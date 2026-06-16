@@ -1,5 +1,17 @@
 # 请求与命令记录
 
+## 2026-06-16 运行控制台逻辑一致性审计
+
+- 用户需求：分析当前独立维护应用代码与 `D:\ProjectPackage\Int\IntRuoyi` 下原运行控制台逻辑一致性；本次按用户写法 `yintruoyi` 理解为原 IntRuoyi 项目。
+- 计划边界：只读静态审计；不执行发布、备份、恢复、回滚、重启、远端清理、SSH、数据库写入或对象存储写入。
+- 命中经验：`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`，发布包、候选、恢复、操作证据与 `code-only`/`with-data` 边界必须按真实逻辑判断。
+- 命令记录：`rg --files` 定位当前独立应用 `backend/src/main/java/com/intruoyi/maintenance/runtime`、`frontend/src` 与原 IntRuoyi runtimecontrol 后端、前端文件。
+- 命令记录：修正端点提取脚本，对比公共路径；独立版 27 个接口，原版 33 个接口，独立版无额外路径，原版额外包含 owner-matrix、wizard、alerts resend site message 6 个治理接口。
+- 命令记录：`rg -n "selectedImageTag|selectedBackupId|apply-test-db-sql|owner-matrix|wizard|resend-site-message"` PASS，确认候选字段、SQL 动作入口、治理接口差异。
+- 命令记录：`rg -n "PreAuthorize|SecurityFrameworkUtils|getLoginUserId|CommonResult|ApiResult"` PASS，确认独立版已移除芋道登录权限依赖，响应外形为本地最小等价类型。
+- 命令记录：`rg -n "code-only|with-data|SkipDatabaseSync|SkipMinioSync|BackendRepoRoot|FrontendRepoRoot|WebsiteRepo|opsRoot|script/|ops/"` PASS，确认 code-only 参数一致，脚本路径和源码根参数为独立化差异。
+- 结论记录：当前独立版与原运行控制台基础路径、动作枚举和构建发布包命令骨架部分一致；候选服务端绑定、发布包 manifest/checksum/tested 校验、恢复候选丰富度、负责人/向导治理、前端 `apply-test-db-sql` 入口和状态枚举存在逻辑不一致。
+
 ## 2026-06-16 运行控制台前端视觉优化
 
 - 用户需求：使用 `design-taste-frontend` 技能，让独立运行控制台前端设计更好看。
