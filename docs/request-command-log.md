@@ -133,3 +133,18 @@
 - 命令记录：`pnpm --dir frontend build` PASS。
 - 命令记录：`task_closeout.py --task-id 20260616-runtime-control-full-original-parity-fix --mode preview` PASS，无删除项、无阻塞、无警告；`--mode apply` PASS，无删除项。
 - 结论记录：独立版运行控制台已对齐原版在 Linux-local 参数、治理持久化、向导场景和前端日志入口上的核心语义；本次仍保持独立本机边界，不回接芋道权限体系。
+
+## 2026-06-16 运行控制台原版逻辑一致性再审计
+
+- 用户需求：继续分析当前独立维护应用代码与 `yintruoyi`（按上下文理解为 `D:\ProjectPackage\Int\IntRuoyi`）下原运行控制台逻辑一致性。
+- 计划边界：本次只做源码、契约、测试和构建审计；不执行真实发布、备份、恢复、回滚、重启、远端清理、SSH、数据库写入或对象存储写入。
+- 命中经验：发布/备份/恢复门禁要求 manifest/checksum/tested/恢复链证据 fail fast；前端门禁要求运行控制台保持紧凑、清晰、可扫描。
+- 命令记录：`python -X utf8 scripts\verify_contracts.py` PASS。
+- 命令记录：`mvn -f backend\pom.xml -Dtest=RuntimeControlOriginalParityTest test` PASS，7 tests / 0 failures。
+- 命令记录：`pnpm --dir frontend typecheck` PASS。
+- 命令记录：`mvn -f backend\pom.xml test` PASS，14 tests / 0 failures。
+- 命令记录：`pnpm --dir frontend build` PASS，Vite 仅提示现有单 chunk 体积超过 500 kB。
+- 命令记录：静态接口/动作比对 PASS，独立版与原版均为 33 个 HTTP 接口、10 个 action id。
+- 命令记录：脚本哈希比对显示 `apply-test-db-sql.ps1`、`backup-ops.ps1`、`show-int-ruoyi-local-status.ps1`、`restart-int-ruoyi-local.ps1` 字节级一致；`publish-int-ruoyi.ps1` 保留独立应用路径与 DCC inventory UTF-8/base64 修正差异。
+- 命令记录：`task-closeout-cleanup --mode preview` PASS，task.md / execution-log.md / verification-report.md 将保留；随后手动删除测试残留目录 `runtime/runtime-control-original-governance-parity-test`。
+- 结论记录：当前独立运行控制台在公开接口、核心动作、候选门禁、前端 payload 和主要脚本契约上与原版一致；权限体系、操作者、监听地址、配置来源、运行态目录和正式服默认禁写属于用户要求的独立化差异。
