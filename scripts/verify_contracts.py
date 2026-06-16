@@ -94,6 +94,14 @@ def verify_frontend_contract() -> None:
     assert_not_contains(api, "selectedBackupId?:", "client-submittable selectedBackupId")
     assert_not_contains(page, "v-model=\"actionForm.selectedImageTag\"", "free-text image tag input")
     assert_not_contains(page, "v-model=\"actionForm.selectedBackupId\"", "free-text backup id input")
+    assert_contains(page, "operationSupportsPublishScope(selectedAction.value.action)", "action-scoped publish payload")
+    assert_contains(page, "operationUsesReleaseTag(selectedAction.value.action)", "action-scoped releaseTag payload")
+    assert_contains(page, "operationRequiresTargetEnvironment(selectedAction.value.action)", "action-scoped targetEnvironment payload")
+    assert_contains(page, "operationUsesTestConclusion(selectedAction.value.action)", "action-scoped testConclusion payload")
+    assert_not_contains(page, "includeOnlyOffice: actionForm.includeOnlyOffice", "unscoped includeOnlyOffice payload")
+    assert_not_contains(page, "includeShowroomBuildPackage: actionForm.includeShowroomBuildPackage", "unscoped includeShowroom payload")
+    assert_not_contains(page, "releaseTag: actionForm.releaseTag || undefined", "unscoped releaseTag payload")
+    assert_not_contains(page, "testConclusion: '独立控制台验证记录'", "hard-coded testConclusion payload")
     assert_contains(package_json, "typecheck", "frontend typecheck script")
 
 

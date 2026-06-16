@@ -1,5 +1,20 @@
 # 请求与命令记录
 
+## 2026-06-16 运行控制台剩余差异改成原版一致
+
+- 用户需求：继续将独立运行控制台改成与原版 IntRuoyi 运行控制台一致。
+- 计划边界：只修改本机独立维护应用；不执行真实发布、备份、恢复、回滚、重启、远端清理、SSH、数据库写入或对象存储写入。
+- 命中经验：`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`，发布包、测试通过标记和恢复候选必须使用真实 manifest/checksum/tested/recoverySet/DCC 证据并 fail fast；`D:\ProjectPackage\Int\IntPP\FRONTEND_STYLE.md`，前端保持紧凑运维控制台风格。
+- 命令记录：`mvn -f backend/pom.xml -Dtest=RuntimeControlOriginalParityTest test` RED，复现 `release-status` 版本字段为空、非动作字段未被拒绝、DCC `chainStatus=BROKEN` 未阻断。
+- 命令记录：`python -X utf8 scripts\verify_contracts.py` RED，复现前端 payload 未按动作裁剪。
+- 命令记录：补齐后 `mvn -f backend/pom.xml -Dtest=RuntimeControlOriginalParityTest test` PASS，7 tests, failures 0。
+- 命令记录：补齐后 `python -X utf8 scripts\verify_contracts.py` PASS。
+- 命令记录：`pnpm --dir frontend typecheck` PASS。
+- 命令记录：`pnpm --dir frontend build` PASS，Vite 仅提示现有大 chunk 体积。
+- 命令记录：`mvn -f backend/pom.xml test` PASS，12 tests, failures 0。
+- 命令记录：`task-closeout-cleanup --mode preview` PASS，无删除项、无阻塞、无警告。
+- 命令记录：`task-closeout-cleanup --mode apply` PASS，无删除项、无阻塞、无警告。
+
 ## 2026-06-16 运行控制台逻辑一致性审计
 
 - 用户需求：分析当前独立维护应用代码与 `D:\ProjectPackage\Int\IntRuoyi` 下原运行控制台逻辑一致性；本次按用户写法 `yintruoyi` 理解为原 IntRuoyi 项目。

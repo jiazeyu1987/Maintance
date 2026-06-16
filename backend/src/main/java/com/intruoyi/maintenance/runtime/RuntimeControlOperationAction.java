@@ -16,7 +16,7 @@ public enum RuntimeControlOperationAction {
     PUBLISH_TEST("publish-test", "部署发布包到测试服", "test", false,
             "deploy/publish-int-ruoyi.ps1",
             req -> deployReleaseArguments("test", req, false)),
-    APPLY_TEST_DB_SQL("apply-test-db-sql", "测试服数据库 SQL", "test", false,
+    APPLY_TEST_DB_SQL("apply-test-db-sql", "测试服数据库快应用", "test", false,
             "deploy/apply-test-db-sql.ps1",
             RuntimeControlOperationAction::applyTestDbSqlArguments),
     MARK_RELEASE_TESTED("mark-release-tested", "标记测试通过", "test", false,

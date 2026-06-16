@@ -15,8 +15,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -56,9 +58,13 @@ class RuntimeControlOriginalParityTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private RuntimeControlOperationStore operationStore;
+
     @BeforeEach
     void setUp() throws Exception {
         resetDirectory(NAS_ROOT);
+        resetDirectory(operationStore.stateDir());
         Files.createDirectories(NAS_ROOT.resolve("Backup/ReleasePackage"));
         Files.createDirectories(NAS_ROOT.resolve("Backup/BackupPackage"));
     }
@@ -278,6 +284,103 @@ class RuntimeControlOriginalParityTest {
         assertThat(preview).contains("-SqlPath", "good.sql", "-ServerHost", "172.30.30.58");
     }
 
+    @Test
+    void releaseStatusAndMarkTestedUseCurrentTestReleaseTagLikeOriginal() throws Exception {
+        createRollbackPackage("release-current", true, false, false);
+        createRollbackPackage("release-tested", true, false, true);
+        createRestorePoint("backup-20260616");
+        saveSuccessfulOperation("op-current-test-release", "test", "ops", "publish-test",
+                Map.of("releaseTag", "release-current"));
+
+        mockMvc.perform(get("/admin-api/infra/runtime-control/release-status"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.data.testCurrentReleaseTag").value("release-current"))
+                .andExpect(jsonPath("$.data.latestTestedReleaseTag").value("release-tested"));
+
+        String preview = mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "action": "mark-release-tested",
+                                  "reason": "contract preview",
+                                  "releaseTag": "release-forged",
+                                  "testConclusion": "回归通过，允许上线正式服",
+                                  "selectedRecoverySetCandidateId": "restore:backup-20260616"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+        assertThat(preview).contains("-ReleaseTag", "release-current").doesNotContain("release-forged");
+    }
+
+    @Test
+    void unsupportedActionFieldsAreRejectedLikeOriginal() throws Exception {
+        createRollbackPackage("release-current", true, false, false);
+        Path sqlRoot = Path.of("target/runtime-control-original-parity-sql").toAbsolutePath().normalize();
+        resetDirectory(sqlRoot);
+        Files.createDirectories(sqlRoot);
+        Path goodSql = sqlRoot.resolve("good.sql");
+        Files.writeString(goodSql, "select 1;", StandardCharsets.UTF_8);
+
+        mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "action": "publish-test",
+                                  "reason": "contract preview",
+                                  "releaseTag": "release-current",
+                                  "includeOnlyOffice": false
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.msg").value(org.hamcrest.Matchers.containsString("includeOnlyOffice")));
+
+        mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "action": "apply-test-db-sql",
+                                  "reason": "contract preview",
+                                  "targetEnvironment": "test",
+                                  "sqlPath": "%s"
+                                }
+                                """.formatted(goodSql.toString().replace("\\", "\\\\"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.msg").value(org.hamcrest.Matchers.containsString("targetEnvironment")));
+
+        mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "action": "build-release",
+                                  "reason": "contract preview",
+                                  "publishScope": "code-only"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.msg").value(org.hamcrest.Matchers.containsString("includeOnlyOffice")));
+    }
+
+    @Test
+    void restoreCandidateRequiresCompleteDccChainLikeOriginal() throws Exception {
+        createRestorePoint("backup-broken-dcc", "BROKEN");
+
+        mockMvc.perform(get("/admin-api/infra/runtime-control/restore-candidates"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.data[0].candidateId").value("restore:backup-broken-dcc"))
+                .andExpect(jsonPath("$.data[0].status").value("BLOCKED"))
+                .andExpect(jsonPath("$.data[0].blockedReasons[0]")
+                        .value(org.hamcrest.Matchers.containsString("chainStatus 不是 COMPLETE")));
+    }
+
     private void createRollbackPackage(String directoryName, boolean withChecksum,
                                        boolean withRollbackEvidence, boolean withTestedEvidence) throws IOException {
         Path root = NAS_ROOT.resolve("Backup/ReleasePackage").resolve(directoryName);
@@ -332,6 +435,10 @@ class RuntimeControlOriginalParityTest {
     }
 
     private void createRestorePoint(String backupId) throws IOException {
+        createRestorePoint(backupId, "COMPLETE");
+    }
+
+    private void createRestorePoint(String backupId, String dccChainStatus) throws IOException {
         Path root = NAS_ROOT.resolve("Backup/BackupPackage").resolve(backupId);
         Files.createDirectories(root.resolve("deploy"));
         Files.createDirectories(root.resolve("manifest"));
@@ -343,10 +450,10 @@ class RuntimeControlOriginalParityTest {
                 {
                   "schemaVersion": "dcc-backup-manifest-v1",
                   "backupMode": "target-dataset",
-                  "chainStatus": "COMPLETE",
+                  "chainStatus": "%s",
                   "changeSummary": {"added": "0", "modified": "0", "deleted": "0", "reused": "1"}
                 }
-                """, StandardCharsets.UTF_8);
+                """.formatted(dccChainStatus), StandardCharsets.UTF_8);
         Files.writeString(root.resolve("manifest/manifest.json"), """
                 {
                   "schemaVersion": "v2",
@@ -366,6 +473,13 @@ class RuntimeControlOriginalParityTest {
                   }
                 }
                 """.formatted(backupId, backupId), StandardCharsets.UTF_8);
+    }
+
+    private void saveSuccessfulOperation(String operationId, String environment, String component, String action,
+                                         Map<String, String> parameters) {
+        operationStore.save(new RuntimeDtos.RuntimeControlOperationRespVO(operationId, "local-operator",
+                Instant.now(), environment, component, action, action, parameters, "contract fixture",
+                "SUCCESS", "success", "target/runtime-control-original-parity.log"));
     }
 
     private static void resetDirectory(Path path) throws IOException {

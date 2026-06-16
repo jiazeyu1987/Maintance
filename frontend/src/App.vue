@@ -71,6 +71,7 @@ const actionForm = reactive({
   publishScope: 'code-only' as 'code-only' | 'with-data',
   targetEnvironment: 'test' as 'test' | 'prod' | 'backup',
   sqlPath: '',
+  testConclusion: '回归通过，允许上线正式服',
   selectedImageCandidateId: '',
   selectedRecoverySetCandidateId: '',
   includeOnlyOffice: false,
@@ -145,6 +146,38 @@ function actionLevelLabel(level: RuntimeAction['level']) {
   return '常规'
 }
 
+function operationSupportsPublishScope(action: string) {
+  return action === 'build-release'
+}
+
+function operationSupportsSmartReleaseReport(action: string) {
+  return ['build-release', 'publish-test', 'promote-prod', 'promote-backup'].includes(action)
+}
+
+function operationRequiresTargetEnvironment(action: string) {
+  return ['backup-now', 'rollback-app', 'restore-data'].includes(action)
+}
+
+function operationUsesReleaseTag(action: string) {
+  return ['build-release', 'publish-test', 'promote-prod', 'promote-backup'].includes(action)
+}
+
+function operationUsesTestConclusion(action: string) {
+  return action === 'mark-release-tested'
+}
+
+function operationUsesSqlPath(action: string) {
+  return action === 'apply-test-db-sql'
+}
+
+function operationUsesImageCandidate(action: string) {
+  return action === 'rollback-app'
+}
+
+function operationUsesRecoverySetCandidate(action: string) {
+  return ['mark-release-tested', 'rehearsal', 'restore-data'].includes(action)
+}
+
 function statusClass(status: string) {
   if (status === 'RUNNING' || status === 'PASS' || status === 'SUCCESS') return 'status-pill--success'
   if (status === 'UNKNOWN' || status === 'DEGRADED' || status === 'WARN' || status === 'RUNNING') {
@@ -171,31 +204,36 @@ function handleActionChange(value: string | number | boolean) {
 }
 
 function requestPayload() {
+  const action = selectedAction.value.action
+  const releaseTag = actionForm.releaseTag.trim()
   return {
-    action: selectedAction.value.action,
+    action,
     reason: actionForm.reason,
     prodConfirmText: actionForm.prodConfirmText || undefined,
-    targetEnvironment:
-      selectedAction.value.action === 'build-release'
-        ? undefined
-        : actionForm.targetEnvironment || selectedAction.value.targetEnvironment,
-    publishScope:
-      selectedAction.value.action === 'build-release' ? actionForm.publishScope : undefined,
-    includeOnlyOffice: actionForm.includeOnlyOffice,
-    includeShowroomBuildPackage: actionForm.includeShowroomBuildPackage,
-    enableSmartReleaseReport: actionForm.enableSmartReleaseReport,
-    releaseTag: actionForm.releaseTag || undefined,
-    sqlPath:
-      selectedAction.value.action === 'apply-test-db-sql' ? actionForm.sqlPath || undefined : undefined,
-    selectedImageCandidateId:
-      selectedAction.value.action === 'rollback-app'
-        ? actionForm.selectedImageCandidateId || undefined
-        : undefined,
-    selectedRecoverySetCandidateId:
-      ['mark-release-tested', 'rehearsal', 'restore-data'].includes(selectedAction.value.action)
-        ? actionForm.selectedRecoverySetCandidateId || undefined
-        : undefined,
-    testConclusion: '独立控制台验证记录'
+    targetEnvironment: operationRequiresTargetEnvironment(selectedAction.value.action)
+      ? actionForm.targetEnvironment || selectedAction.value.targetEnvironment
+      : undefined,
+    publishScope: operationSupportsPublishScope(selectedAction.value.action)
+      ? actionForm.publishScope
+      : undefined,
+    includeOnlyOffice: operationSupportsPublishScope(action) ? actionForm.includeOnlyOffice : undefined,
+    includeShowroomBuildPackage: operationSupportsPublishScope(action)
+      ? actionForm.includeShowroomBuildPackage
+      : undefined,
+    enableSmartReleaseReport: operationSupportsSmartReleaseReport(action)
+      ? actionForm.enableSmartReleaseReport
+      : undefined,
+    releaseTag: operationUsesReleaseTag(selectedAction.value.action) && releaseTag ? releaseTag : undefined,
+    sqlPath: operationUsesSqlPath(action) ? actionForm.sqlPath.trim() || undefined : undefined,
+    selectedImageCandidateId: operationUsesImageCandidate(action)
+      ? actionForm.selectedImageCandidateId || undefined
+      : undefined,
+    selectedRecoverySetCandidateId: operationUsesRecoverySetCandidate(action)
+      ? actionForm.selectedRecoverySetCandidateId || undefined
+      : undefined,
+    testConclusion: operationUsesTestConclusion(selectedAction.value.action)
+      ? actionForm.testConclusion.trim() || undefined
+      : undefined
   }
 }
 
@@ -417,29 +455,32 @@ onMounted(loadData)
             <el-input v-model="actionForm.reason" type="textarea" :rows="3" />
           </el-form-item>
           <div class="form-grid">
-            <el-form-item label="目标环境">
+            <el-form-item v-if="operationRequiresTargetEnvironment(selectedAction.action)" label="目标环境">
               <el-select v-model="actionForm.targetEnvironment">
                 <el-option label="测试服" value="test" />
                 <el-option label="正式服" value="prod" />
                 <el-option label="备份服" value="backup" />
               </el-select>
             </el-form-item>
-            <el-form-item label="发布范围">
+            <el-form-item v-if="operationSupportsPublishScope(selectedAction.action)" label="发布范围">
               <el-select v-model="actionForm.publishScope">
                 <el-option label="仅代码" value="code-only" />
                 <el-option label="含数据" value="with-data" />
               </el-select>
             </el-form-item>
-            <el-form-item label="发布标签">
+            <el-form-item v-if="operationUsesReleaseTag(selectedAction.action)" label="发布标签">
               <el-input v-model="actionForm.releaseTag" placeholder="release-YYYYMMDD-HHmm" />
             </el-form-item>
             <el-form-item label="生产确认">
               <el-input v-model="actionForm.prodConfirmText" placeholder="PROD" />
             </el-form-item>
-            <el-form-item v-if="selectedAction.action === 'apply-test-db-sql'" label="SQL 路径">
+            <el-form-item v-if="operationUsesSqlPath(selectedAction.action)" label="SQL 路径">
               <el-input v-model="actionForm.sqlPath" />
             </el-form-item>
-            <el-form-item v-if="selectedAction.action === 'rollback-app'" label="镜像候选">
+            <el-form-item v-if="operationUsesTestConclusion(selectedAction.action)" label="验证结论">
+              <el-input v-model="actionForm.testConclusion" />
+            </el-form-item>
+            <el-form-item v-if="operationUsesImageCandidate(selectedAction.action)" label="镜像候选">
               <el-select
                 v-model="actionForm.selectedImageCandidateId"
                 filterable
@@ -455,7 +496,7 @@ onMounted(loadData)
               </el-select>
             </el-form-item>
             <el-form-item
-              v-if="['mark-release-tested', 'rehearsal', 'restore-data'].includes(selectedAction.action)"
+              v-if="operationUsesRecoverySetCandidate(selectedAction.action)"
               label="恢复集候选"
             >
               <el-select
@@ -474,9 +515,24 @@ onMounted(loadData)
             </el-form-item>
           </div>
           <div class="switch-row">
-            <el-checkbox v-model="actionForm.includeOnlyOffice">包含 OnlyOffice</el-checkbox>
-            <el-checkbox v-model="actionForm.includeShowroomBuildPackage">包含展厅包</el-checkbox>
-            <el-checkbox v-model="actionForm.enableSmartReleaseReport">智能发布报告</el-checkbox>
+            <el-checkbox
+              v-if="operationSupportsPublishScope(selectedAction.action)"
+              v-model="actionForm.includeOnlyOffice"
+            >
+              包含 OnlyOffice
+            </el-checkbox>
+            <el-checkbox
+              v-if="operationSupportsPublishScope(selectedAction.action)"
+              v-model="actionForm.includeShowroomBuildPackage"
+            >
+              包含展厅包
+            </el-checkbox>
+            <el-checkbox
+              v-if="operationSupportsSmartReleaseReport(selectedAction.action)"
+              v-model="actionForm.enableSmartReleaseReport"
+            >
+              智能发布报告
+            </el-checkbox>
           </div>
           <div class="command-row">
             <el-button

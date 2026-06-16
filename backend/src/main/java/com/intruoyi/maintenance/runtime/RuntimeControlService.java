@@ -125,32 +125,123 @@ public class RuntimeControlService {
 
     private RuntimeControlActionReqVO validateAndResolveAction(RuntimeControlOperationAction action,
                                                                RuntimeControlActionReqVO req) {
-        action.validateRequest(req);
+        validateActionParameters(action, req);
+        RuntimeControlActionReqVO resolvedReq = action == RuntimeControlOperationAction.MARK_RELEASE_TESTED
+                ? copyActionReqWithReleaseTag(req, requireCurrentReleaseTag("test"))
+                : req;
+        action.validateRequest(resolvedReq);
         if (action == RuntimeControlOperationAction.ROLLBACK_APP) {
-            if (hasText(req.selectedImageTag())) {
+            if (hasText(resolvedReq.selectedImageTag())) {
                 throw new RuntimeControlException("selectedImageTag 只能由服务端候选解析");
             }
-            RuntimeControlRollbackCandidateRespVO candidate = requireAvailableRollbackCandidate(req.selectedImageCandidateId());
-            return copyActionReq(req, candidate.imageTag(), null, null, null, null, null);
+            RuntimeControlRollbackCandidateRespVO candidate = requireAvailableRollbackCandidate(resolvedReq.selectedImageCandidateId());
+            return copyActionReq(resolvedReq, candidate.imageTag(), null, null, null, null, null);
         }
         if (action == RuntimeControlOperationAction.REHEARSAL || action == RuntimeControlOperationAction.RESTORE_DATA) {
-            if (hasText(req.selectedBackupId())) {
+            if (hasText(resolvedReq.selectedBackupId())) {
                 throw new RuntimeControlException("selectedBackupId 只能由服务端候选解析");
             }
-            RuntimeControlRestoreCandidateRespVO candidate = requireAvailableRestoreCandidate(req.selectedRecoverySetCandidateId());
-            return copyActionReq(req, null, candidate.backupId(), candidate.recoverySetId(),
+            RuntimeControlRestoreCandidateRespVO candidate = requireAvailableRestoreCandidate(resolvedReq.selectedRecoverySetCandidateId());
+            return copyActionReq(resolvedReq, null, candidate.backupId(), candidate.recoverySetId(),
                     candidate.recoverySetManifestHash(), candidate.programVersion(), candidate.redisPolicy());
         }
         if (action == RuntimeControlOperationAction.MARK_RELEASE_TESTED) {
-            RuntimeControlRestoreCandidateRespVO candidate = requireAvailableRestoreCandidate(req.selectedRecoverySetCandidateId());
-            return copyActionReq(req, null, candidate.backupId(), candidate.recoverySetId(),
+            RuntimeControlRestoreCandidateRespVO candidate = requireAvailableRestoreCandidate(resolvedReq.selectedRecoverySetCandidateId());
+            return copyActionReq(resolvedReq, null, candidate.backupId(), candidate.recoverySetId(),
                     candidate.recoverySetManifestHash(), candidate.programVersion(), candidate.redisPolicy());
         }
         if (action == RuntimeControlOperationAction.APPLY_TEST_DB_SQL) {
-            return copyActionReqWithSqlPath(req, validateSqlPath(req.sqlPath()));
+            return copyActionReqWithSqlPath(resolvedReq, validateSqlPath(resolvedReq.sqlPath()));
         }
-        validateReleasePackageAvailability(action, req.releaseTag());
-        return req;
+        validateReleasePackageAvailability(action, resolvedReq.releaseTag());
+        return resolvedReq;
+    }
+
+    private void validateActionParameters(RuntimeControlOperationAction action, RuntimeControlActionReqVO req) {
+        validateActionTargetEnvironment(action, req);
+        validatePublishScope(action, req);
+        validateSqlParameter(action, req);
+        validateReleaseTagParameter(action, req);
+        validateSmartReleaseReport(action, req);
+    }
+
+    private void validateActionTargetEnvironment(RuntimeControlOperationAction action, RuntimeControlActionReqVO req) {
+        if (action != RuntimeControlOperationAction.BACKUP_NOW
+                && action != RuntimeControlOperationAction.ROLLBACK_APP
+                && action != RuntimeControlOperationAction.RESTORE_DATA) {
+            if (hasText(req.targetEnvironment())) {
+                throw new RuntimeControlException("targetEnvironment");
+            }
+            return;
+        }
+        String targetEnvironment = trimToEmpty(req.targetEnvironment());
+        if (isBlank(targetEnvironment)) {
+            throw new RuntimeControlException("targetEnvironment is required");
+        }
+        List<String> allowedTargets = action == RuntimeControlOperationAction.RESTORE_DATA
+                || action == RuntimeControlOperationAction.ROLLBACK_APP
+                ? List.of("test", "backup")
+                : List.of("test", "prod");
+        if (!allowedTargets.contains(targetEnvironment)) {
+            throw new RuntimeControlException("targetEnvironment");
+        }
+    }
+
+    private void validatePublishScope(RuntimeControlOperationAction action, RuntimeControlActionReqVO req) {
+        if (action != RuntimeControlOperationAction.BUILD_RELEASE) {
+            if (hasText(req.publishScope())) {
+                throw new RuntimeControlException("publishScope");
+            }
+            if (req.includeOnlyOffice() != null) {
+                throw new RuntimeControlException("includeOnlyOffice");
+            }
+            if (req.includeShowroomBuildPackage() != null) {
+                throw new RuntimeControlException("includeShowroomBuildPackage");
+            }
+            return;
+        }
+        if (isBlank(req.publishScope())) {
+            throw new RuntimeControlException("publishScope is required");
+        }
+        if (req.includeOnlyOffice() == null) {
+            throw new RuntimeControlException("includeOnlyOffice is required");
+        }
+        if (req.includeShowroomBuildPackage() == null) {
+            throw new RuntimeControlException("includeShowroomBuildPackage is required");
+        }
+    }
+
+    private void validateSqlParameter(RuntimeControlOperationAction action, RuntimeControlActionReqVO req) {
+        if (action != RuntimeControlOperationAction.APPLY_TEST_DB_SQL && hasText(req.sqlPath())) {
+            throw new RuntimeControlException("sqlPath");
+        }
+    }
+
+    private void validateReleaseTagParameter(RuntimeControlOperationAction action, RuntimeControlActionReqVO req) {
+        if (action == RuntimeControlOperationAction.MARK_RELEASE_TESTED) {
+            return;
+        }
+        if (action == RuntimeControlOperationAction.PUBLISH_TEST
+                || action == RuntimeControlOperationAction.PROMOTE_PROD
+                || action == RuntimeControlOperationAction.PROMOTE_BACKUP) {
+            validateReleaseTag(req.releaseTag());
+            return;
+        }
+        if (hasText(req.releaseTag())) {
+            validateReleaseTag(req.releaseTag());
+        }
+    }
+
+    private void validateSmartReleaseReport(RuntimeControlOperationAction action, RuntimeControlActionReqVO req) {
+        if (!Boolean.TRUE.equals(req.enableSmartReleaseReport())) {
+            return;
+        }
+        if (action != RuntimeControlOperationAction.BUILD_RELEASE
+                && action != RuntimeControlOperationAction.PUBLISH_TEST
+                && action != RuntimeControlOperationAction.PROMOTE_PROD
+                && action != RuntimeControlOperationAction.PROMOTE_BACKUP) {
+            throw new RuntimeControlException("enableSmartReleaseReport");
+        }
     }
 
     private void appendNasReleaseArguments(RuntimeControlOperationAction action, RuntimeControlCommand command,
@@ -273,8 +364,20 @@ public class RuntimeControlService {
     }
 
     public RuntimeControlReleaseStatusRespVO getReleaseStatus() {
-        return new RuntimeControlReleaseStatusRespVO(getReleasePackages(), getOverview().statuses(), getOperations(),
-                null, null);
+        List<RuntimeControlReleasePackageRespVO> releasePackages = getReleasePackages();
+        RuntimeControlOverviewRespVO overview = getOverview();
+        List<RuntimeControlOperationRespVO> recentReleaseOperations = getOperations().stream()
+                .filter(operation -> List.of("build-release", "publish-test", "mark-release-tested",
+                        "promote-prod", "promote-backup").contains(operation.action()))
+                .limit(10)
+                .toList();
+        String latestTestedReleaseTag = releasePackages.stream()
+                .filter(item -> Boolean.TRUE.equals(item.tested()))
+                .map(RuntimeControlReleasePackageRespVO::releaseTag)
+                .findFirst()
+                .orElse(null);
+        return new RuntimeControlReleaseStatusRespVO(releasePackages, overview.statuses(), recentReleaseOperations,
+                resolveCurrentReleaseTag(overview, "test"), latestTestedReleaseTag);
     }
 
     public List<RuntimeControlRollbackCandidateRespVO> getRollbackCandidates() {
@@ -729,6 +832,48 @@ public class RuntimeControlService {
         }
     }
 
+    private String requireCurrentReleaseTag(String environment) {
+        String releaseTag = resolveCurrentReleaseTag(getOverview(), environment);
+        if (isBlank(releaseTag)) {
+            throw new RuntimeControlException(environment + " currentReleaseTag is required");
+        }
+        validateReleaseTag(releaseTag);
+        return releaseTag;
+    }
+
+    private String resolveCurrentReleaseTag(RuntimeControlOverviewRespVO overview, String environment) {
+        Map<String, RuntimeControlStatusRespVO> statuses = overview.statuses().get(environment);
+        if (statuses != null) {
+            String statusReleaseTag = statuses.values().stream()
+                    .map(RuntimeControlStatusRespVO::currentReleaseTag)
+                    .filter(RuntimeControlService::hasText)
+                    .findFirst()
+                    .orElse(null);
+            if (hasText(statusReleaseTag)) {
+                return statusReleaseTag.trim();
+            }
+        }
+        return operationStore.listLatest(200).stream()
+                .filter(operation -> environment.equals(operation.environment()))
+                .filter(operation -> "SUCCESS".equals(operation.status()))
+                .filter(operation -> "publish-test".equals(operation.action()))
+                .map(RuntimeControlOperationRespVO::parameters)
+                .filter(parameters -> parameters != null && hasText(parameters.get("releaseTag")))
+                .map(parameters -> parameters.get("releaseTag").trim())
+                .findFirst()
+                .orElse(null);
+    }
+
+    private void validateReleaseTag(String releaseTag) {
+        if (isBlank(releaseTag)) {
+            throw new RuntimeControlException("releaseTag is required");
+        }
+        String trimmed = releaseTag.trim();
+        if (trimmed.contains("..") || trimmed.contains("/") || trimmed.contains("\\")) {
+            throw new RuntimeControlException("releaseTag 不合法: " + trimmed);
+        }
+    }
+
     private String validateSqlPath(String value) {
         if (isBlank(value)) {
             throw new RuntimeControlException("sqlPath is required");
@@ -905,6 +1050,8 @@ public class RuntimeControlService {
         }
         if (isBlank(chainStatus)) {
             blockedReasons.add("DCC backup manifest 缺少 chainStatus");
+        } else if (!"COMPLETE".equals(chainStatus)) {
+            blockedReasons.add("DCC backup manifest chainStatus 不是 COMPLETE");
         }
         return new DccRestoreSummary(backupMode, chainStatus, stringMap(node(dccManifest, "changeSummary")));
     }
@@ -952,6 +1099,15 @@ public class RuntimeControlService {
                 req.targetEnvironment(), req.publishScope(), req.includeOnlyOffice(),
                 req.includeShowroomBuildPackage(), req.enableSmartReleaseReport(), req.releaseTag(),
                 req.testConclusion(), sqlPath, req.selectedImageCandidateId(), req.selectedImageTag(),
+                req.selectedRecoverySetCandidateId(), req.selectedBackupId(), req.recoverySetId(),
+                req.recoverySetManifestHash(), req.recoverySetProgramVersion(), req.recoverySetRedisPolicy());
+    }
+
+    private RuntimeControlActionReqVO copyActionReqWithReleaseTag(RuntimeControlActionReqVO req, String releaseTag) {
+        return new RuntimeControlActionReqVO(req.action(), req.reason(), req.prodConfirmText(),
+                req.targetEnvironment(), req.publishScope(), req.includeOnlyOffice(),
+                req.includeShowroomBuildPackage(), req.enableSmartReleaseReport(), releaseTag,
+                req.testConclusion(), req.sqlPath(), req.selectedImageCandidateId(), req.selectedImageTag(),
                 req.selectedRecoverySetCandidateId(), req.selectedBackupId(), req.recoverySetId(),
                 req.recoverySetManifestHash(), req.recoverySetProgramVersion(), req.recoverySetRedisPolicy());
     }
@@ -1038,6 +1194,10 @@ public class RuntimeControlService {
 
     private static boolean isBlank(String value) {
         return value == null || value.isBlank();
+    }
+
+    private static String trimToEmpty(String value) {
+        return value == null ? "" : value.trim();
     }
 
     private static String blankToDefault(String value, String defaultValue) {
