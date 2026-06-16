@@ -105,12 +105,23 @@ def verify_scripts_and_config() -> None:
     assert_contains(gitignore, "config/runtime-control.local.yaml", "local config ignore")
 
 
+def verify_release_script_contract() -> None:
+    script = read_text("ops/deploy/publish-int-ruoyi.ps1")
+    assert_contains(script, "JSON_OBJECT(", "DCC object inventory JSON row query")
+    assert_contains(script, "TO_BASE64(", "DCC object inventory base64 transport")
+    assert_contains(script, "FromBase64String", "DCC object inventory base64 decoder")
+    assert_contains(script, "StandardOutputEncoding", "UTF-8 process output capture")
+    assert_contains(script, "ConvertFrom-Json", "DCC object inventory JSON parser")
+    assert_not_contains(script, '$columns = $line -split "`t", 7', "tab-delimited DCC inventory parser")
+
+
 def main() -> int:
     checks = [
         verify_backend_contract,
         verify_backend_tests,
         verify_frontend_contract,
         verify_scripts_and_config,
+        verify_release_script_contract,
     ]
     for check in checks:
         check()

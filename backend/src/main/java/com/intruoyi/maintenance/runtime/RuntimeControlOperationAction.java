@@ -192,6 +192,11 @@ public enum RuntimeControlOperationAction {
         return this == PUBLISH_TEST || this == PROMOTE_PROD || this == PROMOTE_BACKUP;
     }
 
+    public boolean requiresNasReleaseRepository() {
+        return this == BUILD_RELEASE || this == PUBLISH_TEST || this == MARK_RELEASE_TESTED
+                || this == PROMOTE_PROD || this == PROMOTE_BACKUP;
+    }
+
     private boolean isBackupAction() {
         return this == BACKUP_NOW || this == ROLLBACK_APP || this == REHEARSAL || this == RESTORE_DATA;
     }

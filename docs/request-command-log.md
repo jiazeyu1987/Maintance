@@ -13,3 +13,36 @@
 - 命令记录：`.\scripts\build.ps1` PASS。
 - 命令记录：`.\scripts\start.ps1` 后 `curl.exe -s http://127.0.0.1:48181/actuator/health` PASS，返回 `{"status":"UP"}`。
 - 命令记录：Playwright 打开 `http://127.0.0.1:48181/`、检查 snapshot、console、requests，并点击“预览命令”；页面可见且 console error 为 0，未执行真实动作。
+
+## 2026-06-16 真实数据构建发布包 E2E 验证
+
+- 用户需求：使用 E2E 测试，用真实的数据构建一次发布包，不要发布。
+- 计划边界：仅允许触发 `build-release`；不得执行 `publish-test`、`promote-prod`、`promote-backup`、`backup-now`、`rollback-app`、`restore-data`、`restart` 或任何远端清理动作。
+- 计划命令：检查任务文档与经验门禁，检查本机运行控制台健康状态、构建脚本和被管理源码路径，使用 Playwright 打开 `http://127.0.0.1:48181/` 预览并执行 `build-release`，轮询操作结果并核验发布包 manifest/日志证据。
+- 命令记录：`mvn -f backend/pom.xml -Dtest=RuntimeControlContractTest test` RED 失败，发现独立控制台漏掉 `build-release` 的 NAS 发布仓库和后端运行基座参数；修复后同命令 PASS。
+- 命令记录：`mvn -f backend/pom.xml test` PASS。
+- 命令记录：`.\scripts\build.ps1` 首次因旧 jar 被本机控制台进程占用失败，停止 `127.0.0.1:48181` 旧进程后重跑 PASS。
+- 命令记录：本机生成被 `.gitignore` 排除的 `config/runtime-control.local.yaml`，只用于本机真实配置，不提交敏感凭据。
+- 命令记录：Playwright 打开 `http://127.0.0.1:48181/`，选择 `构建发布包`、`含数据`，填写发布标签 `release-20260616-112813-e2e`，点击“预览命令”；预览命令无发布、晋级、正式服主机、备份、恢复、回滚或重启动作。
+- 命令记录：Playwright 执行 `build-release` 标签 `release-20260616-112813-e2e` 后失败，日志显示脚本误从独立仓库推断 `sql\mysql`；修复为显式传入 `-BackendRepoRoot/-FrontendRepoRoot/-WebsiteRepo`。
+- 命令记录：`mvn -f backend/pom.xml -Dtest=RuntimeControlContractTest#buildReleaseWithDataPreviewContainsNasAndRuntimeBaseArguments test` 对源码路径参数先 RED 后 GREEN。
+- 命令记录：重新执行 `mvn -f backend/pom.xml test` 与 `.\scripts\build.ps1`，均 PASS，并重启 `http://127.0.0.1:48181/`。
+- 命令记录：Playwright retry 预览发布标签 `release-20260616-113500-e2e`，确认命令包含被管理源码路径且仍无发布、晋级、正式服主机、备份、恢复、回滚或重启动作。
+- 命令记录：Playwright 执行 `build-release` 标签 `release-20260616-113500-e2e` 后失败，脚本已复制 `23.46 GiB` 真实 MinIO 数据，随后因 DCC 对象清单 tab 分隔解析被真实特殊文件名打坏而失败。
+- 命令记录：`python -X utf8 scripts\verify_contracts.py` 对 DCC inventory JSON 行协议先 RED 后 GREEN；发布脚本改为 `JSON_OBJECT` + `ConvertFrom-Json`。
+- 命令记录：Playwright third retry 执行 `build-release` 标签 `release-20260616-121500-e2e` 后失败；真实后端构建、前端构建、Docker 镜像、本机 MySQL dump 与 `23.46 GiB` MinIO 同步均完成，随后 DCC inventory 在真实中文文件名行因 PowerShell 5.1 stdout 编码破坏而 malformed。
+- 命令记录：`python -X utf8 scripts\verify_contracts.py` 对 DCC inventory base64 传输协议先 RED 后 GREEN；发布脚本改为 `TO_BASE64(JSON_OBJECT)` 单列输出、PowerShell `FromBase64String` + 严格 UTF-8 解码，并为进程捕获设置 `StandardOutputEncoding`。
+- 命令记录：只读查询真实问题行 `fileId=9198354896134`，base64 JSON 可解码为合法对象，路径为 `dcc/original/20260615/@最终版规程@ - 快捷方式.lnk.重命名`。
+- 命令记录：PowerShell AST parse `ops/deploy/publish-int-ruoyi.ps1` PASS；`mvn -f backend/pom.xml test` PASS。
+- 风险记录：只读进程检查发现原 IntRuoyi 运行控制台存在并发 `deploy-release -Environment backup` 进程，不属于本次维护应用 E2E；本次任务不干预该进程，并在后续验收中按操作来源区分。
+- 用户变更：用户明确“发布不要带数据 / 构建不要带数据”，最新范围改为 `code-only` 构建发布包，不包含数据库 dump 或 MinIO 快照。
+- 命令记录：中止本次维护应用正在运行的 `with-data` 构建操作 `op-2026-06-16T045827746415700Z-ab581284-205e-4d11-8e87-4434e44255cd`；后台状态为 `FAILED`，本地半成品无 `release-manifest.json`。
+- 命令记录：删除本任务生成的带数据半成品目录 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260616-125800-e2e`，删除前校验目标位于发布缓存根目录内，删除后目录不存在。
+- 命令记录：`mvn -f backend/pom.xml -Dtest=RuntimeControlContractTest#buildReleaseCodeOnlyPreviewSkipsDatabaseAndMinioData test` PASS；`python -X utf8 scripts\verify_contracts.py` PASS。
+- 命令记录：Playwright 预览发布标签 `release-20260616-152022-codeonly-e2e`，页面发布范围为“仅代码”；参数包含 `-SkipDatabaseSync` 与 `-SkipMinioSync`，不包含发布、晋级、正式服主机、备份、恢复、回滚、重启、数据库 dump 或 MinIO 同步动作。
+- 命令记录：Playwright 执行 `code-only build-release`，操作 `op-2026-06-16T072304860538200Z-0d13eb24-9a16-47b9-aed7-68b9b3e71f21` 最终 `SUCCESS`；日志显示 `Release package built: release-20260616-152022-codeonly-e2e`，NAS 路径 `Backup/ReleasePackage/release-20260616-152022-codeonly-e2e`。
+- 命令记录：发布包本地核验 PASS，`release-manifest.json` 为 `publishScope=code-only`，镜像 tar `811197440` bytes，不存在 `ruoyi-vue-pro-current.sql`、`minio`、`manifest\dcc-object-inventory.json`。
+- 命令记录：`GET /admin-api/infra/runtime-control/release-packages` 可见 `release-20260616-152022-codeonly-e2e` 且状态 `AVAILABLE`；维护应用操作记录中未出现发布、晋级、备份、恢复、回滚、重启动作。
+- 命令记录：Playwright 最终页面快照显示最新操作 `SUCCESS`，浏览器 console error 为 0，请求列表仅包含运行控制台读接口、预览和执行接口。
+- 命令记录：`mvn -f backend/pom.xml test` PASS；`python -X utf8 scripts\verify_contracts.py` PASS。
+- 命令记录：`task-closeout-cleanup` 预览 PASS，无删除项、无阻塞、无警告。

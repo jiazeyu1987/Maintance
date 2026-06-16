@@ -1,5 +1,7 @@
 package com.intruoyi.maintenance.runtime;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -31,6 +33,7 @@ public class RuntimeControlService {
     private final RuntimeControlOperationStore operationStore;
     private final RuntimeControlCommandExecutor commandExecutor;
     private final RuntimeControlNasBrowser nasBrowser;
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final ExecutorService executor = Executors.newCachedThreadPool();
 
     public RuntimeControlService(RuntimeControlProperties properties,
@@ -76,29 +79,120 @@ public class RuntimeControlService {
     }
 
     public RuntimeControlOperationRespVO executeAction(RuntimeControlActionReqVO req) {
-        RuntimeControlActionPreviewRespVO preview = previewAction(req);
-        RuntimeControlCommand command = new RuntimeControlCommand(
-                preview.environment(), preview.component(), preview.scriptPath(), preview.arguments());
         String operationId = nextOperationId();
+        PreparedAction prepared = prepareAction(req, operationId, false);
         Path logPath = operationStore.operationLogPath(operationId);
-        return startOperation(operationId, preview.environment(), preview.component(), preview.action(),
-                preview.actionLabel(), preview.parameters(), req.reason(), command, logPath);
+        return startOperation(operationId, prepared.environment(), prepared.component(), prepared.action(),
+                prepared.actionLabel(), prepared.parameters(), req.reason(), prepared.command(), logPath);
     }
 
     public RuntimeControlActionPreviewRespVO previewAction(RuntimeControlActionReqVO req) {
+        PreparedAction prepared = prepareAction(req, "preview", true);
+        return new RuntimeControlActionPreviewRespVO(prepared.action(), prepared.actionLabel(), prepared.environment(),
+                prepared.component(), prepared.command().scriptPath(), prepared.command().arguments(),
+                prepared.parameters(), Boolean.TRUE.equals(req.enableSmartReleaseReport()),
+                "本机操作者 " + properties.getOperatorId() + " 将执行 " + prepared.actionLabel());
+    }
+
+    private PreparedAction prepareAction(RuntimeControlActionReqVO req, String operationId, boolean previewOnly) {
         RuntimeControlOperationAction action = RuntimeControlOperationAction.require(req.action());
         action.validateRequest(req);
         String environment = action.resolveEnvironment(req);
         guardWrite(environment, req.reason(), req.prodConfirmText(), action.requiresProductionGuard(req));
         RuntimeControlCommand command = action.buildCommand(req, properties);
+        appendNasReleaseArguments(action, command, operationId, previewOnly);
+        appendManagedSourceArguments(action, command);
+        appendBackendRuntimeBaseArguments(action, command);
         Path scriptPath = commandExecutor.resolveScriptPath(command.scriptPath());
         if (!Files.isRegularFile(scriptPath)) {
             throw new RuntimeControlException("脚本不存在: " + scriptPath);
         }
-        return new RuntimeControlActionPreviewRespVO(action.action(), action.label(), environment, action.action(),
-                scriptPath.toString(), command.arguments(), action.safeParameters(req),
-                Boolean.TRUE.equals(req.enableSmartReleaseReport()),
-                "本机操作者 " + properties.getOperatorId() + " 将执行 " + action.label());
+        RuntimeControlCommand resolvedCommand = new RuntimeControlCommand(command.environment(), command.component(),
+                scriptPath.toString(), command.arguments());
+        return new PreparedAction(action.action(), action.label(), environment, action.action(),
+                action.safeParameters(req), resolvedCommand);
+    }
+
+    private void appendNasReleaseArguments(RuntimeControlOperationAction action, RuntimeControlCommand command,
+                                           String operationId, boolean previewOnly) {
+        if (!action.requiresNasReleaseRepository()) {
+            return;
+        }
+        RuntimeControlProperties.ReleasePackage releasePackage = properties.getReleasePackage();
+        String nasServer = requireText(releasePackage.getNasServer(), "releasePackage.nasServer");
+        String nasShare = requireText(releasePackage.getNasShare(), "releasePackage.nasShare");
+        String nasReleaseRoot = requireText(releasePackage.getNasReleaseRoot(), "releasePackage.nasReleaseRoot");
+        requireText(releasePackage.getNasUsername(), "releasePackage.nasUsername");
+        requireText(releasePackage.getNasPassword(), "releasePackage.nasPassword");
+        if (!previewOnly) {
+            Path nasConfigPath = writeNasReleaseConfig(operationId, releasePackage);
+            command.arguments().add("-NasConfigPath");
+            command.arguments().add(nasConfigPath.toString());
+        }
+        command.arguments().add("-NasServer");
+        command.arguments().add(nasServer);
+        command.arguments().add("-NasShare");
+        command.arguments().add(nasShare);
+        command.arguments().add("-NasReleaseRoot");
+        command.arguments().add(nasReleaseRoot);
+    }
+
+    private Path writeNasReleaseConfig(String operationId, RuntimeControlProperties.ReleasePackage releasePackage) {
+        Path configPath = properties.stateDirPath().resolve("nas-release-config").resolve(operationId + ".json");
+        Map<String, String> payload = new LinkedHashMap<>();
+        payload.put("server", requireText(releasePackage.getNasServer(), "releasePackage.nasServer"));
+        payload.put("share", requireText(releasePackage.getNasShare(), "releasePackage.nasShare"));
+        payload.put("username", requireText(releasePackage.getNasUsername(), "releasePackage.nasUsername"));
+        payload.put("password", requireText(releasePackage.getNasPassword(), "releasePackage.nasPassword"));
+        try {
+            Files.createDirectories(configPath.getParent());
+            Files.writeString(configPath, objectMapper.writeValueAsString(payload), StandardCharsets.UTF_8);
+            return configPath;
+        } catch (JsonProcessingException ex) {
+            throw new RuntimeControlException("无法序列化 NAS 发布包配置", ex);
+        } catch (IOException ex) {
+            throw new RuntimeControlException("无法写入 NAS 发布包配置: " + configPath, ex);
+        }
+    }
+
+    private void appendManagedSourceArguments(RuntimeControlOperationAction action, RuntimeControlCommand command) {
+        if (!action.requiresNasReleaseRepository()) {
+            return;
+        }
+        appendRequiredArgument(command.arguments(), "-BackendRepoRoot", properties.getRepoRoot());
+        appendRequiredArgument(command.arguments(), "-FrontendRepoRoot", properties.getFrontendRoot());
+        appendRequiredArgument(command.arguments(), "-WebsiteRepo", properties.getWebsiteRoot());
+    }
+
+    private void appendBackendRuntimeBaseArguments(RuntimeControlOperationAction action, RuntimeControlCommand command) {
+        if (action != RuntimeControlOperationAction.BUILD_RELEASE) {
+            return;
+        }
+        RuntimeControlProperties.ReleasePackage releasePackage = properties.getReleasePackage();
+        appendRequiredArgument(command.arguments(), "-BackendRuntimeBaseMode",
+                releasePackage.getBackendRuntimeBaseMode());
+        appendRequiredArgument(command.arguments(), "-BackendRuntimeBaseTarPath",
+                releasePackage.getBackendRuntimeBaseTarPath());
+        appendRequiredArgument(command.arguments(), "-BackendRuntimeBaseTarSha256",
+                releasePackage.getBackendRuntimeBaseTarSha256());
+        appendRequiredArgument(command.arguments(), "-BackendRuntimeBaseImage",
+                releasePackage.getBackendRuntimeBaseImage());
+        appendRequiredArgument(command.arguments(), "-BackendRuntimeBaseDigest",
+                releasePackage.getBackendRuntimeBaseDigest());
+        appendRequiredArgument(command.arguments(), "-BackendRuntimeBaseVersion",
+                releasePackage.getBackendRuntimeBaseVersion());
+    }
+
+    private static void appendRequiredArgument(List<String> arguments, String name, String value) {
+        arguments.add(name);
+        arguments.add(requireText(value, name));
+    }
+
+    private static String requireText(String value, String name) {
+        if (value == null || value.isBlank()) {
+            throw new RuntimeControlException(name + " is required");
+        }
+        return value.trim();
     }
 
     public List<RuntimeControlOperationRespVO> getOperations() {
@@ -400,5 +494,15 @@ public class RuntimeControlService {
 
     private static String firstText(String first, String second) {
         return first != null && !first.isBlank() ? first : second;
+    }
+
+    private record PreparedAction(
+            String action,
+            String actionLabel,
+            String environment,
+            String component,
+            Map<String, String> parameters,
+            RuntimeControlCommand command
+    ) {
     }
 }

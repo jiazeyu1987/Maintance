@@ -40,6 +40,8 @@ param(
     [string]$LocalMinioContainer = 'docker-minio-1',
     [string]$RemoteMinioContainer = '',
     [string]$WebsiteRepo = $env:INT_RUOYI_WEBSITE_REPO,
+    [string]$BackendRepoRoot = $env:INT_RUOYI_BACKEND_REPO,
+    [string]$FrontendRepoRoot = $env:INT_RUOYI_FRONTEND_REPO,
     [string]$Tag = '',
     [string]$DccSignatureEvidenceHmacSecret = $env:DCC_SIGNATURE_EVIDENCE_HMAC_SECRET,
     [string]$DccSignatureEvidenceKeyVersion = $env:DCC_SIGNATURE_EVIDENCE_KEY_VERSION,
@@ -595,6 +597,9 @@ function Invoke-ProcessCaptureWithInput {
     $processInfo.RedirectStandardInput = $true
     $processInfo.RedirectStandardOutput = $true
     $processInfo.RedirectStandardError = $true
+    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+    $processInfo.StandardOutputEncoding = $utf8NoBom
+    $processInfo.StandardErrorEncoding = $utf8NoBom
     if ($null -ne $processInfo.ArgumentList) {
         foreach ($argument in @($ArgumentList)) {
             [void]$processInfo.ArgumentList.Add($argument)
@@ -2540,13 +2545,16 @@ function Invoke-LocalMySqlRaw {
 function Get-DccReleaseObjectReferenceRows {
     $sql = @'
 SELECT
-  r.file_id,
-  COALESCE(REPLACE(REPLACE(REPLACE(f.path, CHAR(9), ' '), CHAR(13), ''), CHAR(10), ''), ''),
-  COALESCE(REPLACE(REPLACE(REPLACE(f.name, CHAR(9), ' '), CHAR(13), ''), CHAR(10), ''), ''),
-  COALESCE(REPLACE(REPLACE(REPLACE(f.type, CHAR(9), ' '), CHAR(13), ''), CHAR(10), ''), ''),
-  COALESCE(f.size, -1),
-  COALESCE(REPLACE(REPLACE(REPLACE(f.url, CHAR(9), ' '), CHAR(13), ''), CHAR(10), ''), ''),
-  GROUP_CONCAT(DISTINCT CONCAT(r.source_table, '.', r.source_column) ORDER BY r.source_table, r.source_column SEPARATOR ',')
+  REPLACE(TO_BASE64(CAST(JSON_OBJECT(
+      'fileId', r.file_id,
+      'objectPath', COALESCE(f.path, ''),
+      'name', COALESCE(f.name, ''),
+      'contentType', COALESCE(f.type, ''),
+      'declaredBytes', COALESCE(f.size, -1),
+      'url', COALESCE(f.url, ''),
+      'references', COALESCE(GROUP_CONCAT(DISTINCT CONCAT(r.source_table, '.', r.source_column) ORDER BY r.source_table, r.source_column SEPARATOR ','), '')
+    ) AS CHAR CHARACTER SET utf8mb4)
+  ), '\n', '')
 FROM (
   SELECT source_file_id AS file_id, 'dcc_controlled_file' AS source_table, 'source_file_id' AS source_column FROM dcc_controlled_file WHERE source_file_id IS NOT NULL AND deleted = b'0'
   UNION ALL SELECT original_file_id, 'dcc_controlled_file', 'original_file_id' FROM dcc_controlled_file WHERE original_file_id IS NOT NULL AND deleted = b'0'
@@ -2572,22 +2580,31 @@ ORDER BY r.file_id
     if ([string]::IsNullOrWhiteSpace($output)) {
         return $rows
     }
+    $strictUtf8 = [System.Text.UTF8Encoding]::new($false, $true)
     foreach ($line in ($output -split "`r?`n")) {
         if ([string]::IsNullOrWhiteSpace($line)) {
             continue
         }
-        $columns = $line -split "`t", 7
-        if ($columns.Count -lt 7) {
-            Fail "DCC object inventory row is malformed: $line"
+        try {
+            $jsonBytes = [Convert]::FromBase64String($line.Trim())
+            $json = $strictUtf8.GetString($jsonBytes)
+        } catch {
+            Fail "DCC object inventory base64 row is malformed: $line"
         }
+        try {
+            $record = $json | ConvertFrom-Json
+        } catch {
+            Fail "DCC object inventory JSON row is malformed after base64 decode: $json"
+        }
+        $references = @((([string]$record.references) -split ',') | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
         $rows += [ordered]@{
-            fileId = [long]$columns[0]
-            objectPath = [string]$columns[1]
-            name = [string]$columns[2]
-            contentType = [string]$columns[3]
-            declaredBytes = [long]$columns[4]
-            url = [string]$columns[5]
-            references = @((([string]$columns[6]) -split ',') | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+            fileId = [long]$record.fileId
+            objectPath = [string]$record.objectPath
+            name = [string]$record.name
+            contentType = [string]$record.contentType
+            declaredBytes = [long]$record.declaredBytes
+            url = [string]$record.url
+            references = $references
         }
     }
     return $rows
@@ -3343,9 +3360,18 @@ $packageDirectoryName = $Tag
 $componentExplicit = $PSBoundParameters.ContainsKey('Component')
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$backendRepo = (Resolve-Path (Join-Path $scriptDir '..\..')).Path
+$defaultBackendRepo = (Resolve-Path (Join-Path $scriptDir '..\..')).Path
+if ([string]::IsNullOrWhiteSpace($BackendRepoRoot)) {
+    $backendRepo = $defaultBackendRepo
+} else {
+    $backendRepo = (Resolve-Path -LiteralPath $BackendRepoRoot).Path
+}
 $workspaceRoot = (Resolve-Path (Join-Path $backendRepo '..')).Path
-$frontendDir = Join-Path $workspaceRoot 'yudao-ui-admin-vue3'
+$frontendDir = if ([string]::IsNullOrWhiteSpace($FrontendRepoRoot)) {
+    Join-Path $workspaceRoot 'yudao-ui-admin-vue3'
+} else {
+    (Resolve-Path -LiteralPath $FrontendRepoRoot).Path
+}
 if (-not (Test-Path -LiteralPath $frontendDir)) {
     $worktreePortMapPath = Join-Path $scriptDir 'worktree-port-map.ps1'
     if (Test-Path -LiteralPath $worktreePortMapPath) {
