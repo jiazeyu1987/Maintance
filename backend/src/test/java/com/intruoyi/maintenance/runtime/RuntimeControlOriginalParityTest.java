@@ -120,7 +120,20 @@ class RuntimeControlOriginalParityTest {
                 .andExpect(jsonPath("$.code").value(0));
         mockMvc.perform(post("/admin-api/infra/runtime-control/wizard/recommendation")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"scenario\":\"rollback-app\"}"))
+                        .content("{\"scenario\":\"app-exception\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0));
+        mockMvc.perform(post("/admin-api/infra/runtime-control/alerts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "environment": "test",
+                                  "action": "publish-test",
+                                  "severity": "WARN",
+                                  "title": "测试告警",
+                                  "content": "端点契约验证"
+                                }
+                                """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(0));
         mockMvc.perform(post("/admin-api/infra/runtime-control/alerts/1/resend-site-message"))

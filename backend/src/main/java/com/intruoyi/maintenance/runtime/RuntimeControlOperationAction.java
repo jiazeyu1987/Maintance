@@ -101,7 +101,10 @@ public enum RuntimeControlOperationAction {
     }
 
     public RuntimeControlCommand buildCommand(RuntimeControlActionReqVO req, RuntimeControlProperties properties) {
-        List<String> args = new ArrayList<>(argumentsBuilder.apply(req));
+        boolean linuxBackup = isBackupAction() && properties.getBackupOps().isLinuxLocal();
+        List<String> args = linuxBackup
+                ? linuxBackupArguments(action, req, properties)
+                : new ArrayList<>(argumentsBuilder.apply(req));
         if (deploysReleasePackage()) {
             appendRemoteDeployTargetArguments(args, resolveEnvironment(req), properties);
         }
@@ -117,12 +120,12 @@ public enum RuntimeControlOperationAction {
             }
             args.add("-EnableSmartReleaseReport");
         }
-        if (isBackupAction()) {
+        if (isBackupAction() && !linuxBackup) {
             args.add("-OperatorName");
             args.add(properties.getOperatorId());
         }
-        String script = isBackupAction() && properties.getBackupOps().isLinuxLocal()
-                ? properties.getBackupOps().getLinuxScriptPath()
+        String script = linuxBackup
+                ? requireText(properties.getBackupOps().getLinuxScriptPath(), "backupOps.linuxScriptPath")
                 : scriptPath;
         return new RuntimeControlCommand(resolveEnvironment(req), action, script, args);
     }
@@ -205,6 +208,11 @@ public enum RuntimeControlOperationAction {
 
     private boolean requiresReleaseTag() {
         return this == PUBLISH_TEST || this == MARK_RELEASE_TESTED || this == PROMOTE_PROD || this == PROMOTE_BACKUP;
+    }
+
+    public boolean requiresResponsibilityGate() {
+        return this == PROMOTE_PROD || this == PROMOTE_BACKUP || this == ROLLBACK_APP || this == REHEARSAL
+                || this == RESTORE_DATA;
     }
 
     private boolean supportsSmartReleaseReport() {
@@ -308,6 +316,37 @@ public enum RuntimeControlOperationAction {
         return args;
     }
 
+    private static List<String> linuxBackupArguments(String mode, RuntimeControlActionReqVO req,
+                                                     RuntimeControlProperties properties) {
+        List<String> args = new ArrayList<>();
+        args.add("--mode");
+        args.add(mode);
+        args.add("--config");
+        args.add(requireText(properties.getBackupOps().getLinuxConfigPath(), "backupOps.linuxConfigPath"));
+        args.add("--non-interactive");
+        if ("backup-now".equals(mode)) {
+            args.add("--target-environment");
+            args.add(text(req.targetEnvironment()));
+        }
+        if ("rollback-app".equals(mode)) {
+            args.add("--target-environment");
+            args.add(text(req.targetEnvironment()));
+            args.add("--selected-image-tag");
+            args.add(text(req.selectedImageTag()));
+        }
+        if ("rehearsal".equals(mode)) {
+            args.add("--selected-backup-id");
+            args.add(text(req.selectedBackupId()));
+        }
+        if ("restore-data".equals(mode)) {
+            args.add("--target-environment");
+            args.add(text(req.targetEnvironment()));
+            args.add("--selected-backup-id");
+            args.add(text(req.selectedBackupId()));
+        }
+        return args;
+    }
+
     private static void appendRemoteDeployTargetArguments(List<String> args, String targetEnvironment,
                                                           RuntimeControlProperties properties) {
         RuntimeControlProperties.Environment environment = properties.requireEnvironment(targetEnvironment);
@@ -365,6 +404,13 @@ public enum RuntimeControlOperationAction {
 
     private static String textOrDefault(String value, String defaultValue) {
         return isBlank(value) ? defaultValue : value.trim();
+    }
+
+    private static String requireText(String value, String name) {
+        if (isBlank(value)) {
+            throw new RuntimeControlException(name + " is required");
+        }
+        return value.trim();
     }
 
     private static boolean isBlank(String value) {

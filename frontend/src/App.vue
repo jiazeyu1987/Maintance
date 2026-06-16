@@ -2,6 +2,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import {
   CircleCheck,
+  Document,
   Monitor,
   Refresh,
   Search,
@@ -11,6 +12,7 @@ import {
 import {
   executeRuntimeControlAction,
   getRuntimeControlCapacityStatus,
+  getRuntimeControlOperationLog,
   getRuntimeControlOperations,
   getRuntimeControlOverview,
   getRuntimeControlRollbackCandidates,
@@ -19,6 +21,7 @@ import {
   previewRuntimeControlAction,
   restartRuntimeControl,
   type RuntimeControlActionPreviewVO,
+  type RuntimeControlLogVO,
   type RuntimeControlOperationVO,
   type RuntimeControlOverviewVO,
   type RuntimeControlRollbackCandidateVO,
@@ -57,6 +60,10 @@ const loading = ref(false)
 const previewLoading = ref(false)
 const previewDialogVisible = ref(false)
 const preview = ref<RuntimeControlActionPreviewVO>()
+const operationLogDialogVisible = ref(false)
+const operationLogLoading = ref(false)
+const operationLogLoadingId = ref('')
+const operationLog = ref<RuntimeControlLogVO>()
 const selectedActionKey = ref(actions[0].action)
 const selectedAction = computed(() => {
   return actions.find((item) => item.action === selectedActionKey.value) || actions[0]
@@ -310,6 +317,22 @@ async function restartSelected() {
     operations.value = [operation, ...operations.value]
   } catch (error) {
     apiError.value = error instanceof Error ? error.message : String(error)
+  }
+}
+
+async function showOperationLog(row: RuntimeControlOperationVO) {
+  operationLogLoading.value = true
+  operationLogLoadingId.value = row.operationId
+  apiError.value = ''
+  operationLogDialogVisible.value = true
+  operationLog.value = undefined
+  try {
+    operationLog.value = await getRuntimeControlOperationLog(row.operationId)
+  } catch (error) {
+    apiError.value = error instanceof Error ? error.message : String(error)
+  } finally {
+    operationLogLoading.value = false
+    operationLogLoadingId.value = ''
   }
 }
 
@@ -580,6 +603,19 @@ onMounted(loadData)
           </template>
         </el-table-column>
         <el-table-column prop="summary" label="结果" min-width="230" show-overflow-tooltip />
+        <el-table-column label="日志" width="82" align="center">
+          <template #default="{ row }">
+            <el-tooltip content="查看操作日志" placement="top">
+              <el-button
+                class="table-icon-button"
+                :icon="Document"
+                size="small"
+                :loading="operationLogLoading && operationLogLoadingId === row.operationId"
+                @click="showOperationLog(row)"
+              />
+            </el-tooltip>
+          </template>
+        </el-table-column>
       </el-table>
     </section>
 
@@ -599,6 +635,27 @@ onMounted(loadData)
         <el-button @click="previewDialogVisible = false">关闭</el-button>
         <el-button type="danger" :loading="previewLoading" @click="executeAction">执行</el-button>
       </template>
+    </el-dialog>
+
+    <el-dialog
+      v-model="operationLogDialogVisible"
+      class="operation-log-dialog"
+      title="操作日志"
+      width="860px"
+    >
+      <div v-loading="operationLogLoading" class="operation-log-panel">
+        <template v-if="operationLog">
+          <div class="operation-log-meta">
+            <span class="status-pill" :class="statusClass(operationLog.status)">
+              {{ operationLog.status }}
+            </span>
+            <span>{{ operationLog.operationId }}</span>
+            <span>{{ operationLog.length }} bytes</span>
+            <span v-if="operationLog.truncated">已截断</span>
+          </div>
+          <pre class="operation-log-content">{{ operationLog.content || '日志文件暂无内容' }}</pre>
+        </template>
+      </div>
     </el-dialog>
   </main>
 </template>

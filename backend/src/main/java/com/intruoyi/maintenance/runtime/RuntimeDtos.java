@@ -298,17 +298,22 @@ public final class RuntimeDtos {
     }
 
     public record RuntimeControlProbeLatestRespVO(
+            String status,
             Instant sampledAt,
-            List<RuntimeControlProbeRespVO> probes
+            List<RuntimeControlProbeRespVO> probes,
+            RuntimeControlAlertRespVO alert
     ) {
     }
 
     public record RuntimeControlProbeRespVO(
             String environment,
-            String name,
+            String component,
+            String probeType,
+            String url,
             String status,
-            String evidence,
-            String reason,
+            Integer httpStatusCode,
+            Long durationMillis,
+            String error,
             Instant sampledAt
     ) {
     }
@@ -390,28 +395,60 @@ public final class RuntimeDtos {
 
     public record RuntimeControlIncidentCreateReqVO(
             @NotBlank String environment,
+            @NotBlank String action,
             @NotBlank String severity,
             @NotBlank String title,
-            @NotBlank String summary
+            @NotBlank String description,
+            @NotBlank String sourceType,
+            String sourceId
     ) {
     }
 
-    public record RuntimeControlIncidentActionReqVO(@NotBlank String action, @NotBlank String content) {
+    public record RuntimeControlIncidentActionReqVO(
+            @NotBlank String action,
+            @NotBlank String verificationResult,
+            @NotBlank String evidence
+    ) {
     }
 
-    public record RuntimeControlIncidentCloseReqVO(@NotBlank String conclusion) {
+    public record RuntimeControlIncidentCloseReqVO(
+            @NotBlank String ownerGateResult,
+            @NotBlank String verificationResult,
+            @NotBlank String remainingRisk,
+            @NotBlank String postmortemStatus,
+            @NotBlank String closeReason
+    ) {
+    }
+
+    public record RuntimeControlIncidentActionRespVO(
+            String action,
+            String operator,
+            String verificationResult,
+            String evidence,
+            Instant actedAt
+    ) {
     }
 
     public record RuntimeControlIncidentRespVO(
             Long id,
             String environment,
+            String action,
             String severity,
             String title,
-            String summary,
+            String description,
+            String sourceType,
+            String sourceId,
             String status,
+            String createdBy,
             Instant createdAt,
-            Instant closedAt,
-            String conclusion
+            List<RuntimeControlIncidentActionRespVO> actions,
+            String ownerGateResult,
+            String verificationResult,
+            String remainingRisk,
+            String postmortemStatus,
+            String closeReason,
+            String closedBy,
+            Instant closedAt
     ) {
     }
 }

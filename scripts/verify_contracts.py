@@ -90,6 +90,28 @@ def verify_frontend_contract() -> None:
         "resend-site-message",
     ]:
         assert_contains(api, api_path, f"frontend original runtime-control API {api_path}")
+    for api_function in [
+        "getRuntimeControlOperationLog",
+        "runRuntimeControlInspection",
+        "getRuntimeControlInspectionRun",
+        "getRuntimeControlBusinessHealth",
+        "runRuntimeControlProbes",
+        "getRuntimeControlLatestProbes",
+        "getRuntimeControlBackupPoints",
+        "getRuntimeControlBackupPoint",
+        "getRuntimeControlAlertsPage",
+        "createRuntimeControlAlert",
+        "acknowledgeRuntimeControlAlert",
+        "getRuntimeControlIncidentsPage",
+        "createRuntimeControlIncident",
+        "recordRuntimeControlIncidentAction",
+        "closeRuntimeControlIncident",
+        "getRuntimeControlRemoteRootDiskStatus",
+        "cleanupRuntimeControlRemoteRootTemporaryFiles",
+    ]:
+        assert_contains(api, api_function, f"frontend original runtime-control wrapper {api_function}")
+    assert_contains(page, "showOperationLog", "frontend operation log action")
+    assert_contains(page, "operation-log-dialog", "frontend operation log dialog")
     assert_not_contains(api, "selectedImageTag?:", "client-submittable selectedImageTag")
     assert_not_contains(api, "selectedBackupId?:", "client-submittable selectedBackupId")
     assert_not_contains(page, "v-model=\"actionForm.selectedImageTag\"", "free-text image tag input")

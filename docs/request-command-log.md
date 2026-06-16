@@ -120,3 +120,16 @@
 - 命令记录：Playwright 最终页面快照显示最新操作 `SUCCESS`，浏览器 console error 为 0，请求列表仅包含运行控制台读接口、预览和执行接口。
 - 命令记录：`mvn -f backend/pom.xml test` PASS；`python -X utf8 scripts\verify_contracts.py` PASS。
 - 命令记录：`task-closeout-cleanup` 预览 PASS，无删除项、无阻塞、无警告。
+
+## 2026-06-16 运行控制台原版一致性修复
+
+- 用户需求：把独立维护应用里的运行控制台改成与原版 IntRuoyi 一致，重点补 Linux-local 备份参数、运行治理持久化和前端日志入口。
+- 计划边界：保留独立本机运行和不接入芋道登录/角色/菜单权限；不执行真实发布、备份、恢复、回滚、重启或远端清理。
+- 命令记录：`mvn -f backend/pom.xml -Dtest=RuntimeControlOriginalGovernanceParityTest test` 先 RED 后 GREEN，Linux-local 备份命令改为原版 `--mode/--config/--non-interactive` 参数，巡检/告警/责任矩阵/事故改为本地 `runtime-ops/*.json` 持久化。
+- 命令记录：`python -X utf8 scripts\verify_contracts.py` 先 RED 后 GREEN，前端补齐原版运行治理 API wrapper 与操作日志入口。
+- 命令记录：`mvn -f backend/pom.xml -Dtest=RuntimeControlOriginalParityTest test` PASS，旧的一致性测试改为原版向导场景和先创建告警再重发。
+- 命令记录：`mvn -f backend/pom.xml test` PASS，14 tests。
+- 命令记录：`pnpm --dir frontend typecheck` PASS。
+- 命令记录：`pnpm --dir frontend build` PASS。
+- 命令记录：`task_closeout.py --task-id 20260616-runtime-control-full-original-parity-fix --mode preview` PASS，无删除项、无阻塞、无警告；`--mode apply` PASS，无删除项。
+- 结论记录：独立版运行控制台已对齐原版在 Linux-local 参数、治理持久化、向导场景和前端日志入口上的核心语义；本次仍保持独立本机边界，不回接芋道权限体系。

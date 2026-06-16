@@ -3,6 +3,7 @@ package com.intruoyi.maintenance.runtime;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileStore;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Function;
 
 import static com.intruoyi.maintenance.runtime.RuntimeDtos.*;
 
@@ -36,14 +39,40 @@ public class RuntimeControlService {
     private static final String PROD_CONFIRM_TEXT = "PROD";
     private static final String STATUS_AVAILABLE = "AVAILABLE";
     private static final String STATUS_BLOCKED = "BLOCKED";
+    private static final String STATUS_NO_GO = "NO_GO";
     private static final String ROLLBACK_PREFIX = "rollback:";
     private static final String RESTORE_PREFIX = "restore:";
+    private static final Long DEFAULT_RELEASE_OWNER_USER_ID = 1L;
+    private static final String DEFAULT_RELEASE_OWNER_NAME = "admin";
+    private static final List<RuntimeControlOwnerMatrixRespVO> DEFAULT_RELEASE_OWNERS = List.of(
+            defaultOwner(-1001L, "prod", "promote-prod", "release-owner", "默认发布责任人"),
+            defaultOwner(-1002L, "backup", "promote-backup", "release-owner", "默认发布责任人"),
+            defaultOwner(-1003L, "prod", "rollback-app", "release-owner", "默认发布责任人"),
+            defaultOwner(-1004L, "test", "rollback-app", "release-owner", "默认回滚发布责任人"),
+            defaultOwner(-1005L, "backup", "rollback-app", "release-owner", "默认回滚发布责任人"),
+            defaultOwner(-1006L, "test", "restore-data", "data-owner", "默认恢复数据责任人"),
+            defaultOwner(-1007L, "backup", "restore-data", "data-owner", "默认恢复数据责任人"),
+            defaultOwner(-1008L, "local", "storage-capacity-warning", "ops-owner", "默认容量告警责任人"),
+            defaultOwner(-1009L, "test", "storage-capacity-warning", "ops-owner", "默认容量告警责任人"),
+            defaultOwner(-1010L, "backup", "storage-capacity-warning", "ops-owner", "默认容量告警责任人"),
+            defaultOwner(-1011L, "prod", "storage-capacity-warning", "ops-owner", "默认容量告警责任人"),
+            defaultOwner(-1012L, "prod", "backup-now", "ops-owner", "默认备份责任人"),
+            defaultOwner(-1013L, "test", "backup-now", "ops-owner", "默认备份责任人"),
+            defaultOwner(-1014L, "backup", "backup-now", "ops-owner", "默认备份责任人"),
+            defaultOwner(-1015L, "prod", "backup-scheduled", "ops-owner", "默认定时备份责任人"),
+            defaultOwner(-1016L, "test", "rehearsal", "ops-owner", "默认恢复演练责任人"),
+            defaultOwner(-1017L, "backup", "rehearsal", "ops-owner", "默认恢复演练责任人"),
+            defaultOwner(-1018L, "test", "restore-data-started", "data-owner", "默认恢复数据责任人"),
+            defaultOwner(-1019L, "backup", "restore-data-started", "data-owner", "默认恢复数据责任人"),
+            defaultOwner(-1020L, "test", "restore-data-finished", "data-owner", "默认恢复数据责任人"),
+            defaultOwner(-1021L, "backup", "restore-data-finished", "data-owner", "默认恢复数据责任人")
+    );
 
     private final RuntimeControlProperties properties;
     private final RuntimeControlOperationStore operationStore;
     private final RuntimeControlCommandExecutor commandExecutor;
     private final RuntimeControlNasBrowser nasBrowser;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     private final ExecutorService executor = Executors.newCachedThreadPool();
 
     public RuntimeControlService(RuntimeControlProperties properties,
@@ -108,6 +137,7 @@ public class RuntimeControlService {
         RuntimeControlOperationAction action = RuntimeControlOperationAction.require(req.action());
         RuntimeControlActionReqVO resolvedReq = validateAndResolveAction(action, req);
         String environment = action.resolveEnvironment(resolvedReq);
+        validateRequiredOwners(action, environment);
         guardWrite(environment, resolvedReq.reason(), resolvedReq.prodConfirmText(), action.requiresProductionGuard(resolvedReq));
         RuntimeControlCommand command = action.buildCommand(resolvedReq, properties);
         appendNasReleaseArguments(action, command, operationId, previewOnly);
@@ -418,39 +448,72 @@ public class RuntimeControlService {
                 pathCheck("ops-root", "运维脚本路径", properties.opsRootPath(), true)
         );
         String status = checks.stream().allMatch(check -> "PASS".equals(check.status())) ? "PASS" : "BLOCKED";
-        return new RuntimeControlInspectionRunRespVO(System.currentTimeMillis(), status, "本机配置前置检查完成",
-                now, Instant.now(), checks);
+        RuntimeControlInspectionRunRespVO run = new RuntimeControlInspectionRunRespVO(
+                nextStateId("inspection-runs.json", RuntimeControlInspectionRunRespVO.class,
+                        RuntimeControlInspectionRunRespVO::id),
+                status, "本机配置前置检查完成", now, Instant.now(), checks);
+        return saveStateItem("inspection-runs.json", RuntimeControlInspectionRunRespVO.class,
+                RuntimeControlInspectionRunRespVO::id, run);
     }
 
     public RuntimeControlInspectionRunRespVO getInspectionRun(Long id) {
-        throw new RuntimeControlException("独立控制台未持久化巡检历史: " + id);
+        return readStateList("inspection-runs.json", RuntimeControlInspectionRunRespVO.class).stream()
+                .filter(run -> id != null && id.equals(run.id()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeControlException("巡检报告不存在：" + id));
     }
 
     public RuntimeControlBusinessHealthRespVO getBusinessHealth() {
         Instant now = Instant.now();
         List<RuntimeControlBusinessHealthItemRespVO> items = List.of(
-                new RuntimeControlBusinessHealthItemRespVO("runtime-control", "独立控制台进程", "PASS",
-                        "Spring Boot process is serving requests", null, now)
+                blockedBusinessHealth("login", "登录", "缺少登录真实用户路径只读采集器或合成登录探针配置", now),
+                blockedBusinessHealth("erp", "ERP", "缺少 ERP 跨模块只读健康采集器配置", now),
+                blockedBusinessHealth("mes", "MES", "缺少 MES 跨模块只读健康采集器配置", now),
+                blockedBusinessHealth("file-object", "文件对象", "独立控制台未接入芋道文件配置数据库，无法确认文件上传/读取状态", now),
+                blockedBusinessHealth("api-error", "API 错误", "独立控制台未接入芋道 API 错误日志，无法读取未处理错误", now),
+                blockedBusinessHealth("slow-request", "慢请求", "独立控制台未接入芋道访问日志，无法读取慢请求", now),
+                blockedBusinessHealth("job-failure", "任务失败", "独立控制台未接入芋道任务日志，无法读取任务失败", now)
         );
-        return new RuntimeControlBusinessHealthRespVO("PASS", now, items);
+        return new RuntimeControlBusinessHealthRespVO(aggregateStatus(items.stream()
+                .map(RuntimeControlBusinessHealthItemRespVO::status).toList()), now, items);
     }
 
     public RuntimeControlProbeLatestRespVO runProbes() {
-        return getLatestProbes();
-    }
-
-    public RuntimeControlProbeLatestRespVO getLatestProbes() {
         Instant now = Instant.now();
         List<RuntimeControlProbeRespVO> probes = new ArrayList<>();
         for (Map.Entry<String, RuntimeControlProperties.Environment> envEntry : properties.getEnvironments().entrySet()) {
             for (Map.Entry<String, RuntimeControlProperties.Target> targetEntry : envEntry.getValue().getTargets().entrySet()) {
-                RuntimeControlStatusRespVO status = inspectTarget(envEntry.getKey(), envEntry.getValue(),
-                        targetEntry.getKey(), targetEntry.getValue());
-                probes.add(new RuntimeControlProbeRespVO(envEntry.getKey(), targetEntry.getKey(),
-                        normalizeProbeStatus(status.status()), status.url(), status.blockedReason(), now));
+                if (isProbeType(targetEntry.getValue().getActionComponent())) {
+                    RuntimeControlStatusRespVO status = inspectTarget(envEntry.getKey(), envEntry.getValue(),
+                            targetEntry.getKey(), targetEntry.getValue());
+                    probes.add(new RuntimeControlProbeRespVO(envEntry.getKey(), targetEntry.getKey(),
+                            targetEntry.getValue().getActionComponent(), targetEntry.getValue().getUrl(),
+                            normalizeProbeStatus(status.status()), parseHttpStatus(status.httpStatus()), null,
+                            "RUNNING".equals(status.status()) ? null : status.blockedReason(), now));
+                }
             }
         }
-        return new RuntimeControlProbeLatestRespVO(now, probes);
+        if (probes.isEmpty()) {
+            probes = List.of(new RuntimeControlProbeRespVO("runtime-control", "backend/frontend/website",
+                    "config", null, STATUS_BLOCKED, null, null, "未配置 backend/frontend/website 探针目标", now));
+        }
+        RuntimeControlAlertRespVO alert = createProbeFailureAlertIfNeeded(probes);
+        RuntimeControlProbeLatestRespVO latest = new RuntimeControlProbeLatestRespVO(
+                aggregateStatus(probes.stream().map(RuntimeControlProbeRespVO::status).toList()), now, probes, alert);
+        writeStateObject("probes-latest.json", latest);
+        return latest;
+    }
+
+    public RuntimeControlProbeLatestRespVO getLatestProbes() {
+        Instant now = Instant.now();
+        RuntimeControlProbeLatestRespVO latest = readStateObject("probes-latest.json", RuntimeControlProbeLatestRespVO.class);
+        if (latest != null) {
+            return latest;
+        }
+        return new RuntimeControlProbeLatestRespVO(STATUS_NO_GO, now,
+                List.of(new RuntimeControlProbeRespVO("runtime-control", "backend/frontend/website",
+                        "latest", null, STATUS_BLOCKED, null, null, "尚未执行探针，不能展示 PASS", now)),
+                null);
     }
 
     public RuntimeControlCapacityStatusRespVO getCapacityStatus() {
@@ -474,48 +537,113 @@ public class RuntimeControlService {
         throw new RuntimeControlException("远程清理属于高风险动作，需另行授权后执行");
     }
 
-    public PageResult<RuntimeControlAlertRespVO> getAlertsPage() {
-        return PageResult.of(List.of());
+    public synchronized PageResult<RuntimeControlAlertRespVO> getAlertsPage() {
+        return PageResult.of(readStateList("alerts.json", RuntimeControlAlertRespVO.class).stream()
+                .sorted(Comparator.comparing(RuntimeControlAlertRespVO::createdAt,
+                        Comparator.nullsLast(Comparator.reverseOrder())))
+                .toList());
     }
 
-    public RuntimeControlAlertRespVO createAlert(RuntimeControlAlertCreateReqVO req) {
-        return new RuntimeControlAlertRespVO(System.currentTimeMillis(), req.environment(), req.action(), req.severity(),
-                req.title(), req.content(), req.notifyTemplateCode(), req.templateParams(), "BLOCKED", null,
-                "独立本机控制台未接入站内信", Instant.now(), null, null, null);
+    public synchronized RuntimeControlAlertRespVO createAlert(RuntimeControlAlertCreateReqVO req) {
+        Map<String, Object> templateParams = new LinkedHashMap<>();
+        if (req.templateParams() != null) {
+            templateParams.putAll(req.templateParams());
+        }
+        templateParams.putIfAbsent("environment", req.environment());
+        templateParams.putIfAbsent("action", req.action());
+        templateParams.putIfAbsent("severity", req.severity());
+        templateParams.putIfAbsent("title", req.title());
+        templateParams.putIfAbsent("content", req.content());
+
+        String failureReason = resolveAlertBlockReason(req.environment(), req.action(), req.notifyTemplateCode());
+        RuntimeControlAlertRespVO alert = new RuntimeControlAlertRespVO(
+                nextStateId("alerts.json", RuntimeControlAlertRespVO.class, RuntimeControlAlertRespVO::id),
+                trimToEmpty(req.environment()), trimToEmpty(req.action()), trimToEmpty(req.severity()),
+                trimToEmpty(req.title()), trimToEmpty(req.content()), trimToEmpty(req.notifyTemplateCode()),
+                templateParams, STATUS_BLOCKED, null, failureReason, Instant.now(), null, null, null);
+        return saveStateItem("alerts.json", RuntimeControlAlertRespVO.class, RuntimeControlAlertRespVO::id, alert);
     }
 
-    public RuntimeControlAlertRespVO resendAlertSiteMessage(Long id) {
-        return new RuntimeControlAlertRespVO(id, null, null, "INFO", "站内信重发", "独立本机控制台未接入站内信",
-                null, Map.of(), "BLOCKED", null, "独立本机控制台未接入站内信", Instant.now(), null, null, null);
+    public synchronized RuntimeControlAlertRespVO resendAlertSiteMessage(Long id) {
+        RuntimeControlAlertRespVO alert = requireAlert(id);
+        RuntimeControlAlertRespVO updated = new RuntimeControlAlertRespVO(alert.id(), alert.environment(),
+                alert.action(), alert.severity(), alert.title(), alert.content(), alert.notifyTemplateCode(),
+                alert.templateParams(), STATUS_BLOCKED, null,
+                resolveAlertBlockReason(alert.environment(), alert.action(), alert.notifyTemplateCode()),
+                alert.createdAt(), null, alert.acknowledgedBy(), alert.acknowledgedAt());
+        return saveStateItem("alerts.json", RuntimeControlAlertRespVO.class, RuntimeControlAlertRespVO::id, updated);
     }
 
-    public RuntimeControlAlertRespVO acknowledgeAlert(Long id) {
-        throw new RuntimeControlException("独立控制台未持久化告警确认记录: " + id);
+    public synchronized RuntimeControlAlertRespVO acknowledgeAlert(Long id) {
+        RuntimeControlAlertRespVO alert = requireAlert(id);
+        validateRequiredOwners(alert.environment(), alert.action());
+        RuntimeControlAlertRespVO updated = new RuntimeControlAlertRespVO(alert.id(), alert.environment(),
+                alert.action(), alert.severity(), alert.title(), alert.content(), alert.notifyTemplateCode(),
+                alert.templateParams(), alert.siteMessageStatus(), alert.notifyMessageId(),
+                alert.siteMessageFailureReason(), alert.createdAt(), alert.sentAt(), properties.getOperatorId(),
+                Instant.now());
+        return saveStateItem("alerts.json", RuntimeControlAlertRespVO.class, RuntimeControlAlertRespVO::id, updated);
     }
 
-    public List<RuntimeControlOwnerMatrixRespVO> getOwnerMatrix(String environment, String action) {
-        return List.of(defaultOwnerMatrix(environment, action));
+    public synchronized List<RuntimeControlOwnerMatrixRespVO> getOwnerMatrix(String environment, String action) {
+        return effectiveOwnerMatrix().stream()
+                .filter(owner -> isBlank(environment) || environment.equals(owner.environment()))
+                .filter(owner -> isBlank(action) || action.equals(owner.action()))
+                .toList();
     }
 
-    public RuntimeControlOwnerMatrixRespVO createOwnerMatrix(RuntimeControlOwnerMatrixSaveReqVO req) {
-        return ownerMatrixResponse(System.currentTimeMillis(), req);
+    public synchronized RuntimeControlOwnerMatrixRespVO createOwnerMatrix(RuntimeControlOwnerMatrixSaveReqVO req) {
+        validateOwnerMatrixReq(req);
+        RuntimeControlOwnerMatrixRespVO owner = ownerMatrixResponse(
+                nextStateId("owner-matrix.json", RuntimeControlOwnerMatrixRespVO.class,
+                        RuntimeControlOwnerMatrixRespVO::id), req);
+        return saveStateItem("owner-matrix.json", RuntimeControlOwnerMatrixRespVO.class,
+                RuntimeControlOwnerMatrixRespVO::id, owner);
     }
 
-    public RuntimeControlOwnerMatrixRespVO updateOwnerMatrix(Long id, RuntimeControlOwnerMatrixSaveReqVO req) {
-        return ownerMatrixResponse(id, req);
+    public synchronized RuntimeControlOwnerMatrixRespVO updateOwnerMatrix(Long id, RuntimeControlOwnerMatrixSaveReqVO req) {
+        validateOwnerMatrixReq(req);
+        if (id == null || readStateList("owner-matrix.json", RuntimeControlOwnerMatrixRespVO.class).stream()
+                .noneMatch(owner -> id.equals(owner.id()))) {
+            throw new RuntimeControlException("责任人矩阵不存在：" + id);
+        }
+        RuntimeControlOwnerMatrixRespVO owner = ownerMatrixResponse(id, req);
+        return saveStateItem("owner-matrix.json", RuntimeControlOwnerMatrixRespVO.class,
+                RuntimeControlOwnerMatrixRespVO::id, owner);
     }
 
     public List<RuntimeControlWizardScenarioRespVO> getWizardScenarios() {
         return List.of(
-                new RuntimeControlWizardScenarioRespVO("publish-test", "部署测试服", "publish-test", "部署发布包到测试服",
-                        List.of("测试环境需要更新"), List.of("发布包 manifest", "测试服目标主机"), List.of("owner"),
-                        List.of("发布包不可用")),
-                new RuntimeControlWizardScenarioRespVO("rollback-app", "回滚应用", "rollback-app", "回滚版本",
-                        List.of("应用版本异常"), List.of("rollback-compatibility.json", "prod-latest.json"), List.of("owner"),
-                        List.of("缺少可用回滚候选")),
-                new RuntimeControlWizardScenarioRespVO("restore-data", "恢复数据", "restore-data", "恢复数据",
-                        List.of("数据需要恢复"), List.of("备份 manifest", "checksum", "恢复演练证据"), List.of("owner"),
-                        List.of("缺少可恢复备份点"))
+                new RuntimeControlWizardScenarioRespVO("app-exception", "应用异常", "rollback-app", "回滚版本",
+                        List.of("生产应用启动失败", "发布后接口大面积异常"),
+                        List.of("rollback-candidate", "backup-manifest", "operation-reason"),
+                        List.of("release-owner"),
+                        List.of("无服务端回滚候选", "候选缺 manifest", "缺生产确认 PROD", "缺发布责任人")),
+                new RuntimeControlWizardScenarioRespVO("data-exception", "数据异常", "restore-data", "恢复数据",
+                        List.of("数据误删", "需要回到指定备份"),
+                        List.of("backup-manifest", "checksum"),
+                        List.of("data-owner"),
+                        List.of("无服务端恢复候选", "缺 manifest", "缺 checksum", "缺数据责任人")),
+                new RuntimeControlWizardScenarioRespVO("pre-release-check", "发布前检查", "inspection-run", "执行一键巡检",
+                        List.of("准备发布测试服或正式服", "发布前需要确认关键证据"),
+                        List.of("inspection-report", "business-health", "probe", "backup-point", "capacity-status"),
+                        List.of("release-owner"),
+                        List.of("缺关键证据", "业务健康未通过", "核心探针失败", "缺备份演练", "磁盘容量风险未关闭")),
+                new RuntimeControlWizardScenarioRespVO("post-release-observation", "发布后观察", "inspection-run", "执行一键巡检",
+                        List.of("发布后需要观察系统是否稳定", "发布后接口或页面出现异常反馈"),
+                        List.of("inspection-report", "business-health", "probe", "api-error", "slow-request"),
+                        List.of("release-owner", "reviewer"),
+                        List.of("缺巡检报告", "发布后探针失败", "业务健康 NO_GO", "API 错误或慢请求未确认")),
+                new RuntimeControlWizardScenarioRespVO("backup-drill", "备份演练", "backup-points", "查看备份演练",
+                        List.of("备份演练失败", "恢复前需要确认备份点可恢复"),
+                        List.of("backup-manifest", "checksum", "rehearsal-report", "last-verified-at"),
+                        List.of("data-owner"),
+                        List.of("缺 manifest", "缺 checksum", "缺演练报告", "最近验证时间缺失")),
+                new RuntimeControlWizardScenarioRespVO("disk-risk", "磁盘风险", "capacity-status", "查看容量状态",
+                        List.of("日志增长过快", "磁盘容量超过阈值"),
+                        List.of("capacity-status", "log-directory-size", "disk-usage", "alert"),
+                        List.of("ops-owner"),
+                        List.of("磁盘采样阻断", "日志目录超过阈值", "容量告警未确认"))
         );
     }
 
@@ -524,28 +652,66 @@ public class RuntimeControlService {
         RuntimeControlWizardScenarioRespVO selected = getWizardScenarios().stream()
                 .filter(item -> item.scenario().equals(scenario))
                 .findFirst()
-                .orElse(getWizardScenarios().get(0));
+                .orElseThrow(() -> new RuntimeControlException("scenario 不支持：" + scenario));
+        List<RuntimeControlRollbackCandidateRespVO> rollbackCandidates = "rollback-app".equals(selected.recommendedAction())
+                ? getRollbackCandidates() : List.of();
+        List<RuntimeControlRestoreCandidateRespVO> restoreCandidates = "restore-data".equals(selected.recommendedAction())
+                ? getRestoreCandidates() : List.of();
+        List<String> blockingReasons = "rollback-app".equals(selected.recommendedAction())
+                ? collectRollbackBlockingReasons(rollbackCandidates)
+                : "restore-data".equals(selected.recommendedAction())
+                ? collectRestoreBlockingReasons(restoreCandidates)
+                : selected.blockingConditions();
         return new RuntimeControlWizardRecommendationRespVO(selected.scenario(), selected.recommendedAction(),
                 selected.recommendedActionLabel(), selected.requiredEvidence(), selected.requiredOwnerRoles(),
-                selected.blockingConditions(), getRollbackCandidates(), getRestoreCandidates());
+                blockingReasons, rollbackCandidates, restoreCandidates);
     }
 
-    public PageResult<RuntimeControlIncidentRespVO> getIncidentsPage() {
-        return PageResult.of(List.of());
+    public synchronized PageResult<RuntimeControlIncidentRespVO> getIncidentsPage() {
+        return PageResult.of(readStateList("incidents.json", RuntimeControlIncidentRespVO.class).stream()
+                .sorted(Comparator.comparing(RuntimeControlIncidentRespVO::createdAt,
+                        Comparator.nullsLast(Comparator.reverseOrder())))
+                .toList());
     }
 
-    public RuntimeControlIncidentRespVO createIncident(RuntimeControlIncidentCreateReqVO req) {
-        return new RuntimeControlIncidentRespVO(System.currentTimeMillis(), req.environment(), req.severity(),
-                req.title(), req.summary(), "OPEN", Instant.now(), null, null);
+    public synchronized RuntimeControlIncidentRespVO createIncident(RuntimeControlIncidentCreateReqVO req) {
+        validateIncidentCreateReq(req);
+        RuntimeControlIncidentRespVO incident = new RuntimeControlIncidentRespVO(
+                nextStateId("incidents.json", RuntimeControlIncidentRespVO.class, RuntimeControlIncidentRespVO::id),
+                trimToEmpty(req.environment()), trimToEmpty(req.action()), trimToEmpty(req.severity()),
+                trimToEmpty(req.title()), trimToEmpty(req.description()), normalizeSourceType(req.sourceType()),
+                trimToEmpty(req.sourceId()), "OPEN", properties.getOperatorId(), Instant.now(), List.of(),
+                null, null, null, null, null, null, null);
+        return saveStateItem("incidents.json", RuntimeControlIncidentRespVO.class, RuntimeControlIncidentRespVO::id,
+                incident);
     }
 
-    public RuntimeControlIncidentRespVO recordIncidentAction(Long id, RuntimeControlIncidentActionReqVO req) {
-        throw new RuntimeControlException("独立控制台未持久化事故动作记录: " + id + ", action=" + req.action());
+    public synchronized RuntimeControlIncidentRespVO recordIncidentAction(Long id, RuntimeControlIncidentActionReqVO req) {
+        RuntimeControlIncidentRespVO incident = requireOpenIncident(id);
+        List<RuntimeControlIncidentActionRespVO> actions = new ArrayList<>();
+        if (incident.actions() != null) {
+            actions.addAll(incident.actions());
+        }
+        actions.add(new RuntimeControlIncidentActionRespVO(trimToEmpty(req.action()), properties.getOperatorId(),
+                trimToEmpty(req.verificationResult()), trimToEmpty(req.evidence()), Instant.now()));
+        RuntimeControlIncidentRespVO updated = copyIncident(incident, actions, incident.ownerGateResult(),
+                incident.verificationResult(), incident.remainingRisk(), incident.postmortemStatus(),
+                incident.closeReason(), incident.closedBy(), incident.closedAt(), "OPEN");
+        return saveStateItem("incidents.json", RuntimeControlIncidentRespVO.class, RuntimeControlIncidentRespVO::id,
+                updated);
     }
 
-    public RuntimeControlIncidentRespVO closeIncident(Long id, RuntimeControlIncidentCloseReqVO req) {
-        return new RuntimeControlIncidentRespVO(id, null, null, null, null, "CLOSED", null, Instant.now(),
-                req.conclusion());
+    public synchronized RuntimeControlIncidentRespVO closeIncident(Long id, RuntimeControlIncidentCloseReqVO req) {
+        RuntimeControlIncidentRespVO incident = requireOpenIncident(id);
+        validateRequiredOwners(incident.environment(), incident.action());
+        validateIncidentCloseReq(req);
+        RuntimeControlIncidentRespVO closed = copyIncident(incident, incident.actions(),
+                trimToEmpty(req.ownerGateResult()).toUpperCase(Locale.ROOT),
+                trimToEmpty(req.verificationResult()).toUpperCase(Locale.ROOT), trimToEmpty(req.remainingRisk()),
+                trimToEmpty(req.postmortemStatus()).toUpperCase(Locale.ROOT), trimToEmpty(req.closeReason()),
+                properties.getOperatorId(), Instant.now(), "CLOSED");
+        return saveStateItem("incidents.json", RuntimeControlIncidentRespVO.class, RuntimeControlIncidentRespVO::id,
+                closed);
     }
 
     private RuntimeControlOperationRespVO startOperation(String operationId, String environment, String component,
@@ -1069,16 +1235,317 @@ public class RuntimeControlService {
         return false;
     }
 
-    private RuntimeControlOwnerMatrixRespVO defaultOwnerMatrix(String environment, String action) {
-        return new RuntimeControlOwnerMatrixRespVO(1L, blankToDefault(environment, "test"),
-                blankToDefault(action, "publish-test"), "owner", true, null, properties.getOperatorId(),
-                "local-only", Instant.now());
+    private RuntimeControlOwnerMatrixRespVO ownerMatrixResponse(Long id, RuntimeControlOwnerMatrixSaveReqVO req) {
+        return new RuntimeControlOwnerMatrixRespVO(id, trimToEmpty(req.environment()), trimToEmpty(req.action()),
+                trimToEmpty(req.role()), req.required(), req.ownerUserId(), trimToEmpty(req.ownerName()),
+                trimToEmpty(req.escalationPath()), Instant.now());
     }
 
-    private RuntimeControlOwnerMatrixRespVO ownerMatrixResponse(Long id, RuntimeControlOwnerMatrixSaveReqVO req) {
-        return new RuntimeControlOwnerMatrixRespVO(id, req.environment(), req.action(), req.role(),
-                req.required() == null || req.required(), req.ownerUserId(), req.ownerName(),
-                req.escalationPath(), Instant.now());
+    private static RuntimeControlOwnerMatrixRespVO defaultOwner(Long id, String environment, String action,
+                                                                String role, String escalationPath) {
+        return new RuntimeControlOwnerMatrixRespVO(id, environment, action, role, true,
+                DEFAULT_RELEASE_OWNER_USER_ID, DEFAULT_RELEASE_OWNER_NAME, escalationPath, null);
+    }
+
+    private void validateOwnerMatrixReq(RuntimeControlOwnerMatrixSaveReqVO req) {
+        requireText(req.environment(), "environment");
+        requireText(req.action(), "action");
+        requireText(req.role(), "role");
+        if (req.required() == null) {
+            throw new RuntimeControlException("required is required");
+        }
+    }
+
+    private List<RuntimeControlOwnerMatrixRespVO> effectiveOwnerMatrix() {
+        Map<String, RuntimeControlOwnerMatrixRespVO> owners = new LinkedHashMap<>();
+        DEFAULT_RELEASE_OWNERS.forEach(owner -> owners.put(ownerMatrixKey(owner), owner));
+        readStateList("owner-matrix.json", RuntimeControlOwnerMatrixRespVO.class)
+                .forEach(owner -> owners.put(ownerMatrixKey(owner), mergeOwner(owners.get(ownerMatrixKey(owner)), owner)));
+        return owners.values().stream()
+                .sorted(Comparator
+                        .comparing(RuntimeControlOwnerMatrixRespVO::environment)
+                        .thenComparing(RuntimeControlOwnerMatrixRespVO::action)
+                        .thenComparing(RuntimeControlOwnerMatrixRespVO::role)
+                        .thenComparing(owner -> owner.id() == null ? Long.MAX_VALUE : owner.id()))
+                .toList();
+    }
+
+    private RuntimeControlOwnerMatrixRespVO mergeOwner(RuntimeControlOwnerMatrixRespVO defaultOwner,
+                                                       RuntimeControlOwnerMatrixRespVO configuredOwner) {
+        if (defaultOwner == null) {
+            return configuredOwner;
+        }
+        return new RuntimeControlOwnerMatrixRespVO(configuredOwner.id(), configuredOwner.environment(),
+                configuredOwner.action(), configuredOwner.role(), true,
+                configuredOwner.ownerUserId() == null ? defaultOwner.ownerUserId() : configuredOwner.ownerUserId(),
+                isBlank(configuredOwner.ownerName()) ? defaultOwner.ownerName() : configuredOwner.ownerName(),
+                configuredOwner.escalationPath(), configuredOwner.updatedAt());
+    }
+
+    private String ownerMatrixKey(RuntimeControlOwnerMatrixRespVO owner) {
+        return owner.environment() + "/" + owner.action() + "/" + owner.role();
+    }
+
+    private void validateRequiredOwners(RuntimeControlOperationAction action, String environment) {
+        if (action.requiresResponsibilityGate()) {
+            validateRequiredOwners(environment, action.action());
+        }
+    }
+
+    private void validateRequiredOwners(String environment, String action) {
+        String missingReason = findMissingRequiredOwnerReason(environment, action);
+        if (missingReason != null) {
+            throw new RuntimeControlException("责任人: " + missingReason);
+        }
+    }
+
+    private String findMissingRequiredOwnerReason(String environment, String action) {
+        List<RuntimeControlOwnerMatrixRespVO> requiredOwners = getOwnerMatrix(environment, action).stream()
+                .filter(owner -> Boolean.TRUE.equals(owner.required()))
+                .toList();
+        if (requiredOwners.isEmpty()) {
+            return "缺少必填责任人矩阵：" + environment + "/" + action;
+        }
+        List<String> missingRoles = requiredOwners.stream()
+                .filter(owner -> owner.ownerUserId() == null)
+                .map(RuntimeControlOwnerMatrixRespVO::role)
+                .toList();
+        if (!missingRoles.isEmpty()) {
+            return "必填责任人缺失：" + environment + "/" + action + "/" + String.join(",", missingRoles);
+        }
+        return null;
+    }
+
+    private String resolveAlertBlockReason(String environment, String action, String notifyTemplateCode) {
+        if (isBlank(notifyTemplateCode)) {
+            return "站内信模板缺失：" + environment + "/" + action;
+        }
+        String missingOwnerReason = findMissingRequiredOwnerReason(environment, action);
+        return missingOwnerReason == null ? "独立本机控制台未接入站内信" : missingOwnerReason;
+    }
+
+    private RuntimeControlAlertRespVO requireAlert(Long id) {
+        if (id == null) {
+            throw new RuntimeControlException("alertId is required");
+        }
+        return readStateList("alerts.json", RuntimeControlAlertRespVO.class).stream()
+                .filter(alert -> id.equals(alert.id()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeControlException("告警不存在：" + id));
+    }
+
+    private RuntimeControlAlertRespVO createProbeFailureAlertIfNeeded(List<RuntimeControlProbeRespVO> probes) {
+        List<RuntimeControlProbeRespVO> failures = probes.stream()
+                .filter(probe -> STATUS_NO_GO.equals(probe.status()) || STATUS_BLOCKED.equals(probe.status()))
+                .toList();
+        if (failures.isEmpty()) {
+            return null;
+        }
+        RuntimeControlProbeRespVO first = failures.get(0);
+        return createAlert(new RuntimeControlAlertCreateReqVO(first.environment(), "probe-failed", STATUS_NO_GO,
+                "探针失败", failures.stream()
+                .map(probe -> probe.environment() + "/" + probe.component() + " " + probe.status() + " "
+                        + blankToDefault(probe.error(), "无错误详情"))
+                .reduce((left, right) -> left + "; " + right)
+                .orElse("探针失败"), "RUNTIME_OPS_ALERT", new LinkedHashMap<>(Map.of(
+                "environment", first.environment(),
+                "action", "probe-failed",
+                "severity", STATUS_NO_GO
+        ))));
+    }
+
+    private List<String> collectRollbackBlockingReasons(List<RuntimeControlRollbackCandidateRespVO> candidates) {
+        List<String> reasons = new ArrayList<>();
+        if (candidates.isEmpty()) {
+            reasons.add("无服务端回滚候选");
+        }
+        candidates.stream()
+                .flatMap(candidate -> candidate.blockedReasons().stream())
+                .filter(RuntimeControlService::hasText)
+                .distinct()
+                .forEach(reasons::add);
+        return reasons;
+    }
+
+    private List<String> collectRestoreBlockingReasons(List<RuntimeControlRestoreCandidateRespVO> candidates) {
+        List<String> reasons = new ArrayList<>();
+        if (candidates.isEmpty()) {
+            reasons.add("无服务端恢复候选");
+        }
+        candidates.stream()
+                .flatMap(candidate -> candidate.blockedReasons().stream())
+                .filter(RuntimeControlService::hasText)
+                .distinct()
+                .forEach(reasons::add);
+        return reasons;
+    }
+
+    private void validateIncidentCreateReq(RuntimeControlIncidentCreateReqVO req) {
+        requireText(req.environment(), "environment");
+        requireText(req.action(), "action");
+        requireText(req.severity(), "severity");
+        requireText(req.title(), "title");
+        requireText(req.description(), "description");
+        String sourceType = normalizeSourceType(req.sourceType());
+        if (!List.of("DIRECT", "ALERT", "HIGH_RISK_OPERATION").contains(sourceType)) {
+            throw new RuntimeControlException("sourceType");
+        }
+        if (!"DIRECT".equals(sourceType) && isBlank(req.sourceId())) {
+            throw new RuntimeControlException("sourceId is required");
+        }
+    }
+
+    private RuntimeControlIncidentRespVO requireOpenIncident(Long id) {
+        if (id == null) {
+            throw new RuntimeControlException("incidentId is required");
+        }
+        RuntimeControlIncidentRespVO incident = readStateList("incidents.json", RuntimeControlIncidentRespVO.class)
+                .stream()
+                .filter(item -> id.equals(item.id()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeControlException("事故不存在：" + id));
+        if ("CLOSED".equals(incident.status())) {
+            throw new RuntimeControlException("事故已关闭：" + id);
+        }
+        return incident;
+    }
+
+    private void validateIncidentCloseReq(RuntimeControlIncidentCloseReqVO req) {
+        if (!"PASSED".equals(trimToEmpty(req.ownerGateResult()).toUpperCase(Locale.ROOT))) {
+            throw new RuntimeControlException("责任人门禁未通过");
+        }
+        if (!"PASSED".equals(trimToEmpty(req.verificationResult()).toUpperCase(Locale.ROOT))) {
+            throw new RuntimeControlException("验证结果未通过");
+        }
+        if (!"DONE".equals(trimToEmpty(req.postmortemStatus()).toUpperCase(Locale.ROOT))) {
+            throw new RuntimeControlException("复盘状态未完成");
+        }
+        requireText(req.remainingRisk(), "remainingRisk");
+        requireText(req.closeReason(), "closeReason");
+    }
+
+    private RuntimeControlIncidentRespVO copyIncident(RuntimeControlIncidentRespVO source,
+                                                      List<RuntimeControlIncidentActionRespVO> actions,
+                                                      String ownerGateResult,
+                                                      String verificationResult,
+                                                      String remainingRisk,
+                                                      String postmortemStatus,
+                                                      String closeReason,
+                                                      String closedBy,
+                                                      Instant closedAt,
+                                                      String status) {
+        return new RuntimeControlIncidentRespVO(source.id(), source.environment(), source.action(), source.severity(),
+                source.title(), source.description(), source.sourceType(), source.sourceId(), status,
+                source.createdBy(), source.createdAt(), actions, ownerGateResult, verificationResult, remainingRisk,
+                postmortemStatus, closeReason, closedBy, closedAt);
+    }
+
+    private String normalizeSourceType(String sourceType) {
+        return trimToEmpty(sourceType).toUpperCase(Locale.ROOT);
+    }
+
+    private RuntimeControlBusinessHealthItemRespVO blockedBusinessHealth(String code, String name, String reason,
+                                                                         Instant sampledAt) {
+        return new RuntimeControlBusinessHealthItemRespVO(code, name, STATUS_BLOCKED, null, reason, sampledAt);
+    }
+
+    private String aggregateStatus(List<String> statuses) {
+        if (statuses.stream().anyMatch(status -> STATUS_NO_GO.equals(status) || STATUS_BLOCKED.equals(status))) {
+            return STATUS_NO_GO;
+        }
+        if (statuses.stream().anyMatch("WARN"::equals)) {
+            return "WARN";
+        }
+        return "PASS";
+    }
+
+    private boolean isProbeType(String actionComponent) {
+        return "backend".equals(actionComponent) || "frontend".equals(actionComponent)
+                || "website".equals(actionComponent);
+    }
+
+    private Integer parseHttpStatus(String httpStatus) {
+        if (isBlank(httpStatus)) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(httpStatus.trim());
+        } catch (NumberFormatException ex) {
+            return null;
+        }
+    }
+
+    private <T> long nextStateId(String fileName, Class<T> valueType, Function<T, Long> idGetter) {
+        return readStateList(fileName, valueType).stream()
+                .map(idGetter)
+                .filter(id -> id != null)
+                .max(Long::compareTo)
+                .orElse(0L) + 1L;
+    }
+
+    private <T> T saveStateItem(String fileName, Class<T> valueType, Function<T, Long> idGetter, T item) {
+        List<T> items = new ArrayList<>(readStateList(fileName, valueType));
+        Long id = idGetter.apply(item);
+        if (id == null) {
+            throw new RuntimeControlException(fileName + " item id is required");
+        }
+        items.removeIf(existing -> id.equals(idGetter.apply(existing)));
+        items.add(item);
+        writeStateList(fileName, items);
+        return item;
+    }
+
+    private <T> List<T> readStateList(String fileName, Class<T> valueType) {
+        Path path = runtimeOpsPath(fileName);
+        if (!Files.isRegularFile(path)) {
+            return List.of();
+        }
+        try {
+            return objectMapper.readValue(path.toFile(), objectMapper.getTypeFactory()
+                    .constructCollectionType(List.class, valueType));
+        } catch (IOException ex) {
+            throw new RuntimeControlException("无法读取运行态文件: " + path, ex);
+        }
+    }
+
+    private <T> T readStateObject(String fileName, Class<T> valueType) {
+        Path path = runtimeOpsPath(fileName);
+        if (!Files.isRegularFile(path)) {
+            return null;
+        }
+        try {
+            return objectMapper.readValue(path.toFile(), valueType);
+        } catch (IOException ex) {
+            throw new RuntimeControlException("无法读取运行态文件: " + path, ex);
+        }
+    }
+
+    private <T> void writeStateList(String fileName, List<T> values) {
+        Path path = runtimeOpsPath(fileName);
+        try {
+            Files.createDirectories(path.getParent());
+            Path tmpPath = path.resolveSibling(fileName + ".tmp");
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(tmpPath.toFile(), values);
+            Files.move(tmpPath, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        } catch (IOException ex) {
+            throw new RuntimeControlException("无法写入运行态文件: " + path, ex);
+        }
+    }
+
+    private void writeStateObject(String fileName, Object value) {
+        Path path = runtimeOpsPath(fileName);
+        try {
+            Files.createDirectories(path.getParent());
+            Path tmpPath = path.resolveSibling(fileName + ".tmp");
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(tmpPath.toFile(), value);
+            Files.move(tmpPath, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        } catch (IOException ex) {
+            throw new RuntimeControlException("无法写入运行态文件: " + path, ex);
+        }
+    }
+
+    private Path runtimeOpsPath(String fileName) {
+        return properties.stateDirPath().resolve("runtime-ops").resolve(fileName);
     }
 
     private RuntimeControlActionReqVO copyActionReq(RuntimeControlActionReqVO req, String selectedImageTag,
