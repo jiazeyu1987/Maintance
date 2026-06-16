@@ -2,6 +2,8 @@ const API_BASE = '/admin-api'
 const RUNTIME_CONTROL_OVERVIEW_URL = '/admin-api/infra/runtime-control/overview'
 
 export type RuntimeControlDateTime = string | number | number[]
+export type RuntimeOpsInspectionStatus = 'PASS' | 'WARN' | 'BLOCKED' | 'NO_GO'
+export type RuntimeControlCandidateStatus = 'AVAILABLE' | 'BLOCKED'
 export type RuntimeControlPublishScope = 'code-only' | 'with-data'
 export type RuntimeControlTargetEnvironment = 'test' | 'prod' | 'backup'
 
@@ -62,9 +64,7 @@ export interface RuntimeControlActionReqVO {
   testConclusion?: string
   sqlPath?: string
   selectedImageCandidateId?: string
-  selectedImageTag?: string
   selectedRecoverySetCandidateId?: string
-  selectedBackupId?: string
 }
 
 export interface RuntimeControlRestartReqVO {
@@ -90,7 +90,20 @@ export interface RuntimeControlReleasePackageVO {
   releaseTag: string
   packageDirectoryName?: string
   manifestPath?: string
-  status?: string
+  builtAt?: string
+  publishScope?: RuntimeControlPublishScope
+  component?: string
+  includeShowroomBuildPackage?: boolean
+  onlyOfficeIncluded?: boolean
+  imageTag?: string
+  checksumPresent?: boolean
+  tested?: boolean
+  testedAt?: string
+  operatorName?: string
+  testedRecoverySetCandidateId?: string
+  testedRecoverySetId?: string
+  testedRecoverySetManifestHash?: string
+  status?: RuntimeControlCandidateStatus
   blockedReasons?: string[]
 }
 
@@ -114,6 +127,82 @@ export interface RuntimeControlCapacityStatusVO {
     usagePercent?: number
     reason?: string
   }>
+}
+
+export interface RuntimeControlCandidateVO {
+  candidateId: string
+  backupId?: string
+  releaseTag?: string
+  imageTag?: string
+  manifestPath?: string
+  status: RuntimeControlCandidateStatus
+  blockedReasons?: string[]
+}
+
+export interface RuntimeControlRollbackCandidateVO extends RuntimeControlCandidateVO {
+  prodHistoryPath?: string
+  compatibilityStatus?: string
+  compatibilityEvidencePath?: string
+  compatibilityCheckedAt?: string
+  compatibilitySummary?: string
+}
+
+export interface RuntimeControlRestoreCandidateVO extends RuntimeControlCandidateVO {
+  recoverySetId?: string
+  recoverySetStatus?: RuntimeControlCandidateStatus
+  programVersion?: string
+  redisPolicy?: string
+  configurationManifestPath?: string
+  configurationComposePath?: string
+  recoverySetManifestHash?: string
+  componentSummary?: Record<string, string>
+  dccBackupMode?: string
+  dccChainStatus?: string
+  dccChangeSummary?: Record<string, string>
+  checksumPath?: string
+  rehearsalReportPath?: string
+  snapshotPath?: string
+}
+
+export interface RuntimeControlOwnerMatrixReqVO {
+  environment: string
+  action: string
+  role: string
+  required: boolean
+  ownerUserId?: number
+  ownerName?: string
+  escalationPath?: string
+}
+
+export interface RuntimeControlOwnerMatrixVO extends RuntimeControlOwnerMatrixReqVO {
+  id: number
+  updatedAt?: RuntimeControlDateTime
+}
+
+export interface RuntimeControlWizardScenarioVO {
+  scenario: string
+  label: string
+  recommendedAction: string
+  recommendedActionLabel: string
+  symptoms?: string[]
+  requiredEvidence?: string[]
+  requiredOwnerRoles?: string[]
+  blockingConditions?: string[]
+}
+
+export interface RuntimeControlWizardRecommendationReqVO {
+  scenario: string
+}
+
+export interface RuntimeControlWizardRecommendationVO {
+  scenario: string
+  recommendedAction: string
+  recommendedActionLabel: string
+  requiredEvidence?: string[]
+  requiredOwnerRoles?: string[]
+  blockingReasons?: string[]
+  rollbackCandidates?: RuntimeControlRollbackCandidateVO[]
+  restoreCandidates?: RuntimeControlRestoreCandidateVO[]
 }
 
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
@@ -162,6 +251,59 @@ export const restartRuntimeControl = (data: RuntimeControlRestartReqVO) => {
 
 export const getRuntimeControlReleaseStatus = () => {
   return request<RuntimeControlReleaseStatusVO>('/infra/runtime-control/release-status')
+}
+
+export const getRuntimeControlReleasePackages = () => {
+  return request<RuntimeControlReleasePackageVO[]>('/infra/runtime-control/release-packages')
+}
+
+export const getRuntimeControlRollbackCandidates = () => {
+  return request<RuntimeControlRollbackCandidateVO[]>('/infra/runtime-control/rollback-candidates')
+}
+
+export const getRuntimeControlRestoreCandidates = () => {
+  return request<RuntimeControlRestoreCandidateVO[]>('/infra/runtime-control/restore-candidates')
+}
+
+export const resendRuntimeControlAlertSiteMessage = (id: number) => {
+  return request<unknown>(`/infra/runtime-control/alerts/${id}/resend-site-message`, {
+    method: 'POST'
+  })
+}
+
+export const getRuntimeControlOwnerMatrix = (params?: { environment?: string; action?: string }) => {
+  const query = new URLSearchParams()
+  if (params?.environment) query.set('environment', params.environment)
+  if (params?.action) query.set('action', params.action)
+  const suffix = query.toString() ? `?${query}` : ''
+  return request<RuntimeControlOwnerMatrixVO[]>(`/infra/runtime-control/owner-matrix${suffix}`)
+}
+
+export const createRuntimeControlOwnerMatrix = (data: RuntimeControlOwnerMatrixReqVO) => {
+  return request<RuntimeControlOwnerMatrixVO>('/infra/runtime-control/owner-matrix', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  })
+}
+
+export const updateRuntimeControlOwnerMatrix = (id: number, data: RuntimeControlOwnerMatrixReqVO) => {
+  return request<RuntimeControlOwnerMatrixVO>(`/infra/runtime-control/owner-matrix/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  })
+}
+
+export const getRuntimeControlWizardScenarios = () => {
+  return request<RuntimeControlWizardScenarioVO[]>('/infra/runtime-control/wizard/scenarios')
+}
+
+export const getRuntimeControlWizardRecommendation = (
+  data: RuntimeControlWizardRecommendationReqVO
+) => {
+  return request<RuntimeControlWizardRecommendationVO>('/infra/runtime-control/wizard/recommendation', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  })
 }
 
 export const getRuntimeControlCapacityStatus = () => {

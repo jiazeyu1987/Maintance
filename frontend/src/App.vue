@@ -13,12 +13,16 @@ import {
   getRuntimeControlCapacityStatus,
   getRuntimeControlOperations,
   getRuntimeControlOverview,
+  getRuntimeControlRollbackCandidates,
+  getRuntimeControlRestoreCandidates,
   getRuntimeControlReleaseStatus,
   previewRuntimeControlAction,
   restartRuntimeControl,
   type RuntimeControlActionPreviewVO,
   type RuntimeControlOperationVO,
   type RuntimeControlOverviewVO,
+  type RuntimeControlRollbackCandidateVO,
+  type RuntimeControlRestoreCandidateVO,
   type RuntimeControlStatusVO
 } from './api/runtimeControl'
 
@@ -33,6 +37,7 @@ interface RuntimeAction {
 const actions: RuntimeAction[] = [
   { action: 'build-release', label: '构建发布包', level: 'normal', publishScope: 'code-only' },
   { action: 'publish-test', label: '部署测试服', level: 'normal', targetEnvironment: 'test' },
+  { action: 'apply-test-db-sql', label: '测试服数据库快应用', level: 'warning', targetEnvironment: 'test' },
   { action: 'mark-release-tested', label: '标记测试通过', level: 'normal', targetEnvironment: 'test' },
   { action: 'promote-prod', label: '上线正式服', level: 'danger', targetEnvironment: 'prod' },
   { action: 'promote-backup', label: '上线备份服', level: 'warning', targetEnvironment: 'backup' },
@@ -44,6 +49,8 @@ const actions: RuntimeAction[] = [
 
 const overview = ref<RuntimeControlOverviewVO>()
 const operations = ref<RuntimeControlOperationVO[]>([])
+const rollbackCandidates = ref<RuntimeControlRollbackCandidateVO[]>([])
+const restoreCandidates = ref<RuntimeControlRestoreCandidateVO[]>([])
 const releaseError = ref('')
 const apiError = ref('')
 const loading = ref(false)
@@ -65,9 +72,7 @@ const actionForm = reactive({
   targetEnvironment: 'test' as 'test' | 'prod' | 'backup',
   sqlPath: '',
   selectedImageCandidateId: '',
-  selectedImageTag: '',
   selectedRecoverySetCandidateId: '',
-  selectedBackupId: '',
   includeOnlyOffice: false,
   includeShowroomBuildPackage: false,
   enableSmartReleaseReport: false
@@ -104,6 +109,7 @@ const statusSummary = computed(() => [
 const actionDescriptions: Record<string, string> = {
   'build-release': '生成发布包，不直接部署到任何环境',
   'publish-test': '将已构建发布包部署到测试服',
+  'apply-test-db-sql': '只应用明确 SQL，不同步数据库整库、MinIO 或发布包状态',
   'mark-release-tested': '记录发布包测试通过结论',
   'promote-prod': '正式服写入动作，必须满足生产确认',
   'promote-backup': '备份服写入动作，必须满足确认条件',
@@ -159,6 +165,9 @@ function handleActionChange(value: string | number | boolean) {
   selectedActionKey.value = String(value)
   actionForm.targetEnvironment = selectedAction.value.targetEnvironment || 'test'
   actionForm.publishScope = selectedAction.value.publishScope || actionForm.publishScope
+  actionForm.sqlPath = ''
+  actionForm.selectedImageCandidateId = ''
+  actionForm.selectedRecoverySetCandidateId = ''
 }
 
 function requestPayload() {
@@ -176,11 +185,16 @@ function requestPayload() {
     includeShowroomBuildPackage: actionForm.includeShowroomBuildPackage,
     enableSmartReleaseReport: actionForm.enableSmartReleaseReport,
     releaseTag: actionForm.releaseTag || undefined,
-    sqlPath: actionForm.sqlPath || undefined,
-    selectedImageCandidateId: actionForm.selectedImageCandidateId || undefined,
-    selectedImageTag: actionForm.selectedImageTag || undefined,
-    selectedRecoverySetCandidateId: actionForm.selectedRecoverySetCandidateId || undefined,
-    selectedBackupId: actionForm.selectedBackupId || undefined,
+    sqlPath:
+      selectedAction.value.action === 'apply-test-db-sql' ? actionForm.sqlPath || undefined : undefined,
+    selectedImageCandidateId:
+      selectedAction.value.action === 'rollback-app'
+        ? actionForm.selectedImageCandidateId || undefined
+        : undefined,
+    selectedRecoverySetCandidateId:
+      ['mark-release-tested', 'rehearsal', 'restore-data'].includes(selectedAction.value.action)
+        ? actionForm.selectedRecoverySetCandidateId || undefined
+        : undefined,
     testConclusion: '独立控制台验证记录'
   }
 }
@@ -204,7 +218,16 @@ async function loadData() {
     loading.value = false
   }
   try {
-    await getRuntimeControlReleaseStatus()
+    const [releaseStatus, rollbackResp, restoreResp] = await Promise.all([
+      getRuntimeControlReleaseStatus(),
+      getRuntimeControlRollbackCandidates(),
+      getRuntimeControlRestoreCandidates()
+    ])
+    rollbackCandidates.value = rollbackResp
+    restoreCandidates.value = restoreResp
+    if (!actionForm.releaseTag && releaseStatus.latestTestedReleaseTag) {
+      actionForm.releaseTag = releaseStatus.latestTestedReleaseTag
+    }
   } catch (error) {
     releaseError.value = error instanceof Error ? error.message : String(error)
   }
@@ -413,20 +436,41 @@ onMounted(loadData)
             <el-form-item label="生产确认">
               <el-input v-model="actionForm.prodConfirmText" placeholder="PROD" />
             </el-form-item>
-            <el-form-item label="SQL 路径">
+            <el-form-item v-if="selectedAction.action === 'apply-test-db-sql'" label="SQL 路径">
               <el-input v-model="actionForm.sqlPath" />
             </el-form-item>
-            <el-form-item label="镜像标签">
-              <el-input v-model="actionForm.selectedImageTag" />
+            <el-form-item v-if="selectedAction.action === 'rollback-app'" label="镜像候选">
+              <el-select
+                v-model="actionForm.selectedImageCandidateId"
+                filterable
+                placeholder="选择可用回滚候选"
+              >
+                <el-option
+                  v-for="item in rollbackCandidates"
+                  :key="item.candidateId"
+                  :label="`${item.imageTag || item.candidateId} · ${item.status}`"
+                  :value="item.candidateId"
+                  :disabled="item.status !== 'AVAILABLE'"
+                />
+              </el-select>
             </el-form-item>
-            <el-form-item label="镜像候选">
-              <el-input v-model="actionForm.selectedImageCandidateId" />
-            </el-form-item>
-            <el-form-item label="备份点">
-              <el-input v-model="actionForm.selectedBackupId" />
-            </el-form-item>
-            <el-form-item label="恢复集候选">
-              <el-input v-model="actionForm.selectedRecoverySetCandidateId" />
+            <el-form-item
+              v-if="['mark-release-tested', 'rehearsal', 'restore-data'].includes(selectedAction.action)"
+              label="恢复集候选"
+            >
+              <el-select
+                v-model="actionForm.selectedRecoverySetCandidateId"
+                filterable
+                placeholder="选择可恢复备份点"
+              >
+                <el-option
+                  v-for="item in restoreCandidates"
+                  :key="item.candidateId"
+                  :label="`${item.backupId || item.candidateId} · ${item.status}`"
+                  :value="item.candidateId"
+                  :disabled="item.status !== 'AVAILABLE'"
+                />
+              </el-select>
             </el-form-item>
           </div>
           <div class="switch-row">

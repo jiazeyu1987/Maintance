@@ -68,6 +68,7 @@ def verify_frontend_contract() -> None:
     for action in [
         "build-release",
         "publish-test",
+        "apply-test-db-sql",
         "mark-release-tested",
         "promote-prod",
         "promote-backup",
@@ -79,6 +80,20 @@ def verify_frontend_contract() -> None:
         assert_contains(page, action, f"frontend action {action}")
 
     assert_contains(api, "/admin-api/infra/runtime-control/overview", "frontend overview API")
+    for api_path in [
+        "/infra/runtime-control/owner-matrix",
+        "/infra/runtime-control/wizard/scenarios",
+        "/infra/runtime-control/wizard/recommendation",
+        "/infra/runtime-control/rollback-candidates",
+        "/infra/runtime-control/restore-candidates",
+        "/infra/runtime-control/release-packages",
+        "resend-site-message",
+    ]:
+        assert_contains(api, api_path, f"frontend original runtime-control API {api_path}")
+    assert_not_contains(api, "selectedImageTag?:", "client-submittable selectedImageTag")
+    assert_not_contains(api, "selectedBackupId?:", "client-submittable selectedBackupId")
+    assert_not_contains(page, "v-model=\"actionForm.selectedImageTag\"", "free-text image tag input")
+    assert_not_contains(page, "v-model=\"actionForm.selectedBackupId\"", "free-text backup id input")
     assert_contains(package_json, "typecheck", "frontend typecheck script")
 
 

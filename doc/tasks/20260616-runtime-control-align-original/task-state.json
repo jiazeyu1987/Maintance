@@ -1,0 +1,158 @@
+{
+  "schema_version": 2,
+  "task_id": "20260616-runtime-control-align-original",
+  "mode": "full",
+  "status": "completed",
+  "current_phase": null,
+  "phase_statuses": [
+    {
+      "phase_id": "P1",
+      "title": "后端原版契约对齐",
+      "status": "completed",
+      "objective": "补齐原版接口和服务端门禁，特别是发布包 manifest/tested 校验、候选 ID 服务端解析和内部字段拒绝。",
+      "owned_paths": [
+        "`backend/src/main/java/com/intruoyi/maintenance/runtime/**`",
+        "`backend/src/test/java/com/intruoyi/maintenance/runtime/**`。"
+      ],
+      "dependencies": [
+        "原版 IntRuoyi runtimecontrol controller/service/VO 作为行为基线；本机配置仍使用 `maintenance.runtime-control`。"
+      ],
+      "deliverables": [
+        "后端契约测试、运行控制台服务实现、候选/发布包读取逻辑、治理接口最小持久化或明确本地实现。"
+      ],
+      "evidence_expectation": "`mvn -f backend/pom.xml test` 与后端证据文档。",
+      "acceptance_criteria": [
+        {
+          "ac_id": "P1-AC1",
+          "text": "原版 33 个运行控制台公共接口均由独立应用暴露；无 Spring Security / `@PreAuthorize` 依赖。",
+          "status": "completed",
+          "evidence": [
+            "doc/tasks/20260616-runtime-control-align-original/execution-log.md",
+            "doc/tasks/20260616-runtime-control-align-original/test-report.md"
+          ]
+        },
+        {
+          "ac_id": "P1-AC2",
+          "text": "`selectedImageTag` 与 `selectedBackupId` 只能由服务端候选解析；客户端直传时请求失败且不启动命令。",
+          "status": "completed",
+          "evidence": [
+            "doc/tasks/20260616-runtime-control-align-original/execution-log.md",
+            "doc/tasks/20260616-runtime-control-align-original/test-report.md"
+          ]
+        },
+        {
+          "ac_id": "P1-AC3",
+          "text": "发布/晋级动作必须校验 release package 存在、`release-manifest.json` 可解析、artifact sha256 存在；正式/备份晋级必须要求 `tested.json`。",
+          "status": "completed",
+          "evidence": [
+            "doc/tasks/20260616-runtime-control-align-original/execution-log.md",
+            "doc/tasks/20260616-runtime-control-align-original/test-report.md"
+          ]
+        },
+        {
+          "ac_id": "P1-AC4",
+          "text": "rollback、restore、rehearsal、mark-tested 使用服务端候选 ID 解析 imageTag、backupId、recoverySetId、manifestHash、programVersion、redisPolicy。",
+          "status": "completed",
+          "evidence": [
+            "doc/tasks/20260616-runtime-control-align-original/execution-log.md",
+            "doc/tasks/20260616-runtime-control-align-original/test-report.md"
+          ]
+        },
+        {
+          "ac_id": "P1-AC5",
+          "text": "`apply-test-db-sql` 校验 `.sql` 普通非空文件，非 SQL 或缺文件 fail fast。",
+          "status": "completed",
+          "evidence": [
+            "doc/tasks/20260616-runtime-control-align-original/execution-log.md",
+            "doc/tasks/20260616-runtime-control-align-original/test-report.md"
+          ]
+        }
+      ],
+      "evidence": [
+        "doc/tasks/20260616-runtime-control-align-original/execution-log.md"
+      ],
+      "notes": "- Backend parity tests and full backend regression passed.",
+      "last_reviewed_at": "2026-06-16T18:00:08"
+    },
+    {
+      "phase_id": "P2",
+      "title": "前端原版请求与动作入口对齐",
+      "status": "completed",
+      "objective": "前端 API 类型、动作列表、请求 payload 与原版保持一致，补回 `apply-test-db-sql`，移除客户端直传内部候选实际值。",
+      "owned_paths": [
+        "`frontend/src/App.vue`",
+        "`frontend/src/api/runtimeControl.ts`",
+        "frontend tests or static contract checks。"
+      ],
+      "dependencies": [
+        "P1 后端契约。"
+      ],
+      "deliverables": [
+        "前端静态契约测试、类型检查、构建、页面只读验证。"
+      ],
+      "evidence_expectation": "`pnpm --dir frontend typecheck`、`pnpm --dir frontend build`、前端静态契约检查与只读页面验证。",
+      "acceptance_criteria": [
+        {
+          "ac_id": "P2-AC1",
+          "text": "前端 `RuntimeControlActionReqVO` 与原版一致，不包含 `selectedImageTag`、`selectedBackupId`、recoverySet 内部字段。",
+          "status": "completed",
+          "evidence": [
+            "doc/tasks/20260616-runtime-control-align-original/test-report.md"
+          ]
+        },
+        {
+          "ac_id": "P2-AC2",
+          "text": "页面动作列表包含 `apply-test-db-sql`，并且 SQL 路径仅对该动作提交。",
+          "status": "completed",
+          "evidence": [
+            "doc/tasks/20260616-runtime-control-align-original/test-report.md"
+          ]
+        },
+        {
+          "ac_id": "P2-AC3",
+          "text": "页面不再出现“镜像标签”“备份点”自由文本输入，只保留候选 ID 输入或选择。",
+          "status": "completed",
+          "evidence": [
+            "doc/tasks/20260616-runtime-control-align-original/test-report.md"
+          ]
+        },
+        {
+          "ac_id": "P2-AC4",
+          "text": "前端 API 文件包含 owner-matrix、wizard、alert resend、rollback candidates、restore candidates、release packages 等原版 API 方法。",
+          "status": "completed",
+          "evidence": [
+            "doc/tasks/20260616-runtime-control-align-original/test-report.md"
+          ]
+        }
+      ],
+      "evidence": [
+        "doc/tasks/20260616-runtime-control-align-original/test-report.md"
+      ],
+      "notes": "- Frontend contract, typecheck, build, one-click build and browser E2E passed.",
+      "last_reviewed_at": "2026-06-16T18:00:09"
+    }
+  ],
+  "planner_review_status": "approved",
+  "test_status": "passed",
+  "blocking_prereqs": [],
+  "iteration_counts": {
+    "planner_revisions": 0,
+    "executor_loops": 0,
+    "test_loops": 0
+  },
+  "created_at": "2026-06-16T16:44:43",
+  "updated_at": "2026-06-16T18:07:51",
+  "branch": "int_main",
+  "baseline_revision": "8297df8ed16e9ed69e32e3c2147c42d9d21d6b49",
+  "workspace_root": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance",
+  "tasks_root": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks",
+  "task_dir": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260616-runtime-control-align-original",
+  "goal": "将独立运行控制台与原 IntRuoyi 的运行控制台逻辑对齐到原版一致，保留本机独立运行目标，但补齐原版候选校验、治理接口、前端动作和发布包校验",
+  "artifacts": {
+    "prd": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260616-runtime-control-align-original\\prd.md",
+    "test_plan": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260616-runtime-control-align-original\\test-plan.md",
+    "task_state": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260616-runtime-control-align-original\\task-state.json",
+    "execution_log": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260616-runtime-control-align-original\\execution-log.md",
+    "test_report": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260616-runtime-control-align-original\\test-report.md"
+  }
+}

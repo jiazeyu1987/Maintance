@@ -12,6 +12,24 @@
 - 命令记录：`rg -n "code-only|with-data|SkipDatabaseSync|SkipMinioSync|BackendRepoRoot|FrontendRepoRoot|WebsiteRepo|opsRoot|script/|ops/"` PASS，确认 code-only 参数一致，脚本路径和源码根参数为独立化差异。
 - 结论记录：当前独立版与原运行控制台基础路径、动作枚举和构建发布包命令骨架部分一致；候选服务端绑定、发布包 manifest/checksum/tested 校验、恢复候选丰富度、负责人/向导治理、前端 `apply-test-db-sql` 入口和状态枚举存在逻辑不一致。
 
+## 2026-06-16 运行控制台改成与原版一致
+
+- 用户需求：将独立运行控制台改成与原版，也就是 `D:\ProjectPackage\Int\IntRuoyi` 的运行控制台逻辑一致。
+- 计划边界：保留独立应用本机运行与不接入芋道登录/角色/菜单权限；不执行真实发布、备份、恢复、回滚、重启、远端清理、SSH、数据库写入或对象存储写入。
+- 命中经验：`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`，发布包、回滚候选和恢复候选必须读取真实 manifest/checksum/tested 证据；`D:\ProjectPackage\Int\IntPP\FRONTEND_STYLE.md`，前端保持紧凑运维控制台风格。
+- 命令记录：`python -X utf8 scripts\verify_contracts.py` RED，前端缺少原版 `apply-test-db-sql` 动作入口；补齐后同命令 PASS。
+- 命令记录：`mvn -f backend/pom.xml -Dtest=RuntimeControlOriginalParityTest test` RED，原版一致性测试要求 NAS browser 提供 `listFiles`、`isRegularFile`、`readText`；补齐候选解析和 NAS 文件读取后 PASS。
+- 命令记录：`mvn -f backend/pom.xml test` PASS，9 tests, failures 0, errors 0。
+- 命令记录：`pnpm --dir frontend typecheck` PASS。
+- 命令记录：`pnpm --dir frontend build` PASS。
+- 命令记录：`.\scripts\build.ps1` 首次因本机旧维护应用 jar 占用目标文件失败；确认占用进程监听 `127.0.0.1:48181` 且命令行为本仓库 jar 后停止该本机进程，重跑 PASS。
+- 命令记录：启动本地应用后 `GET http://127.0.0.1:48181/actuator/health` 返回 `{"status":"UP"}`。
+- 命令记录：内置 Browser 打开 `http://127.0.0.1:48181/`，DOM 显示 `运行控制台`，动作入口包含 `构建发布包`、`测试服数据库快应用`、`回滚应用`、`恢复数据`，页面显式提示 `backupOps.nasUsername is required`，console error 为 0。
+- 命令记录：Playwright CLI 默认 Chromium 缺失，改用系统 Chrome channel 截图：`pnpm --dir frontend exec playwright screenshot --channel chrome --wait-for-timeout=3000 --viewport-size="1280,720" http://127.0.0.1:48181/ ...\runtime-control-standalone-e2e.png` PASS。
+- 命令记录：`python ...\validate_test_report.py --expected-outcome passed ...` PASS；`python ...\check_completion.py --apply` PASS，任务状态 completed。
+- 命令记录：`git diff --check` PASS，仅有 Windows 换行提示。
+- 命令记录：`task-closeout-cleanup --mode preview` PASS，blocked/warnings 均无；因预览会删除本次 spec-driven 任务的 PRD/test-plan/test-report/task-state 与 E2E 截图证据，未执行 apply。
+
 ## 2026-06-16 运行控制台前端视觉优化
 
 - 用户需求：使用 `design-taste-frontend` 技能，让独立运行控制台前端设计更好看。

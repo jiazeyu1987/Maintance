@@ -176,15 +176,17 @@ public enum RuntimeControlOperationAction {
         if (this == APPLY_TEST_DB_SQL && isBlank(req.sqlPath())) {
             throw new RuntimeControlException("sqlPath is required for action: " + action);
         }
-        if (this == ROLLBACK_APP && (isBlank(req.selectedImageCandidateId()) || isBlank(req.selectedImageTag()))) {
-            throw new RuntimeControlException("selectedImageCandidateId and selectedImageTag are required for rollback-app");
+        if (this == ROLLBACK_APP && isBlank(req.selectedImageCandidateId())) {
+            throw new RuntimeControlException("selectedImageCandidateId is required for rollback-app");
         }
-        if ((this == REHEARSAL || this == RESTORE_DATA)
-                && (isBlank(req.selectedRecoverySetCandidateId()) || isBlank(req.selectedBackupId()))) {
-            throw new RuntimeControlException("selectedRecoverySetCandidateId and selectedBackupId are required for " + action);
+        if ((this == REHEARSAL || this == RESTORE_DATA) && isBlank(req.selectedRecoverySetCandidateId())) {
+            throw new RuntimeControlException("selectedRecoverySetCandidateId is required for " + action);
         }
         if (this == MARK_RELEASE_TESTED && isBlank(req.testConclusion())) {
             throw new RuntimeControlException("testConclusion is required for action: " + action);
+        }
+        if (this == MARK_RELEASE_TESTED && isBlank(req.selectedRecoverySetCandidateId())) {
+            throw new RuntimeControlException("selectedRecoverySetCandidateId is required for action: " + action);
         }
     }
 

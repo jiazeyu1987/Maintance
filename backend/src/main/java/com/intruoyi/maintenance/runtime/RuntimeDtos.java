@@ -142,6 +142,123 @@ public final class RuntimeDtos {
     ) {
     }
 
+    public record RuntimeControlRollbackCandidateRespVO(
+            String candidateId,
+            String backupId,
+            String releaseTag,
+            String imageTag,
+            String manifestPath,
+            String status,
+            List<String> blockedReasons,
+            String prodHistoryPath,
+            String compatibilityStatus,
+            String compatibilityEvidencePath,
+            String compatibilityCheckedAt,
+            String compatibilitySummary
+    ) {
+    }
+
+    public record RuntimeControlRestoreCandidateRespVO(
+            String candidateId,
+            String backupId,
+            String releaseTag,
+            String imageTag,
+            String manifestPath,
+            String status,
+            List<String> blockedReasons,
+            String recoverySetId,
+            String recoverySetStatus,
+            String programVersion,
+            String redisPolicy,
+            String configurationManifestPath,
+            String configurationComposePath,
+            String recoverySetManifestHash,
+            Map<String, String> componentSummary,
+            String dccBackupMode,
+            String dccChainStatus,
+            Map<String, String> dccChangeSummary,
+            String checksumPath,
+            String rehearsalReportPath,
+            String snapshotPath
+    ) {
+    }
+
+    public record RuntimeControlBackupPointRespVO(
+            String backupId,
+            String manifestPath,
+            String checksumPath,
+            String rehearsalReportPath,
+            String snapshotPath,
+            Instant lastVerifiedAt,
+            String imageTag,
+            String backupMode,
+            Integer retentionKeepLast,
+            Integer retentionKeepDays,
+            Double retentionMaxNasUsedPercent,
+            Integer objectAddedCount,
+            Integer objectModifiedCount,
+            Integer objectDeletedCount,
+            Integer objectReusedCount,
+            String recoverabilityStatus,
+            String dccBackupMode,
+            String dccChainStatus,
+            Map<String, String> dccChangeSummary,
+            String rehearsalStatus,
+            List<String> unrecoverableReasons
+    ) {
+    }
+
+    public record RuntimeControlOwnerMatrixSaveReqVO(
+            @NotBlank String environment,
+            @NotBlank String action,
+            @NotBlank String role,
+            Boolean required,
+            Long ownerUserId,
+            String ownerName,
+            String escalationPath
+    ) {
+    }
+
+    public record RuntimeControlOwnerMatrixRespVO(
+            Long id,
+            String environment,
+            String action,
+            String role,
+            Boolean required,
+            Long ownerUserId,
+            String ownerName,
+            String escalationPath,
+            Instant updatedAt
+    ) {
+    }
+
+    public record RuntimeControlWizardScenarioRespVO(
+            String scenario,
+            String label,
+            String recommendedAction,
+            String recommendedActionLabel,
+            List<String> symptoms,
+            List<String> requiredEvidence,
+            List<String> requiredOwnerRoles,
+            List<String> blockingConditions
+    ) {
+    }
+
+    public record RuntimeControlWizardRecommendationReqVO(@NotBlank String scenario) {
+    }
+
+    public record RuntimeControlWizardRecommendationRespVO(
+            String scenario,
+            String recommendedAction,
+            String recommendedActionLabel,
+            List<String> requiredEvidence,
+            List<String> requiredOwnerRoles,
+            List<String> blockingReasons,
+            List<RuntimeControlRollbackCandidateRespVO> rollbackCandidates,
+            List<RuntimeControlRestoreCandidateRespVO> restoreCandidates
+    ) {
+    }
+
     public record RuntimeControlInspectionRunRespVO(
             Long id,
             String status,

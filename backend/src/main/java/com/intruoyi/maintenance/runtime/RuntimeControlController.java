@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -65,12 +66,12 @@ public class RuntimeControlController {
     }
 
     @GetMapping("/admin-api/infra/runtime-control/rollback-candidates")
-    public ApiResult<List<RuntimeControlCandidateRespVO>> getRollbackCandidates() {
+    public ApiResult<List<RuntimeControlRollbackCandidateRespVO>> getRollbackCandidates() {
         return ApiResult.success(runtimeControlService.getRollbackCandidates());
     }
 
     @GetMapping("/admin-api/infra/runtime-control/restore-candidates")
-    public ApiResult<List<RuntimeControlCandidateRespVO>> getRestoreCandidates() {
+    public ApiResult<List<RuntimeControlRestoreCandidateRespVO>> getRestoreCandidates() {
         return ApiResult.success(runtimeControlService.getRestoreCandidates());
     }
 
@@ -117,12 +118,12 @@ public class RuntimeControlController {
     }
 
     @GetMapping("/admin-api/infra/runtime-control/backup-points")
-    public ApiResult<List<RuntimeControlCandidateRespVO>> getBackupPoints() {
+    public ApiResult<List<RuntimeControlBackupPointRespVO>> getBackupPoints() {
         return ApiResult.success(runtimeControlService.getBackupPoints());
     }
 
     @GetMapping("/admin-api/infra/runtime-control/backup-points/{backupId}")
-    public ApiResult<RuntimeControlCandidateRespVO> getBackupPoint(@PathVariable String backupId) {
+    public ApiResult<RuntimeControlBackupPointRespVO> getBackupPoint(@PathVariable String backupId) {
         return ApiResult.success(runtimeControlService.getBackupPoint(backupId));
     }
 
@@ -136,9 +137,45 @@ public class RuntimeControlController {
         return ApiResult.success(runtimeControlService.createAlert(req));
     }
 
+    @PostMapping("/admin-api/infra/runtime-control/alerts/{id}/resend-site-message")
+    public ApiResult<RuntimeControlAlertRespVO> resendAlertSiteMessage(@PathVariable Long id) {
+        return ApiResult.success(runtimeControlService.resendAlertSiteMessage(id));
+    }
+
     @PostMapping("/admin-api/infra/runtime-control/alerts/{id}/acknowledge")
     public ApiResult<RuntimeControlAlertRespVO> acknowledgeAlert(@PathVariable Long id) {
         return ApiResult.success(runtimeControlService.acknowledgeAlert(id));
+    }
+
+    @GetMapping("/admin-api/infra/runtime-control/owner-matrix")
+    public ApiResult<List<RuntimeControlOwnerMatrixRespVO>> getOwnerMatrix(
+            @RequestParam(required = false) String environment,
+            @RequestParam(required = false) String action) {
+        return ApiResult.success(runtimeControlService.getOwnerMatrix(environment, action));
+    }
+
+    @PostMapping("/admin-api/infra/runtime-control/owner-matrix")
+    public ApiResult<RuntimeControlOwnerMatrixRespVO> createOwnerMatrix(
+            @Valid @RequestBody RuntimeControlOwnerMatrixSaveReqVO req) {
+        return ApiResult.success(runtimeControlService.createOwnerMatrix(req));
+    }
+
+    @PutMapping("/admin-api/infra/runtime-control/owner-matrix/{id}")
+    public ApiResult<RuntimeControlOwnerMatrixRespVO> updateOwnerMatrix(
+            @PathVariable Long id,
+            @Valid @RequestBody RuntimeControlOwnerMatrixSaveReqVO req) {
+        return ApiResult.success(runtimeControlService.updateOwnerMatrix(id, req));
+    }
+
+    @GetMapping("/admin-api/infra/runtime-control/wizard/scenarios")
+    public ApiResult<List<RuntimeControlWizardScenarioRespVO>> getWizardScenarios() {
+        return ApiResult.success(runtimeControlService.getWizardScenarios());
+    }
+
+    @PostMapping("/admin-api/infra/runtime-control/wizard/recommendation")
+    public ApiResult<RuntimeControlWizardRecommendationRespVO> recommendWizardAction(
+            @Valid @RequestBody RuntimeControlWizardRecommendationReqVO req) {
+        return ApiResult.success(runtimeControlService.recommendWizardAction(req));
     }
 
     @GetMapping("/admin-api/infra/runtime-control/incidents/page")
