@@ -1,0 +1,15 @@
+/backend/target/
+/backend/src/main/resources/static/
+/frontend/node_modules/
+/frontend/dist/
+/runtime/runtime-control/
+/runtime/runtime-control-test/
+/config/runtime-control.local.yaml
+/.playwright-cli/
+*.log
+*.tmp
+*.pid
+**/__pycache__/
+*.pyc
+/ops/backup-ops/tmp/
+/ops/**/tmp/

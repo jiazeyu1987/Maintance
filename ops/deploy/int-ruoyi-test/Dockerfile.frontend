@@ -1,0 +1,4 @@
+FROM nginx:1.27-alpine
+
+COPY ruoyi-vue-pro/script/deploy/int-ruoyi-test/nginx.conf /etc/nginx/conf.d/default.conf
+COPY yudao-ui-admin-vue3/dist-intruoyi-test/ /usr/share/nginx/html/

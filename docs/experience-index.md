@@ -1,0 +1,15 @@
+# 项目经验索引
+
+任务开始时先读本文件，只打开命中的经验文档；不要全量阅读所有经验。
+
+## 路由
+
+- 发布 / 备份 / 恢复 / 服务器容量：`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`
+- 服务器访问 / 重启 / 远端联调：`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`
+- 前端页面 / 表格 / 样式：`D:\ProjectPackage\Int\IntPP\FRONTEND_STYLE.md`
+
+## 任务门禁
+
+- 在 `task.md` 只摘命中文档的门禁，写入 `## 经验门禁`。
+- 涉及服务器写入、发布、恢复、大文件上传、真实 E2E、worktree 合并或清理等高风险动作前，`execution-log.md` 必须先记录 `GREEN: experience-preflight -> PASS` 或 `BLOCKER: experience-preflight -> <原因>`。
+- 没有 `experience-preflight` 记录时，不执行长链路或高风险动作。

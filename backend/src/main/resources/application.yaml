@@ -1,0 +1,124 @@
+server:
+  address: 127.0.0.1
+  port: 48181
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: runtime-control-maintenance
+  config:
+    import: optional:file:./config/runtime-control.local.yaml
+  web:
+    resources:
+      static-locations: classpath:/static/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+maintenance:
+  runtime-control:
+    operator-id: local-operator
+    repo-root: D:/ProjectPackage/Int/IntRuoyi/ruoyi-vue-pro
+    frontend-root: D:/ProjectPackage/Int/IntRuoyi/yudao-ui-admin-vue3
+    website-root: D:/ProjectPackage/Website
+    ops-root: ${user.dir}/ops
+    state-dir: ${user.dir}/runtime/runtime-control
+    command-timeout-seconds: 1800
+    status-timeout-millis: 1500
+    production-write-enabled: false
+    environments:
+      local:
+        label: Local
+        local: true
+        access-enabled: true
+        targets:
+          intruoyi-frontend:
+            label: IntRuoyi 前端
+            port: 8081
+            url: http://127.0.0.1:8081/
+            action-component: frontend
+            status-script: deploy/show-int-ruoyi-local-status.ps1
+            restart-script: deploy/restart-int-ruoyi-local.ps1
+            action-enabled: true
+          intruoyi-backend:
+            label: IntRuoyi 后端
+            port: 48081
+            url: http://127.0.0.1:48081/actuator/health
+            action-component: backend
+            status-script: deploy/show-int-ruoyi-local-status.ps1
+            restart-script: deploy/restart-int-ruoyi-local.ps1
+            action-enabled: true
+          intruoyi-full:
+            label: IntRuoyi 整套
+            url: http://127.0.0.1:8081/
+            action-component: full
+            status-script: deploy/show-int-ruoyi-local-status.ps1
+            restart-script: deploy/restart-int-ruoyi-local.ps1
+            action-enabled: true
+          website-frontend:
+            label: Website 前端
+            port: 4173
+            url: http://127.0.0.1:4173/
+            action-component: website
+            status-script: deploy/show-int-ruoyi-local-status.ps1
+            restart-script: deploy/restart-int-ruoyi-local.ps1
+            action-enabled: true
+      test:
+        label: Test
+        local: false
+        host: 172.30.30.58
+        server-user: root
+        remote-app-dir: /opt/intruoyi/runtime
+        remote-release-root: /var/lib/docker/intruoyi-releases
+        remote-data-root: /var/lib/docker/intruoyi-data/runtime-data
+        remote-data-disk-mount: /var/lib/docker
+        remote-data-disk-device: /dev/vdb
+        remote-minio-container: ragflow_compose-minio-1
+        access-enabled: true
+      prod:
+        label: Production
+        local: false
+        host: 172.30.30.57
+        server-user: root
+        remote-app-dir: /opt/intruoyi/runtime
+        remote-release-root: /var/lib/docker/intruoyi-releases
+        remote-data-root: /var/lib/docker/intruoyi-data/runtime-data
+        remote-data-disk-mount: /var/lib/docker
+        remote-data-disk-device: /dev/vdb
+        remote-minio-container: ragflow_compose-minio-1
+        access-enabled: false
+        access-disabled-reason: 正式环境写动作未授权，当前独立控制台默认禁止写入、重启、发布、回滚或恢复正式服务器
+      backup:
+        label: Backup
+        local: false
+        host: 172.30.30.59
+        server-user: root
+        remote-app-dir: /opt/intruoyi/runtime
+        remote-release-root: /mnt/intruoyi-data/intruoyi-releases
+        remote-data-root: /mnt/intruoyi-data/runtime-data
+        remote-data-disk-mount: /mnt/intruoyi-data
+        remote-data-disk-device: /dev/mapper/cl-home
+        remote-minio-container: intruoyi-minio
+        access-enabled: true
+    backup-ops:
+      execution-mode: powershell
+      config-path: backup-ops/config/backup-ops.config.json
+      linux-script-path: /opt/intruoyi/ops/backup-ops/linux-native/linux/backup-ops-linux.sh
+      linux-config-path: /opt/intruoyi/ops/backup-ops/linux-native/backup-ops.linux-local.runtime.json
+      nas-server: 172.30.30.4
+      nas-share: IT共享
+      nas-backup-points-root: Backup/BackupPackage
+    release-package:
+      nas-server: 172.30.30.4
+      nas-share: IT共享
+      nas-release-root: Backup/ReleasePackage
+      backend-runtime-base-mode:
+      backend-runtime-base-tar-path:
+      backend-runtime-base-tar-sha256:
+      backend-runtime-base-image:
+      backend-runtime-base-digest:
+      backend-runtime-base-version:

@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "v1",
+  "environment": "test-server-local",
+  "execution": {
+    "mode": "linux-local"
+  },
+  "servers": {
+    "production": {
+      "host": "172.30.30.58",
+      "appDir": "/opt/intruoyi/runtime",
+      "opsRoot": "/opt/intruoyi/ops",
+      "tmpRoot": "/opt/intruoyi/runtime/data/backup-ops/tmp"
+    },
+    "test": {
+      "host": "127.0.0.1",
+      "runtimeDir": "/opt/intruoyi/runtime",
+      "tmpRoot": "/opt/intruoyi/runtime/data/backup-ops/tmp",
+      "backupRoot": "/mnt/nas/Backup/BackupPackage",
+      "backupPointsRoot": "/mnt/nas/Backup/BackupPackage",
+      "minioContainer": "ragflow_compose-minio-1",
+      "rehearsalRoot": "/backup/int-ruoyi/rehearsal/runtime",
+      "rehearsalBackendPort": 48082,
+      "rehearsalFrontendPort": 18081
+    },
+    "backup": {
+      "host": "127.0.0.1",
+      "runtimeDir": "/opt/intruoyi/runtime",
+      "tmpRoot": "/opt/intruoyi/runtime/data/backup-ops/tmp",
+      "backupRoot": "/mnt/nas/Backup/BackupPackage",
+      "backupPointsRoot": "/mnt/nas/Backup/BackupPackage",
+      "minioContainer": "intruoyi-minio"
+    }
+  },
+  "containers": {
+    "mysql": "intruoyi-mysql",
+    "minio": "ragflow_compose-minio-1",
+    "redis": "intruoyi-redis",
+    "backend": "intruoyi-backend",
+    "frontend": "intruoyi-frontend"
+  },
+  "tools": {
+    "minioClientImage": "quay.io/minio/mc:latest"
+  },
+  "backup": {
+    "schedule": "01:30",
+    "keepDaysRemote": 30,
+    "keepDaysLocal": 3,
+    "mysqlDatabase": "ruoyi-vue-pro",
+    "dccTenantId": 122,
+    "objectBucket": "yudao"
+  },
+  "rehearsal": {
+    "schedule": "SUN 02:00",
+    "runtimeNamePrefix": "intruoyi-rehearsal",
+    "bucket": "yudao-rehearsal",
+    "validation": {
+      "tenantId": 1,
+      "tenantName": "芋道源码",
+      "username": "admin",
+      "password": "admin123",
+      "fileConfigId": 28,
+      "sampleFilePath": "dcc/stamped/20260513/dcc-sample_controlled.pdf"
+    }
+  },
+  "console": {
+    "title": "IntRuoyi Backup Console - LINUX LOCAL",
+    "logRoot": "/opt/intruoyi/runtime/data/backup-ops/logs"
+  },
+  "notify": {
+    "enabled": false,
+    "channel": "pending"
+  }
+}

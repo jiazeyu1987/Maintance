@@ -1,0 +1,69 @@
+maintenance:
+  runtime-control:
+    operator-id: local-operator
+    repo-root: D:/ProjectPackage/Int/IntRuoyi/ruoyi-vue-pro
+    frontend-root: D:/ProjectPackage/Int/IntRuoyi/yudao-ui-admin-vue3
+    website-root: D:/ProjectPackage/Website
+    ops-root: D:/ProjectPackage/Int/IntRuoyiMaintance/ops
+    state-dir: D:/ProjectPackage/Int/IntRuoyiMaintance/runtime/runtime-control
+    command-timeout-seconds: 1800
+    status-timeout-millis: 1500
+    production-write-enabled: false
+    environments:
+      local:
+        label: Local
+        local: true
+        access-enabled: true
+      test:
+        label: Test
+        local: false
+        host: 172.30.30.58
+        server-user: root
+        remote-app-dir: /opt/intruoyi/runtime
+        remote-release-root: /var/lib/docker/intruoyi-releases
+        remote-data-root: /var/lib/docker/intruoyi-data/runtime-data
+        remote-data-disk-mount: /var/lib/docker
+        remote-data-disk-device: /dev/vdb
+        remote-minio-container: ragflow_compose-minio-1
+        access-enabled: true
+      prod:
+        label: Production
+        local: false
+        host: 172.30.30.57
+        server-user: root
+        remote-app-dir: /opt/intruoyi/runtime
+        remote-release-root: /var/lib/docker/intruoyi-releases
+        remote-data-root: /var/lib/docker/intruoyi-data/runtime-data
+        remote-data-disk-mount: /var/lib/docker
+        remote-data-disk-device: /dev/vdb
+        remote-minio-container: ragflow_compose-minio-1
+        access-enabled: false
+        access-disabled-reason: 正式环境写动作未授权，独立控制台默认禁止写入正式服务器
+      backup:
+        label: Backup
+        local: false
+        host: 172.30.30.59
+        server-user: root
+        remote-app-dir: /opt/intruoyi/runtime
+        remote-release-root: /mnt/intruoyi-data/intruoyi-releases
+        remote-data-root: /mnt/intruoyi-data/runtime-data
+        remote-data-disk-mount: /mnt/intruoyi-data
+        remote-data-disk-device: /dev/mapper/cl-home
+        remote-minio-container: intruoyi-minio
+        access-enabled: true
+    backup-ops:
+      execution-mode: powershell
+      config-path: backup-ops/config/backup-ops.config.json
+      nas-server: 172.30.30.4
+      nas-share: IT共享
+      nas-username:
+      nas-password:
+      nas-domain:
+      nas-backup-points-root: Backup/BackupPackage
+    release-package:
+      nas-server: 172.30.30.4
+      nas-share: IT共享
+      nas-username:
+      nas-password:
+      nas-domain:
+      nas-release-root: Backup/ReleasePackage

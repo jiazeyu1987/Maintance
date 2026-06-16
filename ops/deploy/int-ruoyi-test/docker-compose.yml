@@ -1,0 +1,178 @@
+name: intruoyi-runtime
+
+services:
+  mysql:
+    image: mysql:8.0.39
+    container_name: intruoyi-mysql
+    restart: unless-stopped
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+      - --explicit_defaults_for_timestamp=true
+      - --lower_case_table_names=1
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - mysqladmin ping -uroot -p${MYSQL_ROOT_PASSWORD} --silent
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    networks:
+      - intruoyi_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: intruoyi-redis
+    restart: unless-stopped
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+    volumes:
+      - ./data/redis:/data
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    networks:
+      - intruoyi_net
+
+  backend:
+    image: intruoyi-backend:${IMAGE_TAG}
+    container_name: intruoyi-backend
+    restart: unless-stopped
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      onlyoffice:
+        condition: service_healthy
+    environment:
+      TZ: Asia/Shanghai
+      JAVA_OPTS: ${JAVA_OPTS}
+      EDHR_S3_ENDPOINT: ${EDHR_S3_ENDPOINT}
+      EDHR_S3_BUCKET: ${EDHR_S3_BUCKET}
+      EDHR_S3_REGION: ${EDHR_S3_REGION}
+      EDHR_S3_ACCESS_KEY: ${EDHR_S3_ACCESS_KEY}
+      EDHR_S3_SECRET_KEY: ${EDHR_S3_SECRET_KEY}
+      EDHR_S3_RETENTION_MODE: ${EDHR_S3_RETENTION_MODE}
+      EDHR_S3_RETAIN_UNTIL_DAYS: ${EDHR_S3_RETAIN_UNTIL_DAYS}
+      EDHR_S3_REQUIRE_LEGAL_HOLD: ${EDHR_S3_REQUIRE_LEGAL_HOLD}
+      ARGS: >-
+        --spring.profiles.active=${SPRING_PROFILES_ACTIVE}
+        --spring.datasource.dynamic.datasource.master.url=jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
+        --spring.datasource.dynamic.datasource.master.username=root
+        --spring.datasource.dynamic.datasource.master.password=${MYSQL_ROOT_PASSWORD}
+        --spring.datasource.dynamic.datasource.slave.url=jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true&nullCatalogMeansCurrent=true
+        --spring.datasource.dynamic.datasource.slave.username=root
+        --spring.datasource.dynamic.datasource.slave.password=${MYSQL_ROOT_PASSWORD}
+        --spring.data.redis.host=redis
+        --spring.data.redis.port=6379
+        --yudao.captcha.enable=false
+        --yudao.web.admin-ui.url=http://${SERVER_HOST}:${FRONTEND_HOST_PORT}
+        --showroom.release.public-website-origin=http://${SERVER_HOST}:${WEBSITE_HOST_PORT}
+        --dcc.signature.evidence.hmac-secret=${DCC_SIGNATURE_EVIDENCE_HMAC_SECRET}
+        --dcc.signature.evidence.key-version=${DCC_SIGNATURE_EVIDENCE_KEY_VERSION}
+        --yudao.dcc.viewer-token.hmac-secret=${DCC_VIEWER_TOKEN_HMAC_SECRET}
+        --yudao.dcc.preview.onlyoffice.base-url=${DCC_ONLYOFFICE_BASE_URL}
+        --yudao.dcc.preview.onlyoffice.jwt-secret=${DCC_ONLYOFFICE_JWT_SECRET}
+        --yudao.dcc.preview.onlyoffice.public-file-base-url=${DCC_ONLYOFFICE_PUBLIC_FILE_BASE_URL}
+        --yudao.dcc.download.encryption.policy-version=${DCC_DOWNLOAD_ENCRYPTION_POLICY_VERSION}
+        --yudao.dcc.download.encryption.key-id=${DCC_DOWNLOAD_ENCRYPTION_KEY_ID}
+        --yudao.dcc.download.encryption.base64-key=${DCC_DOWNLOAD_ENCRYPTION_BASE64_KEY}
+        --yudao.dcc.download.encryption.artifact-directory=${DCC_DOWNLOAD_ENCRYPTION_ARTIFACT_DIRECTORY}
+        --yudao.runtime-control.repo-root=/opt/intruoyi/ops/backup-ops/linux-native
+        --yudao.runtime-control.state-dir=/opt/intruoyi/ops/runtime-control
+        --yudao.runtime-control.backup-ops.execution-mode=linux-local
+        --yudao.runtime-control.backup-ops.linux-script-path=/opt/intruoyi/ops/backup-ops/linux-native/linux/backup-ops-linux.sh
+        --yudao.runtime-control.backup-ops.linux-config-path=/opt/intruoyi/ops/backup-ops/linux-native/backup-ops.linux-local.runtime.json
+        --yudao.runtime-control.backup-ops.nas-backup-points-root=${RUNTIME_CONTROL_NAS_BACKUP_POINTS_ROOT:-Backup/BackupPackage}
+        --yudao.runtime-control.backup-ops.linux-runner-mounts[0]=/var/run/docker.sock:/var/run/docker.sock
+        --yudao.runtime-control.backup-ops.linux-runner-mounts[1]=/opt/intruoyi/runtime:/opt/intruoyi/runtime
+        --yudao.runtime-control.backup-ops.linux-runner-mounts[2]=/opt/intruoyi/ops:/opt/intruoyi/ops
+        --yudao.runtime-control.backup-ops.linux-runner-mounts[3]=/backup:/backup
+        --yudao.runtime-control.backup-ops.linux-runner-mounts[4]=/mnt/nas/Backup/BackupPackage:/mnt/nas/Backup/BackupPackage
+        --yudao.runtime-control.release-package.nas-release-root=${RUNTIME_CONTROL_NAS_RELEASE_ROOT:-Backup/ReleasePackage}
+        --yudao.runtime-control.release-package.backend-runtime-base-mode=${RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_MODE:-}
+        --yudao.runtime-control.release-package.backend-runtime-base-tar-path=${RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_TAR:-}
+        --yudao.runtime-control.release-package.backend-runtime-base-tar-sha256=${RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_TAR_SHA256:-}
+        --yudao.runtime-control.release-package.backend-runtime-base-image=${RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_IMAGE:-}
+        --yudao.runtime-control.release-package.backend-runtime-base-digest=${RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_DIGEST:-}
+        --yudao.runtime-control.release-package.backend-runtime-base-version=${RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_VERSION:-}
+        --yudao.runtime-control.environments.test.host=${RUNTIME_CONTROL_TEST_SERVER_HOST:-}
+        --yudao.runtime-control.environments.prod.host=${RUNTIME_CONTROL_PROD_SERVER_HOST:-}
+        --yudao.runtime-control.environments.backup.host=${RUNTIME_CONTROL_BACKUP_SERVER_HOST:-}
+    ports:
+      - ${BACKEND_HOST_PORT}:48080
+    volumes:
+      - ./data/backend-logs:/root/logs
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/intruoyi/runtime:/opt/intruoyi/runtime
+      - /opt/intruoyi/ops:/opt/intruoyi/ops
+      - /backup:/backup
+      - /mnt/nas/Backup/BackupPackage:/mnt/nas/Backup/BackupPackage
+    networks:
+      - intruoyi_net
+
+  onlyoffice:
+    image: onlyoffice/documentserver:latest
+    container_name: intruoyi-onlyoffice
+    restart: unless-stopped
+    environment:
+      JWT_ENABLED: "false"
+      ALLOW_PRIVATE_IP_ADDRESS: "true"
+      PLUGINS_ENABLED: "false"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl -fsS http://127.0.0.1/healthcheck >/dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    ports:
+      - ${ONLYOFFICE_HOST_PORT}:80
+    networks:
+      - intruoyi_net
+
+  frontend:
+    image: intruoyi-frontend:${IMAGE_TAG}
+    container_name: intruoyi-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - ${FRONTEND_HOST_PORT}:80
+    networks:
+      - intruoyi_net
+
+  website:
+    image: nginx:1.27-alpine
+    container_name: intruoyi-website
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - ${WEBSITE_HOST_PORT}:80
+    volumes:
+      - ./website/dist:/usr/share/nginx/html:ro
+      - ./website/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - intruoyi_net
+
+networks:
+  intruoyi_net:
+    driver: bridge

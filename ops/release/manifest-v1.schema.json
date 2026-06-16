@@ -1,0 +1,334 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://int.example.local/smart-release/manifest-v1.schema.json",
+  "title": "Smart Release Manifest v1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "manifestVersion",
+    "packageId",
+    "releaseTag",
+    "packageType",
+    "createdAt",
+    "createdBy",
+    "sourceRepos",
+    "changeSet",
+    "publishScope",
+    "components",
+    "artifacts",
+    "database",
+    "schemaVersion",
+    "schemaDigest",
+    "migrationPlan",
+    "requiredSql",
+    "buildModules",
+    "compatibilityMatrix",
+    "operationEvidencePolicy",
+    "resources",
+    "targetRequirements",
+    "buildContract",
+    "deployContract",
+    "precheckPlan",
+    "verifyPlan",
+    "rollbackPlan",
+    "forbiddenFieldsCheck",
+    "manifestChecksum"
+  ],
+  "properties": {
+    "manifestVersion": {
+      "const": "1.0"
+    },
+    "packageId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "packageType": {
+      "type": "string",
+      "enum": [
+        "full-release",
+        "smart-release",
+        "data-release",
+        "resource-check-only"
+      ]
+    },
+    "releaseTag": {
+      "type": "string",
+      "minLength": 1
+    },
+    "createdAt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "createdBy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "baselineManifestId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sourceRepos": {
+      "type": "array"
+    },
+    "changeSet": {
+      "type": "object"
+    },
+    "publishScope": {
+      "type": "string",
+      "enum": [
+        "code-only",
+        "with-data"
+      ]
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "backend",
+          "admin-frontend",
+          "website",
+          "database-contract",
+          "required-sql",
+          "runtime-env",
+          "onlyoffice",
+          "packaging-manifest"
+        ]
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "artifactId",
+          "componentName",
+          "artifactType",
+          "includedInPackage",
+          "artifactHash",
+          "sourceHash",
+          "dependencyHash",
+          "buildParameterHash",
+          "contractHash"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "includedInPackage": {
+            "type": "boolean"
+          },
+          "artifactCacheUri": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^sha256:[a-fA-F0-9]{64}$"
+          },
+          "artifactHash": {
+            "type": "string",
+            "pattern": "^sha256:[a-fA-F0-9]{64}$"
+          },
+          "sourceHash": {
+            "type": "string",
+            "pattern": "^sha256:[a-fA-F0-9]{64}$"
+          },
+          "dependencyHash": {
+            "type": "string",
+            "pattern": "^sha256:[a-fA-F0-9]{64}$"
+          },
+          "buildParameterHash": {
+            "type": "string",
+            "pattern": "^sha256:[a-fA-F0-9]{64}$"
+          },
+          "contractHash": {
+            "type": "string",
+            "pattern": "^sha256:[a-fA-F0-9]{64}$"
+          }
+        }
+      }
+    },
+    "schemaVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schemaDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-fA-F0-9]{64}$"
+    },
+    "migrationPlan": {
+      "type": "array"
+    },
+    "requiredSql": {
+      "type": "array"
+    },
+    "buildModules": {
+      "type": "array"
+    },
+    "compatibilityMatrix": {
+      "type": "array"
+    },
+    "operationEvidencePolicy": {
+      "type": "object"
+    },
+    "database": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "schemaMigrations",
+        "requiredDataSets"
+      ],
+      "properties": {
+        "schemaMigrations": {
+          "type": "array"
+        },
+        "requiredDataSets": {
+          "type": "array"
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "resourcePayloadMode",
+        "resourceReferenceManifest",
+        "resourceDeltaPrepared"
+      ],
+      "properties": {
+        "resourcePayloadMode": {
+          "type": "string",
+          "enum": [
+            "reference-check-only"
+          ]
+        },
+        "resourceReferenceManifest": {
+          "type": "string",
+          "minLength": 1
+        },
+        "resourceDeltaPrepared": {
+          "type": "boolean"
+        }
+      }
+    },
+    "targetRequirements": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "environmentCodes",
+        "serverConfigSchemaVersion",
+        "storageProfileIds",
+        "dockerProfileId"
+      ],
+      "properties": {
+        "environmentCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "test",
+              "prod",
+              "backup"
+            ]
+          }
+        },
+        "storageProfileIds": {
+          "type": "array"
+        },
+        "dockerProfileId": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "buildContract": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "mode",
+        "changesBuildExitCode",
+        "writesDatabase",
+        "syncsResources"
+      ],
+      "properties": {
+        "mode": {
+          "const": "report-only"
+        },
+        "changesBuildExitCode": {
+          "const": false
+        },
+        "writesDatabase": {
+          "const": false
+        },
+        "syncsResources": {
+          "const": false
+        }
+      }
+    },
+    "deployContract": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "mode",
+        "changesDeployExitCode",
+        "targetConfigSource",
+        "allowsRemoteMutation",
+        "allowsRemoteReadOnlyProbe"
+      ],
+      "properties": {
+        "mode": {
+          "const": "report-only"
+        },
+        "changesDeployExitCode": {
+          "const": false
+        },
+        "targetConfigSource": {
+          "const": "server-side-runtime-control-config"
+        },
+        "allowsRemoteMutation": {
+          "const": false
+        },
+        "allowsRemoteReadOnlyProbe": {
+          "const": "authorized-only"
+        }
+      }
+    },
+    "precheckPlan": {
+      "type": "object"
+    },
+    "verifyPlan": {
+      "type": "object"
+    },
+    "rollbackPlan": {
+      "type": "object"
+    },
+    "forbiddenFieldsCheck": {
+      "type": "object"
+    },
+    "manifestChecksum": {
+      "type": "string",
+      "pattern": "^sha256:[a-fA-F0-9]{64}$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "packageType": {
+            "const": "smart-release"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "baselineManifestId"
+        ]
+      }
+    }
+  ]
+}

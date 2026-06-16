@@ -1,0 +1,126 @@
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def read_text(path: str) -> str:
+    target = ROOT / path
+    if not target.is_file():
+        raise AssertionError(f"missing required file: {path}")
+    return target.read_text(encoding="utf-8")
+
+
+def assert_contains(text: str, needle: str, label: str) -> None:
+    if needle not in text:
+        raise AssertionError(f"missing {label}: {needle}")
+
+
+def assert_not_contains(text: str, needle: str, label: str) -> None:
+    if needle in text:
+        raise AssertionError(f"forbidden {label}: {needle}")
+
+
+def verify_backend_contract() -> None:
+    controller = read_text("backend/src/main/java/com/intruoyi/maintenance/runtime/RuntimeControlController.java")
+    application = read_text("backend/src/main/java/com/intruoyi/maintenance/MaintenanceApplication.java")
+    config = read_text("backend/src/main/resources/application.yaml")
+    pom = read_text("backend/pom.xml")
+
+    for endpoint in [
+        "/admin-api/infra/runtime-control/overview",
+        "/admin-api/infra/runtime-control/restart",
+        "/admin-api/infra/runtime-control/actions",
+        "/admin-api/infra/runtime-control/actions/preview",
+        "/admin-api/infra/runtime-control/release-packages",
+        "/admin-api/infra/runtime-control/release-status",
+        "/admin-api/infra/runtime-control/backup-points",
+        "/admin-api/infra/runtime-control/remote-root-disk/status",
+        "/admin-api/infra/runtime-control/incidents/page",
+    ]:
+        assert_contains(controller, endpoint, f"backend endpoint {endpoint}")
+
+    assert_not_contains(controller, "@PreAuthorize", "Spring Security pre-authorization")
+    assert_not_contains(application + pom, "spring-boot-starter-security", "Spring Security dependency")
+    assert_contains(config, "address: 127.0.0.1", "loopback binding")
+    assert_contains(config, "port: 48181", "standalone server port")
+    assert_contains(controller, "local-operator", "local operator identity")
+
+
+def verify_backend_tests() -> None:
+    test_source = read_text("backend/src/test/java/com/intruoyi/maintenance/runtime/RuntimeControlContractTest.java")
+    assert_contains(test_source, "noSpringSecurityDependency", "backend security removal test")
+    assert_contains(test_source, "missingConfigurationFailsFast", "backend fail-fast test")
+    assert_contains(test_source, "runtimeControlEndpointsAreExposed", "backend endpoint contract test")
+
+
+def verify_frontend_contract() -> None:
+    page = read_text("frontend/src/App.vue")
+    api = read_text("frontend/src/api/runtimeControl.ts")
+    package_json = read_text("frontend/package.json")
+
+    for forbidden in ["v-hasPermi", "checkPermi", "usePermissionStore", "/login", "infra:runtime-control"]:
+        assert_not_contains(page + api, forbidden, f"frontend permission/login dependency {forbidden}")
+
+    for action in [
+        "build-release",
+        "publish-test",
+        "mark-release-tested",
+        "promote-prod",
+        "promote-backup",
+        "backup-now",
+        "rollback-app",
+        "restore-data",
+        "rehearsal",
+    ]:
+        assert_contains(page, action, f"frontend action {action}")
+
+    assert_contains(api, "/admin-api/infra/runtime-control/overview", "frontend overview API")
+    assert_contains(package_json, "typecheck", "frontend typecheck script")
+
+
+def verify_scripts_and_config() -> None:
+    for path in [
+        "config/runtime-control.example.yaml",
+        "scripts/build.ps1",
+        "scripts/start.ps1",
+        "scripts/dev-backend.ps1",
+        "scripts/dev-frontend.ps1",
+        "ops/deploy/publish-int-ruoyi.ps1",
+        "ops/backup-ops/scripts/backup-ops.ps1",
+        "ops/release/release_preflight_plan.py",
+    ]:
+        read_text(path)
+
+    config = read_text("config/runtime-control.example.yaml")
+    assert_contains(config, "D:/ProjectPackage/Int/IntRuoyi/ruoyi-vue-pro", "managed backend root")
+    assert_contains(config, "D:/ProjectPackage/Int/IntRuoyi/yudao-ui-admin-vue3", "managed frontend root")
+    assert_contains(config, "D:/ProjectPackage/Website", "managed website root")
+
+    gitignore = read_text(".gitignore")
+    assert_contains(gitignore, "runtime/runtime-control/", "runtime state ignore")
+    assert_contains(gitignore, "config/runtime-control.local.yaml", "local config ignore")
+
+
+def main() -> int:
+    checks = [
+        verify_backend_contract,
+        verify_backend_tests,
+        verify_frontend_contract,
+        verify_scripts_and_config,
+    ]
+    for check in checks:
+        check()
+    print("PASS: standalone runtime-control contracts are present")
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except AssertionError as exc:
+        print(f"FAIL: {exc}", file=sys.stderr)
+        raise SystemExit(1)

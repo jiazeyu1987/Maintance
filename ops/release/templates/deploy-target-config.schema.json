@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Deploy Target Config v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "targetConfigId",
+    "environmentCode",
+    "hostRef",
+    "dockerProfileId",
+    "storageProfileIds",
+    "artifactCacheProfiles",
+    "remoteReadOnlyProbe"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "targetConfigId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "environmentCode": {
+      "type": "string",
+      "enum": [
+        "test",
+        "prod",
+        "backup"
+      ]
+    },
+    "hostRef": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dockerProfileId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "storageProfileIds": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "artifactCacheProfiles": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "remoteReadOnlyProbe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "authorizationRef"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "authorizationRef": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

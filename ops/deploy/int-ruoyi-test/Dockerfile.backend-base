@@ -1,0 +1,16 @@
+FROM eclipse-temurin:21-jre-noble
+
+ARG APT_MIRROR=http://mirrors.aliyun.com/ubuntu
+
+RUN set -eux; \
+    sed -i \
+        -e "s#http://security.ubuntu.com/ubuntu#${APT_MIRROR}#g" \
+        -e "s#http://archive.ubuntu.com/ubuntu#${APT_MIRROR}#g" \
+        /etc/apt/sources.list.d/ubuntu.sources; \
+    apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 update; \
+    apt-get -o Acquire::Retries=5 -o Acquire::http::Timeout=30 install -y --no-install-recommends python3 docker.io docker-compose-v2; \
+    rm -rf /var/lib/apt/lists/*
+
+ENV TZ=Asia/Shanghai
+
+CMD ["java", "-version"]

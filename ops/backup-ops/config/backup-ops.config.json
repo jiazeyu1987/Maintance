@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "v1",
+  "environment": "production",
+  "servers": {
+    "production": {
+      "host": "172.30.30.57",
+      "appDir": "/opt/intruoyi/runtime",
+      "opsRoot": "/opt/intruoyi/ops",
+      "tmpRoot": "/opt/intruoyi/runtime/data/backup-ops/tmp"
+    },
+    "test": {
+      "host": "172.30.30.58",
+      "runtimeDir": "/opt/intruoyi/runtime",
+      "tmpRoot": "/opt/intruoyi/runtime/data/backup-ops/tmp",
+      "backupRoot": "/mnt/nas/Backup/BackupPackage",
+      "backupPointsRoot": "/mnt/nas/Backup/BackupPackage",
+      "releasePackagesRoot": "/mnt/nas/Backup/ReleasePackage",
+      "minioContainer": "ragflow_compose-minio-1",
+      "rehearsalRoot": "/backup/int-ruoyi/rehearsal/runtime",
+      "rehearsalBackendPort": 48082,
+      "rehearsalFrontendPort": 18081
+    },
+    "backup": {
+      "host": "172.30.30.59",
+      "runtimeDir": "/opt/intruoyi/runtime",
+      "tmpRoot": "/opt/intruoyi/runtime/data/backup-ops/tmp",
+      "backupRoot": "/mnt/nas/Backup/BackupPackage",
+      "backupPointsRoot": "/mnt/nas/Backup/BackupPackage",
+      "releasePackagesRoot": "/mnt/nas/Backup/ReleasePackage",
+      "minioContainer": "intruoyi-minio"
+    }
+  },
+  "containers": {
+    "mysql": "intruoyi-mysql",
+    "minio": "ragflow_compose-minio-1",
+    "redis": "intruoyi-redis",
+    "backend": "intruoyi-backend",
+    "frontend": "intruoyi-frontend"
+  },
+  "tools": {
+    "minioClientImage": "quay.io/minio/mc:latest",
+    "archiveImage": "alpine:3.20"
+  },
+  "backup": {
+    "schedule": "01:30",
+    "localWorkspaceRoot": "D:\\IntRuoyi-BackupOps\\tmp",
+    "keepDaysRemote": 30,
+    "keepLastPoints": 5,
+    "maxNasUsedPercent": 90,
+    "keepDaysLocal": 3,
+    "mysqlDatabase": "ruoyi-vue-pro",
+    "mysqlBackupMode": "full-dump-baseline",
+    "dccTenantId": 122,
+    "objectBucket": "yudao"
+  },
+  "rehearsal": {
+    "schedule": "SUN 02:00",
+    "runtimeNamePrefix": "intruoyi-rehearsal",
+    "bucket": "yudao-rehearsal",
+    "validation": {
+      "tenantId": 1,
+      "fileConfigId": 28,
+      "sampleFilePath": "dcc/stamped/20260513/dcc-sample_controlled.pdf"
+    }
+  },
+  "console": {
+    "title": "IntRuoyi Backup Console - PRODUCTION",
+    "logRoot": "D:\\IntRuoyi-BackupOps\\logs"
+  },
+  "notify": {
+    "enabled": false,
+    "channel": "pending"
+  }
+}

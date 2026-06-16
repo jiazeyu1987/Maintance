@@ -1,0 +1,48 @@
+{
+  "registryVersion": "1.0",
+  "entries": [
+    {
+      "entryId": "system-menu",
+      "moduleName": "system",
+      "tableName": "system_menu",
+      "naturalKey": ["permission"],
+      "tenantScope": "all-tenants",
+      "ownedFields": ["name", "status", "permission", "component", "path"],
+      "forbiddenOverwriteFields": ["id", "creator", "create_time", "updater", "update_time", "deleted"],
+      "extractSqlRef": "registry/system-menu.extract.sql",
+      "verifySqlRef": "registry/system-menu.verify.sql",
+      "deletePolicy": "never",
+      "resourceBinding": null
+    },
+    {
+      "entryId": "system-dict-data",
+      "moduleName": "system",
+      "tableName": "system_dict_data",
+      "naturalKey": ["dict_type", "value"],
+      "tenantScope": "all-tenants",
+      "ownedFields": ["dict_type", "label", "value", "sort", "status", "color_type", "css_class"],
+      "forbiddenOverwriteFields": ["id", "creator", "create_time", "updater", "update_time", "deleted"],
+      "extractSqlRef": "registry/system-dict-data.extract.sql",
+      "verifySqlRef": "registry/system-dict-data.verify.sql",
+      "deletePolicy": "never",
+      "resourceBinding": null
+    },
+    {
+      "entryId": "infra-file-showroom-reference",
+      "moduleName": "infra",
+      "tableName": "infra_file",
+      "naturalKey": ["config_id", "path"],
+      "tenantScope": "tenant-scoped",
+      "ownedFields": ["config_id", "path", "url", "type", "name"],
+      "forbiddenOverwriteFields": ["id", "creator", "create_time", "updater", "update_time", "deleted"],
+      "extractSqlRef": "registry/infra-file-showroom-reference.extract.sql",
+      "verifySqlRef": "registry/infra-file-showroom-reference.verify.sql",
+      "deletePolicy": "never",
+      "resourceBinding": {
+        "sourceColumn": "url",
+        "storageProfileId": "minio-yudao-default",
+        "expectedDomainPolicy": "target-profile-domain"
+      }
+    }
+  ]
+}
