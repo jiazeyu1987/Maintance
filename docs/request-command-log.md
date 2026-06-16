@@ -1,5 +1,17 @@
 # 请求与命令记录
 
+## 2026-06-16 运行控制台前端视觉优化
+
+- 用户需求：使用 `design-taste-frontend` 技能，让独立运行控制台前端设计更好看。
+- 计划边界：仅优化本机独立控制台前端视觉与可扫描性；不执行发布、备份、恢复、回滚、重启、远端清理或真实写入动作；不引入未验证依赖，不改现有 Vue 3 + Element Plus 技术栈。
+- 命中经验：`D:\ProjectPackage\Int\IntPP\FRONTEND_STYLE.md`，按 IntPP 生产订单列表风格做安静、紧凑、灰蓝边框、表格优先的运维控制台。
+- 命令记录：`python -X utf8 scripts\verify_contracts.py` 先 RED 后 GREEN，新增前端设计 marker 与 token 契约。
+- 命令记录：`pnpm --dir frontend typecheck` PASS。
+- 命令记录：`pnpm --dir frontend build` PASS；Vite 仅提示现有大 chunk 体积。
+- 命令记录：`.\scripts\build.ps1` PASS，随后本机维护应用 `http://127.0.0.1:48181/actuator/health` 返回 `{"status":"UP"}`。
+- 命令记录：Playwright 桌面与 390x844 移动视口打开 `http://127.0.0.1:48181/`，确认页面显示新版运行控制台、动作区无重叠、console error 为 0；未点击执行发布、备份、恢复、回滚、重启或远端清理动作。
+- 命令记录：`task-closeout-cleanup` 预览 PASS，无删除项、无阻塞、无警告；`apply` 也 PASS，无删除项、无阻塞、无警告。
+
 ## 2026-06-16 拆分运行控制台独立应用
 
 - 用户需求：把 IntRuoyi 的运行控制台拆成 `D:\ProjectPackage\Int\IntRuoyiMaintance` 下的独立本机应用，复制 `AGENTS.md`，初始化 Git 管控；独立应用不用芋道权限，默认本机访问，一键启动，管理现有 IntRuoyi 源码。

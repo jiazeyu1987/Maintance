@@ -82,6 +82,35 @@ def verify_frontend_contract() -> None:
     assert_contains(package_json, "typecheck", "frontend typecheck script")
 
 
+def verify_frontend_design_contract() -> None:
+    page = read_text("frontend/src/App.vue")
+    styles = read_text("frontend/src/styles.css")
+
+    for marker in [
+        "console-shell",
+        "status-summary-grid",
+        "workbench-grid",
+        "control-surface",
+        "action-choice-grid",
+        "command-summary",
+        "operation-table-shell",
+        "status-pill",
+        "skeleton-line",
+    ]:
+        assert_contains(page + styles, marker, f"frontend design marker {marker}")
+
+    for token in [
+        "--console-accent: #1677ff",
+        "--console-line: #dbe3ef",
+        "--console-text: #172033",
+        "min-height: 100dvh",
+    ]:
+        assert_contains(styles, token, f"frontend design token {token}")
+
+    assert_not_contains(styles, "Inter,", "generic Inter font stack")
+    assert_not_contains(styles, "linear-gradient(", "marketing gradient background")
+
+
 def verify_scripts_and_config() -> None:
     for path in [
         "config/runtime-control.example.yaml",
@@ -120,6 +149,7 @@ def main() -> int:
         verify_backend_contract,
         verify_backend_tests,
         verify_frontend_contract,
+        verify_frontend_design_contract,
         verify_scripts_and_config,
         verify_release_script_contract,
     ]
