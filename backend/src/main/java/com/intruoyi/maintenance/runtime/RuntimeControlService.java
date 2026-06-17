@@ -983,7 +983,10 @@ public class RuntimeControlService {
         if ((action == RuntimeControlOperationAction.PROMOTE_PROD
                 || action == RuntimeControlOperationAction.PROMOTE_BACKUP)
                 && !Boolean.TRUE.equals(releasePackage.tested())) {
-            throw new RuntimeControlException("releaseTag 尚未测试通过: " + releaseTag);
+            if (action != RuntimeControlOperationAction.PROMOTE_BACKUP
+                    || !hasSuccessfulCodeOnlyTestDeployment(releasePackage)) {
+                throw new RuntimeControlException("releaseTag 尚未测试通过: " + releaseTag);
+            }
         }
         if (action == RuntimeControlOperationAction.PROMOTE_BACKUP
                 && hasText(releasePackage.testedRecoverySetCandidateId())) {
@@ -996,6 +999,24 @@ public class RuntimeControlService {
                 throw new RuntimeControlException("tested.json recoverySetManifestHash 与当前恢复集候选不一致");
             }
         }
+    }
+
+    private boolean hasSuccessfulCodeOnlyTestDeployment(RuntimeControlReleasePackageRespVO releasePackage) {
+        if (!RuntimeControlOperationAction.PUBLISH_SCOPE_CODE_ONLY.equals(releasePackage.publishScope())) {
+            return false;
+        }
+        return operationStore.listLatest(200).stream()
+                .filter(operation -> "test".equals(operation.environment()))
+                .filter(operation -> "publish-test".equals(operation.action()))
+                .filter(operation -> "SUCCESS".equals(operation.status()))
+                .map(RuntimeControlOperationRespVO::parameters)
+                .filter(parameters -> parameters != null && hasText(parameters.get("releaseTag")))
+                .map(parameters -> parameters.get("releaseTag").trim())
+                .anyMatch(value -> releaseTagMatchesPackage(releasePackage, value));
+    }
+
+    private boolean releaseTagMatchesPackage(RuntimeControlReleasePackageRespVO releasePackage, String value) {
+        return value.equals(releasePackage.releaseTag()) || value.equals(releasePackage.packageDirectoryName());
     }
 
     private String requireCurrentReleaseTag(String environment) {

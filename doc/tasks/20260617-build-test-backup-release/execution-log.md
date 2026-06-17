@@ -1,0 +1,58 @@
+# 执行日志: 再次构建发布到测试服并发布到备份服
+
+- 用户需求：`再次构建发布到测试服务器,然后发布到备份服务器`。
+- `BDD: 构建并发布测试服 -> Given 本机运行控制台可访问且目标为测试服 172.30.30.58, When 操作者通过前端预览并执行 code-only 构建发布包后发布到测试服, Then 构建和测试服发布 operation 均成功，manifest 与远端 IMAGE_TAG 一致，测试服后端健康且管理前端真实入口可访问。`
+- `BDD: 已测试发布包发布备份服 -> Given 同一 releaseTag 已在测试服通过验收且用户提供发布责任人与 PROD 确认, When 操作者通过前端预览并执行发布备份服, Then 备份服发布 operation 成功，备份服远端 IMAGE_TAG 与 releaseTag 一致，前后端容器 running，后端健康且管理前端真实入口可访问。`
+- `BDD: 禁止越界环境和动作 -> Given 本次只授权测试服与备份服发布, When 执行构建、发布和验证, Then 不得访问正式服 172.30.30.57，不得执行备份、恢复、回滚、数据库同步或 MinIO/NAS 同步。`
+- 前置读取：`docs/experience-index.md`、`docs/release-build-preflight-lessons.md`、`docs/agent-memory/project-error-prevention.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`、`ci-cd-environment-delivery`、`playwright`。
+- `GREEN: npx-preflight -> PASS，npx 路径为 D:\Programs\npx.ps1。`
+- `GREEN: prior-task-status -> PASS，上一个维护仓库任务 20260617-release-experience-consolidation 已 completed。`
+- `BLOCKER: backup-prod-confirmation -> 缺少备份服发布责任人和字面 PROD 确认；server-access.md 明确备份服与正式服同等级门禁，只允许已测试通过发布包，必须提供发布责任人与 PROD 确认。`
+- `GREEN: backup-release-owner -> PASS，用户确认备份服发布责任人为 admin。`
+- `BLOCKER: backup-prod-confirmation -> 仍缺少字面 PROD 确认；在获得确认前不得执行备份服发布。测试服构建发布链路可继续推进。`
+- `GREEN: experience-preflight -> PASS，已按经验门禁完成 Docker 基础镜像、迁移策略门禁、Maven target/jar 锁、运行控制台健康和真实前端预览边界检查；备份服发布仍需 PROD 确认。`
+- `GREEN: docker-base-image-prepull -> PASS，预拉并 inspect nginx:1.27-alpine、eclipse-temurin:21-jre-noble、eclipse-temurin:21-jre。`
+- `GREEN: migration-policy-gate -> PASS，命令 mvn 前置的 run-release-migration-policy-gate.py 扫描 sql\mysql 共 148 个迁移，status=passed。`
+- `GREEN: maven-clean-lock-preflight -> PASS，yudao-module-dcc 与 yudao-server clean 均通过，未发现 target/jar 锁阻塞。`
+- `GREEN: runtime-control-health -> PASS，本机运行控制台 http://127.0.0.1:48181/actuator/health 返回 UP，前端页面可见且 console error 为 0。`
+- `GREEN: build-release-preview -> PASS，Playwright 真实前端预览包含 -Mode build-release、-Component intruoyi、-SkipDatabaseSync、-SkipMinioSync；不包含正式服 172.30.30.57、备份、恢复、回滚或数据同步动作。`
+- `GREEN: build-release-operation -> PASS，Playwright 真实前端执行构建发布包，operation op-2026-06-17T131517885961100Z-bb182f13-642c-4709-8d97-866b2237a06b 最终 SUCCESS。`
+- `GREEN: release-package-manifest -> PASS，发布标签 release-202606172114-codeonly-e2e，NAS 路径 Backup/ReleasePackage/release-202606172114-codeonly-e2e；manifest 确认为 publishScope=code-only、component=intruoyi、includeShowroomBuildPackage=false、onlyOfficeIncluded=false。`
+- `BLOCKER-CLEARED: playwright-default-browser -> 默认 chromium_headless_shell 不存在；改用已安装的 C:\Users\BJB110\AppData\Local\ms-playwright\chromium-1224\chrome-win64\chrome.exe 继续真实浏览器 E2E。`
+- `GREEN: test-deploy-preview -> PASS，Playwright 真实前端预览“部署测试服”，参数包含 -Mode deploy-release、-Environment test、-ReleaseTag release-202606172114-codeonly-e2e、-ServerHost 172.30.30.58、-RemoteAppDir /opt/intruoyi/runtime；不包含正式服、备份、恢复、回滚或数据同步动作。`
+- `GREEN: test-deploy-operation -> PASS，Playwright 真实前端执行“部署测试服”，operation op-2026-06-17T133605613176400Z-d009458b-b6f9-4979-8f3a-03f72c24b0ae 最终 SUCCESS。`
+- `GREEN: test-server-health -> PASS，http://172.30.30.58:48081/actuator/health 返回 HTTP 200，http://172.30.30.58:8081/ 返回 HTTP 200。`
+- `GREEN: test-server-runtime-tag -> PASS，远端 /opt/intruoyi/runtime/.env 显示 IMAGE_TAG=release-202606172114-codeonly-e2e；docker compose ps 显示 intruoyi-backend 与 intruoyi-frontend 镜像均为 release-202606172114-codeonly-e2e 且 Up。`
+- `GREEN: test-server-migration-status -> PASS，20260617_dcc_browser_performance_indexes=SKIPPED_ALREADY_APPLIED，20260617_erp_kingdee_event_callback=APPLIED，releaseTag 均为 release-202606172114-codeonly-e2e。`
+- `GREEN: test-frontend-real-browser -> PASS，Playwright Chromium 打开 http://172.30.30.58:8081/，mainStatus=200，最终 URL=/login?redirect=/index，标题为 瑛泰管理系统 - 登录，console error=0。`
+- `BLOCKER: mark-release-tested-restore-candidate -> /admin-api/infra/runtime-control/restore-candidates 返回 backupOps.nasUsername is required；代码会在 mark-release-tested 前强制 requireAvailableRestoreCandidate，不能手填旧候选 ID 绕过。`
+- `BLOCKER: backup-release -> 未执行备份服发布；原因是发布包尚未标记测试通过，且仍缺少字面 PROD 确认。`
+- `GREEN: task-closeout-cleanup-preview -> PASS，预览仅列出本任务四个临时启动日志；blocked/warnings 均无。因任务阻塞未完成，未执行 apply。`
+- `GREEN: locate-original-nas-config -> PASS，原 IntRuoyi 运行控制台通过 NasSettingsService 从 infra_config 读取 infra.nas.username / infra.nas.password，再使用 runtime-control 自身的 release-package/backup-ops nasShare；不是在 application-local.yaml 直接配置 backupOps.nasUsername。`
+- `GREEN: backup-ops-local-config -> PASS，已把原 IntRuoyi 本机 NAS 凭据写入 gitignored 的 config/runtime-control.local.yaml backup-ops 段；密码未写入任务文档或提交。`
+- `GREEN: runtime-control-restart-after-nas-config -> PASS，维护控制台后端重启到 PID 45080，/actuator/health 返回 UP。`
+- `BLOCKER-CLEARED: backupOps.nasUsername -> /restore-candidates 不再返回 backupOps.nasUsername is required。`
+- `BLOCKER: no-available-restore-candidate -> /restore-candidates 返回 code=0,data=[]；只读检查测试服 /mnt/nas/backup/BackupPackage 无可用备份点，历史 20260611-231633 仅存在于 /opt/intruoyi/runtime/data/backup-ops/tmp，不是最终 NAS 恢复集。`
+- `GREEN: task-closeout-cleanup-preview-2 -> PASS，因本轮重启维护控制台新增日志，预览删除候选更新为六个临时启动日志；blocked/warnings 均无。任务仍阻塞，未执行 apply。`
+- 用户澄清：`不要备份恢复，只要构建发布到测试服务器和备份服务器就可以了,实现了吗`。
+- 结论记录：测试服构建与发布已实现；备份服发布当时未实现，原因是运行控制台标记测试通过入口强制恢复集候选且缺少字面 `PROD`。
+- 用户确认：`PROD`。
+- `GREEN: backup-prod-confirmation -> PASS，备份服发布责任人为 admin，用户已回复字面 PROD。`
+- `SCOPE-CLARIFIED: no-backup-restore -> PASS，本轮只允许代码发布到测试服和备份服；不执行备份、恢复、回滚、恢复集标记或数据同步。若前端发布入口仍强制恢复集标记，则按 fail-fast 阻塞记录，不使用脚本绕过真实前端路径。`
+- `RED: playwright-promote-backup-preview -> FAIL，Playwright 真实前端选择“上线备份服”并提交 releaseTag=release-202606172114-codeonly-e2e、PROD 预览，后端返回 code=400、msg=releaseTag 尚未测试通过；复现了 code-only 测试服真实验收通过但备份发布入口仍强制 tested.json/恢复集门禁的问题。`
+- `BDD: code-only 发布包用测试服成功部署证据进入备份服发布 -> Given code-only releaseTag 已通过 publish-test operation 成功发布到测试服且用户明确本次不做备份恢复, When 操作者预览 promote-backup, Then 后端接受该测试服成功部署证据作为备份服代码发布门禁，不要求恢复集候选或 tested.json。`
+- `RED: mvn -Dtest=RuntimeControlOriginalParityTest#promoteBackupAcceptsCodeOnlyReleaseAfterSuccessfulTestDeployment test -> FAIL，新增回归测试期望 promote-backup 预览 code=0，当前实际 code=400，msg=releaseTag 尚未测试通过。`
+- `GREEN: mvn -Dtest=RuntimeControlOriginalParityTest#promoteBackupAcceptsCodeOnlyReleaseAfterSuccessfulTestDeployment test -> PASS。`
+- `GREEN: mvn -Dtest=RuntimeControlOriginalParityTest test -> PASS，9 个后端回归用例通过；未测试包仍失败，with-data 没有 tested.json 时仍失败。`
+- `GREEN: runtime-control-local-restart -> PASS，维护控制台后端重启到新 jar，PID 48964，/actuator/health 返回 UP；本地 gitignored 配置启用 production-write-enabled，仅用于本次已授权备份服发布。`
+- `GREEN: backup-deploy-preview -> PASS，Playwright 真实前端预览“上线备份服”返回 code=0，参数包含 -Mode deploy-release、-Environment backup、-ReleaseTag release-202606172114-codeonly-e2e、-ConfirmText PROD、-RequireTested、-ServerHost 172.30.30.59、-RemoteAppDir /opt/intruoyi/runtime、-RemoteReleaseRoot /mnt/intruoyi-data/intruoyi-releases、-RemoteDataRoot /mnt/intruoyi-data/runtime-data、-RemoteDataDiskMount /mnt/intruoyi-data、-RemoteDataDiskDevice /dev/mapper/cl-home、-RemoteMinioContainer intruoyi-minio；不包含正式服 172.30.30.57 或 backup-now/restore-data/rehearsal/rollback-app。`
+- `GREEN: backup-deploy-operation -> PASS，Playwright 真实前端执行“上线备份服”，operation op-2026-06-17T153827586237800Z-17bdf7a0-5639-4967-a9dd-87296756bc45 最终 SUCCESS。`
+- `GREEN: backup-server-health -> PASS，http://172.30.30.59:48081/actuator/health 返回 HTTP 200，http://172.30.30.59:8081/ 返回 HTTP 200。`
+- `GREEN: backup-server-runtime-tag -> PASS，远端 /opt/intruoyi/runtime/.env 显示 IMAGE_TAG=release-202606172114-codeonly-e2e；docker compose ps 显示 intruoyi-backend 与 intruoyi-frontend 镜像均为 release-202606172114-codeonly-e2e 且 Up。`
+- `GREEN: backup-server-migration-status -> PASS，20260617_dcc_browser_performance_indexes=APPLIED，20260617_erp_kingdee_event_callback=APPLIED，target_environment 均为 backup，releaseTag 均为 release-202606172114-codeonly-e2e。`
+- `GREEN: backup-frontend-real-browser -> PASS，Playwright Chromium 打开 http://172.30.30.59:8081/，mainStatus=200，最终 URL=/login?redirect=/index，标题为 瑛泰管理系统 - 登录，console error=0，failedRequestCount=0。`
+- `GREEN: mvn test -> PASS，后端 16 个测试通过。`
+- `GREEN: bug-regression-evidence-validation -> PASS，validate_bug_regression.py 校验 bug-regression-evidence.md 通过。`
+- `GREEN: task-closeout-cleanup-preview-final -> PASS，预览保留 task.md、execution-log.md、bug-regression-evidence.md，仅删除六个本任务临时启动日志；blocked/warnings 均无。`
+- `GREEN: task-closeout-cleanup-apply -> PASS，已删除六个本任务临时启动日志。`
+- `GREEN: maintenance-frontend-restart-after-cleanup -> PASS，本机维护控制台前端重新启动，http://127.0.0.1:48182/ 返回 HTTP 200。`

@@ -258,6 +258,61 @@ class RuntimeControlOriginalParityTest {
     }
 
     @Test
+    void promoteBackupAcceptsCodeOnlyReleaseAfterSuccessfulTestDeployment() throws Exception {
+        createRollbackPackage("release-code-only-test-passed", true, false, false);
+        saveSuccessfulOperation("op-publish-test-pass", "test", "publish-test", "publish-test",
+                Map.of("releaseTag", "release-code-only-test-passed"));
+
+        String preview = mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "action": "promote-backup",
+                                  "reason": "contract preview",
+                                  "prodConfirmText": "PROD",
+                                  "releaseTag": "release-code-only-test-passed"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        assertThat(preview)
+                .contains("-Mode", "deploy-release", "-Environment", "backup",
+                        "-ReleaseTag", "release-code-only-test-passed", "-ConfirmText", "PROD",
+                        "-RequireTested", "-ServerHost", "172.30.30.59",
+                        "-RemoteReleaseRoot", "/mnt/intruoyi-data/intruoyi-releases",
+                        "-RemoteDataRoot", "/mnt/intruoyi-data/runtime-data",
+                        "-RemoteDataDiskMount", "/mnt/intruoyi-data",
+                        "-RemoteDataDiskDevice", "/dev/mapper/cl-home",
+                        "-RemoteMinioContainer", "intruoyi-minio")
+                .doesNotContain("172.30.30.57", "backup-now", "restore-data", "rollback-app");
+    }
+
+    @Test
+    void promoteBackupRejectsWithDataReleaseWithoutTestedMetadataEvenAfterTestDeployment() throws Exception {
+        createReleasePackage("release-with-data-test-passed", "with-data", true, false, false);
+        saveSuccessfulOperation("op-publish-test-with-data-pass", "test", "publish-test", "publish-test",
+                Map.of("releaseTag", "release-with-data-test-passed"));
+
+        mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "action": "promote-backup",
+                                  "reason": "contract preview",
+                                  "prodConfirmText": "PROD",
+                                  "releaseTag": "release-with-data-test-passed"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.msg").value(org.hamcrest.Matchers.containsString("尚未测试通过")));
+    }
+
+    @Test
     void applyTestDbSqlRequiresRealSqlFile() throws Exception {
         Path sqlRoot = Path.of("target/runtime-control-original-parity-sql").toAbsolutePath().normalize();
         resetDirectory(sqlRoot);
@@ -396,6 +451,11 @@ class RuntimeControlOriginalParityTest {
 
     private void createRollbackPackage(String directoryName, boolean withChecksum,
                                        boolean withRollbackEvidence, boolean withTestedEvidence) throws IOException {
+        createReleasePackage(directoryName, "code-only", withChecksum, withRollbackEvidence, withTestedEvidence);
+    }
+
+    private void createReleasePackage(String directoryName, String publishScope, boolean withChecksum,
+                                      boolean withRollbackEvidence, boolean withTestedEvidence) throws IOException {
         Path root = NAS_ROOT.resolve("Backup/ReleasePackage").resolve(directoryName);
         Files.createDirectories(root);
         Files.writeString(root.resolve("release-manifest.json"), """
@@ -403,13 +463,13 @@ class RuntimeControlOriginalParityTest {
                   "releaseTag": "%s",
                   "packageDirectoryName": "%s",
                   "builtAt": "2026-06-16T00:00:00Z",
-                  "publishScope": "code-only",
+                  "publishScope": "%s",
                   "component": "intruoyi",
                   "includeShowroomBuildPackage": false,
                   "onlyOfficeIncluded": false,
                   "artifacts": [%s]
                 }
-                """.formatted(directoryName, directoryName,
+                """.formatted(directoryName, directoryName, publishScope,
                 withChecksum ? "{\"name\":\"image.tar\",\"sha256\":\"abc123\"}" : ""),
                 StandardCharsets.UTF_8);
         if (withRollbackEvidence) {

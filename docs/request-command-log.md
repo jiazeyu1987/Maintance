@@ -240,3 +240,53 @@
 - 命令记录：新增 `docs/agent-memory/project-error-prevention.md`，项目短记忆 309 字，覆盖发布前预检、SQL/script 提交门禁和发布完成联合验证。
 - 命令记录：更新 `docs/experience-index.md`，为“构建发布耗时 / 真实 E2E 发布预检”和“项目错误预防短记忆”增加路由。
 - 结论记录：采纳可复用预检经验；未把具体 releaseTag、operationId、Docker digest、测试服实时容器运行时长升级为长期规则。
+
+## 2026-06-17 再次构建发布测试服并发布备份服
+
+- 用户需求：再次构建发布到测试服务器，然后发布到备份服务器。
+- 计划边界：拟通过运行控制台真实前端 E2E 构建 `code-only` 发布包，先发布测试服 `172.30.30.58` 验收，再发布备份服 `172.30.30.59`；不访问正式服 `172.30.30.57`，不执行备份、恢复、回滚、数据库同步或 MinIO/NAS 同步。
+- 命中经验：读取维护仓库发布预检清单、项目错误预防短记忆、原 IntRuoyi 发布/服务器/登录基线、CI/CD 技能和 Playwright 技能。
+- 命令记录：创建任务目录 `doc/tasks/20260617-build-test-backup-release/`，写入 `task.md` 和 `execution-log.md`。
+- 阻塞记录：备份服与正式服同等级门禁；当前缺少发布责任人和字面 `PROD` 确认，未执行构建、发布或远端写入动作。
+- 用户补充：责任人 `admin`。
+- 阻塞记录：已记录发布责任人；仍缺少字面 `PROD` 确认，因此备份服发布继续阻塞。测试服构建发布链路可先执行。
+- 命令记录：`rg -n "^FROM "` 扫描原 IntRuoyi 前后端 Dockerfile，预拉并 inspect `nginx:1.27-alpine`、`eclipse-temurin:21-jre-noble`、`eclipse-temurin:21-jre` 通过。
+- 命令记录：`python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql` PASS，扫描 148 个迁移。
+- 命令记录：`mvn -f D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\pom.xml -pl yudao-module-dcc -DskipTests clean` PASS；`mvn -f D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\pom.xml -pl yudao-server -DskipTests clean` PASS。
+- 命令记录：本机运行控制台健康检查 PASS；Playwright 打开运行控制台前端，console error 为 0。
+- 命令记录：Playwright 预览 `build-release`，发布标签 `release-202606172114-codeonly-e2e`，参数包含 `-Component intruoyi`、`-SkipDatabaseSync`、`-SkipMinioSync`，不包含正式服、备份、恢复、回滚或数据同步动作。
+- 命令记录：Playwright 执行构建发布包，operation `op-2026-06-17T131517885961100Z-bb182f13-642c-4709-8d97-866b2237a06b` 最终 `SUCCESS`；日志显示 `Release package built: release-202606172114-codeonly-e2e`，NAS 路径 `Backup/ReleasePackage/release-202606172114-codeonly-e2e`。
+- 命令记录：本机运行控制台前端端口 `48182` 已停止，使用 `pnpm --dir frontend dev` 重启，`http://127.0.0.1:48182/` 返回 HTTP 200。
+- 命令记录：Playwright 默认 Chromium headless shell 缺失，改用本机已安装 `ms-playwright\chromium-1224\chrome-win64\chrome.exe` 执行真实浏览器 E2E。
+- 命令记录：Playwright 预览 `publish-test`，参数包含 `-Mode deploy-release`、`-Environment test`、`-ReleaseTag release-202606172114-codeonly-e2e`、`-ServerHost 172.30.30.58`、`-RemoteAppDir /opt/intruoyi/runtime`，不包含正式服、备份、恢复、回滚或数据同步动作。
+- 命令记录：Playwright 执行测试服部署，operation `op-2026-06-17T133605613176400Z-d009458b-b6f9-4979-8f3a-03f72c24b0ae` 最终 `SUCCESS`；发布日志显示远端 required SQL `20260617_erp_kingdee_event_callback.sql` 已 `APPLIED`，后端/前端远端 HTTP readiness 均通过。
+- 命令记录：`curl.exe` 验证测试服后端健康与前端入口均为 HTTP 200。
+- 命令记录：SSH 测试服读取 `.env` 与 `docker compose ps`，确认 `IMAGE_TAG=release-202606172114-codeonly-e2e`，backend/frontend 镜像均为该 tag 且 `Up`。
+- 命令记录：SSH 测试服查询 `infra_release_migration`，`20260617_dcc_browser_performance_indexes=SKIPPED_ALREADY_APPLIED`、`20260617_erp_kingdee_event_callback=APPLIED`。
+- 命令记录：Playwright Chromium 打开 `http://172.30.30.58:8081/`，HTTP 200，最终进入登录页 `/login?redirect=/index`，标题 `瑛泰管理系统 - 登录`，console error 为 0。
+- 阻塞记录：`GET /admin-api/infra/runtime-control/restore-candidates` 返回 `backupOps.nasUsername is required`；代码在 `mark-release-tested` 前强制解析恢复集候选，因此无法标记测试通过，备份服发布未执行。
+- 命令记录：`task-closeout-cleanup --mode preview` PASS，仅列出本任务四个临时启动日志；因任务未完成未执行 apply。
+- 用户补充：`这个intruoyi里有,我不动代码,你来找`；本轮只读定位原 IntRuoyi 中的 backup-ops/NAS 配置来源，避免暴露密码，不修改代码。
+- 命令记录：读取原 IntRuoyi `RuntimeBackupNasRepository` / `NasSettingsServiceImpl`，确认原运行控制台从 `infra_config` 的 `infra.nas.username` / `infra.nas.password` 读取 NAS 凭据，再使用 runtime-control 自身 `nasShare`。
+- 命令记录：只读查询本机 Docker MySQL `infra_config`，确认 NAS 服务地址、用户名键与密码键均存在；未在日志记录凭据明文。
+- 命令记录：将原 IntRuoyi NAS 凭据写入 gitignored 的 `config/runtime-control.local.yaml` 的 `backup-ops` 段；该文件未纳入 Git 跟踪，未修改代码。
+- 命令记录：重启本机维护控制台后端，PID `45080`，健康检查 `/actuator/health` 返回 `UP`。
+- 命令记录：`GET /admin-api/infra/runtime-control/restore-candidates` 不再报 `backupOps.nasUsername is required`，但返回 `data=[]`。
+- 阻塞记录：只读检查测试服 `/mnt/nas/backup/BackupPackage` 无最终可用备份点，历史 `20260611-231633` 仅存在于测试服临时目录 `/opt/intruoyi/runtime/data/backup-ops/tmp`，不能作为恢复集候选；因此仍无法标记测试通过，备份服发布未执行。
+- 命令记录：再次执行 `task-closeout-cleanup --mode preview` PASS，最新删除候选为六个本任务临时启动日志；任务未完成未执行 apply。
+- 用户澄清：不要备份恢复，只要构建发布到测试服务器和备份服务器；询问是否实现。
+- 状态回答：测试服构建发布已实现，备份服发布尚未实现；缺少字面 `PROD` 确认且运行控制台标记测试通过入口仍受恢复集候选约束。
+- 用户确认：`PROD`。
+- 命令记录：记录备份服发布责任人 `admin` 与字面 `PROD` 确认；本轮继续只做 code-only 发布，不执行备份、恢复、回滚、恢复集标记或数据同步。
+- 复现记录：Playwright 真实前端预览“上线备份服”首次返回 `releaseTag 尚未测试通过`，定位为运行控制台后端只认 `tested.json`，不能识别 code-only 测试服成功部署 operation。
+- 命令记录：新增后端回归测试 `RuntimeControlOriginalParityTest#promoteBackupAcceptsCodeOnlyReleaseAfterSuccessfulTestDeployment`，修复前 RED，期望 code=0、实际 code=400。
+- 命令记录：修复 `RuntimeControlService.validateReleasePackageAvailability`，仅对 `PROMOTE_BACKUP + code-only + 同 releaseTag 的成功 publish-test operation` 放行；`PROMOTE_PROD`、`with-data` 和未测试发布包仍保持阻断。
+- 命令记录：`mvn -Dtest=RuntimeControlOriginalParityTest#promoteBackupAcceptsCodeOnlyReleaseAfterSuccessfulTestDeployment test` PASS；`mvn -Dtest=RuntimeControlOriginalParityTest test` PASS。
+- 命令记录：维护控制台后端重新 package，因 Windows jar 文件锁先停止旧 PID，再启动新 PID；本地 gitignored 配置补充 `production-write-enabled: true`，不提交敏感配置。
+- 命令记录：Playwright 真实前端重新预览“上线备份服” PASS，命令指向 `172.30.30.59` 与 `/mnt/intruoyi-data`，不包含正式服、备份、恢复或回滚动作。
+- 命令记录：Playwright 真实前端执行“上线备份服”，operation `op-2026-06-17T153827586237800Z-17bdf7a0-5639-4967-a9dd-87296756bc45` 最终 `SUCCESS`。
+- 命令记录：`curl.exe` 验证备份服后端健康与前端入口均为 HTTP 200。
+- 命令记录：SSH 备份服读取 `.env` 与 `docker compose ps`，确认 `IMAGE_TAG=release-202606172114-codeonly-e2e`，backend/frontend 镜像均为该 tag 且 `Up`。
+- 命令记录：SSH 备份服查询 `infra_release_migration`，`20260617_dcc_browser_performance_indexes=APPLIED`、`20260617_erp_kingdee_event_callback=APPLIED`，target environment 均为 `backup`。
+- 命令记录：Playwright Chromium 打开 `http://172.30.30.59:8081/`，HTTP 200，最终进入登录页 `/login?redirect=/index`，标题 `瑛泰管理系统 - 登录`，console error 为 0，请求失败数为 0。
+- 命令记录：`mvn test` PASS，后端 16 个测试通过；`validate_bug_regression.py --evidence ...bug-regression-evidence.md` PASS。
