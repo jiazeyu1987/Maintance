@@ -1,5 +1,21 @@
 # 请求与命令记录
 
+## 2026-06-17 新增本机前后端重启 bat
+
+- 用户需求：创建一个 bat 文件，双击可以重启前后端；用户随后要求继续。
+- 计划边界：只新增本机双击入口；不执行真实重启、不操作服务器、不 SSH、不写入数据库或对象存储。
+- 命中经验：`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`，正式服默认禁止操作，远端重启必须有当前任务授权；本任务仅本机入口。
+- 命令记录：读取 `scripts\start.ps1`、`scripts\dev-frontend.ps1`、`scripts\dev-backend.ps1`、`ops\deploy\restart-int-ruoyi-local.ps1` 与远端 bat，确认现有脚本入口。
+- 命令记录：只读解析当前维护仓库 `ops\deploy\worktree-port-map.ps1` 失败，错误为缺少 `D:\ProjectPackage\Int\yudao-ui-admin-vue3`。
+- 命令记录：只读解析原 IntRuoyi `worktree-port-map.ps1` 成功，`int_main` 映射到 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3`、`D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro`、端口 `8081/48081`。
+- 命令记录：`RED` 检查 `restart-frontend-backend.bat` 不存在，按预期失败。
+- 命令记录：新增 `restart-frontend-backend.bat`，默认调用原 IntRuoyi 本机重启脚本 `-Component full`。
+- 命令记录：`cmd /d /c restart-frontend-backend.bat cancel` PASS，未触发真实重启。
+- 命令记录：PowerShell 静态检查 bat 必含原 IntRuoyi 重启脚本路径、`-Component full` 和 `cancel` 分支，PASS。
+- 命令记录：`git diff --check` PASS，仅有既有换行提示。
+- 命令记录：`task-closeout-cleanup --mode preview` PASS，无删除项、无阻塞、无警告。
+- 结论记录：已完成本机双击重启入口；验证阶段未执行真实重启、远端操作或数据写入。
+
 ## 2026-06-16 当前运行控制台与原版一致性审计
 
 - 用户需求：分析当前独立维护应用代码与 `yintruoyi`（按上下文理解为 `D:\ProjectPackage\Int\IntRuoyi`）下原运行控制台逻辑一致性。
