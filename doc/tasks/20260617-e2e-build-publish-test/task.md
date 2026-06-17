@@ -65,6 +65,7 @@
 - `GREEN: remote-migration-status -> PASS`，测试服迁移 `20260617_dcc_browser_performance_indexes` 状态为 `APPLIED`。
 - `GREEN: remote-playwright-entry -> PASS`，Playwright 真实打开测试服前端并加载登录页；未执行远端登录，因为 `login-access.md` 未提供远端测试服账号。
 - `GREEN: task-closeout-cleanup-apply -> PASS`，仅清理本任务两个临时日志。
+- `GREEN: independent-verification-gate -> PASS`，`verification-report.md` 已按构建包、测试服发布、远端 tag、容器、健康检查、迁移状态和真实浏览器入口完成独立验收。
 
 ## Cleanup Candidates
 
@@ -72,6 +73,10 @@
 - `doc/tasks/20260617-e2e-build-publish-test/runtime-control-start.err.log`
 
 清理结果：已删除。
+
+## Cleanup Keep
+
+- `doc/tasks/20260617-e2e-build-publish-test/verification-report.md`
 
 ## Current Status
 

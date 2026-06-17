@@ -215,3 +215,17 @@
 - 命令记录：脚本哈希比对显示 `apply-test-db-sql.ps1`、`backup-ops.ps1`、`show-int-ruoyi-local-status.ps1`、`restart-int-ruoyi-local.ps1` 字节级一致；`publish-int-ruoyi.ps1` 保留独立应用路径与 DCC inventory UTF-8/base64 修正差异。
 - 命令记录：`task-closeout-cleanup --mode preview` PASS，task.md / execution-log.md / verification-report.md 将保留；随后手动删除测试残留目录 `runtime/runtime-control-original-governance-parity-test`。
 - 结论记录：当前独立运行控制台在公开接口、核心动作、候选门禁、前端 payload 和主要脚本契约上与原版一致；权限体系、操作者、监听地址、配置来源、运行态目录和正式服默认禁写属于用户要求的独立化差异。
+
+## 2026-06-17 构建发布目标独立验收
+
+- 用户需求：继续完成“构建发布的目标”。
+- 计划边界：只复验测试服 `172.30.30.58` 当前发布状态和任务证据；不访问正式服、备用服，不执行备份、恢复、回滚或再次发布。
+- 命中经验：构建发布任务必须以 operation、manifest、远端 `.env`/镜像 tag、健康检查和真实页面证据共同判定，不得只用健康检查替代发布完成。
+- 命令记录：读取 `ci-cd-environment-delivery`、`independent-verification-gate`、`playwright` 技能，以及 `release-backup-restore.md`、`server-access.md`、`login-access.md`。
+- 命令记录：复查任务文档与执行日志，确认发布包 `release-20260617-1654-codeonly-e2e`、构建 operation `op-2026-06-17T085414727300800Z-8359c878-baa8-4ccd-abd4-65e3f2f03ca4`、部署 operation `op-2026-06-17T090710635870700Z-11dabe12-ebbe-4311-98da-00b614aec4ec`。
+- 命令记录：现时验证 `curl.exe` 后端健康 HTTP 200、前端 HTTP 200。
+- 命令记录：SSH 测试服读取 `.env` 与 `docker compose ps`，确认 `IMAGE_TAG=release-20260617-1654-codeonly-e2e`，前后端镜像均为该 tag 且 running。
+- 命令记录：SSH 测试服查询迁移状态，`20260617_dcc_browser_performance_indexes` 为 `APPLIED`。
+- 命令记录：SSH 测试服读取发布包 manifest，确认 `releaseTag=release-20260617-1654-codeonly-e2e`、`component=intruoyi`、`publishScope=code-only`、`includeShowroomBuildPackage=false`、`onlyOfficeIncluded=false`。
+- 命令记录：Playwright Chromium 打开 `http://172.30.30.58:8081/`，HTTP 200，跳转到登录页，标题 `瑛泰管理系统 - 登录`，console error 为 0。
+- 结论记录：已新增 `doc/tasks/20260617-e2e-build-publish-test/verification-report.md`，独立验收结论 PASS；远端登录未执行，原因是登录文档未提供远端测试服账号。

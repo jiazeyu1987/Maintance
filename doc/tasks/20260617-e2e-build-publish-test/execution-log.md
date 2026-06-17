@@ -54,3 +54,4 @@
 - `INFO: remote-login-scope -> login-access.md 未提供远端测试服可用账号；本任务未冒用本机测试租户密码登录远端，仅验证测试服真实前端入口可达并加载登录页。`
 - `GREEN: task-closeout-cleanup-preview -> PASS，预览仅删除本任务 runtime-control-start.out.log 与 runtime-control-start.err.log，保留 task.md 与 execution-log.md。`
 - `GREEN: task-closeout-cleanup-apply -> PASS，为释放临时日志文件锁，停止本任务启动的本机维护控制台 127.0.0.1:48181 后执行 apply，成功删除两个临时日志；未清理测试服或发布产物。`
+- `GREEN: independent-verification-gate -> PASS，现时复验 curl 后端健康 HTTP 200、前端 HTTP 200、测试服 IMAGE_TAG 与前后端镜像均为 release-20260617-1654-codeonly-e2e、迁移 20260617_dcc_browser_performance_indexes 为 APPLIED、Playwright 真实浏览器打开测试服登录页且 console error 为 0。`
