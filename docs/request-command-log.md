@@ -229,3 +229,14 @@
 - 命令记录：SSH 测试服读取发布包 manifest，确认 `releaseTag=release-20260617-1654-codeonly-e2e`、`component=intruoyi`、`publishScope=code-only`、`includeShowroomBuildPackage=false`、`onlyOfficeIncluded=false`。
 - 命令记录：Playwright Chromium 打开 `http://172.30.30.58:8081/`，HTTP 200，跳转到登录页，标题 `瑛泰管理系统 - 登录`，console error 为 0。
 - 结论记录：已新增 `doc/tasks/20260617-e2e-build-publish-test/verification-report.md`，独立验收结论 PASS；远端登录未执行，原因是登录文档未提供远端测试服账号。
+
+## 2026-06-17 构建发布耗时经验沉淀
+
+- 用户需求：将经验沉淀到文档里，下次不要遇到同样的问题。
+- 计划边界：只更新维护仓库经验文档、项目记忆、任务文档和请求命令日志；不执行发布、重启、备份、恢复、回滚、SSH 写入或数据库写入。
+- 命中经验：发布任务必须提前确认运行控制台版本、发布命令预览、迁移门禁、manifest、operation、远端 tag 和真实页面证据。
+- 命令记录：使用 `fupan` 技能，从 `20260617-e2e-build-publish-test` 的 task、execution-log、verification-report 生成 `candidate-error-evidence.md`。
+- 命令记录：新增 `docs/release-build-preflight-lessons.md`，沉淀 Docker 基础镜像预拉、迁移策略门禁、Maven target/jar 锁、E2E 预览边界、TDD 提交门禁、发布完成判定和重试规则。
+- 命令记录：新增 `docs/agent-memory/project-error-prevention.md`，项目短记忆 309 字，覆盖发布前预检、SQL/script 提交门禁和发布完成联合验证。
+- 命令记录：更新 `docs/experience-index.md`，为“构建发布耗时 / 真实 E2E 发布预检”和“项目错误预防短记忆”增加路由。
+- 结论记录：采纳可复用预检经验；未把具体 releaseTag、operationId、Docker digest、测试服实时容器运行时长升级为长期规则。
