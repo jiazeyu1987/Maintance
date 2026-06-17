@@ -1,0 +1,56 @@
+# 执行日志: 真实 E2E 构建并发布到测试服务器
+
+- 用户需求：`用真实的e2e操作构建发布到测试服务器`。
+- `BDD: 真实 E2E 构建发布到测试服 -> Given 本机运行控制台可访问且目标为测试服 172.30.30.58, When 操作者通过前端预览并执行 code-only 构建发布包后再执行发布到测试服, Then 构建和发布 operation 均成功，发布包 manifest 与远端 IMAGE_TAG 一致，测试服后端健康且管理前端真实路径可访问。`
+- `BDD: 禁止越界环境 -> Given 本次任务只授权测试服, When 执行构建、发布和验证, Then 不得提交 targetEnvironment=prod，不得访问 172.30.30.57 或 172.30.30.59，不得执行备份、恢复、回滚或正式服动作。`
+- 前置读取：`docs/experience-index.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`。
+- 前置检查：`npx` 可用，路径为 `D:\Programs\npx.ps1`。
+- 授权记录：用户当前任务明确要求发布到测试服务器；本任务服务器动作仅限测试服 `172.30.30.58` 和远端目录 `/opt/intruoyi/runtime`。
+- 范围记录：沿用当前发布基线和上次用户要求，构建发布范围为 `code-only`，不得同步数据库或 MinIO/NAS 业务数据。
+- `GREEN: experience-preflight -> PASS`，已读取发布/服务器/登录门禁；本任务只授权测试服 `172.30.30.58`，目标目录 `/opt/intruoyi/runtime`，发布范围 `code-only`；禁止正式服 `172.30.30.57`、备用服 `172.30.30.59`、备份、恢复、回滚、正式发布和数据同步。
+- `BLOCKER-CLEARED: local-runtime-control-initial -> 本机维护控制台 127.0.0.1:48181 初始未监听，需要先启动后再执行真实 E2E。`
+- `GREEN: test-server-health-initial -> PASS，http://172.30.30.58:48081/actuator/health 返回 {"status":"UP"}。`
+- 输入状态记录：原 IntRuoyi 后端仓库 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro` 当前分支 `int_main`，HEAD `77050513b0`，存在既有未提交改动和未跟踪 runtime/task 文件；本任务不回滚、不清理这些改动。
+- 输入状态记录：原 IntRuoyi 前端仓库 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3` 当前分支 `int_main`，HEAD `94b8e4c13`，存在既有未提交改动和未跟踪测试/任务文件；本任务不回滚、不清理这些改动。
+- `GREEN: local-runtime-control-health -> PASS，http://127.0.0.1:48181/actuator/health 返回 {"status":"UP"}。`
+- `GREEN: playwright-entry -> PASS，Playwright 打开 http://127.0.0.1:48181/，页面标题为“运行控制台”，操作区可见“构建发布包”和“部署测试服”。`
+- `GREEN: build-preview-scope -> PASS，弹窗预览命令包含 -Mode build-release、-Component intruoyi、-ReleaseTag release-20260617-1500-codeonly-e2e、-SkipDatabaseSync、-SkipMinioSync、-TestServerHost 172.30.30.58；未包含 172.30.30.57、promote-prod、backup-now、rollback、restore-data。`
+- 预览边界记录：预览命令包含 `-BackupServerHost 172.30.30.59`，脚本静态检查确认 `build-release` 分支不会执行 SSH；该参数为发布脚本必填目标配置，不代表本任务访问备用服务器。
+- `GREEN: build-release-submit -> PASS，Playwright 点击预览弹窗“执行”，后端返回 operationId=op-2026-06-17T072458143463800Z-0d5a0145-9253-4018-991a-55bf864264ef，初始状态 RUNNING。`
+- `RED: build-release-operation -> FAIL，operationId=op-2026-06-17T072458143463800Z-0d5a0145-9253-4018-991a-55bf864264ef 最终状态 FAILED；后端 Maven 打包、前端 Vite build、后端 Docker 镜像构建均已完成，前端 Docker 镜像构建在拉取 nginx:1.27-alpine 元数据时失败。`
+- `BLOCKER: docker-nginx-base-image -> docker build 失败：failed to fetch anonymous token for docker.io/library/nginx:1.27-alpine，dial tcp 199.59.149.136:443 connect timeout。发布包未成功生成，不得进入测试服发布。`
+- `GREEN: docker-nginx-base-image -> PASS，docker pull nginx:1.27-alpine 成功，digest=sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10。`
+- `GREEN: build-preview-scope-retry -> PASS，Playwright 使用新 releaseTag=release-20260617-1538-codeonly-e2e 重新预览构建命令；OnlyOffice/展厅包/智能报告均未勾选，命令包含 -Component intruoyi、-SkipDatabaseSync、-SkipMinioSync、-TestServerHost 172.30.30.58；未包含 172.30.30.57、promote-prod、backup-now、rollback、restore-data。`
+- `GREEN: build-release-submit-retry -> PASS，Playwright 点击预览弹窗“执行”，后端返回 operationId=op-2026-06-17T073818610888200Z-832a7d6b-133a-45ed-abd9-84dd1abfd300，初始状态 RUNNING。`
+- `RED: build-release-operation-retry -> FAIL，operationId=op-2026-06-17T073818610888200Z-832a7d6b-133a-45ed-abd9-84dd1abfd300 最终状态 FAILED；Maven 打包、Vite build、后端镜像和前端镜像均成功，发布迁移策略门禁失败。`
+- `BLOCKER: migration-policy-gate -> dependsOn missing migration '20260513_dcc_base_schema.sql' for migrationId '20260617_dcc_browser_performance_indexes'。发布包未生成 manifest，禁止继续发布测试服。`
+- `GREEN: migration-policy-gate-fix -> PASS，在 ruoyi-vue-pro 中修正 sql/mysql/20260617_dcc_browser_performance_indexes.sql 的 dependsOn 元数据为 20260513_dcc_base_schema；重新运行 script/release/run-release-migration-policy-gate.py 通过，migrationCount=147。`
+- `GREEN: database-schema-evidence -> PASS，运行 database-schema-delivery validate_database_schema.py 校验迁移修复证据通过。`
+- `GREEN: build-preview-scope-third -> PASS，Playwright 使用新 releaseTag=release-20260617-1627-codeonly-e2e 重新预览构建命令；命令包含 -Mode build-release、-Component intruoyi、-SkipDatabaseSync、-SkipMinioSync、-TestServerHost 172.30.30.58；未包含 172.30.30.57、promote-prod、backup-now、rollback、restore-data。`
+- `GREEN: build-release-submit-third -> PASS，Playwright 点击预览弹窗“执行”，后端返回 operationId=op-2026-06-17T082753879349700Z-c7f3f523-d9c6-4077-9b0f-eacc6cf5bf73，初始状态 RUNNING。`
+- `RED: build-release-operation-third -> FAIL，operationId=op-2026-06-17T082753879349700Z-c7f3f523-d9c6-4077-9b0f-eacc6cf5bf73 最终状态 FAILED；Maven clean 在 yudao-module-dcc 删除 target 目录失败。发布包未生成，禁止继续发布测试服。`
+- `GREEN: dcc-target-clean-precondition -> PASS，单独运行 mvn -f D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\pom.xml -pl yudao-module-dcc -DskipTests clean 通过，DCC target 清理前置恢复。`
+- `GREEN: build-preview-scope-fourth -> PASS，Playwright 使用新 releaseTag=release-20260617-1632-codeonly-e2e 重新预览构建命令；命令包含 -Mode build-release、-Component intruoyi、-SkipDatabaseSync、-SkipMinioSync、-TestServerHost 172.30.30.58；未包含 172.30.30.57、promote-prod、backup-now、rollback、restore-data。`
+- `GREEN: build-release-submit-fourth -> PASS，Playwright 点击预览弹窗“执行”，后端返回 operationId=op-2026-06-17T083241295814300Z-dc21fdce-0784-4465-a8d8-7e6ceb485990，初始状态 RUNNING。`
+- `RED: build-release-operation-fourth -> FAIL，operationId=op-2026-06-17T083241295814300Z-dc21fdce-0784-4465-a8d8-7e6ceb485990 最终状态 FAILED；Maven 打包、Vite build 和后端 Docker 镜像成功，前端 Docker 镜像在解析 nginx:1.27-alpine 元数据时 Docker Hub 返回 EOF。发布包未生成，禁止继续发布测试服。`
+- `GREEN: docker-nginx-base-image-retry -> PASS，docker pull nginx:1.27-alpine 成功，digest=sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10，本地 docker image inspect 通过。`
+- `GREEN: build-preview-scope-fifth -> PASS，Playwright 使用新 releaseTag=release-20260617-1645-codeonly-e2e 重新预览构建命令；命令包含 -Mode build-release、-Component intruoyi、-SkipDatabaseSync、-SkipMinioSync、-TestServerHost 172.30.30.58；未包含 172.30.30.57、promote-prod、backup-now、rollback、restore-data。`
+- `GREEN: build-release-submit-fifth -> PASS，Playwright 点击预览弹窗“执行”，后端返回 operationId=op-2026-06-17T084524861642300Z-d778ee83-bb2c-44c5-896d-b1ffed69814a，初始状态 RUNNING。`
+- `RED: build-release-operation-fifth -> FAIL，operationId=op-2026-06-17T084524861642300Z-d778ee83-bb2c-44c5-896d-b1ffed69814a 最终状态 FAILED；发布脚本在 Maven clean 前检测到本机 Java 进程锁定 D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\yudao-server\target\yudao-server.jar。发布包未生成，禁止继续发布测试服。`
+- `BLOCKER: local-backend-jar-lock -> 需要先释放本机占用 yudao-server.jar 的 Java 进程，脚本已明确建议重启本机后端让其运行在复制出来的 runtime jar 上。`
+- `GREEN: local-backend-runtime-restart-attempt -> PASS，本机 restart-ruoyi-backend.bat 已切换后端到 E:\Int\CacheData\IntRuoyi\runtime\backend-20260617-164706.jar；虽然应用因定时任务同步失败退出，但 target\yudao-server.jar 锁已解除。`
+- `GREEN: local-yudao-server-clean-after-restart -> PASS，mvn -f D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\pom.xml -pl yudao-server -DskipTests clean 通过，确认 jar 锁前置已恢复。`
+- `GREEN: build-preview-scope-sixth -> PASS，Playwright 使用新 releaseTag=release-20260617-1654-codeonly-e2e 重新预览构建命令；命令包含 -Mode build-release、-Component intruoyi、-SkipDatabaseSync、-SkipMinioSync、-TestServerHost 172.30.30.58；未包含 172.30.30.57、promote-prod、backup-now、rollback、restore-data。`
+- `GREEN: build-release-submit-sixth -> PASS，Playwright 点击预览弹窗“执行”，后端返回 operationId=op-2026-06-17T085414727300800Z-8359c878-baa8-4ccd-abd4-65e3f2f03ca4，初始状态 RUNNING。`
+- `GREEN: build-release-operation-sixth -> PASS，operationId=op-2026-06-17T085414727300800Z-8359c878-baa8-4ccd-abd4-65e3f2f03ca4 最终状态 SUCCESS；发布包 release-20260617-1654-codeonly-e2e 已上传至 NAS 路径 Backup/ReleasePackage/release-20260617-1654-codeonly-e2e。`
+- `GREEN: release-package-available -> PASS，运行控制台 release-packages 返回 release-20260617-1654-codeonly-e2e；publishScope=code-only，component=intruoyi，includeShowroomBuildPackage=false，onlyOfficeIncluded=false，checksumPresent=true，status=AVAILABLE。`
+- `GREEN: deploy-preview-scope -> PASS，Playwright 选择“部署测试服”并预览命令；命令包含 -Mode deploy-release、-Environment test、-ReleaseTag release-20260617-1654-codeonly-e2e、-ServerHost 172.30.30.58、-RemoteAppDir /opt/intruoyi/runtime；未包含 172.30.30.57、promote-prod、backup-now、rollback、restore-data。`
+- `GREEN: deploy-submit -> PASS，Playwright 点击预览弹窗“执行”，后端返回 operationId=op-2026-06-17T090710635870700Z-11dabe12-ebbe-4311-98da-00b614aec4ec，初始状态 RUNNING。`
+- `GREEN: deploy-operation -> PASS，operationId=op-2026-06-17T090710635870700Z-11dabe12-ebbe-4311-98da-00b614aec4ec 最终状态 SUCCESS；脚本输出 Publish completed for test，前端 http://172.30.30.58:8081，后端健康 http://172.30.30.58:48081/actuator/health。`
+- `GREEN: remote-image-tag -> PASS，ssh 测试服读取 /opt/intruoyi/runtime/.env 返回 IMAGE_TAG=release-20260617-1654-codeonly-e2e，docker compose ps 显示 intruoyi-backend 与 intruoyi-frontend 均 running。`
+- `GREEN: remote-health -> PASS，curl http://172.30.30.58:48081/actuator/health 返回 {"status":"UP"}；curl -I http://172.30.30.58:8081/ 返回 HTTP/1.1 200 OK。`
+- `GREEN: remote-migration-status -> PASS，测试服 infra_release_migration 中 migration_id=20260617_dcc_browser_performance_indexes 的最新 status=APPLIED。`
+- `GREEN: remote-playwright-entry -> PASS，Playwright 打开 http://172.30.30.58:8081/ 返回 HTTP 200 并跳转到 /login?redirect=/index；页面标题“瑛泰管理系统 - 登录”，页面文案包含“瑛泰数字化平台”“登录”，console error 为 0。`
+- `INFO: remote-login-scope -> login-access.md 未提供远端测试服可用账号；本任务未冒用本机测试租户密码登录远端，仅验证测试服真实前端入口可达并加载登录页。`
+- `GREEN: task-closeout-cleanup-preview -> PASS，预览仅删除本任务 runtime-control-start.out.log 与 runtime-control-start.err.log，保留 task.md 与 execution-log.md。`
+- `GREEN: task-closeout-cleanup-apply -> PASS，为释放临时日志文件锁，停止本任务启动的本机维护控制台 127.0.0.1:48181 后执行 apply，成功删除两个临时日志；未清理测试服或发布产物。`

@@ -1,5 +1,56 @@
 # 请求与命令记录
 
+## 2026-06-17 真实 E2E 构建并发布到测试服务器
+
+- 用户需求：用真实的 E2E 操作构建发布到测试服务器。
+- 计划边界：仅发布测试服 `172.30.30.58`，远端目录 `/opt/intruoyi/runtime`；发布范围为 `code-only`，不访问正式服/备用服，不执行备份、恢复、回滚或正式服动作。
+- 命中经验：`release-backup-restore.md`、`server-access.md`、`login-access.md`；真实 E2E 和服务器写入前必须记录 `experience-preflight`。
+- 命令记录：检查 `npx` 可用，路径为 `D:\Programs\npx.ps1`。
+- 命令记录：检查上一任务 `20260617-restart-frontend-backend-bat` 已完成。
+- 命令记录：`GREEN: experience-preflight -> PASS`，目标限定测试服 `172.30.30.58` 与 `code-only` 发布。
+- 命令记录：本机维护控制台 `127.0.0.1:48181` 初始未监听；测试服后端健康检查 `http://172.30.30.58:48081/actuator/health` 返回 `{"status":"UP"}`。
+- 命令记录：记录原 IntRuoyi 前后端 `int_main` HEAD 与既有未提交改动状态；本任务不回滚、不清理这些改动。
+- 命令记录：启动本机维护控制台后 `http://127.0.0.1:48181/actuator/health` 返回 `{"status":"UP"}`。
+- 命令记录：Playwright 打开运行控制台，填入 release tag `release-20260617-1500-codeonly-e2e`，确认 OnlyOffice/展厅包/智能报告均未勾选。
+- 命令记录：构建发布包预览 PASS，命令包含 `-Component intruoyi -SkipDatabaseSync -SkipMinioSync -TestServerHost 172.30.30.58`，不包含正式服 IP、生产发布、备份、恢复、回滚动作。
+- 命令记录：Playwright 点击构建发布包“执行”，operation `op-2026-06-17T072458143463800Z-0d5a0145-9253-4018-991a-55bf864264ef` 初始状态 `RUNNING`。
+- 命令记录：构建 operation 最终 `FAILED`；后端 Maven、前端 Vite build、后端 Docker 镜像构建成功，前端 Docker 镜像构建失败，原因是拉取 `nginx:1.27-alpine` 元数据时 Docker Hub token 请求超时。
+- 阻塞记录：发布包未成功生成，禁止继续发布测试服；下一步先补齐/验证 Docker 基础镜像 `nginx:1.27-alpine`。
+- 命令记录：`docker pull nginx:1.27-alpine` PASS，digest `sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10`。
+- 命令记录：Playwright 使用新 release tag `release-20260617-1538-codeonly-e2e` 重新预览构建发布包，范围检查 PASS。
+- 命令记录：Playwright 点击第二次构建发布包“执行”，operation `op-2026-06-17T073818610888200Z-832a7d6b-133a-45ed-abd9-84dd1abfd300` 初始状态 `RUNNING`。
+- 命令记录：第二次构建 operation 仍 `FAILED`；Maven、Vite、后端镜像和前端镜像成功，发布迁移策略门禁失败，原因是 `20260617_dcc_browser_performance_indexes` 依赖缺失 `20260513_dcc_base_schema.sql`。
+- 阻塞记录：发布包 manifest 未生成，禁止继续发布测试服；需要先修复迁移元数据/扫描集合。
+- 命令记录：在 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro` 修正 `sql/mysql/20260617_dcc_browser_performance_indexes.sql` 首行 `dependsOn` 为清单实际使用的迁移 ID `20260513_dcc_base_schema`。
+- 命令记录：`python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql` 通过，`status=passed`，`migrationCount=147`。
+- 命令记录：`python -X utf8 C:\Users\BJB110\.codex\skills\database-schema-delivery\scripts\validate_database_schema.py --evidence doc\tasks\20260617-dcc-browser-migration-dependency\database-schema-evidence.md` 通过。
+- 命令记录：Playwright 使用新 release tag `release-20260617-1627-codeonly-e2e` 预览第三次构建发布包，范围检查 PASS。
+- 命令记录：Playwright 点击第三次构建发布包“执行”，operation `op-2026-06-17T082753879349700Z-c7f3f523-d9c6-4077-9b0f-eacc6cf5bf73` 初始状态 `RUNNING`。
+- 命令记录：第三次构建 operation `FAILED`；Maven 在 `yudao-module-dcc` 执行 clean 时无法删除 `target`，发布包未生成，禁止发布测试服。
+- 命令记录：`mvn -f D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\pom.xml -pl yudao-module-dcc -DskipTests clean` PASS，DCC target 清理前置恢复。
+- 命令记录：Playwright 使用新 release tag `release-20260617-1632-codeonly-e2e` 预览第四次构建发布包，范围检查 PASS。
+- 命令记录：Playwright 点击第四次构建发布包“执行”，operation `op-2026-06-17T083241295814300Z-dc21fdce-0784-4465-a8d8-7e6ceb485990` 初始状态 `RUNNING`。
+- 命令记录：第四次构建 operation `FAILED`；Maven、Vite build、后端 Docker 镜像成功，前端 Docker 镜像解析 `nginx:1.27-alpine` 元数据时 Docker Hub 返回 EOF，发布包未生成，禁止发布测试服。
+- 命令记录：`docker pull nginx:1.27-alpine` PASS，digest `sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10`，本地 `docker image inspect` PASS。
+- 命令记录：Playwright 使用新 release tag `release-20260617-1645-codeonly-e2e` 预览第五次构建发布包，范围检查 PASS。
+- 命令记录：Playwright 点击第五次构建发布包“执行”，operation `op-2026-06-17T084524861642300Z-d778ee83-bb2c-44c5-896d-b1ffed69814a` 初始状态 `RUNNING`。
+- 命令记录：第五次构建 operation `FAILED`；发布脚本在 Maven clean 前检测到本机 `yudao-server.jar` 被 Java 进程锁定。
+- 命令记录：`restart-ruoyi-backend.bat` 已把本机后端切换到 `E:\Int\CacheData\IntRuoyi\runtime\backend-20260617-164706.jar`，尽管应用最终因定时任务同步失败退出，但目标 jar 锁已解除。
+- 命令记录：`mvn -f D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\pom.xml -pl yudao-server -DskipTests clean` PASS，确认 `yudao-server.jar` 锁前置已恢复。
+- 命令记录：Playwright 使用新 release tag `release-20260617-1654-codeonly-e2e` 预览第六次构建发布包，范围检查 PASS。
+- 命令记录：Playwright 点击第六次构建发布包“执行”，operation `op-2026-06-17T085414727300800Z-8359c878-baa8-4ccd-abd4-65e3f2f03ca4` 初始状态 `RUNNING`。
+- 命令记录：第六次构建 operation `SUCCESS`；发布包上传至 NAS `Backup/ReleasePackage/release-20260617-1654-codeonly-e2e`。
+- 命令记录：`curl http://127.0.0.1:48181/admin-api/infra/runtime-control/release-packages` 显示发布包 `release-20260617-1654-codeonly-e2e` 为 `AVAILABLE`，`publishScope=code-only`，`component=intruoyi`，`checksumPresent=true`。
+- 命令记录：Playwright 选择“部署测试服”，填写 release tag `release-20260617-1654-codeonly-e2e` 并预览部署命令，范围检查 PASS：`-Mode deploy-release -Environment test -ServerHost 172.30.30.58 -RemoteAppDir /opt/intruoyi/runtime`，无正式服、备份、恢复、回滚动作。
+- 命令记录：Playwright 点击部署预览弹窗“执行”，operation `op-2026-06-17T090710635870700Z-11dabe12-ebbe-4311-98da-00b614aec4ec` 初始状态 `RUNNING`。
+- 命令记录：部署 operation `SUCCESS`；日志输出 `Publish completed for test`。
+- 命令记录：测试服 `/opt/intruoyi/runtime/.env` 返回 `IMAGE_TAG=release-20260617-1654-codeonly-e2e`，`docker compose ps` 显示 `intruoyi-backend` 和 `intruoyi-frontend` 均 running。
+- 命令记录：`curl http://172.30.30.58:48081/actuator/health` 返回 `{"status":"UP"}`，`curl -I http://172.30.30.58:8081/` 返回 `HTTP/1.1 200 OK`。
+- 命令记录：测试服 `infra_release_migration` 中 `20260617_dcc_browser_performance_indexes` 最新状态为 `APPLIED`。
+- 命令记录：Playwright 打开 `http://172.30.30.58:8081/`，HTTP 200，跳转到 `/login?redirect=/index`，页面标题为 `瑛泰管理系统 - 登录`，未发现 console error。
+- 命令记录：`task-closeout-cleanup --mode preview` PASS，仅计划删除 `runtime-control-start.out.log` 与 `runtime-control-start.err.log`。
+- 命令记录：停止本任务启动的本机维护控制台 `127.0.0.1:48181` 以释放日志文件锁；`task-closeout-cleanup --mode apply` PASS，已删除两个临时日志。
+
 ## 2026-06-17 新增本机前后端重启 bat
 
 - 用户需求：创建一个 bat 文件，双击可以重启前后端；用户随后要求继续。
