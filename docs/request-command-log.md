@@ -342,3 +342,26 @@
 - 命令记录：`validate_cicd_environment.py --evidence doc\tasks\20260618-shrink-release-package\ci-cd-evidence.md` PASS。
 - 结论记录：后续 build-release 发布包会在 manifest 生成前去掉 `docker-build-context`；未改写已部署历史发布包，避免 manifest 审计记录漂移。
 - 命令记录：`task-closeout-cleanup --mode preview` 与 `--mode apply` PASS，无删除项、阻塞项或警告。
+
+## 2026-06-18 真实 E2E 验证发布包瘦身
+
+- 用户需求：进行真实的 E2E 测试。
+- 计划边界：通过运行控制台真实前端 E2E 触发新的 `code-only` 构建发布包并验证产物瘦身；不部署测试服、备份服或正式服，不执行备份、恢复、回滚、数据库同步或 MinIO/NAS 业务数据同步。
+- 命中经验：读取发布预检清单、原 IntRuoyi 发布/备份恢复基线、服务器访问基线、项目错误预防短记忆、CI/CD 技能和 Playwright 技能。
+- 命令记录：创建任务目录 `doc/tasks/20260618-e2e-release-package-slimming/`，写入 `task.md`、`execution-log.md` 和 `ci-cd-evidence.md`。
+- 命令记录：本机运行控制台后端 `48181` 与前端 `48182` HTTP 200；`npx` 可用。
+- 命令记录：预拉并 inspect `nginx:1.27-alpine`、`eclipse-temurin:21-jre-noble`、`eclipse-temurin:21-jre` 通过。
+- 命令记录：`python -m pytest scripts\tests\test_release_package_slimming.py` PASS，2 个测试通过；`ops\deploy\publish-int-ruoyi.ps1` PowerShell 解析 PASS。
+- 命令记录：发布迁移策略门禁 PASS，扫描 149 个迁移；`yudao-module-dcc` 与 `yudao-server` Maven clean 均 PASS。
+- 命令记录：`GREEN: experience-preflight -> PASS`，本轮只允许构建并验证 code-only 发布包，不部署、不备份、不恢复、不回滚、不做数据同步。
+- 命令记录：Playwright 真实前端打开 `http://127.0.0.1:48182/`，选择 `构建发布包`，填写 releaseTag `release-20260618-1006-slim-e2e`。
+- 命令记录：Playwright 真实前端 `预览命令` PASS，参数包含 `-Mode build-release`、`-Component intruoyi`、`-SkipDatabaseSync`、`-SkipMinioSync`；不包含正式服、部署、备份、恢复或回滚动作。
+- 命令记录：Playwright 真实前端执行构建，operation `op-2026-06-18T020729024794500Z-c7d40719-71d0-4ad4-a56d-0a521020632e` 最终 `SUCCESS`。
+- 命令记录：发布包已上传 NAS 路径 `Backup/ReleasePackage/release-20260618-1006-slim-e2e`；`release-status` 可读回候选，状态 `AVAILABLE`，`checksumPresent=true`。
+- 命令记录：本地发布包 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260618-1006-slim-e2e` 大小 `775.98 MiB`，递归路径和 manifest 均未命中 `docker-build-context`。
+- 命令记录：与旧包 `release-20260618-0056-codeonly-e2e` 的 `1,392.39 MiB` 对比，新包减少 `616.42 MiB`。
+- 命令记录：`validate_cicd_environment.py --evidence doc\tasks\20260618-e2e-release-package-slimming\ci-cd-evidence.md` PASS。
+- 命令记录：Playwright Chromium 浏览器已关闭；`task-closeout-cleanup --mode preview` PASS，保留本任务三份记录/证据文件，无删除项、阻塞项或警告。
+- 阻塞记录：首次 `task-closeout-cleanup --mode apply` 读任务状态为 `unknown`，原因是任务文档只有中文 `当前状态`；已补充英文 `Current Status=completed` 后重试。
+- 命令记录：第二次 `task-closeout-cleanup --mode apply` PASS，无删除项、阻塞项或警告。
+- 结论记录：真实 E2E 构建发布包已完成；本轮未部署测试服、备份服或正式服，未执行备份、恢复、回滚或数据同步。
