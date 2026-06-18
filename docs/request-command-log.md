@@ -365,3 +365,23 @@
 - 阻塞记录：首次 `task-closeout-cleanup --mode apply` 读任务状态为 `unknown`，原因是任务文档只有中文 `当前状态`；已补充英文 `Current Status=completed` 后重试。
 - 命令记录：第二次 `task-closeout-cleanup --mode apply` PASS，无删除项、阻塞项或警告。
 - 结论记录：真实 E2E 构建发布包已完成；本轮未部署测试服、备份服或正式服，未执行备份、恢复、回滚或数据同步。
+
+## 2026-06-18 部署瘦身发布包到测试服并验证
+
+- 用户需求：部署到测试服务器进行验证。
+- 计划边界：只部署测试服 `172.30.30.58`，发布包固定为 `release-20260618-1006-slim-e2e`；不部署备份服或正式服，不执行备份、恢复、回滚、数据库整库同步或 MinIO/NAS 业务数据同步。
+- 命中经验：读取发布预检清单、原 IntRuoyi 发布/备份恢复基线、服务器访问基线、登录访问基线、项目错误预防短记忆、CI/CD 技能和 Playwright 技能。
+- 命令记录：创建任务目录 `doc/tasks/20260618-deploy-test-slim-release/`，写入 `task.md`、`execution-log.md` 和 `ci-cd-evidence.md`。
+- 命令记录：本机运行控制台后端 `48181` 与前端 `48182` HTTP 200；`release-status` 可读回 `release-20260618-1006-slim-e2e`，状态 `AVAILABLE`，`checksumPresent=true`。
+- 命令记录：测试服发布前健康检查后端 `48081` 与前端 `8081` 均 HTTP 200；SSH 只读 preflight 确认 `/opt/intruoyi/runtime` 与 `/mnt/nas` 可写、`/mnt/nas/Backup/ReleasePackage` 可读、容量满足。
+- 命令记录：测试服发布前当前版本为 `IMAGE_TAG=release-20260618-0056-codeonly-e2e`，backend/frontend 均运行旧 tag。
+- 命令记录：`GREEN: experience-preflight -> PASS`，本轮只允许部署 `release-20260618-1006-slim-e2e` 到测试服 `172.30.30.58`，禁止备份服、正式服、备份、恢复、回滚和数据同步。
+- 命令记录：Playwright 真实前端打开运行控制台，预览 `部署测试服` 命令 PASS，参数包含 `-Mode deploy-release`、`-Environment test`、`-ServerHost 172.30.30.58` 和 `/opt/intruoyi/runtime`；不包含正式服、备份、恢复或回滚动作。
+- 命令记录：Playwright 真实前端提交部署，operation `op-2026-06-18T023529660636300Z-3ade4c9c-c424-4f58-a230-304a7990492e` 最终 `SUCCESS`。
+- 命令记录：部署后测试服 `.env` 为 `IMAGE_TAG=release-20260618-1006-slim-e2e`；backend/frontend 镜像分别为 `intruoyi-backend:release-20260618-1006-slim-e2e`、`intruoyi-frontend:release-20260618-1006-slim-e2e`，均为 `running`。
+- 命令记录：测试服健康检查 PASS：后端 `48081` HTTP 200 且 `UP`，前端 `8081` HTTP 200，`pdf.worker.mjs` HTTP 200 `application/javascript`。
+- 命令记录：测试服关键迁移状态只读查询 PASS，三条 `20260617_*` 迁移在当前 release/test 下均为 `SKIPPED_ALREADY_APPLIED`。
+- 命令记录：Playwright 真实打开测试服前端入口，进入 `/login?redirect=/index`，标题 `瑛泰管理系统 - 登录`，console error `0`，failed request `0`。
+- 观察记录：额外只读登录探针显示测试服 `测试租户/aoteman` 当前返回“登录失败，账号密码不正确”；本任务未切换账号伪装通过，也未执行业务写入。
+- 命令记录：`validate_cicd_environment.py --evidence doc\tasks\20260618-deploy-test-slim-release\ci-cd-evidence.md` PASS。
+- 命令记录：`task-closeout-cleanup --mode preview` 与 `--mode apply` PASS，无删除项、阻塞项或警告。
