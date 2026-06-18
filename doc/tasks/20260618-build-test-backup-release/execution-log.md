@@ -1,0 +1,44 @@
+# 执行日志: 构建发布到测试服和备份服
+
+- 用户需求：`构建发布到测试服务器和备份服务器,授权PROD`。
+- 发布责任人：沿用本线程已确认的 `admin`。
+- `GREEN: backup-prod-confirmation -> PASS，用户本轮已明确授权 PROD。`
+- `BDD: 构建 code-only 发布包 -> Given 本机运行控制台可访问且发布范围为 code-only, When 操作者通过真实前端预览并执行构建发布包, Then operation 成功，manifest 与 releaseTag、component、publishScope 一致，且不包含正式服、备份、恢复、回滚或数据同步动作。`
+- `BDD: 发布到测试服 -> Given code-only 发布包构建成功, When 操作者通过真实前端预览并执行部署测试服, Then 测试服 operation 成功，远端 IMAGE_TAG 与 releaseTag 一致，容器运行，后端健康且前端真实入口可访问。`
+- `BDD: 发布到备份服 -> Given 同一 releaseTag 已在测试服成功发布且用户提供 admin/PROD 授权, When 操作者通过真实前端预览并执行上线备份服, Then 备份服 operation 成功，远端 IMAGE_TAG 与 releaseTag 一致，容器运行，后端健康且前端真实入口可访问。`
+- `BDD: 禁止越界动作 -> Given 本次只授权测试服与备份服发布, When 执行构建、发布和验证, Then 不得访问正式服 172.30.30.57，不得执行备份、恢复、回滚、数据库同步或 MinIO/NAS 同步。`
+- 前置读取：`docs/experience-index.md`、`docs/release-build-preflight-lessons.md`、`docs/agent-memory/project-error-prevention.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`、`ci-cd-environment-delivery`、`playwright`。
+- `GREEN: npx-preflight -> PASS，npx 路径为 D:\Programs\npx.ps1。`
+- `GREEN: prior-task-status -> PASS，上一个维护仓库任务 20260617-build-test-backup-release 已 completed。`
+- `GREEN: runtime-control-health -> PASS，本机运行控制台后端 http://127.0.0.1:48181/actuator/health 返回 HTTP 200，前端 http://127.0.0.1:48182/ 返回 HTTP 200；当前维护仓库 HEAD=f8c1d57，已包含上一轮 code-only 备份服门禁修复。`
+- `GREEN: docker-base-image-prepull -> PASS，预拉并 inspect nginx:1.27-alpine、eclipse-temurin:21-jre-noble、eclipse-temurin:21-jre。`
+- `GREEN: migration-policy-gate -> PASS，命令 python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql 扫描 149 个迁移，status=passed。`
+- `GREEN: maven-clean-lock-preflight -> PASS，yudao-module-dcc 与 yudao-server clean 均通过，未发现 target/jar 锁阻塞。`
+- `GREEN: experience-preflight -> PASS，已按经验门禁完成运行控制台健康、Docker 基础镜像、迁移策略门禁、Maven target/jar 锁和授权边界检查；本轮允许测试服与备份服 code-only 发布，禁止正式服、备份、恢复、回滚和数据同步。`
+- `GREEN: build-release-preview -> PASS，Playwright 真实前端预览“构建发布包”，releaseTag=release-20260618-0056-codeonly-e2e；参数包含 -Mode build-release、-Component intruoyi、-SkipDatabaseSync、-SkipMinioSync，不包含正式服 172.30.30.57、promote-prod、backup-now、restore-data、rehearsal 或 rollback-app。`
+- `GREEN: build-release-operation -> PASS，Playwright 真实前端执行“构建发布包”，operation op-2026-06-17T165758289152Z-e82db887-1754-41df-bf3d-7e2bf9f840c9 最终 SUCCESS。`
+- `GREEN: release-package-manifest -> PASS，发布标签 release-20260618-0056-codeonly-e2e，NAS 路径 Backup/ReleasePackage/release-20260618-0056-codeonly-e2e；本地 manifest 确认为 publishScope=code-only、component=intruoyi、includeShowroomBuildPackage=false、onlyOfficeIncluded=false。`
+- `GREEN: test-deploy-preview -> PASS，Playwright 真实前端预览“部署测试服”，参数包含 -Mode deploy-release、-Environment test、-ReleaseTag release-20260618-0056-codeonly-e2e、-ServerHost 172.30.30.58、-RemoteAppDir /opt/intruoyi/runtime；不包含正式服、备份、恢复、回滚或数据同步动作。`
+- `RED: test-deploy-operation -> FAIL，Playwright 真实前端执行“部署测试服”，operation op-2026-06-17T171309722400800Z-72fd40ab-f703-496f-999d-c9011b2a9c8d 最终 FAILED；失败于 required SQL 20260617_mes_scheduler_role_smart_scheduling_tab.sql，目标测试库报错 Missing enabled MES scheduler/planner role with smart scheduling tenant package; cannot grant scheduler role tab。影响：测试服发布未完成，备份服发布前置条件不满足，按 no-fallback 门禁暂停备份服发布。`
+- `GREEN: scheduler-role-precondition-diagnosis -> PASS，只读核对测试服与备份服数据库；核心菜单与租户包 900120 条件存在，但测试服和备份服均无启用的 MES 排产/计划目标角色。`
+- `BLOCKER: test-deploy-state -> 测试服 .env 已写入 release-20260618-0056-codeonly-e2e，但 backend/frontend 容器仍运行 release-202606172114-codeonly-e2e；infra_release_migration 中 20260617_mes_scheduler_role_smart_scheduling_tab 为 RUNNING。`
+- `BLOCKER: backup-deploy -> 测试服发布未通过，且备份服只读核对同样缺少目标角色前置数据；未继续执行备份服发布。`
+- `GREEN: task-closeout-cleanup-preview -> PASS，preview 仅保留 task.md 与 execution-log.md，无 delete、blocked、warnings；任务未完成，未执行 apply。`
+- 用户补充：`授权`，允许补齐测试服与备份服 `tenant_id=122` 的 MES 排产/计划角色前置数据，并处理测试服 stale release lock / migration 状态后重新发布。
+- `BDD: 补齐 MES 发布前置数据 -> Given 测试服与备份服测试租户缺少 MES 排产/计划目标角色且租户包缺少智能排程子菜单, When 在授权范围内只为 tenant_id=122 克隆并切换完整菜单套餐且创建启用的 mes_scheduler 角色, Then required SQL 20260617_mes_scheduler_role_smart_scheduling_tab 可重试通过，且不影响其它租户。`
+- `RED: mes-precondition-data -> FAIL，测试服与备份服 tenant_id=122 目标角色数均为 0，智能排程菜单树缺失数均为 4；测试服 release lock 为 RUNNING。`
+- `GREEN: data-change-design -> PASS，采用克隆 tenant_id=122 当前套餐并切换 tenant package_id 的方案，不直接修改共享套餐；测试服 stale lock/migration 改为 FAILED 以允许脚本重试。`
+- `GREEN: mes-precondition-data-repair -> PASS，测试服 tenant_id=122 切换到克隆套餐 114，备份服 tenant_id=122 切换到克隆套餐 113；两端 mes_scheduler/排产员角色启用，智能排程菜单树缺失数均为 0；备份服 tenant_id=121 仍保持原套餐 111。`
+- `GREEN: test-stale-release-state-repair -> PASS，测试服 infra_release_operation_lock 与 infra_release_migration 中 release-20260618-0056-codeonly-e2e 的遗留 RUNNING 状态均改为 FAILED，可由发布脚本重试 APPLY。`
+- `GREEN: database-schema-evidence-validation -> PASS，validate_database_schema.py --evidence doc/tasks/20260618-build-test-backup-release/database-schema-evidence.md 通过。`
+- `GREEN: test-deploy-retry-preview -> PASS，Playwright 真实前端重新预览“部署测试服”，参数包含 -Environment test、-ReleaseTag release-20260618-0056-codeonly-e2e、-ServerHost 172.30.30.58，不包含正式服、备份、恢复、回滚或数据同步动作。`
+- `GREEN: test-deploy-retry-operation -> PASS，Playwright 真实前端执行“部署测试服”，operation op-2026-06-18T010137328120900Z-1f312235-29b4-4954-b631-3f09874801a4 最终 SUCCESS；required SQL 20260617_mes_scheduler_role_smart_scheduling_tab 执行后为 APPLIED。`
+- `GREEN: test-server-verification -> PASS，测试服后端 HTTP 200、前端 HTTP 200，远端 IMAGE_TAG 与 backend/frontend 镜像均为 release-20260618-0056-codeonly-e2e；迁移状态 20260617_mes_scheduler_role_smart_scheduling_tab=APPLIED，release lock=APPLIED。`
+- `GREEN: test-browser-verification -> PASS，Chromium 打开 http://172.30.30.58:8081/，最终 /login?redirect=/index，标题 瑛泰管理系统 - 登录，console error 0，failed request 0。`
+- `GREEN: backup-deploy-preview -> PASS，Playwright 真实前端预览“上线备份服”，参数包含 -Environment backup、-ReleaseTag release-20260618-0056-codeonly-e2e、-ConfirmText PROD、-RequireTested、-ServerHost 172.30.30.59、/mnt/intruoyi-data、/mnt/intruoyi-data/intruoyi-releases、/dev/mapper/cl-home、intruoyi-minio，不包含正式服、备份、恢复、回滚或数据同步动作。`
+- `GREEN: backup-deploy-operation -> PASS，Playwright 真实前端执行“上线备份服”，operation op-2026-06-18T011250606902100Z-4ca1df68-7dc0-4e79-a9a5-16f9e1e76bd3 最终 SUCCESS；required SQL 20260617_mes_scheduler_role_smart_scheduling_tab 执行后为 APPLIED。`
+- `GREEN: backup-server-verification -> PASS，备份服后端 HTTP 200、前端 HTTP 200，远端 IMAGE_TAG 与 backend/frontend 镜像均为 release-20260618-0056-codeonly-e2e；迁移状态 20260617_mes_scheduler_role_smart_scheduling_tab=APPLIED，release lock=APPLIED。`
+- `GREEN: backup-browser-verification -> PASS，Chromium 打开 http://172.30.30.59:8081/，最终 /login?redirect=/index，标题 瑛泰管理系统 - 登录，console error 0，failed request 0。`
+- `GREEN: ci-cd-evidence-validation -> PASS，validate_cicd_environment.py --evidence doc/tasks/20260618-build-test-backup-release/ci-cd-evidence.md 通过。`
+- `GREEN: final-status -> PASS，测试服与备份服均已发布 release-20260618-0056-codeonly-e2e 并通过验证。`
+- `GREEN: task-closeout-cleanup-apply -> PASS，preview/apply 均无 delete、blocked、warnings，保留 task.md、execution-log.md、database-schema-evidence.md、ci-cd-evidence.md。`

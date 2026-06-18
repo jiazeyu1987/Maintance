@@ -290,3 +290,42 @@
 - 命令记录：SSH 备份服查询 `infra_release_migration`，`20260617_dcc_browser_performance_indexes=APPLIED`、`20260617_erp_kingdee_event_callback=APPLIED`，target environment 均为 `backup`。
 - 命令记录：Playwright Chromium 打开 `http://172.30.30.59:8081/`，HTTP 200，最终进入登录页 `/login?redirect=/index`，标题 `瑛泰管理系统 - 登录`，console error 为 0，请求失败数为 0。
 - 命令记录：`mvn test` PASS，后端 16 个测试通过；`validate_bug_regression.py --evidence ...bug-regression-evidence.md` PASS。
+
+## 2026-06-18 构建发布测试服并发布备份服
+
+- 用户需求：构建发布到测试服务器和备份服务器，授权 `PROD`。
+- 授权记录：本轮备份服发布责任人沿用本线程已确认的 `admin`；用户本条消息已提供 `PROD` 授权。
+- 计划边界：通过运行控制台真实前端 E2E 构建新的 `code-only` 发布包，先发布测试服 `172.30.30.58` 验收，再发布备份服 `172.30.30.59`；不访问正式服 `172.30.30.57`，不执行备份、恢复、回滚、数据库同步或 MinIO/NAS 同步。
+- 命中经验：读取维护仓库发布预检清单、项目错误预防短记忆、原 IntRuoyi 发布/服务器/登录基线、CI/CD 技能和 Playwright 技能。
+- 命令记录：创建任务目录 `doc/tasks/20260618-build-test-backup-release/`，写入 `task.md` 和 `execution-log.md`。
+- 命令记录：本机运行控制台后端 `48181` 与前端 `48182` 健康；当前维护仓库 HEAD 为 `f8c1d57`。
+- 命令记录：预拉并 inspect `nginx:1.27-alpine`、`eclipse-temurin:21-jre-noble`、`eclipse-temurin:21-jre` 通过。
+- 命令记录：`python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql` PASS，扫描 149 个迁移。
+- 命令记录：`mvn -f D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\pom.xml -pl yudao-module-dcc -DskipTests clean` PASS；`mvn -f D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\pom.xml -pl yudao-server -DskipTests clean` PASS。
+- 命令记录：`GREEN: experience-preflight -> PASS`，本轮只允许测试服与备份服 code-only 发布，禁止正式服、备份、恢复、回滚和数据同步。
+- 命令记录：Playwright 真实前端预览“构建发布包” PASS，发布标签 `release-20260618-0056-codeonly-e2e`，参数包含 `-Component intruoyi`、`-SkipDatabaseSync`、`-SkipMinioSync`，不包含正式服、备份、恢复、回滚或数据同步动作。
+- 命令记录：Playwright 真实前端执行“构建发布包”，operation `op-2026-06-17T165758289152Z-e82db887-1754-41df-bf3d-7e2bf9f840c9` 最终 `SUCCESS`；manifest 确认 `publishScope=code-only`、`component=intruoyi`、`includeShowroomBuildPackage=false`、`onlyOfficeIncluded=false`。
+- 命令记录：Playwright 真实前端预览“部署测试服” PASS，参数包含 `-Mode deploy-release`、`-Environment test`、`-ReleaseTag release-20260618-0056-codeonly-e2e`、`-ServerHost 172.30.30.58`、`-RemoteAppDir /opt/intruoyi/runtime`，不包含正式服、备份、恢复或回滚动作。
+- 阻塞记录：Playwright 真实前端执行“部署测试服”，operation `op-2026-06-17T171309722400800Z-72fd40ab-f703-496f-999d-c9011b2a9c8d` 最终 `FAILED`；必需 SQL `20260617_mes_scheduler_role_smart_scheduling_tab.sql` 报错 `Missing enabled MES scheduler/planner role with smart scheduling tenant package; cannot grant scheduler role tab`。
+- 命令记录：只读核对测试服数据库，核心菜单 `900120/5590/5580/5262/5540` 与租户包 `900120` 条件存在，但缺少启用的 MES 排产/计划目标角色。
+- 命令记录：只读核对备份服数据库，核心菜单与租户包 `900120` 条件存在，满足 MES 排产/计划目标角色条件的记录数为 0。
+- 阻塞记录：测试服 `.env` 已写入 `IMAGE_TAG=release-20260618-0056-codeonly-e2e`，但 backend/frontend 容器仍运行上一版 `release-202606172114-codeonly-e2e`；迁移表中 `20260617_mes_scheduler_role_smart_scheduling_tab` 为 `RUNNING`。因测试服发布未完成且备份服前置条件同样缺失，未执行备份服发布。
+- 命令记录：`task-closeout-cleanup --mode preview` PASS，仅保留本任务 `task.md` 与 `execution-log.md`，无删除项、阻塞项或警告；任务未完成，未执行 apply。
+- 用户补充：`授权`。
+- 命令记录：按 `database-schema-delivery` 与真实库结构核对 `system_tenant`、`system_tenant_package`、`system_role`、`infra_release_operation_lock`、`infra_release_migration`，确认测试服与备份服 `tenant_id=122` 均缺少 `mes_scheduler` 角色且智能排程菜单树缺失 4 个子菜单。
+- 命令记录：测试服执行受控 SQL，克隆 `tenant_id=122` 当前套餐并切换到套餐 `114`，创建/启用 `mes_scheduler/排产员` 角色；将上一轮失败遗留的 release lock 与 migration `RUNNING` 状态改为 `FAILED`。
+- 命令记录：测试服只读校验 PASS，`mes_scheduler` 角色数为 1，智能排程菜单树缺失数为 0。
+- 命令记录：备份服执行受控 SQL，克隆 `tenant_id=122` 当前套餐并切换到套餐 `113`，创建/启用 `mes_scheduler/排产员` 角色。
+- 命令记录：备份服只读校验 PASS，`mes_scheduler` 角色数为 1，智能排程菜单树缺失数为 0，`tenant_id=121` 仍保持原套餐 `111`。
+- 命令记录：`validate_database_schema.py --evidence doc\tasks\20260618-build-test-backup-release\database-schema-evidence.md` PASS。
+- 命令记录：Playwright 真实前端重新预览并执行“部署测试服”，operation `op-2026-06-18T010137328120900Z-1f312235-29b4-4954-b631-3f09874801a4` 最终 `SUCCESS`。
+- 命令记录：测试服 required SQL `20260617_mes_scheduler_role_smart_scheduling_tab` 成功执行并标记 `APPLIED`。
+- 命令记录：`curl.exe` 验证测试服后端健康和前端入口均为 HTTP 200；SSH 验证 `.env` 与 backend/frontend 镜像 tag 均为 `release-20260618-0056-codeonly-e2e`。
+- 命令记录：Playwright Chromium 打开 `http://172.30.30.58:8081/`，最终 `/login?redirect=/index`，标题 `瑛泰管理系统 - 登录`，console error 0，failed request 0。
+- 命令记录：Playwright 真实前端预览并执行“上线备份服”，参数包含 `-ConfirmText PROD`、`-RequireTested`、`172.30.30.59`、`/mnt/intruoyi-data` 与 `intruoyi-minio`，不包含正式服、备份、恢复或回滚动作；operation `op-2026-06-18T011250606902100Z-4ca1df68-7dc0-4e79-a9a5-16f9e1e76bd3` 最终 `SUCCESS`。
+- 命令记录：备份服 required SQL `20260617_mes_scheduler_role_smart_scheduling_tab` 成功执行并标记 `APPLIED`。
+- 命令记录：`curl.exe` 验证备份服后端健康和前端入口均为 HTTP 200；SSH 验证 `.env` 与 backend/frontend 镜像 tag 均为 `release-20260618-0056-codeonly-e2e`。
+- 命令记录：Playwright Chromium 打开 `http://172.30.30.59:8081/`，最终 `/login?redirect=/index`，标题 `瑛泰管理系统 - 登录`，console error 0，failed request 0。
+- 命令记录：`validate_cicd_environment.py --evidence doc\tasks\20260618-build-test-backup-release\ci-cd-evidence.md` PASS。
+- 结论记录：测试服与备份服均已发布 `release-20260618-0056-codeonly-e2e` 并通过验证。
+- 命令记录：`task-closeout-cleanup --mode preview` 与 `--mode apply` PASS，无删除项、阻塞项或警告，保留本任务四个记录/证据文件。
