@@ -72,6 +72,29 @@ services:
       EDHR_S3_RETENTION_MODE: ${EDHR_S3_RETENTION_MODE}
       EDHR_S3_RETAIN_UNTIL_DAYS: ${EDHR_S3_RETAIN_UNTIL_DAYS}
       EDHR_S3_REQUIRE_LEGAL_HOLD: ${EDHR_S3_REQUIRE_LEGAL_HOLD}
+      YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_FRONTEND_DIRECTORY: ${YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_FRONTEND_DIRECTORY}
+      YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_SCRIPT_NAME: ${YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_SCRIPT_NAME}
+      MES_SMOKE_BASE_URL: ${MES_SMOKE_BASE_URL}
+      MES_SMOKE_EXCEL_FILE: ${MES_SMOKE_EXCEL_FILE}
+      MES_SMOKE_ARTIFACT_DIR: ${MES_SMOKE_ARTIFACT_DIR}
+      MES_SMOKE_NODE_IMAGE: ${MES_SMOKE_NODE_IMAGE}
+      MES_SMOKE_CAPACITY_MODE: ${MES_SMOKE_CAPACITY_MODE}
+      MES_SMOKE_PRODUCT_CODE: ${MES_SMOKE_PRODUCT_CODE}
+      MES_SMOKE_ERP_UNIT_NUMBER: ${MES_SMOKE_ERP_UNIT_NUMBER}
+      MES_SMOKE_BATCH_NUMBER: ${MES_SMOKE_BATCH_NUMBER}
+      MES_SMOKE_DEFAULT_PASSWORD: ${MES_SMOKE_DEFAULT_PASSWORD}
+      MES_SMOKE_ERP_CREATOR_TENANT: ${MES_SMOKE_ERP_CREATOR_TENANT}
+      MES_SMOKE_ERP_CREATOR_USERNAME: ${MES_SMOKE_ERP_CREATOR_USERNAME}
+      MES_SMOKE_ERP_CREATOR_PASSWORD: ${MES_SMOKE_ERP_CREATOR_PASSWORD}
+      MES_SMOKE_PLANNER_TENANT: ${MES_SMOKE_PLANNER_TENANT}
+      MES_SMOKE_PLANNER_USERNAME: ${MES_SMOKE_PLANNER_USERNAME}
+      MES_SMOKE_PLANNER_PASSWORD: ${MES_SMOKE_PLANNER_PASSWORD}
+      MES_SMOKE_SUPERVISOR_TENANT: ${MES_SMOKE_SUPERVISOR_TENANT}
+      MES_SMOKE_SUPERVISOR_USERNAME: ${MES_SMOKE_SUPERVISOR_USERNAME}
+      MES_SMOKE_SUPERVISOR_PASSWORD: ${MES_SMOKE_SUPERVISOR_PASSWORD}
+      MES_SMOKE_NON_APPROVER_TENANT: ${MES_SMOKE_NON_APPROVER_TENANT}
+      MES_SMOKE_NON_APPROVER_USERNAME: ${MES_SMOKE_NON_APPROVER_USERNAME}
+      MES_SMOKE_NON_APPROVER_PASSWORD: ${MES_SMOKE_NON_APPROVER_PASSWORD}
       ARGS: >-
         --spring.profiles.active=${SPRING_PROFILES_ACTIVE}
         --spring.datasource.dynamic.datasource.master.url=jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
@@ -116,6 +139,8 @@ services:
         --yudao.runtime-control.environments.test.host=${RUNTIME_CONTROL_TEST_SERVER_HOST:-}
         --yudao.runtime-control.environments.prod.host=${RUNTIME_CONTROL_PROD_SERVER_HOST:-}
         --yudao.runtime-control.environments.backup.host=${RUNTIME_CONTROL_BACKUP_SERVER_HOST:-}
+        --yudao.mes.scheduler-workbench.smoke-test.frontend-directory=${YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_FRONTEND_DIRECTORY}
+        --yudao.mes.scheduler-workbench.smoke-test.script-name=${YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_SCRIPT_NAME}
     ports:
       - ${BACKEND_HOST_PORT}:48080
     volumes:
@@ -123,6 +148,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /opt/intruoyi/runtime:/opt/intruoyi/runtime
       - /opt/intruoyi/ops:/opt/intruoyi/ops
+      - /opt/intruoyi/runtime/smoke/bin/npm:/usr/local/bin/npm:ro
       - /backup:/backup
       - /mnt/nas/Backup/BackupPackage:/mnt/nas/Backup/BackupPackage
     networks:

@@ -3413,7 +3413,7 @@ $publishWebsite = $Component -in @('full', 'website')
 $backendJar = Join-Path $backendRepo 'yudao-server\target\yudao-server.jar'
 $backendDockerfile = Join-Path $backendRepo 'script\deploy\int-ruoyi-test\Dockerfile.backend'
 $frontendDockerfile = Join-Path $backendRepo 'script\deploy\int-ruoyi-test\Dockerfile.frontend'
-$composeTemplate = Join-Path $backendRepo 'script\deploy\int-ruoyi-test\docker-compose.yml'
+$composeTemplate = Join-Path $scriptDir 'int-ruoyi-test\docker-compose.yml'
 $websiteNginxTemplate = Join-Path $backendRepo 'script\deploy\int-ruoyi-test\website.nginx.conf'
 $onlyOfficeImage = 'onlyoffice/documentserver:latest'
 $resolvedLocalCacheRoot = Resolve-LocalCacheRoot $LocalCacheRoot
@@ -3481,6 +3481,14 @@ $remoteEnv = "$RemoteAppDir/.env"
 $remoteWebsiteDir = "$RemoteAppDir/website"
 $remoteWebsiteStagingDir = "$remoteReleaseDir/website"
 $remoteWebsitePreviousDir = "$RemoteAppDir/website.previous"
+$schedulerSmokeFrontendDirectory = '/opt/intruoyi/runtime/smoke/yudao-ui-admin-vue3'
+$schedulerSmokeScriptName = 'e2e:mes:smart-scheduling-smoke'
+$schedulerSmokeNodeImage = 'mcr.microsoft.com/playwright:v1.60.0-noble'
+$schedulerSmokeRunnerLocalDir = Join-Path $releaseDir 'smoke'
+$remoteSchedulerSmokeRoot = "$RemoteAppDir/smoke"
+$remoteSchedulerSmokeFrontendDir = "$remoteSchedulerSmokeRoot/yudao-ui-admin-vue3"
+$remoteSchedulerSmokeBinDir = "$remoteSchedulerSmokeRoot/bin"
+$remoteSchedulerSmokeNpmWrapper = "$remoteSchedulerSmokeBinDir/npm"
 $backendRuntimeBaseConfig = Resolve-BackendRuntimeBaseConfig
 $smartReleaseReportOnlyEnabled = Resolve-SmartReleaseReportOnlyEnabled
 if ($publishBackend -and $Mode -notin @('deploy-release', 'mark-tested')) {
@@ -3546,6 +3554,126 @@ function Prepare-RemoteReleaseTree {
     } else {
         Invoke-SshCommand "mkdir -p $mkdirArgs"
     }
+}
+
+function New-SchedulerSmokeNpmWrapperContent {
+    $envNames = @(
+        'MES_SMOKE_BASE_URL',
+        'MES_SMOKE_EXCEL_FILE',
+        'MES_SMOKE_ARTIFACT_DIR',
+        'MES_SMOKE_NODE_IMAGE',
+        'MES_SMOKE_CAPACITY_MODE',
+        'MES_SMOKE_PRODUCT_CODE',
+        'MES_SMOKE_ERP_UNIT_NUMBER',
+        'MES_SMOKE_BATCH_NUMBER',
+        'MES_SMOKE_DEFAULT_PASSWORD',
+        'MES_SMOKE_ERP_CREATOR_TENANT',
+        'MES_SMOKE_ERP_CREATOR_USERNAME',
+        'MES_SMOKE_ERP_CREATOR_PASSWORD',
+        'MES_SMOKE_PLANNER_TENANT',
+        'MES_SMOKE_PLANNER_USERNAME',
+        'MES_SMOKE_PLANNER_PASSWORD',
+        'MES_SMOKE_SUPERVISOR_TENANT',
+        'MES_SMOKE_SUPERVISOR_USERNAME',
+        'MES_SMOKE_SUPERVISOR_PASSWORD',
+        'MES_SMOKE_NON_APPROVER_TENANT',
+        'MES_SMOKE_NON_APPROVER_USERNAME',
+        'MES_SMOKE_NON_APPROVER_PASSWORD',
+        'MES_SMOKE_HEADLESS',
+        'MES_SMOKE_WORK_ORDER_CODE',
+        'MES_SMOKE_WORK_ORDER_QUANTITY',
+        'MES_SMOKE_ERP_SOURCE_BILL_NO',
+        'MES_SMOKE_ERP_PLANNED_START_TIME',
+        'MES_SMOKE_ERP_PLANNED_FINISH_TIME',
+        'MES_SMOKE_PROMISE_DATE',
+        'MES_SMOKE_SCHEDULE_START_TIME',
+        'MES_SMOKE_PRESERVE_MANUAL_LOCKED_TASKS',
+        'MES_SMOKE_RUN_ID',
+        'MES_SMOKE_BACKEND_RUNNER_LOG'
+    )
+    $envArgs = ($envNames | ForEach-Object { "  -e $_ \" }) -join "`n"
+    $content = @"
+#!/usr/bin/env sh
+set -eu
+: "`${MES_SMOKE_NODE_IMAGE:?MES_SMOKE_NODE_IMAGE is required}"
+NODE_IMAGE="`${MES_SMOKE_NODE_IMAGE}"
+WORKDIR="`${PWD:-$schedulerSmokeFrontendDirectory}"
+exec docker run --rm --network host \
+  -v /opt/intruoyi/runtime:/opt/intruoyi/runtime \
+  -w "`$WORKDIR" \
+$envArgs
+  "`$NODE_IMAGE" npm "`$@"
+"@
+    return $content
+}
+
+function New-SchedulerSmokeRunnerPackage {
+    if (-not $publishBackend) {
+        return
+    }
+
+    $smokeTestsSourceDir = Join-Path $frontendDir 'tests\e2e'
+    $realFlowSource = Join-Path $smokeTestsSourceDir 'smart-scheduling-smoke-real-flow.e2e.js'
+    $staticSpecSource = Join-Path $smokeTestsSourceDir 'smart-scheduling-smoke-real-flow-static.spec.js'
+    if (-not (Test-Path -LiteralPath $realFlowSource -PathType Leaf)) {
+        Fail "Smart scheduling smoke E2E script missing: $realFlowSource"
+    }
+    if (-not (Test-Path -LiteralPath $staticSpecSource -PathType Leaf)) {
+        Fail "Smart scheduling smoke static script missing: $staticSpecSource"
+    }
+
+    if (Test-Path -LiteralPath $schedulerSmokeRunnerLocalDir) {
+        Remove-Item -LiteralPath $schedulerSmokeRunnerLocalDir -Recurse -Force
+    }
+    $localFrontendDir = Join-Path $schedulerSmokeRunnerLocalDir 'yudao-ui-admin-vue3'
+    $localTestsDir = Join-Path $localFrontendDir 'tests\e2e'
+    $localInputDir = Join-Path $localFrontendDir 'input'
+    $localOutputDir = Join-Path $localFrontendDir 'output\artifacts'
+    $localBinDir = Join-Path $schedulerSmokeRunnerLocalDir 'bin'
+    New-Item -ItemType Directory -Force -Path $localTestsDir, $localInputDir, $localOutputDir, $localBinDir | Out-Null
+
+    $packageJson = @"
+{
+  "name": "intruoyi-scheduler-smoke-runner",
+  "private": true,
+  "scripts": {
+    "e2e:mes:smart-scheduling-smoke:check": "node tests/e2e/smart-scheduling-smoke-real-flow-static.spec.js",
+    "e2e:mes:smart-scheduling-smoke": "node tests/e2e/smart-scheduling-smoke-real-flow.e2e.js"
+  },
+  "devDependencies": {
+    "playwright": "1.60.0"
+  }
+}
+"@
+    Write-Utf8LfNoBomFile -Path (Join-Path $localFrontendDir 'package.json') -Content $packageJson
+    Copy-Item -LiteralPath $realFlowSource -Destination (Join-Path $localTestsDir 'smart-scheduling-smoke-real-flow.e2e.js') -Force
+    Copy-Item -LiteralPath $staticSpecSource -Destination (Join-Path $localTestsDir 'smart-scheduling-smoke-real-flow-static.spec.js') -Force
+    Write-Utf8LfNoBomFile -Path (Join-Path $localBinDir 'npm') -Content (New-SchedulerSmokeNpmWrapperContent)
+}
+
+function Copy-SchedulerSmokeRunnerToServer {
+    if (-not $publishBackend) {
+        return
+    }
+
+    if (-not (Test-Path -LiteralPath (Join-Path $schedulerSmokeRunnerLocalDir 'yudao-ui-admin-vue3\package.json') -PathType Leaf)) {
+        New-SchedulerSmokeRunnerPackage
+    }
+    Info "Copying scheduler smoke runner to the $PublishTargetName server"
+    Invoke-SshCommand "mkdir -p '$RemoteAppDir' '$remoteSchedulerSmokeRoot' '$remoteSchedulerSmokeFrontendDir/input' '$remoteSchedulerSmokeFrontendDir/output/artifacts' '$remoteSchedulerSmokeBinDir'"
+    Copy-ToServer -LocalPath $schedulerSmokeRunnerLocalDir -RemotePath $RemoteAppDir -Recursive
+    Invoke-SshCommand "chmod +x '$remoteSchedulerSmokeNpmWrapper' && test -f '$remoteSchedulerSmokeFrontendDir/package.json' && test -f '$remoteSchedulerSmokeFrontendDir/tests/e2e/smart-scheduling-smoke-real-flow.e2e.js'"
+    Invoke-SshCommand "cd '$remoteSchedulerSmokeFrontendDir' && '$remoteSchedulerSmokeNpmWrapper' install --no-audit --no-fund"
+}
+
+function Assert-RemoteSchedulerSmokeRuntime {
+    if (-not $publishBackend) {
+        return
+    }
+
+    Info "Checking scheduler smoke runtime on the $PublishTargetName server"
+    Invoke-SshCommand "docker exec intruoyi-backend sh -lc 'test `"`${YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_FRONTEND_DIRECTORY}`" = `"$schedulerSmokeFrontendDirectory`" && test `"`${YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_SCRIPT_NAME}`" = `"$schedulerSmokeScriptName`" && test `"`${MES_SMOKE_NODE_IMAGE}`" = `"$schedulerSmokeNodeImage`" && test -d `"$schedulerSmokeFrontendDirectory`" && test -f `"$schedulerSmokeFrontendDirectory/package.json`" && test -x /usr/local/bin/npm && npm --version >/dev/null'"
+    Invoke-SshCommand "cd '$remoteSchedulerSmokeFrontendDir' && '$remoteSchedulerSmokeNpmWrapper' exec -- node --check tests/e2e/smart-scheduling-smoke-real-flow.e2e.js"
 }
 
 function Get-RequiredDatabaseSqlFileName {
@@ -4235,6 +4363,8 @@ if ($publishBackend -and $Mode -eq 'build-release' -and -not $SkipMinioSync) {
     }
 }
 
+if ($publishBackend) { New-SchedulerSmokeRunnerPackage }
+
 Write-ReleaseRuntimeEnvPackage
 Copy-Item -LiteralPath $composeTemplate -Destination (Join-Path $releaseDir 'docker-compose.yml') -Force
 Remove-ReleaseDockerBuildContextFromPackage
@@ -4285,6 +4415,19 @@ $existingRemoteEnv = @{}
 if (($publishBackend -or $publishFrontend) -and $Mode -ne 'build-release') {
     $existingRemoteEnv = Get-RemoteRuntimeEnvMap
 }
+function Resolve-ExistingRuntimeEnvValue {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Name,
+        [string]$DefaultValue = ''
+    )
+
+    if ($existingRemoteEnv.ContainsKey($Name) -and -not [string]::IsNullOrWhiteSpace($existingRemoteEnv[$Name])) {
+        return $existingRemoteEnv[$Name]
+    }
+    return $DefaultValue
+}
+
 $effectiveMySqlRootPassword = if ($publishBackend -and -not [string]::IsNullOrWhiteSpace($mySqlRootPassword)) { $mySqlRootPassword } elseif ($existingRemoteEnv.ContainsKey('MYSQL_ROOT_PASSWORD')) { $existingRemoteEnv['MYSQL_ROOT_PASSWORD'] } else { '' }
 $effectiveDccSignatureEvidenceHmacSecret = if (-not [string]::IsNullOrWhiteSpace($DccSignatureEvidenceHmacSecret)) { $DccSignatureEvidenceHmacSecret } elseif ($existingRemoteEnv.ContainsKey('DCC_SIGNATURE_EVIDENCE_HMAC_SECRET')) { $existingRemoteEnv['DCC_SIGNATURE_EVIDENCE_HMAC_SECRET'] } else { '' }
 $effectiveDccSignatureEvidenceKeyVersion = if (-not [string]::IsNullOrWhiteSpace($DccSignatureEvidenceKeyVersion)) { $DccSignatureEvidenceKeyVersion } elseif ($existingRemoteEnv.ContainsKey('DCC_SIGNATURE_EVIDENCE_KEY_VERSION')) { $existingRemoteEnv['DCC_SIGNATURE_EVIDENCE_KEY_VERSION'] } else { '' }
@@ -4310,6 +4453,29 @@ $effectiveBackendRuntimeBaseTarSha256 = if (-not [string]::IsNullOrWhiteSpace($B
 $effectiveBackendRuntimeBaseImage = if (-not [string]::IsNullOrWhiteSpace($BackendRuntimeBaseImage)) { $BackendRuntimeBaseImage } elseif ($existingRemoteEnv.ContainsKey('RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_IMAGE')) { $existingRemoteEnv['RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_IMAGE'] } else { '' }
 $effectiveBackendRuntimeBaseDigest = if (-not [string]::IsNullOrWhiteSpace($BackendRuntimeBaseDigest)) { $BackendRuntimeBaseDigest } elseif ($existingRemoteEnv.ContainsKey('RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_DIGEST')) { $existingRemoteEnv['RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_DIGEST'] } else { '' }
 $effectiveBackendRuntimeBaseVersion = if (-not [string]::IsNullOrWhiteSpace($BackendRuntimeBaseVersion)) { $BackendRuntimeBaseVersion } elseif ($existingRemoteEnv.ContainsKey('RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_VERSION')) { $existingRemoteEnv['RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_VERSION'] } else { '' }
+$effectiveSchedulerSmokeFrontendDirectory = $schedulerSmokeFrontendDirectory
+$effectiveSchedulerSmokeScriptName = $schedulerSmokeScriptName
+$effectiveMesSmokeBaseUrl = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_BASE_URL' -DefaultValue "http://127.0.0.1:$FrontendPort"
+$effectiveMesSmokeExcelFile = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_EXCEL_FILE' -DefaultValue "$schedulerSmokeFrontendDirectory/input/smart-scheduling-smoke-feedback.xlsx"
+$effectiveMesSmokeArtifactDir = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_ARTIFACT_DIR' -DefaultValue "$schedulerSmokeFrontendDirectory/output/artifacts"
+$effectiveMesSmokeNodeImage = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_NODE_IMAGE' -DefaultValue $schedulerSmokeNodeImage
+$effectiveMesSmokeCapacityMode = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_CAPACITY_MODE'
+$effectiveMesSmokeProductCode = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_PRODUCT_CODE'
+$effectiveMesSmokeErpUnitNumber = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_ERP_UNIT_NUMBER'
+$effectiveMesSmokeBatchNumber = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_BATCH_NUMBER'
+$effectiveMesSmokeDefaultPassword = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_DEFAULT_PASSWORD'
+$effectiveMesSmokeErpCreatorTenant = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_ERP_CREATOR_TENANT'
+$effectiveMesSmokeErpCreatorUsername = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_ERP_CREATOR_USERNAME'
+$effectiveMesSmokeErpCreatorPassword = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_ERP_CREATOR_PASSWORD'
+$effectiveMesSmokePlannerTenant = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_PLANNER_TENANT'
+$effectiveMesSmokePlannerUsername = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_PLANNER_USERNAME'
+$effectiveMesSmokePlannerPassword = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_PLANNER_PASSWORD'
+$effectiveMesSmokeSupervisorTenant = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_SUPERVISOR_TENANT'
+$effectiveMesSmokeSupervisorUsername = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_SUPERVISOR_USERNAME'
+$effectiveMesSmokeSupervisorPassword = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_SUPERVISOR_PASSWORD'
+$effectiveMesSmokeNonApproverTenant = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_NON_APPROVER_TENANT'
+$effectiveMesSmokeNonApproverUsername = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_NON_APPROVER_USERNAME'
+$effectiveMesSmokeNonApproverPassword = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_NON_APPROVER_PASSWORD'
 $mySqlRootPassword = $effectiveMySqlRootPassword
 $DccSignatureEvidenceHmacSecret = $effectiveDccSignatureEvidenceHmacSecret
 $DccSignatureEvidenceKeyVersion = $effectiveDccSignatureEvidenceKeyVersion
@@ -4359,6 +4525,29 @@ EDHR_S3_SECRET_KEY=$EdhrS3SecretKey
 EDHR_S3_RETENTION_MODE=$EdhrS3RetentionMode
 EDHR_S3_RETAIN_UNTIL_DAYS=$EdhrS3RetainUntilDays
 EDHR_S3_REQUIRE_LEGAL_HOLD=$EdhrS3RequireLegalHold
+YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_FRONTEND_DIRECTORY=$effectiveSchedulerSmokeFrontendDirectory
+YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_SCRIPT_NAME=$effectiveSchedulerSmokeScriptName
+MES_SMOKE_BASE_URL=$effectiveMesSmokeBaseUrl
+MES_SMOKE_EXCEL_FILE=$effectiveMesSmokeExcelFile
+MES_SMOKE_ARTIFACT_DIR=$effectiveMesSmokeArtifactDir
+MES_SMOKE_NODE_IMAGE=$effectiveMesSmokeNodeImage
+MES_SMOKE_CAPACITY_MODE=$effectiveMesSmokeCapacityMode
+MES_SMOKE_PRODUCT_CODE=$effectiveMesSmokeProductCode
+MES_SMOKE_ERP_UNIT_NUMBER=$effectiveMesSmokeErpUnitNumber
+MES_SMOKE_BATCH_NUMBER=$effectiveMesSmokeBatchNumber
+MES_SMOKE_DEFAULT_PASSWORD=$effectiveMesSmokeDefaultPassword
+MES_SMOKE_ERP_CREATOR_TENANT=$effectiveMesSmokeErpCreatorTenant
+MES_SMOKE_ERP_CREATOR_USERNAME=$effectiveMesSmokeErpCreatorUsername
+MES_SMOKE_ERP_CREATOR_PASSWORD=$effectiveMesSmokeErpCreatorPassword
+MES_SMOKE_PLANNER_TENANT=$effectiveMesSmokePlannerTenant
+MES_SMOKE_PLANNER_USERNAME=$effectiveMesSmokePlannerUsername
+MES_SMOKE_PLANNER_PASSWORD=$effectiveMesSmokePlannerPassword
+MES_SMOKE_SUPERVISOR_TENANT=$effectiveMesSmokeSupervisorTenant
+MES_SMOKE_SUPERVISOR_USERNAME=$effectiveMesSmokeSupervisorUsername
+MES_SMOKE_SUPERVISOR_PASSWORD=$effectiveMesSmokeSupervisorPassword
+MES_SMOKE_NON_APPROVER_TENANT=$effectiveMesSmokeNonApproverTenant
+MES_SMOKE_NON_APPROVER_USERNAME=$effectiveMesSmokeNonApproverUsername
+MES_SMOKE_NON_APPROVER_PASSWORD=$effectiveMesSmokeNonApproverPassword
 DCC_VIEWER_TOKEN_HMAC_SECRET=$DccViewerTokenHmacSecret
 DCC_ONLYOFFICE_JWT_SECRET=$DccOnlyOfficeJwtSecret
 DCC_ONLYOFFICE_BASE_URL=$DccOnlyOfficeBaseUrl
@@ -4387,6 +4576,7 @@ if ($publishBackend -or $publishFrontend) {
     Copy-ToServer -LocalPath $remoteEnvLocal -RemotePath $remoteEnv
     Assert-RemoteRuntimeEnvImageTag
 }
+if ($publishBackend) { Copy-SchedulerSmokeRunnerToServer }
 if ($publishBackend -or $publishFrontend) {
     Copy-ToServer -LocalPath $imageTar -RemotePath $remoteImageTar
 }
@@ -4519,6 +4709,7 @@ if ($publishBackend) {
 if ($publishFrontend) {
     Wait-RemoteHttpOk -Url "http://127.0.0.1:$FrontendPort/" -TimeoutSeconds 180
 }
+if ($publishBackend) { Assert-RemoteSchedulerSmokeRuntime }
 if ($IncludeOnlyOffice) {
     Wait-RemoteHttpOk -Url "http://127.0.0.1:$OnlyOfficeHostPort/healthcheck" -TimeoutSeconds 180
 }

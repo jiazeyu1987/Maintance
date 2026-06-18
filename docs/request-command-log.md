@@ -385,3 +385,18 @@
 - 观察记录：额外只读登录探针显示测试服 `测试租户/aoteman` 当前返回“登录失败，账号密码不正确”；本任务未切换账号伪装通过，也未执行业务写入。
 - 命令记录：`validate_cicd_environment.py --evidence doc\tasks\20260618-deploy-test-slim-release\ci-cd-evidence.md` PASS。
 - 命令记录：`task-closeout-cleanup --mode preview` 与 `--mode apply` PASS，无删除项、阻塞项或警告。
+
+## 2026-06-18 维护仓智能排产冒烟发布配置固化
+
+- 用户需求：发布现在从 `D:\ProjectPackage\Int\IntRuoyiMaintance` 进行，修改内容必须是维护仓发布会实际用到的；不再从 `D:\ProjectPackage\Int\IntRuoyi` 构建发布。
+- 命令记录：读取 `ci-cd-environment-delivery`、`quality-assurance-test-suite` 技能与契约。
+- 命令记录：读取 `AGENTS.md`、`docs/experience-index.md`、`docs/release-build-preflight-lessons.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`docs/agent-memory/project-error-prevention.md`。
+- 命令记录：检查上一任务 `doc/tasks/20260618-deploy-test-slim-release/task.md`，确认状态为 `completed`。
+- 命令记录：创建任务目录 `doc/tasks/20260618-maintenance-persist-scheduler-smoke-release/`，写入 `task.md`、`execution-log.md`、`ci-cd-evidence.md`、`qa-evidence.md`。
+- 命令记录：新增 RED 契约测试 `scripts/tests/test_scheduler_smoke_release_config.py`，要求维护发布脚本使用维护仓 compose 模板并打包智能排产 smoke runner/config。
+- 命令记录：`python -X utf8 -m pytest scripts\tests\test_scheduler_smoke_release_config.py -q` -> RED，3 failed，确认维护发布链路缺少智能排产 smoke 固化。
+- 命令记录：修改 `ops/deploy/publish-int-ruoyi.ps1`，改用维护仓 `ops/deploy/int-ruoyi-test/docker-compose.yml`；新增 smoke runner 打包、远端复制、运行态断言和 `.env` smoke 默认项。
+- 命令记录：修改 `ops/deploy/int-ruoyi-test/docker-compose.yml`，新增 backend smoke 环境变量、Spring smoke 参数和 `/opt/intruoyi/runtime/smoke/bin/npm` 挂载。
+- 命令记录：`python -X utf8 -m pytest scripts\tests\test_scheduler_smoke_release_config.py -q` -> PASS，3 passed；PowerShell AST parse -> PASS；`python -X utf8 -m pytest scripts\tests -q` -> PASS，5 passed；Docker Compose config -> PASS。
+- 命令记录：`validate_cicd_environment.py` -> PASS；`validate_quality_assurance.py` 首次因缺少证据标记失败，补齐后 -> PASS；`git diff --check` 限定本任务文件 -> PASS；`task-closeout-cleanup --mode preview` -> PASS。
+- 命令记录：`task-closeout-cleanup --mode apply` -> PASS，无删除项、阻塞项、警告或删除路径。
