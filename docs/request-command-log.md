@@ -400,3 +400,13 @@
 - 命令记录：`python -X utf8 -m pytest scripts\tests\test_scheduler_smoke_release_config.py -q` -> PASS，3 passed；PowerShell AST parse -> PASS；`python -X utf8 -m pytest scripts\tests -q` -> PASS，5 passed；Docker Compose config -> PASS。
 - 命令记录：`validate_cicd_environment.py` -> PASS；`validate_quality_assurance.py` 首次因缺少证据标记失败，补齐后 -> PASS；`git diff --check` 限定本任务文件 -> PASS；`task-closeout-cleanup --mode preview` -> PASS。
 - 命令记录：`task-closeout-cleanup --mode apply` -> PASS，无删除项、阻塞项、警告或删除路径。
+
+## 2026-06-18 发布验证通用经验沉淀
+
+- 用户需求：将前面归纳的 1-6 条经验补充到经验或者基线里，要求能长期复用。
+- 命令记录：读取 `project-experience-consolidation` 技能、`docs/release-build-preflight-lessons.md`、`docs/agent-memory/project-error-prevention.md`、任务文档和请求命令日志。
+- 命令记录：`rg -n "唯一发布源头|配置必须代码化|验证发布产物|环境差异显式检查|目标环境真实运行态|故障补成门禁" docs\\release-build-preflight-lessons.md docs\\agent-memory\\project-error-prevention.md` -> 退出码 1，确认长期经验文档尚未包含六条通用规则。
+- 命令记录：`apply_patch` 已更新发布预检经验文档、短记忆、任务文档和本日志。
+- 命令记录：再次运行 `rg -n "唯一发布源头|配置必须代码化|验证发布产物|环境差异显式检查|目标环境真实运行态|故障补成门禁" docs\\release-build-preflight-lessons.md docs\\agent-memory\\project-error-prevention.md` -> PASS，六条基线可被命中。
+- 命令记录：`git diff --check -- docs/release-build-preflight-lessons.md docs/agent-memory/project-error-prevention.md doc/tasks/20260618-release-validation-experience-baseline docs/request-command-log.md` -> PASS，无空白错误。
+- 命令记录：`task-closeout-cleanup --mode preview` 与 `--mode apply` -> PASS，无删除项、阻塞项、警告或删除路径。
