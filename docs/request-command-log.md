@@ -410,3 +410,29 @@
 - 命令记录：再次运行 `rg -n "唯一发布源头|配置必须代码化|验证发布产物|环境差异显式检查|目标环境真实运行态|故障补成门禁" docs\\release-build-preflight-lessons.md docs\\agent-memory\\project-error-prevention.md` -> PASS，六条基线可被命中。
 - 命令记录：`git diff --check -- docs/release-build-preflight-lessons.md docs/agent-memory/project-error-prevention.md doc/tasks/20260618-release-validation-experience-baseline docs/request-command-log.md` -> PASS，无空白错误。
 - 命令记录：`task-closeout-cleanup --mode preview` 与 `--mode apply` -> PASS，无删除项、阻塞项、警告或删除路径。
+
+## 2026-06-18 维护仓构建发布到测试服务器
+
+- 用户需求：构建发布到测试服务器。
+- 命中经验：读取维护仓任务规范、发布预检经验、IntRuoyi 发布/备份恢复基线、服务器访问基线和登录访问基线；本次授权仅限测试服 `172.30.30.58`，禁止备份服、正式服、备份、恢复、回滚和数据同步。
+- 命令记录：创建任务目录 `doc/tasks/20260618-build-deploy-test-server-maintenance/`，写入 `task.md`、`execution-log.md`、`ci-cd-evidence.md`、`bug-regression-evidence.md`。
+- 命令记录：`python -X utf8 -m pytest scripts\tests\test_showroom_release_sql_contract.py -q` -> RED，3 failed，确认维护仓缺少 `sql/showroom` 奖项 SQL 发布契约和 schema preflight。
+- 命令记录：修改 `ops/deploy/publish-int-ruoyi.ps1`，新增 `sql/mysql` + 指定 `sql/showroom/20260613_showroom_award_and_hall_item_schema.sql` 发布根、release metadata 读取、migration policy gate 参数和远端 `showroom_award` schema preflight。
+- 命令记录：修改 `ops/release/release_migration_manifest.py`、`ops/release/release_migration_policy_gate.py`、`ops/release/run-release-migration-policy-gate.py`，支持 `sql_paths` / `file_prefix` / `--sql-file` / `--file-prefix`，并改为导入维护仓 `ops.release`。
+- 命令记录：`python -X utf8 -m pytest scripts\tests\test_showroom_release_sql_contract.py -q` -> PASS，3 passed；PowerShell AST parse -> PASS；`python -X utf8 -m pytest scripts\tests -q` -> PASS，8 passed。
+- 命令记录：业务仓真实 `sql/showroom/20260613_showroom_award_and_hall_item_schema.sql` migration policy gate -> PASS，`migrationCount=1`；维护仓 CLI 对同一 SQL 文件 -> PASS。
+- 命令记录：补充 `20260606_showroom_hall_product_canvas_layout` dependsOn 契约，业务仓两个 showroom SQL 均补 release metadata；维护仓发布脚本纳入两个 SQL 并保持顺序。
+- 命令记录：修复智能排产冒烟 npm 运行时环境从远端 `.env` 导出 `MES_SMOKE_NODE_IMAGE`，避免部署覆盖测试服手工配置。
+- 命令记录：前端 release build 真实失败于 `vite-plugin-top-level-await` / Rollup/SWC `Cannot set property code`；新增静态回归测试后移除该插件，真实 Vite 构建 PASS。
+- 命令记录：维护控制台真实部署预览先后暴露前端未携带目标环境、后端拒绝匹配目标环境；新增前端静态测试与后端契约测试，`scripts\build.ps1` PASS。
+- 命令记录：真实前端 build-release operation `op-2026-06-18T094150771556100Z-0c41d8dd-8879-42b1-b068-4e0457975aa7` -> SUCCESS；releaseTag `release-20260618-1742-showroom-sql-vite`；发布包 `813535256 bytes` / `775.85 MiB`，无 `docker-build-context`。
+- 命令记录：首次测试服部署因旧 `release-20260618-1437-showroom-sql-smoke-env` 锁仍为 `RUNNING` 失败；只将该旧锁按事实收口为 `FAILED`，`updated_rows=1`。
+- 命令记录：第二次测试服部署因 `preflight-plan.json status=blocked` 失败，阻塞项为 `20260613_showroom_award_and_hall_item_schema` 缺依赖 `20260606_showroom_hall_product_canvas_layout`。
+- 命令记录：新增 RED 用例 `test_preflight_accepts_dependency_applied_earlier_in_same_plan`，修复 `release_preflight_plan.py` 按 manifest 顺序累积同包前置 `APPLY` 迁移；业务仓测试 `python -X utf8 -m pytest script\tests\test_release_preflight_plan.py -q` -> PASS，9 passed；维护仓/业务仓脚本哈希一致。
+- 命令记录：只将本次失败的 `test-release-20260618-1742-showroom-sql-vite` 锁收口为 `FAILED`，`updated_rows=1`，随后通过 Playwright 真实前端再次点击“部署测试服”。
+- 命令记录：最终部署 operation `op-2026-06-18T111139027664400Z-8c8c1cd0-b797-4b05-ba38-56190a4fb52a` -> SUCCESS；日志显示 `Publish completed for test`。
+- 命令记录：测试服验证 PASS：`.env` `IMAGE_TAG=release-20260618-1742-showroom-sql-vite`；backend/frontend 镜像 tag 匹配并 running；后端健康 `UP`；前端 HTTP 200。
+- 命令记录：schema 验证 PASS：`20260606_showroom_hall_product_canvas_layout`、`20260613_showroom_award_and_hall_item_schema`、`20260618_showroom_publicity_role_menu_scope` 均 `APPLIED`；展厅奖项表、混合展厅项表、布局列和 6 个关键索引存在。
+- 命令记录：Playwright 真实打开测试服前端 `http://172.30.30.58:8081/`，标题 `瑛泰管理系统 - 登录`，console error 0，failed request 0，截图保存到任务目录。
+- 命令记录：维护仓测试、业务仓发布预检测试、前端构建契约测试、PowerShell AST、CI/CD/bug/database evidence validators 均 PASS。
+- 命令记录：`task-closeout-cleanup --mode preview` 与 `--mode apply` PASS，无删除项、阻塞项、警告或删除路径。

@@ -9,12 +9,14 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from script.release.release_migration_policy_gate import MigrationPolicyError, run_migration_policy_gate
+from ops.release.release_migration_policy_gate import MigrationPolicyError, run_migration_policy_gate
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--sql-root", required=True)
+    parser.add_argument("--sql-file", action="append", default=[])
+    parser.add_argument("--file-prefix", default="sql/mysql")
     parser.add_argument("--frozen-registry")
     parser.add_argument("--output")
     args = parser.parse_args()
@@ -22,6 +24,8 @@ def main() -> int:
     try:
         report = run_migration_policy_gate(
             Path(args.sql_root),
+            sql_paths=[Path(item) for item in args.sql_file] if args.sql_file else None,
+            file_prefix=args.file_prefix,
             frozen_registry_path=Path(args.frozen_registry) if args.frozen_registry else None,
         )
     except MigrationPolicyError as exc:

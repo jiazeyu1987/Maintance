@@ -26,9 +26,9 @@ def _migration_id(path: Path) -> str:
     return path.stem
 
 
-def _relative_file(sql_root: Path, path: Path) -> str:
+def _relative_file(sql_root: Path, path: Path, file_prefix: str = "sql/mysql") -> str:
     relative = path.relative_to(sql_root).as_posix()
-    return f"sql/mysql/{relative}"
+    return f"{file_prefix.rstrip('/')}/{relative}"
 
 
 def _parse_metadata(path: Path) -> dict[str, list[str] | str]:
@@ -77,7 +77,12 @@ def _parse_metadata(path: Path) -> dict[str, list[str] | str]:
     return metadata
 
 
-def build_migration_manifest(sql_root: Path | str) -> list[dict[str, object]]:
+def build_migration_manifest(
+    sql_root: Path | str,
+    *,
+    sql_paths: list[Path | str] | None = None,
+    file_prefix: str = "sql/mysql",
+) -> list[dict[str, object]]:
     root = Path(sql_root).resolve()
     if not root.exists():
         raise MigrationManifestError(f"SQL root does not exist: {root}")
@@ -86,7 +91,22 @@ def build_migration_manifest(sql_root: Path | str) -> list[dict[str, object]]:
 
     entries: list[dict[str, object]] = []
     seen: dict[str, Path] = {}
-    for path in sorted(root.rglob("20*.sql"), key=lambda item: item.relative_to(root).as_posix()):
+    if sql_paths is None:
+        paths = sorted(root.rglob("20*.sql"), key=lambda item: item.relative_to(root).as_posix())
+    else:
+        paths = []
+        for sql_path in sql_paths:
+            path = Path(sql_path).resolve()
+            if not path.is_file():
+                raise MigrationManifestError(f"SQL file does not exist: {path}")
+            try:
+                path.relative_to(root)
+            except ValueError as exc:
+                raise MigrationManifestError(f"SQL file is outside SQL root: {path}") from exc
+            paths.append(path)
+        paths = sorted(paths, key=lambda item: item.relative_to(root).as_posix())
+
+    for path in paths:
         migration_id = _migration_id(path)
         if migration_id in seen:
             raise MigrationManifestError(f"duplicate migrationId '{migration_id}': {seen[migration_id]} and {path}")
@@ -95,7 +115,7 @@ def build_migration_manifest(sql_root: Path | str) -> list[dict[str, object]]:
         entries.append(
             {
                 "migrationId": migration_id,
-                "file": _relative_file(root, path),
+                "file": _relative_file(root, path, file_prefix),
                 "sha256": _sha256(path),
                 "type": metadata["type"],
                 "allowedEnvironments": metadata["allowedEnvironments"],

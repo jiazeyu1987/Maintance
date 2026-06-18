@@ -162,7 +162,14 @@ function operationSupportsSmartReleaseReport(action: string) {
 }
 
 function operationRequiresTargetEnvironment(action: string) {
-  return ['backup-now', 'rollback-app', 'restore-data'].includes(action)
+  return [
+    'publish-test',
+    'promote-prod',
+    'promote-backup',
+    'backup-now',
+    'rollback-app',
+    'restore-data'
+  ].includes(action)
 }
 
 function operationUsesReleaseTag(action: string) {

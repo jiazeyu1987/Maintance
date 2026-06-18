@@ -19,11 +19,6 @@ def _state_for(target_state: dict[str, dict[str, object]], migration_id: str) ->
     return value if isinstance(value, dict) else None
 
 
-def _dependency_satisfied(target_state: dict[str, dict[str, object]], dependency: str) -> bool:
-    state = _state_for(target_state, dependency)
-    return bool(state and state.get("status") == "APPLIED")
-
-
 def _item(migration: dict[str, object], action: str, reason: str) -> dict[str, object]:
     return {
         "migrationId": migration["migrationId"],
@@ -41,6 +36,11 @@ def build_preflight_plan(
     target_environment: str,
 ) -> dict[str, object]:
     items: list[dict[str, object]] = []
+    satisfied_migrations = {
+        migration_id
+        for migration_id, state in target_state.items()
+        if state.get("status") == "APPLIED"
+    }
     for migration in migrations:
         migration_id = str(migration["migrationId"])
         allowed = [str(item) for item in migration.get("allowedEnvironments", [])]
@@ -54,14 +54,16 @@ def build_preflight_plan(
             accepted_checksums.update(str(item) for item in migration.get("equivalentSha256", []))
             if str(state.get("sha256")) in accepted_checksums:
                 items.append(_item(migration, "SKIP_ALREADY_APPLIED", "migration already applied with matching checksum"))
+                satisfied_migrations.add(migration_id)
             else:
                 items.append(_item(migration, "APPLY", "target checksum differs from manifest; reapply current required SQL"))
+                satisfied_migrations.add(migration_id)
             continue
 
         missing_dependencies = [
             str(dependency)
             for dependency in migration.get("dependsOn", [])
-            if not _dependency_satisfied(target_state, str(dependency))
+            if str(dependency) not in satisfied_migrations
         ]
         if missing_dependencies:
             items.append(
@@ -74,6 +76,7 @@ def build_preflight_plan(
             continue
 
         items.append(_item(migration, "APPLY", "migration is pending and prerequisites are satisfied"))
+        satisfied_migrations.add(migration_id)
 
     return {
         "status": "blocked" if any(item["action"] in BLOCKED_ACTIONS for item in items) else "passed",

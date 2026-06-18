@@ -196,6 +196,15 @@ public class RuntimeControlService {
     }
 
     private void validateActionTargetEnvironment(RuntimeControlOperationAction action, RuntimeControlActionReqVO req) {
+        if (action == RuntimeControlOperationAction.PUBLISH_TEST
+                || action == RuntimeControlOperationAction.PROMOTE_PROD
+                || action == RuntimeControlOperationAction.PROMOTE_BACKUP) {
+            String targetEnvironment = trimToEmpty(req.targetEnvironment());
+            if (hasText(targetEnvironment) && !action.defaultEnvironment().equals(targetEnvironment)) {
+                throw new RuntimeControlException("targetEnvironment");
+            }
+            return;
+        }
         if (action != RuntimeControlOperationAction.BACKUP_NOW
                 && action != RuntimeControlOperationAction.ROLLBACK_APP
                 && action != RuntimeControlOperationAction.RESTORE_DATA) {

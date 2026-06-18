@@ -142,6 +142,46 @@ class RuntimeControlOriginalParityTest {
     }
 
     @Test
+    void publishTestPreviewAcceptsMatchingTargetEnvironmentFromFrontend() throws Exception {
+        createRollbackPackage("release-publish-test-target", true, false, false);
+
+        String preview = mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "action": "publish-test",
+                                  "reason": "contract preview",
+                                  "targetEnvironment": "test",
+                                  "releaseTag": "release-publish-test-target"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        assertThat(preview)
+                .contains("-Mode", "deploy-release", "-Environment", "test",
+                        "-ReleaseTag", "release-publish-test-target", "-ServerHost", "172.30.30.58")
+                .doesNotContain("172.30.30.57", "backup-now", "restore-data", "rollback-app");
+
+        mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "action": "publish-test",
+                                  "reason": "contract preview",
+                                  "targetEnvironment": "backup",
+                                  "releaseTag": "release-publish-test-target"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.msg").value(org.hamcrest.Matchers.containsString("targetEnvironment")));
+    }
+
+    @Test
     void highRiskCandidateValuesAreServerResolvedOnly() throws Exception {
         createRollbackPackage("release-rollback", true, true, true);
         createRestorePoint("backup-20260616");

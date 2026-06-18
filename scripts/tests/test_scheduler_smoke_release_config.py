@@ -46,6 +46,7 @@ def test_publish_script_packages_scheduler_smoke_runner_and_env() -> None:
         "$schedulerSmokeScriptName = 'e2e:mes:smart-scheduling-smoke'",
         "$schedulerSmokeNodeImage = 'mcr.microsoft.com/playwright:v1.60.0-noble'",
         "function New-SchedulerSmokeRunnerPackage",
+        "function Get-RemoteSchedulerSmokeNodeImageBootstrapCommand",
         "function Copy-SchedulerSmokeRunnerToServer",
         "function Assert-RemoteSchedulerSmokeRuntime",
         "Smart scheduling smoke E2E script missing",
@@ -59,5 +60,15 @@ def test_publish_script_packages_scheduler_smoke_runner_and_env() -> None:
         "if ($publishBackend) { New-SchedulerSmokeRunnerPackage }",
         "if ($publishBackend) { Copy-SchedulerSmokeRunnerToServer }",
         "if ($publishBackend) { Assert-RemoteSchedulerSmokeRuntime }",
+    ):
+        assert expected in script
+
+    for expected in (
+        "MES_SMOKE_NODE_IMAGE=`$(grep -E '^MES_SMOKE_NODE_IMAGE=' '$RemoteAppDir/.env'",
+        "MES_SMOKE_NODE_IMAGE is missing in $RemoteAppDir/.env",
+        "export MES_SMOKE_NODE_IMAGE",
+        "$remoteSmokeNodeImageBootstrap = Get-RemoteSchedulerSmokeNodeImageBootstrapCommand",
+        "'$remoteSchedulerSmokeNpmWrapper' install --no-audit --no-fund",
+        "'$remoteSchedulerSmokeNpmWrapper' exec -- node --check tests/e2e/smart-scheduling-smoke-real-flow.e2e.js",
     ):
         assert expected in script

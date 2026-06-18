@@ -1771,6 +1771,39 @@ SQL
     }
 }
 
+function Assert-RemoteShowroomAwardSchemaReady {
+    Info 'Checking remote showroom award schema'
+    $sql = @"
+SELECT CONCAT('TABLES', CHAR(9), COUNT(DISTINCT TABLE_NAME))
+FROM information_schema.TABLES
+WHERE TABLE_SCHEMA = DATABASE()
+  AND TABLE_NAME IN ('showroom_award', 'showroom_award_revision', 'showroom_hall_item');
+SELECT CONCAT('INDEXES', CHAR(9), COUNT(DISTINCT CONCAT(TABLE_NAME, '.', INDEX_NAME)))
+FROM information_schema.STATISTICS
+WHERE TABLE_SCHEMA = DATABASE()
+  AND (
+       (TABLE_NAME = 'showroom_award' AND INDEX_NAME = 'uk_showroom_award_code')
+    OR (TABLE_NAME = 'showroom_award_revision' AND INDEX_NAME = 'uk_showroom_award_revision_no')
+    OR (TABLE_NAME = 'showroom_award_revision' AND INDEX_NAME = 'idx_showroom_award_revision_award')
+    OR (TABLE_NAME = 'showroom_hall_item' AND INDEX_NAME = 'uk_showroom_hall_item')
+    OR (TABLE_NAME = 'showroom_hall_item' AND INDEX_NAME = 'idx_showroom_hall_item_order')
+    OR (TABLE_NAME = 'showroom_hall_item' AND INDEX_NAME = 'idx_showroom_hall_item_item')
+  );
+"@
+    $output = Invoke-RemoteMySqlRaw -Sql $sql -Purpose 'SHOWROOM_AWARD_SCHEMA_MISSING schema verification'
+    $lines = @($output -split "`r?`n" | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    $tableLine = @($lines | Where-Object { $_.StartsWith("TABLES`t") }) | Select-Object -First 1
+    $indexLine = @($lines | Where-Object { $_.StartsWith("INDEXES`t") }) | Select-Object -First 1
+    $tableCount = if ($tableLine) { [int](($tableLine -split "`t")[1]) } else { 0 }
+    $indexCount = if ($indexLine) { [int](($indexLine -split "`t")[1]) } else { 0 }
+    if ($tableCount -ne 3) {
+        Fail "SHOWROOM_AWARD_SCHEMA_MISSING: expected showroom_award/showroom_award_revision/showroom_hall_item before backend start, actual table count: $tableCount"
+    }
+    if ($indexCount -ne 6) {
+        Fail "SHOWROOM_AWARD_SCHEMA_MISSING: expected showroom award/hall item indexes before backend start, actual index count: $indexCount"
+    }
+}
+
 function Wait-RemoteHttpOk {
     param(
         [Parameter(Mandatory = $true)]
@@ -2878,6 +2911,77 @@ function Get-ReleaseDependencyHash {
     }
 }
 
+function Read-ReleaseMigrationMetadata {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$SqlPath
+    )
+
+    if (-not (Test-Path -LiteralPath $SqlPath -PathType Leaf)) {
+        Fail "Release migration SQL missing before metadata read: $SqlPath"
+    }
+    $text = [System.IO.File]::ReadAllText($SqlPath, [System.Text.UTF8Encoding]::new($false))
+    $match = [regex]::Match(
+        $text,
+        '^\s*--\s*release-migration\s*:\s*(.+?)\s*$',
+        [System.Text.RegularExpressions.RegexOptions]::IgnoreCase -bor [System.Text.RegularExpressions.RegexOptions]::Multiline
+    )
+    if (-not $match.Success) {
+        Fail "Release migration metadata missing: $SqlPath"
+    }
+
+    $metadata = [ordered]@{
+        allowedEnvironments = @('test', 'backup', 'prod')
+        dependsOn = @()
+        type = 'schema'
+        riskLevel = 'medium'
+    }
+    foreach ($segment in ($match.Groups[1].Value -split ';')) {
+        $trimmed = $segment.Trim()
+        if ([string]::IsNullOrWhiteSpace($trimmed)) {
+            continue
+        }
+        $parts = $trimmed -split '=', 2
+        if ($parts.Count -ne 2) {
+            Fail "Invalid release migration metadata segment in ${SqlPath}: $trimmed"
+        }
+        $key = $parts[0].Trim()
+        $values = @($parts[1].Split(',') | ForEach-Object { $_.Trim() } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+        switch ($key) {
+            'allowedEnvironments' {
+                if ($values.Count -eq 0) {
+                    Fail "allowedEnvironments is empty in release migration metadata: $SqlPath"
+                }
+                foreach ($value in $values) {
+                    if ($value -notin @('test', 'backup', 'prod')) {
+                        Fail "Invalid allowedEnvironments value in release migration metadata: $SqlPath -> $value"
+                    }
+                }
+                $metadata.allowedEnvironments = @($values)
+            }
+            'dependsOn' {
+                $metadata.dependsOn = @($values)
+            }
+            'type' {
+                if ($values.Count -ne 1 -or $values[0] -notin @('schema', 'data', 'menu', 'config', 'permission', 'seed')) {
+                    Fail "Invalid type in release migration metadata: $SqlPath"
+                }
+                $metadata.type = [string]$values[0]
+            }
+            'riskLevel' {
+                if ($values.Count -ne 1 -or $values[0] -notin @('low', 'medium', 'high')) {
+                    Fail "Invalid riskLevel in release migration metadata: $SqlPath"
+                }
+                $metadata.riskLevel = [string]$values[0]
+            }
+            default {
+                Fail "Unknown release migration metadata key in ${SqlPath}: $key"
+            }
+        }
+    }
+    return $metadata
+}
+
 function New-ReleaseRequiredSqlManifestEntries {
     $entries = @()
     foreach ($entry in $requiredDatabaseSqlScripts) {
@@ -2887,15 +2991,18 @@ function New-ReleaseRequiredSqlManifestEntries {
         if (-not (Test-Path -LiteralPath $packageSqlPath -PathType Leaf)) {
             Fail "Manifest v1 required SQL missing from package: $packageSqlPath"
         }
+        $sourceRelativePath = $relativePath.Replace('/', [System.IO.Path]::DirectorySeparatorChar)
+        $sourcePath = Join-Path $backendRepo $sourceRelativePath
+        $metadata = Read-ReleaseMigrationMetadata -SqlPath $sourcePath
         $entries += [ordered]@{
             id = [System.IO.Path]::GetFileNameWithoutExtension($fileName)
             migrationId = [System.IO.Path]::GetFileNameWithoutExtension($fileName)
             file = "required-sql/$fileName"
             sourcePath = $relativePath
-            type = 'schema'
-            allowedEnvironments = @($entry.Environments)
-            dependsOn = @()
-            riskLevel = 'medium'
+            type = [string]$metadata.type
+            allowedEnvironments = @($metadata.allowedEnvironments)
+            dependsOn = @($metadata.dependsOn)
+            riskLevel = [string]$metadata.riskLevel
             sha256 = ConvertTo-ReleaseFileSha256Digest -Path $packageSqlPath
             requiredPreconditions = @(
                 [ordered]@{
@@ -2914,20 +3021,28 @@ function Invoke-ReleaseMigrationPolicyGate {
     if (-not (Test-Path -LiteralPath $policyGateScript -PathType Leaf)) {
         Fail "Migration policy gate script missing: $policyGateScript"
     }
-    $sqlRoot = Join-Path $backendRepo 'sql\mysql'
-    $result = Invoke-ProcessCapture -FilePath 'python' -ArgumentList @(
-        '-X',
-        'utf8',
-        $policyGateScript,
-        '--sql-root',
-        $sqlRoot
-    ) -WorkingDirectory $backendRepo
-    $output = (($result.StdOut + "`n" + $result.StdErr).Trim())
-    if ($output) {
-        Info "Migration policy gate output: $output"
-    }
-    if ($result.ExitCode -ne 0) {
-        Fail 'Migration policy gate failed; build-release is blocked before package manifest generation.'
+    foreach ($root in @(Get-ReleaseDatabaseSqlRoots)) {
+        $sqlRoot = [string]$root.Root
+        $argumentList = @(
+            '-X',
+            'utf8',
+            $policyGateScript,
+            '--sql-root',
+            $sqlRoot,
+            '--file-prefix',
+            ([string]$root.RelativePath)
+        )
+        foreach ($fileName in @($root.IncludeFiles)) {
+            $argumentList += @('--sql-file', (Join-Path $sqlRoot ([string]$fileName)))
+        }
+        $result = Invoke-ProcessCapture -FilePath 'python' -ArgumentList $argumentList -WorkingDirectory $backendRepo
+        $output = (($result.StdOut + "`n" + $result.StdErr).Trim())
+        if ($output) {
+            Info "Migration policy gate output: $output"
+        }
+        if ($result.ExitCode -ne 0) {
+            Fail 'Migration policy gate failed; build-release is blocked before package manifest generation.'
+        }
     }
 }
 
@@ -3441,25 +3556,71 @@ function Get-ReleaseDatabaseSqlSortKey {
     }
 }
 
+function Get-ReleaseDatabaseSqlRoots {
+    return @(
+        [ordered]@{
+            RelativePath = 'sql/mysql'
+            Root = Join-Path $backendRepo 'sql\mysql'
+            IncludeFiles = @()
+            Environments = @('test', 'prod', 'backup')
+        },
+        [ordered]@{
+            RelativePath = 'sql/showroom'
+            Root = Join-Path $backendRepo 'sql\showroom'
+            IncludeFiles = @(
+                '20260606_showroom_hall_product_canvas_layout.sql',
+                '20260613_showroom_award_and_hall_item_schema.sql'
+            )
+            Environments = @('test', 'prod', 'backup')
+        }
+    )
+}
+
 function Get-ReleaseDatabaseSqlScripts {
-    $sqlRoot = Join-Path $backendRepo 'sql\mysql'
-    if (-not (Test-Path -LiteralPath $sqlRoot -PathType Container)) {
-        Fail "Release database SQL directory missing: $sqlRoot"
+    $entries = @()
+    $seenPackageFileNames = @{}
+    foreach ($root in @(Get-ReleaseDatabaseSqlRoots)) {
+        $sqlRoot = [string]$root.Root
+        $relativeRoot = [string]$root.RelativePath
+        if (-not (Test-Path -LiteralPath $sqlRoot -PathType Container)) {
+            Fail "Release database SQL directory missing: $sqlRoot"
+        }
+
+        $files = @()
+        if (@($root.IncludeFiles).Count -gt 0) {
+            foreach ($fileName in @($root.IncludeFiles)) {
+                $filePath = Join-Path $sqlRoot ([string]$fileName)
+                if (-not (Test-Path -LiteralPath $filePath -PathType Leaf)) {
+                    Fail "Release database SQL file missing: $filePath"
+                }
+                $files += Get-Item -LiteralPath $filePath
+            }
+        } else {
+            $files = @(
+                Get-ChildItem -LiteralPath $sqlRoot -Filter '*.sql' -File |
+                    Where-Object { $_.Name -match '^20\d{6}_.+\.sql$' }
+            )
+        }
+
+        foreach ($file in $files) {
+            if ($seenPackageFileNames.ContainsKey($file.Name)) {
+                Fail "Duplicate release database SQL file name: $($file.Name) in $($seenPackageFileNames[$file.Name]) and $($file.FullName)"
+            }
+            $seenPackageFileNames[$file.Name] = $file.FullName
+            $metadata = Read-ReleaseMigrationMetadata -SqlPath $file.FullName
+            $entries += @{
+                Path = ($relativeRoot + '/' + $file.Name)
+                Environments = @($metadata.allowedEnvironments)
+            }
+        }
     }
 
     $entries = @(
-        Get-ChildItem -LiteralPath $sqlRoot -Filter '*.sql' -File |
-            Where-Object { $_.Name -match '^20\d{6}_.+\.sql$' } |
-            Sort-Object @{ Expression = { Get-ReleaseDatabaseSqlSortKey -FileName $_.Name } }, Name |
-            ForEach-Object {
-                @{
-                    Path = ('sql/mysql/' + $_.Name)
-                    Environments = @('test', 'prod', 'backup')
-                }
-            }
+        $entries |
+            Sort-Object @{ Expression = { Get-ReleaseDatabaseSqlSortKey -FileName ([System.IO.Path]::GetFileName(([string]$_.Path).Replace('/', [System.IO.Path]::DirectorySeparatorChar))) } }, Path
     )
     if ($entries.Count -eq 0) {
-        Fail "No release database SQL scripts found under: $sqlRoot"
+        Fail "No release database SQL scripts found under release SQL roots"
     }
     return $entries
 }
@@ -3651,6 +3812,18 @@ function New-SchedulerSmokeRunnerPackage {
     Write-Utf8LfNoBomFile -Path (Join-Path $localBinDir 'npm') -Content (New-SchedulerSmokeNpmWrapperContent)
 }
 
+function Get-RemoteSchedulerSmokeNodeImageBootstrapCommand {
+    return @"
+set -eu
+MES_SMOKE_NODE_IMAGE=`$(grep -E '^MES_SMOKE_NODE_IMAGE=' '$RemoteAppDir/.env' | sed 's/^MES_SMOKE_NODE_IMAGE=//')
+if [ -z "`$MES_SMOKE_NODE_IMAGE" ]; then
+  echo 'MES_SMOKE_NODE_IMAGE is missing in $RemoteAppDir/.env' >&2
+  exit 1
+fi
+export MES_SMOKE_NODE_IMAGE
+"@.Trim()
+}
+
 function Copy-SchedulerSmokeRunnerToServer {
     if (-not $publishBackend) {
         return
@@ -3663,7 +3836,10 @@ function Copy-SchedulerSmokeRunnerToServer {
     Invoke-SshCommand "mkdir -p '$RemoteAppDir' '$remoteSchedulerSmokeRoot' '$remoteSchedulerSmokeFrontendDir/input' '$remoteSchedulerSmokeFrontendDir/output/artifacts' '$remoteSchedulerSmokeBinDir'"
     Copy-ToServer -LocalPath $schedulerSmokeRunnerLocalDir -RemotePath $RemoteAppDir -Recursive
     Invoke-SshCommand "chmod +x '$remoteSchedulerSmokeNpmWrapper' && test -f '$remoteSchedulerSmokeFrontendDir/package.json' && test -f '$remoteSchedulerSmokeFrontendDir/tests/e2e/smart-scheduling-smoke-real-flow.e2e.js'"
-    Invoke-SshCommand "cd '$remoteSchedulerSmokeFrontendDir' && '$remoteSchedulerSmokeNpmWrapper' install --no-audit --no-fund"
+    $remoteSmokeNodeImageBootstrap = Get-RemoteSchedulerSmokeNodeImageBootstrapCommand
+    Invoke-SshCommand "$remoteSmokeNodeImageBootstrap
+cd '$remoteSchedulerSmokeFrontendDir'
+'$remoteSchedulerSmokeNpmWrapper' install --no-audit --no-fund"
 }
 
 function Assert-RemoteSchedulerSmokeRuntime {
@@ -3673,7 +3849,10 @@ function Assert-RemoteSchedulerSmokeRuntime {
 
     Info "Checking scheduler smoke runtime on the $PublishTargetName server"
     Invoke-SshCommand "docker exec intruoyi-backend sh -lc 'test `"`${YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_FRONTEND_DIRECTORY}`" = `"$schedulerSmokeFrontendDirectory`" && test `"`${YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_SCRIPT_NAME}`" = `"$schedulerSmokeScriptName`" && test `"`${MES_SMOKE_NODE_IMAGE}`" = `"$schedulerSmokeNodeImage`" && test -d `"$schedulerSmokeFrontendDirectory`" && test -f `"$schedulerSmokeFrontendDirectory/package.json`" && test -x /usr/local/bin/npm && npm --version >/dev/null'"
-    Invoke-SshCommand "cd '$remoteSchedulerSmokeFrontendDir' && '$remoteSchedulerSmokeNpmWrapper' exec -- node --check tests/e2e/smart-scheduling-smoke-real-flow.e2e.js"
+    $remoteSmokeNodeImageBootstrap = Get-RemoteSchedulerSmokeNodeImageBootstrapCommand
+    Invoke-SshCommand "$remoteSmokeNodeImageBootstrap
+cd '$remoteSchedulerSmokeFrontendDir'
+'$remoteSchedulerSmokeNpmWrapper' exec -- node --check tests/e2e/smart-scheduling-smoke-real-flow.e2e.js"
 }
 
 function Get-RequiredDatabaseSqlFileName {
@@ -4674,6 +4853,7 @@ if ($publishBackend) {
     Write-ReleasePreflightPlan
     Invoke-RequiredDatabaseSqlScripts
     Assert-RemoteQuartzSchemaReady
+    Assert-RemoteShowroomAwardSchemaReady
 }
 
 if ($publishBackend) {
