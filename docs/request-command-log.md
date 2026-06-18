@@ -329,3 +329,16 @@
 - 命令记录：`validate_cicd_environment.py --evidence doc\tasks\20260618-build-test-backup-release\ci-cd-evidence.md` PASS。
 - 结论记录：测试服与备份服均已发布 `release-20260618-0056-codeonly-e2e` 并通过验证。
 - 命令记录：`task-closeout-cleanup --mode preview` 与 `--mode apply` PASS，无删除项、阻塞项或警告，保留本任务四个记录/证据文件。
+
+## 2026-06-18 缩小 code-only 发布包
+
+- 用户需求：低风险缩小发布包，只保留部署必需内容，去掉 `docker-build-context`。
+- 计划边界：修改本机维护仓库构建脚本和测试；不执行真实服务器发布、远端写入、备份、恢复或回滚。
+- 命中经验：读取发布预检清单、原 IntRuoyi 发布/备份恢复基线、项目错误预防短记忆和 CI/CD 技能。
+- 命令记录：创建任务目录 `doc/tasks/20260618-shrink-release-package/`，写入 `task.md` 与 `execution-log.md`。
+- 命令记录：新增 `scripts/tests/test_release_package_slimming.py`，RED 运行 `python -m pytest scripts\tests\test_release_package_slimming.py` 失败，证明当前脚本未清理最终发布包中的 `docker-build-context`。
+- 命令记录：修改 `ops/deploy/publish-int-ruoyi.ps1`，在 `Write-ReleaseManifest` 前调用 `Remove-ReleaseDockerBuildContextFromPackage`，删除构建上下文并在残留时 fail fast。
+- 命令记录：GREEN 运行 `python -m pytest scripts\tests\test_release_package_slimming.py` PASS，2 个测试通过；PowerShell 解析检查 PASS。
+- 命令记录：`validate_cicd_environment.py --evidence doc\tasks\20260618-shrink-release-package\ci-cd-evidence.md` PASS。
+- 结论记录：后续 build-release 发布包会在 manifest 生成前去掉 `docker-build-context`；未改写已部署历史发布包，避免 manifest 审计记录漂移。
+- 命令记录：`task-closeout-cleanup --mode preview` 与 `--mode apply` PASS，无删除项、阻塞项或警告。

@@ -147,6 +147,18 @@ function New-ReleaseDockerBuildContext {
     }
 }
 
+function Remove-ReleaseDockerBuildContextFromPackage {
+    if (-not (Test-Path -LiteralPath $dockerBuildContextRoot)) {
+        return
+    }
+
+    Info 'Removing Docker build context from final release package'
+    Remove-Item -LiteralPath $dockerBuildContextRoot -Recurse -Force
+    if (Test-Path -LiteralPath $dockerBuildContextRoot) {
+        Fail "Release package still contains docker-build-context: $dockerBuildContextRoot"
+    }
+}
+
 function Resolve-LocalCacheRoot([string]$ConfiguredRoot) {
     $defaultLocalCacheRoot = 'E:\Int\CacheData\IntRuoyi'
     $effectiveRoot = if ([string]::IsNullOrWhiteSpace($ConfiguredRoot)) {
@@ -4225,6 +4237,7 @@ if ($publishBackend -and $Mode -eq 'build-release' -and -not $SkipMinioSync) {
 
 Write-ReleaseRuntimeEnvPackage
 Copy-Item -LiteralPath $composeTemplate -Destination (Join-Path $releaseDir 'docker-compose.yml') -Force
+Remove-ReleaseDockerBuildContextFromPackage
 Write-ReleaseManifest -PackageTag $ReleaseTag
 
 if ($smartReleaseReportOnlyEnabled -and $Mode -eq 'build-release') {
