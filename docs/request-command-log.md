@@ -436,3 +436,132 @@
 - 命令记录：Playwright 真实打开测试服前端 `http://172.30.30.58:8081/`，标题 `瑛泰管理系统 - 登录`，console error 0，failed request 0，截图保存到任务目录。
 - 命令记录：维护仓测试、业务仓发布预检测试、前端构建契约测试、PowerShell AST、CI/CD/bug/database evidence validators 均 PASS。
 - 命令记录：`task-closeout-cleanup --mode preview` 与 `--mode apply` PASS，无删除项、阻塞项、警告或删除路径。
+
+## 2026-06-18 发布后角色 E2E 门禁
+
+- 用户需求：每次发布后在测试服务器用芋道源码租户真实账号 `gaomin`、`zhaojie`、`wangsiyu` 全量验证角色页签隔离、子页访问和智能排产冒烟测试；遇到错误先全部记录，再统一修复、重新构建发布到测试服务器并复测直到满足目标。
+- 命中经验：读取发布预检经验、服务器访问基线、登录访问基线、备份/发布/恢复基线和项目错误预防短记忆；本次高风险动作授权仅限测试服 `172.30.30.58` 和指定三账号真实 E2E。
+- 命令记录：创建任务目录 `doc/tasks/20260618-post-release-role-e2e-gate/`，写入 `task.md`、`execution-log.md`、`qa-evidence.md`、`bug-regression-evidence.md`，记录 `GREEN: experience-preflight -> PASS`。
+- 命令记录：读取前端 Playwright E2E 脚本、智能排产冒烟测试脚本、展厅和 DCC 菜单 SQL 线索，确认前端仓 `playwright` 依赖可解析。
+## 2026-06-18 post-release-role-e2e-gate continuation
+
+- 用户需求：继续构建发布到测试服务器，并把三角色真实 E2E 暴露的问题修复到通过。
+- 执行命令：`python -X utf8 -m pytest script\tests\test_post_release_role_e2e_gate_sql.py script\tests\test_scheduler_smoke_release_contract.py script\tests\test_showroom_release_sql_contract.py script\tests\test_publish_int_ruoyi_to_test_tooling.py script\tests\test_showroom_product_revision_attachment_sql.py script\tests\test_showroom_sql_scripts.py -q`
+- 执行命令：`python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql`
+- 执行命令：`python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\showroom --sql-file sql\showroom\20260605_showroom_product_revision_attachment_schema.sql --sql-file sql\showroom\20260606_showroom_hall_product_canvas_layout.sql --sql-file sql\showroom\20260613_showroom_award_and_hall_item_schema.sql --sql-file sql\showroom\20260615_showroom_hall_canvas_background.sql --file-prefix sql/showroom`
+- 执行命令：`git diff --check -- <current task files>`
+# 2026-06-19 正式服务器发布注意事项确认
+
+- 用户需求：当前的正式服务器发布需要注意什么。
+- 执行命令：读取 `docs/experience-index.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`、`C:\Users\BJB110\.codex\skills\ci-cd-environment-delivery\SKILL.md`、`C:\Users\BJB110\.codex\skills\ci-cd-environment-delivery\references\cicd-contract.md`；创建 `doc/tasks/20260619-prod-release-notes/` 任务记录。
+
+# 2026-06-19 发布后三角色 E2E 门禁新线程接续
+
+- 用户需求：继续上个坏掉线程跑到一半的目标：每次发布后在测试服务器用 `芋道源码` 租户账号 `gaomin`、`zhaojie`、`wangsiyu` 全量验证权限页签、子页访问和智能排产冒烟；失败先全部记录，统一修复后重新构建发布到测试服并复测直到通过。
+- 执行命令：读取 `bug-regression-fix-loop`、`quality-assurance-test-suite`、`playwright` 技能与契约；读取 `doc/tasks/20260618-post-release-role-e2e-gate/` 任务文档、执行日志、QA/缺陷证据和最新 evidence 列表；读取 `docs/experience-index.md`、`docs/release-build-preflight-lessons.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`、`docs/agent-memory/project-error-prevention.md`。
+- 执行命令：摘要读取 `post-release-role-e2e-1781826823171.json` 与 `runtime-console-build-deploy-1781803561178.json`，确认最新发布成功但三角色 E2E 仍有 4 个失败。
+- 执行命令：新增并运行 RED 契约 `MesProAutoScheduleControllerContractTest`、`tests/e2e/mes-auto-schedule-dependency-post-static.spec.js`；运行 `test_scheduler_smoke_release_contract.py` 暴露 smoke 用户名契约失败。
+- 执行命令：修改后端 `/mes/pro/auto-schedule/dependencies` 增加 POST body、前端依赖查询改 POST、SQL/发布测试统一合法 smoke 用户名；`mvn -pl yudao-module-mes -Dtest=MesProAutoScheduleControllerContractTest test` PASS；`node tests\e2e\mes-auto-schedule-dependency-post-static.spec.js` PASS；`python -X utf8 -m pytest script\tests\test_scheduler_smoke_release_contract.py script\tests\test_post_release_role_e2e_gate_sql.py -q` PASS。
+- 执行命令：只读核对测试服数据库 154 条 `infra_file.config_id=28` 产品封面引用与 MinIO 对象缺口；从已有真实对象 evidence 生成 `minio-showroom-cover-20260602-repair-1781842832636.tar`，同步到测试服 MinIO 默认 `yudao` bucket，补齐对象数到 154，并用 `curl -I` 验证失败样例返回 `image/png`。
+- 执行命令：运行本地门禁、构建并发布 `release-20260619-1229-role-e2e-gate-post-deps-smoke-user` 到测试服；证据 `runtime-console-build-deploy-1781844498623.json` 为 PASS，测试服 `.env`、镜像 tag、后端 health、前端 HTTP 200 和 smoke username 迁移状态均通过。
+- 执行命令：运行三角色真实 E2E，证据 `post-release-role-e2e-1781844737245.json` 为 FAIL；记录 `gaomin`/`wangsiyu` 已通过，`zhaojie` smoke 失败根因为 smoke 账号密码过期，另有未读消息请求 `net::ERR_ABORTED` 被 E2E 脚本误判。
+- 执行命令：新增 smoke 密码新鲜度 SQL 迁移和 E2E 请求失败静态回归测试；`python -X utf8 -m pytest ... -q` -> PASS，114 passed；`node doc\tasks\20260618-post-release-role-e2e-gate\scripts\post-release-role-e2e-static.test.cjs` -> PASS；迁移策略门禁 -> PASS，包含 `20260619_post_release_role_e2e_gate_smoke_username_password_freshness_fix`。
+- 执行命令：准备重新构建发布测试服修复版 `release-20260619-1301-role-e2e-gate-smoke-password-freshness`；命令为设置 `RUNTIME_CONSOLE_RELEASE_TAG`、`RUNTIME_CONSOLE_REASON`、`RUNTIME_CONSOLE_TIMEOUT_MS`、`RUNTIME_CONSOLE_POLL_INTERVAL_MS` 后运行 `node doc/tasks/20260618-post-release-role-e2e-gate/scripts/runtime-console-build-deploy.cjs`。
+- 执行命令：发布后只读核验测试服 `release-20260619-1301-role-e2e-gate-smoke-password-freshness` 的后端 health、前端 HTTP 200、远端 `.env`、backend/frontend 镜像 tag、`20260619_post_release_role_e2e_gate_smoke_username_password_freshness_fix` 迁移状态与 smoke 账号 `password_update_time`。
+- 执行命令：准备以 `POST_RELEASE_ROLE_E2E_PASSWORD=111111` 运行 `node doc/tasks/20260618-post-release-role-e2e-gate/scripts/post-release-role-e2e.cjs`，在测试服完整复测 `gaomin`、`zhaojie`、`wangsiyu`。
+- 执行命令：解析 `post-release-role-e2e-1781846902055.json` 与远端 `smoke-report.json`，确认第三轮失败只剩 `zhaojie` 智能排产 smoke，根因为默认 ERP 计划完工时间 `2026-06-20 17:27:00` 落在周六，被 Kingdee 车间工作日历拒绝。
+- 执行命令：新增 RED 静态合同并修复 `tests/e2e/smart-scheduling-smoke-real-flow.e2e.js`，将默认 `MES_SMOKE_ERP_PLANNED_FINISH_TIME` 改为下一个工作日；`node tests/e2e/smart-scheduling-smoke-real-flow-static.spec.js` -> PASS。
+- 执行命令：准备重新构建发布测试服修复版 `release-20260619-1335-role-e2e-gate-weekday-smoke-finish`；命令为设置 `RUNTIME_CONSOLE_RELEASE_TAG`、`RUNTIME_CONSOLE_REASON`、`RUNTIME_CONSOLE_TIMEOUT_MS`、`RUNTIME_CONSOLE_POLL_INTERVAL_MS` 后运行 `node doc/tasks/20260618-post-release-role-e2e-gate/scripts/runtime-console-build-deploy.cjs`。
+- 执行命令：读取最新证据 `post-release-role-e2e-1781848897783.json` 与截图 `zhaojie-smoke-job-trigger-failure-1781848897783.png`，确认 `gaomin`/`wangsiyu` 已通过，`zhaojie` 仅剩 ERP 金蝶同步运行页生产工单“执行一次”按钮不可见。
+- 执行命令：只读查询测试服 `system_users`、`system_role`、`system_role_menu`、`system_menu`、`system_tenant`、`system_tenant_package`，并用 Playwright 真实登录 `messmokeerp` 读取 `get-permission-info`；确认旧 `infra:job:trigger` 绑定在定时任务父链下，被 `filterDisableMenus()` 因缺父链过滤出登录态权限。
+- 执行命令：新增 RED 契约 `test_post_release_role_gate_smoke_erp_job_permission_fix_surfaces_manual_trigger_button`，要求新增迁移在 ERP 同步菜单 `6013` 下补齐 `infra:job:query` 与 `infra:job:trigger` 按钮权限并绑定 ERP smoke 角色；首次运行 `python -X utf8 -m pytest script\tests\test_post_release_role_e2e_gate_sql.py -q` -> FAIL，缺少迁移文件。
+- 执行命令：新增 `sql/mysql/20260619_post_release_role_e2e_gate_smoke_z_erp_job_permission_fix.sql`；`python -X utf8 -m pytest script\tests\test_post_release_role_e2e_gate_sql.py -q` -> PASS，8 passed。
+- 执行命令：`python -X utf8 -m pytest script\tests\test_post_release_role_e2e_gate_sql.py script\tests\test_scheduler_smoke_release_contract.py script\tests\test_showroom_release_sql_contract.py script\tests\test_publish_int_ruoyi_to_test_tooling.py script\tests\test_showroom_product_revision_attachment_sql.py script\tests\test_showroom_sql_scripts.py -q` -> PASS，115 passed。
+- 执行命令：`python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql` -> PASS，migrationCount=157，包含 `20260619_post_release_role_e2e_gate_smoke_z_erp_job_permission_fix`。
+- 执行命令：读取 `runtime-console-build-deploy-20260619-142434.out.log`、operation JSON 和部署日志，确认 `release-20260619-1430-role-e2e-gate-erp-job-permission` 构建与测试服部署 PASS，证据为 `runtime-console-build-deploy-1781851424303.json`。
+- 执行命令：测试服核验 `.env` `IMAGE_TAG`、docker compose backend/frontend 镜像 tag、后端 health HTTP 200、前端 HTTP 200、迁移 `20260619_post_release_role_e2e_gate_smoke_z_erp_job_permission_fix` 状态 `APPLIED`。
+- 执行命令：`POST_RELEASE_ROLE_E2E_PASSWORD=111111 node doc/tasks/20260618-post-release-role-e2e-gate/scripts/post-release-role-e2e.cjs` -> FAIL，证据 `post-release-role-e2e-1781851764170.json`，三账号页面验收仅剩 `zhaojie` 智能排产 smoke 失败。
+- 执行命令：读取远端 `output/artifacts/smoke-report.json`、`backend-runner.log`、`created-erp-production-order.json`、`production-order-sync-trigger.json`、`synced-mes-work-order.json` 和后端日志，确认 ERP 工单创建、MES 同步、手动触发任务均已通过，失败在工单不在 `READY_TO_ADMIT` 入池差异列表。
+- 执行命令：只读查询测试服 `mes_pro_work_order`、`mes_pro_route_product`、`mes_pro_route`、`mes_pro_route_version`、`mes_pro_route_process`、`mes_md_item`、`mes_md_unit_measure`，确认旧默认产品 `AW.106.03.08.1007` 无路线绑定；候选 `YXN.069.001.1003` 为路线就绪产品，单位 `zhi`。
+- 执行命令：读取 smoke Excel 和导入解析/归属代码，确认远端 runner 依赖残留静态 Excel，且 Excel 写死旧产品和旧工单号，后续必须改为每次运行动态生成。
+- 执行命令：新增 RED 契约后运行 `python -X utf8 -m pytest script\tests\test_scheduler_smoke_release_contract.py -q` -> FAIL，发布脚本仍保留旧默认产品且 runner package 缺 `xlsx`。
+- 执行命令：新增 RED 静态契约后运行 `node tests\e2e\smart-scheduling-smoke-real-flow-static.spec.js` -> FAIL，runner 仍要求固定 `MES_SMOKE_EXCEL_FILE`。
+- 执行命令：修改业务仓和维护仓发布脚本，默认 smoke 产品改为 `YXN.069.001.1003`、单位 `zhi`，并显式迁移旧 `AW.106.03.08.1007` / `PCS`；runner package 增加 `xlsx`。
+- 执行命令：修改 `smart-scheduling-smoke-real-flow.e2e.js`，运行前动态生成 `feedback-workbook-<smokeRunId>.xlsx`，写入本次工单号、产品编码、B010 工序和 `sourceFileSha256`。
+- 执行命令：`python -X utf8 -m pytest script\tests\test_scheduler_smoke_release_contract.py -q` -> PASS；`node tests\e2e\smart-scheduling-smoke-real-flow-static.spec.js` -> PASS；`node --check tests\e2e\smart-scheduling-smoke-real-flow.e2e.js` -> PASS；维护仓发布契约和两份 PowerShell AST -> PASS。
+- 执行命令：完整本地回归 `python -X utf8 -m pytest script\tests\test_post_release_role_e2e_gate_sql.py script\tests\test_scheduler_smoke_release_contract.py script\tests\test_showroom_release_sql_contract.py script\tests\test_publish_int_ruoyi_to_test_tooling.py script\tests\test_showroom_product_revision_attachment_sql.py script\tests\test_showroom_sql_scripts.py -q` -> PASS，115 passed；MySQL migration policy -> PASS，157；post-release-role E2E static、dependency POST static、smart scheduling smoke static -> PASS。
+
+# 2026-06-19 发布后三角色 E2E 门禁终轮复测
+
+- 用户需求：每次发布后在测试服务器用 `芋道源码` 租户账号 `gaomin`、`zhaojie`、`wangsiyu` 全量验证角色页签、子页访问和智能排产冒烟；失败先全部记录，统一修复后重新构建发布到测试服并复测直到通过。
+- 执行命令：读取最新部署 evidence `doc/tasks/20260618-post-release-role-e2e-gate/evidence/runtime-console-build-deploy-1781854878582.json` 与输出 `runtime-console-build-deploy-20260619-152237.out.log`，确认 `release-20260619-1518-role-e2e-gate-route-ready-smoke` 已成功构建并部署测试服，准备直接运行三角色真实 E2E。
+
+## 2026-06-19 排产工序快照缺列修复
+
+- 用户需求：继续同一任务，修复测试服最新发布后仅剩的 `zhaojie` 智能排产 smoke 失败，并在修复后重新构建发布到测试服、再跑三账号真实 E2E。
+- 执行命令：读取 `bug-regression-fix-loop` 与 `playwright` 技能、`doc/tasks/20260618-post-release-role-e2e-gate/task.md`、`execution-log.md`、`bug-regression-evidence.md`、`qa-evidence.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`，接续本轮发布后角色 E2E 修复闭环。
+- 执行命令：摘要读取 `doc/tasks/20260618-post-release-role-e2e-gate/evidence/post-release-role-e2e-1781856280345.json`，确认 `gaomin` 与 `wangsiyu` 已通过，仅剩 `zhaojie` 智能排产 smoke 失败。
+- 执行命令：`git -C D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro show HEAD:sql/mysql/20260619_mes_schedule_order_process_snapshot_identity_p8.sql` -> FAIL，确认当前 `HEAD` 尚未包含排产工序快照缺列修复迁移。
+- 执行命令：`python -X utf8 -m pytest script\tests\test_mes_scheduling_closed_loop_sql.py -q` -> PASS，6 passed。
+- 执行命令：`python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql` -> PASS，migrationCount=158，包含 `20260619_mes_schedule_order_process_snapshot_identity_p8`。
+
+## 2026-06-19 A03388 设备工序产能冲突发布修复
+
+- 用户需求：继续同一任务，修复 `release-20260619-1638-role-e2e-gate-process-snapshot` 发布后仅剩的 `zhaojie` 智能排产 smoke 失败，并再次构建发布到测试服、复跑三账号真实 E2E。
+- 执行命令：`$env:RUNTIME_CONSOLE_RELEASE_TAG='release-20260619-1638-role-e2e-gate-process-snapshot'; $env:RUNTIME_CONSOLE_REASON='post-release role E2E gate: add mes schedule order process snapshot schema fix'; $env:RUNTIME_CONSOLE_TIMEOUT_MS='7200000'; $env:RUNTIME_CONSOLE_POLL_INTERVAL_MS='30000'; node doc/tasks/20260618-post-release-role-e2e-gate/scripts/runtime-console-build-deploy.cjs` -> PASS，证据 `runtime-console-build-deploy-1781858207843.json`。
+- 执行命令：`$env:POST_RELEASE_ROLE_E2E_PASSWORD='111111'; node doc/tasks/20260618-post-release-role-e2e-gate/scripts/post-release-role-e2e.cjs` -> FAIL，证据 `post-release-role-e2e-1781858432621.json`，仅剩 `zhaojie` smoke 失败。
+- 执行命令：`ssh root@172.30.30.58 "cat /opt/intruoyi/runtime/smoke/yudao-ui-admin-vue3/output/artifacts/smoke-report.json"`，确认远端失败点为 `/admin-api/mes/pro/auto-schedule/preview`，错误 `设备工序产能存在冲突: machineryId=47, processId=900370`。
+- 执行命令：`ssh root@172.30.30.58 "grep '^IMAGE_TAG=' /opt/intruoyi/runtime/.env"`，确认测试服已运行 `release-20260619-1638-role-e2e-gate-process-snapshot`。
+- 执行命令：读取 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\doc\tasks\20260608-admin-resource-capacity-unify\task.md` 与 `execution-log.md`，确认本机曾对 admin 租户 A03388 的重复高产能做过手工治理，但未沉淀为正式发布迁移。
+- 执行命令：修改 `script\tests\test_post_release_role_e2e_gate_sql.py` 新增 `20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql` 契约；首次运行 `python -X utf8 -m pytest script\tests\test_post_release_role_e2e_gate_sql.py -q` -> FAIL，缺少迁移文件。
+- 执行命令：新增 `sql/mysql/20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql`，再次运行 `python -X utf8 -m pytest script\tests\test_post_release_role_e2e_gate_sql.py -q` -> PASS，9 passed。
+- 执行命令：`python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql` -> PASS，migrationCount=159，包含 `20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix`。
+
+## 2026-06-19 自动编码流水恢复与展厅误报收敛
+
+- 用户需求：继续发布后三角色 E2E 门禁，先完整记录剩余失败，再统一修复并重新构建发布测试服。
+- 执行命令：读取 `bug-regression-fix-loop` 技能、`docs/experience-index.md`、维护仓/业务仓当前任务文档与最新 E2E 证据，确认 `gaomin` 仅剩 `/showroom/company` 的 `dict-data/simple-list` 中止误报，`zhaojie` 仅剩智能排产 `apply` 的 `编码生成失败`。
+- 执行命令：只读核对测试服 `172.30.30.58` 的自动编码数据与运行态，包括 `mes_md_auto_code_rule`、`mes_md_auto_code_part`、`mes_md_auto_code_record`、`redis-cli GET mes:md:auto_code:900070` 与 `docker logs intruoyi-backend --since 45m | grep 'MesMdAutoCodeRecordServiceImpl\|编码生成失败'`，确认规则存在、Redis key 缺失、历史记录停在 `PT-0006/PT-0007`，失败堆栈命中 `generateAutoCode(...:90)`。
+- 执行命令：修改 `doc/tasks/20260618-post-release-role-e2e-gate/scripts/post-release-role-e2e-static.test.cjs` 与 `post-release-role-e2e.cjs`；首次运行 `node doc/tasks/20260618-post-release-role-e2e-gate/scripts/post-release-role-e2e-static.test.cjs` -> FAIL，脚本尚未将 `GET /admin-api/system/dict-data/simple-list` 的 `net::ERR_ABORTED` 归为 benign request failure；修复后同命令 -> PASS。
+- 执行命令：在业务仓新增自动编码恢复契约与实现：更新 `MesMdAutoCodeSerialNumberPartStrategyTest`、`MesMdAutoCodeRedisDAO`、`MesMdAutoCodeRecordMapper`、`MesMdAutoCodeSerialNumberPartStrategy`；首次运行 `mvn -pl yudao-module-mes -Dtest=MesMdAutoCodeSerialNumberPartStrategyTest test` -> FAIL，缺少 `selectLatestSerialRecord(...)` 契约；修复后运行 `mvn -pl yudao-module-mes "-Dtest=MesMdAutoCodeSerialNumberPartStrategyTest,MesProAutoScheduleServiceImplTest" test` -> PASS，28 个测试通过。
+
+## 2026-06-19 eDHR 批次触发门禁修复
+
+- 用户需求：继续同一任务，修复自动编码问题后的新真实阻塞 `排产完成创建 eDHR 批次缺少前置条件：工序与批记录绑定`，再重新构建发布测试服并复跑三角色真实 E2E。
+- 执行命令：读取维护仓最新 E2E 证据 `post-release-role-e2e-1781869546155.json`、业务仓旧任务 `20260619-post-release-role-e2e-gate-autocode-counter-recovery`、当前调度与 eDHR 服务代码、相关测试 `MesProAutoScheduleServiceImplTest`、`MesProAutoScheduleAlgorithmContractTest`、`MesProEdhrBatchExecutionServiceTest`，确认阻塞已从自动编码推进到 eDHR 触发门禁。
+- 执行命令：只读核对测试服路线 `900026` 的 `mes_pro_route_use_process_config`、`mes_pro_route_use_process_batch_record` 与全局 `mes_pro_edhr_work_task_assignment_rule`，确认当前 smoke 路线没有任何启用中的 `BATCH` 配置和批记录绑定，不能被当成 eDHR 路线强制建批次。
+- 执行命令：修改 `MesProAutoScheduleServiceImpl`，新增“仅对存在启用中 `BATCH` 工序配置的路线触发 eDHR 批次创建”的正式门禁；同步补 `MesProAutoScheduleServiceImplTest` 回归用例，覆盖“普通路线跳过”和“已启用 eDHR 路线继续 fail fast”，并为 `MesProAutoScheduleAlgorithmContractTest`、`MesProAutoScheduleContractTest` 补齐新的 mapper 依赖。
+- 执行命令：`mvn -pl yudao-module-mes "-Dtest=MesProAutoScheduleServiceImplTest,MesProAutoScheduleAlgorithmContractTest,MesProAutoScheduleContractTest" test` -> 先因测试类型声明缺失与 Mockito 严格桩校验失败，修正后 -> PASS，35 passed。
+- 执行命令：`mvn -pl yudao-module-mes "-Dtest=MesProEdhrBatchExecutionServiceTest,MesProAutoScheduleServiceImplTest,MesProAutoScheduleAlgorithmContractTest,MesProAutoScheduleContractTest" test` -> PASS，72 passed；确认本次改动没有放宽 eDHR 服务内部 fail-fast 契约。
+
+## 2026-06-19 报工审批人身份解析门禁修复
+
+- 用户需求：继续同一任务，在 `release-20260619-2055-role-e2e-gate-edhr-trigger` 发布后记录 `zhaojie` 智能排产 smoke 的新失败，统一修复后重新构建发布测试服并完整复测三账号。
+- 执行命令：读取 `bug-regression-fix-loop` 技能、`D:\ProjectPackage\Int\IntRuoyi\docs\experience-index.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、维护仓当前任务文档，以及后端上一任务 `20260619-post-release-role-e2e-gate-edhr-batch-trigger-gate/task.md`，建立新的后端任务 `20260619-post-release-role-e2e-gate-feedback-approver-identity`。
+- 执行命令：`ssh root@172.30.30.58 "grep -n 'MES_SMOKE_' /opt/intruoyi/runtime/.env"` -> PASS，确认测试服当前存在 `MES_SMOKE_SUPERVISOR_USERNAME=messmokesupervisor`，但没有 `MES_SMOKE_FEEDBACK_APPROVER_NAME`。
+- 执行命令：`ssh root@172.30.30.58 "cat /opt/intruoyi/runtime/smoke/yudao-ui-admin-vue3/output/artifacts/smoke-report.json"` -> FAIL，确认最新真实 smoke 失败点为 `/admin-api/mes/pro/feedback/import-record/attribute`，错误 `第三方报工导管报工第 2 行工段长匹配到多名用户：eDHR矩阵-审批人`。
+- 执行命令：只读查询测试服 `system_users`、`system_user_role`、`system_role`，确认 `tenant_id=1` 下 `mes_smoke_supervisor(id=910253)` 与 `messmokesupervisor(id=910260)` 均启用且共用 nickname `eDHR矩阵-审批人`，角色同为 `报工冒烟审批员`。
+- 执行命令：修改后端 `MesProFeedbackImportRecordServiceImpl` 与测试 `MesProFeedbackImportRecordServiceImplTest`，让审批人解析优先按 exact username 命中，未命中再按 exact nickname 保持原契约，同时对重复 nickname 继续 fail fast。
+- 执行命令：修改维护仓 `ops/deploy/publish-int-ruoyi.ps1`、`ops/deploy/int-ruoyi-test/docker-compose.yml` 与 `doc/tasks/20260618-post-release-role-e2e-gate/scripts/validate-maintenance-publish-contract.cjs`，显式输出并校验 `MES_SMOKE_FEEDBACK_APPROVER_NAME=$effectiveMesSmokeSupervisorUsername`。
+- 执行命令：`mvn -pl yudao-module-mes "-Dtest=MesProFeedbackImportRecordServiceImplTest" test` -> 先因负例存在未执行路径的多余 stub 导致 Mockito `UnnecessaryStubbingException`，删除多余 stub 后 -> PASS，6 passed。
+- 执行命令：`node D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260618-post-release-role-e2e-gate\scripts\validate-maintenance-publish-contract.cjs` -> PASS，确认维护发布契约包含 `MES_SMOKE_FEEDBACK_APPROVER_NAME` 与 supervisor username 绑定。
+- 执行命令：`$env:RUNTIME_CONSOLE_RELEASE_TAG='release-20260619-2143-role-e2e-gate-feedback-approver'; ...; node doc/tasks/20260618-post-release-role-e2e-gate/scripts/runtime-console-build-deploy.cjs` -> PASS，证据 `runtime-console-build-deploy-1781877791317.json`。
+- 执行命令：`$env:POST_RELEASE_ROLE_E2E_PASSWORD='111111'; node doc/tasks/20260618-post-release-role-e2e-gate/scripts/post-release-role-e2e.cjs` -> FAIL，证据 `post-release-role-e2e-1781877963367.json`；`gaomin` 与 `wangsiyu` 通过，`zhaojie` 仍失败。
+- 执行命令：`ssh root@172.30.30.58 "grep -n 'MES_SMOKE_FEEDBACK_APPROVER_NAME\|MES_SMOKE_SUPERVISOR_USERNAME' /opt/intruoyi/runtime/.env"`、`cat .../output/artifacts/config.json`、`cat .../smoke-report.json` -> PASS/FAIL，确认测试服 `.env` 已有 `MES_SMOKE_FEEDBACK_APPROVER_NAME=messmokesupervisor`，但 smoke `config.json` 仍是 `feedbackApproverName=eDHR矩阵-审批人`，失败仍落在 `/admin-api/mes/pro/feedback/import-record/attribute`。
+- 执行命令：读取 `MesProSchedulerWorkbenchSmokeTestServiceImpl.java`、`MesProSchedulerWorkbenchSmokeProcessControllerImpl.java`、维护仓/业务仓 `publish-int-ruoyi.ps1` 中 `New-SchedulerSmokeNpmWrapperContent`，确认 scheduler smoke 容器环境变量白名单缺少 `MES_SMOKE_FEEDBACK_APPROVER_NAME`。
+- 执行命令：修改维护仓/业务仓发布脚本的 smoke wrapper 白名单、业务仓 compose 契约与 `script/tests/test_scheduler_smoke_release_contract.py`，补齐 `MES_SMOKE_FEEDBACK_APPROVER_NAME` 透传并加严静态门禁。
+- 执行命令：`python -X utf8 -m pytest script\tests\test_scheduler_smoke_release_contract.py -q` -> 先 FAIL（业务仓发布脚本仍未写出 `$effectiveMesSmokeFeedbackApproverName`），补齐后 -> PASS，3 passed。
+- 执行命令：`node D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260618-post-release-role-e2e-gate\scripts\validate-maintenance-publish-contract.cjs` -> PASS，确认维护仓 wrapper 白名单也已包含 `MES_SMOKE_FEEDBACK_APPROVER_NAME`。
+- 执行命令：`$env:RUNTIME_CONSOLE_RELEASE_TAG='release-20260619-2230-role-e2e-gate-feedback-approver-wrapper'; ...; node doc/tasks/20260618-post-release-role-e2e-gate/scripts/runtime-console-build-deploy.cjs` -> PASS，证据 `runtime-console-build-deploy-1781882335880.json`。
+- 执行命令：`ssh root@172.30.30.58 "grep -n 'MES_SMOKE_FEEDBACK_APPROVER_NAME\|MES_SMOKE_SUPERVISOR_USERNAME' /opt/intruoyi/runtime/.env"` -> PASS，确认测试服运行态包含 `MES_SMOKE_FEEDBACK_APPROVER_NAME=messmokesupervisor`。
+- 执行命令：`$env:POST_RELEASE_ROLE_E2E_PASSWORD='111111'; node doc/tasks/20260618-post-release-role-e2e-gate/scripts/post-release-role-e2e.cjs` -> PASS，证据 `post-release-role-e2e-1781882555897.json`，三账号全部通过。
+- 执行命令：`ssh root@172.30.30.58 "cat /opt/intruoyi/runtime/smoke/yudao-ui-admin-vue3/output/artifacts/config.json"` -> PASS，当前 PASS 产物显示 `feedbackApproverName=messmokesupervisor`。
+- 执行命令：`ssh root@172.30.30.58 "cat /opt/intruoyi/runtime/smoke/yudao-ui-admin-vue3/output/artifacts/smoke-report.json"` -> PASS，当前 PASS 产物显示 `approverName=messmokesupervisor`、`approveUserId=910260`、`status=PASS`。
+
+# 2026-06-20 发布后三角色 E2E 门禁收尾
+
+- 用户需求：继续把已通过的发布后三角色测试服验收任务做完收尾，清理附属产物、补齐任务归档，并在维护仓/后端仓做选择性提交。
+- 执行命令：读取 `task-closeout-cleanup` 技能与 `references/closeout-rules.md`，重新核对维护仓主任务 `doc/tasks/20260618-post-release-role-e2e-gate/task.md`、`execution-log.md` 与两个仓库 `git status --short`。
+- 执行命令：`python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260618-post-release-role-e2e-gate --mode preview` -> PASS，确认主任务仅应保留 `task.md`、`execution-log.md` 与最终 PASS 的构建/三角色 E2E evidence。
+- 执行命令：手工删除维护仓主任务 `Cleanup Candidates` 中的 `bug-regression-evidence.md`、`qa-evidence.md`、`scripts/`、中间 build/E2E evidence、screenshots、MinIO 同步附属目录与压缩包；对长路径残留目录改用 `\\?\\` 长路径删除后复核当前目录树仅剩 `task.md`、`execution-log.md` 和两份最终 evidence。
+- 执行命令：核对后端仓四个已完成子任务目录状态均为 `COMPLETED`，并盘点剩余未挂任务的发布契约/SQL/排产链路改动，准备补充后端收口任务目录后再做选择性提交。

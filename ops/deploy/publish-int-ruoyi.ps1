@@ -1772,12 +1772,12 @@ SQL
 }
 
 function Assert-RemoteShowroomAwardSchemaReady {
-    Info 'Checking remote showroom award schema'
+    Info 'Checking remote showroom runtime schema'
     $sql = @"
 SELECT CONCAT('TABLES', CHAR(9), COUNT(DISTINCT TABLE_NAME))
 FROM information_schema.TABLES
 WHERE TABLE_SCHEMA = DATABASE()
-  AND TABLE_NAME IN ('showroom_award', 'showroom_award_revision', 'showroom_hall_item');
+  AND TABLE_NAME IN ('showroom_award', 'showroom_award_revision', 'showroom_hall_item', 'showroom_product_revision_attachment');
 SELECT CONCAT('INDEXES', CHAR(9), COUNT(DISTINCT CONCAT(TABLE_NAME, '.', INDEX_NAME)))
 FROM information_schema.STATISTICS
 WHERE TABLE_SCHEMA = DATABASE()
@@ -1788,19 +1788,32 @@ WHERE TABLE_SCHEMA = DATABASE()
     OR (TABLE_NAME = 'showroom_hall_item' AND INDEX_NAME = 'uk_showroom_hall_item')
     OR (TABLE_NAME = 'showroom_hall_item' AND INDEX_NAME = 'idx_showroom_hall_item_order')
     OR (TABLE_NAME = 'showroom_hall_item' AND INDEX_NAME = 'idx_showroom_hall_item_item')
+    OR (TABLE_NAME = 'showroom_product_revision_attachment' AND INDEX_NAME = 'uk_showroom_product_revision_attachment_file')
+    OR (TABLE_NAME = 'showroom_product_revision_attachment' AND INDEX_NAME = 'idx_showroom_product_revision_attachment_revision')
+    OR (TABLE_NAME = 'showroom_product_revision_attachment' AND INDEX_NAME = 'idx_showroom_product_revision_attachment_product')
   );
+SELECT CONCAT('COLUMNS', CHAR(9), COUNT(DISTINCT COLUMN_NAME))
+FROM information_schema.COLUMNS
+WHERE TABLE_SCHEMA = DATABASE()
+  AND TABLE_NAME = 'showroom_hall'
+  AND COLUMN_NAME = 'canvas_background_image_url';
 "@
     $output = Invoke-RemoteMySqlRaw -Sql $sql -Purpose 'SHOWROOM_AWARD_SCHEMA_MISSING schema verification'
     $lines = @($output -split "`r?`n" | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
     $tableLine = @($lines | Where-Object { $_.StartsWith("TABLES`t") }) | Select-Object -First 1
     $indexLine = @($lines | Where-Object { $_.StartsWith("INDEXES`t") }) | Select-Object -First 1
+    $columnLine = @($lines | Where-Object { $_.StartsWith("COLUMNS`t") }) | Select-Object -First 1
     $tableCount = if ($tableLine) { [int](($tableLine -split "`t")[1]) } else { 0 }
     $indexCount = if ($indexLine) { [int](($indexLine -split "`t")[1]) } else { 0 }
-    if ($tableCount -ne 3) {
-        Fail "SHOWROOM_AWARD_SCHEMA_MISSING: expected showroom_award/showroom_award_revision/showroom_hall_item before backend start, actual table count: $tableCount"
+    $columnCount = if ($columnLine) { [int](($columnLine -split "`t")[1]) } else { 0 }
+    if ($tableCount -ne 4) {
+        Fail "SHOWROOM_AWARD_SCHEMA_MISSING: expected showroom_award/showroom_award_revision/showroom_hall_item/showroom_product_revision_attachment before backend start, actual table count: $tableCount"
     }
-    if ($indexCount -ne 6) {
-        Fail "SHOWROOM_AWARD_SCHEMA_MISSING: expected showroom award/hall item indexes before backend start, actual index count: $indexCount"
+    if ($indexCount -ne 9) {
+        Fail "SHOWROOM_AWARD_SCHEMA_MISSING: expected showroom award/hall item/product attachment indexes before backend start, actual index count: $indexCount"
+    }
+    if ($columnCount -ne 1) {
+        Fail "SHOWROOM_AWARD_SCHEMA_MISSING: expected showroom_hall.canvas_background_image_url before backend start, actual column count: $columnCount"
     }
 }
 
@@ -3568,8 +3581,10 @@ function Get-ReleaseDatabaseSqlRoots {
             RelativePath = 'sql/showroom'
             Root = Join-Path $backendRepo 'sql\showroom'
             IncludeFiles = @(
+                '20260605_showroom_product_revision_attachment_schema.sql',
                 '20260606_showroom_hall_product_canvas_layout.sql',
-                '20260613_showroom_award_and_hall_item_schema.sql'
+                '20260613_showroom_award_and_hall_item_schema.sql',
+                '20260615_showroom_hall_canvas_background.sql'
             )
             Environments = @('test', 'prod', 'backup')
         }
@@ -3736,6 +3751,7 @@ function New-SchedulerSmokeNpmWrapperContent {
         'MES_SMOKE_PLANNER_PASSWORD',
         'MES_SMOKE_SUPERVISOR_TENANT',
         'MES_SMOKE_SUPERVISOR_USERNAME',
+        'MES_SMOKE_FEEDBACK_APPROVER_NAME',
         'MES_SMOKE_SUPERVISOR_PASSWORD',
         'MES_SMOKE_NON_APPROVER_TENANT',
         'MES_SMOKE_NON_APPROVER_USERNAME',
@@ -3802,7 +3818,8 @@ function New-SchedulerSmokeRunnerPackage {
     "e2e:mes:smart-scheduling-smoke": "node tests/e2e/smart-scheduling-smoke-real-flow.e2e.js"
   },
   "devDependencies": {
-    "playwright": "1.60.0"
+    "playwright": "1.60.0",
+    "xlsx": "0.18.5"
   }
 }
 "@
@@ -4638,23 +4655,36 @@ $effectiveMesSmokeBaseUrl = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_BAS
 $effectiveMesSmokeExcelFile = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_EXCEL_FILE' -DefaultValue "$schedulerSmokeFrontendDirectory/input/smart-scheduling-smoke-feedback.xlsx"
 $effectiveMesSmokeArtifactDir = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_ARTIFACT_DIR' -DefaultValue "$schedulerSmokeFrontendDirectory/output/artifacts"
 $effectiveMesSmokeNodeImage = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_NODE_IMAGE' -DefaultValue $schedulerSmokeNodeImage
-$effectiveMesSmokeCapacityMode = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_CAPACITY_MODE'
-$effectiveMesSmokeProductCode = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_PRODUCT_CODE'
-$effectiveMesSmokeErpUnitNumber = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_ERP_UNIT_NUMBER'
-$effectiveMesSmokeBatchNumber = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_BATCH_NUMBER'
-$effectiveMesSmokeDefaultPassword = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_DEFAULT_PASSWORD'
-$effectiveMesSmokeErpCreatorTenant = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_ERP_CREATOR_TENANT'
-$effectiveMesSmokeErpCreatorUsername = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_ERP_CREATOR_USERNAME'
-$effectiveMesSmokeErpCreatorPassword = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_ERP_CREATOR_PASSWORD'
-$effectiveMesSmokePlannerTenant = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_PLANNER_TENANT'
-$effectiveMesSmokePlannerUsername = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_PLANNER_USERNAME'
-$effectiveMesSmokePlannerPassword = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_PLANNER_PASSWORD'
-$effectiveMesSmokeSupervisorTenant = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_SUPERVISOR_TENANT'
-$effectiveMesSmokeSupervisorUsername = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_SUPERVISOR_USERNAME'
-$effectiveMesSmokeSupervisorPassword = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_SUPERVISOR_PASSWORD'
-$effectiveMesSmokeNonApproverTenant = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_NON_APPROVER_TENANT'
-$effectiveMesSmokeNonApproverUsername = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_NON_APPROVER_USERNAME'
-$effectiveMesSmokeNonApproverPassword = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_NON_APPROVER_PASSWORD'
+$mesSmokeTenantName = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('6IqL6YGT5rqQ56CB'))
+$defaultMesSmokeProductCode = 'YXN.069.001.1003'
+$defaultMesSmokeErpUnitNumber = 'zhi'
+$legacyRouteMissingMesSmokeProductCode = 'AW.106.03.08.1007'
+$effectiveMesSmokeCapacityMode = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_CAPACITY_MODE' -DefaultValue 'PLANNED'
+$effectiveMesSmokeProductCode = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_PRODUCT_CODE' -DefaultValue $defaultMesSmokeProductCode
+if ($effectiveMesSmokeProductCode -eq $legacyRouteMissingMesSmokeProductCode) {
+    Info "Replacing legacy MES_SMOKE_PRODUCT_CODE $legacyRouteMissingMesSmokeProductCode with route-ready default $defaultMesSmokeProductCode"
+    $effectiveMesSmokeProductCode = $defaultMesSmokeProductCode
+}
+$effectiveMesSmokeErpUnitNumber = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_ERP_UNIT_NUMBER' -DefaultValue $defaultMesSmokeErpUnitNumber
+if ($effectiveMesSmokeProductCode -eq $defaultMesSmokeProductCode -and $effectiveMesSmokeErpUnitNumber -eq 'PCS') {
+    Info "Replacing legacy MES_SMOKE_ERP_UNIT_NUMBER PCS with route-ready product unit $defaultMesSmokeErpUnitNumber"
+    $effectiveMesSmokeErpUnitNumber = $defaultMesSmokeErpUnitNumber
+}
+$effectiveMesSmokeBatchNumber = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_BATCH_NUMBER' -DefaultValue 'TEST-SMOKE-BATCH'
+$effectiveMesSmokeDefaultPassword = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_DEFAULT_PASSWORD' -DefaultValue '111111'
+$effectiveMesSmokeErpCreatorTenant = $mesSmokeTenantName
+$effectiveMesSmokeErpCreatorUsername = 'messmokeerp'
+$effectiveMesSmokeErpCreatorPassword = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_ERP_CREATOR_PASSWORD' -DefaultValue $effectiveMesSmokeDefaultPassword
+$effectiveMesSmokePlannerTenant = $mesSmokeTenantName
+$effectiveMesSmokePlannerUsername = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_PLANNER_USERNAME' -DefaultValue 'zhaojie'
+$effectiveMesSmokePlannerPassword = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_PLANNER_PASSWORD' -DefaultValue $effectiveMesSmokeDefaultPassword
+$effectiveMesSmokeSupervisorTenant = $mesSmokeTenantName
+$effectiveMesSmokeSupervisorUsername = 'messmokesupervisor'
+$effectiveMesSmokeFeedbackApproverName = $effectiveMesSmokeSupervisorUsername
+$effectiveMesSmokeSupervisorPassword = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_SUPERVISOR_PASSWORD' -DefaultValue $effectiveMesSmokeDefaultPassword
+$effectiveMesSmokeNonApproverTenant = $mesSmokeTenantName
+$effectiveMesSmokeNonApproverUsername = 'messmokenonapprover'
+$effectiveMesSmokeNonApproverPassword = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_NON_APPROVER_PASSWORD' -DefaultValue $effectiveMesSmokeDefaultPassword
 $mySqlRootPassword = $effectiveMySqlRootPassword
 $DccSignatureEvidenceHmacSecret = $effectiveDccSignatureEvidenceHmacSecret
 $DccSignatureEvidenceKeyVersion = $effectiveDccSignatureEvidenceKeyVersion
@@ -4723,6 +4753,7 @@ MES_SMOKE_PLANNER_USERNAME=$effectiveMesSmokePlannerUsername
 MES_SMOKE_PLANNER_PASSWORD=$effectiveMesSmokePlannerPassword
 MES_SMOKE_SUPERVISOR_TENANT=$effectiveMesSmokeSupervisorTenant
 MES_SMOKE_SUPERVISOR_USERNAME=$effectiveMesSmokeSupervisorUsername
+MES_SMOKE_FEEDBACK_APPROVER_NAME=$effectiveMesSmokeFeedbackApproverName
 MES_SMOKE_SUPERVISOR_PASSWORD=$effectiveMesSmokeSupervisorPassword
 MES_SMOKE_NON_APPROVER_TENANT=$effectiveMesSmokeNonApproverTenant
 MES_SMOKE_NON_APPROVER_USERNAME=$effectiveMesSmokeNonApproverUsername
