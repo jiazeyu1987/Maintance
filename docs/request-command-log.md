@@ -1,5 +1,15 @@
 # 请求与命令记录
 
+## 2026-06-20 当前最新程序发布任务复盘
+
+- 用户需求：执行 `$fupan`，把本轮“测试服发布 + 三角色真实验收 + 正式服预发布阻塞”沉淀为可复用经验，避免后续重复踩坑。
+- 命中技能：`C:\Users\BJB110\.codex\skills\fupan\SKILL.md`。
+- 命令记录：读取 `SKILL.md`、当前任务 `task.md`、`execution-log.md`，确认本轮已有足够证据支撑复盘。
+- 命令记录：读取 `references/project-memory-template.md`、既有 `docs/agent-memory/project-error-prevention.md` 与 `docs/request-command-log.md`，按“项目级规则 / 任务专项细节”拆分候选经验。
+- 命令记录：运行 `python -X utf8 C:\Users\BJB110\.codex\skills\fupan\scripts\collect_error_evidence.py --project-root D:\ProjectPackage\Int\IntRuoyiMaintance --glob doc\tasks\20260620-prod-release-current-latest\task.md --glob doc\tasks\20260620-prod-release-current-latest\execution-log.md --glob AGENTS.md --output D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260620-prod-release-current-latest\candidate-error-evidence.md`，生成本轮候选证据。
+- 命令记录：尝试运行 `update_project_memory.py` 追加“正式服 Smart Release prod preflight 证据闭合”规则，被脚本拒绝，原因是该条目目前仍偏本次发布链专项规则，不属于项目级通用短记忆。
+- 结论记录：本轮 `$fupan` 接受的长期经验仍是“发布前预检”“发布验证多证据闭环”“先全量记录失败再统一修复复测”三类；`ProdDryRunEvidencePath / target config / NasConfigPath` 保留在当前任务文档，不提升到 `AGENTS.md` 或项目级记忆；页面脚本细节不进入长期记忆。
+
 ## 2026-06-17 真实 E2E 构建并发布到测试服务器
 
 - 用户需求：用真实的 E2E 操作构建发布到测试服务器。
@@ -565,3 +575,22 @@
 - 执行命令：`python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260618-post-release-role-e2e-gate --mode preview` -> PASS，确认主任务仅应保留 `task.md`、`execution-log.md` 与最终 PASS 的构建/三角色 E2E evidence。
 - 执行命令：手工删除维护仓主任务 `Cleanup Candidates` 中的 `bug-regression-evidence.md`、`qa-evidence.md`、`scripts/`、中间 build/E2E evidence、screenshots、MinIO 同步附属目录与压缩包；对长路径残留目录改用 `\\?\\` 长路径删除后复核当前目录树仅剩 `task.md`、`execution-log.md` 和两份最终 evidence。
 - 执行命令：核对后端仓四个已完成子任务目录状态均为 `COMPLETED`，并盘点剩余未挂任务的发布契约/SQL/排产链路改动，准备补充后端收口任务目录后再做选择性提交。
+
+# 2026-06-20 当前最新程序测试服后再正式服发布
+
+- 用户需求：在不影响正式服 `website` 数据前提下，把当前最新程序先发布到测试服，再发布到正式服；用户已明确授权访问和修改正式服务器。
+- 执行命令：读取维护仓 `AGENTS.md`、`docs/experience-index.md`，确认本次为高风险发布任务，必须先建 `doc/tasks/<task-id>/`、补齐经验门禁并在 `execution-log.md` 记录 `GREEN: experience-preflight -> PASS`，之后才能进入服务器写入或发布动作。
+- 执行命令：读取 `$fupan` 技能说明、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`server-access.md`、`login-access.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`、`docs/agent-memory/project-error-prevention.md`，提炼本次发布强制门禁与正式服 `website` 数据保护边界。
+- 执行命令：核对上一维护仓任务 `doc/tasks/20260620-fupan-post-release-role-e2e-gate/task.md` 状态为 `COMPLETED`，允许开启新任务 `doc/tasks/20260620-prod-release-current-latest/`。
+- 执行命令：创建 `doc/tasks/20260620-prod-release-current-latest/`，新增 `task.md` 与 `execution-log.md`，记录用户授权、发布顺序、正式服数据边界、经验门禁与高风险动作前置状态；当前尚未执行测试服或正式服写入/发布动作。
+
+- 用户需求：继续。
+- 执行命令：读取正式服阻塞 SQL `20260617_mes_scheduler_role_smart_scheduling_tab.sql`、维护仓当前任务文档/执行日志、服务器访问基线与 `$fupan` 技能说明，明确下一步聚焦正式服真实阻塞排查。
+- 执行命令：通过 `ssh root@172.30.30.57` 只读查询正式服 `intruoyi-mysql`，核对 `system_tenant_package` 表结构、`system_menu` 中 `900120/5590/5580/5262/5540`、正式租户 `package_id` 绑定与排产/计划角色基线 -> PASS；确认正式服阻塞根因是“无目标排产角色”被错误当成迁移失败。
+- 执行命令：在后端仓建立任务 `20260620-mes-scheduler-role-prod-baseline-gate`，先补 RED 契约测试，再将 `20260617_mes_scheduler_role_smart_scheduling_tab.sql` 改成“无目标角色时 no-op 并清理临时表”；执行 `python -X utf8 -m pytest script\\tests\\test_mes_scheduler_role_smart_scheduling_tab_sql.py -q` -> 先 `1 failed, 4 passed`，修复后 `5 passed`；随后 `python -X utf8 script\\release\\run-release-migration-policy-gate.py --sql-root sql\\mysql` -> PASS。
+- 执行命令：后端仓按任务目录设置 `TDD_TASK_DIR`，将 DCC 依赖修复、preflight planner 修复与当前“无目标角色 no-op”修复一起提交为 `9667a05ff2 任务: 修复正式发布迁移阻塞`。
+- 执行命令：在维护仓执行 `publish-int-ruoyi.ps1 -Mode build-release ... -ReleaseTag release-20260620-current-head-prod-target-v7 -SkipDatabaseSync -SkipMinioSync` -> PASS，生成并上传 `Backup/ReleasePackage/release-20260620-current-head-prod-target-v7`。
+- 执行命令：执行 `run-deploy-precheck-report.ps1 -PackagePath ...release-20260620-current-head-prod-target-v7 -Environment prod -Mode report-only -OutputPath ...prod-deploy-precheck-report-v7.json` -> PASS，并补齐 `prod-preflight-release-dry-run-v7.json`。
+- 执行命令：执行 `publish-int-ruoyi.ps1 -Mode deploy-release -Environment prod -ReleaseTag release-20260620-current-head-prod-target-v7 ... -ProdDryRunEvidencePath ...prod-preflight-release-dry-run-v7.json -SkipDatabaseSync -SkipMinioSync` -> PASS；日志确认正式服发布锁最终 `LOCK_RELEASED`、后端/前端真实启动成功。
+- 执行命令：发布后只读核对 `grep '^IMAGE_TAG=' /opt/intruoyi/runtime/.env`、`docker ps | grep intruoyi-website` 与 `show-int-ruoyi-remote-status.ps1 -Component full -Json` -> PASS；正式服当前 `IMAGE_TAG=release-20260620-current-head-prod-target-v7`，HTTP 健康检查均为 `200`，`intruoyi-website` 仍为 `nginx:1.27-alpine` 且保持 `Up 2 weeks`。
+- 当前结论：当前最新程序已按 `code-only` 边界先测试服验证、后正式服发布成功，正式服 `website` 运行态未被影响；下一步仅剩维护仓任务文档收尾、清理预览与必要提交。

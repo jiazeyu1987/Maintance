@@ -101,10 +101,21 @@ function Test-PropertyPresent {
         [Parameter(Mandatory = $true)][string]$Name
     )
 
-    $value = Get-ObjectPropertyValue -Object $Object -Name $Name
-    if ($null -eq $value) {
+    if ($null -eq $Object) {
         return $false
     }
+
+    $propertyExists = $false
+    if ($Object -is [System.Collections.IDictionary]) {
+        $propertyExists = $Object.Contains($Name)
+    } else {
+        $propertyExists = $null -ne $Object.PSObject.Properties[$Name]
+    }
+    if (-not $propertyExists) {
+        return $false
+    }
+
+    $value = Get-ObjectPropertyValue -Object $Object -Name $Name
     if (($value -is [string]) -and [string]::IsNullOrWhiteSpace($value)) {
         return $false
     }

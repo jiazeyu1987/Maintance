@@ -9,7 +9,7 @@ param(
     [string]$NasServer = '172.30.30.4',
     [string]$NasShare = '',
     [switch]$RequireTested,
-    [string]$OperatorName = '',
+    [string]$OperatorName = $env:USERNAME,
     [string]$TestConclusion = '',
     [string]$SelectedRecoverySetCandidateId = '',
     [string]$RecoverySetId = '',
@@ -896,7 +896,17 @@ function Invoke-SshCommand {
     )
 
     $normalizedCommand = $Command -replace "`r`n", "`n" -replace "`r", "`n"
-    Invoke-CheckedCommand -FilePath 'ssh' -ArgumentList (New-SshArgumentList -Command $normalizedCommand)
+    Info ("Run: ssh {0}" -f ((New-SshArgumentList -Command $normalizedCommand) -join ' '))
+    $result = Invoke-ProcessCapture -FilePath 'ssh' -ArgumentList (New-SshArgumentList -Command $normalizedCommand)
+    $stdOut = if ($null -ne $result.StdOut) { $result.StdOut } else { '' }
+    $stdErr = if ($null -ne $result.StdErr) { $result.StdErr } else { '' }
+    $text = Remove-SshNoise (($stdOut + "`n" + $stdErr).Trim())
+    if ($text) {
+        Write-Host $text
+    }
+    if ($result.ExitCode -ne 0) {
+        throw "Command failed with exit code $($result.ExitCode): ssh`n$text"
+    }
 }
 
 function Invoke-SshCapture {
@@ -913,7 +923,7 @@ function Invoke-SshCapture {
     $stdErr = if ($null -ne $result.StdErr) { $result.StdErr } else { '' }
     $text = Remove-SshNoise (($stdOut + "`n" + $stdErr).Trim())
     if ($exitCode -ne 0 -and -not $IgnoreExitCode) {
-        Fail "SSH command failed ($exitCode): $normalizedCommand`n$text"
+        throw "SSH command failed ($exitCode): $normalizedCommand`n$text"
     }
     return @{
         Ok = ($exitCode -eq 0)
@@ -1298,13 +1308,11 @@ function New-ReleaseRuntimeEnvContent {
     $resolvedDccSignatureEvidenceKeyVersion = Resolve-PublishRuntimeValue -Name 'DCC_SIGNATURE_EVIDENCE_KEY_VERSION' -CurrentValue $DccSignatureEvidenceKeyVersion -HardcodedValue $DCC_HARDCODED_SIGNATURE_EVIDENCE_KEY_VERSION
     $resolvedDccViewerTokenHmacSecret = Resolve-PublishRuntimeValue -Name 'DCC_VIEWER_TOKEN_HMAC_SECRET' -CurrentValue $DccViewerTokenHmacSecret -HardcodedValue $DCC_HARDCODED_VIEWER_TOKEN_HMAC_SECRET
     $resolvedDccOnlyOfficeJwtSecret = Resolve-PublishRuntimeValue -Name 'DCC_ONLYOFFICE_JWT_SECRET' -CurrentValue $DccOnlyOfficeJwtSecret -HardcodedValue $DCC_HARDCODED_ONLYOFFICE_JWT_SECRET
-    $resolvedDccOnlyOfficeBaseUrl = "http://${TargetServerHost}:$OnlyOfficeHostPort"
     $resolvedDccOnlyOfficePublicFileBaseUrl = "http://host.docker.internal:$BackendPort"
     $resolvedDccDownloadEncryptionPolicyVersion = Resolve-PublishRuntimeValue -Name 'DCC_DOWNLOAD_ENCRYPTION_POLICY_VERSION' -CurrentValue $DccDownloadEncryptionPolicyVersion -HardcodedValue $DCC_HARDCODED_DOWNLOAD_ENCRYPTION_POLICY_VERSION
     $resolvedDccDownloadEncryptionKeyId = Resolve-PublishRuntimeValue -Name 'DCC_DOWNLOAD_ENCRYPTION_KEY_ID' -CurrentValue $DccDownloadEncryptionKeyId -HardcodedValue $DCC_HARDCODED_DOWNLOAD_ENCRYPTION_KEY_ID
     $resolvedDccDownloadEncryptionBase64Key = Resolve-PublishRuntimeValue -Name 'DCC_DOWNLOAD_ENCRYPTION_BASE64_KEY' -CurrentValue $DccDownloadEncryptionBase64Key -HardcodedValue $DCC_HARDCODED_DOWNLOAD_ENCRYPTION_BASE64_KEY
     $resolvedDccDownloadEncryptionArtifactDirectory = Resolve-PublishRuntimeValue -Name 'DCC_DOWNLOAD_ENCRYPTION_ARTIFACT_DIRECTORY' -CurrentValue $DccDownloadEncryptionArtifactDirectory -HardcodedValue $DCC_HARDCODED_DOWNLOAD_ENCRYPTION_ARTIFACT_DIRECTORY
-    $resolvedEdhrS3Endpoint = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_ENDPOINT' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3Endpoint
     $resolvedEdhrS3Bucket = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_BUCKET' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3Bucket
     $resolvedEdhrS3Region = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_REGION' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3Region
     $resolvedEdhrS3AccessKey = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_ACCESS_KEY' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3AccessKey
@@ -1318,13 +1326,11 @@ DCC_SIGNATURE_EVIDENCE_HMAC_SECRET=$resolvedDccSignatureEvidenceHmacSecret
 DCC_SIGNATURE_EVIDENCE_KEY_VERSION=$resolvedDccSignatureEvidenceKeyVersion
 DCC_VIEWER_TOKEN_HMAC_SECRET=$resolvedDccViewerTokenHmacSecret
 DCC_ONLYOFFICE_JWT_SECRET=$resolvedDccOnlyOfficeJwtSecret
-DCC_ONLYOFFICE_BASE_URL=$resolvedDccOnlyOfficeBaseUrl
 DCC_ONLYOFFICE_PUBLIC_FILE_BASE_URL=$resolvedDccOnlyOfficePublicFileBaseUrl
 DCC_DOWNLOAD_ENCRYPTION_POLICY_VERSION=$resolvedDccDownloadEncryptionPolicyVersion
 DCC_DOWNLOAD_ENCRYPTION_KEY_ID=$resolvedDccDownloadEncryptionKeyId
 DCC_DOWNLOAD_ENCRYPTION_BASE64_KEY=$resolvedDccDownloadEncryptionBase64Key
 DCC_DOWNLOAD_ENCRYPTION_ARTIFACT_DIRECTORY=$resolvedDccDownloadEncryptionArtifactDirectory
-EDHR_S3_ENDPOINT=$resolvedEdhrS3Endpoint
 EDHR_S3_BUCKET=$resolvedEdhrS3Bucket
 EDHR_S3_REGION=$resolvedEdhrS3Region
 EDHR_S3_ACCESS_KEY=$resolvedEdhrS3AccessKey
@@ -2997,7 +3003,15 @@ function Read-ReleaseMigrationMetadata {
 
 function New-ReleaseRequiredSqlManifestEntries {
     $entries = @()
-    foreach ($entry in $requiredDatabaseSqlScripts) {
+    $targetRequiredSqlScripts = @($requiredDatabaseSqlScripts | Where-Object {
+        $entry = $_
+        $allowedEnvironments = @($entry.Environments)
+        $allowedEnvironments -contains $Environment
+    })
+    if ($targetRequiredSqlScripts.Count -eq 0) {
+        Fail "Manifest v1 required SQL entries resolved empty for environment: $Environment"
+    }
+    foreach ($entry in $targetRequiredSqlScripts) {
         $relativePath = [string]$entry.Path
         $fileName = Get-RequiredDatabaseSqlFileName -RelativePath $relativePath
         $packageSqlPath = Join-Path $requiredSqlLocalDir $fileName
@@ -3326,13 +3340,21 @@ function Write-ReleaseManifestV1 {
     $packageType = if ($SkipDatabaseSync -and $SkipMinioSync) { 'full-release' } else { 'data-release' }
     $publishScopeValue = if ($SkipDatabaseSync -and $SkipMinioSync) { 'code-only' } else { 'with-data' }
 
+    $effectiveOperatorName = if ([string]::IsNullOrWhiteSpace($OperatorName)) { 'local-operator' } else { $OperatorName.Trim() }
+
+    $targetEnvironmentCodes = @('test', 'backup')
+    if ($Mode -eq 'build-release' -or $Environment -eq 'prod') {
+        $targetEnvironmentCodes += 'prod'
+    }
+    $targetEnvironmentCodes = @($targetEnvironmentCodes | Select-Object -Unique)
+
     $manifestV1 = [ordered]@{
         manifestVersion = '1.0'
         packageId = $packageDirectoryName
         releaseTag = $PackageTag
         packageType = $packageType
         createdAt = (Get-Date).ToUniversalTime().ToString('o')
-        createdBy = $OperatorName
+        createdBy = $effectiveOperatorName
         sourceRepos = $sourceRepos
         changeSet = [ordered]@{
             summary = "Release package $packageDirectoryName"
@@ -3376,7 +3398,7 @@ function Write-ReleaseManifestV1 {
             resourceDeltaProofPath = $null
         }
         targetRequirements = [ordered]@{
-            environmentCodes = @('test', 'backup')
+            environmentCodes = $targetEnvironmentCodes
             serverConfigSchemaVersion = '1.0'
             storageProfileIds = @('minio-yudao-default')
             dockerProfileId = 'intruoyi-docker-compose'
@@ -3472,7 +3494,8 @@ function Write-ReleaseManifest {
     }
     $manifest = $manifest | ConvertTo-Json -Depth 8
     [System.IO.File]::WriteAllText((Join-Path $releaseDir 'release-manifest.json'), $manifest, [System.Text.UTF8Encoding]::new($false))
-    Write-ReleaseManifestV1 -PackageTag $PackageTag -LegacyArtifacts $files
+    $manifestV1Artifacts = @($files | Where-Object { ([string]$_.path) -ne 'manifest.json' })
+    Write-ReleaseManifestV1 -PackageTag $PackageTag -LegacyArtifacts $manifestV1Artifacts
 }
 
 if ($ReleaseTag.Contains('..') -or $ReleaseTag.Contains('/') -or $ReleaseTag.Contains('\')) {
@@ -4054,6 +4077,37 @@ ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), 
     Invoke-SshCommand "cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 ruoyi-vue-pro
 $stateSql
 SQL"
+}
+
+function Ensure-ReleaseMigrationStateSchema {
+    $stateSchemaFileName = '20260613_infra_release_migration_state.sql'
+    $packageSqlPath = Join-Path $requiredSqlLocalDir $stateSchemaFileName
+    if (-not (Test-Path -LiteralPath $packageSqlPath -PathType Leaf)) {
+        Fail "Release state schema SQL missing from release package: $packageSqlPath"
+    }
+
+    $probeSql = @"
+SELECT COUNT(*)
+FROM information_schema.tables
+WHERE table_schema = 'ruoyi-vue-pro'
+  AND table_name IN ('infra_release_migration', 'infra_release_operation_lock');
+"@
+    $probeResult = Invoke-SshCapture "cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 --batch --skip-column-names information_schema
+$probeSql
+SQL"
+    $existingCount = ([string]$probeResult.Output).Trim()
+    if ($existingCount -eq '2') {
+        return
+    }
+
+    Info 'Bootstrapping release migration state tables on target server'
+    $remoteStateSchemaPath = "$remoteRequiredSqlDir/$stateSchemaFileName"
+    if (-not (Test-Path -LiteralPath $packageSqlPath -PathType Leaf)) {
+        Fail "Release state schema SQL missing locally: $packageSqlPath"
+    }
+    if (-not [string]::IsNullOrWhiteSpace($remoteStateSchemaPath)) {
+        Invoke-SshCommand "cat '$remoteStateSchemaPath' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 ruoyi-vue-pro"
+    }
 }
 
 function Invoke-ReleaseOperationLockAcquire {
@@ -4879,80 +4933,92 @@ if ($publishBackend -and $Mode -ne 'build-release') {
     Invoke-SshCommand "cat '$remotePostImportSql' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword -D ruoyi-vue-pro"
 }
 
-if ($publishBackend) {
-    Invoke-ReleaseOperationLockAcquire
-    Write-ReleasePreflightPlan
-    Invoke-RequiredDatabaseSqlScripts
-    Assert-RemoteQuartzSchemaReady
-    Assert-RemoteShowroomAwardSchemaReady
-}
+try {
+    if ($publishBackend) {
+        Ensure-ReleaseMigrationStateSchema
+        Invoke-ReleaseOperationLockAcquire
+        Write-ReleasePreflightPlan
+        Invoke-RequiredDatabaseSqlScripts
+        Assert-RemoteQuartzSchemaReady
+        Assert-RemoteShowroomAwardSchemaReady
+    }
 
-if ($publishBackend) {
-    Assert-RemoteFileStorageConfigRebound
-}
+    if ($publishBackend) {
+        Assert-RemoteFileStorageConfigRebound
+    }
 
-if ($publishWebsite) {
-    Info "Switching Website runtime directory on the $PublishTargetName server"
-    Invoke-SshCommand "test -f '$remoteWebsiteStagingDir/dist/index.html' && test -f '$remoteWebsiteStagingDir/nginx.conf' && rm -rf '$remoteWebsitePreviousDir' && if [ -d '$remoteWebsiteDir' ]; then mv '$remoteWebsiteDir' '$remoteWebsitePreviousDir'; fi && mv '$remoteWebsiteStagingDir' '$remoteWebsiteDir'"
-}
+    if ($publishWebsite) {
+        Info "Switching Website runtime directory on the $PublishTargetName server"
+        Invoke-SshCommand "test -f '$remoteWebsiteStagingDir/dist/index.html' && test -f '$remoteWebsiteStagingDir/nginx.conf' && rm -rf '$remoteWebsitePreviousDir' && if [ -d '$remoteWebsiteDir' ]; then mv '$remoteWebsiteDir' '$remoteWebsitePreviousDir'; fi && mv '$remoteWebsiteStagingDir' '$remoteWebsiteDir'"
+    }
 
-$runtimeServices = @()
-if ($IncludeOnlyOffice) { $runtimeServices += 'onlyoffice' }
-if ($publishBackend) { $runtimeServices += 'backend' }
-if ($publishFrontend) { $runtimeServices += 'frontend' }
-if ($runtimeServices.Count -gt 0) {
-    $runtimeServicesArg = $runtimeServices -join ' '
-    $runtimeServiceDependencyFlag = if ($IncludeOnlyOffice) { '' } else { '--no-deps ' }
-    Info "Starting application services on the $PublishTargetName server: $runtimeServicesArg"
-    Invoke-SshCommand "cd '$RemoteAppDir' && docker compose up -d $runtimeServiceDependencyFlag$runtimeServicesArg"
-}
+    $runtimeServices = @()
+    if ($IncludeOnlyOffice) { $runtimeServices += 'onlyoffice' }
+    if ($publishBackend) { $runtimeServices += 'backend' }
+    if ($publishFrontend) { $runtimeServices += 'frontend' }
+    if ($runtimeServices.Count -gt 0) {
+        $runtimeServicesArg = $runtimeServices -join ' '
+        $runtimeServiceDependencyFlag = if ($IncludeOnlyOffice) { '' } else { '--no-deps ' }
+        Info "Starting application services on the $PublishTargetName server: $runtimeServicesArg"
+        Invoke-SshCommand "cd '$RemoteAppDir' && docker compose up -d $runtimeServiceDependencyFlag$runtimeServicesArg"
+    }
 
-if ($publishWebsite) {
-    Info "Starting Website on the $PublishTargetName server"
-}
-if ($publishWebsite) { Invoke-SshCommand "cd '$RemoteAppDir' && docker compose up -d --force-recreate website" }
+    if ($publishWebsite) {
+        Info "Starting Website on the $PublishTargetName server"
+    }
+    if ($publishWebsite) { Invoke-SshCommand "cd '$RemoteAppDir' && docker compose up -d --force-recreate website" }
 
-Info 'Waiting for remote HTTP readiness'
-if ($publishBackend) {
-    Wait-RemoteHttpOk -Url "http://127.0.0.1:$BackendPort/actuator/health" -TimeoutSeconds 180
-    Assert-RemoteBackendContainerMinioReachable
-}
-if ($publishFrontend) {
-    Wait-RemoteHttpOk -Url "http://127.0.0.1:$FrontendPort/" -TimeoutSeconds 180
-}
-if ($publishBackend) { Assert-RemoteSchedulerSmokeRuntime }
-if ($IncludeOnlyOffice) {
-    Wait-RemoteHttpOk -Url "http://127.0.0.1:$OnlyOfficeHostPort/healthcheck" -TimeoutSeconds 180
-}
-if ($publishWebsite) {
-    Wait-RemoteHttpOk -Url "http://127.0.0.1:$WebsiteHostPort/showroom" -TimeoutSeconds 180
-}
+    Info 'Waiting for remote HTTP readiness'
+    if ($publishBackend) {
+        Wait-RemoteHttpOk -Url "http://127.0.0.1:$BackendPort/actuator/health" -TimeoutSeconds 180
+        Assert-RemoteBackendContainerMinioReachable
+    }
+    if ($publishFrontend) {
+        Wait-RemoteHttpOk -Url "http://127.0.0.1:$FrontendPort/" -TimeoutSeconds 180
+    }
+    if ($publishBackend) { Assert-RemoteSchedulerSmokeRuntime }
+    if ($IncludeOnlyOffice) {
+        Wait-RemoteHttpOk -Url "http://127.0.0.1:$OnlyOfficeHostPort/healthcheck" -TimeoutSeconds 180
+    }
+    if ($publishWebsite) {
+        Wait-RemoteHttpOk -Url "http://127.0.0.1:$WebsiteHostPort/showroom" -TimeoutSeconds 180
+    }
 
-if ($publishBackend) {
-    Invoke-ReleaseOperationLockRelease -Status 'APPLIED'
-}
+    if ($publishBackend) {
+        Invoke-ReleaseOperationLockRelease -Status 'APPLIED'
+    }
 
-if ($publishBackend) { Wait-HttpOk -Url "http://${ServerHost}:$BackendPort/actuator/health" -TimeoutSeconds 180 }
-if ($publishFrontend) { Wait-HttpOk -Url "http://${ServerHost}:$FrontendPort/" -TimeoutSeconds 180 }
-if ($publishFrontend) {
-    Wait-HttpContentTypeOk -Url "http://${ServerHost}:$FrontendPort/pdfjs/pdf.worker.mjs" -ExpectedContentType 'application/javascript' -TimeoutSeconds 180
-}
-$verifyShowroomMediaContent = $publishWebsite -or (-not $SkipMinioSync)
-if ($publishFrontend -and $verifyShowroomMediaContent) {
-    Assert-RemoteShowroomSmokeImageContent
-} elseif ($publishFrontend) {
-    Info 'Skipping showroom smoke image content check for code-only deploy without Website or MinIO data sync'
-}
-if ($publishBackend -and $IncludeOnlyOffice) {
-    Wait-HttpOk -Url "http://${ServerHost}:$OnlyOfficeHostPort/healthcheck" -TimeoutSeconds 180
-}
-if ($publishWebsite) { Wait-HttpOk -Url "http://${ServerHost}:$WebsiteHostPort/" -TimeoutSeconds 180 }
-if ($publishWebsite) { Wait-HttpOk -Url "http://${ServerHost}:$WebsiteHostPort/showroom" -TimeoutSeconds 180 }
-if ($publishWebsite) { Assert-PublicWebsiteEntryReadback }
-if ($publishWebsite) { Assert-PublicWebsiteScopedReleaseCurrent }
+    if ($publishBackend) { Wait-HttpOk -Url "http://${ServerHost}:$BackendPort/actuator/health" -TimeoutSeconds 180 }
+    if ($publishFrontend) { Wait-HttpOk -Url "http://${ServerHost}:$FrontendPort/" -TimeoutSeconds 180 }
+    if ($publishFrontend) {
+        Wait-HttpContentTypeOk -Url "http://${ServerHost}:$FrontendPort/pdfjs/pdf.worker.mjs" -ExpectedContentType 'application/javascript' -TimeoutSeconds 180
+    }
+    $verifyShowroomMediaContent = $publishWebsite -or (-not $SkipMinioSync)
+    if ($publishFrontend -and $verifyShowroomMediaContent) {
+        Assert-RemoteShowroomSmokeImageContent
+    } elseif ($publishFrontend) {
+        Info 'Skipping showroom smoke image content check for code-only deploy without Website or MinIO data sync'
+    }
+    if ($publishBackend -and $IncludeOnlyOffice) {
+        Wait-HttpOk -Url "http://${ServerHost}:$OnlyOfficeHostPort/healthcheck" -TimeoutSeconds 180
+    }
+    if ($publishWebsite) { Wait-HttpOk -Url "http://${ServerHost}:$WebsiteHostPort/" -TimeoutSeconds 180 }
+    if ($publishWebsite) { Wait-HttpOk -Url "http://${ServerHost}:$WebsiteHostPort/showroom" -TimeoutSeconds 180 }
+    if ($publishWebsite) { Assert-PublicWebsiteEntryReadback }
+    if ($publishWebsite) { Assert-PublicWebsiteScopedReleaseCurrent }
 
-if ($Mode -eq 'deploy-release' -and @('prod', 'backup') -contains $Environment) {
-    Write-NasReleaseDeploymentHistory -PackageTag $ReleaseTag -HistoryAction 'deploy' -HistoryEnvironment $Environment
+    if ($Mode -eq 'deploy-release' -and @('prod', 'backup') -contains $Environment) {
+        Write-NasReleaseDeploymentHistory -PackageTag $ReleaseTag -HistoryAction 'deploy' -HistoryEnvironment $Environment
+    }
+} catch {
+    if ($publishBackend) {
+        $releaseErrorMessage = $_.Exception.Message
+        try {
+            Invoke-ReleaseOperationLockRelease -Status 'FAILED' -ErrorMessage $releaseErrorMessage
+        } catch {
+        }
+    }
+    throw
 }
 
 Info 'Cleaning remote release temp files'
