@@ -791,3 +791,5 @@
 - 执行命令：只读核对备份服 `172.30.30.59` 的 `/opt/intruoyi/runtime/.env`、`docker ps --format '{{.Names}} {{.Image}}' | grep -E 'intruoyi-(backend|frontend)'` 与 `http://172.30.30.59:48081/actuator/health`、`http://172.30.30.59:8081/`、`http://172.30.30.59:8081/pdfjs/pdf.worker.mjs` -> PASS；确认运行态 `IMAGE_TAG` 与 backend/frontend 镜像都已切到 `release-20260621-page-full-flow-v6`，三条入口均返回 HTTP `200`。
 - 执行命令：只读核对备份服展厅受保护 URL 边界，执行 `DESCRIBE infra_file` 与边界计数查询 -> PASS；确认 `config_id=28 AND path LIKE 'showroom/%' AND url LIKE '%127.0.0.1:9000%'` 的漂移记录数为 `0`，`url LIKE 'http://172.30.30.59:9000/yudao/%'` 的记录数为 `1434`。
 - 当前结论：`release-20260621-page-full-flow-v6` 已在真实页面链路一次性完整走通 `构建发布包 -> 部署测试服 -> 标记测试通过 -> 上线正式服 -> 上线备份服`，过程中未用接口替代页面提交；接下来进入任务收尾，先运行 `task-closeout-cleanup` 预览，再按本任务范围提交相关改动。
+- 2026-06-21 用户请求：`$fupan`。
+- 2026-06-21 执行记录：按 fupan 技能从真实页面发布全链路任务证据中提炼项目级防错短记忆；先创建 `doc/tasks/20260621-fupan-frontend-release-full-flow-v6/`，再采集候选证据、更新项目短记忆并提交本任务文档改动。
