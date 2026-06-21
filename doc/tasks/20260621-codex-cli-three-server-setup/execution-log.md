@@ -41,3 +41,12 @@
 - GREEN: artifact-validation -> PASS，`validate_artifacts.py` 与 `validate_test_report.py` 已通过，任务文档链与测试报告结构有效。
 - GREEN: completion-gate -> PASS，已执行 `record_test_review.py --outcome passed` 与 `check_completion.py --apply`，任务状态机收口成功。
 - GREEN: closeout-apply -> PASS，为兼容 `task-closeout-cleanup` 脚本状态解析，已在 `task.md` 补充英文 `## Current Status` 元数据；随后成功执行 `task_closeout.py --mode apply`，按预览结果仅保留 `task.md` 与 `execution-log.md`，删除 `prd.md`、`test-plan.md`、`test-report.md`、`task-state.json` 与远端辅助脚本。
+
+## Completion Audit 2026-06-22
+
+- GREEN: current-local-baseline -> PASS，当前本机 `codex --version` 仍为 `0.128.0`，`C:\Users\BJB110\.codex\config.toml` 关键连接项保持 `model_provider=asxs`、`model=gpt-5.4`、`model_reasoning_effort=xhigh`、`disable_response_storage=true`、`sandbox_mode=workspace-write`，provider 仍为 `https://api.asxs.top/v1` + `wire_api=responses`。
+- GREEN: current-config-parity -> PASS，已对本机与 `172.30.30.58 / 172.30.30.57 / 172.30.30.59` 的 `~/.codex/config.toml` 做规范化字段比对，三台远端的关键连接参数与本机完全一致。
+- GREEN: current-auth-parity -> PASS，已对本机与三台远端的 `auth.json` 做 SHA-256 比对，三台远端认证文件均与本机一致。
+- GREEN: current-readonly-smoke -> PASS，已在三台远端重新执行 `codex -a never -s read-only exec --skip-git-repo-check --color never -o /tmp/codex-audit.txt 'Respond with exactly OK and nothing else.' </dev/null`；三台均返回 `OK`，并显示 `provider: asxs`、`model: gpt-5.4`、`reasoning effort: xhigh`。
+- GREEN: current-default-sandbox-smoke -> PASS，已在三台远端重新执行 `codex -a never exec --skip-git-repo-check --color never -o /tmp/codex-audit-default.txt 'Respond with exactly OK and nothing else.' </dev/null`；三台均返回 `OK`，并确认默认 `sandbox: workspace-write` 已生效。
+- NOTE: backup-bwrap-warning-still-present -> `172.30.30.59` 当前仍无系统 `bubblewrap`，默认 `workspace-write` smoke 时提示使用 vendored bubblewrap，但命令实际成功返回 `OK`；该情况不影响本任务“连接参数一致且三台真实跑通”的完成判定。
