@@ -1,6 +1,9 @@
 # Project Error Prevention Memory
 
-- 发布验证不要只看本机源码或单点健康检查；必须按“源码进入唯一发布源头 -> 发布产物验证 -> 目标环境真实运行态”三层确认，环境差异和服务器暴露的问题要补成门禁。
-- 环境发布流程前先预检 Dockerfile 基础镜像、迁移策略门禁和 Maven target/jar 锁；失败不生成可部署包；证据: 20260617-release
-- 任务提交前跑 TDD 钩子；execution-log 用裸 RED/GREEN，sql/mysql 变更配 script/tests；证据: 20260617-release
-- 环境发布验证不能只看健康；必须核 operation SUCCESS、manifest、远端 IMAGE_TAG/镜像、迁移状态和真实浏览器入口；证据: 20260617-release
+- 提交前跑 TDD 钩子；execution-log 只记裸 RED/GREEN；SQL 变更补脚本和测试；证据: 20260617-release
+- 部署验证不能只看健康；要核 operation、manifest、镜像、迁移状态和真实入口；证据: 20260617-release
+- 真实 E2E 先记失败再统一修复并整轮复测；不要边测边改；证据: 20260618-role-e2e
+- 环境部署前先核本机控制台授权、secrets、确认文本、旧 jar/陈旧 RUNNING 锁；任一前置条件缺失直接阻塞；证据: 20260620-release-flow
+- 构建完成就做候选包 preflight；manifest、required SQL、dry-run/隔离工作区、多环境迁移契约先过；证据: 20260621-release-flow
+- 同一发布包按多环境契约处理；test/backup 专属迁移在 prod preflight 明确跳过，SQL/迁移按真实环境基线做合同测试；证据: 20260621-release-flow
+- 测试通过前先确认 AVAILABLE 恢复点；正式备份前单独校验 secrets、确认文本、DCC manifest 和 object inventory；证据: 20260620-release-flow

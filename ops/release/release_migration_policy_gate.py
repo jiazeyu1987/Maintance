@@ -64,6 +64,26 @@ def _check_frozen_checksums(entries: list[dict[str, object]], registry: dict[str
             )
 
 
+def _check_dependency_environment_contract(entries: list[dict[str, object]]) -> None:
+    environments_by_id = {
+        str(entry["migrationId"]): {str(environment) for environment in entry["allowedEnvironments"]}
+        for entry in entries
+    }
+    for entry in entries:
+        migration_id = str(entry["migrationId"])
+        child_environments = environments_by_id[migration_id]
+        for dependency in entry["dependsOn"]:
+            dependency_id = str(dependency)
+            dependency_environments = environments_by_id[dependency_id]
+            if child_environments.issubset(dependency_environments):
+                continue
+            raise MigrationPolicyError(
+                "allowedEnvironments must be a subset of each dependency for "
+                f"migrationId '{migration_id}': dependency '{dependency_id}' allows "
+                f"{sorted(dependency_environments)}, child allows {sorted(child_environments)}"
+            )
+
+
 def run_migration_policy_gate(
     sql_root: Path | str,
     *,
@@ -78,6 +98,7 @@ def run_migration_policy_gate(
         entries = build_migration_manifest(root, sql_paths=paths, file_prefix=file_prefix)
     except MigrationManifestError as exc:
         raise MigrationPolicyError(str(exc)) from exc
+    _check_dependency_environment_contract(entries)
     _check_frozen_checksums(entries, _load_frozen_registry(frozen_registry_path))
     return {
         "status": "passed",

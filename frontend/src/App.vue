@@ -131,6 +131,14 @@ const selectedActionSummary = computed(() => {
   return actionDescriptions[selectedAction.value.action] || '本机运维动作'
 })
 
+const prodConfirmPlaceholder = computed(() => {
+  return selectedAction.value.action === 'backup-now' ? 'PROD-BACKUP-172.30.30.57' : 'PROD'
+})
+
+const prodConfirmLabel = computed(() => {
+  return selectedAction.value.action === 'backup-now' ? '正式备份确认' : '生产确认'
+})
+
 const selectedStatus = computed(() => {
   return overview.value?.statuses?.[restartTarget.environment]?.[restartTarget.component]
 })
@@ -501,8 +509,8 @@ onMounted(loadData)
             <el-form-item v-if="operationUsesReleaseTag(selectedAction.action)" label="发布标签">
               <el-input v-model="actionForm.releaseTag" placeholder="release-YYYYMMDD-HHmm" />
             </el-form-item>
-            <el-form-item label="生产确认">
-              <el-input v-model="actionForm.prodConfirmText" placeholder="PROD" />
+            <el-form-item :label="prodConfirmLabel">
+              <el-input v-model="actionForm.prodConfirmText" :placeholder="prodConfirmPlaceholder" />
             </el-form-item>
             <el-form-item v-if="operationUsesSqlPath(selectedAction.action)" label="SQL 路径">
               <el-input v-model="actionForm.sqlPath" />

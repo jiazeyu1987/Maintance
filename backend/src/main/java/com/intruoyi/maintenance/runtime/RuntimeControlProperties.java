@@ -18,6 +18,7 @@ public class RuntimeControlProperties {
     private String websiteRoot;
     private String opsRoot = "ops";
     private String stateDir = "runtime/runtime-control";
+    private String localCacheRoot = "E:/Int/CacheData/IntRuoyi";
     private long commandTimeoutSeconds = 1800;
     private long statusTimeoutMillis = 1500;
     private boolean productionWriteEnabled;
@@ -59,6 +60,10 @@ public class RuntimeControlProperties {
 
     public Path stateDirPath() {
         return Path.of(stateDir).toAbsolutePath().normalize();
+    }
+
+    public Path localCacheRootPath() {
+        return Path.of(localCacheRoot).toAbsolutePath().normalize();
     }
 
     public Duration commandTimeout() {
@@ -144,6 +149,14 @@ public class RuntimeControlProperties {
 
     public void setStateDir(String stateDir) {
         this.stateDir = stateDir;
+    }
+
+    public String getLocalCacheRoot() {
+        return localCacheRoot;
+    }
+
+    public void setLocalCacheRoot(String localCacheRoot) {
+        this.localCacheRoot = localCacheRoot;
     }
 
     public long getCommandTimeoutSeconds() {
@@ -524,6 +537,7 @@ public class RuntimeControlProperties {
         private String backendRuntimeBaseImage;
         private String backendRuntimeBaseDigest;
         private String backendRuntimeBaseVersion;
+        private String smartReleaseTargetConfigPath;
 
         public String getNasServer() {
             return nasServer;
@@ -619,6 +633,14 @@ public class RuntimeControlProperties {
 
         public void setBackendRuntimeBaseVersion(String backendRuntimeBaseVersion) {
             this.backendRuntimeBaseVersion = backendRuntimeBaseVersion;
+        }
+
+        public String getSmartReleaseTargetConfigPath() {
+            return smartReleaseTargetConfigPath;
+        }
+
+        public void setSmartReleaseTargetConfigPath(String smartReleaseTargetConfigPath) {
+            this.smartReleaseTargetConfigPath = smartReleaseTargetConfigPath;
         }
     }
 }

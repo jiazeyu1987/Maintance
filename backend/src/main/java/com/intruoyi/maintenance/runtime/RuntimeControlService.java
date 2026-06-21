@@ -3,6 +3,8 @@ package com.intruoyi.maintenance.runtime;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileStore;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.time.Instant;
@@ -26,6 +29,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
@@ -138,7 +142,8 @@ public class RuntimeControlService {
         RuntimeControlActionReqVO resolvedReq = validateAndResolveAction(action, req);
         String environment = action.resolveEnvironment(resolvedReq);
         validateRequiredOwners(action, environment);
-        guardWrite(environment, resolvedReq.reason(), resolvedReq.prodConfirmText(), action.requiresProductionGuard(resolvedReq));
+        guardWrite(environment, resolvedReq.reason(), resolvedReq.prodConfirmText(),
+                action.requiresProductionGuard(resolvedReq), action.requiresProdConfirmText(resolvedReq));
         RuntimeControlCommand command = action.buildCommand(resolvedReq, properties);
         appendNasReleaseArguments(action, command, operationId, previewOnly);
         appendManagedSourceArguments(action, command);
@@ -184,6 +189,9 @@ public class RuntimeControlService {
             return copyActionReqWithSqlPath(resolvedReq, validateSqlPath(resolvedReq.sqlPath()));
         }
         validateReleasePackageAvailability(action, resolvedReq.releaseTag());
+        if (action == RuntimeControlOperationAction.PROMOTE_PROD) {
+            return copyActionReqWithProdDryRunEvidencePath(resolvedReq, resolveProdDryRunEvidencePath(resolvedReq));
+        }
         return resolvedReq;
     }
 
@@ -430,6 +438,7 @@ public class RuntimeControlService {
     public List<RuntimeControlRestoreCandidateRespVO> getRestoreCandidates() {
         RuntimeControlNasBrowser.NasConfig nasConfig = backupNasConfig();
         return nasBrowser.listDirectories(nasConfig).stream()
+                .filter(entry -> isRestorePointDirectory(nasConfig, entry))
                 .limit(5)
                 .map(entry -> buildRestoreCandidate(nasConfig, entry))
                 .toList();
@@ -542,7 +551,7 @@ public class RuntimeControlService {
     }
 
     public RuntimeControlRemoteRootCleanupRespVO cleanupRemoteRootTemporaryFiles(RuntimeControlRemoteRootCleanupReqVO req) {
-        guardWrite(req.targetEnvironment(), req.reason(), req.prodConfirmText(), true);
+        guardWrite(req.targetEnvironment(), req.reason(), req.prodConfirmText(), true, true);
         throw new RuntimeControlException("远程清理属于高风险动作，需另行授权后执行");
     }
 
@@ -941,6 +950,16 @@ public class RuntimeControlService {
                 dccSummary.chainStatus(), dccSummary.changeSummary(), checksumPath, rehearsalReportPath, snapshotPath);
     }
 
+    private boolean isRestorePointDirectory(RuntimeControlNasBrowser.NasConfig nasConfig,
+                                            RuntimeControlNasBrowser.NasEntry entry) {
+        String manifestPath = childPath(normalizeNasPath(entry.path()), "manifest", "manifest.json");
+        try {
+            return nasBrowser.isRegularFile(nasConfig, manifestPath);
+        } catch (RuntimeException ex) {
+            return false;
+        }
+    }
+
     private RuntimeControlBackupPointRespVO toBackupPoint(RuntimeControlRestoreCandidateRespVO candidate) {
         return new RuntimeControlBackupPointRespVO(candidate.backupId(), candidate.manifestPath(), candidate.checksumPath(),
                 candidate.rehearsalReportPath(), candidate.snapshotPath(), null, candidate.imageTag(), null, null,
@@ -1067,6 +1086,231 @@ public class RuntimeControlService {
         String trimmed = releaseTag.trim();
         if (trimmed.contains("..") || trimmed.contains("/") || trimmed.contains("\\")) {
             throw new RuntimeControlException("releaseTag 不合法: " + trimmed);
+        }
+    }
+
+    private String resolveProdDryRunEvidencePath(RuntimeControlActionReqVO req) {
+        if (hasText(req.prodDryRunEvidencePath())) {
+            return validateProdDryRunEvidencePath(req.prodDryRunEvidencePath());
+        }
+        return generateProdDryRunEvidence(req.releaseTag());
+    }
+
+    private String validateProdDryRunEvidencePath(String prodDryRunEvidencePath) {
+        try {
+            Path path = Paths.get(prodDryRunEvidencePath.trim()).toAbsolutePath().normalize();
+            if (!Files.isRegularFile(path)) {
+                throw new RuntimeControlException("prodDryRunEvidencePath 文件不存在或不是普通文件: " + path);
+            }
+            return path.toString();
+        } catch (InvalidPathException ex) {
+            throw new RuntimeControlException("prodDryRunEvidencePath 路径不合法: " + ex.getInput(), ex);
+        }
+    }
+
+    private String generateProdDryRunEvidence(String releaseTag) {
+        RuntimeControlProperties.ReleasePackage releasePackage = properties.getReleasePackage();
+        Path targetConfigPath = Path.of(requireText(releasePackage.getSmartReleaseTargetConfigPath(),
+                        "releasePackage.smartReleaseTargetConfigPath"))
+                .toAbsolutePath().normalize();
+        if (!Files.isRegularFile(targetConfigPath)) {
+            throw new RuntimeControlException("正式 Smart Release target config 不存在: " + targetConfigPath);
+        }
+
+        Path releaseDir = locateReleasePackageWorkspace(releaseTag);
+        Path evidenceDir = properties.stateDirPath().resolve("prod-preflight-release-evidence");
+        Path reportPath = evidenceDir.resolve(releaseTag + "-deploy-precheck-report.json");
+        Path dryRunEvidencePath = evidenceDir.resolve(releaseTag + "-preflight-release-dry-run.json");
+        Path scriptPath = commandExecutor.resolveScriptPath("release/run-deploy-precheck-report.ps1");
+        if (!Files.isRegularFile(scriptPath)) {
+            throw new RuntimeControlException("deploy precheck 脚本不存在: " + scriptPath);
+        }
+
+        Path sanitizedWorkspace = null;
+        try {
+            sanitizedWorkspace = prepareProdDryRunPackageWorkspace(releaseTag, releaseDir);
+            runLocalCommand(List.of(
+                    "powershell.exe",
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-File",
+                    scriptPath.toString(),
+                    "-PackagePath",
+                    sanitizedWorkspace.toString(),
+                    "-Environment",
+                    "prod",
+                    "-TargetConfigPath",
+                    targetConfigPath.toString(),
+                    "-Mode",
+                    "report-only",
+                    "-OutputPath",
+                    reportPath.toString()
+            ), "正式 deploy precheck report-only");
+
+            Files.createDirectories(evidenceDir);
+            ObjectNode root = objectMapper.createObjectNode();
+            root.put("status", "passed");
+            root.put("mode", "preflight-release");
+            root.put("targetEnvironment", "prod");
+            root.put("releaseTag", releaseTag);
+            ArrayNode writeActions = root.putArray("writeActions");
+            root.put("reportPath", reportPath.toString().replace('\\', '/'));
+            root.put("targetConfigPath", targetConfigPath.toString().replace('\\', '/'));
+            Files.writeString(dryRunEvidencePath,
+                    objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(root) + System.lineSeparator(),
+                    StandardCharsets.UTF_8);
+            return dryRunEvidencePath.toString();
+        } catch (IOException ex) {
+            throw new RuntimeControlException("无法生成正式 dry-run 隔离工作区或证据: " + dryRunEvidencePath, ex);
+        } finally {
+            deleteDirectoryIfExists(sanitizedWorkspace);
+        }
+    }
+
+    private Path locateReleasePackageWorkspace(String releaseTag) {
+        Path releaseDir = properties.localCacheRootPath().resolve("publish-int-ruoyi").resolve(releaseTag);
+        if (!Files.isDirectory(releaseDir)) {
+            throw new RuntimeControlException("本机未找到发布包工作目录，无法生成正式 dry-run 证据: " + releaseDir);
+        }
+        return releaseDir;
+    }
+
+    private Path prepareProdDryRunPackageWorkspace(String releaseTag, Path sourceReleaseDir) throws IOException {
+        Path manifestPath = sourceReleaseDir.resolve("manifest.json");
+        if (!Files.isRegularFile(manifestPath)) {
+            throw new RuntimeControlException("本机发布包缺少 manifest.json，无法生成正式 dry-run 证据: " + manifestPath);
+        }
+        JsonNode manifest = objectMapper.readTree(Files.readString(manifestPath, StandardCharsets.UTF_8));
+
+        Path workspaceRoot = properties.stateDirPath().resolve("prod-preflight-release-workspaces");
+        Files.createDirectories(workspaceRoot);
+        Path workspace = Files.createTempDirectory(workspaceRoot, releaseTag + "-");
+
+        LinkedHashSet<String> declaredPaths = collectProdDryRunDeclaredPackagePaths(manifest);
+        declaredPaths.add("manifest.json");
+        if (Files.isRegularFile(sourceReleaseDir.resolve("release-manifest.json"))) {
+            declaredPaths.add("release-manifest.json");
+        }
+        if (Files.isRegularFile(sourceReleaseDir.resolve("legacy-release-manifest.json"))) {
+            declaredPaths.add("legacy-release-manifest.json");
+        }
+
+        for (String relativePath : declaredPaths) {
+            copyDeclaredPackageFile(sourceReleaseDir, workspace, relativePath);
+        }
+        return workspace;
+    }
+
+    private LinkedHashSet<String> collectProdDryRunDeclaredPackagePaths(JsonNode manifest) {
+        LinkedHashSet<String> paths = new LinkedHashSet<>();
+        for (JsonNode artifact : array(node(manifest, "artifacts"))) {
+            if (artifact.path("includedInPackage").asBoolean(false)) {
+                addDeclaredPackagePath(paths, text(artifact, "path"));
+            }
+        }
+
+        JsonNode database = node(manifest, "database");
+        for (JsonNode migration : array(node(database, "schemaMigrations"))) {
+            addDeclaredPackagePath(paths, text(migration, "file"));
+        }
+        for (JsonNode dataSet : array(node(database, "requiredDataSets"))) {
+            addDeclaredPackagePath(paths, text(dataSet, "file"));
+        }
+
+        JsonNode resources = node(manifest, "resources");
+        addDeclaredPackagePath(paths, text(resources, "resourceReferenceManifest"));
+        addDeclaredPackagePath(paths, text(resources, "resourceDeltaProofPath"));
+        return paths;
+    }
+
+    private void addDeclaredPackagePath(LinkedHashSet<String> paths, String relativePath) {
+        if (isBlank(relativePath)) {
+            return;
+        }
+        String normalized = normalizeDeclaredPackagePath(relativePath);
+        if (!normalized.isEmpty()) {
+            paths.add(normalized);
+        }
+    }
+
+    private String normalizeDeclaredPackagePath(String relativePath) {
+        String normalized = relativePath.trim().replace("\\", "/");
+        while (normalized.startsWith("./")) {
+            normalized = normalized.substring(2);
+        }
+        while (normalized.startsWith("/")) {
+            normalized = normalized.substring(1);
+        }
+        if (normalized.isEmpty()) {
+            return normalized;
+        }
+        for (String part : normalized.split("/")) {
+            if ("..".equals(part)) {
+                throw new RuntimeControlException("发布包声明路径不合法: " + relativePath);
+            }
+        }
+        return normalized;
+    }
+
+    private void copyDeclaredPackageFile(Path sourceReleaseDir, Path targetReleaseDir, String relativePath) throws IOException {
+        String normalized = normalizeDeclaredPackagePath(relativePath);
+        if (normalized.isEmpty()) {
+            return;
+        }
+        Path sourcePath = sourceReleaseDir.resolve(normalized.replace("/", java.io.File.separator)).normalize();
+        if (!sourcePath.startsWith(sourceReleaseDir)) {
+            throw new RuntimeControlException("发布包声明路径越界: " + relativePath);
+        }
+        if (!Files.isRegularFile(sourcePath)) {
+            throw new RuntimeControlException("发布包声明文件缺失，无法生成正式 dry-run 证据: " + sourcePath);
+        }
+
+        Path targetPath = targetReleaseDir.resolve(normalized.replace("/", java.io.File.separator)).normalize();
+        if (!targetPath.startsWith(targetReleaseDir)) {
+            throw new RuntimeControlException("正式 dry-run 工作区路径越界: " + relativePath);
+        }
+        Path parent = targetPath.getParent();
+        if (parent != null) {
+            Files.createDirectories(parent);
+        }
+        Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    private void deleteDirectoryIfExists(Path directory) {
+        if (directory == null || Files.notExists(directory)) {
+            return;
+        }
+        try (var stream = Files.walk(directory)) {
+            List<Path> paths = stream.sorted(Comparator.reverseOrder()).toList();
+            for (Path path : paths) {
+                Files.deleteIfExists(path);
+            }
+        } catch (IOException ex) {
+            throw new RuntimeControlException("无法清理正式 dry-run 工作区: " + directory, ex);
+        }
+    }
+
+    private void runLocalCommand(List<String> command, String description) {
+        ProcessBuilder builder = new ProcessBuilder(command)
+                .directory(properties.opsRootPath().toFile())
+                .redirectErrorStream(true);
+        try {
+            Process process = builder.start();
+            String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            boolean completed = process.waitFor(properties.commandTimeout().toMillis(), TimeUnit.MILLISECONDS);
+            if (!completed) {
+                process.destroyForcibly();
+                throw new RuntimeControlException(description + " 超时");
+            }
+            if (process.exitValue() != 0) {
+                throw new RuntimeControlException(description + " 失败: " + output.trim());
+            }
+        } catch (IOException ex) {
+            throw new RuntimeControlException("无法启动 " + description, ex);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeControlException(description + " 被中断", ex);
         }
     }
 
@@ -1588,7 +1832,7 @@ public class RuntimeControlService {
                 req.includeShowroomBuildPackage(), req.enableSmartReleaseReport(), req.releaseTag(),
                 req.testConclusion(), req.sqlPath(), req.selectedImageCandidateId(), selectedImageTag,
                 req.selectedRecoverySetCandidateId(), selectedBackupId, recoverySetId, recoverySetManifestHash,
-                recoverySetProgramVersion, recoverySetRedisPolicy);
+                recoverySetProgramVersion, recoverySetRedisPolicy, req.prodDryRunEvidencePath());
     }
 
     private RuntimeControlActionReqVO copyActionReqWithSqlPath(RuntimeControlActionReqVO req, String sqlPath) {
@@ -1597,7 +1841,8 @@ public class RuntimeControlService {
                 req.includeShowroomBuildPackage(), req.enableSmartReleaseReport(), req.releaseTag(),
                 req.testConclusion(), sqlPath, req.selectedImageCandidateId(), req.selectedImageTag(),
                 req.selectedRecoverySetCandidateId(), req.selectedBackupId(), req.recoverySetId(),
-                req.recoverySetManifestHash(), req.recoverySetProgramVersion(), req.recoverySetRedisPolicy());
+                req.recoverySetManifestHash(), req.recoverySetProgramVersion(), req.recoverySetRedisPolicy(),
+                req.prodDryRunEvidencePath());
     }
 
     private RuntimeControlActionReqVO copyActionReqWithReleaseTag(RuntimeControlActionReqVO req, String releaseTag) {
@@ -1606,7 +1851,19 @@ public class RuntimeControlService {
                 req.includeShowroomBuildPackage(), req.enableSmartReleaseReport(), releaseTag,
                 req.testConclusion(), req.sqlPath(), req.selectedImageCandidateId(), req.selectedImageTag(),
                 req.selectedRecoverySetCandidateId(), req.selectedBackupId(), req.recoverySetId(),
-                req.recoverySetManifestHash(), req.recoverySetProgramVersion(), req.recoverySetRedisPolicy());
+                req.recoverySetManifestHash(), req.recoverySetProgramVersion(), req.recoverySetRedisPolicy(),
+                req.prodDryRunEvidencePath());
+    }
+
+    private RuntimeControlActionReqVO copyActionReqWithProdDryRunEvidencePath(RuntimeControlActionReqVO req,
+                                                                               String prodDryRunEvidencePath) {
+        return new RuntimeControlActionReqVO(req.action(), req.reason(), req.prodConfirmText(),
+                req.targetEnvironment(), req.publishScope(), req.includeOnlyOffice(),
+                req.includeShowroomBuildPackage(), req.enableSmartReleaseReport(), req.releaseTag(),
+                req.testConclusion(), req.sqlPath(), req.selectedImageCandidateId(), req.selectedImageTag(),
+                req.selectedRecoverySetCandidateId(), req.selectedBackupId(), req.recoverySetId(),
+                req.recoverySetManifestHash(), req.recoverySetProgramVersion(), req.recoverySetRedisPolicy(),
+                prodDryRunEvidencePath);
     }
 
     private Map<String, String> componentSummary(JsonNode recoverySet) {
@@ -1628,6 +1885,15 @@ public class RuntimeControlService {
 
     private JsonNode node(JsonNode node, String fieldName) {
         return node == null ? null : node.get(fieldName);
+    }
+
+    private List<JsonNode> array(JsonNode node) {
+        if (node == null || !node.isArray()) {
+            return List.of();
+        }
+        List<JsonNode> result = new ArrayList<>();
+        node.forEach(result::add);
+        return result;
     }
 
     private String text(JsonNode node, String fieldName) {
@@ -1747,10 +2013,15 @@ public class RuntimeControlService {
     }
 
     private void guardWrite(String environment, String reason, String prodConfirmText) {
-        guardWrite(environment, reason, prodConfirmText, "prod".equals(environment));
+        guardWrite(environment, reason, prodConfirmText, "prod".equals(environment), "prod".equals(environment));
     }
 
     private void guardWrite(String environment, String reason, String prodConfirmText, boolean productionGuard) {
+        guardWrite(environment, reason, prodConfirmText, productionGuard, productionGuard);
+    }
+
+    private void guardWrite(String environment, String reason, String prodConfirmText, boolean productionGuard,
+                            boolean requireProdConfirmText) {
         if (reason == null || reason.isBlank()) {
             throw new RuntimeControlException("操作原因 reason is required");
         }
@@ -1768,7 +2039,7 @@ public class RuntimeControlService {
             if (!properties.isProductionWriteEnabled()) {
                 throw new RuntimeControlException("正式服/生产级写动作默认禁用，需显式启用 production-write-enabled");
             }
-            if (!PROD_CONFIRM_TEXT.equals(prodConfirmText)) {
+            if (requireProdConfirmText && !PROD_CONFIRM_TEXT.equals(prodConfirmText)) {
                 throw new RuntimeControlException("生产级动作必须提交确认文案 PROD");
             }
         }

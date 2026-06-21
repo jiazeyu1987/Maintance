@@ -12,6 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,13 +32,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(properties = {
         "maintenance.runtime-control.ops-root=../ops",
         "maintenance.runtime-control.state-dir=../runtime/runtime-control-original-parity-test",
+        "maintenance.runtime-control.local-cache-root=target/runtime-control-original-parity-local-cache",
         "maintenance.runtime-control.status-timeout-millis=50",
         "maintenance.runtime-control.production-write-enabled=true",
+        "maintenance.runtime-control.environments.prod.access-enabled=true",
         "maintenance.runtime-control.release-package.nas-server=unit-nas",
         "maintenance.runtime-control.release-package.nas-share=unit-share",
         "maintenance.runtime-control.release-package.nas-username=test-user",
         "maintenance.runtime-control.release-package.nas-password=test-password",
         "maintenance.runtime-control.release-package.nas-release-root=Backup/ReleasePackage",
+        "maintenance.runtime-control.release-package.smart-release-target-config-path=../doc/tasks/20260620-prod-release-current-latest/prod-target-config.json",
         "maintenance.runtime-control.release-package.backend-runtime-base-mode=offline-tar",
         "maintenance.runtime-control.release-package.backend-runtime-base-tar-path=D:/ProjectPackage/Int/BaseImages/runtime-base.tar",
         "maintenance.runtime-control.release-package.backend-runtime-base-tar-sha256=abc123",
@@ -54,6 +59,8 @@ class RuntimeControlOriginalParityTest {
 
     private static final Path NAS_ROOT = Path.of("target/runtime-control-original-parity-nas")
             .toAbsolutePath().normalize();
+    private static final Path LOCAL_CACHE_ROOT = Path.of("target/runtime-control-original-parity-local-cache")
+            .toAbsolutePath().normalize();
 
     @Autowired
     private MockMvc mockMvc;
@@ -64,9 +71,11 @@ class RuntimeControlOriginalParityTest {
     @BeforeEach
     void setUp() throws Exception {
         resetDirectory(NAS_ROOT);
+        resetDirectory(LOCAL_CACHE_ROOT);
         resetDirectory(operationStore.stateDir());
         Files.createDirectories(NAS_ROOT.resolve("Backup/ReleasePackage"));
         Files.createDirectories(NAS_ROOT.resolve("Backup/BackupPackage"));
+        Files.createDirectories(LOCAL_CACHE_ROOT.resolve("publish-int-ruoyi"));
     }
 
     @Test
@@ -353,6 +362,343 @@ class RuntimeControlOriginalParityTest {
     }
 
     @Test
+    void promoteProdPreviewAutoGeneratesDryRunEvidence() throws Exception {
+        String releaseTag = "release-20260621-prod-dry-run-fixture";
+        createRollbackPackage(releaseTag, true, false, true);
+        Path localCacheReleaseDir = LOCAL_CACHE_ROOT.resolve("publish-int-ruoyi")
+                .resolve(releaseTag);
+        resetDirectory(localCacheReleaseDir);
+        Files.createDirectories(localCacheReleaseDir.resolve("resources"));
+        Files.writeString(localCacheReleaseDir.resolve("docker-compose.yml"), "services: {}\n", StandardCharsets.UTF_8);
+        Files.writeString(localCacheReleaseDir.resolve("resources").resolve("resource-reference-manifest.json"), """
+                {
+                  "schemaVersion": "1.0",
+                  "releaseTag": "%s",
+                  "generatedAt": "2026-06-20T00:00:00Z",
+                  "resourcePayloadMode": "reference-check-only",
+                  "dccObjectInventory": null
+                }
+                """.formatted(releaseTag), StandardCharsets.UTF_8);
+        Files.writeString(localCacheReleaseDir.resolve("manifest.json"), """
+                {
+                  "manifestVersion": "1.0",
+                  "packageId": "%s",
+                  "releaseTag": "%s",
+                  "packageType": "full-release",
+                  "createdAt": "2026-06-20T00:00:00Z",
+                  "createdBy": "test",
+                  "sourceRepos": [],
+                  "changeSet": {
+                    "summary": "test release package",
+                    "component": "intruoyi",
+                    "includeShowroomBuildPackage": false,
+                    "includeOnlyOffice": false
+                  },
+                  "publishScope": "code-only",
+                  "components": ["runtime-env", "packaging-manifest"],
+                  "artifacts": [
+                    {
+                      "artifactId": "docker-compose.yml",
+                      "componentName": "runtime-env",
+                      "artifactType": "release-package-file",
+                      "path": "docker-compose.yml",
+                      "includedInPackage": true,
+                      "artifactCacheUri": null,
+                      "sha256": "sha256:%s"
+                    }
+                  ],
+                  "database": {
+                    "schemaMigrations": [],
+                    "requiredDataSets": []
+                  },
+                  "schemaVersion": "not-included",
+                  "schemaDigest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+                  "migrationPlan": [],
+                  "requiredSql": [],
+                  "buildModules": [],
+                  "compatibilityMatrix": [],
+                  "operationEvidencePolicy": {
+                    "requiredOperationTypes": ["manifest-validation"],
+                    "failOnMissingOperationEvidence": true,
+                    "failOnIntermediateFailure": true
+                  },
+                  "resources": {
+                    "resourcePayloadMode": "reference-check-only",
+                    "resourceReferenceManifest": "resources/resource-reference-manifest.json",
+                    "resourceSnapshotId": null,
+                    "resourceDeltaId": null,
+                    "resourceDeltaPrepared": false,
+                    "resourceDeltaProofPath": null
+                  },
+                  "targetRequirements": {
+                    "environmentCodes": ["prod"],
+                    "serverConfigSchemaVersion": "1.0",
+                    "dockerProfileId": "intruoyi-docker-compose",
+                    "storageProfileIds": ["minio-yudao-default"],
+                    "requiresDatabaseMigrationPrecheck": false,
+                    "requiresRequiredDataPrecheck": false,
+                    "requiresResourceDeltaProof": false
+                  },
+                  "buildContract": {
+                    "mode": "report-only",
+                    "intakeReportPath": "intake/intake-result.json",
+                    "manifestValidationResultPath": "manifest-validation-result.json",
+                    "changesBuildExitCode": false,
+                    "writesDatabase": false,
+                    "syncsResources": false
+                  },
+                  "deployContract": {
+                    "mode": "report-only",
+                    "deployPrecheckResultPath": "deploy-precheck-result.json",
+                    "changesDeployExitCode": false,
+                    "targetConfigSource": "server-side-runtime-control-config",
+                    "allowsRemoteMutation": false,
+                    "allowsRemoteReadOnlyProbe": "authorized-only"
+                  },
+                  "precheckPlan": {
+                    "checks": ["manifest", "artifact-hash"]
+                  },
+                  "verifyPlan": {
+                    "checks": ["manifest"]
+                  },
+                  "rollbackPlan": {
+                    "mode": "manual",
+                    "requiresCompatibilityEvidence": true,
+                    "restoresBusinessData": false
+                  },
+                  "forbiddenFieldsCheck": {
+                    "status": "pending-validation",
+                    "hardcodedIpMatches": [],
+                    "secretPatternMatches": [],
+                    "packageExternalPathReferences": []
+                  },
+                  "manifestChecksum": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+                }
+                """.formatted(releaseTag, releaseTag, sha256(localCacheReleaseDir.resolve("docker-compose.yml"))),
+                StandardCharsets.UTF_8);
+        Files.writeString(localCacheReleaseDir.resolve("release-manifest.json"), """
+                {
+                  "releaseTag": "%s",
+                  "packageDirectoryName": "%s",
+                  "builtAt": "2026-06-20T00:00:00Z",
+                  "publishScope": "code-only",
+                  "component": "intruoyi",
+                  "includeShowroomBuildPackage": false,
+                  "onlyOfficeIncluded": false,
+                  "artifacts": [{"name":"image.tar","sha256":"abc123"}]
+                }
+                """.formatted(releaseTag, releaseTag), StandardCharsets.UTF_8);
+
+        String preview = mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "action": "promote-prod",
+                                  "reason": "contract preview",
+                                  "prodConfirmText": "PROD",
+                                  "releaseTag": "%s"
+                                }
+                                """.formatted(releaseTag)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        assertThat(preview)
+                .contains("-Mode", "deploy-release", "-Environment", "prod",
+                        "-ReleaseTag", releaseTag,
+                        "-ProdDryRunEvidencePath");
+        assertThat(Files.exists(operationStore.stateDir().resolve("prod-preflight-release-evidence")
+                .resolve(releaseTag + "-preflight-release-dry-run.json"))).isTrue();
+    }
+
+    @Test
+    void promoteProdPreviewUsesSanitizedPackageWorkspace() throws Exception {
+        String releaseTag = "release-20260621-prod-dry-run-polluted-workspace";
+        createRollbackPackage(releaseTag, true, false, true);
+        Path localCacheReleaseDir = LOCAL_CACHE_ROOT.resolve("publish-int-ruoyi")
+                .resolve(releaseTag);
+        resetDirectory(localCacheReleaseDir);
+        Files.createDirectories(localCacheReleaseDir.resolve("resources"));
+        Files.writeString(localCacheReleaseDir.resolve("docker-compose.yml"), "services: {}\n", StandardCharsets.UTF_8);
+        Files.writeString(localCacheReleaseDir.resolve("resources").resolve("resource-reference-manifest.json"), """
+                {
+                  "schemaVersion": "1.0",
+                  "releaseTag": "%s",
+                  "generatedAt": "2026-06-20T00:00:00Z",
+                  "resourcePayloadMode": "reference-check-only",
+                  "dccObjectInventory": null
+                }
+                """.formatted(releaseTag), StandardCharsets.UTF_8);
+        Files.writeString(localCacheReleaseDir.resolve("manifest.json"), """
+                {
+                  "manifestVersion": "1.0",
+                  "packageId": "%s",
+                  "releaseTag": "%s",
+                  "packageType": "full-release",
+                  "createdAt": "2026-06-20T00:00:00Z",
+                  "createdBy": "test",
+                  "sourceRepos": [],
+                  "changeSet": {
+                    "summary": "test release package",
+                    "component": "intruoyi",
+                    "includeShowroomBuildPackage": false,
+                    "includeOnlyOffice": false
+                  },
+                  "publishScope": "code-only",
+                  "components": ["runtime-env", "packaging-manifest"],
+                  "artifacts": [
+                    {
+                      "artifactId": "docker-compose.yml",
+                      "componentName": "runtime-env",
+                      "artifactType": "release-package-file",
+                      "path": "docker-compose.yml",
+                      "includedInPackage": true,
+                      "artifactCacheUri": null,
+                      "sha256": "sha256:%s"
+                    }
+                  ],
+                  "database": {
+                    "schemaMigrations": [],
+                    "requiredDataSets": []
+                  },
+                  "schemaVersion": "not-included",
+                  "schemaDigest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+                  "migrationPlan": [],
+                  "requiredSql": [],
+                  "buildModules": [],
+                  "compatibilityMatrix": [],
+                  "operationEvidencePolicy": {
+                    "requiredOperationTypes": ["manifest-validation"],
+                    "failOnMissingOperationEvidence": true,
+                    "failOnIntermediateFailure": true
+                  },
+                  "resources": {
+                    "resourcePayloadMode": "reference-check-only",
+                    "resourceReferenceManifest": "resources/resource-reference-manifest.json",
+                    "resourceSnapshotId": null,
+                    "resourceDeltaId": null,
+                    "resourceDeltaPrepared": false,
+                    "resourceDeltaProofPath": null
+                  },
+                  "targetRequirements": {
+                    "environmentCodes": ["prod"],
+                    "serverConfigSchemaVersion": "1.0",
+                    "dockerProfileId": "intruoyi-docker-compose",
+                    "storageProfileIds": ["minio-yudao-default"],
+                    "requiresDatabaseMigrationPrecheck": false,
+                    "requiresRequiredDataPrecheck": false,
+                    "requiresResourceDeltaProof": false
+                  },
+                  "buildContract": {
+                    "mode": "report-only",
+                    "intakeReportPath": "intake/intake-result.json",
+                    "manifestValidationResultPath": "manifest-validation-result.json",
+                    "changesBuildExitCode": false,
+                    "writesDatabase": false,
+                    "syncsResources": false
+                  },
+                  "deployContract": {
+                    "mode": "report-only",
+                    "deployPrecheckResultPath": "deploy-precheck-result.json",
+                    "changesDeployExitCode": false,
+                    "targetConfigSource": "server-side-runtime-control-config",
+                    "allowsRemoteMutation": false,
+                    "allowsRemoteReadOnlyProbe": "authorized-only"
+                  },
+                  "precheckPlan": {
+                    "checks": ["manifest", "artifact-hash"]
+                  },
+                  "verifyPlan": {
+                    "checks": ["manifest"]
+                  },
+                  "rollbackPlan": {
+                    "mode": "manual",
+                    "requiresCompatibilityEvidence": true,
+                    "restoresBusinessData": false
+                  },
+                  "forbiddenFieldsCheck": {
+                    "status": "pending-validation",
+                    "hardcodedIpMatches": [],
+                    "secretPatternMatches": [],
+                    "packageExternalPathReferences": []
+                  },
+                  "manifestChecksum": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+                }
+                """.formatted(releaseTag, releaseTag, sha256(localCacheReleaseDir.resolve("docker-compose.yml"))),
+                StandardCharsets.UTF_8);
+        Files.writeString(localCacheReleaseDir.resolve("release-manifest.json"), """
+                {
+                  "releaseTag": "%s",
+                  "packageDirectoryName": "%s",
+                  "builtAt": "2026-06-20T00:00:00Z",
+                  "publishScope": "code-only",
+                  "component": "intruoyi",
+                  "includeShowroomBuildPackage": false,
+                  "onlyOfficeIncluded": false,
+                  "artifacts": [{"name":"image.tar","sha256":"abc123"}]
+                }
+                """.formatted(releaseTag, releaseTag), StandardCharsets.UTF_8);
+
+        Files.writeString(localCacheReleaseDir.resolve(".env"), "IMAGE_TAG=" + releaseTag + "\n",
+                StandardCharsets.UTF_8);
+        Files.writeString(localCacheReleaseDir.resolve("preflight-plan.json"), """
+                {"status":"passed","items":[]}
+                """, StandardCharsets.UTF_8);
+        Files.writeString(localCacheReleaseDir.resolve("post-import.sql"), "update demo set host='172.30.30.58';\n",
+                StandardCharsets.UTF_8);
+
+        String preview = mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "action": "promote-prod",
+                                  "reason": "contract preview",
+                                  "prodConfirmText": "PROD",
+                                  "releaseTag": "%s"
+                                }
+                                """.formatted(releaseTag)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        assertThat(preview)
+                .contains("-Mode", "deploy-release", "-Environment", "prod",
+                        "-ReleaseTag", releaseTag,
+                        "-ProdDryRunEvidencePath");
+        assertThat(Files.exists(operationStore.stateDir().resolve("prod-preflight-release-evidence")
+                .resolve(releaseTag + "-preflight-release-dry-run.json"))).isTrue();
+    }
+
+    @Test
+    void backupNowPreviewPassesProductionBackupConfirmTextToScript() throws Exception {
+        String preview = mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "action": "backup-now",
+                                  "reason": "contract preview",
+                                  "targetEnvironment": "prod",
+                                  "prodConfirmText": "PROD-BACKUP-172.30.30.57"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        assertThat(preview)
+                .contains("-Mode", "backup-now",
+                        "-TargetEnvironment", "prod",
+                        "-ProductionBackupConfirmText", "PROD-BACKUP-172.30.30.57")
+                .doesNotContain("-ConfirmText");
+    }
+
+    @Test
     void applyTestDbSqlRequiresRealSqlFile() throws Exception {
         Path sqlRoot = Path.of("target/runtime-control-original-parity-sql").toAbsolutePath().normalize();
         resetDirectory(sqlRoot);
@@ -489,6 +835,19 @@ class RuntimeControlOriginalParityTest {
                         .value(org.hamcrest.Matchers.containsString("chainStatus 不是 COMPLETE")));
     }
 
+    @Test
+    void restoreCandidatesIgnoreObjectStoreRootAndStillReturnRealBackupPoints() throws Exception {
+        createRestorePoint("20260621-063218");
+        Files.createDirectories(NAS_ROOT.resolve("Backup/BackupPackage/object-store"));
+
+        mockMvc.perform(get("/admin-api/infra/runtime-control/restore-candidates"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.data.length()").value(1))
+                .andExpect(jsonPath("$.data[0].candidateId").value("restore:20260621-063218"))
+                .andExpect(jsonPath("$.data[0].status").value("AVAILABLE"));
+    }
+
     private void createRollbackPackage(String directoryName, boolean withChecksum,
                                        boolean withRollbackEvidence, boolean withTestedEvidence) throws IOException {
         createReleasePackage(directoryName, "code-only", withChecksum, withRollbackEvidence, withTestedEvidence);
@@ -512,6 +871,17 @@ class RuntimeControlOriginalParityTest {
                 """.formatted(directoryName, directoryName, publishScope,
                 withChecksum ? "{\"name\":\"image.tar\",\"sha256\":\"abc123\"}" : ""),
                 StandardCharsets.UTF_8);
+        Files.writeString(root.resolve("manifest.json"), """
+                {
+                  "manifestVersion": "1.0",
+                  "releaseTag": "%s",
+                  "packageId": "%s",
+                  "targetRequirements": {
+                    "dockerProfileId": "intruoyi-docker-compose",
+                    "storageProfileIds": ["minio-yudao-default"]
+                  }
+                }
+                """.formatted(directoryName, directoryName), StandardCharsets.UTF_8);
         if (withRollbackEvidence) {
             Files.writeString(root.resolve("prod-latest.json"), """
                     {"releaseTag":"%s","packageDirectoryName":"%s","environment":"prod"}
@@ -595,6 +965,15 @@ class RuntimeControlOriginalParityTest {
                 "SUCCESS", "success", "target/runtime-control-original-parity.log"));
     }
 
+    private static String sha256(Path path) throws IOException {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            return java.util.HexFormat.of().formatHex(digest.digest(Files.readAllBytes(path)));
+        } catch (NoSuchAlgorithmException ex) {
+            throw new IllegalStateException("SHA-256 algorithm unavailable", ex);
+        }
+    }
+
     private static void resetDirectory(Path path) throws IOException {
         if (Files.notExists(path)) {
             return;
@@ -602,7 +981,16 @@ class RuntimeControlOriginalParityTest {
         try (var stream = Files.walk(path)) {
             List<Path> paths = stream.sorted(Comparator.reverseOrder()).toList();
             for (Path current : paths) {
-                Files.deleteIfExists(current);
+                try {
+                    Files.deleteIfExists(current);
+                } catch (java.nio.file.DirectoryNotEmptyException ex) {
+                    try (var retry = Files.walk(current)) {
+                        List<Path> retryPaths = retry.sorted(Comparator.reverseOrder()).toList();
+                        for (Path retryPath : retryPaths) {
+                            Files.deleteIfExists(retryPath);
+                        }
+                    }
+                }
             }
         }
     }
@@ -637,7 +1025,12 @@ class RuntimeControlOriginalParityTest {
 
         @Override
         public boolean isRegularFile(NasConfig config, String path) {
-            return Files.isRegularFile(toLocal(path));
+            Path local = toLocal(path);
+            Path parent = local.getParent();
+            if (parent != null && Files.notExists(parent)) {
+                throw new RuntimeControlException("local NAS directory not found: " + toNasPath(parent));
+            }
+            return Files.isRegularFile(local);
         }
 
         @Override

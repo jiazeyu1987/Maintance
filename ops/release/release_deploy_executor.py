@@ -9,7 +9,10 @@ class ReleaseDeployExecutionError(RuntimeError):
 
 
 APPLY_ACTION = "APPLY"
-SKIP_ACTION = "SKIP_ALREADY_APPLIED"
+SKIP_ACTIONS = {
+    "SKIP_ALREADY_APPLIED",
+    "SKIP_ENV_NOT_ALLOWED",
+}
 BLOCKED_ACTIONS = {
     "BLOCKED_CHECKSUM_MISMATCH",
     "BLOCKED_ENV_NOT_ALLOWED",
@@ -31,7 +34,7 @@ def execute_preflight_apply_migrations(
         if action in BLOCKED_ACTIONS:
             migration_id = str(entry.get("migrationId") or "")
             raise ReleaseDeployExecutionError(f"blocked preflight item prevents deploy-release: {migration_id}")
-        if action not in {APPLY_ACTION, SKIP_ACTION}:
+        if action not in ({APPLY_ACTION} | SKIP_ACTIONS):
             migration_id = str(entry.get("migrationId") or "")
             raise ReleaseDeployExecutionError(
                 f"unsupported preflight action for deploy-release: {migration_id} -> {action}"
@@ -45,8 +48,9 @@ def execute_preflight_apply_migrations(
     for entry in items:
         migration_id = str(entry.get("migrationId") or "")
         action = str(entry.get("action") or "")
-        if action == SKIP_ACTION:
-            record_state(entry, "SKIPPED_ALREADY_APPLIED", None)
+        if action in SKIP_ACTIONS:
+            if action == "SKIP_ALREADY_APPLIED":
+                record_state(entry, "SKIPPED_ALREADY_APPLIED", None)
             summary["skipped"].append(migration_id)
             continue
 

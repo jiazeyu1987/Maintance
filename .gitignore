@@ -5,6 +5,7 @@
 /runtime/runtime-control/
 /runtime/runtime-control-test/
 /config/runtime-control.local.yaml
+/ops/backup-ops/config/backup-ops.secrets.json
 /.playwright-cli/
 *.log
 *.tmp

@@ -83,9 +83,21 @@ $ErrorActionPreference = 'Stop'
 if (Get-Variable -Name PSNativeCommandUseErrorActionPreference -ErrorAction SilentlyContinue) {
     $PSNativeCommandUseErrorActionPreference = $false
 }
+$script:ReleaseOperationLockHeld = $false
+$script:ReleaseOperationLockReleasing = $false
 
 function Fail([string]$Message) {
     Write-Host "[FAIL] $Message" -ForegroundColor Red
+    if ($script:ReleaseOperationLockHeld -and -not $script:ReleaseOperationLockReleasing) {
+        try {
+            $script:ReleaseOperationLockReleasing = $true
+            Invoke-ReleaseOperationLockRelease -Status 'FAILED' -ErrorMessage $Message
+        } catch {
+        } finally {
+            $script:ReleaseOperationLockHeld = $false
+            $script:ReleaseOperationLockReleasing = $false
+        }
+    }
     exit 1
 }
 
@@ -3003,15 +3015,7 @@ function Read-ReleaseMigrationMetadata {
 
 function New-ReleaseRequiredSqlManifestEntries {
     $entries = @()
-    $targetRequiredSqlScripts = @($requiredDatabaseSqlScripts | Where-Object {
-        $entry = $_
-        $allowedEnvironments = @($entry.Environments)
-        $allowedEnvironments -contains $Environment
-    })
-    if ($targetRequiredSqlScripts.Count -eq 0) {
-        Fail "Manifest v1 required SQL entries resolved empty for environment: $Environment"
-    }
-    foreach ($entry in $targetRequiredSqlScripts) {
+    foreach ($entry in $requiredDatabaseSqlScripts) {
         $relativePath = [string]$entry.Path
         $fileName = Get-RequiredDatabaseSqlFileName -RelativePath $relativePath
         $packageSqlPath = Join-Path $requiredSqlLocalDir $fileName
@@ -3921,26 +3925,42 @@ function Get-RequiredDatabaseSqlEntriesForEnvironment {
 }
 
 function Get-ReleasePackageDatabaseSqlScripts {
-    $manifestPath = Join-Path $releaseDir 'release-manifest.json'
+    $manifestPath = Join-Path $releaseDir 'manifest.json'
     if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
-        Fail "release-manifest.json missing in release package: $manifestPath"
+        Fail "manifest.json missing in release package for required SQL: $manifestPath"
     }
     try {
         $manifest = [System.IO.File]::ReadAllText($manifestPath, [System.Text.UTF8Encoding]::new($false)) | ConvertFrom-Json
     } catch {
-        Fail "release-manifest.json parse failed for required SQL: $($_.Exception.Message)"
+        Fail "manifest.json parse failed for required SQL: $($_.Exception.Message)"
     }
-    $entries = @($manifest.artifacts | Where-Object {
-        $artifactPath = [string]$_.path
+    $manifestRequiredSql = @()
+    if ($null -ne $manifest.requiredSql) {
+        $manifestRequiredSql = @($manifest.requiredSql)
+    } elseif ($null -ne $manifest.database -and $null -ne $manifest.database.requiredDataSets) {
+        $manifestRequiredSql = @($manifest.database.requiredDataSets)
+    } elseif ($null -ne $manifest.database -and $null -ne $manifest.database.schemaMigrations) {
+        $manifestRequiredSql = @($manifest.database.schemaMigrations)
+    }
+    $entries = @($manifestRequiredSql | Where-Object {
+        $artifactPath = [string]$_.file
         $artifactPath.StartsWith('required-sql/') -and $artifactPath.EndsWith('.sql')
-    } | Sort-Object @{ Expression = { Get-ReleaseDatabaseSqlSortKey -FileName ([System.IO.Path]::GetFileName([string]$_.path)) } }, path | ForEach-Object {
+    } | Sort-Object @{ Expression = { Get-ReleaseDatabaseSqlSortKey -FileName ([System.IO.Path]::GetFileName([string]$_.sourcePath)) } }, sourcePath | ForEach-Object {
+        $sourcePath = [string]$_.sourcePath
+        if ([string]::IsNullOrWhiteSpace($sourcePath)) {
+            Fail "sourcePath missing in release package required SQL entry: $([string]$_.migrationId)"
+        }
+        $allowedEnvironments = @($_.allowedEnvironments)
+        if ($allowedEnvironments.Count -eq 0) {
+            Fail "required SQL entry allowedEnvironments is empty: $sourcePath"
+        }
         @{
-            Path = ('sql/mysql/' + [System.IO.Path]::GetFileName([string]$_.path))
-            Environments = @('test', 'prod', 'backup')
+            Path = $sourcePath
+            Environments = @($allowedEnvironments)
         }
     })
     if ($entries.Count -eq 0) {
-        Fail "Release package contains no required SQL artifacts: $manifestPath"
+        Fail "Release package contains no required SQL entries: $manifestPath"
     }
     return $entries
 }
@@ -3963,7 +3983,7 @@ function Read-ReleasePreflightPlan {
         if ($action.StartsWith('BLOCKED_')) {
             Fail "preflight-plan.json contains blocked migration: $($item.migrationId) -> $action"
         }
-        if ($action -notin @('APPLY', 'SKIP_ALREADY_APPLIED')) {
+        if ($action -notin @('APPLY', 'SKIP_ALREADY_APPLIED', 'SKIP_ENV_NOT_ALLOWED')) {
             Fail "preflight-plan.json contains unsupported migration action: $($item.migrationId) -> $action"
         }
     }
@@ -4135,6 +4155,8 @@ WHERE target_environment = '$Environment';
     Invoke-SshCommand "cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro | grep '^LOCK_ACQUIRED$'
 $lockSql
 SQL"
+    $script:ReleaseOperationLockHeld = $true
+    $script:ReleaseOperationLockReleasing = $false
 }
 
 function Invoke-ReleaseOperationLockRelease {
@@ -4162,6 +4184,8 @@ WHERE target_environment = '$Environment';
     Invoke-SshCommand "cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro | grep '^LOCK_RELEASED$'
 $lockSql
 SQL"
+    $script:ReleaseOperationLockHeld = $false
+    $script:ReleaseOperationLockReleasing = $false
 }
 
 function Copy-RequiredDatabaseSqlScripts {
@@ -4170,8 +4194,7 @@ function Copy-RequiredDatabaseSqlScripts {
     }
     New-Item -ItemType Directory -Force -Path $requiredSqlLocalDir | Out-Null
 
-    $requiredSqlEntries = Get-RequiredDatabaseSqlEntriesForEnvironment -TargetEnvironment $Environment
-    foreach ($entry in $requiredSqlEntries) {
+    foreach ($entry in $requiredDatabaseSqlScripts) {
         $relativePath = [string]$entry.Path
         $sourceRelativePath = $relativePath.Replace('/', [System.IO.Path]::DirectorySeparatorChar)
         $sourcePath = Join-Path $backendRepo $sourceRelativePath
@@ -4269,6 +4292,9 @@ function Invoke-RequiredDatabaseSqlScripts {
     $preflightPlan = Read-ReleasePreflightPlan
     foreach ($item in @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ALREADY_APPLIED' })) {
         Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'SKIPPED_ALREADY_APPLIED'
+    }
+    foreach ($item in @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ENV_NOT_ALLOWED' })) {
+        Info "Skipping required database SQL outside target environment: $($item.migrationId)"
     }
     $applyItems = Get-ReleasePreflightApplyItems -PreflightPlan $preflightPlan
     foreach ($item in $applyItems) {

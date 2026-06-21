@@ -121,7 +121,7 @@ function New-ReleaseManifestValidationResult {
 
 function Test-ManifestPropertyPresent {
     param(
-        [Parameter(Mandatory = $true)]$Object,
+        $Object,
         [Parameter(Mandatory = $true)][string]$Name
     )
 
@@ -143,7 +143,7 @@ function Test-ManifestPropertyPresent {
 
 function Get-ManifestPropertyValue {
     param(
-        [Parameter(Mandatory = $true)]$Object,
+        $Object,
         [Parameter(Mandatory = $true)][string]$Name
     )
 

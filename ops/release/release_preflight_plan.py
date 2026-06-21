@@ -3,15 +3,16 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+from collections import defaultdict, deque
 from pathlib import Path
 
 
 BLOCKED_ACTIONS = {
     "BLOCKED_CHECKSUM_MISMATCH",
-    "BLOCKED_ENV_NOT_ALLOWED",
     "BLOCKED_DEPENDENCY_MISSING",
     "BLOCKED_PREREQUISITE_MISSING",
 }
+SKIP_ENV_NOT_ALLOWED = "SKIP_ENV_NOT_ALLOWED"
 
 
 def _state_for(target_state: dict[str, dict[str, object]], migration_id: str) -> dict[str, object] | None:
@@ -29,6 +30,40 @@ def _item(migration: dict[str, object], action: str, reason: str) -> dict[str, o
     }
 
 
+def _order_migrations_by_dependencies(migrations: list[dict[str, object]]) -> list[dict[str, object]]:
+    migration_by_id = {str(migration["migrationId"]): migration for migration in migrations}
+    original_index = {str(migration["migrationId"]): index for index, migration in enumerate(migrations)}
+    indegree = {migration_id: 0 for migration_id in migration_by_id}
+    edges: dict[str, list[str]] = defaultdict(list)
+
+    for migration in migrations:
+        migration_id = str(migration["migrationId"])
+        for dependency in migration.get("dependsOn", []):
+            dependency_id = str(dependency)
+            if dependency_id not in migration_by_id:
+                continue
+            edges[dependency_id].append(migration_id)
+            indegree[migration_id] += 1
+
+    ready = deque(
+        migration_id
+        for migration_id, degree in sorted(indegree.items(), key=lambda item: original_index[item[0]])
+        if degree == 0
+    )
+    ordered_ids: list[str] = []
+    while ready:
+        migration_id = ready.popleft()
+        ordered_ids.append(migration_id)
+        for child_id in sorted(edges.get(migration_id, []), key=lambda item: original_index[item]):
+            indegree[child_id] -= 1
+            if indegree[child_id] == 0:
+                ready.append(child_id)
+
+    if len(ordered_ids) != len(migrations):
+        return migrations
+    return [migration_by_id[migration_id] for migration_id in ordered_ids]
+
+
 def build_preflight_plan(
     migrations: list[dict[str, object]],
     target_state: dict[str, dict[str, object]],
@@ -36,16 +71,20 @@ def build_preflight_plan(
     target_environment: str,
 ) -> dict[str, object]:
     items: list[dict[str, object]] = []
+    ordered_migrations = _order_migrations_by_dependencies(migrations)
+    known_migrations = {str(migration["migrationId"]) for migration in ordered_migrations}
+    planned_actions: dict[str, str] = {}
     satisfied_migrations = {
         migration_id
         for migration_id, state in target_state.items()
         if state.get("status") == "APPLIED"
     }
-    for migration in migrations:
+    for migration in ordered_migrations:
         migration_id = str(migration["migrationId"])
         allowed = [str(item) for item in migration.get("allowedEnvironments", [])]
         if target_environment not in allowed:
-            items.append(_item(migration, "BLOCKED_ENV_NOT_ALLOWED", f"{target_environment} is not allowed"))
+            items.append(_item(migration, SKIP_ENV_NOT_ALLOWED, f"{target_environment} is not allowed"))
+            planned_actions[migration_id] = SKIP_ENV_NOT_ALLOWED
             continue
 
         state = _state_for(target_state, migration_id)
@@ -55,16 +94,29 @@ def build_preflight_plan(
             if str(state.get("sha256")) in accepted_checksums:
                 items.append(_item(migration, "SKIP_ALREADY_APPLIED", "migration already applied with matching checksum"))
                 satisfied_migrations.add(migration_id)
+                planned_actions[migration_id] = "SKIP_ALREADY_APPLIED"
             else:
                 items.append(_item(migration, "APPLY", "target checksum differs from manifest; reapply current required SQL"))
                 satisfied_migrations.add(migration_id)
+                planned_actions[migration_id] = "APPLY"
             continue
 
-        missing_dependencies = [
-            str(dependency)
-            for dependency in migration.get("dependsOn", [])
-            if str(dependency) not in satisfied_migrations
-        ]
+        missing_dependencies = []
+        for dependency in migration.get("dependsOn", []):
+            dependency_id = str(dependency)
+            if dependency_id in satisfied_migrations:
+                continue
+            dependency_action = planned_actions.get(dependency_id)
+            if dependency_action == SKIP_ENV_NOT_ALLOWED:
+                missing_dependencies.append(f"{dependency_id} (skipped for environment)")
+                continue
+            if dependency_action is not None:
+                missing_dependencies.append(f"{dependency_id} ({dependency_action})")
+                continue
+            if dependency_id in known_migrations:
+                missing_dependencies.append(dependency_id)
+                continue
+            missing_dependencies.append(dependency_id)
         if missing_dependencies:
             items.append(
                 _item(
@@ -73,10 +125,12 @@ def build_preflight_plan(
                     "missing applied dependencies: " + ", ".join(missing_dependencies),
                 )
             )
+            planned_actions[migration_id] = "BLOCKED_DEPENDENCY_MISSING"
             continue
 
         items.append(_item(migration, "APPLY", "migration is pending and prerequisites are satisfied"))
         satisfied_migrations.add(migration_id)
+        planned_actions[migration_id] = "APPLY"
 
     return {
         "status": "blocked" if any(item["action"] in BLOCKED_ACTIONS for item in items) else "passed",

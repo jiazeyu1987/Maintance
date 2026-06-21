@@ -74,6 +74,7 @@ export interface RuntimeControlActionReqVO {
   sqlPath?: string
   selectedImageCandidateId?: string
   selectedRecoverySetCandidateId?: string
+  prodDryRunEvidencePath?: string
 }
 
 export interface RuntimeControlRestartReqVO {

@@ -57,7 +57,8 @@ public final class RuntimeDtos {
             String recoverySetId,
             String recoverySetManifestHash,
             String recoverySetProgramVersion,
-            String recoverySetRedisPolicy
+            String recoverySetRedisPolicy,
+            String prodDryRunEvidencePath
     ) {
     }
 

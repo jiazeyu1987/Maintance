@@ -100,6 +100,13 @@ public enum RuntimeControlOperationAction {
         return productionGuardRequired;
     }
 
+    public boolean requiresProdConfirmText(RuntimeControlActionReqVO req) {
+        if (this == BACKUP_NOW) {
+            return false;
+        }
+        return requiresProductionGuard(req);
+    }
+
     public RuntimeControlCommand buildCommand(RuntimeControlActionReqVO req, RuntimeControlProperties properties) {
         boolean linuxBackup = isBackupAction() && properties.getBackupOps().isLinuxLocal();
         List<String> args = linuxBackup
@@ -165,6 +172,9 @@ public enum RuntimeControlOperationAction {
         }
         if (Boolean.TRUE.equals(req.enableSmartReleaseReport())) {
             parameters.put("enableSmartReleaseReport", "true");
+        }
+        if (this == PROMOTE_PROD && !isBlank(req.prodDryRunEvidencePath())) {
+            parameters.put("prodDryRunEvidencePath", text(req.prodDryRunEvidencePath()));
         }
         return parameters;
     }
@@ -272,6 +282,10 @@ public enum RuntimeControlOperationAction {
         if (requireTested) {
             args.add("-RequireTested");
         }
+        if ("prod".equals(environment) && !isBlank(req.prodDryRunEvidencePath())) {
+            args.add("-ProdDryRunEvidencePath");
+            args.add(text(req.prodDryRunEvidencePath()));
+        }
         return args;
     }
 
@@ -304,6 +318,11 @@ public enum RuntimeControlOperationAction {
         if ("backup-now".equals(mode) || "rollback-app".equals(mode) || "restore-data".equals(mode)) {
             args.add("-TargetEnvironment");
             args.add(textOrDefault(req.targetEnvironment(), "prod"));
+        }
+        if ("backup-now".equals(mode) && "prod".equals(textOrDefault(req.targetEnvironment(), "prod"))
+                && !isBlank(req.prodConfirmText())) {
+            args.add("-ProductionBackupConfirmText");
+            args.add(text(req.prodConfirmText()));
         }
         if ("rollback-app".equals(mode)) {
             args.add("-SelectedImageTag");
