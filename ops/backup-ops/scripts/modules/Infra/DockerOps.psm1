@@ -356,7 +356,70 @@ function Get-BackupOpsTestSshRequest {
         [string]$Code = 'INTBK-7001'
     )
 
-    return New-BackupOpsSshRequest -Config $Config -HostPath @('servers', 'test', 'host') -Code $Code -HostReason '缺少测试服务器地址配置。' -HostAction '请在 runtime 配置中补齐 servers.test.host 后再重试。'
+    $repositoryEnvironment = Get-BackupOpsRepositoryEnvironment -Config $Config
+    return New-BackupOpsSshRequest -Config $Config -HostPath @('servers', $repositoryEnvironment, 'host') -Code $Code -HostReason '缺少备份仓服务器地址配置。' -HostAction '请在 runtime 配置中补齐目标环境 host 后再重试。'
+}
+
+function Get-BackupOpsRepositoryEnvironment {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    if ($Config.PSObject.Properties['environment'] -and [string]$Config.environment -eq 'backup') {
+        return 'backup'
+    }
+    return 'test'
+}
+
+function Get-BackupOpsRepositoryBackupPointsRoot {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Config,
+        [Parameter(Mandatory)]
+        [ValidateSet('INTBK-5002', 'INTBK-7001')]
+        [string]$Code
+    )
+
+    $repositoryEnvironment = Get-BackupOpsRepositoryEnvironment -Config $Config
+    return [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('servers', $repositoryEnvironment, 'backupPointsRoot') -Code $Code -Reason '缺少备份仓根目录配置。' -Action '请补齐目标环境 backupPointsRoot 后再执行恢复或演练。')
+}
+
+function Get-BackupOpsRehearsalHost {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    $repositoryEnvironment = Get-BackupOpsRepositoryEnvironment -Config $Config
+    return [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('servers', $repositoryEnvironment, 'host') -Code 'INTBK-7001' -Reason '缺少演练目标服务器地址配置。' -Action '请补齐目标环境 host 后再执行恢复演练。')
+}
+
+function Get-BackupOpsExpectedDataTargetHost {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Environment
+    )
+
+    switch ($Environment) {
+        'test' { return '172.30.30.58' }
+        'backup' { return '172.30.30.59' }
+        'production' { return '172.30.30.57' }
+        'prod' { return '172.30.30.57' }
+        default { return '' }
+    }
+}
+
+function Test-BackupOpsDataTargetProof {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Environment,
+        [Parameter(Mandatory)]
+        [string]$Host
+    )
+
+    $expectedHost = Get-BackupOpsExpectedDataTargetHost -Environment $Environment
+    return (-not [string]::IsNullOrWhiteSpace($expectedHost)) -and $Host -eq $expectedHost
 }
 
 function Get-BackupOpsRuntimeEnvLines {
@@ -964,7 +1027,7 @@ function Get-BackupOpsRestoreCandidates {
     )
 
     Import-BackupOpsSshDependency
-    $backupPointsRoot = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('servers', 'test', 'backupPointsRoot') -Code 'INTBK-5002' -Reason '缺少测试服务器备份点根目录配置。' -Action '请在 runtime 配置中补齐 servers.test.backupPointsRoot 后再执行恢复。')
+    $backupPointsRoot = Get-BackupOpsRepositoryBackupPointsRoot -Config $Config -Code 'INTBK-5002'
     $databaseName = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('backup', 'mysqlDatabase') -Code 'INTBK-5002' -Reason '缺少 MySQL 数据库名配置。' -Action '请在 runtime 配置中补齐 backup.mysqlDatabase 后再执行恢复。')
     $bucket = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('backup', 'objectBucket') -Code 'INTBK-5002' -Reason '缺少对象桶配置。' -Action '请在 runtime 配置中补齐 backup.objectBucket 后再执行恢复。')
     $sshRequest = Get-BackupOpsTestSshRequest -Config $Config -Code 'INTBK-5002'
@@ -1039,7 +1102,7 @@ function Get-BackupOpsRestoreCandidates {
             }
             $manifestTargetEnvironment = if ($manifestObject.PSObject.Properties['targetEnvironment']) { [string]$manifestObject.targetEnvironment } else { '' }
             $manifestTargetHost = if ($manifestObject.PSObject.Properties['targetHost']) { [string]$manifestObject.targetHost } else { '' }
-            if ($manifestTargetEnvironment -ne 'test' -or $manifestTargetHost -ne '172.30.30.58') {
+            if (-not (Test-BackupOpsDataTargetProof -Environment $manifestTargetEnvironment -Host $manifestTargetHost)) {
                 Write-BackupOpsLog -Session $LogSession -Level 'WARN' -Message "Skip backup candidate $backupId because manifest target proof is missing or invalid."
                 continue
             }
@@ -1135,6 +1198,8 @@ function Get-BackupOpsRestoreCandidates {
                     backupType = $backupType
                     status = $status
                     imageTag = $imageTag
+                    targetEnvironment = $manifestTargetEnvironment
+                    targetHost = $manifestTargetHost
                     redisPolicy = $recoverySetRedisPolicy
                     configurationManifestPath = $recoverySetConfigurationManifestPath
                     configurationComposePath = $recoverySetConfigurationComposePath
@@ -1285,10 +1350,11 @@ function New-BackupOpsRehearsalMetadata {
     )
 
     $runtimeNamePrefix = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('rehearsal', 'runtimeNamePrefix') -Code 'INTBK-7001' -Reason '缺少 rehearsal.runtimeNamePrefix 配置。' -Action '请先补齐恢复演练运行时名称前缀后再执行演练。')
-    $runtimeRoot = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('servers', 'test', 'rehearsalRoot') -Code 'INTBK-7001' -Reason '缺少测试演练运行目录配置。' -Action '请先补齐 servers.test.rehearsalRoot 后再执行演练。')
+    $repositoryEnvironment = Get-BackupOpsRepositoryEnvironment -Config $Config
+    $runtimeRoot = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('servers', $repositoryEnvironment, 'rehearsalRoot') -Code 'INTBK-7001' -Reason '缺少演练运行目录配置。' -Action '请先补齐目标环境 rehearsalRoot 后再执行演练。')
     $bucket = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('rehearsal', 'bucket') -Code 'INTBK-7001' -Reason '缺少 rehearsal.bucket 配置。' -Action '请先补齐演练对象桶配置后再执行演练。')
-    $backendPort = [int](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('servers', 'test', 'rehearsalBackendPort') -Code 'INTBK-7001' -Reason '缺少测试演练后端端口配置。' -Action '请先补齐 servers.test.rehearsalBackendPort 后再执行演练。')
-    $frontendPort = [int](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('servers', 'test', 'rehearsalFrontendPort') -Code 'INTBK-7001' -Reason '缺少测试演练前端端口配置。' -Action '请先补齐 servers.test.rehearsalFrontendPort 后再执行演练。')
+    $backendPort = [int](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('servers', $repositoryEnvironment, 'rehearsalBackendPort') -Code 'INTBK-7001' -Reason '缺少演练后端端口配置。' -Action '请先补齐目标环境 rehearsalBackendPort 后再执行演练。')
+    $frontendPort = [int](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('servers', $repositoryEnvironment, 'rehearsalFrontendPort') -Code 'INTBK-7001' -Reason '缺少演练前端端口配置。' -Action '请先补齐目标环境 rehearsalFrontendPort 后再执行演练。')
     $fileConfigId = [int](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('rehearsal', 'validation', 'fileConfigId') -Code 'INTBK-7001' -Reason '缺少 rehearsal.validation.fileConfigId 配置。' -Action '请先补齐演练文件配置编号后再执行演练。')
     $tenantId = [int](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('rehearsal', 'validation', 'tenantId') -Code 'INTBK-7001' -Reason '缺少 rehearsal.validation.tenantId 配置。' -Action '请先补齐演练租户编号后再执行演练。')
     $tenantName = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('rehearsalAuth', 'tenantName') -Code 'INTBK-7001' -Reason '缺少 rehearsalAuth.tenantName 配置。' -Action '请先在 secrets 文件中补齐演练登录租户名后再执行演练。')
@@ -1370,10 +1436,18 @@ function New-BackupOpsRehearsalConfig {
     )
 
     $clone = ($Config | ConvertTo-Json -Depth 12) | ConvertFrom-Json
+    $repositoryEnvironment = Get-BackupOpsRepositoryEnvironment -Config $Config
     $clone.environment = 'rehearsal'
-    $clone.servers.production.host = $Config.servers.test.host
+    if ($clone.PSObject.Properties['repositoryEnvironment']) {
+        $clone.repositoryEnvironment = $repositoryEnvironment
+    } else {
+        Add-Member -InputObject $clone -MemberType NoteProperty -Name 'repositoryEnvironment' -Value $repositoryEnvironment
+    }
+    $clone.servers.production.host = $Config.servers.$repositoryEnvironment.host
     $clone.servers.production.appDir = $Metadata.RuntimeRoot
     $clone.servers.production.tmpRoot = "$($Metadata.RuntimeRoot)/tmp"
+    $clone.servers.test.host = $Config.servers.$repositoryEnvironment.host
+    $clone.servers.test.backupPointsRoot = $Config.servers.$repositoryEnvironment.backupPointsRoot
     $clone.backup.objectBucket = $Metadata.Bucket
     $clone.containers.mysql = $Metadata.ContainerMap['intruoyi-mysql']
     $clone.containers.redis = $Metadata.ContainerMap['intruoyi-redis']
@@ -1402,12 +1476,12 @@ function Ensure-BackupOpsRehearsalImageAvailable {
     try {
         $inspectResult = Invoke-BackupSshCommand -Request ($testSshRequest + @{ Command = $inspectCommand })
         if ($inspectResult.output -match 'READY') {
-            Write-BackupOpsLog -Session $LogSession -Message "Rehearsal IMAGE_TAG $($Metadata.ImageTag) already exists on test server."
+            Write-BackupOpsLog -Session $LogSession -Message "Rehearsal IMAGE_TAG $($Metadata.ImageTag) already exists on repository server."
             return
         }
     }
     catch {
-        Write-BackupOpsLog -Session $LogSession -Level 'WARN' -Message "Rehearsal IMAGE_TAG $($Metadata.ImageTag) not found on test server. Preparing transfer from production."
+        Write-BackupOpsLog -Session $LogSession -Level 'WARN' -Message "Rehearsal IMAGE_TAG $($Metadata.ImageTag) not found on repository server. Preparing transfer from source runtime."
     }
 
     $prodTmpRoot = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('servers', 'production', 'tmpRoot') -Code 'INTBK-7001' -Reason '缺少正式环境临时目录配置。' -Action '请先补齐 servers.production.tmpRoot 后再执行恢复演练。')
@@ -1432,13 +1506,13 @@ function Ensure-BackupOpsRehearsalImageAvailable {
     Invoke-BackupSshCommand -Request ($testSshRequest + @{
             Command = "mkdir -p {0}" -f (ConvertTo-BackupBashSingleQuotedString -Value $remoteTestArchiveDir)
         }) | Out-Null
-    Write-BackupOpsLog -Session $LogSession -Message "Uploading rehearsal image archive to test server: $remoteTestArchive"
+    Write-BackupOpsLog -Session $LogSession -Message "Uploading rehearsal image archive to repository server: $remoteTestArchive"
     Send-BackupFileOverSsh -Request ($testSshRequest + @{
             LocalPath = $localArchivePath
             RemotePath = $remoteTestArchive
         }) | Out-Null
 
-    Write-BackupOpsLog -Session $LogSession -Message "Loading rehearsal IMAGE_TAG $($Metadata.ImageTag) on test server."
+    Write-BackupOpsLog -Session $LogSession -Message "Loading rehearsal IMAGE_TAG $($Metadata.ImageTag) on repository server."
     Invoke-BackupSshCommand -Request ($testSshRequest + @{
             Command = "gunzip -c {0} | docker load && rm -f {0}" -f (ConvertTo-BackupBashSingleQuotedString -Value $remoteTestArchive)
         }) | Out-Null
@@ -1458,12 +1532,14 @@ function Initialize-BackupOpsRehearsalRuntime {
     )
 
     Import-BackupOpsSshDependency
-    if (-not $Metadata.RuntimeRoot.StartsWith('/backup/int-ruoyi/rehearsal/', [System.StringComparison]::Ordinal)) {
-        throw (New-BackupOpsDockerException -Code 'INTBK-7001' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "测试演练目录不在预期范围内：$($Metadata.RuntimeRoot)" -Action '请先修正 servers.test.rehearsalRoot 到 /backup/int-ruoyi/rehearsal/* 范围后再执行演练。'))
+    $isAllowedRehearsalRoot = $Metadata.RuntimeRoot.StartsWith('/backup/int-ruoyi/rehearsal/', [System.StringComparison]::Ordinal) -or `
+        $Metadata.RuntimeRoot.StartsWith('/mnt/intruoyi-data/backup-ops/rehearsal/', [System.StringComparison]::Ordinal)
+    if (-not $isAllowedRehearsalRoot) {
+        throw (New-BackupOpsDockerException -Code 'INTBK-7001' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "演练目录不在预期范围内：$($Metadata.RuntimeRoot)" -Action '请先修正 rehearsalRoot 到受保护演练目录后再执行演练。'))
     }
 
     $testSshRequest = Get-BackupOpsTestSshRequest -Config $Config -Code 'INTBK-7001'
-    $backupPointsRoot = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('servers', 'test', 'backupPointsRoot') -Code 'INTBK-7001' -Reason '缺少测试服务器备份点根目录配置。' -Action '请先补齐 servers.test.backupPointsRoot 后再执行恢复演练。')
+    $backupPointsRoot = Get-BackupOpsRepositoryBackupPointsRoot -Config $Config -Code 'INTBK-7001'
     $remoteComposePath = "$($backupPointsRoot.TrimEnd('/'))/$($Metadata.BackupId)/deploy/docker-compose.yml"
     $remoteEnvPath = "$($backupPointsRoot.TrimEnd('/'))/$($Metadata.BackupId)/deploy/runtime.env"
     $localStageDir = Get-BackupOpsTempPath -Segments @('rehearsal', $Metadata.BackupId, 'runtime')
@@ -1481,7 +1557,7 @@ function Initialize-BackupOpsRehearsalRuntime {
 
     $envLines = [System.IO.File]::ReadAllLines($localEnvPath, $script:BackupOpsUtf8NoBom)
     $envLines = Set-BackupOpsDotEnvValue -Lines $envLines -Key 'IMAGE_TAG' -Value $Metadata.ImageTag
-    $envLines = Set-BackupOpsDotEnvValue -Lines $envLines -Key 'SERVER_HOST' -Value ([string]$Config.servers.test.host)
+    $envLines = Set-BackupOpsDotEnvValue -Lines $envLines -Key 'SERVER_HOST' -Value (Get-BackupOpsRehearsalHost -Config $Config)
     $envLines = Set-BackupOpsDotEnvValue -Lines $envLines -Key 'BACKEND_HOST_PORT' -Value ([string]$Metadata.BackendPort)
     $envLines = Set-BackupOpsDotEnvValue -Lines $envLines -Key 'FRONTEND_HOST_PORT' -Value ([string]$Metadata.FrontendPort)
     Save-BackupOpsDotEnvFile -Path $localEnvPath -Lines $envLines
@@ -1490,7 +1566,7 @@ function Initialize-BackupOpsRehearsalRuntime {
     $composeText = Convert-BackupOpsComposeToRehearsalRuntime -ComposeText $composeText -Metadata $Metadata
     [System.IO.File]::WriteAllText($localComposePath, $composeText, $script:BackupOpsUtf8NoBom)
 
-    Write-BackupOpsLog -Session $LogSession -Message "Preparing rehearsal runtime root on test server: $($Metadata.RuntimeRoot)"
+    Write-BackupOpsLog -Session $LogSession -Message "Preparing rehearsal runtime root on repository server: $($Metadata.RuntimeRoot)"
     Invoke-BackupSshCommand -Request ($testSshRequest + @{
             Command = "rm -rf {0} && mkdir -p {0} {1}" -f (ConvertTo-BackupBashSingleQuotedString -Value $Metadata.RuntimeRoot), (ConvertTo-BackupBashSingleQuotedString -Value "$($Metadata.RuntimeRoot)/tmp")
         }) | Out-Null
@@ -1736,7 +1812,7 @@ function Get-BackupOpsRehearsalCandidate {
     )
 
     Import-BackupOpsSshDependency
-    $backupPointsRoot = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('servers', 'test', 'backupPointsRoot') -Code 'INTBK-7001' -Reason '缺少测试服务器备份点根目录配置。' -Action '请先补齐 servers.test.backupPointsRoot 后再执行演练。')
+    $backupPointsRoot = Get-BackupOpsRepositoryBackupPointsRoot -Config $Config -Code 'INTBK-7001'
     $databaseName = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('backup', 'mysqlDatabase') -Code 'INTBK-7001' -Reason '缺少 MySQL 数据库名配置。' -Action '请先补齐 backup.mysqlDatabase 后再执行演练。')
     $sshRequest = Get-BackupOpsTestSshRequest -Config $Config -Code 'INTBK-7001'
     $backupDirectory = "$($backupPointsRoot.TrimEnd('/'))/$BackupId"
@@ -1756,7 +1832,7 @@ function Get-BackupOpsRehearsalCandidate {
             @{ Path = $checksumsPath; Kind = 'file' }
         )) {
         if (-not (Get-BackupOpsRemotePathExists -SshRequest $sshRequest -Path $item.Path -Kind $item.Kind)) {
-            throw (New-BackupOpsDockerException -Code 'INTBK-7001' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "指定的演练恢复点不存在或不完整：$BackupId" -Action '请先确认测试服务器备份仓库中存在完整恢复点后再执行恢复演练。'))
+            throw (New-BackupOpsDockerException -Code 'INTBK-7001' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "指定的演练恢复点不存在或不完整：$BackupId" -Action '请先确认目标环境备份仓库中存在完整恢复点后再执行恢复演练。'))
         }
     }
 
@@ -1775,8 +1851,8 @@ function Get-BackupOpsRehearsalCandidate {
     }
     $manifestTargetEnvironment = if ($manifestObject.PSObject.Properties['targetEnvironment']) { [string]$manifestObject.targetEnvironment } else { '' }
     $manifestTargetHost = if ($manifestObject.PSObject.Properties['targetHost']) { [string]$manifestObject.targetHost } else { '' }
-    if ($manifestTargetEnvironment -ne 'test' -or $manifestTargetHost -ne '172.30.30.58') {
-        throw (New-BackupOpsDockerException -Code 'INTBK-7001' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "指定的演练恢复点缺少测试服目标证明：$BackupId。" -Action '请确认 manifest.targetEnvironment=test 且 targetHost=172.30.30.58 后再执行恢复演练。'))
+    if (-not (Test-BackupOpsDataTargetProof -Environment $manifestTargetEnvironment -Host $manifestTargetHost)) {
+        throw (New-BackupOpsDockerException -Code 'INTBK-7001' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "指定的演练恢复点目标证明无效：$BackupId，targetEnvironment=$manifestTargetEnvironment，targetHost=$manifestTargetHost。" -Action '请确认 manifest.targetEnvironment/targetHost 能证明来源环境（test=172.30.30.58，backup=172.30.30.59，production=172.30.30.57）后再执行恢复演练。'))
     }
     if (-not $manifestObject.PSObject.Properties['backupStrategy'] -or $null -eq $manifestObject.backupStrategy) {
         throw (New-BackupOpsDockerException -Code 'INTBK-7001' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "指定的演练恢复点缺少 backupStrategy：$BackupId。" -Action '请重新生成包含 backupStrategy.mode 和 backupStrategy.mysqlBackupMode 的完整备份 manifest 后再执行恢复演练。'))
@@ -1846,7 +1922,7 @@ function Set-BackupOpsRehearsalVerificationState {
 
     Import-BackupOpsSshDependency
     $testSshRequest = Get-BackupOpsTestSshRequest -Config $Config -Code 'INTBK-7001'
-    $backupPointsRoot = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('servers', 'test', 'backupPointsRoot') -Code 'INTBK-7001' -Reason '缺少测试服务器备份点根目录配置。' -Action '请先补齐 servers.test.backupPointsRoot 后再执行演练。')
+    $backupPointsRoot = Get-BackupOpsRepositoryBackupPointsRoot -Config $Config -Code 'INTBK-7001'
     $remoteManifestPath = "$($backupPointsRoot.TrimEnd('/'))/$BackupId/manifest/manifest.json"
     $localManifestDir = Get-BackupOpsTempPath -Segments @('rehearsal', $BackupId, 'manifest')
     $localManifestPath = Join-Path $localManifestDir 'manifest.json'
@@ -1949,7 +2025,7 @@ function Test-BackupOpsRehearsalValidation {
     $metadata = New-BackupOpsRehearsalMetadata -Config $Config -BackupId $BackupId -ImageTag ([string]$candidate.imageTag)
     $rehearsalConfig = New-BackupOpsRehearsalConfig -Config $Config -Metadata $metadata
     $health = Test-BackupOpsFrontendBackendHealth -Config $rehearsalConfig -LogSession $LogSession
-    $backendBaseUrl = ("http://{0}:{1}" -f [string]$Config.servers.test.host, $metadata.BackendPort)
+    $backendBaseUrl = ("http://{0}:{1}" -f (Get-BackupOpsRehearsalHost -Config $Config), $metadata.BackendPort)
     $login = Invoke-BackupOpsRehearsalLoginValidation -Metadata $metadata -BackendBaseUrl $backendBaseUrl -LogSession $LogSession
     $sampleFilePath = Get-BackupOpsRehearsalSampleFilePath -RehearsalConfig $rehearsalConfig -Metadata $metadata
     $sample = Invoke-BackupOpsRehearsalSampleDownloadValidation -Metadata $metadata -BackendBaseUrl $backendBaseUrl -AccessToken $login.accessToken -SampleFilePath $sampleFilePath -LogSession $LogSession

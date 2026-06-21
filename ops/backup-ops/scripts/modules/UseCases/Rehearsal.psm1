@@ -69,14 +69,33 @@ function Get-RehearsalRequiredConfigValue {
     return $value
 }
 
+function Get-RehearsalRepositoryEnvironment {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$Config
+    )
+
+    if ($Config.PSObject.Properties['repositoryEnvironment']) {
+        $repositoryEnvironment = [string]$Config.repositoryEnvironment
+        if ($repositoryEnvironment -in @('test', 'backup')) {
+            return $repositoryEnvironment
+        }
+    }
+    if ($Config.PSObject.Properties['environment'] -and [string]$Config.environment -eq 'backup') {
+        return 'backup'
+    }
+    return 'test'
+}
+
 function Get-RehearsalTestSshRequest {
     param(
         [Parameter(Mandatory = $true)]
         [object]$Config
     )
 
+    $repositoryEnvironment = Get-RehearsalRepositoryEnvironment -Config $Config
     $request = @{
-        Host = [string](Get-RehearsalRequiredConfigValue -Config $Config -Path @('servers', 'test', 'host') -FieldName 'servers.test.host')
+        Host = [string](Get-RehearsalRequiredConfigValue -Config $Config -Path @('servers', $repositoryEnvironment, 'host') -FieldName "servers.$repositoryEnvironment.host")
         User = [string](Get-RehearsalRequiredConfigValue -Config $Config -Path @('ssh', 'user') -FieldName 'ssh.user')
         KeyPath = [string](Get-RehearsalRequiredConfigValue -Config $Config -Path @('auth', 'sshKeyPath') -FieldName 'auth.sshKeyPath')
     }
@@ -150,7 +169,8 @@ function Write-BackupOpsRehearsalEvidence {
         [object]$LogSession
     )
 
-    $backupPointsRoot = [string](Get-RehearsalRequiredConfigValue -Config $Config -Path @('servers', 'test', 'backupPointsRoot') -FieldName 'servers.test.backupPointsRoot')
+    $repositoryEnvironment = Get-RehearsalRepositoryEnvironment -Config $Config
+    $backupPointsRoot = [string](Get-RehearsalRequiredConfigValue -Config $Config -Path @('servers', $repositoryEnvironment, 'backupPointsRoot') -FieldName "servers.$repositoryEnvironment.backupPointsRoot")
     $testSshRequest = Get-RehearsalTestSshRequest -Config $Config
     $remoteManifestDir = "$($backupPointsRoot.TrimEnd('/'))/$BackupId/manifest"
     $localEvidenceDir = Get-RehearsalTempPath -Segments @('rehearsal', $BackupId, 'evidence')

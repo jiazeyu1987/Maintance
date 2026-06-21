@@ -207,8 +207,27 @@ function Get-BackupOpsTestSshRequest {
     )
 
     $request = Get-BackupOpsProductionSshRequest -Config $Config
-    $request['Host'] = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('servers', 'test', 'host') -Code 'INTBK-3002' -Reason '缺少测试服务器地址配置。' -Action '请在 runtime 配置中补齐 servers.test.host 后再执行恢复。')
+    $repositoryEnvironment = Get-BackupOpsMySqlRepositoryEnvironment -Config $Config
+    $request['Host'] = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('servers', $repositoryEnvironment, 'host') -Code 'INTBK-3002' -Reason '缺少备份仓服务器地址配置。' -Action '请在 runtime 配置中补齐目标环境 host 后再执行恢复。')
     return $request
+}
+
+function Get-BackupOpsMySqlRepositoryEnvironment {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    if ($Config.PSObject.Properties['repositoryEnvironment']) {
+        $repositoryEnvironment = [string]$Config.repositoryEnvironment
+        if ($repositoryEnvironment -in @('test', 'backup')) {
+            return $repositoryEnvironment
+        }
+    }
+    if ($Config.PSObject.Properties['environment'] -and [string]$Config.environment -eq 'backup') {
+        return 'backup'
+    }
+    return 'test'
 }
 
 function Get-BackupOpsRuntimeEnvLines {
@@ -263,14 +282,15 @@ function Assert-BackupOpsMySqlRestoreTestHost {
         [Parameter(Mandatory)]
         [string]$Host,
         [Parameter(Mandatory)]
-        [string]$Label
+        [string]$Label,
+        [string]$ExpectedHost = '172.30.30.58'
     )
 
     if ($Host -eq '172.30.30.57') {
-        throw (New-BackupOpsMySqlException -Code 'INTBK-3002' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 恢复${Label}禁止指向正式服务器 172.30.30.57。" -Action '停止恢复，修正 TargetEnvironment 和运行配置，恢复目标只能是测试服务器 172.30.30.58。'))
+        throw (New-BackupOpsMySqlException -Code 'INTBK-3002' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 恢复${Label}禁止指向正式服务器 172.30.30.57。" -Action '停止恢复，修正 TargetEnvironment 和运行配置，恢复目标只能是 test 或 backup 环境。'))
     }
-    if ($Host -ne '172.30.30.58') {
-        throw (New-BackupOpsMySqlException -Code 'INTBK-3002' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 恢复${Label}无法证明为测试服务器 172.30.30.58：$Host" -Action '请显式使用 targetEnvironment=test，并确认目标主机和备份仓库主机均为 172.30.30.58。'))
+    if ($Host -ne $ExpectedHost) {
+        throw (New-BackupOpsMySqlException -Code 'INTBK-3002' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 恢复${Label}无法证明为目标环境主机：host=$Host expected=$ExpectedHost。" -Action '请显式使用 targetEnvironment=test 或 backup，并确认目标主机和备份仓库主机一致。'))
     }
 }
 
@@ -309,11 +329,12 @@ function Assert-BackupOpsMySqlBackupSourceHost {
 function Assert-BackupOpsMySqlBackupRepositoryHost {
     param(
         [Parameter(Mandatory)]
-        [string]$Host
+        [string]$Host,
+        [string]$ExpectedHost = '172.30.30.58'
     )
 
-    if ($Host -ne '172.30.30.58') {
-        throw (New-BackupOpsMySqlException -Code 'INTBK-3001' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 备份仓库主机必须是测试服务器 172.30.30.58：$Host。" -Action '请确认 BackupPackage 仓库仍由测试服务器挂载的 /mnt/nas/Backup/BackupPackage 承载。'))
+    if ($Host -ne $ExpectedHost) {
+        throw (New-BackupOpsMySqlException -Code 'INTBK-3001' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 备份仓库主机与目标环境不匹配：host=$Host expected=$ExpectedHost。" -Action '请确认 BackupPackage 仓库由目标环境服务器承载。'))
     }
 }
 
@@ -324,8 +345,10 @@ function Assert-BackupMySqlRemoteBackupPackageDumpPath {
     )
 
     $normalized = $Path.Replace('\', '/')
-    if (-not $normalized.StartsWith('/mnt/nas/Backup/BackupPackage/', [System.StringComparison]::Ordinal)) {
-        throw (New-BackupOpsMySqlException -Code 'INTBK-3002' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 恢复 dump 不在测试服 BackupPackage 目录下：$Path" -Action '请确认恢复点来自测试服务器 /mnt/nas/Backup/BackupPackage 后再执行恢复。'))
+    $isProtectedBackupPackage = $normalized.StartsWith('/mnt/nas/Backup/BackupPackage/', [System.StringComparison]::Ordinal) -or `
+        $normalized.StartsWith('/mnt/intruoyi-data/Backup/BackupPackage/', [System.StringComparison]::Ordinal)
+    if (-not $isProtectedBackupPackage) {
+        throw (New-BackupOpsMySqlException -Code 'INTBK-3002' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 恢复 dump 不在受保护 BackupPackage 目录下：$Path" -Action '请确认恢复点来自目标环境 BackupPackage 后再执行恢复。'))
     }
     if ($normalized -match '(^|/)\.\.($|/)') {
         throw (New-BackupOpsMySqlException -Code 'INTBK-3002' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 恢复 dump 路径包含非法上级目录引用：$Path" -Action '请使用 BackupPackage 下的合法备份点路径。'))
@@ -574,11 +597,13 @@ function Export-BackupOpsMySqlDump {
     $sshRequest = Get-BackupOpsProductionSshRequest -Config $Config
     $testSshRequest = Get-BackupOpsTestSshRequest -Config $Config
     $targetEnvironment = if ($Config.PSObject.Properties['environment']) { [string]$Config.environment } else { 'production' }
+    $repositoryEnvironment = Get-BackupOpsMySqlRepositoryEnvironment -Config $Config
+    $expectedRepositoryHost = Get-BackupOpsMySqlExpectedBackupSourceHost -Environment $repositoryEnvironment
     Assert-BackupOpsMySqlBackupSourceHost -Environment $targetEnvironment -Host ([string]$sshRequest.Host)
-    Assert-BackupOpsMySqlBackupRepositoryHost -Host ([string]$testSshRequest.Host)
+    Assert-BackupOpsMySqlBackupRepositoryHost -Host ([string]$testSshRequest.Host) -ExpectedHost $expectedRepositoryHost
     $containerName = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('containers', 'mysql') -Code 'INTBK-3001' -Reason '缺少 MySQL 容器名配置。' -Action '请在 runtime 配置中补齐 containers.mysql 后再执行备份。')
     $databaseName = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('backup', 'mysqlDatabase') -Code 'INTBK-3001' -Reason '缺少 MySQL 数据库名配置。' -Action '请在 runtime 配置中补齐 backup.mysqlDatabase 后再执行备份。')
-    $backupPointsRoot = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('servers', 'test', 'backupPointsRoot') -Code 'INTBK-3001' -Reason '缺少测试服务器备份根目录配置。' -Action '请在 runtime 配置中补齐 servers.test.backupPointsRoot 后再执行备份。')
+    $backupPointsRoot = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('servers', $repositoryEnvironment, 'backupPointsRoot') -Code 'INTBK-3001' -Reason '缺少备份仓根目录配置。' -Action '请在 runtime 配置中补齐目标环境 backupPointsRoot 后再执行备份。')
     $rootPassword = Get-BackupOpsMySqlRootPassword -Config $Config
     $dumpFileName = Get-BackupOpsMySqlDumpFileName -DatabaseName $databaseName
     $remoteDumpPath = ($backupPointsRoot.TrimEnd('/')) + "/$($Workspace.BackupId)/mysql/$dumpFileName"
@@ -596,7 +621,7 @@ function Export-BackupOpsMySqlDump {
             RootPassword = $rootPassword
         }) | Out-Null
 
-    Write-BackupOpsLog -Session $LogSession -Message "Exporting MySQL dump from $($sshRequest.Host) directly to test BackupPackage path $remoteDumpPath using docker exec mysqldump."
+    Write-BackupOpsLog -Session $LogSession -Message "Exporting MySQL dump from $($sshRequest.Host) directly to BackupPackage path $remoteDumpPath using docker exec mysqldump."
     $result = Export-BackupMySqlDump -Request (Merge-BackupOpsRequest -Request $sshRequest -Extra @{
             ContainerName = $containerName
             DatabaseName = $databaseName
@@ -620,18 +645,20 @@ function Import-BackupOpsMySqlDump {
     Import-BackupOpsSshDependency
     $databaseName = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('backup', 'mysqlDatabase') -Code 'INTBK-3002' -Reason '缺少 MySQL 数据库名配置。' -Action '请在 runtime 配置中补齐 backup.mysqlDatabase 后再执行恢复。')
     $containerName = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('containers', 'mysql') -Code 'INTBK-3002' -Reason '缺少 MySQL 容器名配置。' -Action '请在 runtime 配置中补齐 containers.mysql 后再执行恢复。')
-    $backupPointsRoot = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('servers', 'test', 'backupPointsRoot') -Code 'INTBK-3002' -Reason '缺少测试服务器备份点根目录配置。' -Action '请在 runtime 配置中补齐 servers.test.backupPointsRoot 后再执行恢复。')
+    $repositoryEnvironment = Get-BackupOpsMySqlRepositoryEnvironment -Config $Config
+    $backupPointsRoot = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('servers', $repositoryEnvironment, 'backupPointsRoot') -Code 'INTBK-3002' -Reason '缺少备份仓根目录配置。' -Action '请在 runtime 配置中补齐目标环境 backupPointsRoot 后再执行恢复。')
     $dumpFileName = Get-BackupOpsMySqlDumpFileName -DatabaseName $databaseName
     $testDumpPath = ($backupPointsRoot.TrimEnd('/')) + "/$BackupId/mysql/$dumpFileName"
     Assert-BackupMySqlRemoteBackupPackageDumpPath -Path $testDumpPath
     $testSshRequest = Get-BackupOpsTestSshRequest -Config $Config
     $productionSshRequest = Get-BackupOpsProductionSshRequest -Config $Config
+    $expectedRepositoryHost = Get-BackupOpsMySqlExpectedBackupSourceHost -Environment $repositoryEnvironment
 
-    Assert-BackupOpsMySqlRestoreTestHost -Host ([string]$testSshRequest.Host) -Label '备份仓库主机'
-    Assert-BackupOpsMySqlRestoreTestHost -Host ([string]$productionSshRequest.Host) -Label '目标主机'
+    Assert-BackupOpsMySqlRestoreTestHost -Host ([string]$testSshRequest.Host) -Label '备份仓库主机' -ExpectedHost $expectedRepositoryHost
+    Assert-BackupOpsMySqlRestoreTestHost -Host ([string]$productionSshRequest.Host) -Label '目标主机' -ExpectedHost $expectedRepositoryHost
 
     if ([string]$productionSshRequest.Host -ne [string]$testSshRequest.Host) {
-        throw (New-BackupOpsMySqlException -Code 'INTBK-3002' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 恢复目标主机 $($productionSshRequest.Host) 与测试备份仓库主机 $($testSshRequest.Host) 不一致，无法证明恢复动作只作用于测试服务器。" -Action '请显式使用 targetEnvironment=test 并确认运行配置把恢复目标固定到 172.30.30.58。'))
+        throw (New-BackupOpsMySqlException -Code 'INTBK-3002' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 恢复目标主机 $($productionSshRequest.Host) 与备份仓库主机 $($testSshRequest.Host) 不一致，无法证明恢复动作只作用于目标环境服务器。" -Action '请显式使用 targetEnvironment=test 或 backup，并确认运行配置把恢复目标固定到同一台服务器。'))
     }
 
     $rootPassword = Get-BackupOpsMySqlRootPassword -Config $Config

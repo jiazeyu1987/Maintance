@@ -234,9 +234,9 @@ function Resolve-BackupOpsTargetEnvironmentConfig {
         throw 'TargetEnvironment must be prod, test, or backup.'
     }
 
-    $supportedTestTargetModes = @('backup-now', 'backup-scheduled', 'rollback-app', 'restore-data')
+    $supportedTestTargetModes = @('backup-now', 'backup-scheduled', 'rollback-app', 'restore-data', 'rehearsal')
     if ($Mode -notin $supportedTestTargetModes) {
-        throw 'TargetEnvironment test/backup is only supported for backup-now, backup-scheduled, rollback-app and restore-data.'
+        throw 'TargetEnvironment test/backup is only supported for backup-now, backup-scheduled, rollback-app, restore-data and rehearsal.'
     }
 
     $targetHost = [string](Get-BackupOpsRequiredLauncherConfigValue -Config $Config -Path @('servers', $TargetEnvironment, 'host') -FieldName "servers.$TargetEnvironment.host")

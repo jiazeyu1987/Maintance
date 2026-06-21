@@ -210,7 +210,7 @@ function Get-BackupOpsFileSshRequest {
         [Parameter(Mandatory)]
         [object]$Config,
         [Parameter(Mandatory)]
-        [ValidateSet('production', 'test')]
+        [ValidateSet('production', 'test', 'backup')]
         [string]$Environment,
         [Parameter(Mandatory)]
         [string]$Code
@@ -249,8 +249,52 @@ function Get-BackupOpsRemoteNasMountRoot {
     if ($normalized -eq '/mnt/nas' -or $normalized.StartsWith('/mnt/nas/')) {
         return '/mnt/nas'
     }
+    if ($normalized -eq '/mnt/intruoyi-data' -or $normalized.StartsWith('/mnt/intruoyi-data/')) {
+        return '/mnt/intruoyi-data'
+    }
 
-    throw (New-BackupOpsInfraBlockedException -Code 'INTBK-2003' -Message (New-BackupOpsOperatorBlockedMessage -Reason "测试服务器备份目录不在 NAS 挂载路径下：$BackupPointsRoot。" -Action '请将 servers.test.backupPointsRoot 配置为 /mnt/nas 下的 Backup/BackupPackage 路径后再执行备份。'))
+    throw (New-BackupOpsInfraBlockedException -Code 'INTBK-2003' -Message (New-BackupOpsOperatorBlockedMessage -Reason "备份仓目录不在受保护挂载路径下：$BackupPointsRoot。" -Action '请将 backupPointsRoot 配置为 /mnt/nas/Backup/BackupPackage 或 /mnt/intruoyi-data/Backup/BackupPackage 后再执行备份。'))
+}
+
+function Get-BackupOpsRepositoryEnvironment {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$Config
+    )
+
+    $targetEnvironment = if ($Config.PSObject.Properties['environment']) { [string]$Config.environment } else { 'test' }
+    if ($targetEnvironment -eq 'backup') {
+        return 'backup'
+    }
+    return 'test'
+}
+
+function Get-BackupOpsRepositoryFileSshRequest {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$Config,
+        [Parameter(Mandatory = $true)]
+        [string]$Code
+    )
+
+    $repositoryEnvironment = Get-BackupOpsRepositoryEnvironment -Config $Config
+    return Get-BackupOpsFileSshRequest -Config $Config -Environment $repositoryEnvironment -Code $Code
+}
+
+function Get-BackupOpsRepositoryBackupPointsRoot {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$Config,
+        [Parameter(Mandatory = $true)]
+        [string]$Code,
+        [Parameter(Mandatory = $true)]
+        [string]$Reason,
+        [Parameter(Mandatory = $true)]
+        [string]$Action
+    )
+
+    $repositoryEnvironment = Get-BackupOpsRepositoryEnvironment -Config $Config
+    return [string](Get-BackupOpsRequiredFileConfigValue -Config $Config -Path @('servers', $repositoryEnvironment, 'backupPointsRoot') -Code $Code -Reason $Reason -Action $Action)
 }
 
 function Get-BackupOpsExpectedBackupTargetHost {
@@ -261,6 +305,7 @@ function Get-BackupOpsExpectedBackupTargetHost {
 
     switch ($Environment) {
         'test' { return '172.30.30.58' }
+        'backup' { return '172.30.30.59' }
         'production' { return '172.30.30.57' }
         'prod' { return '172.30.30.57' }
         default { return '' }
@@ -295,7 +340,7 @@ function Assert-BackupOpsKnownBackupTarget {
         return
     }
 
-    throw (New-BackupOpsInfraBlockedException -Code $Code -Message (New-BackupOpsOperatorBlockedMessage -Reason "$Scope 目标证明无效：targetEnvironment=$Environment targetHost=$Host；仅允许 test/172.30.30.58 或 production/172.30.30.57。" -Action '请修正 TargetEnvironment 与运行配置，禁止生成无法证明来源环境的数据备份。'))
+    throw (New-BackupOpsInfraBlockedException -Code $Code -Message (New-BackupOpsOperatorBlockedMessage -Reason "$Scope 目标证明无效：targetEnvironment=$Environment targetHost=$Host；仅允许 test/172.30.30.58、backup/172.30.30.59 或 production/172.30.30.57。" -Action '请修正 TargetEnvironment 与运行配置，禁止生成无法证明来源环境的数据备份。'))
 }
 
 function Assert-BackupOpsRemoteNasMounted {
@@ -307,20 +352,20 @@ function Assert-BackupOpsRemoteNasMounted {
     )
 
     Import-BackupOpsSshDependency
-    $testRequest = Get-BackupOpsFileSshRequest -Config $Config -Environment 'test' -Code 'INTBK-2003'
+    $repositoryRequest = Get-BackupOpsRepositoryFileSshRequest -Config $Config -Code 'INTBK-2003'
     $targetEnvironment = if ($Config.PSObject.Properties['environment']) { [string]$Config.environment } else { 'test' }
-    $backupPointsRoot = [string](Get-BackupOpsRequiredFileConfigValue -Config $Config -Path @('servers', 'test', 'backupPointsRoot') -Code 'INTBK-2003' -Reason '缺少测试服务器备份根目录配置。' -Action '请先补齐 servers.test.backupPointsRoot 后再执行备份。')
+    $backupPointsRoot = Get-BackupOpsRepositoryBackupPointsRoot -Config $Config -Code 'INTBK-2003' -Reason '缺少备份仓根目录配置。' -Action '请先补齐目标环境 backupPointsRoot 后再执行备份。'
     $remoteTargetRoot = $backupPointsRoot.TrimEnd('/')
     $mountRoot = Get-BackupOpsRemoteNasMountRoot -BackupPointsRoot $remoteTargetRoot
     $escapedMountRoot = ConvertTo-BackupBashSingleQuotedString -Value $mountRoot
     $escapedTargetRoot = ConvertTo-BackupBashSingleQuotedString -Value $remoteTargetRoot
     $command = "test -d $escapedMountRoot && mountpoint -q $escapedMountRoot && mkdir -p $escapedTargetRoot && test -w $escapedTargetRoot"
     $checkRequests = New-Object System.Collections.Generic.List[object]
-    $checkRequests.Add([pscustomobject]@{ Request = $testRequest; Label = 'backup-repository' })
-    if ($targetEnvironment -in @('production', 'prod')) {
+    $checkRequests.Add([pscustomobject]@{ Request = $repositoryRequest; Label = 'backup-repository' })
+    if ($targetEnvironment -in @('production', 'prod', 'backup')) {
         $productionRequest = Get-BackupOpsFileSshRequest -Config $Config -Environment 'production' -Code 'INTBK-2003'
         Assert-BackupOpsKnownBackupTarget -Environment $targetEnvironment -Host ([string]$productionRequest.Host) -Code 'INTBK-2003' -Scope '备份源'
-        if ([string]$productionRequest.Host -ne [string]$testRequest.Host) {
+        if ([string]$productionRequest.Host -ne [string]$repositoryRequest.Host) {
             $checkRequests.Add([pscustomobject]@{ Request = $productionRequest; Label = 'backup-source' })
         }
     }
@@ -340,7 +385,7 @@ function Assert-BackupOpsRemoteNasMounted {
         code = 'INTBK-0000'
         mountRoot = $mountRoot
         backupPointsRoot = $remoteTargetRoot
-        host = $testRequest.Host
+        host = $repositoryRequest.Host
         checkedHosts = @($checkRequests | ForEach-Object { $_.Request.Host })
     }
 }
@@ -514,8 +559,8 @@ function Assert-BackupOpsRemoteRetentionRoot {
     )
 
     $normalized = $RootPath.TrimEnd('/')
-    if ($normalized -ne '/mnt/nas/Backup/BackupPackage') {
-        throw (New-BackupOpsInfraBlockedException -Code 'INTBK-2003' -Message (New-BackupOpsOperatorBlockedMessage -Reason "远端保留策略根目录必须是 /mnt/nas/Backup/BackupPackage，当前为：$RootPath" -Action '停止清理；请先修正 backupPointsRoot，禁止清理 ReleasePackage、/mnt/nas 根目录或其他业务目录。'))
+    if ($normalized -notin @('/mnt/nas/Backup/BackupPackage', '/mnt/intruoyi-data/Backup/BackupPackage')) {
+        throw (New-BackupOpsInfraBlockedException -Code 'INTBK-2003' -Message (New-BackupOpsOperatorBlockedMessage -Reason "远端保留策略根目录必须是受保护 BackupPackage，当前为：$RootPath" -Action '停止清理；请先修正 backupPointsRoot，禁止清理 ReleasePackage、挂载根目录或其他业务目录。'))
     }
 }
 
@@ -775,8 +820,10 @@ function Assert-BackupOpsManifestRemoteMySqlDumpPath {
     )
 
     $normalized = $Path.Replace('\', '/')
-    if (-not $normalized.StartsWith('/mnt/nas/Backup/BackupPackage/', [System.StringComparison]::Ordinal)) {
-        throw (New-BackupOpsInfraBlockedException -Code 'INTBK-6001' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 远端 dump 不在测试服 BackupPackage 目录下：$Path。" -Action '请确认 MySQL dump 直接写入 /mnt/nas/Backup/BackupPackage/<backupId>/mysql 后再生成 manifest。'))
+    $isProtectedBackupPackage = $normalized.StartsWith('/mnt/nas/Backup/BackupPackage/', [System.StringComparison]::Ordinal) -or `
+        $normalized.StartsWith('/mnt/intruoyi-data/Backup/BackupPackage/', [System.StringComparison]::Ordinal)
+    if (-not $isProtectedBackupPackage) {
+        throw (New-BackupOpsInfraBlockedException -Code 'INTBK-6001' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 远端 dump 不在受保护 BackupPackage 目录下：$Path。" -Action '请确认 MySQL dump 直接写入目标环境 BackupPackage/<backupId>/mysql 后再生成 manifest。'))
     }
     if ($normalized -match '(^|/)\.\.($|/)') {
         throw (New-BackupOpsInfraBlockedException -Code 'INTBK-6001' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 远端 dump 路径包含非法上级目录引用：$Path。" -Action '请使用 BackupPackage 下的合法备份点路径。'))
@@ -812,12 +859,9 @@ function Test-BackupOpsMySqlDumpAvailable {
     $remoteDumpPath = [string]$Workspace.RemoteMySqlDumpPath
     Assert-BackupOpsManifestRemoteMySqlDumpPath -Path $remoteDumpPath
     Import-BackupOpsSshDependency
-    $testRequest = Get-BackupOpsFileSshRequest -Config $Config -Environment 'test' -Code 'INTBK-6001'
-    if ([string]$testRequest.Host -ne '172.30.30.58') {
-        throw (New-BackupOpsInfraBlockedException -Code 'INTBK-6001' -Message (New-BackupOpsOperatorBlockedMessage -Reason "无法证明 MySQL 远端 dump 位于测试服务器 172.30.30.58：$($testRequest.Host)。" -Action '请显式使用 targetEnvironment=test，并确认测试服务器主机固定为 172.30.30.58。'))
-    }
+    $repositoryRequest = Get-BackupOpsRepositoryFileSshRequest -Config $Config -Code 'INTBK-6001'
     try {
-        Invoke-BackupSshCommand -Request ($testRequest + @{
+        Invoke-BackupSshCommand -Request ($repositoryRequest + @{
             Command = "test -s {0}" -f (ConvertTo-BackupBashSingleQuotedString -Value $remoteDumpPath)
         }) | Out-Null
     } catch {
@@ -1390,31 +1434,31 @@ function Sync-BackupOpsBackupToTestServer {
     )
 
     Import-BackupOpsSshDependency
-    $testRequest = Get-BackupOpsFileSshRequest -Config $Config -Environment 'test' -Code 'INTBK-2003'
-    $backupPointsRoot = [string](Get-BackupOpsRequiredFileConfigValue -Config $Config -Path @('servers', 'test', 'backupPointsRoot') -Code 'INTBK-2003' -Reason '缺少测试服务器备份根目录配置。' -Action '请先补齐 servers.test.backupPointsRoot 后再执行备份。')
+    $repositoryRequest = Get-BackupOpsRepositoryFileSshRequest -Config $Config -Code 'INTBK-2003'
+    $backupPointsRoot = Get-BackupOpsRepositoryBackupPointsRoot -Config $Config -Code 'INTBK-2003' -Reason '缺少备份仓根目录配置。' -Action '请先补齐目标环境 backupPointsRoot 后再执行备份。'
     $remoteTargetRoot = $backupPointsRoot.TrimEnd('/')
     $remoteBackupRoot = $remoteTargetRoot + '/' + $Workspace.BackupId
     $remoteDirectoryTimeoutSeconds = 60
     $metadataUploadTimeoutSeconds = 300
     $mysqlUploadTimeoutSeconds = 7200
 
-    Invoke-BackupSshCommand -Request ($testRequest + @{
+    Invoke-BackupSshCommand -Request ($repositoryRequest + @{
         Command = "mkdir -p {0}" -f (ConvertTo-BackupBashSingleQuotedString -Value $remoteTargetRoot)
         TimeoutSeconds = $remoteDirectoryTimeoutSeconds
     }) | Out-Null
-    Invoke-BackupSshCommand -Request ($testRequest + @{
+    Invoke-BackupSshCommand -Request ($repositoryRequest + @{
         Command = "mkdir -p {0}" -f (ConvertTo-BackupBashSingleQuotedString -Value $remoteBackupRoot)
         TimeoutSeconds = $remoteDirectoryTimeoutSeconds
     }) | Out-Null
     foreach ($childName in @('deploy', 'manifest', 'mysql', 'objects')) {
-        Invoke-BackupSshCommand -Request ($testRequest + @{
+        Invoke-BackupSshCommand -Request ($repositoryRequest + @{
             Command = "mkdir -p {0}" -f (ConvertTo-BackupBashSingleQuotedString -Value ($remoteBackupRoot + '/' + $childName))
             TimeoutSeconds = $remoteDirectoryTimeoutSeconds
         }) | Out-Null
     }
 
     foreach ($file in @(Get-ChildItem -LiteralPath $Workspace.DeployPath -File -ErrorAction SilentlyContinue)) {
-        Send-BackupFileOverSsh -Request ($testRequest + @{
+        Send-BackupFileOverSsh -Request ($repositoryRequest + @{
             LocalPath = $file.FullName
             RemotePath = $remoteBackupRoot + '/deploy/'
             TimeoutSeconds = $metadataUploadTimeoutSeconds
@@ -1425,7 +1469,7 @@ function Sync-BackupOpsBackupToTestServer {
         if ($file.Name -eq 'manifest.json') {
             continue
         }
-        Send-BackupFileOverSsh -Request ($testRequest + @{
+        Send-BackupFileOverSsh -Request ($repositoryRequest + @{
             LocalPath = $file.FullName
             RemotePath = $remoteBackupRoot + '/manifest/'
             TimeoutSeconds = $metadataUploadTimeoutSeconds
@@ -1433,7 +1477,7 @@ function Sync-BackupOpsBackupToTestServer {
     }
 
     foreach ($file in @(Get-ChildItem -LiteralPath $Workspace.MySqlPath -File -ErrorAction SilentlyContinue)) {
-        Send-BackupFileOverSsh -Request ($testRequest + @{
+        Send-BackupFileOverSsh -Request ($repositoryRequest + @{
             LocalPath = $file.FullName
             RemotePath = $remoteBackupRoot + '/mysql/'
             TimeoutSeconds = $mysqlUploadTimeoutSeconds
@@ -1449,14 +1493,14 @@ function Sync-BackupOpsBackupToTestServer {
         throw (New-BackupOpsInfraBlockedException -Code 'INTBK-2002' -Message (New-BackupOpsOperatorBlockedMessage -Reason "对象增量清单无效：$objectInventoryPath" -Action '请重新执行对象桶 manifest 增量备份，确保 inventory 包含 mode、bucket 和 objectStoreRoot。'))
     }
     if (-not ([string]$inventory.objectStoreRoot).Contains('/object-store')) {
-        throw (New-BackupOpsInfraBlockedException -Code 'INTBK-2002' -Message (New-BackupOpsOperatorBlockedMessage -Reason "对象增量清单 objectStoreRoot 非法：$($inventory.objectStoreRoot)" -Action '请确认对象仓库固定写入 /mnt/nas/Backup/BackupPackage/object-store 后再执行备份同步。'))
+        throw (New-BackupOpsInfraBlockedException -Code 'INTBK-2002' -Message (New-BackupOpsOperatorBlockedMessage -Reason "对象增量清单 objectStoreRoot 非法：$($inventory.objectStoreRoot)" -Action '请确认对象仓库固定写入目标环境 BackupPackage/object-store 后再执行备份同步。'))
     }
-    Send-BackupFileOverSsh -Request ($testRequest + @{
+    Send-BackupFileOverSsh -Request ($repositoryRequest + @{
         LocalPath = $objectInventoryPath
         RemotePath = $remoteBackupRoot + '/objects/manifest-object-inventory.json'
         TimeoutSeconds = $metadataUploadTimeoutSeconds
     }) | Out-Null
-    Write-BackupOpsLog -Session $LogSession -Message "Synced backup point $($Workspace.BackupId) to test server path $remoteBackupRoot."
+    Write-BackupOpsLog -Session $LogSession -Message "Synced backup point $($Workspace.BackupId) to repository path $remoteBackupRoot."
     return [pscustomobject]@{
         operation = 'sync-backup'
         status = 'success'
@@ -1477,8 +1521,8 @@ function Sync-BackupOpsManifestToTestServer {
     )
 
     Import-BackupOpsSshDependency
-    $testRequest = Get-BackupOpsFileSshRequest -Config $Config -Environment 'test' -Code 'INTBK-2003'
-    $backupPointsRoot = [string](Get-BackupOpsRequiredFileConfigValue -Config $Config -Path @('servers', 'test', 'backupPointsRoot') -Code 'INTBK-2003' -Reason '缺少测试服务器备份根目录配置。' -Action '请先补齐 servers.test.backupPointsRoot 后再同步 manifest。')
+    $repositoryRequest = Get-BackupOpsRepositoryFileSshRequest -Config $Config -Code 'INTBK-2003'
+    $backupPointsRoot = Get-BackupOpsRepositoryBackupPointsRoot -Config $Config -Code 'INTBK-2003' -Reason '缺少备份仓根目录配置。' -Action '请先补齐目标环境 backupPointsRoot 后再同步 manifest。'
     $remoteManifestRoot = $backupPointsRoot.TrimEnd('/') + '/' + $Workspace.BackupId + '/manifest/'
     $manifestPath = Join-Path $Workspace.ManifestPath 'manifest.json'
     $manifestUploadTimeoutSeconds = 300
@@ -1487,7 +1531,7 @@ function Sync-BackupOpsManifestToTestServer {
         throw (New-BackupOpsInfraBlockedException -Code 'INTBK-6001' -Message 'manifest.json 不存在，无法同步到测试服务器。')
     }
 
-    Send-BackupFileOverSsh -Request ($testRequest + @{
+    Send-BackupFileOverSsh -Request ($repositoryRequest + @{
         LocalPath = $manifestPath
         RemotePath = $remoteManifestRoot
         TimeoutSeconds = $manifestUploadTimeoutSeconds
@@ -1543,7 +1587,7 @@ function Invoke-BackupOpsRemoteRetentionInternal {
         [switch]$PlanOnly
     )
 
-    $backupPointsRoot = [string](Get-BackupOpsRequiredFileConfigValue -Config $Config -Path @('servers', 'test', 'backupPointsRoot') -Code 'INTBK-2003' -Reason '缺少测试服务器备份根目录配置。' -Action '请先补齐 servers.test.backupPointsRoot 后再执行远端清理。')
+    $backupPointsRoot = Get-BackupOpsRepositoryBackupPointsRoot -Config $Config -Code 'INTBK-2003' -Reason '缺少备份仓根目录配置。' -Action '请先补齐目标环境 backupPointsRoot 后再执行远端清理。'
     Assert-BackupOpsRemoteRetentionRoot -RootPath $backupPointsRoot
     $keepDays = [int](Get-BackupOpsRequiredFileConfigValue -Config $Config -Path @('backup', 'keepDaysRemote') -Code 'INTBK-2003' -Reason '缺少远端保留天数配置。' -Action '请先补齐 backup.keepDaysRemote 后再执行远端清理。')
     $keepLast = if ($Config.backup.PSObject.Properties['keepLastPoints']) { [int]$Config.backup.keepLastPoints } else { 0 }
@@ -1565,8 +1609,8 @@ function Invoke-BackupOpsRemoteRetentionInternal {
     ) -join "`n"
 
     Import-BackupOpsSshDependency
-    $testRequest = Get-BackupOpsFileSshRequest -Config $Config -Environment 'test' -Code 'INTBK-2003'
-    $retentionResult = Invoke-BackupSshCommand -Request ($testRequest + @{ Command = $command })
+    $repositoryRequest = Get-BackupOpsRepositoryFileSshRequest -Config $Config -Code 'INTBK-2003'
+    $retentionResult = Invoke-BackupSshCommand -Request ($repositoryRequest + @{ Command = $command })
     try {
         $result = $retentionResult.output | ConvertFrom-Json
     }

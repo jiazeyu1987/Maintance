@@ -545,15 +545,16 @@ function Invoke-DccDatabaseSnapshotExport {
     $errors = New-Object System.Collections.ArrayList
     $expectedTargetHost = switch ($TargetEnvironment) {
         'test' { '172.30.30.58' }
+        'backup' { '172.30.30.59' }
         'production' { '172.30.30.57' }
         'prod' { '172.30.30.57' }
         default { '' }
     }
     if ([string]::IsNullOrWhiteSpace($expectedTargetHost)) {
         Add-DccSnapshotDiagnostic -Errors $errors -Code 'target_environment_invalid' -Scope 'targetEnvironment' `
-            -Message "DCC database snapshot export only accepts TargetEnvironment test, prod, or production; got $TargetEnvironment." `
+            -Message "DCC database snapshot export only accepts TargetEnvironment test, backup, prod, or production; got $TargetEnvironment." `
             -Impact 'The exporter cannot prove the snapshot belongs to a protected backup flow.' `
-            -NextStep 'Rerun with explicit TargetEnvironment test or production.'
+            -NextStep 'Rerun with explicit TargetEnvironment test, backup, or production.'
     }
     $validTargetHost = if ($TargetEnvironment -eq 'test') {
         $TargetHost -in @('172.30.30.58', 'local')
@@ -566,7 +567,7 @@ function Invoke-DccDatabaseSnapshotExport {
         Add-DccSnapshotDiagnostic -Errors $errors -Code 'target_host_invalid' -Scope 'targetHost' `
             -Message "DCC database snapshot target host is invalid for $TargetEnvironment; expected $expectedTargetHost, got $TargetHost." `
             -Impact 'The snapshot could be mistaken for an unapproved environment.' `
-            -NextStep 'Rerun with TargetHost 172.30.30.58 for test data or 172.30.30.57 for production data.'
+            -NextStep 'Rerun with TargetHost 172.30.30.58 for test, 172.30.30.59 for backup, or 172.30.30.57 for production data.'
     }
 
     $rows = @()

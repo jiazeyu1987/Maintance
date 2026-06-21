@@ -582,21 +582,22 @@ function Invoke-DccBackupManifestBuild {
     $errors = New-Object System.Collections.ArrayList
     $expectedTargetHost = switch ($TargetEnvironment) {
         'test' { '172.30.30.58' }
+        'backup' { '172.30.30.59' }
         'production' { '172.30.30.57' }
         'prod' { '172.30.30.57' }
         default { '' }
     }
     if ([string]::IsNullOrWhiteSpace($expectedTargetHost)) {
         Add-DccBuilderDiagnostic -Errors $errors -Code 'target_environment_invalid' -Scope 'targetEnvironment' `
-            -Message 'DCC backup manifest builder only accepts targetEnvironment test, prod, or production.' `
+            -Message 'DCC backup manifest builder only accepts targetEnvironment test, backup, prod, or production.' `
             -Impact 'The manifest cannot prove it belongs to a protected backup flow.' `
-            -NextStep 'Run the builder with TargetEnvironment test or production and target host proof.'
+            -NextStep 'Run the builder with TargetEnvironment test, backup, or production and target host proof.'
     }
     if ([string]::IsNullOrWhiteSpace($expectedTargetHost) -or $TargetHost -ne $expectedTargetHost) {
         Add-DccBuilderDiagnostic -Errors $errors -Code 'target_host_invalid' -Scope 'targetHost' `
             -Message "DCC backup manifest target host is invalid for $TargetEnvironment; expected $expectedTargetHost, got $TargetHost." `
             -Impact 'The manifest could be mistaken for an unapproved environment.' `
-            -NextStep 'Regenerate the manifest with TargetHost 172.30.30.58 for test or 172.30.30.57 for production.'
+            -NextStep 'Regenerate the manifest with TargetHost 172.30.30.58 for test, 172.30.30.59 for backup, or 172.30.30.57 for production.'
     }
 
     try {

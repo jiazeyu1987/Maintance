@@ -142,7 +142,7 @@ function Get-BackupOpsObjectSshRequest {
         [Parameter(Mandatory)]
         [object]$Config,
         [Parameter(Mandatory)]
-        [ValidateSet('production', 'test')]
+        [ValidateSet('production', 'test', 'backup')]
         [string]$Environment,
         [Parameter(Mandatory)]
         [string]$Code,
@@ -177,9 +177,36 @@ function Assert-BackupOpsObjectBackupPackageRoot {
     )
 
     $normalized = $BackupPointsRoot.TrimEnd('/').Replace('\', '/')
-    if ($normalized -ne '/mnt/nas/Backup/BackupPackage') {
-        throw (New-BackupOpsObjectException -Code 'INTBK-4002' -Message (New-BackupOpsOperatorBlockedMessage -Reason "对象恢复备份根目录不是受保护的测试服 BackupPackage：$BackupPointsRoot" -Action '请确认 servers.test.backupPointsRoot 固定为 /mnt/nas/Backup/BackupPackage 后再执行对象恢复。'))
+    if ($normalized -notin @('/mnt/nas/Backup/BackupPackage', '/mnt/intruoyi-data/Backup/BackupPackage')) {
+        throw (New-BackupOpsObjectException -Code 'INTBK-4002' -Message (New-BackupOpsOperatorBlockedMessage -Reason "对象恢复备份根目录不是受保护 BackupPackage：$BackupPointsRoot" -Action '请确认目标环境 backupPointsRoot 固定为受保护 BackupPackage 后再执行对象恢复。'))
     }
+}
+
+function Get-BackupOpsObjectRepositoryEnvironment {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    if ($Config.PSObject.Properties['environment'] -and [string]$Config.environment -eq 'backup') {
+        return 'backup'
+    }
+    return 'test'
+}
+
+function Get-BackupOpsObjectRuntimeEnvironment {
+    param(
+        [Parameter(Mandatory)]
+        [object]$Config
+    )
+
+    if ($Config.PSObject.Properties['environment'] -and [string]$Config.environment -eq 'test') {
+        return 'test'
+    }
+    if ($Config.PSObject.Properties['environment'] -and [string]$Config.environment -eq 'backup') {
+        return 'backup'
+    }
+    return 'production'
 }
 
 function Assert-BackupOpsObjectRestoreTestHost {
@@ -191,10 +218,10 @@ function Assert-BackupOpsObjectRestoreTestHost {
     )
 
     if ($Host -eq '172.30.30.57') {
-        throw (New-BackupOpsObjectException -Code 'INTBK-4002' -Message (New-BackupOpsOperatorBlockedMessage -Reason "对象恢复${Label}禁止指向正式服务器 172.30.30.57。" -Action '停止恢复，修正 TargetEnvironment 和运行配置，恢复目标只能是测试服务器 172.30.30.58。'))
+        throw (New-BackupOpsObjectException -Code 'INTBK-4002' -Message (New-BackupOpsOperatorBlockedMessage -Reason "对象恢复${Label}禁止指向正式服务器 172.30.30.57。" -Action '停止恢复，修正 TargetEnvironment 和运行配置，恢复目标只能是 test 或 backup 环境。'))
     }
-    if ($Host -ne '172.30.30.58') {
-        throw (New-BackupOpsObjectException -Code 'INTBK-4002' -Message (New-BackupOpsOperatorBlockedMessage -Reason "对象恢复${Label}无法证明为测试服务器 172.30.30.58：$Host" -Action '请显式使用 targetEnvironment=test，并确认目标主机和备份仓库主机均为 172.30.30.58。'))
+    if ($Host -notin @('172.30.30.58', '172.30.30.59')) {
+        throw (New-BackupOpsObjectException -Code 'INTBK-4002' -Message (New-BackupOpsOperatorBlockedMessage -Reason "对象恢复${Label}无法证明为 test 或 backup 环境主机：$Host" -Action '请显式使用 targetEnvironment=test 或 backup，并确认目标主机和备份仓库主机一致。'))
     }
 }
 
@@ -216,8 +243,10 @@ function Assert-BackupOpsObjectRestoreStageRoot {
     )
 
     $normalized = $RemoteTempRoot.TrimEnd('/').Replace('\', '/')
-    if (-not $normalized.StartsWith('/mnt/nas/Backup/BackupPackage/.restore-stage/', [System.StringComparison]::Ordinal)) {
-        throw (New-BackupOpsObjectException -Code 'INTBK-4002' -Message (New-BackupOpsOperatorBlockedMessage -Reason "对象恢复 stage 目录不在测试服 BackupPackage 受控 restore stage 下：$RemoteTempRoot" -Action '请使用 /mnt/nas/Backup/BackupPackage/.restore-stage/<backupId>/objects 作为对象恢复 stage。'))
+    $isProtectedRestoreStage = $normalized.StartsWith('/mnt/nas/Backup/BackupPackage/.restore-stage/', [System.StringComparison]::Ordinal) -or `
+        $normalized.StartsWith('/mnt/intruoyi-data/Backup/BackupPackage/.restore-stage/', [System.StringComparison]::Ordinal)
+    if (-not $isProtectedRestoreStage) {
+        throw (New-BackupOpsObjectException -Code 'INTBK-4002' -Message (New-BackupOpsOperatorBlockedMessage -Reason "对象恢复 stage 目录不在受保护 BackupPackage restore stage 下：$RemoteTempRoot" -Action '请使用 /mnt/nas/Backup/BackupPackage/.restore-stage/<backupId>/objects 或 /mnt/intruoyi-data/Backup/BackupPackage/.restore-stage/<backupId>/objects 作为对象恢复 stage。'))
     }
     if ($normalized -match '(^|/)\.\.($|/)') {
         throw (New-BackupOpsObjectException -Code 'INTBK-4002' -Message (New-BackupOpsOperatorBlockedMessage -Reason "对象恢复 stage 目录包含非法上级目录引用：$RemoteTempRoot" -Action '请只使用 BackupPackage 下合法 restore stage 路径。'))
@@ -232,7 +261,7 @@ function Get-BackupOpsRemoteContainerEnvValue {
         [Parameter(Mandatory)]
         [object]$Config,
         [Parameter(Mandatory)]
-        [ValidateSet('production', 'test')]
+        [ValidateSet('production', 'test', 'backup')]
         [string]$Environment,
         [Parameter(Mandatory)]
         [string]$ContainerName,
@@ -264,15 +293,15 @@ function Get-BackupOpsMinioCredentials {
         [Parameter(Mandatory)]
         [object]$Config,
         [Parameter(Mandatory)]
-        [ValidateSet('production', 'test')]
+        [ValidateSet('production', 'test', 'backup')]
         [string]$Environment,
         [Parameter(Mandatory)]
         [string]$Code
     )
 
     $containerName = [string](Get-BackupOpsRequiredObjectConfigValue -Config $Config -Path @('containers', 'minio') -Code $Code -Reason '缺少 MinIO 容器名配置。' -Action '请先在配置文件中补齐 containers.minio 后再重试。')
-    $reason = if ($Environment -eq 'production') { '无法读取正式环境 MinIO 凭据。' } else { '无法读取测试环境 MinIO 凭据。' }
-    $action = if ($Environment -eq 'production') { '请先确认正式环境 MinIO 容器和凭据来源可读。' } else { '请先确认测试环境 MinIO 容器和凭据来源可读。' }
+    $reason = if ($Environment -eq 'production') { '无法读取正式环境 MinIO 凭据。' } elseif ($Environment -eq 'backup') { '无法读取备份环境 MinIO 凭据。' } else { '无法读取测试环境 MinIO 凭据。' }
+    $action = if ($Environment -eq 'production') { '请先确认正式环境 MinIO 容器和凭据来源可读。' } elseif ($Environment -eq 'backup') { '请先确认备份环境 MinIO 容器和凭据来源可读。' } else { '请先确认测试环境 MinIO 容器和凭据来源可读。' }
 
     $accessKey = Get-BackupOpsRemoteContainerEnvValue -Config $Config -Environment $Environment -ContainerName $containerName -Key 'MINIO_ROOT_USER' -Code $Code -Reason $reason -Action $action
     $secretKey = Get-BackupOpsRemoteContainerEnvValue -Config $Config -Environment $Environment -ContainerName $containerName -Key 'MINIO_ROOT_PASSWORD' -Code $Code -Reason $reason -Action $action
@@ -1126,8 +1155,8 @@ function Import-BackupObjectInventoryFromRemoteNas {
         throw (New-BackupOpsObjectException -Code 'INTBK-4002' -Message (New-BackupOpsOperatorBlockedMessage -Reason "远端对象增量清单无效：$remoteInventoryPath" -Action '请先确认备份点对象清单已按 incremental-manifest 生成后再执行恢复。'))
     }
     $objectStoreRoot = ([string]$inventory.objectStoreRoot).TrimEnd('/').Replace('\', '/')
-    if ($objectStoreRoot -ne '/mnt/nas/Backup/BackupPackage/object-store') {
-        throw (New-BackupOpsObjectException -Code 'INTBK-4002' -Message (New-BackupOpsOperatorBlockedMessage -Reason "远端对象增量清单引用的对象仓库不在受保护 BackupPackage object-store：$($inventory.objectStoreRoot)" -Action '请确认 manifest-object-inventory.json 由测试服标准 BackupPackage 备份流程生成后再执行恢复。'))
+    if ($objectStoreRoot -notin @('/mnt/nas/Backup/BackupPackage/object-store', '/mnt/intruoyi-data/Backup/BackupPackage/object-store')) {
+        throw (New-BackupOpsObjectException -Code 'INTBK-4002' -Message (New-BackupOpsOperatorBlockedMessage -Reason "远端对象增量清单引用的对象仓库不在受保护 BackupPackage object-store：$($inventory.objectStoreRoot)" -Action '请确认 manifest-object-inventory.json 由 test 或 backup 环境标准 BackupPackage 备份流程生成后再执行恢复。'))
     }
 
     $localPlanPath = Join-Path ([System.IO.Path]::GetTempPath()) ('backup-ops-restore-plan-' + [System.Guid]::NewGuid().ToString('N') + '.tsv')
@@ -1265,13 +1294,17 @@ function Backup-BackupOpsObjectBucket {
     )
 
     $bucket = [string](Get-BackupOpsRequiredObjectConfigValue -Config $Config -Path @('backup', 'objectBucket') -Code 'INTBK-4001' -Reason '缺少对象桶配置。' -Action '请先在运行配置中补齐 backup.objectBucket 后再执行对象备份。')
-    $sourceEnvironment = if ([string]$Config.environment -eq 'test') { 'test' } else { 'production' }
+    $sourceEnvironment = Get-BackupOpsObjectRuntimeEnvironment -Config $Config
     $sourceLabel = if ($sourceEnvironment -eq 'test') { '测试环境' } else { '正式环境' }
-    $sourceHost = if ($sourceEnvironment -eq 'test') { [string]$Config.servers.test.host } else { [string]$Config.servers.production.host }
+    if ($sourceEnvironment -eq 'backup') {
+        $sourceLabel = '备份环境'
+    }
+    $sourceHost = [string]$Config.servers.$sourceEnvironment.host
     $clientImage = Get-BackupOpsMinioClientImage -Config $Config -Code 'INTBK-4001'
     $archiveImage = Get-BackupOpsArchiveImage -Config $Config -Code 'INTBK-4001'
-    $backupPointsRoot = [string](Get-BackupOpsRequiredObjectConfigValue -Config $Config -Path @('servers', 'test', 'backupPointsRoot') -Code 'INTBK-4001' -Reason '缺少测试服务器备份点根目录配置。' -Action '请先在运行配置中补齐 servers.test.backupPointsRoot 后再执行对象备份。')
-    $testSshRequest = Get-BackupOpsObjectSshRequest -Config $Config -Environment 'test' -Code 'INTBK-4001' -Reason '缺少测试服务器 SSH 配置。' -Action '请先补齐测试服务器 SSH 接线后再执行对象备份。'
+    $repositoryEnvironment = Get-BackupOpsObjectRepositoryEnvironment -Config $Config
+    $backupPointsRoot = [string](Get-BackupOpsRequiredObjectConfigValue -Config $Config -Path @('servers', $repositoryEnvironment, 'backupPointsRoot') -Code 'INTBK-4001' -Reason '缺少备份仓根目录配置。' -Action '请先在运行配置中补齐目标环境 backupPointsRoot 后再执行对象备份。')
+    $repositorySshRequest = Get-BackupOpsObjectSshRequest -Config $Config -Environment $repositoryEnvironment -Code 'INTBK-4001' -Reason '缺少备份仓 SSH 配置。' -Action '请先补齐目标环境 SSH 接线后再执行对象备份。'
     $creds = Get-BackupOpsMinioCredentials -Config $Config -Environment $sourceEnvironment -Code 'INTBK-4001'
 
     $targetPath = $Workspace.ObjectsPath
@@ -1288,7 +1321,7 @@ function Backup-BackupOpsObjectBucket {
         SecretKey = $creds.SecretKey
         ClientImage = $clientImage
         ArchiveImage = $archiveImage
-        SshRequest = $testSshRequest
+        SshRequest = $repositorySshRequest
         EnvironmentLabel = $sourceLabel
     }
 }
@@ -1305,12 +1338,17 @@ function Restore-BackupOpsObjectBucket {
 
     Import-BackupOpsSshDependency
     $bucket = [string](Get-BackupOpsRequiredObjectConfigValue -Config $Config -Path @('backup', 'objectBucket') -Code 'INTBK-4002' -Reason '缺少对象桶配置。' -Action '请先在运行配置中补齐 backup.objectBucket 后再执行对象恢复。')
-    $backupPointsRoot = [string](Get-BackupOpsRequiredObjectConfigValue -Config $Config -Path @('servers', 'test', 'backupPointsRoot') -Code 'INTBK-4002' -Reason '缺少测试服务器备份点根目录配置。' -Action '请先在运行配置中补齐 servers.test.backupPointsRoot 后再执行对象恢复。')
+    $repositoryEnvironment = Get-BackupOpsObjectRepositoryEnvironment -Config $Config
+    $targetEnvironment = Get-BackupOpsObjectRuntimeEnvironment -Config $Config
+    $backupPointsRoot = [string](Get-BackupOpsRequiredObjectConfigValue -Config $Config -Path @('servers', $repositoryEnvironment, 'backupPointsRoot') -Code 'INTBK-4002' -Reason '缺少备份仓根目录配置。' -Action '请先在运行配置中补齐目标环境 backupPointsRoot 后再执行对象恢复。')
     Assert-BackupOpsObjectBackupPackageRoot -BackupPointsRoot $backupPointsRoot
     Assert-BackupOpsObjectBackupId -BackupId $BackupId
-    Assert-BackupOpsObjectRestoreTestHost -Host ([string]$Config.servers.test.host) -Label '备份仓库主机'
-    Assert-BackupOpsObjectRestoreTestHost -Host ([string]$Config.servers.production.host) -Label '目标主机'
-    $testSshRequest = Get-BackupOpsObjectSshRequest -Config $Config -Environment 'test' -Code 'INTBK-4002' -Reason '缺少测试服务器 SSH 配置。' -Action '请先补齐测试服务器 SSH 接线后再执行对象恢复。'
+    Assert-BackupOpsObjectRestoreTestHost -Host ([string]$Config.servers.$repositoryEnvironment.host) -Label '备份仓库主机'
+    Assert-BackupOpsObjectRestoreTestHost -Host ([string]$Config.servers.$targetEnvironment.host) -Label '目标主机'
+    if ([string]$Config.servers.$repositoryEnvironment.host -ne [string]$Config.servers.$targetEnvironment.host) {
+        throw (New-BackupOpsObjectException -Code 'INTBK-4002' -Message (New-BackupOpsOperatorBlockedMessage -Reason "对象恢复目标主机与备份仓库主机不一致：target=$($Config.servers.$targetEnvironment.host), repository=$($Config.servers.$repositoryEnvironment.host)。" -Action '请显式使用 targetEnvironment=test 或 backup，并确认恢复目标和备份仓库在同一台服务器。'))
+    }
+    $repositorySshRequest = Get-BackupOpsObjectSshRequest -Config $Config -Environment $repositoryEnvironment -Code 'INTBK-4002' -Reason '缺少备份仓 SSH 配置。' -Action '请先补齐目标环境 SSH 接线后再执行对象恢复。'
     $localStageRoot = Join-Path (Split-Path -Parent ([string]$Config.paths.configPath)) '..\tmp\restore-data'
     [void][System.IO.Directory]::CreateDirectory($localStageRoot)
     $localStageRoot = (Resolve-Path $localStageRoot).Path
@@ -1322,26 +1360,26 @@ function Restore-BackupOpsObjectBucket {
     $localInventoryPath = Join-Path $localObjectsRoot 'manifest-object-inventory.json'
 
     $repositoryKeyField = 'repositoryKey'
-    Write-BackupOpsLog -Session $LogSession -Message "Downloading object inventory marker $remoteInventoryPath from test server $($Config.servers.test.host); restore will replay $repositoryKeyField mappings."
-    Receive-BackupFileOverSsh -Request ($testSshRequest + @{
+    Write-BackupOpsLog -Session $LogSession -Message "Downloading object inventory marker $remoteInventoryPath from repository server $($Config.servers.$repositoryEnvironment.host); restore will replay $repositoryKeyField mappings."
+    Receive-BackupFileOverSsh -Request ($repositorySshRequest + @{
         RemotePath = $remoteInventoryPath
         LocalPath = $localInventoryPath
         Recursive = $false
     }) | Out-Null
 
     $clientImage = Get-BackupOpsMinioClientImage -Config $Config -Code 'INTBK-4002'
-    $creds = Get-BackupOpsMinioCredentials -Config $Config -Environment 'production' -Code 'INTBK-4002'
+    $creds = Get-BackupOpsMinioCredentials -Config $Config -Environment $targetEnvironment -Code 'INTBK-4002'
     $targetEnvironmentLabel = if ([string]$Config.environment -eq 'test') { '测试环境' } elseif ([string]$Config.environment -eq 'backup') { '备份环境' } else { '目标环境' }
     $remoteTempRoot = ($backupPointsRoot.TrimEnd('/')) + "/.restore-stage/$BackupId/objects"
     Write-BackupOpsLog -Session $LogSession -Message "Restoring object bucket $bucket to $targetEnvironmentLabel from incremental inventory $remoteInventoryPath."
     return Import-BackupObjectInventoryFromRemoteNas -Request @{
         Bucket = $bucket
         RemoteInventoryPath = $remoteInventoryPath
-        Endpoint = "http://$($Config.servers.production.host):9000"
+        Endpoint = "http://$($Config.servers.$targetEnvironment.host):9000"
         AccessKey = $creds.AccessKey
         SecretKey = $creds.SecretKey
         ClientImage = $clientImage
-        SshRequest = $testSshRequest
+        SshRequest = $repositorySshRequest
         RemoteTempRoot = $remoteTempRoot
         EnvironmentLabel = $targetEnvironmentLabel
     }

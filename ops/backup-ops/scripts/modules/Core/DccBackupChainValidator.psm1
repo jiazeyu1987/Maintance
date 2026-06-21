@@ -324,11 +324,22 @@ function Test-DccChainContract {
         [Parameter(Mandatory = $true)]$Errors
     )
 
-    if ([string](Get-DccProperty -Object $Manifest -Name 'targetEnvironment') -ne 'test') {
+    $targetEnvironment = [string](Get-DccProperty -Object $Manifest -Name 'targetEnvironment')
+    $targetHost = [string](Get-DccProperty -Object $Manifest -Name 'targetHost')
+    $expectedTargetHosts = @{
+        test = '172.30.30.58'
+        backup = '172.30.30.59'
+    }
+    if (-not $expectedTargetHosts.ContainsKey($targetEnvironment)) {
         Add-DccDiagnostic -Errors $Errors -Code 'target_environment_invalid' -Scope 'targetEnvironment' `
-            -Message 'DCC chain validation only accepts targetEnvironment test.' `
-            -Impact 'The validator cannot prove the backup belongs to the protected test environment.' `
-            -NextStep 'Regenerate the backup manifest with targetEnvironment test and target host proof.'
+            -Message 'DCC chain validation only accepts targetEnvironment test or backup.' `
+            -Impact 'The validator cannot prove the backup belongs to a protected recoverable environment.' `
+            -NextStep 'Regenerate the backup manifest with targetEnvironment test/backup and target host proof.'
+    } elseif ($targetHost -ne $expectedTargetHosts[$targetEnvironment]) {
+        Add-DccDiagnostic -Errors $Errors -Code 'target_host_invalid' -Scope 'targetHost' `
+            -Message "DCC chain validation expected targetHost $($expectedTargetHosts[$targetEnvironment]) for targetEnvironment $targetEnvironment but found $targetHost." `
+            -Impact 'The validator cannot prove the backup belongs to the selected environment host.' `
+            -NextStep 'Regenerate the backup manifest with matching targetEnvironment and targetHost proof.'
     }
 
     if ([string](Get-DccProperty -Object $Manifest -Name 'schemaVersion') -ne 'dcc-backup-manifest-v1') {
