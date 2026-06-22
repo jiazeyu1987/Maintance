@@ -1,0 +1,8 @@
+# 执行日志
+
+- GREEN: experience-preflight -> PASS，已读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\worktree-memory.md` 和 `C:\Users\BJB110\.codex\skills\task-closeout-cleanup\SKILL.md`。
+- GREEN: workspace-audit -> PASS，前端两个目标 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\yudao-ui-admin-vue3-dcc-preview-release` 与 `D:\ProjectPackage\Int\IntRuoyiWorktrees\yudao-ui-admin-vue3-mainmerge-release-clean` 都是干净的完成态，且同指向 `37359a074`，主前端目录 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3` 仍单独承载 `int_main`。
+- GREEN: closeout-preview -> PASS，待执行 linked worktree 删除前，已确认当前主前端目录 `git status --short --branch` 可用，且预览边界仅包含这两个 worktree。
+- GREEN: frontend-worktree-remove -> PASS，在 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3` 执行 `git worktree remove D:\ProjectPackage\Int\IntRuoyiWorktrees\yudao-ui-admin-vue3-dcc-preview-release` 与 `git worktree remove D:\ProjectPackage\Int\IntRuoyiWorktrees\yudao-ui-admin-vue3-mainmerge-release-clean`。第二个 worktree 的 Git 登记已移除，但目录残留 `node_modules` 长路径文件树，已校验路径后使用空目录镜像方式清理残留目录。
+- GREEN: final-worktree-audit -> PASS，前端 `git worktree list` 仅剩 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3 [int_main]`，后端 `git worktree list` 仅剩 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro [int_main]`。两个目标目录均已不存在。
+- NOTE: 主前端目录仍保留新的本地现场 `src/views/mes/pro/edhr-batch/BatchExecutionListPage.vue`、`.env.merged-e2e`、`doc/tasks/20260622-edhr-rehearsal-role-selector/` 和 `tests/e2e/edhr-rehearsal-role-selector-static.spec.js`；主后端目录仍保留新的本地现场 `yudao-module-dcc/src/test/java/cn/iocoder/yudao/module/dcc/service/file/DccControlledFileReviewMatrixAccessServiceTest.java`。这些不是被删除 worktree 的残留，本任务未处理。
