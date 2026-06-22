@@ -3048,7 +3048,7 @@ function New-ReleaseRequiredSqlManifestEntries {
 }
 
 function Invoke-ReleaseMigrationPolicyGate {
-    $policyGateScript = Join-Path $backendRepo 'script\release\run-release-migration-policy-gate.py'
+    $policyGateScript = Join-Path $maintenanceReleaseScriptRoot 'run-release-migration-policy-gate.py'
     if (-not (Test-Path -LiteralPath $policyGateScript -PathType Leaf)) {
         Fail "Migration policy gate script missing: $policyGateScript"
     }
@@ -3326,7 +3326,6 @@ function Write-ReleaseManifestV1 {
     )
 
     if ($publishBackend) {
-        Invoke-ReleaseMigrationPolicyGate
         $requiredSqlEntries = New-ReleaseRequiredSqlManifestEntries
         $schemaDigest = Get-ReleaseSchemaDigest -RequiredSqlEntries $requiredSqlEntries
         $schemaVersion = 'schema-digest-' + $schemaDigest.Substring('sha256:'.Length, 16)
@@ -3527,6 +3526,7 @@ $packageDirectoryName = $Tag
 $componentExplicit = $PSBoundParameters.ContainsKey('Component')
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$maintenanceReleaseScriptRoot = Join-Path $scriptDir '..\release'
 $defaultBackendRepo = (Resolve-Path (Join-Path $scriptDir '..\..')).Path
 if ([string]::IsNullOrWhiteSpace($BackendRepoRoot)) {
     $backendRepo = $defaultBackendRepo
@@ -3668,6 +3668,9 @@ function Get-ReleaseDatabaseSqlScripts {
 }
 
 $requiredDatabaseSqlScripts = Get-ReleaseDatabaseSqlScripts
+if ($publishBackend -and $Mode -eq 'build-release') {
+    Invoke-ReleaseMigrationPolicyGate
+}
 $requiredSqlLocalDir = Join-Path $releaseDir 'required-sql'
 $opsRuntimeLocalDir = Join-Path $releaseDir 'ops-runtime'
 $websiteRuntimeLocal = Join-Path $releaseDir 'website'

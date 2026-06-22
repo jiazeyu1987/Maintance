@@ -1,0 +1,143 @@
+{
+  "task_id": "20260621-frontend-release-full-flow-main-merge-rerun",
+  "goal": "在主程序合并代码后，重新通过真实页面完整走通 build/test/mark-tested/prod/backup 发布链路。",
+  "status": "in_progress",
+  "current_stage": "execution",
+  "planner_review_status": "approved",
+  "plan_review_status": "approved",
+  "blocking_prereqs": [],
+  "iteration_counts": {
+    "planner_revisions": 0,
+    "plan_revisions": 0,
+    "executor_loops": 0,
+    "test_loops": 0
+  },
+  "tasks": [
+    {
+      "task_id": "T1",
+      "title": "建立任务与锁定当前主程序基线",
+      "status": "completed",
+      "dependency_ids": [],
+      "write_scope": [
+        "doc/tasks/20260621-frontend-release-full-flow-main-merge-rerun/",
+        "docs/request-command-log.md"
+      ],
+      "acceptance_ids": [
+        "AC-01"
+      ],
+      "owner_agent": "main",
+      "last_outcome": "新任务目录已创建，当前业务前后端与维护仓基线已记录。"
+    },
+    {
+      "task_id": "T2",
+      "title": "页面执行前 preflight",
+      "status": "completed",
+      "dependency_ids": [
+        "T1"
+      ],
+      "write_scope": [
+        "doc/tasks/20260621-frontend-release-full-flow-main-merge-rerun/"
+      ],
+      "acceptance_ids": [
+        "AC-01"
+      ],
+      "owner_agent": "main",
+      "last_outcome": "experience-preflight 已通过，页面与页面快照可用。"
+    },
+    {
+      "task_id": "T3",
+      "title": "页面构建发布包",
+      "status": "in_progress",
+      "dependency_ids": [
+        "T2"
+      ],
+      "write_scope": [
+        "doc/tasks/20260621-frontend-release-full-flow-main-merge-rerun/execution-log.md"
+      ],
+      "acceptance_ids": [
+        "AC-02"
+      ],
+      "owner_agent": "main",
+      "last_outcome": "页面 build-release(v11) 的本机 SQL 预检误报已在维护仓按严格 TDD 修复完成：release_sql_contract_gate.py 现只解析真正 VALUES 顶层插入元组，不再把 ON DUPLICATE KEY UPDATE ... VALUES(`name`) 当成新的 system_menu 记录；维护仓 pytest、showroom 合同测试与真实 clean release backend SQL 根目录门禁均已通过。下一步必须回真实页面以新的 releaseTag release-20260621-page-full-flow-mainmerge-v12 重新 build-release。"
+    },
+    {
+      "task_id": "T4",
+      "title": "页面部署测试服",
+      "status": "pending",
+      "dependency_ids": [
+        "T3"
+      ],
+      "write_scope": [
+        "doc/tasks/20260621-frontend-release-full-flow-main-merge-rerun/execution-log.md"
+      ],
+      "acceptance_ids": [
+        "AC-02",
+        "AC-03"
+      ],
+      "owner_agent": "main",
+      "last_outcome": "页面 deploy-test(v10) 阶段暴露的 DHR 模板菜单主键冲突已经在业务仓按严格 TDD 修复，并已并入 clean release backend worktree；当前维护仓 SQL 预检误报也已修复，后续可在新的 build-release(v12) 成功后重新回到 deploy-test。"
+    },
+    {
+      "task_id": "T5",
+      "title": "页面标记测试通过",
+      "status": "pending",
+      "dependency_ids": [
+        "T4"
+      ],
+      "write_scope": [
+        "doc/tasks/20260621-frontend-release-full-flow-main-merge-rerun/execution-log.md"
+      ],
+      "acceptance_ids": [
+        "AC-02"
+      ]
+    },
+    {
+      "task_id": "T6",
+      "title": "页面上线正式服",
+      "status": "pending",
+      "dependency_ids": [
+        "T5"
+      ],
+      "write_scope": [
+        "doc/tasks/20260621-frontend-release-full-flow-main-merge-rerun/execution-log.md"
+      ],
+      "acceptance_ids": [
+        "AC-02",
+        "AC-03",
+        "AC-04"
+      ]
+    },
+    {
+      "task_id": "T7",
+      "title": "页面上线备份服",
+      "status": "pending",
+      "dependency_ids": [
+        "T6"
+      ],
+      "write_scope": [
+        "doc/tasks/20260621-frontend-release-full-flow-main-merge-rerun/execution-log.md"
+      ],
+      "acceptance_ids": [
+        "AC-02",
+        "AC-03",
+        "AC-04",
+        "AC-05"
+      ]
+    },
+    {
+      "task_id": "T8",
+      "title": "汇总与收尾",
+      "status": "pending",
+      "dependency_ids": [
+        "T7"
+      ],
+      "write_scope": [
+        "doc/tasks/20260621-frontend-release-full-flow-main-merge-rerun/"
+      ],
+      "acceptance_ids": [
+        "AC-05"
+      ]
+    }
+  ],
+  "updated_at": "2026-06-22T12:34:00+08:00"
+}

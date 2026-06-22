@@ -8,6 +8,7 @@ from ops.release.release_migration_manifest import (
     MigrationManifestError,
     build_migration_manifest,
 )
+from ops.release.release_sql_contract_gate import ReleaseSqlContractError, assert_release_sql_contracts
 
 
 class MigrationPolicyError(RuntimeError):
@@ -100,6 +101,10 @@ def run_migration_policy_gate(
         raise MigrationPolicyError(str(exc)) from exc
     _check_dependency_environment_contract(entries)
     _check_frozen_checksums(entries, _load_frozen_registry(frozen_registry_path))
+    try:
+        assert_release_sql_contracts(paths)
+    except ReleaseSqlContractError as exc:
+        raise MigrationPolicyError(str(exc)) from exc
     return {
         "status": "passed",
         "migrationCount": len(entries),
