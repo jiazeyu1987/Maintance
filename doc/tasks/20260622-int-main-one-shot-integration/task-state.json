@@ -1,0 +1,149 @@
+{
+  "task_id": "20260622-int-main-one-shot-integration",
+  "goal": "把 D:\\ProjectPackage\\Int\\IntRuoyi 当前 holding 现场按逻辑组安全融合进真正的 int_main。",
+  "status": "completed",
+  "current_stage": "completed",
+  "planner_review_status": "approved",
+  "plan_review_status": "approved",
+  "blocking_prereqs": [],
+  "iteration_counts": {
+    "planner_revisions": 0,
+    "plan_revisions": 0,
+    "executor_loops": 0,
+    "test_loops": 0
+  },
+  "tasks": [
+    {
+      "task_id": "T1",
+      "title": "挂起旧主线并建立融合总台账",
+      "status": "completed",
+      "dependency_ids": [],
+      "write_scope": [
+        "doc/tasks/20260621-frontend-release-full-flow-main-merge-rerun/",
+        "doc/tasks/20260622-int-main-one-shot-integration/",
+        "docs/request-command-log.md"
+      ],
+      "acceptance_ids": [
+        "AC-01",
+        "AC-06"
+      ],
+      "owner_agent": "main",
+      "last_outcome": "旧的页面发布主线已因用户优先级切换显式挂起，新融合总任务工件已创建。"
+    },
+    {
+      "task_id": "T2",
+      "title": "审计 holding 现场并分组",
+      "status": "completed",
+      "dependency_ids": [
+        "T1"
+      ],
+      "write_scope": [
+        "doc/tasks/20260622-int-main-one-shot-integration/",
+        "docs/request-command-log.md"
+      ],
+      "acceptance_ids": [
+        "AC-01",
+        "AC-02",
+        "AC-03"
+      ],
+      "owner_agent": "main",
+      "last_outcome": "已确认 backend holding 至少混有 DCC 审阅矩阵、DCC 文件名识别残留、MES 排产三组改动；frontend holding 主要为 DCC 审阅矩阵页签，并已据此分组收口。"
+    },
+    {
+      "task_id": "T3",
+      "title": "重放并验证 DCC 审阅矩阵后端",
+      "status": "completed",
+      "dependency_ids": [
+        "T2"
+      ],
+      "write_scope": [
+        "yudao-module-dcc/**",
+        "doc/tasks/20260622-dcc-review-matrix-tab/**"
+      ],
+      "acceptance_ids": [
+        "AC-03",
+        "AC-04"
+      ],
+      "owner_agent": "main",
+      "last_outcome": "DCC 审阅矩阵后端已在 clean 集成基线验证通过并进入 backend 真正的 int_main。"
+    },
+    {
+      "task_id": "T4",
+      "title": "重放并验证 DCC 审阅矩阵前端",
+      "status": "completed",
+      "dependency_ids": [
+        "T2"
+      ],
+      "write_scope": [
+        "src/api/dcc/controlledFile/**",
+        "src/views/dcc/controlled-file/categories/**",
+        "tests/e2e/dcc-review-matrix-tab*"
+      ],
+      "acceptance_ids": [
+        "AC-04",
+        "AC-06"
+      ],
+      "owner_agent": "main",
+      "last_outcome": "DCC 审阅矩阵前端已在 clean 集成基线验证通过并进入 frontend 真正的 int_main。"
+    },
+    {
+      "task_id": "T5",
+      "title": "处理 backend MES 排产组",
+      "status": "completed",
+      "dependency_ids": [
+        "T2"
+      ],
+      "write_scope": [
+        "yudao-module-mes/**",
+        "owning task doc if missing"
+      ],
+      "acceptance_ids": [
+        "AC-05",
+        "AC-06"
+      ],
+      "owner_agent": "main",
+      "last_outcome": "MES 自动排产/preflight 改动已补齐 owning task、通过定向回归，并进入 backend 真正的 int_main。"
+    },
+    {
+      "task_id": "T6",
+      "title": "推进真正 int_main 并回写映射",
+      "status": "completed",
+      "dependency_ids": [
+        "T3",
+        "T4",
+        "T5"
+      ],
+      "write_scope": [
+        "clean int_main worktrees",
+        "maintenance task docs",
+        "docs/request-command-log.md"
+      ],
+      "acceptance_ids": [
+        "AC-01",
+        "AC-03",
+        "AC-04",
+        "AC-05",
+        "AC-06"
+      ],
+      "owner_agent": "main",
+      "last_outcome": "本轮确认可收口的 DCC 与 MES 分组均已进入真正的 int_main，holding 现场继续保留在原始工作区。"
+    },
+    {
+      "task_id": "T7",
+      "title": "收尾预览",
+      "status": "completed",
+      "dependency_ids": [
+        "T6"
+      ],
+      "write_scope": [
+        "doc/tasks/20260622-int-main-one-shot-integration/"
+      ],
+      "acceptance_ids": [
+        "AC-06"
+      ],
+      "owner_agent": "main",
+      "last_outcome": "已执行 task-closeout-cleanup 预览，结果 ready，keep/delete 计划明确且无阻塞。"
+    }
+  ],
+  "updated_at": "2026-06-22T20:27:23.6242133+08:00"
+}
