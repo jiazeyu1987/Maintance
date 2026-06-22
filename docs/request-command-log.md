@@ -882,3 +882,14 @@
 - 当前结论：业务后端已完成 cleanup 顺序修复并通过 `pytest`、迁移策略门禁与 bug regression validator；维护仓下一步需要改用新的 `releaseTag` `release-20260621-page-full-flow-mainmerge-v9` 重新构建发布包，然后继续真实页面 `build-release -> deploy-test -> mark-tested -> prod -> backup`。
 - 2026-06-22 用户请求：重新再走一遍，主程序合并修改了部分代码，怕已经不对了。执行记录：已确认当前任务保持在 T4，下一步用 `release-20260621-page-full-flow-mainmerge-v9` 从真实页面继续重跑 `build-release -> deploy-test`。
 - 2026-06-22 执行记录：复用真实页面会话 `frontend-release-full-flow-mainmerge`，将 `操作原因` 改为 `主程序合并后重新验证页面发布全链路：oq-pq-cleanup-order修复后重建发布包（v9）`，将 `发布标签` 改为 `release-20260621-page-full-flow-mainmerge-v9`，并在“命令预览”确认脚本仍为 `publish-int-ruoyi.ps1 -Mode build-release -ReleaseTag release-20260621-page-full-flow-mainmerge-v9 -Component intruoyi -SkipDatabaseSync -SkipMinioSync -TestServerHost 172.30.30.58 -BackupServerHost 172.30.30.59 ...`。
+- 2026-06-22 用户请求：`现在有没有类似个人中心的页签，可以看到所有的任务`。
+- 2026-06-22 执行记录：创建维护仓任务 `doc/tasks/20260622-task-tab-inventory/`，只读核对 `docs/experience-index.md`、`docs/agent-memory/project-error-prevention.md`、上一任务 `doc/tasks/20260622-sql-preflight-gate/task.md` 完成状态，并登记本次盘点边界。
+- 2026-06-22 执行命令：`rg -n --hidden -S "待办|已办|我的任务|任务中心|个人中心|工作流|审批|流程" D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3\src`、`rg -n --hidden -S "todo|done|my task|task center|workflow|bpm" D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3\src`、`rg -n --hidden -S "待办|已办|我的任务|工作流|审批|流程" D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro` -> PASS；定位到 BPM、DCC、eDHR、展厅等多套任务/审批入口。
+- 2026-06-22 执行记录：只读核对前端路由 `src/router/modules/remaining.ts`、`src/router/modules/showroom.ts`，确认标准 `Profile` 页面仅含基础信息/改密/社交绑定；BPM `我的申请/待办任务`、DCC `工作台`、展厅 `审批中心` 为独立入口，不挂在个人中心下。
+- 2026-06-22 执行记录：只读核对前端页面 `src/views/Profile/Index.vue`、`src/views/bpm/task/{todo,done}/index.vue`、`src/views/bpm/processInstance/index.vue`、`src/views/dcc/controlled-file/{workbench,approval-tasks}/index.vue`、`src/views/mes/pro/edhr-work-task/WorkTaskBoardPage.vue`，确认：
+  - 个人中心无任务页签；
+  - BPM 审批中心可看 `我的流程 / 待办任务 / 已办任务 / 抄送我的`；
+  - DCC 工作台含“我的审批待办”，可跳转到 `DCC审批任务`；
+  - eDHR 工作任务页含 `我的待办 / 候选审核 / 逾期任务 / 我已处理`。
+- 2026-06-22 执行记录：只读核对菜单 SQL `sql/mysql/ruoyi-vue-pro.sql`、`sql/mysql/20260513_dcc_base_schema.sql`、`sql/mysql/20260611_mes_edhr_work_task_flow.sql`，确认 `审批中心`、`待办任务`、`已办任务`、`DCC审批任务`、`DCC我的文件`、`eDHR工作任务` 均已登记为真实菜单入口。
+- 2026-06-22 执行命令：`python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260622-task-tab-inventory --mode preview` -> PASS；预览结果仅保留 `task.md` 与 `execution-log.md`，无额外清理项。
