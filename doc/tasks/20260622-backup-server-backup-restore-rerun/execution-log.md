@@ -1,0 +1,23 @@
+# 执行日志：备份服再次备份恢复演练
+
+- BDD: 再次生成备份服备份点 -> Given 备份服运行态、数据盘、对象存储和备份仓前置条件齐全 / When 执行 backup-now / Then 生成新的可校验备份点，包含 manifest、数据库备份、对象 inventory、checksum 和 DCC 恢复契约证据。
+- BDD: 再次执行备份服恢复演练 -> Given 新备份点与当前运行 IMAGE_TAG 匹配且恢复链可验证 / When 执行 rehearsal / Then 演练健康、登录可达和样本文件下载通过，并把演练证据写回备份仓。
+- BDD: 再次执行备份服真实恢复 -> Given 新备份点已通过演练 / When 执行 restore-data / Then 备份服真实恢复成功，后端、前端、PDF Worker、OnlyOffice 健康检查通过。
+- BDD: 遇错先记录再修复重走 -> Given 备份或恢复任一阶段失败 / When 采集日志、operation、manifest 和环境证据 / Then 先写入 execution-log，再按 RED/GREEN 修复并重新执行完整链路。
+- GREEN: backup-dr-skill-read -> PASS，已读取 `C:\Users\BJB110\.codex\skills\backup-disaster-recovery-readiness\SKILL.md` 与 `references\recovery-contract.md`。
+- GREEN: previous-task-check -> PASS，上一维护仓任务 `doc/tasks/20260621-backup-server-backup-restore-rehearsal/task.md` 已标记 `COMPLETED`。
+- GREEN: baseline-docs-read -> PASS，已读取 `docs/experience-index.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`、`docs/agent-memory/project-error-prevention.md`。
+- GREEN: Invoke-Pester -Path D:\ProjectPackage\Int\IntRuoyiMaintance\ops\backup-ops\tests -EnableExit -> PASS，备份恢复脚本本地回归 13/13 通过。
+- GREEN: backup-server-status-readonly -> PASS，备份服 `172.30.30.59` 状态脚本返回 `status=running`、`backend/frontend/pdfWorker/OnlyOffice=HTTP 200`、`currentReleaseTag=release-20260621-page-full-flow-v6`。
+- RED: experience-preflight -> FAIL，首次 SSH preflight 通过 PowerShell 管道传递 Linux 脚本时出现编码/换行污染，`curl` 对 MinIO health URL 报 `Illegal characters found in URL`；已确认远端目录写入、数据盘、运行版本和主要 HTTP 检查在同次输出中通过，但该 preflight 载体不可信，必须改用 UTF-8 无 BOM、LF 行尾临时脚本重跑后才能执行备份。
+- GREEN: local-log-preflight -> PASS，本机 `D:\IntRuoyi-BackupOps`、`D:\IntRuoyi-BackupOps\logs`、`D:\IntRuoyi-BackupOps\tmp` 均存在且写入探针通过。
+- GREEN: experience-preflight -> PASS，远端 `172.30.30.59` 数据盘 `/dev/mapper/cl-home` 挂载到 `/mnt/intruoyi-data`；`/mnt/intruoyi-data/Backup/BackupPackage`、`/mnt/intruoyi-data/backup-ops/rehearsal/runtime`、`/mnt/intruoyi-data/runtime-data/backup-ops/tmp`、`/opt/intruoyi/runtime` 均可写；`IMAGE_TAG=release-20260621-page-full-flow-v6`；`intruoyi-backend/frontend/mysql/minio/redis/onlyoffice` 容器在线；`backend=200`、`frontend=200`、`pdfWorker=200`、`minio=200`。
+- GREEN: backup-now -TargetEnvironment backup -NonInteractive -> PASS，备份点 `20260622-063253` 成功生成并同步到 `/mnt/intruoyi-data/Backup/BackupPackage/20260622-063253`；`finalStatus=success`，`summary=备份已完成并同步到测试服务器`。
+- GREEN: backup-artifact-verification -> PASS，`manifest/manifest.json`、`manifest/dcc-backup-manifest.json`、`manifest/checksums.txt`、`mysql/ruoyi-vue-pro.sql.gz`、`objects/manifest-object-inventory.json`、`deploy/image-tag.txt` 均非空；`manifest.status=success`、`manifest.targetEnvironment=backup`、`manifest.targetHost=172.30.30.59`、`manifest.imageTag=release-20260621-page-full-flow-v6`、`manifest.validation.mysqlDumpCreated=True`、`manifest.validation.objectBackupCreated=True`、`manifest.validation.checksumsGenerated=True`、`dcc.chainStatus=COMPLETE`。
+- GREEN: rehearsal -TargetEnvironment backup -SelectedBackupId 20260622-063253 -> PASS，演练 MySQL 恢复、对象 bucket 回放、backend/frontend 健康检查、登录检查和样本文件下载均通过；日志 `D:\IntRuoyi-BackupOps\logs\202606\20260622_065533_rehearsal_success.log`，远端 manifest 已更新 `validation.rehearsalStatus=PASSED`、`lastRehearsedAt=2026-06-22T08:03:27.6484375+08:00`。
+- GREEN: rehearsal-evidence-verification -> PASS，远端备份仓 `/mnt/intruoyi-data/Backup/BackupPackage/20260622-063253/manifest/` 存在 `rehearsal-report.json` 777 bytes 与 `现场快照.md` 294 bytes。
+- GREEN: restore-data -TargetEnvironment backup -SelectedBackupId 20260622-063253 -NonInteractive -> PASS，真实恢复备份服数据成功；日志 `D:\IntRuoyi-BackupOps\logs\202606\20260622_080523_restore-data_success.log`，报告 `D:\IntRuoyi-BackupOps\logs\202606\20260622_080523_restore-data_success.report.md` 记录结果 `success`、pre-restore 快照 `20260622_080538_pre-restore`、结论 `Restore completed and health checks passed`。
+- GREEN: post-restore-backup-server-health -> PASS，恢复后只读状态脚本返回 `status=running`、`backend/frontend/pdfWorker/OnlyOffice=HTTP 200`、`currentReleaseTag=release-20260621-page-full-flow-v6`；远端 `.env` 仍为 `IMAGE_TAG=release-20260621-page-full-flow-v6`，`intruoyi-backend/frontend/mysql/minio/redis/onlyoffice` 均运行，备份服数据盘 `/mnt/intruoyi-data` 可用约 `454G`。
+- GREEN: backup-restore-rerun-goal -> PASS，新备份点 `20260622-063253` 已完成 `backup-now -> rehearsal -> restore-data -> post-restore health` 完整闭环。
+- GREEN: final-regression -> PASS，`Invoke-Pester -Path D:\ProjectPackage\Int\IntRuoyiMaintance\ops\backup-ops\tests -EnableExit` 最终回归 13/13 通过。
+- GREEN: task-closeout-cleanup preview -> PASS，`task_status=completed`，保留 `task.md` 与 `execution-log.md`，无删除项、无阻塞、无警告。
