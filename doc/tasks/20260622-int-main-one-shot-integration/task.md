@@ -86,4 +86,8 @@
 
 ## 当前状态
 
-COMPLETED：本轮一次性分组收口已经完成。frontend `int_main` 已保留 DCC 审阅矩阵收口结果 `2cec13de0`，backend `int_main` 已在其基础上继续快进到 MES 收口结果 `d9ba8afae5`。原始前后端工作区继续分别保留在 `codex/20260622-ruoyi-vue-pro-int-main-hold` 与 `codex/20260622-yudao-ui-admin-vue3-int-main-hold`，其中残余未提交内容仅作为 holding 现场保留，不再作为“真正 int_main 是否完成”的判断依据。`task-closeout-cleanup` 预览也已执行，通过结果显示本任务仅需保留 `task.md` 与 `execution-log.md`，无阻塞项。
+COMPLETED：本轮一次性分组收口、集成 worktree 收尾以及维护仓任务目录 cleanup 已全部完成。frontend 真正的 `int_main` 已在收口提交 `2cec13de0` 基础上继续快进到 cleanup 提交 `db289300f`，backend 真正的 `int_main` 已在 MES 收口提交 `d9ba8afae5` 基础上继续快进到 cleanup 提交 `20e2e70305`。本轮集成 worktree `ruoyi-vue-pro-int-main-one-shot-integration` 与 `yudao-ui-admin-vue3-int-main-one-shot-integration` 均已关闭；维护仓当前任务目录也已按 keep/delete 规则删除 `dev-plan.md`、`prd.md`、`request-analysis.md`、`task-state.json`、`test-plan.md` 与 `test-report.md`。原始前后端工作区继续分别保留在 `codex/20260622-ruoyi-vue-pro-int-main-hold` 与 `codex/20260622-yudao-ui-admin-vue3-int-main-hold`，其中残余未提交内容仅作为 holding 现场保留，不再作为“真正 int_main 是否完成”的判断依据。
+
+## Current Status
+
+COMPLETED

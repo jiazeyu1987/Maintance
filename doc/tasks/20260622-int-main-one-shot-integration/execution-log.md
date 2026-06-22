@@ -120,3 +120,46 @@
   - `AC-06`
 - known risks or blockers:
   - 无。
+
+## 2026-06-22 Phase 4 集成 worktree 实际收尾
+
+- task id: `T7`
+- implemented behavior:
+  - 为了让 `task-closeout-cleanup` 在 backend linked worktree 正确指向真正主线，仅在本机 Git 元数据中把 backend 仓库的 `refs/remotes/origin/HEAD` 从 `origin/master-jdk17` 调整为 `origin/int_main`；未改远端默认分支，也未改业务文件。
+  - backend 集成 worktree 先用脚本分别删除 DCC/MES 任务的 evidence 文件，再手工按同一规则提交 cleanup、`--ff-only` 快进到 backend 真正的 `int_main` 并删除 linked worktree。
+  - frontend 集成 worktree 用脚本完成 evidence 文件删除与 cleanup 提交，并成功快进到 frontend 真正的 `int_main`；随后因目录内残留 `node_modules` 导致 `git worktree remove --force` 无法清空目录，再经路径复核后以 Node 递归删除残留普通目录。
+- validation commands:
+  - `git -C D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-int-main-one-shot-integration symbolic-ref refs/remotes/origin/HEAD refs/remotes/origin/int_main`
+  - `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260622-dcc-review-matrix-tab --mode preview`
+  - `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260622-mes-auto-schedule-preflight-gate --mode preview`
+  - `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260622-dcc-review-matrix-tab --mode apply --worktree-closeout off`
+  - `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260622-mes-auto-schedule-preflight-gate --mode apply --worktree-closeout off`
+  - `git -C D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-int-main-one-shot-integration commit -m "任务: 清理DCC与MES收尾产物"`
+  - `git -C D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-dcc-preview-int-main-clean merge --ff-only codex/20260622-int-main-one-shot-integration`
+  - `git -C D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-dcc-preview-int-main-clean worktree remove --force D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-int-main-one-shot-integration`
+  - `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260622-dcc-review-matrix-tab --mode apply`
+  - `node -e "fs.rmSync(...)" D:\ProjectPackage\Int\IntRuoyiWorktrees\yudao-ui-admin-vue3-int-main-one-shot-integration`
+- validation results:
+  - `GREEN: backend-origin-head-align -> PASS`，backend cleanup 预览/脚本主线识别已从错误的 `master-jdk17` 修正为 `int_main`。
+  - `GREEN: backend-worktree-closeout -> PASS`，backend cleanup 提交 `20e2e70305` 已进入真正的 `int_main`，backend 集成 worktree 已从 `git worktree list` 消失。
+  - `GREEN: frontend-worktree-closeout -> PASS`，frontend cleanup 提交 `db289300f` 已进入真正的 `int_main`，frontend 集成 worktree 已从 `git worktree list` 消失，残留普通目录也已删除。
+  - `GREEN: remaining-hold-preserved -> PASS`，原始 holding worktree 仍分别保留在前后端原始工作区，不受本轮集成 worktree 收尾影响。
+- covered acceptance ids:
+  - `AC-01`
+  - `AC-06`
+- known risks or blockers:
+  - 无；当前仅剩维护仓本任务目录自身的 cleanup apply。
+
+## 2026-06-22 Phase 5 维护仓任务目录 cleanup apply
+
+- task id: `T7`
+- validation commands:
+  - `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260622-int-main-one-shot-integration --mode preview`
+  - `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260622-int-main-one-shot-integration --mode apply`
+- validation results:
+  - `GREEN: maintenance-closeout-preview -> PASS`，keep/delete 计划与此前预览一致，`blocked=<none>`。
+  - `GREEN: maintenance-closeout-apply -> PASS`，已删除 `dev-plan.md`、`prd.md`、`request-analysis.md`、`task-state.json`、`test-plan.md` 与 `test-report.md`，当前任务目录仅保留 `task.md` 与 `execution-log.md`。
+- covered acceptance ids:
+  - `AC-06`
+- known risks or blockers:
+  - 无。
