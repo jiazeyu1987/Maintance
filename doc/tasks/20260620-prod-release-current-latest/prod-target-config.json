@@ -1,0 +1,15 @@
+{
+    "schemaVersion":  "1.0",
+    "targetConfigId":  "prod-vdb-ragflow-minio-code-only-20260620",
+    "environmentCode":  "prod",
+    "hostRef":  "ssh://root@172.30.30.57/opt/intruoyi/runtime",
+    "dockerProfileId":  "intruoyi-docker-compose",
+    "storageProfileIds":  [
+                              "minio-yudao-default"
+                          ],
+    "artifactCacheProfiles":  [],
+    "remoteReadOnlyProbe":  {
+                                "enabled":  false,
+                                "authorizationRef":  "user-authorization-20260620-prod-release"
+                            }
+}

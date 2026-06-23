@@ -1304,6 +1304,7 @@ public class RuntimeControlService {
         Path workspace = Files.createTempDirectory(workspaceRoot, releaseTag + "-");
 
         LinkedHashSet<String> declaredPaths = collectProdDryRunDeclaredPackagePaths(manifest);
+        addDeclaredPackageDirectoryFiles(declaredPaths, sourceReleaseDir, "resources");
         declaredPaths.add("manifest.json");
         if (Files.isRegularFile(sourceReleaseDir.resolve("release-manifest.json"))) {
             declaredPaths.add("release-manifest.json");
@@ -1316,6 +1317,19 @@ public class RuntimeControlService {
             copyDeclaredPackageFile(sourceReleaseDir, workspace, relativePath);
         }
         return workspace;
+    }
+
+    private void addDeclaredPackageDirectoryFiles(LinkedHashSet<String> paths, Path sourceReleaseDir, String relativeDirectory)
+            throws IOException {
+        Path directory = sourceReleaseDir.resolve(relativeDirectory).normalize();
+        if (!directory.startsWith(sourceReleaseDir) || !Files.isDirectory(directory)) {
+            return;
+        }
+        try (var stream = Files.walk(directory)) {
+            stream.filter(Files::isRegularFile)
+                    .map(path -> sourceReleaseDir.relativize(path).toString().replace('\\', '/'))
+                    .forEach(path -> addDeclaredPackagePath(paths, path));
+        }
     }
 
     private LinkedHashSet<String> collectProdDryRunDeclaredPackagePaths(JsonNode manifest) {
