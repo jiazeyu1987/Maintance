@@ -1211,3 +1211,29 @@
 - 执行命令：复核更新后的 workbook，确认 sheetnames 为 `展厅 / eDHR / DCC / 智能排产 / 璞润 / 瑛泰系统 / 后续工作`，其中 `后续工作` 为 `12` 行 `6` 列。
 - 执行命令：运行 `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260623-integrate-followup-sheet --mode preview` -> PASS；随后执行同命令 `--mode apply` -> PASS，当前任务无删除项。
 - 结论记录：后续工作内容已成功整合进现有 Excel 工作簿，当前使用的最新文件仍为 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\functional-module-appendix-20260623-qms-yingtai.xlsx`。
+
+## 2026-06-23 只发布随机 ERP 建单改动到测试服
+
+- 用户需求：`把这个改动发布到测试服务器,只发布这个改动就可以,不然太慢了`
+- 计划边界：只允许通过维护控制台真实页面执行 `build-release` 与 `deploy-test`；目标环境仅测试服 `172.30.30.58`；发布范围固定 `code-only`；禁止触发 `mark-tested`、正式服、备份服、备份、恢复、回滚或数据同步动作。
+- 命令记录：已读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md` 与 `D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`；运行控制台 `http://127.0.0.1:48181/` 返回 `200`。
+- 命令记录：只读确认测试服当前 `.env` 为 `IMAGE_TAG=20260623_dcc_content_recognition_gateway_timeout_fix_1`；本地缓存发布包 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\20260623_dcc_content_recognition_gateway_timeout_fix_1\manifest.json` 显示当前测试服基线为 backend `23c596d1e2ba97ef06b4854b53e80b0e88ec25ed`、frontend `4ed836cf016975fa6cca74d99b152b9b5ee3891c`。
+- 命令记录：为保证“只发本次改动”，已创建 clean release worktree：
+  - backend：`D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-mainmerge-release-clean`
+  - frontend：`D:\ProjectPackage\Int\IntRuoyiWorktrees\yudao-ui-admin-vue3-mainmerge-release-clean`
+  - 两仓分支同为 `codex/20260623-test-randomized-erp-order-release`
+- 命令记录：backend release worktree 已仅重放本次代码改动并提交 `aa13420c67513224bebe114d090f0cfffb8388ab`；`mvn -pl yudao-module-mes clean -Dtest=MesKingdeeProductionOrderCreateServiceImplTest test` PASS。
+- 命令记录：frontend release worktree 已仅重放本次代码改动并提交 `e301a67af7acca887c60d1625d34b87d17409e9f`；`node tests/e2e/workorder-create-erp-order-static.spec.js` PASS；`pnpm ts:check` PASS。
+- 阻塞记录：frontend release worktree 在 `pnpm install --frozen-lockfile` 时暴露坏锁文件：`Broken lockfile: no entry for 'adler-32@1.3.1' in pnpm-lock.yaml`。继续执行 `pnpm install --no-frozen-lockfile` 后虽补齐 `node_modules`，但 `D:\ProjectPackage\Int\IntRuoyiWorktrees\yudao-ui-admin-vue3-mainmerge-release-clean\pnpm-lock.yaml` 产生实际 diff（`1 file changed, 166 insertions(+), 131 deletions(-)`）。在用户明确批准是否允许把这 1 个锁文件修复一并带入测试服发布前，页面 `build-release` 与 `deploy-test` 均不得继续。
+- 用户确认：允许把这 1 个前端锁文件修复一并带入本次测试服发布。
+- 命令记录：页面 `build-release` 预览 PASS，命令指向 `release-20260623-random-erp-test-v1`，并确认 `-BackendRepoRoot/-FrontendRepoRoot` 为本次 clean release worktree。
+- 命令记录：页面真实提交 `build-release`，operation `op-2026-06-23T072156013940200Z-4e4291e1-3c74-4f26-8cda-8c116760c505` 最终 `SUCCESS`；本地候选目录 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260623-random-erp-test-v1\` 已生成 `manifest.json`、`release-manifest.json`、镜像 tar、`runtime-env/`、`resources/` 与 `required-sql/`。
+- 命令记录：manifest 核对 PASS，backend commit=`aa13420c67513224bebe114d090f0cfffb8388ab`，frontend commit=`e301a67af7acca887c60d1625d34b87d17409e9f`，`publishScope=code-only`；frontend `dirty=true` 仅来自用户已批准带入的 `pnpm-lock.yaml` 修复。
+- 命令记录：页面 `deploy-test` 预览 PASS，命令确认 `-Mode deploy-release -Environment test -ReleaseTag release-20260623-random-erp-test-v1 -ServerHost 172.30.30.58 -RemoteAppDir /opt/intruoyi/runtime`，且 `-BackendRepoRoot/-FrontendRepoRoot` 仍为本次 clean release worktree。
+- 命令记录：页面真实提交 `deploy-test`，operation `op-2026-06-23T074133159825800Z-f54c26d2-d986-42bb-8c53-485f509c8c06` 最终 `SUCCESS`。
+- 命令记录：只读复核测试服运行态 PASS：
+  - `/opt/intruoyi/runtime/.env` => `IMAGE_TAG=release-20260623-random-erp-test-v1`
+  - `docker compose ps` => `intruoyi-backend` / `intruoyi-frontend` 都为 `release-20260623-random-erp-test-v1`
+  - `http://172.30.30.58:48081/actuator/health` => `{"status":"UP"}`
+  - `http://172.30.30.58:8081/` => HTTP `200`
+- 结论记录：本轮已按用户要求仅通过页面真实执行 `build-release -> deploy-test`，把随机 ERP 建单测试改动发布到测试服；未触发 `mark-tested`、正式服、备份服、备份、恢复或回滚动作。
