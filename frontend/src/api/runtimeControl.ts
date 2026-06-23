@@ -122,6 +122,8 @@ export interface RuntimeControlReleaseStatusVO {
   targetStates: Record<string, Record<string, RuntimeControlStatusVO>>
   recentOperations: RuntimeControlOperationVO[]
   testCurrentReleaseTag?: string
+  prodCurrentReleaseTag?: string
+  backupCurrentReleaseTag?: string
   latestTestedReleaseTag?: string
 }
 

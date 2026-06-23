@@ -772,6 +772,26 @@ class RuntimeControlOriginalParityTest {
     }
 
     @Test
+    void releaseStatusExposesCurrentReleaseTagsForTestBackupAndProdLikeOriginal() throws Exception {
+        createRollbackPackage("release-test-current", true, false, false);
+        createRollbackPackage("release-backup-current", true, false, false);
+        createRollbackPackage("release-prod-current", true, false, false);
+        saveSuccessfulOperation("op-current-test-release", "test", "ops", "publish-test",
+                Map.of("releaseTag", "release-test-current"));
+        saveSuccessfulOperation("op-current-backup-release", "backup", "ops", "promote-backup",
+                Map.of("releaseTag", "release-backup-current"));
+        saveSuccessfulOperation("op-current-prod-release", "prod", "ops", "promote-prod",
+                Map.of("releaseTag", "release-prod-current"));
+
+        mockMvc.perform(get("/admin-api/infra/runtime-control/release-status"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.data.testCurrentReleaseTag").value("release-test-current"))
+                .andExpect(jsonPath("$.data.prodCurrentReleaseTag").value("release-prod-current"))
+                .andExpect(jsonPath("$.data.backupCurrentReleaseTag").value("release-backup-current"));
+    }
+
+    @Test
     void unsupportedActionFieldsAreRejectedLikeOriginal() throws Exception {
         createRollbackPackage("release-current", true, false, false);
         Path sqlRoot = Path.of("target/runtime-control-original-parity-sql").toAbsolutePath().normalize();

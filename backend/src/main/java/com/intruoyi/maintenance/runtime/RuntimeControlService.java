@@ -41,6 +41,9 @@ public class RuntimeControlService {
 
     private static final String LOCAL_OPERATOR = "local-operator";
     private static final String PROD_CONFIRM_TEXT = "PROD";
+    private static final List<String> TEST_CURRENT_RELEASE_ACTIONS = List.of("publish-test");
+    private static final List<String> PROD_CURRENT_RELEASE_ACTIONS = List.of("promote-prod");
+    private static final List<String> BACKUP_CURRENT_RELEASE_ACTIONS = List.of("promote-backup");
     private static final String STATUS_AVAILABLE = "AVAILABLE";
     private static final String STATUS_BLOCKED = "BLOCKED";
     private static final String STATUS_NO_GO = "NO_GO";
@@ -424,7 +427,10 @@ public class RuntimeControlService {
                 .findFirst()
                 .orElse(null);
         return new RuntimeControlReleaseStatusRespVO(releasePackages, overview.statuses(), recentReleaseOperations,
-                resolveCurrentReleaseTag(overview, "test"), latestTestedReleaseTag);
+                resolveCurrentReleaseTag(overview, "test"),
+                resolveCurrentReleaseTag(overview, "prod"),
+                resolveCurrentReleaseTag(overview, "backup"),
+                latestTestedReleaseTag);
     }
 
     public List<RuntimeControlRollbackCandidateRespVO> getRollbackCandidates() {
@@ -1068,10 +1074,19 @@ public class RuntimeControlService {
                 return statusReleaseTag.trim();
             }
         }
+        List<String> releaseActions = switch (environment) {
+            case "test" -> TEST_CURRENT_RELEASE_ACTIONS;
+            case "prod" -> PROD_CURRENT_RELEASE_ACTIONS;
+            case "backup" -> BACKUP_CURRENT_RELEASE_ACTIONS;
+            default -> List.of();
+        };
+        if (releaseActions.isEmpty()) {
+            return null;
+        }
         return operationStore.listLatest(200).stream()
                 .filter(operation -> environment.equals(operation.environment()))
                 .filter(operation -> "SUCCESS".equals(operation.status()))
-                .filter(operation -> "publish-test".equals(operation.action()))
+                .filter(operation -> releaseActions.contains(operation.action()))
                 .map(RuntimeControlOperationRespVO::parameters)
                 .filter(parameters -> parameters != null && hasText(parameters.get("releaseTag")))
                 .map(parameters -> parameters.get("releaseTag").trim())

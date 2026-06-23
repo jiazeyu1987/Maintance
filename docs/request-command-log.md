@@ -1237,3 +1237,14 @@
   - `http://172.30.30.58:48081/actuator/health` => `{"status":"UP"}`
   - `http://172.30.30.58:8081/` => HTTP `200`
 - 结论记录：本轮已按用户要求仅通过页面真实执行 `build-release -> deploy-test`，把随机 ERP 建单测试改动发布到测试服；未触发 `mark-tested`、正式服、备份服、备份、恢复或回滚动作。
+
+## 2026-06-23 运行控制台左下角增加版本号
+
+- 用户需求：在软件左下角增加版本号，版本号要与构建包一致，并能在软件上看到测试服务器和备份服务器是什么版本。
+- 命中经验：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`，命中 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`、`D:\ProjectPackage\Int\IntPP\FRONTEND_STYLE.md`；本任务不执行服务器写入、发布或真实 E2E。
+- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-runtime-control-version-dock\`，写入 `task.md`、`execution-log.md`、`frontend-feature-evidence.md`、`backend-api-evidence.md`。
+- RED 记录：`python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_frontend_version_badge_contract.py -q` 失败，前端未注入 `__APP_VERSION__`；`mvn -f D:\ProjectPackage\Int\IntRuoyiMaintance\backend\pom.xml -Dtest=RuntimeControlOriginalParityTest#releaseStatusExposesCurrentReleaseTagsForTestBackupAndProdLikeOriginal test` 失败，release-status 缺少正式服/备份服当前版本字段。
+- 实现记录：前端通过 Vite 从 `frontend/package.json` 注入构建版本 `2026.06.0`，页面左下角新增版本栏；后端 `release-status` 扩展 `testCurrentReleaseTag/prodCurrentReleaseTag/backupCurrentReleaseTag`，按最近成功发布操作解析当前发布包标签。
+- GREEN 记录：前端契约 pytest PASS；后端 MockMvc 单测 PASS；`pnpm --dir D:\ProjectPackage\Int\IntRuoyiMaintance\frontend typecheck` PASS；`pnpm --dir D:\ProjectPackage\Int\IntRuoyiMaintance\frontend build` PASS；`python -X utf8 D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\verify_contracts.py` PASS。
+- 视觉验证：Playwright 打开 `http://127.0.0.1:48182/`，左下角显示软件版本 `2026.06.0`、测试服版本 `release-20260623-random-erp-test-v1`、正式服/备份服 `未上报`；临时截图已目视检查并在收尾清理。
+- 收尾记录：执行 `task-closeout-cleanup` preview/apply，保留本任务 `task.md` 与 `execution-log.md`，清理 Vite 临时日志和本次 Playwright 临时截图。

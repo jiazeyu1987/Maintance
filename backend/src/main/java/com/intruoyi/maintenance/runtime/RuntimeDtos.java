@@ -128,6 +128,8 @@ public final class RuntimeDtos {
             Map<String, Map<String, RuntimeControlStatusRespVO>> targetStates,
             List<RuntimeControlOperationRespVO> recentOperations,
             String testCurrentReleaseTag,
+            String prodCurrentReleaseTag,
+            String backupCurrentReleaseTag,
             String latestTestedReleaseTag
     ) {
     }

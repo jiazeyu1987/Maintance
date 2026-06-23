@@ -20,6 +20,7 @@ import {
   getRuntimeControlReleaseStatus,
   previewRuntimeControlAction,
   restartRuntimeControl,
+  type RuntimeControlReleaseStatusVO,
   type RuntimeControlActionPreviewVO,
   type RuntimeControlLogVO,
   type RuntimeControlOperationVO,
@@ -51,12 +52,14 @@ const actions: RuntimeAction[] = [
 ]
 
 const overview = ref<RuntimeControlOverviewVO>()
+const releaseStatus = ref<RuntimeControlReleaseStatusVO>()
 const operations = ref<RuntimeControlOperationVO[]>([])
 const rollbackCandidates = ref<RuntimeControlRollbackCandidateVO[]>([])
 const restoreCandidates = ref<RuntimeControlRestoreCandidateVO[]>([])
 const releaseError = ref('')
 const apiError = ref('')
 const loading = ref(false)
+const releaseStatusLoading = ref(false)
 const previewLoading = ref(false)
 const previewDialogVisible = ref(false)
 const preview = ref<RuntimeControlActionPreviewVO>()
@@ -143,6 +146,31 @@ const selectedStatus = computed(() => {
   return overview.value?.statuses?.[restartTarget.environment]?.[restartTarget.component]
 })
 
+const buildVersion = __APP_VERSION__
+
+const runtimeVersionItems = computed(() => [
+  {
+    label: '软件版本',
+    value: buildVersion,
+    tone: 'build'
+  },
+  {
+    label: '测试服',
+    value: releaseVersionValue(releaseStatus.value?.testCurrentReleaseTag),
+    tone: releaseStatus.value?.testCurrentReleaseTag ? 'info' : 'muted'
+  },
+  {
+    label: '正式服',
+    value: releaseVersionValue(releaseStatus.value?.prodCurrentReleaseTag),
+    tone: releaseStatus.value?.prodCurrentReleaseTag ? 'warning' : 'muted'
+  },
+  {
+    label: '备份服',
+    value: releaseVersionValue(releaseStatus.value?.backupCurrentReleaseTag),
+    tone: releaseStatus.value?.backupCurrentReleaseTag ? 'success' : 'muted'
+  }
+])
+
 function statusType(status: string) {
   if (status === 'RUNNING' || status === 'PASS') return 'success'
   if (status === 'UNKNOWN' || status === 'DEGRADED' || status === 'WARN') return 'warning'
@@ -216,6 +244,10 @@ function toneClass(tone: string) {
   return 'summary-card--info'
 }
 
+function releaseVersionValue(value?: string) {
+  return value?.trim() || (releaseStatusLoading.value ? '加载中' : '未上报')
+}
+
 function handleActionChange(value: string | number | boolean) {
   selectedActionKey.value = String(value)
   actionForm.targetEnvironment = selectedAction.value.targetEnvironment || 'test'
@@ -277,19 +309,23 @@ async function loadData() {
   } finally {
     loading.value = false
   }
+  releaseStatusLoading.value = true
   try {
-    const [releaseStatus, rollbackResp, restoreResp] = await Promise.all([
+    const [releaseStatusResp, rollbackResp, restoreResp] = await Promise.all([
       getRuntimeControlReleaseStatus(),
       getRuntimeControlRollbackCandidates(),
       getRuntimeControlRestoreCandidates()
     ])
+    releaseStatus.value = releaseStatusResp
     rollbackCandidates.value = rollbackResp
     restoreCandidates.value = restoreResp
-    if (!actionForm.releaseTag && releaseStatus.latestTestedReleaseTag) {
-      actionForm.releaseTag = releaseStatus.latestTestedReleaseTag
+    if (!actionForm.releaseTag && releaseStatusResp.latestTestedReleaseTag) {
+      actionForm.releaseTag = releaseStatusResp.latestTestedReleaseTag
     }
   } catch (error) {
     releaseError.value = error instanceof Error ? error.message : String(error)
+  } finally {
+    releaseStatusLoading.value = false
   }
 }
 
@@ -672,5 +708,17 @@ onMounted(loadData)
         </template>
       </div>
     </el-dialog>
+
+    <footer class="console-version-dock" aria-label="版本信息">
+      <div
+        v-for="item in runtimeVersionItems"
+        :key="item.label"
+        class="console-version-item"
+        :class="`console-version-item--${item.tone}`"
+      >
+        <span>{{ item.label }}</span>
+        <strong>{{ item.value }}</strong>
+      </div>
+    </footer>
   </main>
 </template>
