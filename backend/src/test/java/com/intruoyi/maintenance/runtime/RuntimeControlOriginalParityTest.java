@@ -792,6 +792,40 @@ class RuntimeControlOriginalParityTest {
     }
 
     @Test
+    void releaseStatusExposesCurrentReleaseNotesForCurrentEnvironmentsOnly() throws Exception {
+        createReleasePackageWithNotes("release-old-history", "历史版本不应展示",
+                List.of("历史版本变动不应进入当前说明"));
+        createReleasePackageWithNotes("release-test-notes", "测试服当前版本：随机 ERP 建单修复",
+                List.of("修复随机 ERP 建单物料选择", "补充运行控制台版本栏"));
+        createReleasePackageWithNotes("release-prod-notes", "正式服当前版本：页面全链路发布",
+                List.of("完成页面全链路正式发布"));
+        createReleasePackageWithNotes("release-backup-notes", "备份服当前版本：备份环境同步",
+                List.of("同步正式服已验证版本到备份服"));
+        saveSuccessfulOperation("op-old-history-release", "test", "ops", "publish-test",
+                Map.of("releaseTag", "release-old-history"));
+        saveSuccessfulOperation("op-current-test-release", "test", "ops", "publish-test",
+                Map.of("releaseTag", "release-test-notes"));
+        saveSuccessfulOperation("op-current-prod-release", "prod", "ops", "promote-prod",
+                Map.of("releaseTag", "release-prod-notes"));
+        saveSuccessfulOperation("op-current-backup-release", "backup", "ops", "promote-backup",
+                Map.of("releaseTag", "release-backup-notes"));
+
+        String response = mockMvc.perform(get("/admin-api/infra/runtime-control/release-status"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.data.testCurrentReleaseNotes.releaseTag").value("release-test-notes"))
+                .andExpect(jsonPath("$.data.testCurrentReleaseNotes.summary").value("测试服当前版本：随机 ERP 建单修复"))
+                .andExpect(jsonPath("$.data.testCurrentReleaseNotes.changes[0]").value("修复随机 ERP 建单物料选择"))
+                .andExpect(jsonPath("$.data.testCurrentReleaseNotes.sourceRepos[0].pathRole").value("backend"))
+                .andExpect(jsonPath("$.data.prodCurrentReleaseNotes.releaseTag").value("release-prod-notes"))
+                .andExpect(jsonPath("$.data.backupCurrentReleaseNotes.releaseTag").value("release-backup-notes"))
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+        assertThat(response).doesNotContain("历史版本变动不应进入当前说明");
+    }
+
+    @Test
     void unsupportedActionFieldsAreRejectedLikeOriginal() throws Exception {
         createRollbackPackage("release-current", true, false, false);
         Path sqlRoot = Path.of("target/runtime-control-original-parity-sql").toAbsolutePath().normalize();
@@ -873,8 +907,20 @@ class RuntimeControlOriginalParityTest {
         createReleasePackage(directoryName, "code-only", withChecksum, withRollbackEvidence, withTestedEvidence);
     }
 
+    private void createReleasePackageWithNotes(String directoryName, String summary, List<String> changes)
+            throws IOException {
+        createReleasePackage(directoryName, "code-only", true, false, false, summary, changes);
+    }
+
     private void createReleasePackage(String directoryName, String publishScope, boolean withChecksum,
                                       boolean withRollbackEvidence, boolean withTestedEvidence) throws IOException {
+        createReleasePackage(directoryName, publishScope, withChecksum, withRollbackEvidence, withTestedEvidence,
+                "Release package " + directoryName, List.of());
+    }
+
+    private void createReleasePackage(String directoryName, String publishScope, boolean withChecksum,
+                                      boolean withRollbackEvidence, boolean withTestedEvidence, String summary,
+                                      List<String> changes) throws IOException {
         Path root = NAS_ROOT.resolve("Backup/ReleasePackage").resolve(directoryName);
         Files.createDirectories(root);
         Files.writeString(root.resolve("release-manifest.json"), """
@@ -896,12 +942,22 @@ class RuntimeControlOriginalParityTest {
                   "manifestVersion": "1.0",
                   "releaseTag": "%s",
                   "packageId": "%s",
+                  "createdAt": "2026-06-16T00:00:00Z",
+                  "sourceRepos": [
+                    {"name": "ruoyi-vue-pro", "pathRole": "backend", "commit": "backend-%s", "branch": "test", "dirty": false},
+                    {"name": "yudao-ui-admin-vue3", "pathRole": "admin-frontend", "commit": "frontend-%s", "branch": "test", "dirty": false}
+                  ],
+                  "changeSet": {
+                    "summary": %s,
+                    "items": %s
+                  },
                   "targetRequirements": {
                     "dockerProfileId": "intruoyi-docker-compose",
                     "storageProfileIds": ["minio-yudao-default"]
                   }
                 }
-                """.formatted(directoryName, directoryName), StandardCharsets.UTF_8);
+                """.formatted(directoryName, directoryName, directoryName, directoryName, jsonString(summary),
+                jsonArray(changes)), StandardCharsets.UTF_8);
         if (withRollbackEvidence) {
             Files.writeString(root.resolve("prod-latest.json"), """
                     {"releaseTag":"%s","packageDirectoryName":"%s","environment":"prod"}
@@ -934,7 +990,15 @@ class RuntimeControlOriginalParityTest {
                     "recoverySetManifestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
                   }
                 }
-                """, StandardCharsets.UTF_8);
+                    """, StandardCharsets.UTF_8);
+    }
+
+    private static String jsonArray(List<String> values) {
+        return "[" + String.join(",", values.stream().map(RuntimeControlOriginalParityTest::jsonString).toList()) + "]";
+    }
+
+    private static String jsonString(String value) {
+        return "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
     }
 
     private void createRestorePoint(String backupId) throws IOException {

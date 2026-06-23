@@ -416,6 +416,7 @@ public class RuntimeControlService {
     public RuntimeControlReleaseStatusRespVO getReleaseStatus() {
         List<RuntimeControlReleasePackageRespVO> releasePackages = getReleasePackages();
         RuntimeControlOverviewRespVO overview = getOverview();
+        RuntimeControlNasBrowser.NasConfig nasConfig = releaseNasConfig();
         List<RuntimeControlOperationRespVO> recentReleaseOperations = getOperations().stream()
                 .filter(operation -> List.of("build-release", "publish-test", "mark-release-tested",
                         "promote-prod", "promote-backup").contains(operation.action()))
@@ -426,10 +427,16 @@ public class RuntimeControlService {
                 .map(RuntimeControlReleasePackageRespVO::releaseTag)
                 .findFirst()
                 .orElse(null);
+        String testCurrentReleaseTag = resolveCurrentReleaseTag(overview, "test");
+        String prodCurrentReleaseTag = resolveCurrentReleaseTag(overview, "prod");
+        String backupCurrentReleaseTag = resolveCurrentReleaseTag(overview, "backup");
         return new RuntimeControlReleaseStatusRespVO(releasePackages, overview.statuses(), recentReleaseOperations,
-                resolveCurrentReleaseTag(overview, "test"),
-                resolveCurrentReleaseTag(overview, "prod"),
-                resolveCurrentReleaseTag(overview, "backup"),
+                testCurrentReleaseTag,
+                prodCurrentReleaseTag,
+                backupCurrentReleaseTag,
+                buildCurrentReleaseNotes(nasConfig, releasePackages, "test", testCurrentReleaseTag),
+                buildCurrentReleaseNotes(nasConfig, releasePackages, "prod", prodCurrentReleaseTag),
+                buildCurrentReleaseNotes(nasConfig, releasePackages, "backup", backupCurrentReleaseTag),
                 latestTestedReleaseTag);
     }
 
@@ -1051,6 +1058,100 @@ public class RuntimeControlService {
 
     private boolean releaseTagMatchesPackage(RuntimeControlReleasePackageRespVO releasePackage, String value) {
         return value.equals(releasePackage.releaseTag()) || value.equals(releasePackage.packageDirectoryName());
+    }
+
+    private RuntimeControlReleaseNotesRespVO buildCurrentReleaseNotes(RuntimeControlNasBrowser.NasConfig nasConfig,
+                                                                      List<RuntimeControlReleasePackageRespVO> releasePackages,
+                                                                      String environment,
+                                                                      String releaseTag) {
+        if (isBlank(releaseTag)) {
+            return null;
+        }
+        RuntimeControlReleasePackageRespVO releasePackage = releasePackages.stream()
+                .filter(item -> releaseTagMatchesPackage(item, releaseTag))
+                .findFirst()
+                .orElse(null);
+        if (releasePackage == null) {
+            return new RuntimeControlReleaseNotesRespVO(environment, releaseTag, null, null, null,
+                    null, null, null, List.of(), List.of(), STATUS_BLOCKED,
+                    List.of("当前 releaseTag 未找到对应发布包: " + releaseTag));
+        }
+
+        List<String> blockedReasons = new ArrayList<>();
+        String packageDirectoryName = blankToDefault(releasePackage.packageDirectoryName(), releasePackage.releaseTag());
+        String packagePath = childPath(requireText(properties.getReleasePackage().getNasReleaseRoot(),
+                "releasePackage.nasReleaseRoot"), packageDirectoryName);
+        String manifestPath = childPath(packagePath, "manifest.json");
+        JsonNode manifest = readJsonIfRegular(nasConfig, manifestPath, "manifest.json", blockedReasons);
+
+        String builtAt = releasePackage.builtAt();
+        String publishScope = releasePackage.publishScope();
+        String component = releasePackage.component();
+        String summary = null;
+        List<String> changes = List.of();
+        List<RuntimeControlReleaseSourceRepoRespVO> sourceRepos = List.of();
+
+        if (manifest != null) {
+            builtAt = blankToDefault(text(manifest, "createdAt"), builtAt);
+            publishScope = blankToDefault(text(manifest, "publishScope"), publishScope);
+            component = blankToDefault(text(node(manifest, "changeSet"), "component"),
+                    blankToDefault(text(manifest, "component"), component));
+
+            JsonNode changeSet = node(manifest, "changeSet");
+            if (changeSet == null || !changeSet.isObject()) {
+                blockedReasons.add("manifest.json 缺少 changeSet");
+            } else {
+                summary = text(changeSet, "summary");
+                if (isBlank(summary)) {
+                    blockedReasons.add("manifest.json changeSet 缺少 summary");
+                }
+                changes = releaseNoteChanges(changeSet);
+            }
+
+            JsonNode sourceReposNode = node(manifest, "sourceRepos");
+            if (sourceReposNode == null || !sourceReposNode.isArray()) {
+                blockedReasons.add("manifest.json 缺少 sourceRepos");
+            } else {
+                sourceRepos = releaseSourceRepos(sourceReposNode);
+            }
+        }
+
+        return new RuntimeControlReleaseNotesRespVO(environment, releaseTag, packageDirectoryName, manifestPath,
+                builtAt, publishScope, component, summary, changes, sourceRepos,
+                blockedReasons.isEmpty() ? STATUS_AVAILABLE : STATUS_BLOCKED, blockedReasons);
+    }
+
+    private List<String> releaseNoteChanges(JsonNode changeSet) {
+        List<String> changes = textItems(node(changeSet, "items"));
+        if (!changes.isEmpty()) {
+            return changes;
+        }
+        return textItems(node(changeSet, "changes"));
+    }
+
+    private List<String> textItems(JsonNode items) {
+        if (items == null || !items.isArray()) {
+            return List.of();
+        }
+        List<String> result = new ArrayList<>();
+        for (JsonNode item : items) {
+            String value = item.isTextual() ? item.asText() : firstText(text(item, "title"),
+                    firstText(text(item, "summary"), firstText(text(item, "description"), text(item, "message"))));
+            if (hasText(value)) {
+                result.add(value.trim());
+            }
+        }
+        return result;
+    }
+
+    private List<RuntimeControlReleaseSourceRepoRespVO> releaseSourceRepos(JsonNode sourceRepos) {
+        List<RuntimeControlReleaseSourceRepoRespVO> result = new ArrayList<>();
+        for (JsonNode sourceRepo : array(sourceRepos)) {
+            result.add(new RuntimeControlReleaseSourceRepoRespVO(text(sourceRepo, "name"),
+                    text(sourceRepo, "pathRole"), text(sourceRepo, "commit"), text(sourceRepo, "branch"),
+                    booleanValue(sourceRepo, "dirty")));
+        }
+        return result;
     }
 
     private String requireCurrentReleaseTag(String environment) {

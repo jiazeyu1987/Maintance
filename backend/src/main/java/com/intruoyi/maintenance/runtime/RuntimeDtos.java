@@ -123,6 +123,31 @@ public final class RuntimeDtos {
     ) {
     }
 
+    public record RuntimeControlReleaseSourceRepoRespVO(
+            String name,
+            String pathRole,
+            String commit,
+            String branch,
+            Boolean dirty
+    ) {
+    }
+
+    public record RuntimeControlReleaseNotesRespVO(
+            String environment,
+            String releaseTag,
+            String packageDirectoryName,
+            String manifestPath,
+            String builtAt,
+            String publishScope,
+            String component,
+            String summary,
+            List<String> changes,
+            List<RuntimeControlReleaseSourceRepoRespVO> sourceRepos,
+            String status,
+            List<String> blockedReasons
+    ) {
+    }
+
     public record RuntimeControlReleaseStatusRespVO(
             List<RuntimeControlReleasePackageRespVO> releasePackages,
             Map<String, Map<String, RuntimeControlStatusRespVO>> targetStates,
@@ -130,6 +155,9 @@ public final class RuntimeDtos {
             String testCurrentReleaseTag,
             String prodCurrentReleaseTag,
             String backupCurrentReleaseTag,
+            RuntimeControlReleaseNotesRespVO testCurrentReleaseNotes,
+            RuntimeControlReleaseNotesRespVO prodCurrentReleaseNotes,
+            RuntimeControlReleaseNotesRespVO backupCurrentReleaseNotes,
             String latestTestedReleaseTag
     ) {
     }

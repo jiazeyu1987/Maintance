@@ -24,4 +24,12 @@ def test_version_badge_contract_is_wired_from_build_package_and_release_status()
     assert "testCurrentReleaseTag" in app_vue
     assert "prodCurrentReleaseTag" in app_vue
     assert "backupCurrentReleaseTag" in app_vue
+    assert "testCurrentReleaseNotes" in app_vue
+    assert "prodCurrentReleaseNotes" in app_vue
+    assert "backupCurrentReleaseNotes" in app_vue
+    assert "releaseNotesDialogVisible" in app_vue
+    assert "查看变更" in app_vue
+    assert "版本变更说明" in app_vue
     assert "console-version-dock" in styles
+    assert "console-version-change-button" in styles
+    assert "release-notes-dialog" in styles

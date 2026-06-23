@@ -117,6 +117,29 @@ export interface RuntimeControlReleasePackageVO {
   blockedReasons?: string[]
 }
 
+export interface RuntimeControlReleaseSourceRepoVO {
+  name?: string
+  pathRole?: string
+  commit?: string
+  branch?: string
+  dirty?: boolean
+}
+
+export interface RuntimeControlReleaseNotesVO {
+  environment: RuntimeControlTargetEnvironment
+  releaseTag: string
+  packageDirectoryName?: string
+  manifestPath?: string
+  builtAt?: string
+  publishScope?: RuntimeControlPublishScope
+  component?: string
+  summary?: string
+  changes?: string[]
+  sourceRepos?: RuntimeControlReleaseSourceRepoVO[]
+  status?: RuntimeControlCandidateStatus
+  blockedReasons?: string[]
+}
+
 export interface RuntimeControlReleaseStatusVO {
   releasePackages: RuntimeControlReleasePackageVO[]
   targetStates: Record<string, Record<string, RuntimeControlStatusVO>>
@@ -124,6 +147,9 @@ export interface RuntimeControlReleaseStatusVO {
   testCurrentReleaseTag?: string
   prodCurrentReleaseTag?: string
   backupCurrentReleaseTag?: string
+  testCurrentReleaseNotes?: RuntimeControlReleaseNotesVO
+  prodCurrentReleaseNotes?: RuntimeControlReleaseNotesVO
+  backupCurrentReleaseNotes?: RuntimeControlReleaseNotesVO
   latestTestedReleaseTag?: string
 }
 

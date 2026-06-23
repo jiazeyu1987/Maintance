@@ -1261,3 +1261,15 @@
 - 验证记录：`release-status` 已返回 `test/prod/backupCurrentReleaseTag`；Playwright 页面快照左下角显示软件版本 `2026.06.0`、测试服 `release-20260623-random-erp-test-v1`、正式服 `release-20260621-page-full-flow-mainmerge-v15`、备份服 `release-20260621-page-full-flow-mainmerge-v15`。
 - 收尾记录：最终复核 PID `35752` 仍监听 `48181`，首页与 `release-status` 均 HTTP 200；运行日志转存到本机 `runtime/runtime-control/`，不占用任务目录。
 - 收尾记录：执行 `task-closeout-cleanup` preview/apply，保留本任务 `task.md` 与 `execution-log.md`，清理旧启动临时日志。
+
+
+## 2026-06-23 运行控制台展示当前版本变动说明
+
+- 用户需求：只展示“当前测试服 / 正式服 / 备份服正在运行版本”的变动说明，不先做复杂历史版本库。
+- 命中经验：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`，命中 `release-build-preflight-lessons.md`、`project-error-prevention.md` 与 `D:\ProjectPackage\Int\IntPP\FRONTEND_STYLE.md`；本任务只修改并验证本机维护控制台，不执行远端服务器写入或发布。
+- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-runtime-control-current-release-notes\`，写入 `task.md`、`execution-log.md`、前后端 evidence，并完成 RED/GREEN 记录。
+- 实现记录：后端 `release-status` 增加 `testCurrentReleaseNotes/prodCurrentReleaseNotes/backupCurrentReleaseNotes`，从当前运行 releaseTag 对应发布包 `manifest.json` 的 `changeSet.summary` 与 `items/changes` 读取说明；缺失时返回 `status=BLOCKED` 与 `blockedReasons`，不伪造说明。
+- 实现记录：前端左下角版本栏为测试服、正式服、备份服增加 `查看变更` 入口，弹窗显示版本号、构建时间、发布范围、组件、摘要、变动明细、源码提交和缺失信息。
+- 验证记录：新增后端契约测试 PASS，原 test/prod/backup 版本字段回归 PASS；前端契约 pytest PASS；`pnpm typecheck` PASS；`pnpm build` PASS；前后端 evidence 校验 PASS。
+- 运行态记录：执行 `scripts/build.ps1` PASS，Maven 全量测试 `23` 个通过；已重启本机 48181，当前 PID `46892`，首页加载 `assets/index-BriPWzK2.js`，接口已返回三个 notes 字段。
+- 收尾记录：执行 `task-closeout-cleanup` preview/apply，保留本任务 `task.md` 与 `execution-log.md`，清理 evidence 临时交付文件。
