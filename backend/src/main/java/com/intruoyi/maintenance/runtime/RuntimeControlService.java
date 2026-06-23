@@ -1299,9 +1299,11 @@ public class RuntimeControlService {
         }
         JsonNode manifest = objectMapper.readTree(Files.readString(manifestPath, StandardCharsets.UTF_8));
 
-        Path workspaceRoot = properties.stateDirPath().resolve("prod-preflight-release-workspaces");
+        Path workspaceRoot = Paths.get(System.getProperty("java.io.tmpdir"), "intruoyi-prod-preflight-workspaces")
+                .toAbsolutePath()
+                .normalize();
         Files.createDirectories(workspaceRoot);
-        Path workspace = Files.createTempDirectory(workspaceRoot, releaseTag + "-");
+        Path workspace = Files.createTempDirectory(workspaceRoot, "pdr-");
 
         LinkedHashSet<String> declaredPaths = collectProdDryRunDeclaredPackagePaths(manifest);
         addDeclaredPackageDirectoryFiles(declaredPaths, sourceReleaseDir, "resources");

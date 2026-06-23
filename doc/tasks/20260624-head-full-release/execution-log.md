@@ -26,6 +26,8 @@ RED: powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build.ps1 -> FA
 
 RED: mvn -f backend\pom.xml -Dtest=RuntimeControlOriginalParityTest#promoteProdPreviewUsesSanitizedPackageWorkspace -DtrimStackTrace=false test -> FAIL，干运行净化工作区未携带发布包 `resources/resource-reference-manifest.json`，正式预检无法校验资源引用清单。
 
+RED: powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build.ps1 -> FAIL，基于维护仓提交 `36f4fb136856fba932f1a66a22db0e88466e75c0` 的干净 worktree 构建失败；深层 worktree 路径下 PowerShell 预检读取 `resources/resource-reference-manifest.json` 报路径不存在，暴露 dry-run 临时工作区路径过长风险。
+
 ## GREEN
 
 GREEN: clean-worktree-preflight -> PASS，已创建维护控制台、业务后端、业务前端三个 detached HEAD 干净 worktree；初始 `git status --short --branch` 均无未提交改动。
@@ -41,6 +43,10 @@ GREEN: backend-release-metadata-commit -> PASS，后端已提交 `bdf2e35a30a1b6
 GREEN: mvn -f backend\pom.xml -Dtest=RuntimeControlOriginalParityTest#promoteProdPreviewUsesSanitizedPackageWorkspace -DtrimStackTrace=false test -> PASS，维护控制台干运行净化工作区携带 `resources/` 证据目录，targeted TDD 通过。
 
 GREEN: powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build.ps1 -> PASS，维护控制台主工作区完整构建通过；前端 typecheck/build 成功，后端 `Tests run: 23, Failures: 0, Errors: 0, Skipped: 0`，jar 打包成功。
+
+GREEN: mvn -f backend\pom.xml -Dtest=RuntimeControlOriginalParityTest#promoteProdPreviewUsesSanitizedPackageWorkspace -DtrimStackTrace=false test -> PASS，正式 dry-run 临时净化工作区改为系统短临时路径后，深层 worktree 路径不再导致 PowerShell 读取资源 manifest 失败。
+
+GREEN: powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build.ps1 -> PASS，维护控制台路径长度修复后主工作区完整构建通过；前端 typecheck/build 成功，后端 `Tests run: 23, Failures: 0, Errors: 0, Skipped: 0`，jar 打包成功。
 
 ## BLOCKER
 

@@ -79,7 +79,7 @@
 
 ## Current Status
 
-IN_PROGRESS：后端 SQL 发布迁移元数据已补齐并提交；维护控制台干运行预检 `resources/` 证据目录缺失已补正式代码，主工作区完整构建通过。下一步需提交维护控制台修复，然后从新的已提交 HEAD 创建干净 worktree 重新构建，作为发布包唯一来源。
+IN_PROGRESS：后端 SQL 发布迁移元数据已补齐并提交；维护控制台干运行预检 `resources/` 证据目录缺失与 Windows 深层路径长度问题已补正式代码，主工作区完整构建通过。下一步需提交第二个维护控制台修复，然后从新的已提交 HEAD 创建干净 worktree 重新构建，作为发布包唯一来源。
 
 ## Verification Evidence
 
@@ -96,6 +96,9 @@ IN_PROGRESS：后端 SQL 发布迁移元数据已补齐并提交；维护控制�
 - 维护控制台 clean build 第二次失败：`RuntimeControlOriginalParityTest.promoteProdPreviewUsesSanitizedPackageWorkspace` 报告干运行净化工作区缺少 `resources/resource-reference-manifest.json`。
 - 维护控制台 targeted 验证：`mvn -f backend\pom.xml -Dtest=RuntimeControlOriginalParityTest#promoteProdPreviewUsesSanitizedPackageWorkspace -DtrimStackTrace=false test` -> PASS。
 - 维护控制台主工作区完整构建：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build.ps1` -> PASS，前端 typecheck/build、后端 23 tests、jar 打包均通过。
+- 维护控制台干净 worktree 完整构建：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build.ps1` -> FAIL，`RuntimeControlOriginalParityTest.promoteProdPreviewUsesSanitizedPackageWorkspace` 在深层 worktree 路径下报告 `resources/resource-reference-manifest.json` 找不到。
+- 维护控制台路径长度修复 targeted 验证：`mvn -f backend\pom.xml -Dtest=RuntimeControlOriginalParityTest#promoteProdPreviewUsesSanitizedPackageWorkspace -DtrimStackTrace=false test` -> PASS。
+- 维护控制台路径长度修复主工作区完整构建：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build.ps1` -> PASS，前端 typecheck/build、后端 23 tests、jar 打包均通过。
 
 ## Blockers
 
