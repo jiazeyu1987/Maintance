@@ -1074,6 +1074,35 @@
 - 结论记录：backend `int_main` 最终包含 `39b2d15f6b`、`9a96ca4f68`、`2b538ad5dd`、`fffbba0c89` 等收口提交；当前 `git worktree list` 仅剩 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro [int_main]` 这一份 backend worktree，`codex/20260622-ruoyi-vue-pro-int-main-hold` 只保留为 branch 指针。
 - 执行命令：在维护仓执行 `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260622-int-main-workspace-normalization --mode preview` -> PASS，结果 `status=ready`、`blocked=<none>`，默认保留 `task.md` 与 `execution-log.md`，并将 `task-state.json` 标记为可删除。
 
+## 2026-06-23 DCC 识别后续实现
+
+- 用户请求：`继续`
+- 执行记录：先在 backend 仓只读核对上一任务文档，发现 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\doc\tasks\20260622-int-main-workspace-normalization\task.md` 仍为 `IN_PROGRESS`；随后补齐完成态描述，确保满足“上一任务先收口再开新任务”的仓库门禁。
+- 执行记录：在主 backend 工作区新增短编码误命中回归测试后，首次执行 `mvn --% -f D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\pom.xml -pl yudao-module-dcc -Dtest=DccControlledFileProjectCodeRecognitionServiceTest -Dsurefire.failIfNoSpecifiedTests=false test` 时，被当前主工作区其他未收口 DCC 改动的编译错误阻断；为避免覆盖用户现场，改按 `worktree-memory` 规则创建 clean backend worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-dcc-short-code-recognition-hardening`，后端分支 `codex/20260623-dcc-short-code-recognition-hardening`，并在 frontend 仓补同名分支占位。
+- 执行命令：在 clean backend worktree 建立任务目录 `doc/tasks/20260623-dcc-short-code-recognition-hardening/`，新增 3 个 RED 用例覆盖：
+  - 短编码 `IN` 嵌入普通长 token `INT-培训记录.pdf`
+  - 两位短编码 `EC` 独立片段 `EC-现场记录.pdf`
+  - 长编码 `CODE-A` 嵌入更长 ASCII token `XCODE-AX审批单.pdf`
+- 执行命令：运行 `mvn --% -f D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-dcc-short-code-recognition-hardening\pom.xml -pl yudao-module-dcc -Dtest=DccControlledFileProjectCodeRecognitionServiceTest -Dsurefire.failIfNoSpecifiedTests=false test` -> FAIL，3 个新增回归用例均证明当前实现没有调用 `fileService.getFileContent(...)` 和 `codexCliClient.recognizeProjectCode(...)`。
+- 执行命令：在 clean backend worktree 更新 `DccControlledFileProjectCodeRecognitionServiceImpl.java`，把文件名直连收紧为“高置信度 + 完整 ASCII token 边界”规则：短编码有效字符长度不足 4 时不再文件名直连，其余编码需满足完整边界后才允许跳过内容识别。
+- 执行命令：回归 `mvn --% -f D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-dcc-short-code-recognition-hardening\pom.xml -pl yudao-module-dcc -Dtest=DccControlledFileProjectCodeRecognitionServiceTest -Dsurefire.failIfNoSpecifiedTests=false test` -> PASS（16/16）；继续执行 `mvn --% -f ... -Dtest=DccControlledFileProjectCodeRecognitionServiceTest,DccProjectCodeCodexCliClientImplTest -Dsurefire.failIfNoSpecifiedTests=false test` -> PASS（20/20）；再执行 `python C:\Users\BJB110\.codex\skills\bug-regression-fix-loop\scripts\validate_bug_regression.py --evidence ...\bug-regression-evidence.md` -> PASS。
+- 执行命令：在 clean backend worktree 以 `TDD_TASK_DIR=D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-dcc-short-code-recognition-hardening\doc\tasks\20260623-dcc-short-code-recognition-hardening` 提交两笔：
+  - `baea65092e 任务: 收紧DCC短编码文件名识别`
+  - `2bc28d3941 任务: 补充DCC短编码回归证据`
+- 结论记录：backend 第一个后续任务已完成，短编码和嵌入长 ASCII token 的误命中不再直接跳过内容识别；最终测试服联动验证留给后续“内容识别运行时跑通”任务继续。
+- 执行记录：随后按维护仓本地发布链路修复继续第二个后续任务；因主维护仓工作区同样存在大量无关脏现场，按 `worktree-memory` 规则创建 clean maintenance worktree `D:\ProjectPackage\Int\IntRuoyiMaintanceWorktrees\int-maint-dcc-content-recognition-enable`，分支 `codex/20260623-test-server-dcc-content-recognition-enable`。
+- 执行命令：在 clean maintenance worktree 建立任务目录 `doc/tasks/20260623-test-server-dcc-content-recognition-enable/` 与合同测试 `scripts/tests/test_publish_dcc_codex_runtime_contract.py`；首次执行 `python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyiMaintanceWorktrees\int-maint-dcc-content-recognition-enable\scripts\tests\test_publish_dcc_codex_runtime_contract.py -q` -> FAIL，明确暴露维护仓 `publish-int-ruoyi.ps1` 和 `ops/deploy/int-ruoyi-test/docker-compose.yml` 缺少 `DCC_PROJECT_CODE_CODEX_CLI_COMMAND`、`DCC_PROJECT_CODE_CODEX_HOME`、`CODEX_HOME`、识别命令参数与挂载。
+- 执行命令：更新 clean maintenance worktree 中的 `ops/deploy/publish-int-ruoyi.ps1` 与 `ops/deploy/int-ruoyi-test/docker-compose.yml`，补齐：
+  - 脚本参数 `DccProjectCodeCodexCliCommand`、`DccProjectCodeCodexHome`
+  - effective 默认值 `/opt/intruoyi/runtime/tools/codex`、`/opt/intruoyi/runtime/backend-codex-home`
+  - `.env` 输出 `DCC_PROJECT_CODE_CODEX_CLI_COMMAND`、`DCC_PROJECT_CODE_CODEX_HOME`
+  - compose 环境变量 `DCC_PROJECT_CODE_CODEX_HOME`、`CODEX_HOME`
+  - JVM 参数 `--yudao.dcc.project-code-recognition.codex-cli-command=${DCC_PROJECT_CODE_CODEX_CLI_COMMAND}`
+  - 挂载 `/opt/intruoyi/runtime/tools/codex` 与 `/opt/intruoyi/runtime/backend-codex-home`
+- 执行命令：回归 `python -X utf8 -m pytest ...test_publish_dcc_codex_runtime_contract.py -q` -> PASS（2 passed）；继续执行 `python -X utf8 C:\Users\BJB110\.codex\skills\ci-cd-environment-delivery\scripts\validate_cicd_environment.py --evidence D:\ProjectPackage\Int\IntRuoyiMaintanceWorktrees\int-maint-dcc-content-recognition-enable\doc\tasks\20260623-test-server-dcc-content-recognition-enable\ci-cd-evidence.md` -> PASS。
+- 执行命令：在 clean maintenance worktree 以 `TDD_TASK_DIR=D:\ProjectPackage\Int\IntRuoyiMaintanceWorktrees\int-maint-dcc-content-recognition-enable\doc\tasks\20260623-test-server-dcc-content-recognition-enable` 提交 `94d0837 任务: 补齐DCC Codex发布运行时合同`。
+- 结论记录：第二个后续任务的“本地合同修复”阶段已完成并提交；当前仍缺测试服写入、容器重建和真实内容识别联调的当前授权，因此不能把本地合同通过直接等同为“测试服内容识别已跑通”。
+
 ## 2026-06-22 删除剩余两个前端 worktree
 
 - 用户请求：删除 `yudao-ui-admin-vue3-dcc-preview-release` 与 `yudao-ui-admin-vue3-mainmerge-release-clean`，让前后端只保留一个 `int_main` worktree。
@@ -1082,3 +1111,59 @@
 - 执行命令：在 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3` 执行 `git worktree remove D:\ProjectPackage\Int\IntRuoyiWorktrees\yudao-ui-admin-vue3-dcc-preview-release` -> PASS；执行 `git worktree remove D:\ProjectPackage\Int\IntRuoyiWorktrees\yudao-ui-admin-vue3-mainmerge-release-clean` 后 Git 登记已移除，但目录因 `node_modules` 长路径残留未自动删除。
 - 执行命令：校验残留路径确认为 `D:\ProjectPackage\Int\IntRuoyiWorktrees\yudao-ui-admin-vue3-mainmerge-release-clean` 后，使用空目录镜像方式清理残留目录，结果 `residual directory removed`。
 - 结论记录：前端 `git worktree list` 仅剩 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3 [int_main]`；后端 `git worktree list` 仅剩 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro [int_main]`。前端主目录和后端主目录仍有新的本地现场，本任务未处理。
+
+## 2026-06-22 测试服 DCC Codex 文件识别能力只读核验
+
+- 用户请求：判断当前测试服务器是否可以实现用 Codex 识别文件的产品名称和产品编码，以及通过产品编码对应产品名称。
+- 命中经验：读取维护仓 `AGENTS.md`、`docs/experience-index.md`、IntRuoyi `docs/server-access.md` 与 `docs/login-access.md`；本任务限定为测试服只读核验，不发布、不重启、不写库、不触发写入接口。
+- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260622-test-server-dcc-codex-recognition-audit\`，记录 BDD 场景、门禁、里程碑和验证报告。
+- 执行命令：本机只读检索 DCC 识别代码，确认存在 `DccControlledFileProjectCodeRecognitionServiceImpl`、`DccProjectCodeCodexCliClientImpl`、`DccProjectCodeRecognitionProperties`、`DccControlledFileController` 和对应测试；识别逻辑为文件名唯一最长编码优先，失败后读取源文件内容调用 Codex CLI。
+- 执行命令：只读检查测试服健康、容器与镜像，确认 `172.30.30.58:48081/actuator/health` 为 `UP`，主后端镜像为 `intruoyi-backend:release-20260621-page-full-flow-mainmerge-v15`。
+- 执行命令：只读检查测试服后端镜像包，确认 `/yudao-server/app.jar` 嵌套 DCC jar 包含识别服务、Codex CLI 客户端、配置类和 `recognize-project-code` 控制器入口。
+- 执行命令：只读查询测试服 MySQL，确认 `dcc_project_code` 与受控文件识别字段存在；启用项目编码基础数据 `248` 条，编码和名称完整 `242` 条，带源文件受控文件 `34667` 条。
+- 执行命令：只读采样文件名编码命中情况，测试租户按“最长且唯一项目编码”规则可直接命中 `923` 条，但样本暴露短编码如 `IN` 容易误命中文件名。
+- 结论记录：测试服可支持“文件名唯一编码 -> 基础数据项目名称”的直接识别路径；但后端容器内未发现 `codex` / `codex.cmd`，compose 未配置 Linux 识别命令覆盖，代码默认 `cmd.exe /c codex.cmd` 不适配 Linux 容器，因此内容级 Codex 识别当前不能视为已跑通。
+
+## 2026-06-23 DCC Codex 识别后续任务包化
+
+- 用户请求：`先1后2`
+- 需求拆解：
+  - `1`：先把“短编码如 IN/OC/EC 容易误命中文件名”的风险整理成明确修复方案。
+  - `2`：再补一个“测试服内容识别跑通改造”的正式任务文档。
+- 执行命令：只读定位并核对 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260622-test-server-dcc-codex-recognition-audit\{task.md,execution-log.md,verification-report.md}`，确认上一核验任务状态为 `COMPLETED`，其验证结论为 `BLOCKED_FOR_FULL_CODEX_CONTENT_RECOGNITION`。
+- 执行命令：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`，按命中门禁拆分后续任务范围。
+- 执行命令：只读核对后端识别代码与测试 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\yudao-module-dcc\src\main\java\cn\iocoder\yudao\module\dcc\service\file\DccControlledFileProjectCodeRecognitionServiceImpl.java`、`...DccProjectCodeCodexCliClientImpl.java`、`...DccProjectCodeRecognitionProperties.java`、`...DccControlledFileProjectCodeRecognitionServiceTest.java`、`...DccProjectCodeCodexCliClientImplTest.java`；确认当前文件名直连使用 `containsIgnoreCase` + 最长唯一编码规则，存在短编码误命中风险。
+- 执行命令：对比业务后端仓与维护仓发布链路：
+  - 业务后端仓 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\deploy\int-ruoyi-test\docker-compose.yml` 与 `publish-int-ruoyi.ps1` 已包含 `DCC_PROJECT_CODE_CODEX_CLI_COMMAND`、`DCC_PROJECT_CODE_CODEX_HOME`、`CODEX_HOME`、`/opt/intruoyi/runtime/tools/codex`、`/opt/intruoyi/runtime/backend-codex-home`。
+  - 维护仓 `D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\int-ruoyi-test\docker-compose.yml` 当前缺少同等 DCC Codex 运行时合同，是测试服内容识别未跑通的关键候选根因。
+- 执行命令：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-dcc-short-code-recognition-hardening-plan\` 与 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-test-server-dcc-content-recognition-enable-plan\`；随后对两个空目录执行 `python -X utf8 C:\Users\BJB110\.codex\skills\roadmap-node-dev-plan\scripts\validate_node_dev_plan.py --task-dir <task-dir>`，两次都按预期返回 `ERROR: Missing required file: task.md`。
+- 执行记录：补齐两个任务的 `task.md`、`prd.md`、`development-plan.md`、`test-plan.md`、`task-state.json` 与 `execution-log.md`，分别固化：
+  - 短编码风险硬化建议：边界感知匹配 + 低置信度短编码不再文件名直连。
+  - 测试服内容识别跑通主线：修复维护仓发布链路缺少 DCC Codex 运行时合同的问题，再重建测试服 backend 并做真实内容识别验收。
+- 执行命令：分别对 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-dcc-short-code-recognition-hardening-plan` 与 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-test-server-dcc-content-recognition-enable-plan` 再次执行 `python -X utf8 C:\Users\BJB110\.codex\skills\roadmap-node-dev-plan\scripts\validate_node_dev_plan.py --task-dir <task-dir>` -> PASS，两个任务包结构均校验通过。
+
+## 2026-06-23 整理集团与璞润时间分配领导文档
+
+- 用户需求：将“集团任务与子公司任务时间安排”和“集团内部项目阶段性投入比例”整理成一份可以直接交付给领导的正式文档。
+- 命中技能：`C:\Users\BJB110\.codex\skills\doc\SKILL.md`。
+- 命中经验：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md` 后命中 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`；本任务为本机文档整理，不涉及服务器、发布或真实 E2E。
+- 执行记录：按仓库规则先检查上一任务，发现 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-test-server-dcc-content-recognition-enable-plan\task.md` 与 `...20260623-dcc-short-code-recognition-hardening-plan\task.md` 仍未完成，已在两个任务文档和执行日志中显式标记为 `BLOCKED`，原因是当前线程切换为领导文档交付。
+- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-leader-time-allocation-document\`，并先写入 `task.md`、`execution-log.md`；同时创建输出目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\` 与预览目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\tmp\docs\20260623-leader-time-allocation-document\`。
+- 执行命令：读取 `C:\Users\BJB110\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe` 环境并验证 `python-docx`、`pdf2image` 可用；确认本机可通过 Word COM 导出 PDF，`pypdfium2` 可渲染预览页。
+- 执行记录：生成最终源稿 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\group-subsidiary-time-allocation-20260623.md`，内容包含工作日/周末排班、集团阶段性项目占比、每周工时折算和特殊情况说明。
+- 执行命令：运行内联 Python 脚本基于 `python-docx` 生成 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\group-subsidiary-time-allocation-20260623.docx`，并通过 Word COM 导出 `D:\ProjectPackage\Int\IntRuoyiMaintance\tmp\docs\20260623-leader-time-allocation-document\group-subsidiary-time-allocation-20260623.pdf`。
+- 执行命令：使用 `pypdfium2` 渲染 PDF 为 `page-1.png`、`page-2.png`，人工核对标题、表格、分页和中文显示正常。
+- 执行命令：先运行 `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260623-leader-time-allocation-document --mode preview` -> PASS，确认仅计划删除 `D:\ProjectPackage\Int\IntRuoyiMaintance\tmp\docs\20260623-leader-time-allocation-document\`；随后执行同命令 `--mode apply` -> PASS，已删除该临时预览目录并保留正式交付物。
+- 结论记录：已交付可直接转发给领导的 Markdown 与 DOCX 文档；当前阶段对“5月15日至20周年期间”按用户语义闭合整理为“智能排产 10%、批记录 EDHR 10%”，如后续口径调整可在现有源稿上快速改版。
+
+## 2026-06-23 整理四大业务功能模块 Excel 附录
+
+- 用户需求：附录一个 Excel 工作簿，把当前展厅、eDHR、DCC、智能排产的功能内容分别整理到独立 sheet 中，并要求“不要加函数名、模块名这种针对程序员的描述，要所有人都能看懂的”。
+- 命中经验：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md` 后命中 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`；本任务为本机盘点与 Excel 交付，不涉及服务器、发布或真实 E2E。
+- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-functional-module-excel-appendix\`，先写入 `task.md`、`execution-log.md`，并在 `output/doc/` 预留正式交付路径。
+- 执行命令：定向盘点 `D:\ProjectPackage\Website`、`D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3`、`D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro` 中与展厅、eDHR、DCC、智能排产直接相关的视图目录、API 目录和后台控制器，确认当前能力边界。
+- 执行记录：根据用户追加要求，将交付口径改为全业务语言表达，Excel 内统一使用 `一级工作 / 二级工作 / 具体内容 / 主要使用场景 / 补充说明`，不直接出现函数名、接口名、控制器名或程序员式模块名。
+- 执行命令：使用 `openpyxl 3.1.5` 生成 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\functional-module-appendix-20260623.xlsx`，包含 `展厅`、`eDHR`、`DCC`、`智能排产` 四个 sheet。
+- 执行命令：复核 workbook 结构，确认 `sheetnames=['展厅','eDHR','DCC','智能排产']`，行列规模分别为 `展厅(22,6)`、`eDHR(27,6)`、`DCC(24,6)`、`智能排产(22,6)`。
+- 执行命令：运行 `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260623-functional-module-excel-appendix --mode preview` -> PASS，仅计划删除 `tmp/docs/20260623-functional-module-excel-appendix/`；随后执行同命令 `--mode apply` -> PASS，已删除该临时目录。
+- 结论记录：已生成一份适合直接附给领导的 Excel 附录，四个业务分别独立成 sheet，内容均按非技术人员可读方式整理。
