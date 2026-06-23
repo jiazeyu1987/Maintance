@@ -1191,3 +1191,12 @@
 - 执行命令：基于 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\functional-module-appendix-20260623-purun.xlsx` 生成最新替代交付文件 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\functional-module-appendix-20260623-qms-yingtai.xlsx`。
 - 执行命令：复核最新替代文件，确认 workbook sheetnames 为 `展厅 / eDHR / DCC / 智能排产 / 璞润 / 瑛泰系统`，其中 `DCC` 为 `17` 行 `6` 列，`瑛泰系统` 为 `17` 行 `6` 列；`DCC` 中第 `12-17` 行为灰色。
 - 结论记录：当前已生成一份最新可用替代交付文件 `functional-module-appendix-20260623-qms-yingtai.xlsx`，已补齐 QMS 文控重点样式和 `瑛泰系统` sheet；若后续关闭原始 Excel，可再覆盖回原文件名。
+
+## 2026-06-23 整理后续工作内容汇报表述
+
+- 用户需求：将“展厅、QMS、eDHR、智能排产、瑛泰系统、璞润”的后续工作内容整理成更适合向领导汇报的正式表述，并优化“后续工作怎么加合适”的表达方式。
+- 命中经验：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md` 后命中 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`；本任务仅做本机文字整理，不涉及代码、服务器或真实 E2E。
+- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-followup-work-content-wording\`，写入 `task.md`、`execution-log.md`，并确认上一任务 `20260623-functional-module-excel-qms-yingtai-sheets` 已完成。
+- 执行记录：将原始较口语化内容统一整理为“当前进展 + 后续工作 + 依赖事项”风格，补齐展厅、QMS、eDHR、智能排产、瑛泰系统、璞润六个模块的正式汇报版口径。
+- 执行命令：生成交付文件 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\followup-work-content-20260623.md`。
+- 结论记录：已形成一份可直接用于领导汇报的后续工作内容文字稿；如需进一步增强管理视角，可在此基础上继续增加“负责人、时间节点、风险依赖”三列信息。
