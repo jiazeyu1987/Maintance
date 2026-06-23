@@ -1200,3 +1200,14 @@
 - 执行记录：将原始较口语化内容统一整理为“当前进展 + 后续工作 + 依赖事项”风格，补齐展厅、QMS、eDHR、智能排产、瑛泰系统、璞润六个模块的正式汇报版口径。
 - 执行命令：生成交付文件 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\followup-work-content-20260623.md`。
 - 结论记录：已形成一份可直接用于领导汇报的后续工作内容文字稿；如需进一步增强管理视角，可在此基础上继续增加“负责人、时间节点、风险依赖”三列信息。
+
+## 2026-06-23 将后续工作内容整合进现有 Excel
+
+- 用户需求：希望把刚整理好的“后续工作内容”整合进刚才生成的 Excel 或 Word 中，由 Agent 选择更合适的形式。
+- 处理判断：选择整合进现有 Excel，更适合与前面各模块 sheet 放在同一份工作簿内统一查看。
+- 命中经验：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md` 后命中 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`；本任务仅做本机 Excel 更新。
+- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-integrate-followup-sheet\`，写入 `task.md`、`execution-log.md`，并确认上一任务 `20260623-followup-work-content-wording` 已完成。
+- 执行命令：直接更新 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\functional-module-appendix-20260623-qms-yingtai.xlsx`，新增 `后续工作` sheet，按与现有 sheet 一致的 `序号 / 一级工作 / 二级工作 / 具体内容 / 主要使用场景 / 补充说明` 六列表头整理展厅、QMS、eDHR、智能排产、瑛泰系统、璞润的后续工作安排。
+- 执行命令：复核更新后的 workbook，确认 sheetnames 为 `展厅 / eDHR / DCC / 智能排产 / 璞润 / 瑛泰系统 / 后续工作`，其中 `后续工作` 为 `12` 行 `6` 列。
+- 执行命令：运行 `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260623-integrate-followup-sheet --mode preview` -> PASS；随后执行同命令 `--mode apply` -> PASS，当前任务无删除项。
+- 结论记录：后续工作内容已成功整合进现有 Excel 工作簿，当前使用的最新文件仍为 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\functional-module-appendix-20260623-qms-yingtai.xlsx`。
