@@ -63,10 +63,10 @@
 ## Milestones
 
 1. 完成任务文档、经验门禁、Git HEAD 和 dirty 状态记录。`COMPLETED`
-2. 创建干净 HEAD 构建来源并构建维护控制台。`IN_PROGRESS`
-3. 通过运行控制台或等价前端操作构建发布包并校验 manifest。`PENDING`
-4. 发布测试服并验证真实运行态。`PENDING`
-5. 发布正式服和备份服并验证真实运行态。`PENDING`
+2. 创建干净 HEAD 构建来源并构建维护控制台。`COMPLETED`
+3. 通过运行控制台或等价前端操作构建发布包并校验 manifest。`COMPLETED`
+4. 发布测试服并验证真实运行态。`COMPLETED`
+5. 发布正式服和备份服并验证真实运行态。`COMPLETED`
 6. 记录经验沉淀、收尾清理预览、提交本任务文档。`IN_PROGRESS`
 
 ## Expected Verification
@@ -79,7 +79,7 @@
 
 ## Current Status
 
-IN_PROGRESS：后端 SQL 发布迁移元数据已补齐并提交；维护控制台干运行预检 `resources/` 证据目录缺失与 Windows 深层路径长度问题已补正式代码，主工作区完整构建通过。下一步需提交第二个维护控制台修复，然后从新的已提交 HEAD 创建干净 worktree 重新构建，作为发布包唯一来源。
+COMPLETED：`release-20260624-head-full-v3` 已从干净已提交代码构建并发布到测试服、正式服、备份服；三环境运行态和控制台版本信息均验证通过；task-closeout-cleanup 预览通过，无删除项、无阻塞。
 
 ## Verification Evidence
 
@@ -99,11 +99,23 @@ IN_PROGRESS：后端 SQL 发布迁移元数据已补齐并提交；维护控制�
 - 维护控制台干净 worktree 完整构建：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build.ps1` -> FAIL，`RuntimeControlOriginalParityTest.promoteProdPreviewUsesSanitizedPackageWorkspace` 在深层 worktree 路径下报告 `resources/resource-reference-manifest.json` 找不到。
 - 维护控制台路径长度修复 targeted 验证：`mvn -f backend\pom.xml -Dtest=RuntimeControlOriginalParityTest#promoteProdPreviewUsesSanitizedPackageWorkspace -DtrimStackTrace=false test` -> PASS。
 - 维护控制台路径长度修复主工作区完整构建：`powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build.ps1` -> PASS，前端 typecheck/build、后端 23 tests、jar 打包均通过。
+- 维护控制台干净 worktree：`D:\ProjectPackage\Int\release-worktrees\IntRuoyiMaintance-20260624-0736fb7`，HEAD `0736fb715451a4f88829880a39272db0d7ea4f2c`，完整构建 PASS。
+- 发布包最终版本：`release-20260624-head-full-v3`。
+- 发布包 manifest：`releaseTag=release-20260624-head-full-v3`，`publishScope=code-only`，`component=intruoyi`，后端 sourceRepo `bdf2e35a30a1b679c59b6253f2a62250b62ffd43 dirty=false`，前端 sourceRepo `317056aa6a2db9dc1cf51e5bbf5e00d9e163729d dirty=false`。
+- 构建 operation：`op-2026-06-23T173205500308500Z-280a1cfd-ce31-4016-a2e5-45a71886e6c6` -> SUCCESS。
+- 测试服发布 operation：`op-2026-06-23T174444462635200Z-f8253075-3157-4647-8588-eed209b0a9da` -> SUCCESS。
+- 测试服运行态：`172.30.30.58` `.env IMAGE_TAG=release-20260624-head-full-v3`；`intruoyi-backend` / `intruoyi-frontend` 镜像 tag 均为 v3 且 running；后端健康 HTTP 200；前端 HTTP 200；Playwright 打开登录页成功，截图 `output/playwright/release-20260624-head-full-v3-test-frontend.png`。
+- 标记测试通过 operation：`op-2026-06-23T180242570470700Z-d7a4ccad-d746-498b-a353-019e38749182` -> SUCCESS。
+- 正式服发布 operation：`op-2026-06-23T180402319749900Z-96551295-7c9b-49e6-b5d7-66af9943671e` -> SUCCESS。
+- 正式服运行态：`172.30.30.57` `.env IMAGE_TAG=release-20260624-head-full-v3`；`intruoyi-backend` / `intruoyi-frontend` 镜像 tag 均为 v3 且 running；后端健康 HTTP 200；前端 HTTP 200；控制台 prod 当前版本 v3。
+- 备份服发布 operation：`op-2026-06-23T181552882833300Z-bae3d087-739d-4269-be02-e6cd7eb7c9b9` -> SUCCESS。
+- 备份服运行态：`172.30.30.59` `.env IMAGE_TAG=release-20260624-head-full-v3`；`intruoyi-backend` / `intruoyi-frontend` 镜像 tag 均为 v3 且 running；后端健康 HTTP 200；前端 HTTP 200；控制台 backup 当前版本 v3。
+- 控制台 release-status：test/prod/backup 均为 `release-20260624-head-full-v3`，release notes 指向 `Backup/ReleasePackage/release-20260624-head-full-v3/manifest.json`，sourceRepos 均为后端 `bdf2e35... dirty=false`、前端 `317056a... dirty=false`。
 
 ## Blockers
 
-- 暂无已确认阻塞。维护控制台修复仍需提交并从干净 HEAD 重新构建；构建未通过前不得生成发布包。
+- 暂无阻塞。
 
 ## Next Required Action
 
-- 提交维护控制台净化工作区修复与必要发布目标配置，然后基于新的已提交 HEAD 重建维护控制台和发布包。
+- 提交本任务文档与经验沉淀。

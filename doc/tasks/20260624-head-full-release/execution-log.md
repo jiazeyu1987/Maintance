@@ -48,6 +48,32 @@ GREEN: mvn -f backend\pom.xml -Dtest=RuntimeControlOriginalParityTest#promotePro
 
 GREEN: powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build.ps1 -> PASS，维护控制台路径长度修复后主工作区完整构建通过；前端 typecheck/build 成功，后端 `Tests run: 23, Failures: 0, Errors: 0, Skipped: 0`，jar 打包成功。
 
+GREEN: powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build.ps1 -> PASS，维护控制台干净 worktree `D:\ProjectPackage\Int\release-worktrees\IntRuoyiMaintance-20260624-0736fb7` 基于 HEAD `0736fb715451a4f88829880a39272db0d7ea4f2c` 完整构建通过。
+
+RED: build-release release-20260624-head-full-v1 -> FAIL，干净前端 worktree 缺少 `node_modules/vite/bin/vite.js`，前端 Vite CLI 前置依赖缺失。
+
+GREEN: pnpm install --frozen-lockfile -> PASS，在干净前端 worktree `D:\ProjectPackage\Int\release-worktrees\IntRuoyi-frontend-20260624-head` 补齐 node_modules，不改变已提交源码。
+
+RED: build-release release-20260624-head-full-v2 -> FAIL，误开启 Smart Release report-only，但本次请求未提供 `SmartReleaseBaselineManifestPath`，脚本按前置条件失败。
+
+GREEN: build-release release-20260624-head-full-v3 -> PASS，operation `op-2026-06-23T173205500308500Z-280a1cfd-ce31-4016-a2e5-45a71886e6c6` 成功；发布包上传 NAS `Backup/ReleasePackage/release-20260624-head-full-v3`。
+
+GREEN: manifest-check release-20260624-head-full-v3 -> PASS，`releaseTag=release-20260624-head-full-v3`，`publishScope=code-only`，`component=intruoyi`，后端 `bdf2e35a30a1b679c59b6253f2a62250b62ffd43 dirty=false`，前端 `317056aa6a2db9dc1cf51e5bbf5e00d9e163729d dirty=false`，镜像 tar 存在。
+
+GREEN: publish-test release-20260624-head-full-v3 -> PASS，operation `op-2026-06-23T174444462635200Z-f8253075-3157-4647-8588-eed209b0a9da` 成功；测试服 `.env`、容器镜像、健康检查、前端页面均为 v3。
+
+GREEN: playwright-test-frontend -> PASS，Playwright 打开 `http://172.30.30.58:8081`，页面标题 `瑛泰管理系统 - 登录`，截图 `output/playwright/release-20260624-head-full-v3-test-frontend.png`。
+
+GREEN: mark-release-tested release-20260624-head-full-v3 -> PASS，operation `op-2026-06-23T180242570470700Z-d7a4ccad-d746-498b-a353-019e38749182` 成功，恢复集 `restore:20260621-063218`。
+
+GREEN: promote-prod release-20260624-head-full-v3 -> PASS，operation `op-2026-06-23T180402319749900Z-96551295-7c9b-49e6-b5d7-66af9943671e` 成功；正式服 `.env`、容器镜像、健康检查、前端页面均为 v3。
+
+GREEN: promote-backup release-20260624-head-full-v3 -> PASS，operation `op-2026-06-23T181552882833300Z-bae3d087-739d-4269-be02-e6cd7eb7c9b9` 成功；备份服 `.env`、容器镜像、健康检查、前端页面均为 v3，发布目录使用 `/mnt/intruoyi-data`。
+
+GREEN: release-status-final -> PASS，运行控制台 test/prod/backup 当前版本均为 `release-20260624-head-full-v3`，三环境 release notes 均能看到 manifest、summary、sourceRepos。
+
+GREEN: task-closeout-cleanup --mode preview -> PASS，`status=ready`，保留 `task.md` 与 `execution-log.md`，无删除项、无阻塞、无警告。
+
 ## BLOCKER
 
 BLOCKER: release-migration-policy-gate -> `sql/mysql/20260623_dcc_view_matrix_independent_source.sql` 缺少发布迁移元数据；根据发布文档，`code-only` / `SkipDatabaseSync` 不跳过 schema、required SQL、迁移元数据或 manifest 门禁。本次发布包未构建，未触发测试服、正式服或备份服发布。该阻塞已通过后端提交 `bdf2e35a30a1b679c59b6253f2a62250b62ffd43` 解除。
