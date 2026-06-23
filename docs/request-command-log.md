@@ -1167,3 +1167,27 @@
 - 执行命令：复核 workbook 结构，确认 `sheetnames=['展厅','eDHR','DCC','智能排产']`，行列规模分别为 `展厅(22,6)`、`eDHR(27,6)`、`DCC(24,6)`、`智能排产(22,6)`。
 - 执行命令：运行 `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260623-functional-module-excel-appendix --mode preview` -> PASS，仅计划删除 `tmp/docs/20260623-functional-module-excel-appendix/`；随后执行同命令 `--mode apply` -> PASS，已删除该临时目录。
 - 结论记录：已生成一份适合直接附给领导的 Excel 附录，四个业务分别独立成 sheet，内容均按非技术人员可读方式整理。
+
+## 2026-06-23 为功能模块 Excel 追加璞润 Sheet
+
+- 用户需求：在现有功能模块 Excel 中增加 `璞润` sheet，内容基于 `D:\Vein` 和 `D:\ocr3` 今年范围内的提交总结，并继续保持和其他 sheet 一样的非技术表达方式。
+- 命中经验：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md` 后命中 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`；本任务仅做本机 Git 提交盘点与 Excel 更新。
+- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-functional-module-excel-purun-sheet\`，写入 `task.md`、`execution-log.md`，并确认上一任务 `20260623-functional-module-excel-appendix` 已完成。
+- 执行命令：只读获取 `D:\Vein` 与 `D:\ocr3` 在 `2026-01-01` 至 `2026-06-23` 期间的提交主题，按业务语言归并为治疗流程优化、图像与判定、算法与连接、机械臂与设备、水路与压力、界面与交互、报告与记录、诊断与发布等工作条目。
+- 执行记录：用户明确要求“不要加函数名、模块名这种针对程序员的描述，要所有人都能看懂的”，因此 `璞润` sheet 只保留业务工作语言，不直接写函数名、接口名、控制器名或提交哈希。
+- 执行命令：尝试直接写回 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\functional-module-appendix-20260623.xlsx` 时，`openpyxl` 返回 `PermissionError`；随后生成中间文件 `functional-module-appendix-20260623.tmp.xlsx`，并复制出可用替代交付文件 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\functional-module-appendix-20260623-purun.xlsx`。
+- 执行命令：复核替代文件，确认 workbook sheetnames 为 `展厅 / eDHR / DCC / 智能排产 / 璞润`，其中 `璞润` sheet 为 `20` 行 `6` 列。
+- 执行命令：删除中间文件 `functional-module-appendix-20260623.tmp.xlsx`，并运行 `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260623-functional-module-excel-purun-sheet --mode preview` -> PASS；预览提示的删除候选已提前手动清理。
+- 阻塞记录：原始文件 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\functional-module-appendix-20260623.xlsx` 当前被其他进程占用，暂时不能原地覆盖；如需回写原路径，需要先关闭占用该文件的程序。
+- 结论记录：当前已生成一份可直接使用的替代交付文件 `functional-module-appendix-20260623-purun.xlsx`，内容已补齐 `璞润` sheet；待原始文件释放锁定后，可再覆盖回原文件名。
+
+## 2026-06-23 补充 QMS 文控重点与瑛泰系统 Sheet
+
+- 用户需求：继续补充 Excel，要求“QMS 里面与浏览功能、浏览权限功能之外的功能标灰色，浏览功能和浏览权限功能细化”；同时补充 QMS 里的 `NAS 管理`、`从 NAS 平移数据到文控中心`，并额外增加 `瑛泰系统` sheet，整理运行控制台里的内容。
+- 命中经验：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md` 后命中 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`；本任务仅做本机盘点与 Excel 更新。
+- 执行记录：识别到原始文件 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\functional-module-appendix-20260623.xlsx` 仍存在锁文件 `~$functional-module-appendix-20260623.xlsx`，说明原文件持续被其他进程占用；因此本轮继续以替代交付文件方式产出，不直接覆盖原文件名。
+- 执行命令：定向检索 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3\src\views\infra\runtime-control\index.vue` 与相关组件，提取运行控制台里的构建发布、测试部署、正式上线、备份恢复、状态查看、探针与风险、事故闭环等内容；同时检索 `DCC` 受控浏览、访问规则、权限预览、OnlyOffice 只读预览、NAS 权限快照、NAS 主体映射和 NAS 平移到文控中心相关证据。
+- 执行记录：按用户要求把 `DCC` sheet 改成“重点突出浏览功能与浏览权限功能”的样式，浏览相关与权限相关条目细化展开，其余 QMS 文控条目标为灰色；同时把 `NAS 管理` 和 `NAS 平移到文控中心` 补充到 QMS 文控范围内。
+- 执行命令：基于 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\functional-module-appendix-20260623-purun.xlsx` 生成最新替代交付文件 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\functional-module-appendix-20260623-qms-yingtai.xlsx`。
+- 执行命令：复核最新替代文件，确认 workbook sheetnames 为 `展厅 / eDHR / DCC / 智能排产 / 璞润 / 瑛泰系统`，其中 `DCC` 为 `17` 行 `6` 列，`瑛泰系统` 为 `17` 行 `6` 列；`DCC` 中第 `12-17` 行为灰色。
+- 结论记录：当前已生成一份最新可用替代交付文件 `functional-module-appendix-20260623-qms-yingtai.xlsx`，已补齐 QMS 文控重点样式和 `瑛泰系统` sheet；若后续关闭原始 Excel，可再覆盖回原文件名。
