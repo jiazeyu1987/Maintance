@@ -1248,3 +1248,16 @@
 - GREEN 记录：前端契约 pytest PASS；后端 MockMvc 单测 PASS；`pnpm --dir D:\ProjectPackage\Int\IntRuoyiMaintance\frontend typecheck` PASS；`pnpm --dir D:\ProjectPackage\Int\IntRuoyiMaintance\frontend build` PASS；`python -X utf8 D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\verify_contracts.py` PASS。
 - 视觉验证：Playwright 打开 `http://127.0.0.1:48182/`，左下角显示软件版本 `2026.06.0`、测试服版本 `release-20260623-random-erp-test-v1`、正式服/备份服 `未上报`；临时截图已目视检查并在收尾清理。
 - 收尾记录：执行 `task-closeout-cleanup` preview/apply，保留本任务 `task.md` 与 `execution-log.md`，清理 Vite 临时日志和本次 Playwright 临时截图。
+
+## 2026-06-23 更新本机运行控制台到提交后版本
+
+- 用户需求：`帮我更新到提交后的版本`
+- 命中经验：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`，命中 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md` 与 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`；本任务只重建并重启本机 48181，不执行远端服务器写入。
+- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-runtime-control-restart-to-commit\`，写入 `task.md` 与 `execution-log.md`。
+- RED 记录：当前 48181 旧 JS 资源不含 `console-version-dock` 与 `2026.06.0`，`release-status` 只有 `testCurrentReleaseTag`，没有 `prodCurrentReleaseTag/backupCurrentReleaseTag`。
+- 执行记录：停止旧 48181 进程 PID `29548`，随后运行 `powershell -NoProfile -ExecutionPolicy Bypass -File D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\build.ps1`，前端 typecheck/build 与 Maven 22 个测试均通过，jar 重新打包成功。
+- 阻塞与处理：首次启动失败，原因是本机 `runtime-control.local.yaml` 的 `repo-root/frontend-root` 指向已删除 clean release worktree；已按项目固定路径改回 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro` 与 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3`。
+- GREEN 记录：重新启动 48181 成功，最终保留运行 PID `35752`；`http://127.0.0.1:48181/` 已加载新资源 `index-BVR1hDry.js`，该 JS 包含 `console-version-dock` 与 `2026.06.0`。
+- 验证记录：`release-status` 已返回 `test/prod/backupCurrentReleaseTag`；Playwright 页面快照左下角显示软件版本 `2026.06.0`、测试服 `release-20260623-random-erp-test-v1`、正式服 `release-20260621-page-full-flow-mainmerge-v15`、备份服 `release-20260621-page-full-flow-mainmerge-v15`。
+- 收尾记录：最终复核 PID `35752` 仍监听 `48181`，首页与 `release-status` 均 HTTP 200；运行日志转存到本机 `runtime/runtime-control/`，不占用任务目录。
+- 收尾记录：执行 `task-closeout-cleanup` preview/apply，保留本任务 `task.md` 与 `execution-log.md`，清理旧启动临时日志。
