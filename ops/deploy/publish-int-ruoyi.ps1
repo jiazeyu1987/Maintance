@@ -757,6 +757,53 @@ function Assert-FrontendBuildStaticAssetContract {
     }
 }
 
+function New-ReleaseChangeSetManifest {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$PackageTag
+    )
+
+    return [ordered]@{
+        summary = "Release package $PackageTag"
+        component = $Component
+        items = @(
+            "发布包：$PackageTag"
+            "组件范围：$Component"
+        )
+        includeShowroomBuildPackage = [bool]$publishWebsite
+        includeOnlyOffice = [bool]$IncludeOnlyOffice
+    }
+}
+
+function Write-FrontendReleaseInfo {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$FrontendDir,
+        [Parameter(Mandatory = $true)]
+        [string]$PackageTag,
+        [Parameter(Mandatory = $true)]
+        [array]$SourceRepos
+    )
+
+    $distDir = Join-Path $FrontendDir 'dist-intruoyi-test'
+    if (-not (Test-Path -LiteralPath $distDir -PathType Container)) {
+        Fail "Frontend release info target dist missing: $distDir"
+    }
+
+    $releaseInfo = [ordered]@{
+        releaseTag = $PackageTag
+        packageId = $packageDirectoryName
+        createdAt = (Get-Date).ToUniversalTime().ToString('o')
+        publishScope = if ($SkipDatabaseSync -and $SkipMinioSync) { 'code-only' } else { 'with-data' }
+        changeSet = New-ReleaseChangeSetManifest -PackageTag $PackageTag
+        sourceRepos = $SourceRepos
+    }
+    $json = $releaseInfo | ConvertTo-Json -Depth 12
+    $targetPath = Join-Path $distDir 'release-info.json'
+    [System.IO.File]::WriteAllText($targetPath, $json, [System.Text.UTF8Encoding]::new($false))
+    Info "Frontend release info written: $targetPath"
+}
+
 function Resolve-BackendRuntimeBaseConfig {
     if (-not $publishBackend -or $Mode -eq 'deploy-release' -or $Mode -eq 'mark-tested') {
         return $null
@@ -3359,12 +3406,7 @@ function Write-ReleaseManifestV1 {
         createdAt = (Get-Date).ToUniversalTime().ToString('o')
         createdBy = $effectiveOperatorName
         sourceRepos = $sourceRepos
-        changeSet = [ordered]@{
-            summary = "Release package $packageDirectoryName"
-            component = $Component
-            includeShowroomBuildPackage = [bool]$publishWebsite
-            includeOnlyOffice = [bool]$IncludeOnlyOffice
-        }
+        changeSet = New-ReleaseChangeSetManifest -PackageTag $PackageTag
         publishScope = $publishScopeValue
         components = $components
         artifacts = $artifacts
@@ -4519,6 +4561,8 @@ try {
         Remove-Item -LiteralPath $viteCacheDir -Recurse -Force
     }
     Invoke-FrontendViteBuild -FrontendDir $frontendDir
+    $frontendReleaseInfoSourceRepos = New-ReleaseSourceRepoManifestEntries
+    Write-FrontendReleaseInfo -FrontendDir $frontendDir -PackageTag $packageDirectoryName -SourceRepos $frontendReleaseInfoSourceRepos
     Assert-FrontendBuildStaticAssetContract -FrontendDir $frontendDir
 } finally {
     $env:NODE_OPTIONS = $oldNodeOptions
