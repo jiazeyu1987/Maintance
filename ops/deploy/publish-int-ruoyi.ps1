@@ -117,6 +117,15 @@ function Write-Utf8LfNoBomFile {
     [System.IO.File]::WriteAllText($Path, $normalized, [System.Text.UTF8Encoding]::new($false))
 }
 
+function ConvertTo-ReleaseUnicodeText {
+    param(
+        [Parameter(Mandatory = $true)]
+        [int[]]$CodePoints
+    )
+
+    return (-join ($CodePoints | ForEach-Object { [char]$_ }))
+}
+
 function New-ReleaseDockerBuildContext {
     param(
         [Parameter(Mandatory = $true)]
@@ -763,12 +772,15 @@ function New-ReleaseChangeSetManifest {
         [string]$PackageTag
     )
 
+    $releasePackageLabel = ConvertTo-ReleaseUnicodeText -CodePoints @(21457, 24067, 21253)
+    $componentScopeLabel = ConvertTo-ReleaseUnicodeText -CodePoints @(32452, 20214, 33539, 22260)
+
     return [ordered]@{
         summary = "Release package $PackageTag"
         component = $Component
         items = @(
-            "发布包：$PackageTag"
-            "组件范围：$Component"
+            "${releasePackageLabel}：$PackageTag"
+            "${componentScopeLabel}：$Component"
         )
         includeShowroomBuildPackage = [bool]$publishWebsite
         includeOnlyOffice = [bool]$IncludeOnlyOffice

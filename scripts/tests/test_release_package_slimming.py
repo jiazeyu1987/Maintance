@@ -30,3 +30,15 @@ def test_release_manifest_artifact_scan_fails_if_docker_build_context_remains() 
 
     assert "'docker-build-context'" in script
     assert "Release package still contains docker-build-context" in script
+
+
+def test_release_change_set_manifest_uses_unicode_safe_labels() -> None:
+    script = _script_text()
+
+    assert "function ConvertTo-ReleaseUnicodeText" in script
+    assert "$releasePackageLabel = ConvertTo-ReleaseUnicodeText -CodePoints @(21457, 24067, 21253)" in script
+    assert "$componentScopeLabel = ConvertTo-ReleaseUnicodeText -CodePoints @(32452, 20214, 33539, 22260)" in script
+    assert '${releasePackageLabel}：$PackageTag' in script
+    assert '${componentScopeLabel}：$Component' in script
+    assert '"发布包：$PackageTag"' not in script
+    assert '"组件范围：$Component"' not in script

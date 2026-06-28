@@ -1,5 +1,14 @@
 # 请求与命令记录
 
+## 2026-06-28 提交并推送代码
+
+- 用户需求：提交并推送当前“发布说明变更项乱码修复”任务的代码。
+- 命中经验：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-agent-checklist.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`。
+- 命令记录：核对当前提交范围归属 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260628-release-change-items-garbled-fix\task.md`，避免混入其他历史残留改动。
+- 命令记录：执行 `python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_release_package_slimming.py D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_release_sql_preflight_gate.py -q` -> PASS。
+- 命令记录：执行 `node D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\publish_release_info_contract.test.mjs` -> PASS。
+- 命令记录：预检查 `git remote -v`，当前维护仓 Git 根目录未配置远端；可执行本地提交，但推送前置条件缺失。
+
 ## 2026-06-21 主程序合并后重新走页面发布全链路
 
 - 用户需求：主程序合并修改了部分代码，担心原来的发布链路已经不对，要求重新通过页面前端点击操作完整走一遍 `构建发布包 -> 部署测试服 -> 标记测试通过 -> 上线正式服 -> 上线备份服`。
