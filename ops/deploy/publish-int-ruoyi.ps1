@@ -61,6 +61,9 @@ param(
     [string]$DccDownloadEncryptionKeyId = $env:DCC_DOWNLOAD_ENCRYPTION_KEY_ID,
     [string]$DccDownloadEncryptionBase64Key = $env:DCC_DOWNLOAD_ENCRYPTION_BASE64_KEY,
     [string]$DccDownloadEncryptionArtifactDirectory = $env:DCC_DOWNLOAD_ENCRYPTION_ARTIFACT_DIRECTORY,
+    [string]$DccProjectCodeCodexCliCommand = $env:DCC_PROJECT_CODE_CODEX_CLI_COMMAND,
+    [string]$DccProjectCodeCodexHome = $env:DCC_PROJECT_CODE_CODEX_HOME,
+    [string]$DccProjectCodeCodexTimeoutSeconds = $env:DCC_PROJECT_CODE_CODEX_TIMEOUT_SECONDS,
     [string]$LocalCacheRoot = $env:INTRUOYI_LOCAL_CACHE_ROOT,
     [ValidateSet('offline-tar')]
     [string]$BackendRuntimeBaseMode = $env:INTRUOYI_BACKEND_RUNTIME_BASE_MODE,
@@ -149,8 +152,12 @@ function New-ReleaseDockerBuildContext {
 
     if ($IncludeBackend) {
         $backendJarTargetDir = Join-Path $ContextRoot 'ruoyi-vue-pro\yudao-server\target'
+        $backendJarTargetPath = Join-Path $backendJarTargetDir 'yudao-server-exec.jar'
         New-Item -ItemType Directory -Force -Path $backendJarTargetDir | Out-Null
-        Copy-Item -LiteralPath $BackendJarPath -Destination (Join-Path $backendJarTargetDir 'yudao-server.jar') -Force
+        [System.IO.File]::Copy($BackendJarPath, $backendJarTargetPath, $true)
+        if (-not (Test-Path -LiteralPath $backendJarTargetPath -PathType Leaf)) {
+            Fail "Backend exec jar missing from Docker build context: $backendJarTargetPath"
+        }
     }
 
     if ($IncludeFrontend) {
@@ -721,11 +728,7 @@ function Invoke-FrontendViteBuild {
         [string]$FrontendDir
     )
 
-    $viteCli = Join-Path $FrontendDir 'node_modules\vite\bin\vite.js'
-    if (-not (Test-Path -LiteralPath $viteCli)) {
-        Fail "Missing frontend Vite CLI: $viteCli"
-    }
-    Invoke-CheckedCommand -FilePath 'node' -ArgumentList @($viteCli, 'build', '--mode', 'test') -WorkingDirectory $FrontendDir
+    Invoke-CheckedCommand -FilePath 'pnpm' -ArgumentList @('build:test') -WorkingDirectory $FrontendDir
 }
 
 function Assert-FrontendBuildStaticAssetContract {
@@ -3619,7 +3622,7 @@ $websiteRepo = (Resolve-Path $WebsiteRepo).Path
 $publishBackend = $Component -in @('full', 'intruoyi', 'backend')
 $publishFrontend = $Component -in @('full', 'intruoyi', 'frontend')
 $publishWebsite = $Component -in @('full', 'website')
-$backendJar = Join-Path $backendRepo 'yudao-server\target\yudao-server.jar'
+$backendJar = Join-Path $backendRepo 'yudao-server\target\yudao-server-exec.jar'
 $backendDockerfile = Join-Path $backendRepo 'script\deploy\int-ruoyi-test\Dockerfile.backend'
 $frontendDockerfile = Join-Path $backendRepo 'script\deploy\int-ruoyi-test\Dockerfile.frontend'
 $composeTemplate = Join-Path $scriptDir 'int-ruoyi-test\docker-compose.yml'
@@ -4344,6 +4347,86 @@ $showroomFileStorageSql
     [System.IO.File]::WriteAllText($postImportSqlLocal, $postImportSql, [System.Text.UTF8Encoding]::new($false))
 }
 
+function Get-RequiredDatabaseSqlSessionPreamble {
+    param(
+        [Parameter(Mandatory = $true)]
+        $Item,
+
+        [Parameter(Mandatory = $true)]
+        [string]$TargetEnvironment
+    )
+    $migrationId = [string]$Item.migrationId
+    switch ($migrationId) {
+        '20260624_dcc_view_matrix_independent_seed' {
+            $seedTenantId = switch ($TargetEnvironment) {
+                'test' { '122' }
+                'prod' { '1' }
+                'backup' { '1' }
+                default { Fail "Unsupported DCC view matrix seed environment: $TargetEnvironment" }
+            }
+            $sessionLines = @(
+                "SET @dcc_view_matrix_seed_tenant_id := $seedTenantId;"
+            )
+            if ($TargetEnvironment -in @('prod', 'backup')) {
+                $sessionLines += "SET @dcc_view_matrix_seed_allow_yudao_tenant := 1;"
+            } else {
+                $sessionLines += "SET @dcc_view_matrix_seed_allow_yudao_tenant := NULL;"
+            }
+            return $sessionLines -join [Environment]::NewLine
+        }
+        default {
+            return ''
+        }
+    }
+}
+
+function Sort-RequiredDatabaseSqlApplyItems {
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyCollection()]
+        [AllowNull()]
+        [object[]]$Items,
+
+        [Parameter(Mandatory = $true)]
+        [string]$TargetEnvironment
+    )
+
+    if ($TargetEnvironment -ne 'test') {
+        return @($Items)
+    }
+
+    if ($null -eq $Items -or $Items.Count -eq 0) {
+        return @()
+    }
+
+    $priorityMap = @{
+        '20260624_dcc_view_matrix_test_tenant_prereq' = 10
+        '20260624_dcc_view_matrix_independent_seed' = 20
+    }
+
+    $indexedItems = @()
+    for ($index = 0; $index -lt $Items.Count; $index++) {
+        $indexedItems += [pscustomobject]@{
+            Item = $Items[$index]
+            OriginalOrder = $index
+        }
+    }
+
+    return @(
+        $indexedItems |
+            Sort-Object `
+                @{ Expression = {
+                    $migrationId = [string]$_.Item.migrationId
+                    if ($priorityMap.ContainsKey($migrationId)) {
+                        return [int]$priorityMap[$migrationId]
+                    }
+                    return 1000 + [int]$_.OriginalOrder
+                } }, `
+                @{ Expression = { [int]$_.OriginalOrder } } |
+            ForEach-Object { $_.Item }
+    )
+}
+
 function Invoke-RequiredDatabaseSqlScripts {
     Info 'Applying required database SQL scripts'
     $preflightPlan = Read-ReleasePreflightPlan
@@ -4353,15 +4436,26 @@ function Invoke-RequiredDatabaseSqlScripts {
     foreach ($item in @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ENV_NOT_ALLOWED' })) {
         Info "Skipping required database SQL outside target environment: $($item.migrationId)"
     }
-    $applyItems = Get-ReleasePreflightApplyItems -PreflightPlan $preflightPlan
+    $applyItems = Sort-RequiredDatabaseSqlApplyItems -Items (Get-ReleasePreflightApplyItems -PreflightPlan $preflightPlan) -TargetEnvironment $Environment
     foreach ($item in $applyItems) {
         $fileName = Get-RequiredDatabaseSqlFileName -RelativePath ([string]$item.file)
         $remoteSqlPath = "$remoteRequiredSqlDir/$fileName"
+        $sessionPreamble = Get-RequiredDatabaseSqlSessionPreamble -Item $item -TargetEnvironment $Environment
         Info "Applying required database SQL: $fileName"
         Invoke-SshCommand "test -f '$remoteSqlPath' && echo REQUIRED_SQL_EXISTS"
         Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'RUNNING'
         try {
-            Invoke-SshCommand "cat '$remoteSqlPath' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 ruoyi-vue-pro"
+            if ([string]::IsNullOrWhiteSpace($sessionPreamble)) {
+                Invoke-SshCommand "cat '$remoteSqlPath' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 ruoyi-vue-pro"
+            } else {
+                $escapedSessionPreamble = $sessionPreamble.TrimEnd()
+                Invoke-SshCommand "{
+cat <<'SQL'
+$escapedSessionPreamble
+SQL
+cat '$remoteSqlPath'
+} | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 ruoyi-vue-pro"
+            }
         } catch {
             Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'FAILED' -ErrorMessage $_.Exception.Message
             throw
@@ -4614,6 +4708,12 @@ if ($publishBackend -or $publishFrontend) {
         -IncludeBackend:$publishBackend `
         -IncludeFrontend:$publishFrontend `
         -BackendJarPath $backendJar
+    if ($publishBackend) {
+        $backendJarContextPath = Join-Path $dockerBuildContextRoot 'ruoyi-vue-pro\yudao-server\target\yudao-server-exec.jar'
+        if (-not (Test-Path -LiteralPath $backendJarContextPath -PathType Leaf)) {
+            Fail "Backend exec jar missing from Docker build context after preparation: $backendJarContextPath"
+        }
+    }
 }
 
 if ($publishBackend) {
@@ -4782,6 +4882,9 @@ $effectiveDccDownloadEncryptionPolicyVersion = if (-not [string]::IsNullOrWhiteS
 $effectiveDccDownloadEncryptionKeyId = if (-not [string]::IsNullOrWhiteSpace($DccDownloadEncryptionKeyId)) { $DccDownloadEncryptionKeyId } elseif ($existingRemoteEnv.ContainsKey('DCC_DOWNLOAD_ENCRYPTION_KEY_ID')) { $existingRemoteEnv['DCC_DOWNLOAD_ENCRYPTION_KEY_ID'] } else { '' }
 $effectiveDccDownloadEncryptionBase64Key = if (-not [string]::IsNullOrWhiteSpace($DccDownloadEncryptionBase64Key)) { $DccDownloadEncryptionBase64Key } elseif ($existingRemoteEnv.ContainsKey('DCC_DOWNLOAD_ENCRYPTION_BASE64_KEY')) { $existingRemoteEnv['DCC_DOWNLOAD_ENCRYPTION_BASE64_KEY'] } else { '' }
 $effectiveDccDownloadEncryptionArtifactDirectory = if (-not [string]::IsNullOrWhiteSpace($DccDownloadEncryptionArtifactDirectory)) { $DccDownloadEncryptionArtifactDirectory } elseif ($existingRemoteEnv.ContainsKey('DCC_DOWNLOAD_ENCRYPTION_ARTIFACT_DIRECTORY')) { $existingRemoteEnv['DCC_DOWNLOAD_ENCRYPTION_ARTIFACT_DIRECTORY'] } else { '' }
+$effectiveDccProjectCodeCodexCliCommand = if (-not [string]::IsNullOrWhiteSpace($DccProjectCodeCodexCliCommand)) { $DccProjectCodeCodexCliCommand } elseif ($existingRemoteEnv.ContainsKey('DCC_PROJECT_CODE_CODEX_CLI_COMMAND')) { $existingRemoteEnv['DCC_PROJECT_CODE_CODEX_CLI_COMMAND'] } else { '/opt/intruoyi/runtime/tools/codex' }
+$effectiveDccProjectCodeCodexHome = if (-not [string]::IsNullOrWhiteSpace($DccProjectCodeCodexHome)) { $DccProjectCodeCodexHome } elseif ($existingRemoteEnv.ContainsKey('DCC_PROJECT_CODE_CODEX_HOME')) { $existingRemoteEnv['DCC_PROJECT_CODE_CODEX_HOME'] } else { '/opt/intruoyi/runtime/backend-codex-home' }
+$effectiveDccProjectCodeCodexTimeoutSeconds = if (-not [string]::IsNullOrWhiteSpace($DccProjectCodeCodexTimeoutSeconds)) { $DccProjectCodeCodexTimeoutSeconds } elseif ($existingRemoteEnv.ContainsKey('DCC_PROJECT_CODE_CODEX_TIMEOUT_SECONDS')) { $existingRemoteEnv['DCC_PROJECT_CODE_CODEX_TIMEOUT_SECONDS'] } else { '300' }
 $effectiveBackendRuntimeBaseMode = if (-not [string]::IsNullOrWhiteSpace($BackendRuntimeBaseMode)) { $BackendRuntimeBaseMode } elseif ($existingRemoteEnv.ContainsKey('RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_MODE')) { $existingRemoteEnv['RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_MODE'] } else { '' }
 $effectiveBackendRuntimeBaseTarPath = if (-not [string]::IsNullOrWhiteSpace($BackendRuntimeBaseTarPath)) { $BackendRuntimeBaseTarPath } elseif ($existingRemoteEnv.ContainsKey('RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_TAR')) { $existingRemoteEnv['RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_TAR'] } else { '' }
 $effectiveBackendRuntimeBaseTarSha256 = if (-not [string]::IsNullOrWhiteSpace($BackendRuntimeBaseTarSha256)) { $BackendRuntimeBaseTarSha256 } elseif ($existingRemoteEnv.ContainsKey('RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_TAR_SHA256')) { $existingRemoteEnv['RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_TAR_SHA256'] } else { '' }
@@ -4843,6 +4946,9 @@ $DccDownloadEncryptionPolicyVersion = $effectiveDccDownloadEncryptionPolicyVersi
 $DccDownloadEncryptionKeyId = $effectiveDccDownloadEncryptionKeyId
 $DccDownloadEncryptionBase64Key = $effectiveDccDownloadEncryptionBase64Key
 $DccDownloadEncryptionArtifactDirectory = $effectiveDccDownloadEncryptionArtifactDirectory
+$DccProjectCodeCodexCliCommand = $effectiveDccProjectCodeCodexCliCommand
+$DccProjectCodeCodexHome = $effectiveDccProjectCodeCodexHome
+$DccProjectCodeCodexTimeoutSeconds = $effectiveDccProjectCodeCodexTimeoutSeconds
 $BackendRuntimeBaseMode = $effectiveBackendRuntimeBaseMode
 $BackendRuntimeBaseTarPath = $effectiveBackendRuntimeBaseTarPath
 $BackendRuntimeBaseTarSha256 = $effectiveBackendRuntimeBaseTarSha256
@@ -4905,6 +5011,9 @@ DCC_DOWNLOAD_ENCRYPTION_POLICY_VERSION=$DccDownloadEncryptionPolicyVersion
 DCC_DOWNLOAD_ENCRYPTION_KEY_ID=$DccDownloadEncryptionKeyId
 DCC_DOWNLOAD_ENCRYPTION_BASE64_KEY=$DccDownloadEncryptionBase64Key
 DCC_DOWNLOAD_ENCRYPTION_ARTIFACT_DIRECTORY=$DccDownloadEncryptionArtifactDirectory
+DCC_PROJECT_CODE_CODEX_CLI_COMMAND=$DccProjectCodeCodexCliCommand
+DCC_PROJECT_CODE_CODEX_HOME=$DccProjectCodeCodexHome
+DCC_PROJECT_CODE_CODEX_TIMEOUT_SECONDS=$DccProjectCodeCodexTimeoutSeconds
 RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_MODE=$BackendRuntimeBaseMode
 RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_TAR=$BackendRuntimeBaseTarPath
 RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_TAR_SHA256=$BackendRuntimeBaseTarSha256

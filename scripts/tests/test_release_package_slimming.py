@@ -32,6 +32,16 @@ def test_release_manifest_artifact_scan_fails_if_docker_build_context_remains() 
     assert "Release package still contains docker-build-context" in script
 
 
+def test_build_context_prepares_backend_exec_jar_and_fail_fast_checks() -> None:
+    script = _script_text()
+
+    assert "function New-ReleaseDockerBuildContext" in script
+    assert "$backendJarTargetPath = Join-Path $backendJarTargetDir 'yudao-server-exec.jar'" in script
+    assert "[System.IO.File]::Copy($BackendJarPath, $backendJarTargetPath, $true)" in script
+    assert "Backend exec jar missing from Docker build context:" in script
+    assert "Backend exec jar missing from Docker build context after preparation:" in script
+
+
 def test_release_change_set_manifest_uses_unicode_safe_labels() -> None:
     script = _script_text()
 
