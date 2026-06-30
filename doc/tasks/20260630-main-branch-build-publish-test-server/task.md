@@ -55,7 +55,7 @@ BDD: 本轮问题要形成前置经验 -> Given 发布过程中出现可复用�
 
 1. 建立本轮主分支发布任务台账并记录经验门禁。`COMPLETED`
 2. 核对三仓主分支输入、工作区状态与运行控制台前置条件。`COMPLETED`
-3. 真实执行 `build-release` 并校验 manifest。`BLOCKED`
+3. 真实执行 `build-release` 并校验 manifest。`COMPLETED`
 4. 真实执行 `publish-test` 并完成测试服运行态验证。`BLOCKED`
 5. 回填全过程证据、问题总结和经验文档更新。`IN_PROGRESS`
 
@@ -74,11 +74,10 @@ BDD: 本轮问题要形成前置经验 -> Given 发布过程中出现可复用�
 
 ## Current Status
 
-BLOCKED：当前仍不满足“只发布 Git 已提交版本”的主分支输入门禁，不能继续真实测试服发布。
+BLOCKED：本轮主分支 `build-release` 已成功且 manifest 通过“只发布 Git 已提交版本”门禁，但测试服 `publish-test` 被 required SQL 契约阻断，暂不能完成测试服发布闭环。
 
-- 历史阻塞：真实 `build-release` 虽已于 `2026-06-30 18:36` 成功完成并上传 NAS 发布包 `release-20260630-1825-main-branch-v1`，但随后的发布包核对发现 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260630-1825-main-branch-v1\manifest.json` 中后端仓记录为 `branch=int_main`、`commit=93bdb0f9aad11b2da8e10f396484e4512ae587e4`、`dirty=true`，因此该发布包已判废。
-- 当前门禁复核时间：`2026-06-30 18:58:06`。
-- 当前维护仓主分支状态：`int_main`，存在未提交改动 `docs/release-agent-checklist.md`、`docs/release-build-preflight-lessons.md`、`docs/request-command-log.md`，以及未纳入版本控制的任务目录 `doc/tasks/20260630-main-branch-build-publish-test-server/`。
-- 当前后端仓主分支状态：`int_main`，仍存在未提交业务改动与任务文档改动，包括 `yudao-module-erp`、`yudao-module-mes` 相关源码/测试文件以及 `doc/tasks/20260630-edhr-gray-fillable-cell-rules/`、`doc/tasks/20260630-schedule-order-replan-production-material-required/` 台账。
-- 当前前端仓主分支状态：`int_main`，存在未纳入版本控制的真实 E2E 文件 `tests/e2e/mes-schedule-order-replan-881mo090863-real-flow.e2e.js`。
-- 按当前线程基线，发布默认只发布三仓主分支当前版本；任一主分支工作区 dirty 时，必须先提示用户选择处理方案，未得到明确选择前不得继续真实 `build-release` 或 `publish-test`。
+- 已完成构建：`op-2026-06-30T111930929156700Z-ee491e68-372d-4812-89bd-365f22bfc4fd` 于 `2026-06-30 19:19:30` 后最终 `SUCCESS`，发布包为 `release-20260630-1912-main-branch-v2`。
+- 已完成 manifest 复核：`E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260630-1912-main-branch-v2\manifest.json` 中后端 `commit=8241c309026bb37c3ba4d13da858afe1aea3ae07 branch=int_main dirty=false`，前端 `commit=513adf9a53f62c8c2fca318a0c75b137f794df89 branch=int_main dirty=false`，该发布包满足“只发布 Git 已提交版本”。
+- 当前阻塞 operation：`op-2026-06-30T113310680094600Z-844a0e48-aaec-4638-b63f-514985aad00e`。
+- 当前阻塞根因：测试服执行 required SQL `20260624_mes_schedule_issue_structured_backflow.sql` 时，MySQL 报错 `ERROR 1060 (42S21) at line 4: Duplicate column name 'status'`；说明真实库已具备该列，而 SQL 仍使用裸 `ALTER TABLE ... ADD COLUMN status`，不满足可重复执行契约。
+- 当前锁状态：发布日志已确认 `LOCK_RELEASED`，本轮可在修复 SQL 契约后直接重新走新的主分支 `build-release -> publish-test`。
