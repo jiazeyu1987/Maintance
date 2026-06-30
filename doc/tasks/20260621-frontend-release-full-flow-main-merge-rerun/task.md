@@ -55,11 +55,11 @@
 1. 建立本任务文档，确认上一任务已完成并锁定当前业务前后端与维护仓基线。`DONE`
 2. 完成 `experience-preflight`、本机控制台可用性检查与页面提交前预检。`DONE`
 3. 通过页面真实执行构建发布包并完成候选包核验。`DONE`（最新有效候选包为 `release-20260621-page-full-flow-mainmerge-v15`）
-4. 通过页面真实部署测试服并完成只读运行态验证。`PENDING`（`v14` 证据已失效，需重新执行 `deploy-test(v15)`）
-5. 通过页面真实标记测试通过并确认恢复候选/测试结论。`PENDING`（`v14` 证据已失效，需重新执行 `mark-tested(v15)`）
-6. 通过页面真实上线正式服并完成运行态与受保护边界验证。`PENDING`
-7. 通过页面真实上线备份服并完成运行态与受保护边界验证。`PENDING`
-8. 汇总本轮问题、修复、最终通过证据并执行收尾预览。`PENDING`
+4. 通过页面真实部署测试服并完成只读运行态验证。`DONE`（`deploy-test(v15)` 已完成，operation=`op-2026-06-22T124343427998700Z-ff404f87-2e5b-4ec1-9e04-cab7342d49a3`）
+5. 通过页面真实标记测试通过并确认恢复候选/测试结论。`DONE`（`mark-tested(v15)` 已完成，operation=`op-2026-06-22T130722457390300Z-2411caa4-7048-451b-bbc4-a5448ee35343`）
+6. 通过页面真实上线正式服并完成运行态与受保护边界验证。`DONE`（`promote-prod(v15)` 已完成，operation=`op-2026-06-22T131359664055200Z-033d12b4-2e7d-467d-8c3e-50f7d312ac4b`）
+7. 通过页面真实上线备份服并完成运行态与受保护边界验证。`DONE`（`backup(v15)` 已完成，operation=`op-2026-06-22T134349739402400Z-5f5507e8-cd79-4630-b9fb-2e2e6fc6d3b8`）
+8. 汇总本轮问题、修复、最终通过证据并执行收尾预览。`DONE`
 
 ## 预期验证
 
@@ -72,7 +72,7 @@
 
 ## 当前状态
 
-IN_PROGRESS：`2026-06-22` 真实页面 `build-release(v15)` 已成功，operation `op-2026-06-22T121006967109700Z-6dc95b22-9d29-4a00-b432-9cdd4e34bc51` 收口为 `SUCCESS`；本地候选目录 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260621-page-full-flow-mainmerge-v15\` 已生成 `manifest.json`、`release-manifest.json` 与 `intruoyi-images_release-20260621-page-full-flow-mainmerge-v15.tar`，且 manifest 已核对 backend commit=`49248d9f20db9e3100bc5f492c7027d4de065f32`、frontend commit=`37359a074cedcc0a341f17cb0abdd1a71f838731`、两仓 `dirty=false`。下一步必须继续复用真实页面会话 `frontend-release-full-flow-mainmerge` 执行 `deploy-test(v15)`，旧 `v14` build/test/mark-tested/prod 证据不得复用。
+COMPLETED：`2026-06-22` 同一 clean 发布输入 `release-20260621-page-full-flow-mainmerge-v15` 已通过真实页面一次性完整走通 `build-release -> deploy-test -> mark-tested -> promote-prod -> promote-backup`。其中 `promote-prod(v15)` operation=`op-2026-06-22T131359664055200Z-033d12b4-2e7d-467d-8c3e-50f7d312ac4b`、`promote-backup(v15)` operation=`op-2026-06-22T134349739402400Z-5f5507e8-cd79-4630-b9fb-2e2e6fc6d3b8` 均收口为 `SUCCESS`；只读复核确认正式服 `172.30.30.57` 与备份服 `172.30.30.59` 的 `/opt/intruoyi/runtime/.env`、`intruoyi-backend`、`intruoyi-frontend` 均已切到 `release-20260621-page-full-flow-mainmerge-v15`，对应 `48081/8081` 均返回 HTTP `200`。showroom 受保护边界也保持稳定：正式服 `config_id=28` 仍为 `bucket=yudao`、`domain=http://172.30.30.57:9000/yudao`，URL 计数 `127.0.0.1:9000 -> 0`、`172.30.30.57:9000/yudao -> 1434`；备份服 `config_id=28` 仍为 `bucket=yudao`、`domain=http://172.30.30.59:9000/yudao`，URL 计数 `127.0.0.1:9000 -> 0`、`172.30.30.59:9000/yudao -> 1434`。本任务目标已完成，后续仅保留收尾预览证据，不再继续新的发布动作。
 
 BLOCKED：`2026-06-22` 真实页面 `deploy-test(v4)` 暴露的 `20260618_mes_edhr_label_print_queue.sql` 菜单主键冲突，已在业务后端任务 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\doc\tasks\20260622-edhr-label-print-menu-id-collision-fix\` 按严格 TDD 修复并通过回归，且修复提交已落盘为 `6d96efef31`。只读证据确认 `900272-900279` 被独立表单占用、`900280-900283` 被其他 eDHR 菜单占用，因此 label print 菜单已切换到独立的 `900320-900331` 号段；`pytest`、迁移策略门禁与真实页面 `build-release(v5)` 均已通过，NAS 产物目录为 `Backup/ReleasePackage/release-20260621-page-full-flow-mainmerge-v5`。
 
@@ -156,3 +156,5 @@ BLOCKED：`2026-06-22` 真实页面 `deploy-test(v4)` 暴露的 `20260618_mes_ed
 `2026-06-22` 用户随后把当前线程目标切换为“按阶段一次性把 `D:\ProjectPackage\Int\IntRuoyi` holding 改动融合进真正的 `int_main`”。因此本任务在保留 `release-20260621-page-full-flow-mainmerge-v14` 已完成 `build-release -> deploy-test -> mark-tested` 以及 `prod(v14)` 失败证据的前提下，显式挂起，不再继续 `上线正式服 -> 上线备份服`。若后续恢复本任务，必须先确认当时的发布输入和环境状态是否仍允许直接续跑，必要时重新生成新的 `releaseTag`。
 
 `2026-06-22` 当前线程已恢复继续推进“主程序合并后重新走页面发布全链路”。在 clean release backend worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-mainmerge-release-clean` 只读对比正式服/测试服 `system_menu` 后确认：正式库 `900266/900267/900268` 仍被 traveler 菜单占用，而旧 `20260618_mes_edhr_release_transaction_lifecycle.sql` 仍把放行事务 `reject / withdraw / event-query` 绑在这组三号段。业务后端已按严格 TDD 把三条放行事务菜单切换到独立的 `900353/900354/900355`，并同步更新 package menu merge 与 `system_role_menu` 合并逻辑；相关回归、迁移策略门禁与 bug regression evidence 校验均已通过，clean worktree 提交为 `49248d9f20`。由于 backend clean 发布输入已从 `5c52f2ec42` 更新到 `49248d9f20`，frontend clean worktree 仍为 `37359a074`，旧 `release-20260621-page-full-flow-mainmerge-v14` 的 build/test/mark-tested/prod 证据不得复用；下一步必须继续复用真实页面会话 `frontend-release-full-flow-mainmerge`，以新的 `releaseTag`（建议 `release-20260621-page-full-flow-mainmerge-v15`）从页面重新执行 `build-release -> deploy-test -> mark-tested -> prod -> backup`。
+`2026-06-22` 真实页面随后继续执行 `deploy-test(v15)`，operation `op-2026-06-22T124343427998700Z-ff404f87-2e5b-4ec1-9e04-cab7342d49a3` 最终 `SUCCESS`。本机日志确认本轮在测试服完整跨过 target-bound `post-import.sql`、`infra_release_migration` 状态回写、`20260618_mes_edhr_release_transaction_lifecycle.sql` 应用、Quartz/showroom schema 检查、`backend/frontend` 容器重建、HTTP readiness、scheduler smoke runtime 校验、测试服发布锁释放与远端临时文件清理，最终输出 `Publish completed for test.`。只读复核同时确认测试服 `/opt/intruoyi/runtime/.env` 已为 `IMAGE_TAG=release-20260621-page-full-flow-mainmerge-v15`，`intruoyi-backend` 与 `intruoyi-frontend` 运行镜像都已切到 `release-20260621-page-full-flow-mainmerge-v15`，`http://172.30.30.58:48081/actuator/health` 与 `http://172.30.30.58:8081/` 均返回 HTTP `200`。至此里程碑 T4 已按新输入基线重新完成；下一步必须继续复用真实页面会话 `frontend-release-full-flow-mainmerge`，从页面真实执行 `mark-tested(v15)`，之后再继续 `prod -> backup`。
+`2026-06-22` 真实页面随后继续执行 `mark-tested(v15)`，operation `op-2026-06-22T130722457390300Z-2411caa4-7048-451b-bbc4-a5448ee35343` 最终 `SUCCESS`。页面预览已确认执行 `publish-int-ruoyi.ps1 -Mode mark-tested -ReleaseTag release-20260621-page-full-flow-mainmerge-v15 -TestConclusion 回归通过，允许上线正式服（v15） -SelectedRecoverySetCandidateId restore:20260621-063218 -RecoverySetId 20260621-063218 ...`，且 `-BackendRepoRoot/-FrontendRepoRoot` 继续指向 `D:/ProjectPackage/Int/IntRuoyiWorktrees/ruoyi-vue-pro-mainmerge-release-clean` 与 `D:/ProjectPackage/Int/IntRuoyiWorktrees/yudao-ui-admin-vue3-mainmerge-release-clean`。本机运行态 JSON 已收口为 `status=SUCCESS / summary=命令执行完成`；日志确认 NAS 发布目录 `Backup/ReleasePackage/release-20260621-page-full-flow-mainmerge-v15` 已写入测试通过结论，并同步记录 `rollback-compatibility.json status=BLOCKED` 元数据。至此里程碑 T5 已按新输入基线重新完成；下一步继续复用真实页面会话执行 `上线正式服(v15)`，之后再继续 `上线备份服(v15)`。
