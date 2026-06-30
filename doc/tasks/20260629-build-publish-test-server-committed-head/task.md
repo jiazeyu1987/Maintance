@@ -52,12 +52,12 @@ BDD: 测试服版本必须与本次已提交 HEAD 一致 -> Given build-release 
 
 ## Milestones
 
-1. 创建任务台账并记录经验门禁。`IN_PROGRESS`
-2. 核对当前各仓库已提交 HEAD、未提交脏改与测试服当前运行版本差异。`PENDING`
+1. 创建任务台账并记录经验门禁。`COMPLETED`
+2. 核对当前各仓库已提交 HEAD、未提交脏改与测试服当前运行版本差异。`COMPLETED`
 3. 创建干净发布 worktree，锁定仅含已提交 HEAD 的发布输入。`COMPLETED`
-4. 真实执行 `build-release` 并校验 manifest 提交号与本次 HEAD 一致。`IN_PROGRESS`
-5. 真实执行 `publish-test` 并验证测试服运行态。`IN_PROGRESS`
-6. 回写日志、证据与结论。`IN_PROGRESS`
+4. 真实执行 `build-release` 并校验 manifest 提交号与本次 HEAD 一致。`COMPLETED`
+5. 真实执行 `publish-test` 并验证测试服运行态。`COMPLETED`
+6. 回写日志、证据与结论。`COMPLETED`
 
 ## Expected Verification
 
@@ -74,22 +74,19 @@ BDD: 测试服版本必须与本次已提交 HEAD 一致 -> Given build-release 
 
 ## Current Status
 
-IN_PROGRESS：本轮“只发布已提交 git HEAD”已推进到 `release-20260629-1915-committed-head-v6` 的真实测试服发布，并在同一 MES 角色范围 SQL 上继续暴露新的主键兼容阻塞；当前状态为：
+COMPLETED：本轮“只发布已提交 git HEAD 到测试服”已完成真实 `build-release -> publish-test` 闭环，并通过测试服运行态六项验收；最终结果如下：
 
-- 前端本轮锁定发布输入仍为 `1ffcdca22b735df762a581b2eed207a4581e8a71`
-- 后端最新已提交修复已推进到 `1e7e81f6f0264b960593610ce375a028059188c4`
-- 维护控制台当前发布输入已切换为：
-  - 后端 `D:\ProjectPackage\Int\release-worktrees\IntRuoyi-backend-20260629-1e7e81f`
-  - 前端 `D:\ProjectPackage\Int\release-worktrees\IntRuoyi-frontend-20260629-1ffcdca`
+- 最终 releaseTag：`release-20260629-2118-committed-head-v10`
+- build operation：`op-2026-06-29T131446009138100Z-4a88e7f8-e94c-4bfb-b199-4cc8e643c823` -> `SUCCESS`
+- publish-test operation：`op-2026-06-29T133100020181Z-7dd99be9-4a25-4760-a558-6ed03f35bef5` -> `SUCCESS`
+- 最终后端发布输入：`D:\ProjectPackage\Int\release-worktrees\IntRuoyi-backend-20260629-4f0553b` -> `4f0553b9157ce385c536f763bebe7c082a2e2437`
+- 最终前端发布输入：`D:\ProjectPackage\Int\release-worktrees\IntRuoyi-frontend-20260629-1ffcdca` -> `1ffcdca22b735df762a581b2eed207a4581e8a71`
+- manifest 已确认后端/前端提交分别等于上述已提交 HEAD，且两者 `dirty=false`
+- 测试服 `.env IMAGE_TAG=release-20260629-2118-committed-head-v10`
+- 测试服运行镜像：
+  - `intruoyi-backend:release-20260629-2118-committed-head-v10`
+  - `intruoyi-frontend:release-20260629-2118-committed-head-v10`
+- 测试服后端健康检查：`http://172.30.30.58:48081/actuator/health` -> HTTP `200`
+- 测试服前端首页：`http://172.30.30.58:8081/` -> HTTP `200`
 
-最新真实构建成功：
-- build operation：`op-2026-06-29T111441016266300Z-e5e96359-e505-40dc-9390-62537a6c35a1`
-- releaseTag：`release-20260629-1915-committed-head-v6`
-- manifest 已确认后端 commit=`e7af75e0102fe63161ae9ef18803b6d6c8f68c69`、前端 commit=`1ffcdca22b735df762a581b2eed207a4581e8a71`，且两者 `dirty=false`
-
-最新真实测试服发布失败：
-- publish-test operation：`op-2026-06-29T112911230263400Z-bb754ec0-c5c7-4e3d-be60-36850080d278`
-- 失败 required SQL：`20260629_mes_smart_scheduling_role_scope.sql`
-- 测试服真实错误：`ERROR 1062 (23000) at line 243: Duplicate entry '910239' for key 'system_role.PRIMARY'`
-
-结论：`车间主任 / mes_workshop_director` 与 `班组长 / mes_team_leader` 的动态主键兼容修复都已进入新的后端已提交 HEAD，但基于该 HEAD 的真实 `build-release(v7)` 又暴露了维护仓发布脚本契约问题：后端 `yudao-server-exec.jar` 虽已成功构建，却没有进入 `docker-build-context/ruoyi-vue-pro/yudao-server/target/`，导致 Docker 构建阶段找不到镜像输入文件。当前正在修复维护仓 build context 生成逻辑与 fail-fast 门禁，随后继续真实 `build-release -> publish-test`。
+结论：本轮目标已完成，并严格停在测试服；未执行 `mark-tested`、正式服或备份服动作。

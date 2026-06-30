@@ -106,3 +106,22 @@ GREEN: committed-head-maint-release-context-fix-20260629 -> PASS，已在维护�
 - build context 准备完成后再次回读校验该文件必须存在，否则在 Docker build 前 fail fast
 - 保持最终发布包仍会在 manifest 生成前删除 `docker-build-context`
 GREEN: `python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_release_package_slimming.py -q` -> PASS，4 passed。
+
+GREEN: committed-head-build-release-20260629-v10 -> PASS，真实 `build-release` operation=`op-2026-06-29T131446009138100Z-4a88e7f8-e94c-4bfb-b199-4cc8e643c823` 最终 `SUCCESS`，releaseTag=`release-20260629-2118-committed-head-v10`。manifest 已核对：
+- 后端 commit=`4f0553b9157ce385c536f763bebe7c082a2e2437`
+- 前端 commit=`1ffcdca22b735df762a581b2eed207a4581e8a71`
+- 两者 `dirty=false`
+
+GREEN: committed-head-publish-test-20260629-v10 -> PASS，真实 `publish-test` operation=`op-2026-06-29T133100020181Z-7dd99be9-4a25-4760-a558-6ed03f35bef5` 于 `2026-06-29 21:43:18` 最终 `SUCCESS`。日志确认：
+- `20260629_mes_smart_scheduling_role_scope.sql` -> `APPLIED`
+- `20260629_mes_smart_scheduling_role_assignment.sql` -> `APPLIED`
+- backend/frontend 容器重建启动成功
+- 发布锁 `LOCK_RELEASED`
+
+GREEN: committed-head-test-runtime-verification-20260629-v10 -> PASS，测试服 `172.30.30.58` 六项运行态验收全部通过：
+- operation=`SUCCESS`
+- manifest=`E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260629-2118-committed-head-v10\manifest.json`，后端 commit=`4f0553b9157ce385c536f763bebe7c082a2e2437`，前端 commit=`1ffcdca22b735df762a581b2eed207a4581e8a71`，两者 `dirty=false`
+- 远端 `.env`：`IMAGE_TAG=release-20260629-2118-committed-head-v10`
+- 远端运行镜像：`intruoyi-backend:release-20260629-2118-committed-head-v10`、`intruoyi-frontend:release-20260629-2118-committed-head-v10`
+- 后端健康检查：`http://172.30.30.58:48081/actuator/health` -> HTTP `200`
+- 前端首页：`http://172.30.30.58:8081/` -> HTTP `200`
