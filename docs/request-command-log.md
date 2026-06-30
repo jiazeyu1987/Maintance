@@ -1842,3 +1842,13 @@
   - 命令：`git -C D:\ProjectPackage\Int\IntRuoyiMaintance branch --contains <commit>`
   - 命令：`git -C D:\ProjectPackage\Int\IntRuoyiMaintance diff --stat <left>..<right>`
   - 命令：`git -C D:\ProjectPackage\Int\IntRuoyiMaintance diff --no-index --stat -- <main-file> <worktree-file>`
+- 请求：`重新构建并发布到测试服务器,当前主程序功能已经变了`、`发布为什么会走worktree,发布只发主分支`、`记录下来,发布只发布主分支,如果主分支是脏的,提示用户让用户选择方案`
+  - 处理：已将长期基线固化到 `AGENTS.md`、`docs/release-build-preflight-lessons.md`、`docs/release-agent-checklist.md`，后续默认只发布三仓主分支当前版本；若主分支脏改，先提示用户选择方案，不默认切到发布 worktree。
+- 请求：`记录下来,发布只发布主分支,如果主分支是脏的,提示用户让用户选择方案`
+  - 固化口径：后续凡收到“构建发布到测试服务器”“构建并发布到测试服务器”“重新构建并发布到测试服务器”等默认发布指令，先检查维护仓、后端仓、前端仓主分支与工作区状态；仅发布三仓主分支当前版本，不默认使用 `worktree`。若任一主分支 dirty，必须先向用户报告风险并等待用户选择处理方案，未获明确选择前不得继续真实发布。
+- 请求：继续执行“基于主分支完成一次测试服务器真实发布闭环”
+  - 命令：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`、`docs/release-build-preflight-lessons.md`、`docs/release-agent-checklist.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`，并建立任务台账 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260630-main-branch-build-publish-test-server\`。
+  - 命令：恢复本机 runtime-control 主分支配置并核对健康检查 `http://127.0.0.1:48181/actuator/health -> UP`；收敛后端主分支发布门禁后提交 `eb539303eb0c3cc9569dd2e367ebb8a5fb2eebc3`。
+  - 命令：通过 runtime-control 执行真实 `build-release`，operation=`op-2026-06-30T102522631383200Z-8da818ff-396d-4ccc-857e-00dabf81efe5`，releaseTag=`release-20260630-1825-main-branch-v1`；后端 Maven、前端 `pnpm build:test`、backend/frontend Docker 镜像构建、`docker save` 与 NAS 上传全部 `SUCCESS`。
+  - 阻塞记录：继续执行测试服发布前，只读核对 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260630-1825-main-branch-v1\manifest.json`，发现后端 `sourceRepos` 记录为 `branch=int_main`、`commit=93bdb0f9aad11b2da8e10f396484e4512ae587e4`、`dirty=true`。随后复核后端主分支 `git status --short`，确认存在未提交业务改动与任务文档改动。按“只发布 Git 已提交版本；主分支脏时先提示用户选择方案”的当前基线，本轮发布包不得继续 `publish-test`，只能保留为排障证据。
+  - 经验沉淀：已将“构建前 clean 检查之外，还必须在 build-release 成功后再次核对 manifest 中 `sourceRepos.dirty=false` 与 commit 未漂移，否则发布包直接判废”的门禁前移写入 `docs/release-build-preflight-lessons.md` 与 `docs/release-agent-checklist.md`。

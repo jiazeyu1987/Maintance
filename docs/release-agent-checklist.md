@@ -106,6 +106,8 @@ Codex 必须把完整发布任务视为以下严格顺序：
   - backend commit
   - frontend commit
   - `sourceRepos.dirty=false`
+  - manifest 中 `branch` 仍是本轮计划分支，且未在构建过程中漂移到新的未计划 commit
+- 若任务要求“只发布 Git 已提交版本”，必须把 manifest 视为最终发布输入证明；构建前的 `git status clean` 不能替代构建后的 manifest 校验。
 
 ### 放行条件
 
@@ -118,6 +120,7 @@ Codex 必须把完整发布任务视为以下严格顺序：
 - 只看到页面成功提示，但无 manifest
 - manifest 与本次提交或 releaseTag 不一致
 - `dirty=true`
+- 构建完成后 manifest 记录的 commit 与构建前计划值不一致
 
 ## 3. 测试服发布与验证
 

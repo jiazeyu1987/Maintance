@@ -70,6 +70,7 @@
    - 发布前必须分别核对维护仓、后端仓、前端仓当前主分支名、HEAD 与 dirty 状态。
    - 若任一主分支工作区 dirty，不得默认继续发布，也不得默认切到 `worktree` 规避；必须先明确提示用户风险并让用户选择处理方案。
    - 只有当用户明确要求“只发布已提交 git 版本”或明确要求隔离发布输入时，才切换到 clean worktree 方案。
+   - 仅在构建前检查主分支 clean 还不够；`build-release` 成功后必须立即复核发布包 `manifest.json` 的 `sourceRepos`，确认 `branch`、`commit` 与本轮计划一致，且所有仓库 `dirty=false`。若 manifest 已记录 `dirty=true` 或 commit 漂移到非计划值，该发布包必须直接判废，不得继续 `publish-test`。
 
 8. 发布“已提交 git 版本”时，先在 clean worktree 过构建前置门禁。
    - 前端至少先过 `pnpm install --frozen-lockfile` 或等价依赖恢复。
@@ -131,6 +132,7 @@
 - 默认发布口径已切换为“只发布主分支当前版本”；clean worktree 只在用户明确要求“只发布已提交 git 版本”或要求隔离发布输入时使用。
 - 若主分支工作区 dirty，必须先向用户报告风险并让用户选择方案；不得默认继续发布，也不得默认创建 worktree 规避。
 - 发布“已提交 git 版本”时，先核对测试服当前运行版本和当前三仓 HEAD 差异；如果 manifest 中 commit 落后于当前 HEAD，必须重新走真实 `build-release -> publish-test`，不能沿用旧结论。
+- `build-release SUCCESS` 只代表打包流程完成，不代表发布输入仍然满足“只发布已提交版本”。如果构建期间主分支又出现未提交改动，manifest 会把对应仓库记为 `dirty=true`；此时即使 NAS 包已上传，也只能保留为排障证据，不能继续发测试服。
 - `runtime-control.local.yaml` 的 `repo-root` / `frontend-root` 必须显式切到最新干净 worktree；若仍指向旧 worktree，即使主仓已有新提交，真实 `build-release` 也不会包含这些提交。
 - 前端 lockfile、pnpm build scripts 放行、后端测试依赖等“只在 clean worktree 才暴露”的问题，本质上都属于“已提交 HEAD 还不可发布”；修复后要先最小提交，再重建 clean worktree，不能把主工作区未提交修复混进发布输入。
 - required SQL 在测试服失败时，优先只读回查真实库状态确认是历史数据冲突、主键占用还是 tenant 范围问题；不要手工改测试库绕过门禁。
