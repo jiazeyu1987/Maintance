@@ -1888,3 +1888,12 @@
   - 命令记录：只读核对 `src/views/mes/pro/feedback/index.vue`、`src/views/mes/pro/workorder/index.vue`、`sql/mysql/ruoyi-vue-pro.sql`、`sql/mysql/20260611_mes_work_order_create_erp_order.sql`、`sql/mysql/20260629_mes_smart_scheduling_role_scope.sql` 与历史任务 `20260629-test-server-zhaojie-scheduler-update-permission-fix`、`20260630-test-server-zhaojie-replan-preview-permission-fix`、`20260630-scheduler-role-scope-gap-analysis`。
   - 命令记录：只读查询本机 Docker MySQL `int-ruoyi-mysql` 中 `system_users`、`system_user_role`、`system_role_menu`、`system_menu`，确认 `zhaojie` 在 `tenant_id=1` 当前仅有 `900120/5530/5531/5550`，在 `tenant_id=122` 当前已有 `900120/5530/5531/5532/5550/5552/900200`。
   - 结论记录：生产报工按钮权限为 `mes:pro-feedback:create/export/approve`；生产工单按钮权限为 `mes:pro-work-order:create/export/create-erp`；`审批` 还要求当前行为审批人；`正式报工/待归属` 页签没有单独权限码；若 `zhaojie` 使用的是 `排产员` 正式角色，则当前白名单默认不含 `5532`、`5535`、`5555`、`5969`，因此对应按钮不会显示。
+- 请求：`5532 mes:pro-work-order:create 900200 mes:pro-work-order:create-erp 5552 mes:pro-feedback:create 5555 mes:pro-feedback:export 5969 mes:pro-feedback:approve 如果还要把导出也全放开，再补：5535 mes:pro-work-order:export 这些有对应的角色吗?如果没有,把这些权限也加在排产员上`
+  - 命中经验：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\powershell-preflight-lessons.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\experience-index.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\powershell-memory.md`。
+  - 命令记录：新建维护仓任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260630-zhaojie-scheduler-button-permission-fix\` 与后端仓任务 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\doc\tasks\20260630-zhaojie-scheduler-button-permission-fix\`。
+  - 命令记录：只读查询本机 Docker MySQL `int-ruoyi-mysql` 的 `system_role_menu/system_role/system_menu`，确认：
+  - `super_admin` 已拥有 `5532/5535/5552/5555/5969/900200`；
+  - `tenant_id=122` 的 `mes_scheduler` 已拥有 `5532/5552/900200`；
+  - `mes_team_leader` 已拥有 `5552`；
+  - `tenant_id=1` 的 `mes_scheduler` 仍缺 `5532/5535/5555/5969/900200`，且运行态也缺失 `5552` 绑定。
+  - 命令记录：只读核对 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\sql\mysql\20260629_mes_smart_scheduling_role_scope.sql`，确认正式 SQL 已包含 `5552`，但尚未包含 `5532/5535/5555/5969/900200`，且菜单基线校验也未覆盖这些依赖菜单。
