@@ -826,6 +826,21 @@ class RuntimeControlOriginalParityTest {
     }
 
     @Test
+    void releaseStatusSanitizesGarbledChangeItemsAndKeepsOnlyReleaseNotesFields() throws Exception {
+        createReleasePackageWithRawItems("release-garbled-notes", "Release package release-garbled-notes",
+                List.of("发布包锛?PackageTag", "组件范围锛?Component"));
+        saveSuccessfulOperation("op-current-garbled-release", "test", "ops", "publish-test",
+                Map.of("releaseTag", "release-garbled-notes"));
+
+        mockMvc.perform(get("/admin-api/infra/runtime-control/release-status"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.data.testCurrentReleaseNotes.releaseTag").value("release-garbled-notes"))
+                .andExpect(jsonPath("$.data.testCurrentReleaseNotes.changes[0]").value("发布包：release-garbled-notes"))
+                .andExpect(jsonPath("$.data.testCurrentReleaseNotes.changes[1]").value("组件范围：intruoyi"));
+    }
+
+    @Test
     void unsupportedActionFieldsAreRejectedLikeOriginal() throws Exception {
         createRollbackPackage("release-current", true, false, false);
         Path sqlRoot = Path.of("target/runtime-control-original-parity-sql").toAbsolutePath().normalize();
@@ -908,6 +923,11 @@ class RuntimeControlOriginalParityTest {
     }
 
     private void createReleasePackageWithNotes(String directoryName, String summary, List<String> changes)
+            throws IOException {
+        createReleasePackage(directoryName, "code-only", true, false, false, summary, changes);
+    }
+
+    private void createReleasePackageWithRawItems(String directoryName, String summary, List<String> changes)
             throws IOException {
         createReleasePackage(directoryName, "code-only", true, false, false, summary, changes);
     }

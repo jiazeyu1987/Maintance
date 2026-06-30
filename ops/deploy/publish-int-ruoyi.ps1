@@ -84,10 +84,11 @@ param(
 
 $ErrorActionPreference = 'Stop'
 if (Get-Variable -Name PSNativeCommandUseErrorActionPreference -ErrorAction SilentlyContinue) {
-    $PSNativeCommandUseErrorActionPreference = $false
+$PSNativeCommandUseErrorActionPreference = $false
 }
 $script:ReleaseOperationLockHeld = $false
 $script:ReleaseOperationLockReleasing = $false
+$script:BuildReleaseRuntimeRestartGuardCreated = $false
 
 function Fail([string]$Message) {
     Write-Host "[FAIL] $Message" -ForegroundColor Red
@@ -207,6 +208,43 @@ function Resolve-LocalCacheRoot([string]$ConfiguredRoot) {
         Fail "Local cache root is required but cannot be created: $resolvedRoot. $($_.Exception.Message)"
     }
     return $resolvedRoot
+}
+
+function Enter-BuildReleaseRuntimeRestartGuard {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$GuardFile
+    )
+
+    if ($Mode -ne 'build-release') {
+        return
+    }
+    if (Test-Path -LiteralPath $GuardFile) {
+        Info "build-release runtime guard already exists: $GuardFile"
+        return
+    }
+
+    $guardDir = Split-Path -Parent $GuardFile
+    if (-not [string]::IsNullOrWhiteSpace($guardDir)) {
+        New-Item -ItemType Directory -Force -Path $guardDir | Out-Null
+    }
+    $guardContent = "build-release runtime guard active: pid=$PID releaseTag=$ReleaseTag mode=$Mode"
+    [System.IO.File]::WriteAllText($GuardFile, $guardContent, [System.Text.UTF8Encoding]::new($false))
+    $script:BuildReleaseRuntimeRestartGuardCreated = $true
+    Info "build-release runtime guard created: $GuardFile"
+}
+
+function Exit-BuildReleaseRuntimeRestartGuard {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$GuardFile
+    )
+
+    if ($Mode -eq 'build-release' -and $script:BuildReleaseRuntimeRestartGuardCreated -and (Test-Path -LiteralPath $GuardFile)) {
+        Remove-Item -LiteralPath $GuardFile -Force
+        Info "build-release runtime guard released: $GuardFile"
+    }
+    $script:BuildReleaseRuntimeRestartGuardCreated = $false
 }
 
 $DCC_HARDCODED_SIGNATURE_EVIDENCE_HMAC_SECRET = 'INTRUOYI-DCC-HARDCODED-SIGNATURE-EVIDENCE-HMAC-20260601'
@@ -777,13 +815,14 @@ function New-ReleaseChangeSetManifest {
 
     $releasePackageLabel = ConvertTo-ReleaseUnicodeText -CodePoints @(21457, 24067, 21253)
     $componentScopeLabel = ConvertTo-ReleaseUnicodeText -CodePoints @(32452, 20214, 33539, 22260)
+    $fullWidthColon = ConvertTo-ReleaseUnicodeText -CodePoints @(65306)
 
     return [ordered]@{
         summary = "Release package $PackageTag"
         component = $Component
         items = @(
-            "${releasePackageLabel}：$PackageTag"
-            "${componentScopeLabel}：$Component"
+            ('{0}{1}{2}' -f $releasePackageLabel, $fullWidthColon, $PackageTag)
+            ('{0}{1}{2}' -f $componentScopeLabel, $fullWidthColon, $Component)
         )
         includeShowroomBuildPackage = [bool]$publishWebsite
         includeOnlyOffice = [bool]$IncludeOnlyOffice
@@ -3629,6 +3668,8 @@ $composeTemplate = Join-Path $scriptDir 'int-ruoyi-test\docker-compose.yml'
 $websiteNginxTemplate = Join-Path $backendRepo 'script\deploy\int-ruoyi-test\website.nginx.conf'
 $onlyOfficeImage = 'onlyoffice/documentserver:latest'
 $resolvedLocalCacheRoot = Resolve-LocalCacheRoot $LocalCacheRoot
+$buildReleaseRuntimeRestartGuardFile = Join-Path $resolvedLocalCacheRoot 'runtime\local-runtime-restart.guard'
+Enter-BuildReleaseRuntimeRestartGuard -GuardFile $buildReleaseRuntimeRestartGuardFile
 $localTempRoot = Join-Path $resolvedLocalCacheRoot 'publish-int-ruoyi'
 $releaseDir = Join-Path $localTempRoot $packageDirectoryName
 $dockerBuildContextRoot = Join-Path $releaseDir 'docker-build-context'
@@ -4629,6 +4670,7 @@ if ($Mode -ne 'build-release') {
 
 New-Item -ItemType Directory -Force -Path $releaseDir | Out-Null
 
+try {
 if ($Mode -ne 'deploy-release') {
 if ($publishBackend) {
 Copy-RequiredDatabaseSqlScripts
@@ -4816,6 +4858,9 @@ if ($Mode -eq 'build-release') {
     Write-Host "NAS release path: $NasReleaseRoot/$packageDirectoryName"
     exit 0
 }
+}
+} finally {
+    Exit-BuildReleaseRuntimeRestartGuard -GuardFile $buildReleaseRuntimeRestartGuardFile
 }
 
 if ($Mode -eq 'deploy-release' -and $publishWebsite) {

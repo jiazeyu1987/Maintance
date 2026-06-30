@@ -4,7 +4,7 @@ FROM ${BACKEND_RUNTIME_BASE_IMAGE}
 RUN mkdir -p /yudao-server
 WORKDIR /yudao-server
 
-COPY ruoyi-vue-pro/yudao-server/target/yudao-server.jar app.jar
+COPY ruoyi-vue-pro/yudao-server/target/yudao-server-exec.jar app.jar
 
 ENV TZ=Asia/Shanghai
 ENV JAVA_OPTS="-Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom"

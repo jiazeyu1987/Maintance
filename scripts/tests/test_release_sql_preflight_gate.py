@@ -4,10 +4,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PUBLISH_SCRIPT = ROOT / "ops" / "deploy" / "publish-int-ruoyi.ps1"
+BACKEND_DOCKERFILE = ROOT / "ops" / "deploy" / "int-ruoyi-test" / "Dockerfile.backend"
 
 
 def read_publish_script() -> str:
     return PUBLISH_SCRIPT.read_text(encoding="utf-8")
+
+
+def read_backend_dockerfile() -> str:
+    return BACKEND_DOCKERFILE.read_text(encoding="utf-8")
 
 
 def test_release_sql_contract_gate_blocks_duplicate_system_menu_ids(tmp_path: Path) -> None:
@@ -95,3 +100,92 @@ def test_publish_script_runs_sql_preflight_before_backend_build() -> None:
     gate_index = script.index("Invoke-ReleaseMigrationPolicyGate", required_sql_index)
     backend_build_index = script.index("Info 'Building backend jar'")
     assert required_sql_index < gate_index < backend_build_index
+
+
+def test_publish_script_executes_dcc_view_matrix_prereq_before_seed_on_test() -> None:
+    script = read_publish_script()
+
+    helper_start = script.index("function Get-RequiredDatabaseSqlSessionPreamble")
+    invoke_start = script.index("function Invoke-RequiredDatabaseSqlScripts")
+    helper_block = script[helper_start:invoke_start]
+    invoke_end = script.index("if ($Mode -eq 'mark-tested')", invoke_start)
+    invoke_block = script[invoke_start:invoke_end]
+
+    assert "function Sort-RequiredDatabaseSqlApplyItems" in script
+    assert "'20260624_dcc_view_matrix_test_tenant_prereq' = 10" in script
+    assert "'20260624_dcc_view_matrix_independent_seed' = 20" in script
+    assert "$applyItems = Sort-RequiredDatabaseSqlApplyItems -Items (Get-ReleasePreflightApplyItems -PreflightPlan $preflightPlan) -TargetEnvironment $Environment" in invoke_block
+    assert "'20260624_dcc_view_matrix_independent_seed'" in helper_block
+    assert "'test' { '122' }" in helper_block
+    assert "SET @dcc_view_matrix_seed_tenant_id := $seedTenantId;" in helper_block
+
+
+def test_publish_script_uses_environment_specific_dcc_view_matrix_seed_tenant() -> None:
+    script = read_publish_script()
+
+    helper_start = script.index("function Get-RequiredDatabaseSqlSessionPreamble")
+    invoke_start = script.index("function Invoke-RequiredDatabaseSqlScripts")
+    helper_block = script[helper_start:invoke_start]
+    invoke_end = script.index("if ($Mode -eq 'mark-tested')", invoke_start)
+    invoke_block = script[invoke_start:invoke_end]
+
+    assert "[string]$TargetEnvironment" in helper_block
+    assert "'test' { '122' }" in helper_block
+    assert "'prod' { '1' }" in helper_block
+    assert "'backup' { '1' }" in helper_block
+    assert "SET @dcc_view_matrix_seed_tenant_id := $seedTenantId;" in helper_block
+    assert "Get-RequiredDatabaseSqlSessionPreamble -Item $item -TargetEnvironment $Environment" in invoke_block
+    assert "SET @dcc_view_matrix_seed_tenant_id := 122;" not in helper_block
+
+
+def test_publish_script_authorizes_dcc_view_matrix_seed_for_production_grade_environments() -> None:
+    script = read_publish_script()
+
+    helper_start = script.index("function Get-RequiredDatabaseSqlSessionPreamble")
+    invoke_start = script.index("function Invoke-RequiredDatabaseSqlScripts")
+    helper_block = script[helper_start:invoke_start]
+
+    assert "SET @dcc_view_matrix_seed_tenant_id := $seedTenantId;" in helper_block
+    assert "$TargetEnvironment -in @('prod', 'backup')" in helper_block
+    assert "SET @dcc_view_matrix_seed_allow_yudao_tenant := 1;" in helper_block
+    assert "SET @dcc_view_matrix_seed_allow_yudao_tenant := NULL;" in helper_block
+
+
+def test_publish_script_preserves_preflight_dependency_order_for_non_priority_required_sql() -> None:
+    script = read_publish_script()
+
+    sort_start = script.index("function Sort-RequiredDatabaseSqlApplyItems")
+    invoke_start = script.index("function Invoke-RequiredDatabaseSqlScripts")
+    sort_block = script[sort_start:invoke_start]
+
+    assert "'20260624_dcc_view_matrix_test_tenant_prereq' = 10" in sort_block
+    assert "'20260624_dcc_view_matrix_independent_seed' = 20" in sort_block
+    assert "OriginalOrder" in sort_block
+    assert "return 1000 + [int]$_.OriginalOrder" in sort_block
+    assert "Sort-Object" in sort_block
+    assert "@{ Expression = { [int]$_.OriginalOrder } }" in sort_block
+    assert "ForEach-Object { $_.Item }" in sort_block
+
+
+def test_publish_script_allows_empty_required_sql_apply_items() -> None:
+    script = read_publish_script()
+
+    sort_start = script.index("function Sort-RequiredDatabaseSqlApplyItems")
+    invoke_start = script.index("function Invoke-RequiredDatabaseSqlScripts")
+    sort_block = script[sort_start:invoke_start]
+
+    assert "[AllowEmptyCollection()]" in sort_block
+    assert "[AllowNull()]" in sort_block
+    assert "if ($null -eq $Items -or $Items.Count -eq 0)" in sort_block
+    assert "return @()" in sort_block
+
+
+def test_publish_script_uses_exec_backend_jar_for_release_image() -> None:
+    script = read_publish_script()
+    dockerfile = read_backend_dockerfile()
+
+    assert "yudao-server\\target\\yudao-server-exec.jar" in script
+    assert "Copy-Item -LiteralPath $BackendJarPath -Destination (Join-Path $backendJarTargetDir 'yudao-server-exec.jar') -Force" in script
+    assert "yudao-server\\target\\yudao-server.jar" not in script
+    assert "COPY ruoyi-vue-pro/yudao-server/target/yudao-server-exec.jar app.jar" in dockerfile
+    assert "COPY ruoyi-vue-pro/yudao-server/target/yudao-server.jar app.jar" not in dockerfile

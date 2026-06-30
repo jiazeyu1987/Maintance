@@ -18,3 +18,9 @@ test('release-info contains the same manifest-level release metadata', () => {
   assert.match(script, /changeSet\s*=\s*New-ReleaseChangeSetManifest/)
   assert.match(script, /sourceRepos\s*=\s*\$SourceRepos/)
 })
+
+test('release change-set labels use unicode-safe concatenation for both manifest and release-info', () => {
+  assert.match(script, /\$fullWidthColon\s*=\s*ConvertTo-ReleaseUnicodeText -CodePoints @\(65306\)/)
+  assert.match(script, /\('\{0\}\{1\}\{2\}' -f \$releasePackageLabel, \$fullWidthColon, \$PackageTag\)/)
+  assert.match(script, /\('\{0\}\{1\}\{2\}' -f \$componentScopeLabel, \$fullWidthColon, \$Component\)/)
+})

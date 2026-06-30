@@ -96,6 +96,8 @@ services:
       MES_SMOKE_NON_APPROVER_TENANT: ${MES_SMOKE_NON_APPROVER_TENANT}
       MES_SMOKE_NON_APPROVER_USERNAME: ${MES_SMOKE_NON_APPROVER_USERNAME}
       MES_SMOKE_NON_APPROVER_PASSWORD: ${MES_SMOKE_NON_APPROVER_PASSWORD}
+      DCC_PROJECT_CODE_CODEX_HOME: ${DCC_PROJECT_CODE_CODEX_HOME}
+      CODEX_HOME: ${DCC_PROJECT_CODE_CODEX_HOME}
       ARGS: >-
         --spring.profiles.active=${SPRING_PROFILES_ACTIVE}
         --spring.datasource.dynamic.datasource.master.url=jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
@@ -119,6 +121,8 @@ services:
         --yudao.dcc.download.encryption.key-id=${DCC_DOWNLOAD_ENCRYPTION_KEY_ID}
         --yudao.dcc.download.encryption.base64-key=${DCC_DOWNLOAD_ENCRYPTION_BASE64_KEY}
         --yudao.dcc.download.encryption.artifact-directory=${DCC_DOWNLOAD_ENCRYPTION_ARTIFACT_DIRECTORY}
+        --yudao.dcc.project-code-recognition.codex-cli-command=${DCC_PROJECT_CODE_CODEX_CLI_COMMAND}
+        --yudao.dcc.project-code-recognition.timeout-seconds=${DCC_PROJECT_CODE_CODEX_TIMEOUT_SECONDS}
         --yudao.runtime-control.repo-root=/opt/intruoyi/ops/backup-ops/linux-native
         --yudao.runtime-control.state-dir=/opt/intruoyi/ops/runtime-control
         --yudao.runtime-control.backup-ops.execution-mode=linux-local
@@ -149,6 +153,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /opt/intruoyi/runtime:/opt/intruoyi/runtime
       - /opt/intruoyi/ops:/opt/intruoyi/ops
+      - /opt/intruoyi/runtime/tools/codex:/opt/intruoyi/runtime/tools/codex:ro
+      - /opt/intruoyi/runtime/backend-codex-home:/opt/intruoyi/runtime/backend-codex-home
       - /opt/intruoyi/runtime/smoke/bin/npm:/usr/local/bin/npm:ro
       - /backup:/backup
       - /mnt/nas/Backup/BackupPackage:/mnt/nas/Backup/BackupPackage

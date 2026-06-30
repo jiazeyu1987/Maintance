@@ -48,7 +48,10 @@ def test_release_change_set_manifest_uses_unicode_safe_labels() -> None:
     assert "function ConvertTo-ReleaseUnicodeText" in script
     assert "$releasePackageLabel = ConvertTo-ReleaseUnicodeText -CodePoints @(21457, 24067, 21253)" in script
     assert "$componentScopeLabel = ConvertTo-ReleaseUnicodeText -CodePoints @(32452, 20214, 33539, 22260)" in script
-    assert '${releasePackageLabel}：$PackageTag' in script
-    assert '${componentScopeLabel}：$Component' in script
+    assert "$fullWidthColon = ConvertTo-ReleaseUnicodeText -CodePoints @(65306)" in script
+    assert "('{0}{1}{2}' -f $releasePackageLabel, $fullWidthColon, $PackageTag)" in script
+    assert "('{0}{1}{2}' -f $componentScopeLabel, $fullWidthColon, $Component)" in script
+    assert '${releasePackageLabel}：$PackageTag' not in script
+    assert '${componentScopeLabel}：$Component' not in script
     assert '"发布包：$PackageTag"' not in script
     assert '"组件范围：$Component"' not in script

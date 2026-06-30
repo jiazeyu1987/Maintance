@@ -1105,7 +1105,7 @@ public class RuntimeControlService {
                 if (isBlank(summary)) {
                     blockedReasons.add("manifest.json changeSet 缺少 summary");
                 }
-                changes = releaseNoteChanges(changeSet);
+                changes = releaseNoteChanges(changeSet, releaseTag, component);
             }
 
             JsonNode sourceReposNode = node(manifest, "sourceRepos");
@@ -1121,12 +1121,52 @@ public class RuntimeControlService {
                 blockedReasons.isEmpty() ? STATUS_AVAILABLE : STATUS_BLOCKED, blockedReasons);
     }
 
-    private List<String> releaseNoteChanges(JsonNode changeSet) {
+    private List<String> releaseNoteChanges(JsonNode changeSet, String releaseTag, String component) {
         List<String> changes = textItems(node(changeSet, "items"));
         if (!changes.isEmpty()) {
-            return changes;
+            return normalizeReleaseNoteChanges(changes, releaseTag, component);
         }
-        return textItems(node(changeSet, "changes"));
+        return normalizeReleaseNoteChanges(textItems(node(changeSet, "changes")), releaseTag, component);
+    }
+
+    private List<String> normalizeReleaseNoteChanges(List<String> changes, String releaseTag, String component) {
+        if (changes.isEmpty()) {
+            return List.of();
+        }
+        List<String> result = new ArrayList<>();
+        for (String change : changes) {
+            String normalized = normalizeReleaseNoteChange(change, releaseTag, component);
+            if (hasText(normalized)) {
+                result.add(normalized.trim());
+            }
+        }
+        return result;
+    }
+
+    private String normalizeReleaseNoteChange(String value, String releaseTag, String component) {
+        if (!hasText(value)) {
+            return "";
+        }
+        String normalized = value.trim()
+                .replace("锛?", "：")
+                .replace("锛�", "：");
+        if (looksLikeReleaseTagPlaceholderChange(normalized)) {
+            return "发布包：" + releaseTag;
+        }
+        if (looksLikeComponentPlaceholderChange(normalized)) {
+            return "组件范围：" + component;
+        }
+        return normalized;
+    }
+
+    private boolean looksLikeReleaseTagPlaceholderChange(String value) {
+        String compact = value.replace(" ", "");
+        return compact.contains("发布包") && compact.endsWith("PackageTag");
+    }
+
+    private boolean looksLikeComponentPlaceholderChange(String value) {
+        String compact = value.replace(" ", "");
+        return compact.contains("组件范围") && compact.endsWith("Component");
     }
 
     private List<String> textItems(JsonNode items) {

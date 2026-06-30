@@ -34,3 +34,17 @@ def test_release_lock_state_tracks_acquire_and_release_paths() -> None:
 
     assert "$script:ReleaseOperationLockHeld = $true" in acquire_function
     assert "$script:ReleaseOperationLockHeld = $false" in release_function
+
+
+def test_build_release_holds_local_runtime_restart_guard_only_for_its_own_window() -> None:
+    script = read_publish_script()
+
+    assert "$script:BuildReleaseRuntimeRestartGuardCreated = $false" in script
+    assert "function Enter-BuildReleaseRuntimeRestartGuard" in script
+    assert "function Exit-BuildReleaseRuntimeRestartGuard" in script
+    assert "$buildReleaseRuntimeRestartGuardFile = Join-Path $resolvedLocalCacheRoot 'runtime\\local-runtime-restart.guard'" in script
+    assert "Enter-BuildReleaseRuntimeRestartGuard -GuardFile $buildReleaseRuntimeRestartGuardFile" in script
+    assert "Exit-BuildReleaseRuntimeRestartGuard -GuardFile $buildReleaseRuntimeRestartGuardFile" in script
+    assert "if ($Mode -eq 'build-release' -and $script:BuildReleaseRuntimeRestartGuardCreated -and (Test-Path -LiteralPath $GuardFile))" in script
+    assert "build-release runtime guard active:" in script
+    assert "build-release runtime guard released:" in script

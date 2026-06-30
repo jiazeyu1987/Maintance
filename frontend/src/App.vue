@@ -70,7 +70,6 @@ const operationLogLoadingId = ref('')
 const operationLog = ref<RuntimeControlLogVO>()
 const releaseNotesDialogVisible = ref(false)
 const selectedReleaseNotes = ref<RuntimeControlReleaseNotesVO>()
-const selectedReleaseNotesLabel = ref('')
 const selectedActionKey = ref(actions[0].action)
 const selectedAction = computed(() => {
   return actions.find((item) => item.action === selectedActionKey.value) || actions[0]
@@ -181,22 +180,18 @@ const runtimeVersionItems = computed(() => [
 
 const selectedReleaseNotesChanges = computed(() => selectedReleaseNotes.value?.changes || [])
 
-const selectedReleaseNotesRepos = computed(() => selectedReleaseNotes.value?.sourceRepos || [])
-
-const selectedReleaseNotesBlockedReasons = computed(() => selectedReleaseNotes.value?.blockedReasons || [])
+const selectedReleaseNotesDisplayChanges = computed(() => {
+  if (selectedReleaseNotesChanges.value.length) {
+    return selectedReleaseNotesChanges.value
+  }
+  const summary = selectedReleaseNotes.value?.summary?.trim()
+  return summary ? [summary] : []
+})
 
 function openReleaseNotes(item: { label: string; notes?: RuntimeControlReleaseNotesVO }) {
   if (!item.notes) return
   selectedReleaseNotes.value = item.notes
-  selectedReleaseNotesLabel.value = item.label
   releaseNotesDialogVisible.value = true
-}
-
-function repoRoleLabel(pathRole?: string) {
-  if (pathRole === 'backend') return '后端'
-  if (pathRole === 'admin-frontend') return '前端'
-  if (pathRole === 'website') return '展厅'
-  return pathRole || '源码仓'
 }
 
 function statusType(status: string) {
@@ -744,41 +739,16 @@ onMounted(loadData)
       width="640px"
     >
       <section v-if="selectedReleaseNotes" class="release-notes-content">
-        <header class="release-notes-head">
-          <span>{{ selectedReleaseNotesLabel }}</span>
+        <div class="release-notes-version">
+          <span>版本号</span>
           <strong>{{ selectedReleaseNotes.releaseTag }}</strong>
-        </header>
-        <dl class="release-notes-meta">
-          <div>
-            <dt>构建时间</dt>
-            <dd>{{ selectedReleaseNotes.builtAt || '未写入' }}</dd>
-          </div>
-          <div>
-            <dt>发布范围</dt>
-            <dd>{{ selectedReleaseNotes.publishScope || '未写入' }}</dd>
-          </div>
-          <div>
-            <dt>发布组件</dt>
-            <dd>{{ selectedReleaseNotes.component || '未写入' }}</dd>
-          </div>
-        </dl>
-        <p class="release-notes-summary">
-          {{ selectedReleaseNotes.summary || '该发布包未写入变动摘要' }}
-        </p>
-        <ul v-if="selectedReleaseNotesChanges.length" class="release-notes-list">
-          <li v-for="change in selectedReleaseNotesChanges" :key="change">{{ change }}</li>
-        </ul>
-        <el-empty v-else description="该发布包未写入变动明细" :image-size="72" />
-        <div v-if="selectedReleaseNotesRepos.length" class="release-notes-repos">
-          <div v-for="repo in selectedReleaseNotesRepos" :key="`${repo.pathRole}-${repo.commit}`">
-            <span>{{ repoRoleLabel(repo.pathRole) }}</span>
-            <strong>{{ repo.commit || '未写入提交' }}</strong>
-            <em v-if="repo.branch">{{ repo.branch }}</em>
-          </div>
         </div>
-        <div v-if="selectedReleaseNotesBlockedReasons.length" class="release-notes-blocked">
-          <strong>缺失信息</strong>
-          <p v-for="reason in selectedReleaseNotesBlockedReasons" :key="reason">{{ reason }}</p>
+        <div class="release-notes-section">
+          <span class="release-notes-section-title">变更说明</span>
+          <ul v-if="selectedReleaseNotesDisplayChanges.length" class="release-notes-list">
+            <li v-for="change in selectedReleaseNotesDisplayChanges" :key="change">{{ change }}</li>
+          </ul>
+          <p v-else class="release-notes-empty">该版本未写入变更说明</p>
         </div>
       </section>
     </el-dialog>
