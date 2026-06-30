@@ -10,6 +10,10 @@
 - Thread baseline: 正式环境/测试环境登录方式统一见 `D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`；涉及登录验证、联调或 E2E 时先按该文档使用对应租户账号。
 - Thread baseline: 涉及备份、恢复、发布、构建、回滚任务前必须先阅读 `D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`。
 - Thread baseline: 正式服 /mnt/nas 是公司共享盘，禁止删除、清空或移除挂载/fstab。
+- Thread baseline: 发布失败先查 migration/manifest/脚本契约，再查环境；后端产物或环境变量契约变更时，维护仓脚本与测试必须同步修改。
+- Thread baseline: 完整发布只认单一 releaseTag 的 `build-release -> publish-test -> mark-tested -> promote-prod -> promote-backup` 闭环；不得拼接多轮 releaseTag 结果。
+- Thread baseline: 发布成功必须同时核 operation=SUCCESS、manifest、远端 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、backend health=UP、frontend HTTP 200；缺任一项不得判定完成。
+- Thread baseline: 后续默认发布只发布各仓库主分支当前版本，不默认创建发布 worktree；若主分支工作区有脏改，必须先提示用户选择处理方案。
 
 ## Mixed Git Workspace Policy
 
@@ -33,6 +37,7 @@
 - Before starting any task, the Agent must create or identify the task directory under `doc/tasks/<task-id>/` and write the task document first.
 - Thread baseline: 每次任务将用户每条需求与执行命令记录到 docs/request-command-log.md。
 - Thread baseline: 每次任务创建或识别任务目录后，必须先读取 `docs/experience-index.md`，按索引只打开命中的经验文档，并在任务文档写入 `经验门禁` 小节，列出本任务适用的强制门禁；不得只写“已阅读”而不摘取门禁。
+- Thread baseline: 后续新增经验默认优先写入事前文档入口；仅事后复盘内容才写入 error-prevention 类文档。
 - Thread baseline: 涉及真实 E2E、Playwright 长链路、登录后写入、服务器写入/重启/发布/备份/恢复/回滚、大文件上传、批量导入、worktree 合并/清理、数据库 schema/迁移/权限/菜单/租户数据修改等高风险动作前，必须在 `execution-log.md` 记录 `GREEN: experience-preflight -> PASS` 或明确 `BLOCKER: experience-preflight -> <原因>`，否则不得执行该高风险动作。
 - The task document must include the task goal, milestone list, expected verification, and current status before production code changes begin.
 - The task document must include a fixed `设计约束检查` section before production code changes begin:

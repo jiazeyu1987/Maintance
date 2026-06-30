@@ -6,6 +6,8 @@
 
 本文只沉淀可复用经验；正式发布规则仍以 `D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`server-access.md` 和 `login-access.md` 为准。
 
+如任务目标是让 Codex 直接照清单执行，请同时读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-agent-checklist.md`。
+
 ## 通用发布验证基线
 
 适用场景：任何功能修改、配置修改、脚本修改、菜单/权限调整、构建发布包和部署服务器。
@@ -63,6 +65,22 @@
    - `execution-log.md` 需要裸 `RED:` / `GREEN:` 证据行；不要只把证据包在反引号里。
    - `sql/mysql` 变更必须配 `script/tests` 下的测试，否则后端仓库 pre-commit 会阻止提交。
 
+7. 默认发布先按主分支发布输入检查。
+   - 默认“构建并发布到测试服务器”等发布命令，只发布维护仓、后端仓、前端仓各自主分支当前版本。
+   - 发布前必须分别核对维护仓、后端仓、前端仓当前主分支名、HEAD 与 dirty 状态。
+   - 若任一主分支工作区 dirty，不得默认继续发布，也不得默认切到 `worktree` 规避；必须先明确提示用户风险并让用户选择处理方案。
+   - 只有当用户明确要求“只发布已提交 git 版本”或明确要求隔离发布输入时，才切换到 clean worktree 方案。
+
+8. 发布“已提交 git 版本”时，先在 clean worktree 过构建前置门禁。
+   - 前端至少先过 `pnpm install --frozen-lockfile` 或等价依赖恢复。
+   - 后端至少先过目标模块构建门禁，例如 `yudao-server` 或本次受影响模块。
+   - 若 clean worktree 本身过不了锁文件、依赖或模块构建门禁，说明“已提交 HEAD”还不可发布；先把修复正式提交，再重建 clean worktree。
+
+9. 发布失败优先做只读根因定位，不要手工改库绕过。
+   - required SQL 在测试服失败时，先回查真实库状态、历史数据、主键占用和租户范围，再决定修复位置。
+   - 禁止先手工改测试库、手工补菜单或手工改角色来“帮助发布过关”。
+   - 这类问题要么回到 SQL 契约修复，要么回到发布脚本 / manifest / migration 门禁修复。
+
 ## 发布完成判定
 
 不得只用健康检查判断发布完成。至少同时具备：
@@ -96,9 +114,31 @@
 - 当前发布脚本 `changeSet.summary` 仅写默认 releaseTag，未提供显式变更说明参数；后续应增加 `-ChangeSummary` / `-ChangeItem` 并由运行控制台传入，减少发布后人工对照 sourceRepos 的成本。
 - 运行控制台 release-status / release-packages 扫描 NAS 通常耗时约 9-10 秒；发布页面可增加缓存或分页，减少每次状态刷新等待。
 
+## 2026-06-28 全链路发布收敛经验
+
+- 真实发布必须沿单一 `releaseTag` 一次性走完 `build-release -> publish-test -> mark-tested -> promote-prod -> promote-backup`；不要拼接多轮版本结果，也不要拿旧测试服成功 + 新正式服成功混成“本轮完成”。
+- 发布失败优先按“契约层 -> 脚本层 -> 环境层”排查：先查 migration/manifest/required SQL/产物契约，再查维护仓发布脚本与业务仓产物是否一致，最后才查服务器状态；连 manifest 或迁移门禁都没过时，不要先怀疑服务器。
+- SQL 要按“可发布”而不是“能执行”编写：`release-migration` 元数据、`dependsOn`、环境变量前置、tenant 上下文和动态菜单字面量规则都必须提前通过门禁或测试，不要等到页面 `build-release` 或 `promote-prod` 才暴露。
+- 维护仓发布脚本必须和业务仓产物合同同步维护；后端 jar 命名、Docker build context、required SQL 排序、空集合处理、prod/backup 变量注入等，只要业务仓契约改了，维护仓脚本和测试必须一起改。
+- 测试服不是形式流程，而是正式服唯一前置筛选器；正式服前至少要先在测试服确认：manifest 正确、`.env IMAGE_TAG` 正确、backend/frontend 镜像 tag 正确、health `UP`、前端 `200`、required SQL/operation 最终 `SUCCESS`。
+- 正式服 / 备份服发布前必须先看预览参数，不允许靠默认值猜：至少逐项确认 `ServerHost`、`RemoteAppDir`、`RemoteReleaseRoot`、`RemoteDataRoot`、`RemoteDataDiskMount`、`RemoteDataDiskDevice`、`RemoteMinioContainer`、`RequireTested`、`ConfirmText=PROD`。
+- 备份服固定要显式核对 `172.30.30.59`、`/mnt/intruoyi-data`、`/mnt/intruoyi-data/runtime-data`、`/mnt/intruoyi-data/intruoyi-releases`、`/dev/mapper/cl-home`、`intruoyi-minio`；任何继承正式服默认值或 Docker 根目录路径的情况都要 fail fast。
+- 正式服问题必须拆成三类证据分别验证：脚本参数是否正确、SQL/迁移是否真实通过、环境前提是否满足。像 `/mnt/nas`、MinIO、数据盘、`.env IMAGE_TAG`、容器镜像和 Docker bind mount 都属于环境契约，不能把环境坏状态误判成业务代码回归。
+- 发布成功判定必须同时看 operation、manifest、`.env`、运行镜像、health 和前端入口；只看 HTTP 200 或只看页面显示成功都不够。
+
+## 2026-06-29 已提交版本发布收敛经验
+
+- 默认发布口径已切换为“只发布主分支当前版本”；clean worktree 只在用户明确要求“只发布已提交 git 版本”或要求隔离发布输入时使用。
+- 若主分支工作区 dirty，必须先向用户报告风险并让用户选择方案；不得默认继续发布，也不得默认创建 worktree 规避。
+- 发布“已提交 git 版本”时，先核对测试服当前运行版本和当前三仓 HEAD 差异；如果 manifest 中 commit 落后于当前 HEAD，必须重新走真实 `build-release -> publish-test`，不能沿用旧结论。
+- `runtime-control.local.yaml` 的 `repo-root` / `frontend-root` 必须显式切到最新干净 worktree；若仍指向旧 worktree，即使主仓已有新提交，真实 `build-release` 也不会包含这些提交。
+- 前端 lockfile、pnpm build scripts 放行、后端测试依赖等“只在 clean worktree 才暴露”的问题，本质上都属于“已提交 HEAD 还不可发布”；修复后要先最小提交，再重建 clean worktree，不能把主工作区未提交修复混进发布输入。
+- required SQL 在测试服失败时，优先只读回查真实库状态确认是历史数据冲突、主键占用还是 tenant 范围问题；不要手工改测试库绕过门禁。
+
 ## 本次证据
 
 - 任务文档：`doc/tasks/20260617-e2e-build-publish-test/task.md`
 - 执行日志：`doc/tasks/20260617-e2e-build-publish-test/execution-log.md`
 - 验收报告：`doc/tasks/20260617-e2e-build-publish-test/verification-report.md`
 - 候选证据：`doc/tasks/20260617-release-experience-consolidation/candidate-error-evidence.md`
+- 本轮新增证据：`doc/tasks/20260625-head-full-release/task.md`、`doc/tasks/20260625-head-full-release/execution-log.md`、`doc/tasks/20260628-release-flow-fupan/release-flow-fupan.md`
