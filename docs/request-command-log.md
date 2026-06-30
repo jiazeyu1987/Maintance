@@ -1,5 +1,14 @@
 # 请求与命令记录
 
+## 2026-06-30 基于主分支完成一次测试服务器真实发布闭环
+
+- 用户需求：基于主分支完成一次测试服务器真实发布闭环；必须真实执行构建、发布、验证；必须记录全过程问题、排查、根因、解决与验证证据；发布成功后将通用问题前移沉淀为发布前置经验，同时保留失败排障方案作为事后学习材料；最终交付包括发布成功、完整任务记录、问题总结和经验文档更新。
+- 命中经验：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-agent-checklist.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`。
+- 命令记录：核对上一维护仓任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260630-release-main-branch-baseline\task.md` 已 `COMPLETED`，允许开启新任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260630-main-branch-test-server-release-closure\`。
+- 命令记录：读取 `ci-cd-environment-delivery` 与 `playwright` 技能，确认本轮需要通过真实运行控制台动作完成测试服发布闭环，并同步沉淀经验文档。
+- 命令记录：核对后端仓 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro` 与前端仓 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3` 当前主分支均无未提交改动；维护仓 `D:\ProjectPackage\Int\IntRuoyiMaintance` 主分支存在未跟踪 `output/doc/*` 文件，按新基线需先作为发布前置阻塞记录。
+- 命令记录：检查本机运行控制台 `http://127.0.0.1:48181/actuator/health` 当前不可达，错误为“无法连接到远程服务器”；在恢复运行控制台前，不进入真实 `build-release` / `publish-test`。
+
 ## 2026-06-29 精简版本变更说明弹窗并修复变更说明乱码
 
 - 用户需求：将“版本变更说明”弹窗改成只列出版本号和变更说明，去掉其他字段，并处理变更说明乱码问题。
