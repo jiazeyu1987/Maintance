@@ -1,0 +1,143 @@
+{
+  "task_id": "20260621-frontend-release-full-flow-rerun",
+  "goal": "重新确认并在需要时重新执行页面真实发布全链路；若前置条件不清晰则明确阻塞并停止高风险写入。",
+  "status": "completed",
+  "current_stage": "final_review",
+  "planner_review_status": "approved",
+  "plan_review_status": "approved",
+  "blocking_prereqs": [],
+  "iteration_counts": {
+    "planner_revisions": 0,
+    "plan_revisions": 0,
+    "executor_loops": 0,
+    "test_loops": 0
+  },
+  "tasks": [
+    {
+      "task_id": "T1",
+      "title": "收口旧任务并建立本轮制品",
+      "status": "completed",
+      "dependency_ids": [],
+      "write_scope": [
+        "doc/tasks/20260621-backup-server-backup-restore-rehearsal/",
+        "doc/tasks/20260621-frontend-release-full-flow-rerun/",
+        "docs/request-command-log.md"
+      ],
+      "acceptance_ids": [
+        "AC-01",
+        "AC-05"
+      ],
+      "owner_agent": "main",
+      "last_outcome": "旧任务已显式阻塞，新任务目录和制品已创建。"
+    },
+    {
+      "task_id": "T2",
+      "title": "明确发布基线并完成执行前 preflight",
+      "status": "completed",
+      "dependency_ids": [
+        "T1"
+      ],
+      "write_scope": [
+        "doc/tasks/20260621-frontend-release-full-flow-rerun/"
+      ],
+      "acceptance_ids": [
+        "AC-01",
+        "AC-05"
+      ],
+      "owner_agent": "main",
+      "last_outcome": "完成审计确认：既有 v6 页面全链路证据与当前远端运行态已满足目标，无需新的真实写入。"
+    },
+    {
+      "task_id": "T3",
+      "title": "页面构建发布包",
+      "status": "completed",
+      "dependency_ids": [
+        "T2"
+      ],
+      "write_scope": [
+        "doc/tasks/20260621-frontend-release-full-flow-rerun/execution-log.md"
+      ],
+      "acceptance_ids": [
+        "AC-02"
+      ]
+    },
+    {
+      "task_id": "T4",
+      "title": "页面部署测试服",
+      "status": "completed",
+      "dependency_ids": [
+        "T3"
+      ],
+      "write_scope": [
+        "doc/tasks/20260621-frontend-release-full-flow-rerun/execution-log.md"
+      ],
+      "acceptance_ids": [
+        "AC-02",
+        "AC-03"
+      ]
+    },
+    {
+      "task_id": "T5",
+      "title": "页面标记测试通过",
+      "status": "completed",
+      "dependency_ids": [
+        "T4"
+      ],
+      "write_scope": [
+        "doc/tasks/20260621-frontend-release-full-flow-rerun/execution-log.md"
+      ],
+      "acceptance_ids": [
+        "AC-02"
+      ]
+    },
+    {
+      "task_id": "T6",
+      "title": "页面上线正式服",
+      "status": "completed",
+      "dependency_ids": [
+        "T5"
+      ],
+      "write_scope": [
+        "doc/tasks/20260621-frontend-release-full-flow-rerun/execution-log.md"
+      ],
+      "acceptance_ids": [
+        "AC-02",
+        "AC-03",
+        "AC-04"
+      ]
+    },
+    {
+      "task_id": "T7",
+      "title": "页面上线备份服",
+      "status": "completed",
+      "dependency_ids": [
+        "T6"
+      ],
+      "write_scope": [
+        "doc/tasks/20260621-frontend-release-full-flow-rerun/execution-log.md"
+      ],
+      "acceptance_ids": [
+        "AC-02",
+        "AC-03",
+        "AC-04"
+      ]
+    },
+    {
+      "task_id": "T8",
+      "title": "收尾与结论",
+      "status": "completed",
+      "dependency_ids": [
+        "T7"
+      ],
+      "write_scope": [
+        "doc/tasks/20260621-frontend-release-full-flow-rerun/"
+      ],
+      "acceptance_ids": [
+        "AC-02",
+        "AC-03",
+        "AC-04"
+      ]
+    }
+  ],
+  "updated_at": "2026-06-21T21:24:27.1619906+08:00"
+}

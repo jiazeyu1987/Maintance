@@ -1,0 +1,38 @@
+{
+  "status": "planned",
+  "currentMilestone": "M1",
+  "milestones": [
+    {
+      "id": "M1",
+      "title": "建立失败样例与阈值基线",
+      "status": "planned"
+    },
+    {
+      "id": "M2",
+      "title": "实现高置信度直连规则",
+      "status": "planned"
+    },
+    {
+      "id": "M3",
+      "title": "回归与联动验证",
+      "status": "planned"
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "A1",
+      "text": "短编码不再因为普通文件名子串而直连回写。"
+    },
+    {
+      "id": "A2",
+      "text": "长编码边界清晰时仍保留快捷识别能力。"
+    },
+    {
+      "id": "A3",
+      "text": "低置信度场景继续正式识别链路或显式失败。"
+    }
+  ],
+  "blockers": [
+    "最终测试服联调依赖 20260623-test-server-dcc-content-recognition-enable-plan 先完成内容识别运行时接通。"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "status": "planned",
+  "currentMilestone": "M1",
+  "milestones": [
+    {
+      "id": "M1",
+      "title": "用维护仓合同测试锁定根因",
+      "status": "planned"
+    },
+    {
+      "id": "M2",
+      "title": "修复维护仓发布链路",
+      "status": "planned"
+    },
+    {
+      "id": "M3",
+      "title": "重建测试服 backend 运行时",
+      "status": "planned"
+    },
+    {
+      "id": "M4",
+      "title": "真实内容识别验收",
+      "status": "planned"
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "A1",
+      "text": "维护仓发布链路正式携带 DCC Codex 运行时合同。"
+    },
+    {
+      "id": "A2",
+      "text": "测试服 backend 容器可执行 Codex CLI 并读取 backend-codex-home。"
+    },
+    {
+      "id": "A3",
+      "text": "真实文件内容识别样本可完成项目编码和项目名称回写。"
+    }
+  ],
+  "blockers": [
+    "进入实现和测试服发布前，需要用户继续授权测试服写入、容器重建和真实联调。",
+    "最终验收需要先锁定一个文件名不足以唯一判断、但文件内容可识别的真实样本。"
+  ]
+}

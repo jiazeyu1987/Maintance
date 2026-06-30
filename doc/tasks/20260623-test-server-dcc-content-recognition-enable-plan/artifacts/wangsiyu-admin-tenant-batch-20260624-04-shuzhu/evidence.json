@@ -1,0 +1,394 @@
+{
+  "baseUrl": "http://172.30.30.58:8081",
+  "tenant": "芋道源码",
+  "username": "wangsiyu",
+  "directoryId": 910648,
+  "directoryName": "04 输注类",
+  "directoryPath": "质量管理/3.DMR/04.物资采购清单/04 输注类",
+  "preCount": 20,
+  "task": {
+    "taskId": 7,
+    "status": "COMPLETED",
+    "scope": "CURRENT",
+    "directoryId": 910648,
+    "directoryPath": "质量管理/3.DMR/04.物资采购清单/04 输注类",
+    "keyword": null,
+    "statusFilter": null,
+    "categoryId": null,
+    "overwriteExisting": false,
+    "syncFileNameTitle": true,
+    "totalCount": 20,
+    "processedCount": 20,
+    "successCount": 1,
+    "failedCount": 19,
+    "skippedExistingCount": 0,
+    "remainingCount": 0,
+    "lastFailureMessage": "DCC project-code recognition failed: Codex CLI exited with code 1: OpenAI Codex v0.128.0 (research preview) -------- workdir: /tmp/dcc-project-code-recognition-10589206839655794491 model: gpt-5.4 provider: OpenAI approval: never sandbox: read-only reasoning effort: xhigh reasoning summaries: none session id: 019ef99d-7a10-7543-b9db-8144aab16b18 -------- user 你是 DCC 基础信息识别助手。请读取当前目录下的源文件，并且只能从 dcc-project-code-candidates.json 中选择一个启用的 DCC 基础数据候选。 源文件名：1ml注射器-物资采购清单 P-ZSQ(W) A0.pdf 文件 MIME 类型：application/pdf ",
+    "startedAt": 1782302713000,
+    "completedAt": 1782304336000
+  },
+  "postCount": 19,
+  "result": "PASS",
+  "snapshots": [
+    {
+      "status": "WAITING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 20,
+      "lastFailureMessage": null
+    }
+  ]
+}

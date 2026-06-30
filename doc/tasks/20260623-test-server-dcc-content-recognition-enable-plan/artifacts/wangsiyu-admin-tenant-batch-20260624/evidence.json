@@ -1,0 +1,303 @@
+{
+  "baseUrl": "http://172.30.30.58:8081",
+  "tenant": "芋道源码",
+  "username": "wangsiyu",
+  "directoryId": 910505,
+  "directoryName": "07.检验、生产用设备清单",
+  "preCount": 18,
+  "task": {
+    "taskId": 5,
+    "status": "COMPLETED",
+    "scope": "CURRENT",
+    "directoryId": 910505,
+    "directoryPath": "质量管理/3.DMR/07.检验、生产用设备清单",
+    "keyword": null,
+    "statusFilter": null,
+    "categoryId": null,
+    "overwriteExisting": false,
+    "syncFileNameTitle": true,
+    "totalCount": 18,
+    "processedCount": 18,
+    "successCount": 4,
+    "failedCount": 14,
+    "skippedExistingCount": 0,
+    "remainingCount": 0,
+    "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match",
+    "startedAt": 1782298986000,
+    "completedAt": 1782299897000
+  },
+  "postCount": 14,
+  "result": "PASS",
+  "snapshots": [
+    {
+      "status": "WAITING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 18,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 6,
+      "successCount": 3,
+      "failedCount": 3,
+      "skippedExistingCount": 0,
+      "remainingCount": 12,
+      "lastFailureMessage": "Duplicate entry '906104-910515-指引导丝CE' for key 'dcc_controlled_file_master.uk_dcc_controlled_file_master_chain'"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 6,
+      "successCount": 3,
+      "failedCount": 3,
+      "skippedExistingCount": 0,
+      "remainingCount": 12,
+      "lastFailureMessage": "Duplicate entry '906104-910515-指引导丝CE' for key 'dcc_controlled_file_master.uk_dcc_controlled_file_master_chain'"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 6,
+      "successCount": 3,
+      "failedCount": 3,
+      "skippedExistingCount": 0,
+      "remainingCount": 12,
+      "lastFailureMessage": "Duplicate entry '906104-910515-指引导丝CE' for key 'dcc_controlled_file_master.uk_dcc_controlled_file_master_chain'"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 6,
+      "successCount": 3,
+      "failedCount": 3,
+      "skippedExistingCount": 0,
+      "remainingCount": 12,
+      "lastFailureMessage": "Duplicate entry '906104-910515-指引导丝CE' for key 'dcc_controlled_file_master.uk_dcc_controlled_file_master_chain'"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 6,
+      "successCount": 3,
+      "failedCount": 3,
+      "skippedExistingCount": 0,
+      "remainingCount": 12,
+      "lastFailureMessage": "Duplicate entry '906104-910515-指引导丝CE' for key 'dcc_controlled_file_master.uk_dcc_controlled_file_master_chain'"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 6,
+      "successCount": 3,
+      "failedCount": 3,
+      "skippedExistingCount": 0,
+      "remainingCount": 12,
+      "lastFailureMessage": "Duplicate entry '906104-910515-指引导丝CE' for key 'dcc_controlled_file_master.uk_dcc_controlled_file_master_chain'"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 6,
+      "successCount": 3,
+      "failedCount": 3,
+      "skippedExistingCount": 0,
+      "remainingCount": 12,
+      "lastFailureMessage": "Duplicate entry '906104-910515-指引导丝CE' for key 'dcc_controlled_file_master.uk_dcc_controlled_file_master_chain'"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 6,
+      "successCount": 3,
+      "failedCount": 3,
+      "skippedExistingCount": 0,
+      "remainingCount": 12,
+      "lastFailureMessage": "Duplicate entry '906104-910515-指引导丝CE' for key 'dcc_controlled_file_master.uk_dcc_controlled_file_master_chain'"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 6,
+      "successCount": 3,
+      "failedCount": 3,
+      "skippedExistingCount": 0,
+      "remainingCount": 12,
+      "lastFailureMessage": "Duplicate entry '906104-910515-指引导丝CE' for key 'dcc_controlled_file_master.uk_dcc_controlled_file_master_chain'"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 6,
+      "successCount": 3,
+      "failedCount": 3,
+      "skippedExistingCount": 0,
+      "remainingCount": 12,
+      "lastFailureMessage": "Duplicate entry '906104-910515-指引导丝CE' for key 'dcc_controlled_file_master.uk_dcc_controlled_file_master_chain'"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 6,
+      "successCount": 3,
+      "failedCount": 3,
+      "skippedExistingCount": 0,
+      "remainingCount": 12,
+      "lastFailureMessage": "Duplicate entry '906104-910515-指引导丝CE' for key 'dcc_controlled_file_master.uk_dcc_controlled_file_master_chain'"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 6,
+      "successCount": 3,
+      "failedCount": 3,
+      "skippedExistingCount": 0,
+      "remainingCount": 12,
+      "lastFailureMessage": "Duplicate entry '906104-910515-指引导丝CE' for key 'dcc_controlled_file_master.uk_dcc_controlled_file_master_chain'"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 6,
+      "successCount": 3,
+      "failedCount": 3,
+      "skippedExistingCount": 0,
+      "remainingCount": 12,
+      "lastFailureMessage": "Duplicate entry '906104-910515-指引导丝CE' for key 'dcc_controlled_file_master.uk_dcc_controlled_file_master_chain'"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 7,
+      "successCount": 3,
+      "failedCount": 4,
+      "skippedExistingCount": 0,
+      "remainingCount": 11,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 7,
+      "successCount": 3,
+      "failedCount": 4,
+      "skippedExistingCount": 0,
+      "remainingCount": 11,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 7,
+      "successCount": 3,
+      "failedCount": 4,
+      "skippedExistingCount": 0,
+      "remainingCount": 11,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 7,
+      "successCount": 3,
+      "failedCount": 4,
+      "skippedExistingCount": 0,
+      "remainingCount": 11,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 7,
+      "successCount": 3,
+      "failedCount": 4,
+      "skippedExistingCount": 0,
+      "remainingCount": 11,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 7,
+      "successCount": 3,
+      "failedCount": 4,
+      "skippedExistingCount": 0,
+      "remainingCount": 11,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 7,
+      "successCount": 3,
+      "failedCount": 4,
+      "skippedExistingCount": 0,
+      "remainingCount": 11,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 7,
+      "successCount": 3,
+      "failedCount": 4,
+      "skippedExistingCount": 0,
+      "remainingCount": 11,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 7,
+      "successCount": 3,
+      "failedCount": 4,
+      "skippedExistingCount": 0,
+      "remainingCount": 11,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 7,
+      "successCount": 3,
+      "failedCount": 4,
+      "skippedExistingCount": 0,
+      "remainingCount": 11,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 7,
+      "successCount": 3,
+      "failedCount": 4,
+      "skippedExistingCount": 0,
+      "remainingCount": 11,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 7,
+      "successCount": 3,
+      "failedCount": 4,
+      "skippedExistingCount": 0,
+      "remainingCount": 11,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 7,
+      "successCount": 3,
+      "failedCount": 4,
+      "skippedExistingCount": 0,
+      "remainingCount": 11,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 8,
+      "successCount": 3,
+      "failedCount": 5,
+      "skippedExistingCount": 0,
+      "remainingCount": 10,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 8,
+      "successCount": 3,
+      "failedCount": 5,
+      "skippedExistingCount": 0,
+      "remainingCount": 10,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 8,
+      "successCount": 3,
+      "failedCount": 5,
+      "skippedExistingCount": 0,
+      "remainingCount": 10,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    }
+  ]
+}

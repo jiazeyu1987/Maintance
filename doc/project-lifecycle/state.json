@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-06-21T02:30:27.887615+00:00",
+  "project_root": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance",
+  "status": "blocked",
+  "current_step": "project-inception-docs",
+  "next_skill": "project-inception-docs",
+  "active_task_dir": "doc/tasks/20260616-runtime-control-align-original",
+  "completed_steps": [],
+  "missing_prerequisites": [
+    {
+      "step": "project-inception-docs",
+      "path": "docs/inception/project-brief.md",
+      "impact": "Blocks `project-inception-docs` completion and later lifecycle steps."
+    },
+    {
+      "step": "project-inception-docs",
+      "path": "docs/inception/evidence-inventory.md",
+      "impact": "Blocks `project-inception-docs` completion and later lifecycle steps."
+    }
+  ],
+  "recommended_agents": [
+    {
+      "role": "planner",
+      "skill": "project-inception-docs",
+      "mode": "serial",
+      "reason": "Create evidence-backed project definition.",
+      "writes": [
+        "docs/inception/"
+      ]
+    }
+  ],
+  "specialist_state": {
+    "active_specialist_skill": null,
+    "specialist_status": "idle",
+    "active_task_dir": "doc/tasks/20260616-runtime-control-align-original",
+    "verification_status": "not_started",
+    "next_action": "Run project-inception-docs",
+    "blocked_reason": "docs/inception/project-brief.md; docs/inception/evidence-inventory.md"
+  },
+  "autopilot": {
+    "enabled": false,
+    "resume_until_blocked": false,
+    "iteration": 0,
+    "last_action": "inspect",
+    "next_action": "Run project-inception-docs",
+    "stop_reason": "blocked"
+  },
+  "done_definition": {
+    "path": "doc/project-lifecycle/done-definition.md",
+    "exists": false,
+    "status": "missing"
+  },
+  "chain": [
+    {
+      "id": "project-inception-docs",
+      "skill": "project-inception-docs",
+      "status": "blocked",
+      "evidence": [],
+      "missing": [
+        "docs/inception/project-brief.md",
+        "docs/inception/evidence-inventory.md"
+      ]
+    }
+  ]
+}

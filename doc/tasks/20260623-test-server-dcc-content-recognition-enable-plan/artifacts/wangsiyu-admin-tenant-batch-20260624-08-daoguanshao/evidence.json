@@ -1,0 +1,394 @@
+{
+  "baseUrl": "http://172.30.30.58:8081",
+  "tenant": "芋道源码",
+  "username": "wangsiyu",
+  "directoryId": 910960,
+  "directoryName": "08 导管鞘类_说明书",
+  "directoryPath": "质量管理/3.DMR/02.说明书/08 导管鞘类_说明书",
+  "preCount": 18,
+  "task": {
+    "taskId": 8,
+    "status": "COMPLETED",
+    "scope": "CURRENT",
+    "directoryId": 910960,
+    "directoryPath": "质量管理/3.DMR/02.说明书/08 导管鞘类_说明书",
+    "keyword": null,
+    "statusFilter": null,
+    "categoryId": null,
+    "overwriteExisting": false,
+    "syncFileNameTitle": true,
+    "totalCount": 18,
+    "processedCount": 18,
+    "successCount": 0,
+    "failedCount": 18,
+    "skippedExistingCount": 0,
+    "remainingCount": 0,
+    "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match",
+    "startedAt": 1782304657000,
+    "completedAt": 1782306269000
+  },
+  "postCount": 18,
+  "result": "PASS",
+  "snapshots": [
+    {
+      "status": "WAITING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 18,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 18,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 18,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 18,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 18,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 18,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 18,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 18,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 18,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 18,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 18,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 18,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 18,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 18,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 18,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 18,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 18,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 18,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 0,
+      "successCount": 0,
+      "failedCount": 0,
+      "skippedExistingCount": 0,
+      "remainingCount": 18,
+      "lastFailureMessage": null
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 1,
+      "successCount": 0,
+      "failedCount": 1,
+      "skippedExistingCount": 0,
+      "remainingCount": 17,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 1,
+      "successCount": 0,
+      "failedCount": 1,
+      "skippedExistingCount": 0,
+      "remainingCount": 17,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 1,
+      "successCount": 0,
+      "failedCount": 1,
+      "skippedExistingCount": 0,
+      "remainingCount": 17,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 1,
+      "successCount": 0,
+      "failedCount": 1,
+      "skippedExistingCount": 0,
+      "remainingCount": 17,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 1,
+      "successCount": 0,
+      "failedCount": 1,
+      "skippedExistingCount": 0,
+      "remainingCount": 17,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 1,
+      "successCount": 0,
+      "failedCount": 1,
+      "skippedExistingCount": 0,
+      "remainingCount": 17,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 1,
+      "successCount": 0,
+      "failedCount": 1,
+      "skippedExistingCount": 0,
+      "remainingCount": 17,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 1,
+      "successCount": 0,
+      "failedCount": 1,
+      "skippedExistingCount": 0,
+      "remainingCount": 17,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 1,
+      "successCount": 0,
+      "failedCount": 1,
+      "skippedExistingCount": 0,
+      "remainingCount": 17,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 1,
+      "successCount": 0,
+      "failedCount": 1,
+      "skippedExistingCount": 0,
+      "remainingCount": 17,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 1,
+      "successCount": 0,
+      "failedCount": 1,
+      "skippedExistingCount": 0,
+      "remainingCount": 17,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 1,
+      "successCount": 0,
+      "failedCount": 1,
+      "skippedExistingCount": 0,
+      "remainingCount": 17,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 1,
+      "successCount": 0,
+      "failedCount": 1,
+      "skippedExistingCount": 0,
+      "remainingCount": 17,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 2,
+      "successCount": 0,
+      "failedCount": 2,
+      "skippedExistingCount": 0,
+      "remainingCount": 16,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 2,
+      "successCount": 0,
+      "failedCount": 2,
+      "skippedExistingCount": 0,
+      "remainingCount": 16,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 2,
+      "successCount": 0,
+      "failedCount": 2,
+      "skippedExistingCount": 0,
+      "remainingCount": 16,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 2,
+      "successCount": 0,
+      "failedCount": 2,
+      "skippedExistingCount": 0,
+      "remainingCount": 16,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 2,
+      "successCount": 0,
+      "failedCount": 2,
+      "skippedExistingCount": 0,
+      "remainingCount": 16,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 2,
+      "successCount": 0,
+      "failedCount": 2,
+      "skippedExistingCount": 0,
+      "remainingCount": 16,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 2,
+      "successCount": 0,
+      "failedCount": 2,
+      "skippedExistingCount": 0,
+      "remainingCount": 16,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    },
+    {
+      "status": "RUNNING",
+      "processedCount": 2,
+      "successCount": 0,
+      "failedCount": 2,
+      "skippedExistingCount": 0,
+      "remainingCount": 16,
+      "lastFailureMessage": "DCC project-code recognition returned no DCC basic-data match"
+    }
+  ]
+}

@@ -1,0 +1,155 @@
+{
+    "status":  "passed",
+    "mode":  "report-only",
+    "deployBehavior":  "deploy-release",
+    "packageId":  "release-20260620-current-head-prod-target-v7",
+    "manifestVersion":  "1.0",
+    "environment":  "prod",
+    "targetConfigId":  "prod-vdb-ragflow-minio-code-only-20260620",
+    "checkedAt":  "2026-06-20T10:19:51.9625906Z",
+    "changesDeployExitCode":  false,
+    "errors":  [
+
+               ],
+    "warnings":  [
+
+                 ],
+    "checks":  [
+                   {
+                       "code":  "DEPLOY_ENVIRONMENT_VALID",
+                       "status":  "passed",
+                       "scope":  "Environment",
+                       "message":  "Command environment is supported.",
+                       "impact":  "Deploy precheck can evaluate logical target compatibility.",
+                       "nextStep":  "Continue target config checks."
+                   },
+                   {
+                       "code":  "DEPLOY_TARGET_CONFIG_VALID",
+                       "status":  "passed",
+                       "scope":  "targetConfig",
+                       "message":  "Target config parsed and matched schemaVersion 1.0.",
+                       "impact":  "Deploy precheck can compare manifest target requirements against declared target capabilities.",
+                       "nextStep":  "Continue deploy precheck report-only target compatibility checks."
+                   },
+                   {
+                       "code":  "DEPLOY_TARGET_CONFIG_ENVIRONMENT_MATCHED",
+                       "status":  "passed",
+                       "scope":  "targetConfig.environmentCode",
+                       "message":  "Target config environmentCode matches the selected environment.",
+                       "impact":  "Deploy precheck can continue with this logical target.",
+                       "nextStep":  "Continue target requirement checks."
+                   },
+                   {
+                       "code":  "MANIFEST_PRESENT",
+                       "status":  "passed",
+                       "scope":  "manifest.presence",
+                       "message":  "manifest.json was found.",
+                       "impact":  "Manifest JSON parsing can continue.",
+                       "nextStep":  "Parse Manifest v1 JSON."
+                   },
+                   {
+                       "code":  "MANIFEST_JSON_VALID",
+                       "status":  "passed",
+                       "scope":  "manifest.parse",
+                       "message":  "manifest.json parsed successfully.",
+                       "impact":  "Schema and package integrity checks can continue.",
+                       "nextStep":  "Validate Manifest v1 required fields and package type."
+                   },
+                   {
+                       "code":  "MANIFEST_REQUIRED_FIELDS_PRESENT",
+                       "status":  "passed",
+                       "scope":  "manifest.required",
+                       "message":  "All required Manifest v1 top-level fields are present.",
+                       "impact":  "Schema-level validation can continue.",
+                       "nextStep":  "Continue package type, baseline, file, checksum, and forbidden field checks."
+                   },
+                   {
+                       "code":  "MANIFEST_SCHEMA_CORE_VALID",
+                       "status":  "passed",
+                       "scope":  "manifest.schema",
+                       "message":  "Manifest v1 core schema checks passed.",
+                       "impact":  "Package type and smart-release baseline requirements are explicit.",
+                       "nextStep":  "Continue file declaration and forbidden field checks."
+                   },
+                   {
+                       "code":  "PACKAGE_DECLARATIONS_VALID",
+                       "status":  "passed",
+                       "scope":  "package.files",
+                       "message":  "Package file declaration and sha256 checks passed.",
+                       "impact":  "Every package file is declared and every declared sha256 matched.",
+                       "nextStep":  "Continue forbidden target and secret scanning."
+                   },
+                   {
+                       "code":  "FORBIDDEN_CONTENT_SCAN_PASSED",
+                       "status":  "passed",
+                       "scope":  "forbiddenFieldsCheck",
+                       "message":  "Forbidden target IP and secret scans passed.",
+                       "impact":  "No hardcoded target address or secret pattern was detected in manifest-scanned package files.",
+                       "nextStep":  "Manifest validator has completed."
+                   },
+                   {
+                       "code":  "DEPLOY_TARGET_REQUIREMENT_MATCHED",
+                       "status":  "passed",
+                       "scope":  "targetRequirements.environmentCodes",
+                       "message":  "Selected environment is allowed by manifest targetRequirements.",
+                       "impact":  "The logical environment requirement is satisfied.",
+                       "nextStep":  "Continue target profile compatibility checks."
+                   },
+                   {
+                       "code":  "DEPLOY_DOCKER_PROFILE_MATCHED",
+                       "status":  "passed",
+                       "scope":  "targetRequirements.dockerProfileId",
+                       "message":  "Docker profile requirement is covered by target config.",
+                       "impact":  "The target declares the required docker profile.",
+                       "nextStep":  "Continue storage profile checks."
+                   },
+                   {
+                       "code":  "DEPLOY_STORAGE_PROFILE_MATCHED",
+                       "status":  "passed",
+                       "scope":  "targetRequirements.storageProfileIds",
+                       "message":  "All required storage profiles are covered by target config.",
+                       "impact":  "Resource references can be evaluated against declared target storage profiles.",
+                       "nextStep":  "Continue artifact checks."
+                   },
+                   {
+                       "code":  "DEPLOY_ARTIFACTS_VERIFIED",
+                       "status":  "passed",
+                       "scope":  "artifacts",
+                       "message":  "Artifact presence, package sha256, and cache profile checks passed.",
+                       "impact":  "Package artifact integrity is verified locally for report-only precheck.",
+                       "nextStep":  "Continue resource and plan checks."
+                   },
+                   {
+                       "code":  "DEPLOY_SCHEMA_PLAN_VERIFIED",
+                       "status":  "passed",
+                       "scope":  "database.schemaMigrations",
+                       "message":  "Schema migration precheck plan is complete for Phase 1 report-only.",
+                       "impact":  "No database statements are executed by this precheck.",
+                       "nextStep":  "Continue required data plan checks."
+                   },
+                   {
+                       "code":  "DEPLOY_REQUIRED_DATA_PLAN_VERIFIED",
+                       "status":  "passed",
+                       "scope":  "database.requiredDataSets",
+                       "message":  "Required data precheck plan is complete for Phase 1 report-only.",
+                       "impact":  "No database statements are executed by this precheck.",
+                       "nextStep":  "Continue resource checks."
+                   },
+                   {
+                       "code":  "DEPLOY_RESOURCE_GATE_VERIFIED",
+                       "status":  "passed",
+                       "scope":  "resources",
+                       "message":  "Resource reference and delta proof checks passed for Phase 1 report-only.",
+                       "impact":  "No object storage synchronization is performed by this precheck.",
+                       "nextStep":  "Continue deploy report review."
+                   },
+                   {
+                       "code":  "DEPLOY_REMOTE_MUTATION_DISABLED",
+                       "status":  "passed",
+                       "scope":  "deployContract.allowsRemoteMutation",
+                       "message":  "Deploy precheck report-only performs no remote mutation.",
+                       "impact":  "The tool only writes the local deploy-precheck-result.json report.",
+                       "nextStep":  "Review the local report before invoking any deploy-release path."
+                   }
+               ]
+}

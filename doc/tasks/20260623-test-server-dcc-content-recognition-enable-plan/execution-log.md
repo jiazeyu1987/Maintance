@@ -1,0 +1,85 @@
+# 执行记录：测试服 DCC 内容级 Codex 识别跑通
+
+- BDD: 维护仓发布链路必须携带 DCC Codex 运行时合同 -> Given 维护仓生成测试服 backend 运行时 / When 输出 .env 与 docker-compose.yml / Then 必须包含 DCC Codex 命令、CODEX_HOME 和挂载路径。
+- BDD: backend 容器里缺少 Codex 运行时时不得误判成功 -> Given 容器中没有可执行 codex 或认证目录 / When 触发内容级识别 / Then 后端必须返回明确失败。
+- BDD: 文件名不足以判断时能通过内容识别完成回写 -> Given 文件名不含唯一明确项目编码 / When 文控从测试服页面触发识别 / Then 后端读取文件内容并由 Codex 返回有效候选。
+- GREEN: previous-task-check -> PASS，已核对 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260622-test-server-dcc-codex-recognition-audit\task.md` 为 `COMPLETED`，本任务承接其 blocker 继续拆解。
+- GREEN: experience-gate-routing -> PASS，已读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`、`project-error-prevention.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`release-backup-restore.md`、`login-access.md`；当前仅做规划，不执行测试服写入。
+- GREEN: publish-chain-diff -> PASS，只读对比后确认业务后端仓 `script\deploy\int-ruoyi-test\docker-compose.yml` 已包含 `DCC_PROJECT_CODE_CODEX_HOME`、`CODEX_HOME`、`--yudao.dcc.project-code-recognition.codex-cli-command=${DCC_PROJECT_CODE_CODEX_CLI_COMMAND}` 与相关挂载；维护仓 `ops\deploy\int-ruoyi-test\docker-compose.yml` 当前缺少同等合同。
+- GREEN: runtime-root-cause -> PASS，维护仓 `ops\deploy\publish-int-ruoyi.ps1` 当前未写入 DCC Codex 运行时变量，而测试服 v15 现场也确认为容器内缺少 `/opt/intruoyi/runtime/tools/codex` 可执行入口。
+- RED: `python -X utf8 C:\Users\BJB110\.codex\skills\roadmap-node-dev-plan\scripts\validate_node_dev_plan.py --task-dir D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-test-server-dcc-content-recognition-enable-plan` -> FAIL，`Missing required file: task.md`，证明任务包在建档前确实不存在。
+- GREEN: `python -X utf8 C:\Users\BJB110\.codex\skills\roadmap-node-dev-plan\scripts\validate_node_dev_plan.py --task-dir D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-test-server-dcc-content-recognition-enable-plan` -> PASS，任务包结构已补齐，可进入后续实现阶段。
+- BLOCKER: task-switch -> 用户当前线程改为“整理领导时间分配文档”，本任务暂停在规划完成状态；影响：维护仓修复、测试服重建与真实内容识别验证均顺延到用户恢复本任务后执行。
+- CHANGE: user-resume-and-authorize-test-server -> 用户恢复本任务，并明确授权继续在测试服执行发布、容器重建与真实联调。
+- GREEN: release-package-v1 -> PASS，已在干净发布 worktree 上构建并部署 `release-20260623-dcc-batch-recognition-test-v1` 到测试服；远端 `.env`、backend/frontend 镜像 tag、`/actuator/health`、管理前端入口与 PDF worker 均通过。
+- GREEN: test-server-login-preflight -> PASS，`node D:\ProjectPackage\Int\IntRuoyi\scripts\preflight\login-preflight.mjs --base-url http://172.30.30.58:8081 --tenant 测试租户 --username aoteman --password 111111 --target-path /dcc/controlled-file/browser --target-text 刷新列表` 成功，远端数据库同时确认 `aoteman` 具备 `doc_control`。
+- RED: test-server-batch-task-1 -> FAIL，真实目录 `DCC E2E Documents/1. QMS documents/3 RE 扫描件`（`directoryId=909031`，`33` 条）批量任务 `taskId=1` 最终 `33/33` 失败，错误为 `failed to start Codex CLI command [cmd.exe, /c, codex.cmd]`，证明测试服仍回退到 Windows 默认命令。
+- GREEN: maintenance-runtime-codex-contract-fix -> PASS，维护仓 `ops/deploy/publish-int-ruoyi.ps1`、`ops/deploy/int-ruoyi-test/docker-compose.yml` 已补齐 `DCC_PROJECT_CODE_CODEX_CLI_COMMAND`、`DCC_PROJECT_CODE_CODEX_HOME`、`CODEX_HOME` 和 codex 挂载；backend-only 包 `release-20260624-dcc-batch-recognition-codex-v2` 已发布到测试服。
+- GREEN: codex-cli-health-probe -> PASS，测试服容器内直接执行 `printf "hello from codex health probe" | /opt/intruoyi/runtime/tools/codex ... -` 可快速返回 `Hello from Codex.`，证明 CLI 与认证链路本身可工作。
+- RED: test-server-batch-task-2 -> FAIL，同目录任务 `taskId=2` 结束时 `33/33` 失败，但错误已从 `cmd.exe` 收敛为 `Codex CLI timed out after 120 seconds` 与 `returned no DCC basic-data match`，说明 Linux Codex 链路生效但 120 秒不够且样本不一定可命中。
+- GREEN: maintenance-timeout-contract-red-green -> PASS，维护仓已增加 `DCC_PROJECT_CODE_CODEX_TIMEOUT_SECONDS` 发布合同与回归测试 `python -m pytest D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_publish_dcc_codex_runtime_contract.py -q`；同时保留 `test_scheduler_smoke_release_config.py`、`test_release_sql_preflight_gate.py` 通过。
+- RED: batch-task-long-error-message -> FAIL，新增后端回归测试 `processWaitingTasksTruncatesLongFailureMessageBeforePersistingProgress` 首次失败，稳定复现“`last_failure_message` 过长把任务从 RUNNING 打成 FAILED”的数据库截断缺陷。
+- GREEN: batch-task-long-error-message-fix -> PASS，已在 `DccControlledFileBatchRecognitionServiceImpl` 增加失败消息截断，定向 Maven 回归 `mvn --% -f D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-dcc-batch-recognition-browser\pom.xml -pl yudao-module-dcc -Dtest=DccControlledFileBatchRecognitionServiceTest#processWaitingTasksTruncatesLongFailureMessageBeforePersistingProgress -Dsurefire.failIfNoSpecifiedTests=false test` 通过。
+- GREEN: release-timeout-v3-v4 -> PASS，先后发布 `release-20260624-dcc-batch-recognition-timeout-v3`（仅超时合同）与 `release-20260624-dcc-batch-recognition-timeout-v4`（超时合同 + 错误消息截断）到测试服 backend；远端 `.env` 现已确认 `DCC_PROJECT_CODE_CODEX_TIMEOUT_SECONDS=300`。
+- GREEN: test-server-batch-task-4 -> PASS，使用中等规模目录 `DCC E2E Documents/1. QMS documents/2 GL 扫描件/作废文件`（`directoryId=909034`，`12` 条）真实触发批量识别；任务 `taskId=4` 最终 `COMPLETED`，`processed=12 / success=0 / failed=12 / skipped=0`，最后错误稳定为 `DCC project-code recognition returned no DCC basic-data match`，不再出现 `cmd.exe` 回退、`120s timeout` 或 `Data truncation`。
+- INFO: current-conclusion -> 当前测试服已证明“批量任务入口、异步执行、Linux Codex 启动链路、超时合同、错误消息落库”均可工作；剩余未放行项是测试租户可见样本尚未找到一个“内容级应命中”的真实文件，目前中等规模样本全部返回 `no DCC basic-data match`。
+- INFO: admin-tenant-sampling -> 测试服 `芋道源码` 租户已只读采样到多个 `20` 左右目录候选，包括 `质量管理/3.DMR/06.物料清单/05 有源类`（20 条）、`质量管理/3.DMR/04.物资采购清单/04 输注类`（20 条）、`质量管理/3.DMR/03.工艺文件/07 骨科类_工艺文件`（20 条）和 `质量管理/3.DMR/10.产品技术要求`（24 条）。
+- BLOCKER: admin-tenant-missing-doc-control -> 测试服远端数据库核验 `tenant_id=1` 下无任何用户绑定 `doc_control`；`admin` 实际角色仅 `common/super_admin/showroom_publicity`。因此在 `芋道源码/admin/admin123` 下真实打开 `http://172.30.30.58:8081/dcc/controlled-file/browser?scope=current&directoryId=910505&pageNo=1&pageSize=10` 时，页面不会显示 `批量识别产品名称/编号` 按钮，无法继续按现有权限合同发起批量任务。
+- GREEN: admin-tenant-role-recode -> PASS，已通过测试服 `芋道源码/admin/admin123` 的现有系统角色更新接口，将 `system_role.id=910233` 的角色码从 `wenkong` 改为 `doc_control`；远端数据库回读确认 `wangsiyu` 与 `zhaohaichen` 现均继承 `doc_control`。
+- GREEN: wangsiyu-admin-tenant-login -> PASS，`wangsiyu/111111` 在测试服 `芋道源码` 租户真实登录成功，前端登录态已显示角色 `doc_control` 与 `wenkong_download`。
+- GREEN: admin-tenant-batch-task-5 -> PASS，使用约 `20` 条目录 `质量管理/3.DMR/07.检验、生产用设备清单`（`directoryId=910505`，实际 `18` 条）在测试服 `芋道源码/wangsiyu` 下真实触发批量识别；任务 `taskId=5` 最终 `COMPLETED`，`processed=18 / success=4 / failed=14 / skipped=0`。
+- INFO: admin-tenant-batch-task-5-findings -> 该目录已证明测试服 `芋道源码` 租户存在内容级/文件名级可命中的真实样本，失败项的最终错误稳定为 `DCC project-code recognition returned no DCC basic-data match`；同时在前几轮修复后，不再复现 `cmd.exe/codex.cmd` 回退、`120s timeout` 或 `last_failure_message` 截断导致任务 `FAILED`。
+- GREEN: admin-tenant-batch-task-6 -> PASS，使用约 `20` 条目录 `质量管理/3.DMR/06.物料清单/05 有源类`（`directoryId=910524`，`20` 条）在测试服 `芋道源码/wangsiyu` 下真实触发批量识别；任务 `taskId=6` 最终 `COMPLETED`，`processed=20 / success=1 / failed=19 / skipped=0`，最后错误稳定为 `DCC project-code recognition returned no DCC basic-data match`，并出现 1 条真实成功样本。
+- GREEN: admin-tenant-batch-task-7 -> PASS，使用约 `20` 条目录 `质量管理/3.DMR/04.物资采购清单/04 输注类`（`directoryId=910648`，`20` 条）在测试服 `芋道源码/wangsiyu` 下真实触发批量识别；任务 `taskId=7` 最终 `COMPLETED`，`processed=20 / success=1 / failed=19 / skipped=0`。本轮额外暴露一个可复现但不阻断任务完成的错误细节：部分失败消息会包含 `Codex CLI exited with code 1 ...` 的原始 CLI 输出。
+- GREEN: admin-tenant-batch-task-8 -> PASS，使用约 `20` 条目录 `质量管理/3.DMR/02.说明书/08 导管鞘类_说明书`（`directoryId=910960`，实际 `18` 条）在测试服 `芋道源码/wangsiyu` 下真实触发批量识别；任务 `taskId=8` 最终 `COMPLETED`，`processed=18 / success=0 / failed=18 / skipped=0`。
+- GREEN: admin-tenant-batch-task-9 -> PASS，使用约 `20` 条目录 `质量管理/3.DMR/10.产品技术要求`（`directoryId=909098`，实际 `24` 条）在测试服 `芋道源码/wangsiyu` 下真实触发批量识别；任务 `taskId=9` 最终 `COMPLETED`，`processed=24 / success=7 / failed=17 / skipped=0`，是目前命中数最多的一轮。
+- INFO: admin-tenant-sample-trend -> `芋道源码/wangsiyu` 当前已验证的中等规模目录结果依次为：`18条=4成功`、`20条=1成功`、`20条=1成功`、`18条=0成功`、`24条=7成功`。这证明测试服内容级识别链路在真实样本上并非“全量 0 命中”，但样本命中率仍不稳定。
+- INFO: admin-tenant-2-dhf-inventory -> 测试服 `芋道源码` 租户 `质量管理/2.DHF`（`directoryId=911730`）当前只读统计为“直属文件 `1` 条、递归文件 `15644` 条、递归目录节点 `2137` 个”，可作为持续扩大量级样本池。
+- GREEN: admin-tenant-batch-task-10-started -> PASS，已使用测试服 `芋道源码/wangsiyu` 在 `质量管理/2.DHF`（`directoryId=911730`，递归 `15644` 条）真实触发批量识别；任务 `taskId=10` 已创建并进入 `RUNNING`。
+- INFO: admin-tenant-batch-task-10-progress-20260624-2211 -> 截至 `2026-06-24 22:11:02 +08:00`，`taskId=10` 状态 `RUNNING`，`processed=3 / success=0 / failed=3 / skipped=0 / remaining=15641`，最后错误仍为 `DCC project-code recognition returned no DCC basic-data match`。
+- INFO: admin-tenant-batch-task-10-throughput -> 两次真实轮询已观察到 `processedCount 2 -> 3` 的增长，证明任务未卡死而是在串行推进；按当前单条内容识别速度，这轮 `15644` 条任务将是多日级长跑样本。
+- GREEN: local-regression-fix-v5 -> PASS，基于测试服 `2.DHF` 前几条失败样本新增本地回归，修复“`dcc_project_code` 精确重复候选未折叠”和“Codex 提示词丢目录路径上下文”两处根因；后端定向回归 `DccControlledFileProjectCodeRecognitionServiceTest,DccProjectCodeCodexCliClientImplTest` 与受影响批量回归均已通过。
+- GREEN: test-server-release-20260624-context-v5 -> PASS，backend-only `release-20260624-dcc-batch-recognition-context-v5` 已部署测试服；旧长跑任务 `taskId=10` 在 backend 重启恢复后自动收口为 `FAILED`，最终刻度 `processed=27 / success=0 / failed=27 / remaining=15617 / lastFailureMessage=Interrupted by application restart before batch recognition completed`。
+- INFO: admin-tenant-batch-task-11 -> 使用修复后的 v5 测试服重新对 `质量管理/2.DHF` 发起任务 `taskId=11`；在下次发布 v6 前该任务已推进到 `processed=15 / success=0 / failed=15 / remaining=15629`，随后同样因 backend 重启被自动收口为 `FAILED`。
+- GREEN: local-regression-fix-v6 -> PASS，继续补上“目录路径中的唯一长项目编码也应参与高置信直连”的第二轮本地回归；新增回归 `recognizeProjectCode_directoryPathUsesUniqueProjectCodeShortcutBeforeCodex` 先 RED 后 GREEN，受影响 `29` 条后端回归全部通过。
+- GREEN: test-server-release-20260624-context-v6 -> PASS，backend-only `release-20260624-dcc-batch-recognition-context-v6` 已部署测试服，backend 健康检查恢复正常。
+- GREEN: admin-tenant-batch-task-12-started -> PASS，使用测试服 `芋道源码/wangsiyu` 在 v6 运行态下重新对 `质量管理/2.DHF` 发起任务 `taskId=12`，初始 `totalCount=15644`。
+- GREEN: admin-tenant-batch-task-12-progress-20260624-2319 -> 截至首次 `95s` 轮询，`taskId=12` 状态 `RUNNING`，`processed=307 / success=64 / failed=243 / skipped=0 / remaining=15337`；这已经从此前 `2.DHF` 长跑样本的“连续 0 成功”改善为明确存在批量正向命中。
+- INFO: admin-tenant-batch-task-12-progress-20260624-2320 -> 截至第二次 `190s` 轮询，`processed=308 / success=64 / failed=244 / remaining=15336`；截至第三次 `285s` 轮询，`processed=309 / success=64 / failed=245 / remaining=15335`，任务仍在持续推进。
+- INFO: admin-tenant-batch-task-12-progress-20260624-2349 -> 再次连续 `4` 次 `95s` 轮询结果为：
+  - `23:44:48` -> `processed=320 / success=64 / failed=256 / remaining=15324`
+  - `23:46:24` -> `processed=321 / success=64 / failed=257 / remaining=15323`
+  - `23:47:59` -> `processed=322 / success=64 / failed=258 / remaining=15322`
+  - `23:49:35` -> `processed=323 / success=64 / failed=259 / remaining=15321`
+- INFO: admin-tenant-batch-task-12-slow-tail -> 上述 `4` 次轮询证明 `taskId=12` 未卡死，但当前已进入慢速尾段，近 `5` 分钟仅新增 `3` 条处理且 `successCount` 暂未继续增长；这说明当前批次多为需要内容判定但仍 `no match` 的慢样本。
+- INFO: admin-tenant-batch-task-12-progress-20260624-2354 -> 最新连续 `3` 次 `95s` 轮询结果为：
+  - `23:50:59` -> `processed=324 / success=64 / failed=260 / remaining=15320`
+  - `23:52:35` -> `processed=325 / success=64 / failed=261 / remaining=15319`
+  - `23:54:10` -> `processed=326 / success=64 / failed=262 / remaining=15318`
+- INFO: admin-tenant-batch-task-12-slow-tail-continued -> `taskId=12` 仍持续前进，但成功数继续停留在 `64`，说明当前尾段主要仍是无匹配样本；这轮长跑要真正“全部分析完”还需要继续观察更长时间。
+- INFO: admin-tenant-batch-task-12-progress-20260625-0003 -> 跨到 `2026-06-25` 后继续连续轮询结果为：
+  - `23:56:37` -> `processed=328 / success=64 / failed=264 / remaining=15316`
+  - `23:58:12` -> `processed=329 / success=64 / failed=265 / remaining=15315`
+  - `23:59:48` -> `processed=330 / success=64 / failed=266 / remaining=15314`
+  - `00:01:24` -> `processed=330 / success=64 / failed=266 / remaining=15314`
+  - `00:01:39` -> `processed=331 / success=64 / failed=267 / remaining=15313`
+  - `00:03:40` -> `processed=332 / success=64 / failed=268 / remaining=15312`
+- INFO: admin-tenant-batch-task-12-slow-tail-confirmed -> 上述轮询证明 `taskId=12` 并未卡死，`00:01:24` 的短暂停滞只是单条慢样本；当前整体仍是极慢速推进，且新增处理条目全部落在失败计数，成功数继续维持 `64`。
+- GREEN: admin-tenant-batch-task-12-monitor-bootstrap -> PASS，为了满足“持续检查直到全部分析完”，已在维护仓任务 artifacts 下创建后台监控器：
+  - PowerShell 版 `artifacts/task-12-monitor/monitor-task.ps1`
+  - Python 版 `artifacts/task-12-monitor/monitor_task.py`
+- INFO: admin-tenant-batch-task-12-monitor-routing -> PowerShell 版因 Windows `ssh` 原生 stderr 噪声（`close - IO is still pending on closed socket`）持续污染结果，被降级为备用；Python 版已验证可以稳定写出真实快照。
+- GREEN: admin-tenant-batch-task-12-monitor-running -> PASS，Python 后台监控进程已启动（当前 PID `40532`），持续输出到：
+  - `artifacts/task-12-monitor/latest.json`
+  - `artifacts/task-12-monitor/history.ndjson`
+  - `artifacts/task-12-monitor/poll.log`
+- INFO: admin-tenant-batch-task-12-progress-20260625-0014 -> Python 监控器最近一次已记录 `00:14:05 +0800` 快照：`processed=339 / success=64 / failed=275 / remaining=15305 / status=RUNNING`。
+- GREEN: admin-tenant-batch-task-12-monitor-cleanup -> PASS，已识别并停止残留 PowerShell 监控进程 `39788`，当前仅保留 Python 监控进程 `40532` 持续写出任务快照，避免双进程互相污染 `poll.log`。
+- INFO: admin-tenant-batch-task-12-progress-20260625-0017 -> 后台 Python 监控器自动续写的最新快照为 `00:17:45 +0800`：`processed=342 / success=64 / failed=278 / remaining=15302 / status=RUNNING`。
+- GREEN: admin-tenant-batch-task-12-monitor-interval-fix -> PASS，继续排查发现 Python 监控进程 `40532` 实际是调试阶段以 `intervalSeconds=1` 启动的实例；已停止该进程并按正式轮询节奏重启为新进程 `14036`，`monitor-meta.json` 现已确认 `intervalSeconds=120`。
+- INFO: admin-tenant-batch-task-12-progress-20260625-0021 -> 重启为正式 `120s` 监控后，首个自动快照为 `00:21:35 +0800`：`processed=344 / success=64 / failed=280 / remaining=15300 / status=RUNNING`。
+- INFO: admin-tenant-batch-task-12-progress-20260625-0025 -> 后台 Python 监控器下一档自动快照为 `00:25:36 +0800`：`processed=346 / success=64 / failed=282 / remaining=15298 / status=RUNNING`，证明正式 `120s` 轮询已生效且持续推进。
+- INFO: admin-tenant-batch-task-12-progress-20260625-0031 -> 后台 Python 监控器继续自动快照到 `00:31:38 +0800`：`processed=350 / success=64 / failed=286 / remaining=15294 / status=RUNNING`，本轮新增 `4` 条处理，仍全部落在失败计数。
+- INFO: admin-tenant-batch-task-12-progress-20260625-0037 -> 后台 Python 监控器继续自动快照到 `00:37:40 +0800`：`processed=354 / success=64 / failed=290 / remaining=15290 / status=RUNNING`，任务仍在稳步推进，新增处理条目继续全部落在失败计数。
+- INFO: admin-tenant-batch-task-12-progress-20260625-0041 -> 后台 Python 监控器继续自动快照到 `00:41:41 +0800`：`processed=356 / success=64 / failed=292 / remaining=15288 / status=RUNNING`，本轮继续仅新增失败样本，没有新增成功命中。
+- INFO: admin-tenant-batch-task-12-progress-20260625-0047 -> 后台 Python 监控器继续自动快照到 `00:47:43 +0800`：`processed=359 / success=64 / failed=295 / remaining=15285 / status=RUNNING`，任务继续慢速推进，新增处理条目仍全部落在失败计数。

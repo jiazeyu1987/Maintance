@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "mode": "preflight-release",
+  "targetEnvironment": "prod",
+  "releaseTag": "release-20260620-current-head-prod-target-v4",
+  "writeActions": [],
+  "reportPath": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20260620-prod-release-current-latest/evidence/prod-deploy-precheck-report-v4.json"
+}

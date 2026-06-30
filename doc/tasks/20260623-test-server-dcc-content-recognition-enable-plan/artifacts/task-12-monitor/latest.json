@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-06-27 13:11:58 +0800",
+  "taskId": 12,
+  "status": "COMPLETED",
+  "totalCount": 15644,
+  "processedCount": 15644,
+  "successCount": 388,
+  "failedCount": 15256,
+  "skippedExistingCount": 0,
+  "remainingCount": 0,
+  "lastFailureMessage": "DCC project-code recognition failed: Codex CLI exited with code 1: OpenAI Codex v0.128.0 (research preview) -------- workdir: /tmp/dcc-project-code-recognition-8985779295712157664 model: gpt-5.4 provider: OpenAI approval: never sandbox: read-only reasoning effort: xhigh reasoning summaries: none session id: 019f077b-ee7d-7671-a46e-9e0736a3c06d -------- user 你是 DCC 基础信息识别助手。请读取当前目录下的源文件，并且只能从 dcc-project-code-candidates.json 中选择一个启用的 DCC 基础数据候选。 源文件上下文：质量管理/2.DHF/项目清单.xlsx 工作目录中的实际文件名：项目清单.xlsx 文件 MIME 类型：ap",
+  "diagnostics": {
+    "returncode": 0,
+    "stdout": [],
+    "stderr": [
+      "close - IO is still pending on closed socket. read:1, write:0, io:000002A920E14EB0"
+    ]
+  },
+  "deltaProcessed": 1,
+  "deltaSuccess": 0,
+  "deltaFailed": 1
+}

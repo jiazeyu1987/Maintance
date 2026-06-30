@@ -1,0 +1,202 @@
+{
+    "status":  "failed",
+    "mode":  "report-only",
+    "deployBehavior":  "deploy-release",
+    "packageId":  "release-20260620-current-head-prod-target-v2",
+    "manifestVersion":  "1.0",
+    "environment":  "prod",
+    "targetConfigId":  "prod-vdb-ragflow-minio-code-only-20260620",
+    "checkedAt":  "2026-06-20T07:48:41.8487708Z",
+    "changesDeployExitCode":  false,
+    "errors":  [
+                   {
+                       "code":  "DEPLOY_TARGET_CONFIG_INVALID",
+                       "status":  "failed",
+                       "scope":  "targetConfig.required",
+                       "message":  "Target config is missing required field(s): artifactCacheProfiles.",
+                       "impact":  "Deploy precheck cannot determine target capability coverage.",
+                       "nextStep":  "Add the missing target config fields and rerun."
+                   },
+                   {
+                       "code":  "PACKAGE_FILE_SHA256_MISMATCH",
+                       "status":  "failed",
+                       "scope":  "artifacts[2].sha256",
+                       "message":  "sha256 mismatch for \u0027manifest.json\u0027: expected sha256:490010722a96e0a9edb6adec413d28285fb77418e5a070ce178847553d6ebec1 but got sha256:25429f224aa4a2fef300155d38ef9f34319f67e6bf206447a7001b4c3d14d05b.",
+                       "impact":  "The package content differs from manifest integrity metadata.",
+                       "nextStep":  "Rebuild the package or update the manifest only after verifying the file content is intended."
+                   },
+                   {
+                       "code":  "FORBIDDEN_HARDCODED_TARGET_IP",
+                       "status":  "failed",
+                       "scope":  "forbiddenFieldsCheck.hardcodedIpMatches",
+                       "message":  "Forbidden hardcoded deploy target IP \u0027127.0.0.1\u0027 found in \u0027docker-compose.yml\u0027.",
+                       "impact":  "Release packages must use logical environment requirements, not concrete server addresses.",
+                       "nextStep":  "Remove the IP from the package and use server-side Runtime Control target config."
+                   },
+                   {
+                       "code":  "FORBIDDEN_HARDCODED_TARGET_IP",
+                       "status":  "failed",
+                       "scope":  "forbiddenFieldsCheck.hardcodedIpMatches",
+                       "message":  "Forbidden hardcoded deploy target IP \u0027172.30.30.59\u0027 found in \u0027runtime-env/backup.env\u0027.",
+                       "impact":  "Release packages must use logical environment requirements, not concrete server addresses.",
+                       "nextStep":  "Remove the IP from the package and use server-side Runtime Control target config."
+                   },
+                   {
+                       "code":  "FORBIDDEN_HARDCODED_TARGET_IP",
+                       "status":  "failed",
+                       "scope":  "forbiddenFieldsCheck.hardcodedIpMatches",
+                       "message":  "Forbidden hardcoded deploy target IP \u0027172.30.30.57\u0027 found in \u0027runtime-env/backup.env\u0027.",
+                       "impact":  "Release packages must use logical environment requirements, not concrete server addresses.",
+                       "nextStep":  "Remove the IP from the package and use server-side Runtime Control target config."
+                   },
+                   {
+                       "code":  "FORBIDDEN_HARDCODED_TARGET_IP",
+                       "status":  "failed",
+                       "scope":  "forbiddenFieldsCheck.hardcodedIpMatches",
+                       "message":  "Forbidden hardcoded deploy target IP \u0027172.30.30.57\u0027 found in \u0027runtime-env/prod.env\u0027.",
+                       "impact":  "Release packages must use logical environment requirements, not concrete server addresses.",
+                       "nextStep":  "Remove the IP from the package and use server-side Runtime Control target config."
+                   },
+                   {
+                       "code":  "FORBIDDEN_HARDCODED_TARGET_IP",
+                       "status":  "failed",
+                       "scope":  "forbiddenFieldsCheck.hardcodedIpMatches",
+                       "message":  "Forbidden hardcoded deploy target IP \u0027172.30.30.57\u0027 found in \u0027runtime-env/prod.env\u0027.",
+                       "impact":  "Release packages must use logical environment requirements, not concrete server addresses.",
+                       "nextStep":  "Remove the IP from the package and use server-side Runtime Control target config."
+                   },
+                   {
+                       "code":  "FORBIDDEN_HARDCODED_TARGET_IP",
+                       "status":  "failed",
+                       "scope":  "forbiddenFieldsCheck.hardcodedIpMatches",
+                       "message":  "Forbidden hardcoded deploy target IP \u0027172.30.30.58\u0027 found in \u0027runtime-env/test.env\u0027.",
+                       "impact":  "Release packages must use logical environment requirements, not concrete server addresses.",
+                       "nextStep":  "Remove the IP from the package and use server-side Runtime Control target config."
+                   },
+                   {
+                       "code":  "FORBIDDEN_HARDCODED_TARGET_IP",
+                       "status":  "failed",
+                       "scope":  "forbiddenFieldsCheck.hardcodedIpMatches",
+                       "message":  "Forbidden hardcoded deploy target IP \u0027172.30.30.57\u0027 found in \u0027runtime-env/test.env\u0027.",
+                       "impact":  "Release packages must use logical environment requirements, not concrete server addresses.",
+                       "nextStep":  "Remove the IP from the package and use server-side Runtime Control target config."
+                   },
+                   {
+                       "code":  "DEPLOY_ARTIFACT_SHA256_MISMATCH",
+                       "status":  "failed",
+                       "scope":  "artifacts[2].sha256",
+                       "message":  "Artifact \u0027manifest.json\u0027 sha256 mismatch: expected sha256:490010722a96e0a9edb6adec413d28285fb77418e5a070ce178847553d6ebec1 but got sha256:25429f224aa4a2fef300155d38ef9f34319f67e6bf206447a7001b4c3d14d05b.",
+                       "impact":  "The package artifact content does not match manifest integrity metadata.",
+                       "nextStep":  "Rebuild the package or correct the manifest sha256 after verifying artifact content."
+                   }
+               ],
+    "warnings":  [
+
+                 ],
+    "checks":  [
+                   {
+                       "code":  "DEPLOY_ENVIRONMENT_VALID",
+                       "status":  "passed",
+                       "scope":  "Environment",
+                       "message":  "Command environment is supported.",
+                       "impact":  "Deploy precheck can evaluate logical target compatibility.",
+                       "nextStep":  "Continue target config checks."
+                   },
+                   {
+                       "code":  "DEPLOY_TARGET_CONFIG_INVALID",
+                       "status":  "failed",
+                       "scope":  "targetConfig.required",
+                       "message":  "Target config required field validation failed.",
+                       "impact":  "Target config capability checks cannot be trusted.",
+                       "nextStep":  "Fix the target config contract."
+                   },
+                   {
+                       "code":  "MANIFEST_PRESENT",
+                       "status":  "passed",
+                       "scope":  "manifest.presence",
+                       "message":  "manifest.json was found.",
+                       "impact":  "Manifest JSON parsing can continue.",
+                       "nextStep":  "Parse Manifest v1 JSON."
+                   },
+                   {
+                       "code":  "MANIFEST_JSON_VALID",
+                       "status":  "passed",
+                       "scope":  "manifest.parse",
+                       "message":  "manifest.json parsed successfully.",
+                       "impact":  "Schema and package integrity checks can continue.",
+                       "nextStep":  "Validate Manifest v1 required fields and package type."
+                   },
+                   {
+                       "code":  "MANIFEST_REQUIRED_FIELDS_PRESENT",
+                       "status":  "passed",
+                       "scope":  "manifest.required",
+                       "message":  "All required Manifest v1 top-level fields are present.",
+                       "impact":  "Schema-level validation can continue.",
+                       "nextStep":  "Continue package type, baseline, file, checksum, and forbidden field checks."
+                   },
+                   {
+                       "code":  "MANIFEST_SCHEMA_CORE_VALID",
+                       "status":  "passed",
+                       "scope":  "manifest.schema",
+                       "message":  "Manifest v1 core schema checks passed.",
+                       "impact":  "Package type and smart-release baseline requirements are explicit.",
+                       "nextStep":  "Continue file declaration and forbidden field checks."
+                   },
+                   {
+                       "code":  "PACKAGE_FILE_VALIDATION_FAILED",
+                       "status":  "failed",
+                       "scope":  "package.files",
+                       "message":  "Package file declaration or sha256 checks failed.",
+                       "impact":  "The package cannot be safely used by Smart Release gates.",
+                       "nextStep":  "Fix undeclared, missing, or changed files and rerun validation."
+                   },
+                   {
+                       "code":  "FORBIDDEN_CONTENT_SCAN_FAILED",
+                       "status":  "failed",
+                       "scope":  "forbiddenFieldsCheck",
+                       "message":  "Forbidden target IP or secret scan failed.",
+                       "impact":  "The package violates Smart Release target and credential boundaries.",
+                       "nextStep":  "Remove the reported IP or secret-like values and rerun validation."
+                   },
+                   {
+                       "code":  "DEPLOY_TARGET_REQUIREMENT_MATCHED",
+                       "status":  "passed",
+                       "scope":  "targetRequirements.environmentCodes",
+                       "message":  "Selected environment is allowed by manifest targetRequirements.",
+                       "impact":  "The logical environment requirement is satisfied.",
+                       "nextStep":  "Continue target profile compatibility checks."
+                   },
+                   {
+                       "code":  "DEPLOY_ARTIFACTS_VERIFIED",
+                       "status":  "failed",
+                       "scope":  "artifacts",
+                       "message":  "Artifact checks found one or more deploy precheck failures.",
+                       "impact":  "Deploy precheck cannot mark artifact integrity as passed.",
+                       "nextStep":  "Fix artifact declarations, package files, or cache profile bindings."
+                   },
+                   {
+                       "code":  "DEPLOY_SCHEMA_PLAN_VERIFIED",
+                       "status":  "passed",
+                       "scope":  "database.schemaMigrations",
+                       "message":  "Schema migration precheck plan is complete for Phase 1 report-only.",
+                       "impact":  "No database statements are executed by this precheck.",
+                       "nextStep":  "Continue required data plan checks."
+                   },
+                   {
+                       "code":  "DEPLOY_REQUIRED_DATA_PLAN_VERIFIED",
+                       "status":  "passed",
+                       "scope":  "database.requiredDataSets",
+                       "message":  "Required data precheck plan is complete for Phase 1 report-only.",
+                       "impact":  "No database statements are executed by this precheck.",
+                       "nextStep":  "Continue resource checks."
+                   },
+                   {
+                       "code":  "DEPLOY_RESOURCE_GATE_VERIFIED",
+                       "status":  "passed",
+                       "scope":  "resources",
+                       "message":  "Resource reference and delta proof checks passed for Phase 1 report-only.",
+                       "impact":  "No object storage synchronization is performed by this precheck.",
+                       "nextStep":  "Continue deploy report review."
+                   }
+               ]
+}

@@ -1,0 +1,28 @@
+# 测试服 DCC 内容识别运行时合同补齐执行日志
+
+- BDD: 发布脚本必须写入 DCC Codex 运行时变量 -> Given 维护仓生成测试服 backend 运行时 / When 输出 `.env` / Then 其中必须包含 DCC 内容识别所需的 Codex 命令和 HOME 变量。
+- BDD: compose 必须把 DCC Codex 运行时传进 backend 容器 -> Given 维护仓生成测试服 compose / When backend 容器启动 / Then 其中必须包含 `CODEX_HOME`、识别命令参数和对应挂载。
+- BDD: 本地合同校验失败时不得误判测试服已可用 -> Given 发布链路缺少 DCC Codex 运行时合同 / When 本地合同测试执行 / Then 测试必须直接失败，而不是用健康检查或宿主机现状替代成功。
+- GREEN: previous-task-check -> PASS，已核对测试服只读核验任务结论，确认当前只处理维护仓本地发布链路缺口。
+- GREEN: experience-preflight -> PASS，已读取 `experience-index/server-access/release-backup-restore/worktree-memory`；本轮仅做本地脚本与 compose 合同修复，不执行测试服写入。
+- RED: `python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyiMaintanceWorktrees\int-maint-dcc-content-recognition-enable\scripts\tests\test_publish_dcc_codex_runtime_contract.py -q` -> FAIL，脚本未包含 `DCC_PROJECT_CODE_CODEX_CLI_COMMAND` / `DCC_PROJECT_CODE_CODEX_HOME`，compose 未包含 `CODEX_HOME`、识别命令参数与 DCC Codex 挂载。
+- GREEN: publish-script-contract -> PASS，已在 `ops/deploy/publish-int-ruoyi.ps1` 补齐 DCC Codex 运行时参数、effective 默认值和 `.env` 写入。
+- GREEN: compose-contract -> PASS，已在 `ops/deploy/int-ruoyi-test/docker-compose.yml` 补齐 `DCC_PROJECT_CODE_CODEX_HOME`、`CODEX_HOME`、识别命令参数与挂载。
+- GREEN: `python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyiMaintanceWorktrees\int-maint-dcc-content-recognition-enable\scripts\tests\test_publish_dcc_codex_runtime_contract.py -q` -> PASS，`2 passed`。
+- GREEN: `python -X utf8 C:\Users\BJB110\.codex\skills\ci-cd-environment-delivery\scripts\validate_cicd_environment.py --evidence D:\ProjectPackage\Int\IntRuoyiMaintanceWorktrees\int-maint-dcc-content-recognition-enable\doc\tasks\20260623-test-server-dcc-content-recognition-enable\ci-cd-evidence.md` -> PASS，CI/CD 证据格式校验通过。
+- GREEN: build-release-backend-runtime-fix -> PASS，使用 maintenance clean worktree 发布脚本构建 `backend code-only` 发布包 `20260623_dcc_content_recognition_runtime_fix_1`，并显式写入 `DCC_PROJECT_CODE_CODEX_CLI_COMMAND=/opt/intruoyi/runtime/tools/codex`、`DCC_PROJECT_CODE_CODEX_HOME=/opt/intruoyi/runtime/backend-codex-home`。
+- GREEN: deploy-release-backend-runtime-fix -> PASS，测试服 backend 已重建到 `20260623_dcc_content_recognition_runtime_fix_1`，健康检查 `48081` 返回 `200`。
+- GREEN: test-server-runtime-asset-check -> PASS，测试服 `.env` 为 `IMAGE_TAG=20260623_dcc_content_recognition_runtime_fix_1`；backend 容器存在 `/opt/intruoyi/runtime/tools/codex`，`CODEX_HOME=/opt/intruoyi/runtime/backend-codex-home`，且 `auth.json/config.toml` 文件存在。
+- BLOCKER: test-server-auth-parity-drift -> 测试服 `/root/.codex` 与 `backend-codex-home` 初始哈希不等于本机当前有效配置；容器内 Codex 冒烟返回 `401 Unauthorized`。影响：虽有 CLI 可执行入口，但运行时认证无效，内容识别无法视为跑通。
+- GREEN: test-server-auth-sync -> PASS，已将本机当前有效 `auth.json/config.toml` 同步到测试服 `/root/.codex` 与 `/opt/intruoyi/runtime/backend-codex-home`；两处 SHA-256 现与本机一致。
+- GREEN: test-server-host-codex-smoke -> PASS，测试服宿主机 `codex exec` 最小冒烟返回 `OK`。
+- GREEN: test-server-container-codex-smoke -> PASS，测试服 backend 容器 `/opt/intruoyi/runtime/tools/codex exec` 最小冒烟返回 `OK`。
+- GREEN: object-missing-sample-check -> PASS，真实页面与接口回查确认一批测试租户样本的 `infra_file.url` 指向的对象已缺失，点击识别返回 `NoSuchKey`，属于数据残留而非运行时故障。
+- GREEN: backend-direct-no-match-sample -> PASS，样本 `2054545668044050094` 通过 backend 直连 `48081` 调用已在约 `80s` 内返回真实业务结果 `DCC project-code recognition returned no DCC basic-data match`，说明内容识别链路已执行完成，不再是 CLI 不可用。
+- GREEN: build-release-gateway-timeout-fix -> PASS，已构建前后端 code-only 发布包 `20260623_dcc_content_recognition_gateway_timeout_fix_1`，包含 frontend nginx 超时修复。
+- GREEN: deploy-release-gateway-timeout-fix -> PASS，测试服 backend/frontend 已同步重建到 `20260623_dcc_content_recognition_gateway_timeout_fix_1`，`48081/8081/pdf.worker.mjs` 均返回 `200`。
+- GREEN: frontend-gateway-timeout-check -> PASS，测试服前端容器 `nginx -T` 已包含 `/admin-api/` 与 `/admin-api/infra/file/` 的 `proxy_connect_timeout 60s`、`proxy_read_timeout 300s`、`proxy_send_timeout 300s`。
+- GREEN: frontend-proxy-no-504 -> PASS，样本 `2054545668044050094` 通过 `8081/admin-api/.../recognize-project-code` 在约 `110s` 返回 backend 真实业务结果 `DCC project-code recognition returned no DCC basic-data match`，不再出现 `504 Gateway Time-out`。
+- GREEN: sample-20-recognition-batch -> PASS，已对 20 条“对象存在、测试租户、当前 `dcc_project_code_id IS NULL`”样本做 backend 直连批量识别采样；样本覆盖 `20260608/empty.docx`、`codex-fixed-A-20260608023653.docx`、`20260609/empty.docx`、`20260610/empty.docx`、`20260611/empty.docx` 等 5 组可访问对象，返回结果 `20/20` 均为 `DCC project-code recognition returned no DCC basic-data match`，单条耗时范围约 `51s-107s`。
+- GREEN: sample-20-db-readback -> PASS，数据库回读确认这 20 条样本当前 `dcc_project_code_id` 仍为 `NULL`，`project_code_recognition_type` 仍为空，未出现部分误写或脏更新。
+- BLOCKER: positive-recognition-sample-missing -> 当前尚未找到一条同时满足“对象存在”“内容足以命中 DCC 基础数据”“不依赖已被删除 fixture 对象”的真实测试租户样本。影响：可证明内容识别运行链路已跑通并能返回真实业务结果，但还不能证明当前测试服已拿到一条成功匹配并回写的内容识别正样本。

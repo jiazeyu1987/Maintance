@@ -1,0 +1,74 @@
+{
+  "taskId": "20260620-prod-release-current-latest",
+  "startedAt": "2026-06-20T06:36:10.306Z",
+  "baseUrl": "http://172.30.30.58:8081",
+  "tenant": "芋道源码",
+  "accounts": [
+    {
+      "username": "gaomin",
+      "expectedRootName": "展厅",
+      "runSmoke": false
+    },
+    {
+      "username": "zhaojie",
+      "expectedRootName": "智能排产",
+      "runSmoke": true
+    },
+    {
+      "username": "wangsiyu",
+      "expectedRootName": "DCC文控中心",
+      "runSmoke": false
+    }
+  ],
+  "results": [
+    {
+      "username": "gaomin",
+      "expectedRootName": "展厅",
+      "startedAt": "2026-06-20T06:36:16.116Z",
+      "topMenus": [],
+      "sidebarTexts": [],
+      "rootMenu": null,
+      "routes": [],
+      "smoke": null,
+      "failures": [
+        "未捕获 menu/list 响应"
+      ],
+      "finishedAt": "2026-06-20T06:36:36.196Z"
+    },
+    {
+      "username": "zhaojie",
+      "expectedRootName": "智能排产",
+      "startedAt": "2026-06-20T06:36:37.167Z",
+      "topMenus": [],
+      "sidebarTexts": [],
+      "rootMenu": null,
+      "routes": [],
+      "smoke": null,
+      "failures": [
+        "未捕获 menu/list 响应"
+      ],
+      "finishedAt": "2026-06-20T06:36:55.305Z"
+    },
+    {
+      "username": "wangsiyu",
+      "expectedRootName": "DCC文控中心",
+      "startedAt": "2026-06-20T06:36:55.361Z",
+      "topMenus": [],
+      "sidebarTexts": [],
+      "rootMenu": null,
+      "routes": [],
+      "smoke": null,
+      "failures": [
+        "未捕获 menu/list 响应"
+      ],
+      "finishedAt": "2026-06-20T06:37:13.285Z"
+    }
+  ],
+  "failures": [
+    "gaomin: 未捕获 menu/list 响应",
+    "zhaojie: 未捕获 menu/list 响应",
+    "wangsiyu: 未捕获 menu/list 响应"
+  ],
+  "finishedAt": "2026-06-20T06:37:13.288Z",
+  "status": "FAIL"
+}

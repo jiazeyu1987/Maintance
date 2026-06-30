@@ -1,0 +1,1051 @@
+{
+  "taskId": "20260620-prod-release-current-latest",
+  "startedAt": "2026-06-20T06:57:59.583Z",
+  "baseUrl": "http://172.30.30.58:8081",
+  "tenant": "芋道源码",
+  "accounts": [
+    {
+      "username": "gaomin",
+      "expectedRootName": "展厅",
+      "runSmoke": false
+    },
+    {
+      "username": "zhaojie",
+      "expectedRootName": "智能排产",
+      "runSmoke": true
+    },
+    {
+      "username": "wangsiyu",
+      "expectedRootName": "DCC文控中心",
+      "runSmoke": false
+    }
+  ],
+  "results": [
+    {
+      "username": "gaomin",
+      "expectedRootName": "展厅",
+      "startedAt": "2026-06-20T06:57:59.648Z",
+      "topMenus": [],
+      "sidebarTexts": [
+        "展厅公司",
+        "公司版本",
+        "产品管理",
+        "提示管理",
+        "展厅管理",
+        "审批中心"
+      ],
+      "rootMenu": {
+        "id": 980100,
+        "name": "展厅",
+        "path": "showroom",
+        "component": "",
+        "childCount": 6
+      },
+      "routes": [
+        {
+          "id": 980101,
+          "name": "展厅公司",
+          "path": "/showroom/company",
+          "component": "showroom-admin/index",
+          "permission": "",
+          "startedAt": "2026-06-20T06:58:07.077Z",
+          "finalUrl": "http://172.30.30.58:8081/showroom/company",
+          "title": "瑛泰管理系统 - 公司信息",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=8573220891882F63&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=2419%2C2419&et=3&ja=0&ln=zh-cn&lo=0&rnd=1350168167&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Findex&v=1.3.2&lv=1&sn=42032&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Findex",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 980118,
+          "name": "公司版本",
+          "path": "/showroom/company-version",
+          "component": "showroom-admin/index",
+          "permission": "",
+          "startedAt": "2026-06-20T06:58:08.384Z",
+          "finalUrl": "http://172.30.30.58:8081/showroom/company-version",
+          "title": "瑛泰管理系统 - 公司版本",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=8573220891882F63&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=4492%2C4492&et=3&ja=0&ln=zh-cn&lo=0&lt=1781938680&rnd=1537033329&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fshowroom%2Fcompany&v=1.3.2&lv=2&sn=42033&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fshowroom%2Fcompany",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 980102,
+          "name": "产品管理",
+          "path": "/showroom/product",
+          "component": "showroom-admin/index",
+          "permission": "",
+          "startedAt": "2026-06-20T06:58:12.281Z",
+          "finalUrl": "http://172.30.30.58:8081/showroom/product",
+          "title": "瑛泰管理系统 - 产品管理",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=8573220891882F63&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1222%2C1222&et=3&ja=0&ln=zh-cn&lo=0&lt=1781938680&rnd=805403273&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fshowroom%2Fcompany-version&v=1.3.2&lv=2&sn=42037&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fshowroom%2Fcompany-version",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 980119,
+          "name": "提示管理",
+          "path": "/showroom/prompt",
+          "component": "showroom-admin/index",
+          "permission": "",
+          "startedAt": "2026-06-20T06:58:13.677Z",
+          "finalUrl": "http://172.30.30.58:8081/showroom/prompt",
+          "title": "瑛泰管理系统 - 提示管理",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=8573220891882F63&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=3815%2C3815&et=3&ja=0&ln=zh-cn&lo=0&lt=1781938680&rnd=367446223&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fshowroom%2Fproduct&v=1.3.2&lv=2&sn=42038&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fshowroom%2Fproduct",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 980103,
+          "name": "展厅管理",
+          "path": "/showroom/hall",
+          "component": "showroom-admin/index",
+          "permission": "",
+          "startedAt": "2026-06-20T06:58:15.345Z",
+          "finalUrl": "http://172.30.30.58:8081/showroom/hall",
+          "title": "瑛泰管理系统 - 展柜管理",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=8573220891882F63&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1305%2C1304&et=3&ja=0&ln=zh-cn&lo=0&lt=1781938680&rnd=1182055510&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fshowroom%2Fprompt&v=1.3.2&lv=2&sn=42042&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fshowroom%2Fprompt",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 980104,
+          "name": "审批中心",
+          "path": "/showroom/approval",
+          "component": "showroom-admin/index",
+          "permission": "",
+          "startedAt": "2026-06-20T06:58:16.634Z",
+          "finalUrl": "http://172.30.30.58:8081/showroom/approval",
+          "title": "瑛泰管理系统 - 审批中心",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=8573220891882F63&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1499%2C1499&et=3&ja=0&ln=zh-cn&lo=0&lt=1781938680&rnd=1603674940&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fshowroom%2Fhall&v=1.3.2&lv=2&sn=42044&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fshowroom%2Fhall",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        }
+      ],
+      "smoke": null,
+      "failures": [
+        "顶层菜单不符合预期: []"
+      ],
+      "finishedAt": "2026-06-20T06:58:16.635Z"
+    },
+    {
+      "username": "zhaojie",
+      "expectedRootName": "智能排产",
+      "startedAt": "2026-06-20T06:58:16.689Z",
+      "topMenus": [],
+      "sidebarTexts": [
+        "排产员工作台",
+        "排产工单",
+        "报工",
+        "排程日历",
+        "生产排产",
+        "璞慧排产"
+      ],
+      "rootMenu": {
+        "id": 900120,
+        "name": "智能排产",
+        "path": "smart-scheduling",
+        "component": "",
+        "childCount": 6
+      },
+      "routes": [
+        {
+          "id": 5590,
+          "name": "排产员工作台",
+          "path": "/mes/pro/scheduler-workbench",
+          "component": "mes/pro/scheduler-workbench/index",
+          "permission": "",
+          "startedAt": "2026-06-20T06:58:20.874Z",
+          "finalUrl": "http://172.30.30.58:8081/mes/pro/scheduler-workbench",
+          "title": "瑛泰管理系统 - 排产员工作台",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=83CE36D0C6961561&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=2433%2C2433&et=3&ja=0&ln=zh-cn&lo=0&rnd=387407851&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Findex&v=1.3.2&lv=1&sn=42049&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Findex",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 5580,
+          "name": "排产工单",
+          "path": "/mes/pro/schedule-order",
+          "component": "mes/pro/scheduleorder/index",
+          "permission": "",
+          "startedAt": "2026-06-20T06:58:22.201Z",
+          "finalUrl": "http://172.30.30.58:8081/mes/pro/schedule-order",
+          "title": "瑛泰管理系统 - 排产工单",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=83CE36D0C6961561&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1251%2C1251&et=3&ja=0&ln=zh-cn&lo=0&lt=1781938697&rnd=1674038947&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fmes%2Fpro%2Fscheduler-workbench&v=1.3.2&lv=2&sn=42050&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fmes%2Fpro%2Fscheduler-workbench",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 5550,
+          "name": "报工",
+          "path": "/mes/pro/feedback",
+          "component": "mes/pro/feedback/index",
+          "permission": "",
+          "startedAt": "2026-06-20T06:58:23.521Z",
+          "finalUrl": "http://172.30.30.58:8081/mes/pro/feedback",
+          "title": "瑛泰管理系统 - 报工",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=83CE36D0C6961561&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1245%2C1245&et=3&ja=0&ln=zh-cn&lo=0&lt=1781938697&rnd=296268471&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fmes%2Fpro%2Fschedule-order&v=1.3.2&lv=2&sn=42051&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fmes%2Fpro%2Fschedule-order",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 5262,
+          "name": "排程日历",
+          "path": "/mes/pro/schedule-calendar",
+          "component": "mes/pro/task/calendar/index",
+          "permission": "",
+          "startedAt": "2026-06-20T06:58:25.035Z",
+          "finalUrl": "http://172.30.30.58:8081/mes/pro/schedule-calendar",
+          "title": "瑛泰管理系统 - 排程日历",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=83CE36D0C6961561&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1235%2C1235&et=3&ja=0&ln=zh-cn&lo=0&lt=1781938697&rnd=693177765&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fmes%2Fpro%2Ffeedback&v=1.3.2&lv=2&sn=42052&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fmes%2Fpro%2Ffeedback",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 5540,
+          "name": "生产排产",
+          "path": "/mes/pro/task",
+          "component": "mes/pro/task/index",
+          "permission": "",
+          "startedAt": "2026-06-20T06:58:26.991Z",
+          "finalUrl": "http://172.30.30.58:8081/mes/pro/task",
+          "title": "瑛泰管理系统 - 生产排产",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=83CE36D0C6961561&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1428%2C1428&et=3&ja=0&ln=zh-cn&lo=0&lt=1781938697&rnd=149202487&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fmes%2Fpro%2Fschedule-calendar&v=1.3.2&lv=2&sn=42054&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fmes%2Fpro%2Fschedule-calendar",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 900104,
+          "name": "璞慧排产",
+          "path": "/mes/pro/puhui-schedule",
+          "component": "mes/pro/puhui-schedule/index",
+          "permission": "",
+          "startedAt": "2026-06-20T06:58:28.252Z",
+          "finalUrl": "http://172.30.30.58:8081/mes/pro/puhui-schedule",
+          "title": "瑛泰管理系统 - 璞慧排产",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=83CE36D0C6961561&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1864%2C1864&et=3&ja=0&ln=zh-cn&lo=0&lt=1781938697&rnd=1076449752&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fmes%2Fpro%2Ftask&v=1.3.2&lv=2&sn=42055&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fmes%2Fpro%2Ftask",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        }
+      ],
+      "smoke": {
+        "startedAt": "2026-06-20T06:58:28.253Z",
+        "statuses": [
+          {
+            "phase": "before-start",
+            "text": "瑛泰管理系统 智能排产 排产员工作台 排产工单 报工 排程日历 生产排产 璞慧排产 智能排产 / 排产员工作台 请输入菜单内容 赵杰 排产员工作台 排产员工作台 按生产订单到报工复盘的顺序处理排产事项 刷新 冒烟测试 未启动 冒烟测试未启动 待排工单 6 排产工单池 今日已排任务 0 计划产能 0 今日可用产能 0 来自排产工单资源快照 今日报工数量 0 0 条报工 报工偏差 无偏差 偏差 0 设"
+          },
+          {
+            "phase": "start-miss",
+            "text": "未找到 smoke 启动按钮，可见按钮: 刷新 | 待排工单 6 排产工单池 | 今日已排任务 0 计划产能 0 | 今日可用产能 0 来自排产工单资源快照 | 今日报工数量 0 0 条报工 | 报工偏差 无偏差 偏差 0 | 设备维修中 0 影响今日产能 | 排产阻塞项 0 资源未配置 0 | 物料短缺 0 来自现有排程问题 | 待排工单 6 | 待排工单 6 | 资源未配置 0 | 维修设备 0 | 今日任务 0 | 今日任务 0 | 报工数量 0.00 | 阻塞项 0 | 处理 | 处理 | 处理 | 处理 | 处理 | 处理 | 处理 | 处理 | 处理 | 处理"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T06:58:37.843Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T06:58:46.131Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T06:58:54.419Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T06:59:02.686Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T06:59:10.989Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T06:59:19.276Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T06:59:27.574Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T06:59:35.871Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T06:59:44.196Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T06:59:52.543Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:00:00.870Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:00:09.155Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:00:17.467Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:00:25.763Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:00:34.176Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:00:42.446Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:00:50.705Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:00:59.039Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:01:07.313Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:01:15.634Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:01:23.916Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:01:32.212Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:01:40.533Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:01:48.911Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:01:57.195Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:02:05.466Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:02:13.752Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:02:22.058Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:02:30.389Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:02:38.685Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:02:46.943Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:02:55.279Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:03:03.568Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:03:11.869Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:03:20.140Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:03:28.435Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:03:36.706Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:03:45.038Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:03:53.355Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:04:01.729Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:04:10.002Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:04:18.257Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:04:26.589Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:04:34.889Z"
+          },
+          {
+            "phase": "poll",
+            "text": "未启动",
+            "at": "2026-06-20T07:04:43.209Z"
+          }
+        ],
+        "clickedStart": false,
+        "completed": false
+      },
+      "failures": [
+        "顶层菜单不符合预期: []",
+        "智能排产冒烟测试未完成"
+      ],
+      "finishedAt": "2026-06-20T07:04:43.209Z"
+    },
+    {
+      "username": "wangsiyu",
+      "expectedRootName": "DCC文控中心",
+      "startedAt": "2026-06-20T07:04:43.275Z",
+      "topMenus": [],
+      "sidebarTexts": [
+        "DCC目录管理",
+        "DCC访问规则",
+        "DCC文件类别",
+        "DCC基础数据",
+        "DCC岗位分配",
+        "DCC审批路线",
+        "DCC下发",
+        "DCC培训",
+        "DCC受控上传",
+        "DCC受控浏览",
+        "DCC我的文件",
+        "DCC审批任务",
+        "DCC电子签名管理",
+        "DCC受控文件审计",
+        "DCC我的培训",
+        "DCC审批打印模板"
+      ],
+      "rootMenu": {
+        "id": 6800,
+        "name": "DCC文控中心",
+        "path": "/dcc",
+        "component": "",
+        "childCount": 16
+      },
+      "routes": [
+        {
+          "id": 6801,
+          "name": "DCC目录管理",
+          "path": "/dcc/controlled-file/directories",
+          "component": "dcc/controlled-file/directories/index",
+          "permission": "",
+          "startedAt": "2026-06-20T07:04:54.434Z",
+          "finalUrl": "http://172.30.30.58:8081/dcc/controlled-file/directories",
+          "title": "瑛泰管理系统 - DCC目录管理",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://api.iconify.design/ep.json?icons=collection-tag%2Cfiles%2Cfolder%2Cmanagement",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            },
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=D12B1F27D89D0966&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&et=0&ja=0&ln=zh-cn&lo=0&rnd=958437360&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Flogin%3Fredirect%3D%252Findex&v=1.3.2&lv=1&api=4_0&sn=42436&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Findex&tt=%E7%91%9B%E6%B3%B0%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%20-%20%E7%99%BB%E5%BD%95",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            },
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=D12B1F27D89D0966&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=2572%2C2572&et=3&ja=0&ln=zh-cn&lo=0&rnd=15161261&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Findex&v=1.3.2&lv=1&sn=42436&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Findex",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 6802,
+          "name": "DCC访问规则",
+          "path": "/dcc/controlled-file/access-rules",
+          "component": "dcc/controlled-file/access-rules/index",
+          "permission": "",
+          "startedAt": "2026-06-20T07:04:57.816Z",
+          "finalUrl": "http://172.30.30.58:8081/dcc/controlled-file/access-rules",
+          "title": "瑛泰管理系统 - DCC访问规则",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=D12B1F27D89D0966&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=8569%2C8569&et=3&ja=0&ln=zh-cn&lo=0&lt=1781939084&rnd=68196627&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Fdirectories&v=1.3.2&lv=2&sn=42436&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Fdirectories",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 6803,
+          "name": "DCC文件类别",
+          "path": "/dcc/controlled-file/categories",
+          "component": "dcc/controlled-file/categories/index",
+          "permission": "",
+          "startedAt": "2026-06-20T07:04:59.458Z",
+          "finalUrl": "http://172.30.30.58:8081/dcc/controlled-file/categories",
+          "title": "瑛泰管理系统 - DCC文件类别",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=D12B1F27D89D0966&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=2656%2C2656&et=3&ja=0&ln=zh-cn&lo=0&lt=1781939084&rnd=1554616072&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Faccess-rules&v=1.3.2&lv=2&sn=42445&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Faccess-rules",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 990210,
+          "name": "DCC基础数据",
+          "path": "/dcc/controlled-file/basic-data",
+          "component": "dcc/controlled-file/basic-data/index",
+          "permission": "",
+          "startedAt": "2026-06-20T07:05:00.743Z",
+          "finalUrl": "http://172.30.30.58:8081/dcc/controlled-file/basic-data",
+          "title": "瑛泰管理系统 - DCC基础数据",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=D12B1F27D89D0966&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1524%2C1524&et=3&ja=0&ln=zh-cn&lo=0&lt=1781939084&rnd=795338447&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Fcategories&v=1.3.2&lv=2&sn=42448&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Fcategories",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 6804,
+          "name": "DCC岗位分配",
+          "path": "/dcc/controlled-file/positions",
+          "component": "dcc/controlled-file/positions/index",
+          "permission": "",
+          "startedAt": "2026-06-20T07:05:02.209Z",
+          "finalUrl": "http://172.30.30.58:8081/dcc/controlled-file/positions",
+          "title": "瑛泰管理系统 - DCC岗位分配",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=D12B1F27D89D0966&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1149%2C1149&et=3&ja=0&ln=zh-cn&lo=0&lt=1781939084&rnd=1037863313&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Fbasic-data&v=1.3.2&lv=2&sn=42450&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Fbasic-data",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 6805,
+          "name": "DCC审批路线",
+          "path": "/dcc/controlled-file/routes",
+          "component": "dcc/controlled-file/routes/index",
+          "permission": "",
+          "startedAt": "2026-06-20T07:05:03.720Z",
+          "finalUrl": "http://172.30.30.58:8081/dcc/controlled-file/routes",
+          "title": "瑛泰管理系统 - DCC审批路线",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=D12B1F27D89D0966&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1380%2C1380&et=3&ja=0&ln=zh-cn&lo=0&lt=1781939084&rnd=709329781&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Fpositions&v=1.3.2&lv=2&sn=42451&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Fpositions",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 6808,
+          "name": "DCC下发",
+          "path": "/dcc/controlled-file/distribution",
+          "component": "dcc/controlled-file/distribution/index",
+          "permission": "",
+          "startedAt": "2026-06-20T07:05:05.329Z",
+          "finalUrl": "http://172.30.30.58:8081/dcc/controlled-file/distribution",
+          "title": "瑛泰管理系统 - 文件分发规则",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=D12B1F27D89D0966&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1423%2C1423&et=3&ja=0&ln=zh-cn&lo=0&lt=1781939084&rnd=1500758371&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Froutes&v=1.3.2&lv=2&sn=42452&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Froutes",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 6809,
+          "name": "DCC培训",
+          "path": "/dcc/controlled-file/training",
+          "component": "dcc/controlled-file/training/index",
+          "permission": "",
+          "startedAt": "2026-06-20T07:05:07.041Z",
+          "finalUrl": "http://172.30.30.58:8081/dcc/controlled-file/training",
+          "title": "瑛泰管理系统 - 文件培训规则",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=D12B1F27D89D0966&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1532%2C1532&et=3&ja=0&ln=zh-cn&lo=0&lt=1781939084&rnd=1596311181&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Fdistribution&v=1.3.2&lv=2&sn=42454&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Fdistribution",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 6806,
+          "name": "DCC受控上传",
+          "path": "/dcc/controlled-file/upload",
+          "component": "dcc/controlled-file/upload/index",
+          "permission": "",
+          "startedAt": "2026-06-20T07:05:08.772Z",
+          "finalUrl": "http://172.30.30.58:8081/dcc/controlled-file/upload",
+          "title": "瑛泰管理系统 - DCC受控上传",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=D12B1F27D89D0966&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1542%2C1542&et=3&ja=0&ln=zh-cn&lo=0&lt=1781939084&rnd=1034251103&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Ftraining&v=1.3.2&lv=2&sn=42456&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Ftraining",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 6807,
+          "name": "DCC受控浏览",
+          "path": "/dcc/controlled-file/browser",
+          "component": "dcc/controlled-file/browser/index",
+          "permission": "",
+          "startedAt": "2026-06-20T07:05:10.439Z",
+          "finalUrl": "http://172.30.30.58:8081/dcc/controlled-file/browser",
+          "title": "瑛泰管理系统 - DCC受控浏览",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=D12B1F27D89D0966&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1649%2C1649&et=3&ja=0&ln=zh-cn&lo=0&lt=1781939084&rnd=1152857374&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Fupload&v=1.3.2&lv=2&sn=42457&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Fupload",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 6813,
+          "name": "DCC我的文件",
+          "path": "/dcc/controlled-file/mine",
+          "component": "dcc/controlled-file/mine/index",
+          "permission": "",
+          "startedAt": "2026-06-20T07:05:11.922Z",
+          "finalUrl": "http://172.30.30.58:8081/dcc/controlled-file/mine",
+          "title": "瑛泰管理系统 - DCC我的文件",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=D12B1F27D89D0966&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1586%2C1586&et=3&ja=0&ln=zh-cn&lo=0&lt=1781939084&rnd=587131365&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Fbrowser&v=1.3.2&lv=2&sn=42459&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Fbrowser",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 6814,
+          "name": "DCC审批任务",
+          "path": "/dcc/controlled-file/approval-tasks",
+          "component": "dcc/controlled-file/approval-tasks/index",
+          "permission": "",
+          "startedAt": "2026-06-20T07:05:13.453Z",
+          "finalUrl": "http://172.30.30.58:8081/dcc/controlled-file/approval-tasks",
+          "title": "瑛泰管理系统 - DCC审批任务",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=D12B1F27D89D0966&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1391%2C1391&et=3&ja=0&ln=zh-cn&lo=0&lt=1781939084&rnd=772766935&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Fmine&v=1.3.2&lv=2&sn=42461&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Fmine",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 6815,
+          "name": "DCC电子签名管理",
+          "path": "/dcc/controlled-file/signatures",
+          "component": "dcc/controlled-file/signatures/index",
+          "permission": "",
+          "startedAt": "2026-06-20T07:05:15.278Z",
+          "finalUrl": "http://172.30.30.58:8081/dcc/controlled-file/signatures",
+          "title": "瑛泰管理系统 - DCC电子签名管理",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=D12B1F27D89D0966&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1451%2C1451&et=3&ja=0&ln=zh-cn&lo=0&lt=1781939084&rnd=312565617&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Fapproval-tasks&v=1.3.2&lv=2&sn=42462&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Fapproval-tasks",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 6818,
+          "name": "DCC受控文件审计",
+          "path": "/dcc/controlled-file/audit",
+          "component": "dcc/controlled-file/audit/index",
+          "permission": "",
+          "startedAt": "2026-06-20T07:05:16.568Z",
+          "finalUrl": "http://172.30.30.58:8081/dcc/controlled-file/audit",
+          "title": "瑛泰管理系统 - 受控文件审计",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=D12B1F27D89D0966&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1736%2C1736&et=3&ja=0&ln=zh-cn&lo=0&lt=1781939084&rnd=657754387&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Fsignatures&v=1.3.2&lv=2&sn=42464&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Fsignatures",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 990208,
+          "name": "DCC我的培训",
+          "path": "/dcc/controlled-file/training-mine",
+          "component": "dcc/controlled-file/training/mine/index",
+          "permission": "",
+          "startedAt": "2026-06-20T07:05:18.139Z",
+          "finalUrl": "http://172.30.30.58:8081/dcc/controlled-file/training-mine",
+          "title": "瑛泰管理系统 - 我的培训",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=D12B1F27D89D0966&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1193%2C1193&et=3&ja=0&ln=zh-cn&lo=0&lt=1781939084&rnd=1245015703&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Faudit&v=1.3.2&lv=2&sn=42465&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Faudit",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        },
+        {
+          "id": 980120,
+          "name": "DCC审批打印模板",
+          "path": "/dcc/controlled-file/print-template",
+          "component": "dcc/controlled-file/print-template/index",
+          "permission": "",
+          "startedAt": "2026-06-20T07:05:19.361Z",
+          "finalUrl": "http://172.30.30.58:8081/dcc/controlled-file/print-template",
+          "title": "瑛泰管理系统 - 审批打印模板",
+          "forbiddenTexts": [],
+          "apiFailures": [],
+          "requestFailures": [],
+          "externalRequestFailures": [
+            {
+              "method": "GET",
+              "url": "https://hm.baidu.com/hm.gif?hca=D12B1F27D89D0966&cc=1&ck=1&cl=24-bit&ds=1440x1000&vl=1000&ep=1481%2C1481&et=3&ja=0&ln=zh-cn&lo=0&lt=1781939084&rnd=621510925&si=a1ff8825baa73c3a78eb96aa40325abc&su=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Ftraining-mine&v=1.3.2&lv=2&sn=42467&r=0&ww=1440&u=http%3A%2F%2F172.30.30.58%3A8081%2Fdcc%2Fcontrolled-file%2Ftraining-mine",
+              "failure": "net::ERR_ABORTED",
+              "benign": true
+            }
+          ],
+          "consoleErrors": [],
+          "pageErrors": [],
+          "screenshot": ""
+        }
+      ],
+      "smoke": null,
+      "failures": [
+        "顶层菜单不符合预期: []"
+      ],
+      "finishedAt": "2026-06-20T07:05:19.362Z"
+    }
+  ],
+  "failures": [
+    "gaomin: 顶层菜单不符合预期: []",
+    "zhaojie: 顶层菜单不符合预期: []",
+    "zhaojie: 智能排产冒烟测试未完成",
+    "wangsiyu: 顶层菜单不符合预期: []"
+  ],
+  "finishedAt": "2026-06-20T07:05:19.365Z",
+  "status": "FAIL"
+}
