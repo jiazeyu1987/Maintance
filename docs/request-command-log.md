@@ -1897,3 +1897,10 @@
   - `mes_team_leader` 已拥有 `5552`；
   - `tenant_id=1` 的 `mes_scheduler` 仍缺 `5532/5535/5555/5969/900200`，且运行态也缺失 `5552` 绑定。
   - 命令记录：只读核对 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\sql\mysql\20260629_mes_smart_scheduling_role_scope.sql`，确认正式 SQL 已包含 `5552`，但尚未包含 `5532/5535/5555/5969/900200`，且菜单基线校验也未覆盖这些依赖菜单。
+- 请求：`继续`（承接 `2026-09-10 AUTO-DAY 班次产能缺失` 根因修复）
+  - 当前处理：后端根因修复已提交 `b0d401af1eba3a71befc3c8b5d07552a3425ed85`；本轮在维护仓创建任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260701-schedule-calendar-capacity-horizon-release-test-server\`，按“只发布已提交 git 版本”路径推进测试服发布验证。
+  - 命中经验：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`、`docs/release-build-preflight-lessons.md`、`docs/release-agent-checklist.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\worktree-memory.md`。
+  - 当前结论：维护仓与后端主工作区仍有无关脏改，发布输入不得直接取主工作区；下一步需创建 clean maintenance/backend/frontend worktree，切换 runtime-control 发布输入后再执行真实 `build-release -> publish-test`。
+  - 追加记录：发布链路新增正式修复提交 `1b364a2fe8d458deb14ba322bdeb1af5394d83f6`，解决 `sql/mysql/20260630_mes_pro_work_order_erp_snapshot_fields.sql` 在测试服重复发布时的幂等性阻断；相关 pytest、migration gate 与 TDD 门禁均已通过。
+  - 命令记录：维护控制台已切换到 clean backend worktree `D:\ProjectPackage\Int\release-worktrees\IntRuoyi-backend-20260701-1b364a2` 后重新执行真实 `build-release`，operation=`op-2026-06-30T180856412443100Z-e35aa0c2-d701-4bcb-99df-9e9540fe61ea` 最终 `SUCCESS`；候选包 `release-20260701-capacity-horizon-v2` 的 manifest 已确认 backend=`1b364a2fe8d458deb14ba322bdeb1af5394d83f6`、frontend=`c8f87af720535115c233bf894e957471d68cc667`，且 `dirty=false`。
+  - 命令记录：通过运行控制台 action preview 核对 `publish-test` 目标为测试服 `172.30.30.58`、`RemoteAppDir=/opt/intruoyi/runtime`、`releaseTag=release-20260701-capacity-horizon-v2`，随后已提交真实 `publish-test` operation=`op-2026-06-30T183226445474300Z-f8e7e47e-c07d-4d7b-98bf-8ca8b9ed4ea2`；当前进入只读轮询与测试服运行态验收阶段。
