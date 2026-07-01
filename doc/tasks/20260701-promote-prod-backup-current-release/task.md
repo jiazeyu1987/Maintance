@@ -41,12 +41,21 @@ BDD: 正式服和备份服运行态必须与 releaseTag 一致 -> Given 发布 o
 ## Milestones
 
 1. 建立任务台账并记录经验门禁。`COMPLETED`
-2. 复核测试服成功证据与当前三仓状态。`PENDING`
-3. 通过运行控制台真实执行 `mark-tested`。`PENDING`
+2. 复核测试服成功证据与当前三仓状态。`COMPLETED`
+3. 通过运行控制台真实执行 `mark-tested`。`COMPLETED`
 4. 通过运行控制台真实执行 `promote-prod` 并验证正式服。`BLOCKED`
 5. 通过运行控制台真实执行 `promote-backup` 并验证备份服。`BLOCKED`
-6. 回填证据、closeout 预览并提交维护仓记录。`PENDING`
+6. 回填证据、closeout 预览并提交维护仓记录。`COMPLETED`
 
 ## Current Status
 
 BLOCKED：promote-prod 已真实执行但失败，失败点为正式服 required SQL 20260613_dcc_file_view_matrix_seed.sql 执行 CALL apply_dcc_file_view_matrix_seed() 时触发 ERROR 1648 (HY000): Data too long for condition item 'MESSAGE_TEXT'。正式服发布未完成，按发布门禁禁止继续执行备份服发布；需先修复该 required SQL 的 MESSAGE_TEXT 过长契约，并重新走同一 releaseTag 发布链路。
+
+## Final Recorded Result
+
+- `mark-release-tested`：`op-2026-07-01T114323350177300Z-b9c87f76-2701-47ff-b62b-ec012dccd6e6` -> `SUCCESS`。
+- `promote-prod`：`op-2026-07-01T114634769559Z-27398231-9d1e-49dd-b12f-7ade558e4e1a` -> `FAILED`。
+- 正式服失败点：`20260613_dcc_file_view_matrix_seed.sql`，执行 `CALL apply_dcc_file_view_matrix_seed()` 时报 `ERROR 1648 (HY000): Data too long for condition item 'MESSAGE_TEXT'`。
+- 正式服 release lock：`prod-release-20260701-1720-current` 已记录为 `FAILED` 并释放。
+- 备份服发布：未执行；正式服未成功前禁止继续 `promote-backup`。
+- Closeout preview：`status=ready`，无删除项、无阻塞。

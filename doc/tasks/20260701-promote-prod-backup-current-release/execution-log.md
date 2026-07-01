@@ -9,3 +9,9 @@ GREEN: pre-promote-release-evidence -> PASS，已复核 releaseTag=release-20260
 BLOCKER: promote-prod-required-sql-message-text-too-long -> 正式服发布 operation op-2026-07-01T114634769559Z-27398231-9d1e-49dd-b12f-7ade558e4e1a 失败；失败点为 required SQL 20260613_dcc_file_view_matrix_seed.sql，MySQL 返回 ERROR 1648 (HY000) at line 496: Data too long for condition item 'MESSAGE_TEXT'。发布锁已释放为 FAILED。按发布规则，正式服未完成，禁止继续备份服发布，需先修复该 SQL 的 MESSAGE_TEXT 过长契约并重新构建/发布同一流程。
 
 BLOCKER: stop-before-backup -> 正式服 promote-prod 未成功，按 release-agent-checklist 与 release-backup-restore 门禁，禁止继续 promote-backup；本轮停止在正式服 required SQL 失败点，等待修复 20260613_dcc_file_view_matrix_seed.sql。
+
+GREEN: prod-failure-state-readback -> PASS，已只读回查正式服 infra_release_operation_lock，operation_id=prod-release-20260701-1720-current 状态为 FAILED；infra_release_migration 中 migration_id=20260613_dcc_file_view_matrix_seed 状态为 FAILED，error_message 与 operation 日志一致。
+
+GREEN: backup-not-attempted-check -> PASS，运行控制台 operations 中不存在 release-20260701-1720-current 的 promote-backup operation，本轮已按门禁停止在正式服失败点。
+
+GREEN: closeout-preview -> PASS，task-closeout-cleanup preview 返回 status=ready，无删除项、无阻塞。
