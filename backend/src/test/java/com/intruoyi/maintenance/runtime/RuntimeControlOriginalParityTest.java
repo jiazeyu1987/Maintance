@@ -172,7 +172,12 @@ class RuntimeControlOriginalParityTest {
 
         assertThat(preview)
                 .contains("-Mode", "deploy-release", "-Environment", "test",
-                        "-ReleaseTag", "release-publish-test-target", "-ServerHost", "172.30.30.58")
+                        "-ReleaseTag", "release-publish-test-target", "-ServerHost", "172.30.30.58",
+                        "-RemoteReleaseRoot", "/var/lib/docker/intruoyi-releases",
+                        "-RemoteDataRoot", "/var/lib/docker/intruoyi-data/runtime-data",
+                        "-RemoteDataDiskMount", "/var/lib/docker",
+                        "-RemoteDataDiskDevice", "/dev/vdb",
+                        "-RemoteMinioContainer", "ragflow_compose-minio-1")
                 .doesNotContain("172.30.30.57", "backup-now", "restore-data", "rollback-app");
 
         mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")

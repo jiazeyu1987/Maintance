@@ -59,10 +59,10 @@ BDD: 通用问题前移沉淀为事前经验 -> Given 发布过程中出现可�
 ## Milestones
 
 1. 创建本轮发布任务台账并记录经验门禁。`COMPLETED`
-2. 核对三仓主分支脏改范围并分别提交。`IN_PROGRESS`
-3. 真实执行 `build-release` 并校验 manifest。`PENDING`
-4. 真实执行 `publish-test` 并完成测试服运行态验证。`PENDING`
-5. 回填全过程证据、问题总结和经验文档更新。`PENDING`
+2. 核对三仓主分支脏改范围并分别提交。`COMPLETED`
+3. 真实执行 `build-release` 并校验 manifest。`COMPLETED`
+4. 真实执行 `publish-test` 并完成测试服运行态验证。`COMPLETED`
+5. 回填全过程证据、问题总结和经验文档更新。`COMPLETED`
 
 ## Expected Verification
 
@@ -80,4 +80,18 @@ BDD: 通用问题前移沉淀为事前经验 -> Given 发布过程中出现可�
 
 ## Current Status
 
-IN_PROGRESS：已确认三仓主工作区均存在新的在途改动，且用户已明确授权“先提交主工作区再继续”。当前正在按仓库分别核对改动范围与任务证据，随后将分别提交维护仓、后端仓、前端仓，再进入新的真实 `build-release -> publish-test`。
+COMPLETED：本轮已基于三仓主分支最新已提交版本完成真实 `build-release -> publish-test -> 测试服运行态验收` 闭环。
+
+- 成功构建 operation：`op-2026-07-01T033034704182700Z-1f28bee7-89e4-4557-8a7f-133704a26751`
+- 成功测试服发布 operation：`op-2026-07-01T035959878754100Z-fba9c2e2-7656-49d4-9003-3ab0627a22c8`
+- 成功 `releaseTag`：`release-20260701-main-branch-commit-head-v2`
+- manifest 复核：后端 `291cbc29e825307cb3cf1e6d35b64e713d1d0d94 / int_main / dirty=false`；前端 `57bd4d394e0795279eccf2d505b54534060aec9a / int_main / dirty=false`
+- 测试服运行态验收：
+  - `/opt/intruoyi/runtime/.env`：`IMAGE_TAG=release-20260701-main-branch-commit-head-v2`
+  - 运行镜像：`intruoyi-backend:release-20260701-main-branch-commit-head-v2`、`intruoyi-frontend:release-20260701-main-branch-commit-head-v2`
+  - 后端健康检查：`http://172.30.30.58:48081/actuator/health` -> HTTP `200` / `UP`
+  - 前端入口：`http://172.30.30.58:8081/` -> HTTP `200`
+
+- 本轮关键问题收敛：
+  - 运行控制台曾从旧维护 worktree 启动，导致首次 `build-release` 使用错误发布输入；已切回当前维护仓实例并保留阻塞证据。
+  - 维护控制台测试服参数一度被误判为备份服口径，真实发布后只读核对证明测试服当前仍以 `/var/lib/docker`、`/dev/vdb`、`ragflow_compose-minio-1` 为准；已把“测试服参数不得套用备份服经验”前移到发布前置经验并回写服务器访问文档。
