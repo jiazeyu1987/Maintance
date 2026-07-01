@@ -93,6 +93,8 @@
 - 凡涉及重构，必须先从长期可维护、可扩展的方向评估方案，先写任务文档，再采用 Subagent-Driven Development 方式执行重构。
 
 - Thread baseline: E2E 必须走真实用户路径；只用 Playwright 操作前端，接口仅用于最终校验，前端无入口则先修前端并失败。
+- Thread baseline: 所有 Playwright 自动化默认统一使用业务前端仓 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3` 的 Playwright `1.60.0` 与其浏览器缓存；运行目录默认切到该仓，使用其 `node_modules\playwright`，不得默认使用侧边聊天 `node_repl`、`npx` 临时版本或其它 Playwright 版本。
+- Thread baseline: 如必须在非业务前端仓上下文启动 Playwright，必须显式指定可用浏览器路径 `E:\Int\DevCache\playwright-browsers\chromium-1223\chrome-win64\chrome.exe` 或系统 Chrome `C:\Program Files\Google\Chrome\Application\chrome.exe`；若仍指向缺失的 `chromium-1200`、`chromium_headless_shell-1200` 或其它不存在浏览器缓存，必须 fail fast，不得反复执行 `playwright install` 卡住任务。
 
 - Thread baseline: E2E 不得为测试额外增加前端控件或内容；发现错误必须主动暴露，不得隐藏或绕过。
 - Thread baseline: 删除前端控件时必须同步删除对应后端功能，更新相关文档和测试，并运行受影响测试。

@@ -49,6 +49,15 @@
   - `node D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3\tests\e2e\mes-feedback-permission-static.spec.js`
   - `node D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3\tests\e2e\mes-feedback-tracking-static.spec.js`
 - 当前结果：已完成三仓脏改归类，正在补齐维护仓/前端任务台账并准备分别提交维护仓、后端仓、前端仓主分支改动，提交后再进入真实 `build-release -> publish-test`。
+- 命令记录：分别提交三仓主分支发布输入：
+  - 前端仓提交 `9662a85e7e54c41cbbc594a843a47dff8d1dfa7f`，提交信息 `任务: 收口待归属与排产前端修复`
+  - 后端仓提交 `1985ac31a4ff57e52ff78721302ac0bd77ba505c`，提交信息 `任务: 收口展厅与SRM发布修复`，并通过 `TDD_TASK_DIR=doc/tasks/20260701-release-input-closeout` 的后端 TDD 钩子
+  - 维护仓提交 `29bd0aa`，提交信息 `任务: 更新测试服发布任务记录`
+- 命令记录：通过本机运维台页面真实预览并执行 `build-release`，operation=`op-2026-07-01T092718393431Z-e0ee2912-b24f-46d6-9a2e-5608c0426cde`，releaseTag=`release-20260701-1720-current`，最终 `SUCCESS`。
+- 命令记录：只读核对 manifest `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260701-1720-current\manifest.json`，确认后端 `1985ac31a4ff57e52ff78721302ac0bd77ba505c / int_main / dirty=false`，前端 `9662a85e7e54c41cbbc594a843a47dff8d1dfa7f / int_main / dirty=false`。
+- 命令记录：通过本机运维台页面真实预览并执行 `publish-test`，operation=`op-2026-07-01T094350943851500Z-35882b3a-115c-44c0-b76e-57a2c4906633`，最终 `SUCCESS`。
+- 命令记录：只读 SSH 核验测试服运行态，确认 `.env IMAGE_TAG=release-20260701-1720-current`，`backend|intruoyi-backend:release-20260701-1720-current|running`，`frontend|intruoyi-frontend:release-20260701-1720-current|running`，后端健康 `{"status":"UP"}`，前端入口 HTTP `200`，PDF worker HTTP `200 application/javascript`。
+- 当前结果：本轮“构建并发布到测试服务器”已完成真实 `build-release -> publish-test -> 测试服运行态验证` 闭环，并严格停在测试服；未执行 `mark-tested`、正式服或备份服发布。
 
 ## 2026-06-30 排程日历正式排程为空时报错
 
