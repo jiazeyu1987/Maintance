@@ -2005,4 +2005,9 @@
   - 命令记录：新增维护仓合同测试，先 RED 证明发布对象清单仍包含临时上传表；随后修改 `ops/deploy/publish-int-ruoyi.ps1`，移除 `dcc_controlled_file_temporary_file` 作为发布清单来源，并同步修正 slim 包测试中 backend exec jar 复制契约。
   - 命令记录：从历史发布快照 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260616-121500-e2e\minio\yudao\dcc\original\` 恢复本机 MinIO `dcc/original/20260609|20260610|20260611/empty.docx`，文件大小 `3306`、SHA256 `fd9160a87bcbe94570d998499f1b1ed9b39f381fde1688c2ed2b0b0a6d562bf2`。
   - 验证命令：`python -X utf8 -m pytest scripts/tests/test_publish_dcc_codex_runtime_contract.py scripts/tests/test_release_package_slimming.py scripts/tests/test_release_sql_preflight_gate.py -q` -> PASS，16 passed；PowerShell ParseFile -> PASS。
+  - 阻塞记录：`release-20260701-1720-mes-scheduler-dcc-inventory-fix` 的 build-release 失败，operation=`op-2026-07-01T161418982943200Z-f3a9cdb2-d4e4-4cb2-9671-9e13a9fd9545`，根因是本机 MinIO 仍缺少 `dcc/original/20260614/QMS文件清单.xlsx` 等历史 DCC 对象。
+  - 命令记录：从历史发布快照 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\20260615-merge-chunk-test-001\minio\yudao\` 恢复 DCC `20260614/20260615` 对象，并按 UTF-8 key 精确恢复 `旋转接头 接三通旋塞-I 11105-LJ-601.PDF` 与 `胶塞 82041-LJ-108.PDF`；最终 DCC 对象前置检查 `checked=14165, missing=0`。
+  - 阻塞记录：`release-20260701-1720-mes-scheduler-dcc-objects-restored` 的 build-release 在生成 DCC 清单后挂起于 NAS mount，operation=`op-2026-07-01T173402387281300Z-afcc65f1-c1cf-4561-af59-b0f391fcba89`；本地发布进程持续 RUNNING 数小时后被终止，旧 tag 废弃。
+  - 命令记录：新增 NAS 配置权威性 BDD/TDD；先 RED 证明 `Read-NasReleaseConfig` 会用 CLI `NasShare` 覆盖 UTF-8 配置文件中的中文共享名，随后修改 `ops/deploy/publish-int-ruoyi.ps1`，保持 NAS share 只来自 UTF-8 config file，并记录忽略 CLI `NasShare` 覆盖。
+  - 验证命令：`python -X utf8 -m pytest scripts/tests/test_publish_dcc_codex_runtime_contract.py scripts/tests/test_release_package_slimming.py scripts/tests/test_release_sql_preflight_gate.py -q` -> PASS，17 passed；PowerShell ParseFile -> PASS。
 

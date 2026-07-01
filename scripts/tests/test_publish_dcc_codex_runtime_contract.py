@@ -13,6 +13,13 @@ def _dcc_release_object_reference_query() -> str:
     return script[start:end]
 
 
+def _nas_release_config_reader() -> str:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    start = script.index("function Read-NasReleaseConfig")
+    end = script.index("function Join-NasRelativePath", start)
+    return script[start:end]
+
+
 def test_publish_runtime_preserves_dcc_codex_linux_contract() -> None:
     script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
     compose = COMPOSE_TEMPLATE.read_text(encoding="utf-8")
@@ -49,3 +56,11 @@ def test_dcc_release_inventory_excludes_bound_temporary_uploads() -> None:
         not in query
     )
     assert "dcc_controlled_file_temporary_file" not in query
+
+
+def test_nas_release_config_file_is_authoritative_for_share_name() -> None:
+    reader = _nas_release_config_reader()
+
+    assert "$config.server = $NasServer" in reader
+    assert "$config.share = $NasShare" not in reader
+    assert "NAS release config share must come from the UTF-8 config file" in reader

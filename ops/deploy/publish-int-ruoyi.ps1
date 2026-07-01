@@ -2122,8 +2122,9 @@ function Read-NasReleaseConfig {
     if (-not [string]::IsNullOrWhiteSpace($NasServer)) {
         $config.server = $NasServer
     }
-    if (-not [string]::IsNullOrWhiteSpace($NasShare)) {
-        $config.share = $NasShare
+    # NAS release config share must come from the UTF-8 config file.
+    if (-not [string]::IsNullOrWhiteSpace($NasShare) -and $NasShare -ne [string]$config.share) {
+        Info 'Ignoring command-line NasShare; NAS release config share remains authoritative.'
     }
     return $config
 }

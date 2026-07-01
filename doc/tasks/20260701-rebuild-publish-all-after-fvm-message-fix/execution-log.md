@@ -38,3 +38,16 @@ RED: python -X utf8 -m pytest scripts/tests/test_publish_dcc_codex_runtime_contr
 GREEN: dcc-object-restore-preflight -> PASS, source=E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260616-121500-e2e\minio\yudao\dcc\original\{20260609,20260610,20260611}\empty.docx, size=3306, sha256=fd9160a87bcbe94570d998499f1b1ed9b39f381fde1688c2ed2b0b0a6d562bf2, target=local MinIO yudao/dcc/original/{20260609,20260610,20260611}/empty.docx
 GREEN: python -X utf8 -m pytest scripts/tests/test_publish_dcc_codex_runtime_contract.py scripts/tests/test_release_package_slimming.py scripts/tests/test_release_sql_preflight_gate.py -q -> PASS, result=16 passed
 GREEN: powershell-parse -> PASS, command=[System.Management.Automation.Language.Parser]::ParseFile(ops/deploy/publish-int-ruoyi.ps1)
+
+BLOCKER: build-release -> FAIL, releaseTag=release-20260701-1720-mes-scheduler-dcc-inventory-fix, operation=op-2026-07-01T161418982943200Z-f3a9cdb2-d4e4-4cb2-9671-9e13a9fd9545, reason=DCC_OBJECT_SNAPSHOT_MISSING fileId=9198354894835 object=dcc/original/20260614/QMS文件清单.xlsx
+BLOCKER: dcc-full-object-restore-preflight -> FAIL, source=E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\20260615-merge-chunk-test-001\minio\yudao\dcc\original\{20260614,20260615}, target=local MinIO yudao/dcc/original/{20260614,20260615}, checked=17935, missing=2, impact=继续构建会再次因缺失 DCC 对象阻塞；后续按 UTF-8 key 精确恢复两个文件后重验。
+
+GREEN: dcc-final-object-restore-preflight -> PASS, source=E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\20260615-merge-chunk-test-001\minio\yudao, restored=dcc/original/20260615/旋转接头 接三通旋塞-I 11105-LJ-601.PDF sha256=8165f67c6e43fc16560bea1b03f7fc5ca3d8ef3014ed668f270be7f6d962c4ac; dcc/original/20260615/胶塞 82041-LJ-108.PDF sha256=823669414fa584cc1453bbb62f48b23159e8fc95f1dfad4eb810a51a85e00299, checked=14165, missing=0
+
+BLOCKER: build-release -> ABORTED, releaseTag=release-20260701-1720-mes-scheduler-dcc-objects-restored, operation=op-2026-07-01T173402387281300Z-afcc65f1-c1cf-4561-af59-b0f391fcba89, reason=local publish process remained RUNNING after DCC package generation and NAS mount log for multiple hours; process killed to prevent indefinite release lock. Impact: release tag abandoned; next attempt requires root-cause fix and a fresh releaseTag.
+BDD: NAS release config share authority -> Given runtime-control writes a UTF-8 NAS config containing the Chinese share name, When build-release receives a command-line NasShare value that may be mojibake from process invocation, Then the publish script must keep the UTF-8 config share and must not override it from CLI.
+RED: python -X utf8 -m pytest scripts/tests/test_publish_dcc_codex_runtime_contract.py -q -> FAIL, expected reason=Read-NasReleaseConfig still overrides UTF-8 config share from NasShare CLI parameter
+
+GREEN: python -X utf8 -m pytest scripts/tests/test_publish_dcc_codex_runtime_contract.py scripts/tests/test_release_package_slimming.py scripts/tests/test_release_sql_preflight_gate.py -q -> PASS
+
+GREEN: powershell-parse -> PASS, command=[System.Management.Automation.Language.Parser]::ParseFile(ops/deploy/publish-int-ruoyi.ps1)
