@@ -1974,3 +1974,15 @@
   - 阻塞记录：首次 `publish-test` 预览暴露维护控制台仍用旧测试服参数 `/var/lib/docker` 契约；随后误把测试服参数切到备份服口径并发起真实发布 `op-2026-07-01T035549937463500Z-e3c10e33-d8b8-4bbb-b00d-b43dfe640fae`，日志在 `docker inspect intruoyi-minio` 阶段失败。只读核对测试服真实运行态后，确认 `172.30.30.58` 当前实际仍使用 `/var/lib/docker`、设备 `/dev/vdb`、容器 `ragflow_compose-minio-1`，因此把“测试服参数不得套用备份服经验”前移写入 `docs/release-build-preflight-lessons.md` 与 `D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`。
   - 命令记录：维护控制台参数与契约测试修回测试服真实基线后，重新打包维护控制台 jar 并重启 `48181`；预览确认测试服发布参数恢复为 `/var/lib/docker`、`/dev/vdb`、`ragflow_compose-minio-1`。
   - 命令记录：重新执行真实 `publish-test`，operation=`op-2026-07-01T035959878754100Z-fba9c2e2-7656-49d4-9003-3ab0627a22c8` 最终 `SUCCESS`；随后只读核验 `/opt/intruoyi/runtime/.env`、运行镜像、后端健康检查和前端入口，确认 `.env IMAGE_TAG=release-20260701-main-branch-commit-head-v2`，`intruoyi-backend|intruoyi-backend:release-20260701-main-branch-commit-head-v2`，`intruoyi-frontend|intruoyi-frontend:release-20260701-main-branch-commit-head-v2`，后端 `http://172.30.30.58:48081/actuator/health` 返回 HTTP `200` / `UP`，前端 `http://172.30.30.58:8081/` 返回 HTTP `200`。
+
+## 2026-07-01：DCC 批量识别 5 worker 发布链路配置
+
+- 请求：`我要用5个codex来识别所有文件的文件名和编码,应该怎么做`、`你能帮我做到吗`
+  - 命中经验：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\powershell-memory.md`。
+  - 命令记录：新建维护仓任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260701-dcc-batch-recognition-five-workers\{task.md,execution-log.md}`，明确当前只改维护仓本机发布链路，不执行测试服发布、重启、正式服或备份服动作。
+  - 命令记录：修改 `ops/deploy/publish-int-ruoyi.ps1`，新增 `DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT` 参数、远端已有值继承、默认值 `5` 和 runtime `.env` 写入。
+  - 命令记录：修改 `ops/deploy/int-ruoyi-test/docker-compose.yml`，向后端 JVM 参数透传 `--yudao.dcc.project-code-recognition.worker-count=${DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT}`。
+  - 命令记录：修改 `scripts/tests/test_publish_dcc_codex_runtime_contract.py`，补充 worker-count 发布合同断言。
+  - 验证命令：`python -m pytest scripts\tests\test_publish_dcc_codex_runtime_contract.py -q` -> PASS，确认维护仓发布链路写入 `DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT`，compose 已透传 worker-count。
+  - 收尾命令：`python C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --workspace D:\ProjectPackage\Int\IntRuoyiMaintance --task-id 20260701-dcc-batch-recognition-five-workers --mode preview` -> PASS，ready，保留 `task.md` 与 `execution-log.md`，无阻塞。
+
