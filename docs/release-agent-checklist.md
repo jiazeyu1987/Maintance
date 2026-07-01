@@ -64,11 +64,10 @@ Codex 必须把完整发布任务视为以下严格顺序：
 
 - 确认发布源头在 `D:\ProjectPackage\Int\IntRuoyiMaintance`。
 - 确认后端、前端、维护仓三方主分支名、当前提交与 dirty 状态。
-- 默认只发布主分支当前版本，不默认创建发布 `worktree`。
-- 若任一主分支工作区 dirty，先停止并提示用户选择方案；未得到用户明确选择前，不继续真实发布。
-- 若本次要求“只发布已提交 git 版本”，必须先核对测试服当前 releaseTag/manifest 与当前三仓 HEAD 是否一致；不一致时不能复用旧发布结论。
-- 若本次要求“只发布已提交 git 版本”，必须显式核对 runtime-control 当前 `repo-root` / `frontend-root` 指向的就是最新干净 worktree，而不是旧 worktree。
-- 在 clean worktree 上先过前端 lockfile / 依赖恢复与后端目标模块构建门禁；未通过时，先提交修复再重建 worktree。
+- 每次发布一律先创建本次专用的临时发布 `worktree`，禁止直接在主工作区执行构建、验证或发布。
+- 必须先核对测试服当前 releaseTag/manifest 与本次目标提交是否一致；不一致时不能复用旧发布结论。
+- 必须显式核对 runtime-control 当前 `repo-root` / `frontend-root` 指向的就是本次最新临时发布 worktree，而不是主工作区或旧 worktree。
+- 在临时发布 worktree 上先过前端 lockfile / 依赖恢复与后端目标模块构建门禁；未通过时，先提交修复再重建 worktree。
 - 先跑发布门禁或契约测试，尤其是：
   - migration policy gate
   - 影响发布链路的 SQL 契约测试
@@ -83,17 +82,16 @@ Codex 必须把完整发布任务视为以下严格顺序：
 
 - migration / manifest / 脚本契约未报错。
 - 本次使用的后端、前端、维护仓输入关系清晰。
-- 默认发布时，三仓主分支输入已明确且无未经用户处理的脏改风险。
+- 三仓主分支状态、本次目标提交与临时发布 worktree 路径已明确记录。
 - 运行控制台预览命令指向正确 repo-root / frontend-root / scriptPath。
 
 ### 阻塞条件
 
 - SQL 缺少 `release-migration` 元数据。
 - `dependsOn` 错误。
-- 主分支工作区 dirty，且用户尚未明确选择处理方案。
 - 发布脚本仍引用旧产物名、旧变量、旧路径。
 - 运行控制台仍加载旧 worktree 或旧逻辑。
-- clean worktree 自身无法通过 frozen-lockfile、依赖恢复或目标模块构建门禁。
+- 临时发布 worktree 自身无法通过 frozen-lockfile、依赖恢复或目标模块构建门禁。
 
 ## 2. 构建完成判定
 

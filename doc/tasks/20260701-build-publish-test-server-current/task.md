@@ -61,7 +61,7 @@ BDD: 测试服运行态必须落到同一 releaseTag -> Given 发布输入已满
 
 1. 建立任务台账并记录经验门禁。`COMPLETED`
 2. 核对三仓当前分支、HEAD 与 dirty 状态。`COMPLETED`
-3. 明确发布输入方案并完成构建前门禁。`IN_PROGRESS`
+3. 明确发布输入方案并完成构建前门禁。`BLOCKED`
 4. 真实执行 `build-release` 并校验 manifest。`PENDING`
 5. 真实执行 `publish-test` 并完成测试服运行态验证。`PENDING`
 6. 回填证据并完成任务收尾。`PENDING`
@@ -80,7 +80,7 @@ BDD: 测试服运行态必须落到同一 releaseTag -> Given 发布输入已满
 
 ## Current Status
 
-IN_PROGRESS：用户已明确选择“先提交主工作区再发布”，当前正在收口三仓发布输入并补齐任务归属/验证证据，完成后将分别提交维护仓、后端仓与前端仓，再进入真实发布。
+BLOCKED：当前线程优先级已切换为“统一构建发布临时 worktree 规则固化”。本任务原先基于“先提交主工作区再发布”的旧发布基线推进，现已不再符合最新线程规则。后续如恢复本任务，必须先按新的统一发布规则重写发布输入方案、任务文档和执行门禁，再决定是否继续真实发布。
 
 - 维护仓：当前仅保留 `docs/request-command-log.md` 与本轮 `doc/tasks/20260701-build-publish-test-server-current/` 的任务记录改动，提交后可恢复 clean
 - 后端仓：本轮待提交范围主要对应 `20260701-showroom-product-excel-audio-keyword-roundtrip`、`20260701-srm-nas-locator-blacklist-srm-admin-binding`、`20260701-srm-nas-locator-wildcard-search-error` 与 `20260701-local-admin-api-48081-connection-refused`

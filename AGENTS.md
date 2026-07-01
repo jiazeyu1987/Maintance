@@ -13,7 +13,15 @@
 - Thread baseline: 发布失败先查 migration/manifest/脚本契约，再查环境；后端产物或环境变量契约变更时，维护仓脚本与测试必须同步修改。
 - Thread baseline: 完整发布只认单一 releaseTag 的 `build-release -> publish-test -> mark-tested -> promote-prod -> promote-backup` 闭环；不得拼接多轮 releaseTag 结果。
 - Thread baseline: 发布成功必须同时核 operation=SUCCESS、manifest、远端 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、backend health=UP、frontend HTTP 200；缺任一项不得判定完成。
-- Thread baseline: 后续默认发布只发布各仓库主分支当前版本，不默认创建发布 worktree；若主分支工作区有脏改，必须先提示用户选择处理方案。
+- Thread baseline: 每次构建发布一律在临时发布 worktree 中执行，禁止直接在主工作区执行构建、验证或发布。
+- Thread baseline: 临时发布 worktree 必须检出本次发布目标提交；构建发布输入固定为该目标提交对应的 Git 已提交内容，未提交改动、未跟踪文件和脏工作区内容一律不得进入发布包。
+- Thread baseline: 主工作区固定为各仓库用于持续开发和最终融合的 `int_main` 工作区；主工作区只用于日常开发、最终融合和发布收口，不作为直接发布执行环境。
+- Thread baseline: 每次发布开始前必须新建本次专用的临时发布 worktree；该 worktree 只用于本次发布隔离环境，不得跨任务复用，不得作为长期开发工作区。
+- Thread baseline: 临时发布 worktree 未产生新提交时，发布完成后必须直接删除。
+- Thread baseline: 临时发布 worktree 产生新提交时，必须先将新提交合回对应仓库 `int_main`，并在合并结果上完成必要验证；验证通过后必须删除该临时发布 worktree。
+- Thread baseline: 临时发布 worktree 存在未确认归属的改动、未合并提交或验证未通过问题时，任务状态必须标记为阻塞；阻塞状态下不得删除该 worktree，不得宣称本次发布完成。
+- Thread baseline: 一次发布任务完成的判定条件固定为：发布流程完成、发布结论已记录、所有临时发布 worktree 已删除、现场只剩各仓库 `int_main` 主工作区。
+- Thread baseline: 每次使用临时发布 worktree 时，任务文档和 `execution-log.md` 必须记录 worktree 路径、目标提交、构建命令、验证命令、是否产生新提交、是否已合回 `int_main`、最终删除结果。
 
 ## Mixed Git Workspace Policy
 

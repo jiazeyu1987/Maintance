@@ -1,5 +1,21 @@
 # 请求与命令记录
 
+## 2026-07-01 统一构建发布临时 worktree 规则固化
+
+- 用户需求：`一次构建发布可以中间额外有新的worktree,但是结束了之后要只保留一个worktree`，并要求整理成 Codex 看到后只有唯一执行方案的正式规则文案。
+- 命中经验：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-agent-checklist.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\worktree-memory.md`。
+- 命令记录：核对上一维护仓任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260701-build-publish-test-server-current\task.md` 仍为 `IN_PROGRESS`，且其发布输入基线已与当前线程新规则冲突；先将其显式改为 `BLOCKED`，再新建任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260701-release-temp-worktree-baseline\`。
+- 命令记录：检索并定位旧规则口径：
+  - `AGENTS.md`
+  - `docs/release-build-preflight-lessons.md`
+  - `docs/release-agent-checklist.md`
+- 命令记录：统一替换为新口径：
+  - 每次构建发布一律在临时发布 `worktree` 中执行
+  - 构建发布输入固定为目标提交对应的 Git 已提交内容
+  - 发布完成后所有临时发布 `worktree` 必须删除
+  - 最终现场只保留各仓库 `int_main` 主工作区
+- 当前结果：`AGENTS.md`、`docs/release-build-preflight-lessons.md`、`docs/release-agent-checklist.md` 已完成统一基线替换；本轮正在补齐任务收尾与复核，后续收到构建发布命令时应按“统一临时发布 worktree 工作流”执行。
+
 ## 2026-07-01 构建并发布到测试服务器
 
 - 用户需求：`构建并发布到测试服务器`

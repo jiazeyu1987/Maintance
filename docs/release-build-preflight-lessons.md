@@ -65,17 +65,17 @@
    - `execution-log.md` 需要裸 `RED:` / `GREEN:` 证据行；不要只把证据包在反引号里。
    - `sql/mysql` 变更必须配 `script/tests` 下的测试，否则后端仓库 pre-commit 会阻止提交。
 
-7. 默认发布先按主分支发布输入检查。
-   - 默认“构建并发布到测试服务器”等发布命令，只发布维护仓、后端仓、前端仓各自主分支当前版本。
-   - 发布前必须分别核对维护仓、后端仓、前端仓当前主分支名、HEAD 与 dirty 状态。
-   - 若任一主分支工作区 dirty，不得默认继续发布，也不得默认切到 `worktree` 规避；必须先明确提示用户风险并让用户选择处理方案。
-   - 只有当用户明确要求“只发布已提交 git 版本”或明确要求隔离发布输入时，才切换到 clean worktree 方案。
-   - 仅在构建前检查主分支 clean 还不够；`build-release` 成功后必须立即复核发布包 `manifest.json` 的 `sourceRepos`，确认 `branch`、`commit` 与本轮计划一致，且所有仓库 `dirty=false`。若 manifest 已记录 `dirty=true` 或 commit 漂移到非计划值，该发布包必须直接判废，不得继续 `publish-test`。
+7. 每次发布统一走临时发布 worktree。
+   - “构建并发布到测试服务器”等所有发布命令，一律先创建本次专用的临时发布 `worktree`，禁止直接在主工作区执行构建、验证或发布。
+   - 临时发布 `worktree` 必须检出本次发布目标提交；构建发布输入固定为该目标提交对应的 Git 已提交内容。
+   - 主工作区未提交改动、未跟踪文件和脏工作区内容一律不得进入发布包；临时发布 `worktree` 的存在就是为了隔离这些内容。
+   - 发布前必须分别核对维护仓、后端仓、前端仓主工作区当前分支名、目标提交与 dirty 状态，并显式记录本次临时发布 `worktree` 路径和目标提交。
+   - 仅在构建前检查主工作区 clean 或目标提交还不够；`build-release` 成功后必须立即复核发布包 `manifest.json` 的 `sourceRepos`，确认 `branch`、`commit` 与本轮计划一致，且所有仓库 `dirty=false`。若 manifest 已记录 `dirty=true` 或 commit 漂移到非计划值，该发布包必须直接判废，不得继续 `publish-test`。
 
-8. 发布“已提交 git 版本”时，先在 clean worktree 过构建前置门禁。
+8. 临时发布 worktree 必须先过构建前置门禁。
    - 前端至少先过 `pnpm install --frozen-lockfile` 或等价依赖恢复。
    - 后端至少先过目标模块构建门禁，例如 `yudao-server` 或本次受影响模块。
-   - 若 clean worktree 本身过不了锁文件、依赖或模块构建门禁，说明“已提交 HEAD”还不可发布；先把修复正式提交，再重建 clean worktree。
+   - 若临时发布 `worktree` 本身过不了锁文件、依赖或目标模块构建门禁，说明本次目标提交还不可发布；先把修复正式提交，再重建临时发布 `worktree`。
 
 9. 发布失败优先做只读根因定位，不要手工改库绕过。
    - required SQL 在测试服失败时，先回查真实库状态、历史数据、主键占用和租户范围，再决定修复位置。
@@ -133,12 +133,11 @@
 
 ## 2026-06-29 已提交版本发布收敛经验
 
-- 默认发布口径已切换为“只发布主分支当前版本”；clean worktree 只在用户明确要求“只发布已提交 git 版本”或要求隔离发布输入时使用。
-- 若主分支工作区 dirty，必须先向用户报告风险并让用户选择方案；不得默认继续发布，也不得默认创建 worktree 规避。
-- 发布“已提交 git 版本”时，先核对测试服当前运行版本和当前三仓 HEAD 差异；如果 manifest 中 commit 落后于当前 HEAD，必须重新走真实 `build-release -> publish-test`，不能沿用旧结论。
+- 发布口径已切换为“每次发布统一走临时发布 worktree，并且只发布目标提交对应的 Git 已提交内容”；不得再按“主工作区默认直发、dirty 时再询问方案”的旧规则执行。
+- 发布前必须先核对测试服当前运行版本和本次目标提交差异；如果 manifest 中 commit 落后于本轮计划值，必须重新走真实 `build-release -> publish-test`，不能沿用旧结论。
 - `build-release SUCCESS` 只代表打包流程完成，不代表发布输入仍然满足“只发布已提交版本”。如果构建期间主分支又出现未提交改动，manifest 会把对应仓库记为 `dirty=true`；此时即使 NAS 包已上传，也只能保留为排障证据，不能继续发测试服。
 - `runtime-control.local.yaml` 的 `repo-root` / `frontend-root` 必须显式切到最新干净 worktree；若仍指向旧 worktree，即使主仓已有新提交，真实 `build-release` 也不会包含这些提交。
-- 前端 lockfile、pnpm build scripts 放行、后端测试依赖等“只在 clean worktree 才暴露”的问题，本质上都属于“已提交 HEAD 还不可发布”；修复后要先最小提交，再重建 clean worktree，不能把主工作区未提交修复混进发布输入。
+- 前端 lockfile、pnpm build scripts 放行、后端测试依赖等“只在临时发布 worktree 才暴露”的问题，本质上都属于“目标提交还不可发布”；修复后要先最小提交，再重建临时发布 worktree，不能把主工作区未提交修复混进发布输入。
 - required SQL 在测试服失败时，优先只读回查真实库状态确认是历史数据冲突、主键占用还是 tenant 范围问题；不要手工改测试库绕过门禁。
 
 ## 2026-06-30 主分支真实发布收敛经验
