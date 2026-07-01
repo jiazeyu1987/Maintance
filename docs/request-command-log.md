@@ -1,5 +1,16 @@
 # 请求与命令记录
 
+## 2026-07-01 删除旧发布任务与旧发布基线任务
+
+- 用户需求：`旧的发布任务,旧的基线直接删除`
+- 命中经验：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\worktree-memory.md`。
+- 命令记录：核对上一维护仓任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260701-release-temp-worktree-baseline\task.md` 已 `COMPLETED`，允许新建删除任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260701-delete-obsolete-release-tasks\`。
+- 命令记录：核对删除目标目录范围：
+  - `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260701-build-publish-test-server-current\`
+  - `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260630-release-main-branch-baseline\`
+- 命令记录：按用户明确授权，直接删除以上两个旧任务目录，仅保留已生效的新发布规则正文与新规则固化任务台账。
+- 当前结果：两个旧任务目录已删除；当前维护仓生效口径仍为“每次构建发布统一走临时发布 worktree，发布完成后删除所有临时发布 worktree，只保留各仓库 int_main 主工作区”。
+
 ## 2026-07-01 统一构建发布临时 worktree 规则固化
 
 - 用户需求：`一次构建发布可以中间额外有新的worktree,但是结束了之后要只保留一个worktree`，并要求整理成 Codex 看到后只有唯一执行方案的正式规则文案。
