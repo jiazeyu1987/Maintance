@@ -1986,6 +1986,15 @@
   - 验证命令：`python -m pytest scripts\tests\test_publish_dcc_codex_runtime_contract.py -q` -> PASS，确认维护仓发布链路写入 `DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT`，compose 已透传 worker-count。
   - 收尾命令：`python C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --workspace D:\ProjectPackage\Int\IntRuoyiMaintance --task-id 20260701-dcc-batch-recognition-five-workers --mode preview` -> PASS，ready，保留 `task.md` 与 `execution-log.md`，无阻塞。
 
+## 2026-07-02：发布经验自动沉淀
+
+- 请求：`帮我做到全自动`
+  - 命中经验：`docs/experience-index.md`、`docs/release-build-preflight-lessons.md`、`docs/release-agent-checklist.md`、`ci-cd-environment-delivery`。
+  - 命令记录：新建任务台账 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260702-auto-release-experience-summary\`，记录 BDD、经验门禁、设计约束和 RED/GREEN 证据。
+  - 命令记录：修改运行控制台 operation store，使 `build-release`、`publish-test`、`mark-tested`、`promote-prod`、`promote-backup` 完成后自动追加 `runtime/runtime-control/release-experience-candidates.md`。
+  - 命令记录：自动候选内容包含 operationId、action、environment、releaseTag、status、summary、候选前置经验和日志摘录；非发布 operation 不生成候选；候选写入失败会 fail fast 并标记 operation 失败。
+  - 验证命令：`mvn -f backend\pom.xml "-Dtest=RuntimeControlOriginalParityTest#completedReleaseOperationsWriteExperienceCandidateNotes,RuntimeControlOriginalParityTest#nonReleaseOperationsDoNotWriteExperienceCandidateNotes" test` -> PASS。
+
 ## 2026-07-01：构建并发布到测试服、正式服、备份服
 
 - 请求：`/goal 成功构建并发布到测试服务器,正式服务器,备份服务器`

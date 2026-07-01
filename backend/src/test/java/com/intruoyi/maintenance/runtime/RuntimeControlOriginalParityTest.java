@@ -846,6 +846,43 @@ class RuntimeControlOriginalParityTest {
     }
 
     @Test
+    void completedReleaseOperationsWriteExperienceCandidateNotes() throws Exception {
+        operationStore.save(new RuntimeDtos.RuntimeControlOperationRespVO("op-release-failed", "local-operator",
+                Instant.parse("2026-07-02T00:00:00Z"), "test", "intruoyi", "publish-test", "发布测试服",
+                Map.of("releaseTag", "release-auto-summary"), "contract fixture", "RUNNING",
+                "命令已提交", operationStore.operationLogPath("op-release-failed").toString()));
+        operationStore.initializeLog(operationStore.operationLogPath("op-release-failed"));
+        operationStore.appendLog(operationStore.operationLogPath("op-release-failed"),
+                "ERROR 1060 (42S21): Duplicate column name 'status'" + System.lineSeparator()
+                        + "ERROR: 命令退出码非 0: 1" + System.lineSeparator());
+
+        operationStore.updateStatus("op-release-failed", "FAILED", "命令退出码非 0: 1");
+
+        Path candidatePath = operationStore.stateDir().resolve("release-experience-candidates.md");
+        assertThat(candidatePath).isRegularFile();
+        String candidates = Files.readString(candidatePath, StandardCharsets.UTF_8);
+        assertThat(candidates)
+                .contains("releaseTag: release-auto-summary")
+                .contains("action: publish-test")
+                .contains("status: FAILED")
+                .contains("required SQL")
+                .contains("Duplicate column name");
+    }
+
+    @Test
+    void nonReleaseOperationsDoNotWriteExperienceCandidateNotes() throws Exception {
+        operationStore.save(new RuntimeDtos.RuntimeControlOperationRespVO("op-restart", "local-operator",
+                Instant.parse("2026-07-02T00:00:00Z"), "local", "backend", "restart", "重启运行组件",
+                Map.of("component", "backend"), "contract fixture", "RUNNING",
+                "命令已提交", operationStore.operationLogPath("op-restart").toString()));
+        operationStore.initializeLog(operationStore.operationLogPath("op-restart"));
+
+        operationStore.updateStatus("op-restart", "SUCCESS", "命令执行完成");
+
+        assertThat(operationStore.stateDir().resolve("release-experience-candidates.md")).doesNotExist();
+    }
+
+    @Test
     void unsupportedActionFieldsAreRejectedLikeOriginal() throws Exception {
         createRollbackPackage("release-current", true, false, false);
         Path sqlRoot = Path.of("target/runtime-control-original-parity-sql").toAbsolutePath().normalize();

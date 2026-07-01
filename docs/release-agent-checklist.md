@@ -253,7 +253,49 @@ Codex 必须按这个顺序排查：
 2. 再决定修 SQL、修迁移契约还是修发布脚本
 3. 禁止手工改测试库绕过发布门禁
 
-## 8. 完成判定
+## 8. 2026-07-01 新增前置门禁
+
+### 发布输入与 releaseTag
+
+- 修复任何发布 blocker 后，必须重新执行 `build-release` 并生成新的 `releaseTag`。
+- 禁止用旧失败包继续 `publish-test`、`mark-tested`、`promote-prod` 或 `promote-backup`。
+- 禁止拼接不同 `releaseTag` 的测试服、正式服、备份服结果。
+- `build-release` 成功后必须复核 manifest 中 backend/frontend `commit` 与 `dirty=false`。
+
+### 测试服参数
+
+- `publish-test` 预览必须显式核对测试服真实参数：
+  - `ServerHost=172.30.30.58`
+  - `RemoteAppDir=/opt/intruoyi/runtime`
+  - Docker root 不得误套备份服路径
+  - 数据盘设备、MinIO 容器名必须与 `server-access.md` 一致
+- 如果预览中出现备份服或正式服参数，必须先修正维护控制台配置、脚本或文档，不得继续真实发布。
+
+### required SQL 与真实库基线
+
+- 发布前对新增或改动的 required SQL 做可重入检查，重点检查：
+  - `ADD COLUMN` 是否有存在性保护
+  - 菜单插入是否有冲突检测
+  - 角色绑定是否兼容真实角色编码
+  - 租户包与菜单权限是否同步
+  - DCC 分类、编码、字段长度和唯一性是否有前置校验
+- SQL 依赖角色、菜单、租户或账号时，先只读查真实库，不能只按历史角色码或文档推断。
+- 如果真实库基线不满足 SQL 契约，必须阻塞并修 SQL/迁移/数据契约；禁止手工改测试库帮助发布过关。
+
+### DCC promote 前检查
+
+- `promote-prod` 前必须对正式服 live data 做只读 DCC 质量预检。
+- 至少覆盖分类重复、分类编码缺失、字段长度超限、必填关系缺失。
+- 任一 DCC 质量预检失败时，不得推进正式服发布；失败 releaseTag 只保留为排障证据。
+
+### 自动经验候选
+
+- 发布类 operation 完成后必须生成 `runtime/runtime-control/release-experience-candidates.md`。
+- 候选内容至少包含 operationId、action、environment、releaseTag、status、summary、候选前置经验和关键日志摘录。
+- 如果候选文件缺失，任务收口不得视为完成；如果运行控制台写候选失败，operation 必须 fail fast。
+- 任务收尾时读取候选文件，将稳定、可复用经验正式写入 `release-build-preflight-lessons.md` 或本清单。
+
+## 9. 完成判定
 
 Codex 只有在以下条件同时成立时，才能判定完整发布完成：
 
