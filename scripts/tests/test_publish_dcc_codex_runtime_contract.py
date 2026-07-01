@@ -6,6 +6,13 @@ PUBLISH_SCRIPT = ROOT / "ops" / "deploy" / "publish-int-ruoyi.ps1"
 COMPOSE_TEMPLATE = ROOT / "ops" / "deploy" / "int-ruoyi-test" / "docker-compose.yml"
 
 
+def _dcc_release_object_reference_query() -> str:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    start = script.index("function Get-DccReleaseObjectReferenceRows")
+    end = script.index("$output = Invoke-LocalMySqlRaw", start)
+    return script[start:end]
+
+
 def test_publish_runtime_preserves_dcc_codex_linux_contract() -> None:
     script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
     compose = COMPOSE_TEMPLATE.read_text(encoding="utf-8")
@@ -32,3 +39,13 @@ def test_publish_runtime_preserves_dcc_codex_linux_contract() -> None:
     assert "--yudao.dcc.project-code-recognition.worker-count=${DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT}" in compose
     assert "- /opt/intruoyi/runtime/tools/codex:/opt/intruoyi/runtime/tools/codex:ro" in compose
     assert "- /opt/intruoyi/runtime/backend-codex-home:/opt/intruoyi/runtime/backend-codex-home" in compose
+
+
+def test_dcc_release_inventory_excludes_bound_temporary_uploads() -> None:
+    query = _dcc_release_object_reference_query()
+
+    assert (
+        "FROM dcc_controlled_file_temporary_file WHERE storage_file_id IS NOT NULL AND deleted = b'0'"
+        not in query
+    )
+    assert "dcc_controlled_file_temporary_file" not in query

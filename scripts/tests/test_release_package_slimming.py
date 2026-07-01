@@ -37,7 +37,7 @@ def test_build_context_prepares_backend_exec_jar_and_fail_fast_checks() -> None:
 
     assert "function New-ReleaseDockerBuildContext" in script
     assert "$backendJarTargetPath = Join-Path $backendJarTargetDir 'yudao-server-exec.jar'" in script
-    assert "[System.IO.File]::Copy($BackendJarPath, $backendJarTargetPath, $true)" in script
+    assert "Copy-Item -LiteralPath $BackendJarPath -Destination (Join-Path $backendJarTargetDir 'yudao-server-exec.jar') -Force" in script
     assert "Backend exec jar missing from Docker build context:" in script
     assert "Backend exec jar missing from Docker build context after preparation:" in script
 

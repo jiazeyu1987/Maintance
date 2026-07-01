@@ -1986,3 +1986,14 @@
   - 验证命令：`python -m pytest scripts\tests\test_publish_dcc_codex_runtime_contract.py -q` -> PASS，确认维护仓发布链路写入 `DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT`，compose 已透传 worker-count。
   - 收尾命令：`python C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --workspace D:\ProjectPackage\Int\IntRuoyiMaintance --task-id 20260701-dcc-batch-recognition-five-workers --mode preview` -> PASS，ready，保留 `task.md` 与 `execution-log.md`，无阻塞。
 
+## 2026-07-01：构建并发布到测试服、正式服、备份服
+
+- 请求：`/goal 成功构建并发布到测试服务器,正式服务器,备份服务器`
+  - 命中经验：`docs/experience-index.md`、`docs/release-build-preflight-lessons.md`、`docs/release-agent-checklist.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\worktree-memory.md`。
+  - 命令记录：新建/沿用任务台账 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260701-rebuild-publish-all-after-fvm-message-fix\`，记录 release 全链路 BDD、经验门禁与高风险 `GREEN: experience-preflight -> PASS`。
+  - 命令记录：基于后端提交 `ae1d91ebe34c9c1ec1b31a0c3177f633ba3c2821`、前端提交 `5ece14735a23f86fc04a1741156ba4389628532d`、维护仓提交 `fb18456ade89c3e07192ba927816f127830e76e0` 创建专用发布 worktree，并把 runtime-control `repo-root/frontend-root` 切换到本轮 worktree。
+  - 阻塞记录：`release-20260701-1720-mes-scheduler-role-fix` 的 build-release 失败，operation=`op-2026-07-01T150926362509700Z-c52e6e92-5f66-455b-b191-a495be74a809`，根因是 DCC 对象清单从 `dcc_controlled_file_temporary_file` 临时上传表收集孤儿/暂存对象，且本机 MinIO 缺少历史 `empty.docx` 对象。
+  - 命令记录：新增维护仓合同测试，先 RED 证明发布对象清单仍包含临时上传表；随后修改 `ops/deploy/publish-int-ruoyi.ps1`，移除 `dcc_controlled_file_temporary_file` 作为发布清单来源，并同步修正 slim 包测试中 backend exec jar 复制契约。
+  - 命令记录：从历史发布快照 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260616-121500-e2e\minio\yudao\dcc\original\` 恢复本机 MinIO `dcc/original/20260609|20260610|20260611/empty.docx`，文件大小 `3306`、SHA256 `fd9160a87bcbe94570d998499f1b1ed9b39f381fde1688c2ed2b0b0a6d562bf2`。
+  - 验证命令：`python -X utf8 -m pytest scripts/tests/test_publish_dcc_codex_runtime_contract.py scripts/tests/test_release_package_slimming.py scripts/tests/test_release_sql_preflight_gate.py -q` -> PASS，16 passed；PowerShell ParseFile -> PASS。
+

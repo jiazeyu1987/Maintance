@@ -156,7 +156,7 @@ function New-ReleaseDockerBuildContext {
         $backendJarTargetDir = Join-Path $ContextRoot 'ruoyi-vue-pro\yudao-server\target'
         $backendJarTargetPath = Join-Path $backendJarTargetDir 'yudao-server-exec.jar'
         New-Item -ItemType Directory -Force -Path $backendJarTargetDir | Out-Null
-        [System.IO.File]::Copy($BackendJarPath, $backendJarTargetPath, $true)
+        Copy-Item -LiteralPath $BackendJarPath -Destination (Join-Path $backendJarTargetDir 'yudao-server-exec.jar') -Force
         if (-not (Test-Path -LiteralPath $backendJarTargetPath -PathType Leaf)) {
             Fail "Backend exec jar missing from Docker build context: $backendJarTargetPath"
         }
@@ -2746,7 +2746,6 @@ FROM (
   UNION ALL SELECT source_file_id, 'dcc_controlled_file_signature', 'source_file_id' FROM dcc_controlled_file_signature WHERE source_file_id IS NOT NULL AND deleted = b'0'
   UNION ALL SELECT controlled_copy_file_id, 'dcc_controlled_file_signature', 'controlled_copy_file_id' FROM dcc_controlled_file_signature WHERE controlled_copy_file_id IS NOT NULL AND deleted = b'0'
   UNION ALL SELECT template_file_id, 'dcc_approval_print_template', 'template_file_id' FROM dcc_approval_print_template WHERE template_file_id IS NOT NULL AND deleted = b'0'
-  UNION ALL SELECT storage_file_id, 'dcc_controlled_file_temporary_file', 'storage_file_id' FROM dcc_controlled_file_temporary_file WHERE storage_file_id IS NOT NULL AND deleted = b'0'
 ) r
 LEFT JOIN infra_file f ON f.id = r.file_id AND f.deleted = b'0'
 GROUP BY r.file_id, f.path, f.name, f.type, f.size, f.url
