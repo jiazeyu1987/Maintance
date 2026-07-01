@@ -48,7 +48,7 @@ BDD: 三环境运行态必须与 releaseTag 一致 -> Given 发布 operation 成
 
 ## Current Status
 
-IN_PROGRESS：已完成 MES 排产员角色修复的发布 worktree、运行控制台切换与后端/前端前置验证；已修复 DCC 发布对象清单污染、本机 DCC MinIO 历史对象缺失，以及 build-release 挂起在 NAS 中文共享名被 CLI 参数覆盖的问题。当前旧失败/中止 releaseTag 均已废弃；下一步使用新的 releaseTag 重新执行 build-release，并继续单一 releaseTag 的测试服、正式服、备份服闭环。
+IN_PROGRESS：已完成 MES 排产员角色修复的发布 worktree、运行控制台切换与后端/前端前置验证；已修复 DCC 发布对象清单污染、本机 DCC MinIO 历史对象缺失、NAS 中文共享名被 CLI 参数覆盖，以及 DCC 对象清单使用 PowerShell 数组 `+=` 导致大清单阶段无进度且疑似挂起的问题。当前旧失败/中止 releaseTag 均已废弃；下一步使用新的 releaseTag 重新执行 build-release，并继续单一 releaseTag 的测试服、正式服、备份服闭环。
 
 ## 追加门禁
 
@@ -56,3 +56,4 @@ IN_PROGRESS：已完成 MES 排产员角色修复的发布 worktree、运行控�
 - 本机 MinIO 中 DCC `infra_file` 已引用对象必须真实存在；缺失时必须从可追溯历史快照恢复并记录 hash，不得静默跳过或改用 code-only。
 - 本轮 blocker 修复后必须使用新 releaseTag 重跑 build-release，旧失败包仅保留排障证据。
 - NAS 发布共享名必须以 UTF-8 配置文件为准；命令行 `NasShare` 参数若因进程调用发生乱码，不得覆盖配置文件中的中文共享名。
+- DCC 对象清单生成必须使用线性追加集合并输出进度；不得在大清单场景使用 PowerShell 数组 `+=` 造成二次复杂度和无进度长时间静默。

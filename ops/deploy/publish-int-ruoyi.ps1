@@ -2754,9 +2754,9 @@ ORDER BY r.file_id
 '@
 
     $output = Invoke-LocalMySqlRaw -Sql $sql -Purpose 'DCC release object reference query'
-    $rows = @()
+    $rows = [System.Collections.Generic.List[object]]::new()
     if ([string]::IsNullOrWhiteSpace($output)) {
-        return $rows
+        return $rows.ToArray()
     }
     $strictUtf8 = [System.Text.UTF8Encoding]::new($false, $true)
     foreach ($line in ($output -split "`r?`n")) {
@@ -2775,7 +2775,7 @@ ORDER BY r.file_id
             Fail "DCC object inventory JSON row is malformed after base64 decode: $json"
         }
         $references = @((([string]$record.references) -split ',') | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
-        $rows += [ordered]@{
+        [void]$rows.Add([ordered]@{
             fileId = [long]$record.fileId
             objectPath = [string]$record.objectPath
             name = [string]$record.name
@@ -2783,9 +2783,9 @@ ORDER BY r.file_id
             declaredBytes = [long]$record.declaredBytes
             url = [string]$record.url
             references = $references
-        }
+        })
     }
-    return $rows
+    return $rows.ToArray()
 }
 
 function Resolve-DccSnapshotObjectPath {
@@ -2819,9 +2819,12 @@ function Write-DccObjectInventoryForReleasePackage {
 
     Info 'Generating DCC object inventory for with-data release package'
     $rows = @(Get-DccReleaseObjectReferenceRows)
-    $inventoryFiles = @()
+    $inventoryFiles = [System.Collections.Generic.List[object]]::new()
     $totalBytes = [int64]0
+    $processed = 0
+    $totalRows = $rows.Count
     foreach ($row in $rows) {
+        $processed += 1
         if ([string]::IsNullOrWhiteSpace($row.objectPath)) {
             Fail "DCC_INFRA_FILE_MISSING: DCC file reference points to missing infra_file id=$($row.fileId)"
         }
@@ -2833,7 +2836,7 @@ function Write-DccObjectInventoryForReleasePackage {
         $hash = Get-FileHash -Algorithm SHA256 -LiteralPath $snapshotFile
         $snapshotRelativePath = $snapshotFile.Substring($releaseDir.Length).TrimStart('\', '/').Replace('\', '/')
         $totalBytes += [int64]$snapshotItem.Length
-        $inventoryFiles += [ordered]@{
+        [void]$inventoryFiles.Add([ordered]@{
             fileId = $row.fileId
             objectPath = $row.objectPath
             snapshotPath = $snapshotRelativePath
@@ -2843,6 +2846,9 @@ function Write-DccObjectInventoryForReleasePackage {
             name = $row.name
             contentType = $row.contentType
             references = $row.references
+        })
+        if ($processed -eq 1 -or ($processed % 500) -eq 0 -or $processed -eq $totalRows) {
+            Info "DCC object inventory progress: $processed/$totalRows"
         }
     }
 
@@ -2861,7 +2867,7 @@ function Write-DccObjectInventoryForReleasePackage {
             referencedFiles = $inventoryFiles.Count
             bytes = $totalBytes
         }
-        files = $inventoryFiles
+        files = $inventoryFiles.ToArray()
     } | ConvertTo-Json -Depth 8
     $inventoryPath = Join-Path $manifestDir 'dcc-object-inventory.json'
     [System.IO.File]::WriteAllText($inventoryPath, $inventory, [System.Text.UTF8Encoding]::new($false))

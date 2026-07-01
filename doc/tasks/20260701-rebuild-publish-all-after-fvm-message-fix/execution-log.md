@@ -51,3 +51,14 @@ RED: python -X utf8 -m pytest scripts/tests/test_publish_dcc_codex_runtime_contr
 GREEN: python -X utf8 -m pytest scripts/tests/test_publish_dcc_codex_runtime_contract.py scripts/tests/test_release_package_slimming.py scripts/tests/test_release_sql_preflight_gate.py -q -> PASS
 
 GREEN: powershell-parse -> PASS, command=[System.Management.Automation.Language.Parser]::ParseFile(ops/deploy/publish-int-ruoyi.ps1)
+
+GREEN: build-release-start -> PASS, releaseTag=release-20260701-1720-mes-scheduler-nas-config-fix, operation=op-2026-07-01T213950557605Z-849f65ae-408d-462e-b49b-223ad200348d
+
+BLOCKER: build-release -> ABORTED, releaseTag=release-20260701-1720-mes-scheduler-nas-config-fix, operation=op-2026-07-01T213950557605Z-849f65ae-408d-462e-b49b-223ad200348d, reason=process idle after DCC object inventory start with no manifest/inventory output and stale log ageSeconds=324. Impact: release tag abandoned; requires DCC inventory performance/root-cause fix and new releaseTag.
+
+BDD: DCC object inventory must finish for large release snapshots -> Given with-data release snapshot contains thousands of DCC file references, When build-release generates manifest/dcc-object-inventory.json, Then the script must use linear append collections and emit progress so inventory generation cannot silently appear stuck after the start marker.
+RED: python -X utf8 -m pytest scripts/tests/test_publish_dcc_codex_runtime_contract.py -q -> FAIL, expected reason=DCC inventory uses PowerShell array += without progress logging
+
+GREEN: python -X utf8 -m pytest scripts/tests/test_publish_dcc_codex_runtime_contract.py scripts/tests/test_release_package_slimming.py scripts/tests/test_release_sql_preflight_gate.py -q -> PASS
+
+GREEN: powershell-parse -> PASS, command=[System.Management.Automation.Language.Parser]::ParseFile(ops/deploy/publish-int-ruoyi.ps1)

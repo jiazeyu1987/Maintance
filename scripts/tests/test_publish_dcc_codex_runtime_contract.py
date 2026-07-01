@@ -13,6 +13,20 @@ def _dcc_release_object_reference_query() -> str:
     return script[start:end]
 
 
+def _dcc_release_object_reference_function() -> str:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    start = script.index("function Get-DccReleaseObjectReferenceRows")
+    end = script.index("function Resolve-DccSnapshotObjectPath", start)
+    return script[start:end]
+
+
+def _dcc_inventory_writer() -> str:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    start = script.index("function Write-DccObjectInventoryForReleasePackage")
+    end = script.index("function Write-NasReleaseDeploymentHistory", start)
+    return script[start:end]
+
+
 def _nas_release_config_reader() -> str:
     script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
     start = script.index("function Read-NasReleaseConfig")
@@ -64,3 +78,14 @@ def test_nas_release_config_file_is_authoritative_for_share_name() -> None:
     assert "$config.server = $NasServer" in reader
     assert "$config.share = $NasShare" not in reader
     assert "NAS release config share must come from the UTF-8 config file" in reader
+
+
+def test_dcc_inventory_generation_uses_linear_collections_and_progress_logging() -> None:
+    reference_function = _dcc_release_object_reference_function()
+    writer = _dcc_inventory_writer()
+
+    assert "$rows += " not in reference_function
+    assert "$inventoryFiles += " not in writer
+    assert "System.Collections.Generic.List[object]" in reference_function
+    assert "System.Collections.Generic.List[object]" in writer
+    assert "DCC object inventory progress:" in writer

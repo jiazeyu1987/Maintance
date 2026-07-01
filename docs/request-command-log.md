@@ -2010,4 +2010,7 @@
   - 阻塞记录：`release-20260701-1720-mes-scheduler-dcc-objects-restored` 的 build-release 在生成 DCC 清单后挂起于 NAS mount，operation=`op-2026-07-01T173402387281300Z-afcc65f1-c1cf-4561-af59-b0f391fcba89`；本地发布进程持续 RUNNING 数小时后被终止，旧 tag 废弃。
   - 命令记录：新增 NAS 配置权威性 BDD/TDD；先 RED 证明 `Read-NasReleaseConfig` 会用 CLI `NasShare` 覆盖 UTF-8 配置文件中的中文共享名，随后修改 `ops/deploy/publish-int-ruoyi.ps1`，保持 NAS share 只来自 UTF-8 config file，并记录忽略 CLI `NasShare` 覆盖。
   - 验证命令：`python -X utf8 -m pytest scripts/tests/test_publish_dcc_codex_runtime_contract.py scripts/tests/test_release_package_slimming.py scripts/tests/test_release_sql_preflight_gate.py -q` -> PASS，17 passed；PowerShell ParseFile -> PASS。
+  - 阻塞记录：`release-20260701-1720-mes-scheduler-nas-config-fix` 的 build-release 在 `Generating DCC object inventory for with-data release package` 后日志停止更新且未生成 `manifest/dcc-object-inventory.json`；operation=`op-2026-07-01T213950557605Z-849f65ae-408d-462e-b49b-223ad200348d` 被终止，旧 tag 废弃。
+  - 命令记录：新增 DCC 对象清单性能 BDD/TDD；先 RED 证明清单生成仍使用 PowerShell 数组 `+=` 且缺少进度日志，随后修改 `ops/deploy/publish-int-ruoyi.ps1`，将 DCC reference rows 与 inventory files 改为 `System.Collections.Generic.List[object]` 线性追加，并每 500 条输出 `DCC object inventory progress`。
+  - 验证命令：`python -X utf8 -m pytest scripts/tests/test_publish_dcc_codex_runtime_contract.py scripts/tests/test_release_package_slimming.py scripts/tests/test_release_sql_preflight_gate.py -q` -> PASS，18 passed；PowerShell ParseFile -> PASS。
 
