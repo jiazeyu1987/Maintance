@@ -137,8 +137,18 @@
 - 前端 lockfile、pnpm build scripts 放行、后端测试依赖等“只在 clean worktree 才暴露”的问题，本质上都属于“已提交 HEAD 还不可发布”；修复后要先最小提交，再重建 clean worktree，不能把主工作区未提交修复混进发布输入。
 - required SQL 在测试服失败时，优先只读回查真实库状态确认是历史数据冲突、主键占用还是 tenant 范围问题；不要手工改测试库绕过门禁。
 
+## 2026-06-30 主分支真实发布收敛经验
+
+- 主分支发布不仅要在构建前检查三仓 clean，还要在 `build-release` 成功后立刻复核 `manifest.json` 的 `sourceRepos.branch/commit/dirty`；只要任一仓库为 `dirty=true`，该包直接判废，不得继续 `publish-test`。
+- required SQL 要按“真实环境可重入、可重复发布”来写；像 `20260624_mes_schedule_issue_structured_backflow.sql` 这种重复加列报错的问题，必须补成幂等 SQL 与自动测试，不能靠“测试服当前只跑一次”侥幸通过。
+- 菜单/权限 SQL 不能只改菜单树本身；若发布门禁依赖租户包或角色包，必须同步维护 `tenant package menu_ids` 等派生契约，否则会在测试服 required SQL 阶段才暴露。
+- 发布后角色门禁必须兼容真实基线角色编码；如果环境里真实启用的是 `doc_control` 或 `wenkong_download`，就不能把 required SQL 硬写死成只认旧 `wenkong`。
+- `publish-test` 长时间 `RUNNING` 不等于卡死；要同时看 operation log 是否持续推进到 NAS 下载、required SQL、容器重建、HTTP readiness、runtime smoke 和 `LOCK_RELEASED`。只有状态停滞且日志不再推进时，才按卡死方向排障。
+
 ## 本次证据
 
+- 当前主分支测试服发布闭环任务：`doc/tasks/20260630-main-branch-build-publish-test-server/task.md`
+- 当前主分支测试服发布闭环执行日志：`doc/tasks/20260630-main-branch-build-publish-test-server/execution-log.md`
 - 任务文档：`doc/tasks/20260617-e2e-build-publish-test/task.md`
 - 执行日志：`doc/tasks/20260617-e2e-build-publish-test/execution-log.md`
 - 验收报告：`doc/tasks/20260617-e2e-build-publish-test/verification-report.md`

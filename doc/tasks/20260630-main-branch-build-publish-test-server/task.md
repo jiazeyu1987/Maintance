@@ -56,8 +56,8 @@ BDD: 本轮问题要形成前置经验 -> Given 发布过程中出现可复用�
 1. 建立本轮主分支发布任务台账并记录经验门禁。`COMPLETED`
 2. 核对三仓主分支输入、工作区状态与运行控制台前置条件。`COMPLETED`
 3. 真实执行 `build-release` 并校验 manifest。`COMPLETED`
-4. 真实执行 `publish-test` 并完成测试服运行态验证。`BLOCKED`
-5. 回填全过程证据、问题总结和经验文档更新。`IN_PROGRESS`
+4. 真实执行 `publish-test` 并完成测试服运行态验证。`COMPLETED`
+5. 回填全过程证据、问题总结和经验文档更新。`COMPLETED`
 
 ## Expected Verification
 
@@ -74,15 +74,20 @@ BDD: 本轮问题要形成前置经验 -> Given 发布过程中出现可复用�
 
 ## Current Status
 
-BLOCKED：本轮主分支 `build-release` 已成功且 manifest 通过“只发布 Git 已提交版本”门禁，但测试服 `publish-test` 继续被 required SQL / 发布后角色门禁契约阻断，暂不能完成测试服发布闭环。
+COMPLETED：本轮已基于三仓主分支 `int_main` 完成真实 `build-release -> publish-test -> 测试服运行态验收` 闭环。
 
-- 已完成构建：`op-2026-06-30T111930929156700Z-ee491e68-372d-4812-89bd-365f22bfc4fd` 于 `2026-06-30 19:19:30` 后最终 `SUCCESS`，发布包为 `release-20260630-1912-main-branch-v2`。
-- 已完成 manifest 复核：`E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260630-1912-main-branch-v2\manifest.json` 中后端 `commit=8241c309026bb37c3ba4d13da858afe1aea3ae07 branch=int_main dirty=false`，前端 `commit=513adf9a53f62c8c2fca318a0c75b137f794df89 branch=int_main dirty=false`，该发布包满足“只发布 Git 已提交版本”。
-- 当前阻塞 operation：`op-2026-06-30T113310680094600Z-844a0e48-aaec-4638-b63f-514985aad00e`。
-- 当前阻塞根因：测试服执行 required SQL `20260624_mes_schedule_issue_structured_backflow.sql` 时，MySQL 报错 `ERROR 1060 (42S21) at line 4: Duplicate column name 'status'`；说明真实库已具备该列，而 SQL 仍使用裸 `ALTER TABLE ... ADD COLUMN status`，不满足可重复执行契约。
-- 当前锁状态：发布日志已确认 `LOCK_RELEASED`，本轮可在修复 SQL 契约后直接重新走新的主分支 `build-release -> publish-test`。
-- 最新真实构建：`op-2026-06-30T122943908590100Z-9a31cf90-8660-414f-9a6f-caeba66a3477` 于 `2026-06-30 21:35` 左右最终 `SUCCESS`，发布包为 `release-20260630-2135-main-branch-v4`。
-- 最新 manifest 复核：`E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260630-2135-main-branch-v4\manifest.json` 中后端 `commit=2709509b960c1f4ed0abb3c2d7413dc46054cade branch=int_main dirty=false`，前端 `commit=513adf9a53f62c8c2fca318a0c75b137f794df89 branch=int_main dirty=false`。
-- 最新测试服阻塞 operation：`op-2026-06-30T124330918809800Z-e45cfcee-3242-4752-a407-eec8cb860ebc`。
-- 最新阻塞根因：测试服执行 required SQL `20260618_post_release_role_e2e_gate.sql` 时，MySQL 报错 `ERROR 1644 (45000) at line 244: Missing enabled wenkong role; cannot prepare wangsiyu DCC E2E account`。只读核对测试服真实库后确认：租户 `1/芋道源码` 存在启用用户 `wangsiyu`，但不存在启用角色 `code='wenkong'`；当前真实角色基线为 `doc_control/文控` 与 `wenkong_download/文控下载`，说明本轮阻塞属于发布后角色门禁 SQL 契约与当前角色编码基线漂移不一致。
-- 当前锁状态：最新发布日志已确认 `LOCK_RELEASED`，本轮可在修复 `20260618_post_release_role_e2e_gate.sql` 契约后直接重新走新的主分支 `build-release -> publish-test`。
+- 最终成功构建 operation：`op-2026-06-30T130432919630200Z-edc4f8fd-5bc8-4b9e-8ecc-66ab48b496b0`
+- 最终成功测试服发布 operation：`op-2026-06-30T132211004358500Z-c04dfcb5-47c3-4061-a657-86ce57e8420e`
+- 最终成功 `releaseTag`：`20260630_210433`
+- 最终 manifest：`E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\20260630_210433\manifest.json`
+- manifest 复核结果：后端 `commit=6303d61a849f4413bab823a88c9aa3d3a60e5aed branch=int_main dirty=false`，前端 `commit=513adf9a53f62c8c2fca318a0c75b137f794df89 branch=int_main dirty=false`
+- 测试服运行态验收：
+  - `/opt/intruoyi/runtime/.env` 为 `IMAGE_TAG=20260630_210433`
+  - `intruoyi-backend|intruoyi-backend:20260630_210433`
+  - `intruoyi-frontend|intruoyi-frontend:20260630_210433`
+  - 后端健康检查 `http://172.30.30.58:48081/actuator/health` 返回 HTTP `200` / `UP`
+  - 前端入口 `http://172.30.30.58:8081/` 返回 HTTP `200`
+- 本轮保留的关键排障收敛：
+  - `20260624_mes_schedule_issue_structured_backflow.sql` 幂等性修复
+  - `20260624_mes_auto_schedule_permission_split.sql` 租户包菜单同步修复
+  - `20260618_post_release_role_e2e_gate.sql` 从真实 DCC 角色基线选择 `doc_control -> wenkong -> wenkong_download`

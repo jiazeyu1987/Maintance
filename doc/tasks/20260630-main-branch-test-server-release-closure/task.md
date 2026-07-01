@@ -62,7 +62,7 @@ BDD: 通用问题前移沉淀为事前经验 -> Given 本轮发布暴露出可�
 ## Milestones
 
 1. 创建任务台账、写入经验门禁与初始阻塞。`COMPLETED`
-2. 核对三仓主分支状态、runtime-control 可用性与发布前置条件。`IN_PROGRESS`
+2. 核对三仓主分支状态、runtime-control 可用性与发布前置条件。`BLOCKED`
 3. 真实执行 `build-release` 并校验 manifest。`PENDING`
 4. 真实执行 `publish-test` 并完成测试服运行态验证。`PENDING`
 5. 回填全过程问题、根因、解决、验证证据。`PENDING`
@@ -83,7 +83,8 @@ BDD: 通用问题前移沉淀为事前经验 -> Given 本轮发布暴露出可�
 
 ## Current Status
 
-IN_PROGRESS：任务台账已创建并补齐经验门禁。当前存在两个前置阻塞需先处理：
+BLOCKED：该任务已被后续任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260630-main-branch-build-publish-test-server\task.md` 接续并完成同一目标范围内的真实主分支测试服发布闭环。
 
-1. 维护仓主分支存在未跟踪文件 `output/doc/*`，按“主分支脏改先提示用户选择方案”的基线，不能直接默认继续发布。
-2. 本机运行控制台 `http://127.0.0.1:48181/actuator/health` 当前不可达，需先恢复发布入口，否则无法执行真实页面发布闭环。
+1. 原计划中的主分支脏改与 runtime-control 健康前置问题，已在后续任务中完成收敛、提交与验证。
+2. 当前不再继续在本任务目录内推进发布动作；以接续任务中的最终 `build-release -> publish-test -> 测试服运行态验收` 结果为准。
+3. 阻塞原因不是缺少前置条件，而是目标已被后续同类任务替代收口，按仓库规则显式标记为 `BLOCKED`，避免与已完成任务并行悬挂。

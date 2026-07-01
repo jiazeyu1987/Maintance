@@ -1904,3 +1904,8 @@
   - 追加记录：发布链路新增正式修复提交 `1b364a2fe8d458deb14ba322bdeb1af5394d83f6`，解决 `sql/mysql/20260630_mes_pro_work_order_erp_snapshot_fields.sql` 在测试服重复发布时的幂等性阻断；相关 pytest、migration gate 与 TDD 门禁均已通过。
   - 命令记录：维护控制台已切换到 clean backend worktree `D:\ProjectPackage\Int\release-worktrees\IntRuoyi-backend-20260701-1b364a2` 后重新执行真实 `build-release`，operation=`op-2026-06-30T180856412443100Z-e35aa0c2-d701-4bcb-99df-9e9540fe61ea` 最终 `SUCCESS`；候选包 `release-20260701-capacity-horizon-v2` 的 manifest 已确认 backend=`1b364a2fe8d458deb14ba322bdeb1af5394d83f6`、frontend=`c8f87af720535115c233bf894e957471d68cc667`，且 `dirty=false`。
   - 命令记录：通过运行控制台 action preview 核对 `publish-test` 目标为测试服 `172.30.30.58`、`RemoteAppDir=/opt/intruoyi/runtime`、`releaseTag=release-20260701-capacity-horizon-v2`，随后已提交真实 `publish-test` operation=`op-2026-06-30T183226445474300Z-f8e7e47e-c07d-4d7b-98bf-8ca8b9ed4ea2`；当前进入只读轮询与测试服运行态验收阶段。
+## 2026-07-01
+
+- 请求：`目标：基于主分支完成一次测试服务器真实发布闭环。要求：1）必须真实执行构建、发布、验证；2）必须记录全过程问题、排查、根因、解决与验证证据；3）发布成功后，重点将通用问题前移沉淀为发布前置经验，补充到构建发布经验中；4）同时保留失败后排障方案作为事后学习材料；5）最终交付不仅是发布成功，还包括完整任务记录、问题总结和经验文档更新。如果主工作区是脏的,先提交主工作区的代码`
+  - 命令记录：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`、`docs\release-build-preflight-lessons.md`、`docs\release-agent-checklist.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`；只读核对三仓 `git status --short`、`git log --oneline -5`、任务台账与请求日志，确认当前维护仓、后端仓、前端仓主分支 `int_main` 均有新的脏改。
+  - 结论记录：当前不能直接沿用 2026-06-30 的发布结果，必须先按用户确认分别提交三仓主工作区，再以这些新提交作为本轮测试服真实发布输入。
