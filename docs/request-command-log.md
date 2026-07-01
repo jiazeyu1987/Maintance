@@ -1,5 +1,28 @@
 # 请求与命令记录
 
+## 2026-07-01 构建并发布到测试服务器
+
+- 用户需求：`构建并发布到测试服务器`
+- 命中经验：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-agent-checklist.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\powershell-preflight-lessons.md`。
+- 命令记录：核对维护仓已有发布任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260701-main-branch-test-server-release-closure\task.md` 与 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260701-schedule-calendar-capacity-horizon-release-test-server\task.md` 均为 `COMPLETED`，允许创建新任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260701-build-publish-test-server-current\`。
+- 命令记录：读取经验索引、发布前置清单、服务器访问、登录方式、PowerShell 编码门禁，并补写本轮任务台账 `task.md` 与 `execution-log.md`。
+- 命令记录：执行三仓状态核对：
+  - `git -C D:\ProjectPackage\Int\IntRuoyiMaintance status --short --branch`
+  - `git -C D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro status --short --branch`
+  - `git -C D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3 status --short --branch`
+- 当前结果：维护仓、后端仓、前端仓主工作区均存在已跟踪或未跟踪改动，不满足“默认只发布主分支当前版本”的 clean 门禁；已按规范在 `execution-log.md` 记录 `BLOCKER: publish-input-dirty-main-workspaces`，等待用户明确本轮发布输入方案后再继续真实 `build-release -> publish-test`。
+- 用户选择：`1`，即“先提交再发布”。
+- 命令记录：补读并核对当前脏改所属任务与验证证据：
+  - `git -C D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro diff --stat`
+  - `git -C D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3 diff --stat`
+  - `Get-Content -Encoding utf8 <相关 task.md / execution-log.md>`
+  - `node D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3\tests\e2e\mes-schedule-order-main-table-wrap-static.spec.js`
+  - `node D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3\tests\e2e\mes-schedule-order-admission-wrap-static.spec.js`
+  - `node D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3\tests\e2e\mes-feedback-user-select-permission-static.spec.js`
+  - `node D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3\tests\e2e\mes-feedback-permission-static.spec.js`
+  - `node D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3\tests\e2e\mes-feedback-tracking-static.spec.js`
+- 当前结果：已完成三仓脏改归类，正在补齐维护仓/前端任务台账并准备分别提交维护仓、后端仓、前端仓主分支改动，提交后再进入真实 `build-release -> publish-test`。
+
 ## 2026-06-30 排程日历正式排程为空时报错
 
 - 用户需求：`报错 加载月排程失败：当前正式排程为空，无法加载排程日历`
