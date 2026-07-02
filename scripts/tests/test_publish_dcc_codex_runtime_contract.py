@@ -41,15 +41,19 @@ def test_publish_runtime_preserves_dcc_codex_linux_contract() -> None:
     assert "[string]$DccProjectCodeCodexCliCommand = $env:DCC_PROJECT_CODE_CODEX_CLI_COMMAND" in script
     assert "[string]$DccProjectCodeCodexHome = $env:DCC_PROJECT_CODE_CODEX_HOME" in script
     assert "[string]$DccProjectCodeCodexTimeoutSeconds = $env:DCC_PROJECT_CODE_CODEX_TIMEOUT_SECONDS" in script
+    assert "[string]$DccProjectCodeRecognitionVersion = $env:DCC_PROJECT_CODE_RECOGNITION_VERSION" in script
     assert "[string]$DccProjectCodeRecognitionWorkerCount = $env:DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT" in script
     assert "DCC_PROJECT_CODE_CODEX_CLI_COMMAND=$DccProjectCodeCodexCliCommand" in script
     assert "DCC_PROJECT_CODE_CODEX_HOME=$DccProjectCodeCodexHome" in script
     assert "DCC_PROJECT_CODE_CODEX_TIMEOUT_SECONDS=$DccProjectCodeCodexTimeoutSeconds" in script
+    assert "DCC_PROJECT_CODE_RECOGNITION_VERSION=$DccProjectCodeRecognitionVersion" in script
     assert "DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT=$DccProjectCodeRecognitionWorkerCount" in script
     assert "/opt/intruoyi/runtime/tools/codex" in script
     assert "/opt/intruoyi/runtime/backend-codex-home" in script
     assert "$effectiveDccProjectCodeCodexTimeoutSeconds" in script
     assert "else { '300' }" in script
+    assert "$effectiveDccProjectCodeRecognitionVersion" in script
+    assert "else { 'v1' }" in script
     assert "$effectiveDccProjectCodeRecognitionWorkerCount" in script
     assert "else { '5' }" in script
 
@@ -57,6 +61,7 @@ def test_publish_runtime_preserves_dcc_codex_linux_contract() -> None:
     assert "CODEX_HOME: ${DCC_PROJECT_CODE_CODEX_HOME}" in compose
     assert "--yudao.dcc.project-code-recognition.codex-cli-command=${DCC_PROJECT_CODE_CODEX_CLI_COMMAND}" in compose
     assert "--yudao.dcc.project-code-recognition.timeout-seconds=${DCC_PROJECT_CODE_CODEX_TIMEOUT_SECONDS}" in compose
+    assert "--yudao.dcc.project-code-recognition.version=${DCC_PROJECT_CODE_RECOGNITION_VERSION}" in compose
     assert "--yudao.dcc.project-code-recognition.worker-count=${DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT}" in compose
     assert "- /opt/intruoyi/runtime/tools/codex:/opt/intruoyi/runtime/tools/codex:ro" in compose
     assert "- /opt/intruoyi/runtime/backend-codex-home:/opt/intruoyi/runtime/backend-codex-home" in compose
