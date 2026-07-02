@@ -2030,3 +2030,29 @@
 [2026-07-02 08:23:02 +08:00] 命令记录：测试服运行态验证 PASS，releaseTag=release-20260702-0738-codeonly-test，.env、后端/前端镜像 tag、后端 health=UP、前端 HTTP 200、pdf worker HTTP 200 均一致。
 
 [2026-07-02 08:23:55 +08:00] 结论记录：不带数据构建并发布测试服完成，releaseTag=release-20260702-0738-codeonly-test，buildOperation=op-2026-07-01T235523602125100Z-ce23456f-d0f7-415a-a575-2e1ca7228f23，publishOperation=op-2026-07-02T001015631437900Z-571f3f40-9ade-41b1-b681-13abd4c035b6。
+
+[2026-07-02 08:31:05 +08:00] 用户需求：把刚才发布到测试服务器的包发布到正式服务器和备份服务器。releaseTag=release-20260702-0738-codeonly-test。
+
+[2026-07-02 08:35:25 +08:00] 命令记录：mark-tested PASS，releaseTag=release-20260702-0738-codeonly-test，operation=op-2026-07-02T003519305152700Z-acc9b02b-d803-4e60-9dd7-74f9f670cca4，selectedRecoverySetCandidateId=restore:20260621-063218。
+
+[2026-07-02 08:36:16 +08:00] 用户确认：用刚才的包，继续使用 releaseTag=release-20260702-0738-codeonly-test，不重建、不换包。
+
+[2026-07-02 08:36:16 +08:00] 命令记录：promote-prod preview PASS，releaseTag=release-20260702-0738-codeonly-test，包含 RequireTested/ConfirmText PROD/ProdDryRunEvidencePath。
+
+[2026-07-02 08:37:52 +08:00] 命令记录：提交 promote-prod，releaseTag=release-20260702-0738-codeonly-test，operation=op-2026-07-02T003717687464900Z-3af49870-1fdc-4484-be01-19d90747ce36。
+
+[2026-07-02 08:50:33 +08:00] 命令记录：promote-prod PASS，releaseTag=release-20260702-0738-codeonly-test，operation=op-2026-07-02T003717687464900Z-3af49870-1fdc-4484-be01-19d90747ce36。
+
+[2026-07-02 08:51:04 +08:00] 命令记录：正式服运行态验证 PASS，releaseTag=release-20260702-0738-codeonly-test，.env、后端/前端镜像 tag、后端 health=UP、前端 HTTP 200、pdf worker HTTP 200 均一致。
+
+[2026-07-02 08:51:23 +08:00] 命令记录：promote-backup preview PASS，releaseTag=release-20260702-0738-codeonly-test，目标备份服 172.30.30.59，路径为 /mnt/intruoyi-data 闭环。
+
+[2026-07-02 08:51:40 +08:00] 命令记录：提交 promote-backup，releaseTag=release-20260702-0738-codeonly-test，operation=op-2026-07-02T005123161454400Z-1f1b4219-b991-43da-b37a-8d5e5e14a9b2。
+
+[2026-07-02 09:06:41 +08:00] 命令记录：promote-backup PASS，releaseTag=release-20260702-0738-codeonly-test，operation=op-2026-07-02T005123161454400Z-1f1b4219-b991-43da-b37a-8d5e5e14a9b2。
+
+[2026-07-02 09:07:31 +08:00] 命令记录：备份服运行态验证 PASS，releaseTag=release-20260702-0738-codeonly-test，.env、后端/前端镜像 tag、后端 health=UP、前端 HTTP 200、pdf worker HTTP 200、/mnt/intruoyi-data 挂载均一致。
+
+[2026-07-02 09:07:31 +08:00] 命令记录：release-status 三环境验证 PASS，test/prod/backup currentReleaseTag 均为 release-20260702-0738-codeonly-test。
+
+[2026-07-02 09:07:31 +08:00] 结论记录：刚才测试服包已发布到正式服务器和备份服务器，releaseTag=release-20260702-0738-codeonly-test，三环境运行态验证均 PASS。
