@@ -2014,3 +2014,19 @@
   - 命令记录：新增 DCC 对象清单性能 BDD/TDD；先 RED 证明清单生成仍使用 PowerShell 数组 `+=` 且缺少进度日志，随后修改 `ops/deploy/publish-int-ruoyi.ps1`，将 DCC reference rows 与 inventory files 改为 `System.Collections.Generic.List[object]` 线性追加，并每 500 条输出 `DCC object inventory progress`。
   - 验证命令：`python -X utf8 -m pytest scripts/tests/test_publish_dcc_codex_runtime_contract.py scripts/tests/test_release_package_slimming.py scripts/tests/test_release_sql_preflight_gate.py -q` -> PASS，18 passed；PowerShell ParseFile -> PASS。
 
+
+[2026-07-02 07:30:30 +08:00] 用户需求：构建并发布到测试服务器，不带数据的。
+
+[2026-07-02 07:54:54 +08:00] 命令记录：no-data build-release preview PASS，releaseTag=release-20260702-0738-codeonly-test，参数包含 -SkipDatabaseSync/-SkipMinioSync，只允许测试服 172.30.30.58。
+
+[2026-07-02 07:55:23 +08:00] 命令记录：提交 no-data build-release，releaseTag=release-20260702-0738-codeonly-test，operation=op-2026-07-01T235523602125100Z-ce23456f-d0f7-415a-a575-2e1ca7228f23。
+
+[2026-07-02 08:07:44 +08:00] 命令记录：no-data build-release PASS，releaseTag=release-20260702-0738-codeonly-test，operation=op-2026-07-01T235523602125100Z-ce23456f-d0f7-415a-a575-2e1ca7228f23，manifest=E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260702-0738-codeonly-test\manifest.json。
+
+[2026-07-02 08:10:29 +08:00] 命令记录：提交 publish-test，releaseTag=release-20260702-0738-codeonly-test，operation=op-2026-07-02T001015631437900Z-571f3f40-9ade-41b1-b681-13abd4c035b6，目标测试服 172.30.30.58。
+
+[2026-07-02 08:22:30 +08:00] 命令记录：publish-test PASS，releaseTag=release-20260702-0738-codeonly-test，operation=op-2026-07-02T001015631437900Z-571f3f40-9ade-41b1-b681-13abd4c035b6。
+
+[2026-07-02 08:23:02 +08:00] 命令记录：测试服运行态验证 PASS，releaseTag=release-20260702-0738-codeonly-test，.env、后端/前端镜像 tag、后端 health=UP、前端 HTTP 200、pdf worker HTTP 200 均一致。
+
+[2026-07-02 08:23:55 +08:00] 结论记录：不带数据构建并发布测试服完成，releaseTag=release-20260702-0738-codeonly-test，buildOperation=op-2026-07-01T235523602125100Z-ce23456f-d0f7-415a-a575-2e1ca7228f23，publishOperation=op-2026-07-02T001015631437900Z-571f3f40-9ade-41b1-b681-13abd4c035b6。
