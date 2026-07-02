@@ -2056,3 +2056,15 @@
 [2026-07-02 09:07:31 +08:00] 命令记录：release-status 三环境验证 PASS，test/prod/backup currentReleaseTag 均为 release-20260702-0738-codeonly-test。
 
 [2026-07-02 09:07:31 +08:00] 结论记录：刚才测试服包已发布到正式服务器和备份服务器，releaseTag=release-20260702-0738-codeonly-test，三环境运行态验证均 PASS。
+
+## 20260702-215459 构建发布到测试服务器不带数据
+- 用户需求：构建发布到测试服务器，不带数据。
+- 任务目录：doc/tasks/20260702-build-publish-test-nodata-evening/
+- 当前动作：创建任务文档并记录经验预检。
+
+## 2026-07-03 01:08:41 +08:00 用户请求：构建发布到测试服务器，不带数据
+- 任务目录：D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260702-build-publish-test-nodata-evening
+- 执行结果：已完成 code-only build-release -> publish-test，最终 releaseTag=release-20260703-0009-nodata-evening-fix3。
+- build-release operation=op-2026-07-02T161541001144800Z-e41fd403-d2ff-4b9c-83a7-fc1f4225577d，状态 SUCCESS；manifest publishScope=code-only，backend=8b9b0bd7450413202423b1a61aea5530f14a6436 dirty=false，frontend=4a89359a739ba69f5d1ce348e324455968fb28cb dirty=false。
+- publish-test operation=op-2026-07-02T163956246337200Z-32587742-51dc-4f73-9f5a-8b84ce3e2d9e，状态 SUCCESS；测试服 .env IMAGE_TAG、backend/frontend 镜像 tag 均为 release-20260703-0009-nodata-evening-fix3；backend health=UP；frontend HTTP 200。
+- 边界：本轮未执行 mark-tested、正式服、备份服、备份、恢复或回滚。
