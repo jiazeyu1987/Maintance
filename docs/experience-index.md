@@ -4,6 +4,8 @@
 
 ## 路由
 
+- 维护控制台临时 worktree 构建 / pnpm approve-builds / ERR_PNPM_IGNORED_BUILDS：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
+
 - PowerShell 命令编排 / 中文编码 / 终端输出预检：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\powershell-preflight-lessons.md`
 - 构建发布耗时 / 真实 E2E 发布预检：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
 - 已提交 git 版本发布 / clean worktree 发布输入 / 发布前置门禁：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
@@ -21,3 +23,6 @@
 - 在 `task.md` 只摘命中文档的门禁，写入 `## 经验门禁`。
 - 涉及服务器写入、发布、恢复、大文件上传、真实 E2E、worktree 合并或清理等高风险动作前，`execution-log.md` 必须先记录 `GREEN: experience-preflight -> PASS` 或 `BLOCKER: experience-preflight -> <原因>`。
 - 没有 `experience-preflight` 记录时，不执行长链路或高风险动作。
+
+- 发布 mark-tested / mark-release-tested / selectedRecoverySetCandidateId / recovery set 候选：见 `docs/release-build-preflight-lessons.md` 的
+- 发布验证 / 正式服端口 / docker compose ps / 48081 / 8081：见 `docs/release-build-preflight-lessons.md` 的

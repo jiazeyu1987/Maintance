@@ -1,0 +1,21 @@
+{
+    "code":  0,
+    "data":  {
+                 "operationId":  "op-2026-07-03T163511316141200Z-89e50181-d9b3-4874-8c72-893e90ac8c48",
+                 "requestedBy":  "local-operator",
+                 "requestedAt":  "2026-07-03T16:35:40.866512800Z",
+                 "environment":  "prod",
+                 "component":  "promote-prod",
+                 "action":  "promote-prod",
+                 "actionLabel":  "ä¸çº¿å·²éªè¯åå¸å\u0085",
+                 "parameters":  {
+                                    "releaseTag":  "release-20260703-2335-codeonly-three-env",
+                                    "prodDryRunEvidencePath":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\IntRuoyiMaintance\\runtime\\runtime-control\\prod-preflight-release-evidence\\release-20260703-2335-codeonly-three-env-preflight-release-dry-run.json"
+                                },
+                 "reason":  "IntRuoyi code-only three-environment release closure: promote same tested releaseTag to production server",
+                 "status":  "RUNNING",
+                 "summary":  "å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+                 "resultLogPath":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\IntRuoyiMaintance\\runtime\\runtime-control\\logs\\op-2026-07-03T163511316141200Z-89e50181-d9b3-4874-8c72-893e90ac8c48.log"
+             },
+    "msg":  ""
+}

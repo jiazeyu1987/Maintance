@@ -1,0 +1,30 @@
+ENV_IMAGE_TAG=release-20260703-2335-codeonly-three-env
+COMPOSE_PS_BEGIN
+NAME                  IMAGE                                                        COMMAND                   SERVICE      CREATED         STATUS                 PORTS
+intruoyi-backend      intruoyi-backend:release-20260703-2335-codeonly-three-env    "/__cacert_entrypoin…"   backend      3 minutes ago   Up 3 minutes           0.0.0.0:48081->48080/tcp, :::48081->48080/tcp
+intruoyi-frontend     intruoyi-frontend:release-20260703-2335-codeonly-three-env   "/docker-entrypoint.…"   frontend     3 minutes ago   Up 3 minutes           0.0.0.0:8081->80/tcp, :::8081->80/tcp
+intruoyi-mysql        mysql:8.0.39                                                 "docker-entrypoint.s…"   mysql        4 weeks ago     Up 4 weeks (healthy)   3306/tcp, 33060/tcp
+intruoyi-onlyoffice   onlyoffice/documentserver:latest                             "/app/ds/run-documen…"   onlyoffice   11 days ago     Up 11 days (healthy)   443/tcp, 0.0.0.0:8080->80/tcp, :::8080->80/tcp
+intruoyi-redis        redis:7-alpine                                               "docker-entrypoint.s…"   redis        5 weeks ago     Up 5 weeks (healthy)   6379/tcp
+intruoyi-website      nginx:1.27-alpine                                            "/docker-entrypoint.…"   website      3 weeks ago     Up 3 weeks             0.0.0.0:8083->80/tcp, :::8083->80/tcp
+COMPOSE_PS_END
+DOCKER_PS_BEGIN
+intruoyi-frontend|intruoyi-frontend:release-20260703-2335-codeonly-three-env|Up 3 minutes
+intruoyi-backend|intruoyi-backend:release-20260703-2335-codeonly-three-env|Up 3 minutes
+intruoyi-onlyoffice|onlyoffice/documentserver:latest|Up 11 days (healthy)
+intruoyi-rehearsal-frontend|intruoyi-frontend:20260611_dcc_incremental_codeonly_2031|Up 3 weeks
+intruoyi-rehearsal-backend|intruoyi-backend:20260611_dcc_incremental_codeonly_2031|Up 3 weeks
+intruoyi-rehearsal-mysql|mysql:8.0.39|Up 3 weeks (healthy)
+intruoyi-rehearsal-redis|redis:7-alpine|Up 3 weeks (healthy)
+intruoyi-website|nginx:1.27-alpine|Up 3 weeks
+intruoyi-mysql|mysql:8.0.39|Up 4 weeks (healthy)
+intruoyi-redis|redis:7-alpine|Up 5 weeks (healthy)
+ragflow_compose-minio-1|quay.io/minio/minio:RELEASE.2025-06-13T11-33-47Z|Up 5 weeks
+DOCKER_PS_END
+INSPECT_BEGIN
+intruoyi-backend|intruoyi-backend:release-20260703-2335-codeonly-three-env
+intruoyi-frontend|intruoyi-frontend:release-20260703-2335-codeonly-three-env
+INSPECT_END
+BACKEND_HEALTH={"status":"UP"}
+FRONTEND_HTTP=200
+PDF_WORKER_HTTP=200

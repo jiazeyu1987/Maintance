@@ -1,0 +1,37 @@
+SSH_EXIT_CODE=0
+===== STDOUT =====
+ENV_IMAGE_TAG=release-20260703-2335-codeonly-three-env
+BACKEND_IMAGE=intruoyi-backend:release-20260703-2335-codeonly-three-env
+FRONTEND_IMAGE=intruoyi-frontend:release-20260703-2335-codeonly-three-env
+BACKEND_HOST_PORT=48081
+FRONTEND_HOST_PORT=8081
+COMPOSE_PS_BEGIN
+NAME                  IMAGE                                                        COMMAND                   SERVICE      CREATED         STATUS                 PORTS
+intruoyi-backend      intruoyi-backend:release-20260703-2335-codeonly-three-env    "/__cacert_entrypoin…"   backend      2 minutes ago   Up 2 minutes           0.0.0.0:48081->48080/tcp, :::48081->48080/tcp
+intruoyi-frontend     intruoyi-frontend:release-20260703-2335-codeonly-three-env   "/docker-entrypoint.…"   frontend     2 minutes ago   Up 2 minutes           0.0.0.0:8081->80/tcp, :::8081->80/tcp
+intruoyi-mysql        mysql:8.0.39                                                 "docker-entrypoint.s…"   mysql        4 weeks ago     Up 4 weeks (healthy)   3306/tcp, 33060/tcp
+intruoyi-onlyoffice   onlyoffice/documentserver:latest                             "/app/ds/run-documen…"   onlyoffice   4 weeks ago     Up 4 weeks (healthy)   443/tcp, 0.0.0.0:8080->80/tcp, :::8080->80/tcp
+intruoyi-redis        redis:7-alpine                                               "docker-entrypoint.s…"   redis        4 weeks ago     Up 4 weeks (healthy)   6379/tcp
+intruoyi-website      nginx:1.27-alpine                                            "/docker-entrypoint.…"   website      3 weeks ago     Up 3 weeks             0.0.0.0:8083->80/tcp, :::8083->80/tcp
+COMPOSE_PS_END
+MOUNT_FINDMNT_BEGIN
+/mnt/intruoyi-data /dev/mapper/cl-home ext4   rw,relatime,seclabel,data=ordered
+MOUNT_FINDMNT_END
+MOUNT_DF_BEGIN
+文件系统             容量  已用  可用 已用% 挂载点
+/dev/mapper/cl-home  927G  427G  453G   49% /mnt/intruoyi-data
+MOUNT_DF_END
+PATH_CHECK_BEGIN
+EXISTS /mnt/intruoyi-data
+EXISTS /mnt/intruoyi-data/intruoyi-releases
+EXISTS /mnt/intruoyi-data/runtime-data
+EXISTS /mnt/intruoyi-data/intruoyi-releases/release-20260703-2335-codeonly-three-env
+PATH_CHECK_END
+BACKEND_HEALTH_HOST={"status":"UP"}
+BACKEND_HEALTH_CONTAINER={"status":"UP"}
+FRONTEND_HTTP=200
+PDF_WORKER_HTTP=200
+
+===== STDERR =====
+close - IO is still pending on closed socket. read:1, write:0, io:0000019BBE279E30
+

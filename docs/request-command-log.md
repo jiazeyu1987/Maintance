@@ -2089,3 +2089,97 @@
 - publish-test 首次 operation=op-2026-07-03T080000300286800Z-15fd0acf-70e5-483a-8585-82bc282ce473 因启用 EnableSmartReleaseReport 但缺少 -SmartReleaseTargetConfigPath 失败；未使用 prod target config 误套测试服，关闭可选报告后按同一 releaseTag 重试。
 - publish-test 重试 operation=op-2026-07-03T080239101028700Z-e0b55e76-a62e-4445-be42-248ed979a170，状态 SUCCESS；测试服 .env IMAGE_TAG、backend/frontend 镜像 tag 均为 release-20260703-0912-test-again；backend health=UP；frontend HTTP 200；pdf worker HTTP 200。
 - 边界：本轮未执行 mark-tested、正式服、备份服、备份、恢复或回滚。
+
+## 2026-07-03 23:21:20 20260703-codeonly-three-env-release
+
+- 用户需求：执行 IntRuoyi 不带数据的完整三环境发布闭环，使用当前 int_main 已提交 HEAD，必须新建干净临时发布 worktree，测试服、正式服、备份服全部发布并验证。
+- 已执行命令：初始化任务文档、读取发布经验门禁、记录仓库目标提交与主工作区 dirty 隔离约束。
+- 任务目录：`doc/tasks/20260703-codeonly-three-env-release/`
+
+- 命令记录：创建本轮临时发布 worktree，maintenance=D:\ProjectPackage\Int\IntRuoyiWorktrees\20260703-codeonly-three-env-release\IntRuoyiMaintance，backend=D:\ProjectPackage\Int\IntRuoyiWorktrees\20260703-codeonly-three-env-release\ruoyi-vue-pro，frontend=D:\ProjectPackage\Int\IntRuoyiWorktrees\20260703-codeonly-three-env-release\yudao-ui-admin-vue3；目标提交 maintenance=14fcac2349d79a33351dca1ed65d99bfe9b40982，backend=4ef9206881465189f06d4dd8db30c4bacf03b5d8，frontend=0587b626a86a570016a53dae350a4a4bbea2e81f。
+
+- 命令记录：运行控制台切换失败证据冻结；临时维护 worktree scripts/build.ps1 被 pnpm ERR_PNPM_IGNORED_BUILDS 阻断，jar 未生成，48181 当前无监听，证据写入 doc/tasks/20260703-codeonly-three-env-release/evidence/runtime-control-worktree-build-failure-20260703.md。
+
+- 命令记录：沉淀维护控制台临时 worktree 构建前置经验：pnpm 11 首次恢复依赖需 pnpm approve-builds --all，同步更新 release-build-preflight-lessons 与 experience-index。
+
+- 命令记录：pnpm approve-builds --all 后重跑临时维护 worktree scripts/build.ps1 成功，启动 48181 并验证 health={"status":"UP"}。
+
+- 命令记录：预览 build-release PASS，releaseTag=release-20260703-2335-codeonly-three-env，参数包含 -Component intruoyi -SkipDatabaseSync -SkipMinioSync -TestServerHost 172.30.30.58 -BackupServerHost 172.30.30.59，不包含备份、恢复、回滚。
+
+- 命令记录：继续轮询 build-release operation=op-2026-07-03T153405744077400Z-02fbe71d-f709-4364-b21c-90821b63c934，结果 SUCCESS，releaseTag=release-20260703-2335-codeonly-three-env，operation/log 证据已保存。
+
+- 命令记录：冻结 releaseTag=release-20260703-2335-codeonly-three-env manifest 校验失败证据；manifest 缺少 sourceRepos，无法证明 dirty=false，本 releaseTag 判废，不继续发布。
+
+- 命令记录：Manifest v1 校验 PASS；releaseTag=release-20260703-2335-codeonly-three-env，publishScope=code-only，sourceRepos backend/admin-frontend dirty=false 且目标提交一致，包根无数据目录；更正 legacy manifest 误判。
+
+- 命令记录：补跑 Manifest v1 validator，状态=PASS，输出保存到 doc/tasks/20260703-codeonly-three-env-release/evidence/manifest-v1-validator-output.txt。
+
+- 命令记录：预览 publish-test PASS，releaseTag=release-20260703-2335-codeonly-three-env，参数包含 -Mode deploy-release -Environment test -ServerHost 172.30.30.58 -RemoteAppDir /opt/intruoyi/runtime，不包含正式服、备份、恢复、回滚动作。
+
+- 命令记录：执行 publish-test，operation=op-2026-07-03T155449725216100Z-adc5802d-1d2e-4199-8635-81110bf97774，releaseTag=release-20260703-2335-codeonly-three-env，结果 SUCCESS。
+
+- 命令记录：测试服最终运行态验证 PASS；operation=op-2026-07-03T155449725216100Z-adc5802d-1d2e-4199-8635-81110bf97774 SUCCESS，.env IMAGE_TAG=release-20260703-2335-codeonly-three-env，backend=intruoyi-backend|intruoyi-backend:release-20260703-2335-codeonly-three-env|Up 3 minutes，frontend=intruoyi-frontend|intruoyi-frontend:release-20260703-2335-codeonly-three-env|Up 3 minutes，backend health=UP，frontend HTTP 200，PDF worker HTTP 200。
+
+## 2026-07-04 00:12:50 +08:00 任务 20260703-codeonly-three-env-release mark-tested 预览失败
+- 请求：执行 mark-release-tested。
+- 失败：接口返回 selectedRecoverySetCandidateId is required for action: mark-release-tested。
+- 证据：D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\mark-tested-preview-failure-selectedRecoverySetCandidateId.json。
+- 下一步：按维护代码契约查找 recovery set 候选 ID 来源后重试。
+
+## 2026-07-04 00:33:58 +08:00 任务 20260703-codeonly-three-env-release mark-tested 轮询失败
+- 请求：轮询 mark-tested operation。
+- 失败：1200 秒内未通过 operations 列表找到 operation=op-2026-07-03T161333772184700Z-06061413-1db6-43a9-97e5-863ca79e0f97。
+- 下一步：读取运行控制台 state-dir 与操作日志确认真实状态。
+
+## 2026-07-04 00:34:34 +08:00 任务 20260703-codeonly-three-env-release mark-tested 成功证据补录
+- 请求：补录 operation=op-2026-07-03T161333772184700Z-06061413-1db6-43a9-97e5-863ca79e0f97 的真实结果。
+- 结果：operations 列表与 operation log 均显示 SUCCESS。
+
+## 2026-07-04 00:34:34 +08:00 任务 20260703-codeonly-three-env-release promote-prod
+- 请求：对 releaseTag=release-20260703-2335-codeonly-three-env 执行 promote-prod，prodConfirmText=PROD，requireTested=true。
+- 命令：POST /actions/preview 与 POST /actions，轮询 operations 并保存证据。
+- 结果：operation=op-2026-07-03T163511316141200Z-89e50181-d9b3-4874-8c72-893e90ac8c48 status=SUCCESS。
+
+## 2026-07-04 00:50:15 +08:00 任务 20260703-codeonly-three-env-release 正式服验证失败证据冻结
+- 请求：冻结正式服 172.30.30.57 后端健康检查失败证据。
+- 失败：127.0.0.1:48080 拒绝连接；SSH 诊断 stdout/stderr 已分离保存，sshExitCode=0。
+- 证据：D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\prod-server-verification-failure-diagnostic.txt。
+
+## 2026-07-04 00:51:04 +08:00 任务 20260703-codeonly-three-env-release 正式服验证（真实端口）
+- 请求：按正式服 docker compose 实际映射端口验证 .env IMAGE_TAG、前后端镜像 tag、backend health、frontend HTTP、PDF worker HTTP。
+- 结果：PASS；releaseTag=release-20260703-2335-codeonly-three-env。
+- 证据：D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\prod-server-verification-final.txt。
+
+## 2026-07-04 01:06:41 +08:00 任务 20260703-codeonly-three-env-release promote-backup
+- 请求：对 releaseTag=release-20260703-2335-codeonly-three-env 执行 promote-backup，prodConfirmText=PROD，预览必须包含 172.30.30.59 与 /mnt/intruoyi-data 参数。
+- 命令：POST /actions/preview 与 POST /actions，轮询 operations 并保存证据。
+- 结果：operation=op-2026-07-03T165324146656100Z-83717ddc-3a40-41f3-bb28-ae4b1e9d3dba status=SUCCESS。
+
+## 2026-07-04 01:07:15 +08:00 任务 20260703-codeonly-three-env-release 备份服验证
+- 请求：验证备份服 172.30.30.59 的 .env IMAGE_TAG、前后端镜像 tag、backend health、frontend HTTP、PDF worker HTTP、/mnt/intruoyi-data 挂载和发布路径。
+- 结果：PASS；releaseTag=release-20260703-2335-codeonly-three-env。
+- 证据：D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\backup-server-verification-final.txt。
+
+## 2026-07-04 01:08:35 +08:00 任务 20260703-codeonly-three-env-release 运行控制台主路径恢复
+- 请求：停止临时 worktree 运行控制台，恢复主维护仓 jar 和主配置。
+- 结果：PASS；PID=20628，health=UP。
+- 证据：D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\runtime-control-main-restore-verification.json。
+
+## 2026-07-04 01:10:06 +08:00 任务 20260703-codeonly-three-env-release 运行控制台主路径最终复核更正
+- 请求：确认 48181 已恢复到主维护仓路径。
+- 结果：PASS；health=UP，进程命令行指向主维护仓 jar。
+- 证据：D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\runtime-control-main-restore-final-check-corrected.json。
+
+## 2026-07-04 01:10:29 +08:00 任务 20260703-codeonly-three-env-release 临时 worktree 清理失败证据冻结
+- 请求：检查 git worktree remove 后残留目录。
+- 结果：已确认路径边界为 D:\ProjectPackage\Int\IntRuoyiWorktrees\20260703-codeonly-three-env-release；证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\temporary-release-worktree-cleanup-failure-inspection.json。
+
+## 2026-07-04 01:14:43 +08:00 任务 20260703-codeonly-three-env-release 临时发布 worktree 长路径最终清理
+- 请求：处理 pnpm 长路径/链接残留并删除本次临时发布根目录。
+- 结果：PASS；tempRootExistsAfter=false，git worktree prune 后不再列出本次路径。
+- 证据：D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\temporary-release-worktree-cleanup-longpath-final.json。
+
+## 2026-07-04 01:16:34 +08:00 任务 20260703-codeonly-three-env-release 最终收口
+- 请求：完成任务文档、执行日志、cleanup 预览和最终证据校验。
+- 结果：PASS；releaseTag=release-20260703-2335-codeonly-three-env 同一标签完成三环境闭环。
+- 证据：D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\final-release-closeout-verification.json。

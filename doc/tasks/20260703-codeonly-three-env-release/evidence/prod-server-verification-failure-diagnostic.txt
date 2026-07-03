@@ -1,0 +1,277 @@
+SSH_EXIT_CODE=0
+STDOUT_PATH=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\prod-server-verification-failure-diagnostic.stdout.txt
+STDERR_PATH=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\prod-server-verification-failure-diagnostic.stderr.txt
+
+===== STDOUT =====
+CHECKED_AT=2026-07-04T00:50:15+08:00
+HOSTNAME=localhost.localdomain
+PWD_BEFORE=/root
+PWD=/opt/intruoyi/runtime
+ENV_IMAGE_TAG=release-20260703-2335-codeonly-three-env
+COMPOSE_PS_BEGIN
+NAME                  IMAGE                                                        COMMAND                   SERVICE      CREATED         STATUS                 PORTS
+intruoyi-backend      intruoyi-backend:release-20260703-2335-codeonly-three-env    "/__cacert_entrypoin…"   backend      4 minutes ago   Up 4 minutes           0.0.0.0:48081->48080/tcp, :::48081->48080/tcp
+intruoyi-frontend     intruoyi-frontend:release-20260703-2335-codeonly-three-env   "/docker-entrypoint.…"   frontend     4 minutes ago   Up 4 minutes           0.0.0.0:8081->80/tcp, :::8081->80/tcp
+intruoyi-mysql        mysql:8.0.39                                                 "docker-entrypoint.s…"   mysql        5 weeks ago     Up 5 weeks (healthy)   3306/tcp, 33060/tcp
+intruoyi-onlyoffice   onlyoffice/documentserver:latest                             "/app/ds/run-documen…"   onlyoffice   4 weeks ago     Up 4 weeks (healthy)   443/tcp, 0.0.0.0:8080->80/tcp, :::8080->80/tcp
+intruoyi-redis        redis:7-alpine                                               "docker-entrypoint.s…"   redis        5 weeks ago     Up 5 weeks (healthy)   6379/tcp
+intruoyi-website      nginx:1.27-alpine                                            "/docker-entrypoint.…"   website      4 weeks ago     Up 4 weeks             0.0.0.0:8083->80/tcp, :::8083->80/tcp
+COMPOSE_PS_END
+INSPECT_BACKEND_BEGIN
+name=/intruoyi-backend image=intruoyi-backend:release-20260703-2335-codeonly-three-env state=running running=true started=2026-07-03T16:45:57.685609375Z finished=0001-01-01T00:00:00Z exit=0 health=none
+INSPECT_BACKEND_END
+INSPECT_FRONTEND_BEGIN
+name=/intruoyi-frontend image=intruoyi-frontend:release-20260703-2335-codeonly-three-env state=running running=true started=2026-07-03T16:45:58.181402833Z finished=0001-01-01T00:00:00Z exit=0 health=none
+INSPECT_FRONTEND_END
+PORTS_BEGIN
+LISTEN   0         128                 0.0.0.0:8080             0.0.0.0:*        users:(("docker-proxy",pid=20370,fd=4))                                        
+LISTEN   0         128                 0.0.0.0:8081             0.0.0.0:*        users:(("docker-proxy",pid=25735,fd=4))                                        
+LISTEN   0         128                 0.0.0.0:8083             0.0.0.0:*        users:(("docker-proxy",pid=16788,fd=4))                                        
+LISTEN   0         128                    [::]:8080                [::]:*        users:(("docker-proxy",pid=20377,fd=4))                                        
+LISTEN   0         128                    [::]:8081                [::]:*        users:(("docker-proxy",pid=25743,fd=4))                                        
+LISTEN   0         128                    [::]:8083                [::]:*        users:(("docker-proxy",pid=16794,fd=4))                                        
+PORTS_END
+BACKEND_HEALTH_BEGIN
+curl: (7) Failed to connect to 127.0.0.1 port 48080: 拒绝连接
+
+HTTP_CODE=000
+BACKEND_HEALTH_END
+FRONTEND_HTTP_BEGIN
+curl: (7) Failed to connect to 127.0.0.1 port 80: 拒绝连接
+HTTP_CODE=000
+FRONTEND_HTTP_END
+PDF_WORKER_HTTP_BEGIN
+curl: (7) Failed to connect to 127.0.0.1 port 80: 拒绝连接
+HTTP_CODE=000
+PDF_WORKER_HTTP_END
+BACKEND_LOG_TAIL_BEGIN
+2026-07-04 00:46:00.998 [background-preinit] [34mINFO [0;39m [36morg.hibernate.validator.internal.util.Version:21[0;39m - HV000001: Hibernate Validator 8.0.3.Final
+瑛泰源码 http://www.iocoder.cn
+Application Version: 1.0.0
+Spring Boot Version: 3.5.14
+
+.__   __.   ______      .______    __    __    _______
+|  \ |  |  /  __  \     |   _  \  |  |  |  |  /  _____|
+|   \|  | |  |  |  |    |  |_)  | |  |  |  | |  |  __
+|  . `  | |  |  |  |    |   _  <  |  |  |  | |  | |_ |
+|  |\   | |  `--'  |    |  |_)  | |  `--'  | |  |__| |
+|__| \__|  \______/     |______/   \______/   \______|
+
+███╗   ██╗ ██████╗     ██████╗ ██╗   ██╗ ██████╗
+████╗  ██║██╔═══██╗    ██╔══██╗██║   ██║██╔════╝
+██╔██╗ ██║██║   ██║    ██████╔╝██║   ██║██║  ███╗
+██║╚██╗██║██║   ██║    ██╔══██╗██║   ██║██║   ██║
+██║ ╚████║╚██████╔╝    ██████╔╝╚██████╔╝╚██████╔╝
+╚═╝  ╚═══╝ ╚═════╝     ╚═════╝  ╚═════╝  ╚═════╝
+
+2026-07-04 00:46:01.170 [main] [34mINFO [0;39m [36mcn.iocoder.yudao.server.YudaoServerApplication:53[0;39m - Starting YudaoServerApplication using Java 21.0.11 with PID 1 (/yudao-server/app.jar started by root in /yudao-server)
+2026-07-04 00:46:01.172 [main] [34mINFO [0;39m [36mcn.iocoder.yudao.server.YudaoServerApplication:658[0;39m - The following 1 profile is active: "dev"
+2026-07-04 00:46:10.266 [main] [34mINFO [0;39m [36mo.j.minidao.auto.MinidaoAutoConfiguration:23[0;39m -  ******************* init miniDao config [ begin ] *********************** 
+2026-07-04 00:46:10.267 [main] [34mINFO [0;39m [36mo.j.minidao.auto.MinidaoAutoConfiguration:26[0;39m -  ------ minidao.base-package ------- org.jeecg.modules.jmreport.*,org.jeecg.modules.drag.*
+2026-07-04 00:46:10.268 [main] [34mINFO [0;39m [36mo.j.minidao.auto.MinidaoAutoConfiguration:50[0;39m -  *******************  init miniDao config  [ end ] *********************** 
+2026-07-04 00:46:11.478 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportCategoryDao }
+2026-07-04 00:46:11.480 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportDao }
+2026-07-04 00:46:11.480 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportDataSourceDao }
+2026-07-04 00:46:11.481 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportDbDao }
+2026-07-04 00:46:11.481 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportDbFieldDao }
+2026-07-04 00:46:11.481 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportDbParamDao }
+2026-07-04 00:46:11.481 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportDictDao }
+2026-07-04 00:46:11.481 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportDictItemDao }
+2026-07-04 00:46:11.481 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportExportJobDao }
+2026-07-04 00:46:11.481 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportExportLogDao }
+2026-07-04 00:46:11.481 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportExtDataDao }
+2026-07-04 00:46:11.482 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportLinkDao }
+2026-07-04 00:46:11.482 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportMapDao }
+2026-07-04 00:46:11.482 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportShareDao }
+2026-07-04 00:46:11.482 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportSheetDao }
+2026-07-04 00:46:11.482 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.JimuDragCategoryDao }
+2026-07-04 00:46:11.482 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.JimuDragMapDao }
+2026-07-04 00:46:11.482 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.JimuReportIconLibDao }
+2026-07-04 00:46:11.482 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.OnlDragCompDao }
+2026-07-04 00:46:11.482 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.OnlDragDataSourceDao }
+2026-07-04 00:46:11.483 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.OnlDragDatasetHeadDao }
+2026-07-04 00:46:11.483 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.OnlDragDatasetItemDao }
+2026-07-04 00:46:11.483 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.OnlDragDatasetParamDao }
+2026-07-04 00:46:11.483 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.OnlDragPageCompDao }
+2026-07-04 00:46:11.483 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.OnlDragPageDao }
+2026-07-04 00:46:11.483 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.OnlDragShareDao }
+2026-07-04 00:46:12.187 [main] [34mINFO [0;39m [36mc.g.y.a.MybatisPlusJoinAutoConfiguration:142[0;39m - MPJ SqlSessionFactory bean definition: sqlSessionFactory factoryBeanName: com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration factoryMethodName: sqlSessionFactory source: com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration.sqlSessionFactory(javax.sql.DataSource)
+2026-07-04 00:46:12.698 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'org.springframework.ai.model.anthropic.autoconfigure.StringToToolChoiceConverter' of type [org.springframework.ai.model.anthropic.autoconfigure.StringToToolChoiceConverter] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [threadPoolTaskExecutorBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-07-04 00:46:13.307 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'com.mzt.logapi.starter.configuration.LogRecordProxyAutoConfiguration' of type [com.mzt.logapi.starter.configuration.LogRecordProxyAutoConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [threadPoolTaskExecutorBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-07-04 00:46:13.326 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'mzt.log.record-com.mzt.logapi.starter.configuration.LogRecordProperties' of type [com.mzt.logapi.starter.configuration.LogRecordProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [threadPoolTaskExecutorBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-07-04 00:46:13.343 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'logRecordPerformanceMonitor' of type [com.mzt.logapi.service.impl.DefaultLogRecordPerformanceMonitor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [threadPoolTaskExecutorBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-07-04 00:46:13.397 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'cn.iocoder.yudao.framework.datapermission.config.YudaoDataPermissionAutoConfiguration' of type [cn.iocoder.yudao.framework.datapermission.config.YudaoDataPermissionAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [threadPoolTaskExecutorBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-07-04 00:46:13.402 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'dataPermissionAnnotationAdvisor' of type [cn.iocoder.yudao.framework.datapermission.core.aop.DataPermissionAnnotationAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [threadPoolTaskExecutorBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-07-04 00:46:13.403 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:429[0;39m - Bean 'cn.iocoder.yudao.framework.quartz.config.YudaoAsyncAutoConfiguration' of type [cn.iocoder.yudao.framework.quartz.config.YudaoAsyncAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [threadPoolTaskExecutorBeanPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-07-04 00:46:13.409 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:429[0;39m - Bean 'cn.iocoder.yudao.module.report.framework.jmreport.config.JmReportPdfExportAutoConfiguration' of type [cn.iocoder.yudao.module.report.framework.jmreport.config.JmReportPdfExportAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [jmReportPdfExportBeanPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-07-04 00:46:13.420 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'jmReportPdfFontRegistry' of type [cn.iocoder.yudao.module.report.framework.jmreport.core.pdf.JmReportPdfFontRegistry] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [jmReportPdfExportBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-07-04 00:46:13.454 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'org.springframework.ai.mcp.server.common.autoconfigure.annotations.McpServerAnnotationScannerAutoConfiguration' of type [org.springframework.ai.mcp.server.common.autoconfigure.annotations.McpServerAnnotationScannerAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [serverAnnotatedMethodBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-07-04 00:46:13.457 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'serverAnnotatedBeanRegistry' of type [org.springframework.ai.mcp.server.common.autoconfigure.annotations.McpServerAnnotationScannerAutoConfiguration$ServerMcpAnnotatedBeans] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [serverAnnotatedMethodBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-07-04 00:46:13.464 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'spring.ai.mcp.server.annotation-scanner-org.springframework.ai.mcp.server.common.autoconfigure.annotations.McpServerAnnotationScannerProperties' of type [org.springframework.ai.mcp.server.common.autoconfigure.annotations.McpServerAnnotationScannerProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [serverAnnotatedMethodBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-processed, declare it with ROLE_INFRASTRUCTURE.
+2026-07-04 00:46:14.166 [main] [34mINFO [0;39m [36mo.s.boot.web.embedded.tomcat.TomcatWebServer:111[0;39m - Tomcat initialized with port 48080 (http)
+2026-07-04 00:46:14.190 [main] [34mINFO [0;39m [36morg.apache.coyote.http11.Http11NioProtocol:168[0;39m - Initializing ProtocolHandler ["http-nio-48080"]
+2026-07-04 00:46:14.194 [main] [34mINFO [0;39m [36morg.apache.catalina.core.StandardService:168[0;39m - Starting service [Tomcat]
+2026-07-04 00:46:14.194 [main] [34mINFO [0;39m [36morg.apache.catalina.core.StandardEngine:168[0;39m - Starting Servlet engine: [Apache Tomcat/10.1.54]
+2026-07-04 00:46:14.265 [main] [34mINFO [0;39m [36mo.a.c.core.ContainerBase.[Tomcat].[localhost].[/]:168[0;39m - Initializing Spring embedded WebApplicationContext
+2026-07-04 00:46:14.265 [main] [34mINFO [0;39m [36mo.s.b.w.s.c.ServletWebServerApplicationContext:301[0;39m - Root WebApplicationContext: initialization completed in 12614 ms
+
+================================================================================================
+            _ _ __  __       ____                       _   
+           | (_)  \/  |_   _|  _ \ ___ _ __   ___  _ __| |_ 
+        _  | | | |\/| | | | | |_) / _ \ '_ \ / _ \| '__| __|
+       | |_| | | |  | | |_| |  _ <  __/ |_) | (_) | |  | |_ 
+        \___/|_|_|  |_|\__,_|_| \_\___| .__/ \___/|_|   \__|
+                                      |_|                   
+		Version: 2.3.2
+		打造 “简单|智能|专业 ” 的数据可视化报表。
+		官网：https://jimureport.com
+================================================================================================
+2026-07-04 00:46:15.500 [main] [34mINFO [0;39m [36mcom.alibaba.druid.pool.DruidDataSource:673[0;39m - {dataSource-1,master} inited
+2026-07-04 00:46:15.512 [main] [34mINFO [0;39m [36mc.b.dynamic.datasource.DynamicRoutingDataSource:158[0;39m - dynamic-datasource - add a datasource named [slave] success
+2026-07-04 00:46:15.513 [main] [34mINFO [0;39m [36mc.b.dynamic.datasource.DynamicRoutingDataSource:158[0;39m - dynamic-datasource - add a datasource named [master] success
+2026-07-04 00:46:15.513 [main] [34mINFO [0;39m [36mc.b.dynamic.datasource.DynamicRoutingDataSource:241[0;39m - dynamic-datasource initial loaded [2] datasource,primary datasource named [master]
+2026-07-04 00:46:20.579 [main] [34mINFO [0;39m [36morg.redisson.Version:43[0;39m - Redisson 4.3.1
+2026-07-04 00:46:21.379 [redisson-netty-1-5] [34mINFO [0;39m [36morg.redisson.connection.ConnectionsHolder:152[0;39m - 1 connections initialized for redis/172.21.0.3:6379
+2026-07-04 00:46:21.476 [redisson-netty-1-20] [34mINFO [0;39m [36morg.redisson.connection.ConnectionsHolder:152[0;39m - 24 connections initialized for redis/172.21.0.3:6379
+2026-07-04 00:46:27.845 [main] [34mINFO [0;39m [36mc.a.c.config.AjCaptchaServiceAutoConfiguration:33[0;39m - 自定义配置项：
+AjCaptchaProperties{type=BLOCKPUZZLE, jigsaw='classpath:images/jigsaw', picClick='classpath:images/pic-click', waterMark='瑛泰源码', waterFont='WenQuanZhengHei.ttf', fontType='WenQuanZhengHei.ttf', slipOffset='5', aesStatus=true, interferenceOptions='0', cacheNumber='1000', timingClear='180', cacheType=redis, reqFrequencyLimitEnable=false, reqGetLockLimit=5, reqGetLockSeconds=10, reqGetMinuteLimit=30, reqCheckMinuteLimit=60, reqVerifyMinuteLimit=60}
+2026-07-04 00:46:27.873 [main] [34mINFO [0;39m [36mcom.anji.captcha.util.ImageUtils:71[0;39m - 自定义resource底图:[SLIDING_BLOCK=[Ljava.lang.String;@789da93, ORIGINAL=[Ljava.lang.String;@4915bf72, PIC_CLICK=[Ljava.lang.String;@369a654e]
+2026-07-04 00:46:27.877 [main] [34mINFO [0;39m [36mc.anji.captcha.service.impl.CaptchaServiceFactory:52[0;39m - supported-captchaCache-service:[redis, local]
+2026-07-04 00:46:27.888 [main] [34mINFO [0;39m [36mc.anji.captcha.service.impl.CaptchaServiceFactory:57[0;39m - supported-captchaTypes-service:[clickWord, default, blockPuzzle, pictureWord]
+2026-07-04 00:46:27.888 [main] [34mINFO [0;39m [36mc.a.c.service.impl.BlockPuzzleCaptchaServiceImpl:80[0;39m - --->>>初始化验证码底图<<<---blockPuzzle
+2026-07-04 00:46:32.931 [main] [34mINFO [0;39m [36morg.quartz.impl.StdSchedulerFactory:1222[0;39m - Using default implementation for ThreadExecutor
+2026-07-04 00:46:32.967 [main] [34mINFO [0;39m [36morg.quartz.core.SchedulerSignalerImpl:62[0;39m - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2026-07-04 00:46:32.967 [main] [34mINFO [0;39m [36morg.quartz.core.QuartzScheduler:224[0;39m - Quartz Scheduler v2.5.2 created.
+2026-07-04 00:46:32.994 [main] [34mINFO [0;39m [36mo.s.scheduling.quartz.LocalDataSourceJobStore:676[0;39m - Using db table-based data access locking (synchronization).
+2026-07-04 00:46:32.998 [main] [34mINFO [0;39m [36mo.s.scheduling.quartz.LocalDataSourceJobStore:147[0;39m - JobStoreCMT initialized.
+2026-07-04 00:46:33.000 [main] [34mINFO [0;39m [36morg.quartz.core.QuartzScheduler:289[0;39m - Scheduler meta-data: Quartz Scheduler (v2.5.2) 'schedulerName' with instanceId '374d47164c461783097192936'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 25 threads.
+  Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. and is clustered.
+
+2026-07-04 00:46:33.000 [main] [34mINFO [0;39m [36morg.quartz.impl.StdSchedulerFactory:1376[0;39m - Quartz scheduler 'schedulerName' initialized from an externally provided properties instance.
+2026-07-04 00:46:33.000 [main] [34mINFO [0;39m [36morg.quartz.impl.StdSchedulerFactory:1378[0;39m - Quartz scheduler version: 2.5.2
+2026-07-04 00:46:33.000 [main] [34mINFO [0;39m [36morg.quartz.core.QuartzScheduler:2250[0;39m - JobFactory set to: org.springframework.scheduling.quartz.SpringBeanJobFactory@719c023
+2026-07-04 00:46:34.232 [main] [34mINFO [0;39m [36mo.f.s.b.e.EventRegistryAutoConfiguration:106[0;39m - No deployment resources were found for autodeployment
+2026-07-04 00:46:34.780 [main] [34mINFO [0;39m [36mo.f.c.engine.impl.async.DefaultAsyncTaskExecutor:132[0;39m - Creating thread pool queue of size 100
+2026-07-04 00:46:34.780 [main] [34mINFO [0;39m [36mo.f.c.engine.impl.async.DefaultAsyncTaskExecutor:138[0;39m - Creating thread factory with naming pattern flowable-async-task-invoker-%d
+2026-07-04 00:46:34.782 [main] [34mINFO [0;39m [36mo.f.c.engine.impl.async.DefaultAsyncTaskExecutor:146[0;39m - Creating executor service with corePoolSize 8, maxPoolSize 8 and keepAliveTime 5000
+2026-07-04 00:46:35.143 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1076[0;39m - Found 2 Engine Configurators in total:
+2026-07-04 00:46:35.144 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1078[0;39m - class org.flowable.eventregistry.spring.configurator.SpringEventRegistryConfigurator (priority:100000)
+2026-07-04 00:46:35.144 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1078[0;39m - class org.flowable.idm.engine.configurator.IdmEngineConfigurator (priority:150000)
+2026-07-04 00:46:35.144 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1104[0;39m - Executing beforeInit() of class org.flowable.eventregistry.spring.configurator.SpringEventRegistryConfigurator (priority:100000)
+2026-07-04 00:46:35.159 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1104[0;39m - Executing beforeInit() of class org.flowable.idm.engine.configurator.IdmEngineConfigurator (priority:150000)
+2026-07-04 00:46:37.008 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1111[0;39m - Executing configure() of class org.flowable.eventregistry.spring.configurator.SpringEventRegistryConfigurator (priority:100000)
+2026-07-04 00:46:37.057 [main] [34mINFO [0;39m [36mo.f.eventregistry.impl.EventRegistryEngineImpl:53[0;39m - EventRegistryEngine default created
+2026-07-04 00:46:37.059 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1111[0;39m - Executing configure() of class org.flowable.idm.engine.configurator.IdmEngineConfigurator (priority:150000)
+2026-07-04 00:46:37.100 [main] [34mINFO [0;39m [36morg.flowable.idm.engine.impl.IdmEngineImpl:52[0;39m - IdmEngine default created
+2026-07-04 00:46:37.231 [main] [34mINFO [0;39m [36morg.flowable.engine.impl.ProcessEngineImpl:89[0;39m - ProcessEngine default created
+2026-07-04 00:46:37.295 [main] [34mINFO [0;39m [36mo.flowable.engine.impl.cmd.ValidateV5EntitiesCmd:43[0;39m - Total of v5 deployments found: 0
+2026-07-04 00:46:55.795 [main] [34mINFO [0;39m [36mc.i.yudao.module.ai.tool.method.PersonServiceImpl:145[0;39m - Initializing PersonService data store...
+2026-07-04 00:46:55.801 [main] [34mINFO [0;39m [36mc.i.yudao.module.ai.tool.method.PersonServiceImpl:148[0;39m - PersonService initialized with 100 records. Next ID: 101
+2026-07-04 00:47:22.281 [main] [34mINFO [0;39m [36mo.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer:110[0;39m - Global AuthenticationManager configured with UserDetailsService bean with name adminUserDetailsManager
+2026-07-04 00:47:23.243 [main] [34mINFO [0;39m [36mo.s.b.actuate.endpoint.web.EndpointLinksResolver:60[0;39m - Exposing 16 endpoints beneath base path '/actuator'
+2026-07-04 00:47:24.506 [main] [34mINFO [0;39m [36mc.i.yudao.framework.dict.core.DictFrameworkUtils:44[0;39m - [init][初始化 DictFrameworkUtils 成功]
+2026-07-04 00:47:25.505 [main] [34mINFO [0;39m [36mc.b.m.e.spring.MybatisPlusApplicationContextAware:43[0;39m - Register ApplicationContext instances org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@f4cfd90
+2026-07-04 00:47:25.515 [main] [34mINFO [0;39m [36mcom.fhs.common.spring.SpringContextUtil:38[0;39m - ------SpringContextUtil setApplicationContext-------
+2026-07-04 00:47:26.525 [main] [31mWARN [0;39m [36mo.s.mcp.provider.tool.SyncMcpToolProvider:141[0;39m - No tool methods found in the provided tool objects: []
+2026-07-04 00:47:26.867 [main] [34mINFO [0;39m [36mc.a.core.http.netty.implementation.NettyUtility:375[0;39m - {"az.sdk.message":"The following Netty versions were found on the classpath and have a mismatch with the versions used by azure-core-http-netty. If your application runs without issue this message can be ignored, otherwise please align the Netty versions used in your application. For more information, see https://aka.ms/azsdk/java/dependency/troubleshoot.","azure-netty-version":"4.1.130.Final","azure-netty-native-version":"2.0.74.Final","classpath-netty-version-io.netty:netty-common":"4.2.12.Final","classpath-netty-version-io.netty:netty-handler":"4.2.12.Final","classpath-netty-version-io.netty:netty-handler-proxy":"4.2.12.Final","classpath-netty-version-io.netty:netty-buffer":"4.2.12.Final","classpath-netty-version-io.netty:netty-codec":"4.2.12.Final","classpath-netty-version-io.netty:netty-codec-http":"4.2.12.Final","classpath-netty-version-io.netty:netty-codec-http2":"4.2.12.Final","classpath-netty-version-io.netty:netty-transport-native-unix-common":"4.2.12.Final","classpath-netty-version-io.netty:netty-transport-native-epoll":"4.1.100.Final","classpath-netty-version-io.netty:netty-transport-native-kqueue":"4.2.12.Final","classpath-native-netty-version-io.netty:netty-tcnative-boringssl-static":"2.0.75.Final"}
+2026-07-04 00:47:29.736 [main] [34mINFO [0;39m [36mo.f.j.s.impl.asyncexecutor.AbstractAsyncExecutor:102[0;39m - Starting up the async job executor [org.flowable.spring.job.service.SpringAsyncExecutor] for engine bpmn
+2026-07-04 00:47:29.755 [Thread-23] [34mINFO [0;39m [36mo.f.j.s.i.asyncexecutor.ResetExpiredJobsRunnable:63[0;39m - starting to reset expired jobs for engine bpmn
+2026-07-04 00:47:29.755 [main] [34mINFO [0;39m [36morg.apache.coyote.http11.Http11NioProtocol:168[0;39m - Starting ProtocolHandler ["http-nio-48080"]
+2026-07-04 00:47:29.756 [Thread-22] [34mINFO [0;39m [36mo.f.j.s.i.asyncexecutor.AcquireTimerJobsRunnable:109[0;39m - starting to acquire async jobs due for engine bpmn
+2026-07-04 00:47:29.756 [Thread-21] [34mINFO [0;39m [36mo.f.j.s.i.a.AcquireAsyncJobsDueRunnable:106[0;39m - starting to acquire async jobs due for engine bpmn
+2026-07-04 00:47:29.778 [main] [34mINFO [0;39m [36mo.s.boot.web.embedded.tomcat.TomcatWebServer:243[0;39m - Tomcat started on port 48080 (http) with context path '/'
+2026-07-04 00:47:29.782 [main] [34mINFO [0;39m [36mo.s.scheduling.quartz.SchedulerFactoryBean:730[0;39m - Starting Quartz Scheduler now
+2026-07-04 00:47:29.809 [main] [34mINFO [0;39m [36mo.s.scheduling.quartz.LocalDataSourceJobStore:3561[0;39m - ClusterManager: detected 1 failed or restarted instances.
+2026-07-04 00:47:29.810 [main] [34mINFO [0;39m [36mo.s.scheduling.quartz.LocalDataSourceJobStore:3426[0;39m - ClusterManager: Scanning for instance "ddd6b6310ea61782953345003"'s failed in-progress jobs.
+2026-07-04 00:47:29.824 [main] [34mINFO [0;39m [36morg.quartz.core.QuartzScheduler:541[0;39m - Scheduler schedulerName_$_374d47164c461783097192936 started.
+2026-07-04 00:47:29.880 [main] [34mINFO [0;39m [36mcn.iocoder.yudao.server.YudaoServerApplication:59[0;39m - Started YudaoServerApplication in 90.761 seconds (process running for 92.148)
+2026-07-04 00:47:29.954 [main] [34mINFO [0;39m [36mc.i.y.m.s.s.p.PermissionCacheStartupRefreshRunner:38[0;39m - [run][启动阶段已清理权限缓存: [role, user_role_ids, menu_role_ids, permission_menu_ids]]
+2026-07-04 00:47:30.290 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(5) handlerName(payNotifyJob) 同步完成]
+2026-07-04 00:47:30.320 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(17) handlerName(payOrderSyncJob) 同步完成]
+2026-07-04 00:47:30.353 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(18) handlerName(payOrderExpireJob) 同步完成]
+2026-07-04 00:47:30.377 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(19) handlerName(payRefundSyncJob) 同步完成]
+2026-07-04 00:47:30.400 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(21) handlerName(tradeOrderAutoCancelJob) 同步完成]
+2026-07-04 00:47:30.421 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(22) handlerName(tradeOrderAutoReceiveJob) 同步完成]
+2026-07-04 00:47:30.442 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(23) handlerName(tradeOrderAutoCommentJob) 同步完成]
+2026-07-04 00:47:30.461 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(24) handlerName(brokerageRecordUnfreezeJob) 同步完成]
+2026-07-04 00:47:30.489 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(25) handlerName(accessLogCleanJob) 同步完成]
+2026-07-04 00:47:30.510 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(26) handlerName(errorLogCleanJob) 同步完成]
+2026-07-04 00:47:30.533 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(27) handlerName(jobLogCleanJob) 同步完成]
+2026-07-04 00:47:30.552 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(33) handlerName(demoJob) 同步完成]
+2026-07-04 00:47:30.570 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(35) handlerName(payTransferSyncJob) 同步完成]
+2026-07-04 00:47:30.588 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(36) handlerName(iotDeviceOfflineCheckJob) 同步完成]
+2026-07-04 00:47:30.605 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(37) handlerName(iotOtaUpgradeJob) 同步完成]
+2026-07-04 00:47:30.622 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(38) handlerName(combinationRecordExpireJob) 同步完成]
+2026-07-04 00:47:30.639 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(39) handlerName(couponExpireJob) 同步完成]
+2026-07-04 00:47:30.656 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(40) handlerName(productStatisticsJob) 同步完成]
+2026-07-04 00:47:30.670 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(5600) handlerName(kingdeeProductionOrderSyncJob) 同步完成]
+2026-07-04 00:47:30.683 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(5601) handlerName(mesProNightlyReplanJob) 同步完成]
+2026-07-04 00:47:30.699 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(5602) handlerName(kingdeeProductItemSyncJob) 同步完成]
+2026-07-04 00:47:30.715 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(5603) handlerName(kingdeeStockSyncJob) 同步完成]
+2026-07-04 00:47:30.729 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(5604) handlerName(kingdeePurchaseOrderSyncJob) 同步完成]
+2026-07-04 00:47:30.744 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(5605) handlerName(kingdeeSaleOrderSyncJob) 同步完成]
+2026-07-04 00:47:30.759 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(5606) handlerName(kingdeeBomSyncJob) 同步完成]
+2026-07-04 00:47:30.776 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(5607) handlerName(kingdeeProductionMaterialListSyncJob) 同步完成]
+2026-07-04 00:47:30.787 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m - [syncJob][id(5610) handlerName(mesEdhrWorkTaskOverdueJob) 同步完成]
+2026-07-04 00:47:30.795 [main] [34mINFO [0;39m [36mc.i.y.m.infra.service.job.JobStartupSyncRunner:32[0;39m - [run][定时任务已同步到 Quartz]
+2026-07-04 00:47:31.800 [pool-18-thread-1] [34mINFO [0;39m [36mc.i.y.f.banner.core.BannerApplicationRunner:23[0;39m - 
+----------------------------------------------------------
+	项目启动成功！
+	接口文档: 	https://doc.iocoder.cn/api-doc/ 
+	开发文档: 	https://doc.iocoder.cn 
+	视频教程: 	https://t.zsxq.com/02Yf6M7Qn 
+----------------------------------------------------------
+[商城系统 yudao-module-mall - 已禁用][参考 https://doc.iocoder.cn/mall/build/ 开启]
+[微信公众号 yudao-module-mp - 已禁用][参考 https://doc.iocoder.cn/mp/build/ 开启]
+[支付系统 yudao-module-pay - 已禁用][参考 https://doc.iocoder.cn/pay/build/ 开启]
+[IoT 物联网 yudao-module-iot - 已禁用][参考 https://doc.iocoder.cn/iot/build/ 开启]
+2026-07-04 00:47:32.778 [http-nio-48080-exec-1] [34mINFO [0;39m [36mo.a.c.core.ContainerBase.[Tomcat].[localhost].[/]:168[0;39m - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-04 00:47:32.779 [http-nio-48080-exec-1] [34mINFO [0;39m [36morg.springframework.web.servlet.DispatcherServlet:532[0;39m - Initializing Servlet 'dispatcherServlet'
+2026-07-04 00:47:32.789 [http-nio-48080-exec-1] [34mINFO [0;39m [36morg.springframework.web.servlet.DispatcherServlet:554[0;39m - Completed initialization in 10 ms
+2026-07-04 00:50:00.208 [schedulerName_Worker-1] [34mINFO [0;39m [36mo.s.s.a.AnnotationAsyncExecutionInterceptor:254[0;39m - More than one TaskExecutor bean found within the context, and none is named 'taskExecutor'. Mark one of them as primary or name it 'taskExecutor' (possibly as an alias) in order to use it for async processing: [jmReportTaskExecutor, jmTaskScheduler, applicationTaskExecutor]
+BACKEND_LOG_TAIL_END
+FRONTEND_LOG_TAIL_BEGIN
+/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+/docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+10-listen-on-ipv6-by-default.sh: info: /etc/nginx/conf.d/default.conf differs from the packaged version
+/docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+/docker-entrypoint.sh: Configuration complete; ready for start up
+2026/07/03 16:45:58 [notice] 1#1: using the "epoll" event method
+2026/07/03 16:45:58 [notice] 1#1: nginx/1.27.5
+2026/07/03 16:45:58 [notice] 1#1: built by gcc 14.2.0 (Alpine 14.2.0) 
+2026/07/03 16:45:58 [notice] 1#1: OS: Linux 4.18.0-147.el8.x86_64
+2026/07/03 16:45:58 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2026/07/03 16:45:58 [notice] 1#1: start worker processes
+2026/07/03 16:45:58 [notice] 1#1: start worker process 29
+2026/07/03 16:45:58 [notice] 1#1: start worker process 30
+2026/07/03 16:45:58 [notice] 1#1: start worker process 31
+2026/07/03 16:45:58 [notice] 1#1: start worker process 32
+2026/07/03 16:45:58 [notice] 1#1: start worker process 33
+2026/07/03 16:45:58 [notice] 1#1: start worker process 34
+2026/07/03 16:45:58 [notice] 1#1: start worker process 35
+2026/07/03 16:45:58 [notice] 1#1: start worker process 36
+2026/07/03 16:45:58 [notice] 1#1: start worker process 37
+2026/07/03 16:45:58 [notice] 1#1: start worker process 38
+2026/07/03 16:45:58 [notice] 1#1: start worker process 39
+2026/07/03 16:45:58 [notice] 1#1: start worker process 40
+2026/07/03 16:45:58 [notice] 1#1: start worker process 41
+2026/07/03 16:45:58 [notice] 1#1: start worker process 42
+2026/07/03 16:45:58 [notice] 1#1: start worker process 43
+2026/07/03 16:45:58 [notice] 1#1: start worker process 44
+172.21.0.1 - - [03/Jul/2026:16:47:35 +0000] "GET / HTTP/1.1" 200 3807 "-" "curl/7.61.1" "-"
+172.30.38.23 - - [03/Jul/2026:16:47:41 +0000] "GET / HTTP/1.1" 200 3807 "-" "Mozilla/5.0 (Windows NT; Windows NT 10.0; zh-CN) WindowsPowerShell/5.1.26100.3624" "-"
+172.30.38.23 - - [03/Jul/2026:16:47:41 +0000] "HEAD /pdfjs/pdf.worker.mjs HTTP/1.1" 200 0 "-" "Mozilla/5.0 (Windows NT; Windows NT 10.0; zh-CN) WindowsPowerShell/5.1.26100.3624" "-"
+FRONTEND_LOG_TAIL_END
+
+===== STDERR =====
+close - IO is still pending on closed socket. read:1, write:0, io:0000025F90434DA0
+

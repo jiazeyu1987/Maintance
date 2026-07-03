@@ -1,0 +1,63 @@
+{
+    "checkedAt":  "2026-07-04 01:16:34 +08:00",
+    "releaseTag":  "release-20260703-2335-codeonly-three-env",
+    "operations":  [
+                       {
+                           "file":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260703-codeonly-three-env-release\\evidence\\build-release-op-2026-07-03T153405744077400Z-02fbe71d-f709-4364-b21c-90821b63c934-operation.json",
+                           "operationId":  "op-2026-07-03T153405744077400Z-02fbe71d-f709-4364-b21c-90821b63c934",
+                           "action":  "build-release",
+                           "environment":  "release",
+                           "status":  "SUCCESS",
+                           "releaseTag":  "release-20260703-2335-codeonly-three-env"
+                       },
+                       {
+                           "file":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260703-codeonly-three-env-release\\evidence\\publish-test-op-2026-07-03T155449725216100Z-adc5802d-1d2e-4199-8635-81110bf97774-operation.json",
+                           "operationId":  "op-2026-07-03T155449725216100Z-adc5802d-1d2e-4199-8635-81110bf97774",
+                           "action":  "publish-test",
+                           "environment":  "test",
+                           "status":  "SUCCESS",
+                           "releaseTag":  "release-20260703-2335-codeonly-three-env"
+                       },
+                       {
+                           "file":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260703-codeonly-three-env-release\\evidence\\mark-tested-op-2026-07-03T161333772184700Z-06061413-1db6-43a9-97e5-863ca79e0f97-operation.json",
+                           "operationId":  "op-2026-07-03T161333772184700Z-06061413-1db6-43a9-97e5-863ca79e0f97",
+                           "action":  "mark-release-tested",
+                           "environment":  "test",
+                           "status":  "SUCCESS",
+                           "releaseTag":  "release-20260703-2335-codeonly-three-env"
+                       },
+                       {
+                           "file":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260703-codeonly-three-env-release\\evidence\\promote-prod-op-2026-07-03T163511316141200Z-89e50181-d9b3-4874-8c72-893e90ac8c48-operation.json",
+                           "operationId":  "op-2026-07-03T163511316141200Z-89e50181-d9b3-4874-8c72-893e90ac8c48",
+                           "action":  "promote-prod",
+                           "environment":  "prod",
+                           "status":  "SUCCESS",
+                           "releaseTag":  "release-20260703-2335-codeonly-three-env"
+                       },
+                       {
+                           "file":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260703-codeonly-three-env-release\\evidence\\promote-backup-op-2026-07-03T165324146656100Z-83717ddc-3a40-41f3-bb28-ae4b1e9d3dba-operation.json",
+                           "operationId":  "op-2026-07-03T165324146656100Z-83717ddc-3a40-41f3-bb28-ae4b1e9d3dba",
+                           "action":  "promote-backup",
+                           "environment":  "backup",
+                           "status":  "SUCCESS",
+                           "releaseTag":  "release-20260703-2335-codeonly-three-env"
+                       }
+                   ],
+    "verificationChecks":  {
+                               "testHasTag":  true,
+                               "testHealthUp":  true,
+                               "testFrontend200":  true,
+                               "testPdf200":  true,
+                               "prodHasTag":  true,
+                               "prodHealthUp":  true,
+                               "prodFrontend200":  true,
+                               "prodPdf200":  true,
+                               "backupHasTag":  true,
+                               "backupHealthUp":  true,
+                               "backupFrontend200":  true,
+                               "backupPdf200":  true,
+                               "backupMount":  true
+                           },
+    "cleanupPreview":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260703-codeonly-three-env-release\\evidence\\task-closeout-cleanup-preview.txt",
+    "taskStatus":  "Completed"
+}

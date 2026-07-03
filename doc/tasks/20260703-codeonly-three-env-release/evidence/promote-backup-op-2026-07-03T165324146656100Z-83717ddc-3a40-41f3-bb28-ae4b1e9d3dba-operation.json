@@ -1,0 +1,16 @@
+{
+    "operationId":  "op-2026-07-03T165324146656100Z-83717ddc-3a40-41f3-bb28-ae4b1e9d3dba",
+    "requestedBy":  "local-operator",
+    "requestedAt":  "2026-07-03T16:53:40.365838600Z",
+    "environment":  "backup",
+    "component":  "promote-backup",
+    "action":  "promote-backup",
+    "actionLabel":  "ä¸çº¿å¤ä»½æå¡å¨",
+    "parameters":  {
+                       "releaseTag":  "release-20260703-2335-codeonly-three-env"
+                   },
+    "reason":  "IntRuoyi code-only three-environment release closure: promote same tested releaseTag to backup server with explicit /mnt/intruoyi-data target",
+    "status":  "SUCCESS",
+    "summary":  "å½ä»¤æ§è¡å®æ",
+    "resultLogPath":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\IntRuoyiMaintance\\runtime\\runtime-control\\logs\\op-2026-07-03T165324146656100Z-83717ddc-3a40-41f3-bb28-ae4b1e9d3dba.log"
+}

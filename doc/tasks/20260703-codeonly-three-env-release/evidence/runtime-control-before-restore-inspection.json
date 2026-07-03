@@ -1,0 +1,27 @@
+{
+    "checkedAt":  "2026-07-04 01:07:36 +08:00",
+    "port48181":  {
+                      "LocalAddress":  "127.0.0.1",
+                      "LocalPort":  48181,
+                      "OwningProcess":  5920,
+                      "State":  2
+                  },
+    "processInfo":  [
+                        {
+                            "pid":  5920,
+                            "commandLine":  "\"C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.10.7-hotspot\\bin\\java.exe\" -jar D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\IntRuoyiMaintance\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar"
+                        }
+                    ],
+    "mainJars":  {
+                     "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar",
+                     "Length":  37614746,
+                     "LastWriteTime":  "\/Date(1782878334408)\/"
+                 },
+    "tempJars":  {
+                     "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\IntRuoyiMaintance\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar",
+                     "Length":  35141807,
+                     "LastWriteTime":  "\/Date(1783092705914)\/"
+                 },
+    "mainConfigExists":  true,
+    "tempConfigExists":  true
+}

@@ -1,0 +1,44 @@
+{
+    "code":  0,
+    "data":  [
+                 {
+                     "candidateId":  "restore:20260621-063218",
+                     "backupId":  "20260621-063218",
+                     "releaseTag":  null,
+                     "imageTag":  "release-20260620-current-head-prod-target-v7",
+                     "manifestPath":  "Backup/BackupPackage/20260621-063218/manifest/manifest.json",
+                     "status":  "AVAILABLE",
+                     "blockedReasons":  [
+
+                                        ],
+                     "recoverySetId":  "20260621-063218",
+                     "recoverySetStatus":  "COMPLETE",
+                     "programVersion":  "release-20260620-current-head-prod-target-v7",
+                     "redisPolicy":  "CLEAR_AND_REBUILD",
+                     "configurationManifestPath":  "deploy/runtime.env",
+                     "configurationComposePath":  "deploy/docker-compose.yml",
+                     "recoverySetManifestHash":  "6806edb9075622a5dbe646e2a1dca1ea499472cc610e070161b68f7249aecf66",
+                     "componentSummary":  {
+                                              "program":  "release-20260620-current-head-prod-target-v7",
+                                              "redis":  "CLEAR_AND_REBUILD",
+                                              "configuration":  "deploy/runtime.env"
+                                          },
+                     "dccBackupMode":  "incremental",
+                     "dccChainStatus":  "COMPLETE",
+                     "dccChangeSummary":  {
+                                              "addedRecords":  "7",
+                                              "changedRecords":  "0",
+                                              "deletedRecords":  "0",
+                                              "invalidatedRecords":  "0",
+                                              "addedObjects":  "7",
+                                              "changedObjects":  "0",
+                                              "reusedObjects":  "238",
+                                              "tombstoneObjects":  "0"
+                                          },
+                     "checksumPath":  "Backup/BackupPackage/20260621-063218/manifest/checksums.txt",
+                     "rehearsalReportPath":  "Backup/BackupPackage/20260621-063218/manifest/rehearsal-report.json",
+                     "snapshotPath":  "Backup/BackupPackage/20260621-063218/manifest/ç°åºå¿«ç\u0085§.md"
+                 }
+             ],
+    "msg":  ""
+}

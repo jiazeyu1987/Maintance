@@ -1,0 +1,50 @@
+[
+    {
+        "Name":  "required-sql",
+        "FullName":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260703-2335-codeonly-three-env\\required-sql",
+        "PSIsContainer":  true,
+        "Length":  null
+    },
+    {
+        "Name":  "resources",
+        "FullName":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260703-2335-codeonly-three-env\\resources",
+        "PSIsContainer":  true,
+        "Length":  null
+    },
+    {
+        "Name":  "runtime-env",
+        "FullName":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260703-2335-codeonly-three-env\\runtime-env",
+        "PSIsContainer":  true,
+        "Length":  null
+    },
+    {
+        "Name":  "smoke",
+        "FullName":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260703-2335-codeonly-three-env\\smoke",
+        "PSIsContainer":  true,
+        "Length":  null
+    },
+    {
+        "Name":  "docker-compose.yml",
+        "FullName":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260703-2335-codeonly-three-env\\docker-compose.yml",
+        "PSIsContainer":  false,
+        "Length":  10608
+    },
+    {
+        "Name":  "intruoyi-images_release-20260703-2335-codeonly-three-env.tar",
+        "FullName":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260703-2335-codeonly-three-env\\intruoyi-images_release-20260703-2335-codeonly-three-env.tar",
+        "PSIsContainer":  false,
+        "Length":  814114304
+    },
+    {
+        "Name":  "manifest.json",
+        "FullName":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260703-2335-codeonly-three-env\\manifest.json",
+        "PSIsContainer":  false,
+        "Length":  2094053
+    },
+    {
+        "Name":  "release-manifest.json",
+        "FullName":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260703-2335-codeonly-three-env\\release-manifest.json",
+        "PSIsContainer":  false,
+        "Length":  75153
+    }
+]

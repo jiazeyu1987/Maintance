@@ -1,0 +1,22 @@
+{
+    "releaseTag":  "release-20260703-2335-codeonly-three-env",
+    "packageDirectoryName":  "release-20260703-2335-codeonly-three-env",
+    "manifestPath":  "Backup/ReleasePackage/release-20260703-2335-codeonly-three-env/release-manifest.json",
+    "builtAt":  "2026-07-03T15:48:49.1534660Z",
+    "publishScope":  "code-only",
+    "component":  "intruoyi",
+    "includeShowroomBuildPackage":  false,
+    "onlyOfficeIncluded":  false,
+    "imageTag":  "release-20260703-2335-codeonly-three-env",
+    "checksumPresent":  true,
+    "tested":  false,
+    "testedAt":  null,
+    "operatorName":  null,
+    "testedRecoverySetCandidateId":  null,
+    "testedRecoverySetId":  null,
+    "testedRecoverySetManifestHash":  null,
+    "status":  "AVAILABLE",
+    "blockedReasons":  [
+
+                       ]
+}

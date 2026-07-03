@@ -1,0 +1,43 @@
+[
+    "POLL 23:55:34 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 23:56:04 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 23:56:34 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 23:57:04 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 23:57:34 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 23:58:04 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 23:58:34 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 23:59:04 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 23:59:34 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 00:00:04 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 00:00:34 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 00:01:04 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 00:01:34 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 00:02:04 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 00:02:34 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 00:03:04 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 00:03:34 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 00:04:05 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 00:04:35 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 00:05:05 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 00:05:35 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 00:06:05 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 00:06:35 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 00:07:05 status=RUNNING summary=å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+    "POLL 00:07:35 status=SUCCESS summary=å½ä»¤æ§è¡å®æ",
+    {
+        "operationId":  "op-2026-07-03T155449725216100Z-adc5802d-1d2e-4199-8635-81110bf97774",
+        "requestedBy":  "local-operator",
+        "requestedAt":  "2026-07-03T15:55:04.531218700Z",
+        "environment":  "test",
+        "component":  "publish-test",
+        "action":  "publish-test",
+        "actionLabel":  "é¨ç½²åå¸å\u0085å°æµè¯æ",
+        "parameters":  {
+                           "releaseTag":  "release-20260703-2335-codeonly-three-env"
+                       },
+        "reason":  "IntRuoyi code-only three-environment release closure: publish test server",
+        "status":  "SUCCESS",
+        "summary":  "å½ä»¤æ§è¡å®æ",
+        "resultLogPath":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\IntRuoyiMaintance\\runtime\\runtime-control\\logs\\op-2026-07-03T155449725216100Z-adc5802d-1d2e-4199-8635-81110bf97774.log"
+    }
+]

@@ -1,0 +1,17 @@
+SSH_EXIT_CODE=0
+===== STDOUT =====
+ENV_IMAGE_TAG=release-20260703-2335-codeonly-three-env
+BACKEND_IMAGE=intruoyi-backend:release-20260703-2335-codeonly-three-env
+FRONTEND_IMAGE=intruoyi-frontend:release-20260703-2335-codeonly-three-env
+COMPOSE_PORTS_BACKEND=intruoyi-backend intruoyi-backend:release-20260703-2335-codeonly-three-env "/__cacert_entrypoin…" backend 5 minutes ago Up 5 minutes 0.0.0.0:48081->48080/tcp, :::48081->48080/tcp
+
+COMPOSE_PORTS_FRONTEND=intruoyi-frontend intruoyi-frontend:release-20260703-2335-codeonly-three-env "/docker-entrypoint.…" frontend 5 minutes ago Up 5 minutes 0.0.0.0:8081->80/tcp, :::8081->80/tcp
+
+BACKEND_HEALTH_HOST={"status":"UP"}
+BACKEND_HEALTH_CONTAINER={"status":"UP"}
+FRONTEND_HTTP=200
+PDF_WORKER_HTTP=200
+
+===== STDERR =====
+close - IO is still pending on closed socket. read:1, write:0, io:000001423637D610
+

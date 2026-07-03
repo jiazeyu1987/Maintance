@@ -1,0 +1,426 @@
+===== D:\ProjectPackage\Int\IntRuoyiWorktrees\20260703-codeonly-three-env-release\IntRuoyiMaintance\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeDtos.java =====
+--- around line 37 ---
+   25:             Integer port,
+   26:             String currentReleaseTag,
+   27:             RuntimeControlOperationRespVO lastOperation,
+   28:             boolean actionEnabled,
+   29:             String blockedReason
+   30:     ) {
+   31:     }
+   32: 
+   33:     public record RuntimeControlRestartReqVO(
+   34:             @NotBlank String environment,
+   35:             @NotBlank String component,
+   36:             @NotBlank String reason,
+   37:             String prodConfirmText
+   38:     ) {
+   39:     }
+   40: 
+   41:     public record RuntimeControlActionReqVO(
+   42:             @NotBlank String action,
+   43:             @NotBlank String reason,
+   44:             String prodConfirmText,
+   45:             String targetEnvironment,
+   46:             String publishScope,
+   47:             Boolean includeOnlyOffice,
+   48:             Boolean includeShowroomBuildPackage,
+   49:             Boolean enableSmartReleaseReport,
+   50:             String releaseTag,
+   51:             String testConclusion,
+   52:             String sqlPath,
+   53:             String selectedImageCandidateId,
+   54:             String selectedImageTag,
+   55:             String selectedRecoverySetCandidateId,
+   56:             String selectedBackupId,
+   57:             String recoverySetId,
+   58:             String recoverySetManifestHash,
+   59:             String recoverySetProgramVersion,
+   60:             String recoverySetRedisPolicy,
+   61:             String prodDryRunEvidencePath
+   62:     ) {
+   63:     }
+   64: 
+   65:     public record RuntimeControlActionPreviewRespVO(
+   66:             String action,
+   67:             String actionLabel,
+   68:             String environment,
+   69:             String component,
+   70:             String scriptPath,
+   71:             List<String> arguments,
+   72:             Map<String, String> parameters,
+   73:             boolean enableSmartReleaseReport,
+   74:             String summary
+   75:     ) {
+   76:     }
+   77: 
+   78:     public record RuntimeControlOperationRespVO(
+   79:             String operationId,
+   80:             String requestedBy,
+   81:             Instant requestedAt,
+   82:             String environment,
+   83:             String component,
+   84:             String action,
+   85:             String actionLabel,
+   86:             Map<String, String> parameters,
+   87:             String reason,
+   88:             String status,
+   89:             String summary,
+   90:             String resultLogPath
+   91:     ) {
+   92:     }
+   93: 
+   94:     public record RuntimeControlLogRespVO(
+   95:             String operationId,
+   96:             String status,
+   97:             String content,
+   98:             int length,
+   99:             boolean truncated,
+  100:             String logPath
+  101:     ) {
+  102:     }
+  103: 
+  104:     public record RuntimeControlReleasePackageRespVO(
+  105:             String releaseTag,
+  106:             String packageDirectoryName,
+  107:             String manifestPath,
+
+--- around line 41 ---
+   29:             String blockedReason
+   30:     ) {
+   31:     }
+   32: 
+   33:     public record RuntimeControlRestartReqVO(
+   34:             @NotBlank String environment,
+   35:             @NotBlank String component,
+   36:             @NotBlank String reason,
+   37:             String prodConfirmText
+   38:     ) {
+   39:     }
+   40: 
+   41:     public record RuntimeControlActionReqVO(
+   42:             @NotBlank String action,
+   43:             @NotBlank String reason,
+   44:             String prodConfirmText,
+   45:             String targetEnvironment,
+   46:             String publishScope,
+   47:             Boolean includeOnlyOffice,
+   48:             Boolean includeShowroomBuildPackage,
+   49:             Boolean enableSmartReleaseReport,
+   50:             String releaseTag,
+   51:             String testConclusion,
+   52:             String sqlPath,
+   53:             String selectedImageCandidateId,
+   54:             String selectedImageTag,
+   55:             String selectedRecoverySetCandidateId,
+   56:             String selectedBackupId,
+   57:             String recoverySetId,
+   58:             String recoverySetManifestHash,
+   59:             String recoverySetProgramVersion,
+   60:             String recoverySetRedisPolicy,
+   61:             String prodDryRunEvidencePath
+   62:     ) {
+   63:     }
+   64: 
+   65:     public record RuntimeControlActionPreviewRespVO(
+   66:             String action,
+   67:             String actionLabel,
+   68:             String environment,
+   69:             String component,
+   70:             String scriptPath,
+   71:             List<String> arguments,
+   72:             Map<String, String> parameters,
+   73:             boolean enableSmartReleaseReport,
+   74:             String summary
+   75:     ) {
+   76:     }
+   77: 
+   78:     public record RuntimeControlOperationRespVO(
+   79:             String operationId,
+   80:             String requestedBy,
+   81:             Instant requestedAt,
+   82:             String environment,
+   83:             String component,
+   84:             String action,
+   85:             String actionLabel,
+   86:             Map<String, String> parameters,
+   87:             String reason,
+   88:             String status,
+   89:             String summary,
+   90:             String resultLogPath
+   91:     ) {
+   92:     }
+   93: 
+   94:     public record RuntimeControlLogRespVO(
+   95:             String operationId,
+   96:             String status,
+   97:             String content,
+   98:             int length,
+   99:             boolean truncated,
+  100:             String logPath
+  101:     ) {
+  102:     }
+  103: 
+  104:     public record RuntimeControlReleasePackageRespVO(
+  105:             String releaseTag,
+  106:             String packageDirectoryName,
+  107:             String manifestPath,
+  108:             String builtAt,
+  109:             String publishScope,
+  110:             String component,
+  111:             Boolean includeShowroomBuildPackage,
+
+--- around line 44 ---
+   32: 
+   33:     public record RuntimeControlRestartReqVO(
+   34:             @NotBlank String environment,
+   35:             @NotBlank String component,
+   36:             @NotBlank String reason,
+   37:             String prodConfirmText
+   38:     ) {
+   39:     }
+   40: 
+   41:     public record RuntimeControlActionReqVO(
+   42:             @NotBlank String action,
+   43:             @NotBlank String reason,
+   44:             String prodConfirmText,
+   45:             String targetEnvironment,
+   46:             String publishScope,
+   47:             Boolean includeOnlyOffice,
+   48:             Boolean includeShowroomBuildPackage,
+   49:             Boolean enableSmartReleaseReport,
+   50:             String releaseTag,
+   51:             String testConclusion,
+   52:             String sqlPath,
+   53:             String selectedImageCandidateId,
+   54:             String selectedImageTag,
+   55:             String selectedRecoverySetCandidateId,
+   56:             String selectedBackupId,
+   57:             String recoverySetId,
+   58:             String recoverySetManifestHash,
+   59:             String recoverySetProgramVersion,
+   60:             String recoverySetRedisPolicy,
+   61:             String prodDryRunEvidencePath
+   62:     ) {
+   63:     }
+   64: 
+   65:     public record RuntimeControlActionPreviewRespVO(
+   66:             String action,
+   67:             String actionLabel,
+   68:             String environment,
+   69:             String component,
+   70:             String scriptPath,
+   71:             List<String> arguments,
+   72:             Map<String, String> parameters,
+   73:             boolean enableSmartReleaseReport,
+   74:             String summary
+   75:     ) {
+   76:     }
+   77: 
+   78:     public record RuntimeControlOperationRespVO(
+   79:             String operationId,
+   80:             String requestedBy,
+   81:             Instant requestedAt,
+   82:             String environment,
+   83:             String component,
+   84:             String action,
+   85:             String actionLabel,
+   86:             Map<String, String> parameters,
+   87:             String reason,
+   88:             String status,
+   89:             String summary,
+   90:             String resultLogPath
+   91:     ) {
+   92:     }
+   93: 
+   94:     public record RuntimeControlLogRespVO(
+   95:             String operationId,
+   96:             String status,
+   97:             String content,
+   98:             int length,
+   99:             boolean truncated,
+  100:             String logPath
+  101:     ) {
+  102:     }
+  103: 
+  104:     public record RuntimeControlReleasePackageRespVO(
+  105:             String releaseTag,
+  106:             String packageDirectoryName,
+  107:             String manifestPath,
+  108:             String builtAt,
+  109:             String publishScope,
+  110:             String component,
+  111:             Boolean includeShowroomBuildPackage,
+  112:             Boolean onlyOfficeIncluded,
+  113:             String imageTag,
+  114:             Boolean checksumPresent,
+
+--- around line 373 ---
+  361:             String code,
+  362:             String name,
+  363:             String status,
+  364:             Long usedBytes,
+  365:             Long availableBytes,
+  366:             Double usagePercent,
+  367:             String reason
+  368:     ) {
+  369:     }
+  370: 
+  371:     public record RuntimeControlRemoteRootDiskStatusRespVO(
+  372:             String targetEnvironment,
+  373:             String serverHost,
+  374:             Long availableBytes,
+  375:             Double usagePercent,
+  376:             Double inodeUsagePercent,
+  377:             Long backupTempBytes,
+  378:             Long tmpBytes,
+  379:             Instant sampledAt
+  380:     ) {
+  381:     }
+  382: 
+  383:     public record RuntimeControlRemoteRootCleanupReqVO(
+  384:             @NotBlank String targetEnvironment,
+  385:             @NotBlank String reason,
+  386:             String prodConfirmText
+  387:     ) {
+  388:     }
+  389: 
+  390:     public record RuntimeControlRemoteRootCleanupRespVO(
+  391:             int deletedEntryCount,
+  392:             RuntimeControlRemoteRootDiskStatusRespVO before,
+  393:             RuntimeControlRemoteRootDiskStatusRespVO after
+  394:     ) {
+  395:     }
+  396: 
+  397:     public record RuntimeControlAlertCreateReqVO(
+  398:             @NotBlank String environment,
+  399:             @NotBlank String action,
+  400:             @NotBlank String severity,
+  401:             @NotBlank String title,
+  402:             @NotBlank String content,
+  403:             String notifyTemplateCode,
+  404:             Map<String, Object> templateParams
+  405:     ) {
+  406:     }
+  407: 
+  408:     public record RuntimeControlAlertRespVO(
+  409:             Long id,
+  410:             String environment,
+  411:             String action,
+  412:             String severity,
+  413:             String title,
+  414:             String content,
+  415:             String notifyTemplateCode,
+  416:             Map<String, Object> templateParams,
+  417:             String siteMessageStatus,
+  418:             Long notifyMessageId,
+  419:             String siteMessageFailureReason,
+  420:             Instant createdAt,
+  421:             Instant sentAt,
+  422:             String acknowledgedBy,
+  423:             Instant acknowledgedAt
+  424:     ) {
+  425:     }
+  426: 
+  427:     public record RuntimeControlIncidentCreateReqVO(
+  428:             @NotBlank String environment,
+  429:             @NotBlank String action,
+  430:             @NotBlank String severity,
+  431:             @NotBlank String title,
+  432:             @NotBlank String description,
+  433:             @NotBlank String sourceType,
+  434:             String sourceId
+  435:     ) {
+  436:     }
+  437: 
+  438:     public record RuntimeControlIncidentActionReqVO(
+  439:             @NotBlank String action,
+  440:             @NotBlank String verificationResult,
+  441:             @NotBlank String evidence
+  442:     ) {
+  443:     }
+
+--- around line 386 ---
+  374:             Long availableBytes,
+  375:             Double usagePercent,
+  376:             Double inodeUsagePercent,
+  377:             Long backupTempBytes,
+  378:             Long tmpBytes,
+  379:             Instant sampledAt
+  380:     ) {
+  381:     }
+  382: 
+  383:     public record RuntimeControlRemoteRootCleanupReqVO(
+  384:             @NotBlank String targetEnvironment,
+  385:             @NotBlank String reason,
+  386:             String prodConfirmText
+  387:     ) {
+  388:     }
+  389: 
+  390:     public record RuntimeControlRemoteRootCleanupRespVO(
+  391:             int deletedEntryCount,
+  392:             RuntimeControlRemoteRootDiskStatusRespVO before,
+  393:             RuntimeControlRemoteRootDiskStatusRespVO after
+  394:     ) {
+  395:     }
+  396: 
+  397:     public record RuntimeControlAlertCreateReqVO(
+  398:             @NotBlank String environment,
+  399:             @NotBlank String action,
+  400:             @NotBlank String severity,
+  401:             @NotBlank String title,
+  402:             @NotBlank String content,
+  403:             String notifyTemplateCode,
+  404:             Map<String, Object> templateParams
+  405:     ) {
+  406:     }
+  407: 
+  408:     public record RuntimeControlAlertRespVO(
+  409:             Long id,
+  410:             String environment,
+  411:             String action,
+  412:             String severity,
+  413:             String title,
+  414:             String content,
+  415:             String notifyTemplateCode,
+  416:             Map<String, Object> templateParams,
+  417:             String siteMessageStatus,
+  418:             Long notifyMessageId,
+  419:             String siteMessageFailureReason,
+  420:             Instant createdAt,
+  421:             Instant sentAt,
+  422:             String acknowledgedBy,
+  423:             Instant acknowledgedAt
+  424:     ) {
+  425:     }
+  426: 
+  427:     public record RuntimeControlIncidentCreateReqVO(
+  428:             @NotBlank String environment,
+  429:             @NotBlank String action,
+  430:             @NotBlank String severity,
+  431:             @NotBlank String title,
+  432:             @NotBlank String description,
+  433:             @NotBlank String sourceType,
+  434:             String sourceId
+  435:     ) {
+  436:     }
+  437: 
+  438:     public record RuntimeControlIncidentActionReqVO(
+  439:             @NotBlank String action,
+  440:             @NotBlank String verificationResult,
+  441:             @NotBlank String evidence
+  442:     ) {
+  443:     }
+  444: 
+  445:     public record RuntimeControlIncidentCloseReqVO(
+  446:             @NotBlank String ownerGateResult,
+  447:             @NotBlank String verificationResult,
+  448:             @NotBlank String remainingRisk,
+  449:             @NotBlank String postmortemStatus,
+  450:             @NotBlank String closeReason
+  451:     ) {
+  452:     }
+  453: 
+  454:     public record RuntimeControlIncidentActionRespVO(
+  455:             String action,
+  456:             String operator,
+

@@ -1,0 +1,32 @@
+{
+    "checkedAt":  "2026-07-04 01:08:35 +08:00",
+    "stopped":  [
+                    {
+                        "pid":  5920,
+                        "commandLine":  "\"C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.10.7-hotspot\\bin\\java.exe\" -jar D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\IntRuoyiMaintance\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar",
+                        "stopped":  true
+                    }
+                ],
+    "startedPid":  20628,
+    "mainJar":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar",
+    "outLog":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\runtime\\logs\\runtime-control-main-restore-20260704-010838.out.log",
+    "errLog":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\runtime\\logs\\runtime-control-main-restore-20260704-010838.err.log",
+    "health":  {
+                   "status":  "UP"
+               },
+    "healthError":  "无法连接到远程服务器",
+    "port48181":  [
+                      {
+                          "LocalAddress":  "127.0.0.1",
+                          "LocalPort":  48181,
+                          "OwningProcess":  20628,
+                          "State":  2
+                      }
+                  ],
+    "processInfo":  [
+                        {
+                            "pid":  20628,
+                            "commandLine":  "\"C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.10.7-hotspot\\bin\\java.exe\" -jar D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar "
+                        }
+                    ]
+}

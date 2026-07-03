@@ -1,0 +1,16 @@
+{
+    "operationId":  "op-2026-07-03T155449725216100Z-adc5802d-1d2e-4199-8635-81110bf97774",
+    "requestedBy":  "local-operator",
+    "requestedAt":  "2026-07-03T15:55:04.531218700Z",
+    "environment":  "test",
+    "component":  "publish-test",
+    "action":  "publish-test",
+    "actionLabel":  "é¨ç½²åå¸å\u0085å°æµè¯æ",
+    "parameters":  {
+                       "releaseTag":  "release-20260703-2335-codeonly-three-env"
+                   },
+    "reason":  "IntRuoyi code-only three-environment release closure: publish test server",
+    "status":  "SUCCESS",
+    "summary":  "å½ä»¤æ§è¡å®æ",
+    "resultLogPath":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\IntRuoyiMaintance\\runtime\\runtime-control\\logs\\op-2026-07-03T155449725216100Z-adc5802d-1d2e-4199-8635-81110bf97774.log"
+}

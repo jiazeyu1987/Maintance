@@ -185,3 +185,22 @@
 - 本轮新增证据：`doc/tasks/20260625-head-full-release/task.md`、`doc/tasks/20260625-head-full-release/execution-log.md`、`doc/tasks/20260628-release-flow-fupan/release-flow-fupan.md`
 - 不带数据测试服发布证据：`doc/tasks/20260702-build-publish-test-nodata-evening/task.md`、`doc/tasks/20260702-build-publish-test-nodata-evening/execution-log.md`
 - 前置经验沉淀证据：`doc/tasks/20260703-release-preflight-experience-nodata-dcc/task.md`、`doc/tasks/20260703-release-preflight-experience-nodata-dcc/execution-log.md`
+
+## 2026-07-03 维护控制台临时 worktree 构建前置
+
+- 新建维护仓临时发布 worktree 后，`frontend/node_modules` 不存在或由 pnpm 11 首次恢复时，必须先在维护仓 `frontend` 目录执行 `pnpm approve-builds --all`，确认 `esbuild`、`vue-demi` 等前端构建脚本被显式允许，再执行 `scripts/build.ps1`。
+- 若出现 `ERR_PNPM_IGNORED_BUILDS`，不得跳过前端构建、不得复用主工作区 `dist` 或旧 jar；先冻结失败证据，再补齐 approve-builds 前置条件并重跑完整维护控制台构建。
+- 运行控制台切换到 release worktree 前，必须确认 48181 归属；旧主工作区进程停止后若构建失败，记录 48181 无监听影响，补齐前置条件后再启动 release worktree 控制台。
+## 2026-07-03 mark-release-tested 必须携带 recovery set 候选
+
+- 触发条件：code-only 发布在测试服验证通过后执行 mark-release-tested。
+- 失败现象：预览接口返回 `selectedRecoverySetCandidateId is required for action: mark-release-tested`。
+- 前置门禁：mark-tested 前必须从当前 releaseTag/测试服发布结果对应的真实候选来源取得 `selectedRecoverySetCandidateId`，不得省略、不得手工标绿。
+- 处理要求：冻结预览失败证据，补齐真实候选 ID 后重新预览并执行 mark-tested。
+
+## 2026-07-04 正式服验证必须读取 docker compose 端口映射
+
+- 触发条件：promote-prod 后执行远端健康检查。
+- 失败现象：直接访问宿主 `127.0.0.1:48080` 和 `127.0.0.1:80` 返回拒绝连接，但 `docker compose ps` 显示正式服实际映射为 `48081->48080`、`8081->80`，容器内服务已正常启动。
+- 前置门禁：正式服/备份服验收不得硬编码宿主端口；必须先以 `docker compose ps` 或发布配置为准确认宿主端口，再验证 backend health、frontend HTTP 和 PDF worker。
+- 处理要求：先冻结错误端口的失败证据，再使用真实端口重验；不得把端口映射差异误判为发布失败。

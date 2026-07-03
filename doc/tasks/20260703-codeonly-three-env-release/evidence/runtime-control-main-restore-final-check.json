@@ -1,0 +1,21 @@
+{
+    "checkedAt":  "2026-07-04 01:09:18 +08:00",
+    "health":  {
+                   "status":  "UP"
+               },
+    "listeners":  [
+                      {
+                          "LocalAddress":  "127.0.0.1",
+                          "LocalPort":  48181,
+                          "OwningProcess":  20628,
+                          "State":  2
+                      }
+                  ],
+    "processInfo":  [
+                        {
+                            "pid":  20628,
+                            "commandLine":  "\"C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.10.7-hotspot\\bin\\java.exe\" -jar D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar "
+                        }
+                    ],
+    "runtimeOnMainPath":  false
+}

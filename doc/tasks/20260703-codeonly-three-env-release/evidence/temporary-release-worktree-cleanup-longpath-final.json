@@ -1,0 +1,654 @@
+{
+    "checkedAt":  "2026-07-04 01:14:45 +08:00",
+    "tempRoot":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release",
+    "boundaryVerified":  true,
+    "beforeTop":  [
+                      {
+                          "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\IntRuoyiMaintance",
+                          "Mode":  "d-----",
+                          "Length":  null,
+                          "Attributes":  16,
+                          "LastWriteTime":  "\/Date(1783098756003)\/"
+                      },
+                      {
+                          "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3",
+                          "Mode":  "d-----",
+                          "Length":  null,
+                          "Attributes":  16,
+                          "LastWriteTime":  "\/Date(1783098798639)\/"
+                      }
+                  ],
+    "beforeLongest":  [
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@8.26.1_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\validateDefaultProjectForFilesGlob.d.ts.map",
+                              "Mode":  "------",
+                              "Length":  287,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627436154)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@7.18.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\validateDefaultProjectForFilesGlob.d.ts.map",
+                              "Mode":  "------",
+                              "Length":  322,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627432959)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@7.18.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\validateDefaultProjectForFilesGlob.js.map",
+                              "Mode":  "------",
+                              "Length":  636,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627432962)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@babel+helper-builder-binar_e8ad7e51180b08e18862eae0b080cdd1\\node_modules\\@babel\\helper-builder-binary-assignment-operator-visitor\\lib\\explode-assignable-expression.js.map",
+                              "Mode":  "------",
+                              "Length":  5605,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627436863)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@7.18.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\validateDefaultProjectForFilesGlob.d.ts",
+                              "Mode":  "------",
+                              "Length":  513,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627433127)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@8.26.1_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\validateDefaultProjectForFilesGlob.d.ts",
+                              "Mode":  "------",
+                              "Length":  452,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627436233)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@6.21.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\WatchCompilerHostOfConfigFile.d.ts.map",
+                              "Mode":  "-a----",
+                              "Length":  873,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627432983)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@7.18.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\WatchCompilerHostOfConfigFile.d.ts.map",
+                              "Mode":  "------",
+                              "Length":  873,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627432983)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@8.26.1_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\WatchCompilerHostOfConfigFile.d.ts.map",
+                              "Mode":  "------",
+                              "Length":  846,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627436174)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+eslint-p_ff0ba5ebdc54de7de7f6de95127bea18\\node_modules\\@typescript-eslint\\eslint-plugin\\dist\\rules\\no-unnecessary-parameter-property-assignment.js.map",
+                              "Mode":  "------",
+                              "Length":  5144,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627433188)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@8.26.1_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\validateDefaultProjectForFilesGlob.js",
+                              "Mode":  "------",
+                              "Length":  1020,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627436058)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@7.18.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\validateDefaultProjectForFilesGlob.js",
+                              "Mode":  "-a----",
+                              "Length":  1126,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627432608)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@6.21.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\getWatchProgramsForProjects.d.ts.map",
+                              "Mode":  "------",
+                              "Length":  426,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627434772)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@8.26.1_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\getWatchProgramsForProjects.d.ts.map",
+                              "Mode":  "------",
+                              "Length":  383,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627436092)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@7.18.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\WatchCompilerHostOfConfigFile.js.map",
+                              "Mode":  "------",
+                              "Length":  206,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627432984)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@6.21.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\WatchCompilerHostOfConfigFile.js.map",
+                              "Mode":  "-a----",
+                              "Length":  206,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627432984)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@7.18.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\getWatchProgramsForProjects.d.ts.map",
+                              "Mode":  "------",
+                              "Length":  426,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627432851)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@babel+helper-builder-binar_e8ad7e51180b08e18862eae0b080cdd1\\node_modules\\@babel\\helper-builder-binary-assignment-operator-visitor\\lib\\explode-assignable-expression.js",
+                              "Mode":  "------",
+                              "Length":  1983,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627436861)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+eslint-p_ff0ba5ebdc54de7de7f6de95127bea18\\node_modules\\@typescript-eslint\\eslint-plugin\\docs\\rules\\no-unnecessary-parameter-property-assignment.mdx",
+                              "Mode":  "------",
+                              "Length":  1003,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627433890)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@8.26.1_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\WatchCompilerHostOfConfigFile.d.ts",
+                              "Mode":  "------",
+                              "Length":  786,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627436256)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@8.26.1_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\createProjectProgramError.d.ts.map",
+                              "Mode":  "------",
+                              "Length":  354,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627436076)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+eslint-p_ff0ba5ebdc54de7de7f6de95127bea18\\node_modules\\@typescript-eslint\\eslint-plugin\\dist\\rules\\no-unnecessary-parameter-property-assignment.js",
+                              "Mode":  "-a----",
+                              "Length":  6999,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627432463)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@7.18.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\WatchCompilerHostOfConfigFile.d.ts",
+                              "Mode":  "------",
+                              "Length":  810,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627433137)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@7.18.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\getWatchProgramsForProjects.js.map",
+                              "Mode":  "------",
+                              "Length":  10166,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627432856)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@6.21.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\getWatchProgramsForProjects.js.map",
+                              "Mode":  "------",
+                              "Length":  10075,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627434772)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@6.21.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\WatchCompilerHostOfConfigFile.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  810,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627433137)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+basic-modu_042b165f676d4e14f2c79c917421b665\\node_modules\\@wangeditor-next\\basic-modules\\dist\\basic-modules\\src\\modules\\indent\\parse-style-html.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  306,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627421751)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+eslint-p_ff0ba5ebdc54de7de7f6de95127bea18\\node_modules\\@typescript-eslint\\eslint-plugin\\dist\\rules\\no-non-null-asserted-nullish-coalescing.js.map",
+                              "Mode":  "------",
+                              "Length":  2006,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627433173)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@videojs+http-streaming@2.16.3_video.js@7.21.6\\node_modules\\@videojs\\http-streaming\\docs\\images\\sources\\new-playlist-loader-master-video-alt-audio-sequence.plantuml",
+                              "Mode":  "------",
+                              "Length":  7118,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627423270)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+plugin-men_2f293a7f8d61da55aaddeec1ac2755ba\\node_modules\\@wangeditor-next\\plugin-mention\\dist\\basic-modules\\src\\modules\\color\\parse-style-html.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  306,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627421711)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@6.21.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\WatchCompilerHostOfConfigFile.js",
+                              "Mode":  "-a----",
+                              "Length":  309,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627432627)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@7.18.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\WatchCompilerHostOfConfigFile.js",
+                              "Mode":  "------",
+                              "Length":  309,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627432627)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@8.26.1_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\WatchCompilerHostOfConfigFile.js",
+                              "Mode":  "------",
+                              "Length":  252,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627436063)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@8.26.1_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\getWatchProgramsForProjects.d.ts",
+                              "Mode":  "------",
+                              "Length":  652,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627436201)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+basic-modu_042b165f676d4e14f2c79c917421b665\\node_modules\\@wangeditor-next\\basic-modules\\dist\\basic-modules\\src\\modules\\color\\parse-style-html.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  306,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627421711)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+plugin-men_2f293a7f8d61da55aaddeec1ac2755ba\\node_modules\\@wangeditor-next\\plugin-mention\\dist\\basic-modules\\src\\modules\\image\\parse-elem-html.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  455,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627421676)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+eslint-p_ff0ba5ebdc54de7de7f6de95127bea18\\node_modules\\@typescript-eslint\\eslint-plugin\\dist\\rules\\use-unknown-in-catch-callback-variable.js.map",
+                              "Mode":  "------",
+                              "Length":  6894,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627433371)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+eslint-p_ff0ba5ebdc54de7de7f6de95127bea18\\node_modules\\@typescript-eslint\\eslint-plugin\\dist\\rules\\no-unnecessary-boolean-literal-compare.js.map",
+                              "Mode":  "------",
+                              "Length":  5196,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627433187)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+upload-ima_32be2cac486958df4d86e395b8f6cc2e\\node_modules\\@wangeditor-next\\upload-image-module\\dist\\core\\src\\parse-html\\parse-common-elem-html.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  444,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627420101)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@6.21.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\getWatchProgramsForProjects.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  696,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627433057)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@7.18.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\getWatchProgramsForProjects.d.ts",
+                              "Mode":  "------",
+                              "Length":  696,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627433057)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+basic-modu_042b165f676d4e14f2c79c917421b665\\node_modules\\@wangeditor-next\\basic-modules\\dist\\basic-modules\\src\\modules\\header\\parse-elem-html.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  1330,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627421673)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+eslint-p_ff0ba5ebdc54de7de7f6de95127bea18\\node_modules\\@typescript-eslint\\eslint-plugin\\dist\\rules\\naming-convention-utils\\parse-options.js.map",
+                              "Mode":  "------",
+                              "Length":  2758,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627433247)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+plugin-men_2f293a7f8d61da55aaddeec1ac2755ba\\node_modules\\@wangeditor-next\\plugin-mention\\dist\\basic-modules\\src\\modules\\color\\pre-parse-html.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  347,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627421951)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+basic-modu_042b165f676d4e14f2c79c917421b665\\node_modules\\@wangeditor-next\\basic-modules\\dist\\basic-modules\\src\\modules\\indent\\pre-parse-html.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  387,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627421961)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+basic-modu_042b165f676d4e14f2c79c917421b665\\node_modules\\@wangeditor-next\\basic-modules\\dist\\basic-modules\\src\\modules\\image\\parse-elem-html.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  455,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627421676)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+plugin-men_2f293a7f8d61da55aaddeec1ac2755ba\\node_modules\\@wangeditor-next\\plugin-mention\\dist\\basic-modules\\src\\modules\\todo\\parse-elem-html.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  451,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627421706)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+plugin-men_2f293a7f8d61da55aaddeec1ac2755ba\\node_modules\\@wangeditor-next\\plugin-mention\\dist\\video-module\\src\\module\\menu\\EditVideoSizeMenu.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  917,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627419965)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+plugin-men_2f293a7f8d61da55aaddeec1ac2755ba\\node_modules\\@wangeditor-next\\plugin-mention\\dist\\basic-modules\\src\\modules\\link\\parse-elem-html.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  451,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627421678)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+plugin-men_2f293a7f8d61da55aaddeec1ac2755ba\\node_modules\\@wangeditor-next\\plugin-mention\\dist\\video-module\\src\\module\\menu\\EditVideoSrcMenu.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  1156,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627419970)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@7.18.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\createIsolatedProgram.d.ts.map",
+                              "Mode":  "------",
+                              "Length":  351,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627432737)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+plugin-men_2f293a7f8d61da55aaddeec1ac2755ba\\node_modules\\@wangeditor-next\\plugin-mention\\dist\\basic-modules\\src\\modules\\color\\style-to-html.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  298,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627422071)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+basic-modu_042b165f676d4e14f2c79c917421b665\\node_modules\\@wangeditor-next\\basic-modules\\dist\\basic-modules\\src\\modules\\indent\\style-to-html.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  181,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627422073)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+plugin-men_2f293a7f8d61da55aaddeec1ac2755ba\\node_modules\\@wangeditor-next\\plugin-mention\\dist\\code-highlight\\src\\module\\menu\\SelectLangMenu.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  1353,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627420468)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\IntRuoyiMaintance\\frontend\\node_modules\\.pnpm\\element-plus@2.11.9_vue@3.5.25_typescript@5.9.3_\\node_modules\\element-plus\\lib\\components\\date-picker-panel\\src\\date-picker-com\\basic-month-table.vue.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  5886,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627441819)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@8.26.1_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\getWatchProgramsForProjects.js",
+                              "Mode":  "------",
+                              "Length":  17743,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627436019)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+eslint-p_ff0ba5ebdc54de7de7f6de95127bea18\\node_modules\\@typescript-eslint\\eslint-plugin\\docs\\rules\\no-non-null-asserted-nullish-coalescing.mdx",
+                              "Mode":  "------",
+                              "Length":  1760,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627433822)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+code-highl_8e5bb7fbe2c01a0e7c14af76cb3ebb37\\node_modules\\@wangeditor-next\\code-highlight\\dist\\code-highlight\\src\\module\\menu\\SelectLangMenu.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  1353,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627420468)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+plugin-men_2f293a7f8d61da55aaddeec1ac2755ba\\node_modules\\@wangeditor-next\\plugin-mention\\dist\\basic-modules\\src\\modules\\todo\\pre-parse-html.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  335,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627421963)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@8.26.1_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\createProjectProgramError.d.ts",
+                              "Mode":  "------",
+                              "Length":  284,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627436189)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+basic-modu_042b165f676d4e14f2c79c917421b665\\node_modules\\@wangeditor-next\\basic-modules\\dist\\basic-modules\\src\\modules\\link\\parse-elem-html.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  451,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627421678)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@8.26.1_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\createIsolatedProgram.d.ts.map",
+                              "Mode":  "------",
+                              "Length":  320,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627436074)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+basic-modu_042b165f676d4e14f2c79c917421b665\\node_modules\\@wangeditor-next\\basic-modules\\dist\\basic-modules\\src\\modules\\todo\\parse-elem-html.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  451,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627421706)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+basic-modu_042b165f676d4e14f2c79c917421b665\\node_modules\\@wangeditor-next\\basic-modules\\dist\\basic-modules\\src\\modules\\color\\pre-parse-html.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  347,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627421951)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@7.18.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\getWatchProgramsForProjects.js",
+                              "Mode":  "-a----",
+                              "Length":  18022,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627432495)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@6.21.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\getWatchProgramsForProjects.js",
+                              "Mode":  "------",
+                              "Length":  17998,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627434536)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\IntRuoyiMaintance\\frontend\\node_modules\\.pnpm\\element-plus@2.11.9_vue@3.5.25_typescript@5.9.3_\\node_modules\\element-plus\\lib\\components\\date-picker-panel\\src\\date-picker-com\\panel-month-range.vue.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  3157,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627443095)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+typescript-estree@6.21.0_typescript@5.3.3\\node_modules\\@typescript-eslint\\typescript-estree\\dist\\create-program\\createIsolatedProgram.d.ts.map",
+                              "Mode":  "-a----",
+                              "Length":  351,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627432737)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+upload-ima_32be2cac486958df4d86e395b8f6cc2e\\node_modules\\@wangeditor-next\\upload-image-module\\dist\\core\\src\\parse-html\\parse-text-elem-html.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  542,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627420105)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\IntRuoyiMaintance\\frontend\\node_modules\\.pnpm\\element-plus@2.11.9_vue@3.5.25_typescript@5.9.3_\\node_modules\\element-plus\\lib\\components\\date-picker-panel\\src\\composables\\use-month-range-header.js.map",
+                              "Mode":  "------",
+                              "Length":  3604,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627439431)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+plugin-men_2f293a7f8d61da55aaddeec1ac2755ba\\node_modules\\@wangeditor-next\\plugin-mention\\dist\\upload-image-module\\src\\module\\upload-images.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  266,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627422312)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+plugin-men_2f293a7f8d61da55aaddeec1ac2755ba\\node_modules\\@wangeditor-next\\plugin-mention\\dist\\list-module\\src\\module\\menu\\NumberedListMenu.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  529,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627420236)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+plugin-men_2f293a7f8d61da55aaddeec1ac2755ba\\node_modules\\@wangeditor-next\\plugin-mention\\dist\\list-module\\src\\module\\menu\\BulletedListMenu.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  543,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627419723)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\IntRuoyiMaintance\\frontend\\node_modules\\.pnpm\\element-plus@2.11.9_vue@3.5.25_typescript@5.9.3_\\node_modules\\element-plus\\lib\\components\\date-picker-panel\\src\\date-picker-com\\panel-year-range.vue.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  3157,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627443095)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@wangeditor-next+plugin-men_2f293a7f8d61da55aaddeec1ac2755ba\\node_modules\\@wangeditor-next\\plugin-mention\\dist\\video-module\\src\\module\\helper\\upload-videos.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  196,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627420581)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+eslint-p_ff0ba5ebdc54de7de7f6de95127bea18\\node_modules\\@typescript-eslint\\eslint-plugin\\dist\\rules\\no-non-null-asserted-nullish-coalescing.js",
+                              "Mode":  "-a----",
+                              "Length":  3709,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627432431)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\IntRuoyiMaintance\\frontend\\node_modules\\.pnpm\\element-plus@2.11.9_vue@3.5.25_typescript@5.9.3_\\node_modules\\element-plus\\lib\\components\\date-picker-panel\\src\\date-picker-com\\basic-year-table.vue.d.ts",
+                              "Mode":  "-a----",
+                              "Length":  6082,
+                              "Attributes":  32,
+                              "LastWriteTime":  "\/Date(1782627441824)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\IntRuoyiMaintance\\frontend\\node_modules\\.pnpm\\element-plus@2.11.9_vue@3.5.25_typescript@5.9.3_\\node_modules\\element-plus\\es\\components\\date-picker-panel\\src\\date-picker-com\\panel-month-range.vue.d.ts",
+                              "Mode":  "------",
+                              "Length":  3157,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627443095)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\IntRuoyiMaintance\\frontend\\node_modules\\.pnpm\\element-plus@2.11.9_vue@3.5.25_typescript@5.9.3_\\node_modules\\element-plus\\es\\components\\date-picker-panel\\src\\date-picker-com\\basic-month-table.vue.d.ts",
+                              "Mode":  "------",
+                              "Length":  5886,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627441819)\/"
+                          },
+                          {
+                              "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\yudao-ui-admin-vue3\\node_modules\\.pnpm\\@typescript-eslint+eslint-p_ff0ba5ebdc54de7de7f6de95127bea18\\node_modules\\@typescript-eslint\\eslint-plugin\\dist\\rules\\no-non-null-asserted-optional-chain.js.map",
+                              "Mode":  "------",
+                              "Length":  1352,
+                              "Attributes":  128,
+                              "LastWriteTime":  "\/Date(1782627433175)\/"
+                          }
+                      ],
+    "deleteAttempts":  [
+                           {
+                               "method":  "Directory.Delete long path",
+                               "success":  true
+                           }
+                       ],
+    "tempRootExistsAfter":  false,
+    "afterTop":  [
+
+                 ],
+    "pruneResults":  [
+                         {
+                             "owner":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance",
+                             "prune":  {
+                                           "exitCode":  0,
+                                           "stdout":  "",
+                                           "stderr":  "",
+                                           "args":  "worktree prune --verbose"
+                                       }
+                         },
+                         {
+                             "owner":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro",
+                             "prune":  {
+                                           "exitCode":  0,
+                                           "stdout":  "",
+                                           "stderr":  "",
+                                           "args":  "worktree prune --verbose"
+                                       }
+                         },
+                         {
+                             "owner":  "D:\\ProjectPackage\\Int\\IntRuoyi\\yudao-ui-admin-vue3",
+                             "prune":  {
+                                           "exitCode":  0,
+                                           "stdout":  "",
+                                           "stderr":  "",
+                                           "args":  "worktree prune --verbose"
+                                       }
+                         }
+                     ],
+    "afterLists":  [
+                       {
+                           "owner":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance",
+                           "list":  {
+                                        "exitCode":  0,
+                                        "stdout":  "worktree D:/ProjectPackage/Int/IntRuoyiMaintance\nHEAD 14fcac2349d79a33351dca1ed65d99bfe9b40982\nbranch refs/heads/int_main\n\nworktree D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-205043-signal\nHEAD 4cdc8845bb5a0a550fba28d2f7185f05638a84b0\ndetached\n\nworktree D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-2220-category\nHEAD fb18456ade89c3e07192ba927816f127830e76e0\ndetached\n\nworktree D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-2320-mes-scheduler\nHEAD fb18456ade89c3e07192ba927816f127830e76e0\ndetached\n\nworktree D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-dfb317e\nHEAD dfb317e8474ff1cc0b65b8063e00e85588649d46\ndetached\n\n",
+                                        "stderr":  "",
+                                        "args":  "worktree list --porcelain"
+                                    }
+                       },
+                       {
+                           "owner":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro",
+                           "list":  {
+                                        "exitCode":  0,
+                                        "stdout":  "worktree D:/ProjectPackage/Int/IntRuoyi/ruoyi-vue-pro\nHEAD cecadac69c286711bfdc53313e4c565ffbc72787\nbranch refs/heads/int_main\n\n",
+                                        "stderr":  "",
+                                        "args":  "worktree list --porcelain"
+                                    }
+                       },
+                       {
+                           "owner":  "D:\\ProjectPackage\\Int\\IntRuoyi\\yudao-ui-admin-vue3",
+                           "list":  {
+                                        "exitCode":  0,
+                                        "stdout":  "worktree D:/ProjectPackage/Int/IntRuoyi/yudao-ui-admin-vue3\nHEAD 0c7ff2470ad8cad71ba3cb4e34d16238b9e0675c\nbranch refs/heads/int_main\n\n",
+                                        "stderr":  "",
+                                        "args":  "worktree list --porcelain"
+                                    }
+                       }
+                   ],
+    "stillListed":  [
+
+                    ]
+}

@@ -1,0 +1,22 @@
+{
+    "code":  0,
+    "data":  {
+                 "operationId":  "op-2026-07-03T161333772184700Z-06061413-1db6-43a9-97e5-863ca79e0f97",
+                 "requestedBy":  "local-operator",
+                 "requestedAt":  "2026-07-03T16:13:34.689994900Z",
+                 "environment":  "test",
+                 "component":  "mark-release-tested",
+                 "action":  "mark-release-tested",
+                 "actionLabel":  "æ è®°æµè¯éè¿",
+                 "parameters":  {
+                                    "releaseTag":  "release-20260703-2335-codeonly-three-env",
+                                    "testConclusion":  "æµè¯æ .env IMAGE_TAGãbackend/frontend éå tagãbackend health=UPãfrontend HTTP 200ãPDF worker HTTP 200 åå·²éè¿ã",
+                                    "selectedRecoverySetCandidateId":  "restore:20260621-063218"
+                                },
+                 "reason":  "æµè¯æåå¸éªè¯éè¿ï¼è¿å\u0085¥åä¸ releaseTag ä¸ç¯å¢é­ç¯ mark-tested é¨ç¦ã",
+                 "status":  "RUNNING",
+                 "summary":  "å½ä»¤å·²æäº¤å°æ¬æºæ§è¡éå",
+                 "resultLogPath":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260703-codeonly-three-env-release\\IntRuoyiMaintance\\runtime\\runtime-control\\logs\\op-2026-07-03T161333772184700Z-06061413-1db6-43a9-97e5-863ca79e0f97.log"
+             },
+    "msg":  ""
+}

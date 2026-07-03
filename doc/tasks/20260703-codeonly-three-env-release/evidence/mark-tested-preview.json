@@ -1,0 +1,5 @@
+{
+    "code":  400,
+    "data":  null,
+    "msg":  "selectedRecoverySetCandidateId is required for action: mark-release-tested"
+}

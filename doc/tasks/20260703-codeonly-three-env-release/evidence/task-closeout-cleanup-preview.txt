@@ -1,0 +1,65 @@
+status: ready
+workspace_root: D:\ProjectPackage\Int\IntRuoyiMaintance
+task_id: 20260703-codeonly-three-env-release
+mode: preview
+worktree: linked=False current_branch=int_main main_branch=int_main
+keep:
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\execution-log.md
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\task.md
+delete:
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\backup-server-verification-final.txt
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\build-release-op-2026-07-03T153405744077400Z-02fbe71d-f709-4364-b21c-90821b63c934-log.txt
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\build-release-op-2026-07-03T153405744077400Z-02fbe71d-f709-4364-b21c-90821b63c934-operation.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\failed-manifest-missing-sourceRepos.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\manifest-v1-current.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\manifest-v1-validator-output.txt
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\manifest-validation-failure-20260703.md
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\mark-tested-contract-search.txt
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\mark-tested-execute-response.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\mark-tested-op-2026-07-03T161333772184700Z-06061413-1db6-43a9-97e5-863ca79e0f97-log.txt
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\mark-tested-op-2026-07-03T161333772184700Z-06061413-1db6-43a9-97e5-863ca79e0f97-operation.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\mark-tested-operation-not-found-diagnostic.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\mark-tested-preview-failure-selectedRecoverySetCandidateId.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\mark-tested-preview-with-recovery-candidate.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\mark-tested-preview.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\mark-tested-restore-candidates.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\prod-diagnostic-remote.sh
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\prod-server-verification-failure-diagnostic.stderr.txt
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\prod-server-verification-failure-diagnostic.stdout.txt
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\prod-server-verification-failure-diagnostic.txt
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\prod-server-verification-final.txt
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\promote-backup-argument-builder-focused.txt
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\promote-backup-contract-search.txt
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\promote-backup-dto-service-focused.txt
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\promote-backup-execute-response.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\promote-backup-op-2026-07-03T165324146656100Z-83717ddc-3a40-41f3-bb28-ae4b1e9d3dba-log.txt
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\promote-backup-op-2026-07-03T165324146656100Z-83717ddc-3a40-41f3-bb28-ae4b1e9d3dba-operation.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\promote-backup-preview.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\promote-prod-execute-response.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\promote-prod-op-2026-07-03T163511316141200Z-89e50181-d9b3-4874-8c72-893e90ac8c48-log.txt
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\promote-prod-op-2026-07-03T163511316141200Z-89e50181-d9b3-4874-8c72-893e90ac8c48-operation.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\promote-prod-preview.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\publish-test-op-2026-07-03T155449725216100Z-adc5802d-1d2e-4199-8635-81110bf97774-log.txt
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\publish-test-op-2026-07-03T155449725216100Z-adc5802d-1d2e-4199-8635-81110bf97774-operation-current.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\publish-test-op-2026-07-03T155449725216100Z-adc5802d-1d2e-4199-8635-81110bf97774-operation.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\release-manifest-current.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\release-package-current.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\release-package-first-level-v1-validation.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\release-packages-after-build-full.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\release-packages-after-build.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\runtime-action-reqvo-fields.txt
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\runtime-control-before-restore-inspection.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\runtime-control-main-restore-final-check-corrected.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\runtime-control-main-restore-final-check.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\runtime-control-main-restore-verification.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\runtime-control-worktree-build-failure-20260703.md
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\temporary-release-worktree-cleanup-failure-inspection.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\temporary-release-worktree-cleanup-final-retry.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\temporary-release-worktree-cleanup-longpath-final.json
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\test-server-docker-diagnostic.txt
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\test-server-verification-final.txt
+  - D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\test-server-verification.txt
+blocked:
+  - <none>
+warnings:
+  - <none>
