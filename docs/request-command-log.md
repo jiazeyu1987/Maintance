@@ -2072,3 +2072,8 @@
 ## 2026-07-03 08:51:26 +08:00 用户请求：帮我沉淀成前置经验，防止后面继续犯错
 - 任务目录：D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-release-preflight-experience-nodata-dcc
 - 当前动作：将不带数据测试服发布暴露的 code-only required SQL、DCC lifecycle_stage NOT NULL、远端 MySQL 查询、runtime-control 临时 worktree 配置和 no-data manifest 校验沉淀为前置经验。
+
+## 2026-07-03 08:56:41 +08:00 用户请求：帮我做成这个技能，用 `$前置技能` 来触发
+- 任务目录：D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-create-preflight-skill
+- 执行结果：已创建本地技能 `preflight-experience-consolidation`，路径 `C:\Users\BJB110\.codex\skills\preflight-experience-consolidation`。
+- 验证结果：`quick_validate.py` PASS，`SKILL.md` description 包含 `$前置技能`，references 包含 build、release、powershell、worktree 四个分区。
