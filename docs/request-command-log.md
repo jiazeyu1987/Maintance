@@ -2077,3 +2077,15 @@
 - 任务目录：D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-create-preflight-skill
 - 执行结果：已创建本地技能 `preflight-experience-consolidation`，路径 `C:\Users\BJB110\.codex\skills\preflight-experience-consolidation`。
 - 验证结果：`quick_validate.py` PASS，`SKILL.md` description 包含 `$前置技能`，references 包含 build、release、powershell、worktree 四个分区。
+
+## 2026-07-03 09:09:34 +08:00 用户请求：再次构建发布到测试服务器
+- 任务目录：D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-build-publish-test-again
+- 当前口径：沿用上次测试服 code-only / 不带数据发布，先执行经验门禁与临时发布 worktree 预检。
+
+## 2026-07-03 16:16:10 +08:00 用户请求：再次构建发布到测试服务器
+- 任务目录：D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-build-publish-test-again
+- 执行结果：已完成 code-only build-release -> publish-test，最终 releaseTag=release-20260703-0912-test-again。
+- build-release operation=op-2026-07-03T011522088783Z-a5911d73-7521-4ff2-a583-32d202173206，状态 SUCCESS；manifest publishScope=code-only，backend=bbbdbf3228d6d43fab613a4fcb1a3cadec0d54d7 dirty=false，frontend=013c26372f444e9550eaa48ac3f012b8538727e0 dirty=false，dataDirs absent。
+- publish-test 首次 operation=op-2026-07-03T080000300286800Z-15fd0acf-70e5-483a-8585-82bc282ce473 因启用 EnableSmartReleaseReport 但缺少 -SmartReleaseTargetConfigPath 失败；未使用 prod target config 误套测试服，关闭可选报告后按同一 releaseTag 重试。
+- publish-test 重试 operation=op-2026-07-03T080239101028700Z-e0b55e76-a62e-4445-be42-248ed979a170，状态 SUCCESS；测试服 .env IMAGE_TAG、backend/frontend 镜像 tag 均为 release-20260703-0912-test-again；backend health=UP；frontend HTTP 200；pdf worker HTTP 200。
+- 边界：本轮未执行 mark-tested、正式服、备份服、备份、恢复或回滚。
