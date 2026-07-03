@@ -2068,3 +2068,7 @@
 - build-release operation=op-2026-07-02T161541001144800Z-e41fd403-d2ff-4b9c-83a7-fc1f4225577d，状态 SUCCESS；manifest publishScope=code-only，backend=8b9b0bd7450413202423b1a61aea5530f14a6436 dirty=false，frontend=4a89359a739ba69f5d1ce348e324455968fb28cb dirty=false。
 - publish-test operation=op-2026-07-02T163956246337200Z-32587742-51dc-4f73-9f5a-8b84ce3e2d9e，状态 SUCCESS；测试服 .env IMAGE_TAG、backend/frontend 镜像 tag 均为 release-20260703-0009-nodata-evening-fix3；backend health=UP；frontend HTTP 200。
 - 边界：本轮未执行 mark-tested、正式服、备份服、备份、恢复或回滚。
+
+## 2026-07-03 08:51:26 +08:00 用户请求：帮我沉淀成前置经验，防止后面继续犯错
+- 任务目录：D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-release-preflight-experience-nodata-dcc
+- 当前动作：将不带数据测试服发布暴露的 code-only required SQL、DCC lifecycle_stage NOT NULL、远端 MySQL 查询、runtime-control 临时 worktree 配置和 no-data manifest 校验沉淀为前置经验。

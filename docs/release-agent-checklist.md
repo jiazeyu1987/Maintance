@@ -295,6 +295,37 @@ Codex 必须按这个顺序排查：
 - 如果候选文件缺失，任务收口不得视为完成；如果运行控制台写候选失败，operation 必须 fail fast。
 - 任务收尾时读取候选文件，将稳定、可复用经验正式写入 `release-build-preflight-lessons.md` 或本清单。
 
+## 8.1 2026-07-03 不带数据发布新增前置门禁
+
+### code-only 不跳过 SQL
+
+- `code-only`、`-SkipDatabaseSync`、`-SkipMinioSync` 只表示不携带业务数据和文件，不表示跳过 schema、required SQL、migration 或字段约束变更。
+- 不带数据发布在 `build-release` 后仍必须核验 required SQL、migration 门禁和真实库约束变更结果。
+
+### DCC lifecycle_stage / NOT NULL
+
+- DCC 分类 `lifecycle_stage` 或任何字段改为 `NOT NULL` 前，必须先查全表空值，不能只查 `deleted=0` 活动行。
+- `deleted=1` 历史归档行同样会阻塞 `NOT NULL`，必须在可重复 SQL 中定义归档归一化规则和注释。
+- required SQL 报 `Invalid use of NULL value` 时，先只读按 `deleted` 等关键维度统计空值分布，再修 SQL、迁移顺序或数据契约；禁止手工改测试库绕过。
+
+### 远端 MySQL 查询
+
+- 测试服业务库名以真实容器为准；当前确认业务库为 `ruoyi-vue-pro`，不得默认写成 `yudao_ruoyi`。
+- MySQL root 密码必须在容器内展开，优先使用 `docker exec -i intruoyi-mysql sh -lc 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" ruoyi-vue-pro'` 并通过标准输入传 SQL。
+- PowerShell、SSH、sh、mysql 多层引号失败时，改用标准输入、临时脚本或 here-doc，并记录 `$LASTEXITCODE`；不得把查询失败误判为数据库无数据。
+
+### runtime-control 配置
+
+- 修改 `runtime-control.local.yaml` 的 `repo-root` / `frontend-root` 后，必须回读确认 YAML 缩进、实际路径和 `http://127.0.0.1:48181/actuator/health`。
+- 配置指向临时发布 worktree 后，收尾前必须恢复稳定主路径，或明确确认该 worktree 不会被删除。
+- 运行控制台启动入口以维护仓当前脚本为准；本轮确认入口是 `scripts\start.ps1`。
+
+### no-data manifest
+
+- no-data 发布必须验证 manifest `publishScope=code-only`。
+- 发布包不得包含 `database`、`db-dump`、`mysql-dump`、`minio`、`files`、`runtime-data`、`data`、`docker-build-context` 等数据目录。
+- 允许存在 `required-sql`、`resources`、`runtime-env`、`smoke` 等代码发布必要目录；operation `SUCCESS` 不能替代 manifest 与目录检查。
+
 ## 9. 完成判定
 
 Codex 只有在以下条件同时成立时，才能判定完整发布完成：

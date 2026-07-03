@@ -161,6 +161,19 @@
 - 运行控制台在 `build-release`、`publish-test`、`mark-tested`、`promote-prod`、`promote-backup` 完成后，会自动把发布经验候选追加到 `runtime/runtime-control/release-experience-candidates.md`；任务收口时必须读取该候选文件，把可复用项正式前移到本文或 `release-agent-checklist.md`。
 - 自动经验候选生成是发布闭环的一部分；如果候选文件无法写入，operation 必须 fail fast，不允许静默跳过经验沉淀。
 
+## 2026-07-03 不带数据测试服发布前置门禁
+
+- `code-only` / `-SkipDatabaseSync` / `-SkipMinioSync` 只表示不同步业务数据和文件，不表示跳过 schema、required SQL、migration 或约束变更；构建成功后仍必须按真实库执行 required SQL 并检查迁移结果。
+- DCC 分类 `lifecycle_stage` 迁移在执行 `ALTER ... NOT NULL` 前必须做全表非空门禁，不能只校验 `deleted=0` 活动行；`deleted=1` 的历史归档行同样会阻塞 `NOT NULL` 约束变更。
+- DCC 历史分类补值必须按根因写进可重复执行的 SQL 和测试：活动行按确认的业务阶段映射，已删除历史行必须有明确归档归一化规则和注释；禁止手工改测试库来让发布过关。
+- required SQL 如果报 `Invalid use of NULL value`，优先只读查询目标字段全表空值分布，例如按 `deleted` 分组统计，再定位是活动数据未映射、归档历史行未归一化，还是字段约束顺序错误。
+- 测试服业务库名以真实容器查询为准；当前测试服 MySQL 容器内业务库为 `ruoyi-vue-pro`，不要默认写成 `yudao_ruoyi`。
+- 远端 MySQL 查询容器内环境变量时，不要让本地 PowerShell 或远端宿主机提前展开 `$MYSQL_ROOT_PASSWORD`；优先用 `docker exec -i intruoyi-mysql sh -lc 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" ruoyi-vue-pro'` 并通过标准输入传 SQL。
+- 跨 PowerShell、SSH、sh、mysql 多层引号失败时，不要继续堆嵌套转义；改用标准输入、临时脚本或 here-doc，并显式记录 `$LASTEXITCODE`，避免把查询失败误判成数据库无数据。
+- 修改 `runtime-control.local.yaml` 的 `repo-root` / `frontend-root` 时必须写后校验 YAML 缩进、实际路径和 `http://127.0.0.1:48181/actuator/health`；配置指向临时 worktree 后，收尾前必须恢复到稳定主路径或确认该 worktree 不会被删除。
+- 运行控制台启动入口以维护仓当前脚本为准；本轮确认应使用 `scripts\start.ps1`，不要凭旧路径猜测 `ops\runtime-control\start-runtime-control.ps1`。
+- 不带数据发布的 manifest 必须显式验证 `publishScope=code-only`，并确认发布包中不存在 `database`、`mysql`、`minio`、`files` 等数据目录；仅看到 operation `SUCCESS` 不足以证明“不带数据”。
+
 ## 本次证据
 
 - 当前主分支测试服发布闭环任务：`doc/tasks/20260630-main-branch-build-publish-test-server/task.md`
@@ -170,3 +183,5 @@
 - 验收报告：`doc/tasks/20260617-e2e-build-publish-test/verification-report.md`
 - 候选证据：`doc/tasks/20260617-release-experience-consolidation/candidate-error-evidence.md`
 - 本轮新增证据：`doc/tasks/20260625-head-full-release/task.md`、`doc/tasks/20260625-head-full-release/execution-log.md`、`doc/tasks/20260628-release-flow-fupan/release-flow-fupan.md`
+- 不带数据测试服发布证据：`doc/tasks/20260702-build-publish-test-nodata-evening/task.md`、`doc/tasks/20260702-build-publish-test-nodata-evening/execution-log.md`
+- 前置经验沉淀证据：`doc/tasks/20260703-release-preflight-experience-nodata-dcc/task.md`、`doc/tasks/20260703-release-preflight-experience-nodata-dcc/execution-log.md`
