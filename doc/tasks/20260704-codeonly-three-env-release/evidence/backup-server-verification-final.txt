@@ -1,0 +1,23 @@
+﻿ENV_IMAGE_TAG=release-20260705-001827-codeonly-three-env
+BACKEND_IMAGE=intruoyi-backend:release-20260705-001827-codeonly-three-env
+FRONTEND_IMAGE=intruoyi-frontend:release-20260705-001827-codeonly-three-env
+BACKEND_HEALTH_JSON={"status":"UP"}
+BACKEND_HEALTH_STATUS=UP
+FRONTEND_HTTP=200
+PDF_WORKER_HTTP=200
+PDF_WORKER_CONTENT_TYPE=Content-Type: application/javascript
+DATA_MOUNT_SOURCE=/dev/mapper/cl-home
+DATA_MOUNT_TARGET=/mnt/intruoyi-data
+RELEASE_ROOT_SOURCE=/dev/mapper/cl-home
+RUNTIME_DATA_SOURCE=/dev/mapper/cl-home
+RELEASE_DIR_EXISTS=yes
+RUNTIME_DATA_DIR_EXISTS=yes
+COMPOSE_PS_BEGIN
+NAME                  IMAGE                                                          COMMAND                   SERVICE      CREATED         STATUS                 PORTS
+intruoyi-backend      intruoyi-backend:release-20260705-001827-codeonly-three-env    "/__cacert_entrypoin…"   backend      2 minutes ago   Up 2 minutes           0.0.0.0:48081->48080/tcp, :::48081->48080/tcp
+intruoyi-frontend     intruoyi-frontend:release-20260705-001827-codeonly-three-env   "/docker-entrypoint.…"   frontend     2 minutes ago   Up 2 minutes           0.0.0.0:8081->80/tcp, :::8081->80/tcp
+intruoyi-mysql        mysql:8.0.39                                                   "docker-entrypoint.s…"   mysql        4 weeks ago     Up 4 weeks (healthy)   3306/tcp, 33060/tcp
+intruoyi-onlyoffice   onlyoffice/documentserver:latest                               "/app/ds/run-documen…"   onlyoffice   4 weeks ago     Up 4 weeks (healthy)   443/tcp, 0.0.0.0:8080->80/tcp, :::8080->80/tcp
+intruoyi-redis        redis:7-alpine                                                 "docker-entrypoint.s…"   redis        4 weeks ago     Up 4 weeks (healthy)   6379/tcp
+intruoyi-website      nginx:1.27-alpine                                              "/docker-entrypoint.…"   website      3 weeks ago     Up 3 weeks             0.0.0.0:8083->80/tcp, :::8083->80/tcp
+COMPOSE_PS_END

@@ -1,0 +1,591 @@
+{
+  "package": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260705-001827-codeonly-three-env",
+  "files": {
+    "release-manifest.json": {
+      "exists": true,
+      "size": 75458,
+      "backendCommitPresent": true,
+      "frontendCommitPresent": false,
+      "topKeys": [
+        "releaseTag",
+        "packageDirectoryName",
+        "builtAt",
+        "gitCommit",
+        "publishScope",
+        "component",
+        "includeShowroomBuildPackage",
+        "onlyOfficeIncluded",
+        "artifacts",
+        "backendRuntimeBaseMode",
+        "backendRuntimeBaseImage",
+        "backendRuntimeBaseDigest",
+        "backendRuntimeBaseVersion",
+        "backendRuntimeBaseTarSha256"
+      ],
+      "sourceRepoLike": [
+        {
+          "path": "gitCommit",
+          "value": "933de66d093e4c78dadddf6c56400160cbceb1fb"
+        },
+        {
+          "path": "backendRuntimeBaseMode",
+          "value": "offline-tar"
+        },
+        {
+          "path": "backendRuntimeBaseImage",
+          "value": "intruoyi-backend-runtime-base:2026.06.05-jre21-noble-docker29.2.1"
+        },
+        {
+          "path": "backendRuntimeBaseDigest",
+          "value": "sha256:b4f7d85f325665c3b372379e6d352c3c8be2d3a08add68ac0dc151f720160be7"
+        },
+        {
+          "path": "backendRuntimeBaseVersion",
+          "value": "2026.06.05-jre21-noble-docker29.2.1"
+        },
+        {
+          "path": "backendRuntimeBaseTarSha256",
+          "value": "5bcd568b46ba9f28bfa7ac8ee67e283aea95bd585a89842a14cc40827fa71603"
+        }
+      ]
+    },
+    "manifest.json": {
+      "exists": true,
+      "size": 2102495,
+      "backendCommitPresent": true,
+      "frontendCommitPresent": true,
+      "topKeys": [
+        "manifestVersion",
+        "packageId",
+        "releaseTag",
+        "packageType",
+        "createdAt",
+        "createdBy",
+        "sourceRepos",
+        "changeSet",
+        "publishScope",
+        "components",
+        "artifacts",
+        "database",
+        "schemaVersion",
+        "schemaDigest",
+        "migrationPlan",
+        "requiredSql",
+        "buildModules",
+        "compatibilityMatrix",
+        "operationEvidencePolicy",
+        "resources",
+        "targetRequirements",
+        "buildContract",
+        "deployContract",
+        "precheckPlan",
+        "verifyPlan",
+        "rollbackPlan",
+        "forbiddenFieldsCheck",
+        "manifestChecksum"
+      ],
+      "sourceRepoLike": [
+        {
+          "path": "sourceRepos[0].commit",
+          "value": "933de66d093e4c78dadddf6c56400160cbceb1fb"
+        },
+        {
+          "path": "sourceRepos[0].dirty",
+          "value": false
+        },
+        {
+          "path": "sourceRepos[0].dirtySummaryHash",
+          "value": null
+        },
+        {
+          "path": "sourceRepos[1].commit",
+          "value": "cc2cef81e11220a6ba50b8931dfca5811a368401"
+        },
+        {
+          "path": "sourceRepos[1].dirty",
+          "value": false
+        },
+        {
+          "path": "sourceRepos[1].dirtySummaryHash",
+          "value": null
+        },
+        {
+          "path": "artifacts[0].sourceHash",
+          "value": "sha256:78bb402c7144a61dec80b12125a7ad6156ffe2c11f577516abb8d3bd96633f7d"
+        },
+        {
+          "path": "artifacts[1].sourceHash",
+          "value": "sha256:243f160e064f7fc6cf9e73d04dd4b541018bd8d2888a8a7ca633c8f1045371cb"
+        },
+        {
+          "path": "artifacts[2].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[3].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[4].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[5].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[6].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[7].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[8].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[9].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[10].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[11].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[12].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[13].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[14].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[15].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[16].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[17].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[18].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[19].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[20].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[21].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[22].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[23].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[24].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[25].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[26].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[27].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[28].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[29].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[30].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[31].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[32].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[33].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[34].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[35].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[36].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[37].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[38].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[39].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[40].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[41].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[42].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[43].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[44].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[45].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[46].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[47].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[48].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "artifacts[49].sourceHash",
+          "value": "sha256:2bc3a0ef70b69c154b837fa35b25173e38f39cf9d5b26e07b6acca5c9b052c8e"
+        },
+        {
+          "path": "database.requiredDataSets[0].sourcePath",
+          "value": "sql/mysql/20260512_ai_base_schema.sql"
+        },
+        {
+          "path": "database.requiredDataSets[1].sourcePath",
+          "value": "sql/mysql/20260512_ai_codex_seed.sql"
+        },
+        {
+          "path": "database.requiredDataSets[2].sourcePath",
+          "value": "sql/mysql/20260512_bpm_base_schema.sql"
+        },
+        {
+          "path": "database.requiredDataSets[3].sourcePath",
+          "value": "sql/mysql/20260512_crm_base_schema.sql"
+        },
+        {
+          "path": "database.requiredDataSets[4].sourcePath",
+          "value": "sql/mysql/20260512_erp_base_schema.sql"
+        },
+        {
+          "path": "database.requiredDataSets[5].sourcePath",
+          "value": "sql/mysql/20260512_erp_kingdee_purchase_order_sync.sql"
+        },
+        {
+          "path": "database.requiredDataSets[6].sourcePath",
+          "value": "sql/mysql/20260512_mes_base_schema.sql"
+        },
+        {
+          "path": "database.requiredDataSets[7].sourcePath",
+          "value": "sql/mysql/20260512_mes_schema.sql"
+        },
+        {
+          "path": "database.requiredDataSets[8].sourcePath",
+          "value": "sql/mysql/20260513_dcc_base_schema.sql"
+        },
+        {
+          "path": "database.requiredDataSets[9].sourcePath",
+          "value": "sql/mysql/20260513_dcc_id_auto_increment_fix.sql"
+        },
+        {
+          "path": "database.requiredDataSets[10].sourcePath",
+          "value": "sql/mysql/20260513_dcc_notify_template_seed.sql"
+        },
+        {
+          "path": "database.requiredDataSets[11].sourcePath",
+          "value": "sql/mysql/20260513_erp_kingdee_supplier_sync_record.sql"
+        },
+        {
+          "path": "database.requiredDataSets[12].sourcePath",
+          "value": "sql/mysql/20260513_erp_product_standard_expand.sql"
+        },
+        {
+          "path": "database.requiredDataSets[13].sourcePath",
+          "value": "sql/mysql/20260513_kingdee_multi_sync.sql"
+        },
+        {
+          "path": "database.requiredDataSets[14].sourcePath",
+          "value": "sql/mysql/20260513_mes_dv_machinery_extend.sql"
+        },
+        {
+          "path": "database.requiredDataSets[15].sourcePath",
+          "value": "sql/mysql/20260513_mes_dv_machinery_process_process_id.sql"
+        },
+        {
+          "path": "database.requiredDataSets[16].sourcePath",
+          "value": "sql/mysql/20260513_mes_md_workstation_capacity.sql"
+        },
+        {
+          "path": "database.requiredDataSets[17].sourcePath",
+          "value": "sql/mysql/20260514_erp_kingdee_config_page.sql"
+        },
+        {
+          "path": "database.requiredDataSets[18].sourcePath",
+          "value": "sql/mysql/20260514_mes_batch_record_report.sql"
+        },
+        {
+          "path": "database.requiredDataSets[19].sourcePath",
+          "value": "sql/mysql/20260515_dcc_governance_split_menu.sql"
+        },
+        {
+          "path": "database.requiredDataSets[20].sourcePath",
+          "value": "sql/mysql/20260515_dcc_runtime_schema_repair.sql"
+        },
+        {
+          "path": "database.requiredDataSets[21].sourcePath",
+          "value": "sql/mysql/20260515_dcc_runtime_seed_name_fix.sql"
+        },
+        {
+          "path": "database.requiredDataSets[22].sourcePath",
+          "value": "sql/mysql/20260515_mes_md_item_specification_512.sql"
+        },
+        {
+          "path": "database.requiredDataSets[23].sourcePath",
+          "value": "sql/mysql/20260516_dcc_electronic_signature_management.sql"
+        },
+        {
+          "path": "database.requiredDataSets[24].sourcePath",
+          "value": "sql/mysql/20260516_dcc_training_closed_loop_menu.sql"
+        },
+        {
+          "path": "database.requiredDataSets[25].sourcePath",
+          "value": "sql/mysql/20260516_mes_batch_record_report_route_key.sql"
+        },
+        {
+          "path": "database.requiredDataSets[26].sourcePath",
+          "value": "sql/mysql/20260517_infra_file_content_longblob.sql"
+        },
+        {
+          "path": "database.requiredDataSets[27].sourcePath",
+          "value": "sql/mysql/20260518_dcc_approval_task_name_fix.sql"
+        },
+        {
+          "path": "database.requiredDataSets[28].sourcePath",
+          "value": "sql/mysql/20260520_dcc_signature_menu_restore.sql"
+        },
+        {
+          "path": "database.requiredDataSets[29].sourcePath",
+          "value": "sql/mysql/20260520_system_nas_management_menu.sql"
+        },
+        {
+          "path": "database.requiredDataSets[30].sourcePath",
+          "value": "sql/mysql/20260521_showroom_company_cover_image.sql"
+        },
+        {
+          "path": "database.requiredDataSets[31].sourcePath",
+          "value": "sql/mysql/20260522_mes_route_process_batch_record_binding.sql"
+        },
+        {
+          "path": "database.requiredDataSets[32].sourcePath",
+          "value": "sql/mysql/20260522_showroom_product_cover_batch_task.sql"
+        },
+        {
+          "path": "database.requiredDataSets[33].sourcePath",
+          "value": "sql/mysql/20260523_dcc_nas_transfer_task.sql"
+        },
+        {
+          "path": "database.requiredDataSets[34].sourcePath",
+          "value": "sql/mysql/20260523_infra_runtime_control_menu.sql"
+        },
+        {
+          "path": "database.requiredDataSets[35].sourcePath",
+          "value": "sql/mysql/20260523_mes_batch_record_execution_edhr_v1.sql"
+        },
+        {
+          "path": "database.requiredDataSets[36].sourcePath",
+          "value": "sql/mysql/20260524_edhr_permission_restore.sql"
+        },
+        {
+          "path": "database.requiredDataSets[37].sourcePath",
+          "value": "sql/mysql/20260524_showroom_company_version_menu_visibility.sql"
+        },
+        {
+          "path": "database.requiredDataSets[38].sourcePath",
+          "value": "sql/mysql/20260524_showroom_prompt_menu_visibility.sql"
+        },
+        {
+          "path": "database.requiredDataSets[39].sourcePath",
+          "value": "sql/mysql/20260524_showroom_prompt_version.sql"
+        },
+        {
+          "path": "database.requiredDataSets[40].sourcePath",
+          "value": "sql/mysql/20260525_dcc_screenshot_t1.sql"
+        },
+        {
+          "path": "database.requiredDataSets[41].sourcePath",
+          "value": "sql/mysql/20260525_dcc_screenshot_t3.sql"
+        },
+        {
+          "path": "database.requiredDataSets[42].sourcePath",
+          "value": "sql/mysql/20260525_dcc_screenshot_t5.sql"
+        },
+        {
+          "path": "database.requiredDataSets[43].sourcePath",
+          "value": "sql/mysql/20260525_edhr_archive_permission.sql"
+        },
+        {
+          "path": "database.requiredDataSets[44].sourcePath",
+          "value": "sql/mysql/20260525_edhr_archive_schema.sql"
+        },
+        {
+          "path": "database.requiredDataSets[45].sourcePath",
+          "value": "sql/mysql/20260525_showroom_hall_name_suffix_showcase.sql"
+        },
+        {
+          "path": "database.requiredDataSets[46].sourcePath",
+          "value": "sql/mysql/20260525_system_password_policy.sql"
+        },
+        {
+          "path": "database.requiredDataSets[47].sourcePath",
+          "value": "sql/mysql/20260526_dcc_electronic_signature_hardening.sql"
+        },
+        {
+          "path": "database.requiredDataSets[48].sourcePath",
+          "value": "sql/mysql/20260526_dcc_other_template_category.sql"
+        },
+        {
+          "path": "database.requiredDataSets[49].sourcePath",
+          "value": "sql/mysql/20260526_edhr_approval_archive_schema_contract.sql"
+        },
+        {
+          "path": "requiredSql[0].sourcePath",
+          "value": "sql/mysql/20260512_ai_base_schema.sql"
+        },
+        {
+          "path": "requiredSql[1].sourcePath",
+          "value": "sql/mysql/20260512_ai_codex_seed.sql"
+        },
+        {
+          "path": "requiredSql[2].sourcePath",
+          "value": "sql/mysql/20260512_bpm_base_schema.sql"
+        },
+        {
+          "path": "requiredSql[3].sourcePath",
+          "value": "sql/mysql/20260512_crm_base_schema.sql"
+        },
+        {
+          "path": "requiredSql[4].sourcePath",
+          "value": "sql/mysql/20260512_erp_base_schema.sql"
+        },
+        {
+          "path": "requiredSql[5].sourcePath",
+          "value": "sql/mysql/20260512_erp_kingdee_purchase_order_sync.sql"
+        },
+        {
+          "path": "requiredSql[6].sourcePath",
+          "value": "sql/mysql/20260512_mes_base_schema.sql"
+        },
+        {
+          "path": "requiredSql[7].sourcePath",
+          "value": "sql/mysql/20260512_mes_schema.sql"
+        },
+        {
+          "path": "requiredSql[8].sourcePath",
+          "value": "sql/mysql/20260513_dcc_base_schema.sql"
+        },
+        {
+          "path": "requiredSql[9].sourcePath",
+          "value": "sql/mysql/20260513_dcc_id_auto_increment_fix.sql"
+        },
+        {
+          "path": "requiredSql[10].sourcePath",
+          "value": "sql/mysql/20260513_dcc_notify_template_seed.sql"
+        },
+        {
+          "path": "requiredSql[11].sourcePath",
+          "value": "sql/mysql/20260513_erp_kingdee_supplier_sync_record.sql"
+        },
+        {
+          "path": "requiredSql[12].sourcePath",
+          "value": "sql/mysql/20260513_erp_product_standard_expand.sql"
+        },
+        {
+          "path": "requiredSql[13].sourcePath",
+          "value": "sql/mysql/20260513_kingdee_multi_sync.sql"
+        }
+      ]
+    }
+  },
+  "commitSearch": {
+    "hits": [
+      {
+        "file": "manifest.json",
+        "backendCommitPresent": true,
+        "frontendCommitPresent": true,
+        "sourceReposPresent": true,
+        "dirtyPresent": true,
+        "snippet": "{\n    \"manifestVersion\":  \"1.0\",\n    \"packageId\":  \"release-20260705-001827-codeonly-three-env\",\n    \"releaseTag\":  \"release-20260705-001827-codeonly-three-env\",\n    \"packageType\":  \"full-release\",\n    \"createdAt\":  \"2026-07-04T16:30:52.7320825Z\",\n    \"createdBy\":  \"BJB110\",\n    \"sourceRepos\":  [\n                        {\n                            \"name\":  \"ruoyi-vue-pro\",\n                            \"pathRole\":  \"backend\",\n                            \"commit\":  \"933de66d093e4c78dadddf6c56400160cbceb1fb\",\n                            \"branch\":  \"HEAD\",\n                            \"dirty\":  false,\n                            \"dirtySummaryHash\":  null\n                        },\n                        {\n                            \"name\":  \"yudao-ui-admin-vue3\",\n                            \"pathRole\":  \"admin-frontend\",\n                            \"commit\":  \"cc2cef81e11220a6ba50b8931dfca5811a368401\",\n                            \"branch\":  \"HEAD\",\n                            \"dirty\":  f"
+      },
+      {
+        "file": "release-manifest.json",
+        "backendCommitPresent": true,
+        "frontendCommitPresent": false,
+        "sourceReposPresent": false,
+        "dirtyPresent": false,
+        "snippet": "{\n    \"releaseTag\":  \"release-20260705-001827-codeonly-three-env\",\n    \"packageDirectoryName\":  \"release-20260705-001827-codeonly-three-env\",\n    \"builtAt\":  \"2026-07-04T16:30:49.9321243Z\",\n    \"gitCommit\":  \"933de66d093e4c78dadddf6c56400160cbceb1fb\",\n    \"publishScope\":  \"code-only\",\n    \"component\":  \"intruoyi\",\n    \"includeShowroomBuildPackage\":  false,\n    \"onlyOfficeIncluded\":  false,\n    \"artifacts\":  [\n                      {\n                          \"path\":  \"docker-compose.yml\",\n                          \"sha256\":  \"292287ccfb7736685209c6ceaff3af408185fb9fbd5922973cfbedb1b2b02c9a\",\n                          \"bytes\":  10608\n                      },\n                      {\n                          \"path\":  \"intruoyi-images_release-20260705-001827-codeonly-three-env.tar\",\n                          \"sha256\":  \"298172335f66e254cbd1489755f778faaf7d4564c10da6d26e02604dd76a54f3\",\n                          \"bytes\":  814187008\n                      },\n                      {\n         "
+      }
+    ]
+  }
+}

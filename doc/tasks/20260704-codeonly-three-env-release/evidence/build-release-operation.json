@@ -1,0 +1,19 @@
+﻿{
+    "operationId":  "op-2026-07-04T161827593170700Z-e0cfce0a-4529-4e34-aeb3-974546d7e83f",
+    "requestedBy":  "local-operator",
+    "requestedAt":  "2026-07-04T16:18:27.598289800Z",
+    "environment":  "release",
+    "component":  "build-release",
+    "action":  "build-release",
+    "actionLabel":  "æå»ºåå¸å\u0085",
+    "parameters":  {
+                       "publishScope":  "code-only",
+                       "includeOnlyOffice":  "false",
+                       "includeShowroomBuildPackage":  "false",
+                       "releaseTag":  "release-20260705-001827-codeonly-three-env"
+                   },
+    "reason":  "20260704-codeonly-three-env-release code-only build after migration policy fix",
+    "status":  "SUCCESS",
+    "summary":  "å½ä»¤æ§è¡å®æ",
+    "resultLogPath":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260704-codeonly-three-env-release\\IntRuoyiMaintance\\runtime\\runtime-control\\logs\\op-2026-07-04T161827593170700Z-e0cfce0a-4529-4e34-aeb3-974546d7e83f.log"
+}

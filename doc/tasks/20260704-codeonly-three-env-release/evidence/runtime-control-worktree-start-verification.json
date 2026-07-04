@@ -1,0 +1,14 @@
+﻿{
+    "checkedAt":  "2026-07-05 00:04:30 +08:00",
+    "healthRaw":  "{\"status\":\"UP\"}",
+    "listenerPid":  10544,
+    "commandLine":  "\"C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.10.7-hotspot\\bin\\java.exe\" -jar D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260704-codeonly-three-env-release\\IntRuoyiMaintance\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar",
+    "expectedWorktree":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260704-codeonly-three-env-release\\IntRuoyiMaintance",
+    "commandLineUsesWorktreeJar":  true,
+    "trackedAndUntrackedStatus":  [
+                                      "?? frontend/pnpm-workspace.yaml",
+                                      "?? runtime/"
+                                  ],
+    "startOutLog":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260704-codeonly-three-env-release\\evidence\\runtime-control-worktree-start.out.log",
+    "startErrLog":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260704-codeonly-three-env-release\\evidence\\runtime-control-worktree-start.err.log"
+}

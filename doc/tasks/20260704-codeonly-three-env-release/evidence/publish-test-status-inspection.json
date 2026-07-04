@@ -1,0 +1,20 @@
+{
+  "operationId": "op-2026-07-04T164018694312200Z-1e1d3d80-0ef0-4e9b-94eb-825f27ef09e5",
+  "normalizedStatus": "SUCCESS",
+  "operation": {
+    "operationId": "op-2026-07-04T164018694312200Z-1e1d3d80-0ef0-4e9b-94eb-825f27ef09e5",
+    "requestedBy": "local-operator",
+    "requestedAt": "2026-07-04T16:40:34.860461700Z",
+    "environment": "test",
+    "component": "publish-test",
+    "action": "publish-test",
+    "actionLabel": "部署发布包到测试服",
+    "parameters": {
+      "releaseTag": "release-20260705-001827-codeonly-three-env"
+    },
+    "reason": "20260704-codeonly-three-env-release publish validated code-only package to test 172.30.30.58",
+    "status": "SUCCESS",
+    "summary": "命令执行完成",
+    "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260704-codeonly-three-env-release\\IntRuoyiMaintance\\runtime\\runtime-control\\logs\\op-2026-07-04T164018694312200Z-1e1d3d80-0ef0-4e9b-94eb-825f27ef09e5.log"
+  }
+}

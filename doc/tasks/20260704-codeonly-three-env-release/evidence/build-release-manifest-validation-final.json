@@ -1,0 +1,28 @@
+{
+  "releaseTag": "release-20260705-001827-codeonly-three-env",
+  "packageDirectory": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260705-001827-codeonly-three-env",
+  "manifestPath": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260705-001827-codeonly-three-env\\release-manifest.json",
+  "manifestSha256": "02dfafdcff8d315a3f3710da25afb020377665dc1bbac89e19dc7de92cfc682f",
+  "imageTar": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260705-001827-codeonly-three-env\\intruoyi-images_release-20260705-001827-codeonly-three-env.tar",
+  "imageTarSha256": "298172335f66e254cbd1489755f778faaf7d4564c10da6d26e02604dd76a54f3",
+  "fileCount": 255,
+  "requiredSqlFileCount": 244,
+  "publishScopeCodeOnlyPresent": true,
+  "backendCommitPresent": true,
+  "frontendCommitPresent": false,
+  "dirtyTruePresent": false,
+  "forbiddenDataPathHits": [],
+  "topLevelEntries": [
+    "docker-compose.yml",
+    "intruoyi-images_release-20260705-001827-codeonly-three-env.tar",
+    "manifest.json",
+    "release-manifest.json",
+    "required-sql",
+    "resources",
+    "runtime-env",
+    "smoke"
+  ],
+  "violations": [
+    "frontend commit missing from manifest"
+  ]
+}

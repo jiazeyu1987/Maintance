@@ -1,0 +1,16 @@
+{
+  "operationId": "op-2026-07-04T183107725619Z-343fbd72-c548-4a66-898b-8017f7557a3f",
+  "requestedBy": "local-operator",
+  "requestedAt": "2026-07-04T18:31:22.839003700Z",
+  "environment": "backup",
+  "component": "promote-backup",
+  "action": "promote-backup",
+  "actionLabel": "上线备份服务器",
+  "parameters": {
+    "releaseTag": "release-20260705-001827-codeonly-three-env"
+  },
+  "reason": "20260704-codeonly-three-env-release promote tested code-only release to backup server 172.30.30.59 with PROD confirmation and /mnt/intruoyi-data paths",
+  "status": "SUCCESS",
+  "summary": "命令执行完成",
+  "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260704-codeonly-three-env-release\\IntRuoyiMaintance\\runtime\\runtime-control\\logs\\op-2026-07-04T183107725619Z-343fbd72-c548-4a66-898b-8017f7557a3f.log"
+}

@@ -1,0 +1,40 @@
+{
+  "releaseTag": "release-20260705-001827-codeonly-three-env",
+  "packageDirectory": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260705-001827-codeonly-three-env",
+  "contractManifestPath": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260705-001827-codeonly-three-env\\manifest.json",
+  "legacyReleaseManifestPath": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260705-001827-codeonly-three-env\\release-manifest.json",
+  "manifestSha256": "b737640535b40574e8d94433b3da21c680112bc0dfa135553fe4895c4848ebab",
+  "releaseManifestSha256": "02dfafdcff8d315a3f3710da25afb020377665dc1bbac89e19dc7de92cfc682f",
+  "imageTar": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260705-001827-codeonly-three-env\\intruoyi-images_release-20260705-001827-codeonly-three-env.tar",
+  "imageTarSha256": "298172335f66e254cbd1489755f778faaf7d4564c10da6d26e02604dd76a54f3",
+  "fileCount": 255,
+  "topLevelEntries": [
+    "docker-compose.yml",
+    "intruoyi-images_release-20260705-001827-codeonly-three-env.tar",
+    "manifest.json",
+    "release-manifest.json",
+    "required-sql",
+    "resources",
+    "runtime-env",
+    "smoke"
+  ],
+  "requiredSqlFileCount": 244,
+  "forbiddenDataPathHits": [],
+  "backendRepo": {
+    "name": "ruoyi-vue-pro",
+    "pathRole": "backend",
+    "commit": "933de66d093e4c78dadddf6c56400160cbceb1fb",
+    "branch": "HEAD",
+    "dirty": false,
+    "dirtySummaryHash": null
+  },
+  "frontendRepo": {
+    "name": "yudao-ui-admin-vue3",
+    "pathRole": "admin-frontend",
+    "commit": "cc2cef81e11220a6ba50b8931dfca5811a368401",
+    "branch": "HEAD",
+    "dirty": false,
+    "dirtySummaryHash": null
+  },
+  "violations": []
+}

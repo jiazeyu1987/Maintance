@@ -1,0 +1,38 @@
+﻿{
+    "releaseTag":  "release-20260705-001827-codeonly-three-env",
+    "runtimeHealth":  "UP",
+    "runtimePid":  43044,
+    "runtimeCommandLine":  "\"C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.10.7-hotspot\\bin\\java.exe\" -jar D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar",
+    "runtimeCommandLinePointsToMain":  true,
+    "releaseWorktreeRootExists":  false,
+    "maintWorktreeContainsRelease":  false,
+    "backendWorktreeContainsRelease":  false,
+    "frontendWorktreeContainsRelease":  false,
+    "backendCurrentHead":  "1293ad5eea07107ca9d349c48be48e0be02f663c",
+    "frontendCurrentHead":  "cc2cef81e11220a6ba50b8931dfca5811a368401",
+    "maintCurrentHead":  "3df8d5a96920f8fd9bb7ec7362499bb52940e55d",
+    "backendStatus":  [
+                          " M yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/batchrecordreport/MesProBatchRecordReportLayoutCalibrator.java",
+                          " M yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/service/pro/batchrecordreport/FullWordTableInventoryProbeTest.java",
+                          " M yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/service/pro/batchrecordreport/MesProBatchRecordReportJsonBuilderTest.java"
+                      ],
+    "frontendStatus":  {
+
+                       },
+    "maintStatus":  [
+                        " M doc/tasks/20260701-dcc-batch-recognition-five-workers/execution-log.md",
+                        " M doc/tasks/20260701-rebuild-publish-all-after-fvm-message-fix/execution-log.md",
+                        " M docs/experience-index.md",
+                        " M docs/release-build-preflight-lessons.md",
+                        " M docs/request-command-log.md",
+                        "?? config/runtime-control.local.before-20260701-205043.yaml",
+                        "?? config/runtime-control.local.before-category-20260701-221522.yaml",
+                        "?? config/runtime-control.local.before-fix3-20260703-001013.yaml",
+                        "?? config/runtime-control.local.before-mes-scheduler-20260701-230707.yaml",
+                        "?? config/runtime-control.local.before-nodata-evening-20260702-2151.yaml",
+                        "?? config/runtime-control.local.before-nodata-evening-fix-20260702-2240.yaml",
+                        "?? config/runtime-control.local.before-nodata-evening-fix2-20260702-2316.yaml",
+                        "?? doc/tasks/20260704-codeonly-three-env-release/",
+                        "?? runtime/"
+                    ]
+}

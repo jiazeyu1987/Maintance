@@ -1,0 +1,11 @@
+﻿{
+    "health":  {
+                   "status":  "UP"
+               },
+    "pid":  43044,
+    "commandLine":  "\"C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.10.7-hotspot\\bin\\java.exe\" -jar D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar",
+    "commandLinePointsToMain":  true,
+    "commandLinePointsToReleaseWorktree":  false,
+    "mainConfigRepoRoot":  "D:/ProjectPackage/Int/IntRuoyi/ruoyi-vue-pro",
+    "mainConfigFrontendRoot":  "D:/ProjectPackage/Int/IntRuoyi/yudao-ui-admin-vue3"
+}

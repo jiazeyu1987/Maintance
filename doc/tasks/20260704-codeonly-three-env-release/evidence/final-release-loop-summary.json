@@ -1,0 +1,60 @@
+{
+  "releaseTag": "release-20260705-001827-codeonly-three-env",
+  "operations": [
+    {
+      "action": "build-release",
+      "found": true,
+      "operationId": "op-2026-07-04T161827593170700Z-e0cfce0a-4529-4e34-aeb3-974546d7e83f",
+      "status": "SUCCESS",
+      "environment": "release"
+    },
+    {
+      "action": "publish-test",
+      "found": true,
+      "operationId": "op-2026-07-04T164018694312200Z-1e1d3d80-0ef0-4e9b-94eb-825f27ef09e5",
+      "status": "SUCCESS",
+      "environment": "test"
+    },
+    {
+      "action": "mark-release-tested",
+      "found": true,
+      "operationId": "op-2026-07-04T181516637071500Z-3171b8c3-c937-4cfc-aafe-d7a7d9ebf9e6",
+      "status": "SUCCESS",
+      "environment": "test"
+    },
+    {
+      "action": "promote-prod",
+      "found": true,
+      "operationId": "op-2026-07-04T181652100023900Z-d8241796-3fe2-4592-bf13-b042def4b797",
+      "status": "SUCCESS",
+      "environment": "prod"
+    },
+    {
+      "action": "promote-backup",
+      "found": true,
+      "operationId": "op-2026-07-04T183107725619Z-343fbd72-c548-4a66-898b-8017f7557a3f",
+      "status": "SUCCESS",
+      "environment": "backup"
+    }
+  ],
+  "releasePackage": {
+    "releaseTag": "release-20260705-001827-codeonly-three-env",
+    "packageDirectoryName": "release-20260705-001827-codeonly-three-env",
+    "manifestPath": "Backup/ReleasePackage/release-20260705-001827-codeonly-three-env/release-manifest.json",
+    "builtAt": "2026-07-04T16:30:49.9321243Z",
+    "publishScope": "code-only",
+    "component": "intruoyi",
+    "includeShowroomBuildPackage": false,
+    "onlyOfficeIncluded": false,
+    "imageTag": "release-20260705-001827-codeonly-three-env",
+    "checksumPresent": true,
+    "tested": true,
+    "testedAt": "2026-07-04T18:15:18.7687373Z",
+    "operatorName": "BJB110",
+    "testedRecoverySetCandidateId": "restore:20260621-063218",
+    "testedRecoverySetId": "20260621-063218",
+    "testedRecoverySetManifestHash": "6806edb9075622a5dbe646e2a1dca1ea499472cc610e070161b68f7249aecf66",
+    "status": "AVAILABLE",
+    "blockedReasons": []
+  }
+}

@@ -2183,3 +2183,59 @@
 - 请求：完成任务文档、执行日志、cleanup 预览和最终证据校验。
 - 结果：PASS；releaseTag=release-20260703-2335-codeonly-three-env 同一标签完成三环境闭环。
 - 证据：D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260703-codeonly-three-env-release\evidence\final-release-closeout-verification.json。
+
+## 2026-07-04 23:44:12 +08:00 任务 20260704-codeonly-three-env-release 启动
+- 请求：执行 IntRuoyi 不带数据完整三环境发布闭环；使用后端、前端、维护仓当前 `int_main` 已提交 HEAD；新建本次专用临时发布 worktree；构建使用 `SkipDatabaseSync` 与 `SkipMinioSync`；按同一 releaseTag 完成 build-release、publish-test、mark-tested、promote-prod、promote-backup；正式/备份授权口径为 `PROD`。
+- 初始命令：读取三个仓库 branch/HEAD/dirty 状态；读取上一任务完成状态；创建 `doc/tasks/20260704-codeonly-three-env-release/` 并写入 `task.md`、`execution-log.md`。
+- 前置命令：读取 `docs/experience-index.md`、`docs/release-build-preflight-lessons.md`、`docs/release-agent-checklist.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\worktree-memory.md`。
+- 结果：`GREEN: experience-preflight -> PASS` 已写入执行日志；后续允许进入临时 release worktree 创建与发布前置检查。
+
+## 2026-07-04 23:56:00 +08:00 任务 20260704-codeonly-three-env-release 临时控制台构建失败冻结
+- 请求：在本轮专用临时 release worktree 中构建维护仓运行控制台。
+- 命令：`pnpm --dir <maintenance-worktree>\frontend approve-builds --all`；随后后台执行 `scripts\build.ps1`。
+- 失败：`scripts\build.ps1` 未生成 jar，stdout 显示 `ERR_PNPM_IGNORED_BUILDS`，阻断包为 `esbuild@0.27.7`、`vue-demi@0.14.10`；stderr 显示 `frontend\dist\index.html` 缺失。
+- 证据：`D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260704-codeonly-three-env-release\evidence\runtime-control-worktree-build.out.log`；`D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260704-codeonly-three-env-release\evidence\runtime-control-worktree-build.err.log`。
+- 经验沉淀：已更新 `docs/release-build-preflight-lessons.md` 与 `docs/experience-index.md`，补充 approve-builds 空结果后仍需以 install 通过为准的门禁。
+
+## 2026-07-04 23:59:25 +08:00 任务 20260704-codeonly-three-env-release 临时控制台构建修复
+- 请求：补齐临时维护仓 frontend build scripts approval 前置条件并重跑完整构建。
+- 命令：写入临时 worktree 的 `frontend/pnpm-workspace.yaml`，设置 `allowBuilds.esbuild=true` 与 `allowBuilds.vue-demi=true`；执行 `pnpm install --frozen-lockfile`；后台重跑 `scripts\build.ps1`。
+- 结果：PASS；frontend install/typecheck/build 通过，Maven 测试 26 项通过，生成 `backend\target\runtime-control-maintenance-2026.06-SNAPSHOT.jar`。
+- 证据：`D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260704-codeonly-three-env-release\evidence\runtime-control-worktree-build-retry1.out.log`；`D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260704-codeonly-three-env-release\evidence\runtime-control-worktree-build-retry1.err.log`。
+
+## 2026-07-05 00:04:30 +08:00 任务 20260704-codeonly-three-env-release 临时控制台启动
+- 请求：将本机 48181 运行控制台切到本轮临时 release worktree。
+- 命令：确认 48181 当前由主维护仓 jar 进程 PID=20628 占用后停止该进程；从 `D:\ProjectPackage\Int\IntRuoyiWorktrees\20260704-codeonly-three-env-release\IntRuoyiMaintance\scripts\start.ps1` 启动临时控制台；验证 `/actuator/health`、监听进程和命令行路径。
+- 结果：PASS；48181 health=`{"status":"UP"}`，listener PID=10544，命令行指向本轮临时 release worktree jar。
+- 证据：`D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260704-codeonly-three-env-release\evidence\runtime-control-worktree-start-verification.json`。
+
+## 2026-07-05 00:07:34 +08:00 任务 20260704-codeonly-three-env-release 构建前 migration 门禁失败
+- 请求：执行 build-release 前置门禁。
+- 命令：后端 worktree 执行 `python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql`；维护仓 worktree 执行 `python -X utf8 -m pytest scripts\tests\test_release_package_slimming.py scripts\tests\test_publish_release_lock_cleanup.py scripts\tests\test_release_sql_preflight_gate.py`。
+- 结果：维护仓发布脚本测试 PASS，17 passed；后端 migration policy gate FAIL，`20260704_showroom_product_target_market_text` 依赖不存在的 `20260519_showroom_v1_schema`。
+- 影响：build-release 尚未执行，未生成 releaseTag；必须先修 SQL release-migration 元数据并提交，再重建临时发布 worktree。
+- 证据：`D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260704-codeonly-three-env-release\evidence\migration-policy-gate-failure-20260705.json`。
+- 经验沉淀：已更新 `docs/release-build-preflight-lessons.md` 与 `docs/experience-index.md`，补充 dependsOn 必须引用真实 migrationId 的门禁。
+
+- [2026-07-05 00:17:58 +08:00] 同步后端修复提交到发布 worktree：git checkout --detach 933de66d093e4c78dadddf6c56400160cbceb1fb；后端/前端发布 worktree dirty=false。
+- [2026-07-05 00:17:59 +08:00] 重新执行迁移门禁和维护仓发布脚本测试：全部 PASS。
+- [2026-07-05 00:31:55 +08:00] 继续追踪已提交 build-release：releaseTag=release-20260705-001827-codeonly-three-env, operationId=op-2026-07-04T161827593170700Z-e0cfce0a-4529-4e34-aeb3-974546d7e83f, status=SUCCESS。
+- [2026-07-05 00:33:06 +08:00] 校验 build manifest 与发布包内容：INVALID，证据 JSON BOM 读取失败，未进入 publish-test，以下重跑结果为准。
+- [2026-07-05 00:37:41 +08:00] 冻结 build manifest 校验失败证据：release-manifest.json 未包含前端 commit；暂停发布并检查 manifest 契约。
+- [2026-07-05 00:38:18 +08:00] 沉淀 manifest 校验入口经验，并按 manifest.json 契约重跑构建产物校验：PASS。
+- [2026-07-05 00:39:06 +08:00] publish-test 预览门禁失败并冻结证据：未执行发布操作，开始检查 preview 响应与 action 契约。
+- [2026-07-05 02:11:06 +08:00] 重新读取 publish-test operation 状态：operationId=op-2026-07-04T164018694312200Z-1e1d3d80-0ef0-4e9b-94eb-825f27ef09e5，normalizedStatus=SUCCESS；修正轮询脚本误判超时。
+- [2026-07-05 02:13:15 +08:00] 修正测试服验证脚本生成方式：前次本机字符串展开失败，未执行远端操作；改为单引号 here-string 后重跑。
+- [2026-07-05 02:13:21 +08:00] 测试服验证：.env、backend/frontend 镜像 tag、backend health=UP、frontend HTTP 200、PDF worker HTTP 200，PASS。
+- [2026-07-05 02:15:37 +08:00] mark-tested 执行：releaseTag=release-20260705-001827-codeonly-three-env, operationId=op-2026-07-04T181516637071500Z-3171b8c3-c937-4cfc-aafe-d7a7d9ebf9e6, status=SUCCESS, recoverySet=restore:20260621-063218。
+- [2026-07-05 02:29:24 +08:00] promote-prod 执行成功：releaseTag=release-20260705-001827-codeonly-three-env, operationId=op-2026-07-04T181652100023900Z-d8241796-3fe2-4592-bf13-b042def4b797, ConfirmText=PROD, RequireTested。
+- [2026-07-05 02:30:15 +08:00] 正式服验证：host=172.30.30.57，.env、backend/frontend 镜像 tag、backend health=UP、frontend HTTP 200、PDF worker HTTP 200，PASS。
+- [2026-07-05 02:46:53 +08:00] promote-backup 执行成功：releaseTag=release-20260705-001827-codeonly-three-env, operationId=op-2026-07-04T183107725619Z-343fbd72-c548-4a66-898b-8017f7557a3f, ConfirmText=PROD, RequireTested, /mnt/intruoyi-data 参数已在预览确认。
+- [2026-07-05 02:47:27 +08:00] 备份服验证：host=172.30.30.59，.env、backend/frontend 镜像 tag、backend health=UP、frontend/PDF HTTP 200、/mnt/intruoyi-data 挂载和发布路径，PASS。
+- [2026-07-05 02:48:11 +08:00] 汇总最终发布闭环 operation：五个 operation 均为 SUCCESS，releaseTag=release-20260705-001827-codeonly-three-env，tested metadata 已存在。
+- [2026-07-05 02:49:32 +08:00] 恢复本机运行控制台到主维护仓：health=UP，PID=43044，命令行指向主仓 jar，PASS。
+- [2026-07-05 02:51:32 +08:00] release worktree 删除首次残留：仅本次专用根目录下仍有未跟踪运行/构建产物，开始安全清理重试。
+- [2026-07-05 02:52:12 +08:00] release worktree 残留清理重试：PowerShell Remove-Item 遇到 node_modules 长路径，改用带路径校验的单脚本删除。
+- [2026-07-05 02:52:50 +08:00] release worktree 残留清理再次重试：先清 node_modules 长路径残留，再删除本次 release 根。
+- [2026-07-05 02:54:31 +08:00] 本次专用临时 release worktree 根目录及三仓 worktree 元数据清理完成，PASS。
+- [2026-07-05 02:55:15 +0800] 任务完成：releaseTag=release-20260705-001827-codeonly-three-env 完成三环境 code-only 发布闭环，运行控制台恢复主路径，临时 worktree 删除完成。

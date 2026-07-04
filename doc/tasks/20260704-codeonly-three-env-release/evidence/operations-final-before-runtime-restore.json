@@ -1,0 +1,92 @@
+﻿{
+    "code":  0,
+    "data":  [
+                 {
+                     "operationId":  "op-2026-07-04T183107725619Z-343fbd72-c548-4a66-898b-8017f7557a3f",
+                     "requestedBy":  "local-operator",
+                     "requestedAt":  "2026-07-04T18:31:22.839003700Z",
+                     "environment":  "backup",
+                     "component":  "promote-backup",
+                     "action":  "promote-backup",
+                     "actionLabel":  "ä¸çº¿å¤ä»½æå¡å¨",
+                     "parameters":  {
+                                        "releaseTag":  "release-20260705-001827-codeonly-three-env"
+                                    },
+                     "reason":  "20260704-codeonly-three-env-release promote tested code-only release to backup server 172.30.30.59 with PROD confirmation and /mnt/intruoyi-data paths",
+                     "status":  "SUCCESS",
+                     "summary":  "å½ä»¤æ§è¡å®æ",
+                     "resultLogPath":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260704-codeonly-three-env-release\\IntRuoyiMaintance\\runtime\\runtime-control\\logs\\op-2026-07-04T183107725619Z-343fbd72-c548-4a66-898b-8017f7557a3f.log"
+                 },
+                 {
+                     "operationId":  "op-2026-07-04T181652100023900Z-d8241796-3fe2-4592-bf13-b042def4b797",
+                     "requestedBy":  "local-operator",
+                     "requestedAt":  "2026-07-04T18:17:23.969164900Z",
+                     "environment":  "prod",
+                     "component":  "promote-prod",
+                     "action":  "promote-prod",
+                     "actionLabel":  "ä¸çº¿å·²éªè¯åå¸å\u0085",
+                     "parameters":  {
+                                        "releaseTag":  "release-20260705-001827-codeonly-three-env",
+                                        "prodDryRunEvidencePath":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260704-codeonly-three-env-release\\IntRuoyiMaintance\\runtime\\runtime-control\\prod-preflight-release-evidence\\release-20260705-001827-codeonly-three-env-preflight-release-dry-run.json"
+                                    },
+                     "reason":  "20260704-codeonly-three-env-release promote tested code-only release to production with PROD confirmation",
+                     "status":  "SUCCESS",
+                     "summary":  "å½ä»¤æ§è¡å®æ",
+                     "resultLogPath":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260704-codeonly-three-env-release\\IntRuoyiMaintance\\runtime\\runtime-control\\logs\\op-2026-07-04T181652100023900Z-d8241796-3fe2-4592-bf13-b042def4b797.log"
+                 },
+                 {
+                     "operationId":  "op-2026-07-04T181516637071500Z-3171b8c3-c937-4cfc-aafe-d7a7d9ebf9e6",
+                     "requestedBy":  "local-operator",
+                     "requestedAt":  "2026-07-04T18:15:17.525892Z",
+                     "environment":  "test",
+                     "component":  "mark-release-tested",
+                     "action":  "mark-release-tested",
+                     "actionLabel":  "æ è®°æµè¯éè¿",
+                     "parameters":  {
+                                        "releaseTag":  "release-20260705-001827-codeonly-three-env",
+                                        "testConclusion":  "?????????:.env IMAGE_TAG?backend/frontend ?? tag?backend health=UP?frontend HTTP 200?PDF worker HTTP 200,????????????",
+                                        "selectedRecoverySetCandidateId":  "restore:20260621-063218"
+                                    },
+                     "reason":  "20260704-codeonly-three-env-release test server verification passed; mark release tested before PROD promotion",
+                     "status":  "SUCCESS",
+                     "summary":  "å½ä»¤æ§è¡å®æ",
+                     "resultLogPath":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260704-codeonly-three-env-release\\IntRuoyiMaintance\\runtime\\runtime-control\\logs\\op-2026-07-04T181516637071500Z-3171b8c3-c937-4cfc-aafe-d7a7d9ebf9e6.log"
+                 },
+                 {
+                     "operationId":  "op-2026-07-04T164018694312200Z-1e1d3d80-0ef0-4e9b-94eb-825f27ef09e5",
+                     "requestedBy":  "local-operator",
+                     "requestedAt":  "2026-07-04T16:40:34.860461700Z",
+                     "environment":  "test",
+                     "component":  "publish-test",
+                     "action":  "publish-test",
+                     "actionLabel":  "é¨ç½²åå¸å\u0085å°æµè¯æ",
+                     "parameters":  {
+                                        "releaseTag":  "release-20260705-001827-codeonly-three-env"
+                                    },
+                     "reason":  "20260704-codeonly-three-env-release publish validated code-only package to test 172.30.30.58",
+                     "status":  "SUCCESS",
+                     "summary":  "å½ä»¤æ§è¡å®æ",
+                     "resultLogPath":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260704-codeonly-three-env-release\\IntRuoyiMaintance\\runtime\\runtime-control\\logs\\op-2026-07-04T164018694312200Z-1e1d3d80-0ef0-4e9b-94eb-825f27ef09e5.log"
+                 },
+                 {
+                     "operationId":  "op-2026-07-04T161827593170700Z-e0cfce0a-4529-4e34-aeb3-974546d7e83f",
+                     "requestedBy":  "local-operator",
+                     "requestedAt":  "2026-07-04T16:18:27.598289800Z",
+                     "environment":  "release",
+                     "component":  "build-release",
+                     "action":  "build-release",
+                     "actionLabel":  "æå»ºåå¸å\u0085",
+                     "parameters":  {
+                                        "publishScope":  "code-only",
+                                        "includeOnlyOffice":  "false",
+                                        "includeShowroomBuildPackage":  "false",
+                                        "releaseTag":  "release-20260705-001827-codeonly-three-env"
+                                    },
+                     "reason":  "20260704-codeonly-three-env-release code-only build after migration policy fix",
+                     "status":  "SUCCESS",
+                     "summary":  "å½ä»¤æ§è¡å®æ",
+                     "resultLogPath":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260704-codeonly-three-env-release\\IntRuoyiMaintance\\runtime\\runtime-control\\logs\\op-2026-07-04T161827593170700Z-e0cfce0a-4529-4e34-aeb3-974546d7e83f.log"
+                 }
+             ],
+    "msg":  ""
+}

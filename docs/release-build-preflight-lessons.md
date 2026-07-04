@@ -191,6 +191,12 @@
 - 新建维护仓临时发布 worktree 后，`frontend/node_modules` 不存在或由 pnpm 11 首次恢复时，必须先在维护仓 `frontend` 目录执行 `pnpm approve-builds --all`，确认 `esbuild`、`vue-demi` 等前端构建脚本被显式允许，再执行 `scripts/build.ps1`。
 - 若出现 `ERR_PNPM_IGNORED_BUILDS`，不得跳过前端构建、不得复用主工作区 `dist` 或旧 jar；先冻结失败证据，再补齐 approve-builds 前置条件并重跑完整维护控制台构建。
 - 运行控制台切换到 release worktree 前，必须确认 48181 归属；旧主工作区进程停止后若构建失败，记录 48181 无监听影响，补齐前置条件后再启动 release worktree 控制台。
+
+### 2026-07-04 pnpm approve-builds 空结果仍可能阻断 install
+
+- 在干净维护仓 release worktree 中，`pnpm approve-builds --all` 可能返回 "There are no packages awaiting approval"，但随后的 `pnpm install --frozen-lockfile` 仍因 `ERR_PNPM_IGNORED_BUILDS` 阻断 `esbuild`、`vue-demi`。
+- 前置门禁不能只看 `approve-builds --all` 退出码；必须紧接着执行一次 `pnpm --dir <maintenance-worktree>\frontend install --frozen-lockfile`，并以该命令真实通过作为 frontend build scripts approval 证据。
+- 若 install 仍报 `ERR_PNPM_IGNORED_BUILDS`，必须先冻结 stdout/stderr，再查 pnpm approval state、ignored builds 清单和 workspace 配置；不得复用主工作区 `node_modules`、`dist` 或旧 jar。
 ## 2026-07-03 mark-release-tested 必须携带 recovery set 候选
 
 - 触发条件：code-only 发布在测试服验证通过后执行 mark-release-tested。
@@ -198,9 +204,27 @@
 - 前置门禁：mark-tested 前必须从当前 releaseTag/测试服发布结果对应的真实候选来源取得 `selectedRecoverySetCandidateId`，不得省略、不得手工标绿。
 - 处理要求：冻结预览失败证据，补齐真实候选 ID 后重新预览并执行 mark-tested。
 
+## 2026-07-05 release-migration dependsOn 必须引用真实 migrationId
+
+- 触发条件：构建前执行 `python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql`。
+- 失败现象：`dependsOn missing migration '20260519_showroom_v1_schema' for migrationId '20260704_showroom_product_target_market_text'`。
+- 前置门禁：新增 SQL 的 `dependsOn` 必须引用 `sql\mysql` 中真实存在的 SQL 文件 stem / migrationId；不得凭表名、历史记忆或业务模块名称编造依赖。
+- 处理要求：先冻结门禁失败 JSON 和目标 SQL 首行，再只读列出同域 SQL 的 release-migration 元数据，确认最小真实依赖后修复 SQL 元数据；修复后必须重跑 migration policy gate，生成新提交后重建 release worktree，不得把临时 worktree 未提交修复混入发布包。
+
 ## 2026-07-04 正式服验证必须读取 docker compose 端口映射
 
 - 触发条件：promote-prod 后执行远端健康检查。
 - 失败现象：直接访问宿主 `127.0.0.1:48080` 和 `127.0.0.1:80` 返回拒绝连接，但 `docker compose ps` 显示正式服实际映射为 `48081->48080`、`8081->80`，容器内服务已正常启动。
 - 前置门禁：正式服/备份服验收不得硬编码宿主端口；必须先以 `docker compose ps` 或发布配置为准确认宿主端口，再验证 backend health、frontend HTTP 和 PDF worker。
 - 处理要求：先冻结错误端口的失败证据，再使用真实端口重验；不得把端口映射差异误判为发布失败。
+
+## 2026-07-05 发布 manifest sourceRepos 校验入口
+- 现象：code-only build 成功后，`release-manifest.json` 只记录兼容概要字段（例如 `gitCommit`），不承载完整 `sourceRepos`；若用它校验前后端 commit，会误判“前端 commit 缺失”。
+- 前置门禁：构建后必须以发布包根目录的 `manifest.json` 作为完整契约入口，校验 `publishScope=code-only`、`sourceRepos[*].commit`、`sourceRepos[*].dirty=false`、`releaseTag` 与包目录一致；`release-manifest.json` 只用于兼容概要存在性/摘要校验。
+- 失败处理：若 `manifest.json` 缺失或 `sourceRepos` 不完整，发布包判废并重新构建；不得用 `release-manifest.json` 或运行日志手工补齐字段后继续发布。
+
+## 2026-07-05 deploy action preview 参数契约
+- 现象：对 `publish-test` 这类部署动作发送 `publishScope/includeOnlyOffice/includeShowroomBuildPackage` 会触发接口参数校验失败（例如 `msg=publishScope`），预览不会返回部署命令。
+- 前置门禁：`build-release` 使用 `publishScope=code-only`、`SkipDatabaseSync`、`SkipMinioSync`；后续 `publish-test/promote-prod/promote-backup` 必须复用已构建 releaseTag，只发送部署动作必需字段：`action`、`reason`、`releaseTag`、`targetEnvironment`，生产级动作再加 `prodConfirmText=PROD`。
+- 失败处理：预览返回 4xx 时不得执行 action；冻结 preview JSON，修正参数契约并重新预览，确认命令包含 `-Mode deploy-release`、目标环境、目标主机与 releaseTag 后再执行。
+

@@ -1,0 +1,8 @@
+﻿{
+    "checkedAt":  "2026-07-05 00:07:34 +08:00",
+    "command":  "python -X utf8 script\\release\\run-release-migration-policy-gate.py --sql-root sql\\mysql",
+    "workdir":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260704-codeonly-three-env-release\\ruoyi-vue-pro",
+    "status":  "failed",
+    "error":  "dependsOn missing migration \u002720260519_showroom_v1_schema\u0027 for migrationId \u002720260704_showroom_product_target_market_text\u0027",
+    "impact":  "build-release is blocked before package creation; no releaseTag has been generated."
+}
