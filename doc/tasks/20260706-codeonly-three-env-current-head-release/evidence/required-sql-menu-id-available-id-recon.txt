@@ -1,0 +1,95 @@
+time=2026-07-06 22:20:06 +08:00
+=== local candidate id search 900363-900380 ===
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\script\tests\test_post_release_role_e2e_gate_sql.py:225:    assert "`process_id` = 900370" in sql
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\script\tests\test_post_release_role_e2e_gate_sql.py:226:    assert "`process_id` = 900371" in sql
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_post_release_role_e2e_gate_smoke_route_900026_line_fix.sql:34:    AND `process_id` IN (900379, 900380, 900381, 900382, 900383, 900384, 900385, 900386, 900387)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql:20:    AND `process_id` = 900370
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql:26:      SET MESSAGE_TEXT = 'post release admin resource capacity fix requires one active keep row for machinery 47 process 900370 at 25.714286';
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql:33:    AND `process_id` = 900371
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql:39:      SET MESSAGE_TEXT = 'post release admin resource capacity fix requires one active keep row for machinery 47 process 900371 at 40.000000';
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql:48:    AND `process_id` = 900370
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql:58:    AND `process_id` = 900371
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql:68:      AND `process_id` IN (900370, 900371)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql:83:    AND `process_id` = 900370
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql:91:    AND `process_id` = 900371
+=== remote test readonly system_menu candidates ===
+mysql: [Warning] Using a password on the command line interface can be insecure.
+section
+system_menu_900290_900390
+id	name	permission	parent_id	type	deleted
+900290	eDHR DHR模板	mes:pro-edhr-dhr-template:query	900220	2	\0
+900291	eDHR DHR模板查询	mes:pro-edhr-dhr-template:query	900290	3	\0
+900292	eDHR DHR模板创建	mes:pro-edhr-dhr-template:create	900290	3	\0
+900293	eDHR统一变更	mes:pro-edhr-change:unified-query	900220	2	\0
+900294	eDHR统一变更创建	mes:pro-edhr-change:unified-create	900293	3	\0
+900295	eDHR统一变更提交	mes:pro-edhr-change:unified-submit	900293	3	\0
+900301	eDHR记录本	mes:pro-edhr-recordbook:query	900220	2	\0
+900302	eDHR记录本模板查询	mes:pro-edhr-recordbook-template:query	900301	3	\0
+900303	eDHR记录本模板创建	mes:pro-edhr-recordbook-template:create	900301	3	\0
+900304	eDHR记录本模板启用	mes:pro-edhr-recordbook-template:activate	900301	3	\0
+900305	eDHR记录本查询	mes:pro-edhr-recordbook:query	900301	3	\0
+900306	eDHR记录本创建	mes:pro-edhr-recordbook:create	900301	3	\0
+900307	eDHR记录条目查询	mes:pro-edhr-recordbook-entry:query	900301	3	\0
+900308	eDHR记录条目创建	mes:pro-edhr-recordbook-entry:create	900301	3	\0
+900309	eDHR记录条目草稿保存	mes:pro-edhr-recordbook-entry:save	900301	3	\0
+900310	eDHR记录条目提交	mes:pro-edhr-recordbook-entry:submit	900301	3	\0
+900311	eDHR受控标签查询	mes:pro-edhr-tag:query	900301	3	\0
+900312	eDHR受控标签创建	mes:pro-edhr-tag:create	900301	3	\0
+900313	eDHR受控标签启用	mes:pro-edhr-tag:activate	900301	3	\0
+900314	eDHR受控标签停用	mes:pro-edhr-tag:disable	900301	3	\0
+900315	eDHR部署授权接口		900220	2	\0
+900316	eDHR部署查询	mes:pro-edhr-deployment:query	900315	3	\0
+900317	eDHR部署创建	mes:pro-edhr-deployment:create	900315	3	\0
+900318	eDHR部署补证据	mes:pro-edhr-deployment:update	900315	3	\0
+900319	eDHR部署预检	mes:pro-edhr-deployment:precheck	900315	3	\0
+900320	eDHR标签管理	mes:pro-edhr-label:query	900220	2	\0
+900321	eDHR标签模板查询	mes:pro-edhr-label-template:query	900320	3	\0
+900322	eDHR标签模板创建	mes:pro-edhr-label-template:create	900320	3	\0
+900323	eDHR标签模板启用	mes:pro-edhr-label-template:activate	900320	3	\0
+900324	eDHR标签查询	mes:pro-edhr-label:query	900320	3	\0
+900325	eDHR标签预览	mes:pro-edhr-label:preview	900320	3	\0
+900326	eDHR打印任务	mes:pro-edhr-print-task:query	900220	2	\0
+900327	eDHR打印任务查询	mes:pro-edhr-print-task:query	900326	3	\0
+900328	eDHR创建打印任务	mes:pro-edhr-print-task:create	900326	3	\0
+900329	eDHR标记打印失败	mes:pro-edhr-print-task:mark-failed	900326	3	\0
+900330	eDHR确认打印成功	mes:pro-edhr-print-task:confirm	900326	3	\0
+900331	eDHR打印事件查询	mes:pro-edhr-print-task:query	900326	3	\0
+900332	eDHR OQ/PQ执行台		900220	2	\0
+900333	eDHR OQ/PQ查询	mes:pro-edhr-oq-pq:query	900332	3	\0
+900334	eDHR OQ/PQ创建	mes:pro-edhr-oq-pq:create	900332	3	\0
+900335	eDHR OQ/PQ执行	mes:pro-edhr-oq-pq:execute	900332	3	\0
+900336	eDHR 偏差复测	mes:pro-edhr-oq-pq:retest	900332	3	\0
+900337	eDHR 偏差关闭	mes:pro-edhr-oq-pq:close	900332	3	\0
+900338	eDHR打印策略	mes:pro-edhr-print-policy:query	900220	2	\0
+900339	eDHR打印策略查询	mes:pro-edhr-print-policy:query	900338	3	\0
+900340	eDHR打印策略创建	mes:pro-edhr-print-policy:create	900338	3	\0
+900341	eDHR打印策略启用	mes:pro-edhr-print-policy:activate	900338	3	\0
+900342	eDHR补打申请	mes:pro-edhr-print-task:reprint	900278	3	\0
+900343	eDHR作废历史副本	mes:pro-edhr-print-task:history-copy	900278	3	\0
+900344	eDHR打印历史导出	mes:pro-edhr-print-task:export	900278	3	\0
+900345	eDHR补打历史查询	mes:pro-edhr-print-task:query	900278	3	\0
+900346	eDHR导出审计查询	mes:pro-edhr-print-task:query	900278	3	\0
+900347	eDHR DHR模板完整性检查	mes:pro-edhr-dhr-template:check	900290	3	\0
+900348	eDHR DHR模板审核	mes:pro-edhr-dhr-template:approve	900290	3	\0
+900349	eDHR DHR模板签核	mes:pro-edhr-dhr-template:signoff	900290	3	\0
+900350	eDHR DHR模板生效	mes:pro-edhr-dhr-template:activate	900290	3	\0
+900351	eDHR DHR模板停用	mes:pro-edhr-dhr-template:retire	900290	3	\0
+900352	eDHR DHR模板作废	mes:pro-edhr-dhr-template:void	900290	3	\0
+900353	eDHR放行驳回	mes:pro-edhr-release:reject	900260	3	\0
+900354	eDHR放行撤回	mes:pro-edhr-release:withdraw	900260	3	\0
+900355	eDHR放行事务事件查询	mes:pro-edhr-release:event-query	900260	3	\0
+900356	eDHR流程干预管理	mes:pro-edhr-flow-intervention:query	900220	2	\0
+900357	eDHR流程日志查询	mes:pro-edhr-flow-intervention:event-query	900356	3	\0
+900358	eDHR流程退回	mes:pro-edhr-flow-intervention:return	900356	3	\0
+900359	eDHR流程撤回	mes:pro-edhr-flow-intervention:withdraw	900356	3	\0
+900360	eDHR流程转办	mes:pro-edhr-flow-intervention:transfer	900356	3	\0
+900361	eDHR流程加签	mes:pro-edhr-flow-intervention:add-sign	900356	3	\0
+900362	eDHR管理员干预	mes:pro-edhr-flow-intervention:admin-intervene	900356	3	\0
+section
+target_permissions_existing
+section
+candidate_id_count
+used_900363_900364	used_900365_900366	used_900367_900368
+NULL	NULL	NULL
+close - IO is still pending on closed socket. read:1, write:0, io:000002A2A091A440
+remoteExitCode=0

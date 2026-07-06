@@ -1,0 +1,189 @@
+timestamp=2026-07-06T23:43:38
+--- health ---
+healthStatusCode=200
+healthBody=123 34 115 116 97 116 117 115 34 58 34 85 80 34 125
+--- java processes ---
+
+
+ProcessId   : 36468
+Name        : java.exe
+CommandLine : "C:\Program Files\Eclipse Adoptium\jdk-21.0.10.7-hotspot\bin\java.exe" -jar E:\Int\CacheData\IntRuoyi\run
+              time\backend-20260706-233914.jar --server.port=48081 --spring.profiles.active=local --spring.datasource.d
+              ynamic.datasource.master.url=jdbc:mysql://127.0.0.1:23306/ruoyi-vue-pro?useSSL=false&serverTimezone=Asia/
+              Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true --spring
+              .datasource.dynamic.datasource.master.username=root --spring.datasource.dynamic.datasource.master.passwor
+              d=123456 --spring.datasource.dynamic.datasource.slave.url=jdbc:mysql://127.0.0.1:23306/ruoyi-vue-pro?useS
+              SL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true&nullCata
+              logMeansCurrent=true --spring.datasource.dynamic.datasource.slave.username=root --spring.datasource.dynam
+              ic.datasource.slave.password=123456 --spring.data.redis.host=127.0.0.1 --spring.data.redis.port=26379 --y
+              udao.dcc.preview.onlyoffice.base-url=http://127.0.0.1:8080 --yudao.dcc.preview.onlyoffice.public-file-bas
+              e-url=http://host.docker.internal:48081 --yudao.runtime-control.repo-root=D:\ProjectPackage\Int\IntRuoyi\
+              ruoyi-vue-pro --yudao.runtime-control.state-dir=D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\runtime\runt
+              ime-control --yudao.runtime-control.release-package.backend-runtime-base-mode=offline-tar --yudao.runtime
+              -control.release-package.backend-runtime-base-tar-path=D:\ProjectPackage\Int\BaseImages\intruoyi-backend-
+              runtime-base-2026.06.05-jre21-noble-docker29.2.1.tar --yudao.runtime-control.release-package.backend-runt
+              ime-base-tar-sha256=5bcd568b46ba9f28bfa7ac8ee67e283aea95bd585a89842a14cc40827fa71603 --yudao.runtime-cont
+              rol.release-package.backend-runtime-base-image=intruoyi-backend-runtime-base:2026.06.05-jre21-noble-docke
+              r29.2.1 --yudao.runtime-control.release-package.backend-runtime-base-digest=sha256:b4f7d85f325665c3b37237
+              9e6d352c3c8be2d3a08add68ac0dc151f720160be7 --yudao.runtime-control.release-package.backend-runtime-base-v
+              ersion=2026.06.05-jre21-noble-docker29.2.1 --yudao.erp.kingdee.base-url=http://172.30.30.8 --yudao.erp.ki
+              ngdee.acct-id=6977227150362f --yudao.erp.kingdee.username=贾泽宇 --yudao.erp.kingdee.password=<redacted> 
+              --yudao.erp.kingdee.lcid=2052 --yudao.erp.kingdee.purchase-order.purchase-org-number=881 --yudao.erp.king
+              dee.purchase-order.query-days=365 --yudao.erp.kingdee.purchase-order.query-limit=1000 
+
+ProcessId   : 13492
+Name        : java.exe
+CommandLine : "C:\Program Files\Eclipse Adoptium\jdk-21.0.10.7-hotspot\bin\java.exe" -jar D:\ProjectPackage\Int\IntRuoy
+              iMaintance\backend\target\runtime-control-maintenance-2026.06-SNAPSHOT.jar 
+
+ProcessId   : 13900
+Name        : powershell.exe
+CommandLine : "C:\windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Command "try { [Console]::OutputEncoding=[Sy
+              stem.Text.Encoding]::UTF8 } catch {}
+              $ErrorActionPreference='Continue'
+              [Console]::InputEncoding = [System.Text.UTF8Encoding]::new($false)
+              [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+              $OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+              $root = 'D:\ProjectPackage\Int\IntRuoyiMaintance'
+              $taskDir = Join-Path $root 'doc\tasks\20260706-codeonly-three-env-current-head-release'
+              $evidenceDir = Join-Path $taskDir 'evidence'
+              $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+              $out = Join-Path $evidenceDir 'runtime-restore-failure-inspection.txt'
+              $lines = New-Object System.Collections.Generic.List[string]
+              $lines.Add(\"timestamp=$((Get-Date).ToString('s'))\")
+              $lines.Add('--- health ---')
+              try {
+                $resp = Invoke-WebRequest -Uri 'http://127.0.0.1:48181/actuator/health' -UseBasicParsing -TimeoutSec 5
+                $lines.Add(\"healthStatusCode=$($resp.StatusCode)\")
+                $lines.Add(\"healthBody=$($resp.Content)\")
+              } catch { $lines.Add(\"healthError=$($_.Exception.Message)\") }
+              $lines.Add('--- java processes ---')
+              $lines.Add((Get-CimInstance Win32_Process | Where-Object { $_.Name -match '^java' -or $_.CommandLine -mat
+              ch 'runtime-control-maintenance' } | Select-Object ProcessId,Name,CommandLine | Format-List | Out-String)
+              )
+              $lines.Add('--- main jar exists ---')
+              $mainJar = Join-Path $root 'backend\target\runtime-control-maintenance-2026.06-SNAPSHOT.jar'
+              $lines.Add(\"mainJar=$mainJar\")
+              $lines.Add(\"mainJarExists=$(Test-Path -LiteralPath $mainJar -PathType Leaf)\")
+              if (Test-Path -LiteralPath $mainJar) { $lines.Add(\"mainJarSize=$((Get-Item -LiteralPath $mainJar).Length
+              )\") }
+              $lines.Add('--- latest restore logs ---')
+              $logDir = Join-Path $root 'runtime\logs'
+              if (Test-Path -LiteralPath $logDir) {
+                Get-ChildItem -LiteralPath $logDir -File -Filter 'runtime-control-main-restore-*' | Sort-Object LastWri
+              teTime -Descending | Select-Object -First 8 | ForEach-Object {
+                  $lines.Add(\"LOG=$($_.FullName) lastWrite=$($_.LastWriteTime.ToString('s')) size=$($_.Length)\")
+                  try { $lines.Add(([System.IO.File]::ReadAllText($_.FullName, $utf8NoBom) -split \"`r?`n\" | Select-Ob
+              ject -Last 80 | Out-String)) } catch { $lines.Add(\"logReadError=$($_.Exception.Message)\") }
+                }
+              }
+              $lines.Add('--- temp worktree paths ---')
+              foreach ($p in @('D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce','D:\ProjectPackage\Int\IntRuoyiWorkt
+              rees\r260706ce\b','D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f','D:\ProjectPackage\Int\IntRuoyiWo
+              rktrees\r260706ce\m')) {
+                $lines.Add(\"path=$p exists=$(Test-Path -LiteralPath $p)\")
+              }
+              $lines.Add('--- git worktree lists ---')
+              foreach ($repo in @('D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro','D:\ProjectPackage\Int\IntRuoyi\yudao-
+              ui-admin-vue3','D:\ProjectPackage\Int\IntRuoyiMaintance')) {
+                $lines.Add(\"REPO=$repo\")
+                try { $lines.Add((git -C $repo worktree list | Out-String)) } catch { $lines.Add(\"worktreeListError=$(
+              $_.Exception.Message)\") }
+              }
+              [System.IO.File]::WriteAllText($out, ($lines -join \"`n\") + \"`n\", $utf8NoBom)
+              Get-Content -LiteralPath $out -Encoding utf8 | Select-Object -First 260"
+
+
+
+
+--- main jar exists ---
+mainJar=D:\ProjectPackage\Int\IntRuoyiMaintance\backend\target\runtime-control-maintenance-2026.06-SNAPSHOT.jar
+mainJarExists=True
+mainJarSize=37614746
+--- latest restore logs ---
+LOG=D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\logs\runtime-control-main-restore-20260706-234140.err.log lastWrite=2026-07-06T23:41:40 size=0
+logReadError=Exception calling "ReadAllText" with "2" argument(s): "The process cannot access the file 'D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\logs\runtime-control-main-restore-20260706-234140.err.log' because it is being used by another process."
+LOG=D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\logs\runtime-control-main-restore-20260706-234140.out.log lastWrite=2026-07-06T23:41:40 size=0
+logReadError=Exception calling "ReadAllText" with "2" argument(s): "The process cannot access the file 'D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\logs\runtime-control-main-restore-20260706-234140.out.log' because it is being used by another process."
+LOG=D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\logs\runtime-control-main-restore-20260704-010838.out.log lastWrite=2026-07-04T01:08:46 size=3159
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.9)
+
+2026-07-04T01:08:40.008+08:00  INFO 20628 --- [runtime-control-maintenance] [           main] c.i.maintenance.MaintenanceApplication   : Starting MaintenanceApplication v2026.06-SNAPSHOT using Java 21.0.10 with PID 20628 (D:\ProjectPackage\Int\IntRuoyiMaintance\backend\target\runtime-control-maintenance-2026.06-SNAPSHOT.jar started by BJB110 in D:\ProjectPackage\Int\IntRuoyiMaintance)
+2026-07-04T01:08:40.012+08:00  INFO 20628 --- [runtime-control-maintenance] [           main] c.i.maintenance.MaintenanceApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-07-04T01:08:41.510+08:00  INFO 20628 --- [runtime-control-maintenance] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 48181 (http)
+2026-07-04T01:08:41.527+08:00  INFO 20628 --- [runtime-control-maintenance] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-07-04T01:08:41.528+08:00  INFO 20628 --- [runtime-control-maintenance] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.50]
+2026-07-04T01:08:41.573+08:00  INFO 20628 --- [runtime-control-maintenance] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-07-04T01:08:41.574+08:00  INFO 20628 --- [runtime-control-maintenance] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1517 ms
+2026-07-04T01:08:41.852+08:00  INFO 20628 --- [runtime-control-maintenance] [           main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2026-07-04T01:08:42.506+08:00  INFO 20628 --- [runtime-control-maintenance] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-07-04T01:08:42.599+08:00  INFO 20628 --- [runtime-control-maintenance] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 48181 (http) with context path '/'
+2026-07-04T01:08:42.612+08:00  INFO 20628 --- [runtime-control-maintenance] [           main] c.i.maintenance.MaintenanceApplication   : Started MaintenanceApplication in 3.101 seconds (process running for 3.647)
+2026-07-04T01:08:46.028+08:00  INFO 20628 --- [runtime-control-maintenance] [.1-48181-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-04T01:08:46.029+08:00  INFO 20628 --- [runtime-control-maintenance] [.1-48181-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-07-04T01:08:46.030+08:00  INFO 20628 --- [runtime-control-maintenance] [.1-48181-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+
+
+LOG=D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\logs\runtime-control-main-restore-20260704-010838.err.log lastWrite=2026-07-04T01:08:38 size=0
+
+
+LOG=D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\logs\runtime-control-main-restore-20260703-005942.out.log lastWrite=2026-07-03T00:59:46 size=3159
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.9)
+
+2026-07-03T00:59:43.513+08:00  INFO 37224 --- [runtime-control-maintenance] [           main] c.i.maintenance.MaintenanceApplication   : Starting MaintenanceApplication v2026.06-SNAPSHOT using Java 21.0.10 with PID 37224 (D:\ProjectPackage\Int\IntRuoyiMaintance\backend\target\runtime-control-maintenance-2026.06-SNAPSHOT.jar started by BJB110 in D:\ProjectPackage\Int\IntRuoyiMaintance)
+2026-07-03T00:59:43.518+08:00  INFO 37224 --- [runtime-control-maintenance] [           main] c.i.maintenance.MaintenanceApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-07-03T00:59:44.929+08:00  INFO 37224 --- [runtime-control-maintenance] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 48181 (http)
+2026-07-03T00:59:44.944+08:00  INFO 37224 --- [runtime-control-maintenance] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-07-03T00:59:44.945+08:00  INFO 37224 --- [runtime-control-maintenance] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.50]
+2026-07-03T00:59:44.970+08:00  INFO 37224 --- [runtime-control-maintenance] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-07-03T00:59:44.972+08:00  INFO 37224 --- [runtime-control-maintenance] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1410 ms
+2026-07-03T00:59:45.195+08:00  INFO 37224 --- [runtime-control-maintenance] [           main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2026-07-03T00:59:45.851+08:00  INFO 37224 --- [runtime-control-maintenance] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-07-03T00:59:45.980+08:00  INFO 37224 --- [runtime-control-maintenance] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 48181 (http) with context path '/'
+2026-07-03T00:59:45.994+08:00  INFO 37224 --- [runtime-control-maintenance] [           main] c.i.maintenance.MaintenanceApplication   : Started MaintenanceApplication in 3.005 seconds (process running for 3.492)
+2026-07-03T00:59:46.353+08:00  INFO 37224 --- [runtime-control-maintenance] [.1-48181-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-03T00:59:46.354+08:00  INFO 37224 --- [runtime-control-maintenance] [.1-48181-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-07-03T00:59:46.355+08:00  INFO 37224 --- [runtime-control-maintenance] [.1-48181-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+
+
+LOG=D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\logs\runtime-control-main-restore-20260703-005942.err.log lastWrite=2026-07-03T00:59:42 size=0
+
+
+--- temp worktree paths ---
+path=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce exists=True
+path=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b exists=True
+path=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f exists=True
+path=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m exists=True
+--- git worktree lists ---
+REPO=D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro
+D:/ProjectPackage/Int/IntRuoyi/ruoyi-vue-pro         a14fa4833c [int_main]
+D:/ProjectPackage/Int/IntRuoyiWorktrees/r260706ce/b  18537705e7 [codex/release-20260706-menu-id-fix]
+
+REPO=D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3
+D:/ProjectPackage/Int/IntRuoyi/yudao-ui-admin-vue3   f75fa7d0c [int_main]
+D:/ProjectPackage/Int/IntRuoyiWorktrees/r260706ce/f  d03af99c0 (detached HEAD)
+
+REPO=D:\ProjectPackage\Int\IntRuoyiMaintance
+D:/ProjectPackage/Int/IntRuoyiMaintance                                                19b121a [int_main]
+D:/ProjectPackage/Int/IntRuoyiWorktrees/r260706ce/m                                    19b121a (detached HEAD)
+D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-205043-signal       4cdc884 (detached HEAD)
+D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-2220-category       fb18456 (detached HEAD)
+D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-2320-mes-scheduler  fb18456 (detached HEAD)
+D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-dfb317e             dfb317e (detached HEAD)
+

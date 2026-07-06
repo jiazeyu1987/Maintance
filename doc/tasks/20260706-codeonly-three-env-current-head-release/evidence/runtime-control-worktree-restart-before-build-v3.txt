@@ -1,0 +1,40 @@
+time=2026-07-06 21:38:20 +08:00
+startedPid=39548
+processExited=False
+healthExit=0
+health={"status":"UP"}
+stdout=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\runtime-control-worktree-restart-before-build-v3.out.log
+stderr=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\runtime-control-worktree-restart-before-build-v3.err.log
+netstat48181=
+
+  TCP    127.0.0.1:48181        0.0.0.0:0              LISTENING       39548
+  TCP    127.0.0.1:60627        127.0.0.1:48181        TIME_WAIT       0
+
+
+
+stdoutTail=
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.9)
+
+2026-07-06T21:38:15.331+08:00  INFO 39548 --- [runtime-control-maintenance] [           main] c.i.maintenance.MaintenanceApplication   : Starting MaintenanceApplication v2026.06-SNAPSHOT using Java 21.0.10 with PID 39548 (D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\runtime-control-maintenance-2026.06-SNAPSHOT.jar started by BJB110 in D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m)
+2026-07-06T21:38:15.336+08:00  INFO 39548 --- [runtime-control-maintenance] [           main] c.i.maintenance.MaintenanceApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-07-06T21:38:17.113+08:00  INFO 39548 --- [runtime-control-maintenance] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 48181 (http)
+2026-07-06T21:38:17.131+08:00  INFO 39548 --- [runtime-control-maintenance] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-07-06T21:38:17.132+08:00  INFO 39548 --- [runtime-control-maintenance] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.50]
+2026-07-06T21:38:17.163+08:00  INFO 39548 --- [runtime-control-maintenance] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-07-06T21:38:17.164+08:00  INFO 39548 --- [runtime-control-maintenance] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1766 ms
+2026-07-06T21:38:18.034+08:00  INFO 39548 --- [runtime-control-maintenance] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-07-06T21:38:18.138+08:00  INFO 39548 --- [runtime-control-maintenance] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 48181 (http) with context path '/'
+2026-07-06T21:38:18.154+08:00  INFO 39548 --- [runtime-control-maintenance] [           main] c.i.maintenance.MaintenanceApplication   : Started MaintenanceApplication in 3.513 seconds (process running for 4.33)
+2026-07-06T21:38:20.027+08:00  INFO 39548 --- [runtime-control-maintenance] [.1-48181-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-06T21:38:20.029+08:00  INFO 39548 --- [runtime-control-maintenance] [.1-48181-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-07-06T21:38:20.030+08:00  INFO 39548 --- [runtime-control-maintenance] [.1-48181-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+
+stderrTail=

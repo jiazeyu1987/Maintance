@@ -1,0 +1,23 @@
+time=2026-07-06 22:49:53 +08:00
+taskId=20260706-codeonly-three-env-current-head-release
+releaseTag=release-20260706-2245-codeonly-three-env-v6
+host=172.30.30.58
+scpExit=0
+sshExit=0
+section=env
+IMAGE_TAG=release-20260706-2245-codeonly-three-env-v6
+section=backend_image
+intruoyi-backend:release-20260706-2245-codeonly-three-env-v6|running
+section=frontend_image
+intruoyi-frontend:release-20260706-2245-codeonly-three-env-v6|running
+section=backend_health
+{"status":"UP"}
+section=frontend_http
+200
+section=pdf_worker_http
+200 application/javascript
+section=release_lock
+mysql: [Warning] Using a password on the command line interface can be insecure.
+section=release_migrations_failed_or_running
+mysql: [Warning] Using a password on the command line interface can be insecure.
+close - IO is still pending on closed socket. read:1, write:0, io:00000168DE6D7080

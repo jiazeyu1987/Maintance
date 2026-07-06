@@ -1,0 +1,34 @@
+time=2026-07-06 22:47:15 +08:00
+taskId=20260706-codeonly-three-env-current-head-release
+releaseTag=release-20260706-2245-codeonly-three-env-v6
+host=172.30.30.58
+section=env
+
+sh:行1: ﻿﻿set: 未找到命令
+sh: 第 2 行:cd: $'/opt/intruoyi/runtime\r': 没有那个文件或目录
+IMAGE_TAG=section=compose_images
+sed：无法读取 .env
+：没有那个文件或目录
+sh:行6: $'sort\r': 未找到命令
+no configuration file provided: not found
+
+section=backend_health
+curl: (3) Illegal characters found in URL
+
+section=frontend_http
+
+000
+curl: (3) Illegal characters found in URL
+section=pdf_worker_http
+
+000 
+section=release_lock
+curl: (3) Illegal characters found in URL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+
+test-release-20260706-2245-codeonly-three-env-v6	release-20260706-2245-codeonly-three-env-v6	test	APPLIED		2026-07-06 22:40:24	2026-07-06 22:46:52
+section=release_migrations_failed_or_running
+mysql: [Warning] Using a password on the command line interface can be insecure.
+
+close - IO is still pending on closed socket. read:1, write:0, io:000002173A8429B0
+sshExit=0

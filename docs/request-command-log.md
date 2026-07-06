@@ -2244,3 +2244,107 @@
 - 请求：用户授权继续，将 DCC 批量识别覆盖策略发布并验证到测试服；本次不操作正式服/备份服。
 - 目标提交：backend=991a4c9264，frontend=093cc1a9d；当前主分支后续提交不进入本次发布输入。
 - 前置：已读取发布与服务器访问门禁，任务目录已创建：D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-dcc-policy-test-server-release。
+
+## 2026-07-06 19:04:42 +08:00 任务 20260706-codeonly-three-env-current-head-release 临时发布 worktree 创建失败冻结
+- 请求：创建本轮专用临时发布 worktree。
+- 结果：FAIL；维护仓长路径检出失败，已冻结现场，未进入构建或发布。
+- 证据：D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\release-worktree-create-failure-long-path.json。
+## 2026-07-06 19:05:58 +08:00 任务 20260706-codeonly-three-env-current-head-release 临时发布 worktree 短路径重建
+- 请求：清理长路径失败残留后，在标准 worktree 根下用短目录重建三仓临时发布 worktree。
+- 命令：git worktree remove/prune 后 git worktree add --detach 到 D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce。
+- 结果：PASS；三仓 commit 匹配目标 HEAD 且 dirty=false；证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\release-worktree-create-short-path.json。
+## 2026-07-06 project-experience-consolidation
+
+- 用户请求：执行 project-experience-consolidation 技能，沉淀当前项目经验。
+- 执行动作：读取技能说明，扫描现有长期经验文档；将 release worktree 长路径失败经验合并到 worktree 与发布前置文档，未新建经验文档。
+- 验证：长期经验文档、当前任务文档和执行日志已更新。
+
+## 2026-07-06 20:33:08 +08:00 任务 20260706-codeonly-three-env-current-head-release 临时运行控制台 Maven 打包
+- 请求：生成临时维护仓运行控制台 jar。
+- 结果：PASS；exitCode=0，jarExists=True，jar=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\runtime-control-maintenance-2026.06-SNAPSHOT.jar。
+- 证据：stdout=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\runtime-control-maven-package-native.out.log；stderr=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\runtime-control-maven-package-native.err.log。
+
+## 2026-07-06 20:42:42 +08:00 任务 20260706-codeonly-three-env-current-head-release 临时运行控制台最终复核
+- 请求：复核 48181 是否已由本轮临时维护仓启动。
+- 结果：PASS；health=UP，启动日志包含 D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m 和本轮 jar；证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\runtime-control-worktree-java-start-final-pass.txt。
+
+## 2026-07-06 21:37:16 +08:00 任务 20260706-codeonly-three-env-current-head-release build-release 首次失败冻结
+- 请求：执行 code-only build-release。
+- 结果：FAIL；缺少 -TestServerHost，未生成可发布 releaseTag。
+- 证据：D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\build-release-failure-missing-testserverhost.txt。
+
+## 2026-07-06 21:38:22 +08:00 任务 20260706-codeonly-three-env-current-head-release build-release v3
+- 请求：补齐 TestServerHost 后重跑 code-only build-release。
+- 命令：publish-int-ruoyi.ps1 -Mode build-release -Component intruoyi -ReleaseTag release-20260706-2145-codeonly-three-env-v3 -TestServerHost 172.30.30.58 -SkipDatabaseSync -SkipMinioSync。
+- 结果：FAIL；exitCode=1；证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\build-release-v3-command-summary.txt。
+
+## 2026-07-06 21:40:17 +08:00 任务 20260706-codeonly-three-env-current-head-release build-release v3 失败经验沉淀
+- 请求：冻结并沉淀 build-release 缺少 BackupServerHost 的可复用前置门禁。
+- 结果：PASS；releaseTag=release-20260706-2145-codeonly-three-env-v3 判废，后续必须用新 tag 且显式传入 TestServerHost/ProdServerHost/BackupServerHost。
+## 2026-07-06 21:53:16 +08:00 任务 20260706-codeonly-three-env-current-head-release build-release v4
+- 请求：执行 code-only build-release，显式传入 TestServerHost/ProdServerHost/BackupServerHost。
+- 结果：FAIL；releaseTag=release-20260706-2205-codeonly-three-env-v4，exitCode=1，证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\build-release-v4-command-summary.txt。
+## 2026-07-06 21:55:04 +08:00 任务 20260706-codeonly-three-env-current-head-release build-release v4 失败经验沉淀
+- 请求：冻结并沉淀 NasConfigPath 误传 runtime-control YAML 的失败门禁。
+- 结果：PASS；v4 releaseTag 判废，后续使用新的 releaseTag 与正确 NAS JSON 重建。
+## 2026-07-06 22:06:55 +08:00 任务 20260706-codeonly-three-env-current-head-release build-release v5
+- 请求：使用正确 NAS JSON 重新执行 code-only build-release。
+- 结果：PASS；releaseTag=release-20260706-2235-codeonly-three-env-v5，exitCode=0，证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\build-release-v5-command-summary.txt。
+## 2026-07-06 22:07:22 +08:00 任务 20260706-codeonly-three-env-current-head-release build-release v5 产物校验
+- 请求：校验 build operation/manifest/code-only/sourceRepos/无数据目录。
+- 结果：PASS；manifest 与发布包结构校验通过，证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\build-release-v5-package-validation.json。
+## 2026-07-06 22:18:24 +08:00 任务 20260706-codeonly-three-env-current-head-release publish-test v5
+- 请求：执行 deploy-release 到测试服 172.30.30.58。
+- 结果：FAIL；releaseTag=release-20260706-2235-codeonly-three-env-v5，exitCode=1，证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\publish-test-v5-command-summary.txt。
+## 2026-07-06 22:19:15 +08:00 任务 20260706-codeonly-three-env-current-head-release publish-test v5 失败冻结
+- 请求：冻结 required SQL 菜单 ID 冲突失败证据并沉淀前置经验。
+- 结果：PASS；releaseTag=release-20260706-2235-codeonly-three-env-v5 的 publish-test 未完成，证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\publish-test-v5-required-sql-menu-id-conflict-snapshot.txt；后续必须修复 SQL 根因并重新构建新 releaseTag。
+## 2026-07-06 22:21:06 +08:00 任务 20260706-codeonly-three-env-current-head-release required SQL 菜单 ID 修复验证
+- 请求：验证 900363/900364 修复的 SQL 测试与 release migration policy gate。
+- 结果：PASS；证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\required-sql-menu-id-fix-verification-summary.txt。
+## 2026-07-06 22:21:31 +08:00 任务 20260706-codeonly-three-env-current-head-release 后端 SQL 修复提交
+- 请求：提交 required SQL 菜单 ID 修复。
+- 结果：FAIL；commitExit=1，证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\backend-menu-id-fix-commit-and-main-merge-recon.txt。
+## 2026-07-06 22:21:58 +08:00 任务 20260706-codeonly-three-env-current-head-release 后端 SQL 修复提交
+- 请求：带 TDD_TASK_DIR 提交并尝试合回 required SQL 菜单 ID 修复。
+- 结果：PARTIAL；fixCommit=0cb706c5ded7b890f31c8d9550efa4f6657471ec，合回未完成，证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\backend-menu-id-fix-commit-with-tdd-and-main-merge.txt。
+## 2026-07-06 22:22:22 +08:00 任务 20260706-codeonly-three-env-current-head-release 后端 SQL 修复 cherry-pick 合回
+- 请求：将菜单 ID 修复单提交合回当前后端 int_main。
+- 结果：PASS；newHead=18537705e7eff0fce10d7306d4d076e19d9065eb，证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\backend-menu-id-fix-cherry-pick-main.txt。
+## 2026-07-06 22:22:54 +08:00 任务 20260706-codeonly-three-env-current-head-release 发布输入重定基
+- 请求：将发布 worktree 重定基到后端 SQL 修复后的提交并确认前后端 clean。
+- 结果：FAIL；证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\post-fix-release-input-rebaseline.txt。
+## 2026-07-06 22:23:30 +08:00 任务 20260706-codeonly-three-env-current-head-release 发布输入重定基 v2
+- 请求：将后端/前端发布 worktree 切到当前已提交 HEAD 并确认 clean。
+- 结果：PASS；backend=18537705e7eff0fce10d7306d4d076e19d9065eb，frontend=d03af99c0337e299e0d292231b673b45e20f7cae，证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\post-fix-release-input-rebaseline-v2.txt。
+## 2026-07-06 22:33:45 +08:00 任务 20260706-codeonly-three-env-current-head-release build-release v6
+- 请求：修复 required SQL 后使用新 releaseTag 重新执行 code-only build-release。
+- 结果：PASS；releaseTag=release-20260706-2245-codeonly-three-env-v6，exitCode=0，证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\build-release-v6-command-summary.txt。
+## 2026-07-06 22:34:08 +08:00 任务 20260706-codeonly-three-env-current-head-release build-release v6 产物校验
+- 请求：校验 v6 build manifest/code-only/sourceRepos/无数据目录。
+- 结果：PASS；证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\build-release-v6-package-validation.json。
+## 2026-07-06 22:46:48 +08:00 任务 20260706-codeonly-three-env-current-head-release publish-test v6
+- 请求：执行 deploy-release 到测试服 172.30.30.58。
+- 结果：PASS；releaseTag=release-20260706-2245-codeonly-three-env-v6，exitCode=0，证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\publish-test-v6-command-summary.txt。
+## 2026-07-06 22:47:16 +08:00 任务 20260706-codeonly-three-env-current-head-release 测试服 v6 独立验证
+- 请求：验证测试服 .env、镜像、健康检查、HTTP 与发布锁状态。
+- 结果：FAIL；证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\test-server-v6-verification.txt。
+## 2026-07-06 22:48:25 +08:00 任务 20260706-codeonly-three-env-current-head-release 测试服 v6 独立验证重跑 v3
+- 请求：用逐条 SSH 单行命令重验测试服发布结果。
+- 结果：FAIL；证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\test-server-v6-verification-v3.txt。
+## 2026-07-06 22:49:21 +08:00 任务 20260706-codeonly-three-env-current-head-release 测试服 v6 独立验证重跑 v4
+- 请求：用 docker inspect JSON 与 Python HTTP 重验测试服发布结果。
+- 结果：FAIL；证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\test-server-v6-verification-v4.txt。
+## 2026-07-06 22:49:54 +08:00 任务 20260706-codeonly-three-env-current-head-release 测试服 v6 独立验证重跑 v5
+- 请求：上传 LF/UTF-8 远端脚本并重验测试服发布结果。
+- 结果：FAIL；证据 D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\test-server-v6-verification-v5.txt。
+
+- [2026-07-06 22:54:48 +08:00] 失败记录：mark-tested releaseTag=release-20260706-2245-codeonly-three-env-v6 首次执行失败，根因为本地 Start-Process -ArgumentList 对带空格中文 TestConclusion 拆词，导致 三环境 误绑定到 Component；stdout/stderr 与摘要已冻结到当前任务 evidence。
+- [2026-07-06 22:54:48 +08:00] 经验沉淀：新增 mark-tested 本地启动参数引号门禁 到 docs/release-build-preflight-lessons.md，并同步 docs/experience-index.md；后续重试改用无歧义参数包装，仍保持同一 releaseTag。
+
+- [2026-07-06 22:55:27 +08:00] 命令记录：mark-tested 重试通过，releaseTag=release-20260706-2245-codeonly-three-env-v6，selectedRecoverySetCandidateId=restore:20260621-063218，脚本输出 Release package marked as tested；下一步进入正式服 promote-prod，必须携带 ConfirmText=PROD、RequireTested 与正式 dry-run 证据。
+
+- [2026-07-06 23:26:01 +08:00] 命令记录：promote-prod 通过，releaseTag=release-20260706-2245-codeonly-three-env-v6，operationId=op-2026-07-06T145929632013700Z-6235332a-37e7-46fb-9802-10b30080ac88，正式服 172.30.30.57 验证 .env IMAGE_TAG、backend/frontend 镜像、backend health、frontend、PDF worker 与 release lock 全部通过；下一步执行 promote-backup，必须显式核对 /mnt/intruoyi-data。
+
+- [2026-07-06 23:48:10 +08:00] 收尾记录：同一 releaseTag=release-20260706-2245-codeonly-three-env-v6 已完成 build-release -> publish-test -> mark-tested -> promote-prod -> promote-backup；测试服、正式服、备份服均完成 .env IMAGE_TAG、backend/frontend 镜像、backend health、frontend、PDF worker 与 release lock 验证，备份服额外验证 /mnt/intruoyi-data 挂载与发布路径。
+- [2026-07-06 23:48:10 +08:00] 收尾记录：运行控制台已恢复主工作区 jar 并验证 health=UP；本次临时发布 worktree 根 D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce 已删除；cleanup preview 已执行但因本任务要求保留冻结证据，未删除 evidence/。

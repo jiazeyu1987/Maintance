@@ -93,6 +93,12 @@ Codex 必须把完整发布任务视为以下严格顺序：
 - 运行控制台仍加载旧 worktree 或旧逻辑。
 - 临时发布 worktree 自身无法通过 frozen-lockfile、依赖恢复或目标模块构建门禁。
 
+### release worktree 路径长度门禁
+
+- 创建 release worktree 时，临时根目录必须短而稳定；推荐 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r<日期><短标识>`。
+- 维护仓、后端仓、前端仓子目录优先使用 `m`、`b`、`f`；不要使用完整任务 ID + 完整仓库名的深层嵌套路径。
+- 若 checkout 报 `Filename too long`，必须冻结证据、清理已部分创建的 worktree、`git worktree prune`，再用短路径重建；不得继续沿用部分成功的 worktree。
+
 ## 2. 构建完成判定
 
 ### 必做动作

@@ -1,0 +1,25 @@
+section=mount
+/mnt/intruoyi-data /dev/mapper/cl-home ext4   rw,relatime,seclabel,data=ordered
+文件系统              1024-块      已用      可用 配额 挂载点
+/dev/mapper/cl-home 971196772 447253756 474585808  49% /mnt/intruoyi-data
+section=paths
+release_root_exists=/mnt/intruoyi-data/intruoyi-releases
+data_root_exists=/mnt/intruoyi-data/runtime-data
+release_tag_path_exists=/mnt/intruoyi-data/intruoyi-releases/release-20260706-2245-codeonly-three-env-v6
+section=env_tag
+IMAGE_TAG=release-20260706-2245-codeonly-three-env-v6
+section=compose_images
+    image: intruoyi-backend:release-20260706-2245-codeonly-three-env-v6
+    image: intruoyi-frontend:release-20260706-2245-codeonly-three-env-v6
+section=running_images
+/intruoyi-backend intruoyi-backend:release-20260706-2245-codeonly-three-env-v6
+/intruoyi-frontend intruoyi-frontend:release-20260706-2245-codeonly-three-env-v6
+section=backend_health
+http_code=200
+{"status":"UP"}
+section=frontend_http
+http_code=200
+section=pdf_worker_http
+http_code=200 content_type=application/javascript
+section=release_lock
+backup-release-20260706-2245-codeonly-three-env-v6	release-20260706-2245-codeonly-three-env-v6	backup	APPLIED

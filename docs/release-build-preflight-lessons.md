@@ -228,3 +228,34 @@
 - 前置门禁：`build-release` 使用 `publishScope=code-only`、`SkipDatabaseSync`、`SkipMinioSync`；后续 `publish-test/promote-prod/promote-backup` 必须复用已构建 releaseTag，只发送部署动作必需字段：`action`、`reason`、`releaseTag`、`targetEnvironment`，生产级动作再加 `prodConfirmText=PROD`。
 - 失败处理：预览返回 4xx 时不得执行 action；冻结 preview JSON，修正参数契约并重新预览，确认命令包含 `-Mode deploy-release`、目标环境、目标主机与 releaseTag 后再执行。
 
+## 2026-07-06 Windows 发布 worktree 长路径门禁
+
+- 触发场景：构建发布前为维护仓、后端仓、前端仓创建本轮专用 release worktree。
+- 失败现象：使用完整任务 ID 和完整仓库名组成深层 worktree 路径时，维护仓 checkout 历史 evidence 或构建产物路径可能触发 `Filename too long` 和 `fatal: Could not reset index file to revision 'HEAD'`，导致维护仓未完成检出而后端/前端已部分创建。
+- 前置门禁：发布 worktree 根路径必须采用短目录名，例如 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce`；三仓子目录使用短名 `m`、`b`、`f`，并在任务文档记录短路径与完整 taskId 的映射。
+- 处理要求：一旦发生长路径失败，先冻结 git 输出、failure JSON、三仓 `git worktree list --porcelain` 和残留目录清单；只清理本次失败路径下的部分 worktree，执行 `git worktree prune`，再用短路径重建并确认三仓 `dirty=false` 后才能继续构建或发布。
+
+## 2026-07-06 build-release 目标主机参数必须一次性显式传齐
+
+- 触发场景：code-only `build-release` 生成测试服和备份服 runtime env / 包 URL / 存储检查配置。
+- 失败现象：仅传 `-TestServerHost` 时脚本返回 [FAIL] Missing -BackupServerHost; release target host for environment 'backup' must be configured and passed explicitly so package URLs and storage checks are bound to the selected publish target.
+- 前置门禁：`build-release` 即使尚未部署备份服，也必须显式传入 `-TestServerHost 172.30.30.58` 与 `-BackupServerHost 172.30.30.59`；涉及三环境闭环时同时传入 `-ProdServerHost 172.30.30.57`，避免后续 runtime env 和发布目标不一致。
+- 处理要求：缺少目标主机参数时先冻结 stdout/stderr/preflight/summary；不得复用失败 releaseTag，补齐主机参数后用新的 releaseTag 重新构建。
+## 2026-07-06 publish-int-ruoyi NasConfigPath 必须是 NAS JSON
+
+- 触发场景：直接调用 ops/deploy/publish-int-ruoyi.ps1 执行 build-release、deploy-release、mark-tested 或 promote 动作。
+- 失败现象：将 config/runtime-control.local.yaml 传给 -NasConfigPath 时，脚本在 Read-NasReleaseConfig 中按 JSON 解析并报 ConvertFrom-Json: Invalid JSON primitive: maintenance，构建已完成但 operation 失败，releaseTag 必须判废。
+- 前置门禁：-NasConfigPath 必须指向 runtime/runtime-control/nas-release-config/*.json 形态的 NAS 发布配置，且包含 server、share、username、password 四个字段；runtime-control.local.yaml 只用于运行控制台配置，不可直接作为发布脚本 NasConfigPath。
+- 处理要求：先冻结 stdout/stderr/preflight/summary 和半成品发布包快照；补齐 NAS JSON 后使用新的 releaseTag 重建，不得继续使用失败 releaseTag。
+## 2026-07-06 required SQL 菜单硬编码 ID 必须先查真实占用
+
+- 触发场景：code-only deploy-release 执行 required SQL，SQL 需要新增 system_menu 按钮、权限或租户菜单绑定。
+- 失败现象：SQL 硬编码菜单 ID（例如 900301/900302）在目标库已被其他权限占用，触发 SIGNAL 并导致 deploy-release 失败，operation lock 标记 FAILED。
+- 前置门禁：required SQL 涉及 system_menu.id、permission、parent_id、system_role_menu 或 system_tenant_package_menu 时，构建/发布前必须只读核验目标环境真实占用；硬编码 ID 必须证明未占用或与同一业务权限完全一致。若目标库存在漂移，必须修正 SQL 为可重复、可审计、不会覆盖其他权限的根因方案后重新构建 releaseTag。
+- 处理要求：先冻结 operation stdout/stderr、目标 SQL、远端 system_menu 占用查询、infra_release_migration/operation_lock 状态；不得手工删除/改写目标库权限来绕过门禁。
+
+## 2026-07-06 mark-tested 本地启动参数引号门禁
+
+- 触发场景：使用 Start-Process -ArgumentList 数组启动 PowerShell 脚本时，如果 -TestConclusion 等自由文本参数包含空格或中文标点，子进程命令行可能被重新拆词，后续词会被误绑定到位置参数，例如 Component，导致 ValidateSet 失败。
+- 前置门禁：发布脚本参数中凡包含空格、中文说明、括号或其它自由文本时，优先使用无空格的结论文本，或生成临时 .ps1 包装脚本并在包装脚本内用 call operator 传参；不得直接依赖 Start-Process -ArgumentList 自动保留复杂字符串边界。
+- 证据要求：若发生此类失败，必须冻结 stdout/stderr 与参数摘要，记录实际失败参数名和被误绑定值后再重试。

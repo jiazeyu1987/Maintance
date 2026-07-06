@@ -1,0 +1,95 @@
+started=2026-07-06 22:21:04 +08:00
+finished=2026-07-06 22:21:06 +08:00
+pytestExit=0
+policyExit=0
+pytestStdout=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\required-sql-menu-id-fix-pytest.out.log
+pytestStderr=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\required-sql-menu-id-fix-pytest.err.log
+policyStdout=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\required-sql-menu-id-fix-migration-policy.out.log
+policyStderr=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\required-sql-menu-id-fix-migration-policy.err.log
+pytestStdoutTail=
+...                                                                      [100%]
+3 passed in 0.11s
+pytestStderrTail=
+
+policyStdoutTail=
+      ],
+      "riskLevel": "medium"
+    },
+    {
+      "migrationId": "20260706_dcc_recognition_traceable_failure_messages",
+      "file": "sql/mysql/20260706_dcc_recognition_traceable_failure_messages.sql",
+      "sha256": "f67780a2ed6b4c8befba961d7863e863741b7fe0e9b04010cb4af865c2c889ae",
+      "type": "schema",
+      "allowedEnvironments": [
+        "test",
+        "backup",
+        "prod"
+      ],
+      "dependsOn": [
+        "20260701_dcc_batch_recognition_worker_ledger_export"
+      ],
+      "riskLevel": "medium"
+    },
+    {
+      "migrationId": "20260706_dcc_signature_image_evidence_chain",
+      "file": "sql/mysql/20260706_dcc_signature_image_evidence_chain.sql",
+      "sha256": "3a9176b8eaf13491739bd445fd1997ba166466484e7d3f8adca6e322ad47ac4b",
+      "type": "schema",
+      "allowedEnvironments": [
+        "test",
+        "backup",
+        "prod"
+      ],
+      "dependsOn": [
+        "20260513_dcc_base_schema"
+      ],
+      "riskLevel": "medium"
+    },
+    {
+      "migrationId": "20260706_mes_edhr_process_form_permission_rule",
+      "file": "sql/mysql/20260706_mes_edhr_process_form_permission_rule.sql",
+      "sha256": "9c6c7749b712689506f728ad620a8ef4b74aa330b9fcbd40503701b75f6513d7",
+      "type": "schema",
+      "allowedEnvironments": [
+        "test",
+        "backup",
+        "prod"
+      ],
+      "dependsOn": [
+        "20260612_mes_process_use_route_tabs"
+      ],
+      "riskLevel": "medium"
+    },
+    {
+      "migrationId": "20260706_showroom_current_empty_legacy_product_code_backfill",
+      "file": "sql/mysql/20260706_showroom_current_empty_legacy_product_code_backfill.sql",
+      "sha256": "676bec7e99c7207222ac66f556dbca2960da8e3986e1668d4026497e6337a5cd",
+      "type": "data",
+      "allowedEnvironments": [
+        "test",
+        "backup",
+        "prod"
+      ],
+      "dependsOn": [
+        "20260706_showroom_legacy_product_code_english_name_backfill"
+      ],
+      "riskLevel": "medium"
+    },
+    {
+      "migrationId": "20260706_showroom_legacy_product_code_english_name_backfill",
+      "file": "sql/mysql/20260706_showroom_legacy_product_code_english_name_backfill.sql",
+      "sha256": "eb9d0c05cf49b1da694c7743567a3f03956f57b886c241e150f0c43f582f24b7",
+      "type": "data",
+      "allowedEnvironments": [
+        "test",
+        "backup",
+        "prod"
+      ],
+      "dependsOn": [
+        "20260705_showroom_legacy_product_code_name_backfill"
+      ],
+      "riskLevel": "medium"
+    }
+  ]
+}
+policyStderrTail=

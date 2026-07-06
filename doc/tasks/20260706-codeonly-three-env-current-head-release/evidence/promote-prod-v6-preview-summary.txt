@@ -1,0 +1,12 @@
+timestamp=2026-07-06T22:57:58
+releaseTag=release-20260706-2245-codeonly-three-env-v6
+action=promote-prod-preview
+httpStatus=200
+requestSucceeded=True
+durationSeconds=0
+dryRunPath=
+dryRunExists=False
+dryRunValid=False
+dryRunCopy=
+response=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\promote-prod-v6-preview-response.json
+error=

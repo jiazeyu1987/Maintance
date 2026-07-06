@@ -1,0 +1,107 @@
+{
+    "taskId":  "20260706-codeonly-three-env-current-head-release",
+    "time":  "2026-07-06 22:07:22 +08:00",
+    "releaseTag":  "release-20260706-2235-codeonly-three-env-v5",
+    "releaseDir":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260706-2235-codeonly-three-env-v5",
+    "releaseDirExists":  true,
+    "checks":  {
+                   "releaseTagMatches":  true,
+                   "publishScopeCodeOnly":  true,
+                   "legacyPublishScopeCodeOnly":  true,
+                   "backendCommitMatches":  true,
+                   "frontendCommitMatches":  true,
+                   "sourceReposDirtyFalse":  true,
+                   "noForbiddenTopDataDirs":  true,
+                   "imageTarExists":  true,
+                   "runtimeEnvExists":  true,
+                   "manifestExists":  true,
+                   "legacyManifestExists":  true,
+                   "allPackageChecksPass":  true
+               },
+    "files":  [
+                  {
+                      "name":  "docker-compose.yml",
+                      "type":  "file",
+                      "length":  10608
+                  },
+                  {
+                      "name":  "intruoyi-images_release-20260706-2235-codeonly-three-env-v5.tar",
+                      "type":  "file",
+                      "length":  814345216
+                  },
+                  {
+                      "name":  "manifest.json",
+                      "type":  "file",
+                      "length":  2176018
+                  },
+                  {
+                      "name":  "release-manifest.json",
+                      "type":  "file",
+                      "length":  78175
+                  },
+                  {
+                      "name":  "required-sql",
+                      "type":  "dir",
+                      "length":  1
+                  },
+                  {
+                      "name":  "resources",
+                      "type":  "dir",
+                      "length":  1
+                  },
+                  {
+                      "name":  "runtime-env",
+                      "type":  "dir",
+                      "length":  1
+                  },
+                  {
+                      "name":  "smoke",
+                      "type":  "dir",
+                      "length":  1
+                  }
+              ],
+    "errors":  [
+
+               ],
+    "manifestPath":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260706-2235-codeonly-three-env-v5\\manifest.json",
+    "legacyManifestPath":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260706-2235-codeonly-three-env-v5\\release-manifest.json",
+    "manifest":  {
+                     "manifestVersion":  "1.0",
+                     "releaseTag":  "release-20260706-2235-codeonly-three-env-v5",
+                     "packageDirectoryName":  null,
+                     "publishScope":  "code-only",
+                     "sourceRepos":  [
+                                         {
+                                             "name":  "ruoyi-vue-pro",
+                                             "pathRole":  "backend",
+                                             "commit":  "042037a42a91ac3e285bccbbccebd05f7507628d",
+                                             "dirty":  false,
+                                             "branch":  "HEAD"
+                                         },
+                                         {
+                                             "name":  "yudao-ui-admin-vue3",
+                                             "pathRole":  "admin-frontend",
+                                             "commit":  "ab36017e80982b9f308b2324b4d18c6f83792424",
+                                             "dirty":  false,
+                                             "branch":  "HEAD"
+                                         }
+                                     ]
+                 },
+    "legacyManifest":  {
+                           "packageDirectoryName":  "release-20260706-2235-codeonly-three-env-v5",
+                           "publishScope":  "code-only",
+                           "onlyOfficeIncluded":  false,
+                           "component":  "intruoyi"
+                       },
+    "forbiddenTopDataDirs":  [
+
+                             ],
+    "operationLike":  {
+                          "directScriptExitCode":  0,
+                          "buildSummary":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260706-codeonly-three-env-current-head-release\\evidence\\build-release-v5-command-summary.txt",
+                          "note":  "build-release was executed through publish-int-ruoyi.ps1 directly; runtime-control operation JSON is checked separately if present."
+                      },
+    "recentRuntimeControlJson":  [
+
+                                 ]
+}

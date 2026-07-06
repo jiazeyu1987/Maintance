@@ -1,0 +1,17 @@
+{
+  "operationId" : "op-2026-07-06T145929632013700Z-6235332a-37e7-46fb-9802-10b30080ac88",
+  "requestedBy" : "local-operator",
+  "requestedAt" : 1783350006.963657300,
+  "environment" : "prod",
+  "component" : "promote-prod",
+  "action" : "promote-prod",
+  "actionLabel" : "上线已验证发布包",
+  "parameters" : {
+    "releaseTag" : "release-20260706-2245-codeonly-three-env-v6",
+    "prodDryRunEvidencePath" : "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260706ce\\m\\runtime\\runtime-control\\prod-preflight-release-evidence\\release-20260706-2245-codeonly-three-env-v6-preflight-release-dry-run.json"
+  },
+  "reason" : "codeonly-three-env-v6-promote-prod",
+  "status" : "SUCCESS",
+  "summary" : "命令执行完成",
+  "resultLogPath" : "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260706ce\\m\\runtime\\runtime-control\\logs\\op-2026-07-06T145929632013700Z-6235332a-37e7-46fb-9802-10b30080ac88.log"
+}

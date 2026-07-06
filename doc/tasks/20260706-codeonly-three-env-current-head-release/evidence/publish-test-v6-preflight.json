@@ -1,0 +1,41 @@
+{
+    "taskId":  "20260706-codeonly-three-env-current-head-release",
+    "time":  "2026-07-06 22:34:31 +08:00",
+    "releaseTag":  "release-20260706-2245-codeonly-three-env-v6",
+    "action":  "publish-test",
+    "mode":  "deploy-release",
+    "environment":  "test",
+    "script":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260706ce\\m\\ops\\deploy\\publish-int-ruoyi.ps1",
+    "nasConfig":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260706ce\\m\\runtime\\runtime-control\\nas-release-config\\manual-release-20260706-v5.json",
+    "serverHost":  "172.30.30.58",
+    "remoteAppDir":  "/opt/intruoyi/runtime",
+    "remoteReleaseRoot":  "/var/lib/docker/intruoyi-releases",
+    "remoteDataRoot":  "/var/lib/docker/intruoyi-data/runtime-data",
+    "remoteDataDiskMount":  "/var/lib/docker",
+    "remoteDataDiskDevice":  "/dev/vdb",
+    "remoteMinioContainer":  "ragflow_compose-minio-1",
+    "testServerHost":  "172.30.30.58",
+    "prodServerHost":  "172.30.30.57",
+    "backupServerHost":  "172.30.30.59",
+    "backend":  {
+                    "path":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260706ce\\b",
+                    "commit":  "18537705e7eff0fce10d7306d4d076e19d9065eb",
+                    "status":  [
+
+                               ]
+                },
+    "frontend":  {
+                     "path":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260706ce\\f",
+                     "commit":  "d03af99c0337e299e0d292231b673b45e20f7cae",
+                     "status":  [
+
+                                ]
+                 },
+    "rejectedReleaseTags":  [
+                                "release-20260706-2045-codeonly-three-env",
+                                "release-20260706-2145-codeonly-three-env-v3",
+                                "release-20260706-2205-codeonly-three-env-v4",
+                                "release-20260706-2235-codeonly-three-env-v5"
+                            ],
+    "command":  "powershell -NoProfile -ExecutionPolicy Bypass -File D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260706ce\\m\\ops\\deploy\\publish-int-ruoyi.ps1 -Mode deploy-release -Environment test -ReleaseTag release-20260706-2245-codeonly-three-env-v6 -NasConfigPath D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260706ce\\m\\runtime\\runtime-control\\nas-release-config\\manual-release-20260706-v5.json -ServerHost 172.30.30.58 -ServerUser root -RemoteAppDir /opt/intruoyi/runtime -RemoteReleaseRoot /var/lib/docker/intruoyi-releases -RemoteDataRoot /var/lib/docker/intruoyi-data/runtime-data -RemoteDataDiskMount /var/lib/docker -RemoteDataDiskDevice /dev/vdb -RemoteMinioContainer ragflow_compose-minio-1 -TestServerHost 172.30.30.58 -ProdServerHost 172.30.30.57 -BackupServerHost 172.30.30.59 -BackendRepoRoot D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260706ce\\b -FrontendRepoRoot D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260706ce\\f"
+}

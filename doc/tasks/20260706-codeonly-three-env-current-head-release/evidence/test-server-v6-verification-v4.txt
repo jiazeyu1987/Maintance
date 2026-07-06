@@ -1,0 +1,54 @@
+time=2026-07-06 22:49:17 +08:00
+taskId=20260706-codeonly-three-env-current-head-release
+releaseTag=release-20260706-2245-codeonly-three-env-v6
+host=172.30.30.58
+section=env
+exit=0
+release-20260706-2245-codeonly-three-env-v6
+close - IO is still pending on closed socket. read:1, write:0, io:0000024B51E83950
+section=docker_inspect
+exit=0
+<stored-json>
+length=30861
+section=backend_health
+exit=0
+{"status":"UP"}
+close - IO is still pending on closed socket. read:1, write:0, io:000001E2AAB32FF0
+section=frontend_curl_exit
+exit=0
+HTTP_STATUS:0
+close - IO is still pending on closed socket. read:1, write:0, io:0000029024F94210
+section=frontend_http
+exit=1
+  File "<stdin>", line 3
+    r=urllib.request.urlopen(http://127.0.0.1:8081/, timeout=20)
+                                 ^
+SyntaxError: invalid syntax
+close - IO is still pending on closed socket. read:1, write:0, io:000001C1CAA15EF0
+section=pdf_worker_http
+exit=1
+  File "<stdin>", line 3
+    r=urllib.request.urlopen(http://127.0.0.1:8081/pdfjs/pdf.worker.mjs, timeout=20)
+                                 ^
+SyntaxError: invalid syntax
+close - IO is still pending on closed socket. read:1, write:0, io:00000219B8E886E0
+section=release_lock
+exit=1
+bash: -c:行0: 寻找匹配的 `"' 是遇到了未预期的文件结束符
+bash: -c:行1: 语法错误: 未预期的文件结尾
+close - IO is still pending on closed socket. read:1, write:0, io:0000028E7A19F5F0
+section=release_migrations_failed_or_running
+exit=1
+bash: -c:行0: 寻找匹配的 `"' 是遇到了未预期的文件结束符
+bash: -c:行1: 语法错误: 未预期的文件结尾
+close - IO is still pending on closed socket. read:1, write:0, io:00000246B96E5D80
+dockerInspectParseError=Invalid JSON primitive: lose - IO is still pending on closed socket. read:1, write:0, io:0000023A72658E30.
+section=parsed_checks
+envTag=True
+backendImage=False
+frontendImage=False
+backendHealth=True
+frontendHttp200=False
+pdfWorkerHttp200=False
+releaseLockApplied=False
+noFailedOrRunningMigrations=False

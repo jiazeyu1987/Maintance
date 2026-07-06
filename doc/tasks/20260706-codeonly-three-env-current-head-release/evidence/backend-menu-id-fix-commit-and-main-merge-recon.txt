@@ -1,0 +1,19 @@
+time=2026-07-06 22:21:29 +08:00
+=== temp backend status before commit ===
+ M script/tests/test_mes_edhr_process_form_permission_rule_sql.py
+ M sql/mysql/20260706_mes_edhr_process_form_permission_rule.sql
+=== temp backend branch/head before commit ===
+branch=HEAD
+head=042037a42a91ac3e285bccbbccebd05f7507628d
+Switched to a new branch 'codex/release-20260706-menu-id-fix'
+TDD compliance failed: set TDD_TASK_DIR to the task directory path before committing.
+commitExit=1
+fixCommit=042037a42a91ac3e285bccbbccebd05f7507628d
+=== temp backend status after commit ===
+M  script/tests/test_mes_edhr_process_form_permission_rule_sql.py
+M  sql/mysql/20260706_mes_edhr_process_form_permission_rule.sql
+=== main backend status before merge attempt ===
+?? doc/tasks/20260705-batch-record-layout-ratio-branch-review/
+?? sql/mysql/20260705_showroom_legacy_product_code_auto_confirmable_draft.sql
+mainClean=False
+mergeSkipped=main backend worktree/index is dirty; do not merge over unrelated staged/user changes

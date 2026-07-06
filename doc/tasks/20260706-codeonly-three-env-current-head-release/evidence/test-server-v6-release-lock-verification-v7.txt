@@ -1,0 +1,4 @@
+section=release_lock_rows
+test-release-20260706-2245-codeonly-three-env-v6	release-20260706-2245-codeonly-three-env-v6	test	APPLIED
+section=operation_history_rows
+section=release_migrations_failed_or_running

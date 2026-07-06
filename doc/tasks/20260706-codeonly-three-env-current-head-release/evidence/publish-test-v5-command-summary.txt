@@ -1,0 +1,150 @@
+taskId=20260706-codeonly-three-env-current-head-release
+releaseTag=release-20260706-2235-codeonly-three-env-v5
+action=publish-test
+started=2026-07-06 22:08:03 +08:00
+finished=2026-07-06 22:18:24 +08:00
+exitCode=1
+preflight=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\publish-test-v5-preflight.json
+stdout=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\publish-test-v5-operation.out.log
+stderr=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\publish-test-v5-operation.err.log
+stdoutTail=
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260706-2235-codeonly-three-env-v5', '20260620_srm_d9_1_contract', '20260620_srm_d9_1_contract.sql', '4520438739426b5917dbe1cdbd6fbef43245983a2675c2f0c87058ffbe051d71', 'test', 'SKIPPED_ALREADY_APPLIED', NOW(), CASE WHEN 'SKIPPED_ALREADY_APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260706-2235-codeonly-three-env-v5', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 ruoyi-vue-pro
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260706-2235-codeonly-three-env-v5', '20260621_srm_phase45_simulated_execution', '20260621_srm_phase45_simulated_execution.sql', 'a41369e2f5406d0868cd164672fa2a5bdbbd644eb936434b1c3cd714e31264d0', 'test', 'SKIPPED_ALREADY_APPLIED', NOW(), CASE WHEN 'SKIPPED_ALREADY_APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260706-2235-codeonly-three-env-v5', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 ruoyi-vue-pro
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260706-2235-codeonly-three-env-v5', '20260619_post_release_role_e2e_gate_smoke_username_password_freshness_fix', '20260619_post_release_role_e2e_gate_smoke_username_password_freshness_fix.sql', '8f98d9df5c03b48903aecf7baa0876f69d919c82d1f939790eed71e5e4bbfaad', 'test', 'SKIPPED_ALREADY_APPLIED', NOW(), CASE WHEN 'SKIPPED_ALREADY_APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260706-2235-codeonly-three-env-v5', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 ruoyi-vue-pro
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260706-2235-codeonly-three-env-v5', '20260628_srm_t6_nas_locator', '20260628_srm_t6_nas_locator.sql', '2a0792284179479272b68f4871d2bd4afd3db59abd3c538d266cf6749aaabad1', 'test', 'SKIPPED_ALREADY_APPLIED', NOW(), CASE WHEN 'SKIPPED_ALREADY_APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260706-2235-codeonly-three-env-v5', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 ruoyi-vue-pro
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260706-2235-codeonly-three-env-v5', '20260619_post_release_role_e2e_gate_smoke_z_erp_job_permission_fix', '20260619_post_release_role_e2e_gate_smoke_z_erp_job_permission_fix.sql', 'b90028109c29d054598952b65c04e17fe8e7f6170d2ab3b0c1e604fa926a554b', 'test', 'SKIPPED_ALREADY_APPLIED', NOW(), CASE WHEN 'SKIPPED_ALREADY_APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260706-2235-codeonly-three-env-v5', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 ruoyi-vue-pro
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260706-2235-codeonly-three-env-v5', '20260701_srm_t6_nas_locator_blacklist_config', '20260701_srm_t6_nas_locator_blacklist_config.sql', '2e59012517b267fe0a6060ae57149b96342509459f819097d9f2926ff2a4c3fd', 'test', 'SKIPPED_ALREADY_APPLIED', NOW(), CASE WHEN 'SKIPPED_ALREADY_APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260706-2235-codeonly-three-env-v5', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 ruoyi-vue-pro
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260706-2235-codeonly-three-env-v5', '20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix', '20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql', 'c0d37b742489ad4cc397f557618ababcfd1a600f5e18b69804f9fc0f0ce167b6', 'test', 'SKIPPED_ALREADY_APPLIED', NOW(), CASE WHEN 'SKIPPED_ALREADY_APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260706-2235-codeonly-three-env-v5', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 ruoyi-vue-pro
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260706-2235-codeonly-three-env-v5', '20260619_post_release_role_e2e_gate_smoke_route_900026_line_fix', '20260619_post_release_role_e2e_gate_smoke_route_900026_line_fix.sql', '121858c6276712b0afda85f212b7df11dddfbb5446bdca77a5ffd4fc9e4d4720', 'test', 'SKIPPED_ALREADY_APPLIED', NOW(), CASE WHEN 'SKIPPED_ALREADY_APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260706-2235-codeonly-three-env-v5', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Skipping required database SQL outside target environment: 20260625_dcc_fvm_matrix_retain_other_completion
+[INFO] Applying required database SQL: 20260513_dcc_base_schema.sql
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 test -f '/var/lib/docker/intruoyi-releases/release-20260706-2235-codeonly-three-env-v5/required-sql/20260513_dcc_base_schema.sql' && echo REQUIRED_SQL_EXISTS
+REQUIRED_SQL_EXISTS
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 ruoyi-vue-pro
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260706-2235-codeonly-three-env-v5', '20260513_dcc_base_schema', '20260513_dcc_base_schema.sql', '697f31107009aff47559222de12ad36e4419cd346fc17cc47ec7cda86a9e5f03', 'test', 'RUNNING', NOW(), CASE WHEN 'RUNNING' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260706-2235-codeonly-three-env-v5', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat '/var/lib/docker/intruoyi-releases/release-20260706-2235-codeonly-three-env-v5/required-sql/20260513_dcc_base_schema.sql' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 ruoyi-vue-pro
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 ruoyi-vue-pro
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260706-2235-codeonly-three-env-v5', '20260513_dcc_base_schema', '20260513_dcc_base_schema.sql', '697f31107009aff47559222de12ad36e4419cd346fc17cc47ec7cda86a9e5f03', 'test', 'APPLIED', NOW(), CASE WHEN 'APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260706-2235-codeonly-three-env-v5', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Applying required database SQL: 20260706_dcc_signature_image_evidence_chain.sql
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 test -f '/var/lib/docker/intruoyi-releases/release-20260706-2235-codeonly-three-env-v5/required-sql/20260706_dcc_signature_image_evidence_chain.sql' && echo REQUIRED_SQL_EXISTS
+REQUIRED_SQL_EXISTS
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 ruoyi-vue-pro
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260706-2235-codeonly-three-env-v5', '20260706_dcc_signature_image_evidence_chain', '20260706_dcc_signature_image_evidence_chain.sql', '3a9176b8eaf13491739bd445fd1997ba166466484e7d3f8adca6e322ad47ac4b', 'test', 'RUNNING', NOW(), CASE WHEN 'RUNNING' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260706-2235-codeonly-three-env-v5', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat '/var/lib/docker/intruoyi-releases/release-20260706-2235-codeonly-three-env-v5/required-sql/20260706_dcc_signature_image_evidence_chain.sql' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 ruoyi-vue-pro
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 ruoyi-vue-pro
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260706-2235-codeonly-three-env-v5', '20260706_dcc_signature_image_evidence_chain', '20260706_dcc_signature_image_evidence_chain.sql', '3a9176b8eaf13491739bd445fd1997ba166466484e7d3f8adca6e322ad47ac4b', 'test', 'APPLIED', NOW(), CASE WHEN 'APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260706-2235-codeonly-three-env-v5', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Applying required database SQL: 20260706_mes_edhr_process_form_permission_rule.sql
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 test -f '/var/lib/docker/intruoyi-releases/release-20260706-2235-codeonly-three-env-v5/required-sql/20260706_mes_edhr_process_form_permission_rule.sql' && echo REQUIRED_SQL_EXISTS
+REQUIRED_SQL_EXISTS
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 ruoyi-vue-pro
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260706-2235-codeonly-three-env-v5', '20260706_mes_edhr_process_form_permission_rule', '20260706_mes_edhr_process_form_permission_rule.sql', 'abae75709be2b6cfd6916c6fa53f8ab354973a4452380575d896edaff0128f96', 'test', 'RUNNING', NOW(), CASE WHEN 'RUNNING' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260706-2235-codeonly-three-env-v5', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat '/var/lib/docker/intruoyi-releases/release-20260706-2235-codeonly-three-env-v5/required-sql/20260706_mes_edhr_process_form_permission_rule.sql' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 ruoyi-vue-pro
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1644 (45000) at line 199: Menu id 900301 or 900302 is already used by another permission; cannot create process form permission rule buttons
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 ruoyi-vue-pro
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260706-2235-codeonly-three-env-v5', '20260706_mes_edhr_process_form_permission_rule', '20260706_mes_edhr_process_form_permission_rule.sql', 'abae75709be2b6cfd6916c6fa53f8ab354973a4452380575d896edaff0128f96', 'test', 'FAILED', NOW(), CASE WHEN 'FAILED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('Command failed with exit code 1: ssh
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1644 (45000) at line 199: Menu id 900301 or 900302 is already used by another permission; cannot create process form permission rule buttons', ''), 'release-20260706-2235-codeonly-three-env-v5', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro | grep '^LOCK_RELEASED$'
+UPDATE infra_release_operation_lock
+SET status = 'FAILED',
+    finished_at = NOW(),
+    error_message = NULLIF('Command failed with exit code 1: ssh
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1644 (45000) at line 199: Menu id 900301 or 900302 is already used by another permission; cannot create process form permission rule buttons', ''),
+    updater = 'release-system',
+    update_time = NOW()
+WHERE target_environment = 'test'
+  AND operation_id = 'test-release-20260706-2235-codeonly-three-env-v5'
+  AND status = 'RUNNING';
+SELECT CASE WHEN status = 'FAILED' THEN 'LOCK_RELEASED' ELSE CONCAT('LOCK_RELEASE_FAILED:', operation_id, ':', status) END
+FROM infra_release_operation_lock
+WHERE target_environment = 'test';
+SQL
+LOCK_RELEASED
+mysql: [Warning] Using a password on the command line interface can be insecure.
+stderrTail=
+powershell.exe : Command failed with exit code 1: ssh
+At line:47 char:1
++ & powershell -NoProfile -ExecutionPolicy Bypass -File $script -Mode d ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Command failed with exit code 1: ssh:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1644 (45000) at line 199: Menu id 900301 or 900302 is already used by another permission; cannot create process f
+orm permission rule buttons
+At D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\ops\deploy\publish-int-ruoyi.ps1:1023 char:9
++         throw "Command failed with exit code $($result.ExitCode): ssh ...
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Command failed ...on rule buttons:String) [], RuntimeException
+    + FullyQualifiedErrorId : Command failed with exit code 1: ssh
+mysql: [Warning] Using a password on the command line interface can be insecure.
+    ERROR 1644 (45000) at line 199: Menu id 900301 or 900302 is already used by another permission; cannot create proc 
+   ess form permission rule buttons
+ 

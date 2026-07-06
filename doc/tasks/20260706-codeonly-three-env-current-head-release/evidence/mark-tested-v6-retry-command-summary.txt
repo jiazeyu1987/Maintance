@@ -1,0 +1,15 @@
+timestamp=2026-07-06T22:55:10
+releaseTag=release-20260706-2245-codeonly-three-env-v6
+mode=mark-tested
+attempt=retry-wrapper
+exitCode=0
+durationSeconds=3
+success=True
+selectedRecoverySetCandidateId=restore:20260621-063218
+recoverySetId=20260621-063218
+recoverySetManifestHash=6806edb9075622a5dbe646e2a1dca1ea499472cc610e070161b68f7249aecf66
+recoverySetProgramVersion=release-20260620-current-head-prod-target-v7
+recoverySetRedisPolicy=CLEAR_AND_REBUILD
+wrapper=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\invoke-mark-tested-v6-retry.ps1
+stdout=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\mark-tested-v6-retry-operation.out.log
+stderr=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\mark-tested-v6-retry-operation.err.log

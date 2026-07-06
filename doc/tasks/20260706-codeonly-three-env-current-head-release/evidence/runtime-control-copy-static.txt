@@ -1,0 +1,4 @@
+copied frontend dist to backend static
+source=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\frontend\dist
+destination=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\resources\static
+time=2026-07-06 20:32:22 +08:00

@@ -1,0 +1,695 @@
+time=2026-07-06 22:19:38 +08:00
+=== git status backend main/temp ===
+--- main backend ---
+ M yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/controller/admin/pro/batchrecord/vo/MesProBatchRecordExecutionApprovalActionRespVO.java
+ M yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/batchrecord/MesProBatchRecordExecutionServiceImpl.java
+ M yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/batchrecord/MesProEdhrWorkTaskServiceImpl.java
+ M yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/approval/MesProEdhrApprovalTaskAdapterTest.java
+ M yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/service/pro/batchrecord/MesProBatchRecordExecutionServiceImplTest.java
+ M yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/service/pro/batchrecord/MesProEdhrWorkTaskServiceImplTest.java
+?? doc/tasks/20260705-batch-record-layout-ratio-branch-review/
+?? sql/mysql/20260705_showroom_legacy_product_code_auto_confirmable_draft.sql
+?? yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/batchrecord/MesProEdhrApprovalStatusMapping.java
+?? yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/service/pro/batchrecord/MesProEdhrApprovalStatusMappingTest.java
+--- temp backend ---
+=== file: D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260706_mes_edhr_process_form_permission_rule.sql ===
+   1: -- release-migration: allowedEnvironments=test,backup,prod; dependsOn=20260612_mes_process_use_route_tabs; type=schema; riskLevel=medium
+   2: SET NAMES utf8mb4;
+   3: 
+   4: CREATE TABLE IF NOT EXISTS `mes_pro_edhr_process_form_permission_rule` (
+   5:   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '编号',
+   6:   `route_process_id` bigint NOT NULL COMMENT '工艺路线工序编号',
+   7:   `batch_record_report_id` varchar(128) NOT NULL COMMENT '批记录表单编号',
+   8:   `rule_type` varchar(32) NOT NULL COMMENT '规则类型：FILL/SIGNATURE',
+   9:   `signature_cell_key` varchar(128) NOT NULL DEFAULT '' COMMENT '签名单元格 Key，填写规则为空',
+  10:   `signature_role` varchar(32) DEFAULT NULL COMMENT '签名角色：APPROVAL/APPROVE/REVIEW',
+  11:   `candidate_source_type` varchar(32) NOT NULL COMMENT '候选来源类型：USER/USERS/ROLE/DEPT/DEPT_LEADER',
+  12:   `candidate_source_ids` varchar(1000) NOT NULL COMMENT '候选来源 ID 列表，逗号分隔',
+  13:   `completion_policy` varchar(32) NOT NULL COMMENT '完成策略：ANY_ONE/ALL',
+  14:   `due_minutes` int NOT NULL COMMENT '处理时限，单位分钟',
+  15:   `enabled` bit(1) NOT NULL DEFAULT b'1' COMMENT '是否启用',
+  16:   `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+  17:   `creator` varchar(64) DEFAULT '' COMMENT '创建者',
+  18:   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  19:   `updater` varchar(64) DEFAULT '' COMMENT '更新者',
+  20:   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  21:   `deleted` bit(1) NOT NULL DEFAULT b'0' COMMENT '是否删除',
+  22:   `tenant_id` bigint NOT NULL DEFAULT 0 COMMENT '租户编号',
+  23:   PRIMARY KEY (`id`),
+  24:   UNIQUE KEY `uk_mes_pro_edhr_process_form_rule` (`tenant_id`, `route_process_id`, `batch_record_report_id`, `rule_type`, `signature_cell_key`, `deleted`),
+  25:   KEY `idx_mes_pro_edhr_process_form_rule_route_report` (`tenant_id`, `route_process_id`, `batch_record_report_id`)
+  26: ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='eDHR 工序表单权限规则';
+  27: 
+  28: DROP PROCEDURE IF EXISTS ensure_mes_edhr_process_form_permission_rule_permissions;
+  29: 
+  30: DELIMITER //
+  31: CREATE PROCEDURE ensure_mes_edhr_process_form_permission_rule_permissions()
+  32: BEGIN
+  33:   IF EXISTS (
+  34:     SELECT 1
+  35:     FROM `system_tenant_package`
+  36:     WHERE `deleted` = b'0'
+  37:       AND NOT JSON_VALID(`menu_ids`)
+  38:   ) THEN
+  39:     SIGNAL SQLSTATE '45000'
+  40:       SET MESSAGE_TEXT = 'Invalid system_tenant_package.menu_ids JSON; cannot merge eDHR process form permission rule menus';
+  41:   END IF;
+  42: 
+  43:   IF NOT EXISTS (
+  44:     SELECT 1
+  45:     FROM `system_menu`
+  46:     WHERE `id` = 900221
+  47:       AND `permission` = 'mes:pro-batch-record-route:query'
+  48:       AND `deleted` = b'0'
+  49:   ) THEN
+  50:     SIGNAL SQLSTATE '45000'
+  51:       SET MESSAGE_TEXT = 'Missing process batch record route menu 900221; cannot append process form permission rule buttons';
+  52:   END IF;
+  53: 
+  54:   IF EXISTS (
+  55:     SELECT 1
+  56:     FROM `system_menu`
+  57:     WHERE `id` IN (900301, 900302)
+  58:       AND `deleted` = b'0'
+  59:       AND `permission` NOT IN (
+  60:         'mes:pro-edhr-process-form-permission-rule:query',
+  61:         'mes:pro-edhr-process-form-permission-rule:update'
+  62:       )
+  63:   ) THEN
+  64:     SIGNAL SQLSTATE '45000'
+  65:       SET MESSAGE_TEXT = 'Menu id 900301 or 900302 is already used by another permission; cannot create process form permission rule buttons';
+  66:   END IF;
+  67: 
+  68:   INSERT INTO `system_menu` (
+  69:     `id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`,
+  70:     `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`,
+  71:     `creator`, `create_time`, `updater`, `update_time`, `deleted`
+  72:   ) VALUES
+  73:   (
+  74:     900301, '工序表单权限查询', 'mes:pro-edhr-process-form-permission-rule:query', 3, 20, 900221,
+  75:     '', '', '', '', 0, b'1', b'1', b'1', 'edhr-process-form-permission', NOW(), 'edhr-process-form-permission', NOW(), b'0'
+  76:   ),
+  77:   (
+  78:     900302, '工序表单权限维护', 'mes:pro-edhr-process-form-permission-rule:update', 3, 21, 900221,
+  79:     '', '', '', '', 0, b'1', b'1', b'1', 'edhr-process-form-permission', NOW(), 'edhr-process-form-permission', NOW(), b'0'
+  80:   )
+  81:   ON DUPLICATE KEY UPDATE
+  82:     `name` = VALUES(`name`),
+  83:     `permission` = VALUES(`permission`),
+  84:     `type` = VALUES(`type`),
+  85:     `sort` = VALUES(`sort`),
+  86:     `parent_id` = VALUES(`parent_id`),
+  87:     `path` = VALUES(`path`),
+  88:     `icon` = VALUES(`icon`),
+  89:     `component` = VALUES(`component`),
+  90:     `component_name` = VALUES(`component_name`),
+  91:     `status` = VALUES(`status`),
+  92:     `visible` = VALUES(`visible`),
+  93:     `keep_alive` = VALUES(`keep_alive`),
+  94:     `always_show` = VALUES(`always_show`),
+  95:     `updater` = VALUES(`updater`),
+  96:     `update_time` = VALUES(`update_time`),
+  97:     `deleted` = VALUES(`deleted`);
+  98: 
+  99:   DROP TEMPORARY TABLE IF EXISTS `tmp_mes_edhr_process_form_permission_packages`;
+ 100:   CREATE TEMPORARY TABLE `tmp_mes_edhr_process_form_permission_packages` AS
+ 101:   SELECT DISTINCT `package`.`id` AS `package_id`
+ 102:   FROM `system_tenant_package` AS `package`
+ 103:   WHERE `package`.`deleted` = b'0'
+ 104:     AND JSON_VALID(`package`.`menu_ids`)
+ 105:     AND JSON_CONTAINS(CAST(`package`.`menu_ids` AS JSON), CAST('900221' AS JSON), '$');
+ 106: 
+ 107:   DROP TEMPORARY TABLE IF EXISTS `tmp_mes_edhr_process_form_permission_package_menu_ids`;
+ 108:   CREATE TEMPORARY TABLE `tmp_mes_edhr_process_form_permission_package_menu_ids` (
+ 109:     `package_id` bigint NOT NULL,
+ 110:     `menu_id` bigint NOT NULL,
+ 111:     PRIMARY KEY (`package_id`, `menu_id`)
+ 112:   );
+ 113: 
+ 114:   INSERT IGNORE INTO `tmp_mes_edhr_process_form_permission_package_menu_ids` (`package_id`, `menu_id`)
+ 115:   SELECT
+ 116:     `target_package`.`package_id`,
+ 117:     CAST(`existing_menu`.`menu_id` AS UNSIGNED)
+ 118:   FROM `tmp_mes_edhr_process_form_permission_packages` AS `target_package`
+ 119:   JOIN `system_tenant_package` AS `package`
+ 120:     ON `package`.`id` = `target_package`.`package_id`
+ 121:    AND `package`.`deleted` = b'0'
+ 122:    AND JSON_VALID(`package`.`menu_ids`)
+ 123:   JOIN JSON_TABLE(
+ 124:     `package`.`menu_ids`,
+ 125:     '$[*]' COLUMNS (`menu_id` bigint PATH '$')
+ 126:   ) AS `existing_menu`;
+ 127: 
+ 128:   INSERT IGNORE INTO `tmp_mes_edhr_process_form_permission_package_menu_ids` (`package_id`, `menu_id`)
+ 129:   SELECT
+ 130:     `target_package`.`package_id`,
+ 131:     `menu`.`id`
+ 132:   FROM `tmp_mes_edhr_process_form_permission_packages` AS `target_package`
+ 133:   JOIN `system_menu` AS `menu`
+ 134:     ON `menu`.`id` IN (900301, 900302)
+ 135:    AND `menu`.`deleted` = b'0';
+ 136: 
+ 137:   UPDATE `system_tenant_package` AS `package`
+ 138:   JOIN (
+ 139:     SELECT DISTINCT
+ 140:       `package_id`,
+ 141:       JSON_ARRAYAGG(`menu_id`) OVER (
+ 142:         PARTITION BY `package_id`
+ 143:         ORDER BY `menu_id`
+ 144:         ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+ 145:       ) AS `menu_ids`
+ 146:     FROM `tmp_mes_edhr_process_form_permission_package_menu_ids`
+ 147:   ) AS `merged`
+ 148:     ON `merged`.`package_id` = `package`.`id`
+ 149:   SET `package`.`menu_ids` = `merged`.`menu_ids`,
+ 150:       `package`.`updater` = 'edhr-process-form-permission',
+ 151:       `package`.`update_time` = NOW();
+ 152: 
+ 153:   INSERT INTO `system_role_menu` (
+ 154:     `role_id`, `menu_id`, `creator`, `create_time`, `updater`, `update_time`, `deleted`, `tenant_id`
+ 155:   )
+ 156:   SELECT
+ 157:     `role`.`id`,
+ 158:     `menu`.`id`,
+ 159:     'edhr-process-form-permission',
+ 160:     NOW(),
+ 161:     'edhr-process-form-permission',
+ 162:     NOW(),
+ 163:     b'0',
+ 164:     `role`.`tenant_id`
+ 165:   FROM `system_role` AS `role`
+ 166:   JOIN `system_tenant` AS `tenant`
+ 167:     ON `tenant`.`id` = `role`.`tenant_id`
+ 168:    AND `tenant`.`deleted` = b'0'
+ 169:   JOIN `tmp_mes_edhr_process_form_permission_packages` AS `target_package`
+ 170:     ON `target_package`.`package_id` = `tenant`.`package_id`
+ 171:   JOIN `system_tenant_package` AS `package`
+ 172:     ON `package`.`id` = `tenant`.`package_id`
+ 173:    AND `package`.`deleted` = b'0'
+ 174:    AND JSON_VALID(`package`.`menu_ids`)
+ 175:   JOIN `system_role_menu` AS `route_role_menu`
+ 176:     ON `route_role_menu`.`role_id` = `role`.`id`
+ 177:    AND `route_role_menu`.`tenant_id` = `role`.`tenant_id`
+ 178:    AND `route_role_menu`.`menu_id` = 900221
+ 179:    AND `route_role_menu`.`deleted` = b'0'
+ 180:   JOIN `system_menu` AS `menu`
+ 181:     ON `menu`.`id` IN (900301, 900302)
+ 182:    AND `menu`.`deleted` = b'0'
+ 183:   WHERE `role`.`deleted` = b'0'
+ 184:     AND JSON_CONTAINS(CAST(`package`.`menu_ids` AS JSON), CAST(CONCAT('', `menu`.`id`) AS JSON), '$')
+ 185:     AND NOT EXISTS (
+ 186:       SELECT 1
+ 187:       FROM `system_role_menu` AS `role_menu`
+ 188:       WHERE `role_menu`.`role_id` = `role`.`id`
+ 189:         AND `role_menu`.`menu_id` = `menu`.`id`
+ 190:         AND `role_menu`.`tenant_id` = `role`.`tenant_id`
+ 191:         AND `role_menu`.`deleted` = b'0'
+ 192:     );
+ 193: 
+ 194:   DROP TEMPORARY TABLE IF EXISTS `tmp_mes_edhr_process_form_permission_package_menu_ids`;
+ 195:   DROP TEMPORARY TABLE IF EXISTS `tmp_mes_edhr_process_form_permission_packages`;
+ 196: END//
+ 197: DELIMITER ;
+ 198: 
+ 199: CALL ensure_mes_edhr_process_form_permission_rule_permissions();
+ 200: 
+ 201: DROP PROCEDURE IF EXISTS ensure_mes_edhr_process_form_permission_rule_permissions;
+=== file: D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\script\tests\test_mes_edhr_process_form_permission_rule_sql.py ===
+   1: from pathlib import Path
+   2: 
+   3: 
+   4: REPO_ROOT = Path(__file__).resolve().parents[2]
+   5: SQL_PATH = REPO_ROOT / "sql" / "mysql" / "20260706_mes_edhr_process_form_permission_rule.sql"
+   6: 
+   7: 
+   8: def read_sql() -> str:
+   9:     assert SQL_PATH.exists(), "missing eDHR process form permission rule migration"
+  10:     return SQL_PATH.read_text(encoding="utf-8")
+  11: 
+  12: 
+  13: def test_process_form_permission_rule_migration_declares_publishable_contract() -> None:
+  14:     text = read_sql()
+  15: 
+  16:     assert text.startswith(
+  17:         "-- release-migration: allowedEnvironments=test,backup,prod; "
+  18:         "dependsOn=20260612_mes_process_use_route_tabs; type=schema; riskLevel=medium"
+  19:     )
+  20:     assert "SET NAMES utf8mb4;" in text
+  21:     assert "SIGNAL SQLSTATE '45000'" in text
+  22:     assert "Invalid system_tenant_package.menu_ids JSON" in text
+  23:     assert "Missing process batch record route menu 900221" in text
+  24:     assert "Menu id 900301 or 900302 is already used by another permission" in text
+  25: 
+  26: 
+  27: def test_process_form_permission_rule_migration_declares_schema_and_indexes() -> None:
+  28:     text = read_sql()
+  29: 
+  30:     required_snippets = [
+  31:         "CREATE TABLE IF NOT EXISTS `mes_pro_edhr_process_form_permission_rule`",
+  32:         "`route_process_id` bigint NOT NULL",
+  33:         "`batch_record_report_id` varchar(128) NOT NULL",
+  34:         "`rule_type` varchar(32) NOT NULL",
+  35:         "`signature_cell_key` varchar(128) NOT NULL DEFAULT ''",
+  36:         "`signature_role` varchar(32) DEFAULT NULL",
+  37:         "`candidate_source_type` varchar(32) NOT NULL",
+  38:         "`candidate_source_ids` varchar(1000) NOT NULL",
+  39:         "`completion_policy` varchar(32) NOT NULL",
+  40:         "`due_minutes` int NOT NULL",
+  41:         "`tenant_id` bigint NOT NULL DEFAULT 0",
+  42:         "UNIQUE KEY `uk_mes_pro_edhr_process_form_rule`",
+  43:         "KEY `idx_mes_pro_edhr_process_form_rule_route_report`",
+  44:     ]
+  45: 
+  46:     for snippet in required_snippets:
+  47:         assert snippet in text
+  48: 
+  49: 
+  50: def test_process_form_permission_rule_migration_adds_menu_and_role_permissions_without_hardcoded_roles() -> None:
+  51:     text = read_sql()
+  52: 
+  53:     required_snippets = [
+  54:         "900301, '工序表单权限查询', 'mes:pro-edhr-process-form-permission-rule:query'",
+  55:         "900302, '工序表单权限维护', 'mes:pro-edhr-process-form-permission-rule:update'",
+  56:         "JSON_CONTAINS(CAST(`package`.`menu_ids` AS JSON), CAST('900221' AS JSON), '$')",
+  57:         "JOIN `system_role_menu` AS `route_role_menu`",
+  58:         "`route_role_menu`.`menu_id` = 900221",
+  59:         "JOIN `system_menu` AS `menu`",
+  60:         "`menu`.`id` IN (900301, 900302)",
+  61:         "NOT EXISTS",
+  62:         "DROP TEMPORARY TABLE IF EXISTS `tmp_mes_edhr_process_form_permission_package_menu_ids`",
+  63:         "DROP TEMPORARY TABLE IF EXISTS `tmp_mes_edhr_process_form_permission_packages`",
+  64:     ]
+  65: 
+  66:     for snippet in required_snippets:
+  67:         assert snippet in text
+  68: 
+  69:     assert "tenant_admin" not in text
+  70:     assert "DELETE FROM `system_menu`" not in text
+  71:     assert "DELETE FROM `system_role_menu`" not in text
+  72:     assert "DELETE FROM `system_tenant_package`" not in text
+=== file: D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_recordbook_management.sql ===
+   1: -- release-migration: allowedEnvironments=test,backup,prod; dependsOn=20260618_mes_edhr_form_instance; type=schema; riskLevel=medium
+   2: -- eDHR recordbook template, recordbook, entry, controlled tag binding and event baseline.
+   5: CREATE TABLE IF NOT EXISTS `mes_pro_edhr_recordbook_template` (
+  26:   UNIQUE KEY `uk_mes_pro_edhr_recordbook_template_code` (`tenant_id`, `template_code`, `deleted`),
+  27:   KEY `idx_mes_pro_edhr_recordbook_template_status` (`tenant_id`, `status`, `deleted`)
+  28: ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='MES eDHR记录本模板';
+  30: CREATE TABLE IF NOT EXISTS `mes_pro_edhr_recordbook` (
+  57:   UNIQUE KEY `uk_mes_pro_edhr_recordbook_code` (`tenant_id`, `recordbook_code`, `deleted`),
+  58:   KEY `idx_mes_pro_edhr_recordbook_owner` (`tenant_id`, `owner_user_id`, `status`, `deleted`),
+  59:   KEY `idx_mes_pro_edhr_recordbook_template` (`tenant_id`, `template_id`, `status`, `deleted`),
+  60:   KEY `idx_mes_pro_edhr_recordbook_business` (`tenant_id`, `business_scope`, `business_object_type`, `business_object_id`, `deleted`)
+  61: ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='MES eDHR记录本';
+  63: CREATE TABLE IF NOT EXISTS `mes_pro_edhr_recordbook_entry` (
+  88:   UNIQUE KEY `uk_mes_pro_edhr_recordbook_entry_code` (`tenant_id`, `entry_code`, `deleted`),
+  89:   UNIQUE KEY `uk_mes_pro_edhr_recordbook_entry_idempotency` (`tenant_id`, `recordbook_id`, `idempotency_key`, `deleted`),
+  90:   KEY `idx_mes_pro_edhr_recordbook_entry_book` (`tenant_id`, `recordbook_id`, `status`, `deleted`),
+  91:   KEY `idx_mes_pro_edhr_recordbook_entry_submitter` (`tenant_id`, `submitted_by`, `submitted_at`, `deleted`)
+  92: ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='MES eDHR记录本条目';
+  94: CREATE TABLE IF NOT EXISTS `mes_pro_edhr_controlled_tag` (
+ 112:   UNIQUE KEY `uk_mes_pro_edhr_controlled_tag_code` (`tenant_id`, `tag_code`, `deleted`),
+ 113:   KEY `idx_mes_pro_edhr_recordbook_tag_status` (`tenant_id`, `tag_status`, `deleted`)
+ 114: ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='MES eDHR受控标签';
+ 116: CREATE TABLE IF NOT EXISTS `mes_pro_edhr_recordbook_tag_binding` (
+ 133:   UNIQUE KEY `uk_mes_pro_edhr_recordbook_tag_binding` (`tenant_id`, `entry_id`, `tag_code`, `deleted`),
+ 134:   KEY `idx_mes_pro_edhr_recordbook_tag_binding_book` (`tenant_id`, `recordbook_id`, `tag_code`, `deleted`)
+ 135: ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='MES eDHR记录本标签绑定';
+ 137: CREATE TABLE IF NOT EXISTS `mes_pro_edhr_recordbook_event` (
+ 158:   KEY `idx_mes_pro_edhr_recordbook_event_entry` (`tenant_id`, `entry_id`, `occurred_at`),
+ 159:   KEY `idx_mes_pro_edhr_recordbook_event_book` (`tenant_id`, `recordbook_id`, `occurred_at`),
+ 160:   KEY `idx_mes_pro_edhr_recordbook_event_type` (`tenant_id`, `event_type`, `result_status`)
+ 161: ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='MES eDHR记录本事件';
+ 165: SELECT 900301, 'eDHR记录本', 'mes:pro-edhr-recordbook:query', 2, 11, 900220, '/mes/pro/edhr-recordbook', 'ep:notebook', 'mes/pro/edhr-recordbook/RecordbookPage', 'MesProEdhrRecordbook', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+ 166: WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900301 OR (`permission` = 'mes:pro-edhr-recordbook:query' AND `type` = 2));
+ 170: SELECT 900302, 'eDHR记录本模板查询', 'mes:pro-edhr-recordbook-template:query', 3, 1, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+ 171: WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `permission` = 'mes:pro-edhr-recordbook-template:query');
+ 175: SELECT 900303, 'eDHR记录本模板创建', 'mes:pro-edhr-recordbook-template:create', 3, 2, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+ 176: WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `permission` = 'mes:pro-edhr-recordbook-template:create');
+ 180: SELECT 900304, 'eDHR记录本模板启用', 'mes:pro-edhr-recordbook-template:activate', 3, 3, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+ 181: WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `permission` = 'mes:pro-edhr-recordbook-template:activate');
+ 185: SELECT 900305, 'eDHR记录本查询', 'mes:pro-edhr-recordbook:query', 3, 4, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+ 186: WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `permission` = 'mes:pro-edhr-recordbook:query' AND `type` = 3);
+ 190: SELECT 900306, 'eDHR记录本创建', 'mes:pro-edhr-recordbook:create', 3, 5, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+ 191: WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `permission` = 'mes:pro-edhr-recordbook:create');
+ 195: SELECT 900307, 'eDHR记录条目查询', 'mes:pro-edhr-recordbook-entry:query', 3, 6, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+ 196: WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `permission` = 'mes:pro-edhr-recordbook-entry:query');
+ 200: SELECT 900308, 'eDHR记录条目创建', 'mes:pro-edhr-recordbook-entry:create', 3, 7, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+ 201: WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `permission` = 'mes:pro-edhr-recordbook-entry:create');
+ 205: SELECT 900309, 'eDHR记录条目草稿保存', 'mes:pro-edhr-recordbook-entry:save', 3, 8, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+ 206: WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `permission` = 'mes:pro-edhr-recordbook-entry:save');
+ 210: SELECT 900310, 'eDHR记录条目提交', 'mes:pro-edhr-recordbook-entry:submit', 3, 9, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+ 211: WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `permission` = 'mes:pro-edhr-recordbook-entry:submit');
+ 215: SELECT 900311, 'eDHR受控标签查询', 'mes:pro-edhr-tag:query', 3, 10, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+ 216: WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `permission` = 'mes:pro-edhr-tag:query');
+ 220: SELECT 900312, 'eDHR受控标签创建', 'mes:pro-edhr-tag:create', 3, 11, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+ 221: WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `permission` = 'mes:pro-edhr-tag:create');
+ 225: SELECT 900313, 'eDHR受控标签启用', 'mes:pro-edhr-tag:activate', 3, 12, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+ 226: WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `permission` = 'mes:pro-edhr-tag:activate');
+ 230: SELECT 900314, 'eDHR受控标签停用', 'mes:pro-edhr-tag:disable', 3, 13, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+ 231: WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `permission` = 'mes:pro-edhr-tag:disable');
+ 233: DROP PROCEDURE IF EXISTS ensure_mes_edhr_recordbook_menus;
+ 235: CREATE PROCEDURE ensure_mes_edhr_recordbook_menus()
+ 239:       SET MESSAGE_TEXT = 'Missing eDHR root system_menu row; cannot merge eDHR recordbook menus';
+ 248:       SET MESSAGE_TEXT = 'Invalid system_tenant_package.menu_ids JSON; cannot merge eDHR recordbook menus';
+ 251:   IF (SELECT COUNT(*) FROM `system_menu` WHERE `deleted` = b'0' AND `id` IN (900301, 900302, 900303, 900304, 900305, 900306, 900307, 900308, 900309, 900310, 900311, 900312, 900313, 900314)) <> 14 THEN
+ 253:       SET MESSAGE_TEXT = 'Missing eDHR recordbook system_menu rows; cannot merge tenant package menu_ids';
+ 256:   DROP TEMPORARY TABLE IF EXISTS `tmp_mes_edhr_recordbook_target_packages`;
+ 257:   CREATE TEMPORARY TABLE `tmp_mes_edhr_recordbook_target_packages` AS
+ 264:   DROP TEMPORARY TABLE IF EXISTS `tmp_mes_edhr_recordbook_menu_ids`;
+ 265:   CREATE TEMPORARY TABLE `tmp_mes_edhr_recordbook_menu_ids` AS
+ 268:   WHERE `id` IN (900301, 900302, 900303, 900304, 900305, 900306, 900307, 900308, 900309, 900310, 900311, 900312, 900313, 900314)
+ 271:   DROP TEMPORARY TABLE IF EXISTS `tmp_mes_edhr_recordbook_package_menu_ids`;
+ 272:   CREATE TEMPORARY TABLE `tmp_mes_edhr_recordbook_package_menu_ids` AS
+ 276:   FROM `tmp_mes_edhr_recordbook_target_packages` AS `target_package`
+ 286:   INSERT INTO `tmp_mes_edhr_recordbook_package_menu_ids` (`package_id`, `menu_id`)
+ 290:   FROM `tmp_mes_edhr_recordbook_target_packages` AS `target_package`
+ 291:   CROSS JOIN `tmp_mes_edhr_recordbook_menu_ids` AS `menu`;
+ 300:       FROM `tmp_mes_edhr_recordbook_package_menu_ids`
+ 307:       `package`.`updater` = 'edhr-recordbook-menu',
+ 316:     'edhr-recordbook-menu',
+ 318:     'edhr-recordbook-menu',
+ 326:   JOIN `tmp_mes_edhr_recordbook_target_packages` AS `target_package`
+ 329:     ON `menu`.`id` IN (900301, 900302, 900303, 900304, 900305, 900306, 900307, 900308, 900309, 900310, 900311, 900312, 900313, 900314)
+ 342:   DROP TEMPORARY TABLE IF EXISTS `tmp_mes_edhr_recordbook_package_menu_ids`;
+ 343:   DROP TEMPORARY TABLE IF EXISTS `tmp_mes_edhr_recordbook_menu_ids`;
+ 344:   DROP TEMPORARY TABLE IF EXISTS `tmp_mes_edhr_recordbook_target_packages`;
+ 348: CALL ensure_mes_edhr_recordbook_menus();
+ 350: DROP PROCEDURE IF EXISTS ensure_mes_edhr_recordbook_menus;
+=== file: D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260702_mes_edhr_seven_visible_tabs.sql ===
+   4: DROP PROCEDURE IF EXISTS ensure_mes_edhr_seven_visible_tabs;
+   7: CREATE PROCEDURE ensure_mes_edhr_seven_visible_tabs()
+  16:       SET MESSAGE_TEXT = 'Invalid system_tenant_package.menu_ids JSON; cannot merge eDHR visible tabs';
+  26:       SET MESSAGE_TEXT = 'Missing eDHR batch processing parent menu 900220; cannot apply visible tabs';
+  36:       SET MESSAGE_TEXT = 'Missing approval center menu 1200; cannot fuse eDHR approval entry';
+  46:       SET MESSAGE_TEXT = 'Missing unified electronic signature batch-signature menu 900412; cannot unify eDHR signature tab';
+  49:   DROP TEMPORARY TABLE IF EXISTS `tmp_mes_edhr_visible_tabs`;
+  50:   CREATE TEMPORARY TABLE `tmp_mes_edhr_visible_tabs` (
+  62:   INSERT INTO `tmp_mes_edhr_visible_tabs`
+  68:   SELECT 900033 AS `id`, '批次执行' AS `name`, 'mes:pro-edhr-batch-execution:query' AS `permission`, 1 AS `sort`,
+  69:          '/mes/pro/feedback/edhr-batch-execution' AS `path`, 'ep:document-checked' AS `icon`,
+  70:          'mes/pro/edhr-batch/BatchExecutionListPage' AS `component`, 'MesProEdhrBatchExecutionListPage' AS `component_name`,
+  71:          'eDHR 批次打开、执行、关闭、归档和历史入口' AS `remark`
+  74:          '/mes/pro/feedback/edhr-tracking' AS `path`, 'ep:position' AS `icon`,
+  75:          'mes/pro/edhr/TrackingPage' AS `component`, 'MesProFeedbackEdhrTracking' AS `component_name`,
+  78:   SELECT 900235 AS `id`, '变更与异常' AS `name`, 'mes:pro-edhr-change:query' AS `permission`, 3 AS `sort`,
+  79:          '/mes/pro/feedback/edhr-change' AS `path`, 'ep:document' AS `icon`,
+  80:          'mes/pro/edhr/RecordChangePage' AS `component`, 'MesProFeedbackEdhrRecordChange' AS `component_name`,
+  83:   SELECT 900260 AS `id`, '放行与归档' AS `name`, 'mes:pro-edhr-release:query' AS `permission`, 4 AS `sort`,
+  84:          '/mes/pro/feedback/edhr-release' AS `path`, 'ep:finished' AS `icon`,
+  85:          'mes/pro/edhr-release/ReleasePage' AS `component`, 'MesProEdhrReleasePage' AS `component_name`,
+  88:   IF (SELECT COUNT(*) FROM `tmp_mes_edhr_visible_tabs`) <> 5 THEN
+  90:       SET MESSAGE_TEXT = 'eDHR batch processing visible tab contract must declare exactly five tabs';
+ 100:          'edhr-seven-visible-tabs', NOW(), 'edhr-seven-visible-tabs', NOW(), b'0'
+ 101:   FROM `tmp_mes_edhr_visible_tabs`
+ 120:   DROP TEMPORARY TABLE IF EXISTS `tmp_mes_edhr_hidden_retained_tabs`;
+ 121:   CREATE TEMPORARY TABLE `tmp_mes_edhr_hidden_retained_tabs` (
+ 126:   INSERT INTO `tmp_mes_edhr_hidden_retained_tabs`
+ 127:   SELECT 900024 AS `id`, 'eDHR审批统一到审批中心一级页签，详情路由保留但菜单隐藏' AS `reason`
+ 128:   UNION ALL SELECT 900026 AS `id`, 'eDHR签名记录统一到电子签名一级页签下的批记录签名记录，原功能保留但隐藏' AS `reason`
+ 129:   UNION ALL SELECT 900230 AS `id`, 'eDHR工作任务保留为批次详情和待办承接能力' AS `reason`
+ 130:   UNION ALL SELECT 900241 AS `id`, 'eDHR操作审计保留为详情页审计入口' AS `reason`
+ 131:   UNION ALL SELECT 900243 AS `id`, 'eDHR对象权限保留为后台权限评估入口' AS `reason`
+ 132:   UNION ALL SELECT 900266 AS `id`, 'eDHR流转单保留为后台能力' AS `reason`
+ 133:   UNION ALL SELECT 900272 AS `id`, 'eDHR独立表单保留为后台能力' AS `reason`
+ 134:   UNION ALL SELECT 900280 AS `id`, 'eDHR报表目录保留为后台报表能力' AS `reason`
+ 135:   UNION ALL SELECT 900283 AS `id`, 'eDHR交付驾驶舱保留为交付后台能力' AS `reason`
+ 136:   UNION ALL SELECT 900286 AS `id`, 'eDHR验证包矩阵保留为验证后台能力' AS `reason`
+ 137:   UNION ALL SELECT 900290 AS `id`, 'eDHR DHR模板保留为模板后台能力' AS `reason`
+ 138:   UNION ALL SELECT 900293 AS `id`, 'eDHR统一变更保留为变更后台能力' AS `reason`
+ 139:   UNION ALL SELECT 900301 AS `id`, 'eDHR记录本保留为记录本后台能力' AS `reason`
+ 140:   UNION ALL SELECT 900315 AS `id`, 'eDHR部署授权接口保留为部署后台能力' AS `reason`
+ 141:   UNION ALL SELECT 900332 AS `id`, 'eDHR OQ/PQ保留为验证执行后台能力' AS `reason`
+ 142:   UNION ALL SELECT 900338 AS `id`, 'eDHR打印策略保留为打印后台能力' AS `reason`
+ 143:   UNION ALL SELECT 900356 AS `id`, 'eDHR流程干预管理保留为管理员干预能力' AS `reason`;
+ 146:   JOIN `tmp_mes_edhr_hidden_retained_tabs` AS `hidden_tab`
+ 150:       `menu`.`updater` = 'edhr-seven-visible-tabs',
+ 154:   JOIN `tmp_mes_edhr_visible_tabs` AS `visible_tab`
+ 170:       `menu`.`updater` = 'edhr-seven-visible-tabs',
+ 182:       `updater` = 'edhr-seven-visible-tabs',
+ 187:   SET `name` = 'eDHR审批',
+ 191:       `path` = '/mes/pro/feedback/edhr-approval',
+ 193:       `component` = 'mes/pro/edhr/ApprovalPage',
+ 194:       `component_name` = 'MesProFeedbackEdhrApproval',
+ 197:       `updater` = 'edhr-seven-visible-tabs',
+ 201:   -- 多余 eDHR 功能保留但隐藏：只隐藏菜单可见性，不删除 system_menu、权限、路由、页面或 API。
+ 205:       `menu`.`updater` = 'edhr-seven-visible-tabs',
+ 209:     AND `menu`.`id` NOT IN (SELECT `id` FROM `tmp_mes_edhr_visible_tabs`);
+ 211:   DROP TEMPORARY TABLE IF EXISTS `tmp_mes_edhr_target_packages`;
+ 212:   CREATE TEMPORARY TABLE `tmp_mes_edhr_target_packages` AS
+ 220:   JOIN `tmp_mes_edhr_target_packages` AS `target`
+ 223:       `package`.`updater` = 'edhr-seven-visible-tabs',
+ 229:   JOIN `tmp_mes_edhr_target_packages` AS `target`
+ 232:       `package`.`updater` = 'edhr-seven-visible-tabs',
+ 238:   JOIN `tmp_mes_edhr_target_packages` AS `target`
+ 241:       `package`.`updater` = 'edhr-seven-visible-tabs',
+ 247:   JOIN `tmp_mes_edhr_target_packages` AS `target`
+ 250:       `package`.`updater` = 'edhr-seven-visible-tabs',
+ 256:   JOIN `tmp_mes_edhr_target_packages` AS `target`
+ 259:       `package`.`updater` = 'edhr-seven-visible-tabs',
+ 266:          'edhr-seven-visible-tabs', NOW(), 'edhr-seven-visible-tabs', NOW()
+ 268:   JOIN `tmp_mes_edhr_visible_tabs` AS `visible_tab`
+ 277: CALL ensure_mes_edhr_seven_visible_tabs();
+ 278: DROP PROCEDURE IF EXISTS ensure_mes_edhr_seven_visible_tabs;
+=== sql mysql hardcoded 9003xx menu ids ===
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_dhr_template_lifecycle.sql:122:SELECT 900347, 'eDHR DHR模板完整性检查', 'mes:pro-edhr-dhr-template:check', 3, 3, 900290, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-dhr-template-menu', NOW(), 'edhr-dhr-template-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_dhr_template_lifecycle.sql:127:SELECT 900348, 'eDHR DHR模板审核', 'mes:pro-edhr-dhr-template:approve', 3, 4, 900290, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-dhr-template-menu', NOW(), 'edhr-dhr-template-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_dhr_template_lifecycle.sql:132:SELECT 900349, 'eDHR DHR模板签核', 'mes:pro-edhr-dhr-template:signoff', 3, 5, 900290, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-dhr-template-menu', NOW(), 'edhr-dhr-template-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_dhr_template_lifecycle.sql:137:SELECT 900350, 'eDHR DHR模板生效', 'mes:pro-edhr-dhr-template:activate', 3, 6, 900290, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-dhr-template-menu', NOW(), 'edhr-dhr-template-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_dhr_template_lifecycle.sql:142:SELECT 900351, 'eDHR DHR模板停用', 'mes:pro-edhr-dhr-template:retire', 3, 7, 900290, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-dhr-template-menu', NOW(), 'edhr-dhr-template-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_dhr_template_lifecycle.sql:147:SELECT 900352, 'eDHR DHR模板作废', 'mes:pro-edhr-dhr-template:void', 3, 8, 900290, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-dhr-template-menu', NOW(), 'edhr-dhr-template-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_dhr_template_lifecycle.sql:168:  IF (SELECT COUNT(*) FROM `system_menu` WHERE `deleted` = b'0' AND `id` IN (900290, 900291, 900292, 900347, 900348, 900349, 900350, 900351, 900352)) <> 9 THEN
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_dhr_template_lifecycle.sql:185:  WHERE `id` IN (900290, 900291, 900292, 900347, 900348, 900349, 900350, 900351, 900352)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:85:         WHEN `menu`.`path` = '/mes/pro/feedback/edhr-flow-intervention' THEN 900356
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:86:         WHEN `menu`.`permission` = 'mes:pro-edhr-flow-intervention:event-query' THEN 900357
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:87:         WHEN `menu`.`permission` = 'mes:pro-edhr-flow-intervention:return' THEN 900358
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:88:         WHEN `menu`.`permission` = 'mes:pro-edhr-flow-intervention:withdraw' THEN 900359
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:89:         WHEN `menu`.`permission` = 'mes:pro-edhr-flow-intervention:transfer' THEN 900360
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:90:         WHEN `menu`.`permission` = 'mes:pro-edhr-flow-intervention:add-sign' THEN 900361
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:91:         WHEN `menu`.`permission` = 'mes:pro-edhr-flow-intervention:admin-intervene' THEN 900362
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:111:SELECT 900356, 'eDHR流程干预管理', 'mes:pro-edhr-flow-intervention:query', 2, 356, 900220,
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:114:  AND NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900356 OR (`permission` = 'mes:pro-edhr-flow-intervention:query' AND `type` = 2));
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:118:SELECT 900357, 'eDHR流程日志查询', 'mes:pro-edhr-flow-intervention:event-query', 3, 1, 900356,
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:120:WHERE EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900356 AND `deleted` = b'0')
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:121:  AND NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900357 OR `permission` = 'mes:pro-edhr-flow-intervention:event-query');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:125:SELECT 900358, 'eDHR流程退回', 'mes:pro-edhr-flow-intervention:return', 3, 2, 900356,
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:127:WHERE EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900356 AND `deleted` = b'0')
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:128:  AND NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900358 OR `permission` = 'mes:pro-edhr-flow-intervention:return');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:132:SELECT 900359, 'eDHR流程撤回', 'mes:pro-edhr-flow-intervention:withdraw', 3, 3, 900356,
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:134:WHERE EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900356 AND `deleted` = b'0')
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:135:  AND NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900359 OR `permission` = 'mes:pro-edhr-flow-intervention:withdraw');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:139:SELECT 900360, 'eDHR流程转办', 'mes:pro-edhr-flow-intervention:transfer', 3, 4, 900356,
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:141:WHERE EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900356 AND `deleted` = b'0')
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:142:  AND NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900360 OR `permission` = 'mes:pro-edhr-flow-intervention:transfer');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:146:SELECT 900361, 'eDHR流程加签', 'mes:pro-edhr-flow-intervention:add-sign', 3, 5, 900356,
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:148:WHERE EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900356 AND `deleted` = b'0')
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:149:  AND NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900361 OR `permission` = 'mes:pro-edhr-flow-intervention:add-sign');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:153:SELECT 900362, 'eDHR管理员干预', 'mes:pro-edhr-flow-intervention:admin-intervene', 3, 6, 900356,
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:155:WHERE EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900356 AND `deleted` = b'0')
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:156:  AND NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900362 OR `permission` = 'mes:pro-edhr-flow-intervention:admin-intervene');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:175:WHERE `id` = 900356
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:180:      WHEN 900357 THEN 'eDHR流程日志查询'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:181:      WHEN 900358 THEN 'eDHR流程退回'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:182:      WHEN 900359 THEN 'eDHR流程撤回'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:183:      WHEN 900360 THEN 'eDHR流程转办'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:184:      WHEN 900361 THEN 'eDHR流程加签'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:185:      WHEN 900362 THEN 'eDHR管理员干预'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:189:      WHEN 900357 THEN 1
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:190:      WHEN 900358 THEN 2
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:191:      WHEN 900359 THEN 3
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:192:      WHEN 900360 THEN 4
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:193:      WHEN 900361 THEN 5
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:194:      WHEN 900362 THEN 6
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:196:    `parent_id` = 900356,
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:208:WHERE (`id` = 900357 AND `permission` = 'mes:pro-edhr-flow-intervention:event-query')
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:209:   OR (`id` = 900358 AND `permission` = 'mes:pro-edhr-flow-intervention:return')
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:210:   OR (`id` = 900359 AND `permission` = 'mes:pro-edhr-flow-intervention:withdraw')
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:211:   OR (`id` = 900360 AND `permission` = 'mes:pro-edhr-flow-intervention:transfer')
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:212:   OR (`id` = 900361 AND `permission` = 'mes:pro-edhr-flow-intervention:add-sign')
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:213:   OR (`id` = 900362 AND `permission` = 'mes:pro-edhr-flow-intervention:admin-intervene');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:233:  IF (SELECT COUNT(*) FROM `system_menu` WHERE `deleted` = b'0' AND `id` IN (900356, 900357, 900358, 900359, 900360, 900361, 900362)) <> 7 THEN
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:241:    WHERE `id` = 900356
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:256:    WHERE `id` IN (900357, 900358, 900359, 900360, 900361, 900362)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:258:        `parent_id` <> 900356
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:259:        OR (`id` = 900357 AND (`name` <> 'eDHR流程日志查询' OR `permission` <> 'mes:pro-edhr-flow-intervention:event-query'))
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:260:        OR (`id` = 900358 AND (`name` <> 'eDHR流程退回' OR `permission` <> 'mes:pro-edhr-flow-intervention:return'))
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:261:        OR (`id` = 900359 AND (`name` <> 'eDHR流程撤回' OR `permission` <> 'mes:pro-edhr-flow-intervention:withdraw'))
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:262:        OR (`id` = 900360 AND (`name` <> 'eDHR流程转办' OR `permission` <> 'mes:pro-edhr-flow-intervention:transfer'))
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:263:        OR (`id` = 900361 AND (`name` <> 'eDHR流程加签' OR `permission` <> 'mes:pro-edhr-flow-intervention:add-sign'))
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:264:        OR (`id` = 900362 AND (`name` <> 'eDHR管理员干预' OR `permission` <> 'mes:pro-edhr-flow-intervention:admin-intervene'))
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:284:  WHERE `id` IN (900356, 900357, 900358, 900359, 900360, 900361, 900362)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_flow_intervention_log.sql:351:    ON `menu`.`id` IN (900356, 900357, 900358, 900359, 900360, 900361, 900362)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_label_print_queue.sql:123:SELECT 900320, 'eDHR标签管理', 'mes:pro-edhr-label:query', 2, 10, 900220, '/mes/pro/feedback/edhr-label', 'ep:price-tag', 'mes/pro/edhr-label-print/LabelPrintQueuePage', 'MesProFeedbackEdhrLabelPrint', 0, b'1', b'1', b'1', 'edhr-label-print-menu', NOW(), 'edhr-label-print-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_label_print_queue.sql:124:WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900320 OR (`permission` = 'mes:pro-edhr-label:query' AND `type` = 2));
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_label_print_queue.sql:128:SELECT 900321, 'eDHR标签模板查询', 'mes:pro-edhr-label-template:query', 3, 1, 900320, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-label-print-menu', NOW(), 'edhr-label-print-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_label_print_queue.sql:133:SELECT 900322, 'eDHR标签模板创建', 'mes:pro-edhr-label-template:create', 3, 2, 900320, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-label-print-menu', NOW(), 'edhr-label-print-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_label_print_queue.sql:138:SELECT 900323, 'eDHR标签模板启用', 'mes:pro-edhr-label-template:activate', 3, 3, 900320, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-label-print-menu', NOW(), 'edhr-label-print-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_label_print_queue.sql:143:SELECT 900324, 'eDHR标签查询', 'mes:pro-edhr-label:query', 3, 4, 900320, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-label-print-menu', NOW(), 'edhr-label-print-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_label_print_queue.sql:148:SELECT 900325, 'eDHR标签预览', 'mes:pro-edhr-label:preview', 3, 5, 900320, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-label-print-menu', NOW(), 'edhr-label-print-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_label_print_queue.sql:153:SELECT 900326, 'eDHR打印任务', 'mes:pro-edhr-print-task:query', 2, 11, 900220, '/mes/pro/feedback/edhr-print-task', 'ep:printer', 'mes/pro/edhr-label-print/LabelPrintQueuePage', 'MesProFeedbackEdhrPrintTask', 0, b'1', b'1', b'1', 'edhr-label-print-menu', NOW(), 'edhr-label-print-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_label_print_queue.sql:154:WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900326 OR (`permission` = 'mes:pro-edhr-print-task:query' AND `type` = 2));
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_label_print_queue.sql:158:SELECT 900327, 'eDHR打印任务查询', 'mes:pro-edhr-print-task:query', 3, 1, 900326, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-label-print-menu', NOW(), 'edhr-label-print-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_label_print_queue.sql:163:SELECT 900328, 'eDHR创建打印任务', 'mes:pro-edhr-print-task:create', 3, 2, 900326, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-label-print-menu', NOW(), 'edhr-label-print-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_label_print_queue.sql:168:SELECT 900329, 'eDHR标记打印失败', 'mes:pro-edhr-print-task:mark-failed', 3, 3, 900326, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-label-print-menu', NOW(), 'edhr-label-print-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_label_print_queue.sql:173:SELECT 900330, 'eDHR确认打印成功', 'mes:pro-edhr-print-task:confirm', 3, 4, 900326, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-label-print-menu', NOW(), 'edhr-label-print-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_label_print_queue.sql:178:SELECT 900331, 'eDHR打印事件查询', 'mes:pro-edhr-print-task:query', 3, 5, 900326, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-label-print-menu', NOW(), 'edhr-label-print-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_label_print_queue.sql:179:WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900331);
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_label_print_queue.sql:199:  IF (SELECT COUNT(*) FROM `system_menu` WHERE `deleted` = b'0' AND `id` IN (900320, 900321, 900322, 900323, 900324, 900325, 900326, 900327, 900328, 900329, 900330, 900331)) <> 12 THEN
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_label_print_queue.sql:216:  WHERE `id` IN (900320, 900321, 900322, 900323, 900324, 900325, 900326, 900327, 900328, 900329, 900330, 900331)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:140:         WHEN `menu`.`path` = '/mes/pro/feedback/edhr-oq-pq' THEN 900332
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:141:         WHEN `menu`.`permission` = 'mes:pro-edhr-oq-pq:query' THEN 900333
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:142:         WHEN `menu`.`permission` = 'mes:pro-edhr-oq-pq:create' THEN 900334
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:143:         WHEN `menu`.`permission` = 'mes:pro-edhr-oq-pq:execute' THEN 900335
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:144:         WHEN `menu`.`permission` = 'mes:pro-edhr-oq-pq:retest' THEN 900336
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:145:         WHEN `menu`.`permission` = 'mes:pro-edhr-oq-pq:close' THEN 900337
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:164:SELECT 900332, 'eDHR OQ/PQ执行台', '', 2, 290, 900220, '/mes/pro/feedback/edhr-oq-pq', 'ep:operation', 'mes/pro/edhr-oq-pq/OqPqPage', 'MesProEdhrOqPq', 0, b'1', b'0', b'1', 'system', NOW(), 'system', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:165:WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900332 OR `path` = '/mes/pro/feedback/edhr-oq-pq');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:169:SELECT 900333, 'eDHR OQ/PQ查询', 'mes:pro-edhr-oq-pq:query', 3, 1, 900332, '', '', '', '', 0, b'1', b'0', b'1', 'system', NOW(), 'system', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:170:WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900333 OR `permission` = 'mes:pro-edhr-oq-pq:query');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:174:SELECT 900334, 'eDHR OQ/PQ创建', 'mes:pro-edhr-oq-pq:create', 3, 2, 900332, '', '', '', '', 0, b'1', b'0', b'1', 'system', NOW(), 'system', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:175:WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900334 OR `permission` = 'mes:pro-edhr-oq-pq:create');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:179:SELECT 900335, 'eDHR OQ/PQ执行', 'mes:pro-edhr-oq-pq:execute', 3, 3, 900332, '', '', '', '', 0, b'1', b'0', b'1', 'system', NOW(), 'system', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:180:WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900335 OR `permission` = 'mes:pro-edhr-oq-pq:execute');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:184:SELECT 900336, 'eDHR 偏差复测', 'mes:pro-edhr-oq-pq:retest', 3, 4, 900332, '', '', '', '', 0, b'1', b'0', b'1', 'system', NOW(), 'system', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:185:WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900336 OR `permission` = 'mes:pro-edhr-oq-pq:retest');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:189:SELECT 900337, 'eDHR 偏差关闭', 'mes:pro-edhr-oq-pq:close', 3, 5, 900332, '', '', '', '', 0, b'1', b'0', b'1', 'system', NOW(), 'system', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:190:WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900337 OR `permission` = 'mes:pro-edhr-oq-pq:close');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:209:WHERE `id` = 900332
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:214:      WHEN 900333 THEN 'eDHR OQ/PQ查询'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:215:      WHEN 900334 THEN 'eDHR OQ/PQ创建'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:216:      WHEN 900335 THEN 'eDHR OQ/PQ执行'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:217:      WHEN 900336 THEN 'eDHR 偏差复测'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:218:      WHEN 900337 THEN 'eDHR 偏差关闭'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:222:      WHEN 900333 THEN 1
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:223:      WHEN 900334 THEN 2
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:224:      WHEN 900335 THEN 3
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:225:      WHEN 900336 THEN 4
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:226:      WHEN 900337 THEN 5
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:228:    `parent_id` = 900332,
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:240:WHERE (`id` = 900333 AND `permission` = 'mes:pro-edhr-oq-pq:query')
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:241:   OR (`id` = 900334 AND `permission` = 'mes:pro-edhr-oq-pq:create')
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:242:   OR (`id` = 900335 AND `permission` = 'mes:pro-edhr-oq-pq:execute')
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:243:   OR (`id` = 900336 AND `permission` = 'mes:pro-edhr-oq-pq:retest')
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:244:   OR (`id` = 900337 AND `permission` = 'mes:pro-edhr-oq-pq:close');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:279:  WHERE `id` IN (900332, 900333, 900334, 900335, 900336, 900337)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:290:    WHERE `id` = 900332
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:305:    WHERE `id` IN (900333, 900334, 900335, 900336, 900337)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:307:        `parent_id` <> 900332
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:308:        OR (`id` = 900333 AND (`name` <> 'eDHR OQ/PQ查询' OR `permission` <> 'mes:pro-edhr-oq-pq:query'))
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:309:        OR (`id` = 900334 AND (`name` <> 'eDHR OQ/PQ创建' OR `permission` <> 'mes:pro-edhr-oq-pq:create'))
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:310:        OR (`id` = 900335 AND (`name` <> 'eDHR OQ/PQ执行' OR `permission` <> 'mes:pro-edhr-oq-pq:execute'))
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:311:        OR (`id` = 900336 AND (`name` <> 'eDHR 偏差复测' OR `permission` <> 'mes:pro-edhr-oq-pq:retest'))
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_oq_pq_execution_deviation.sql:312:        OR (`id` = 900337 AND (`name` <> 'eDHR 偏差关闭' OR `permission` <> 'mes:pro-edhr-oq-pq:close'))
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_recordbook_management.sql:165:SELECT 900301, 'eDHR记录本', 'mes:pro-edhr-recordbook:query', 2, 11, 900220, '/mes/pro/edhr-recordbook', 'ep:notebook', 'mes/pro/edhr-recordbook/RecordbookPage', 'MesProEdhrRecordbook', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_recordbook_management.sql:166:WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900301 OR (`permission` = 'mes:pro-edhr-recordbook:query' AND `type` = 2));
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_recordbook_management.sql:170:SELECT 900302, 'eDHR记录本模板查询', 'mes:pro-edhr-recordbook-template:query', 3, 1, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_recordbook_management.sql:175:SELECT 900303, 'eDHR记录本模板创建', 'mes:pro-edhr-recordbook-template:create', 3, 2, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_recordbook_management.sql:180:SELECT 900304, 'eDHR记录本模板启用', 'mes:pro-edhr-recordbook-template:activate', 3, 3, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_recordbook_management.sql:185:SELECT 900305, 'eDHR记录本查询', 'mes:pro-edhr-recordbook:query', 3, 4, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_recordbook_management.sql:190:SELECT 900306, 'eDHR记录本创建', 'mes:pro-edhr-recordbook:create', 3, 5, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_recordbook_management.sql:195:SELECT 900307, 'eDHR记录条目查询', 'mes:pro-edhr-recordbook-entry:query', 3, 6, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_recordbook_management.sql:200:SELECT 900308, 'eDHR记录条目创建', 'mes:pro-edhr-recordbook-entry:create', 3, 7, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_recordbook_management.sql:205:SELECT 900309, 'eDHR记录条目草稿保存', 'mes:pro-edhr-recordbook-entry:save', 3, 8, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_recordbook_management.sql:210:SELECT 900310, 'eDHR记录条目提交', 'mes:pro-edhr-recordbook-entry:submit', 3, 9, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_recordbook_management.sql:215:SELECT 900311, 'eDHR受控标签查询', 'mes:pro-edhr-tag:query', 3, 10, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_recordbook_management.sql:220:SELECT 900312, 'eDHR受控标签创建', 'mes:pro-edhr-tag:create', 3, 11, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_recordbook_management.sql:225:SELECT 900313, 'eDHR受控标签启用', 'mes:pro-edhr-tag:activate', 3, 12, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_recordbook_management.sql:230:SELECT 900314, 'eDHR受控标签停用', 'mes:pro-edhr-tag:disable', 3, 13, 900301, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-recordbook-menu', NOW(), 'edhr-recordbook-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_recordbook_management.sql:251:  IF (SELECT COUNT(*) FROM `system_menu` WHERE `deleted` = b'0' AND `id` IN (900301, 900302, 900303, 900304, 900305, 900306, 900307, 900308, 900309, 900310, 900311, 900312, 900313, 900314)) <> 14 THEN
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_recordbook_management.sql:268:  WHERE `id` IN (900301, 900302, 900303, 900304, 900305, 900306, 900307, 900308, 900309, 900310, 900311, 900312, 900313, 900314)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_recordbook_management.sql:329:    ON `menu`.`id` IN (900301, 900302, 900303, 900304, 900305, 900306, 900307, 900308, 900309, 900310, 900311, 900312, 900313, 900314)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_print_policy_reissue_void.sql:100:SELECT 900338, 'eDHR打印策略', 'mes:pro-edhr-print-policy:query', 2, 12, 900220, '/mes/pro/feedback/edhr-print-policy', 'ep:setting', 'mes/pro/edhr-label-print/LabelPrintQueuePage', 'MesProFeedbackEdhrPrintPolicy', 0, b'1', b'1', b'1', 'edhr-print-policy-menu', NOW(), 'edhr-print-policy-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_print_policy_reissue_void.sql:101:WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900338 OR (`permission` = 'mes:pro-edhr-print-policy:query' AND `type` = 2));
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_print_policy_reissue_void.sql:105:SELECT 900339, 'eDHR打印策略查询', 'mes:pro-edhr-print-policy:query', 3, 1, 900338, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-print-policy-menu', NOW(), 'edhr-print-policy-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_print_policy_reissue_void.sql:110:SELECT 900340, 'eDHR打印策略创建', 'mes:pro-edhr-print-policy:create', 3, 2, 900338, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-print-policy-menu', NOW(), 'edhr-print-policy-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_print_policy_reissue_void.sql:115:SELECT 900341, 'eDHR打印策略启用', 'mes:pro-edhr-print-policy:activate', 3, 3, 900338, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-print-policy-menu', NOW(), 'edhr-print-policy-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_print_policy_reissue_void.sql:120:SELECT 900342, 'eDHR补打申请', 'mes:pro-edhr-print-task:reprint', 3, 6, 900278, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-print-policy-menu', NOW(), 'edhr-print-policy-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_print_policy_reissue_void.sql:125:SELECT 900343, 'eDHR作废历史副本', 'mes:pro-edhr-print-task:history-copy', 3, 7, 900278, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-print-policy-menu', NOW(), 'edhr-print-policy-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_print_policy_reissue_void.sql:130:SELECT 900344, 'eDHR打印历史导出', 'mes:pro-edhr-print-task:export', 3, 8, 900278, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-print-policy-menu', NOW(), 'edhr-print-policy-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_print_policy_reissue_void.sql:135:SELECT 900345, 'eDHR补打历史查询', 'mes:pro-edhr-print-task:query', 3, 9, 900278, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-print-policy-menu', NOW(), 'edhr-print-policy-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_print_policy_reissue_void.sql:136:WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900345);
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_print_policy_reissue_void.sql:140:SELECT 900346, 'eDHR导出审计查询', 'mes:pro-edhr-print-task:query', 3, 10, 900278, '', '', '', '', 0, b'1', b'1', b'1', 'edhr-print-policy-menu', NOW(), 'edhr-print-policy-menu', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_print_policy_reissue_void.sql:141:WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900346);
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_print_policy_reissue_void.sql:161:  IF (SELECT COUNT(*) FROM `system_menu` WHERE `deleted` = b'0' AND `id` IN (900338, 900339, 900340, 900341, 900342, 900343, 900344, 900345, 900346)) <> 9 THEN
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_print_policy_reissue_void.sql:178:  WHERE `id` IN (900338, 900339, 900340, 900341, 900342, 900343, 900344, 900345, 900346)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_release_transaction_lifecycle.sql:182:SELECT 900353, 'eDHR放行驳回', 'mes:pro-edhr-release:reject', 3, 6, 900260,
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_release_transaction_lifecycle.sql:185:  AND NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900353 OR `permission` = 'mes:pro-edhr-release:reject');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_release_transaction_lifecycle.sql:189:SELECT 900354, 'eDHR放行撤回', 'mes:pro-edhr-release:withdraw', 3, 7, 900260,
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_release_transaction_lifecycle.sql:192:  AND NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900354 OR `permission` = 'mes:pro-edhr-release:withdraw');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_release_transaction_lifecycle.sql:196:SELECT 900355, 'eDHR放行事务事件查询', 'mes:pro-edhr-release:event-query', 3, 8, 900260,
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_release_transaction_lifecycle.sql:199:  AND NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900355 OR `permission` = 'mes:pro-edhr-release:event-query');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_release_transaction_lifecycle.sql:214:  IF (SELECT COUNT(*) FROM `system_menu` WHERE `deleted` = b'0' AND `id` IN (900263, 900264, 900353, 900354, 900355)) <> 5 THEN
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_release_transaction_lifecycle.sql:244:  WHERE `id` IN (900263, 900264, 900353, 900354, 900355)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260618_mes_edhr_release_transaction_lifecycle.sql:321:    ON `menu`.`id` IN (900263, 900264, 900353, 900354, 900355)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:82:-- cannot block insertion of the new 900315-900319 menu set.
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:89:    `id` IN (900296, 900297, 900298, 900299, 900300)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:93:      AND `id` NOT IN (900315, 900316, 900317, 900318, 900319)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:113:SELECT 900315, 'eDHR部署授权接口', '', 2, 315, 900220, '/mes/pro/feedback/edhr-deployment', 'ep:guide', 'mes/pro/edhr-deployment/DeploymentPage', 'MesProEdhrDeployment', 0, b'1', b'0', b'1', 'system', NOW(), 'system', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:114:WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900315 OR `path` = '/mes/pro/feedback/edhr-deployment');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:118:SELECT 900316, 'eDHR部署查询', 'mes:pro-edhr-deployment:query', 3, 1, 900315, '', '', '', '', 0, b'1', b'0', b'1', 'system', NOW(), 'system', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:119:WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900316 OR `permission` = 'mes:pro-edhr-deployment:query');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:123:SELECT 900317, 'eDHR部署创建', 'mes:pro-edhr-deployment:create', 3, 2, 900315, '', '', '', '', 0, b'1', b'0', b'1', 'system', NOW(), 'system', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:124:WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900317 OR `permission` = 'mes:pro-edhr-deployment:create');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:128:SELECT 900318, 'eDHR部署补证据', 'mes:pro-edhr-deployment:update', 3, 3, 900315, '', '', '', '', 0, b'1', b'0', b'1', 'system', NOW(), 'system', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:129:WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900318 OR `permission` = 'mes:pro-edhr-deployment:update');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:133:SELECT 900319, 'eDHR部署预检', 'mes:pro-edhr-deployment:precheck', 3, 4, 900315, '', '', '', '', 0, b'1', b'0', b'1', 'system', NOW(), 'system', NOW(), b'0'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:134:WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = 900319 OR `permission` = 'mes:pro-edhr-deployment:precheck');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:153:WHERE `id` = 900315
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:158:      WHEN 900316 THEN 'eDHR部署查询'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:159:      WHEN 900317 THEN 'eDHR部署创建'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:160:      WHEN 900318 THEN 'eDHR部署补证据'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:161:      WHEN 900319 THEN 'eDHR部署预检'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:165:      WHEN 900316 THEN 1
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:166:      WHEN 900317 THEN 2
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:167:      WHEN 900318 THEN 3
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:168:      WHEN 900319 THEN 4
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:170:    `parent_id` = 900315,
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:182:WHERE (`id` = 900316 AND `permission` = 'mes:pro-edhr-deployment:query')
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:183:   OR (`id` = 900317 AND `permission` = 'mes:pro-edhr-deployment:create')
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:184:   OR (`id` = 900318 AND `permission` = 'mes:pro-edhr-deployment:update')
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:185:   OR (`id` = 900319 AND `permission` = 'mes:pro-edhr-deployment:precheck');
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:220:  WHERE `id` IN (900315, 900316, 900317, 900318, 900319)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:231:    WHERE `id` = 900315
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:246:    WHERE `id` IN (900316, 900317, 900318, 900319)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:248:        `parent_id` <> 900315
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:249:        OR (`id` = 900316 AND (`name` <> 'eDHR部署查询' OR `permission` <> 'mes:pro-edhr-deployment:query'))
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:250:        OR (`id` = 900317 AND (`name` <> 'eDHR部署创建' OR `permission` <> 'mes:pro-edhr-deployment:create'))
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:251:        OR (`id` = 900318 AND (`name` <> 'eDHR部署补证据' OR `permission` <> 'mes:pro-edhr-deployment:update'))
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_mes_edhr_deployment_license_interface.sql:252:        OR (`id` = 900319 AND (`name` <> 'eDHR部署预检' OR `permission` <> 'mes:pro-edhr-deployment:precheck'))
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql:20:    AND `process_id` = 900370
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql:26:      SET MESSAGE_TEXT = 'post release admin resource capacity fix requires one active keep row for machinery 47 process 900370 at 25.714286';
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql:33:    AND `process_id` = 900371
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql:39:      SET MESSAGE_TEXT = 'post release admin resource capacity fix requires one active keep row for machinery 47 process 900371 at 40.000000';
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql:48:    AND `process_id` = 900370
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql:58:    AND `process_id` = 900371
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql:68:      AND `process_id` IN (900370, 900371)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql:83:    AND `process_id` = 900370
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql:91:    AND `process_id` = 900371
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260619_post_release_role_e2e_gate_smoke_route_900026_line_fix.sql:34:    AND `process_id` IN (900379, 900380, 900381, 900382, 900383, 900384, 900385, 900386, 900387)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260702_mes_edhr_seven_visible_tabs.sql:139:  UNION ALL SELECT 900301 AS `id`, 'eDHR记录本保留为记录本后台能力' AS `reason`
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260702_mes_edhr_seven_visible_tabs.sql:140:  UNION ALL SELECT 900315 AS `id`, 'eDHR部署授权接口保留为部署后台能力' AS `reason`
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260702_mes_edhr_seven_visible_tabs.sql:141:  UNION ALL SELECT 900332 AS `id`, 'eDHR OQ/PQ保留为验证执行后台能力' AS `reason`
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260702_mes_edhr_seven_visible_tabs.sql:142:  UNION ALL SELECT 900338 AS `id`, 'eDHR打印策略保留为打印后台能力' AS `reason`
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260702_mes_edhr_seven_visible_tabs.sql:143:  UNION ALL SELECT 900356 AS `id`, 'eDHR流程干预管理保留为管理员干预能力' AS `reason`;
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260706_mes_edhr_process_form_permission_rule.sql:57:    WHERE `id` IN (900301, 900302)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260706_mes_edhr_process_form_permission_rule.sql:65:      SET MESSAGE_TEXT = 'Menu id 900301 or 900302 is already used by another permission; cannot create process form permission rule buttons';
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260706_mes_edhr_process_form_permission_rule.sql:74:    900301, '工序表单权限查询', 'mes:pro-edhr-process-form-permission-rule:query', 3, 20, 900221,
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260706_mes_edhr_process_form_permission_rule.sql:78:    900302, '工序表单权限维护', 'mes:pro-edhr-process-form-permission-rule:update', 3, 21, 900221,
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260706_mes_edhr_process_form_permission_rule.sql:134:    ON `menu`.`id` IN (900301, 900302)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\20260706_mes_edhr_process_form_permission_rule.sql:181:    ON `menu`.`id` IN (900301, 900302)
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\mes-auto-schedule-complete-demo-clean.sql:28:DELETE FROM mes_pro_process WHERE id IN (900300, 900301);
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\mes-auto-schedule-complete-demo-data.sql:29:DELETE FROM mes_pro_process WHERE id IN (900300, 900301);
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\mes-auto-schedule-complete-demo-data.sql:85:    (900300, 'AUTO-PROC-01', 'AutoScheduleCutting', 'AUTO', 0, 'codex', 'codex', 1),
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\mes-auto-schedule-complete-demo-data.sql:86:    (900301, 'AUTO-PROC-02', 'AutoScheduleAssembly', 'AUTO', 0, 'codex', 'codex', 1);
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\mes-auto-schedule-complete-demo-data.sql:101:    (900022, 900020, 900300, 1, 900301, 1, 0, 0, '#1677ff', b'1', b'0', 'codex', 'codex', 1),
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\mes-auto-schedule-complete-demo-data.sql:102:    (900023, 900020, 900301, 2, NULL, 1, 0, 0, '#13c2c2', b'0', b'0', 'codex', 'codex', 1);
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\mes-auto-schedule-complete-demo-data.sql:123:    (900050, 'AUTO-WS-01', 'AutoScheduleWorkstationA', 'AUTO-A', 900010, 900300, 900040, 1.00, 0, 'codex', 'codex', 1),
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\mes-auto-schedule-complete-demo-data.sql:124:    (900051, 'AUTO-WS-02', 'AutoScheduleWorkstationB', 'AUTO-B', 900010, 900301, 900041, 1.00, 0, 'codex', 'codex', 1);
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\mes-auto-schedule-first-loop-demo-clean.sql:28:DELETE FROM mes_pro_process WHERE id IN (900300, 900301);
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\mes-auto-schedule-first-loop-demo-data.sql:29:DELETE FROM mes_pro_process WHERE id IN (900300, 900301);
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\mes-auto-schedule-first-loop-demo-data.sql:77:    (900300, 'AUTO-PROC-01', 'AutoScheduleProcess', 'AUTO', 0, 'codex', 'codex', 1);
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\mes-auto-schedule-first-loop-demo-data.sql:92:    (900022, 900020, 900300, 1, NULL, 1, 0, 0, '#1677ff', b'1', b'0', 'codex', 'codex', 1);
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\sql\mysql\mes-auto-schedule-first-loop-demo-data.sql:112:    (900050, 'AUTO-WS-01', 'AutoScheduleWorkstation', 'AUTO', 900010, 900300, 900040, 0, 'codex', 'codex', 1);
+=== remote test readonly system_menu 900290-900340 ===
+mysql: [Warning] Using a password on the command line interface can be insecure.
+close - IO is still pending on closed socket. read:1, write:0, io:00000179619D5A70
+remoteExitCode=0

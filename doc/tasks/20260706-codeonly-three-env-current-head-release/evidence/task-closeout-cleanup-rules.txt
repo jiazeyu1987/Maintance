@@ -1,0 +1,88 @@
+# Closeout Rules
+
+## Core defaults
+
+### Always keep
+
+- `doc/tasks/<task-id>/task.md`
+- `doc/tasks/<task-id>/execution-log.md`
+- production source files
+- required migrations and schema files
+- formal tests under `src/test/`
+
+### Default delete set
+
+- every other file under `doc/tasks/<task-id>/`
+- explicit cleanup candidates listed in the task document
+- explicit paths passed with `--extra-delete`
+
+### Default blocked set
+
+- any path outside the resolved workspace root
+- any path under `src/test/`
+- any unresolved or ambiguous task selection
+- apply mode on non-completed tasks
+
+## Task markdown extensions
+
+The script reads these optional sections from `task.md`.
+
+## Cleanup Candidates
+
+- `output/runtime/task-123-report.json`
+- `tmp/task-123-preview/`
+
+## Cleanup Keep
+
+- `doc/tasks/task-123/reference-screenshot.png`
+
+Use one bullet path per line.
+
+## Worktree closeout rules
+
+Treat the current repo as a linked worktree only when:
+
+- `git rev-parse --git-dir` and `git rev-parse --git-common-dir` resolve to different directories
+
+### Main branch detection
+
+1. Read `refs/remotes/origin/HEAD`
+2. Strip the `origin/` prefix
+3. If that fails, try local branches in this order:
+   - `main`
+   - `master`
+   - `int_main`
+
+### Merge guards
+
+Before merge, require:
+
+- current task status is completed
+- current branch is not the detected main branch
+- target main worktree exists
+- target main worktree `git status --porcelain` is empty
+- merge succeeds with `git merge --ff-only <current-branch>`
+
+### Cleanup commit rule
+
+Create one cleanup commit only when tracked repo changes remain after cleanup.
+
+Suggested message:
+
+- `任务: 清理任务收尾产物 <task-id>`
+
+### Worktree removal rule
+
+Remove the linked worktree only after:
+
+- cleanup finished
+- cleanup commit succeeded when needed
+- ff-only merge succeeded
+- removal runs from the surviving main worktree with `git worktree remove --force`
+
+## Safety notes
+
+- Prefer blocking over guessing.
+- Never delete formal tests automatically.
+- Never merge with a merge commit.
+- Never remove the primary worktree.

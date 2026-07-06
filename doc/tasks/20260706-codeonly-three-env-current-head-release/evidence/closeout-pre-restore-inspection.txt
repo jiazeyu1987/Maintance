@@ -1,0 +1,90 @@
+timestamp=2026-07-06T23:40:53
+--- config files ---
+FILE=D:\ProjectPackage\Int\IntRuoyiMaintance\config\runtime-control.local.yaml
+
+    repo-root: D:/ProjectPackage/Int/IntRuoyi/ruoyi-vue-pro
+    frontend-root: D:/ProjectPackage/Int/IntRuoyi/yudao-ui-admin-vue3
+    state-dir: D:/ProjectPackage/Int/IntRuoyiMaintance/runtime/runtime-control
+      nas-server: '172.30.30.4'
+      nas-share: 'IT共享'
+      nas-username: 'int'
+      nas-password: '[REDACTED]'
+      nas-domain: ''
+      nas-backup-points-root: 'Backup/BackupPackage'
+    release-package:
+      nas-server: '172.30.30.4'
+      nas-share: 'IT共享'
+      nas-username: 'int'
+      nas-password: '[REDACTED]'
+      nas-domain: ''
+      nas-release-root: 'Backup/ReleasePackage'
+      smart-release-target-config-path: 'D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20260620-prod-release-curren
+t-latest/prod-target-config.json'
+
+
+
+--- java processes ---
+
+
+ProcessId   : 39548
+CommandLine : "C:\Program Files\Eclipse Adoptium\jdk-21.0.10.7-hotspot\bin\java.exe" -jar D:\ProjectPackage\Int\IntRuoy
+              iWorktrees\r260706ce\m\backend\target\runtime-control-maintenance-2026.06-SNAPSHOT.jar 
+
+
+
+
+--- temp worktree git status ---
+WORKTREE=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b
+
+codex/release-20260706-menu-id-fix
+18537705e7eff0fce10d7306d4d076e19d9065eb
+WORKTREE=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f
+
+HEAD
+d03af99c0337e299e0d292231b673b45e20f7cae
+WORKTREE=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m
+?? frontend/pnpm-workspace.yaml
+?? runtime/
+
+HEAD
+19b121a72e0fe65c38137a154bf45e4f5391c438
+--- main repo statuses ---
+REPO=D:\ProjectPackage\Int\IntRuoyiMaintance
+ M doc/tasks/20260701-dcc-batch-recognition-five-workers/execution-log.md
+ M doc/tasks/20260701-rebuild-publish-all-after-fvm-message-fix/execution-log.md
+ M docs/experience-index.md
+ M docs/release-agent-checklist.md
+ M docs/release-build-preflight-lessons.md
+ M docs/request-command-log.md
+?? config/runtime-control.local.before-20260701-205043.yaml
+?? config/runtime-control.local.before-category-20260701-221522.yaml
+?? config/runtime-control.local.before-fix3-20260703-001013.yaml
+?? config/runtime-control.local.before-mes-scheduler-20260701-230707.yaml
+?? config/runtime-control.local.before-nodata-evening-20260702-2151.yaml
+?? config/runtime-control.local.before-nodata-evening-fix-20260702-2240.yaml
+?? config/runtime-control.local.before-nodata-evening-fix2-20260702-2316.yaml
+?? doc/tasks/20260706-codeonly-three-env-current-head-release/
+?? runtime/
+
+int_main
+19b121a72e0fe65c38137a154bf45e4f5391c438
+REPO=D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro
+ M yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/scheduleorder/MesProScheduleOrderServiceImpl.java
+?? doc/tasks/20260705-batch-record-layout-ratio-branch-review/
+?? script/tests/test_mes_schedule_order_service_injection.py
+?? sql/mysql/20260705_showroom_legacy_product_code_auto_confirmable_draft.sql
+
+int_main
+a14fa4833c421d40630e46e066298d5f5f119ff5
+REPO=D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3
+?? output-yudao-8081-restart-frontend.err.log
+?? output-yudao-8081-restart-frontend.out.log
+?? output-yudao-ui-8081-restart-workorder-link.err.log
+?? output-yudao-ui-8081-restart-workorder-link.out.log
+?? output-yudao-ui-8081-start.err.log
+?? output-yudao-ui-8081-start.out.log
+?? tests/output/edhr-cell-rule-toggle-real-e2e.cjs
+?? tests/output/edhr-cell-rule-toggle-real/
+
+int_main
+f75fa7d0cb8f8f639b1a83955ca5c49dc30d8dfc

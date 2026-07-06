@@ -1,0 +1,15 @@
+timestamp=2026-07-06T23:25:09
+releaseTag=release-20260706-2245-codeonly-three-env-v6
+action=promote-prod
+httpStatus=200
+apiCode=0
+operationId=op-2026-07-06T145929632013700Z-6235332a-37e7-46fb-9802-10b30080ac88
+status=POLL_ERROR
+success=False
+durationSeconds=1539
+confirmText=PROD
+requireTested=True
+dryRunEvidence=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\runtime\runtime-control\prod-preflight-release-evidence\release-20260706-2245-codeonly-three-env-v6-preflight-release-dry-run.json
+executeResponse=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\promote-prod-v6-execute-response.json
+poll=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\promote-prod-v6-operation-poll.json
+operationLog=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\promote-prod-v6-operation.log

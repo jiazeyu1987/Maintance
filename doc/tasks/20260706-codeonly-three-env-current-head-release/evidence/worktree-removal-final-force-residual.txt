@@ -1,0 +1,55 @@
+timestamp=2026-07-06T23:46:30
+allowedRoot=D:\ProjectPackage\Int\IntRuoyiWorktrees
+releaseRoot=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce
+--- before worktree lists ---
+REPO=D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro
+D:/ProjectPackage/Int/IntRuoyi/ruoyi-vue-pro  a14fa4833c [int_main]
+REPO=D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3
+D:/ProjectPackage/Int/IntRuoyi/yudao-ui-admin-vue3  f75fa7d0c [int_main]
+REPO=D:\ProjectPackage\Int\IntRuoyiMaintance
+D:/ProjectPackage/Int/IntRuoyiMaintance                                                19b121a [int_main]
+D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-205043-signal       4cdc884 (detached HEAD)
+D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-2220-category       fb18456 (detached HEAD)
+D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-2320-mes-scheduler  fb18456 (detached HEAD)
+D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-dfb317e             dfb317e (detached HEAD)
+notRegistered=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b
+notRegistered=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f
+notRegistered=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m
+--- residual cleanup preview ---
+topResidual=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f
+topResidual=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m
+residualMissing=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b
+residualPath=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f hasGitFile=False
+removedResidual=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f existsAfter=False
+residualPath=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m hasGitFile=False
+removedResidual=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m existsAfter=False
+removedEmptyReleaseRoot=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce
+--- final worktree lists ---
+REPO=D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro
+D:/ProjectPackage/Int/IntRuoyi/ruoyi-vue-pro  a14fa4833c [int_main]
+REPO=D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3
+D:/ProjectPackage/Int/IntRuoyi/yudao-ui-admin-vue3  f75fa7d0c [int_main]
+REPO=D:\ProjectPackage\Int\IntRuoyiMaintance
+D:/ProjectPackage/Int/IntRuoyiMaintance                                                19b121a [int_main]
+D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-205043-signal       4cdc884 (detached HEAD)
+D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-2220-category       fb18456 (detached HEAD)
+D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-2320-mes-scheduler  fb18456 (detached HEAD)
+D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-dfb317e             dfb317e (detached HEAD)
+--- final existence ---
+path=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce exists=False
+path=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b exists=False
+path=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f exists=False
+path=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m exists=False
+--- runtime health ---
+healthStatusCode=200
+healthBody=123 34 115 116 97 116 117 115 34 58 34 85 80 34 125
+--- runtime java process ---
+
+
+ProcessId   : 13492
+CommandLine : "C:\Program Files\Eclipse Adoptium\jdk-21.0.10.7-hotspot\bin\java.exe" -jar D:\ProjectPackage\Int\IntRuoy
+              iMaintance\backend\target\runtime-control-maintenance-2026.06-SNAPSHOT.jar 
+
+
+
+

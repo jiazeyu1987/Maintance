@@ -1,0 +1,101 @@
+{
+    "taskId":  "20260706-codeonly-three-env-current-head-release",
+    "time":  "2026-07-06 22:34:08 +08:00",
+    "releaseTag":  "release-20260706-2245-codeonly-three-env-v6",
+    "releaseDir":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260706-2245-codeonly-three-env-v6",
+    "releaseDirExists":  true,
+    "checks":  {
+                   "releaseTagMatches":  true,
+                   "publishScopeCodeOnly":  true,
+                   "legacyPublishScopeCodeOnly":  true,
+                   "backendCommitMatches":  true,
+                   "frontendCommitMatches":  true,
+                   "sourceReposDirtyFalse":  true,
+                   "noForbiddenTopDataDirs":  true,
+                   "imageTarExists":  true,
+                   "runtimeEnvExists":  true,
+                   "manifestExists":  true,
+                   "legacyManifestExists":  true,
+                   "allPackageChecksPass":  true
+               },
+    "files":  [
+                  {
+                      "name":  "docker-compose.yml",
+                      "type":  "file",
+                      "length":  10608
+                  },
+                  {
+                      "name":  "intruoyi-images_release-20260706-2245-codeonly-three-env-v6.tar",
+                      "type":  "file",
+                      "length":  814361088
+                  },
+                  {
+                      "name":  "manifest.json",
+                      "type":  "file",
+                      "length":  2176048
+                  },
+                  {
+                      "name":  "release-manifest.json",
+                      "type":  "file",
+                      "length":  78175
+                  },
+                  {
+                      "name":  "required-sql",
+                      "type":  "dir",
+                      "length":  1
+                  },
+                  {
+                      "name":  "resources",
+                      "type":  "dir",
+                      "length":  1
+                  },
+                  {
+                      "name":  "runtime-env",
+                      "type":  "dir",
+                      "length":  1
+                  },
+                  {
+                      "name":  "smoke",
+                      "type":  "dir",
+                      "length":  1
+                  }
+              ],
+    "errors":  [
+
+               ],
+    "manifest":  {
+                     "manifestVersion":  "1.0",
+                     "releaseTag":  "release-20260706-2245-codeonly-three-env-v6",
+                     "packageDirectoryName":  null,
+                     "publishScope":  "code-only",
+                     "sourceRepos":  [
+                                         {
+                                             "name":  "ruoyi-vue-pro",
+                                             "pathRole":  "backend",
+                                             "commit":  "18537705e7eff0fce10d7306d4d076e19d9065eb",
+                                             "dirty":  false,
+                                             "branch":  "codex/release-20260706-menu-id-fix"
+                                         },
+                                         {
+                                             "name":  "yudao-ui-admin-vue3",
+                                             "pathRole":  "admin-frontend",
+                                             "commit":  "d03af99c0337e299e0d292231b673b45e20f7cae",
+                                             "dirty":  false,
+                                             "branch":  "HEAD"
+                                         }
+                                     ]
+                 },
+    "legacyManifest":  {
+                           "packageDirectoryName":  "release-20260706-2245-codeonly-three-env-v6",
+                           "publishScope":  "code-only",
+                           "onlyOfficeIncluded":  false,
+                           "component":  "intruoyi"
+                       },
+    "forbiddenTopDataDirs":  [
+
+                             ],
+    "operationEvidence":  {
+                              "buildReleaseCommandExitCode":  0,
+                              "buildSummary":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260706-codeonly-three-env-current-head-release\\evidence\\build-release-v6-command-summary.txt"
+                          }
+}

@@ -1,0 +1,49 @@
+time=2026-07-06 22:23:27 +08:00
+targetMaint=19b121a72e0fe65c38137a154bf45e4f5391c438
+targetBackend=18537705e7eff0fce10d7306d4d076e19d9065eb
+targetFrontend=d03af99c0337e299e0d292231b673b45e20f7cae
+=== main worktree status snapshot ===
+--- main-maint ---
+branch=int_main
+head=19b121a72e0fe65c38137a154bf45e4f5391c438
+ M doc/tasks/20260701-dcc-batch-recognition-five-workers/execution-log.md
+ M doc/tasks/20260701-rebuild-publish-all-after-fvm-message-fix/execution-log.md
+ M docs/experience-index.md
+ M docs/release-agent-checklist.md
+ M docs/release-build-preflight-lessons.md
+ M docs/request-command-log.md
+?? config/runtime-control.local.before-20260701-205043.yaml
+?? config/runtime-control.local.before-category-20260701-221522.yaml
+?? config/runtime-control.local.before-fix3-20260703-001013.yaml
+?? config/runtime-control.local.before-mes-scheduler-20260701-230707.yaml
+?? config/runtime-control.local.before-nodata-evening-20260702-2151.yaml
+?? config/runtime-control.local.before-nodata-evening-fix-20260702-2240.yaml
+?? config/runtime-control.local.before-nodata-evening-fix2-20260702-2316.yaml
+?? doc/tasks/20260706-codeonly-three-env-current-head-release/
+?? runtime/
+--- main-backend ---
+branch=int_main
+head=18537705e7eff0fce10d7306d4d076e19d9065eb
+?? doc/tasks/20260705-batch-record-layout-ratio-branch-review/
+?? sql/mysql/20260705_showroom_legacy_product_code_auto_confirmable_draft.sql
+--- main-frontend ---
+branch=int_main
+head=d03af99c0337e299e0d292231b673b45e20f7cae
+?? output-yudao-8081-restart-frontend.err.log
+?? output-yudao-8081-restart-frontend.out.log
+?? output-yudao-ui-8081-start.err.log
+?? output-yudao-ui-8081-start.out.log
+?? tests/output/edhr-cell-rule-toggle-real-e2e.cjs
+?? tests/output/edhr-cell-rule-toggle-real/
+=== reset release worktrees to target committed heads ===
+backend: HEAD is now at 18537705e7 任务: 修复eDHR工序表单权限菜单ID
+frontend: HEAD is now at d03af99c0 任务: 优化EDHR审批详情语义
+backendResetExit=0
+frontendResetExit=0
+=== release worktree status after reset ===
+--- wt-backend ---
+branch=codex/release-20260706-menu-id-fix
+head=18537705e7eff0fce10d7306d4d076e19d9065eb
+--- wt-frontend ---
+branch=HEAD
+head=d03af99c0337e299e0d292231b673b45e20f7cae

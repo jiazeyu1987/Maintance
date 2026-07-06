@@ -1,0 +1,16 @@
+{
+  "operationId" : "op-2026-07-06T152642480550500Z-f8bfc329-aab8-4400-b723-7beada4fa2e3",
+  "requestedBy" : "local-operator",
+  "requestedAt" : 1783351620.835363700,
+  "environment" : "backup",
+  "component" : "promote-backup",
+  "action" : "promote-backup",
+  "actionLabel" : "上线备份服务器",
+  "parameters" : {
+    "releaseTag" : "release-20260706-2245-codeonly-three-env-v6"
+  },
+  "reason" : "codeonly-three-env-v6-promote-backup",
+  "status" : "SUCCESS",
+  "summary" : "命令执行完成",
+  "resultLogPath" : "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260706ce\\m\\runtime\\runtime-control\\logs\\op-2026-07-06T152642480550500Z-f8bfc329-aab8-4400-b723-7beada4fa2e3.log"
+}

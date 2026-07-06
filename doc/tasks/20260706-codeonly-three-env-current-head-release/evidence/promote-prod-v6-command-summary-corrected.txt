@@ -1,0 +1,16 @@
+timestamp=2026-07-06T23:25:37
+releaseTag=release-20260706-2245-codeonly-three-env-v6
+host=172.30.30.57
+operationId=op-2026-07-06T145929632013700Z-6235332a-37e7-46fb-9802-10b30080ac88
+operationStatePath=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\runtime\runtime-control\op-2026-07-06T145929632013700Z-6235332a-37e7-46fb-9802-10b30080ac88.json
+operationStateCopied=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\promote-prod-v6-operation-state.json
+operationStatus=SUCCESS
+envTag=True
+backendImage=True
+frontendImage=True
+backendHealth=True
+frontendHttp200=True
+pdfWorkerHttp200=True
+releaseLockApplied=True
+success=True
+raw=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\prod-server-v6-verification.txt

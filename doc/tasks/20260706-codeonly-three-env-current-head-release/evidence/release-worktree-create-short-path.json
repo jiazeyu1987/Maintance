@@ -1,0 +1,46 @@
+﻿{
+    "taskId":  "20260706-codeonly-three-env-current-head-release",
+    "tempRoot":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260706ce",
+    "priorFailedRoot":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260706-codeonly-three-env-current-head-release",
+    "cleanupLog":  [
+
+                   ],
+    "createdAt":  "2026-07-06 19:05:58 +08:00",
+    "sourceCommits":  {
+                          "maintenance":  "19b121a72e0fe65c38137a154bf45e4f5391c438",
+                          "backend":  "042037a42a91ac3e285bccbbccebd05f7507628d",
+                          "frontend":  "ab36017e80982b9f308b2324b4d18c6f83792424"
+                      },
+    "states":  [
+                   {
+                       "name":  "maintenance",
+                       "path":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260706ce\\m",
+                       "branch":  "HEAD",
+                       "commit":  "19b121a72e0fe65c38137a154bf45e4f5391c438",
+                       "dirty":  false,
+                       "status":  [
+
+                                  ]
+                   },
+                   {
+                       "name":  "backend",
+                       "path":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260706ce\\b",
+                       "branch":  "HEAD",
+                       "commit":  "042037a42a91ac3e285bccbbccebd05f7507628d",
+                       "dirty":  false,
+                       "status":  [
+
+                                  ]
+                   },
+                   {
+                       "name":  "frontend",
+                       "path":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260706ce\\f",
+                       "branch":  "HEAD",
+                       "commit":  "ab36017e80982b9f308b2324b4d18c6f83792424",
+                       "dirty":  false,
+                       "status":  [
+
+                                  ]
+                   }
+               ]
+}

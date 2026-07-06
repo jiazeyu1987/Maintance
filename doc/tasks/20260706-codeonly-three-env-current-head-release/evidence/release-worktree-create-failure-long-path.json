@@ -1,0 +1,79 @@
+﻿{
+    "taskId":  "20260706-codeonly-three-env-current-head-release",
+    "inspectedAt":  "2026-07-06 19:04:42 +08:00",
+    "failure":  "maintenance worktree checkout failed under long temp path with Filename too long; backend/frontend may have been created before failure handling stopped",
+    "failedPath":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260706-codeonly-three-env-current-head-release",
+    "pathExists":  true,
+    "childItems":  [
+                       {
+                           "Name":  "ruoyi-vue-pro",
+                           "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260706-codeonly-three-env-current-head-release\\ruoyi-vue-pro",
+                           "Mode":  "d-----",
+                           "Length":  null,
+                           "LastWriteTime":  "\/Date(1783335834340)\/"
+                       },
+                       {
+                           "Name":  "yudao-ui-admin-vue3",
+                           "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\20260706-codeonly-three-env-current-head-release\\yudao-ui-admin-vue3",
+                           "Mode":  "d-----",
+                           "Length":  null,
+                           "LastWriteTime":  "\/Date(1783335848212)\/"
+                       }
+                   ],
+    "maintenanceWorktrees":  [
+                                 "worktree D:/ProjectPackage/Int/IntRuoyiMaintance",
+                                 "HEAD 19b121a72e0fe65c38137a154bf45e4f5391c438",
+                                 "branch refs/heads/int_main",
+                                 "",
+                                 "worktree D:/ProjectPackage/Int/IntRuoyiWorktrees/20260706-dcc-policy-test-server-release/IntRuoyiMaintance",
+                                 "HEAD 63626395a16da9e4ab8a0b3f668d3d8e7a816d3f",
+                                 "detached",
+                                 "prunable gitdir file points to non-existent location",
+                                 "",
+                                 "worktree D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-205043-signal",
+                                 "HEAD 4cdc8845bb5a0a550fba28d2f7185f05638a84b0",
+                                 "detached",
+                                 "",
+                                 "worktree D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-2220-category",
+                                 "HEAD fb18456ade89c3e07192ba927816f127830e76e0",
+                                 "detached",
+                                 "",
+                                 "worktree D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-2320-mes-scheduler",
+                                 "HEAD fb18456ade89c3e07192ba927816f127830e76e0",
+                                 "detached",
+                                 "",
+                                 "worktree D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-dfb317e",
+                                 "HEAD dfb317e8474ff1cc0b65b8063e00e85588649d46",
+                                 "detached",
+                                 ""
+                             ],
+    "backendWorktrees":  [
+                             "worktree D:/ProjectPackage/Int/IntRuoyi/ruoyi-vue-pro",
+                             "HEAD 042037a42a91ac3e285bccbbccebd05f7507628d",
+                             "branch refs/heads/int_main",
+                             "",
+                             "worktree D:/ProjectPackage/Int/IntRuoyiWorktrees/20260706-codeonly-three-env-current-head-release/ruoyi-vue-pro",
+                             "HEAD 042037a42a91ac3e285bccbbccebd05f7507628d",
+                             "detached",
+                             "",
+                             "worktree D:/ProjectPackage/Int/IntRuoyiWorktrees/edhr_batch_improve/ruoyi-vue-pro",
+                             "HEAD 1ccb8742f8b8d017b926b20826f9410be557ded7",
+                             "branch refs/heads/edhr_batch_improve",
+                             ""
+                         ],
+    "frontendWorktrees":  [
+                              "worktree D:/ProjectPackage/Int/IntRuoyi/yudao-ui-admin-vue3",
+                              "HEAD ab36017e80982b9f308b2324b4d18c6f83792424",
+                              "branch refs/heads/int_main",
+                              "",
+                              "worktree D:/ProjectPackage/Int/IntRuoyiWorktrees/20260706-codeonly-three-env-current-head-release/yudao-ui-admin-vue3",
+                              "HEAD ab36017e80982b9f308b2324b4d18c6f83792424",
+                              "detached",
+                              "",
+                              "worktree D:/ProjectPackage/Int/IntRuoyiWorktrees/edhr_batch_improve/yudao-ui-admin-vue3",
+                              "HEAD fadeae2a43194f75169aad81a9c62c36a1790f66",
+                              "branch refs/heads/edhr_batch_improve",
+                              ""
+                          ],
+    "boundaryRoot":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees"
+}

@@ -1,0 +1,13 @@
+timestamp=2026-07-06T22:59:05
+releaseTag=release-20260706-2245-codeonly-three-env-v6
+action=promote-prod-preview
+httpStatus=200
+apiCode=0
+requestSucceeded=True
+durationSeconds=35
+dryRunPath=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\runtime\runtime-control\prod-preflight-release-evidence\release-20260706-2245-codeonly-three-env-v6-preflight-release-dry-run.json
+dryRunExists=True
+dryRunValid=True
+dryRunCopy=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\promote-prod-v6-preflight-release-dry-run-v2.json
+response=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\promote-prod-v6-preview-response-v2.json
+error=

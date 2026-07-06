@@ -1,0 +1,275 @@
+timestamp=2026-07-06T23:45:20
+--- paths ---
+PATH=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce exists=True
+itemCount=88172
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\public dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\runtime dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\scripts dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\src dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\tests dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\types dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\package-lock.json dir=False len=667276
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\package.json dir=False len=19919
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\playwright.config.ts dir=False len=198
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\pnpm-lock.yaml dir=False len=378314
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\pnpm-workspace.yaml dir=False len=153
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\postcss.config.js dir=False len=64
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\prettier.config.js dir=False len=903
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\README.md dir=False len=23651
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\stylelint.config.js dir=False len=5774
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\tsconfig.json dir=False len=1320
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\tsconfig.relaxed.json dir=False len=153
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\tsconfig.schedule-relaxed.json dir=False len=1881
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\uno.config.ts dir=False len=2212
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\vite.config.ts dir=False len=7446
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\web-types.json dir=False len=403
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\.pnpm dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\.progress dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@commitlint dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@element-plus dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@form-create dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@iconify dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@intlify dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@microsoft dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@purge-icons dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@types dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@typescript-eslint dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@unocss dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@videojs-player dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@vitejs dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@vueuse dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@wangeditor-next dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@zxcvbn-ts dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\animate.css dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\autoprefixer dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\axios dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\benz-amr-recorder dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\bpmn-js dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\bpmn-js-properties-panel dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\bpmn-js-token-simulation dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\camunda-bpmn-moddle dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\consola dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\cropperjs dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\cross-env dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\crypto-js dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\dayjs dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\dayjs-plugin-lunar dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\dhtmlx-gantt dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\diagram-js dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\driver.js dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\echarts dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\echarts-wordcloud dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\element-plus dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\eslint dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\eslint-config-prettier dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\eslint-define-config dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\eslint-plugin-prettier dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\eslint-plugin-vue dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\fast-xml-parser dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\graceful-fs dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\highlight.js dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\jsbarcode dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\jsencrypt dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\jsoneditor dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\lint-staged dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\lodash-es dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\markdown-it dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\markmap-common dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\markmap-lib dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\markmap-toolbar dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\markmap-view dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\min-dash dir=True len=1
+gitStatus=git : fatal: not a git repository (or any of the parent directories): .git
+At line:33 char:39
++ ... y { $lines.Add('gitStatus=' + ((git -C $p status --short 2>&1 | Out-S ...
++                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (fatal: not a gi...ectories): .git:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+PATH=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b exists=False
+PATH=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f exists=True
+itemCount=73467
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\public dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\runtime dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\scripts dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\src dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\tests dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\types dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\package-lock.json dir=False len=667276
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\package.json dir=False len=19919
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\playwright.config.ts dir=False len=198
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\pnpm-lock.yaml dir=False len=378314
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\pnpm-workspace.yaml dir=False len=153
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\postcss.config.js dir=False len=64
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\prettier.config.js dir=False len=903
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\README.md dir=False len=23651
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\stylelint.config.js dir=False len=5774
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\tsconfig.json dir=False len=1320
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\tsconfig.relaxed.json dir=False len=153
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\tsconfig.schedule-relaxed.json dir=False len=1881
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\uno.config.ts dir=False len=2212
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\vite.config.ts dir=False len=7446
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\web-types.json dir=False len=403
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\.pnpm dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\.progress dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@commitlint dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@element-plus dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@form-create dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@iconify dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@intlify dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@microsoft dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@purge-icons dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@types dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@typescript-eslint dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@unocss dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@videojs-player dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@vitejs dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@vueuse dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@wangeditor-next dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\@zxcvbn-ts dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\animate.css dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\autoprefixer dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\axios dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\benz-amr-recorder dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\bpmn-js dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\bpmn-js-properties-panel dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\bpmn-js-token-simulation dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\camunda-bpmn-moddle dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\consola dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\cropperjs dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\cross-env dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\crypto-js dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\dayjs dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\dayjs-plugin-lunar dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\dhtmlx-gantt dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\diagram-js dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\driver.js dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\echarts dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\echarts-wordcloud dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\element-plus dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\eslint dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\eslint-config-prettier dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\eslint-define-config dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\eslint-plugin-prettier dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\eslint-plugin-vue dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\fast-xml-parser dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\graceful-fs dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\highlight.js dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\jsbarcode dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\jsencrypt dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\jsoneditor dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\lint-staged dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\lodash-es dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\markdown-it dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\markmap-common dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\markmap-lib dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\markmap-toolbar dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\markmap-view dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\min-dash dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\mitt dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\node_modules\nprogress dir=True len=1
+gitStatus=git : fatal: not a git repository (or any of the parent directories): .git
+At line:33 char:39
++ ... y { $lines.Add('gitStatus=' + ((git -C $p status --short 2>&1 | Out-S ...
++                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (fatal: not a gi...ectories): .git:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+PATH=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m exists=True
+itemCount=14703
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\config dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\doc dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\docs dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\frontend dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\ops dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\output dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\runtime dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\scripts dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\.git dir=False len=65
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\.gitignore dir=False len=340
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\AGENTS.md dir=False len=17378
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\restart-frontend-backend.bat dir=False len=429
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\pom.xml dir=False len=2121
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\test dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\java dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\resources dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\java\com dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\java\com\intruoyi dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\java\com\intruoyi\maintenance dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\java\com\intruoyi\maintenance\MaintenanceApplication.java dir=False len=564
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\ApiResult.java dir=False len=354
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\PageResult.java dir=False len=249
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlCommand.java dir=False len=233
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlCommandExecutor.java dir=False len=3825
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlController.java dir=False len=10201
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlException.java dir=False len=313
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlExceptionHandler.java dir=False len=967
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlNasBrowser.java dir=False len=7382
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlOperationAction.java dir=False len=20377
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlOperationStore.java dir=False len=11248
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlProperties.java dir=False len=19533
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java dir=False len=124878
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeDtos.java dir=False len=14898
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\resources\static dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\main\resources\application.yaml dir=False len=4601
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\test\java dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\test\java\com dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\test\java\com\intruoyi dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\test\java\com\intruoyi\maintenance dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\test\java\com\intruoyi\maintenance\runtime dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlContractTest.java dir=False len=8399
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalGovernanceParityTest.java dir=False len=17379
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java dir=False len=65103
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\classes dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\generated-sources dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\generated-test-sources dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\maven-archiver dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\maven-status dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\runtime-control-original-governance-parity-nas dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\runtime-control-original-parity-local-cache dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\runtime-control-original-parity-nas dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\runtime-control-original-parity-sql dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\surefire-reports dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\test-classes dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\runtime-control-maintenance-2026.06-SNAPSHOT.jar dir=False len=34770932
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\runtime-control-maintenance-2026.06-SNAPSHOT.jar.original dir=False len=159301
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\classes\com dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\classes\application.yaml dir=False len=4601
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\classes\com\intruoyi dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\classes\com\intruoyi\maintenance dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\classes\com\intruoyi\maintenance\runtime dir=True len=1
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\classes\com\intruoyi\maintenance\MaintenanceApplication.class dir=False len=930
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\classes\com\intruoyi\maintenance\runtime\ApiResult.class dir=False len=2817
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\classes\com\intruoyi\maintenance\runtime\PageResult.class dir=False len=2317
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\classes\com\intruoyi\maintenance\runtime\RuntimeControlCommand.class dir=False len=2305
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\classes\com\intruoyi\maintenance\runtime\RuntimeControlCommandExecutor.class dir=False len=6381
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\classes\com\intruoyi\maintenance\runtime\RuntimeControlController.class dir=False len=22821
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\classes\com\intruoyi\maintenance\runtime\RuntimeControlException.class dir=False len=653
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\classes\com\intruoyi\maintenance\runtime\RuntimeControlExceptionHandler.class dir=False len=3524
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\classes\com\intruoyi\maintenance\runtime\RuntimeControlNasBrowser$NasConfig.class dir=False len=2436
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\classes\com\intruoyi\maintenance\runtime\RuntimeControlNasBrowser$NasEntry.class dir=False len=2139
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\classes\com\intruoyi\maintenance\runtime\RuntimeControlNasBrowser.class dir=False len=13271
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\classes\com\intruoyi\maintenance\runtime\RuntimeControlOperationAction.class dir=False len=20347
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\classes\com\intruoyi\maintenance\runtime\RuntimeControlOperationStore.class dir=False len=15011
+item=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\backend\target\classes\com\intruoyi\maintenance\runtime\RuntimeControlProperties$BackupOps.class dir=False len=2960
+gitStatus=?? frontend/pnpm-workspace.yaml
+?? runtime/
+--- worktree lists ---
+REPO=D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro
+D:/ProjectPackage/Int/IntRuoyi/ruoyi-vue-pro  a14fa4833c [int_main]
+REPO=D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3
+D:/ProjectPackage/Int/IntRuoyi/yudao-ui-admin-vue3  f75fa7d0c [int_main]
+REPO=D:\ProjectPackage\Int\IntRuoyiMaintance
+D:/ProjectPackage/Int/IntRuoyiMaintance                                                19b121a [int_main]
+D:/ProjectPackage/Int/IntRuoyiWorktrees/r260706ce/m                                    19b121a (detached HEAD)
+D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-205043-signal       4cdc884 (detached HEAD)
+D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-2220-category       fb18456 (detached HEAD)
+D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-2320-mes-scheduler  fb18456 (detached HEAD)
+D:/ProjectPackage/Int/release-worktrees/IntRuoyiMaintance-20260701-dfb317e             dfb317e (detached HEAD)

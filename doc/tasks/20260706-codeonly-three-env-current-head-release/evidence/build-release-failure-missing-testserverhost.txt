@@ -1,0 +1,19 @@
+taskId=20260706-codeonly-three-env-current-head-release
+time=2026-07-06 21:37:16 +08:00
+releaseTag=release-20260706-2045-codeonly-three-env
+failure=build-release failed before package creation because -TestServerHost was missing
+runtimeControlHealthBeforeRecovery=curl.exe : curl: (7) Failed to connect to 127.0.0.1 port 48181 after 2055 ms: Could not connect to server
+At line:21 char:10
++ $health=(& curl.exe -sS --max-time 5 http://127.0.0.1:48181/actuator/ ...
++          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (curl: (7) Faile...nnect to server:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+runtimeControlCurlExitBeforeRecovery=7
+netstat48181=
+
+stdout=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\build-release-operation.out.log
+stderr=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\build-release-operation.err.log
+stdoutTail=
+[FAIL] Missing -TestServerHost; release target host for environment 'test' must be configured and passed explicitly so package URLs and storage checks are bound to the selected publish target.
+
+stderrTail=

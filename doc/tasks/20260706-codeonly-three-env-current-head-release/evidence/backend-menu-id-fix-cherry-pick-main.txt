@@ -1,0 +1,23 @@
+time=2026-07-06 22:22:20 +08:00
+fixCommit=0cb706c5ded7b890f31c8d9550efa4f6657471ec
+TDD_TASK_DIR=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release
+=== main backend before cherry-pick ===
+branch=int_main
+head=1267d1186c8dc7a65576c7290156a1ba7ed359fb
+?? doc/tasks/20260705-batch-record-layout-ratio-branch-review/
+?? sql/mysql/20260705_showroom_legacy_product_code_auto_confirmable_draft.sql
+incomingFiles=script/tests/test_mes_edhr_process_form_permission_rule_sql.py,sql/mysql/20260706_mes_edhr_process_form_permission_rule.sql
+trackedDirtyCount=0
+untrackedOverlapCount=0
+[int_main 18537705e7] 任务: 修复eDHR工序表单权限菜单ID
+ Date: Mon Jul 6 22:21:56 2026 +0800
+ 2 files changed, 10 insertions(+), 10 deletions(-)
+cherryPickExit=0
+=== main backend after cherry-pick attempt ===
+head=18537705e7eff0fce10d7306d4d076e19d9065eb
+?? doc/tasks/20260705-batch-record-layout-ratio-branch-review/
+?? sql/mysql/20260705_showroom_legacy_product_code_auto_confirmable_draft.sql
+=== last commit stat ===
+18537705e7 任务: 修复eDHR工序表单权限菜单ID
+script/tests/test_mes_edhr_process_form_permission_rule_sql.py
+sql/mysql/20260706_mes_edhr_process_form_permission_rule.sql

@@ -1,0 +1,10 @@
+releaseTag=release-20260706-2235-codeonly-three-env-v5
+releaseDir=E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2235-codeonly-three-env-v5
+allPackageChecksPass=True
+Count=12
+IsReadOnly=False
+Keys=releaseTagMatches publishScopeCodeOnly legacyPublishScopeCodeOnly backendCommitMatches frontendCommitMatches sourceReposDirtyFalse noForbiddenTopDataDirs imageTarExists runtimeEnvExists manifestExists legacyManifestExists allPackageChecksPass
+Values=True True True True True True True True True True True True
+IsFixedSize=False
+SyncRoot=System.Object
+IsSynchronized=False

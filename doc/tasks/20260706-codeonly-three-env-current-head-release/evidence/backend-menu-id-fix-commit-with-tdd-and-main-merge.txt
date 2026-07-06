@@ -1,0 +1,33 @@
+time=2026-07-06 22:21:55 +08:00
+TDD_TASK_DIR=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release
+=== temp backend status before commit ===
+M  script/tests/test_mes_edhr_process_form_permission_rule_sql.py
+M  sql/mysql/20260706_mes_edhr_process_form_permission_rule.sql
+tempBranch=codex/release-20260706-menu-id-fix
+TDD compliance passed.
+[codex/release-20260706-menu-id-fix 0cb706c5de] 任务: 修复eDHR工序表单权限菜单ID
+ 2 files changed, 10 insertions(+), 10 deletions(-)
+commitExit=0
+fixCommit=0cb706c5ded7b890f31c8d9550efa4f6657471ec
+=== temp backend status after commit ===
+=== main backend status before merge ===
+?? doc/tasks/20260705-batch-record-layout-ratio-branch-review/
+?? sql/mysql/20260705_showroom_legacy_product_code_auto_confirmable_draft.sql
+incomingFiles=script/tests/test_mes_edhr_process_form_permission_rule_sql.py,sql/mysql/20260706_mes_edhr_process_form_permission_rule.sql
+trackedDirtyCount=0
+untrackedOverlapCount=0
+hint: Diverging branches can't be fast-forwarded, you need to either:
+hint:
+hint: 	git merge --no-ff
+hint:
+hint: or:
+hint:
+hint: 	git rebase
+hint:
+hint: Disable this message with "git config set advice.diverging false"
+fatal: Not possible to fast-forward, aborting.
+mergeExit=128
+=== main backend status after merge ===
+?? doc/tasks/20260705-batch-record-layout-ratio-branch-review/
+?? sql/mysql/20260705_showroom_legacy_product_code_auto_confirmable_draft.sql
+mainHead=1267d1186c8dc7a65576c7290156a1ba7ed359fb

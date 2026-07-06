@@ -1,0 +1,12 @@
+taskId=20260706-codeonly-three-env-current-head-release
+releaseTag=release-20260706-2145-codeonly-three-env-v3
+started=2026-07-06 21:38:21 +08:00
+finished=2026-07-06 21:38:22 +08:00
+exitCode=1
+preflight=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\build-release-v3-preflight.json
+stdout=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\build-release-v3-operation.out.log
+stderr=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\build-release-v3-operation.err.log
+stdoutTail=
+[FAIL] Missing -BackupServerHost; release target host for environment 'backup' must be configured and passed explicitly so package URLs and storage checks are bound to the selected publish target.
+
+stderrTail=

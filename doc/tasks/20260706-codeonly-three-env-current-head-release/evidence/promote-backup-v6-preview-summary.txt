@@ -1,0 +1,16 @@
+timestamp=2026-07-06T23:26:20
+releaseTag=release-20260706-2245-codeonly-three-env-v6
+action=promote-backup-preview
+httpStatus=200
+apiCode=0
+requestSucceeded=True
+durationSeconds=19
+hasBackupHost172_30_30_59=True
+hasMntIntruoyiData=True
+hasBackupReleaseRoot=True
+hasBackupDataRoot=True
+hasConfirmTextPROD=True
+hasRequireTested=True
+success=True
+response=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-codeonly-three-env-current-head-release\evidence\promote-backup-v6-preview-response.json
+error=

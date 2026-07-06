@@ -1,0 +1,10 @@
+﻿{
+    "config":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260706ce\\m\\config\\runtime-control.local.yaml",
+    "repoRoot":  "D:/ProjectPackage/Int/IntRuoyiWorktrees/r260706ce/b",
+    "frontendRoot":  "D:/ProjectPackage/Int/IntRuoyiWorktrees/r260706ce/f",
+    "opsRoot":  "D:/ProjectPackage/Int/IntRuoyiWorktrees/r260706ce/m/ops",
+    "stateDir":  "D:/ProjectPackage/Int/IntRuoyiWorktrees/r260706ce/m/runtime/runtime-control",
+    "containsMainRepo":  false,
+    "containsMainFrontend":  false,
+    "containsMainOps":  false
+}

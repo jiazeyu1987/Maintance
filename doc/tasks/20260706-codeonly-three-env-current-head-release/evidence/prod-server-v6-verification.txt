@@ -1,0 +1,17 @@
+section=env_tag
+IMAGE_TAG=release-20260706-2245-codeonly-three-env-v6
+section=compose_images
+    image: intruoyi-backend:release-20260706-2245-codeonly-three-env-v6
+    image: intruoyi-frontend:release-20260706-2245-codeonly-three-env-v6
+section=running_images
+/intruoyi-backend intruoyi-backend:release-20260706-2245-codeonly-three-env-v6
+/intruoyi-frontend intruoyi-frontend:release-20260706-2245-codeonly-three-env-v6
+section=backend_health
+http_code=200
+{"status":"UP"}
+section=frontend_http
+http_code=200
+section=pdf_worker_http
+http_code=200 content_type=application/javascript
+section=release_lock
+prod-release-20260706-2245-codeonly-three-env-v6	release-20260706-2245-codeonly-three-env-v6	prod	APPLIED

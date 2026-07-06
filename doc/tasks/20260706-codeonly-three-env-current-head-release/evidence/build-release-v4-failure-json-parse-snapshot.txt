@@ -1,0 +1,519 @@
+time=2026-07-06 21:53:32 +08:00
+tag=release-20260706-2205-codeonly-three-env-v4
+cacheExists=True
+script=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\ops\deploy\publish-int-ruoyi.ps1
+=== script lines 2088-2130 ===
+ 2088: if ! mountpoint -q '$RemoteAppDir/data'; then
+ 2089:   if [ -n "`$(find '$RemoteAppDir/data' -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]; then
+ 2090:     echo "Remote runtime data dir is not mounted and is not empty: $RemoteAppDir/data" >&2
+ 2091:     exit 1
+ 2092:   fi
+ 2093:   mount --bind '$RemoteDataRoot' '$RemoteAppDir/data'
+ 2094: fi
+ 2095: data_dir_source=`$(df -P '$RemoteAppDir/data' | awk 'NR==2 {print `$1}')
+ 2096: if [ "`$data_dir_source" != '$RemoteDataDiskDevice' ]; then
+ 2097:   echo "Expected $RemoteAppDir/data to be stored on $RemoteDataDiskDevice, got: `$data_dir_source" >&2
+ 2098:   exit 1
+ 2099: fi
+ 2100: fstab_line='$RemoteDataRoot $RemoteAppDir/data none bind 0 0'
+ 2101: if ! grep -Fqs "`$fstab_line" /etc/fstab; then
+ 2102:   printf '%s\n' "`$fstab_line" >> /etc/fstab
+ 2103: fi
+ 2104: mkdir -p '$RemoteAppDir/data/mysql' '$RemoteAppDir/data/redis' '$RemoteAppDir/data/backend-logs' '$RemoteAppDir/data/minio'
+ 2105: "@
+ 2106:     Invoke-SshCommand $command
+ 2107: }
+ 2108: 
+ 2109: function Read-NasReleaseConfig {
+ 2110:     if ([string]::IsNullOrWhiteSpace($NasConfigPath)) {
+ 2111:         Fail 'Missing NasConfigPath; release package modes must use NAS Management configuration.'
+ 2112:     }
+ 2113:     if (-not (Test-Path -LiteralPath $NasConfigPath)) {
+ 2114:         Fail "NAS release config file not found: $NasConfigPath"
+ 2115:     }
+ 2116:     $text = [System.IO.File]::ReadAllText($NasConfigPath, [System.Text.UTF8Encoding]::new($false))
+ 2117:     $config = $text | ConvertFrom-Json
+ 2118:     foreach ($field in @('server', 'share', 'username', 'password')) {
+ 2119:         if ([string]::IsNullOrWhiteSpace([string]$config.$field)) {
+ 2120:             Fail "NAS release config missing field: $field"
+ 2121:         }
+ 2122:     }
+ 2123:     if (-not [string]::IsNullOrWhiteSpace($NasServer)) {
+ 2124:         $config.server = $NasServer
+ 2125:     }
+ 2126:     # NAS release config share must come from the UTF-8 config file.
+ 2127:     if (-not [string]::IsNullOrWhiteSpace($NasShare) -and $NasShare -ne [string]$config.share) {
+ 2128:         Info 'Ignoring command-line NasShare; NAS release config share remains authoritative.'
+ 2129:     }
+ 2130:     return $config
+=== ConvertFrom-Json occurrences ===
+ 1565:         $json = $result.StdOut | ConvertFrom-Json
+ 1735:         return $response.Content | ConvertFrom-Json
+ 2117:     $config = $text | ConvertFrom-Json
+ 2396:         $manifest = $manifestText | ConvertFrom-Json
+ 2595:         return $manifestText | ConvertFrom-Json
+ 2678:         $dccObjectInventory = [System.IO.File]::ReadAllText($dccObjectInventoryPath, [System.Text.UTF8Encoding]::new($false)) | ConvertFrom-Json
+ 2774:             $record = $json | ConvertFrom-Json
+ 4042:         $manifest = [System.IO.File]::ReadAllText($manifestPath, [System.Text.UTF8Encoding]::new($false)) | ConvertFrom-Json
+ 4083:         $plan = [System.IO.File]::ReadAllText($preflightPlanPath, [System.Text.UTF8Encoding]::new($false)) | ConvertFrom-Json
+ 4160:         $evidence = [System.IO.File]::ReadAllText($ProdDryRunEvidencePath, [System.Text.UTF8Encoding]::new($false)) | ConvertFrom-Json
+=== cache top files ===
+ 2026-07-06 19:05:30        10608 docker-compose.yml
+ 2026-07-06 21:53:03    814338560 intruoyi-images_release-20260706-2205-codeonly-three-env-v4.tar
+ 2026-07-06 21:53:16      2176018 manifest.json
+ 2026-07-06 21:53:13        78175 release-manifest.json
+ 2026-07-06 21:41:20            1 required-sql
+ 2026-07-06 21:53:07            1 resources
+ 2026-07-06 21:53:05            1 runtime-env
+ 2026-07-06 21:53:05            1 smoke
+=== cache recursive selected ===
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\resources
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\runtime-env
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\smoke
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\docker-compose.yml
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\intruoyi-images_release-20260706-2205-codeonly-three-env-v4.tar
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\manifest.json
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\release-manifest.json
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260512_ai_base_schema.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260512_ai_codex_seed.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260512_bpm_base_schema.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260512_crm_base_schema.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260512_erp_base_schema.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260512_erp_kingdee_purchase_order_sync.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260512_mes_base_schema.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260512_mes_schema.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260513_dcc_base_schema.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260513_dcc_id_auto_increment_fix.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260513_dcc_notify_template_seed.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260513_erp_kingdee_supplier_sync_record.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260513_erp_product_standard_expand.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260513_kingdee_multi_sync.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260513_mes_dv_machinery_extend.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260513_mes_dv_machinery_process_process_id.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260513_mes_md_workstation_capacity.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260514_erp_kingdee_config_page.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260514_mes_batch_record_report.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260515_dcc_governance_split_menu.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260515_dcc_runtime_schema_repair.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260515_dcc_runtime_seed_name_fix.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260515_mes_md_item_specification_512.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260516_dcc_electronic_signature_management.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260516_dcc_training_closed_loop_menu.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260516_mes_batch_record_report_route_key.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260517_infra_file_content_longblob.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260518_dcc_approval_task_name_fix.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260520_dcc_signature_menu_restore.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260520_system_nas_management_menu.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260521_showroom_company_cover_image.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260522_mes_route_process_batch_record_binding.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260522_showroom_product_cover_batch_task.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260523_dcc_nas_transfer_task.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260523_infra_runtime_control_menu.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260523_mes_batch_record_execution_edhr_v1.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260524_edhr_permission_restore.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260524_showroom_company_version_menu_visibility.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260524_showroom_prompt_menu_visibility.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260524_showroom_prompt_version.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260525_dcc_screenshot_t1.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260525_dcc_screenshot_t3.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260525_dcc_screenshot_t5.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260525_edhr_archive_permission.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260525_edhr_archive_schema.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260525_showroom_hall_name_suffix_showcase.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260525_system_password_policy.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260526_dcc_electronic_signature_hardening.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260526_dcc_other_template_category.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260526_edhr_approval_archive_schema_contract.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260526_edhr_field_audit_schema.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260527_dcc_approval_print_template.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260527_dcc_controlled_file_status_widen.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260527_dcc_directory_access_rule_subject_type_contract.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260527_dcc_external_file_review.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260527_dcc_nas_acl_snapshot_restore.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260527_infra_runtime_control_notify_template_seed.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260528_dcc_controlled_file_protection.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260528_edhr_archive_worm_guard.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260528_edhr_domain_trace_schema.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260528_signature_governance_menu.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260529_dcc_audit_menu_permission.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260529_dcc_training_mine_menu_restore.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260530_dcc_exact_nas_identifier_collation.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260530_dcc_long_file_name_length.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260530_dcc_long_nas_source_remark.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260530_dcc_tenant_scoped_code_indexes.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260601_showroom_hall_descriptions.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260604_dcc_controlled_file_product_name.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260605_showroom_product_revision_attachment_schema.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260606_mes_puhui_schedule_menu.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260606_showroom_hall_product_canvas_layout.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260607_product_master_data.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260608_edhr_batch_execution_schema.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260609_mes_md_workstation_shift_hours.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260609_mes_workstation_default_single_capacity_30.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260609_mes_work_order_code_erp_unification.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260610_mes_admin_edhr_approval_v1_seed.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260610_mes_admin_edhr_task_dedupe.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260610_mes_auto_schedule_schedule_order_p5.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260610_mes_feedback_import_attribution_p6.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260610_mes_route_use_config_p3.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260610_mes_scheduler_workbench_p7.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260610_mes_schedule_order_p1.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260610_mes_schedule_resource_adjustment_p4.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260610_mes_schedule_snapshot_p2.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260611_mes_edhr_batch_processing_tabs.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260611_mes_edhr_execution_list_hide_menu.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260611_mes_edhr_multi_signature_approval.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260611_mes_edhr_rejection_revision_flow.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260611_mes_edhr_work_task_flow.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260611_mes_scheduler_workbench_smart_scheduling_tab.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260611_mes_smart_scheduling_extra_tabs.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260611_mes_smart_scheduling_tabs.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260611_mes_work_order_create_erp_order.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260612_erp_bom_sync_job.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260612_erp_kingdee_sync_menu.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260612_erp_kingdee_sync_runtime.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260612_erp_product_item_sync_job.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260612_erp_purchase_sale_kingdee_status.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260612_erp_purchase_sale_sync_jobs.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260612_erp_stock_sync_job.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260612_erp_sync_menu_base_data.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260612_mes_batch_record_report_name.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260612_mes_edhr_attachment_ledger.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260612_mes_edhr_final_archive_work_task.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260612_mes_edhr_final_inspection_dossier.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260612_mes_edhr_multi_batch_route.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260612_mes_edhr_record_change_menu.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260612_mes_edhr_void_reopen_supplement.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260612_mes_kingdee_production_sync_record_tenant_source.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260612_mes_process_use_route_tabs.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260612_mes_qc_oqc_finish_permission.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260613_dcc_file_view_matrix_seed.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260613_dcc_nas_local_folder_import.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260613_erp_bom_list_menu.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260613_erp_disable_base_realtime_sync_jobs.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260613_erp_inventory_list_menu.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260613_erp_kingdee_inventory_list.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260613_erp_kingdee_sync_record_tenant_unique.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260613_erp_production_material_list_menu.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260613_infra_release_migration_state.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260613_mes_edhr_special_nodes.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260613_mes_kingdee_bom_list.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260613_mes_kingdee_production_material_list.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260613_mes_kingdee_production_material_list_sync_job.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260613_mes_nightly_replan_job_2am.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260613_mes_schedule_order_sync_progress_permission.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260613_mes_smart_scheduling_t1_schema.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260613_runtime_control_release_package_config.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260613_showroom_award_and_hall_item_schema.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260614_dcc_master_directory_identity.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260614_dcc_nas_local_folder_large_import.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260614_dcc_nas_transfer_product_master.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260614_dcc_optional_product_binding.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260614_dcc_product_visibility_group.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260614_disable_runtime_nightly_release_job.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260614_mes_edhr_work_task_candidate_pool.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260614_mes_pro_task_status_in_progress.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260614_mes_route_version_backfill.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260614_mes_schedule_order_auto_schedulable_backfill.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260615_dcc_local_folder_chunk_upload.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260615_mes_edhr_tail_four_goals.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260615_mes_pro_work_order_menu_route_restore.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260615_mes_scheduler_workbench_only_summary.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260615_mes_schedule_order_usability_permission.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260615_quartz_scheduler_schema.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260615_showroom_hall_canvas_background.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260615_system_config_package_data_governance.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260615_system_config_package_menu.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260617_dcc_browser_performance_indexes.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260617_erp_kingdee_event_callback.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260617_mes_scheduler_role_smart_scheduling_tab.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_dcc_project_code_recognition_link.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_mes_edhr_delivery_cockpit.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_mes_edhr_dhr_template_lifecycle.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_mes_edhr_flow_intervention_log.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_mes_edhr_form_instance.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_mes_edhr_init_batch_precheck.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_mes_edhr_label_print_queue.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_mes_edhr_oq_pq_execution_deviation.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_mes_edhr_print_policy_reissue_void.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_mes_edhr_recordbook_management.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_mes_edhr_release_precheck_engine.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_mes_edhr_release_transaction_lifecycle.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_mes_edhr_report_catalog.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_mes_edhr_traveler_instance_binding.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_mes_edhr_unified_change_impact.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_mes_edhr_validation_package_matrix.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_post_release_role_e2e_gate.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_post_release_role_e2e_gate_password_fix.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_post_release_role_e2e_gate_smoke_contract.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_showroom_publicity_role_menu_scope.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260618_srm_d7_1_code_rule_baseline.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260619_mes_edhr_deployment_license_interface.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260619_mes_schedule_order_process_snapshot_identity_p8.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260619_post_release_role_e2e_gate_smoke_route_900026_line_fix.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260619_post_release_role_e2e_gate_smoke_username_fix.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260619_post_release_role_e2e_gate_smoke_username_password_freshness_fix.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260619_post_release_role_e2e_gate_smoke_z_erp_job_permission_fix.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260619_srm_d7_2_supplier_access_risk.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260619_srm_d7_3_plan_framework.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260619_srm_d8_1_non_bidding.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260620_srm_d10_1_tender.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260620_srm_d9_1_contract.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260620_srm_phase1_supplier_access_profile.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260621_srm_phase1_supplier_portal.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260621_srm_phase3_purchase_order.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260621_srm_phase45_simulated_execution.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260622_mes_edhr_bpm_notify_to_inbox.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260623_dcc_browser_batch_recognition_task.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260623_dcc_view_matrix_independent_source.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260624_dcc_view_matrix_independent_seed.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260624_dcc_view_matrix_test_tenant_prereq.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260624_mes_auto_schedule_permission_split.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260624_mes_edhr_release_transaction_lifecycle_column_repair.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260624_mes_feedback_surplus_pool.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260624_mes_scheduler_workbench_permission_split.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260624_mes_schedule_issue_structured_backflow.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260624_mes_schedule_order_freeze_audit.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260624_unified_approval_phase5_retire_legacy_menus.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260624_unified_electronic_signature_menu.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260625_dcc_fvm_matrix_retain_other_completion.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260625_dcc_review_matrix_rule_metadata.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260625_showroom_keyword_menu_visibility.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260626_dcc_access_rule_manual_binding.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260626_dcc_access_rule_menu_retire.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260626_dcc_basic_data_global_submenu.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260626_dcc_merge_view_preview_permission.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260626_dcc_permission_menu_rename.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260626_mes_edhr_flow_intervention_runtime.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260626_mes_feedback_import_reattribute_link.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260626_mes_replan_operation_log_reason_nullable.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260626_mes_schedule_issue_lifecycle.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260626_role_management_split_rename_navigation.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260626_role_name_garbled_repair.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260626_showroom_keyword_bu_seed_runtime.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260626_showroom_keyword_healing_seed_runtime.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260626_showroom_keyword_schema_seed_runtime.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260626_showroom_product_current_bu_normalization.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260626_showroom_product_translate_publish_batch_task.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260628_srm_t6_nas_locator.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260629_dcc_batch_recognition_task_schema_repair.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260629_dcc_controlled_file_recognition_claim.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260629_dcc_controlled_file_recognition_record.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260629_dcc_subtab_four_char_rename.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260629_menu_title_srm_dcc_rename.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260629_mes_schedule_order_manual_finish.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260629_mes_smart_scheduling_role_assignment.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260629_mes_smart_scheduling_role_scope.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260629_srm_admin_role_visibility.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260630_approval_center_role_visibility.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260630_dcc_admin_full_config_managed_scope.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260630_dcc_admin_full_config_menu.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260630_erp_production_admin_role.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260630_mes_pro_work_order_erp_snapshot_fields.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260701_dcc_batch_recognition_worker_ledger_export.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260701_srm_admin_role_menu_scope_cleanup.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260701_srm_t6_nas_locator_blacklist_config.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260702_dcc_recognition_file_type_levels.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260702_mes_edhr_seven_visible_tabs.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260703_dcc_project_code_alias_mapping.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260704_showroom_product_target_market_text.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260705_showroom_legacy_product_code_mapping.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260705_showroom_legacy_product_code_name_backfill.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260706_dcc_batch_recognition_existing_record_policy.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260706_dcc_recognition_traceable_failure_messages.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260706_dcc_signature_image_evidence_chain.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260706_mes_edhr_process_form_permission_rule.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260706_showroom_current_empty_legacy_product_code_backfill.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\required-sql\20260706_showroom_legacy_product_code_english_name_backfill.sql
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\resources\resource-reference-manifest.json
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\runtime-env\backup.env
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\runtime-env\prod.env
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\runtime-env\test.env
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\smoke\bin
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\smoke\yudao-ui-admin-vue3
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\smoke\bin\npm
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\smoke\yudao-ui-admin-vue3\input
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\smoke\yudao-ui-admin-vue3\output
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\smoke\yudao-ui-admin-vue3\tests
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\smoke\yudao-ui-admin-vue3\package.json
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\smoke\yudao-ui-admin-vue3\output\artifacts
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\smoke\yudao-ui-admin-vue3\tests\e2e
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\smoke\yudao-ui-admin-vue3\tests\e2e\smart-scheduling-smoke-real-flow-static.spec.js
+E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\smoke\yudao-ui-admin-vue3\tests\e2e\smart-scheduling-smoke-real-flow.e2e.js
+=== stdout last 160 ===
++ @commitlint/cli 19.6.0
++ @commitlint/config-conventional 19.6.0
++ @iconify/json 2.2.277
++ @intlify/unplugin-vue-i18n 2.0.0
++ @purge-icons/generated 0.9.0
++ @types/jsoneditor 9.9.6
++ @types/lodash-es 4.17.12
++ @types/node 20.17.9
++ @types/nprogress 0.2.3
++ @types/qrcode 1.5.5
++ @types/qs 6.9.17
++ @typescript-eslint/eslint-plugin 7.18.0
++ @typescript-eslint/parser 7.18.0
++ @unocss/eslint-config 0.57.7
++ @unocss/eslint-plugin 66.1.0-beta.5
++ @unocss/transformer-variant-group 0.58.9
++ @vitejs/plugin-legacy 5.4.3
++ @vitejs/plugin-vue 5.2.1
++ @vitejs/plugin-vue-jsx 3.1.0
++ autoprefixer 10.4.20
++ bpmn-js 17.11.1
++ bpmn-js-properties-panel 5.23.0
++ consola 3.2.3
++ cross-env 7.0.3
++ eslint 8.57.1
++ eslint-config-prettier 9.1.0
++ eslint-define-config 2.1.0
++ eslint-plugin-prettier 5.2.1
++ eslint-plugin-vue 9.31.0
++ graceful-fs 4.2.11
++ lint-staged 15.2.10
++ playwright 1.60.0
++ postcss 8.4.49
++ postcss-html 1.7.0
++ postcss-scss 4.0.9
++ prettier 3.4.1
++ prettier-eslint 16.3.0
++ rimraf 5.0.10
++ rollup 4.27.4
++ sass 1.81.0
++ stylelint 16.11.0
++ stylelint-config-html 1.1.0
++ stylelint-config-recommended 14.0.1
++ stylelint-config-standard 36.0.1
++ stylelint-order 6.0.4
++ terser 5.36.0
++ typescript 5.3.3
++ unocss 0.58.9
++ unplugin-auto-import 0.16.7
++ unplugin-element-plus 0.8.0
++ unplugin-vue-components 0.25.2
++ vite 5.1.4
++ vite-plugin-compression 0.5.1
++ vite-plugin-ejs 1.7.0
++ vite-plugin-eslint 1.8.1
++ vite-plugin-progress 0.0.7
++ vite-plugin-purge-icons 0.10.0
++ vite-plugin-svg-icons-ng 1.3.1
++ vite-plugin-top-level-await 1.4.4
++ vue-eslint-parser 9.4.3
++ vue-tsc 2.2.12
++ xlsx 0.18.5
+Done in 22.3s using pnpm v11.7.0
+$ cross-env NODE_OPTIONS=--max-old-space-size=8192 vite build --mode test
+[33mThe CJS build of Vite's Node API is deprecated. See https://vitejs.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+Browserslist: browsers data (caniuse-lite) is 20 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[36m[1mBuild successful. Please see dist-intruoyi-test directory[22m[39m
+[INFO] Frontend release info written: D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f\dist-intruoyi-test\release-info.json
+[INFO] Preparing Docker build context from current worktree artifacts
+[INFO] Building backend image
+[INFO] Run: docker build --no-cache --build-arg BACKEND_RUNTIME_BASE_IMAGE=intruoyi-backend-runtime-base:2026.06.05-jre21-noble-docker29.2.1 -t intruoyi-backend:release-20260706-2205-codeonly-three-env-v4 -f D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\script\deploy\int-ruoyi-test\Dockerfile.backend E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\docker-build-context
+#0 building with "desktop-linux" instance using docker driver
+#1 [internal] load build definition from Dockerfile.backend
+#1 transferring dockerfile: 435B 0.0s done
+#1 WARN: InvalidDefaultArgInFrom: Default value for ARG ${BACKEND_RUNTIME_BASE_IMAGE} results in empty or invalid base image name (line 2)
+#1 DONE 0.1s
+#2 [internal] load metadata for docker.io/library/intruoyi-backend-runtime-base:2026.06.05-jre21-noble-docker29.2.1
+#2 DONE 0.1s
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+#4 [1/4] FROM docker.io/library/intruoyi-backend-runtime-base:2026.06.05-jre21-noble-docker29.2.1@sha256:b4f7d85f325665c3b372379e6d352c3c8be2d3a08add68ac0dc151f720160be7
+#4 resolve docker.io/library/intruoyi-backend-runtime-base:2026.06.05-jre21-noble-docker29.2.1@sha256:b4f7d85f325665c3b372379e6d352c3c8be2d3a08add68ac0dc151f720160be7 0.0s done
+#4 CACHED
+#5 [internal] load build context
+#5 ...
+#6 [2/4] RUN mkdir -p /yudao-server
+#6 DONE 0.6s
+#5 [internal] load build context
+#5 ...
+#7 [3/4] WORKDIR /yudao-server
+#7 DONE 0.1s
+#5 [internal] load build context
+#5 transferring context: 116.98MB 5.0s
+#5 transferring context: 255.00MB 10.0s
+#5 transferring context: 393.74MB 15.1s
+#5 transferring context: 543.33MB 20.2s
+#5 transferring context: 612.54MB 18.5s done
+#5 DONE 18.5s
+#8 [4/4] COPY ruoyi-vue-pro/yudao-server/target/yudao-server-exec.jar app.jar
+#8 DONE 1.2s
+#9 exporting to image
+#9 exporting layers
+#9 exporting layers 22.9s done
+#9 exporting manifest sha256:18809fc5003066e36b361047ddf9ac5033cde05e657e942eaefc82e43015dbb3 0.1s done
+#9 exporting config sha256:1a02d5903aa484aee7134987d85d8fea797ead932b050a3a40887c7ad578dcb6 0.0s done
+#9 exporting attestation manifest sha256:eb90d51dc0f06c338ec59c6ef3370671c7bc1be9e20e6d5f0441cebc588fb056 0.1s done
+#9 exporting manifest list sha256:9bdc109995cf2f4d2a80caefafa6e0687ca5300aca9304615431dcf5d9789f6f
+#9 exporting manifest list sha256:9bdc109995cf2f4d2a80caefafa6e0687ca5300aca9304615431dcf5d9789f6f 0.0s done
+#9 naming to docker.io/library/intruoyi-backend:release-20260706-2205-codeonly-three-env-v4 done
+#9 unpacking to docker.io/library/intruoyi-backend:release-20260706-2205-codeonly-three-env-v4
+#9 unpacking to docker.io/library/intruoyi-backend:release-20260706-2205-codeonly-three-env-v4 2.4s done
+#9 DONE 25.7s
+ [33m1 warning found (use docker --debug to expand):
+[0m - InvalidDefaultArgInFrom: Default value for ARG ${BACKEND_RUNTIME_BASE_IMAGE} results in empty or invalid base image name (line 2)
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/t9g0z1gua43964wriughhfkz8
+[INFO] Building frontend image
+[INFO] Run: docker build --no-cache -t intruoyi-frontend:release-20260706-2205-codeonly-three-env-v4 -f D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b\script\deploy\int-ruoyi-test\Dockerfile.frontend E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\docker-build-context
+#0 building with "desktop-linux" instance using docker driver
+#1 [internal] load build definition from Dockerfile.frontend
+#1 transferring dockerfile: 234B 0.0s done
+#1 DONE 0.1s
+#2 [internal] load metadata for docker.io/library/nginx:1.27-alpine
+#2 DONE 0.1s
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+#4 [internal] load build context
+#4 ...
+#5 [1/3] FROM docker.io/library/nginx:1.27-alpine@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10
+#5 resolve docker.io/library/nginx:1.27-alpine@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10 0.1s done
+#5 CACHED
+#4 [internal] load build context
+#4 transferring context: 8.31MB 5.0s
+#4 transferring context: 21.89MB 10.1s
+#4 transferring context: 30.68MB 12.1s done
+#4 DONE 12.1s
+#6 [2/3] COPY ruoyi-vue-pro/script/deploy/int-ruoyi-test/nginx.conf /etc/nginx/conf.d/default.conf
+#6 DONE 0.5s
+#7 [3/3] COPY yudao-ui-admin-vue3/dist-intruoyi-test/ /usr/share/nginx/html/
+#7 DONE 0.5s
+#8 exporting to image
+#8 exporting layers
+#8 exporting layers 1.2s done
+#8 exporting manifest sha256:19862a28b487c000d997a5901f51659f9086e6a9e7dd4a338aea6049bb26cb84 0.1s done
+#8 exporting config sha256:b26e99654b65f1426fe23f432681b2d7791eed44945837f0cb80d245458172eb 0.1s done
+#8 exporting attestation manifest sha256:52e583c24023769ec505477852841bbc476176eccc4598c0a6816834e3111ea5 0.1s done
+#8 exporting manifest list sha256:ef130d7ae7c095584170add35315403b0f167846780e88aa6074298fa4113ae0
+#8 exporting manifest list sha256:ef130d7ae7c095584170add35315403b0f167846780e88aa6074298fa4113ae0 0.1s done
+#8 naming to docker.io/library/intruoyi-frontend:release-20260706-2205-codeonly-three-env-v4 done
+#8 unpacking to docker.io/library/intruoyi-frontend:release-20260706-2205-codeonly-three-env-v4
+#8 unpacking to docker.io/library/intruoyi-frontend:release-20260706-2205-codeonly-three-env-v4 0.7s done
+#8 DONE 2.3s
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/au04cv2ayw2n04242zng12nk2
+[INFO] Exporting release images
+[INFO] Run: docker save -o E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260706-2205-codeonly-three-env-v4\intruoyi-images_release-20260706-2205-codeonly-three-env-v4.tar intruoyi-backend:release-20260706-2205-codeonly-three-env-v4 intruoyi-frontend:release-20260706-2205-codeonly-three-env-v4
+[INFO] Removing Docker build context from final release package
+[INFO] build-release runtime guard released: E:\Int\CacheData\IntRuoyi\runtime\local-runtime-restart.guard
+=== stderr full ===
+powershell.exe : ConvertFrom-Json : Invalid JSON primitive: maintenance.
+At line:38 char:1
++ & powershell -NoProfile -ExecutionPolicy Bypass -File $script -Mode b ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ConvertFrom-Jso...e: maintenance.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+At D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m\ops\deploy\publish-int-ruoyi.ps1:2117 char:23
++     $config = $text | ConvertFrom-Json
++                       ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [ConvertFrom-Json], ArgumentException
+    + FullyQualifiedErrorId : System.ArgumentException,Microsoft.PowerShell.Commands.ConvertFromJsonCommand
+ 

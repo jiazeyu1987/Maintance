@@ -1,0 +1,50 @@
+timestamp=2026-07-06T23:41:12
+--- backend ---
+main=D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro
+worktree=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\b
+mainHead=a14fa4833c421d40630e46e066298d5f5f119ff5
+worktreeHead=18537705e7eff0fce10d7306d4d076e19d9065eb
+worktreeHeadIsAncestorOfMain=True
+worktreeStatus=
+mainStatus=M yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/scheduleorder/MesProScheduleOrderServiceImpl.java
+?? doc/tasks/20260705-batch-record-layout-ratio-branch-review/
+?? script/tests/test_mes_schedule_order_service_injection.py
+?? sql/mysql/20260705_showroom_legacy_product_code_auto_confirmable_draft.sql
+--- frontend ---
+main=D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3
+worktree=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\f
+mainHead=f75fa7d0cb8f8f639b1a83955ca5c49dc30d8dfc
+worktreeHead=d03af99c0337e299e0d292231b673b45e20f7cae
+worktreeHeadIsAncestorOfMain=True
+worktreeStatus=
+mainStatus=?? output-yudao-8081-restart-frontend.err.log
+?? output-yudao-8081-restart-frontend.out.log
+?? output-yudao-ui-8081-restart-workorder-link.err.log
+?? output-yudao-ui-8081-restart-workorder-link.out.log
+?? output-yudao-ui-8081-start.err.log
+?? output-yudao-ui-8081-start.out.log
+?? tests/output/edhr-cell-rule-toggle-real-e2e.cjs
+?? tests/output/edhr-cell-rule-toggle-real/
+--- maintenance ---
+main=D:\ProjectPackage\Int\IntRuoyiMaintance
+worktree=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce\m
+mainHead=19b121a72e0fe65c38137a154bf45e4f5391c438
+worktreeHead=19b121a72e0fe65c38137a154bf45e4f5391c438
+worktreeHeadIsAncestorOfMain=True
+worktreeStatus=?? frontend/pnpm-workspace.yaml
+?? runtime/
+mainStatus=M doc/tasks/20260701-dcc-batch-recognition-five-workers/execution-log.md
+ M doc/tasks/20260701-rebuild-publish-all-after-fvm-message-fix/execution-log.md
+ M docs/experience-index.md
+ M docs/release-agent-checklist.md
+ M docs/release-build-preflight-lessons.md
+ M docs/request-command-log.md
+?? config/runtime-control.local.before-20260701-205043.yaml
+?? config/runtime-control.local.before-category-20260701-221522.yaml
+?? config/runtime-control.local.before-fix3-20260703-001013.yaml
+?? config/runtime-control.local.before-mes-scheduler-20260701-230707.yaml
+?? config/runtime-control.local.before-nodata-evening-20260702-2151.yaml
+?? config/runtime-control.local.before-nodata-evening-fix-20260702-2240.yaml
+?? config/runtime-control.local.before-nodata-evening-fix2-20260702-2316.yaml
+?? doc/tasks/20260706-codeonly-three-env-current-head-release/
+?? runtime/

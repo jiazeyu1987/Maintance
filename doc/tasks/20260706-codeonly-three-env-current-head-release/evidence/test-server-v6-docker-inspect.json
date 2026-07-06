@@ -1,0 +1,628 @@
+[
+    {
+        "Id": "0a5b5a2b9206d9f847da4f760024a0f4733e5e4049a4a97f9b381107dae9c367",
+        "Created": "2026-07-06T14:45:09.917909814Z",
+        "Path": "/__cacert_entrypoint.sh",
+        "Args": [
+            "sh",
+            "-c",
+            "exec java ${JAVA_OPTS} -jar app.jar ${ARGS}"
+        ],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 22036,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-06T14:45:14.247393592Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+        },
+        "Image": "sha256:dd65f35ff98208977a0ac0013ba426b064b6a2d780e0fa50a41cf8c7ace6a74a",
+        "ResolvConfPath": "/var/lib/docker/containers/0a5b5a2b9206d9f847da4f760024a0f4733e5e4049a4a97f9b381107dae9c367/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/0a5b5a2b9206d9f847da4f760024a0f4733e5e4049a4a97f9b381107dae9c367/hostname",
+        "HostsPath": "/var/lib/docker/containers/0a5b5a2b9206d9f847da4f760024a0f4733e5e4049a4a97f9b381107dae9c367/hosts",
+        "LogPath": "/var/lib/docker/containers/0a5b5a2b9206d9f847da4f760024a0f4733e5e4049a4a97f9b381107dae9c367/0a5b5a2b9206d9f847da4f760024a0f4733e5e4049a4a97f9b381107dae9c367-json.log",
+        "Name": "/intruoyi-backend",
+        "RestartCount": 0,
+        "Driver": "overlay2",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": [
+                "/opt/intruoyi/runtime/data/backend-logs:/root/logs:rw",
+                "/var/run/docker.sock:/var/run/docker.sock:rw",
+                "/opt/intruoyi/runtime/tools/codex:/opt/intruoyi/runtime/tools/codex:ro",
+                "/opt/intruoyi/runtime/smoke/bin/npm:/usr/local/bin/npm:ro",
+                "/backup:/backup:rw",
+                "/mnt/nas/Backup/BackupPackage:/mnt/nas/Backup/BackupPackage:rw",
+                "/opt/intruoyi/runtime:/opt/intruoyi/runtime:rw",
+                "/opt/intruoyi/ops:/opt/intruoyi/ops:rw",
+                "/opt/intruoyi/runtime/backend-codex-home:/opt/intruoyi/runtime/backend-codex-home:rw"
+            ],
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {
+                    "max-file": "3",
+                    "max-size": "10m"
+                }
+            },
+            "NetworkMode": "intruoyi-runtime_intruoyi_net",
+            "PortBindings": {
+                "48080/tcp": [
+                    {
+                        "HostIp": "",
+                        "HostPort": "48081"
+                    }
+                ]
+            },
+            "RestartPolicy": {
+                "Name": "unless-stopped",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "host",
+            "Dns": null,
+            "DnsOptions": null,
+            "DnsSearch": null,
+            "ExtraHosts": [
+                "host.docker.internal:host-gateway"
+            ],
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": null,
+            "BlkioDeviceReadBps": null,
+            "BlkioDeviceWriteBps": null,
+            "BlkioDeviceReadIOps": null,
+            "BlkioDeviceWriteIOps": null,
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": null,
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": false,
+            "PidsLimit": null,
+            "Ulimits": null,
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/asound",
+                "/proc/acpi",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/sys/firmware",
+                "/sys/devices/virtual/powercap"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "GraphDriver": {
+            "Data": {
+                "LowerDir": "/var/lib/docker/overlay2/c78678139357d27f934dc15010fc318ddaa48f58c3245b4e8ebd11b79f47f200-init/diff:/var/lib/docker/overlay2/77bfe693b305dc856c22c76729f07131a33fc450dbc3c741ae97c113edf6f8e0/diff:/var/lib/docker/overlay2/e20d0855a8c40acb6e3f197b6438d934567242384772ac19826880f5713ad365/diff:/var/lib/docker/overlay2/3ea56370195ecb47f4821caf310920d8d78aa83ec2e6a37c04e6b036ed660580/diff:/var/lib/docker/overlay2/a9d1c5c8b2cc23d580e44a8275e379469fa492d732ff5b67489ff11af7f45d38/diff:/var/lib/docker/overlay2/738f0bcb539d97bbe660ce5903f707a7078c7c96541caa21ced823e71e1c91d8/diff:/var/lib/docker/overlay2/c5c2e0449f65196a24b748ea87b377b59d925b9f3755809b02a0b82489c8dcd0/diff:/var/lib/docker/overlay2/f3757a92a7be7edb8aded0d1086b3a2101b648b6346b541dc354914f7a7f2a4d/diff:/var/lib/docker/overlay2/81b8ca7955de11020252b44b5b329596522539699e70c0cec55e9a6089be3c15/diff:/var/lib/docker/overlay2/2af9de538d2fcb2acc32d60caf4c6bfefc91179c38af9d45947ca277eb850a91/diff",
+                "MergedDir": "/var/lib/docker/overlay2/c78678139357d27f934dc15010fc318ddaa48f58c3245b4e8ebd11b79f47f200/merged",
+                "UpperDir": "/var/lib/docker/overlay2/c78678139357d27f934dc15010fc318ddaa48f58c3245b4e8ebd11b79f47f200/diff",
+                "WorkDir": "/var/lib/docker/overlay2/c78678139357d27f934dc15010fc318ddaa48f58c3245b4e8ebd11b79f47f200/work"
+            },
+            "Name": "overlay2"
+        },
+        "Mounts": [
+            {
+                "Type": "bind",
+                "Source": "/var/run/docker.sock",
+                "Destination": "/var/run/docker.sock",
+                "Mode": "rw",
+                "RW": true,
+                "Propagation": "rprivate"
+            },
+            {
+                "Type": "bind",
+                "Source": "/opt/intruoyi/runtime/tools/codex",
+                "Destination": "/opt/intruoyi/runtime/tools/codex",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+            },
+            {
+                "Type": "bind",
+                "Source": "/opt/intruoyi/runtime/smoke/bin/npm",
+                "Destination": "/usr/local/bin/npm",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+            },
+            {
+                "Type": "bind",
+                "Source": "/opt/intruoyi/runtime/backend-codex-home",
+                "Destination": "/opt/intruoyi/runtime/backend-codex-home",
+                "Mode": "rw",
+                "RW": true,
+                "Propagation": "rprivate"
+            },
+            {
+                "Type": "bind",
+                "Source": "/opt/intruoyi/runtime/data/backend-logs",
+                "Destination": "/root/logs",
+                "Mode": "rw",
+                "RW": true,
+                "Propagation": "rprivate"
+            },
+            {
+                "Type": "bind",
+                "Source": "/backup",
+                "Destination": "/backup",
+                "Mode": "rw",
+                "RW": true,
+                "Propagation": "rprivate"
+            },
+            {
+                "Type": "bind",
+                "Source": "/mnt/nas/Backup/BackupPackage",
+                "Destination": "/mnt/nas/Backup/BackupPackage",
+                "Mode": "rw",
+                "RW": true,
+                "Propagation": "rprivate"
+            },
+            {
+                "Type": "bind",
+                "Source": "/opt/intruoyi/runtime",
+                "Destination": "/opt/intruoyi/runtime",
+                "Mode": "rw",
+                "RW": true,
+                "Propagation": "rprivate"
+            },
+            {
+                "Type": "bind",
+                "Source": "/opt/intruoyi/ops",
+                "Destination": "/opt/intruoyi/ops",
+                "Mode": "rw",
+                "RW": true,
+                "Propagation": "rprivate"
+            }
+        ],
+        "Config": {
+            "Hostname": "0a5b5a2b9206",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": true,
+            "AttachStderr": true,
+            "ExposedPorts": {
+                "48080/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "MES_SMOKE_NON_APPROVER_PASSWORD=111111",
+                "MES_SMOKE_ERP_CREATOR_PASSWORD=111111",
+                "EDHR_S3_REGION=us-east-1",
+                "MES_SMOKE_SUPERVISOR_PASSWORD=111111",
+                "MES_SMOKE_NON_APPROVER_USERNAME=messmokenonapprover",
+                "YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_FRONTEND_DIRECTORY=/opt/intruoyi/runtime/smoke/yudao-ui-admin-vue3",
+                "MES_SMOKE_CAPACITY_MODE=PLANNED",
+                "EDHR_S3_REQUIRE_LEGAL_HOLD=true",
+                "DCC_PROJECT_CODE_CODEX_HOME=/opt/intruoyi/runtime/backend-codex-home",
+                "MES_SMOKE_PLANNER_TENANT=芋道源码",
+                "EDHR_S3_BUCKET=edhr-protected-storage-20260601",
+                "MES_SMOKE_ARTIFACT_DIR=/opt/intruoyi/runtime/smoke/yudao-ui-admin-vue3/output/artifacts",
+                "MES_SMOKE_PLANNER_PASSWORD=zhaojie123",
+                "MES_SMOKE_PRODUCT_CODE=YXN.069.001.1003",
+                "EDHR_S3_RETENTION_MODE=COMPLIANCE",
+                "MES_SMOKE_FEEDBACK_APPROVER_NAME=messmokesupervisor",
+                "MES_SMOKE_DEFAULT_PASSWORD=111111",
+                "EDHR_S3_SECRET_KEY=wWTyLUJXBThGSdhHkCvjzjJJButf79yDj6mretTb",
+                "MES_SMOKE_NODE_IMAGE=mcr.microsoft.com/playwright:v1.60.0-noble",
+                "MES_SMOKE_ERP_CREATOR_TENANT=芋道源码",
+                "ARGS=--spring.profiles.active=dev --spring.datasource.dynamic.datasource.master.url=jdbc:mysql://mysql:3306/ruoyi-vue-pro?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true --spring.datasource.dynamic.datasource.master.username=root --spring.datasource.dynamic.datasource.master.password=<redacted> --spring.datasource.dynamic.datasource.slave.url=jdbc:mysql://mysql:3306/ruoyi-vue-pro?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true&nullCatalogMeansCurrent=true --spring.datasource.dynamic.datasource.slave.username=root --spring.datasource.dynamic.datasource.slave.password=<redacted> --spring.data.redis.host=redis --spring.data.redis.port=6379 --yudao.captcha.enable=false --yudao.web.admin-ui.url=http://172.30.30.58:8081 --showroom.release.public-website-origin=http://172.30.30.58:8083 --dcc.signature.evidence.hmac-secret=TYl0/FagzzgBiG6fXTeMklZnLW23OWeAZM9DkNXLxJs= --dcc.signature.evidence.key-version=test-vdb-rebuild-20260528-v1 --yudao.dcc.viewer-token.hmac-secret=INTRUOYI-DCC-HARDCODED-VIEWER-TOKEN-HMAC-20260601 --yudao.dcc.preview.onlyoffice.base-url=http://172.30.30.58:8080 --yudao.dcc.preview.onlyoffice.jwt-secret=INTRUOYI-DCC-HARDCODED-ONLYOFFICE-JWT-20260601 --yudao.dcc.preview.onlyoffice.public-file-base-url=http://host.docker.internal:48081 --yudao.dcc.download.encryption.policy-version=local-dev-aes-gcm-v1 --yudao.dcc.download.encryption.key-id=local-dev-20260531203657 --yudao.dcc.download.encryption.base64-key=rQkaUy18wT43TD4SBlX7bYCDeRcZ8T3r6m2R9pBLahE= --yudao.dcc.download.encryption.artifact-directory=dcc/download-encryption/local --yudao.dcc.project-code-recognition.codex-cli-command=/opt/intruoyi/runtime/tools/codex --yudao.dcc.project-code-recognition.timeout-seconds=300 --yudao.dcc.project-code-recognition.version=v1 --yudao.dcc.project-code-recognition.worker-count=5 --yudao.runtime-control.repo-root=/opt/intruoyi/ops/backup-ops/linux-native --yudao.runtime-control.state-dir=/opt/intruoyi/ops/runtime-control --yudao.runtime-control.backup-ops.execution-mode=linux-local --yudao.runtime-control.backup-ops.linux-script-path=/opt/intruoyi/ops/backup-ops/linux-native/linux/backup-ops-linux.sh --yudao.runtime-control.backup-ops.linux-config-path=/opt/intruoyi/ops/backup-ops/linux-native/backup-ops.linux-local.runtime.json --yudao.runtime-control.backup-ops.nas-backup-points-root=Backup/BackupPackage --yudao.runtime-control.backup-ops.linux-runner-mounts[0]=/var/run/docker.sock:/var/run/docker.sock --yudao.runtime-control.backup-ops.linux-runner-mounts[1]=/opt/intruoyi/runtime:/opt/intruoyi/runtime --yudao.runtime-control.backup-ops.linux-runner-mounts[2]=/opt/intruoyi/ops:/opt/intruoyi/ops --yudao.runtime-control.backup-ops.linux-runner-mounts[3]=/backup:/backup --yudao.runtime-control.backup-ops.linux-runner-mounts[4]=/mnt/nas/Backup/BackupPackage:/mnt/nas/Backup/BackupPackage --yudao.runtime-control.release-package.nas-release-root=Backup/ReleasePackage --yudao.runtime-control.release-package.backend-runtime-base-mode=offline-tar --yudao.runtime-control.release-package.backend-runtime-base-tar-path=D:\\ProjectPackage\\Int\\BaseImages\\intruoyi-backend-runtime-base-2026.06.05-jre21-noble-docker29.2.1.tar --yudao.runtime-control.release-package.backend-runtime-base-tar-sha256=5bcd568b46ba9f28bfa7ac8ee67e283aea95bd585a89842a14cc40827fa71603 --yudao.runtime-control.release-package.backend-runtime-base-image=intruoyi-backend-runtime-base:2026.06.05-jre21-noble-docker29.2.1 --yudao.runtime-control.release-package.backend-runtime-base-digest=sha256:b4f7d85f325665c3b372379e6d352c3c8be2d3a08add68ac0dc151f720160be7 --yudao.runtime-control.release-package.backend-runtime-base-version=2026.06.05-jre21-noble-docker29.2.1 --yudao.runtime-control.environments.test.host=172.30.30.58 --yudao.runtime-control.environments.prod.host=172.30.30.57 --yudao.runtime-control.environments.backup.host=172.30.30.59 --yudao.mes.scheduler-workbench.smoke-test.frontend-directory=/opt/intruoyi/runtime/smoke/yudao-ui-admin-vue3 --yudao.mes.scheduler-workbench.smoke-test.script-name=e2e:mes:smart-scheduling-smoke",
+                "MES_SMOKE_ERP_UNIT_NUMBER=zhi",
+                "MES_SMOKE_EXCEL_FILE=/opt/intruoyi/runtime/smoke/yudao-ui-admin-vue3/input/smart-scheduling-smoke-feedback.xlsx",
+                "MES_SMOKE_BASE_URL=http://127.0.0.1:8081",
+                "EDHR_S3_RETAIN_UNTIL_DAYS=7",
+                "JAVA_OPTS=-Xms1g -Xmx2g -Djava.security.egd=file:/dev/./urandom",
+                "MES_SMOKE_BATCH_NUMBER=TEST-SMOKE-BATCH",
+                "YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_SCRIPT_NAME=e2e:mes:smart-scheduling-smoke",
+                "MES_SMOKE_SUPERVISOR_TENANT=芋道源码",
+                "TZ=Asia/Shanghai",
+                "MES_SMOKE_NON_APPROVER_TENANT=芋道源码",
+                "EDHR_S3_ACCESS_KEY=EDHRCJSBJZZDMENUJE6R",
+                "CODEX_HOME=/opt/intruoyi/runtime/backend-codex-home",
+                "MES_SMOKE_SUPERVISOR_USERNAME=messmokesupervisor",
+                "MES_SMOKE_PLANNER_USERNAME=zhaojie",
+                "MES_SMOKE_ERP_CREATOR_USERNAME=messmokeerp",
+                "EDHR_S3_ENDPOINT=http://172.30.30.57:9000",
+                "PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "JAVA_HOME=/opt/java/openjdk",
+                "LANG=en_US.UTF-8",
+                "LANGUAGE=en_US:en",
+                "LC_ALL=en_US.UTF-8",
+                "JAVA_VERSION=jdk-21.0.11+10"
+            ],
+            "Cmd": [
+                "sh",
+                "-c",
+                "exec java ${JAVA_OPTS} -jar app.jar ${ARGS}"
+            ],
+            "Image": "intruoyi-backend:release-20260706-2245-codeonly-three-env-v6",
+            "Volumes": null,
+            "WorkingDir": "/yudao-server",
+            "Entrypoint": [
+                "/__cacert_entrypoint.sh"
+            ],
+            "OnBuild": null,
+            "Labels": {
+                "com.docker.compose.config-hash": "ed857c38568569f5f9c4af3a87676049a6b4f7097b7ce7eee1a0a4142ab6cfd3",
+                "com.docker.compose.container-number": "1",
+                "com.docker.compose.depends_on": "",
+                "com.docker.compose.image": "sha256:dd65f35ff98208977a0ac0013ba426b064b6a2d780e0fa50a41cf8c7ace6a74a",
+                "com.docker.compose.oneoff": "False",
+                "com.docker.compose.project": "intruoyi-runtime",
+                "com.docker.compose.project.config_files": "/opt/intruoyi/runtime/docker-compose.yml",
+                "com.docker.compose.project.working_dir": "/opt/intruoyi/runtime",
+                "com.docker.compose.replace": "4044537755b48dfcd63fb86c5b8c293d80eb25cf167a2a869dc6ae261155a97d",
+                "com.docker.compose.service": "backend",
+                "com.docker.compose.version": "2.27.0",
+                "org.opencontainers.image.version": "24.04"
+            }
+        },
+        "NetworkSettings": {
+            "Bridge": "",
+            "SandboxID": "6bfe61e78ac0d13680c2f7450b5faa31014880eb693df709c457318221e6f2b8",
+            "SandboxKey": "/var/run/docker/netns/6bfe61e78ac0",
+            "Ports": {
+                "48080/tcp": [
+                    {
+                        "HostIp": "0.0.0.0",
+                        "HostPort": "48081"
+                    },
+                    {
+                        "HostIp": "::",
+                        "HostPort": "48081"
+                    }
+                ]
+            },
+            "HairpinMode": false,
+            "LinkLocalIPv6Address": "",
+            "LinkLocalIPv6PrefixLen": 0,
+            "SecondaryIPAddresses": null,
+            "SecondaryIPv6Addresses": null,
+            "EndpointID": "",
+            "Gateway": "",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "IPAddress": "",
+            "IPPrefixLen": 0,
+            "IPv6Gateway": "",
+            "MacAddress": "",
+            "Networks": {
+                "intruoyi-runtime_intruoyi_net": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": [
+                        "intruoyi-backend",
+                        "backend"
+                    ],
+                    "MacAddress": "02:42:c0:a8:30:05",
+                    "NetworkID": "c22de812d9a31a114134d23afe2cc8e3d01f2da852ff66548759a4a67830ba22",
+                    "EndpointID": "f47c4d3445779395df1e77d90c26ef27014b2f4faed58eb0278b869005e48adb",
+                    "Gateway": "192.168.48.1",
+                    "IPAddress": "192.168.48.5",
+                    "IPPrefixLen": 20,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DriverOpts": null,
+                    "DNSNames": [
+                        "intruoyi-backend",
+                        "backend",
+                        "0a5b5a2b9206"
+                    ]
+                }
+            }
+        }
+    },
+    {
+        "Id": "c8355a0467bbadfa0533100e9243006ac2a4ef54677ee99900aa42069f644a15",
+        "Created": "2026-07-06T14:45:13.452536896Z",
+        "Path": "/docker-entrypoint.sh",
+        "Args": [
+            "nginx",
+            "-g",
+            "daemon off;"
+        ],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 22608,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-07-06T14:45:14.701286125Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+        },
+        "Image": "sha256:b85182cd11b7b9c5fc59cb8a06ed7939ce3403ce73e09a90e9ada8f9ce23dcb3",
+        "ResolvConfPath": "/var/lib/docker/containers/c8355a0467bbadfa0533100e9243006ac2a4ef54677ee99900aa42069f644a15/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/c8355a0467bbadfa0533100e9243006ac2a4ef54677ee99900aa42069f644a15/hostname",
+        "HostsPath": "/var/lib/docker/containers/c8355a0467bbadfa0533100e9243006ac2a4ef54677ee99900aa42069f644a15/hosts",
+        "LogPath": "/var/lib/docker/containers/c8355a0467bbadfa0533100e9243006ac2a4ef54677ee99900aa42069f644a15/c8355a0467bbadfa0533100e9243006ac2a4ef54677ee99900aa42069f644a15-json.log",
+        "Name": "/intruoyi-frontend",
+        "RestartCount": 0,
+        "Driver": "overlay2",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": null,
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {
+                    "max-file": "3",
+                    "max-size": "10m"
+                }
+            },
+            "NetworkMode": "intruoyi-runtime_intruoyi_net",
+            "PortBindings": {
+                "80/tcp": [
+                    {
+                        "HostIp": "",
+                        "HostPort": "8081"
+                    }
+                ]
+            },
+            "RestartPolicy": {
+                "Name": "unless-stopped",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "host",
+            "Dns": null,
+            "DnsOptions": null,
+            "DnsSearch": null,
+            "ExtraHosts": [],
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": null,
+            "BlkioDeviceReadBps": null,
+            "BlkioDeviceWriteBps": null,
+            "BlkioDeviceReadIOps": null,
+            "BlkioDeviceWriteIOps": null,
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": null,
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": false,
+            "PidsLimit": null,
+            "Ulimits": null,
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/asound",
+                "/proc/acpi",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/sys/firmware",
+                "/sys/devices/virtual/powercap"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "GraphDriver": {
+            "Data": {
+                "LowerDir": "/var/lib/docker/overlay2/ad9b3b50165abb5fc6bc8af2821c3ff50af3dc941fa1d13568165eb7f52beabb-init/diff:/var/lib/docker/overlay2/be4b3adfd6c2fbc87c1490d4dddf6ee55e7800120ff8ddc934140d615e92d2d0/diff:/var/lib/docker/overlay2/f8ac0a4ec0409968767e2c1e57d82e9c9058e98ccc9f2fa5a086994f7ddc6a41/diff:/var/lib/docker/overlay2/57a211400a46a1ee53fd10226bd2ab297d2cce0585c623bf871fed2109c655c8/diff:/var/lib/docker/overlay2/a20a277fa1e038f5de1e8879ad5ae9b50f109cf0c4593e31e6c5d8627eb804ff/diff:/var/lib/docker/overlay2/a71c8f4555581bb58a088058c1d1971aefd2df9fdd771726be66e377e3675072/diff:/var/lib/docker/overlay2/16b39900830cc4d61af1541f47e7bd5b18bcba7539203f5999c836363a5f1d07/diff:/var/lib/docker/overlay2/cc049a2cc27795f0efce88ba6df643dc783516b326a79defccd1f3a3293fbbfa/diff:/var/lib/docker/overlay2/d1ddb841b60c13a39d093ec7d0ee34d0e91a62f22d859837c2da4519614ab42a/diff:/var/lib/docker/overlay2/d6d0ea1676800be857f1b431292129ec9272173df856c8967369970d7593a5bd/diff:/var/lib/docker/overlay2/7660b553559c7d33f880b387447298f6c93f2b9ff205248a3e5bafec886a068a/diff",
+                "MergedDir": "/var/lib/docker/overlay2/ad9b3b50165abb5fc6bc8af2821c3ff50af3dc941fa1d13568165eb7f52beabb/merged",
+                "UpperDir": "/var/lib/docker/overlay2/ad9b3b50165abb5fc6bc8af2821c3ff50af3dc941fa1d13568165eb7f52beabb/diff",
+                "WorkDir": "/var/lib/docker/overlay2/ad9b3b50165abb5fc6bc8af2821c3ff50af3dc941fa1d13568165eb7f52beabb/work"
+            },
+            "Name": "overlay2"
+        },
+        "Mounts": [],
+        "Config": {
+            "Hostname": "c8355a0467bb",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": true,
+            "AttachStderr": true,
+            "ExposedPorts": {
+                "80/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "NGINX_VERSION=1.27.5",
+                "PKG_RELEASE=1",
+                "DYNPKG_RELEASE=1",
+                "NJS_VERSION=0.8.10",
+                "NJS_RELEASE=1"
+            ],
+            "Cmd": [
+                "nginx",
+                "-g",
+                "daemon off;"
+            ],
+            "Image": "intruoyi-frontend:release-20260706-2245-codeonly-three-env-v6",
+            "Volumes": null,
+            "WorkingDir": "/",
+            "Entrypoint": [
+                "/docker-entrypoint.sh"
+            ],
+            "OnBuild": null,
+            "Labels": {
+                "com.docker.compose.config-hash": "4267b5e04ae6eb6d2083d479bce83405d0d8f18370f7600df89e5fd8bd4a689d",
+                "com.docker.compose.container-number": "1",
+                "com.docker.compose.depends_on": "backend:service_started:false",
+                "com.docker.compose.image": "sha256:b85182cd11b7b9c5fc59cb8a06ed7939ce3403ce73e09a90e9ada8f9ce23dcb3",
+                "com.docker.compose.oneoff": "False",
+                "com.docker.compose.project": "intruoyi-runtime",
+                "com.docker.compose.project.config_files": "/opt/intruoyi/runtime/docker-compose.yml",
+                "com.docker.compose.project.working_dir": "/opt/intruoyi/runtime",
+                "com.docker.compose.replace": "1dc2af760eeabacc07c6d3417c713d9b202548f03714ab6d49b089385af5829d",
+                "com.docker.compose.service": "frontend",
+                "com.docker.compose.version": "2.27.0",
+                "maintainer": "NGINX Docker Maintainers <docker-maint@nginx.com>"
+            },
+            "StopSignal": "SIGQUIT"
+        },
+        "NetworkSettings": {
+            "Bridge": "",
+            "SandboxID": "10d23fce7d647434e7aefd7609661d4037b0d353bbd7e542bccea16c5afe8beb",
+            "SandboxKey": "/var/run/docker/netns/10d23fce7d64",
+            "Ports": {
+                "80/tcp": [
+                    {
+                        "HostIp": "0.0.0.0",
+                        "HostPort": "8081"
+                    },
+                    {
+                        "HostIp": "::",
+                        "HostPort": "8081"
+                    }
+                ]
+            },
+            "HairpinMode": false,
+            "LinkLocalIPv6Address": "",
+            "LinkLocalIPv6PrefixLen": 0,
+            "SecondaryIPAddresses": null,
+            "SecondaryIPv6Addresses": null,
+            "EndpointID": "",
+            "Gateway": "",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "IPAddress": "",
+            "IPPrefixLen": 0,
+            "IPv6Gateway": "",
+            "MacAddress": "",
+            "Networks": {
+                "intruoyi-runtime_intruoyi_net": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": [
+                        "intruoyi-frontend",
+                        "frontend"
+                    ],
+                    "MacAddress": "02:42:c0:a8:30:07",
+                    "NetworkID": "c22de812d9a31a114134d23afe2cc8e3d01f2da852ff66548759a4a67830ba22",
+                    "EndpointID": "3b07549232de3236454eb1ceb800b918a08b8ddde61ae3ea7a6263d4888b48a6",
+                    "Gateway": "192.168.48.1",
+                    "IPAddress": "192.168.48.7",
+                    "IPPrefixLen": 20,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DriverOpts": null,
+                    "DNSNames": [
+                        "intruoyi-frontend",
+                        "frontend",
+                        "c8355a0467bb"
+                    ]
+                }
+            }
+        }
+    }
+]
+close - IO is still pending on closed socket. read:1, write:0, io:0000023A72658E30
