@@ -2239,3 +2239,8 @@
 - [2026-07-05 02:52:50 +08:00] release worktree 残留清理再次重试：先清 node_modules 长路径残留，再删除本次 release 根。
 - [2026-07-05 02:54:31 +08:00] 本次专用临时 release worktree 根目录及三仓 worktree 元数据清理完成，PASS。
 - [2026-07-05 02:55:15 +0800] 任务完成：releaseTag=release-20260705-001827-codeonly-three-env 完成三环境 code-only 发布闭环，运行控制台恢复主路径，临时 worktree 删除完成。
+
+## 2026-07-06 DCC 覆盖策略测试服发布授权
+- 请求：用户授权继续，将 DCC 批量识别覆盖策略发布并验证到测试服；本次不操作正式服/备份服。
+- 目标提交：backend=991a4c9264，frontend=093cc1a9d；当前主分支后续提交不进入本次发布输入。
+- 前置：已读取发布与服务器访问门禁，任务目录已创建：D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260706-dcc-policy-test-server-release。
