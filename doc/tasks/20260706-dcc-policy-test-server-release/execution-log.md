@@ -104,3 +104,7 @@ RED: publish-int-ruoyi.ps1 -Mode build-release -ReleaseTag release-20260706-1130
 - GREEN: task-complete -> PASS，2026-07-06 13:34:07 +08:00，测试服 v3 运行态与 DCC 覆盖策略真实页面验证完成；未执行 mark-tested / 正式服 / 备份服操作。
 
 - GREEN: closeout-status-marker -> PASS，2026-07-06 13:35:17 +08:00，任务文档补充 Status: completed 供清理门禁识别。
+
+GREEN: task-closeout-cleanup -> PASS, 2026-07-06 13:42:52, 清理任务临时验证脚本、截图与 worktree 记录，仅保留 task.md / execution-log.md。
+
+GREEN: task-closeout-cleanup -> PASS, 2026-07-06 13:56:21, 已应用清理，仅保留 task.md 与 execution-log.md。

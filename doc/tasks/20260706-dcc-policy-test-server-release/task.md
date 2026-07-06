@@ -44,7 +44,9 @@ Status: completed
 - 测试服运行态切换到本次 releaseTag。
 - 真实页面中按钮策略可选择“跳过已有记录 / 跳过成功，重试失败和未识别 / 覆盖全部已有值”。
 
-## 当前状态
+## Current Status
+
+completed
 
 已完成：releaseTag elease-20260706-1305-dcc-policy-test-v3 已部署到测试服，后端/前端容器、.env IMAGE_TAG、后端健康检查、前端 HTTP 200 和 DCC 批量识别覆盖策略弹窗真实页面验证均通过。
 
