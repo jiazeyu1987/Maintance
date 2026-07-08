@@ -4,6 +4,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 PUBLISH_SCRIPT = ROOT / "ops" / "deploy" / "publish-int-ruoyi.ps1"
 COMPOSE_TEMPLATE = ROOT / "ops" / "deploy" / "int-ruoyi-test" / "docker-compose.yml"
+BACKEND_DOCKERFILE = ROOT / "ops" / "deploy" / "int-ruoyi-test" / "Dockerfile.backend"
+FRONTEND_NGINX_TEMPLATE = ROOT / "ops" / "deploy" / "int-ruoyi-test" / "nginx.conf"
 
 
 def _dcc_release_object_reference_query() -> str:
@@ -65,6 +67,19 @@ def test_publish_runtime_preserves_dcc_codex_linux_contract() -> None:
     assert "--yudao.dcc.project-code-recognition.worker-count=${DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT}" in compose
     assert "- /opt/intruoyi/runtime/tools/codex:/opt/intruoyi/runtime/tools/codex:ro" in compose
     assert "- /opt/intruoyi/runtime/backend-codex-home:/opt/intruoyi/runtime/backend-codex-home" in compose
+
+
+def test_publish_runtime_maps_backend_host_port_to_actual_container_port() -> None:
+    compose = COMPOSE_TEMPLATE.read_text(encoding="utf-8")
+    dockerfile = BACKEND_DOCKERFILE.read_text(encoding="utf-8")
+    nginx = FRONTEND_NGINX_TEMPLATE.read_text(encoding="utf-8")
+
+    assert "${BACKEND_HOST_PORT}:48081" in compose
+    assert "${BACKEND_HOST_PORT}:48080" not in compose
+    assert "EXPOSE 48081" in dockerfile
+    assert "EXPOSE 48080" not in dockerfile
+    assert "proxy_pass http://backend:48081;" in nginx
+    assert "proxy_pass http://backend:48080;" not in nginx
 
 
 def test_dcc_release_inventory_excludes_bound_temporary_uploads() -> None:

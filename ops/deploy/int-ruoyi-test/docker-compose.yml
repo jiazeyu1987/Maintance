@@ -149,7 +149,7 @@ services:
         --yudao.mes.scheduler-workbench.smoke-test.frontend-directory=${YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_FRONTEND_DIRECTORY}
         --yudao.mes.scheduler-workbench.smoke-test.script-name=${YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_SCRIPT_NAME}
     ports:
-      - ${BACKEND_HOST_PORT}:48080
+      - ${BACKEND_HOST_PORT}:48081
     volumes:
       - ./data/backend-logs:/root/logs
       - /var/run/docker.sock:/var/run/docker.sock
