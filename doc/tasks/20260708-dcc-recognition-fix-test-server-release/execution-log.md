@@ -25,3 +25,14 @@
 - RED: `python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_publish_dcc_codex_runtime_contract.py -q` -> FAIL，1 failed / 4 passed；新增维护仓发布端口契约断言捕获 `${BACKEND_HOST_PORT}:48081` 缺失。
 - IMPLEMENTATION: 将维护仓测试服发布模板的 docker-compose、Dockerfile.backend、nginx.conf 后端容器端口统一为 48081，并保留契约测试禁止回退到 48080。
 - GREEN: `python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_publish_dcc_codex_runtime_contract.py -q` -> PASS，5 passed；维护仓发布模板中影响测试服后端端口的 48080 残留只存在于负向测试断言。
+
+
+## 2026-07-08T16:49:00+08:00
+- GREEN: publish-test-final -> PASS，releaseTag=`release-20260708-dcc-recognition-fix-4`，operationId=`op-2026-07-08T082438118967200Z-e7f5a609-a1a6-4f19-bd0b-539c714543b2` 最终 `SUCCESS`；日志显示远端 backend health、frontend、OnlyOffice health 均 HTTP 200。
+- GREEN: test-server-runtime -> PASS，远端 `.env` 为 `IMAGE_TAG=release-20260708-dcc-recognition-fix-4`、`BACKEND_HOST_PORT=48081`、`FRONTEND_HOST_PORT=8081`；`intruoyi-backend` 与 `intruoyi-frontend` 容器镜像均为 `release-20260708-dcc-recognition-fix-4`，后端 `http://127.0.0.1:48081/actuator/health` 返回 `{"status":"UP"}`，前端 `http://127.0.0.1:8081/` 返回 HTTP 200。
+- GREEN: release-lock -> PASS，测试服发布锁 `test-release-20260708-dcc-recognition-fix-4` 已正常释放为 `APPLIED`，started_at=`2026-07-08 16:34:51`，finished_at=`2026-07-08 16:41:35`，running migrations=0。
+- GREEN: dcc-recognition-audit -> PASS，使用真实表 `dcc_controlled_file_recognition_claim` / `dcc_controlled_file_batch_recognition_task` / `dcc_controlled_file_recognition_record` 审计；active_claims=0，running_tasks=0。
+- ANALYSIS: 最新 `DATA_TOO_LONG` 识别记录 update_time=`2026-07-08 08:47:11`，最新批量任务 18 update_time=`2026-07-08 08:48:16`，均早于本次 fix-4 发布完成时间 `2026-07-08 16:41:35`；因此它们是发布前历史失败，不是本次发布后仍存在的新报错。
+- ROOT_CAUSE: 原识别报错根因是 DCC 识别结果状态写入 `dcc_controlled_file_recognition_record.status varchar(16)` 时出现 `Data truncation: Data too long for column 'status'`；同时旧运行态在重启/失败后留下任务失败与占用清理风险。修复已通过后端回归与测试服真实部署验证。
+- ROOT_CAUSE: 测试服发布过程中额外暴露出两个发布链路问题：业务仓测试服模板仍指向容器 48080；维护仓 `ops/deploy/int-ruoyi-test` 模板也仍指向 48080，导致 fix-3 容器内健康但宿主 48081 连接重置。两处模板端口已统一为 48081，并各自补了契约测试。
+- STATUS: 任务完成；当前测试服没有 active claim、没有 running task，未发现 fix-4 发布完成后的新增 DCC 产品名称/基础信息识别报错。
