@@ -2348,3 +2348,7 @@
 
 - [2026-07-06 23:48:10 +08:00] 收尾记录：同一 releaseTag=release-20260706-2245-codeonly-three-env-v6 已完成 build-release -> publish-test -> mark-tested -> promote-prod -> promote-backup；测试服、正式服、备份服均完成 .env IMAGE_TAG、backend/frontend 镜像、backend health、frontend、PDF worker 与 release lock 验证，备份服额外验证 /mnt/intruoyi-data 挂载与发布路径。
 - [2026-07-06 23:48:10 +08:00] 收尾记录：运行控制台已恢复主工作区 jar 并验证 health=UP；本次临时发布 worktree 根 D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce 已删除；cleanup preview 已执行但因本任务要求保留冻结证据，未删除 evidence/。
+
+## 2026-07-08T08:13:59+08:00 20260708-build-publish-test-server
+- USER: 构建发布到测试服务器
+- COMMAND: 创建任务目录 doc/tasks/20260708-build-publish-test-server/，校正上一任务 Current Status，记录发布前置经验门禁。
