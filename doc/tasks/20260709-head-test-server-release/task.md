@@ -72,3 +72,17 @@ Status: in_progress
 - 状态：进行中。
 - 已完成：创建任务目录、读取发布/经验/worktree/PowerShell 门禁、记录三仓目标 HEAD 与 dirty 基线；已创建短路径干净临时 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709h`；维护控制台已从干净 worktree 构建并启动，48181 health=UP。
 - 当前阻塞：无；`release-20260709-head-test-v3` 构建成功并已通过 manifest/sourceRepos/dirty=false/变更说明校验，下一步仅发布测试服。
+## 发布完成记录（2026-07-09）
+
+- 当前状态：Completed
+- 发布范围：仅测试服务器；未执行正式服或备份服发布。
+- 发布标签：`release-20260709-head-test-v3`。
+- 构建来源：后端 `87cb9f9996f1d5cf5e2c05ee57586e9bd2a403d5`、前端 `d2022624d7c362400f0f8a976da59b828a06881f`，manifest 记录 `dirty=false`；维护控制台发布脚本最终提交 `65fb961439679fc329642ee4a0650c545ec3de9d`。
+- 构建操作：`op-2026-07-09T013606785826300Z-45bc8231-d958-4e92-b0a9-00bf09c6010c`，本地发布包 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260709-head-test-v3`，NAS 归档 `Backup/ReleasePackage/release-20260709-head-test-v3`。
+- 测试服发布操作：`op-2026-07-09T023914856131600Z-09fcea10-25d3-496b-98bf-31a5f71225c1`，结果 `SUCCESS`。
+- 真实运行态验证：测试服 `.env IMAGE_TAG`、后端/前端镜像 tag、容器运行状态、后端 health=UP、前端 HTTP 200、前端页面标题、`release-info.json`、运行控制台版本号和变更说明均已核对通过。
+- 收尾要求：本节后续执行临时 worktree 清理预览、清理、验证和提交。
+## 临时发布 worktree 清理记录（2026-07-09）
+
+GREEN: task-closeout-cleanup-preview -> PASS, 已预览 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709h` 下维护仓、后端仓、前端仓临时 worktree；确认三仓目标提交均已包含在各自主工作区 HEAD，`r260709h` 无剩余 Git worktree 注册。
+GREEN: release-worktree-cleanup -> PASS, 停止精确匹配本次维护控制台 jar 的本地 Java 进程 PID 34472，删除残留的未注册目录 `m`、`f` 及空发布根目录 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709h`；最终验证路径均已删除。

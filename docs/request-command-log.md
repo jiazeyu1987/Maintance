@@ -2390,3 +2390,20 @@
 - 2026-07-09 fix chunked upload remote size parser: parse Invoke-ProcessCapture.StdOut and rerun contract/parser checks.
 
 - 2026-07-09 prepare commit for chunked upload size parser fix after tests PASS.
+
+- 2026-07-09 sync release worktree to chunked upload size parser fix: 65fb961439679fc329642ee4a0650c545ec3de9d.
+
+- 2026-07-09 publish-test retry with chunked upload size parser fix: releaseTag=release-20260709-head-test-v3, maintenanceHead=65fb961439679fc329642ee4a0650c545ec3de9d.
+
+- 2026-07-09 publish-test execute with size parser fix: operationId=op-2026-07-09T023914856131600Z-09fcea10-25d3-496b-98bf-31a5f71225c1.
+
+- 2026-07-09 post-publish independent runtime verification for releaseTag=release-20260709-head-test-v3 operationId=op-2026-07-09T023914856131600Z-09fcea10-25d3-496b-98bf-31a5f71225c1.
+
+- 2026-07-09 rerun post-publish verification with UTF-8 raw response parsing after mojibake false negative.
+
+- 2026-07-09 final runtime verification rerun: join remote ssh output before regex matching to avoid array -notmatch false negative.
+## 2026-07-09 仅测试服发布收尾记录
+
+- 用户目标：基于当前分支 HEAD 已提交代码构建 `release-20260709-head-test-v3` 并仅发布测试服务器；未提交改动不得进入构建产物。
+- 已记录：构建操作 `op-2026-07-09T013606785826300Z-45bc8231-d958-4e92-b0a9-00bf09c6010c`、测试服发布操作 `op-2026-07-09T023914856131600Z-09fcea10-25d3-496b-98bf-31a5f71225c1`、最终运行态核验通过、问题清单已写入任务执行日志、前置经验已沉淀。
+- 临时发布 worktree 清理完成：`D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709h` 已从维护仓、后端仓、前端仓 worktree 注册中移除；残留运行产物目录已在确认无未合并提交后删除。

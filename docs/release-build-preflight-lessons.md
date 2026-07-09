@@ -269,3 +269,45 @@
 - 正式服发布完成后，排序类需求不能只验证 HTTP 200；至少核验 backend/frontend 镜像 tag、backend health、frontend HTTP、目标租户记录数量、排序字段非空数量、按新排序规则查询的首批记录和空排序字段尾部规则。
 - 只读数据库核验应打印目标环境、目标租户、主键、当前编号和排序字段，避免把测试租户或其它租户的同码数据误当成正式租户结果。
 - 运行控制台预览参数中若出现 `ProdDryRunEvidencePath`、`RequireTested`、`ConfirmText=PROD`、正式服 host/data disk/release root 等关键项，执行前必须逐项确认；缺一项即阻塞。
+
+## 2026-07-09 测试服 HEAD 发布前置经验（任务 20260709-head-test-server-release）
+
+### 发布前必查项
+
+- 构建来源必须固定为当前分支 HEAD 已提交内容：记录维护仓、后端仓、前端仓当前分支、HEAD、`git status --short`；工作区脏时必须创建干净临时 worktree，或用可复核命令证明构建只读取 HEAD。
+- 发布 worktree 必须记录路径、目标提交、是否产生新提交、是否已合回主工作区、最终删除结果；一次发布只允许使用单一 `releaseTag` 的闭环结果。
+- Node/pnpm 必须与 `packageManager` 声明一致；本次维护控制台前端需要 `corepack pnpm@10.25.0`，发现 pnpm 11 生成的 `pnpm-workspace.yaml` 或 `ERR_PNPM_IGNORED_BUILDS` 必须 fail fast 并清理后重装。
+- 后端 SQL 发布前必须跑 release migration metadata gate；SQL metadata 必须包含并符合 `allowedEnvironments`、`dependsOn`、`type`、`riskLevel` 等契约，禁止构建阶段才发现格式错误。
+- build-release 预检必须区分“构建配置包含 BackupServerHost”和“执行备份服发布动作”；不得因配置字段存在误判为备份发布。
+- Smart Release report-only 模式必须显式提供 baseline manifest、candidate manifest 和 smart-release config；缺任一输入必须 fail fast，不得继续构建不可确认来源的包。
+
+### 可自动化项
+
+- 自动检查三仓 HEAD、dirty 状态、releaseTag、manifest sourceRepos、dirty=false、changeSet、package 路径、tar 大小和 NAS 归档一致性。
+- 自动检查测试服远端磁盘、inode、目标 releaseTag 目录是否存在同名残留、远端 `.env IMAGE_TAG`、镜像 tag、容器状态、后端 health、前端 HTTP 200、OnlyOffice health。
+- 自动对大于 1GB 的 image tar 使用分块上传，并逐块校验远端字节数、最终校验远端文件大小；禁止盲目反复 scp。
+- 自动用 UTF-8 原始 JSON 或结构化字段校验 runtime-control `release-status`；中文摘要不可通过默认编码输出直接做判断。
+- 自动把 SSH 多行输出 join 后再做正则判断；PowerShell 数组直接 `-match/-notmatch` 会造成 false negative。
+
+### 高风险步骤
+
+- 大镜像包上传：scp 可能因 `Timeout, client not responding` 产生远端 partial tar；必须先检查本地/NAS tar 首尾可读、大小一致，再使用带远端校验的分块上传。
+- 本地 runtime-control jar 重建：旧 Java 进程会锁定 jar 导致 Maven repackage 失败；重启前必须只匹配 `java.exe` 且命令行包含目标 worktree/runtime 路径，禁止误杀当前 PowerShell。
+- runtime-control API 直连：测试服发布动作接口为 `/admin-api/infra/runtime-control/actions`，预览接口为 `/admin-api/infra/runtime-control/actions/preview`，请求体必须包含 `reason`。
+- 临时 worktree 清理：清理前必须确认相关提交已合回主工作区、工作区无未确认归属改动、验证已通过；阻塞状态下不得删除 worktree。
+
+### 常见失败原因与推荐检查命令
+
+- pnpm 版本漂移：`corepack pnpm@10.25.0 --version`、`git status --short`、检查是否存在非预期 `frontend/pnpm-workspace.yaml`。
+- SQL metadata 不合规：`python -X utf8 -m pytest script/tests/test_mes_route_process_alignment_sql.py -q`；构建前先执行 release migration policy gate。
+- 发布包来源不可确认：检查 `manifest.json` 的 `releaseTag`、`sourceRepos.backend.commit`、`sourceRepos.frontend.commit`、`dirty=false`、`changeSet`。
+- 大包传输中断：检查本地 tar 与 NAS tar 大小、远端 partial 文件大小、`/var/log/auth.log` 中 `Timeout, client not responding`。
+- 运行态误判：使用 UTF-8 WebClient/结构化 JSON；SSH 输出 join 后再正则检查 `.env IMAGE_TAG`、镜像 tag 和容器状态。
+
+### 必须 fail fast 的条件
+
+- manifest 缺失、releaseTag 不一致、sourceRepos commit 与目标 HEAD 不一致、dirty 不是 false、changeSet/版本说明无法确认。
+- build-release 预览无法确认仅构建、不发布正式服/备份服，或 Smart Release report-only 缺少必要输入。
+- SQL 发布契约检查失败，或数据库迁移风险级别/环境范围不可判定。
+- 测试服发布后任一项失败：operation != SUCCESS、远端 `.env IMAGE_TAG` 不等于 releaseTag、实际镜像 tag 不一致、容器未运行、后端 health 不是 UP、前端 HTTP 不是 200、运行控制台版本号或变更说明不匹配。
+- 发现 PowerShell 编码、数组匹配或 API 路径造成误判时，必须改为结构化/原始 UTF-8 校验后再下结论，不得降级跳过验证。

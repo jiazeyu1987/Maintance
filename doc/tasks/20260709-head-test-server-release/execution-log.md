@@ -261,3 +261,48 @@ GREEN: publish-script-parse-size-parser -> PASS, PowerShell Parser.ParseFile ops
 ## 阶段记录 - 分块上传字节校验二次修正提交
 - 当前进度：远端大小解析已改为读取 `Invoke-ProcessCapture.StdOut`，契约测试与 PowerShell 语法检查均通过。
 - 下一步动作：仅提交本任务相关二次修正与记录，同步临时发布 worktree 到新提交后继续 publish-test。
+GREEN: maintenance-chunked-upload-size-parser-commit -> PASS, commit=65fb961439679fc329642ee4a0650c545ec3de9d, message=任务: 修复发布分块上传字节校验.
+
+## 阶段记录 - 同步分块上传二次修正到临时发布 worktree
+- 当前进度：维护仓二次修正已提交 $newHead，远端字节数校验已改为读取 Invoke-ProcessCapture.StdOut。
+- 下一步动作：将临时发布 worktree 切到新提交，确认脚本包含二次修正，重启维护控制台后继续 test-only publish。
+GREEN: release-worktree-sync-size-parser-fix -> PASS, worktree=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709h\m, head=65fb961439679fc329642ee4a0650c545ec3de9d, runtimeControlPid=34472, health=UP.
+
+## 阶段记录 - 分块上传字节校验修正版 publish-test 重试
+- 当前进度：临时发布 worktree 已同步到维护仓提交 `65fb961439679fc329642ee4a0650c545ec3de9d`，维护控制台 48181 health=UP。
+- 下一步动作：再次预览并执行同一 releaseTag `release-20260709-head-test-v3` 的 publish-test，仅测试服；验证分块上传、远端字节数校验、docker load、容器启动和脚本内 smoke。
+GREEN: publish-test release-20260709-head-test-v3 with size parser fix -> PASS, operationId=op-2026-07-09T023914856131600Z-09fcea10-25d3-496b-98bf-31a5f71225c1, status=SUCCESS.
+
+## 阶段记录 - publish-test 成功后独立运行态复核
+- 当前进度：publish-test 操作 $opId 已完成，脚本输出 Publish completed for test。
+- 下一步动作：独立复核本地 operation 状态、测试服 .env IMAGE_TAG、容器镜像 tag、backend health、frontend HTTP、OnlyOffice health、前端 
+elease-info.json 与运行控制台 release-status 版本/变更说明。
+### 问题 - release-status 中文变更说明校验因响应解码误判
+- 现象：publish-test 已 SUCCESS，运行控制台 `release-status` 中 `testCurrentReleaseNotes.releaseTag` 与 sourceRepos 均正确，但本地校验脚本查找中文 `发布包` 时失败；输出中中文字段呈现 mojibake。
+- 阶段：发布后独立运行态复核 / 运行控制台版本与变更说明校验。
+- 影响：独立复核未完成，需要用 UTF-8 原始响应或结构化字段重新校验，不得因编码误判宣称失败或跳过。
+- 原因判断：PowerShell `Invoke-RestMethod | ConvertTo-Json` 在当前终端显示链路中出现中文转码显示问题；结构化字段仍包含 releaseTag、summary、changes。
+- 处理动作：改为读取原始 HTTP 字节按 UTF-8 解码，并同时校验 `summary`、`changes` 数组、sourceRepos dirty=false 和前端 `release-info.json`。
+- 结果：等待复核结果。
+- 是否可前置检查：是，中文校验统一用 UTF-8 原始字节或结构化字段，不依赖控制台显示。
+- 是否可自动化：是，发布后验收脚本应封装 UTF-8 响应读取与 JSON 字段校验。
+- 下次如何避免：中文发布说明校验不得直接匹配可能被终端转码污染的展示文本。
+### 问题 - 远端运行态输出按数组匹配导致 `.env` 误判
+- 现象：远端复核输出已显示 `ENV_IMAGE_TAG=release-20260709-head-test-v3`，但 PowerShell 校验仍抛出 `remote .env IMAGE_TAG mismatch`。
+- 阶段：发布后独立运行态复核 / `.env` 与镜像 tag 校验。
+- 影响：运行态复核脚本误判失败；发布结果本身未受影响，需要重新用合并文本校验。
+- 原因判断：`ssh` 输出在 PowerShell 中是字符串数组，`$remoteOut -notmatch pattern` 返回所有不匹配的行，数组非空即被当作 true。
+- 处理动作：将远端输出用换行合并为单个字符串后再执行正则校验。
+- 结果：等待最终复核结果。
+- 是否可前置检查：是，所有多行命令输出正则校验前必须显式 `-join "`n"`。
+- 是否可自动化：是，发布验收脚本封装 `Assert-TextContains`，禁止直接对数组使用 `-match/-notmatch`。
+- 下次如何避免：PowerShell 校验远端多行输出时先合并文本，再匹配关键证据。
+GREEN: final-independent-runtime-verification -> PASS, operation=op-2026-07-09T023914856131600Z-09fcea10-25d3-496b-98bf-31a5f71225c1, releaseTag=release-20260709-head-test-v3, .env tag/image tags/container states/health/frontend/OnlyOffice/release-info/runtime console release notes all verified.
+## 经验沉淀与收尾（2026-07-09）
+
+GREEN: experience-consolidation -> PASS, 已将 `release-20260709-head-test-v3` 测试服发布中的构建来源、manifest、版本说明、分块上传、runtime-control API、运行态验证和 PowerShell/UTF-8 误判问题沉淀到 `docs/release-build-preflight-lessons.md`。
+GREEN: release-final-state -> PASS, buildOperation=`op-2026-07-09T013606785826300Z-45bc8231-d958-4e92-b0a9-00bf09c6010c`, publishOperation=`op-2026-07-09T023914856131600Z-09fcea10-25d3-496b-98bf-31a5f71225c1`, backendCommit=`87cb9f9996f1d5cf5e2c05ee57586e9bd2a403d5`, frontendCommit=`d2022624d7c362400f0f8a976da59b828a06881f`, maintenanceCommit=`65fb961439679fc329642ee4a0650c545ec3de9d`, runtime console releaseTag/change notes and test server runtime state verified.
+## 临时发布 worktree 清理记录（2026-07-09）
+
+GREEN: task-closeout-cleanup-preview -> PASS, 已预览 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709h` 下维护仓、后端仓、前端仓临时 worktree；确认三仓目标提交均已包含在各自主工作区 HEAD，`r260709h` 无剩余 Git worktree 注册。
+GREEN: release-worktree-cleanup -> PASS, 停止精确匹配本次维护控制台 jar 的本地 Java 进程 PID 34472，删除残留的未注册目录 `m`、`f` 及空发布根目录 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709h`；最终验证路径均已删除。
