@@ -1,0 +1,45 @@
+--- date ---
+2026-07-09T14:06:10+08:00
+--- release dir ---
+总用量 796008
+drwxr-xr-x.   3 root root      4096 7月   9 14:00 .
+drwxr-xr-x. 212 root root     20480 7月   9 13:53 ..
+-rw-r--r--.   1 root root 815053312 7月   9 13:55 intruoyi-images_release-20260709-codeonly-three-env-head-v5.tar
+-rw-r--r--.   1 root root      1730 7月   9 14:00 post-import.sql
+drwxr-xr-x.   2 root root     24576 7月   9 13:59 required-sql
+--- required sql checksum ---
+ebf59e3c7166c3c0c23a4ece2d336b8b664b9e00986e2020095d8cc2d5eca33e  /var/lib/docker/intruoyi-releases/release-20260709-codeonly-three-env-head-v5/required-sql/20260708_mes_balloon_process_device_capacity.sql
+--- release operation lock ---
+*************************** 1. row ***************************
+target_environment: test
+      operation_id: test-release-20260709-codeonly-three-env-head-v5
+       release_tag: release-20260709-codeonly-three-env-head-v5
+            status: FAILED
+        started_at: 2026-07-09 14:00:24
+       finished_at: 2026-07-09 14:05:24
+     error_message: Command failed with exit code 1: ssh
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1137 (HY000) at line 763: Can't reopen table: 'seed'
+--- failed migration row ---
+*************************** 1. row ***************************
+  release_tag: release-20260709-codeonly-three-env-head-v5
+ migration_id: 20260708_mes_balloon_process_device_capacity
+    file_name: 20260708_mes_balloon_process_device_capacity.sql
+       status: FAILED
+   started_at: 2026-07-09 14:05:20
+  finished_at: 2026-07-09 14:05:23
+error_message: Command failed with exit code 1: ssh
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1137 (HY000) at line 763: Can't reopen table: 'seed'
+--- env image tag ---
+IMAGE_TAG=release-20260709-codeonly-three-env-head-v5
+--- docker images ---
+NAME                  IMAGE                                             COMMAND                   SERVICE      CREATED       STATUS                 PORTS
+intruoyi-backend      intruoyi-backend:release-20260709-head-test-v3    "/__cacert_entrypoin…"   backend      3 hours ago   Up 3 hours             0.0.0.0:48081->48081/tcp, :::48081->48081/tcp
+intruoyi-frontend     intruoyi-frontend:release-20260709-head-test-v3   "/docker-entrypoint.…"   frontend     3 hours ago   Up 3 hours             0.0.0.0:8081->80/tcp, :::8081->80/tcp
+intruoyi-mysql        mysql:8.0.39                                      "docker-entrypoint.s…"   mysql        5 weeks ago   Up 5 weeks (healthy)   3306/tcp, 33060/tcp
+intruoyi-onlyoffice   onlyoffice/documentserver:latest                  "/app/ds/run-documen…"   onlyoffice   2 weeks ago   Up 2 weeks (healthy)   443/tcp, 0.0.0.0:8080->80/tcp, :::8080->80/tcp
+intruoyi-redis        redis:7-alpine                                    "docker-entrypoint.s…"   redis        5 weeks ago   Up 5 weeks (healthy)   6379/tcp
+intruoyi-website      nginx:1.27-alpine                                 "/docker-entrypoint.…"   website      4 weeks ago   Up 4 weeks             0.0.0.0:8083->80/tcp, :::8083->80/tcp
+/intruoyi-backend intruoyi-backend:release-20260709-head-test-v3 running
+/intruoyi-frontend intruoyi-frontend:release-20260709-head-test-v3 running

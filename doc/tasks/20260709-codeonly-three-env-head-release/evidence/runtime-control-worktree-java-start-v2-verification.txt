@@ -1,0 +1,14 @@
+taskId=20260709-codeonly-three-env-head-release
+time=2026-07-09 13:19:08 +08:00
+pid=20308
+healthOk=True
+health={"status":"UP"}
+worktree=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m
+hasWorktreePathInStartupLog=True
+commandLine="C:\Program Files\Eclipse Adoptium\jdk-21.0.10.7-hotspot\bin\java.exe" -jar D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\target\runtime-control-maintenance-2026.06-SNAPSHOT.jar 
+netstat48181=
+  TCP    127.0.0.1:48181        0.0.0.0:0              LISTENING       20308
+  TCP    127.0.0.1:48181        127.0.0.1:58608        ESTABLISHED     20308
+  TCP    127.0.0.1:58608        127.0.0.1:48181        ESTABLISHED     61208
+stdout=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\runtime-control-worktree-java-start-v2.out.log
+stderr=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\runtime-control-worktree-java-start-v2.err.log

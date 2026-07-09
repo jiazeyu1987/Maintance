@@ -1,0 +1,338 @@
+# 构建发布备份恢复基线
+
+## 触发条件
+
+- 构建发布包、发布到测试服/备份服/正式服。
+- 标记测试通过、上线备份服、上线正式服。
+- 备份、增量备份、恢复、恢复演练、回滚。
+- 大文件上传、批量导入、对象存储或 NAS 文件一致性验证。
+
+## 强制门禁
+
+- 访问远端环境前先读取 `docs/server-access.md`。
+- 涉及登录、E2E 或管理前端验证时先读取 `docs/login-access.md`。
+- 涉及 worktree 发布隔离、合并或清理时先读取 `docs/worktree-memory.md`。
+- 开始前必须确认目标环境、目标主机、目标库、对象存储 endpoint、发布包或备份点。
+- 发布、备份、恢复、回滚不得用 mock、默认成功、静默跳过或自动降级掩盖失败。
+- 缺少 manifest、schema 版本、备份链、恢复证据、环境凭据或授权时必须 fail fast。
+- 发布代码入口必须先确认：发布、构建、部署脚本和运行控制台发布链路的修改统一在 `D:\ProjectPackage\Int\IntRuoyiMaintance`；`D:\ProjectPackage\Int\IntRuoyi` 只作为业务源码、SQL 和前后端发布输入。
+- 真实写入、备份、恢复必须同一环境闭环，记录前端 URL、后端 action origin、目标主机和目标库证明。
+- 备份或恢复前必须检查根分区、NAS、数据盘、临时目录、日志目录和挂载写入权限。
+- 发布和恢复前必须证明前端、后端、数据库 schema、迁移脚本、required SQL 与 `releaseTag` 或兼容矩阵一致。
+- 备份可用性必须以最终目录、manifest、checksum、对象清单和恢复演练证据共同判定。
+
+## 常见失败模式
+
+- 健康检查通过不等于 operation 成功。
+- 本地等待超时不等于服务器失败，需回查 operation、日志、进程和最终产物。
+- 新旧发布包、数据库 schema、对象 inventory 和 manifest 容易跨环境混跑。
+- 大 dump、上传临时文件或日志落根分区会导致 operation 卡死或无法 finalize。
+- 候选发布包不能只按目录名或时间排序，必须读取 manifest 校验 releaseTag 和 sha256。
+
+## 验证命令
+
+- 构建：manifest 存在且 artifact sha256 可校验。
+- 发布：远端 `.env`、运行镜像和 manifest `IMAGE_TAG` 一致，健康检查通过。
+- 备份：最终备份根目录存在非空 manifest、数据库备份、对象 inventory 和 checksum。
+- 恢复：schema 与代码兼容，文件记录与对象一致，后端健康，管理前端真实登录路径和本次核心业务路径可用。
+- 自动化入口：`node scripts/preflight/publish-preflight.mjs --manifest <manifest.json> --environment <test|backup|prod> --sql-root <dir> --remote-host <host> --remote-app-dir <dir>`
+
+本文是 IntRuoyi 构建、发布、备份、恢复、回滚任务的强制前置文档。凡任务涉及以下任一事项，开始前必须先阅读并按本文检查：
+
+- 构建发布包。
+- 发布到测试服、备份服或正式服。
+- 标记测试通过、上线备份服、上线正式服。
+- 备份、增量备份、恢复数据。
+- 回滚代码、回滚数据、恢复到历史发布包。
+
+## 基本边界
+
+- 默认只允许本机修改和验证；正式服务器默认禁止访问、发布、重启、写数据或读写正式数据，除非用户明确授权。
+- 测试服、备份服、正式服的访问方式以 `docs/server-access.md` 为准。
+- 登录验证账号以 `docs/login-access.md` 为准。
+- 发布、备份、恢复任务不得用 mock、默认成功、静默跳过、自动降级掩盖失败。
+- 缺少 manifest、schema 版本、备份链、恢复证据或环境凭据时必须 fail fast。
+
+## 构建发布备份恢复复盘加速清单
+
+后续构建、发布、备份、恢复任务开始后，先按以下顺序做快速确认，避免重复排查上次连续备份和发布验证暴露的问题。
+
+### 开始前先确认
+
+- 本机进程来源：`48081` 后端和 `8081` 前端必须来自当前主仓库和目标分支，不能漂移到旧 worktree 或历史构建产物。
+- 环境闭环：凡是“真实写入 + 备份 + 恢复”链路，写入目标、备份目标、恢复目标必须是同一环境；不得出现“本地写入、测试服备份”或“测试服写入、备份服恢复后再当成测试服结果验收”的跨环境混跑。开始前必须记录前端 URL、后端 action origin、目标主机和目标库证明，任一不一致直接 fail fast。
+- 真实前端 action origin：运行控制台 E2E 等待提交响应时，`actionOrigin` 必须与浏览器实际发起请求的 origin 一致。若前端通过 `/admin-api` 代理提交，等待响应应匹配前端 origin；后端直连 origin 只用于明确的 API 直连验证，不能混用导致真实 operation 已提交但测试脚本误判超时。
+- 正式服边界：未获用户明确授权时，运行控制台、状态脚本、发布脚本、备份脚本、恢复脚本和 E2E 都不得访问 `172.30.30.57` 的 SSH、HTTP、对象存储或数据库。
+- 测试备份边界：连续备份、恢复、DCC 文件新增/修改/删除验收必须显式提交 `targetEnvironment=test`，并记录目标主机证明为 `172.30.30.58`；无法证明目标主机时必须 fail fast。
+- 禁止参数：备份恢复 E2E 和脚本必须硬断言不得提交 `targetEnvironment=prod`，不得提交 `promote-prod`，不得向 `172.30.30.57` 做健康检查、清理、恢复或联调。
+- 任务日志范围：证明正式服未访问时，只检索本任务当天和本次 operation 的日志；历史日志可能保留旧的正式服记录，不能作为本次访问证据混用。
+- Windows 执行细节：中文文件读写必须显式 UTF-8；Linux/container 脚本从 Windows 生成时必须保证 LF 行尾，不能依赖运行时再用 `tr -d '\015'` 修正。
+- SSH 执行细节：远程命令要有显式 timeout，OpenSSH 长命令使用 `-n` 并排空 stdout/stderr 后再等待，避免发布或备份 operation 卡死。
+- 远程脚本传输：跨 PowerShell、SSH、Linux shell 执行多行脚本时，避免依赖复杂引号和 here-doc 嵌套；复杂脚本优先采用 UTF-8 文件、Base64 传输或已部署脚本入口，执行后必须回读关键输出，防止变量、引号或中文编码被中途破坏。
+- 容量 preflight：真实备份、恢复演练和恢复数据前必须记录 `/`、`/mnt/nas`、`/opt/intruoyi/runtime/data` 的可用空间、挂载点和写入权限；任一目录不可写、挂载点不符合预期或根分区低于安全阈值时直接阻断。
+- 容器路径证明：备份、恢复和演练脚本必须分别证明控制容器、detached runner、宿主机和 NAS 对同一备份根目录可见；只在容器内看到 `/mnt/nas/Backup/BackupPackage`，不能证明宿主机或 NAS 已收到备份产物。
+- 容器访问宿主机服务：从容器内校验宿主机发布端口、演练后端、演练前端或下载地址时，不得默认使用 `127.0.0.1`；必须使用已验证的容器到宿主机地址，并记录该地址来源。
+
+### 构建与发布
+
+- 发布代码源头：凡修改发布、构建、部署脚本、运行控制台发布链路、测试服/备份服 compose 或冒烟发布配置，必须在 `D:\ProjectPackage\Int\IntRuoyiMaintance` 修改并从该目录构建发布；不得在 `D:\ProjectPackage\Int\IntRuoyi` 复制或维护另一套发布代码。
+- 构建发布包入口：Agent 执行构建发布包必须通过运行控制台的“构建发布包”按钮或等价前端操作提交 operation，不得直接在命令行运行发布脚本替代按钮。若按钮缺少本次所需参数或模式，必须先按 BDD/TDD 修复或新增运行控制台按钮/动作，再通过按钮触发；命令行只允许用于只读核验、失败排查、脚本单测或按钮动作缺失前的开发验证，不能产出正式候选发布包。
+- 目标环境绑定：测试服和备份服必须使用各自的 `runtime-env`、对象存储 endpoint、bucket、Object Lock 配置，不得继承正式环境 `EDHR_S3_*`。
+- 发布预览：提交构建前必须查看实际命令参数，确认 `component`、`publishScope`、Website/展厅构筑包、OnlyOffice、数据库同步、MinIO 同步符合本次目标。
+- 代码包发布：若目标只是管理前端/后端代码包，必须显式使用 `-Component intruoyi -SkipDatabaseSync -SkipMinioSync`，并确认 NAS 发布包路径只产出代码包，不得误入完整数据快照或对象存储同步路径。
+- 前端发布目录：验证前端 bundle 时必须以发布脚本实际输出目录和远端包内静态资源为准。普通 `npm run build:test` 的 `dist-test` 不能代替发布脚本使用的 `dist-intruoyi-test`，也不能代替 NAS/远端包内的最终 bundle 证据。
+- 发布 manifest：构建完成后以 manifest 和包内 artifact 为准，不以界面提示或日志末尾单行成功作为唯一依据。
+- 发布包成功出口：`build-release` 只有在脚本退出码成功、Manifest v1 `manifest/manifest.json` 存在且 NAS 目标发布目录完成上传后，才可视为可部署发布包。只有本地 image tar、Docker image 或旧 `release-manifest.json` 的目录是半成品，不得继续执行 `deploy-release` 或手工部署。
+- 发布包候选识别：运行控制台不得在读取 `release-manifest.json` 前仅按目录名或 NAS `modifiedAt` 截断候选。NAS 可能不返回 `modifiedAt`，新格式 `yyyyMMdd_...` 目录也可能被旧 `26-...` 目录名排序挤掉；候选必须先读取 manifest，校验 `releaseTag`、`packageDirectoryName`、artifact `sha256` 后，再按 `builtAt`/releaseTag 排序与展示。
+- Schema preflight：执行 required SQL 前检查基础表、关键字段、迁移版本和租户作用域；缺少 `system_tenant` 这类基础表时应在 SQL 执行前失败。
+- 迁移元数据门禁：构建发布包前必须通过发布迁移策略门禁或等价检查，确保纳入发布扫描的 `sql/mysql/20*.sql` 具备 `release-migration:` 元数据。门禁通常 fail fast 报首个文件；发现缺失后要扫描全量缺失清单，作为独立发布治理任务逐项确认，不得为赶当前业务发布批量随手补不清楚的历史 SQL 元数据。
+- `SkipDatabaseSync` 边界：`-SkipDatabaseSync` 和 `code-only` 只表示不执行数据同步，不表示跳过 schema、required SQL、迁移元数据或发布 manifest 门禁。
+- 候选接口性能：回滚候选、恢复候选需要限制最近记录数量，避免运行控制台超时；发布包候选如需限制，必须在 manifest 校验后限制展示数量，不能影响指定 `releaseTag` 的前置校验。
+- 状态探测范围：overview 状态检查应限制并发和目标环境，避免同一环境组件探测相互抢占，避免旧本地进程触发非授权目标探测。
+- `code-only` 验证边界：`code-only` 发布不包含 Website 或 MinIO 数据同步时，不做展厅图片内容 smoke check；应验证后端、管理前端、pdf worker 和本次包含组件。
+- OnlyOffice 边界：未包含 OnlyOffice 时，发布脚本不应启动、等待或健康检查 OnlyOffice 依赖；Docker Compose 可使用 `--no-deps` 限定本次组件。
+- 远端版本证明：发布后必须读取远端 `.env` 或等效配置，确认 `IMAGE_TAG=<releaseTag>` 与发布 manifest 一致。
+- 前后端镜像契约：发布、备份、恢复和恢复演练前必须确认远端 `.env`、后端运行镜像、管理前端运行镜像和发布 manifest 属于同一 `IMAGE_TAG` 或兼容矩阵允许的组合。发现前端和后端 tag 混用时，必须在数据库 dump、对象复制或恢复动作前阻断。
+- Operation 证据：构建、测试服发布、标记测试通过、备份服发布必须分别记录 operation ID、状态、日志路径和失败原因；最终服务器健康不等于所有 operation 都成功。
+- 本机运行控制台版本：修复运行控制台后端逻辑后，必须确认当前 `48081` 进程加载的是包含修复的 jar；代码已提交或本地类已编译不等于运行实例已生效。发布前先用实际接口验证候选列表/门禁行为，再提交真实发布动作。
+- Spring Boot 可执行 jar 热更新：若为本机演练临时注入内嵌模块 jar，`BOOT-INF/lib/*.jar` 必须保持 STORED 无压缩；使用普通 `jar uf` 会把内嵌 jar 压缩成 `compress_type=8` 并导致启动失败。更新后需复验 `compress_type=0`、目标 class/常量确实存在，再重启并健康检查。
+
+### 备份与 Manifest
+
+- 包目录边界：`ReleasePackage` 只保存程序发布包，`BackupPackage` 只保存数据备份；备份、恢复、对象仓库和保留清理不得写入或删除 `ReleasePackage`、`/mnt/nas` 根目录、挂载、`fstab` 或其他业务目录。
+- 测试备份落点：测试服备份数据只能写入测试服 NAS 挂载下的 `/mnt/nas/Backup/BackupPackage`，不得把本机临时 staging 当成正式备份点。
+- Manifest 最小字段：每个备份点必须记录 `backupId`、`targetEnvironment`、目标主机、`imageTag`、MySQL 备份链、对象 manifest、checksums、对象新增/修改/删除/复用统计和恢复集。
+- 备份范围声明字段：每个与 DCC 相关的备份点还必须显式记录 `backupScopeType` 与 `backupScopeId`。`backupScopeType` 只允许 `target-dataset` 或 `environment-full`；`backupScopeId` 必须能唯一指向本次备份范围，例如测试类别、测试产品集合、租户范围或 restore point 数据集。缺少这两个字段时，不得生成或接受 DCC backup manifest。
+- Manifest 上传时机：只有数据库备份、对象复制、对象清单、checksum 校验全部完成后，才能写最终 manifest；中途失败不得生成默认成功 manifest。
+- 成功出口校验：备份 operation 返回 `success` 之前，必须在最终备份根目录重新校验关键产物存在且非空，至少包括 `manifest/manifest.json`、`manifest/dcc-backup-manifest.json`、数据库备份文件、对象 inventory 和 checksum；任何缺失都必须把 operation 标记为失败。
+- 可恢复性优先于动作成功：运行控制台 action 成功、脚本退出码为 0 或日志末尾出现 success，都不能单独证明备份可恢复；必须以最终备份目录、manifest、checksum、对象清单和恢复演练证据共同判定。
+- 本地等待超时不等于服务器失败：真实备份或恢复耗时超过 E2E 单步等待窗口时，先检查服务器 operation 状态、脚本进程、最终日志和备份点目录；如果服务器仍在执行或最终已成功，不得把本地进程超时直接记为业务失败，也不得立即重复发起同类写入操作。
+- MySQL 当前阶段：仍保留全量逻辑基线；不得把全量 dump 伪装成增量成功。要做 binlog 增量或 xtrabackup 物理备份，必须先证明 binlog、权限、依赖、备份锁和恢复链前置条件齐全，否则 fail fast。
+- MySQL 增量证据：备份 manifest 的 `mysqlIncrementalPlan` 必须列出 binlog/xtrabackup 的 `requiredEvidence`；未具备 `binlogPosition`、保留窗口、工具可用性、权限、checkpoint 和恢复演练证据前，只能标记为 `requires-prerequisite`，不能自动降级为全量后宣称增量成功。
+- MySQL 增量恢复门禁：`restore-data` 读取到 `mysqlBackupMode=binlog-*` 或 `mysqlBackupMode=xtrabackup-*` 时，必须先校验对应 `mysqlIncrementalPlan` 的状态、证据字段和恢复演练结果；状态仍为 `requires-prerequisite`、证据缺失或模式未知时必须在停服务、重建数据库、导入 dump、对象回放之前失败，不得静默按全量 dump 恢复。
+- MySQL binlog 分层实施：binlog 增量必须分为前置探测、binlog 文件采集、增量段 manifest、恢复回放演练四层；前置探测只能写入 `mysql/binlog-preflight.json` 并证明继续实施条件，不能把 `preflight-passed` 当作可恢复备份成功，也不能据此跳过 binlog 文件和回放验证。
+- MySQL binlog 段边界：binlog 文件导出后必须生成 `mysql/binlog-segment-manifest.json`，记录 binlog 文件名、起止位置、段文件路径和 sha256；该 manifest 仍只是增量段证据，不等于恢复可用，缺少恢复回放演练时必须继续阻断成功备份。
+- MySQL binlog 回放证据：恢复演练导入全量基线后，必须按 `mysql/binlog-segment-manifest.json` 的顺序回放每个 binlog segment，并写回 `replayStatus=passed`、`replayedAt` 和 segment 级结果；缺 segment、checksum 不匹配或回放失败时，演练不得标记通过。
+- MySQL binlog 放行语义：binlog 增量模式可以先生成包含全量基线、binlog segment、对象/DCC manifest 的“待演练备份点”，但发布 manifest 必须标记 `requires-rehearsal` 或 `rehearsalStatus=not-run`；只有 rehearsal 回放 binlog 并写入通过证据后，`restore-data` 才能进入恢复动作。
+- 大 dump 落盘：大库备份不要长期停留在根分区临时目录；临时 staging 只用于处理中转，最终数据备份点以 `/mnt/nas/Backup/BackupPackage/<backupId>/` 为准。
+- 路径归属校验：备份脚本不得只信任配置字段值；执行前必须解析并输出 `backupPointsRoot`、`console.logRoot`、`tmpRoot`、`rehearsalRoot` 的真实路径、挂载点、可用空间和是否位于允许的数据盘或 NAS。`console.logRoot`、`tmpRoot`、`rehearsalRoot` 不得落在根分区。
+- 历史路径漂移：发现旧配置遗留的 `/backup/int-ruoyi/backups` 等根盘备份目录时，不得直接删除。必须逐个识别是否存在 `manifest/manifest.json`；有 manifest 的备份点先迁移到正式备份根或纳入保留策略，没有 manifest 的半成品只能归档为失败证据或按清理策略处理。
+
+### 对象增量与 DCC 验收
+
+- 对象备份模型：MinIO/NAS 文件不能继续每次全量 bucket tar；每个备份点生成对象级 manifest，并在 `objects/manifest-object-inventory.json` 记录对象 path、size、etag 或 sha256、lastModified、状态。
+- 对象仓库模型：未变化对象只复用 content-addressed `object-store` 条目，不重复复制；新增对象只复制新增对象；修改对象只复制新版本对象；删除对象在新备份点 manifest 中体现为 deleted 或从恢复集缺失。
+- 对象仓库路径：对象 inventory 必须为每个可恢复对象写入稳定 `repositoryPath`，恢复只能按 `repositoryPath` 从共享 `object-store` 物化对象；缺少 `repositoryPath` 或对象仓库文件不存在时必须 fail fast，不能回退到备份点内的旧整桶副本。
+- 备份点体积边界：备份点内只保留对象 manifest、DCC manifest、数据库快照和恢复契约，不得继续携带 `objects/<bucket>/...` 整桶镜像；临时 staging 也不得先整桶 `mirror` 后再去重，必须先按 metadata 与上一恢复点 inventory 计算复制计划，只对新增或变化对象执行对象级复制。
+- Manifest 增量链字段：DCC manifest 必须显式写入 `backupMode`、`baselineBackupId`、`baselineRestorePointId`、`previousBackupId`、`previousRestorePointId`、`chainStatus` 和当前段 `changeSummary`；不得要求后续恢复、UI 或审计逻辑从历史事件数组倒推出增量链状态。
+- 连续备份证据：B1 记录基线对象，B2 不变时必须生成新 manifest 且复用 B1 对象，B3 只新增文件 B，B4 只新增或更新文件 B 的新版本，B5 记录文件 B 删除且不破坏 B3/B4 历史恢复。
+- DCC 真实路径：DCC 文件新增、修改、删除必须通过测试租户真实前端用户路径完成，使用测试租户账号；不得脚本直塞文件，不得修改芋道源码租户数据。
+- DCC 一致性 preflight：DCC 备份前至少检查三层一致性。第一层：`dcc_controlled_file` 主记录引用的对象路径必须都能在当前 object inventory 中找到。第二层：DCC 子表不得继续引用已删除或不存在的父记录。第三层：当前恢复点 manifest 中的数据库快照与对象 inventory 必须共享同一 restore point 标识。任一层失败都必须阻断，不得把失败延后到恢复阶段。
+- DCC 测试数据治理：测试租户中的 DCC 真实 E2E 必须使用专用测试类别、专用产品主数据和可识别命名规则。每轮真实链路结束后应清理本轮测试数据，并定期巡检、作废引用缺失对象的历史测试记录，避免长期残留把后续备份链污染成全局阻塞。
+- DCC 测试数据治理触发时机：至少在三个时点执行。第一，真实 DCC E2E 结束后立即清理本轮测试数据。第二，每次 DCC 备份前先跑一次历史残留巡检。第三，按固定周期执行测试租户 DCC 巡检并输出作废/保留报告。缺少最近一次巡检证据时，DCC 备份不得直接继续。
+- DCC 一致性问题分级：DCC 子表孤儿引用可在测试租户历史测试记录范围内按规则自动作废；`dcc_controlled_file` 主记录引用缺失对象默认必须阻断，除非命中已批准的测试残留清理范围；object inventory 范围不足、restore point 不一致或 manifest 范围不一致必须重新生成对象 inventory 或 backup manifest，不得用数据作废替代。
+- 内容证明：文件下载返回 JSON、鉴权失败或预览不可用时，不得用错误响应大小冒充文件内容；应结合前端可访问性、文件详情、预览元数据、MinIO stat、对象仓库 size/etag/sha256 和源内容校验。下载权限失败不必然等于恢复失败，但必须明确区分“对象和记录已恢复”与“当前账号具备下载权限”。
+- 删除恢复语义：恢复到 B5 时文件 B 不得出现或不得可访问，文件 A 仍应可访问；恢复到 B3/B4 时文件 B 必须分别恢复为新增内容和修改后内容。
+
+### 恢复与健康检查
+
+- `imageTag` 门禁：恢复前必须校验当前程序 `IMAGE_TAG` 与备份 manifest 的 `imageTag` 完全匹配；测试服运行较新镜像时应先切换到匹配发布包或直接失败，不得带错代码恢复数据。
+- 恢复演练隔离：恢复演练 compose 不得无差别复制测试服运行中的 `container_name`、端口和共享服务依赖；OnlyOffice、对象存储等共享服务如不属于本次演练恢复集，应显式剥离或使用隔离名称，避免与当前测试服运行服务冲突。
+- 恢复链门禁：恢复候选存在不等于恢复链可用；必须验证全量基线、MySQL 增量链、schema 版本、对象 manifest 引用和 checksums。
+- 演练目录门禁：测试服务器独立恢复演练只能使用 `/backup/int-ruoyi/rehearsal/*` 范围内的专用目录；`servers.test.rehearsalRoot` 不得指向 `/opt/intruoyi/runtime/data/...` 等正常运行数据目录。配置不匹配时应在停服务、重建数据库、导入 dump 或对象回放前以明确错误阻断，并要求先修正配置后重试。
+- 演练 MySQL 就绪门禁：恢复演练启动 MySQL 后，不能只依赖一次 `mysqladmin ping` 判断可导入；MySQL entrypoint 的临时初始化服务可能短暂可 ping 后关闭。必须等待 Docker health 为 `healthy`，再执行 MySQL 连通性检查，之后才允许导入 dump。容器内 `mysql` 命令必须显式使用 TCP，例如 `-h127.0.0.1`，避免默认走 `/var/run/mysqld/mysqld.sock` 导致刚启动阶段 socket 不存在而误失败。
+- 演练组件范围门禁：恢复演练启动 backend/frontend 时必须显式限定服务范围并使用 `--no-deps`，不得因 compose 依赖自动拉起 OnlyOffice、Website 或其他非目标组件；端口冲突应作为配置或启动范围错误处理，不得停用测试服既有服务来绕过。
+- DCC 恢复链 preflight：DCC manifest 的 `schemaVersion`、`chainStatus`、baseline/previous 指针和每段 checksum 必须在恢复前校验；object inventory 引用的 `repositoryPath` 必须能在共享 object-store 中找到；缺失或格式错误时输出明确修复动作，并且必须早于停服务、重建数据库、导入 dump 或对象回放，不得等到数据库或对象恢复过程中才失败。
+- DCC 链式恢复计划：恢复到历史点时必须先生成 replay plan，明确 `baselineRestorePointId`、目标恢复点、从 baseline 到目标点的增量段列表、目标点数据库记录和对象 inventory；目标点不可达时必须 fail fast，禁止跳段或凭当前全量视图推断。
+- 运行控制台候选展示：备份点列表和恢复候选必须展示 DCC `backupMode`、`chainStatus`、当前段 `changeSummary`、对象增删改复用统计、演练状态和阻断/不可恢复原因；前端只展示后端 VO 返回的事实字段，不解析 manifest，不从路径或日志文本推断链状态，也不得把字段缺失显示成可恢复。
+- Manifest 恢复：恢复指定备份点时只按该备份点 manifest 的恢复集回放对象，已删除对象不得被历史对象仓库残留重新恢复出来。
+- 链式恢复计划：DCC 恢复计划必须输出从 baseline 到目标恢复点的 `replayPointIds`、segments 和重放后的 `finalFiles`；验收 V1/V2、删除、作废、权限和 preview 时以 `finalFiles` 为准，不能只读取目标点单个快照并假设链路可重放。
+- 多点验收：恢复验收不能只测最新备份点；连续备份至少验证 B3、B4、B5，分别证明新增、修改、删除语义。
+- 失败后状态：恢复失败后必须记录后端、前端、数据库、对象恢复的实际状态；如服务已停止，先按测试服流程恢复到可验证状态，再继续下一次恢复。
+- Shell 解析细节：远端 TSV/manifest 文本解析使用 `while IFS= read -r line` 和 `printf '%s' "$line"` 处理字段，避免额外换行或 CRLF 污染对象 key。
+- 健康检查证明：每次备份和恢复都记录目标环境证明、checksums 结果、测试服健康检查结果、manifest 路径和 operation ID。
+- 长时间 running 排查：operation 长时间停留在 `running` 时，不得只按界面状态判断。必须同时检查 operation JSON、result log、脚本进程、根分区空间、日志目录空间和失败报告是否写出；如果脚本已退出但状态未 finalize，应按真实失败记录处理并保留原始日志。
+- 服务重启窗口的 E2E 响应处理：`restore-data` 会停止并重启前后端，真实 E2E 监听 operation log 时可能收到 HTML 错误页、前端入口页或连接重置。测试脚本只能把 `content-type=application/json` 且包含目标 operation 的响应作为状态证据；非 JSON 响应应记录为重启窗口现象，不得覆盖真实 operation 日志。
+
+### 保留策略与清理
+
+- 清理预览优先：任何保留策略执行前先做 dry-run，记录保留点、待删备份点、孤儿对象候选、NAS 容量和根目录剩余空间。
+- 清理根目录：远端清理根必须精确等于 `/mnt/nas/Backup/BackupPackage`；不得删除、清空或修改 `ReleasePackage`、`/mnt/nas` 根目录、共享盘挂载、`fstab` 或其他业务目录。
+- 对象仓库清理：只能清理不再被任何保留 manifest 引用的 `object-store` 对象；清理前必须证明关键对象 `exists=true`、`referenced=true`、`deleteCandidate=false` 时不会被删。
+- 临时目录清理：`/opt/intruoyi/ops/backup/tmp` 和 `/tmp` 的历史 staging 可按运行控制台授权清理，但它们不是正式备份包；不得把清理临时目录当成保留策略执行结果。
+- 容量阈值：保留策略同时支持最近 N 个恢复点、N 天保留和 NAS 容量阈值；容量不足时必须记录阻塞和影响，不得扩大清理范围绕过。
+- 根盘释放顺序：因历史备份写入根盘导致容量不足时，先做目录归属和 manifest 识别，再迁移或归档，最后才释放空间；不得以恢复容量为由删除仍可恢复的备份点或丢弃失败证据。
+
+### 常见误区修正
+
+- “版本统一”指前端、后端、数据库 schema、迁移脚本和 required SQL 的发布契约一致，不要求本地、测试服、备份服业务数据完全一致。
+- “业务数据不必一致”不等于“真实写入、备份、恢复可以跨环境混跑”；只要任务目标是验证备份恢复语义，写入、备份、恢复就必须在同一环境闭环。
+- `code-only` 发布不覆盖整库业务数据，但仍可能执行 schema 迁移、菜单权限、必要配置和目标环境绑定 SQL。
+- 最终服务器健康不等于所有 operation 都成功；中途失败的 operation 必须单独记录，不得被后续成功状态覆盖。
+- 已上传发布包不等于构建 operation 成功；如果构建脚本在 NAS 阶段挂起或被终止，即使目录和 manifest 后续可见，也必须以 operation 状态为准重新执行或明确记录失败，不得把 failed operation 当作 succeeded 继续链路。
+- 本地构建缓存不等于发布包；如果 build-release 在 Manifest v1 或 NAS 上传前失败，缓存目录中的镜像 tar、Docker image、旧 `release-manifest.json` 都只能作为失败证据和排障材料，不能被运行控制台或人工流程选为发布候选。
+- operation 停留在 `running` 不等于仍在执行；磁盘写满、日志目录不可写或失败报告写出失败，可能导致真实失败无法 finalize。此类记录必须按失败根因修复后重新执行，不得人工标记成功。
+- 不包含 Website/展厅构筑包时，不应以展厅媒体内容检查作为发布成功门槛；如任务要求验证展厅，必须明确包含 Website 和对应文件数据同步范围。
+- 恢复候选存在不等于恢复链可用；必须验证全量基线、增量链、schema 版本和对象存储恢复点。
+- B2 生成新 manifest 不是重复全量备份；判断标准是未变化对象复用、对象仓库未重复写入。
+- 对象删除不是删除历史对象仓库；删除状态只影响目标备份点恢复集，历史 B3/B4 能否恢复取决于保留策略是否仍保留对应 manifest 和引用对象。
+- `infra_file` 有行且 `path` 非空，不等于 DCC 对象一致性通过；真正的门禁是“数据库主记录引用的对象路径”是否出现在当前 object inventory 中。
+
+## 发布包契约
+
+每个发布包必须能说明以下信息：
+
+- `releaseTag`：发布包唯一版本。
+- `component`：组件范围，例如 `intruoyi`、`full`、`backend`、`frontend`、`website`。
+- `publishScope`：`code-only` 或 `with-data`。
+- `includeShowroomBuildPackage`：是否包含 Website/展厅构筑包。
+- `onlyOfficeIncluded`：是否包含 OnlyOffice。
+- 数据库契约：当前代码需要的基础表、schema 版本、迁移脚本清单、required SQL 清单。
+- 外部数据契约：MinIO/NAS/Object Lock、文件配置、对象存储版本或同步范围。
+- 环境闭环字段：凡是涉及真实写入、备份或恢复的任务证据，必须额外记录 `frontendBaseUrl`、`actionOrigin`、`databaseHost`、`objectStorageEndpoint`、`targetEnvironment`。这 5 项必须同属一个环境；任一字段缺失或跨环境混搭，任务直接阻断。
+
+如果现有脚本尚未完整写入数据库契约，任务必须在任务文档中记录缺口，并在执行前补充等效的只读 preflight 检查。
+
+## 构建规则
+
+- 构建前必须确认本地代码来源、Git HEAD、后端路径 `ruoyi-vue-pro`、管理前端路径 `yudao-ui-admin-vue3`、展厅前端路径 `D:\ProjectPackage\Website`。
+- 构建前必须明确组件范围：默认不包含 Website/展厅构筑包，除非用户勾选或明确要求。
+- 构建前必须明确是否包含 OnlyOffice。
+- `code-only` 发布包不得包含整库数据导出，不得同步 MinIO/NAS 业务数据。
+- `with-data` 发布包必须明确会覆盖哪些数据，并在用户确认后执行。
+- 构建结果必须校验 manifest，不得凭日志末尾的成功字样单独判定成功。
+
+## 发布规则
+
+- 测试服先发布并验证，通过后才能标记测试通过。
+- 备份服只能部署已测试通过的发布包，除非用户明确授权绕过并记录风险。
+- 正式服发布必须由用户明确授权，并再次阅读 `docs/server-access.md`、`docs/login-access.md` 和本文。
+- 管理前端、后端服务、数据库 schema 与迁移脚本必须作为同一发布单元校验；不得发布前端新版本、后端旧版本或数据库旧 schema 的未声明组合。
+- `code-only` 发布不覆盖整库业务数据，但仍可以执行幂等迁移、菜单权限、必要配置和目标环境绑定 SQL。
+- 发布前必须检查目标库基础表和 schema 版本满足当前发布包前置条件。
+- required SQL 必须具备明确前置条件；缺基础表、缺字段、缺配置时必须在执行前失败。
+- 目标环境配置不得从正式服静默继承到测试服或备份服。
+
+## 发布版本一致性门禁
+
+发布时要求的是版本契约一致，不是要求本地、测试服、备份服的业务数据完全一致。每次构建和发布前必须验证：
+
+- 管理前端构建产物、后端镜像、数据库 schema 版本、迁移脚本清单和 required SQL 清单属于同一 `releaseTag`。
+- 如果某一组件版本不同，必须存在明确的兼容矩阵，说明允许组合、适用范围、验证证据和回滚条件。
+- 前端调用的 API 字段、枚举、权限码、菜单路由必须由同一后端版本提供。
+- 后端启动所需表、字段、索引、字典、菜单权限和配置必须由目标数据库 schema 提供。
+- 数据库迁移必须在后端接收对应请求前完成；禁止用前端隐藏入口或后端吞异常掩盖 schema 落后。
+- 测试服和备份服部署同一发布包时，必须确认两端数据库 schema 均满足该发布包前置条件。
+- 新增或修改 `sql/mysql`、菜单权限、租户菜单绑定、文件配置或发布 manifest 字段时，必须同步更新发布契约测试或门禁脚本；不能只靠本地单测或真实 E2E 证明功能可用。
+- 若提交钩子或发布门禁提示缺少 `script/tests`、manifest 或迁移契约验证，必须补齐契约证据后再提交；不得绕过钩子，也不得把 SQL 变更拆出发布链路。
+
+缺少版本 manifest、schema 版本、迁移清单或兼容矩阵时，不得继续构建、发布、标记测试通过或上线备份服。
+
+## 数据库版本门禁
+
+发布和恢复前必须确认：
+
+- 基础表存在，例如 `system_tenant`、`system_tenant_package`、`system_users`。
+- 当前代码所需业务表、字段、索引存在或有迁移脚本可创建。
+- 迁移脚本可重复执行，或明确声明只能执行一次。
+- required SQL 的作用范围和租户范围明确。
+- schema 版本满足发布包要求。
+- 旧数据恢复到新代码时，必须执行向前迁移。
+- 新数据恢复到旧代码默认禁止，除非存在明确降级迁移和验证证据。
+
+禁止在 schema 不兼容时继续发布、恢复或回滚。
+
+## 备份规则
+
+备份不是只保存一个 SQL dump。完整备份能力至少包含：
+
+- 数据库全量基线备份。
+- 数据库增量备份链，例如 binlog 或等效增量记录。
+- 对象存储或 NAS 文件的版本、清单和变更范围。
+- 运行配置和环境变量模板，不记录明文密钥。
+- 发布包、代码版本、schema 版本、迁移状态。
+- 备份时间、来源环境、备份操作者、校验值。
+- 大体量业务域的增量策略；DCC 文档域必须单独记录数据库记录、对象文件、权限规则、审批路线、培训/分发规则的增量范围。
+
+备份 manifest 必须记录：
+
+- 全量基线 ID。
+- 增量链起止位置。
+- `releaseTag`。
+- schema 版本。
+- 对象存储版本或快照 ID。
+- 是否经过恢复验证。
+
+## DCC 文档增量备份门禁
+
+DCC 文档域包含大量数据库记录和对象文件，不能长期依赖每次全量复制。DCC 备份必须满足：
+
+- 备份范围契约必须先说清楚：是备份“目标数据集”还是备份“目标环境当前全量 DCC 数据”。如果数据库快照覆盖的是整个测试租户，则对象 inventory 也必须覆盖同一范围；不得一边只复制少量新对象，一边要求 manifest 为整租户历史记录兜底。
+- 备份范围声明责任：发起备份的人必须在 operation 提交前声明备份范围，脚本必须把该声明落到 manifest。若实际数据库快照范围、对象 inventory 范围与声明不一致，脚本必须 fail fast，并在报告中分别输出 `declaredScope`、`databaseSnapshotScope`、`objectInventoryScope`。
+- 建立可恢复的全量基线，并在基线之后按时间点或变更序列记录增量。
+- 数据库增量至少覆盖 DCC 文件主记录、版本记录、分类、权限、审批路线、审批节点、分发规则、培训规则和审计记录。
+- 文件增量必须覆盖对象存储或 NAS 中与 DCC 记录关联的原文、转换件、预览件、签名件和附件。
+- 数据库记录与对象文件必须共享同一恢复点标识，避免恢复后出现记录存在但文件缺失、文件存在但记录不可见。
+- 增量链跨越 schema 迁移时，必须记录迁移前后版本和对应迁移脚本。
+- 删除、作废、归档、权限变更和审批配置变更也属于增量备份范围，不能只备份新增文件。
+- 增量备份必须有抽样校验和恢复演练证据；只生成增量文件但未验证恢复链，不得声明备份可用。
+
+## 增量备份规则
+
+增量备份必须考虑版本变化：
+
+- 每段增量必须声明 `schemaFrom` 和 `schemaTo`。
+- 跨 schema 版本的增量必须记录对应迁移脚本。
+- 增量链不能断点、乱序或重复应用。
+- 增量链中任何一段缺失时，恢复必须失败。
+- 数据库增量与对象存储增量必须能对齐到同一恢复点。
+- 不能只恢复数据库增量而忽略文件记录对应的对象内容。
+
+## 恢复规则
+
+恢复前必须选择并验证：
+
+- 目标环境。
+- 全量基线备份。
+- 增量链范围。
+- 对象存储/NAS 对应版本。
+- 目标代码 `releaseTag`。
+- 目标 schema 版本。
+- 迁移方向。
+- 目标发布包来源：恢复所使用的程序版本必须能追溯到生成该备份点时的发布包或兼容矩阵允许的发布包；不能只凭“版本看起来兼容”就直接恢复。
+
+恢复后必须验证：
+
+- 数据库 schema 版本与代码兼容。
+- 关键基础表、业务表和租户数据存在。
+- 文件记录与对象存储内容一致。
+- 程序与数据同源：恢复后的 `IMAGE_TAG`、schema 版本、backup manifest、release manifest 或兼容矩阵必须能相互证明来源一致；缺任一证据时，不得把恢复标记为通过。
+- 后端健康检查通过。
+- 管理前端真实登录路径可用。
+- 与本次任务相关的核心业务路径可用。
+
+没有恢复验证证据，不得声明备份可用。
+
+## 回滚规则
+
+回滚分为代码回滚、数据回滚和组合回滚：
+
+- 代码回滚只切换发布包，不默认回滚数据。
+- 数据回滚必须走恢复流程，不能用手工 SQL 拼接替代。
+- 组合回滚必须先确认目标代码版本能读取目标数据版本。
+- 回滚到旧代码时，如果数据库已经被新版本迁移，必须确认存在降级迁移，否则禁止回滚。
+- 回滚完成后必须执行健康检查和真实用户路径验证。
+
+## 证据要求
+
+每次构建、发布、备份、恢复、回滚任务必须在任务文档或执行日志记录：
+
+- BDD 场景。
+- RED/GREEN/REGRESSION 证据。
+- 发布包 manifest 校验结果。
+- schema preflight 结果。
+- 备份或恢复 manifest。
+- 目标服务器健康检查。
+- 失败记录和处理结论。
+
+如果任何证据缺失，任务不得标记完成。

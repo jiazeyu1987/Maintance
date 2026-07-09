@@ -1,0 +1,5 @@
+time=2026-07-09 13:15:22 +08:00
+step=runtime-control-worktree-build
+status=FAIL
+reason=maintenance worktree has no .\mvnw.cmd; previous start script attempted wrapper command and failed before Java process launch.
+impact=runtime-control not started yet; release build has not been executed; no releaseTag created.

@@ -1,0 +1,43 @@
+=== main header before ===
+-- eDHR batch record Word import version approval phase one.
+-- Non-destructive migration: only creates version-control tables and adds nullable version references.
+
+DROP PROCEDURE IF EXISTS add_mes_edhr_column_if_missing;
+DELIMITER $$
+CREATE PROCEDURE add_mes_edhr_column_if_missing(
+  IN p_table_name varchar(128),
+  IN p_column_name varchar(128),
+  IN p_column_ddl text
+)
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+      FROM information_schema.columns
+     WHERE table_schema = DATABASE()
+       AND table_name = p_table_name
+       AND column_name = p_column_name
+  ) THEN
+    SET @add_column_sql = CONCAT('ALTER TABLE `', p_table_name, '` ADD COLUMN ', p_column_ddl);
+    PREPARE add_column_stmt FROM @add_column_sql;
+
+=== worktree header before ===
+-- eDHR batch record Word import version approval phase one.
+-- Non-destructive migration: only creates version-control tables and adds nullable version references.
+
+DROP PROCEDURE IF EXISTS add_mes_edhr_column_if_missing;
+DELIMITER $$
+CREATE PROCEDURE add_mes_edhr_column_if_missing(
+  IN p_table_name varchar(128),
+  IN p_column_name varchar(128),
+  IN p_column_ddl text
+)
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+      FROM information_schema.columns
+     WHERE table_schema = DATABASE()
+       AND table_name = p_table_name
+       AND column_name = p_column_name
+  ) THEN
+    SET @add_column_sql = CONCAT('ALTER TABLE `', p_table_name, '` ADD COLUMN ', p_column_ddl);
+    PREPARE add_column_stmt FROM @add_column_sql;

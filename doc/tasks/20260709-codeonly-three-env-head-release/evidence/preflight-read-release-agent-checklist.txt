@@ -1,0 +1,348 @@
+# IntRuoyi Codex 发布执行检查清单
+
+## 触发条件
+
+当任务涉及以下任一事项时，Codex 必须先读本文，再决定是否进入真实发布动作：
+
+- 运行控制台 `build-release`
+- 发布到测试服
+- `mark-tested`
+- 发布到正式服
+- 发布到备份服
+- 发布失败后的重试
+
+本文面向 Codex 执行，不替代正式规则。正式边界仍以以下文档为准：
+
+- `D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`
+- `D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`
+- `D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`
+
+## 执行模型
+
+Codex 必须把完整发布任务视为以下严格顺序：
+
+1. `build-release`
+2. `publish-test`
+3. 测试服运行态验证
+4. `mark-tested`
+5. `promote-prod`
+6. 正式服运行态验证
+7. `promote-backup`
+8. 备份服运行态验证
+
+任何一步失败，都必须先记录真实证据，再修复，再从合适步骤重新执行；不得把不同 releaseTag 的成功结果拼接成一次完成。
+
+## 0. 开始前必做
+
+### 必做动作
+
+- 创建或识别任务目录。
+- 读取 `docs/experience-index.md`。
+- 命中并读取：
+  - `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
+  - `D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`
+  - `D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`
+  - 如涉及登录验证，再读 `D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`
+- 在 `execution-log.md` 先写 `GREEN: experience-preflight -> PASS` 或明确 blocker。
+- 在 `docs/request-command-log.md` 记录用户需求与关键命令。
+
+### 放行条件
+
+- 任务目录存在。
+- 命中文档已读取并在任务文档写出 `经验门禁`。
+- 高风险动作前已有 `experience-preflight` 记录。
+
+### 阻塞条件
+
+- 没有任务目录。
+- 没有 experience-preflight 记录。
+- 正式服或备份服操作缺少当前任务授权。
+
+## 1. 构建前检查
+
+### 必做动作
+
+- 确认发布源头在 `D:\ProjectPackage\Int\IntRuoyiMaintance`。
+- 确认后端、前端、维护仓三方主分支名、当前提交与 dirty 状态。
+- 每次发布一律先创建本次专用的临时发布 `worktree`，禁止直接在主工作区执行构建、验证或发布。
+- 必须先核对测试服当前 releaseTag/manifest 与本次目标提交是否一致；不一致时不能复用旧发布结论。
+- 必须显式核对 runtime-control 当前 `repo-root` / `frontend-root` 指向的就是本次最新临时发布 worktree，而不是主工作区或旧 worktree。
+- 在临时发布 worktree 上先过前端 lockfile / 依赖恢复与后端目标模块构建门禁；未通过时，先提交修复再重建 worktree。
+- 先跑发布门禁或契约测试，尤其是：
+  - migration policy gate
+  - 影响发布链路的 SQL 契约测试
+  - 影响产物契约的发布脚本测试
+- 确认本机运行控制台是当前版本，必要时重启后再核对。
+- 核对构建预览命令包含：
+  - `-Mode build-release`
+  - `-Component intruoyi`
+  - 本次目标 `releaseTag`
+
+### 放行条件
+
+- migration / manifest / 脚本契约未报错。
+- 本次使用的后端、前端、维护仓输入关系清晰。
+- 三仓主分支状态、本次目标提交与临时发布 worktree 路径已明确记录。
+- 运行控制台预览命令指向正确 repo-root / frontend-root / scriptPath。
+
+### 阻塞条件
+
+- SQL 缺少 `release-migration` 元数据。
+- `dependsOn` 错误。
+- 发布脚本仍引用旧产物名、旧变量、旧路径。
+- 运行控制台仍加载旧 worktree 或旧逻辑。
+- 临时发布 worktree 自身无法通过 frozen-lockfile、依赖恢复或目标模块构建门禁。
+
+### release worktree 路径长度门禁
+
+- 创建 release worktree 时，临时根目录必须短而稳定；推荐 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r<日期><短标识>`。
+- 维护仓、后端仓、前端仓子目录优先使用 `m`、`b`、`f`；不要使用完整任务 ID + 完整仓库名的深层嵌套路径。
+- 若 checkout 报 `Filename too long`，必须冻结证据、清理已部分创建的 worktree、`git worktree prune`，再用短路径重建；不得继续沿用部分成功的 worktree。
+
+## 2. 构建完成判定
+
+### 必做动作
+
+- 检查 build operation 最终状态。
+- 读取 manifest。
+- 核对：
+  - `releaseTag`
+  - backend commit
+  - frontend commit
+  - `sourceRepos.dirty=false`
+  - manifest 中 `branch` 仍是本轮计划分支，且未在构建过程中漂移到新的未计划 commit
+- 若任务要求“只发布 Git 已提交版本”，必须把 manifest 视为最终发布输入证明；构建前的 `git status clean` 不能替代构建后的 manifest 校验。
+
+### 放行条件
+
+- build operation=`SUCCESS`
+- manifest 存在
+- manifest 与本次目标 releaseTag、提交、发布范围一致
+
+### 阻塞条件
+
+- 只看到页面成功提示，但无 manifest
+- manifest 与本次提交或 releaseTag 不一致
+- `dirty=true`
+- 构建完成后 manifest 记录的 commit 与构建前计划值不一致
+
+## 3. 测试服发布与验证
+
+### 必做动作
+
+- 预览测试服发布命令，确认：
+  - `-Environment test`
+  - `-ServerHost 172.30.30.58`
+  - `-RemoteAppDir /opt/intruoyi/runtime`
+- 执行 `publish-test`
+- 只读核对测试服：
+  - `.env IMAGE_TAG`
+  - backend/frontend 实际镜像 tag
+  - backend health
+  - frontend HTTP
+  - operation 最终状态
+
+### 放行条件
+
+- test operation=`SUCCESS`
+- `.env IMAGE_TAG=<releaseTag>`
+- backend/frontend 镜像 tag = `<releaseTag>`
+- backend health=`UP`
+- frontend HTTP=`200`
+
+### 阻塞条件
+
+- operation 未成功
+- `.env` 已变但容器镜像仍是旧版本
+- health 不通
+- frontend 不通
+
+## 4. mark-tested 放行规则
+
+### 必做动作
+
+- 只有在测试服验证通过后，才允许执行 `mark-tested`
+- 记录 operation ID、结果与 recovery candidate
+
+### 放行条件
+
+- 测试服运行态验证已完成
+- `mark-tested` operation=`SUCCESS`
+
+### 阻塞条件
+
+- 测试服未验证就尝试 mark-tested
+- 手工改 tested 状态代替 action
+
+## 5. 正式服发布与验证
+
+### 必做动作
+
+- 预览正式服发布命令，逐项核对：
+  - `-Environment prod`
+  - `-ConfirmText PROD`
+  - `-RequireTested`
+  - 目标 host、目录、数据路径、MinIO 参数
+- 执行 `promote-prod`
+- 只读核对正式服：
+  - `.env IMAGE_TAG`
+  - backend/frontend 实际镜像 tag
+  - backend health
+  - frontend HTTP
+  - operation 最终状态
+
+### 放行条件
+
+- prod operation=`SUCCESS`
+- `.env IMAGE_TAG=<releaseTag>`
+- backend/frontend 镜像 tag = `<releaseTag>`
+- backend health=`UP`
+- frontend HTTP=`200`
+
+### 阻塞条件
+
+- 正式服未带 `PROD`
+- 正式服未带 `RequireTested`
+- operation 未成功
+- `/mnt/nas`、数据盘、MinIO、挂载状态异常
+
+## 6. 备份服发布与验证
+
+### 必做动作
+
+- 预览备份服发布命令，逐项核对：
+  - `-Environment backup`
+  - `-ServerHost 172.30.30.59`
+  - `-RemoteReleaseRoot /mnt/intruoyi-data/intruoyi-releases`
+  - `-RemoteDataRoot /mnt/intruoyi-data/runtime-data`
+  - `-RemoteDataDiskMount /mnt/intruoyi-data`
+  - `-RemoteDataDiskDevice /dev/mapper/cl-home`
+  - `-RemoteMinioContainer intruoyi-minio`
+- 执行 `promote-backup`
+- 只读核对备份服：
+  - `.env IMAGE_TAG`
+  - backend/frontend 实际镜像 tag
+  - 数据盘挂载
+  - backend health
+  - frontend HTTP
+  - operation 最终状态
+
+### 放行条件
+
+- backup operation=`SUCCESS`
+- `.env IMAGE_TAG=<releaseTag>`
+- backend/frontend 镜像 tag = `<releaseTag>`
+- `/mnt/intruoyi-data` 挂载正确
+- backend health=`UP`
+- frontend HTTP=`200`
+
+### 阻塞条件
+
+- 备份服未显式使用 `/mnt/intruoyi-data`
+- 备份服误继承 Docker 根目录路径或正式服参数
+- operation 未成功
+
+## 7. 失败时的排查优先级
+
+Codex 必须按这个顺序排查：
+
+1. migration / manifest / required SQL 契约
+2. 维护仓发布脚本与业务仓产物契约
+3. 运行控制台当前加载版本
+4. 测试服 / 正式服 / 备份服环境状态
+
+禁止在第 1、2 层未排干净前，直接把问题归因到服务器。
+
+若失败点在 required SQL：
+
+1. 先只读回查真实库状态、主键占用、历史数据与 tenant 范围
+2. 再决定修 SQL、修迁移契约还是修发布脚本
+3. 禁止手工改测试库绕过发布门禁
+
+## 8. 2026-07-01 新增前置门禁
+
+### 发布输入与 releaseTag
+
+- 修复任何发布 blocker 后，必须重新执行 `build-release` 并生成新的 `releaseTag`。
+- 禁止用旧失败包继续 `publish-test`、`mark-tested`、`promote-prod` 或 `promote-backup`。
+- 禁止拼接不同 `releaseTag` 的测试服、正式服、备份服结果。
+- `build-release` 成功后必须复核 manifest 中 backend/frontend `commit` 与 `dirty=false`。
+
+### 测试服参数
+
+- `publish-test` 预览必须显式核对测试服真实参数：
+  - `ServerHost=172.30.30.58`
+  - `RemoteAppDir=/opt/intruoyi/runtime`
+  - Docker root 不得误套备份服路径
+  - 数据盘设备、MinIO 容器名必须与 `server-access.md` 一致
+- 如果预览中出现备份服或正式服参数，必须先修正维护控制台配置、脚本或文档，不得继续真实发布。
+
+### required SQL 与真实库基线
+
+- 发布前对新增或改动的 required SQL 做可重入检查，重点检查：
+  - `ADD COLUMN` 是否有存在性保护
+  - 菜单插入是否有冲突检测
+  - 角色绑定是否兼容真实角色编码
+  - 租户包与菜单权限是否同步
+  - DCC 分类、编码、字段长度和唯一性是否有前置校验
+- SQL 依赖角色、菜单、租户或账号时，先只读查真实库，不能只按历史角色码或文档推断。
+- 如果真实库基线不满足 SQL 契约，必须阻塞并修 SQL/迁移/数据契约；禁止手工改测试库帮助发布过关。
+
+### DCC promote 前检查
+
+- `promote-prod` 前必须对正式服 live data 做只读 DCC 质量预检。
+- 至少覆盖分类重复、分类编码缺失、字段长度超限、必填关系缺失。
+- 任一 DCC 质量预检失败时，不得推进正式服发布；失败 releaseTag 只保留为排障证据。
+
+### 自动经验候选
+
+- 发布类 operation 完成后必须生成 `runtime/runtime-control/release-experience-candidates.md`。
+- 候选内容至少包含 operationId、action、environment、releaseTag、status、summary、候选前置经验和关键日志摘录。
+- 如果候选文件缺失，任务收口不得视为完成；如果运行控制台写候选失败，operation 必须 fail fast。
+- 任务收尾时读取候选文件，将稳定、可复用经验正式写入 `release-build-preflight-lessons.md` 或本清单。
+
+## 8.1 2026-07-03 不带数据发布新增前置门禁
+
+### code-only 不跳过 SQL
+
+- `code-only`、`-SkipDatabaseSync`、`-SkipMinioSync` 只表示不携带业务数据和文件，不表示跳过 schema、required SQL、migration 或字段约束变更。
+- 不带数据发布在 `build-release` 后仍必须核验 required SQL、migration 门禁和真实库约束变更结果。
+
+### DCC lifecycle_stage / NOT NULL
+
+- DCC 分类 `lifecycle_stage` 或任何字段改为 `NOT NULL` 前，必须先查全表空值，不能只查 `deleted=0` 活动行。
+- `deleted=1` 历史归档行同样会阻塞 `NOT NULL`，必须在可重复 SQL 中定义归档归一化规则和注释。
+- required SQL 报 `Invalid use of NULL value` 时，先只读按 `deleted` 等关键维度统计空值分布，再修 SQL、迁移顺序或数据契约；禁止手工改测试库绕过。
+
+### 远端 MySQL 查询
+
+- 测试服业务库名以真实容器为准；当前确认业务库为 `ruoyi-vue-pro`，不得默认写成 `yudao_ruoyi`。
+- MySQL root 密码必须在容器内展开，优先使用 `docker exec -i intruoyi-mysql sh -lc 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" ruoyi-vue-pro'` 并通过标准输入传 SQL。
+- PowerShell、SSH、sh、mysql 多层引号失败时，改用标准输入、临时脚本或 here-doc，并记录 `$LASTEXITCODE`；不得把查询失败误判为数据库无数据。
+
+### runtime-control 配置
+
+- 修改 `runtime-control.local.yaml` 的 `repo-root` / `frontend-root` 后，必须回读确认 YAML 缩进、实际路径和 `http://127.0.0.1:48181/actuator/health`。
+- 配置指向临时发布 worktree 后，收尾前必须恢复稳定主路径，或明确确认该 worktree 不会被删除。
+- 运行控制台启动入口以维护仓当前脚本为准；本轮确认入口是 `scripts\start.ps1`。
+
+### no-data manifest
+
+- no-data 发布必须验证 manifest `publishScope=code-only`。
+- 发布包不得包含 `database`、`db-dump`、`mysql-dump`、`minio`、`files`、`runtime-data`、`data`、`docker-build-context` 等数据目录。
+- 允许存在 `required-sql`、`resources`、`runtime-env`、`smoke` 等代码发布必要目录；operation `SUCCESS` 不能替代 manifest 与目录检查。
+
+## 9. 完成判定
+
+Codex 只有在以下条件同时成立时，才能判定完整发布完成：
+
+- 同一 `releaseTag` 已走完 `build-release -> publish-test -> mark-tested -> promote-prod -> promote-backup`
+- 五个 operation 都有明确结果证据
+- 测试服、正式服、备份服三环境都已验证：
+  - `.env IMAGE_TAG`
+  - backend/frontend 实际镜像 tag
+  - backend health=`UP`
+  - frontend HTTP=`200`
+- 任务日志与请求命令日志已回写
+
+任何缺项都不得宣称“完整发布已完成”。

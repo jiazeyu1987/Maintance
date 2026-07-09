@@ -1,0 +1,36 @@
+﻿{
+    "taskDir":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release",
+    "taskDirExists":  true,
+    "taskMdExists":  true,
+    "executionLogExists":  true,
+    "hookDir":  ".git/hooks",
+    "status":  [
+                   "M  sql/mysql/20260708_mes_balloon_process_device_capacity.sql",
+                   "M  sql/mysql/20260708_mes_batch_record_version_phase_one.sql",
+                   " M yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/batchrecordreport/MesProBatchRecordReportServiceImpl.java",
+                   " M yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/batchrecordreport/MesProBatchRecordRouteERecognizer.java",
+                   " M yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/service/pro/batchrecordreport/MesProBatchRecordReportServiceImplDbTest.java",
+                   " M yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/service/pro/batchrecordreport/MesProBatchRecordRouteERecognizerTest.java",
+                   "?? yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/batchrecordreport/MesProBatchRecordLossReportNormalizer.java"
+               ],
+    "staged":  [
+                   "sql/mysql/20260708_mes_balloon_process_device_capacity.sql",
+                   "sql/mysql/20260708_mes_batch_record_version_phase_one.sql"
+               ],
+    "retry2Stderr":  "TDD compliance failed:\r\n- repo tooling changes under script/ or sql/mysql/ require a changed script test under script/tests/.\r\n",
+    "retry2Stdout":  "",
+    "hooks":  [
+                  {
+                      "path":  ".git\\hooks\\pre-commit",
+                      "exists":  false
+                  },
+                  {
+                      "path":  ".git\\hooks\\commit-msg",
+                      "exists":  false
+                  },
+                  {
+                      "path":  ".git\\hooks\\pre-push",
+                      "exists":  false
+                  }
+              ]
+}

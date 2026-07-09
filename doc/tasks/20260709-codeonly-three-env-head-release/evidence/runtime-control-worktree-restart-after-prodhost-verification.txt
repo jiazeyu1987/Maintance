@@ -1,0 +1,7 @@
+time=2026-07-09 13:21:50 +08:00
+pid=804
+health={"status":"UP"}
+config=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\config\runtime-control.local.yaml
+prodHostPatched=True
+stdout=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\runtime-control-worktree-java-restart-after-prodhost.out.log
+stderr=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\runtime-control-worktree-java-restart-after-prodhost.err.log

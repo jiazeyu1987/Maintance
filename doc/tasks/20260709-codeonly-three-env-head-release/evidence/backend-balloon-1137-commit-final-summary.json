@@ -1,0 +1,30 @@
+﻿{
+    "status":  "SUCCESS",
+    "commit":  "65190bdc3c43489536d0fb1908290aa4629ce522",
+    "subject":  "任务:修复球囊发布SQL临时表重开",
+    "staged":  [
+                   "script/tests/test_release_migration_metadata_sql_20260708.py",
+                   "sql/mysql/20260708_mes_balloon_process_device_capacity.sql"
+               ],
+    "pytestOut":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\backend-balloon-1137-pytest-final.out.log",
+    "policyOut":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\migration-policy-full-after-balloon-1137-fix-final-output.json",
+    "diffCheckOut":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\backend-balloon-1137-diff-check-commit.out.log",
+    "backendMainStatus":  [
+                              " M docs/request-command-log.md",
+                              " M yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/controller/admin/pro/route/MesProRouteProductController.java",
+                              " M yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/dal/mysql/pro/route/MesProRouteProductMapper.java",
+                              " M yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/enums/ErrorCodeConstants.java",
+                              " M yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/process/MesProProcessServiceImpl.java",
+                              " M yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/route/MesProRouteProductService.java",
+                              " M yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/route/MesProRouteProductServiceImpl.java",
+                              " M yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/service/pro/process/MesProProcessServiceImplTest.java",
+                              "?? doc/tasks/20260709-route-product-bind-from-work-orders/",
+                              "?? yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/controller/admin/pro/route/vo/product/MesProRouteProductBindFromWorkOrdersReqVO.java",
+                              "?? yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/controller/admin/pro/route/vo/product/MesProRouteProductBindFromWorkOrdersRespVO.java",
+                              "?? yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/MesProRouteProductBindFromWorkOrdersTest.java"
+                          ],
+    "backendWorktreeReset":  "HEAD is now at 65190bdc3c 任务:修复球囊发布SQL临时表重开",
+    "backendWorktreeStatus":  {
+
+                              }
+}

@@ -1,0 +1,15 @@
+﻿{
+    "generatedAt":  "2026-07-09T14:46:36",
+    "issue":  "code-only release preflight produced APPLY items for type=data required SQL, causing publish-test v6 to apply data migration 20260709_mes_rt000006_batch_record_mapping.sql and fail on missing RT000006 route",
+    "fix":  [
+                "preserve requiredSql type/migrationId/file/sha256 in Get-ReleasePackageDatabaseSqlScripts entries",
+                "pass releasePublishScope into Get-ReleasePreflightApplyItems",
+                "filter type=data apply items when publishScope=code-only before remote MySQL execution"
+            ],
+    "verification":  {
+                         "stdout":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\maintenance-codeonly-required-sql-contract-pytest.out.log",
+                         "command":  "python -X utf8 -m pytest tests/test_code_only_required_sql_contract.py -q",
+                         "stderr":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\maintenance-codeonly-required-sql-contract-pytest.err.log",
+                         "result":  "PASS"
+                     }
+}

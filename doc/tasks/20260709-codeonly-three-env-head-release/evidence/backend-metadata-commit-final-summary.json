@@ -1,0 +1,29 @@
+﻿{
+    "status":  "SUCCESS",
+    "pytestOut":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\backend-release-migration-20260708-pytest.out.log",
+    "pytestErr":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\backend-release-migration-20260708-pytest.err.log",
+    "staged":  [
+                   "script/tests/test_release_migration_metadata_sql_20260708.py",
+                   "sql/mysql/20260708_mes_balloon_process_device_capacity.sql",
+                   "sql/mysql/20260708_mes_batch_record_version_phase_one.sql"
+               ],
+    "commit":  "d09b493535cd8db228f91aa2917a29179af94f34",
+    "subject":  "任务:修复发布迁移元数据",
+    "backendMainStatus":  [
+                              " M yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/batchrecordreport/MesProBatchRecordReportServiceImpl.java",
+                              " M yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/batchrecordreport/MesProBatchRecordRouteERecognizer.java",
+                              " M yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/service/pro/batchrecordreport/MesProBatchRecordReportServiceImplDbTest.java",
+                              " M yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/service/pro/batchrecordreport/MesProBatchRecordRouteERecognizerTest.java",
+                              "?? yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/batchrecordreport/MesProBatchRecordLossReportNormalizer.java"
+                          ],
+    "backendWorktreeReset":  "HEAD is now at d09b493535 任务:修复发布迁移元数据",
+    "backendWorktreeStatus":  {
+
+                              },
+    "docsTouched":  [
+                        "docs/release-build-preflight-lessons.md",
+                        "docs/experience-index.md",
+                        "docs/request-command-log.md",
+                        "doc/tasks/20260709-codeonly-three-env-head-release/execution-log.md"
+                    ]
+}

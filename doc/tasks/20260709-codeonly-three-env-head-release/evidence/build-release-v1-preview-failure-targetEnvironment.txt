@@ -1,0 +1,7 @@
+time=2026-07-09 13:20:12 +08:00
+step=build-release-preview-v1
+status=FAIL
+releaseTag=release-20260709-codeonly-three-env-head-v1
+reason=runtime-control API returned code=400 msg=targetEnvironment when build-release preview request included targetEnvironment.
+impact=no build operation executed; no release package created; v1 releaseTag is preview-failed and will not be used for final loop.
+previewResponse={"code":400,"data":null,"msg":"targetEnvironment"}

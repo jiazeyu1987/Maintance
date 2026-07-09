@@ -1,0 +1,20 @@
+=== balloon main ===
+-- release-migration: allowedEnvironments=test,backup,prod; dependsOn=20260513_mes_dv_machinery_extend; type=schema; riskLevel=medium
+-- 球囊扩张导管工序设置与设备产能联动：按桌面 Excel Sheet1 导入 tenant_id=1 数据。
+
+=== balloon worktree ===
+-- release-migration: allowedEnvironments=test,backup,prod; dependsOn=20260513_mes_dv_machinery_extend; type=schema; riskLevel=medium
+-- 球囊扩张导管工序设置与设备产能联动：按桌面 Excel Sheet1 导入 tenant_id=1 数据。
+
+=== phase main ===
+-- release-migration: allowedEnvironments=test,backup,prod; dependsOn=20260514_mes_batch_record_report,20260612_mes_edhr_multi_batch_route; type=schema; riskLevel=medium
+-- eDHR batch record Word import version approval phase one.
+-- Non-destructive migration: only creates version-control tables and adds nullable version references.
+
+DROP PROCEDURE IF EXISTS add_mes_edhr_column_if_missing;
+=== phase worktree ===
+-- release-migration: allowedEnvironments=test,backup,prod; dependsOn=20260514_mes_batch_record_report,20260612_mes_edhr_multi_batch_route; type=schema; riskLevel=medium
+-- eDHR batch record Word import version approval phase one.
+-- Non-destructive migration: only creates version-control tables and adds nullable version references.
+
+DROP PROCEDURE IF EXISTS add_mes_edhr_column_if_missing;

@@ -1,0 +1,25 @@
+﻿{
+    "releaseTag":  "release-20260709-codeonly-three-env-head-v6",
+    "script":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m\\ops\\deploy\\publish-int-ruoyi.ps1",
+    "nasConfigPath":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m\\runtime\\runtime-control\\nas-release-config\\manual-build-release-v6.json",
+    "backendRepoRoot":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\b",
+    "frontendRepoRoot":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\f",
+    "maintenanceWorktree":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m",
+    "backendHead":  "65190bdc3c43489536d0fb1908290aa4629ce522",
+    "frontendHead":  "0931b8dc3725b34689ee36e68cc4dd3a7aacea3b",
+    "maintenanceHead":  "140b253731f5b7520dd32e5fa5de30313484a2c3",
+    "backendStatus":  [
+
+                      ],
+    "frontendStatus":  [
+
+                       ],
+    "maintenanceOpsConfigStatus":  [
+
+                                   ],
+    "hasSkipDatabaseSync":  true,
+    "hasSkipMinioSync":  true,
+    "hasTestServerHost":  true,
+    "hasProdServerHost":  true,
+    "hasBackupServerHost":  true
+}

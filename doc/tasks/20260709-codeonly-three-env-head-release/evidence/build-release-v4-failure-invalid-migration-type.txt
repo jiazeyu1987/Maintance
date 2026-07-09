@@ -1,0 +1,10 @@
+time=2026-07-09 13:23:49 +08:00
+step=build-release-command-v4
+status=FAIL
+releaseTag=release-20260709-codeonly-three-env-head-v4
+reason=publish-int-ruoyi.ps1 failed before package creation: Invalid type in release migration metadata: D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\b\sql\mysql\20260708_mes_balloon_process_device_capacity.sql
+impact=no release package directory found for v4; v4 releaseTag is failed and must not be used for publish-test/mark-tested/promote-prod/promote-backup.
+stdoutTail=[INFO] build-release runtime guard created: E:\Int\CacheData\IntRuoyi\runtime\local-runtime-restart.guard
+[FAIL] Invalid type in release migration metadata: D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\b\sql\mysql\20260708_mes_balloon_process_device_capacity.sql
+
+stderrTail=

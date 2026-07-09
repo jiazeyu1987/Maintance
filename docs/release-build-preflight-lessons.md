@@ -311,3 +311,47 @@
 - SQL 发布契约检查失败，或数据库迁移风险级别/环境范围不可判定。
 - 测试服发布后任一项失败：operation != SUCCESS、远端 `.env IMAGE_TAG` 不等于 releaseTag、实际镜像 tag 不一致、容器未运行、后端 health 不是 UP、前端 HTTP 不是 200、运行控制台版本号或变更说明不匹配。
 - 发现 PowerShell 编码、数组匹配或 API 路径造成误判时，必须改为结构化/原始 UTF-8 校验后再下结论，不得降级跳过验证。
+'
+
+## 2026-07-09 build-release 预览请求不得携带 targetEnvironment
+
+- 触发场景：通过运行控制台 API `/admin-api/infra/runtime-control/actions/preview` 预览 `build-release`。
+- 失败现象：请求体同时包含 `action=build-release` 与 `targetEnvironment=test` 时，接口返回 `code=400,msg=targetEnvironment`，构建不会启动。
+- 前置门禁：`build-release` 预览/执行请求只传构建字段：`action`、`reason`、`releaseTag`、`publishScope=code-only`、`includeOnlyOffice=false`、`includeShowroomBuildPackage=false`、`enableSmartReleaseReport=false`；`targetEnvironment` 仅用于 `publish-test/promote-prod/promote-backup` 部署动作。
+- 处理要求：冻结失败响应和请求体；该 releaseTag 若仅预览失败且未启动 operation，可更换新 releaseTag 重新预览并执行。
+'
+## 2026-07-09 build-release 三环境预览必须含 ProdServerHost
+
+- 触发场景：执行 code-only 三环境完整闭环，运行控制台 uild-release 预览命令只包含 TestServerHost 与 BackupServerHost。
+- 失败现象：本地预览门禁发现命令缺少 -ProdServerHost 172.30.30.57，虽然预览 API 返回成功，但后续正式服 runtime env / manifest 目标参数可能不完整。
+- 前置门禁：三环境闭环的 uild-release 预览必须同时包含 -TestServerHost 172.30.30.58、-ProdServerHost 172.30.30.57、-BackupServerHost 172.30.30.59。
+- 处理要求：冻结预览参数；补齐运行控制台本地配置中 maintenance.runtime-control.environments.prod.host 后重启控制台，并使用新 releaseTag 重新预览/构建。
+
+## 2026-07-09 build-release 迁移元数据必须先过全量策略门禁
+
+- 适用场景：执行 IntRuoyi code-only / no-data `build-release` 前，尤其是 HEAD 中包含 `sql/mysql/*.sql` 迁移文件时。
+- 强制门禁：先运行 `script/release/run-release-migration-policy-gate.py --sql-root <backend>/sql/mysql --json`，并保存完整 JSON 证据；不得只抽查单文件。
+- 元数据约束：`type` 只能使用脚本允许枚举 `schema`、`data`、`menu`、`config`、`permission`、`seed`；不得写 `schema-data` 等组合值。
+- 依赖约束：`dependsOn` 必须填写真实存在的 migrationId，且依赖迁移的 `allowedEnvironments` 必须覆盖子迁移环境。
+- 失败处理：若 build-release 报 `Invalid type in release migration metadata` 或 `missing release-migration metadata`，先冻结 operation 日志与策略门禁 JSON，再修复 SQL 首行元数据并补 `script/tests` 覆盖后重新生成新的 releaseTag。
+
+## 2026-07-09 publish-test SQL 不得复用同一派生/临时表别名触发 MySQL 1137
+
+- 适用场景：发布脚本执行 `required-sql/*.sql` 时出现 `ERROR 1137 (HY000): Can't reopen table: '<alias>'`。
+- 强制门禁：失败后先冻结发布 stdout/stderr、远端 `infra_release_operation_lock`、`infra_release_migration` 失败行、远端 required-sql checksum 与当前 `.env IMAGE_TAG`。
+- 根因判断：MySQL 对同一查询中的派生/临时表复用有限制；SQL 中如果将同一 CTE/临时结果别名在嵌套子查询中重复引用，发布执行会失败，不能通过重试或手工标绿绕过。
+- 修复要求：把可复用种子结果落到真实临时表，或拆分为互不重复 reopen 的 SQL 片段；修复后必须补 `script/tests` 静态覆盖并重新构建新的 releaseTag。
+## 2026-07-09 publish-test required SQL 前置业务数据必须由迁移自给或显式依赖
+
+- 适用场景：发布脚本执行 `required-sql/*.sql` 时，SQL 通过 `SIGNAL SQLSTATE '45000'` 报 `Missing <业务对象>`，例如 `Missing RT000006 pressure pump route`。
+- 强制门禁：失败后先冻结发布 stdout/stderr、远端 `infra_release_operation_lock`、`infra_release_migration` 失败行、远端 required-sql checksum、相关业务表查询快照与当前 `.env IMAGE_TAG`。
+- 根因判断：code-only 发布不得依赖测试服手工补数据；若 required SQL 需要业务主数据，应在迁移包内通过同一或前置 migration 创建，或在 metadata `dependsOn` 中声明真实前置 migrationId。
+- 修复要求：不得手工改测试库绕过。修复 SQL 根因并补 `script/tests` 覆盖后，必须重新构建新的 releaseTag，不能拼接失败 tag 的后续结果。
+
+### Gate: code-only 发布不得执行 `type=data` required SQL
+- Trigger: 使用 `SkipDatabaseSync` 与 `SkipMinioSync` 构建或发布 `publishScope=code-only` 包，且 manifest / preflight-plan 包含 required SQL。
+- Preflight check: 发布脚本必须在远端 MySQL 执行前按 `publishScope` 过滤 required SQL；`code-only` 只允许执行结构/菜单/配置/权限/种子等代码契约必需迁移，不得执行业务数据迁移 `type=data`。
+- Blocker: 若 `preflight-plan.json` 中 `type=data` 项会进入 APPLY 执行队列，必须阻塞并修复发布脚本，重新生成新的 releaseTag。
+- Verification: 运行 `python -X utf8 -m pytest tests/test_code_only_required_sql_contract.py -q`，并在发布日志中看到 `Skipping data required database SQL for code-only release` 后再继续三环境发布。
+- Forbidden action: 不得手工补测试库业务数据、不得把 data SQL 改成 schema 绕过、不得复用失败 releaseTag 拼接后续环境结果。
+- Evidence: `doc/tasks/20260709-codeonly-three-env-head-release/evidence/maintenance-codeonly-required-sql-contract-fix-summary.json`。

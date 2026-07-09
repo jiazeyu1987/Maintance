@@ -1,0 +1,9 @@
+{
+    "action":  "build-release",
+    "reason":  "code-only three-env release build from clean temporary worktrees",
+    "publishScope":  "code-only",
+    "includeOnlyOffice":  false,
+    "includeShowroomBuildPackage":  false,
+    "enableSmartReleaseReport":  false,
+    "releaseTag":  "release-20260709-codeonly-three-env-head-v2"
+}

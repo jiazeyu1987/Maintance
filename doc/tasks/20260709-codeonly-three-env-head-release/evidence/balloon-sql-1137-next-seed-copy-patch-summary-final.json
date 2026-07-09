@@ -1,0 +1,26 @@
+﻿{
+    "status":  "PATCHED_NEXT_SEED_COPY",
+    "replacedLookupBlocks":  2,
+    "nextSeedLookupRemaining":  [
+
+                                ],
+    "originalNextSeedJoinRemaining":  [
+
+                                      ],
+    "copyTableMatches":  [
+                             "160: DROP TEMPORARY TABLE IF EXISTS `tmp_balloon_route_process_next_seed`;",
+                             "207: DROP TEMPORARY TABLE IF EXISTS `tmp_balloon_route_process_next_seed`;",
+                             "208: CREATE TEMPORARY TABLE `tmp_balloon_route_process_next_seed` LIKE `tmp_balloon_route_process_seed`;",
+                             "209: INSERT INTO `tmp_balloon_route_process_next_seed`",
+                             "606:  LEFT JOIN `tmp_balloon_route_process_next_seed` next_seed",
+                             "630:  LEFT JOIN `tmp_balloon_route_process_next_seed` next_seed",
+                             "758: DROP TEMPORARY TABLE IF EXISTS `tmp_balloon_route_process_next_seed`;"
+                         ],
+    "notExistsRemaining":  [
+
+                           ],
+    "gitStatus":  [
+                      " M script/tests/test_release_migration_metadata_sql_20260708.py",
+                      " M sql/mysql/20260708_mes_balloon_process_device_capacity.sql"
+                  ]
+}

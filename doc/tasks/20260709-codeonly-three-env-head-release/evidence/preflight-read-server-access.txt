@@ -1,0 +1,97 @@
+# IntRuoyi 服务器访问说明
+
+## 触发条件
+
+- 测试服、备份服、正式服状态检查、联调、排障。
+- 远端重启、发布、备份、恢复、回滚、大文件上传和批量导入。
+- 需要 SSH、远端健康检查、远端 Docker/Compose 或对象存储核验的任务。
+
+## 强制门禁
+
+- 涉及发布、备份、恢复或回滚时，同时读取 `docs/release-backup-restore.md`。
+- 涉及登录验证或 E2E 时，同时读取 `docs/login-access.md`。
+- 正式服默认禁止操作；测试服、备份服、正式服写入或重启必须有用户当前任务授权。
+- 远端凭据不得写入仓库、脚本、任务文档或运行控制台配置。
+- 服务器动作前必须确认目标主机、目标目录、目标数据盘、目标容器和授权范围。
+- 备份服与正式服同等级门禁：只允许已测试通过发布包，必须提供发布责任人与 `PROD` 确认。
+- 备用服务器必须显式使用 `/mnt/intruoyi-data` 数据盘相关参数，不得回退到根分区或 Docker 默认路径。
+- 大文件上传、批量导入、备份或恢复前必须检查根分区、数据盘、NAS 挂载和目标临时目录可用空间。
+- 远端命令应优先使用仓库封装脚本；直接 SSH 时必须记录执行目标和关键输出。
+- 本机后端重启或健康检查失败时，先核当前进程命令行和运行参数；默认后端 jar/profile 可能连接 `3306/root`，不得把该启动前置错误误判成业务功能失败。
+- 本机前后端启动默认使用组件脚本：后端 `restart-ruoyi-backend.bat`，前端 `restart-ruoyi-frontend.bat`；旧入口 `restart-ruoyi.bat` 已拆分为提示脚本，不再隐式启动两个组件。
+- 本机启动脚本退出码为 0 只代表脚本流程完成，收尾必须分别验证端口监听、进程命令行、后端 `/actuator/health` 和前端 HTML 响应。
+
+## 常见失败模式
+
+- 备用服务器没有 `/dev/vdb`，真实 1T 数据盘是 `/dev/sdb` 下的 LVM `/dev/mapper/cl-home`。
+- MinIO 容器名和对象存储 endpoint 必须以当前目标环境为准，不得从正式服配置兜底。
+- 健康检查通过不等于发布、备份、恢复或导入任务完成。
+- 根分区、上传临时目录或 Docker 默认路径容量不足会让长任务中途网络失败。
+- 本机 IntRuoyi 后端标准运行态依赖 Docker MySQL `23306` 与 Redis `26379`；若直接用默认 `yudao-server.jar` 或未带本机参数启动，常见表现是尝试连接 `3306/root` 后失败。
+- 本机 Vite 前端刚重启后可能仍在首次编译，第一次 `Invoke-WebRequest http://localhost:8081/` 可能超时；先确认 `8081` 监听进程和前端日志，再用 `localhost` 与 `127.0.0.1` 复验，不要把冷启动超时直接归因为前端未启动。
+
+## 验证命令
+
+- 远端 `/actuator/health` 返回健康。
+- 目标前端 URL 可访问，必要时走真实登录。
+- 远端 `.env`、Docker 镜像、挂载目录、对象存储配置与任务目标一致。
+- 本机后端排障时同时核 `/actuator/health`、监听端口、进程命令行和数据库/Redis 端口；只看到 Java 进程存在不等于运行态正确。
+- 本机前后端启动后验证顺序：`Get-NetTCPConnection -LocalPort 48081,8081 -State Listen`，读取对应 `Win32_Process.CommandLine`，再请求 `http://127.0.0.1:48081/actuator/health` 和 `http://localhost:8081/`。
+- 本机后端运行包更新后，不能只看 `mvn package` 或源码已修改；必须确认 `yudao-server-exec.jar` 里的目标 `BOOT-INF/lib` 模块 jar 已更新且内嵌 jar 为 `compress_type=0`，再重启 48081、检查 `/actuator/health`，最后用真实接口或 E2E 证明新逻辑已生效。
+- 自动化入口：`node scripts/preflight/upload-preflight.mjs --host <host> --remote-app-dir /opt/intruoyi/runtime --data-root <path> --nginx-conf <path> --multipart-tmp <path>`
+
+## 固定服务器
+
+- 测试服务器 IP：`172.30.30.58`
+- 备用服务器 IP：`172.30.30.59`
+- 三台服务器当前 IntRuoyi 远端运行目录统一为：`/opt/intruoyi/runtime`
+
+## 访问测试服务器
+
+- 优先使用仓库封装脚本：
+  - `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\deploy\show-int-ruoyi-test-status.bat`
+  - `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\deploy\restart-int-ruoyi-to-test.bat`
+  - `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\deploy\[PROD_ACCESS_REMOVED]1 -Environment test`
+  - `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\运维工具.bat test`
+- 当前仓库已确认的底层访问链路是 SSH，脚本最终会调用 `ssh root@172.30.30.58`。
+- 直接 SSH 示例：`ssh root@172.30.30.58`
+- 常用外部验证地址：
+  - 前端：`http://172.30.30.58:8081/`
+  - 后端健康检查：`http://172.30.30.58:48081/actuator/health`
+  - 展厅站点：`http://172.30.30.58:8083/`
+- 2026-07-01 最新只读核对结果：测试服务器当前数据盘实际挂载仍是 `/var/lib/docker`（设备 `/dev/vdb`），发布/运行数据目录为 `/var/lib/docker/intruoyi-releases` 与 `/var/lib/docker/intruoyi-data/runtime-data`；当前目标 MinIO 容器名为 `ragflow_compose-minio-1`。测试服参数不得套用备份服 `/mnt/intruoyi-data` / `intruoyi-minio` 基线。
+
+## 访问正式服务器
+
+[PROD_ACCESS_REMOVED]
+## 访问备用服务器
+
+- 优先使用仓库封装脚本与运行控制台：
+  - 状态脚本：`D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\deploy\show-int-ruoyi-remote-status.ps1 -ServerHost 172.30.30.59 -ServerUser root -RemoteAppDir /opt/intruoyi/runtime -RemoteDataRoot /mnt/intruoyi-data/runtime-data -RemoteDataDiskMount /mnt/intruoyi-data -RemoteDataDiskDevice /dev/mapper/cl-home -RemoteMinioContainer intruoyi-minio -Component full -Json`
+  - 发布脚本：`D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\deploy\[PROD_ACCESS_REMOVED]1 -Environment backup -ConfirmText PROD -RemoteReleaseRoot /mnt/intruoyi-data/intruoyi-releases -RemoteDataRoot /mnt/intruoyi-data/runtime-data -RemoteDataDiskMount /mnt/intruoyi-data -RemoteDataDiskDevice /dev/mapper/cl-home -RemoteMinioContainer intruoyi-minio`
+- 当前仓库已确认的底层访问链路是 SSH，脚本最终会调用 `ssh root@172.30.30.59`。
+- 备用服务器与正式服同等级门禁：只允许已测试通过发布包，必须提供发布责任人与 `PROD` 确认。
+- 不在仓库、脚本、任务文档或运行控制台配置中记录 SSH 密码；首次接入时使用临时已授权口令安装本机公钥，后续必须走非交互式 SSH。
+- 当前只读探测结果：备用服务器不存在 `/dev/vdb`；1T 数据盘是 `/dev/sdb` 下的 LVM `/dev/mapper/cl-home`，挂载点为 `/mnt/intruoyi-data`。备用发布必须显式使用 `RemoteDataDiskMount=/mnt/intruoyi-data`、`RemoteDataDiskDevice=/dev/mapper/cl-home`、`RemoteDataRoot=/mnt/intruoyi-data/runtime-data`、`RemoteReleaseRoot=/mnt/intruoyi-data/intruoyi-releases`，不得回退到根分区或 `/var/lib/docker` 默认 release/data 路径。
+- 2026-06-03 授权补齐后结果：备用服务器存在真实目标 MinIO 容器 `intruoyi-minio`，数据目录 `/mnt/intruoyi-data/runtime-data/minio`，主机 `127.0.0.1:9000` 与后端容器访问 `host.docker.internal:9000` 均可达，默认 bucket 为 `yudao`。with-data 备份发布必须显式使用 `RemoteMinioContainer=intruoyi-minio`，禁止用正式服 RagFlow 容器名兜底。
+- 常用外部验证地址：
+  - 前端：`http://172.30.30.59:8081/`
+  - 后端健康检查：`http://172.30.30.59:48081/actuator/health`
+  - 展厅站点：`http://172.30.30.59:8083/`
+
+## 说明
+
+- 本文档仅记录当前仓库内已确认的固定 IP、SSH 访问链路与脚本入口。
+- 本文档禁止写入 SSH 密码、私钥内容、跳板机口令或 VPN 密钥；如后续确认稳定凭据来源，只记录凭据来源名称与轮换责任人。
+- 后续凡涉及测试服/正式服状态检查、重启、发布、联调或环境核对，默认先看本文档。
+
+## 证据来源
+
+- `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\OPS.md`
+- `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\deploy\show-int-ruoyi-test-status.bat`
+- `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\deploy\[PROD_ACCESS_REMOVED]`
+- `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\deploy\[PROD_ACCESS_REMOVED]1`
+- `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\deploy\restart-int-ruoyi-remote.ps1`
+- `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\docs\environments\ci-cd-evidence.md`
+- `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\docs\environments\ci-cd-prod-evidence.md`
+- `D:\ProjectPackage\Int\IntRuoyi\docs\recovery\production-backup-plan.md`

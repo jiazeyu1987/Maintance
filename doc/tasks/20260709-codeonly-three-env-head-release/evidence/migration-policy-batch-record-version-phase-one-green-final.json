@@ -1,0 +1,48 @@
+{
+  "status": "passed",
+  "migrationCount": 3,
+  "migrations": [
+    {
+      "migrationId": "20260514_mes_batch_record_report",
+      "file": "sql/mysql/20260514_mes_batch_record_report.sql",
+      "sha256": "35aa1b5a294ae1fb5a22fdd7652bc731d9e985f4ce98dae9853f14affdd740cc",
+      "type": "schema",
+      "allowedEnvironments": [
+        "test",
+        "backup",
+        "prod"
+      ],
+      "dependsOn": [],
+      "riskLevel": "medium"
+    },
+    {
+      "migrationId": "20260612_mes_edhr_multi_batch_route",
+      "file": "sql/mysql/20260612_mes_edhr_multi_batch_route.sql",
+      "sha256": "a2c98da722ea9ca5e04015df2666b94b1725adc68a1da9bd0d1021d64af7c0da",
+      "type": "schema",
+      "allowedEnvironments": [
+        "test",
+        "backup",
+        "prod"
+      ],
+      "dependsOn": [],
+      "riskLevel": "medium"
+    },
+    {
+      "migrationId": "20260708_mes_batch_record_version_phase_one",
+      "file": "sql/mysql/20260708_mes_batch_record_version_phase_one.sql",
+      "sha256": "a958d06d8268136a174133df9bf2a5c370f364a544442ea814eff52b32e6dee2",
+      "type": "schema",
+      "allowedEnvironments": [
+        "test",
+        "backup",
+        "prod"
+      ],
+      "dependsOn": [
+        "20260514_mes_batch_record_report",
+        "20260612_mes_edhr_multi_batch_route"
+      ],
+      "riskLevel": "medium"
+    }
+  ]
+}

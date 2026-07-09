@@ -1,0 +1,46 @@
+--- date ---
+2026-07-09T14:41:03+08:00
+--- release dir ---
+总用量 796016
+drwxr-xr-x.   3 root root      4096 7月   9 14:35 .
+drwxr-xr-x. 213 root root     20480 7月   9 14:28 ..
+-rw-r--r--.   1 root root 815059968 7月   9 14:30 intruoyi-images_release-20260709-codeonly-three-env-head-v6.tar
+-rw-r--r--.   1 root root      1730 7月   9 14:35 post-import.sql
+drwxr-xr-x.   2 root root     24576 7月   9 14:34 required-sql
+--- required sql checksum ---
+999b2057c10f24a36720ecd74dcc8070e6d082d9960f88541e6332a947946711  /var/lib/docker/intruoyi-releases/release-20260709-codeonly-three-env-head-v6/required-sql/20260709_mes_rt000006_batch_record_mapping.sql
+--- release operation lock ---
+*************************** 1. row ***************************
+target_environment: test
+      operation_id: test-release-20260709-codeonly-three-env-head-v6
+       release_tag: release-20260709-codeonly-three-env-head-v6
+            status: FAILED
+        started_at: 2026-07-09 14:35:24
+       finished_at: 2026-07-09 14:40:30
+     error_message: Command failed with exit code 1: ssh
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1644 (45000) at line 325: Missing RT000006 pressure pump route
+--- failed migration row ---
+*************************** 1. row ***************************
+  release_tag: release-20260709-codeonly-three-env-head-v6
+ migration_id: 20260709_mes_rt000006_batch_record_mapping
+    file_name: 20260709_mes_rt000006_batch_record_mapping.sql
+       status: FAILED
+   started_at: 2026-07-09 14:40:27
+  finished_at: 2026-07-09 14:40:29
+error_message: Command failed with exit code 1: ssh
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 1644 (45000) at line 325: Missing RT000006 pressure pump route
+--- RT000006 route/process snapshot ---
+--- env image tag ---
+IMAGE_TAG=release-20260709-codeonly-three-env-head-v6
+--- containers ---
+NAME                  IMAGE                                             COMMAND                   SERVICE      CREATED       STATUS                 PORTS
+intruoyi-backend      intruoyi-backend:release-20260709-head-test-v3    "/__cacert_entrypoin…"   backend      4 hours ago   Up 4 hours             0.0.0.0:48081->48081/tcp, :::48081->48081/tcp
+intruoyi-frontend     intruoyi-frontend:release-20260709-head-test-v3   "/docker-entrypoint.…"   frontend     4 hours ago   Up 4 hours             0.0.0.0:8081->80/tcp, :::8081->80/tcp
+intruoyi-mysql        mysql:8.0.39                                      "docker-entrypoint.s…"   mysql        5 weeks ago   Up 5 weeks (healthy)   3306/tcp, 33060/tcp
+intruoyi-onlyoffice   onlyoffice/documentserver:latest                  "/app/ds/run-documen…"   onlyoffice   2 weeks ago   Up 2 weeks (healthy)   443/tcp, 0.0.0.0:8080->80/tcp, :::8080->80/tcp
+intruoyi-redis        redis:7-alpine                                    "docker-entrypoint.s…"   redis        5 weeks ago   Up 5 weeks (healthy)   6379/tcp
+intruoyi-website      nginx:1.27-alpine                                 "/docker-entrypoint.…"   website      4 weeks ago   Up 4 weeks             0.0.0.0:8083->80/tcp, :::8083->80/tcp
+/intruoyi-backend intruoyi-backend:release-20260709-head-test-v3 running
+/intruoyi-frontend intruoyi-frontend:release-20260709-head-test-v3 running

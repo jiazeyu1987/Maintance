@@ -1,0 +1,19 @@
+﻿{
+    "status":  "PATCHED",
+    "sql":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\sql\\mysql\\20260708_mes_balloon_process_device_capacity.sql",
+    "test":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\script\\tests\\test_release_migration_metadata_sql_20260708.py",
+    "notExistsRemaining":  [
+
+                           ],
+    "newJoinMatches":  [
+                           "419:     WHERE existing.`id` IS NULL;",
+                           "455:          WHERE process.`id` IS NULL",
+                           "505:      WHERE existing.`id` IS NULL;",
+                           "515:          WHERE route.`id` IS NULL",
+                           "609:  LEFT JOIN `mes_pro_route_process` existing",
+                           "614:      WHERE existing.`id` IS NULL;",
+                           "665:     WHERE existing.`id` IS NULL;",
+                           "739:     LEFT JOIN `mes_dv_machinery_process` existing",
+                           "745:     WHERE existing.`id` IS NULL;"
+                       ]
+}

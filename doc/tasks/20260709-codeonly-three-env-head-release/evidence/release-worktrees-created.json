@@ -1,0 +1,38 @@
+{
+    "taskId":  "20260709-codeonly-three-env-head-release",
+    "createdAt":  "2026-07-09T13:13:39.3251459+08:00",
+    "base":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce",
+    "backend":  {
+                    "dirty":  false,
+                    "actualCommit":  "c1ae4d0a82a423656131913c8d92c31e2923464c",
+                    "worktree":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\b",
+                    "branch":  "HEAD",
+                    "targetCommit":  "c1ae4d0a82a423656131913c8d92c31e2923464c",
+                    "status":  {
+
+                               },
+                    "main":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro"
+                },
+    "frontend":  {
+                     "dirty":  false,
+                     "actualCommit":  "0931b8dc3725b34689ee36e68cc4dd3a7aacea3b",
+                     "worktree":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\f",
+                     "branch":  "HEAD",
+                     "targetCommit":  "0931b8dc3725b34689ee36e68cc4dd3a7aacea3b",
+                     "status":  {
+
+                                },
+                     "main":  "D:\\ProjectPackage\\Int\\IntRuoyi\\yudao-ui-admin-vue3"
+                 },
+    "maintenance":  {
+                        "dirty":  false,
+                        "actualCommit":  "140b253731f5b7520dd32e5fa5de30313484a2c3",
+                        "worktree":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m",
+                        "branch":  "HEAD",
+                        "targetCommit":  "140b253731f5b7520dd32e5fa5de30313484a2c3",
+                        "status":  {
+
+                                   },
+                        "main":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance"
+                    }
+}

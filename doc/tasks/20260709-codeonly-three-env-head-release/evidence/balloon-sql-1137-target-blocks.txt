@@ -1,0 +1,226 @@
+--- lines 392-432 ---
+392:     IF v_default_workshop_id IS NULL THEN
+393:         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Missing default workshop for tenant 1';
+394:     END IF;
+395: 
+396:     INSERT INTO `mes_pro_process`
+397:         (`product_name`, `code`, `name`, `attention`, `status`, `manual_shift_capacity`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`, `tenant_id`)
+398:     SELECT
+399:         seed.`product_name`,
+400:         seed.`process_code`,
+401:         seed.`process_name`,
+402:         NULL,
+403:         0,
+404:         seed.`manual_shift_capacity`,
+405:         NULLIF(seed.`remark`, ''),
+406:         'balloon-process-device-capacity',
+407:         NOW(),
+408:         'balloon-process-device-capacity',
+409:         NOW(),
+410:         b'0',
+411:         @target_tenant_id
+412:     FROM `tmp_balloon_process_seed` seed
+413:     WHERE NOT EXISTS (
+414:         SELECT 1
+415:           FROM `mes_pro_process` existing
+416:          WHERE existing.`tenant_id` = @target_tenant_id
+417:            AND existing.`deleted` = b'0'
+418:            AND existing.`product_name` = seed.`product_name`
+419:            AND existing.`code` = seed.`process_code`
+420:            AND existing.`name` = seed.`process_name`
+421:     );
+422: 
+423:     UPDATE `mes_pro_process` process
+424:     INNER JOIN `tmp_balloon_process_seed` seed
+425:         ON seed.`product_name` = process.`product_name`
+426:        AND seed.`process_code` = process.`code`
+427:        AND seed.`process_name` = process.`name`
+428:     SET process.`manual_shift_capacity` = seed.`manual_shift_capacity`,
+429:         process.`status` = 0,
+430:         process.`remark` = NULLIF(seed.`remark`, ''),
+431:         process.`updater` = 'balloon-process-device-capacity',
+432:         process.`update_time` = NOW()
+--- lines 438-466 ---
+438:           FROM `tmp_balloon_route_seed` route_seed
+439:          WHERE (
+440:              SELECT COUNT(*)
+441:                FROM `tmp_balloon_route_process_seed` route_process_seed
+442:               WHERE route_process_seed.`route_code` = route_seed.`route_code`
+443:          ) <> route_seed.`expected_process_count`
+444:     ) THEN
+445:         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Balloon route process seed count mismatch';
+446:     END IF;
+447: 
+448:     IF EXISTS (
+449:         SELECT 1
+450:           FROM `tmp_balloon_route_process_seed` seed
+451:          WHERE NOT EXISTS (
+452:              SELECT 1
+453:                FROM `mes_pro_process` process
+454:               WHERE process.`tenant_id` = @target_tenant_id
+455:                 AND process.`deleted` = b'0'
+456:                 AND process.`product_name` = seed.`product_name`
+457:                 AND process.`code` = seed.`process_code`
+458:                 AND process.`name` = seed.`process_name`
+459:          )
+460:     ) THEN
+461:         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Missing balloon route process master data';
+462:     END IF;
+463: 
+464:     IF EXISTS (
+465:         SELECT route_seed.`route_code`
+466:           FROM `tmp_balloon_route_seed` route_seed
+--- lines 488-528 ---
+488:     END IF;
+489: 
+490:     INSERT INTO `mes_pro_route`
+491:         (`code`, `name`, `description`, `status`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`, `tenant_id`)
+492:     SELECT
+493:         route_seed.`route_code`,
+494:         route_seed.`route_name`,
+495:         CONCAT(route_seed.`product_name`, ' Excel Sheet1 工艺路线'),
+496:         0,
+497:         '球囊工序路线导入',
+498:         'balloon-route-process-import',
+499:         NOW(),
+500:         'balloon-route-process-import',
+501:         NOW(),
+502:         b'0',
+503:         @target_tenant_id
+504:       FROM `tmp_balloon_route_seed` route_seed
+505:      WHERE NOT EXISTS (
+506:          SELECT 1
+507:            FROM `mes_pro_route` existing
+508:           WHERE existing.`tenant_id` = @target_tenant_id
+509:             AND existing.`deleted` = b'0'
+510:             AND existing.`code` = route_seed.`route_code`
+511:      );
+512: 
+513:     IF EXISTS (
+514:         SELECT 1
+515:           FROM `tmp_balloon_route_seed` route_seed
+516:          WHERE NOT EXISTS (
+517:              SELECT 1
+518:                FROM `mes_pro_route` route
+519:               WHERE route.`tenant_id` = @target_tenant_id
+520:                 AND route.`deleted` = b'0'
+521:                 AND route.`code` = route_seed.`route_code`
+522:                 AND route.`name` = route_seed.`route_name`
+523:          )
+524:     ) THEN
+525:         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Balloon route code/name mismatch';
+526:     END IF;
+527: 
+528:     IF EXISTS (
+--- lines 600-626 ---
+600:        AND route.`deleted` = b'0'
+601:        AND route.`code` = seed.`route_code`
+602:       JOIN `mes_pro_process` process
+603:         ON process.`tenant_id` = @target_tenant_id
+604:        AND process.`deleted` = b'0'
+605:        AND process.`product_name` = seed.`product_name`
+606:        AND process.`code` = seed.`process_code`
+607:        AND process.`name` = seed.`process_name`
+608:  LEFT JOIN `tmp_balloon_route_process_seed` next_seed
+609:         ON next_seed.`route_code` = seed.`route_code`
+610:        AND next_seed.`sort` = seed.`sort` + 1
+611:  LEFT JOIN `mes_pro_process` next_process
+612:         ON next_process.`tenant_id` = @target_tenant_id
+613:        AND next_process.`deleted` = b'0'
+614:        AND next_process.`product_name` = next_seed.`product_name`
+615:        AND next_process.`code` = next_seed.`process_code`
+616:        AND next_process.`name` = next_seed.`process_name`
+617:      WHERE NOT EXISTS (
+618:          SELECT 1
+619:            FROM `mes_pro_route_process` existing
+620:           WHERE existing.`tenant_id` = @target_tenant_id
+621:             AND existing.`deleted` = b'0'
+622:             AND existing.`route_id` = route.`id`
+623:             AND existing.`process_id` = process.`id`
+624:      );
+625: 
+626:     UPDATE `mes_pro_route_process` route_process
+--- lines 646-682 ---
+646:            route_process.`update_time` = NOW()
+647:      WHERE route_process.`tenant_id` = @target_tenant_id
+648:        AND route_process.`deleted` = b'0'
+649:        AND route_process.`remark` = '球囊工序路线导入';
+650: 
+651:     INSERT INTO `mes_dv_machinery`
+652:         (`code`, `name`, `brand`, `specification`, `machinery_type_id`, `workshop_id`, `process_name`, `standard_hourly_capacity`, `status`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`, `tenant_id`)
+653:     SELECT
+654:         seed.`machinery_code`,
+655:         seed.`machinery_name`,
+656:         NULL,
+657:         NULL,
+658:         v_default_type_id,
+659:         v_default_workshop_id,
+660:         NULL,
+661:         NULL,
+662:         0,
+663:         '球囊扩张导管工序产能导入',
+664:         'balloon-process-device-capacity',
+665:         NOW(),
+666:         'balloon-process-device-capacity',
+667:         NOW(),
+668:         b'0',
+669:         @target_tenant_id
+670:     FROM `tmp_balloon_machinery_seed` seed
+671:     WHERE NOT EXISTS (
+672:         SELECT 1
+673:           FROM `mes_dv_machinery` existing
+674:          WHERE existing.`tenant_id` = @target_tenant_id
+675:            AND existing.`deleted` = b'0'
+676:            AND existing.`code` = seed.`machinery_code`
+677:     );
+678: 
+679:     UPDATE `mes_dv_machinery` machinery
+680:     INNER JOIN `tmp_balloon_machinery_seed` seed
+681:         ON seed.`machinery_code` = machinery.`code`
+682:     SET machinery.`name` = seed.`machinery_name`,
+--- lines 716-760 ---
+716:     WHERE mp.`tenant_id` = @target_tenant_id
+717:       AND mp.`deleted` = b'0';
+718: 
+719:     INSERT INTO `mes_dv_machinery_process`
+720:         (`machinery_id`, `process_id`, `process_code`, `machinery_code`, `line_name`, `process_name`, `device_name`, `device_quantity`, `ten_half_hour_daily_capacity`, `standard_hourly_capacity`, `source_row_no`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`, `tenant_id`)
+721:     SELECT
+722:         machinery.`id`,
+723:         process.`id`,
+724:         seed.`process_code`,
+725:         seed.`machinery_code`,
+726:         seed.`product_name`,
+727:         seed.`process_name`,
+728:         seed.`device_name`,
+729:         seed.`device_quantity`,
+730:         seed.`ten_half_hour_daily_capacity`,
+731:         seed.`ten_half_hour_daily_capacity` / 10.5,
+732:         seed.`source_row_no`,
+733:         NULLIF(seed.`remark`, ''),
+734:         'balloon-process-device-capacity',
+735:         NOW(),
+736:         'balloon-process-device-capacity',
+737:         NOW(),
+738:         b'0',
+739:         @target_tenant_id
+740:     FROM `tmp_balloon_machinery_process_seed` seed
+741:     INNER JOIN `mes_pro_process` process
+742:         ON process.`tenant_id` = @target_tenant_id
+743:        AND process.`deleted` = b'0'
+744:        AND process.`product_name` = seed.`product_name`
+745:        AND process.`code` = seed.`process_code`
+746:        AND process.`name` = seed.`process_name`
+747:     INNER JOIN `mes_dv_machinery` machinery
+748:         ON machinery.`tenant_id` = @target_tenant_id
+749:        AND machinery.`deleted` = b'0'
+750:        AND machinery.`code` = seed.`machinery_code`
+751:     WHERE NOT EXISTS (
+752:         SELECT 1
+753:           FROM `mes_dv_machinery_process` existing
+754:          WHERE existing.`tenant_id` = @target_tenant_id
+755:            AND existing.`deleted` = b'0'
+756:            AND existing.`process_id` = process.`id`
+757:            AND existing.`machinery_code` = seed.`machinery_code`
+758:            AND existing.`source_row_no` = seed.`source_row_no`
+759:     );
+760: END$$

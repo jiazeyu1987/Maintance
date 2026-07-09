@@ -1,0 +1,36 @@
+﻿{
+    "pytestStatus":  "PASS",
+    "pytestExitCode":  0,
+    "pytestText":  "============================= test session starts =============================\r\nplatform win32 -- Python 3.12.10, pytest-8.4.2, pluggy-1.6.0\r\nrootdir: D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\r\nplugins: anyio-4.12.1\r\ncollected 3 items\r\n\r\nscript\\tests\\test_release_migration_metadata_sql_20260708.py ...         [100%]\r\n\r\n============================== 3 passed in 0.20s ==============================\r\n",
+    "pytestErrText":  "",
+    "policyStatus":  "FAIL",
+    "policyExitCode":  2,
+    "policyErrText":  "usage: run-release-migration-policy-gate.py [-h] --sql-root SQL_ROOT\r\n                                            [--sql-file SQL_FILE]\r\n                                            [--file-prefix FILE_PREFIX]\r\n                                            [--frozen-registry FROZEN_REGISTRY]\r\n                                            [--output OUTPUT]\r\nrun-release-migration-policy-gate.py: error: unrecognized arguments: --json\r\n",
+    "diffCheckExitCode":  0,
+    "diffCheckOut":  "",
+    "diffCheckErr":  "warning: in the working copy of \u0027script/tests/test_release_migration_metadata_sql_20260708.py\u0027, LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of \u0027sql/mysql/20260708_mes_balloon_process_device_capacity.sql\u0027, LF will be replaced by CRLF the next time Git touches it\n",
+    "sqlGuards":  {
+                      "whereNotExists":  [
+
+                                         ],
+                      "nextSeedLookup":  [
+
+                                         ],
+                      "originalNextSeedJoin":  [
+
+                                               ],
+                      "copyTable":  [
+                                        "160: DROP TEMPORARY TABLE IF EXISTS `tmp_balloon_route_process_next_seed`;",
+                                        "207: DROP TEMPORARY TABLE IF EXISTS `tmp_balloon_route_process_next_seed`;",
+                                        "208: CREATE TEMPORARY TABLE `tmp_balloon_route_process_next_seed` LIKE `tmp_balloon_route_process_seed`;",
+                                        "209: INSERT INTO `tmp_balloon_route_process_next_seed`",
+                                        "606:  LEFT JOIN `tmp_balloon_route_process_next_seed` next_seed",
+                                        "630:  LEFT JOIN `tmp_balloon_route_process_next_seed` next_seed",
+                                        "758: DROP TEMPORARY TABLE IF EXISTS `tmp_balloon_route_process_next_seed`;"
+                                    ]
+                  },
+    "status":  [
+                   " M script/tests/test_release_migration_metadata_sql_20260708.py",
+                   " M sql/mysql/20260708_mes_balloon_process_device_capacity.sql"
+               ]
+}

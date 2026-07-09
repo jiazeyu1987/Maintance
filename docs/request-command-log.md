@@ -2407,3 +2407,51 @@
 - 用户目标：基于当前分支 HEAD 已提交代码构建 `release-20260709-head-test-v3` 并仅发布测试服务器；未提交改动不得进入构建产物。
 - 已记录：构建操作 `op-2026-07-09T013606785826300Z-45bc8231-d958-4e92-b0a9-00bf09c6010c`、测试服发布操作 `op-2026-07-09T023914856131600Z-09fcea10-25d3-496b-98bf-31a5f71225c1`、最终运行态核验通过、问题清单已写入任务执行日志、前置经验已沉淀。
 - 临时发布 worktree 清理完成：`D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709h` 已从维护仓、后端仓、前端仓 worktree 注册中移除；残留运行产物目录已在确认无未合并提交后删除。
+
+
+## 2026-07-09 13:12:23 +0800 - 20260709-codeonly-three-env-head-release
+- 用户需求：执行 IntRuoyi code-only 三环境完整发布闭环；SkipDatabaseSync + SkipMinioSync；允许 PROD 正式/备份发布；使用当前 int_main 已提交 HEAD；必须干净临时 worktree。
+- 已执行命令：初始仓库状态检查、前置文档读取、创建任务目录与执行日志。
+- 当前结论：experience-preflight PASS；主工作区存在脏内容但发布输入将限定为已提交 HEAD 的临时干净 worktree。
+
+- 2026-07-09 13:13:48 +08:00 已创建临时发布 worktree：D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce；backend/frontend/maintenance 均 dirty=false。
+
+- 2026-07-09 13:19:08 +08:00 已补齐运行控制台临时 worktree health=UP 验证证据。
+
+- 2026-07-09 13:20:12 +08:00 build-release v1 预览失败：targetEnvironment 参数不适用于 build-release；已冻结证据并沉淀经验，改用新 releaseTag 重新预览。
+
+- 2026-07-09 13:21:44 +08:00 build-release v2 预览失败：缺少 ProdServerHost；已冻结证据并沉淀经验，补齐临时控制台 prod host 后改用新 releaseTag。
+
+- 2026-07-09 13:23:09 +08:00 build-release v3 预览仍缺少 ProdServerHost；已冻结证据，下一步直接调用 worktree 发布脚本并显式传入三环境主机参数。
+
+- 2026-07-09 13:23:49 +08:00 build-release v4 失败：sql/mysql/20260708_mes_balloon_process_device_capacity.sql release migration metadata type 不合法；已冻结失败证据，开始定位契约。
+
+### 2026-07-09 IntRuoyi 三环境 code-only 发布 - 迁移元数据修复
+
+- command: `python -X utf8 -m pytest script/tests/test_release_migration_metadata_sql_20260708.py`
+- result: PASS，补充 20260708 两条 SQL 的 release-migration 元数据测试覆盖。
+- command: `script/release/run-release-migration-policy-gate.py --sql-root <backend>/sql/mysql --json`
+- result: PASS，见任务 evidence 中 full policy gate JSON。
+### 2026-07-09 IntRuoyi 三环境 code-only 发布 - publish-test v5 失败冻结
+
+- command: publish-int-ruoyi.ps1 -Mode deploy-release -Environment test -ReleaseTag release-20260709-codeonly-three-env-head-v5 ...
+- result: FAIL，required SQL 20260708_mes_balloon_process_device_capacity.sql line 763 报 MySQL 1137 Can't reopen table: 'seed'。
+- command: ssh root@172.30.30.58 bash -s < freeze-publish-test-v5-failure-remote.sh
+- result: 已冻结远端 operation lock、migration 失败行、release dir、checksum、.env IMAGE_TAG 与容器状态。
+### 2026-07-09 IntRuoyi 三环境 code-only 发布 - 球囊 SQL 1137 修复
+
+- command: `python -X utf8 -m pytest script/tests/test_release_migration_metadata_sql_20260708.py`
+- result: PASS，覆盖 release metadata 与 MySQL 1137 reopen 静态约束。
+- command: `python -X utf8 script/release/run-release-migration-policy-gate.py --sql-root sql/mysql --output <evidence>`
+- result: PASS，迁移策略门禁通过。
+### 2026-07-09 IntRuoyi 三环境 code-only 发布 - publish-test v6 失败冻结
+
+- command: publish-int-ruoyi.ps1 -Mode deploy-release -Environment test -ReleaseTag release-20260709-codeonly-three-env-head-v6 ...
+- result: FAIL，required SQL 20260709_mes_rt000006_batch_record_mapping.sql line 325 报 Missing RT000006 pressure pump route。
+- command: ssh root@172.30.30.58 bash -s < freeze-publish-test-v6-failure-remote.sh
+- result: 已冻结远端 operation lock、migration 失败行、release dir、checksum、业务表快照、.env IMAGE_TAG 与容器状态。
+
+## 2026-07-09 14:46:36 code-only required SQL 修复
+- 用户请求：继续执行 IntRuoyi code-only 三环境发布闭环。
+- 命令：`python -X utf8 -m pytest tests/test_code_only_required_sql_contract.py -q`。
+- 结果：PASS；已修复维护脚本在 `publishScope=code-only` 时仍执行 `type=data` required SQL 的发布契约问题。

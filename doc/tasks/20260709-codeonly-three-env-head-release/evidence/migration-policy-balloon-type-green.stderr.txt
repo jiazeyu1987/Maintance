@@ -1,0 +1,4 @@
+{
+  "status": "failed",
+  "error": "dependsOn missing migration '20260513_mes_dv_machinery_extend' for migrationId '20260708_mes_balloon_process_device_capacity'"
+}

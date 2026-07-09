@@ -1,0 +1,23 @@
+[
+    {
+        "path":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro",
+        "branch":  "int_main",
+        "head":  "c1ae4d0a82a423656131913c8d92c31e2923464c",
+        "dirty":  true,
+        "status":  " M yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/batchrecordreport/MesProBatchRecordRouteERecognizer.java\n M yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/service/pro/batchrecordreport/MesProBatchRecordRouteERecognizerTest.java"
+    },
+    {
+        "path":  "D:\\ProjectPackage\\Int\\IntRuoyi\\yudao-ui-admin-vue3",
+        "branch":  "int_main",
+        "head":  "0931b8dc3725b34689ee36e68cc4dd3a7aacea3b",
+        "dirty":  true,
+        "status":  "?? doc/tasks/20260708-schedule-order-export-columns/e2e-diagnostics/\n?? doc/tasks/20260708-schedule-order-export-columns/e2e-export/\n?? output-frontend-8081-start.err.log\n?? output-frontend-8081-start.out.log\n?? output-yudao-8081-restart-frontend.err.log\n?? output-yudao-8081-restart-frontend.out.log\n?? output-yudao-ui-8081-restart-report-import.err.log\n?? output-yudao-ui-8081-restart-report-import.out.log\n?? output-yudao-ui-8081-restart-workorder-link.err.log\n?? output-yudao-ui-8081-restart-workorder-link.out.log\n?? output-yudao-ui-8081-start.err.log\n?? output-yudao-ui-8081-start.out.log\n?? showroom-vue-tsc-after-freeze-removal.log\n?? tests/output/20260707-edhr-t6-batch-action-diagnostic/\n?? tests/output/20260707-edhr-t6-batch-page-diagnostic/\n?? tests/output/20260707-edhr-t6-detail-api-diagnostic/\n?? tests/output/20260707-edhr-t6-detail-diagnostic/\n?? tests/output/20260707-edhr-t6-login-diagnostic/\n?? tests/output/20260707-edhr-t6-open-create-diagnostic/\n?? tests/output/20260709-schedule-order-process-route-unified-list-login-diagnostic-2/\n?? tests/output/20260709-schedule-order-process-route-unified-list-login-diagnostic/\n?? tests/output/20260709-schedule-order-process-route-unified-list-real/\n?? tests/output/edhr-cell-rule-toggle-real-e2e.cjs\n?? tests/output/edhr-cell-rule-toggle-real/\n?? tests/output/iot-ota-task-pause-resume/\n?? tests/output/mes-replan-feedback-remaining-candidate-scan/\n?? tests/output/mes-replan-feedback-remaining-diagnostic/\n?? tests/output/mes-schedule-route-production-factor-real/\n?? tests/output/pro-workorder-batch-real-e2e.cjs\n?? tests/output/replan-date-data-diagnostic/\n?? tests/output/replan-date-login-probe.png\n?? tests/output/replan-date-page-probe/\n?? yudao-ui-admin-vue3/"
+    },
+    {
+        "path":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance",
+        "branch":  "int_main",
+        "head":  "140b253731f5b7520dd32e5fa5de30313484a2c3",
+        "dirty":  true,
+        "status":  " M doc/tasks/20260701-dcc-batch-recognition-five-workers/execution-log.md\n M doc/tasks/20260701-rebuild-publish-all-after-fvm-message-fix/execution-log.md\n?? \" + repr($local) + r\"\n?? config/runtime-control.local.before-20260701-205043.yaml\n?? config/runtime-control.local.before-category-20260701-221522.yaml\n?? config/runtime-control.local.before-dccfix-20260708.yaml\n?? config/runtime-control.local.before-fix3-20260703-001013.yaml\n?? config/runtime-control.local.before-mes-scheduler-20260701-230707.yaml\n?? config/runtime-control.local.before-nodata-evening-20260702-2151.yaml\n?? config/runtime-control.local.before-nodata-evening-fix-20260702-2240.yaml\n?? config/runtime-control.local.before-nodata-evening-fix2-20260702-2316.yaml\n?? config/runtime-control.local.before-showroom-legacy-order.yaml\n?? doc/tasks/20260707-showroom-legacy-order-prod-release/\n?? doc/tasks/20260709-codeonly-three-env-head-release/\n?? frontend/pnpm-workspace.yaml\n?? runtime/"
+    }
+]

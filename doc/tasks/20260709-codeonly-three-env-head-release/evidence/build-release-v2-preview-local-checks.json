@@ -1,0 +1,15 @@
+{
+    "releaseTag":  "release-20260709-codeonly-three-env-head-v2",
+    "modeBuildRelease":  true,
+    "skipDatabaseSync":  true,
+    "skipMinioSync":  true,
+    "componentIntruoyi":  true,
+    "hasTestServerHost":  true,
+    "hasProdServerHost":  false,
+    "hasBackupServerHost":  true,
+    "noPromoteProd":  true,
+    "noPromoteBackup":  true,
+    "noBackupNow":  true,
+    "noRollback":  true,
+    "noRestoreData":  true
+}

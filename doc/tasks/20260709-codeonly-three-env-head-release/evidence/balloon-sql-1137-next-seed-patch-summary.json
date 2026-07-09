@@ -1,0 +1,32 @@
+﻿{
+    "status":  "PATCHED_NEXT_SEED",
+    "replacedBlocks":  2,
+    "nextSeedJoinRemaining":  [
+
+                              ],
+    "nextSeedLookupMatches":  [
+                                  "605:            SELECT next_seed_lookup.`process_code`",
+                                  "606:              FROM `tmp_balloon_route_process_seed` next_seed_lookup",
+                                  "607:             WHERE next_seed_lookup.`route_code` = seed.`route_code`",
+                                  "608:               AND next_seed_lookup.`sort` = seed.`sort` + 1",
+                                  "612:            SELECT next_seed_lookup.`process_name`",
+                                  "613:              FROM `tmp_balloon_route_process_seed` next_seed_lookup",
+                                  "614:             WHERE next_seed_lookup.`route_code` = seed.`route_code`",
+                                  "615:               AND next_seed_lookup.`sort` = seed.`sort` + 1",
+                                  "638:            SELECT next_seed_lookup.`process_code`",
+                                  "639:              FROM `tmp_balloon_route_process_seed` next_seed_lookup",
+                                  "640:             WHERE next_seed_lookup.`route_code` = seed.`route_code`",
+                                  "641:               AND next_seed_lookup.`sort` = seed.`sort` + 1",
+                                  "645:            SELECT next_seed_lookup.`process_name`",
+                                  "646:              FROM `tmp_balloon_route_process_seed` next_seed_lookup",
+                                  "647:             WHERE next_seed_lookup.`route_code` = seed.`route_code`",
+                                  "648:               AND next_seed_lookup.`sort` = seed.`sort` + 1"
+                              ],
+    "notExistsRemaining":  [
+
+                           ],
+    "gitStatus":  [
+                      " M script/tests/test_release_migration_metadata_sql_20260708.py",
+                      " M sql/mysql/20260708_mes_balloon_process_device_capacity.sql"
+                  ]
+}

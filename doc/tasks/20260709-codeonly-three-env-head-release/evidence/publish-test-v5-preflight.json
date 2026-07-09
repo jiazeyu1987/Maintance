@@ -1,0 +1,17 @@
+﻿{
+    "taskId":  "20260709-codeonly-three-env-head-release",
+    "action":  "publish-test",
+    "releaseTag":  "release-20260709-codeonly-three-env-head-v5",
+    "script":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m\\ops\\deploy\\publish-int-ruoyi.ps1",
+    "nasConfigPath":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m\\runtime\\runtime-control\\nas-release-config\\manual-build-release-v5.json",
+    "serverHost":  "172.30.30.58",
+    "remoteAppDir":  "/opt/intruoyi/runtime",
+    "remoteReleaseRoot":  "/var/lib/docker/intruoyi-releases",
+    "remoteDataRoot":  "/var/lib/docker/intruoyi-data/runtime-data",
+    "remoteDataDiskMount":  "/var/lib/docker",
+    "remoteDataDiskDevice":  "/dev/vdb",
+    "remoteMinioContainer":  "ragflow_compose-minio-1",
+    "backendRepoRoot":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\b",
+    "frontendRepoRoot":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\f",
+    "command":  "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \u003cscript\u003e -Mode deploy-release -Environment test -ReleaseTag \u003creleaseTag\u003e ..."
+}

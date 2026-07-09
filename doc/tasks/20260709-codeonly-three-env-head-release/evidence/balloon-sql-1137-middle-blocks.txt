@@ -1,0 +1,99 @@
+--- lines 528-599 ---
+528:     IF EXISTS (
+529:         SELECT 1
+530:           FROM `tmp_balloon_route_process_seed` seed
+531:           JOIN `tmp_balloon_route_seed` route_seed
+532:             ON route_seed.`route_code` = seed.`route_code`
+533:           JOIN `mes_pro_route` route
+534:             ON route.`tenant_id` = @target_tenant_id
+535:            AND route.`deleted` = b'0'
+536:            AND route.`code` = seed.`route_code`
+537:           JOIN `mes_pro_route_process` route_process
+538:             ON route_process.`tenant_id` = @target_tenant_id
+539:            AND route_process.`deleted` = b'0'
+540:            AND route_process.`route_id` = route.`id`
+541:            AND route_process.`sort` = seed.`sort`
+542:           JOIN `mes_pro_process` process
+543:             ON process.`tenant_id` = @target_tenant_id
+544:            AND process.`deleted` = b'0'
+545:            AND process.`product_name` = seed.`product_name`
+546:            AND process.`code` = seed.`process_code`
+547:            AND process.`name` = seed.`process_name`
+548:          WHERE route_process.`process_id` <> process.`id`
+549:     ) THEN
+550:         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Balloon route process sort conflict';
+551:     END IF;
+552: 
+553:     IF EXISTS (
+554:         SELECT 1
+555:           FROM `tmp_balloon_route_process_seed` seed
+556:           JOIN `mes_pro_route` route
+557:             ON route.`tenant_id` = @target_tenant_id
+558:            AND route.`deleted` = b'0'
+559:            AND route.`code` = seed.`route_code`
+560:           JOIN `mes_pro_process` process
+561:             ON process.`tenant_id` = @target_tenant_id
+562:            AND process.`deleted` = b'0'
+563:            AND process.`product_name` = seed.`product_name`
+564:            AND process.`code` = seed.`process_code`
+565:            AND process.`name` = seed.`process_name`
+566:           JOIN `mes_pro_route_process` route_process
+567:             ON route_process.`tenant_id` = @target_tenant_id
+568:            AND route_process.`deleted` = b'0'
+569:            AND route_process.`route_id` = route.`id`
+570:            AND route_process.`process_id` = process.`id`
+571:          WHERE route_process.`sort` <> seed.`sort`
+572:     ) THEN
+573:         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Balloon route process id conflict';
+574:     END IF;
+575: 
+576:     INSERT INTO `mes_pro_route_process`
+577:         (`route_id`, `process_id`, `sort`, `next_process_id`, `link_type`, `prepare_time`, `wait_time`, `color_code`, `key_flag`, `check_flag`, `batch_record_report_id`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`, `tenant_id`)
+578:     SELECT
+579:         route.`id`,
+580:         process.`id`,
+581:         seed.`sort`,
+582:         next_process.`id`,
+583:         0,
+584:         NULL,
+585:         NULL,
+586:         NULL,
+587:         b'0',
+588:         b'0',
+589:         NULL,
+590:         '球囊工序路线导入',
+591:         'balloon-route-process-import',
+592:         NOW(),
+593:         'balloon-route-process-import',
+594:         NOW(),
+595:         b'0',
+596:         @target_tenant_id
+597:       FROM `tmp_balloon_route_process_seed` seed
+598:       JOIN `mes_pro_route` route
+599:         ON route.`tenant_id` = @target_tenant_id
+--- lines 626-650 ---
+626:     UPDATE `mes_pro_route_process` route_process
+627:       JOIN `mes_pro_route` route
+628:         ON route.`id` = route_process.`route_id`
+629:        AND route.`tenant_id` = @target_tenant_id
+630:        AND route.`deleted` = b'0'
+631:       JOIN `tmp_balloon_route_process_seed` seed
+632:         ON seed.`route_code` = route.`code`
+633:        AND seed.`sort` = route_process.`sort`
+634:  LEFT JOIN `tmp_balloon_route_process_seed` next_seed
+635:         ON next_seed.`route_code` = seed.`route_code`
+636:        AND next_seed.`sort` = seed.`sort` + 1
+637:  LEFT JOIN `mes_pro_process` next_process
+638:         ON next_process.`tenant_id` = @target_tenant_id
+639:        AND next_process.`deleted` = b'0'
+640:        AND next_process.`product_name` = next_seed.`product_name`
+641:        AND next_process.`code` = next_seed.`process_code`
+642:        AND next_process.`name` = next_seed.`process_name`
+643:        SET route_process.`next_process_id` = next_process.`id`,
+644:            route_process.`link_type` = COALESCE(route_process.`link_type`, 0),
+645:            route_process.`updater` = 'balloon-route-process-import',
+646:            route_process.`update_time` = NOW()
+647:      WHERE route_process.`tenant_id` = @target_tenant_id
+648:        AND route_process.`deleted` = b'0'
+649:        AND route_process.`remark` = '球囊工序路线导入';
+650: 

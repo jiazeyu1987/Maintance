@@ -1,0 +1,98 @@
+﻿{
+    "gitDir":  "D:/ProjectPackage/Int/IntRuoyi/ruoyi-vue-pro/.git",
+    "hookDir":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\.git\\hooks",
+    "hookFiles":  [
+                      {
+                          "Name":  "applypatch-msg.sample",
+                          "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\.git\\hooks\\applypatch-msg.sample",
+                          "Length":  478
+                      },
+                      {
+                          "Name":  "commit-msg.sample",
+                          "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\.git\\hooks\\commit-msg.sample",
+                          "Length":  896
+                      },
+                      {
+                          "Name":  "fsmonitor-watchman.sample",
+                          "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\.git\\hooks\\fsmonitor-watchman.sample",
+                          "Length":  4726
+                      },
+                      {
+                          "Name":  "post-update.sample",
+                          "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\.git\\hooks\\post-update.sample",
+                          "Length":  189
+                      },
+                      {
+                          "Name":  "pre-applypatch.sample",
+                          "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\.git\\hooks\\pre-applypatch.sample",
+                          "Length":  424
+                      },
+                      {
+                          "Name":  "pre-commit",
+                          "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\.git\\hooks\\pre-commit",
+                          "Length":  246
+                      },
+                      {
+                          "Name":  "pre-commit.sample",
+                          "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\.git\\hooks\\pre-commit.sample",
+                          "Length":  1649
+                      },
+                      {
+                          "Name":  "pre-merge-commit.sample",
+                          "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\.git\\hooks\\pre-merge-commit.sample",
+                          "Length":  416
+                      },
+                      {
+                          "Name":  "pre-push.sample",
+                          "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\.git\\hooks\\pre-push.sample",
+                          "Length":  1374
+                      },
+                      {
+                          "Name":  "pre-rebase.sample",
+                          "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\.git\\hooks\\pre-rebase.sample",
+                          "Length":  4898
+                      },
+                      {
+                          "Name":  "pre-receive.sample",
+                          "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\.git\\hooks\\pre-receive.sample",
+                          "Length":  544
+                      },
+                      {
+                          "Name":  "prepare-commit-msg.sample",
+                          "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\.git\\hooks\\prepare-commit-msg.sample",
+                          "Length":  1492
+                      },
+                      {
+                          "Name":  "push-to-checkout.sample",
+                          "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\.git\\hooks\\push-to-checkout.sample",
+                          "Length":  2783
+                      },
+                      {
+                          "Name":  "sendemail-validate.sample",
+                          "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\.git\\hooks\\sendemail-validate.sample",
+                          "Length":  2308
+                      },
+                      {
+                          "Name":  "update.sample",
+                          "FullName":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\.git\\hooks\\update.sample",
+                          "Length":  3650
+                      }
+                  ],
+    "searchMatches":  {
+
+                      },
+    "fileSnippets":  [
+                         {
+                             "path":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\script\\tests\\test_release_migration_policy_gate.py",
+                             "content":  "import hashlib\r\nimport json\r\nimport subprocess\r\nfrom pathlib import Path\r\n\r\nimport pytest\r\n\r\nfrom script.release.release_migration_policy_gate import (\r\n    MigrationPolicyError,\r\n    run_migration_policy_gate,\r\n)\r\n\r\n\r\nREPO_ROOT = Path(__file__).resolve().parents[2]\r\n\r\n\r\ndef write_sql(root: Path, name: str, body: str) -\u003e Path:\r\n    path = root / name\r\n    path.parent.mkdir(parents=True, exist_ok=True)\r\n    path.write_text(body, encoding=\"utf-8\")\r\n    return path\r\n\r\n\r\ndef write_frozen_registry(path: Path, entries: dict[str, str]) -\u003e None:\r\n    path.write_text(json.dumps({\"migrations\": entries}, ensure_ascii=False, indent=2) + \"\\n\", encoding=\"utf-8\")\r\n\r\n\r\ndef test_policy_gate_rejects_missing_required_metadata(tmp_path: Path) -\u003e None:\r\n    sql_root = tmp_path / \"sql\" / \"mysql\"\r\n    sql_root.mkdir(parents=True)\r\n    write_sql(sql_root, \"20260613_missing_metadata.sql\", \"CREATE TABLE IF NOT EXISTS demo_table (id bigint);\\n\")\r\n\r\n    with pytest.raises(MigrationPolicyError, match=\"missing release-migration metadata\"):\r\n        run_migration_policy_gate(sql_root)\r\n\r\n\r\ndef test_policy_gate_rejects_missing_dependency(tmp_path: Path) -\u003e None:\n    sql_root = tmp_path / \"sql\" / \"mysql\"\r\n    sql_root.mkdir(parents=True)\r\n    write_sql(\r\n        sql_root,\r\n        \"20260613_child.sql\",\r\n        \"-- release-migration: allowedEnvironments=test; dependsOn=20260613_parent; type=schema; riskLevel=medium\\n\"\r\n        \"CREATE TABLE IF NOT EXISTS child_table (id bigint);\\n\",\r\n    )\r\n\r\n    with pytest.raises(MigrationPolicyError, match=\"dependsOn missing migration\"):\n        run_migration_policy_gate(sql_root)\n\n\ndef test_policy_gate_rejects_dependency_environment_superset(tmp_path: Path) -\u003e None:\n    sql_root = tmp_path / \"sql\" / \"mysql\"\n    sql_root.mkdir(parents=True)\n    write_sql(\n        sql_root,\n        \"20260613_parent.sql\",\n        \"-- release-migration: allowedEnvironments=test; dependsOn=; type=schema; riskLevel=medium\\n\"\n        \"CREATE TABLE IF NOT EXISTS parent_table (id bigint);\\n\",\n    )\n    write_sql(\n        sql_root,\n        \"20260613_child.sql\",\n        \"-- release-migration: allowedEnvironments=test,backup; dependsOn=20260613_parent; type=schema; riskLevel=medium\\n\"\n        \"CREATE TABLE IF NOT EXISTS child_table (id bigint);\\n\",\n    )\n\n    with pytest.raises(MigrationPolicyError, match=\"allowedEnvironments must be a subset\"):\n        run_migration_policy_gate(sql_root)\n\n\ndef test_policy_gate_rejects_frozen_checksum_change(tmp_path: Path) -\u003e None:\n    sql_root = tmp_path / \"sql\" / \"mysql\"\r\n    sql_root.mkdir(parents=True)\r\n    sql_path = write_sql(\r\n        sql_root,\r\n        \"20260613_frozen.sql\",\r\n        \"-- release-migration: allowedEnvironments=test,backup; dependsOn=; type=schema; riskLevel=low\\n\"\r\n        \"CREATE TABLE IF NOT EXISTS frozen_table (id bigint);\\n\",\r\n    )\r\n    registry = tmp_path / \"frozen-migrations.json\"\r\n    write_frozen_registry(registry, {\"20260613_frozen\": \"0\" * 64})\r\n\r\n    with pytest.raises(MigrationPolicyError, match=\"checksum frozen violation\"):\r\n        run_migration_policy_gate(sql_root, frozen_registry_path=registry)\r\n\r\n    write_frozen_registry(registry, {\"20260613_frozen\": hashlib.sha256(sql_path.read_bytes()).hexdigest()})\r\n    report = run_migration_policy_gate(sql_root, frozen_registry_path=registry)\r\n    assert report[\"status\"] == \"passed\"\r\n    assert report[\"migrationCount\"] == 1\r\n\r\n\r\ndef test_policy_gate_cli_returns_nonzero_on_failure(tmp_path: Path) -\u003e None:\r\n    sql_root = tmp_path / \"sql\" / \"mysql\"\r\n    sql_root.mkdir(parents=True)\r\n    write_sql(sql_root, \"20260613_missing_metadata.sql\", \"select 1;\\n\")\r\n\r\n    result = subprocess.run(\r\n        [\r\n            \"python\",\r\n            \"-X\",\r\n            \"utf8\",\r\n            str(REPO_ROOT / \"script\" / \"release\" / \"run-release-migration-policy-gate.py\"),\r\n            \"--sql-root\",\r\n            str(sql_root),\r\n        ],\r\n        cwd=REPO_ROOT,\r\n        text=True,\r\n        encoding=\"utf-8\",\r\n        stdout=subprocess.PIPE,\r\n        stderr=subprocess.PIPE,\r\n    )\r\n\r\n    assert result.returncode == 1\r\n    assert \"missing release-migration metadata\" in result.stderr\r\n\r\n\r\ndef test_build_release_invokes_migration_policy_gate_before_manifest_generation() -\u003e None:\n    script = (REPO_ROOT / \"script\" / \"deploy\" / \"publish-int-ruoyi.ps1\").read_text(encoding=\"utf-8\")\n    assert \"function Invoke-ReleaseMigrationPolicyGate\" in script\n    assert \"run-release-migration-policy-gate.py\" in script\n    assert \"Migration policy gate failed; build-release is blocked before package manifest generation.\" in script\n    assert script.index(\"Invoke-ReleaseMigrationPolicyGate\") \u003c script.index(\"$requiredSqlEntries = New-ReleaseRequiredSqlManifestEntries\")\n\n\ndef test_dcc_browser_performance_migration_depends_on_base_migration_id() -\u003e None:\n    report = run_migration_policy_gate(REPO_ROOT / \"sql\" / \"mysql\")\n    migrations = {str(entry[\"migrationId\"]): entry for entry in report[\"migrations\"]}\n\n    assert \"20260513_dcc_base_schema\" in migrations\n    assert migrations[\"20260617_dcc_browser_performance_indexes\"][\"dependsOn\"] == [\n        \"20260513_dcc_base_schema\"\n    ]\n"
+                         },
+                         {
+                             "path":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\script\\tests\\test_release_manifest_migration_contract.py",
+                             "content":  "import hashlib\r\nfrom pathlib import Path\r\n\r\nimport pytest\r\n\r\nfrom script.release.release_migration_manifest import (\r\n    MigrationManifestError,\r\n    build_migration_manifest,\r\n)\r\n\r\n\r\nREPO_ROOT = Path(__file__).resolve().parents[2]\r\n\r\n\r\ndef write_sql(root: Path, name: str, body: str) -\u003e Path:\r\n    path = root / name\r\n    path.parent.mkdir(parents=True, exist_ok=True)\r\n    path.write_text(body, encoding=\"utf-8\")\r\n    return path\r\n\r\n\r\ndef test_migration_manifest_contains_structured_sql_metadata(tmp_path: Path) -\u003e None:\r\n    sql_root = tmp_path / \"sql\" / \"mysql\"\r\n    sql_root.mkdir(parents=True)\r\n    write_sql(\r\n        sql_root,\r\n        \"20260612_runtime_nightly_release_job.sql\",\r\n        \"CREATE TABLE IF NOT EXISTS infra_runtime_release_job (id bigint PRIMARY KEY);\\n\",\r\n    )\r\n    sql_path = write_sql(\r\n        sql_root,\r\n        \"20260613_runtime_control_release_package_config.sql\",\r\n        \"-- release-migration: allowedEnvironments=test,backup; dependsOn=20260612_runtime_nightly_release_job; type=schema; riskLevel=medium\\n\"\r\n        \"CREATE TABLE IF NOT EXISTS infra_runtime_release_package_config (id bigint PRIMARY KEY);\\n\",\r\n    )\r\n\r\n    entries = build_migration_manifest(sql_root)\r\n\r\n    assert entries[1:] == [\r\n        {\r\n            \"migrationId\": \"20260613_runtime_control_release_package_config\",\r\n            \"file\": \"sql/mysql/20260613_runtime_control_release_package_config.sql\",\r\n            \"sha256\": hashlib.sha256(sql_path.read_bytes()).hexdigest(),\r\n            \"type\": \"schema\",\r\n            \"allowedEnvironments\": [\"test\", \"backup\"],\r\n            \"dependsOn\": [\"20260612_runtime_nightly_release_job\"],\r\n            \"riskLevel\": \"medium\",\r\n        }\r\n    ]\r\n\r\n\r\ndef test_migration_manifest_rejects_duplicate_migration_id(tmp_path: Path) -\u003e None:\r\n    sql_root = tmp_path / \"sql\" / \"mysql\"\r\n    sql_root.mkdir(parents=True)\r\n    write_sql(sql_root, \"20260613_duplicate.sql\", \"select 1;\\n\")\r\n    write_sql(sql_root, \"subdir/20260613_duplicate.sql\", \"select 2;\\n\")\r\n\r\n    with pytest.raises(MigrationManifestError, match=\"duplicate migrationId\"):\r\n        build_migration_manifest(sql_root)\r\n\r\n\r\ndef test_migration_manifest_rejects_missing_dependency(tmp_path: Path) -\u003e None:\r\n    sql_root = tmp_path / \"sql\" / \"mysql\"\r\n    sql_root.mkdir(parents=True)\r\n    write_sql(\r\n        sql_root,\r\n        \"20260613_child.sql\",\r\n        \"-- release-migration: dependsOn=20260613_parent\\n\"\r\n        \"select 1;\\n\",\r\n    )\r\n\r\n    with pytest.raises(MigrationManifestError, match=\"dependsOn missing migration\"):\r\n        build_migration_manifest(sql_root)\r\n\r\n\r\ndef test_publish_release_manifest_writes_structured_migration_fields() -\u003e None:\r\n    script = (REPO_ROOT / \"script\" / \"deploy\" / \"publish-int-ruoyi.ps1\").read_text(encoding=\"utf-8\")\r\n\r\n    assert \"migrationId = [System.IO.Path]::GetFileNameWithoutExtension($fileName)\" in script\r\n    assert \"type = \u0027schema\u0027\" in script\r\n    assert \"allowedEnvironments = @($entry.Environments)\" in script\r\n    assert \"dependsOn = @()\" in script\r\n    assert \"riskLevel = \u0027medium\u0027\" in script\r\n    assert \"migrationId = [string]$requiredSql.migrationId\" in script\r\n    assert \"allowedEnvironments = @($requiredSql.allowedEnvironments)\" in script\r\n    assert \"dependsOn = @($requiredSql.dependsOn)\" in script\r\n"
+                         },
+                         {
+                             "path":  "D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\script\\tests\\test_release_migration_metadata_sql_20260630.py",
+                             "content":  "from pathlib import Path\n\n\nSQL_ROOT = Path(__file__).resolve().parents[2] / \"sql\" / \"mysql\"\n\n\ndef read_first_line(name: str) -\u003e str:\n    return (SQL_ROOT / name).read_text(encoding=\"utf-8\").splitlines()[0]\n\n\ndef test_approval_center_role_visibility_has_release_metadata() -\u003e None:\n    assert read_first_line(\"20260630_approval_center_role_visibility.sql\") == (\n        \"-- release-migration: allowedEnvironments=test,backup,prod; \"\n        \"dependsOn=; type=data; riskLevel=medium\"\n    )\n\n\ndef test_dcc_admin_full_config_managed_scope_has_release_metadata() -\u003e None:\n    assert read_first_line(\"20260630_dcc_admin_full_config_managed_scope.sql\") == (\n        \"-- release-migration: allowedEnvironments=test,backup,prod; \"\n        \"dependsOn=; type=schema; riskLevel=low\"\n    )\n\n\ndef test_mes_pro_work_order_erp_snapshot_fields_has_release_metadata() -\u003e None:\n    assert read_first_line(\"20260630_mes_pro_work_order_erp_snapshot_fields.sql\") == (\n        \"-- release-migration: allowedEnvironments=test,backup,prod; \"\n        \"dependsOn=; type=schema; riskLevel=low\"\n    )\n\n\ndef test_dcc_admin_full_config_menu_depends_on_uses_migration_ids() -\u003e None:\n    assert read_first_line(\"20260630_dcc_admin_full_config_menu.sql\") == (\n        \"-- release-migration: allowedEnvironments=test,backup,prod; \"\n        \"dependsOn=20260513_dcc_base_schema,20260515_dcc_governance_split_menu,\"\n        \"20260529_dcc_audit_menu_permission; type=menu; riskLevel=low\"\n    )\n"
+                         }
+                     ]
+}

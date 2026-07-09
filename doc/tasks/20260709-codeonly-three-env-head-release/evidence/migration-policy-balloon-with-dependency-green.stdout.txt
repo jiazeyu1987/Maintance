@@ -1,0 +1,34 @@
+{
+  "status": "passed",
+  "migrationCount": 2,
+  "migrations": [
+    {
+      "migrationId": "20260513_mes_dv_machinery_extend",
+      "file": "sql/mysql/20260513_mes_dv_machinery_extend.sql",
+      "sha256": "c56c2b4664521a885301a67a8dec025838f218122205cab1738d82818cd2116e",
+      "type": "schema",
+      "allowedEnvironments": [
+        "test",
+        "backup",
+        "prod"
+      ],
+      "dependsOn": [],
+      "riskLevel": "medium"
+    },
+    {
+      "migrationId": "20260708_mes_balloon_process_device_capacity",
+      "file": "sql/mysql/20260708_mes_balloon_process_device_capacity.sql",
+      "sha256": "ebf59e3c7166c3c0c23a4ece2d336b8b664b9e00986e2020095d8cc2d5eca33e",
+      "type": "schema",
+      "allowedEnvironments": [
+        "test",
+        "backup",
+        "prod"
+      ],
+      "dependsOn": [
+        "20260513_mes_dv_machinery_extend"
+      ],
+      "riskLevel": "medium"
+    }
+  ]
+}

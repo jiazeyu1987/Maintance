@@ -1,0 +1,70 @@
+﻿{
+    "status":  "PASS",
+    "releaseTag":  "release-20260709-codeonly-three-env-head-v6",
+    "manifestPath":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260709-codeonly-three-env-head-v6\\manifest.json",
+    "manifestPublishScope":  "code-only",
+    "manifestReleaseTag":  "release-20260709-codeonly-three-env-head-v6",
+    "manifestSourceRepos":  [
+                                {
+                                    "name":  "ruoyi-vue-pro",
+                                    "pathRole":  "backend",
+                                    "commit":  "65190bdc3c43489536d0fb1908290aa4629ce522",
+                                    "branch":  "HEAD",
+                                    "dirty":  false,
+                                    "dirtySummaryHash":  null
+                                },
+                                {
+                                    "name":  "yudao-ui-admin-vue3",
+                                    "pathRole":  "admin-frontend",
+                                    "commit":  "0931b8dc3725b34689ee36e68cc4dd3a7aacea3b",
+                                    "branch":  "HEAD",
+                                    "dirty":  false,
+                                    "dirtySummaryHash":  null
+                                }
+                            ],
+    "topEntries":  [
+                       {
+                           "Name":  "required-sql",
+                           "Mode":  "d-----",
+                           "Length":  null
+                       },
+                       {
+                           "Name":  "resources",
+                           "Mode":  "d-----",
+                           "Length":  null
+                       },
+                       {
+                           "Name":  "runtime-env",
+                           "Mode":  "d-----",
+                           "Length":  null
+                       },
+                       {
+                           "Name":  "smoke",
+                           "Mode":  "d-----",
+                           "Length":  null
+                       },
+                       {
+                           "Name":  "docker-compose.yml",
+                           "Mode":  "-a----",
+                           "Length":  10608
+                       },
+                       {
+                           "Name":  "intruoyi-images_release-20260709-codeonly-three-env-head-v6.tar",
+                           "Mode":  "-a----",
+                           "Length":  815059968
+                       },
+                       {
+                           "Name":  "manifest.json",
+                           "Mode":  "-a----",
+                           "Length":  2343059
+                       },
+                       {
+                           "Name":  "release-manifest.json",
+                           "Mode":  "-a----",
+                           "Length":  83923
+                       }
+                   ],
+    "forbiddenHits":  [
+
+                      ]
+}

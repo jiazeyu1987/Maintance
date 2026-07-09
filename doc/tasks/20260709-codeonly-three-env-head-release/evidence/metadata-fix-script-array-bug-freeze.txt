@@ -1,0 +1,5 @@
+time=2026-07-09 13:28:18 +08:00
+step=migration-policy-batch-record-version-phase-one
+status=INTERRUPTED
+reason=PowerShell array construction used Join-Path with multiple child path arguments, after metadata was already prepended to 20260708_mes_batch_record_version_phase_one.sql in main and release worktree.
+impact=no commit yet; continue by validating patched files and full migration policy gate.

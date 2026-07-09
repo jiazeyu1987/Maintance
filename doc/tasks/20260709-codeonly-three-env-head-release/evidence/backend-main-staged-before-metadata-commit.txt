@@ -1,0 +1,2 @@
+sql/mysql/20260708_mes_balloon_process_device_capacity.sql
+sql/mysql/20260708_mes_batch_record_version_phase_one.sql
