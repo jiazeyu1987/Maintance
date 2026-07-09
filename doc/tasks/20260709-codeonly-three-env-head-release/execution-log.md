@@ -122,3 +122,131 @@ GREEN: migration-policy-full-after-metadata-fixes-final -> PASS, 2026-07-09 13:2
 - GREEN: python -X utf8 -m pytest tests/test_code_only_required_sql_contract.py -q -> PASS，证据 `evidence/maintenance-codeonly-required-sql-contract-v2-pytest.out.log`。
 - GREEN: PowerShell Parser.ParseFile publish-int-ruoyi.ps1 -> PARSE_OK，证据 `evidence/maintenance-codeonly-required-sql-contract-v2-parse.txt`。
 - 结论：v8 判废，下一轮重新构建 v9，禁止复用 v8 拼接后续环境。
+
+
+## v9 build-release Java native memory 失败冻结（2026-07-09 15:42:17）
+- RED: build-release-v9 -> FAIL，releaseTag=release-20260709-codeonly-three-env-head-v9，后端 Maven 构建阶段 JVM 报 `There is insufficient memory for the Java Runtime Environment to continue`，`Native memory allocation (malloc) failed`。
+- 冻结证据：`evidence/build-release-v9-result.json`、`evidence/build-release-v9-operation.out.log`、`evidence/build-release-v9-operation.err.log`、`evidence/build-release-v9-direct-preflight.json`、`evidence/build-release-v9-java-native-memory-failure-freeze.json`。
+- 结论：v9 未生成发布包，判废；下一轮必须先降低 Maven/JVM 构建内存压力并重新构建新 releaseTag，禁止复用 v9。
+
+## 2026-07-09 16:03:49 v10 build manifest verification corrected v2
+- Evidence freeze: evidence/build-release-v10-manifest-validation-mixed-sql-container-freeze.json captured the mixed SQL-container validator failure.
+- GREEN: build-release-v10 manifest -> PASS, evidence: evidence/build-release-v10-manifest-validation.json
+- Authoritative SQL metadata: manifest.requiredSql; requiredSqlCount=271; dataSqlCount=28, to be skipped during code-only deploy.
+- releaseTag: release-20260709-codeonly-three-env-head-v10
+- publishScope: code-only; sourceRepos dirty=false; backend/frontend only; no forbidden data/minio/dump/backup/upload directories.
+
+## 2026-07-09 16:37:20 publish-test v10 verified
+- GREEN: publish-test -> PASS, evidence: evidence/publish-test-v10-result.json
+- GREEN: test remote verification -> PASS, evidence: evidence/publish-test-v10-remote-verification.json
+- Server: 172.30.30.58; IMAGE_TAG=release-20260709-codeonly-three-env-head-v10; backend/frontend image tags match releaseTag.
+- Backend health=UP; frontend HTTP 200; PDF worker HTTP 200.
+- Code-only SQL gate: data SQL skip log count=1; RT000006 data SQL not applied.
+
+## 2026-07-09 16:39:31 mark-tested v10
+- GREEN: mark-tested -> PASS, evidence: evidence/mark-tested-v10-result.json
+- releaseTag: release-20260709-codeonly-three-env-head-v10
+- NAS package marked tested; rollback compatibility metadata recorded only, no backup/restore/rollback executed.
+
+## 2026-07-09 16:43:31 prod-preflight-release dry-run failure freeze
+
+- BLOCKER: prod-preflight-release-dry-run -> FAIL, PowerShell `Copy-Item -Recurse` failed while copying sanitized package workspace.
+- Evidence: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\prod-preflight-release-dry-run-v10-copyitem-failure-freeze.json`.
+- Lesson: added gate to `docs/release-build-preflight-lessons.md` and route to `docs/experience-index.md`.
+- Next: retry dry-run generation with Python `shutil.copytree` or `robocopy /E`; do not execute `promote-prod` until dry-run evidence passes.
+
+## 2026-07-09 16:45:53 prod-preflight-release dry-run
+
+- GREEN: prod-preflight-release-dry-run -> PASS
+- ReleaseTag: `release-20260709-codeonly-three-env-head-v10`
+- Target config: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260620-prod-release-current-latest\prod-target-config.json`
+- Evidence: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\prod-preflight-release-dry-run-v10.json`
+- Report: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\prod-deploy-precheck-report-v10.json`
+- Summary: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\prod-preflight-release-dry-run-v10-summary.json`
+
+## 2026-07-09 17:01:55 promote-prod
+
+- GREEN: promote-prod -> PASS
+- ReleaseTag: `release-20260709-codeonly-three-env-head-v10`
+- Operation ids: ``
+- Evidence: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\promote-prod-v10-result.json`
+- Stdout: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\promote-prod-v10-operation.out.log`
+- Stderr: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\promote-prod-v10-operation.err.log`
+- Command: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\promote-prod-v10-command-summary.txt`
+- Flags: `ConfirmText=PROD`, `RequireTested`, `SkipDatabaseSync`, `SkipMinioSync`, no backup/restore/rollback command.
+
+## 2026-07-09 17:02:26 prod remote verification
+
+- GREEN: prod remote verification -> PASS
+- ReleaseTag: `release-20260709-codeonly-three-env-head-v10`
+- `.env IMAGE_TAG`: `release-20260709-codeonly-three-env-head-v10`
+- Backend image: `intruoyi-backend:release-20260709-codeonly-three-env-head-v10`
+- Frontend image: `intruoyi-frontend:release-20260709-codeonly-three-env-head-v10`
+- Backend health: `UP`
+- Frontend HTTP: `200`
+- PDF worker HTTP: `200`
+- Evidence: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\promote-prod-v10-remote-verification.json`
+
+## 2026-07-09 17:19:16 promote-backup
+
+- GREEN: promote-backup -> PASS
+- ReleaseTag: `release-20260709-codeonly-three-env-head-v10`
+- Operation ids: ``
+- Evidence: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\promote-backup-v10-result.json`
+- Stdout: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\promote-backup-v10-operation.out.log`
+- Stderr: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\promote-backup-v10-operation.err.log`
+- Command: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\promote-backup-v10-command-summary.txt`
+- Flags: `ConfirmText=PROD`, `RequireTested`, `SkipDatabaseSync`, `SkipMinioSync`, no backup/restore/rollback command.
+- Backup path params: `RemoteReleaseRoot=/mnt/intruoyi-data/intruoyi-releases`, `RemoteDataRoot=/mnt/intruoyi-data/runtime-data`, `RemoteDataDiskMount=/mnt/intruoyi-data`.
+
+## 2026-07-09 17:19:57 backup remote verification
+
+- GREEN: backup remote verification -> PASS
+- ReleaseTag: `release-20260709-codeonly-three-env-head-v10`
+- `.env IMAGE_TAG`: `release-20260709-codeonly-three-env-head-v10`
+- Backend image: `intruoyi-backend:release-20260709-codeonly-three-env-head-v10`
+- Frontend image: `intruoyi-frontend:release-20260709-codeonly-three-env-head-v10`
+- Backend health: `UP`
+- Frontend HTTP: `200`
+- PDF worker HTTP: `200`
+- Mount: `/mnt/intruoyi-data /dev/mapper/cl-home ext4`
+- Release package path: `/mnt/intruoyi-data/intruoyi-releases/release-20260709-codeonly-three-env-head-v10`
+- Evidence: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\promote-backup-v10-remote-verification.json`
+
+## 2026-07-09 17:20:50 closeout precheck
+
+- GREEN: runtime-control main-path health -> PASS
+- Runtime config restored to main paths before check: `D:\ProjectPackage\Int\IntRuoyiMaintance\config\runtime-control.local.yaml`
+- Cleanup preview: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\task-closeout-cleanup-preview.out.txt` / `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\task-closeout-cleanup-preview.err.txt` exitCode `0`
+- Worktree status before delete: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\closeout-precheck-runtime-health-cleanup-preview.json`
+
+## 2026-07-09 17:25:28 worktree residual cleanup lesson
+
+- BLOCKER: final closeout worktree remove -> FAIL evidence already frozen.
+- Lesson: added residual worktree cleanup gate to `D:\ProjectPackage\Int\IntRuoyi\docs\worktree-memory.md` and route to `docs/experience-index.md`.
+- Next: safely remove only unregistered residual directories under `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce` after path and registry verification.
+
+## 2026-07-09 17:26:49 residual cleanup locked jar freeze
+
+- BLOCKER: residual worktree directory cleanup -> FAIL, locked maintenance Jar was still in use.
+- ReleaseTag: `release-20260709-codeonly-three-env-head-v10`
+- Locked path: `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\target\runtime-control-maintenance-2026.06-SNAPSHOT.jar`
+- Evidence: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\final-closeout-residual-cleanup-locked-jar-freeze.json`
+- Process inspection stdout: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\final-closeout-process-lock-inspection.out.txt`
+- Process inspection stderr: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\final-closeout-process-lock-inspection.err.txt`
+- Next: if process owner is the old temp worktree runtime-control, stop it and restart runtime-control from main path before retrying cleanup.
+
+## 2026-07-09 17:34:18 final closeout
+
+- GREEN: full three-environment release loop -> PASS
+- ReleaseTag: `release-20260709-codeonly-three-env-head-v10`
+- GREEN: build-release -> PASS
+- GREEN: publish-test -> PASS
+- GREEN: mark-tested -> PASS
+- GREEN: promote-prod -> PASS
+- GREEN: promote-backup -> PASS
+- GREEN: test/prod/backup remote verification -> PASS
+- GREEN: runtime-control main-path health after worktree delete -> PASS
+- GREEN: temporary release worktrees deleted -> PASS
+- Evidence: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\final-release-closeout-v10.json`
+

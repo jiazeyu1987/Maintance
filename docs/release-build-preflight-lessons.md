@@ -373,3 +373,22 @@
 - Verification: `python -X utf8 -m pytest tests/test_code_only_required_sql_contract.py -q` 通过，并在发布日志中看到 data SQL 的 `Skipping data required database SQL for code-only release`。
 - Forbidden action: 不得用手工补测试库 RT000006、手工改 preflight-plan、或把 data SQL 改成 schema 来绕过门禁。
 - Evidence: `doc/tasks/20260709-codeonly-three-env-head-release/evidence/maintenance-codeonly-required-sql-contract-v2-fix-summary.json`。
+
+
+### Gate: build-release 前检查 Java/Maven native memory 余量
+- Trigger: 执行 IntRuoyi `build-release`，尤其是连续多轮 Maven/Docker 构建后。
+- Preflight check: 构建前记录系统可用物理/虚拟内存；若上轮出现 JVM `Native memory allocation (malloc) failed`，必须释放/降低构建内存压力后再生成新 releaseTag。
+- Blocker: 若 Java/Maven 构建阶段出现 `There is insufficient memory for the Java Runtime Environment to continue`，当前 releaseTag 判废，冻结 `hs_err_pid*.log`、operation stdout/stderr、内存快照。
+- Verification: 新一轮构建前记录内存快照，构建命令使用受控 JVM/Maven 内存参数，并最终生成 manifest 通过校验。
+- Forbidden action: 不得复用失败 releaseTag；不得忽略 JVM native memory 错误继续发布。
+- Evidence: `doc/tasks/20260709-codeonly-three-env-head-release/evidence/build-release-v9-java-native-memory-failure-freeze.json`。
+
+### Gate: 正式预检发布包复制不得使用 PowerShell Copy-Item -Recurse
+
+- Trigger: 生成 `prod-preflight-release` dry-run 证据，且需要复制发布包到临时 sanitized package workspace。
+- Preflight check: 在复制前确认源发布包目录存在，并优先使用 `robocopy /E` 或 Python `shutil.copytree` 创建完整目录树；不得用 `Copy-Item -Recurse` 复制包含大量 SQL/嵌套目录的发布包作为唯一方式。
+- Blocker: 复制阶段出现缺失路径、部分文件未落地、返回码非成功范围，必须冻结复制命令、错误、源目录、目标目录和 dry-run/report 状态。
+- Verification: dry-run 证据 JSON 必须 `status=passed`、`mode=preflight-release`、`targetEnvironment=prod`、`releaseTag` 匹配，且 `writeActions=[]`。
+- Forbidden action: 不得手写 dry-run 绿灯、不得跳过 `ProdDryRunEvidencePath`、不得在没有完整 sanitized package workspace 的情况下执行正式服发布。
+- Evidence: `doc/tasks/20260709-codeonly-three-env-head-release/evidence/prod-preflight-release-dry-run-v10-copyitem-failure-freeze.json`。
+

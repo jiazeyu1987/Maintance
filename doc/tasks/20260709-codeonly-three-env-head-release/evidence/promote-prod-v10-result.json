@@ -1,0 +1,16 @@
+{
+  "status": "SUCCESS",
+  "phase": "promote-prod",
+  "releaseTag": "release-20260709-codeonly-three-env-head-v10",
+  "startedAt": "2026-07-09T16:46:25.532281+08:00",
+  "completedAt": "2026-07-09T17:01:55.125155+08:00",
+  "exitCode": 0,
+  "commandPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\promote-prod-v10-command-summary.txt",
+  "stdoutPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\promote-prod-v10-operation.out.log",
+  "stderrPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\promote-prod-v10-operation.err.log",
+  "operationIds": [],
+  "lockReleased": true,
+  "completedMarkerSeen": true,
+  "dryRunEvidencePath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m\\runtime\\runtime-control\\prod-preflight-release-evidence\\release-20260709-codeonly-three-env-head-v10-preflight-release-dry-run.json",
+  "noBackupRestoreRollbackCommand": true
+}

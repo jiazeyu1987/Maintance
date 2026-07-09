@@ -1,0 +1,27 @@
+{
+  "status": "FAILED",
+  "phase": "prod-preflight-release-dry-run",
+  "releaseTag": "release-20260709-codeonly-three-env-head-v10",
+  "frozenAt": "2026-07-09T16:43:31.624735+08:00",
+  "failure": {
+    "step": "sanitized package workspace copy",
+    "tool": "PowerShell Copy-Item -Recurse",
+    "error": "Copy-Item : Could not find a part of the path 'C:\\Users\\BJB110\\AppData\\Local\\Temp\\prod-dry-run-release-20260709-codeonly-three-env-head-v10-...\\release-20260709-codeonly-three-env-head-v10\\required-sql\\20260619_post_release_role_e2e_gate_smoke_username_password_freshness_fix.sql'.",
+    "impact": "正式服 promote-prod 前置 ProdDryRunEvidencePath 无法生成，必须冻结证据并改用更稳定的复制方式后重试。"
+  },
+  "paths": {
+    "maintenanceWorktree": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m",
+    "releasePackageDir": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260709-codeonly-three-env-head-v10",
+    "targetConfigPath": null,
+    "precheckScript": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m\\ops\\release\\run-deploy-precheck-report.ps1",
+    "dryRunEvidencePath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m\\runtime\\runtime-control\\prod-preflight-release-evidence\\release-20260709-codeonly-three-env-head-v10-preflight-release-dry-run.json",
+    "precheckReportPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m\\runtime\\runtime-control\\prod-preflight-release-evidence\\release-20260709-codeonly-three-env-head-v10-deploy-precheck-report.json"
+  },
+  "state": {
+    "releasePackageDirExists": true,
+    "targetConfigExists": false,
+    "precheckScriptExists": true,
+    "dryRunEvidenceExists": false,
+    "precheckReportExists": false
+  }
+}

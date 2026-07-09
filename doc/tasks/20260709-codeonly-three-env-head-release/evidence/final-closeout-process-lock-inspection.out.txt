@@ -1,0 +1,53 @@
+--- java processes containing IntRuoyiMaintance or r260709ce or runtime-control ---
+[
+    {
+        "ProcessId":  51644,
+        "ParentProcessId":  56300,
+        "Name":  "cmd.exe",
+        "ExecutablePath":  "C:\\windows\\system32\\cmd.exe",
+        "CommandLine":  "C:\\windows\\system32\\cmd.exe /c \"\"D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\frontend\\node_modules\\.bin\\vite.cmd\" --host 127.0.0.1 --port 48182 \""
+    },
+    {
+        "ProcessId":  57552,
+        "ParentProcessId":  51644,
+        "Name":  "node.exe",
+        "ExecutablePath":  "D:\\Programs\\node.exe",
+        "CommandLine":  "node   \"D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\frontend\\node_modules\\.bin\\\\..\\vite\\bin\\vite.js\" --host 127.0.0.1 --port 48182"
+    },
+    {
+        "ProcessId":  38172,
+        "ParentProcessId":  57552,
+        "Name":  "esbuild.exe",
+        "ExecutablePath":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\frontend\\node_modules\\.pnpm\\@esbuild+win32-x64@0.27.7\\node_modules\\@esbuild\\win32-x64\\esbuild.exe",
+        "CommandLine":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\frontend\\node_modules\\.pnpm\\@esbuild+win32-x64@0.27.7\\node_modules\\@esbuild\\win32-x64\\esbuild.exe --service=0.27.7 --ping"
+    },
+    {
+        "ProcessId":  804,
+        "ParentProcessId":  34776,
+        "Name":  "java.exe",
+        "ExecutablePath":  "C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.10.7-hotspot\\bin\\java.exe",
+        "CommandLine":  "\"C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.10.7-hotspot\\bin\\java.exe\" -jar D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar "
+    },
+    {
+        "ProcessId":  12816,
+        "ParentProcessId":  46576,
+        "Name":  "powershell.exe",
+        "ExecutablePath":  "C:\\windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+        "CommandLine":  "\"C:\\windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -Command \"try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}\n$ErrorActionPreference=\u0027Stop\u0027\n[Console]::InputEncoding=[System.Text.UTF8Encoding]::new($false)\n[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new($false)\n$OutputEncoding=[System.Text.UTF8Encoding]::new($false)\n@\u0027\nfrom pathlib import Path\nimport json, datetime, subprocess, urllib.request, os\nroot = Path(r\u0027D:\\ProjectPackage\\Int\\IntRuoyiMaintance\u0027)\ntask_id = \u002720260709-codeonly-three-env-head-release\u0027\ntask = root / \u0027doc\u0027 / \u0027tasks\u0027 / task_id\nevidence = task / \u0027evidence\u0027\nevidence.mkdir(parents=True, exist_ok=True)\nrelease_tag=\u0027release-20260709-codeonly-three-env-head-v10\u0027\nlocked = Path(r\u0027D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar\u0027)\nfreeze = {\n  \u0027status\u0027:\u0027FAILED\u0027,\n  \u0027phase\u0027:\u0027residual-worktree-directory-cleanup\u0027,\n  \u0027releaseTag\u0027: release_tag,\n  \u0027failedAt\u0027: datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8))).isoformat(),\n  \u0027failure\u0027: {\n    \u0027error\u0027:\u0027PermissionError WinError 32: file is being used by another process\u0027,\n    \u0027lockedPath\u0027: str(locked),\n    \u0027impact\u0027:\u0027临时维护 worktree 目录暂不能删除；必须定位并切换/停止占用该 Jar 的旧运行控制台进程后再清理。\u0027\n  },\n  \u0027pathState\u0027: {\n    \u0027lockedPathExists\u0027: locked.exists(),\n    \u0027tempWorktreeBaseExists\u0027: Path(r\u0027D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\u0027).exists(),\n    \u0027maintenanceResidualExists\u0027: Path(r\u0027D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m\u0027).exists(),\n    \u0027frontendResidualExists\u0027: Path(r\u0027D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\f\u0027).exists(),\n  }\n}\ntry:\n    with urllib.request.urlopen(\u0027http://127.0.0.1:48181/actuator/health\u0027, timeout=10) as resp:\n        body=resp.read(4096).decode(\u0027utf-8\u0027,\u0027replace\u0027)\n        freeze[\u0027runtimeHealthBeforeProcessInspection\u0027]={\u0027statusCode\u0027:resp.status,\u0027body\u0027:body,\u0027passed\u0027:resp.status==200 and \u0027UP\u0027 in body}\nexcept Exception as ex:\n    freeze[\u0027runtimeHealthBeforeProcessInspection\u0027]={\u0027error\u0027:repr(ex),\u0027passed\u0027:False}\nfreeze_path=evidence/\u0027final-closeout-residual-cleanup-locked-jar-freeze.json\u0027\nfreeze_path.write_text(json.dumps(freeze,ensure_ascii=False,indent=2),encoding=\u0027utf-8\u0027)\n# Inspect Java/processes and port owner with PowerShell.\nps = r\u0027\u0027\u0027\n$ErrorActionPreference=\u0027Continue\u0027\n[Console]::InputEncoding=[System.Text.UTF8Encoding]::new($false)\n[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new($false)\n$OutputEncoding=[System.Text.UTF8Encoding]::new($false)\nWrite-Output \u0027--- java processes containing IntRuoyiMaintance or r260709ce or runtime-control ---\u0027\nGet-CimInstance Win32_Process | Where-Object { $_.CommandLine -match \u0027IntRuoyiMaintance|r260709ce|runtime-control-maintenance|48181\u0027 } | Select-Object ProcessId,ParentProcessId,Name,ExecutablePath,CommandLine | ConvertTo-Json -Depth 5\nWrite-Output \u0027--- port 48181 owner ---\u0027\nGet-NetTCPConnection -LocalPort 48181 -ErrorAction SilentlyContinue | Select-Object LocalAddress,LocalPort,State,OwningProcess | ConvertTo-Json -Depth 5\nWrite-Output \u0027--- owning process details ---\u0027\n$owners = @(Get-NetTCPConnection -LocalPort 48181 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique)\nforeach ($pid in $owners) { Get-CimInstance Win32_Process -Filter \\\"ProcessId=$pid\\\" | Select-Object ProcessId,ParentProcessId,Name,ExecutablePath,CommandLine | ConvertTo-Json -Depth 5 }\n\u0027\u0027\u0027\nproc=subprocess.run([\u0027powershell\u0027,\u0027-NoProfile\u0027,\u0027-ExecutionPolicy\u0027,\u0027Bypass\u0027,\u0027-Command\u0027,ps], cwd=str(root), text=True, encoding=\u0027utf-8\u0027, errors=\u0027replace\u0027, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=60)\nproc_out=evidence/\u0027final-closeout-process-lock-inspection.out.txt\u0027\nproc_err=evidence/\u0027final-closeout-process-lock-inspection.err.txt\u0027\nproc_out.write_text(proc.stdout,encoding=\u0027utf-8\u0027)\nproc_err.write_text(proc.stderr,encoding=\u0027utf-8\u0027)\nexec_path=task/\u0027execution-log.md\u0027\nexec_text=exec_path.read_text(encoding=\u0027utf-8\u0027)\nentry=f\u0027\u0027\u0027\\n## {datetime.datetime.now().strftime(\u0027%Y-%m-%d %H:%M:%S\u0027)} residual cleanup locked jar freeze\\n\\n- BLOCKER: residual worktree directory cleanup -\u003e FAIL, locked maintenance Jar was still in use.\\n- ReleaseTag: `{release_tag}`\\n- Locked path: `{locked}`\\n- Evidence: `{freeze_path}`\\n- Process inspection stdout: `{proc_out}`\\n- Process inspection stderr: `{proc_err}`\\n- Next: if process owner is the old temp worktree runtime-control, stop it and restart runtime-control from main path before retrying cleanup.\\n\u0027\u0027\u0027\nif \u0027residual cleanup locked jar freeze\u0027 not in exec_text:\n    exec_path.write_text(exec_text.rstrip()+\u0027\\n\u0027+entry,encoding=\u0027utf-8\u0027)\nreq=root/\u0027docs\u0027/\u0027request-command-log.md\u0027\nreq_text=req.read_text(encoding=\u0027utf-8\u0027)\nreq_entry=f\u0027\u0027\u0027\\n## {datetime.datetime.now().strftime(\u0027%Y-%m-%d %H:%M:%S\u0027)} {task_id}\\n\\n- Request: 继续发布收口，处理临时维护 worktree Jar 被进程锁定导致目录无法删除。\\n- Command: freeze locked Jar cleanup failure and inspect Java/port 48181 process owner.\\n- Evidence: `{freeze_path}`; process inspection `{proc_out}`.\\n\u0027\u0027\u0027\nif \u0027freeze locked Jar cleanup failure and inspect Java/port 48181 process owner\u0027 not in req_text:\n    req.write_text(req_text.rstrip()+\u0027\\n\u0027+req_entry,encoding=\u0027utf-8\u0027)\nprint(json.dumps({\u0027status\u0027:\u0027FROZEN\u0027,\u0027freezePath\u0027:str(freeze_path),\u0027processStdout\u0027:str(proc_out),\u0027processStderr\u0027:str(proc_err),\u0027runtimeHealth\u0027:freeze[\u0027runtimeHealthBeforeProcessInspection\u0027]},ensure_ascii=False,indent=2))\n\u0027@ | python -X utf8 -\""
+    },
+    {
+        "ProcessId":  58424,
+        "ParentProcessId":  61512,
+        "Name":  "powershell.exe",
+        "ExecutablePath":  "C:\\windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+        "CommandLine":  "powershell -NoProfile -ExecutionPolicy Bypass -Command \"\n$ErrorActionPreference=\u0027Continue\u0027\n[Console]::InputEncoding=[System.Text.UTF8Encoding]::new($false)\n[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new($false)\n$OutputEncoding=[System.Text.UTF8Encoding]::new($false)\nWrite-Output \u0027--- java processes containing IntRuoyiMaintance or r260709ce or runtime-control ---\u0027\nGet-CimInstance Win32_Process | Where-Object { $_.CommandLine -match \u0027IntRuoyiMaintance|r260709ce|runtime-control-maintenance|48181\u0027 } | Select-Object ProcessId,ParentProcessId,Name,ExecutablePath,CommandLine | ConvertTo-Json -Depth 5\nWrite-Output \u0027--- port 48181 owner ---\u0027\nGet-NetTCPConnection -LocalPort 48181 -ErrorAction SilentlyContinue | Select-Object LocalAddress,LocalPort,State,OwningProcess | ConvertTo-Json -Depth 5\nWrite-Output \u0027--- owning process details ---\u0027\n$owners = @(Get-NetTCPConnection -LocalPort 48181 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique)\nforeach ($pid in $owners) { Get-CimInstance Win32_Process -Filter \\\"ProcessId=$pid\\\" | Select-Object ProcessId,ParentProcessId,Name,ExecutablePath,CommandLine | ConvertTo-Json -Depth 5 }\n\""
+    }
+]
+--- port 48181 owner ---
+{
+    "LocalAddress":  "127.0.0.1",
+    "LocalPort":  48181,
+    "State":  2,
+    "OwningProcess":  804
+}
+--- owning process details ---

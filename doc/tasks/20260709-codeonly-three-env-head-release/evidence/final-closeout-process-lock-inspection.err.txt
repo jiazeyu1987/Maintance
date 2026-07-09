@@ -1,0 +1,7 @@
+Cannot overwrite variable PID because it is read-only or constant.
+At line:12 char:10
++ foreach ($pid in $owners) { Get-CimInstance Win32_Process -Filter "Pr ...
++          ~~~~
+    + CategoryInfo          : WriteError: (PID:String) [], SessionStateUnauthorizedAccessException
+    + FullyQualifiedErrorId : VariableNotWritable
+ 

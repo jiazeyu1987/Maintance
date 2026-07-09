@@ -1,0 +1,579 @@
+--- around line 11:     [switch]$RequireTested, ---
+    1: param(
+    2:     [ValidateSet('direct', 'build-release', 'deploy-release', 'mark-tested')]
+    3:     [string]$Mode = 'direct',
+    4:     [ValidateSet('full', 'intruoyi', 'backend', 'frontend', 'website')]
+    5:     [string]$Component = 'full',
+    6:     [string]$ReleaseTag = '',
+    7:     [string]$NasConfigPath = '',
+    8:     [string]$NasReleaseRoot = 'Backup/ReleasePackage',
+    9:     [string]$NasServer = '172.30.30.4',
+   10:     [string]$NasShare = '',
+   11:     [switch]$RequireTested,
+   12:     [string]$OperatorName = $env:USERNAME,
+   13:     [string]$TestConclusion = '',
+   14:     [string]$SelectedRecoverySetCandidateId = '',
+   15:     [string]$RecoverySetId = '',
+   16:     [string]$RecoverySetManifestHash = '',
+   17:     [string]$RecoverySetProgramVersion = '',
+   18:     [string]$RecoverySetRedisPolicy = '',
+   19:     [ValidateSet('test', 'prod', 'backup')]
+   20:     [string]$Environment = 'test',
+   21:     [string]$ConfirmText = '',
+   22:     [string]$ProdDryRunEvidencePath = '',
+   23:     [string]$ServerHost = '',
+   24:     [string]$TestServerHost = $env:RUNTIME_CONTROL_TEST_SERVER_HOST,
+   25:     [string]$ProdServerHost = $env:RUNTIME_CONTROL_PROD_SERVER_HOST,
+   26:     [string]$BackupServerHost = $env:RUNTIME_CONTROL_BACKUP_SERVER_HOST,
+   27:     [string]$ServerUser = 'root',
+   28:     [string]$RemoteAppDir = '/opt/intruoyi/runtime',
+   29:     [string]$RemoteReleaseRoot = '/var/lib/docker/intruoyi-releases',
+   30:     [string]$RemoteDataRoot = '/var/lib/docker/intruoyi-data/runtime-data',
+   31:     [string]$RemoteDataDiskMount = '/var/lib/docker',
+   32:     [string]$RemoteDataDiskDevice = '/dev/vdb',
+   33:     [int]$FrontendPort = 8081,
+   34:     [int]$BackendPort = 48081,
+   35:     [int]$WebsiteHostPort = 8083,
+   36:     [int]$OnlyOfficeHostPort = 8080,
+   37:     [string]$ShowroomSiteKey = 'yingtai-showroom',
+   38:     [string]$ShowroomStage = 'TEST',
+   39:     [string]$LocalMySqlContainer = 'int-ruoyi-mysql',
+--- around line 13:     [string]$TestConclusion = '', ---
+   40:     [string]$LocalMinioContainer = 'docker-minio-1',
+   41:     [string]$RemoteMinioContainer = '',
+--- around line 21:     [string]$ConfirmText = '', ---
+   42:     [string]$WebsiteRepo = $env:INT_RUOYI_WEBSITE_REPO,
+   43:     [string]$BackendRepoRoot = $env:INT_RUOYI_BACKEND_REPO,
+   44:     [string]$FrontendRepoRoot = $env:INT_RUOYI_FRONTEND_REPO,
+   45:     [string]$Tag = '',
+   46:     [string]$DccSignatureEvidenceHmacSecret = $env:DCC_SIGNATURE_EVIDENCE_HMAC_SECRET,
+   47:     [string]$DccSignatureEvidenceKeyVersion = $env:DCC_SIGNATURE_EVIDENCE_KEY_VERSION,
+   48:     [string]$EdhrS3Endpoint = $env:EDHR_S3_ENDPOINT,
+   49:     [string]$EdhrS3Bucket = $env:EDHR_S3_BUCKET,
+--- around line 22:     [string]$ProdDryRunEvidencePath = '', ---
+   50:     [string]$EdhrS3Region = $env:EDHR_S3_REGION,
+--- around line 340: if (@('prod', 'backup') -contains $Environment -and $ConfirmText -ne 'PROD') { ---
+  328: }
+  329: if ($Mode -ne 'mark-tested' -and [string]::IsNullOrWhiteSpace($ServerHost)) {
+  330:     Fail "Missing -ServerHost; release target host for environment '$Environment' must be configured by runtime-control or passed explicitly."
+  331: }
+  332: if (-not [string]::IsNullOrWhiteSpace($ServerHost)) {
+  333:     $ServerHost = $ServerHost.Trim()
+  334: }
+  335: if ([string]::IsNullOrWhiteSpace($RemoteMinioContainer) -and $publishTarget.ContainsKey('RemoteMinioContainer')) {
+  336:     $RemoteMinioContainer = $publishTarget.RemoteMinioContainer
+  337: }
+  338: $PublishTargetName = $publishTarget.DisplayName
+  339: 
+  340: if (@('prod', 'backup') -contains $Environment -and $ConfirmText -ne 'PROD') {
+  341:     Fail "Explicit confirmation required for production-grade publish: -ConfirmText PROD"
+  342: }
+  343: 
+  344: function Remove-SshNoise([string]$Text) {
+  345:     if ([string]::IsNullOrWhiteSpace($Text)) {
+  346:         return ''
+  347:     }
+  348:     return (($Text -split "`r?`n") | Where-Object {
+  349:         $_ -and $_ -notlike 'close - IO is still pending on closed socket.*'
+  350:     }) -join "`n"
+  351: }
+  352: 
+  353: function Require-Command([string]$Name) {
+  354:     if (-not (Get-Command $Name -ErrorAction SilentlyContinue)) {
+  355:         Fail "Missing command: $Name"
+  356:     }
+  357: }
+  358: 
+  359: function Get-SshCommonOptions {
+  360:     return @(
+  361:         '-o', 'BatchMode=yes',
+  362:         '-o', 'ConnectTimeout=10',
+  363:         '-o', 'ConnectionAttempts=1',
+  364:         '-o', 'ServerAliveInterval=10',
+  365:         '-o', 'ServerAliveCountMax=3',
+  366:         '-o', 'StrictHostKeyChecking=no'
+  367:     )
+  368: }
+--- around line 341:     Fail "Explicit confirmation required for production-grade publish: -ConfirmText PROD" ---
+  369: 
+--- around line 864:     if (-not $publishBackend -or $Mode -eq 'deploy-release' -or $Mode -eq 'mark-tested') { ---
+  852:         createdAt = (Get-Date).ToUniversalTime().ToString('o')
+  853:         publishScope = if ($SkipDatabaseSync -and $SkipMinioSync) { 'code-only' } else { 'with-data' }
+  854:         changeSet = New-ReleaseChangeSetManifest -PackageTag $PackageTag
+  855:         sourceRepos = $SourceRepos
+  856:     }
+  857:     $json = $releaseInfo | ConvertTo-Json -Depth 12
+  858:     $targetPath = Join-Path $distDir 'release-info.json'
+  859:     [System.IO.File]::WriteAllText($targetPath, $json, [System.Text.UTF8Encoding]::new($false))
+  860:     Info "Frontend release info written: $targetPath"
+  861: }
+  862: 
+  863: function Resolve-BackendRuntimeBaseConfig {
+  864:     if (-not $publishBackend -or $Mode -eq 'deploy-release' -or $Mode -eq 'mark-tested') {
+  865:         return $null
+  866:     }
+  867: 
+  868:     if ([string]::IsNullOrWhiteSpace($BackendRuntimeBaseMode)) {
+  869:         Fail 'Missing BackendRuntimeBaseMode; backend runtime base image distribution mode is required.'
+  870:     }
+  871:     $mode = $BackendRuntimeBaseMode.Trim()
+  872:     if ($mode -ne 'offline-tar') {
+  873:         Fail "Unsupported BackendRuntimeBaseMode: $mode. Only offline-tar is supported."
+  874:     }
+  875: 
+  876:     if ([string]::IsNullOrWhiteSpace($BackendRuntimeBaseTarPath)) {
+  877:         Fail 'Missing BackendRuntimeBaseTarPath; backend image packaging requires an internal runtime base image tar.'
+  878:     }
+  879:     $tarPath = $BackendRuntimeBaseTarPath.Trim()
+  880:     if (-not (Test-Path -LiteralPath $tarPath -PathType Leaf)) {
+  881:         Fail "BackendRuntimeBaseTarPath not found: $tarPath"
+  882:     }
+  883:     $resolvedTarPath = (Resolve-Path -LiteralPath $tarPath).Path
+  884: 
+  885:     if ([string]::IsNullOrWhiteSpace($BackendRuntimeBaseTarSha256)) {
+  886:         Fail 'Missing BackendRuntimeBaseTarSha256; backend runtime base tar integrity is required.'
+  887:     }
+  888:     $tarSha256 = $BackendRuntimeBaseTarSha256.Trim().ToLowerInvariant()
+  889:     if ($tarSha256 -notmatch '^[0-9a-f]{64}$') {
+  890:         Fail "BackendRuntimeBaseTarSha256 must be a 64-character SHA256 hex value: $BackendRuntimeBaseTarSha256"
+  891:     }
+  892: 
+--- around line 2436:     if (-not $RequireTested) { ---
+ 2424:         if (Test-Path -LiteralPath $targetPath) {
+ 2425:             Fail "NAS release package already exists: $NasReleaseRoot/$packageDirectoryName"
+ 2426:         }
+ 2427:         New-Item -ItemType Directory -Force -Path $targetRoot | Out-Null
+ 2428:         Copy-Item -LiteralPath $releaseDir -Destination $targetRoot -Recurse -Force
+ 2429:         Info "Release package uploaded to NAS: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
+ 2430:     } finally {
+ 2431:         Disconnect-NasReleaseShare -MountInfo $mountInfo
+ 2432:     }
+ 2433: }
+ 2434: 
+ 2435: function Should-RequireNasReleaseTestedForDeploy {
+ 2436:     if (-not $RequireTested) {
+ 2437:         return $false
+ 2438:     }
+ 2439:     if ($Environment -eq 'prod') {
+ 2440:         return $true
+ 2441:     }
+ 2442:     if ($Environment -eq 'backup') {
+ 2443:         Info 'TEMPORARY_BACKUP_RECOVERY_GATE_DISABLED: Backup deploy recovery gate temporarily disabled by operator request; tested.json rollback compatibility evidence is not required for backup environment.'
+ 2444:         return $false
+ 2445:     }
+ 2446:     return $false
+ 2447: }
+ 2448: 
+ 2449: function Copy-ReleasePackageFromNas {
+ 2450:     param(
+ 2451:         [Parameter(Mandatory = $true)]
+ 2452:         [string]$PackageTag
+ 2453:     )
+ 2454:     $nasConfig = Read-NasReleaseConfig
+ 2455:     $mountInfo = $null
+ 2456:     try {
+ 2457:         $mountInfo = Connect-NasReleaseShare -NasConfig $nasConfig
+ 2458:         $sourcePath = Get-NasReleasePackagePath -NasRoot $mountInfo.Root -PackageTag $PackageTag
+ 2459:         if (-not (Test-Path -LiteralPath $sourcePath)) {
+ 2460:             $packageDirectoryName = ConvertTo-ReleasePackageDirectoryName -ReleaseTagValue $PackageTag
+ 2461:             Fail "NAS release package not found: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
+ 2462:         }
+ 2463:         if (Should-RequireNasReleaseTestedForDeploy) {
+ 2464:             Assert-NasReleaseTested -MountedPackagePath $sourcePath -PackageTag $PackageTag
+--- around line 2601: function Write-NasRollbackCompatibilityEvidence { ---
+ 2589:             recoverySetId = $RecoverySetId
+ 2590:             recoverySetManifestHash = $RecoverySetManifestHash.ToLowerInvariant()
+ 2591:             programVersion = $RecoverySetProgramVersion
+ 2592:             redisPolicy = $RecoverySetRedisPolicy
+ 2593:         }
+ 2594:         compatibility = [ordered]@{
+ 2595:             appOnlyRollback = $status
+ 2596:             blockedReasons = @($blockedReasons.ToArray())
+ 2597:         }
+ 2598:     }
+ 2599: }
+ 2600: 
+ 2601: function Write-NasRollbackCompatibilityEvidence {
+ 2602:     param(
+ 2603:         [Parameter(Mandatory = $true)]
+ 2604:         [string]$PackagePath,
+ 2605:         [Parameter(Mandatory = $true)]
+ 2606:         [object]$Evidence
+ 2607:     )
+ 2608: 
+ 2609:     $compatibilityPath = Join-Path $PackagePath 'rollback-compatibility.json'
+ 2610:     $compatibilityJson = $Evidence | ConvertTo-Json -Depth 8
+ 2611:     [System.IO.File]::WriteAllText($compatibilityPath, $compatibilityJson, [System.Text.UTF8Encoding]::new($false))
+ 2612: }
+ 2613: 
+ 2614: function Mark-NasReleaseTested {
+ 2615:     param(
+ 2616:         [Parameter(Mandatory = $true)]
+ 2617:         [string]$PackageTag
+ 2618:     )
+ 2619:     $nasConfig = Read-NasReleaseConfig
+ 2620:     $mountInfo = $null
+ 2621:     try {
+ 2622:         if ([string]::IsNullOrWhiteSpace($TestConclusion)) {
+ 2623:             Fail 'TestConclusion is required when marking a release package as tested.'
+ 2624:         }
+ 2625:         if ([string]::IsNullOrWhiteSpace($SelectedRecoverySetCandidateId)) {
+ 2626:             Fail 'SelectedRecoverySetCandidateId is required when marking a release package as tested.'
+ 2627:         }
+ 2628:         if ([string]::IsNullOrWhiteSpace($RecoverySetId)) {
+ 2629:             Fail 'RecoverySetId is required when marking a release package as tested.'
+--- around line 2622:         if ([string]::IsNullOrWhiteSpace($TestConclusion)) { ---
+ 2630:         }
+ 2631:         if ([string]::IsNullOrWhiteSpace($RecoverySetManifestHash)) {
+ 2632:             Fail 'RecoverySetManifestHash is required when marking a release package as tested.'
+ 2633:         }
+ 2634:         if ([string]::IsNullOrWhiteSpace($RecoverySetProgramVersion)) {
+ 2635:             Fail 'RecoverySetProgramVersion is required when marking rollback compatibility evidence.'
+ 2636:         }
+ 2637:         if ([string]::IsNullOrWhiteSpace($RecoverySetRedisPolicy)) {
+ 2638:             Fail 'RecoverySetRedisPolicy is required when marking rollback compatibility evidence.'
+ 2639:         }
+ 2640:         if ($RecoverySetManifestHash -notmatch '^[0-9a-fA-F]{64}$') {
+ 2641:             Fail 'RecoverySetManifestHash must be a SHA-256 hex value when marking rollback compatibility evidence.'
+ 2642:         }
+ 2643:         $expectedRecoverySetCandidateId = "restore:$RecoverySetId"
+ 2644:         if ($SelectedRecoverySetCandidateId -ne $expectedRecoverySetCandidateId) {
+ 2645:             Fail "SelectedRecoverySetCandidateId must match RecoverySetId when marking rollback compatibility evidence: expected $expectedRecoverySetCandidateId"
+ 2646:         }
+ 2647:         $mountInfo = Connect-NasReleaseShare -NasConfig $nasConfig
+ 2648:         $packagePath = Get-NasReleasePackagePath -NasRoot $mountInfo.Root -PackageTag $PackageTag
+ 2649:         if (-not (Test-Path -LiteralPath $packagePath)) {
+ 2650:             $packageDirectoryName = ConvertTo-ReleasePackageDirectoryName -ReleaseTagValue $PackageTag
+--- around line 2623:             Fail 'TestConclusion is required when marking a release package as tested.' ---
+ 2651:             Fail "NAS release package not found: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
+--- around line 2659:             testedAt = $checkedAt ---
+ 2652:         }
+ 2653:         $packageDirectoryName = ConvertTo-ReleasePackageDirectoryName -ReleaseTagValue $PackageTag
+ 2654:         $manifest = Read-NasReleaseManifestForCompatibility -PackagePath $packagePath -PackageTag $PackageTag -PackageDirectoryName $packageDirectoryName
+ 2655:         $checkedAt = (Get-Date).ToUniversalTime().ToString('o')
+ 2656:         $tested = [ordered]@{
+ 2657:             releaseTag = $PackageTag
+ 2658:             packageDirectoryName = $packageDirectoryName
+ 2659:             testedAt = $checkedAt
+ 2660:             operatorName = $OperatorName
+ 2661:             testConclusion = $TestConclusion
+ 2662:             recoverySet = [ordered]@{
+ 2663:                 selectedRecoverySetCandidateId = $SelectedRecoverySetCandidateId
+ 2664:                 recoverySetId = $RecoverySetId
+ 2665:                 recoverySetManifestHash = $RecoverySetManifestHash
+ 2666:                 programVersion = $RecoverySetProgramVersion
+ 2667:                 redisPolicy = $RecoverySetRedisPolicy
+ 2668:             }
+ 2669:         } | ConvertTo-Json -Depth 4
+ 2670:         $compatibility = New-RollbackCompatibilityEvidence `
+ 2671:             -Manifest $manifest `
+ 2672:             -PackageTag $PackageTag `
+ 2673:             -PackageDirectoryName $packageDirectoryName `
+ 2674:             -CheckedAt $checkedAt `
+ 2675:             -SelectedRecoverySetCandidateId $SelectedRecoverySetCandidateId `
+ 2676:             -RecoverySetId $RecoverySetId `
+ 2677:             -RecoverySetManifestHash $RecoverySetManifestHash `
+ 2678:             -RecoverySetProgramVersion $RecoverySetProgramVersion `
+ 2679:             -RecoverySetRedisPolicy $RecoverySetRedisPolicy
+ 2680:         [System.IO.File]::WriteAllText((Join-Path $packagePath 'tested.json'), $tested, [System.Text.UTF8Encoding]::new($false))
+ 2681:         Write-NasRollbackCompatibilityEvidence -PackagePath $packagePath -Evidence $compatibility
+ 2682:         Info "Release package marked as tested: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
+ 2683:         Info "rollback-compatibility.json status=$($compatibility['status']) recorded: $NasReleaseRoot/$packageDirectoryName/rollback-compatibility.json"
+ 2684:     } finally {
+ 2685:         Disconnect-NasReleaseShare -MountInfo $mountInfo
+ 2686:     }
+ 2687: }
+--- around line 2661:             testConclusion = $TestConclusion ---
+ 2688: 
+ 2689: function Assert-NasReleaseTested {
+--- around line 2681:         Write-NasRollbackCompatibilityEvidence -PackagePath $packagePath -Evidence $compatibility ---
+ 2690:     param(
+ 2691:         [Parameter(Mandatory = $true)]
+ 2692:         [string]$MountedPackagePath,
+ 2693:         [Parameter(Mandatory = $true)]
+ 2694:         [string]$PackageTag
+ 2695:     )
+ 2696:     $testedPath = Join-Path $MountedPackagePath 'tested.json'
+ 2697:     if (-not (Test-Path -LiteralPath $testedPath)) {
+ 2698:         $packageDirectoryName = ConvertTo-ReleasePackageDirectoryName -ReleaseTagValue $PackageTag
+ 2699:         Fail "Release package has not been marked as tested: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
+ 2700:     }
+ 2701: }
+ 2702: 
+ 2703: function Read-ReleaseManifest {
+ 2704:     $manifestPath = Join-Path $releaseDir 'release-manifest.json'
+ 2705:     if (-not (Test-Path -LiteralPath $manifestPath)) {
+ 2706:         Fail "release-manifest.json missing in release package: $manifestPath"
+ 2707:     }
+ 2708: 
+ 2709:     try {
+--- around line 4269: function Assert-ProdDryRunEvidence { ---
+ 4257:     }
+ 4258:     [System.IO.File]::WriteAllText($targetStatePath, $targetStateJson, [System.Text.UTF8Encoding]::new($false))
+ 4259:     Invoke-CheckedCommand -FilePath 'python' -ArgumentList @(
+ 4260:         '-X', 'utf8',
+ 4261:         $preflightScriptPath,
+ 4262:         '--manifest', $manifestPath,
+ 4263:         '--target-state', $targetStatePath,
+ 4264:         '--target-environment', $Environment,
+ 4265:         '--output', $preflightPlanPath
+ 4266:     )
+ 4267: }
+ 4268: 
+ 4269: function Assert-ProdDryRunEvidence {
+ 4270:     if ($Environment -ne 'prod' -or $Mode -ne 'deploy-release') {
+ 4271:         return
+ 4272:     }
+ 4273:     if ([string]::IsNullOrWhiteSpace($ProdDryRunEvidencePath)) {
+ 4274:         Fail 'Production deploy-release requires -ProdDryRunEvidencePath from a passed preflight-release dry-run.'
+ 4275:     }
+ 4276:     if (-not (Test-Path -LiteralPath $ProdDryRunEvidencePath -PathType Leaf)) {
+ 4277:         Fail "Production dry-run evidence file missing: $ProdDryRunEvidencePath"
+ 4278:     }
+ 4279:     try {
+ 4280:         $evidence = [System.IO.File]::ReadAllText($ProdDryRunEvidencePath, [System.Text.UTF8Encoding]::new($false)) | ConvertFrom-Json
+ 4281:     } catch {
+ 4282:         Fail "Production dry-run evidence JSON parse failed: $($_.Exception.Message)"
+ 4283:     }
+ 4284:     if ([string]$evidence.status -ne 'passed') {
+ 4285:         Fail "Production dry-run evidence status must be passed: $($evidence.status)"
+ 4286:     }
+ 4287:     if ([string]$evidence.targetEnvironment -ne 'prod') {
+ 4288:         Fail "Production dry-run evidence targetEnvironment must be prod: $($evidence.targetEnvironment)"
+ 4289:     }
+ 4290:     if ([string]$evidence.releaseTag -ne $ReleaseTag) {
+ 4291:         Fail "Production dry-run evidence releaseTag does not match deploy-release: $($evidence.releaseTag)"
+ 4292:     }
+ 4293:     if ([string]$evidence.mode -ne 'preflight-release') {
+ 4294:         Fail "Production dry-run evidence mode must be preflight-release: $($evidence.mode)"
+ 4295:     }
+ 4296:     if ($null -eq $evidence.writeActions -or @($evidence.writeActions).Count -gt 0) {
+ 4297:         Fail 'Production dry-run evidence must be read-only and include empty writeActions.'
+--- around line 4273:     if ([string]::IsNullOrWhiteSpace($ProdDryRunEvidencePath)) { ---
+ 4298:     }
+ 4299: }
+ 4300: 
+ 4301: function Get-ReleasePreflightApplyItems {
+--- around line 4274:         Fail 'Production deploy-release requires -ProdDryRunEvidencePath from a passed preflight-release dry-run.' ---
+ 4302:     param(
+--- around line 4276:     if (-not (Test-Path -LiteralPath $ProdDryRunEvidencePath -PathType Leaf)) { ---
+ 4303:         [Parameter(Mandatory = $true)]
+ 4304:         $PreflightPlan,
+--- around line 4277:         Fail "Production dry-run evidence file missing: $ProdDryRunEvidencePath" ---
+ 4305: 
+--- around line 4280:         $evidence = [System.IO.File]::ReadAllText($ProdDryRunEvidencePath, [System.Text.UTF8Encoding]::new($false)) | ConvertFrom-Json ---
+ 4306:         [Parameter(Mandatory = $true)]
+ 4307:         [string]$PublishScope
+ 4308:     )
+--- around line 4676: if ($Mode -eq 'mark-tested') { ---
+ 4664: SQL
+ 4665: cat '$remoteSqlPath'
+ 4666: } | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 ruoyi-vue-pro"
+ 4667:             }
+ 4668:         } catch {
+ 4669:             Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'FAILED' -ErrorMessage $_.Exception.Message
+ 4670:             throw
+ 4671:         }
+ 4672:         Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'APPLIED'
+ 4673:     }
+ 4674: }
+ 4675: 
+ 4676: if ($Mode -eq 'mark-tested') {
+ 4677:     Mark-NasReleaseTested -PackageTag $ReleaseTag
+ 4678:     Write-Host "Release package marked as tested: $ReleaseTag"
+ 4679:     exit 0
+ 4680: }
+ 4681: 
+ 4682: if ($Mode -eq 'deploy-release') {
+ 4683:     Info "Deploying release package: $ReleaseTag"
+ 4684:     Copy-ReleasePackageFromNas -PackageTag $ReleaseTag
+ 4685:     Assert-ProdDryRunEvidence
+ 4686:     $requiredDatabaseSqlScripts = Get-ReleasePackageDatabaseSqlScripts
+ 4687:     $Component = Resolve-DeployReleasePackageComponent -ComponentExplicit $componentExplicit
+ 4688:     $publishBackend = $Component -in @('full', 'intruoyi', 'backend')
+ 4689:     $publishFrontend = $Component -in @('full', 'intruoyi', 'frontend')
+ 4690:     $publishWebsite = $Component -in @('full', 'website')
+ 4691:     $releasePublishScope = Resolve-DeployReleasePackageScope
+ 4692:     $releaseOnlyOfficeIncluded = Resolve-DeployReleasePackageOnlyOfficeIncluded
+ 4693:     $IncludeOnlyOffice = $releaseOnlyOfficeIncluded
+ 4694:     Assert-DeployReleasePackageArtifactsForScope -PublishScope $releasePublishScope
+ 4695:     if ($publishBackend) {
+ 4696:         Assert-RequiredDatabaseSqlScriptsInRelease
+ 4697:     }
+ 4698:     Apply-ReleaseRuntimeEnvPackage -TargetEnvironment $Environment
+ 4699:     if ($releasePublishScope -eq 'code-only') {
+ 4700:         $SkipDatabaseSync = $true
+ 4701:         $SkipMinioSync = $true
+ 4702:     } elseif ($releasePublishScope -eq 'with-data') {
+ 4703:         Info 'Deploying with-data release package'
+ 4704:     }
+--- around line 4682: if ($Mode -eq 'deploy-release') { ---
+ 4705:     if ($smartReleaseReportOnlyEnabled -and $Mode -eq 'deploy-release') {
+ 4706:         Invoke-SmartReleaseDeployPrecheckReportOnly -PackagePath $releaseDir
+ 4707:     }
+ 4708: }
+ 4709: 
+ 4710: Set-PublishRuntimeDefaultsForTarget -TargetServerHost $ServerHost -TargetEnvironment $Environment
+--- around line 4685:     Assert-ProdDryRunEvidence ---
+ 4711: 
+ 4712: if ($Mode -ne 'mark-tested') {
+ 4713:     Require-Command 'docker'
+--- around line 4705:     if ($smartReleaseReportOnlyEnabled -and $Mode -eq 'deploy-release') { ---
+ 4714:     Require-Command 'python'
+ 4715: }
+ 4716: if ($Mode -ne 'build-release') {
+ 4717:     Require-Command 'ssh'
+ 4718:     Require-Command 'scp'
+ 4719: }
+ 4720: if ($Mode -ne 'deploy-release') {
+ 4721:     Require-Command 'mvn'
+ 4722:     Require-Command 'node'
+ 4723:     Require-Command 'npm'
+ 4724: }
+ 4725: 
+ 4726: if ($publishBackend -and $Mode -ne 'build-release' -and [string]::IsNullOrWhiteSpace($DccSignatureEvidenceHmacSecret)) {
+ 4727:     Fail 'Missing DCC_SIGNATURE_EVIDENCE_HMAC_SECRET; DCC electronic signature evidence is fail-fast and requires an explicit HMAC secret.'
+ 4728: }
+ 4729: 
+ 4730: if ($publishBackend -and $Mode -ne 'build-release' -and [string]::IsNullOrWhiteSpace($DccSignatureEvidenceKeyVersion)) {
+ 4731:     Fail 'Missing DCC_SIGNATURE_EVIDENCE_KEY_VERSION; DCC electronic signature evidence is fail-fast and requires an explicit key version.'
+ 4732: }
+ 4733: 
+--- around line 5034: if ($Mode -eq 'deploy-release' -and $publishWebsite) { ---
+ 5022: if ($Mode -eq 'build-release') {
+ 5023:     Copy-ReleasePackageToNas -PackageTag $ReleaseTag
+ 5024:     Write-Host ''
+ 5025:     Write-Host "Release package built: $ReleaseTag"
+ 5026:     Write-Host "NAS release path: $NasReleaseRoot/$packageDirectoryName"
+ 5027:     exit 0
+ 5028: }
+ 5029: }
+ 5030: } finally {
+ 5031:     Exit-BuildReleaseRuntimeRestartGuard -GuardFile $buildReleaseRuntimeRestartGuardFile
+ 5032: }
+ 5033: 
+ 5034: if ($Mode -eq 'deploy-release' -and $publishWebsite) {
+ 5035:     $websiteTemplateInPackage = Join-Path $websiteRuntimeLocal 'nginx.template.conf'
+ 5036:     if (Test-Path -LiteralPath $websiteTemplateInPackage) {
+ 5037:         $websiteNginxTemplateText = [System.IO.File]::ReadAllText($websiteTemplateInPackage, [System.Text.UTF8Encoding]::new($false))
+ 5038:     } else {
+ 5039:         $websiteNginxTemplateText = [System.IO.File]::ReadAllText($websiteNginxTemplate, [System.Text.UTF8Encoding]::new($false))
+ 5040:     }
+ 5041:     $websiteNginxText = $websiteNginxTemplateText.Replace('__BACKEND_ORIGIN__', "${ServerHost}:$BackendPort")
+ 5042:     [System.IO.File]::WriteAllText($websiteNginxLocal, $websiteNginxText, [System.Text.UTF8Encoding]::new($false))
+ 5043: }
+ 5044: 
+ 5045: if ($Mode -eq 'deploy-release') {
+ 5046:     if ($publishBackend) {
+ 5047:         Info 'Regenerating target-bound post-import SQL for deploy-release'
+ 5048:         Write-TargetBoundPostImportSql
+ 5049:     }
+ 5050: } elseif ($publishBackend -and $Mode -ne 'build-release' -and -not (Test-Path -LiteralPath $postImportSqlLocal)) {
+ 5051:     Info 'Generating target-bound post-import SQL for deployment'
+ 5052:     Write-TargetBoundPostImportSql
+ 5053: }
+ 5054: 
+ 5055: Info 'Preparing remote runtime data disk'
+ 5056: Assert-RemoteRuntimeDataOnDataDisk
+ 5057: 
+ 5058: Info 'Preparing remote release directories'
+ 5059: Prepare-RemoteReleaseTree
+ 5060: 
+ 5061: Info 'Writing remote compose environment file locally'
+ 5062: $existingRemoteEnv = @{}
+--- around line 5045: if ($Mode -eq 'deploy-release') { ---
+ 5063: if (($publishBackend -or $publishFrontend) -and $Mode -ne 'build-release') {
+ 5064:     $existingRemoteEnv = Get-RemoteRuntimeEnvMap
+ 5065: }
+ 5066: function Resolve-ExistingRuntimeEnvValue {
+ 5067:     param(
+ 5068:         [Parameter(Mandatory = $true)]
+ 5069:         [string]$Name,
+ 5070:         [string]$DefaultValue = ''
+ 5071:     )
+ 5072: 
+ 5073:     if ($existingRemoteEnv.ContainsKey($Name) -and -not [string]::IsNullOrWhiteSpace($existingRemoteEnv[$Name])) {
+--- around line 5305:         if ($Mode -eq 'deploy-release') { ---
+ 5293:         Fail "Target-bound post-import SQL missing: $postImportSqlLocal"
+ 5294:     }
+ 5295:     Copy-ToServer -LocalPath $postImportSqlLocal -RemotePath $remotePostImportSql
+ 5296: }
+ 5297: 
+ 5298: if ($publishBackend -or $publishFrontend) {
+ 5299:     Info "Loading release images on the $PublishTargetName server"
+ 5300:     Invoke-SshCommand "docker load -i '$remoteImageTar'"
+ 5301: }
+ 5302: 
+ 5303: if ($publishBackend) {
+ 5304:     if (-not $SkipMinioSync) {
+ 5305:         if ($Mode -eq 'deploy-release') {
+ 5306:             $minioSnapshotLocal = Join-Path $releaseDir 'minio\yudao'
+ 5307:             if (-not (Test-Path -LiteralPath $minioSnapshotLocal)) {
+ 5308:                 Fail "Release package MinIO snapshot missing: $minioSnapshotLocal"
+ 5309:             }
+ 5310:             Info "Syncing MinIO bucket yudao from release package to the $PublishTargetName server"
+ 5311:             $minioSyncCommand = "docker run --rm -v `"${minioSnapshotLocal}:/snapshot/yudao:ro`" --entrypoint /bin/sh minio/mc -c 'mc alias set dst http://${ServerHost}:9000 $remoteMinioAccessKey $remoteMinioSecretKey && mc mb --ignore-existing dst/yudao && mc mirror --overwrite --disable-multipart --retry /snapshot/yudao dst/yudao && mc anonymous set download dst/yudao'"
+ 5312:             Invoke-CheckedShell -Command $minioSyncCommand -DisplayCommand 'docker run --rm -v "<release>/minio/yudao:/snapshot/yudao:ro" --entrypoint /bin/sh minio/mc -c "mc alias set dst <redacted> && mc mb --ignore-existing dst/yudao && mc mirror --overwrite --disable-multipart --retry /snapshot/yudao dst/yudao && mc anonymous set download dst/yudao"'
+ 5313:         } else {
+ 5314:             Info "Syncing MinIO bucket yudao from local host to the $PublishTargetName server"
+ 5315:             $minioSyncCommand = "docker run --rm --add-host host.docker.internal:host-gateway --entrypoint /bin/sh minio/mc -c 'mc alias set src http://host.docker.internal:9000 $localMinioAccessKey $localMinioSecretKey && mc alias set dst http://${ServerHost}:9000 $remoteMinioAccessKey $remoteMinioSecretKey && mc mb --ignore-existing dst/yudao && mc mirror --overwrite --disable-multipart --retry src/yudao dst/yudao && mc anonymous set download dst/yudao'"
+ 5316:             Invoke-CheckedShell -Command $minioSyncCommand -DisplayCommand 'docker run --rm --add-host host.docker.internal:host-gateway --entrypoint /bin/sh minio/mc -c "mc alias set src <redacted> && mc alias set dst <redacted> && mc mb --ignore-existing dst/yudao && mc mirror --overwrite --disable-multipart --retry src/yudao dst/yudao && mc anonymous set download dst/yudao"'
+ 5317:         }
+ 5318:     }
+ 5319: }
+ 5320: 
+ 5321: if ($publishBackend -and -not $SkipDatabaseSync) {
+ 5322:     Info 'Resetting remote MySQL container and data directory before import'
+ 5323:     Invoke-SshCommand "docker rm -f intruoyi-mysql 2>/dev/null || true"
+ 5324:     Invoke-SshCommand "rm -rf '$RemoteAppDir/data/mysql' && mkdir -p '$RemoteAppDir/data/mysql'"
+ 5325: }
+ 5326: 
+ 5327: if ($publishBackend) {
+ 5328:     Info "Starting MySQL and Redis on the $PublishTargetName server"
+ 5329:     Invoke-SshCommand "cd '$RemoteAppDir' && docker compose up -d mysql redis"
+ 5330: }
+ 5331: 
+ 5332: if ($publishBackend) {
+ 5333:     Info 'Waiting for remote MySQL health'
+--- around line 5423:     if ($Mode -eq 'deploy-release' -and @('prod', 'backup') -contains $Environment) { ---
+ 5411:         Assert-RemoteShowroomSmokeImageContent
+ 5412:     } elseif ($publishFrontend) {
+ 5413:         Info 'Skipping showroom smoke image content check for code-only deploy without Website or MinIO data sync'
+ 5414:     }
+ 5415:     if ($publishBackend -and $IncludeOnlyOffice) {
+ 5416:         Wait-HttpOk -Url "http://${ServerHost}:$OnlyOfficeHostPort/healthcheck" -TimeoutSeconds 180
+ 5417:     }
+ 5418:     if ($publishWebsite) { Wait-HttpOk -Url "http://${ServerHost}:$WebsiteHostPort/" -TimeoutSeconds 180 }
+ 5419:     if ($publishWebsite) { Wait-HttpOk -Url "http://${ServerHost}:$WebsiteHostPort/showroom" -TimeoutSeconds 180 }
+ 5420:     if ($publishWebsite) { Assert-PublicWebsiteEntryReadback }
+ 5421:     if ($publishWebsite) { Assert-PublicWebsiteScopedReleaseCurrent }
+ 5422: 
+ 5423:     if ($Mode -eq 'deploy-release' -and @('prod', 'backup') -contains $Environment) {
+ 5424:         Write-NasReleaseDeploymentHistory -PackageTag $ReleaseTag -HistoryAction 'deploy' -HistoryEnvironment $Environment
+ 5425:     }
+ 5426: } catch {
+ 5427:     if ($publishBackend) {
+ 5428:         $releaseErrorMessage = $_.Exception.Message
+ 5429:         try {
+ 5430:             Invoke-ReleaseOperationLockRelease -Status 'FAILED' -ErrorMessage $releaseErrorMessage
+ 5431:         } catch {
+ 5432:         }
+ 5433:     }
+ 5434:     throw
+ 5435: }
+ 5436: 
+ 5437: Info 'Cleaning remote release temp files'
+ 5438: Invoke-SshCommand "rm -f '$remoteImageTar' '$remoteDbDump' '$remoteResetDbSql' '$remotePostImportSql'"
+ 5439: $remoteCleanupDirs = @()
+ 5440: if ($publishBackend) {
+ 5441:     $remoteCleanupDirs += $remoteRequiredSqlDir
+ 5442: }
+ 5443: if ($publishWebsite) {
+ 5444:     $remoteCleanupDirs += $remoteWebsitePreviousDir
+ 5445: }
+ 5446: if ($remoteCleanupDirs.Count -gt 0) {
+ 5447:     $remoteCleanupDirsArg = Join-ShellQuotedPathList -Paths $remoteCleanupDirs
+ 5448:     Invoke-SshCommand "rm -rf $remoteCleanupDirsArg"
+ 5449: }
+ 5450: 
+ 5451: Write-Host ''

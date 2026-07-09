@@ -1,0 +1,219 @@
+﻿{
+    "checkedAt":  "2026-07-09T16:03:49",
+    "releaseTag":  "release-20260709-codeonly-three-env-head-v10",
+    "packageDir":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260709-codeonly-three-env-head-v10",
+    "manifestPath":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260709-codeonly-three-env-head-v10\\manifest.json",
+    "status":  "PASS",
+    "note":  "Corrected validation v2: manifest.requiredSql is the authoritative SQL metadata source; required-sql artifacts are allowed in code-only packages, and type=data entries must be skipped by deploy runtime.",
+    "previousOverbroadFailureEvidence":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\build-release-v10-manifest-validation-overbroad-rule-freeze.json",
+    "previousMixedSqlContainerFailureEvidence":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\build-release-v10-manifest-validation-mixed-sql-container-freeze.json",
+    "checks":  {
+                   "buildOperationSuccess":  true,
+                   "releaseTagMatches":  true,
+                   "publishScopeCodeOnly":  true,
+                   "manifestExists":  true,
+                   "packageDirExists":  true,
+                   "sourceReposDirtyFalse":  true,
+                   "sourceReposOnlyBackendFrontend":  true,
+                   "noForbiddenDataDirectories":  true,
+                   "noDumpOrMinioArtifacts":  true,
+                   "requiredSqlMetadataComplete":  true,
+                   "dataSqlPresentButSkippableByType":  true
+               },
+    "buildOperationStatus":  "SUCCESS",
+    "manifestPublishScope":  "code-only",
+    "manifestReleaseTag":  "release-20260709-codeonly-three-env-head-v10",
+    "sourceRepos":  [
+                        {
+                            "name":  "ruoyi-vue-pro",
+                            "branch":  "HEAD",
+                            "commit":  "65190bdc3c43489536d0fb1908290aa4629ce522",
+                            "dirty":  false
+                        },
+                        {
+                            "name":  "yudao-ui-admin-vue3",
+                            "branch":  "HEAD",
+                            "commit":  "0931b8dc3725b34689ee36e68cc4dd3a7aacea3b",
+                            "dirty":  false
+                        }
+                    ],
+    "topLevelDirs":  [
+                         "required-sql",
+                         "resources",
+                         "runtime-env",
+                         "smoke"
+                     ],
+    "forbiddenDirs":  [
+
+                      ],
+    "dumpLikeFiles":  [
+
+                      ],
+    "requiredSqlCount":  271,
+    "dataSqlCount":  28,
+    "dataSqlSample":  [
+                          {
+                              "id":  "20260607_product_master_data",
+                              "migrationId":  "20260607_product_master_data",
+                              "file":  "required-sql/20260607_product_master_data.sql",
+                              "sourcePath":  "sql/mysql/20260607_product_master_data.sql",
+                              "type":  "data",
+                              "riskLevel":  "medium"
+                          },
+                          {
+                              "id":  "20260622_mes_edhr_bpm_notify_to_inbox",
+                              "migrationId":  "20260622_mes_edhr_bpm_notify_to_inbox",
+                              "file":  "required-sql/20260622_mes_edhr_bpm_notify_to_inbox.sql",
+                              "sourcePath":  "sql/mysql/20260622_mes_edhr_bpm_notify_to_inbox.sql",
+                              "type":  "data",
+                              "riskLevel":  "medium"
+                          },
+                          {
+                              "id":  "20260624_mes_auto_schedule_permission_split",
+                              "migrationId":  "20260624_mes_auto_schedule_permission_split",
+                              "file":  "required-sql/20260624_mes_auto_schedule_permission_split.sql",
+                              "sourcePath":  "sql/mysql/20260624_mes_auto_schedule_permission_split.sql",
+                              "type":  "data",
+                              "riskLevel":  "medium"
+                          },
+                          {
+                              "id":  "20260624_mes_scheduler_workbench_permission_split",
+                              "migrationId":  "20260624_mes_scheduler_workbench_permission_split",
+                              "file":  "required-sql/20260624_mes_scheduler_workbench_permission_split.sql",
+                              "sourcePath":  "sql/mysql/20260624_mes_scheduler_workbench_permission_split.sql",
+                              "type":  "data",
+                              "riskLevel":  "medium"
+                          },
+                          {
+                              "id":  "20260625_dcc_fvm_matrix_retain_other_completion",
+                              "migrationId":  "20260625_dcc_fvm_matrix_retain_other_completion",
+                              "file":  "required-sql/20260625_dcc_fvm_matrix_retain_other_completion.sql",
+                              "sourcePath":  "sql/mysql/20260625_dcc_fvm_matrix_retain_other_completion.sql",
+                              "type":  "data",
+                              "riskLevel":  "medium"
+                          },
+                          {
+                              "id":  "20260626_dcc_access_rule_menu_retire",
+                              "migrationId":  "20260626_dcc_access_rule_menu_retire",
+                              "file":  "required-sql/20260626_dcc_access_rule_menu_retire.sql",
+                              "sourcePath":  "sql/mysql/20260626_dcc_access_rule_menu_retire.sql",
+                              "type":  "data",
+                              "riskLevel":  "low"
+                          },
+                          {
+                              "id":  "20260626_dcc_basic_data_global_submenu",
+                              "migrationId":  "20260626_dcc_basic_data_global_submenu",
+                              "file":  "required-sql/20260626_dcc_basic_data_global_submenu.sql",
+                              "sourcePath":  "sql/mysql/20260626_dcc_basic_data_global_submenu.sql",
+                              "type":  "data",
+                              "riskLevel":  "medium"
+                          },
+                          {
+                              "id":  "20260626_dcc_merge_view_preview_permission",
+                              "migrationId":  "20260626_dcc_merge_view_preview_permission",
+                              "file":  "required-sql/20260626_dcc_merge_view_preview_permission.sql",
+                              "sourcePath":  "sql/mysql/20260626_dcc_merge_view_preview_permission.sql",
+                              "type":  "data",
+                              "riskLevel":  "low"
+                          },
+                          {
+                              "id":  "20260626_dcc_permission_menu_rename",
+                              "migrationId":  "20260626_dcc_permission_menu_rename",
+                              "file":  "required-sql/20260626_dcc_permission_menu_rename.sql",
+                              "sourcePath":  "sql/mysql/20260626_dcc_permission_menu_rename.sql",
+                              "type":  "data",
+                              "riskLevel":  "low"
+                          },
+                          {
+                              "id":  "20260626_role_management_split_rename_navigation",
+                              "migrationId":  "20260626_role_management_split_rename_navigation",
+                              "file":  "required-sql/20260626_role_management_split_rename_navigation.sql",
+                              "sourcePath":  "sql/mysql/20260626_role_management_split_rename_navigation.sql",
+                              "type":  "data",
+                              "riskLevel":  "medium"
+                          },
+                          {
+                              "id":  "20260626_role_name_garbled_repair",
+                              "migrationId":  "20260626_role_name_garbled_repair",
+                              "file":  "required-sql/20260626_role_name_garbled_repair.sql",
+                              "sourcePath":  "sql/mysql/20260626_role_name_garbled_repair.sql",
+                              "type":  "data",
+                              "riskLevel":  "low"
+                          },
+                          {
+                              "id":  "20260626_showroom_product_current_bu_normalization",
+                              "migrationId":  "20260626_showroom_product_current_bu_normalization",
+                              "file":  "required-sql/20260626_showroom_product_current_bu_normalization.sql",
+                              "sourcePath":  "sql/mysql/20260626_showroom_product_current_bu_normalization.sql",
+                              "type":  "data",
+                              "riskLevel":  "medium"
+                          },
+                          {
+                              "id":  "20260629_mes_smart_scheduling_role_assignment",
+                              "migrationId":  "20260629_mes_smart_scheduling_role_assignment",
+                              "file":  "required-sql/20260629_mes_smart_scheduling_role_assignment.sql",
+                              "sourcePath":  "sql/mysql/20260629_mes_smart_scheduling_role_assignment.sql",
+                              "type":  "data",
+                              "riskLevel":  "low"
+                          },
+                          {
+                              "id":  "20260629_mes_smart_scheduling_role_scope",
+                              "migrationId":  "20260629_mes_smart_scheduling_role_scope",
+                              "file":  "required-sql/20260629_mes_smart_scheduling_role_scope.sql",
+                              "sourcePath":  "sql/mysql/20260629_mes_smart_scheduling_role_scope.sql",
+                              "type":  "data",
+                              "riskLevel":  "medium"
+                          },
+                          {
+                              "id":  "20260629_srm_admin_role_visibility",
+                              "migrationId":  "20260629_srm_admin_role_visibility",
+                              "file":  "required-sql/20260629_srm_admin_role_visibility.sql",
+                              "sourcePath":  "sql/mysql/20260629_srm_admin_role_visibility.sql",
+                              "type":  "data",
+                              "riskLevel":  "medium"
+                          },
+                          {
+                              "id":  "20260630_approval_center_role_visibility",
+                              "migrationId":  "20260630_approval_center_role_visibility",
+                              "file":  "required-sql/20260630_approval_center_role_visibility.sql",
+                              "sourcePath":  "sql/mysql/20260630_approval_center_role_visibility.sql",
+                              "type":  "data",
+                              "riskLevel":  "medium"
+                          },
+                          {
+                              "id":  "20260630_erp_production_admin_role",
+                              "migrationId":  "20260630_erp_production_admin_role",
+                              "file":  "required-sql/20260630_erp_production_admin_role.sql",
+                              "sourcePath":  "sql/mysql/20260630_erp_production_admin_role.sql",
+                              "type":  "data",
+                              "riskLevel":  "medium"
+                          },
+                          {
+                              "id":  "20260701_srm_admin_role_menu_scope_cleanup",
+                              "migrationId":  "20260701_srm_admin_role_menu_scope_cleanup",
+                              "file":  "required-sql/20260701_srm_admin_role_menu_scope_cleanup.sql",
+                              "sourcePath":  "sql/mysql/20260701_srm_admin_role_menu_scope_cleanup.sql",
+                              "type":  "data",
+                              "riskLevel":  "medium"
+                          },
+                          {
+                              "id":  "20260705_showroom_legacy_product_code_auto_confirmable_draft",
+                              "migrationId":  "20260705_showroom_legacy_product_code_auto_confirmable_draft",
+                              "file":  "required-sql/20260705_showroom_legacy_product_code_auto_confirmable_draft.sql",
+                              "sourcePath":  "sql/mysql/20260705_showroom_legacy_product_code_auto_confirmable_draft.sql",
+                              "type":  "data",
+                              "riskLevel":  "medium"
+                          },
+                          {
+                              "id":  "20260705_showroom_legacy_product_code_name_backfill",
+                              "migrationId":  "20260705_showroom_legacy_product_code_name_backfill",
+                              "file":  "required-sql/20260705_showroom_legacy_product_code_name_backfill.sql",
+                              "sourcePath":  "sql/mysql/20260705_showroom_legacy_product_code_name_backfill.sql",
+                              "type":  "data",
+                              "riskLevel":  "medium"
+                          }
+                      ],
+    "missingSqlType":  [
+
+                       ]
+}

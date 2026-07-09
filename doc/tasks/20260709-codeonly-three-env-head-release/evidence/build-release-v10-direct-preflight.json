@@ -1,0 +1,35 @@
+﻿{
+    "releaseTag":  "release-20260709-codeonly-three-env-head-v10",
+    "component":  "intruoyi",
+    "script":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m\\ops\\deploy\\publish-int-ruoyi.ps1",
+    "nasConfigPath":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m\\runtime\\runtime-control\\nas-release-config\\manual-build-release-v10.json",
+    "backendRepoRoot":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\b",
+    "frontendRepoRoot":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\f",
+    "maintenanceWorktree":  "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m",
+    "backendHead":  "65190bdc3c43489536d0fb1908290aa4629ce522",
+    "frontendHead":  "0931b8dc3725b34689ee36e68cc4dd3a7aacea3b",
+    "maintenanceHead":  "5f266c6ff1932e2169ab0cefe5baeb0ca08fa314",
+    "backendStatus":  [
+
+                      ],
+    "frontendStatus":  [
+
+                       ],
+    "maintenanceStatus":  [
+
+                          ],
+    "hasSkipDatabaseSync":  true,
+    "hasSkipMinioSync":  true,
+    "hasComponentIntruoyi":  true,
+    "hasTestServerHost":  true,
+    "hasProdServerHost":  true,
+    "hasBackupServerHost":  true,
+    "mavenOpts":  "-Xms128m -Xmx768m -XX:MaxMetaspaceSize=384m -XX:ReservedCodeCacheSize=96m -XX:CICompilerCount=2 -XX:TieredStopAtLevel=1 -Djava.awt.headless=true",
+    "memoryBefore":  {
+                         "TotalVisibleMemorySize":  32799644,
+                         "FreePhysicalMemory":  11115912,
+                         "TotalVirtualMemorySize":  72121240,
+                         "FreeVirtualMemory":  12231460
+                     },
+    "command":  "MAVEN_OPTS=\u003ccapped\u003e; powershell -NoProfile -ExecutionPolicy Bypass -File \u003cscript\u003e -Mode build-release -Component intruoyi -ReleaseTag \u003ctag\u003e -NasConfigPath \u003cnas\u003e -ServerHost 172.30.30.58 -ServerUser root -TestServerHost 172.30.30.58 -ProdServerHost 172.30.30.57 -BackupServerHost 172.30.30.59 -BackendRepoRoot \u003cbackend\u003e -FrontendRepoRoot \u003cfrontend\u003e -RemoteMinioContainer ragflow_compose-minio-1 -SkipDatabaseSync -SkipMinioSync"
+}

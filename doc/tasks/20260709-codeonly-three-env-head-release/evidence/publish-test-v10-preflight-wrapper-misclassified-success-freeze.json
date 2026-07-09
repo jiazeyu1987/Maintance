@@ -1,0 +1,11 @@
+﻿{
+    "status":  "MISCLASSIFIED_SUCCESS",
+    "releaseTag":  "release-20260709-codeonly-three-env-head-v10",
+    "frozenAt":  "2026-07-09T16:24:51",
+    "explanation":  "Wrapper invoked deploy command with -DryRun assumption, but script parameter parsing failed and actual publish completed; no separate preflight evidence was produced. Raw log retained and decoded as operation evidence.",
+    "rawLog":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\publish-test-v10-preflight-command.log",
+    "decodedLog":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\publish-test-v10-operation.decoded.log",
+    "resultEvidence":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\publish-test-v10-result.json",
+    "verificationEvidence":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\publish-test-v10-remote-verification.json",
+    "publishCompleted":  true
+}

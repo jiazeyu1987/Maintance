@@ -1,0 +1,23 @@
+PWD=/opt/intruoyi/runtime
+ENV_IMAGE_TAG=release-20260709-codeonly-three-env-head-v10
+COMPOSE_PS_START
+NAME                  IMAGE                                                            COMMAND                   SERVICE      CREATED         STATUS                 PORTS
+intruoyi-backend      intruoyi-backend:release-20260709-codeonly-three-env-head-v10    "/__cacert_entrypoin…"   backend      2 minutes ago   Up 2 minutes           0.0.0.0:48081->48081/tcp, :::48081->48081/tcp
+intruoyi-frontend     intruoyi-frontend:release-20260709-codeonly-three-env-head-v10   "/docker-entrypoint.…"   frontend     2 minutes ago   Up 2 minutes           0.0.0.0:8081->80/tcp, :::8081->80/tcp
+intruoyi-mysql        mysql:8.0.39                                                     "docker-entrypoint.s…"   mysql        5 weeks ago     Up 5 weeks (healthy)   3306/tcp, 33060/tcp
+intruoyi-onlyoffice   onlyoffice/documentserver:latest                                 "/app/ds/run-documen…"   onlyoffice   5 weeks ago     Up 5 weeks (healthy)   443/tcp, 0.0.0.0:8080->80/tcp, :::8080->80/tcp
+intruoyi-redis        redis:7-alpine                                                   "docker-entrypoint.s…"   redis        5 weeks ago     Up 5 weeks (healthy)   6379/tcp
+intruoyi-website      nginx:1.27-alpine                                                "/docker-entrypoint.…"   website      4 weeks ago     Up 4 weeks             0.0.0.0:8083->80/tcp, :::8083->80/tcp
+COMPOSE_PS_END
+BACKEND_IMAGE=intruoyi-backend:release-20260709-codeonly-three-env-head-v10
+FRONTEND_IMAGE=intruoyi-frontend:release-20260709-codeonly-three-env-head-v10
+LOCAL_BACKEND_HEALTH={"status":"UP"}
+LOCAL_FRONTEND_STATUS=200
+LOCAL_PDF_WORKER_STATUS=200 application/javascript
+MOUNT_INFO=/mnt/intruoyi-data /dev/mapper/cl-home ext4
+MOUNT_SOURCE=/dev/mapper/cl-home
+MOUNT_TARGET=/mnt/intruoyi-data
+RELEASE_ROOT_EXISTS=yes
+DATA_ROOT_EXISTS=yes
+RELEASE_PACKAGE_PATH=/mnt/intruoyi-data/intruoyi-releases/release-20260709-codeonly-three-env-head-v10
+DF_MNT=/dev/mapper/cl-home 971196772 447271208 474568356  49% /mnt/intruoyi-data

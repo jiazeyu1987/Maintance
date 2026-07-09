@@ -1,0 +1,246 @@
+﻿{
+    "frozenAt":  "2026-07-09T15:42:17",
+    "releaseTag":  "release-20260709-codeonly-three-env-head-v9",
+    "status":  "FAIL",
+    "failure":  "build-release v9 failed during Maven backend build because Java native memory allocation failed",
+    "failedEvidence":  {
+                           "preflight":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\build-release-v9-direct-preflight.json",
+                           "hsErr":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\build-release-v9-hs_err_pid6440.log",
+                           "result":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\build-release-v9-result.json",
+                           "stderr":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\build-release-v9-operation.err.log",
+                           "replay":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\build-release-v9-replay_pid6440.log",
+                           "stdout":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\build-release-v9-operation.out.log"
+                       },
+    "errorLines":  [
+                       "# There is insufficient memory for the Java Runtime Environment to continue.",
+                       "# Native memory allocation (malloc) failed to allocate 1045632 bytes. Error detail: Chunk::new",
+                       "# D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m\\hs_err_pid6440.log",
+                       "# D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m\\replay_pid6440.log",
+                       "# There is insufficient memory for the Java Runtime Environment to continue.",
+                       "# Native memory allocation (malloc) failed to allocate 1045632 bytes. Error detail: Chunk::new",
+                       "# D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m\\hs_err_pid6440.log",
+                       "# D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m\\replay_pid6440.log"
+                   ],
+    "stderrTail":  [
+                       ""
+                   ],
+    "memorySnapshot":  {
+                           "TotalVisibleMemorySize":  32799644,
+                           "FreePhysicalMemory":  7782032,
+                           "TotalVirtualMemorySize":  72121240,
+                           "FreeVirtualMemory":  7903360
+                       },
+    "topProcesses":  [
+                         {
+                             "ProcessName":  "java",
+                             "Id":  38432,
+                             "WorkingSet64":  2123198464,
+                             "VirtualMemorySize64":  14999080960,
+                             "CPU":  167.453125
+                         },
+                         {
+                             "ProcessName":  "java",
+                             "Id":  59852,
+                             "WorkingSet64":  1932185600,
+                             "VirtualMemorySize64":  14968217600,
+                             "CPU":  83.40625
+                         },
+                         {
+                             "ProcessName":  "java",
+                             "Id":  66416,
+                             "WorkingSet64":  1484251136,
+                             "VirtualMemorySize64":  7069589504,
+                             "CPU":  214.5
+                         },
+                         {
+                             "ProcessName":  "node",
+                             "Id":  64812,
+                             "WorkingSet64":  796577792,
+                             "VirtualMemorySize64":  24621776896,
+                             "CPU":  544.234375
+                         },
+                         {
+                             "ProcessName":  "node",
+                             "Id":  17936,
+                             "WorkingSet64":  417628160,
+                             "VirtualMemorySize64":  24427503616,
+                             "CPU":  287.375
+                         },
+                         {
+                             "ProcessName":  "java",
+                             "Id":  55388,
+                             "WorkingSet64":  298430464,
+                             "VirtualMemorySize64":  14844682240,
+                             "CPU":  12.828125
+                         },
+                         {
+                             "ProcessName":  "com.docker.backend",
+                             "Id":  22504,
+                             "WorkingSet64":  174034944,
+                             "VirtualMemorySize64":  6232666112,
+                             "CPU":  7811.828125
+                         },
+                         {
+                             "ProcessName":  "Docker Desktop",
+                             "Id":  25528,
+                             "WorkingSet64":  36610048,
+                             "VirtualMemorySize64":  3711342428160,
+                             "CPU":  504.296875
+                         },
+                         {
+                             "ProcessName":  "com.docker.backend",
+                             "Id":  24352,
+                             "WorkingSet64":  24522752,
+                             "VirtualMemorySize64":  5841006592,
+                             "CPU":  68.8125
+                         },
+                         {
+                             "ProcessName":  "com.docker.build",
+                             "Id":  24748,
+                             "WorkingSet64":  19439616,
+                             "VirtualMemorySize64":  5780910080,
+                             "CPU":  60.671875
+                         },
+                         {
+                             "ProcessName":  "node",
+                             "Id":  33936,
+                             "WorkingSet64":  11800576,
+                             "VirtualMemorySize64":  15385546752,
+                             "CPU":  18.09375
+                         },
+                         {
+                             "ProcessName":  "Docker Desktop",
+                             "Id":  10272,
+                             "WorkingSet64":  8163328,
+                             "VirtualMemorySize64":  2238585245696,
+                             "CPU":  189.90625
+                         },
+                         {
+                             "ProcessName":  "node",
+                             "Id":  57552,
+                             "WorkingSet64":  8089600,
+                             "VirtualMemorySize64":  15334666240,
+                             "CPU":  31.21875
+                         },
+                         {
+                             "ProcessName":  "node_repl",
+                             "Id":  13416,
+                             "WorkingSet64":  6201344,
+                             "VirtualMemorySize64":  4523663360,
+                             "CPU":  0.078125
+                         },
+                         {
+                             "ProcessName":  "node_repl",
+                             "Id":  65852,
+                             "WorkingSet64":  5828608,
+                             "VirtualMemorySize64":  4523663360,
+                             "CPU":  0.0625
+                         },
+                         {
+                             "ProcessName":  "node_repl",
+                             "Id":  14500,
+                             "WorkingSet64":  5771264,
+                             "VirtualMemorySize64":  4523663360,
+                             "CPU":  0.171875
+                         },
+                         {
+                             "ProcessName":  "java",
+                             "Id":  804,
+                             "WorkingSet64":  5423104,
+                             "VirtualMemorySize64":  14903373824,
+                             "CPU":  21.65625
+                         },
+                         {
+                             "ProcessName":  "Docker Desktop",
+                             "Id":  25520,
+                             "WorkingSet64":  4796416,
+                             "VirtualMemorySize64":  2255394553856,
+                             "CPU":  34.515625
+                         },
+                         {
+                             "ProcessName":  "node_repl",
+                             "Id":  64156,
+                             "WorkingSet64":  4755456,
+                             "VirtualMemorySize64":  4523663360,
+                             "CPU":  0.09375
+                         },
+                         {
+                             "ProcessName":  "node_repl",
+                             "Id":  50128,
+                             "WorkingSet64":  3641344,
+                             "VirtualMemorySize64":  4523663360,
+                             "CPU":  0.234375
+                         },
+                         {
+                             "ProcessName":  "node_repl",
+                             "Id":  50340,
+                             "WorkingSet64":  3379200,
+                             "VirtualMemorySize64":  4523663360,
+                             "CPU":  0.125
+                         },
+                         {
+                             "ProcessName":  "docker-sandbox",
+                             "Id":  25524,
+                             "WorkingSet64":  2740224,
+                             "VirtualMemorySize64":  5663002624,
+                             "CPU":  26.234375
+                         },
+                         {
+                             "ProcessName":  "node_repl",
+                             "Id":  58336,
+                             "WorkingSet64":  2383872,
+                             "VirtualMemorySize64":  4524711936,
+                             "CPU":  2.21875
+                         },
+                         {
+                             "ProcessName":  "node_repl",
+                             "Id":  59280,
+                             "WorkingSet64":  2379776,
+                             "VirtualMemorySize64":  4523663360,
+                             "CPU":  2.421875
+                         },
+                         {
+                             "ProcessName":  "node",
+                             "Id":  19292,
+                             "WorkingSet64":  2334720,
+                             "VirtualMemorySize64":  5667172352,
+                             "CPU":  3.09375
+                         },
+                         {
+                             "ProcessName":  "node_repl",
+                             "Id":  14356,
+                             "WorkingSet64":  2248704,
+                             "VirtualMemorySize64":  4524711936,
+                             "CPU":  0.765625
+                         },
+                         {
+                             "ProcessName":  "node",
+                             "Id":  57360,
+                             "WorkingSet64":  2236416,
+                             "VirtualMemorySize64":  5605941248,
+                             "CPU":  1.765625
+                         },
+                         {
+                             "ProcessName":  "node_repl",
+                             "Id":  6432,
+                             "WorkingSet64":  2207744,
+                             "VirtualMemorySize64":  4523663360,
+                             "CPU":  0.21875
+                         },
+                         {
+                             "ProcessName":  "node_repl",
+                             "Id":  16480,
+                             "WorkingSet64":  2199552,
+                             "VirtualMemorySize64":  4523663360,
+                             "CPU":  0.25
+                         },
+                         {
+                             "ProcessName":  "node_repl",
+                             "Id":  808,
+                             "WorkingSet64":  2195456,
+                             "VirtualMemorySize64":  4524711936,
+                             "CPU":  0.484375
+                         }
+                     ],
+    "nextAction":  "record preflight lesson, reduce Maven/Java build memory pressure, rebuild a new releaseTag rather than reusing v9"
+}

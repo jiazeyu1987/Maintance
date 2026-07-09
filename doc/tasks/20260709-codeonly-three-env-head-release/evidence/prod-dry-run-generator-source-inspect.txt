@@ -1,0 +1,222 @@
+===== SEARCH ROOT: D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src =====
+--- PATTERN: generateProdDryRunEvidence ---
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1252:        return generateProdDryRunEvidence(req.releaseTag());
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1267:    private String generateProdDryRunEvidence(String releaseTag) {
+--- PATTERN: prod-preflight-release-evidence ---
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java:517:        assertThat(Files.exists(operationStore.stateDir().resolve("prod-preflight-release-evidence")
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java:677:        assertThat(Files.exists(operationStore.stateDir().resolve("prod-preflight-release-evidence")
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1277:        Path evidenceDir = properties.stateDirPath().resolve("prod-preflight-release-evidence");
+--- PATTERN: preflight-release-dry-run ---
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java:518:                .resolve(releaseTag + "-preflight-release-dry-run.json"))).isTrue();
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java:678:                .resolve(releaseTag + "-preflight-release-dry-run.json"))).isTrue();
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1279:        Path dryRunEvidencePath = evidenceDir.resolve(releaseTag + "-preflight-release-dry-run.json");
+--- PATTERN: deploy-precheck-report ---
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1278:        Path reportPath = evidenceDir.resolve(releaseTag + "-deploy-precheck-report.json");
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1280:        Path scriptPath = commandExecutor.resolveScriptPath("release/run-deploy-precheck-report.ps1");
+--- PATTERN: ProdDryRunEvidencePath ---
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java:516:                        "-ProdDryRunEvidencePath");
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java:676:                        "-ProdDryRunEvidencePath");
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlOperationAction.java:286:            args.add("-ProdDryRunEvidencePath");
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:196:            return copyActionReqWithProdDryRunEvidencePath(resolvedReq, resolveProdDryRunEvidencePath(resolvedReq));
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1248:    private String resolveProdDryRunEvidencePath(RuntimeControlActionReqVO req) {
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1250:            return validateProdDryRunEvidencePath(req.prodDryRunEvidencePath());
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1255:    private String validateProdDryRunEvidencePath(String prodDryRunEvidencePath) {
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:2030:    private RuntimeControlActionReqVO copyActionReqWithProdDryRunEvidencePath(RuntimeControlActionReqVO req,
+--- PATTERN: writeActions ---
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1313:            ArrayNode writeActions = root.putArray("writeActions");
+--- PATTERN: report-only ---
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java:448:                    "mode": "report-only",
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java:456:                    "mode": "report-only",
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java:600:                    "mode": "report-only",
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java:608:                    "mode": "report-only",
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1302:                    "report-only",
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1305:            ), "正式 deploy precheck report-only");
+===== SEARCH ROOT: D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\frontend\src =====
+--- PATTERN: generateProdDryRunEvidence ---
+--- PATTERN: prod-preflight-release-evidence ---
+--- PATTERN: preflight-release-dry-run ---
+--- PATTERN: deploy-precheck-report ---
+--- PATTERN: ProdDryRunEvidencePath ---
+--- PATTERN: writeActions ---
+--- PATTERN: report-only ---
+===== SEARCH ROOT: D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops =====
+--- PATTERN: generateProdDryRunEvidence ---
+--- PATTERN: prod-preflight-release-evidence ---
+--- PATTERN: preflight-release-dry-run ---
+--- PATTERN: deploy-precheck-report ---
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:601:        -ScriptPath (Join-Path $releaseScriptRoot 'run-deploy-precheck-report.ps1') `
+--- PATTERN: ProdDryRunEvidencePath ---
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:22:    [string]$ProdDryRunEvidencePath = '',
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:4273:    if ([string]::IsNullOrWhiteSpace($ProdDryRunEvidencePath)) {
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:4274:        Fail 'Production deploy-release requires -ProdDryRunEvidencePath from a passed preflight-release dry-run.'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:4276:    if (-not (Test-Path -LiteralPath $ProdDryRunEvidencePath -PathType Leaf)) {
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:4277:        Fail "Production dry-run evidence file missing: $ProdDryRunEvidencePath"
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:4280:        $evidence = [System.IO.File]::ReadAllText($ProdDryRunEvidencePath, [System.Text.UTF8Encoding]::new($false)) | ConvertFrom-Json
+--- PATTERN: writeActions ---
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\release_prod_dry_run_gate.py:25:    write_actions = evidence.get("writeActions")
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\release_prod_dry_run_gate.py:27:        raise ProdDryRunGateError("prod dry-run evidence writeActions must be an explicit list")
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:4296:    if ($null -eq $evidence.writeActions -or @($evidence.writeActions).Count -gt 0) {
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:4297:        Fail 'Production dry-run evidence must be read-only and include empty writeActions.'
+--- PATTERN: report-only ---
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:473:    Fail "Invalid INTRUOYI_SMART_RELEASE_REPORT_ONLY: $envValue. Use 1 to enable report-only or unset the variable."
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:485:        Fail "Missing $ArgumentName; Smart Release report-only requires explicit local input files."
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:502:        Fail 'Missing PackagePath; Smart Release report-only requires a release package directory.'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:563:        -ArgumentList @('-PackagePath', $PackagePath, '-Mode', 'report-only', '-OutputPath', $manifestValidationOutputPath) `
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:567:        Info "Smart Release manifest validation report-only completed with exit code $($manifestValidationResult.ExitCode); legacy build-release flow continues because the report was written."
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:580:            '-Mode', 'report-only'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:585:        Info "Smart Release intake report-only completed with exit code $($intakeResult.ExitCode); legacy build-release flow continues because the report was written."
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:602:        -ArgumentList @('-PackagePath', $PackagePath, '-Environment', $Environment, '-TargetConfigPath', $targetConfigPath, '-Mode', 'report-only', '-OutputPath', $deployPrecheckOutputPath) `
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:606:        Fail "SMART_RELEASE_DEPLOY_PRECHECK_FAILED: deploy precheck report-only failed with exit code $($precheckResult.ExitCode). Report: $deployPrecheckOutputPath"
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:609:    Write-Host "[FAIL] SMART_RELEASE_REPORT_ONLY_DEPLOY_STOP: Smart Release deploy report-only completed; real deploy was not executed. Report: $deployPrecheckOutputPath" -ForegroundColor Red
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:3633:            mode = 'report-only'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\deploy\publish-int-ruoyi.ps1:3641:            mode = 'report-only'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\run-deploy-precheck-report.ps1:12:    [ValidateSet('report-only')]
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\run-deploy-precheck-report.ps1:13:    [string]$Mode = 'report-only',
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\run-deploy-precheck-report.ps1:54:        impact = 'The deploy precheck report-only command could not complete its local contract checks.'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\run-deploy-precheck-report.ps1:55:        nextStep = 'Fix the reported local precondition and rerun deploy precheck report-only.'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\run-release-intake.ps1:16:    [ValidateSet('report-only')]
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\run-release-intake.ps1:17:    [string]$Mode = 'report-only',
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\manifest-v1.schema.json:260:          "const": "report-only"
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\manifest-v1.schema.json:285:          "const": "report-only"
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\validate-release-manifest.ps1:6:    [ValidateSet('report-only')]
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\validate-release-manifest.ps1:7:    [string]$Mode = 'report-only',
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\lib\DeployPrecheckReport.psm1:290:            -Message 'TargetConfigPath is required for deploy precheck report-only.' `
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\lib\DeployPrecheckReport.psm1:404:        -NextStep 'Continue deploy precheck report-only target compatibility checks.'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\lib\DeployPrecheckReport.psm1:640:            -Impact 'Package artifact integrity is verified locally for report-only precheck.' `
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\lib\DeployPrecheckReport.psm1:681:            -Message 'Schema migration precheck plan is complete for Phase 1 report-only.' `
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\lib\DeployPrecheckReport.psm1:701:            -Message 'Required data precheck plan is complete for Phase 1 report-only.' `
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\lib\DeployPrecheckReport.psm1:864:            -Message 'Resource reference and delta proof checks passed for Phase 1 report-only.' `
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\lib\DeployPrecheckReport.psm1:901:            -Impact 'Phase 1 report-only will not perform remote probing without explicit authorization.' `
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\lib\DeployPrecheckReport.psm1:909:            -Impact 'Remote probing is not attempted by report-only precheck.' `
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\lib\DeployPrecheckReport.psm1:917:            -Message 'Deploy precheck report-only performs no remote mutation.' `
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\lib\DeployPrecheckReport.psm1:964:        [ValidateSet('report-only')][string]$Mode = 'report-only'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\lib\ReleaseIntake.psm1:97:        mode = 'report-only'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\lib\ReleaseIntake.psm1:929:        [ValidateSet('report-only')]
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\lib\ReleaseIntake.psm1:930:        [string]$Mode = 'report-only',
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\lib\ReleaseIntake.psm1:1047:        Write-Output "Release intake report-only completed: $status"
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\lib\ReleaseManifestValidator.psm1:102:            -Impact 'The release package contract is structurally valid for Phase 1 report-only gates.' `
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\lib\ReleaseManifestValidator.psm1:103:            -NextStep 'Continue build intake or deploy precheck report-only validation.'
+D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\ops\release\lib\ReleaseManifestValidator.psm1:624:        [ValidateSet('report-only')][string]$Mode = 'report-only'
+===== SEARCH ROOT: D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\scripts =====
+--- PATTERN: generateProdDryRunEvidence ---
+--- PATTERN: prod-preflight-release-evidence ---
+--- PATTERN: preflight-release-dry-run ---
+--- PATTERN: deploy-precheck-report ---
+--- PATTERN: ProdDryRunEvidencePath ---
+--- PATTERN: writeActions ---
+--- PATTERN: report-only ---
+===== SEARCH ROOT: D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709ce\m\runtime =====
+--- PATTERN: generateProdDryRunEvidence ---
+--- PATTERN: prod-preflight-release-evidence ---
+--- PATTERN: preflight-release-dry-run ---
+--- PATTERN: deploy-precheck-report ---
+--- PATTERN: ProdDryRunEvidencePath ---
+--- PATTERN: writeActions ---
+--- PATTERN: report-only ---
+===== SEARCH ROOT: D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src =====
+--- PATTERN: generateProdDryRunEvidence ---
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1252:        return generateProdDryRunEvidence(req.releaseTag());
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1267:    private String generateProdDryRunEvidence(String releaseTag) {
+--- PATTERN: prod-preflight-release-evidence ---
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java:517:        assertThat(Files.exists(operationStore.stateDir().resolve("prod-preflight-release-evidence")
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java:677:        assertThat(Files.exists(operationStore.stateDir().resolve("prod-preflight-release-evidence")
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1277:        Path evidenceDir = properties.stateDirPath().resolve("prod-preflight-release-evidence");
+--- PATTERN: preflight-release-dry-run ---
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java:518:                .resolve(releaseTag + "-preflight-release-dry-run.json"))).isTrue();
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java:678:                .resolve(releaseTag + "-preflight-release-dry-run.json"))).isTrue();
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1279:        Path dryRunEvidencePath = evidenceDir.resolve(releaseTag + "-preflight-release-dry-run.json");
+--- PATTERN: deploy-precheck-report ---
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1278:        Path reportPath = evidenceDir.resolve(releaseTag + "-deploy-precheck-report.json");
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1280:        Path scriptPath = commandExecutor.resolveScriptPath("release/run-deploy-precheck-report.ps1");
+--- PATTERN: ProdDryRunEvidencePath ---
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java:516:                        "-ProdDryRunEvidencePath");
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java:676:                        "-ProdDryRunEvidencePath");
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlOperationAction.java:286:            args.add("-ProdDryRunEvidencePath");
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:196:            return copyActionReqWithProdDryRunEvidencePath(resolvedReq, resolveProdDryRunEvidencePath(resolvedReq));
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1248:    private String resolveProdDryRunEvidencePath(RuntimeControlActionReqVO req) {
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1250:            return validateProdDryRunEvidencePath(req.prodDryRunEvidencePath());
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1255:    private String validateProdDryRunEvidencePath(String prodDryRunEvidencePath) {
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:2030:    private RuntimeControlActionReqVO copyActionReqWithProdDryRunEvidencePath(RuntimeControlActionReqVO req,
+--- PATTERN: writeActions ---
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1313:            ArrayNode writeActions = root.putArray("writeActions");
+--- PATTERN: report-only ---
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java:448:                    "mode": "report-only",
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java:456:                    "mode": "report-only",
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java:600:                    "mode": "report-only",
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\test\java\com\intruoyi\maintenance\runtime\RuntimeControlOriginalParityTest.java:608:                    "mode": "report-only",
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1302:                    "report-only",
+D:\ProjectPackage\Int\IntRuoyiMaintance\backend\src\main\java\com\intruoyi\maintenance\runtime\RuntimeControlService.java:1305:            ), "正式 deploy precheck report-only");
+===== SEARCH ROOT: D:\ProjectPackage\Int\IntRuoyiMaintance\frontend\src =====
+--- PATTERN: generateProdDryRunEvidence ---
+--- PATTERN: prod-preflight-release-evidence ---
+--- PATTERN: preflight-release-dry-run ---
+--- PATTERN: deploy-precheck-report ---
+--- PATTERN: ProdDryRunEvidencePath ---
+--- PATTERN: writeActions ---
+--- PATTERN: report-only ---
+===== SEARCH ROOT: D:\ProjectPackage\Int\IntRuoyiMaintance\ops =====
+--- PATTERN: generateProdDryRunEvidence ---
+--- PATTERN: prod-preflight-release-evidence ---
+--- PATTERN: preflight-release-dry-run ---
+--- PATTERN: deploy-precheck-report ---
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:601:        -ScriptPath (Join-Path $releaseScriptRoot 'run-deploy-precheck-report.ps1') `
+--- PATTERN: ProdDryRunEvidencePath ---
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:22:    [string]$ProdDryRunEvidencePath = '',
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:4273:    if ([string]::IsNullOrWhiteSpace($ProdDryRunEvidencePath)) {
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:4274:        Fail 'Production deploy-release requires -ProdDryRunEvidencePath from a passed preflight-release dry-run.'
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:4276:    if (-not (Test-Path -LiteralPath $ProdDryRunEvidencePath -PathType Leaf)) {
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:4277:        Fail "Production dry-run evidence file missing: $ProdDryRunEvidencePath"
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:4280:        $evidence = [System.IO.File]::ReadAllText($ProdDryRunEvidencePath, [System.Text.UTF8Encoding]::new($false)) | ConvertFrom-Json
+--- PATTERN: writeActions ---
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\release_prod_dry_run_gate.py:25:    write_actions = evidence.get("writeActions")
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\release_prod_dry_run_gate.py:27:        raise ProdDryRunGateError("prod dry-run evidence writeActions must be an explicit list")
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:4296:    if ($null -eq $evidence.writeActions -or @($evidence.writeActions).Count -gt 0) {
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:4297:        Fail 'Production dry-run evidence must be read-only and include empty writeActions.'
+--- PATTERN: report-only ---
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\run-deploy-precheck-report.ps1:12:    [ValidateSet('report-only')]
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\run-deploy-precheck-report.ps1:13:    [string]$Mode = 'report-only',
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\run-deploy-precheck-report.ps1:54:        impact = 'The deploy precheck report-only command could not complete its local contract checks.'
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\run-deploy-precheck-report.ps1:55:        nextStep = 'Fix the reported local precondition and rerun deploy precheck report-only.'
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\manifest-v1.schema.json:260:          "const": "report-only"
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\manifest-v1.schema.json:285:          "const": "report-only"
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\run-release-intake.ps1:16:    [ValidateSet('report-only')]
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\run-release-intake.ps1:17:    [string]$Mode = 'report-only',
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\validate-release-manifest.ps1:6:    [ValidateSet('report-only')]
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\validate-release-manifest.ps1:7:    [string]$Mode = 'report-only',
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\lib\DeployPrecheckReport.psm1:290:            -Message 'TargetConfigPath is required for deploy precheck report-only.' `
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\lib\DeployPrecheckReport.psm1:404:        -NextStep 'Continue deploy precheck report-only target compatibility checks.'
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\lib\DeployPrecheckReport.psm1:640:            -Impact 'Package artifact integrity is verified locally for report-only precheck.' `
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\lib\DeployPrecheckReport.psm1:681:            -Message 'Schema migration precheck plan is complete for Phase 1 report-only.' `
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\lib\DeployPrecheckReport.psm1:701:            -Message 'Required data precheck plan is complete for Phase 1 report-only.' `
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\lib\DeployPrecheckReport.psm1:864:            -Message 'Resource reference and delta proof checks passed for Phase 1 report-only.' `
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\lib\DeployPrecheckReport.psm1:901:            -Impact 'Phase 1 report-only will not perform remote probing without explicit authorization.' `
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\lib\DeployPrecheckReport.psm1:909:            -Impact 'Remote probing is not attempted by report-only precheck.' `
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\lib\DeployPrecheckReport.psm1:917:            -Message 'Deploy precheck report-only performs no remote mutation.' `
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\lib\DeployPrecheckReport.psm1:964:        [ValidateSet('report-only')][string]$Mode = 'report-only'
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\lib\ReleaseManifestValidator.psm1:102:            -Impact 'The release package contract is structurally valid for Phase 1 report-only gates.' `
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\lib\ReleaseManifestValidator.psm1:103:            -NextStep 'Continue build intake or deploy precheck report-only validation.'
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\lib\ReleaseManifestValidator.psm1:624:        [ValidateSet('report-only')][string]$Mode = 'report-only'
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:473:    Fail "Invalid INTRUOYI_SMART_RELEASE_REPORT_ONLY: $envValue. Use 1 to enable report-only or unset the variable."
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:485:        Fail "Missing $ArgumentName; Smart Release report-only requires explicit local input files."
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:502:        Fail 'Missing PackagePath; Smart Release report-only requires a release package directory.'
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:563:        -ArgumentList @('-PackagePath', $PackagePath, '-Mode', 'report-only', '-OutputPath', $manifestValidationOutputPath) `
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:567:        Info "Smart Release manifest validation report-only completed with exit code $($manifestValidationResult.ExitCode); legacy build-release flow continues because the report was written."
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:580:            '-Mode', 'report-only'
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:585:        Info "Smart Release intake report-only completed with exit code $($intakeResult.ExitCode); legacy build-release flow continues because the report was written."
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:602:        -ArgumentList @('-PackagePath', $PackagePath, '-Environment', $Environment, '-TargetConfigPath', $targetConfigPath, '-Mode', 'report-only', '-OutputPath', $deployPrecheckOutputPath) `
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:606:        Fail "SMART_RELEASE_DEPLOY_PRECHECK_FAILED: deploy precheck report-only failed with exit code $($precheckResult.ExitCode). Report: $deployPrecheckOutputPath"
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:609:    Write-Host "[FAIL] SMART_RELEASE_REPORT_ONLY_DEPLOY_STOP: Smart Release deploy report-only completed; real deploy was not executed. Report: $deployPrecheckOutputPath" -ForegroundColor Red
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:3633:            mode = 'report-only'
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1:3641:            mode = 'report-only'
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\lib\ReleaseIntake.psm1:97:        mode = 'report-only'
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\lib\ReleaseIntake.psm1:929:        [ValidateSet('report-only')]
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\lib\ReleaseIntake.psm1:930:        [string]$Mode = 'report-only',
+D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\lib\ReleaseIntake.psm1:1047:        Write-Output "Release intake report-only completed: $status"
+===== SEARCH ROOT: D:\ProjectPackage\Int\IntRuoyiMaintance\scripts =====
+--- PATTERN: generateProdDryRunEvidence ---
+--- PATTERN: prod-preflight-release-evidence ---
+--- PATTERN: preflight-release-dry-run ---
+--- PATTERN: deploy-precheck-report ---
+--- PATTERN: ProdDryRunEvidencePath ---
+--- PATTERN: writeActions ---
+--- PATTERN: report-only ---

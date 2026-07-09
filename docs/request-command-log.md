@@ -2470,3 +2470,84 @@
 ## 2026-07-09 15:38:14 v8 publish-test 失败与过滤修复 v2
 - 命令：冻结 v8 发布失败远端证据；运行 `python -X utf8 -m pytest tests/test_code_only_required_sql_contract.py -q`；运行 PowerShell Parser.ParseFile。
 - 结果：v8 判废；过滤逻辑已修复并验证 PASS；下一轮重新构建 v9。
+
+
+## 2026-07-09 15:42:17 v9 build-release 内存失败处理
+- 命令：读取 v9 build-release stdout/stderr，冻结 hs_err 与内存快照。
+- 结果：v9 判废；失败原因是 Maven/JVM native memory allocation failed，下一轮降低内存压力并重建新 releaseTag。
+
+## 2026-07-09 16:03:49 修正 v10 manifest 校验 v2
+- 用户命令：继续
+- 执行命令：冻结混合 SQL 容器误判证据，按 manifest.requiredSql 重新校验 v10 发布包。
+- 结果：GREEN: build-release-v10 manifest -> PASS；requiredSqlCount=271，dataSqlCount=28。
+
+## 2026-07-09 16:37:20 publish-test v10 verified
+- ???????
+- ??????? Python ????? HTTP/SSH/operation ?????????? JSON?
+- ???GREEN: publish-test -> PASS?GREEN: test remote verification -> PASS?
+
+## 2026-07-09 16:39:31 mark-tested v10
+- 用户命令：继续
+- 执行命令：对 release-20260709-codeonly-three-env-head-v10 执行 mark-tested，使用测试服验收结论写入 NAS tested 标记。
+- 结果：GREEN: mark-tested -> PASS。
+
+## 2026-07-09 16:43:31 20260709-codeonly-three-env-head-release
+
+- Request: 继续执行 IntRuoyi code-only 三环境发布闭环。
+- Command: freeze prod-preflight-release dry-run Copy-Item failure, update release preflight lesson/index/execution log.
+- Evidence: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\prod-preflight-release-dry-run-v10-copyitem-failure-freeze.json`.
+
+## 2026-07-09 16:45:53 20260709-codeonly-three-env-head-release
+
+- Request: 继续执行 IntRuoyi code-only 三环境发布闭环。
+- Command: run prod preflight-release dry-run report-only for `release-20260709-codeonly-three-env-head-v10` using manifest-declared sanitized workspace.
+- Evidence: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\prod-preflight-release-dry-run-v10.json`; report `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\prod-deploy-precheck-report-v10.json`.
+
+## 2026-07-09 17:01:55 20260709-codeonly-three-env-head-release
+
+- Request: 继续执行 IntRuoyi code-only 三环境发布闭环。
+- Command: `publish-int-ruoyi.ps1 -Mode deploy-release -Environment prod -Component intruoyi -ReleaseTag release-20260709-codeonly-three-env-head-v10 -ConfirmText PROD -RequireTested -ProdDryRunEvidencePath ... -SkipDatabaseSync -SkipMinioSync`.
+- Evidence: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\promote-prod-v10-result.json`.
+
+## 2026-07-09 17:02:26 20260709-codeonly-three-env-head-release
+
+- Request: 继续执行 IntRuoyi code-only 三环境发布闭环。
+- Command: verify prod host `172.30.30.57` .env IMAGE_TAG, backend/frontend container images, backend health, frontend root, PDF worker for `release-20260709-codeonly-three-env-head-v10`.
+- Evidence: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\promote-prod-v10-remote-verification.json`.
+
+## 2026-07-09 17:19:16 20260709-codeonly-three-env-head-release
+
+- Request: 继续执行 IntRuoyi code-only 三环境发布闭环。
+- Command: `publish-int-ruoyi.ps1 -Mode deploy-release -Environment backup -Component intruoyi -ReleaseTag release-20260709-codeonly-three-env-head-v10 -ConfirmText PROD -RequireTested -RemoteReleaseRoot /mnt/intruoyi-data/intruoyi-releases -RemoteDataRoot /mnt/intruoyi-data/runtime-data -RemoteDataDiskMount /mnt/intruoyi-data -SkipDatabaseSync -SkipMinioSync`.
+- Evidence: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\promote-backup-v10-result.json`.
+
+## 2026-07-09 17:19:57 20260709-codeonly-three-env-head-release
+
+- Request: 继续执行 IntRuoyi code-only 三环境发布闭环。
+- Command: verify backup host `172.30.30.59` .env IMAGE_TAG, backend/frontend container images, backend health, frontend root, PDF worker, `/mnt/intruoyi-data` mount and release path for `release-20260709-codeonly-three-env-head-v10`.
+- Evidence: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\promote-backup-v10-remote-verification.json`.
+
+## 2026-07-09 17:20:50 20260709-codeonly-three-env-head-release
+
+- Request: 发布闭环收尾，恢复运行控制台主路径、预览任务清理、确认临时 worktree 可删除。
+- Command: verify `http://127.0.0.1:48181/actuator/health`, run task-closeout cleanup preview, inspect temp worktree status.
+- Evidence: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\closeout-precheck-runtime-health-cleanup-preview.json`.
+
+## 2026-07-09 17:25:28 20260709-codeonly-three-env-head-release
+
+- Request: 继续发布收口，处理 Git worktree remove 后的临时目录残留。
+- Command: record residual worktree cleanup lesson before retrying directory cleanup.
+- Evidence: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\final-closeout-worktree-delete-failure.json`.
+
+## 2026-07-09 17:26:49 20260709-codeonly-three-env-head-release
+
+- Request: 继续发布收口，处理临时维护 worktree Jar 被进程锁定导致目录无法删除。
+- Command: freeze locked Jar cleanup failure and inspect Java/port 48181 process owner.
+- Evidence: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\final-closeout-residual-cleanup-locked-jar-freeze.json`; process inspection `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\final-closeout-process-lock-inspection.out.txt`.
+
+## 2026-07-09 17:34:18 20260709-codeonly-three-env-head-release
+
+- Request: 完成发布闭环收尾，按 48181 端口所属进程精确验证主路径后清理临时 worktree 残留。
+- Command: inspect port owner only, remove residual `r260709ce`, verify runtime health, write final closeout evidence.
+- Evidence: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\final-release-closeout-v10.json`.
+

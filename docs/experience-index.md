@@ -58,3 +58,10 @@
 - Keywords: preflight-plan missing type, manifest requiredSql type map, code-only data SQL skip, requiredSqlTypeByMigrationId, RT000006 data migration
   - Read: `docs/release-build-preflight-lessons.md`
   - Gate: code-only required SQL 过滤必须从 manifest requiredSql 回查 migration type；preflight item 缺 type 不得导致 data SQL 执行。
+
+
+- Keywords: Java native memory allocation failed, Maven build memory, hs_err_pid, build-release memory, insufficient memory JVM
+  - Read: `docs/release-build-preflight-lessons.md`
+  - Gate: build-release 前检查内存余量；JVM native memory 失败必须冻结 hs_err 与内存快照，降低构建内存压力后重建新 releaseTag。
+- Keywords: prod-preflight-release, ProdDryRunEvidencePath, sanitized package workspace, Copy-Item, robocopy, shutil.copytree -> `docs/release-build-preflight-lessons.md`
+- Keywords: worktree remove failed, residual worktree directory, Invalid argument, Directory not empty, r260709ce cleanup -> `D:/ProjectPackage/Int/IntRuoyi/docs/worktree-memory.md`

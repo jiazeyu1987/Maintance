@@ -1,0 +1,30 @@
+[
+  {
+    "name": "backend-health",
+    "url": "http://172.30.30.57:48081/actuator/health",
+    "startedAt": "2026-07-09T17:02:26.064122+08:00",
+    "statusCode": 200,
+    "contentType": "application/vnd.spring-boot.actuator.v3+json",
+    "bodyPrefix": "{\"status\":\"UP\"}",
+    "passedStatus": true,
+    "passedContains": true
+  },
+  {
+    "name": "frontend-root",
+    "url": "http://172.30.30.57:8081/",
+    "startedAt": "2026-07-09T17:02:26.146048+08:00",
+    "statusCode": 200,
+    "contentType": "text/html",
+    "bodyPrefix": "<!DOCTYPE html>\r\n<html lang=\"en\" translate=\"no\" class=\"notranslate\">\r\n  <head>\r\n    <meta charset=\"UTF-8\" />\r\n    <link rel=\"icon\" href=\"/favicon.ico\" />\r\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\r\n    <meta name=\"google\" content=\"notranslate\" />\r\n    <meta name=\"viewport\" content=",
+    "passedStatus": true
+  },
+  {
+    "name": "pdf-worker",
+    "url": "http://172.30.30.57:8081/pdfjs/pdf.worker.mjs",
+    "startedAt": "2026-07-09T17:02:26.156584+08:00",
+    "statusCode": 200,
+    "contentType": "application/javascript",
+    "bodyPrefix": "/**\r\n * @licstart The following is the entire license notice for the\r\n * JavaScript code in this page\r\n *\r\n * Copyright 2024 Mozilla Foundation\r\n *\r\n * Licensed under the Apache License, Version 2.0 (the \"License\");\r\n * you may not use this file except in compliance with the License.\r\n * You may obt",
+    "passedStatus": true
+  }
+]

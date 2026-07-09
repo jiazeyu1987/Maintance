@@ -1,0 +1,71 @@
+{
+  "status": "SUCCESS",
+  "operation": "publish-test",
+  "releaseTag": "release-20260709-codeonly-three-env-head-v10",
+  "environment": "test",
+  "server": "172.30.30.58",
+  "checkedAt": "2026-07-09T16:37:20",
+  "decodedOperationLog": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\publish-test-v10-operation.decoded.log",
+  "rawOperationLog": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\publish-test-v10-preflight-command.log",
+  "httpProbeEvidence": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\publish-test-v10-http-probe-curl.json",
+  "sshStdout": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\publish-test-v10-ssh-minimal.out.txt",
+  "sshStderr": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\publish-test-v10-ssh-minimal.err.txt",
+  "checks": {
+    "publishCompletedInLog": true,
+    "lockReleased": true,
+    "dataSqlSkipLogged": true,
+    "rt000006DataSqlNotApplied": true,
+    "sshEvidencePresent": true,
+    "envImageTagMatches": true,
+    "backendImageTagMatches": true,
+    "frontendImageTagMatches": true,
+    "backendHealthUp": true,
+    "frontendHttp200": true,
+    "pdfWorkerHttp200": true
+  },
+  "dataSqlSkipLogCount": 1,
+  "remote": {
+    "imageTag": "release-20260709-codeonly-three-env-head-v10",
+    "backendLine": "intruoyi-backend|intruoyi-backend:release-20260709-codeonly-three-env-head-v10",
+    "frontendLine": "intruoyi-frontend|intruoyi-frontend:release-20260709-codeonly-three-env-head-v10",
+    "backendImage": "intruoyi-backend:release-20260709-codeonly-three-env-head-v10",
+    "frontendImage": "intruoyi-frontend:release-20260709-codeonly-three-env-head-v10",
+    "dockerImages": "intruoyi-frontend|intruoyi-frontend:release-20260709-codeonly-three-env-head-v10\nintruoyi-backend|intruoyi-backend:release-20260709-codeonly-three-env-head-v10\nintruoyi-onlyoffice|onlyoffice/documentserver:latest\nintruoyi-rehearsal-frontend|intruoyi-frontend:20260611_dcc_incremental_codeonly_2031\nintruoyi-rehearsal-backend|intruoyi-backend:20260611_dcc_incremental_codeonly_2031\nintruoyi-rehearsal-mysql|mysql:8.0.39\nintruoyi-rehearsal-redis|redis:7-alpine\nintruoyi-website|nginx:1.27-alpine\nintruoyi-mysql|mysql:8.0.39\nintruoyi-redis|redis:7-alpine\nragflow_compose-minio-1|quay.io/minio/minio:RELEASE.2025-06-13T11-33-47Z",
+    "stderr": "ssh.exe : close - IO is still pending on closed socket. read:1, write:0, io:000001D9D1685080\r\nAt line:63 char:1\r\n+ & ssh.exe -o BatchMode=yes -o ConnectTimeout=5 -o ConnectionAttempts= ...\r\n+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n    + CategoryInfo          : NotSpecified: (close - IO is s...00001D9D1685080:String) [], RemoteException\r\n    + FullyQualifiedErrorId : NativeCommandError\r\n \r\n"
+  },
+  "http": [
+    {
+      "name": "backend-health",
+      "uri": "http://172.30.30.58:48081/actuator/health",
+      "exitCode": 0,
+      "statusCode": "200",
+      "elapsedMs": 177,
+      "bodyPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\publish-test-v10-backend-health.body.txt",
+      "stderrPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\publish-test-v10-backend-health.err.txt",
+      "bodySample": "{\"status\":\"UP\"}",
+      "stderr": {}
+    },
+    {
+      "name": "frontend",
+      "uri": "http://172.30.30.58:8081/",
+      "exitCode": 0,
+      "statusCode": "200",
+      "elapsedMs": 98,
+      "bodyPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\publish-test-v10-frontend.body.txt",
+      "stderrPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\publish-test-v10-frontend.err.txt",
+      "bodySample": "<!DOCTYPE html>\r\n<html lang=\"en\" translate=\"no\" class=\"notranslate\">\r\n  <head>\r\n    <meta charset=\"UTF-8\" />\r\n    <link rel=\"icon\" href=\"/favicon.ico\" />\r\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\r\n    <meta name=\"google\" content=\"notranslate\" />\r\n    <meta name=\"viewport\" content=",
+      "stderr": {}
+    },
+    {
+      "name": "pdf-worker",
+      "uri": "http://172.30.30.58:8081/pdfjs/pdf.worker.mjs",
+      "exitCode": 0,
+      "statusCode": "200",
+      "elapsedMs": 285,
+      "bodyPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\publish-test-v10-pdf-worker.body.txt",
+      "stderrPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\publish-test-v10-pdf-worker.err.txt",
+      "bodySample": "/**\r\n * @licstart The following is the entire license notice for the\r\n * JavaScript code in this page\r\n *\r\n * Copyright 2024 Mozilla Foundation\r\n *\r\n * Licensed under the Apache License, Version 2.0 (the \"License\");\r\n * you may not use this file except in compliance with the License.\r\n * You may obt",
+      "stderr": {}
+    }
+  ]
+}

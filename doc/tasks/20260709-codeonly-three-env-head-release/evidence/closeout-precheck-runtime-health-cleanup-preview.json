@@ -1,0 +1,41 @@
+{
+  "checkedAt": "2026-07-09T17:20:47.844343+08:00",
+  "phase": "closeout-precheck",
+  "runtimeConfigPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\config\\runtime-control.local.yaml",
+  "runtimeHealth": {
+    "statusCode": 200,
+    "body": "{\"status\":\"UP\"}",
+    "passed": true
+  },
+  "cleanupPreview": {
+    "exitCode": 0,
+    "stdoutPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\task-closeout-cleanup-preview.out.txt",
+    "stderrPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\task-closeout-cleanup-preview.err.txt"
+  },
+  "worktreeStatusBeforeDelete": {
+    "maintenance": {
+      "path": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m",
+      "exists": true,
+      "statusPorcelain": "",
+      "dirty": false,
+      "head": "5f266c6ff1932e2169ab0cefe5baeb0ca08fa314",
+      "branch": "HEAD"
+    },
+    "backend": {
+      "path": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\b",
+      "exists": true,
+      "statusPorcelain": "",
+      "dirty": false,
+      "head": "65190bdc3c43489536d0fb1908290aa4629ce522",
+      "branch": "HEAD"
+    },
+    "frontend": {
+      "path": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\f",
+      "exists": true,
+      "statusPorcelain": "",
+      "dirty": false,
+      "head": "0931b8dc3725b34689ee36e68cc4dd3a7aacea3b",
+      "branch": "HEAD"
+    }
+  }
+}

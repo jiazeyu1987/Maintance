@@ -1,0 +1,2384 @@
+--- line 1 pattern param\( ---
+    1: param(
+    2:     [ValidateSet('direct', 'build-release', 'deploy-release', 'mark-tested')]
+    3:     [string]$Mode = 'direct',
+    4:     [ValidateSet('full', 'intruoyi', 'backend', 'frontend', 'website')]
+    5:     [string]$Component = 'full',
+    6:     [string]$ReleaseTag = '',
+--- line 2 pattern ValidateSet ---
+    1: param(
+    2:     [ValidateSet('direct', 'build-release', 'deploy-release', 'mark-tested')]
+    3:     [string]$Mode = 'direct',
+    4:     [ValidateSet('full', 'intruoyi', 'backend', 'frontend', 'website')]
+    5:     [string]$Component = 'full',
+    6:     [string]$ReleaseTag = '',
+    7:     [string]$NasConfigPath = '',
+--- line 3 pattern Mode ---
+    1: param(
+    2:     [ValidateSet('direct', 'build-release', 'deploy-release', 'mark-tested')]
+    3:     [string]$Mode = 'direct',
+    4:     [ValidateSet('full', 'intruoyi', 'backend', 'frontend', 'website')]
+    5:     [string]$Component = 'full',
+    6:     [string]$ReleaseTag = '',
+    7:     [string]$NasConfigPath = '',
+    8:     [string]$NasReleaseRoot = 'Backup/ReleasePackage',
+--- line 4 pattern ValidateSet ---
+    1: param(
+    2:     [ValidateSet('direct', 'build-release', 'deploy-release', 'mark-tested')]
+    3:     [string]$Mode = 'direct',
+    4:     [ValidateSet('full', 'intruoyi', 'backend', 'frontend', 'website')]
+    5:     [string]$Component = 'full',
+    6:     [string]$ReleaseTag = '',
+    7:     [string]$NasConfigPath = '',
+    8:     [string]$NasReleaseRoot = 'Backup/ReleasePackage',
+    9:     [string]$NasServer = '172.30.30.4',
+--- line 11 pattern tested ---
+    8:     [string]$NasReleaseRoot = 'Backup/ReleasePackage',
+    9:     [string]$NasServer = '172.30.30.4',
+   10:     [string]$NasShare = '',
+   11:     [switch]$RequireTested,
+   12:     [string]$OperatorName = $env:USERNAME,
+   13:     [string]$TestConclusion = '',
+   14:     [string]$SelectedRecoverySetCandidateId = '',
+   15:     [string]$RecoverySetId = '',
+   16:     [string]$RecoverySetManifestHash = '',
+--- line 19 pattern ValidateSet ---
+   16:     [string]$RecoverySetManifestHash = '',
+   17:     [string]$RecoverySetProgramVersion = '',
+   18:     [string]$RecoverySetRedisPolicy = '',
+   19:     [ValidateSet('test', 'prod', 'backup')]
+   20:     [string]$Environment = 'test',
+   21:     [string]$ConfirmText = '',
+   22:     [string]$ProdDryRunEvidencePath = '',
+   23:     [string]$ServerHost = '',
+   24:     [string]$TestServerHost = $env:RUNTIME_CONTROL_TEST_SERVER_HOST,
+--- line 21 pattern ConfirmText ---
+   18:     [string]$RecoverySetRedisPolicy = '',
+   19:     [ValidateSet('test', 'prod', 'backup')]
+   20:     [string]$Environment = 'test',
+   21:     [string]$ConfirmText = '',
+   22:     [string]$ProdDryRunEvidencePath = '',
+   23:     [string]$ServerHost = '',
+   24:     [string]$TestServerHost = $env:RUNTIME_CONTROL_TEST_SERVER_HOST,
+   25:     [string]$ProdServerHost = $env:RUNTIME_CONTROL_PROD_SERVER_HOST,
+   26:     [string]$BackupServerHost = $env:RUNTIME_CONTROL_BACKUP_SERVER_HOST,
+--- line 22 pattern ProdDryRunEvidence ---
+   19:     [ValidateSet('test', 'prod', 'backup')]
+   20:     [string]$Environment = 'test',
+   21:     [string]$ConfirmText = '',
+   22:     [string]$ProdDryRunEvidencePath = '',
+   23:     [string]$ServerHost = '',
+   24:     [string]$TestServerHost = $env:RUNTIME_CONTROL_TEST_SERVER_HOST,
+   25:     [string]$ProdServerHost = $env:RUNTIME_CONTROL_PROD_SERVER_HOST,
+   26:     [string]$BackupServerHost = $env:RUNTIME_CONTROL_BACKUP_SERVER_HOST,
+   27:     [string]$ServerUser = 'root',
+--- line 53 pattern Mode ---
+   50:     [string]$EdhrS3Region = $env:EDHR_S3_REGION,
+   51:     [string]$EdhrS3AccessKey = $env:EDHR_S3_ACCESS_KEY,
+   52:     [string]$EdhrS3SecretKey = $env:EDHR_S3_SECRET_KEY,
+   53:     [string]$EdhrS3RetentionMode = $env:EDHR_S3_RETENTION_MODE,
+   54:     [string]$EdhrS3RetainUntilDays = $env:EDHR_S3_RETAIN_UNTIL_DAYS,
+   55:     [string]$EdhrS3RequireLegalHold = $env:EDHR_S3_REQUIRE_LEGAL_HOLD,
+   56:     [string]$DccViewerTokenHmacSecret = $env:DCC_VIEWER_TOKEN_HMAC_SECRET,
+   57:     [string]$DccOnlyOfficeJwtSecret = $env:DCC_ONLYOFFICE_JWT_SECRET,
+   58:     [string]$DccOnlyOfficeBaseUrl = $env:DCC_ONLYOFFICE_BASE_URL,
+--- line 70 pattern ValidateSet ---
+   67:     [string]$DccProjectCodeRecognitionVersion = $env:DCC_PROJECT_CODE_RECOGNITION_VERSION,
+   68:     [string]$DccProjectCodeRecognitionWorkerCount = $env:DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT,
+   69:     [string]$LocalCacheRoot = $env:INTRUOYI_LOCAL_CACHE_ROOT,
+   70:     [ValidateSet('offline-tar')]
+   71:     [string]$BackendRuntimeBaseMode = $env:INTRUOYI_BACKEND_RUNTIME_BASE_MODE,
+   72:     [string]$BackendRuntimeBaseTarPath = $env:INTRUOYI_BACKEND_RUNTIME_BASE_TAR,
+   73:     [string]$BackendRuntimeBaseTarSha256 = $env:INTRUOYI_BACKEND_RUNTIME_BASE_TAR_SHA256,
+   74:     [string]$BackendRuntimeBaseImage = $env:INTRUOYI_BACKEND_RUNTIME_BASE_IMAGE,
+   75:     [string]$BackendRuntimeBaseDigest = $env:INTRUOYI_BACKEND_RUNTIME_BASE_DIGEST,
+--- line 71 pattern Mode ---
+   68:     [string]$DccProjectCodeRecognitionWorkerCount = $env:DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT,
+   69:     [string]$LocalCacheRoot = $env:INTRUOYI_LOCAL_CACHE_ROOT,
+   70:     [ValidateSet('offline-tar')]
+   71:     [string]$BackendRuntimeBaseMode = $env:INTRUOYI_BACKEND_RUNTIME_BASE_MODE,
+   72:     [string]$BackendRuntimeBaseTarPath = $env:INTRUOYI_BACKEND_RUNTIME_BASE_TAR,
+   73:     [string]$BackendRuntimeBaseTarSha256 = $env:INTRUOYI_BACKEND_RUNTIME_BASE_TAR_SHA256,
+   74:     [string]$BackendRuntimeBaseImage = $env:INTRUOYI_BACKEND_RUNTIME_BASE_IMAGE,
+   75:     [string]$BackendRuntimeBaseDigest = $env:INTRUOYI_BACKEND_RUNTIME_BASE_DIGEST,
+   76:     [string]$BackendRuntimeBaseVersion = $env:INTRUOYI_BACKEND_RUNTIME_BASE_VERSION,
+--- line 115 pattern param\( ---
+  112: }
+  113: 
+  114: function Write-Utf8LfNoBomFile {
+  115:     param(
+  116:         [Parameter(Mandatory = $true)]
+  117:         [string]$Path,
+  118:         [Parameter(Mandatory = $true)]
+  119:         [string]$Content
+  120:     )
+--- line 127 pattern param\( ---
+  124: }
+  125: 
+  126: function ConvertTo-ReleaseUnicodeText {
+  127:     param(
+  128:         [Parameter(Mandatory = $true)]
+  129:         [int[]]$CodePoints
+  130:     )
+  131: 
+  132:     return (-join ($CodePoints | ForEach-Object { [char]$_ }))
+--- line 136 pattern param\( ---
+  133: }
+  134: 
+  135: function New-ReleaseDockerBuildContext {
+  136:     param(
+  137:         [Parameter(Mandatory = $true)]
+  138:         [string]$ContextRoot,
+  139:         [Parameter(Mandatory = $true)]
+  140:         [string]$BackendRepoRoot,
+  141:         [Parameter(Mandatory = $true)]
+--- line 216 pattern param\( ---
+  213: }
+  214: 
+  215: function Enter-BuildReleaseRuntimeRestartGuard {
+  216:     param(
+  217:         [Parameter(Mandatory = $true)]
+  218:         [string]$GuardFile
+  219:     )
+  220: 
+  221:     if ($Mode -ne 'build-release') {
+--- line 221 pattern Mode ---
+  218:         [string]$GuardFile
+  219:     )
+  220: 
+  221:     if ($Mode -ne 'build-release') {
+  222:         return
+  223:     }
+  224:     if (Test-Path -LiteralPath $GuardFile) {
+  225:         Info "build-release runtime guard already exists: $GuardFile"
+  226:         return
+--- line 233 pattern Mode ---
+  230:     if (-not [string]::IsNullOrWhiteSpace($guardDir)) {
+  231:         New-Item -ItemType Directory -Force -Path $guardDir | Out-Null
+  232:     }
+  233:     $guardContent = "build-release runtime guard active: pid=$PID releaseTag=$ReleaseTag mode=$Mode"
+  234:     [System.IO.File]::WriteAllText($GuardFile, $guardContent, [System.Text.UTF8Encoding]::new($false))
+  235:     $script:BuildReleaseRuntimeRestartGuardCreated = $true
+  236:     Info "build-release runtime guard created: $GuardFile"
+  237: }
+  238: 
+--- line 240 pattern param\( ---
+  237: }
+  238: 
+  239: function Exit-BuildReleaseRuntimeRestartGuard {
+  240:     param(
+  241:         [Parameter(Mandatory = $true)]
+  242:         [string]$GuardFile
+  243:     )
+  244: 
+  245:     if ($Mode -eq 'build-release' -and $script:BuildReleaseRuntimeRestartGuardCreated -and (Test-Path -LiteralPath $GuardFile)) {
+--- line 245 pattern Mode ---
+  242:         [string]$GuardFile
+  243:     )
+  244: 
+  245:     if ($Mode -eq 'build-release' -and $script:BuildReleaseRuntimeRestartGuardCreated -and (Test-Path -LiteralPath $GuardFile)) {
+  246:         Remove-Item -LiteralPath $GuardFile -Force
+  247:         Info "build-release runtime guard released: $GuardFile"
+  248:     }
+  249:     $script:BuildReleaseRuntimeRestartGuardCreated = $false
+  250: }
+--- line 262 pattern param\( ---
+  259: $DCC_HARDCODED_DOWNLOAD_ENCRYPTION_ARTIFACT_DIRECTORY = 'dcc/download-encrypted-artifacts'
+  260: 
+  261: function Require-ConfiguredTargetServerHost {
+  262:     param(
+  263:         [Parameter(Mandatory = $true)]
+  264:         [string]$TargetEnvironment,
+  265:         [AllowNull()]
+  266:         [string]$Value,
+  267:         [Parameter(Mandatory = $true)]
+--- line 288 pattern param\( ---
+  285: }
+  286: 
+  287: function Resolve-PublishTarget {
+  288:     param(
+  289:         [Parameter(Mandatory = $true)]
+  290:         [string]$TargetEnvironment
+  291:     )
+  292: 
+  293:     switch ($TargetEnvironment) {
+--- line 321 pattern Mode ---
+  318:     }
+  319: }
+  320: 
+  321: if ($Mode -in @('build-release', 'deploy-release')) {
+  322:     Assert-ReleaseTargetServerHostsConfigured
+  323: }
+  324: 
+  325: $publishTarget = Resolve-PublishTarget -TargetEnvironment $Environment
+  326: if ([string]::IsNullOrWhiteSpace($ServerHost)) {
+--- line 329 pattern Mode ---
+  326: if ([string]::IsNullOrWhiteSpace($ServerHost)) {
+  327:     $ServerHost = $publishTarget.ServerHost
+  328: }
+  329: if ($Mode -ne 'mark-tested' -and [string]::IsNullOrWhiteSpace($ServerHost)) {
+  330:     Fail "Missing -ServerHost; release target host for environment '$Environment' must be configured by runtime-control or passed explicitly."
+  331: }
+  332: if (-not [string]::IsNullOrWhiteSpace($ServerHost)) {
+  333:     $ServerHost = $ServerHost.Trim()
+  334: }
+--- line 340 pattern ConfirmText ---
+  337: }
+  338: $PublishTargetName = $publishTarget.DisplayName
+  339: 
+  340: if (@('prod', 'backup') -contains $Environment -and $ConfirmText -ne 'PROD') {
+  341:     Fail "Explicit confirmation required for production-grade publish: -ConfirmText PROD"
+  342: }
+  343: 
+  344: function Remove-SshNoise([string]$Text) {
+  345:     if ([string]::IsNullOrWhiteSpace($Text)) {
+--- line 341 pattern ConfirmText ---
+  338: $PublishTargetName = $publishTarget.DisplayName
+  339: 
+  340: if (@('prod', 'backup') -contains $Environment -and $ConfirmText -ne 'PROD') {
+  341:     Fail "Explicit confirmation required for production-grade publish: -ConfirmText PROD"
+  342: }
+  343: 
+  344: function Remove-SshNoise([string]$Text) {
+  345:     if ([string]::IsNullOrWhiteSpace($Text)) {
+  346:         return ''
+--- line 361 pattern Mode ---
+  358: 
+  359: function Get-SshCommonOptions {
+  360:     return @(
+  361:         '-o', 'BatchMode=yes',
+  362:         '-o', 'ConnectTimeout=10',
+  363:         '-o', 'ConnectionAttempts=1',
+  364:         '-o', 'ServerAliveInterval=10',
+  365:         '-o', 'ServerAliveCountMax=3',
+  366:         '-o', 'StrictHostKeyChecking=no'
+--- line 371 pattern param\( ---
+  368: }
+  369: 
+  370: function New-SshArgumentList {
+  371:     param(
+  372:         [Parameter(Mandatory = $true)]
+  373:         [string]$Command
+  374:     )
+  375: 
+  376:     return @('-n') + (Get-SshCommonOptions) + @(
+--- line 383 pattern param\( ---
+  380: }
+  381: 
+  382: function New-ScpArgumentList {
+  383:     param(
+  384:         [Parameter(Mandatory = $true)]
+  385:         [string]$LocalPath,
+  386:         [Parameter(Mandatory = $true)]
+  387:         [string]$RemotePath,
+  388:         [switch]$Recursive
+--- line 399 pattern param\( ---
+  396: }
+  397: 
+  398: function Invoke-ProcessCapture {
+  399:     param(
+  400:         [Parameter(Mandatory = $true)]
+  401:         [string]$FilePath,
+  402:         [string[]]$ArgumentList = @(),
+  403:         [string]$WorkingDirectory = $null
+  404:     )
+--- line 477 pattern param\( ---
+  474: }
+  475: 
+  476: function Resolve-SmartReleaseInputFilePath {
+  477:     param(
+  478:         [AllowNull()]
+  479:         [string]$PathValue,
+  480:         [Parameter(Mandatory = $true)]
+  481:         [string]$ArgumentName
+  482:     )
+--- line 496 pattern param\( ---
+  493: }
+  494: 
+  495: function New-SmartReleaseReportDirectory {
+  496:     param(
+  497:         [Parameter(Mandatory = $true)]
+  498:         [string]$PackagePath
+  499:     )
+  500: 
+  501:     if ([string]::IsNullOrWhiteSpace($PackagePath)) {
+--- line 516 pattern param\( ---
+  513: }
+  514: 
+  515: function Invoke-SmartReleaseReportProcess {
+  516:     param(
+  517:         [Parameter(Mandatory = $true)]
+  518:         [string]$ScriptPath,
+  519:         [Parameter(Mandatory = $true)]
+  520:         [string[]]$ArgumentList,
+  521:         [Parameter(Mandatory = $true)]
+--- line 549 pattern param\( ---
+  546: }
+  547: 
+  548: function Invoke-SmartReleaseBuildReportOnly {
+  549:     param(
+  550:         [Parameter(Mandatory = $true)]
+  551:         [string]$PackagePath
+  552:     )
+  553: 
+  554:     $baselineManifestPath = Resolve-SmartReleaseInputFilePath -PathValue $SmartReleaseBaselineManifestPath -ArgumentName '-SmartReleaseBaselineManifestPath'
+--- line 563 pattern Mode ---
+  560:     $manifestValidationOutputPath = Join-Path $reportDirectory 'manifest-validation-result.json'
+  561:     $manifestValidationResult = Invoke-SmartReleaseReportProcess `
+  562:         -ScriptPath (Join-Path $releaseScriptRoot 'validate-release-manifest.ps1') `
+  563:         -ArgumentList @('-PackagePath', $PackagePath, '-Mode', 'report-only', '-OutputPath', $manifestValidationOutputPath) `
+  564:         -ExpectedOutputPath $manifestValidationOutputPath `
+  565:         -ReportName 'manifest validation'
+  566:     if ($manifestValidationResult.ExitCode -ne 0) {
+  567:         Info "Smart Release manifest validation report-only completed with exit code $($manifestValidationResult.ExitCode); legacy build-release flow continues because the report was written."
+  568:     }
+--- line 580 pattern Mode ---
+  577:             '-LocalDatabaseConfigPath', $localDatabaseConfigPath,
+  578:             '-DataOwnershipRegistryPath', $dataOwnershipRegistryPath,
+  579:             '-OutputDir', $intakeOutputDir,
+  580:             '-Mode', 'report-only'
+  581:         ) `
+  582:         -ExpectedOutputPath $intakeResultPath `
+  583:         -ReportName 'intake'
+  584:     if ($intakeResult.ExitCode -ne 0) {
+  585:         Info "Smart Release intake report-only completed with exit code $($intakeResult.ExitCode); legacy build-release flow continues because the report was written."
+--- line 590 pattern param\( ---
+  587: }
+  588: 
+  589: function Invoke-SmartReleaseDeployPrecheckReportOnly {
+  590:     param(
+  591:         [Parameter(Mandatory = $true)]
+  592:         [string]$PackagePath
+  593:     )
+  594: 
+  595:     $targetConfigPath = Resolve-SmartReleaseInputFilePath -PathValue $SmartReleaseTargetConfigPath -ArgumentName '-SmartReleaseTargetConfigPath'
+--- line 602 pattern Mode ---
+  599: 
+  600:     $precheckResult = Invoke-SmartReleaseReportProcess `
+  601:         -ScriptPath (Join-Path $releaseScriptRoot 'run-deploy-precheck-report.ps1') `
+  602:         -ArgumentList @('-PackagePath', $PackagePath, '-Environment', $Environment, '-TargetConfigPath', $targetConfigPath, '-Mode', 'report-only', '-OutputPath', $deployPrecheckOutputPath) `
+  603:         -ExpectedOutputPath $deployPrecheckOutputPath `
+  604:         -ReportName 'deploy precheck'
+  605:     if ($precheckResult.ExitCode -ne 0) {
+  606:         Fail "SMART_RELEASE_DEPLOY_PRECHECK_FAILED: deploy precheck report-only failed with exit code $($precheckResult.ExitCode). Report: $deployPrecheckOutputPath"
+  607:     }
+--- line 614 pattern param\( ---
+  611: }
+  612: 
+  613: function ConvertTo-ProcessArgumentString {
+  614:     param(
+  615:         [string[]]$Arguments = @()
+  616:     )
+  617: 
+  618:     $escaped = New-Object System.Collections.Generic.List[string]
+  619:     foreach ($argument in @($Arguments)) {
+--- line 655 pattern param\( ---
+  652: }
+  653: 
+  654: function Invoke-ProcessCaptureWithInput {
+  655:     param(
+  656:         [Parameter(Mandatory = $true)]
+  657:         [string]$FilePath,
+  658:         [string[]]$ArgumentList = @(),
+  659:         [string]$StandardInput = '',
+  660:         [string]$WorkingDirectory = $null
+--- line 709 pattern param\( ---
+  706: }
+  707: 
+  708: function Invoke-CheckedCommand {
+  709:     param(
+  710:         [Parameter(Mandatory = $true)]
+  711:         [string]$FilePath,
+  712:         [string[]]$ArgumentList = @(),
+  713:         [string]$WorkingDirectory = $null
+  714:     )
+--- line 740 pattern param\( ---
+  737: }
+  738: 
+  739: function Invoke-CheckedShell {
+  740:     param(
+  741:         [Parameter(Mandatory = $true)]
+  742:         [string]$Command,
+  743:         [string]$DisplayCommand = $null,
+  744:         [string]$WorkingDirectory = $null
+  745:     )
+--- line 766 pattern param\( ---
+  763: }
+  764: 
+  765: function Invoke-FrontendViteBuild {
+  766:     param(
+  767:         [Parameter(Mandatory = $true)]
+  768:         [string]$FrontendDir
+  769:     )
+  770: 
+  771:     Invoke-CheckedCommand -FilePath 'pnpm' -ArgumentList @('build:test') -WorkingDirectory $FrontendDir
+--- line 775 pattern param\( ---
+  772: }
+  773: 
+  774: function Assert-FrontendBuildStaticAssetContract {
+  775:     param(
+  776:         [Parameter(Mandatory = $true)]
+  777:         [string]$FrontendDir
+  778:     )
+  779: 
+  780:     $distDir = Join-Path $FrontendDir 'dist-intruoyi-test'
+--- line 813 pattern param\( ---
+  810: }
+  811: 
+  812: function New-ReleaseChangeSetManifest {
+  813:     param(
+  814:         [Parameter(Mandatory = $true)]
+  815:         [string]$PackageTag
+  816:     )
+  817: 
+  818:     $releasePackageLabel = ConvertTo-ReleaseUnicodeText -CodePoints @(21457, 24067, 21253)
+--- line 835 pattern param\( ---
+  832: }
+  833: 
+  834: function Write-FrontendReleaseInfo {
+  835:     param(
+  836:         [Parameter(Mandatory = $true)]
+  837:         [string]$FrontendDir,
+  838:         [Parameter(Mandatory = $true)]
+  839:         [string]$PackageTag,
+  840:         [Parameter(Mandatory = $true)]
+--- line 864 pattern Mode ---
+  861: }
+  862: 
+  863: function Resolve-BackendRuntimeBaseConfig {
+  864:     if (-not $publishBackend -or $Mode -eq 'deploy-release' -or $Mode -eq 'mark-tested') {
+  865:         return $null
+  866:     }
+  867: 
+  868:     if ([string]::IsNullOrWhiteSpace($BackendRuntimeBaseMode)) {
+  869:         Fail 'Missing BackendRuntimeBaseMode; backend runtime base image distribution mode is required.'
+--- line 868 pattern Mode ---
+  865:         return $null
+  866:     }
+  867: 
+  868:     if ([string]::IsNullOrWhiteSpace($BackendRuntimeBaseMode)) {
+  869:         Fail 'Missing BackendRuntimeBaseMode; backend runtime base image distribution mode is required.'
+  870:     }
+  871:     $mode = $BackendRuntimeBaseMode.Trim()
+  872:     if ($mode -ne 'offline-tar') {
+  873:         Fail "Unsupported BackendRuntimeBaseMode: $mode. Only offline-tar is supported."
+--- line 869 pattern Mode ---
+  866:     }
+  867: 
+  868:     if ([string]::IsNullOrWhiteSpace($BackendRuntimeBaseMode)) {
+  869:         Fail 'Missing BackendRuntimeBaseMode; backend runtime base image distribution mode is required.'
+  870:     }
+  871:     $mode = $BackendRuntimeBaseMode.Trim()
+  872:     if ($mode -ne 'offline-tar') {
+  873:         Fail "Unsupported BackendRuntimeBaseMode: $mode. Only offline-tar is supported."
+  874:     }
+--- line 871 pattern Mode ---
+  868:     if ([string]::IsNullOrWhiteSpace($BackendRuntimeBaseMode)) {
+  869:         Fail 'Missing BackendRuntimeBaseMode; backend runtime base image distribution mode is required.'
+  870:     }
+  871:     $mode = $BackendRuntimeBaseMode.Trim()
+  872:     if ($mode -ne 'offline-tar') {
+  873:         Fail "Unsupported BackendRuntimeBaseMode: $mode. Only offline-tar is supported."
+  874:     }
+  875: 
+  876:     if ([string]::IsNullOrWhiteSpace($BackendRuntimeBaseTarPath)) {
+--- line 872 pattern Mode ---
+  869:         Fail 'Missing BackendRuntimeBaseMode; backend runtime base image distribution mode is required.'
+  870:     }
+  871:     $mode = $BackendRuntimeBaseMode.Trim()
+  872:     if ($mode -ne 'offline-tar') {
+  873:         Fail "Unsupported BackendRuntimeBaseMode: $mode. Only offline-tar is supported."
+  874:     }
+  875: 
+  876:     if ([string]::IsNullOrWhiteSpace($BackendRuntimeBaseTarPath)) {
+  877:         Fail 'Missing BackendRuntimeBaseTarPath; backend image packaging requires an internal runtime base image tar.'
+--- line 873 pattern Mode ---
+  870:     }
+  871:     $mode = $BackendRuntimeBaseMode.Trim()
+  872:     if ($mode -ne 'offline-tar') {
+  873:         Fail "Unsupported BackendRuntimeBaseMode: $mode. Only offline-tar is supported."
+  874:     }
+  875: 
+  876:     if ([string]::IsNullOrWhiteSpace($BackendRuntimeBaseTarPath)) {
+  877:         Fail 'Missing BackendRuntimeBaseTarPath; backend image packaging requires an internal runtime base image tar.'
+  878:     }
+--- line 918 pattern Mode ---
+  915:     }
+  916: 
+  917:     return [ordered]@{
+  918:         Mode = $mode
+  919:         TarPath = $resolvedTarPath
+  920:         TarSha256 = $tarSha256
+  921:         Image = $image
+  922:         Digest = $digest
+  923:         Version = $version
+--- line 928 pattern param\( ---
+  925: }
+  926: 
+  927: function Assert-BackendRuntimeBaseImageAvailable {
+  928:     param(
+  929:         [Parameter(Mandatory = $true)]
+  930:         [System.Collections.IDictionary]$Config
+  931:     )
+  932: 
+  933:     $actualTarSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $config.TarPath).Hash.ToLowerInvariant()
+--- line 955 pattern param\( ---
+  952: }
+  953: 
+  954: function Get-ProcessLockHintForPath {
+  955:     param(
+  956:         [Parameter(Mandatory = $true)]
+  957:         [string]$Path
+  958:     )
+  959: 
+  960:     try {
+--- line 980 pattern param\( ---
+  977: }
+  978: 
+  979: function Assert-BackendJarAvailableForMavenClean {
+  980:     param(
+  981:         [Parameter(Mandatory = $true)]
+  982:         [string]$JarPath
+  983:     )
+  984: 
+  985:     if (-not (Test-Path -LiteralPath $JarPath -PathType Leaf)) {
+--- line 993 pattern Mode ---
+  990:     try {
+  991:         $stream = [System.IO.File]::Open(
+  992:             $JarPath,
+  993:             [System.IO.FileMode]::Open,
+  994:             [System.IO.FileAccess]::ReadWrite,
+  995:             [System.IO.FileShare]::None
+  996:         )
+  997:     } catch {
+  998:         $lockHint = Get-ProcessLockHintForPath -Path $JarPath
+--- line 1008 pattern param\( ---
+ 1005: }
+ 1006: 
+ 1007: function Invoke-SshCommand {
+ 1008:     param(
+ 1009:         [Parameter(Mandatory = $true)]
+ 1010:         [string]$Command
+ 1011:     )
+ 1012: 
+ 1013:     $normalizedCommand = $Command -replace "`r`n", "`n" -replace "`r", "`n"
+--- line 1028 pattern param\( ---
+ 1025: }
+ 1026: 
+ 1027: function Invoke-SshCapture {
+ 1028:     param(
+ 1029:         [Parameter(Mandatory = $true)]
+ 1030:         [string]$Command,
+ 1031:         [switch]$IgnoreExitCode
+ 1032:     )
+ 1033: 
+--- line 1051 pattern param\( ---
+ 1048: }
+ 1049: 
+ 1050: function Test-RemoteFileExists {
+ 1051:     param(
+ 1052:         [Parameter(Mandatory = $true)]
+ 1053:         [string]$Path
+ 1054:     )
+ 1055: 
+ 1056:     $result = Invoke-SshCapture -Command "test -f '$Path'" -IgnoreExitCode
+--- line 1101 pattern param\( ---
+ 1098: }
+ 1099: 
+ 1100: function Test-RemoteComposeService {
+ 1101:     param(
+ 1102:         [Parameter(Mandatory = $true)]
+ 1103:         [string[]]$Services,
+ 1104:         [Parameter(Mandatory = $true)]
+ 1105:         [string]$ServiceName
+ 1106:     )
+--- line 1112 pattern param\( ---
+ 1109: }
+ 1110: 
+ 1111: function Assert-RemoteComposeService {
+ 1112:     param(
+ 1113:         [Parameter(Mandatory = $true)]
+ 1114:         [string[]]$Services,
+ 1115:         [Parameter(Mandatory = $true)]
+ 1116:         [string]$ServiceName
+ 1117:     )
+--- line 1125 pattern param\( ---
+ 1122: }
+ 1123: 
+ 1124: function Get-LocalContainerEnvValue {
+ 1125:     param(
+ 1126:         [Parameter(Mandatory = $true)]
+ 1127:         [string]$ContainerName,
+ 1128:         [Parameter(Mandatory = $true)]
+ 1129:         [string]$Key
+ 1130:     )
+--- line 1145 pattern param\( ---
+ 1142: }
+ 1143: 
+ 1144: function Get-RemoteContainerEnvValue {
+ 1145:     param(
+ 1146:         [Parameter(Mandatory = $true)]
+ 1147:         [string]$ContainerName,
+ 1148:         [Parameter(Mandatory = $true)]
+ 1149:         [string]$Key
+ 1150:     )
+--- line 1168 pattern Mode ---
+ 1165:         EDHR_S3_REGION = $EdhrS3Region
+ 1166:         EDHR_S3_ACCESS_KEY = $EdhrS3AccessKey
+ 1167:         EDHR_S3_SECRET_KEY = $EdhrS3SecretKey
+ 1168:         EDHR_S3_RETENTION_MODE = $EdhrS3RetentionMode
+ 1169:         EDHR_S3_RETAIN_UNTIL_DAYS = $EdhrS3RetainUntilDays
+ 1170:         EDHR_S3_REQUIRE_LEGAL_HOLD = $EdhrS3RequireLegalHold
+ 1171:     }
+ 1172: }
+ 1173: 
+--- line 1175 pattern param\( ---
+ 1172: }
+ 1173: 
+ 1174: function Resolve-PublishRuntimeValue {
+ 1175:     param(
+ 1176:         [Parameter(Mandatory = $true)]
+ 1177:         [string]$Name,
+ 1178:         [AllowNull()]
+ 1179:         [string]$CurrentValue,
+ 1180:         [AllowNull()]
+--- line 1204 pattern param\( ---
+ 1201: }
+ 1202: 
+ 1203: function Get-PublishRuntimeEnvironmentValue {
+ 1204:     param(
+ 1205:         [Parameter(Mandatory = $true)]
+ 1206:         [string]$Name
+ 1207:     )
+ 1208: 
+ 1209:     foreach ($target in @(
+--- line 1228 pattern Mode ---
+ 1225:     'EDHR_S3_TEST_REGION',
+ 1226:     'EDHR_S3_TEST_ACCESS_KEY',
+ 1227:     'EDHR_S3_TEST_SECRET_KEY',
+ 1228:     'EDHR_S3_TEST_RETENTION_MODE',
+ 1229:     'EDHR_S3_TEST_RETAIN_UNTIL_DAYS',
+ 1230:     'EDHR_S3_TEST_REQUIRE_LEGAL_HOLD',
+ 1231:     'EDHR_S3_BACKUP_ENDPOINT',
+ 1232:     'EDHR_S3_BACKUP_BUCKET',
+ 1233:     'EDHR_S3_BACKUP_REGION',
+--- line 1236 pattern Mode ---
+ 1233:     'EDHR_S3_BACKUP_REGION',
+ 1234:     'EDHR_S3_BACKUP_ACCESS_KEY',
+ 1235:     'EDHR_S3_BACKUP_SECRET_KEY',
+ 1236:     'EDHR_S3_BACKUP_RETENTION_MODE',
+ 1237:     'EDHR_S3_BACKUP_RETAIN_UNTIL_DAYS',
+ 1238:     'EDHR_S3_BACKUP_REQUIRE_LEGAL_HOLD',
+ 1239:     'EDHR_S3_PROD_ENDPOINT',
+ 1240:     'EDHR_S3_PROD_BUCKET',
+ 1241:     'EDHR_S3_PROD_REGION',
+--- line 1244 pattern Mode ---
+ 1241:     'EDHR_S3_PROD_REGION',
+ 1242:     'EDHR_S3_PROD_ACCESS_KEY',
+ 1243:     'EDHR_S3_PROD_SECRET_KEY',
+ 1244:     'EDHR_S3_PROD_RETENTION_MODE',
+ 1245:     'EDHR_S3_PROD_RETAIN_UNTIL_DAYS',
+ 1246:     'EDHR_S3_PROD_REQUIRE_LEGAL_HOLD'
+ 1247: )
+ 1248: 
+ 1249: function Get-TargetSpecificEdhrEnvName {
+--- line 1250 pattern param\( ---
+ 1247: )
+ 1248: 
+ 1249: function Get-TargetSpecificEdhrEnvName {
+ 1250:     param(
+ 1251:         [Parameter(Mandatory = $true)]
+ 1252:         [string]$TargetEnvironment,
+ 1253:         [Parameter(Mandatory = $true)]
+ 1254:         [string]$Name
+ 1255:     )
+--- line 1269 pattern param\( ---
+ 1266: }
+ 1267: 
+ 1268: function Resolve-TargetPublishRuntimeValue {
+ 1269:     param(
+ 1270:         [Parameter(Mandatory = $true)]
+ 1271:         [string]$Name,
+ 1272:         [Parameter(Mandatory = $true)]
+ 1273:         [string]$TargetEnvironment,
+ 1274:         [AllowNull()]
+--- line 1312 pattern param\( ---
+ 1309: }
+ 1310: 
+ 1311: function Set-PublishRuntimeDefaultsForTarget {
+ 1312:     param(
+ 1313:         [Parameter(Mandatory = $true)]
+ 1314:         [string]$TargetServerHost,
+ 1315:         [Parameter(Mandatory = $true)]
+ 1316:         [string]$TargetEnvironment
+ 1317:     )
+--- line 1365 pattern Mode ---
+ 1362:     $script:EdhrS3Region = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_REGION' -TargetEnvironment $TargetEnvironment -CurrentValue $script:EdhrS3Region
+ 1363:     $script:EdhrS3AccessKey = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_ACCESS_KEY' -TargetEnvironment $TargetEnvironment -CurrentValue $script:EdhrS3AccessKey
+ 1364:     $script:EdhrS3SecretKey = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_SECRET_KEY' -TargetEnvironment $TargetEnvironment -CurrentValue $script:EdhrS3SecretKey
+ 1365:     $script:EdhrS3RetentionMode = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_RETENTION_MODE' -TargetEnvironment $TargetEnvironment -CurrentValue $script:EdhrS3RetentionMode
+ 1366:     $script:EdhrS3RetainUntilDays = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_RETAIN_UNTIL_DAYS' -TargetEnvironment $TargetEnvironment -CurrentValue $script:EdhrS3RetainUntilDays
+ 1367:     $script:EdhrS3RequireLegalHold = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_REQUIRE_LEGAL_HOLD' -TargetEnvironment $TargetEnvironment -CurrentValue $script:EdhrS3RequireLegalHold
+ 1368: }
+ 1369: 
+ 1370: function Read-ReleaseRuntimeEnvFile {
+--- line 1371 pattern param\( ---
+ 1368: }
+ 1369: 
+ 1370: function Read-ReleaseRuntimeEnvFile {
+ 1371:     param(
+ 1372:         [Parameter(Mandatory = $true)]
+ 1373:         [string]$Path
+ 1374:     )
+ 1375: 
+ 1376:     $settings = @{}
+--- line 1389 pattern param\( ---
+ 1386: }
+ 1387: 
+ 1388: function Set-PublishRuntimeValuesFromSettings {
+ 1389:     param(
+ 1390:         [Parameter(Mandatory = $true)]
+ 1391:         [hashtable]$Settings
+ 1392:     )
+ 1393: 
+ 1394:     if ($Settings.ContainsKey('DCC_SIGNATURE_EVIDENCE_HMAC_SECRET')) { $script:DccSignatureEvidenceHmacSecret = $Settings['DCC_SIGNATURE_EVIDENCE_HMAC_SECRET'] }
+--- line 1409 pattern Mode ---
+ 1406:     if ($Settings.ContainsKey('EDHR_S3_REGION')) { $script:EdhrS3Region = $Settings['EDHR_S3_REGION'] }
+ 1407:     if ($Settings.ContainsKey('EDHR_S3_ACCESS_KEY')) { $script:EdhrS3AccessKey = $Settings['EDHR_S3_ACCESS_KEY'] }
+ 1408:     if ($Settings.ContainsKey('EDHR_S3_SECRET_KEY')) { $script:EdhrS3SecretKey = $Settings['EDHR_S3_SECRET_KEY'] }
+ 1409:     if ($Settings.ContainsKey('EDHR_S3_RETENTION_MODE')) { $script:EdhrS3RetentionMode = $Settings['EDHR_S3_RETENTION_MODE'] }
+ 1410:     if ($Settings.ContainsKey('EDHR_S3_RETAIN_UNTIL_DAYS')) { $script:EdhrS3RetainUntilDays = $Settings['EDHR_S3_RETAIN_UNTIL_DAYS'] }
+ 1411:     if ($Settings.ContainsKey('EDHR_S3_REQUIRE_LEGAL_HOLD')) { $script:EdhrS3RequireLegalHold = $Settings['EDHR_S3_REQUIRE_LEGAL_HOLD'] }
+ 1412: }
+ 1413: 
+ 1414: function New-ReleaseRuntimeEnvContent {
+--- line 1415 pattern param\( ---
+ 1412: }
+ 1413: 
+ 1414: function New-ReleaseRuntimeEnvContent {
+ 1415:     param(
+ 1416:         [Parameter(Mandatory = $true)]
+ 1417:         [string]$TargetEnvironment,
+ 1418:         [Parameter(Mandatory = $true)]
+ 1419:         [string]$TargetServerHost
+ 1420:     )
+--- line 1435 pattern Mode ---
+ 1432:     $resolvedEdhrS3Region = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_REGION' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3Region
+ 1433:     $resolvedEdhrS3AccessKey = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_ACCESS_KEY' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3AccessKey
+ 1434:     $resolvedEdhrS3SecretKey = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_SECRET_KEY' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3SecretKey
+ 1435:     $resolvedEdhrS3RetentionMode = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_RETENTION_MODE' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3RetentionMode
+ 1436:     $resolvedEdhrS3RetainUntilDays = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_RETAIN_UNTIL_DAYS' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3RetainUntilDays
+ 1437:     $resolvedEdhrS3RequireLegalHold = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_REQUIRE_LEGAL_HOLD' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3RequireLegalHold
+ 1438: 
+ 1439:     return @"
+ 1440: DCC_SIGNATURE_EVIDENCE_HMAC_SECRET=$resolvedDccSignatureEvidenceHmacSecret
+--- line 1453 pattern Mode ---
+ 1450: EDHR_S3_REGION=$resolvedEdhrS3Region
+ 1451: EDHR_S3_ACCESS_KEY=$resolvedEdhrS3AccessKey
+ 1452: EDHR_S3_SECRET_KEY=$resolvedEdhrS3SecretKey
+ 1453: EDHR_S3_RETENTION_MODE=$resolvedEdhrS3RetentionMode
+ 1454: EDHR_S3_RETAIN_UNTIL_DAYS=$resolvedEdhrS3RetainUntilDays
+ 1455: EDHR_S3_REQUIRE_LEGAL_HOLD=$resolvedEdhrS3RequireLegalHold
+ 1456: "@
+ 1457: }
+ 1458: 
+--- line 1479 pattern param\( ---
+ 1476: }
+ 1477: 
+ 1478: function Apply-ReleaseRuntimeEnvPackage {
+ 1479:     param(
+ 1480:         [Parameter(Mandatory = $true)]
+ 1481:         [string]$TargetEnvironment
+ 1482:     )
+ 1483: 
+ 1484:     $runtimeEnvFile = Join-Path $releaseDir "runtime-env\$TargetEnvironment.env"
+--- line 1495 pattern param\( ---
+ 1492: }
+ 1493: 
+ 1494: function Assert-EdhrProtectedStorageConfig {
+ 1495:     param(
+ 1496:         [Parameter(Mandatory = $true)]
+ 1497:         [string]$Context,
+ 1498:         [Parameter(Mandatory = $true)]
+ 1499:         [hashtable]$Settings
+ 1500:     )
+--- line 1508 pattern Mode ---
+ 1505:         'EDHR_S3_REGION',
+ 1506:         'EDHR_S3_ACCESS_KEY',
+ 1507:         'EDHR_S3_SECRET_KEY',
+ 1508:         'EDHR_S3_RETENTION_MODE',
+ 1509:         'EDHR_S3_RETAIN_UNTIL_DAYS',
+ 1510:         'EDHR_S3_REQUIRE_LEGAL_HOLD'
+ 1511:     )) {
+ 1512:         if ([string]::IsNullOrWhiteSpace([string]$Settings[$key])) {
+ 1513:             Fail "Missing $key for $Context; eDHR protected storage/Object Lock is fail-fast and cannot be bypassed."
+--- line 1517 pattern Mode ---
+ 1514:         }
+ 1515:     }
+ 1516: 
+ 1517:     $mode = ([string]$Settings['EDHR_S3_RETENTION_MODE']).Trim().ToUpperInvariant()
+ 1518:     if ($mode -notin @('GOVERNANCE', 'COMPLIANCE')) {
+ 1519:         Fail 'Invalid EDHR_S3_RETENTION_MODE; expected GOVERNANCE or COMPLIANCE for eDHR protected storage/Object Lock.'
+ 1520:     }
+ 1521: 
+ 1522:     $days = 0
+--- line 1518 pattern Mode ---
+ 1515:     }
+ 1516: 
+ 1517:     $mode = ([string]$Settings['EDHR_S3_RETENTION_MODE']).Trim().ToUpperInvariant()
+ 1518:     if ($mode -notin @('GOVERNANCE', 'COMPLIANCE')) {
+ 1519:         Fail 'Invalid EDHR_S3_RETENTION_MODE; expected GOVERNANCE or COMPLIANCE for eDHR protected storage/Object Lock.'
+ 1520:     }
+ 1521: 
+ 1522:     $days = 0
+ 1523:     if (-not [int]::TryParse(([string]$Settings['EDHR_S3_RETAIN_UNTIL_DAYS']).Trim(), [ref]$days) -or $days -le 0) {
+--- line 1519 pattern Mode ---
+ 1516: 
+ 1517:     $mode = ([string]$Settings['EDHR_S3_RETENTION_MODE']).Trim().ToUpperInvariant()
+ 1518:     if ($mode -notin @('GOVERNANCE', 'COMPLIANCE')) {
+ 1519:         Fail 'Invalid EDHR_S3_RETENTION_MODE; expected GOVERNANCE or COMPLIANCE for eDHR protected storage/Object Lock.'
+ 1520:     }
+ 1521: 
+ 1522:     $days = 0
+ 1523:     if (-not [int]::TryParse(([string]$Settings['EDHR_S3_RETAIN_UNTIL_DAYS']).Trim(), [ref]$days) -or $days -le 0) {
+ 1524:         Fail 'Invalid EDHR_S3_RETAIN_UNTIL_DAYS; expected a positive integer for eDHR protected storage/Object Lock.'
+--- line 1534 pattern param\( ---
+ 1531: }
+ 1532: 
+ 1533: function Set-EdhrStorageVerifierEnvironment {
+ 1534:     param(
+ 1535:         [Parameter(Mandatory = $true)]
+ 1536:         [hashtable]$Settings
+ 1537:     )
+ 1538: 
+ 1539:     foreach ($key in $Settings.Keys) {
+--- line 1545 pattern param\( ---
+ 1542: }
+ 1543: 
+ 1544: function Invoke-EdhrStorageRetentionVerifier {
+ 1545:     param(
+ 1546:         [Parameter(Mandatory = $true)]
+ 1547:         [string]$BackendRepo
+ 1548:     )
+ 1549: 
+ 1550:     $verifier = Join-Path $BackendRepo 'tool\edhr-storage-retention-verifier\verify.py'
+--- line 1575 pattern param\( ---
+ 1572: }
+ 1573: 
+ 1574: function ConvertTo-SqlStringLiteral {
+ 1575:     param(
+ 1576:         [AllowNull()]
+ 1577:         [string]$Value
+ 1578:     )
+ 1579: 
+ 1580:     if ($null -eq $Value) {
+--- line 1593 pattern param\( ---
+ 1590: }
+ 1591: 
+ 1592: function New-ShowroomFileStoragePostImportSql {
+ 1593:     param(
+ 1594:         [Parameter(Mandatory = $true)]
+ 1595:         [string]$TargetServerHost,
+ 1596:         [string]$MinioAccessKey = '',
+ 1597:         [string]$MinioAccessSecret = ''
+ 1598:     )
+--- line 1647 pattern param\( ---
+ 1644: }
+ 1645: 
+ 1646: function Copy-ToServer {
+ 1647:     param(
+ 1648:         [Parameter(Mandatory = $true)]
+ 1649:         [string]$LocalPath,
+ 1650:         [Parameter(Mandatory = $true)]
+ 1651:         [string]$RemotePath,
+ 1652:         [switch]$Recursive
+--- line 1659 pattern param\( ---
+ 1656: }
+ 1657: 
+ 1658: function Get-RemoteFileSize {
+ 1659:     param(
+ 1660:         [Parameter(Mandatory = $true)]
+ 1661:         [string]$RemotePath
+ 1662:     )
+ 1663: 
+ 1664:     $sizeResult = Invoke-ProcessCapture -FilePath 'ssh' -ArgumentList (New-SshArgumentList -Command "if [ -f '$RemotePath' ]; then stat -c '%s' '$RemotePath'; else echo MISSING; exit 42; fi")
+--- line 1678 pattern param\( ---
+ 1675: }
+ 1676: 
+ 1677: function Assert-RemoteFileSize {
+ 1678:     param(
+ 1679:         [Parameter(Mandatory = $true)]
+ 1680:         [string]$RemotePath,
+ 1681:         [Parameter(Mandatory = $true)]
+ 1682:         [Int64]$ExpectedBytes
+ 1683:     )
+--- line 1693 pattern param\( ---
+ 1690: }
+ 1691: 
+ 1692: function Copy-LargeFileToServerInChunks {
+ 1693:     param(
+ 1694:         [Parameter(Mandatory = $true)]
+ 1695:         [string]$LocalPath,
+ 1696:         [Parameter(Mandatory = $true)]
+ 1697:         [string]$RemotePath,
+ 1698:         [Int64]$ChunkBytes = 134217728
+--- line 1719 pattern Mode ---
+ 1716:         $bufferSize = [int][Math]::Min([Int64]4194304, $ChunkBytes)
+ 1717:         $buffer = New-Object byte[] $bufferSize
+ 1718:         $chunkIndex = 0
+ 1719:         $inputStream = [System.IO.File]::Open($LocalPath, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read, [System.IO.FileShare]::Read)
+ 1720:         try {
+ 1721:             while ($true) {
+ 1722:                 $remaining = [Int64]$ChunkBytes
+ 1723:                 $chunkPath = Join-Path $chunkRoot ("chunk-{0:D6}.part" -f $chunkIndex)
+ 1724:                 $outputStream = [System.IO.File]::Open($chunkPath, [System.IO.FileMode]::CreateNew, [System.IO.FileAccess]::Write, [System.IO.FileShare]::None)
+--- line 1724 pattern Mode ---
+ 1721:             while ($true) {
+ 1722:                 $remaining = [Int64]$ChunkBytes
+ 1723:                 $chunkPath = Join-Path $chunkRoot ("chunk-{0:D6}.part" -f $chunkIndex)
+ 1724:                 $outputStream = [System.IO.File]::Open($chunkPath, [System.IO.FileMode]::CreateNew, [System.IO.FileAccess]::Write, [System.IO.FileShare]::None)
+ 1725:                 $written = 0L
+ 1726:                 try {
+ 1727:                     while ($remaining -gt 0) {
+ 1728:                         $readSize = [int][Math]::Min([Int64]$buffer.Length, $remaining)
+ 1729:                         $read = $inputStream.Read($buffer, 0, $readSize)
+--- line 1775 pattern param\( ---
+ 1772: }
+ 1773: 
+ 1774: function Wait-HttpOk {
+ 1775:     param(
+ 1776:         [Parameter(Mandatory = $true)]
+ 1777:         [string]$Url,
+ 1778:         [int]$TimeoutSeconds = 180
+ 1779:     )
+ 1780: 
+--- line 1801 pattern param\( ---
+ 1798: }
+ 1799: 
+ 1800: function Wait-HttpContentTypeOk {
+ 1801:     param(
+ 1802:         [Parameter(Mandatory = $true)]
+ 1803:         [string]$Url,
+ 1804:         [Parameter(Mandatory = $true)]
+ 1805:         [string]$ExpectedContentType,
+ 1806:         [int]$TimeoutSeconds = 180
+--- line 1832 pattern param\( ---
+ 1829: }
+ 1830: 
+ 1831: function Read-JsonEndpoint {
+ 1832:     param(
+ 1833:         [Parameter(Mandatory = $true)]
+ 1834:         [string]$Url,
+ 1835:         [Parameter(Mandatory = $true)]
+ 1836:         [string]$Purpose
+ 1837:     )
+--- line 1953 pattern param\( ---
+ 1950: }
+ 1951: 
+ 1952: function Wait-RemoteContainerHealth {
+ 1953:     param(
+ 1954:         [Parameter(Mandatory = $true)]
+ 1955:         [string]$ContainerName,
+ 1956:         [int]$TimeoutSeconds = 180
+ 1957:     )
+ 1958: 
+--- line 1975 pattern param\( ---
+ 1972: }
+ 1973: 
+ 1974: function Wait-RemoteMySqlReady {
+ 1975:     param(
+ 1976:         [int]$TimeoutSeconds = 180
+ 1977:     )
+ 1978: 
+ 1979:     $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
+ 1980:     $lastStatus = ''
+--- line 2058 pattern param\( ---
+ 2055: }
+ 2056: 
+ 2057: function Wait-RemoteHttpOk {
+ 2058:     param(
+ 2059:         [Parameter(Mandatory = $true)]
+ 2060:         [string]$Url,
+ 2061:         [int]$TimeoutSeconds = 180
+ 2062:     )
+ 2063: 
+--- line 2080 pattern param\( ---
+ 2077: }
+ 2078: 
+ 2079: function Invoke-RemoteMySqlRaw {
+ 2080:     param(
+ 2081:         [Parameter(Mandatory = $true)]
+ 2082:         [string]$Sql,
+ 2083:         [string]$Purpose = 'remote MySQL query'
+ 2084:     )
+ 2085: 
+--- line 2227 pattern Mode ---
+ 2224: 
+ 2225: function Read-NasReleaseConfig {
+ 2226:     if ([string]::IsNullOrWhiteSpace($NasConfigPath)) {
+ 2227:         Fail 'Missing NasConfigPath; release package modes must use NAS Management configuration.'
+ 2228:     }
+ 2229:     if (-not (Test-Path -LiteralPath $NasConfigPath)) {
+ 2230:         Fail "NAS release config file not found: $NasConfigPath"
+ 2231:     }
+ 2232:     $text = [System.IO.File]::ReadAllText($NasConfigPath, [System.Text.UTF8Encoding]::new($false))
+--- line 2250 pattern param\( ---
+ 2247: }
+ 2248: 
+ 2249: function Join-NasRelativePath {
+ 2250:     param(
+ 2251:         [Parameter(Mandatory = $true)]
+ 2252:         [string[]]$Parts
+ 2253:     )
+ 2254:     $normalized = New-Object System.Collections.Generic.List[string]
+ 2255:     foreach ($part in $Parts) {
+--- line 2278 pattern param\( ---
+ 2275: }
+ 2276: 
+ 2277: function ConvertTo-ReleasePackageDirectoryName {
+ 2278:     param(
+ 2279:         [Parameter(Mandatory = $true)]
+ 2280:         [string]$ReleaseTagValue
+ 2281:     )
+ 2282:     if ([string]::IsNullOrWhiteSpace($ReleaseTagValue)) {
+ 2283:         Fail 'ReleaseTag is blank'
+--- line 2341 pattern param\( ---
+ 2338: }
+ 2339: 
+ 2340: function Assert-ReleasePackageDirectoryNameSafe {
+ 2341:     param(
+ 2342:         [Parameter(Mandatory = $true)]
+ 2343:         [string]$DirectoryName
+ 2344:     )
+ 2345:     if ([string]::IsNullOrWhiteSpace($DirectoryName)) {
+ 2346:         Fail 'Release package directory name is blank'
+--- line 2354 pattern param\( ---
+ 2351: }
+ 2352: 
+ 2353: function Connect-NasReleaseShare {
+ 2354:     param(
+ 2355:         [Parameter(Mandatory = $true)]
+ 2356:         $NasConfig
+ 2357:     )
+ 2358:     $root = "\\$($NasConfig.server)\$($NasConfig.share)"
+ 2359:     Info "Mounting NAS release repository: \\$($NasConfig.server)\$($NasConfig.share)\$NasReleaseRoot"
+--- line 2369 pattern param\( ---
+ 2366: }
+ 2367: 
+ 2368: function Disconnect-NasReleaseShare {
+ 2369:     param($MountInfo)
+ 2370:     if ($MountInfo -and $MountInfo.Root) {
+ 2371:         Invoke-NasReleaseShareDisconnect -Root ([string]$MountInfo.Root)
+ 2372:     }
+ 2373: }
+ 2374: 
+--- line 2376 pattern param\( ---
+ 2373: }
+ 2374: 
+ 2375: function Invoke-NasReleaseShareDisconnect {
+ 2376:     param(
+ 2377:         [Parameter(Mandatory = $true)]
+ 2378:         [string]$Root
+ 2379:     )
+ 2380: 
+ 2381:     $displayCommand = 'net use "' + $Root + '" /delete /y'
+--- line 2401 pattern param\( ---
+ 2398: }
+ 2399: 
+ 2400: function Get-NasReleasePackagePath {
+ 2401:     param(
+ 2402:         [Parameter(Mandatory = $true)]
+ 2403:         [string]$NasRoot,
+ 2404:         [Parameter(Mandatory = $true)]
+ 2405:         [string]$PackageTag
+ 2406:     )
+--- line 2413 pattern param\( ---
+ 2410: }
+ 2411: 
+ 2412: function Copy-ReleasePackageToNas {
+ 2413:     param(
+ 2414:         [Parameter(Mandatory = $true)]
+ 2415:         [string]$PackageTag
+ 2416:     )
+ 2417:     $nasConfig = Read-NasReleaseConfig
+ 2418:     $mountInfo = $null
+--- line 2435 pattern tested ---
+ 2432:     }
+ 2433: }
+ 2434: 
+ 2435: function Should-RequireNasReleaseTestedForDeploy {
+ 2436:     if (-not $RequireTested) {
+ 2437:         return $false
+ 2438:     }
+ 2439:     if ($Environment -eq 'prod') {
+ 2440:         return $true
+--- line 2436 pattern tested ---
+ 2433: }
+ 2434: 
+ 2435: function Should-RequireNasReleaseTestedForDeploy {
+ 2436:     if (-not $RequireTested) {
+ 2437:         return $false
+ 2438:     }
+ 2439:     if ($Environment -eq 'prod') {
+ 2440:         return $true
+ 2441:     }
+--- line 2443 pattern tested ---
+ 2440:         return $true
+ 2441:     }
+ 2442:     if ($Environment -eq 'backup') {
+ 2443:         Info 'TEMPORARY_BACKUP_RECOVERY_GATE_DISABLED: Backup deploy recovery gate temporarily disabled by operator request; tested.json rollback compatibility evidence is not required for backup environment.'
+ 2444:         return $false
+ 2445:     }
+ 2446:     return $false
+ 2447: }
+ 2448: 
+--- line 2450 pattern param\( ---
+ 2447: }
+ 2448: 
+ 2449: function Copy-ReleasePackageFromNas {
+ 2450:     param(
+ 2451:         [Parameter(Mandatory = $true)]
+ 2452:         [string]$PackageTag
+ 2453:     )
+ 2454:     $nasConfig = Read-NasReleaseConfig
+ 2455:     $mountInfo = $null
+--- line 2463 pattern tested ---
+ 2460:             $packageDirectoryName = ConvertTo-ReleasePackageDirectoryName -ReleaseTagValue $PackageTag
+ 2461:             Fail "NAS release package not found: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
+ 2462:         }
+ 2463:         if (Should-RequireNasReleaseTestedForDeploy) {
+ 2464:             Assert-NasReleaseTested -MountedPackagePath $sourcePath -PackageTag $PackageTag
+ 2465:         }
+ 2466:         if (Test-Path -LiteralPath $releaseDir) {
+ 2467:             Remove-Item -LiteralPath $releaseDir -Recurse -Force
+ 2468:         }
+--- line 2464 pattern tested ---
+ 2461:             Fail "NAS release package not found: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
+ 2462:         }
+ 2463:         if (Should-RequireNasReleaseTestedForDeploy) {
+ 2464:             Assert-NasReleaseTested -MountedPackagePath $sourcePath -PackageTag $PackageTag
+ 2465:         }
+ 2466:         if (Test-Path -LiteralPath $releaseDir) {
+ 2467:             Remove-Item -LiteralPath $releaseDir -Recurse -Force
+ 2468:         }
+ 2469:         New-Item -ItemType Directory -Force -Path $localTempRoot | Out-Null
+--- line 2479 pattern param\( ---
+ 2476: }
+ 2477: 
+ 2478: function Get-RequiredJsonPropertyValue {
+ 2479:     param(
+ 2480:         [Parameter(Mandatory = $true)]
+ 2481:         [object]$JsonObject,
+ 2482:         [Parameter(Mandatory = $true)]
+ 2483:         [string]$PropertyName,
+ 2484:         [Parameter(Mandatory = $true)]
+--- line 2496 pattern param\( ---
+ 2493: }
+ 2494: 
+ 2495: function Read-NasReleaseManifestForCompatibility {
+ 2496:     param(
+ 2497:         [Parameter(Mandatory = $true)]
+ 2498:         [string]$PackagePath,
+ 2499:         [Parameter(Mandatory = $true)]
+ 2500:         [string]$PackageTag,
+ 2501:         [Parameter(Mandatory = $true)]
+--- line 2539 pattern param\( ---
+ 2536: }
+ 2537: 
+ 2538: function New-RollbackCompatibilityEvidence {
+ 2539:     param(
+ 2540:         [Parameter(Mandatory = $true)]
+ 2541:         [object]$Manifest,
+ 2542:         [Parameter(Mandatory = $true)]
+ 2543:         [string]$PackageTag,
+ 2544:         [Parameter(Mandatory = $true)]
+--- line 2570 pattern tested ---
+ 2567: 
+ 2568:     if ($blockedReasons.Count -eq 0) {
+ 2569:         $status = 'COMPATIBLE'
+ 2570:         $summary = "release package $PackageDirectoryName tested with recovery set $RecoverySetId; app-only rollback compatibility confirmed"
+ 2571:     } else {
+ 2572:         $status = 'BLOCKED'
+ 2573:         $summary = "app-only rollback blocked: " + (($blockedReasons.ToArray()) -join '; ')
+ 2574:     }
+ 2575: 
+--- line 2602 pattern param\( ---
+ 2599: }
+ 2600: 
+ 2601: function Write-NasRollbackCompatibilityEvidence {
+ 2602:     param(
+ 2603:         [Parameter(Mandatory = $true)]
+ 2604:         [string]$PackagePath,
+ 2605:         [Parameter(Mandatory = $true)]
+ 2606:         [object]$Evidence
+ 2607:     )
+--- line 2614 pattern tested ---
+ 2611:     [System.IO.File]::WriteAllText($compatibilityPath, $compatibilityJson, [System.Text.UTF8Encoding]::new($false))
+ 2612: }
+ 2613: 
+ 2614: function Mark-NasReleaseTested {
+ 2615:     param(
+ 2616:         [Parameter(Mandatory = $true)]
+ 2617:         [string]$PackageTag
+ 2618:     )
+ 2619:     $nasConfig = Read-NasReleaseConfig
+--- line 2615 pattern param\( ---
+ 2612: }
+ 2613: 
+ 2614: function Mark-NasReleaseTested {
+ 2615:     param(
+ 2616:         [Parameter(Mandatory = $true)]
+ 2617:         [string]$PackageTag
+ 2618:     )
+ 2619:     $nasConfig = Read-NasReleaseConfig
+ 2620:     $mountInfo = $null
+--- line 2623 pattern tested ---
+ 2620:     $mountInfo = $null
+ 2621:     try {
+ 2622:         if ([string]::IsNullOrWhiteSpace($TestConclusion)) {
+ 2623:             Fail 'TestConclusion is required when marking a release package as tested.'
+ 2624:         }
+ 2625:         if ([string]::IsNullOrWhiteSpace($SelectedRecoverySetCandidateId)) {
+ 2626:             Fail 'SelectedRecoverySetCandidateId is required when marking a release package as tested.'
+ 2627:         }
+ 2628:         if ([string]::IsNullOrWhiteSpace($RecoverySetId)) {
+--- line 2626 pattern tested ---
+ 2623:             Fail 'TestConclusion is required when marking a release package as tested.'
+ 2624:         }
+ 2625:         if ([string]::IsNullOrWhiteSpace($SelectedRecoverySetCandidateId)) {
+ 2626:             Fail 'SelectedRecoverySetCandidateId is required when marking a release package as tested.'
+ 2627:         }
+ 2628:         if ([string]::IsNullOrWhiteSpace($RecoverySetId)) {
+ 2629:             Fail 'RecoverySetId is required when marking a release package as tested.'
+ 2630:         }
+ 2631:         if ([string]::IsNullOrWhiteSpace($RecoverySetManifestHash)) {
+--- line 2629 pattern tested ---
+ 2626:             Fail 'SelectedRecoverySetCandidateId is required when marking a release package as tested.'
+ 2627:         }
+ 2628:         if ([string]::IsNullOrWhiteSpace($RecoverySetId)) {
+ 2629:             Fail 'RecoverySetId is required when marking a release package as tested.'
+ 2630:         }
+ 2631:         if ([string]::IsNullOrWhiteSpace($RecoverySetManifestHash)) {
+ 2632:             Fail 'RecoverySetManifestHash is required when marking a release package as tested.'
+ 2633:         }
+ 2634:         if ([string]::IsNullOrWhiteSpace($RecoverySetProgramVersion)) {
+--- line 2632 pattern tested ---
+ 2629:             Fail 'RecoverySetId is required when marking a release package as tested.'
+ 2630:         }
+ 2631:         if ([string]::IsNullOrWhiteSpace($RecoverySetManifestHash)) {
+ 2632:             Fail 'RecoverySetManifestHash is required when marking a release package as tested.'
+ 2633:         }
+ 2634:         if ([string]::IsNullOrWhiteSpace($RecoverySetProgramVersion)) {
+ 2635:             Fail 'RecoverySetProgramVersion is required when marking rollback compatibility evidence.'
+ 2636:         }
+ 2637:         if ([string]::IsNullOrWhiteSpace($RecoverySetRedisPolicy)) {
+--- line 2656 pattern tested ---
+ 2653:         $packageDirectoryName = ConvertTo-ReleasePackageDirectoryName -ReleaseTagValue $PackageTag
+ 2654:         $manifest = Read-NasReleaseManifestForCompatibility -PackagePath $packagePath -PackageTag $PackageTag -PackageDirectoryName $packageDirectoryName
+ 2655:         $checkedAt = (Get-Date).ToUniversalTime().ToString('o')
+ 2656:         $tested = [ordered]@{
+ 2657:             releaseTag = $PackageTag
+ 2658:             packageDirectoryName = $packageDirectoryName
+ 2659:             testedAt = $checkedAt
+ 2660:             operatorName = $OperatorName
+ 2661:             testConclusion = $TestConclusion
+--- line 2659 pattern tested ---
+ 2656:         $tested = [ordered]@{
+ 2657:             releaseTag = $PackageTag
+ 2658:             packageDirectoryName = $packageDirectoryName
+ 2659:             testedAt = $checkedAt
+ 2660:             operatorName = $OperatorName
+ 2661:             testConclusion = $TestConclusion
+ 2662:             recoverySet = [ordered]@{
+ 2663:                 selectedRecoverySetCandidateId = $SelectedRecoverySetCandidateId
+ 2664:                 recoverySetId = $RecoverySetId
+--- line 2680 pattern tested ---
+ 2677:             -RecoverySetManifestHash $RecoverySetManifestHash `
+ 2678:             -RecoverySetProgramVersion $RecoverySetProgramVersion `
+ 2679:             -RecoverySetRedisPolicy $RecoverySetRedisPolicy
+ 2680:         [System.IO.File]::WriteAllText((Join-Path $packagePath 'tested.json'), $tested, [System.Text.UTF8Encoding]::new($false))
+ 2681:         Write-NasRollbackCompatibilityEvidence -PackagePath $packagePath -Evidence $compatibility
+ 2682:         Info "Release package marked as tested: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
+ 2683:         Info "rollback-compatibility.json status=$($compatibility['status']) recorded: $NasReleaseRoot/$packageDirectoryName/rollback-compatibility.json"
+ 2684:     } finally {
+ 2685:         Disconnect-NasReleaseShare -MountInfo $mountInfo
+--- line 2682 pattern tested ---
+ 2679:             -RecoverySetRedisPolicy $RecoverySetRedisPolicy
+ 2680:         [System.IO.File]::WriteAllText((Join-Path $packagePath 'tested.json'), $tested, [System.Text.UTF8Encoding]::new($false))
+ 2681:         Write-NasRollbackCompatibilityEvidence -PackagePath $packagePath -Evidence $compatibility
+ 2682:         Info "Release package marked as tested: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
+ 2683:         Info "rollback-compatibility.json status=$($compatibility['status']) recorded: $NasReleaseRoot/$packageDirectoryName/rollback-compatibility.json"
+ 2684:     } finally {
+ 2685:         Disconnect-NasReleaseShare -MountInfo $mountInfo
+ 2686:     }
+ 2687: }
+--- line 2689 pattern tested ---
+ 2686:     }
+ 2687: }
+ 2688: 
+ 2689: function Assert-NasReleaseTested {
+ 2690:     param(
+ 2691:         [Parameter(Mandatory = $true)]
+ 2692:         [string]$MountedPackagePath,
+ 2693:         [Parameter(Mandatory = $true)]
+ 2694:         [string]$PackageTag
+--- line 2690 pattern param\( ---
+ 2687: }
+ 2688: 
+ 2689: function Assert-NasReleaseTested {
+ 2690:     param(
+ 2691:         [Parameter(Mandatory = $true)]
+ 2692:         [string]$MountedPackagePath,
+ 2693:         [Parameter(Mandatory = $true)]
+ 2694:         [string]$PackageTag
+ 2695:     )
+--- line 2696 pattern tested ---
+ 2693:         [Parameter(Mandatory = $true)]
+ 2694:         [string]$PackageTag
+ 2695:     )
+ 2696:     $testedPath = Join-Path $MountedPackagePath 'tested.json'
+ 2697:     if (-not (Test-Path -LiteralPath $testedPath)) {
+ 2698:         $packageDirectoryName = ConvertTo-ReleasePackageDirectoryName -ReleaseTagValue $PackageTag
+ 2699:         Fail "Release package has not been marked as tested: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
+ 2700:     }
+ 2701: }
+--- line 2697 pattern tested ---
+ 2694:         [string]$PackageTag
+ 2695:     )
+ 2696:     $testedPath = Join-Path $MountedPackagePath 'tested.json'
+ 2697:     if (-not (Test-Path -LiteralPath $testedPath)) {
+ 2698:         $packageDirectoryName = ConvertTo-ReleasePackageDirectoryName -ReleaseTagValue $PackageTag
+ 2699:         Fail "Release package has not been marked as tested: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
+ 2700:     }
+ 2701: }
+ 2702: 
+--- line 2699 pattern tested ---
+ 2696:     $testedPath = Join-Path $MountedPackagePath 'tested.json'
+ 2697:     if (-not (Test-Path -LiteralPath $testedPath)) {
+ 2698:         $packageDirectoryName = ConvertTo-ReleasePackageDirectoryName -ReleaseTagValue $PackageTag
+ 2699:         Fail "Release package has not been marked as tested: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
+ 2700:     }
+ 2701: }
+ 2702: 
+ 2703: function Read-ReleaseManifest {
+ 2704:     $manifestPath = Join-Path $releaseDir 'release-manifest.json'
+--- line 2745 pattern param\( ---
+ 2742: }
+ 2743: 
+ 2744: function Resolve-DeployReleasePackageComponent {
+ 2745:     param(
+ 2746:         [Parameter(Mandatory = $true)]
+ 2747:         [bool]$ComponentExplicit
+ 2748:     )
+ 2749: 
+ 2750:     if ($ComponentExplicit) {
+--- line 2770 pattern param\( ---
+ 2767: }
+ 2768: 
+ 2769: function Assert-DeployReleasePackageArtifactsForScope {
+ 2770:     param(
+ 2771:         [Parameter(Mandatory = $true)]
+ 2772:         [string]$PublishScope
+ 2773:     )
+ 2774: 
+ 2775:     if (-not $publishBackend) {
+--- line 2820 pattern param\( ---
+ 2817: }
+ 2818: 
+ 2819: function Invoke-LocalMySqlRaw {
+ 2820:     param(
+ 2821:         [Parameter(Mandatory = $true)]
+ 2822:         [string]$Sql,
+ 2823:         [string]$Purpose = 'local MySQL query'
+ 2824:     )
+ 2825: 
+--- line 2909 pattern param\( ---
+ 2906: }
+ 2907: 
+ 2908: function Resolve-DccSnapshotObjectPath {
+ 2909:     param(
+ 2910:         [Parameter(Mandatory = $true)]
+ 2911:         [string]$SnapshotRoot,
+ 2912:         [Parameter(Mandatory = $true)]
+ 2913:         [string]$ObjectPath
+ 2914:     )
+--- line 2932 pattern param\( ---
+ 2929: }
+ 2930: 
+ 2931: function Write-DccObjectInventoryForReleasePackage {
+ 2932:     param(
+ 2933:         [Parameter(Mandatory = $true)]
+ 2934:         [string]$MinioSnapshotRoot
+ 2935:     )
+ 2936: 
+ 2937:     Info 'Generating DCC object inventory for with-data release package'
+--- line 2995 pattern param\( ---
+ 2992: }
+ 2993: 
+ 2994: function Write-NasReleaseDeploymentHistory {
+ 2995:     param(
+ 2996:         [Parameter(Mandatory = $true)]
+ 2997:         [string]$PackageTag,
+ 2998: 
+ 2999:         [Parameter(Mandatory = $true)]
+ 3000:         [string]$HistoryAction,
+--- line 3003 pattern ValidateSet ---
+ 3000:         [string]$HistoryAction,
+ 3001: 
+ 3002:         [Parameter(Mandatory = $true)]
+ 3003:         [ValidateSet('prod', 'backup')]
+ 3004:         [string]$HistoryEnvironment
+ 3005:     )
+ 3006:     $nasConfig = Read-NasReleaseConfig
+ 3007:     $mountInfo = $null
+ 3008:     try {
+--- line 3041 pattern param\( ---
+ 3038: }
+ 3039: 
+ 3040: function ConvertTo-ReleaseStringSha256Digest {
+ 3041:     param(
+ 3042:         [Parameter(Mandatory = $true)]
+ 3043:         [string]$Value
+ 3044:     )
+ 3045:     $sha = [System.Security.Cryptography.SHA256]::Create()
+ 3046:     try {
+--- line 3057 pattern param\( ---
+ 3054: }
+ 3055: 
+ 3056: function ConvertTo-ReleaseFileSha256Digest {
+ 3057:     param(
+ 3058:         [Parameter(Mandatory = $true)]
+ 3059:         [string]$Path
+ 3060:     )
+ 3061:     if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+ 3062:         Fail "Manifest v1 file hash input missing: $Path"
+--- line 3068 pattern param\( ---
+ 3065: }
+ 3066: 
+ 3067: function ConvertTo-ReleaseManifestSha256Digest {
+ 3068:     param(
+ 3069:         [Parameter(Mandatory = $true)]
+ 3070:         [string]$HashValue
+ 3071:     )
+ 3072:     $value = $HashValue.Trim().ToLowerInvariant()
+ 3073:     if ($value -match '^sha256:[a-f0-9]{64}$') {
+--- line 3083 pattern param\( ---
+ 3080: }
+ 3081: 
+ 3082: function Get-ReleasePackageRelativePath {
+ 3083:     param(
+ 3084:         [Parameter(Mandatory = $true)]
+ 3085:         [string]$FullPath
+ 3086:     )
+ 3087:     return $FullPath.Substring($releaseDir.Length).TrimStart('\', '/').Replace('\', '/')
+ 3088: }
+--- line 3091 pattern param\( ---
+ 3088: }
+ 3089: 
+ 3090: function Get-ReleaseGitValue {
+ 3091:     param(
+ 3092:         [Parameter(Mandatory = $true)]
+ 3093:         [string]$RepoPath,
+ 3094:         [Parameter(Mandatory = $true)]
+ 3095:         [string[]]$Arguments,
+ 3096:         [Parameter(Mandatory = $true)]
+--- line 3107 pattern param\( ---
+ 3104: }
+ 3105: 
+ 3106: function New-ReleaseSourceRepoEntry {
+ 3107:     param(
+ 3108:         [Parameter(Mandatory = $true)]
+ 3109:         [string]$Name,
+ 3110:         [Parameter(Mandatory = $true)]
+ 3111:         [string]$PathRole,
+ 3112:         [Parameter(Mandatory = $true)]
+--- line 3153 pattern param\( ---
+ 3150: }
+ 3151: 
+ 3152: function Get-ReleaseDependencyHash {
+ 3153:     param(
+ 3154:         [Parameter(Mandatory = $true)]
+ 3155:         [string]$ModuleName
+ 3156:     )
+ 3157:     switch ($ModuleName) {
+ 3158:         'backend' { return ConvertTo-ReleaseFileSha256Digest -Path (Join-Path $backendRepo 'pom.xml') }
+--- line 3171 pattern param\( ---
+ 3168: }
+ 3169: 
+ 3170: function Read-ReleaseMigrationMetadata {
+ 3171:     param(
+ 3172:         [Parameter(Mandatory = $true)]
+ 3173:         [string]$SqlPath
+ 3174:     )
+ 3175: 
+ 3176:     if (-not (Test-Path -LiteralPath $SqlPath -PathType Leaf)) {
+--- line 3306 pattern param\( ---
+ 3303: }
+ 3304: 
+ 3305: function New-ReleaseMigrationPlanEntries {
+ 3306:     param(
+ 3307:         [Parameter(Mandatory = $true)]
+ 3308:         [array]$RequiredSqlEntries
+ 3309:     )
+ 3310:     $entries = @()
+ 3311:     foreach ($requiredSql in @($RequiredSqlEntries)) {
+--- line 3330 pattern param\( ---
+ 3327: }
+ 3328: 
+ 3329: function Get-ReleaseSchemaDigest {
+ 3330:     param(
+ 3331:         [Parameter(Mandatory = $true)]
+ 3332:         [array]$RequiredSqlEntries
+ 3333:     )
+ 3334:     $schemaContract = [ordered]@{
+ 3335:         requiredSql = @($RequiredSqlEntries)
+--- line 3360 pattern param\( ---
+ 3357: }
+ 3358: 
+ 3359: function Get-ReleaseModuleSourceHash {
+ 3360:     param(
+ 3361:         [Parameter(Mandatory = $true)]
+ 3362:         [string]$ModuleName,
+ 3363:         [Parameter(Mandatory = $true)]
+ 3364:         [array]$SourceRepos
+ 3365:     )
+--- line 3379 pattern param\( ---
+ 3376: }
+ 3377: 
+ 3378: function Get-ReleaseComponentArtifactHash {
+ 3379:     param(
+ 3380:         [Parameter(Mandatory = $true)]
+ 3381:         [string]$ModuleName,
+ 3382:         [Parameter(Mandatory = $true)]
+ 3383:         [array]$LegacyArtifacts,
+ 3384:         [Parameter(Mandatory = $true)]
+--- line 3412 pattern param\( ---
+ 3409: }
+ 3410: 
+ 3411: function New-ReleaseBuildModuleManifestEntries {
+ 3412:     param(
+ 3413:         [Parameter(Mandatory = $true)]
+ 3414:         [array]$Components,
+ 3415:         [Parameter(Mandatory = $true)]
+ 3416:         [array]$LegacyArtifacts,
+ 3417:         [Parameter(Mandatory = $true)]
+--- line 3424 pattern Mode ---
+ 3421:     )
+ 3422:     $entries = @()
+ 3423:     $buildParameterHash = ConvertTo-ReleaseStringSha256Digest -Value (@{
+ 3424:         mode = $Mode
+ 3425:         component = $Component
+ 3426:         publishTargetName = $PublishTargetName
+ 3427:         includeOnlyOffice = [bool]$IncludeOnlyOffice
+ 3428:         includeShowroomBuildPackage = [bool]$publishWebsite
+ 3429:         skipDatabaseSync = [bool]$SkipDatabaseSync
+--- line 3448 pattern param\( ---
+ 3445: }
+ 3446: 
+ 3447: function Get-ReleaseBuildModuleByName {
+ 3448:     param(
+ 3449:         [Parameter(Mandatory = $true)]
+ 3450:         [array]$BuildModules,
+ 3451:         [Parameter(Mandatory = $true)]
+ 3452:         [string]$ModuleName
+ 3453:     )
+--- line 3462 pattern param\( ---
+ 3459: }
+ 3460: 
+ 3461: function Resolve-ReleaseArtifactComponentName {
+ 3462:     param(
+ 3463:         [Parameter(Mandatory = $true)]
+ 3464:         [string]$RelativePath
+ 3465:     )
+ 3466:     if ($RelativePath.StartsWith('website/')) { return 'website' }
+ 3467:     if ($RelativePath.StartsWith('required-sql/')) { return 'required-sql' }
+--- line 3481 pattern param\( ---
+ 3478: }
+ 3479: 
+ 3480: function New-ReleaseArtifactManifestEntries {
+ 3481:     param(
+ 3482:         [Parameter(Mandatory = $true)]
+ 3483:         [array]$LegacyArtifacts,
+ 3484:         [Parameter(Mandatory = $true)]
+ 3485:         [array]$BuildModules
+ 3486:     )
+--- line 3521 pattern param\( ---
+ 3518: }
+ 3519: 
+ 3520: function Write-ReleaseResourceReferenceManifest {
+ 3521:     param(
+ 3522:         [Parameter(Mandatory = $true)]
+ 3523:         [string]$PackageTag
+ 3524:     )
+ 3525:     $resourcesDir = Join-Path $releaseDir 'resources'
+ 3526:     New-Item -ItemType Directory -Force -Path $resourcesDir | Out-Null
+--- line 3532 pattern Mode ---
+ 3529:         schemaVersion = '1.0'
+ 3530:         releaseTag = $PackageTag
+ 3531:         generatedAt = (Get-Date).ToUniversalTime().ToString('o')
+ 3532:         resourcePayloadMode = 'reference-check-only'
+ 3533:         dccObjectInventory = if (Test-Path -LiteralPath $dccObjectInventoryPath -PathType Leaf) {
+ 3534:             [ordered]@{
+ 3535:                 path = 'manifest/dcc-object-inventory.json'
+ 3536:                 sha256 = ConvertTo-ReleaseFileSha256Digest -Path $dccObjectInventoryPath
+ 3537:             }
+--- line 3546 pattern param\( ---
+ 3543: }
+ 3544: 
+ 3545: function Write-ReleaseManifestV1 {
+ 3546:     param(
+ 3547:         [Parameter(Mandatory = $true)]
+ 3548:         [string]$PackageTag,
+ 3549:         [Parameter(Mandatory = $true)]
+ 3550:         [array]$LegacyArtifacts
+ 3551:     )
+--- line 3574 pattern Mode ---
+ 3571:     $effectiveOperatorName = if ([string]::IsNullOrWhiteSpace($OperatorName)) { 'local-operator' } else { $OperatorName.Trim() }
+ 3572: 
+ 3573:     $targetEnvironmentCodes = @('test', 'backup')
+ 3574:     if ($Mode -eq 'build-release' -or $Environment -eq 'prod') {
+ 3575:         $targetEnvironmentCodes += 'prod'
+ 3576:     }
+ 3577:     $targetEnvironmentCodes = @($targetEnvironmentCodes | Select-Object -Unique)
+ 3578: 
+ 3579:     $manifestV1 = [ordered]@{
+--- line 3616 pattern Mode ---
+ 3613:             failOnIntermediateFailure = $true
+ 3614:         }
+ 3615:         resources = [ordered]@{
+ 3616:             resourcePayloadMode = 'reference-check-only'
+ 3617:             resourceReferenceManifest = 'resources/resource-reference-manifest.json'
+ 3618:             resourceSnapshotId = $null
+ 3619:             resourceDeltaId = $null
+ 3620:             resourceDeltaPrepared = $false
+ 3621:             resourceDeltaProofPath = $null
+--- line 3633 pattern Mode ---
+ 3630:             requiresResourceDeltaProof = $false
+ 3631:         }
+ 3632:         buildContract = [ordered]@{
+ 3633:             mode = 'report-only'
+ 3634:             intakeReportPath = 'intake/intake-result.json'
+ 3635:             manifestValidationResultPath = 'manifest-validation-result.json'
+ 3636:             changesBuildExitCode = $false
+ 3637:             writesDatabase = $false
+ 3638:             syncsResources = $false
+--- line 3641 pattern Mode ---
+ 3638:             syncsResources = $false
+ 3639:         }
+ 3640:         deployContract = [ordered]@{
+ 3641:             mode = 'report-only'
+ 3642:             deployPrecheckResultPath = 'deploy-precheck-result.json'
+ 3643:             changesDeployExitCode = $false
+ 3644:             targetConfigSource = 'server-side-runtime-control-config'
+ 3645:             allowsRemoteMutation = $false
+ 3646:             allowsRemoteReadOnlyProbe = 'authorized-only'
+--- line 3655 pattern Mode ---
+ 3652:             checks = @('manifest', 'runtime-health', 'operation-evidence')
+ 3653:         }
+ 3654:         rollbackPlan = [ordered]@{
+ 3655:             mode = 'manual'
+ 3656:             requiresCompatibilityEvidence = $true
+ 3657:             restoresBusinessData = $false
+ 3658:         }
+ 3659:         forbiddenFieldsCheck = [ordered]@{
+ 3660:             status = 'pending-validation'
+--- line 3674 pattern param\( ---
+ 3671: }
+ 3672: 
+ 3673: function Write-ReleaseManifest {
+ 3674:     param(
+ 3675:         [Parameter(Mandatory = $true)]
+ 3676:         [string]$PackageTag
+ 3677:     )
+ 3678:     Write-ReleaseResourceReferenceManifest -PackageTag $PackageTag
+ 3679:     $gitCommit = (& git -C $backendRepo rev-parse HEAD 2>$null)
+--- line 3708 pattern Mode ---
+ 3705:     }
+ 3706:     if ($publishBackend -and $null -ne $backendRuntimeBaseConfig) {
+ 3707:         $backendRuntimeBaseManifest = [ordered]@{
+ 3708:             backendRuntimeBaseMode = $backendRuntimeBaseConfig.Mode
+ 3709:             backendRuntimeBaseImage = $backendRuntimeBaseConfig.Image
+ 3710:             backendRuntimeBaseDigest = $backendRuntimeBaseConfig.Digest
+ 3711:             backendRuntimeBaseVersion = $backendRuntimeBaseConfig.Version
+ 3712:             backendRuntimeBaseTarSha256 = $backendRuntimeBaseConfig.TarSha256
+ 3713:         }
+--- line 3805 pattern param\( ---
+ 3802: $resetDbSqlLocal = Join-Path $releaseDir 'reset-db.sql'
+ 3803: $postImportSqlLocal = Join-Path $releaseDir 'post-import.sql'
+ 3804: function Get-ReleaseDatabaseSqlSortKey {
+ 3805:     param(
+ 3806:         [Parameter(Mandatory = $true)]
+ 3807:         [string]$FileName
+ 3808:     )
+ 3809: 
+ 3810:     switch ($FileName) {
+--- line 3893 pattern Mode ---
+ 3890: }
+ 3891: 
+ 3892: $requiredDatabaseSqlScripts = Get-ReleaseDatabaseSqlScripts
+ 3893: if ($publishBackend -and $Mode -eq 'build-release') {
+ 3894:     Invoke-ReleaseMigrationPolicyGate
+ 3895: }
+ 3896: $requiredSqlLocalDir = Join-Path $releaseDir 'required-sql'
+ 3897: $opsRuntimeLocalDir = Join-Path $releaseDir 'ops-runtime'
+ 3898: $websiteRuntimeLocal = Join-Path $releaseDir 'website'
+--- line 3922 pattern Mode ---
+ 3919: $remoteSchedulerSmokeNpmWrapper = "$remoteSchedulerSmokeBinDir/npm"
+ 3920: $backendRuntimeBaseConfig = Resolve-BackendRuntimeBaseConfig
+ 3921: $smartReleaseReportOnlyEnabled = Resolve-SmartReleaseReportOnlyEnabled
+ 3922: if ($publishBackend -and $Mode -notin @('deploy-release', 'mark-tested')) {
+ 3923:     Assert-BackendJarAvailableForMavenClean -JarPath $backendJar
+ 3924: }
+ 3925: 
+ 3926: function Join-ShellQuotedPathList {
+ 3927:     param(
+--- line 3927 pattern param\( ---
+ 3924: }
+ 3925: 
+ 3926: function Join-ShellQuotedPathList {
+ 3927:     param(
+ 3928:         [Parameter(Mandatory = $true)]
+ 3929:         [string[]]$Paths
+ 3930:     )
+ 3931: 
+ 3932:     return (($Paths | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -Unique | ForEach-Object {
+--- line 3938 pattern param\( ---
+ 3935: }
+ 3936: 
+ 3937: function ConvertTo-ShellSingleQuotedLiteral {
+ 3938:     param(
+ 3939:         [Parameter(Mandatory = $true)]
+ 3940:         [string]$Value,
+ 3941:         [string]$Purpose = 'shell literal'
+ 3942:     )
+ 3943: 
+--- line 3993 pattern Mode ---
+ 3990:         'MES_SMOKE_EXCEL_FILE',
+ 3991:         'MES_SMOKE_ARTIFACT_DIR',
+ 3992:         'MES_SMOKE_NODE_IMAGE',
+ 3993:         'MES_SMOKE_CAPACITY_MODE',
+ 3994:         'MES_SMOKE_PRODUCT_CODE',
+ 3995:         'MES_SMOKE_ERP_UNIT_NUMBER',
+ 3996:         'MES_SMOKE_BATCH_NUMBER',
+ 3997:         'MES_SMOKE_DEFAULT_PASSWORD',
+ 3998:         'MES_SMOKE_ERP_CREATOR_TENANT',
+--- line 4128 pattern param\( ---
+ 4125: }
+ 4126: 
+ 4127: function Get-RequiredDatabaseSqlFileName {
+ 4128:     param(
+ 4129:         [Parameter(Mandatory = $true)]
+ 4130:         [string]$RelativePath
+ 4131:     )
+ 4132:     return [System.IO.Path]::GetFileName($RelativePath)
+ 4133: }
+--- line 4136 pattern param\( ---
+ 4133: }
+ 4134: 
+ 4135: function Get-RequiredDatabaseSqlEntriesForEnvironment {
+ 4136:     param(
+ 4137:         [Parameter(Mandatory = $true)]
+ 4138:         [string]$TargetEnvironment
+ 4139:     )
+ 4140: 
+ 4141:     $entries = @($requiredDatabaseSqlScripts | Where-Object {
+--- line 4269 pattern ProdDryRunEvidence ---
+ 4266:     )
+ 4267: }
+ 4268: 
+ 4269: function Assert-ProdDryRunEvidence {
+ 4270:     if ($Environment -ne 'prod' -or $Mode -ne 'deploy-release') {
+ 4271:         return
+ 4272:     }
+ 4273:     if ([string]::IsNullOrWhiteSpace($ProdDryRunEvidencePath)) {
+ 4274:         Fail 'Production deploy-release requires -ProdDryRunEvidencePath from a passed preflight-release dry-run.'
+--- line 4270 pattern Mode ---
+ 4267: }
+ 4268: 
+ 4269: function Assert-ProdDryRunEvidence {
+ 4270:     if ($Environment -ne 'prod' -or $Mode -ne 'deploy-release') {
+ 4271:         return
+ 4272:     }
+ 4273:     if ([string]::IsNullOrWhiteSpace($ProdDryRunEvidencePath)) {
+ 4274:         Fail 'Production deploy-release requires -ProdDryRunEvidencePath from a passed preflight-release dry-run.'
+ 4275:     }
+--- line 4273 pattern ProdDryRunEvidence ---
+ 4270:     if ($Environment -ne 'prod' -or $Mode -ne 'deploy-release') {
+ 4271:         return
+ 4272:     }
+ 4273:     if ([string]::IsNullOrWhiteSpace($ProdDryRunEvidencePath)) {
+ 4274:         Fail 'Production deploy-release requires -ProdDryRunEvidencePath from a passed preflight-release dry-run.'
+ 4275:     }
+ 4276:     if (-not (Test-Path -LiteralPath $ProdDryRunEvidencePath -PathType Leaf)) {
+ 4277:         Fail "Production dry-run evidence file missing: $ProdDryRunEvidencePath"
+ 4278:     }
+--- line 4274 pattern ProdDryRunEvidence ---
+ 4271:         return
+ 4272:     }
+ 4273:     if ([string]::IsNullOrWhiteSpace($ProdDryRunEvidencePath)) {
+ 4274:         Fail 'Production deploy-release requires -ProdDryRunEvidencePath from a passed preflight-release dry-run.'
+ 4275:     }
+ 4276:     if (-not (Test-Path -LiteralPath $ProdDryRunEvidencePath -PathType Leaf)) {
+ 4277:         Fail "Production dry-run evidence file missing: $ProdDryRunEvidencePath"
+ 4278:     }
+ 4279:     try {
+--- line 4276 pattern ProdDryRunEvidence ---
+ 4273:     if ([string]::IsNullOrWhiteSpace($ProdDryRunEvidencePath)) {
+ 4274:         Fail 'Production deploy-release requires -ProdDryRunEvidencePath from a passed preflight-release dry-run.'
+ 4275:     }
+ 4276:     if (-not (Test-Path -LiteralPath $ProdDryRunEvidencePath -PathType Leaf)) {
+ 4277:         Fail "Production dry-run evidence file missing: $ProdDryRunEvidencePath"
+ 4278:     }
+ 4279:     try {
+ 4280:         $evidence = [System.IO.File]::ReadAllText($ProdDryRunEvidencePath, [System.Text.UTF8Encoding]::new($false)) | ConvertFrom-Json
+ 4281:     } catch {
+--- line 4277 pattern ProdDryRunEvidence ---
+ 4274:         Fail 'Production deploy-release requires -ProdDryRunEvidencePath from a passed preflight-release dry-run.'
+ 4275:     }
+ 4276:     if (-not (Test-Path -LiteralPath $ProdDryRunEvidencePath -PathType Leaf)) {
+ 4277:         Fail "Production dry-run evidence file missing: $ProdDryRunEvidencePath"
+ 4278:     }
+ 4279:     try {
+ 4280:         $evidence = [System.IO.File]::ReadAllText($ProdDryRunEvidencePath, [System.Text.UTF8Encoding]::new($false)) | ConvertFrom-Json
+ 4281:     } catch {
+ 4282:         Fail "Production dry-run evidence JSON parse failed: $($_.Exception.Message)"
+--- line 4280 pattern ProdDryRunEvidence ---
+ 4277:         Fail "Production dry-run evidence file missing: $ProdDryRunEvidencePath"
+ 4278:     }
+ 4279:     try {
+ 4280:         $evidence = [System.IO.File]::ReadAllText($ProdDryRunEvidencePath, [System.Text.UTF8Encoding]::new($false)) | ConvertFrom-Json
+ 4281:     } catch {
+ 4282:         Fail "Production dry-run evidence JSON parse failed: $($_.Exception.Message)"
+ 4283:     }
+ 4284:     if ([string]$evidence.status -ne 'passed') {
+ 4285:         Fail "Production dry-run evidence status must be passed: $($evidence.status)"
+--- line 4293 pattern Mode ---
+ 4290:     if ([string]$evidence.releaseTag -ne $ReleaseTag) {
+ 4291:         Fail "Production dry-run evidence releaseTag does not match deploy-release: $($evidence.releaseTag)"
+ 4292:     }
+ 4293:     if ([string]$evidence.mode -ne 'preflight-release') {
+ 4294:         Fail "Production dry-run evidence mode must be preflight-release: $($evidence.mode)"
+ 4295:     }
+ 4296:     if ($null -eq $evidence.writeActions -or @($evidence.writeActions).Count -gt 0) {
+ 4297:         Fail 'Production dry-run evidence must be read-only and include empty writeActions.'
+ 4298:     }
+--- line 4294 pattern Mode ---
+ 4291:         Fail "Production dry-run evidence releaseTag does not match deploy-release: $($evidence.releaseTag)"
+ 4292:     }
+ 4293:     if ([string]$evidence.mode -ne 'preflight-release') {
+ 4294:         Fail "Production dry-run evidence mode must be preflight-release: $($evidence.mode)"
+ 4295:     }
+ 4296:     if ($null -eq $evidence.writeActions -or @($evidence.writeActions).Count -gt 0) {
+ 4297:         Fail 'Production dry-run evidence must be read-only and include empty writeActions.'
+ 4298:     }
+ 4299: }
+--- line 4302 pattern param\( ---
+ 4299: }
+ 4300: 
+ 4301: function Get-ReleasePreflightApplyItems {
+ 4302:     param(
+ 4303:         [Parameter(Mandatory = $true)]
+ 4304:         $PreflightPlan,
+ 4305: 
+ 4306:         [Parameter(Mandatory = $true)]
+ 4307:         [string]$PublishScope
+--- line 4350 pattern param\( ---
+ 4347: }
+ 4348: 
+ 4349: function Invoke-ReleaseMigrationStateUpdate {
+ 4350:     param(
+ 4351:         [Parameter(Mandatory = $true)]
+ 4352:         $Item,
+ 4353:         [Parameter(Mandatory = $true)]
+ 4354:         [string]$Status,
+ 4355:         [string]$ErrorMessage = ''
+--- line 4432 pattern param\( ---
+ 4429: }
+ 4430: 
+ 4431: function Invoke-ReleaseOperationLockRelease {
+ 4432:     param(
+ 4433:         [Parameter(Mandatory = $true)]
+ 4434:         [string]$Status,
+ 4435:         [string]$ErrorMessage = ''
+ 4436:     )
+ 4437:     $operationId = "$Environment-$ReleaseTag"
+--- line 4560 pattern param\( ---
+ 4557: }
+ 4558: 
+ 4559: function Get-RequiredDatabaseSqlSessionPreamble {
+ 4560:     param(
+ 4561:         [Parameter(Mandatory = $true)]
+ 4562:         $Item,
+ 4563: 
+ 4564:         [Parameter(Mandatory = $true)]
+ 4565:         [string]$TargetEnvironment
+--- line 4593 pattern param\( ---
+ 4590: }
+ 4591: 
+ 4592: function Sort-RequiredDatabaseSqlApplyItems {
+ 4593:     param(
+ 4594:         [Parameter(Mandatory = $true)]
+ 4595:         [AllowEmptyCollection()]
+ 4596:         [AllowNull()]
+ 4597:         [object[]]$Items,
+ 4598: 
+--- line 4676 pattern Mode ---
+ 4673:     }
+ 4674: }
+ 4675: 
+ 4676: if ($Mode -eq 'mark-tested') {
+ 4677:     Mark-NasReleaseTested -PackageTag $ReleaseTag
+ 4678:     Write-Host "Release package marked as tested: $ReleaseTag"
+ 4679:     exit 0
+ 4680: }
+ 4681: 
+--- line 4677 pattern tested ---
+ 4674: }
+ 4675: 
+ 4676: if ($Mode -eq 'mark-tested') {
+ 4677:     Mark-NasReleaseTested -PackageTag $ReleaseTag
+ 4678:     Write-Host "Release package marked as tested: $ReleaseTag"
+ 4679:     exit 0
+ 4680: }
+ 4681: 
+ 4682: if ($Mode -eq 'deploy-release') {
+--- line 4678 pattern tested ---
+ 4675: 
+ 4676: if ($Mode -eq 'mark-tested') {
+ 4677:     Mark-NasReleaseTested -PackageTag $ReleaseTag
+ 4678:     Write-Host "Release package marked as tested: $ReleaseTag"
+ 4679:     exit 0
+ 4680: }
+ 4681: 
+ 4682: if ($Mode -eq 'deploy-release') {
+ 4683:     Info "Deploying release package: $ReleaseTag"
+--- line 4682 pattern Mode ---
+ 4679:     exit 0
+ 4680: }
+ 4681: 
+ 4682: if ($Mode -eq 'deploy-release') {
+ 4683:     Info "Deploying release package: $ReleaseTag"
+ 4684:     Copy-ReleasePackageFromNas -PackageTag $ReleaseTag
+ 4685:     Assert-ProdDryRunEvidence
+ 4686:     $requiredDatabaseSqlScripts = Get-ReleasePackageDatabaseSqlScripts
+ 4687:     $Component = Resolve-DeployReleasePackageComponent -ComponentExplicit $componentExplicit
+--- line 4685 pattern ProdDryRunEvidence ---
+ 4682: if ($Mode -eq 'deploy-release') {
+ 4683:     Info "Deploying release package: $ReleaseTag"
+ 4684:     Copy-ReleasePackageFromNas -PackageTag $ReleaseTag
+ 4685:     Assert-ProdDryRunEvidence
+ 4686:     $requiredDatabaseSqlScripts = Get-ReleasePackageDatabaseSqlScripts
+ 4687:     $Component = Resolve-DeployReleasePackageComponent -ComponentExplicit $componentExplicit
+ 4688:     $publishBackend = $Component -in @('full', 'intruoyi', 'backend')
+ 4689:     $publishFrontend = $Component -in @('full', 'intruoyi', 'frontend')
+ 4690:     $publishWebsite = $Component -in @('full', 'website')
+--- line 4705 pattern Mode ---
+ 4702:     } elseif ($releasePublishScope -eq 'with-data') {
+ 4703:         Info 'Deploying with-data release package'
+ 4704:     }
+ 4705:     if ($smartReleaseReportOnlyEnabled -and $Mode -eq 'deploy-release') {
+ 4706:         Invoke-SmartReleaseDeployPrecheckReportOnly -PackagePath $releaseDir
+ 4707:     }
+ 4708: }
+ 4709: 
+ 4710: Set-PublishRuntimeDefaultsForTarget -TargetServerHost $ServerHost -TargetEnvironment $Environment
+--- line 4712 pattern Mode ---
+ 4709: 
+ 4710: Set-PublishRuntimeDefaultsForTarget -TargetServerHost $ServerHost -TargetEnvironment $Environment
+ 4711: 
+ 4712: if ($Mode -ne 'mark-tested') {
+ 4713:     Require-Command 'docker'
+ 4714:     Require-Command 'python'
+ 4715: }
+ 4716: if ($Mode -ne 'build-release') {
+ 4717:     Require-Command 'ssh'
+--- line 4716 pattern Mode ---
+ 4713:     Require-Command 'docker'
+ 4714:     Require-Command 'python'
+ 4715: }
+ 4716: if ($Mode -ne 'build-release') {
+ 4717:     Require-Command 'ssh'
+ 4718:     Require-Command 'scp'
+ 4719: }
+ 4720: if ($Mode -ne 'deploy-release') {
+ 4721:     Require-Command 'mvn'
+--- line 4720 pattern Mode ---
+ 4717:     Require-Command 'ssh'
+ 4718:     Require-Command 'scp'
+ 4719: }
+ 4720: if ($Mode -ne 'deploy-release') {
+ 4721:     Require-Command 'mvn'
+ 4722:     Require-Command 'node'
+ 4723:     Require-Command 'npm'
+ 4724: }
+ 4725: 
+--- line 4726 pattern Mode ---
+ 4723:     Require-Command 'npm'
+ 4724: }
+ 4725: 
+ 4726: if ($publishBackend -and $Mode -ne 'build-release' -and [string]::IsNullOrWhiteSpace($DccSignatureEvidenceHmacSecret)) {
+ 4727:     Fail 'Missing DCC_SIGNATURE_EVIDENCE_HMAC_SECRET; DCC electronic signature evidence is fail-fast and requires an explicit HMAC secret.'
+ 4728: }
+ 4729: 
+ 4730: if ($publishBackend -and $Mode -ne 'build-release' -and [string]::IsNullOrWhiteSpace($DccSignatureEvidenceKeyVersion)) {
+ 4731:     Fail 'Missing DCC_SIGNATURE_EVIDENCE_KEY_VERSION; DCC electronic signature evidence is fail-fast and requires an explicit key version.'
+--- line 4730 pattern Mode ---
+ 4727:     Fail 'Missing DCC_SIGNATURE_EVIDENCE_HMAC_SECRET; DCC electronic signature evidence is fail-fast and requires an explicit HMAC secret.'
+ 4728: }
+ 4729: 
+ 4730: if ($publishBackend -and $Mode -ne 'build-release' -and [string]::IsNullOrWhiteSpace($DccSignatureEvidenceKeyVersion)) {
+ 4731:     Fail 'Missing DCC_SIGNATURE_EVIDENCE_KEY_VERSION; DCC electronic signature evidence is fail-fast and requires an explicit key version.'
+ 4732: }
+ 4733: 
+ 4734: if ($publishBackend -and $Mode -ne 'build-release' -and ([string]::IsNullOrWhiteSpace($DccViewerTokenHmacSecret) -or $DccViewerTokenHmacSecret.Trim().Length -lt 32)) {
+ 4735:     Fail 'Missing DCC_VIEWER_TOKEN_HMAC_SECRET; DCC viewer tokens are fail-fast and require an explicit HMAC secret of at least 32 characters.'
+--- line 4734 pattern Mode ---
+ 4731:     Fail 'Missing DCC_SIGNATURE_EVIDENCE_KEY_VERSION; DCC electronic signature evidence is fail-fast and requires an explicit key version.'
+ 4732: }
+ 4733: 
+ 4734: if ($publishBackend -and $Mode -ne 'build-release' -and ([string]::IsNullOrWhiteSpace($DccViewerTokenHmacSecret) -or $DccViewerTokenHmacSecret.Trim().Length -lt 32)) {
+ 4735:     Fail 'Missing DCC_VIEWER_TOKEN_HMAC_SECRET; DCC viewer tokens are fail-fast and require an explicit HMAC secret of at least 32 characters.'
+ 4736: }
+ 4737: 
+ 4738: if ($publishBackend -and $IncludeOnlyOffice -and $Mode -ne 'build-release' -and [string]::IsNullOrWhiteSpace($DccOnlyOfficeJwtSecret)) {
+ 4739:     Fail 'Missing DCC_ONLYOFFICE_JWT_SECRET; DCC OnlyOffice preview URL tokens are fail-fast and require an explicit signing secret.'
+--- line 4738 pattern Mode ---
+ 4735:     Fail 'Missing DCC_VIEWER_TOKEN_HMAC_SECRET; DCC viewer tokens are fail-fast and require an explicit HMAC secret of at least 32 characters.'
+ 4736: }
+ 4737: 
+ 4738: if ($publishBackend -and $IncludeOnlyOffice -and $Mode -ne 'build-release' -and [string]::IsNullOrWhiteSpace($DccOnlyOfficeJwtSecret)) {
+ 4739:     Fail 'Missing DCC_ONLYOFFICE_JWT_SECRET; DCC OnlyOffice preview URL tokens are fail-fast and require an explicit signing secret.'
+ 4740: }
+ 4741: 
+ 4742: if ($publishBackend -and $IncludeOnlyOffice -and $Mode -ne 'build-release' -and [string]::IsNullOrWhiteSpace($DccOnlyOfficeBaseUrl)) {
+ 4743:     Fail 'Missing DCC_ONLYOFFICE_BASE_URL; DCC OnlyOffice preview requires an explicit browser-accessible document server URL.'
+--- line 4742 pattern Mode ---
+ 4739:     Fail 'Missing DCC_ONLYOFFICE_JWT_SECRET; DCC OnlyOffice preview URL tokens are fail-fast and require an explicit signing secret.'
+ 4740: }
+ 4741: 
+ 4742: if ($publishBackend -and $IncludeOnlyOffice -and $Mode -ne 'build-release' -and [string]::IsNullOrWhiteSpace($DccOnlyOfficeBaseUrl)) {
+ 4743:     Fail 'Missing DCC_ONLYOFFICE_BASE_URL; DCC OnlyOffice preview requires an explicit browser-accessible document server URL.'
+ 4744: }
+ 4745: 
+ 4746: if ($publishBackend -and $IncludeOnlyOffice -and $Mode -ne 'build-release' -and [string]::IsNullOrWhiteSpace($DccOnlyOfficePublicFileBaseUrl)) {
+ 4747:     Fail 'Missing DCC_ONLYOFFICE_PUBLIC_FILE_BASE_URL; DCC OnlyOffice preview requires an explicit document-server-accessible backend URL.'
+--- line 4746 pattern Mode ---
+ 4743:     Fail 'Missing DCC_ONLYOFFICE_BASE_URL; DCC OnlyOffice preview requires an explicit browser-accessible document server URL.'
+ 4744: }
+ 4745: 
+ 4746: if ($publishBackend -and $IncludeOnlyOffice -and $Mode -ne 'build-release' -and [string]::IsNullOrWhiteSpace($DccOnlyOfficePublicFileBaseUrl)) {
+ 4747:     Fail 'Missing DCC_ONLYOFFICE_PUBLIC_FILE_BASE_URL; DCC OnlyOffice preview requires an explicit document-server-accessible backend URL.'
+ 4748: }
+ 4749: 
+ 4750: if ($publishBackend -and $Mode -ne 'build-release' -and [string]::IsNullOrWhiteSpace($DccDownloadEncryptionPolicyVersion)) {
+ 4751:     Fail 'Missing DCC_DOWNLOAD_ENCRYPTION_POLICY_VERSION; DCC controlled download encryption is fail-fast and requires an explicit policy version.'
+--- line 4750 pattern Mode ---
+ 4747:     Fail 'Missing DCC_ONLYOFFICE_PUBLIC_FILE_BASE_URL; DCC OnlyOffice preview requires an explicit document-server-accessible backend URL.'
+ 4748: }
+ 4749: 
+ 4750: if ($publishBackend -and $Mode -ne 'build-release' -and [string]::IsNullOrWhiteSpace($DccDownloadEncryptionPolicyVersion)) {
+ 4751:     Fail 'Missing DCC_DOWNLOAD_ENCRYPTION_POLICY_VERSION; DCC controlled download encryption is fail-fast and requires an explicit policy version.'
+ 4752: }
+ 4753: 
+ 4754: if ($publishBackend -and $Mode -ne 'build-release' -and [string]::IsNullOrWhiteSpace($DccDownloadEncryptionKeyId)) {
+ 4755:     Fail 'Missing DCC_DOWNLOAD_ENCRYPTION_KEY_ID; DCC controlled download encryption is fail-fast and requires an explicit key id.'
+--- line 4754 pattern Mode ---
+ 4751:     Fail 'Missing DCC_DOWNLOAD_ENCRYPTION_POLICY_VERSION; DCC controlled download encryption is fail-fast and requires an explicit policy version.'
+ 4752: }
+ 4753: 
+ 4754: if ($publishBackend -and $Mode -ne 'build-release' -and [string]::IsNullOrWhiteSpace($DccDownloadEncryptionKeyId)) {
+ 4755:     Fail 'Missing DCC_DOWNLOAD_ENCRYPTION_KEY_ID; DCC controlled download encryption is fail-fast and requires an explicit key id.'
+ 4756: }
+ 4757: 
+ 4758: if ($publishBackend -and $Mode -ne 'build-release' -and [string]::IsNullOrWhiteSpace($DccDownloadEncryptionBase64Key)) {
+ 4759:     Fail 'Missing DCC_DOWNLOAD_ENCRYPTION_BASE64_KEY; DCC controlled download encryption is fail-fast and requires an explicit AES key.'
+--- line 4758 pattern Mode ---
+ 4755:     Fail 'Missing DCC_DOWNLOAD_ENCRYPTION_KEY_ID; DCC controlled download encryption is fail-fast and requires an explicit key id.'
+ 4756: }
+ 4757: 
+ 4758: if ($publishBackend -and $Mode -ne 'build-release' -and [string]::IsNullOrWhiteSpace($DccDownloadEncryptionBase64Key)) {
+ 4759:     Fail 'Missing DCC_DOWNLOAD_ENCRYPTION_BASE64_KEY; DCC controlled download encryption is fail-fast and requires an explicit AES key.'
+ 4760: }
+ 4761: 
+ 4762: if ($publishBackend -and $Mode -ne 'build-release' -and [string]::IsNullOrWhiteSpace($DccDownloadEncryptionArtifactDirectory)) {
+ 4763:     Fail 'Missing DCC_DOWNLOAD_ENCRYPTION_ARTIFACT_DIRECTORY; DCC controlled download encryption is fail-fast and requires an explicit artifact directory.'
+--- line 4762 pattern Mode ---
+ 4759:     Fail 'Missing DCC_DOWNLOAD_ENCRYPTION_BASE64_KEY; DCC controlled download encryption is fail-fast and requires an explicit AES key.'
+ 4760: }
+ 4761: 
+ 4762: if ($publishBackend -and $Mode -ne 'build-release' -and [string]::IsNullOrWhiteSpace($DccDownloadEncryptionArtifactDirectory)) {
+ 4763:     Fail 'Missing DCC_DOWNLOAD_ENCRYPTION_ARTIFACT_DIRECTORY; DCC controlled download encryption is fail-fast and requires an explicit artifact directory.'
+ 4764: }
+ 4765: 
+ 4766: $edhrProtectedStorageSettings = Get-EdhrProtectedStorageSettings
+ 4767: if ($publishBackend) {
+--- line 4783 pattern Mode ---
+ 4780: 
+ 4781: $localMinioAccessKey = ''
+ 4782: $localMinioSecretKey = ''
+ 4783: if ($publishBackend -and $Mode -ne 'deploy-release' -and -not $SkipMinioSync) {
+ 4784:     $localMinioAccessKey = Get-LocalContainerEnvValue -ContainerName $LocalMinioContainer -Key 'MINIO_ROOT_USER'
+ 4785:     if ([string]::IsNullOrWhiteSpace($localMinioAccessKey)) {
+ 4786:         $localMinioAccessKey = Get-LocalContainerEnvValue -ContainerName $LocalMinioContainer -Key 'MINIO_USER'
+ 4787:     }
+ 4788:     $localMinioSecretKey = Get-LocalContainerEnvValue -ContainerName $LocalMinioContainer -Key 'MINIO_ROOT_PASSWORD'
+--- line 4796 pattern Mode ---
+ 4793: 
+ 4794: $remoteMinioAccessKey = ''
+ 4795: $remoteMinioSecretKey = ''
+ 4796: $requiresRemoteMinioCredentials = $publishBackend -and $Mode -ne 'build-release'
+ 4797: if ($requiresRemoteMinioCredentials -and [string]::IsNullOrWhiteSpace($RemoteMinioContainer)) {
+ 4798:     Fail 'Missing -RemoteMinioContainer; target MinIO credentials are required for target file storage rebind.'
+ 4799: }
+ 4800: if ($requiresRemoteMinioCredentials) {
+ 4801:     $remoteMinioAccessKey = Get-RemoteContainerEnvValue -ContainerName $RemoteMinioContainer -Key 'MINIO_ROOT_USER'
+--- line 4811 pattern Mode ---
+ 4808:     }
+ 4809: }
+ 4810: 
+ 4811: if ($publishBackend -and $Mode -ne 'deploy-release' -and -not $SkipMinioSync -and (
+ 4812:     [string]::IsNullOrWhiteSpace($localMinioAccessKey) -or
+ 4813:     [string]::IsNullOrWhiteSpace($localMinioSecretKey)
+ 4814: )) {
+ 4815:     Fail 'Missing local MinIO credentials from running containers'
+ 4816: }
+--- line 4831 pattern Mode ---
+ 4828:     Assert-BackendRuntimeBaseImageAvailable -Config $backendRuntimeBaseConfig
+ 4829: }
+ 4830: 
+ 4831: if ($Mode -ne 'build-release') {
+ 4832:     Info "Checking SSH access to $ServerHost"
+ 4833:     Invoke-CheckedCommand -FilePath 'ssh' -ArgumentList (New-SshArgumentList -Command 'echo SSH_OK')
+ 4834: 
+ 4835:     Info "Checking docker compose on $ServerHost"
+ 4836:     Invoke-SshCommand 'docker compose version'
+--- line 4842 pattern Mode ---
+ 4839: New-Item -ItemType Directory -Force -Path $releaseDir | Out-Null
+ 4840: 
+ 4841: try {
+ 4842: if ($Mode -ne 'deploy-release') {
+ 4843: if ($publishBackend) {
+ 4844: Copy-RequiredDatabaseSqlScripts
+ 4845: }
+ 4846: 
+ 4847: if ($publishBackend) {
+--- line 4868 pattern Mode ---
+ 4865: $viteCacheDir = Join-Path $frontendDir 'node_modules\.vite'
+ 4866: try {
+ 4867:     $env:NODE_OPTIONS = '--max-old-space-size=8192'
+ 4868:     if ($Mode -eq 'build-release') {
+ 4869:         $env:VITE_BASE_URL = ''
+ 4870:     } else {
+ 4871:         $env:VITE_BASE_URL = "http://${ServerHost}:$BackendPort"
+ 4872:     }
+ 4873:     $env:VITE_BASE_PATH = '/'
+--- line 4903 pattern Mode ---
+ 4900:     Fail "Website build output missing: $websiteDistSource"
+ 4901: }
+ 4902: 
+ 4903: if ($Mode -eq 'build-release') {
+ 4904:     Copy-Item -LiteralPath $websiteNginxTemplate -Destination (Join-Path $websiteRuntimeLocal 'nginx.template.conf') -Force
+ 4905: } else {
+ 4906:     $websiteNginxTemplateText = [System.IO.File]::ReadAllText($websiteNginxTemplate, [System.Text.UTF8Encoding]::new($false))
+ 4907:     $websiteNginxText = $websiteNginxTemplateText.Replace('__BACKEND_ORIGIN__', "${ServerHost}:$BackendPort")
+ 4908:     [System.IO.File]::WriteAllText($websiteNginxLocal, $websiteNginxText, [System.Text.UTF8Encoding]::new($false))
+--- line 5000 pattern Mode ---
+ 4997:     Write-TargetBoundPostImportSql
+ 4998: }
+ 4999: 
+ 5000: if ($publishBackend -and $Mode -eq 'build-release' -and -not $SkipMinioSync) {
+ 5001:     Info 'Exporting local MinIO yudao bucket into release package'
+ 5002:     $minioSnapshotLocal = Join-Path $releaseDir 'minio\yudao'
+ 5003:     New-Item -ItemType Directory -Force -Path $minioSnapshotLocal | Out-Null
+ 5004:     $minioExportCommand = "docker run --rm --add-host host.docker.internal:host-gateway -v `"${minioSnapshotLocal}:/snapshot/yudao`" --entrypoint /bin/sh minio/mc -c 'mc alias set src http://host.docker.internal:9000 $localMinioAccessKey $localMinioSecretKey && mc mirror --overwrite --disable-multipart --retry src/yudao /snapshot/yudao'"
+ 5005:     Invoke-CheckedShell -Command $minioExportCommand -DisplayCommand 'docker run --rm --add-host host.docker.internal:host-gateway -v "<release>/minio/yudao:/snapshot/yudao" --entrypoint /bin/sh minio/mc -c "mc alias set src <redacted> && mc mirror --overwrite --disable-multipart --retry src/yudao /snapshot/yudao"'
+--- line 5018 pattern Mode ---
+ 5015: Remove-ReleaseDockerBuildContextFromPackage
+ 5016: Write-ReleaseManifest -PackageTag $ReleaseTag
+ 5017: 
+ 5018: if ($smartReleaseReportOnlyEnabled -and $Mode -eq 'build-release') {
+ 5019:     Invoke-SmartReleaseBuildReportOnly -PackagePath $releaseDir
+ 5020: }
+ 5021: 
+ 5022: if ($Mode -eq 'build-release') {
+ 5023:     Copy-ReleasePackageToNas -PackageTag $ReleaseTag
+--- line 5022 pattern Mode ---
+ 5019:     Invoke-SmartReleaseBuildReportOnly -PackagePath $releaseDir
+ 5020: }
+ 5021: 
+ 5022: if ($Mode -eq 'build-release') {
+ 5023:     Copy-ReleasePackageToNas -PackageTag $ReleaseTag
+ 5024:     Write-Host ''
+ 5025:     Write-Host "Release package built: $ReleaseTag"
+ 5026:     Write-Host "NAS release path: $NasReleaseRoot/$packageDirectoryName"
+ 5027:     exit 0
+--- line 5034 pattern Mode ---
+ 5031:     Exit-BuildReleaseRuntimeRestartGuard -GuardFile $buildReleaseRuntimeRestartGuardFile
+ 5032: }
+ 5033: 
+ 5034: if ($Mode -eq 'deploy-release' -and $publishWebsite) {
+ 5035:     $websiteTemplateInPackage = Join-Path $websiteRuntimeLocal 'nginx.template.conf'
+ 5036:     if (Test-Path -LiteralPath $websiteTemplateInPackage) {
+ 5037:         $websiteNginxTemplateText = [System.IO.File]::ReadAllText($websiteTemplateInPackage, [System.Text.UTF8Encoding]::new($false))
+ 5038:     } else {
+ 5039:         $websiteNginxTemplateText = [System.IO.File]::ReadAllText($websiteNginxTemplate, [System.Text.UTF8Encoding]::new($false))
+--- line 5045 pattern Mode ---
+ 5042:     [System.IO.File]::WriteAllText($websiteNginxLocal, $websiteNginxText, [System.Text.UTF8Encoding]::new($false))
+ 5043: }
+ 5044: 
+ 5045: if ($Mode -eq 'deploy-release') {
+ 5046:     if ($publishBackend) {
+ 5047:         Info 'Regenerating target-bound post-import SQL for deploy-release'
+ 5048:         Write-TargetBoundPostImportSql
+ 5049:     }
+ 5050: } elseif ($publishBackend -and $Mode -ne 'build-release' -and -not (Test-Path -LiteralPath $postImportSqlLocal)) {
+--- line 5050 pattern Mode ---
+ 5047:         Info 'Regenerating target-bound post-import SQL for deploy-release'
+ 5048:         Write-TargetBoundPostImportSql
+ 5049:     }
+ 5050: } elseif ($publishBackend -and $Mode -ne 'build-release' -and -not (Test-Path -LiteralPath $postImportSqlLocal)) {
+ 5051:     Info 'Generating target-bound post-import SQL for deployment'
+ 5052:     Write-TargetBoundPostImportSql
+ 5053: }
+ 5054: 
+ 5055: Info 'Preparing remote runtime data disk'
+--- line 5063 pattern Mode ---
+ 5060: 
+ 5061: Info 'Writing remote compose environment file locally'
+ 5062: $existingRemoteEnv = @{}
+ 5063: if (($publishBackend -or $publishFrontend) -and $Mode -ne 'build-release') {
+ 5064:     $existingRemoteEnv = Get-RemoteRuntimeEnvMap
+ 5065: }
+ 5066: function Resolve-ExistingRuntimeEnvValue {
+ 5067:     param(
+ 5068:         [Parameter(Mandatory = $true)]
+--- line 5067 pattern param\( ---
+ 5064:     $existingRemoteEnv = Get-RemoteRuntimeEnvMap
+ 5065: }
+ 5066: function Resolve-ExistingRuntimeEnvValue {
+ 5067:     param(
+ 5068:         [Parameter(Mandatory = $true)]
+ 5069:         [string]$Name,
+ 5070:         [string]$DefaultValue = ''
+ 5071:     )
+ 5072: 
+--- line 5087 pattern Mode ---
+ 5084: $effectiveEdhrS3Region = if (-not [string]::IsNullOrWhiteSpace($EdhrS3Region)) { $EdhrS3Region } elseif ($existingRemoteEnv.ContainsKey('EDHR_S3_REGION')) { $existingRemoteEnv['EDHR_S3_REGION'] } else { '' }
+ 5085: $effectiveEdhrS3AccessKey = if (-not [string]::IsNullOrWhiteSpace($EdhrS3AccessKey)) { $EdhrS3AccessKey } elseif ($existingRemoteEnv.ContainsKey('EDHR_S3_ACCESS_KEY')) { $existingRemoteEnv['EDHR_S3_ACCESS_KEY'] } else { '' }
+ 5086: $effectiveEdhrS3SecretKey = if (-not [string]::IsNullOrWhiteSpace($EdhrS3SecretKey)) { $EdhrS3SecretKey } elseif ($existingRemoteEnv.ContainsKey('EDHR_S3_SECRET_KEY')) { $existingRemoteEnv['EDHR_S3_SECRET_KEY'] } else { '' }
+ 5087: $effectiveEdhrS3RetentionMode = if (-not [string]::IsNullOrWhiteSpace($EdhrS3RetentionMode)) { $EdhrS3RetentionMode } elseif ($existingRemoteEnv.ContainsKey('EDHR_S3_RETENTION_MODE')) { $existingRemoteEnv['EDHR_S3_RETENTION_MODE'] } else { '' }
+ 5088: $effectiveEdhrS3RetainUntilDays = if (-not [string]::IsNullOrWhiteSpace($EdhrS3RetainUntilDays)) { $EdhrS3RetainUntilDays } elseif ($existingRemoteEnv.ContainsKey('EDHR_S3_RETAIN_UNTIL_DAYS')) { $existingRemoteEnv['EDHR_S3_RETAIN_UNTIL_DAYS'] } else { '' }
+ 5089: $effectiveEdhrS3RequireLegalHold = if (-not [string]::IsNullOrWhiteSpace($EdhrS3RequireLegalHold)) { $EdhrS3RequireLegalHold } elseif ($existingRemoteEnv.ContainsKey('EDHR_S3_REQUIRE_LEGAL_HOLD')) { $existingRemoteEnv['EDHR_S3_REQUIRE_LEGAL_HOLD'] } else { '' }
+ 5090: $effectiveDccViewerTokenHmacSecret = if (-not [string]::IsNullOrWhiteSpace($DccViewerTokenHmacSecret)) { $DccViewerTokenHmacSecret } elseif ($existingRemoteEnv.ContainsKey('DCC_VIEWER_TOKEN_HMAC_SECRET')) { $existingRemoteEnv['DCC_VIEWER_TOKEN_HMAC_SECRET'] } else { '' }
+ 5091: $effectiveDccOnlyOfficeJwtSecret = if (-not [string]::IsNullOrWhiteSpace($DccOnlyOfficeJwtSecret)) { $DccOnlyOfficeJwtSecret } elseif ($existingRemoteEnv.ContainsKey('DCC_ONLYOFFICE_JWT_SECRET')) { $existingRemoteEnv['DCC_ONLYOFFICE_JWT_SECRET'] } else { '' }
+ 5092: $effectiveDccOnlyOfficeBaseUrl = if (-not [string]::IsNullOrWhiteSpace($DccOnlyOfficeBaseUrl)) { $DccOnlyOfficeBaseUrl } elseif ($existingRemoteEnv.ContainsKey('DCC_ONLYOFFICE_BASE_URL')) { $existingRemoteEnv['DCC_ONLYOFFICE_BASE_URL'] } else { '' }
+--- line 5103 pattern Mode ---
+ 5100: $effectiveDccProjectCodeCodexTimeoutSeconds = if (-not [string]::IsNullOrWhiteSpace($DccProjectCodeCodexTimeoutSeconds)) { $DccProjectCodeCodexTimeoutSeconds } elseif ($existingRemoteEnv.ContainsKey('DCC_PROJECT_CODE_CODEX_TIMEOUT_SECONDS')) { $existingRemoteEnv['DCC_PROJECT_CODE_CODEX_TIMEOUT_SECONDS'] } else { '300' }
+ 5101: $effectiveDccProjectCodeRecognitionVersion = if (-not [string]::IsNullOrWhiteSpace($DccProjectCodeRecognitionVersion)) { $DccProjectCodeRecognitionVersion } elseif ($existingRemoteEnv.ContainsKey('DCC_PROJECT_CODE_RECOGNITION_VERSION')) { $existingRemoteEnv['DCC_PROJECT_CODE_RECOGNITION_VERSION'] } else { 'v1' }
+ 5102: $effectiveDccProjectCodeRecognitionWorkerCount = if (-not [string]::IsNullOrWhiteSpace($DccProjectCodeRecognitionWorkerCount)) { $DccProjectCodeRecognitionWorkerCount } elseif ($existingRemoteEnv.ContainsKey('DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT')) { $existingRemoteEnv['DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT'] } else { '5' }
+ 5103: $effectiveBackendRuntimeBaseMode = if (-not [string]::IsNullOrWhiteSpace($BackendRuntimeBaseMode)) { $BackendRuntimeBaseMode } elseif ($existingRemoteEnv.ContainsKey('RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_MODE')) { $existingRemoteEnv['RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_MODE'] } else { '' }
+ 5104: $effectiveBackendRuntimeBaseTarPath = if (-not [string]::IsNullOrWhiteSpace($BackendRuntimeBaseTarPath)) { $BackendRuntimeBaseTarPath } elseif ($existingRemoteEnv.ContainsKey('RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_TAR')) { $existingRemoteEnv['RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_TAR'] } else { '' }
+ 5105: $effectiveBackendRuntimeBaseTarSha256 = if (-not [string]::IsNullOrWhiteSpace($BackendRuntimeBaseTarSha256)) { $BackendRuntimeBaseTarSha256 } elseif ($existingRemoteEnv.ContainsKey('RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_TAR_SHA256')) { $existingRemoteEnv['RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_TAR_SHA256'] } else { '' }
+ 5106: $effectiveBackendRuntimeBaseImage = if (-not [string]::IsNullOrWhiteSpace($BackendRuntimeBaseImage)) { $BackendRuntimeBaseImage } elseif ($existingRemoteEnv.ContainsKey('RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_IMAGE')) { $existingRemoteEnv['RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_IMAGE'] } else { '' }
+ 5107: $effectiveBackendRuntimeBaseDigest = if (-not [string]::IsNullOrWhiteSpace($BackendRuntimeBaseDigest)) { $BackendRuntimeBaseDigest } elseif ($existingRemoteEnv.ContainsKey('RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_DIGEST')) { $existingRemoteEnv['RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_DIGEST'] } else { '' }
+ 5108: $effectiveBackendRuntimeBaseVersion = if (-not [string]::IsNullOrWhiteSpace($BackendRuntimeBaseVersion)) { $BackendRuntimeBaseVersion } elseif ($existingRemoteEnv.ContainsKey('RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_VERSION')) { $existingRemoteEnv['RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_VERSION'] } else { '' }
+--- line 5119 pattern Mode ---
+ 5116: $defaultMesSmokeProductCode = 'YXN.069.001.1003'
+ 5117: $defaultMesSmokeErpUnitNumber = 'zhi'
+ 5118: $legacyRouteMissingMesSmokeProductCode = 'AW.106.03.08.1007'
+ 5119: $effectiveMesSmokeCapacityMode = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_CAPACITY_MODE' -DefaultValue 'PLANNED'
+ 5120: $effectiveMesSmokeProductCode = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_PRODUCT_CODE' -DefaultValue $defaultMesSmokeProductCode
+ 5121: if ($effectiveMesSmokeProductCode -eq $legacyRouteMissingMesSmokeProductCode) {
+ 5122:     Info "Replacing legacy MES_SMOKE_PRODUCT_CODE $legacyRouteMissingMesSmokeProductCode with route-ready default $defaultMesSmokeProductCode"
+ 5123:     $effectiveMesSmokeProductCode = $defaultMesSmokeProductCode
+ 5124: }
+--- line 5153 pattern Mode ---
+ 5150: $EdhrS3Region = $effectiveEdhrS3Region
+ 5151: $EdhrS3AccessKey = $effectiveEdhrS3AccessKey
+ 5152: $EdhrS3SecretKey = $effectiveEdhrS3SecretKey
+ 5153: $EdhrS3RetentionMode = $effectiveEdhrS3RetentionMode
+ 5154: $EdhrS3RetainUntilDays = $effectiveEdhrS3RetainUntilDays
+ 5155: $EdhrS3RequireLegalHold = $effectiveEdhrS3RequireLegalHold
+ 5156: $DccViewerTokenHmacSecret = $effectiveDccViewerTokenHmacSecret
+ 5157: $DccOnlyOfficeJwtSecret = $effectiveDccOnlyOfficeJwtSecret
+ 5158: $DccOnlyOfficeBaseUrl = $effectiveDccOnlyOfficeBaseUrl
+--- line 5169 pattern Mode ---
+ 5166: $DccProjectCodeCodexTimeoutSeconds = $effectiveDccProjectCodeCodexTimeoutSeconds
+ 5167: $DccProjectCodeRecognitionVersion = $effectiveDccProjectCodeRecognitionVersion
+ 5168: $DccProjectCodeRecognitionWorkerCount = $effectiveDccProjectCodeRecognitionWorkerCount
+ 5169: $BackendRuntimeBaseMode = $effectiveBackendRuntimeBaseMode
+ 5170: $BackendRuntimeBaseTarPath = $effectiveBackendRuntimeBaseTarPath
+ 5171: $BackendRuntimeBaseTarSha256 = $effectiveBackendRuntimeBaseTarSha256
+ 5172: $BackendRuntimeBaseImage = $effectiveBackendRuntimeBaseImage
+ 5173: $BackendRuntimeBaseDigest = $effectiveBackendRuntimeBaseDigest
+ 5174: $BackendRuntimeBaseVersion = $effectiveBackendRuntimeBaseVersion
+--- line 5196 pattern Mode ---
+ 5193: EDHR_S3_REGION=$EdhrS3Region
+ 5194: EDHR_S3_ACCESS_KEY=$EdhrS3AccessKey
+ 5195: EDHR_S3_SECRET_KEY=$EdhrS3SecretKey
+ 5196: EDHR_S3_RETENTION_MODE=$EdhrS3RetentionMode
+ 5197: EDHR_S3_RETAIN_UNTIL_DAYS=$EdhrS3RetainUntilDays
+ 5198: EDHR_S3_REQUIRE_LEGAL_HOLD=$EdhrS3RequireLegalHold
+ 5199: YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_FRONTEND_DIRECTORY=$effectiveSchedulerSmokeFrontendDirectory
+ 5200: YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_SCRIPT_NAME=$effectiveSchedulerSmokeScriptName
+ 5201: MES_SMOKE_BASE_URL=$effectiveMesSmokeBaseUrl
+--- line 5205 pattern Mode ---
+ 5202: MES_SMOKE_EXCEL_FILE=$effectiveMesSmokeExcelFile
+ 5203: MES_SMOKE_ARTIFACT_DIR=$effectiveMesSmokeArtifactDir
+ 5204: MES_SMOKE_NODE_IMAGE=$effectiveMesSmokeNodeImage
+ 5205: MES_SMOKE_CAPACITY_MODE=$effectiveMesSmokeCapacityMode
+ 5206: MES_SMOKE_PRODUCT_CODE=$effectiveMesSmokeProductCode
+ 5207: MES_SMOKE_ERP_UNIT_NUMBER=$effectiveMesSmokeErpUnitNumber
+ 5208: MES_SMOKE_BATCH_NUMBER=$effectiveMesSmokeBatchNumber
+ 5209: MES_SMOKE_DEFAULT_PASSWORD=$effectiveMesSmokeDefaultPassword
+ 5210: MES_SMOKE_ERP_CREATOR_TENANT=$effectiveMesSmokeErpCreatorTenant
+--- line 5236 pattern Mode ---
+ 5233: DCC_PROJECT_CODE_CODEX_TIMEOUT_SECONDS=$DccProjectCodeCodexTimeoutSeconds
+ 5234: DCC_PROJECT_CODE_RECOGNITION_VERSION=$DccProjectCodeRecognitionVersion
+ 5235: DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT=$DccProjectCodeRecognitionWorkerCount
+ 5236: RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_MODE=$BackendRuntimeBaseMode
+ 5237: RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_TAR=$BackendRuntimeBaseTarPath
+ 5238: RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_TAR_SHA256=$BackendRuntimeBaseTarSha256
+ 5239: RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_IMAGE=$BackendRuntimeBaseImage
+ 5240: RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_DIGEST=$BackendRuntimeBaseDigest
+ 5241: RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_VERSION=$BackendRuntimeBaseVersion
+--- line 5291 pattern Mode ---
+ 5288:     Copy-ToServer -LocalPath $resetDbSqlLocal -RemotePath $remoteResetDbSql
+ 5289: }
+ 5290: 
+ 5291: if ($publishBackend -and $Mode -ne 'build-release') {
+ 5292:     if (-not (Test-Path -LiteralPath $postImportSqlLocal)) {
+ 5293:         Fail "Target-bound post-import SQL missing: $postImportSqlLocal"
+ 5294:     }
+ 5295:     Copy-ToServer -LocalPath $postImportSqlLocal -RemotePath $remotePostImportSql
+ 5296: }
+--- line 5305 pattern Mode ---
+ 5302: 
+ 5303: if ($publishBackend) {
+ 5304:     if (-not $SkipMinioSync) {
+ 5305:         if ($Mode -eq 'deploy-release') {
+ 5306:             $minioSnapshotLocal = Join-Path $releaseDir 'minio\yudao'
+ 5307:             if (-not (Test-Path -LiteralPath $minioSnapshotLocal)) {
+ 5308:                 Fail "Release package MinIO snapshot missing: $minioSnapshotLocal"
+ 5309:             }
+ 5310:             Info "Syncing MinIO bucket yudao from release package to the $PublishTargetName server"
+--- line 5344 pattern Mode ---
+ 5341:     Invoke-SshCommand "cat '$remoteDbDump' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword"
+ 5342: }
+ 5343: 
+ 5344: if ($publishBackend -and $Mode -ne 'build-release') {
+ 5345:     Info 'Applying target-bound post-import SQL'
+ 5346:     Invoke-SshCommand "cat '$remotePostImportSql' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword -D ruoyi-vue-pro"
+ 5347: }
+ 5348: 
+ 5349: try {
+--- line 5423 pattern Mode ---
+ 5420:     if ($publishWebsite) { Assert-PublicWebsiteEntryReadback }
+ 5421:     if ($publishWebsite) { Assert-PublicWebsiteScopedReleaseCurrent }
+ 5422: 
+ 5423:     if ($Mode -eq 'deploy-release' -and @('prod', 'backup') -contains $Environment) {
+ 5424:         Write-NasReleaseDeploymentHistory -PackageTag $ReleaseTag -HistoryAction 'deploy' -HistoryEnvironment $Environment
+ 5425:     }
+ 5426: } catch {
+ 5427:     if ($publishBackend) {
+ 5428:         $releaseErrorMessage = $_.Exception.Message

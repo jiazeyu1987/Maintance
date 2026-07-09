@@ -1,0 +1,30 @@
+﻿{
+    "status":  "SUCCESS",
+    "operation":  "mark-tested",
+    "releaseTag":  "release-20260709-codeonly-three-env-head-v10",
+    "startedAt":  "2026-07-09T16:39:27",
+    "finishedAt":  "2026-07-09T16:39:31",
+    "exitCode":  0,
+    "stdout":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\mark-tested-v10-operation.out.log",
+    "stderr":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\mark-tested-v10-operation.err.log",
+    "commandSummary":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\mark-tested-v10-command-summary.txt",
+    "checks":  {
+                   "exitCodeZero":  true,
+                   "releaseMarkedAsTestedLog":  true,
+                   "rollbackCompatibilityRecordedLog":  true,
+                   "noBackupRestoreRollbackCommand":  true
+               },
+    "stdoutTail":  [
+                       "[INFO] Mounting NAS release repository: \\\\172.30.30.4\\IT共享\\Backup/ReleasePackage",
+                       "[INFO] Run shell: net use \"\\\\172.30.30.4\\IT共享\" /user:int \u003credacted\u003e",
+                       "[INFO] Release package marked as tested: Backup/ReleasePackage/release-20260709-codeonly-three-env-head-v10 (releaseTag=release-20260709-codeonly-three-env-head-v10)",
+                       "[INFO] rollback-compatibility.json status=BLOCKED recorded: Backup/ReleasePackage/release-20260709-codeonly-three-env-head-v10/rollback-compatibility.json",
+                       "[INFO] Run shell: net use \"\\\\172.30.30.4\\IT共享\" /delete /y",
+                       "\\\\172.30.30.4\\IT共享 was deleted successfully.",
+                       "Release package marked as tested: release-20260709-codeonly-three-env-head-v10",
+                       ""
+                   ],
+    "stderrTail":  [
+                       ""
+                   ]
+}

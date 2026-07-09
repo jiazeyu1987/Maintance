@@ -191,3 +191,45 @@
 - 失败点：preflight item 缺少 `type`，旧过滤未跳过 `type=data` 的 RT000006 数据迁移。
 - 处置：冻结失败证据；修复发布脚本按 manifest requiredSql 回查类型；本地测试与 PowerShell 解析通过。
 - 后续：维护仓提交修复后同步发布 worktree，重新构建 v9。
+
+
+### v9 构建失败（2026-07-09 15:42:17）
+- 状态：失败并判废。
+- 失败点：后端 Maven 构建阶段 Java native memory allocation 失败。
+- 处置：已冻结 operation 日志、JVM 错误报告和内存现场；下一轮降低构建内存压力后重建新 releaseTag。
+
+### v10 构建产物校验修正 v2
+- 状态：完成
+- 证据：evidence/build-release-v10-manifest-validation.json
+- 说明：第二次校验误把非权威迁移计划结构并入 SQL 元数据，已冻结 evidence/build-release-v10-manifest-validation-mixed-sql-container-freeze.json；最终以 manifest.requiredSql 为 SQL 类型权威来源。
+- 结论：$releaseTag manifest 为 code-only，sourceRepos dirty=false，发布包未包含禁用的数据/MinIO/dump/backup/upload目录；data SQL 将由运行时按 	ype=data 跳过。
+
+### ???????? v10
+- ?????
+- ???172.30.30.58
+- ???`evidence/publish-test-v10-result.json`?`evidence/publish-test-v10-remote-verification.json`?`evidence/publish-test-v10-http-probe-curl.json`
+- ???`.env IMAGE_TAG`?backend/frontend ?? tag?backend health?frontend HTTP?PDF worker HTTP ??????data SQL ?? code-only ???
+
+### mark-tested v10
+- 状态：完成
+- 证据：`evidence/mark-tested-v10-result.json`、`evidence/mark-tested-v10-operation.out.log`
+- 结论：同一 releaseTag 已在 NAS 标记 tested；仅写入兼容性元数据，未执行备份/恢复/回滚。
+- 2026-07-09: 正式预检 dry-run 复制阶段失败已冻结，新增 Copy-Item 发布包复制门禁，改用稳定复制方式后继续。
+- 2026-07-09: 正式服 preflight-release dry-run 已通过，生成 `ProdDryRunEvidencePath`，可进入 `promote-prod`。
+- 2026-07-09: 正式服 `promote-prod` 已完成，等待远端 `.env`、镜像 tag、HTTP/health/PDF worker 验证。
+- 2026-07-09: 正式服远端验证通过：`.env IMAGE_TAG`、backend/frontend 镜像 tag、backend health=UP、frontend HTTP 200、PDF worker HTTP 200。
+- 2026-07-09: 备份服 `promote-backup` 已完成，显式使用 `/mnt/intruoyi-data` 发布/数据盘参数，等待远端验证。
+- 2026-07-09: 备份服远端验证通过：`.env IMAGE_TAG`、backend/frontend 镜像 tag、backend health=UP、frontend HTTP 200、PDF worker HTTP 200、`/mnt/intruoyi-data` 挂载和发布路径正确。
+
+## Final Status
+
+- Status: Completed
+- ReleaseTag: `release-20260709-codeonly-three-env-head-v10`
+- Scope: code-only / no data; build and deploy used `SkipDatabaseSync` and `SkipMinioSync`.
+- Completed loop: `build-release -> publish-test -> mark-tested -> promote-prod -> promote-backup`.
+- Verification: test/prod/backup `.env IMAGE_TAG`, backend/frontend image tags, backend health, frontend HTTP 200, PDF worker HTTP 200 all passed.
+- Backup extra verification: `/mnt/intruoyi-data` mounted from `/dev/mapper/cl-home`; release package under `/mnt/intruoyi-data/intruoyi-releases/release-20260709-codeonly-three-env-head-v10`.
+- Runtime Control: main-path config restored and health `UP` after temp worktree deletion.
+- Temporary worktrees: `D:/ProjectPackage/Int/IntRuoyiWorktrees/r260709ce/m`, `b`, `f` deleted.
+- Final evidence: `doc/tasks/20260709-codeonly-three-env-head-release/evidence/final-release-closeout-v10.json`.
+

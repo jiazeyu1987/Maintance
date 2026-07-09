@@ -1,0 +1,22 @@
+{
+  "status": "FAILED",
+  "phase": "residual-worktree-directory-cleanup",
+  "releaseTag": "release-20260709-codeonly-three-env-head-v10",
+  "failedAt": "2026-07-09T17:26:47.754309+08:00",
+  "failure": {
+    "error": "PermissionError WinError 32: file is being used by another process",
+    "lockedPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar",
+    "impact": "临时维护 worktree 目录暂不能删除；必须定位并切换/停止占用该 Jar 的旧运行控制台进程后再清理。"
+  },
+  "pathState": {
+    "lockedPathExists": true,
+    "tempWorktreeBaseExists": true,
+    "maintenanceResidualExists": true,
+    "frontendResidualExists": false
+  },
+  "runtimeHealthBeforeProcessInspection": {
+    "statusCode": 200,
+    "body": "{\"status\":\"UP\"}",
+    "passed": true
+  }
+}

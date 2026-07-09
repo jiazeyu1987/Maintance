@@ -1,0 +1,19 @@
+{
+  "status": "SUCCESS",
+  "phase": "promote-backup",
+  "releaseTag": "release-20260709-codeonly-three-env-head-v10",
+  "startedAt": "2026-07-09T17:02:56.699401+08:00",
+  "completedAt": "2026-07-09T17:19:16.053650+08:00",
+  "exitCode": 0,
+  "commandPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\promote-backup-v10-command-summary.txt",
+  "stdoutPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\promote-backup-v10-operation.out.log",
+  "stderrPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\promote-backup-v10-operation.err.log",
+  "operationIds": [],
+  "lockReleased": true,
+  "completedMarkerSeen": true,
+  "remoteDataDiskMount": "/mnt/intruoyi-data",
+  "remoteReleaseRoot": "/mnt/intruoyi-data/intruoyi-releases",
+  "remoteDataRoot": "/mnt/intruoyi-data/runtime-data",
+  "explicitMntIntruoyiDataParams": true,
+  "noBackupRestoreRollbackCommand": true
+}

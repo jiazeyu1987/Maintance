@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "mode": "preflight-release",
+  "targetEnvironment": "prod",
+  "releaseTag": "release-20260709-codeonly-three-env-head-v10",
+  "writeActions": [],
+  "reportPath": "D:/ProjectPackage/Int/IntRuoyiWorktrees/r260709ce/m/runtime/runtime-control/prod-preflight-release-evidence/release-20260709-codeonly-three-env-head-v10-deploy-precheck-report.json",
+  "targetConfigPath": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20260620-prod-release-current-latest/prod-target-config.json"
+}

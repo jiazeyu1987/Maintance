@@ -1,0 +1,17 @@
+{
+  "status": "SUCCESS",
+  "releaseTag": "release-20260709-codeonly-three-env-head-v10",
+  "startedAt": "2026-07-09T16:45:42.598175+08:00",
+  "completedAt": "2026-07-09T16:45:53.832438+08:00",
+  "dryRunEvidencePath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m\\runtime\\runtime-control\\prod-preflight-release-evidence\\release-20260709-codeonly-three-env-head-v10-preflight-release-dry-run.json",
+  "taskDryRunEvidencePath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\prod-preflight-release-dry-run-v10.json",
+  "reportPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260709ce\\m\\runtime\\runtime-control\\prod-preflight-release-evidence\\release-20260709-codeonly-three-env-head-v10-deploy-precheck-report.json",
+  "taskReportPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\prod-deploy-precheck-report-v10.json",
+  "targetConfigPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260620-prod-release-current-latest\\prod-target-config.json",
+  "copiedArtifactCount": 281,
+  "precheckExitCode": 0,
+  "precheckStatus": "passed",
+  "writeActionsEmpty": true,
+  "stdoutPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\prod-preflight-release-dry-run-v10-precheck.out.log",
+  "stderrPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\prod-preflight-release-dry-run-v10-precheck.err.log"
+}
