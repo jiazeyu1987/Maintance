@@ -2376,3 +2376,17 @@
 - 2026-07-09 TDD for release transfer fix: add contract test for chunked image tar upload before implementation.
 
 - 2026-07-09 maintenance release transfer fix verified: node contract test PASS; PowerShell parse PASS; prepare isolated commit.
+
+- 2026-07-09 sync maintenance release worktree to committed transfer fix: 09a3dd0cb661cad7736230859a751c11cb86069b.
+
+- 2026-07-09 rebuild maintenance worktree after jar lock: stop local runtime-control processes, clean target jar, rebuild and restart health check.
+
+- 2026-07-09 retry maintenance rebuild after self-match stop failure: restrict process stop to java.exe runtime-control jar only.
+
+- 2026-07-09 publish-test retry with committed chunked transfer fix: releaseTag=release-20260709-head-test-v3, maintenanceHead=09a3dd0cb661cad7736230859a751c11cb86069b.
+
+- 2026-07-09 publish-test execute with chunked transfer fix: operationId=op-2026-07-09T022835897789500Z-c47e3f04-f8be-43cd-8f80-9e67022c39bc.
+
+- 2026-07-09 fix chunked upload remote size parser: parse Invoke-ProcessCapture.StdOut and rerun contract/parser checks.
+
+- 2026-07-09 prepare commit for chunked upload size parser fix after tests PASS.

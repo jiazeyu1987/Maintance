@@ -1661,8 +1661,12 @@ function Get-RemoteFileSize {
         [string]$RemotePath
     )
 
-    $sizeText = Invoke-ProcessCapture -FilePath 'ssh' -ArgumentList (New-SshArgumentList -Command "if [ -f '$RemotePath' ]; then stat -c '%s' '$RemotePath'; else echo MISSING; exit 42; fi")
-    $trimmed = $sizeText.Trim()
+    $sizeResult = Invoke-ProcessCapture -FilePath 'ssh' -ArgumentList (New-SshArgumentList -Command "if [ -f '$RemotePath' ]; then stat -c '%s' '$RemotePath'; else echo MISSING; exit 42; fi")
+    if ($sizeResult.ExitCode -ne 0) {
+        $sizeOutput = (($sizeResult.StdOut + "`n" + $sizeResult.StdErr).Trim())
+        Fail "Unable to read remote file size for ${RemotePath}: $sizeOutput"
+    }
+    $trimmed = ([string]$sizeResult.StdOut).Trim()
     $remoteSize = 0L
     if (-not [Int64]::TryParse($trimmed, [ref]$remoteSize)) {
         Fail "Unable to parse remote file size for ${RemotePath}: $trimmed"

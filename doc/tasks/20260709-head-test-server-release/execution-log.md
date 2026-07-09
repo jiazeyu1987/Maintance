@@ -212,3 +212,52 @@ GREEN: publish-script-parse -> PASS, PowerShell Parser.ParseFile ops/deploy/publ
 ## 阶段记录 - 维护仓发布工具修正提交前检查
 - 当前进度：镜像 tar 分块上传实现与契约测试已通过，PowerShell 语法解析通过。
 - 下一步动作：只暂存本任务直接相关的发布脚本、测试、任务文档和请求命令日志，提交维护仓；提交后同步临时发布 worktree 到新 HEAD。
+GREEN: maintenance-release-transfer-fix-commit -> PASS, commit=09a3dd0cb661cad7736230859a751c11cb86069b, message=任务: 修复测试服发布镜像包分块传输.
+
+## 阶段记录 - 同步临时发布 worktree 到维护仓修正提交
+- 当前进度：维护仓发布工具修正已提交 $newHead，包含镜像 tar 分块上传与字节数校验。
+- 下一步动作：将临时发布 worktree D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709h\m 切到该提交，重新构建并启动维护控制台后继续 test-only publish。
+### 问题 - 同步维护仓修正后重建 jar 被运行进程锁定
+- 现象：临时发布 worktree 切到维护仓修正提交后，`scripts\build.ps1` 的 Maven repackage 阶段无法将 `runtime-control-maintenance-2026.06-SNAPSHOT.jar` 重命名为 `.jar.original`；随后启动的进程未能在 48181 健康。
+- 阶段：维护控制台重建 / 本地发布工具切换。
+- 影响：修正后的维护控制台未可靠启动，不能继续 publish-test。
+- 原因判断：旧维护控制台进程仍持有 target jar 文件句柄，导致重打包失败；需要先停止本地 48181 与相关 jar 进程，再清理 target 产物并重建。
+- 处理动作：停止 48181 监听进程和命令行包含 `runtime-control-maintenance` 的 Java 进程，清理 target jar/original，使用 pnpm 10.25.0 重新构建，重启并检查 health。
+- 结果：等待重建结果。
+- 是否可前置检查：是，重建维护控制台前必须检查并停止占用 target jar 的本地进程。
+- 是否可自动化：是，build/start 脚本可在重打包前检查 jar 是否被运行控制台占用。
+- 下次如何避免：发布工具修正后重建前先停旧进程，不在 jar 正运行时执行 repackage。
+### 问题 - 停止维护控制台进程时误匹配当前 PowerShell
+- 现象：停止 `runtime-control-maintenance` 进程的命令匹配了当前 PowerShell 命令行自身，输出 `Stopping jar process 44832` 后执行会话中断，未完成清理、重建和 health 检查。
+- 阶段：维护控制台重建 / 进程清理。
+- 影响：修正后的维护控制台仍未确认启动，不能继续 publish-test。
+- 原因判断：用 `CommandLine -match runtime-control-maintenance...jar` 扫描所有进程时，当前 PowerShell 命令行文本也包含该字符串。
+- 处理动作：改为仅停止 `java.exe` 且命令行包含目标 jar 的进程；重新检查 48181、清理 target jar、重建、启动并检查 health。
+- 结果：等待本次重建结果。
+- 是否可前置检查：是，停止进程必须同时限定进程名和命令行。
+- 是否可自动化：是，封装 Stop-RuntimeControlJavaOnly，禁止泛匹配当前 shell。
+- 下次如何避免：进程清理脚本不得仅按命令行关键字过滤所有进程，必须限定可执行文件名。
+GREEN: maintenance-worktree-rebuild-after-process-filter-fix -> PASS, worktree=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709h\m, runtimeControlPid=47492, health=UP.
+
+## 阶段记录 - 分块上传修正版 publish-test 重试
+- 当前进度：维护控制台临时发布 worktree 已切到已提交修正 `09a3dd0cb661cad7736230859a751c11cb86069b`，重新构建成功，Maven 测试 26 项通过，48181 health=UP。
+- 下一步动作：再次预览并执行同一 releaseTag `release-20260709-head-test-v3` 的 publish-test，仅测试服；重点验证镜像 tar 分块上传与远端字节数校验。
+### 问题 - 分块上传远端字节数校验解析命令返回对象失败
+- 现象：分块上传第一片 128MB 已通过 scp 传到测试服，但 `Get-RemoteFileSize` 调用 `$sizeText.Trim()` 时报 `[System.Collections.Hashtable]` 没有 `Trim` 方法。
+- 阶段：测试服发布 / 镜像 tar 分块上传后远端字节数校验。
+- 影响：发布流程失败并清理远端 chunks 目录，镜像未合并加载，测试服未完成发布。
+- 原因判断：`Invoke-ProcessCapture` 返回结构化对象/Hashtable，不是纯字符串；新函数误按字符串处理。
+- 处理动作：读取 `Invoke-ProcessCapture` 实现和同类调用，修正 `Get-RemoteFileSize` 从 stdout 字段取值，并补契约测试覆盖。
+- 结果：等待修正。
+- 是否可前置检查：是，新增测试应覆盖 `Invoke-ProcessCapture` 返回对象结构。
+- 是否可自动化：是，发布脚本静态契约测试检查 `.Stdout.Trim()` 或等效字段解析。
+- 下次如何避免：新增函数必须先核对被调用工具函数返回类型，不能凭函数名假设返回字符串。
+## 阶段记录 - 分块上传字节校验二次修正验证
+- 当前进度：已修正 `Get-RemoteFileSize`，从 `Invoke-ProcessCapture` 的 `StdOut` 字段读取远端文件大小，并补充契约测试防止回归。
+- 下一步动作：运行 Node 契约测试和 PowerShell 语法解析检查；通过后提交维护仓二次修正。
+GREEN: publish-image-tar-transfer-contract-size-parser -> PASS, node --test scripts/tests/publish_image_tar_transfer_contract.test.mjs.
+GREEN: publish-script-parse-size-parser -> PASS, PowerShell Parser.ParseFile ops/deploy/publish-int-ruoyi.ps1.
+
+## 阶段记录 - 分块上传字节校验二次修正提交
+- 当前进度：远端大小解析已改为读取 `Invoke-ProcessCapture.StdOut`，契约测试与 PowerShell 语法检查均通过。
+- 下一步动作：仅提交本任务相关二次修正与记录，同步临时发布 worktree 到新提交后继续 publish-test。
