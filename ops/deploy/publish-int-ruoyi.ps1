@@ -1655,6 +1655,118 @@ function Copy-ToServer {
     Invoke-CheckedCommand -FilePath 'scp' -ArgumentList (New-ScpArgumentList -LocalPath $LocalPath -RemotePath $RemotePath -Recursive:$Recursive)
 }
 
+function Get-RemoteFileSize {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$RemotePath
+    )
+
+    $sizeText = Invoke-ProcessCapture -FilePath 'ssh' -ArgumentList (New-SshArgumentList -Command "if [ -f '$RemotePath' ]; then stat -c '%s' '$RemotePath'; else echo MISSING; exit 42; fi")
+    $trimmed = $sizeText.Trim()
+    $remoteSize = 0L
+    if (-not [Int64]::TryParse($trimmed, [ref]$remoteSize)) {
+        Fail "Unable to parse remote file size for ${RemotePath}: $trimmed"
+    }
+    return $remoteSize
+}
+
+function Assert-RemoteFileSize {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$RemotePath,
+        [Parameter(Mandatory = $true)]
+        [Int64]$ExpectedBytes
+    )
+
+    $actualBytes = Get-RemoteFileSize -RemotePath $RemotePath
+    if ($actualBytes -ne $ExpectedBytes) {
+        Fail "Remote file size mismatch: $RemotePath expected=$ExpectedBytes actual=$actualBytes"
+    }
+    Info "Remote file size verified: $RemotePath bytes=$actualBytes"
+}
+
+function Copy-LargeFileToServerInChunks {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$LocalPath,
+        [Parameter(Mandatory = $true)]
+        [string]$RemotePath,
+        [Int64]$ChunkBytes = 134217728
+    )
+
+    if (-not (Test-Path -LiteralPath $LocalPath -PathType Leaf)) {
+        Fail "Large file source missing: $LocalPath"
+    }
+    if ($ChunkBytes -le 0) {
+        Fail "ChunkBytes must be positive: $ChunkBytes"
+    }
+
+    $sourceItem = Get-Item -LiteralPath $LocalPath
+    $expectedBytes = [Int64]$sourceItem.Length
+    $chunkRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("publish-int-ruoyi-chunks-" + [System.Guid]::NewGuid().ToString("N"))
+    $remoteChunkDir = "$RemotePath.chunks.$([System.Guid]::NewGuid().ToString('N'))"
+    try {
+        New-Item -ItemType Directory -Force -Path $chunkRoot | Out-Null
+        Invoke-SshCommand "rm -f '$RemotePath' && rm -rf '$remoteChunkDir' && mkdir -p '$remoteChunkDir'"
+
+        $bufferSize = [int][Math]::Min([Int64]4194304, $ChunkBytes)
+        $buffer = New-Object byte[] $bufferSize
+        $chunkIndex = 0
+        $inputStream = [System.IO.File]::Open($LocalPath, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read, [System.IO.FileShare]::Read)
+        try {
+            while ($true) {
+                $remaining = [Int64]$ChunkBytes
+                $chunkPath = Join-Path $chunkRoot ("chunk-{0:D6}.part" -f $chunkIndex)
+                $outputStream = [System.IO.File]::Open($chunkPath, [System.IO.FileMode]::CreateNew, [System.IO.FileAccess]::Write, [System.IO.FileShare]::None)
+                $written = 0L
+                try {
+                    while ($remaining -gt 0) {
+                        $readSize = [int][Math]::Min([Int64]$buffer.Length, $remaining)
+                        $read = $inputStream.Read($buffer, 0, $readSize)
+                        if ($read -le 0) {
+                            break
+                        }
+                        $outputStream.Write($buffer, 0, $read)
+                        $remaining -= [Int64]$read
+                        $written += [Int64]$read
+                    }
+                } finally {
+                    $outputStream.Close()
+                }
+
+                if ($written -eq 0) {
+                    Remove-Item -LiteralPath $chunkPath -Force
+                    break
+                }
+
+                $remoteChunkPath = "$remoteChunkDir/$(Split-Path -Leaf $chunkPath)"
+                Info "Uploading large file chunk $chunkIndex to the $PublishTargetName server ($written bytes)"
+                Invoke-CheckedCommand -FilePath 'scp' -ArgumentList (New-ScpArgumentList -LocalPath $chunkPath -RemotePath $remoteChunkPath)
+                Assert-RemoteFileSize -RemotePath $remoteChunkPath -ExpectedBytes $written
+                Remove-Item -LiteralPath $chunkPath -Force
+                $chunkIndex++
+            }
+        } finally {
+            $inputStream.Close()
+        }
+
+        if ($chunkIndex -eq 0 -and $expectedBytes -ne 0) {
+            Fail "Large file chunking produced no chunks: $LocalPath"
+        }
+
+        Invoke-SshCommand "cat '$remoteChunkDir'/*.part > '$RemotePath' && rm -rf '$remoteChunkDir'"
+        Assert-RemoteFileSize -RemotePath $RemotePath -ExpectedBytes $expectedBytes
+    } finally {
+        if (Test-Path -LiteralPath $chunkRoot) {
+            Remove-Item -LiteralPath $chunkRoot -Recurse -Force
+        }
+        try {
+            Invoke-SshCommand "rm -rf '$remoteChunkDir'"
+        } catch {
+        }
+    }
+}
+
 function Wait-HttpOk {
     param(
         [Parameter(Mandatory = $true)]
@@ -5095,7 +5207,7 @@ if ($publishBackend -or $publishFrontend) {
 }
 if ($publishBackend) { Copy-SchedulerSmokeRunnerToServer }
 if ($publishBackend -or $publishFrontend) {
-    Copy-ToServer -LocalPath $imageTar -RemotePath $remoteImageTar
+    Copy-LargeFileToServerInChunks -LocalPath $imageTar -RemotePath $remoteImageTar
 }
 if ($publishWebsite) {
     Copy-ToServer -LocalPath $websiteRuntimeLocal -RemotePath $remoteReleaseDir -Recursive

@@ -2352,3 +2352,27 @@
 ## 2026-07-08T08:13:59+08:00 20260708-build-publish-test-server
 - USER: 构建发布到测试服务器
 - COMMAND: 创建任务目录 doc/tasks/20260708-build-publish-test-server/，校正上一任务 Current Status，记录发布前置经验门禁。
+- 2026-07-09 执行记录：用户要求仅基于当前分支最新已提交代码完成一次测试服发布，未提交改动不得进入构建产物；已创建任务目录 `doc/tasks/20260709-head-test-server-release/`，记录维护仓 HEAD `91700a6b65190e1d6a651cf9a16a1f96207ed2a5`、后端 HEAD `549fa9199a7b8e8663d62aaee3d1c47d76e7a83a`、前端 HEAD `d2022624d7c362400f0f8a976da59b828a06881f`；三仓主工作区均 dirty，下一步必须创建短路径干净 release worktree。
+- 2026-07-09 执行记录：已创建短路径干净 release worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709h`；维护仓子目录 `m`、后端子目录 `b`、前端子目录 `f` 均为计划 HEAD 且 `git status --porcelain` 为空。
+- 2026-07-09 执行记录：维护控制台干净 worktree 构建失败，`pnpm approve-builds --all` 显示无待审批，但 `pnpm install --frozen-lockfile` 与 `scripts\build.ps1` 均因 `ERR_PNPM_IGNORED_BUILDS` 阻断 `esbuild@0.27.7`、`vue-demi@0.14.10`，不得复用旧 dist 或旧 jar；下一步调查 pnpm 审批状态与 packageManager 固定版本。
+- 2026-07-09 执行记录：确认 `pnpm` 命令实际为 bundled pnpm 11.7.0，而维护前端声明 `packageManager=pnpm@10.25.0`；删除 pnpm 11 生成的未跟踪 `frontend/pnpm-workspace.yaml` 后，用 `corepack pnpm@10.25.0` 重新执行维护控制台构建，`vue-tsc`、`vite build`、Maven test/package 通过，Maven 测试 26 项通过，生成 `runtime-control-maintenance-2026.06-SNAPSHOT.jar`。
+- 2026-07-09 执行记录：干净维护控制台配置已切到 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709h\b` 与 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709h\f`，进程 `pid=57124` 从 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709h\m\backend\target\runtime-control-maintenance-2026.06-SNAPSHOT.jar` 启动，`http://127.0.0.1:48181/actuator/health` 返回 HTTP 200 / UP。
+- 2026-07-09 执行记录：build-release 预览返回脚本 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709h\m\ops\deploy\publish-int-ruoyi.ps1`，参数指向干净后端/前端 worktree；本地门禁最初误把 build-release 的 `BackupServerHost=172.30.30.59` 判为备份服动作，已记录并改为按 action 分层校验。
+- 2026-07-09 执行记录：build-release `release-20260709-head-test-v1` 失败，operation `op-2026-07-09T011857958133700Z-e405e8f5-a462-42ad-9f6d-43f44fa845cd`，原因是后端 `sql/mysql/20260709_mes_route_process_master_alignment.sql` 的 release metadata 非 key-value 形态。已在后端仓按严格 TDD 修复并提交 `87cb9f9996f1d5cf5e2c05ee57586e9bd2a403d5`，旧 releaseTag 判废，下一步用新 releaseTag 重建发布包。
+- 2026-07-09 执行记录：后端临时发布 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709h\b` 已更新到已提交修复 HEAD `87cb9f9996f1d5cf5e2c05ee57586e9bd2a403d5` 且保持 clean；下一次构建使用新的 releaseTag，不复用 `release-20260709-head-test-v1`。
+- 2026-07-09 执行记录：build-release `release-20260709-head-test-v2` 失败，operation `op-2026-07-09T012312011537500Z-11ba10f7-568e-4410-8fe9-dd862cf6b3e9`；虽然本地 manifest 与镜像 tar 已生成，但最终失败于 `Missing -SmartReleaseBaselineManifestPath`，因此 v2 判废。下一步使用 `release-20260709-head-test-v3` 且不启用 Smart Release report-only 重新构建。
+- 2026-07-09 执行记录：build-release `release-20260709-head-test-v3` 成功，operation `op-2026-07-09T013606785826300Z-45bc8231-d958-4e92-b0a9-00bf09c6010c`；manifest 校验通过：backend `87cb9f9996f1d5cf5e2c05ee57586e9bd2a403d5` dirty=false，frontend `d2022624d7c362400f0f8a976da59b828a06881f` dirty=false，publishScope=`code-only`，变更说明与 releaseTag 一致，未包含 database/mysql/minio/files 数据目录。
+
+- 2026-07-09 publish-test retry precheck: localTar=E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260709-head-test-v3\intruoyi-images_release-20260709-head-test-v3.tar localSize=2454713856 remoteSize=2121793536; remove incomplete remote tar then retry same releaseTag.
+
+- 2026-07-09 publish-test preview retry v3: structured guard PASS; mode=deploy-release environment=test releaseTag=release-20260709-head-test-v3.
+
+- 2026-07-09 publish-test execute retry v3: operationId=op-2026-07-09T020308904687Z-63c7d2b2-9b70-46bd-931c-a102bac4ee2f.
+
+- 2026-07-09 publish-test retry after cache restore: preview structured guard PASS; mode=deploy-release environment=test releaseTag=release-20260709-head-test-v3.
+
+- 2026-07-09 publish-test retry after cache restore: operationId=op-2026-07-09T021151890482800Z-ef75e2f9-1b9c-4309-a5a7-b9503773f116.
+
+- 2026-07-09 TDD for release transfer fix: add contract test for chunked image tar upload before implementation.
+
+- 2026-07-09 maintenance release transfer fix verified: node contract test PASS; PowerShell parse PASS; prepare isolated commit.
