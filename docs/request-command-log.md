@@ -2455,3 +2455,18 @@
 - 用户请求：继续执行 IntRuoyi code-only 三环境发布闭环。
 - 命令：`python -X utf8 -m pytest tests/test_code_only_required_sql_contract.py -q`。
 - 结果：PASS；已修复维护脚本在 `publishScope=code-only` 时仍执行 `type=data` required SQL 的发布契约问题。
+
+
+## 2026-07-09 15:06:02 v7 manifest 范围失败处理
+- 命令：校验 `release-20260709-codeonly-three-env-head-v7` manifest/sourceRepos/topEntries。
+- 结果：FAIL；Website dirty 被纳入 manifest，已冻结证据并沉淀门禁，下一轮重建 v8。
+
+
+## 2026-07-09 15:22:45 v8 manifest 校验修正
+- 命令：按现有 manifest 契约复核 `release-20260709-codeonly-three-env-head-v8`。
+- 结果：PASS；此前仅因校验脚本误要求 `manifest.json.component` 被挡住，已修正为 sourceRepos/topEntries/release-manifest 范围校验。
+
+
+## 2026-07-09 15:38:14 v8 publish-test 失败与过滤修复 v2
+- 命令：冻结 v8 发布失败远端证据；运行 `python -X utf8 -m pytest tests/test_code_only_required_sql_contract.py -q`；运行 PowerShell Parser.ParseFile。
+- 结果：v8 判废；过滤逻辑已修复并验证 PASS；下一轮重新构建 v9。

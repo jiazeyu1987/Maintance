@@ -1,0 +1,63 @@
+﻿{
+    "frozenAt":  "2026-07-09T15:06:02",
+    "releaseTag":  "release-20260709-codeonly-three-env-head-v7",
+    "failure":  "manifest validation failed after build-release SUCCESS because sourceRepos included dirty Website repo, outside this IntRuoyi code-only scope",
+    "validationPath":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\build-release-v7-manifest-validation.json",
+    "buildResultPath":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\build-release-v7-result.json",
+    "preflightPath":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\build-release-v7-direct-preflight.json",
+    "manifestStatus":  "FAIL",
+    "errors":  [
+                   "sourceRepos dirty count=1"
+               ],
+    "sourceRepos":  [
+                        null
+                    ],
+    "topEntries":  [
+                       {
+                           "Name":  "required-sql",
+                           "Mode":  "d-----",
+                           "Length":  null
+                       },
+                       {
+                           "Name":  "resources",
+                           "Mode":  "d-----",
+                           "Length":  null
+                       },
+                       {
+                           "Name":  "runtime-env",
+                           "Mode":  "d-----",
+                           "Length":  null
+                       },
+                       {
+                           "Name":  "smoke",
+                           "Mode":  "d-----",
+                           "Length":  null
+                       },
+                       {
+                           "Name":  "website",
+                           "Mode":  "d-----",
+                           "Length":  null
+                       },
+                       {
+                           "Name":  "docker-compose.yml",
+                           "Mode":  "-a----",
+                           "Length":  10608
+                       },
+                       {
+                           "Name":  "intruoyi-images_release-20260709-codeonly-three-env-head-v7.tar",
+                           "Mode":  "-a----",
+                           "Length":  815055872
+                       },
+                       {
+                           "Name":  "manifest.json",
+                           "Mode":  "-a----",
+                           "Length":  2413860
+                       },
+                       {
+                           "Name":  "release-manifest.json",
+                           "Mode":  "-a----",
+                           "Length":  94247
+                       }
+                   ],
+    "nextAction":  "rebuild new releaseTag with explicit -Component intruoyi; do not reuse v7 for any environment"
+}

@@ -1,0 +1,114 @@
+﻿{
+    "status":  "FAIL",
+    "releaseTag":  "release-20260709-codeonly-three-env-head-v7",
+    "manifestPath":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260709-codeonly-three-env-head-v7\\manifest.json",
+    "releaseManifestPath":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260709-codeonly-three-env-head-v7\\release-manifest.json",
+    "manifestPublishScope":  "code-only",
+    "manifestReleaseTag":  "release-20260709-codeonly-three-env-head-v7",
+    "manifestSourceRepos":  [
+                                {
+                                    "name":  "ruoyi-vue-pro",
+                                    "pathRole":  "backend",
+                                    "commit":  "65190bdc3c43489536d0fb1908290aa4629ce522",
+                                    "branch":  "HEAD",
+                                    "dirty":  false,
+                                    "dirtySummaryHash":  null
+                                },
+                                {
+                                    "name":  "yudao-ui-admin-vue3",
+                                    "pathRole":  "admin-frontend",
+                                    "commit":  "0931b8dc3725b34689ee36e68cc4dd3a7aacea3b",
+                                    "branch":  "HEAD",
+                                    "dirty":  false,
+                                    "dirtySummaryHash":  null
+                                },
+                                {
+                                    "name":  "Website",
+                                    "pathRole":  "website",
+                                    "commit":  "f30a52819bf3d4dc5cd129700b3a4d2081b733c9",
+                                    "branch":  "main",
+                                    "dirty":  true,
+                                    "dirtySummaryHash":  "sha256:a423b102d7a10c2c7c3629438b7124a9a702616ee9e2e63076cd0519c8403894"
+                                }
+                            ],
+    "requiredSqlCount":  271,
+    "requiredSqlTypeCounts":  [
+                                  {
+                                      "type":  "schema",
+                                      "count":  186
+                                  },
+                                  {
+                                      "type":  "seed",
+                                      "count":  10
+                                  },
+                                  {
+                                      "type":  "config",
+                                      "count":  7
+                                  },
+                                  {
+                                      "type":  "menu",
+                                      "count":  29
+                                  },
+                                  {
+                                      "type":  "permission",
+                                      "count":  11
+                                  },
+                                  {
+                                      "type":  "data",
+                                      "count":  28
+                                  }
+                              ],
+    "topEntries":  [
+                       {
+                           "Name":  "required-sql",
+                           "Mode":  "d-----",
+                           "Length":  null
+                       },
+                       {
+                           "Name":  "resources",
+                           "Mode":  "d-----",
+                           "Length":  null
+                       },
+                       {
+                           "Name":  "runtime-env",
+                           "Mode":  "d-----",
+                           "Length":  null
+                       },
+                       {
+                           "Name":  "smoke",
+                           "Mode":  "d-----",
+                           "Length":  null
+                       },
+                       {
+                           "Name":  "website",
+                           "Mode":  "d-----",
+                           "Length":  null
+                       },
+                       {
+                           "Name":  "docker-compose.yml",
+                           "Mode":  "-a----",
+                           "Length":  10608
+                       },
+                       {
+                           "Name":  "intruoyi-images_release-20260709-codeonly-three-env-head-v7.tar",
+                           "Mode":  "-a----",
+                           "Length":  815055872
+                       },
+                       {
+                           "Name":  "manifest.json",
+                           "Mode":  "-a----",
+                           "Length":  2413860
+                       },
+                       {
+                           "Name":  "release-manifest.json",
+                           "Mode":  "-a----",
+                           "Length":  94247
+                       }
+                   ],
+    "forbiddenHits":  [
+
+                      ],
+    "errors":  [
+                   "sourceRepos dirty count=1"
+               ]
+}

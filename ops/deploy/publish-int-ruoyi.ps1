@@ -4312,10 +4312,33 @@ function Get-ReleasePreflightApplyItems {
         return $applyItems
     }
 
+    $requiredSqlTypeByMigrationId = @{}
+    foreach ($entry in @($requiredDatabaseSqlScripts)) {
+        $migrationId = [string]$entry.MigrationId
+        if ([string]::IsNullOrWhiteSpace($migrationId)) {
+            $migrationId = [System.IO.Path]::GetFileNameWithoutExtension([string]$entry.Path)
+        }
+        if ([string]::IsNullOrWhiteSpace($migrationId)) {
+            Fail "Required SQL entry missing migrationId for code-only scope filtering: $($entry.Path)"
+        }
+        $sqlType = [string]$entry.Type
+        if ([string]::IsNullOrWhiteSpace($sqlType)) {
+            Fail "Required SQL entry missing type for code-only scope filtering: $migrationId"
+        }
+        $requiredSqlTypeByMigrationId[$migrationId] = $sqlType
+    }
+
     $codeOnlyApplyItems = @()
     foreach ($item in $applyItems) {
-        if ([string]$item.type -eq 'data') {
-            Info "Skipping data required database SQL for code-only release: $($item.migrationId)"
+        $migrationId = [string]$item.migrationId
+        if ([string]::IsNullOrWhiteSpace($migrationId)) {
+            Fail "preflight-plan.json APPLY item missing migrationId for code-only scope filtering"
+        }
+        if (-not $requiredSqlTypeByMigrationId.ContainsKey($migrationId)) {
+            Fail "preflight-plan.json APPLY item missing from manifest requiredSql for code-only scope filtering: $migrationId"
+        }
+        if ([string]$requiredSqlTypeByMigrationId[$migrationId] -eq 'data') {
+            Info "Skipping data required database SQL for code-only release: $migrationId"
             continue
         }
         $codeOnlyApplyItems += $item

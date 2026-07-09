@@ -1,0 +1,39 @@
+﻿{
+    "remoteSnapshotExitCode":  0,
+    "remoteSnapshotOut":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\publish-test-v8-failure-remote-snapshot.txt",
+    "remoteSnapshotErr":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\publish-test-v8-failure-remote-snapshot.err.txt",
+    "localPreflightExists":  true,
+    "localManifestExists":  true,
+    "localRt000006PreflightItem":  {
+                                       "migrationId":  "20260709_mes_rt000006_batch_record_mapping",
+                                       "file":  "required-sql/20260709_mes_rt000006_batch_record_mapping.sql",
+                                       "sha256":  "999b2057c10f24a36720ecd74dcc8070e6d082d9960f88541e6332a947946711",
+                                       "action":  "APPLY",
+                                       "reason":  "migration is pending and prerequisites are satisfied"
+                                   },
+    "localRt000006ManifestItem":  {
+                                      "id":  "20260709_mes_rt000006_batch_record_mapping",
+                                      "migrationId":  "20260709_mes_rt000006_batch_record_mapping",
+                                      "file":  "required-sql/20260709_mes_rt000006_batch_record_mapping.sql",
+                                      "sourcePath":  "sql/mysql/20260709_mes_rt000006_batch_record_mapping.sql",
+                                      "type":  "data",
+                                      "allowedEnvironments":  [
+                                                                  "test",
+                                                                  "backup",
+                                                                  "prod"
+                                                              ],
+                                      "dependsOn":  [
+                                                        "20260706_mes_edhr_process_form_permission_rule",
+                                                        "20260612_mes_edhr_multi_batch_route"
+                                                    ],
+                                      "riskLevel":  "medium",
+                                      "sha256":  "sha256:999b2057c10f24a36720ecd74dcc8070e6d082d9960f88541e6332a947946711",
+                                      "requiredPreconditions":  [
+                                                                    {
+                                                                        "type":  "schema-preflight-pass",
+                                                                        "required":  true,
+                                                                        "resolution":  "Run schema preflight and apply the missing prerequisite migration before executing required SQL."
+                                                                    }
+                                                                ]
+                                  }
+}

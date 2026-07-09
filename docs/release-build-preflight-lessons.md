@@ -355,3 +355,21 @@
 - Verification: 运行 `python -X utf8 -m pytest tests/test_code_only_required_sql_contract.py -q`，并在发布日志中看到 `Skipping data required database SQL for code-only release` 后再继续三环境发布。
 - Forbidden action: 不得手工补测试库业务数据、不得把 data SQL 改成 schema 绕过、不得复用失败 releaseTag 拼接后续环境结果。
 - Evidence: `doc/tasks/20260709-codeonly-three-env-head-release/evidence/maintenance-codeonly-required-sql-contract-fix-summary.json`。
+
+
+### Gate: IntRuoyi code-only 发布必须显式 `-Component intruoyi`
+- Trigger: 执行 IntRuoyi 后端/前端 code-only build-release，且本机可能存在 `INT_RUOYI_WEBSITE_REPO` 或 Website 仓路径。
+- Preflight check: build-release 命令必须显式传入 `-Component intruoyi`，manifest `sourceRepos` 只能包含 `ruoyi-vue-pro` 与 `yudao-ui-admin-vue3`，不得包含 dirty Website 仓或生成 `website/` 包目录。
+- Blocker: 若 manifest 包含 Website、`website/` 顶层目录或任一 sourceRepos dirty=true，当前 releaseTag 判废，必须重新构建新 releaseTag。
+- Verification: `build-release-<tag>-manifest-validation.json` 中 `manifestPublishScope=code-only`、后端/前端 dirty=false、无 Website sourceRepo、无 `website/` 顶层目录。
+- Forbidden action: 不得把含脏 Website 的包继续发布到测试服、正式服或备份服；不得用后续验证拼接该 releaseTag。
+- Evidence: `doc/tasks/20260709-codeonly-three-env-head-release/evidence/build-release-v7-manifest-scope-failure-freeze.json`。
+
+
+### Gate: code-only required SQL 过滤必须以 manifest 类型为准
+- Trigger: `publishScope=code-only` 发布包生成 `preflight-plan.json` 并准备执行 required SQL。
+- Preflight check: 发布脚本不得依赖 `preflight-plan.json` item 的 `type` 字段；必须从 manifest requiredSql 建立 `migrationId -> type` 映射，并按该映射跳过 `type=data`。
+- Blocker: 若任一 APPLY item 无法在 manifest requiredSql 中找到 migrationId 或 type，必须 fail fast，不得继续执行远端 MySQL。
+- Verification: `python -X utf8 -m pytest tests/test_code_only_required_sql_contract.py -q` 通过，并在发布日志中看到 data SQL 的 `Skipping data required database SQL for code-only release`。
+- Forbidden action: 不得用手工补测试库 RT000006、手工改 preflight-plan、或把 data SQL 改成 schema 来绕过门禁。
+- Evidence: `doc/tasks/20260709-codeonly-three-env-head-release/evidence/maintenance-codeonly-required-sql-contract-v2-fix-summary.json`。

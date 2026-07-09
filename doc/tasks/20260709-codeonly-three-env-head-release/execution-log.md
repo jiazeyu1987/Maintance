@@ -100,3 +100,25 @@ GREEN: migration-policy-full-after-metadata-fixes-final -> PASS, 2026-07-09 13:2
 - GREEN: python -X utf8 -m pytest tests/test_code_only_required_sql_contract.py -q -> PASS，输出 `evidence/maintenance-codeonly-required-sql-contract-pytest.out.log`。
 - GREEN: code-only-required-sql-contract-fix -> PASS，汇总 `evidence/maintenance-codeonly-required-sql-contract-fix-summary.json`。
 - 结论：需要使用维护脚本修复后的新 releaseTag 继续闭环，禁止拼接 v6 的失败结果。
+
+
+## v7 manifest 范围失败冻结（2026-07-09 15:06:02）
+- RED: build-release-v7-manifest-validation -> FAIL，build operation 虽 SUCCESS，但 manifest sourceRepos 包含 dirty Website 仓，超出本次 IntRuoyi 后端/前端发布范围，v7 判废。
+- 冻结证据：`evidence/build-release-v7-result.json`、`evidence/build-release-v7-direct-preflight.json`、`evidence/build-release-v7-manifest-validation.json`、`evidence/build-release-v7-manifest-scope-failure-freeze.json`。
+- 根因：build-release 命令未显式传 `-Component intruoyi`，脚本默认 `Component=full`，在当前环境变量存在 WebsiteRepo 时会把 Website 纳入发布包与 sourceRepos。
+- 经验沉淀：已新增 code-only IntRuoyi 发布必须显式 `-Component intruoyi` 的门禁；下一轮必须重新生成 v8，禁止复用 v7。
+
+
+## v8 manifest 校验修正（2026-07-09 15:22:45）
+- GREEN: build-release-v8-manifest-validation -> PASS，按现有 manifest 契约校验：publishScope=code-only，sourceRepos 仅后端/前端且 dirty=false，无 Website 仓/website 目录/数据目录命中，证据 `evidence/build-release-v8-manifest-validation.json`。
+- 说明：`manifest.json` 当前不定义 `component` 字段；范围以 `-Component intruoyi` 构建命令、sourceRepos、topEntries 和 `release-manifest.json`（如存在）校验。
+
+
+## v8 publish-test 失败冻结与过滤修复 v2（2026-07-09 15:38:14）
+- RED: publish-test-v8 -> FAIL，releaseTag=release-20260709-codeonly-three-env-head-v8，远端仍执行 `20260709_mes_rt000006_batch_record_mapping.sql` 并报 `Missing RT000006 pressure pump route`。
+- 冻结证据：`evidence/publish-test-v8-result.json`、`evidence/publish-test-v8-operation.out.log`、`evidence/publish-test-v8-operation.err.log`、`evidence/publish-test-v8-failure-remote-snapshot.txt`、`evidence/publish-test-v8-preflight-item-inspect.json`。
+- 根因：`preflight-plan.json` 的 APPLY item 不携带 `type`，旧过滤逻辑读取 `$item.type`，导致 `type=data` 项未被跳过。
+- 修复：code-only 过滤改为从 manifest 派生的 `$requiredDatabaseSqlScripts` 建立 `migrationId -> type` 映射；缺 migrationId/type 直接 fail fast；`type=data` 在远端 MySQL 执行前跳过。
+- GREEN: python -X utf8 -m pytest tests/test_code_only_required_sql_contract.py -q -> PASS，证据 `evidence/maintenance-codeonly-required-sql-contract-v2-pytest.out.log`。
+- GREEN: PowerShell Parser.ParseFile publish-int-ruoyi.ps1 -> PARSE_OK，证据 `evidence/maintenance-codeonly-required-sql-contract-v2-parse.txt`。
+- 结论：v8 判废，下一轮重新构建 v9，禁止复用 v8 拼接后续环境。

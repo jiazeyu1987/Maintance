@@ -172,3 +172,22 @@
 - 修复：`Get-ReleasePackageDatabaseSqlScripts` 保留 requiredSql 的 `type/migrationId/file/sha256`，`Get-ReleasePreflightApplyItems` 接收 `PublishScope`，当 `code-only` 时在远端 MySQL 执行前明确跳过 `type=data` required SQL。
 - 验证：`GREEN: python -X utf8 -m pytest tests/test_code_only_required_sql_contract.py -q -> PASS`，证据见 `evidence/maintenance-codeonly-required-sql-contract-pytest.out.log`。
 - 后续：必须重新构建新的 releaseTag，不能复用 v6 失败包。
+
+
+### v7 范围校验失败（2026-07-09 15:06:02）
+- 状态：失败并判废。
+- 失败点：manifest sourceRepos 包含 dirty Website 仓，违反本次仅 IntRuoyi 后端/前端/维护仓发布输入。
+- 处置：冻结失败证据并沉淀门禁；下一轮用 `-Component intruoyi` 重新构建 v8。
+
+
+### v8 manifest 校验修正（2026-07-09 15:22:45）
+- 状态：完成。
+- 结论：v8 包范围正确，sourceRepos 仅后端/前端且 dirty=false，无 Website 或数据目录。
+- 下一步：发布测试服并验证同一 releaseTag。
+
+
+### v8 publish-test 失败与过滤修复 v2（2026-07-09 15:38:14）
+- 状态：失败并判废。
+- 失败点：preflight item 缺少 `type`，旧过滤未跳过 `type=data` 的 RT000006 数据迁移。
+- 处置：冻结失败证据；修复发布脚本按 manifest requiredSql 回查类型；本地测试与 PowerShell 解析通过。
+- 后续：维护仓提交修复后同步发布 worktree，重新构建 v9。

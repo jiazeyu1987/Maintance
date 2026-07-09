@@ -1,0 +1,10 @@
+﻿taskId=20260709-codeonly-three-env-head-release
+releaseTag=release-20260709-codeonly-three-env-head-v8
+action=publish-test
+component=intruoyi
+started=2026-07-09 15:23:09 +08:00
+finished=2026-07-09 15:35:36 +08:00
+exitCode=1
+preflight=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\publish-test-v8-preflight.json
+stdout=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\publish-test-v8-operation.out.log
+stderr=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\publish-test-v8-operation.err.log

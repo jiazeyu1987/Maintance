@@ -1,0 +1,25 @@
+﻿{
+    "generatedAt":  "2026-07-09T15:38:14",
+    "issue":  "publish-test v8 still executed type=data RT000006 SQL because preflight-plan items do not carry type; filtering used item.type and missed data migrations",
+    "frozenEvidence":  [
+                           "publish-test-v8-result.json",
+                           "publish-test-v8-operation.out.log",
+                           "publish-test-v8-operation.err.log",
+                           "publish-test-v8-preflight-item-inspect.json",
+                           "publish-test-v8-failure-remote-snapshot.txt",
+                           "publish-test-v8-failure-remote-snapshot.err.txt"
+                       ],
+    "fix":  [
+                "build requiredSql type map from manifest-derived requiredDatabaseSqlScripts",
+                "fail fast if migrationId/type is missing for code-only filtering",
+                "skip preflight APPLY items when manifest requiredSql type is data"
+            ],
+    "verification":  {
+                         "stdout":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\maintenance-codeonly-required-sql-contract-v2-pytest.out.log",
+                         "pytest":  "python -X utf8 -m pytest tests/test_code_only_required_sql_contract.py -q -\u003e PASS",
+                         "parse":  "PowerShell Parser.ParseFile publish-int-ruoyi.ps1 -\u003e PARSE_OK",
+                         "stderr":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\maintenance-codeonly-required-sql-contract-v2-pytest.err.log",
+                         "parseEvidence":  "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260709-codeonly-three-env-head-release\\evidence\\maintenance-codeonly-required-sql-contract-v2-parse.txt"
+                     },
+    "nextAction":  "commit fix, reset maintenance release worktree, rebuild new releaseTag v9 for a clean single-tag loop"
+}

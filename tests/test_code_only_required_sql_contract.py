@@ -18,6 +18,8 @@ def test_code_only_deploy_skips_data_required_sql_before_remote_mysql_apply():
     text = read_script()
     assert "Get-ReleasePreflightApplyItems -PreflightPlan $preflightPlan -PublishScope $releasePublishScope" in text
     assert "Skipping data required database SQL for code-only release" in text
+    assert "$requiredSqlTypeByMigrationId[$migrationId]" in text
+    assert "preflight-plan.json APPLY item missing from manifest requiredSql for code-only scope filtering" in text
     apply_index = text.index('Info "Applying required database SQL: $fileName"')
     skip_index = text.index("Skipping data required database SQL for code-only release")
     assert skip_index < apply_index

@@ -1,0 +1,9 @@
+﻿taskId=20260709-codeonly-three-env-head-release
+releaseTag=release-20260709-codeonly-three-env-head-v8
+component=intruoyi
+started=2026-07-09 15:06:30 +08:00
+finished=2026-07-09 15:19:42 +08:00
+exitCode=0
+preflight=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\build-release-v8-direct-preflight.json
+stdout=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\build-release-v8-operation.out.log
+stderr=D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\build-release-v8-operation.err.log
