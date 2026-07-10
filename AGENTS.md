@@ -46,6 +46,8 @@
 - Thread baseline: 每次任务将用户每条需求与执行命令记录到 docs/request-command-log.md。
 - Thread baseline: 每次任务创建或识别任务目录后，必须先读取 `docs/experience-index.md`，按索引只打开命中的经验文档，并在任务文档写入 `经验门禁` 小节，列出本任务适用的强制门禁；不得只写“已阅读”而不摘取门禁。
 - Thread baseline: 后续新增经验默认优先写入事前文档入口；仅事后复盘内容才写入 error-prevention 类文档。
+- Thread baseline: 后续新增或更新经验必须遵循 `docs/experience-index.md` 的“经验文档写入规范（强制）”；优先更新已有归宿，门禁摘要固定包含 `Trigger`、`Preflight check`、`Blocker`、`Verification`、`Forbidden action`、`Evidence`，不得只写背景、结论或“下次注意”。
+- Thread baseline: 能转为前置检查的问题必须写成可执行门禁；涉及操作流程时还必须写明阶段必查项、推荐命令、Fail Fast、必须记录，并同步更新 `docs/experience-index.md` 的关键词路由和对应执行 checklist。
 - Thread baseline: 涉及真实 E2E、Playwright 长链路、登录后写入、服务器写入/重启/发布/备份/恢复/回滚、大文件上传、批量导入、worktree 合并/清理、数据库 schema/迁移/权限/菜单/租户数据修改等高风险动作前，必须在 `execution-log.md` 记录 `GREEN: experience-preflight -> PASS` 或明确 `BLOCKER: experience-preflight -> <原因>`，否则不得执行该高风险动作。
 - The task document must include the task goal, milestone list, expected verification, and current status before production code changes begin.
 - The task document must include a fixed `设计约束检查` section before production code changes begin:

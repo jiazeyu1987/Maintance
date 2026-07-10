@@ -2,8 +2,54 @@
 
 任务开始时先读本文件，只打开命中的经验文档；不要全量阅读所有经验。
 
+## 经验文档写入规范（强制）
+
+### 归档原则
+
+- 先搜索并更新已有经验文档；不得把同类经验拆成多个重复入口。
+- 可在行动前检查的问题，必须优先写入 preflight、checklist、memory 或正式流程文档；只有不能转成前置门禁的事后分析才写入 error-prevention。
+- 一次性任务状态、临时数据、当前完成情况和长篇执行流水保留在 `doc/tasks/<task-id>/`，不得混入长期经验。
+- 没有合适归宿且确需新建长期经验文档时，必须先取得用户明确授权。
+
+### 门禁摘要模板
+
+每条可执行经验必须先提供以下固定摘要，字段不得缺失：
+
+```markdown
+### <经验标题>
+
+- Trigger: <哪些任务、关键词或现象会命中本经验>
+- Preflight check: <执行风险动作前必须运行的精确检查>
+- Blocker: <出现哪些结果必须立即停止>
+- Verification: <证明通过的命令、字段、状态、日志或证据路径>
+- Forbidden action: <禁止采用的绕过、降级、手工修补或跳过动作>
+- Evidence: <来源任务、提交、releaseTag、operation id、文件或问题记录>
+```
+
+### 操作流程扩展模板
+
+涉及构建、发布、服务器、数据库、真实 E2E、worktree、备份恢复或其他长链路操作时，在门禁摘要后按执行顺序补充：
+
+1. `阶段 N：<阶段名称>`
+2. `必查项`
+3. `推荐命令`
+4. `Fail Fast`
+5. `必须记录`
+
+每个问题必须记录：现象、阶段、影响、原因判断、处理动作、结果、是否可前置检查、是否可自动化、下次如何避免。
+
+### 写入完成条件
+
+- 在本索引增加可命中的任务关键词、错误文本、命令名、配置键或环境名路由。
+- 若经验会阻塞实际流程，同步更新对应 checklist 或主流程入口。
+- 在当前任务 `task.md` 摘取本次适用门禁，在 `execution-log.md` 记录验证证据。
+- 使用 `rg` 验证新关键词能从索引定位到目标文档。
+- 验证 UTF-8 编码和 `git diff --check`，只提交本任务产生的文件。
+- 不得用模糊描述替代精确命令、字段、路径和 fail-fast 条件。
+
 ## 路由
 
+- 经验沉淀 / 新增经验 / 更新经验 / 经验文件格式 / 前置经验 / 经验门禁模板：先执行本文件“经验文档写入规范（强制）”，再按下方关键词选择目标文档。
 - 测试服发布 / 仅测试服 / current HEAD test release / publish-test / 运行态验收 / release-info 版本变更说明：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md`
 - 维护控制台临时 worktree 构建 / pnpm approve-builds / ERR_PNPM_IGNORED_BUILDS：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
 - pnpm approve-builds 空结果但 install 仍因 ERR_PNPM_IGNORED_BUILDS 失败：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`

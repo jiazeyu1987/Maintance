@@ -2583,3 +2583,6 @@
 2026-07-10T10:35:00+08:00	20260710-test-release-preflight-optimization	COMMAND	Create docs/test-release-preflight.md as the test-only publish preflight entry; update experience-index, release-agent-checklist, release-build-preflight-lessons and task execution log.
 2026-07-10T10:40:00+08:00	20260710-test-release-preflight-optimization	RESULT	PASS: UTF-8, keyword discovery, diff check and task-closeout preview all passed; ready to commit scoped docs.
 2026-07-10T10:45:00+08:00	20260710-test-release-preflight-optimization	RESULT	PASS: task-closeout apply completed with delete=none, blocked=none and warnings=none; proceeding with isolated staging and commit.
+2026-07-10T11:00:00+08:00	20260710-experience-writing-standard	REQUEST	让后续新增或更新经验文件统一按照本次优化后的方式编写。
+2026-07-10T11:00:00+08:00	20260710-experience-writing-standard	COMMAND	Read project experience rules and existing optimized preflight structure; create task docs; add the mandatory experience-writing template to experience-index and enforce it from AGENTS.md.
+2026-07-10T11:05:00+08:00	20260710-experience-writing-standard	RESULT	PASS: mandatory experience-writing format, route updates, UTF-8/diff verification and task-closeout cleanup completed.
