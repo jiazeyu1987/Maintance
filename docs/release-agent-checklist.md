@@ -346,5 +346,9 @@ Codex 只有在以下条件同时成立时，才能判定完整发布完成：
   - backend health=`UP`
   - frontend HTTP=`200`
 - 任务日志与请求命令日志已回写
+- 发布和运行态验证完成后，任务先进入 `ready_for_closeout`
+- `task-closeout-cleanup` preview/apply 已通过，`verification-report.md` 位于默认 keep 集
+- 所有临时 worktree 的 Git 注册和物理目录均已清理，运行控制台已恢复稳定主路径
+- 只有上述 closeout 证据全部通过后，任务状态才更新为 `completed`
 
 任何缺项都不得宣称“完整发布已完成”。

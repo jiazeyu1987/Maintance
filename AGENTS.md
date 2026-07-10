@@ -20,13 +20,13 @@
 - Thread baseline: 临时发布 worktree 未产生新提交时，发布完成后必须直接删除。
 - Thread baseline: 临时发布 worktree 产生新提交时，必须先将新提交合回对应仓库 `int_main`，并在合并结果上完成必要验证；验证通过后必须删除该临时发布 worktree。
 - Thread baseline: 临时发布 worktree 存在未确认归属的改动、未合并提交或验证未通过问题时，任务状态必须标记为阻塞；阻塞状态下不得删除该 worktree，不得宣称本次发布完成。
-- Thread baseline: 一次发布任务完成的判定条件固定为：发布流程完成、发布结论已记录、所有临时发布 worktree 已删除、现场只剩各仓库 `int_main` 主工作区。
+- Thread baseline: 发布流程和运行态验证完成后，任务状态先标记为 `ready_for_closeout`；只有发布结论已记录、所有临时发布 worktree 已删除、运行控制台已恢复稳定主路径且现场只剩各仓库 `int_main` 主工作区后，才能标记 `completed`。
 - Thread baseline: 每次使用临时发布 worktree 时，任务文档和 `execution-log.md` 必须记录 worktree 路径、目标提交、构建命令、验证命令、是否产生新提交、是否已合回 `int_main`、最终删除结果。
 
 ## Mixed Git Workspace Policy
 
-- 本项目为混合 Git 工作区；凡要求新建或使用新分支，必须在每个 Git 仓库创建同名新分支。
-- Thread baseline: 涉及 worktree 创建、合并、清理或排障时，先阅读 docs/worktree-memory.md。
+- 本项目为混合 Git 工作区；凡要求新建或使用新分支，只在本任务实际参与且需要修改的 Git 仓库创建同名分支，不得在无关仓库制造分支状态。
+- Thread baseline: 涉及 worktree 创建、合并、清理或排障时，先阅读 `D:\ProjectPackage\Int\IntRuoyi\docs\worktree-memory.md`。
 - Thread baseline: Codex 并行开发默认一任务一独立 worktree 工作区；前后端成对建同名分支，根目录仅用于协调与最终集成。
 - Thread baseline: IntRuoyi 根目录 Git 不作为融合结果判断项；融合以前后端 `ruoyi-vue-pro` 与 `yudao-ui-admin-vue3` 仓库为准。
 - Thread baseline: worktree 合并后必须在合并结果上验证相关功能正确性；验证未通过不得视为完成或继续清理 worktree。
@@ -55,11 +55,13 @@
   - `是否从根因和长期维护角度解决`：是/否；如否，必须先阻塞并说明缺少的正式方案前置条件。
   - `是否存在临时补丁或绕过`：是/否；如是，必须注明用户明确批准范围、风险和后续处理。
 - After each milestone is reached, the Agent must update the task document with milestone status, completed work, verification evidence, and remaining blockers.
+- Implementation and required verification完成后，如清理、合并或 worktree 删除尚未完成，`## Current Status` 必须写为 `ready_for_closeout`。
 - When the task is finished, the Agent must mark the task document as completed and record the final verification result.
 - Before starting a new task, the Agent must check the previous task document in the same service repository. If it is not marked completed, the Agent must finish or explicitly block the old task document before working on the new task.
 - If the previous task cannot be completed because of missing prerequisites, the Agent must record the blocker and impact in the old task document, then report it before starting the new task.
 
-- For all six microservice Agents, every completed work item must be committed to the owning service Git repository after required verification passes.
+- For all six microservice Agents, implementation changes must be committed to the owning service Git repository after required verification passes and before destructive closeout or integration.
+- Closeout、合并和 worktree 删除验证通过后，才把任务标记为 `completed`，并单独提交最终任务记录。
 - Each commit must include only files directly produced by the current work item; do not include unrelated user edits, other Agent changes, or temporary output.
 - If verification fails or a required precondition is missing, fail fast and report the exact blocker and impact before committing.
 - Use a concise commit message that names the result, preferably in Chinese, for example `任务: 更新权限校验`.
@@ -95,8 +97,7 @@
 - 凡涉及重构，必须先从长期可维护、可扩展的方向评估方案，先写任务文档，再采用 Subagent-Driven Development 方式执行重构。
 
 - Thread baseline: E2E 必须走真实用户路径；只用 Playwright 操作前端，接口仅用于最终校验，前端无入口则先修前端并失败。
-- Thread baseline: 所有 Playwright 自动化默认统一使用业务前端仓 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3` 的 Playwright `1.60.0` 与其浏览器缓存；运行目录默认切到该仓，使用其 `node_modules\playwright`，不得默认使用侧边聊天 `node_repl`、`npx` 临时版本或其它 Playwright 版本。
-- Thread baseline: 如必须在非业务前端仓上下文启动 Playwright，必须显式指定可用浏览器路径 `E:\Int\DevCache\playwright-browsers\chromium-1223\chrome-win64\chrome.exe` 或系统 Chrome `C:\Program Files\Google\Chrome\Application\chrome.exe`；若仍指向缺失的 `chromium-1200`、`chromium_headless_shell-1200` 或其它不存在浏览器缓存，必须 fail fast，不得反复执行 `playwright install` 卡住任务。
+- Thread baseline: Playwright 版本、运行目录与浏览器路径继承 `D:\ProjectPackage\AGENTS.md`，维护仓不重复定义共同规则。
 
 - Thread baseline: E2E 不得为测试额外增加前端控件或内容；发现错误必须主动暴露，不得隐藏或绕过。
 - Thread baseline: 删除前端控件时必须同步删除对应后端功能，更新相关文档和测试，并运行受影响测试。
@@ -124,5 +125,5 @@
 - Thread baseline: 编写或修复 SQL 前，以当前真实库 `DESCRIBE` / `SHOW TABLES` 为准核对表名字段，尤其是 MES 老表和动态菜单相关表；不得仅凭 DO 类名、历史记忆或推断字段写运行 SQL。
 - Thread baseline: 正式服务器默认禁止操作；仅在用户明确授权的发布、联调、排障场景下按文档执行。
 - Thread baseline: 默认提到的修改需求只在本机修改，未经明确授权不操作服务器或远程环境。
-- Thread baseline: 所有端到端测试必须由 Playwright 实际打开页面并先登录后操作；禁止接口绕过发布流程，仅使用既有真实数据，禁止模拟、自创数据和兜底，缺少数据自动失败。
+- Thread baseline: 所有端到端测试必须由 Playwright 实际打开页面并先登录后操作；只读场景复用既有真实数据；创建、导入、编辑、删除等写入型场景允许且必须仅通过真实前端在测试租户创建带任务标识、可追踪且可清理的用例数据。禁止 mock、接口或 SQL 绕过、修改芋道源码租户、使用备份数据冒充测试环境或兜底成功；缺少必要基线数据必须 fail fast。
 - Thread baseline: `测试租户`指租户名称`测试租户`、账号名称`aoteman`；`芋道源码`指租户名称`芋道源码`、账号名称`admin`。

@@ -431,9 +431,14 @@
 
 ## 2026-07-10 发布任务 closeout 状态与清理契约
 
-- 执行 task-closeout 前必须先 preview，并确认 keep/delete/blocked/warnings 与本任务范围一致。
-- 当前清理脚本只把 `## Current Status` 节中以 `completed` 开头的内容识别为完成态；仅写中文 `## 当前状态` 或 `Status: COMPLETED` 会被识别为 unknown 并阻塞 apply。
-- 任务模板应同时保留用户可读的中文状态和机器可读的 `## Current Status` / `completed`，不得为绕过门禁直接删除状态检查。
+- Trigger: 任务工作和必要验证已完成，准备清理临时产物、合并分支或删除 worktree。
+- Preflight check: 将机器可读 `## Current Status` 写为 `ready_for_closeout`，运行 task-closeout preview，确认 `task.md`、`execution-log.md`、`verification-report.md` 位于 keep，delete/blocked/warnings 与本任务范围一致。
+- Blocker: 状态仍为 `in_progress`/`blocked`/`unknown`，验证报告进入 delete，存在未确认改动或未合并提交，主工作区脏改阻止 ff-only 合并。
+- Verification: task-closeout apply 成功，合并结果验证通过，Git worktree 注册与物理目录均不存在，运行控制台恢复稳定主路径后，再把状态更新为 `completed`。
+- Forbidden action: 不得为通过 apply 提前写 `completed`，不得删除 `verification-report.md`，不得绕过主工作区脏改或扩大删除范围。
+- Evidence: `task.md`、`execution-log.md`、`verification-report.md`、task-closeout 输出、合并提交、`git worktree list` 和运行控制台 health。
+
+- task-closeout apply 接受 `ready_for_closeout` 与 `completed`；正常流程必须优先使用 `ready_for_closeout`，只为兼容已完成旧任务保留 `completed`。
 - worktree 删除完成必须同时满足：Git 注册不存在、固定任务物理根不存在、运行控制台已恢复到主工作区且 health=`UP`。
 - Windows 下 `git worktree remove --force` 返回 Directory not empty 时，必须按 `docs/worktree-memory.md` 先确认已注销、路径受限、无进程引用，再删除残留；不得扩大到其他任务目录。
 

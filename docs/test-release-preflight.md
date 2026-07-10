@@ -229,16 +229,21 @@ ssh root@172.30.30.58 bash -s
 
 ### 必查项
 
+- 发布和真实运行态验证完成后，将任务状态标记为 `ready_for_closeout`，不得提前写 `completed`。
 - 运行 `task-closeout-cleanup` preview。
+- `task.md`、`execution-log.md` 和 `verification-report.md` 必须位于默认 keep 集。
 - 临时 release worktree 若无新提交，发布完成后删除。
 - 若有新提交，必须先合回对应 `int_main` 并验证，再清理。
 - 删除前恢复本地维护控制台配置，不得让 48181 继续引用即将删除的 worktree。
 - Windows `git worktree remove` 后还要确认物理目录不存在。
+- cleanup、合并、Git 注册、物理目录和运行控制台恢复全部验证通过后，才把任务状态更新为 `completed`。
 
 ### Fail Fast
 
 - worktree 有未确认改动。
 - worktree 有未合回提交。
+- cleanup 尚未通过却已把任务标记为 `completed`。
+- `verification-report.md` 被归入 delete。
 - 运行控制台仍引用 release worktree。
 - Git 注册已删但物理目录残留，且未完成固定路径、无进程引用和无 Git 注册检查。
 
