@@ -12,6 +12,7 @@
 - Thread baseline: 正式服 /mnt/nas 是公司共享盘，禁止删除、清空或移除挂载/fstab。
 - Thread baseline: 发布失败先查 migration/manifest/脚本契约，再查环境；后端产物或环境变量契约变更时，维护仓脚本与测试必须同步修改。
 - Thread baseline: 完整发布只认单一 releaseTag 的 `build-release -> publish-test -> mark-tested -> promote-prod -> promote-backup` 闭环；不得拼接多轮 releaseTag 结果。
+- Thread baseline: 用户明确要求“仅测试服发布”时，成功范围止于同一 releaseTag 的 `build-release -> publish-test` 及测试服真实运行态、页面、版本号和变更说明验证；禁止执行 `mark-tested`、`promote-prod` 或 `promote-backup`，不得因未走完整发布链而误判测试服发布失败。
 - Thread baseline: 发布成功必须同时核 operation=SUCCESS、manifest、远端 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、backend health=UP、frontend HTTP 200；缺任一项不得判定完成。
 - Thread baseline: 每次构建发布一律在临时发布 worktree 中执行，禁止直接在主工作区执行构建、验证或发布。
 - Thread baseline: 临时发布 worktree 必须检出本次发布目标提交；构建发布输入固定为该目标提交对应的 Git 已提交内容，未提交改动、未跟踪文件和脏工作区内容一律不得进入发布包。
@@ -20,7 +21,7 @@
 - Thread baseline: 临时发布 worktree 未产生新提交时，发布完成后必须直接删除。
 - Thread baseline: 临时发布 worktree 产生新提交时，必须先将新提交合回对应仓库 `int_main`，并在合并结果上完成必要验证；验证通过后必须删除该临时发布 worktree。
 - Thread baseline: 临时发布 worktree 存在未确认归属的改动、未合并提交或验证未通过问题时，任务状态必须标记为阻塞；阻塞状态下不得删除该 worktree，不得宣称本次发布完成。
-- Thread baseline: 发布流程和运行态验证完成后，任务状态先标记为 `ready_for_closeout`；只有发布结论已记录、所有临时发布 worktree 已删除、运行控制台已恢复稳定主路径且现场只剩各仓库 `int_main` 主工作区后，才能标记 `completed`。
+- Thread baseline: 发布流程和运行态验证完成后，任务状态先标记为 `ready_for_closeout`；只有发布结论已记录、本任务拥有的临时发布 worktree 已删除、本任务启动或改动的运行控制台已恢复任务前稳定路径后，才能标记 `completed`。其他并发任务的 worktree、进程和控制台实例不得删除或停止，也不因其存在阻塞本任务收尾，除非双方正在争用同一测试环境或发布锁。
 - Thread baseline: 每次使用临时发布 worktree 时，任务文档和 `execution-log.md` 必须记录 worktree 路径、目标提交、构建命令、验证命令、是否产生新提交、是否已合回 `int_main`、最终删除结果。
 
 ## Mixed Git Workspace Policy
@@ -38,12 +39,10 @@
 - Thread baseline: 前端本地入口固定为 `http://localhost:8081`；涉及前端调试、联调、验证或 E2E 时默认从该入口进入。
 - Thread baseline: 展厅前端路径固定为 `D:\ProjectPackage\Website`；涉及展厅前端代码、调试与联调时默认使用该目录。
 
-## Agent Git Commit Policy
-
 ## Agent Task Documentation Policy
 
 - Before starting any task, the Agent must create or identify the task directory under `doc/tasks/<task-id>/` and write the task document first.
-- Thread baseline: 每次任务将用户每条需求与执行命令记录到 docs/request-command-log.md。
+- Thread baseline: 每次任务将用户需求、执行命令意图和验证结果记录到 `docs/request-command-log.md`；密码、token、私钥、连接串和其他凭据必须脱敏，含明文凭据的原始日志不得提交。
 - Thread baseline: 每次任务创建或识别任务目录后，必须先读取 `docs/experience-index.md`，按索引只打开命中的经验文档，并在任务文档写入 `经验门禁` 小节，列出本任务适用的强制门禁；不得只写“已阅读”而不摘取门禁。
 - Thread baseline: 后续新增经验默认优先写入事前文档入口；仅事后复盘内容才写入 error-prevention 类文档。
 - Thread baseline: 后续新增或更新经验必须遵循 `docs/experience-index.md` 的“经验文档写入规范（强制）”；优先更新已有归宿，门禁摘要固定包含 `Trigger`、`Preflight check`、`Blocker`、`Verification`、`Forbidden action`、`Evidence`，不得只写背景、结论或“下次注意”。
@@ -57,8 +56,8 @@
 - After each milestone is reached, the Agent must update the task document with milestone status, completed work, verification evidence, and remaining blockers.
 - Implementation and required verification完成后，如清理、合并或 worktree 删除尚未完成，`## Current Status` 必须写为 `ready_for_closeout`。
 - When the task is finished, the Agent must mark the task document as completed and record the final verification result.
-- Before starting a new task, the Agent must check the previous task document in the same service repository. If it is not marked completed, the Agent must finish or explicitly block the old task document before working on the new task.
-- If the previous task cannot be completed because of missing prerequisites, the Agent must record the blocker and impact in the old task document, then report it before starting the new task.
+- Before starting a new task, the Agent must check the most recent task document owned by the current thread or current task chain in the same service repository. If it is not marked completed, the Agent must finish or explicitly block that owned task before working on the new task; unrelated concurrent task documents are not treated as the current task's predecessor.
+- If the current thread's previous owned task cannot be completed because of missing prerequisites, the Agent must record the blocker and impact in that task document, then report it before starting the new task.
 
 - For all six microservice Agents, implementation changes must be committed to the owning service Git repository after required verification passes and before destructive closeout or integration.
 - Closeout、合并和 worktree 删除验证通过后，才把任务标记为 `completed`，并单独提交最终任务记录。
@@ -75,8 +74,6 @@
 - 建议使用 `BDD: <scenario name> -> Given/When/Then`、`RED: <command> -> FAIL, <expected reason>`、`GREEN: <command> -> PASS` 标记。
 - 缺少前置条件、依赖、测试环境或测试数据时必须失败并报告；不得用 mock 成功、静默跳过、降级或 fallback 掩盖。
 
-- Thread baseline: 当前仓库所有功能、修复、重构和行为变更默认采用严格 TDD：先失败测试，再最小实现，最后回归验证。
-- Thread baseline: 后续所有功能、修复、重构和行为变更默认采用 BDD + 严格 TDD：先用 BDD 写清楚用户、业务或接口可观察的 `Given / When / Then` 场景，再按 TDD 执行失败测试、最小实现和回归验证；BDD 场景与 TDD 证据必须记录到 `doc/tasks/<task-id>/execution-log.md`，建议使用 `BDD: <scenario name> -> Given/When/Then`、`RED: <command> -> FAIL, <expected reason>`、`GREEN: <command> -> PASS` 标记；缺少前置条件、依赖、测试环境或测试数据时必须失败并报告，不得用 mock 成功、静默跳过、降级或 fallback 掩盖。
 - Thread baseline: 未明确说明时，e2e 测试用例必须使用真实数据，不得使用 mock 数据。
 - Thread baseline: 测试统一使用独立测试租户登录，禁止用备份数据方案代替真实测试环境。
 
@@ -96,15 +93,16 @@
 
 - 凡涉及重构，必须先从长期可维护、可扩展的方向评估方案，先写任务文档，再采用 Subagent-Driven Development 方式执行重构。
 
-- Thread baseline: E2E 必须走真实用户路径；只用 Playwright 操作前端，接口仅用于最终校验，前端无入口则先修前端并失败。
+- Thread baseline: E2E 必须走真实用户路径；只用 Playwright 操作前端，接口仅用于最终校验。发布、审计或独立验证时若前端无入口必须 fail fast 并记录，不得临时改产品扩大范围；功能或修复任务仅在入口属于已批准范围且先完成 BDD + TDD 时补入口。
 - Thread baseline: Playwright 版本、运行目录与浏览器路径继承 `D:\ProjectPackage\AGENTS.md`，维护仓不重复定义共同规则。
 
 - Thread baseline: E2E 不得为测试额外增加前端控件或内容；发现错误必须主动暴露，不得隐藏或绕过。
-- Thread baseline: 删除前端控件时必须同步删除对应后端功能，更新相关文档和测试，并运行受影响测试。
+- Thread baseline: 删除前端控件时必须先确认是“仅隐藏入口”还是“下线完整功能”；只有用户范围或正式需求明确下线完整功能时才同步删除后端能力。无此依据不得扩大为后端删除；两种情形都必须更新相关文档和测试并运行受影响测试。
 - Thread baseline: DCC审核矩阵/审批路线必须保持与 `D:\ocr2\resource\审核会签.pdf` 确认版一致；未经用户明确批准，任何测试、联调或 E2E 不得切换、覆盖或改写 live 审核矩阵版本。
 - Thread baseline: 本机展厅默认文件配置 `infra_file_config.id=28`、默认 bucket `yudao`、默认域 `http://127.0.0.1:9000/yudao` 视为受保护资源；未经用户明确授权，任何 E2E、联调、脚本或人工操作不得修改、切换、覆盖或绑定到其他 bucket/domain/endpoint。
 - Thread baseline: 任何 E2E、联调、脚本或人工操作都不得把 `config_id=28` 且 `path LIKE 'showroom/%'` 的默认展厅媒体 URL 改写到非默认受保护域；发现默认展厅文件配置或 `showroom/%` 媒体 URL 漂移时必须 fail fast，禁止继续启动、继续 E2E 或用临时同步/回填掩盖问题，除非用户明确批准本次修复范围。
 - Thread baseline: PowerShell 5.1 不使用 `&&`；命令改为分行执行或用 `;` 连接。
+- Thread baseline: PowerShell 任务涉及中文参数、中文正则、中文 SQL、SSH/MySQL 标准输入、多行 inline 脚本或 here-string 时，执行风险命令前必须读取 `D:\ProjectPackage\Int\IntRuoyi\docs\powershell-memory.md` 并按其设计编码与退出码验证路径。
 
 ## Encoding Safety Policy
 

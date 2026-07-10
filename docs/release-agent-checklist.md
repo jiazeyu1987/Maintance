@@ -138,13 +138,19 @@ Codex 必须把完整发布任务视为以下严格顺序：
   - `-Environment test`
   - `-ServerHost 172.30.30.58`
   - `-RemoteAppDir /opt/intruoyi/runtime`
+- 真实写入前检查本地/远端发布进程和 `infra_release_operation_lock`；存在活动发布或 `RUNNING` 锁时阻塞，不与其他任务重叠发布同一测试环境。
 - 执行 `publish-test`
 - 只读核对测试服：
   - `.env IMAGE_TAG`
+  - compose 解析后的 backend/frontend 镜像
   - backend/frontend 实际镜像 tag
   - backend health
   - frontend HTTP
+  - `release-info.json`
+  - `infra_release_operation_lock`
   - operation 最终状态
+- 最终判定前重新执行上述运行态检查，确认未被并发任务的新 releaseTag 覆盖。
+- 保存或提交发布日志前扫描明文凭据；日志含密码、token、私钥、连接串或 `mysql -p...` 时先脱敏并删除原始秘密日志。
 
 ### 放行条件
 
@@ -158,6 +164,9 @@ Codex 必须把完整发布任务视为以下严格顺序：
 
 - operation 未成功
 - `.env` 已变但容器镜像仍是旧版本
+- `.env`、compose、实际镜像、`release-info.json` 或 operation lock 指向不同 releaseTag
+- 存在其他任务的活动发布进程或目标版本在最终验收前被覆盖
+- 待保留或待提交日志含明文凭据
 - health 不通
 - frontend 不通
 

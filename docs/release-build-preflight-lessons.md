@@ -420,6 +420,24 @@
 - 必须 fail fast：Manifest v1 缺失、双仓提交或 dirty 无法确认、artifact 校验失败；不得因把 Manifest v1 字段错误强加给 legacy 清单而误判有效包。
 - 记录：`doc/tasks/20260709-current-head-test-only-release/execution-log.md` 中的 `v9-legacy-manifest-overstrict-local-validator` 与修正后门禁结果。
 
+## 2026-07-10 Manifest artifact SHA256 前缀门禁
+
+- Trigger: 校验 Manifest v1 或兼容清单中的 artifact SHA256，尤其是字段可能采用 `sha256:<64hex>` 或裸 `<64hex>` 两种表示时。
+- Preflight check: 先识别哈希字段 schema；只允许规范化一个开头的 `sha256:` 前缀，再验证剩余值为 64 位十六进制并与文件实际 SHA256 比较。
+- Blocker: 哈希格式无法识别、前缀重复、规范化后不是 64 位十六进制、文件缺失、大小或哈希不一致。
+- Verification: 输出 artifact 总数、missing、sizeMismatch、hashMismatch；全部必须为 0，且总数与 manifest 一致。
+- Forbidden action: 不得把带 `sha256:` 的有效值直接与裸哈希比较后误报全部失败，不得跳过失败项或用文件存在性代替哈希。
+- Evidence: `doc/tasks/20260710-current-head-test-only-release-completion-audit/execution-log.md`；初版校验器误报 281 项 hash mismatch，规范化前缀后 281/281 全部通过。
+
+## 2026-07-10 发布日志凭据脱敏门禁
+
+- Trigger: 发布脚本、SSH、MySQL、Docker 或运行控制台会把完整命令写入 stdout/stderr、operation 日志或任务证据。
+- Preflight check: 发布前确认日志器对密码、token、私钥、连接串和 `mysql -p...` 参数脱敏；发布后在保留或提交日志前扫描明文凭据模式。
+- Blocker: 任一待保留或待提交文件含明文凭据；无法证明日志已脱敏。
+- Verification: 脱敏扫描命中数为 0；任务文档只记录命令意图、退出码、计数和脱敏摘要，原始秘密日志已从任务产物中删除。
+- Forbidden action: 不得把含明文密码的 stdout/stderr、operation dump 或命令历史提交到 Git，不得为“完整证据”保留凭据原文。
+- Evidence: `doc/tasks/20260710-current-head-test-only-release-completion-audit/execution-log.md`；修复发布 stdout 中检测到 274 处明文 MySQL 密码命令，完成摘要后必须删除原始日志。
+
 ## 2026-07-10 测试服真实运行态与运行控制台展示必须拆分验证
 
 - 发布成功必查仍以真实运行态为准：远端 `.env IMAGE_TAG`、backend/frontend 实际镜像、容器 running、backend health `UP`、frontend HTTP 200、目标迁移、唯一索引和冲突数。
@@ -427,7 +445,7 @@
 - 测试服后端若在 Linux 容器中仍用 `powershell.exe` 执行 status script，运维矩阵会显示 `ERROR/unknown`，`release-status.testCurrentReleaseTag` 也可能为 null。该问题必须单独记录，不能用错误矩阵覆盖已独立取得的真实运行态。
 - 必须 fail fast：用户验收明确要求运维矩阵健康时，出现 Linux/PowerShell 探测错误即阻塞；若验收仅要求版本号与变更说明，则仍须保证 `release-info.json`、页面对话框和维护控制台发布记录一致，同时公开记录矩阵缺陷。
 - 推荐检查：`curl /release-info.json`、Playwright 打开版本对话框、维护控制台 `/release-status`、SSH `docker inspect`、远端 HTTP 与数据库只读查询交叉验证。
-- 记录：`doc/tasks/20260709-current-head-test-only-release/execution-log.md` 中的 v9 真实运行态、Playwright 页面验收和已知控制台缺陷记录。
+- 记录：`doc/tasks/20260709-current-head-test-only-release/execution-log.md` 以及 `doc/tasks/20260710-current-head-test-only-release-completion-audit/execution-log.md` 中的 v9 真实运行态、Playwright 页面验收和已知控制台缺陷记录。
 
 ## 2026-07-10 发布任务 closeout 状态与清理契约
 

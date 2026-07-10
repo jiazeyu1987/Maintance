@@ -59,9 +59,15 @@ PowerShell 共同基础规则以 `D:\ProjectPackage\Int\IntRuoyi\docs\powershell
 
 ## 2026-07-10 Windows subprocess 向 SSH bash 标准输入必须禁用 CRLF 转换
 
-- Python `subprocess.run(..., text=True, input=script)` 在 Windows 上可能把 `\n` 转为 `\r\n`，远端 `bash -s` 会报 `set: -\r invalid option`、路径尾部出现 `\r` 或 `do\r` 语法错误。
+- Trigger: Windows 上通过 Python subprocess、PowerShell 或其他客户端把多行脚本送入 SSH 远端 `bash -s`。
+- Preflight check: 发送前将脚本编码为 UTF-8 bytes，并断言输入字节不含 `\r`；禁止使用可能自动转换换行的 `text=True, input=script`。
+- Blocker: 输入含 CRLF；远端 stderr 出现 `set: -\r invalid option`、路径尾部 `\r`、`do\r` 或等价语法错误。
+- Verification: 使用 `input=script.encode('utf-8')` 发送，stdout/stderr 显式 UTF-8 decode，远端命令退出码为 0 且关键输出完整。
+- Forbidden action: 不得把远端脚本因 CRLF 未执行误判为服务器、Docker、数据库或业务数据异常，不得继续复用损坏脚本输出。
+- Evidence: `doc/tasks/20260710-current-head-test-only-release-completion-audit/execution-log.md`；首次 text 模式失败，改为 UTF-8 bytes + LF 后同一只读验证通过。
+
 - 推荐写法：`input=script.encode('utf-8')`，按 bytes 发送；stdout/stderr 再显式 `decode('utf-8', errors='replace')`。
-- 执行前可检查脚本字节不含 `\r`；失败时保留 stderr，禁止把远端脚本未执行误判为服务器或数据库异常。
+- 失败时保留 stderr 和输入换行检查结果，再修正传输层；不要先改远端命令或环境。
 
 ## 2026-07-10 原生命令 stderr 与 PowerShell 自动变量门禁
 

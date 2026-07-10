@@ -154,6 +154,15 @@ corepack pnpm@10.25.0 --version
 - required SQL 依赖未验证 live data。
 - 测试服数据修复缺少授权、备份、ROLLBACK 演练或引用保持验证。
 
+### 并发发布与目标版本漂移门禁
+
+- Trigger: 测试服发布、完成性审计或长时间 publish-test 期间，可能存在其他任务操作同一测试环境、发布锁或运行目录。
+- Preflight check: 在真实写入前和最终验收前分别检查本地/远端发布进程、`infra_release_operation_lock`、远端 `.env IMAGE_TAG`、compose 解析镜像、实际容器镜像和 `release-info.json`，记录当前 releaseTag 与 operation。
+- Blocker: 存在活动发布进程或 `RUNNING` 锁；任一检查点的 releaseTag 与本任务目标不一致；发布过程中被其他任务覆盖。
+- Verification: 无活动发布进程，锁状态为本任务对应的 `APPLIED`，`.env`、compose、实际镜像和 `release-info.json` 全部等于同一目标 releaseTag。
+- Forbidden action: 不得使用发布前旧快照代替最终状态，不得让两个任务重叠发布同一环境，不得在目标版本已被覆盖后仍宣称完成。
+- Evidence: `doc/tasks/20260710-current-head-test-only-release-completion-audit/execution-log.md`；并发 v3 于 2026-07-10 14:43 完成后，本任务按冻结 v9 基线于 14:49-15:05 恢复并重新验证。
+
 ## 阶段 5：测试服发布后真实运行态
 
 ### 必查项
