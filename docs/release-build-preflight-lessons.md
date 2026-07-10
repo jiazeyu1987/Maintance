@@ -392,3 +392,46 @@
 - Forbidden action: 不得手写 dry-run 绿灯、不得跳过 `ProdDryRunEvidencePath`、不得在没有完整 sanitized package workspace 的情况下执行正式服发布。
 - Evidence: `doc/tasks/20260709-codeonly-three-env-head-release/evidence/prod-preflight-release-dry-run-v10-copyitem-failure-freeze.json`。
 
+## 2026-07-10 构建开始后以冻结发布 worktree 为唯一来源基线
+
+- 触发场景：业务仓持续开发，`build-release` 构建或测试服发布期间源分支继续产生新提交。
+- 强制门禁：发布开始前一次性记录维护仓、后端仓、前端仓的目标提交，并将专用 release worktree 检出到这些提交；后续来源一致性只比较 release worktree HEAD、`manifest.json.sourceRepos[*].commit`、`dirty=false` 和发布产物。
+- 判定规则：冻结完成后的源分支 HEAD 漂移不使已构建发布包失效，也不要求反复追逐最新提交重建；只有 release worktree HEAD、dirty 状态、Manifest v1 或产物校验发生变化时才判废。
+- 自动化项：`build-release` 提交前生成 frozen-baseline JSON；构建后自动比较 worktree HEAD 与 Manifest v1 双仓提交，不再读取持续变化的源分支 HEAD 作为发布门禁。
+- 禁止事项：不得把“源分支后来有新提交”误判为包来源漂移；也不得在冻结 worktree 中混入未提交修复后继续使用同一 releaseTag。
+- 记录：`doc/tasks/20260709-current-head-test-only-release/execution-log.md` 中的 `release-target-refreeze-v9` 与 `build-release-v9-manifest-package-validation-corrected`。
+
+## 2026-07-10 路线排产配置收敛迁移必须前置检查真实冲突
+
+- 触发场景：required SQL 将 `mes_pro_route_schedule_config` 从产品维度收敛到 `tenant_id + route_version_id + route_process_id` 工序维度。
+- 发布前必查：在测试服只读统计活动配置重复组，并输出冲突配置 ID、`item_id`、产能、夜班和日历差异；发现同一工序存在语义不同的配置时，必须在镜像加载、`.env IMAGE_TAG` 更新和 required SQL 执行前阻塞。
+- 高风险步骤：业务数据修复必须先确认当前提交的读取/写入契约、真实引用和快照固化逻辑，再执行备份、ROLLBACK 演练和 fail-fast 事务脚本；禁止无业务依据地猜测保留哪一行。
+- 自动化项：发布脚本在执行 `20260613_mes_smart_scheduling_t1_schema.sql` 前运行同等冲突查询，并在失败输出 tenant/version/process/config/item 差异。
+- 必须 fail fast：冲突组不为 0、修复授权不明确、备份校验失败、引用数量变化、事务演练未恢复原状、目标唯一键仍不可创建。
+- 记录：`doc/tasks/20260709-current-head-test-only-release/execution-log.md` 中的测试服冲突数据修复授权、ROLLBACK 演练与正式执行记录。
+
+## 2026-07-10 Manifest v1 与兼容清单必须按各自 schema 校验
+
+- `manifest.json` 是完整发布契约，负责双仓 `sourceRepos`、commit、dirty、changeSet、required SQL、资源模式和全部 artifact。
+- `release-manifest.json` 是兼容概要，只要求 releaseTag、packageDirectoryName、component、publishScope、单一 backend `gitCommit` 和 artifact inventory；不得强制其包含 frontend commit。
+- 自动化项：校验器先识别 schema/version，再执行对应字段集；Manifest v1 双仓来源校验与 legacy 281 项 artifact 大小/SHA256 校验必须分别保留。
+- 必须 fail fast：Manifest v1 缺失、双仓提交或 dirty 无法确认、artifact 校验失败；不得因把 Manifest v1 字段错误强加给 legacy 清单而误判有效包。
+- 记录：`doc/tasks/20260709-current-head-test-only-release/execution-log.md` 中的 `v9-legacy-manifest-overstrict-local-validator` 与修正后门禁结果。
+
+## 2026-07-10 测试服真实运行态与运行控制台展示必须拆分验证
+
+- 发布成功必查仍以真实运行态为准：远端 `.env IMAGE_TAG`、backend/frontend 实际镜像、容器 running、backend health `UP`、frontend HTTP 200、目标迁移、唯一索引和冲突数。
+- 运行控制台的版本验收必须真实登录页面，进入 `基础设施 -> 监控中心 -> 运行控制台`，打开全局 `版本变更说明`，核对 releaseTag、摘要、变更项和双仓提交；不得只读取接口或截图首页角标。
+- 测试服后端若在 Linux 容器中仍用 `powershell.exe` 执行 status script，运维矩阵会显示 `ERROR/unknown`，`release-status.testCurrentReleaseTag` 也可能为 null。该问题必须单独记录，不能用错误矩阵覆盖已独立取得的真实运行态。
+- 必须 fail fast：用户验收明确要求运维矩阵健康时，出现 Linux/PowerShell 探测错误即阻塞；若验收仅要求版本号与变更说明，则仍须保证 `release-info.json`、页面对话框和维护控制台发布记录一致，同时公开记录矩阵缺陷。
+- 推荐检查：`curl /release-info.json`、Playwright 打开版本对话框、维护控制台 `/release-status`、SSH `docker inspect`、远端 HTTP 与数据库只读查询交叉验证。
+- 记录：`doc/tasks/20260709-current-head-test-only-release/execution-log.md` 中的 v9 真实运行态、Playwright 页面验收和已知控制台缺陷记录。
+
+## 2026-07-10 发布任务 closeout 状态与清理契约
+
+- 执行 task-closeout 前必须先 preview，并确认 keep/delete/blocked/warnings 与本任务范围一致。
+- 当前清理脚本只把 `## Current Status` 节中以 `completed` 开头的内容识别为完成态；仅写中文 `## 当前状态` 或 `Status: COMPLETED` 会被识别为 unknown 并阻塞 apply。
+- 任务模板应同时保留用户可读的中文状态和机器可读的 `## Current Status` / `completed`，不得为绕过门禁直接删除状态检查。
+- worktree 删除完成必须同时满足：Git 注册不存在、固定任务物理根不存在、运行控制台已恢复到主工作区且 health=`UP`。
+- Windows 下 `git worktree remove --force` 返回 Directory not empty 时，必须按 `docs/worktree-memory.md` 先确认已注销、路径受限、无进程引用，再删除残留；不得扩大到其他任务目录。
+

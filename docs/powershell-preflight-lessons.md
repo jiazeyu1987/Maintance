@@ -38,3 +38,29 @@
 
 - 侧边聊天和主线程共用同一台 Windows 机器，PowerShell 5.1 限制一致；侧边聊天里同样不能写 `&&`。
 - 侧边聊天虽然常用于轻量探索，但只要涉及中文文件读取或命令输出，也必须沿用显式 UTF-8 规则，不能因为“只是看一下”就省略编码门禁。
+
+## 2026-07-10 PowerShell 向 Python/Node 管道传源码的编码门禁
+
+- 将包含中文源码的 PowerShell here-string 直接管道给 `python -` 或 `node -`，可能在解析前变成 `?`，造成正则表达式语法错误、字符串比较失败或证据 JSON 写入乱码。
+- 优先方案：脚本源码保持 ASCII，中文常量使用 `\uXXXX`；或将 UTF-8 无 BOM 脚本文件写到受控临时目录后直接执行，并在写后按 UTF-8 回读。
+- `$OutputEncoding`、`[Console]::InputEncoding`、`[Console]::OutputEncoding` 必须设置，但不能替代对管道源字节的验证。
+- 发现 `????`、中文比较明明相同却失败或 JSON 中文字段乱码时，必须停下重生成证据，禁止继续沿用损坏文件。
+
+## 2026-07-10 Windows subprocess 向 SSH bash 标准输入必须禁用 CRLF 转换
+
+- Python `subprocess.run(..., text=True, input=script)` 在 Windows 上可能把 `\n` 转为 `\r\n`，远端 `bash -s` 会报 `set: -\r invalid option`、路径尾部出现 `\r` 或 `do\r` 语法错误。
+- 推荐写法：`input=script.encode('utf-8')`，按 bytes 发送；stdout/stderr 再显式 `decode('utf-8', errors='replace')`。
+- 执行前可检查脚本字节不含 `\r`；失败时保留 stderr，禁止把远端脚本未执行误判为服务器或数据库异常。
+
+## 2026-07-10 原生命令 stderr 与 PowerShell 自动变量门禁
+
+- `git checkout` 等原生命令可能在成功且退出码为 0 时向 stderr 输出正常提示；`$ErrorActionPreference='Stop'` 不能代替 `$LASTEXITCODE` 判断。
+- 需要可靠捕获时使用 `Start-Process -Wait -PassThru` 配合 stdout/stderr 文件，并以 `ExitCode` 为准；正常 stderr 作为证据记录，不直接判失败。
+- PowerShell 变量后紧跟冒号时使用 `${Path}:`，避免 `$Path:` 解析错误。
+- 不把函数参数命名为 `$Args`；它是 PowerShell 自动变量，容易造成数组绑定和参数读取异常。
+
+## 2026-07-10 HTTP 健康检查与进程路径扫描门禁
+
+- `Invoke-WebRequest.Content` 在不同 PowerShell/HTTP 响应组合下可能是 `byte[]`，不得直接使用 `-match 'UP'`；JSON 健康接口优先用 `Invoke-RestMethod` 并断言结构化 `status`。
+- 若必须使用 `Invoke-WebRequest`，先按响应编码将字节显式解码，再做字符串或 JSON 判断。
+- 按命令行扫描占用某个 worktree 的进程时，清理命令自身也会包含目标路径；必须排除当前 `$PID`，再检查剩余进程，避免把执行壳误判为外部锁定进程。
