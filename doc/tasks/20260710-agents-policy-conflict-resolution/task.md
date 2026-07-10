@@ -12,7 +12,7 @@
 - [x] M4：修复 E2E 数据、worktree 路径、经验格式、分支范围和残缺路由。
 - [x] M5：去除可安全继承的重复规则并明确权威入口。
 - [x] M6：独立复审全部发现，验证 UTF-8、差异范围和任务收尾。
-- [ ] M7：分别提交各 Git 仓库内本任务产生的改动。
+- [x] M7：分别提交各 Git 仓库内本任务产生的改动。
 
 ## 预期验证
 
@@ -47,10 +47,13 @@
 
 ## Current Status
 
-ready_for_closeout
+completed
 
 ## 当前结果
 
 - task-closeout 状态机和验证报告保留缺陷已按严格 TDD 修复。
 - 全局、父级、维护仓和业务仓规则已消除原审计发现的执行冲突。
-- 独立验证结果为 PASS，待完成分仓提交和最终 closeout。
+- 独立验证结果为 PASS。
+- IntRuoyi 业务仓提交为 `a89903a0cfa2cfdd114b27265ee9ea19a750d849`。
+- 维护仓实现提交为 `743f19f134177eb7ebe8fe0f1d73df64f4bb806d`。
+- task-closeout apply 已成功，仅删除临时补丁，四份正式任务记录全部保留。

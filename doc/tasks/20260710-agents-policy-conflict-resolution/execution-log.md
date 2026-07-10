@@ -35,3 +35,11 @@ GREEN: policy-conflicts-resolved -> PASS，已统一状态机、报告保留、E
 GREEN: independent-verification -> PASS，旧冲突文本无命中，Playwright 共同规则仅父级命中，diff/UTF-8/CLI/单测均通过。
 
 GREEN: int-ruoyi-isolated-commit -> PASS，业务仓仅提交本任务涉及的 `AGENTS.md`、`docs/experience-index.md`、`docs/worktree-memory.md`，提交为 `a89903a0cfa2cfdd114b27265ee9ea19a750d849`；其余既有脏改保持未暂存。
+
+GREEN: maintenance-isolated-commit -> PASS，维护仓规则、经验、正式任务证据和请求日志提交为 `743f19f134177eb7ebe8fe0f1d73df64f4bb806d`；临时补丁未进入提交。
+
+GREEN: task-closeout-preview -> PASS，keep 为 `task.md`、`execution-log.md`、`verification-report.md`、`bug-regression-evidence.md`，delete 仅为 `int-ruoyi-agents-task-only.patch`，blocked/warnings 均为空。
+
+GREEN: task-closeout-apply -> PASS，临时补丁已删除，四份正式任务记录均保留；当前工作区为主 worktree，无合并或 worktree 删除动作。
+
+GREEN: final-status -> PASS，全部规则冲突修复、回归验证、独立复审、分仓隔离提交和任务收尾均完成。
