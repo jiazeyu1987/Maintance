@@ -16,6 +16,7 @@
 - `D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`
 - `D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`
 - `D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`
+- 仅测试服发布还必须先读：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md`
 
 ## 执行模型
 
@@ -39,6 +40,7 @@ Codex 必须把完整发布任务视为以下严格顺序：
 - 创建或识别任务目录。
 - 读取 `docs/experience-index.md`。
 - 命中并读取：
+  - `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md`（仅测试服发布或 publish-test 任务）
   - `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
   - `D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`
   - `D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`

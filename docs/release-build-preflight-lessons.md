@@ -8,6 +8,8 @@
 
 如任务目标是让 Codex 直接照清单执行，请同时读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-agent-checklist.md`。
 
+如果任务是“仅测试服发布”或“当前提交发布到测试服”，先读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md` 作为阶段门禁入口；本文保留详细故障经验和诊断规则。
+
 ## 通用发布验证基线
 
 适用场景：任何功能修改、配置修改、脚本修改、菜单/权限调整、构建发布包和部署服务器。
