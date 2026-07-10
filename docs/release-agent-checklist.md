@@ -31,6 +31,8 @@ Codex 必须把完整发布任务视为以下严格顺序：
 7. `promote-backup`
 8. 备份服运行态验证
 
+以上八步仅适用于用户明确授权的完整发布。仅测试服任务必须以 `docs/test-release-preflight.md` 为范围权威，在第 3 步测试服运行态验证通过后停止；不得执行 `mark-tested`、`promote-prod`、`promote-backup` 或任何正式服、备份服动作。
+
 任何一步失败，都必须先记录真实证据，再修复，再从合适步骤重新执行；不得把不同 releaseTag 的成功结果拼接成一次完成。
 
 ## 0. 开始前必做
