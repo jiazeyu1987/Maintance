@@ -29,3 +29,11 @@ GREEN: closeout-regression -> PASS，task-closeout 单元测试 3/3，skill quic
 GREEN: independent-verification -> PASS，当前审计范围内无未解决逻辑冲突。
 
 GREEN: int-ruoyi-isolated-commit -> PASS，业务仓提交 `82188d7301f557d08d3f257e584416bcb59e99b1` 仅包含本任务两处 AGENTS 规则和三份经验文档；原有标准列表模板与 PowerShell 增量改动保持未暂存。
+
+GREEN: maintenance-isolated-commit -> PASS，维护仓规则修复、任务记录和独立验证报告提交为 `bdcc443120f909a19db555295e1d0d96602802c6`；15 项既有无关改动未进入提交。
+
+GREEN: task-closeout-preview -> PASS，keep 为 `task.md`、`execution-log.md`、`verification-report.md`，delete/blocked/warnings 均为空。
+
+GREEN: task-closeout-apply -> PASS，无删除路径，三份正式任务记录完整保留；当前为主 worktree，无合并或 worktree 删除动作。
+
+GREEN: final-status -> PASS，本次复审、冲突修复、独立验证、两仓隔离提交和收尾全部完成。
