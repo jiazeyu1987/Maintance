@@ -65,3 +65,5 @@ GREEN: release-audit-worktree-removal -> PASS，删除前再次确认 m/b/f 三�
 GREEN: scoped-commits -> PASS，维护仓规则、经验、验收报告和本任务五条脱敏请求日志已提交为 `a2dbeaeac78197850d740a95c342f5c5d79f2988`；业务仓仅本任务 AGENTS 冲突修复提交为 `a3aa3a06f35f6d89b321983845975c675cb12ab0`，用户既有“标准列表模板”和 PowerShell 两处工作区改动未进入提交。
 
 GREEN: final-closeout -> PASS，发布验收、问题记录、经验沉淀、规则冲突修复、临时秘密产物清理、worktree 注销与物理删除均完成；任务状态更新为 `completed`。
+
+ISSUE: powershell-native-output-array-match -> 现象=最终 HTTP sanity 使用 `$release = curl.exe ...` 后直接在 `if` 中执行 `$release -notmatch <releaseTag>`，多行 JSON 被 PowerShell 捕获为字符串数组，数组布尔语义产生假失败；阶段=收尾后最终复核；影响=误报 release-info 不匹配，但未触发任何写入；原因判断=未先 join 原生命令多行 stdout 或结构化解析 JSON；处理动作=改用 Python UTF-8 JSON 解析，并通过 SSH 交叉核对 `.env`、镜像、发布锁；结果=v9、双仓提交、容器 running、health UP、前端 HTTP 200 全部仍通过；是否可前置检查=是；是否可自动化=是；下次如何避免=原生命令多行输出先 `-join` 后匹配，JSON 必须用结构化解析，不把数组 `-match/-notmatch` 结果直接当单一布尔值。
