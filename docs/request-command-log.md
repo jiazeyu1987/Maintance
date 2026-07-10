@@ -2586,3 +2586,6 @@
 2026-07-10T11:00:00+08:00	20260710-experience-writing-standard	REQUEST	让后续新增或更新经验文件统一按照本次优化后的方式编写。
 2026-07-10T11:00:00+08:00	20260710-experience-writing-standard	COMMAND	Read project experience rules and existing optimized preflight structure; create task docs; add the mandatory experience-writing template to experience-index and enforce it from AGENTS.md.
 2026-07-10T11:05:00+08:00	20260710-experience-writing-standard	RESULT	PASS: mandatory experience-writing format, route updates, UTF-8/diff verification and task-closeout cleanup completed.
+2026-07-10T11:20:00+08:00	20260710-agents-policy-conflict-audit	REQUEST	审计当前全局、父级、项目级 AGENTS 及影响判断的经验和收尾规则是否存在逻辑冲突。
+2026-07-10T11:20:00+08:00	20260710-agents-policy-conflict-audit	COMMAND	Discover and compare five AGENTS files, maintenance and IntRuoyi experience indexes, PowerShell/worktree routes, independent-verification output rules and task-closeout lifecycle gates.
+2026-07-10T11:25:00+08:00	20260710-agents-policy-conflict-audit	RESULT	FAIL: found two high-risk lifecycle conflicts plus E2E data, worktree path, experience schema and branch-scope ambiguities; no audited policy file was modified.
