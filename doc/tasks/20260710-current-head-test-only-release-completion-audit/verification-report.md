@@ -4,7 +4,7 @@
 
 `release-20260709-current-head-test-v9` 的仅测试服发布验收通过。构建产物只包含冻结的已提交代码，测试服真实运行态、运行控制台版本号和变更说明均已验证。正式服、备份服、`mark-tested` 和 promote 动作未执行。
 
-当前仅剩任务级临时产物和 worktree 清理；独立验收已通过，任务状态为 `ready_for_closeout`。
+独立验收、任务级临时产物清理和 worktree 收尾均已通过，任务状态为 `completed`。
 
 ## 冻结发布输入
 

@@ -2603,3 +2603,4 @@
 2026-07-10T15:26:51+08:00	20260710-current-head-test-only-release-completion-audit	COMMAND	基于冻结 maintenance/backend/frontend 提交和既有 v9 包，仅对测试服执行恢复发布；复核 Manifest、281 项 artifact、镜像、容器、HTTP、发布锁、迁移、真实运行控制台版本与变更说明；命令与日志仅记录脱敏摘要。
 2026-07-10T15:26:51+08:00	20260710-current-head-test-only-release-completion-audit	RESULT	PASS: release-20260709-current-head-test-v9 已恢复并通过测试服真实运行态与真实页面验收；正式服、备份服、mark-tested 和 promote 均未执行；问题台账与前置经验已更新。
 2026-07-10T15:26:51+08:00	20260710-current-head-test-only-release-completion-audit	RULES	已消除全局/项目 AGENTS 的并发任务归属、仅测试服完成定义、E2E 缺入口、前端控件删除范围和命令日志脱敏冲突；原始秘密日志及本任务临时 worktree 已清理。
+2026-07-10T15:29:16+08:00	20260710-current-head-test-only-release-completion-audit	CLOSEOUT	维护仓规则与经验提交 a2dbeaeac78197850d740a95c342f5c5d79f2988、业务仓 AGENTS 提交 a3aa3a06f35f6d89b321983845975c675cb12ab0；任务核心记录保留，状态 completed。

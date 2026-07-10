@@ -11,7 +11,7 @@
 - [x] M3：重新校验 Manifest v1、legacy manifest 和 281 项产物。
 - [x] M4：修复测试服由后续并发发布造成的目标版本漂移，恢复冻结 v9。
 - [x] M5：重新验证镜像、容器、健康、HTTP、真实页面、版本号和变更说明。
-- [ ] M6：复核问题记录、经验沉淀、环境边界并完成独立验证和收尾。
+- [x] M6：复核问题记录、经验沉淀、环境边界并完成独立验证和收尾。
 
 ## 预期验证
 
@@ -40,7 +40,7 @@
 
 ## Current Status
 
-ready_for_closeout
+completed
 
 ## Current Result
 
@@ -51,6 +51,8 @@ ready_for_closeout
 - 真实页面：测试租户 `aoteman` 登录运行控制台成功，版本角标与“版本变更说明”显示 v9、摘要和双仓提交，console error=0。
 - 环境边界：修复发布日志仅连接 `172.30.30.58`；未连接 `.57` 或 `.59`，未执行 `mark-tested`、`promote-prod` 或 `promote-backup`。
 - 已知非降级缺陷：运行控制台 Linux 后端仍尝试 `powershell.exe`，矩阵显示 `ERROR/unknown`；真实运行态和版本对话框已独立验证，缺陷已公开记录。
+- 规则与经验提交：维护仓 `a2dbeaeac78197850d740a95c342f5c5d79f2988`；业务仓 AGENTS 冲突修复 `a3aa3a06f35f6d89b321983845975c675cb12ab0`；全局 AGENTS 同步增加规则优先级、任务归属和日志脱敏边界。
+- 收尾：task-closeout preview/apply 通过；只保留三份核心任务记录；三个冻结 worktree 注册和物理目录均已删除；任务状态 `completed`。
 
 ## Cleanup Candidates
 

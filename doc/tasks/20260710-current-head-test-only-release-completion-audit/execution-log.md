@@ -61,3 +61,7 @@ ISSUE: worktree-process-scan-self-match -> 现象=第二次清理预检按命令
 GREEN: task-closeout-cleanup -> PASS，preview 仅将 `task.md`、`execution-log.md`、`verification-report.md` 列为 keep，将原始 stdout/stderr、临时 UI 脚本和截图列为 delete，blocked/warnings 均为 none；apply 已删除四项临时产物，含 274 处明文凭据的原始 stdout 已不存在。
 
 GREEN: release-audit-worktree-removal -> PASS，删除前再次确认 m/b/f 三个 worktree 的 HEAD 分别为冻结 maintenance/backend/frontend 提交且 dirty=0、无其他进程占用；随后分别从 owning repo 执行 `git worktree remove --force` 与 prune；三项 Git 注册=0、物理目录=0，任务根 `r260710v9audit` 不存在，未产生需合并提交。
+
+GREEN: scoped-commits -> PASS，维护仓规则、经验、验收报告和本任务五条脱敏请求日志已提交为 `a2dbeaeac78197850d740a95c342f5c5d79f2988`；业务仓仅本任务 AGENTS 冲突修复提交为 `a3aa3a06f35f6d89b321983845975c675cb12ab0`，用户既有“标准列表模板”和 PowerShell 两处工作区改动未进入提交。
+
+GREEN: final-closeout -> PASS，发布验收、问题记录、经验沉淀、规则冲突修复、临时秘密产物清理、worktree 注销与物理删除均完成；任务状态更新为 `completed`。
