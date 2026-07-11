@@ -2551,56 +2551,110 @@
 - Command: inspect port owner only, remove residual `r260709ce`, verify runtime health, write final closeout evidence.
 - Evidence: `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260709-codeonly-three-env-head-release\evidence\final-release-closeout-v10.json`.
 
-2026-07-09T20:54:51	20260709-current-head-test-only-release	REQUEST	仅测试服发布：基于当前分支 HEAD 已提交代码构建维护控制台和测试发布包，发布测试服并验证 manifest/运行态/版本说明/经验沉淀。
-2026-07-09T20:56:09	20260709-current-head-test-only-release	COMMAND	git worktree add --detach for maintance/backend/frontend HEAD into D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709t; verify dirty=false and write evidence/release-worktree-create.json.
-2026-07-09T20:58:06	20260709-current-head-test-only-release	COMMAND	Source HEAD drift detected before build; remove unbuilt r260709t worktrees and recreate clean r260709t2 from current HEADs.
-2026-07-09T21:03:40	20260709-current-head-test-only-release	COMMAND	Retry maintenance build with Start-Process capture; pnpm@10.25.0 + mvn test package; jar=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709t2\m\backend\target\runtime-control-maintenance-2026.06-SNAPSHOT.jar.
-2026-07-09T21:04:35	20260709-current-head-test-only-release	COMMAND	Diagnose missing runtime-control.local.yaml in clean worktree before runtime-control start.
-2026-07-09T21:12:08	20260709-current-head-test-only-release	COMMAND	Clean r260709t2 residuals and create clean r260709t3 worktrees from current HEADs.
-2026-07-09T21:18:18	20260709-current-head-test-only-release	COMMAND	Preview and start build-release via runtime-control API; releaseTag=release-20260709-current-head-test; operationId=op-2026-07-09T131818532463200Z-6a0e89b5-5104-4450-b93a-4e07718cb01d.
-2026-07-09T21:34:51	20260709-current-head-test-only-release	COMMAND	Poll build-release operation and validate manifest/sourceRepos/changeSet for release-20260709-current-head-test.
-2026-07-09T21:38:04	20260709-current-head-test-only-release	COMMAND	Retry preview and start publish-test via runtime-control API; releaseTag=release-20260709-current-head-test; operationId=op-2026-07-09T133736857125Z-7f65f377-b8cf-4a9b-9115-8f733ab81ceb.
-2026-07-10T08:42:17+08:00	20260709-current-head-test-only-release	REQUEST	继续。
-2026-07-10T08:42:17+08:00	20260709-current-head-test-only-release	COMMAND	Read ci-cd/preflight release gates; run read-only SELECT conflict audit on test DB; read test `.env`, container image/status, backend health and frontend HTTP; read source/release worktree HEAD and status. No publish, restart, database write, prod, or backup action.
-2026-07-10T08:42:17+08:00	20260709-current-head-test-only-release	RESULT	BLOCKED: 4 route schedule configuration conflicts remain; v8 is not running; source HEADs have advanced beyond v8. Evidence=doc/tasks/20260709-current-head-test-only-release/evidence/resume-after-blocked-audit-2.json.
-2026-07-10T08:47:09+08:00	20260709-current-head-test-only-release	REQUEST	授权修复测试服发布阻塞数据。
-2026-07-10T08:47:09+08:00	20260709-current-head-test-only-release	COMMAND	Compare current committed migration/service contract; audit exact conflict rows, schedule-order snapshot references, target unique-key collisions; export row backup and reference TSV; create fail-fast transactional correction SQL.
-2026-07-10T08:48:16+08:00	20260709-current-head-test-only-release	COMMAND	Run exact test-server correction transaction with final COMMIT replaced by ROLLBACK; verify conflict count and rows restore in a new connection.
-2026-07-10T08:48:33+08:00	20260709-current-head-test-only-release	COMMAND	Execute authorized test-server correction transaction; independently verify conflict count=0, preserved references, exact row state, backend HTTP 200 and frontend HTTP 200.
-2026-07-10T09:08:11+08:00	20260709-current-head-test-only-release	COMMAND	Freeze v9 release worktree baseline at maintenance 1fe4d64a6d4a8840aca061aca3c0c6d72a07d280, backend f1ef04912951ef15ae0d2881c974c964c182d76e, frontend d33339bd7e29f705d12d92d8409d7bc37d314566; build release-20260709-current-head-test-v9 from clean committed inputs.
-2026-07-10T09:12:00+08:00	20260709-current-head-test-only-release	COMMAND	Validate Manifest v1 and legacy manifest by their own schemas; verify version, change summary, component, code-only scope, required SQL hashes and all 281 artifact sizes/SHA256.
-2026-07-10T09:13:18+08:00	20260709-current-head-test-only-release	COMMAND	Preview then submit publish-test for release-20260709-current-head-test-v9 only to 172.30.30.58; operation op-2026-07-10T011318297410400Z-dbee4822-c99c-40ff-894c-71f75679440a.
-2026-07-10T09:27:00+08:00	20260709-current-head-test-only-release	RESULT	publish-test operation SUCCESS; no production, backup, promotion or mark-tested action.
-2026-07-10T09:53:09+08:00	20260709-current-head-test-only-release	COMMAND	Verify test runtime .env/image tags, containers, backend health, frontend HTTP, migrations, unique index, release lock, real Playwright login/page, runtime console release version and change summary.
-2026-07-10T09:53:09+08:00	20260709-current-head-test-only-release	RESULT	PASS: 32/32 required acceptance checks. Runtime operational matrix Linux/powershell.exe defect and release-status current-tag-null defect recorded separately.
-2026-07-10T10:00:00+08:00	20260709-current-head-test-only-release	REQUEST	继续完成发布收尾、问题记录和经验沉淀。
-2026-07-10T10:04:24+08:00	20260709-current-head-test-only-release	COMMAND	Stop maintenance console running from r260709t3, copy the frozen-commit maintenance Jar to the main workspace target, start it from D:\ProjectPackage\Int\IntRuoyiMaintance and verify port 48181 health.
-2026-07-10T10:06:00+08:00	20260709-current-head-test-only-release	RESULT	PASS: main-workspace maintenance console PID 57312 is listening on 48181 with health UP; first wrapper falsely reported failure because Invoke-WebRequest.Content was byte[].
-2026-07-10T10:10:00+08:00	20260709-current-head-test-only-release	COMMAND	Run task-closeout preview, verify frozen HEAD/status/no new commits, remove r260709t3 backend/frontend/maintenance worktree registrations, then remove only unregistered residual directories under the fixed task root.
-2026-07-10T10:15:00+08:00	20260709-current-head-test-only-release	RESULT	PASS: r260709t3 Git registrations and physical root removed; frontend and maintenance Directory not empty failures were handled only after fixed-path, unregistered and no-process checks; maintenance console remains UP.
-2026-07-10T10:30:00+08:00	20260710-test-release-preflight-optimization	REQUEST	优化经验文档，使后续构建发布前能更好使用。
-2026-07-10T10:30:00+08:00	20260710-test-release-preflight-optimization	COMMAND	Read preflight-experience-consolidation skill, experience index, release-build preflight lessons, PowerShell lessons, worktree memory, previous completed release task, and create task docs.
-2026-07-10T10:35:00+08:00	20260710-test-release-preflight-optimization	COMMAND	Create docs/test-release-preflight.md as the test-only publish preflight entry; update experience-index, release-agent-checklist, release-build-preflight-lessons and task execution log.
-2026-07-10T10:40:00+08:00	20260710-test-release-preflight-optimization	RESULT	PASS: UTF-8, keyword discovery, diff check and task-closeout preview all passed; ready to commit scoped docs.
-2026-07-10T10:45:00+08:00	20260710-test-release-preflight-optimization	RESULT	PASS: task-closeout apply completed with delete=none, blocked=none and warnings=none; proceeding with isolated staging and commit.
-2026-07-10T11:00:00+08:00	20260710-experience-writing-standard	REQUEST	让后续新增或更新经验文件统一按照本次优化后的方式编写。
-2026-07-10T11:00:00+08:00	20260710-experience-writing-standard	COMMAND	Read project experience rules and existing optimized preflight structure; create task docs; add the mandatory experience-writing template to experience-index and enforce it from AGENTS.md.
-2026-07-10T11:05:00+08:00	20260710-experience-writing-standard	RESULT	PASS: mandatory experience-writing format, route updates, UTF-8/diff verification and task-closeout cleanup completed.
-2026-07-10T11:20:00+08:00	20260710-agents-policy-conflict-audit	REQUEST	审计当前全局、父级、项目级 AGENTS 及影响判断的经验和收尾规则是否存在逻辑冲突。
-2026-07-10T11:20:00+08:00	20260710-agents-policy-conflict-audit	COMMAND	Discover and compare five AGENTS files, maintenance and IntRuoyi experience indexes, PowerShell/worktree routes, independent-verification output rules and task-closeout lifecycle gates.
-2026-07-10T11:25:00+08:00	20260710-agents-policy-conflict-audit	RESULT	FAIL: found two high-risk lifecycle conflicts plus E2E data, worktree path, experience schema and branch-scope ambiguities; no audited policy file was modified.
-2026-07-10T11:45:00+08:00	20260710-agents-policy-conflict-resolution	REQUEST	按 Agent 判断直接解决全部规则冲突，不再询问用户。
-2026-07-10T11:45:00+08:00	20260710-agents-policy-conflict-resolution	COMMAND	Add RED tests for ready_for_closeout and verification-report keep; update task-closeout skill/script; align global, parent, maintenance and IntRuoyi rules; run independent verification.
-2026-07-10T12:00:00+08:00	20260710-agents-policy-conflict-resolution	RESULT	PASS: 3 unit tests, skill validation, CLI forward tests, old-conflict scan, UTF-8 checks and cross-repository policy audit passed; task ready for isolated commits and closeout.
-2026-07-10T12:10:00+08:00	20260710-agents-policy-conflict-resolution	RESULT	PASS: IntRuoyi policy changes committed in isolation as a89903a0cfa2cfdd114b27265ee9ea19a750d849; unrelated existing workspace changes remain untouched.
-2026-07-10T12:20:00+08:00	20260710-agents-policy-conflict-resolution	RESULT	PASS: maintenance policy implementation committed as 743f19f134177eb7ebe8fe0f1d73df64f4bb806d; task-closeout deleted only the temporary patch and preserved all formal task evidence.
-2026-07-10T11:20:12+08:00	20260710-agents-policy-current-reaudit	REQUEST	重新审计当前全局、父级、项目级 AGENTS 及影响判断的经验、验证和收尾文件是否仍存在逻辑冲突。
-2026-07-10T11:25:33+08:00	20260710-agents-policy-current-reaudit	RESULT	PASS after fixes: unified task/index startup order, added read-only PowerShell bootstrap, tightened source-tenant write override, clarified test-only release stop point, and aligned two-phase Git commits; policy assertions and closeout regression passed.
-2026-07-10T11:26:00+08:00	20260710-agents-policy-current-reaudit	RESULT	IntRuoyi rule fixes committed in isolation as 82188d7301f557d08d3f257e584416bcb59e99b1; unrelated existing AGENTS changes remain unstaged.
-2026-07-10T11:27:00+08:00	20260710-agents-policy-current-reaudit	RESULT	Maintenance rule fixes committed as bdcc443120f909a19db555295e1d0d96602802c6; task-closeout applied with no deletions, blockers, or warnings; current audited policy set has no unresolved logical conflicts.
-2026-07-10T14:35:00+08:00	20260710-current-head-test-only-release-completion-audit	REQUEST	继续原仅测试服发布目标，按当前发布包和测试服真实状态重新证明完成；不追逐冻结后的源码提交，不操作正式服或备份服。
-2026-07-10T14:35:00+08:00	20260710-current-head-test-only-release-completion-audit	RESULT	BLOCKED FOR REPAIR: v9 containers and release-info remain running, but a later blocked v3 task rewrote remote .env and compose without switching containers; completion requires restoring a consistent v9 test runtime.
-2026-07-10T15:26:51+08:00	20260710-current-head-test-only-release-completion-audit	COMMAND	基于冻结 maintenance/backend/frontend 提交和既有 v9 包，仅对测试服执行恢复发布；复核 Manifest、281 项 artifact、镜像、容器、HTTP、发布锁、迁移、真实运行控制台版本与变更说明；命令与日志仅记录脱敏摘要。
-2026-07-10T15:26:51+08:00	20260710-current-head-test-only-release-completion-audit	RESULT	PASS: release-20260709-current-head-test-v9 已恢复并通过测试服真实运行态与真实页面验收；正式服、备份服、mark-tested 和 promote 均未执行；问题台账与前置经验已更新。
-2026-07-10T15:26:51+08:00	20260710-current-head-test-only-release-completion-audit	RULES	已消除全局/项目 AGENTS 的并发任务归属、仅测试服完成定义、E2E 缺入口、前端控件删除范围和命令日志脱敏冲突；原始秘密日志及本任务临时 worktree 已清理。
-2026-07-10T15:29:16+08:00	20260710-current-head-test-only-release-completion-audit	CLOSEOUT	维护仓规则与经验提交 a2dbeaeac78197850d740a95c342f5c5d79f2988、业务仓 AGENTS 提交 a3aa3a06f35f6d89b321983845975c675cb12ab0；任务核心记录保留，状态 completed。
+2026-07-09T20:54:51    20260709-current-head-test-only-release    REQUEST    仅测试服发布：基于当前分支 HEAD 已提交代码构建维护控制台和测试发布包，发布测试服并验证 manifest/运行态/版本说明/经验沉淀。
+2026-07-09T20:56:09    20260709-current-head-test-only-release    COMMAND    git worktree add --detach for maintance/backend/frontend HEAD into D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709t; verify dirty=false and write evidence/release-worktree-create.json.
+2026-07-09T20:58:06    20260709-current-head-test-only-release    COMMAND    Source HEAD drift detected before build; remove unbuilt r260709t worktrees and recreate clean r260709t2 from current HEADs.
+2026-07-09T21:03:40    20260709-current-head-test-only-release    COMMAND    Retry maintenance build with Start-Process capture; pnpm@10.25.0 + mvn test package; jar=D:\ProjectPackage\Int\IntRuoyiWorktrees\r260709t2\m\backend\target\runtime-control-maintenance-2026.06-SNAPSHOT.jar.
+2026-07-09T21:04:35    20260709-current-head-test-only-release    COMMAND    Diagnose missing runtime-control.local.yaml in clean worktree before runtime-control start.
+2026-07-09T21:12:08    20260709-current-head-test-only-release    COMMAND    Clean r260709t2 residuals and create clean r260709t3 worktrees from current HEADs.
+2026-07-09T21:18:18    20260709-current-head-test-only-release    COMMAND    Preview and start build-release via runtime-control API; releaseTag=release-20260709-current-head-test; operationId=op-2026-07-09T131818532463200Z-6a0e89b5-5104-4450-b93a-4e07718cb01d.
+2026-07-09T21:34:51    20260709-current-head-test-only-release    COMMAND    Poll build-release operation and validate manifest/sourceRepos/changeSet for release-20260709-current-head-test.
+2026-07-09T21:38:04    20260709-current-head-test-only-release    COMMAND    Retry preview and start publish-test via runtime-control API; releaseTag=release-20260709-current-head-test; operationId=op-2026-07-09T133736857125Z-7f65f377-b8cf-4a9b-9115-8f733ab81ceb.
+2026-07-10T08:42:17+08:00    20260709-current-head-test-only-release    REQUEST    继续。
+2026-07-10T08:42:17+08:00    20260709-current-head-test-only-release    COMMAND    Read ci-cd/preflight release gates; run read-only SELECT conflict audit on test DB; read test `.env`, container image/status, backend health and frontend HTTP; read source/release worktree HEAD and status. No publish, restart, database write, prod, or backup action.
+2026-07-10T08:42:17+08:00    20260709-current-head-test-only-release    RESULT    BLOCKED: 4 route schedule configuration conflicts remain; v8 is not running; source HEADs have advanced beyond v8. Evidence=doc/tasks/20260709-current-head-test-only-release/evidence/resume-after-blocked-audit-2.json.
+2026-07-10T08:47:09+08:00    20260709-current-head-test-only-release    REQUEST    授权修复测试服发布阻塞数据。
+2026-07-10T08:47:09+08:00    20260709-current-head-test-only-release    COMMAND    Compare current committed migration/service contract; audit exact conflict rows, schedule-order snapshot references, target unique-key collisions; export row backup and reference TSV; create fail-fast transactional correction SQL.
+2026-07-10T08:48:16+08:00    20260709-current-head-test-only-release    COMMAND    Run exact test-server correction transaction with final COMMIT replaced by ROLLBACK; verify conflict count and rows restore in a new connection.
+2026-07-10T08:48:33+08:00    20260709-current-head-test-only-release    COMMAND    Execute authorized test-server correction transaction; independently verify conflict count=0, preserved references, exact row state, backend HTTP 200 and frontend HTTP 200.
+2026-07-10T09:08:11+08:00    20260709-current-head-test-only-release    COMMAND    Freeze v9 release worktree baseline at maintenance 1fe4d64a6d4a8840aca061aca3c0c6d72a07d280, backend f1ef04912951ef15ae0d2881c974c964c182d76e, frontend d33339bd7e29f705d12d92d8409d7bc37d314566; build release-20260709-current-head-test-v9 from clean committed inputs.
+2026-07-10T09:12:00+08:00    20260709-current-head-test-only-release    COMMAND    Validate Manifest v1 and legacy manifest by their own schemas; verify version, change summary, component, code-only scope, required SQL hashes and all 281 artifact sizes/SHA256.
+2026-07-10T09:13:18+08:00    20260709-current-head-test-only-release    COMMAND    Preview then submit publish-test for release-20260709-current-head-test-v9 only to 172.30.30.58; operation op-2026-07-10T011318297410400Z-dbee4822-c99c-40ff-894c-71f75679440a.
+2026-07-10T09:27:00+08:00    20260709-current-head-test-only-release    RESULT    publish-test operation SUCCESS; no production, backup, promotion or mark-tested action.
+2026-07-10T09:53:09+08:00    20260709-current-head-test-only-release    COMMAND    Verify test runtime .env/image tags, containers, backend health, frontend HTTP, migrations, unique index, release lock, real Playwright login/page, runtime console release version and change summary.
+2026-07-10T09:53:09+08:00    20260709-current-head-test-only-release    RESULT    PASS: 32/32 required acceptance checks. Runtime operational matrix Linux/powershell.exe defect and release-status current-tag-null defect recorded separately.
+2026-07-10T10:00:00+08:00    20260709-current-head-test-only-release    REQUEST    继续完成发布收尾、问题记录和经验沉淀。
+2026-07-10T10:04:24+08:00    20260709-current-head-test-only-release    COMMAND    Stop maintenance console running from r260709t3, copy the frozen-commit maintenance Jar to the main workspace target, start it from D:\ProjectPackage\Int\IntRuoyiMaintance and verify port 48181 health.
+2026-07-10T10:06:00+08:00    20260709-current-head-test-only-release    RESULT    PASS: main-workspace maintenance console PID 57312 is listening on 48181 with health UP; first wrapper falsely reported failure because Invoke-WebRequest.Content was byte[].
+2026-07-10T10:10:00+08:00    20260709-current-head-test-only-release    COMMAND    Run task-closeout preview, verify frozen HEAD/status/no new commits, remove r260709t3 backend/frontend/maintenance worktree registrations, then remove only unregistered residual directories under the fixed task root.
+2026-07-10T10:15:00+08:00    20260709-current-head-test-only-release    RESULT    PASS: r260709t3 Git registrations and physical root removed; frontend and maintenance Directory not empty failures were handled only after fixed-path, unregistered and no-process checks; maintenance console remains UP.
+2026-07-10T10:30:00+08:00    20260710-test-release-preflight-optimization    REQUEST    优化经验文档，使后续构建发布前能更好使用。
+2026-07-10T10:30:00+08:00    20260710-test-release-preflight-optimization    COMMAND    Read preflight-experience-consolidation skill, experience index, release-build preflight lessons, PowerShell lessons, worktree memory, previous completed release task, and create task docs.
+2026-07-10T10:35:00+08:00    20260710-test-release-preflight-optimization    COMMAND    Create docs/test-release-preflight.md as the test-only publish preflight entry; update experience-index, release-agent-checklist, release-build-preflight-lessons and task execution log.
+2026-07-10T10:40:00+08:00    20260710-test-release-preflight-optimization    RESULT    PASS: UTF-8, keyword discovery, diff check and task-closeout preview all passed; ready to commit scoped docs.
+2026-07-10T10:45:00+08:00    20260710-test-release-preflight-optimization    RESULT    PASS: task-closeout apply completed with delete=none, blocked=none and warnings=none; proceeding with isolated staging and commit.
+2026-07-10T11:00:00+08:00    20260710-experience-writing-standard    REQUEST    让后续新增或更新经验文件统一按照本次优化后的方式编写。
+2026-07-10T11:00:00+08:00    20260710-experience-writing-standard    COMMAND    Read project experience rules and existing optimized preflight structure; create task docs; add the mandatory experience-writing template to experience-index and enforce it from AGENTS.md.
+2026-07-10T11:05:00+08:00    20260710-experience-writing-standard    RESULT    PASS: mandatory experience-writing format, route updates, UTF-8/diff verification and task-closeout cleanup completed.
+2026-07-10T11:20:00+08:00    20260710-agents-policy-conflict-audit    REQUEST    审计当前全局、父级、项目级 AGENTS 及影响判断的经验和收尾规则是否存在逻辑冲突。
+2026-07-10T11:20:00+08:00    20260710-agents-policy-conflict-audit    COMMAND    Discover and compare five AGENTS files, maintenance and IntRuoyi experience indexes, PowerShell/worktree routes, independent-verification output rules and task-closeout lifecycle gates.
+2026-07-10T11:25:00+08:00    20260710-agents-policy-conflict-audit    RESULT    FAIL: found two high-risk lifecycle conflicts plus E2E data, worktree path, experience schema and branch-scope ambiguities; no audited policy file was modified.
+2026-07-10T11:45:00+08:00    20260710-agents-policy-conflict-resolution    REQUEST    按 Agent 判断直接解决全部规则冲突，不再询问用户。
+2026-07-10T11:45:00+08:00    20260710-agents-policy-conflict-resolution    COMMAND    Add RED tests for ready_for_closeout and verification-report keep; update task-closeout skill/script; align global, parent, maintenance and IntRuoyi rules; run independent verification.
+2026-07-10T12:00:00+08:00    20260710-agents-policy-conflict-resolution    RESULT    PASS: 3 unit tests, skill validation, CLI forward tests, old-conflict scan, UTF-8 checks and cross-repository policy audit passed; task ready for isolated commits and closeout.
+2026-07-10T12:10:00+08:00    20260710-agents-policy-conflict-resolution    RESULT    PASS: IntRuoyi policy changes committed in isolation as a89903a0cfa2cfdd114b27265ee9ea19a750d849; unrelated existing workspace changes remain untouched.
+2026-07-10T12:20:00+08:00    20260710-agents-policy-conflict-resolution    RESULT    PASS: maintenance policy implementation committed as 743f19f134177eb7ebe8fe0f1d73df64f4bb806d; task-closeout deleted only the temporary patch and preserved all formal task evidence.
+2026-07-10T11:20:12+08:00    20260710-agents-policy-current-reaudit    REQUEST    重新审计当前全局、父级、项目级 AGENTS 及影响判断的经验、验证和收尾文件是否仍存在逻辑冲突。
+2026-07-10T11:25:33+08:00    20260710-agents-policy-current-reaudit    RESULT    PASS after fixes: unified task/index startup order, added read-only PowerShell bootstrap, tightened source-tenant write override, clarified test-only release stop point, and aligned two-phase Git commits; policy assertions and closeout regression passed.
+2026-07-10T11:26:00+08:00    20260710-agents-policy-current-reaudit    RESULT    IntRuoyi rule fixes committed in isolation as 82188d7301f557d08d3f257e584416bcb59e99b1; unrelated existing AGENTS changes remain unstaged.
+2026-07-10T11:27:00+08:00    20260710-agents-policy-current-reaudit    RESULT    Maintenance rule fixes committed as bdcc443120f909a19db555295e1d0d96602802c6; task-closeout applied with no deletions, blockers, or warnings; current audited policy set has no unresolved logical conflicts.
+2026-07-10T14:35:00+08:00    20260710-current-head-test-only-release-completion-audit    REQUEST    继续原仅测试服发布目标，按当前发布包和测试服真实状态重新证明完成；不追逐冻结后的源码提交，不操作正式服或备份服。
+2026-07-10T14:35:00+08:00    20260710-current-head-test-only-release-completion-audit    RESULT    BLOCKED FOR REPAIR: v9 containers and release-info remain running, but a later blocked v3 task rewrote remote .env and compose without switching containers; completion requires restoring a consistent v9 test runtime.
+2026-07-10T15:26:51+08:00    20260710-current-head-test-only-release-completion-audit    COMMAND    基于冻结 maintenance/backend/frontend 提交和既有 v9 包，仅对测试服执行恢复发布；复核 Manifest、281 项 artifact、镜像、容器、HTTP、发布锁、迁移、真实运行控制台版本与变更说明；命令与日志仅记录脱敏摘要。
+2026-07-10T15:26:51+08:00    20260710-current-head-test-only-release-completion-audit    RESULT    PASS: release-20260709-current-head-test-v9 已恢复并通过测试服真实运行态与真实页面验收；正式服、备份服、mark-tested 和 promote 均未执行；问题台账与前置经验已更新。
+2026-07-10T15:26:51+08:00    20260710-current-head-test-only-release-completion-audit    RULES    已消除全局/项目 AGENTS 的并发任务归属、仅测试服完成定义、E2E 缺入口、前端控件删除范围和命令日志脱敏冲突；原始秘密日志及本任务临时 worktree 已清理。
+2026-07-10T15:29:16+08:00    20260710-current-head-test-only-release-completion-audit    CLOSEOUT    维护仓规则与经验提交 a2dbeaeac78197850d740a95c342f5c5d79f2988、业务仓 AGENTS 提交 a3aa3a06f35f6d89b321983845975c675cb12ab0；任务核心记录保留，状态 completed。
+## 2026-07-11T00:22:57+08:00 任务 20260711-current-head-test-only-release 启动
+
+- REQUEST：基于任务开始时当前分支最新已提交 HEAD 构建维护控制台和测试发布包，仅发布测试服务器；未提交改动不得进入产物。
+- COMMAND INTENT：冻结 `int_main@266f0ae7349348dbeeac4fe553ac404da714dbd6`，读取发布/构建/worktree/PowerShell 前置经验，创建干净临时发布 worktree，后续仅执行 `build-release -> publish-test` 和测试服真实运行态、页面、版本说明验证。
+- RESULT：主工作区 dirty，已按门禁决定使用新建 HEAD-pinned 临时发布 worktree；未执行任何服务器写入、正式服/备份服动作或 promote 动作。
+
+### 2026-07-11 仅测试服发布前置门禁
+
+- COMMAND INTENT：冻结 backend `2714df1ccb99d60b27cdf8b5236c0e21b78f824b`、frontend `f3edb4202a8c8acd1ffa39c180a203bafbbc2ddf`，核对仅测试服、manifest、服务器、worktree、PowerShell 和收尾门禁。
+- RESULT：GREEN: experience-preflight -> PASS；三个主工作区均存在无关 dirty 内容，下一步只从冻结提交创建短路径 detached worktree，禁止未提交内容进入构建输入。
+- ISSUE：初始只读探查未在第一次命令中完整读取共同 PowerShell 记忆；未发生高风险动作，已在 worktree/构建/发布前纠正并记录。
+
+### 2026-07-11 临时发布 worktree 冻结
+
+- COMMAND：创建 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260711t\m|b|f`，分别检出 maintenance `266f0ae7349348dbeeac4fe553ac404da714dbd6`、backend `2714df1ccb99d60b27cdf8b5236c0e21b78f824b`、frontend `f3edb4202a8c8acd1ffa39c180a203bafbbc2ddf`。
+- RESULT：三个 worktree 均 detached、clean、无子模块，构建发布输入已冻结；不再读取源分支后续提交。
+- ISSUE：首次 detached 分支校验对空输出调用 `.Trim()` 产生非终止错误；改用 `rev-parse --abbrev-ref HEAD` 后复验通过。
+
+### 2026-07-11 维护控制台构建与发布包前置阻塞
+
+- COMMAND：使用 `corepack pnpm@10.25.0` 完成维护前端 frozen install、依赖脚本审批、typecheck、Vite build，并执行 Maven test/package。
+- RESULT：维护 Jar 构建成功，SHA256=`5fe32b4ca4a9893a8b84e05b194ed9e06ea166deed3aa5c80fa05d492e65e24a`。
+- ISSUE：系统 pnpm 为 11.7.0；`approve-builds --all` 不受 pnpm 10.25.0 支持；最终通过任务外部 build policy 与 `rebuild --pending` 完成依赖脚本构建，未修改冻结 package.json/lockfile。
+- COMMAND：对冻结 backend `2714df1ccb99d60b27cdf8b5236c0e21b78f824b` 执行全量 release migration policy gate。
+- RESULT：BLOCKED；`sql/mysql/20260710_mes_pro_replan_explanation_snapshot.sql` 缺 release-migration metadata，未生成 releaseTag/manifest/发布包，未执行 publish-test。
+- SAFETY：主路径运行控制台保持 PID `53856`、health=`UP`；未连接测试服、正式服或备份服；未执行 mark-tested/promote。
+
+### 2026-07-11 发布迁移 metadata 隔离诊断
+
+- COMMAND：从冻结 backend `2714df1ccb99d60b27cdf8b5236c0e21b78f824b` 创建独立诊断 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260711t\bd`；先增加失败契约测试，再验证最小 metadata 修复。
+- RED：迁移 metadata 首行契约测试在原 SQL 上失败，1 failed / 2 passed。
+- GREEN：候选 `allowedEnvironments=test,backup,prod; dependsOn=; type=schema; riskLevel=medium` 通过 10 个定向测试和包含 278 个迁移的全量 policy gate。
+- RESULT：根因和正式最小修复已证明；诊断改动未提交、未进入原冻结发布输入，仍需用户批准改变后端提交后才能继续 build-release/publish-test。
+- SAFETY：未修改后端主工作区或原冻结 worktree；未连接测试服、正式服或备份服。
+
+### 2026-07-11 用户授权恢复发布
+
+- REQUEST：用户明确授权提交已验证的迁移 metadata 修复，并以新后端提交重新冻结后继续仅测试服发布。
+- COMMAND INTENT：仅提交迁移 metadata 首行与对应契约测试；隔离后端主工作区现有 ERP/Fenbeitong 未提交内容；融合验证后重新冻结 clean release worktree。
+- BOUNDARY：不追逐其他新提交，不操作正式服或备份服，不执行 mark-tested/promote。
+- ISSUE：后端补丁首次提交被 TDD pre-commit 阻止，原因是未设置 `TDD_TASK_DIR`；未产生提交，暂存内容仍严格限定两文件，后续将绑定本任务 RED/GREEN 记录后重试。
+- RESULT：绑定本任务 `TDD_TASK_DIR` 后提交 `29cf684450849adc49433a6fb97fe44ec872d580` 成功；后端 `int_main` 已 ff-only 融合，10 个定向测试和 278 个迁移 policy gate 通过；现有 ERP/Fenbeitong 未提交改动保持不变。
+- COMMAND：重新冻结 release worktree：maintenance `266f0ae734`、backend `29cf684450`、frontend `f3edb4202a`，三者 clean；将本地运行控制台从主路径 PID `53856` 切换到冻结 Jar PID `58680`，配置指向本次 backend/frontend worktree。
+- ISSUE：首次 preview 本地校验误用 PowerShell 自动变量 `$args`，产生 ReleaseTag 假失败；API 实际参数正确，未启动构建，改用 `$previewArgs` 后重试。
+- COMMAND：build-release preview 全部门禁通过后提交 `release-20260711-current-head-test`，operation=`op-2026-07-10T171442384640Z-672c493c-a144-4881-9bc0-6b4b113f57e6`。
+- PROGRESS：operation 当前 RUNNING，已加载离线后端 runtime base，正在从冻结 backend worktree 执行 Maven clean package。
+- RESULT：build-release FAILED；前端 `pnpm build:test` 在 Vite/esbuild 收尾阶段报 `[vite:esbuild-transpile] The service was stopped`，未生成可验收 manifest，未执行 publish-test。旧 releaseTag 保留为失败证据，后续仅可在同一冻结输入下使用新 releaseTag 重建。
+
+### 2026-07-11 当前 HEAD 仅测试服发布完成
+
+- REQUEST：继续完成 `20260711-current-head-test-only-release`，只构建发布任务开始时冻结 worktree 中记录的代码，不追逐后续提交。
+- COMMAND：使用冻结 maintenance/backend/frontend worktree 执行 build-release `op-2026-07-11T020116790952700Z-a56e7120-5a78-45a4-a2a3-a1016359d0f1` 与 publish-test `op-2026-07-11T022429337867100Z-391009c6-1e42-436e-bebd-075f15c4c65d`；验证 manifest、远端 `.env`、镜像、容器、health、HTTP、release-info、Playwright 前端页面和运行控制台版本对话框。
+- RESULT：PASS，`release-20260711-current-head-test-r4` 已发布到测试服并通过真实运行态验证；未执行 `mark-tested`、`promote-prod`、`promote-backup`，未发布正式服/备份服。
+- ISSUES：记录 P001-P029；新增前置经验覆盖 runtime-control 候选扫描、dead RUNNING operation、PowerShell/SSH/Playwright、secret 输出 allowlist、release-info 中文编码和版本对话框验收。

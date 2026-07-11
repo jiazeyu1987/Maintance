@@ -324,9 +324,9 @@
 '
 ## 2026-07-09 build-release 三环境预览必须含 ProdServerHost
 
-- 触发场景：执行 code-only 三环境完整闭环，运行控制台 uild-release 预览命令只包含 TestServerHost 与 BackupServerHost。
+- 触发场景：执行 code-only 三环境完整闭环，运行控制台 \build-release 预览命令只包含 TestServerHost 与 BackupServerHost。
 - 失败现象：本地预览门禁发现命令缺少 -ProdServerHost 172.30.30.57，虽然预览 API 返回成功，但后续正式服 runtime env / manifest 目标参数可能不完整。
-- 前置门禁：三环境闭环的 uild-release 预览必须同时包含 -TestServerHost 172.30.30.58、-ProdServerHost 172.30.30.57、-BackupServerHost 172.30.30.59。
+- 前置门禁：三环境闭环的 \build-release 预览必须同时包含 -TestServerHost 172.30.30.58、-ProdServerHost 172.30.30.57、-BackupServerHost 172.30.30.59。
 - 处理要求：冻结预览参数；补齐运行控制台本地配置中 maintenance.runtime-control.environments.prod.host 后重启控制台，并使用新 releaseTag 重新预览/构建。
 
 ## 2026-07-09 build-release 迁移元数据必须先过全量策略门禁
@@ -460,3 +460,22 @@
 - worktree 删除完成必须同时满足：Git 注册不存在、固定任务物理根不存在、运行控制台已恢复到主工作区且 health=`UP`。
 - Windows 下 `git worktree remove --force` 返回 Directory not empty 时，必须按 `docs/worktree-memory.md` 先确认已注销、路径受限、无进程引用，再删除残留；不得扩大到其他任务目录。
 
+## 2026-07-11 runtime-control 发布候选扫描与 dead operation 门禁
+
+### Gate: publish-test 目标 releaseTag 必须走直接 manifest 可用性验证
+
+- Trigger: 运行控制台预览或执行 `publish-test`，且历史 release package 数量较多或 release-status/release-packages 接口耗时明显。
+- Preflight check: 在 preview 前直接读取目标 `release-20260711-current-head-test-r4` 的本地包和 NAS manifest，确认 releaseTag、publishScope、sourceRepos 和 checksum；候选包列表只作展示，不作为目标包可用性的唯一门禁。
+- Blocker: preview 为了校验单一 releaseTag 而触发全量候选扫描、JVM 退出、HTTP 连接关闭或 operation 未创建时，当前发布动作必须停止并记录，不得宣称 publish-test 已提交。
+- Verification: health=`UP`、preview 返回 action=`publish-test` / environment=`test` / releaseTag 正确，submit 返回 operationId，最终 operation=SUCCESS。
+- Forbidden action: 禁止在 runtime console 崩溃后直接手工跑发布脚本来冒充 operation=SUCCESS；若确需脚本旁路，必须先取得明确授权并记录验收缺口。
+- Evidence: `20260711-current-head-test-only-release` 中 P019、`op-2026-07-11T022429337867100Z-391009c6-1e42-436e-bebd-075f15c4c65d`。
+
+### Gate: dead RUNNING operation 必须与当前 releaseTag 验收拆分
+
+- Trigger: operation 列表中存在历史 `RUNNING`，但本地无对应子进程或日志不再推进。
+- Preflight check: 发布前列出 RUNNING operation，核对 operationId、releaseTag、进程、日志最后更新时间和发布锁。
+- Blocker: 若 RUNNING operation 属于本次目标 releaseTag 或占用发布锁，不得继续发布；若为历史死状态，必须记录并通过当前 release-status/operation/manifest/远端状态证明本轮发布不受影响。
+- Verification: 当前 build-release 与 publish-test operationId 均为 SUCCESS，release-status current test tag、远端 `.env` 和镜像 tag 均指向同一 releaseTag。
+- Forbidden action: 禁止只看操作列表存在 SUCCESS 就忽略同一 releaseTag 的死锁或漂移。
+- Evidence: `20260711-current-head-test-only-release` P016/P029。

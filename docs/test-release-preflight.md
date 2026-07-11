@@ -274,3 +274,38 @@ ssh root@172.30.30.58 bash -s
 - 不得手工改测试库绕过 required SQL。
 - 不得把失败 releaseTag 的 build/test/prod/backup 结果与新 releaseTag 拼接。
 - 不得因为 PowerShell 编码、SSH 换行或本地校验脚本误报而降级验证。
+
+## 2026-07-11 仅测试服发布运行态验收新增门禁
+
+### Trigger
+
+仅测试服发布、`publish-test`、测试服真实运行态验收、运行控制台版本号和变更说明核对。
+
+### Preflight check
+
+- `publish-test` 前先直接确认目标 releaseTag 的本地包和 NAS manifest 可读，不依赖全量候选包扫描作为唯一可用性证明。
+- 执行 `publish-test` 预览前确认运行控制台 health=`UP`，且没有与本 releaseTag 无关的活动发布锁。
+- 发布后必须同时验证：operation=SUCCESS、远端 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、容器 Up、backend health=`UP`、frontend HTTP=200、`/release-info.json`、运行控制台 release-status 和真实页面版本对话框。
+- 使用 Playwright 验证运行控制台时，先确认 `require.resolve('playwright')` 和浏览器 executable path；浏览器缓存缺失时使用稳定安装的 Chrome/Edge 路径，不在发布验收中临时下载浏览器。
+
+### Blocker
+
+- 目标 releaseTag 的 manifest 不可读、sourceRepos 不匹配或 `dirty=true`。
+- `publish-test` preview/submit 无法返回明确 operation，或 operation 非 SUCCESS。
+- 远端 `.env`、实际镜像 tag、backend health、frontend HTTP、release-info 或运行控制台版本/变更说明任一缺失。
+
+### Verification
+
+- 记录 build-release operation、publish-test operation、manifest path、远端 `.env`、`docker compose ps`/`docker inspect`、backend health、frontend HTTP、`/release-info.json` 和 Playwright 结果。
+- 运行控制台版本验收必须打开 `版本变更说明` 对话框，核对 releaseTag、summary/changeSet 和 backend/frontend commits。
+
+### Forbidden action
+
+- 禁止用 HTTP 200 单项替代运行态完整验收。
+- 禁止在仅测试服发布任务中执行 `mark-release-tested`、`promote-prod`、`promote-backup`。
+- 禁止把 PowerShell 默认 JSON/控制台输出中的中文文本作为唯一变更说明证据。
+
+### Evidence
+
+- 本次任务：`doc/tasks/20260711-current-head-test-only-release/execution-log.md`、`verification-report.md`。
+- ReleaseTag：`release-20260711-current-head-test-r4`；build operation `op-2026-07-11T020116790952700Z-a56e7120-5a78-45a4-a2a3-a1016359d0f1`；publish operation `op-2026-07-11T022429337867100Z-391009c6-1e42-436e-bebd-075f15c4c65d`。

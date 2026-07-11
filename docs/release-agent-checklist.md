@@ -363,3 +363,22 @@ Codex 只有在以下条件同时成立时，才能判定完整发布完成：
 - 只有上述 closeout 证据全部通过后，任务状态才更新为 `completed`
 
 任何缺项都不得宣称“完整发布已完成”。
+
+## 8.2 2026-07-11 仅测试服发布补充检查
+
+### publish-test preview 稳定性
+
+- 对单一 releaseTag 发布，先直接校验目标 manifest，不让候选包全量扫描成为唯一门禁。
+- preview/submit 任一步导致运行控制台断连且无 operationId 时，必须记录失败并停止；不得把脚本执行或旧 operation 当成本次成功。
+
+### 运行态验收
+
+- 测试服成功判定必须同时具备：build operation SUCCESS、publish-test operation SUCCESS、manifest sourceRepos clean、远端 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、容器 Up、backend health UP、frontend HTTP 200、`release-info.json`、运行控制台 release-status、真实页面版本对话框。
+- 运行控制台有历史 dead RUNNING operation 时，必须证明它不是本次 releaseTag 且不占用发布锁；否则阻塞。
+
+### PowerShell/SSH/Playwright
+
+- Host:port URL 用 `${hostIp}` 写法。
+- bash `$()`/`||` 不放入 PowerShell 双引号。
+- Playwright 先检查模块与浏览器路径；可用已安装 Chrome/Edge，不在发布验收中临时安装浏览器。
+- release-info 中文说明以 UTF-8 parser 或浏览器页面为准；PowerShell mojibake 只记录为采集问题。

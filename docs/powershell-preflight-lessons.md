@@ -81,3 +81,36 @@ PowerShell 共同基础规则以 `D:\ProjectPackage\Int\IntRuoyi\docs\powershell
 - `Invoke-WebRequest.Content` 在不同 PowerShell/HTTP 响应组合下可能是 `byte[]`，不得直接使用 `-match 'UP'`；JSON 健康接口优先用 `Invoke-RestMethod` 并断言结构化 `status`。
 - 若必须使用 `Invoke-WebRequest`，先按响应编码将字节显式解码，再做字符串或 JSON 判断。
 - 按命令行扫描占用某个 worktree 的进程时，清理命令自身也会包含目标路径；必须排除当前 `$PID`，再检查剩余进程，避免把执行壳误判为外部锁定进程。
+
+## 2026-07-11 PowerShell/SSH/Playwright 发布验收门禁
+
+### Trigger
+
+PowerShell 5.1/7 中执行 SSH、bash 片段、HTTP host:port、release-info JSON、Playwright 页面验收或含中文发布说明的命令。
+
+### Preflight check
+
+- PowerShell 字符串中变量后紧跟 `:` 时必须写 `${var}`，例如 `http://${hostIp}:8081/`。
+- bash 片段含 `$()`、`$var`、`||`、管道或引号时，不放入 PowerShell 双引号；优先用 UTF-8 文件、单引号字符串或逐条短命令。
+- 远端脚本启用 `set -u` 时，所有本地变量必须显式传入远端变量名，不得直接引用本地 PowerShell 变量名。
+- SSH 多行输出前先跑一条只读探针；OpenSSH `IO is still pending on closed socket` 只能作为 SSH 采集问题处理，不得覆盖应用实际 health/HTTP 结果。
+- Playwright 前先执行 `node -e "require.resolve('playwright')"` 并确认浏览器 executable path；缓存缺失时使用已安装 Chrome/Edge，发布验收中不临时下载浏览器。
+- release-info 中文内容用 UTF-8-aware parser 或真实浏览器核验；PowerShell 默认对象渲染出现 mojibake 时不得作为失败或通过的唯一依据。
+
+### Blocker
+
+- URI 被插值成 `http:///`、远端脚本变量未绑定、bash 被 PowerShell 本地解析、Playwright 模块/浏览器不可用且没有稳定替代路径。
+- 命令输出可能包含 secret 值且尚未经过 allowlist/redaction。
+
+### Verification
+
+- 记录实际 URI、SSH 退出码、HTTP status、health JSON、Playwright result JSON 和截图路径；敏感值只记录字段名或脱敏结果。
+
+### Forbidden action
+
+- 禁止打印完整 runtime-env、`.env`、secret key、password、token 或私钥内容。
+- 禁止用接口直读替代用户明确要求的真实页面/版本对话框验收。
+
+### Evidence
+
+- `20260711-current-head-test-only-release` P020-P028。
