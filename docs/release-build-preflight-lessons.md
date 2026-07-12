@@ -479,3 +479,39 @@
 - Verification: 当前 build-release 与 publish-test operationId 均为 SUCCESS，release-status current test tag、远端 `.env` 和镜像 tag 均指向同一 releaseTag。
 - Forbidden action: 禁止只看操作列表存在 SUCCESS 就忽略同一 releaseTag 的死锁或漂移。
 - Evidence: `20260711-current-head-test-only-release` P016/P029。
+
+## 2026-07-12 Smart Release 报告基线门禁
+
+- Trigger: build-release 参数启用 `enableSmartReleaseReport` 或需要生成 smart release report。
+- Preflight check: 在 preview 前确认 `SmartReleaseBaselineManifestPath` 存在、可读、与目标组件和发布链路匹配。
+- Blocker: 启用 smart report 但 baseline manifest 缺失或不可读时必须 fail fast，不得继续构建。
+- Verification: preview 参数、baseline manifest 路径和 build operation 结果均记录到任务证据。
+- Forbidden action: 不得在 build operation 失败后复用同一失败 releaseTag 发布；不得用禁用报告参数掩盖用户明确要求的报告产物。
+- Evidence: `doc/tasks/20260712-current-head-test-only-release/issues.md` P011。
+
+## 2026-07-12 Manifest v1 与 legacy schema 分离校验
+
+- Trigger: 构建发布包后校验 manifest、版本号、变更说明和 sourceRepos。
+- Preflight check: Manifest v1 读取发布包根目录 `manifest.json`，按 `sourceRepos`、`changeSet.component`、`changeSet.summary`、`publishScope` 校验；legacy `release-manifest.json` 只作为兼容证据，不得混用字段。
+- Blocker: Manifest v1 缺失、字段路径不匹配、sourceRepos commit 与冻结 HEAD 不一致、dirty=true、版本说明无法追溯到 releaseTag。
+- Verification: 记录 `manifest.json` 路径、sourceRepos、dirty、publishScope、changeSet summary 和 legacy manifest 的独立校验结果。
+- Forbidden action: 不得用 legacy schema 字段判断 Manifest v1 缺字段；不得用旧镜像 tag 替代 Manifest v1 证据。
+- Evidence: `doc/tasks/20260712-current-head-test-only-release/issues.md` P014。
+
+## 2026-07-12 干净 release worktree 依赖恢复门禁
+
+- Trigger: 每次新建短路径 release worktree 并执行前端/后端/维护控制台构建。
+- Preflight check: 构建前在 release worktree 内确认依赖目录、lockfile、包管理器版本和离线缓存可用；缺失依赖必须先执行可复现安装命令并记录，不得复制主工作区未提交产物。
+- Blocker: clean worktree 缺 `node_modules`、Maven/PNPM 缓存不可用、安装命令会修改冻结 sourceRepos 或 lockfile。
+- Verification: 记录安装命令、退出码、lockfile diff、构建命令和最终 manifest sourceRepos dirty=false。
+- Forbidden action: 不得把主工作区 `node_modules`、target 或 dist 直接拷入发布包；不得因依赖缺失改为从脏工作区构建。
+- Evidence: `doc/tasks/20260712-current-head-test-only-release/issues.md` P012。
+
+## 2026-07-12 长任务 operationId 恢复门禁
+
+- Trigger: build-release、publish-test 或运行态验证耗时较长、HTTP 请求超时、控制台输出中断。
+- Preflight check: 提交动作后立即记录 operationId；超时后优先按 operationId 轮询状态和日志，不重复提交同一动作。
+- Blocker: 未拿到 operationId、operation releaseTag 与目标不一致、状态无法证明 SUCCESS 或失败原因。
+- Verification: 记录 operationId、releaseTag、最终 status、日志摘要和耗时原因。
+- Forbidden action: 禁止因前端/HTTP 超时重复触发构建或发布；禁止拼接多轮 releaseTag 结果。
+- Evidence: `doc/tasks/20260712-current-head-test-only-release/issues.md` P015。

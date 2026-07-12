@@ -309,3 +309,37 @@ ssh root@172.30.30.58 bash -s
 
 - 本次任务：`doc/tasks/20260711-current-head-test-only-release/execution-log.md`、`verification-report.md`。
 - ReleaseTag：`release-20260711-current-head-test-r4`；build operation `op-2026-07-11T020116790952700Z-a56e7120-5a78-45a4-a2a3-a1016359d0f1`；publish operation `op-2026-07-11T022429337867100Z-391009c6-1e42-436e-bebd-075f15c4c65d`。
+
+## 2026-07-12 publish-test 目标字段与版本说明验收门禁
+
+### Trigger
+
+仅测试服发布、`publish-test` preview、发布后运行控制台版本号与变更说明核对。
+
+### Preflight check
+
+- `publish-test` preview 的目标判断必须基于结构化字段：`action=publish-test`、`mode=deploy-release`、`environment=test`、`ServerHost=172.30.30.58`、`RemoteAppDir=/opt/intruoyi/runtime` 和目标 `releaseTag`。
+- preview 输出中的 `BackupServerHost` 只能作为参数元数据记录，不得单独作为实际发布目标判定；必须同时确认没有 `mark-tested`、`promote-prod`、`promote-backup` 动作。
+- 运行控制台版本与变更说明验收必须核对 releaseTag、changeSet.summary、changes、backend/frontend sourceRepos commit 和 dirty=false。
+- PowerShell 输出出现中文 mojibake 时，必须改用 UTF-8-aware parser、HTTP JSON 原文或真实页面作为权威证据，不得用默认渲染结果判定通过或失败。
+
+### Blocker
+
+- preview 无法明确证明 `ServerHost=172.30.30.58` 或 `environment=test`。
+- preview 中出现正式服/备份服的实际 `ServerHost`、`RemoteAppDir` 或 promote/mark-tested 动作。
+- release-info、运行控制台或页面无法证明版本号与变更说明来自本次 releaseTag。
+
+### Verification
+
+- 记录 preview 字段化检查结果、publish-test operation、远端 `.env IMAGE_TAG`、镜像 tag、health、HTTP、`/release-info.json` 和运行控制台版本说明结果。
+
+### Forbidden action
+
+- 禁止用字符串包含 `BackupServerHost` 直接判定 publish-test 目标错误。
+- 禁止在仅测试服发布任务中执行 prod/backup/promote/mark-tested。
+- 禁止因 PowerShell 中文渲染乱码降级或跳过版本说明验收。
+
+### Evidence
+
+- 本次任务：`doc/tasks/20260712-current-head-test-only-release/execution-log.md`、`verification-report.md`。
+- ReleaseTag：`release-20260712-intmain-test-r260712p-r3`；build operation `op-2026-07-12T031646245278700Z-f1006e17-c7b6-445b-9eaa-5d67e4b66ed1`；publish operation `op-2026-07-12T043308044248700Z-d8e299c3-a64e-43cc-bd5a-949db86dc67f`。

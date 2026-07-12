@@ -2658,3 +2658,16 @@
 - COMMAND：使用冻结 maintenance/backend/frontend worktree 执行 build-release `op-2026-07-11T020116790952700Z-a56e7120-5a78-45a4-a2a3-a1016359d0f1` 与 publish-test `op-2026-07-11T022429337867100Z-391009c6-1e42-436e-bebd-075f15c4c65d`；验证 manifest、远端 `.env`、镜像、容器、health、HTTP、release-info、Playwright 前端页面和运行控制台版本对话框。
 - RESULT：PASS，`release-20260711-current-head-test-r4` 已发布到测试服并通过真实运行态验证；未执行 `mark-tested`、`promote-prod`、`promote-backup`，未发布正式服/备份服。
 - ISSUES：记录 P001-P029；新增前置经验覆盖 runtime-control 候选扫描、dead RUNNING operation、PowerShell/SSH/Playwright、secret 输出 allowlist、release-info 中文编码和版本对话框验收。
+
+2026-07-12T02:54:11+08:00	20260712-current-head-test-only-release	RESULT	BLOCKED: frozen backend HEAD ad23d54eab81ec20bf057db60920833e4d633035 failed release migration policy gate because sql/mysql/20260711_mes_batch_record_cell_link_rule.sql lacks release-migration metadata; no releaseTag/manifest generated and no publish-test/server write executed.
+
+
+2026-07-12T03:03:05+08:00	20260712-current-head-test-only-release	RESULT	BLOCKED: user requested only int_main; clean int_main worktree D:\ProjectPackage\Int\IntRuoyiWorktrees\r260712i still failed release migration policy gate for sql/mysql/20260711_mes_batch_record_cell_link_rule.sql missing release-migration metadata; no build-release/publish-test/server write executed.
+
+2026-07-12T11:16:46+08:00	20260712-current-head-test-only-release	RESULT	PASS: after backend metadata fix and new clean release worktree freeze, build-release succeeded for release-20260712-intmain-test-r260712p-r3; maintenance=481d03c1940f233ba12576801286ff2617e3a441, backend=c7753b28997dbd8d8b3581250961646f00b14ccb, frontend=2d10335f75a72f934aac52839fdb78a696036304; manifest sourceRepos dirty=false.
+
+2026-07-12T12:33:08+08:00	20260712-current-head-test-only-release	RESULT	PASS: publish-test succeeded for release-20260712-intmain-test-r260712p-r3 on test server 172.30.30.58 only; operation op-2026-07-12T043308044248700Z-d8e299c3-a64e-43cc-bd5a-949db86dc67f SUCCESS; no mark-tested/promote-prod/promote-backup executed.
+
+2026-07-12T12:50:00+08:00	20260712-current-head-test-only-release	RESULT	PASS: test runtime verification passed; remote .env IMAGE_TAG, backend/frontend actual image tags, containers, backend health, frontend HTTP, frontend release-info, runtime-control version and change notes all matched release-20260712-intmain-test-r260712p-r3.
+
+2026-07-12T13:10:00+08:00	20260712-current-head-test-only-release	RESULT	PASS: closeout actions restored local runtime-control to main workspace path and removed task release worktree D:\ProjectPackage\Int\IntRuoyiWorktrees\r260712p; final docs and preflight lessons updated with encountered issues and prevention gates.

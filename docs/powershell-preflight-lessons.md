@@ -114,3 +114,21 @@ PowerShell 5.1/7 中执行 SSH、bash 片段、HTTP host:port、release-info JSO
 ### Evidence
 
 - `20260711-current-head-test-only-release` P020-P028。
+
+## 2026-07-12 PowerShell 自动变量与进程守卫门禁
+
+- Trigger: PowerShell 脚本中定义变量、函数参数、进程扫描或 worktree 删除前置检查。
+- Preflight check: 避免使用 `$PID`、`$Args`、`$Host` 等自动变量名作为自定义变量；扫描命令行占用时排除当前进程 ID，并排除当前检查脚本自身的命令行。
+- Blocker: 变量名与自动变量冲突、进程列表只命中当前清理脚本、无法证明真实外部进程未占用待删 worktree。
+- Verification: 记录进程扫描过滤条件、剩余匹配进程数量、worktree 注册和物理路径结果。
+- Forbidden action: 禁止因当前检查命令包含目标路径就误判外部进程占用；禁止在未确认路径边界和进程引用前递归删除。
+- Evidence: `doc/tasks/20260712-current-head-test-only-release/issues.md` P009、P018。
+
+## 2026-07-12 native 命令 stderr 与退出码门禁
+
+- Trigger: PowerShell 执行 pnpm、git、docker、ssh、maven 等 native 命令并采集 stdout/stderr。
+- Preflight check: 以 `$LASTEXITCODE` 或进程 `ExitCode` 为准；stderr 必须结合退出码和产物存在性判断，不能单独判失败。
+- Blocker: native 命令退出码非 0、产物缺失、stderr 表示真实错误且无通过证据。
+- Verification: 记录命令、退出码、关键 stderr 摘要和产物/manifest 校验结果。
+- Forbidden action: 禁止把成功命令的普通 warning/stderr 当作失败；也禁止忽略非 0 退出码继续发布。
+- Evidence: `doc/tasks/20260712-current-head-test-only-release/issues.md` P010。
