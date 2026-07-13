@@ -1,0 +1,25 @@
+{
+  "release": "release-20260713-current-head-test-r260713u",
+  "backendCommit": "a69271e228c7738cd0ade0e12f9b7f8a85aec205",
+  "frontendCommit": "627f644d542902481809441efe5c1371f6a7d28c",
+  "testFrontend": {
+    "status": 200,
+    "title": "瑛泰管理系统 - 登录",
+    "textHasLogin": true,
+    "textLength": 28,
+    "consoleErrors": 0,
+    "consoleWarnings": 0
+  },
+  "runtimeConsole": {
+    "status": 200,
+    "title": "运行控制台",
+    "bodyHasReleaseTag": true,
+    "dialogHasTitle": true,
+    "dialogHasReleaseTag": true,
+    "dialogHasChangeNotes": true,
+    "dialogTextSample": "版本变更说明\n版本号\nrelease-20260713-current-head-test-r260713u\n变更说明\n发布包：release-20260713-current-head-test-r260713u\n组件范围：intruoyi\n软件版本\n2026.06.0\n测试服\nrelease-20260713-current-head-test-r260713u\n查看变更\n正式服\n未上报\n备份服\n未上报",
+    "consoleErrors": 0,
+    "consoleWarnings": 0,
+    "screenshotPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260713-current-head-test-only-release-rerun\\runtime-console-r260713u-release-info.png"
+  }
+}
