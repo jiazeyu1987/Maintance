@@ -118,7 +118,9 @@ public enum RuntimeControlOperationAction {
         if (this == APPLY_TEST_DB_SQL) {
             appendApplyTestDbSqlTargetArguments(args, properties);
         }
-        if (this == BUILD_RELEASE || deploysReleasePackage()) {
+        if (this == BUILD_RELEASE) {
+            appendReleaseTargetHostArguments(args, properties, true);
+        } else if (deploysReleasePackage()) {
             appendReleaseTargetHostArguments(args, properties, "prod".equals(resolveEnvironment(req)));
         }
         if (Boolean.TRUE.equals(req.enableSmartReleaseReport())) {

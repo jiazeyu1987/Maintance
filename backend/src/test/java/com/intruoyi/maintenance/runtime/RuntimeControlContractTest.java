@@ -115,8 +115,10 @@ class RuntimeControlContractTest {
 
         assertThat(response)
                 .contains("-Mode", "build-release", "-SkipDatabaseSync", "-SkipMinioSync",
-                        "-NasServer", "-NasShare", "-NasReleaseRoot")
-                .doesNotContain("-ProdServerHost")
+                        "-NasServer", "-NasShare", "-NasReleaseRoot",
+                        "-TestServerHost", "172.30.30.58",
+                        "-BackupServerHost", "172.30.30.59",
+                        "-ProdServerHost", "172.30.30.57")
                 .doesNotContain("test-password");
     }
 
@@ -146,11 +148,13 @@ class RuntimeControlContractTest {
                         "-WebsiteRepo", "D:/ProjectPackage/Website",
                         "-BackendRuntimeBaseMode", "-BackendRuntimeBaseTarPath",
                         "-BackendRuntimeBaseTarSha256", "-BackendRuntimeBaseImage",
+                        "-TestServerHost", "172.30.30.58",
+                        "-BackupServerHost", "172.30.30.59",
+                        "-ProdServerHost", "172.30.30.57",
                         "-BackendRuntimeBaseDigest", "-BackendRuntimeBaseVersion");
         assertThat(response)
                 .doesNotContain("-SkipDatabaseSync")
                 .doesNotContain("-SkipMinioSync")
-                .doesNotContain("-ProdServerHost")
                 .doesNotContain("test-password");
     }
 }
