@@ -596,3 +596,43 @@
 - Verification: preview gate 输出每个关键参数的来源和检查结果，至少覆盖 `ServerHost`、`RemoteAppDir`、`ConfirmText=PROD`、`RequireTested`、`RemoteDataDiskMount`。
 - Forbidden action: 不得在 parser 误报后直接跳过 preview gate；必须读取原始 preview 并修正解析器。
 - Evidence: `doc/tasks/20260712-intmain-codeonly-three-env-release/issues.md` P020。
+
+
+## 2026-07-13 release-info 与运行控制台验收解析门禁
+
+### release-info CRLF-safe 解析
+
+- Trigger: 三环境运行态验证读取 `release-info.json`、版本号、变更说明或 sourceRepos commit。
+- Preflight check: 使用 JSON parser 或先将远端输出 CRLF 安全规范化；若用 shell 文本压缩，必须同时删除 `\r` 与 `\n`，并校验 releaseTag、backend commit、frontend commit 三项。
+- Blocker: 解析结果只得到 `{`、releaseInfoTagOk=false、commit 字段缺失、PowerShell/SSH 输出含 CRLF 导致字段截断。
+- Verification: 运行态证据中 `releaseInfoTagOk=true`、`releaseInfoBackendCommitOk=true`、`releaseInfoFrontendCommitOk=true`。
+- Forbidden action: 不得因文本解析器失败就手工标绿运行态；不得只用 HTTP 200 替代 release-info 内容校验。
+- Evidence: `doc/tasks/20260713-current-head-codeonly-three-env-rerun/execution-log.md#milestone-7a-test-runtime-verification-parser-correction`。
+
+### 运行控制台页面 console 结构化判定
+
+- Trigger: Playwright 或浏览器工具验证运行控制台页面、版本变更说明、operation 列表和 console 输出。
+- Preflight check: console 验证以结构化错误计数或精确 `Errors: 0` / `Warnings: 0` 判定；不得用简单字符串包含 `error` 扫描整段输出。
+- Blocker: 页面正文或工具统计字段包含 `Errors: 0` 被误判；console 检查无法区分真实 error 与统计标题。
+- Verification: 页面证据中 `operationChainVisible=true`、`operationSuccessVisible=true`、`consoleNoError=true`，且版本号和变更说明可见。
+- Forbidden action: 不得跳过真实页面验收；不得把误判失败改成忽略 console。
+- Evidence: `doc/tasks/20260713-current-head-codeonly-three-env-rerun/runtime-console-page-probe-r260713j.json`。
+
+## 2026-07-13 release worktree 物理根目录复核门禁
+
+- Trigger: 发布完成后删除临时 release worktree、state dir 或执行 task closeout。
+- Preflight check: 分别检查维护仓、后端仓、前端仓 `git worktree list --porcelain` 不含本轮 worktree；再检查固定物理根目录、子目录、state dir 是否仍存在；若残留目录不是 Git repo，仍需按固定路径边界删除。
+- Blocker: Git 注册已删除但物理根目录仍存在、state dir 仍存在、残留目录在预期根之外、仍有进程命令行引用待删路径。
+- Verification: closeout 证据必须同时包含 `afterRootExists=false`、`stateExists=false`、三仓 `Registered=false`，运行控制台 health 仍为 `UP` 且主路径稳定。
+- Forbidden action: 不得把 `git worktree list` 无记录等同于物理目录清理完成；不得删除无关并发任务 worktree。
+- Evidence: `doc/tasks/20260713-current-head-codeonly-three-env-rerun/worktree-cleanup-r260713j-final.json`。
+
+
+## 2026-07-13 task-closeout 长运行进程日志目录门禁
+
+- Trigger: 发布收尾恢复本地运行控制台、启动长运行进程，随后执行 task-closeout preview/apply 清理任务附属日志和证据。
+- Preflight check: 恢复主路径运行控制台时，stdout/stderr 不得重定向到当前任务目录或任何 task-closeout delete 候选；apply 前检查 48181 进程命令行与打开日志位置，必要时先重启到仓库外或稳定主目录日志路径。
+- Blocker: task-closeout apply 对 `.log` 返回 `PermissionError WinError 32`、进程仍占用任务目录内文件、日志路径位于待删除 evidence/task 目录。
+- Verification: runtime-control health=`UP`，进程命令行指向主工作区 Jar，task-closeout preview/apply blocked=<none> 且 warnings=<none>。
+- Forbidden action: 不得强杀后跳过 health 复核；不得为删除日志停止运行控制台后不恢复；不得提交被进程占用的任务附属日志。
+- Evidence: `doc/tasks/20260713-current-head-codeonly-three-env-rerun/execution-log.md#milestone-13-task-closeout-cleanup`。

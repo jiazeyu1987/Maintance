@@ -2696,3 +2696,13 @@
 2026-07-13T13:36:00+08:00	20260712-intmain-codeonly-three-env-release	RESULT	PASS: release-20260713-intmain-codeonly-three-env-r260713g-r1 completed build-release, publish-test, mark-tested, promote-prod, and promote-backup; all five operations SUCCESS; test/prod/backup runtime checks passed; backup /mnt/intruoyi-data mount verified; runtime-control restored to main path; r260713g worktree and state dir removed.
 
 2026-07-13T13:45:00+08:00	20260712-intmain-codeonly-three-env-release	CLOSEOUT	PASS: task-closeout preview/apply returned no delete, blocked, or warning items; runtime-control health remained UP from the main path; r260713g Git registrations, physical worktree, and state dir were absent; task status set to completed and scoped documentation/experience changes prepared for isolated commit.
+
+2026-07-13T14:30:00+08:00	20260713-current-head-codeonly-three-env-rerun	REQUEST	主程序又更新了，重新执行一次 IntRuoyi code-only 完整三环境发布闭环；使用维护仓、后端仓、前端仓当前 int_main 已提交 HEAD，新建干净临时 release worktree，禁止未提交/未跟踪/脏工作区内容进入发布包。
+
+2026-07-13T14:35:00+08:00	20260713-current-head-codeonly-three-env-rerun	COMMAND_INTENT	读取发布前置经验与服务器/worktree/PowerShell 门禁；冻结 maintenance=1535b827e6089549c978b670b8c8349e5362c63a、backend=738cfaeb04cc1b123de42283a01560b63fdac2b2、frontend=cac1c25d0f9b15e511167b0d26c3e9d13ee550ea；准备创建 D:\ProjectPackage\Int\IntRuoyiWorktrees\r260713h\m|b|f。
+
+
+2026-07-13T17:58:00+08:00	20260713-current-head-codeonly-three-env-rerun	RESULT	PASS: `release-20260713-intmain-codeonly-three-env-r260713j-r1` completed build-release, publish-test, mark-tested, promote-prod and promote-backup; all five operations SUCCESS; test/prod/backup runtime checks passed; backup `/mnt/intruoyi-data` mount verified; runtime-control restored to main workspace path.
+2026-07-13T17:58:00+08:00	20260713-current-head-codeonly-three-env-rerun	CLOSEOUT	Removed residual physical release worktree root `D:/ProjectPackage/Int/IntRuoyiWorktrees/r260713j` after confirming no Git registrations and no state dir; updated verification report, task records, request log and preflight lessons. Raw secret-bearing logs are not committed.
+
+2026-07-13T18:05:00+08:00	20260713-current-head-codeonly-three-env-rerun	CLOSEOUT	First task-closeout apply failed because runtime-control stdout/stderr logs in the task directory were locked by the 48181 process; froze evidence, restarted runtime-control from the main workspace Jar with logs outside task dir, verified health UP, then task-closeout apply succeeded with blocked=<none> and warnings=<none>.

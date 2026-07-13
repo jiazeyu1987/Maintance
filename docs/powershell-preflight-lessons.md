@@ -148,3 +148,13 @@ PowerShell 5.1/7 中执行 SSH、bash 片段、HTTP host:port、release-info JSO
 - Preview 参数：实现 `value_after(flag)` 或等价解析；对 `-RequireTested` 这类无值 flag 用包含检查，对 `-ServerHost` 这类有值 flag 用“flag 后一项”等值检查。
 - `rg`：正则以 `-` 开头时使用 `rg -- "<pattern>" <path>`；包含 lookahead/lookbehind 时使用 `rg --pcre2` 或 Python `re`。
 - 脱敏：只匹配 `mysql -p<非空密码>`、`/user:<user> <secret>`、`password/token/secret` 等明确 secret 形态；扫描命中后打印上下文人工确认，避免把 `-ProdServerHost`、`ruoyi-vue-pro`、releaseTag 或普通路径改写掉。
+
+
+## 2026-07-13 Playwright console 统计文本与 release-info CRLF 门禁
+
+- Trigger: PowerShell/Playwright/SSH 组合采集运行控制台页面、console 输出或远端 `release-info.json`。
+- Preflight check: `release-info` 使用 JSON parser 或 CRLF-safe compact；Playwright console 输出以错误计数结构化判定，不用 `contains("error")` 扫描整段工具输出。
+- Blocker: CRLF 导致 release-info 字段截断、`Errors: 0`/`Warnings: 0` 被当成真实错误、PowerShell byte[] 或默认渲染导致中文/JSON 证据不可读。
+- Verification: 证据中 releaseTag 与 source commit 均匹配；console result 明确 Total messages 与 Errors/Warnings 计数；页面版本号与变更说明可见。
+- Forbidden action: 不得用 HTTP 200 或页面可打开替代版本/变更说明验收；不得将解析器误判通过手工标绿。
+- Evidence: `doc/tasks/20260713-current-head-codeonly-three-env-rerun/execution-log.md` 的 `release-info-crlf-parser` 与 `console-error-string-parser`。
