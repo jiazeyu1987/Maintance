@@ -432,11 +432,20 @@
 ## 2026-07-10 发布日志凭据脱敏门禁
 
 - Trigger: 发布脚本、SSH、MySQL、Docker 或运行控制台会把完整命令写入 stdout/stderr、operation 日志或任务证据。
-- Preflight check: 发布前确认日志器对密码、token、私钥、连接串和 `mysql -p...` 参数脱敏；发布后在保留或提交日志前扫描明文凭据模式。
+- Preflight check: 发布前确认日志器对密码、token、私钥、连接串和 `mysql -p...` 参数脱敏；发布后在保留或提交日志前扫描明文凭据模式，扫描规则必须覆盖 `mysql -uroot -p<redacted>`、`mysql -u<user> -p<secret>`、`/user:<user> <redacted>` 这类无 `password=` 字样的命令参数。
 - Blocker: 任一待保留或待提交文件含明文凭据；无法证明日志已脱敏。
 - Verification: 脱敏扫描命中数为 0；任务文档只记录命令意图、退出码、计数和脱敏摘要，原始秘密日志已从任务产物中删除。
 - Forbidden action: 不得把含明文密码的 stdout/stderr、operation dump 或命令历史提交到 Git，不得为“完整证据”保留凭据原文。
-- Evidence: `doc/tasks/20260710-current-head-test-only-release-completion-audit/execution-log.md`；修复发布 stdout 中检测到 274 处明文 MySQL 密码命令，完成摘要后必须删除原始日志。
+- Evidence: `doc/tasks/20260710-current-head-test-only-release-completion-audit/execution-log.md`；`doc/tasks/20260712-intmain-codeonly-three-env-release/issues.md#p007`；修复发布 stdout 中检测到明文 MySQL 密码命令，完成摘要后必须删除原始日志。
+
+## 2026-07-13 required SQL 兼容路线流迁移重命名顺序
+
+- Trigger: code-only / no-data 发布执行 MES required SQL，且 SQL 仍引用 `mes_pro_route_use_process_batch_record`，目标环境可能已执行 `20260709_mes_route_flow_config_unification` 并将旧表重命名为 `mes_pro_route_use_process_batch_record_legacy_20260709`。
+- Preflight check: 发布前只读查询目标环境 `information_schema.tables` 与 `infra_release_migration`，确认当前表、legacy 表、`20260708_mes_batch_record_version_phase_one`、`20260709_mes_route_flow_config_unification` 的真实状态；SQL 中对已被后续迁移重命名的 legacy 表只能使用显式 table-exists 守卫。
+- Blocker: required SQL 直接 `ALTER` 或 `CALL add...('mes_pro_route_use_process_batch_record')`，但目标库当前表不存在且 legacy 表存在；或迁移状态显示后续重命名已完成但前序 SQL 尚未应用。
+- Verification: `python -X utf8 -m pytest script\tests\test_mes_batch_record_version_sql.py -q` 必须覆盖当前表和 legacy 表双路径；发布失败时保存远端 `information_schema.tables`、`infra_release_migration`、operation lock 与 operation log 的脱敏证据。
+- Forbidden action: 不得手工重建测试库表或手工改 `infra_release_migration` 绕过；不得把失败 releaseTag 拼接到后续正式/备份发布。
+- Evidence: `doc/tasks/20260712-intmain-codeonly-three-env-release/evidence/publish-test-failure-db-snapshot-r260713c-r2.json`；后端提交 `fdd93ec98c`。
 
 ## 2026-07-10 测试服真实运行态与运行控制台展示必须拆分验证
 
@@ -515,3 +524,75 @@
 - Verification: 记录 operationId、releaseTag、最终 status、日志摘要和耗时原因。
 - Forbidden action: 禁止因前端/HTTP 超时重复触发构建或发布；禁止拼接多轮 releaseTag 结果。
 - Evidence: `doc/tasks/20260712-current-head-test-only-release/issues.md` P015。
+
+## 2026-07-12 冻结 worktree 脚本参数契约门禁
+
+- Trigger: 在 release worktree 中执行发布前置脚本、migration policy gate、manifest 校验或维护仓发布契约测试。
+- Preflight check: 执行前先读取当前冻结 worktree 中脚本的 `--help` 或测试入口，确认参数契约；历史经验中的命令只能作为候选，不能替代当前脚本契约。
+- Blocker: 当前脚本不支持历史参数、参数语义不明确、输出路径未指定且 stdout 不能作为稳定证据。
+- Verification: 记录 `--help` 关键参数、最终执行命令、退出码和 `--output` 证据路径。
+- Forbidden action: 不得因历史文档写过 `--json` 就直接用于当前脚本；不得在参数错误时把门禁失败误判为迁移内容失败。
+- Evidence: `doc/tasks/20260712-intmain-codeonly-three-env-release/issues.md` P003。
+
+## 2026-07-13 build-release 三环境 Host 完整性门禁
+
+- Trigger: 执行完整三环境 code-only 或 with-data 发布闭环的 `build-release` preview。
+- Preflight check: preview arguments 必须同时包含 `-TestServerHost 172.30.30.58`、`-ProdServerHost 172.30.30.57`、`-BackupServerHost 172.30.30.59`；不能只检查 test/backup。
+- Blocker: 缺任一 host、host 值与 `server-access.md` 不一致、preview 的 repo/frontend root 不指向本次 release worktree。
+- Verification: 记录 preview JSON/raw summary，确认 `BackendRepoRoot`、`FrontendRepoRoot`、三环境 host、`-Component intruoyi` 和 code-only skip 参数。
+- Forbidden action: 不得在缺 `-ProdServerHost` 的 releaseTag 上继续 build-release；不得用后续 promote-prod 参数补救 build-release manifest/runtime-env 的目标缺口。
+- Evidence: `doc/tasks/20260712-intmain-codeonly-three-env-release/issues.md` P004，维护仓提交 `367786f`。
+
+## 2026-07-13 release worktree 双前端依赖恢复门禁
+
+- Trigger: fresh release worktree 中执行 IntRuoyi `build-release`，尤其是维护仓和业务前端分属两个 npm/pnpm 项目。
+- Preflight check: submit build-release 前分别确认维护仓 frontend 和业务前端 `yudao-ui-admin-vue3` 依赖已按 lockfile 恢复；业务前端至少验证 `node_modules/.bin/cross-env` 或执行 `pnpm install --frozen-lockfile`。
+- Blocker: 业务前端 `node_modules` 缺失、frozen install 修改 lockfile、`pnpm build:test` 依赖命令不可解析。
+- Verification: 记录业务前端 install 命令、退出码、lockfile diff、`node_modules/.bin/cross-env` 存在性和 build-release 新 releaseTag。
+- Forbidden action: 不得用维护控制台前端 install 结果替代业务前端依赖恢复；不得在失败 releaseTag 上继续发布。
+- Evidence: `doc/tasks/20260712-intmain-codeonly-three-env-release/issues.md` P005。
+
+## 2026-07-13 build-release 本地 Docker inspect 与 env 脱敏门禁
+
+- Trigger: `build-release` 需要读取本地 MySQL/MinIO 容器环境变量，或日志/排障命令涉及 `docker inspect --format '{{range .Config.Env}}...'`。
+- Preflight check: 提交 build-release 前只读核对 `docker version`、目标本地容器存在、`docker inspect --format '{{.State.Status}}' <container>` 可执行；如需检查 env，只能输出键名存在性或白名单脱敏摘要，不得打印完整 env。
+- Blocker: `docker inspect` 返回非 0、抛出 `Exception 0xc0000005`、Docker Desktop/daemon 不可用、本地必需容器缺失，或任何待保存/提交日志包含容器完整 env、密码、token、secret。
+- Verification: 记录 Docker client/server 版本、必需容器存在性、env key 存在性计数、build operation id 和失败/成功状态；secret scan 命中数必须为 0。
+- Forbidden action: 不得把 `docker inspect` 原始 env 输出粘贴到任务日志、证据或提交中；不得在 Docker inspect 门禁失败后复用失败 releaseTag 继续发布。
+- Evidence: `doc/tasks/20260712-intmain-codeonly-three-env-release/issues.md` P011/P012，operation `op-2026-07-13T020341321200Z-97c25063-2488-4604-aebf-2d62697b2496`。
+
+## 2026-07-13 远端发布锁表查询必须先按真实 schema 校验
+
+- Trigger: publish-test、promote-prod、promote-backup 前后只读查询 `infra_release_operation_lock`、`infra_release_migration` 或其他发布治理表。
+- Preflight check: 查询前先执行 `SHOW COLUMNS` / `DESCRIBE`，或使用已验证的 schema-aware 查询；`infra_release_operation_lock` 当前字段为 `update_time`，不是 `updated_time`。
+- Blocker: 只读 SQL 报 `Unknown column`、表结构与脚本假设不一致、锁状态无法证明为本任务目标 releaseTag 的终态。
+- Verification: 证据中记录字段清单、目标环境、releaseTag、operation_id、status 和更新时间字段；查询命令退出码为 0。
+- Forbidden action: 不得在锁表查询失败时把环境状态当作已验证，不得继续使用历史字段名反复重试，不得手工更新锁表绕过发布状态。
+- Evidence: `doc/tasks/20260712-intmain-codeonly-three-env-release/issues.md` P014。
+
+## 2026-07-13 mark-tested payload 不得携带 targetEnvironment
+
+- Trigger: 通过运行控制台 API 或页面执行 `mark-release-tested` / `mark-tested`。
+- Preflight check: payload 必须包含 `testConclusion` 和来自 `/restore-candidates` 的 `selectedRecoverySetCandidateId`；不得携带 `targetEnvironment`；releaseTag 以测试服当前已验证版本为准。
+- Blocker: preview 返回 `targetEnvironment`、`selectedRecoverySetCandidateId is required`、候选 ID 不可用、测试服运行态未验证通过。
+- Verification: preview arguments 包含 `-Mode mark-tested`、`-ReleaseTag <releaseTag>`、`-SelectedRecoverySetCandidateId <candidate>`；operation=SUCCESS。
+- Forbidden action: 不得手工标绿 tested 状态，不得省略 recovery set 候选，不得把 publish-test 成功直接等同 mark-tested 完成。
+- Evidence: `doc/tasks/20260712-intmain-codeonly-three-env-release/issues.md` P015。
+
+## 2026-07-13 运行控制台 state-dir 不得污染 release worktree
+
+- Trigger: 临时 release worktree 中启动维护控制台并执行 `build-release`、`publish-test`、`promote-prod` 或 `promote-backup`。
+- Preflight check: `runtime-control.local.yaml` 的 `state-dir`、logs、cache、operation state 必须位于 Git release worktree 外部，或已确认不会被 `git status --porcelain --ignored=no` 计入 dirty；启动 48181 后必须再次检查维护、后端、前端三个 release worktree clean。
+- Blocker: 任一 release worktree 出现 `?? runtime/`、operation state、logs、cache 或其它未跟踪运行态目录；manifest sourceRepos 可能被标记 dirty。
+- Verification: 启动运行控制台后记录 `git status --porcelain --ignored=no` 为空，`BackendRepoRoot`/`FrontendRepoRoot` 指向本轮 worktree，state-dir 指向 worktree 外部固定任务目录。
+- Forbidden action: 不得在 release worktree dirty 时继续 build-release；不得把未跟踪 state/log/cache 目录混入发布来源证明。
+- Evidence: `doc/tasks/20260712-intmain-codeonly-three-env-release/issues.md` P018；`r260713g` 将 state-dir 移至 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260713g-state` 后 manifest dirty=false。
+
+## 2026-07-13 preview 参数解析必须兼容 switch flag
+
+- Trigger: 校验运行控制台 preview arguments，尤其包含 `-RequireTested`、`-SkipDatabaseSync`、`-SkipMinioSync`、`-IncludeOnlyOffice` 等单值 switch flag。
+- Preflight check: gate 脚本必须按 flag 语义解析参数；对 switch flag 只检查存在性，对 key/value flag 查找后继值，不得简单按偶数位置 zip。
+- Blocker: gate parser 无法识别 switch flag，导致 `ServerHost`、`RemoteDataRoot`、`ConfirmText` 等后续参数错位或误判。
+- Verification: preview gate 输出每个关键参数的来源和检查结果，至少覆盖 `ServerHost`、`RemoteAppDir`、`ConfirmText=PROD`、`RequireTested`、`RemoteDataDiskMount`。
+- Forbidden action: 不得在 parser 误报后直接跳过 preview gate；必须读取原始 preview 并修正解析器。
+- Evidence: `doc/tasks/20260712-intmain-codeonly-three-env-release/issues.md` P020。

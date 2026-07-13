@@ -121,12 +121,22 @@
 - Keywords: Manifest artifact sha256 prefix, sha256:<64hex>, 281 hash mismatch, hash prefix normalization -> `docs/release-build-preflight-lessons.md#2026-07-10-manifest-artifact-sha256-前缀门禁`
 - Keywords: runtime-control Linux powershell.exe, 运维矩阵 ERROR unknown, release-status current tag null, release-info 版本变更说明 -> `docs/release-build-preflight-lessons.md`
 - Keywords: PowerShell pipe Python Node 中文问号, subprocess text CRLF ssh bash, $LASTEXITCODE stderr, $Args automatic variable -> `docs/powershell-preflight-lessons.md`
+- Keywords: PowerShell heredoc, python -c newline, U+FEFF BOM stdin, Playwright 中文正则, rg -- lookahead, preview 参数 flag 错位, -RequireTested, 脱敏误伤 ruoyi-vue-pro, -ProdServerHost -> `docs/powershell-preflight-lessons.md#2026-07-13-powershell-发布脚本承载参数解析与证据脱敏门禁`
 - Keywords: concurrent publish, releaseTag drift, operation lock RUNNING, 并发发布, 目标版本漂移, .env compose image release-info 不一致 -> `docs/test-release-preflight.md#并发发布与目标版本漂移门禁`
 - Keywords: publish-test preview BackupServerHost metadata, forbidden host token, ServerHost target gate, 172.30.30.59 误判 -> `docs/test-release-preflight.md#2026-07-12-publish-test-preview-目标字段门禁`
 - Keywords: SmartReleaseBaselineManifestPath missing, enableSmartReleaseReport failed, smart release report-only baseline -> `docs/release-build-preflight-lessons.md#2026-07-12-smart-release-报告基线门禁`
 - Keywords: Manifest v1 changeSet.component, legacy release-manifest component, schema-specific manifest validation -> `docs/release-build-preflight-lessons.md#2026-07-12-manifest-v1-与-legacy-schema-分离校验`
 - Keywords: PowerShell $PID automatic variable, cleanup process self-match, r260712p worktree removal, command line guard -> `docs/powershell-preflight-lessons.md#2026-07-12-powershell-自动变量与进程守卫门禁`
+- Keywords: migration policy gate --json unsupported, run-release-migration-policy-gate --output, frozen script parameter contract -> `docs/release-build-preflight-lessons.md#2026-07-12-冻结-worktree-脚本参数契约门禁`
+- Keywords: build-release missing ProdServerHost, three environment host preview, TestServerHost ProdServerHost BackupServerHost -> `docs/release-build-preflight-lessons.md#2026-07-13-build-release-三环境-host-完整性门禁`
+- Keywords: release worktree frontend node_modules missing, cross-env not recognized, yudao-ui-admin-vue3 frozen install -> `docs/release-build-preflight-lessons.md#2026-07-13-release-worktree-双前端依赖恢复门禁`
 - Keywords: release log secret, mysql -p plaintext, 发布日志明文密码, request-command-log 脱敏, raw secret log -> `docs/release-build-preflight-lessons.md#2026-07-10-发布日志凭据脱敏门禁`
+- Keywords: mes_pro_route_use_process_batch_record missing, mes_pro_route_use_process_batch_record_legacy_20260709, ERROR 1146, 20260708_mes_batch_record_version_phase_one, route flow legacy rename order -> `docs/release-build-preflight-lessons.md#2026-07-13-required-sql-兼容路线流迁移重命名顺序`
+- Keywords: docker inspect crash, Exception 0xc0000005, local container env, raw docker env secrets, LocalMySqlContainer, LocalMinioContainer -> `docs/release-build-preflight-lessons.md#2026-07-13-build-release-本地-docker-inspect-与-env-脱敏门禁`
+- Keywords: infra_release_operation_lock updated_time, update_time, Unknown column updated_time, release lock schema -> `docs/release-build-preflight-lessons.md#2026-07-13-远端发布锁表查询必须先按真实-schema-校验`
+- Keywords: mark-release-tested targetEnvironment, mark-tested targetEnvironment, selectedRecoverySetCandidateId restore candidate -> `docs/release-build-preflight-lessons.md#2026-07-13-mark-tested-payload-不得携带-targetenvironment`
+- Keywords: runtime-control state-dir release worktree dirty, ?? runtime, operation state logs cache dirty sourceRepos -> `docs/release-build-preflight-lessons.md#2026-07-13-运行控制台-state-dir-不得污染-release-worktree`
+- Keywords: preview arguments RequireTested switch flag parser, SkipDatabaseSync SkipMinioSync flag, ServerHost preview gate false negative -> `docs/release-build-preflight-lessons.md#2026-07-13-preview-参数解析必须兼容-switch-flag`
 - Keywords: AGENTS rule conflict, 规则优先级, previous task ownership, concurrent worktree ownership, 仅测试服完成定义 -> 先读全局 `C:\Users\BJB110\.codex\AGENTS.md` 的 `Rule Precedence and Task Ownership`，再读当前目录最近的项目 `AGENTS.md`
 - Keywords: Invoke-WebRequest Content byte array, Invoke-RestMethod health status, process scan exclude current PID -> `docs/powershell-preflight-lessons.md`
 - Keywords: task-closeout status unknown, Current Status completed, cleanup preview apply, worktree Directory not empty -> `docs/release-build-preflight-lessons.md` and `D:\ProjectPackage\Int\IntRuoyi\docs\worktree-memory.md`

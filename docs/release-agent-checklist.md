@@ -72,6 +72,8 @@ Codex 必须把完整发布任务视为以下严格顺序：
 - 必须先核对测试服当前 releaseTag/manifest 与本次目标提交是否一致；不一致时不能复用旧发布结论。
 - 必须显式核对 runtime-control 当前 `repo-root` / `frontend-root` 指向的就是本次最新临时发布 worktree，而不是主工作区或旧 worktree。
 - 在临时发布 worktree 上先过前端 lockfile / 依赖恢复与后端目标模块构建门禁；未通过时，先提交修复再重建 worktree。
+- `build-release` 前先用脱敏/白名单方式核对本地 Docker 可用性和必需容器存在；不得直接打印 `docker inspect` 的完整 env。
+- 运行控制台指向 release worktree 后，再查一次三仓 `git status --porcelain --ignored=no`；`state-dir`、logs、operation state 和 cache 不得落在 release worktree 内造成 `dirty=true`。
 - 先跑发布门禁或契约测试，尤其是：
   - migration policy gate
   - 影响发布链路的 SQL 契约测试
@@ -81,6 +83,7 @@ Codex 必须把完整发布任务视为以下严格顺序：
   - `-Mode build-release`
   - `-Component intruoyi`
   - 本次目标 `releaseTag`
+- 校验 preview arguments 时必须兼容 `-RequireTested`、`-SkipDatabaseSync`、`-SkipMinioSync` 等 switch flag；不得用简单偶数配对解析。
 
 ### 放行条件
 
@@ -175,6 +178,8 @@ Codex 必须把完整发布任务视为以下严格顺序：
 ### 必做动作
 
 - 只有在测试服验证通过后，才允许执行 `mark-tested`
+- 预览和执行 `mark-tested` 时不得传 `targetEnvironment`。
+- 必须从 `/restore-candidates` 或真实页面候选中选择 `selectedRecoverySetCandidateId`，不得省略候选。
 - 记录 operation ID、结果与 recovery candidate
 
 ### 放行条件
@@ -185,6 +190,7 @@ Codex 必须把完整发布任务视为以下严格顺序：
 ### 阻塞条件
 
 - 测试服未验证就尝试 mark-tested
+- 预览返回 `targetEnvironment` 或 `selectedRecoverySetCandidateId is required`
 - 手工改 tested 状态代替 action
 
 ## 5. 正式服发布与验证
@@ -298,6 +304,7 @@ Codex 必须按这个顺序排查：
   - 角色绑定是否兼容真实角色编码
   - 租户包与菜单权限是否同步
   - DCC 分类、编码、字段长度和唯一性是否有前置校验
+  - 被后续迁移重命名的 legacy 表是否有双表或 `table exists` 守卫，尤其是 `mes_pro_route_use_process_batch_record` 与 `mes_pro_route_use_process_batch_record_legacy_20260709`
 - SQL 依赖角色、菜单、租户或账号时，先只读查真实库，不能只按历史角色码或文档推断。
 - 如果真实库基线不满足 SQL 契约，必须阻塞并修 SQL/迁移/数据契约；禁止手工改测试库帮助发布过关。
 

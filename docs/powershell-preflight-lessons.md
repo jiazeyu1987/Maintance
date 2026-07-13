@@ -132,3 +132,19 @@ PowerShell 5.1/7 中执行 SSH、bash 片段、HTTP host:port、release-info JSO
 - Verification: 记录命令、退出码、关键 stderr 摘要和产物/manifest 校验结果。
 - Forbidden action: 禁止把成功命令的普通 warning/stderr 当作失败；也禁止忽略非 0 退出码继续发布。
 - Evidence: `doc/tasks/20260712-current-head-test-only-release/issues.md` P010。
+
+## 2026-07-13 PowerShell 发布脚本承载、参数解析与证据脱敏门禁
+
+- Trigger: PowerShell 中执行发布 API 辅助脚本、`python -c`、Python/Node stdin、Playwright 脚本、`rg` 正则检查、运行控制台 preview 参数校验或发布日志脱敏。
+- Preflight check: 多行 Python/Node 不使用 Bash heredoc，也不把带 `\n` 的多行源码压进 `python -c`；stdin 执行时先处理可能出现的 `U+FEFF`；中文按钮文案、中文正则和 Playwright 选择器优先使用 Unicode 转义或 UTF-8 脚本文件；解析 preview 参数时按 flag 查找下一项，不能简单两两配对；`rg` 搜索以 `-` 开头的正则时加 `--`，需要 lookaround 时改用 Python 或 `rg --pcre2`；脱敏规则必须区分真实 secret 与普通参数/路径。
+- Blocker: 出现 `Missing file specification after redirection operator`、`unexpected character after line continuation character`、`invalid non-printable character U+FEFF`、中文正则变成 `????`、preview 因单值 flag 错位误判目标 host、`rg` 把正则当 flag、默认 `rg` 不支持 lookaround、脱敏把 `-ProdServerHost` 或 `ruoyi-vue-pro` 当成密码。
+- Verification: 执行后保存结构化 preview gate、脚本退出码、UTF-8 回读结果、Playwright 页面结果、脱敏前后扫描摘要；参数 gate 必须证明 `-ServerHost`、`-ReleaseTag`、`-RequireTested`、`-ConfirmText` 等关键 flag 各自命中正确值。
+- Forbidden action: 不得在 PowerShell 里直接使用 Bash heredoc；不得只靠设置 `$OutputEncoding` 就认为 stdin 中文不会污染；不得用 `args[0::2]`/`args[1::2]` 解析含无值 flag 的命令；不得用过宽脱敏正则污染 releaseTag、仓库名、host 参数或数据库名；不得把脱敏后的误伤日志当作真实远端命令证据。
+- Evidence: `doc/tasks/20260712-intmain-codeonly-three-env-release/execution-log.md`；主线程遇到 `python -c` 换行语法错误、stdin `U+FEFF`、Playwright 中文正则污染、promote-prod preview flag 错位误判、`rg` 正则 flag/lookaround 问题，以及 `mysql -p...` 脱敏规则误伤 `ruoyi-vue-pro`。
+
+### 推荐做法
+
+- 多行 Python：`@' ... '@ | python -X utf8 -c "import sys; exec(sys.stdin.read().lstrip('\ufeff'))"`；若脚本含中文关键字，优先写入 UTF-8 临时脚本文件并回读。
+- Preview 参数：实现 `value_after(flag)` 或等价解析；对 `-RequireTested` 这类无值 flag 用包含检查，对 `-ServerHost` 这类有值 flag 用“flag 后一项”等值检查。
+- `rg`：正则以 `-` 开头时使用 `rg -- "<pattern>" <path>`；包含 lookahead/lookbehind 时使用 `rg --pcre2` 或 Python `re`。
+- 脱敏：只匹配 `mysql -p<非空密码>`、`/user:<user> <secret>`、`password/token/secret` 等明确 secret 形态；扫描命中后打印上下文人工确认，避免把 `-ProdServerHost`、`ruoyi-vue-pro`、releaseTag 或普通路径改写掉。
