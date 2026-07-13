@@ -135,7 +135,7 @@
 - `Get-Content -Encoding utf8 D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`
 - `Get-Content -Encoding utf8 D:\ProjectPackage\Int\IntRuoyi\docs\worktree-memory.md`
 - `git -C D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3 diff -- src/views/dcc/controlled-file/browser/index.vue src/views/dcc/controlled-file/browser/state-cache.ts tests/e2e/dcc-browser-cache-write-failure-static.spec.js tests/e2e/dcc-browser-remember-state-cache-static.spec.js`
-- `node D:\ProjectPackage\Int\IntRuoyi\scripts\preflight\login-preflight.mjs --base-url http://172.30.30.58:8081 --tenant 测试租户 --username aoteman --password 111111 --target-path /dcc/controlled-file/browser --target-text 刷新列表`
+- `node D:\ProjectPackage\Int\IntRuoyi\scripts\preflight\login-preflight.mjs --base-url http://172.30.30.58:8081 --tenant 测试租户 --username aoteman --password <redacted> --target-path /dcc/controlled-file/browser --target-text 刷新列表`
 - `ssh root@172.30.30.58` 只读核验 `.env IMAGE_TAG`、`docker compose ps` 与前端 bundle 命中情况
 - `Playwright` 真实浏览器读取测试服 DCC 浏览页 localStorage，确认 metadata key 仍包含嵌套 `children`
 - `apply_patch` -> 阻塞上一维护仓任务 `20260630-build-release-local-runtime-guard`，并新建 `20260630-test-server-dcc-browser-cache-write-failure-rerelease` 任务文档与执行日志
@@ -1107,7 +1107,7 @@
 - 执行记录：在隔离后端 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-dcc-preview-release` 上继续推进，确认先前 `20260622_dcc_preview_codex_release_fix_2` 已解决 Codex CLI 120 秒超时，新的真实根因是样本 `dcc_controlled_file.id=2054545668044050095` 的源文件名只唯一命中项目名称 `PTCA球囊扩张导管`，旧实现只支持“文件名先识别项目编码”。
 - 执行命令：新增并回归 `源文件名唯一项目名称直连识别`，通过 `mvn -f D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-dcc-preview-release\pom.xml -pl yudao-module-dcc "-Dtest=DccControlledFileProjectCodeRecognitionServiceTest#recognizeProjectCode_uniqueProjectNameInSourceFileNameSkipsCodexAndFileContentRead,DccControlledFileProjectCodeRecognitionServiceTest#recognizeProjectCode_uniqueProjectCodeInSourceFileNameSkipsCodexAndFileContentRead,DccControlledFileProjectCodeRecognitionServiceTest#recognizeProjectCode_sourceFileNameUsesLongestUniqueProjectCodeBeforeCodex" test`、`mvn -f ... -pl yudao-module-dcc -am "-Dtest=DccControlledFileProjectCodeRecognitionServiceTest,DccProjectCodeCodexCliClientImplTest" "-Dsurefire.failIfNoSpecifiedTests=false" test`、`python -X utf8 -m pytest ...test_publish_int_ruoyi_to_test_tooling.py -q`（87 passed）、`python -X utf8 -m pytest ...test_edhr_release_transaction_schema_sql.py -q`（4 passed）与 `python -X utf8 ...run-release-migration-policy-gate.py --sql-root ...\\sql\\mysql`。
 - 执行命令：构建并部署测试服 backend 发布包 `20260622_dcc_preview_codex_release_fix_3`，使用 `publish-int-ruoyi.ps1 -Mode build-release ... -ReleaseTag 20260622_dcc_preview_codex_release_fix_3 ... -DccProjectCodeCodexCliCommand /opt/intruoyi/runtime/tools/codex -DccProjectCodeCodexHome /opt/intruoyi/runtime/backend-codex-home` 与 `publish-int-ruoyi.ps1 -Mode deploy-release ... -ReleaseTag 20260622_dcc_preview_codex_release_fix_3 ...` -> PASS。
-- 执行命令：使用测试租户真实接口验证，`POST http://172.30.30.58:48081/admin-api/system/auth/login` 携带 header `tenant-id: 122` 与 `aoteman/111111` 登录成功；随后 `POST http://172.30.30.58:48081/admin-api/dcc/controlled-files/2054545668044050095/recognize-project-code` 返回 `code=0`，`dccProjectCodeId=1`、`projectCode=PTCABC`、`projectName=PTCA球囊扩张导管`、`matchType=PROJECT_NAME`。
+- 执行命令：使用测试租户真实接口验证，`POST http://172.30.30.58:48081/admin-api/system/auth/login` 携带 header `tenant-id: 122` 与 `aoteman/<redacted>` 登录成功；随后 `POST http://172.30.30.58:48081/admin-api/dcc/controlled-files/2054545668044050095/recognize-project-code` 返回 `code=0`，`dccProjectCodeId=1`、`projectCode=PTCABC`、`projectName=PTCA球囊扩张导管`、`matchType=PROJECT_NAME`。
 - 执行命令：通过 `ssh -o BatchMode=yes root@172.30.30.58` + `docker exec intruoyi-mysql mysql --default-character-set=utf8mb4 ...` 真实回读测试服数据库，确认 `dcc_controlled_file.id=2054545668044050095` 已写回 `file_name/title/product_name=PTCA球囊扩张导管`、`product_code=PTCABC`、`dcc_project_code_id=1`、`project_code_recognition_type=PROJECT_NAME`，并且其 `master_id=2054545668044045220` 对应的 `dcc_controlled_file_master.file_name` 也同步为 `PTCA球囊扩张导管`。
 - 结论记录：测试服 DCC 受控预览后端识别链路已跑通，当前会优先用源文件名中的唯一项目编码或唯一项目名称命中 DCC 基础数据，并把正确项目名称同步回写到受控文件与主链文件名；本轮未触碰正式服。
 - 2026-06-22 用户进一步确认：`D:\ProjectPackage\Int\IntRuoyi` 下项目后续都要按 `int_main` 方向融合。执行记录：只读核对后发现原始主工作区 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro` 虽处于 `int_main`，但存在大量未提交改动，且与本次 DCC 修复同文件重叠，不能直接把当前任务硬合进去。随后创建干净成对 worktree：后端 `D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-dcc-preview-int-main-clean`、前端 `D:\ProjectPackage\Int\IntRuoyiWorktrees\yudao-ui-admin-vue3-dcc-preview-int-main-clean`，分支同为 `codex/20260622-dcc-preview-int-main-clean`，基线分别来自 `int_main`。
@@ -1396,7 +1396,7 @@
 - `POST /admin-api/infra/runtime-control/actions/preview` -> PASS，`publish-test` 预览命令目标 `172.30.30.58`
 - `POST /admin-api/infra/runtime-control/actions` `publish-test` -> PASS，operation `op-2026-06-30T063029209792400Z-8b3bd5dd-5120-44b6-bf7d-4961956cbef8` `SUCCESS`
 - `ssh root@172.30.30.58 'cd /opt/intruoyi/runtime; grep ^IMAGE_TAG= .env; docker ps --format {{.Image}} | grep intruoyi'` -> PASS
-- `node D:\ProjectPackage\Int\IntRuoyi\scripts\preflight\login-preflight.mjs --base-url http://172.30.30.58:8081 --tenant 测试租户 --username aoteman --password 111111 --target-path /dcc/controlled-file/browser --target-text 刷新列表` -> PASS
+- `node D:\ProjectPackage\Int\IntRuoyi\scripts\preflight\login-preflight.mjs --base-url http://172.30.30.58:8081 --tenant 测试租户 --username aoteman --password <redacted> --target-path /dcc/controlled-file/browser --target-text 刷新列表` -> PASS
 - `node 临时真实页面验证脚本` -> PASS，toast/dialog/pageerror 全空，metadata localStorage 不含 `children`
 
 ## 2026-06-23 运行控制台左下角增加版本号
@@ -1443,7 +1443,7 @@
   - frontend：`http://127.0.0.1:8087`
   - backend：`http://127.0.0.1:48087`
   - 本地库已执行 `20260623_dcc_browser_batch_recognition_task.sql`
-- 命令记录：真实登录前置 `node D:\ProjectPackage\Int\IntRuoyi\scripts\preflight\login-preflight.mjs --base-url http://127.0.0.1:8087 --tenant 芋道源码 --username admin --password admin123 --target-path /dcc/controlled-file/browser --target-text 刷新列表` -> PASS。
+- 命令记录：真实登录前置 `node D:\ProjectPackage\Int\IntRuoyi\scripts\preflight\login-preflight.mjs --base-url http://127.0.0.1:8087 --tenant 芋道源码 --username admin --password <redacted> --target-path /dcc/controlled-file/browser --target-text 刷新列表` -> PASS。
 - 命令记录：只读采样目录后，选择中等规模目录 `质量管理/3.DMR/10.产品技术要求`，总数 `24`，空识别字段样本量充足。
 - 命令记录：`node D:\ProjectPackage\Int\IntRuoyiWorktrees\yudao-ui-admin-vue3-dcc-batch-recognition-browser\doc\tasks\20260623-dcc-browser-batch-recognition\verify-dcc-browser-batch-recognition-admin.e2e.mjs` -> PASS。
 - 结果摘要：真实批量任务 `taskId=1` 最终 `COMPLETED`，`processed=24 / success=7 / failed=17 / skipped=0`；浏览页按钮、确认弹窗、进度弹窗和自动刷新链路均通过。
@@ -1455,7 +1455,7 @@
 - 命令记录：`node scripts/preflight/publish-preflight.mjs --manifest E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260623-dcc-batch-recognition-test-v1\manifest.json --environment test --sql-root ... --remote-host 172.30.30.58 --remote-app-dir /opt/intruoyi/runtime --user root` -> PASS，确认 releaseTag、远端 IMAGE_TAG、Quartz 迁移和 smoke 发布门禁。
 - 命令记录：维护仓 `ops/deploy/publish-int-ruoyi.ps1` 首次 `build-release` 失败，根因是前端构建仍直调 `node vite.js build --mode test`；随后将其改为 `pnpm build:test`，`release-20260623-dcc-batch-recognition-test-v1` 构建并上传 NAS -> PASS。
 - 命令记录：`release-20260623-dcc-batch-recognition-test-v1` 部署测试服 -> PASS；测试服 `.env`、backend/frontend 镜像 tag、`/actuator/health`、前端入口和 pdf worker 都已通过。
-- 命令记录：远端数据库核验 `aoteman` 在测试租户中绑定 `doc_control`；`node scripts/preflight/login-preflight.mjs --base-url http://172.30.30.58:8081 --tenant 测试租户 --username aoteman --password 111111 --target-path /dcc/controlled-file/browser --target-text 刷新列表` -> PASS。
+- 命令记录：远端数据库核验 `aoteman` 在测试租户中绑定 `doc_control`；`node scripts/preflight/login-preflight.mjs --base-url http://172.30.30.58:8081 --tenant 测试租户 --username aoteman --password <redacted> --target-path /dcc/controlled-file/browser --target-text 刷新列表` -> PASS。
 - 命令记录：测试服真实目录采样后选定 `DCC E2E Documents/1. QMS documents/3 RE 扫描件`（`directoryId=909031`，`33` 条）作为中等规模目录。
 - RED 记录：测试服批量任务 `taskId=1` -> `COMPLETED`，但 `33/33` 失败，最后错误为 `failed to start Codex CLI command [cmd.exe, /c, codex.cmd]`；说明测试服运行态仍回退到 Windows 默认命令。
 - 命令记录：维护仓发布链路继续修复，补齐 `DCC_PROJECT_CODE_CODEX_CLI_COMMAND`、`DCC_PROJECT_CODE_CODEX_HOME`、`CODEX_HOME` 和 codex 挂载；重新构建 backend-only `release-20260624-dcc-batch-recognition-codex-v2` 并部署测试服 -> PASS。
@@ -1478,11 +1478,11 @@
 - 命令记录：测试服重新使用中等规模目录 `DCC E2E Documents/1. QMS documents/2 GL 扫描件/作废文件`（`directoryId=909034`，`12` 条）执行真实批量识别 -> PASS，任务 `taskId=4` 最终 `COMPLETED`，`processed=12 / success=0 / failed=12 / skipped=0`，最后错误稳定为 `DCC project-code recognition returned no DCC basic-data match`，不再出现 `cmd.exe` 回退、`120s timeout` 或 `Data truncation`。
 - 当前结论更新：测试服内容识别链路的运行时/发布合同问题已被修完，现阶段剩余问题已经收敛为“测试租户可见样本没有命中 DCC 基础数据”，而不是 Codex 启动、超时或任务状态写库问题。
 - 用户追加需求：要求“在测试服务器的芋道源码租户里再采样一个20个左右的文件夹做识别”。
-- 命令记录：在测试服 `芋道源码/admin/admin123` 下只读采样到多个约 20 条目录，包括 `质量管理/3.DMR/06.物料清单/05 有源类`（20 条）、`质量管理/3.DMR/04.物资采购清单/04 输注类`（20 条）、`质量管理/3.DMR/03.工艺文件/07 骨科类_工艺文件`（20 条）、`质量管理/3.DMR/07.检验、生产用设备清单`（18 条）、`质量管理/3.DMR/10.产品技术要求`（24 条）等。
+- 命令记录：在测试服 `芋道源码/admin/<redacted>` 下只读采样到多个约 20 条目录，包括 `质量管理/3.DMR/06.物料清单/05 有源类`（20 条）、`质量管理/3.DMR/04.物资采购清单/04 输注类`（20 条）、`质量管理/3.DMR/03.工艺文件/07 骨科类_工艺文件`（20 条）、`质量管理/3.DMR/07.检验、生产用设备清单`（18 条）、`质量管理/3.DMR/10.产品技术要求`（24 条）等。
 - 阻塞记录：测试服 `tenant_id=1` 数据库核验显示，`admin` 仅绑定 `common/super_admin/showroom_publicity`，`tenant_id=1` 下没有任何账号绑定 `doc_control`；因此 `芋道源码/admin` 真实打开 DCC 浏览页时不会显示 `批量识别产品名称/编号` 按钮，无法按现有权限合同对这些目录直接发起识别。
 - 用户继续提供账号：`wangsiyu / 111111`。
-- 命令记录：测试服 `芋道源码/wangsiyu/111111` 真实登录 PASS；登录态显示其原角色为 `wenkong / wenkong_download`，仍不具备 `doc_control`，直接调用批量任务接口返回 `Access Denied`。
-- 命令记录：通过测试服 `芋道源码/admin/admin123` 真实登录后的现有系统角色更新接口，将 `system_role.id=910233` 的角色码从 `wenkong` 更新为 `doc_control` -> PASS。
+- 命令记录：测试服 `芋道源码/wangsiyu/<redacted>` 真实登录 PASS；登录态显示其原角色为 `wenkong / wenkong_download`，仍不具备 `doc_control`，直接调用批量任务接口返回 `Access Denied`。
+- 命令记录：通过测试服 `芋道源码/admin/<redacted>` 真实登录后的现有系统角色更新接口，将 `system_role.id=910233` 的角色码从 `wenkong` 更新为 `doc_control` -> PASS。
 - 命令记录：远端数据库回读 PASS，`wangsiyu` 与 `zhaohaichen` 现均继承 `doc_control`；`wangsiyu` 再次真实登录后，前端登录态已显示 `doc_control`。
 - 命令记录：使用测试服 `芋道源码/wangsiyu` 在 `质量管理/3.DMR/07.检验、生产用设备清单`（`directoryId=910505`，`18` 条）真实触发批量识别 -> PASS，任务 `taskId=5` 最终 `COMPLETED`，`processed=18 / success=4 / failed=14 / skipped=0`。
 - 当前结论再更新：测试服 `芋道源码` 租户里已经有约 20 条规模的真实目录样本，并且确实出现了 `4` 条成功命中，证明这条租户视角下的识别链路不再是“全部零命中”；但仍不能宣告“内容识别全部跑通”，因为同一目录还有 `14` 条 `no DCC basic-data match`。
@@ -1506,7 +1506,7 @@
 - 命令记录：发布 backend-only `release-20260624-dcc-batch-recognition-context-v5` 到测试服 -> PASS；backend 重启后，旧长跑 `taskId=10` 自动收口为 `FAILED`，最终 `processed=27 / success=0 / failed=27 / remaining=15617 / lastFailureMessage=Interrupted by application restart before batch recognition completed`。
 - 命令记录：在 v5 测试服上重新创建 `2.DHF` 任务 `taskId=11`；发布 v6 前该任务进度到 `processed=15 / success=0 / failed=15 / remaining=15629`，backend 重启后同样自动收口为 `FAILED`。
 - 命令记录：发布 backend-only `release-20260624-dcc-batch-recognition-context-v6` 到测试服 -> PASS，backend 健康检查恢复正常。
-- 命令记录：通过真实登录接口 `POST http://172.30.30.58:48081/admin-api/system/auth/login`（`tenant-id=1`, `wangsiyu/111111`）拿 token 后，再次对 `质量管理/2.DHF` 创建任务 `taskId=12` -> PASS。
+- 命令记录：通过真实登录接口 `POST http://172.30.30.58:48081/admin-api/system/auth/login`（`tenant-id=1`, `wangsiyu/<redacted>`）拿 token 后，再次对 `质量管理/2.DHF` 创建任务 `taskId=12` -> PASS。
 - 命令记录：`taskId=12` 三次轮询结果：
   - `95s`: `processed=307 / success=64 / failed=243 / skipped=0 / remaining=15337`
   - `190s`: `processed=308 / success=64 / failed=244 / skipped=0 / remaining=15336`
@@ -2706,3 +2706,7 @@
 2026-07-13T17:58:00+08:00	20260713-current-head-codeonly-three-env-rerun	CLOSEOUT	Removed residual physical release worktree root `D:/ProjectPackage/Int/IntRuoyiWorktrees/r260713j` after confirming no Git registrations and no state dir; updated verification report, task records, request log and preflight lessons. Raw secret-bearing logs are not committed.
 
 2026-07-13T18:05:00+08:00	20260713-current-head-codeonly-three-env-rerun	CLOSEOUT	First task-closeout apply failed because runtime-control stdout/stderr logs in the task directory were locked by the 48181 process; froze evidence, restarted runtime-control from the main workspace Jar with logs outside task dir, verified health UP, then task-closeout apply succeeded with blocked=<none> and warnings=<none>.
+
+2026-07-13T18:22:00+08:00	20260713-project-experience-consolidation	REQUEST	用户指定 project-experience-consolidation 技能，要求将本轮可复用经验归档到项目长期经验。
+2026-07-13T18:30:00+08:00	20260713-project-experience-consolidation	COMMAND_INTENT	读取维护仓与主项目经验索引，优先更新已有长期经验文档，不新建经验文档；归档 worktree 清理、PowerShell/Playwright 解析和发布运行态验收门禁。
+2026-07-13T18:38:00+08:00	20260713-project-experience-consolidation	RESULT	PASS: 主项目 worktree-memory、powershell-memory、release-backup-restore 和 experience-index 已更新；维护仓任务记录、验收报告和请求日志已更新；task-closeout preview/apply blocked=<none> warnings=<none>。
