@@ -625,7 +625,7 @@
 - Blocker: Git 注册已删除但物理根目录仍存在、state dir 仍存在、残留目录在预期根之外、仍有进程命令行引用待删路径。
 - Verification: closeout 证据必须同时包含 `afterRootExists=false`、`stateExists=false`、三仓 `Registered=false`，运行控制台 health 仍为 `UP` 且主路径稳定。
 - Forbidden action: 不得把 `git worktree list` 无记录等同于物理目录清理完成；不得删除无关并发任务 worktree。
-- Evidence: `doc/tasks/20260713-current-head-codeonly-three-env-rerun/worktree-cleanup-r260713j-final.json`。
+- Evidence: `doc/tasks/20260713-current-head-codeonly-three-env-rerun/worktree-cleanup-r260713j-final.json`；`doc/tasks/20260713-current-head-codeonly-three-env-r260713v/execution-log.md` 的 `git-worktree-remove-maintenance`、`git-worktree-remove-frontend` 与 `release-worktree-cleanup`。
 
 
 ## 2026-07-13 task-closeout 长运行进程日志目录门禁

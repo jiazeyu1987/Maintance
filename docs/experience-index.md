@@ -145,3 +145,5 @@
 - Keywords: ready_for_closeout, verification-report keep, cleanup apply, closeout state machine, completed after cleanup -> `docs/release-build-preflight-lessons.md#2026-07-10-发布任务-closeout-状态与清理契约` and `D:\ProjectPackage\Int\IntRuoyi\docs\worktree-memory.md`
 - Keywords: test-only release, publish-test, test server runtime verification, release-info dialog, frozen release worktree, only test server -> `docs/test-release-preflight.md`
 - Gate: 仅测试服发布任务优先读取 `docs/test-release-preflight.md`，再按失败点跳转 `release-build-preflight-lessons.md`、`powershell-preflight-lessons.md` 和 `D:\ProjectPackage\Int\IntRuoyi\docs\worktree-memory.md`。
+- Keywords: remote python3 absent, python3 command not found, jq command not found, backup runtime verification carrier, 远端验收工具缺失 -> `docs/powershell-preflight-lessons.md#2026-07-14-远端验收工具可用性门禁`
+- Keywords: worktree remove Directory not empty, r260713v release worktree residual, git worktree registration absent physical directory exists -> `docs/release-build-preflight-lessons.md#2026-07-13-release-worktree-物理根目录复核门禁`
