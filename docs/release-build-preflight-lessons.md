@@ -637,3 +637,21 @@
 - Verification: runtime-control health=`UP`，进程命令行指向主工作区 Jar，task-closeout preview/apply blocked=<none> 且 warnings=<none>。
 - Forbidden action: 不得强杀后跳过 health 复核；不得为删除日志停止运行控制台后不恢复；不得提交被进程占用的任务附属日志。
 - Evidence: `doc/tasks/20260713-current-head-codeonly-three-env-rerun/execution-log.md#milestone-13-task-closeout-cleanup`。
+
+## 2026-07-16 release preflight 菜单 SQL 解析边界门禁
+
+- Trigger: `build-release` 执行维护仓 `ops.release.release_sql_contract_gate`，扫描菜单类 required SQL，尤其包含 `INSERT INTO system_menu ... SELECT ... ON DUPLICATE KEY UPDATE VALUES(...)`、后续临时表 `VALUES` 或 `system_role_menu` 授权清单。
+- Preflight check: `system_menu.id` 静态唯一性门禁只应解析真正的 `INSERT INTO system_menu (...) VALUES (...)` 插入声明；遇到 `INSERT INTO system_menu (...) SELECT ...` 时不得继续吞到后续 `ON DUPLICATE KEY UPDATE VALUES(...)` 或无关临时表 `VALUES`。若报错行号落在临时表、授权清单或更新子句，先按 TDD 修复维护仓解析器并补回归测试。
+- Blocker: `system_menu.id must be an integer literal for release preflight` 指向非 `system_menu VALUES` 插入行，或 `duplicate system_menu.id detected across release SQL history` 的第二个位置实际来自临时表/授权清单。
+- Verification: 维护仓新增 `scripts/tests/test_release_sql_preflight_gate.py` 回归，证明 `INSERT ... SELECT ... ON DUPLICATE KEY UPDATE VALUES(...)` 加后续临时表不会被当成 `system_menu` 插入；运行 `python -X utf8 -m pytest scripts/tests/test_release_sql_preflight_gate.py -q`；再用 clean release worktree 重新运行 migration policy gate 和新的 `build-release`。
+- Forbidden action: 不得为迎合误解析器去改业务 SQL 或手工改库；不得跳过 release preflight planner；不得复用失败 releaseTag 继续 `publish-test`、`mark-tested`、`promote-prod` 或 `promote-backup`。
+- Evidence: `doc/tasks/20260716-current-head-codeonly-three-env/execution-log.md`，`release-20260716-intmain-codeonly-three-env-r260716a-r1` operation `op-2026-07-15T162751592993800Z-07bd38b2-499b-4708-84a9-7b358734b779` and `release-20260716-intmain-codeonly-three-env-r260716b-r1` operation `op-2026-07-15T164733908318700Z-b740f44f-6170-46ed-910a-63aa3ba1c3b1` both failed before manifest because the parser crossed from `INSERT INTO system_menu ... SELECT` into later non-`system_menu` `VALUES` blocks.
+
+## 2026-07-16 release build 前端 ESLint slot 未使用变量门禁
+
+- Trigger: `build-release` 进入业务前端 `pnpm build:test` / `vite build --mode test`，Vite ESLint 插件扫描 Vue template slot scope。
+- Preflight check: 在干净前端 release worktree 执行目标构建命令或至少执行会触发 `vite-plugin-eslint` 的 `pnpm build:test`；重点关注表格列 `#default="{ ... }"`、排序/筛选 slot scope 和组合式函数返回值是否被模板实际使用。
+- Blocker: `vue/no-unused-vars`、`no-unused-vars` 或 `vite-plugin-eslint` 报未使用 slot 变量，尤其是发布期间才被 build:test 捕获的 `sortColumnAttrs`、`handleTemplateSortChange` 等。
+- Verification: 前端任务补充聚焦测试或构建证据，`pnpm build:test` 在 clean release worktree 通过；随后重新构建新的 releaseTag，原失败 tag 判废。
+- Forbidden action: 不得关闭 ESLint、移除 vite-plugin-eslint、用注释绕过规则或跳过前端构建；不得复用失败 releaseTag 继续发布链路。
+- Evidence: `doc/tasks/20260716-current-head-codeonly-three-env/execution-log.md`，`release-20260716-intmain-codeonly-three-env-r260716c-r1` operation `op-2026-07-15T170422234564100Z-32d8180b-c6c1-448f-8541-5bf8a9adf666` failed during `pnpm build:test` at `src/views/mes/pro/scheduler-workbench/components/ProcessWipTable.vue:27`.
