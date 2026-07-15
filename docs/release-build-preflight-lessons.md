@@ -336,6 +336,7 @@
 - 元数据约束：`type` 只能使用脚本允许枚举 `schema`、`data`、`menu`、`config`、`permission`、`seed`；不得写 `schema-data` 等组合值。
 - 依赖约束：`dependsOn` 必须填写真实存在的 migrationId，且依赖迁移的 `allowedEnvironments` 必须覆盖子迁移环境。
 - 失败处理：若 build-release 报 `Invalid type in release migration metadata` 或 `missing release-migration metadata`，先冻结 operation 日志与策略门禁 JSON，再修复 SQL 首行元数据并补 `script/tests` 覆盖后重新生成新的 releaseTag。
+- 2026-07-15 追加证据：`release-20260715-intmain-codeonly-three-env-r260715v-r1` 在 `build-release` 阶段失败，operation `op-2026-07-14T161447801754900Z-e7e1c3bf-8141-427a-bcf9-fd79544950f7` 日志报 `Release migration metadata missing: ...\sql\mysql\20260714_dcc_personal_file_decommission.sql`。后续遇到 `20260714_dcc_personal_file_decommission.sql` 或其他新增 SQL 文件时，必须在构建前运行全量 migration policy gate；若失败，冻结 operation/manifest 状态，补 SQL 首行 `-- release-migration: ...` 与对应 `script/tests` 后使用新 releaseTag 重建。
 
 ## 2026-07-09 publish-test SQL 不得复用同一派生/临时表别名触发 MySQL 1137
 

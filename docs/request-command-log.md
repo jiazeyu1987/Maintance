@@ -1,5 +1,14 @@
 # 请求与命令记录
 
+## 2026-07-15 code-only 三环境完整发布 r260715v
+
+- 用户需求：执行 IntRuoyi 不带数据的完整三环境发布闭环，发布输入限定为后端、前端、维护仓当前 `int_main` 已提交 HEAD；必须使用专用临时 release worktree，构建时使用 `SkipDatabaseSync` 与 `SkipMinioSync`，并授权正式/备份发布 `ConfirmText=PROD`。
+- 命中经验：`docs/experience-index.md`、`docs/release-build-preflight-lessons.md`、`docs/release-agent-checklist.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\worktree-memory.md`。
+- 命令记录：创建任务目录 `doc/tasks/20260715-current-head-codeonly-three-env/`；创建 release worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260715v\m|b|f`，冻结 commits maintenance=`489817747511769f59e169be698ef8057e9a0585`、backend=`18a10ebd194b3c4c360caddeab0ef3c07071eb62`、frontend=`2694d886fcc0b54c9fef64074b41be22b1d8e63e`，三者 `dirty=false`。
+- 命令记录：构建并启动 release worktree 维护控制台，外部 state/config 位于 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260715v-state`，`http://127.0.0.1:48181/actuator/health` 返回 `UP`。
+- 失败证据：`build-release` r1 releaseTag=`release-20260715-intmain-codeonly-three-env-r260715v-r1`，operation=`op-2026-07-14T161447801754900Z-e7e1c3bf-8141-427a-bcf9-fd79544950f7`，状态 `FAILED`，原因为后端 SQL `sql/mysql/20260714_dcc_personal_file_decommission.sql` 缺少 `release-migration` 元数据；失败发生在 manifest 创建前，本轮包目录不存在。
+- 当前处理：已先冻结 operation JSON/log、preview 参数和 manifest 状态，并将可复用教训补入 `docs/release-build-preflight-lessons.md` 与 `docs/experience-index.md`；下一步按根因修复 SQL 元数据并补测试，再使用新的 releaseTag 重建，禁止复用 r1 拼接后续环境结果。
+
 ## 2026-07-01 删除旧发布任务与旧发布基线任务
 
 - 用户需求：`旧的发布任务,旧的基线直接删除`
@@ -2719,3 +2728,8 @@
 2026-07-14T00:10:00+08:00	20260714-project-experience-consolidation-r260713v	REQUEST	用户调用 project-experience-consolidation，要求继续沉淀 r260713v 三环境发布闭环中的可复用经验。
 2026-07-14T00:10:00+08:00	20260714-project-experience-consolidation-r260713v	COMMAND_INTENT	优先更新已有长期经验文档，不新建文档；将备份服远端验收工具缺失和 release worktree 物理残留处理沉淀为前置门禁，并保持提交隔离。
 2026-07-14T00:18:00+08:00	20260714-project-experience-consolidation-r260713v	RESULT	PASS: 维护仓已有经验入口已更新；新增远端验收工具可用性门禁，补充 r260713v release worktree 物理残留清理证据和索引关键词；task-closeout preview/apply blocked=<none> warnings=<none>；关键词、diff 和凭据扫描通过。
+
+2026-07-15T00:05:00+08:00	20260715-current-head-codeonly-three-env	REQUEST	用户要求执行 IntRuoyi code-only / 不带数据完整三环境发布闭环；使用维护仓、后端仓、前端仓当前 int_main 已提交 HEAD，新建本次专用干净 release worktree，构建必须使用 SkipDatabaseSync 与 SkipMinioSync，不执行备份/恢复/回滚，正式服和备份服 promotion 授权口径为 PROD。
+2026-07-15T00:15:00+08:00	20260715-current-head-codeonly-three-env	RESULT	RED: 首轮 `release-20260715-intmain-codeonly-three-env-r260715v-r1` build-release 失败；operation `op-2026-07-14T161447801754900Z-e7e1c3bf-8141-427a-bcf9-fd79544950f7` 在 manifest 创建前失败，根因是 `20260714_dcc_personal_file_decommission.sql` 缺少 `release-migration` metadata。失败证据已冻结，经验门禁已更新，后端根因修复提交 `8d5f7c07b2` 后重建新 releaseTag。
+2026-07-15T01:18:00+08:00	20260715-current-head-codeonly-three-env	RESULT	PASS: `release-20260715-intmain-codeonly-three-env-r260715w-r1` 完成 build-release、publish-test、mark-tested、promote-prod、promote-backup；五个 operation 均为 SUCCESS；测试服、正式服、备份服 `.env IMAGE_TAG`、backend/frontend 镜像、backend health、frontend HTTP、PDF worker HTTP 均通过；备份服 `/mnt/intruoyi-data` 挂载、release dir 和 data root 通过；运行控制台已恢复主工作区且 health=UP；raw secret-bearing logs 未提交。
+2026-07-15T09:20:00+08:00	20260715-current-head-codeonly-three-env	CLOSEOUT	PASS: 维护仓/后端仓/前端仓 `git worktree list` 均无 `r260715v` 或 `r260715w` 注册，`D:\ProjectPackage\Int\IntRuoyiWorktrees` 无对应物理 worktree；task-closeout preview/apply delete/blocked/warnings 均为 `<none>`；运行控制台主路径 health=UP；任务状态已标记 completed，准备仅提交本任务任务文档、请求日志和必要经验门禁改动。
