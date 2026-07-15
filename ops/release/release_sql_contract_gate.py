@@ -9,7 +9,7 @@ from pathlib import Path
 BLOCK_COMMENT_PATTERN = re.compile(r"/\*.*?\*/", re.DOTALL)
 LINE_COMMENT_PATTERN = re.compile(r"(?m)^\s*--.*$")
 SYSTEM_MENU_INSERT_PATTERN = re.compile(
-    r"insert\s+(?:ignore\s+)?into\s+`?system_menu`?\s*\((?P<columns>.*?)\)\s*values\s*(?P<values>.*?);",
+    r"insert\s+(?:ignore\s+)?into\s+`?system_menu`?\s*\((?P<columns>[^)]*)\)\s*values\s*(?P<values>.*?);",
     re.IGNORECASE | re.DOTALL,
 )
 

@@ -86,6 +86,38 @@ def test_release_sql_contract_gate_allows_on_duplicate_key_update_values_clause(
     gate.assert_release_sql_contracts([sql_path])
 
 
+def test_release_sql_contract_gate_ignores_insert_select_on_duplicate_update_values(tmp_path: Path) -> None:
+    gate = importlib.import_module("ops.release.release_sql_contract_gate")
+    sql_root = tmp_path / "sql" / "mysql"
+    sql_root.mkdir(parents=True)
+    base_sql = sql_root / "20260624_unified_signature.sql"
+    base_sql.write_text(
+        "-- release-migration: allowedEnvironments=test,backup,prod; dependsOn=; type=menu; riskLevel=medium\n"
+        "INSERT INTO `system_menu` (`id`, `name`, `parent_id`) VALUES (900411, '文件签名记录', 900218);\n",
+        encoding="utf-8",
+    )
+    select_sql = sql_root / "20260714_signature_my_signature_admin_menu.sql"
+    select_sql.write_text(
+        "-- release-migration: allowedEnvironments=test,backup,prod; dependsOn=20260624_unified_signature; type=menu; riskLevel=medium\n"
+        "INSERT INTO `system_menu`\n"
+        "(`id`, `name`, `permission`, `type`, `sort`, `parent_id`)\n"
+        "SELECT @unified_signature_my_signature_menu_id, '我的签名', 'signature-governance:policy:query', 2, 3, @unified_signature_menu_id\n"
+        "FROM DUAL\n"
+        "WHERE NOT EXISTS (SELECT 1 FROM `system_menu` WHERE `id` = @unified_signature_my_signature_menu_id)\n"
+        "ON DUPLICATE KEY UPDATE\n"
+        "  `name` = VALUES(`name`),\n"
+        "  `parent_id` = VALUES(`parent_id`);\n"
+        "INSERT INTO `tmp_signature_regular_menu_ids` (`menu_id`)\n"
+        "VALUES\n"
+        "  (900218),\n"
+        "  (900411),\n"
+        "  (900418);\n",
+        encoding="utf-8",
+    )
+
+    gate.assert_release_sql_contracts([base_sql, select_sql])
+
+
 def test_publish_script_runs_sql_preflight_before_backend_build() -> None:
     script = read_publish_script()
 
