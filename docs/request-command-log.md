@@ -2783,3 +2783,8 @@
 2026-07-19T11:48:00+08:00	20260719-current-head-codeonly-three-env	RESULT	PASS: 测试服 `172.30.30.58`、正式服 `172.30.30.57`、备份服 `172.30.30.59` 均已只读核对 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、backend health `UP`、frontend HTTP `200`、`pdfjs/pdf.worker.mjs` HTTP `200` 和 `release-info.json`；备份服额外确认 `/mnt/intruoyi-data` 挂载自 `/dev/mapper/cl-home`、release 目录和 runtime-data 目录存在。运行控制台已恢复主维护仓路径并 health=UP；本任务临时 release worktree/state 已删除。
 2026-07-19T11:49:00+08:00	20260719-current-head-codeonly-three-env	CLOSEOUT	PASS: task-closeout preview 返回 `status=ready`、blocked=`<none>`、warnings=`<none>`，保留 `task.md`、`execution-log.md`、`verification-report.md`，其余任务附属临时证据文件按 closeout 规则清理；未提交原始含凭据日志。
 2026-07-19T11:50:00+08:00	20260719-current-head-codeonly-three-env	CLOSEOUT	PASS: task-closeout apply 返回 `status=applied`，任务状态已标记 completed；最终保留 `task.md`、`execution-log.md`、`verification-report.md`，准备按提交隔离规则只提交本任务记录、请求日志和必要经验门禁文件。
+
+2026-07-19T11:58:00+08:00	20260719-project-experience-consolidation-r260719k	REQUEST	用户调用 project-experience-consolidation 技能，要求继续沉淀 r260719k 三环境 code-only 发布闭环的可复用经验。
+2026-07-19T11:58:00+08:00	20260719-project-experience-consolidation-r260719k	COMMAND_INTENT	读取既有经验索引、发布前置经验、发布执行清单、主项目发布/备份恢复与 worktree 记忆，优先合并到已有长期文档，不新建经验文档；只记录可复用门禁，不写一次性流水。
+2026-07-19T12:08:00+08:00	20260719-project-experience-consolidation-r260719k	RESULT	PASS: 已将 r260719k 完整三环境 code-only 发布的复发防止经验合并到既有 `docs/release-agent-checklist.md`，并在 `docs/experience-index.md` 增加关键词路由；未新建长期经验文档，未执行构建、发布、备份、恢复、回滚或服务器写入。
+2026-07-19T12:09:00+08:00	20260719-project-experience-consolidation-r260719k	CLOSEOUT	PASS: task-closeout preview/apply 均通过，delete=`<none>`、blocked=`<none>`、warnings=`<none>`；准备按提交隔离规则只提交本任务记录、请求日志当前任务条目和必要经验门禁。

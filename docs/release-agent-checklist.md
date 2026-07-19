@@ -100,6 +100,15 @@ Codex 必须把完整发布任务视为以下严格顺序：
 - 运行控制台仍加载旧 worktree 或旧逻辑。
 - 临时发布 worktree 自身无法通过 frozen-lockfile、依赖恢复或目标模块构建门禁。
 
+### 2026-07-19 r260719k 发布失败复发防止清单
+
+- Trigger: 完整三环境 code-only 发布在 clean release worktree 中执行 `build-release`、`publish-test`、`promote-prod` 或 `promote-backup`。
+- Preflight check: `build-release` 前必须同时跑迁移元数据全量门禁、近期 SQL 静态测试、MES companion contract 编译门禁、前端 API export 静态门禁、`pnpm build:test`、Docker CLI/BuildKit 健康检查；required SQL 静态测试必须覆盖结构化 `release-migration`、`dependsOn` 无 `.sql` 后缀、单值 `type`、字符串 collation、动态角色 ID、DCC `OBSOLETE_CHAIN`、`content_key` CAST collation、`system_tenant_package.menu_ids` 扩容顺序。
+- Blocker: 出现 `missing release-migration metadata`、`unknown release-migration metadata key`、`dependsOn missing migration`、`invalid type`、MES/前端 companion export 编译失败、MySQL `ERROR 1267`、`ERROR 1644`、`dcc master points to obsolete revision`、`ERROR 1406 Data too long for column 'menu_ids'`，或 Docker build 日志长时间不推进且 Docker CLI/BuildKit 同步异常。
+- Verification: 失败时先冻结 operation JSON、脱敏日志、preview 参数、manifest 状态、远端关键输出和失败时间；修复后必须用新的 releaseTag 重新 `build-release`，并在同一 releaseTag 上完成测试服、正式服、备份服运行态验证。
+- Forbidden action: 不得手工改测试库/正式库/备份库、手工更新发布锁或迁移状态、跳过 SQL/编译/BuildKit 门禁、复用失败 releaseTag，或拼接不同 releaseTag 的环境结果。
+- Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/execution-log.md`；最终 releaseTag `release-20260719-intmain-codeonly-three-env-r260719k-r1`。
+
 ### release worktree 路径长度门禁
 
 - 创建 release worktree 时，临时根目录必须短而稳定；推荐 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r<日期><短标识>`。
