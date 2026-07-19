@@ -229,6 +229,7 @@
 - 现象：对 `publish-test` 这类部署动作发送 `publishScope/includeOnlyOffice/includeShowroomBuildPackage` 会触发接口参数校验失败（例如 `msg=publishScope`），预览不会返回部署命令。
 - 前置门禁：`build-release` 使用 `publishScope=code-only`、`SkipDatabaseSync`、`SkipMinioSync`；后续 `publish-test/promote-prod/promote-backup` 必须复用已构建 releaseTag，只发送部署动作必需字段：`action`、`reason`、`releaseTag`、`targetEnvironment`，生产级动作再加 `prodConfirmText=PROD`。
 - 失败处理：预览返回 4xx 时不得执行 action；冻结 preview JSON，修正参数契约并重新预览，确认命令包含 `-Mode deploy-release`、目标环境、目标主机与 releaseTag 后再执行。
+- 2026-07-19 复现证据：任务 `20260719-current-head-codeonly-three-env` 的 `publish-test-preview-r260719i.utf8.json` 返回 `{"code":400,"data":null,"msg":"publishScope"}`，未创建 operation；重新预览前必须删除部署动作请求体中的 `publishScope/includeOnlyOffice/includeShowroomBuildPackage`。
 
 ## 2026-07-06 Windows 发布 worktree 长路径门禁
 
@@ -655,3 +656,93 @@
 - Verification: 前端任务补充聚焦测试或构建证据，`pnpm build:test` 在 clean release worktree 通过；随后重新构建新的 releaseTag，原失败 tag 判废。
 - Forbidden action: 不得关闭 ESLint、移除 vite-plugin-eslint、用注释绕过规则或跳过前端构建；不得复用失败 releaseTag 继续发布链路。
 - Evidence: `doc/tasks/20260716-current-head-codeonly-three-env/execution-log.md`，`release-20260716-intmain-codeonly-three-env-r260716c-r1` operation `op-2026-07-15T170422234564100Z-32d8180b-c6c1-448f-8541-5bf8a9adf666` failed during `pnpm build:test` at `src/views/mes/pro/scheduler-workbench/components/ProcessWipTable.vue:27`.
+
+## 2026-07-19 build-release Docker BuildKit 卡顿诊断门禁
+
+- Trigger: `build-release` 进入 backend/frontend `docker build` 阶段后长时间没有新 operation 日志，或并行执行 `docker version`、`docker ps`、`docker buildx ls` 出现 `_ping` 超时、Docker Desktop Linux engine 500、BuildKit 状态不可用。
+- Preflight check: 构建前先执行 `docker version`、`docker buildx ls`、`docker ps` 并记录脱敏摘要；构建中若日志停留在 `docker build`，必须同时检查 operation 状态、log `LastWriteTime`、`docker.exe` / `docker-buildx.exe` 子进程 CPU、Docker CLI 健康命令结果，以及发布包目录/manifest 状态；若 Docker 健康预检刚通过但实际 build 仍卡死，必须把“预检通过后中途失效”作为 Docker Desktop / BuildKit 运行态故障冻结，而不是重提同一 operation。
+- Blocker: 构建前 Docker CLI/BuildKit 健康命令超时或 500、Docker Desktop Linux engine `_ping` 不通、或构建中同时满足“日志与文件时间连续无变化、BuildKit 子进程无 CPU/IO 进展、Docker CLI 健康命令失败”并超过本任务记录的等待阈值。
+- Verification: 证据必须包含 operation JSON、脱敏 operation log、Docker 健康命令输出、相关进程快照、manifest 存在性和冻结时间；Docker 恢复后必须用新的 releaseTag 重建，不得复用失败或中止的 releaseTag。
+- Forbidden action: 不得仅凭 operation 日志暂时无新增就终止构建；不得把 Docker 原始 env、密码或 token 写入任务日志；不得把被终止或 Docker 前置失败的 releaseTag 接入 publish-test / mark-tested / promote-prod / promote-backup。
+- Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/build-release-docker-precondition-failure-r260719f.json`、`build-release-operation-r260719f-final.json`、`build-release-operation-r260719f-log-final.sanitized.json`；同任务复发证据 `build-release-docker-precondition-failure-r260719j.json`、`build-release-operation-r260719j-final.json`、`build-release-operation-r260719j-log-freeze.sanitized.json`。
+
+## 2026-07-19 system entitlement 迁移元数据门禁
+
+- Trigger: code-only / no-data 发布前执行全量 migration policy gate，HEAD 包含 `sql/mysql/20260718_system_entitlement_management.sql` 或其他新增系统权限治理表、策略种子 SQL。
+- Preflight check: 每个新增 `sql/mysql/20*.sql` 首行必须是完整 `release-migration` 元数据，至少包含 `allowedEnvironments`、`dependsOn`、`type`、`riskLevel`；`dependsOn` 必须填写迁移 ID，不带 `.sql` 后缀；对应 `script/tests` 必须断言该 SQL 的发布元数据存在且语义与内容一致。
+- Blocker: policy gate 输出 `missing release-migration metadata: ...20260718_system_entitlement_management.sql`、`unknown release-migration metadata key`、`dependsOn missing migration`、首行只有说明性短语、`type` 不在脚本允许枚举内，或缺少对应测试断言。
+- Verification: 先冻结 gate JSON，再补测试 RED；SQL 首行补齐后运行 `python -X utf8 -m pytest script/tests/test_system_entitlement_policy_sql.py -q` 和 `python -X utf8 script/release/run-release-migration-policy-gate.py --sql-root sql/mysql --output <task-dir>/migration-policy-gate-<id>.json` 均通过。
+- Forbidden action: 不得在缺元数据时跳过 migration policy gate、手工标绿发布、手工改目标库或把 `code-only` 解释成跳过 schema/seed 迁移门禁。
+- Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/execution-log.md`；`r260719a` preflight failed before `build-release` with `missing release-migration metadata` for `20260718_system_entitlement_management.sql`.
+
+## 2026-07-19 release-migration 结构化字段与 dependsOn 后缀门禁
+
+- Trigger: code-only / no-data 发布前执行全量 migration policy gate，SQL 首行仍是描述性短语、把 migrationId 写成普通文本，在 `dependsOn` 中写入带 `.sql` 后缀的文件名，或把 `type` 写成复合值。
+- Preflight check: 执行 `python -X utf8 script/release/run-release-migration-policy-gate.py --sql-root sql/mysql --output <task-dir>/migration-policy-gate-<id>.json`；对近期新增或修改 SQL 的测试必须断言完整首行，例如 `allowedEnvironments=test,backup,prod; dependsOn=<migrationId>; type=<schema|data|menu|config|permission|seed>; riskLevel=<low|medium|high>`，且 `dependsOn` 只写 migrationId，`type` 只能写一个枚举值；同时可用只读脚本扫描 `type` 是否在允许集合内、`dependsOn` 是否无 `.sql` 后缀。
+- Blocker: 门禁输出 `unknown release-migration metadata key ... riskLevel`、`dependsOn missing migration '<id>.sql'`、`invalid type ... schema,menu`，或测试只检查 `startswith("-- release-migration:")` / `riskLevel` 而未锁定结构化字段。
+- Verification: 失败 JSON 先冻结到任务目录；补充/修正 `script/tests` 后先 RED，再修正 SQL 首行；目标 pytest 与全量 migration policy gate 均通过后，才能进入 `build-release`。
+- Forbidden action: 不得为了 code-only 发布跳过 schema/data/permission/menu SQL 元数据门禁；不得把 `.sql` 文件名当作合法 `dependsOn`；不得手工编辑 manifest 或远端迁移状态绕过。
+- Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/execution-log.md`；`r260719a` gate failed on `20260715_mes_schedule_capacity_mode_unification.sql` descriptive metadata and `20260717_bpm_form_center.sql` `type=schema,menu`; pre-release validation also caught `.sql` suffix in `20260718_mes_feedback_import_record_direct_progress.sql` dependsOn.
+
+## 2026-07-19 build-release MES companion contract 编译门禁
+
+- Trigger: clean release worktree 执行 `build-release`，后端服务实现已引用新的 MES VO、Mapper 或 Service 方法，但对应合同文件没有进入已提交 HEAD。
+- Preflight check: 在提交 `build-release` 前，对冻结后端 worktree 运行窄合同测试，至少覆盖 `EdhrBatchExecutionRespVO.releaseActionLocked`、`EdhrBatchExecutionTaskOpenReqVO.workTaskId`、`EdhrBatchExecutionTaskRespVO.batchRecordVersionNo`、`MesProEdhrRecordChangeService.withdrawVoidBatchExecution`、`MesProRouteVersionMapper.updateApprovalFieldsToDraft`；随后运行 `mvn.cmd -pl yudao-module-mes -am "-DskipTests" compile`。
+- Blocker: Maven 编译日志出现 `setReleaseActionLocked`、`getWorkTaskId`、`setBatchRecordVersionNo`、`withdrawVoidBatchExecution`、`updateApprovalFieldsToDraft` 或同类 companion contract 缺失；manifest 尚未生成时，该 releaseTag 必须判废。
+- Verification: 冻结 operation JSON、operation log、preview 参数、manifest absent 状态和失败时间；先沉淀本门禁，再补 RED/GREEN 合同测试和 Maven 编译证据，最后使用新的 releaseTag 重新构建。
+- Forbidden action: 不得把主工作区未提交 companion 改动直接混入发布包；不得跳过 Maven 编译、删除 `@Override`、注释实现调用或手工标绿失败 releaseTag。
+- Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/execution-log.md`；`release-20260719-intmain-codeonly-three-env-r260719b-r1` build operation `op-2026-07-18T174249577677300Z-c5a943af-322e-4b82-b906-1e07637a94de` failed before manifest during `yudao-module-mes` compile.
+
+## 2026-07-19 frontend eDHR companion API export 门禁
+
+- Trigger: clean frontend release worktree 执行 `pnpm build:test`，页面已引用新的 eDHR API 方法，但 `src/api` 没有同步导出。
+- Preflight check: 在 `build-release` 前运行相关静态合同和 `pnpm build:test`；对页面 import 的新增 API，测试必须同时断言 API 文件导出方法名和真实后端 URL，例如 `withdrawVoidBatchExecution` -> `/mes/pro/edhr-change/void-batch-execution/withdraw`。
+- Blocker: Rollup/Vite 报 `"withdrawVoidBatchExecution" is not exported by "src/api/mes/pro/edhr/change.ts"` 或同类 missing export；该 releaseTag 未生成时必须判废。
+- Verification: 冻结 `pnpm build:test` 失败输出、补 RED/GREEN 静态测试、修复 API 导出，再在新的 clean release worktree 运行 `pnpm build:test` 通过后才能提交 `build-release`。
+- Forbidden action: 不得删除页面功能、改成通用 BPM 调用、跳过前端 build、关闭 Rollup/Vite 检查或把主工作区未提交 API 直接混入发布包。
+- Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/execution-log.md`；`r260719c` frontend preflight failed before `build-release` because `BatchExecutionListPage.vue` imported `withdrawVoidBatchExecution` while `change.ts` lacked the export.
+
+## 2026-07-19 publish-test required SQL collation 门禁
+
+- Trigger: `publish-test` / `promote-prod` / `promote-backup` 执行 required SQL，SQL 将临时表字符串列、用户变量或字面量与真实业务表 `varchar` 字段做 `=` / `JOIN` / `NOT EXISTS` 比较，尤其命中 `20260717_mes_edhr_filler_minimal_permissions.sql`。
+- Preflight check: 发布前对新增或近期修改的 required SQL 运行静态门禁，禁止未声明 collation 的临时表字符串列与 `system_*` / `mes_*` 字符字段直接比较；若 SQL 只为历史权限补齐且已被 `system_entitlement_policy` 动态授权替代，应将旧角色/用户/菜单写入迁移改为无副作用 no-op，并用测试断言不再写 `system_user_role` / `system_role_menu`。
+- Blocker: 远端 MySQL 报 `ERROR 1267 (HY000): Illegal mix of collations ... for operation '='`，或静态测试发现 required SQL 仍包含临时字符串权限表直接 join `system_menu.permission`、用户变量角色编码 join `system_role.code`、或写入静态角色/用户/菜单绑定。
+- Verification: 先冻结 preview、operation JSON、脱敏 operation log、manifest state、远端 `infra_release_operation_lock` / `infra_release_migration` 失败行和 `.env IMAGE_TAG`；补 RED 测试后修复 SQL，运行目标 pytest、migration policy gate、重新构建新 releaseTag 并重新 `publish-test`。
+- Forbidden action: 不得手工修改测试库 collation、手工更新 `infra_release_migration` / operation lock、复用失败 releaseTag 继续 `mark-tested` / `promote-prod` / `promote-backup`，或把 `code-only` 解释成可以跳过 required SQL 根因修复。
+- Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/execution-log.md`；`release-20260719-intmain-codeonly-three-env-r260719d-r1` `publish-test` operation `op-2026-07-18T190202341116900Z-12fbff2a-a9f3-47cd-bff1-a026ba7f4701` failed on `20260717_mes_edhr_filler_minimal_permissions.sql` line 24 with MySQL `ERROR 1267`.
+
+## 2026-07-19 publish-test 角色 ID 硬编码占用门禁
+
+- Trigger: `publish-test` / `promote-prod` / `promote-backup` 执行 required SQL，SQL 通过固定 `system_role.id` 创建或更新业务角色，尤其命中 `20260718_bpm_admin_role_assignment.sql`、`bpm_admin`、`910311`。
+- Preflight check: 发布前对新增或近期修改的角色/菜单 required SQL 运行静态门禁，禁止在目标环境已有非目标角色占用固定 ID 时直接 `SIGNAL` 中止；正式方案应先按稳定业务键 `tenant_id + code` 查找目标角色，目标角色不存在且首选 ID 空闲时才使用首选 ID，否则由数据库生成新 ID 并把后续 `system_role_menu` / `system_user_role` 写入同一个解析出的角色 ID。
+- Blocker: 远端 MySQL 报 `ERROR 1644 (45000): Role id <id> is already occupied by another role`，或静态测试发现角色 SQL 仍以固定 ID 作为唯一身份、存在 “occupied by another role” 失败分支、没有 `LAST_INSERT_ID()` / 等价动态 ID 生成路径。
+- Verification: 先冻结 preview、operation JSON、脱敏 operation log、manifest state、远端 `infra_release_operation_lock` / `infra_release_migration` 失败行和占用角色快照；补 RED 测试后修复 SQL，运行目标 pytest、migration policy gate、重新构建新 releaseTag 并重新 `publish-test`。
+- Forbidden action: 不得手工删除/改名目标环境已有角色、手工更新发布锁或迁移状态、复用失败 releaseTag 继续后续步骤，或把角色 ID 冲突当作测试服脏数据直接跳过。
+- Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/execution-log.md`；`release-20260719-intmain-codeonly-three-env-r260719e-r1` `publish-test` operation `op-2026-07-18T195310630559800Z-2b5f6c24-bd91-4ee0-b02c-cb23ba489531` failed on `20260718_bpm_admin_role_assignment.sql` with MySQL `ERROR 1644` because role id `910311` was already used by `electronic_signature_admin`.
+
+## 2026-07-19 controlled content 生命周期迁移 OBSOLETE_CHAIN 门禁
+
+- Trigger: `publish-test` / `promote-prod` / `promote-backup` 执行 `20260718_controlled_content_lifecycle.sql` 或其他 DCC controlled content 生命周期迁移，目标库存在 `dcc_controlled_file_master.current_active_controlled_file_id` 指向 `dcc_controlled_file.status='OBSOLETE'` 的历史链。
+- Preflight check: 发布前用真实 schema 只读核对 `dcc_controlled_file_master` 与 `dcc_controlled_file` 字段，当前字段名为 `file_number`、`current_active_controlled_file_id`、`status`、`tenant_id`；预检查必须区分两类数据：`master.status='OBSOLETE_CHAIN'` 且无任何 `ACTIVE` 版本的全链作废历史应由迁移跳过；非 `OBSOLETE_CHAIN` master 指向已作废、缺失、删除或多条 active 候选时才阻塞。
+- Blocker: MySQL 报 `ERROR 1644 (45000): dcc master points to obsolete revision; repair current active before controlled content lifecycle migration`，且远端只读探针证明受影响 master 不是合法 `OBSOLETE_CHAIN`、存在 active 候选歧义、或 master 与 active/current 关系不满足唯一可修复条件。
+- Verification: 先冻结 preview、operation JSON、脱敏 operation log、manifest state、远端 `infra_release_operation_lock` / `infra_release_migration` 失败行、真实表字段清单、受影响 master 状态分布和 active 候选统计；补 RED 测试证明合法 `OBSOLETE_CHAIN` 不应触发失败，再修复 SQL，运行目标 pytest、migration policy gate、重新构建新 releaseTag 并重新 `publish-test`。
+- Forbidden action: 不得把 `OBSOLETE_CHAIN` 的测试租户历史数据手工改成 `ACTIVE` 或清空 current 指针；不得使用错误历史表名 `dcc_file` 或字段名 `file_no` 作为判断依据；不得手工更新发布锁/迁移状态、复用失败 releaseTag 继续后续步骤，或跳过 controlled content 生命周期迁移。
+- Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/execution-log.md`；`release-20260719-intmain-codeonly-three-env-r260719g-r1` `publish-test` operation `op-2026-07-18T215155104007500Z-0ab6f192-96e1-42b9-ab65-bd477895625d` failed on `20260718_controlled_content_lifecycle.sql` while read-only probes showed 181 affected rows were tenant `122`, `master.status=OBSOLETE_CHAIN`, current file status `OBSOLETE`, and `active_count=0`.
+
+## 2026-07-19 controlled content content_key CAST collation 门禁
+
+- Trigger: `publish-test` / `promote-prod` / `promote-backup` 执行 `20260718_controlled_content_lifecycle.sql` 或其他迁移，把 bigint 业务 ID 通过 `CAST(<id> AS CHAR)` 与 `controlled_content_version_ref.content_key` 这类显式 `utf8mb4_unicode_ci` 字段比较。
+- Preflight check: 发布前对 controlled content required SQL 运行静态门禁；凡出现 `existing_ref.content_key = CAST(... AS CHAR)`、`ref.content_key = CAST(... AS CHAR)` 或同类 `varchar` 字段与 CAST 字符串比较，CAST 结果必须显式 `COLLATE utf8mb4_unicode_ci`，或使用与目标列完全一致的 collation 表达式；同时用只读远端 `information_schema.COLUMNS` 确认目标列实际 collation。
+- Blocker: MySQL 报 `ERROR 1267 (HY000): Illegal mix of collations (utf8mb4_unicode_ci,IMPLICIT) and (utf8mb4_0900_ai_ci,IMPLICIT) for operation '='`，或静态测试发现 controlled content `content_key` 比较仍依赖数据库默认 collation。
+- Verification: 先冻结 preview、operation JSON、脱敏 operation log、manifest state、远端 `infra_release_operation_lock` / `infra_release_migration` 失败行和目标字段 collation；补 RED 测试后修复 SQL，运行目标 pytest、migration policy gate、重新构建新 releaseTag 并重新 `publish-test`。
+- Forbidden action: 不得手工修改目标库默认 collation、手工更新发布锁/迁移状态、删除已生成的 platform lifecycle 表来绕过，或复用失败 releaseTag 继续 `mark-tested` / `promote-prod` / `promote-backup`。
+- Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/execution-log.md`；`release-20260719-intmain-codeonly-three-env-r260719h-r1` `publish-test` operation `op-2026-07-18T224523125574700Z-b262418e-b298-47f7-86e1-4d6d3cd905c6` failed on `20260718_controlled_content_lifecycle.sql` with `ERROR 1267` after `controlled_content_version_ref.content_key` existed as `utf8mb4_unicode_ci` while `CAST(master.id AS CHAR)` inherited `utf8mb4_0900_ai_ci`.
+
+## 2026-07-19 backup promote tenant package menu_ids 长度门禁
+
+- Trigger: `publish-test` / `promote-prod` / `promote-backup` 执行新增菜单类 required SQL，SQL 会把新增菜单 ID 合并回 `system_tenant_package.menu_ids`，尤其命中 `20260717_bpm_form_center.sql` 和大量 9 位菜单 ID。
+- Preflight check: 发布前静态测试必须识别 `UPDATE system_tenant_package SET menu_ids = JSON_ARRAYAGG(...)` 或同类合并逻辑；若新增菜单集合可能让 JSON 超过现有 `varchar(4096)`，迁移必须先把 `system_tenant_package.menu_ids` 扩为可承载的 `TEXT` / `LONGTEXT`，并用测试断言该 schema 扩容早于合并更新。
+- Blocker: 远端 MySQL 报 `ERROR 1406 (22001): Data too long for column 'menu_ids'`，或目标 SQL 对 `system_tenant_package.menu_ids` 做 JSON 合并但没有显式 schema 扩容 / 长度前置检查。
+- Verification: 先冻结 preview、operation JSON、脱敏 operation log、manifest state、远端 `.env IMAGE_TAG`、实际镜像 tag、`/mnt/intruoyi-data` 挂载、`infra_release_operation_lock` 和 `infra_release_migration` 失败行；补 RED 测试后修复 SQL，运行目标 pytest、migration policy gate、重新构建新的 releaseTag，并用同一新 releaseTag 重走完整发布链。
+- Forbidden action: 不得手工缩短目标库 `menu_ids`、删除套餐菜单、手工改发布锁或迁移状态、直接在备份库修改字段后复用失败 releaseTag，或把 code-only 发布解释成可以跳过菜单 required SQL。
+- Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/execution-log.md`；`release-20260719-intmain-codeonly-three-env-r260719i-r1` `promote-backup` operation `op-2026-07-19T003345411999400Z-e0458e90-7ca3-494c-81ea-08babadccf3b` failed on `20260717_bpm_form_center.sql` line 380 with MySQL `ERROR 1406` while backup `.env IMAGE_TAG` had moved to the new releaseTag but backend/frontend containers still ran the previous release.
