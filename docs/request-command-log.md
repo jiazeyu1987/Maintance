@@ -2430,6 +2430,10 @@
 - 2026-07-09 13:20:12 +08:00 build-release v1 预览失败：targetEnvironment 参数不适用于 build-release；已冻结证据并沉淀经验，改用新 releaseTag 重新预览。
 
 - 2026-07-09 13:21:44 +08:00 build-release v2 预览失败：缺少 ProdServerHost；已冻结证据并沉淀经验，补齐临时控制台 prod host 后改用新 releaseTag。
+2026-07-20T09:35:50+08:00	20260720-chatgpt-config-openai-provider-repair	REQUEST	用户要求修复本机 `config.toml` 的 `Model provider "OpenAI" not found`，保存后重新打开当前对话串。
+2026-07-20T09:35:50+08:00	20260720-chatgpt-config-openai-provider-repair	COMMAND_INTENT	创建任务目录并应用 PowerShell UTF-8 门禁；只读核对 `C:\Users\BJB110\.codex\config.toml` 的 provider 定义后，以最小改动补齐 `[model_providers.OpenAI]`，解析验证通过后删除临时备份并重新打开对话串。
+2026-07-20T09:35:50+08:00	20260720-chatgpt-config-openai-provider-repair	RESULT	PASS: 当前用户级 `config.toml` 仅定义了 `asxs`，缺少 `[model_providers.OpenAI]`；已补齐该 provider，`python -X utf8` + `tomllib` 验证 `DEFINED_PROVIDERS=OpenAI,asxs`，活动 provider 仍为 `asxs`，未改变现有默认模型来源。
+2026-07-20T09:35:50+08:00	20260720-chatgpt-config-openai-provider-repair	CLOSEOUT	PASS: 本任务临时备份 `C:\Users\BJB110\.codex\config.toml.bak-20260720-093130` 已删除；对话串 `019f416a-1250-7ef3-a9a9-f5c2a53de186` 已重新打开；任务状态已标记 completed。
 
 - 2026-07-09 13:23:09 +08:00 build-release v3 预览仍缺少 ProdServerHost；已冻结证据，下一步直接调用 worktree 发布脚本并显式传入三环境主机参数。
 
