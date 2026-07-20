@@ -930,7 +930,7 @@ function Assert-BackendRuntimeBaseImageAvailable {
         [System.Collections.IDictionary]$Config
     )
 
-    $actualTarSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $config.TarPath).Hash.ToLowerInvariant()
+    $actualTarSha256 = ConvertTo-ReleaseFileSha256Hex -Path $config.TarPath
     if ($actualTarSha256 -ne $config.TarSha256) {
         Fail "Backend runtime base tar sha256 mismatch: expected $($config.TarSha256), got $actualTarSha256 ($($config.TarPath))"
     }
@@ -2809,7 +2809,7 @@ function Assert-DeployReleasePackageArtifactsForScope {
         if ([string]::IsNullOrWhiteSpace($dccFile.sha256)) {
             Fail "with-data release package DCC object inventory missing sha256 for file id=$($dccFile.fileId)"
         }
-        $actualHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $dccSnapshotPath).Hash.ToLowerInvariant()
+        $actualHash = ConvertTo-ReleaseFileSha256Hex -Path $dccSnapshotPath
         if ($actualHash -ne ([string]$dccFile.sha256).ToLowerInvariant()) {
             Fail "DCC_OBJECT_INVENTORY_HASH_MISMATCH: with-data release package DCC snapshot object hash mismatch file id=$($dccFile.fileId) path=$($dccFile.snapshotPath)"
         }
@@ -2950,14 +2950,14 @@ function Write-DccObjectInventoryForReleasePackage {
             Fail "DCC_OBJECT_SNAPSHOT_MISSING: DCC file id=$($row.fileId) object=$($row.objectPath) is missing from release MinIO snapshot."
         }
         $snapshotItem = Get-Item -LiteralPath $snapshotFile
-        $hash = Get-FileHash -Algorithm SHA256 -LiteralPath $snapshotFile
+        $hash = ConvertTo-ReleaseFileSha256Hex -Path $snapshotFile
         $snapshotRelativePath = $snapshotFile.Substring($releaseDir.Length).TrimStart('\', '/').Replace('\', '/')
         $totalBytes += [int64]$snapshotItem.Length
         [void]$inventoryFiles.Add([ordered]@{
             fileId = $row.fileId
             objectPath = $row.objectPath
             snapshotPath = $snapshotRelativePath
-            sha256 = $hash.Hash.ToLowerInvariant()
+            sha256 = $hash
             bytes = [int64]$snapshotItem.Length
             declaredBytes = $row.declaredBytes
             name = $row.name
@@ -3053,7 +3053,7 @@ function ConvertTo-ReleaseStringSha256Digest {
     }
 }
 
-function ConvertTo-ReleaseFileSha256Digest {
+function ConvertTo-ReleaseFileSha256Hex {
     param(
         [Parameter(Mandatory = $true)]
         [string]$Path
@@ -3061,7 +3061,33 @@ function ConvertTo-ReleaseFileSha256Digest {
     if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
         Fail "Manifest v1 file hash input missing: $Path"
     }
-    return 'sha256:' + (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()
+
+    $stream = [System.IO.File]::Open(
+        $Path,
+        [System.IO.FileMode]::Open,
+        [System.IO.FileAccess]::Read,
+        [System.IO.FileShare]::Read
+    )
+    try {
+        $sha256 = [System.Security.Cryptography.SHA256]::Create()
+        try {
+            $hashBytes = $sha256.ComputeHash($stream)
+        } finally {
+            $sha256.Dispose()
+        }
+    } finally {
+        $stream.Dispose()
+    }
+
+    return [System.BitConverter]::ToString($hashBytes).Replace('-', '').ToLowerInvariant()
+}
+
+function ConvertTo-ReleaseFileSha256Digest {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+    return 'sha256:' + (ConvertTo-ReleaseFileSha256Hex -Path $Path)
 }
 
 function ConvertTo-ReleaseManifestSha256Digest {
@@ -3685,10 +3711,10 @@ function Write-ReleaseManifest {
         if ($path.Name -eq 'release-manifest.json') {
             continue
         }
-        $hash = Get-FileHash -Algorithm SHA256 -LiteralPath $path.FullName
+        $hash = ConvertTo-ReleaseFileSha256Hex -Path $path.FullName
         $files += [ordered]@{
             path = $path.FullName.Substring($releaseDir.Length).TrimStart('\', '/').Replace('\', '/')
-            sha256 = $hash.Hash.ToLowerInvariant()
+            sha256 = $hash
             bytes = $path.Length
         }
     }
