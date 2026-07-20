@@ -1,4 +1,5 @@
 import importlib
+import re
 from pathlib import Path
 
 
@@ -53,6 +54,28 @@ def test_publish_script_checks_showroom_award_schema_before_backend_start() -> N
     showroom_schema_index = script.index("Assert-RemoteShowroomAwardSchemaReady", required_sql_index)
     service_start_index = script.index("Starting application services on the $PublishTargetName server")
     assert required_sql_index < showroom_schema_index < service_start_index
+
+
+def test_showroom_smoke_image_wait_allows_production_file_proxy_warmup() -> None:
+    script = read_publish_script()
+    assert "function ConvertFrom-HexUtf8" in script
+    assert "HEX(path)" in script
+    assert "ConvertFrom-HexUtf8 -Hex $parts[1]" in script
+
+    match = re.search(
+        r"function Assert-RemoteShowroomSmokeImageContent \{(?P<body>.*?)\n\}",
+        script,
+        re.DOTALL,
+    )
+
+    assert match is not None
+    body = match.group("body")
+    assert "ExpectedContentType 'image/'" in body
+    assert "[uri]::EscapeDataString([string]$_)" in body
+    assert "$encodedAssetPath" in body
+    assert "$($asset.Path)" not in body
+    assert "-TimeoutSeconds 420" in body
+    assert "-TimeoutSeconds 180" not in body
 
 
 def test_migration_policy_gate_supports_explicit_showroom_sql_file(tmp_path: Path) -> None:

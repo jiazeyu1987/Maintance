@@ -2096,6 +2096,27 @@ SQL
     return ($result.Output).Trim()
 }
 
+function ConvertFrom-HexUtf8 {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Hex,
+        [string]$Purpose = 'UTF-8 hex text'
+    )
+
+    $normalized = $Hex.Trim()
+    if ($normalized.Length -eq 0 -or ($normalized.Length % 2) -ne 0) {
+        Fail "$Purpose is not valid even-length hex"
+    }
+    try {
+        $bytes = for ($i = 0; $i -lt $normalized.Length; $i += 2) {
+            [Convert]::ToByte($normalized.Substring($i, 2), 16)
+        }
+        return [System.Text.Encoding]::UTF8.GetString([byte[]]$bytes)
+    } catch {
+        Fail "$Purpose is not valid UTF-8 hex: $($_.Exception.Message)"
+    }
+}
+
 function Assert-RemoteFileStorageConfigRebound {
     $sql = @"
 SELECT CONCAT(
@@ -2139,7 +2160,7 @@ function Assert-RemoteBackendContainerMinioReachable {
 
 function Get-RemoteShowroomSmokeImageAsset {
     $sql = @"
-SELECT CONCAT(config_id, CHAR(9), path)
+SELECT CONCAT(config_id, CHAR(9), HEX(path))
 FROM infra_file
 WHERE config_id = 28
   AND deleted = b'0'
@@ -2156,16 +2177,19 @@ LIMIT 1;
     if ($parts.Count -ne 2 -or [string]::IsNullOrWhiteSpace($parts[0]) -or [string]::IsNullOrWhiteSpace($parts[1])) {
         Fail "SHOWROOM_FILE_CONTENT_SMOKE_FAILED: invalid showroom image sample row: $output"
     }
+    $decodedPath = ConvertFrom-HexUtf8 -Hex $parts[1] -Purpose 'SHOWROOM_FILE_CONTENT_SMOKE_FAILED sample image path'
     return @{
         ConfigId = $parts[0].Trim()
-        Path = $parts[1].Trim()
+        Path = $decodedPath
     }
 }
 
 function Assert-RemoteShowroomSmokeImageContent {
     $asset = Get-RemoteShowroomSmokeImageAsset
-    $smokeImageUrl = "http://${ServerHost}:$FrontendPort/admin-api/infra/file/$($asset.ConfigId)/get/$($asset.Path)"
-    Wait-HttpContentTypeOk -Url $smokeImageUrl -ExpectedContentType 'image/' -TimeoutSeconds 180
+    $encodedAssetPath = (($asset.Path -split '/') | ForEach-Object { [uri]::EscapeDataString([string]$_) }) -join '/'
+    $smokeImageUrl = "http://${ServerHost}:$FrontendPort/admin-api/infra/file/$($asset.ConfigId)/get/$encodedAssetPath"
+    # The production backend can report health before the MinIO-backed file proxy is fully warm.
+    Wait-HttpContentTypeOk -Url $smokeImageUrl -ExpectedContentType 'image/' -TimeoutSeconds 420
     Info "Showroom smoke image is readable through frontend proxy: $smokeImageUrl"
 }
 
