@@ -1,0 +1,16 @@
+{
+  "operationId": "op-2026-07-22T181416808987800Z-e34ba850-6090-45b1-9f1c-91fd1520aff8",
+  "requestedBy": "local-operator",
+  "requestedAt": "2026-07-22T18:14:41.283946900Z",
+  "environment": "test",
+  "component": "publish-test",
+  "action": "publish-test",
+  "actionLabel": "部署发布包到测试服",
+  "parameters": {
+    "releaseTag": "release-20260723-intmain-codeonly-three-env-r260723s-r1"
+  },
+  "reason": "20260723 code-only publish to test server 172.30.30.58",
+  "status": "SUCCESS",
+  "summary": "命令执行完成",
+  "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260723s-state\\runtime-control\\logs\\op-2026-07-22T181416808987800Z-e34ba850-6090-45b1-9f1c-91fd1520aff8.log"
+}

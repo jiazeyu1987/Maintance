@@ -1,0 +1,8 @@
+{
+  "envTag": true,
+  "backendImage": true,
+  "frontendImage": true,
+  "backendHealth": true,
+  "frontendHttp": true,
+  "pdfWorkerHttp": true
+}

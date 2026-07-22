@@ -1,0 +1,7 @@
+{
+  "step": "promote-prod-preview",
+  "timeoutSeconds": 30,
+  "result": "TIMEOUT before response",
+  "operationCreated": false,
+  "traceback": "timeout stack captured in shell output from previous command"
+}

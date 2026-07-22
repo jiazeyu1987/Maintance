@@ -1,0 +1,22 @@
+{
+  "code": 0,
+  "data": {
+    "operationId": "op-2026-07-22T183551381955800Z-b585c04f-7b40-4186-8f24-939a1aaf57d6",
+    "requestedBy": "local-operator",
+    "requestedAt": "2026-07-22T18:35:52.189601Z",
+    "environment": "test",
+    "component": "mark-release-tested",
+    "action": "mark-release-tested",
+    "actionLabel": "标记测试通过",
+    "parameters": {
+      "releaseTag": "release-20260723-intmain-codeonly-three-env-r260723s-r1",
+      "testConclusion": "test server verification passed: env tag, images, backend health, frontend HTTP, PDF worker HTTP",
+      "selectedRecoverySetCandidateId": "restore:20260621-063218"
+    },
+    "reason": "20260723 test server verification passed for code-only release",
+    "status": "RUNNING",
+    "summary": "命令已提交到本机执行队列",
+    "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260723s-state\\runtime-control\\logs\\op-2026-07-22T183551381955800Z-b585c04f-7b40-4186-8f24-939a1aaf57d6.log"
+  },
+  "msg": ""
+}

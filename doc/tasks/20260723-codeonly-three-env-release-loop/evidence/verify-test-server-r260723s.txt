@@ -1,0 +1,77 @@
+ENV_IMAGE_TAG=release-20260723-intmain-codeonly-three-env-r260723s-r1
+BACKEND_IMAGE=intruoyi-backend:release-20260723-intmain-codeonly-three-env-r260723s-r1
+FRONTEND_IMAGE=intruoyi-frontend:release-20260723-intmain-codeonly-three-env-r260723s-r1
+BACKEND_HEALTH={"status":"UP"}
+FRONTEND_HTTP=200
+PDF_WORKER_HTTP=200 application/javascript
+RELEASE_INFO={
+
+    "releaseTag":  "release-20260723-intmain-codeonly-three-env-r260723s-r1",
+
+    "packageId":  "release-20260723-intmain-codeonly-three-env-r260723s-r1",
+
+    "createdAt":  "2026-07-22T18:08:26.7374098Z",
+
+    "publishScope":  "code-only",
+
+    "changeSet":  {
+
+                      "summary":  "Release package release-20260723-intmain-codeonly-three-env-r260723s-r1",
+
+                      "component":  "intruoyi",
+
+                      "items":  [
+
+                                    "发布包：release-20260723-intmain-codeonly-three-env-r260723s-r1",
+
+                                    "组件范围：intruoyi"
+
+                                ],
+
+                      "includeShowroomBuildPackage":  false,
+
+                      "includeOnlyOffice":  false
+
+                  },
+
+    "sourceRepos":  [
+
+                        {
+
+                            "name":  "ruoyi-vue-pro",
+
+                            "pathRole":  "backend",
+
+                            "commit":  "2d7fabf8263f3a5410f334bd177ea492e06b098b",
+
+                            "branch":  "codex/r260723s",
+
+                            "dirty":  false,
+
+                            "dirtySummaryHash":  null
+
+                        },
+
+                        {
+
+                            "name":  "yudao-ui-admin-vue3",
+
+                            "pathRole":  "admin-frontend",
+
+                            "commit":  "2989ec4d711d96be77bb2c6244f7189b7815a745",
+
+                            "branch":  "codex/r260723s",
+
+                            "dirty":  false,
+
+                            "dirtySummaryHash":  null
+
+                        }
+
+                    ]
+
+}
+close - IO is still pending on closed socket. read:1, write:0, io:000001BA797C5BC0
+
+
+exitCode=0

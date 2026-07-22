@@ -1,0 +1,25 @@
+{
+  "host": "172.30.30.57",
+  "releaseTag": "release-20260723-intmain-codeonly-three-env-r260723s-r1",
+  "exitCode": 0,
+  "stdout": [
+    "host=172.30.30.57",
+    "envTag=release-20260723-intmain-codeonly-three-env-r260723s-r1",
+    "backendImage=intruoyi-backend:release-20260723-intmain-codeonly-three-env-r260723s-r1",
+    "frontendImage=intruoyi-frontend:release-20260723-intmain-codeonly-three-env-r260723s-r1",
+    "backendHealth={\"status\":\"UP\"}",
+    "frontendHttp=200",
+    "pdfWorkerHttp=200"
+  ],
+  "stderr": [
+    "close - IO is still pending on closed socket. read:1, write:0, io:00000139CB846BD0"
+  ],
+  "evidence": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260723-codeonly-three-env-release-loop\\evidence\\verify-prod-server-r260723s.txt",
+  "checkedAtEpoch": 1784746802,
+  "envTag": "release-20260723-intmain-codeonly-three-env-r260723s-r1",
+  "backendImage": "intruoyi-backend:release-20260723-intmain-codeonly-three-env-r260723s-r1",
+  "frontendImage": "intruoyi-frontend:release-20260723-intmain-codeonly-three-env-r260723s-r1",
+  "backendHealth": "{\"status\":\"UP\"}",
+  "frontendHttp": "200",
+  "pdfWorkerHttp": "200"
+}

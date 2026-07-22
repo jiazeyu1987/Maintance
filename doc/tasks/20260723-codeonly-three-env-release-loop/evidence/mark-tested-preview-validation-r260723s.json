@@ -1,0 +1,39 @@
+{
+  "missing": [],
+  "forbidden": [],
+  "arguments": [
+    "-Mode",
+    "mark-tested",
+    "-ReleaseTag",
+    "release-20260723-intmain-codeonly-three-env-r260723s-r1",
+    "-TestConclusion",
+    "test server verification passed: env tag, images, backend health, frontend HTTP, PDF worker HTTP",
+    "-SelectedRecoverySetCandidateId",
+    "restore:20260621-063218",
+    "-RecoverySetId",
+    "20260621-063218",
+    "-RecoverySetManifestHash",
+    "6806edb9075622a5dbe646e2a1dca1ea499472cc610e070161b68f7249aecf66",
+    "-RecoverySetProgramVersion",
+    "release-20260620-current-head-prod-target-v7",
+    "-RecoverySetRedisPolicy",
+    "CLEAR_AND_REBUILD",
+    "-NasServer",
+    "172.30.30.4",
+    "-NasShare",
+    "IT共享",
+    "-NasReleaseRoot",
+    "Backup/ReleasePackage",
+    "-BackendRepoRoot",
+    "D:/ProjectPackage/Int/IntRuoyiWorktrees/r260723s/b",
+    "-FrontendRepoRoot",
+    "D:/ProjectPackage/Int/IntRuoyiWorktrees/r260723s/f",
+    "-WebsiteRepo",
+    "D:/ProjectPackage/Website"
+  ],
+  "parameters": {
+    "releaseTag": "release-20260723-intmain-codeonly-three-env-r260723s-r1",
+    "testConclusion": "test server verification passed: env tag, images, backend health, frontend HTTP, PDF worker HTTP",
+    "selectedRecoverySetCandidateId": "restore:20260621-063218"
+  }
+}

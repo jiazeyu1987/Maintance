@@ -1,0 +1,46 @@
+{
+  "checkedAtEpoch": 1784748600,
+  "worktrees": {
+    "maintenance": {
+      "exitCode": 0,
+      "stdout": [
+        "D:/ProjectPackage/Int/IntRuoyiMaintance             ccca443 [int_main]",
+        "D:/ProjectPackage/Int/IntRuoyiWorktrees/r260720p/m  c9c07ef (detached HEAD)"
+      ],
+      "stderr": [],
+      "containsR260723s": false,
+      "containsR260723r": false
+    },
+    "backend": {
+      "exitCode": 0,
+      "stdout": [
+        "D:/ProjectPackage/Int/IntRuoyi/ruoyi-vue-pro                2d7fabf826 [int_main]",
+        "D:/ProjectPackage/Int/IntRuoyiWorktrees/20260723_batch/m    547c62e533 [codex/20260723_batch]",
+        "D:/ProjectPackage/Int/IntRuoyiWorktrees/jiluben_20260722/m  19579c79f0 [codex/jiluben_20260722]"
+      ],
+      "stderr": [],
+      "containsR260723s": false,
+      "containsR260723r": false
+    },
+    "frontend": {
+      "exitCode": 0,
+      "stdout": [
+        "D:/ProjectPackage/Int/IntRuoyi/yudao-ui-admin-vue3          2989ec4d7 [int_main]",
+        "D:/ProjectPackage/Int/IntRuoyiWorktrees/20260723_batch/w    aacb6deb3 [codex/20260723_batch]",
+        "D:/ProjectPackage/Int/IntRuoyiWorktrees/jiluben_20260722/w  2fe26a1f3 [codex/jiluben_20260722]"
+      ],
+      "stderr": [],
+      "containsR260723s": false,
+      "containsR260723r": false
+    }
+  },
+  "pathStatus": {
+    "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260723s": false,
+    "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260723s-state": false,
+    "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260723r": false,
+    "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260723r-state": false
+  },
+  "runtimeHealth": {
+    "status": "UP"
+  }
+}

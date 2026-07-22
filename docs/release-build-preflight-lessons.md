@@ -687,11 +687,12 @@
 ## 2026-07-19 build-release MES companion contract 编译门禁
 
 - Trigger: clean release worktree 执行 `build-release`，后端服务实现已引用新的 MES VO、Mapper 或 Service 方法，但对应合同文件没有进入已提交 HEAD。
-- Preflight check: 在提交 `build-release` 前，对冻结后端 worktree 运行窄合同测试，至少覆盖 `EdhrBatchExecutionRespVO.releaseActionLocked`、`EdhrBatchExecutionTaskOpenReqVO.workTaskId`、`EdhrBatchExecutionTaskRespVO.batchRecordVersionNo`、`MesProEdhrRecordChangeService.withdrawVoidBatchExecution`、`MesProRouteVersionMapper.updateApprovalFieldsToDraft`；随后运行 `mvn.cmd -pl yudao-module-mes -am "-DskipTests" compile`。
-- Blocker: Maven 编译日志出现 `setReleaseActionLocked`、`getWorkTaskId`、`setBatchRecordVersionNo`、`withdrawVoidBatchExecution`、`updateApprovalFieldsToDraft` 或同类 companion contract 缺失；manifest 尚未生成时，该 releaseTag 必须判废。
+- Preflight check: 在提交 `build-release` 前，对冻结后端 worktree 运行窄合同测试，至少覆盖 `EdhrBatchExecutionRespVO.releaseActionLocked`、`EdhrBatchExecutionTaskOpenReqVO.workTaskId`、`EdhrBatchExecutionTaskRespVO.batchRecordVersionNo`、`MesProEdhrRecordChangeService.withdrawVoidBatchExecution`、`MesProRouteVersionMapper.updateApprovalFieldsToDraft`、`MesProBatchRecordParsedCell.isReviewedCellRule`、`MesProBatchRecordParsedCell.getCellRuleSource`，并覆盖新增 `@Override` 实现方法是否仍存在于父接口/父类；随后运行 `mvn.cmd -pl yudao-module-mes -am "-DskipTests" compile`。
+- Blocker: Maven 编译日志出现 `setReleaseActionLocked`、`getWorkTaskId`、`setBatchRecordVersionNo`、`withdrawVoidBatchExecution`、`updateApprovalFieldsToDraft`、`isReviewedCellRule`、`getCellRuleSource`，或出现 `@Override` 方法未覆盖/实现父类型方法等同类 companion contract 缺失；manifest 尚未生成时，该 releaseTag 必须判废。
 - Verification: 冻结 operation JSON、operation log、preview 参数、manifest absent 状态和失败时间；先沉淀本门禁，再补 RED/GREEN 合同测试和 Maven 编译证据，最后使用新的 releaseTag 重新构建。
 - Forbidden action: 不得把主工作区未提交 companion 改动直接混入发布包；不得跳过 Maven 编译、删除 `@Override`、注释实现调用或手工标绿失败 releaseTag。
 - Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/execution-log.md`；`release-20260719-intmain-codeonly-three-env-r260719b-r1` build operation `op-2026-07-18T174249577677300Z-c5a943af-322e-4b82-b906-1e07637a94de` failed before manifest during `yudao-module-mes` compile.
+- Evidence: `doc/tasks/20260723-codeonly-three-env-release-loop/execution-log.md`；`r260723r` build-release 前置 MES companion compile gate 失败，尚未创建 releaseTag，日志命中 `MesProBatchRecordExecutionBusinessApprovalEffectExecutor.java:[65,5]` `@Override` 签名漂移，以及 `MesProBatchRecordParsedCell.isReviewedCellRule()` / `getCellRuleSource()` 缺失。
 
 ## 2026-07-19 frontend eDHR companion API export 门禁
 
@@ -701,6 +702,15 @@
 - Verification: 冻结 `pnpm build:test` 失败输出、补 RED/GREEN 静态测试、修复 API 导出，再在新的 clean release worktree 运行 `pnpm build:test` 通过后才能提交 `build-release`。
 - Forbidden action: 不得删除页面功能、改成通用 BPM 调用、跳过前端 build、关闭 Rollup/Vite 检查或把主工作区未提交 API 直接混入发布包。
 - Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/execution-log.md`；`r260719c` frontend preflight failed before `build-release` because `BatchExecutionListPage.vue` imported `withdrawVoidBatchExecution` while `change.ts` lacked the export.
+
+## 2026-07-23 frontend build:test vite progress cache 门禁
+
+- Trigger: clean frontend release worktree 的 `pnpm build:test` / `vite build --mode test` 被工具超时、中断或人工停止后再次重跑。
+- Preflight check: 重跑前先冻结失败日志；随后确认该 worktree 下无残留 `node.exe`、`vite`、`esbuild`、`pnpm` 等构建进程，并清理 `node_modules\.progress`、`node_modules\.progress.json`、`dist`、`dist-test` 这些由中断或上次成功构建留下的本地产物。
+- Blocker: `vite-plugin-progress` 在 `closeBundle` 中执行 `mkdir node_modules\.progress` 时报 `EEXIST: file already exists`，或存在同一 worktree 的残留前端构建进程仍持有构建目录。
+- Verification: 记录进程扫描结果与清理对象；在同一 clean release worktree 重新执行 `pnpm build:test` 并获得 PASS；重跑后再次清理 `node_modules\.progress` / `dist-test` 等输出并确认发布输入 Git `dirty=false`，不得把 build output 或 progress cache 纳入 release sourceRepos。
+- Forbidden action: 不得把超时截断的构建当作成功；不得跳过前端构建、删除整个 `node_modules` 作为默认动作、手工标绿失败日志，或带着 `.progress` / `dist` 残留继续 `build-release`。
+- Evidence: `doc/tasks/20260723-codeonly-three-env-release-loop/execution-log.md`；`r260723s` frontend preflight first run was interrupted by a 360s timeout, retry failed with `Error: EEXIST: file already exists, mkdir '<frontend>\node_modules\.progress'`; frozen log `doc/tasks/20260723-codeonly-three-env-release-loop/evidence/frontend-build-test-r260723s.log`.
 
 ## 2026-07-19 publish-test required SQL collation 门禁
 

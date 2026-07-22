@@ -1,0 +1,39 @@
+{
+  "releaseTag": "release-20260723-intmain-codeonly-three-env-r260723s-r1",
+  "packageRoot": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260723-intmain-codeonly-three-env-r260723s-r1",
+  "manifestPath": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260723-intmain-codeonly-three-env-r260723s-r1\\manifest.json",
+  "publishScope": "code-only",
+  "component": null,
+  "sourceRepos": [
+    {
+      "name": "ruoyi-vue-pro",
+      "pathRole": "backend",
+      "commit": "2d7fabf8263f3a5410f334bd177ea492e06b098b",
+      "branch": "codex/r260723s",
+      "dirty": false,
+      "dirtySummaryHash": null
+    },
+    {
+      "name": "yudao-ui-admin-vue3",
+      "pathRole": "admin-frontend",
+      "commit": "2989ec4d711d96be77bb2c6244f7189b7815a745",
+      "branch": "codex/r260723s",
+      "dirty": false,
+      "dirtySummaryHash": null
+    }
+  ],
+  "dirtyRepos": [],
+  "topLevelEntries": [
+    "docker-compose.yml",
+    "intruoyi-images_release-20260723-intmain-codeonly-three-env-r260723s-r1.tar",
+    "manifest.json",
+    "release-manifest.json",
+    "required-sql",
+    "resources",
+    "runtime-env",
+    "smoke"
+  ],
+  "forbiddenRootDirs": [],
+  "forbiddenAnyDirs": [],
+  "operationStatus": "SUCCESS"
+}
