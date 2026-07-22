@@ -746,3 +746,12 @@
 - Verification: 先冻结 preview、operation JSON、脱敏 operation log、manifest state、远端 `.env IMAGE_TAG`、实际镜像 tag、`/mnt/intruoyi-data` 挂载、`infra_release_operation_lock` 和 `infra_release_migration` 失败行；补 RED 测试后修复 SQL，运行目标 pytest、migration policy gate、重新构建新的 releaseTag，并用同一新 releaseTag 重走完整发布链。
 - Forbidden action: 不得手工缩短目标库 `menu_ids`、删除套餐菜单、手工改发布锁或迁移状态、直接在备份库修改字段后复用失败 releaseTag，或把 code-only 发布解释成可以跳过菜单 required SQL。
 - Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/execution-log.md`；`release-20260719-intmain-codeonly-three-env-r260719i-r1` `promote-backup` operation `op-2026-07-19T003345411999400Z-e0458e90-7ca3-494c-81ea-08babadccf3b` failed on `20260717_bpm_form_center.sql` line 380 with MySQL `ERROR 1406` while backup `.env IMAGE_TAG` had moved to the new releaseTag but backend/frontend containers still ran the previous release.
+
+## 2026-07-20 展厅图片 smoke gate 中文路径解码门禁
+
+- Trigger: `publish-test` / `promote-prod` / `promote-backup` 的展厅图片 smoke gate 需要从远端 MySQL 读取 `infra_file.path`、`path LIKE 'showroom/%'` 或其他可能包含中文的文件路径，再在本地 PowerShell/Node/HTTP 客户端拼接 URL。
+- Preflight check: 发布脚本不得直接使用远端 MySQL stdout 中的中文路径文本；SQL 应返回 `HEX(path)` 或等价字节安全载体，本地显式按 UTF-8 解码，再用 `[uri]::EscapeDataString` 或等价方法逐段 URL 编码。对应契约测试必须覆盖中文路径样例、`showrooms[].products` 发布态索引和代理返回 `image/jpeg`。
+- Blocker: smoke gate 返回 JSON/404 而非图片、URL 中出现乱码或 `%EF%BF%BD`、PowerShell 子进程无法证明 stdout 按 UTF-8 还原，或测试只覆盖 ASCII 路径。
+- Verification: `python -m pytest scripts/tests/test_deploy_precheck_report_contract.py scripts/tests/test_showroom_release_sql_contract.py` PASS；正式服发布后核 `.env IMAGE_TAG`、backend/frontend image tag、health、Website `/showroom` HTTP 200、受保护展厅图片代理 HTTP 200 `image/jpeg`，并用 Playwright 真实展厅验证英文 `Owner Company` / `License Holder` 为 `int-medical`。
+- Forbidden action: 不得跳过图片 smoke gate、手工改服务器文件、手工回填媒体 URL、修改受保护 `infra_file_config.id=28` / `showroom/%` 默认媒体域，或把 200 JSON 响应当作图片成功。
+- Evidence: `doc/tasks/20260720-prod-showroom-int-medical-publish/`；维护仓提交 `aba2b9f`；releaseTag `release-20260720-showroom-int-medical-full-r260720p-r2`；正式服 operation `op-2026-07-20T133237626561400Z-df502144-11e9-48a7-92d5-3efa4cbf9f5a`。
