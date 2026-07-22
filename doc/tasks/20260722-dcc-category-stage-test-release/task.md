@@ -49,7 +49,7 @@
 
 ## Current Status
 
-in_progress
+completed
 
 ## Progress
 
