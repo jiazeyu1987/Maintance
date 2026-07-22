@@ -1,0 +1,49 @@
+# Execution Log
+
+## 2026-07-22
+
+- 用户需求：继续修复测试服务器报错 `请求地址不存在:admin-api/dcc/distribution-tasks/my-page`。
+- BDD: 测试服提供 DCC 分发待办接口 -> Given 测试服用户已登录; When 个人工作台请求 `/dcc/distribution-tasks/my-page`; Then 后端返回真实分页业务响应而不是 `code=404`。
+- BDD: 测试服提供 DCC 培训待办接口 -> Given 个人工作台同时加载培训待办; When 请求 `/dcc/training-tasks/my-page`; Then 后端命中真实 Controller 而不是不存在地址。
+- BDD: 仅测试服发布边界 -> Given 用户要求继续修复测试服; When 本次构建发布完成; Then 只更新 `172.30.30.58`，不执行 `mark-tested`、正式服或备份服动作。
+- RED: test-server-distribution-my-page -> FAIL(expected)，真实登录后 `GET /admin-api/dcc/distribution-tasks/my-page` 返回 HTTP 200、业务码 404。
+- RED: test-server-runtime-class-inspection -> FAIL(expected)，运行中后端 `app.jar` 缺少 `DccDistributionTaskController`、`DccDistributionTaskServiceImpl` 和 `DccTrainingTaskController`。
+- ROOT_CAUSE: backend-release-drift -> 测试服后端仍为 `release-20260720-showroom-int-medical-full-r260720p-r2`，未包含后端提交 `3b61d6f663`；测试服前端已经调用新接口。
+- GREEN: experience-preflight -> PASS，已读取 `docs/test-release-preflight.md`、`docs/release-agent-checklist.md`、`docs/release-build-preflight-lessons.md`、IntRuoyi `docs/server-access.md`、`docs/login-access.md`、`docs/release-backup-restore.md`、`docs/worktree-memory.md` 和 `docs/powershell-memory.md`；本轮仅允许测试服发布。
+- BLOCKER: previous-build-release-sql-gate -> `sql/mysql/20260721_mes_edhr_golden_finger_admin_permission.sql` 触发 `system_menu.id must be an integer literal for release preflight`；必须先判定业务 SQL 错误或维护仓解析误报并按 TDD 正式修复。
+- GREEN: golden-finger-sql-gate-fix -> PASS，后端提交 `39d726761d` 将 `20260721_mes_edhr_golden_finger_admin_permission.sql` 的菜单 ID 改为字面量，并新增静态测试。
+- GREEN: maintenance-release-preflight-test -> PASS，维护仓提交 `29e4f884` 修正发布 SQL 预检测试契约，`python -X utf8 -m pytest scripts/tests/test_release_sql_preflight_gate.py -q` 结果 11 passed。
+- GREEN: build-release-r1 -> SUCCESS，`release-20260722-dcc-distribution-backend-r260722d-r1` 构建成功且本地 `yudao-server-exec.jar` 包含 DCC 分发/培训 Controller 与 Service。
+- RED: publish-test-r1-required-sql -> FAIL(expected)，测试服发布在 required SQL `20260611_mes_edhr_batch_processing_tabs.sql` 停止，原因是测试服 `system_menu.id=900220` 已由后续迁移改名为 `eDHR批记录`，历史 SQL 仍只接受旧名 `eDHR批处理`。
+- RED: batch-processing-tabs-forward-compatible-contract -> FAIL(expected)，`python -X utf8 -m pytest script/tests/test_mes_edhr_batch_processing_tabs_sql.py -q` 结果 2 failed / 2 passed，证明历史 SQL 缺少重命名后父菜单的幂等契约。
+- GREEN: test-server-menu-900220-readonly-check -> PASS，只读核对测试服 `900220` 的 `permission=mes:pro-edhr-batch-processing:query`、`parent_id=5100`、`path=edhr-batch-processing`，确认它是同一个受控 eDHR 父菜单，不是无关 ID 占用。
+- GREEN: batch-processing-tabs-forward-compatible-contract -> PASS，后端提交 `1b98a86982` 将历史 SQL 改为按权限、路径、父级和受控名称集合 fail-fast，并使用最终显示名 `eDHR批记录`；`python -X utf8 -m pytest script/tests/test_mes_edhr_batch_processing_tabs_sql.py -q` 结果 4 passed。
+- GREEN: release-sql-contract-gate -> PASS，`python -X utf8 -m pytest script/tests/test_mes_edhr_batch_processing_tabs_sql.py script/tests/test_mes_edhr_golden_finger_admin_permission_sql.py -q` 结果 8 passed。
+- GREEN: migration-policy-gate-r2 -> PASS，`python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql --output ...\migration-policy-gate-r2.json` 结果 `status=passed`、`migrationCount=354`。
+- GREEN: backend-distribution-target-tests -> PASS，`mvn.cmd -pl yudao-module-dcc -am "-Dtest=cn.iocoder.yudao.module.dcc.service.file.DccDistributionTaskServiceImplTest,cn.iocoder.yudao.module.dcc.service.file.DccTrainingTaskServiceTest" "-Dsurefire.failIfNoSpecifiedTests=false" test` 结果 6 tests passed。
+- GREEN: build-release-r2 -> SUCCESS，`release-20260722-dcc-distribution-backend-r260722d-r2` 构建成功，manifest 指向后端提交 `1b98a86982e5888bc94896573af583b5c73dc10d` 且 dirty=false；本地内嵌 `yudao-module-dcc` jar 包含分发/培训 Controller 与 Service。
+- RED: publish-test-r2-required-sql -> FAIL(expected)，发布在 required SQL `20260717_bpm_form_center.sql` 停止，测试服后端镜像仍为 `release-20260720-showroom-int-medical-full-r260720p-r2`；原因是测试服已有同一表单中心菜单 ID 段，`605071220/605071221` 是旧布局权限项，历史 SQL guard 在后续 UPDATE 收敛前错误阻断。
+- RED: form-center-layout-upgrade-guard -> FAIL(expected)，新增 `test_form_center_menu_guard_allows_controlled_layout_upgrade_for_same_ids` 后，`python -X utf8 -m pytest script/tests/test_bpm_form_center_sql.py -q` 结果 1 failed / 6 passed。
+- GREEN: form-center-layout-upgrade-guard -> PASS，后端提交 `857e18e945` 将 `20260717_bpm_form_center.sql` 同 ID 冲突门禁收窄为 deleted 或 permission 不一致才阻断，允许受控菜单布局升级由后续 UPDATE 收敛。
+- GREEN: release-sql-contract-gate-r3 -> PASS，`python -X utf8 -m pytest script/tests/test_bpm_form_center_sql.py script/tests/test_form_center_menu_under_basic_data_sql.py script/tests/test_mes_edhr_batch_processing_tabs_sql.py script/tests/test_mes_edhr_golden_finger_admin_permission_sql.py -q` 结果 18 passed。
+- GREEN: migration-policy-gate-r3 -> PASS，`python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql --output ...\migration-policy-gate-r3.json` 结果 `status=passed`、`migrationCount=354`。
+- RED: publish-test-r3-required-sql -> FAIL(expected)，测试服发布在 required SQL `20260721_admin_full_scope_role_standardization.sql` 停止，错误为 `Illegal mix of collations`；只读核对测试服 `system_menu.permission` 为 `utf8mb4_unicode_ci`，迁移临时表默认使用 `utf8mb4_general_ci`。
+- RED: admin-full-scope-temp-permission-collation-contract -> FAIL(expected)，新增临时权限表 collation 契约后，`python -X utf8 -m pytest script/tests/test_admin_full_scope_role_standardization_sql.py -q` 结果 1 failed / 5 passed。
+- GREEN: admin-full-scope-temp-permission-collation-contract -> PASS，将 `tmp_audit_admin_expected_permission.permission` 显式定义为 `CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`，`python -X utf8 -m pytest script/tests/test_admin_full_scope_role_standardization_sql.py -q` 结果 6 passed。
+- GREEN: release-sql-contract-gate-r4 -> PASS，`python -X utf8 -m pytest script/tests/test_admin_full_scope_role_standardization_sql.py script/tests/test_bpm_form_center_sql.py script/tests/test_form_center_menu_under_basic_data_sql.py script/tests/test_mes_edhr_batch_processing_tabs_sql.py script/tests/test_mes_edhr_golden_finger_admin_permission_sql.py -q` 结果 24 passed。
+- GREEN: migration-policy-gate-r4 -> PASS，`python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql --output ...\migration-policy-gate-r4.json` 结果 `status=passed`、`migrationCount=354`。
+- GREEN: build-release-r4 -> SUCCESS，`release-20260722-dcc-distribution-backend-r260722d-r4` 构建成功并上传 NAS，manifest 指向后端提交 `12c32957cd7ac7708761e3c8c97dbf8742e4b7f6`；本地内嵌 `yudao-module-dcc` jar 包含分发/培训 Controller 与 Service。
+- RED: publish-test-r4-required-sql -> FAIL(expected)，发布在 required SQL `20260721_admin_full_scope_role_standardization.sql` 停止，错误为 `Missing enabled full-scope admin menu`；只读核对缺失固定菜单 ID `990226`，测试服已有同权限旧菜单 `990221 / dcc:project-code-assignment:audit:query`。
+- RED: admin-full-scope-project-code-audit-id-contract -> FAIL(expected)，新增测试确认全量管理员校验不应绑定 `dcc:project-code-assignment:audit:query` 的偏好 ID `990226`，`python -X utf8 -m pytest script/tests/test_admin_full_scope_role_standardization_sql.py -q` 结果 1 failed / 6 passed。
+- GREEN: admin-full-scope-project-code-audit-id-contract -> PASS，移除 `tmp_audit_admin_expected_menu` 中的 `990226` 固定 ID 依赖，保留权限项校验；`python -X utf8 -m pytest script/tests/test_admin_full_scope_role_standardization_sql.py -q` 结果 7 passed。
+- GREEN: release-sql-contract-gate-r5 -> PASS，`python -X utf8 -m pytest script/tests/test_admin_full_scope_role_standardization_sql.py script/tests/test_bpm_form_center_sql.py script/tests/test_form_center_menu_under_basic_data_sql.py script/tests/test_mes_edhr_batch_processing_tabs_sql.py script/tests/test_mes_edhr_golden_finger_admin_permission_sql.py -q` 结果 25 passed。
+- GREEN: migration-policy-gate-r5 -> PASS，`python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql --output ...\migration-policy-gate-r5.json` 结果 `status=passed`、`migrationCount=354`。
+- GREEN: build-release-r5 -> SUCCESS，`release-20260722-dcc-distribution-backend-r260722d-r5` 构建成功并上传 NAS，manifest 指向后端提交 `65b0a82d195101f4555fea0b459a224d3c228a28`，`component=backend`，`publishScope=code-only`。
+- GREEN: local-release-class-check-r5 -> PASS，本地 `yudao-server-exec.jar` 内嵌 `yudao-module-dcc` 包含 `DccDistributionTaskController.class`、`DccTrainingTaskController.class`、`DccDistributionTaskServiceImpl.class`。
+- GREEN: publish-test-r5 -> SUCCESS，测试服 `172.30.30.58` 完成 `release-20260722-dcc-distribution-backend-r260722d-r5` 发布，required SQL `20260721_admin_full_scope_role_standardization.sql` 记录为 `APPLIED`，后端容器重建并健康。
+- GREEN: test-runtime-r5 -> PASS，远端 `.env IMAGE_TAG=release-20260722-dcc-distribution-backend-r260722d-r5`；运行中后端镜像为 `intruoyi-backend:release-20260722-dcc-distribution-backend-r260722d-r5`；前端镜像保持 `intruoyi-frontend:release-20260722-dcc-category-stage-test-r260722b-r1`；`/actuator/health` 返回 `UP`。
+- GREEN: remote-app-class-check-r5 -> PASS，测试服运行中 `/yudao-server/app.jar` 内嵌 `yudao-module-dcc` 包含分发/培训 Controller 与分发 Service class。
+- GREEN: login-preflight-test-server -> PASS，官方 `node scripts/preflight/login-preflight.mjs --base-url http://172.30.30.58:8081 --tenant 芋道源码 --username admin --target-path /index` 真实登录进入目标页。
+- GREEN: distribution-training-my-page-api -> PASS，真实登录页面会话中 `/admin-api/dcc/distribution-tasks/my-page?pageNo=1&pageSize=10` 与 `/admin-api/dcc/training-tasks/my-page?pageNo=1&pageSize=10` 均返回 HTTP 200、业务码 `0`、分页 `list`。
+- GREEN: profile-workbench-e2e -> PASS，真实打开 `/user/profile` 个人工作台，页面触发的 `distribution-tasks/my-page` 与 `training-tasks/my-page` 请求均返回 HTTP 200、业务码 `0`，未出现 `请求地址不存在` 或业务码 `404`。
+- GREEN: backend-main-integration -> PASS，后端 5 个任务提交已 cherry-pick 到主工作区 `int_main`，最新提交 `76acc730cc`；主工作区复跑 SQL 契约集合结果 25 passed。
