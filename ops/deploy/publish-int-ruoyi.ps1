@@ -66,6 +66,7 @@ param(
     [string]$DccProjectCodeCodexTimeoutSeconds = $env:DCC_PROJECT_CODE_CODEX_TIMEOUT_SECONDS,
     [string]$DccProjectCodeRecognitionVersion = $env:DCC_PROJECT_CODE_RECOGNITION_VERSION,
     [string]$DccProjectCodeRecognitionWorkerCount = $env:DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT,
+    [string]$ShowroomCodexCliCommand = $env:SHOWROOM_CODEX_CLI_COMMAND,
     [string]$LocalCacheRoot = $env:INTRUOYI_LOCAL_CACHE_ROOT,
     [ValidateSet('offline-tar')]
     [string]$BackendRuntimeBaseMode = $env:INTRUOYI_BACKEND_RUNTIME_BASE_MODE,
@@ -4733,7 +4734,6 @@ if ($Mode -eq 'deploy-release') {
     Info "Deploying release package: $ReleaseTag"
     Copy-ReleasePackageFromNas -PackageTag $ReleaseTag
     Assert-ProdDryRunEvidence
-    $requiredDatabaseSqlScripts = Get-ReleasePackageDatabaseSqlScripts
     $Component = Resolve-DeployReleasePackageComponent -ComponentExplicit $componentExplicit
     $publishBackend = $Component -in @('full', 'intruoyi', 'backend')
     $publishFrontend = $Component -in @('full', 'intruoyi', 'frontend')
@@ -4743,6 +4743,7 @@ if ($Mode -eq 'deploy-release') {
     $IncludeOnlyOffice = $releaseOnlyOfficeIncluded
     Assert-DeployReleasePackageArtifactsForScope -PublishScope $releasePublishScope
     if ($publishBackend) {
+        $requiredDatabaseSqlScripts = Get-ReleasePackageDatabaseSqlScripts
         Assert-RequiredDatabaseSqlScriptsInRelease
     }
     Apply-ReleaseRuntimeEnvPackage -TargetEnvironment $Environment
@@ -5150,6 +5151,7 @@ $effectiveDccProjectCodeCodexHome = if (-not [string]::IsNullOrWhiteSpace($DccPr
 $effectiveDccProjectCodeCodexTimeoutSeconds = if (-not [string]::IsNullOrWhiteSpace($DccProjectCodeCodexTimeoutSeconds)) { $DccProjectCodeCodexTimeoutSeconds } elseif ($existingRemoteEnv.ContainsKey('DCC_PROJECT_CODE_CODEX_TIMEOUT_SECONDS')) { $existingRemoteEnv['DCC_PROJECT_CODE_CODEX_TIMEOUT_SECONDS'] } else { '300' }
 $effectiveDccProjectCodeRecognitionVersion = if (-not [string]::IsNullOrWhiteSpace($DccProjectCodeRecognitionVersion)) { $DccProjectCodeRecognitionVersion } elseif ($existingRemoteEnv.ContainsKey('DCC_PROJECT_CODE_RECOGNITION_VERSION')) { $existingRemoteEnv['DCC_PROJECT_CODE_RECOGNITION_VERSION'] } else { 'v1' }
 $effectiveDccProjectCodeRecognitionWorkerCount = if (-not [string]::IsNullOrWhiteSpace($DccProjectCodeRecognitionWorkerCount)) { $DccProjectCodeRecognitionWorkerCount } elseif ($existingRemoteEnv.ContainsKey('DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT')) { $existingRemoteEnv['DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT'] } else { '5' }
+$effectiveShowroomCodexCliCommand = if (-not [string]::IsNullOrWhiteSpace($ShowroomCodexCliCommand)) { $ShowroomCodexCliCommand } elseif ($existingRemoteEnv.ContainsKey('SHOWROOM_CODEX_CLI_COMMAND')) { $existingRemoteEnv['SHOWROOM_CODEX_CLI_COMMAND'] } else { '/opt/intruoyi/runtime/tools/codex' }
 $effectiveBackendRuntimeBaseMode = if (-not [string]::IsNullOrWhiteSpace($BackendRuntimeBaseMode)) { $BackendRuntimeBaseMode } elseif ($existingRemoteEnv.ContainsKey('RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_MODE')) { $existingRemoteEnv['RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_MODE'] } else { '' }
 $effectiveBackendRuntimeBaseTarPath = if (-not [string]::IsNullOrWhiteSpace($BackendRuntimeBaseTarPath)) { $BackendRuntimeBaseTarPath } elseif ($existingRemoteEnv.ContainsKey('RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_TAR')) { $existingRemoteEnv['RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_TAR'] } else { '' }
 $effectiveBackendRuntimeBaseTarSha256 = if (-not [string]::IsNullOrWhiteSpace($BackendRuntimeBaseTarSha256)) { $BackendRuntimeBaseTarSha256 } elseif ($existingRemoteEnv.ContainsKey('RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_TAR_SHA256')) { $existingRemoteEnv['RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_TAR_SHA256'] } else { '' }
@@ -5216,6 +5218,7 @@ $DccProjectCodeCodexHome = $effectiveDccProjectCodeCodexHome
 $DccProjectCodeCodexTimeoutSeconds = $effectiveDccProjectCodeCodexTimeoutSeconds
 $DccProjectCodeRecognitionVersion = $effectiveDccProjectCodeRecognitionVersion
 $DccProjectCodeRecognitionWorkerCount = $effectiveDccProjectCodeRecognitionWorkerCount
+$ShowroomCodexCliCommand = $effectiveShowroomCodexCliCommand
 $BackendRuntimeBaseMode = $effectiveBackendRuntimeBaseMode
 $BackendRuntimeBaseTarPath = $effectiveBackendRuntimeBaseTarPath
 $BackendRuntimeBaseTarSha256 = $effectiveBackendRuntimeBaseTarSha256
@@ -5283,6 +5286,7 @@ DCC_PROJECT_CODE_CODEX_HOME=$DccProjectCodeCodexHome
 DCC_PROJECT_CODE_CODEX_TIMEOUT_SECONDS=$DccProjectCodeCodexTimeoutSeconds
 DCC_PROJECT_CODE_RECOGNITION_VERSION=$DccProjectCodeRecognitionVersion
 DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT=$DccProjectCodeRecognitionWorkerCount
+SHOWROOM_CODEX_CLI_COMMAND=$ShowroomCodexCliCommand
 RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_MODE=$BackendRuntimeBaseMode
 RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_TAR=$BackendRuntimeBaseTarPath
 RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_TAR_SHA256=$BackendRuntimeBaseTarSha256
