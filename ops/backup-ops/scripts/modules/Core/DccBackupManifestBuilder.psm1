@@ -573,6 +573,8 @@ function Invoke-DccBackupManifestBuild {
         [Parameter(Mandatory = $true)][string]$RestorePointId,
         [Parameter(Mandatory = $true)][string]$TargetEnvironment,
         [Parameter(Mandatory = $true)][string]$TargetHost,
+        [AllowEmptyString()][string]$BackupScopeType = '',
+        [AllowEmptyString()][string]$BackupScopeId = '',
         [Parameter(Mandatory = $true)][string]$DccSnapshotPath,
         [Parameter(Mandatory = $true)][string]$ObjectInventoryPath,
         [string]$PreviousManifestPath,
@@ -598,6 +600,20 @@ function Invoke-DccBackupManifestBuild {
             -Message "DCC backup manifest target host is invalid for $TargetEnvironment; expected $expectedTargetHost, got $TargetHost." `
             -Impact 'The manifest could be mistaken for an unapproved environment.' `
             -NextStep 'Regenerate the manifest with TargetHost 172.30.30.58 for test, 172.30.30.59 for backup, or 172.30.30.57 for production.'
+    }
+    $resolvedBackupScopeType = Get-DccBuilderString $BackupScopeType
+    $resolvedBackupScopeId = Get-DccBuilderString $BackupScopeId
+    if ([string]::IsNullOrWhiteSpace($resolvedBackupScopeType) -or [string]::IsNullOrWhiteSpace($resolvedBackupScopeId)) {
+        Add-DccBuilderDiagnostic -Errors $errors -Code 'backup_scope_missing' -Scope 'backupScope' `
+            -Message 'DCC backup manifest requires backupScopeType and backupScopeId.' `
+            -Impact 'The backup scope cannot be audited or matched to its database/object inventory coverage.' `
+            -NextStep 'Regenerate the manifest with backupScopeType target-dataset/environment-full and a stable backupScopeId.'
+    }
+    elseif ($resolvedBackupScopeType -notin @('target-dataset', 'environment-full')) {
+        Add-DccBuilderDiagnostic -Errors $errors -Code 'backup_scope_invalid' -Scope 'backupScopeType' `
+            -Message "DCC backup manifest backupScopeType is invalid: $resolvedBackupScopeType." `
+            -Impact 'The restore chain cannot tell whether the backup is a scoped dataset or an environment-wide DCC backup.' `
+            -NextStep 'Use backupScopeType target-dataset or environment-full.'
     }
 
     try {
@@ -728,6 +744,8 @@ function Invoke-DccBackupManifestBuild {
         previousRestorePointId = if ([string]::IsNullOrWhiteSpace($previousPoint)) { $null } else { $previousPoint }
         chainStatus = 'COMPLETE'
         changeSummary = $changeSummary
+        backupScopeType = $resolvedBackupScopeType
+        backupScopeId = $resolvedBackupScopeId
         targetEnvironment = $TargetEnvironment
         targetHost = $TargetHost
         status = 'success'

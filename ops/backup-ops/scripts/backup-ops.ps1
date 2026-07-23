@@ -16,6 +16,8 @@
     [ValidateSet('prod', 'test', 'backup')]
     [string]$TargetEnvironment = 'prod',
 
+    [string]$RepositoryEnvironment = '',
+
     [switch]$NonInteractive,
 
     [string]$OperatorName = $env:USERNAME
@@ -211,11 +213,58 @@ function Assert-BackupOpsProductionBackupConfirmation {
     }
 }
 
+function Resolve-BackupOpsRepositoryEnvironmentSelection {
+    $selectedRepository = ([string]$RepositoryEnvironment).Trim()
+    if ([string]::IsNullOrWhiteSpace($selectedRepository)) {
+        if ($TargetEnvironment -eq 'prod' -and $Mode -in @('backup-now', 'backup-scheduled')) {
+            throw (New-BackupOpsLauncherException -Status 'blocked' -Code 'INTBK-1003' -Message "原因：Production backup now requires an explicit repository environment; implicit test repository selection is forbidden.`n建议动作：请显式传入 -RepositoryEnvironment test 或 backup，并记录仓库主机证明后重试。")
+        }
+        return ''
+    }
+
+    if ($selectedRepository -notin @('test', 'backup')) {
+        throw (New-BackupOpsLauncherException -Status 'blocked' -Code 'INTBK-1003' -Message "原因：RepositoryEnvironment 只能是 test 或 backup，当前为 '$selectedRepository'.`n建议动作：请显式传入 -RepositoryEnvironment test 或 backup。")
+    }
+
+    if ($Mode -notin @('backup-now', 'backup-scheduled', 'rehearsal')) {
+        throw (New-BackupOpsLauncherException -Status 'blocked' -Code 'INTBK-1003' -Message "原因：RepositoryEnvironment 仅支持 backup-now、backup-scheduled 或 rehearsal，不适用于 $Mode.`n建议动作：请移除 -RepositoryEnvironment，或改用受支持动作。")
+    }
+
+    if ($TargetEnvironment -in @('test', 'backup') -and $selectedRepository -ne $TargetEnvironment) {
+        throw (New-BackupOpsLauncherException -Status 'blocked' -Code 'INTBK-1003' -Message "原因：非正式环境动作不允许跨环境备份仓库：TargetEnvironment=$TargetEnvironment RepositoryEnvironment=$selectedRepository.`n建议动作：请保持两者一致，或使用 TargetEnvironment prod 显式声明正式来源。")
+    }
+
+    return $selectedRepository
+}
+
+function Set-BackupOpsRepositoryEnvironment {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$Config,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Value
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Value)) {
+        return $Config
+    }
+
+    if ($Config.PSObject.Properties['repositoryEnvironment']) {
+        $Config.repositoryEnvironment = $Value
+    } else {
+        Add-Member -InputObject $Config -MemberType NoteProperty -Name 'repositoryEnvironment' -Value $Value
+    }
+    return $Config
+}
+
 function Resolve-BackupOpsTargetEnvironmentConfig {
     param(
         [Parameter(Mandatory = $true)]
         [object]$Config
     )
+
+    $resolvedRepositoryEnvironment = Resolve-BackupOpsRepositoryEnvironmentSelection
 
     if ($Mode -eq 'restore-data' -and $TargetEnvironment -eq 'prod') {
         throw (New-BackupOpsLauncherException -Status 'blocked' -Code 'INTBK-1003' -Message "原因：restore-data only supports TargetEnvironment test or backup; production restore-data is forbidden.`n建议动作：请显式传入 -TargetEnvironment test 或 backup 后再执行恢复。")
@@ -226,6 +275,9 @@ function Resolve-BackupOpsTargetEnvironmentConfig {
     }
 
     if ($TargetEnvironment -eq 'prod') {
+        if (-not [string]::IsNullOrWhiteSpace($resolvedRepositoryEnvironment)) {
+            $Config = Set-BackupOpsRepositoryEnvironment -Config $Config -Value $resolvedRepositoryEnvironment
+        }
         return $Config
     }
 
@@ -252,6 +304,8 @@ function Resolve-BackupOpsTargetEnvironmentConfig {
     }
     $clone.servers.production.tmpRoot = $targetTmpRoot
     $clone.containers.minio = $targetMinioContainer
+    $effectiveRepositoryEnvironment = if ([string]::IsNullOrWhiteSpace($resolvedRepositoryEnvironment)) { $TargetEnvironment } else { $resolvedRepositoryEnvironment }
+    $clone = Set-BackupOpsRepositoryEnvironment -Config $clone -Value $effectiveRepositoryEnvironment
     return $clone
 }
 

@@ -54,6 +54,8 @@
     "mysqlDatabase": "ruoyi-vue-pro",
     "mysqlBackupMode": "full-dump-baseline",
     "dccTenantId": 122,
+    "dccBackupScopeType": "target-dataset",
+    "dccBackupScopeId": "tenant:122",
     "objectBucket": "yudao"
   },
   "rehearsal": {

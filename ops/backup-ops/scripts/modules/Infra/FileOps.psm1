@@ -256,12 +256,41 @@ function Get-BackupOpsRemoteNasMountRoot {
     throw (New-BackupOpsInfraBlockedException -Code 'INTBK-2003' -Message (New-BackupOpsOperatorBlockedMessage -Reason "备份仓目录不在受保护挂载路径下：$BackupPointsRoot。" -Action '请将 backupPointsRoot 配置为 /mnt/nas/Backup/BackupPackage 或 /mnt/intruoyi-data/Backup/BackupPackage 后再执行备份。'))
 }
 
+function Get-BackupOpsSourceTempProbeRoot {
+    param(
+        [Parameter(Mandatory)]
+        [string]$TmpRoot
+    )
+
+    $normalized = $TmpRoot.Replace('\', '/').TrimEnd('/')
+    if ([string]::IsNullOrWhiteSpace($normalized) -or -not $normalized.StartsWith('/')) {
+        throw (New-BackupOpsInfraBlockedException -Code 'INTBK-2003' -Message (New-BackupOpsOperatorBlockedMessage -Reason "正式源临时目录配置无效：$TmpRoot。" -Action '请将 servers.production.tmpRoot 配置为正式服受控数据盘下的绝对路径。'))
+    }
+
+    if ($normalized -match '^(?<root>/.+)/backup-ops(?:/|$)') {
+        return [string]$Matches['root']
+    }
+
+    $lastSlash = $normalized.LastIndexOf('/')
+    if ($lastSlash -le 0) {
+        return '/'
+    }
+    return $normalized.Substring(0, $lastSlash)
+}
+
 function Get-BackupOpsRepositoryEnvironment {
     param(
         [Parameter(Mandatory = $true)]
         [object]$Config
     )
 
+    if ($Config.PSObject.Properties['repositoryEnvironment'] -and -not [string]::IsNullOrWhiteSpace([string]$Config.repositoryEnvironment)) {
+        $repositoryEnvironment = [string]$Config.repositoryEnvironment
+        if ($repositoryEnvironment -in @('test', 'backup')) {
+            return $repositoryEnvironment
+        }
+        throw (New-BackupOpsInfraBlockedException -Code 'INTBK-2003' -Message (New-BackupOpsOperatorBlockedMessage -Reason "备份仓库环境无效：repositoryEnvironment=$repositoryEnvironment。" -Action '请显式使用 repositoryEnvironment=test 或 backup，禁止静默回退到默认仓库。'))
+    }
     $targetEnvironment = if ($Config.PSObject.Properties['environment']) { [string]$Config.environment } else { 'test' }
     if ($targetEnvironment -eq 'backup') {
         return 'backup'
@@ -359,22 +388,38 @@ function Assert-BackupOpsRemoteNasMounted {
     $mountRoot = Get-BackupOpsRemoteNasMountRoot -BackupPointsRoot $remoteTargetRoot
     $escapedMountRoot = ConvertTo-BackupBashSingleQuotedString -Value $mountRoot
     $escapedTargetRoot = ConvertTo-BackupBashSingleQuotedString -Value $remoteTargetRoot
-    $command = "test -d $escapedMountRoot && mountpoint -q $escapedMountRoot && mkdir -p $escapedTargetRoot && test -w $escapedTargetRoot"
+    $repositoryCommand = "test -d $escapedMountRoot && mountpoint -q $escapedMountRoot && mkdir -p $escapedTargetRoot && test -w $escapedTargetRoot"
     $checkRequests = New-Object System.Collections.Generic.List[object]
-    $checkRequests.Add([pscustomobject]@{ Request = $repositoryRequest; Label = 'backup-repository' })
+    $checkRequests.Add([pscustomobject]@{
+            Request = $repositoryRequest
+            Label = 'backup-repository'
+            Command = $repositoryCommand
+            Root = $remoteTargetRoot
+            Action = '请先确认备份仓挂载已就绪，并且当前 SSH 用户可写 BackupPackage 后再执行备份。'
+        })
     if ($targetEnvironment -in @('production', 'prod', 'backup')) {
         $productionRequest = Get-BackupOpsFileSshRequest -Config $Config -Environment 'production' -Code 'INTBK-2003'
         Assert-BackupOpsKnownBackupTarget -Environment $targetEnvironment -Host ([string]$productionRequest.Host) -Code 'INTBK-2003' -Scope '备份源'
         if ([string]$productionRequest.Host -ne [string]$repositoryRequest.Host) {
-            $checkRequests.Add([pscustomobject]@{ Request = $productionRequest; Label = 'backup-source' })
+            $sourceTmpRoot = [string](Get-BackupOpsRequiredFileConfigValue -Config $Config -Path @('servers', 'production', 'tmpRoot') -Code 'INTBK-2003' -Reason '缺少正式源临时目录配置。' -Action '请先补齐 servers.production.tmpRoot，确保其位于正式服受控数据盘下。')
+            $sourceProbeRoot = Get-BackupOpsSourceTempProbeRoot -TmpRoot $sourceTmpRoot
+            $escapedSourceProbeRoot = ConvertTo-BackupBashSingleQuotedString -Value $sourceProbeRoot
+            $sourceCommand = "test -d $escapedSourceProbeRoot && test -w $escapedSourceProbeRoot"
+            $checkRequests.Add([pscustomobject]@{
+                    Request = $productionRequest
+                    Label = 'backup-source-temp-root'
+                    Command = $sourceCommand
+                    Root = $sourceProbeRoot
+                    Action = '请先确认正式源 tmpRoot 的上级受控数据盘目录存在且当前 SSH 用户可写；禁止要求正式源挂载备份仓数据盘。'
+                })
         }
     }
 
     foreach ($entry in $checkRequests) {
         try {
-            Invoke-BackupSshCommand -Request ($entry.Request + @{ Command = $command }) | Out-Null
+            Invoke-BackupSshCommand -Request ($entry.Request + @{ Command = $entry.Command }) | Out-Null
         } catch {
-            throw (New-BackupOpsInfraBlockedException -Code 'INTBK-2003' -Message (New-BackupOpsOperatorBlockedMessage -Reason "$($entry.Label) NAS 未就绪或不可写：$remoteTargetRoot。" -Action '请先确认 /mnt/nas 已挂载公司共享盘，并且当前 SSH 用户可写 Backup/BackupPackage 后再执行备份。'))
+            throw (New-BackupOpsInfraBlockedException -Code 'INTBK-2003' -Message (New-BackupOpsOperatorBlockedMessage -Reason "$($entry.Label) 路径未就绪或不可写：$($entry.Root)。" -Action ([string]$entry.Action)))
         }
     }
 
@@ -478,6 +523,30 @@ function New-BackupChecksumsText {
     }
 
     return ($lines -join [Environment]::NewLine)
+}
+
+function Get-BackupOpsFileSha256 {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$LiteralPath
+    )
+
+    $item = Get-Item -LiteralPath $LiteralPath -ErrorAction Stop
+    if (-not $item -or $item.PSIsContainer) {
+        throw [System.ArgumentException]::new("INTBK-6002: checksum target is not a file: $LiteralPath")
+    }
+
+    $sha256 = [System.Security.Cryptography.SHA256]::Create()
+    $stream = [System.IO.File]::OpenRead($item.FullName)
+    try {
+        $hashBytes = $sha256.ComputeHash($stream)
+        return ([System.BitConverter]::ToString($hashBytes).Replace('-', '').ToLowerInvariant())
+    }
+    finally {
+        $stream.Dispose()
+        $sha256.Dispose()
+    }
 }
 
 function New-BackupChecksumsFile {
@@ -979,7 +1048,7 @@ function New-BackupOpsManifest {
     $checksumsHash = ''
     $checksumsFullPath = Join-Path $backupRoot $checksumsRelativePath
     if (Test-Path -LiteralPath $checksumsFullPath -PathType Leaf) {
-        $checksumsHash = (Get-FileHash -LiteralPath $checksumsFullPath -Algorithm SHA256).Hash.ToLowerInvariant()
+        $checksumsHash = Get-BackupOpsFileSha256 -LiteralPath $checksumsFullPath
     }
 
     $model = New-BackupManifestModel -Request @{
@@ -1344,6 +1413,8 @@ function New-BackupOpsDccBackupManifest {
     Assert-BackupOpsKnownBackupTarget -Environment ([string]$targetEnvironment) -Host $targetHost -Code 'INTBK-6001' -Scope 'DCC 备份源'
 
     $tenantId = [long](Get-BackupOpsRequiredFileConfigValue -Config $Config -Path @('backup', 'dccTenantId') -Code 'INTBK-6001' -Reason '缺少 DCC 测试租户 ID，无法限定 DCC 数据库快照范围。' -Action '请配置 backup.dccTenantId 为测试租户 ID 后再执行 DCC 备份 manifest 生成。')
+    $backupScopeType = [string](Get-BackupOpsRequiredFileConfigValue -Config $Config -Path @('backup', 'dccBackupScopeType') -Code 'INTBK-6001' -Reason '缺少 DCC 备份范围类型。' -Action '请配置 backup.dccBackupScopeType 为 target-dataset 或 environment-full 后再执行 DCC 备份 manifest 生成。')
+    $backupScopeId = [string](Get-BackupOpsRequiredFileConfigValue -Config $Config -Path @('backup', 'dccBackupScopeId') -Code 'INTBK-6001' -Reason '缺少 DCC 备份范围标识。' -Action '请配置 backup.dccBackupScopeId，例如 tenant:122，确保数据库快照和对象 inventory 可审计。')
     $objectInventoryPath = Join-Path $Workspace.ObjectsPath 'manifest-object-inventory.json'
     if (-not (Test-Path -LiteralPath $objectInventoryPath -PathType Leaf)) {
         throw (New-BackupOpsInfraBlockedException -Code 'INTBK-6001' -Message (New-BackupOpsOperatorBlockedMessage -Reason "对象 inventory 不存在：$objectInventoryPath。" -Action '请先完成对象增量备份并生成 objects/manifest-object-inventory.json，再生成 DCC 备份 manifest。'))
@@ -1365,6 +1436,8 @@ function New-BackupOpsDccBackupManifest {
             -RestorePointId ([string]$Workspace.BackupId) `
             -TargetEnvironment ([string]$targetEnvironment) `
             -TargetHost $targetHost `
+            -BackupScopeType $backupScopeType `
+            -BackupScopeId $backupScopeId `
             -DccSnapshotPath $snapshotPath `
             -ObjectInventoryPath $objectInventoryPath `
             -OutputPath $manifestPath
@@ -1374,6 +1447,8 @@ function New-BackupOpsDccBackupManifest {
             -RestorePointId ([string]$Workspace.BackupId) `
             -TargetEnvironment ([string]$targetEnvironment) `
             -TargetHost $targetHost `
+            -BackupScopeType $backupScopeType `
+            -BackupScopeId $backupScopeId `
             -DccSnapshotPath $snapshotPath `
             -ObjectInventoryPath $objectInventoryPath `
             -PreviousManifestPath $previousManifestPath `
@@ -1407,7 +1482,7 @@ function New-BackupOpsChecksums {
         $fullPath = Join-Path $Workspace.BackupRoot $relativePath
         if (Test-Path -LiteralPath $fullPath) {
             $entries += [pscustomobject]@{
-                Sha256 = (Get-FileHash -LiteralPath $fullPath -Algorithm SHA256).Hash.ToLowerInvariant()
+                Sha256 = Get-BackupOpsFileSha256 -LiteralPath $fullPath
                 RelativePath = $relativePath.Replace('/', '\')
             }
         }

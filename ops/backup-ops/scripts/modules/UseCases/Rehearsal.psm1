@@ -80,6 +80,9 @@ function Get-RehearsalRepositoryEnvironment {
         if ($repositoryEnvironment -in @('test', 'backup')) {
             return $repositoryEnvironment
         }
+        if (-not [string]::IsNullOrWhiteSpace($repositoryEnvironment)) {
+            throw (New-RehearsalEvidenceException -Code 'INTBK-7002' -Status 'blocked' -Message "恢复演练仓库环境无效：repositoryEnvironment=$repositoryEnvironment。请显式使用 test 或 backup，禁止静默回退到默认仓库。")
+        }
     }
     if ($Config.PSObject.Properties['environment'] -and [string]$Config.environment -eq 'backup') {
         return 'backup'

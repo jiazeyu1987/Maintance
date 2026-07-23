@@ -366,6 +366,13 @@ function Get-BackupOpsRepositoryEnvironment {
         [object]$Config
     )
 
+    if ($Config.PSObject.Properties['repositoryEnvironment'] -and -not [string]::IsNullOrWhiteSpace([string]$Config.repositoryEnvironment)) {
+        $repositoryEnvironment = [string]$Config.repositoryEnvironment
+        if ($repositoryEnvironment -in @('test', 'backup')) {
+            return $repositoryEnvironment
+        }
+        throw (New-BackupOpsDockerException -Code 'INTBK-7001' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "备份仓库环境无效：repositoryEnvironment=$repositoryEnvironment。" -Action '请显式使用 repositoryEnvironment=test 或 backup，禁止静默回退到默认仓库。'))
+    }
     if ($Config.PSObject.Properties['environment'] -and [string]$Config.environment -eq 'backup') {
         return 'backup'
     }

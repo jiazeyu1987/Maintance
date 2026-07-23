@@ -13,6 +13,13 @@ param(
     [string]$TargetHost,
 
     [Parameter(Mandatory = $true)]
+    [ValidateSet('target-dataset', 'environment-full')]
+    [string]$BackupScopeType,
+
+    [Parameter(Mandatory = $true)]
+    [string]$BackupScopeId,
+
+    [Parameter(Mandatory = $true)]
     [string]$DccSnapshotPath,
 
     [Parameter(Mandatory = $true)]
@@ -34,6 +41,8 @@ $result = Invoke-DccBackupManifestBuild `
     -RestorePointId $RestorePointId `
     -TargetEnvironment $TargetEnvironment `
     -TargetHost $TargetHost `
+    -BackupScopeType $BackupScopeType `
+    -BackupScopeId $BackupScopeId `
     -DccSnapshotPath $DccSnapshotPath `
     -ObjectInventoryPath $ObjectInventoryPath `
     -PreviousManifestPath $PreviousManifestPath `

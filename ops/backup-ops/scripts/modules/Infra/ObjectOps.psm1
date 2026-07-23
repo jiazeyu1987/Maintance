@@ -188,6 +188,13 @@ function Get-BackupOpsObjectRepositoryEnvironment {
         [object]$Config
     )
 
+    if ($Config.PSObject.Properties['repositoryEnvironment'] -and -not [string]::IsNullOrWhiteSpace([string]$Config.repositoryEnvironment)) {
+        $repositoryEnvironment = [string]$Config.repositoryEnvironment
+        if ($repositoryEnvironment -in @('test', 'backup')) {
+            return $repositoryEnvironment
+        }
+        throw (New-BackupOpsObjectException -Code 'INTBK-4001' -Message (New-BackupOpsOperatorBlockedMessage -Reason "对象备份仓库环境无效：repositoryEnvironment=$repositoryEnvironment。" -Action '请显式使用 repositoryEnvironment=test 或 backup，禁止静默回退到默认仓库。'))
+    }
     if ($Config.PSObject.Properties['environment'] -and [string]$Config.environment -eq 'backup') {
         return 'backup'
     }
@@ -663,6 +670,34 @@ function ConvertFrom-BackupOpsRemoteInventoryOutput {
     return @($items)
 }
 
+function Test-BackupOpsIgnorableObjectMetadataLine {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Line
+    )
+
+    $trimmed = $Line.Trim()
+    if ([string]::IsNullOrWhiteSpace($trimmed)) {
+        return $true
+    }
+    if ($trimmed -match "^Unable to find image '.+' locally$") {
+        return $true
+    }
+    if ($trimmed -match '^[^:\s]+:\s+Pulling from .+$') {
+        return $true
+    }
+    if ($trimmed -match '^Digest:\s+sha256:[0-9A-Fa-f]+$') {
+        return $true
+    }
+    if ($trimmed -match '^Status:\s+(Downloaded newer image for|Image is up to date for)\s+.+$') {
+        return $true
+    }
+    if ($trimmed -match '^[0-9A-Fa-f]{12,}:\s+(Pulling fs layer|Downloading|Download complete|Verifying Checksum|Pull complete|Waiting|Already exists)$') {
+        return $true
+    }
+    return $false
+}
+
 function ConvertFrom-BackupOpsRemoteObjectMetadataJson {
     param(
         [Parameter(Mandatory)]
@@ -674,7 +709,19 @@ function ConvertFrom-BackupOpsRemoteObjectMetadataJson {
         if ([string]::IsNullOrWhiteSpace($line)) {
             continue
         }
-        $entry = $line | ConvertFrom-Json
+        try {
+            $entry = $line | ConvertFrom-Json -ErrorAction Stop
+        }
+        catch {
+            if (Test-BackupOpsIgnorableObjectMetadataLine -Line $line) {
+                continue
+            }
+            $safeLine = $line.Trim()
+            if ($safeLine.Length -gt 160) {
+                $safeLine = $safeLine.Substring(0, 160) + '...'
+            }
+            throw (New-BackupOpsObjectException -Code 'INTBK-4001' -Message (New-BackupOpsOperatorBlockedMessage -Reason "对象元数据远端输出不是 JSON：$safeLine" -Action '请先确认远端 mc --json 输出未混入 Docker、网络、认证或对象存储错误后再执行对象备份。'))
+        }
         if ([string]$entry.type -ne 'file' -or [string]::IsNullOrWhiteSpace([string]$entry.key)) {
             continue
         }

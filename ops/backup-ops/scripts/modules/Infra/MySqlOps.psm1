@@ -223,6 +223,9 @@ function Get-BackupOpsMySqlRepositoryEnvironment {
         if ($repositoryEnvironment -in @('test', 'backup')) {
             return $repositoryEnvironment
         }
+        if (-not [string]::IsNullOrWhiteSpace($repositoryEnvironment)) {
+            throw (New-BackupOpsMySqlException -Code 'INTBK-3001' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 备份仓库环境无效：repositoryEnvironment=$repositoryEnvironment。" -Action '请显式使用 repositoryEnvironment=test 或 backup，禁止静默回退到默认仓库。'))
+        }
     }
     if ($Config.PSObject.Properties['environment'] -and [string]$Config.environment -eq 'backup') {
         return 'backup'
@@ -358,6 +361,38 @@ function Assert-BackupMySqlRemoteBackupPackageDumpPath {
     }
 }
 
+function Assert-BackupMySqlRemoteSourceTempDumpPath {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path,
+        [Parameter(Mandatory)]
+        [string]$SourceTempRoot
+    )
+
+    $normalized = $Path.Replace('\', '/')
+    $normalizedRoot = $SourceTempRoot.Replace('\', '/').TrimEnd('/')
+    if ([string]::IsNullOrWhiteSpace($normalizedRoot) -or -not $normalizedRoot.StartsWith('/')) {
+        throw (New-BackupOpsMySqlException -Code 'INTBK-3001' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 导出中转根目录配置无效：$SourceTempRoot" -Action '请将 servers.production.tmpRoot 配置为正式源受控数据盘下的绝对路径。'))
+    }
+    if ($normalizedRoot -match '(^|/)BackupPackage($|/)') {
+        throw (New-BackupOpsMySqlException -Code 'INTBK-3001' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 导出中转根目录不能指向 BackupPackage：$SourceTempRoot" -Action '请将导出中转目录与最终备份仓库目录分离。'))
+    }
+    if ($normalized -match '(^|/)\.\.($|/)') {
+        throw (New-BackupOpsMySqlException -Code 'INTBK-3002' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 导出中转 dump 路径包含非法上级目录引用：$Path" -Action '请使用正式源受控临时目录下的合法中转路径。'))
+    }
+    if ($normalized -like '*/ReleasePackage/*') {
+        throw (New-BackupOpsMySqlException -Code 'INTBK-3002' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 导出中转 dump 指向 ReleasePackage：$Path" -Action '数据备份中转不得写入 ReleasePackage。'))
+    }
+
+    $expectedPrefix = $normalizedRoot + '/backup-now/'
+    if (-not $normalized.StartsWith($expectedPrefix, [System.StringComparison]::Ordinal)) {
+        throw (New-BackupOpsMySqlException -Code 'INTBK-3002' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 导出中转 dump 不在正式源受控临时目录下：$Path" -Action '请确认 cross-host backup 只将源端 dump 写入 servers.production.tmpRoot/backup-now/<backupId>/mysql。'))
+    }
+    if ($normalized -notmatch '/mysql/[^/]+\.sql\.gz$') {
+        throw (New-BackupOpsMySqlException -Code 'INTBK-3002' -Status 'blocked' -Message (New-BackupOpsOperatorBlockedMessage -Reason "MySQL 导出中转 dump 文件名不符合预期：$Path" -Action '请使用 backup-now/<backupId>/mysql/<database>.sql.gz 形式的中转路径。'))
+    }
+}
+
 function Get-BackupMySqlRemoteDumpDirectory {
     param(
         [Parameter(Mandatory)]
@@ -390,7 +425,14 @@ function New-BackupMySqlDumpCommandSpec {
 
     if ($Request.ContainsKey('RemoteDumpPath') -and -not [string]::IsNullOrWhiteSpace([string]$Request['RemoteDumpPath'])) {
         $remoteDumpPath = Get-BackupMySqlFieldValue -Request $Request -Name 'RemoteDumpPath'
-        Assert-BackupMySqlRemoteBackupPackageDumpPath -Path $remoteDumpPath
+        $allowSourceTempDumpPath = $Request.ContainsKey('AllowSourceTempDumpPath') -and [System.Convert]::ToBoolean($Request['AllowSourceTempDumpPath'])
+        if ($allowSourceTempDumpPath) {
+            $sourceTempRoot = Get-BackupMySqlFieldValue -Request $Request -Name 'SourceTempRoot'
+            Assert-BackupMySqlRemoteSourceTempDumpPath -Path $remoteDumpPath -SourceTempRoot $sourceTempRoot
+        }
+        else {
+            Assert-BackupMySqlRemoteBackupPackageDumpPath -Path $remoteDumpPath
+        }
         $remoteDumpDirectory = Get-BackupMySqlRemoteDumpDirectory -Path $remoteDumpPath
         $escapedRemoteDumpDirectory = ConvertTo-BackupBashSingleQuotedString -Value $remoteDumpDirectory
         $escapedRemoteDumpPath = ConvertTo-BackupBashSingleQuotedString -Value $remoteDumpPath
@@ -621,13 +663,55 @@ function Export-BackupOpsMySqlDump {
             RootPassword = $rootPassword
         }) | Out-Null
 
-    Write-BackupOpsLog -Session $LogSession -Message "Exporting MySQL dump from $($sshRequest.Host) directly to BackupPackage path $remoteDumpPath using docker exec mysqldump."
-    $result = Export-BackupMySqlDump -Request (Merge-BackupOpsRequest -Request $sshRequest -Extra @{
-            ContainerName = $containerName
-            DatabaseName = $databaseName
-            RootPassword = $rootPassword
-            RemoteDumpPath = $remoteDumpPath
-        })
+    if ([string]$sshRequest.Host -eq [string]$testSshRequest.Host) {
+        Write-BackupOpsLog -Session $LogSession -Message "Exporting MySQL dump from $($sshRequest.Host) directly to BackupPackage path $remoteDumpPath using docker exec mysqldump."
+        $result = Export-BackupMySqlDump -Request (Merge-BackupOpsRequest -Request $sshRequest -Extra @{
+                ContainerName = $containerName
+                DatabaseName = $databaseName
+                RootPassword = $rootPassword
+                RemoteDumpPath = $remoteDumpPath
+            })
+    }
+    else {
+        $sourceTmpRoot = [string](Get-BackupOpsRequiredConfigValue -Config $Config -Path @('servers', 'production', 'tmpRoot') -Code 'INTBK-3001' -Reason '缺少正式环境临时目录配置，无法安全中转跨主机 MySQL dump。' -Action '请补齐 servers.production.tmpRoot，并确认其位于正式服受控运行数据目录后再执行备份。')
+        $remoteSourceDumpDir = ($sourceTmpRoot.TrimEnd('/')) + "/backup-now/$($Workspace.BackupId)/mysql"
+        $remoteSourceDumpPath = "$remoteSourceDumpDir/$dumpFileName"
+        $localDumpPath = Join-Path ([string]$Workspace.MySqlPath) $dumpFileName
+        [void][System.IO.Directory]::CreateDirectory([string]$Workspace.MySqlPath)
+
+        Write-BackupOpsLog -Session $LogSession -Message "Exporting MySQL dump from source host $($sshRequest.Host) to task temp path before uploading to repository host $($testSshRequest.Host)."
+        Invoke-BackupSshCommand -Request ($sshRequest + @{
+            Command = "mkdir -p {0}" -f (ConvertTo-BackupBashSingleQuotedString -Value $remoteSourceDumpDir)
+            TimeoutSeconds = 60
+        }) | Out-Null
+        $result = Export-BackupMySqlDump -Request (Merge-BackupOpsRequest -Request $sshRequest -Extra @{
+                ContainerName = $containerName
+                DatabaseName = $databaseName
+                RootPassword = $rootPassword
+                RemoteDumpPath = $remoteSourceDumpPath
+                AllowSourceTempDumpPath = $true
+                SourceTempRoot = $sourceTmpRoot
+            })
+        Receive-BackupFileOverSsh -Request ($sshRequest + @{
+            RemotePath = $remoteSourceDumpPath
+            LocalPath = $localDumpPath
+            TimeoutSeconds = 7200
+        }) | Out-Null
+        $remoteDumpDirectory = Get-BackupMySqlRemoteDumpDirectory -Path $remoteDumpPath
+        Invoke-BackupSshCommand -Request ($testSshRequest + @{
+            Command = "mkdir -p {0}" -f (ConvertTo-BackupBashSingleQuotedString -Value $remoteDumpDirectory)
+            TimeoutSeconds = 60
+        }) | Out-Null
+        Send-BackupFileOverSsh -Request ($testSshRequest + @{
+            LocalPath = $localDumpPath
+            RemotePath = $remoteDumpPath
+            TimeoutSeconds = 7200
+        }) | Out-Null
+        Invoke-BackupSshCommand -Request ($sshRequest + @{
+            Command = "rm -f {0}" -f (ConvertTo-BackupBashSingleQuotedString -Value $remoteSourceDumpPath)
+            TimeoutSeconds = 60
+        }) | Out-Null
+    }
     Write-BackupOpsLog -Session $LogSession -Message "MySQL dump exported successfully: $remoteDumpPath"
     return $result
 }

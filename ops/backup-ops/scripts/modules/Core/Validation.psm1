@@ -215,6 +215,8 @@ function Assert-BackupOpsConfiguration {
         @('backup', 'keepDaysLocal'),
         @('backup', 'mysqlDatabase'),
         @('backup', 'objectBucket'),
+        @('backup', 'dccBackupScopeType'),
+        @('backup', 'dccBackupScopeId'),
         @('rehearsal', 'schedule'),
         @('rehearsal', 'runtimeNamePrefix'),
         @('rehearsal', 'bucket'),

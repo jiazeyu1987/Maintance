@@ -329,17 +329,33 @@ function Test-DccChainContract {
     $expectedTargetHosts = @{
         test = '172.30.30.58'
         backup = '172.30.30.59'
+        production = '172.30.30.57'
+        prod = '172.30.30.57'
     }
     if (-not $expectedTargetHosts.ContainsKey($targetEnvironment)) {
         Add-DccDiagnostic -Errors $Errors -Code 'target_environment_invalid' -Scope 'targetEnvironment' `
-            -Message 'DCC chain validation only accepts targetEnvironment test or backup.' `
+            -Message 'DCC chain validation only accepts targetEnvironment test, backup, prod, or production.' `
             -Impact 'The validator cannot prove the backup belongs to a protected recoverable environment.' `
-            -NextStep 'Regenerate the backup manifest with targetEnvironment test/backup and target host proof.'
+            -NextStep 'Regenerate the backup manifest with targetEnvironment test, backup, or production and target host proof.'
     } elseif ($targetHost -ne $expectedTargetHosts[$targetEnvironment]) {
         Add-DccDiagnostic -Errors $Errors -Code 'target_host_invalid' -Scope 'targetHost' `
             -Message "DCC chain validation expected targetHost $($expectedTargetHosts[$targetEnvironment]) for targetEnvironment $targetEnvironment but found $targetHost." `
             -Impact 'The validator cannot prove the backup belongs to the selected environment host.' `
             -NextStep 'Regenerate the backup manifest with matching targetEnvironment and targetHost proof.'
+    }
+    $backupScopeType = [string](Get-DccProperty -Object $Manifest -Name 'backupScopeType')
+    $backupScopeId = [string](Get-DccProperty -Object $Manifest -Name 'backupScopeId')
+    if ([string]::IsNullOrWhiteSpace($backupScopeType) -or [string]::IsNullOrWhiteSpace($backupScopeId)) {
+        Add-DccDiagnostic -Errors $Errors -Code 'backup_scope_missing' -Scope 'backupScope' `
+            -Message 'DCC backup manifest requires backupScopeType and backupScopeId.' `
+            -Impact 'The restore chain cannot prove the DCC database records and object inventory cover the same declared scope.' `
+            -NextStep 'Regenerate the DCC manifest with backupScopeType target-dataset/environment-full and a stable backupScopeId.'
+    }
+    elseif ($backupScopeType -notin @('target-dataset', 'environment-full')) {
+        Add-DccDiagnostic -Errors $Errors -Code 'backup_scope_invalid' -Scope 'backupScopeType' `
+            -Message "DCC backup manifest backupScopeType is invalid: $backupScopeType." `
+            -Impact 'Restore planning cannot interpret the declared DCC backup coverage.' `
+            -NextStep 'Use backupScopeType target-dataset or environment-full.'
     }
 
     if ([string](Get-DccProperty -Object $Manifest -Name 'schemaVersion') -ne 'dcc-backup-manifest-v1') {
