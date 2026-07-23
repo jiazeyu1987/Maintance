@@ -1,0 +1,9 @@
+target_rows	96
+target_safe_rows_before	96
+target_bad_rows_before	0
+shared_records_before	0
+shared_ref_rows_before	0
+updated_rows	96
+post_deleted_rows_in_tx	96
+post_active_rows_in_tx	0
+commit_decision	COMMIT

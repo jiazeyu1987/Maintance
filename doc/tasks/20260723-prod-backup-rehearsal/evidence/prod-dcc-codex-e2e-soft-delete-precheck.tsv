@@ -1,0 +1,10 @@
+target_rows	96
+target_safe_rows	96
+target_bad_rows	0
+target_ref_rows	384
+target_missing_infra_refs	0
+target_non_codex_path_refs	0
+target_deleted_infra_refs	0
+target_unique_paths	288
+other_active_records_sharing_target_file_ids	0
+other_active_reference_rows_sharing_target_file_ids	0

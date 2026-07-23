@@ -1,0 +1,164 @@
+# Execution Log
+
+## Request
+
+- 用户授权在演练窗口内对 IntRuoyi 做一次真实正式服备份与备份服隔离恢复演练。
+- 授权边界：正式服仅 `backup-now`；备份服仅同一 `backupId` 的隔离 `rehearsal`；不授权 `restore-data -TargetEnvironment backup`。
+- 敏感信息处理：日志仅记录脱敏命令意图、产物路径、退出码、错误码和校验结论，不记录密码、token、私钥、连接串或完整敏感命令行。
+
+## BDD
+
+- BDD: prod-backup-and-isolated-rehearsal -> Given 当前正式服可只读核对运行态且用户授权正式备份, When 执行当前脚本的 `backup-now` 并用同一 `backupId` 执行备份服隔离 `rehearsal`, Then 备份产物完整、manifest 的 `imageTag` 匹配实测生产版本、隔离演练健康和样例文件下载全部通过。
+- BDD: explicit-production-source-backup-repository -> Given 用户已授权正式脚本方案且配置同时声明 `sourceEnvironment=production` 与 `repositoryEnvironment=backup`, When 发起正式 `backup-now`, Then 备份源保持正式服、备份仓库固定为备份服受保护 `BackupPackage`，manifest 仍证明正式来源，且不得把备份服 runtime 当作来源。
+- BDD: backup-repository-isolated-rehearsal -> Given 一个来源证明为 production 的新备份点位于备份服仓库, When 在备份服执行隔离 `rehearsal`, Then 只使用该备份点、隔离 rehearsal 根和 rehearsal bucket，不允许 `restore-data` 覆盖备份服正常 runtime。
+
+## TDD / Verification
+
+- GREEN: previous-task-status -> PASS，最近两个维护仓任务均为 `completed`，本任务未接管无关并发改动。
+- GREEN: documentation-preflight -> PASS，已读取服务器访问、登录、发布/备份/恢复、PowerShell、经验索引和 backup disaster readiness 规则；未记录敏感凭据。
+- GREEN: backup-ops-config-read -> PASS，当前配置包含 production/test/backup 三组服务器、正式确认文本机制、备份服 `backupPointsRoot=/mnt/intruoyi-data/Backup/BackupPackage` 与 `rehearsalRoot=/mnt/intruoyi-data/backup-ops/rehearsal/runtime`。
+- GREEN: prod-readonly-runtime-preflight -> PASS，正式服当前 `IMAGE_TAG=release-20260723-intmain-codeonly-three-env-r260723s-r1`；backend/frontend 容器同 tag 运行；`/mnt/nas` mounted；`/mnt/nas/Backup/BackupPackage` 存在且可写；MinIO `yudao` bucket 存在；`servers.production.tmpRoot` 当前不存在。
+- GREEN: backup-readonly-runtime-preflight -> PASS，备份服当前 `IMAGE_TAG=release-20260723-intmain-codeonly-three-env-r260723s-r1`；正常 runtime 容器运行；`/mnt/intruoyi-data` mounted；备份根、tmp 根、隔离 rehearsal 根均存在且可写；`yudao` 与 `yudao-rehearsal` bucket 均存在。
+- BLOCKER: experience-preflight -> 当前脚本契约无法在授权范围内同时满足正式服来源 `backup-now` 与备份服仓库同一新 `backupId` 的隔离 `rehearsal`。`TargetEnvironment=prod` 会保留正式源但 repository 默认解析到 `test`；`TargetEnvironment=backup` 会把 `servers.production.*` 改为备份服 runtime，导致备份来源不再是正式服。停止所有远端写入。
+- NOOP: backup-now -> NOT_RUN，未生成 `backupId`，无 operation/report/log。
+- NOOP: rehearsal -> NOT_RUN，未覆盖备份服正常 runtime，未写入 manifest 或 rehearsal evidence。
+- REVIEWER: prod-backup-rehearsal -> BLOCKED，授权范围内无法满足成功判定；需要先授权正式脚本方案或受控同步方案。
+- AUTHORIZATION: explicit-support -> 用户于 2026-07-23 23:37 +08:00 明确授权实施“production source -> backup repository -> isolated rehearsal”的正式脚本支持；未授权 `restore-data -TargetEnvironment backup` 或任何覆盖备份服正常 MySQL、对象桶、runtime 的动作。
+- COMMAND_INTENT: 增加独立来源与仓库环境契约、Pester 覆盖和静态校验；在本地测试完成并重新记录 `GREEN: experience-preflight -> PASS` 前，不执行远端写入。
+- RED: BackupTargetEnvironment.Tests.ps1 -> FAIL，预期失败点覆盖 production MySQL 不能直接写备份服数据盘、FileOps/ObjectOps repository 显式解析缺失、production DCC manifest chain validation 不接受正式来源证明。
+- RED: DCC backup scope contract -> FAIL，manifest builder 缺少 `BackupScopeType/BackupScopeId` 参数且 chain validator 未阻断缺少范围声明的 DCC backup manifest。
+- GREEN: Invoke-Pester -Script .\ops\backup-ops\tests\*.Tests.ps1 -> PASS，18 passed、0 failed；覆盖 `RepositoryEnvironment=backup`、正式来源到备份仓跨主机 MySQL 中转、对象仓库解析、DCC scope、rehearsal evidence 写回备份仓库和远端 HTTP timeout。
+- GREEN: parser-json-diff-utf8 -> PASS，PowerShell parser PASS；JSON config parse PASS；`git diff --check` 无错误，仅 CRLF 工作区提示；UTF-8 decode PASS。
+- GREEN: prod-backup-repository-fail-fast -> PASS，`backup-now -TargetEnvironment prod -NonInteractive` 在缺少显式 `RepositoryEnvironment` 时以 `INTBK-1003` 阻断，未执行远端写入。
+- COMMAND_INTENT: 重新执行正式服和备份服只读 preflight；若当前 IMAGE_TAG、容器、挂载、容量、备份根、tmp 根、日志根、对象存储或隔离 rehearsal 根任一不满足授权边界，记录 BLOCKER 并停止。
+- GREEN: prod-readonly-runtime-preflight-rerun -> PASS，正式服 `172.30.30.57` 当前 `IMAGE_TAG=release-20260723-intmain-codeonly-three-env-r260723s-r1`；backend/frontend 容器镜像同 tag 且运行；backend health=`UP`；frontend HTTP=`200`；`/mnt/nas` 挂载到公司共享盘，`/mnt/nas/Backup/BackupPackage` 存在且可写；`ragflow_compose-minio-1` 中 `yudao` bucket 存在；`/opt/intruoyi/runtime/data` 在数据盘上且可写，`tmpRoot=/opt/intruoyi/runtime/data/backup-ops/tmp` 当前缺失但将在授权的 `backup-now` 内创建。
+- GREEN: backup-readonly-runtime-preflight-rerun -> PASS，备份服 `172.30.30.59` 当前 `IMAGE_TAG=release-20260723-intmain-codeonly-three-env-r260723s-r1`；backend/frontend 容器镜像同 tag 且运行；backend health=`UP`；frontend HTTP=`200`；`/mnt/intruoyi-data` 挂载 `/dev/mapper/cl-home`；`/mnt/intruoyi-data/Backup/BackupPackage`、`/mnt/intruoyi-data/runtime-data/backup-ops/tmp`、`/mnt/intruoyi-data/backup-ops/rehearsal/runtime` 均存在且可写；`intruoyi-minio` 中 `yudao` 与 `yudao-rehearsal` bucket 均存在。
+- GREEN: rehearsal-status-enum-preflight -> PASS，精确扫描未发现 `rehearsalStatus='verified'` 写入枚举；当前写入/阻断枚举为 `PASSED`、`pending-review`、`unverified`，restore-data 仅兼容读取 `passed/pass`。
+- GREEN: experience-preflight -> PASS，链路证明：sourceHost=`172.30.30.57`，repositoryEnvironment=`backup`，repositoryHost=`172.30.30.59`，backupPointsRoot=`/mnt/intruoyi-data/Backup/BackupPackage`，rehearsalRoot=`/mnt/intruoyi-data/backup-ops/rehearsal/runtime`，imageTag=`release-20260723-intmain-codeonly-three-env-r260723s-r1`。允许进入正式 `backup-now`；仍禁止 `restore-data -TargetEnvironment backup`、覆盖正常 runtime、手改 manifest、复用旧 `backupId` 或自动重试写入。
+- COMMAND_INTENT: 正式 `backup-now` 写入尝试，仅使用 `TargetEnvironment=prod` + `RepositoryEnvironment=backup` + 当前生产确认机制；不包含密码、token、私钥或连接串；不执行 `restore-data`、重启、发布、回滚、删除、配置修改或 manifest 手工修改。
+- BLOCKER: backup-now -> status=blocked, code=INTBK-2003, exitCode=1，本地等待未超时，脚本实际在 `[1/7] 校验 NAS 挂载` 阶段阻断；backupId=`<none>`；imageTag=`release-20260723-intmain-codeonly-three-env-r260723s-r1`；report=`D:\IntRuoyi-BackupOps\logs\202607\20260724_002724_backup-now_blocked.report.md`；json=`D:\IntRuoyi-BackupOps\logs\202607\20260724_002724_backup-now_blocked.report.json`；log=`D:\IntRuoyi-BackupOps\logs\202607\20260724_002724_backup-now_blocked.log`。
+- ERROR_REDACTED: backup-now -> `backup-source` 被要求检查 `/mnt/intruoyi-data/Backup/BackupPackage`，该路径属于备份服仓库，不应出现在正式源主机挂载检查；脚本返回 `INTBK-2003`，未进入创建备份工作目录、MySQL dump、对象 inventory、manifest 或 rehearsal 阶段。
+- GREEN: backup-now-artifact-integrity-after-block -> PASS，备份服 `BackupPackage` 未出现 2026-07-24 新备份点；正式服 `/opt/intruoyi/runtime/data/backup-ops` 未出现新目录；blocked report `artifacts={}`、`steps=[]`；无新 `backupId`。
+- GREEN: current-service-state-after-block -> PASS，正式服和备份服 backend health 均为 `UP`，frontend HTTP 均为 `200`，两端 `IMAGE_TAG` 均保持 `release-20260723-intmain-codeonly-three-env-r260723s-r1`。
+- RED: production-source-repository-mount-check-regression -> FAIL，新增 Pester 场景复现 `Assert-BackupOpsRemoteNasMounted` 在 `environment=production` 且 `repositoryEnvironment=backup` 时把备份服仓库路径传给正式源主机检查，17 passed、1 failed。
+- GREEN: production-source-repository-mount-check-fix -> PASS，修复后仓库主机检查 `/mnt/intruoyi-data/Backup/BackupPackage`，正式源主机只检查 `tmpRoot` 的受控数据盘基础路径；`Invoke-Pester -Script .\ops\backup-ops\tests\*.Tests.ps1` 通过 19 passed、0 failed；`FileOps.psm1` parser PASS。
+- NOOP: rehearsal -> NOT_RUN，正式 `backup-now` 未成功且无新 `backupId`，按授权边界禁止执行备份服隔离 `rehearsal`。
+- GREEN: project-experience-consolidation -> PASS，已将 `INTBK-2003` / `backup-source` 错把备份服仓库路径用于正式源主机校验的经验合并到 `D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md#正式源备份到备份服隔离演练仓库门禁`，并在 `docs/experience-index.md` 增加 `backup-source NAS 未就绪`、`INTBK-2003` 路由；未新建长期经验文档。
+- REVIEWER: prod-backup-rehearsal -> BLOCKED，原因是首次正式 `backup-now` 已实际返回 `INTBK-2003`，且用户禁止自动重试写入；本地脚本根因已修复并通过回归，但再次提交正式 `backup-now` 需要用户重新授权。
+- AUTHORIZATION: retry-backup-now -> 用户于 2026-07-24 00:44:03 +08:00 回复“授权”，允许在已修复 FileOps 挂载检查后再次提交一次正式 `backup-now`；授权边界仍仅限正式备份和后续同一新 `backupId` 的备份服隔离 `rehearsal`，不包含 `restore-data -TargetEnvironment backup` 或覆盖正常 runtime。
+- COMMAND_INTENT: 正式 `backup-now` 第二次写入尝试，仅使用已修复脚本和当前生产确认机制；不包含密码、token、私钥或连接串；不执行 `restore-data`、重启、发布、回滚、删除、配置修改或 manifest 手工修改。
+- BLOCKER: backup-now-retry -> status=blocked, code=INTBK-3002, exitCode=1，本地等待未超时，脚本实际在 `[3/7] 导出 MySQL` 阶段阻断；backupId=`20260724-004458`；imageTag=`release-20260723-intmain-codeonly-three-env-r260723s-r1`；report=`D:\IntRuoyi-BackupOps\logs\202607\20260724_004457_backup-now_blocked.report.md`；json=`D:\IntRuoyi-BackupOps\logs\202607\20260724_004457_backup-now_blocked.report.json`；log=`D:\IntRuoyi-BackupOps\logs\202607\20260724_004457_backup-now_blocked.log`。
+- ERROR_REDACTED: backup-now-retry -> `Export-BackupMySqlDump` 仍将正式源中转路径 `/opt/intruoyi/runtime/data/backup-ops/tmp/backup-now/20260724-004458/mysql/ruoyi-vue-pro.sql.gz` 按恢复 dump 路径强制要求位于 BackupPackage，返回 `INTBK-3002`；未进入对象 inventory、deploy metadata、checksums、manifest 或 rehearsal 阶段。
+- GREEN: backup-now-retry-artifact-integrity-after-block -> PASS，备份服 `/mnt/intruoyi-data/Backup/BackupPackage/20260724-004458` 不存在；正式服仅存在临时目录 `/opt/intruoyi/runtime/data/backup-ops/tmp/backup-now/20260724-004458/mysql`，未发现 dump 文件；本机仅存在空工作目录 `D:\IntRuoyi-BackupOps\tmp\20260724-004458\deploy|manifest|mysql|objects`；blocked report `artifacts={}`、`steps=[]`。
+- GREEN: current-service-state-after-second-block -> PASS，正式服和备份服 backend health 均为 `UP`，frontend HTTP 均为 `200`，两端 `IMAGE_TAG` 均保持 `release-20260723-intmain-codeonly-three-env-r260723s-r1`。
+- RED: mysql-source-temp-dump-path-regression -> FAIL，新增 Pester 场景复现 MySQL 导出 helper 默认阻断正式源中转路径，且缺少显式 source-temp 合法路径契约，18 passed、1 failed。
+- GREEN: mysql-source-temp-dump-path-fix -> PASS，修复后只有显式 `AllowSourceTempDumpPath + SourceTempRoot` 的 cross-host 导出允许写 `servers.production.tmpRoot/backup-now/<backupId>/mysql/*.sql.gz`，恢复导入仍阻断非 BackupPackage 路径；`Invoke-Pester -Script .\ops\backup-ops\tests\*.Tests.ps1` 通过 20 passed、0 failed；MySQL parser PASS。
+- NOOP: rehearsal-after-retry -> NOT_RUN，正式 `backup-now` 未成功且 `backupId=20260724-004458` 无完整备份点，按授权边界禁止执行备份服隔离 `rehearsal`。
+- GREEN: project-experience-consolidation-mysql-source-temp -> PASS，已将 `INTBK-3002` / MySQL 中转路径被误判为非 BackupPackage 恢复 dump 的经验合并到 `D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md#正式源备份到备份服隔离演练仓库门禁`，并在 `docs/experience-index.md` 增加 `MySQL 恢复 dump 不在受保护 BackupPackage`、`source temp dump`、`INTBK-3002` 路由；未新建长期经验文档。
+- REVIEWER: prod-backup-rehearsal -> BLOCKED，原因是第二次正式 `backup-now` 已实际返回 `INTBK-3002`，且用户禁止自动重试写入；本地 MySQL 根因已修复并通过回归，但再次提交正式 `backup-now` 需要用户重新授权。
+- AUTHORIZATION: retry-backup-now-after-mysql-fix -> 用户于 2026-07-24 00:52:52 +08:00 回复“授权”，允许在已修复 MySQL 导出中转路径校验后再次提交一次正式 `backup-now`；授权边界仍仅限正式备份和后续同一新 `backupId` 的备份服隔离 `rehearsal`，不包含 `restore-data -TargetEnvironment backup` 或覆盖正常 runtime。
+- COMMAND_INTENT: 正式 `backup-now` 第三次写入尝试，仅使用已修复脚本和当前生产确认机制；不包含密码、token、私钥或连接串；不执行 `restore-data`、重启、发布、回滚、删除、配置修改或 manifest 手工修改。
+- BLOCKER: backup-now-third -> status=blocked, code=INTBK-4001, exitCode=1，本地等待未超时，脚本实际在 `[4/7] 备份 MinIO 对象` 阶段阻断；backupId=`20260724-005414`；imageTag=`release-20260723-intmain-codeonly-three-env-r260723s-r1`；report=`D:\IntRuoyi-BackupOps\logs\202607\20260724_005413_backup-now_blocked.report.md`；json=`D:\IntRuoyi-BackupOps\logs\202607\20260724_005413_backup-now_blocked.report.json`；log=`D:\IntRuoyi-BackupOps\logs\202607\20260724_005413_backup-now_blocked.log`。
+- ERROR_REDACTED: backup-now-third -> 对象元数据解析遇到远端输出 `Invalid JSON primitive: Unable`；根因是 `mc --json` 对象元数据输出前混入 Docker pull/status 噪声行，而旧解析器将首行 `Unable...` 当 JSON 解析失败。未进入对象 inventory 发布、deploy metadata、checksums、manifest 或 rehearsal 阶段。
+- GREEN: backup-now-third-artifact-integrity-after-block -> PASS，备份服 `/mnt/intruoyi-data/Backup/BackupPackage/20260724-005414/mysql/ruoyi-vue-pro.sql.gz` 存在且大小约 `6080019020` bytes；同一备份点缺少 `objects/manifest-object-inventory.json`、`manifest/manifest.json`、`checksums/sha256sums.txt` 和 `deploy/runtime.env`，属于不完整备份点，禁止复用。
+- GREEN: current-service-state-after-third-block -> PASS，正式服和备份服 backend health 均为 `UP`，frontend HTTP 均为 `200`，两端 `IMAGE_TAG` 均保持 `release-20260723-intmain-codeonly-three-env-r260723s-r1`。
+- RED: object-metadata-docker-status-noise-regression -> FAIL，新增 Pester 场景复现远端 `mc --json` 输出前混入 `Unable to find image ... locally`、`Pulling from`、`Download complete`、`Digest`、`Status` 等 Docker 拉取状态行时，旧解析器把状态行当 JSON 导致对象备份阻断。
+- GREEN: object-metadata-docker-status-noise-fix -> PASS，修复后 `ConvertFrom-BackupOpsRemoteObjectMetadataJson` 跳过已知 Docker pull/status 噪声行，但仍对真实非 JSON 输出 fail fast；`Invoke-Pester -Script .\ops\backup-ops\tests\*.Tests.ps1` 通过 22 passed、0 failed；ObjectOps parser PASS。
+- NOOP: rehearsal-after-third -> NOT_RUN，正式 `backup-now` 未成功且 `backupId=20260724-005414` 无完整备份点，按授权边界禁止执行备份服隔离 `rehearsal`。
+- GREEN: project-experience-consolidation-object-metadata -> PASS，已将 `INTBK-4001` / Docker pull/status 行混入 `mc --json` 输出的经验合并到 `D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md#正式源备份到备份服隔离演练仓库门禁`，并在 `docs/experience-index.md` 增加 `Invalid JSON primitive: Unable`、`Docker pull status lines`、`mc --json`、`INTBK-4001` 路由；未新建长期经验文档。
+- REVIEWER: prod-backup-rehearsal -> BLOCKED，原因是第三次正式 `backup-now` 已实际返回 `INTBK-4001`，且用户禁止自动重试写入；本地 ObjectOps 根因已修复并通过回归，但再次提交正式 `backup-now` 需要用户重新授权。
+- AUTHORIZATION: retry-backup-now-after-objectops-fix -> 用户于 2026-07-24 01:25:17 +08:00 回复“授权”，允许在已修复 ObjectOps 元数据解析后再次提交一次正式 `backup-now`；授权边界仍仅限正式备份和后续同一新 `backupId` 的备份服隔离 `rehearsal`，不包含 `restore-data -TargetEnvironment backup` 或覆盖正常 runtime。
+- RED: local-regression-gate-before-fourth-attempt -> FAIL，`Invoke-Pester -Script .\ops\backup-ops\tests\*.Tests.ps1` 首次复跑为 20 passed、2 failed；失败均为测试断言隔离问题，未触发任何远端写入。
+- GREEN: local-regression-gate-before-fourth-attempt -> PASS，修复测试隔离与显式 try/catch 断言后，`Invoke-Pester -Script .\ops\backup-ops\tests\*.Tests.ps1` 为 22 passed、0 failed；PowerShell parser、JSON config parse、UTF-8 decode 和 `git diff --check` 均通过，diff check 仅有既有 CRLF 工作区提示。
+- GREEN: readonly-runtime-preflight-before-fourth-attempt -> PASS，正式服与备份服 `IMAGE_TAG` 均为 `release-20260723-intmain-codeonly-three-env-r260723s-r1`；两端 backend image/frontend image 同 tag 且 running；backend health=`UP`；frontend HTTP=`200`；正式服 `/mnt/nas/Backup/BackupPackage` 可写且 `yudao` bucket 存在；备份服 `/mnt/intruoyi-data/Backup/BackupPackage`、`tmpRoot`、`rehearsalRoot` 可写，`yudao` 与 `yudao-rehearsal` bucket 存在。
+- COMMAND_INTENT: 正式 `backup-now` 第四次写入尝试，仅使用已修复脚本、`TargetEnvironment=prod`、`RepositoryEnvironment=backup` 和当前生产确认机制；不包含密码、token、私钥或连接串；不执行 `restore-data`、重启、发布、回滚、删除、配置修改或 manifest 手工修改。
+- BLOCKER: backup-now-fourth -> status=blocked, code=INTBK-6001, exitCode=2，本地等待未超时，脚本实际在 `[5/7] 生成 checksums 与 manifest` 阶段阻断；backupId=`20260724-013816`；imageTag=`release-20260723-intmain-codeonly-three-env-r260723s-r1`；report=`D:\IntRuoyi-BackupOps\logs\202607\20260724_013815_backup-now_blocked.report.md`；json=`D:\IntRuoyi-BackupOps\logs\202607\20260724_013815_backup-now_blocked.report.json`；log=`D:\IntRuoyi-BackupOps\logs\202607\20260724_013815_backup-now_blocked.log`。
+- ERROR_REDACTED: backup-now-fourth -> DCC 备份 manifest 构建失败；诊断文件 `D:\IntRuoyi-BackupOps\tmp\20260724-013816\manifest\dcc-backup-manifest.json` 显示 `dcc_object_inventory_missing:384`，341 个受控文件记录中存在 384 个对象引用缺口、288 个唯一路径缺失；首个缺失路径为 `codex-e2e/CODEX_E2E_T4_E11_1779725588169.pdf.original.pdf`。
+- GREEN: backup-now-fourth-local-artifact-integrity-after-block -> PASS，本机 workspace 存在 `mysql/ruoyi-vue-pro.sql.gz` 6080009151 bytes、`objects/manifest-object-inventory.json` 15854307 bytes、`deploy/runtime.env` 3625 bytes、`deploy/image-tag.txt` 且 imageTag 匹配；本机未生成最终 `manifest/manifest.json` 或 `checksums/sha256sums.txt`。
+- GREEN: backup-now-fourth-remote-artifact-integrity-after-block -> PASS，备份服 `/mnt/intruoyi-data/Backup/BackupPackage/20260724-013816/mysql/ruoyi-vue-pro.sql.gz` 存在且大小 6080009151 bytes；备份服缺少 `objects/manifest-object-inventory.json`、`manifest/dcc-backup-manifest.json`、`manifest/manifest.json`、`checksums/sha256sums.txt`、`deploy/runtime.env` 和 `deploy/image-tag.txt`。
+- GREEN: current-service-state-after-fourth-block -> PASS，正式服和备份服 backend health 均为 `UP`，frontend HTTP 均为 `200`，两端 `IMAGE_TAG` 均保持 `release-20260723-intmain-codeonly-three-env-r260723s-r1`。
+- NOOP: rehearsal-after-fourth -> NOT_RUN，正式 `backup-now` 未成功且 `backupId=20260724-013816` 无完整备份点，按授权边界禁止执行备份服隔离 `rehearsal`。
+- GREEN: project-experience-consolidation-dcc-inventory -> PASS，已将 `INTBK-6001` / `dcc_object_inventory_missing` 经验合并到 `D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md#正式源备份到备份服隔离演练仓库门禁` 和对象增量与 DCC 验收小节，并在 `docs/experience-index.md` 增加 `DCC manifest`、`INTBK-6001`、`dcc_object_inventory_missing`、`对象 inventory 覆盖率` 路由；未新建长期经验文档。
+- REVIEWER: prod-backup-rehearsal -> BLOCKED，原因是第四次正式 `backup-now` 已实际返回 `INTBK-6001`，DCC 数据快照引用的对象缺失于对象 inventory；本轮无完整备份点，无法进入同一 `backupId` 的隔离 rehearsal。
+- GREEN: final-local-verification -> PASS，`Invoke-Pester -Script .\ops\backup-ops\tests\*.Tests.ps1` 22 passed、0 failed；PowerShell parser PASS；JSON config parse PASS；UTF-8 decode PASS；`git diff --check` 无错误，仅既有 CRLF 工作区提示。
+- AUTHORIZATION: readonly-dcc-gap-investigation -> 用户于 2026-07-24 02:16:24 +08:00 回复“授权”；本轮按只读排查 DCC 缺失对象来源处理，不修生产数据、不补对象、不删除记录、不调整备份范围、不重试 `backup-now`、不执行 `rehearsal`。
+- COMMAND_INTENT: 只读分析 `D:\IntRuoyi-BackupOps\tmp\20260724-013816` 中 DCC 快照、对象 inventory 和 manifest 诊断，定位 `dcc_object_inventory_missing` 范围；不读取或记录敏感凭据 -> PASS。
+- GREEN: dcc-gap-local-snapshot-analysis -> PASS，DCC 快照中 96 个 `ACTIVE` 的 `CODEX-E2E-*` 受控文件引用 `codex-e2e/` 前缀；原始 TSV 共 384 条对象角色引用，包含 original/published/source/stamped 各 96，其中 source 与 original 共享路径，规范化后为 288 个唯一缺失对象路径。
+- GREEN: dcc-gap-inventory-analysis -> PASS，失败备份对象 inventory 共 44,207 项，`codex-e2e/` 前缀对象数为 0；其他已知 DCC inventory 前缀存在，说明缺口集中在 `codex-e2e/`。
+- GREEN: prod-minio-codex-e2e-readonly-check -> PASS，正式 MinIO `yudao` bucket 中 `codex-e2e/` 目录缺失，抽样 `CODEX_E2E_T4_E11_1779725588169` 的 original/published/stamped 三个对象均缺失；同一方法验证 `dcc/original/20260526/codex-e2e-source.pdf` 与 `dcc/stamped/20260513/dcc-sample_controlled.pdf` 存在，排除只读抽样方法失效。
+- GREEN: backup-history-codex-e2e-readonly-check -> PASS，备份服 `/mnt/intruoyi-data/Backup/BackupPackage` 和正式服 `/mnt/nas/Backup/BackupPackage` 历史 manifest/object inventory 中 `codex-e2e/` 命中数均为 0，未发现可直接恢复这些对象的历史备份来源。
+- REVIEWER: dcc-gap-investigation -> BLOCKED，当前开放阻断从“inventory 采集范围未知”收敛为“生产 DCC 数据保留 `codex-e2e/` 活跃引用，但正式 MinIO 与历史备份仓均无对应对象”；后续任何修复都需要单独授权生产 DCC 数据/对象处理策略。
+- AUTHORIZATION: dcc-gap-remediation-ambiguous -> 用户于 2026-07-24 02:24:30 +08:00 再次回复“授权”；由于当前不是单纯重试脚本，而是需要在恢复缺失对象、软删除/下线孤儿 DCC 记录、正式调整备份范围之间选择生产处理策略，本条授权未指定策略，不能作为生产数据写入、对象补齐、备份范围修改、重新 `backup-now` 或 `rehearsal` 的执行依据。
+- BLOCKER: dcc-gap-remediation-strategy -> 缺少明确策略选择；停止后续写入和重复提交，保持 `backupId=20260724-013816` 禁止复用。
+- GREEN: historical-dcc-codex-e2e-repair-evidence-readonly -> PASS，只读核对 `D:\ProjectPackage\Int\IntRuoyi\doc\tasks\20260613-prod-data-backup`：历史任务在用户授权下对 96 条 `tenant_id=122`、`CODEX-E2E%`、`ACTIVE`、对象路径 `codex-e2e/%` 的测试残留主记录执行可回滚软删除，并在随后正式备份中得到 `INTBK-0000`。
+- GREEN: current-vs-historical-codex-e2e-id-set-compare -> PASS，当前 `D:\IntRuoyi-BackupOps\tmp\20260724-013816\manifest\dcc-backup-manifest.json` 中 96 个缺失 `controlled-file` ID 与历史 `affected-dcc-codex-e2e-records.csv` 完全一致：CurrentIdCount=96、HistoricalIdCount=96、CurrentOnlyCount=0、HistoricalOnlyCount=0、ExactMatch=True。
+- REVIEWER: dcc-gap-remediation-candidate -> BLOCKED，最小可回滚候选策略为“按历史同清单软删除/下线这 96 条测试残留 DCC 主记录，并保留修复前快照与回滚 SQL”；但用户尚未明确选择该策略，故仍不得执行生产写入或重试备份。
+- AUTHORIZATION: dcc-gap-soft-delete-remediation -> 用户于 2026-07-24 02:28:35 +08:00 回复“授权”；按上一条明确要求解释为授权“按历史同清单软删除/下线这 96 条生产 DCC 测试残留记录，并先导出修复前快照与回滚 SQL，验证后重新执行正式 `backup-now`”。授权仍不包含 `restore-data -TargetEnvironment backup`、覆盖备份服正常 runtime、手改 manifest、复用旧 `backupId`、重启、发布、回滚或删除文件。
+- COMMAND_INTENT: 生产 DCC 修复预检与回滚证据生成；只读核对正式库当前目标记录仍精确为 96 条测试残留、对象路径约束和共享引用约束，通过后导出修复前 SQL 快照；不记录密码、token、私钥、连接串或完整敏感命令行。
+- GREEN: prod-dcc-soft-delete-precheck-and-rollback -> PASS，正式库只读预检指标：target_rows=96、target_safe_rows=96、target_bad_rows=0、target_ref_rows=384、target_missing_infra_refs=0、target_non_codex_path_refs=0、target_deleted_infra_refs=0、target_unique_paths=288、other_active_records_sharing_target_file_ids=0、other_active_reference_rows_sharing_target_file_ids=0；回滚 SQL 已导出到 `doc/tasks/20260723-prod-backup-rehearsal/evidence/prod-dcc-codex-e2e-before-20260724-rollback.sql`，大小 69,608 bytes。
+- BLOCKER: prod-dcc-soft-delete-write -> MySQL 在写入事务的临时引用表构建阶段返回 `ERROR 1137 (HY000): Can't reopen table: 't'`，发生在 `UPDATE dcc_controlled_file` 之前；未提交任何业务表变更。
+- GREEN: prod-dcc-soft-delete-failed-write-postcheck -> PASS，只读复核 target_rows=96、target_deleted_rows=0、target_active_rows=96、target_safe_rows=96，证明本次写入阻断未改变正式 DCC 目标记录。
+- REVIEWER: prod-dcc-soft-delete-remediation -> BLOCKED，按用户“不得自动重试写入操作”要求停止；需要用户再次授权修正后的无临时表重开 SQL 后，才可提交下一次生产软删除写入。
+- AUTHORIZATION: dcc-gap-soft-delete-remediation-fixed-sql -> 用户于 2026-07-24 02:35:39 +08:00 回复“授权”；按上一条要求解释为授权使用修正后的无临时表重开 SQL 再执行一次软删除。授权仍不包含 `restore-data -TargetEnvironment backup`、覆盖备份服正常 runtime、手改 manifest、复用旧 `backupId`、重启、发布、回滚或删除文件。
+- COMMAND_INTENT: 使用修正后的无临时表重开 SQL 执行单次软删除；事务前和事务内均校验 96 条目标范围、对象路径和共享引用计数，不满足则回滚；执行后立即只读 postcheck。
+- GREEN: prod-dcc-soft-delete-fixed-sql-precheck -> PASS，target_rows=96、target_safe_rows=96、target_bad_rows=0、target_ref_rows=384、target_missing_infra_refs=0、target_non_codex_path_refs=0、target_deleted_infra_refs=0、target_unique_paths=288、other_active_records_sharing_target_file_ids=0、other_active_reference_rows_sharing_target_file_ids=0。
+- GREEN: prod-dcc-soft-delete-fixed-sql-write -> PASS，事务返回 target_rows=96、target_safe_rows_before=96、target_bad_rows_before=0、shared_records_before=0、shared_ref_rows_before=0、updated_rows=96、post_deleted_rows_in_tx=96、post_active_rows_in_tx=0、commit_decision=COMMIT。
+- GREEN: prod-dcc-soft-delete-fixed-sql-postcheck -> PASS，只读复核 target_rows=96、target_deleted_rows=96、target_active_rows=0、target_updater_rows=96、target_status_still_active_rows=96。回滚 SQL 保留在 `doc/tasks/20260723-prod-backup-rehearsal/evidence/prod-dcc-codex-e2e-before-20260724-rollback.sql`。
+- COMMAND_INTENT: 重新执行正式 `backup-now`，使用当前脚本生产确认机制与 `TargetEnvironment=prod`、`RepositoryEnvironment=backup`；不复用旧 `backupId`，不执行 `restore-data`、重启、发布、回滚、删除文件、手改 manifest 或覆盖备份服正常 runtime。
+- BLOCKER: backup-now-after-dcc-soft-delete -> status=fail, code=INTBK-6003, exitCode=1，本地等待未超时，脚本实际在 `[5/7] 生成 checksums 与 manifest` 阶段失败；backupId=`20260724-023840`；report=`D:\IntRuoyi-BackupOps\logs\202607\20260724_023839_backup-now_fail.report.md`；json=`D:\IntRuoyi-BackupOps\logs\202607\20260724_023839_backup-now_fail.report.json`；log=`D:\IntRuoyi-BackupOps\logs\202607\20260724_023839_backup-now_fail.log`。
+- ERROR_REDACTED: backup-now-after-dcc-soft-delete -> 子进程 PowerShell 运行时缺少 `Get-FileHash`，导致 checksum 生成失败；DCC manifest 已成功生成，不再出现 `dcc_object_inventory_missing`。
+- GREEN: backup-now-after-dcc-soft-delete-artifact-integrity -> PASS，本机 `D:\IntRuoyi-BackupOps\tmp\20260724-023840` 存在 MySQL dump 6,080,027,016 bytes、对象 inventory 23,460,565 bytes、DCC manifest 16,581,926 bytes、deploy runtime.env 和 image-tag.txt；本机缺少最终 `manifest/manifest.json` 与 `manifest/checksums.txt`。备份服 `/mnt/intruoyi-data/Backup/BackupPackage/20260724-023840` 仅发现 MySQL dump、object copy plan TSV 和脚本，未形成完整备份点。
+- GREEN: current-service-state-after-backup-now-fail -> PASS，正式服与备份服 backend/frontend 容器仍运行且镜像 tag 均为 `release-20260723-intmain-codeonly-three-env-r260723s-r1`；MySQL/Redis/MinIO 相关容器保持运行，未执行重启、发布、回滚或 restore-data。
+- RED: local-checksum-command-dependency-regression -> FAIL，正式 `backup-now` 暴露 `New-BackupOpsChecksums` 与 manifest recoverySet checksums hash 仍依赖 `Get-FileHash`，在子进程 PowerShell 环境中该 cmdlet 不可用。
+- GREEN: local-checksum-sha256-fix -> PASS，新增 `Get-BackupOpsFileSha256` 使用 .NET SHA256 计算文件哈希，并替换 `Get-FileHash` 调用；`Invoke-Pester -Script .\ops\backup-ops\tests\*.Tests.ps1` 通过 23 passed、0 failed；`FileOps.psm1` parser PASS，测试 parser PASS。
+- REVIEWER: prod-backup-rehearsal -> BLOCKED，DCC 数据缺口已修复，但最新正式 `backup-now` 未成功；本地 checksum 根因已修复，因用户禁止自动重试写入，需要重新授权后才能再次提交正式 `backup-now`。
+
+## Command Log
+
+- BOOTSTRAP: 只读读取适用 `AGENTS.md`、上一任务状态、`docs/experience-index.md` 和 `docs/powershell-memory.md` -> PASS。
+- COMMAND_INTENT: 只读读取 `server-access.md`、`login-access.md`、`release-backup-restore.md`、backup-ops 当前脚本与配置、相关历史经验和技能文件 -> PASS。
+- COMMAND_INTENT: 通过 SSH 只读核对正式服与备份服 `.env IMAGE_TAG`、容器、挂载、容量、备份根、tmp 根、日志根配置、对象存储和备份服 rehearsal 根；命令不包含密码、token、私钥、连接串或完整 `.env` 输出 -> PASS。
+- COMMAND_INTENT: 静态核对 `TargetEnvironment` 与 repository 解析契约，确认是否可安全进入正式 `backup-now` 与备份服 `rehearsal` -> BLOCKED。
+- COMMAND_INTENT: 本地修改 backup-ops 脚本、配置与 Pester 测试，显式支持 `TargetEnvironment=prod` + `RepositoryEnvironment=backup`；未触发远端写入 -> PASS。
+- COMMAND_INTENT: 运行本地 Pester、parser、JSON、diff 和 UTF-8 检查；不包含凭据或敏感命令行 -> PASS。
+- COMMAND_INTENT: 通过 SSH 只读复核正式服和备份服当前运行态、挂载、容量、备份根、tmp 根、演练根、对象 bucket、健康检查和 `rehearsalStatus` 枚举；未记录完整 `.env`、密码、token、私钥、连接串或敏感命令行 -> PASS。
+- COMMAND_INTENT: 在 `GREEN: experience-preflight -> PASS` 后提交一次正式 `backup-now`，脚本阻断后停止后续写入和重复提交；读取本地 blocked report/log、只读核对产物完整性和服务状态 -> BLOCKED。
+- COMMAND_INTENT: 本地 TDD 修复 FileOps 挂载检查残留问题并跑 Pester/parser；不再次提交远端写入 -> PASS。
+- COMMAND_INTENT: 使用 project-experience-consolidation 规则沉淀可复用备份恢复门禁；优先更新既有 `release-backup-restore.md` 和 `experience-index.md`，不新建长期经验文档 -> PASS。
+- COMMAND_INTENT: 记录用户重新授权后，提交一次修复后的正式 `backup-now`；若再次阻断，停止后续写入和重复提交 -> BLOCKED。
+- COMMAND_INTENT: 第二次正式 `backup-now` 阻断后停止后续写入和重复提交；读取本地 blocked report/log、只读核对产物完整性和服务状态 -> BLOCKED。
+- COMMAND_INTENT: 本地 TDD 修复 MySQL 导出中转路径校验残留并跑 Pester/parser；不再次提交远端写入 -> PASS。
+- COMMAND_INTENT: 记录用户再次授权后，提交一次修复后的正式 `backup-now`；若再次阻断，停止后续写入和重复提交 -> PENDING。
+- COMMAND_INTENT: 第三次正式 `backup-now` 阻断后停止后续写入和重复提交；读取本地 blocked report/log、只读核对产物完整性和服务状态 -> BLOCKED。
+- COMMAND_INTENT: 本地 TDD 修复 ObjectOps 元数据解析对 Docker pull/status 噪声的处理并跑 Pester/parser；不再次提交远端写入 -> PASS。
+- COMMAND_INTENT: 第四次正式 `backup-now` 前执行本地 Pester/parser/JSON/UTF-8/diff 门禁；首次 Pester 暴露测试隔离失败后先修复测试，再重新通过；未触发远端写入 -> PASS。
+- COMMAND_INTENT: 记录用户再次授权后，提交一次修复后的正式 `backup-now`；若再次阻断，停止后续写入和重复提交 -> BLOCKED。
+- COMMAND_INTENT: 第四次正式 `backup-now` 阻断后停止后续写入和重复提交；读取本地 blocked report、DCC manifest 诊断、只读核对产物完整性和服务状态 -> BLOCKED。
+- COMMAND_INTENT: 使用 project-experience-consolidation 规则沉淀可复用 DCC 对象 inventory 覆盖率门禁；优先更新既有 `release-backup-restore.md` 和 `experience-index.md`，不新建长期经验文档 -> PASS。
+- COMMAND_INTENT: 最终本地 Pester/parser/JSON/UTF-8/diff 校验；不执行提交、不执行 rehearsal、不重复 backup-now -> PASS。
+- COMMAND_INTENT: 授权后只读排查 DCC 缺失对象来源；分析本机失败备份诊断、正式 MinIO 前缀存在性和正式/备份历史备份仓 manifest 命中；不执行任何远端写入 -> PASS。
+- COMMAND_INTENT: 记录用户再次“授权”但未指定 DCC 缺口处理策略；不执行生产写入、不补对象、不删除记录、不调整备份范围、不重试 `backup-now`、不执行 `rehearsal` -> BLOCKED。
+- COMMAND_INTENT: 只读比对当前 `INTBK-6001` 缺失 DCC 主记录与 2026-06-14 历史修复清单；不执行生产写入、不补对象、不删除记录、不调整备份范围、不重试 `backup-now`、不执行 `rehearsal` -> PASS。
+- COMMAND_INTENT: 记录用户明确授权按历史同清单软删除/下线 96 条 DCC 测试残留记录；先生成回滚证据和只读预检，不直接跳到生产写入 -> PENDING。
+- COMMAND_INTENT: 正式库预检与回滚 SQL 生成 -> PASS；第一次软删除写入在 UPDATE 前被 MySQL 临时表重开限制阻断，postcheck 证明无数据变更；停止自动重试 -> BLOCKED。
+- COMMAND_INTENT: 记录用户授权修正版无临时表重开 SQL；重新预检后执行单次软删除事务并 postcheck -> PENDING。
+- COMMAND_INTENT: 修正版无临时表重开 SQL 软删除与 postcheck -> PASS；重新执行正式 `backup-now` -> PENDING。
+- COMMAND_INTENT: 第五次正式 `backup-now` 失败后停止后续写入和重复提交；读取报告、产物完整性和服务状态，修复本地 checksum 依赖并跑 Pester/parser；不再次执行备份 -> BLOCKED。
+- AUTHORIZATION: retry-backup-now-after-checksum-fix -> 用户于 2026-07-24 03:07 +08:00 回复“授权”，允许在已修复 checksum 逻辑后重新提交一次新的正式 `backup-now`；授权边界仍仅限正式备份和后续同一新 `backupId` 的备份服隔离 `rehearsal`，不包含 `restore-data -TargetEnvironment backup`、覆盖备份服正常 runtime、手改 manifest、复用旧 `backupId`、重启、发布、回滚或删除文件。
+- GREEN: local-regression-gate-before-sixth-attempt -> PASS，`Invoke-Pester -Script .\ops\backup-ops\tests\*.Tests.ps1` 通过 23 passed、0 failed；PowerShell parser PASS；backup-ops JSON config parse PASS；`git diff --check` 无错误，仅既有 CRLF 工作区提示；`rehearsalStatus=verified` 写入枚举扫描无命中。
+- COMMAND_INTENT: 重新执行一次新的正式 `backup-now`，使用已修复 checksum 逻辑、`TargetEnvironment=prod`、`RepositoryEnvironment=backup` 和当前生产确认机制；不复用旧 `backupId`，不执行 `restore-data`、重启、发布、回滚、删除文件、手改 manifest 或覆盖备份服正常 runtime。
+- GREEN: backup-now-sixth -> PASS，正式 `backup-now` 返回 `status=success`、`code=INTBK-0000`、exitCode=0；新 `backupId=20260724-030845`；report=`D:\IntRuoyi-BackupOps\logs\202607\20260724_030844_backup-now_success.report.md`；json=`D:\IntRuoyi-BackupOps\logs\202607\20260724_030844_backup-now_success.report.json`；log=`D:\IntRuoyi-BackupOps\logs\202607\20260724_030844_backup-now_success.log`。
+- GREEN: backup-now-sixth-local-artifact-integrity -> PASS，本机 `D:\IntRuoyi-BackupOps\tmp\20260724-030845` 存在并非空：`manifest/manifest.json` 15,857,625 bytes、`manifest/checksums.txt` 368 bytes、`mysql/ruoyi-vue-pro.sql.gz` 6,080,022,752 bytes、`objects/manifest-object-inventory.json` 15,854,307 bytes、`manifest/dcc-backup-manifest.json` 8,765,072 bytes、`deploy/runtime.env` 3,625 bytes、`deploy/image-tag.txt` 57 bytes。
+- GREEN: backup-now-sixth-manifest-check -> PASS，manifest `imageTag=release-20260723-intmain-codeonly-three-env-r260723s-r1` 与本次正式服实测一致；`recoverySet.status=COMPLETE`；对象清单 44,207 项；DCC manifest `status=success`；checksums 文件 SHA256 与 manifest `recoverySet.checksums.sha256=58744d240fe7c8bbdd6fbb9946d377b0c45bb2e25226d38d2fcb4ee7c8492faa` 一致。
+- GREEN: backup-now-sixth-remote-artifact-integrity -> PASS，备份服仓库 `/mnt/intruoyi-data/Backup/BackupPackage/20260724-030845` 下同一 `backupId` 的 `manifest/manifest.json`、`manifest/checksums.txt`、`mysql/ruoyi-vue-pro.sql.gz`、`objects/manifest-object-inventory.json`、`manifest/dcc-backup-manifest.json`、`deploy/runtime.env`、`deploy/image-tag.txt` 均存在且非空；候选状态为 success，演练前 `rehearsalStatus=unverified`。
+- COMMAND_INTENT: 仅对同一新 `backupId=20260724-030845` 执行备份服隔离 `rehearsal`，固定 `TargetEnvironment=backup`、`RepositoryEnvironment=backup`，使用脚本配置的 `/mnt/intruoyi-data/backup-ops/rehearsal/runtime` 与 `yudao-rehearsal`；不执行 `restore-data -TargetEnvironment backup`，不覆盖备份服正常 MySQL、正常 `yudao` bucket 或正常 runtime。
+- GREEN: rehearsal-backup-server-isolated -> PASS，`rehearsal` 使用同一 `backupId=20260724-030845` 返回 `status=success`、`code=INTBK-0000`、exitCode=0；report=`D:\IntRuoyi-BackupOps\logs\202607\20260724_033419_rehearsal_success.report.md`；json=`D:\IntRuoyi-BackupOps\logs\202607\20260724_033419_rehearsal_success.report.json`；log=`D:\IntRuoyi-BackupOps\logs\202607\20260724_033419_rehearsal_success.log`。
+- GREEN: rehearsal-validation-checks -> PASS，`backendHealth=pass`、`frontendHttp200=pass`、`loginReachable=pass`、`fileDownloadSample=pass`；本地 evidence `ops/backup-ops/tmp/rehearsal/20260724-030845/evidence/rehearsal-report.json` 594 bytes、`现场快照.md` 315 bytes。
+- GREEN: rehearsal-manifest-status -> PASS，备份服仓库 manifest 写回 `validation.rehearsalStatus=PASSED`、`lastRehearsedAt=2026-07-24T04:10:18.3602097+08:00`；远端 `manifest/rehearsal-report.json` 594 bytes 且 `status=PASSED`，远端 `manifest/现场快照.md` 315 bytes。
+- GREEN: backup-server-normal-runtime-after-rehearsal -> PASS，备份服正常 `intruoyi-backend`、`intruoyi-frontend` 仍运行在 `release-20260723-intmain-codeonly-three-env-r260723s-r1` 且约 25 小时未重启；正常 frontend HTTP 200；隔离演练容器为 `intruoyi-rehearsal-*`，端口 `48082/18081`，未覆盖正常 runtime。
+- GREEN: project-experience-consolidation-checksum -> PASS，已将 `INTBK-6003` / `Get-FileHash` 缺失导致 checksum 失败的门禁合并到 `D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md#正式源备份到备份服隔离演练仓库门禁`，并更新维护仓 `docs/experience-index.md` 路由；未新建长期经验文档。
+- REVIEWER: prod-backup-rehearsal -> GO，正式 `backup-now` 与备份服隔离 `rehearsal` 均使用同一新 `backupId=20260724-030845` 并返回 `INTBK-0000`；所有成功判定项满足；仍未授权且未执行 `restore-data -TargetEnvironment backup` 或覆盖备份服正常 runtime。
+- GREEN: task-status -> ready_for_closeout，任务记录已更新为 `ready_for_closeout`，下一步仅执行 task-closeout-cleanup preview/apply 和最终状态记录。
+- GREEN: task-closeout-cleanup-preview -> PASS，preview status=`ready`；keep 包含任务核心记录、`doc/tasks/20260723-prod-backup-rehearsal/evidence/` 与 `ops/backup-ops/tmp/rehearsal/20260724-030845/evidence/`；delete=`<none>`，blocked=`<none>`，warnings=`<none>`。
+- GREEN: task-closeout-cleanup-apply -> PASS，apply status=`applied`；delete=`<none>`，blocked=`<none>`，warnings=`<none>`；当前为主工作区 `int_main`，不是 linked worktree，无需 worktree merge 或 removal。
+- GREEN: task-status -> completed，任务文档已标记 `completed`，最终 Reviewer 结论保持 `GO`。
