@@ -46,6 +46,7 @@
 ## Verification Evidence
 
 - Canonical path check: `D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md` 当前不存在；本次只读定位到历史预检证据 `doc/tasks/20260709-codeonly-three-env-head-release/evidence/preflight-read-server-access.txt`，并用维护仓长期门禁 `docs/release-build-preflight-lessons.md` 交叉确认测试服为 `172.30.30.58`、运行目录为 `/opt/intruoyi/runtime`。
+- Correction: 用户指出 `D:\正式服访问方式\` 下有访问方式；已只读脱敏确认 `D:\正式服访问方式\server-access.md` 存在，记录测试服 `172.30.30.58`、正式服 `172.30.30.57`、备用服 `172.30.30.59`，并确认三台服务器运行目录统一为 `/opt/intruoyi/runtime`。后续服务器访问应优先读取该目录下的访问资料。
 - SSH read-only status: `ssh root@172.30.30.58 bash -s`，退出码 `0`；未执行重启、发布、数据库写入、文件修改或清理。
 - System: `2026-07-24T13:23:04+08:00`，uptime `166 days`，load average `0.31, 0.40, 0.43`。
 - Memory: `31Gi` total，`8.2Gi` used，`21Gi` available；swap `9Gi` total，`3.4Gi` used。

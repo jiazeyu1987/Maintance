@@ -11,3 +11,4 @@
 - INFO: experience-consolidation -> 本次状态值为一次性运行态，不写入长期经验；`server-access.md` 缺失问题已在本任务记录中留痕，若后续需要恢复规范访问文档，应由用户授权创建或恢复 `D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`。
 - GREEN: task-closeout-preview -> PASS, `task_closeout.py --task-id 20260724-test-server-status --mode preview` 显示 keep 为 `task.md`、`execution-log.md`、`verification-report.md`，delete/blocked/warnings 均为 none。
 - GREEN: task-closeout-apply -> PASS, `task_closeout.py --task-id 20260724-test-server-status --mode apply` 完成，linked worktree=false，deleted_paths none。
+- GREEN: access-path-correction -> PASS, 用户补充 `D:\正式服访问方式\` 下有访问方式；已只读脱敏读取 `server-access.md` / `login-access.md`，确认 `server-access.md` 记录测试服 `172.30.30.58`、正式服 `172.30.30.57`、备用服 `172.30.30.59` 和统一运行目录 `/opt/intruoyi/runtime`。本次未读取、记录或提交任何密码、token、私钥或口令。
