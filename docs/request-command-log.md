@@ -1,5 +1,14 @@
 # 请求与命令记录
 
+## 2026-07-24 查看测试服务器状态
+
+- 用户需求：查看测试服务器的状态。
+- 命中经验：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`、历史预检证据 `doc/tasks/20260709-codeonly-three-env-head-release/evidence/preflight-read-server-access.txt`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\powershell-preflight-lessons.md`。
+- 命令记录：创建任务目录 `doc/tasks/20260724-test-server-status/`；读取上一任务状态，上一任务 `20260724-push-maintenance-github` 仍因 GitHub 历史大文件限制处于 `blocked`，与本次只读服务器检查不冲突。
+- 命令记录：指定规范路径 `D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md` 当前不存在；通过历史预检证据和长期门禁交叉确认测试服 `172.30.30.58`、运行目录 `/opt/intruoyi/runtime`、前端 `8081`、后端健康 `48081`。
+- 命令记录：执行 `ssh root@172.30.30.58 bash -s` 只读检查系统、磁盘、内存、Docker/Compose、`.env IMAGE_TAG`、后端健康、前端、展厅和 OnlyOffice health；SSH 退出码 `0`，未执行重启、发布、数据库写入、远端文件修改或清理。
+- 当前结果：测试服务器状态正常；`IMAGE_TAG=release-20260723-dcc-viewer-permission-r260723vp-r1`，backend/frontend 均 Up 26 hours，后端 `UP`，前端 HTTP `200`，展厅 HTTP `200`，OnlyOffice HTTP `200`。
+
 ## 2026-07-15 code-only 三环境完整发布 r260715v
 
 - 用户需求：执行 IntRuoyi 不带数据的完整三环境发布闭环，发布输入限定为后端、前端、维护仓当前 `int_main` 已提交 HEAD；必须使用专用临时 release worktree，构建时使用 `SkipDatabaseSync` 与 `SkipMinioSync`，并授权正式/备份发布 `ConfirmText=PROD`。
