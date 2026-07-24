@@ -4,7 +4,7 @@
 
 当任务涉及 IntRuoyi 运行控制台真实 E2E 构建发布包、发布到测试服、发布包候选验收或构建发布失败重试时，先读本文。
 
-本文只沉淀可复用经验；正式发布规则仍以 `D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`server-access.md` 和 `login-access.md` 为准。
+本文只沉淀可复用经验；正式发布规则仍以 `E:\IntRuoyi\docs\release-backup-restore.md`、`server-access.md` 和 `login-access.md` 为准。
 
 如任务目标是让 Codex 直接照清单执行，请同时读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-agent-checklist.md`。
 
@@ -39,7 +39,7 @@
 
 2. 先预拉 Docker 基础镜像。
    - 构建前扫描 Dockerfile 中的 `FROM`：
-     `rg -n "^FROM " D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3 -g Dockerfile*`
+     `rg -n "^FROM " E:\IntRuoyi\IntRuoyiBackend E:\IntRuoyi\IntRuoyiFronted -g Dockerfile*`
    - 对每个基础镜像执行 `docker pull <image>` 和 `docker image inspect <image>`。
    - 本次已证明 `nginx:1.27-alpine` 拉取超时或 EOF 会让前端镜像构建在后半程失败，必须在真实 E2E 提交前提前发现。
 
@@ -51,8 +51,8 @@
 
 4. 先释放 Maven target 和 jar 锁。
    - 构建前至少验证：
-     `mvn -f D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\pom.xml -pl yudao-module-dcc -DskipTests clean`
-     `mvn -f D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\pom.xml -pl yudao-server -DskipTests clean`
+     `mvn -f E:\IntRuoyi\IntRuoyiBackend\pom.xml -pl yudao-module-dcc -DskipTests clean`
+     `mvn -f E:\IntRuoyi\IntRuoyiBackend\pom.xml -pl yudao-server -DskipTests clean`
    - 如果 `yudao-server\target\yudao-server.jar` 被 Java 进程占用，先让本机后端运行在复制出的 runtime jar 上，释放 target jar 后再构建。
    - 不要在 target jar 被锁时反复点构建按钮。
 

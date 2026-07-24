@@ -13,9 +13,9 @@
 
 本文面向 Codex 执行，不替代正式规则。正式边界仍以以下文档为准：
 
-- `D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`
-- `D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`
-- `D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`
+- `E:\IntRuoyi\docs\release-backup-restore.md`
+- `E:\IntRuoyi\docs\server-access.md`
+- `E:\IntRuoyi\docs\login-access.md`
 - 仅测试服发布还必须先读：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md`
 
 ## 执行模型
@@ -44,9 +44,9 @@ Codex 必须把完整发布任务视为以下严格顺序：
 - 命中并读取：
   - `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md`（仅测试服发布或 publish-test 任务）
   - `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
-  - `D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`
-  - `D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`
-  - 如涉及登录验证，再读 `D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`
+  - `E:\IntRuoyi\docs\release-backup-restore.md`
+  - `E:\IntRuoyi\docs\server-access.md`
+  - 如涉及登录验证，再读 `E:\IntRuoyi\docs\login-access.md`
 - 在 `execution-log.md` 先写 `GREEN: experience-preflight -> PASS` 或明确 blocker。
 - 在 `docs/request-command-log.md` 记录用户需求与关键命令。
 

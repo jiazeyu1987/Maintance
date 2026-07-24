@@ -5,10 +5,10 @@
 - IntGY: `D:\ProjectPackage\Int\IntGY`
 - IntPP: `D:\ProjectPackage\Int\IntPP`
 - IntBatchRecord: `D:\ProjectPackage\Int\IntBatchRecord`
-- Thread baseline: IntRuoyi 后端路径固定为 `ruoyi-vue-pro`，前端路径固定为 `yudao-ui-admin-vue3`；均相对仓库根 `D:\ProjectPackage\Int\IntRuoyi`。
-- Thread baseline: 测试服/正式服 IP 与访问方式统一见 `D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`；涉及服务器状态检查、重启、发布或联调时先按该文档执行。
-- Thread baseline: 正式环境/测试环境登录方式统一见 `D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`；涉及登录验证、联调或 E2E 时先按该文档使用对应租户账号。
-- Thread baseline: 涉及备份、恢复、发布、构建、回滚任务前必须先阅读 `D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`。
+- Thread baseline: IntRuoyi 主程序根目录固定为 `E:\IntRuoyi`；后端路径固定为 `IntRuoyiBackend`，前端路径固定为 `IntRuoyiFronted`，均相对该根目录。
+- Thread baseline: 测试服/正式服 IP 与访问方式统一见 `E:\IntRuoyi\docs\server-access.md`；涉及服务器状态检查、重启、发布或联调时先按该文档执行。
+- Thread baseline: 正式环境/测试环境登录方式统一见 `E:\IntRuoyi\docs\login-access.md`；涉及登录验证、联调或 E2E 时先按该文档使用对应租户账号。
+- Thread baseline: 涉及备份、恢复、发布、构建、回滚任务前必须先阅读 `E:\IntRuoyi\docs\release-backup-restore.md`。
 - Thread baseline: 正式服 /mnt/nas 是公司共享盘，禁止删除、清空或移除挂载/fstab。
 - Thread baseline: 发布失败先查 migration/manifest/脚本契约，再查环境；后端产物或环境变量契约变更时，维护仓脚本与测试必须同步修改。
 - Thread baseline: 完整发布只认单一 releaseTag 的 `build-release -> publish-test -> mark-tested -> promote-prod -> promote-backup` 闭环；不得拼接多轮 releaseTag 结果。
@@ -27,9 +27,9 @@
 ## Mixed Git Workspace Policy
 
 - 本项目为混合 Git 工作区；凡要求新建或使用新分支，只在本任务实际参与且需要修改的 Git 仓库创建同名分支，不得在无关仓库制造分支状态。
-- Thread baseline: 涉及 worktree 创建、合并、清理或排障时，先阅读 `D:\ProjectPackage\Int\IntRuoyi\docs\worktree-memory.md`。
+- Thread baseline: 涉及 worktree 创建、合并、清理或排障时，先阅读 `E:\IntRuoyi\docs\worktree-memory.md`。
 - Thread baseline: Codex 并行开发默认一任务一独立 worktree 工作区；前后端成对建同名分支，根目录仅用于协调与最终集成。
-- Thread baseline: IntRuoyi 根目录 Git 不作为融合结果判断项；融合以前后端 `ruoyi-vue-pro` 与 `yudao-ui-admin-vue3` 仓库为准。
+- Thread baseline: IntRuoyi 根目录 Git 不作为融合结果判断项；融合以前后端 `IntRuoyiBackend` 与 `IntRuoyiFronted` 仓库为准。
 - Thread baseline: worktree 合并后必须在合并结果上验证相关功能正确性；验证未通过不得视为完成或继续清理 worktree。
 
 ## Unified Frontend Style
@@ -102,7 +102,7 @@
 - Thread baseline: 本机展厅默认文件配置 `infra_file_config.id=28`、默认 bucket `yudao`、默认域 `http://127.0.0.1:9000/yudao` 视为受保护资源；未经用户明确授权，任何 E2E、联调、脚本或人工操作不得修改、切换、覆盖或绑定到其他 bucket/domain/endpoint。
 - Thread baseline: 任何 E2E、联调、脚本或人工操作都不得把 `config_id=28` 且 `path LIKE 'showroom/%'` 的默认展厅媒体 URL 改写到非默认受保护域；发现默认展厅文件配置或 `showroom/%` 媒体 URL 漂移时必须 fail fast，禁止继续启动、继续 E2E 或用临时同步/回填掩盖问题，除非用户明确批准本次修复范围。
 - Thread baseline: PowerShell 5.1 不使用 `&&`；命令改为分行执行或用 `;` 连接。
-- Thread baseline: PowerShell 任务涉及中文参数、中文正则、中文 SQL、SSH/MySQL 标准输入、多行 inline 脚本或 here-string 时，执行风险命令前必须读取 `D:\ProjectPackage\Int\IntRuoyi\docs\powershell-memory.md` 并按其设计编码与退出码验证路径。
+- Thread baseline: PowerShell 任务涉及中文参数、中文正则、中文 SQL、SSH/MySQL 标准输入、多行 inline 脚本或 here-string 时，执行风险命令前必须读取 `E:\IntRuoyi\docs\powershell-memory.md` 并按其设计编码与退出码验证路径。
 
 ## Encoding Safety Policy
 

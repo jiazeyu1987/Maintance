@@ -6,12 +6,12 @@
 
 正式规则仍以以下文档为准：
 
-- `D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`
-- `D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`
-- `D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`
+- `E:\IntRuoyi\docs\release-backup-restore.md`
+- `E:\IntRuoyi\docs\server-access.md`
+- `E:\IntRuoyi\docs\login-access.md`
 - `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
 - `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\powershell-preflight-lessons.md`
-- `D:\ProjectPackage\Int\IntRuoyi\docs\worktree-memory.md`
+- `E:\IntRuoyi\docs\worktree-memory.md`
 
 ## 使用顺序
 
@@ -63,8 +63,8 @@
 
 ```powershell
 git -C D:\ProjectPackage\Int\IntRuoyiMaintance status --short --branch
-git -C D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro status --short --branch
-git -C D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3 status --short --branch
+git -C E:\IntRuoyi\IntRuoyiBackend status --short --branch
+git -C E:\IntRuoyi\IntRuoyiFronted status --short --branch
 git -C <release-worktree> rev-parse HEAD
 git -C <release-worktree> status --porcelain
 ```
