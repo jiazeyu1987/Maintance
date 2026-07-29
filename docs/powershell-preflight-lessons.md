@@ -15,7 +15,7 @@
 
 PowerShell 共同基础规则以 `E:\IntRuoyi\docs\powershell-memory.md` 为唯一权威来源；本文只沉淀维护仓、运行控制台和构建发布专项增量。若文字重复，以共同规则为准；维护仓更严格的专项门禁继续叠加执行。具体业务发布、备份、恢复和 E2E 规则仍以对应业务文档为准。
 
-启动时允许且只允许一条固定的只读 bootstrap 命令：先设置 UTF-8，仅用于读取适用的 `AGENTS.md`、上一任务状态、经验索引和 `powershell-memory.md`。该命令不得写文件、调用外部服务、执行构建/测试/发布或通过管道传递业务文本；完成读取后，后续 PowerShell 命令全部按权威共同规则执行。
+启动时允许且只允许一条固定的只读 bootstrap 命令：先设置 UTF-8，仅用于读取适用的 `AGENTS.md`、上一任务状态、经验索引和 `powershell-memory.md`。该 bootstrap 是 task-doc-first 的唯一前置例外；不得写文件、调用外部服务、执行构建/测试/发布或通过管道传递业务文本；完成读取后必须立即创建或更新任务文档并摘取经验门禁，后续 PowerShell 命令全部按权威共同规则执行。
 
 ## 必做预检
 
@@ -141,6 +141,7 @@ PowerShell 5.1/7 中执行 SSH、bash 片段、HTTP host:port、release-info JSO
 - Verification: 执行后保存结构化 preview gate、脚本退出码、UTF-8 回读结果、Playwright 页面结果、脱敏前后扫描摘要；参数 gate 必须证明 `-ServerHost`、`-ReleaseTag`、`-RequireTested`、`-ConfirmText` 等关键 flag 各自命中正确值。
 - Forbidden action: 不得在 PowerShell 里直接使用 Bash heredoc；不得只靠设置 `$OutputEncoding` 就认为 stdin 中文不会污染；不得用 `args[0::2]`/`args[1::2]` 解析含无值 flag 的命令；不得用过宽脱敏正则污染 releaseTag、仓库名、host 参数或数据库名；不得把脱敏后的误伤日志当作真实远端命令证据。
 - Evidence: `doc/tasks/20260712-intmain-codeonly-three-env-release/execution-log.md`；主线程遇到 `python -c` 换行语法错误、stdin `U+FEFF`、Playwright 中文正则污染、promote-prod preview flag 错位误判、`rg` 正则 flag/lookaround 问题，以及 `mysql -p...` 脱敏规则误伤 `ruoyi-vue-pro`。
+- 2026-07-29 追加证据：本机 `npx playwright install chromium` 超过 300 秒未完成，但稳定安装的 Chrome 可通过 `npx playwright screenshot --channel chrome ...` 和 `npx playwright cli open --browser chrome ...` 完成测试服前端与运行控制台版本对话框验收。日志脱敏正则必须只匹配空白后的 CLI 参数 `\s-p...`，避免把普通库名 `ruoyi-vue-pro` 误改成脱敏文本。
 
 ### 推荐做法
 
@@ -167,3 +168,21 @@ PowerShell 5.1/7 中执行 SSH、bash 片段、HTTP host:port、release-info JSO
 - Verification: 失败证据必须区分 carrier/tooling 失败与服务器运行态失败；改写后记录 SSH exit code、`.env IMAGE_TAG`、backend/frontend image tag、backend health、frontend HTTP、PDF worker HTTP、release-info、release lock 和 migration failed count 的结构化断言。
 - Forbidden action: 不得把远端工具缺失当作发布失败或发布成功；不得因此跳过 release-info、release lock、migration 或 PDF worker 核验。
 - Evidence: `doc/tasks/20260713-current-head-codeonly-three-env-r260713v/execution-log.md` 的 `backup-runtime-verification-python3` 与 `backup-runtime-verification`。
+
+## 2026-07-13 SSH stdin、Windows 二进制 LF 与远端 SQL 验收门禁
+
+- Trigger: Windows 本机通过 Python/PowerShell 调 `ssh ... bash -s` 发送多行远端验收脚本，或通过 SSH 查询远端 MySQL 发布锁、migration 状态、`.env`、compose 与 release-info。
+- Preflight check: 需要向远端 `bash -s` 传 stdin 时禁止使用 `ssh -n`；Windows Python `subprocess` 不使用 `text=True` 传远端 bash 脚本，改用 `input=script.encode('utf-8')` 并确认 LF；远端 SQL 核验优先用 `docker exec -i ... mysql <<'SQL'` heredoc 和单引号 SQL 字面量。
+- Blocker: 输出为空但断言全失败、stderr 出现 `set: -\r invalid option`、路径尾部带 `\r`、`do\r` 语法错误、MySQL 双引号过滤返回空但全表查询存在目标行。
+- Verification: 记录 SSH 命令不含 `-n`，远端脚本以 UTF-8 bytes 发送，`.env IMAGE_TAG`、镜像、health、release-info、release lock 与 migration failed count 均结构化断言通过。
+- Forbidden action: 不得把 stdin 未发送、CRLF 污染或 SQL 引号误判造成的空输出当作服务器运行态失败；不得因此跳过 release lock 或 migration 核验。
+- Evidence: `doc/tasks/20260713-current-head-test-only-release/execution-log.md` 的 `ssh-stdin-n-flag`、`windows-textmode-crlf`、`mysql-double-quote-filter`。
+
+## 2026-07-13 Python f-string literal braces 与远端验收脚本门禁
+
+- Trigger: Windows 本机用 Python 组装包含 bash、SQL、JSON、Docker format 或 JavaScript 对象字面量的远端验收脚本。
+- Preflight check: 不用 f-string 包裹含大量 `{}` 的脚本文本；优先使用 ASCII 占位符加 `.replace(...)`、`string.Template` 或外部 UTF-8 脚本文件；发送 SSH 前先本地执行最小语法检查，确认无 `SyntaxError` 且尚未连接远端。
+- Blocker: 本地出现 `SyntaxError: f-string: valid expression required before '}'`、格式化占位符与脚本文本冲突、无法证明失败发生在本地且远端未执行。
+- Verification: 记录首次失败为本地 carrier 错误、无服务器动作发生；改写后 SSH 退出码为 0，并结构化验证 `.env IMAGE_TAG`、镜像、health、release-info、release lock 和 migration 状态。
+- Forbidden action: 不得为了绕过 f-string 错误改远端脚本逻辑、跳过 release lock/migration 核验，或把本地 carrier 失败当成测试服发布失败。
+- Evidence: `doc/tasks/20260713-current-head-test-only-release-rerun/task.md` P005，releaseTag `release-20260713-current-head-test-r260713u`。

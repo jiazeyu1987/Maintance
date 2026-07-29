@@ -27,6 +27,7 @@
 - Blocker: 构建来源无法证明为冻结提交、manifest 缺失或 dirty、版本/变更说明无法确认、预览不是 test、operation 非 SUCCESS、实际镜像/health/HTTP/迁移/控制台版本任一失败。
 - Verification: `execution-log.md` 中记录冻结提交、worktree 路径、build/publish operation、manifest 校验、远端 `.env IMAGE_TAG`、实际镜像、容器、health、HTTP、Playwright 页面和 worktree 清理结果。
 - Forbidden action: 不得从脏主工作区构建，不得拼接不同 releaseTag，不得手工改库绕过 required SQL，不得跳过真实页面验证，不得在 worktree 未清理或控制台仍指向临时路径时宣称完成。
+- Evidence: `task.md`、`execution-log.md`、`verification-report.md`、releaseTag、build/publish operation、manifest 路径、远端运行态证据、Playwright 页面证据和 worktree 清理证据。
 
 ## 阶段 0：发布范围锁定
 
@@ -98,7 +99,8 @@ git -C <release-worktree> status --porcelain
 
 ```powershell
 Invoke-RestMethod -Uri http://127.0.0.1:48181/actuator/health
-python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql --json
+python -X utf8 script\release\run-release-migration-policy-gate.py --help
+python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql --output <task-dir>\migration-policy-gate.json
 corepack pnpm@10.25.0 --version
 ```
 
@@ -162,6 +164,15 @@ corepack pnpm@10.25.0 --version
 - Verification: 无活动发布进程，锁状态为本任务对应的 `APPLIED`，`.env`、compose、实际镜像和 `release-info.json` 全部等于同一目标 releaseTag。
 - Forbidden action: 不得使用发布前旧快照代替最终状态，不得让两个任务重叠发布同一环境，不得在目标版本已被覆盖后仍宣称完成。
 - Evidence: `doc/tasks/20260710-current-head-test-only-release-completion-audit/execution-log.md`；并发 v3 于 2026-07-10 14:43 完成后，本任务按冻结 v9 基线于 14:49-15:05 恢复并重新验证。
+
+### publish-test 失败后 `.env` 与实际镜像漂移门禁
+
+- Trigger: `publish-test` operation 非 `SUCCESS`，尤其 required SQL 失败后仍发现 `/opt/intruoyi/runtime/.env` 的 `IMAGE_TAG` 已被写成目标 releaseTag。
+- Preflight check: 失败冻结时必须同时记录 operation 状态、release lock、migration failed 行、`.env IMAGE_TAG`、`docker inspect` 后端/前端实际镜像、容器状态、backend health、frontend HTTP；若 `.env` 与实际镜像不一致，任务状态必须标记 blocked，后续重启/发布前先处理 drift。
+- Blocker: `.env IMAGE_TAG=<目标 releaseTag>` 但 backend/frontend 实际镜像 tag 仍为旧 releaseTag；release lock 为 `FAILED`；migration failed count 大于 0；operation 非 `SUCCESS`。
+- Verification: 远端证据必须显示 `.env`、实际镜像、容器状态、health、HTTP、lock/migration 状态；恢复或重发前再次确认 drift 已消除。
+- Forbidden action: 不得因 `.env IMAGE_TAG` 等于目标 releaseTag 就宣称发布成功；不得在未授权时手工改 `.env`、手工更新 release lock/migration、或复用失败 releaseTag 继续 mark/promote。
+- Evidence: `doc/tasks/20260729-head-test-only-release/execution-log.md`；`publish-test` operation `op-2026-07-29T024258673743700Z-1774cd02-0579-420e-86eb-bcd0ed97475a` failed 后 `.env IMAGE_TAG=release-20260729-intmain-head-test-r260729a-r1`，但 backend/frontend 容器仍运行 `release-20260728-codeonly-noonlyoffice-test-r2`。
 
 ## 阶段 5：测试服发布后真实运行态
 
@@ -309,6 +320,7 @@ ssh root@172.30.30.58 bash -s
 
 - 本次任务：`doc/tasks/20260711-current-head-test-only-release/execution-log.md`、`verification-report.md`。
 - ReleaseTag：`release-20260711-current-head-test-r4`；build operation `op-2026-07-11T020116790952700Z-a56e7120-5a78-45a4-a2a3-a1016359d0f1`；publish operation `op-2026-07-11T022429337867100Z-391009c6-1e42-436e-bebd-075f15c4c65d`。
+- 2026-07-29 追加证据：`release-20260729-sqlfix-test-r260729d-r1` 仅执行 `build-release` 与 `publish-test`，未执行 `mark-tested`、`promote-prod`、`promote-backup`；测试服 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、容器 running、backend health `UP`、frontend HTTP `200`、release-info、运行控制台 release-status 和 Playwright 版本变更说明对话框均一致。
 
 ## 2026-07-12 publish-test 目标字段与版本说明验收门禁
 
@@ -343,3 +355,68 @@ ssh root@172.30.30.58 bash -s
 
 - 本次任务：`doc/tasks/20260712-current-head-test-only-release/execution-log.md`、`verification-report.md`。
 - ReleaseTag：`release-20260712-intmain-test-r260712p-r3`；build operation `op-2026-07-12T031646245278700Z-f1006e17-c7b6-445b-9eaa-5d67e4b66ed1`；publish operation `op-2026-07-12T043308044248700Z-d8e299c3-a64e-43cc-bd5a-949db86dc67f`。
+
+## 2026-07-13 仅测试服发布远端验收脚本承载门禁
+
+### Trigger
+
+仅测试服发布后通过 SSH 脚本验证 `.env IMAGE_TAG`、Docker 镜像、容器状态、health、HTTP、`release-info.json`、release lock 或 migration 状态。
+
+### Preflight check
+
+- 远端多行脚本必须以 UTF-8 bytes + LF 发送；Windows Python/PowerShell 文本模式不得直接作为 `bash -s` stdin。
+- 需要向 `bash -s` 传脚本时不得使用 `ssh -n`。
+- 远端 MySQL 只读核验使用 stdin heredoc 和单引号 SQL 字面量，避免多层双引号过滤返回空结果。
+- 配置和 operation 日志证据必须先脱敏；不得打印完整 `runtime-control.local.yaml`、`.env` 或 raw operation log。
+
+### Blocker
+
+- SSH 输出为空、stderr 出现 CRLF 解析错误、release lock/migration 查询为空且未做 schema-aware 复查。
+- 任一待保留证据含明文密码、token、私钥、连接串或 `mysql -p<secret>`。
+
+### Verification
+
+- 记录 `.env IMAGE_TAG`、backend/frontend image tag、container running、health=UP、frontend HTTP 200、PDF worker HTTP 200、release-info tag/commit、release lock APPLIED、migration failed count=0。
+- 页面验收必须打开运行控制台“版本变更说明”，确认 releaseTag 与变更说明可见，console error=0。
+
+### Forbidden action
+
+- 禁止把 SSH/CRLF/SQL 承载错误当作服务器发布失败；修正采集路径后必须重跑。
+- 禁止因 release-status/release-packages 超时跳过目标 Manifest 直接校验。
+
+### Evidence
+
+- 本次任务：`doc/tasks/20260713-current-head-test-only-release/execution-log.md`、`verification-report.md`。
+- ReleaseTag：`release-20260713-current-head-test-r260713t-r3`；build operation `op-2026-07-13T114933441747800Z-ea18fdef-4abd-44e8-a712-8615a67b95bf`；publish operation `op-2026-07-13T121325438123300Z-549989ce-c0b2-4cab-bc66-e7dfc0630394`。
+
+## 2026-07-13 运行控制台版本说明与 source commit 分层验收门禁
+
+### Trigger
+
+仅测试服发布后，使用 Playwright 验证运行控制台版本号、变更说明，并同时需要证明后端/前端 source commit 来自冻结 HEAD。
+
+### Preflight check
+
+- 页面验收聚焦用户可见字段：releaseTag、版本号、发布包、组件范围、变更说明或 change summary。
+- source commit、dirty=false、publishScope 等机器字段以远端 `release-info.json` 和发布包 `manifest.json` 为权威。
+- 若当前 UI 版本对话框不展示 commit，不得把“页面无 commit”直接当作发布失败；必须确认页面可见版本说明已通过且 release-info/manifest 的 commit 校验独立通过。
+
+### Blocker
+
+- 页面无法显示当前 releaseTag 或版本变更说明。
+- `release-info.json` 或 `manifest.json` 无法证明 backend/frontend commit 与冻结 HEAD 一致，或 sourceRepos `dirty=true`。
+
+### Verification
+
+- Playwright 记录运行控制台 HTTP 200、版本变更说明对话框可见、releaseTag/发布包/组件范围可见、console errors=0。
+- release-info/manifest 记录 backend commit、frontend commit、publishScope、dirty=false，并与冻结 worktree HEAD 比对。
+
+### Forbidden action
+
+- 禁止用页面 HTTP 200 替代版本说明可见性。
+- 禁止仅因 UI 不显示 commit 而跳过 release-info/manifest commit 校验，或反过来只用 API 校验替代用户可见页面验收。
+
+### Evidence
+
+- 本次任务：`doc/tasks/20260713-current-head-test-only-release-rerun/task.md` P006，`runtime-console-page-probe-r260713u.json`。
+- ReleaseTag：`release-20260713-current-head-test-r260713u`；build operation `op-2026-07-13T130433994984600Z-0ddaec3f-7a3b-465a-a40b-182c572b3508`；publish operation `op-2026-07-13T132238031788800Z-7427e313-5a0e-4bae-8bc3-be5decaa3c0a`。

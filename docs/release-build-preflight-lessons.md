@@ -123,7 +123,7 @@
 
 ## 2026-06-28 全链路发布收敛经验
 
-- 真实发布必须沿单一 `releaseTag` 一次性走完 `build-release -> publish-test -> mark-tested -> promote-prod -> promote-backup`；不要拼接多轮版本结果，也不要拿旧测试服成功 + 新正式服成功混成“本轮完成”。
+- 完整三环境发布必须沿单一 `releaseTag` 一次性走完 `build-release -> publish-test -> mark-tested -> promote-prod -> promote-backup`；仅测试服发布以 `docs/test-release-preflight.md` 为范围权威，在 `publish-test` 与测试服真实运行态验收后停止；任何范围都不得拼接多轮版本结果。
 - 发布失败优先按“契约层 -> 脚本层 -> 环境层”排查：先查 migration/manifest/required SQL/产物契约，再查维护仓发布脚本与业务仓产物是否一致，最后才查服务器状态；连 manifest 或迁移门禁都没过时，不要先怀疑服务器。
 - SQL 要按“可发布”而不是“能执行”编写：`release-migration` 元数据、`dependsOn`、环境变量前置、tenant 上下文和动态菜单字面量规则都必须提前通过门禁或测试，不要等到页面 `build-release` 或 `promote-prod` 才暴露。
 - 维护仓发布脚本必须和业务仓产物合同同步维护；后端 jar 命名、Docker build context、required SQL 排序、空集合处理、prod/backup 变量注入等，只要业务仓契约改了，维护仓脚本和测试必须一起改。
@@ -265,7 +265,7 @@
 
 ## 2026-07-08 排序类 code-only 正式发布经验
 
-- 产品列表、管理列表、排序规则这类看似纯后端逻辑的 code-only 发布，仍必须按完整发布闭环执行：干净发布输入 `build-release`、测试服 `publish-test`、`mark-release-tested`、正式服 `promote-prod`，不得因为“不改数据”跳过测试服或 mark-tested。
+- 用户授权完整三环境发布时，产品列表、管理列表、排序规则这类看似纯后端逻辑的 code-only 发布，仍必须按完整发布闭环执行：干净发布输入 `build-release`、测试服 `publish-test`、`mark-release-tested`、正式服 `promote-prod`，不得因为“不改数据”跳过测试服或 mark-tested；仅测试服授权时不得执行 `mark-release-tested` 或正式服/备份服动作。
 - 如果主工作区存在无关 dirty SQL、草稿脚本或其它模块改动，必须使用临时干净后端/前端 release worktree 出包，并在构建预览中确认 `repo-root` / `frontend-root` 指向该干净路径；发布完成后必须恢复 `runtime-control.local.yaml` 到稳定主路径。
 - 构建或发布过程中 required SQL 暴露的 `release-migration` 元数据、`dependsOn`、collation 或可重复执行问题，即使不是本次业务目标，也属于发布契约阻塞；修复后必须提交、重建 releaseTag、重新 `publish-test`，不能复用失败包继续 promote。
 - 测试服页面 E2E 如果被账号密码或租户数据为空阻塞，应把阻塞原因写入执行日志，并改用可重复的只读证据补强：运行镜像 tag、健康检查、真实库目标租户数据分布、目标排序 SQL 查询结果；不得把空测试租户页面当成业务通过证据。
@@ -322,18 +322,17 @@
 - 失败现象：请求体同时包含 `action=build-release` 与 `targetEnvironment=test` 时，接口返回 `code=400,msg=targetEnvironment`，构建不会启动。
 - 前置门禁：`build-release` 预览/执行请求只传构建字段：`action`、`reason`、`releaseTag`、`publishScope=code-only`、`includeOnlyOffice=false`、`includeShowroomBuildPackage=false`、`enableSmartReleaseReport=false`；`targetEnvironment` 仅用于 `publish-test/promote-prod/promote-backup` 部署动作。
 - 处理要求：冻结失败响应和请求体；该 releaseTag 若仅预览失败且未启动 operation，可更换新 releaseTag 重新预览并执行。
-'
 ## 2026-07-09 build-release 三环境预览必须含 ProdServerHost
 
-- 触发场景：执行 code-only 三环境完整闭环，运行控制台 \build-release 预览命令只包含 TestServerHost 与 BackupServerHost。
+- 触发场景：执行 code-only 三环境完整闭环，运行控制台 `build-release` 预览命令只包含 TestServerHost 与 BackupServerHost。
 - 失败现象：本地预览门禁发现命令缺少 -ProdServerHost 172.30.30.57，虽然预览 API 返回成功，但后续正式服 runtime env / manifest 目标参数可能不完整。
-- 前置门禁：三环境闭环的 \build-release 预览必须同时包含 -TestServerHost 172.30.30.58、-ProdServerHost 172.30.30.57、-BackupServerHost 172.30.30.59。
+- 前置门禁：三环境闭环的 `build-release` 预览必须同时包含 -TestServerHost 172.30.30.58、-ProdServerHost 172.30.30.57、-BackupServerHost 172.30.30.59。
 - 处理要求：冻结预览参数；补齐运行控制台本地配置中 maintenance.runtime-control.environments.prod.host 后重启控制台，并使用新 releaseTag 重新预览/构建。
 
 ## 2026-07-09 build-release 迁移元数据必须先过全量策略门禁
 
 - 适用场景：执行 IntRuoyi code-only / no-data `build-release` 前，尤其是 HEAD 中包含 `sql/mysql/*.sql` 迁移文件时。
-- 强制门禁：先运行 `script/release/run-release-migration-policy-gate.py --sql-root <backend>/sql/mysql --json`，并保存完整 JSON 证据；不得只抽查单文件。
+- 强制门禁：先在当前冻结 worktree 运行 `script/release/run-release-migration-policy-gate.py --help` 确认参数契约，再按当前脚本支持的 `--output <evidence-json>` 保存完整 JSON 证据，例如 `script/release/run-release-migration-policy-gate.py --sql-root <backend>/sql/mysql --output <task-dir>/migration-policy-gate.json`；历史 `--json` 示例不得直接用于冻结 worktree。
 - 元数据约束：`type` 只能使用脚本允许枚举 `schema`、`data`、`menu`、`config`、`permission`、`seed`；不得写 `schema-data` 等组合值。
 - 依赖约束：`dependsOn` 必须填写真实存在的 migrationId，且依赖迁移的 `allowedEnvironments` 必须覆盖子迁移环境。
 - 失败处理：若 build-release 报 `Invalid type in release migration metadata` 或 `missing release-migration metadata`，先冻结 operation 日志与策略门禁 JSON，再修复 SQL 首行元数据并补 `script/tests` 覆盖后重新生成新的 releaseTag。
@@ -345,6 +344,7 @@
 - 强制门禁：失败后先冻结发布 stdout/stderr、远端 `infra_release_operation_lock`、`infra_release_migration` 失败行、远端 required-sql checksum 与当前 `.env IMAGE_TAG`。
 - 根因判断：MySQL 对同一查询中的派生/临时表复用有限制；SQL 中如果将同一 CTE/临时结果别名在嵌套子查询中重复引用，发布执行会失败，不能通过重试或手工标绿绕过。
 - 修复要求：把可复用种子结果落到真实临时表，或拆分为互不重复 reopen 的 SQL 片段；修复后必须补 `script/tests` 静态覆盖并重新构建新的 releaseTag。
+- 2026-07-29 追加证据：`release-20260729-sqlfix-test-r260729c-r1` 在 `20260726_system_codex_smart_scheduling_test_items.sql` line 313 失败于 `Can't reopen table: 'seed'`；修复时将 checkpoint expected/actual count 拆成独立 `SELECT COUNT(*) INTO`，提交 `919122b6` 后用新 releaseTag `release-20260729-sqlfix-test-r260729d-r1` 重建并 `publish-test` 成功。发布前静态测试应扫描 `tmp_codex_smart_scheduling_checkpoint_seed` / `seed` 等临时表在同一语句或嵌套子查询中重复读取。
 ## 2026-07-09 publish-test required SQL 前置业务数据必须由迁移自给或显式依赖
 
 - 适用场景：发布脚本执行 `required-sql/*.sql` 时，SQL 通过 `SIGNAL SQLSTATE '45000'` 报 `Missing <业务对象>`，例如 `Missing RT000006 pressure pump route`。
@@ -434,7 +434,7 @@
 ## 2026-07-10 发布日志凭据脱敏门禁
 
 - Trigger: 发布脚本、SSH、MySQL、Docker 或运行控制台会把完整命令写入 stdout/stderr、operation 日志或任务证据。
-- Preflight check: 发布前确认日志器对密码、token、私钥、连接串和 `mysql -p...` 参数脱敏；发布后在保留或提交日志前扫描明文凭据模式，扫描规则必须覆盖 `mysql -uroot -p<redacted>`、`mysql -u<user> -p<secret>`、`/user:<user> <redacted>` 这类无 `password=` 字样的命令参数。
+- Preflight check: 发布前确认日志器对密码、token、私钥、连接串和 `mysql -p<redacted>` 类参数脱敏；发布后在保留或提交日志前扫描明文凭据模式，扫描规则必须覆盖 `mysql -uroot -p<redacted>`、`mysql -u<user> -p<secret>`、`/user:<user> <redacted>` 这类无 `password=` 字样的命令参数。
 - Blocker: 任一待保留或待提交文件含明文凭据；无法证明日志已脱敏。
 - Verification: 脱敏扫描命中数为 0；任务文档只记录命令意图、退出码、计数和脱敏摘要，原始秘密日志已从任务产物中删除。
 - Forbidden action: 不得把含明文密码的 stdout/stderr、operation dump 或命令历史提交到 Git，不得为“完整证据”保留凭据原文。
@@ -525,7 +525,7 @@
 - Blocker: 未拿到 operationId、operation releaseTag 与目标不一致、状态无法证明 SUCCESS 或失败原因。
 - Verification: 记录 operationId、releaseTag、最终 status、日志摘要和耗时原因。
 - Forbidden action: 禁止因前端/HTTP 超时重复触发构建或发布；禁止拼接多轮 releaseTag 结果。
-- Evidence: `doc/tasks/20260712-current-head-test-only-release/issues.md` P015。
+- Evidence: `doc/tasks/20260712-current-head-test-only-release/issues.md` P015；`doc/tasks/20260713-current-head-test-only-release-rerun/task.md` P007。
 
 ## 2026-07-12 冻结 worktree 脚本参数契约门禁
 
@@ -563,6 +563,15 @@
 - Forbidden action: 不得把 `docker inspect` 原始 env 输出粘贴到任务日志、证据或提交中；不得在 Docker inspect 门禁失败后复用失败 releaseTag 继续发布。
 - Evidence: `doc/tasks/20260712-intmain-codeonly-three-env-release/issues.md` P011/P012，operation `op-2026-07-13T020341321200Z-97c25063-2488-4604-aebf-2d62697b2496`。
 
+## 2026-07-19 build-release Docker BuildKit 卡顿诊断门禁
+
+- Trigger: `build-release` 进入 backend/frontend `docker build` 阶段后长时间没有新 operation 日志，或并行执行 `docker version`、`docker ps`、`docker buildx ls` 出现 `_ping` 超时、Docker Desktop Linux engine 500、BuildKit 状态不可用。
+- Preflight check: 构建前先执行 `docker version`、`docker buildx ls`、`docker ps` 并记录脱敏摘要；构建中若日志停留在 `docker build`，必须同时检查 operation 状态、log `LastWriteTime`、`docker.exe` / `docker-buildx.exe` 子进程 CPU、Docker CLI 健康命令结果，以及发布包目录/manifest 状态；若 Docker 健康预检刚通过但实际 build 仍卡死，必须把“预检通过后中途失效”作为 Docker Desktop / BuildKit 运行态故障冻结，而不是重提同一 operation。
+- Blocker: 构建前 Docker CLI/BuildKit 健康命令超时或 500、Docker Desktop Linux engine `_ping` 不通、或构建中同时满足“日志与文件时间连续无变化、BuildKit 子进程无 CPU/IO 进展、Docker CLI 健康命令失败”并超过本任务记录的等待阈值。
+- Verification: 证据必须包含 operation JSON、脱敏 operation log、Docker 健康命令输出、相关进程快照、manifest 存在性和冻结时间；Docker 恢复后必须用新的 releaseTag 重建，不得复用失败或中止的 releaseTag。
+- Forbidden action: 不得仅凭 operation 日志暂时无新增就终止构建；不得把 Docker 原始 env、密码或 token 写入任务日志；不得把被终止或 Docker 前置失败的 releaseTag 接入 publish-test / mark-tested / promote-prod / promote-backup。
+- Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/build-release-docker-precondition-failure-r260719f.json`、`build-release-operation-r260719f-final.json`、`build-release-operation-r260719f-log-final.sanitized.json`；同任务复发证据 `build-release-docker-precondition-failure-r260719j.json`、`build-release-operation-r260719j-final.json`、`build-release-operation-r260719j-log-freeze.sanitized.json`。
+
 ## 2026-07-13 远端发布锁表查询必须先按真实 schema 校验
 
 - Trigger: publish-test、promote-prod、promote-backup 前后只读查询 `infra_release_operation_lock`、`infra_release_migration` 或其他发布治理表。
@@ -588,7 +597,34 @@
 - Blocker: 任一 release worktree 出现 `?? runtime/`、operation state、logs、cache 或其它未跟踪运行态目录；manifest sourceRepos 可能被标记 dirty。
 - Verification: 启动运行控制台后记录 `git status --porcelain --ignored=no` 为空，`BackendRepoRoot`/`FrontendRepoRoot` 指向本轮 worktree，state-dir 指向 worktree 外部固定任务目录。
 - Forbidden action: 不得在 release worktree dirty 时继续 build-release；不得把未跟踪 state/log/cache 目录混入发布来源证明。
-- Evidence: `doc/tasks/20260712-intmain-codeonly-three-env-release/issues.md` P018；`r260713g` 将 state-dir 移至 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260713g-state` 后 manifest dirty=false。
+- Evidence: `doc/tasks/20260712-intmain-codeonly-three-env-release/issues.md` P018；`r260713g` 将 state-dir 移至 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260713g-state` 后 manifest dirty=false；`doc/tasks/20260713-current-head-test-only-release/execution-log.md` 的 `runtime-dir-dirty-after-resume`。
+
+## 2026-07-13 clean maintenance worktree local config 与 runtime 输出门禁
+
+- Trigger: 在全新维护仓 release worktree 中构建或启动 runtime-control，尤其主工作区 dirty 或本地配置未提交时。
+- Preflight check: 预期 `config/runtime-control.local.yaml` 在 clean worktree 中可能不存在；必须在 worktree 外创建任务专用 state/config，并只记录 repo-root、frontend-root、state-dir、端口、releaseTag 等非敏感字段；维护控制台构建后必须立即执行 `git status --porcelain --ignored=no`。
+- Blocker: 无法证明 runtime-control 指向冻结 worktree；构建后出现 `?? runtime/`、operation state、logs/cache 等未跟踪目录；配置采集会输出密码、token、连接串或完整 `.env`。
+- Verification: 记录外部 config/state 路径、运行控制台 health=UP、进程命令行指向冻结 Jar，三仓 release worktree `status --porcelain --ignored=no` 为空。
+- Forbidden action: 不得把主工作区 local config 复制进 release worktree 并提交/打包；不得在维护 worktree dirty 时继续 build-release。
+- Evidence: `doc/tasks/20260713-current-head-test-only-release-rerun/task.md` P001/P002，release worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260713u`。
+
+## 2026-07-13 发布包可用性与历史 migration 失败分层门禁
+
+- Trigger: 指定 releaseTag 执行 `publish-test` 前校验 NAS/本地发布包，或测试服存在历史 failed migration 记录。
+- Preflight check: 发布包可用性以目标 `manifest.json`、运行控制台 deploy preview、脚本配置的 NAS/PackageRoot 转换为准；单个手写 UNC `Test-Path` 只能作辅助。migration 查询必须同时区分全局历史失败和本次 target release 失败。
+- Blocker: 目标 manifest 不可读、preview 无法解析包、sourceRepos 不匹配、dirty=true、当前 target release 存在 failed migration；不得因历史其他 releaseTag 失败直接误判本轮失败或通过。
+- Verification: 记录 manifest 路径、releaseTag、preview package lookup、历史 failed releaseTags 列表、本次 target failed migration count=0。
+- Forbidden action: 不得用单个 UNC false negative 阻塞已由脚本配置证明可用的包；不得把历史失败迁移混入本次 releaseTag 的验收结论。
+- Evidence: `doc/tasks/20260713-current-head-test-only-release-rerun/task.md` P003/P004，releaseTag `release-20260713-current-head-test-r260713u`。
+
+## 2026-07-13 测试服发布验收配置脱敏与 direct manifest lookup 门禁
+
+- Trigger: 仅测试服发布恢复执行、读取 `runtime-control.local.yaml`、调用 `/release-status`/`/release-packages` 或验证指定 releaseTag 的发布包。
+- Preflight check: 配置证据采集只输出 repo-root、frontend-root、state-dir、releaseTag、operationId 等非敏感字段，不得打印完整配置、`.env` 或 runtime-env；指定 releaseTag 时优先直接读取本地包/NAS Manifest，候选列表接口只作展示或补充。
+- Blocker: 证据采集输出 NAS/数据库/SSH 密码、token、私钥或连接串；候选扫描超时、JVM 退出或返回空导致无法证明目标包；Manifest 不存在、sourceRepos dirty=true 或 commit 不匹配。
+- Verification: secret scan 命中数为 0；目标 `manifest.json` 可读且 releaseTag、publishScope、sourceRepos、artifact hash 通过；候选接口超时时有 direct manifest lookup 证据。
+- Forbidden action: 不得把完整 `runtime-control.local.yaml`、operation 原始日志或 secret-bearing 命令输出提交到仓库；不得用 release-status 超时掩盖目标包未校验。
+- Evidence: `doc/tasks/20260713-current-head-test-only-release/execution-log.md` 的 `config-read-secret-output`、`release-status-timeout`、`publish-test-log-secret`。
 
 ## 2026-07-13 preview 参数解析必须兼容 switch flag
 
@@ -628,6 +664,7 @@
 - Verification: closeout 证据必须同时包含 `afterRootExists=false`、`stateExists=false`、三仓 `Registered=false`，运行控制台 health 仍为 `UP` 且主路径稳定。
 - Forbidden action: 不得把 `git worktree list` 无记录等同于物理目录清理完成；不得删除无关并发任务 worktree。
 - Evidence: `doc/tasks/20260713-current-head-codeonly-three-env-rerun/worktree-cleanup-r260713j-final.json`；`doc/tasks/20260713-current-head-codeonly-three-env-r260713v/execution-log.md` 的 `git-worktree-remove-maintenance`、`git-worktree-remove-frontend` 与 `release-worktree-cleanup`。
+- 2026-07-29 追加证据：`doc/tasks/20260729-head-test-only-release/execution-log.md` closeout 中，`git worktree remove --force` 已移除 `r260729a/b/c/d` 注册，但物理目录因前端 `node_modules` / pnpm 长路径残留返回 `Directory not empty`；最终在确认无 `.git`、无进程引用、路径仅限本任务 release worktree/state 后，用长路径安全删除并复核 `Test-Path=False`。
 
 
 ## 2026-07-13 task-closeout 长运行进程日志目录门禁
@@ -656,15 +693,6 @@
 - Verification: 前端任务补充聚焦测试或构建证据，`pnpm build:test` 在 clean release worktree 通过；随后重新构建新的 releaseTag，原失败 tag 判废。
 - Forbidden action: 不得关闭 ESLint、移除 vite-plugin-eslint、用注释绕过规则或跳过前端构建；不得复用失败 releaseTag 继续发布链路。
 - Evidence: `doc/tasks/20260716-current-head-codeonly-three-env/execution-log.md`，`release-20260716-intmain-codeonly-three-env-r260716c-r1` operation `op-2026-07-15T170422234564100Z-32d8180b-c6c1-448f-8541-5bf8a9adf666` failed during `pnpm build:test` at `src/views/mes/pro/scheduler-workbench/components/ProcessWipTable.vue:27`.
-
-## 2026-07-19 build-release Docker BuildKit 卡顿诊断门禁
-
-- Trigger: `build-release` 进入 backend/frontend `docker build` 阶段后长时间没有新 operation 日志，或并行执行 `docker version`、`docker ps`、`docker buildx ls` 出现 `_ping` 超时、Docker Desktop Linux engine 500、BuildKit 状态不可用。
-- Preflight check: 构建前先执行 `docker version`、`docker buildx ls`、`docker ps` 并记录脱敏摘要；构建中若日志停留在 `docker build`，必须同时检查 operation 状态、log `LastWriteTime`、`docker.exe` / `docker-buildx.exe` 子进程 CPU、Docker CLI 健康命令结果，以及发布包目录/manifest 状态；若 Docker 健康预检刚通过但实际 build 仍卡死，必须把“预检通过后中途失效”作为 Docker Desktop / BuildKit 运行态故障冻结，而不是重提同一 operation。
-- Blocker: 构建前 Docker CLI/BuildKit 健康命令超时或 500、Docker Desktop Linux engine `_ping` 不通、或构建中同时满足“日志与文件时间连续无变化、BuildKit 子进程无 CPU/IO 进展、Docker CLI 健康命令失败”并超过本任务记录的等待阈值。
-- Verification: 证据必须包含 operation JSON、脱敏 operation log、Docker 健康命令输出、相关进程快照、manifest 存在性和冻结时间；Docker 恢复后必须用新的 releaseTag 重建，不得复用失败或中止的 releaseTag。
-- Forbidden action: 不得仅凭 operation 日志暂时无新增就终止构建；不得把 Docker 原始 env、密码或 token 写入任务日志；不得把被终止或 Docker 前置失败的 releaseTag 接入 publish-test / mark-tested / promote-prod / promote-backup。
-- Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/build-release-docker-precondition-failure-r260719f.json`、`build-release-operation-r260719f-final.json`、`build-release-operation-r260719f-log-final.sanitized.json`；同任务复发证据 `build-release-docker-precondition-failure-r260719j.json`、`build-release-operation-r260719j-final.json`、`build-release-operation-r260719j-log-freeze.sanitized.json`。
 
 ## 2026-07-19 system entitlement 迁移元数据门禁
 
@@ -721,6 +749,15 @@
 - Forbidden action: 不得手工修改测试库 collation、手工更新 `infra_release_migration` / operation lock、复用失败 releaseTag 继续 `mark-tested` / `promote-prod` / `promote-backup`，或把 `code-only` 解释成可以跳过 required SQL 根因修复。
 - Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/execution-log.md`；`release-20260719-intmain-codeonly-three-env-r260719d-r1` `publish-test` operation `op-2026-07-18T190202341116900Z-12fbff2a-a9f3-47cd-bff1-a026ba7f4701` failed on `20260717_mes_edhr_filler_minimal_permissions.sql` line 24 with MySQL `ERROR 1267`.
 
+## 2026-07-29 system_codex_test seed collation 门禁
+
+- Trigger: `publish-test` / `promote-prod` / `promote-backup` 执行 `20260726_dcc_codex_test_items_seed.sql` 或其他 Codex 测试管理 seed SQL，SQL 使用临时 seed 表与 `system_codex_test_case` / `system_codex_test_checkpoint` 的 `name`、`status`、`severity` 等字符串列比较。
+- Preflight check: 发布前用真实目标库 `information_schema.COLUMNS` 查询 `system_codex_test_case` 与 `system_codex_test_checkpoint` 文本列 collation；若目标列为 `utf8mb4_0900_ai_ci`，seed 临时表字符串列、JOIN/NOT EXISTS 比较和过程内校验必须显式使用相同 collation，或直接按目标列 collation 声明临时表字段。静态测试必须覆盖 `tmp_*_seed` 与 `system_codex_test_*` 字段比较。
+- Blocker: 远端 MySQL 报 `ERROR 1267 Illegal mix of collations (utf8mb4_0900_ai_ci,IMPLICIT) and (utf8mb4_unicode_ci,IMPLICIT) for operation '='`，或静态/只读门禁发现 Codex seed 临时表 `DEFAULT COLLATE=utf8mb4_unicode_ci` 但目标 `system_codex_test_*` 列为 `utf8mb4_0900_ai_ci` 且比较未显式 `COLLATE`。
+- Verification: 冻结 `publish-test` preview、operation JSON、脱敏 operation log、manifest/sourceRepos、远端 `.env IMAGE_TAG`、实际镜像 tag、`infra_release_operation_lock`、`infra_release_migration` 失败行和 `information_schema.COLUMNS` collation 输出；补 RED 测试后修复 SQL，运行目标 SQL 测试、migration policy gate，重新 build-release 新 releaseTag 并重新 `publish-test`。
+- Forbidden action: 不得手工修改测试库默认 collation、手工更新 release lock / migration 状态、删除 Codex 测试管理数据、复用失败 releaseTag 继续 `mark-tested` / `promote-prod` / `promote-backup`，或把 `.env IMAGE_TAG` 已变更当作发布成功。
+- Evidence: `doc/tasks/20260729-head-test-only-release/execution-log.md`；releaseTag `release-20260729-intmain-head-test-r260729a-r1` failed on `20260726_dcc_codex_test_items_seed.sql` line 291 with MySQL `ERROR 1267`; `release-20260729-sqlfix-test-r260729b-r2` then failed on `20260726_system_codex_smart_scheduling_test_items.sql` with `utf8mb4_general_ci` vs `utf8mb4_0900_ai_ci`; final repaired source commit `919122b6` rebuilt as `release-20260729-sqlfix-test-r260729d-r1` and passed `publish-test`.
+
 ## 2026-07-19 publish-test 角色 ID 硬编码占用门禁
 
 - Trigger: `publish-test` / `promote-prod` / `promote-backup` 执行 required SQL，SQL 通过固定 `system_role.id` 创建或更新业务角色，尤其命中 `20260718_bpm_admin_role_assignment.sql`、`bpm_admin`、`910311`。
@@ -729,6 +766,15 @@
 - Verification: 先冻结 preview、operation JSON、脱敏 operation log、manifest state、远端 `infra_release_operation_lock` / `infra_release_migration` 失败行和占用角色快照；补 RED 测试后修复 SQL，运行目标 pytest、migration policy gate、重新构建新 releaseTag 并重新 `publish-test`。
 - Forbidden action: 不得手工删除/改名目标环境已有角色、手工更新发布锁或迁移状态、复用失败 releaseTag 继续后续步骤，或把角色 ID 冲突当作测试服脏数据直接跳过。
 - Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/execution-log.md`；`release-20260719-intmain-codeonly-three-env-r260719e-r1` `publish-test` operation `op-2026-07-18T195310630559800Z-2b5f6c24-bd91-4ee0-b02c-cb23ba489531` failed on `20260718_bpm_admin_role_assignment.sql` with MySQL `ERROR 1644` because role id `910311` was already used by `electronic_signature_admin`.
+
+## 2026-07-22 publish-test required SQL 权限菜单兼容门禁
+
+- Trigger: `publish-test` / `promote-prod` / `promote-backup` 执行菜单或角色权限类 required SQL，SQL 同时校验 `system_menu.id` 与 `system_menu.permission`，尤其包含临时权限表、`tmp_*_expected_permission`、`tmp_*_expected_menu`、审计/全量管理员权限集合。
+- Preflight check: 发布前静态测试必须覆盖两类兼容性：临时权限表字符串列与 `system_menu.permission` 比较时显式使用目标列 collation，例如 `CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`；权限菜单存在旧 ID 但同一 `permission`、`status=0`、`deleted=0` 时，不得再要求偏好 ID 必须存在，主校验应以稳定业务键 `permission` 为准。
+- Blocker: 远端 MySQL 报 `ERROR 1267 Illegal mix of collations`，或 required SQL 报 `Missing enabled full-scope admin menu` 且只读核对显示缺失的是偏好菜单 ID、目标权限已由旧 ID 正常存在。
+- Verification: 先冻结失败 releaseTag、operation/migration 状态、远端 `system_menu.permission` collation、缺失 ID 与同权限菜单快照；补 RED 测试后修复 SQL，运行目标 pytest、migration policy gate，重新构建新的 releaseTag，并通过测试服真实页面/API 验收。
+- Forbidden action: 不得手工改测试库 collation、手工插入偏好 ID 菜单、删除旧权限菜单、手工更新发布锁/迁移状态，或复用失败 releaseTag 继续发布。
+- Evidence: `doc/tasks/20260722-dcc-distribution-backend-test-release/execution-log.md`；`release-20260722-dcc-distribution-backend-r260722d-r3` 失败于 `ERROR 1267`，`r4` 失败于缺失偏好菜单 ID `990226`，`r5` 通过后测试服个人工作台 DCC 分发/培训 `my-page` 均返回业务码 `0`。
 
 ## 2026-07-19 controlled content 生命周期迁移 OBSOLETE_CHAIN 门禁
 
@@ -765,3 +811,12 @@
 - Verification: `python -m pytest scripts/tests/test_deploy_precheck_report_contract.py scripts/tests/test_showroom_release_sql_contract.py` PASS；正式服发布后核 `.env IMAGE_TAG`、backend/frontend image tag、health、Website `/showroom` HTTP 200、受保护展厅图片代理 HTTP 200 `image/jpeg`，并用 Playwright 真实展厅验证英文 `Owner Company` / `License Holder` 为 `int-medical`。
 - Forbidden action: 不得跳过图片 smoke gate、手工改服务器文件、手工回填媒体 URL、修改受保护 `infra_file_config.id=28` / `showroom/%` 默认媒体域，或把 200 JSON 响应当作图片成功。
 - Evidence: `doc/tasks/20260720-prod-showroom-int-medical-publish/`；维护仓提交 `aba2b9f`；releaseTag `release-20260720-showroom-int-medical-full-r260720p-r2`；正式服 operation `op-2026-07-20T133237626561400Z-df502144-11e9-48a7-92d5-3efa4cbf9f5a`。
+
+## 2026-07-24 GitHub 推送前历史大文件门禁
+
+- Trigger: 将维护仓推送到 GitHub、迁移远端、首次初始化远端仓库，或提交/保留发布 evidence、operation JSON、构建结果 JSON、压缩包、日志归档等可能超过 GitHub 限制的文件。
+- Preflight check: 推送前扫描已提交历史中的 blob 大小，至少确认没有超过 GitHub 100 MB 单文件限制的对象；对发布 evidence 只提交必要摘要和可复现索引，超大原始结果应保存在任务外部受控位置并记录路径/校验，不直接进入 Git 历史。
+- Blocker: `git push` 返回 `GH001: Large files detected`、`pre-receive hook declined`，或本地历史扫描发现任一 blob 超过 100 MB；此时必须停止推送并取得用户明确授权后再选择历史重写、Git LFS 迁移或快照分支方案。
+- Verification: 记录 `git ls-tree -l` 或等价历史扫描结果、目标远端 URL、分支、失败/通过的 `git push` 退出码；修复后再次运行大文件扫描并确认 `git push` 成功。
+- Forbidden action: 不得强推、静默改写历史、自动迁移 Git LFS、创建无历史快照分支替代原推送，或删除 evidence 文件后宣称已保留完整历史，除非用户明确授权该具体方案。
+- Evidence: `doc/tasks/20260724-push-maintenance-github/`；推送 `int_main` 到 `https://github.com/jiazeyu1987/IntRuoyiMaintance.git` 时，GitHub 拒绝已提交文件 `doc/tasks/20260709-codeonly-three-env-head-release/evidence/build-release-v5-result.json`，本地 blob 大小 `390728434` bytes，远端报告 `372.63 MB`。
