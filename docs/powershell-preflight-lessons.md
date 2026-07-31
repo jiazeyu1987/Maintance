@@ -65,6 +65,7 @@ PowerShell 共同基础规则以 `E:\IntRuoyi\docs\powershell-memory.md` 为唯�
 - Verification: 使用 `input=script.encode('utf-8')` 发送，stdout/stderr 显式 UTF-8 decode，远端命令退出码为 0 且关键输出完整。
 - Forbidden action: 不得把远端脚本因 CRLF 未执行误判为服务器、Docker、数据库或业务数据异常，不得继续复用损坏脚本输出。
 - Evidence: `doc/tasks/20260710-current-head-test-only-release-completion-audit/execution-log.md`；首次 text 模式失败，改为 UTF-8 bytes + LF 后同一只读验证通过。
+- 2026-07-31 追加证据：`release-20260731-smartseed-tempfix-head-test-r260731d-r1` 发布后验收首次用 `text=True` 发送 SSH stdin，stderr 出现 CRLF 解析错误且 `.env IMAGE_TAG` / frontend inspect 证据不完整；改用 `input=remote_script.encode('utf-8')` 后同一远端验收完整通过。
 
 - 推荐写法：`input=script.encode('utf-8')`，按 bytes 发送；stdout/stderr 再显式 `decode('utf-8', errors='replace')`。
 - 失败时保留 stderr 和输入换行检查结果，再修正传输层；不要先改远端命令或环境。
@@ -177,6 +178,7 @@ PowerShell 5.1/7 中执行 SSH、bash 片段、HTTP host:port、release-info JSO
 - Verification: 记录 SSH 命令不含 `-n`，远端脚本以 UTF-8 bytes 发送，`.env IMAGE_TAG`、镜像、health、release-info、release lock 与 migration failed count 均结构化断言通过。
 - Forbidden action: 不得把 stdin 未发送、CRLF 污染或 SQL 引号误判造成的空输出当作服务器运行态失败；不得因此跳过 release lock 或 migration 核验。
 - Evidence: `doc/tasks/20260713-current-head-test-only-release/execution-log.md` 的 `ssh-stdin-n-flag`、`windows-textmode-crlf`、`mysql-double-quote-filter`。
+- 2026-07-31 追加证据：远端验收必须用 LF 二进制 stdin 后再采信 `.env IMAGE_TAG=release-20260731-smartseed-tempfix-head-test-r260731d-r1`、backend/frontend image tag、release lock `APPLIED`、migration failed/running count `0`；首次 CRLF 输出不得写入最终验证报告。
 
 ## 2026-07-13 Python f-string literal braces 与远端验收脚本门禁
 

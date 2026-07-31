@@ -199,6 +199,7 @@
 - 在干净维护仓 release worktree 中，`pnpm approve-builds --all` 可能返回 "There are no packages awaiting approval"，但随后的 `pnpm install --frozen-lockfile` 仍因 `ERR_PNPM_IGNORED_BUILDS` 阻断 `esbuild`、`vue-demi`。
 - 前置门禁不能只看 `approve-builds --all` 退出码；必须紧接着执行一次 `pnpm --dir <maintenance-worktree>\frontend install --frozen-lockfile`，并以该命令真实通过作为 frontend build scripts approval 证据。
 - 若 install 仍报 `ERR_PNPM_IGNORED_BUILDS`，必须先冻结 stdout/stderr，再查 pnpm approval state、ignored builds 清单和 workspace 配置；不得复用主工作区 `node_modules`、`dist` 或旧 jar。
+- 2026-07-31 追加门禁：`pnpm@10.25.0` 下 `approve-builds --all` 不可作为通用修复路径；若 `pnpm ignored-builds` 仍列出 `esbuild` / `vue-demi`，可在当前 release worktree 内临时写入最小 `pnpm.onlyBuiltDependencies`，执行 `pnpm rebuild` 后复查 `pnpm ignored-builds=None`，随后必须恢复 `package.json` 并确认 release worktree `git status --porcelain --ignored=no` 为空。不得把临时依赖放行配置留进发布输入或提交。
 ## 2026-07-03 mark-release-tested 必须携带 recovery set 候选
 
 - 触发条件：code-only 发布在测试服验证通过后执行 mark-release-tested。
@@ -345,6 +346,7 @@
 - 根因判断：MySQL 对同一查询中的派生/临时表复用有限制；SQL 中如果将同一 CTE/临时结果别名在嵌套子查询中重复引用，发布执行会失败，不能通过重试或手工标绿绕过。
 - 修复要求：把可复用种子结果落到真实临时表，或拆分为互不重复 reopen 的 SQL 片段；修复后必须补 `script/tests` 静态覆盖并重新构建新的 releaseTag。
 - 2026-07-29 追加证据：`release-20260729-sqlfix-test-r260729c-r1` 在 `20260726_system_codex_smart_scheduling_test_items.sql` line 313 失败于 `Can't reopen table: 'seed'`；修复时将 checkpoint expected/actual count 拆成独立 `SELECT COUNT(*) INTO`，提交 `919122b6` 后用新 releaseTag `release-20260729-sqlfix-test-r260729d-r1` 重建并 `publish-test` 成功。发布前静态测试应扫描 `tmp_codex_smart_scheduling_checkpoint_seed` / `seed` 等临时表在同一语句或嵌套子查询中重复读取。
+- 2026-07-31 追加证据：`release-20260731-smartseed-sqlfix-head-test-r260731c-r2` 在同一智能排产 seed SQL 失败于 `Can't reopen table: 'seed'`；正式修复提交 `fa6137aa24f65bca75714d9b8c497d71ffee5d14` 将 expected/actual checkpoint count 拆成两个 `SELECT COUNT(*) INTO` 变量，目标 pytest `5 passed`、DCC+smart seed pytest `10 passed`、migration policy `400 passed`，新 releaseTag `release-20260731-smartseed-tempfix-head-test-r260731d-r1` `publish-test` 成功。
 ## 2026-07-09 publish-test required SQL 前置业务数据必须由迁移自给或显式依赖
 
 - 适用场景：发布脚本执行 `required-sql/*.sql` 时，SQL 通过 `SIGNAL SQLSTATE '45000'` 报 `Missing <业务对象>`，例如 `Missing RT000006 pressure pump route`。
@@ -430,6 +432,7 @@
 - Verification: 输出 artifact 总数、missing、sizeMismatch、hashMismatch；全部必须为 0，且总数与 manifest 一致。
 - Forbidden action: 不得把带 `sha256:` 的有效值直接与裸哈希比较后误报全部失败，不得跳过失败项或用文件存在性代替哈希。
 - Evidence: `doc/tasks/20260710-current-head-test-only-release-completion-audit/execution-log.md`；初版校验器误报 281 项 hash mismatch，规范化前缀后 281/281 全部通过。
+- 2026-07-31 追加证据：`r260731c-r2` 后置自定义断言直接比较 Manifest 的 `sha256:<lowercase>` 与 `Get-FileHash` 大写裸哈希，误报全部 artifact 不一致；标准 validator 已通过，修正为去除单个 `sha256:` 前缀并统一大小写后重跑通过。
 
 ## 2026-07-10 发布日志凭据脱敏门禁
 
@@ -665,6 +668,7 @@
 - Forbidden action: 不得把 `git worktree list` 无记录等同于物理目录清理完成；不得删除无关并发任务 worktree。
 - Evidence: `doc/tasks/20260713-current-head-codeonly-three-env-rerun/worktree-cleanup-r260713j-final.json`；`doc/tasks/20260713-current-head-codeonly-three-env-r260713v/execution-log.md` 的 `git-worktree-remove-maintenance`、`git-worktree-remove-frontend` 与 `release-worktree-cleanup`。
 - 2026-07-29 追加证据：`doc/tasks/20260729-head-test-only-release/execution-log.md` closeout 中，`git worktree remove --force` 已移除 `r260729a/b/c/d` 注册，但物理目录因前端 `node_modules` / pnpm 长路径残留返回 `Directory not empty`；最终在确认无 `.git`、无进程引用、路径仅限本任务 release worktree/state 后，用长路径安全删除并复核 `Test-Path=False`。
+- 2026-07-31 追加证据：`doc/tasks/20260730-head-test-only-release/execution-log.md` closeout 中，`git worktree remove --force` 已移除 `r260731d` 维护仓和主程序仓注册，但物理目录仍残留 ignored `node_modules` 树；必须同时复核 `git worktree list --porcelain`、固定物理根 `Test-Path=False`、state dir 不存在、无进程引用和运行控制台主路径 health=`UP`，再标记任务 `completed`。
 
 
 ## 2026-07-13 task-closeout 长运行进程日志目录门禁
@@ -675,6 +679,7 @@
 - Verification: runtime-control health=`UP`，进程命令行指向主工作区 Jar，task-closeout preview/apply blocked=<none> 且 warnings=<none>。
 - Forbidden action: 不得强杀后跳过 health 复核；不得为删除日志停止运行控制台后不恢复；不得提交被进程占用的任务附属日志。
 - Evidence: `doc/tasks/20260713-current-head-codeonly-three-env-rerun/execution-log.md#milestone-13-task-closeout-cleanup`。
+- 2026-07-31 追加门禁：发布验收使用 Playwright CLI daemon 后，closeout 必须扫描任务 ID / releaseTag 对应的 `output\playwright\<task-or-release>\.playwright-cli\page-*.yml` 和 `cliDaemon.js <release>` 进程；若快照可能含登录页输入字段，必须先删除快照目录，目录被锁时仅停止命令行可证明属于本任务的 Playwright daemon 和子进程，禁止误停其他并发 E2E/Playwright 任务。
 
 ## 2026-07-16 release preflight 菜单 SQL 解析边界门禁
 

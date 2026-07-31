@@ -388,6 +388,7 @@ ssh root@172.30.30.58 bash -s
 
 - 本次任务：`doc/tasks/20260713-current-head-test-only-release/execution-log.md`、`verification-report.md`。
 - ReleaseTag：`release-20260713-current-head-test-r260713t-r3`；build operation `op-2026-07-13T114933441747800Z-ea18fdef-4abd-44e8-a712-8615a67b95bf`；publish operation `op-2026-07-13T121325438123300Z-549989ce-c0b2-4cab-bc66-e7dfc0630394`。
+- 2026-07-31 追加证据：`release-20260731-smartseed-tempfix-head-test-r260731d-r1` 首次远端验收因 Windows text mode stdin CRLF 导致 `.env IMAGE_TAG` 和 frontend inspect 证据不完整；改用 `input=remote_script.encode('utf-8')`、LF 二进制 stdin 后，`.env IMAGE_TAG`、backend/frontend image tag、container running、backend health `UP`、frontend HTTP `200`、release-info、release lock `APPLIED`、migration failed/running count `0` 全部通过。
 
 ## 2026-07-13 运行控制台版本说明与 source commit 分层验收门禁
 
@@ -420,3 +421,4 @@ ssh root@172.30.30.58 bash -s
 
 - 本次任务：`doc/tasks/20260713-current-head-test-only-release-rerun/task.md` P006，`runtime-console-page-probe-r260713u.json`。
 - ReleaseTag：`release-20260713-current-head-test-r260713u`；build operation `op-2026-07-13T130433994984600Z-0ddaec3f-7a3b-465a-a40b-182c572b3508`；publish operation `op-2026-07-13T132238031788800Z-7427e313-5a0e-4bae-8bc3-be5decaa3c0a`。
+- 2026-07-31 追加证据：运行控制台页面显示测试服版本 `release-20260731-smartseed-tempfix-head-test-r260731d-r1`，点击“查看变更”后对话框显示“发布包：release-20260731-smartseed-tempfix-head-test-r260731d-r1”和“组件范围：intruoyi”；source commit 与 dirty=false 由远端 `/release-info.json` 和发布包 `manifest.json` 独立证明。
