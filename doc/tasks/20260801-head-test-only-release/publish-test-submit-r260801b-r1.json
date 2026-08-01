@@ -1,0 +1,20 @@
+{
+  "code": 0,
+  "data": {
+    "operationId": "op-2026-08-01T055625180911100Z-30dc356a-792d-44b5-b18a-9aaa0f3aa3cb",
+    "requestedBy": "local-operator",
+    "requestedAt": "2026-08-01T05:56:58.697762400Z",
+    "environment": "test",
+    "component": "publish-test",
+    "action": "publish-test",
+    "actionLabel": "部署发布包到测试服",
+    "parameters": {
+      "releaseTag": "release-20260801-frozen-smartseed-fix-r260801b-r1"
+    },
+    "reason": "20260801 frozen smartseed fix publish test only r260801b",
+    "status": "RUNNING",
+    "summary": "命令已提交到本机执行队列",
+    "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801b-state\\runtime-control\\logs\\op-2026-08-01T055625180911100Z-30dc356a-792d-44b5-b18a-9aaa0f3aa3cb.log"
+  },
+  "msg": ""
+}

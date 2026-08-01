@@ -1,0 +1,84 @@
+{
+  "releaseTag": "release-20260801-frozen-dcc-column-collation-r260801e-r1",
+  "packageDir": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260801-frozen-dcc-column-collation-r260801e-r1",
+  "packageExists": true,
+  "files": {
+    "releaseManifest": {
+      "FullName": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260801-frozen-dcc-column-collation-r260801e-r1\\release-manifest.json",
+      "Length": 124829,
+      "LastWriteTime": "2026-08-01T16:18:58.1934736+08:00"
+    },
+    "requiredDccSeedSql": {
+      "FullName": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260801-frozen-dcc-column-collation-r260801e-r1\\required-sql\\20260731_dcc_file_category_match_rule_seed.sql",
+      "Length": 5429,
+      "LastWriteTime": "2026-08-01T15:49:17.5156017+08:00"
+    },
+    "manifest": {
+      "FullName": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260801-frozen-dcc-column-collation-r260801e-r1\\manifest.json",
+      "Length": 3556758,
+      "LastWriteTime": "2026-08-01T16:19:05.4026758+08:00"
+    },
+    "imageTar": {
+      "FullName": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260801-frozen-dcc-column-collation-r260801e-r1\\intruoyi-images_release-20260801-frozen-dcc-column-collation-r260801e-r1.tar",
+      "Length": 704104960,
+      "LastWriteTime": "2026-08-01T16:18:41.6351038+08:00"
+    }
+  },
+  "manifestReleaseTag": "release-20260801-frozen-dcc-column-collation-r260801e-r1",
+  "releaseManifestReleaseTag": "release-20260801-frozen-dcc-column-collation-r260801e-r1",
+  "releaseManifestGitCommit": "f81435c16ca1defb9b5c35c2e3a2d31a2c77e2ce",
+  "manifestSourceRepos": [
+    {
+      "name": "ruoyi-vue-pro",
+      "pathRole": "backend",
+      "commit": "f81435c16ca1defb9b5c35c2e3a2d31a2c77e2ce",
+      "branch": "codex/20260801-smart-seed-collation-fix-frozen",
+      "dirty": false,
+      "dirtySummaryHash": null
+    },
+    {
+      "name": "yudao-ui-admin-vue3",
+      "pathRole": "admin-frontend",
+      "commit": "f81435c16ca1defb9b5c35c2e3a2d31a2c77e2ce",
+      "branch": "codex/20260801-smart-seed-collation-fix-frozen",
+      "dirty": false,
+      "dirtySummaryHash": null
+    }
+  ],
+  "releaseInfo": {
+    "releaseTag": "release-20260801-frozen-dcc-column-collation-r260801e-r1",
+    "packageId": "release-20260801-frozen-dcc-column-collation-r260801e-r1",
+    "createdAt": "2026-08-01T08:15:59.0824172Z",
+    "publishScope": "code-only",
+    "changeSet": {
+      "summary": "Release package release-20260801-frozen-dcc-column-collation-r260801e-r1",
+      "component": "intruoyi",
+      "items": [
+        "发布包：release-20260801-frozen-dcc-column-collation-r260801e-r1",
+        "组件范围：intruoyi"
+      ],
+      "includeShowroomBuildPackage": false,
+      "includeOnlyOffice": false
+    },
+    "sourceRepos": [
+      {
+        "name": "ruoyi-vue-pro",
+        "pathRole": "backend",
+        "commit": "f81435c16ca1defb9b5c35c2e3a2d31a2c77e2ce",
+        "branch": "codex/20260801-smart-seed-collation-fix-frozen",
+        "dirty": false,
+        "dirtySummaryHash": null
+      },
+      {
+        "name": "yudao-ui-admin-vue3",
+        "pathRole": "admin-frontend",
+        "commit": "f81435c16ca1defb9b5c35c2e3a2d31a2c77e2ce",
+        "branch": "codex/20260801-smart-seed-collation-fix-frozen",
+        "dirty": false,
+        "dirtySummaryHash": null
+      }
+    ]
+  },
+  "dccSeedHasColumnCollations": true,
+  "expectedCommit": "f81435c16ca1defb9b5c35c2e3a2d31a2c77e2ce"
+}

@@ -756,12 +756,12 @@
 
 ## 2026-07-29 system_codex_test seed collation 门禁
 
-- Trigger: `publish-test` / `promote-prod` / `promote-backup` 执行 `20260726_dcc_codex_test_items_seed.sql` 或其他 Codex 测试管理 seed SQL，SQL 使用临时 seed 表与 `system_codex_test_case` / `system_codex_test_checkpoint` 的 `name`、`status`、`severity` 等字符串列比较。
-- Preflight check: 发布前用真实目标库 `information_schema.COLUMNS` 查询 `system_codex_test_case` 与 `system_codex_test_checkpoint` 文本列 collation；若目标列为 `utf8mb4_0900_ai_ci`，seed 临时表字符串列、JOIN/NOT EXISTS 比较和过程内校验必须显式使用相同 collation，或直接按目标列 collation 声明临时表字段。静态测试必须覆盖 `tmp_*_seed` 与 `system_codex_test_*` 字段比较。
-- Blocker: 远端 MySQL 报 `ERROR 1267 Illegal mix of collations (utf8mb4_0900_ai_ci,IMPLICIT) and (utf8mb4_unicode_ci,IMPLICIT) for operation '='`，或静态/只读门禁发现 Codex seed 临时表 `DEFAULT COLLATE=utf8mb4_unicode_ci` 但目标 `system_codex_test_*` 列为 `utf8mb4_0900_ai_ci` 且比较未显式 `COLLATE`。
+- Trigger: `publish-test` / `promote-prod` / `promote-backup` 执行 `20260726_dcc_codex_test_items_seed.sql`、`20260726_system_codex_smart_scheduling_test_items.sql` 或其他 Codex 测试管理 / 智能排产 seed SQL，SQL 使用临时 seed 表、过程变量或字面量与 `system_codex_test_case` / `system_codex_test_checkpoint` 的 `name`、`status`、`severity` 等字符串列比较。
+- Preflight check: 发布前用真实目标库 `information_schema.COLUMNS` 查询 `system_codex_test_case` 与 `system_codex_test_checkpoint` 文本列 collation；若目标列为 `utf8mb4_0900_ai_ci`，seed 临时表字符串列、过程内 checkpoint/name/status/severity 校验、JOIN/NOT EXISTS/COUNT 比较必须显式使用相同 collation，或直接按目标列 collation 声明临时表字段。静态测试必须覆盖 `tmp_*_seed`、`tmp_codex_smart_scheduling_*` 与 `system_codex_test_*` 字段比较。
+- Blocker: 远端 MySQL 报 `ERROR 1267 Illegal mix of collations`，尤其包含 `utf8mb4_0900_ai_ci` vs `utf8mb4_unicode_ci` 或 `utf8mb4_general_ci` vs `utf8mb4_0900_ai_ci`，或静态/只读门禁发现 Codex seed 临时表 `DEFAULT COLLATE=utf8mb4_unicode_ci` / `utf8mb4_general_ci` 但目标 `system_codex_test_*` 列为 `utf8mb4_0900_ai_ci` 且比较未显式 `COLLATE`。
 - Verification: 冻结 `publish-test` preview、operation JSON、脱敏 operation log、manifest/sourceRepos、远端 `.env IMAGE_TAG`、实际镜像 tag、`infra_release_operation_lock`、`infra_release_migration` 失败行和 `information_schema.COLUMNS` collation 输出；补 RED 测试后修复 SQL，运行目标 SQL 测试、migration policy gate，重新 build-release 新 releaseTag 并重新 `publish-test`。
 - Forbidden action: 不得手工修改测试库默认 collation、手工更新 release lock / migration 状态、删除 Codex 测试管理数据、复用失败 releaseTag 继续 `mark-tested` / `promote-prod` / `promote-backup`，或把 `.env IMAGE_TAG` 已变更当作发布成功。
-- Evidence: `doc/tasks/20260729-head-test-only-release/execution-log.md`；releaseTag `release-20260729-intmain-head-test-r260729a-r1` failed on `20260726_dcc_codex_test_items_seed.sql` line 291 with MySQL `ERROR 1267`; `release-20260729-sqlfix-test-r260729b-r2` then failed on `20260726_system_codex_smart_scheduling_test_items.sql` with `utf8mb4_general_ci` vs `utf8mb4_0900_ai_ci`; final repaired source commit `919122b6` rebuilt as `release-20260729-sqlfix-test-r260729d-r1` and passed `publish-test`.
+- Evidence: `doc/tasks/20260729-head-test-only-release/execution-log.md`；releaseTag `release-20260729-intmain-head-test-r260729a-r1` failed on `20260726_dcc_codex_test_items_seed.sql` line 291 with MySQL `ERROR 1267`; `release-20260729-sqlfix-test-r260729b-r2` then failed on `20260726_system_codex_smart_scheduling_test_items.sql` with `utf8mb4_general_ci` vs `utf8mb4_0900_ai_ci`; final repaired source commit `919122b6` rebuilt as `release-20260729-sqlfix-test-r260729d-r1` and passed `publish-test`。2026-08-01 追加证据：`doc/tasks/20260801-head-test-only-release/execution-log.md`；`release-20260801-intmain-head-test-r260801a-r2` `publish-test` operation `op-2026-07-31T184648151088Z-d51572f6-9207-44dd-bbab-6f54c347cea4` 再次 failed on `20260726_system_codex_smart_scheduling_test_items.sql` line 313，MySQL `ERROR 1267` 显示 `utf8mb4_general_ci` vs `utf8mb4_0900_ai_ci`，说明静态门禁必须覆盖过程内 checkpoint 计数/校验比较。
 
 ## 2026-07-19 publish-test 角色 ID 硬编码占用门禁
 
@@ -825,3 +825,21 @@
 - Verification: 记录 `git ls-tree -l` 或等价历史扫描结果、目标远端 URL、分支、失败/通过的 `git push` 退出码；修复后再次运行大文件扫描并确认 `git push` 成功。
 - Forbidden action: 不得强推、静默改写历史、自动迁移 Git LFS、创建无历史快照分支替代原推送，或删除 evidence 文件后宣称已保留完整历史，除非用户明确授权该具体方案。
 - Evidence: `doc/tasks/20260724-push-maintenance-github/`；推送 `int_main` 到 `https://github.com/jiazeyu1987/IntRuoyiMaintance.git` 时，GitHub 拒绝已提交文件 `doc/tasks/20260709-codeonly-three-env-head-release/evidence/build-release-v5-result.json`，本地 blob 大小 `390728434` bytes，远端报告 `372.63 MB`。
+
+## 2026-08-01 required SQL seed 列级 collation 门禁
+
+- Trigger: `publish-test` / `promote-prod` / `promote-backup` 执行 DCC 分类、匹配规则、Codex 测试项或其他 seed SQL，临时表字段会与多个真实表文本列比较。
+- Preflight check: 发布前不仅检查临时表 `DEFAULT CHARSET/COLLATE`，还必须读取真实目标列的 `information_schema.COLUMNS.COLLATION_NAME`；同一 seed 临时表如果同时比较 `dcc_file_category.name`、`dcc_file_category_match_rule.match_text`、`match_type` 等列，必须按目标列分别声明列级 `COLLATE`。
+- Blocker: 静态测试或真实库只读检查发现 seed 临时列使用统一默认 collation，但目标列 collation 不一致；或远端 MySQL 报 `ERROR 1267 Illegal mix of collations`，尤其是 `utf8mb4_unicode_ci` 与 `utf8mb4_0900_ai_ci` 混用。
+- Verification: 目标 SQL 测试必须断言列级声明；发布前运行相关 pytest 和 migration policy gate；发布后核 operation SUCCESS、manifest sourceRepos dirty=false、release lock APPLIED、migration failed/running=0。
+- Forbidden action: 不得手工修改测试库默认 collation、手工更新 release lock / migration 状态、删除 seed 数据或复用失败 releaseTag。
+- Evidence: `doc/tasks/20260801-head-test-only-release/execution-log.md`；`release-20260801-frozen-dcc-category-collation-r260801d-r1` 因表默认 collation 不足仍失败，最终 commit `f81435c16ca1defb9b5c35c2e3a2d31a2c77e2ce` 以列级 collation 修复并发布 `release-20260801-frozen-dcc-column-collation-r260801e-r1` 成功。
+
+## 2026-08-01 release worktree ignored 依赖残留清理门禁
+
+- Trigger: 发布 worktree 执行过前端 dependency restore、`pnpm build:test`、运行控制台 build 或其他会生成 ignored 目录的步骤后，执行 closeout/worktree 删除。
+- Preflight check: `git worktree remove --force` 后必须同时检查 Git 注册、物理根目录、state dir 和进程引用；若物理目录仍在，先确认路径在本任务 allowlist 内、无 `.git` 注册、无外部进程引用，再清理 ignored `node_modules` / runtime 残留。
+- Blocker: Git 注册已消失但物理目录仍存在；目录在 allowlist 外；进程命令行仍引用待删路径；或 cleanup 证据只记录 `git worktree list` 而未记录物理路径。
+- Verification: closeout 证据必须包含每个任务路径 `existsAfter=false`、worktree list 不含本任务 token、48181 仍由主维护路径进程提供 health=UP。
+- Forbidden action: 不得把 `Directory not empty` 忽略为成功；不得删除无关并发 worktree；不得在运行控制台仍指向 release worktree 时删除该路径。
+- Evidence: `doc/tasks/20260801-head-test-only-release/worktree-cleanup-r260801e-r1.json`；r260801a/r260801b Git 注册已清除后，物理目录因 ignored `node_modules` 和 pnpm 长路径残留，需要固定路径白名单和 Windows 长路径前缀清理。

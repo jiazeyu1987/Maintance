@@ -1,0 +1,16 @@
+{
+  "operationId": "op-2026-07-31T184648151088Z-d51572f6-9207-44dd-bbab-6f54c347cea4",
+  "requestedBy": "local-operator",
+  "requestedAt": "2026-07-31T18:47:15.312269900Z",
+  "environment": "test",
+  "component": "publish-test",
+  "action": "publish-test",
+  "actionLabel": "部署发布包到测试服",
+  "parameters": {
+    "releaseTag": "release-20260801-intmain-head-test-r260801a-r2"
+  },
+  "reason": "20260801 HEAD-only test release r260801a publish test only",
+  "status": "FAILED",
+  "summary": "命令退出码非 0: 1",
+  "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801a-state\\runtime-control\\logs\\op-2026-07-31T184648151088Z-d51572f6-9207-44dd-bbab-6f54c347cea4.log"
+}

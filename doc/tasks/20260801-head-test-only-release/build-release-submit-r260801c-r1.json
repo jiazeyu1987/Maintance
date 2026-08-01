@@ -1,0 +1,23 @@
+{
+  "code": 0,
+  "data": {
+    "operationId": "op-2026-08-01T062027925347600Z-8b456896-224f-4409-8c5a-dcbf65db8e86",
+    "requestedBy": "local-operator",
+    "requestedAt": "2026-08-01T06:20:27.928069600Z",
+    "environment": "release",
+    "component": "build-release",
+    "action": "build-release",
+    "actionLabel": "构建发布包",
+    "parameters": {
+      "publishScope": "code-only",
+      "includeOnlyOffice": "false",
+      "includeShowroomBuildPackage": "false",
+      "releaseTag": "release-20260801-frozen-smartseed-tempfix-r260801c-r1"
+    },
+    "reason": "20260801 frozen HEAD smartseed temp table fix test-only release r260801c build",
+    "status": "RUNNING",
+    "summary": "命令已提交到本机执行队列",
+    "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801b-state\\runtime-control\\logs\\op-2026-08-01T062027925347600Z-8b456896-224f-4409-8c5a-dcbf65db8e86.log"
+  },
+  "msg": ""
+}

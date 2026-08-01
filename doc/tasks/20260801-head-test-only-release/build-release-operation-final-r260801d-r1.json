@@ -1,0 +1,19 @@
+{
+  "operationId": "op-2026-08-01T070742390438700Z-2b23cda9-93ff-4ccc-b155-0fe29bce82b4",
+  "requestedBy": "local-operator",
+  "requestedAt": "2026-08-01T07:07:42.391532600Z",
+  "environment": "release",
+  "component": "build-release",
+  "action": "build-release",
+  "actionLabel": "构建发布包",
+  "parameters": {
+    "publishScope": "code-only",
+    "includeOnlyOffice": "false",
+    "includeShowroomBuildPackage": "false",
+    "releaseTag": "release-20260801-frozen-dcc-category-collation-r260801d-r1"
+  },
+  "reason": "20260801 frozen HEAD DCC category collation fix test-only release r260801d build",
+  "status": "SUCCESS",
+  "summary": "命令执行完成",
+  "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801b-state\\runtime-control\\logs\\op-2026-08-01T070742390438700Z-2b23cda9-93ff-4ccc-b155-0fe29bce82b4.log"
+}

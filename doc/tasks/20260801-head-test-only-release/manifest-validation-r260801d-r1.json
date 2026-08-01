@@ -1,0 +1,53 @@
+{
+  "status": "passed",
+  "failedChecks": [],
+  "expectedCommit": "9aeb1fc2a68fb97a2b3fb71b4d03777d97289f21",
+  "releaseTag": "release-20260801-frozen-dcc-category-collation-r260801d-r1",
+  "manifestSourceRepos": [
+    {
+      "name": "ruoyi-vue-pro",
+      "pathRole": "backend",
+      "commit": "9aeb1fc2a68fb97a2b3fb71b4d03777d97289f21",
+      "branch": "codex/20260801-smart-seed-collation-fix-frozen",
+      "dirty": false,
+      "dirtySummaryHash": null
+    },
+    {
+      "name": "yudao-ui-admin-vue3",
+      "pathRole": "admin-frontend",
+      "commit": "9aeb1fc2a68fb97a2b3fb71b4d03777d97289f21",
+      "branch": "codex/20260801-smart-seed-collation-fix-frozen",
+      "dirty": false,
+      "dirtySummaryHash": null
+    }
+  ],
+  "releaseInfoChangeSet": {
+    "summary": "Release package release-20260801-frozen-dcc-category-collation-r260801d-r1",
+    "component": "intruoyi",
+    "items": [
+      "发布包：release-20260801-frozen-dcc-category-collation-r260801d-r1",
+      "组件范围：intruoyi"
+    ],
+    "includeShowroomBuildPackage": false,
+    "includeOnlyOffice": false
+  },
+  "releaseManifestGitCommit": "9aeb1fc2a68fb97a2b3fb71b4d03777d97289f21",
+  "checks": {
+    "packageExists": true,
+    "imageTarExists": true,
+    "manifestExists": true,
+    "releaseManifestExists": true,
+    "manifestReleaseTagMatches": true,
+    "releaseManifestReleaseTagMatches": true,
+    "releaseManifestGitCommitMatches": true,
+    "sourceRepoCount": 2,
+    "allManifestSourceReposExpectedCommit": true,
+    "allManifestSourceReposClean": true,
+    "releaseInfoReleaseTagMatches": true,
+    "allReleaseInfoSourceReposExpectedCommit": true,
+    "allReleaseInfoSourceReposClean": true,
+    "publishScopeCodeOnly": true,
+    "dccSeedHasExplicitCollation": true,
+    "changeSetPresent": true
+  }
+}

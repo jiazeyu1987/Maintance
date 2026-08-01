@@ -1,0 +1,261 @@
+{
+  "status": "PASS",
+  "errors": [],
+  "checks": [
+    {
+      "name": "package directory exists",
+      "ok": true,
+      "evidence": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260801-frozen-smartseed-tempfix-r260801c-r1"
+    },
+    {
+      "name": "release-manifest exists",
+      "ok": true,
+      "evidence": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260801-frozen-smartseed-tempfix-r260801c-r1\\release-manifest.json"
+    },
+    {
+      "name": "manifest exists",
+      "ok": true,
+      "evidence": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260801-frozen-smartseed-tempfix-r260801c-r1\\manifest.json"
+    },
+    {
+      "name": "release-manifest releaseTag matches",
+      "ok": true,
+      "evidence": "release-20260801-frozen-smartseed-tempfix-r260801c-r1"
+    },
+    {
+      "name": "manifest releaseTag matches",
+      "ok": true,
+      "evidence": "release-20260801-frozen-smartseed-tempfix-r260801c-r1"
+    },
+    {
+      "name": "release-manifest gitCommit matches frozen fix HEAD",
+      "ok": true,
+      "evidence": "e3d3a8efdae5e17a7643192bf55a2c5ae21d1ff4"
+    },
+    {
+      "name": "manifest publishScope code-only",
+      "ok": true,
+      "evidence": "code-only"
+    },
+    {
+      "name": "release-manifest publishScope code-only",
+      "ok": true,
+      "evidence": "code-only"
+    },
+    {
+      "name": "component intruoyi",
+      "ok": true,
+      "evidence": {
+        "releaseManifest": "intruoyi",
+        "manifestChangeSet": "intruoyi"
+      }
+    },
+    {
+      "name": "onlyOffice not included",
+      "ok": true,
+      "evidence": {
+        "releaseManifest": false,
+        "manifest": false
+      }
+    },
+    {
+      "name": "showroom package not included",
+      "ok": true,
+      "evidence": {
+        "releaseManifest": false,
+        "manifest": false
+      }
+    },
+    {
+      "name": "image tar artifact present",
+      "ok": true,
+      "evidence": [
+        "intruoyi-images_release-20260801-frozen-smartseed-tempfix-r260801c-r1.tar"
+      ]
+    },
+    {
+      "name": "docker-compose artifact present",
+      "ok": true,
+      "evidence": true
+    },
+    {
+      "name": "smart scheduling required SQL present",
+      "ok": true,
+      "evidence": "required-sql/20260726_system_codex_smart_scheduling_test_items.sql"
+    },
+    {
+      "name": "smart scheduling required SQL SHA matches fixed migration",
+      "ok": true,
+      "evidence": "e633f8ac1a008d6a46ebf94190614f6632b9094d66bb8242818ec3b0a78d934c"
+    },
+    {
+      "name": "backend source repo listed",
+      "ok": true,
+      "evidence": [
+        {
+          "name": "ruoyi-vue-pro",
+          "pathRole": "backend",
+          "commit": "e3d3a8efdae5e17a7643192bf55a2c5ae21d1ff4",
+          "branch": "codex/20260801-smart-seed-collation-fix-frozen",
+          "dirty": false,
+          "dirtySummaryHash": null
+        }
+      ]
+    },
+    {
+      "name": "backend commit matches frozen fix HEAD",
+      "ok": true,
+      "evidence": {
+        "name": "ruoyi-vue-pro",
+        "pathRole": "backend",
+        "commit": "e3d3a8efdae5e17a7643192bf55a2c5ae21d1ff4",
+        "branch": "codex/20260801-smart-seed-collation-fix-frozen",
+        "dirty": false,
+        "dirtySummaryHash": null
+      }
+    },
+    {
+      "name": "backend dirty false",
+      "ok": true,
+      "evidence": {
+        "name": "ruoyi-vue-pro",
+        "pathRole": "backend",
+        "commit": "e3d3a8efdae5e17a7643192bf55a2c5ae21d1ff4",
+        "branch": "codex/20260801-smart-seed-collation-fix-frozen",
+        "dirty": false,
+        "dirtySummaryHash": null
+      }
+    },
+    {
+      "name": "admin-frontend source repo listed",
+      "ok": true,
+      "evidence": [
+        {
+          "name": "yudao-ui-admin-vue3",
+          "pathRole": "admin-frontend",
+          "commit": "e3d3a8efdae5e17a7643192bf55a2c5ae21d1ff4",
+          "branch": "codex/20260801-smart-seed-collation-fix-frozen",
+          "dirty": false,
+          "dirtySummaryHash": null
+        }
+      ]
+    },
+    {
+      "name": "admin-frontend commit matches frozen fix HEAD",
+      "ok": true,
+      "evidence": {
+        "name": "yudao-ui-admin-vue3",
+        "pathRole": "admin-frontend",
+        "commit": "e3d3a8efdae5e17a7643192bf55a2c5ae21d1ff4",
+        "branch": "codex/20260801-smart-seed-collation-fix-frozen",
+        "dirty": false,
+        "dirtySummaryHash": null
+      }
+    },
+    {
+      "name": "admin-frontend dirty false",
+      "ok": true,
+      "evidence": {
+        "name": "yudao-ui-admin-vue3",
+        "pathRole": "admin-frontend",
+        "commit": "e3d3a8efdae5e17a7643192bf55a2c5ae21d1ff4",
+        "branch": "codex/20260801-smart-seed-collation-fix-frozen",
+        "dirty": false,
+        "dirtySummaryHash": null
+      }
+    },
+    {
+      "name": "release-manifest artifact sha integrity",
+      "ok": true,
+      "evidence": []
+    },
+    {
+      "name": "frontend image release-info tag matches",
+      "ok": true,
+      "evidence": {
+        "releaseTag": "release-20260801-frozen-smartseed-tempfix-r260801c-r1",
+        "packageId": "release-20260801-frozen-smartseed-tempfix-r260801c-r1",
+        "createdAt": "2026-08-01T06:33:35.8618109Z",
+        "publishScope": "code-only",
+        "changeSet": {
+          "summary": "Release package release-20260801-frozen-smartseed-tempfix-r260801c-r1",
+          "component": "intruoyi",
+          "items": [
+            "发布包：release-20260801-frozen-smartseed-tempfix-r260801c-r1",
+            "组件范围：intruoyi"
+          ],
+          "includeShowroomBuildPackage": false,
+          "includeOnlyOffice": false
+        },
+        "sourceRepos": [
+          {
+            "name": "ruoyi-vue-pro",
+            "pathRole": "backend",
+            "commit": "e3d3a8efdae5e17a7643192bf55a2c5ae21d1ff4",
+            "branch": "codex/20260801-smart-seed-collation-fix-frozen",
+            "dirty": false,
+            "dirtySummaryHash": null
+          },
+          {
+            "name": "yudao-ui-admin-vue3",
+            "pathRole": "admin-frontend",
+            "commit": "e3d3a8efdae5e17a7643192bf55a2c5ae21d1ff4",
+            "branch": "codex/20260801-smart-seed-collation-fix-frozen",
+            "dirty": false,
+            "dirtySummaryHash": null
+          }
+        ]
+      }
+    },
+    {
+      "name": "frontend image release-info changeSet present",
+      "ok": true,
+      "evidence": {
+        "summary": "Release package release-20260801-frozen-smartseed-tempfix-r260801c-r1",
+        "component": "intruoyi",
+        "items": [
+          "发布包：release-20260801-frozen-smartseed-tempfix-r260801c-r1",
+          "组件范围：intruoyi"
+        ],
+        "includeShowroomBuildPackage": false,
+        "includeOnlyOffice": false
+      }
+    },
+    {
+      "name": "frontend image release-info sourceRepos match commit",
+      "ok": true,
+      "evidence": [
+        {
+          "name": "ruoyi-vue-pro",
+          "pathRole": "backend",
+          "commit": "e3d3a8efdae5e17a7643192bf55a2c5ae21d1ff4",
+          "branch": "codex/20260801-smart-seed-collation-fix-frozen",
+          "dirty": false,
+          "dirtySummaryHash": null
+        },
+        {
+          "name": "yudao-ui-admin-vue3",
+          "pathRole": "admin-frontend",
+          "commit": "e3d3a8efdae5e17a7643192bf55a2c5ae21d1ff4",
+          "branch": "codex/20260801-smart-seed-collation-fix-frozen",
+          "dirty": false,
+          "dirtySummaryHash": null
+        }
+      ]
+    },
+    {
+      "name": "manifest changeSet present",
+      "ok": true,
+      "evidence": {
+        "summary": "Release package release-20260801-frozen-smartseed-tempfix-r260801c-r1",
+        "component": "intruoyi",
+        "items": [
+          "发布包：release-20260801-frozen-smartseed-tempfix-r260801c-r1",
+          "组件范围：intruoyi"
+        ],
+        "includeShowroomBuildPackage": false,
+        "includeOnlyOffice": false
+      }
+    }
+  ]
+}

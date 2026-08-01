@@ -172,7 +172,7 @@ corepack pnpm@10.25.0 --version
 - Blocker: `.env IMAGE_TAG=<目标 releaseTag>` 但 backend/frontend 实际镜像 tag 仍为旧 releaseTag；release lock 为 `FAILED`；migration failed count 大于 0；operation 非 `SUCCESS`。
 - Verification: 远端证据必须显示 `.env`、实际镜像、容器状态、health、HTTP、lock/migration 状态；恢复或重发前再次确认 drift 已消除。
 - Forbidden action: 不得因 `.env IMAGE_TAG` 等于目标 releaseTag 就宣称发布成功；不得在未授权时手工改 `.env`、手工更新 release lock/migration、或复用失败 releaseTag 继续 mark/promote。
-- Evidence: `doc/tasks/20260729-head-test-only-release/execution-log.md`；`publish-test` operation `op-2026-07-29T024258673743700Z-1774cd02-0579-420e-86eb-bcd0ed97475a` failed 后 `.env IMAGE_TAG=release-20260729-intmain-head-test-r260729a-r1`，但 backend/frontend 容器仍运行 `release-20260728-codeonly-noonlyoffice-test-r2`。
+- Evidence: `doc/tasks/20260729-head-test-only-release/execution-log.md`；`publish-test` operation `op-2026-07-29T024258673743700Z-1774cd02-0579-420e-86eb-bcd0ed97475a` failed 后 `.env IMAGE_TAG=release-20260729-intmain-head-test-r260729a-r1`，但 backend/frontend 容器仍运行 `release-20260728-codeonly-noonlyoffice-test-r2`。2026-08-01 追加证据：`doc/tasks/20260801-head-test-only-release/execution-log.md`；`publish-test` operation `op-2026-07-31T184648151088Z-d51572f6-9207-44dd-bbab-6f54c347cea4` failed 后 `.env IMAGE_TAG=release-20260801-intmain-head-test-r260801a-r2`，backend/frontend 实际容器仍运行 `release-20260731-smartseed-tempfix-head-test-r260731d-r1`，release lock=`FAILED`，migration `FAILED=1`。
 
 ## 阶段 5：测试服发布后真实运行态
 
@@ -422,3 +422,38 @@ ssh root@172.30.30.58 bash -s
 - 本次任务：`doc/tasks/20260713-current-head-test-only-release-rerun/task.md` P006，`runtime-console-page-probe-r260713u.json`。
 - ReleaseTag：`release-20260713-current-head-test-r260713u`；build operation `op-2026-07-13T130433994984600Z-0ddaec3f-7a3b-465a-a40b-182c572b3508`；publish operation `op-2026-07-13T132238031788800Z-7427e313-5a0e-4bae-8bc3-be5decaa3c0a`。
 - 2026-07-31 追加证据：运行控制台页面显示测试服版本 `release-20260731-smartseed-tempfix-head-test-r260731d-r1`，点击“查看变更”后对话框显示“发布包：release-20260731-smartseed-tempfix-head-test-r260731d-r1”和“组件范围：intruoyi”；source commit 与 dirty=false 由远端 `/release-info.json` 和发布包 `manifest.json` 独立证明。
+
+## 2026-08-01 仅测试服 r260801e 成功闭环门禁
+
+### Trigger
+
+用户明确要求“仅测试服发布”，且发布链路中出现过失败 releaseTag、冻结修复分支或测试服 `.env` / 容器状态漂移。
+
+### Preflight check
+
+- 每个失败 releaseTag 判废；修复后必须重新 `build-release` 新 releaseTag，再执行 `publish-test`。
+- 成功判定只接受同一 releaseTag 的 `build-release SUCCESS`、manifest/sourceRepos clean、`publish-test SUCCESS`、测试服 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、health、HTTP、release-info、release lock 和 migration 状态全部一致。
+- 运行控制台 release-status 必须显示同一 `testCurrentReleaseTag`、summary、changes 和 sourceRepos；prod/backup current tag 或 `latestTestedReleaseTag` 不参与仅测试服成功判定。
+- 任务收尾前必须恢复 48181 到主维护路径，并确认 prod/backup access disabled 后再删除 release worktree。
+
+### Blocker
+
+- 任一成功证据来自不同 releaseTag。
+- `mark-tested`、`promote-prod`、`promote-backup` 出现在本轮仅测试服操作链。
+- release lock 非 `APPLIED`，migration 存在 `FAILED` / `RUNNING`，或 `.env IMAGE_TAG` 与实际镜像不一致。
+- 运行控制台仍指向待删 release worktree。
+
+### Verification
+
+- 保存 `manifest-validation-<tag>.json`、`manifest-summary-<tag>.json`、`publish-test-operation-final-<tag>.json`、`runtime-control-release-status-<tag>.json`、`remote-runtime-verification-<tag>.json` 和 `worktree-cleanup-<tag>.json`。
+- 远端运行态断言至少包括 `.env IMAGE_TAG`、backend/frontend image tag、容器 Up、backend health `UP`、frontend HTTP 200、页面标题、`release-info.json`、release lock `APPLIED`、migration failed/running count `0`。
+
+### Forbidden action
+
+- 禁止把失败 releaseTag 的 build 结果与新 releaseTag 的 publish 结果拼接。
+- 禁止用 HTTP 200 或 `.env` 单项替代真实镜像、release-info、lock/migration 检查。
+- 禁止在仅测试服任务中顺手执行 `mark-tested` 或任何正式/备份服动作。
+
+### Evidence
+
+- `doc/tasks/20260801-head-test-only-release/`；最终 releaseTag `release-20260801-frozen-dcc-column-collation-r260801e-r1`，build operation `op-2026-08-01T075619071613500Z-8ce3eda8-87d7-412c-8daf-b944d4d737df`，publish operation `op-2026-08-01T082221679621900Z-bdfeb32d-6378-404e-af3c-3bb8b8407300`，远端运行态和 cleanup 证据均通过。

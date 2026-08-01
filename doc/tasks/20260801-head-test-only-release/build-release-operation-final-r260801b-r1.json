@@ -1,0 +1,19 @@
+{
+  "operationId": "op-2026-08-01T053708956655200Z-983a46de-ceca-4158-b262-aeb341f606a8",
+  "requestedBy": "local-operator",
+  "requestedAt": "2026-08-01T05:37:08.961190100Z",
+  "environment": "release",
+  "component": "build-release",
+  "action": "build-release",
+  "actionLabel": "构建发布包",
+  "parameters": {
+    "publishScope": "code-only",
+    "includeOnlyOffice": "false",
+    "includeShowroomBuildPackage": "false",
+    "releaseTag": "release-20260801-frozen-smartseed-fix-r260801b-r1"
+  },
+  "reason": "20260801 frozen HEAD smartseed collation fix test-only release r260801b build",
+  "status": "SUCCESS",
+  "summary": "命令执行完成",
+  "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801b-state\\runtime-control\\logs\\op-2026-08-01T053708956655200Z-983a46de-ceca-4158-b262-aeb341f606a8.log"
+}

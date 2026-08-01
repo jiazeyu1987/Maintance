@@ -1,0 +1,20 @@
+{
+  "code": 0,
+  "data": {
+    "operationId": "op-2026-08-01T082221679621900Z-bdfeb32d-6378-404e-af3c-3bb8b8407300",
+    "requestedBy": "local-operator",
+    "requestedAt": "2026-08-01T08:22:55.503433600Z",
+    "environment": "test",
+    "component": "publish-test",
+    "action": "publish-test",
+    "actionLabel": "部署发布包到测试服",
+    "parameters": {
+      "releaseTag": "release-20260801-frozen-dcc-column-collation-r260801e-r1"
+    },
+    "reason": "20260801 frozen HEAD DCC column collation fix publish test only r260801e",
+    "status": "RUNNING",
+    "summary": "命令已提交到本机执行队列",
+    "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801b-state\\runtime-control\\logs\\op-2026-08-01T082221679621900Z-bdfeb32d-6378-404e-af3c-3bb8b8407300.log"
+  },
+  "msg": ""
+}

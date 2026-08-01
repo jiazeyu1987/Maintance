@@ -1,0 +1,23 @@
+{
+  "code": 0,
+  "data": {
+    "operationId": "op-2026-07-31T182843386387300Z-b1088fac-87af-46e2-99ed-7475df470ea7",
+    "requestedBy": "local-operator",
+    "requestedAt": "2026-07-31T18:28:43.389901500Z",
+    "environment": "release",
+    "component": "build-release",
+    "action": "build-release",
+    "actionLabel": "构建发布包",
+    "parameters": {
+      "publishScope": "code-only",
+      "includeOnlyOffice": "false",
+      "includeShowroomBuildPackage": "false",
+      "releaseTag": "release-20260801-intmain-head-test-r260801a-r2"
+    },
+    "reason": "20260801 HEAD-only test release r260801a retry after frozen frontend dependency restore",
+    "status": "RUNNING",
+    "summary": "命令已提交到本机执行队列",
+    "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801a-state\\runtime-control\\logs\\op-2026-07-31T182843386387300Z-b1088fac-87af-46e2-99ed-7475df470ea7.log"
+  },
+  "msg": ""
+}

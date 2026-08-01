@@ -1,0 +1,16 @@
+{
+  "oldPid": 55512,
+  "stoppedOldReleaseProcess": true,
+  "newPid": 45648,
+  "healthHttpStatus": 200,
+  "healthBody": "{\"status\":\"UP\"}",
+  "commandLine": "\"C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.10.7-hotspot\\bin\\java.exe\" -jar D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar --server.port=48181 --maintenance.runtime-control.repo-root=E:/IntRuoyi/IntRuoyiBackend --maintenance.runtime-control.frontend-root=E:/IntRuoyi/IntRuoyiFronted --maintenance.runtime-control.ops-root=D:/ProjectPackage/Int/IntRuoyiMaintance/ops --maintenance.runtime-control.state-dir=D:/ProjectPackage/Int/IntRuoyiMaintance/runtime/runtime-control --maintenance.runtime-control.production-write-enabled=false --maintenance.runtime-control.environments.test.access-enabled=true --maintenance.runtime-control.environments.test.host=172.30.30.58 --maintenance.runtime-control.environments.test.remote-app-dir=/opt/intruoyi/runtime --maintenance.runtime-control.environments.prod.access-enabled=false --maintenance.runtime-control.environments.backup.access-enabled=false",
+  "repoRoot": "E:/IntRuoyi/IntRuoyiBackend",
+  "frontendRoot": "E:/IntRuoyi/IntRuoyiFronted",
+  "stateDir": "D:/ProjectPackage/Int/IntRuoyiMaintance/runtime/runtime-control",
+  "prodAccessEnabled": false,
+  "backupAccessEnabled": false,
+  "productionWriteEnabled": false,
+  "note": "First health evidence attempt saw Invoke-WebRequest.Content as byte[]; this evidence decodes UTF-8 explicitly.",
+  "passed": true
+}

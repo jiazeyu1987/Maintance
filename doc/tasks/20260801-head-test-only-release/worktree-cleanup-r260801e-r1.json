@@ -1,0 +1,82 @@
+{
+  "pathsChecked": [
+    "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801a\\m",
+    "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801b\\m",
+    "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801a",
+    "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801b",
+    "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801a-state",
+    "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801b-state",
+    "D:\\IntRuoyiWorktree\\r260801a-release-app",
+    "D:\\IntRuoyiWorktree\\r260801b-frozen-smartseed-fix"
+  ],
+  "pathExistsAfterCleanup": {
+    "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801a\\m": false,
+    "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801b\\m": false,
+    "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801a": false,
+    "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801b": false,
+    "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801a-state": false,
+    "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801b-state": false,
+    "D:\\IntRuoyiWorktree\\r260801a-release-app": false,
+    "D:\\IntRuoyiWorktree\\r260801b-frozen-smartseed-fix": false
+  },
+  "maintenanceWorktreeList": {
+    "cmd": [
+      "git",
+      "worktree",
+      "list",
+      "--porcelain"
+    ],
+    "returnCode": 0,
+    "stdout": "worktree D:/ProjectPackage/Int/IntRuoyiMaintance\nHEAD cb85bb0dbf2f36931ff2bc0aff75a4e96b5bd331\nbranch refs/heads/int_main\n\nworktree D:/ProjectPackage/Int/IntRuoyiWorktrees/r260720p/m\nHEAD c9c07ef04307de494563e3ba5ad853edefd35a66\ndetached\n\nworktree D:/ProjectPackage/Int/IntRuoyiWorktrees/r260730a/m\nHEAD 9b530038433c964ab39de19f5d30d63ad4702333\ndetached\n\nworktree D:/ProjectPackage/Int/IntRuoyiWorktrees/r260731a/m\nHEAD 9b530038433c964ab39de19f5d30d63ad4702333\ndetached\n\nworktree D:/ProjectPackage/Int/IntRuoyiWorktrees/r260731b/m\nHEAD 9b530038433c964ab39de19f5d30d63ad4702333\ndetached\n\nworktree D:/ProjectPackage/Int/IntRuoyiWorktrees/r260731c/m\nHEAD 9b530038433c964ab39de19f5d30d63ad4702333\ndetached",
+    "stderr": ""
+  },
+  "sourceWorktreeList": {
+    "cmd": [
+      "git",
+      "-C",
+      "E:\\IntRuoyi",
+      "worktree",
+      "list",
+      "--porcelain"
+    ],
+    "returnCode": 0,
+    "stdout": "worktree E:/IntRuoyi\nHEAD ac8457724d16d287f5d65013ba304f77f3786e7b\nbranch refs/heads/int_main\n\nworktree D:/IntRuoyiWorktree/20260731_shengchanbanzuzhang\nHEAD 008de03966563cdb7fe13cef7483f687dd67ad5f\nbranch refs/heads/codex/20260731_shengchanbanzuzhang\n\nworktree D:/IntRuoyiWorktree/pml-test-r260731\nHEAD f95edbb88dae1a622bac5470755b0580c60869be\nbranch refs/heads/codex/sync-production-bom-test-r260731pml\n\nworktree D:/IntRuoyiWorktree/process-pool-full-chain-closure\nHEAD 96a1659283ad37a2098f18366e527eaab38a614d\nbranch refs/heads/codex/process-pool-full-chain-closure-20260730\n\nworktree D:/IntRuoyiWorktree/r260730a-release-app\nHEAD 4d6acc51bfc20070b8f9473839d00fea650a2031\ndetached\n\nworktree D:/IntRuoyiWorktree/r260731a-release-app\nHEAD b6370020247aac7fd27e25a9842601a992a816c7\ndetached\n\nworktree D:/IntRuoyiWorktree/r260731b-release-app\nHEAD b6370020247aac7fd27e25a9842601a992a816c7\ndetached\n\nworktree D:/IntRuoyiWorktree/r260731c-release-app\nHEAD 7b9d8c36f3aa19779277be1a2cddaa50789a3821\ndetached\n\nworktree D:/IntRuoyiWorktree/r260731c-smart-seed-fix\nHEAD fa6137aa24f65bca75714d9b8c497d71ffee5d14\nbranch refs/heads/codex/20260731-smart-seed-collation-fix\n\nworktree D:/IntRuoyiWorktree/r260801-smartseed-collation-fix\nHEAD 638093b76dbf9c0cafdf3d299a35882c152cad45\nbranch refs/heads/codex/20260801-smart-seed-collation-fix\n\nworktree D:/IntRuoyiWorktree/standard-template-e2e-runtime\nHEAD fa55ac61eeb2c1820a0a1dc6f3a6c63f6864a5fd\nbranch refs/heads/codex/20260730-standard-template-e2e-runtime",
+    "stderr": ""
+  },
+  "runtimeHealth": {
+    "status": 200,
+    "body": "{\"status\":\"UP\"}"
+  },
+  "runtimeProcess": {
+    "cmd": [
+      "powershell",
+      "-NoProfile",
+      "-Command",
+      "$OutputEncoding=[System.Text.UTF8Encoding]::new($false); (Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'java.exe' -and $_.CommandLine -match 'runtime-control-maintenance' -and $_.CommandLine -match '48181' } | Select-Object ProcessId,CommandLine | ConvertTo-Json -Depth 3)"
+    ],
+    "returnCode": 0,
+    "stdout": "{\n    \"ProcessId\":  45648,\n    \"CommandLine\":  \"\\\"C:\\\\Program Files\\\\Eclipse Adoptium\\\\jdk-21.0.10.7-hotspot\\\\bin\\\\java.exe\\\" -jar D:\\\\ProjectPackage\\\\Int\\\\IntRuoyiMaintance\\\\backend\\\\target\\\\runtime-control-maintenance-2026.06-SNAPSHOT.jar --server.port=48181 --maintenance.runtime-control.repo-root=E:/IntRuoyi/IntRuoyiBackend --maintenance.runtime-control.frontend-root=E:/IntRuoyi/IntRuoyiFronted --maintenance.runtime-control.ops-root=D:/ProjectPackage/Int/IntRuoyiMaintance/ops --maintenance.runtime-control.state-dir=D:/ProjectPackage/Int/IntRuoyiMaintance/runtime/runtime-control --maintenance.runtime-control.production-write-enabled=false --maintenance.runtime-control.environments.test.access-enabled=true --maintenance.runtime-control.environments.test.host=172.30.30.58 --maintenance.runtime-control.environments.test.remote-app-dir=/opt/intruoyi/runtime --maintenance.runtime-control.environments.prod.access-enabled=false --maintenance.runtime-control.environments.backup.access-enabled=false\"\n}",
+    "stderr": ""
+  },
+  "runtimeJavaCommandLines": [
+    "\"C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.10.7-hotspot\\bin\\java.exe\" -jar D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar --server.port=48181 --maintenance.runtime-control.repo-root=E:/IntRuoyi/IntRuoyiBackend --maintenance.runtime-control.frontend-root=E:/IntRuoyi/IntRuoyiFronted --maintenance.runtime-control.ops-root=D:/ProjectPackage/Int/IntRuoyiMaintance/ops --maintenance.runtime-control.state-dir=D:/ProjectPackage/Int/IntRuoyiMaintance/runtime/runtime-control --maintenance.runtime-control.production-write-enabled=false --maintenance.runtime-control.environments.test.access-enabled=true --maintenance.runtime-control.environments.test.host=172.30.30.58 --maintenance.runtime-control.environments.test.remote-app-dir=/opt/intruoyi/runtime --maintenance.runtime-control.environments.prod.access-enabled=false --maintenance.runtime-control.environments.backup.access-enabled=false"
+  ],
+  "checks": {
+    "paths": {
+      "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801a\\m": false,
+      "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801b\\m": false,
+      "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801a": false,
+      "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801b": false,
+      "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801a-state": false,
+      "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801b-state": false,
+      "D:\\IntRuoyiWorktree\\r260801a-release-app": false,
+      "D:\\IntRuoyiWorktree\\r260801b-frozen-smartseed-fix": false
+    },
+    "maintenanceWorktreeHasTaskPaths": false,
+    "sourceWorktreeHasTaskPaths": false,
+    "runtimeHealthUp": true,
+    "runtimeProcessMainPath": true
+  },
+  "note": "Process scan filters java.exe and parses JSON before matching command line.",
+  "passed": true
+}

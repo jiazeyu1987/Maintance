@@ -1,0 +1,23 @@
+{
+  "code": 0,
+  "data": {
+    "operationId": "op-2026-07-31T181050340020300Z-1f2bea9b-ea22-45ab-9800-1100bb9fb2d3",
+    "requestedBy": "local-operator",
+    "requestedAt": "2026-07-31T18:10:50.346130700Z",
+    "environment": "release",
+    "component": "build-release",
+    "action": "build-release",
+    "actionLabel": "构建发布包",
+    "parameters": {
+      "publishScope": "code-only",
+      "includeOnlyOffice": "false",
+      "includeShowroomBuildPackage": "false",
+      "releaseTag": "release-20260801-intmain-head-test-r260801a-r1"
+    },
+    "reason": "20260801 HEAD-only test release r260801a",
+    "status": "RUNNING",
+    "summary": "命令已提交到本机执行队列",
+    "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260801a-state\\runtime-control\\logs\\op-2026-07-31T181050340020300Z-1f2bea9b-ea22-45ab-9800-1100bb9fb2d3.log"
+  },
+  "msg": ""
+}

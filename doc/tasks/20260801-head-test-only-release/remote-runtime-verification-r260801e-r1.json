@@ -1,0 +1,244 @@
+{
+  "collectedAtLocal": "2026-08-01T16:47:49+0800",
+  "environment": "test",
+  "serverHost": "172.30.30.58",
+  "releaseTag": "release-20260801-frozen-dcc-column-collation-r260801e-r1",
+  "expectedCommit": "f81435c16ca1defb9b5c35c2e3a2d31a2c77e2ce",
+  "publicHttp": [
+    {
+      "label": "public-backend-health",
+      "url": "http://172.30.30.58:48081/actuator/health",
+      "status": 200,
+      "durationSeconds": 0.07,
+      "body": "{\"status\":\"UP\"}"
+    },
+    {
+      "label": "public-frontend-page",
+      "url": "http://172.30.30.58:8081/",
+      "status": 200,
+      "durationSeconds": 0.023,
+      "body": "<!DOCTYPE html>\r\n<html lang=\"en\" translate=\"no\" class=\"notranslate\">\r\n  <head>\r\n    <meta charset=\"UTF-8\" />\r\n    <link rel=\"icon\" href=\"/favicon.ico\" />\r\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\r\n    <meta name=\"google\" content=\"notranslate\" />\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\r\n    <meta\r\n      name=\"keywords\"\r\n      content=\"瑛泰管理系统 基于 vue3 + CompositionAPI + typescript + vite3 + element plus 的后台开源免费管理系统！\"\r\n    />\r\n    <meta\r\n      name=\"description\"\r\n      content=\"瑛泰管理系统 基于 vue3 + CompositionAPI + typescript + vite3 + element plus 的后台开源免费管理系统！\"\r\n    />\r\n    <title>瑛泰管理系统</title>\r\n    <script type=\"module\" crossorigin src=\"/assets/index-CzHXXe72.js\"></script>\n    <link rel=\"modulepreload\" crossorigin href=\"/assets/form-create-CfdN5T7Y.js\">\n    <link rel=\"modulepreload\" crossorigin href=\"/assets/form-designer-CRhzA9Cp.js\">\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-ApV2v62v.css\">\n  </head>\r\n  <body>\r\n    <div id=\"app\">\r\n      <style>\n        .app-loading {\n          display: flex;\n          width: 100%;\n          height: 100%;\n          justify-content: center;\n          align-items: center;\n          flex-direction: column;\n          background: #f0f2f5;\n        }\n\n        .app-loading .app-loading-wrap {\n          position: absolute;\n          top: 50%;\n          left: 50%;\n          display: flex;\n          transform: translate3d(-50%, -50%, 0);\n          justify-content: center;\n          align-items: center;\n          flex-direction: column;\n        }\n\n        .app-loading .app-loading-title {\n          margin-bottom: 30px;\n          font-size: 20px;\n          font-weight: bold;\n          text-align: center;\n        }\n\n        .app-loading .app-loading-logo {\n          width: 100px;\n          margin: 0 auto 15px auto;\n        }\n\n        .app-loading .app-loading-item {\n          position: relative;\n          display: inline-block;\n          width: 60px;\n          height: 60px;\n          vertical-align: middle;\n          border-radius: 50%;\n        }\n\n        .app-loading .app-loading-outter {\n          position: absolute;\n          width: 100%;\n          height: 100%;\n          border: 4px solid #2d8cf0;\n          border-bottom: 0;\n          border-left-color: transparent;\n          border-radius: 50%;\n          animation: loader-outter 1s cubic-bezier(0.42, 0.61, 0.58, 0.41) infinite;\n        }\n\n        .app-loading .app-loading-inner {\n          position: absolute;\n          top: calc(50% - 20px);\n          left: calc(50% - 20px);\n          width: 40px;\n          height: 40px;\n          border: 4px solid #87bdff;\n          border-right: 0;\n          border-top-color: transparent;\n          border-radius: 50%;\n          animation: loader-inner 1s cubic-bezier(0.42, 0.61, 0.58, 0.41) infinite;\n        }\n\n        @keyframes loader-outter {\n          0% {\n            transform: rotate(0deg);\n          }\n\n          100% {\n            transform: rotate(360deg);\n          }\n        }\n\n        @keyframes loader-inner {\n          0% {\n            transform: rotate(0deg);\n          }\n\n          100% {\n            transform: rotate(-360deg);\n          }\n        }\n      </style>\r\n      <div class=\"app-loading\">\r\n        <div class=\"app-loading-wrap\">\r\n          <div class=\"app-loading-title\">\r\n            <img src=\"/logo.gif\" class=\"app-loading-logo\" alt=\"Logo\" />\r\n            <div class=\"app-loading-title\">瑛泰管理系统</div>\r\n          </div>\r\n          <div class=\"app-loading-item\">\r\n            <div class=\"app-loading-outter\"></div>\r\n            <div class=\"app-loading-inner\"></div>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\r\n  </body>\r\n</html>\r\n"
+    },
+    {
+      "label": "public-release-info",
+      "url": "http://172.30.30.58:8081/release-info.json",
+      "status": 200,
+      "durationSeconds": 0.007,
+      "body": "{\r\n    \"releaseTag\":  \"release-20260801-frozen-dcc-column-collation-r260801e-r1\",\r\n    \"packageId\":  \"release-20260801-frozen-dcc-column-collation-r260801e-r1\",\r\n    \"createdAt\":  \"2026-08-01T08:15:59.0824172Z\",\r\n    \"publishScope\":  \"code-only\",\r\n    \"changeSet\":  {\r\n                      \"summary\":  \"Release package release-20260801-frozen-dcc-column-collation-r260801e-r1\",\r\n                      \"component\":  \"intruoyi\",\r\n                      \"items\":  [\r\n                                    \"发布包：release-20260801-frozen-dcc-column-collation-r260801e-r1\",\r\n                                    \"组件范围：intruoyi\"\r\n                                ],\r\n                      \"includeShowroomBuildPackage\":  false,\r\n                      \"includeOnlyOffice\":  false\r\n                  },\r\n    \"sourceRepos\":  [\r\n                        {\r\n                            \"name\":  \"ruoyi-vue-pro\",\r\n                            \"pathRole\":  \"backend\",\r\n                            \"commit\":  \"f81435c16ca1defb9b5c35c2e3a2d31a2c77e2ce\",\r\n                            \"branch\":  \"codex/20260801-smart-seed-collation-fix-frozen\",\r\n                            \"dirty\":  false,\r\n                            \"dirtySummaryHash\":  null\r\n                        },\r\n                        {\r\n                            \"name\":  \"yudao-ui-admin-vue3\",\r\n                            \"pathRole\":  \"admin-frontend\",\r\n                            \"commit\":  \"f81435c16ca1defb9b5c35c2e3a2d31a2c77e2ce\",\r\n                            \"branch\":  \"codex/20260801-smart-seed-collation-fix-frozen\",\r\n                            \"dirty\":  false,\r\n                            \"dirtySummaryHash\":  null\r\n                        }\r\n                    ]\r\n}"
+    }
+  ],
+  "remoteChecks": [
+    {
+      "label": "env-image-tag",
+      "command": "cd /opt/intruoyi/runtime; sed -n 's/^IMAGE_TAG=//p' .env",
+      "returnCode": 0,
+      "durationSeconds": 0.344,
+      "stdout": "release-20260801-frozen-dcc-column-collation-r260801e-r1",
+      "stderr": "close - IO is still pending on closed socket. read:1, write:0, io:0000025E96FD1D40"
+    },
+    {
+      "label": "docker-backend-frontend",
+      "command": "docker ps --format '{{.Names}}|{{.Image}}|{{.Status}}' | grep -E '^intruoyi-(backend|frontend)\\|'",
+      "returnCode": 0,
+      "durationSeconds": 0.346,
+      "stdout": "intruoyi-frontend|intruoyi-frontend:release-20260801-frozen-dcc-column-collation-r260801e-r1|Up 9 minutes\nintruoyi-backend|intruoyi-backend:release-20260801-frozen-dcc-column-collation-r260801e-r1|Up 9 minutes",
+      "stderr": "close - IO is still pending on closed socket. read:1, write:0, io:000001E5895E7D30"
+    },
+    {
+      "label": "docker-compose-ps",
+      "command": "cd /opt/intruoyi/runtime; docker compose ps",
+      "returnCode": 0,
+      "durationSeconds": 0.483,
+      "stdout": "NAME                  IMAGE                                                                        COMMAND                   SERVICE      CREATED         STATUS                  PORTS\nintruoyi-backend      intruoyi-backend:release-20260801-frozen-dcc-column-collation-r260801e-r1    \"/__cacert_entrypoin…\"   backend      9 minutes ago   Up 9 minutes            0.0.0.0:48081->48081/tcp, :::48081->48081/tcp\nintruoyi-frontend     intruoyi-frontend:release-20260801-frozen-dcc-column-collation-r260801e-r1   \"/docker-entrypoint.…\"   frontend     9 minutes ago   Up 9 minutes            0.0.0.0:8081->80/tcp, :::8081->80/tcp\nintruoyi-mysql        mysql:8.0.39                                                                 \"docker-entrypoint.s…\"   mysql        8 weeks ago     Up 8 weeks (healthy)    3306/tcp, 33060/tcp\nintruoyi-onlyoffice   onlyoffice/documentserver:latest                                             \"/app/ds/run-documen…\"   onlyoffice   4 days ago      Up 4 days (healthy)     443/tcp, 0.0.0.0:8080->80/tcp, :::8080->80/tcp\nintruoyi-redis        redis:7-alpine                                                               \"docker-entrypoint.s…\"   redis        2 months ago    Up 2 months (healthy)   6379/tcp\nintruoyi-website      nginx:1.27-alpine                                                            \"/docker-entrypoint.…\"   website      11 days ago     Up 11 days              0.0.0.0:8083->80/tcp, :::8083->80/tcp",
+      "stderr": "close - IO is still pending on closed socket. read:1, write:0, io:0000027E3B066980"
+    },
+    {
+      "label": "remote-backend-health",
+      "command": "curl -fsS http://127.0.0.1:48081/actuator/health",
+      "returnCode": 0,
+      "durationSeconds": 0.368,
+      "stdout": "{\"status\":\"UP\"}",
+      "stderr": "close - IO is still pending on closed socket. read:1, write:0, io:0000020A16DAFA60"
+    },
+    {
+      "label": "remote-frontend-page",
+      "command": "tmp=/tmp/int-frontend-check.html; code=$(curl -fsS -o $tmp -w '%{http_code}' http://127.0.0.1:8081/); printf '%s\\n' \"$code\"; sed -n 's/.*<title>\\(.*\\)<\\/title>.*/\\1/p' $tmp | head -1",
+      "returnCode": 0,
+      "durationSeconds": 0.331,
+      "stdout": "200\n瑛泰管理系统",
+      "stderr": "close - IO is still pending on closed socket. read:1, write:0, io:00000132F921FA60"
+    },
+    {
+      "label": "remote-release-info",
+      "command": "curl -fsS http://127.0.0.1:8081/release-info.json",
+      "returnCode": 0,
+      "durationSeconds": 0.325,
+      "stdout": "{\n    \"releaseTag\":  \"release-20260801-frozen-dcc-column-collation-r260801e-r1\",\n    \"packageId\":  \"release-20260801-frozen-dcc-column-collation-r260801e-r1\",\n    \"createdAt\":  \"2026-08-01T08:15:59.0824172Z\",\n    \"publishScope\":  \"code-only\",\n    \"changeSet\":  {\n                      \"summary\":  \"Release package release-20260801-frozen-dcc-column-collation-r260801e-r1\",\n                      \"component\":  \"intruoyi\",\n                      \"items\":  [\n                                    \"发布包：release-20260801-frozen-dcc-column-collation-r260801e-r1\",\n                                    \"组件范围：intruoyi\"\n                                ],\n                      \"includeShowroomBuildPackage\":  false,\n                      \"includeOnlyOffice\":  false\n                  },\n    \"sourceRepos\":  [\n                        {\n                            \"name\":  \"ruoyi-vue-pro\",\n                            \"pathRole\":  \"backend\",\n                            \"commit\":  \"f81435c16ca1defb9b5c35c2e3a2d31a2c77e2ce\",\n                            \"branch\":  \"codex/20260801-smart-seed-collation-fix-frozen\",\n                            \"dirty\":  false,\n                            \"dirtySummaryHash\":  null\n                        },\n                        {\n                            \"name\":  \"yudao-ui-admin-vue3\",\n                            \"pathRole\":  \"admin-frontend\",\n                            \"commit\":  \"f81435c16ca1defb9b5c35c2e3a2d31a2c77e2ce\",\n                            \"branch\":  \"codex/20260801-smart-seed-collation-fix-frozen\",\n                            \"dirty\":  false,\n                            \"dirtySummaryHash\":  null\n                        }\n                    ]\n}",
+      "stderr": "close - IO is still pending on closed socket. read:1, write:0, io:000001F30F7AE5E0"
+    },
+    {
+      "label": "db-operation-lock",
+      "command": "docker exec intruoyi-mysql sh -lc 'mysql -N -B -uroot -p\"$<MYSQL_ROOT_PASSWORD_ENV>\" -D \"$MYSQL_DATABASE\" -e \"SELECT operation_id,release_tag,target_environment,status,started_at,finished_at,IFNULL(error_message,\\\"\\\") FROM infra_release_operation_lock WHERE target_environment=\\\"test\\\" ORDER BY started_at DESC LIMIT 5;\"'",
+      "returnCode": 0,
+      "durationSeconds": 0.601,
+      "stdout": "test-release-20260801-frozen-dcc-column-collation-r260801e-r1\trelease-20260801-frozen-dcc-column-collation-r260801e-r1\ttest\tAPPLIED\t2026-08-01 16:31:46\t2026-08-01 16:40:36",
+      "stderr": "mysql: [Warning] Using a password on the command line interface can be insecure.\nclose - IO is still pending on closed socket. read:1, write:0, io:000001D8AF18FBC0"
+    },
+    {
+      "label": "db-migration-counts",
+      "command": "docker exec intruoyi-mysql sh -lc 'mysql -N -B -uroot -p\"$<MYSQL_ROOT_PASSWORD_ENV>\" -D \"$MYSQL_DATABASE\" -e \"SELECT status,COUNT(*) FROM infra_release_migration WHERE target_environment=\\\"test\\\" AND release_tag=\\\"release-20260801-frozen-dcc-column-collation-r260801e-r1\\\" GROUP BY status ORDER BY status; SELECT COUNT(*) AS failed_or_running FROM infra_release_migration WHERE target_environment=\\\"test\\\" AND release_tag=\\\"release-20260801-frozen-dcc-column-collation-r260801e-r1\\\" AND status IN (\\\"FAILED\\\",\\\"RUNNING\\\");\"'",
+      "returnCode": 0,
+      "durationSeconds": 0.571,
+      "stdout": "APPLIED\t2\nSKIPPED_ALREADY_APPLIED\t369\n0",
+      "stderr": "mysql: [Warning] Using a password on the command line interface can be insecure.\nclose - IO is still pending on closed socket. read:1, write:0, io:0000019B1EBF99D0"
+    }
+  ],
+  "assertions": [
+    {
+      "name": "ssh_commands_return_zero",
+      "ok": true,
+      "detail": {
+        "env-image-tag": 0,
+        "docker-backend-frontend": 0,
+        "docker-compose-ps": 0,
+        "remote-backend-health": 0,
+        "remote-frontend-page": 0,
+        "remote-release-info": 0,
+        "db-operation-lock": 0,
+        "db-migration-counts": 0
+      }
+    },
+    {
+      "name": "env_image_tag_matches",
+      "ok": true,
+      "detail": "release-20260801-frozen-dcc-column-collation-r260801e-r1"
+    },
+    {
+      "name": "backend_image_tag_matches",
+      "ok": true,
+      "detail": [
+        "intruoyi-frontend|intruoyi-frontend:release-20260801-frozen-dcc-column-collation-r260801e-r1|Up 9 minutes",
+        "intruoyi-backend|intruoyi-backend:release-20260801-frozen-dcc-column-collation-r260801e-r1|Up 9 minutes"
+      ]
+    },
+    {
+      "name": "frontend_image_tag_matches",
+      "ok": true,
+      "detail": [
+        "intruoyi-frontend|intruoyi-frontend:release-20260801-frozen-dcc-column-collation-r260801e-r1|Up 9 minutes",
+        "intruoyi-backend|intruoyi-backend:release-20260801-frozen-dcc-column-collation-r260801e-r1|Up 9 minutes"
+      ]
+    },
+    {
+      "name": "remote_backend_health_up",
+      "ok": true,
+      "detail": "{\"status\":\"UP\"}"
+    },
+    {
+      "name": "remote_frontend_http_200",
+      "ok": true,
+      "detail": "200\n瑛泰管理系统"
+    },
+    {
+      "name": "remote_frontend_title_present",
+      "ok": true,
+      "detail": "200\n瑛泰管理系统"
+    },
+    {
+      "name": "release_info_tag_matches",
+      "ok": true,
+      "detail": "release-20260801-frozen-dcc-column-collation-r260801e-r1"
+    },
+    {
+      "name": "release_info_commit_matches",
+      "ok": true,
+      "detail": [
+        {
+          "name": "ruoyi-vue-pro",
+          "pathRole": "backend",
+          "commit": "f81435c16ca1defb9b5c35c2e3a2d31a2c77e2ce",
+          "branch": "codex/20260801-smart-seed-collation-fix-frozen",
+          "dirty": false,
+          "dirtySummaryHash": null
+        },
+        {
+          "name": "yudao-ui-admin-vue3",
+          "pathRole": "admin-frontend",
+          "commit": "f81435c16ca1defb9b5c35c2e3a2d31a2c77e2ce",
+          "branch": "codex/20260801-smart-seed-collation-fix-frozen",
+          "dirty": false,
+          "dirtySummaryHash": null
+        }
+      ]
+    },
+    {
+      "name": "release_info_changes_present",
+      "ok": true,
+      "detail": {
+        "summary": "Release package release-20260801-frozen-dcc-column-collation-r260801e-r1",
+        "component": "intruoyi",
+        "items": [
+          "发布包：release-20260801-frozen-dcc-column-collation-r260801e-r1",
+          "组件范围：intruoyi"
+        ],
+        "includeShowroomBuildPackage": false,
+        "includeOnlyOffice": false
+      }
+    },
+    {
+      "name": "latest_test_lock_matches_release",
+      "ok": true,
+      "detail": [
+        "test-release-20260801-frozen-dcc-column-collation-r260801e-r1\trelease-20260801-frozen-dcc-column-collation-r260801e-r1\ttest\tAPPLIED\t2026-08-01 16:31:46\t2026-08-01 16:40:36"
+      ]
+    },
+    {
+      "name": "migration_no_failed_or_running",
+      "ok": true,
+      "detail": "APPLIED\t2\nSKIPPED_ALREADY_APPLIED\t369\n0"
+    },
+    {
+      "name": "public_backend_health_up",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "body": "{\"status\":\"UP\"}"
+      }
+    },
+    {
+      "name": "public_frontend_http_200",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "titleFound": true
+      }
+    },
+    {
+      "name": "public_release_info_matches",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "releaseTag": "release-20260801-frozen-dcc-column-collation-r260801e-r1",
+        "sourceRepos": [
+          {
+            "name": "ruoyi-vue-pro",
+            "pathRole": "backend",
+            "commit": "f81435c16ca1defb9b5c35c2e3a2d31a2c77e2ce",
+            "branch": "codex/20260801-smart-seed-collation-fix-frozen",
+            "dirty": false,
+            "dirtySummaryHash": null
+          },
+          {
+            "name": "yudao-ui-admin-vue3",
+            "pathRole": "admin-frontend",
+            "commit": "f81435c16ca1defb9b5c35c2e3a2d31a2c77e2ce",
+            "branch": "codex/20260801-smart-seed-collation-fix-frozen",
+            "dirty": false,
+            "dirtySummaryHash": null
+          }
+        ]
+      }
+    }
+  ],
+  "passed": true
+}

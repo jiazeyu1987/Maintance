@@ -115,6 +115,7 @@ PowerShell 5.1/7 中执行 SSH、bash 片段、HTTP host:port、release-info JSO
 ### Evidence
 
 - `20260711-current-head-test-only-release` P020-P028。
+- 2026-08-01 追加证据：`doc/tasks/20260801-head-test-only-release/execution-log.md` 的只读远端复核中，SSH exit code=`0` 且 `.env`、容器、health、HTTP、lock/migration 必需字段完整，但 stderr 出现 `close - IO is still pending on closed socket`；本类 warning 只能作为 carrier 分层记录，不能覆盖完整 stdout 里的业务状态。
 
 ## 2026-07-12 PowerShell 自动变量与进程守卫门禁
 
@@ -142,7 +143,7 @@ PowerShell 5.1/7 中执行 SSH、bash 片段、HTTP host:port、release-info JSO
 - Verification: 执行后保存结构化 preview gate、脚本退出码、UTF-8 回读结果、Playwright 页面结果、脱敏前后扫描摘要；参数 gate 必须证明 `-ServerHost`、`-ReleaseTag`、`-RequireTested`、`-ConfirmText` 等关键 flag 各自命中正确值。
 - Forbidden action: 不得在 PowerShell 里直接使用 Bash heredoc；不得只靠设置 `$OutputEncoding` 就认为 stdin 中文不会污染；不得用 `args[0::2]`/`args[1::2]` 解析含无值 flag 的命令；不得用过宽脱敏正则污染 releaseTag、仓库名、host 参数或数据库名；不得把脱敏后的误伤日志当作真实远端命令证据。
 - Evidence: `doc/tasks/20260712-intmain-codeonly-three-env-release/execution-log.md`；主线程遇到 `python -c` 换行语法错误、stdin `U+FEFF`、Playwright 中文正则污染、promote-prod preview flag 错位误判、`rg` 正则 flag/lookaround 问题，以及 `mysql -p...` 脱敏规则误伤 `ruoyi-vue-pro`。
-- 2026-07-29 追加证据：本机 `npx playwright install chromium` 超过 300 秒未完成，但稳定安装的 Chrome 可通过 `npx playwright screenshot --channel chrome ...` 和 `npx playwright cli open --browser chrome ...` 完成测试服前端与运行控制台版本对话框验收。日志脱敏正则必须只匹配空白后的 CLI 参数 `\s-p...`，避免把普通库名 `ruoyi-vue-pro` 误改成脱敏文本。
+- 2026-07-29 追加证据：本机 `npx playwright install chromium` 超过 300 秒未完成，但稳定安装的 Chrome 可通过 `npx playwright screenshot --channel chrome ...` 和 `npx playwright cli open --browser chrome ...` 完成测试服前端与运行控制台版本对话框验收。日志脱敏正则必须只匹配空白后的 CLI 参数 `\s-p...`，避免把普通库名 `ruoyi-vue-pro` 误改成脱敏文本。2026-08-01 追加证据：`doc/tasks/20260801-head-test-only-release/publish-test-operation-r260801a-r2.sanitized.log` 保留 `ruoyi-vue-pro` 数据库名，只脱敏 `mysql -p<secret>` 形态；脱敏后必须再做 secret pattern scan 与普通名称保真检查。
 
 ### 推荐做法
 
@@ -188,3 +189,12 @@ PowerShell 5.1/7 中执行 SSH、bash 片段、HTTP host:port、release-info JSO
 - Verification: 记录首次失败为本地 carrier 错误、无服务器动作发生；改写后 SSH 退出码为 0，并结构化验证 `.env IMAGE_TAG`、镜像、health、release-info、release lock 和 migration 状态。
 - Forbidden action: 不得为了绕过 f-string 错误改远端脚本逻辑、跳过 release lock/migration 核验，或把本地 carrier 失败当成测试服发布失败。
 - Evidence: `doc/tasks/20260713-current-head-test-only-release-rerun/task.md` P005，releaseTag `release-20260713-current-head-test-r260713u`。
+
+## 2026-08-01 PowerShell 远端验收与 closeout 自匹配门禁
+
+- Trigger: PowerShell 中通过 SSH 查询远端 MySQL、验证 `/actuator/health`、恢复 48181 运行控制台、扫描进程或清理 release worktree。
+- Preflight check: `ssh -> docker exec -> mysql` 多层命令优先用 Python/PowerShell 参数数组或 UTF-8 LF stdin，不把四层引号压进一个 PowerShell 字符串；`Invoke-WebRequest.Content` 必须识别 byte[] 并按 UTF-8 解码；进程扫描必须限定进程名并排除当前检查器；本机策略拒绝宽脚本时拆成可审计小步骤。
+- Blocker: 本地 shell 报引号未闭合、health 200 但 body 断言因 byte[] 失败、进程扫描命中当前校验脚本、或批量脚本被策略拒绝且没有拆分执行证据。
+- Verification: 记录 carrier exit code、decoded health body、被采信的 java.exe PID/CommandLine、stdout 必需字段完整性、cleanup path allowlist 和最终 `passed=true` 证据。
+- Forbidden action: 不得把本地 carrier/编码/自匹配失败当作测试服业务失败；不得因此跳过 release lock、migration、运行控制台主路径或 worktree 物理目录复核。
+- Evidence: `doc/tasks/20260801-head-test-only-release/execution-log.md` I012-I016；`remote-runtime-verification-r260801e-r1.json`、`runtime-control-main-restore-r260801e-r1.json`、`worktree-cleanup-r260801e-r1.json`。

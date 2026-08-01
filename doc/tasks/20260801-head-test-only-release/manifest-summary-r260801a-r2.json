@@ -1,0 +1,356 @@
+{
+  "releaseTag": "release-20260801-intmain-head-test-r260801a-r2",
+  "component": "intruoyi",
+  "publishScope": "code-only",
+  "builtAt": null,
+  "sourceRepos": [
+    {
+      "name": "ruoyi-vue-pro",
+      "pathRole": "backend",
+      "commit": "9420210f7ad4fb2519c179458fae0e823d082b54",
+      "branch": "HEAD",
+      "dirty": false,
+      "dirtySummaryHash": null
+    },
+    {
+      "name": "yudao-ui-admin-vue3",
+      "pathRole": "admin-frontend",
+      "commit": "9420210f7ad4fb2519c179458fae0e823d082b54",
+      "branch": "HEAD",
+      "dirty": false,
+      "dirtySummaryHash": null
+    }
+  ],
+  "repoResults": [
+    {
+      "name": "ruoyi-vue-pro",
+      "commit": "9420210f7ad4fb2519c179458fae0e823d082b54",
+      "dirty": false,
+      "commitOk": true,
+      "dirtyOk": true
+    },
+    {
+      "name": "yudao-ui-admin-vue3",
+      "commit": "9420210f7ad4fb2519c179458fae0e823d082b54",
+      "dirty": false,
+      "commitOk": true,
+      "dirtyOk": true
+    }
+  ],
+  "changeSet": {
+    "summary": "Release package release-20260801-intmain-head-test-r260801a-r2",
+    "component": "intruoyi",
+    "items": [
+      "发布包：release-20260801-intmain-head-test-r260801a-r2",
+      "组件范围：intruoyi"
+    ],
+    "includeShowroomBuildPackage": false,
+    "includeOnlyOffice": false
+  },
+  "legacyReleaseTag": "release-20260801-intmain-head-test-r260801a-r2",
+  "legacyGitCommit": "9420210f7ad4fb2519c179458fae0e823d082b54",
+  "artifactCountChecked": 2045,
+  "artifactAllOk": true,
+  "artifactResults": [
+    {
+      "path": "docker-compose.yml",
+      "exists": true,
+      "shaOk": true,
+      "size": 10608
+    },
+    {
+      "path": "intruoyi-images_release-20260801-intmain-head-test-r260801a-r2.tar",
+      "exists": true,
+      "shaOk": true,
+      "size": 704106496
+    },
+    {
+      "path": "required-sql/20260512_ai_base_schema.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 13164
+    },
+    {
+      "path": "required-sql/20260512_ai_codex_seed.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 1789
+    },
+    {
+      "path": "required-sql/20260512_bpm_base_schema.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 7592
+    },
+    {
+      "path": "required-sql/20260512_crm_base_schema.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 17628
+    },
+    {
+      "path": "required-sql/20260512_erp_base_schema.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 33197
+    },
+    {
+      "path": "required-sql/20260512_erp_kingdee_purchase_order_sync.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 1975
+    },
+    {
+      "path": "required-sql/20260512_mes_base_schema.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 140579
+    },
+    {
+      "path": "required-sql/20260512_mes_schema.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 20350
+    },
+    {
+      "path": "required-sql/20260513_dcc_base_schema.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 76023
+    },
+    {
+      "path": "required-sql/20260513_dcc_id_auto_increment_fix.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 1435
+    },
+    {
+      "path": "required-sql/20260513_dcc_notify_template_seed.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 9439
+    },
+    {
+      "path": "required-sql/20260513_erp_kingdee_supplier_sync_record.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 1142
+    },
+    {
+      "path": "required-sql/20260513_erp_product_standard_expand.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 188
+    },
+    {
+      "path": "required-sql/20260513_kingdee_multi_sync.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 4643
+    },
+    {
+      "path": "required-sql/20260513_mes_dv_machinery_extend.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 2320
+    },
+    {
+      "path": "required-sql/20260513_mes_dv_machinery_process_process_id.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 1239
+    },
+    {
+      "path": "required-sql/20260513_mes_md_workstation_capacity.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 1026
+    },
+    {
+      "path": "required-sql/20260514_erp_kingdee_config_page.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 3174
+    },
+    {
+      "path": "required-sql/20260514_mes_batch_record_report.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 2071
+    },
+    {
+      "path": "required-sql/20260515_dcc_governance_split_menu.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 1911
+    },
+    {
+      "path": "required-sql/20260515_dcc_runtime_schema_repair.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 41939
+    },
+    {
+      "path": "required-sql/20260515_dcc_runtime_seed_name_fix.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 872
+    },
+    {
+      "path": "required-sql/20260515_mes_md_item_specification_512.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 190
+    },
+    {
+      "path": "required-sql/20260516_dcc_electronic_signature_management.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 1504
+    },
+    {
+      "path": "required-sql/20260516_dcc_training_closed_loop_menu.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 681
+    },
+    {
+      "path": "required-sql/20260516_mes_batch_record_report_route_key.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 2372
+    },
+    {
+      "path": "required-sql/20260517_infra_file_content_longblob.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 1136
+    },
+    {
+      "path": "required-sql/20260518_dcc_approval_task_name_fix.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 3722
+    },
+    {
+      "path": "required-sql/20260520_dcc_signature_menu_restore.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 1598
+    },
+    {
+      "path": "required-sql/20260520_system_nas_management_menu.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 6310
+    },
+    {
+      "path": "required-sql/20260521_showroom_company_cover_image.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 871
+    },
+    {
+      "path": "required-sql/20260522_mes_route_process_batch_record_binding.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 1028
+    },
+    {
+      "path": "required-sql/20260522_showroom_product_cover_batch_task.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 2851
+    },
+    {
+      "path": "required-sql/20260523_dcc_nas_transfer_task.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 3689
+    },
+    {
+      "path": "required-sql/20260523_infra_runtime_control_menu.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 3585
+    },
+    {
+      "path": "required-sql/20260523_mes_batch_record_execution_edhr_v1.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 5544
+    },
+    {
+      "path": "required-sql/20260524_edhr_permission_restore.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 6313
+    },
+    {
+      "path": "required-sql/20260524_showroom_company_version_menu_visibility.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 4402
+    },
+    {
+      "path": "required-sql/20260524_showroom_prompt_menu_visibility.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 4159
+    },
+    {
+      "path": "required-sql/20260524_showroom_prompt_version.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 4404
+    },
+    {
+      "path": "required-sql/20260525_dcc_screenshot_t1.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 1504
+    },
+    {
+      "path": "required-sql/20260525_dcc_screenshot_t3.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 1071
+    },
+    {
+      "path": "required-sql/20260525_dcc_screenshot_t5.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 2153
+    },
+    {
+      "path": "required-sql/20260525_edhr_archive_permission.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 8514
+    },
+    {
+      "path": "required-sql/20260525_edhr_archive_schema.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 4646
+    },
+    {
+      "path": "required-sql/20260525_showroom_hall_name_suffix_showcase.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 556
+    },
+    {
+      "path": "required-sql/20260525_system_password_policy.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 1128
+    },
+    {
+      "path": "required-sql/20260526_dcc_electronic_signature_hardening.sql",
+      "exists": true,
+      "shaOk": true,
+      "size": 21772
+    }
+  ]
+}
