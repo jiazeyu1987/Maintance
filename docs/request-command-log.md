@@ -2922,3 +2922,12 @@
 2026-08-01T16:58:30+08:00	20260801-head-test-only-release	RESULT	PASS: 测试服 `172.30.30.58` 真实运行态通过；`.env IMAGE_TAG`、backend/frontend 实际镜像 tag、容器 Up、backend health=UP、frontend HTTP 200、页面标题、`release-info.json`、release lock=APPLIED、migration FAILED/RUNNING=0 均匹配 r260801e；运行控制台 release-status 显示同一 releaseTag 和变更说明。
 2026-08-01T16:59:00+08:00	20260801-head-test-only-release	RESULT	EXPERIENCE: 已将 DCC seed 列级 collation、仅测试服成功闭环、PowerShell/SSH/MySQL 承载、Invoke-WebRequest byte[]、进程扫描自匹配、release worktree ignored node_modules 长路径清理沉淀到 `docs/release-build-preflight-lessons.md`、`docs/test-release-preflight.md`、`docs/powershell-preflight-lessons.md` 与 `docs/experience-index.md`。
 2026-08-01T16:59:30+08:00	20260801-head-test-only-release	CLOSEOUT	PASS: 修复提交已合回 `E:\IntRuoyi` 的 `int_main`，merge commit `ac8457724d16d287f5d65013ba304f77f3786e7b`；聚焦 SQL seed 回归 8 passed；48181 已恢复主维护路径 PID=45648 health=UP 且正式/备份访问禁用；r260801a/r260801b release/fix worktree 与 state dir Git 注册和物理路径均不存在。
+## 20260802-head-test-only-release
+
+- 用户请求：仅基于当前分支最新已提交 HEAD 构建维护控制台和测试发布包，发布到测试服务器；未提交改动不得进入产物，禁止正式服/备份服发布，成功后记录问题并沉淀前置经验。
+- 命令意图：读取经验索引和测试服发布门禁；检查维护仓与主程序仓 Git 分支、HEAD、dirty 状态和 48181 运行控制台状态；创建任务文档并冻结发布边界。
+- 当前证据：维护仓 branch=`int_main` HEAD=`dbc80bc678ae299f419b61c6264601477ea95410` dirty；主程序仓 branch=`int_main` HEAD=`baf59590f11907efae992cd65d48c067c2f3e572` dirty；本轮必须使用 clean release worktree。
+- 命令记录：创建维护 release worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260802a\m` 和主程序 release worktree `D:\IntRuoyiWorktree\r260802a-release-app`；运行 migration policy gate `status=passed, migrationCount=406`；恢复前端依赖并构建维护控制台，Maven tests `26` passed。
+- 命令记录：通过 runtime-control 执行 build-release，releaseTag=`release-20260802-intmain-head-test-r260802a-r1`，operation=`op-2026-08-01T164440373170300Z-e1e28b57-392e-4329-9a0f-7c6e1541cbe9`，状态 `SUCCESS`；manifest validator=`MANIFEST_VALIDATION_PASSED`，sourceRepos 均为 `baf59590f11907efae992cd65d48c067c2f3e572` 且 dirty=false。
+- 命令记录：publish-test 首次 preview 因带入 build-only 字段 `includeOnlyOffice` 返回 HTTP 400；改用最小 payload 后 preview 通过，执行 publish-test operation=`op-2026-08-01T170326581868700Z-f11be1e5-4e3b-4335-9730-2c989e8800f5`，状态 `SUCCESS`，未执行 `mark-tested`、`promote-prod`、`promote-backup`。
+- 验证记录：测试服 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、容器 running、backend health、frontend HTTP、release-info、release lock、当前 release migration failed/running 全部匹配 `release-20260802-intmain-head-test-r260802a-r1`；Playwright Chrome 截图显示测试服登录页。

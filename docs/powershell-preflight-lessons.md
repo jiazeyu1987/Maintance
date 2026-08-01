@@ -198,3 +198,12 @@ PowerShell 5.1/7 中执行 SSH、bash 片段、HTTP host:port、release-info JSO
 - Verification: 记录 carrier exit code、decoded health body、被采信的 java.exe PID/CommandLine、stdout 必需字段完整性、cleanup path allowlist 和最终 `passed=true` 证据。
 - Forbidden action: 不得把本地 carrier/编码/自匹配失败当作测试服业务失败；不得因此跳过 release lock、migration、运行控制台主路径或 worktree 物理目录复核。
 - Evidence: `doc/tasks/20260801-head-test-only-release/execution-log.md` I012-I016；`remote-runtime-verification-r260801e-r1.json`、`runtime-control-main-restore-r260801e-r1.json`、`worktree-cleanup-r260801e-r1.json`。
+
+## 2026-08-02 PowerShell 复合命令策略拦截与证据精简门禁
+
+- Trigger: PowerShell 中执行 release worktree 构建、静态资源清理复制、Jar 启动、JSON 生成或运行态验证等多步骤命令。
+- Preflight check: 优先调用仓库已有脚本，例如 `scripts\build.ps1`；需要清理、复制、启动和健康检查时拆成小步骤，每步记录退出码和关键产物；大 JSON 输出写入任务证据文件，任务日志只记录 status/count/hash。
+- Blocker: 本机策略拒绝包含递归清理、复杂引号、Start-Process、JSON 和多命令串联的大命令；或输出过大导致无法审计关键 PASS/FAIL。
+- Verification: 记录被拒命令的阶段和影响；改用小步骤后验证 Jar、health、manifest、远端运行态和截图证据。
+- Forbidden action: 禁止为了绕过策略扩大命令权限、合并更多操作、忽略被拒步骤或把未执行命令当作成功。
+- Evidence: `doc/tasks/20260802-head-test-only-release/execution-log.md` I004、I006；维护控制台最终通过 `scripts\build.ps1` 构建，运行态摘要写入 JSON 证据。

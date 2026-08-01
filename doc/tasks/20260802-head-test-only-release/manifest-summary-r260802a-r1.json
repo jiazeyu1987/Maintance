@@ -1,0 +1,49 @@
+{
+  "releaseTag": "release-20260802-intmain-head-test-r260802a-r1",
+  "manifestVersion": "1.0",
+  "changeSet": {
+    "summary": "Release package release-20260802-intmain-head-test-r260802a-r1",
+    "component": "intruoyi",
+    "items": [
+      "发布包：release-20260802-intmain-head-test-r260802a-r1",
+      "组件范围：intruoyi"
+    ],
+    "includeShowroomBuildPackage": false,
+    "includeOnlyOffice": false
+  },
+  "sourceRepos": [
+    {
+      "name": "ruoyi-vue-pro",
+      "pathRole": "backend",
+      "commit": "baf59590f11907efae992cd65d48c067c2f3e572",
+      "branch": "HEAD",
+      "dirty": false,
+      "dirtySummaryHash": null
+    },
+    {
+      "name": "yudao-ui-admin-vue3",
+      "pathRole": "admin-frontend",
+      "commit": "baf59590f11907efae992cd65d48c067c2f3e572",
+      "branch": "HEAD",
+      "dirty": false,
+      "dirtySummaryHash": null
+    }
+  ],
+  "targetRequirements": {
+    "environmentCodes": [
+      "test",
+      "backup",
+      "prod"
+    ],
+    "serverConfigSchemaVersion": "1.0",
+    "storageProfileIds": [
+      "minio-yudao-default"
+    ],
+    "dockerProfileId": "intruoyi-docker-compose",
+    "requiresDatabaseMigrationPrecheck": true,
+    "requiresRequiredDataPrecheck": true,
+    "requiresResourceDeltaProof": false
+  },
+  "artifactCount": 420,
+  "requiredSqlCount": 410
+}

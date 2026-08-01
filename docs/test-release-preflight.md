@@ -457,3 +457,37 @@ ssh root@172.30.30.58 bash -s
 ### Evidence
 
 - `doc/tasks/20260801-head-test-only-release/`；最终 releaseTag `release-20260801-frozen-dcc-column-collation-r260801e-r1`，build operation `op-2026-08-01T075619071613500Z-8ce3eda8-87d7-412c-8daf-b944d4d737df`，publish operation `op-2026-08-01T082221679621900Z-bdfeb32d-6378-404e-af3c-3bb8b8407300`，远端运行态和 cleanup 证据均通过。
+
+## 2026-08-02 仅测试服 r260802a 发布 payload 与历史失败记录门禁
+
+### Trigger
+
+仅测试服发布使用运行控制台 API 发起 `publish-test`，或发布前远端只读检查发现 `infra_release_migration` 中存在旧 releaseTag 的 `FAILED` 记录。
+
+### Preflight check
+
+- `publish-test` 请求体必须使用最小有效 payload：`action`、`reason`、`releaseTag`；不要携带 `includeOnlyOffice`、`includeShowroomBuildPackage`、`publishScope` 等 build-only 字段。
+- 发布前只读检查必须区分两类 migration：当前目标 releaseTag 的 `FAILED/RUNNING` 行必须为 `0`；历史旧 releaseTag 的 `FAILED` 行需记录但不直接阻塞当前 code-only 发布。
+- 版本变更说明校验不得只查发布包根目录；必须按顺序核 `manifest.json` changeSet、前端镜像或远端 `/release-info.json`、运行控制台 `release-status`。
+
+### Blocker
+
+- `publish-test` preview 返回 `msg=includeOnlyOffice`、`publishScope` 或其他 action schema 错误且未重新预览通过。
+- 当前目标 releaseTag 的 migration `FAILED/RUNNING` count 不为 `0`。
+- `release-info.json`、manifest changeSet、运行控制台 release-status 不能证明同一 releaseTag 的版本号和变更说明。
+
+### Verification
+
+- preview 结构化参数显示 `Mode=deploy-release`、`Environment=test`、`ReleaseTag=<target>`、`ServerHost=172.30.30.58`、`RemoteAppDir=/opt/intruoyi/runtime`，且无正式/备份动作。
+- 远端验收保存 `.env IMAGE_TAG`、backend/frontend image tag、health、HTTP、release-info、release lock、当前 releaseTag migration status；历史 failed migration 单独记录 releaseTag 和原因。
+- 运行控制台 release-status 显示 `testCurrentReleaseTag=<target>`、summary、changes、sourceRepos dirty=false。
+
+### Forbidden action
+
+- 禁止把 build-only 字段塞进 publish-test payload 后忽略 preview 失败继续发布。
+- 禁止因历史旧 releaseTag 的 FAILED migration 行存在就手工改库、清空迁移表或误判本次发布失败；也禁止忽略当前 releaseTag 的 FAILED/RUNNING。
+- 禁止只用 HTTP 200 或 package root 文件存在性替代版本变更说明验收。
+
+### Evidence
+
+- `doc/tasks/20260802-head-test-only-release/`；releaseTag `release-20260802-intmain-head-test-r260802a-r1`；build operation `op-2026-08-01T164440373170300Z-e1e28b57-392e-4329-9a0f-7c6e1541cbe9`；publish operation `op-2026-08-01T170326581868700Z-f11be1e5-4e3b-4335-9730-2c989e8800f5`；远端运行态、release-status 和 Playwright 页面证据均通过。

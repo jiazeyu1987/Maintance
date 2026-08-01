@@ -1,0 +1,75 @@
+{
+  "releaseTag": "release-20260802-intmain-head-test-r260802a-r1",
+  "testCurrentReleaseTag": "release-20260802-intmain-head-test-r260802a-r1",
+  "latestTestedReleaseTag": "release-20260723-intmain-codeonly-three-env-r260723s-r1",
+  "testCurrentReleaseNotes": {
+    "environment": "test",
+    "releaseTag": "release-20260802-intmain-head-test-r260802a-r1",
+    "packageDirectoryName": "release-20260802-intmain-head-test-r260802a-r1",
+    "manifestPath": "Backup/ReleasePackage/release-20260802-intmain-head-test-r260802a-r1/manifest.json",
+    "builtAt": "2026-08-01T16:57:03.9742662Z",
+    "publishScope": "code-only",
+    "component": "intruoyi",
+    "summary": "Release package release-20260802-intmain-head-test-r260802a-r1",
+    "changes": [
+      "发布包：release-20260802-intmain-head-test-r260802a-r1",
+      "组件范围：intruoyi"
+    ],
+    "sourceRepos": [
+      {
+        "name": "ruoyi-vue-pro",
+        "pathRole": "backend",
+        "commit": "baf59590f11907efae992cd65d48c067c2f3e572",
+        "branch": "HEAD",
+        "dirty": false
+      },
+      {
+        "name": "yudao-ui-admin-vue3",
+        "pathRole": "admin-frontend",
+        "commit": "baf59590f11907efae992cd65d48c067c2f3e572",
+        "branch": "HEAD",
+        "dirty": false
+      }
+    ],
+    "status": "AVAILABLE",
+    "blockedReasons": []
+  },
+  "recentOperationsForRelease": [
+    {
+      "operationId": "op-2026-08-01T170326581868700Z-f11be1e5-4e3b-4335-9730-2c989e8800f5",
+      "requestedBy": "local-operator",
+      "requestedAt": "2026-08-01T17:03:56.279832900Z",
+      "environment": "test",
+      "component": "publish-test",
+      "action": "publish-test",
+      "actionLabel": "部署发布包到测试服",
+      "parameters": {
+        "releaseTag": "release-20260802-intmain-head-test-r260802a-r1"
+      },
+      "reason": "20260802 deploy frozen HEAD package to test server only",
+      "status": "SUCCESS",
+      "summary": "命令执行完成",
+      "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260802a-state\\runtime-control\\logs\\op-2026-08-01T170326581868700Z-f11be1e5-4e3b-4335-9730-2c989e8800f5.log"
+    },
+    {
+      "operationId": "op-2026-08-01T164440373170300Z-e1e28b57-392e-4329-9a0f-7c6e1541cbe9",
+      "requestedBy": "local-operator",
+      "requestedAt": "2026-08-01T16:44:40.378851200Z",
+      "environment": "release",
+      "component": "build-release",
+      "action": "build-release",
+      "actionLabel": "构建发布包",
+      "parameters": {
+        "publishScope": "code-only",
+        "includeOnlyOffice": "false",
+        "includeShowroomBuildPackage": "false",
+        "releaseTag": "release-20260802-intmain-head-test-r260802a-r1"
+      },
+      "reason": "20260802 HEAD-only test server release build from frozen worktree r260802a",
+      "status": "SUCCESS",
+      "summary": "命令执行完成",
+      "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260802a-state\\runtime-control\\logs\\op-2026-08-01T164440373170300Z-e1e28b57-392e-4329-9a0f-7c6e1541cbe9.log"
+    }
+  ],
+  "forbiddenActionsPresent": []
+}
