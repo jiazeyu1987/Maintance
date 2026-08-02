@@ -1,0 +1,2 @@
+mysql: [Warning] Using a password on the command line interface can be insecure.
+close - IO is still pending on closed socket. read:1, write:0, io:0000028DE1DFF5F0

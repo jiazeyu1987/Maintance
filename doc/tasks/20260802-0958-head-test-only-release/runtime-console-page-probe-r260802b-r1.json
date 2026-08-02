@@ -1,0 +1,14 @@
+{
+  "url": "http://127.0.0.1:48181/",
+  "title": "运行控制台",
+  "releaseTag": "release-20260802-intmain-head-test-r260802b-r1",
+  "changeButtonVisible": true,
+  "releaseTagVisible": true,
+  "packageVisible": true,
+  "componentVisible": true,
+  "beforeTextSample": "本机运维台 · 127.0.0.1:48181 运行控制台 local-operator 容量 PASS 刷新 运行实例 3 异常/停止 1 操作记录 2 容量状态 PASS 实例状态 4 项 环境 组件 状态 HTTP 地址 动作 local intruoyi-frontend RUNNING 200 http://127.0.0.1:8081/ local intruoyi-backend RUNNING 200 http://127.0.0.1:48081/actuator/health local intruoyi-full RUNNING 200 http://127.0.0.1:8081/ local website-frontend STOPPED http://127.0.0.1:4173/ 运维动作 常规 当前动作 构建发布包 生成发布包，不直接部署到任何环境 构建发布包 部署测试服 测试服数据库快应用 标记测试通过 上线正式服 上线备份服 立即备份 回滚应用 恢复数据 恢复演练 操作原因 发布范围 仅代码 发布标签 生产确认 包含 OnlyOffice 包含展厅包 智能发布报告 预览命令 操作记录 SUCCESS 部署发布包到测试服 编号 操作者 环境 动作 状态 结果 日志 op-2026-08-02T022945019393Z-852720a9-61ba-4c79-8cc5-245ced64c078 local-operator test 部署发布包到测试服 SUCCESS 命令执行完成 op-2026-08-02T021129767983200Z-e204dce2-6be8-4a13-9428-063c4070ae40 local-operator release 构建发布包 SUCCESS 命令执行完成 软件版本 2026.06.0 测试服 release-20260802-intmain-head-test-r260802b-r1 查看变更 正式服 未上报 备份服 未上报",
+  "afterTextSample": "本机运维台 · 127.0.0.1:48181 运行控制台 local-operator 容量 PASS 刷新 运行实例 3 异常/停止 1 操作记录 2 容量状态 PASS 实例状态 4 项 环境 组件 状态 HTTP 地址 动作 local intruoyi-frontend RUNNING 200 http://127.0.0.1:8081/ local intruoyi-backend RUNNING 200 http://127.0.0.1:48081/actuator/health local intruoyi-full RUNNING 200 http://127.0.0.1:8081/ local website-frontend STOPPED http://127.0.0.1:4173/ 运维动作 常规 当前动作 构建发布包 生成发布包，不直接部署到任何环境 构建发布包 部署测试服 测试服数据库快应用 标记测试通过 上线正式服 上线备份服 立即备份 回滚应用 恢复数据 恢复演练 操作原因 发布范围 仅代码 发布标签 生产确认 包含 OnlyOffice 包含展厅包 智能发布报告 预览命令 操作记录 SUCCESS 部署发布包到测试服 编号 操作者 环境 动作 状态 结果 日志 op-2026-08-02T022945019393Z-852720a9-61ba-4c79-8cc5-245ced64c078 local-operator test 部署发布包到测试服 SUCCESS 命令执行完成 op-2026-08-02T021129767983200Z-e204dce2-6be8-4a13-9428-063c4070ae40 local-operator release 构建发布包 SUCCESS 命令执行完成 版本变更说明 版本号 release-20260802-intmain-head-test-r260802b-r1 变更说明 发布包：release-20260802-intmain-head-test-r260802b-r1 组件范围：intruoyi 软件版本 2026.06.0 测试服 release-20260802-intmain-head-test-r260802b-r1 查看变更 正式服 未上报 备份服 未上报",
+  "consoleErrors": [],
+  "failedRequests": [],
+  "screenshotPath": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20260802-0958-head-test-only-release/runtime-console-page-r260802b-r1.png"
+}

@@ -491,3 +491,37 @@ ssh root@172.30.30.58 bash -s
 ### Evidence
 
 - `doc/tasks/20260802-head-test-only-release/`；releaseTag `release-20260802-intmain-head-test-r260802a-r1`；build operation `op-2026-08-01T164440373170300Z-e1e28b57-392e-4329-9a0f-7c6e1541cbe9`；publish operation `op-2026-08-01T170326581868700Z-f11be1e5-4e3b-4335-9730-2c989e8800f5`；远端运行态、release-status 和 Playwright 页面证据均通过。
+
+## 2026-08-02 09:58 后 r260802b 仅测试服重新上传门禁
+
+### Trigger
+
+用户要求“重新上传一遍”且明确不接受某个时间点之前的发布实现、operation、截图或 closeout 结论作为完成证据。
+
+### Preflight check
+
+- 新建独立任务目录并写明时间边界；旧 releaseTag 只能作为发布前状态或历史背景，不得作为完成证据。
+- 重新冻结当前维护仓和主程序仓 HEAD；主工作区 dirty 时必须创建本轮专用 clean release worktree。
+- 使用新 releaseTag 重新完成同一条 `build-release -> publish-test` 链路；发布后只接受同一 releaseTag 的 operation、manifest、远端运行态、release-status 和页面证据。
+- 发布前后均记录测试服当前 tag、目标 releaseTag 的 migration `FAILED/RUNNING` 数量、历史旧失败 migration 数量和 release lock 状态。
+
+### Blocker
+
+- 任一完成证据来自用户指定时间边界之前。
+- build-release、publish-test、manifest、远端 `.env`、实际镜像、release-info、release-status 或页面可见版本号不属于同一 releaseTag。
+- 出现 `mark-tested`、`promote-prod`、`promote-backup` 或正式/备份服部署动作。
+
+### Verification
+
+- 任务日志记录新冻结 HEAD、worktree 路径、build operation、publish operation、manifest sourceRepos dirty=false、远端 `.env IMAGE_TAG`、backend/frontend image tag、container running、backend health `UP`、frontend HTTP `200`、release lock `APPLIED`、目标 migration failed/running `0`。
+- 运行控制台页面必须显示当前 releaseTag、发布包、组件范围和变更说明，且 Playwright console errors/failed requests 为空。
+
+### Forbidden action
+
+- 禁止把旧成功 releaseTag 的截图、operation 或 closeout 结论复用为本次重新上传成功。
+- 禁止因主分支后续继续更新而追逐新提交；构建发布只认发布开始时记录的冻结 worktree HEAD。
+- 禁止只用 HTTP 200、`.env` 单项或 operation summary 替代完整运行态验收。
+
+### Evidence
+
+- `doc/tasks/20260802-0958-head-test-only-release/`；releaseTag `release-20260802-intmain-head-test-r260802b-r1`；maintenance HEAD `b25214b3de563aa83e3bac9eacf401da49c5f476`；app HEAD `b99246f58ff7d556caee24307ec89b662d0427e3`；build operation `op-2026-08-02T021129767983200Z-e204dce2-6be8-4a13-9428-063c4070ae40`；publish operation `op-2026-08-02T022945019393Z-852720a9-61ba-4c79-8cc5-245ced64c078`；远端运行态、release-status、前端页面和运行控制台页面证据均通过。

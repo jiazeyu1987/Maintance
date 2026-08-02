@@ -1,0 +1,64 @@
+{
+  "releaseTag": "release-20260802-intmain-head-test-r260802b-r1",
+  "exitCode": 0,
+  "stdout": "env_image_tag\trelease-20260802-intmain-head-test-r260802b-r1\nbackend_image_status\tintruoyi-backend:release-20260802-intmain-head-test-r260802b-r1|Up 30 minutes\nfrontend_image_status\tintruoyi-frontend:release-20260802-intmain-head-test-r260802b-r1|Up 30 minutes\nbackend_health\t{\"status\":\"UP\"}\nfrontend_http\t200\nfrontend_title\t瑛泰管理系统\nrelease_info\t{    \"releaseTag\":  \"release-20260802-intmain-head-test-r260802b-r1\",    \"packageId\":  \"release-20260802-intmain-head-test-r260802b-r1\",    \"createdAt\":  \"2026-08-02T02:22:50.2217360Z\",    \"publishScope\":  \"code-only\",    \"changeSet\":  {                      \"summary\":  \"Release package release-20260802-intmain-head-test-r260802b-r1\",                      \"component\":  \"intruoyi\",                      \"items\":  [                                    \"发布包：release-20260802-intmain-head-test-r260802b-r1\",                                    \"组件范围：intruoyi\"                                ],                      \"includeShowroomBuildPackage\":  false,                      \"includeOnlyOffice\":  false                  },    \"sourceRepos\":  [                        {                            \"name\":  \"ruoyi-vue-pro\",                            \"pathRole\":  \"backend\",                            \"commit\":  \"b99246f58ff7d556caee24307ec89b662d0427e3\",                            \"branch\":  \"HEAD\",                            \"dirty\":  false,                            \"dirtySummaryHash\":  null                        },                        {                            \"name\":  \"yudao-ui-admin-vue3\",                            \"pathRole\":  \"admin-frontend\",                            \"commit\":  \"b99246f58ff7d556caee24307ec89b662d0427e3\",                            \"branch\":  \"HEAD\",                            \"dirty\":  false,                            \"dirtySummaryHash\":  null                        }                    ]}\ntarget_lock\ttest|release-20260802-intmain-head-test-r260802b-r1|APPLIED\ntarget_migration_failed_running\t0\n",
+  "stderr": "close - IO is still pending on closed socket. read:1, write:0, io:00000193BD1F9B80\r\n",
+  "items": {
+    "env_image_tag": "release-20260802-intmain-head-test-r260802b-r1",
+    "backend_image_status": "intruoyi-backend:release-20260802-intmain-head-test-r260802b-r1|Up 30 minutes",
+    "frontend_image_status": "intruoyi-frontend:release-20260802-intmain-head-test-r260802b-r1|Up 30 minutes",
+    "backend_health": "{\"status\":\"UP\"}",
+    "frontend_http": "200",
+    "frontend_title": "瑛泰管理系统",
+    "release_info": "{    \"releaseTag\":  \"release-20260802-intmain-head-test-r260802b-r1\",    \"packageId\":  \"release-20260802-intmain-head-test-r260802b-r1\",    \"createdAt\":  \"2026-08-02T02:22:50.2217360Z\",    \"publishScope\":  \"code-only\",    \"changeSet\":  {                      \"summary\":  \"Release package release-20260802-intmain-head-test-r260802b-r1\",                      \"component\":  \"intruoyi\",                      \"items\":  [                                    \"发布包：release-20260802-intmain-head-test-r260802b-r1\",                                    \"组件范围：intruoyi\"                                ],                      \"includeShowroomBuildPackage\":  false,                      \"includeOnlyOffice\":  false                  },    \"sourceRepos\":  [                        {                            \"name\":  \"ruoyi-vue-pro\",                            \"pathRole\":  \"backend\",                            \"commit\":  \"b99246f58ff7d556caee24307ec89b662d0427e3\",                            \"branch\":  \"HEAD\",                            \"dirty\":  false,                            \"dirtySummaryHash\":  null                        },                        {                            \"name\":  \"yudao-ui-admin-vue3\",                            \"pathRole\":  \"admin-frontend\",                            \"commit\":  \"b99246f58ff7d556caee24307ec89b662d0427e3\",                            \"branch\":  \"HEAD\",                            \"dirty\":  false,                            \"dirtySummaryHash\":  null                        }                    ]}",
+    "target_lock": "test|release-20260802-intmain-head-test-r260802b-r1|APPLIED",
+    "target_migration_failed_running": "0"
+  },
+  "releaseInfo": {
+    "releaseTag": "release-20260802-intmain-head-test-r260802b-r1",
+    "packageId": "release-20260802-intmain-head-test-r260802b-r1",
+    "createdAt": "2026-08-02T02:22:50.2217360Z",
+    "publishScope": "code-only",
+    "changeSet": {
+      "summary": "Release package release-20260802-intmain-head-test-r260802b-r1",
+      "component": "intruoyi",
+      "items": [
+        "发布包：release-20260802-intmain-head-test-r260802b-r1",
+        "组件范围：intruoyi"
+      ],
+      "includeShowroomBuildPackage": false,
+      "includeOnlyOffice": false
+    },
+    "sourceRepos": [
+      {
+        "name": "ruoyi-vue-pro",
+        "pathRole": "backend",
+        "commit": "b99246f58ff7d556caee24307ec89b662d0427e3",
+        "branch": "HEAD",
+        "dirty": false,
+        "dirtySummaryHash": null
+      },
+      {
+        "name": "yudao-ui-admin-vue3",
+        "pathRole": "admin-frontend",
+        "commit": "b99246f58ff7d556caee24307ec89b662d0427e3",
+        "branch": "HEAD",
+        "dirty": false,
+        "dirtySummaryHash": null
+      }
+    ]
+  },
+  "assertions": {
+    "sshExit0": true,
+    "envMatches": true,
+    "backendImageMatches": true,
+    "frontendImageMatches": true,
+    "backendHealthUp": true,
+    "frontendHttp200": true,
+    "releaseInfoMatches": true,
+    "sourceReposClean": true,
+    "releaseLockApplied": true,
+    "targetMigrationNoFailedRunning": true
+  },
+  "passed": true
+}

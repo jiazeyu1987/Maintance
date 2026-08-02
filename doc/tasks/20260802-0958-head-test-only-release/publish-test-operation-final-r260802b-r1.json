@@ -1,0 +1,16 @@
+{
+  "operationId": "op-2026-08-02T022945019393Z-852720a9-61ba-4c79-8cc5-245ced64c078",
+  "requestedBy": "local-operator",
+  "requestedAt": "2026-08-02T02:30:14.475302200Z",
+  "environment": "test",
+  "component": "publish-test",
+  "action": "publish-test",
+  "actionLabel": "部署发布包到测试服",
+  "parameters": {
+    "releaseTag": "release-20260802-intmain-head-test-r260802b-r1"
+  },
+  "reason": "2026-08-02 09:58 后重新上传测试服：仅部署 r260802b 到测试服务器",
+  "status": "SUCCESS",
+  "summary": "命令执行完成",
+  "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260802b-state\\runtime-control\\logs\\op-2026-08-02T022945019393Z-852720a9-61ba-4c79-8cc5-245ced64c078.log"
+}

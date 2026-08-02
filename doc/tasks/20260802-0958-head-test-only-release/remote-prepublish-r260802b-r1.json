@@ -1,0 +1,51 @@
+{
+  "releaseTag": "release-20260802-intmain-head-test-r260802b-r1",
+  "env_image_tag": "release-20260802-intmain-head-test-r260802a-r1",
+  "backend_image_status": "intruoyi-backend:release-20260802-intmain-head-test-r260802a-r1|running",
+  "frontend_image_status": "intruoyi-frontend:release-20260802-intmain-head-test-r260802a-r1|running",
+  "backend_health": "{\"status\":\"UP\"}",
+  "frontend_http": "200",
+  "release_info": {
+    "releaseTag": "release-20260802-intmain-head-test-r260802a-r1",
+    "packageId": "release-20260802-intmain-head-test-r260802a-r1",
+    "createdAt": "2026-08-01T16:54:58.7273530Z",
+    "publishScope": "code-only",
+    "changeSet": {
+      "summary": "Release package release-20260802-intmain-head-test-r260802a-r1",
+      "component": "intruoyi",
+      "items": [
+        "发布包：release-20260802-intmain-head-test-r260802a-r1",
+        "组件范围：intruoyi"
+      ],
+      "includeShowroomBuildPackage": false,
+      "includeOnlyOffice": false
+    },
+    "sourceRepos": [
+      {
+        "name": "ruoyi-vue-pro",
+        "pathRole": "backend",
+        "commit": "baf59590f11907efae992cd65d48c067c2f3e572",
+        "branch": "HEAD",
+        "dirty": false,
+        "dirtySummaryHash": null
+      },
+      {
+        "name": "yudao-ui-admin-vue3",
+        "pathRole": "admin-frontend",
+        "commit": "baf59590f11907efae992cd65d48c067c2f3e572",
+        "branch": "HEAD",
+        "dirty": false,
+        "dirtySummaryHash": null
+      }
+    ]
+  },
+  "running_locks": "0",
+  "target_failed_running": "0",
+  "global_failed": "3",
+  "assertions": {
+    "noRunningLocks": true,
+    "targetNoFailedRunning": true,
+    "backendHealthUp": true,
+    "frontendHttp200": true
+  }
+}

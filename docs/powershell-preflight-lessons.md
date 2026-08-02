@@ -207,3 +207,37 @@ PowerShell 5.1/7 中执行 SSH、bash 片段、HTTP host:port、release-info JSO
 - Verification: 记录被拒命令的阶段和影响；改用小步骤后验证 Jar、health、manifest、远端运行态和截图证据。
 - Forbidden action: 禁止为了绕过策略扩大命令权限、合并更多操作、忽略被拒步骤或把未执行命令当作成功。
 - Evidence: `doc/tasks/20260802-head-test-only-release/execution-log.md` I004、I006；维护控制台最终通过 `scripts\build.ps1` 构建，运行态摘要写入 JSON 证据。
+
+## 2026-08-02 r260802b PowerShell/SSH/Playwright carrier 门禁
+
+### Trigger
+
+Windows PowerShell 中执行 release worktree 清理、启动本地 Jar、通过 SSH/MySQL 采集远端验收、或用 `.mjs` Playwright 脚本验证运行控制台页面。
+
+### Preflight check
+
+- 递归清理和进程启动拆成小步骤；若本机策略拒绝 `Remove-Item -Recurse` 或复杂 `Start-Process`，使用可审计的精确 allowlist 清理或 `subprocess.Popen`，并记录 PID、路径边界、health。
+- SSH/MySQL stdout parser 同时兼容真实 tab 和字面量 `\t` 分隔；stderr 的 MySQL password warning / OpenSSH `IO is still pending` 只能作为 carrier warning 记录，不能覆盖 exit code 0 与完整 stdout assertions。
+- `.mjs` Playwright 脚本不得直接混用 CommonJS `require` 与 top-level await；需要复用前端 worktree 依赖时，用 `createRequire('<frontend package.json>')` 绑定模块解析根。
+- 远端 `release-info.json` 通过 key-value stdout 传回本地时必须先 compact 成单行，例如 `tr -d '\r\n'`，或改用 base64/JSON 文件运输；不得把多行 JSON 首行 `{` 当成完整内容。
+- 页面验收结果必须写成结构化 JSON，包含 title、releaseTagVisible、packageVisible、componentVisible、consoleErrors、failedRequests 和 screenshotPath。
+
+### Blocker
+
+- 清理路径不在本任务 allowlist、目录仍含 `.git`、仍有非本任务进程引用，或无法证明删除不影响并发任务。
+- SSH stdout 关键字段缺失、parser 未识别分隔符、exit code 非 0，或 stderr 指向真实命令失败。
+- Playwright 模块解析失败、页面脚本无法证明版本号和变更说明可见。
+
+### Verification
+
+- 保存进程/PID/health、远端 stdout/stderr、结构化运行态 JSON、Playwright JSON 与截图；任务日志记录 carrier warning 的分层判断。
+
+### Forbidden action
+
+- 禁止因 PowerShell 策略拒绝而扩大命令权限、改用宽删除或跳过 clean 复核。
+- 禁止把 SSH carrier warning 单独判为发布失败，也禁止在 stdout 断言不完整时忽略 stderr 继续标绿。
+- 禁止为解决 Playwright 依赖问题临时下载浏览器或改产品页面。
+
+### Evidence
+
+- `doc/tasks/20260802-0958-head-test-only-release/execution-log.md` I005、I006、I008、I010、I011；`runtime-console-page-probe-r260802b-r1.json` 显示 releaseTag、发布包、组件范围和变更说明均可见且 console/请求无失败。

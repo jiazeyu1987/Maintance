@@ -1,0 +1,23 @@
+{
+  "releaseTag": "release-20260802-intmain-head-test-r260802b-r1",
+  "taskCloseoutApply": "applied",
+  "cleanupCandidateExists": {
+    "runtime-console-page-probe-r260802b-r1.mjs": false,
+    "runtime-control-r260802b.err.log": false,
+    "runtime-control-r260802b.out.log": false,
+    "runtime-control-r260802b.pid": false
+  },
+  "runtimeControl48181": "NO_LISTENER",
+  "worktreeRegistered": {
+    "maintenance": false,
+    "app": false
+  },
+  "pathExists": {
+    "maintenanceRoot": false,
+    "maintenanceWorktree": false,
+    "appWorktree": false,
+    "stateRoot": false
+  },
+  "finalRemoteRecheckPassed": true,
+  "passed": true
+}

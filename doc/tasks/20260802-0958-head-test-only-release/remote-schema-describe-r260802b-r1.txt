@@ -1,0 +1,31 @@
+id	bigint	NO	PRI	NULL	auto_increment
+target_environment	varchar(32)	NO	UNI	NULL
+operation_id	varchar(128)	NO		NULL
+release_tag	varchar(128)	NO	MUL	NULL
+status	varchar(32)	NO	MUL	NULL
+started_at	datetime	NO		CURRENT_TIMESTAMP	DEFAULT_GENERATED
+finished_at	datetime	YES		NULL
+error_message	text	YES		NULL
+creator	varchar(64)	YES
+create_time	datetime	NO		CURRENT_TIMESTAMP	DEFAULT_GENERATED
+updater	varchar(64)	YES
+update_time	datetime	NO		CURRENT_TIMESTAMP	DEFAULT_GENERATED on update CURRENT_TIMESTAMP
+deleted	bit(1)	NO		b'0'
+tenant_id	bigint	NO		0
+id	bigint	NO	PRI	NULL	auto_increment
+release_tag	varchar(128)	NO	MUL	NULL
+migration_id	varchar(191)	NO		NULL
+file_name	varchar(512)	NO		NULL
+sha256	varchar(64)	NO		NULL
+target_environment	varchar(32)	NO	MUL	NULL
+status	varchar(32)	NO		NULL
+started_at	datetime	NO		CURRENT_TIMESTAMP	DEFAULT_GENERATED
+finished_at	datetime	YES		NULL
+error_message	text	YES		NULL
+operation_id	varchar(128)	NO	MUL	NULL
+creator	varchar(64)	YES
+create_time	datetime	NO		CURRENT_TIMESTAMP	DEFAULT_GENERATED
+updater	varchar(64)	YES
+update_time	datetime	NO		CURRENT_TIMESTAMP	DEFAULT_GENERATED on update CURRENT_TIMESTAMP
+deleted	bit(1)	NO		b'0'
+tenant_id	bigint	NO		0

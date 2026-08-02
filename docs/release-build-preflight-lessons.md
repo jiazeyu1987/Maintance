@@ -843,3 +843,37 @@
 - Verification: closeout 证据必须包含每个任务路径 `existsAfter=false`、worktree list 不含本任务 token、48181 仍由主维护路径进程提供 health=UP。
 - Forbidden action: 不得把 `Directory not empty` 忽略为成功；不得删除无关并发 worktree；不得在运行控制台仍指向 release worktree 时删除该路径。
 - Evidence: `doc/tasks/20260801-head-test-only-release/worktree-cleanup-r260801e-r1.json`；r260801a/r260801b Git 注册已清除后，物理目录因 ignored `node_modules` 和 pnpm 长路径残留，需要固定路径白名单和 Windows 长路径前缀清理。
+
+## 2026-08-02 r260802b release worktree 来源、state-dir 与 schema-first 验收门禁
+
+### Trigger
+
+HEAD-only 构建发布在维护仓或主程序仓主工作区 dirty，且需要启动本地 runtime-control、轮询长时间 build/publish operation、查询远端 release lock / migration 状态。
+
+### Preflight check
+
+- `runtime-control.local.yaml` 必须显式指向本轮 clean app worktree 的 backend/frontend，并把 `state-dir` 放到本轮任务专用状态目录；构建后重新核 release worktree `git status --short`。
+- build-release 后必须同时校验发布包 `manifest.json`、artifact SHA256、sourceRepos commit/dirty、前端镜像内 `release-info.json` 和本地 Docker image tag。
+- 长时间 `RUNNING` operation 不能只看 summary；必须核 operation log 是否继续推进、本地子进程是否存在、远端 `.env`/容器是否已变化。
+- 查询 `infra_release_operation_lock`、`infra_release_migration` 等远端表前先 `DESCRIBE` 或用已验证 schema 证据；禁止硬编码历史列名。
+
+### Blocker
+
+- manifest sourceRepos `dirty=true`、commit 与冻结 HEAD 不一致、artifact hash 缺失或 mismatch。
+- runtime-control state/log/cache 污染 release worktree，且不能清理到 clean。
+- operation 长时间 RUNNING 且日志不推进、发布锁被本轮目标占用或远端实际状态无法确认。
+- 远端 SQL 出现 `Unknown column 'lock_key'`、`Unknown column 'updated_time'` 等 schema mismatch 且未先做 schema-first 修正。
+
+### Verification
+
+- 任务记录包含 worktree 路径、目标 HEAD、state-dir、build operation、publish operation、manifest validation、image release-info、operation final、远端 schema describe、release lock、migration status 和运行态 JSON。
+
+### Forbidden action
+
+- 禁止在主工作区 dirty 时直接构建。
+- 禁止把 `git worktree list` 或 operation summary 当作唯一证据。
+- 禁止在 release lock 查询失败后跳过 lock/migration 验收或手工标绿。
+
+### Evidence
+
+- `doc/tasks/20260802-0958-head-test-only-release/execution-log.md` I002、I004、I007、I009；releaseTag `release-20260802-intmain-head-test-r260802b-r1`；`remote-schema-describe-r260802b-r1.txt` 证明当前锁表使用 `target_environment`、`release_tag`、`status` 字段。

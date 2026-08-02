@@ -1,0 +1,75 @@
+{
+  "releaseTag": "release-20260802-intmain-head-test-r260802b-r1",
+  "testCurrentReleaseTag": "release-20260802-intmain-head-test-r260802b-r1",
+  "latestTestedReleaseTag": "release-20260723-intmain-codeonly-three-env-r260723s-r1",
+  "testCurrentReleaseNotes": {
+    "environment": "test",
+    "releaseTag": "release-20260802-intmain-head-test-r260802b-r1",
+    "packageDirectoryName": "release-20260802-intmain-head-test-r260802b-r1",
+    "manifestPath": "Backup/ReleasePackage/release-20260802-intmain-head-test-r260802b-r1/manifest.json",
+    "builtAt": "2026-08-02T02:26:41.8448029Z",
+    "publishScope": "code-only",
+    "component": "intruoyi",
+    "summary": "Release package release-20260802-intmain-head-test-r260802b-r1",
+    "changes": [
+      "发布包：release-20260802-intmain-head-test-r260802b-r1",
+      "组件范围：intruoyi"
+    ],
+    "sourceRepos": [
+      {
+        "name": "ruoyi-vue-pro",
+        "pathRole": "backend",
+        "commit": "b99246f58ff7d556caee24307ec89b662d0427e3",
+        "branch": "HEAD",
+        "dirty": false
+      },
+      {
+        "name": "yudao-ui-admin-vue3",
+        "pathRole": "admin-frontend",
+        "commit": "b99246f58ff7d556caee24307ec89b662d0427e3",
+        "branch": "HEAD",
+        "dirty": false
+      }
+    ],
+    "status": "AVAILABLE",
+    "blockedReasons": []
+  },
+  "recentOperationsForRelease": [
+    {
+      "operationId": "op-2026-08-02T022945019393Z-852720a9-61ba-4c79-8cc5-245ced64c078",
+      "requestedBy": "local-operator",
+      "requestedAt": "2026-08-02T02:30:14.475302200Z",
+      "environment": "test",
+      "component": "publish-test",
+      "action": "publish-test",
+      "actionLabel": "部署发布包到测试服",
+      "parameters": {
+        "releaseTag": "release-20260802-intmain-head-test-r260802b-r1"
+      },
+      "reason": "2026-08-02 09:58 后重新上传测试服：仅部署 r260802b 到测试服务器",
+      "status": "SUCCESS",
+      "summary": "命令执行完成",
+      "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260802b-state\\runtime-control\\logs\\op-2026-08-02T022945019393Z-852720a9-61ba-4c79-8cc5-245ced64c078.log"
+    },
+    {
+      "operationId": "op-2026-08-02T021129767983200Z-e204dce2-6be8-4a13-9428-063c4070ae40",
+      "requestedBy": "local-operator",
+      "requestedAt": "2026-08-02T02:11:29.775458700Z",
+      "environment": "release",
+      "component": "build-release",
+      "action": "build-release",
+      "actionLabel": "构建发布包",
+      "parameters": {
+        "publishScope": "code-only",
+        "includeOnlyOffice": "false",
+        "includeShowroomBuildPackage": "false",
+        "releaseTag": "release-20260802-intmain-head-test-r260802b-r1"
+      },
+      "reason": "2026-08-02 09:58 后重新上传测试服：基于本轮冻结 HEAD 构建 r260802b",
+      "status": "SUCCESS",
+      "summary": "命令执行完成",
+      "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260802b-state\\runtime-control\\logs\\op-2026-08-02T021129767983200Z-e204dce2-6be8-4a13-9428-063c4070ae40.log"
+    }
+  ],
+  "forbiddenActionsPresent": []
+}

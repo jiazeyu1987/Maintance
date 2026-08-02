@@ -2931,3 +2931,16 @@
 - 命令记录：通过 runtime-control 执行 build-release，releaseTag=`release-20260802-intmain-head-test-r260802a-r1`，operation=`op-2026-08-01T164440373170300Z-e1e28b57-392e-4329-9a0f-7c6e1541cbe9`，状态 `SUCCESS`；manifest validator=`MANIFEST_VALIDATION_PASSED`，sourceRepos 均为 `baf59590f11907efae992cd65d48c067c2f3e572` 且 dirty=false。
 - 命令记录：publish-test 首次 preview 因带入 build-only 字段 `includeOnlyOffice` 返回 HTTP 400；改用最小 payload 后 preview 通过，执行 publish-test operation=`op-2026-08-01T170326581868700Z-f11be1e5-4e3b-4335-9730-2c989e8800f5`，状态 `SUCCESS`，未执行 `mark-tested`、`promote-prod`、`promote-backup`。
 - 验证记录：测试服 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、容器 running、backend health、frontend HTTP、release-info、release lock、当前 release migration failed/running 全部匹配 `release-20260802-intmain-head-test-r260802a-r1`；Playwright Chrome 截图显示测试服登录页。
+
+## 20260802-0958-head-test-only-release
+
+- 用户请求：再重新上传一遍；不考虑 2026-08-02 09:58 之前的发布实现，仅允许基于本轮开始时当前分支最新已提交 HEAD 构建并发布到测试服务器，禁止未提交改动进入产物，禁止正式服/备份服/mark-tested/promote 动作。
+- 命令意图：创建本次独立任务目录和时间边界，读取发布/构建/PowerShell/worktree 经验门禁；因维护仓和主程序仓主工作区 dirty，使用本轮专用 clean release worktree 冻结发布来源。
+- 当前证据：维护仓 branch=`int_main` HEAD=`b25214b3de563aa83e3bac9eacf401da49c5f476`；主程序仓 branch=`int_main` HEAD=`b99246f58ff7d556caee24307ec89b662d0427e3`；release worktree 分别为 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260802b\m` 与 `D:\IntRuoyiWorktree\r260802b-release-app`。
+- 命令记录：migration policy gate `status=passed, migrationCount=406`；维护控制台 `scripts\build.ps1` 成功，Maven tests `26` passed；build-release operation `op-2026-08-02T021129767983200Z-e204dce2-6be8-4a13-9428-063c4070ae40` 状态 `SUCCESS`。
+- 命令记录：发布包 `release-20260802-intmain-head-test-r260802b-r1` manifest validator `passed`，artifact hashes `420/420`，sourceRepos 均为 `b99246f58ff7d556caee24307ec89b662d0427e3` 且 dirty=false；版本号和变更说明存在于 manifest、镜像 release-info、远端 release-info 和运行控制台。
+- 命令记录：仅执行 publish-test，operation `op-2026-08-02T022945019393Z-852720a9-61ba-4c79-8cc5-245ced64c078` 状态 `SUCCESS`；未执行 `mark-tested`、`promote-prod`、`promote-backup`。
+- 验证记录：测试服 `172.30.30.58` `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、容器 running、backend health `UP`、frontend HTTP `200`、前端页面标题、release-info、release lock `APPLIED`、当前 release migration failed/running `0` 均匹配 r260802b；运行控制台页面显示 releaseTag、发布包、组件范围和变更说明。
+- 经验记录：已将 09:58 后重新上传证据边界、schema-first release lock 验收、literal `\t` SQL 输出、PowerShell 策略拦截、Playwright `createRequire` 依赖解析等问题沉淀到发布/构建/PowerShell 前置经验与索引。
+
+2026-08-02T11:10:00+08:00	20260802-0958-head-test-only-release	CLOSEOUT	PASS: r260802b task-closeout cleanup applied; task-owned runtime-control stopped; release worktree Git registrations and physical paths removed; final test-server runtime recheck passed; task marked completed.

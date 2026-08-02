@@ -1,0 +1,30 @@
+{
+  "package": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260802-intmain-head-test-r260802b-r1",
+  "manifestPath": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260802-intmain-head-test-r260802b-r1\\manifest.json",
+  "releaseTag": "release-20260802-intmain-head-test-r260802b-r1",
+  "component": "intruoyi",
+  "publishScope": "code-only",
+  "changeSummary": "Release package release-20260802-intmain-head-test-r260802b-r1",
+  "changes": [
+    "发布包：release-20260802-intmain-head-test-r260802b-r1",
+    "组件范围：intruoyi"
+  ],
+  "sourceRepos": [
+    {
+      "name": "ruoyi-vue-pro",
+      "pathRole": "backend",
+      "commit": "b99246f58ff7d556caee24307ec89b662d0427e3",
+      "branch": "HEAD",
+      "dirty": false,
+      "dirtySummaryHash": null
+    },
+    {
+      "name": "yudao-ui-admin-vue3",
+      "pathRole": "admin-frontend",
+      "commit": "b99246f58ff7d556caee24307ec89b662d0427e3",
+      "branch": "HEAD",
+      "dirty": false,
+      "dirtySummaryHash": null
+    }
+  ]
+}

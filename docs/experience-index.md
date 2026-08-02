@@ -190,3 +190,7 @@
 - Keywords: release worktree ignored node_modules residual, Directory not empty, pnpm long path, physical worktree cleanup r260801a r260801b -> `docs/release-build-preflight-lessons.md#2026-08-01-release-worktree-ignored-依赖残留清理门禁`
 - Keywords: publish-test payload includeOnlyOffice 400, build-only field in deploy action, historical FAILED migration old releaseTag, release-info package root missing, r260802a test-only -> `docs/test-release-preflight.md#2026-08-02-仅测试服-r260802a-发布-payload-与历史失败记录门禁`
 - Keywords: PowerShell composite command rejected, scripts build ps1 fallback, large migration policy output, evidence summary count, r260802a -> `docs/powershell-preflight-lessons.md#2026-08-02-powershell-复合命令策略拦截与证据精简门禁`
+
+- Keywords: 09:58后重新上传, 09:58 cutoff, 不复用旧发布证据, r260802b, HEAD-only rerun, test-only reupload -> `docs/test-release-preflight.md#2026-08-02-0958-后-r260802b-仅测试服重新上传门禁`
+- Keywords: lock_key Unknown column, infra_release_operation_lock schema-first, release lock DESCRIBE, operation summary submitted queue, state-dir release worktree dirty, r260802b manifest sourceRepos -> `docs/release-build-preflight-lessons.md#2026-08-02-r260802b-release-worktree-来源-state-dir-与-schema-first-验收门禁`
+- Keywords: literal \t SQL output, PowerShell Remove-Item policy blocked, Start-Process policy blocked, mjs require top-level await, createRequire playwright, release-info multiline stdout, SSH IO pending warning, r260802b carrier -> `docs/powershell-preflight-lessons.md#2026-08-02-r260802b-powershellsshplaywright-carrier-门禁`

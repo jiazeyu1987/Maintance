@@ -1,0 +1,23 @@
+{
+  "code": 0,
+  "data": {
+    "operationId": "op-2026-08-02T021129767983200Z-e204dce2-6be8-4a13-9428-063c4070ae40",
+    "requestedBy": "local-operator",
+    "requestedAt": "2026-08-02T02:11:29.775458700Z",
+    "environment": "release",
+    "component": "build-release",
+    "action": "build-release",
+    "actionLabel": "构建发布包",
+    "parameters": {
+      "publishScope": "code-only",
+      "includeOnlyOffice": "false",
+      "includeShowroomBuildPackage": "false",
+      "releaseTag": "release-20260802-intmain-head-test-r260802b-r1"
+    },
+    "reason": "2026-08-02 09:58 后重新上传测试服：基于本轮冻结 HEAD 构建 r260802b",
+    "status": "RUNNING",
+    "summary": "命令已提交到本机执行队列",
+    "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260802b-state\\runtime-control\\logs\\op-2026-08-02T021129767983200Z-e204dce2-6be8-4a13-9428-063c4070ae40.log"
+  },
+  "msg": ""
+}
