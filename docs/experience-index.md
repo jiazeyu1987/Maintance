@@ -51,6 +51,7 @@
 
 - 经验沉淀 / 新增经验 / 更新经验 / 经验文件格式 / 前置经验 / 经验门禁模板：先执行本文件“经验文档写入规范（强制）”，再按下方关键词选择目标文档。
 - 测试服发布 / 仅测试服 / current HEAD test release / publish-test / 运行态验收 / release-info 版本变更说明：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md`
+- 反馈修复测试服发布 / 本机可以测试服不行 / release-info gitChanges / 版本变更说明未生成 / 李萍.xlsx / WORK_ORDER_NOT_FOUND / ACTIVE_TASK_NOT_FOUND / WORKSTATION_NOT_FOUND：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md#2026-08-02-反馈修复测试服发布与业务数据分层门禁`
 - publish-test preview 崩溃 / release package candidate scan / dead RUNNING operation / runtime-control JVM 退出：`docs/release-build-preflight-lessons.md#2026-07-11-runtime-control-发布候选扫描与-dead-operation-门禁`。
 - PowerShell host:port 插值 / SSH IO pending / bash `$()` / Playwright 浏览器缓存 / release-info mojibake：`docs/powershell-preflight-lessons.md`，标题“2026-07-11 PowerShell/SSH/Playwright 发布验收门禁”。
 - 仅测试服运行态验收 / release-info / 运行控制台版本变更说明 / Playwright 版本对话框：`docs/test-release-preflight.md#2026-07-11-仅测试服发布运行态验收新增门禁`。
@@ -65,6 +66,7 @@
 - Windows 发布 worktree 长路径 / Filename too long / 维护仓历史 evidence 检出失败：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
 - build-release 目标主机参数 / TestServerHost / BackupServerHost / ProdServerHost / runtime env 生成：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
 - publish-int-ruoyi NasConfigPath / NAS JSON / runtime-control.local.yaml 误传 / ConvertFrom-Json maintenance：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
+- publish-int-ruoyi sourceRepos ordered dictionary / Get-ReleaseObjectPropertyText / codex.ps1 / empty Git change facts / frontend release-info gitChanges / detached HEAD pre-commit / No branch runtime profile：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-08-02-发布脚本-manifestchangeset-生成门禁`
 - 展厅图片 smoke gate / 远端 MySQL stdout 中文路径 / `infra_file.path` / `HEX(path)` / `EscapeDataString` / `showrooms[].products`：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-07-20-展厅图片-smoke-gate-中文路径解码门禁`
 - 不带数据发布 / code-only / SkipDatabaseSync / SkipMinioSync / manifest 无数据目录验证：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
 - release-migration dependsOn 缺失 / SQL 元数据依赖不存在 / migration policy gate：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
@@ -194,3 +196,5 @@
 - Keywords: 09:58后重新上传, 09:58 cutoff, 不复用旧发布证据, r260802b, HEAD-only rerun, test-only reupload -> `docs/test-release-preflight.md#2026-08-02-0958-后-r260802b-仅测试服重新上传门禁`
 - Keywords: lock_key Unknown column, infra_release_operation_lock schema-first, release lock DESCRIBE, operation summary submitted queue, state-dir release worktree dirty, r260802b manifest sourceRepos -> `docs/release-build-preflight-lessons.md#2026-08-02-r260802b-release-worktree-来源-state-dir-与-schema-first-验收门禁`
 - Keywords: literal \t SQL output, PowerShell Remove-Item policy blocked, Start-Process policy blocked, mjs require top-level await, createRequire playwright, release-info multiline stdout, SSH IO pending warning, r260802b carrier -> `docs/powershell-preflight-lessons.md#2026-08-02-r260802b-powershellsshplaywright-carrier-门禁`
+- Keywords: release-info gitChanges, 版本变更说明未生成, r260802g no gitChanges, r260802h feedback fix test release, DirectWorkstationResolution test server stale code, 李萍.xlsx WORK_ORDER_NOT_FOUND ACTIVE_TASK_NOT_FOUND PROCESS_NOT_FOUND WORKSTATION_NOT_FOUND FEEDBACK_USER_NOT_FOUND -> `docs/test-release-preflight.md#2026-08-02-反馈修复测试服发布与业务数据分层门禁`
+- Keywords: ordered sourceRepo dictionary, Get-ReleaseObjectPropertyText IDictionary, codex.ps1 ProcessStartInfo, Resolve-ReleaseChangeSummaryCodexCliCommand, empty_git_change_facts, Missing NasConfigPath, detached HEAD pre-commit Get-GitValue, No branch runtime profile -> `docs/release-build-preflight-lessons.md#2026-08-02-发布脚本-manifestchangeset-生成门禁`

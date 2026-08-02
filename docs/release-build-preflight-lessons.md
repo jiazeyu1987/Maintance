@@ -877,3 +877,43 @@ HEAD-only 构建发布在维护仓或主程序仓主工作区 dirty，且需要�
 ### Evidence
 
 - `doc/tasks/20260802-0958-head-test-only-release/execution-log.md` I002、I004、I007、I009；releaseTag `release-20260802-intmain-head-test-r260802b-r1`；`remote-schema-describe-r260802b-r1.txt` 证明当前锁表使用 `target_environment`、`release_tag`、`status` 字段。
+
+## 2026-08-02 发布脚本 manifest/changeSet 生成门禁
+
+### Trigger
+
+修改或执行 `publish-int-ruoyi.ps1` 的 `build-release`，尤其涉及 `sourceRepos`、`changeSet`、`release-info.json`、Codex 变更说明、空 Git 变更、`NasConfigPath` 或临时 release worktree 提交。
+
+### Preflight check
+
+- 目标 pytest 至少覆盖 `source_repo_identity`、`codex_command_resolver`、`release_change_set`、`empty_git_change_facts` 和 `build_release_writes_frontend_release_info`。
+- `sourceRepos` 读取必须兼容普通对象和 `System.Collections.IDictionary` / `[ordered]`；不得只读 `PSObject.Properties`。
+- Codex CLI 解析必须优先 `.cmd` / `.exe` 或 native `Application`，不能把 `codex.ps1` 直接交给 `ProcessStartInfo.FileName`。
+- 直接执行发布脚本前必须显式确认 `NasConfigPath`，缺失时应在 Maven/Vite/Docker 长构建前 fail fast。
+- 空 Git change facts 必须作为合法场景处理，不能因 mandatory collection binding 在函数体前失败。
+- 前端 release-info 必须复用 manifest changeSet，至少包含当前 releaseTag、sourceRepos 和 `changeSet.gitChanges`。
+- 发布脚本修复应先合入主 `int_main` 或已注册稳定 worktree，再创建新的 clean release worktree；不要从 detached release worktree 或未注册运行 profile 的临时分支直接作为最终发布源。
+
+### Blocker
+
+- build-release 结束后缺少 `manifest.json`、`release-manifest.json` 或 image tar。
+- manifest sourceRepos 无法读取 pathRole/name/commit/dirty，或任一 source repo `dirty=true`。
+- Codex command resolver 返回 `.ps1` 且无 `.cmd` / `.exe` 替代。
+- 前端 release-info 没有 `changeSet.gitChanges`，导致运行控制台版本说明无法证明变更内容。
+- release script 修复只存在于临时 dirty worktree，尚未进入目标 `origin/int_main`。
+
+### Verification
+
+- 记录每个失败 releaseTag 的判废原因；修复后使用新 releaseTag 重新 build。
+- 记录目标 pytest GREEN、`git diff --check`、目标提交、clean worktree 状态、manifest sourceRepos、frontend release-info changeSet 和最终远端 release-info。
+- 临时 worktree 有未提交改动时，比对其 diff 是否已经进入目标 HEAD；未确认前不得删除。
+
+### Forbidden action
+
+- 禁止复用缺 manifest、缺 NAS upload、缺 gitChanges 或 operation 非成功的 releaseTag。
+- 禁止把 local manifest 存在解释为 build-release 成功；脚本退出码、operation 成功和 NAS/manifest 证据必须一致。
+- 禁止把 detached worktree 的暂存改动静默遗弃；必须确认已进入目标提交或明确阻塞。
+
+### Evidence
+
+- `doc/tasks/20260802-commit-feedback-fix-test-release/`；失败 releaseTags `r260802c-r1/r2/r3`、`r260802d-r1`、`r260802e-r1`、`r260802f-r1`、`r260802g-r1`；最终源提交 `f0c34dfed910f52f9c03b401e976cbd2d0424e00` 和 releaseTag `release-20260802-feedback-fix-test-r260802h-r1` 通过 manifest、release-info 和测试服运行态验证。

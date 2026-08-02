@@ -525,3 +525,37 @@ ssh root@172.30.30.58 bash -s
 ### Evidence
 
 - `doc/tasks/20260802-0958-head-test-only-release/`；releaseTag `release-20260802-intmain-head-test-r260802b-r1`；maintenance HEAD `b25214b3de563aa83e3bac9eacf401da49c5f476`；app HEAD `b99246f58ff7d556caee24307ec89b662d0427e3`；build operation `op-2026-08-02T021129767983200Z-e204dce2-6be8-4a13-9428-063c4070ae40`；publish operation `op-2026-08-02T022945019393Z-852720a9-61ba-4c79-8cc5-245ced64c078`；远端运行态、release-status、前端页面和运行控制台页面证据均通过。
+
+## 2026-08-02 反馈修复测试服发布与业务数据分层门禁
+
+### Trigger
+
+仅测试服发布用于验证“本机修复已进入测试服”，并且后续还要用真实 Excel、真实租户或真实业务流程验证功能结果，例如第三方报工 `李萍.xlsx`、`WORK_ORDER_NOT_FOUND`、`ACTIVE_TASK_NOT_FOUND`、运行控制台版本变更说明。
+
+### Preflight check
+
+- 发布验收必须先证明同一 releaseTag 的 clean worktree HEAD、manifest sourceRepos、远端 `.env`、实际镜像、health、HTTP、release-info、release lock、migration 和真实页面版本说明一致。
+- 前端 `/release-info.json` 必须包含 `changeSet.gitChanges` 或等价用户可见变更项；只有 manifest 有 changeSet 不够，因为版本说明对话框读取的是前端 release-info。
+- 业务 Excel 验证前必须按租户只读检查样例行的工单、排产工单、活动任务、工序、工位和报工用户覆盖情况；缺少任一业务前置数据时，先记录业务数据阻塞，不把它混同为发布失败。
+- 测试租户和芋道源码租户的验证结论必须分开；测试租户缺工单、芋道源码缺活动任务或用户都应分别记录。
+
+### Blocker
+
+- release-info 缺少当前 releaseTag、sourceRepos commit、dirty=false 或 `changeSet.gitChanges`。
+- `.env`、实际镜像、release-info、release lock 或 migration 任一项不属于同一 releaseTag。
+- 业务验证出现 `WORK_ORDER_NOT_FOUND`、`ACTIVE_TASK_NOT_FOUND`、`PROCESS_NOT_FOUND`、`WORKSTATION_NOT_FOUND`、`FEEDBACK_USER_NOT_FOUND` 等前置数据缺口且未先归类记录。
+
+### Verification
+
+- 发布成功证据记录 releaseTag、worktree 路径、目标提交、manifest path、远端 `.env IMAGE_TAG`、backend/frontend image tag、backend health、frontend HTTP、remote `/release-info.json`、release lock、migration status 和 Playwright 版本对话框。
+- 业务 Excel 验证证据记录租户、账号、上传文件、submitted/imported/skipped 计数、失败原因分布，以及只读数据覆盖查询结果。
+
+### Forbidden action
+
+- 禁止把业务数据缺口解释为“发布没生效”，也禁止把发布成功解释为“业务导入一定通过”。
+- 禁止为了让 Excel 验证通过而手工改测试库、跨租户借数据、用接口或 SQL 代替真实前端上传，除非用户明确授权数据修复范围。
+- 禁止 release-info 没有变更说明时降级为只看 HTTP 200 或 manifest。
+
+### Evidence
+
+- `doc/tasks/20260802-commit-feedback-fix-test-release/`；最终 releaseTag `release-20260802-feedback-fix-test-r260802h-r1`；源提交 `f0c34dfed910f52f9c03b401e976cbd2d0424e00`；运行态和版本说明通过，`李萍.xlsx` 业务导入阻塞于测试服数据前置条件。
