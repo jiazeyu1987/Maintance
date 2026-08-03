@@ -1,0 +1,19 @@
+{
+  "operationId": "op-2026-08-03T014004195140200Z-27256ee2-7aa4-4539-a982-044bd4f86239",
+  "requestedBy": "local-operator",
+  "requestedAt": "2026-08-03T01:40:04.199724300Z",
+  "environment": "release",
+  "component": "build-release",
+  "action": "build-release",
+  "actionLabel": "构建发布包",
+  "parameters": {
+    "publishScope": "code-only",
+    "includeOnlyOffice": "false",
+    "includeShowroomBuildPackage": "false",
+    "releaseTag": "release-20260803-dcc-menu-replay-fix-test-r260803b-r1"
+  },
+  "reason": "20260803 DCC menu replay fix test-only release build from frozen r260803b worktrees",
+  "status": "SUCCESS",
+  "summary": "命令执行完成",
+  "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260803b-state\\runtime-control\\logs\\op-2026-08-03T014004195140200Z-27256ee2-7aa4-4539-a982-044bd4f86239.log"
+}

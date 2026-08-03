@@ -172,7 +172,7 @@ corepack pnpm@10.25.0 --version
 - Blocker: `.env IMAGE_TAG=<目标 releaseTag>` 但 backend/frontend 实际镜像 tag 仍为旧 releaseTag；release lock 为 `FAILED`；migration failed count 大于 0；operation 非 `SUCCESS`。
 - Verification: 远端证据必须显示 `.env`、实际镜像、容器状态、health、HTTP、lock/migration 状态；恢复或重发前再次确认 drift 已消除。
 - Forbidden action: 不得因 `.env IMAGE_TAG` 等于目标 releaseTag 就宣称发布成功；不得在未授权时手工改 `.env`、手工更新 release lock/migration、或复用失败 releaseTag 继续 mark/promote。
-- Evidence: `doc/tasks/20260729-head-test-only-release/execution-log.md`；`publish-test` operation `op-2026-07-29T024258673743700Z-1774cd02-0579-420e-86eb-bcd0ed97475a` failed 后 `.env IMAGE_TAG=release-20260729-intmain-head-test-r260729a-r1`，但 backend/frontend 容器仍运行 `release-20260728-codeonly-noonlyoffice-test-r2`。2026-08-01 追加证据：`doc/tasks/20260801-head-test-only-release/execution-log.md`；`publish-test` operation `op-2026-07-31T184648151088Z-d51572f6-9207-44dd-bbab-6f54c347cea4` failed 后 `.env IMAGE_TAG=release-20260801-intmain-head-test-r260801a-r2`，backend/frontend 实际容器仍运行 `release-20260731-smartseed-tempfix-head-test-r260731d-r1`，release lock=`FAILED`，migration `FAILED=1`。
+- Evidence: `doc/tasks/20260729-head-test-only-release/execution-log.md`；`publish-test` operation `op-2026-07-29T024258673743700Z-1774cd02-0579-420e-86eb-bcd0ed97475a` failed 后 `.env IMAGE_TAG=release-20260729-intmain-head-test-r260729a-r1`，但 backend/frontend 容器仍运行 `release-20260728-codeonly-noonlyoffice-test-r2`。2026-08-01 追加证据：`doc/tasks/20260801-head-test-only-release/execution-log.md`；`publish-test` operation `op-2026-07-31T184648151088Z-d51572f6-9207-44dd-bbab-6f54c347cea4` failed 后 `.env IMAGE_TAG=release-20260801-intmain-head-test-r260801a-r2`，backend/frontend 实际容器仍运行 `release-20260731-smartseed-tempfix-head-test-r260731d-r1`，release lock=`FAILED`，migration `FAILED=1`。2026-08-03 追加证据：`doc/tasks/20260803-head-test-only-release/execution-log.md`；`publish-test` operation `op-2026-08-02T171256308397600Z-05598a68-af1a-4f8f-8db2-3b7806418241` failed 后 `.env IMAGE_TAG` 短暂变为 `release-20260803-intmain-head-test-r260803a-r1`，backend/frontend 实际容器仍为 `release-20260802-feedback-fix-test-r260802h-r1`，release lock=`FAILED`，migration `FAILED/RUNNING=1`；失败收束时仅恢复 `.env IMAGE_TAG` 到实际运行 tag，不改 release lock/migration，不宣称发布成功。
 
 ## 阶段 5：测试服发布后真实运行态
 
@@ -559,3 +559,38 @@ ssh root@172.30.30.58 bash -s
 ### Evidence
 
 - `doc/tasks/20260802-commit-feedback-fix-test-release/`；最终 releaseTag `release-20260802-feedback-fix-test-r260802h-r1`；源提交 `f0c34dfed910f52f9c03b401e976cbd2d0424e00`；运行态和版本说明通过，`李萍.xlsx` 业务导入阻塞于测试服数据前置条件。
+
+## 2026-08-03 required SQL 修复后仅测试服 r260803b 成功闭环门禁
+
+### Trigger
+
+仅测试服发布在上一轮失败于 required SQL checksum 漂移、菜单固定 ID、`.env` 与实际镜像短暂漂移后，修复 SQL 并使用新 releaseTag 重新发布。
+
+### Preflight check
+
+- 失败 releaseTag 必须判废；修复后用新 releaseTag 重新 `build-release -> publish-test`，不得复用失败包或旧运行态证据。
+- 发布前必须运行远端只读 precheck：无 RUNNING test lock、目标 releaseTag migration FAILED/RUNNING=0、backend health 和 frontend HTTP 仍正常。
+- 发布后必须同时核 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、容器 Up、backend health、frontend HTTP、`/release-info.json` sourceRepos、release lock、target migration 和运行控制台“版本变更说明”。
+- 长时间 `RUNNING` 时先看脱敏 operation log 是否持续推进；镜像分片上传和逐文件 required SQL scp 属于正常长耗时阶段，不得仅凭轮询次数判定失败。
+
+### Blocker
+
+- 任一完成证据来自失败 releaseTag 或不同 releaseTag。
+- `publish-test` preview 不指向 `Environment=test`、`ServerHost=172.30.30.58`、`RemoteAppDir=/opt/intruoyi/runtime`。
+- 当前 releaseTag 的 release lock 不是 `APPLIED`，或 migration `FAILED/RUNNING` 不为 `0`。
+- 运行控制台页面不显示本轮 releaseTag 或变更说明。
+
+### Verification
+
+- 记录 build operation、publish operation、manifest summary、前端镜像 release-info、remote pre/postcheck、运行控制台 Playwright 弹窗和测试服前端页面截图。
+- 运行控制台页面验收至少确认测试服 releaseTag、版本号、发布包、组件范围；source commit 以 manifest 和 `/release-info.json` 作为机器证据。
+
+### Forbidden action
+
+- 禁止因测试服 frontend HTTP 200 就跳过镜像 tag、release-info、lock/migration 和页面版本说明验证。
+- 禁止用 `.env IMAGE_TAG` 单项替代实际容器镜像。
+- 禁止在仅测试服任务中执行 `mark-tested`、`promote-prod` 或 `promote-backup`。
+
+### Evidence
+
+- `doc/tasks/20260803-fix-dcc-base-schema-menu-id-release/`；releaseTag `release-20260803-dcc-menu-replay-fix-test-r260803b-r1`；build operation `op-2026-08-03T014004195140200Z-27256ee2-7aa4-4539-a982-044bd4f86239`；publish operation `op-2026-08-03T020027072659300Z-324edfd7-4658-4822-89ed-0e35e37f7feb`；remote postcheck 与运行控制台版本变更说明均通过。

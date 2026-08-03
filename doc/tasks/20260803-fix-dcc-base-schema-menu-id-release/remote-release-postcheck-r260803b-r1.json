@@ -1,0 +1,133 @@
+{
+  "mode": "post",
+  "host": "172.30.30.58",
+  "releaseTag": "release-20260803-dcc-menu-replay-fix-test-r260803b-r1",
+  "returncode": 0,
+  "parsed": {
+    "containers": [
+      {
+        "name": "intruoyi-frontend",
+        "image": "intruoyi-frontend:release-20260803-dcc-menu-replay-fix-test-r260803b-r1",
+        "status": "Up 2 minutes"
+      },
+      {
+        "name": "intruoyi-backend",
+        "image": "intruoyi-backend:release-20260803-dcc-menu-replay-fix-test-r260803b-r1",
+        "status": "Up 2 minutes"
+      },
+      {
+        "name": "intruoyi-onlyoffice",
+        "image": "onlyoffice/documentserver:latest",
+        "status": "Up 6 days (healthy)"
+      },
+      {
+        "name": "intruoyi-website",
+        "image": "nginx:1.27-alpine",
+        "status": "Up 13 days"
+      },
+      {
+        "name": "intruoyi-rehearsal-frontend",
+        "image": "intruoyi-frontend:20260611_dcc_incremental_codeonly_2031",
+        "status": "Up 7 weeks"
+      },
+      {
+        "name": "intruoyi-rehearsal-backend",
+        "image": "intruoyi-backend:20260611_dcc_incremental_codeonly_2031",
+        "status": "Up 7 weeks"
+      },
+      {
+        "name": "intruoyi-rehearsal-mysql",
+        "image": "mysql:8.0.39",
+        "status": "Up 7 weeks (healthy)"
+      },
+      {
+        "name": "intruoyi-rehearsal-redis",
+        "image": "redis:7-alpine",
+        "status": "Up 7 weeks (healthy)"
+      },
+      {
+        "name": "intruoyi-mysql",
+        "image": "mysql:8.0.39",
+        "status": "Up 2 months (healthy)"
+      },
+      {
+        "name": "intruoyi-redis",
+        "image": "redis:7-alpine",
+        "status": "Up 2 months (healthy)"
+      }
+    ],
+    "IMAGE_TAG": "release-20260803-dcc-menu-replay-fix-test-r260803b-r1",
+    "BACKEND_HEALTH_CODE": "200",
+    "BACKEND_HEALTH_BODY": "{\"status\":\"UP\"}",
+    "FRONTEND_HTTP_CODE": "200",
+    "FRONTEND_HTML_BYTES": "3807",
+    "RELEASE_INFO_HTTP_CODE": "200",
+    "RELEASE_INFO_JSON": "{    \"releaseTag\":  \"release-20260803-dcc-menu-replay-fix-test-r260803b-r1\",    \"packageId\":  \"release-20260803-dcc-menu-replay-fix-test-r260803b-r1\",    \"createdAt\":  \"2026-08-03T01:49:09.5614993Z\",    \"publishScope\":  \"code-only\",    \"changeSet\":  {                      \"summary\":  \"Release package release-20260803-dcc-menu-replay-fix-test-r260803b-r1\",                      \"component\":  \"intruoyi\",                      \"items\":  [                                    \"发布包：release-20260803-dcc-menu-replay-fix-test-r260803b-r1\",                                    \"组件范围：intruoyi\"                                ],                      \"includeShowroomBuildPackage\":  false,                      \"includeOnlyOffice\":  false                  },    \"sourceRepos\":  [                        {                            \"name\":  \"ruoyi-vue-pro\",                            \"pathRole\":  \"backend\",                            \"commit\":  \"ae4c85511f050785f91b51f29c22c511df8e7cdc\",                            \"branch\":  \"HEAD\",                            \"dirty\":  false,                            \"dirtySummaryHash\":  null                        },                        {                            \"name\":  \"yudao-ui-admin-vue3\",                            \"pathRole\":  \"admin-frontend\",                            \"commit\":  \"ae4c85511f050785f91b51f29c22c511df8e7cdc\",                            \"branch\":  \"HEAD\",                            \"dirty\":  false,                            \"dirtySummaryHash\":  null                        }                    ]}",
+    "MYSQL_STATE": "available",
+    "RELEASE_STATE_TABLE_COUNT": "2",
+    "RUNNING_LOCK_COUNT": "0",
+    "TARGET_RELEASE_FAILED_RUNNING_COUNT": "0",
+    "TARGET_RELEASE_MIGRATION_ROWS": "383",
+    "TARGET_RELEASE_APPLIED_ROWS": "6",
+    "CURRENT_RELEASE_LOCK_STATUS": "APPLIED",
+    "HISTORICAL_FAILED_MIGRATION_COUNT": "3",
+    "LATEST_TEST_LOCK": "test|test-release-20260803-dcc-menu-replay-fix-test-r260803b-r1|release-20260803-dcc-menu-replay-fix-test-r260803b-r1|APPLIED|2026-08-03 10:16:49|2026-08-03 10:26:40",
+    "CONTROLLED_PRINT_PERMISSION_COUNT": "1",
+    "SYSTEM_MENU_6813_COUNT": "0"
+  },
+  "releaseInfo": {
+    "releaseTag": "release-20260803-dcc-menu-replay-fix-test-r260803b-r1",
+    "packageId": "release-20260803-dcc-menu-replay-fix-test-r260803b-r1",
+    "createdAt": "2026-08-03T01:49:09.5614993Z",
+    "publishScope": "code-only",
+    "changeSet": {
+      "summary": "Release package release-20260803-dcc-menu-replay-fix-test-r260803b-r1",
+      "component": "intruoyi",
+      "items": [
+        "发布包：release-20260803-dcc-menu-replay-fix-test-r260803b-r1",
+        "组件范围：intruoyi"
+      ],
+      "includeShowroomBuildPackage": false,
+      "includeOnlyOffice": false
+    },
+    "sourceRepos": [
+      {
+        "name": "ruoyi-vue-pro",
+        "pathRole": "backend",
+        "commit": "ae4c85511f050785f91b51f29c22c511df8e7cdc",
+        "branch": "HEAD",
+        "dirty": false,
+        "dirtySummaryHash": null
+      },
+      {
+        "name": "yudao-ui-admin-vue3",
+        "pathRole": "admin-frontend",
+        "commit": "ae4c85511f050785f91b51f29c22c511df8e7cdc",
+        "branch": "HEAD",
+        "dirty": false,
+        "dirtySummaryHash": null
+      }
+    ]
+  },
+  "stderrRedacted": "close - IO is still pending on closed socket. read:1, write:0, io:00000298602AACB0\r\n",
+  "checks": {
+    "sshExitZero": true,
+    "mysqlStateAvailable": true,
+    "releaseStateTablesPresent": true,
+    "noRunningTestLock": true,
+    "targetReleaseFailedOrRunningZero": true,
+    "backendHealthUp": true,
+    "frontendHttp200": true,
+    "envImageTagMatches": true,
+    "backendImageMatches": true,
+    "frontendImageMatches": true,
+    "backendRunning": true,
+    "frontendRunning": true,
+    "releaseInfoHttp200": true,
+    "releaseInfoTagMatches": true,
+    "releaseInfoSourceCommitMatches": true,
+    "releaseLockApplied": true,
+    "targetReleaseHasAppliedRows": true
+  },
+  "passed": true
+}

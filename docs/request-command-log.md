@@ -1,5 +1,14 @@
 # 请求与命令记录
 
+## 2026-08-03 当前 HEAD 仅测试服发布 r260803a
+
+- 用户需求：仅基于当前分支最新已提交 HEAD 构建维护控制台和测试发布包，并只发布到测试服务器；未提交改动不得进入构建产物，禁止 `mark-tested`、正式服和备份服动作；发布后必须验证真实运行态、记录问题并沉淀前置经验。
+- 命中经验：`docs/experience-index.md`、`docs/test-release-preflight.md`、`docs/release-build-preflight-lessons.md`、`docs/powershell-preflight-lessons.md`、`E:\IntRuoyi\docs\release-backup-restore.md`、`E:\IntRuoyi\docs\server-access.md`、`E:\IntRuoyi\docs\login-access.md`、`E:\IntRuoyi\docs\worktree-memory.md`、`E:\IntRuoyi\docs\powershell-memory.md`。
+- 命令记录：创建任务目录 `doc/tasks/20260803-head-test-only-release/`，写入目标、里程碑、设计约束、强制经验门禁和验收标准。
+- 命令记录：冻结发布起点：维护仓 branch=`int_main`, HEAD=`ed7ef820d57fc0185e5c16a8be2e820a13384b15`, dirty；主程序仓 branch=`int_main`, HEAD=`1606947b7598eca15e904362759a7236a255dbbf`, dirty；因此本轮必须创建干净 release worktree。
+- 当前计划：release id=`r260803a`；维护 worktree=`D:\ProjectPackage\Int\IntRuoyiWorktrees\r260803a\m`；主程序 worktree=`D:\IntRuoyiWorktree\r260803a-release-app`；state dir=`D:\ProjectPackage\Int\IntRuoyiWorktrees\r260803a-state\runtime-control`；releaseTag=`release-20260803-intmain-head-test-r260803a-r1`。
+- 当前结果：发布尚未开始；下一步创建并复核 clean release worktree。
+
 ## 2026-07-24 查看测试服务器状态
 
 - 用户需求：查看测试服务器的状态。
@@ -2944,3 +2953,28 @@
 - 经验记录：已将 09:58 后重新上传证据边界、schema-first release lock 验收、literal `\t` SQL 输出、PowerShell 策略拦截、Playwright `createRequire` 依赖解析等问题沉淀到发布/构建/PowerShell 前置经验与索引。
 
 2026-08-02T11:10:00+08:00	20260802-0958-head-test-only-release	CLOSEOUT	PASS: r260802b task-closeout cleanup applied; task-owned runtime-control stopped; release worktree Git registrations and physical paths removed; final test-server runtime recheck passed; task marked completed.
+
+## 20260803-head-test-only-release
+
+- 用户请求：仅基于当前分支开始发布时冻结的 HEAD 已提交代码构建维护控制台和测试发布包，并只发布测试服务器；未提交改动不得进入产物，禁止正式服/备份服/mark-tested/promote 动作；发布后必须验证真实运行态、记录问题并沉淀经验。
+- 命令意图：读取发布、worktree、PowerShell、server-access、login-access 和 closeout 门禁；维护仓 HEAD=d7ef820d57fc0185e5c16a8be2e820a13384b15、主程序 HEAD=1606947b7598eca15e904362759a7236a255dbbf，主工作区均 dirty，因此创建 clean release worktree 冻结构建来源。
+- 命令记录：维护 release worktree D:\ProjectPackage\Int\IntRuoyiWorktrees\r260803a\m、主程序 release worktree D:\IntRuoyiWorktree\r260803a-release-app；migration policy gate passed；维护控制台前端 build/typecheck 和 Maven tests 26 passed；build-release operation op-2026-08-02T164907897014700Z-a76bd666-e3b7-449a-b77f-e4541826cd8f SUCCESS。
+- 命令记录：发布包
+elease-20260803-intmain-head-test-r260803a-r1 manifest validator passed；sourceRepos 均为 1606947b7598eca15e904362759a7236a255dbbf 且 dirty=false；frontend image
+elease-info.json 与 manifest releaseTag/changeSet/sourceRepos 一致。
+- 命令记录：publish-test preview gate passed，目标 Environment=test、ServerHost=172.30.30.58、RemoteAppDir=/opt/intruoyi/runtime，未执行 mark-tested、promote-prod、promote-backup；publish-test operation op-2026-08-02T171256308397600Z-05598a68-af1a-4f8f-8db2-3b7806418241 FAILED。
+- 阻塞记录：required SQL 20260513_dcc_base_schema.sql line 1298 报 MySQL ERROR 1062 Duplicate entry '6813' for key 'system_menu.PRIMARY'；preflight-plan 对该 migration 判定 APPLY，原因是目标 checksum 与 manifest checksum 不一致；release lock=FAILED，目标 migration FAILED/RUNNING=1，失败 releaseTag 不得复用。
+- 收束记录：publish 失败后测试服 .env IMAGE_TAG 短暂为失败 releaseTag，但 backend/frontend 容器仍为上一轮
+elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复为实际运行 tag，未改 release lock/migration，复核 backend health=UP、frontend HTTP 200、release-info 仍为上一轮成功 release。
+- 经验记录：已将 required SQL checksum 漂移重放菜单主键门禁与本轮 .env drift 失败证据更新到 docs/release-build-preflight-lessons.md、docs/test-release-preflight.md 和 docs/experience-index.md。
+
+2026-08-03T01:50:43+08:00	20260803-head-test-only-release	BLOCKED	发布包构建成功但仅测试服 publish-test 失败；任务保持 blocked，release worktrees/state 保留为证据，不执行 completed closeout，不复用失败 releaseTag。
+2026-08-03T10:40:46+08:00	20260803-fix-dcc-base-schema-menu-id-release	RESULT	PASS: 修复 `20260513_dcc_base_schema.sql` 移除 `dcc:controlled-file:print` 固定 `id=6813` 后，使用新 releaseTag `release-20260803-dcc-menu-replay-fix-test-r260803b-r1` 完成仅测试服 `build-release -> publish-test`；build operation `op-2026-08-03T014004195140200Z-27256ee2-7aa4-4539-a982-044bd4f86239` 与 publish operation `op-2026-08-03T020027072659300Z-324edfd7-4658-4822-89ed-0e35e37f7feb` 均 SUCCESS，未执行 mark-tested/promote-prod/promote-backup。
+2026-08-03T10:40:46+08:00	20260803-fix-dcc-base-schema-menu-id-release	RESULT	PASS: 测试服真实运行态通过；远端 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、容器 Up、backend health=UP、frontend HTTP=200、release-info source commit、release lock=APPLIED、target migration failed/running=0，运行控制台页面显示本轮 releaseTag 与变更说明。
+2026-08-03T10:40:46+08:00	20260803-fix-dcc-base-schema-menu-id-release	BLOCKED	发布成功后的 closeout 被主程序 `E:\IntRuoyi` 并发 staged/dirty 阻塞；修复提交 `ae4c85511f050785f91b51f29c22c511df8e7cdc` 尚未安全合回 `int_main`，本任务未删除 fix/release worktree，等待主线并发改动收口或明确授权后再合回清理。
+2026-08-03T10:40:46+08:00	20260803-fix-dcc-base-schema-menu-id-release	EXPERIENCE	已将 r260803b 仅测试服成功闭环、required SQL checksum 漂移修复后验收、长时间 publish-test 上传进度判断、发布成功后主线合回并发索引门禁沉淀到 `docs/test-release-preflight.md`、`docs/release-build-preflight-lessons.md` 与 `docs/experience-index.md`。
+2026-08-03T11:03:00+08:00	20260803-fix-dcc-base-schema-menu-id-release	CLOSEOUT	PASS: 已在 `E:\IntRuoyi` `int_main` 精确提交本任务修复 `6b1fd19eb`，cached diff 仅两文件；聚焦 pytest `15 passed`；同一 SQL 文件的非本任务 product onboarding hunk 未进入提交。
+2026-08-03T11:04:00+08:00	20260803-fix-dcc-base-schema-menu-id-release	CLOSEOUT	PASS: 停止 r260803b release worktree 运行控制台 PID `33196`，从主维护目录 `D:\ProjectPackage\Int\IntRuoyiMaintance` 启动 PID `57912`，48181 health=`UP`。
+2026-08-03T11:08:00+08:00	20260803-fix-dcc-base-schema-menu-id-release	CLOSEOUT	PASS: 本任务 r260803b maintenance/app release worktree、fix worktree、state dir 与空父目录均已删除；Git worktree list 不含 r260803b release/fix 路径；其它并发 worktree 未触碰。
+2026-08-03T11:12:00+08:00	20260803-fix-dcc-base-schema-menu-id-release	CLOSEOUT	PASS: task-closeout-cleanup preview/apply 均通过，delete/deleted_paths/blocked/warnings 均为 none；任务状态标记 completed，发布证据精确保留。
+2026-08-03T11:14:00+08:00	20260803-fix-dcc-base-schema-menu-id-release	CLOSEOUT	PASS: 最终复核发现 `E:\IntRuoyi` 已有后续其它任务提交到 HEAD `134434c78`，但本任务提交 `6b1fd19eb` 仍为当前 HEAD 祖先；目标两文件无本任务遗留暂存/工作区改动。

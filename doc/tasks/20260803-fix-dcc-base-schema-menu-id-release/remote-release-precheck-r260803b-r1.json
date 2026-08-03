@@ -1,0 +1,145 @@
+{
+  "mode": "pre",
+  "host": "172.30.30.58",
+  "releaseTag": "release-20260803-dcc-menu-replay-fix-test-r260803b-r1",
+  "returncode": 0,
+  "parsed": {
+    "containers": [
+      {
+        "name": "intruoyi-frontend",
+        "image": "intruoyi-frontend:release-20260802-feedback-fix-test-r260802h-r1",
+        "status": "Up 18 hours"
+      },
+      {
+        "name": "intruoyi-backend",
+        "image": "intruoyi-backend:release-20260802-feedback-fix-test-r260802h-r1",
+        "status": "Up 18 hours"
+      },
+      {
+        "name": "intruoyi-onlyoffice",
+        "image": "onlyoffice/documentserver:latest",
+        "status": "Up 6 days (healthy)"
+      },
+      {
+        "name": "intruoyi-website",
+        "image": "nginx:1.27-alpine",
+        "status": "Up 13 days"
+      },
+      {
+        "name": "intruoyi-rehearsal-frontend",
+        "image": "intruoyi-frontend:20260611_dcc_incremental_codeonly_2031",
+        "status": "Up 7 weeks"
+      },
+      {
+        "name": "intruoyi-rehearsal-backend",
+        "image": "intruoyi-backend:20260611_dcc_incremental_codeonly_2031",
+        "status": "Up 7 weeks"
+      },
+      {
+        "name": "intruoyi-rehearsal-mysql",
+        "image": "mysql:8.0.39",
+        "status": "Up 7 weeks (healthy)"
+      },
+      {
+        "name": "intruoyi-rehearsal-redis",
+        "image": "redis:7-alpine",
+        "status": "Up 7 weeks (healthy)"
+      },
+      {
+        "name": "intruoyi-mysql",
+        "image": "mysql:8.0.39",
+        "status": "Up 2 months (healthy)"
+      },
+      {
+        "name": "intruoyi-redis",
+        "image": "redis:7-alpine",
+        "status": "Up 2 months (healthy)"
+      }
+    ],
+    "IMAGE_TAG": "release-20260802-feedback-fix-test-r260802h-r1",
+    "BACKEND_HEALTH_CODE": "200",
+    "BACKEND_HEALTH_BODY": "{\"status\":\"UP\"}",
+    "FRONTEND_HTTP_CODE": "200",
+    "FRONTEND_HTML_BYTES": "3807",
+    "RELEASE_INFO_HTTP_CODE": "200",
+    "RELEASE_INFO_JSON": "{    \"manifestVersion\":  \"1.0\",    \"packageId\":  \"release-20260802-feedback-fix-test-r260802h-r1\",    \"releaseTag\":  \"release-20260802-feedback-fix-test-r260802h-r1\",    \"createdAt\":  \"2026-08-02T07:40:48.8758791Z\",    \"createdBy\":  \"Codex\",    \"sourceRepos\":  [                        {                            \"name\":  \"ruoyi-vue-pro\",                            \"pathRole\":  \"backend\",                            \"commit\":  \"f0c34dfed910f52f9c03b401e976cbd2d0424e00\",                            \"branch\":  \"HEAD\",                            \"dirty\":  false,                            \"dirtySummaryHash\":  null                        },                        {                            \"name\":  \"yudao-ui-admin-vue3\",                            \"pathRole\":  \"admin-frontend\",                            \"commit\":  \"f0c34dfed910f52f9c03b401e976cbd2d0424e00\",                            \"branch\":  \"HEAD\",                            \"dirty\":  false,                            \"dirtySummaryHash\":  null                        }                    ],    \"changeSet\":  {                      \"summary\":  \"Git changes since previous release release-20260802-feedback-fix-test-r260802g-r1\",                      \"component\":  \"intruoyi\",                      \"previousReleaseTag\":  \"release-20260802-feedback-fix-test-r260802g-r1\",                      \"summaryGenerator\":  \"codex\",                      \"gitComparisonBase\":  {                                                \"previousReleaseTag\":  \"release-20260802-feedback-fix-test-r260802g-r1\",                                                \"previousPackageId\":  \"release-20260802-feedback-fix-test-r260802g-r1\",                                                \"maxItems\":  10                                            },                      \"gitChanges\":  [                                         \"修正了前端版本更新说明的生成问题，让发布时的变更说明能够正常整理出来。\"                                     ],                      \"items\":  [                                    \"修正了前端版本更新说明的生成问题，让发布时的变更说明能够正常整理出来。\"                                ],                      \"changes\":  [                                      \"修正了前端版本更新说明的生成问题，让发布时的变更说明能够正常整理出来。\"                                  ],                      \"includeShowroomBuildPackage\":  false,                      \"includeOnlyOffice\":  false                  },    \"publishScope\":  \"code-only\",    \"components\":  [                       \"backend\",                       \"database-contract\",                       \"required-sql\",                       \"runtime-env\",                       \"admin-frontend\",                       \"packaging-manifest\"                   ]}",
+    "MYSQL_STATE": "available",
+    "RELEASE_STATE_TABLE_COUNT": "2",
+    "RUNNING_LOCK_COUNT": "0",
+    "TARGET_RELEASE_FAILED_RUNNING_COUNT": "0",
+    "TARGET_RELEASE_MIGRATION_ROWS": "0",
+    "TARGET_RELEASE_APPLIED_ROWS": "0",
+    "CURRENT_RELEASE_LOCK_STATUS": "",
+    "HISTORICAL_FAILED_MIGRATION_COUNT": "4",
+    "LATEST_TEST_LOCK": "test|test-release-20260803-intmain-head-test-r260803a-r1|release-20260803-intmain-head-test-r260803a-r1|FAILED|2026-08-03 01:32:03|2026-08-03 01:38:46",
+    "CONTROLLED_PRINT_PERMISSION_COUNT": "0",
+    "SYSTEM_MENU_6813_COUNT": "0"
+  },
+  "releaseInfo": {
+    "manifestVersion": "1.0",
+    "packageId": "release-20260802-feedback-fix-test-r260802h-r1",
+    "releaseTag": "release-20260802-feedback-fix-test-r260802h-r1",
+    "createdAt": "2026-08-02T07:40:48.8758791Z",
+    "createdBy": "Codex",
+    "sourceRepos": [
+      {
+        "name": "ruoyi-vue-pro",
+        "pathRole": "backend",
+        "commit": "f0c34dfed910f52f9c03b401e976cbd2d0424e00",
+        "branch": "HEAD",
+        "dirty": false,
+        "dirtySummaryHash": null
+      },
+      {
+        "name": "yudao-ui-admin-vue3",
+        "pathRole": "admin-frontend",
+        "commit": "f0c34dfed910f52f9c03b401e976cbd2d0424e00",
+        "branch": "HEAD",
+        "dirty": false,
+        "dirtySummaryHash": null
+      }
+    ],
+    "changeSet": {
+      "summary": "Git changes since previous release release-20260802-feedback-fix-test-r260802g-r1",
+      "component": "intruoyi",
+      "previousReleaseTag": "release-20260802-feedback-fix-test-r260802g-r1",
+      "summaryGenerator": "codex",
+      "gitComparisonBase": {
+        "previousReleaseTag": "release-20260802-feedback-fix-test-r260802g-r1",
+        "previousPackageId": "release-20260802-feedback-fix-test-r260802g-r1",
+        "maxItems": 10
+      },
+      "gitChanges": [
+        "修正了前端版本更新说明的生成问题，让发布时的变更说明能够正常整理出来。"
+      ],
+      "items": [
+        "修正了前端版本更新说明的生成问题，让发布时的变更说明能够正常整理出来。"
+      ],
+      "changes": [
+        "修正了前端版本更新说明的生成问题，让发布时的变更说明能够正常整理出来。"
+      ],
+      "includeShowroomBuildPackage": false,
+      "includeOnlyOffice": false
+    },
+    "publishScope": "code-only",
+    "components": [
+      "backend",
+      "database-contract",
+      "required-sql",
+      "runtime-env",
+      "admin-frontend",
+      "packaging-manifest"
+    ]
+  },
+  "stderrRedacted": "close - IO is still pending on closed socket. read:1, write:0, io:00000215890E62B0\r\n",
+  "checks": {
+    "sshExitZero": true,
+    "mysqlStateAvailable": true,
+    "releaseStateTablesPresent": true,
+    "noRunningTestLock": true,
+    "targetReleaseFailedOrRunningZero": true,
+    "backendHealthUp": true,
+    "frontendHttp200": true
+  },
+  "passed": true
+}

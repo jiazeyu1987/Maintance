@@ -258,6 +258,15 @@
 - 前置门禁：required SQL 涉及 system_menu.id、permission、parent_id、system_role_menu 或 system_tenant_package_menu 时，构建/发布前必须只读核验目标环境真实占用；硬编码 ID 必须证明未占用或与同一业务权限完全一致。若目标库存在漂移，必须修正 SQL 为可重复、可审计、不会覆盖其他权限的根因方案后重新构建 releaseTag。
 - 处理要求：先冻结 operation stdout/stderr、目标 SQL、远端 system_menu 占用查询、infra_release_migration/operation_lock 状态；不得手工删除/改写目标库权限来绕过门禁。
 
+## 2026-08-03 required SQL checksum 漂移重放菜单主键门禁
+
+- Trigger: `preflight-plan.json` 中菜单/权限类 required SQL 出现 `action=APPLY` 且原因包含 `target checksum differs from manifest`，尤其是历史 base schema 或包含 `INSERT INTO system_menu ... SELECT ... WHERE NOT EXISTS(permission)` 的 SQL。
+- Preflight check: 在镜像加载、远端 `.env IMAGE_TAG` 更新和 MySQL 执行前，只读核对目标环境 `infra_release_migration` 旧 checksum、manifest 新 checksum、SQL 中固定 `system_menu.id`、业务键 `permission/path/component` 与目标库实际占用；若固定 ID 已存在但业务键不完全等价，必须阻塞。
+- Blocker: 目标库记录 checksum 与 manifest 不一致且 SQL 不是可重复执行的幂等迁移；目标库存在同一 `system_menu.id` 但 SQL 的 `WHERE NOT EXISTS` 只按 permission/path 判断；远端 MySQL 报 `ERROR 1062 Duplicate entry '<id>' for key 'system_menu.PRIMARY'`。
+- Verification: 冻结 `publish-test` preview、operation JSON、脱敏 operation log、`preflight-target-state-<env>.json`、`preflight-plan.json` 摘要、远端 release lock/migration 状态、目标 `system_menu` 占用快照和测试服 `.env`/实际镜像；补 RED 测试后修复 SQL 幂等性或拆分新迁移，运行 migration policy gate，重新 build-release 新 releaseTag 并重新 `publish-test`。
+- Forbidden action: 禁止手工把失败 migration 改成 APPLIED/SKIPPED、手工删除/覆盖目标库菜单、复用失败 releaseTag、或把 `.env IMAGE_TAG` 已写入目标 tag 当作发布成功。
+- Evidence: `doc/tasks/20260803-head-test-only-release/execution-log.md`；`release-20260803-intmain-head-test-r260803a-r1` 的 `publish-test` operation `op-2026-08-02T171256308397600Z-05598a68-af1a-4f8f-8db2-3b7806418241` 在 `20260513_dcc_base_schema.sql` line 1298 失败，MySQL `ERROR 1062 Duplicate entry '6813' for key 'system_menu.PRIMARY'`；preflight-plan 对 `20260513_dcc_base_schema` 判定 `APPLY`，原因是 target checksum `9c6d4004565813ebfc8b1ad0454c6eb7d27302a348f426f1ad94795774c2bd33` 与 manifest checksum `4751b23cf28e932d936f3c6a81d9aee109afbd6fa509189dd50d589ac6abfe28` 不一致。
+
 ## 2026-07-06 mark-tested 本地启动参数引号门禁
 
 - 触发场景：使用 Start-Process -ArgumentList 数组启动 PowerShell 脚本时，如果 -TestConclusion 等自由文本参数包含空格或中文标点，子进程命令行可能被重新拆词，后续词会被误绑定到位置参数，例如 Component，导致 ValidateSet 失败。
@@ -843,6 +852,7 @@
 - Verification: closeout 证据必须包含每个任务路径 `existsAfter=false`、worktree list 不含本任务 token、48181 仍由主维护路径进程提供 health=UP。
 - Forbidden action: 不得把 `Directory not empty` 忽略为成功；不得删除无关并发 worktree；不得在运行控制台仍指向 release worktree 时删除该路径。
 - Evidence: `doc/tasks/20260801-head-test-only-release/worktree-cleanup-r260801e-r1.json`；r260801a/r260801b Git 注册已清除后，物理目录因 ignored `node_modules` 和 pnpm 长路径残留，需要固定路径白名单和 Windows 长路径前缀清理。
+- 2026-08-03 追加证据：`doc/tasks/20260803-fix-dcc-base-schema-menu-id-release/` closeout 中，r260803b 维护/app release worktree 已 clean，但 `git worktree remove --force` 仍因构建产物返回 `Directory not empty`；维护目录需先确认 Git 已注销、路径在 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260803b` 下，再清只读属性后删除；app release 目录因 pnpm 断链/权限需用 symlink-safe 删除并复核 `existsAfter=false`。
 
 ## 2026-08-02 r260802b release worktree 来源、state-dir 与 schema-first 验收门禁
 
@@ -917,3 +927,12 @@ HEAD-only 构建发布在维护仓或主程序仓主工作区 dirty，且需要�
 ### Evidence
 
 - `doc/tasks/20260802-commit-feedback-fix-test-release/`；失败 releaseTags `r260802c-r1/r2/r3`、`r260802d-r1`、`r260802e-r1`、`r260802f-r1`、`r260802g-r1`；最终源提交 `f0c34dfed910f52f9c03b401e976cbd2d0424e00` 和 releaseTag `release-20260802-feedback-fix-test-r260802h-r1` 通过 manifest、release-info 和测试服运行态验证。
+
+## 2026-08-03 发布成功后主线合回必须检查并发索引门禁
+
+- Trigger: 发布修复来自临时 app worktree 或 fix worktree，发布成功后需要把修复提交合回主程序 `int_main` 并清理 worktree。
+- Preflight check: 合回前先检查目标主线 `git diff --cached --name-only`、`git status --short -- <task files>`、目标文件是否已有非本任务 hunk；若同一文件有并发未提交内容，只能做 hunk 级比对，不能整文件暂存。
+- Blocker: 目标主线存在非本任务已暂存文件；目标文件同时包含非本任务 hunk；`.git/index.lock` 或后台 `git status` 进程正在占用 index；全量 migration gate 被当前主线其它未完成 SQL 或缺元数据阻塞；提交会混入其它任务内容。
+- Verification: 记录主线 branch、HEAD、cached 文件列表、目标文件 diff、索引级 hunk 暂存方式、本任务聚焦测试结果、fix commit 与主线目标文件 diff 为空，以及 release/fix worktree 最终删除结果。
+- Forbidden action: 禁止为了收口而整文件 `git add`、提交并发暂存文件、重置/清空别人的 index、删除未合回修复 worktree，或把测试服发布成功等同于主线收口完成。
+- Evidence: `doc/tasks/20260803-fix-dcc-base-schema-menu-id-release/execution-log.md` P006/P007；`E:\IntRuoyi` 的 `int_main` 曾有并发 staged/dirty，且 `20260513_dcc_base_schema.sql` 有非本任务 hunk；最终仅移出非本任务暂存文档、用 index patch 暂存菜单 hunk，提交 `6b1fd19eb` 只包含本任务两文件，聚焦 pytest `15 passed`，fix/release worktree 已在 48181 恢复主路径后清理。

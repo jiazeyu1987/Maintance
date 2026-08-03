@@ -1,0 +1,16 @@
+- generic [ref=e5]:
+  - generic [ref=e6]: 瑛泰数字化平台
+  - generic [ref=e10]:
+    - heading "登录" [level=2] [ref=e14]
+    - generic [ref=e25]:
+      - combobox [ref=e27]
+      - generic [ref=e28]: 芋道源码
+    - textbox "请输入用户名" [ref=e44]: admin
+    - textbox "请输入密码" [ref=e57]: admin123
+    - generic [ref=e66]:
+      - generic [ref=e68] [cursor=pointer]:
+        - generic [ref=e69]:
+          - checkbox "记住我" [checked]
+        - generic [ref=e71]: 记住我
+      - generic [ref=e72]: 忘记密码?
+    - button "登录" [ref=e78] [cursor=pointer]

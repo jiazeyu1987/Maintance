@@ -1,0 +1,190 @@
+- main [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - paragraph [ref=e6]: 本机运维台 · 127.0.0.1:48181
+      - heading "运行控制台" [level=1] [ref=e7]
+      - paragraph [ref=e8]: local-operator
+    - generic [ref=e9]:
+      - generic [ref=e10]: 容量 PASS
+      - button "刷新" [ref=e171] [cursor=pointer]
+  - region "运行摘要" [ref=e12]:
+    - article [ref=e13]:
+      - generic [ref=e14]: 运行实例
+      - strong [ref=e15]: "3"
+    - article [ref=e16]:
+      - generic [ref=e17]: 异常/停止
+      - strong [ref=e18]: "1"
+    - article [ref=e19]:
+      - generic [ref=e20]: 操作记录
+      - strong [ref=e21]: "2"
+    - article [ref=e22]:
+      - generic [ref=e23]: 容量状态
+      - strong [ref=e24]: PASS
+  - generic [ref=e25]:
+    - generic [ref=e26]:
+      - generic [ref=e27]:
+        - generic [ref=e28]: 实例状态
+        - generic [ref=e34]: 4 项
+      - generic [ref=e177]:
+        - table [ref=e179]:
+          - rowgroup [ref=e187]:
+            - row [ref=e188]:
+              - columnheader "环境" [ref=e189]
+              - columnheader "组件" [ref=e191]
+              - columnheader "状态" [ref=e193]
+              - columnheader "HTTP" [ref=e195]
+              - columnheader "地址" [ref=e197]
+              - columnheader "动作" [ref=e199]
+        - table [ref=e205]:
+          - rowgroup [ref=e213]:
+            - row [ref=e214]:
+              - cell "local" [ref=e215]
+              - cell "intruoyi-frontend" [ref=e217]
+              - cell "RUNNING" [ref=e219]
+              - cell "200" [ref=e222]
+              - cell "http://127.0.0.1:8081/" [ref=e224]
+              - cell [ref=e226]:
+                - button [ref=e228] [cursor=pointer]
+            - row [ref=e232]:
+              - cell "local" [ref=e233]
+              - cell "intruoyi-backend" [ref=e235]
+              - cell "RUNNING" [ref=e237]
+              - cell "200" [ref=e240]
+              - cell "http://127.0.0.1:48081/actuator/health" [ref=e242]
+              - cell [ref=e244]:
+                - button [ref=e246] [cursor=pointer]
+            - row [ref=e250]:
+              - cell "local" [ref=e251]
+              - cell "intruoyi-full" [ref=e253]
+              - cell "RUNNING" [ref=e255]
+              - cell "200" [ref=e258]
+              - cell "http://127.0.0.1:8081/" [ref=e260]
+              - cell [ref=e262]:
+                - button [ref=e264] [cursor=pointer]
+            - row [ref=e268]:
+              - cell "local" [ref=e269]
+              - cell "website-frontend" [ref=e271]
+              - cell "STOPPED" [ref=e273]
+              - cell [ref=e276]
+              - cell "http://127.0.0.1:4173/" [ref=e277]
+              - cell [ref=e279]:
+                - button [ref=e281] [cursor=pointer]
+    - generic [ref=e56]:
+      - generic [ref=e57]:
+        - generic [ref=e58]: 运维动作
+        - generic [ref=e63]: 常规
+      - generic [ref=e64]:
+        - generic [ref=e65]:
+          - generic [ref=e66]: 当前动作
+          - strong [ref=e67]: 构建发布包
+        - paragraph [ref=e68]: 生成发布包，不直接部署到任何环境
+      - radiogroup "运维动作" [ref=e69]:
+        - radio "构建发布包" [checked] [ref=e70] [cursor=pointer]
+        - radio "部署测试服" [ref=e71] [cursor=pointer]
+        - radio "测试服数据库快应用" [ref=e72] [cursor=pointer]
+        - radio "标记测试通过" [ref=e73] [cursor=pointer]
+        - radio "上线正式服" [ref=e74] [cursor=pointer]
+        - radio "上线备份服" [ref=e75] [cursor=pointer]
+        - radio "立即备份" [ref=e76] [cursor=pointer]
+        - radio "回滚应用" [ref=e77] [cursor=pointer]
+        - radio "恢复数据" [ref=e78] [cursor=pointer]
+        - radio "恢复演练" [ref=e79] [cursor=pointer]
+      - generic [ref=e80]:
+        - generic [ref=e81]:
+          - generic [ref=e82]: 操作原因
+          - textbox "操作原因" [ref=e85]: 独立控制台本机验证，仅预览命令
+        - generic [ref=e86]:
+          - generic [ref=e87]:
+            - generic [ref=e88]: 发布范围
+            - generic [ref=e91] [cursor=pointer]:
+              - generic:
+                - combobox "发布范围" [ref=e93]
+                - generic [ref=e94]: 仅代码
+          - generic [ref=e99]:
+            - generic [ref=e100]: 发布标签
+            - textbox "发布标签" [ref=e104]:
+              - /placeholder: release-YYYYMMDD-HHmm
+          - generic [ref=e105]:
+            - generic [ref=e106]: 生产确认
+            - textbox "生产确认" [ref=e110]:
+              - /placeholder: PROD
+        - generic [ref=e111]:
+          - generic [ref=e112] [cursor=pointer]:
+            - generic [ref=e113]:
+              - checkbox "包含 OnlyOffice"
+            - generic [ref=e115]: 包含 OnlyOffice
+          - generic [ref=e116] [cursor=pointer]:
+            - generic [ref=e117]:
+              - checkbox "包含展厅包"
+            - generic [ref=e119]: 包含展厅包
+          - generic [ref=e120] [cursor=pointer]:
+            - generic [ref=e121]:
+              - checkbox "智能发布报告"
+            - generic [ref=e123]: 智能发布报告
+        - button "预览命令" [ref=e125] [cursor=pointer]
+  - generic [ref=e130]:
+    - generic [ref=e131]:
+      - generic [ref=e132]: 操作记录
+      - generic [ref=e285]:
+        - generic [ref=e286]: SUCCESS
+        - generic [ref=e287]: 部署发布包到测试服
+    - generic [ref=e289]:
+      - table [ref=e291]:
+        - rowgroup [ref=e300]:
+          - row [ref=e301]:
+            - columnheader "编号" [ref=e302]
+            - columnheader "操作者" [ref=e304]
+            - columnheader "环境" [ref=e306]
+            - columnheader "动作" [ref=e308]
+            - columnheader "状态" [ref=e310]
+            - columnheader "结果" [ref=e312]
+            - columnheader "日志" [ref=e314]
+      - table [ref=e320]:
+        - rowgroup [ref=e329]:
+          - row [ref=e330]:
+            - cell "op-2026-08-03T020027072659300Z-324edfd7-4658-4822-89ed-0e35e37f7feb" [ref=e331]
+            - cell "local-operator" [ref=e333]
+            - cell "test" [ref=e335]
+            - cell "部署发布包到测试服" [ref=e337]
+            - cell "SUCCESS" [ref=e339]
+            - cell "命令执行完成" [ref=e342]
+            - cell [ref=e344]:
+              - button [ref=e346] [cursor=pointer]
+          - row [ref=e350]:
+            - cell "op-2026-08-03T014004195140200Z-27256ee2-7aa4-4539-a982-044bd4f86239" [ref=e351]
+            - cell "local-operator" [ref=e353]
+            - cell "release" [ref=e355]
+            - cell "构建发布包" [ref=e357]
+            - cell "SUCCESS" [ref=e359]
+            - cell "命令执行完成" [ref=e362]
+            - cell [ref=e364]:
+              - button [ref=e366] [cursor=pointer]
+  - dialog "版本变更说明" [ref=e376]:
+    - generic [active] [ref=e377]:
+      - generic [ref=e378]:
+        - heading "版本变更说明" [level=2] [ref=e379]
+        - button "Close this dialog" [ref=e380] [cursor=pointer]
+      - generic [ref=e385]:
+        - generic [ref=e386]:
+          - generic [ref=e387]: 版本号
+          - strong [ref=e388]: release-20260803-dcc-menu-replay-fix-test-r260803b-r1
+        - generic [ref=e389]:
+          - text: 变更说明
+          - list [ref=e390]:
+            - listitem [ref=e391]: 发布包：release-20260803-dcc-menu-replay-fix-test-r260803b-r1
+            - listitem [ref=e392]: 组件范围：intruoyi
+  - generic "版本信息" [ref=e154]:
+    - generic [ref=e156]:
+      - generic [ref=e157]: 软件版本
+      - strong [ref=e158]: 2026.06.0
+    - generic [ref=e159]:
+      - generic [ref=e160]:
+        - generic [ref=e161]: 测试服
+        - strong [ref=e162]: release-20260803-dcc-menu-replay-fix-test-r260803b-r1
+      - button "查看变更" [ref=e370] [cursor=pointer]
+    - generic [ref=e164]:
+      - generic [ref=e165]: 正式服
+      - strong [ref=e166]: 未上报
+    - generic [ref=e168]:
+      - generic [ref=e169]: 备份服
+      - strong [ref=e170]: 未上报

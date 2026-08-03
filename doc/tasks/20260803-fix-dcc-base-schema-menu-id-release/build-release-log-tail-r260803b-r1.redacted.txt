@@ -1,0 +1,467 @@
+aobject.permission.DccNasAclIdentityMappingDO
+  ���ڷ� varargs ����, Ӧʹ�� cn.iocoder.yudao.module.dcc.dal.dataobject.permission.DccNasAclIdentityMappingDO[], ����Ҳ�������ƴ˾���
+[INFO] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-dcc/src/test/java/cn/iocoder/yudao/module/dcc/service/directory/DccDirectoryAdminServiceImplTest.java: ĳЩ�����ļ�ʹ�û򸲸����ѹ�ʱ�� API��
+[INFO] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-dcc/src/test/java/cn/iocoder/yudao/module/dcc/service/directory/DccDirectoryAdminServiceImplTest.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:deprecation ���±��롣
+[INFO] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-dcc/src/test/java/cn/iocoder/yudao/module/dcc/controller/admin/file/DccControlledFileBrowserPageControllerTest.java: ĳЩ�����ļ�ʹ����δ�����򲻰�ȫ�Ĳ�����
+[INFO] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-dcc/src/test/java/cn/iocoder/yudao/module/dcc/controller/admin/file/DccControlledFileBrowserPageControllerTest.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:unchecked ���±��롣
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-module-dcc ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-module-dcc ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260803b-release-app\IntRuoyiBackend\yudao-module-dcc\target\yudao-module-dcc-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ------------------< cn.iocoder.boot:yudao-module-srm >------------------
+[INFO] Building yudao-module-srm 2026.04-SNAPSHOT                       [26/30]
+[INFO]   from yudao-module-srm\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-module-srm ---
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-module-srm ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-module-srm ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-module-srm ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-module-srm:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-module-srm ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 226 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-srm/src/main/java/cn/iocoder/yudao/module/srm/service/nonbidding/SrmNonBiddingProcurementServiceImpl.java: D:\IntRuoyiWorktree\r260803b-release-app\IntRuoyiBackend\yudao-module-srm\src\main\java\cn\iocoder\yudao\module\srm\service\nonbidding\SrmNonBiddingProcurementServiceImpl.javaʹ�û򸲸����ѹ�ʱ�� API��
+[INFO] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-srm/src/main/java/cn/iocoder/yudao/module/srm/service/nonbidding/SrmNonBiddingProcurementServiceImpl.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:deprecation ���±��롣
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-module-srm ---
+[INFO] Copying 3 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-module-srm ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 18 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[63,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[63,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[63,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[63,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[63,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[65,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[65,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[65,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[65,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[65,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[67,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[67,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[67,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[67,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[67,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-module-srm ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-module-srm ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260803b-release-app\IntRuoyiBackend\yudao-module-srm\target\yudao-module-srm-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ------------------< cn.iocoder.boot:yudao-module-ai >-------------------
+[INFO] Building yudao-module-ai 2026.04-SNAPSHOT                        [27/30]
+[INFO]   from yudao-module-ai\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[WARNING] 2 problems were encountered while building the effective model for org.apache.yetus:audience-annotations:jar:0.5.0 during dependency collection step for project (use -X to see details)
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-module-ai ---
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-module-ai ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-module-ai ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260803b-release-app\IntRuoyiBackend\yudao-module-ai\src\main\resources
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-module-ai ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-module-ai:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-module-ai ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 200 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-module-ai ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260803b-release-app\IntRuoyiBackend\yudao-module-ai\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-module-ai ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 38 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-module-ai ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-module-ai ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260803b-release-app\IntRuoyiBackend\yudao-module-ai\target\yudao-module-ai-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ------------------< cn.iocoder.boot:yudao-module-mes >------------------
+[INFO] Building yudao-module-mes 2026.04-SNAPSHOT                       [28/30]
+[INFO]   from yudao-module-mes\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-module-mes ---
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-module-mes ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-module-mes ---
+[INFO] Copying 6 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-module-mes ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-module-mes:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-module-mes ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2473 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/schedule/MesProAutoScheduleServiceImpl.java:[1180,87] ���һ������ʹ���˲�׼ȷ�ı������͵� varargs �����ķ� varargs ����; 
+  ���� varargs ����, Ӧʹ�� java.lang.Object
+  ���ڷ� varargs ����, Ӧʹ�� java.lang.Object[], ����Ҳ�������ƴ˾���
+[INFO] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/batchrecord/MesProBatchRecordExecutionFieldAuditHasher.java: ĳЩ�����ļ�ʹ�û򸲸����ѹ�ʱ�� API��
+[INFO] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/batchrecord/MesProBatchRecordExecutionFieldAuditHasher.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:deprecation ���±��롣
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-module-mes ---
+[INFO] Copying 6 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-module-mes ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 372 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/service/pro/batchrecord/MesProEdhrBatchExecutionLegacyProcessTest.java: ĳЩ�����ļ�ʹ�û򸲸����ѹ�ʱ�� API��
+[INFO] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/service/pro/batchrecord/MesProEdhrBatchExecutionLegacyProcessTest.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:deprecation ���±��롣
+[INFO] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/MesProRouteVersionAndCopyTest.java: ĳЩ�����ļ�ʹ����δ�����򲻰�ȫ�Ĳ�����
+[INFO] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/MesProRouteVersionAndCopyTest.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:unchecked ���±��롣
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-module-mes ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-module-mes ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260803b-release-app\IntRuoyiBackend\yudao-module-mes\target\yudao-module-mes-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ---------------< cn.iocoder.boot:yudao-module-showroom >----------------
+[INFO] Building yudao-module-showroom 2026.04-SNAPSHOT                  [29/30]
+[INFO]   from yudao-module-showroom\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-module-showroom ---
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-module-showroom ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-module-showroom ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-module-showroom ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-module-showroom:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-module-showroom ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 237 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/main/java/cn/iocoder/yudao/module/showroom/release/ShowroomReleaseAssembler.java: ĳЩ�����ļ�ʹ����δ�����򲻰�ȫ�Ĳ�����
+[INFO] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/main/java/cn/iocoder/yudao/module/showroom/release/ShowroomReleaseAssembler.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:unchecked ���±��롣
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-module-showroom ---
+[INFO] Copying 3 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-module-showroom ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 77 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/AbstractShowroomReleaseDbTest.java:[106,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/AbstractShowroomReleaseDbTest.java:[106,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/AbstractShowroomReleaseDbTest.java:[106,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/AbstractShowroomReleaseDbTest.java:[106,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/AbstractShowroomReleaseDbTest.java:[106,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/AbstractShowroomReleaseDbTest.java:[108,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/AbstractShowroomReleaseDbTest.java:[108,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/AbstractShowroomReleaseDbTest.java:[108,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/AbstractShowroomReleaseDbTest.java:[108,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/AbstractShowroomReleaseDbTest.java:[108,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/configpackage/ShowroomHallConfigPackageServiceTest.java:[73,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/configpackage/ShowroomHallConfigPackageServiceTest.java:[73,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/configpackage/ShowroomHallConfigPackageServiceTest.java:[73,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/configpackage/ShowroomHallConfigPackageServiceTest.java:[73,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/configpackage/ShowroomHallConfigPackageServiceTest.java:[73,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/content/ShowroomPersistentContentServiceTest.java:[37,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/content/ShowroomPersistentContentServiceTest.java:[37,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/content/ShowroomPersistentContentServiceTest.java:[37,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/content/ShowroomPersistentContentServiceTest.java:[37,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/content/ShowroomPersistentContentServiceTest.java:[37,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/content/ShowroomProductAttachmentTest.java:[31,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/content/ShowroomProductAttachmentTest.java:[31,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/content/ShowroomProductAttachmentTest.java:[31,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/content/ShowroomProductAttachmentTest.java:[31,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/content/ShowroomProductAttachmentTest.java:[31,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[70,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[70,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[70,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[70,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[70,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[73,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[73,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[73,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[73,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[73,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[76,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[76,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[76,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[76,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[76,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[79,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[79,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[79,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[79,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[79,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[82,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[82,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[82,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[82,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[82,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[85,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[85,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[85,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[85,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[85,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[114,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[114,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[114,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[114,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[114,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[116,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[116,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[116,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[116,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[116,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[118,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[118,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[118,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[118,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[118,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[120,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[120,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[120,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[120,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[120,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[122,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[122,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[122,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[122,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[122,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[124,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[124,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[124,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[124,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[124,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[126,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[126,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[126,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[126,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[126,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[128,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[128,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[128,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[128,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[128,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[130,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[130,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[130,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[130,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[INFO] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java: ĳЩ�����ļ�����ʹ�û򸲸��˱��Ϊ��ɾ�����ѹ�ʱ API��
+[INFO] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/ShowroomLegacyWebsiteConfigConditionalRequestTest.java: ĳЩ�����ļ�ʹ����δ�����򲻰�ȫ�Ĳ�����
+[INFO] /D:/IntRuoyiWorktree/r260803b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/ShowroomLegacyWebsiteConfigConditionalRequestTest.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:unchecked ���±��롣
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-module-showroom ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-module-showroom ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260803b-release-app\IntRuoyiBackend\yudao-module-showroom\target\yudao-module-showroom-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] --------------------< cn.iocoder.boot:yudao-server >--------------------
+[INFO] Building yudao-server 2026.04-SNAPSHOT                           [30/30]
+[INFO]   from yudao-server\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-server ---
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-server ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-server ---
+[INFO] Copying 4 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-server ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-server:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-server ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- dependency:3.7.0:unpack (unpack-report-openpdf-phrase-override) @ yudao-server ---
+[INFO] Configured Artifact: cn.iocoder.boot:yudao-module-report:2026.04-SNAPSHOT:jar
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-server ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260803b-release-app\IntRuoyiBackend\yudao-server\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-server ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 15 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-server ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-server ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260803b-release-app\IntRuoyiBackend\yudao-server\target\yudao-server.jar
+[INFO] 
+[INFO] --- spring-boot:3.5.9:repackage (default) @ yudao-server ---
+[INFO] Attaching repackaged archive D:\IntRuoyiWorktree\r260803b-release-app\IntRuoyiBackend\yudao-server\target\yudao-server-exec.jar with classifier exec
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for yudao 2026.04-SNAPSHOT:
+[INFO] 
+[INFO] yudao .............................................. SUCCESS [  0.470 s]
+[INFO] yudao-framework .................................... SUCCESS [  0.086 s]
+[INFO] yudao-common ....................................... SUCCESS [  5.738 s]
+[INFO] yudao-spring-boot-starter-web ...................... SUCCESS [  2.320 s]
+[INFO] yudao-spring-boot-starter-security ................. SUCCESS [  2.236 s]
+[INFO] yudao-spring-boot-starter-mybatis .................. SUCCESS [  2.867 s]
+[INFO] yudao-spring-boot-starter-redis .................... SUCCESS [  0.998 s]
+[INFO] yudao-spring-boot-starter-mq ....................... SUCCESS [  2.082 s]
+[INFO] yudao-spring-boot-starter-job ...................... SUCCESS [  3.112 s]
+[INFO] yudao-spring-boot-starter-test ..................... SUCCESS [  1.722 s]
+[INFO] yudao-spring-boot-starter-biz-tenant ............... SUCCESS [  6.142 s]
+[INFO] yudao-spring-boot-starter-websocket ................ SUCCESS [  6.930 s]
+[INFO] yudao-spring-boot-starter-monitor .................. SUCCESS [ 30.971 s]
+[INFO] yudao-spring-boot-starter-protection ............... SUCCESS [  3.074 s]
+[INFO] yudao-spring-boot-starter-biz-ip ................... SUCCESS [  1.178 s]
+[INFO] yudao-spring-boot-starter-excel .................... SUCCESS [  1.196 s]
+[INFO] yudao-spring-boot-starter-biz-data-permission ...... SUCCESS [  1.344 s]
+[INFO] yudao-module-infra ................................. SUCCESS [ 46.931 s]
+[INFO] yudao-module-system ................................ SUCCESS [  9.821 s]
+[INFO] yudao-module-report ................................ SUCCESS [  2.526 s]
+[INFO] yudao-module-bpm ................................... SUCCESS [  6.136 s]
+[INFO] yudao-module-crm ................................... SUCCESS [  4.466 s]
+[INFO] yudao-module-erp ................................... SUCCESS [  6.008 s]
+[INFO] yudao-module-mdm ................................... SUCCESS [  2.352 s]
+[INFO] yudao-module-dcc ................................... SUCCESS [ 10.999 s]
+[INFO] yudao-module-srm ................................... SUCCESS [  4.851 s]
+[INFO] yudao-module-ai .................................... SUCCESS [  8.331 s]
+[INFO] yudao-module-mes ................................... SUCCESS [ 31.786 s]
+[INFO] yudao-module-showroom .............................. SUCCESS [  6.401 s]
+[INFO] yudao-server ....................................... SUCCESS [  4.675 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  03:38 min
+[INFO] Finished at: 2026-08-03T09:45:15+08:00
+[INFO] ------------------------------------------------------------------------
+[INFO] Building frontend static assets for the test server
+[INFO] Run: pnpm build:test
+> yudao-ui-admin-vue3@2026.04-snapshot build:test D:\IntRuoyiWorktree\r260803b-release-app\IntRuoyiFronted
+> cross-env NODE_OPTIONS=--max-old-space-size=8192 vite build --mode test
+[33mThe CJS build of Vite's Node API is deprecated. See https://vitejs.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+Browserslist: browsers data (caniuse-lite) is 21 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Build successful. Please see dist-intruoyi-test directory
+[INFO] Frontend release info written: D:\IntRuoyiWorktree\r260803b-release-app\IntRuoyiFronted\dist-intruoyi-test\release-info.json
+[INFO] Preparing Docker build context from current worktree artifacts
+[INFO] Building backend image
+[INFO] Run: docker build --no-cache --build-arg BACKEND_RUNTIME_BASE_IMAGE=intruoyi-backend-runtime-base:2026.06.05-jre21-noble-docker29.2.1 -t intruoyi-backend:release-20260803-dcc-menu-replay-fix-test-r260803b-r1 -f D:\IntRuoyiWorktree\r260803b-release-app\IntRuoyiBackend\script\deploy\int-ruoyi-test\Dockerfile.backend E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260803-dcc-menu-replay-fix-test-r260803b-r1\docker-build-context
+#0 building with "desktop-linux" instance using docker driver
+#1 [internal] load build definition from Dockerfile.backend
+#1 transferring dockerfile:
+#1 transferring dockerfile: 435B 0.0s done
+#1 WARN: InvalidDefaultArgInFrom: Default value for ARG ${BACKEND_RUNTIME_BASE_IMAGE} results in empty or invalid base image name (line 2)
+#1 DONE 0.3s
+#2 [internal] load metadata for docker.io/library/intruoyi-backend-runtime-base:2026.06.05-jre21-noble-docker29.2.1
+#2 DONE 0.2s
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+#4 [internal] load build context
+#4 ...
+#5 [1/4] FROM docker.io/library/intruoyi-backend-runtime-base:2026.06.05-jre21-noble-docker29.2.1@sha256:b4f7d85f325665c3b372379e6d352c3c8be2d3a08add68ac0dc151f720160be7
+#5 resolve docker.io/library/intruoyi-backend-runtime-base:2026.06.05-jre21-noble-docker29.2.1@sha256:b4f7d85f325665c3b372379e6d352c3c8be2d3a08add68ac0dc151f720160be7 0.1s done
+#5 CACHED
+#4 [internal] load build context
+#4 transferring context: 10.10MB 5.1s
+#4 ...
+#6 [2/4] RUN mkdir -p /yudao-server
+#6 DONE 5.8s
+#4 [internal] load build context
+#4 ...
+#7 [3/4] WORKDIR /yudao-server
+#7 DONE 0.2s
+#4 [internal] load build context
+#4 transferring context: 129.99MB 10.3s
+#4 transferring context: 255.88MB 15.4s
+#4 transferring context: 378.89MB 20.4s
+#4 transferring context: 501.63MB 25.1s done
+#4 DONE 25.2s
+#8 [4/4] COPY ruoyi-vue-pro/yudao-server/target/yudao-server-exec.jar app.jar
+#8 DONE 4.1s
+#9 exporting to image
+#9 exporting layers
+#9 exporting layers 12.9s done
+#9 exporting manifest sha256:d647b1e0203a3374181f83e4079e4b1e46e7ca969ec79197680513ab2715855a 0.1s done
+#9 exporting config sha256:ec31e7b10ebaf31d71b22ad90b8704c468ff3321d6428a31085affa16a1697e3 0.1s done
+#9 exporting attestation manifest sha256:41c001b451b9c9130495b3e65979411fe110d677b504a97574c5942b7e019bf8 0.1s done
+#9 exporting manifest list sha256:fae58dfb2a508b177f2f8682b18414ff4d6e77325334d24e700fa14845ac73d0
+#9 exporting manifest list sha256:fae58dfb2a508b177f2f8682b18414ff4d6e77325334d24e700fa14845ac73d0 0.1s done
+#9 naming to docker.io/library/intruoyi-backend:release-20260803-dcc-menu-replay-fix-test-r260803b-r1 done
+#9 unpacking to docker.io/library/intruoyi-backend:release-20260803-dcc-menu-replay-fix-test-r260803b-r1
+#9 unpacking to docker.io/library/intruoyi-backend:release-20260803-dcc-menu-replay-fix-test-r260803b-r1 3.4s done
+#9 DONE 16.7s
+ [33m1 warning found (use docker --debug to expand):
+[0m - InvalidDefaultArgInFrom: Default value for ARG ${BACKEND_RUNTIME_BASE_IMAGE} results in empty or invalid base image name (line 2)
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/pqtr7gacpu98ve0wne6wqvweb
+[INFO] Building frontend image
+[INFO] Run: docker build --no-cache -t intruoyi-frontend:release-20260803-dcc-menu-replay-fix-test-r260803b-r1 -f D:\IntRuoyiWorktree\r260803b-release-app\IntRuoyiBackend\script\deploy\int-ruoyi-test\Dockerfile.frontend E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260803-dcc-menu-replay-fix-test-r260803b-r1\docker-build-context
+#0 building with "desktop-linux" instance using docker driver
+#1 [internal] load build definition from Dockerfile.frontend
+#1 transferring dockerfile: 234B done
+#1 DONE 0.0s
+#2 [internal] load metadata for docker.io/library/nginx:1.27-alpine
+#2 DONE 0.1s
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+#4 [internal] load build context
+#4 ...
+#5 [1/3] FROM docker.io/library/nginx:1.27-alpine@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10
+#5 resolve docker.io/library/nginx:1.27-alpine@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10 0.1s done
+#5 CACHED
+#4 [internal] load build context
+#4 transferring context: 33.26MB 2.1s done
+#4 DONE 2.2s
+#6 [2/3] COPY ruoyi-vue-pro/script/deploy/int-ruoyi-test/nginx.conf /etc/nginx/conf.d/default.conf
+#6 DONE 0.5s
+#7 [3/3] COPY yudao-ui-admin-vue3/dist-intruoyi-test/ /usr/share/nginx/html/
+#7 DONE 0.7s
+#8 exporting to image
+#8 exporting layers
+#8 exporting layers 1.4s done
+#8 exporting manifest sha256:e782a9c63eb33e13dcdfd9360af0863f65a28eefde5ae6992591808aa24a71d1 0.1s done
+#8 exporting config sha256:0e9377bf938a7aa03bd2f9406e54b1c025b2b09b980afaa0abe5c030cf72cbf1 0.1s done
+#8 exporting attestation manifest sha256:b502fa25bb05d5617faf99d90e8d7f1a368abcb2c46dc746c57aad9a0571c5fb
+#8 exporting attestation manifest sha256:b502fa25bb05d5617faf99d90e8d7f1a368abcb2c46dc746c57aad9a0571c5fb 0.2s done
+#8 exporting manifest list sha256:e93862c40f8a5c1b03a4ed71154082c3b958f819814d9816cf9bedbb24b075d7
+#8 exporting manifest list sha256:e93862c40f8a5c1b03a4ed71154082c3b958f819814d9816cf9bedbb24b075d7 0.1s done
+#8 naming to docker.io/library/intruoyi-frontend:release-20260803-dcc-menu-replay-fix-test-r260803b-r1 done
+#8 unpacking to docker.io/library/intruoyi-frontend:release-20260803-dcc-menu-replay-fix-test-r260803b-r1
+#8 unpacking to docker.io/library/intruoyi-frontend:release-20260803-dcc-menu-replay-fix-test-r260803b-r1 0.9s done
+#8 DONE 2.7s
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/js5pz0radpqvfktw430l6qna0
+[INFO] Exporting release images
+[INFO] Run: docker save -o E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260803-dcc-menu-replay-fix-test-r260803b-r1\intruoyi-images_release-20260803-dcc-menu-replay-fix-test-r260803b-r1.tar intruoyi-backend:release-20260803-dcc-menu-replay-fix-test-r260803b-r1 intruoyi-frontend:release-20260803-dcc-menu-replay-fix-test-r260803b-r1
+[INFO] Removing Docker build context from final release package
+[INFO] Mounting NAS release repository: \\172.30.30.4\IT����\Backup/ReleasePackage
+[INFO] Run shell: net use "\\172.30.30.4\IT����" /user:int <redacted>
+[INFO] Release package uploaded to NAS: Backup/ReleasePackage/release-20260803-dcc-menu-replay-fix-test-r260803b-r1 (releaseTag=release-20260803-dcc-menu-replay-fix-test-r260803b-r1)
+[INFO] Run shell: net use "\\172.30.30.4\IT����" /delete /y
+\\172.30.30.4\IT���� �Ѿ�ɾ����
+
+Release package built: release-20260803-dcc-menu-replay-fix-test-r260803b-r1
+NAS release path: Backup/ReleasePackage/release-20260803-dcc-menu-replay-fix-test-r260803b-r1
