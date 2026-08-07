@@ -936,3 +936,21 @@ HEAD-only 构建发布在维护仓或主程序仓主工作区 dirty，且需要�
 - Verification: 记录主线 branch、HEAD、cached 文件列表、目标文件 diff、索引级 hunk 暂存方式、本任务聚焦测试结果、fix commit 与主线目标文件 diff 为空，以及 release/fix worktree 最终删除结果。
 - Forbidden action: 禁止为了收口而整文件 `git add`、提交并发暂存文件、重置/清空别人的 index、删除未合回修复 worktree，或把测试服发布成功等同于主线收口完成。
 - Evidence: `doc/tasks/20260803-fix-dcc-base-schema-menu-id-release/execution-log.md` P006/P007；`E:\IntRuoyi` 的 `int_main` 曾有并发 staged/dirty，且 `20260513_dcc_base_schema.sql` 有非本任务 hunk；最终仅移出非本任务暂存文档、用 index patch 暂存菜单 hunk，提交 `6b1fd19eb` 只包含本任务两文件，聚焦 pytest `15 passed`，fix/release worktree 已在 48181 恢复主路径后清理。
+
+## 2026-08-08 clean release worktree 本机 runtime-control 配置门禁
+
+- Trigger: 维护仓主工作区 dirty，必须从 clean release worktree 构建维护控制台并通过运行控制台执行 `build-release`；clean worktree 中缺少被 `.gitignore` 排除的 `config/runtime-control.local.yaml`。
+- Preflight check: 从主维护目录复制本机 runtime-control local config 到本轮维护 release worktree 后，必须显式改写 `repo-root`、`frontend-root`、`ops-root` 和 `state-dir`：前两者指向本轮 app clean worktree，`ops-root` 指向本轮维护 worktree，`state-dir` 指向本轮专用 state 目录；随后运行 preview gate 验证脚本路径和 repo roots。
+- Blocker: local config 缺失；任一路径仍指向主工作区、旧 worktree 或主维护 state；复制配置后 Git 状态出现非 ignored dirty；preview gate 中 repoRoot/frontendRoot 不是本轮 clean worktree。
+- Verification: 记录配置关键路径只读输出、release worktree `git status --porcelain` 为空、build-release preview gate 全 true、manifest sourceRepos commit 等于冻结 app HEAD 且 dirty=false。
+- Forbidden action: 禁止直接用主维护目录运行控制台构建 dirty 主程序；禁止让本轮发布写入主维护 runtime-control state；禁止把 local config 提交进仓库。
+- Evidence: `doc/tasks/20260808-head-test-only-release/execution-log.md`；r260808a 配置写入后 `repo-root=D:/IntRuoyiWorktree/r260808a-release-app/IntRuoyiBackend`、`frontend-root=D:/IntRuoyiWorktree/r260808a-release-app/IntRuoyiFronted`、`ops-root=D:/ProjectPackage/Int/IntRuoyiWorktrees/r260808a/m/ops`、`state-dir=D:/ProjectPackage/Int/IntRuoyiWorktrees/r260808a-state`，build preview gate 通过。
+
+## 2026-08-08 build.ps1 生成 runtime 目录清理门禁
+
+- Trigger: 在维护 release worktree 中运行 `scripts/build.ps1` 后，构建成功但 `git status --porcelain` 出现未跟踪 `runtime/`。
+- Preflight check: 构建后立即复核维护 release worktree dirty 状态；若仅有本次生成的 `runtime/`，先做绝对路径边界校验、确认目标位于本轮维护 worktree 且不含 `.git`，再清理并复核 clean。
+- Blocker: dirty 项不止本次生成目录；目标路径不在本轮 worktree；目录含 `.git`；有非本任务进程引用；清理后 worktree 仍 dirty。
+- Verification: 记录 jar hash、Maven tests 结果、删除路径、清理方式、清理后 `git status --porcelain` 为空。
+- Forbidden action: 禁止用 dirty release worktree 继续 build-release；禁止宽泛删除 worktree 根或 node_modules；禁止删除未确认归属的并发任务文件。
+- Evidence: `doc/tasks/20260808-head-test-only-release/execution-log.md`；维护构建 26 tests passed、jar SHA256=`dd47d207373e9bd025f4136fab0cf6b693ac02fb362b7a931849da4318f2eec6`，清理 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260808a\m\runtime` 后 worktree clean。

@@ -594,3 +594,21 @@ ssh root@172.30.30.58 bash -s
 ### Evidence
 
 - `doc/tasks/20260803-fix-dcc-base-schema-menu-id-release/`；releaseTag `release-20260803-dcc-menu-replay-fix-test-r260803b-r1`；build operation `op-2026-08-03T014004195140200Z-27256ee2-7aa4-4539-a982-044bd4f86239`；publish operation `op-2026-08-03T020027072659300Z-324edfd7-4658-4822-89ed-0e35e37f7feb`；remote postcheck 与运行控制台版本变更说明均通过。
+
+## 2026-08-08 运行控制台 release-status 等待与端口隔离验收门禁
+
+- Trigger: 仅测试服发布完成后，需要用运行控制台页面验证当前 releaseTag、发布包、组件范围和变更说明；页面底部显示“加载中”；或因 48181 已被主维护控制台占用/进程管理策略限制，临时在其它端口启动本轮 release worktree 控制台。
+- Preflight check: 页面验收前先用实际控制台端口只读调用 `/admin-api/infra/runtime-control/release-status`，确认 `testCurrentReleaseTag`、`testCurrentReleaseNotes.changes`、`sourceRepos.commit` 和 `dirty=false` 已返回；Playwright 页面脚本必须等待目标 releaseTag 出现在 `document.body.innerText` 后再点击“查看变更”，不能只截取初始“加载中”状态。
+- Blocker: release-status API 不含目标 releaseTag/变更说明；页面等待 60 秒仍不显示目标 releaseTag；“查看变更”对话框不显示版本号、发布包或组件范围；页面 console error / failed request 非 0；控制台 preview 的 `repo-root` / `frontend-root` 未指向本轮 clean worktree。
+- Verification: 记录实际控制台端口、release-status JSON、Playwright JSON、截图路径、前端 HTTP 200、运行控制台 HTTP 200、releaseTagVisible/packageVisible/componentVisible/changeNotesVisible、consoleErrors 和 failedRequests。
+- Forbidden action: 禁止把 API 已返回 releaseTag 但页面仍“加载中”的初始截图当作页面验收通过；禁止因端口隔离而省略运行控制台页面验证；禁止用接口验证替代“查看变更”真实页面对话框。
+- Evidence: `doc/tasks/20260808-head-test-only-release/playwright-runtime-console-r260808a-r1.json`；首次脚本等待不足失败，重试等待 releaseTag 后通过，截图位于 `output/playwright/r260808a-release/`，releaseTag=`release-20260808-intmain-head-test-r260808a-r1`。
+
+## 2026-08-08 publish-test 长 migration 状态写入进度门禁
+
+- Trigger: `publish-test` 长时间 `RUNNING`，operation summary 长期停留在“命令已提交到本机执行队列”，但脱敏日志持续输出 required SQL 上传或 `infra_release_migration` 逐条状态写入。
+- Preflight check: 长阶段每隔固定时间读取 operation JSON 和脱敏 log tail；判断进度以日志阶段为准，区分“仍在推进”和“无新增日志卡死”；记录当前阶段、耗时原因和下一步等待/诊断动作。
+- Blocker: operation 非 SUCCESS；log tail 长时间无新增且远端存在 RUNNING lock；日志出现 MySQL/SSH/scp/docker health 失败；无法确认是否仍在同一 releaseTag 上推进。
+- Verification: publish-test 结束后必须独立 postcheck：operation=SUCCESS、release lock=APPLIED、migration failed/running=0、`.env`/实际镜像/容器/health/HTTP/release-info 均匹配目标 releaseTag。
+- Forbidden action: 禁止因 summary 未更新而重复提交 publish-test；禁止中断仍在推进的 required SQL/migration 状态写入；禁止只看 `Publish completed for test` 文本而跳过独立 postcheck。
+- Evidence: `doc/tasks/20260808-head-test-only-release/publish-test-log-tail-r260808a-r1.redacted.txt`；poll 15/30/45 仍为 RUNNING，但日志从 required SQL 上传推进到 migration 状态写入，最终 poll 59 SUCCESS。

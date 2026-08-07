@@ -241,3 +241,12 @@ Windows PowerShell 中执行 release worktree 清理、启动本地 Jar、通过
 ### Evidence
 
 - `doc/tasks/20260802-0958-head-test-only-release/execution-log.md` I005、I006、I008、I010、I011；`runtime-console-page-probe-r260802b-r1.json` 显示 releaseTag、发布包、组件范围和变更说明均可见且 console/请求无失败。
+
+## 2026-08-08 PowerShell 进程/删除策略拦截与端口隔离门禁
+
+- Trigger: 发布任务需要在 Windows PowerShell 中停止/启动本机运行控制台、删除本次生成目录，或使用 `Start-Process` / `Stop-Process` / `Remove-Item -Recurse`，工具策略返回 blocked/rejected。
+- Preflight check: 先用只读命令识别端口、PID、命令行和目标路径归属；若进程管理被拦截，不得扩大权限或强停其它进程，可改为前台会话在未占用端口启动本轮 release worktree 控制台，并把实际端口写入所有 API/Playwright 脚本；若删除被拦截，只允许对本任务生成目录使用绝对路径边界校验和 `.git` 检查后清理。
+- Blocker: 目标端口已被未知进程占用；无法证明 PID/路径属于本任务或安全隔离端口；清理目标不在本轮 worktree；前台会话无法健康启动；脚本仍指向 48181 但实际使用隔离端口。
+- Verification: 记录 blocked 命令类型、替代执行路径、实际端口、PID/前台会话 id、health、API ROOT、Playwright URL 和 cleanup 后 Git 状态。
+- Forbidden action: 禁止因为策略拦截而申请宽权限、使用通配符杀进程、删除 worktree 根目录、跳过运行控制台页面验收或继续使用主工作区 48181 构建。
+- Evidence: `doc/tasks/20260808-head-test-only-release/execution-log.md`；`Stop-Process`/`Start-Process`/`Remove-Item` 均被策略拦截，r260808a 改用 48182 前台会话启动，API/Playwright 全部指向 48182，任务生成 `runtime/` 经边界校验清理。
