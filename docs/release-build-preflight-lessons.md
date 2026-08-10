@@ -519,7 +519,7 @@
 - Blocker: Manifest v1 缺失、字段路径不匹配、sourceRepos commit 与冻结 HEAD 不一致、dirty=true、版本说明无法追溯到 releaseTag。
 - Verification: 记录 `manifest.json` 路径、sourceRepos、dirty、publishScope、changeSet summary 和 legacy manifest 的独立校验结果。
 - Forbidden action: 不得用 legacy schema 字段判断 Manifest v1 缺字段；不得用旧镜像 tag 替代 Manifest v1 证据。
-- Evidence: `doc/tasks/20260712-current-head-test-only-release/issues.md` P014。
+- Evidence: `doc/tasks/20260712-current-head-test-only-release/issues.md` P014。2026-08-06 追加证据：`doc/tasks/20260806-head-test-only-release/manifest-validation-r260806c-r1.json` 初始校验脚本曾误读顶层 `component`，修正为 Manifest v1 的 `changeSet.component` 后验证通过；`release-20260806-intmain-head-test-r260806c-r1` manifest/sourceRepos/release-info 均证明冻结提交和变更说明一致。
 
 ## 2026-07-12 干净 release worktree 依赖恢复门禁
 
@@ -937,6 +937,23 @@ HEAD-only 构建发布在维护仓或主程序仓主工作区 dirty，且需要�
 - Forbidden action: 禁止为了收口而整文件 `git add`、提交并发暂存文件、重置/清空别人的 index、删除未合回修复 worktree，或把测试服发布成功等同于主线收口完成。
 - Evidence: `doc/tasks/20260803-fix-dcc-base-schema-menu-id-release/execution-log.md` P006/P007；`E:\IntRuoyi` 的 `int_main` 曾有并发 staged/dirty，且 `20260513_dcc_base_schema.sql` 有非本任务 hunk；最终仅移出非本任务暂存文档、用 index patch 暂存菜单 hunk，提交 `6b1fd19eb` 只包含本任务两文件，聚焦 pytest `15 passed`，fix/release worktree 已在 48181 恢复主路径后清理。
 
+## 2026-08-06 后端 Spring context smoke 与多构造函数 Bean 门禁
+
+- Trigger: 构建发布包、`publish-test`、`promote-prod` 或 `promote-backup` 会部署后端镜像，且后端新增/修改 `@Service`、`@Component`、`@Controller` 或构造器注入类。
+- Preflight check: build-release 前至少运行一个后端 Spring context smoke，或静态扫描 Spring bean 类：同一 bean 存在多个构造函数时，必须有唯一 `@Autowired` 构造函数或明确无参构造函数；测试专用构造函数不得让生产构造器注入变得不明确。
+- Blocker: 后端日志或 smoke 测试出现 `UnsatisfiedDependencyException`、`BeanCreationException`、`No default constructor found`、`Failed to instantiate`，或静态扫描发现多构造函数 Spring bean 没有显式注入构造函数。
+- Verification: 记录 smoke 命令、目标类清单、Maven/ArchUnit/静态检查结果；发布后仍必须核 backend health=`UP`，不能只看 Maven package 成功。
+- Forbidden action: 不得把 Maven compile/package 通过等同于后端可启动；不得在测试服 health 失败后手工改 release lock/migration 或复用失败 releaseTag。
+- Evidence: `doc/tasks/20260806-head-test-only-release/`；`release-20260806-intmain-head-test-r260806b-r2` build-release 成功但 publish-test health readiness 失败，后端日志显示 `MesTeamLeaderProcessConfigServiceImpl` 有 public 生产构造函数和 package-private 测试构造函数但缺显式 `@Autowired`，Spring 报 `No default constructor found`。2026-08-06 修复后追加证据：`spring-constructor-gate-r260806c.json` 显示同一类 `constructorCount=2` 且 public production constructor 已有 `@Autowired`，随后 `release-20260806-intmain-head-test-r260806c-r1` publish-test 与 backend health 均通过。
+
+### 阶段补充：后端 runtime smoke
+
+1. `阶段：build-release 前`
+2. `必查项`：后端 Spring context smoke 或多构造函数 Spring bean 静态检查；新增构造器注入服务必须覆盖运行态启动。
+3. `推荐命令`：优先项目内已有 Maven/ArchUnit smoke；无现成命令时先补测试，不用测试服发布代替 smoke。
+4. `Fail Fast`：出现 `No default constructor found`、`UnsatisfiedDependencyException` 或 smoke 启动失败时停止构建发布。
+5. `必须记录`：目标类、构造器数量、注入标注、smoke 命令、失败 releaseTag 和后端日志证据。
+
 ## 2026-08-08 clean release worktree 本机 runtime-control 配置门禁
 
 - Trigger: 维护仓主工作区 dirty，必须从 clean release worktree 构建维护控制台并通过运行控制台执行 `build-release`；clean worktree 中缺少被 `.gitignore` 排除的 `config/runtime-control.local.yaml`。
@@ -954,3 +971,20 @@ HEAD-only 构建发布在维护仓或主程序仓主工作区 dirty，且需要�
 - Verification: 记录 jar hash、Maven tests 结果、删除路径、清理方式、清理后 `git status --porcelain` 为空。
 - Forbidden action: 禁止用 dirty release worktree 继续 build-release；禁止宽泛删除 worktree 根或 node_modules；禁止删除未确认归属的并发任务文件。
 - Evidence: `doc/tasks/20260808-head-test-only-release/execution-log.md`；维护构建 26 tests passed、jar SHA256=`dd47d207373e9bd025f4136fab0cf6b693ac02fb362b7a931849da4318f2eec6`，清理 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260808a\m\runtime` 后 worktree clean。
+## 2026-08-10 pnpm 真实子进程完成与 ignored-builds 清零门禁
+
+- Trigger: clean release worktree 使用 Corepack/pnpm 恢复主程序或维护控制台前端依赖，尤其是外层 shell/工具会异步承载子进程，或 `pnpm ignored-builds` 报出 esbuild、vue-demi、sharp 等待批准脚本。
+- Preflight check: 同一 worktree 只允许一个依赖恢复进程；以实际 pnpm/node 子进程退出、命令退出码、关键二进制存在和 `pnpm ignored-builds` 为空共同判定完成。需要批准脚本时使用明确 allowlist 执行 `pnpm rebuild --pending`，随后移除临时配置并复核 `git status --porcelain` 为空。
+- Blocker: 外层 corepack/shell 已返回但目标 worktree 仍有 pnpm/node/esbuild 子进程；同一 worktree 有两个安装进程；`ignored-builds` 非空；关键可执行文件缺失；或临时批准配置/测试 runtime 文件让 release worktree 变脏。
+- Verification: 记录进程树和命令行归属、真实退出码、ignored-builds=`none`、关键二进制检查以及构建前后 worktree clean；维护控制台还需运行 `scripts/build.ps1` 并核前端 build、Maven tests 和 JAR hash。
+- Forbidden action: 不得把承载进程返回当成依赖完成，不得在同一 worktree 并发重启 install，不得跳过 ignored-builds，不得把临时 `onlyBuiltDependencies` 或构建测试生成的 runtime 文件提交或纳入发布包。
+- Evidence: `doc/tasks/20260809-head-test-only-release/execution-log.md`；r260809a 主程序安装发现两个遗留 Node 子进程，改为单一真实 pnpm 后约 11 分 9 秒完成；主程序 7 个及维护前端 2 个 ignored builds 清零，两个 worktree 最终 clean，维护 Maven tests 26 passed。
+
+## 2026-08-11 r260811a release worktree 依赖、manifest 与发布日志门禁
+
+- Trigger: 从 dirty 主工作区冻结 HEAD 到 clean release worktree，并在 clean worktree 构建维护控制台、主程序前端和测试发布包。
+- Preflight check: 新 app release worktree 在 build-release 前必须确认 `IntRuoyiFronted/node_modules/.bin/cross-env.cmd`、`vite.cmd`、`vue-tsc.cmd` 存在；`pnpm ignored-builds` 必须清零；manifest 校验统一使用 `ops\release\validate-release-manifest.ps1 -PackagePath <package>`，不要手写 `-ManifestPath`。
+- Blocker: node_modules 缺失、cross-env/vite/vue-tsc 缺失、ignored-builds 非空、manifest validator 参数不匹配、sourceRepos commit/dirty 与冻结 HEAD 不一致、发布日志未经脱敏。
+- Verification: 记录 app/frontend dependency install 结果、ignored-builds=None、worktree clean、build operation SUCCESS、`MANIFEST_VALIDATION_PASSED`、release-info sourceRepos dirty=false、publish-test 脱敏日志 secret scan=0。
+- Forbidden action: 禁止用 r1 失败包继续 publish-test；禁止复用无 manifest 或 manifest 校验无效的包；禁止提交 raw publish log 中的 `mysql -p...` 密码形态。
+- Evidence: `doc/tasks/20260811-head-test-only-release/execution-log.md` I005-I007；最终 releaseTag `release-20260811-intmain-head-test-r260811a-r2`。

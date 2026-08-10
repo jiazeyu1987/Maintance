@@ -174,6 +174,15 @@ corepack pnpm@10.25.0 --version
 - Forbidden action: 不得因 `.env IMAGE_TAG` 等于目标 releaseTag 就宣称发布成功；不得在未授权时手工改 `.env`、手工更新 release lock/migration、或复用失败 releaseTag 继续 mark/promote。
 - Evidence: `doc/tasks/20260729-head-test-only-release/execution-log.md`；`publish-test` operation `op-2026-07-29T024258673743700Z-1774cd02-0579-420e-86eb-bcd0ed97475a` failed 后 `.env IMAGE_TAG=release-20260729-intmain-head-test-r260729a-r1`，但 backend/frontend 容器仍运行 `release-20260728-codeonly-noonlyoffice-test-r2`。2026-08-01 追加证据：`doc/tasks/20260801-head-test-only-release/execution-log.md`；`publish-test` operation `op-2026-07-31T184648151088Z-d51572f6-9207-44dd-bbab-6f54c347cea4` failed 后 `.env IMAGE_TAG=release-20260801-intmain-head-test-r260801a-r2`，backend/frontend 实际容器仍运行 `release-20260731-smartseed-tempfix-head-test-r260731d-r1`，release lock=`FAILED`，migration `FAILED=1`。2026-08-03 追加证据：`doc/tasks/20260803-head-test-only-release/execution-log.md`；`publish-test` operation `op-2026-08-02T171256308397600Z-05598a68-af1a-4f8f-8db2-3b7806418241` failed 后 `.env IMAGE_TAG` 短暂变为 `release-20260803-intmain-head-test-r260803a-r1`，backend/frontend 实际容器仍为 `release-20260802-feedback-fix-test-r260802h-r1`，release lock=`FAILED`，migration `FAILED/RUNNING=1`；失败收束时仅恢复 `.env IMAGE_TAG` 到实际运行 tag，不改 release lock/migration，不宣称发布成功。
 
+### publish-test 失败后镜像已切换但后端启动失败门禁
+
+- Trigger: `publish-test` operation 非 `SUCCESS`，且失败后 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag 已等于目标 releaseTag，但 backend health 失败或容器持续重启。
+- Preflight check: 失败冻结时必须同时记录 operation final、release lock、migration status、`.env IMAGE_TAG`、backend/frontend image tag、`docker compose ps`、backend health、frontend HTTP、frontend `/release-info.json` 和 backend `docker logs --tail`；如果镜像已切换但 backend health 失败，必须把该 releaseTag 判废。
+- Blocker: operation 非 `SUCCESS`；release lock=`FAILED`；backend health 非 `UP`；backend 日志存在 `Application run failed`、`UnsatisfiedDependencyException`、`No default constructor found`、`BeanCreationException` 或同类 Spring context 启动失败。
+- Verification: 证据必须显示前端 HTTP 与 release-info 不能覆盖 backend health 失败；只有 operation=`SUCCESS`、lock=`APPLIED`、backend health=`UP`、migration `FAILED/RUNNING=0` 全部满足，才可进入运行控制台页面版本验收。
+- Forbidden action: 不得因 `.env` 和实际镜像 tag 已等于目标 releaseTag 就宣称测试服发布成功；不得手工改 release lock/migration 或复用失败 releaseTag；不得在未授权时回滚或重试。
+- Evidence: `doc/tasks/20260806-head-test-only-release/`；`release-20260806-intmain-head-test-r260806b-r2` publish operation `op-2026-08-06T114908393935900Z-ded107d0-7996-4d3f-b7b4-ceadb49e489a` failed 后 `.env` 与实际镜像均为 r2，frontend HTTP 200，但 backend health curl exit=56，release lock=`FAILED`，后端日志显示 `MesTeamLeaderProcessConfigServiceImpl` 多构造函数缺显式 `@Autowired` 导致 `No default constructor found`。
+
 ## 阶段 5：测试服发布后真实运行态
 
 ### 必查项
@@ -595,6 +604,41 @@ ssh root@172.30.30.58 bash -s
 
 - `doc/tasks/20260803-fix-dcc-base-schema-menu-id-release/`；releaseTag `release-20260803-dcc-menu-replay-fix-test-r260803b-r1`；build operation `op-2026-08-03T014004195140200Z-27256ee2-7aa4-4539-a982-044bd4f86239`；publish operation `op-2026-08-03T020027072659300Z-324edfd7-4658-4822-89ed-0e35e37f7feb`；remote postcheck 与运行控制台版本变更说明均通过。
 
+## 2026-08-06 r260806c 仅测试服成功闭环门禁
+
+### Trigger
+
+仅测试服发布在上一轮失败 tag 已切换镜像但后端启动失败后，用户确认修复已提交，需要用新 clean release worktree 和新 releaseTag 恢复测试服。
+
+### Preflight check
+
+- 失败 releaseTag 必须判废；修复后重新冻结当前 HEAD 到本轮专用 clean release worktree，并使用新 releaseTag 完整执行 `build-release -> publish-test`。
+- build-release 前增加 Spring constructor/static smoke 门禁；多构造函数 Spring bean 必须有唯一显式 `@Autowired` 生产构造函数或明确无参构造函数。
+- publish-test 前做远端只读 precheck；旧失败 `.env` / image tag 可作为背景记录，但必须确认无 RUNNING lock 后才允许发布新 tag。
+- 发布后必须同时核 operation、manifest/sourceRepos dirty=false、`.env IMAGE_TAG`、实际镜像、容器 running、backend health、frontend HTTP、release-info、release lock、target migration 和运行控制台版本变更说明。
+
+### Blocker
+
+- 任一完成证据来自失败 releaseTag 或不同 releaseTag。
+- Spring constructor gate 未通过，或 backend health 非 `UP`。
+- publish-test preview 不是 `Environment=test`、`ServerHost=172.30.30.58`、`RemoteAppDir=/opt/intruoyi/runtime`。
+- 运行控制台页面不显示当前 releaseTag、发布包、组件范围或变更说明。
+
+### Verification
+
+- 记录 build operation、publish operation、manifest validation、remote pre/postcheck、Playwright JSON 和截图。
+- 成功证据必须显示 release lock=`APPLIED`、target migration failed/running=`0`、frontend console errors/failed requests=`0`、runtime console errors/failed requests=`0`。
+
+### Forbidden action
+
+- 禁止复用已失败的 r260806b-r2 releaseTag。
+- 禁止手工改 release lock/migration 或用前端 HTTP 200 覆盖 backend health 失败。
+- 禁止在仅测试服任务中执行 `mark-tested`、`promote-prod` 或 `promote-backup`。
+
+### Evidence
+
+- `doc/tasks/20260806-head-test-only-release/`；releaseTag `release-20260806-intmain-head-test-r260806c-r1`；build operation `op-2026-08-06T131808382264900Z-1a134a91-d2eb-434d-b0a6-b0da5018a2f7`；publish operation `op-2026-08-06T134301524868800Z-58d50c52-dab5-43b8-8ce9-81849d0c96ef`；`remote-release-postcheck-r260806c-r1.json` 与 `playwright-runtime-console-r260806c-r1.json` 均通过，未执行正式服、备份服或 mark/promote。
+
 ## 2026-08-08 运行控制台 release-status 等待与端口隔离验收门禁
 
 - Trigger: 仅测试服发布完成后，需要用运行控制台页面验证当前 releaseTag、发布包、组件范围和变更说明；页面底部显示“加载中”；或因 48181 已被主维护控制台占用/进程管理策略限制，临时在其它端口启动本轮 release worktree 控制台。
@@ -612,3 +656,20 @@ ssh root@172.30.30.58 bash -s
 - Verification: publish-test 结束后必须独立 postcheck：operation=SUCCESS、release lock=APPLIED、migration failed/running=0、`.env`/实际镜像/容器/health/HTTP/release-info 均匹配目标 releaseTag。
 - Forbidden action: 禁止因 summary 未更新而重复提交 publish-test；禁止中断仍在推进的 required SQL/migration 状态写入；禁止只看 `Publish completed for test` 文本而跳过独立 postcheck。
 - Evidence: `doc/tasks/20260808-head-test-only-release/publish-test-log-tail-r260808a-r1.redacted.txt`；poll 15/30/45 仍为 RUNNING，但日志从 required SQL 上传推进到 migration 状态写入，最终 poll 59 SUCCESS。
+## 2026-08-10 r260809a 仅测试服成功闭环与长 operation 门禁
+
+- Trigger: 从冻结 clean worktree 对单一 releaseTag 执行 `build-release -> publish-test`，且 required SQL/migration 数量较多导致 operation 长时间保持 RUNNING、摘要变化少。
+- Preflight check: 发布前固定 releaseTag、build/publish operation scope、测试服 host 和远端目录；manifest 必须核 source commit/dirty、artifact hash、release-info 和 changeSet。publish-test 提交后保持唯一 operation id，按 operation 状态、日志最后推进时间、当前 migration 文件和状态表计数判断进展。
+- Blocker: manifest 任一来源/版本/变更说明无法确认；operation 日志和 migration 状态均超过既定超时无推进；出现 FAILED；或 `.env IMAGE_TAG`、实际镜像、容器、health、HTTP、release-info、lock/migration、运行控制台任一验收不一致。
+- Verification: build operation 和 publish operation 均 SUCCESS；测试服 `.env` 与 backend/frontend 实际镜像匹配，容器 running、backend health=UP、frontend HTTP 200、release lock=APPLIED、migration failed/running=0；Playwright 打开测试服页面和运行控制台，点击 `查看变更` 后确认 releaseTag、发布包和组件说明，无 console error/failed request。
+- Forbidden action: 不得因摘要长时间不变而重复点击或重提 publish-test；不得把本机实例矩阵代替测试服远端验收；不得执行 `mark-tested`、`promote-prod`、`promote-backup`，不得写正式服或备份服。
+- Evidence: `doc/tasks/20260809-head-test-only-release/`；releaseTag `release-20260809-intmain-head-test-r260809a-r1`，build operation `op-2026-08-09T154417143232100Z-1cbd9f9c-35e8-4b3f-9cda-1646af3f808f`、publish operation `op-2026-08-09T155709667969700Z-6d3f54cc-4892-4b0e-8c49-624bacd79bfe` 均 SUCCESS；publish 约 24 分钟且没有重复提交。
+
+## 2026-08-11 r260811a 仅测试服成功闭环与脱敏页面验收门禁
+
+- Trigger: 仅测试服发布完成后，需要同时证明远端真实运行态、运行控制台版本变更说明和页面验收，且 Playwright snapshot 可能暴露登录页默认凭据。
+- Preflight check: publish-test 只允许 action=`publish-test`、Environment=`test`、ServerHost=`172.30.30.58`、RemoteAppDir=`/opt/intruoyi/runtime`；页面验收优先用 Playwright CLI `open/eval/screenshot` 采集脱敏结构化结果，登录页 snapshot 原文不得留存。
+- Blocker: `.env IMAGE_TAG`、实际镜像 tag、release-info、release lock、migration counts 或运行控制台页面版本说明任一项不匹配 releaseTag；snapshot/日志中出现默认密码或 raw secret。
+- Verification: 记录 publish operation SUCCESS、backend/frontend running、health UP、frontend HTTP 200、PDF worker 200、release-info sourceRepos dirty=false、lock APPLIED、migration FAILED/RUNNING=0、运行控制台可见软件版本、测试服 releaseTag、发布包和组件范围。
+- Forbidden action: 禁止用前端 HTTP 200 替代 release-info/lock/migration/运行控制台页面验收；禁止保存含默认密码的 Playwright snapshot；禁止执行 mark-tested/promote-prod/promote-backup。
+- Evidence: `doc/tasks/20260811-head-test-only-release/execution-log.md`；releaseTag `release-20260811-intmain-head-test-r260811a-r2`；publish operation `op-2026-08-10T184419479334Z-b3dd4c79-c0f1-4a8c-bc32-5a930700a511`。

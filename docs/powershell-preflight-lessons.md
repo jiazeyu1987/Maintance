@@ -42,6 +42,7 @@ PowerShell 共同基础规则以 `E:\IntRuoyi\docs\powershell-memory.md` 为唯�
 ## 快速判废信号
 
 - 命令里出现 `&&`，直接改写后再执行。
+- PowerShell 命令里出现 Bash heredoc `<<`，直接判定为 shell 语法错误风险，改用 `apply_patch` 或显式 UTF-8 文件写入。
 - 中文文件用默认 `Get-Content`/`Set-Content`/重定向处理，直接判定为编码风险。
 - 中文日志、SQL 结果或任务文档出现乱码，先停下确认编码，不继续连锁操作。
 
@@ -66,6 +67,7 @@ PowerShell 共同基础规则以 `E:\IntRuoyi\docs\powershell-memory.md` 为唯�
 - Forbidden action: 不得把远端脚本因 CRLF 未执行误判为服务器、Docker、数据库或业务数据异常，不得继续复用损坏脚本输出。
 - Evidence: `doc/tasks/20260710-current-head-test-only-release-completion-audit/execution-log.md`；首次 text 模式失败，改为 UTF-8 bytes + LF 后同一只读验证通过。
 - 2026-07-31 追加证据：`release-20260731-smartseed-tempfix-head-test-r260731d-r1` 发布后验收首次用 `text=True` 发送 SSH stdin，stderr 出现 CRLF 解析错误且 `.env IMAGE_TAG` / frontend inspect 证据不完整；改用 `input=remote_script.encode('utf-8')` 后同一远端验收完整通过。
+- 2026-08-06 追加证据：`release-20260806-intmain-head-test-r260806b-r2` publish-test 失败后只读探测首次因 Windows text-mode stdin 让远端 bash 报 `set: pipefail\r: invalid option`；改用任务脚本 `post_failure_probe.py` 的 `input=REMOTE_SCRIPT.encode("utf-8")` 后，成功采集 `.env`、镜像 tag、backend health、frontend HTTP、release-info、release lock 和 migration 状态。
 
 - 推荐写法：`input=script.encode('utf-8')`，按 bytes 发送；stdout/stderr 再显式 `decode('utf-8', errors='replace')`。
 - 失败时保留 stderr 和输入换行检查结果，再修正传输层；不要先改远端命令或环境。
@@ -250,3 +252,12 @@ Windows PowerShell 中执行 release worktree 清理、启动本地 Jar、通过
 - Verification: 记录 blocked 命令类型、替代执行路径、实际端口、PID/前台会话 id、health、API ROOT、Playwright URL 和 cleanup 后 Git 状态。
 - Forbidden action: 禁止因为策略拦截而申请宽权限、使用通配符杀进程、删除 worktree 根目录、跳过运行控制台页面验收或继续使用主工作区 48181 构建。
 - Evidence: `doc/tasks/20260808-head-test-only-release/execution-log.md`；`Stop-Process`/`Start-Process`/`Remove-Item` 均被策略拦截，r260808a 改用 48182 前台会话启动，API/Playwright 全部指向 48182，任务生成 `runtime/` 经边界校验清理。
+
+## 2026-08-11 PowerShell SSH/MySQL、Playwright CLI 与 snapshot 脱敏门禁
+
+- Trigger: Windows PowerShell 中通过 SSH 查询远端 MySQL 发布锁/迁移状态，或用 Playwright CLI 验证测试服前端和运行控制台页面。
+- Preflight check: PowerShell here-string 传 SSH stdin 前必须确认无 BOM、无 CRLF 污染且本地变量不会提前展开；查询容器 MySQL 密码时只在远端容器内引用 `$MYSQL_ROOT_PASSWORD`，不打印值；Playwright 前确认 CLI、browser executable 和目标 channel，优先用 `open/eval/screenshot`，不要用 `npx --package` 直接运行外部脚本。
+- Blocker: 远端出现 `set: 未找到命令`、MySQL 空密码/访问拒绝、`Cannot find module 'playwright'`、headless shell 缺失且无稳定浏览器 channel、snapshot 输出包含默认密码或 secret。
+- Verification: 记录 carrier exit code、stdout 关键字段、release lock/migration counts、Playwright 页面 title/url/releaseTag/变更说明布尔断言、截图路径和 secret scan=0；OpenSSH `IO is still pending on closed socket` 只能作为 carrier warning 分层记录。
+- Forbidden action: 禁止把 quoting/BOM/浏览器缓存问题误判为发布失败；禁止保存含默认凭据的 `.playwright-cli/page-*.yml`；禁止在 raw log/snapshot 未脱敏时提交或复制。
+- Evidence: `doc/tasks/20260811-head-test-only-release/execution-log.md` I008-I010；DB 查询改为不暴露密码的短命令后通过，Playwright snapshot 已清理。
