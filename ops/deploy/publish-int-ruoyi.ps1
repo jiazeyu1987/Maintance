@@ -92,6 +92,9 @@ $PSNativeCommandUseErrorActionPreference = $false
 $script:ReleaseOperationLockHeld = $false
 $script:ReleaseOperationLockReleasing = $false
 $script:BuildReleaseRuntimeRestartGuardCreated = $false
+$releaseMigrationExecutableTypes = @('schema', 'data', 'menu', 'config', 'permission', 'seed')
+$releaseMigrationEvidenceOnlyTypes = @('preflight', 'backfill', 'postflight', 'rollback-dry-run')
+$releaseMigrationAllowedTypes = @($releaseMigrationExecutableTypes + $releaseMigrationEvidenceOnlyTypes)
 
 function Fail([string]$Message) {
     Write-Host "[FAIL] $Message" -ForegroundColor Red
@@ -3270,7 +3273,7 @@ function Read-ReleaseMigrationMetadata {
                 $metadata.dependsOn = @($values)
             }
             'type' {
-                if ($values.Count -ne 1 -or $values[0] -notin @('schema', 'data', 'menu', 'config', 'permission', 'seed')) {
+                if ($values.Count -ne 1 -or $values[0] -notin $releaseMigrationAllowedTypes) {
                     Fail "Invalid type in release migration metadata: $SqlPath"
                 }
                 $metadata.type = [string]$values[0]
@@ -3923,6 +3926,10 @@ function Get-ReleaseDatabaseSqlScripts {
             }
             $seenPackageFileNames[$file.Name] = $file.FullName
             $metadata = Read-ReleaseMigrationMetadata -SqlPath $file.FullName
+            if ([string]$metadata.type -in $releaseMigrationEvidenceOnlyTypes) {
+                Info "Excluding evidence-only release SQL from required migrations: $($file.Name) [$($metadata.type)]"
+                continue
+            }
             $entries += @{
                 Path = ($relativeRoot + '/' + $file.Name)
                 Environments = @($metadata.allowedEnvironments)

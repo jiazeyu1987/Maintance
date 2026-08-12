@@ -68,6 +68,80 @@ def test_migration_policy_gate_passes_unique_system_menu_ids(tmp_path: Path) -> 
     assert report["migrationCount"] == 2
 
 
+def test_migration_policy_gate_accepts_evidence_only_migration_types(tmp_path: Path) -> None:
+    policy_gate = importlib.import_module("ops.release.release_migration_policy_gate")
+    sql_root = tmp_path / "sql" / "mysql"
+    sql_root.mkdir(parents=True)
+    migrations = [
+        ("20260811_base_schema", "", "schema"),
+        ("20260812_c00_preflight", "20260811_base_schema", "preflight"),
+        ("20260812_c00_schema", "20260811_base_schema", "schema"),
+        ("20260812_c00_backfill", "20260812_c00_schema", "backfill"),
+        ("20260812_c00_postflight", "20260812_c00_schema", "postflight"),
+        ("20260812_c00_rollback", "20260812_c00_schema", "rollback-dry-run"),
+    ]
+    for migration_id, dependency, migration_type in migrations:
+        (sql_root / f"{migration_id}.sql").write_text(
+            "-- release-migration: allowedEnvironments=test,backup,prod; "
+            f"dependsOn={dependency}; type={migration_type}; riskLevel=high\n"
+            "SELECT 1;\n",
+            encoding="utf-8",
+        )
+
+    report = policy_gate.run_migration_policy_gate(sql_root)
+
+    assert report["status"] == "passed"
+    assert {entry["type"] for entry in report["migrations"]} == {
+        "preflight",
+        "schema",
+        "backfill",
+        "postflight",
+        "rollback-dry-run",
+    }
+
+
+def test_migration_policy_gate_rejects_executable_dependency_on_evidence_only_migration(tmp_path: Path) -> None:
+    policy_gate = importlib.import_module("ops.release.release_migration_policy_gate")
+    sql_root = tmp_path / "sql" / "mysql"
+    sql_root.mkdir(parents=True)
+    preflight_sql = sql_root / "20260812_c00_preflight.sql"
+    preflight_sql.write_text(
+        "-- release-migration: allowedEnvironments=test,backup,prod; "
+        "dependsOn=; type=preflight; riskLevel=high\n"
+        "SELECT 1;\n",
+        encoding="utf-8",
+    )
+    schema_sql = sql_root / "20260812_c00_schema.sql"
+    schema_sql.write_text(
+        "-- release-migration: allowedEnvironments=test,backup,prod; "
+        "dependsOn=20260812_c00_preflight; type=schema; riskLevel=high\n"
+        "SELECT 1;\n",
+        encoding="utf-8",
+    )
+
+    try:
+        policy_gate.run_migration_policy_gate(sql_root)
+    except policy_gate.MigrationPolicyError as exc:
+        message = str(exc)
+    else:
+        raise AssertionError("expected executable-to-evidence-only dependency rejection")
+
+    assert "executable migration cannot depend on evidence-only migration" in message
+    assert "20260812_c00_schema" in message
+    assert "20260812_c00_preflight" in message
+
+
+def test_publish_script_excludes_evidence_only_sql_from_required_migrations() -> None:
+    script = read_publish_script()
+
+    assert "$releaseMigrationExecutableTypes = @('schema', 'data', 'menu', 'config', 'permission', 'seed')" in script
+    assert "$releaseMigrationEvidenceOnlyTypes = @('preflight', 'backfill', 'postflight', 'rollback-dry-run')" in script
+    assert "$releaseMigrationAllowedTypes = @($releaseMigrationExecutableTypes + $releaseMigrationEvidenceOnlyTypes)" in script
+    assert "if ([string]$metadata.type -in $releaseMigrationEvidenceOnlyTypes)" in script
+    assert 'Info "Excluding evidence-only release SQL from required migrations: $($file.Name) [$($metadata.type)]"' in script
+    assert "continue" in script
+
+
 def test_release_sql_contract_gate_allows_on_duplicate_key_update_values_clause(tmp_path: Path) -> None:
     gate = importlib.import_module("ops.release.release_sql_contract_gate")
     sql_root = tmp_path / "sql" / "mysql"
@@ -146,7 +220,7 @@ def test_publish_script_executes_dcc_view_matrix_prereq_before_seed_on_test() ->
     assert "function Sort-RequiredDatabaseSqlApplyItems" in script
     assert "'20260624_dcc_view_matrix_test_tenant_prereq' = 10" in script
     assert "'20260624_dcc_view_matrix_independent_seed' = 20" in script
-    assert "$applyItems = Sort-RequiredDatabaseSqlApplyItems -Items (Get-ReleasePreflightApplyItems -PreflightPlan $preflightPlan) -TargetEnvironment $Environment" in invoke_block
+    assert "$applyItems = Sort-RequiredDatabaseSqlApplyItems -Items (Get-ReleasePreflightApplyItems -PreflightPlan $preflightPlan -PublishScope $releasePublishScope) -TargetEnvironment $Environment" in invoke_block
     assert "'20260624_dcc_view_matrix_independent_seed'" in helper_block
     assert "'test' { '122' }" in helper_block
     assert "SET @dcc_view_matrix_seed_tenant_id := $seedTenantId;" in helper_block
