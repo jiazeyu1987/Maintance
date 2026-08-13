@@ -81,4 +81,3 @@
 
 - 后续实施若无法满足 \`auth.productionBackupConfirmText\` 的 Windows ACL 前置，必须按文档 blocked，不得改为命令行明文或其它未批准来源。
 - Playwright 真实页面验证依赖本地/测试运行态、测试租户账号和动态菜单/权限基线；缺失时必须 blocked，不得用 API、SQL、文件样本或 stub 代替。
-

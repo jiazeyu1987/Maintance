@@ -114,4 +114,3 @@ The current package is substantially narrowed to one roadmap node, OPS-NODE-001,
 - final_decision: fail
 
 The revised package is now one roadmap node, but logic, usability, and UI/testability still contain release-blocking gaps. Most critically, its script tests target a different copy from the backend and deployment source, so the documented GREEN path would not prove the shipped system is fixed.
-

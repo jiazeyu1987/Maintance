@@ -110,4 +110,3 @@ The reviewed package is intended to be an executable, verifiable single roadmap 
 - final_decision: fail
 
 The planning result is not releasable as a single executable roadmap node. Logic, usability, and UI/testability each contain blocking issues.
-

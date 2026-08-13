@@ -83,4 +83,3 @@
 - Windows S4U 是否可满足目标账号与备份资源访问必须在实施 Pester 和后续授权环境验证；失败时必须 blocked，不得改用 current user/SYSTEM/highest 或命令行凭据。
 - completedAt 需要由后端备份 manifest/status 链路规范化暴露；在该字段实现并验证前，健康状态不得返回正常。
 - 维护仓历史副本继续存在漂移风险，但本节点通过后端运行/打包 source contract 排除其作为放行输入；删除或建立单向生成机制属于独立后续治理范围。
-
