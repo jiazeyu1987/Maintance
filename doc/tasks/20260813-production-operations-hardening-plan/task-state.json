@@ -1,0 +1,189 @@
+{
+  "taskId": "20260813-production-operations-hardening-plan",
+  "title": "正式自动备份计划任务契约规划",
+  "status": "completed",
+  "currentPhase": "completed",
+  "currentMilestone": "PLAN-M6",
+  "planningTask": {
+    "status": "completed",
+    "currentMilestone": "PLAN-M6",
+    "completionMeaning": "Planning artifacts independently reviewed, validated, and closed out"
+  },
+  "implementationNode": {
+    "id": "OPS-NODE-001",
+    "status": "planned",
+    "currentPhase": "ready-for-implementation",
+    "currentMilestone": "IMPL-M1",
+    "completionMeaning": "Complete only OPS-NODE-001 backend-source local/test implementation and verification; production scheduler rollout and successor nodes are excluded"
+  },
+  "scope": "One executable node only: backend-owned production scheduled-backup scripts, explicit protected principal/authorization, repository propagation, deterministic scheduler health, and existing /system/backup-plan verification.",
+  "sourceOfTruth": {
+    "owningRepository": "E:/IntRuoyi/IntRuoyiBackend",
+    "scriptRoot": "E:/IntRuoyi/IntRuoyiBackend/script/backup-ops",
+    "maintenanceCopyPolicy": "D:/ProjectPackage/Int/IntRuoyiMaintance/ops/backup-ops is a divergent historical copy and is not implementation, test, package, or acceptance input for OPS-NODE-001"
+  },
+  "implementationEntryBlockers": [],
+  "implementationEntryDecisions": [
+    {
+      "id": "ED-001",
+      "description": "受保护生产确认固定使用 backend backup-ops.secrets.json 的 auth.productionBackupConfirmText；scheduled-task principal 固定使用 taskPrincipal.principalId + LogonType=S4U + RunLevel=Limited 的专用服务账号，并要求 batch-logon 权限",
+      "owner": "后端实施 owner / 运维负责人复核",
+      "validation": "Backend Pester validates same principal identity, logon type, ACL, masked plan-only, and missing/mismatch fail fast",
+      "blockIf": "principalId 缺失、无 batch-logon、非 S4U/Limited、使用当前用户/SYSTEM/最高权限、计划任务身份与 ACL 验证身份不一致、principal 不可读或普通用户可写",
+      "evidenceLocation": "实施任务 execution-log.md"
+    },
+    {
+      "id": "ED-002",
+      "description": "RepositoryEnvironment 是 backend backup-ops.config.json 的必填 backup.repositoryEnvironment=test|backup，经 service -> schedule -> gateway -> registrar 传播并在页面只读显示，不设默认值",
+      "owner": "前后端实施 owner",
+      "validation": "Config/frontend read-only contract + JUnit + Pester validate explicit/missing/invalid propagation",
+      "blockIf": "任一层丢值、默认填充或允许非法值",
+      "evidenceLocation": "实施任务 execution-log.md"
+    },
+    {
+      "id": "ED-003",
+      "description": "backup.maxFreshnessHours 是正整数配置，必须来自已批准 RPO；最新成功点使用 manifest completedAt，判定 now-completedAt <= maxFreshnessHours；缺失/非法时健康状态为配置异常",
+      "owner": "运维负责人 / 业务 RPO owner",
+      "validation": "Pester config validation + JUnit health decision table",
+      "blockIf": "实现使用隐式默认阈值或缺配置仍返回正常",
+      "evidenceLocation": "实施任务 execution-log.md"
+    }
+  ],
+  "rolloutBlockers": [
+    {
+      "id": "RB-001",
+      "description": "正式服计划任务 principalId/logonType、凭据安装、注册、启用和连续运行证明需要另行明确授权",
+      "owner": "用户明确授权 / 运维负责人",
+      "requiredArtifact": "单独授权任务、正式环境 principal/ACL/受保护确认安装证明和运行证据目录",
+      "validation": "按 release-backup-restore.md 和 server-access.md 的后续授权任务执行",
+      "clearanceTransition": "后续 rollout task planned -> ready-for-implementation；不改变本节点 implementation readiness",
+      "evidenceLocation": "后续授权任务 execution-log.md 和 verification-report.md",
+      "impact": "Production rollout evidence cannot be collected in this planning task"
+    },
+    {
+      "id": "RB-002",
+      "description": "backup.maxFreshnessHours 对应 RPO 数值未确认",
+      "owner": "业务 RPO owner / 运维负责人",
+      "requiredArtifact": "RPO decision record and configured positive maxFreshnessHours",
+      "validation": "Configuration evidence + health status check",
+      "clearanceTransition": "production health 配置异常 -> eligible for normal after all checks pass",
+      "evidenceLocation": "后续授权任务 execution-log.md",
+      "impact": "Implementation can be completed, but production health must not be normal"
+    }
+  ],
+  "requirements": [
+    "OPS-REQ-001A",
+    "OPS-REQ-001B",
+    "OPS-REQ-001C",
+    "OPS-REQ-001D",
+    "OPS-REQ-001E"
+  ],
+  "acceptance": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-004",
+    "AC-005",
+    "AC-006",
+    "AC-007"
+  ],
+  "bddScenarios": [
+    "BDD-001",
+    "BDD-002",
+    "BDD-003",
+    "BDD-004",
+    "BDD-005",
+    "BDD-006",
+    "BDD-007"
+  ],
+  "milestones": [
+    {
+      "id": "IMPL-M1",
+      "title": "后端 source-of-truth、principal 与受保护确认合同 RED",
+      "status": "planned",
+      "priority": "P0",
+      "entryBlockers": [],
+      "requirements": [
+        "OPS-REQ-001A",
+        "OPS-REQ-001B",
+        "OPS-REQ-001E"
+      ],
+      "verification": "Invoke-Pester -Script .\\script\\backup-ops\\tests\\BackupScheduledTaskContract.Tests.ps1; python -X utf8 -m pytest script/tests/test_backup_ops_scheduled_task_contract.py script/tests/test_runtime_control_ops_scripts.py -q"
+    },
+    {
+      "id": "IMPL-M2",
+      "title": "后端注册脚本、principal、仓库与受保护确认 GREEN",
+      "status": "planned",
+      "priority": "P0",
+      "entryBlockers": [],
+      "requirements": [
+        "OPS-REQ-001A",
+        "OPS-REQ-001B"
+      ],
+      "verification": "Invoke-Pester -Path .\\script\\backup-ops\\tests -EnableExit"
+    },
+    {
+      "id": "IMPL-M3",
+      "title": "RepositoryEnvironment 传播与确定性健康判定",
+      "status": "planned",
+      "priority": "P0",
+      "entryBlockers": [],
+      "requirements": [
+        "OPS-REQ-001C",
+        "OPS-REQ-001D"
+      ],
+      "verification": "mvn -pl yudao-module-infra -am \"-Dtest=BackupPlanServiceImplTest,WindowsBackupPlanSchedulerGatewayTest\" \"-Dsurefire.failIfNoSpecifiedTests=false\" test"
+    },
+    {
+      "id": "IMPL-M4",
+      "title": "现有页面当前状态与 query-only 权限验收",
+      "status": "planned",
+      "priority": "P0",
+      "entryBlockers": [],
+      "requirements": [
+        "OPS-REQ-001D"
+      ],
+      "verification": "node tests/e2e/system-backup-plan-standard-list-static.spec.js; authorized current-state and planned query-only permission Playwright at explicit http://localhost:8081"
+    }
+  ],
+  "successorBacklog": [
+    {
+      "id": "OPS-NODE-002",
+      "title": "外部通知通道",
+      "blocker": "通知渠道、测试目标、责任人和凭据管理方案未确认",
+      "stateModelConstraint": "Primary alert workflow state remains separate from notification delivery status, attempts, retry history, and secondary alert linkage"
+    },
+    {
+      "id": "OPS-NODE-003",
+      "title": "备份可恢复性看板",
+      "blocker": "备份仓库读取权限和恢复候选状态机未确认"
+    },
+    {
+      "id": "OPS-NODE-004",
+      "title": "独立外部监控节点",
+      "blocker": "部署位置、网络策略和告警升级链未确认"
+    },
+    {
+      "id": "OPS-NODE-005",
+      "title": "可观测性与镜像治理",
+      "blocker": "监控采集端、管理网络和镜像批准策略未确认"
+    },
+    {
+      "id": "OPS-NODE-006",
+      "title": "PITR",
+      "blocker": "RPO/RTO、binlog 保留和恢复负责人未确认"
+    },
+    {
+      "id": "OPS-NODE-007",
+      "title": "只读分析与月报",
+      "blocker": "只读数据源、指标负责人和口径未确认"
+    }
+  ],
+  "artifacts": {
+    "prd": "doc/tasks/20260813-production-operations-hardening-plan/prd.md",
+    "developmentPlan": "doc/tasks/20260813-production-operations-hardening-plan/development-plan.md",
+    "testPlan": "doc/tasks/20260813-production-operations-hardening-plan/test-plan.md",
+    "executionLog": "doc/tasks/20260813-production-operations-hardening-plan/execution-log.md",
+    "task": "doc/tasks/20260813-production-operations-hardening-plan/task.md"
+  }
+}
