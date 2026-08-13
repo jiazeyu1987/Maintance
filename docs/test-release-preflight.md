@@ -92,6 +92,7 @@ git -C <release-worktree> status --porcelain
 - 维护控制台当前 48181 进程是否加载本轮发布逻辑。
 - 前端依赖是否在 release worktree 内按锁文件恢复。
 - 后端 release migration metadata gate 是否通过。
+- 主程序冻结 HEAD 的 migration type 去重集合，是否全部包含在维护仓 Python policy gate 与 `publish-int-ruoyi.ps1` 的相同允许集合中；新增类型是否已同步提交两个 parser 和契约测试。
 - code-only 发布是否明确 `-Component intruoyi`、`SkipDatabaseSync`、`SkipMinioSync`。
 - 测试服已知 required SQL 前置数据冲突是否已只读检查。
 
@@ -108,6 +109,7 @@ corepack pnpm@10.25.0 --version
 
 - 维护控制台不是本轮 Jar 或健康检查不是 `UP`。
 - SQL metadata 缺失、`dependsOn` 错误或 type 不在允许枚举。
+- 主程序 SQL、维护仓 Python gate、维护仓 PowerShell parser 的 migration type 集合不一致；尤其出现 `invalid type ... backfill` 时必须在依赖恢复和 build-release 前停止。
 - 前端 lockfile/依赖恢复失败。
 - code-only 包仍会执行 `type=data` required SQL。
 
@@ -673,3 +675,12 @@ ssh root@172.30.30.58 bash -s
 - Verification: 记录 publish operation SUCCESS、backend/frontend running、health UP、frontend HTTP 200、PDF worker 200、release-info sourceRepos dirty=false、lock APPLIED、migration FAILED/RUNNING=0、运行控制台可见软件版本、测试服 releaseTag、发布包和组件范围。
 - Forbidden action: 禁止用前端 HTTP 200 替代 release-info/lock/migration/运行控制台页面验收；禁止保存含默认密码的 Playwright snapshot；禁止执行 mark-tested/promote-prod/promote-backup。
 - Evidence: `doc/tasks/20260811-head-test-only-release/execution-log.md`；releaseTag `release-20260811-intmain-head-test-r260811a-r2`；publish operation `op-2026-08-10T184419479334Z-b3dd4c79-c0f1-4a8c-bc32-5a930700a511`。
+
+## 2026-08-13 DCC 活跃上传槽与运行控制台配置门禁
+
+- Trigger: `publish-test` 包含 `20260811_dcc_upload_slot_idempotency.sql`，或 release worktree 控制台用于验收测试服版本号和“查看变更”。
+- Preflight check: 远端写入前按迁移真实口径查询 `dcc_controlled_file_temporary_file`：`deleted=0 AND status='AVAILABLE' AND cleanup_status IN ('ACTIVE','CLEANING') AND bound_controlled_file_id IS NULL`，按 tenant/uploader/session/purpose 分组必须无重复；启动隔离控制台前同时校验 `maintenance.runtime-control.backup-ops` 与 `release-package` 的 NAS server/share/username/password/root 必填项，凭据只做 presence check；Playwright 等待目标 releaseTag 出现后再点“查看变更”。
+- Blocker: 活跃上传槽存在重复；无法确认应该保留哪一条；未生成逐行备份和回滚 SQL；隔离控制台缺任一 NAS 配置块；页面虽有 SUCCESS operation 但测试服版本为“未上报”或版本对话框缺变更项。
+- Verification: 重复组查询结果为 0；如经用户授权修复，必须证明事务 affectedRows 精确为 1、保留行与清理行、回滚材料和迁移重试结果；页面六个 API 均 200，版本栏、版本号、发布包与组件范围可见；远端 `.env`、实际镜像、Actuator、HTTP、release-info、lock 和 migration 独立全绿。最终控制台复核固定使用 `/admin-api/infra/runtime-control/release-status`，同时校验 `testCurrentReleaseTag`、`testCurrentReleaseNotes.releaseTag`、`changes`、48181 PID 和启动参数；误用简写路由或 404 只能记为校验假阴性并按真实路由重查。
+- Forbidden action: 禁止发布脚本自动选择并删除/清理重复业务行；禁止无用户授权修改测试数据；禁止用 release-status API 已成功替代真实页面；禁止因 rollback/restore 候选接口失败而把测试服版本“未上报”降级为可接受。
+- Evidence: `doc/tasks/2026-08-11-test-only-release-head/execution-log.md`；releaseTag=`release-20260813-intmain-head-test-r260812b-r2`，publish operation=`op-2026-08-13T001732036464300Z-1541e376-2561-40b8-82c8-77c33bcfda17`。

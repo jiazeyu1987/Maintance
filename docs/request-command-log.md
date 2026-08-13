@@ -1,5 +1,17 @@
 # 请求与命令记录
 
+## 2026-08-12 仅测试服 HEAD 发布
+
+- 用户需求：仅基于发布开始时当前分支 HEAD 已提交代码构建维护控制台和测试发布包，发布到测试服务器；未提交改动不得进入构建产物，禁止正式服/备份服动作。
+- 命中经验：`docs/experience-index.md`、`docs/test-release-preflight.md`、`docs/release-build-preflight-lessons.md`、`docs/powershell-preflight-lessons.md`、`E:\IntRuoyi\docs\release-backup-restore.md`、`E:\IntRuoyi\docs\server-access.md`、`E:\IntRuoyi\docs\login-access.md`、`E:\IntRuoyi\docs\worktree-memory.md`、`E:\IntRuoyi\docs\powershell-memory.md`。
+- 命令意图：冻结维护仓/后端/前端 HEAD，创建干净临时 release worktree，构建维护控制台和测试发布包，校验 manifest、版本号、变更说明，执行 `publish-test` 并完成测试服真实运行态与运行控制台页面验证。
+- 敏感信息处理：不记录 SSH 密码、私钥、数据库密码、token、连接串或其它凭据原文。
+- 当前结果：已冻结 releaseId=`r260812a`；维护仓 HEAD=`3d980bb16a300020985f90d3b118fef45786336a`，主程序 HEAD=`5d503ea5e5d754461031ddb4271e5db77c2c4d91`；主工作区较脏，已创建 clean release worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260812a\m` 与 `D:\IntRuoyiWorktree\r260812a-release-app`，下一步仅从这两个路径构建。
+- 验证结果：migration policy gate 失败，冻结 app HEAD 的 `20260812_mes_pqc_dcc_qa_c00_backfill.sql` committed metadata 使用 `type=backfill`，冻结维护 HEAD 的 gate 和正式发布脚本仅允许 `schema/data/menu/config/permission/seed`。
+- 处理结果：按 fail-fast 门禁停止本任务维护构建和前端依赖恢复进程；未生成发布包/manifest/版本号/变更说明，未执行 `publish-test`，测试服保持上一版本运行，正式服和备份服未操作。
+- 继续复验：中断后冻结 worktree HEAD 与 clean 状态未变、无任务残留进程；同一 migration policy gate 再次因 `type=backfill` 失败。已把跨仓 migration type 集合一致性检查合并到既有发布经验文档和索引。
+- 修复意图：C00 `preflight/backfill/postflight/rollback-dry-run` 是 evidence-only SQL，不得被 build-release 当成 required migration 执行；将在维护仓独立修复 worktree 用严格 TDD 扩展 policy metadata 支持，并在 PowerShell required SQL 收集时 fail-safe 排除这些类型。
+
 ## 2026-08-03 当前 HEAD 仅测试服发布 r260803a
 
 - 用户需求：仅基于当前分支最新已提交 HEAD 构建维护控制台和测试发布包，并只发布到测试服务器；未提交改动不得进入构建产物，禁止 `mark-tested`、正式服和备份服动作；发布后必须验证真实运行态、记录问题并沉淀前置经验。
@@ -3020,3 +3032,18 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - 发布结果：仅执行 publish-test r2，operation `op-2026-08-10T184419479334Z-b3dd4c79-c0f1-4a8c-bc32-5a930700a511` SUCCESS；未执行 `mark-tested`、`promote-prod`、`promote-backup`。
 - 验收结果：测试服 `.env IMAGE_TAG`、backend/frontend 实际镜像、容器状态、backend health、frontend HTTP、PDF worker、release-info、release lock、migration counts 和运行控制台版本变更说明均通过；本轮问题 I001-I010 已写入任务日志并沉淀到既有经验文档。
 - 收尾结果：仓库内 closeout preview/apply 通过，仅保留三份正式任务记录；`r260811a` 维护 release worktree、主程序 release worktree、state dir 均已删除且 worktree 注册无残留；`48182` 无监听；清理后测试服仍运行最终 releaseTag；任务状态标记 completed。
+
+## 20260811-test-only-release-head
+
+- 用户请求：继续完成仅测试服 HEAD 发布；发布输入固定为开始时记录的已提交代码，不追逐后续开发提交，未提交改动不得进入产物；必须验证 manifest、版本变更说明、真实运行态并记录问题与经验。
+- 冻结证据：维护仓原始 HEAD=`3d980bb16a300020985f90d3b118fef45786336a`，主程序 HEAD=`5d503ea5e5d754461031ddb4271e5db77c2c4d91`；主工作区均 dirty，使用 r260812a clean detached release worktree。
+- 阻塞与修复意图：冻结主程序 C00 SQL 使用 `preflight/backfill/postflight/rollback-dry-run`，冻结维护工具原本只接受 executable 类型；先 fail fast，未发布。随后在独立维护修复 worktree 用 BDD + 严格 TDD 扩展审计类型，PowerShell required SQL 显式排除 evidence-only，并增加 executable 不得依赖 evidence-only 的闭包门禁。
+- 验证记录：目标 pytest 14 passed，相关回归 22 passed，PowerShell parser errors=0，冻结 app SQL 策略门禁 `status=passed, migrationCount=474`。首次复验误写下划线入口导致命令失败一次，经 `rg --files` 定位真实连字符入口后重跑通过；无源码、产物或远端副作用。
+- 构建记录：维护依赖首次 frozen install 因 E 盘 pnpm store 链接耗时 16m45s，唯一子进程最终成功；外部 onlyBuiltDependencies policy 后 `ignored-builds=None`、`pendingBuilds=[]`。最终 `scripts\build.ps1` PASS，Maven 26 tests PASS，jar SHA256=`3eae95d8b68f802509a29d66e85e06b1dd54074d49b95b9686826a2b13341e58`。
+- 集成记录：实现提交 `97723ac524487595ab5b145e31251d6bc1ec0091` 精确包含四个发布契约文件，已 `--ff-only` 合回维护 `int_main`；合并结果 22 tests PASS、冻结 app SQL gate 474 PASS。新 releaseId=`r260812b`，维护输入固定 `97723ac`，主程序继续固定原 `5d503ea`。
+- 构建记录：在 r260812b 专用 clean detached worktree 构建 releaseTag=`release-20260813-intmain-head-test-r260812b-r2`；build operation=`op-2026-08-12T190406618402500Z-3771efa2-38a7-4bf1-be8e-3e0f1f237bde` SUCCESS，manifest 484 个 artifact 的 hash/size、sourceRepos commit=`5d503ea5e5d754461031ddb4271e5db77c2c4d91`/dirty=false、release-info/changeSet 全通过。
+- 发布问题：首次 publish-test 因测试服 DCC 活跃上传槽重复失败；冻结两行与 rollback inserts 后，经用户明确授权只将冗余 id=51 标记 CLEANED、保留 id=50，affectedRows=1、重复组=0。命令和日志中的 NAS/MySQL 凭据均脱敏，未写正式服或备份服。
+- 发布结果：仅执行 publish-test，operation=`op-2026-08-13T001732036464300Z-1541e376-2561-40b8-82c8-77c33bcfda17` SUCCESS；未执行 mark-tested/promote-prod/promote-backup。
+- 验收结果：测试服 `.env`、backend/frontend 实际镜像、容器 running、Actuator UP、frontend HTTP 200、release-info、lock=APPLIED、migration total=430/APPLIED=4/SKIPPED=426/FAILED-RUNNING=0 全通过；Playwright 打开测试前端和运行控制台，版本栏及“查看变更”显示目标 releaseTag、发布包和组件范围，console errors=0。
+- 经验记录：新增 DCC 活跃上传槽发布前查询、releaseTag 占用检查、隔离控制台 backup-ops/release-package 双配置、脱敏辅助函数自测和页面 release-status fail-fast 门禁；任务进入 ready_for_closeout，等待本任务控制台/worktree/state 清理。
+- 收尾结果：五个 release worktree、两个 state 根和任务分支已清理，48181 已恢复主维护路径且显示本次 r2；清理后远端复核仍全部通过。task-closeout preview/apply 无 blocked/warnings，仅保留三份正式任务记录，任务状态 completed。

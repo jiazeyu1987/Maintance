@@ -717,14 +717,14 @@
 - Forbidden action: 不得在缺元数据时跳过 migration policy gate、手工标绿发布、手工改目标库或把 `code-only` 解释成跳过 schema/seed 迁移门禁。
 - Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/execution-log.md`；`r260719a` preflight failed before `build-release` with `missing release-migration metadata` for `20260718_system_entitlement_management.sql`.
 
-## 2026-07-19 release-migration 结构化字段与 dependsOn 后缀门禁
+## 2026-07-19 release-migration 结构化字段、类型集合与 dependsOn 后缀门禁
 
-- Trigger: code-only / no-data 发布前执行全量 migration policy gate，SQL 首行仍是描述性短语、把 migrationId 写成普通文本，在 `dependsOn` 中写入带 `.sql` 后缀的文件名，或把 `type` 写成复合值。
-- Preflight check: 执行 `python -X utf8 script/release/run-release-migration-policy-gate.py --sql-root sql/mysql --output <task-dir>/migration-policy-gate-<id>.json`；对近期新增或修改 SQL 的测试必须断言完整首行，例如 `allowedEnvironments=test,backup,prod; dependsOn=<migrationId>; type=<schema|data|menu|config|permission|seed>; riskLevel=<low|medium|high>`，且 `dependsOn` 只写 migrationId，`type` 只能写一个枚举值；同时可用只读脚本扫描 `type` 是否在允许集合内、`dependsOn` 是否无 `.sql` 后缀。
-- Blocker: 门禁输出 `unknown release-migration metadata key ... riskLevel`、`dependsOn missing migration '<id>.sql'`、`invalid type ... schema,menu`，或测试只检查 `startswith("-- release-migration:")` / `riskLevel` 而未锁定结构化字段。
-- Verification: 失败 JSON 先冻结到任务目录；补充/修正 `script/tests` 后先 RED，再修正 SQL 首行；目标 pytest 与全量 migration policy gate 均通过后，才能进入 `build-release`。
-- Forbidden action: 不得为了 code-only 发布跳过 schema/data/permission/menu SQL 元数据门禁；不得把 `.sql` 文件名当作合法 `dependsOn`；不得手工编辑 manifest 或远端迁移状态绕过。
-- Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/execution-log.md`；`r260719a` gate failed on `20260715_mes_schedule_capacity_mode_unification.sql` descriptive metadata and `20260717_bpm_form_center.sql` `type=schema,menu`; pre-release validation also caught `.sql` suffix in `20260718_mes_feedback_import_record_direct_progress.sql` dependsOn.
+- Trigger: code-only / no-data 发布前执行全量 migration policy gate，SQL 首行仍是描述性短语、把 migrationId 写成普通文本，在 `dependsOn` 中写入带 `.sql` 后缀的文件名、把 `type` 写成复合值，或主程序新增 migration type 但维护仓发布工具尚未支持。
+- Preflight check: 先执行 `python -X utf8 <maintenance-worktree>/ops/release/run-release-migration-policy-gate.py --sql-root <app-worktree>/IntRuoyiBackend/sql/mysql --output <task-dir>/migration-policy-gate-<id>.json`；再对比主程序冻结 HEAD 全部 `release-migration type` 去重集合、维护仓 Python gate 的允许集合和 `ops/deploy/publish-int-ruoyi.ps1` parser 允许集合，三者必须一致。新增类型必须同步修改两个维护仓 parser、manifest/required SQL 语义和契约测试并提交。
+- Blocker: 门禁输出 `unknown release-migration metadata key ... riskLevel`、`dependsOn missing migration '<id>.sql'`、`invalid type ... schema,menu`、`invalid type ... backfill`，三处类型集合不一致，或测试只检查 `startswith("-- release-migration:")` / `riskLevel` 而未锁定结构化字段。
+- Verification: 失败 JSON 先冻结到任务目录；补充/修正 `script/tests` 后先 RED，再修正 SQL 或正式扩展两个 parser；目标 pytest、PowerShell 契约测试与全量 migration policy gate 均通过，并复核三处类型集合一致后，才能进入依赖恢复与 `build-release`。
+- Forbidden action: 不得把未知类型临时改写成已有类型、从 release worktree 修改未提交 SQL、为 code-only 发布跳过 SQL 元数据门禁、只改 Python gate 不改正式 PowerShell parser、手工编辑 manifest 或远端迁移状态绕过。
+- Evidence: `doc/tasks/20260719-current-head-codeonly-three-env/execution-log.md`；`r260719a` gate failed on描述性 metadata、`type=schema,menu` 和 `.sql` dependsOn。`doc/tasks/2026-08-11-test-only-release-head/execution-log.md`；`r260812a` frozen app HEAD 使用 `type=backfill`，而 frozen maintenance HEAD Python/PowerShell parsers 只接受 `schema/data/menu/config/permission/seed`，因此在 build-release 前 fail fast。
 
 ## 2026-07-19 build-release MES companion contract 编译门禁
 
@@ -988,3 +988,12 @@ HEAD-only 构建发布在维护仓或主程序仓主工作区 dirty，且需要�
 - Verification: 记录 app/frontend dependency install 结果、ignored-builds=None、worktree clean、build operation SUCCESS、`MANIFEST_VALIDATION_PASSED`、release-info sourceRepos dirty=false、publish-test 脱敏日志 secret scan=0。
 - Forbidden action: 禁止用 r1 失败包继续 publish-test；禁止复用无 manifest 或 manifest 校验无效的包；禁止提交 raw publish log 中的 `mysql -p...` 密码形态。
 - Evidence: `doc/tasks/20260811-head-test-only-release/execution-log.md` I005-I007；最终 releaseTag `release-20260811-intmain-head-test-r260811a-r2`。
+
+## 2026-08-13 releaseTag 占用、脱敏辅助与隔离控制台完整配置门禁
+
+- Trigger: 从 clean release worktree 启动 runtime-control 执行 build-release/publish-test，或恢复中断后的长 operation 并读取脱敏日志。
+- Preflight check: build submit 前通过 release-status/NAS package candidate 检查目标 releaseTag 目录不存在；隔离配置必须一次复制并 presence-check `release-package` 与 `backup-ops` 两个块，同时覆写本轮 repo/frontend/ops/state 路径；日志脱敏函数先用含 `MYSQL_PWD=`、`mysql -p`、`password=`、`nas-password` 的样例做编译与替换测试。
+- Blocker: NAS 已存在同名 releaseTag；任何 local config 路径指向主工作区/旧 worktree；任一 NAS 必填项缺失；脱敏函数编译失败或输出仍含凭据形态。
+- Verification: preview gate、config presence summary、两个 release worktree clean、releaseTag candidate absent、脱敏样例 secret scan=0；构建后 manifest sourceRepos commit/dirty 和 artifact hash 全通过。
+- Forbidden action: 禁止删除/覆盖 NAS 既有发布包以复用 tag；禁止只复制 release-package 而省略 backup-ops；禁止对脚本源码运行宽泛凭据替换；禁止把 raw operation log 提交为证据。
+- Evidence: `doc/tasks/2026-08-11-test-only-release-head/execution-log.md`；r260812b-r1 因同名 NAS 包存在失败，r2 使用相同冻结 clean 输入成功；发布后页面验收因 backup-ops 缺失首次阻塞，补齐配置后通过。
