@@ -74,6 +74,7 @@
 - 测试服远端 MySQL 查询 / ruoyi-vue-pro 业务库 / 容器内 MYSQL_ROOT_PASSWORD / SSH 多层引号：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
 - runtime-control.local.yaml / repo-root / frontend-root / 临时发布 worktree / 控制台健康检查：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
 - 发布 / 备份 / 恢复 / 服务器容量：`E:\IntRuoyi\docs\release-backup-restore.md`
+- 备份脚本唯一源码 / backup-ops source of truth / 维护仓副本漂移 / 计划任务 principal S4U ACL / RepositoryEnvironment / completedAt 新鲜度：`E:\IntRuoyi\docs\release-backup-restore.md#正式服备份计划任务状态门禁`
 - 正式服 backup-now + 备份服 rehearsal / production source -> backup repository / same backupId / TargetEnvironment prod backup mismatch / backup-source NAS 未就绪 / INTBK-2003 / MySQL 恢复 dump 不在受保护 BackupPackage / INTBK-3002 / source temp dump / MinIO 对象备份 / INTBK-4001 / Invalid JSON primitive: Unable / Docker pull status lines / mc --json / DCC manifest / INTBK-6001 / dcc_object_inventory_missing / 对象 inventory 覆盖率 / checksums / Get-FileHash 缺失 / INTBK-6003 / rehearsalStatus verified PASSED 冲突 / backendHealth frontendHttp200 loginReachable fileDownloadSample / rehearsal bucket runtime 隔离：`E:\IntRuoyi\docs\release-backup-restore.md#正式源备份到备份服隔离演练仓库门禁`
 - 服务器访问 / 重启 / 远端联调：`E:\IntRuoyi\docs\server-access.md`
 - 前端页面 / 表格 / 样式：`D:\ProjectPackage\Int\IntPP\FRONTEND_STYLE.md`

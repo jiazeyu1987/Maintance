@@ -3047,3 +3047,12 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - 验收结果：测试服 `.env`、backend/frontend 实际镜像、容器 running、Actuator UP、frontend HTTP 200、release-info、lock=APPLIED、migration total=430/APPLIED=4/SKIPPED=426/FAILED-RUNNING=0 全通过；Playwright 打开测试前端和运行控制台，版本栏及“查看变更”显示目标 releaseTag、发布包和组件范围，console errors=0。
 - 经验记录：新增 DCC 活跃上传槽发布前查询、releaseTag 占用检查、隔离控制台 backup-ops/release-package 双配置、脱敏辅助函数自测和页面 release-status fail-fast 门禁；任务进入 ready_for_closeout，等待本任务控制台/worktree/state 清理。
 - 收尾结果：五个 release worktree、两个 state 根和任务分支已清理，48181 已恢复主维护路径且显示本次 r2；清理后远端复核仍全部通过。task-closeout preview/apply 无 blocked/warnings，仅保留三份正式任务记录，任务状态 completed。
+
+## 2026-08-13 正式服运维规划文档复核优化
+
+- 用户意图：复核并优化既有正式服运维 PRD、开发计划、测试计划和任务状态中的不合理项与错误项。
+- 执行范围：仅修改 `doc/tasks/20260813-production-operations-hardening-plan/` 及本次任务记录；不修改生产代码，不操作服务器、数据库或运行环境。
+- 命令意图：读取项目规则、经验索引、既有规划包及对应代码证据；运行独立审查闭环和文档静态校验。
+- 凭据处理：不记录或输出密码、token、私钥、连接串及其他凭据。
+- 验证结果：第三轮独立复审 `pass`；规划包结构、JSON、UTF-8 无 BOM、空白和收尾校验通过；两个任务状态均为 `completed`，OPS-NODE-001 实施仍为 `planned / ready-for-implementation`。
+- 范围确认：未修改生产代码，未连接或操作服务器、数据库、NAS、计划任务和运行环境，未执行备份、恢复、发布或真实 E2E。
