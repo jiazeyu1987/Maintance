@@ -107,7 +107,7 @@ Completion of this plan means only the selected node is ready for implementation
 - E:\IntRuoyi\IntRuoyiFronted\src\api\system\backupPlan\index.ts
 - E:\IntRuoyi\IntRuoyiFronted\tests\e2e\system-backup-plan-standard-list-static.spec.js
 - E:\IntRuoyi\IntRuoyiFronted\tests\e2e\system-backup-plan-real-readonly.e2e.js
-- E:\IntRuoyi\IntRuoyiFronted\tests\e2e\system-backup-plan-query-only-permission.e2e.js（planned）
+- E:\IntRuoyi\IntRuoyiFronted\tests\e2e\system-backup-plan-query-only-permission.e2e.js
 
 ## TDD Sequence
 
@@ -126,10 +126,10 @@ Completion of this plan means only the selected node is ready for implementation
    - Expected failure: 状态模型无法表达脚本路径漂移、查询失败或缺少 protected confirmation blocked reason。
 6. GREEN: 同一 Maven 命令通过。
 7. REGRESSION: 在 E:\IntRuoyi\IntRuoyiBackend 运行 Invoke-Pester -Path .\script\backup-ops\tests -EnableExit。
-8. REGRESSION: 在 E:\IntRuoyi\IntRuoyiBackend 运行 python -X utf8 -m pytest script/tests/test_system_backup_plan_menu_sql.py script/tests/test_publish_int_ruoyi_to_test_tooling.py -q。
+8. REGRESSION: 在 E:\IntRuoyi\IntRuoyiBackend 运行 `python -X utf8 -m pytest script/tests/test_backup_ops_scheduled_task_contract.py script/tests/test_runtime_control_ops_scripts.py script/tests/test_system_backup_plan_menu_sql.py -q`，并运行 `python -X utf8 -m pytest script/tests/test_publish_int_ruoyi_to_test_tooling.py::test_publish_script_syncs_runtime_control_ops_scripts_without_secrets -q`。发布工具全文件回归属于更宽发布基线，若因与本节点无关且未修改的 migration metadata 先决条件失败，必须单独记录，不能覆盖本节点定向门禁结果。
 9. REGRESSION: 在 E:\IntRuoyi\IntRuoyiFronted 运行 pnpm ts:check 和 node tests/e2e/system-backup-plan-standard-list-static.spec.js。
-10. AUTHORIZED READ-ONLY E2E: 在 PowerShell 中执行 `$env:SYSTEM_BACKUP_PLAN_E2E_BASE_URL='http://localhost:8081'; node tests/e2e/system-backup-plan-real-readonly.e2e.js`；缺少运行态或授权时记录 BLOCKED，不用 API 或 stub 替代。
-11. QUERY-ONLY PERMISSION E2E: 使用预先批准的测试租户 query-only 账号运行 `$env:SYSTEM_BACKUP_PLAN_E2E_BASE_URL='http://localhost:8081'; node tests/e2e/system-backup-plan-query-only-permission.e2e.js`；账号缺失时记录 BLOCKED，不临时改权限。
+10. AUTHORIZED READ-ONLY E2E: 默认入口为 `$env:SYSTEM_BACKUP_PLAN_E2E_BASE_URL='http://localhost:8081'`；隔离 worktree 使用已登记 slot 时允许显式覆盖并记录实际入口，本任务为 `http://127.0.0.1:8086`。运行 `node tests/e2e/system-backup-plan-real-readonly.e2e.js`；缺少运行态或授权时记录 BLOCKED，不用 API 或 stub 替代。
+11. QUERY-ONLY PERMISSION E2E: 按已接受变更单由管理员通过测试租户真实前端准备最小权限账号，记录原角色；默认入口为 `$env:SYSTEM_BACKUP_PLAN_QUERY_ONLY_BASE_URL='http://localhost:8081'`，隔离 worktree 显式使用已登记的 `http://127.0.0.1:8086`；运行 `node tests/e2e/system-backup-plan-query-only-permission.e2e.js`，通过后恢复原角色并清理任务专用角色。不得用 API/SQL 改权限。
 
 ## UI Entry Contract
 
@@ -147,11 +147,11 @@ Completion of this plan means only the selected node is ready for implementation
   - system:backup-plan:update
   - system:backup-plan:execute
 - Menu SQL: E:\IntRuoyi\IntRuoyiBackend\sql\mysql\20260725_system_backup_plan_menu.sql
-- Test tenant access: query-only E2E 使用明确只有 \`system:backup-plan:query\` 的授权测试账号；项目默认 aoteman 全权限基线不能证明 query-only 控件行为。该账号未准备时权限场景记录 BLOCKED。Production UI verification requires separate authorization.
+- Test tenant access: query-only E2E 使用明确只有 \`system:backup-plan:query\` 的授权测试账号；项目默认 aoteman 全权限基线不能证明 query-only 控件行为。用户已授权管理员通过测试租户真实前端准备该身份；必须记录并恢复用户原角色，清理任务专用角色。Production UI verification requires separate authorization.
 - Schedule contract: backend backup.repositoryEnvironment is required test/backup, propagated to registrar and displayed read-only; missing/invalid config fails. This is covered by config/Pester/JUnit/static display contract, not by query-only E2E.
-- Query-only E2E: never click save, enable, disable, or backup-now. 只有 query permission 的账号应看到 status/history，update/execute controls 必须隐藏；后端用该身份调用四个写接口必须为 403（仅最终 API 权限比对，不替代页面步骤）。
+- Query-only E2E: never click save, enable, disable, or backup-now. 只有 query permission 的账号应看到 status/history，update/execute controls 必须隐藏；后端用该身份调用四个写接口必须符合项目权限拒绝合同 `HTTP 200 + JSON code=403`（仅最终 API 权限比对，不替代页面步骤）。
 - Read-only states to assert: current returned health state, blocked reason when present, empty history when naturally present, request error feedback when naturally reproducible through the real runtime. States without an approved frontend-only setup path are recorded BLOCKED, not claimed by source matching.
-- Frontend entry: http://localhost:8081. Any override must be explicit, logged, and verified before navigation; implicit 8083 default is forbidden for acceptance.
+- Frontend entry baseline: http://localhost:8081. 隔离 worktree 可使用已登记且成对验证的 slot 入口；任何覆盖必须显式记录并在导航前验证，本任务实际入口为 http://127.0.0.1:8086。隐式 8083 默认值禁止用于验收。
 
 ## Deployment Strategy
 

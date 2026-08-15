@@ -38,11 +38,12 @@
 | Pester regression | Invoke-Pester -Path .\script\backup-ops\tests -EnableExit | E:\IntRuoyi\IntRuoyiBackend | script/backup-ops/tests | implementation execution-log.md |
 | Source/package RED/GREEN | python -X utf8 -m pytest script/tests/test_backup_ops_scheduled_task_contract.py script/tests/test_runtime_control_ops_scripts.py -q | E:\IntRuoyi\IntRuoyiBackend | planned test_backup_ops_scheduled_task_contract.py + existing runtime source test | pytest output |
 | Backend RED/GREEN | mvn -pl yudao-module-infra -am "-Dtest=BackupPlanServiceImplTest,WindowsBackupPlanSchedulerGatewayTest" "-Dsurefire.failIfNoSpecifiedTests=false" test | E:\IntRuoyi\IntRuoyiBackend | existing BackupPlanServiceImplTest + planned WindowsBackupPlanSchedulerGatewayTest | Surefire reports |
-| Backend release/menu regression | python -X utf8 -m pytest script/tests/test_system_backup_plan_menu_sql.py script/tests/test_publish_int_ruoyi_to_test_tooling.py -q | E:\IntRuoyi\IntRuoyiBackend | existing menu and packaging tests | pytest output |
+| Backend node regression | python -X utf8 -m pytest script/tests/test_backup_ops_scheduled_task_contract.py script/tests/test_runtime_control_ops_scripts.py script/tests/test_system_backup_plan_menu_sql.py -q | E:\IntRuoyi\IntRuoyiBackend | backup-ops source/runtime/menu tests | pytest output |
+| Backend package sync regression | python -X utf8 -m pytest script/tests/test_publish_int_ruoyi_to_test_tooling.py::test_publish_script_syncs_runtime_control_ops_scripts_without_secrets -q | E:\IntRuoyi\IntRuoyiBackend | task-relevant package sync test | pytest output |
 | Frontend static | node tests/e2e/system-backup-plan-standard-list-static.spec.js | E:\IntRuoyi\IntRuoyiFronted | tests/e2e/system-backup-plan-standard-list-static.spec.js | node output |
 | Frontend typecheck | pnpm ts:check | E:\IntRuoyi\IntRuoyiFronted | TypeScript project | pnpm output |
-| Authorized read-only E2E | `$env:SYSTEM_BACKUP_PLAN_E2E_BASE_URL='http://localhost:8081'; node tests/e2e/system-backup-plan-real-readonly.e2e.js` | E:\IntRuoyi\IntRuoyiFronted | tests/e2e/system-backup-plan-real-readonly.e2e.js | Playwright log/screenshot |
-| Query-only permission E2E | `$env:SYSTEM_BACKUP_PLAN_E2E_BASE_URL='http://localhost:8081'; node tests/e2e/system-backup-plan-query-only-permission.e2e.js` | E:\IntRuoyi\IntRuoyiFronted | planned tests/e2e/system-backup-plan-query-only-permission.e2e.js | Playwright log/screenshot + final 403 comparison |
+| Authorized read-only E2E | `$env:SYSTEM_BACKUP_PLAN_E2E_BASE_URL='<baseline 8081 or explicit registered worktree slot>'; node tests/e2e/system-backup-plan-real-readonly.e2e.js` | E:\IntRuoyi\IntRuoyiFronted | tests/e2e/system-backup-plan-real-readonly.e2e.js | Playwright log/screenshot |
+| Query-only permission E2E | `$env:SYSTEM_BACKUP_PLAN_QUERY_ONLY_BASE_URL='<baseline 8081 or explicit registered worktree slot>'; node tests/e2e/system-backup-plan-query-only-permission.e2e.js` | E:\IntRuoyi\IntRuoyiFronted | tests/e2e/system-backup-plan-query-only-permission.e2e.js | Playwright log/screenshot + final HTTP 200 / business code 403 comparison |
 
 ## BDD Scenarios
 
@@ -100,7 +101,7 @@ Given backend backup-ops.config.json 显式配置 backup.repositoryEnvironment=t
 When 后端读取或注册备份计划\
 Then RepositoryEnvironment 经 service、schedule 和 gateway 传播到注册脚本，并在页面只读显示\
 And 缺失或非法值时状态为配置异常且注册失败\
-And query-only E2E 不执行任何写操作，传播行为由 config contract、JUnit 和 Pester 验证
+And query-only 页面步骤不执行写操作，页面验收完成后只向写接口发送预期返回 HTTP 200 权限封装且业务码 403 的比对请求；传播行为由 config contract、JUnit 和 Pester 验证
 
 ## TDD Sequence
 
@@ -177,7 +178,7 @@ Regression:
 Prerequisites:
 
 - 静态测试文件已存在；前端依赖安装完成。
-- Playwright 当前状态只读 E2E 可按 login-access.md 使用测试租户 tenant_id=122 / aoteman；query-only permission E2E 必须使用测试租户内预先批准、仅绑定 \`system:backup-plan:query\` 且不含 update/execute 的账号。不得在 E2E 中用 API/SQL 创建或改权限；账号缺失时该场景 BLOCKED。
+- Playwright 当前状态只读 E2E 可按 login-access.md 使用测试租户 tenant_id=122 / aoteman；query-only permission E2E 必须使用测试租户内仅绑定 \`system:backup-plan:query\` 且不含 update/execute/wildcard 的账号。用户已通过 `docs/changes/20260814-query-only-account-ui-authorization.md` 授权管理员在 E2E 前通过真实前端准备该账号；必须记录并恢复原角色、清理任务专用角色，仍禁止 API/SQL 改权限。
 - E2E base URL 固定为 http://localhost:8081。若脚本环境变量允许覆盖，必须显式设置为该值并在日志核对；不得使用脚本隐式 8083 默认。
 
 RED:
@@ -207,19 +208,19 @@ Authorized E2E:
 
 Query-only permission E2E:
 
-- Command: \`$env:SYSTEM_BACKUP_PLAN_E2E_BASE_URL='http://localhost:8081'; node tests/e2e/system-backup-plan-query-only-permission.e2e.js\`
+- Command: 默认 `$env:SYSTEM_BACKUP_PLAN_QUERY_ONLY_BASE_URL='http://localhost:8081'`；隔离 worktree 使用已登记 slot 时显式覆盖，本任务为 `http://127.0.0.1:8086`；随后运行 `node tests/e2e/system-backup-plan-query-only-permission.e2e.js`。
 - Working directory: E:\IntRuoyi\IntRuoyiFronted
-- Planned test file: tests/e2e/system-backup-plan-query-only-permission.e2e.js
+- Test file: tests/e2e/system-backup-plan-query-only-permission.e2e.js
 - User path: 仅 query 账号登录 -> 打开页面 -> 验证 status/history 可见 -> 验证保存、启用、停用、立即备份控件在 DOM 中不可见 -> 不点击任何写控件。
-- Final API comparison: 只在页面步骤完成后，用同一登录态确认 PUT schedule、POST enable、POST disable、POST backup-now 均返回 403；不得用于设置页面状态。
-- Blocked handling: 缺少预先批准的 query-only 账号时记录 BLOCKER，不用 aoteman 全权限账号、API/SQL 改权限或静态匹配冒充。
+- Final API comparison: 只在页面步骤完成后，用同一登录态确认 PUT schedule、POST enable、POST disable、POST backup-now 均符合项目权限拒绝合同 `HTTP 200 + JSON code=403`；不得用于设置页面状态。
+- Blocked handling: 管理员无法通过真实前端准备精确 query-only 身份、无法记录/恢复原角色或无法清理任务专用角色时记录 BLOCKER；不用 aoteman 全权限账号、API/SQL 改权限或静态匹配冒充。
 
 ## E2E User Paths
 
 ### E2E-001 备份计划任务状态查看
 
 - 登录测试租户或授权运维账号。
-- 从 http://localhost:8081 登录并打开 /system/backup-plan。
+- 从基线 `http://localhost:8081` 登录；隔离 worktree 验收可显式使用已登记且完成前后端成对健康检查的 slot，本任务为 `http://127.0.0.1:8086`。随后打开 `/system/backup-plan`。
 - 等待 GET /admin-api/infra/backup-plan/status 和 GET /admin-api/infra/backup-plan/history/page 返回 200。
 - 验证页面显示“当前自动备份计划”“自动备份”“下次备份时间”“上次备份结果”“备份包历史”。
 - 若 blockedReason 存在，验证页面显示“配置异常”和原因。
@@ -232,7 +233,7 @@ Query-only permission E2E:
 
 - Existing route/component: \`/system/backup-plan\` / \`E:\IntRuoyi\IntRuoyiFronted\src\views\system\backup-plan\index.vue\`
 - Backend endpoint contract: GET /admin-api/infra/backup-plan/status returns scheduler status, schedule, next run, last run/result, latest backup point, principal/command/path validation summary and blocked reason without secrets.
-- Existing endpoints also include POST /admin-api/infra/backup-plan/backup-now, PUT schedule, POST enable and POST disable; OPS-NODE-001 E2E is query-only and must not invoke them.
+- Existing endpoints also include POST /admin-api/infra/backup-plan/backup-now, PUT schedule, POST enable and POST disable；query-only 页面步骤不得调用它们，页面验收完成后仅允许用同一登录态发送预期返回 `HTTP 200 + JSON code=403` 的最终权限比对请求。
 - Permission and dynamic menu: \`system:backup-plan:query\` from \`E:\IntRuoyi\IntRuoyiBackend\sql\mysql\20260725_system_backup_plan_menu.sql\`; target tenant binding must be verified before E2E.
 - States to assert dynamically: 当前真实状态、blockedReason（若存在）、秘密缺失；query-only permission behavior 由独立预批准账号场景验证。
 - Disabled, last failed, configuration abnormal, empty history and API error require an approved frontend-only real setup path. If the current environment does not naturally expose one, record that state as BLOCKED rather than claiming it via source matching. Permission behavior follows the dedicated query-only account path above.
@@ -295,4 +296,4 @@ Query-only permission E2E:
 - TB-005：计划任务专用 principalId、S4U/Limited 或 ACL 安装合同无法满足时 blocked；不得退回当前用户、SYSTEM、最高权限，也不得把账号密码或确认值放入命令行。
 - TB-006：backup.maxFreshnessHours 对应 RPO 尚未确认时，生产健康必须为配置异常；不得使用默认阈值。
 - TB-007：维护仓与后端脚本副本继续漂移不阻塞本节点，只要所有实际运行、测试和打包均严格使用 backend source；不得混用维护仓 GREEN 证据。
-- TB-008：测试租户缺少预先批准的 query-only 账号时，权限 E2E blocked；不得临时用 API/SQL 改权限或用 aoteman 全权限账号冒充。
+- TB-008：用户已授权管理员通过测试租户真实前端准备 query-only 身份；若实时权限响应仍含 update/execute/wildcard、无法恢复原角色或无法清理任务专用角色，权限 E2E/收尾 blocked；不得用 API/SQL 改权限或用 aoteman 全权限账号冒充。

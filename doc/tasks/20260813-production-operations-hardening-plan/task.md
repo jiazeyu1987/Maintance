@@ -1,14 +1,14 @@
-# 正式自动备份计划任务契约规划
+# 正式自动备份计划任务契约实施
 
 ## Task Goal
 
-基于 20260813-production-operations-review 的正式服运维现状评估，将原来过大的“正式服运维能力补齐规划”优化为一个可执行、可测试、可复审的单节点实施包：正式自动备份计划任务注册与健康合同。
+基于 20260813-production-operations-review 的正式服运维现状评估，将原来过大的“正式服运维能力补齐规划”优化并实施为一个可执行、可测试、可复审的单节点：正式自动备份计划任务注册与健康合同。
 
-本任务只生成和修订规划文档，不修改生产代码、服务器、数据库或运行环境。
+规划阶段已完成并通过独立复审；用户于 2026-08-14 要求继续后，按既有 implementationNode 执行 IMPL-M1 至 IMPL-M4。本节点允许修改隔离 worktree 内的后端 source-of-truth、相关后端服务、前端页面和测试，但不操作正式服务器、数据库或远端运行环境。
 
 ## Scope
 
-- 生成并优化单节点 PRD、开发计划、测试计划和机器可读任务状态。
+- 生成并优化单节点 PRD、开发计划、测试计划和机器可读任务状态，并按计划实施 OPS-NODE-001。
 - Selected node: OPS-NODE-001 正式自动备份计划任务契约。
 - 实施唯一 source of truth：E:\IntRuoyi\IntRuoyiBackend\script\backup-ops；维护仓 ops/backup-ops 不作为本节点修改、测试、打包或验收输入。
 - 覆盖计划任务注册参数、受保护生产确认输入、显式备份仓库、后端状态查询、现有 /system/backup-plan 页面只读验收。
@@ -16,7 +16,7 @@
 
 ## Non-Scope
 
-- 不修改生产代码、配置、服务器、数据库或运行环境。
+- 不操作正式服务器、正式配置、数据库或远端运行环境；本地实现仅在任务隔离 worktree 中进行。
 - 不注册计划任务，不执行备份、恢复、发布、重启、故障注入或远端探测。
 - 不实现外部通知、备份可恢复性看板扩展、独立外部监控、事件闭环、可观测性、镜像治理、PITR、只读分析或月报。
 - 不替业务决定 RTO、RPO、SLO、通知渠道、负责人、监控部署位置或分析数据源。
@@ -31,6 +31,10 @@
 - [completed] PLAN-M4：完成第二轮独立复审，识别实际脚本 source-of-truth、principal/ACL、RepositoryEnvironment 传播、健康判定和 E2E 合同缺口。
 - [completed] PLAN-M5：按第二轮审查单修订并通过第三轮独立复审。
 - [completed] PLAN-M6：更新收尾记录并标记完成。
+- [completed] IMPL-M1：在隔离 worktree 中为后端 source-of-truth、计划任务 principal 和受保护生产确认建立失败合同测试；独立复核确认 RED 有效。
+- [completed] IMPL-M2：实现注册脚本、principal、仓库环境和受保护确认合同 GREEN。
+- [completed] IMPL-M3：实现 RepositoryEnvironment 传播与确定性健康判定。
+- [completed] IMPL-M4：现有页面当前状态、缺配置异常回归、最小菜单授权和 query-only 真实 E2E 已完成；独立 tester 已确认四个写接口权限封装、原角色恢复、任务专用角色删除和敏感临时产物清理均通过。
 
 ## Expected Verification
 
@@ -63,7 +67,7 @@
 
 completed
 
-第三轮独立复审、规划包校验和 task-closeout preview/apply 均已通过。规划任务已完成；实施状态仍为 planned / ready-for-implementation，正式服 rollout 仍需后续明确授权。
+规划任务和 OPS-NODE-001 的 IMPL-M1 至 IMPL-M4 均已完成独立复核、实现提交、`int_main` 融合验证与任务清理。实现提交已进入 `int_main`，当前融合基线完成 30 模块后端构建、定向回归、脚本合同和前端类型门禁；任务 helper、Git worktree 注册、物理目录及 8086/48086 运行态均已清理。正式服 rollout 仍需后续明确授权。
 
 ## Planning Artifacts
 
@@ -74,16 +78,16 @@ completed
 
 ## Blockers
 
-- 本节点本地实现入口无阻塞。
+- 本地/测试环境实现、验收、融合和收尾无剩余 blocker。
 - 正式服计划任务注册、启用和连续运行证明需要另行明确授权。
 - 正式环境 principalId/logonType、受保护凭据安装方式和 backup.maxFreshnessHours 对应 RPO 数值未确认，阻塞 rollout，不阻塞本地合同实现。
-- 测试租户 query-only 权限账号若未预先准备，仅阻塞对应权限 E2E；不得在验收时用 API/SQL 临时改权限或用全权限账号冒充。
+- 后续若重新执行 query-only 权限 E2E，仍必须通过真实前端准备并恢复最小权限身份；不得用 API/SQL 临时改权限或用全权限账号冒充。
 - 外部通知、独立监控、PITR、只读分析和月报的业务/环境决策阻塞对应后续节点，不阻塞本节点规划包。
 
 ## Completion Meaning
 
-- 本规划任务完成表示单节点实施包通过复审；不表示生产代码已经实现。
-- OPS-NODE-001 实施完成只包括本地/测试脚本、后端状态和现有页面只读合同验证。
+- 本任务完成表示 OPS-NODE-001 的脚本、后端状态和现有页面只读合同已在本地/测试环境实现、融合并通过独立验证。
+- 本任务完成不表示正式服计划任务已经注册、启用或取得连续运行证明。
 - 正式服 rollout 必须在后续明确授权任务中完成，不能用本规划任务状态替代。
 
 ## Cleanup Keep
@@ -92,3 +96,5 @@ completed
 - doc/tasks/20260813-production-operations-hardening-plan/development-plan.md
 - doc/tasks/20260813-production-operations-hardening-plan/test-plan.md
 - doc/tasks/20260813-production-operations-hardening-plan/task-state.json
+- doc/tasks/20260813-production-operations-hardening-plan/test-report.md
+- doc/tasks/20260813-production-operations-hardening-plan/verification-report.md

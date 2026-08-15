@@ -1,9 +1,9 @@
 {
   "taskId": "20260813-production-operations-hardening-plan",
-  "title": "正式自动备份计划任务契约规划",
+  "title": "正式自动备份计划任务契约实施",
   "status": "completed",
   "currentPhase": "completed",
-  "currentMilestone": "PLAN-M6",
+  "currentMilestone": "IMPL-M4",
   "planningTask": {
     "status": "completed",
     "currentMilestone": "PLAN-M6",
@@ -11,9 +11,9 @@
   },
   "implementationNode": {
     "id": "OPS-NODE-001",
-    "status": "planned",
-    "currentPhase": "ready-for-implementation",
-    "currentMilestone": "IMPL-M1",
+    "status": "completed",
+    "currentPhase": "completed",
+    "currentMilestone": "IMPL-M4",
     "completionMeaning": "Complete only OPS-NODE-001 backend-source local/test implementation and verification; production scheduler rollout and successor nodes are excluded"
   },
   "scope": "One executable node only: backend-owned production scheduled-backup scripts, explicit protected principal/authorization, repository propagation, deterministic scheduler health, and existing /system/backup-plan verification.",
@@ -100,7 +100,7 @@
     {
       "id": "IMPL-M1",
       "title": "后端 source-of-truth、principal 与受保护确认合同 RED",
-      "status": "planned",
+      "status": "completed",
       "priority": "P0",
       "entryBlockers": [],
       "requirements": [
@@ -108,42 +108,64 @@
         "OPS-REQ-001B",
         "OPS-REQ-001E"
       ],
-      "verification": "Invoke-Pester -Script .\\script\\backup-ops\\tests\\BackupScheduledTaskContract.Tests.ps1; python -X utf8 -m pytest script/tests/test_backup_ops_scheduled_task_contract.py script/tests/test_runtime_control_ops_scripts.py -q"
+      "verification": "Invoke-Pester -Script .\\script\\backup-ops\\tests\\BackupScheduledTaskContract.Tests.ps1; python -X utf8 -m pytest script/tests/test_backup_ops_scheduled_task_contract.py script/tests/test_runtime_control_ops_scripts.py -q",
+      "evidence": [
+        "execution-log.md: IMPL-M1 RED parser/collection, Pester Failed=8, pytest 5 failed/8 passed",
+        "test-report.md: independent RED review passed"
+      ]
     },
     {
       "id": "IMPL-M2",
       "title": "后端注册脚本、principal、仓库与受保护确认 GREEN",
-      "status": "planned",
+      "status": "completed",
       "priority": "P0",
       "entryBlockers": [],
       "requirements": [
         "OPS-REQ-001A",
         "OPS-REQ-001B"
       ],
-      "verification": "Invoke-Pester -Path .\\script\\backup-ops\\tests -EnableExit"
+      "verification": "Invoke-Pester -Path .\\script\\backup-ops\\tests -EnableExit",
+      "evidence": [
+        "execution-log.md: IMPL-M2 GREEN parser/Pester/pytest/diff/security scan",
+        "test-report.md: IMPL-M2 independent verification passed"
+      ]
     },
     {
       "id": "IMPL-M3",
       "title": "RepositoryEnvironment 传播与确定性健康判定",
-      "status": "planned",
+      "status": "completed",
       "priority": "P0",
       "entryBlockers": [],
       "requirements": [
         "OPS-REQ-001C",
         "OPS-REQ-001D"
       ],
-      "verification": "mvn -pl yudao-module-infra -am \"-Dtest=BackupPlanServiceImplTest,WindowsBackupPlanSchedulerGatewayTest\" \"-Dsurefire.failIfNoSpecifiedTests=false\" test"
+      "verification": "mvn -pl yudao-module-infra -am \"-Dtest=BackupPlanServiceImplTest,WindowsBackupPlanSchedulerGatewayTest,RuntimeBackupDrillServiceImplTest\" \"-Dsurefire.failIfNoSpecifiedTests=false\" test",
+      "evidence": [
+        "execution-log.md: IMPL-M3 GREEN Maven/Pester/pytest/diff and coverage hardening",
+        "test-report.md: IMPL-M3 independent verification passed"
+      ]
     },
     {
       "id": "IMPL-M4",
       "title": "现有页面当前状态与 query-only 权限验收",
-      "status": "planned",
+      "status": "completed",
       "priority": "P0",
       "entryBlockers": [],
       "requirements": [
         "OPS-REQ-001D"
       ],
-      "verification": "node tests/e2e/system-backup-plan-standard-list-static.spec.js; authorized current-state and planned query-only permission Playwright at explicit http://localhost:8081"
+      "verification": "node tests/e2e/system-backup-plan-standard-list-static.spec.js; authorized current-state Playwright via SYSTEM_BACKUP_PLAN_E2E_BASE_URL; query-only Playwright via SYSTEM_BACKUP_PLAN_QUERY_ONLY_BASE_URL with final HTTP 200 + JSON code=403 permission comparison",
+      "verificationBlockers": [],
+      "evidence": [
+        "execution-log.md: frontend static/typecheck, backend 18-test regression, full local build, paired runtime, authorized readonly Playwright, null repositoryEnvironment RED/GREEN",
+        "test-report.md: IMPL-M4 independent gate round-2 BLOCKED only by missing pre-approved query-only credentials; no remaining deterministic defect found",
+        "test-report.md: IMPL-M4 independent gate round-3 PASS with real query-only UI lifecycle, four HTTP 200 + JSON code=403 write denials, role restoration, temporary role deletion, and secret-artifact cleanup",
+        "docs/changes/20260814-query-only-account-ui-authorization.md: user authorized test-tenant UI permission setup, restoration, and cleanup",
+        "execution-log.md: role parent-only TDD, real query-only Playwright PASS, role restoration, cleanup, and secret-artifact removal",
+        "execution-log.md: task-relevant Maven/Pester/pytest/frontend regressions PASS; one unrelated broad publish-suite baseline failure recorded separately",
+        "verification-report.md: implementation commit integrated into int_main, current-head 30-module package and focused regressions passed, task worktree removed"
+      ]
     }
   ],
   "successorBacklog": [
@@ -184,6 +206,7 @@
     "developmentPlan": "doc/tasks/20260813-production-operations-hardening-plan/development-plan.md",
     "testPlan": "doc/tasks/20260813-production-operations-hardening-plan/test-plan.md",
     "executionLog": "doc/tasks/20260813-production-operations-hardening-plan/execution-log.md",
-    "task": "doc/tasks/20260813-production-operations-hardening-plan/task.md"
+    "task": "doc/tasks/20260813-production-operations-hardening-plan/task.md",
+    "verificationReport": "doc/tasks/20260813-production-operations-hardening-plan/verification-report.md"
   }
 }
