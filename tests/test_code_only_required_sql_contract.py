@@ -14,12 +14,20 @@ def test_required_sql_manifest_entries_preserve_type_for_scope_filtering():
     assert "Type = [string]$_.type" in text
 
 
-def test_code_only_deploy_skips_data_required_sql_before_remote_mysql_apply():
+def test_code_only_deploy_executes_only_scope_aware_preflight_apply_items():
     text = read_script()
-    assert "Get-ReleasePreflightApplyItems -PreflightPlan $preflightPlan -PublishScope $releasePublishScope" in text
-    assert "Skipping data required database SQL for code-only release" in text
-    assert "$requiredSqlTypeByMigrationId[$migrationId]" in text
-    assert "preflight-plan.json APPLY item missing from manifest requiredSql for code-only scope filtering" in text
+    assert "'--publish-scope', $releasePublishScope" in text
+    assert "SKIP_SCOPE_EXCLUDED" in text
+    assert "function Get-ReleasePreflightApplyItems" not in text
+    assert "$preflightApplyItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'APPLY' })" in text
     apply_index = text.index('Info "Applying required database SQL: $fileName"')
-    skip_index = text.index("Skipping data required database SQL for code-only release")
+    skip_index = text.index("Skipping required database SQL excluded by publish scope")
     assert skip_index < apply_index
+
+
+def test_code_only_scope_is_planned_before_deploy_without_post_plan_filtering():
+    text = read_script()
+    assert "'--publish-scope', $releasePublishScope" in text
+    assert "SKIP_SCOPE_EXCLUDED" in text
+    assert "function Get-ReleasePreflightApplyItems" not in text
+    assert "$preflightApplyItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'APPLY' })" in text

@@ -4262,6 +4262,9 @@ function Read-ReleasePreflightPlan {
     } catch {
         Fail "preflight-plan.json parse failed: $($_.Exception.Message)"
     }
+    if ([string]$plan.publishScope -ne $releasePublishScope) {
+        Fail "preflight-plan.json publishScope does not match release package: $($plan.publishScope) != $releasePublishScope"
+    }
     if ([string]$plan.status -ne 'passed') {
         Fail "preflight-plan.json status must be passed before deploy-release: $($plan.status)"
     }
@@ -4270,7 +4273,7 @@ function Read-ReleasePreflightPlan {
         if ($action.StartsWith('BLOCKED_')) {
             Fail "preflight-plan.json contains blocked migration: $($item.migrationId) -> $action"
         }
-        if ($action -notin @('APPLY', 'SKIP_ALREADY_APPLIED', 'SKIP_ENV_NOT_ALLOWED')) {
+        if ($action -notin @('APPLY', 'SKIP_ALREADY_APPLIED', 'SKIP_ENV_NOT_ALLOWED', 'SKIP_SCOPE_EXCLUDED')) {
             Fail "preflight-plan.json contains unsupported migration action: $($item.migrationId) -> $action"
         }
     }
@@ -4320,6 +4323,7 @@ SQL"
         '--manifest', $manifestPath,
         '--target-state', $targetStatePath,
         '--target-environment', $Environment,
+        '--publish-scope', $releasePublishScope,
         '--output', $preflightPlanPath
     )
 }
@@ -4354,54 +4358,6 @@ function Assert-ProdDryRunEvidence {
     if ($null -eq $evidence.writeActions -or @($evidence.writeActions).Count -gt 0) {
         Fail 'Production dry-run evidence must be read-only and include empty writeActions.'
     }
-}
-
-function Get-ReleasePreflightApplyItems {
-    param(
-        [Parameter(Mandatory = $true)]
-        $PreflightPlan,
-
-        [Parameter(Mandatory = $true)]
-        [string]$PublishScope
-    )
-
-    $applyItems = @($PreflightPlan.items | Where-Object { [string]$_.action -eq 'APPLY' })
-    if ($PublishScope -ne 'code-only') {
-        return $applyItems
-    }
-
-    $requiredSqlTypeByMigrationId = @{}
-    foreach ($entry in @($requiredDatabaseSqlScripts)) {
-        $migrationId = [string]$entry.MigrationId
-        if ([string]::IsNullOrWhiteSpace($migrationId)) {
-            $migrationId = [System.IO.Path]::GetFileNameWithoutExtension([string]$entry.Path)
-        }
-        if ([string]::IsNullOrWhiteSpace($migrationId)) {
-            Fail "Required SQL entry missing migrationId for code-only scope filtering: $($entry.Path)"
-        }
-        $sqlType = [string]$entry.Type
-        if ([string]::IsNullOrWhiteSpace($sqlType)) {
-            Fail "Required SQL entry missing type for code-only scope filtering: $migrationId"
-        }
-        $requiredSqlTypeByMigrationId[$migrationId] = $sqlType
-    }
-
-    $codeOnlyApplyItems = @()
-    foreach ($item in $applyItems) {
-        $migrationId = [string]$item.migrationId
-        if ([string]::IsNullOrWhiteSpace($migrationId)) {
-            Fail "preflight-plan.json APPLY item missing migrationId for code-only scope filtering"
-        }
-        if (-not $requiredSqlTypeByMigrationId.ContainsKey($migrationId)) {
-            Fail "preflight-plan.json APPLY item missing from manifest requiredSql for code-only scope filtering: $migrationId"
-        }
-        if ([string]$requiredSqlTypeByMigrationId[$migrationId] -eq 'data') {
-            Info "Skipping data required database SQL for code-only release: $migrationId"
-            continue
-        }
-        $codeOnlyApplyItems += $item
-    }
-    return $codeOnlyApplyItems
 }
 
 function Invoke-ReleaseMigrationStateUpdate {
@@ -4703,7 +4659,11 @@ function Invoke-RequiredDatabaseSqlScripts {
     foreach ($item in @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ENV_NOT_ALLOWED' })) {
         Info "Skipping required database SQL outside target environment: $($item.migrationId)"
     }
-    $applyItems = Sort-RequiredDatabaseSqlApplyItems -Items (Get-ReleasePreflightApplyItems -PreflightPlan $preflightPlan -PublishScope $releasePublishScope) -TargetEnvironment $Environment
+    foreach ($item in @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_SCOPE_EXCLUDED' })) {
+        Info "Skipping required database SQL excluded by publish scope ${releasePublishScope}: $($item.migrationId)"
+    }
+    $preflightApplyItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'APPLY' })
+    $applyItems = Sort-RequiredDatabaseSqlApplyItems -Items $preflightApplyItems -TargetEnvironment $Environment
     foreach ($item in $applyItems) {
         $fileName = Get-RequiredDatabaseSqlFileName -RelativePath ([string]$item.file)
         $remoteSqlPath = "$remoteRequiredSqlDir/$fileName"

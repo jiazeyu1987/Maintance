@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import heapq
 import json
-from collections import defaultdict, deque
+from collections import defaultdict
 from pathlib import Path
 
 
@@ -11,8 +12,12 @@ BLOCKED_ACTIONS = {
     "BLOCKED_CHECKSUM_MISMATCH",
     "BLOCKED_DEPENDENCY_MISSING",
     "BLOCKED_PREREQUISITE_MISSING",
+    "BLOCKED_SCOPE_DEPENDENCY",
 }
 SKIP_ENV_NOT_ALLOWED = "SKIP_ENV_NOT_ALLOWED"
+SKIP_SCOPE_EXCLUDED = "SKIP_SCOPE_EXCLUDED"
+SUPPORTED_PUBLISH_SCOPES = {"code-only", "with-data"}
+SUPPORTED_MIGRATION_TYPES = {"schema", "data", "menu", "config", "permission", "seed"}
 
 
 def _state_for(target_state: dict[str, dict[str, object]], migration_id: str) -> dict[str, object] | None:
@@ -45,19 +50,20 @@ def _order_migrations_by_dependencies(migrations: list[dict[str, object]]) -> li
             edges[dependency_id].append(migration_id)
             indegree[migration_id] += 1
 
-    ready = deque(
-        migration_id
+    ready = [
+        (original_index[migration_id], migration_id)
         for migration_id, degree in sorted(indegree.items(), key=lambda item: original_index[item[0]])
         if degree == 0
-    )
+    ]
+    heapq.heapify(ready)
     ordered_ids: list[str] = []
     while ready:
-        migration_id = ready.popleft()
+        _, migration_id = heapq.heappop(ready)
         ordered_ids.append(migration_id)
         for child_id in sorted(edges.get(migration_id, []), key=lambda item: original_index[item]):
             indegree[child_id] -= 1
             if indegree[child_id] == 0:
-                ready.append(child_id)
+                heapq.heappush(ready, (original_index[child_id], child_id))
 
     if len(ordered_ids) != len(migrations):
         return migrations
@@ -69,18 +75,26 @@ def build_preflight_plan(
     target_state: dict[str, dict[str, object]],
     *,
     target_environment: str,
+    publish_scope: str,
 ) -> dict[str, object]:
+    if publish_scope not in SUPPORTED_PUBLISH_SCOPES:
+        raise ValueError(f"unsupported publish scope: {publish_scope}")
+
     items: list[dict[str, object]] = []
     ordered_migrations = _order_migrations_by_dependencies(migrations)
     known_migrations = {str(migration["migrationId"]) for migration in ordered_migrations}
     planned_actions: dict[str, str] = {}
+    scope_dependency_paths: dict[str, list[str]] = {}
     satisfied_migrations = {
         migration_id
         for migration_id, state in target_state.items()
-        if state.get("status") == "APPLIED"
+        if state.get("status") == "APPLIED" and migration_id not in known_migrations
     }
     for migration in ordered_migrations:
         migration_id = str(migration["migrationId"])
+        migration_type = str(migration.get("type", "")).strip()
+        if migration_type not in SUPPORTED_MIGRATION_TYPES:
+            raise ValueError(f"unsupported migration type for {migration_id}: {migration_type or '<blank>'}")
         allowed = [str(item) for item in migration.get("allowedEnvironments", [])]
         if target_environment not in allowed:
             items.append(_item(migration, SKIP_ENV_NOT_ALLOWED, f"{target_environment} is not allowed"))
@@ -95,16 +109,30 @@ def build_preflight_plan(
                 items.append(_item(migration, "SKIP_ALREADY_APPLIED", "migration already applied with matching checksum"))
                 satisfied_migrations.add(migration_id)
                 planned_actions[migration_id] = "SKIP_ALREADY_APPLIED"
-            else:
-                items.append(_item(migration, "APPLY", "target checksum differs from manifest; reapply current required SQL"))
-                satisfied_migrations.add(migration_id)
-                planned_actions[migration_id] = "APPLY"
+                continue
+
+        if publish_scope == "code-only" and migration_type == "data":
+            items.append(_item(migration, SKIP_SCOPE_EXCLUDED, "code-only excludes pending data migration"))
+            planned_actions[migration_id] = SKIP_SCOPE_EXCLUDED
+            scope_dependency_paths[migration_id] = [migration_id]
+            continue
+
+        if state and state.get("status") == "APPLIED":
+            items.append(_item(migration, "APPLY", "target checksum differs from manifest; reapply current required SQL"))
+            satisfied_migrations.add(migration_id)
+            planned_actions[migration_id] = "APPLY"
             continue
 
         missing_dependencies = []
+        scope_dependency_path: list[str] | None = None
         for dependency in migration.get("dependsOn", []):
             dependency_id = str(dependency)
             if dependency_id in satisfied_migrations:
+                continue
+            if dependency_id in scope_dependency_paths:
+                candidate_path = [migration_id, *scope_dependency_paths[dependency_id]]
+                if scope_dependency_path is None or len(candidate_path) < len(scope_dependency_path):
+                    scope_dependency_path = candidate_path
                 continue
             dependency_action = planned_actions.get(dependency_id)
             if dependency_action == SKIP_ENV_NOT_ALLOWED:
@@ -117,6 +145,18 @@ def build_preflight_plan(
                 missing_dependencies.append(dependency_id)
                 continue
             missing_dependencies.append(dependency_id)
+        if scope_dependency_path is not None:
+            items.append(
+                _item(
+                    migration,
+                    "BLOCKED_SCOPE_DEPENDENCY",
+                    f"publish scope {publish_scope} excludes required dependency path: "
+                    + " -> ".join(scope_dependency_path),
+                )
+            )
+            planned_actions[migration_id] = "BLOCKED_SCOPE_DEPENDENCY"
+            scope_dependency_paths[migration_id] = scope_dependency_path
+            continue
         if missing_dependencies:
             items.append(
                 _item(
@@ -135,6 +175,7 @@ def build_preflight_plan(
     return {
         "status": "blocked" if any(item["action"] in BLOCKED_ACTIONS for item in items) else "passed",
         "targetEnvironment": target_environment,
+        "publishScope": publish_scope,
         "items": items,
     }
 
@@ -211,6 +252,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--manifest", required=True)
     parser.add_argument("--target-state", required=True)
     parser.add_argument("--target-environment", required=True)
+    parser.add_argument("--publish-scope", required=True, choices=sorted(SUPPORTED_PUBLISH_SCOPES))
     parser.add_argument("--output", required=True)
     args = parser.parse_args(argv)
 
@@ -223,7 +265,12 @@ def main(argv: list[str] | None = None) -> int:
             migration["sha256"] = _normalize_sha256(migration["sha256"])
     _attach_equivalent_sql_checksums(migrations, manifest_path)
 
-    plan = build_preflight_plan(migrations, target_state, target_environment=args.target_environment)
+    plan = build_preflight_plan(
+        migrations,
+        target_state,
+        target_environment=args.target_environment,
+        publish_scope=args.publish_scope,
+    )
     Path(args.output).write_text(json.dumps(plan, ensure_ascii=False, indent=2), encoding="utf-8")
     return 0
 

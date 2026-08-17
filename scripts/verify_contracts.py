@@ -170,8 +170,8 @@ def verify_scripts_and_config() -> None:
         read_text(path)
 
     config = read_text("config/runtime-control.example.yaml")
-    assert_contains(config, "D:/ProjectPackage/Int/IntRuoyi/ruoyi-vue-pro", "managed backend root")
-    assert_contains(config, "D:/ProjectPackage/Int/IntRuoyi/yudao-ui-admin-vue3", "managed frontend root")
+    assert_contains(config, "E:/IntRuoyi/IntRuoyiBackend", "managed backend root")
+    assert_contains(config, "E:/IntRuoyi/IntRuoyiFronted", "managed frontend root")
     assert_contains(config, "D:/ProjectPackage/Website", "managed website root")
 
     gitignore = read_text(".gitignore")

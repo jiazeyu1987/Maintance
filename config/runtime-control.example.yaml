@@ -1,8 +1,8 @@
 maintenance:
   runtime-control:
     operator-id: local-operator
-    repo-root: D:/ProjectPackage/Int/IntRuoyi/ruoyi-vue-pro
-    frontend-root: D:/ProjectPackage/Int/IntRuoyi/yudao-ui-admin-vue3
+    repo-root: E:/IntRuoyi/IntRuoyiBackend
+    frontend-root: E:/IntRuoyi/IntRuoyiFronted
     website-root: D:/ProjectPackage/Website
     ops-root: D:/ProjectPackage/Int/IntRuoyiMaintance/ops
     state-dir: D:/ProjectPackage/Int/IntRuoyiMaintance/runtime/runtime-control
