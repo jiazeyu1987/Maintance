@@ -57,7 +57,7 @@ class RuntimeControlContractTest {
     void missingConfigurationFailsFast() {
         RuntimeControlProperties properties = new RuntimeControlProperties();
         properties.setRepoRoot("");
-        properties.setFrontendRoot("D:/ProjectPackage/Int/IntRuoyi/yudao-ui-admin-vue3");
+        properties.setFrontendRoot("E:/IntRuoyi/IntRuoyiFronted");
         properties.setWebsiteRoot("D:/ProjectPackage/Website");
         properties.setEnvironments(Map.of());
 
@@ -143,8 +143,8 @@ class RuntimeControlContractTest {
 
         assertThat(response)
                 .contains("-Mode", "build-release", "-NasServer", "-NasShare", "-NasReleaseRoot",
-                        "-BackendRepoRoot", "D:/ProjectPackage/Int/IntRuoyi/ruoyi-vue-pro",
-                        "-FrontendRepoRoot", "D:/ProjectPackage/Int/IntRuoyi/yudao-ui-admin-vue3",
+                        "-BackendRepoRoot", "E:/IntRuoyi/IntRuoyiBackend",
+                        "-FrontendRepoRoot", "E:/IntRuoyi/IntRuoyiFronted",
                         "-WebsiteRepo", "D:/ProjectPackage/Website",
                         "-BackendRuntimeBaseMode", "-BackendRuntimeBaseTarPath",
                         "-BackendRuntimeBaseTarSha256", "-BackendRuntimeBaseImage",

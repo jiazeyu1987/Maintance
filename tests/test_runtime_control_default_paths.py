@@ -22,3 +22,12 @@ def test_runtime_control_tracked_defaults_use_fixed_main_repository_paths() -> N
     assert "E:/IntRuoyi/IntRuoyiFronted" in verifier
     assert "D:/ProjectPackage/Int/IntRuoyi/ruoyi-vue-pro" not in verifier
     assert "D:/ProjectPackage/Int/IntRuoyi/yudao-ui-admin-vue3" not in verifier
+
+    java_contract = (
+        REPO_ROOT
+        / "backend/src/test/java/com/intruoyi/maintenance/runtime/RuntimeControlContractTest.java"
+    ).read_text(encoding="utf-8")
+    assert "E:/IntRuoyi/IntRuoyiBackend" in java_contract
+    assert "E:/IntRuoyi/IntRuoyiFronted" in java_contract
+    assert "D:/ProjectPackage/Int/IntRuoyi/ruoyi-vue-pro" not in java_contract
+    assert "D:/ProjectPackage/Int/IntRuoyi/yudao-ui-admin-vue3" not in java_contract
