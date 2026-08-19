@@ -4657,6 +4657,45 @@ function Sort-RequiredDatabaseSqlApplyItems {
     )
 }
 
+function Invoke-RouteSnapshotIdentityMigrationCommand {
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('BACKFILL', 'READINESS')]
+        [string]$MigrationMode,
+
+        [Parameter(Mandatory = $true)]
+        [string]$ReportFileName
+    )
+
+    $remoteReportDir = "$remoteReleaseDir/runtime-reports"
+    $remoteReportFile = "$remoteReportDir/$ReportFileName"
+    $remoteReportDirLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteReportDir -Purpose 'route snapshot migration report directory'
+    $remoteReportFileLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteReportFile -Purpose 'route snapshot migration report file'
+    $remoteAppDirLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $RemoteAppDir -Purpose 'remote app directory'
+    $reportVolumeLiteral = ConvertTo-ShellSingleQuotedLiteral -Value "${remoteReportDir}:/runtime-reports" -Purpose 'route snapshot migration report volume'
+    $argsValue = "--server.port=0 --yudao.mes.route-snapshot-migration.mode=$MigrationMode --yudao.mes.route-snapshot-migration.report-file=/runtime-reports/$ReportFileName"
+    $argsLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $argsValue -Purpose 'route snapshot migration ARGS'
+
+    Info "Running MES route snapshot identity $MigrationMode before NOT NULL enforcement"
+    Invoke-SshCommand "mkdir -p $remoteReportDirLiteral && rm -f $remoteReportFileLiteral && cd $remoteAppDirLiteral && docker compose run --rm --no-deps -v $reportVolumeLiteral -e ARGS=$argsLiteral backend"
+    Invoke-SshCommand "test -f $remoteReportFileLiteral && grep -q '\"status\" : \"READY\"' $remoteReportFileLiteral && grep -q '\"blockerCount\" : 0' $remoteReportFileLiteral"
+}
+
+function Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement {
+    param(
+        [Parameter(Mandatory = $true)]
+        $Item
+    )
+
+    $migrationId = [string]$Item.migrationId
+    if ($migrationId -ne '20260812_mes_route_version_snapshot_identity_enforce') {
+        return
+    }
+
+    Invoke-RouteSnapshotIdentityMigrationCommand -MigrationMode 'BACKFILL' -ReportFileName 'route-snapshot-identity-backfill.json'
+    Invoke-RouteSnapshotIdentityMigrationCommand -MigrationMode 'READINESS' -ReportFileName 'route-snapshot-identity-readiness.json'
+}
+
 function Invoke-RequiredDatabaseSqlScripts {
     Info 'Applying required database SQL scripts'
     $preflightPlan = Read-ReleasePreflightPlan
@@ -4677,6 +4716,7 @@ function Invoke-RequiredDatabaseSqlScripts {
         $sessionPreamble = Get-RequiredDatabaseSqlSessionPreamble -Item $item -TargetEnvironment $Environment
         Info "Applying required database SQL: $fileName"
         Invoke-SshCommand "test -f '$remoteSqlPath' && echo REQUIRED_SQL_EXISTS"
+        Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement -Item $item
         Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'RUNNING'
         try {
             if ([string]::IsNullOrWhiteSpace($sessionPreamble)) {

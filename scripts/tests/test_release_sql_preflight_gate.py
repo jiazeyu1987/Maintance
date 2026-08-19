@@ -220,7 +220,8 @@ def test_publish_script_executes_dcc_view_matrix_prereq_before_seed_on_test() ->
     assert "function Sort-RequiredDatabaseSqlApplyItems" in script
     assert "'20260624_dcc_view_matrix_test_tenant_prereq' = 10" in script
     assert "'20260624_dcc_view_matrix_independent_seed' = 20" in script
-    assert "$applyItems = Sort-RequiredDatabaseSqlApplyItems -Items (Get-ReleasePreflightApplyItems -PreflightPlan $preflightPlan -PublishScope $releasePublishScope) -TargetEnvironment $Environment" in invoke_block
+    assert "$preflightApplyItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'APPLY' })" in invoke_block
+    assert "$applyItems = Sort-RequiredDatabaseSqlApplyItems -Items $preflightApplyItems -TargetEnvironment $Environment" in invoke_block
     assert "'20260624_dcc_view_matrix_independent_seed'" in helper_block
     assert "'test' { '122' }" in helper_block
     assert "SET @dcc_view_matrix_seed_tenant_id := $seedTenantId;" in helper_block
@@ -271,6 +272,23 @@ def test_publish_script_preserves_preflight_dependency_order_for_non_priority_re
     assert "Sort-Object" in sort_block
     assert "@{ Expression = { [int]$_.OriginalOrder } }" in sort_block
     assert "ForEach-Object { $_.Item }" in sort_block
+
+
+def test_publish_script_runs_route_snapshot_identity_backfill_before_enforcement_sql() -> None:
+    script = read_publish_script()
+
+    assert "function Invoke-RouteSnapshotIdentityMigrationCommand" in script
+    assert "function Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement" in script
+    assert "20260812_mes_route_version_snapshot_identity_enforce" in script
+    assert "route-snapshot-identity-backfill.json" in script
+    assert "route-snapshot-identity-readiness.json" in script
+    assert "yudao.mes.route-snapshot-migration.mode=$MigrationMode" in script
+    assert "Invoke-RouteSnapshotIdentityMigrationCommand -MigrationMode 'BACKFILL'" in script
+    assert "Invoke-RouteSnapshotIdentityMigrationCommand -MigrationMode 'READINESS'" in script
+
+    hook_index = script.index("Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement -Item $item")
+    sql_apply_index = script.index("Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'RUNNING'", hook_index)
+    assert hook_index < sql_apply_index
 
 
 def test_publish_script_allows_empty_required_sql_apply_items() -> None:
