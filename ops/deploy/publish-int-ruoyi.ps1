@@ -92,6 +92,7 @@ $PSNativeCommandUseErrorActionPreference = $false
 $script:ReleaseOperationLockHeld = $false
 $script:ReleaseOperationLockReleasing = $false
 $script:BuildReleaseRuntimeRestartGuardCreated = $false
+$script:ReleaseErrorMessageMaxLength = 2048
 $releaseMigrationExecutableTypes = @('schema', 'data', 'menu', 'config', 'permission', 'seed')
 $releaseMigrationEvidenceOnlyTypes = @('preflight', 'backfill', 'postflight', 'rollback-dry-run')
 $releaseMigrationAllowedTypes = @($releaseMigrationExecutableTypes + $releaseMigrationEvidenceOnlyTypes)
@@ -103,6 +104,8 @@ function Fail([string]$Message) {
             $script:ReleaseOperationLockReleasing = $true
             Invoke-ReleaseOperationLockRelease -Status 'FAILED' -ErrorMessage $Message
         } catch {
+            $cleanupMessage = ConvertTo-ReleaseErrorMessage -Value $_.Exception.Message
+            Write-Host "[FAIL] Release operation lock cleanup failed: $cleanupMessage" -ForegroundColor Red
         } finally {
             $script:ReleaseOperationLockHeld = $false
             $script:ReleaseOperationLockReleasing = $false
@@ -1439,6 +1442,7 @@ function New-ReleaseRuntimeEnvContent {
     $resolvedDccDownloadEncryptionKeyId = Resolve-PublishRuntimeValue -Name 'DCC_DOWNLOAD_ENCRYPTION_KEY_ID' -CurrentValue $DccDownloadEncryptionKeyId -HardcodedValue $DCC_HARDCODED_DOWNLOAD_ENCRYPTION_KEY_ID
     $resolvedDccDownloadEncryptionBase64Key = Resolve-PublishRuntimeValue -Name 'DCC_DOWNLOAD_ENCRYPTION_BASE64_KEY' -CurrentValue $DccDownloadEncryptionBase64Key -HardcodedValue $DCC_HARDCODED_DOWNLOAD_ENCRYPTION_BASE64_KEY
     $resolvedDccDownloadEncryptionArtifactDirectory = Resolve-PublishRuntimeValue -Name 'DCC_DOWNLOAD_ENCRYPTION_ARTIFACT_DIRECTORY' -CurrentValue $DccDownloadEncryptionArtifactDirectory -HardcodedValue $DCC_HARDCODED_DOWNLOAD_ENCRYPTION_ARTIFACT_DIRECTORY
+    $resolvedEdhrS3Endpoint = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_ENDPOINT' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3Endpoint
     $resolvedEdhrS3Bucket = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_BUCKET' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3Bucket
     $resolvedEdhrS3Region = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_REGION' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3Region
     $resolvedEdhrS3AccessKey = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_ACCESS_KEY' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3AccessKey
@@ -1457,6 +1461,7 @@ DCC_DOWNLOAD_ENCRYPTION_POLICY_VERSION=$resolvedDccDownloadEncryptionPolicyVersi
 DCC_DOWNLOAD_ENCRYPTION_KEY_ID=$resolvedDccDownloadEncryptionKeyId
 DCC_DOWNLOAD_ENCRYPTION_BASE64_KEY=$resolvedDccDownloadEncryptionBase64Key
 DCC_DOWNLOAD_ENCRYPTION_ARTIFACT_DIRECTORY=$resolvedDccDownloadEncryptionArtifactDirectory
+EDHR_S3_ENDPOINT=$resolvedEdhrS3Endpoint
 EDHR_S3_BUCKET=$resolvedEdhrS3Bucket
 EDHR_S3_REGION=$resolvedEdhrS3Region
 EDHR_S3_ACCESS_KEY=$resolvedEdhrS3AccessKey
@@ -1592,6 +1597,60 @@ function ConvertTo-SqlStringLiteral {
         return 'NULL'
     }
     return "'" + $Value.Replace("'", "''") + "'"
+}
+
+function Protect-ReleaseSensitiveText {
+    param(
+        [AllowNull()]
+        [string]$Value
+    )
+
+    if ($null -eq $Value) {
+        return ''
+    }
+
+    $text = $Value
+    $patterns = @(
+        '(?i)(MYSQL_PWD=)[^\s''"`;\r\n]+'
+        '(?i)(?<!-)(-p)[^\s''"`;\r\n]+'
+        '(?i)((?:password|secret|access[_-]?key|private[_-]?key|hmac[_-]?secret|base64[_-]?key)\s*[=:]\s*)[^\s,;''"`\r\n]+'
+    )
+    foreach ($pattern in $patterns) {
+        $text = [System.Text.RegularExpressions.Regex]::Replace($text, $pattern, '$1<redacted>')
+    }
+    return $text
+}
+
+function ConvertTo-ReleaseErrorMessage {
+    param(
+        [AllowNull()]
+        [string]$Value
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Value)) {
+        return ''
+    }
+
+    $text = ($Value -replace "`r`n", "`n" -replace "`r", "`n").Trim()
+    $text = Protect-ReleaseSensitiveText $text
+    if ($text.Length -gt $script:ReleaseErrorMessageMaxLength) {
+        $suffix = '...<truncated>'
+        $text = $text.Substring(0, $script:ReleaseErrorMessageMaxLength - $suffix.Length) + $suffix
+    }
+    return $text
+}
+
+function ConvertTo-ReleaseErrorBase64 {
+    param(
+        [AllowNull()]
+        [string]$Value
+    )
+
+    $text = ConvertTo-ReleaseErrorMessage -Value $Value
+    if ([string]::IsNullOrWhiteSpace($text)) {
+        return ''
+    }
+    return [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($text))
 }
 
 function New-EdhrProtectedStoragePostImportSql {
@@ -4025,6 +4084,22 @@ grep -Fx $expectedImageTagLiteral $remoteEnvLiteral
     Info "Remote runtime .env IMAGE_TAG verified: $packageDirectoryName"
 }
 
+function Assert-RemoteRuntimeEnvEdhrEndpoint {
+    if ([string]::IsNullOrWhiteSpace($EdhrS3Endpoint)) {
+        Fail 'EDHR_S3_ENDPOINT is required before writing the target runtime environment.'
+    }
+    $remoteEnvLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteEnv -Purpose 'remote runtime env path'
+    $expectedEndpointLine = "EDHR_S3_ENDPOINT=$EdhrS3Endpoint"
+    $expectedEndpointLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $expectedEndpointLine -Purpose 'remote runtime EDHR endpoint'
+    $command = @"
+set -eu
+test -f $remoteEnvLiteral
+grep -Fx $expectedEndpointLiteral $remoteEnvLiteral
+"@
+    Invoke-SshCommand $command
+    Info "Remote runtime .env EDHR_S3_ENDPOINT verified: $EdhrS3Endpoint"
+}
+
 function Prepare-RemoteReleaseTree {
     $directories = @(
         $RemoteAppDir,
@@ -4378,10 +4453,15 @@ function Invoke-ReleaseMigrationStateUpdate {
     $migrationId = [string]$Item.migrationId
     $fileName = Get-RequiredDatabaseSqlFileName -RelativePath ([string]$Item.file)
     $sha256 = [string]$Item.sha256
-    $escapedErrorMessage = $ErrorMessage.Replace("'", "''")
+    $encodedErrorMessage = ConvertTo-ReleaseErrorBase64 -Value $ErrorMessage
+    $errorSqlExpression = if ([string]::IsNullOrWhiteSpace($encodedErrorMessage)) {
+        'NULL'
+    } else {
+        "CONVERT(FROM_BASE64('$encodedErrorMessage') USING utf8mb4)"
+    }
     $stateSql = @"
 INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
-VALUES ('$ReleaseTag', '$migrationId', '$fileName', '$sha256', '$Environment', '$Status', NOW(), CASE WHEN '$Status' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('$escapedErrorMessage', ''), '$ReleaseTag', 'release-system', NOW(), 'release-system', NOW(), b'0')
+VALUES ('$ReleaseTag', '$migrationId', '$fileName', '$sha256', '$Environment', '$Status', NOW(), CASE WHEN '$Status' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, $errorSqlExpression, '$ReleaseTag', 'release-system', NOW(), 'release-system', NOW(), b'0')
 ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
 "@
     Invoke-SshCommand "cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 ruoyi-vue-pro
@@ -4456,12 +4536,17 @@ function Invoke-ReleaseOperationLockRelease {
         [string]$ErrorMessage = ''
     )
     $operationId = "$Environment-$ReleaseTag"
-    $escapedErrorMessage = $ErrorMessage.Replace("'", "''")
+    $encodedErrorMessage = ConvertTo-ReleaseErrorBase64 -Value $ErrorMessage
+    $errorSqlExpression = if ([string]::IsNullOrWhiteSpace($encodedErrorMessage)) {
+        'NULL'
+    } else {
+        "CONVERT(FROM_BASE64('$encodedErrorMessage') USING utf8mb4)"
+    }
     $lockSql = @"
 UPDATE infra_release_operation_lock
 SET status = '$Status',
     finished_at = NOW(),
-    error_message = NULLIF('$escapedErrorMessage', ''),
+    error_message = $errorSqlExpression,
     updater = 'release-system',
     update_time = NOW()
 WHERE target_environment = '$Environment'
@@ -4673,11 +4758,11 @@ function Invoke-RouteSnapshotIdentityMigrationCommand {
     $remoteReportFileLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteReportFile -Purpose 'route snapshot migration report file'
     $remoteAppDirLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $RemoteAppDir -Purpose 'remote app directory'
     $reportVolumeLiteral = ConvertTo-ShellSingleQuotedLiteral -Value "${remoteReportDir}:/runtime-reports" -Purpose 'route snapshot migration report volume'
-    $argsValue = "--server.port=0 --yudao.mes.route-snapshot-migration.mode=$MigrationMode --yudao.mes.route-snapshot-migration.report-file=/runtime-reports/$ReportFileName"
-    $argsLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $argsValue -Purpose 'route snapshot migration ARGS'
+    $extraArgsValue = "--server.port=0 --yudao.mes.route-snapshot-migration.mode=$MigrationMode --yudao.mes.route-snapshot-migration.report-file=/runtime-reports/$ReportFileName"
+    $extraArgsLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $extraArgsValue -Purpose 'route snapshot migration extra args'
 
     Info "Running MES route snapshot identity $MigrationMode before NOT NULL enforcement"
-    Invoke-SshCommand "mkdir -p $remoteReportDirLiteral && rm -f $remoteReportFileLiteral && cd $remoteAppDirLiteral && docker compose run --rm --no-deps -v $reportVolumeLiteral -e ARGS=$argsLiteral backend"
+    Invoke-SshCommand "mkdir -p $remoteReportDirLiteral && rm -f $remoteReportFileLiteral && cd $remoteAppDirLiteral && docker compose run --rm --no-deps -v $reportVolumeLiteral -e INTRUOYI_EXTRA_ARGS=$extraArgsLiteral backend"
     Invoke-SshCommand "test -f $remoteReportFileLiteral && grep -q '\"status\" : \"READY\"' $remoteReportFileLiteral && grep -q '\"blockerCount\" : 0' $remoteReportFileLiteral"
 }
 
@@ -5321,6 +5406,9 @@ if ($publishBackend -or $publishFrontend) {
     Copy-ToServer -LocalPath $composeLocal -RemotePath $remoteCompose
     Copy-ToServer -LocalPath $remoteEnvLocal -RemotePath $remoteEnv
     Assert-RemoteRuntimeEnvImageTag
+    if ($publishBackend) {
+        Assert-RemoteRuntimeEnvEdhrEndpoint
+    }
 }
 if ($publishBackend) { Copy-SchedulerSmokeRunnerToServer }
 if ($publishBackend -or $publishFrontend) {
@@ -5498,6 +5586,8 @@ try {
         try {
             Invoke-ReleaseOperationLockRelease -Status 'FAILED' -ErrorMessage $releaseErrorMessage
         } catch {
+            $cleanupMessage = ConvertTo-ReleaseErrorMessage -Value $_.Exception.Message
+            Write-Host "[FAIL] Release operation lock cleanup failed: $cleanupMessage" -ForegroundColor Red
         }
     }
     throw

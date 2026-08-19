@@ -285,10 +285,36 @@ def test_publish_script_runs_route_snapshot_identity_backfill_before_enforcement
     assert "yudao.mes.route-snapshot-migration.mode=$MigrationMode" in script
     assert "Invoke-RouteSnapshotIdentityMigrationCommand -MigrationMode 'BACKFILL'" in script
     assert "Invoke-RouteSnapshotIdentityMigrationCommand -MigrationMode 'READINESS'" in script
+    assert "-e INTRUOYI_EXTRA_ARGS=" in script
+    assert "-e ARGS=" not in script
 
     hook_index = script.index("Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement -Item $item")
     sql_apply_index = script.index("Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'RUNNING'", hook_index)
     assert hook_index < sql_apply_index
+
+
+def test_backend_image_appends_one_shot_extra_args_without_overriding_compose_args() -> None:
+    dockerfile = read_backend_dockerfile()
+
+    assert 'ENV INTRUOYI_EXTRA_ARGS=""' in dockerfile
+    assert '${ARGS} ${INTRUOYI_EXTRA_ARGS}' in dockerfile
+
+
+def test_release_runtime_env_package_contains_target_bound_edhr_endpoint() -> None:
+    script = read_publish_script()
+
+    assert 'EDHR_S3_ENDPOINT=$resolvedEdhrS3Endpoint' in script
+
+
+def test_release_error_state_updates_are_bounded_and_secret_redacted() -> None:
+    script = read_publish_script()
+
+    assert 'function ConvertTo-ReleaseErrorMessage' in script
+    assert '$script:ReleaseErrorMessageMaxLength' in script
+    assert 'ConvertTo-ReleaseErrorBase64 -Value $ErrorMessage' in script
+    assert 'FROM_BASE64' in script
+    assert 'function Protect-ReleaseSensitiveText' in script
+    assert 'Protect-ReleaseSensitiveText $text' in script
 
 
 def test_publish_script_allows_empty_required_sql_apply_items() -> None:

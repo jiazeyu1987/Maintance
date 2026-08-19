@@ -9,7 +9,8 @@ COPY ruoyi-vue-pro/yudao-server/target/yudao-server-exec.jar app.jar
 ENV TZ=Asia/Shanghai
 ENV JAVA_OPTS="-Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom"
 ENV ARGS=""
+ENV INTRUOYI_EXTRA_ARGS=""
 
 EXPOSE 48081
 
-CMD ["sh", "-c", "exec java ${JAVA_OPTS} -jar app.jar ${ARGS}"]
+CMD ["sh", "-c", "exec java ${JAVA_OPTS} -jar app.jar ${ARGS} ${INTRUOYI_EXTRA_ARGS}"]
