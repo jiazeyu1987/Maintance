@@ -819,20 +819,25 @@ function Assert-FrontendBuildStaticAssetContract {
 function New-ReleaseChangeSetManifest {
     param(
         [Parameter(Mandatory = $true)]
-        [string]$PackageTag
+        [string]$PackageTag,
+        [Parameter(Mandatory = $true)]
+        [array]$SourceRepos
     )
 
     $releasePackageLabel = ConvertTo-ReleaseUnicodeText -CodePoints @(21457, 24067, 21253)
     $componentScopeLabel = ConvertTo-ReleaseUnicodeText -CodePoints @(32452, 20214, 33539, 22260)
     $fullWidthColon = ConvertTo-ReleaseUnicodeText -CodePoints @(65306)
+    $commitChanges = New-ReleaseSourceCommitChangeEntries -SourceRepos $SourceRepos
+    $items = @(
+        ('{0}{1}{2}' -f $releasePackageLabel, $fullWidthColon, $PackageTag)
+        ('{0}{1}{2}' -f $componentScopeLabel, $fullWidthColon, $Component)
+    )
+    $items += @($commitChanges.items)
 
     return [ordered]@{
-        summary = "Release package $PackageTag"
+        summary = (@($commitChanges.subjects) -join ' | ')
         component = $Component
-        items = @(
-            ('{0}{1}{2}' -f $releasePackageLabel, $fullWidthColon, $PackageTag)
-            ('{0}{1}{2}' -f $componentScopeLabel, $fullWidthColon, $Component)
-        )
+        items = @($items)
         includeShowroomBuildPackage = [bool]$publishWebsite
         includeOnlyOffice = [bool]$IncludeOnlyOffice
     }
@@ -858,7 +863,7 @@ function Write-FrontendReleaseInfo {
         packageId = $packageDirectoryName
         createdAt = (Get-Date).ToUniversalTime().ToString('o')
         publishScope = if ($SkipDatabaseSync -and $SkipMinioSync) { 'code-only' } else { 'with-data' }
-        changeSet = New-ReleaseChangeSetManifest -PackageTag $PackageTag
+        changeSet = New-ReleaseChangeSetManifest -PackageTag $PackageTag -SourceRepos $SourceRepos
         sourceRepos = $SourceRepos
     }
     $json = $releaseInfo | ConvertTo-Json -Depth 12
@@ -3223,6 +3228,70 @@ function Get-ReleaseGitValue {
     return ([string]$value).Trim()
 }
 
+function Get-ReleaseSourceRepoPath {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$PathRole
+    )
+
+    switch ($PathRole) {
+        'backend' { return $backendRepo }
+        'admin-frontend' { return $frontendDir }
+        'website' { return $websiteRepo }
+        default { Fail "Unknown source repo path role for release change notes: $PathRole" }
+    }
+}
+
+function New-ReleaseSourceCommitChangeEntries {
+    param(
+        [Parameter(Mandatory = $true)]
+        [array]$SourceRepos
+    )
+
+    if ($SourceRepos.Count -eq 0) {
+        Fail 'Missing source repositories for release change notes.'
+    }
+
+    $commitLabel = ConvertTo-ReleaseUnicodeText -CodePoints @(25552, 20132)
+    $fullWidthColon = ConvertTo-ReleaseUnicodeText -CodePoints @(65306)
+    $seenCommits = @{}
+    $items = @()
+    $subjects = @()
+
+    foreach ($sourceRepo in $SourceRepos) {
+        $commit = ([string]$sourceRepo.commit).Trim()
+        if ($commit -notmatch '^[a-fA-F0-9]{40}$') {
+            Fail "Missing source commit for release change notes: $($sourceRepo.name)"
+        }
+        if ($seenCommits.ContainsKey($commit)) {
+            continue
+        }
+
+        $repoPath = Get-ReleaseSourceRepoPath -PathRole ([string]$sourceRepo.pathRole)
+        $subject = Get-ReleaseGitValue `
+            -RepoPath $repoPath `
+            -Arguments @('show', '-s', '--format=%s', '--no-show-signature', $commit) `
+            -Purpose "$($sourceRepo.name) commit subject"
+        if ([string]::IsNullOrWhiteSpace($subject)) {
+            Fail "Missing commit subject for release change notes: $($sourceRepo.name)@$commit"
+        }
+
+        $shortCommit = $commit.Substring(0, 12)
+        $items += ('{0}{1}{2} {3}' -f $commitLabel, $fullWidthColon, $shortCommit, $subject)
+        $subjects += $subject
+        $seenCommits[$commit] = $true
+    }
+
+    if ($items.Count -eq 0) {
+        Fail 'Missing commit change entries for release change notes.'
+    }
+
+    return [ordered]@{
+        items = @($items)
+        subjects = @($subjects)
+    }
+}
+
 function New-ReleaseSourceRepoEntry {
     param(
         [Parameter(Mandatory = $true)]
@@ -3704,7 +3773,7 @@ function Write-ReleaseManifestV1 {
         createdAt = (Get-Date).ToUniversalTime().ToString('o')
         createdBy = $effectiveOperatorName
         sourceRepos = $sourceRepos
-        changeSet = New-ReleaseChangeSetManifest -PackageTag $PackageTag
+        changeSet = New-ReleaseChangeSetManifest -PackageTag $PackageTag -SourceRepos $sourceRepos
         publishScope = $publishScopeValue
         components = $components
         artifacts = $artifacts
