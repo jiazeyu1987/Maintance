@@ -1285,12 +1285,42 @@ function Get-TargetSpecificEdhrEnvName {
     return "EDHR_S3_${target}_${suffix}"
 }
 
+function Resolve-TargetEdhrS3Endpoint {
+    param(
+        [AllowNull()]
+        [string]$Endpoint,
+        [Parameter(Mandatory = $true)]
+        [string]$TargetServerHost,
+        [bool]$TargetSpecific = $false
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Endpoint)) {
+        return ''
+    }
+    $trimmedEndpoint = $Endpoint.Trim()
+    if ($TargetSpecific -or [string]::IsNullOrWhiteSpace($TargetServerHost)) {
+        return $trimmedEndpoint
+    }
+
+    $uri = $null
+    if ([System.Uri]::TryCreate($trimmedEndpoint, [System.UriKind]::Absolute, [ref]$uri)) {
+        $builder = [System.UriBuilder]::new($uri)
+        if ($builder.Host -match '^(\d{1,3}\.){3}\d{1,3}$') {
+            $builder.Host = $TargetServerHost
+            return $builder.Uri.AbsoluteUri.TrimEnd('/')
+        }
+    }
+    return $trimmedEndpoint
+}
+
 function Resolve-TargetPublishRuntimeValue {
     param(
         [Parameter(Mandatory = $true)]
         [string]$Name,
         [Parameter(Mandatory = $true)]
         [string]$TargetEnvironment,
+        [AllowNull()]
+        [string]$TargetServerHost = '',
         [AllowNull()]
         [string]$CurrentValue,
         [AllowNull()]
@@ -1305,23 +1335,26 @@ function Resolve-TargetPublishRuntimeValue {
         Get-PublishRuntimeEnvironmentValue -Name $targetSpecificName
     }
     $genericEnvironmentValue = Get-PublishRuntimeEnvironmentValue -Name $Name
-    if (-not [string]::IsNullOrWhiteSpace($targetSpecificValue)) {
-        return $targetSpecificValue.Trim()
-    }
-    if ($Name.StartsWith('EDHR_S3_') -and $normalizedTarget -in @('prod', 'backup')) {
-        return ''
-    }
-    if (-not [string]::IsNullOrWhiteSpace($CurrentValue)) {
-        return $CurrentValue.Trim()
-    }
-    if (-not [string]::IsNullOrWhiteSpace($targetSpecificValue)) {
-        return $targetSpecificValue
-    }
-    if (-not [string]::IsNullOrWhiteSpace($genericEnvironmentValue)) {
-        return $genericEnvironmentValue
-    }
-    if (-not [string]::IsNullOrWhiteSpace($HardcodedValue)) {
-        return $HardcodedValue.Trim()
+    $candidates = @(
+        @{ Value = $targetSpecificValue; TargetSpecific = $true },
+        @{ Value = $CurrentValue; TargetSpecific = $false },
+        @{ Value = $genericEnvironmentValue; TargetSpecific = $false },
+        @{ Value = $HardcodedValue; TargetSpecific = $false }
+    )
+
+    foreach ($candidate in $candidates) {
+        $candidateValue = [string]$candidate.Value
+        if ([string]::IsNullOrWhiteSpace($candidateValue)) {
+            continue
+        }
+        $trimmedValue = $candidateValue.Trim()
+        if ($Name -eq 'EDHR_S3_ENDPOINT') {
+            return Resolve-TargetEdhrS3Endpoint `
+                -Endpoint $trimmedValue `
+                -TargetServerHost $TargetServerHost `
+                -TargetSpecific ([bool]$candidate.TargetSpecific)
+        }
+        return $trimmedValue
     }
     return ''
 }
@@ -1397,7 +1430,7 @@ function Set-PublishRuntimeDefaultsForTarget {
         -CurrentValue $script:DccDownloadEncryptionArtifactDirectory `
         -HardcodedValue $DCC_HARDCODED_DOWNLOAD_ENCRYPTION_ARTIFACT_DIRECTORY
 
-    $script:EdhrS3Endpoint = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_ENDPOINT' -TargetEnvironment $TargetEnvironment -CurrentValue $script:EdhrS3Endpoint
+    $script:EdhrS3Endpoint = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_ENDPOINT' -TargetEnvironment $TargetEnvironment -TargetServerHost $TargetServerHost -CurrentValue $script:EdhrS3Endpoint
     $script:EdhrS3Bucket = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_BUCKET' -TargetEnvironment $TargetEnvironment -CurrentValue $script:EdhrS3Bucket
     $script:EdhrS3Region = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_REGION' -TargetEnvironment $TargetEnvironment -CurrentValue $script:EdhrS3Region
     $script:EdhrS3AccessKey = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_ACCESS_KEY' -TargetEnvironment $TargetEnvironment -CurrentValue $script:EdhrS3AccessKey
@@ -1468,7 +1501,7 @@ function New-ReleaseRuntimeEnvContent {
     $resolvedDccDownloadEncryptionKeyId = Resolve-PublishRuntimeValue -Name 'DCC_DOWNLOAD_ENCRYPTION_KEY_ID' -CurrentValue $DccDownloadEncryptionKeyId -HardcodedValue $DCC_HARDCODED_DOWNLOAD_ENCRYPTION_KEY_ID
     $resolvedDccDownloadEncryptionBase64Key = Resolve-PublishRuntimeValue -Name 'DCC_DOWNLOAD_ENCRYPTION_BASE64_KEY' -CurrentValue $DccDownloadEncryptionBase64Key -HardcodedValue $DCC_HARDCODED_DOWNLOAD_ENCRYPTION_BASE64_KEY
     $resolvedDccDownloadEncryptionArtifactDirectory = Resolve-PublishRuntimeValue -Name 'DCC_DOWNLOAD_ENCRYPTION_ARTIFACT_DIRECTORY' -CurrentValue $DccDownloadEncryptionArtifactDirectory -HardcodedValue $DCC_HARDCODED_DOWNLOAD_ENCRYPTION_ARTIFACT_DIRECTORY
-    $resolvedEdhrS3Endpoint = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_ENDPOINT' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3Endpoint
+    $resolvedEdhrS3Endpoint = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_ENDPOINT' -TargetEnvironment $TargetEnvironment -TargetServerHost $TargetServerHost -CurrentValue $EdhrS3Endpoint
     $resolvedEdhrS3Bucket = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_BUCKET' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3Bucket
     $resolvedEdhrS3Region = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_REGION' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3Region
     $resolvedEdhrS3AccessKey = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_ACCESS_KEY' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3AccessKey

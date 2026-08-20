@@ -315,6 +315,27 @@ def test_release_runtime_env_fails_when_test_endpoint_points_outside_test_host()
     assert "Assert-ReleaseRuntimeEnvTargetBoundary `\n        -TargetEnvironment $TargetEnvironment" in script
 
 
+def test_release_runtime_env_rebinds_generic_edhr_endpoint_to_target_host() -> None:
+    script = read_publish_script()
+
+    resolver_start = script.index("function Resolve-TargetPublishRuntimeValue")
+    boundary_start = script.index("function Assert-ReleaseRuntimeEnvTargetBoundary")
+    resolver_block = script[resolver_start:boundary_start]
+    defaults_start = script.index("function Set-PublishRuntimeDefaultsForTarget")
+    read_env_start = script.index("function Read-ReleaseRuntimeEnvFile")
+    defaults_block = script[defaults_start:read_env_start]
+    content_start = script.index("function New-ReleaseRuntimeEnvContent")
+    writer_start = script.index("function Write-ReleaseRuntimeEnvPackage")
+    content_block = script[content_start:writer_start]
+
+    assert "function Resolve-TargetEdhrS3Endpoint" in script
+    assert "[string]$TargetServerHost" in resolver_block
+    assert "$builder.Host = $TargetServerHost" in script
+    assert "Resolve-TargetEdhrS3Endpoint" in resolver_block
+    assert "-TargetServerHost $TargetServerHost" in defaults_block
+    assert "-TargetServerHost $TargetServerHost" in content_block
+
+
 def test_release_error_state_updates_are_bounded_and_secret_redacted() -> None:
     script = read_publish_script()
 
