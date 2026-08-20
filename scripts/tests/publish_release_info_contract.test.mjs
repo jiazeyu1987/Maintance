@@ -25,6 +25,11 @@ test('release-info contains the same manifest-level release metadata', () => {
 test('release change-set is derived from the exact frozen source commits', () => {
   assert.match(script, /function Get-ReleaseSourceRepoPath/)
   assert.match(script, /function New-ReleaseSourceCommitChangeEntries/)
+  assert.match(script, /function Get-ReleaseGitValue/)
+  assert.match(script, /Invoke-ProcessCapture -FilePath 'git'/)
+  assert.match(script, /i18n\.logOutputEncoding=UTF-8/)
+  assert.match(script, /Manifest v1 requires git metadata for \$\{Purpose\}/)
+  assert.doesNotMatch(script, /& git -C \$RepoPath @Arguments/)
   assert.match(script, /\[array\]\$SourceRepos/)
   assert.match(script, /'show', '-s', '--format=%s', '--no-show-signature', \$commit/)
   assert.match(script, /Missing source commit for release change notes/)

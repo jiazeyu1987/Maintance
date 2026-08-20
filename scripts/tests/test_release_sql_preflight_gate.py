@@ -306,6 +306,15 @@ def test_release_runtime_env_package_contains_target_bound_edhr_endpoint() -> No
     assert 'EDHR_S3_ENDPOINT=$resolvedEdhrS3Endpoint' in script
 
 
+def test_release_runtime_env_fails_when_test_endpoint_points_outside_test_host() -> None:
+    script = read_publish_script()
+
+    assert "function Assert-ReleaseRuntimeEnvTargetBoundary" in script
+    assert "EDHR_S3_ENDPOINT for test runtime env must point to 172.30.30.58" in script
+    assert "172\\.30\\.30\\.57|172\\.30\\.30\\.59" in script
+    assert "Assert-ReleaseRuntimeEnvTargetBoundary `\n        -TargetEnvironment $TargetEnvironment" in script
+
+
 def test_release_error_state_updates_are_bounded_and_secret_redacted() -> None:
     script = read_publish_script()
 

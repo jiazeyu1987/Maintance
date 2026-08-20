@@ -447,8 +447,9 @@ function Invoke-ProcessCapture {
             -NoNewWindow `
             -Wait `
             -PassThru
-        $stdout = if (Test-Path $stdoutPath) { Get-Content -LiteralPath $stdoutPath -Raw -ErrorAction SilentlyContinue } else { '' }
-        $stderr = if (Test-Path $stderrPath) { Get-Content -LiteralPath $stderrPath -Raw -ErrorAction SilentlyContinue } else { '' }
+        $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+        $stdout = if (Test-Path $stdoutPath) { [System.IO.File]::ReadAllText($stdoutPath, $utf8NoBom) } else { '' }
+        $stderr = if (Test-Path $stderrPath) { [System.IO.File]::ReadAllText($stderrPath, $utf8NoBom) } else { '' }
         return @{
             ExitCode = $process.ExitCode
             StdOut = $stdout
@@ -1296,6 +1297,7 @@ function Resolve-TargetPublishRuntimeValue {
         [string]$HardcodedValue = ''
     )
 
+    $normalizedTarget = $TargetEnvironment.Trim().ToLowerInvariant()
     $targetSpecificName = Get-TargetSpecificEdhrEnvName -TargetEnvironment $TargetEnvironment -Name $Name
     $targetSpecificValue = if ([string]::IsNullOrWhiteSpace($targetSpecificName)) {
         ''
@@ -1304,13 +1306,10 @@ function Resolve-TargetPublishRuntimeValue {
     }
     $genericEnvironmentValue = Get-PublishRuntimeEnvironmentValue -Name $Name
     if (-not [string]::IsNullOrWhiteSpace($targetSpecificValue)) {
-        if ([string]::IsNullOrWhiteSpace($CurrentValue)) {
-            return $targetSpecificValue
-        }
-        if (-not [string]::IsNullOrWhiteSpace($genericEnvironmentValue) -and
-            $CurrentValue.Trim() -eq $genericEnvironmentValue) {
-            return $targetSpecificValue
-        }
+        return $targetSpecificValue.Trim()
+    }
+    if ($Name.StartsWith('EDHR_S3_') -and $normalizedTarget -in @('prod', 'backup')) {
+        return ''
     }
     if (-not [string]::IsNullOrWhiteSpace($CurrentValue)) {
         return $CurrentValue.Trim()
@@ -1325,6 +1324,28 @@ function Resolve-TargetPublishRuntimeValue {
         return $HardcodedValue.Trim()
     }
     return ''
+}
+
+function Assert-ReleaseRuntimeEnvTargetBoundary {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$TargetEnvironment,
+        [Parameter(Mandatory = $true)]
+        [string]$TargetServerHost,
+        [AllowNull()]
+        [string]$EdhrS3Endpoint
+    )
+
+    if ([string]::IsNullOrWhiteSpace($EdhrS3Endpoint)) {
+        return
+    }
+    $normalizedTarget = $TargetEnvironment.Trim().ToLowerInvariant()
+    if ($normalizedTarget -eq 'test' -and $EdhrS3Endpoint -match '172\.30\.30\.57|172\.30\.30\.59') {
+        Fail 'EDHR_S3_ENDPOINT for test runtime env must point to 172.30.30.58; actual endpoint points outside test host.'
+    }
+    if ($normalizedTarget -eq 'test' -and $TargetServerHost -eq '172.30.30.58' -and $EdhrS3Endpoint -match '172\.30\.30\.\d+' -and $EdhrS3Endpoint -notmatch [regex]::Escape($TargetServerHost)) {
+        Fail 'EDHR_S3_ENDPOINT for test runtime env must point to 172.30.30.58; actual endpoint points outside test host.'
+    }
 }
 
 function Set-PublishRuntimeDefaultsForTarget {
@@ -1455,6 +1476,10 @@ function New-ReleaseRuntimeEnvContent {
     $resolvedEdhrS3RetentionMode = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_RETENTION_MODE' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3RetentionMode
     $resolvedEdhrS3RetainUntilDays = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_RETAIN_UNTIL_DAYS' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3RetainUntilDays
     $resolvedEdhrS3RequireLegalHold = Resolve-TargetPublishRuntimeValue -Name 'EDHR_S3_REQUIRE_LEGAL_HOLD' -TargetEnvironment $TargetEnvironment -CurrentValue $EdhrS3RequireLegalHold
+    Assert-ReleaseRuntimeEnvTargetBoundary `
+        -TargetEnvironment $TargetEnvironment `
+        -TargetServerHost $TargetServerHost `
+        -EdhrS3Endpoint $resolvedEdhrS3Endpoint
 
     return @"
 DCC_SIGNATURE_EVIDENCE_HMAC_SECRET=$resolvedDccSignatureEvidenceHmacSecret
@@ -3221,11 +3246,12 @@ function Get-ReleaseGitValue {
         [Parameter(Mandatory = $true)]
         [string]$Purpose
     )
-    $value = & git -C $RepoPath @Arguments 2>$null
-    if ($LASTEXITCODE -ne 0) {
+    $gitArguments = @('-c', 'i18n.logOutputEncoding=UTF-8', '-C', $RepoPath) + @($Arguments)
+    $result = Invoke-ProcessCapture -FilePath 'git' -ArgumentList $gitArguments -WorkingDirectory $RepoPath
+    if ($result.ExitCode -ne 0) {
         Fail "Manifest v1 requires git metadata for ${Purpose}: $RepoPath"
     }
-    return ([string]$value).Trim()
+    return ([string]$result.StdOut).Trim()
 }
 
 function Get-ReleaseSourceRepoPath {
