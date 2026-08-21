@@ -1536,22 +1536,7 @@ EDHR_S3_REQUIRE_LEGAL_HOLD=$resolvedEdhrS3RequireLegalHold
 }
 
 function Write-ReleaseRuntimeEnvPackage {
-    $runtimeEnvDir = Join-Path $releaseDir 'runtime-env'
-    New-Item -ItemType Directory -Force -Path $runtimeEnvDir | Out-Null
-    $runtimeEnvTargets = @(
-        @{ FileName = 'test.env'; Host = $TestServerHost; ArgumentName = '-TestServerHost' },
-        @{ FileName = 'backup.env'; Host = $BackupServerHost; ArgumentName = '-BackupServerHost' }
-    )
-    if (-not [string]::IsNullOrWhiteSpace($ProdServerHost)) {
-        $runtimeEnvTargets += @{ FileName = 'prod.env'; Host = $ProdServerHost; ArgumentName = '-ProdServerHost' }
-    }
-    foreach ($target in $runtimeEnvTargets) {
-        $targetRuntimeEnvFileName = $target.FileName
-        $targetEnvironment = [System.IO.Path]::GetFileNameWithoutExtension($targetRuntimeEnvFileName)
-        $targetServerHost = Require-ConfiguredTargetServerHost -TargetEnvironment $targetEnvironment -Value $target.Host -ArgumentName $target.ArgumentName
-        $content = New-ReleaseRuntimeEnvContent -TargetEnvironment $targetEnvironment -TargetServerHost $targetServerHost
-        Write-Utf8LfNoBomFile -Path (Join-Path $runtimeEnvDir $targetRuntimeEnvFileName) -Content $content
-    }
+    Info 'Skipping runtime-env secret package files; target runtime secrets are resolved from target .env or operator environment during deploy.'
 }
 
 function Apply-ReleaseRuntimeEnvPackage {
@@ -4957,6 +4942,35 @@ if ($Mode -eq 'mark-tested') {
     exit 0
 }
 
+$existingRemoteEnv = @{}
+function Import-ExistingRemoteRuntimeEnvSettings {
+    if ($Mode -eq 'build-release') {
+        return
+    }
+    if (-not ($publishBackend -or $publishFrontend)) {
+        return
+    }
+    if ($existingRemoteEnv.Count -gt 0) {
+        return
+    }
+
+    Set-Variable -Name existingRemoteEnv -Scope Script -Value (Get-RemoteRuntimeEnvMap)
+    Set-PublishRuntimeValuesFromSettings -Settings $existingRemoteEnv
+}
+
+function Resolve-ExistingRuntimeEnvValue {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Name,
+        [string]$DefaultValue = ''
+    )
+
+    if ($existingRemoteEnv.ContainsKey($Name) -and -not [string]::IsNullOrWhiteSpace($existingRemoteEnv[$Name])) {
+        return $existingRemoteEnv[$Name]
+    }
+    return $DefaultValue
+}
+
 if ($Mode -eq 'deploy-release') {
     Info "Deploying release package: $ReleaseTag"
     Copy-ReleasePackageFromNas -PackageTag $ReleaseTag
@@ -4974,6 +4988,8 @@ if ($Mode -eq 'deploy-release') {
         Assert-RequiredDatabaseSqlScriptsInRelease
     }
     Apply-ReleaseRuntimeEnvPackage -TargetEnvironment $Environment
+    Require-Command 'ssh'
+    Import-ExistingRemoteRuntimeEnvSettings
     if ($releasePublishScope -eq 'code-only') {
         $SkipDatabaseSync = $true
         $SkipMinioSync = $true
@@ -5338,21 +5354,8 @@ Info 'Preparing remote release directories'
 Prepare-RemoteReleaseTree
 
 Info 'Writing remote compose environment file locally'
-$existingRemoteEnv = @{}
-if (($publishBackend -or $publishFrontend) -and $Mode -ne 'build-release') {
-    $existingRemoteEnv = Get-RemoteRuntimeEnvMap
-}
-function Resolve-ExistingRuntimeEnvValue {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Name,
-        [string]$DefaultValue = ''
-    )
-
-    if ($existingRemoteEnv.ContainsKey($Name) -and -not [string]::IsNullOrWhiteSpace($existingRemoteEnv[$Name])) {
-        return $existingRemoteEnv[$Name]
-    }
-    return $DefaultValue
+if (($publishBackend -or $publishFrontend) -and $Mode -ne 'build-release' -and $existingRemoteEnv.Count -eq 0) {
+    Import-ExistingRemoteRuntimeEnvSettings
 }
 
 $effectiveMySqlRootPassword = if ($publishBackend -and -not [string]::IsNullOrWhiteSpace($mySqlRootPassword)) { $mySqlRootPassword } elseif ($existingRemoteEnv.ContainsKey('MYSQL_ROOT_PASSWORD')) { $existingRemoteEnv['MYSQL_ROOT_PASSWORD'] } else { '' }

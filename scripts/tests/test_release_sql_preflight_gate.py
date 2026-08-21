@@ -300,10 +300,18 @@ def test_backend_image_appends_one_shot_extra_args_without_overriding_compose_ar
     assert '${ARGS} ${INTRUOYI_EXTRA_ARGS}' in dockerfile
 
 
-def test_release_runtime_env_package_contains_target_bound_edhr_endpoint() -> None:
+def test_release_runtime_env_package_omits_secret_env_files() -> None:
     script = read_publish_script()
 
-    assert 'EDHR_S3_ENDPOINT=$resolvedEdhrS3Endpoint' in script
+    writer_start = script.index("function Write-ReleaseRuntimeEnvPackage")
+    apply_start = script.index("function Apply-ReleaseRuntimeEnvPackage")
+    writer_block = script[writer_start:apply_start]
+
+    assert "Skipping runtime-env secret package files" in writer_block
+    assert "Write-Utf8LfNoBomFile" not in writer_block
+    assert "EDHR_S3_ENDPOINT=" not in writer_block
+    assert "EDHR_S3_ACCESS_KEY=" not in writer_block
+    assert "EDHR_S3_SECRET_KEY=" not in writer_block
 
 
 def test_release_runtime_env_fails_when_test_endpoint_points_outside_test_host() -> None:
@@ -334,6 +342,21 @@ def test_release_runtime_env_rebinds_generic_edhr_endpoint_to_target_host() -> N
     assert "Resolve-TargetEdhrS3Endpoint" in resolver_block
     assert "-TargetServerHost $TargetServerHost" in defaults_block
     assert "-TargetServerHost $TargetServerHost" in content_block
+
+
+def test_deploy_release_imports_remote_runtime_env_before_secret_gates() -> None:
+    script = read_publish_script()
+
+    import_start = script.index("function Import-ExistingRemoteRuntimeEnvSettings")
+    deploy_start = script.index("if ($Mode -eq 'deploy-release')")
+    defaults_index = script.index("Set-PublishRuntimeDefaultsForTarget", deploy_start)
+    secret_gate_index = script.index("$edhrProtectedStorageSettings = Get-EdhrProtectedStorageSettings", deploy_start)
+    import_call_index = script.index("Import-ExistingRemoteRuntimeEnvSettings", deploy_start)
+
+    import_block = script[import_start:deploy_start]
+    assert "Get-RemoteRuntimeEnvMap" in import_block
+    assert "Set-PublishRuntimeValuesFromSettings -Settings $existingRemoteEnv" in import_block
+    assert deploy_start < import_call_index < defaults_index < secret_gate_index
 
 
 def test_release_error_state_updates_are_bounded_and_secret_redacted() -> None:
