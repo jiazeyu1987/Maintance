@@ -359,6 +359,27 @@ def test_deploy_release_imports_remote_runtime_env_before_secret_gates() -> None
     assert deploy_start < import_call_index < defaults_index < secret_gate_index
 
 
+def test_build_release_imports_remote_runtime_env_before_secret_gates() -> None:
+    script = read_publish_script()
+
+    import_start = script.index("function Import-ExistingRemoteRuntimeEnvSettings")
+    resolve_existing_start = script.index("function Resolve-ExistingRuntimeEnvValue")
+    import_block = script[import_start:resolve_existing_start]
+    deploy_start = script.index("if ($Mode -eq 'deploy-release')")
+    defaults_index = script.index("Set-PublishRuntimeDefaultsForTarget", deploy_start)
+    secret_gate_index = script.index("$edhrProtectedStorageSettings = Get-EdhrProtectedStorageSettings", deploy_start)
+    build_import_index = script.index("if ($Mode -eq 'build-release' -and $publishBackend)", deploy_start)
+
+    build_import_block = script[build_import_index:defaults_index]
+
+    assert "if ($Mode -eq 'build-release')" in import_block
+    assert "Get-RemoteRuntimeEnvMap" in import_block
+    assert "eDHR protected storage verifier must use target environment secrets" in import_block
+    assert "Set-PublishRuntimeValuesFromSettings -Settings $existingRemoteEnv" in import_block
+    assert "Require-Command 'ssh'" in build_import_block
+    assert "Import-ExistingRemoteRuntimeEnvSettings" in build_import_block
+    assert deploy_start < build_import_index < defaults_index < secret_gate_index
+
 def test_release_error_state_updates_are_bounded_and_secret_redacted() -> None:
     script = read_publish_script()
 

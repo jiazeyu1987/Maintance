@@ -4944,9 +4944,6 @@ if ($Mode -eq 'mark-tested') {
 
 $existingRemoteEnv = @{}
 function Import-ExistingRemoteRuntimeEnvSettings {
-    if ($Mode -eq 'build-release') {
-        return
-    }
     if (-not ($publishBackend -or $publishFrontend)) {
         return
     }
@@ -4955,6 +4952,22 @@ function Import-ExistingRemoteRuntimeEnvSettings {
     }
 
     Set-Variable -Name existingRemoteEnv -Scope Script -Value (Get-RemoteRuntimeEnvMap)
+    if ($Mode -eq 'build-release') {
+        foreach ($key in @(
+            'EDHR_S3_ENDPOINT',
+            'EDHR_S3_BUCKET',
+            'EDHR_S3_REGION',
+            'EDHR_S3_ACCESS_KEY',
+            'EDHR_S3_SECRET_KEY',
+            'EDHR_S3_RETENTION_MODE',
+            'EDHR_S3_RETAIN_UNTIL_DAYS',
+            'EDHR_S3_REQUIRE_LEGAL_HOLD'
+        )) {
+            if (-not $existingRemoteEnv.ContainsKey($key) -or [string]::IsNullOrWhiteSpace([string]$existingRemoteEnv[$key])) {
+                Fail "Missing $key in remote runtime .env for build-release; eDHR protected storage verifier must use target environment secrets."
+            }
+        }
+    }
     Set-PublishRuntimeValuesFromSettings -Settings $existingRemoteEnv
 }
 
@@ -4999,6 +5012,11 @@ if ($Mode -eq 'deploy-release') {
     if ($smartReleaseReportOnlyEnabled -and $Mode -eq 'deploy-release') {
         Invoke-SmartReleaseDeployPrecheckReportOnly -PackagePath $releaseDir
     }
+}
+
+if ($Mode -eq 'build-release' -and $publishBackend) {
+    Require-Command 'ssh'
+    Import-ExistingRemoteRuntimeEnvSettings
 }
 
 Set-PublishRuntimeDefaultsForTarget -TargetServerHost $ServerHost -TargetEnvironment $Environment
