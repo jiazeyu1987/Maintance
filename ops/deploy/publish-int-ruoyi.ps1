@@ -4182,7 +4182,10 @@ function Get-ReleaseDatabaseSqlScripts {
     return $entries
 }
 
-$requiredDatabaseSqlScripts = Get-ReleaseDatabaseSqlScripts
+$requiredDatabaseSqlScripts = @()
+if ($Mode -notin @('deploy-release', 'mark-tested')) {
+    $requiredDatabaseSqlScripts = Get-ReleaseDatabaseSqlScripts
+}
 if ($publishBackend -and $Mode -eq 'build-release') {
     Invoke-ReleaseMigrationPolicyGate
 }

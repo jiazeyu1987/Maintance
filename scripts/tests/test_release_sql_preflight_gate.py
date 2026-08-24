@@ -231,6 +231,19 @@ def test_publish_script_runs_sql_preflight_before_backend_build() -> None:
     assert required_sql_index < gate_index < backend_build_index
 
 
+def test_publish_script_does_not_scan_live_sql_for_package_only_modes() -> None:
+    script = read_publish_script()
+
+    assignment = "$requiredDatabaseSqlScripts = Get-ReleaseDatabaseSqlScripts"
+    assignment_index = script.index(assignment)
+    next_mark_tested = script.index("if ($Mode -eq 'mark-tested')", assignment_index)
+    guard_block = script[assignment_index - 180:assignment_index + len(assignment) + 80]
+
+    assert "if ($Mode -notin @('deploy-release', 'mark-tested'))" in guard_block
+    assert "$Mode -eq 'mark-tested'" not in guard_block.split(assignment, 1)[0]
+    assert next_mark_tested > assignment_index
+
+
 def test_publish_script_executes_dcc_view_matrix_prereq_before_seed_on_test() -> None:
     script = read_publish_script()
 
