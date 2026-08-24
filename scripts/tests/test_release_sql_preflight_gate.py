@@ -478,6 +478,14 @@ def test_release_sql_contract_gate_blocks_repeated_nested_temp_table_reference(t
     assert "tmp_role" in message
 
 
+def test_production_release_role_sql_passes_temp_table_reopen_contract() -> None:
+    backend_sql = Path(r"E:\IntRuoyi\IntRuoyiBackend\sql\mysql\20260814_mes_production_release_roles.sql")
+    assert backend_sql.is_file(), f"required backend migration is missing: {backend_sql}"
+
+    gate = importlib.import_module("ops.release.release_sql_contract_gate")
+    gate.assert_release_sql_contracts([backend_sql])
+
+
 def test_release_sql_contract_gate_requires_explicit_collation_for_text_temp_tables(tmp_path: Path) -> None:
     gate = importlib.import_module("ops.release.release_sql_contract_gate")
     sql_path = tmp_path / "20260824_temp_collation.sql"
