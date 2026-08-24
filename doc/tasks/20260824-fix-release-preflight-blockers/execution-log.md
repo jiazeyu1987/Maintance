@@ -33,6 +33,14 @@
 - SQL change introduces one independent in-memory temporary snapshot table per iteration. It does not alter persistent tables or tenant data. The existing end-of-procedure cleanup will be extended to drop the snapshot table.
 - No server, publish, backup, restore, or E2E action is authorized by this task.
 
+## Closeout
+
+- Cleanup preview: `task_closeout.py --task-id 20260824-fix-release-preflight-blockers --mode preview` -> PASS; kept task.md and execution-log.md; no deletions.
+- Cleanup apply: `task_closeout.py --task-id 20260824-fix-release-preflight-blockers --mode apply` -> PASS; no task artifacts deleted; main worktree, no merge or worktree removal required.
+- Implementation commit: backend `64fa527f2` contains only the runner, SQL migration, and Java regression test.
+- Evidence commit: maintenance `13c7da2` contains only the SQL gate regression test and this task's records.
+- Shared `docs/request-command-log.md` was updated with the request/command/evidence entry but left unstaged because it also contains unrelated concurrent changes.
+
 ## Current Status
 
-ready_for_closeout; original release preflight blockers fixed, full Maven regression blocked by unrelated concurrent compile error.
+completed; original release preflight blockers fixed. Full Maven regression remains blocked only by unrelated concurrent source compile error documented above.

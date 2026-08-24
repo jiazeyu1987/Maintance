@@ -10,7 +10,7 @@
 2. [completed] 修复 `MesProRouteVersionSnapshotMigrationRunner` 的 Spring 构造器注入契约并通过静态回归门禁。
 3. [completed] 修复生产放行角色 SQL 的临时表读写冲突并通过 SQL 合同门禁。
 4. [completed] 运行相关静态门禁、测试和差异审计，记录未解决阻塞。
-5. [in_progress] 完成本任务实现提交、收尾记录和状态更新。
+5. [completed] 完成本任务实现提交、收尾记录和状态更新。
 
 ## 预期验证
 
@@ -47,4 +47,4 @@
 
 ## Current Status
 
-ready_for_closeout
+completed
