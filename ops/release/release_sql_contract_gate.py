@@ -12,6 +12,19 @@ SYSTEM_MENU_INSERT_PATTERN = re.compile(
     r"insert\s+(?:ignore\s+)?into\s+`?system_menu`?\s*\((?P<columns>[^)]*)\)\s*values\s*(?P<values>.*?);",
     re.IGNORECASE | re.DOTALL,
 )
+TEMP_TABLE_REFERENCE_PATTERN = re.compile(
+    r"(?<![a-z0-9_])`?(tmp_[a-z0-9_]+)`?(?![a-z0-9_])(?!\s*\.)",
+    re.IGNORECASE,
+)
+TEMP_TABLE_CREATE_PATTERN = re.compile(
+    r"\bcreate\s+temporary\s+table\s+(?:if\s+not\s+exists\s+)?`?(tmp_[a-z0-9_]+)`?",
+    re.IGNORECASE,
+)
+TEMP_TABLE_TEXT_COLUMN_PATTERN = re.compile(
+    r"\b(?:char|varchar|tinytext|text|mediumtext|longtext|enum|set)\b",
+    re.IGNORECASE,
+)
+TEMP_TABLE_CONTRACT_START_DATE = "20260801"
 
 
 class ReleaseSqlContractError(RuntimeError):
@@ -31,6 +44,213 @@ def _mask_sql_comments(text: str) -> str:
 
     without_block_comments = BLOCK_COMMENT_PATTERN.sub(_mask, text)
     return LINE_COMMENT_PATTERN.sub(_mask, without_block_comments)
+
+
+def _mask_sql_string_literals(text: str) -> str:
+    masked = list(text)
+    quote: str | None = None
+    index = 0
+    while index < len(text):
+        char = text[index]
+        if quote is None:
+            if char in ("'", '"'):
+                quote = char
+                masked[index] = " "
+            index += 1
+            continue
+        if char == "\\" and index + 1 < len(text):
+            if text[index + 1] != "\n":
+                masked[index] = " "
+                masked[index + 1] = " "
+            index += 2
+            continue
+        if char == quote:
+            if index + 1 < len(text) and text[index + 1] == quote:
+                masked[index] = " "
+                masked[index + 1] = " "
+                index += 2
+                continue
+            masked[index] = " "
+            quote = None
+            index += 1
+            continue
+        if char != "\n":
+            masked[index] = " "
+        index += 1
+    return "".join(masked)
+
+
+def _iter_sql_statements(text: str) -> list[tuple[str, int]]:
+    masked = _mask_sql_string_literals(_mask_sql_comments(text))
+    statements: list[tuple[str, int]] = []
+    start = 0
+    for index, char in enumerate(masked):
+        if char != ";":
+            continue
+        statement = masked[start:index]
+        if statement.strip():
+            statements.append((statement, start))
+        start = index + 1
+    trailing = masked[start:]
+    if trailing.strip():
+        statements.append((trailing, start))
+    return statements
+
+
+def _extract_parenthesized_text(statement: str, start: int) -> str:
+    depth = 0
+    for index in range(start, len(statement)):
+        if statement[index] == "(":
+            depth += 1
+        elif statement[index] == ")":
+            depth -= 1
+            if depth == 0:
+                return statement[start + 1 : index]
+    return ""
+
+
+def _extract_temp_table_text_columns(statement: str, create_match: re.Match[str]) -> set[str]:
+    opening = statement.find("(", create_match.end())
+    if opening < 0:
+        return set()
+    columns_text = _extract_parenthesized_text(statement, opening)
+    if not columns_text:
+        return set()
+    text_columns: set[str] = set()
+    for definition in _split_top_level_csv(columns_text):
+        column_match = re.match(r"\s*`?([a-z0-9_]+)`?\s+", definition, re.IGNORECASE)
+        if not column_match or not TEMP_TABLE_TEXT_COLUMN_PATTERN.search(definition):
+            continue
+        text_columns.add(column_match.group(1).lower())
+    return text_columns
+
+
+SQL_KEYWORDS = {
+    "as",
+    "and",
+    "by",
+    "cross",
+    "from",
+    "group",
+    "having",
+    "inner",
+    "join",
+    "left",
+    "limit",
+    "on",
+    "or",
+    "order",
+    "right",
+    "where",
+}
+
+
+def _extract_temp_table_aliases(statement: str, table_name: str) -> set[str]:
+    aliases = {table_name.lower()}
+    alias_pattern = re.compile(
+        rf"\b{re.escape(table_name)}\b(?:\s+as)?\s+`?([a-z][a-z0-9_]*)`?",
+        re.IGNORECASE,
+    )
+    for match in alias_pattern.finditer(statement):
+        alias = match.group(1).lower()
+        if alias not in SQL_KEYWORDS:
+            aliases.add(alias)
+    return aliases
+
+
+def _contains_temp_text_external_equality(
+    statement: str,
+    table_name: str,
+    text_columns: set[str],
+    all_temp_aliases: set[str],
+) -> bool:
+    aliases = _extract_temp_table_aliases(statement, table_name)
+    qualified_column = r"`?([a-z0-9_]+)`?\s*\.\s*`?([a-z0-9_]+)`?"
+    for match in re.finditer(rf"(?P<left>{qualified_column})\s*=\s*(?P<right>{qualified_column})", statement, re.IGNORECASE):
+        left_alias, left_column = match.group("left").split(".", 1)
+        right_alias, right_column = match.group("right").split(".", 1)
+        left_alias = left_alias.replace("`", "").strip().lower()
+        right_alias = right_alias.replace("`", "").strip().lower()
+        left_column = left_column.replace("`", "").strip().lower()
+        right_column = right_column.replace("`", "").strip().lower()
+        left_is_temp_text = left_alias in aliases and left_column in text_columns
+        right_is_temp_text = right_alias in aliases and right_column in text_columns
+        if left_is_temp_text and right_alias not in all_temp_aliases:
+            return True
+        if right_is_temp_text and left_alias not in all_temp_aliases:
+            return True
+    return False
+
+
+def _find_repeated_temp_tables(statement: str) -> list[str]:
+    repeated_names: set[str] = set()
+    for segment in re.split(r";|\bthen\b|\bdo\b", statement, flags=re.IGNORECASE):
+        counts = defaultdict(int)
+        for match in TEMP_TABLE_REFERENCE_PATTERN.finditer(segment):
+            counts[match.group(1).lower()] += 1
+        repeated_names.update(table_name for table_name, count in counts.items() if count > 1)
+    return sorted(repeated_names)
+
+
+def _is_temp_table_contract_scope(path: Path) -> bool:
+    migration_date = re.match(r"^(\d{8})_", path.name)
+    if migration_date is None:
+        return True
+    # Existing migrations before this baseline are immutable history; new and actively repaired
+    # migrations must satisfy the stricter MySQL temp-table contracts.
+    return migration_date.group(1) >= TEMP_TABLE_CONTRACT_START_DATE
+
+
+def _assert_temp_table_contracts(path: Path, text: str) -> None:
+    if not _is_temp_table_contract_scope(path):
+        return
+    statements = _iter_sql_statements(text)
+    text_temp_tables: dict[str, tuple[set[str], int, bool]] = {}
+    for statement, statement_start in statements:
+        create_match = TEMP_TABLE_CREATE_PATTERN.search(statement)
+        if not create_match:
+            continue
+        table_name = create_match.group(1).lower()
+        text_columns = _extract_temp_table_text_columns(statement, create_match)
+        text_temp_tables[table_name] = (
+            text_columns,
+            statement_start,
+            bool(re.search(r"\bcollate\b", statement, re.IGNORECASE)),
+        )
+
+    for statement, statement_start in statements:
+        references = [match.group(1).lower() for match in TEMP_TABLE_REFERENCE_PATTERN.finditer(statement)]
+        repeated = _find_repeated_temp_tables(statement)
+        if repeated:
+            line = text.count("\n", 0, statement_start) + 1
+            names = ", ".join(repeated)
+            raise ReleaseSqlContractError(
+                "MySQL temp table reopen risk: the same temporary table is referenced more than once "
+                f"in one SQL statement ({names}): {path.as_posix()}:{line}"
+            )
+
+        if "=" not in statement:
+            continue
+        all_temp_aliases = {
+            alias
+            for table_name in text_temp_tables
+            for alias in _extract_temp_table_aliases(statement, table_name)
+        }
+        for table_name, (text_columns, create_start, has_collation) in text_temp_tables.items():
+            if has_collation or not text_columns or table_name not in references:
+                continue
+            if not _contains_temp_text_external_equality(
+                statement,
+                table_name,
+                text_columns,
+                all_temp_aliases,
+            ):
+                continue
+            line = text.count("\n", 0, create_start) + 1
+            raise ReleaseSqlContractError(
+                "temporary table collation must be explicit for text columns: "
+                f"{table_name} in {path.as_posix()}:{line}"
+            )
 
 
 def _parse_columns(columns_text: str) -> list[str]:
@@ -194,6 +414,8 @@ def assert_release_sql_contracts(sql_paths: list[Path | str]) -> None:
     occurrences_by_menu_id: dict[str, list[MenuInsertOccurrence]] = defaultdict(list)
     for raw_path in sql_paths:
         path = Path(raw_path).resolve()
+        sql_text = path.read_text(encoding="utf-8")
+        _assert_temp_table_contracts(path, sql_text)
         for occurrence in _iter_system_menu_insert_occurrences(path):
             occurrences_by_menu_id[occurrence.menu_id].append(occurrence)
 

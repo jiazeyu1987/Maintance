@@ -1,3 +1,8 @@
+[CmdletBinding()]
+param(
+  [switch]$ForceFrontendDependencies
+)
+
 $ErrorActionPreference = 'Stop'
 [Console]::InputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
@@ -17,7 +22,12 @@ Require-Command mvn
 Require-Command node
 Require-Command pnpm
 
-pnpm --dir "$Root\frontend" install --frozen-lockfile
+& (Join-Path $PSScriptRoot 'prepare-frontend-dependencies.ps1') `
+  -FrontendDir (Join-Path $Root 'frontend') `
+  -Force:$ForceFrontendDependencies
+if ($LASTEXITCODE -ne 0) {
+  throw "Frontend dependency preparation failed with exit code $LASTEXITCODE"
+}
 pnpm --dir "$Root\frontend" typecheck
 pnpm --dir "$Root\frontend" build
 

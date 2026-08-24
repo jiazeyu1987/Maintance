@@ -779,6 +779,44 @@ function Invoke-FrontendViteBuild {
     Invoke-CheckedCommand -FilePath 'pnpm' -ArgumentList @('build:test') -WorkingDirectory $FrontendDir
 }
 
+function Assert-FrontendBuildPreflight {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$FrontendDir
+    )
+
+    foreach ($requiredInput in @('package.json', 'pnpm-lock.yaml')) {
+        $inputPath = Join-Path $FrontendDir $requiredInput
+        if (-not (Test-Path -LiteralPath $inputPath -PathType Leaf)) {
+            Fail "Frontend build input missing before backend build: $inputPath"
+        }
+    }
+    Require-Command 'node'
+    Require-Command 'pnpm'
+    foreach ($binaryName in @('cross-env.cmd', 'vite.cmd', 'vue-tsc.cmd')) {
+        $binaryPath = Join-Path $FrontendDir (Join-Path 'node_modules\.bin' $binaryName)
+        if (-not (Test-Path -LiteralPath $binaryPath -PathType Leaf)) {
+            Fail "Frontend build dependency binary missing before backend build: $binaryPath"
+        }
+    }
+    $ignoredBuildsResult = Invoke-ProcessCapture `
+        -FilePath 'pnpm' `
+        -ArgumentList @('ignored-builds') `
+        -WorkingDirectory $FrontendDir
+    if ($ignoredBuildsResult.ExitCode -ne 0) {
+        Fail "Frontend dependency ignored-builds check failed with exit code $($ignoredBuildsResult.ExitCode)"
+    }
+    $ignoredBuildLines = @(
+        (($ignoredBuildsResult.StdOut + "`n" + $ignoredBuildsResult.StdErr) -split "`r?`n") |
+            ForEach-Object { $_.Trim() } |
+            Where-Object { $_ }
+    )
+    if ($ignoredBuildLines.Count -ne 1 -or $ignoredBuildLines[0] -ne 'None') {
+        Fail "Frontend dependency ignored-builds must report exactly None before backend build: $($ignoredBuildLines -join ' | ')"
+    }
+    Info "Frontend dependency preflight passed: $FrontendDir"
+}
+
 function Assert-FrontendBuildStaticAssetContract {
     param(
         [Parameter(Mandatory = $true)]
@@ -3535,6 +3573,24 @@ function Invoke-ReleaseMigrationPolicyGate {
     }
 }
 
+function Invoke-BackendSpringConstructorGate {
+    $gateScript = Join-Path $maintenanceReleaseScriptRoot 'spring_constructor_contract_gate.py'
+    if (-not (Test-Path -LiteralPath $gateScript -PathType Leaf)) {
+        Fail "Spring constructor contract gate script missing: $gateScript"
+    }
+    $result = Invoke-ProcessCapture `
+        -FilePath 'python' `
+        -ArgumentList @('-X', 'utf8', $gateScript, '--source-root', $backendRepo) `
+        -WorkingDirectory $backendRepo
+    $output = (($result.StdOut + "`n" + $result.StdErr).Trim())
+    if ($output) {
+        Info "Spring constructor gate output: $output"
+    }
+    if ($result.ExitCode -ne 0) {
+        Fail 'Spring constructor contract gate failed; backend build is blocked before package generation.'
+    }
+}
+
 function New-ReleaseMigrationPlanEntries {
     param(
         [Parameter(Mandatory = $true)]
@@ -5152,6 +5208,12 @@ New-Item -ItemType Directory -Force -Path $releaseDir | Out-Null
 
 try {
 if ($Mode -ne 'deploy-release') {
+if ($publishFrontend) {
+Assert-FrontendBuildPreflight -FrontendDir $frontendDir
+}
+if ($publishBackend) {
+Invoke-BackendSpringConstructorGate
+}
 if ($publishBackend) {
 Copy-RequiredDatabaseSqlScripts
 }

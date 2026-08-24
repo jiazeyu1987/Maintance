@@ -131,6 +131,29 @@ def test_migration_policy_gate_rejects_executable_dependency_on_evidence_only_mi
     assert "20260812_c00_preflight" in message
 
 
+def test_migration_policy_gate_propagates_temp_table_reopen_contract(tmp_path: Path) -> None:
+    policy_gate = importlib.import_module("ops.release.release_migration_policy_gate")
+    sql_root = tmp_path / "sql" / "mysql"
+    sql_root.mkdir(parents=True)
+    sql_path = sql_root / "20260824_temp_reopen.sql"
+    sql_path.write_text(
+        "-- release-migration: allowedEnvironments=test,backup,prod; "
+        "dependsOn=; type=data; riskLevel=high\n"
+        "INSERT INTO tmp_demo (id) SELECT id FROM tmp_demo;\n",
+        encoding="utf-8",
+    )
+
+    try:
+        policy_gate.run_migration_policy_gate(sql_root)
+    except policy_gate.MigrationPolicyError as exc:
+        message = str(exc)
+    else:
+        raise AssertionError("expected migration policy gate to propagate temp-table reopen risk")
+
+    assert "MySQL temp table reopen risk" in message
+    assert "20260824_temp_reopen" in message
+
+
 def test_publish_script_excludes_evidence_only_sql_from_required_migrations() -> None:
     script = read_publish_script()
 
@@ -413,3 +436,118 @@ def test_publish_script_uses_exec_backend_jar_for_release_image() -> None:
     assert "yudao-server\\target\\yudao-server.jar" not in script
     assert "COPY ruoyi-vue-pro/yudao-server/target/yudao-server-exec.jar app.jar" in dockerfile
     assert "COPY ruoyi-vue-pro/yudao-server/target/yudao-server.jar app.jar" not in dockerfile
+
+
+def test_release_sql_contract_gate_blocks_repeated_temp_table_reference(tmp_path: Path) -> None:
+    gate = importlib.import_module("ops.release.release_sql_contract_gate")
+    sql_path = tmp_path / "20260824_temp_reopen.sql"
+    sql_path.write_text(
+        "INSERT INTO tmp_demo (id) SELECT id FROM tmp_demo;\n",
+        encoding="utf-8",
+    )
+
+    try:
+        gate.assert_release_sql_contracts([sql_path])
+    except gate.ReleaseSqlContractError as exc:
+        message = str(exc)
+    else:
+        raise AssertionError("expected MySQL temp table reopen conflict")
+
+    assert "MySQL temp table reopen risk" in message
+    assert "tmp_demo" in message
+    assert "20260824_temp_reopen.sql" in message
+
+
+def test_release_sql_contract_gate_blocks_repeated_nested_temp_table_reference(tmp_path: Path) -> None:
+    gate = importlib.import_module("ops.release.release_sql_contract_gate")
+    sql_path = tmp_path / "20260824_temp_nested_reopen.sql"
+    sql_path.write_text(
+        "SELECT 1 WHERE EXISTS (SELECT 1 FROM tmp_role) "
+        "AND EXISTS (SELECT 1 FROM tmp_role);\n",
+        encoding="utf-8",
+    )
+
+    try:
+        gate.assert_release_sql_contracts([sql_path])
+    except gate.ReleaseSqlContractError as exc:
+        message = str(exc)
+    else:
+        raise AssertionError("expected nested MySQL temp table reopen conflict")
+
+    assert "MySQL temp table reopen risk" in message
+    assert "tmp_role" in message
+
+
+def test_release_sql_contract_gate_requires_explicit_collation_for_text_temp_tables(tmp_path: Path) -> None:
+    gate = importlib.import_module("ops.release.release_sql_contract_gate")
+    sql_path = tmp_path / "20260824_temp_collation.sql"
+    sql_path.write_text(
+        "CREATE TEMPORARY TABLE tmp_labels (label VARCHAR(64));\n"
+        "SELECT 1 FROM tmp_labels JOIN system_labels "
+        "ON tmp_labels.label = system_labels.label;\n",
+        encoding="utf-8",
+    )
+
+    try:
+        gate.assert_release_sql_contracts([sql_path])
+    except gate.ReleaseSqlContractError as exc:
+        message = str(exc)
+    else:
+        raise AssertionError("expected explicit temporary table collation requirement")
+
+    assert "temporary table collation must be explicit" in message
+    assert "tmp_labels" in message
+
+
+def test_release_sql_contract_gate_accepts_explicit_collation_for_text_temp_tables(tmp_path: Path) -> None:
+    gate = importlib.import_module("ops.release.release_sql_contract_gate")
+    sql_path = tmp_path / "20260824_temp_collation_ok.sql"
+    sql_path.write_text(
+        "CREATE TEMPORARY TABLE tmp_labels (label VARCHAR(64)) "
+        "DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;\n"
+        "SELECT 1 FROM tmp_labels JOIN system_labels "
+        "ON tmp_labels.label = system_labels.label;\n",
+        encoding="utf-8",
+    )
+
+    gate.assert_release_sql_contracts([sql_path])
+
+
+def test_build_script_delegates_frontend_dependency_preparation() -> None:
+    build_script = (ROOT / "scripts" / "build.ps1").read_text(encoding="utf-8")
+
+    assert "prepare-frontend-dependencies.ps1" in build_script
+    assert "ForceFrontendDependencies" in build_script
+    assert "install --frozen-lockfile" not in build_script
+
+
+def test_frontend_dependency_preparation_contract_is_explicit() -> None:
+    helper_path = ROOT / "scripts" / "prepare-frontend-dependencies.ps1"
+    assert helper_path.is_file()
+    helper = helper_path.read_text(encoding="utf-8")
+
+    for expected in (
+        "pnpm-lock.yaml",
+        "Get-FileHash",
+        ".release-dependencies.json",
+        "ignored-builds",
+        "cross-env.cmd",
+        "vite.cmd",
+        "vue-tsc.cmd",
+        "'install', '--frozen-lockfile'",
+        "FRONTEND_DEPENDENCIES_REUSED",
+    ):
+        assert expected in helper
+
+
+def test_publish_script_runs_frontend_dependency_preflight_before_backend_build() -> None:
+    script = read_publish_script()
+
+    assert "function Assert-FrontendBuildPreflight" in script
+    assert "cross-env.cmd" in script
+    assert "vite.cmd" in script
+    assert "vue-tsc.cmd" in script
+    assert "-ArgumentList @('ignored-builds')" in script
+    preflight_index = script.index("Assert-FrontendBuildPreflight -FrontendDir $frontendDir")
+    backend_build_index = script.index("Info 'Building backend jar'")
+    assert preflight_index < backend_build_index
