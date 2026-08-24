@@ -1,0 +1,663 @@
+{
+  "status": "failed",
+  "mode": "report-only",
+  "code": "PACKAGE_UNDECLARED_FILE",
+  "scope": "package.files",
+  "path": ".env",
+  "message": "Package contains undeclared file '.env'.",
+  "impact": "The release package contains bytes that are not covered by manifest intent.",
+  "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package.",
+  "errors": [
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": ".env",
+      "message": "Package contains undeclared file '.env'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "post-import.sql",
+      "message": "Package contains undeclared file 'post-import.sql'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "preflight-plan.json",
+      "message": "Package contains undeclared file 'preflight-plan.json'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "preflight-target-state-test.json",
+      "message": "Package contains undeclared file 'preflight-target-state-test.json'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/actions/01-立即备份.bat",
+      "message": "Package contains undeclared file 'ops-runtime/actions/01-立即备份.bat'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/actions/02-回滚应用版本.bat",
+      "message": "Package contains undeclared file 'ops-runtime/actions/02-回滚应用版本.bat'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/actions/03-恢复数据.bat",
+      "message": "Package contains undeclared file 'ops-runtime/actions/03-恢复数据.bat'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/actions/Register-BackupOpsScheduledTasks.ps1",
+      "message": "Package contains undeclared file 'ops-runtime/actions/Register-BackupOpsScheduledTasks.ps1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/actions/Resolve-BackupOpsLogRoot.ps1",
+      "message": "Package contains undeclared file 'ops-runtime/actions/Resolve-BackupOpsLogRoot.ps1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/config/backup-ops.config.example.json",
+      "message": "Package contains undeclared file 'ops-runtime/config/backup-ops.config.example.json'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/config/backup-ops.config.json",
+      "message": "Package contains undeclared file 'ops-runtime/config/backup-ops.config.json'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/config/backup-ops.linux-local.example.json",
+      "message": "Package contains undeclared file 'ops-runtime/config/backup-ops.linux-local.example.json'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/config/backup-ops.secrets.example.json",
+      "message": "Package contains undeclared file 'ops-runtime/config/backup-ops.secrets.example.json'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/linux/backup_ops_linux.py",
+      "message": "Package contains undeclared file 'ops-runtime/linux/backup_ops_linux.py'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/linux/backup-ops-linux.sh",
+      "message": "Package contains undeclared file 'ops-runtime/linux/backup-ops-linux.sh'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/script/deploy/manage-int-ruoyi-remote-root-disk.ps1",
+      "message": "Package contains undeclared file 'ops-runtime/script/deploy/manage-int-ruoyi-remote-root-disk.ps1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/backup-ops.ps1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/backup-ops.ps1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/build-dcc-backup-manifest.ps1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/build-dcc-backup-manifest.ps1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/export-dcc-database-snapshot.ps1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/export-dcc-database-snapshot.ps1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/validate-dcc-backup-chain.ps1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/validate-dcc-backup-chain.ps1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/Core/Config.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/Core/Config.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/Core/DccBackupChainValidator.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/Core/DccBackupChainValidator.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/Core/DccBackupManifestBuilder.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/Core/DccBackupManifestBuilder.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/Core/DccDatabaseSnapshotExporter.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/Core/DccDatabaseSnapshotExporter.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/Core/Logging.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/Core/Logging.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/Core/ResultModel.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/Core/ResultModel.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/Core/Validation.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/Core/Validation.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/Infra/DockerOps.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/Infra/DockerOps.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/Infra/FileOps.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/Infra/FileOps.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/Infra/MySqlOps.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/Infra/MySqlOps.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/Infra/NotifyOps.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/Infra/NotifyOps.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/Infra/ObjectOps.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/Infra/ObjectOps.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/Infra/ReportOps.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/Infra/ReportOps.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/Infra/SshOps.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/Infra/SshOps.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/Ui/ConsoleMenu.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/Ui/ConsoleMenu.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/Ui/ConsolePrompt.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/Ui/ConsolePrompt.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/UseCases/BackupNow.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/UseCases/BackupNow.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/UseCases/BackupScheduled.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/UseCases/BackupScheduled.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/UseCases/Rehearsal.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/UseCases/Rehearsal.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/UseCases/RestoreData.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/UseCases/RestoreData.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_UNDECLARED_FILE",
+      "scope": "package.files",
+      "path": "ops-runtime/scripts/modules/UseCases/RollbackApp.psm1",
+      "message": "Package contains undeclared file 'ops-runtime/scripts/modules/UseCases/RollbackApp.psm1'.",
+      "impact": "The release package contains bytes that are not covered by manifest intent.",
+      "nextStep": "Declare the file in artifacts, database, or resources, or remove it from the package."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": ".env",
+      "message": "Forbidden hardcoded deploy target IP '172.30.30.58' found in '.env'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": ".env",
+      "message": "Forbidden hardcoded deploy target IP '172.30.30.58' found in '.env'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": ".env",
+      "message": "Forbidden hardcoded deploy target IP '172.30.30.59' found in '.env'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": ".env",
+      "message": "Forbidden hardcoded deploy target IP '172.30.30.58' found in '.env'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": ".env",
+      "message": "Forbidden hardcoded deploy target IP '127.0.0.1' found in '.env'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": ".env",
+      "message": "Forbidden hardcoded deploy target IP '172.30.30.58' found in '.env'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": "post-import.sql",
+      "message": "Forbidden hardcoded deploy target IP '127.0.0.1' found in 'post-import.sql'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": "post-import.sql",
+      "message": "Forbidden hardcoded deploy target IP '127.0.0.1' found in 'post-import.sql'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": "post-import.sql",
+      "message": "Forbidden hardcoded deploy target IP '127.0.0.1' found in 'post-import.sql'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": "post-import.sql",
+      "message": "Forbidden hardcoded deploy target IP '127.0.0.1' found in 'post-import.sql'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": "post-import.sql",
+      "message": "Forbidden hardcoded deploy target IP '172.30.30.58' found in 'post-import.sql'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": "ops-runtime/config/backup-ops.config.example.json",
+      "message": "Forbidden hardcoded deploy target IP '172.30.30.57' found in 'ops-runtime/config/backup-ops.config.example.json'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": "ops-runtime/config/backup-ops.config.example.json",
+      "message": "Forbidden hardcoded deploy target IP '172.30.30.58' found in 'ops-runtime/config/backup-ops.config.example.json'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": "ops-runtime/config/backup-ops.config.example.json",
+      "message": "Forbidden hardcoded deploy target IP '172.30.30.59' found in 'ops-runtime/config/backup-ops.config.example.json'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": "ops-runtime/config/backup-ops.config.json",
+      "message": "Forbidden hardcoded deploy target IP '172.30.30.57' found in 'ops-runtime/config/backup-ops.config.json'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": "ops-runtime/config/backup-ops.config.json",
+      "message": "Forbidden hardcoded deploy target IP '172.30.30.58' found in 'ops-runtime/config/backup-ops.config.json'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": "ops-runtime/config/backup-ops.config.json",
+      "message": "Forbidden hardcoded deploy target IP '172.30.30.59' found in 'ops-runtime/config/backup-ops.config.json'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": "ops-runtime/config/backup-ops.linux-local.example.json",
+      "message": "Forbidden hardcoded deploy target IP '172.30.30.58' found in 'ops-runtime/config/backup-ops.linux-local.example.json'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": "ops-runtime/config/backup-ops.linux-local.example.json",
+      "message": "Forbidden hardcoded deploy target IP '127.0.0.1' found in 'ops-runtime/config/backup-ops.linux-local.example.json'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": "ops-runtime/config/backup-ops.linux-local.example.json",
+      "message": "Forbidden hardcoded deploy target IP '127.0.0.1' found in 'ops-runtime/config/backup-ops.linux-local.example.json'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_SECRET_PATTERN",
+      "scope": "forbiddenFieldsCheck.secretPatternMatches",
+      "path": "ops-runtime/config/backup-ops.linux-local.example.json",
+      "message": "Forbidden secret-like assignment found in 'ops-runtime/config/backup-ops.linux-local.example.json'.",
+      "impact": "Release packages must not embed passwords, tokens, private keys, or endpoint secrets.",
+      "nextStep": "Remove the secret and provide credentials through the approved runtime secret channel."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_SECRET_PATTERN",
+      "scope": "forbiddenFieldsCheck.secretPatternMatches",
+      "path": "ops-runtime/config/backup-ops.secrets.example.json",
+      "message": "Forbidden secret-like assignment found in 'ops-runtime/config/backup-ops.secrets.example.json'.",
+      "impact": "Release packages must not embed passwords, tokens, private keys, or endpoint secrets.",
+      "nextStep": "Remove the secret and provide credentials through the approved runtime secret channel."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": "ops-runtime/script/deploy/manage-int-ruoyi-remote-root-disk.ps1",
+      "message": "Forbidden hardcoded deploy target IP '172.30.30.58' found in 'ops-runtime/script/deploy/manage-int-ruoyi-remote-root-disk.ps1'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": "ops-runtime/script/deploy/manage-int-ruoyi-remote-root-disk.ps1",
+      "message": "Forbidden hardcoded deploy target IP '172.30.30.57' found in 'ops-runtime/script/deploy/manage-int-ruoyi-remote-root-disk.ps1'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_HARDCODED_TARGET_IP",
+      "scope": "forbiddenFieldsCheck.hardcodedIpMatches",
+      "path": "ops-runtime/script/deploy/manage-int-ruoyi-remote-root-disk.ps1",
+      "message": "Forbidden hardcoded deploy target IP '172.30.30.59' found in 'ops-runtime/script/deploy/manage-int-ruoyi-remote-root-disk.ps1'.",
+      "impact": "Release packages must use logical environment requirements, not concrete server addresses.",
+      "nextStep": "Remove the IP from the package and use server-side Runtime Control target config."
+    }
+  ],
+  "warnings": [],
+  "checks": [
+    {
+      "status": "passed",
+      "code": "MANIFEST_PRESENT",
+      "scope": "manifest.presence",
+      "path": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260823-intmain-training-r260823f-r11\\manifest.json",
+      "message": "manifest.json was found.",
+      "impact": "Manifest JSON parsing can continue.",
+      "nextStep": "Parse Manifest v1 JSON."
+    },
+    {
+      "status": "passed",
+      "code": "MANIFEST_JSON_VALID",
+      "scope": "manifest.parse",
+      "path": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260823-intmain-training-r260823f-r11\\manifest.json",
+      "message": "manifest.json parsed successfully.",
+      "impact": "Schema and package integrity checks can continue.",
+      "nextStep": "Validate Manifest v1 required fields and package type."
+    },
+    {
+      "status": "passed",
+      "code": "MANIFEST_REQUIRED_FIELDS_PRESENT",
+      "scope": "manifest.required",
+      "path": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260823-intmain-training-r260823f-r11\\manifest.json",
+      "message": "All required Manifest v1 top-level fields are present.",
+      "impact": "Schema-level validation can continue.",
+      "nextStep": "Continue package type, baseline, file, checksum, and forbidden field checks."
+    },
+    {
+      "status": "passed",
+      "code": "MANIFEST_SCHEMA_CORE_VALID",
+      "scope": "manifest.schema",
+      "path": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260823-intmain-training-r260823f-r11\\manifest.json",
+      "message": "Manifest v1 core schema checks passed.",
+      "impact": "Package type and smart-release baseline requirements are explicit.",
+      "nextStep": "Continue file declaration and forbidden field checks."
+    },
+    {
+      "status": "failed",
+      "code": "PACKAGE_FILE_VALIDATION_FAILED",
+      "scope": "package.files",
+      "path": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260823-intmain-training-r260823f-r11",
+      "message": "Package file declaration or sha256 checks failed.",
+      "impact": "The package cannot be safely used by Smart Release gates.",
+      "nextStep": "Fix undeclared, missing, or changed files and rerun validation."
+    },
+    {
+      "status": "failed",
+      "code": "FORBIDDEN_CONTENT_SCAN_FAILED",
+      "scope": "forbiddenFieldsCheck",
+      "path": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260823-intmain-training-r260823f-r11",
+      "message": "Forbidden target IP or secret scan failed.",
+      "impact": "The package violates Smart Release target and credential boundaries.",
+      "nextStep": "Remove the reported IP or secret-like values and rerun validation."
+    }
+  ]
+}
