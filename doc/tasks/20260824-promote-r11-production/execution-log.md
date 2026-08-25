@@ -54,3 +54,4 @@ GREEN: `python -X utf8 -m pytest scripts/tests/test_release_sql_preflight_gate.p
 - 追加只读差异证据：从正式服历史发布目录读取旧 `20260607_product_master_data.sql`（仅本机临时取证，随后删除），确认旧 hash=`12f8d1cd...` 的 SQL 比 r11 多一条 `990207 / mdm:product:map-showroom` 菜单插入；r11 版本并未执行删除。
 - 追加 live-state 探针：正式库 `system_menu` 当前存在 `id=990207`、`permission=mdm:product:map-showroom`、`parent_id=990201`、`status=0`、`deleted=0`。这说明当前 live state 包含该历史菜单，但不能自动把不同 checksum 认定为 manifest 等价；现有发布契约没有按 live state 绕过 checksum 的正式 reconciliation 模式。
 - 处理结论：未修改 r11 包、manifest、迁移台账或正式库；仍需正式发布负责人批准并实施可审计的迁移基线对账，或授权重新构建合规发布包后才能继续。
+- 依赖表探针：正式库仅存在 `mdm_product`，不存在 `dcc_product_onboarding_request`、`mdm_enterprise`、`mdm_user_company_scope`、`mdm_role_company_scope`；因此后续 r11 schema 迁移确实尚未落地，不能用旧容器健康或已有 `mdm_product` 表替代依赖闭包验证。
