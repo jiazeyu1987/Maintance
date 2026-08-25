@@ -42,3 +42,12 @@ GREEN: `python -X utf8 -m pytest scripts/tests/test_release_sql_preflight_gate.p
 - 问题记录：直接对测试发布后的本地缓存目录运行 manifest validator 时发现部署阶段生成的 `.env`、`preflight-plan.json`、`preflight-target-state-test.json`、`ops-runtime` 等未声明文件，报告 `PACKAGE_UNDECLARED_FILE`。阶段：构建包复核；影响：直接复核会失败，但不代表 NAS 原始 manifest 无效；原因判断：发布脚本在同一缓存目录写入部署运行时证据，包缓存被部署污染。处理：未删除或篡改 r11，改用正式 prod dry-run 的 sanitized package workspace；结果：prod preview PASS。可前置检查：是；构建/发布后应区分 immutable package 与 deployment workspace。可自动化：是；发布脚本应输出独立 sanitized 校验目录。下次避免：禁止把部署生成文件写回 immutable package，或在 validator 前先生成受控清单。
 - 追加诊断：r11 manifest 中 `20260607_product_master_data` 为 `type=data`、sha256=`111c3764...`；正式库 target-state 中该迁移为 `APPLIED` 但 sha256=`12f8d1cd...`，因此它是 checksum-mismatched 的 pending data ancestor。`code-only` 正确将其 scope-excluded，后续 schema 迁移因此触发 `BLOCKED_SCOPE_DEPENDENCY`。这不是可通过旧台账或旧容器绕过的误报；同一 r11 无安全正式发布路径。
 - 对照证据：测试服 r11 publish 日志记录该迁移为 `SKIPPED_ALREADY_APPLIED` 且 checksum=`111c3764...`；正式服日志在生成 prod target preflight plan 后阻断。说明问题是正式库与同一 r11 的迁移基线漂移，不是包内 SQL 缺失。
+
+## 继续核查（2026-08-25）
+
+- `show-int-ruoyi-prod-status.bat` 只读复核：正式服仍运行发布前旧版本；backend health HTTP 200、frontend HTTP 200，未出现 r11 实际镜像切换。
+- 远端 `infra_release_migration` 只读查询：`20260607_product_master_data` 仍为 `SKIPPED_ALREADY_APPLIED`，目标 checksum=`12f8d1cd...`，来源 releaseTag=`release-20260709-codeonly-three-env-head-v10`；未执行任何台账或业务数据写入。
+- 远端 `infra_release_operation_lock` 只读查询：r11 prod operation 仍为 `FAILED`，无 RUNNING 锁。
+- 预检计划结构化复核：`status=blocked`、`BLOCKED_SCOPE_DEPENDENCY=6`、`APPLY=135`；最小依赖链仍从 `20260803_dcc_product_onboarding_flow` / `20260816_mdm_enterprise_company_scope` 指向 `20260607_product_master_data`，并传递阻塞至注册证书后续迁移。
+- 等价 checksum 复核：r11 包内 `20260607_product_master_data.sql` raw sha=`111c3764...`，去除首行 release metadata 后 sha=`4d5ce68d...`，均不等于正式库 `12f8d1cd...`；当前发布脚本没有正式 reconciliation 模式。
+- 结论：同一 r11 在当前正式库状态下仍无合规放行路径；不得改包、改迁移台账、手工执行 data SQL 或绕过 `BLOCKED_SCOPE_DEPENDENCY`。
