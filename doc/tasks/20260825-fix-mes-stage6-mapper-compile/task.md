@@ -2,7 +2,7 @@
 
 ## 任务目标
 
-修复 `MesStage6IdiSimulationServiceImpl` 调用 `ErpKingdeeProductionPickListItemMapper.selectPickListIdsByProductionOrderNo(String)` 导致的后端编译失败，补齐正式 mapper 合同和回归测试，不改变无关业务行为。
+核验并解除 `MesStage6IdiSimulationServiceImpl` 调用 `ErpKingdeeProductionPickListItemMapper.selectPickListIdsByProductionOrderNo(String)` 导致的后端编译阻塞，确认正式 mapper 合同和回归覆盖，不改变无关业务行为。
 
 ## 里程碑
 
