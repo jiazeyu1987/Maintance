@@ -51,3 +51,6 @@ GREEN: `python -X utf8 -m pytest scripts/tests/test_release_sql_preflight_gate.p
 - 预检计划结构化复核：`status=blocked`、`BLOCKED_SCOPE_DEPENDENCY=6`、`APPLY=135`；最小依赖链仍从 `20260803_dcc_product_onboarding_flow` / `20260816_mdm_enterprise_company_scope` 指向 `20260607_product_master_data`，并传递阻塞至注册证书后续迁移。
 - 等价 checksum 复核：r11 包内 `20260607_product_master_data.sql` raw sha=`111c3764...`，去除首行 release metadata 后 sha=`4d5ce68d...`，均不等于正式库 `12f8d1cd...`；当前发布脚本没有正式 reconciliation 模式。
 - 结论：同一 r11 在当前正式库状态下仍无合规放行路径；不得改包、改迁移台账、手工执行 data SQL 或绕过 `BLOCKED_SCOPE_DEPENDENCY`。
+- 追加只读差异证据：从正式服历史发布目录读取旧 `20260607_product_master_data.sql`（仅本机临时取证，随后删除），确认旧 hash=`12f8d1cd...` 的 SQL 比 r11 多一条 `990207 / mdm:product:map-showroom` 菜单插入；r11 版本并未执行删除。
+- 追加 live-state 探针：正式库 `system_menu` 当前存在 `id=990207`、`permission=mdm:product:map-showroom`、`parent_id=990201`、`status=0`、`deleted=0`。这说明当前 live state 包含该历史菜单，但不能自动把不同 checksum 认定为 manifest 等价；现有发布契约没有按 live state 绕过 checksum 的正式 reconciliation 模式。
+- 处理结论：未修改 r11 包、manifest、迁移台账或正式库；仍需正式发布负责人批准并实施可审计的迁移基线对账，或授权重新构建合规发布包后才能继续。
