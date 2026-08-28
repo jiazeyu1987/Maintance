@@ -621,6 +621,15 @@ def test_frontend_dependency_preparation_contract_is_explicit() -> None:
         assert expected in helper
 
 
+def test_frontend_dependency_preparation_allows_missing_stamp() -> None:
+    helper_path = ROOT / "scripts" / "prepare-frontend-dependencies.ps1"
+    helper = helper_path.read_text(encoding="utf-8")
+    function_body = helper.split("function Test-DependencyStamp", 1)[1].split("function Assert-RequiredBinaries", 1)[0]
+
+    assert "[Parameter(Mandatory = $true)]$Stamp" not in function_body
+    assert "if ($null -eq $Stamp" in function_body
+
+
 def test_publish_script_runs_frontend_dependency_preflight_before_backend_build() -> None:
     script = read_publish_script()
 

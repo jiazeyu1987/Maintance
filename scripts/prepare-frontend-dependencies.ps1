@@ -61,7 +61,7 @@ function Get-IgnoredBuilds {
 
 function Test-DependencyStamp {
     param(
-        [Parameter(Mandatory = $true)]$Stamp,
+        $Stamp,
         [Parameter(Mandatory = $true)][string]$PackageHash,
         [Parameter(Mandatory = $true)][string]$LockHash,
         [Parameter(Mandatory = $true)][string]$NodeVersion,
