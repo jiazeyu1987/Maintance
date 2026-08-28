@@ -24,6 +24,7 @@ Require-Command pnpm
 
 & (Join-Path $PSScriptRoot 'prepare-frontend-dependencies.ps1') `
   -FrontendDir (Join-Path $Root 'frontend') `
+  -RequiredBinary @('vite.cmd', 'vue-tsc.cmd') `
   -Force:$ForceFrontendDependencies
 if ($LASTEXITCODE -ne 0) {
   throw "Frontend dependency preparation failed with exit code $LASTEXITCODE"

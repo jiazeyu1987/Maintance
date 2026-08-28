@@ -599,6 +599,7 @@ def test_build_script_delegates_frontend_dependency_preparation() -> None:
 
     assert "prepare-frontend-dependencies.ps1" in build_script
     assert "ForceFrontendDependencies" in build_script
+    assert "-RequiredBinary @('vite.cmd', 'vue-tsc.cmd')" in build_script
     assert "install --frozen-lockfile" not in build_script
 
 
