@@ -181,7 +181,48 @@ function New-ReleaseDockerBuildContext {
         }
         $frontendRepoTarget = Join-Path $ContextRoot 'yudao-ui-admin-vue3'
         New-Item -ItemType Directory -Force -Path $frontendRepoTarget | Out-Null
-        Copy-Item -LiteralPath $frontendDistSource -Destination $frontendRepoTarget -Recurse -Force
+        Copy-ReleaseDirectoryTree -SourceDirectory $frontendDistSource -DestinationDirectory (Join-Path $frontendRepoTarget 'dist-intruoyi-test')
+    }
+}
+
+function Copy-ReleaseDirectoryTree {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$SourceDirectory,
+        [Parameter(Mandatory = $true)]
+        [string]$DestinationDirectory
+    )
+
+    if (-not (Test-Path -LiteralPath $SourceDirectory -PathType Container)) {
+        Fail "Release directory copy source missing: $SourceDirectory"
+    }
+    Require-Command 'robocopy'
+
+    if (Test-Path -LiteralPath $DestinationDirectory) {
+        Remove-Item -LiteralPath $DestinationDirectory -Recurse -Force
+    }
+    New-Item -ItemType Directory -Force -Path $DestinationDirectory | Out-Null
+
+    $robocopyArgs = @(
+        $SourceDirectory,
+        $DestinationDirectory,
+        '/E',
+        '/NFL',
+        '/NDL',
+        '/NJH',
+        '/NJS',
+        '/NP',
+        '/R:2',
+        '/W:1'
+    )
+    Info ("Run: robocopy {0} {1} /E /NFL /NDL /NJH /NJS /NP /R:2 /W:1" -f $SourceDirectory, $DestinationDirectory)
+    & robocopy @robocopyArgs | Out-Null
+    $robocopyExitCode = $LASTEXITCODE
+    if ($robocopyExitCode -ge 8) {
+        Fail "Release directory copy failed with robocopy exit code $robocopyExitCode`: $SourceDirectory -> $DestinationDirectory"
+    }
+    if (-not (Test-Path -LiteralPath $DestinationDirectory -PathType Container)) {
+        Fail "Release directory copy destination missing after robocopy: $DestinationDirectory"
     }
 }
 

@@ -42,6 +42,22 @@ def test_build_context_prepares_backend_exec_jar_and_fail_fast_checks() -> None:
     assert "Backend exec jar missing from Docker build context after preparation:" in script
 
 
+def test_build_context_frontend_dist_uses_robocopy_directory_copy() -> None:
+    script = _script_text()
+
+    assert "function Copy-ReleaseDirectoryTree" in script
+    assert "robocopy" in script
+    assert (
+        "Copy-ReleaseDirectoryTree "
+        "-SourceDirectory $frontendDistSource "
+        "-DestinationDirectory (Join-Path $frontendRepoTarget 'dist-intruoyi-test')"
+    ) in script
+    assert (
+        "Copy-Item -LiteralPath $frontendDistSource "
+        "-Destination $frontendRepoTarget -Recurse -Force"
+    ) not in script
+
+
 def test_release_change_set_manifest_uses_unicode_safe_labels() -> None:
     script = _script_text()
 
