@@ -18,6 +18,11 @@ DEFAULT_ALLOWED_ENVIRONMENTS = ["test", "backup", "prod"]
 DEFAULT_TYPE = "schema"
 DEFAULT_RISK_LEVEL = "medium"
 METADATA_PATTERN = re.compile(r"^\s*--\s*release-migration\s*:\s*(.+?)\s*$", re.IGNORECASE | re.MULTILINE)
+ROLLBACK_METADATA_PATTERN = re.compile(r"^\s*--\s*rollback-migration\s*:", re.IGNORECASE | re.MULTILINE)
+
+
+def is_rollback_migration(path: Path) -> bool:
+    return ROLLBACK_METADATA_PATTERN.search(path.read_text(encoding="utf-8")) is not None
 
 
 def _sha256(path: Path) -> str:
@@ -94,7 +99,10 @@ def build_migration_manifest(
     entries: list[dict[str, object]] = []
     seen: dict[str, Path] = {}
     if sql_paths is None:
-        paths = sorted(root.rglob("20*.sql"), key=lambda item: item.relative_to(root).as_posix())
+        paths = sorted(
+            (path for path in root.rglob("20*.sql") if not is_rollback_migration(path)),
+            key=lambda item: item.relative_to(root).as_posix(),
+        )
     else:
         paths = []
         for sql_path in sql_paths:
@@ -107,6 +115,12 @@ def build_migration_manifest(
                 raise MigrationManifestError(f"SQL file is outside SQL root: {path}") from exc
             paths.append(path)
         paths = sorted(paths, key=lambda item: item.relative_to(root).as_posix())
+        rollback_paths = [path for path in paths if is_rollback_migration(path)]
+        if rollback_paths:
+            raise MigrationManifestError(
+                "rollback-only migrations cannot be included in a release manifest: "
+                + ", ".join(str(path) for path in rollback_paths)
+            )
 
     for path in paths:
         migration_id = _migration_id(path)

@@ -100,6 +100,56 @@ def test_migration_policy_gate_accepts_evidence_only_migration_types(tmp_path: P
     }
 
 
+def test_migration_policy_gate_excludes_rollback_only_sql_from_default_release_manifest(tmp_path: Path) -> None:
+    policy_gate = importlib.import_module("ops.release.release_migration_policy_gate")
+    sql_root = tmp_path / "sql" / "mysql"
+    sql_root.mkdir(parents=True)
+    release_sql = sql_root / "20260822_release_schema.sql"
+    release_sql.write_text(
+        "-- release-migration: allowedEnvironments=test,backup,prod; "
+        "dependsOn=; type=schema; riskLevel=medium\n"
+        "CREATE TABLE IF NOT EXISTS release_table (id bigint);\n",
+        encoding="utf-8",
+    )
+    rollback_sql = sql_root / "20260822_release_schema_rollback.sql"
+    rollback_sql.write_text(
+        "-- rollback-migration: allowedEnvironments=test,backup,prod; "
+        "requiresBackup=true; type=schema; riskLevel=high\n"
+        "DROP TABLE IF EXISTS release_table;\n",
+        encoding="utf-8",
+    )
+
+    report = policy_gate.run_migration_policy_gate(sql_root)
+
+    assert report["status"] == "passed"
+    assert [entry["migrationId"] for entry in report["migrations"]] == [
+        "20260822_release_schema"
+    ]
+
+
+def test_migration_policy_gate_rejects_explicit_rollback_only_sql_manifest_input(tmp_path: Path) -> None:
+    policy_gate = importlib.import_module("ops.release.release_migration_policy_gate")
+    sql_root = tmp_path / "sql" / "mysql"
+    sql_root.mkdir(parents=True)
+    rollback_sql = sql_root / "20260822_release_schema_rollback.sql"
+    rollback_sql.write_text(
+        "-- rollback-migration: allowedEnvironments=test,backup,prod; "
+        "requiresBackup=true; type=schema; riskLevel=high\n"
+        "DROP TABLE IF EXISTS release_table;\n",
+        encoding="utf-8",
+    )
+
+    try:
+        policy_gate.run_migration_policy_gate(sql_root, sql_paths=[rollback_sql])
+    except policy_gate.MigrationPolicyError as exc:
+        message = str(exc)
+    else:
+        raise AssertionError("expected rollback-only manifest input rejection")
+
+    assert "rollback-only migration cannot be included in a release manifest" in message
+    assert "20260822_release_schema_rollback.sql" in message
+
+
 def test_migration_policy_gate_rejects_executable_dependency_on_evidence_only_migration(tmp_path: Path) -> None:
     policy_gate = importlib.import_module("ops.release.release_migration_policy_gate")
     sql_root = tmp_path / "sql" / "mysql"
@@ -163,6 +213,16 @@ def test_publish_script_excludes_evidence_only_sql_from_required_migrations() ->
     assert "if ([string]$metadata.type -in $releaseMigrationEvidenceOnlyTypes)" in script
     assert 'Info "Excluding evidence-only release SQL from required migrations: $($file.Name) [$($metadata.type)]"' in script
     assert "continue" in script
+
+
+def test_publish_script_excludes_rollback_only_sql_before_required_metadata_read() -> None:
+    script = read_publish_script()
+
+    assert "function Test-ReleaseRollbackMigrationMetadata" in script
+    assert 'Info "Excluding rollback-only release SQL from required migrations: $($file.Name)"' in script
+    rollback_skip_index = script.index("Test-ReleaseRollbackMigrationMetadata -SqlPath $file.FullName")
+    metadata_read_index = script.index("Read-ReleaseMigrationMetadata -SqlPath $file.FullName", rollback_skip_index)
+    assert rollback_skip_index < metadata_read_index
 
 
 def test_release_sql_contract_gate_allows_on_duplicate_key_update_values_clause(tmp_path: Path) -> None:

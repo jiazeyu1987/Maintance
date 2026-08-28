@@ -3438,6 +3438,23 @@ function Get-ReleaseDependencyHash {
     }
 }
 
+function Test-ReleaseRollbackMigrationMetadata {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$SqlPath
+    )
+
+    if (-not (Test-Path -LiteralPath $SqlPath -PathType Leaf)) {
+        Fail "Release migration SQL missing before rollback metadata read: $SqlPath"
+    }
+    $text = [System.IO.File]::ReadAllText($SqlPath, [System.Text.UTF8Encoding]::new($false))
+    return [regex]::IsMatch(
+        $text,
+        '^\s*--\s*rollback-migration\s*:',
+        [System.Text.RegularExpressions.RegexOptions]::IgnoreCase -bor [System.Text.RegularExpressions.RegexOptions]::Multiline
+    )
+}
+
 function Read-ReleaseMigrationMetadata {
     param(
         [Parameter(Mandatory = $true)]
@@ -4160,6 +4177,10 @@ function Get-ReleaseDatabaseSqlScripts {
                 Fail "Duplicate release database SQL file name: $($file.Name) in $($seenPackageFileNames[$file.Name]) and $($file.FullName)"
             }
             $seenPackageFileNames[$file.Name] = $file.FullName
+            if (Test-ReleaseRollbackMigrationMetadata -SqlPath $file.FullName) {
+                Info "Excluding rollback-only release SQL from required migrations: $($file.Name)"
+                continue
+            }
             $metadata = Read-ReleaseMigrationMetadata -SqlPath $file.FullName
             if ([string]$metadata.type -in $releaseMigrationEvidenceOnlyTypes) {
                 Info "Excluding evidence-only release SQL from required migrations: $($file.Name) [$($metadata.type)]"

@@ -7,8 +7,10 @@ from ops.release.release_migration_manifest import (
     EVIDENCE_ONLY_TYPES,
     EXECUTABLE_TYPES,
     METADATA_PATTERN,
+    ROLLBACK_METADATA_PATTERN,
     MigrationManifestError,
     build_migration_manifest,
+    is_rollback_migration,
 )
 from ops.release.release_sql_contract_gate import ReleaseSqlContractError, assert_release_sql_contracts
 
@@ -32,7 +34,10 @@ def _load_frozen_registry(path: Path | str | None) -> dict[str, str]:
 
 def _resolve_sql_paths(sql_root: Path, sql_paths: list[Path | str] | None) -> list[Path]:
     if sql_paths is None:
-        return sorted(sql_root.rglob("20*.sql"), key=lambda item: item.relative_to(sql_root).as_posix())
+        return sorted(
+            (path for path in sql_root.rglob("20*.sql") if not is_rollback_migration(path)),
+            key=lambda item: item.relative_to(sql_root).as_posix(),
+        )
     resolved: list[Path] = []
     for sql_path in sql_paths:
         path = Path(sql_path).resolve()
@@ -49,6 +54,10 @@ def _resolve_sql_paths(sql_root: Path, sql_paths: list[Path | str] | None) -> li
 def _require_explicit_metadata(sql_root: Path, sql_paths: list[Path] | None = None) -> None:
     for path in _resolve_sql_paths(sql_root, sql_paths):
         text = path.read_text(encoding="utf-8")
+        if ROLLBACK_METADATA_PATTERN.search(text):
+            raise MigrationPolicyError(
+                f"rollback-only migration cannot be included in a release manifest: {path}"
+            )
         if not METADATA_PATTERN.search(text):
             raise MigrationPolicyError(f"missing release-migration metadata: {path}")
 
