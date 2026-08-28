@@ -53,7 +53,10 @@ function Get-IgnoredBuilds {
 
     $output = Invoke-NativeText -FilePath 'pnpm' -ArgumentList @('ignored-builds') -WorkingDirectory $WorkingDirectory
     $lines = @($output -split "`r?`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ })
-    if ($lines.Count -ne 1 -or $lines[0] -ne 'None') {
+    $compactOutput = ($lines -join ' ')
+    $isNoneOutput = ($lines.Count -eq 1 -and $lines[0] -eq 'None') -or
+        ($compactOutput -eq 'Automatically ignored builds during installation: None')
+    if (-not $isNoneOutput) {
         throw "pnpm ignored-builds must report exactly None before build; got: $output"
     }
     return @()

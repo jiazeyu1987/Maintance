@@ -630,6 +630,15 @@ def test_frontend_dependency_preparation_allows_missing_stamp() -> None:
     assert "if ($null -eq $Stamp" in function_body
 
 
+def test_frontend_dependency_preparation_accepts_verbose_none_ignored_builds() -> None:
+    helper_path = ROOT / "scripts" / "prepare-frontend-dependencies.ps1"
+    helper = helper_path.read_text(encoding="utf-8")
+    function_body = helper.split("function Get-IgnoredBuilds", 1)[1].split("function Test-DependencyStamp", 1)[0]
+
+    assert "Automatically ignored builds during installation:" in function_body
+    assert "None" in function_body
+
+
 def test_publish_script_runs_frontend_dependency_preflight_before_backend_build() -> None:
     script = read_publish_script()
 
