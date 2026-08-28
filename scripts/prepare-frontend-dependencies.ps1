@@ -55,7 +55,10 @@ function Get-IgnoredBuilds {
     $lines = @($output -split "`r?`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ })
     $compactOutput = ($lines -join ' ')
     $isNoneOutput = ($lines.Count -eq 1 -and $lines[0] -eq 'None') -or
-        ($compactOutput -eq 'Automatically ignored builds during installation: None')
+        ($compactOutput -eq 'Automatically ignored builds during installation: None') -or
+        ($lines.Count -eq 2 -and
+            $lines[0] -eq 'Automatically ignored builds during installation:' -and
+            $lines[1] -eq 'None')
     if (-not $isNoneOutput) {
         throw "pnpm ignored-builds must report exactly None before build; got: $output"
     }

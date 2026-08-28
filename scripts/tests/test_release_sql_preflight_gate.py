@@ -640,6 +640,16 @@ def test_frontend_dependency_preparation_accepts_verbose_none_ignored_builds() -
     assert "None" in function_body
 
 
+def test_frontend_dependency_preparation_accepts_multiline_none_ignored_builds() -> None:
+    helper_path = ROOT / "scripts" / "prepare-frontend-dependencies.ps1"
+    helper = helper_path.read_text(encoding="utf-8")
+    function_body = helper.split("function Get-IgnoredBuilds", 1)[1].split("function Test-DependencyStamp", 1)[0]
+
+    assert "$lines.Count -eq 2" in function_body
+    assert "$lines[0] -eq 'Automatically ignored builds during installation:'" in function_body
+    assert "$lines[1] -eq 'None'" in function_body
+
+
 def test_publish_script_runs_frontend_dependency_preflight_before_backend_build() -> None:
     script = read_publish_script()
 
@@ -651,3 +661,12 @@ def test_publish_script_runs_frontend_dependency_preflight_before_backend_build(
     preflight_index = script.index("Assert-FrontendBuildPreflight -FrontendDir $frontendDir")
     backend_build_index = script.index("Info 'Building backend jar'")
     assert preflight_index < backend_build_index
+
+
+def test_publish_script_accepts_multiline_none_ignored_builds() -> None:
+    script = read_publish_script()
+    function_body = script.split("function Assert-FrontendBuildPreflight", 1)[1].split("function Assert-FrontendBuildStaticAssetContract", 1)[0]
+
+    assert "$ignoredBuildLines.Count -eq 2" in function_body
+    assert "$ignoredBuildLines[0] -eq 'Automatically ignored builds during installation:'" in function_body
+    assert "$ignoredBuildLines[1] -eq 'None'" in function_body

@@ -811,7 +811,12 @@ function Assert-FrontendBuildPreflight {
             ForEach-Object { $_.Trim() } |
             Where-Object { $_ }
     )
-    if ($ignoredBuildLines.Count -ne 1 -or $ignoredBuildLines[0] -ne 'None') {
+    $ignoredBuildsIsNone = ($ignoredBuildLines.Count -eq 1 -and $ignoredBuildLines[0] -eq 'None') -or
+        ($ignoredBuildLines.Count -eq 1 -and $ignoredBuildLines[0] -eq 'Automatically ignored builds during installation: None') -or
+        ($ignoredBuildLines.Count -eq 2 -and
+            $ignoredBuildLines[0] -eq 'Automatically ignored builds during installation:' -and
+            $ignoredBuildLines[1] -eq 'None')
+    if (-not $ignoredBuildsIsNone) {
         Fail "Frontend dependency ignored-builds must report exactly None before backend build: $($ignoredBuildLines -join ' | ')"
     }
     Info "Frontend dependency preflight passed: $FrontendDir"
