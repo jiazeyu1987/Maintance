@@ -1,5 +1,23 @@
 # 请求与命令记录
 
+## 2026-08-28 仅测试服 HEAD 发布
+
+- 用户需求：仅基于当前分支最新已提交代码构建维护控制台和测试发布包，并只发布到测试服务器；未提交改动不得进入构建产物，禁止正式服、备份服和 `mark-tested`。
+- 命中经验：`docs/experience-index.md`、`docs/test-release-preflight.md`、`docs/release-build-preflight-lessons.md`、`docs/powershell-preflight-lessons.md`、`E:\IntRuoyi\docs\release-backup-restore.md`、`E:\IntRuoyi\docs\server-access.md`、`E:\IntRuoyi\docs\login-access.md`、`E:\IntRuoyi\docs\worktree-memory.md`、`E:\IntRuoyi\docs\powershell-memory.md`。
+- 命令意图：冻结发布开始时的 HEAD，创建本轮专用 clean release worktree，构建维护控制台和测试发布包，校验 manifest、版本号、变更说明，并只发布到测试服务器 `172.30.30.58`。
+- 当前冻结基线：维护仓 `int_main@ebd527c436619595ec7c11615dfd9fe58cb05f67`；E:\IntRuoyi 根仓 `int_main@10fecf5caf929d47a385bcbf92fb410da312f8c2`；两处主工作区均存在既有脏改动，不能直接进入构建产物。
+- 当前任务目录：`doc/tasks/20260828-test-only-release-head/`
+- 当前结果：构建前 fail fast；冻结 HEAD 中 `TrainingRulesReadonlyTab.vue` 为 tracked 0 字节文件，且 `20260822_mes_process_pool_active_order_completion_receipt_rollback.sql` 使用 `rollback-migration` 首行导致实际 ops migration policy gate 报 `missing release-migration metadata`。未执行维护控制台构建、`build-release`、`publish-test` 或任何测试服服务器写入。
+
+
+## 2026-08-19 仅测试服 HEAD 发布
+
+- 用户需求：仅基于当前分支最新已提交 HEAD 构建维护控制台和测试发布包，并只发布到测试服务器；未提交改动不得进入构建产物，禁止 `mark-tested`、正式服和备份服动作；发布后必须验证真实运行态、记录问题并沉淀前置经验。
+- 命中经验：`docs/experience-index.md`、`docs/test-release-preflight.md`、`docs/release-build-preflight-lessons.md`、`docs/powershell-preflight-lessons.md`、`E:\IntRuoyi\docs\release-backup-restore.md`、`E:\IntRuoyi\docs\server-access.md`、`E:\IntRuoyi\docs\login-access.md`、`E:\IntRuoyi\docs\worktree-memory.md`、`E:\IntRuoyi\docs\powershell-memory.md`。
+- 命令意图：冻结维护仓和主程序仓 HEAD，创建干净临时 release worktree，构建维护控制台和测试发布包，校验 manifest、版本号、变更说明，执行 `publish-test` 并完成测试服真实运行态与运行控制台页面验证。
+- 当前计划：release id=`r260819a`；维护 worktree=`D:\ProjectPackage\Int\IntRuoyiWorktrees\r260819a\m`；主程序 worktree=`D:\IntRuoyiWorktree\r260819a\a`；state dir=`D:\ProjectPackage\Int\IntRuoyiWorktrees\r260819a-state\runtime-control`；releaseTag=`release-20260819-intmain-head-test-r260819a-r1`。
+- 初始状态：维护仓 `int_main` HEAD=`eba06a66a78ee3027397e54cea412ee6b8b0b741` 且主工作区 dirty；主程序仓 `int_main` HEAD=`037e55c280c346df8aa8d89453240ce5c7e0c83a` 且主工作区 dirty/ahead 6；本轮构建不得使用主工作区脏内容。
+
 ## 2026-08-12 仅测试服 HEAD 发布
 
 - 用户需求：仅基于发布开始时当前分支 HEAD 已提交代码构建维护控制台和测试发布包，发布到测试服务器；未提交改动不得进入构建产物，禁止正式服/备份服动作。
@@ -3048,6 +3066,25 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - 经验记录：新增 DCC 活跃上传槽发布前查询、releaseTag 占用检查、隔离控制台 backup-ops/release-package 双配置、脱敏辅助函数自测和页面 release-status fail-fast 门禁；任务进入 ready_for_closeout，等待本任务控制台/worktree/state 清理。
 - 收尾结果：五个 release worktree、两个 state 根和任务分支已清理，48181 已恢复主维护路径且显示本次 r2；清理后远端复核仍全部通过。task-closeout preview/apply 无 blocked/warnings，仅保留三份正式任务记录，任务状态 completed。
 
+## 20260813-r260812b-experience-consolidation
+
+- 用户请求：显式调用 `project-experience-consolidation`，复核刚完成的 r260812b 仅测试服发布并沉淀可复用经验。
+- 命令意图：只读提取来源任务 ISSUE，按经验索引查找已有归宿；不新建长期经验文档，不操作服务器、数据库、运行进程或 worktree。
+
+## 20260813-production-operations-review
+
+- 用户请求：基于当前系统评估正式服务器日常运维方式，重点包括软件更新、备份和数据分析。
+- 命令意图：只读检查维护仓及 `E:\IntRuoyi\docs` 中的发布、备份恢复、服务器访问、运行监控和容量相关证据；不连接或修改正式服务器、数据库及远端环境，所有记录保持脱敏。
+- 结果：确认发布与真实备份恢复演练已有较完整闭环；发现正式计划备份注册参数与主入口强制契约不匹配、通知未启用、应用内巡检缺少独立持续调度与外部告警；已形成按日/周/月/季度的运维模型和 P0/P1/P2 实施优先级。
+- 收尾：任务文档 UTF-8 与 diff 检查通过；task-closeout preview/apply 均无删除项、阻塞或警告，任务状态已标记 `completed`。
+
+## 20260813-production-operations-hardening-plan
+
+- 用户请求：将正式服运维现状中需要补齐的部分形成 PRD、开发计划和测试计划。
+- 命令意图：读取前序评估、当前发布备份恢复与运行控制证据，建立需求到开发里程碑、BDD/TDD 和验收证据的追踪关系；本次不修改生产代码或操作服务器、数据库和运行环境。
+- 结果：已生成 prd.md、development-plan.md、test-plan.md 与 task-state.json，覆盖自动备份、外部通知、独立监控、自动巡检、可观测性、镜像版本治理、PITR、只读分析与月报。
+- 收尾：任务包验证、三个规划技能 self-test、JSON/UTF-8/diff 检查和 task-closeout preview/apply 均通过；六个正式规划文件全部保留，规划交付完成，实施尚未开始。
+- 归档结果：迁移类型、DCC 活跃上传槽、NAS 配置、releaseTag 占用和日志脱敏已由前一任务写入既有经验；本次补齐真实 schema/compose 探针、稳定控制台版本复核、当次 JAR hash、Playwright CLI 串行和外部 worktree/task-closeout 顺序门禁，并同步发布 checklist 与索引。
 ## 2026-08-13 正式服运维规划文档复核优化
 
 - 用户意图：复核并优化既有正式服运维 PRD、开发计划、测试计划和任务状态中的不合理项与错误项。
@@ -3056,3 +3093,385 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - 凭据处理：不记录或输出密码、token、私钥、连接串及其他凭据。
 - 验证结果：第三轮独立复审 `pass`；规划包结构、JSON、UTF-8 无 BOM、空白和收尾校验通过；两个任务状态均为 `completed`，OPS-NODE-001 实施仍为 `planned / ready-for-implementation`。
 - 范围确认：未修改生产代码，未连接或操作服务器、数据库、NAS、计划任务和运行环境，未执行备份、恢复、发布或真实 E2E。
+
+## 2026-08-14 正式自动备份计划任务 IMPL-M1
+
+- 用户意图：电脑重启后继续已通过复审的运维规划实施。
+- 命令意图：从 `implementationNode.currentMilestone=IMPL-M1` 恢复，只在 IntRuoyi 隔离 worktree 中创建并运行后端计划任务合同测试以取得预期 RED；不改生产脚本，不操作服务器、数据库、NAS、计划任务或运行环境。
+- 凭据处理：测试只使用 dummy 标识；命令、日志和任务文档不记录生产确认明文、账号密码、token、私钥或连接串。
+- 结果：IMPL-M1 RED 已完成并经独立复核通过；新增后端合同测试只暴露当前实现缺少 RepositoryEnvironment、受保护确认、principal/S4U/Limited、batch-logon/ACL 和脱敏合同，未修改生产脚本或操作服务器/数据库/运行态。
+
+## 2026-08-14 正式自动备份计划任务 IMPL-M2
+
+- 用户意图：继续既有实施链，推进 IMPL-M2 GREEN。
+- 命令意图：在 `D:\IntRuoyiWorktree\production-backup-scheduled-task-contract\IntRuoyiBackend` 隔离 worktree 中实现注册脚本、principal、仓库环境和受保护确认合同；只运行本地 Pester/pytest/parser/diff 验证，不操作服务器、数据库、NAS、计划任务或运行环境。
+- 凭据处理：不得记录生产确认明文、账号密码、token、私钥或连接串；受保护确认只允许通过 secrets 读取并在 plan-only/日志中脱敏展示。
+- 结果：PASS。IMPL-M2 已实现并通过独立验证；Pester `9 passed`，pytest `13 passed`，parser/diff/静态秘密扫描均通过；未操作服务器、数据库、NAS、计划任务、备份、恢复、发布或运行态。
+- 提交记录：后端 worktree 提交 `1ee24591a`（`任务: 实现备份计划任务注册合同`），任务状态推进到 IMPL-M3 待实施；维护任务记录与经验文档保持未提交，等待后续里程碑/收尾统一处理。
+
+## 2026-08-14 正式自动备份计划任务 IMPL-M3
+
+- 用户意图：继续既有实施链，推进 IMPL-M3。
+- 命令意图：在 `D:\IntRuoyiWorktree\production-backup-scheduled-task-contract\IntRuoyiBackend` 隔离 worktree 中实现 RepositoryEnvironment 传播与确定性健康判定；只运行本地 Maven/脚本/静态验证，不操作服务器、数据库、NAS、计划任务、备份、恢复、发布或运行环境。
+- 凭据处理：不得记录生产确认明文、账号密码、token、私钥或连接串；状态接口和页面证据只允许 blocked reason 与脱敏证明。
+- 结果：PASS。IMPL-M3 已实现并通过第二轮独立验证；Maven 扩展目标 `30 passed`，Pester `9 passed`，pytest `13 passed`，`git diff --check` 仅 CRLF 工作区提示；覆盖 fake schtasks 输出、query failure、disabled、missing next run、non-zero last result、path drift、RepositoryEnvironment/maxFreshnessHours 和 manifest completedAt 正常/非法解析。
+- 提交记录：后端 worktree 提交 `27db9a062`（`任务: 实现备份计划健康判定合同`）；任务状态推进到 IMPL-M4 planned / implementation-ui；未操作服务器、数据库、NAS、计划任务、备份、恢复、发布或运行态。
+- 2026-08-14：用户在本机重启后要求继续既有 OPS-NODE-001 实施链；恢复 IMPL-M4，只操作 `D:\IntRuoyiWorktree\production-backup-scheduled-task-contract` 本地 worktree，不连接测试服或正式服。
+- 命令意图：核对 task-state、worktree 改动与端口；恢复 slot 5 的 `8086/48086` 成对运行态；从当前 worktree 构建后端 Jar；运行前端静态合同、类型检查与测试租户真实只读 Playwright；凭据仅从既有本机测试来源注入进程环境，未输出或写入文档。
+- 验证结果：静态合同 PASS，类型检查 PASS，后端 30/30 模块构建 PASS，48086 health=UP，8086 HTTP 200，测试租户/aoteman 真实只读 E2E PASS；同时发现状态接口在缺少 `backup.repositoryEnvironment` 时空指针，已补确定性回归测试并取得预期 RED，进入根因修复。
+- 根因修复结果：将 `List.of(...).contains(null)` 改为显式允许值判断；目标单测 1/1、服务全类 18/18、修复后 Jar 30/30 模块构建和业务码收紧后的测试租户真实只读 E2E 均 PASS，缺失仓库环境现在明确显示为配置异常，不再返回系统异常，也未设置默认值。
+- 权限门禁结果：新增 planned query-only Playwright 文件并通过静态/语法检查；当前缺少预先批准的 query-only 测试账号凭据，脚本按预期 fail fast。按计划禁止使用 aoteman 冒充或通过 API/SQL 临时改权限，因此 IMPL-M4 标记 blocked，未提交、未推进后续节点。
+- 独立门禁 round-1：发现 query-only 脚本错误断言 transport HTTP 403，而项目权限拒绝合同为 HTTP 200 + JSON code=403；按严格 TDD 先复现静态合同失败，再修正完整认证头和业务码断言，并同步开发/测试执行口径。
+- 独立门禁 round-2：确定性缺陷已清除；frontend static、E2E 语法、权限封装回归与 diff 检查通过，结论为 BLOCKED。唯一剩余前置是预批准 query-only 测试账号凭据，未提交、未推进后续节点。
+- 用户新增授权：允许从测试租户用户管理选择现有用户，普通测试用户使用用户提供的统一测试密码，并允许管理员通过真实前端赋予验收所需权限；所有凭据在记录中脱敏。
+- 变更处理：已接受 `20260814-query-only-account-ui-authorization`，范围仅限本机测试租户真实页面的最小权限角色配置、query-only E2E、原角色恢复和任务专用角色清理；仍禁止 API/SQL 改权限、远端/正式服操作和全权限账号冒充。
+- query-only 结果：PASS。管理员通过测试租户真实前端创建最小查询角色并绑定字母数字现有用户；页面只读路径、写控件隐藏和四个写接口 `HTTP 200 + JSON code=403` 均通过。随后恢复所有候选用户原角色、删除任务专用角色并清理含敏感状态的临时浏览器产物。
+- 凭据处理：用户提供的管理员及普通测试用户凭据只通过交互式安全输入使用；本日志、任务文档、截图和提交均不记录明文。
+- 回归结果：frontend static/typecheck、Maven 31 tests、Pester 9 tests、task-relevant pytest 15+1 tests 通过。更宽发布工具 pytest 有 1 个与本节点无关的既有 migration metadata 基线失败，已显式记录，不用于替代或否定本节点定向门禁。
+- 重启恢复：电脑重启后确认本任务 8086/48086 无监听；不重复已完成的权限写入，继续执行独立验证、提交和任务收尾。
+- 独立门禁准备：使用现有 worktree 构建恢复本地 slot 5，48086 health=UP、8086 HTTP 200；仅供独立 tester 验证，不执行 migration、远端访问、计划任务注册、备份或恢复。
+- 2026-08-15 重启恢复：确认上轮无结果的根因包含主 agent 错误调用 FREEFORM 工具以及 tester 的无人管理交互式输入，不是电脑重启本身；已改为 raw JavaScript 工具调用并禁止无人管理的凭据提示。
+- 命令意图：恢复本任务 slot 5 本地运行态，顺序执行前端静态/语法/typecheck、Maven、Pester、pytest、缺陷证据和 diff 门禁，再重派独立 tester；不连接远端、不执行 migration、计划任务注册、备份、恢复或发布。
+- 编排错误：一次 pytest 命令把发布同步测试写成不存在的文件路径，前置 13 项通过但命令因路径不存在退出；已按测试计划改用正确精确目标并重跑，未用该错误结果评价产品质量。
+- 验证结果：frontend static/语法/typecheck PASS，Maven 31 tests PASS，Pester 9 tests PASS，task-relevant pytest 15+1 tests PASS，bug evidence/task-state/diff PASS，48086 health=UP、8086 HTTP 200；凭据仍保持脱敏，IMPL-M4 等待独立 tester 最终结论。
+- 独立门禁结果：IMPL-M4 round-3 PASS。独立 tester 完成前端 static/语法/typecheck、Maven 31+1 定向测试和真实 query-only UI 生命周期；四个写接口均按项目合同返回 HTTP 200 + JSON code=403，原角色恢复、临时角色删除和敏感会话清理均通过。
+- 状态推进：IMPL-M4 已标记 completed，OPS-NODE-001 进入 ready_for_closeout；下一步仅提交任务所属实现、融合最新 int_main、验证融合结果并清理本任务 helper/worktree，不执行正式服 rollout、计划任务注册、备份或恢复。
+- 2026-08-15 用户请求：电脑重启后继续，并要求分析上述错误原因、实施解决方案和完成收尾；所有账号、密码和安全输入继续脱敏，未写入命令或报告。
+- 原因与解决：query-only 原断言误把权限业务码当 transport 状态码，已统一为 HTTP 200 + JSON `code=403`；8086 错误 Vite mode 导致 `/undefined` API 前缀，已按 `vite --mode dev` 成对验证；隔离 worktree 首次全量构建缺少尚未提交的 MES 前置类，待正式提交 `254bb6181` 补齐后在当前 `int_main` HEAD 重建通过，未复制脏文件绕过。
+- 最终验证：实现融合提交 `050b19a7c` 已是 `int_main` 祖先；当前 HEAD `9f7055e29` 的 30 模块 Maven package、31+1 个定向 Maven 测试、Pester 9、pytest 15+1、前端静态/语法/typecheck 全部 PASS。
+- 收尾结果：task-closeout preview/apply blocked=0、warnings=0；一次性证据和 lifecycle helper 已清理；任务 worktree Git 注册、物理目录、8086/48086 监听和任务进程均不存在；OPS-NODE-001 状态更新为 completed，未执行正式服 rollout、计划任务注册、备份或恢复。
+
+## 2026-08-16 仅测试服 HEAD 固化发布
+
+- 用户意图：仅基于发布开始时当前分支最新已提交代码构建维护控制台和测试发布包，并仅发布到测试服务器；不追逐启动后的新提交，未提交改动不得进入产物；发布后完整验证真实运行态、页面、运行控制台版本号与变更说明，并记录问题和沉淀前置经验。
+- 命令意图：读取正式发布、服务器、登录、PowerShell、worktree、测试服发布和 closeout 门禁；记录维护仓与主程序仓 branch/HEAD/status；从冻结提交创建 `D:\IntRuoyiWorktree\r260816a` 下本轮专用 clean detached worktree；只执行同一 releaseTag 的 `build-release -> publish-test` 和测试服验收。
+- 冻结证据：维护仓 `int_main@3cd1f3e7e99fa397497107708a9ba977d5879749`；主程序仓 `int_main@cb0464ce886973f16136ed31b4d5812d28927eb3`；两者主工作区均 dirty，不直接作为构建输入。
+- 环境边界：只允许 test=`172.30.30.58`；禁止 `mark-tested`、`promote-prod`、`promote-backup`，禁止访问或写入正式服、备份服；任何凭据只做 presence/脱敏验证，不写入日志、任务文档或提交。
+- 构建结果：维护控制台前端 typecheck/build、后端 26 tests 和 jar package PASS；隔离运行控制台 48181 health=UP。唯一 `build-release` operation=`SUCCESS`，主程序 Maven 30/30 模块、前端 `build:test`、两镜像 build、镜像 tar 导出和 NAS 上传均完成。
+- 来源验证：Manifest v1 validator PASS；releaseTag/publishScope、两个 sourceRepos commit/dirty、legacy gitCommit、前端 release-info/changeSet、artifact size、两 worktree HEAD/clean 共 22 项断言全部通过。发布包只对应冻结主程序提交 `cb0464ce...`，没有采用后续分支更新或未提交改动。
+- 当前意图：在服务器写入前先只读检查测试服发布锁/现状并执行 `publish-test` preview；只允许目标 `172.30.30.58` 和同一 releaseTag，通过后提交唯一 operation 并核真实运行态。仍不执行 mark-tested/prod/backup 动作。
+- 发布结果：唯一 `publish-test` operation=`op-2026-08-15T183354112639300Z-271fd4fe-4a9c-456d-93e4-bc3a14ae3c4f` 在 required SQL 阶段失败；错误为 `20260813_form_template_menu_before_form_center` 的真实菜单父级前置不成立。未重试、未手工修库、未改 migration ledger、未切换正式服或备份服。
+- 失败态核对：测试 release lock=`FAILED`、RUNNING lock=0、迁移 APPLIED=6/SKIPPED=428/FAILED=1；`.env`/Compose 指向目标 tag，但实际 backend/frontend 仍为旧版本，backend health=UP、frontend HTTP=200 仅证明旧运行态可用。本次测试服发布未成功。
+- 凭据处理：operation 原始日志含展开后的 secret-bearing MySQL 命令，不复制、不提交；任务证据只记录脱敏摘要、状态和计数。
+- 环境恢复：准备恢复 48181 主维护控制台时发现主 `runtime-control.local.yaml` 仍指向废弃主程序目录，与固定 `E:\IntRuoyi\IntRuoyiBackend/IntRuoyiFronted` 契约不一致；按 fail-fast 未停止本任务隔离控制台、未用旧配置重启、未删除 release worktree/state。
+- 阻塞审计 2：复核 operation 仍 FAILED、两个冻结 worktree clean 且 HEAD 未变化。结构化解析 Manifest/preflight-plan 发现 3 个 APPLY 迁移传递依赖 pending 且会被 code-only 过滤的 data 迁移；计划生成后过滤未重算依赖闭包。冻结包无受支持继续路径，仍未重试、未改包/SQL/ledger、未切 with-data。
+- Scope 复核：目标包固定 code-only，500 个 artifact 中无 database dump/MinIO snapshot；现有脚本要求 with-data 包必须含 MySQL dump、MinIO snapshot 和 DCC inventory。同一包不能受支持地切换 scope，未尝试修改 manifest 或执行 with-data。
+- 阻塞审计 3：operation/远端 migration/menu/实际镜像与前两轮一致，两个冻结 worktree HEAD/clean 未变化，结构化分析仍判定 supportedPath=false、hazards=3。相同阻塞已连续确认 3 次，目标正式标记 blocked；未重试、未修改测试库、未切换 scope、未操作正式服或备份服。
+
+## 2026-08-17 正式自动备份契约 int_main 融合后验证
+
+- 用户意图：独立验证 OPS-NODE-001 已融合进入 `int_main`，并确认当前融合结果仍满足相关源码与自动化测试合同。
+- 命令意图：只读核对主程序与维护仓提交祖先关系、分支和脏状态；在主程序当前 `int_main` 上运行定向 Maven、Pester、pytest 及前端静态/类型验证。所有测试逐项记录退出码，不连接或修改正式服务器，不执行发布、备份、恢复、数据库或 NAS 操作。
+- 验证基线：主工作区存在并行脏改动且分支在预检期间前进，因此冻结 clean detached worktree `int_main@2101423329a5b5af8534c44af7536eb69861504d`；验证结束时主分支仍为同一提交。
+- 验证结果：融合/实现/维护收尾提交祖先关系全部通过；Maven 31+1、Pester 9、pytest 15+1、前端静态合同、两个 E2E 语法和 `pnpm ts:check` 全部 PASS，worktree diff check、进程和监听复核通过。
+- 范围结论：本地融合和代码合同验证 PASS；未连接正式服务器，正式计划任务 rollout、RPO 参数和连续运行证据仍需单独授权。
+- 收尾结果：task-closeout preview/apply 无 blocker/warning；detached verification worktree 因依赖残留首次移除返回目录非空，在确认 Git 注册已移除、无 `.git`、无进程后按任务精确路径清理，最终物理目录不存在。
+
+## 2026-08-17 code-only 迁移闭包正式修复与仅测试服发布
+
+- 用户授权：允许解除上一轮固定 HEAD 限制，正式修复 `code-only` migration 依赖闭包、已确认的错误 migration metadata 和本机运行控制台固定路径；验证后提交新的 HEAD、构建新 releaseTag，并继续只发布测试服务器。
+- 命令意图：读取发布、服务器、登录、PowerShell、worktree、迁移和测试服门禁；从维护仓与主程序各自本地 `int_main` 创建任务专用 clean worktree；按 BDD/TDD 执行 RED/GREEN/REGRESSION；仅提交任务文件并合入主线后，从新提交创建独立 release worktree，执行 `build-release -> publish-test` 和真实运行态/页面验收。
+- 禁止范围：不手工修改测试库或 migration ledger，不复用/重试上一失败 releaseTag，不发布或探测正式服/备份服，不执行 `mark-tested`、`promote-prod`、`promote-backup`，不提交秘密或并发任务改动。
+- Git 预检：维护仓 `int_main@3cd1f3e...` dirtyCount=196；主程序共享主工作区在只读检查期间从 `969cf6d...` 前进到 `21014233...` 且 dirtyCount=11704。后续禁止使用两个共享脏工作区作为开发、测试或构建输入，只认任务 worktree 创建后的实际 HEAD。
+
+## 2026-08-19 仅测试服 HEAD 发布尝试
+
+- 用户意图：仅基于发布开始时冻结的当前分支最新已提交代码构建维护控制台和测试发布包，并仅发布测试服务器；未提交改动不得进入产物，测试服成功后再做完整运行态和运行控制台版本说明验收。
+- 命令意图：读取发布、服务器、登录、PowerShell、worktree、测试服发布和经验门禁；创建/复用任务目录 `doc/tasks/20260819-test-only-head-release`；从维护仓和主程序仓冻结 HEAD 创建本轮 clean release worktree；启动本轮维护控制台并通过运行控制台 API 预览/执行 `build-release`，禁止 `mark-tested`、`promote-prod`、`promote-backup`。
+- 冻结证据：维护仓 `int_main@eba06a66a78ee3027397e54cea412ee6b8b0b741`，release worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260819a\m`；主程序仓 `int_main@037e55c280c346df8aa8d89453240ce5c7e0c83a`，release worktree `D:\IntRuoyiWorktree\r260819a\a`；两个 release worktree 均 clean，主工作区脏改未进入构建输入。
+- 构建结果：`build-release` 预览去除错误 `targetEnvironment` 后通过，但唯一 operation `op-2026-08-18T174311645827300Z-818527d7-fab1-4411-9cec-bb27e29acdec` 在 manifest 生成前失败，原因是实际维护仓 ops migration policy gate 拒绝 `20260814_mes_c015_route_dcc_qa_reconciliation_schema`（schema）依赖 `20260814_mes_c015_route_dcc_qa_reconciliation_backfill`（backfill/evidence-only）。
+- 边界结论：发布包、manifest、版本号和变更说明均未生成；未执行 `publish-test`，未写测试服、正式服或备份服；失败 releaseTag `release-20260819-intmain-head-test-r260819a-r1` 判废，不允许复用。
+- 问题记录：任务日志已记录 PowerShell 换行转义、主工作区脏、宽泛搜索输出过大、build-release payload 误带 `targetEnvironment`、app gate 与实际 ops gate 规则不一致、完整 runtime config 取证粒度过大、实际迁移依赖闭包阻塞等问题。
+- 经验沉淀：已更新 `docs/release-build-preflight-lessons.md`、`docs/test-release-preflight.md` 和 `docs/experience-index.md`，要求发布前以 preview 指向的实际维护仓 ops gate 为准，拦截 executable migration 依赖 evidence-only migration；凭据和配置只记录脱敏白名单字段。
+## 2026-08-19 仅测试服发布 r260819b
+
+- Request: 基于当前分支最新已提交代码执行仅测试服发布；未提交改动不得进入构建产物。
+- Command intent: 读取发布/PowerShell/worktree/服务器门禁；从 dirty 主工作区冻结维护仓 HEAD `eba06a66a78ee3027397e54cea412ee6b8b0b741` 与主程序 HEAD `037e55c280c346df8aa8d89453240ce5c7e0c83a`；创建 `r260819b` 干净 release worktree；生成脱敏 runtime-control 配置摘要；运行维护仓实际 ops migration policy gate。
+- Result: BLOCKED before build. Ops gate failed because `20260814_mes_c015_route_dcc_qa_reconciliation_schema` (`schema`) depends on evidence-only `20260814_mes_c015_route_dcc_qa_reconciliation_backfill` (`backfill`). No build-release, publish-test, mark-tested, promote-prod, promote-backup, or server write was executed.
+- Evidence: `doc/tasks/20260819-test-only-head-release/evidence/frozen-baseline-r260819b.json`, `doc/tasks/20260819-test-only-head-release/evidence/runtime-control-config-summary-r260819b.json`, `doc/tasks/20260819-test-only-head-release/evidence/ops-migration-policy-gate-r260819b.json`.
+- Secret handling: raw runtime config/NAS credentials are not recorded in task evidence or this command log; only credential presence booleans are recorded.
+
+## 2026-08-19 仅测试服发布 r260819c
+
+- Authorization and frozen source: 用户已授权正式修复迁移门禁；主程序修复提交=`e0c488267dabf77ce566acd0013cc400fdf88bfe`，最终冻结 app HEAD=`22fce6c341c770cb6ac78eb5b2f9f82d5bbcd843`，维护 HEAD=`eba06a66a78ee3027397e54cea412ee6b8b0b741`。发布输入固定为 `D:\IntRuoyiWorktree\r260819c\a` 与 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260819c\m`，均 detached clean。
+- Preflight result: app gate 与维护实际 ops gate 均 PASS 505 migrations；维护控制台完整构建 PASS、Maven 26 tests PASS，最终 JAR SHA-256=`73c7ee3e2f36dc4579e3bb6356fe5ae980496b080ffc559a56464053068007e6`。
+- Dependency result: app frozen install 耗时 5m12s；app/maintenance pnpm ignored-builds 经临时最小 `onlyBuiltDependencies` + `rebuild --pending` 清零，package.json 原始哈希恢复，worktree clean。
+- Runtime-control result: 后台 Start-Process 被本机策略拒绝且未产生副作用；改用本任务前台 PTY 启动 `127.0.0.1:48182`，PID=45368、health=UP。build-release preview 对 releaseTag=`release-20260819-intmain-head-test-r260819c-r1` 全部通过；尚未提交 build operation。
+- Secret handling: runtime YAML、NAS JSON 和 operation raw secret-bearing output 不写入日志；只记录脱敏路径、布尔门禁、operation ID 和状态。
+
+## 2026-08-19 仅测试服发布 r260819e
+
+- 用户意图：再次授权继续本次仅测试服发布；仍要求发布产物只来自已记录 worktree 的已提交代码，不追逐后续新提交，不发布正式服或备份服。
+- 命令意图：复用任务目录 `doc/tasks/20260819-test-only-head-release`；从维护仓已提交修复 `74b3a87bf60be40d0f5ccf6bbe37874a5a7ea465` 和主程序固定提交 `adeb3aabc89e03d1f231552015d37bc78e0f2adb` 创建/核对 `r260819e` 干净 release worktree；先过 runtime-control 配置、app gate 和维护仓实际 ops gate，再构建维护控制台、提交 `build-release -> publish-test`。
+- 当前证据：`D:\ProjectPackage\Int\IntRuoyiWorktrees\r260819e\m` 与 `D:\IntRuoyiWorktree\r260819e\a` 均为 detached clean；`runtime-control-config-summary-r260819e.json`、`app-migration-policy-gate-r260819e.json`、`ops-migration-policy-gate-r260819e.json` 均 PASS。
+- 范围边界：只允许测试服 `172.30.30.58` 和远端 `/opt/intruoyi/runtime`；禁止 `mark-tested`、`promote-prod`、`promote-backup`；runtime YAML、NAS JSON、SSH/MySQL/MinIO 凭据不写入日志。
+- r260819e-r1 结果：build-release operation `op-2026-08-19T075024057388700Z-df65c1a6-bdde-4d08-bbe9-58653c87c919` 因前台 48182 控制台中断留下 stale RUNNING 和不完整半包；本地包无 manifest、legacy manifest 或 release-info，releaseTag 判废，未执行 publish-test 或任何正式/备份服动作。
+- 后续动作：不追逐新提交、不复用失败 tag；继续使用 `r260819e` 的同一冻结 maintenance/app worktree 和同一目标提交，换新 releaseTag `release-20260819-intmain-head-test-r260819e-r2` 重新 build-release。
+
+## 2026-08-19 仅测试服发布 r260819f-r2 元数据门禁
+
+- 命令意图：只读核验 build-release operation、package、manifest v1、legacy manifest、前端镜像内 `release-info.json`、本地镜像 tag、冻结 worktree HEAD/clean 和测试 runtime-env；不执行服务器发布写入。
+- 构建结果：operation=`op-2026-08-19T155932383630800Z-bf57b59b-0327-46d9-86c1-53e233b37888` 为 SUCCESS，发布包、sourceRepos、dirty=false、legacy gitCommit、两镜像 tag 和测试 eDHR 绑定均与冻结输入一致。
+- 阻断结果：manifest 与前端 release-info 的 changeSet 只有通用发布包/组件范围，未包含冻结提交 `adeb3aabc...` 的主题 `任务: 修复C00发布后空哈希`；按验收标准判废 `r260819f-r2`，未执行 publish-test、mark-tested、promote-prod 或 promote-backup。
+- 后续命令意图：按 BDD/TDD 修复维护发布脚本的 commit-bound changeSet 契约，提交后创建新 release worktree 和新 releaseTag 重建；禁止修改已生成包或镜像绕过重建。
+## 2026-08-20 仅测试服发布续跑
+
+- Request: 用户要求继续仅测试服发布；构建产物必须只包含发布开始记录的干净 worktree 已提交代码，不追逐后续 Git 更新。
+- Commands: 创建修复 worktree `r260819h-fix`，运行 Node / pytest / git diff 门禁，提交 `2d5a42bbe900b2b04bd5f4b8283d99994e0d0950`；创建发布 worktree `r260820a`。敏感环境变量、eDHR 凭据和 raw secret-bearing 日志未记录。
+- Verification so far: commit-bound release notes UTF-8 probe PASS；target runtime env boundary tests PASS；维护/app 发布 worktree detached clean。
+
+## 2026-08-20 仅测试服发布 r260820a-r2 / r260820b 续跑
+
+- Request: 用户继续授权仅测试服发布；失败 tag 不复用，仍只基于已记录干净 release worktree 的已提交代码构建发布。
+- Command intent: 对 `r260820a-r2` 执行 manifest、release-info、runtime-env 与 publish-test 预览/执行；失败后只读冻结远端 lock/migration/运行态证据，随后使用维护修复提交 `59bc2330b4e2998415f738bdf6f10206135adb7c` 与固定 app 提交 `adeb3aabc89e03d1f231552015d37bc78e0f2adb` 创建/使用 `r260820b` 干净 release worktree。
+- Result: `r260820a-r2` build-release PASS，但 publish-test 在 route snapshot BACKFILL hook 阶段因 Quartz job 查询尚未迁移出的 `pqc_release_application_scope_id` 失败；远端实际 backend/frontend 仍为旧镜像，测试服发布未成功。`r260820b` app/ops migration policy gate 已 PASS，下一步构建并发布新 releaseTag。
+- Secret handling: 测试服 `.env`、NAS、MySQL、MinIO 和 SSH 原始输出未写入日志；仅记录脱敏状态、endpoint 主机、operation、releaseTag 和校验结论。
+
+## 2026-08-20 仅测试服发布 r260820c / r260820d 续跑
+
+- Request: 继续完成仅测试服发布；固定使用发布开始后已记录的冻结提交，失败 releaseTag 不复用，不追逐后续 Git 更新。
+- r260820c result: `build-release` operation `op-2026-08-19T234923044851500Z-7e04040e-bcca-4de7-9bab-4459efe98c65` 因控制台进程继承正式 `EDHR_S3_ENDPOINT` 而在 manifest 前失败；部分包无 manifest/release-info，tag 判废，未执行 publish-test/prod/backup/mark-tested。
+- r260820d intent: 从相同冻结 maintenance/app commits 创建新的 detached clean release worktree，配置绑定新 worktree；启动控制台前从测试服受控 `.env.copytest` 显式加载测试 eDHR 到 process-scoped generic/test variables，先过脱敏 binding summary 与 Object Lock verifier，再执行新 tag 的 `build-release -> publish-test`。
+- Frozen evidence: maintenance=`e3c3fedf8ccb7bca81925ab8b892c59bdd3097ab`，app=`adeb3aabc89e03d1f231552015d37bc78e0f2adb`，worktrees=`D:\ProjectPackage\Int\IntRuoyiWorktrees\r260820d\m` / `D:\IntRuoyiWorktree\r260820d\a`，releaseTag=`release-20260820-frozen-head-test-r260820d-r1`。
+- Secret handling: 不保存 `.env.copytest` 原文、access key、secret key、NAS/MySQL/SSH 密码或 raw secret-bearing operation log；证据只保留 endpoint/bucket/region/retention flags、credential presence 和结果状态。
+
+## 2026-08-21 仅测试服 HEAD 发布 r260821c
+
+- Request: 继续执行仅测试服发布；构建产物必须只包含本轮发布开始记录的当前分支 HEAD 已提交代码，未提交改动不得进入构建，不追逐后续 Git 更新。
+- Command intent: 识别任务目录 `doc/tasks/20260821-test-only-head-release`；从 dirty 主工作区冻结维护仓 HEAD `c3c85e7c476392520412f107165f15d277ae4064` 与主程序 HEAD `12a773ef285ff34bf2bd25036fd3dff2930912bc`；创建/使用干净 release worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260821c\m` 与 `D:\IntRuoyiWorktree\r260821c\a`；仅运行维护控制台构建和 `build-release`，发布前校验 package/manifest/release-info。
+- Result: BLOCKED before publish-test. r1 因 app 前端依赖缺失失败，r2 因 Smart Release baseline 缺失失败，r3 build-release operation `op-2026-08-20T190813392637100Z-556cbade-a3e9-4c4a-9dc9-bc791ed59add` SUCCESS 但发布包独立 manifest validator 失败，且 manifest/release-info 变更说明乱码。
+- Blockers: `runtime-env/test.env`、`prod.env`、`backup.env` 均含 forbidden hardcoded `EDHR_S3_ENDPOINT=http://172.30.30.57:9000`；manifest 与 `release-info.json` 的 `changeSet.summary/items` 未以 UTF-8 呈现冻结提交主题 `任务: 修复发布Hook镜像参数`。
+- Boundary: 未执行 `publish-test`、`mark-tested`、`promote-prod`、`promote-backup`；未写测试服、正式服或备份服；未手工修改发布包、manifest、release-info 或远端状态。
+- Secret handling: 不保存 NAS、SSH、MySQL、MinIO 或 eDHR 凭据原文；operation log 中凭据输出仅以脚本脱敏文本作为过程参考，不写入长期日志。
+
+## 2026-08-21 仅测试服 HEAD 发布 r260821h-r4
+
+- Request/authorization: 用户要求仅基于发布开始时冻结的已提交 HEAD 构建并发布测试服；用户已回复“授权”“继续”；允许测试服写入和真实运行态验证，未授权正式服、备份服、`mark-tested`、`promote-prod`、`promote-backup`。
+- Frozen inputs: maintenance `66c4ea05dda04459433bc22471ea2b6f4f3dfc32`，app `12a773ef285ff34bf2bd25036fd3dff2930912bc`；worktrees `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260821h\m` / `D:\IntRuoyiWorktree\r260821h\a`；package `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260821-intmain-head-test-r260821h-r4`。
+- Build commands/evidence: maintenance `scripts\build.ps1` PASS；`build-release` operation `op-2026-08-21T204711713137200Z-9de34c7d-990f-4236-8d47-70be7309ce14` SUCCESS；manifest validator `MANIFEST_VALIDATION_PASSED`；tar SHA-256=`b9735d8aaf43e4665aec5ea262a7fa92e8c66e16bbbadad7e31ca5203cb5c040`。
+- Publish command/evidence: preview action=`publish-test`、environment=`test`、host=`172.30.30.58`、remote=`/opt/intruoyi/runtime`；唯一 publish operation `op-2026-08-21T210307402431400Z-d11e3d45-06fb-4026-a039-a1ee4f70086b` FAILED；未执行其它环境动作。
+- Failure: route snapshot BACKFILL 运行报告启动时 `MesProRouteVersionSnapshotMigrationRunner` 报 `No default constructor found`；r4 判废，不重试、不改 lock/migration、不改冻结 app 代码。
+- Failure-state verification: `.env IMAGE_TAG` 为 r4，但 actual backend=`hotfix-20260814-route-submit-order-r1`、actual frontend=`release-20260813-intmain-head-test-r260812b-r2`；旧容器 running、backend health UP、frontend HTTP 200，frontend release-info 仍旧版本；旧 `.env` 基线无法安全证明，任务状态 blocked。
+- Problems/lessons: P026 Docker `InvalidDefaultArgInFrom` warning；P027 raw operation log 暴露密码参数形态；P028 publish failure 后 `.env`/actual images/release-info 漂移；P029 Spring multi-constructor Bean 缺显式 `@Autowired`。问题完整字段、处理结果和自动化建议见 `doc/tasks/20260821-test-only-head-release/execution-log.md`。
+- Secret handling: request log、任务证据和经验文档不记录密码、token、私钥、完整 `.env` 或 raw operation log；只记录脱敏状态、tag、hash、计数和路径。
+
+## 2026-08-22 仅测试服 HEAD 发布 r260822a-r2
+
+- Request/authorization: 用户继续并已授权仅测试服发布；本轮必须从开始时记录的冻结提交构建，只允许 `build-release -> publish-test`，禁止正式服、备份服、`mark-tested`、`promote-prod`、`promote-backup`。
+- Frozen inputs: maintenance=`66c4ea05dda04459433bc22471ea2b6f4f3dfc32`，app=`c4d2c637bf1f2cea723876ee363f311b1128aaf4`；worktrees=`D:\ProjectPackage\Int\IntRuoyiWorktrees\r260822a\m` / `D:\IntRuoyiWorktree\r260822a\a`；package=`E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260822-intmain-head-test-r260822a-r2`。
+- Build commands/evidence: app `pnpm build:test` PASS；maintenance `scripts\build.ps1` PASS；build-release operation=`op-2026-08-22T033833931534300Z-c3389b33-a5b1-44e0-9b17-e63dc07cce7e` SUCCESS；manifest validator PASS；tar SHA-256=`aa2c8e5d2b8748798f2c6f2966806e7c91fb5bedc115a103bddd6c22826ddb68`。
+- Publish commands/evidence: preview and high-risk preflight PASS；唯一 publish operation=`op-2026-08-22T035621436028400Z-55335b7f-e740-4d0f-a9d1-a85f875648fa`，target=`test` host=`172.30.30.58` remote=`/opt/intruoyi/runtime`。
+- Result: route snapshot BACKFILL report=`BLOCKED`、`blockerCount=882`；临时 runner 已按任务边界清理，live backend/frontend 未切换；operation API/state 未形成 SUCCESS，任务判定 `NO-GO/blocked`，r260822a-r2 不得复用。
+- Problems: P038-P042 已记录 route snapshot blocker、runner 不退出、operation stale RUNNING、串行迁移耗时和 raw log secret redaction；脱敏日志未记录凭据原文。
+- Secret handling: 不记录密码、token、私钥、完整 `.env` 或 raw operation log；仅记录脱敏状态、tag、hash、计数、路径和退出结论。
+
+## 2026-08-22 继续诊断 r260822a-r2 route snapshot blocker
+
+- Request: 用户继续执行现有仅测试服发布任务；沿用已冻结 worktree/提交，不重新获取 Git 后续提交，不重试失败 releaseTag。
+- Command intent: 只读读取测试服 route snapshot report；按真实库 `DESCRIBE` 核对 `mes_pro_route_version`、租户分布、身份列状态和少量 JSON 字段；不执行业务数据、migration ledger、release lock 或 `.env` 写入。
+- Evidence: report `status=BLOCKED`、`scannedCount=47`、`updatedCount=0`、`blockerCount=882`；reasonCode=`FLOW_NODES_MISSING:8`、`ROUTE_ID_MISSING:2`、`PROCESS_ID_INVALID:436`、`PRODUCT_BOM_IDENTITY_INVALID:436`；tenant 1=芋道源码 46 条、tenant 122=测试租户 1 条；身份列 47/47 均为空。
+- Root cause: 历史 route snapshot 不满足严格结构/身份契约；样本 route version `id=110` 的快照 BOM `processId=0`，当前 BOM 物理表对应 `process_id` 为正数，不能从当前投影静默重建不可变历史快照。46 条 blocker-bearing rows 属于受保护芋道源码租户。
+- Problems: P044 远端无 jq；P045 首次内联 SQL quoting 失败；P046 JSONPath binary 类型探针失败；P047 历史快照治理 blocker；P048 中文租户名终端乱码。完整字段见任务 `execution-log.md` 与 `verification-report.md`。
+- Result: 根因已确认，任务保持 `NO-GO/blocked`；未修改任何业务数据或状态表，未执行 `mark-tested`、`promote-prod`、`promote-backup`，未访问正式/备份服务器；r260822a-r2 不得复用。
+- Secret handling: 远端 SQL 仅在容器内引用环境变量密码，未输出密码值；报告/任务证据不含 token、私钥、完整 `.env` 或 raw operation log；中文证据使用 UTF-8/HEX 处理。
+
+## 2026-08-22 继续执行失败态只读复核
+
+- Request: 用户继续当前仅测试服发布目标；必须沿用已冻结 worktree/提交，不追逐 Git 后续提交，不复用失败 releaseTag，并继续记录真实外部状态。
+- Command intent: 只读复核两个发布 worktree 的 HEAD/clean 状态、本地 route snapshot 报告状态，以及测试服 `.env`、实际容器 tag 和任务临时 runner；不执行远端写入、重启、删除 live 容器、租户数据修改、migration ledger/release lock 修改或正式/备份服操作。
+- Evidence: worktree maintenance=`66c4ea05dda04459433bc22471ea2b6f4f3dfc32`、app=`c4d2c637bf1f2cea723876ee363f311b1128aaf4`，均 detached clean；报告=`BLOCKED/882`、`47 scanned`、`0 updated`；测试服 `.env` 仍为 r2，实际 backend/frontend 仍为旧 tag 且 running，任务 route runner 不存在。
+- P049: 首次远程状态探针包含嵌套 Python/SSH/PowerShell 引号，PowerShell 在本机解析失败，未执行远程命令；改用简单 SSH 只读命令后成功。该问题无服务器副作用，后续复杂诊断使用 UTF-8 文件载体或单一脚本并检查退出码。
+- Result: 当前发布仍 `NO-GO / blocked`；未执行页面/控制台验收，未执行 `mark-tested`、`promote-prod`、`promote-backup`，未访问正式服/备份服。
+- Secret handling: 未记录密码、token、私钥、完整 `.env` 或 raw operation log；仅记录 tag、状态、计数和脱敏路径。
+
+## 2026-08-22 route snapshot blocker 租户范围精确关联
+
+- Command intent: 只读查询测试服 `mes_pro_route_version(id, tenant_id)`，将本地 route snapshot 报告的 882 条 blocker 按 `routeVersionId` 关联，核对租户范围；禁止任何数据库写入、状态表修改、容器操作和正式/备份服访问。
+- Command: 远端容器内执行 `SELECT id, tenant_id FROM mes_pro_route_version ORDER BY id`，使用环境变量密码，不输出凭据；本地 PowerShell 仅做 JSON 关联和计数。
+- Evidence: SSH exit code=`0`；47/47 routeVersionId 映射，0 unmapped；tenant 1=881 blockers，tenant 122=1 blocker，总计 882。
+- P050: 报告缺少 tenantId，初始总数不能直接证明租户分布；通过真实表只读关联补强证据，并记录为可自动化的发布前门禁。
+- Result: 全租户 BACKFILL/READINESS 仍不满足零 blocker；不能仅修测试租户或排除 tenant 1，发布继续 blocked。
+- Secret handling: 未记录密码、token、私钥、完整 `.env` 或 raw operation log；只记录脱敏 SQL 意图、退出码和计数。
+
+## 2026-08-22 授权后测试服历史快照修复
+
+- Request/authorization: 用户明确授权对测试服历史 route snapshot 执行受控数据修复；范围仅为 `172.30.30.58`，不触碰正式服、备份服、`mark-tested`、`promote-prod`、`promote-backup`。
+- Command intent: 使用 task-owned UTF-8 SQL `doc/tasks/20260821-test-only-head-release/evidence/route-snapshot-repair-r260822a-r2.sql`，通过官方 `E:\IntRuoyi\IntRuoyiBackend\script\deploy\apply-test-db-sql.ps1` 写入测试库；随后对 `/opt/intruoyi/runtime` 执行与发布脚本同源的 BACKFILL/READINESS runner 复核。
+- SQL evidence: `repairedCount=27`，tenant counts=`tenant 1:26`、`tenant 122:1`，SQL SHA-256=`06d8e6dfcbc1043625d9d50067c6bb84bd6b33a547eb12b1b93dea0f6b5dd5ae`；未记录凭据原文。
+- Apply result: `APPLY_TEST_DB_SQL_OK`，测试服数据库写入成功；远端只读后置查询确认 `mes_pro_route_version` 47/47 条快照非空，身份列 47/47 暂为空，等待正式 BACKFILL 回填。
+- Boundary: 未访问正式服或备份服，未执行 `mark-tested`、`promote-prod`、`promote-backup`，未重试已判废的 r260822a-r2 publish operation。
+
+## 2026-08-22 授权后正式 BACKFILL 复核
+
+- Request/authorization: 用户授权测试服历史 route snapshot 受控修复；范围仅为测试服 `172.30.30.58`，不触碰正式服、备份服、`mark-tested`、`promote-prod`、`promote-backup`。
+- Command intent: 使用冻结 r260822a worktree 和 r2 backend 仅运行官方发布脚本同源 `route snapshot BACKFILL` 诊断，读取报告并核对 `mes_pro_route_schedule_config`、`mes_pro_route_process` 的真实字段与旧 ID 来源；不重建、不发布、不切换 live 容器。
+- Result: 报告 `route-snapshot-identity-backfill-authorized-r260822a.json` 为 `BLOCKED`，`scannedCount=47`、`updatedCount=0`、`blockerCount=8`；8 条均是 `ROUTE_PROCESS_UNRESOLVED`，集中于 routeVersionId=3 的 scheduleConfigs 引用 `900124-900127`。
+- Root cause evidence: `mes_pro_route_schedule_config` 真实字段为 `route_version_id + route_process_id`；相关行仍引用旧 ID，但 `mes_pro_route_process` 当前有效/逻辑删除行均不存在这些 ID，未找到正式旧新映射来源。冻结代码严格拒绝 unresolved routeProcessId，不能按顺序猜测、删除或置空配置。
+- Blocker: 在正式映射/恢复来源和可审计修复方案缺失时，继续构建或发布会违反 fail-fast 与历史身份不可变契约；r260822a-r2 继续判废，未执行任何新 build-release/publish-test。
+- Process issues: task-owned runner 未自然退出，清理后本地 SSH 以 `137` 收束并出现 OpenSSH carrier warning；诊断中出现 worktree 路径、PowerShell/SSH 引号和错误字段探针问题；一次宽泛配置读取暴露 secret-bearing 字段到终端，原始输出未写入证据/提交。
+- Time evidence: 修复元数据含未来 `generatedAt=2026-08-23T00:48:03.685692+08:00`，保留原始证据并记录为时钟/证据一致性问题，不以该时间字段作为发布结论依据。
+- Boundary: 正式服、备份服未访问；live backend/frontend 未重启、未删除、未切换；不执行状态表手工收束或任何降级路径。
+
+## 2026-08-22 历史备份表只读证据补充
+
+- Request/authorization: 用户继续授权本次仅测试服发布任务；沿用冻结维护 HEAD=`66c4ea05dda04459433bc22471ea2b6f4f3dfc32`、app HEAD=`c4d2c637bf1f2cea723876ee363f311b1128aaf4`，不追逐后续提交；仍禁止正式服、备份服、`mark-tested`、`promote-prod`、`promote-backup`。
+- Command intent: 只读查询测试库三份历史 `m3syncbk_*_schedproc` 备份表，核对旧 `routeProcessId`、历史 process/config 身份与当前 `routeId=900025` 工序；使用测试运行时环境变量注入 MySQL 凭据，不记录凭据原文，不执行任何数据库写入或 live 容器操作。
+- Evidence: 三份历史表一致证明旧 `900124/900125/900126/900127` 对应历史 process `900331/900333/900370/900371`、历史编码 `B010/B030/PROC-XLSX-00001/PROC-XLSX-00002`、历史配置 `203/204/205/206`；当前前四个工序已是新 ID `926785/926786/926787/926788`、新 process `922894/922895/922896/922897` 和新编码 `Z2630/Z3710/Z2775/Z2772`，当前路线总工序数为 23。
+- Evidence file: `doc/tasks/20260821-test-only-head-release/evidence/route-snapshot-orphan-route-process-history-r260822a.json`，`readOnly=true`、`writesPerformed=false`、`mappingSourceFound=false`、结论=`BLOCKED`。
+- Result: 历史备份仅证明旧身份，不构成旧新映射；名称/排序相似不能用于修复。剩余 8 条 `ROUTE_PROCESS_UNRESOLVED` 仍阻断 BACKFILL，未构建、未发布、未重试 r2。
+- Problems: P062/P063 记录历史身份来源缺失和禁止盲映射；P064 记录一次未注入 `MYSQL_PWD` 的只读探针失败，后续使用受控环境变量重跑成功；详细字段见任务 `execution-log.md`。
+- P067: 最终 worktree JSON 核对首次复现 PowerShell 语句块直接接管道错误；改为先收集数组后 `ConvertTo-Json`，两个冻结 worktree 均核对为 detached clean；无副作用，详细字段见任务 `execution-log.md`。
+- Boundary: 正式服/备份服未访问，live backend/frontend 未重启、删除或切换；未修改 migration ledger、release lock、租户数据或发布包。
+
+## 2026-08-23 仅测试服 HEAD 发布 r3 启动
+
+- Request: 用户要求基于本次发布开始时当前分支最新已提交代码，仅发布测试服务器 `172.30.30.58`；未提交改动不得进入产物；必须验证 manifest、版本号、变更说明和测试服真实运行态；成功后沉淀前置经验。
+- Command intent: 只读检查维护仓与 `E:\IntRuoyi` 主程序仓分支、HEAD、dirty 状态、冻结 HEAD 中关键 Vue SFC；随后仅在专用 clean release worktree 中构建并按单一 releaseTag 执行 `build-release -> publish-test`。禁止 `mark-tested`、`promote-prod`、`promote-backup`、旧包复用和正式/备份服访问。
+- Preflight result: 维护仓 `int_main@66c4ea05dda04459433bc22471ea2b6f4f3dfc32`、app root `int_main@0002767c0486f11d82bd82666bf8b0f164aee597`；两处主工作区均 dirty，未使用其工作树构建。冻结 app HEAD 的 `IntRuoyiFronted/src/views/dcc/controlled-file/training/components/TrainingRulesReadonlyTab.vue` 仍为 tracked 0 字节，沿用上一轮 Vite 合同阻塞的根因复核。
+- Boundary: 在空 Vue SFC 解除前不创建新的构建包、不执行 `build-release`/`publish-test`、不写测试服务器；不复用任意旧 worktree、旧 releaseTag、旧 manifest 或旧运行态证据。
+- Final result: 新建 maintenance worktree=`D:\ProjectPackage\Int\IntRuoyiWorktrees\r260823d\m@66c4ea05...`、app worktree=`D:\IntRuoyiWorktree\r260823d\a@0002767c...`，两者 detached clean；冻结 app worktree 扫描到 `zero-byte-vue-count=1`，Git blob/file size 均为 `0`，任务按构建前门禁标记 `blocked/NO-GO`。
+- Problems: P001=dirty 主工作区已用 clean worktree 隔离；P002=冻结 HEAD 空 Vue SFC 阻断全部构建发布；P003=冻结后 app 主线推进到 `a6574c3...`，按用户要求不追逐。详细字段见 `doc/tasks/20260823-test-only-head-release-r3/execution-log.md`。
+- Remote boundary: 未访问或写入测试/正式/备份服务器，未生成 package/manifest/releaseTag，未执行构建、容器切换、健康/页面/运行控制台验收或推广动作；blocked worktree 保留为证据。
+
+## 2026-08-23 仅测试服 HEAD 发布 r3 继续复核
+
+- Command intent: 不获取或追逐后续提交；只读复核当前 `int_main` HEAD、origin 同步状态、冻结 worktree 和目标 Vue SFC blob/文件大小，确认是否具备重新冻结和构建条件。
+- Evidence: app 当前 `int_main@a6574c3631dfa3c5f8381596fcef5c91acd98db0` 与 `origin/int_main` 同步；目标 SFC 仍为 blob/file size=`0`；提交 `5f0138e4c3bd6cabfef97f45dbd287e4b3072aa2` 的 diff 显示 `248 -> 0` 行删除。
+- Result: P002/P004 同一构建前阻塞在连续复核中仍存在；未创建新 worktree、未安装依赖、未构建、未生成 releaseTag、未访问服务器；旧 `r260823d` worktree 保留。
+
+## 2026-08-23 使用最新 Git 的测试服发布重启
+
+- Request: 用户要求使用最新 Git 版本发布到测试服务器；仍保持仅测试服范围和冻结 HEAD 输入约束。
+- Command intent: 从官方 Git for Windows release 下载并校验 64 位安装器，安装到独立目录 `D:\Programs\Git-2.55.0.5`，后续所有 Git 操作显式使用该版本；随后重新冻结当前本地分支 HEAD 并从 dirty 主工作区创建 clean release worktree。
+- Tool evidence: `git version 2.55.0.windows.5`；installer SHA256=`D065A4E23C3D9A6B5073D609B5BE0830227EC3CA053C083BA385061DDFAF94C6`；未覆盖旧 `D:\Programs\Git`。
+- Source evidence: 新 Git 读取 app `int_main@a0025c94278790badeefdc624af4372399e1207a`，`origin/int_main@a6574c363...`，ahead=`1`；目标 Vue SFC 仍为 size=`0`，因此尚未构建或发布。
+
+## 2026-08-24 发布前置与构建依赖复用优化
+
+- Request: 用户同意将近期发布中反复出现的迁移、Spring、前端依赖和构建耗时问题前置到检查阶段，并优化重复安装。
+- Command intent: 仅修改维护仓正式 SQL/发布/构建脚本和契约测试；运行只读静态扫描、Python pytest、PowerShell AST 解析和差异检查；不操作服务器、运行中的发布 operation/worktree、租户数据或默认展厅资源。
+- Changes: `release_sql_contract_gate.py` 增加当前迁移基线后的 MySQL temp-table reopen/collation 静态契约；新增 `spring_constructor_contract_gate.py` 并在后端 Maven 前扫描 Spring Bean 多构造器；`publish-int-ruoyi.ps1` 增加前端输入/二进制/`pnpm ignored-builds` 和 Spring gate；`build.ps1` 调用 `prepare-frontend-dependencies.ps1` 复用冻结 worktree 的依赖 stamp。
+- Verification: 新增/相邻门禁测试 `34 passed`；PowerShell 三脚本 AST `PASS`；当前后端只读 Spring 扫描按预期报告 `MesProRouteVersionSnapshotMigrationRunner` 多构造器风险；当前 SQL 只读扫描按预期报告 `20260814_mes_production_release_roles.sql` temp-table reopen 风险。
+- Blocker: 完整 `verify_contracts.py` 和前端相关回归被并发任务删除的 `frontend/src/App.vue`、`frontend/package.json` 等文件阻塞；未恢复并发文件，未执行真实构建或发布。
+- Evidence: `doc/tasks/20260824-release-preflight-build-optimization/execution-log.md`；无凭据原文、密码、token、私钥或连接串写入本日志。
+
+## 2026-08-24 r260823f10/r11 仅测试服发布与运行态验收
+
+- Request: 用户要求先修复发布阻塞，再用修复后的最新已提交代码仅发布测试服务器；禁止正式服、备份服、mark-tested 和 promotion。
+- Command intent: 在 app commit 4f1f847b63bd82bb53ffc0081d7eeecfb1f5c47f 与 maintenance commit 2307b93c2ce541b7458c4e7c524810d0b1f6687f 的专用 clean worktree 中执行 build-release，校验 manifest/sourceRepos/dirty/changeSet，随后仅执行 publish-test。
+- Build result: releaseTag=release-20260823-intmain-training-r260823f-r11；package=E:/Int/CacheData/IntRuoyi/publish-int-ruoyi/release-20260823-intmain-training-r260823f-r11；build operation=op-2026-08-24T115227267149700Z-05373329-a53c-4c18-902b-428b115ecb68 SUCCESS；manifest validator=MANIFEST_VALIDATION_PASSED；双 sourceRepos commit 一致、dirty=false、changeSet.summary=任务: 修复生产角色权限临时表重复打开。
+- Publish result: preview gate PASS；publish-test operation=op-2026-08-24T130555285358Z-d4c042ba-6f92-4f8e-a4d1-a380601bca5f SUCCESS；target=test；未执行 mark-tested、promote-prod、promote-backup。
+- Runtime result: remote-runtime-r260823f10-r11.json PASS；.env IMAGE_TAG、backend/frontend image tag、容器运行态、backend health=UP、frontend HTTP=200、release-info.json、release lock APPLIED、migration FAILED/RUNNING=0 全部匹配同一 r11。
+- Page result: Playwright 真实打开测试服前端登录页，HTTP/API=200、console errors=0；运行控制台真实页面显示 r11、版本变更说明和提交摘要，正式服/备份服仍未上报。测试服认证后业务页因 admin 密码过期且租户选择无数据未继续，已记录 ISSUE-016，未猜测凭据或执行写入。
+- Problems: r10 operation 中断遗留 RUNNING、r11 首次 preview 旧控制台配置、数据库 lock 内部 operation_id 与控制台 operation id 契约差异、测试服登录基线过期；均已记录现象/阶段/影响/原因/动作/结果/前置检查/自动化/避免方式。
+- Evidence: doc/tasks/20260823-fix-training-rules-sfc-test-release/execution-log.md、remote-runtime-r260823f10-r11.json、manifest-validation-r260823f10-r11.json、output/playwright/r11-runtime-console.png、output/playwright/r11-test-frontend-login.png；所有凭据均未写入。
+
+## 2026-08-24 发布前置两个阻塞修复
+
+- Request: 用户要求继续解决发布前置检查发现的 Spring 构造器契约和 MySQL 临时表重复打开阻塞。
+- Command intent: 只修改后端 runner、对应 SQL、回归测试和维护仓任务证据；先执行 RED，再执行静态门禁与目标测试；不访问服务器、不发布、不修改租户数据、不触碰并发任务源码。
+- Changes: `MesProRouteVersionSnapshotMigrationRunner` 生产构造器增加 `@Autowired`；`20260814_mes_production_release_roles.sql` 增加独立 source 临时表，并拆分后置 `OR` 临时表校验；补充实际 SQL 门禁回归测试。
+- Verification: SQL 契约测试 `31 passed`；Spring 静态门禁 `status: passed`；`git diff --check` 通过。Maven 目标测试完成本次 runner 编译后被并发源码 `MesStage6IdiSimulationServiceImpl.java:583` 调用缺失 mapper 方法阻塞，未修改该文件。
+- Boundary: 未执行服务器、发布、备份、恢复、E2E 或数据库写入；未记录密码、token、私钥或连接串。
+
+## 2026-08-25 r11 正式服晋级阻塞
+
+- Request: 用户要求将已验证的同一 r11 包晋级正式服务器；禁止重建、换包、换 releaseTag 或发布备份服。
+- Command intent: 先通过运行控制台执行 mark-tested，再以 `PROD`/`RequireTested` 预览并执行 `promote-prod`，目标仅 `172.30.30.57`。
+- Fix: `mark-tested` 首次误读开发仓库缺 metadata 的 `20260822_mes_active_order_pick_list_binding.sql`；维护脚本修复为 `deploy-release`/`mark-tested` 不扫描 live SQL，回归 `32 passed`，提交 `58fa954`。
+- Mark result: 同一 r11 `op-2026-08-24T161343310401700Z-81371129-617a-45cf-a42c-c720d8c5b0bd SUCCESS`，tested=true。
+- Prod preview: dry-run status=passed，manifest/包声明/哈希/禁用目标扫描/目标配置/迁移计划报告均通过，无远程写入。
+- Prod result: `op-2026-08-24T162302044432900Z-4eca53c5-366b-4699-b2a7-5a9876992d65 FAILED`；正式库 `preflight-plan.json status=blocked`，命中 `BLOCKED_SCOPE_DEPENDENCY`（`20260803_dcc_product_onboarding_flow -> 20260607_product_master_data` 及下游依赖），按门禁停止。
+- Recovery: 已恢复 prod `/opt/intruoyi/runtime/.env` 为发布前旧配置；旧 backend/frontend 容器实际镜像保持运行，health=UP、frontend HTTP=200，prod lock=FAILED；未执行 promote-backup。
+- Blocker: 不能判定正式服发布成功；禁止手工修改迁移状态、tested/lock、改包或绕过 scope dependency。
+- Evidence: `doc/tasks/20260824-promote-r11-production/execution-log.md`、`verification-report.md`、运行控制台 operation JSON/log；凭据原文未写入。
+
+## 2026-08-25 MES Stage6 mapper 编译阻塞复核
+
+- Request: 用户要求先修复后端编译错误再继续。
+- Command intent: 只读核对 Stage6 consumer 与 ERP mapper 合同，先复现原 Maven 编译，再用带 `-am` 的 reactor 目标测试验证；不修改并发 Stage6 源码、不访问服务器或数据库。
+- Root cause: 当前 `ErpKingdeeProductionPickListItemMapper` 已含 `selectPickListIdsByProductionOrderNo(String)`；原单模块命令漏 `-am`，使用陈旧 ERP 本地 artifact。
+- Verification: `mvn -pl yudao-module-mes -am ...` -> `BUILD SUCCESS`，MES 目标测试 `5 passed`；`mvn -pl yudao-module-erp -am ...` -> `BUILD SUCCESS`，ERP 目标测试 `3 passed`。
+- Boundary: 未修改生产代码、未执行服务器/发布/数据库写入/备份恢复/E2E；并发 Stage6 文件保持未触碰。
+
+## 2026-08-25 继续修复发布阻塞
+
+- Request: 用户要求继续修复未完成任务中的发布阻塞。
+- Command intent: 只读核对 code-only 迁移依赖闭包与正式库基线漂移；先运行 RED，再用任务目录隔离临时目录运行 backend/maintenance 合同测试；不修改正式库、migration ledger、manifest 或失败 releaseTag。
+- RED: backend 默认 pytest 临时目录因 `WinError 5` 产生 `14 passed, 3 errors`；正式 r11 preflight 仍为 `status=blocked`、`BLOCKED_SCOPE_DEPENDENCY=6`，`20260607_product_master_data` checksum 与 r11 manifest 不一致。
+- GREEN: backend `test_release_preflight_plan.py` 使用任务目录 `--basetemp` -> `17 passed`；maintenance `test_release_sql_preflight_gate.py` -> `32 passed`。
+- Conclusion: 当前维护仓与 backend 的 scope-aware 迁移依赖闭包实现一致且测试通过，无安全本地代码补丁；正式服仍需正式 reconciliation 方案和授权，禁止手工改库、改台账或重试失败包。
+- Boundary: 未执行服务器写入、数据库写入、发布、mark-tested、promote-prod、promote-backup 或 E2E。
+
+## 2026-08-25 r11 正式服迁移基线继续复核
+
+- Request: 用户要求继续将同一 r11 包发布到正式服务器。
+- Command intent: 只读复核正式服状态、`infra_release_migration`、`infra_release_operation_lock`、r11 `preflight-plan.json` 与等价 checksum；不重试失败 operation，不改包，不写正式库。
+- Verification: `show-int-ruoyi-prod-status.bat` -> 正式服旧 backend/frontend 实际镜像仍运行，backend health HTTP 200，frontend HTTP 200；远端迁移查询 -> `20260607_product_master_data=SKIPPED_ALREADY_APPLIED`, target sha=`12f8d1cd...`, source releaseTag=`release-20260709-codeonly-three-env-head-v10`；远端 prod lock -> r11 `FAILED` 且无 RUNNING。
+- Verification: r11 `preflight-plan.json` -> `status=blocked`, `BLOCKED_SCOPE_DEPENDENCY=6`, `APPLY=135`；r11 data SQL raw sha=`111c3764...`，去 metadata sha=`4d5ce68d...`，均不等于 prod target sha。
+- Result: 阻塞未解除；当前没有正式 reconciliation 入口。禁止手工改 migration ledger、执行 data SQL、修改 manifest 或绕过 `BLOCKED_SCOPE_DEPENDENCY`；正式服未切换到 r11，未执行备份服动作。
+
+## 2026-08-25 r11 正式服状态再核查
+
+- Request: 用户要求继续将同一 r11 包发布到正式服务器。
+- Command intent: 只读执行 `show-int-ruoyi-remote-status.ps1 -ServerHost 172.30.30.57 -Component full -Json`，并核对正式服 `.env IMAGE_TAG` 与 backend/frontend 实际镜像；不重复提交 `promote-prod`。
+- Verification: 状态脚本 -> `status=running`、backend/frontend/OnlyOffice HTTP 200、运行态 running；`.env IMAGE_TAG=release-20260716-intmain-codeonly-three-env-r260716d-r1`，backend/frontend 实际镜像均为 `release-20260723-intmain-codeonly-three-env-r260723s-r1`，未运行 r11。
+- Problem: 一次嵌套 SSH/MySQL 只读查询因 PowerShell 引号传递错误输出 mysql usage，查询证据作废；未发生远程写入或运行态变化。后续改采项目状态脚本和无嵌套 SQL 的只读检查，并将该载荷问题记录到任务 `execution-log.md`。
+- Result: 正式服保持发布前旧运行态且健康；r11 迁移 checksum/scope dependency 阻塞仍未解除，未执行重试、备份服操作或任何数据库/manifest/lock 修改。
+
+## 2026-08-28 仅测试服 HEAD 发布继续
+
+- Request: 用户要求继续完成当前分支已提交代码的仅测试服发布；未提交改动不得进入构建产物。
+- Command intent: 先复核上一轮阻塞，再只提交两个发布阻塞修复：维护仓 rollback-only SQL 排除契约、app 仓培训规则只读页恢复；随后重新冻结新 HEAD 到本轮专用 release worktree 并仅执行 `build-release -> publish-test`。
+- Verification so far: 维护仓 `test_release_sql_preflight_gate.py` -> `35 passed`；app 静态契约 `dcc-training-ux-prechecks-static.spec.cjs` 与 `dcc-training-rules-context-static.spec.js` 均由 FAIL 转 PASS。
+- Boundary: 尚未执行服务器写入、`build-release`、`publish-test`、`mark-tested`、`promote-prod` 或 `promote-backup`；未记录密码、token、私钥或连接串。
+
+## 2026-08-29 测试服发布链路耗时优化
+
+- Request: 用户要求优化 Codex 测试服发布链路，减少下次发布时间。
+- Command intent: 仅修改维护仓发布脚本和发布合同测试；把 required SQL 上传从逐文件 `scp` 优化为一次 tar 归档上传和远端解包；把 `SKIP_ALREADY_APPLIED` 迁移状态从逐条远端 MySQL 写入优化为批量写入；补齐 SSH 命令日志和异常文本脱敏。不执行真实服务器发布、数据库写入、备份、恢复、正式服或备份服操作。
+- Verification: RED `test_release_sql_preflight_gate.py` -> 3 failed；GREEN 同文件 -> `42 passed`；REGRESSION 发布合同测试集合 -> `53 passed`；PowerShell AST parse -> `PSSCRIPT_PARSE_OK`；`git diff --check` 通过；本机 `tar/ssh/scp` 命令存在。
+- Commit: 维护仓实现提交 `9c5d64f`（`任务: 优化测试服发布链路`），范围仅 `ops/deploy/publish-int-ruoyi.ps1` 与 `scripts/tests/test_release_sql_preflight_gate.py`。
+- Boundary: 相邻前端合同测试因本任务前已有 `frontend/` 目录删除状态失败，未恢复、覆盖或提交并行脏改动；未记录密码、token、私钥或连接串。
+
+## 2026-08-29 测试服发布 ops runtime 上传优化
+
+- Request: 用户要求继续优化发布链路耗时。
+- Command intent: 仅修改维护仓发布脚本和合同测试；将 runtime-control ops package 从 5 次目录/文件 `Copy-ToServer` 改为本地 tar 归档、一次上传、远端解包并校验关键文件；保留远端 `config` 目录避免误删 secrets。不执行真实服务器发布、数据库写入、备份、恢复、正式服或备份服操作。
+- Verification: RED `test_publish_script_uploads_ops_runtime_package_as_single_archive` -> `1 failed, 43 passed`；GREEN `test_release_sql_preflight_gate.py` -> `44 passed`；REGRESSION 发布合同测试集合 -> `55 passed`；PowerShell AST parse -> `PSSCRIPT_PARSE_OK`；`git diff --check` 通过；本机 `tar/ssh/scp` 命令存在。
+- Commit: 维护仓实现提交 `f33a8ec`（`任务: 优化发布ops运行包上传`），范围仅 `ops/deploy/publish-int-ruoyi.ps1` 与 `scripts/tests/test_release_sql_preflight_gate.py`。
+- Boundary: 未恢复、覆盖或提交并行脏改动；未记录密码、token、私钥或连接串。
+
+## 2026-08-29 required SQL 远端完整性校验优化
+
+- Request: 用户要求继续优化发布链路耗时。
+- Command intent: 仅修改维护仓发布脚本和合同测试；将 required SQL 远端 tar 解包校验从“非空”升级为“远端 SQL 文件数等于本地计划数”，并取消每个 APPLY 项前额外的 `ssh test -f` 文件存在性检查。不执行真实服务器发布、数据库写入、备份、恢复、正式服或备份服操作。
+- Verification: RED 新增 2 个合同测试 -> `2 failed, 44 passed`；GREEN `test_release_sql_preflight_gate.py` -> `46 passed`；REGRESSION 发布合同测试集合 -> `57 passed`；PowerShell AST parse -> `PSSCRIPT_PARSE_OK`；`git diff --check` 通过；本机 `tar/ssh/scp` 命令存在。
+- Commit: 维护仓实现提交 `079c6a6`（`任务: 优化required SQL远端校验`），范围仅 `ops/deploy/publish-int-ruoyi.ps1` 与 `scripts/tests/test_release_sql_preflight_gate.py`。
+- Boundary: 未恢复、覆盖或提交并行脏改动；未记录密码、token、私钥或连接串。
+
+## 2026-08-29 required SQL APPLY 状态入账优化
+
+- Request: 用户要求继续优化发布链路耗时。
+- Command intent: 仅修改维护仓发布脚本和合同测试；将每个 required SQL APPLY 成功路径的远端文件检查、`RUNNING` 入账、SQL 执行、`APPLIED` 入账合并到单次 SSH 会话；SQL 执行失败仍由外层 catch 写 `FAILED` 并抛出。不执行真实服务器发布、数据库写入、备份、恢复、正式服或备份服操作。
+- Verification: RED 新增 2 个合同测试 -> `2 failed, 46 passed`；GREEN `test_release_sql_preflight_gate.py` -> `48 passed`；REGRESSION 发布合同测试集合 -> `59 passed`；PowerShell AST parse -> `PSSCRIPT_PARSE_OK`；`git diff --check` 通过；本机 `tar/ssh/scp` 命令存在。
+- Commit: 维护仓实现提交 `e4bc1e5`（`任务: 优化required SQL状态入账`），范围仅 `ops/deploy/publish-int-ruoyi.ps1` 与 `scripts/tests/test_release_sql_preflight_gate.py`。
+- Boundary: 未恢复、覆盖或提交并行脏改动；未记录密码、token、私钥或连接串。
+
+## 2026-08-29 required SQL route snapshot hook SSH 优化
+
+- Request: 用户要求继续优化发布链路耗时。
+- Command intent: 仅修改维护仓发布脚本和合同测试；将 required SQL 中 route snapshot 身份迁移 hook 的“运行一次性 backend”和“检查 report READY/blockerCount”从每个模式 2 次 SSH 合并为 1 次 SSH；保留 `set -e` fail-fast 和 report 校验。不执行真实服务器发布、数据库写入、备份、恢复、正式服或备份服操作。
+- Verification: RED 新增合同测试 -> `1 failed`；GREEN 新合同 -> `1 passed`；GREEN `test_release_sql_preflight_gate.py` -> `49 passed`；REGRESSION 发布合同测试集合 -> `60 passed`；PowerShell AST parse -> `PSSCRIPT_PARSE_OK`；`git diff --check` 通过。
+- Commit: 待实现提交。
+- Boundary: 未恢复、覆盖或提交并行脏改动；未记录密码、token、私钥或连接串。
+
+## 2026-08-29 仅测试服 HEAD 发布 r260829j 成功闭环
+
+- Request: 用户要求继续完成当前分支最新已提交代码的仅测试服发布；未提交改动不得进入构建产物；发布成功后记录问题并沉淀前置经验。
+- Command intent: 基于本轮专用 clean release worktree `r260829j` 固定维护仓 `24106b18eec879e87d5cdf8d79fa0a739e9120a6` 与 IntRuoyi `3892f88f00d30aa06a4be6c5bd48f9e55ed6203c`，执行维护控制台构建、`build-release`、manifest/release-info 校验、仅测试服 `publish-test` 和真实运行态/页面/控制台验收。
+- Verification: 维护仓 clean pytest `72 passed`；app 注册证静态契约 `4 passed`；app DCC Maven 合同 `Tests run: 1` 且 `BUILD SUCCESS`；维护控制台 JAR SHA256=`3A93FEE01504C96194B7BF0461C14E6CB0B4FC33BF1FA8F2B6331FD29D18E945`；build operation `op-2026-08-29T074248158573400Z-4ec035f6-02a6-49ee-a41c-c598d4cd2cee` SUCCESS；publish operation `op-2026-08-29T080003811407100Z-9e826bd7-61ca-44e3-bc28-f8a3794035bb` SUCCESS；final gate 全部 true。
+- Runtime: 测试服 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、container running、backend health UP、frontend HTTP 200、frontend `release-info.json`、运行控制台 release-status 和 Playwright 页面均匹配 `release-20260829-frozen-head-test-r260829j-r1`。
+- Experience: 已将注册证 SQL 旧表列合同/CHECK 表达式、manifest 摘要校验、runtime-control state 根目录、SSH stdin/IO warning、Playwright snapshot 脱敏和运行控制台端口标签问题沉淀到前置经验与索引。
+- Closeout: `task_closeout.py preview/apply` 均通过；Playwright 浏览器关闭；任务拥有的 release 控制台 Java 进程停止；44 个 release worktree 的 Git 注册、物理路径和进程引用最终均为 0。
+- Boundary: 未执行 `mark-tested`、`promote-prod`、`promote-backup`；未发布正式服或备份服；未记录密码、token、私钥、完整 `.env`、完整本机 local config 或 raw operation log。

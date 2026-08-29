@@ -261,3 +261,96 @@ Windows PowerShell 中执行 release worktree 清理、启动本地 Jar、通过
 - Verification: 记录 carrier exit code、stdout 关键字段、release lock/migration counts、Playwright 页面 title/url/releaseTag/变更说明布尔断言、截图路径和 secret scan=0；OpenSSH `IO is still pending on closed socket` 只能作为 carrier warning 分层记录。
 - Forbidden action: 禁止把 quoting/BOM/浏览器缓存问题误判为发布失败；禁止保存含默认凭据的 `.playwright-cli/page-*.yml`；禁止在 raw log/snapshot 未脱敏时提交或复制。
 - Evidence: `doc/tasks/20260811-head-test-only-release/execution-log.md` I008-I010；DB 查询改为不暴露密码的短命令后通过，Playwright snapshot 已清理。
+
+## 2026-08-21 发布 operation 日志脱敏与失败态远端复核门禁
+
+- Trigger: PowerShell 发布脚本通过 SSH 执行 MySQL、Docker 或迁移登记命令，并将命令写入 operation log；或 publish-test 失败后需要核对 `.env`、compose、实际镜像和 release-info。
+- Preflight check: logger 先用 `mysql -p<secret>`、`password=...`、`token=...` 样本执行替换和 secret scan；失败态探针只输出字段名、tag、状态、hash 和计数，禁止读取完整 `.env`；远端多行脚本以 UTF-8 LF bytes 发送。
+- Blocker: raw operation log 命中密码/token/secret；PowerShell 默认渲染泄漏完整命令；`.env`/compose/actual images/release-info 关键字段缺失或漂移；或 SSH carrier warning 使关键 stdout 不完整。
+- Verification: 记录 SSH exit code、脱敏后的关键字段、`docker compose config --images`、`docker compose images`、`docker inspect`、health/HTTP/release-info 和 secret-pattern scan=0；carrier warning 与业务失败分层记录。
+- Forbidden action: 不得提交或复制 raw operation log；不得打印完整 runtime env/密码；不得因旧容器健康或 OpenSSH warning 跳过失败态版本复核；不得用未验证的旧 tag 手工恢复。
+- Evidence: `doc/tasks/20260821-test-only-head-release/execution-log.md` P027-P028；publish operation `op-2026-08-21T210307402431400Z-d11e3d45-06fb-4026-a039-a1ee4f70086b`。
+
+## 2026-08-22 operation 长等待、临时 runner 与日志脱敏复核门禁
+
+- Trigger: Windows PowerShell 通过维护控制台提交长时间 publish-test，远端运行 `docker compose run --rm`，或 operation log 持续记录 SSH/MySQL/Docker 命令。
+- Preflight check: 读取 `command-timeout-seconds`；stdout 读取必须可被 timeout 中断；定时记录 operation state、log last-write、远端 runner/live 容器；logger 使用 `mysql -p<secret>`、`password=...`、`secret=...` 样例验证替换并扫描输出。
+- Blocker: operation API/state 未进入 SUCCESS/FAILED/STOPPED；runner 在报告完成后仍 running；日志出现未脱敏密码/token；或 SSH carrier 使关键 stdout 不完整。
+- Verification: 记录 operation id、state file mtime、脱敏 log tail、runner inspect/cleanup、live image tags、scan count；OpenSSH `IO is still pending on closed socket` 单独归类为 carrier warning。
+- Forbidden action: 不得通过编辑 JSON 伪造 SUCCESS；不得重复提交 publish-test；不得把 `-p` 的普通路径误当凭据并扩大替换；不得保存 raw log 或完整 runtime env。
+- Evidence: `doc/tasks/20260821-test-only-head-release/execution-log.md` P038-P043；publish operation `op-2026-08-22T035621436028400Z-55335b7f-e740-4d0f-a9d1-a85f875648fa`。
+
+## 2026-08-22 远端报告/SQL 诊断载体门禁
+
+- Trigger: PowerShell 需要通过 SSH 读取远端 JSON、MySQL schema 或 JSON 字段，且命令包含多层 shell 引号、中文输出或 `$` JSONPath。
+- Preflight check: 先检查远端 `python3`/`jq` 等诊断工具；复杂 SQL 一律写 UTF-8 无 BOM 文件后经 stdin 执行；避免在远端 shell 双引号中直接放 `$` JSONPath；每条 scp/ssh/mysql 命令单独检查退出码。
+- Blocker: 诊断工具缺失且没有明确替代证据、SQL quoting 失败、JSONPath 参数类型错误、中文输出乱码或关键 stdout 不完整。
+- Verification: 保存脱敏 JSON/SQL 证据，复读 `status/count` 和关键字段；中文数据库值使用 UTF-8 文件或 `HEX()` 解码；carrier warning 与业务退出码分层记录。
+- Forbidden action: 不得把本地 quoting/编码/工具缺失误判为业务发布成功或失败；不得把探针失败后未执行的步骤当作已验证；不得把密码写入 SQL、日志或任务证据。
+- Evidence: `doc/tasks/20260821-test-only-head-release/execution-log.md` P044-P048；`evidence/route-snapshot-readonly-probe.sql`。
+
+## 2026-08-22 嵌套 PowerShell/SSH/Python 诊断命令门禁
+
+### Trigger
+
+Windows PowerShell 中需要通过 SSH 执行包含 Python、JSONPath 或复杂 shell 字符串的远端只读状态探针。
+
+### Preflight check
+
+- 复杂远端诊断不得把 Python 内联代码、SSH 引号和 PowerShell 字符串叠加在一条命令中；优先使用 UTF-8 无 BOM 文件载体，或使用不含内联脚本的单一远端命令。
+- 远端只读探针必须单独检查本地解析、SSH 退出码和关键 stdout 字段；本地 ParserError 只能说明探针未执行，不能当作远端业务结果。
+
+### Blocker
+
+- 本地 PowerShell ParserError、远端命令未执行、关键字段缺失或退出码无法确认。
+
+### Verification
+
+- 记录失败命令的本地解析结果，随后用简化命令或文件载体重跑；保存 `.env`、容器 tag、状态等脱敏字段，并确认没有发生远端写入。
+
+### Forbidden action
+
+- 不得把探针解析失败误判为发布失败或成功；不得为绕过 quoting 问题改用宽权限、猜测性远端写入或跳过关键状态字段。
+
+### Evidence
+
+- `doc/tasks/20260821-test-only-head-release/execution-log.md` P049；首次嵌套探针在本地 ParserError，简化 SSH 只读探针随后通过。
+
+## 2026-08-29 r260829j 运行控制台 state、SSH stdin 与 Playwright 脱敏门禁
+
+### 门禁摘要
+
+- Trigger: Windows PowerShell 启动隔离端口 runtime-control、通过 SSH stdin 执行批量 SQL/远端验收、轮询 operation API、读取 manifest/release-info，用 Playwright snapshot 验证登录页和运行控制台，或清理 Git 注册已删除但物理目录仍残留的 release worktree。
+- Preflight check: runtime-control 的 `state-dir` 根目录只允许 operation state 及约定子目录，任务进程/证据 JSON 放到独立 state/evidence 目录；批量 SQL 通过 SSH stdin 传输，日志只记录短命令摘要；远端验收同时记录 exit code、stdout 必需字段和 stderr carrier warning；Playwright 登录页证据必须脱敏，不保存含 input value 的 raw snapshot；清理物理残留前必须确认 allow-list、无 `.git`、无进程引用，`Remove-Item -Recurse` 被策略拒绝时不要扩大权限，pnpm `node_modules` 残留先清只读属性并用空目录 `robocopy /MIR` 清空。
+- Blocker: operation API 因未知 JSON 返回 400；批量 SQL 被拼入 SSH 参数导致 Windows “文件名或扩展名太长”；SSH stdout 字段缺失或退出码非 0；Playwright snapshot/log 命中默认密码、token、secret；运行控制台实际端口和证据 URL 无法对应；Git 注册已删除但物理目录仍存在、存在 `.git`、路径越界或仍有进程引用。
+- Verification: PowerShell parser gate、发布脚本 pytest、operation API 恢复、远端 runtime JSON、Playwright 脱敏摘要和截图；记录 PID/端口/state-dir/证据路径，不记录完整 local config、`.env` 或 raw operation log。
+- Forbidden action: 禁止把任意 evidence JSON 写入 operation state 根目录；禁止把完整 SQL、manifest 或 `.env` 原文打印到任务日志；禁止因 OpenSSH `IO is still pending` warning 覆盖完整 stdout 断言；禁止提交 `.playwright-cli/page-*.yml` 或含默认密码的 snapshot。
+- Evidence: `doc/tasks/20260828-test-only-release-head/execution-log.md` 问题 36、38、39、40；维护提交 `24106b18eec879e87d5cdf8d79fa0a739e9120a6`；releaseTag `release-20260829-frozen-head-test-r260829j-r1`。
+
+### 阶段 1：runtime-control state 与进程证据
+
+1. 必查项：`repo-root`、`frontend-root`、`ops-root`、`state-dir` 指向本轮 clean worktree/state；进程证据文件不放入 runtime-control operation 根目录。
+2. 推荐命令：`Invoke-RestMethod http://127.0.0.1:<port>/actuator/health`、`Invoke-RestMethod http://127.0.0.1:<port>/admin-api/infra/runtime-control/operations`、`Get-CimInstance Win32_Process`。
+3. Fail Fast：operation API 400、state-dir 指向旧 worktree、PID/端口无法对应、或 local config 原文需要打印才能判断。
+4. 必须记录：端口、PID、JAR path、state-dir、operation id、健康状态和证据文件位置；凭据只记录 presence。
+
+### 阶段 2：SSH stdin 与远端验收
+
+1. 必查项：批量 SQL 不进入 SSH 参数；远端脚本以 UTF-8 LF stdin 发送；exit code、stdout 必需字段、stderr warning 分层记录。
+2. 推荐命令：维护仓 `test_release_sql_preflight_gate.py` 覆盖 `Invoke-SshCommandWithInput`；远端验收用短 POSIX shell + docker/curl/mysql。
+3. Fail Fast：出现 Windows 命令行长度错误、stdout 缺 `.env IMAGE_TAG`/镜像/health/HTTP/release-info 字段、SSH exit code 非 0。
+4. 必须记录：输入长度摘要、SQL 行数、SSH exit code、stderr warning 分类和结构化 runtime JSON。
+
+### 阶段 3：Playwright 页面证据
+
+1. 必查项：Playwright CLI 可用、目标 URL 和实际端口一致、snapshot/日志不含密码/token/secret。
+2. 推荐命令：先打开页面并保存截图，再用结构化摘要记录 title、URL、可见非敏感文案、releaseTag 和变更说明。
+3. Fail Fast：raw snapshot 包含默认密码、页面证据无法证明目标 releaseTag、或运行控制台端口标签与实际 URL 不一致且未记录分层判断。
+4. 必须记录：截图路径、title、releaseTag/changes 可见性、secret scan 结果和任何 UI 静态标签不一致。
+
+### 阶段 4：release worktree 物理残留
+
+1. 必查项：`git worktree list --porcelain` 不含目标路径、`Test-Path <path>\.git` 为 false、进程命令行不含目标路径、目标路径位于本任务 release allow-list。
+2. 推荐命令：`git worktree remove --force <path>` 后执行物理路径复核；对仅剩 `node_modules` 的残留目录，用本任务空目录 `robocopy <empty> <node_modules> /MIR /R:0 /W:0` 后再删空目录链。
+3. Fail Fast：目录仍含 `.git`、路径越界、存在进程引用、残留内容不是可再生依赖目录，或删除失败原因无法归类。
+4. 必须记录：Git 注册计数、物理存在计数、进程引用计数、被清理路径、`robocopy` 方式和最终 `Test-Path=False`。

@@ -91,8 +91,10 @@ git -C <release-worktree> status --porcelain
 
 - 维护控制台当前 48181 进程是否加载本轮发布逻辑。
 - 前端依赖是否在 release worktree 内按锁文件恢复。
-- 后端 release migration metadata gate 是否通过。
+- 后端 release migration metadata gate 是否通过；以运行控制台 preview 返回的维护仓实际 `ops/release/run-release-migration-policy-gate.py` 为主，app 仓 `script/release/run-release-migration-policy-gate.py` 只作辅助。
 - 主程序冻结 HEAD 的 migration type 去重集合，是否全部包含在维护仓 Python policy gate 与 `publish-int-ruoyi.ps1` 的相同允许集合中；新增类型是否已同步提交两个 parser 和契约测试。
+- 可执行迁移（`schema/data/menu/config/permission/seed`）是否依赖 evidence-only 迁移（`preflight/backfill/postflight/rollback-dry-run`）；实际 ops gate 报 `executable migration cannot depend on evidence-only migration` 时必须在 build-release 前停止。
+- code-only 过滤后的可执行迁移依赖闭包是否完整；任一将执行的 schema/menu/config/permission/seed 迁移都不得直接或传递依赖 preflight=`APPLY` 但会被 scope 过滤的 `type=data` 迁移。data 祖先已真实 APPLIED 时仍应对关键 live-state 断言做只读探针，不能只信台账。
 - code-only 发布是否明确 `-Component intruoyi`、`SkipDatabaseSync`、`SkipMinioSync`。
 - 测试服已知 required SQL 前置数据冲突是否已只读检查。
 
@@ -100,16 +102,18 @@ git -C <release-worktree> status --porcelain
 
 ```powershell
 Invoke-RestMethod -Uri http://127.0.0.1:48181/actuator/health
-python -X utf8 script\release\run-release-migration-policy-gate.py --help
-python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql --output <task-dir>\migration-policy-gate.json
+python -X utf8 <maintenance-release-worktree>\ops\release\run-release-migration-policy-gate.py --help
+python -X utf8 <maintenance-release-worktree>\ops\release\run-release-migration-policy-gate.py --sql-root <app-release-worktree>\IntRuoyiBackend\sql\mysql --file-prefix sql/mysql --output <task-dir>\ops-migration-policy-gate.json
 corepack pnpm@10.25.0 --version
 ```
 
 ### Fail Fast
 
 - 维护控制台不是本轮 Jar 或健康检查不是 `UP`。
-- SQL metadata 缺失、`dependsOn` 错误或 type 不在允许枚举。
+- SQL metadata 缺失、`dependsOn` 错误、type 不在允许枚举，或 `rollback-migration` 脚本混入发布 SQL 扫描根但未被正式 parser/manifest/测试支持。
 - 主程序 SQL、维护仓 Python gate、维护仓 PowerShell parser 的 migration type 集合不一致；尤其出现 `invalid type ... backfill` 时必须在依赖恢复和 build-release 前停止。
+- app 仓 gate PASS 但实际维护仓 ops gate FAIL；以实际 ops gate 为准阻塞，不得继续构建或发布。
+- code-only 过滤后存在 `APPLY executable -> pending filtered data` 的直接或传递依赖，或迁移台账显示已应用但 SQL 要求的关键 live state 不成立。
 - 前端 lockfile/依赖恢复失败。
 - code-only 包仍会执行 `type=data` required SQL。
 
@@ -684,3 +688,178 @@ ssh root@172.30.30.58 bash -s
 - Verification: 重复组查询结果为 0；如经用户授权修复，必须证明事务 affectedRows 精确为 1、保留行与清理行、回滚材料和迁移重试结果；页面六个 API 均 200，版本栏、版本号、发布包与组件范围可见；远端 `.env`、实际镜像、Actuator、HTTP、release-info、lock 和 migration 独立全绿。最终控制台复核固定使用 `/admin-api/infra/runtime-control/release-status`，同时校验 `testCurrentReleaseTag`、`testCurrentReleaseNotes.releaseTag`、`changes`、48181 PID 和启动参数；误用简写路由或 404 只能记为校验假阴性并按真实路由重查。
 - Forbidden action: 禁止发布脚本自动选择并删除/清理重复业务行；禁止无用户授权修改测试数据；禁止用 release-status API 已成功替代真实页面；禁止因 rollback/restore 候选接口失败而把测试服版本“未上报”降级为可接受。
 - Evidence: `doc/tasks/2026-08-11-test-only-release-head/execution-log.md`；releaseTag=`release-20260813-intmain-head-test-r260812b-r2`，publish operation=`op-2026-08-13T001732036464300Z-1541e376-2561-40b8-82c8-77c33bcfda17`。
+
+## 2026-08-13 发布后探针契约、稳定控制台与收尾门禁
+
+- Trigger: `publish-test` 已返回 SUCCESS，准备运行独立远端探针、恢复 48181 稳定控制台、执行 Playwright 最终复验或删除 release worktree/state。
+- Preflight check: 远端 SQL 探针先从冻结 migration 和真实库 `DESCRIBE` 确认表名/字段；先读 compose 判断容器是否定义 Docker healthcheck，未定义时容器门禁只核 `state=running`，应用健康独立核 Actuator HTTP 200/UP。删除 release worktree 前，主 `runtime-control.local.yaml` 的 repo/frontend/ops/state 必须符合当前固定根，48181 的 PID/命令行/JAR 必须指向主维护路径，完整 `/admin-api/infra/runtime-control/release-status` 必须返回目标 tag 和变更说明；同一 Playwright CLI 会话的 open/resize/snapshot/click/find/console/close 必须串行执行。每次实际构建单独记录 JAR hash，不把同 HEAD 的历史重建 hash 当作当前产物固定值。
+- Blocker: 探针凭推断使用表名/字段；把未定义 healthcheck 的 `health=none` 当成应用失败或健康成功；主控制台配置仍指向废弃 repo/frontend 路径；48181 仍引用 release worktree、主路径 JAR/state 只显示旧版本、release-status 缺目标变更说明；Playwright 出现 `ECOMPROMISED Lock compromised` 且尚未串行重验；task-closeout preview 把 workspace 外 worktree/state 列为 blocked；或当前 JAR 来源/当次 hash 无法证明。
+- Verification: 远端 `.env`、实际镜像、容器 running、Actuator UP、frontend HTTP 200、release-info、lock/migration 和业务探针均按真实契约通过；48181 health=UP、PID/命令行指向主维护路径、release-status 的 `testCurrentReleaseTag`/notes/changes 匹配目标；Playwright 页面版本与 console errors=0 串行复验通过；外部 worktree/state 按 `E:\IntRuoyi\docs\worktree-memory.md` 清理后，task-closeout preview/apply 的 blocked/warnings 均为空。
+- Forbidden action: 禁止臆造数据库表、Docker healthcheck 或简写 API 路由；禁止用旧稳定控制台 health=UP 替代当前版本/变更说明；禁止跨重建强求历史 JAR hash 相同；禁止并行启动同一 npm cache 下的多个 Playwright CLI 命令；禁止绕过 task-closeout workspace 边界或扩大删除到其它任务路径。
+- Evidence: `doc/tasks/2026-08-11-test-only-release-head/execution-log.md` 的 `postcheck-probe-contract`、`main-runtime-stale-jar-state`、`maintenance-jar-hash-nondeterminism`、`playwright-npm-lock-contention`、`task-closeout-outside-workspace`、`worktree-remove-directory-not-empty` 和 `final-runtime-status-wrong-route`。
+
+1. 阶段 1：独立远端探针
+   必查项：冻结 SQL/`DESCRIBE`、compose healthcheck、容器 state、Actuator、HTTP、release-info、lock/migration。
+   推荐命令：`rg <table-or-field> <frozen-migration>`、远端 `DESCRIBE <table>`、`docker compose ps --format json`、`curl -fsS <backend>/actuator/health`。
+   Fail Fast：schema/compose 契约不明、任一真实运行态字段不匹配目标 releaseTag。
+   必须记录：探针依据、容器状态、Actuator/HTTP、迁移计数和业务冲突计数。
+
+2. 阶段 2：稳定控制台与页面复验
+   必查项：主 local config 的 repo/frontend/ops/state 固定路径、48181 PID/命令行/JAR 路径、当次 JAR hash、主 state 中本次 operation、完整 release-status 路由、目标 tag/notes/changes。
+   推荐命令：`Get-NetTCPConnection -LocalPort 48181 -State Listen`、`Get-CimInstance Win32_Process`、`Get-FileHash <jar> -Algorithm SHA256`、`Invoke-RestMethod http://127.0.0.1:48181/admin-api/infra/runtime-control/release-status`。
+   Fail Fast：主路径控制台仍显示旧版本、来源 JAR/operation state 无法证明、页面版本对话框或 console 验收失败。
+   必须记录：PID、命令行、JAR hash、release-status 关键字段和串行 Playwright 结果。
+
+3. 阶段 3：外部 worktree 与任务 closeout
+   必查项：Git 注册、固定物理路径、state dir、进程引用、task-closeout workspace 边界。
+   推荐命令：两仓 `git worktree list --porcelain`、固定路径 `Test-Path`、进程命令行扫描、`task_closeout.py --mode preview`。
+   Fail Fast：存在未合并提交/dirty、`.git`、归属不明进程、路径越界、preview blocked/warnings 非空。
+   必须记录：每个路径的 registered/existsAfter、稳定控制台最终状态和 task-closeout preview/apply 结果。
+
+## 2026-08-16 code-only 迁移依赖闭包与真实状态门禁
+
+- Trigger: `publishScope=code-only` 会跳过 `type=data` required SQL，同时存在依赖这些迁移的 schema/menu/config/permission/seed 迁移，或迁移脚本使用 `SIGNAL SQLSTATE '45000'` 校验菜单、配置、权限等 live state。
+- Preflight check: 从 Manifest v1 `migrationPlan`/`requiredSql` 和 target preflight action 计算 code-only 过滤后的传递依赖闭包；对每个待执行迁移，若任一祖先是 preflight=`APPLY` 且会因 `type=data` 被过滤，必须在远端写入前阻塞。对 SQL 中固定 ID、parent/path、唯一键或状态断言生成只读查询，同时比较 migration ledger 与真实表状态，不能只看 `SKIPPED_ALREADY_APPLIED`。
+- Blocker: 出现 `APPLY executable -> pending filtered data` 依赖；ledger 标记 APPLIED/已应用但 live state 不满足后续迁移；无法从当前冻结提交证明正式修复方案；或失败 releaseTag 已产生 APPLIED/FAILED 部分记录。
+- Verification: 保存最小依赖链、相关 Manifest 条目、远端只读 state probe、目标 release lock 与 migration counts。修复后必须新增 policy/contract tests，提交正式源码，从新冻结 HEAD 构建新 releaseTag，再完整执行测试服发布。
+- Forbidden action: 禁止手工把测试库调整成预期形态后继续失败 tag；禁止改 migration ledger、把 data 类型随意改成 schema、复用失败发布包、重复提交同一 operation，或用旧容器 health/HTTP 200 掩盖目标镜像未上线。
+- Evidence: `doc/tasks/20260816-test-only-release-head/`；`20260721_form_center_menu_under_basic_data` 为 `type=data`，后续 menu 迁移依赖该状态；失败时菜单仍位于旧父级，release lock=`FAILED`，`.env` 与实际镜像不一致。
+
+1. 阶段 1：Manifest 依赖闭包
+   必查项：`publishScope`、migrationId/type/dependsOn、code-only 执行集合、被过滤祖先。
+   推荐命令：使用 `ConvertFrom-Json`/JSON parser 读取 `manifest.json` 的 `migrationPlan` 与 `requiredSql`，输出最小依赖链；禁止用日志全文搜索代替结构化解析。
+   Fail Fast：任一待执行迁移传递依赖 pending 且会被 scope 过滤的迁移。
+   必须记录：待执行节点、被过滤祖先、最小依赖路径和 Manifest checksum。
+
+2. 阶段 2：迁移台账与 live state 对照
+   必查项：目标环境 `infra_release_migration` 状态、SQL 的固定 ID/parent/path/唯一键断言、真实表当前值。
+   推荐命令：先按真实库 `DESCRIBE`，再运行只读 `SELECT`；菜单迁移至少核 `system_menu.id/name/parent_id/path/type/deleted`。
+   Fail Fast：ledger 与 live state 不一致，或 live state 前置缺失。
+   必须记录：脱敏 SQL 意图、ledger 状态、真实值、期望值和差异。
+
+3. 阶段 3：失败后的版本漂移冻结
+   必查项：operation、release lock、migration failed 行、`.env IMAGE_TAG`、Compose images、实际镜像、health/HTTP、release-info。
+   推荐命令：运行任务内只读 post-failure probe；operation 日志仅取脱敏摘要。
+   Fail Fast：任一目标版本证据未通过；失败 tag 已产生部分迁移记录。
+   必须记录：失败迁移、状态计数、实际运行版本与禁止重试结论。
+
+## 2026-08-21 r260821h-r4 失败态漂移与 Spring context 门禁
+
+### 门禁摘要
+
+- Trigger: `publish-test` 失败发生在 required SQL、route snapshot BACKFILL/READINESS 或其它容器前置运行报告阶段；日志出现 `No default constructor found`、`Application run failed`、`InvalidDefaultArgInFrom` 或 MySQL 密码命令。
+- Preflight check: publish-test 写入前保存远端 `.env` 的脱敏 hash/来源、当前 compose 解析镜像和实际容器镜像；build-release 前扫描 Docker warning，并执行 Spring context smoke 或多构造函数 Spring Bean 静态检查；operation log 只能记录脱敏命令摘要。
+- Blocker: operation 非 `SUCCESS`；`.env`/compose/实际镜像/release-info 任一漂移；Spring context 启动失败；raw log 含密码/token；或失败 tag 已产生迁移部分状态且无法证明恢复基线。
+- Verification: 失败冻结同时记录 operation final、`.env IMAGE_TAG`、`docker compose config --images`、`docker compose images`、`docker inspect`、容器状态、Actuator、前端 HTTP、`release-info.json`、release lock/migration 和脱敏日志扫描结果。
+- Forbidden action: 不得因旧容器 health/HTTP 200 或 `.env` 已等于目标 tag 判成功；不得猜测旧 tag 回滚、手工改 release lock/migration、重试失败 tag、执行 mark-tested/promote；不得提交 raw operation log。
+- Evidence: `doc/tasks/20260821-test-only-head-release/execution-log.md` P026-P029；publish operation `op-2026-08-21T210307402431400Z-d11e3d45-06fb-4026-a039-a1ee4f70086b`；releaseTag `release-20260821-intmain-head-test-r260821h-r4`。
+
+### 阶段 1：构建前运行契约
+
+- 必查项：Dockerfile `FROM`/ARG warning、Spring Bean 多构造函数注入、发布 logger secret scan、旧 `.env` 可恢复性。
+- 推荐命令：`rg -n "^FROM |ARG " <backend> <frontend> -g "Dockerfile*"`；对 Spring Bean 做构造函数静态扫描；对 log 样本扫描 `mysql -p`、`password=`, `token=`。
+- Fail Fast：`InvalidDefaultArgInFrom` 未解释；多构造函数无唯一显式 `@Autowired`；日志出现 secret 形态；无法保存旧 `.env` hash/恢复路径。
+- 必须记录：warning 摘要、目标 Bean、logger 脱敏测试、旧 env 证明和自动恢复路径。
+
+### 阶段 2：失败收束
+
+- 必查项：同一 operation 状态、失败日志阶段、远端 env/compose/actual images、容器/health/HTTP/release-info、lock/migration。
+- 推荐命令：`docker compose config --images`、`docker compose images`、`docker inspect`、`curl -fsS /actuator/health`、`curl -fsS /release-info.json`。
+- Fail Fast：env/compose/actual images 不一致、失败 tag 有部分迁移状态、或旧 env 基线不可证明。
+- 必须记录：现象、阶段、影响、原因判断、处理动作、结果、前置检查、自动化方式、下次避免；失败 tag 判废且禁止重试。
+
+## 2026-08-22 r260822a-r2 route snapshot blocker 与 operation 终态门禁
+
+### 门禁摘要
+
+- Trigger: `publish-test` 已通过构建/manifest 门禁，但 route snapshot BACKFILL/READINESS 报告返回 `BLOCKED`，或临时 backend runner 未退出、operation API 长时间保持 `RUNNING`。
+- Preflight check: 发布前验证修复提交的真实 Spring context smoke；发布中记录报告 `status`/`blockerCount`、临时 runner 生命周期、operation 状态文件更新时间和命令执行器超时；logger 先完成 secret redaction 样例测试。
+- Blocker: report `status != READY`、`blockerCount != 0`；临时 runner 未退出；operation 未进入明确 `SUCCESS`/`FAILED`；或 raw log 命中 `mysql -p`、`password=`、`token=`。
+- Verification: 保存脱敏报告摘要、runner 创建/清理结果、operation JSON/API、日志 scan、live backend/frontend 实际 tag；发布成功仍必须满足 operation=`SUCCESS` 与全部运行态门禁。
+- Forbidden action: 禁止因构造注入修复测试通过就跳过真实 BACKFILL/READINESS；禁止手工将 `RUNNING` 改为 `SUCCESS`；禁止修改业务数据/迁移台账消除 blocker；禁止重复提交同一 operation 或复用失败 releaseTag。
+- Evidence: `doc/tasks/20260821-test-only-head-release/execution-log.md` P038-P043；releaseTag=`release-20260822-intmain-head-test-r260822a-r2`；publish operation=`op-2026-08-22T035621436028400Z-55335b7f-e740-4d0f-a9d1-a85f875648fa`。
+
+### 阶段 1：发布前运行报告
+
+1. 必查项：修复提交的 Spring context smoke、route snapshot runner 参数、远端报告目录、logger 脱敏样例。
+2. 推荐命令：项目内 `ApplicationContextRunner` 测试；远端只读读取 report `status`/`blockerCount`；本地 secret-pattern scan。
+3. Fail Fast：Spring context 启动失败、报告非 READY、blockerCount 非 0、logger 输出 raw secret。
+4. 必须记录：目标提交、测试命令、报告摘要、releaseTag、operation id、日志 scan 结果。
+
+### 阶段 2：长 operation 与失败收束
+
+1. 必查项：脱敏日志进度、operation JSON/API、command-timeout、临时 runner 状态、live 容器 tag。
+2. 推荐命令：读取 operation state 与 log tail；远端 `docker inspect`/`docker ps` 只查询任务创建的 runner 与 live backend/frontend。
+3. Fail Fast：无日志进展超过真实超时、runner 不退出、operation 不是明确终态、env/compose/actual image/release-info 漂移。
+4. 必须记录：耗时阶段、进度计数、阻塞根因、清理边界、live 容器未受影响证据和下一步自动化动作。
+
+## 2026-08-22 route snapshot 历史数据治理与租户范围门禁
+
+### 门禁摘要
+
+- Trigger: route snapshot BACKFILL/READINESS 已能启动，但报告返回 `BLOCKED`，尤其 blocker 来自历史快照结构、正式身份或多个租户。
+- Preflight check: 远端写入前读取结构化报告并按 `reasonCode`、`routeVersionId`、租户分布聚合；按真实库 `DESCRIBE` 核对 `mes_pro_route_version` 与相关源表；区分芋道源码租户与测试租户；确认历史快照是不可变证据，不能从当前投影推断修复值。
+- Blocker: `status != READY`、`blockerCount != 0`、存在受保护租户 blocker、无法提供正式历史快照治理/回滚方案，或有人提出排除租户、只写 hash、跳过 BACKFILL/READINESS 的降级路径。
+- Verification: 保存原始报告的非敏感副本、status/scanned/updated/blockerCount、reasonCode counts、tenant counts、关键样本字段和零写入证明；修复后必须用新提交、新 worktree、新 releaseTag 重新执行完整 `build-release -> publish-test`。
+- Forbidden action: 禁止修改芋道源码租户数据；禁止用当前路线/BOM 表重建不可变历史快照；禁止排除 tenant 1、修改 migration ledger/release lock、只写身份列、跳过门禁或复用失败 releaseTag。
+- Evidence: `doc/tasks/20260821-test-only-head-release/execution-log.md` P047；`evidence/route-snapshot-identity-backfill-r260822a-r2.json`；`evidence/route-snapshot-readonly-probe.sql`。
+
+## 2026-08-22 route snapshot blocker 租户精确归属门禁
+
+### 门禁摘要
+
+- Trigger: route snapshot 报告包含 blocker，但报告 schema 只提供 `routeVersionId`、未提供 `tenantId`，或发布判断需要确认 blocker 是否落在受保护租户。
+- Preflight check: 使用真实库只读查询 `mes_pro_route_version(id, tenant_id)`，按报告 `routeVersionId` 做完整关联；必须证明映射覆盖率为 100%，并按 `tenant_id/reasonCode` 输出计数。
+- Blocker: 任一 blocker 无法映射、报告缺少关键 ID、关联退出码非 0、存在受保护租户 blocker，或有人提出只修测试租户/排除受保护租户来满足全租户门禁。
+- Verification: 记录 SQL 意图、SSH exit code、报告 blocker 总数、映射总数、未映射数、租户与 reasonCode 聚合；不记录密码和 raw operation log。
+- Forbidden action: 禁止只凭报告总数推断租户归属；禁止用 tenant filter、只写 hash、跳过 BACKFILL/READINESS 或修改受保护租户来伪造可发布状态。
+- Evidence: `doc/tasks/20260821-test-only-head-release/execution-log.md` P050；本轮 882 条 blocker 全部映射，tenant 1=881、tenant 122=1。
+
+### 阶段必查项
+
+1. 发布前运行报告：报告必须是结构化 JSON，聚合 `status`、`scannedCount`、`updatedCount`、`blockerCount`、reasonCode 和租户分布。
+2. 数据契约核对：以真实库 `DESCRIBE` 和只读 SQL 为准；历史 snapshot 的结构/身份必须由自身证明，不能引用当前 projection 作为 fallback。
+3. 失败收束：保持 operation 非成功、保留 worktree/报告，禁止同 tag 重试；若失败脚本已写 `.env`，另行验证 env/compose/actual image 漂移。
+
+## 2026-08-24 r11 仅测试服发布终态与页面门禁
+
+### 门禁摘要
+
+- Trigger: 完成修复后重新执行同一 releaseTag 的 build-release -> publish-test，并准备判断测试发布成功。
+- Preflight check: build operation SUCCESS；manifest/release-manifest、sourceRepos commit/dirty、前端 release-info、changeSet.summary 和 worktree HEAD 一致；publish preview 明确 environment=test、noPromotion=true。
+- Blocker: build/publish operation 非 SUCCESS、远端 .env 与实际 image tag 不一致、容器非 running、Actuator 非 UP、frontend HTTP 非 200、release-info 缺 commit/dirty/changeSet、目标 release lock 非 APPLIED、目标 migration 存在 FAILED/RUNNING，或运行控制台版本说明无法展示时必须判定 NO-GO。
+- Verification: 远端只读探针同时核对 .env、docker inspect、compose ps、health、frontend、release-info、latest releaseTag lock 和 migration；Playwright 真实打开测试前端入口并记录 title、HTTP/API、console errors；运行控制台打开版本变更说明核对 releaseTag、summary、commit，正式/备份保持未上报。
+- Forbidden action: 禁止因 publish operation SUCCESS 跳过运行态；禁止把数据库锁内部 operation_id 与控制台 operation id 强行要求相等；禁止为页面验收猜测过期凭据、修改租户/账号或 API-only 冒充真实页面；禁止访问正式服和备份服。
+- Evidence: 本任务 remote-runtime-r260823f10-r11.json、output/playwright/r11-test-frontend-login.png、output/playwright/r11-runtime-console.png、execution-log.md ISSUE-014/015/016。
+
+## 2026-08-29 r260829j 仅测试服成功闭环、真实运行态与控制台版本门禁
+
+### 门禁摘要
+
+- Trigger: 用户明确要求“仅测试服发布”，需要从 clean release worktree 的同一 releaseTag 验证 `build-release -> publish-test`，并证明测试服真实运行态、前端页面、运行控制台版本号和变更说明。
+- Preflight check: `publish-test` preview 必须是 action=`publish-test`、environment=`test`，禁止 `mark-tested`、`promote-prod`、`promote-backup`；发布后必须独立核 operation=SUCCESS、远端 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、container running、backend Actuator UP、frontend HTTP 200、frontend `/release-info.json`、运行控制台 `/release-status` 和 Playwright 页面。
+- Blocker: build/publish operation 非 SUCCESS；`.env`、实际镜像、release-info、manifest 或运行控制台任一 releaseTag 不一致；backend health 非 UP；frontend HTTP 非 200；运行控制台无法显示当前 releaseTag/发布包/组件范围/提交摘要；页面证据含默认密码或 raw secret；正式服或备份服被触发。
+- Verification: 保存 `remote-runtime-check*.json`、`runtime-console-release-status*.json`、`playwright-verification*.json`、截图和最终 `test-release-final-gate*.json`；final gate 必须把 worktree clean、manifest、官方 validator、远端运行态、页面、控制台和禁止推广动作全部列为 true。
+- Forbidden action: 禁止用 `publish-test` SUCCESS 代替真实运行态；禁止只看前端 HTTP 200；禁止把运行控制台 API 验收降级为页面未展开的初始状态；禁止保存含敏感输入值的 Playwright snapshot；禁止访问或发布正式服/备份服。
+- Evidence: `doc/tasks/20260828-test-only-release-head/execution-log.md`；releaseTag `release-20260829-frozen-head-test-r260829j-r1`；build operation `op-2026-08-29T074248158573400Z-4ec035f6-02a6-49ee-a41c-c598d4cd2cee`；publish operation `op-2026-08-29T080003811407100Z-9e826bd7-61ca-44e3-bc28-f8a3794035bb`；final gate `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260829j-state\test-release-final-gate-r260829j-r1.json`。
+
+### 阶段 1：publish-test 前范围确认
+
+1. 必查项：releaseTag、build package、preview action/environment、目标 test host、远端 runtime 目录、禁止动作 token。
+2. 推荐命令：通过运行控制台 preview API 保存 `publish-test-preview*.json`，再用结构化 guard 检查 `action=publish-test`、`environment=test`、无 `mark-tested/promote-prod/promote-backup`。
+3. Fail Fast：preview 指向非 test 环境、releaseTag 不等于构建包、或 payload 出现 promotion/mark 动作。
+4. 必须记录：preview JSON、guard JSON、releaseTag、目标 host 和未执行正式/备份动作声明。
+
+### 阶段 2：远端真实运行态
+
+1. 必查项：`.env IMAGE_TAG`、backend/frontend `docker inspect` image、compose ps、container state、Actuator health、frontend HTTP、frontend release-info。
+2. 推荐命令：远端只读 SSH 脚本使用 POSIX shell、docker、curl 和 JSON parser；`.env` 只读取白名单键，不整体 source。
+3. Fail Fast：任一字段缺失或不匹配 releaseTag；container 非 running；backend health 非 UP；frontend HTTP 非 200；release-info sourceRepos dirty 非 false。
+4. 必须记录：脱敏 stdout 摘要、SSH exit code、runtime JSON、image tag、health body、HTTP status 和 release-info summary。
+
+### 阶段 3：页面和运行控制台版本说明
+
+1. 必查项：测试服前端可真实打开；运行控制台 API 返回当前 test releaseTag 和 changes；页面点击 `查看变更` 后显示 releaseTag、发布包、组件范围和提交摘要。
+2. 推荐命令：Playwright CLI 串行执行 `open`、页面断言和 `screenshot`；登录页只记录非敏感 visible text，运行控制台用实际隔离端口。
+3. Fail Fast：页面打不开、运行控制台 release-status 缺当前 tag、对话框缺变更说明、Playwright 证据含密码/token。
+4. 必须记录：页面 URL/title、截图路径、release-status 关键字段、console/请求异常摘要和 secret scan 结果。

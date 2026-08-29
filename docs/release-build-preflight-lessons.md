@@ -342,11 +342,12 @@
 ## 2026-07-09 build-release 迁移元数据必须先过全量策略门禁
 
 - 适用场景：执行 IntRuoyi code-only / no-data `build-release` 前，尤其是 HEAD 中包含 `sql/mysql/*.sql` 迁移文件时。
-- 强制门禁：先在当前冻结 worktree 运行 `script/release/run-release-migration-policy-gate.py --help` 确认参数契约，再按当前脚本支持的 `--output <evidence-json>` 保存完整 JSON 证据，例如 `script/release/run-release-migration-policy-gate.py --sql-root <backend>/sql/mysql --output <task-dir>/migration-policy-gate.json`；历史 `--json` 示例不得直接用于冻结 worktree。
+- 强制门禁：先以运行控制台 preview 返回的实际 `scriptPath` 为准定位维护仓 `ops/release/run-release-migration-policy-gate.py`，再对冻结 app backend 的 `sql/mysql` 执行门禁并保存 JSON 证据；只有无法定位实际 ops gate 时，才补跑 app 仓 `script/release/run-release-migration-policy-gate.py` 作为辅助。历史 `--json` 示例不得直接用于冻结 worktree。
 - 元数据约束：`type` 只能使用脚本允许枚举 `schema`、`data`、`menu`、`config`、`permission`、`seed`；不得写 `schema-data` 等组合值。
-- 依赖约束：`dependsOn` 必须填写真实存在的 migrationId，且依赖迁移的 `allowedEnvironments` 必须覆盖子迁移环境。
-- 失败处理：若 build-release 报 `Invalid type in release migration metadata` 或 `missing release-migration metadata`，先冻结 operation 日志与策略门禁 JSON，再修复 SQL 首行元数据并补 `script/tests` 覆盖后重新生成新的 releaseTag。
+- 依赖约束：`dependsOn` 必须填写真实存在的 migrationId，依赖迁移的 `allowedEnvironments` 必须覆盖子迁移环境；executable 类型（`schema/data/menu/config/permission/seed`）不得直接依赖 evidence-only 类型（`preflight/backfill/postflight/rollback-dry-run`）。
+- 失败处理：若 build-release 报 `Invalid type in release migration metadata`、`missing release-migration metadata` 或 `executable migration cannot depend on evidence-only migration`，先冻结 operation 日志与实际 ops gate JSON，再修复 SQL 首行元数据/依赖链并补 `script/tests` 覆盖后重新生成新的 releaseTag。
 - 2026-07-15 追加证据：`release-20260715-intmain-codeonly-three-env-r260715v-r1` 在 `build-release` 阶段失败，operation `op-2026-07-14T161447801754900Z-e7e1c3bf-8141-427a-bcf9-fd79544950f7` 日志报 `Release migration metadata missing: ...\sql\mysql\20260714_dcc_personal_file_decommission.sql`。后续遇到 `20260714_dcc_personal_file_decommission.sql` 或其他新增 SQL 文件时，必须在构建前运行全量 migration policy gate；若失败，冻结 operation/manifest 状态，补 SQL 首行 `-- release-migration: ...` 与对应 `script/tests` 后使用新 releaseTag 重建。
+- 2026-08-19 追加证据：`release-20260819-intmain-head-test-r260819a-r1` 在 `build-release` 阶段失败，operation `op-2026-08-18T174311645827300Z-818527d7-fab1-4411-9cec-bb27e29acdec` 日志报 `20260814_mes_c015_route_dcc_qa_reconciliation_schema`（`schema`）依赖 `20260814_mes_c015_route_dcc_qa_reconciliation_backfill`（`backfill`）。app 仓 gate 仍返回 PASS，实际维护仓 ops gate 返回 FAIL；后续发布前必须优先执行实际 ops gate，不能只用 app 仓 gate 判定。
 
 ## 2026-07-09 publish-test SQL 不得复用同一派生/临时表别名触发 MySQL 1137
 
@@ -997,3 +998,219 @@ HEAD-only 构建发布在维护仓或主程序仓主工作区 dirty，且需要�
 - Verification: preview gate、config presence summary、两个 release worktree clean、releaseTag candidate absent、脱敏样例 secret scan=0；构建后 manifest sourceRepos commit/dirty 和 artifact hash 全通过。
 - Forbidden action: 禁止删除/覆盖 NAS 既有发布包以复用 tag；禁止只复制 release-package 而省略 backup-ops；禁止对脚本源码运行宽泛凭据替换；禁止把 raw operation log 提交为证据。
 - Evidence: `doc/tasks/2026-08-11-test-only-release-head/execution-log.md`；r260812b-r1 因同名 NAS 包存在失败，r2 使用相同冻结 clean 输入成功；发布后页面验收因 backup-ops 缺失首次阻塞，补齐配置后通过。
+
+## 2026-08-16 code-only 迁移依赖闭包不能只验证 ID 存在
+
+- Trigger: code-only 发布会跳过 `type=data` required SQL，但 Manifest 中其它可执行迁移通过 `dependsOn` 直接或传递依赖它，或依赖它建立的菜单/配置/权限真实状态。
+- Preflight check: policy gate 除了验证 migrationId 存在、无环和 type 合法，还必须按实际 publishScope 与 target preflight action 计算过滤后执行图；任何 APPLY 迁移不得依赖 preflight=APPLY 但会被 scope 过滤的 pending 节点。对于 SQL 中 `SIGNAL` 的固定 ID、parent/path、唯一键或状态断言，应在服务器写入前从冻结 SQL 生成只读 live-state probe，并与 migration ledger 对照。
+- Blocker: 出现 `APPLY executable -> pending filtered data` 依赖路径；ledger 表示已应用但真实状态不满足后续迁移；或无法证明正式迁移会在同一新 releaseTag 内自给前置状态。
+- Verification: 合同测试覆盖直接和传递依赖、code-only 过滤、最小依赖链输出；发布前证据包含 Manifest 条目、live-state 查询、ledger/真实值差异。修复必须提交后用新冻结 HEAD 和新 releaseTag 完整重建。
+- Forbidden action: 禁止手工补数据库后继续失败 tag；禁止修改 ledger、复用失败包、把 `type=data` 随意改成其它类型绕过过滤，或因旧服务 health/HTTP 正常而判发布成功。
+- Evidence: `doc/tasks/20260816-test-only-release-head/execution-log.md` P-016；负责移动菜单的 data migration 被 code-only 跳过，后续 menu migration 在真实父级断言处失败。
+
+### 可自动化实现
+
+1. 从 Manifest `migrationPlan` 建立 `migrationId -> {type, dependsOn}` 图，并按 publishScope 标记 executed/skipped。
+2. 对每个 APPLY 节点遍历祖先；命中 preflight=APPLY 且 scope 将过滤的节点时立即输出最小路径并使 gate 非零退出。
+3. 对包含 `SIGNAL` 的 menu/config/permission migration 输出待核 live-state 字段清单；无法自动解析时要求显式 `requiredPreconditions`，不得静默跳过。
+4. publish-test 失败后自动生成脱敏状态摘要，包含 lock/migration counts、env/compose/actual images、health/HTTP/release-info；原始 secret-bearing operation log 不进入任务证据。
+
+## 2026-08-21 r260821h-r4 构建 warning、Spring context 与失败 env 漂移
+
+### 门禁摘要
+
+- Trigger: build-release 生成 Docker warning，或 publish-test 在 route snapshot 运行报告阶段失败，尤其出现 `InvalidDefaultArgInFrom`、`No default constructor found`、`Application run failed`、`.env IMAGE_TAG` 与 actual image 不一致或 raw MySQL password command。
+- Preflight check: 构建前扫描 Dockerfile `ARG/FROM` 契约；对 `@Component`/`@Service` Bean 执行 Spring context smoke 或多构造函数静态扫描；发布脚本 logger 先通过 `mysql -p`/`password=`/`token=` 样本脱敏测试；远端 `.env` 写入前保存脱敏 hash、旧内容来源和恢复路径。
+- Blocker: warning 未解释、Spring Bean 多构造函数无唯一显式 `@Autowired`、raw log 命中 secret、或无法证明 publish-test 失败后可以恢复旧 `.env`/compose/actual image 一致性。
+- Verification: 记录 Docker warning 摘要、Bean/构造函数证据、logger secret scan、operation final、`.env`、`docker compose config --images`、`docker compose images`、`docker inspect`、容器状态、Actuator、frontend HTTP、release-info、lock/migration。
+- Forbidden action: 不得把 Maven package 通过当作 Spring runtime 可启动；不得因旧容器 health/HTTP 200 判成功；不得猜测旧 tag 回滚、手工改 release lock/migration、重试失败 releaseTag 或提交 raw operation log。
+- Evidence: `doc/tasks/20260821-test-only-head-release/execution-log.md` P026-P029；publish operation `op-2026-08-21T210307402431400Z-d11e3d45-06fb-4026-a039-a1ee4f70086b`；releaseTag `release-20260821-intmain-head-test-r260821h-r4`。
+
+### 阶段 1：build-release
+
+1. 阶段名称：构建运行契约。
+2. 必查项：Dockerfile 基础镜像 ARG/FROM、Spring Bean 构造函数、维护/app release worktree clean、发布 logger 脱敏。
+3. 推荐命令：`rg -n "^FROM |ARG " <backend> <frontend> -g "Dockerfile*"`；Spring context smoke；`docker build` warning 摘要采集；secret-pattern scan。
+4. Fail Fast：`InvalidDefaultArgInFrom` 未解释、`No default constructor found`、logger 输出 raw secret 或 worktree 变脏。
+5. 必须记录：warning、目标 Bean、测试命令、退出码、worktree、JAR/image digest 与 redaction scan。
+
+### 阶段 2：publish-test 失败收束
+
+1. 阶段名称：失败态版本一致性。
+2. 必查项：同一 operation final、`.env IMAGE_TAG`、compose 解析镜像、实际容器镜像、容器 state、health、frontend HTTP、release-info、lock/migration。
+3. 推荐命令：`docker compose config --images`、`docker compose images`、`docker inspect`、`curl -fsS http://127.0.0.1:48081/actuator/health`、`curl -fsS http://127.0.0.1:8081/release-info.json`。
+4. Fail Fast：env/compose/actual images/release-info 漂移；失败 tag 已写入部分迁移状态；旧 `.env` 基线不可证明。
+5. 必须记录：现象、阶段、影响、原因判断、处理动作、结果、是否可前置、是否可自动化、下次避免；失败 tag 判废且不重试。
+
+## 2026-08-22 route snapshot BACKFILL blocker 与异步 operation 状态收束
+
+### 门禁摘要
+
+- Trigger: 后端 route snapshot runner 已修复构造注入并通过单测，但真实 BACKFILL/READINESS 报告仍返回 blocker；或 `docker compose run --rm` 临时 runner 不退出、operation JSON 长期保持 `RUNNING`。
+- Preflight check: build-release 前运行真实 Spring context smoke；publish-test 前确认报告要求 `status=READY` 且 `blockerCount=0`；命令执行器必须在读取 stdout 时也可中断超时，并在异常/强制清理时写入明确 FAILED/STOPPED；logger 先做 secret redaction contract test。
+- Blocker: report `BLOCKED`/`blockerCount>0`；临时 runner 不退出；operation 没有明确终态；raw log 含 MySQL 密码或其它 secret；失败 tag 产生部分 migration state 且无法证明恢复基线。
+- Verification: 记录 smoke 命令、报告摘要、runner `docker inspect`、operation state/API、脱敏日志 scan、live image tags；只有 operation=`SUCCESS` 才能进入运行态验收。
+- Forbidden action: 禁止手工改 operation 状态冒充成功；禁止修改业务数据、migration ledger 或 release lock 来消除 blocker；禁止重复提交同一 releaseTag；禁止提交 raw log。
+- Evidence: `doc/tasks/20260821-test-only-head-release/execution-log.md` P038-P043；releaseTag=`release-20260822-intmain-head-test-r260822a-r2`。
+
+### 阶段 1：构建与运行报告
+
+1. 必查项：Spring Bean 构造函数、context smoke、Docker warning、route snapshot report contract、logger redaction contract。
+2. 推荐命令：Maven `ApplicationContextRunner` smoke；report JSON parser；`rg`/结构化 secret scan；Docker runner command/volume 预览。
+3. Fail Fast：context 失败、report 非 READY、blockerCount 非 0、secret scan 命中或 worktree 变脏。
+4. 必须记录：commit、worktree、releaseTag、report fields、warning、scan result 和 artifact hash。
+
+### 阶段 2：异步命令执行器
+
+1. 必查项：stdout 读取与 timeout 是否可中断；子进程退出码；异常时 operation state 是否落盘；临时 runner 是否 guaranteed cleanup。
+2. 推荐命令：维护控制台命令执行器回归测试；模拟 stdout 长时间不 EOF、子进程非零退出和强制清理；检查 operation 状态文件更新时间。
+3. Fail Fast：超时只在 stdout EOF 后触发、异常路径留下 RUNNING、runner 残留或 operation API 无终态。
+4. 必须记录：命令执行器线程/子进程状态、timeout、operation final、清理结果和不重复操作结论。
+
+## 2026-08-22 route snapshot BACKFILL blocker 的构建发布前置门禁
+
+- Trigger: 新代码已通过 Spring context smoke，但 build/release 依赖的 required SQL 会在测试服执行 route snapshot BACKFILL/READINESS。
+- Preflight check: 将 route snapshot report contract 纳入 build/release 计划；远端写入前用只读报告聚合 blocker reason、租户分布和样本结构；对迁移注释中“禁止从当前投影推断”执行静态合同检查。
+- Blocker: 历史快照存在结构或身份 blocker；受保护租户数据需要修改；报告聚合无法证明零 blocker；或发布脚本没有明确的失败态恢复边界。
+- Verification: 只读证据必须与 manifest/sourceRepos/releaseTag 绑定；修复不得改验证器放宽约束，必须有正式数据治理方案、备份/回滚证据、BDD/TDD 或迁移合同测试，并从新冻结输入重建。
+- Forbidden action: 禁止把数据 blocker 误判为构建问题后改 validator；禁止只为过发布在包里排除迁移、从当前表补历史 snapshot、或把 source tenant 当作可修改测试数据。
+- Evidence: `doc/tasks/20260821-test-only-head-release/verification-report.md` 的 Continued Diagnosis；r260822a-r2 report evidence。
+
+## 2026-08-23 冻结 HEAD 的 Vue SFC 完整性门禁
+
+- Trigger: 仅测试服发布、clean release worktree 前端构建、Vite 报 `At least one <template> or <script> is required`，或冻结提交中出现 tracked 0 字节 `.vue` 文件。
+- Preflight check: 创建并核对冻结 app worktree 后、恢复依赖前，扫描 tracked `.vue` 文件；每个文件必须非空且至少包含 `<template>` 或 `<script>`。扫描结果必须绑定冻结 commit 和绝对 worktree 路径。
+- Blocker: 任一 tracked Vue SFC 为 0 字节、同时缺少 `<template>` 与 `<script>`、文件来自未提交主工作区修复，或无法证明扫描对象就是冻结 HEAD 时立即停止；不得进入依赖安装、前端 build、`build-release` 或 `publish-test`。
+- Verification: 记录 `git cat-file -s HEAD:<path>`、worktree file length、SFC 扫描总数/失败数、`git status --porcelain --untracked-files=all` 和冻结 commit；修复后必须提交到主线并由新 worktree/new releaseTag 重新执行门禁。
+- Forbidden action: 禁止从 dirty 主工作区复制非空文件覆盖 release worktree，禁止生成空壳组件、跳过前端 build、复用旧包/旧 manifest/旧 releaseTag，或在构建源不完整时继续服务器写入。
+- Evidence: `doc/tasks/20260823-test-only-head-release-r3/verification-report.md`；冻结 app commit=`0002767c0486f11d82bd82666bf8b0f164aee597`，`TrainingRulesReadonlyTab.vue` blob/file size=`0`。
+- Evidence: `doc/tasks/20260828-test-only-release-head/verification-report.md`；冻结 app commit=`10fecf5caf929d47a385bcbf92fb410da312f8c2`，同一 SFC blob `e69de29bb2d1d6434b8b29ae775ad8c2e48c5391`，size=`0`，构建前 fail fast。
+
+### 阶段补充：前端源码静态完整性
+
+1. 阶段名称：release worktree 创建后、依赖恢复前。
+2. 必查项：tracked `.vue` 非空、SFC 至少含 template/script、worktree clean、HEAD 与冻结提交一致。
+3. 推荐命令：`git -C <app-worktree> ls-files 'IntRuoyiFronted/**/*.vue'` 配合 `git cat-file -s HEAD:<path>`，或使用等价的 UTF-8 安全结构扫描脚本。
+4. Fail Fast：空文件、SFC 结构缺失、worktree dirty、HEAD 不一致。
+5. 必须记录：冻结 commit、绝对路径、失败文件数和文件列表；未通过时明确 build/publish 未执行。
+
+## 2026-08-24 发布前置门禁与冻结 worktree 依赖复用实现
+
+### 门禁摘要
+
+- Trigger: `build-release`、维护控制台构建或 required SQL 发生变更，尤其出现 MySQL `ERROR 1137`、`ERROR 1267`、`No default constructor found`、`cross-env`/`vite`/`vue-tsc` 缺失或同一 worktree 重复 `pnpm install`。
+- Preflight check: 维护仓 `ops/release/release_sql_contract_gate.py` 对当前迁移基线（`20260801` 起）扫描同一 SQL 语句/表达式的 `tmp_*` 重复引用，并对与非临时表文本列等值比较的临时表要求显式 `COLLATE`；`spring_constructor_contract_gate.py --source-root <backend>` 扫描带 Spring Bean 注解的多构造器类；应用前端构建前检查 `package.json`、`pnpm-lock.yaml`、`node_modules/.bin/{cross-env,vite,vue-tsc}.cmd` 和 `pnpm ignored-builds`；维护构建统一调用 `scripts/prepare-frontend-dependencies.ps1`，按 package/lock SHA-256、Node/pnpm 版本和二进制清单复用 stamp。
+- Blocker: SQL gate 报 `MySQL temp table reopen risk` 或 `temporary table collation must be explicit`；Spring gate 报多构造器且无唯一 `@Autowired`/无参构造；依赖输入、stamp、二进制或 ignored-builds 状态缺失/漂移；任何命令非零退出。阻塞发生在 Maven 或前端打包前，不进入服务器写入。
+- Verification: `python -X utf8 -m pytest scripts/tests/test_release_sql_preflight_gate.py scripts/tests/test_spring_constructor_contract.py -q --basetemp <task-dir>`；PowerShell AST 解析三个脚本；记录 gate JSON/文本输出、冻结 backend/frontend worktree、commit 和 dirty 状态。当前依赖缺失时只允许一次 `pnpm install --frozen-lockfile`，成功后写入 ignored `node_modules/.release-dependencies.json`。
+- Forbidden action: 禁止复用旧 releaseTag/旧 `node_modules`/旧产物掩盖 stamp 漂移，禁止把 Maven package 通过当作 Spring 可启动，禁止忽略 SQL gate、修改服务器/ledger 或吞掉命令异常。
+- Evidence: 本任务 `doc/tasks/20260824-release-preflight-build-optimization/execution-log.md`；r7/r8/r9 发布失败日志中的 `ERROR 1267`、`ERROR 1137`、Spring 构造器和重复前端安装证据。
+
+### 阶段补充：构建前执行顺序
+
+1. 阶段名称：冻结 worktree 完整性与依赖状态。
+2. 必查项：冻结 commit/clean、frontend SFC 完整性、依赖 stamp、required binaries、`pnpm ignored-builds`。
+3. 推荐命令：`python -X utf8 ops/release/run-release-migration-policy-gate.py ...`；`python -X utf8 ops/release/spring_constructor_contract_gate.py --source-root <backend>`；`scripts/prepare-frontend-dependencies.ps1 -FrontendDir <frontend>`。
+4. Fail Fast：任一 gate 非零、依赖状态不可证明、前端入口/lockfile 缺失或 worktree 漂移；不进入 Maven、Docker、`build-release` 或 `publish-test`。
+5. 必须记录：gate 命令、退出码、输出摘要、依赖 stamp 哈希/版本、冻结路径和未执行的后续阶段。
+
+### 根因修复规则
+
+- Spring Bean 为测试增加辅助构造器时，生产注入构造器必须显式标注 `@Autowired`；只依赖“唯一构造器”推断会在构造器数量变化后退化为启动期 `No default constructor found`。
+- MySQL 迭代扩展临时结果集时，禁止同一 `INSERT ... SELECT` 同时读取和写入同一 `tmp_*` 表；每轮先复制到独立 source 快照表，再写入目标表，并在过程末尾清理两者。
+- 同一临时表在 `IF EXISTS` 的多个 `OR` 分支中重复读取时，拆成多个独立校验块，避免优化器触发 `Can't reopen table`；门禁通过不等于可以保留原 SQL 结构。
+- Evidence: `64fa527f2`（后端 Spring/SQL 修复）、`13c7da2`（维护仓回归测试与任务证据）、`9cdbe89`（收尾记录）。
+
+## 2026-08-28 rollback-migration 混入发布 SQL 根目录门禁
+
+- Trigger: 仅测试服发布或 `build-release` 前，实际维护仓 `ops/release/run-release-migration-policy-gate.py` 扫描冻结 app worktree 的 `IntRuoyiBackend/sql/mysql`。
+- Preflight check: 对发布扫描根下每个 `.sql` 文件确认首行是当前发布包 parser 可识别的 `release-migration` 元数据；rollback 专用脚本如果仍放在该扫描根内，必须先确认维护仓 Python gate、PowerShell parser、manifest 语义和契约测试均已正式支持。
+- Blocker: 任一 SQL 首行为 `rollback-migration` 或其他非 `release-migration` 元数据，导致 gate 输出 `missing release-migration metadata`；或者尝试用 release worktree 未提交修改替换首行。
+- Verification: 先冻结 gate JSON、目标 SQL 首行、目标 app commit 和 clean worktree 状态；正式修复后在主线提交，重新创建 release worktree，并重跑 `python -X utf8 <maintenance-worktree>\ops\release\run-release-migration-policy-gate.py --sql-root <app-worktree>\IntRuoyiBackend\sql\mysql --file-prefix sql/mysql --output <task-dir>\migration-policy-gate.json`。
+- Forbidden action: 禁止把 rollback SQL 元数据缺失视为 code-only 可忽略事项，禁止手工编辑 release package/manifest，禁止跳过 migration policy gate 后继续 `build-release` 或 `publish-test`。
+- Evidence: `doc/tasks/20260828-test-only-release-head/verification-report.md`；`20260822_mes_process_pool_active_order_completion_receipt_rollback.sql` 首行为 `-- rollback-migration: ...`，实际 ops gate 输出 `missing release-migration metadata`。
+
+## 2026-08-24 r11 迁移临时表、operation 与构建身份门禁
+
+### 门禁摘要
+
+- Trigger: build-release/publish-test 长耗时、required SQL 使用临时表、运行控制台重启或需要从旧失败轮次继续发布。
+- Preflight check: 固定 releaseTag、目标提交、maintenance/app worktree、控制台 config/state-dir/PID；运行 SQL temp-table self-read/reopen 与 collation gate；operation 必须有唯一最终状态；manifest 与前端 release-info 必须共同证明 commit/dirty/changeSet。
+- Blocker: operation 进程退出后仍为 RUNNING、preview source root 指向旧 worktree、同一 SQL 语句重复读取 tmp_*、临时表字符集/排序规则未显式固定、manifest 或 release-info 无法证明冻结提交时立即停止，不发布服务器。
+- Verification: 记录 operation final 与日志尾部、worktree HEAD/clean、manifest validator、package path、远端 .env/actual image/container/health/HTTP/release-info、release lock 最新状态和 migration FAILED/RUNNING 计数。
+- Forbidden action: 禁止重复提交同一 operation、复用失败 releaseTag、手工重置 release lock、直接修改远端 env/ledger、把控制台 operation id 与数据库 release lock operation_id 强行当作同一字段、用 SSH 引号猜测替代真实报告。
+- Evidence: 本任务 execution-log.md ISSUE-014/015、remote-runtime-r260823f10-r11.json、manifest-validation-r260823f10-r11.json；r7/r8/r9 的 ERROR 1267/1137 失败日志。
+
+## 2026-08-29 publish-test required SQL 批量化与脱敏门禁
+
+- Trigger: `publish-test` 包含大量 required SQL、日志显示逐文件 `scp` / 逐条 `ssh + mysql` 入账、迁移计划多数为 `SKIP_ALREADY_APPLIED`，或 operation log 可能打印 `mysql -p...` / `MYSQL_PWD=...`。
+- Preflight check: `publish-int-ruoyi.ps1` 必须将 required SQL staging 后生成单个 tar 归档、一次上传到远端再解包；远端解包 SQL 数必须与本地计划数量一致；`SKIP_ALREADY_APPLIED` 迁移状态必须批量 upsert；`Invoke-SshCommand` / `Invoke-SshCapture` 的显示命令、输出和异常文本必须经过 secret redaction。
+- Blocker: required SQL 仍逐文件 `scp`；`SKIP_ALREADY_APPLIED` 仍逐条远端 MySQL 写入；tar 不可用、归档为空或远端解包数量不一致；operation/task 日志命中明文 `mysql -p...`、`MYSQL_PWD=`、password/token/secret。
+- Verification: `python -X utf8 -m pytest scripts\tests\test_release_sql_preflight_gate.py -q` 覆盖归档上传、批量状态写入和 SSH 日志脱敏；PowerShell AST 解析 `ops\deploy\publish-int-ruoyi.ps1`；`git diff --check`；本机 `tar.exe`、`ssh.exe`、`scp.exe` presence check。
+- Forbidden action: 禁止为节省时间跳过 required SQL、手工改 migration ledger、复用失败 releaseTag/旧包、降低 manifest/运行态验收标准，或提交 raw secret-bearing operation log。
+- Evidence: `doc/tasks/20260829-optimize-test-release-pipeline/verification-report.md`；维护仓实现提交 `9c5d64f`（`任务: 优化测试服发布链路`）。
+
+### 阶段补充：publish-test 耗时前移与批量化
+
+1. 阶段名称：required SQL 上传前。
+2. 必查项：本地计划 SQL 数、staging 目录 SQL 数、tar 命令可用、远端目标目录为空或已清理、归档解包数量一致。
+3. 推荐命令：发布脚本内置 staging/tar/remote count gate；本机预检 `Get-Command tar,ssh,scp`；合同测试 `test_publish_script_uploads_required_sql_as_single_archive`。
+4. Fail Fast：tar 缺失、归档为空、远端文件数不等于计划数、任一 SQL 文件路径无法映射。
+5. 必须记录：releaseTag、计划 SQL 总数、归档路径、远端目录、解包数量和失败边界。
+6. 优化规则：集中完整性校验通过后，不再在每个 APPLY 项前额外执行 `ssh test -f '$remoteSqlPath'`；缺文件由解包数量门禁或实际 `cat '$remoteSqlPath' | mysql` fail fast 暴露。
+7. Evidence: `doc/tasks/20260829-optimize-required-sql-remote-verification/verification-report.md`；维护仓实现提交 `079c6a6`（`任务: 优化required SQL远端校验`）。
+
+1. 阶段名称：migration state 入账前。
+2. 必查项：`SKIP_ALREADY_APPLIED` 数量、批量 upsert SQL 行数、单文件执行状态仍保留独立 START/APPLIED/FAILED 证据。
+3. 推荐命令：合同测试 `test_publish_script_batches_skip_already_applied_migration_state_updates`；operation log 检查 `Batch updating release migration state`。
+4. Fail Fast：跳过态入账退化为逐条远端 MySQL 调用，或批量 SQL 不能证明每个 migrationId/status/checksum/sourceFile。
+5. 必须记录：批量数量、目标状态、单条失败处理边界和迁移台账最终计数。
+6. 优化规则：APPLY 成功路径可将远端文件检查、`RUNNING`、required SQL 执行、`APPLIED` 合并到单次 SSH 会话；SQL 失败必须由外层 catch 继续写 `FAILED` 并抛出，不得吞异常或标记成功。
+7. Evidence: `doc/tasks/20260829-optimize-required-sql-apply-state-ssh/verification-report.md`；维护仓实现提交 `e4bc1e5`（`任务: 优化required SQL状态入账`）。
+
+1. 阶段名称：发布日志脱敏。
+2. 必查项：所有 SSH command/capture 输出路径、异常路径和 task 证据路径。
+3. 推荐命令：合同测试 `test_ssh_command_logs_and_errors_are_secret_redacted`；secret-pattern scan operation log。
+4. Fail Fast：日志或异常含 `mysql -p` 明文密码、`MYSQL_PWD=` 原值、password/token/secret 原值。
+5. 必须记录：脱敏测试结果、scan 结果和被拒绝提交的 raw log 路径。
+
+### 阶段补充：runtime-control ops 包上传
+
+1. 阶段名称：ops runtime 上传前。
+2. 必查项：本地 staging 必须包含 `linux`、`scripts`、`actions`、`config` 与 `script/deploy/manage-int-ruoyi-remote-root-disk.ps1`；staging 内不得包含 `backup-ops.secrets.json`；本机 `tar` 可用。
+3. 推荐命令：合同测试 `test_publish_script_uploads_ops_runtime_package_as_single_archive`；PowerShell AST parse；本机 `Get-Command tar,ssh,scp`。
+4. Fail Fast：仍对 `linux/scripts/actions/config` 多次 `Copy-ToServer`、ops tar 未生成、远端解包后关键文件缺失，或归档包含 secrets。
+5. 必须记录：归档名、远端 `ops-runtime.tar`、关键文件校验、实现提交和未执行真实发布的边界。
+6. 禁止做法：禁止为省时整目录删除 `$remoteOpsRuntimeDir`，避免误删远端 `config` 下现有 secrets；只能清理受控脚本目录和受控 deploy 文件后解包覆盖。
+7. Evidence: `doc/tasks/20260829-optimize-test-release-ops-runtime-upload/verification-report.md`；维护仓实现提交 `f33a8ec`（`任务: 优化发布ops运行包上传`）。
+
+## 2026-08-29 r260829j clean HEAD 构建、manifest 与 DCC SQL 合同门禁
+
+### 门禁摘要
+
+- Trigger: 仅测试服 HEAD 发布、dirty 主工作区发布、clean release worktree 构建、注册证 DCC required SQL、manifest/release-info/sourceRepos 校验、`cross-env.cmd`/`vite.cmd`/`vue-tsc.cmd` 缺失、`ERROR 1644` 注册证核心列合同或 CHECK 精确表达式失败。
+- Preflight check: 每轮发布必须新建本轮专用 maintenance/app release worktree，记录两个 HEAD、路径和 `git status --short --branch`；构建前运行 Vue SFC 完整性、迁移策略、Spring constructor、注册证核心 SQL 静态契约和必要 Maven 合同；app 前端必须完成 `pnpm install --frozen-lockfile --reporter append-only`、`pnpm rebuild --pending`、`pnpm ignored-builds=None`，并验证 `node_modules\.bin\cross-env.cmd`、`vite.cmd`、`vue-tsc.cmd` 存在；构建后用 JSON parser 和官方 validator 校验 manifest/sourceRepos/dirty/changeSet/release-info。
+- Blocker: 任一 release worktree dirty、HEAD 与冻结记录不一致、manifest/sourceRepos/dirty/changeSet 不能绑定目标提交、前端依赖二进制缺失、`pnpm ignored-builds` 非空、注册证 required SQL 精确合同与目标 MySQL 8 规范化输出不一致，或试图从 dirty 主工作区直接构建。
+- Verification: 保存 freeze JSON、构建前 gate 输出、Maven/JAR hash、build operation SUCCESS、`package-manifest-check*.json`、`validate-release-manifest.ps1` 输出、前端镜像内 `/usr/share/nginx/html/release-info.json`；任务日志只记录关键字段和 hash，不打印完整 manifest。
+- Forbidden action: 禁止复用失败 releaseTag、旧 worktree、旧 manifest 或旧 node_modules；禁止在 release worktree 临时改 SQL/前端依赖后继续发布；禁止把 MySQL CHECK 语义相同但字符串不匹配的问题通过放宽断言或手工改库绕过；禁止输出完整 manifest 作为证据。
+- Evidence: `doc/tasks/20260828-test-only-release-head/execution-log.md` 问题 30、34、37；app 提交 `d3f5d6f13603ae723357cd909022eb1652ab64c0`、`3892f88f00d30aa06a4be6c5bd48f9e55ed6203c`；最终 releaseTag `release-20260829-frozen-head-test-r260829j-r1`；final gate `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260829j-state\test-release-final-gate-r260829j-r1.json`。
+
+### 阶段 1：冻结 worktree 与构建前 gate
+
+1. 必查项：两个仓库当前分支、HEAD、dirty；本轮专用 release worktree 是否 detached clean；构建开始后是否固定目标提交。
+2. 推荐命令：`git status --short --branch`、`git rev-parse HEAD`、`git worktree list --porcelain`、Vue SFC 完整性扫描、`run-release-migration-policy-gate.py --output <state>.json`、`spring_constructor_contract_gate.py --source-root <backend>`。
+3. Fail Fast：主工作区 dirty 且未使用 clean worktree；release worktree dirty；gate 非零；目标提交、路径或 state-dir 无法记录。
+4. 必须记录：目标提交、worktree 路径、构建目录、state-dir、releaseTag、各 gate 的 status/count。
+
+### 阶段 2：前端依赖与维护控制台构建
+
+1. 必查项：app frontend `package.json`/`pnpm-lock.yaml`、`node_modules\.bin` 三个关键命令、`pnpm ignored-builds`、tracked diff；维护控制台构建后的 JAR hash。
+2. 推荐命令：`pnpm install --frozen-lockfile --reporter append-only`、`pnpm rebuild --pending`、`pnpm ignored-builds`、`Test-Path node_modules\.bin\cross-env.cmd`、`scripts\build.ps1`。
+3. Fail Fast：关键二进制不存在、ignored-builds 非空、临时 `pnpm.onlyBuiltDependencies` 未恢复、维护构建后 release worktree 出现未解释 dirty。
+4. 必须记录：依赖恢复结果、ignored-builds 输出、关键二进制检查、JAR SHA256、构建命令和退出码。
+
+### 阶段 3：manifest 与版本说明
+
+1. 必查项：发布包存在、`manifest.json`、`release-manifest.json`、镜像 tar、manifest `sourceRepos[*].commit/dirty`、`changeSet.summary`、前端镜像 `release-info.json`。
+2. 推荐命令：`validate-release-manifest.ps1 -PackagePath <package> -OutputPath <state>.json`，以及读取 manifest 的短 JSON 摘要脚本。
+3. Fail Fast：manifest 缺失、validator 失败、source commit 不等于冻结 app HEAD、dirty 非 false、变更说明为空或无法对应提交、release-info 与 manifest 不一致。
+4. 必须记录：releaseTag、package path、source commit、dirty、changeSet、artifact SHA256、validator status。
