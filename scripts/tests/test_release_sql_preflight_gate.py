@@ -15,6 +15,16 @@ def read_backend_dockerfile() -> str:
     return BACKEND_DOCKERFILE.read_text(encoding="utf-8")
 
 
+def test_release_docker_context_copy_uses_parallel_robocopy() -> None:
+    script = read_publish_script()
+
+    assert "'/MT:32'" in script
+    assert "robocopy {0} {1} /E /MT:32" in script
+    assert "$sourceFiles = @(Get-ChildItem -LiteralPath $SourceDirectory -Recurse -File -Force)" in script
+    assert "$destinationFiles = @(Get-ChildItem -LiteralPath $DestinationDirectory -Recurse -File -Force)" in script
+    assert "Release directory copy incomplete" in script
+
+
 def test_release_sql_contract_gate_blocks_duplicate_system_menu_ids(tmp_path: Path) -> None:
     gate = importlib.import_module("ops.release.release_sql_contract_gate")
     sql_root = tmp_path / "sql" / "mysql"

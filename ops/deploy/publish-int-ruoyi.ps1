@@ -207,6 +207,7 @@ function Copy-ReleaseDirectoryTree {
         $SourceDirectory,
         $DestinationDirectory,
         '/E',
+        '/MT:32',
         '/NFL',
         '/NDL',
         '/NJH',
@@ -215,7 +216,7 @@ function Copy-ReleaseDirectoryTree {
         '/R:2',
         '/W:1'
     )
-    Info ("Run: robocopy {0} {1} /E /NFL /NDL /NJH /NJS /NP /R:2 /W:1" -f $SourceDirectory, $DestinationDirectory)
+    Info ("Run: robocopy {0} {1} /E /MT:32 /NFL /NDL /NJH /NJS /NP /R:2 /W:1" -f $SourceDirectory, $DestinationDirectory)
     & robocopy @robocopyArgs | Out-Null
     $robocopyExitCode = $LASTEXITCODE
     if ($robocopyExitCode -ge 8) {
@@ -223,6 +224,16 @@ function Copy-ReleaseDirectoryTree {
     }
     if (-not (Test-Path -LiteralPath $DestinationDirectory -PathType Container)) {
         Fail "Release directory copy destination missing after robocopy: $DestinationDirectory"
+    }
+    $sourceFiles = @(Get-ChildItem -LiteralPath $SourceDirectory -Recurse -File -Force)
+    $destinationFiles = @(Get-ChildItem -LiteralPath $DestinationDirectory -Recurse -File -Force)
+    $sourceBytes = [int64](($sourceFiles | Measure-Object -Property Length -Sum).Sum)
+    $destinationBytes = [int64](($destinationFiles | Measure-Object -Property Length -Sum).Sum)
+    if ($sourceFiles.Count -ne $destinationFiles.Count -or $sourceBytes -ne $destinationBytes) {
+        Fail (
+            "Release directory copy incomplete: source files=$($sourceFiles.Count), bytes=$sourceBytes; " +
+            "destination files=$($destinationFiles.Count), bytes=$destinationBytes"
+        )
     }
 }
 
