@@ -1,0 +1,189 @@
+{
+  "releaseTag": "release-20260829-timed-head-test-r260829k-r2",
+  "failedReleaseTag": "release-20260829-timed-head-test-r260829k-r1",
+  "maintenanceHead": "eb1193f1e3dec75ed87cb01a10464a05e2e91d60",
+  "appHead": "3892f88f00d30aa06a4be6c5bd48f9e55ed6203c",
+  "buildOperationId": "op-2026-08-29T094711769603400Z-ded24bdd-b6fc-40f1-a43a-79f8a9232111",
+  "publishOperationId": "op-2026-08-29T100507230543400Z-9db39d71-d6b4-42f9-a030-61da96fc4c5f",
+  "measuredSeconds": {
+    "setupBeforeRelease": 408.656,
+    "wastedR1AndDependencyRecovery": 491.808,
+    "successfulBuildRelease": 840.638,
+    "successfulPublishTest": 290.605,
+    "successfulCoreBuildPlusPublish": 1131.243,
+    "successfulValidationAroundPublish": 24.395,
+    "successfulCorePlusValidation": 1155.638,
+    "closeoutCleanupAndVerification": 30.555,
+    "totalMeasuredSegments": 2086.756,
+    "wallClockFromWorktreeCreateToPagePass": 3219.0
+  },
+  "segments": [
+    {
+      "segment": "experience_preflight",
+      "phase": "completed",
+      "durationSeconds": null,
+      "releaseTag": null,
+      "operationId": null
+    },
+    {
+      "segment": "release_worktree_create",
+      "phase": "completed",
+      "durationSeconds": 92.541,
+      "releaseTag": null,
+      "operationId": null
+    },
+    {
+      "segment": "runtime_control_config",
+      "phase": "completed",
+      "durationSeconds": 0.044,
+      "releaseTag": null,
+      "operationId": null
+    },
+    {
+      "segment": "maintenance_release_contract_tests",
+      "phase": "completed",
+      "durationSeconds": 1.041,
+      "releaseTag": null,
+      "operationId": null
+    },
+    {
+      "segment": "runtime_control_build",
+      "phase": "completed",
+      "durationSeconds": 274.128,
+      "releaseTag": null,
+      "operationId": null
+    },
+    {
+      "segment": "runtime_control_start",
+      "phase": "started",
+      "durationSeconds": null,
+      "releaseTag": null,
+      "operationId": null
+    },
+    {
+      "segment": "runtime_control_start",
+      "phase": "completed",
+      "durationSeconds": 40.902,
+      "releaseTag": null,
+      "operationId": null
+    },
+    {
+      "segment": "build_release_preview",
+      "phase": "completed",
+      "durationSeconds": 0.18,
+      "releaseTag": "release-20260829-timed-head-test-r260829k-r1",
+      "operationId": null
+    },
+    {
+      "segment": "build_release_operation",
+      "phase": "failed",
+      "durationSeconds": 30.172,
+      "releaseTag": "release-20260829-timed-head-test-r260829k-r1",
+      "operationId": "op-2026-08-29T093553125136900Z-8c48c57b-e941-4bb4-ac35-56d685710dda"
+    },
+    {
+      "segment": "app_frontend_dependency_prepare_after_r1_failure",
+      "phase": "completed",
+      "durationSeconds": 461.456,
+      "releaseTag": null,
+      "operationId": null
+    },
+    {
+      "segment": "build_release_preview_r2",
+      "phase": "completed",
+      "durationSeconds": 0.099,
+      "releaseTag": "release-20260829-timed-head-test-r260829k-r2",
+      "operationId": null
+    },
+    {
+      "segment": "build_release_operation_r2",
+      "phase": "completed",
+      "durationSeconds": 840.638,
+      "releaseTag": "release-20260829-timed-head-test-r260829k-r2",
+      "operationId": "op-2026-08-29T094711769603400Z-ded24bdd-b6fc-40f1-a43a-79f8a9232111"
+    },
+    {
+      "segment": "manifest_package_validation_r2",
+      "phase": "completed",
+      "durationSeconds": 0.155,
+      "releaseTag": "release-20260829-timed-head-test-r260829k-r2",
+      "operationId": null
+    },
+    {
+      "segment": "publish_test_preview",
+      "phase": "completed",
+      "durationSeconds": 5.438,
+      "releaseTag": "release-20260829-timed-head-test-r260829k-r2",
+      "operationId": null
+    },
+    {
+      "segment": "test_server_pre_publish_status",
+      "phase": "completed",
+      "durationSeconds": 1.875,
+      "releaseTag": null,
+      "operationId": null
+    },
+    {
+      "segment": "publish_test_operation",
+      "phase": "completed",
+      "durationSeconds": 290.605,
+      "releaseTag": "release-20260829-timed-head-test-r260829k-r2",
+      "operationId": "op-2026-08-29T100507230543400Z-9db39d71-d6b4-42f9-a030-61da96fc4c5f"
+    },
+    {
+      "segment": "remote_runtime_verification_r2",
+      "phase": "completed",
+      "durationSeconds": 0.777,
+      "releaseTag": "release-20260829-timed-head-test-r260829k-r2",
+      "operationId": null
+    },
+    {
+      "segment": "runtime_control_release_status_verification",
+      "phase": "completed",
+      "durationSeconds": 6.076,
+      "releaseTag": "release-20260829-timed-head-test-r260829k-r2",
+      "operationId": null
+    },
+    {
+      "segment": "playwright_runtime_console_page_verification",
+      "phase": "completed",
+      "durationSeconds": 10.074,
+      "releaseTag": "release-20260829-timed-head-test-r260829k-r2",
+      "operationId": null
+    },
+    {
+      "segment": "task_closeout_cleanup_apply",
+      "phase": "completed",
+      "durationSeconds": 1.634,
+      "releaseTag": null,
+      "operationId": null
+    },
+    {
+      "segment": "release_worktree_git_remove",
+      "phase": "completed",
+      "durationSeconds": 25.748,
+      "releaseTag": null,
+      "operationId": null
+    },
+    {
+      "segment": "release_worktree_physical_cleanup",
+      "phase": "completed",
+      "durationSeconds": 2.238,
+      "releaseTag": null,
+      "operationId": null
+    },
+    {
+      "segment": "final_closeout_verification",
+      "phase": "completed",
+      "durationSeconds": 0.935,
+      "releaseTag": null,
+      "operationId": null
+    }
+  ],
+  "findings": [
+    "r1 build-release failed after 30.172s because clean app worktree missed frontend dependency binaries; dependency restore then cost 461.456s.",
+    "Successful r2 build-release took 840.638s; this remains the largest required release operation segment.",
+    "Successful r2 publish-test took 290.605s; log confirmed deploy-control.tar, required-sql.tar, ops-runtime.tar and six image chunks were used.",
+    "Post-publish verification was short compared with build/publish: remote runtime 0.777s, release-status 6.076s, Playwright page 10.074s."
+  ]
+}
