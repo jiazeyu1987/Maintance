@@ -771,6 +771,37 @@ def test_publish_script_uploads_ops_runtime_package_as_single_archive() -> None:
     assert "Copy-ToServer -LocalPath (Join-Path $opsRuntimeLocalDir 'config')" not in copy_block
 
 
+def test_publish_script_uploads_deploy_control_files_as_single_archive() -> None:
+    script = read_publish_script()
+
+    assert "function Copy-DeployControlFilesToServer" in script
+    helper_start = script.index("function Copy-DeployControlFilesToServer")
+    helper_end = script.index("function Copy-ReleaseOpsRuntimePackage", helper_start)
+    helper_block = script[helper_start:helper_end]
+    deploy_start = script.index('Info "Copying deploy control files to the $PublishTargetName server"')
+    deploy_end = script.index('Info "Reading remote compose services on the $PublishTargetName server"', deploy_start)
+    deploy_block = script[deploy_start:deploy_end]
+
+    assert "deploy-control.tar" in helper_block
+    assert "trap cleanup_deploy_control EXIT" in helper_block
+    assert "Invoke-CheckedCommand -FilePath 'tar'" in helper_block
+    assert "Copy-ToServer -LocalPath $deployControlArchivePath -RemotePath $remoteDeployControlArchive" in helper_block
+    assert "tar -xf $remoteDeployControlArchiveLiteral -C $remoteDeployControlExtractDirLiteral" in helper_block
+    assert "test -f $remoteDeployControlExtractDirLiteral/app/docker-compose.yml" in helper_block
+    assert "test -f $remoteDeployControlExtractDirLiteral/app/.env" in helper_block
+    assert "test -f $remoteDeployControlExtractDirLiteral/website/dist/index.html" in helper_block
+    assert "test -f $remoteDeployControlExtractDirLiteral/website/nginx.conf" in helper_block
+    assert "test -f $remoteDeployControlExtractDirLiteral/sql/reset-db.sql" in helper_block
+    assert "test -f $remoteDeployControlExtractDirLiteral/sql/post-import.sql" in helper_block
+    assert "Copy-DeployControlFilesToServer -ComposeLocal $composeLocal" in deploy_block
+    assert "Copy-ToServer -LocalPath $composeLocal -RemotePath $remoteCompose" not in deploy_block
+    assert "Copy-ToServer -LocalPath $remoteEnvLocal -RemotePath $remoteEnv" not in deploy_block
+    assert "Copy-ToServer -LocalPath $websiteRuntimeLocal -RemotePath $remoteReleaseDir -Recursive" not in deploy_block
+    assert "Copy-ToServer -LocalPath $resetDbSqlLocal -RemotePath $remoteResetDbSql" not in deploy_block
+    assert "Copy-ToServer -LocalPath $postImportSqlLocal -RemotePath $remotePostImportSql" not in deploy_block
+    assert "Copy-LargeFileToServerInChunks -LocalPath $imageTar -RemotePath $remoteImageTar" in deploy_block
+
+
 def test_publish_script_batches_skip_already_applied_migration_state_updates() -> None:
     script = read_publish_script()
 

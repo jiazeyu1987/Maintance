@@ -4958,6 +4958,129 @@ function Copy-RequiredDatabaseSqlScriptsToServer {
     }
 }
 
+function Copy-DeployControlFilesToServer {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$ComposeLocal
+    )
+
+    $deployControlArchiveRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("deploy-control-upload-" + [System.Guid]::NewGuid().ToString("N"))
+    $deployControlArchivePath = Join-Path ([System.IO.Path]::GetTempPath()) "deploy-control-$packageDirectoryName.tar"
+    $remoteDeployControlArchive = "$remoteReleaseDir/deploy-control.tar"
+    $remoteDeployControlExtractDir = "$remoteReleaseDir/deploy-control"
+    $hasDeployControlFiles = $false
+    try {
+        if (Test-Path -LiteralPath $deployControlArchiveRoot) {
+            Remove-Item -LiteralPath $deployControlArchiveRoot -Recurse -Force
+        }
+        if (Test-Path -LiteralPath $deployControlArchivePath -PathType Leaf) {
+            Remove-Item -LiteralPath $deployControlArchivePath -Force
+        }
+        New-Item -ItemType Directory -Force -Path $deployControlArchiveRoot | Out-Null
+
+        if ($publishBackend -or $publishFrontend) {
+            if (-not (Test-Path -LiteralPath $ComposeLocal -PathType Leaf)) {
+                Fail "Deploy compose file missing before archive upload: $ComposeLocal"
+            }
+            if (-not (Test-Path -LiteralPath $remoteEnvLocal -PathType Leaf)) {
+                Fail "Deploy environment file missing before archive upload: $remoteEnvLocal"
+            }
+            $appControlRoot = Join-Path $deployControlArchiveRoot 'app'
+            New-Item -ItemType Directory -Force -Path $appControlRoot | Out-Null
+            Copy-Item -LiteralPath $ComposeLocal -Destination (Join-Path $appControlRoot 'docker-compose.yml') -Force
+            Copy-Item -LiteralPath $remoteEnvLocal -Destination (Join-Path $appControlRoot '.env') -Force
+            $hasDeployControlFiles = $true
+        }
+
+        if ($publishWebsite) {
+            if (-not (Test-Path -LiteralPath $websiteRuntimeLocal -PathType Container)) {
+                Fail "Website runtime directory missing before archive upload: $websiteRuntimeLocal"
+            }
+            Copy-Item -LiteralPath $websiteRuntimeLocal -Destination (Join-Path $deployControlArchiveRoot 'website') -Recurse -Force
+            $hasDeployControlFiles = $true
+        }
+
+        if ($publishBackend -and -not $SkipDatabaseSync) {
+            if (-not (Test-Path -LiteralPath $resetDbSqlLocal -PathType Leaf)) {
+                Fail "Reset database SQL missing before archive upload: $resetDbSqlLocal"
+            }
+            $sqlControlRoot = Join-Path $deployControlArchiveRoot 'sql'
+            New-Item -ItemType Directory -Force -Path $sqlControlRoot | Out-Null
+            Copy-Item -LiteralPath $resetDbSqlLocal -Destination (Join-Path $sqlControlRoot 'reset-db.sql') -Force
+            $hasDeployControlFiles = $true
+        }
+
+        if ($publishBackend -and $Mode -ne 'build-release') {
+            if (-not (Test-Path -LiteralPath $postImportSqlLocal -PathType Leaf)) {
+                Fail "Target-bound post-import SQL missing before archive upload: $postImportSqlLocal"
+            }
+            $sqlControlRoot = Join-Path $deployControlArchiveRoot 'sql'
+            New-Item -ItemType Directory -Force -Path $sqlControlRoot | Out-Null
+            Copy-Item -LiteralPath $postImportSqlLocal -Destination (Join-Path $sqlControlRoot 'post-import.sql') -Force
+            $hasDeployControlFiles = $true
+        }
+
+        if (-not $hasDeployControlFiles) {
+            return
+        }
+
+        Info 'Packing deploy control files archive'
+        Invoke-CheckedCommand -FilePath 'tar' -ArgumentList @('-cf', $deployControlArchivePath, '-C', $deployControlArchiveRoot, '.')
+        if (-not (Test-Path -LiteralPath $deployControlArchivePath -PathType Leaf)) {
+            Fail "deploy control archive was not created: $deployControlArchivePath"
+        }
+        Copy-ToServer -LocalPath $deployControlArchivePath -RemotePath $remoteDeployControlArchive
+
+        $remoteDeployControlArchiveLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteDeployControlArchive -Purpose 'deploy control archive'
+        $remoteDeployControlExtractDirLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteDeployControlExtractDir -Purpose 'deploy control extract directory'
+        $remoteComposeLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteCompose -Purpose 'remote compose path'
+        $remoteEnvLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteEnv -Purpose 'remote env path'
+        $remoteWebsiteStagingDirLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteWebsiteStagingDir -Purpose 'remote website staging directory'
+        $remoteResetDbSqlLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteResetDbSql -Purpose 'remote reset database SQL path'
+        $remotePostImportSqlLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remotePostImportSql -Purpose 'remote post-import SQL path'
+        $remoteCommands = @(
+            'set -e',
+            "cleanup_deploy_control() { rm -rf $remoteDeployControlExtractDirLiteral; rm -f $remoteDeployControlArchiveLiteral; }",
+            'trap cleanup_deploy_control EXIT',
+            "rm -rf $remoteDeployControlExtractDirLiteral",
+            "mkdir -p $remoteDeployControlExtractDirLiteral",
+            "tar -xf $remoteDeployControlArchiveLiteral -C $remoteDeployControlExtractDirLiteral"
+        )
+        if ($publishBackend -or $publishFrontend) {
+            $remoteCommands += "test -f $remoteDeployControlExtractDirLiteral/app/docker-compose.yml"
+            $remoteCommands += "test -f $remoteDeployControlExtractDirLiteral/app/.env"
+            $remoteCommands += "cp $remoteDeployControlExtractDirLiteral/app/docker-compose.yml $remoteComposeLiteral"
+            $remoteCommands += "cp $remoteDeployControlExtractDirLiteral/app/.env $remoteEnvLiteral"
+        }
+        if ($publishWebsite) {
+            $remoteCommands += "test -f $remoteDeployControlExtractDirLiteral/website/dist/index.html"
+            $remoteCommands += "test -f $remoteDeployControlExtractDirLiteral/website/nginx.conf"
+            $remoteCommands += "rm -rf $remoteWebsiteStagingDirLiteral"
+            $remoteCommands += "mv $remoteDeployControlExtractDirLiteral/website $remoteWebsiteStagingDirLiteral"
+            $remoteCommands += "test -f $remoteWebsiteStagingDirLiteral/dist/index.html"
+            $remoteCommands += "test -f $remoteWebsiteStagingDirLiteral/nginx.conf"
+        }
+        if ($publishBackend -and -not $SkipDatabaseSync) {
+            $remoteCommands += "test -f $remoteDeployControlExtractDirLiteral/sql/reset-db.sql"
+            $remoteCommands += "cp $remoteDeployControlExtractDirLiteral/sql/reset-db.sql $remoteResetDbSqlLiteral"
+        }
+        if ($publishBackend -and $Mode -ne 'build-release') {
+            $remoteCommands += "test -f $remoteDeployControlExtractDirLiteral/sql/post-import.sql"
+            $remoteCommands += "cp $remoteDeployControlExtractDirLiteral/sql/post-import.sql $remotePostImportSqlLiteral"
+        }
+        $remoteCommands += "rm -rf $remoteDeployControlExtractDirLiteral"
+        $remoteCommands += "rm -f $remoteDeployControlArchiveLiteral"
+        Invoke-SshCommand ($remoteCommands -join "`n")
+    } finally {
+        if (Test-Path -LiteralPath $deployControlArchiveRoot) {
+            Remove-Item -LiteralPath $deployControlArchiveRoot -Recurse -Force
+        }
+        if (Test-Path -LiteralPath $deployControlArchivePath -PathType Leaf) {
+            Remove-Item -LiteralPath $deployControlArchivePath -Force
+        }
+    }
+}
+
 function Copy-ReleaseOpsRuntimePackage {
     Info 'Syncing runtime-control ops scripts to the target server'
     if (Test-Path -LiteralPath $opsRuntimeLocalDir) {
@@ -5844,14 +5967,13 @@ RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_VERSION=$BackendRuntimeBaseVersion
 $remoteEnvLocal = Join-Path $releaseDir '.env'
 Write-Utf8LfNoBomFile -Path $remoteEnvLocal -Content $remoteEnvContent
 
-Info "Copying compose and environment files to the $PublishTargetName server"
+Info "Copying deploy control files to the $PublishTargetName server"
 $composeLocal = Join-Path $releaseDir 'docker-compose.yml'
 if (-not (Test-Path -LiteralPath $composeLocal)) {
     $composeLocal = $composeTemplate
 }
+Copy-DeployControlFilesToServer -ComposeLocal $composeLocal
 if ($publishBackend -or $publishFrontend) {
-    Copy-ToServer -LocalPath $composeLocal -RemotePath $remoteCompose
-    Copy-ToServer -LocalPath $remoteEnvLocal -RemotePath $remoteEnv
     Assert-RemoteRuntimeEnvImageTag
     if ($publishBackend) {
         Assert-RemoteRuntimeEnvEdhrEndpoint
@@ -5860,10 +5982,6 @@ if ($publishBackend -or $publishFrontend) {
 if ($publishBackend) { Copy-SchedulerSmokeRunnerToServer }
 if ($publishBackend -or $publishFrontend) {
     Copy-LargeFileToServerInChunks -LocalPath $imageTar -RemotePath $remoteImageTar
-}
-if ($publishWebsite) {
-    Copy-ToServer -LocalPath $websiteRuntimeLocal -RemotePath $remoteReleaseDir -Recursive
-    Invoke-SshCommand "test -f '$remoteWebsiteStagingDir/dist/index.html' && test -f '$remoteWebsiteStagingDir/nginx.conf'"
 }
 if ($publishBackend) {
     Copy-RequiredDatabaseSqlScriptsToServer
@@ -5889,14 +6007,12 @@ if ($publishWebsite) {
 
 if ($publishBackend -and -not $SkipDatabaseSync) {
     Copy-ToServer -LocalPath $dbDump -RemotePath $remoteDbDump
-    Copy-ToServer -LocalPath $resetDbSqlLocal -RemotePath $remoteResetDbSql
 }
 
 if ($publishBackend -and $Mode -ne 'build-release') {
     if (-not (Test-Path -LiteralPath $postImportSqlLocal)) {
         Fail "Target-bound post-import SQL missing: $postImportSqlLocal"
     }
-    Copy-ToServer -LocalPath $postImportSqlLocal -RemotePath $remotePostImportSql
 }
 
 if ($publishBackend -or $publishFrontend) {
