@@ -5128,8 +5128,17 @@ function Invoke-RouteSnapshotIdentityMigrationCommand {
     $extraArgsLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $extraArgsValue -Purpose 'route snapshot migration extra args'
 
     Info "Running MES route snapshot identity $MigrationMode before NOT NULL enforcement"
-    Invoke-SshCommand "mkdir -p $remoteReportDirLiteral && rm -f $remoteReportFileLiteral && cd $remoteAppDirLiteral && docker compose run --rm --no-deps -v $reportVolumeLiteral -e INTRUOYI_EXTRA_ARGS=$extraArgsLiteral backend"
-    Invoke-SshCommand "test -f $remoteReportFileLiteral && grep -q '\"status\" : \"READY\"' $remoteReportFileLiteral && grep -q '\"blockerCount\" : 0' $remoteReportFileLiteral"
+    $command = @"
+set -e
+mkdir -p $remoteReportDirLiteral
+rm -f $remoteReportFileLiteral
+cd $remoteAppDirLiteral
+docker compose run --rm --no-deps -v $reportVolumeLiteral -e INTRUOYI_EXTRA_ARGS=$extraArgsLiteral backend
+test -f $remoteReportFileLiteral
+grep -q '"status" : "READY"' $remoteReportFileLiteral
+grep -q '"blockerCount" : 0' $remoteReportFileLiteral
+"@
+    Invoke-SshCommand $command
 }
 
 function Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement {

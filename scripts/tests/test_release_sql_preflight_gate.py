@@ -389,6 +389,20 @@ def test_publish_script_runs_route_snapshot_identity_backfill_before_enforcement
     assert hook_index < sql_apply_index
 
 
+def test_publish_script_combines_route_snapshot_run_and_report_check_in_single_ssh_session() -> None:
+    script = read_publish_script()
+
+    helper_start = script.index("function Invoke-RouteSnapshotIdentityMigrationCommand")
+    helper_end = script.index("function Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement", helper_start)
+    helper_block = script[helper_start:helper_end]
+
+    assert helper_block.count("Invoke-SshCommand") == 1
+    assert "docker compose run --rm --no-deps" in helper_block
+    assert "test -f $remoteReportFileLiteral" in helper_block
+    assert "grep -q '\"status\" : \"READY\"' $remoteReportFileLiteral" in helper_block
+    assert "grep -q '\"blockerCount\" : 0' $remoteReportFileLiteral" in helper_block
+
+
 def test_backend_image_appends_one_shot_extra_args_without_overriding_compose_args() -> None:
     dockerfile = read_backend_dockerfile()
 
