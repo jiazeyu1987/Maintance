@@ -5147,6 +5147,47 @@ function Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement {
     Invoke-RouteSnapshotIdentityMigrationCommand -MigrationMode 'READINESS' -ReportFileName 'route-snapshot-identity-readiness.json'
 }
 
+function Invoke-RequiredDatabaseSqlScriptWithState {
+    param(
+        [Parameter(Mandatory = $true)]
+        $Item,
+        [Parameter(Mandatory = $true)]
+        [string]$RemoteSqlPath,
+        [string]$SessionPreamble = ''
+    )
+
+    $runningSql = New-ReleaseMigrationStateUpsertSql -Item $Item -Status 'RUNNING'
+    $appliedSql = New-ReleaseMigrationStateUpsertSql -Item $Item -Status 'APPLIED'
+    $remoteSqlPathLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $RemoteSqlPath -Purpose 'required database SQL remote path'
+    $mysqlCommand = "docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 ruoyi-vue-pro"
+    if ([string]::IsNullOrWhiteSpace($SessionPreamble)) {
+        $applySqlCommand = "cat $remoteSqlPathLiteral"
+    } else {
+        $escapedSessionPreamble = $SessionPreamble.TrimEnd()
+        $applySqlCommand = @"
+{
+cat <<'REQUIRED_SQL_SESSION_PREAMBLE'
+$escapedSessionPreamble
+REQUIRED_SQL_SESSION_PREAMBLE
+cat $remoteSqlPathLiteral
+}
+"@
+    }
+
+    $command = @"
+set -e
+test -f $remoteSqlPathLiteral
+cat <<'RELEASE_STATE_RUNNING_SQL' | $mysqlCommand
+$runningSql
+RELEASE_STATE_RUNNING_SQL
+$applySqlCommand | $mysqlCommand
+cat <<'RELEASE_STATE_APPLIED_SQL' | $mysqlCommand
+$appliedSql
+RELEASE_STATE_APPLIED_SQL
+"@
+    Invoke-SshCommand $command
+}
+
 function Invoke-RequiredDatabaseSqlScripts {
     Info 'Applying required database SQL scripts'
     $preflightPlan = Read-ReleasePreflightPlan
@@ -5166,24 +5207,12 @@ function Invoke-RequiredDatabaseSqlScripts {
         $sessionPreamble = Get-RequiredDatabaseSqlSessionPreamble -Item $item -TargetEnvironment $Environment
         Info "Applying required database SQL: $fileName"
         Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement -Item $item
-        Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'RUNNING'
         try {
-            if ([string]::IsNullOrWhiteSpace($sessionPreamble)) {
-                Invoke-SshCommand "cat '$remoteSqlPath' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 ruoyi-vue-pro"
-            } else {
-                $escapedSessionPreamble = $sessionPreamble.TrimEnd()
-                Invoke-SshCommand "{
-cat <<'SQL'
-$escapedSessionPreamble
-SQL
-cat '$remoteSqlPath'
-} | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 ruoyi-vue-pro"
-            }
+            Invoke-RequiredDatabaseSqlScriptWithState -Item $item -RemoteSqlPath $remoteSqlPath -SessionPreamble $sessionPreamble
         } catch {
             Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'FAILED' -ErrorMessage $_.Exception.Message
             throw
         }
-        Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'APPLIED'
     }
 }
 

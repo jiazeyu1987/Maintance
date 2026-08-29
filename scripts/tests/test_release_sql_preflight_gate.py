@@ -385,7 +385,7 @@ def test_publish_script_runs_route_snapshot_identity_backfill_before_enforcement
     assert "-e ARGS=" not in script
 
     hook_index = script.index("Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement -Item $item")
-    sql_apply_index = script.index("Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'RUNNING'", hook_index)
+    sql_apply_index = script.index("Invoke-RequiredDatabaseSqlScriptWithState -Item $item", hook_index)
     assert hook_index < sql_apply_index
 
 
@@ -705,6 +705,39 @@ def test_publish_script_does_not_check_each_required_sql_file_over_ssh_after_arc
 
     assert "test -f '$remoteSqlPath'" not in invoke_block
     assert "REQUIRED_SQL_EXISTS" not in invoke_block
+
+
+def test_publish_script_combines_required_sql_success_state_updates_in_single_ssh_session() -> None:
+    script = read_publish_script()
+
+    assert "function Invoke-RequiredDatabaseSqlScriptWithState" in script
+    helper_start = script.index("function Invoke-RequiredDatabaseSqlScriptWithState")
+    helper_end = script.index("function Invoke-RequiredDatabaseSqlScripts", helper_start)
+    helper_block = script[helper_start:helper_end]
+    invoke_start = script.index("function Invoke-RequiredDatabaseSqlScripts")
+    invoke_end = script.index("if ($Mode -eq 'mark-tested')", invoke_start)
+    invoke_block = script[invoke_start:invoke_end]
+
+    assert "New-ReleaseMigrationStateUpsertSql -Item $Item -Status 'RUNNING'" in helper_block
+    assert "New-ReleaseMigrationStateUpsertSql -Item $Item -Status 'APPLIED'" in helper_block
+    assert "Invoke-SshCommand $command" in helper_block
+    assert "Invoke-RequiredDatabaseSqlScriptWithState -Item $item -RemoteSqlPath $remoteSqlPath -SessionPreamble $sessionPreamble" in invoke_block
+    assert "Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'RUNNING'" not in invoke_block
+    assert "Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'APPLIED'" not in invoke_block
+
+
+def test_publish_script_records_failed_required_sql_after_combined_apply_failure() -> None:
+    script = read_publish_script()
+    invoke_start = script.index("function Invoke-RequiredDatabaseSqlScripts")
+    invoke_end = script.index("if ($Mode -eq 'mark-tested')", invoke_start)
+    invoke_block = script[invoke_start:invoke_end]
+
+    helper_call = "Invoke-RequiredDatabaseSqlScriptWithState -Item $item -RemoteSqlPath $remoteSqlPath -SessionPreamble $sessionPreamble"
+    failed_update = "Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'FAILED' -ErrorMessage $_.Exception.Message"
+    assert helper_call in invoke_block
+    assert failed_update in invoke_block
+    assert invoke_block.index(helper_call) < invoke_block.index(failed_update)
+    assert "throw" in invoke_block[invoke_block.index(failed_update):]
 
 
 def test_publish_script_uploads_ops_runtime_package_as_single_archive() -> None:
