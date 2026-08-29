@@ -686,6 +686,27 @@ def test_publish_script_uploads_required_sql_as_single_archive() -> None:
     assert "Copy-ToServer -LocalPath $packageSqlPath" not in copy_block
 
 
+def test_publish_script_requires_exact_remote_required_sql_archive_count() -> None:
+    script = read_publish_script()
+    copy_start = script.index("function Copy-RequiredDatabaseSqlScriptsToServer")
+    next_function = script.index("function Copy-ReleaseOpsRuntimePackage", copy_start)
+    copy_block = script[copy_start:next_function]
+
+    assert "remote_sql_count" in copy_block
+    assert "-ne $archiveSqlCount" in copy_block
+    assert "required SQL archive remote file count mismatch" in copy_block
+
+
+def test_publish_script_does_not_check_each_required_sql_file_over_ssh_after_archive_gate() -> None:
+    script = read_publish_script()
+    invoke_start = script.index("function Invoke-RequiredDatabaseSqlScripts")
+    invoke_end = script.index("if ($Mode -eq 'mark-tested')", invoke_start)
+    invoke_block = script[invoke_start:invoke_end]
+
+    assert "test -f '$remoteSqlPath'" not in invoke_block
+    assert "REQUIRED_SQL_EXISTS" not in invoke_block
+
+
 def test_publish_script_uploads_ops_runtime_package_as_single_archive() -> None:
     script = read_publish_script()
     copy_start = script.index("function Copy-ReleaseOpsRuntimePackage")

@@ -4947,7 +4947,7 @@ function Copy-RequiredDatabaseSqlScriptsToServer {
         }
         Copy-ToServer -LocalPath $requiredSqlArchivePath -RemotePath $remoteRequiredSqlArchive
         Info "Extracting required database SQL archive on target server: $archiveSqlCount files"
-        Invoke-SshCommand "rm -rf '$remoteRequiredSqlDir' && mkdir -p '$remoteRequiredSqlDir' && tar -xf '$remoteRequiredSqlArchive' -C '$remoteRequiredSqlDir' && remote_sql_count=`$(find '$remoteRequiredSqlDir' -maxdepth 1 -type f -name '*.sql' | wc -l) && if [ `"`$remote_sql_count`" -le 0 ]; then echo 'required SQL archive contains no files'; exit 43; fi && rm -f '$remoteRequiredSqlArchive'"
+        Invoke-SshCommand "rm -rf '$remoteRequiredSqlDir' && mkdir -p '$remoteRequiredSqlDir' && tar -xf '$remoteRequiredSqlArchive' -C '$remoteRequiredSqlDir' && remote_sql_count=`$(find '$remoteRequiredSqlDir' -maxdepth 1 -type f -name '*.sql' | wc -l | tr -d ' ') && if [ `"`$remote_sql_count`" -ne $archiveSqlCount ]; then echo `"required SQL archive remote file count mismatch: expected $archiveSqlCount, actual `$remote_sql_count`"; exit 43; fi && rm -f '$remoteRequiredSqlArchive'"
     } finally {
         if (Test-Path -LiteralPath $requiredSqlArchiveRoot) {
             Remove-Item -LiteralPath $requiredSqlArchiveRoot -Recurse -Force
@@ -5165,7 +5165,6 @@ function Invoke-RequiredDatabaseSqlScripts {
         $remoteSqlPath = "$remoteRequiredSqlDir/$fileName"
         $sessionPreamble = Get-RequiredDatabaseSqlSessionPreamble -Item $item -TargetEnvironment $Environment
         Info "Applying required database SQL: $fileName"
-        Invoke-SshCommand "test -f '$remoteSqlPath' && echo REQUIRED_SQL_EXISTS"
         Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement -Item $item
         Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'RUNNING'
         try {
