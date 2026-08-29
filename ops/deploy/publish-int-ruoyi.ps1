@@ -1115,16 +1115,18 @@ function Invoke-SshCommand {
     )
 
     $normalizedCommand = $Command -replace "`r`n", "`n" -replace "`r", "`n"
-    Info ("Run: ssh {0}" -f ((New-SshArgumentList -Command $normalizedCommand) -join ' '))
+    $displayCommand = Protect-ReleaseSensitiveText $normalizedCommand
+    Info ("Run: ssh {0}" -f ((New-SshArgumentList -Command $displayCommand) -join ' '))
     $result = Invoke-ProcessCapture -FilePath 'ssh' -ArgumentList (New-SshArgumentList -Command $normalizedCommand)
     $stdOut = if ($null -ne $result.StdOut) { $result.StdOut } else { '' }
     $stdErr = if ($null -ne $result.StdErr) { $result.StdErr } else { '' }
     $text = Remove-SshNoise (($stdOut + "`n" + $stdErr).Trim())
-    if ($text) {
-        Write-Host $text
+    $safeText = Protect-ReleaseSensitiveText $text
+    if ($safeText) {
+        Write-Host $safeText
     }
     if ($result.ExitCode -ne 0) {
-        throw "Command failed with exit code $($result.ExitCode): ssh`n$text"
+        throw "Command failed with exit code $($result.ExitCode): ssh`n$safeText"
     }
 }
 
@@ -1142,7 +1144,9 @@ function Invoke-SshCapture {
     $stdErr = if ($null -ne $result.StdErr) { $result.StdErr } else { '' }
     $text = Remove-SshNoise (($stdOut + "`n" + $stdErr).Trim())
     if ($exitCode -ne 0 -and -not $IgnoreExitCode) {
-        throw "SSH command failed ($exitCode): $normalizedCommand`n$text"
+        $safeCommand = Protect-ReleaseSensitiveText $normalizedCommand
+        $safeText = Protect-ReleaseSensitiveText $text
+        throw "SSH command failed ($exitCode): $safeCommand`n$safeText"
     }
     return @{
         Ok = ($exitCode -eq 0)
@@ -4689,6 +4693,18 @@ function Invoke-ReleaseMigrationStateUpdate {
         [string]$Status,
         [string]$ErrorMessage = ''
     )
+    Invoke-ReleaseMigrationStateBatchUpdate -Items @($Item) -Status $Status -ErrorMessage $ErrorMessage
+}
+
+function New-ReleaseMigrationStateUpsertSql {
+    param(
+        [Parameter(Mandatory = $true)]
+        $Item,
+        [Parameter(Mandatory = $true)]
+        [string]$Status,
+        [string]$ErrorMessage = ''
+    )
+
     $migrationId = [string]$Item.migrationId
     $fileName = Get-RequiredDatabaseSqlFileName -RelativePath ([string]$Item.file)
     $sha256 = [string]$Item.sha256
@@ -4698,11 +4714,38 @@ function Invoke-ReleaseMigrationStateUpdate {
     } else {
         "CONVERT(FROM_BASE64('$encodedErrorMessage') USING utf8mb4)"
     }
-    $stateSql = @"
+    $releaseTagSql = ConvertTo-SqlStringLiteral -Value $ReleaseTag
+    $migrationIdSql = ConvertTo-SqlStringLiteral -Value $migrationId
+    $fileNameSql = ConvertTo-SqlStringLiteral -Value $fileName
+    $sha256Sql = ConvertTo-SqlStringLiteral -Value $sha256
+    $environmentSql = ConvertTo-SqlStringLiteral -Value $Environment
+    $statusSql = ConvertTo-SqlStringLiteral -Value $Status
+    return @"
 INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
-VALUES ('$ReleaseTag', '$migrationId', '$fileName', '$sha256', '$Environment', '$Status', NOW(), CASE WHEN '$Status' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, $errorSqlExpression, '$ReleaseTag', 'release-system', NOW(), 'release-system', NOW(), b'0')
+VALUES ($releaseTagSql, $migrationIdSql, $fileNameSql, $sha256Sql, $environmentSql, $statusSql, NOW(), CASE WHEN $statusSql IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, $errorSqlExpression, $releaseTagSql, 'release-system', NOW(), 'release-system', NOW(), b'0')
 ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
 "@
+}
+
+function Invoke-ReleaseMigrationStateBatchUpdate {
+    param(
+        [AllowEmptyCollection()]
+        [AllowNull()]
+        [object[]]$Items,
+        [Parameter(Mandatory = $true)]
+        [string]$Status,
+        [string]$ErrorMessage = ''
+    )
+
+    if ($null -eq $Items -or $Items.Count -eq 0) {
+        return
+    }
+    Info "Batch updating release migration state: $Status ($($Items.Count))"
+    $stateSql = @(
+        foreach ($item in $Items) {
+            New-ReleaseMigrationStateUpsertSql -Item $item -Status $Status -ErrorMessage $ErrorMessage
+        }
+    ) -join "`n"
     Invoke-SshCommand "cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 ruoyi-vue-pro
 $stateSql
 SQL"
@@ -4835,11 +4878,42 @@ function Assert-RequiredDatabaseSqlScriptsInRelease {
 function Copy-RequiredDatabaseSqlScriptsToServer {
     Assert-RequiredDatabaseSqlScriptsInRelease
     $requiredSqlEntries = Get-RequiredDatabaseSqlEntriesForEnvironment -TargetEnvironment $Environment
-    foreach ($entry in $requiredSqlEntries) {
-        $relativePath = [string]$entry.Path
-        $fileName = Get-RequiredDatabaseSqlFileName -RelativePath $relativePath
-        $packageSqlPath = Join-Path $requiredSqlLocalDir $fileName
-        Copy-ToServer -LocalPath $packageSqlPath -RemotePath "$remoteRequiredSqlDir/$fileName"
+    $requiredSqlArchiveRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("required-sql-upload-" + [System.Guid]::NewGuid().ToString("N"))
+    $requiredSqlArchivePath = Join-Path ([System.IO.Path]::GetTempPath()) "required-sql-$packageDirectoryName.tar"
+    $remoteRequiredSqlArchive = "$remoteReleaseDir/required-sql.tar"
+    try {
+        if (Test-Path -LiteralPath $requiredSqlArchiveRoot) {
+            Remove-Item -LiteralPath $requiredSqlArchiveRoot -Recurse -Force
+        }
+        if (Test-Path -LiteralPath $requiredSqlArchivePath -PathType Leaf) {
+            Remove-Item -LiteralPath $requiredSqlArchivePath -Force
+        }
+        New-Item -ItemType Directory -Force -Path $requiredSqlArchiveRoot | Out-Null
+        foreach ($entry in $requiredSqlEntries) {
+            $relativePath = [string]$entry.Path
+            $fileName = Get-RequiredDatabaseSqlFileName -RelativePath $relativePath
+            $packageSqlPath = Join-Path $requiredSqlLocalDir $fileName
+            Copy-Item -LiteralPath $packageSqlPath -Destination (Join-Path $requiredSqlArchiveRoot $fileName) -Force
+        }
+        $archiveSqlCount = @(Get-ChildItem -LiteralPath $requiredSqlArchiveRoot -File -Filter '*.sql').Count
+        if ($archiveSqlCount -le 0) {
+            Fail 'required SQL archive contains no files before upload'
+        }
+        Info "Packing required database SQL archive: $archiveSqlCount files"
+        Invoke-CheckedCommand -FilePath 'tar' -ArgumentList @('-cf', $requiredSqlArchivePath, '-C', $requiredSqlArchiveRoot, '.')
+        if (-not (Test-Path -LiteralPath $requiredSqlArchivePath -PathType Leaf)) {
+            Fail "required SQL archive was not created: $requiredSqlArchivePath"
+        }
+        Copy-ToServer -LocalPath $requiredSqlArchivePath -RemotePath $remoteRequiredSqlArchive
+        Info "Extracting required database SQL archive on target server: $archiveSqlCount files"
+        Invoke-SshCommand "rm -rf '$remoteRequiredSqlDir' && mkdir -p '$remoteRequiredSqlDir' && tar -xf '$remoteRequiredSqlArchive' -C '$remoteRequiredSqlDir' && remote_sql_count=`$(find '$remoteRequiredSqlDir' -maxdepth 1 -type f -name '*.sql' | wc -l) && if [ `"`$remote_sql_count`" -le 0 ]; then echo 'required SQL archive contains no files'; exit 43; fi && rm -f '$remoteRequiredSqlArchive'"
+    } finally {
+        if (Test-Path -LiteralPath $requiredSqlArchiveRoot) {
+            Remove-Item -LiteralPath $requiredSqlArchiveRoot -Recurse -Force
+        }
+        if (Test-Path -LiteralPath $requiredSqlArchivePath -PathType Leaf) {
+            Remove-Item -LiteralPath $requiredSqlArchivePath -Force
+        }
     }
 }
 
@@ -5023,9 +5097,8 @@ function Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement {
 function Invoke-RequiredDatabaseSqlScripts {
     Info 'Applying required database SQL scripts'
     $preflightPlan = Read-ReleasePreflightPlan
-    foreach ($item in @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ALREADY_APPLIED' })) {
-        Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'SKIPPED_ALREADY_APPLIED'
-    }
+    $skipAlreadyAppliedItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ALREADY_APPLIED' })
+    Invoke-ReleaseMigrationStateBatchUpdate -Items $skipAlreadyAppliedItems -Status 'SKIPPED_ALREADY_APPLIED'
     foreach ($item in @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ENV_NOT_ALLOWED' })) {
         Info "Skipping required database SQL outside target environment: $($item.migrationId)"
     }
@@ -5154,6 +5227,9 @@ if ($Mode -ne 'mark-tested') {
 if ($Mode -ne 'build-release') {
     Require-Command 'ssh'
     Require-Command 'scp'
+}
+if ($publishBackend -and $Mode -eq 'deploy-release') {
+    Require-Command 'tar'
 }
 if ($Mode -ne 'deploy-release') {
     Require-Command 'mvn'

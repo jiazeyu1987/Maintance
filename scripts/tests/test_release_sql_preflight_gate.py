@@ -670,3 +670,48 @@ def test_publish_script_accepts_multiline_none_ignored_builds() -> None:
     assert "$ignoredBuildLines.Count -eq 2" in function_body
     assert "$ignoredBuildLines[0] -eq 'Automatically ignored builds during installation:'" in function_body
     assert "$ignoredBuildLines[1] -eq 'None'" in function_body
+
+
+def test_publish_script_uploads_required_sql_as_single_archive() -> None:
+    script = read_publish_script()
+    copy_start = script.index("function Copy-RequiredDatabaseSqlScriptsToServer")
+    next_function = script.index("function Copy-ReleaseOpsRuntimePackage", copy_start)
+    copy_block = script[copy_start:next_function]
+
+    assert "required-sql.tar" in copy_block
+    assert "Invoke-CheckedCommand -FilePath 'tar'" in copy_block
+    assert "Copy-ToServer -LocalPath $requiredSqlArchivePath -RemotePath $remoteRequiredSqlArchive" in copy_block
+    assert "tar -xf" in copy_block
+    assert "required SQL archive contains no files" in copy_block
+    assert "Copy-ToServer -LocalPath $packageSqlPath" not in copy_block
+
+
+def test_publish_script_batches_skip_already_applied_migration_state_updates() -> None:
+    script = read_publish_script()
+
+    assert "function Invoke-ReleaseMigrationStateBatchUpdate" in script
+    assert "Batch updating release migration state" in script
+    assert "$skipAlreadyAppliedItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ALREADY_APPLIED' })" in script
+    assert "Invoke-ReleaseMigrationStateBatchUpdate -Items $skipAlreadyAppliedItems -Status 'SKIPPED_ALREADY_APPLIED'" in script
+
+    invoke_start = script.index("function Invoke-RequiredDatabaseSqlScripts")
+    invoke_end = script.index("if ($Mode -eq 'mark-tested')", invoke_start)
+    invoke_block = script[invoke_start:invoke_end]
+    assert "foreach ($item in @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ALREADY_APPLIED' }))" not in invoke_block
+
+
+def test_ssh_command_logs_and_errors_are_secret_redacted() -> None:
+    script = read_publish_script()
+    command_start = script.index("function Invoke-SshCommand")
+    capture_start = script.index("function Invoke-SshCapture", command_start)
+    command_block = script[command_start:capture_start]
+    capture_end = script.index("function Test-RemoteFileExists", capture_start)
+    capture_block = script[capture_start:capture_end]
+
+    assert "$displayCommand = Protect-ReleaseSensitiveText $normalizedCommand" in command_block
+    assert "Info (\"Run: ssh {0}\" -f ((New-SshArgumentList -Command $displayCommand) -join ' '))" in command_block
+    assert "$safeText = Protect-ReleaseSensitiveText $text" in command_block
+    assert "throw \"Command failed with exit code $($result.ExitCode): ssh`n$safeText\"" in command_block
+    assert "$safeCommand = Protect-ReleaseSensitiveText $normalizedCommand" in capture_block
+    assert "$safeText = Protect-ReleaseSensitiveText $text" in capture_block
+    assert "throw \"SSH command failed ($exitCode): $safeCommand`n$safeText\"" in capture_block
