@@ -4996,13 +4996,25 @@ function Copy-ReleaseOpsRuntimePackage {
     New-Item -ItemType Directory -Force -Path $targetDeployDirectory | Out-Null
     Copy-Item -LiteralPath $remoteRootDiskScript -Destination (Join-Path $targetDeployDirectory 'manage-int-ruoyi-remote-root-disk.ps1') -Force
 
-    Invoke-SshCommand "mkdir -p '$remoteOpsRuntimeDir' '$remoteOpsRuntimeDir/config' '$remoteOpsRuntimeDir/script/deploy' && rm -rf '$remoteOpsRuntimeDir/linux' '$remoteOpsRuntimeDir/scripts' '$remoteOpsRuntimeDir/actions' '$remoteOpsRuntimeDir/script/deploy/manage-int-ruoyi-remote-root-disk.ps1' && mkdir -p '$remoteOpsRuntimeDir/linux' '$remoteOpsRuntimeDir/scripts' '$remoteOpsRuntimeDir/actions'"
-    Copy-ToServer -LocalPath (Join-Path $opsRuntimeLocalDir 'linux') -RemotePath $remoteOpsRuntimeDir -Recursive
-    Copy-ToServer -LocalPath (Join-Path $opsRuntimeLocalDir 'scripts') -RemotePath $remoteOpsRuntimeDir -Recursive
-    Copy-ToServer -LocalPath (Join-Path $opsRuntimeLocalDir 'actions') -RemotePath $remoteOpsRuntimeDir -Recursive
-    Copy-ToServer -LocalPath (Join-Path $opsRuntimeLocalDir 'config') -RemotePath $remoteOpsRuntimeDir -Recursive
-    Copy-ToServer -LocalPath (Join-Path $targetDeployDirectory 'manage-int-ruoyi-remote-root-disk.ps1') -RemotePath "$remoteOpsRuntimeDir/script/deploy/manage-int-ruoyi-remote-root-disk.ps1"
-    Invoke-SshCommand "test -f '$remoteOpsRuntimeDir/linux/backup-ops-linux.sh' && test -f '$remoteOpsRuntimeDir/script/deploy/manage-int-ruoyi-remote-root-disk.ps1'"
+    $opsRuntimeArchivePath = Join-Path ([System.IO.Path]::GetTempPath()) "ops-runtime-$packageDirectoryName.tar"
+    $remoteOpsRuntimeArchive = "$remoteReleaseDir/ops-runtime.tar"
+    try {
+        if (Test-Path -LiteralPath $opsRuntimeArchivePath -PathType Leaf) {
+            Remove-Item -LiteralPath $opsRuntimeArchivePath -Force
+        }
+        Info 'Packing runtime-control ops package archive'
+        Invoke-CheckedCommand -FilePath 'tar' -ArgumentList @('-cf', $opsRuntimeArchivePath, '-C', $opsRuntimeLocalDir, '.')
+        if (-not (Test-Path -LiteralPath $opsRuntimeArchivePath -PathType Leaf)) {
+            Fail "runtime-control ops archive was not created: $opsRuntimeArchivePath"
+        }
+        Copy-ToServer -LocalPath $opsRuntimeArchivePath -RemotePath $remoteOpsRuntimeArchive
+        Info 'Extracting runtime-control ops package archive on target server'
+        Invoke-SshCommand "mkdir -p '$remoteOpsRuntimeDir' '$remoteOpsRuntimeDir/config' '$remoteOpsRuntimeDir/script/deploy' && rm -rf '$remoteOpsRuntimeDir/linux' '$remoteOpsRuntimeDir/scripts' '$remoteOpsRuntimeDir/actions' '$remoteOpsRuntimeDir/script/deploy/manage-int-ruoyi-remote-root-disk.ps1' && tar -xf '$remoteOpsRuntimeArchive' -C '$remoteOpsRuntimeDir' && rm -f '$remoteOpsRuntimeArchive' && test -f '$remoteOpsRuntimeDir/linux/backup-ops-linux.sh' && test -f '$remoteOpsRuntimeDir/script/deploy/manage-int-ruoyi-remote-root-disk.ps1'"
+    } finally {
+        if (Test-Path -LiteralPath $opsRuntimeArchivePath -PathType Leaf) {
+            Remove-Item -LiteralPath $opsRuntimeArchivePath -Force
+        }
+    }
 }
 
 function Write-TargetBoundPostImportSql {

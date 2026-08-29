@@ -686,6 +686,23 @@ def test_publish_script_uploads_required_sql_as_single_archive() -> None:
     assert "Copy-ToServer -LocalPath $packageSqlPath" not in copy_block
 
 
+def test_publish_script_uploads_ops_runtime_package_as_single_archive() -> None:
+    script = read_publish_script()
+    copy_start = script.index("function Copy-ReleaseOpsRuntimePackage")
+    next_function = script.index("function Write-TargetBoundPostImportSql", copy_start)
+    copy_block = script[copy_start:next_function]
+
+    assert "ops-runtime.tar" in copy_block
+    assert "Invoke-CheckedCommand -FilePath 'tar'" in copy_block
+    assert "Copy-ToServer -LocalPath $opsRuntimeArchivePath -RemotePath $remoteOpsRuntimeArchive" in copy_block
+    assert "tar -xf '$remoteOpsRuntimeArchive' -C '$remoteOpsRuntimeDir'" in copy_block
+    assert "Runtime-control ops package must not include backup-ops.secrets.json" in copy_block
+    assert "Copy-ToServer -LocalPath (Join-Path $opsRuntimeLocalDir 'linux')" not in copy_block
+    assert "Copy-ToServer -LocalPath (Join-Path $opsRuntimeLocalDir 'scripts')" not in copy_block
+    assert "Copy-ToServer -LocalPath (Join-Path $opsRuntimeLocalDir 'actions')" not in copy_block
+    assert "Copy-ToServer -LocalPath (Join-Path $opsRuntimeLocalDir 'config')" not in copy_block
+
+
 def test_publish_script_batches_skip_already_applied_migration_state_updates() -> None:
     script = read_publish_script()
 
