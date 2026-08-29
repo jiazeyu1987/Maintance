@@ -148,6 +148,8 @@ services:
         --yudao.runtime-control.environments.backup.host=${RUNTIME_CONTROL_BACKUP_SERVER_HOST:-}
         --yudao.mes.scheduler-workbench.smoke-test.frontend-directory=${YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_FRONTEND_DIRECTORY}
         --yudao.mes.scheduler-workbench.smoke-test.script-name=${YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_SCRIPT_NAME}
+        --yudao.erp.invoice-voucher-print-assistant.assistant-host=${SERVER_HOST}
+        --yudao.erp.invoice-voucher-print-assistant.assistant-port=18733
     ports:
       - ${BACKEND_HOST_PORT}:48081
     volumes:
