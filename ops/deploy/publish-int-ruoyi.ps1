@@ -427,6 +427,18 @@ function New-SshArgumentList {
     )
 }
 
+function New-SshArgumentListWithInput {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Command
+    )
+
+    return (Get-SshCommonOptions) + @(
+        "$ServerUser@$ServerHost",
+        $Command
+    )
+}
+
 function New-ScpArgumentList {
     param(
         [Parameter(Mandatory = $true)]
@@ -1118,6 +1130,35 @@ function Invoke-SshCommand {
     $displayCommand = Protect-ReleaseSensitiveText $normalizedCommand
     Info ("Run: ssh {0}" -f ((New-SshArgumentList -Command $displayCommand) -join ' '))
     $result = Invoke-ProcessCapture -FilePath 'ssh' -ArgumentList (New-SshArgumentList -Command $normalizedCommand)
+    $stdOut = if ($null -ne $result.StdOut) { $result.StdOut } else { '' }
+    $stdErr = if ($null -ne $result.StdErr) { $result.StdErr } else { '' }
+    $text = Remove-SshNoise (($stdOut + "`n" + $stdErr).Trim())
+    $safeText = Protect-ReleaseSensitiveText $text
+    if ($safeText) {
+        Write-Host $safeText
+    }
+    if ($result.ExitCode -ne 0) {
+        throw "Command failed with exit code $($result.ExitCode): ssh`n$safeText"
+    }
+}
+
+function Invoke-SshCommandWithInput {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Command,
+        [AllowNull()]
+        [string]$StandardInput = ''
+    )
+
+    $normalizedCommand = $Command -replace "`r`n", "`n" -replace "`r", "`n"
+    $normalizedInput = if ($null -ne $StandardInput) {
+        $StandardInput -replace "`r`n", "`n" -replace "`r", "`n"
+    } else {
+        ''
+    }
+    $displayCommand = Protect-ReleaseSensitiveText $normalizedCommand
+    Info ("Run: ssh {0} <stdin:{1} chars>" -f ((New-SshArgumentListWithInput -Command $displayCommand) -join ' '), $normalizedInput.Length)
+    $result = Invoke-ProcessCaptureWithInput -FilePath 'ssh' -ArgumentList (New-SshArgumentListWithInput -Command $normalizedCommand) -StandardInput $normalizedInput
     $stdOut = if ($null -ne $result.StdOut) { $result.StdOut } else { '' }
     $stdErr = if ($null -ne $result.StdErr) { $result.StdErr } else { '' }
     $text = Remove-SshNoise (($stdOut + "`n" + $stdErr).Trim())
@@ -4746,9 +4787,9 @@ function Invoke-ReleaseMigrationStateBatchUpdate {
             New-ReleaseMigrationStateUpsertSql -Item $item -Status $Status -ErrorMessage $ErrorMessage
         }
     ) -join "`n"
-    Invoke-SshCommand "cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 ruoyi-vue-pro
-$stateSql
-SQL"
+    Invoke-SshCommandWithInput `
+        -Command "docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 ruoyi-vue-pro" `
+        -StandardInput $stateSql
 }
 
 function Ensure-ReleaseMigrationStateSchema {

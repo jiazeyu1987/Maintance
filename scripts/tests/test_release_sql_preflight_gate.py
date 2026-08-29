@@ -700,6 +700,22 @@ def test_publish_script_batches_skip_already_applied_migration_state_updates() -
     assert "foreach ($item in @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ALREADY_APPLIED' }))" not in invoke_block
 
 
+def test_release_migration_state_batch_update_streams_sql_over_ssh_stdin() -> None:
+    script = read_publish_script()
+
+    assert "function New-SshArgumentListWithInput" in script
+    assert "function Invoke-SshCommandWithInput" in script
+
+    batch_start = script.index("function Invoke-ReleaseMigrationStateBatchUpdate")
+    batch_end = script.index("function Ensure-ReleaseMigrationStateSchema", batch_start)
+    batch_block = script[batch_start:batch_end]
+
+    assert "Invoke-SshCommandWithInput" in batch_block
+    assert "-StandardInput $stateSql" in batch_block
+    assert "cat <<'SQL'" not in batch_block
+    assert 'Info "Batch updating release migration state: $Status ($($Items.Count))"' in batch_block
+
+
 def test_ssh_command_logs_and_errors_are_secret_redacted() -> None:
     script = read_publish_script()
     command_start = script.index("function Invoke-SshCommand")
