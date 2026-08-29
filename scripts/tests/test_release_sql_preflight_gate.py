@@ -686,6 +686,20 @@ def test_publish_script_accepts_multiline_none_ignored_builds() -> None:
     assert "$ignoredBuildLines[1] -eq 'None'" in function_body
 
 
+def test_publish_script_bounds_edhr_storage_verifier_wait() -> None:
+    script = read_publish_script()
+    process_capture = script.split("function Invoke-ProcessCapture", 1)[1].split("function Resolve-SmartReleaseReportOnlyEnabled", 1)[0]
+    verifier_block = script.split("function Invoke-EdhrStorageRetentionVerifier", 1)[1].split("function ConvertTo-SqlStringLiteral", 1)[0]
+
+    assert "[int]$TimeoutSeconds = 0" in process_capture
+    assert "$process.WaitForExit($TimeoutSeconds * 1000)" in process_capture
+    assert "Stop-Process -Id $process.Id -Force" in process_capture
+    assert "Process timed out after $TimeoutSeconds seconds." in process_capture
+    assert "$timeoutSeconds = 120" in verifier_block
+    assert "-TimeoutSeconds $timeoutSeconds" in verifier_block
+    assert "timed out after $timeoutSeconds seconds" in verifier_block
+
+
 def test_publish_script_uploads_required_sql_as_single_archive() -> None:
     script = read_publish_script()
     copy_start = script.index("function Copy-RequiredDatabaseSqlScriptsToServer")

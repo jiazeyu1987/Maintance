@@ -460,7 +460,8 @@ function Invoke-ProcessCapture {
         [Parameter(Mandatory = $true)]
         [string]$FilePath,
         [string[]]$ArgumentList = @(),
-        [string]$WorkingDirectory = $null
+        [string]$WorkingDirectory = $null,
+        [int]$TimeoutSeconds = 0
     )
 
     $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ("publish-int-ruoyi-" + [System.Guid]::NewGuid().ToString("N"))
@@ -498,13 +499,31 @@ function Invoke-ProcessCapture {
             -RedirectStandardOutput $stdoutPath `
             -RedirectStandardError $stderrPath `
             -NoNewWindow `
-            -Wait `
             -PassThru
+        $timedOut = $false
+        if ($TimeoutSeconds -gt 0) {
+            if (-not $process.WaitForExit($TimeoutSeconds * 1000)) {
+                $timedOut = $true
+                Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+                $process.WaitForExit()
+            }
+        } else {
+            $process.WaitForExit()
+        }
         $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
         $stdout = if (Test-Path $stdoutPath) { [System.IO.File]::ReadAllText($stdoutPath, $utf8NoBom) } else { '' }
         $stderr = if (Test-Path $stderrPath) { [System.IO.File]::ReadAllText($stderrPath, $utf8NoBom) } else { '' }
+        if ($timedOut) {
+            $timeoutMessage = "Process timed out after $TimeoutSeconds seconds."
+            if ($stderr) {
+                $stderr = $stderr.TrimEnd() + "`n" + $timeoutMessage + "`n"
+            } else {
+                $stderr = $timeoutMessage + "`n"
+            }
+        }
+        $exitCode = if ($timedOut) { -1 } else { $process.ExitCode }
         return @{
-            ExitCode = $process.ExitCode
+            ExitCode = $exitCode
             StdOut = $stdout
             StdErr = $stderr
         }
@@ -1746,10 +1765,14 @@ function Invoke-EdhrStorageRetentionVerifier {
     }
 
     Info 'Verifying eDHR protected storage/Object Lock target before publish'
-    $result = Invoke-ProcessCapture -FilePath 'python' -ArgumentList @('-X', 'utf8', $verifier) -WorkingDirectory $BackendRepo
+    $timeoutSeconds = 120
+    $result = Invoke-ProcessCapture -FilePath 'python' -ArgumentList @('-X', 'utf8', $verifier) -WorkingDirectory $BackendRepo -TimeoutSeconds $timeoutSeconds
     $output = Remove-SshNoise ((($result.StdOut + "`n" + $result.StdErr)).Trim())
     if ($output) {
         Write-Host $output
+    }
+    if ($result.ExitCode -eq -1) {
+        Fail "eDHR protected storage verifier timed out after $timeoutSeconds seconds."
     }
     if ($result.ExitCode -ne 0) {
         Fail "eDHR protected storage verifier failed with exit code $($result.ExitCode)."
