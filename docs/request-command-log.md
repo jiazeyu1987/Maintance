@@ -3463,7 +3463,15 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Request: 用户要求继续优化发布链路耗时。
 - Command intent: 仅修改维护仓发布脚本和合同测试；将 required SQL 中 route snapshot 身份迁移 hook 的“运行一次性 backend”和“检查 report READY/blockerCount”从每个模式 2 次 SSH 合并为 1 次 SSH；保留 `set -e` fail-fast 和 report 校验。不执行真实服务器发布、数据库写入、备份、恢复、正式服或备份服操作。
 - Verification: RED 新增合同测试 -> `1 failed`；GREEN 新合同 -> `1 passed`；GREEN `test_release_sql_preflight_gate.py` -> `49 passed`；REGRESSION 发布合同测试集合 -> `60 passed`；PowerShell AST parse -> `PSSCRIPT_PARSE_OK`；`git diff --check` 通过。
-- Commit: 待实现提交。
+- Commit: 维护仓实现提交 `f035655`（`任务: 优化route snapshot发布hook校验`），范围仅 `ops/deploy/publish-int-ruoyi.ps1` 与 `scripts/tests/test_release_sql_preflight_gate.py`。
+- Boundary: 未恢复、覆盖或提交并行脏改动；未记录密码、token、私钥或连接串。
+
+## 2026-08-29 deploy 控制文件上传优化
+
+- Request: 用户要求继续优化发布链路耗时。
+- Command intent: 仅修改维护仓发布脚本和合同测试；将 compose、`.env`、website runtime、reset-db.sql、post-import.sql 等小控制文件按原条件 staging 后打包为 `deploy-control.tar` 一次上传，远端解包并校验关键文件；镜像 tar 和数据库 dump 仍走原大文件路径。不执行真实服务器发布、数据库写入、备份、恢复、正式服或备份服操作。
+- Verification: RED 新增合同测试 -> `1 failed`；GREEN 新合同 -> `1 passed`；GREEN `test_release_sql_preflight_gate.py` -> `50 passed`；REGRESSION 发布合同测试集合 -> `61 passed`；PowerShell AST parse -> `PSSCRIPT_PARSE_OK`；`git diff --check` 通过；本机 `tar/ssh/scp` 命令存在。
+- Commit: 维护仓实现提交 `ff1368a`（`任务: 优化deploy控制文件上传`），范围仅 `ops/deploy/publish-int-ruoyi.ps1` 与 `scripts/tests/test_release_sql_preflight_gate.py`。
 - Boundary: 未恢复、覆盖或提交并行脏改动；未记录密码、token、私钥或连接串。
 
 ## 2026-08-29 仅测试服 HEAD 发布 r260829j 成功闭环
@@ -3475,3 +3483,22 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Experience: 已将注册证 SQL 旧表列合同/CHECK 表达式、manifest 摘要校验、runtime-control state 根目录、SSH stdin/IO warning、Playwright snapshot 脱敏和运行控制台端口标签问题沉淀到前置经验与索引。
 - Closeout: `task_closeout.py preview/apply` 均通过；Playwright 浏览器关闭；任务拥有的 release 控制台 Java 进程停止；44 个 release worktree 的 Git 注册、物理路径和进程引用最终均为 0。
 - Boundary: 未执行 `mark-tested`、`promote-prod`、`promote-backup`；未发布正式服或备份服；未记录密码、token、私钥、完整 `.env`、完整本机 local config 或 raw operation log。
+
+## 2026-08-29 带分段耗时统计的仅测试服真实发布
+
+- Request: 用户要求执行一次带分段耗时统计的真实发布。
+- Command intent: 基于当前已提交 HEAD 新建本轮专用 clean release worktree，执行仅测试服 `build-release -> publish-test`，采集准备、worktree、前置测试、构建、发布、运行态验证和收尾清理分段耗时；发布输入不得包含未提交改动。
+- Boundary: 只允许测试服真实发布和验收；禁止执行 `mark-tested`、`promote-prod`、`promote-backup`、正式服/备份服发布、手工改测试库、跳过 SQL 或拼接旧 releaseTag 结果；命令日志只记录脱敏摘要。
+- Result: 成功 releaseTag `release-20260829-timed-head-test-r260829k-r2`，build operation `op-2026-08-29T094711769603400Z-ded24bdd-b6fc-40f1-a43a-79f8a9232111` SUCCESS，publish operation `op-2026-08-29T100507230543400Z-9db39d71-d6b4-42f9-a030-61da96fc4c5f` SUCCESS；r1 因 clean app worktree 缺少前端依赖二进制作废。
+- Verification: r2 的 manifest、远端 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、backend health=UP、frontend HTTP 200、release-info/release-status 与 Playwright 页面版本说明均通过；任务自有 runtime-control 与 release worktree 已清理；耗时详见 `doc/tasks/20260829-timed-test-release/timing-summary.md`。
+
+## 2026-08-29 发票打印助手测试服 18733 部署
+
+- Request: 用户要求将 `E:\ProjectPackage\erp-invoice-voucher-print-assistant` 下的发票打印助手发布到测试服务器，并让主程序可通过 `18733` 端口打开查看。
+- Command intent: 基于助手项目已提交内容创建本轮专用发布 worktree，验证授权入口和本地服务契约后部署到测试服 `172.30.30.58` 的 `18733` 端口；必要时复核主程序入口环境变量，不操作正式服、备份服或业务数据。
+- Boundary: 远端写入前必须完成经验门禁和本地验证；禁止用 mock 页面、旧 artifact、临时静态补丁或跳过授权链路冒充主程序可打开；命令日志只记录脱敏摘要。
+- Result: PASS，已完成 closeout。助手服务已部署并监听 `172.30.30.58:18733`；主程序 releaseTag `release-20260830-invoice-assistant-test-r260830k-r1` 完成仅测试服 `build-release -> publish-test`，build `1121.255s`，publish `307.292s`。
+- Verification: 本地 manifest 存在且 backend/frontend sourceRepos 均为 `60fb439d75659a4a9276e39a241f28f005292218`、dirty=false；测试服 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、backend health、frontend HTTP、release-info、release lock 和 migration ledger 均通过；helper systemd active、容器 `erp-invoice-voucher-print-assistant:92d47d5` running、`18733` LISTEN、直连 403。
+- E2E: 修正任务 Playwright 登录脚本的租户选择器后，真实打开 `http://172.30.30.58:8081`；`测试租户/aoteman` 通过 ERP 菜单加载 `18733` 助手 iframe；`测试租户/dccmatrixregsvc` 无目标权限且看不到菜单；直连助手返回 403。测试密码仅由当前进程注入，未写入文档。
+- Closeout: `task-closeout-cleanup --mode apply` 已删除本任务临时 artifacts；任务拥有的 helper、主程序和维护仓临时发布 worktree 已删除；任务状态标记 `completed`。
+- Boundary: 未执行 `mark-tested`、`promote-prod`、`promote-backup`；未发布正式服或备份服；未记录 token、私钥、连接串、完整 `.env` 或 raw secret-bearing 日志。

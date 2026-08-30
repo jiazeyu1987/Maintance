@@ -863,3 +863,41 @@ ssh root@172.30.30.58 bash -s
 2. 推荐命令：Playwright CLI 串行执行 `open`、页面断言和 `screenshot`；登录页只记录非敏感 visible text，运行控制台用实际隔离端口。
 3. Fail Fast：页面打不开、运行控制台 release-status 缺当前 tag、对话框缺变更说明、Playwright 证据含密码/token。
 4. 必须记录：页面 URL/title、截图路径、release-status 关键字段、console/请求异常摘要和 secret scan 结果。
+
+## 2026-08-30 发布后登录页租户选择器门禁
+
+### 门禁摘要
+
+- Trigger: 测试服发布后用 Playwright 登录 `测试租户/aoteman`、外部助手入口、权限菜单验收，或登录页显示默认 `芋道源码` 但脚本声称已填 `测试租户`。
+- Preflight check: 打开登录页后先确认租户控件真实 DOM；Element Plus `el-select filterable allow-create` 必须优先操作 `.el-select input[role="combobox"], input.el-select__input`，填入目标租户后等待对应 `.el-select-dropdown__item:visible` 并点击，找不到选项时才按允许创建规则 `Enter`。旧版普通输入框只作为明确存在且可见时的兼容路径。
+- Blocker: 租户控件不可见、目标租户选项无法确认、页面仍显示默认租户、登录接口返回账号密码错误/密码过期、或权限响应的用户/权限/菜单与目标租户不一致时必须停止。
+- Verification: Playwright 脱敏输出租户/账号标签、租户字段是否成功填入、登录业务码、权限响应是否包含目标 permission、菜单 path/component/componentName、console error count；必要时用只读 DB 查目标账号所在租户和角色，不输出密码或 token。
+- Forbidden action: 禁止只找 `input[placeholder="请输入租户名称"]` 后在未填中时继续登录；禁止把默认 `芋道源码` 登录结果当作 `测试租户` 验收；禁止猜密码、改账号密码、切租户或用 API-only 冒充页面登录。
+- Evidence: `doc/tasks/20260829-invoice-print-assistant-test-deploy/execution-log.md`，`release-20260830-invoice-assistant-test-r260830k-r1`。
+
+### 阶段必查项
+
+1. 登录页 DOM 识别：确认 `.login-form` 内租户控件类型、可见 input、页面默认租户文本。
+2. 租户选择：优先使用 Element Plus combobox，选中后记录页面显示的目标租户。
+3. 权限响应：登录后核对用户标签、permissions、menu path/component/componentName。
+4. Fail Fast：控件不存在、目标租户未选中、登录业务码非 0、权限响应不属于目标租户。
+5. 必须记录：租户字段是否成功填入、登录 URL、账号标签、权限响应摘要。
+
+## 2026-08-30 publish-test 远端 staging 清理与 manifest 权威门禁
+
+### 门禁摘要
+
+- Trigger: `publish-test` 成功后核验 manifest，远端 `/var/lib/docker/intruoyi-releases/<releaseTag>` 目录存在但为空，或脚本已将发布包解包后清理 staging 内容。
+- Preflight check: manifest 权威优先使用本地发布包根目录 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\<releaseTag>\manifest.json`，再用远端 `/release-info.json`、`.env IMAGE_TAG`、实际镜像 tag、release lock 和 migration ledger 交叉验证；远端 staging 目录只能作为 publish 临时工作目录，不得作为唯一 manifest 来源。
+- Blocker: 本地发布包 manifest 缺失、sourceRepos commit/dirty 与冻结 HEAD 不一致、远端 release-info 与 manifest 不一致、`.env IMAGE_TAG` 或实际镜像 tag 漂移、release lock 非 `APPLIED`、或 migration 存在 `FAILED/RUNNING`。
+- Verification: 结构化读取本地 `manifest.json`，记录 `publishScope`、sourceRepos commit/dirty、镜像 tar；远端记录 `.env IMAGE_TAG`、`docker inspect` image/status、Actuator health、frontend HTTP、`/release-info.json`、release lock 和 migration count。
+- Forbidden action: 禁止因为远端 staging 目录为空就手工补传 manifest 或修改远端状态；禁止用旧 releaseTag 的 manifest、旧运行态或口头说明代替当前 releaseTag 的结构化验证。
+- Evidence: `doc/tasks/20260829-invoice-print-assistant-test-deploy/execution-log.md`，`release-20260830-invoice-assistant-test-r260830k-r1`。
+
+### 阶段必查项
+
+1. 本地发布包 manifest：核 `releaseTag`、`publishScope`、sourceRepos commit/dirty、artifact path/hash。
+2. 远端运行态交叉验证：核 `.env IMAGE_TAG`、实际镜像、容器、health、HTTP、release-info。
+3. release ledger：核 release lock 与 migration status，FAILED/RUNNING 必须为 0。
+4. Fail Fast：manifest 缺失、JSON 解析失败、commit/dirty 漂移、远端运行态漂移。
+5. 必须记录：manifest path、sourceRepos 摘要、artifact 摘要、远端运行态摘要。
