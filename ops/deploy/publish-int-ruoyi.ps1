@@ -518,6 +518,7 @@ function Invoke-ProcessCapture {
         }
 
         $process = Start-Process @startProcessParameters
+        $null = $process.Handle
         $timedOut = $false
         if ($TimeoutSeconds -gt 0) {
             if (-not $process.WaitForExit($TimeoutSeconds * 1000)) {

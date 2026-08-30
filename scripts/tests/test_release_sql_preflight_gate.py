@@ -722,6 +722,15 @@ def test_publish_script_waits_for_unbounded_process_capture_before_reading_exit_
     assert "$process.ExitCode" in process_capture
 
 
+def test_publish_script_primes_process_handle_before_timeout_wait() -> None:
+    script = read_publish_script()
+    process_capture = script.split("function Invoke-ProcessCapture", 1)[1].split("function Resolve-SmartReleaseReportOnlyEnabled", 1)[0]
+
+    assert "$null = $process.Handle" in process_capture
+    assert process_capture.index("$process = Start-Process @startProcessParameters") < process_capture.index("$null = $process.Handle")
+    assert process_capture.index("$null = $process.Handle") < process_capture.index("if ($TimeoutSeconds -gt 0)")
+
+
 def test_publish_script_uploads_required_sql_as_single_archive() -> None:
     script = read_publish_script()
     copy_start = script.index("function Copy-RequiredDatabaseSqlScriptsToServer")
