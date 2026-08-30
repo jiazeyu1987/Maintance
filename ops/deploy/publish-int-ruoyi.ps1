@@ -504,23 +504,31 @@ function Invoke-ProcessCapture {
                 }
             }
         }
-        $process = Start-Process -FilePath $effectiveFilePath `
-            -ArgumentList $effectiveArguments `
-            -WorkingDirectory $effectiveWorkingDirectory `
-            -RedirectStandardOutput $stdoutPath `
-            -RedirectStandardError $stderrPath `
-            -NoNewWindow `
-            -PassThru
+        $startProcessParameters = @{
+            FilePath = $effectiveFilePath
+            ArgumentList = $effectiveArguments
+            WorkingDirectory = $effectiveWorkingDirectory
+            RedirectStandardOutput = $stdoutPath
+            RedirectStandardError = $stderrPath
+            NoNewWindow = $true
+            PassThru = $true
+        }
+        if ($TimeoutSeconds -le 0) {
+            $startProcessParameters['Wait'] = $true
+        }
+
+        $process = Start-Process @startProcessParameters
         $timedOut = $false
         if ($TimeoutSeconds -gt 0) {
             if (-not $process.WaitForExit($TimeoutSeconds * 1000)) {
                 $timedOut = $true
                 Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
                 $process.WaitForExit()
+            } else {
+                $process.WaitForExit()
             }
-        } else {
-            $process.WaitForExit()
         }
+        $process.Refresh()
         $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
         $stdout = if (Test-Path $stdoutPath) { [System.IO.File]::ReadAllText($stdoutPath, $utf8NoBom) } else { '' }
         $stderr = if (Test-Path $stderrPath) { [System.IO.File]::ReadAllText($stderrPath, $utf8NoBom) } else { '' }

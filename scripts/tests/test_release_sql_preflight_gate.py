@@ -710,6 +710,18 @@ def test_publish_script_bounds_edhr_storage_verifier_wait() -> None:
     assert "timed out after $timeoutSeconds seconds" in verifier_block
 
 
+def test_publish_script_waits_for_unbounded_process_capture_before_reading_exit_code() -> None:
+    script = read_publish_script()
+    process_capture = script.split("function Invoke-ProcessCapture", 1)[1].split("function Resolve-SmartReleaseReportOnlyEnabled", 1)[0]
+
+    assert "$startProcessParameters = @{" in process_capture
+    assert "if ($TimeoutSeconds -le 0)" in process_capture
+    assert "$startProcessParameters['Wait'] = $true" in process_capture
+    assert "Start-Process @startProcessParameters" in process_capture
+    assert "$process.Refresh()" in process_capture
+    assert "$process.ExitCode" in process_capture
+
+
 def test_publish_script_uploads_required_sql_as_single_archive() -> None:
     script = read_publish_script()
     copy_start = script.index("function Copy-RequiredDatabaseSqlScriptsToServer")
