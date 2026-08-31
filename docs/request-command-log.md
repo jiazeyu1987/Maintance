@@ -3510,3 +3510,13 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Result: PASS。助手仓新镜像 `erp-invoice-voucher-print-assistant:ba55fb8` 已在测试服运行，替换旧镜像 `erp-invoice-voucher-print-assistant:92d47d5`；主程序前端与后端保持健康。
 - Verification: 发布 worktree 内 `node --check server.js` 和 4 个静态合同均 PASS；源 artifact size `317440` bytes、SHA256 `3E6B6502AE2CD88AB8F17512EFA3DE42F106C5FF740C435F903EC6E3E0FCD5AB`，远端 SHA 复核一致；远端 systemd active、容器 running、`0.0.0.0:18733` LISTEN；本机访问助手 HTTP 403 且显示无权访问，`8081` HTTP 200，`48081/actuator/health` HTTP 200 且 `UP`。
 - Closeout: `task-closeout-cleanup` preview/apply 已删除本任务 artifacts；助手发布 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\invoice-assistant-standalone-r260831d` 已移除。
+
+## 2026-09-01 主系统与发票打印助手联合测试服发布
+
+- Request: 用户要求再次将主系统和发票打印助手一起发布到测试服务器。
+- Command intent: 基于维护仓、主系统和助手仓库的已提交 HEAD 创建本轮专用 clean release worktree，先部署发票打印助手到测试服 `18733`，再执行主系统仅测试服 `build-release -> publish-test`，最后验证真实运行态、发布账本和 ERP 菜单 iframe 页面路径。
+- Boundary: 只允许测试服 `172.30.30.58`；禁止 `mark-tested`、`promote-prod`、`promote-backup`、正式服/备份服操作、未提交改动进包、手工改测试库或记录明文凭据。
+- Result: PASS。主系统 releaseTag `release-20260901-main-invoice-assistant-test-r260901a-r1` 发布成功；发票打印助手镜像 `erp-invoice-voucher-print-assistant:ba55fb8` 在测试服运行。
+- Verification: build operation `op-2026-08-31T175950833708200Z-2bced8b6-7544-44f4-ba35-338702f541bf` SUCCESS；publish operation `op-2026-08-31T182540028464Z-a9c8f0fc-93ee-4808-b9f8-96b3215b2fc1` SUCCESS；manifest/sourceRepos dirty=false；测试服 `.env IMAGE_TAG`、backend/frontend 镜像、health、frontend HTTP、release-info、release lock、migration ledger、助手 systemd/container/listen/direct-403 均通过。
+- E2E: Playwright 真实登录 `测试租户/aoteman`，菜单链 `ERP 系统 / 财务管理 / 发票凭证打印` 可见；点击后 ERP 签发短期票据，页面通过 `http://172.30.30.58:18733/auth/callback` iframe 加载助手，console/page error 均为 0。测试密码仅由当前进程注入，未写入文档。
+- Closeout: `task-closeout-cleanup` preview/apply 已清理本任务 artifacts；任务自有运行控制台已停止；三套 release worktree、残留 ignored 目录和本轮 stateDir 均已删除；任务状态 completed。
