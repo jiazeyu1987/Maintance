@@ -901,3 +901,33 @@ ssh root@172.30.30.58 bash -s
 3. release ledger：核 release lock 与 migration status，FAILED/RUNNING 必须为 0。
 4. Fail Fast：manifest 缺失、JSON 解析失败、commit/dirty 漂移、远端运行态漂移。
 5. 必须记录：manifest path、sourceRepos 摘要、artifact 摘要、远端运行态摘要。
+
+## 2026-08-31 r260831c 仅测试服成功闭环与发布失败恢复门禁
+
+### 门禁摘要
+
+- Trigger: 当前 HEAD 仅测试服发布，前轮因 scope dependency、required SQL duplicate column 或 `.env`/actual image 漂移失败，修复后使用新 releaseTag 重建。
+- Preflight check: 每轮新建 maintenance/app clean release worktree；失败 tag 绝不复用；最终 manifest 后先跑 target-bound code-only plan，status=passed/blocked=0；历史 ADD COLUMN 对 live schema 必须可重放；publish preview 精确解析 `-Environment/-ServerHost`，不能把 inert `-BackupServerHost` 配置误判为备份动作。
+- Blocker: target plan blocked、required SQL 非幂等、`.env` 与 actual image 漂移未恢复、operation 非 SUCCESS、lock 非 APPLIED、migration FAILED/RUNNING>0、页面版本说明缺 tag/summary/commit 或出现浏览器错误。
+- Verification: 同一成功 tag 的 build/publish operation SUCCESS；manifest validator、sourceRepos dirty=false；远端 `.env`/compose/actual image/container/health/HTTP/release-info；lock/migration；runtime-control release-status；Playwright 测试服页面与查看变更；结构化 final gate 全 true。
+- Forbidden action: 禁止拼接 r1/r2/r3 证据、手工改 ledger/schema 过关、with-data 扩大范围、跳过页面、执行 mark/prod/backup，或在失败 worktree 临时修 SQL后继续。
+- Evidence: `doc/tasks/20260831-test-only-release-head/verification-report.md`；成功 releaseTag `release-20260831-cell-link-idempotency-test-r260831c-r1`；final gate 28/28。
+
+### 阶段 1：失败轮次收束
+
+1. 每个失败 operation 记录 operationId、duration、脱敏日志、根因 migration、lock/migration、`.env`/actual image/health。
+2. `.env` 漂移恢复需用户授权、精确旧新 tag、原子单行替换和恢复后交叉验证；不重启容器、不修改 FAILED 记录。
+3. 修复必须在独立开发 worktree 严格 RED/GREEN、提交并合入主线；随后从新主线提交创建全新 release worktree/tag。
+
+### 阶段 2：成功运行态与 ledger
+
+1. 必查项：`.env`、compose backend/frontend image、docker inspect actual image、container running、Actuator UP、frontend 200、release-info commit/dirty/summary。
+2. Ledger 必须显示当前 tag lock=APPLIED、FAILED/RUNNING=0、global RUNNING=0；本任务修复的 target migrations 必须 APPLIED 且 checksum 与最终 manifest 一致。
+3. 任何单项缺失不得用 operation SUCCESS 替代。
+
+### 阶段 3：浏览器与 final gate
+
+1. Playwright 版本和浏览器路径必须预检；标准依赖目录缺模块时，不得 `npx` 临时下载版本，使用项目内已确认同版本依赖并记录来源。
+2. 镜像内 release-info 读取优先 `docker create + docker cp + docker rm`，避免短命 `docker run --rm cat` 客户端/状态悬挂。
+3. 测试服公开登录页与认证后业务页结论分层；缺远端测试账号凭据时不得猜密码。本次公开页只证明前端可见，运行控制台页面负责版本说明验收。
+4. Final gate 至少汇总 worktree/head/clean、两 operation、manifest、runtime、ledger、release-status、Playwright、禁止动作；输出 false 清单，全部 true 才进入 closeout。

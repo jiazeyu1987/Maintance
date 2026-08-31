@@ -354,3 +354,22 @@ Windows PowerShell 中需要通过 SSH 执行包含 Python、JSONPath 或复杂 
 2. 推荐命令：`git worktree remove --force <path>` 后执行物理路径复核；对仅剩 `node_modules` 的残留目录，用本任务空目录 `robocopy <empty> <node_modules> /MIR /R:0 /W:0` 后再删空目录链。
 3. Fail Fast：目录仍含 `.git`、路径越界、存在进程引用、残留内容不是可再生依赖目录，或删除失败原因无法归类。
 4. 必须记录：Git 注册计数、物理存在计数、进程引用计数、被清理路径、`robocopy` 方式和最终 `Test-Path=False`。
+
+## 2026-08-31 发布长链路跨层载荷、PowerShell 语法与假绿门禁
+
+### 门禁摘要
+
+- Trigger: functions JavaScript 模板内嵌 PowerShell，PowerShell 再承载 SSH/bash/mysql stdin；出现 `foreach($x in$list)` ParserError、函数名 `H` 命中 Get-History、`${name}` 被 JS 插值、反引号制表符截断模板、非终止 MethodException 后 ssh exit 0、或状态提示没有真实 process/session。
+- Preflight check: 复杂多行命令先写任务 helper，并用 PowerShell AST parse；`foreach ($x in $list)` 保持空格和多行；helper 名使用任务前缀并 `Get-Command` 检查冲突；functions.exec 的 JS template 内禁用 PowerShell `${}` 和反引号，改用字符串连接/[char]；远端 stdin 脚本设置 `$ErrorActionPreference='Stop'`，校验 payload bytes/SHA256、external exit code 和远端业务成功标记。
+- Blocker: 本地 ParserError/MethodException、payload 空、只有 ssh exit 0 无业务标记、引用不存在的 session/wait cell、中文或 SQL 载荷编码不明、或 stderr/command log 未脱敏时停止。
+- Verification: 记录实际 sessionId/PID/operationId；helper AST errors=0；payload bytes/hash 非空；远端 marker 与恢复后状态交叉验证；每个 external command 检查 `$LASTEXITCODE`。
+- Forbidden action: 禁止重复复制压缩 inline loop；禁止把状态消息当成执行；禁止本地异常后继续空 stdin；禁止在 JS template 中直接嵌 PowerShell `${}`/backtick；禁止用短别名函数名；禁止把 shell exit 0 包装成业务成功。
+- Evidence: `doc/tasks/20260831-test-only-release-head/execution-log.md` ISSUE-018/019/021/023-031。
+
+### 执行顺序
+
+1. 载荷构造：显式 UTF-8/LF，检查非空、bytes、SHA256。
+2. 本地语法：helper 文件 AST parse；inline 仅允许短的无循环命令。
+3. 远端执行：ProcessStartInfo ArgumentList + stdin；记录 exit code，不输出凭据。
+4. 业务判定：必须有远端 marker 和独立状态复核；exit 0 只能证明进程退出。
+5. 长任务观测：只有真实 sessionId/PID/operationId 才允许 wait/poll；无句柄时下一步必须是实际命令。
