@@ -1,0 +1,26 @@
+# 20260831 发票打印助手独立测试服发布执行日志
+
+## Log
+
+- BDD: standalone invoice assistant test deploy -> Given 主程序已运行且助手项目有可构建内容，When 单独发布助手到测试服 `18733`，Then `http://172.30.30.58:18733/` 可访问且主程序端口保持可达。
+- BDD: assistant direct access remains guarded -> Given 助手需要主程序 ticket 授权，When 直接访问未带有效 ticket 的助手页面，Then 助手返回明确拒绝结果而不是开放业务页面。
+- INFO: task-start -> 本次仅发布 `E:\ProjectPackage\erp-invoice-voucher-print-assistant` 到测试服 `172.30.30.58:18733`；主程序端口已由用户确认正常运行，本次不执行 IntRuoyi 主程序发布。
+- GREEN: experience-preflight -> PASS，已读取 `AGENTS.md`、`docs/experience-index.md`、`E:\IntRuoyi\docs\server-access.md`、`E:\IntRuoyi\docs\release-backup-restore.md`、`E:\IntRuoyi\docs\powershell-memory.md`、`E:\IntRuoyi\docs\worktree-memory.md`、`docs\test-release-preflight.md`、`docs\powershell-preflight-lessons.md` 和上次 `20260829-invoice-print-assistant-test-deploy` 记录；本次仅授权测试服助手服务 `18733`，禁止主程序发布和正式/备份服动作。
+- BLOCKER: assistant-source-freeze -> 助手仓库 `E:\ProjectPackage\erp-invoice-voucher-print-assistant` 当前 HEAD 为 `92d47d54ca7ff831264a1b97742e0c4a174f15fa`，分支 `main` 领先 `origin/main` 3 个提交，但仍存在未提交改动：`.env.example`、`Probe-SsoBrowser.py`、`public/index.html`、`server.js`，以及未跟踪 `doc/tasks/*` 和 `tests/*`。按发布输入门禁，不能从脏工作区构建或发布。
+- INFO: user-resume -> 用户要求“先整理并提交这些当前改动，再发布新的提交”；当前复核显示助手仓库已 clean，`main` 领先 `origin/main` 5 个本地提交，最新提交为 `ba55fb8ddb5aa507d70e7d64f4a5d8c44a12179b`（`任务: 更新销售组织名称`）。
+- GREEN: assistant-source-freeze -> PASS。助手仓库 `git status --short --branch` 为 clean；最近 5 个提交依次覆盖 ERP 授权、容器部署、容器基线、固定端口和销售组织名称更新；`git diff --check HEAD~5..HEAD` 无空白错误。
+- GREEN: assistant-local-static-tests -> PASS。`node --check server.js`、`node tests\assistant-auth-static.cjs`、`node tests\container-deploy-static.cjs`、`node tests\fixed-port-static.cjs`、`node tests\sales-org-copy-static.cjs` 均通过。
+- GREEN: remote-preflight -> PASS。测试服 `172.30.30.58` 当前 `erp-invoice-voucher-print-assistant.service` active，容器镜像为 `erp-invoice-voucher-print-assistant:92d47d5`，`18733` LISTEN，直连助手 HTTP 403，主程序 frontend HTTP 200、backend health `UP`；远端 Docker `26.1.3`、Docker Compose `v2.27.0` 可用。
+- GREEN: release-worktree -> PASS。从助手 HEAD `ba55fb8ddb5aa507d70e7d64f4a5d8c44a12179b` 创建干净 detached 发布 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\invoice-assistant-standalone-r260831d`。
+- GREEN: release-worktree-tests -> PASS。发布 worktree 中 `node --check server.js`、`node tests\assistant-auth-static.cjs`、`node tests\container-deploy-static.cjs`、`node tests\fixed-port-static.cjs`、`node tests\sales-org-copy-static.cjs` 均通过。
+- GREEN: package-artifact -> PASS。源 artifact `doc/tasks/20260831-invoice-assistant-standalone-test-deploy/artifacts/invoice-voucher-print-assistant-ba55fb8.tar`，大小 `317440` bytes，SHA256=`3E6B6502AE2CD88AB8F17512EFA3DE42F106C5FF740C435F903EC6E3E0FCD5AB`，由发布 worktree HEAD `ba55fb8ddb5aa507d70e7d64f4a5d8c44a12179b` 生成。
+- ISSUE-001: 现象=首次远端 SHA/build 命令被本地 PowerShell 提前解析，出现 `sha256sum` 被当成本地命令和远端 shell 变量丢失；阶段=远端部署承载；影响=该输出包含假绿风险，不作为任何发布证据；原因判断=PowerShell 字符串与远端 bash `$()`/变量混用；处理动作=改为任务 helper `invoke-remote-deploy.ps1`，用 UTF-8 LF bytes 发送远端 bash，并断言 payload 非空、无 CR、远端 success marker；结果=helper AST 解析 PASS，后续部署成功；是否可前置检查=是；是否可自动化=是；下次如何避免=复杂 SSH/bash/docker 部署一律用受控 helper 或 stdin bytes，不写多层 inline。
+- GREEN: remote-deploy-helper-parse -> PASS。`invoke-remote-deploy.ps1` PowerShell AST 无语法错误；本机 PowerShell 版本 `7.6.4`。
+- GREEN: remote-deploy-ba55fb8 -> PASS。helper payload bytes=`4343`、payload SHA256=`47DACD146939C3B93503E9819A7B1B137649D37F02F96795E649D5333CAADFF3`；远端 artifact SHA256=`3e6b6502ae2cd88ab8f17512efa3de42f106c5ff740c435f903ec6e3e0fcd5ab`；构建镜像 `erp-invoice-voucher-print-assistant:ba55fb8`；`systemctl restart erp-invoice-voucher-print-assistant.service` 后 success marker=`REMOTE_DEPLOY_SUCCESS image=erp-invoice-voucher-print-assistant:ba55fb8`。
+- GREEN: remote-runtime-final -> PASS。测试服 `erp-invoice-voucher-print-assistant.service` active；容器 `erp-invoice-voucher-print-assistant` image=`erp-invoice-voucher-print-assistant:ba55fb8`、state=`running`；`0.0.0.0:18733` LISTEN；远端直连助手 HTTP 403、frontend HTTP 200、backend health `{"status":"UP"}`；systemd unit `ExecStart` 已指向 `erp-invoice-voucher-print-assistant:ba55fb8`。
+- GREEN: local-runtime-final -> PASS。本机访问 `http://172.30.30.58:18733/` 返回 HTTP 403 且页面包含“无权访问发票凭证打印助手”；`http://172.30.30.58:8081/` 返回 HTTP 200；`http://172.30.30.58:48081/actuator/health` 返回 HTTP 200 且 `status=UP`。
+- INFO: experience-consolidation -> 已按 `project-experience-consolidation` 规则复核可复用经验；本次“PowerShell inline SSH 假绿”已命中现有 `docs\powershell-preflight-lessons.md#2026-08-31-发布长链路跨层载荷powershell-语法与假绿门禁`，独立助手固定端口/短期票据已命中 `E:\IntRuoyi\docs\login-access.md#ERP 外部助手短期票据授权门禁`，未新增长期经验文档。
+- INFO: request-command-log-boundary -> `docs\request-command-log.md` 在本任务开始前已有大量未提交日志改动；为避免把其它任务日志混入本次提交，本次请求、命令意图、验证和边界完整记录在当前任务 `task.md`、`execution-log.md` 与 `verification-report.md`，未整体暂存该共享日志文件。
+- GREEN: task-closeout-cleanup-preview -> PASS。preview keep=`task.md/execution-log.md/verification-report.md`，delete=本任务 `artifacts` 下 5 个临时文件，blocked/warnings 均为 `<none>`。
+- GREEN: task-closeout-cleanup-apply -> PASS。已删除本任务 `artifacts` 中的 HTML/JSON/tar/helper 临时文件，保留三份核心任务记录。
+- GREEN: release-worktree-cleanup -> PASS。`git worktree remove --force D:\ProjectPackage\Int\IntRuoyiWorktrees\invoice-assistant-standalone-r260831d` 退出码 0；助手仓 `git worktree list --porcelain` 仅剩主工作区；`Test-Path` 返回 `False`。

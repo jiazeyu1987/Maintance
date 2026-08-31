@@ -3502,3 +3502,11 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - E2E: 修正任务 Playwright 登录脚本的租户选择器后，真实打开 `http://172.30.30.58:8081`；`测试租户/aoteman` 通过 ERP 菜单加载 `18733` 助手 iframe；`测试租户/dccmatrixregsvc` 无目标权限且看不到菜单；直连助手返回 403。测试密码仅由当前进程注入，未写入文档。
 - Closeout: `task-closeout-cleanup --mode apply` 已删除本任务临时 artifacts；任务拥有的 helper、主程序和维护仓临时发布 worktree 已删除；任务状态标记 `completed`。
 - Boundary: 未执行 `mark-tested`、`promote-prod`、`promote-backup`；未发布正式服或备份服；未记录 token、私钥、连接串、完整 `.env` 或 raw secret-bearing 日志。
+## 2026-08-31 发票打印助手独立测试服重发
+
+- Request: 用户要求先整理并提交 `E:\ProjectPackage\erp-invoice-voucher-print-assistant` 当前改动，再将新的提交单独发布到测试服务器；主程序端口已经正常运行。
+- Command intent: 复核助手仓库 clean HEAD，基于 `ba55fb8ddb5aa507d70e7d64f4a5d8c44a12179b` 创建干净发布 worktree，运行静态合同，生成源 artifact，上传到测试服 `172.30.30.58` 后只构建并重启 `erp-invoice-voucher-print-assistant.service`，不发布或重启 IntRuoyi 主程序。
+- Boundary: 只允许测试服助手服务 `18733`；禁止正式服/备份服、IntRuoyi `build-release` / `publish-test` / `mark-tested` / `promote-prod` / `promote-backup`、手工改库或记录明文凭据。
+- Result: PASS。助手仓新镜像 `erp-invoice-voucher-print-assistant:ba55fb8` 已在测试服运行，替换旧镜像 `erp-invoice-voucher-print-assistant:92d47d5`；主程序前端与后端保持健康。
+- Verification: 发布 worktree 内 `node --check server.js` 和 4 个静态合同均 PASS；源 artifact size `317440` bytes、SHA256 `3E6B6502AE2CD88AB8F17512EFA3DE42F106C5FF740C435F903EC6E3E0FCD5AB`，远端 SHA 复核一致；远端 systemd active、容器 running、`0.0.0.0:18733` LISTEN；本机访问助手 HTTP 403 且显示无权访问，`8081` HTTP 200，`48081/actuator/health` HTTP 200 且 `UP`。
+- Closeout: `task-closeout-cleanup` preview/apply 已删除本任务 artifacts；助手发布 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\invoice-assistant-standalone-r260831d` 已移除。
