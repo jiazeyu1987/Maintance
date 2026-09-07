@@ -1,6 +1,7 @@
 param(
-    [ValidateSet('direct', 'build-release', 'deploy-release', 'mark-tested')]
-    [string]$Mode = 'direct',
+    [Parameter(Mandatory = $true)]
+    [ValidateSet('build-release', 'deploy-release', 'mark-tested')]
+    [string]$Mode,
     [ValidateSet('full', 'intruoyi', 'backend', 'frontend', 'website')]
     [string]$Component = 'full',
     [string]$ReleaseTag = '',
@@ -8,9 +9,10 @@ param(
     [string]$NasReleaseRoot = 'Backup/ReleasePackage',
     [string]$NasServer = '172.30.30.4',
     [string]$NasShare = '',
-    [switch]$RequireTested,
     [string]$OperatorName = $env:USERNAME,
     [string]$TestConclusion = '',
+    [string]$TestOperationId = '',
+    [string]$TestOperationEvidencePath = '',
     [string]$SelectedRecoverySetCandidateId = '',
     [string]$RecoverySetId = '',
     [string]$RecoverySetManifestHash = '',
@@ -89,6 +91,7 @@ $ErrorActionPreference = 'Stop'
 if (Get-Variable -Name PSNativeCommandUseErrorActionPreference -ErrorAction SilentlyContinue) {
 $PSNativeCommandUseErrorActionPreference = $false
 }
+Import-Module -Force (Join-Path $PSScriptRoot '..\release\lib\ReleasePackageGovernance.psm1')
 $script:ReleaseOperationLockHeld = $false
 $script:ReleaseOperationLockReleasing = $false
 $script:BuildReleaseRuntimeRestartGuardCreated = $false
@@ -2740,24 +2743,11 @@ function Copy-ReleasePackageToNas {
         }
         New-Item -ItemType Directory -Force -Path $targetRoot | Out-Null
         Copy-Item -LiteralPath $releaseDir -Destination $targetRoot -Recurse -Force
+        $null = Test-ReleasePackageIntegrity -PackagePath $targetPath -ExpectedReleaseTag $PackageTag
         Info "Release package uploaded to NAS: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
     } finally {
         Disconnect-NasReleaseShare -MountInfo $mountInfo
     }
-}
-
-function Should-RequireNasReleaseTestedForDeploy {
-    if (-not $RequireTested) {
-        return $false
-    }
-    if ($Environment -eq 'prod') {
-        return $true
-    }
-    if ($Environment -eq 'backup') {
-        Info 'TEMPORARY_BACKUP_RECOVERY_GATE_DISABLED: Backup deploy recovery gate temporarily disabled by operator request; tested.json rollback compatibility evidence is not required for backup environment.'
-        return $false
-    }
-    return $false
 }
 
 function Copy-ReleasePackageFromNas {
@@ -2774,16 +2764,23 @@ function Copy-ReleasePackageFromNas {
             $packageDirectoryName = ConvertTo-ReleasePackageDirectoryName -ReleaseTagValue $PackageTag
             Fail "NAS release package not found: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
         }
-        if (Should-RequireNasReleaseTestedForDeploy) {
-            Assert-NasReleaseTested -MountedPackagePath $sourcePath -PackageTag $PackageTag
-        }
         if (Test-Path -LiteralPath $releaseDir) {
             Remove-Item -LiteralPath $releaseDir -Recurse -Force
         }
         New-Item -ItemType Directory -Force -Path $localTempRoot | Out-Null
         Copy-Item -LiteralPath $sourcePath -Destination $localTempRoot -Recurse -Force
         $packageDirectoryName = ConvertTo-ReleasePackageDirectoryName -ReleaseTagValue $PackageTag
+        $packageIntegrity = Test-ReleasePackageIntegrity -PackagePath $releaseDir -ExpectedReleaseTag $PackageTag
+        if ($Environment -in @('prod', 'backup')) {
+            $null = Test-ReleasePromotionAttestation `
+                -PackagePath $releaseDir `
+                -ExpectedReleaseTag $PackageTag `
+                -TargetEnvironment $Environment `
+                -TestOperationId $TestOperationId `
+                -TestOperationEvidencePath $TestOperationEvidencePath
+        }
         Info "Release package downloaded from NAS: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
+        return $packageIntegrity
     } finally {
         Disconnect-NasReleaseShare -MountInfo $mountInfo
     }
@@ -2966,21 +2963,15 @@ function Mark-NasReleaseTested {
         }
         $packageDirectoryName = ConvertTo-ReleasePackageDirectoryName -ReleaseTagValue $PackageTag
         $manifest = Read-NasReleaseManifestForCompatibility -PackagePath $packagePath -PackageTag $PackageTag -PackageDirectoryName $packageDirectoryName
+        $packageIntegrity = Test-ReleasePackageIntegrity -PackagePath $packagePath -ExpectedReleaseTag $PackageTag
         $checkedAt = (Get-Date).ToUniversalTime().ToString('o')
-        $tested = [ordered]@{
-            releaseTag = $PackageTag
-            packageDirectoryName = $packageDirectoryName
-            testedAt = $checkedAt
-            operatorName = $OperatorName
-            testConclusion = $TestConclusion
-            recoverySet = [ordered]@{
-                selectedRecoverySetCandidateId = $SelectedRecoverySetCandidateId
-                recoverySetId = $RecoverySetId
-                recoverySetManifestHash = $RecoverySetManifestHash
-                programVersion = $RecoverySetProgramVersion
-                redisPolicy = $RecoverySetRedisPolicy
-            }
-        } | ConvertTo-Json -Depth 4
+        $recoverySet = @{
+            selectedRecoverySetCandidateId = $SelectedRecoverySetCandidateId
+            recoverySetId = $RecoverySetId
+            recoverySetManifestHash = $RecoverySetManifestHash
+            programVersion = $RecoverySetProgramVersion
+            redisPolicy = $RecoverySetRedisPolicy
+        }
         $compatibility = New-RollbackCompatibilityEvidence `
             -Manifest $manifest `
             -PackageTag $PackageTag `
@@ -2991,26 +2982,20 @@ function Mark-NasReleaseTested {
             -RecoverySetManifestHash $RecoverySetManifestHash `
             -RecoverySetProgramVersion $RecoverySetProgramVersion `
             -RecoverySetRedisPolicy $RecoverySetRedisPolicy
-        [System.IO.File]::WriteAllText((Join-Path $packagePath 'tested.json'), $tested, [System.Text.UTF8Encoding]::new($false))
+        Assert-ReleaseRollbackCompatibility -Compatibility $compatibility
+        $null = Write-ReleaseTestedAttestation `
+            -PackagePath $packagePath `
+            -ExpectedReleaseTag $packageIntegrity.releaseTag `
+            -TestOperationId $TestOperationId `
+            -TestOperationEvidencePath $TestOperationEvidencePath `
+            -TestedBy $OperatorName `
+            -TestConclusion $TestConclusion `
+            -RecoverySet $recoverySet
         Write-NasRollbackCompatibilityEvidence -PackagePath $packagePath -Evidence $compatibility
         Info "Release package marked as tested: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
         Info "rollback-compatibility.json status=$($compatibility['status']) recorded: $NasReleaseRoot/$packageDirectoryName/rollback-compatibility.json"
     } finally {
         Disconnect-NasReleaseShare -MountInfo $mountInfo
-    }
-}
-
-function Assert-NasReleaseTested {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$MountedPackagePath,
-        [Parameter(Mandatory = $true)]
-        [string]$PackageTag
-    )
-    $testedPath = Join-Path $MountedPackagePath 'tested.json'
-    if (-not (Test-Path -LiteralPath $testedPath)) {
-        $packageDirectoryName = ConvertTo-ReleasePackageDirectoryName -ReleaseTagValue $PackageTag
-        Fail "Release package has not been marked as tested: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
     }
 }
 
@@ -4116,22 +4101,13 @@ function Write-ReleaseManifest {
         [string]$PackageTag
     )
     Write-ReleaseResourceReferenceManifest -PackageTag $PackageTag
+    $legacyArtifacts = @(Get-ReleasePackageImmutableArtifactEntries -PackagePath $releaseDir -ExcludeManifestJson)
+    Write-ReleaseManifestV1 -PackageTag $PackageTag -LegacyArtifacts $legacyArtifacts
     $gitCommit = (& git -C $backendRepo rev-parse HEAD 2>$null)
     if ($LASTEXITCODE -ne 0) {
         $gitCommit = ''
     }
-    $files = @()
-    foreach ($path in Get-ChildItem -LiteralPath $releaseDir -File -Recurse) {
-        if ($path.Name -eq 'release-manifest.json') {
-            continue
-        }
-        $hash = ConvertTo-ReleaseFileSha256Hex -Path $path.FullName
-        $files += [ordered]@{
-            path = $path.FullName.Substring($releaseDir.Length).TrimStart('\', '/').Replace('\', '/')
-            sha256 = $hash
-            bytes = $path.Length
-        }
-    }
+    $files = @(Get-ReleasePackageImmutableArtifactEntries -PackagePath $releaseDir)
     $manifest = [ordered]@{
         releaseTag = $PackageTag
         packageDirectoryName = $packageDirectoryName
@@ -4157,8 +4133,6 @@ function Write-ReleaseManifest {
     }
     $manifest = $manifest | ConvertTo-Json -Depth 8
     [System.IO.File]::WriteAllText((Join-Path $releaseDir 'release-manifest.json'), $manifest, [System.Text.UTF8Encoding]::new($false))
-    $manifestV1Artifacts = @($files | Where-Object { ([string]$_.path) -ne 'manifest.json' })
-    Write-ReleaseManifestV1 -PackageTag $PackageTag -LegacyArtifacts $manifestV1Artifacts
 }
 
 if ($ReleaseTag.Contains('..') -or $ReleaseTag.Contains('/') -or $ReleaseTag.Contains('\')) {
@@ -5391,6 +5365,24 @@ function Invoke-RequiredDatabaseSqlScripts {
     }
 }
 
+$testPublishOperationEvidence = $null
+if ($Mode -eq 'mark-tested' -or ($Mode -eq 'deploy-release' -and $Environment -in @('prod', 'backup'))) {
+    if ([string]::IsNullOrWhiteSpace($TestOperationId)) {
+        Fail 'TestOperationId is required for mark-tested and production-grade promotion.'
+    }
+    if ([string]::IsNullOrWhiteSpace($TestOperationEvidencePath)) {
+        Fail 'TestOperationEvidencePath is required for mark-tested and production-grade promotion.'
+    }
+    try {
+        $testPublishOperationEvidence = Assert-PublishTestOperationEvidence `
+            -EvidencePath $TestOperationEvidencePath `
+            -ExpectedOperationId $TestOperationId `
+            -ExpectedReleaseTag $ReleaseTag
+    } catch {
+        Fail $_.Exception.Message
+    }
+}
+
 if ($Mode -eq 'mark-tested') {
     Mark-NasReleaseTested -PackageTag $ReleaseTag
     Write-Host "Release package marked as tested: $ReleaseTag"
@@ -5441,13 +5433,14 @@ function Resolve-ExistingRuntimeEnvValue {
 
 if ($Mode -eq 'deploy-release') {
     Info "Deploying release package: $ReleaseTag"
-    Copy-ReleasePackageFromNas -PackageTag $ReleaseTag
-    Assert-ProdDryRunEvidence
+    $releasePackageIntegrity = Copy-ReleasePackageFromNas -PackageTag $ReleaseTag
     $Component = Resolve-DeployReleasePackageComponent -ComponentExplicit $componentExplicit
     $publishBackend = $Component -in @('full', 'intruoyi', 'backend')
     $publishFrontend = $Component -in @('full', 'intruoyi', 'frontend')
     $publishWebsite = $Component -in @('full', 'website')
-    $releasePublishScope = Resolve-DeployReleasePackageScope
+    $releasePublishScope = $releasePackageIntegrity.PublishScope
+    Assert-ReleasePackageDeploymentScope -TargetEnvironment $Environment -PublishScope $releasePublishScope
+    Assert-ProdDryRunEvidence
     $releaseOnlyOfficeIncluded = Resolve-DeployReleasePackageOnlyOfficeIncluded
     $IncludeOnlyOffice = $releaseOnlyOfficeIncluded
     Assert-DeployReleasePackageArtifactsForScope -PublishScope $releasePublishScope
@@ -5794,7 +5787,9 @@ Write-ReleaseManifest -PackageTag $ReleaseTag
 
 if ($smartReleaseReportOnlyEnabled -and $Mode -eq 'build-release') {
     Invoke-SmartReleaseBuildReportOnly -PackagePath $releaseDir
+    Write-ReleaseManifest -PackageTag $ReleaseTag
 }
+$buildPackageIntegrity = Test-ReleasePackageIntegrity -PackagePath $releaseDir -ExpectedReleaseTag $ReleaseTag
 
 if ($Mode -eq 'build-release') {
     Copy-ReleasePackageToNas -PackageTag $ReleaseTag

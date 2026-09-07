@@ -151,6 +151,22 @@ class RuntimeControlOriginalParityTest {
     }
 
     @Test
+    void operationStoreSelectsOnlyExactSuccessfulTestPublishForReleaseTag() {
+        saveOperation("wrong-environment", "prod", "publish-test", "SUCCESS", "release-selector");
+        saveOperation("wrong-action", "test", "promote-prod", "SUCCESS", "release-selector");
+        saveOperation("wrong-status", "test", "publish-test", "FAILED", "release-selector");
+        saveOperation("wrong-tag", "test", "publish-test", "SUCCESS", "other-release");
+        saveOperation("exact-success", "test", "publish-test", "SUCCESS", "release-selector");
+
+        RuntimeDtos.RuntimeControlOperationRespVO selected =
+                operationStore.findLatestSuccessfulTestPublish("release-selector");
+
+        assertThat(selected).isNotNull();
+        assertThat(selected.operationId()).isEqualTo("exact-success");
+        assertThat(operationStore.findLatestSuccessfulTestPublish("missing-release")).isNull();
+    }
+
+    @Test
     void publishTestPreviewAcceptsMatchingTargetEnvironmentFromFrontend() throws Exception {
         createRollbackPackage("release-publish-test-target", true, false, false);
 
@@ -314,6 +330,8 @@ class RuntimeControlOriginalParityTest {
     @Test
     void promoteBackupAcceptsCodeOnlyReleaseAfterSuccessfulTestDeployment() throws Exception {
         createRollbackPackage("release-code-only-test-passed", true, false, false);
+        createRestorePoint("backup-20260616");
+        createTestedMetadata("release-code-only-test-passed");
         saveSuccessfulOperation("op-publish-test-pass", "test", "publish-test", "publish-test",
                 Map.of("releaseTag", "release-code-only-test-passed"));
 
@@ -336,7 +354,8 @@ class RuntimeControlOriginalParityTest {
         assertThat(preview)
                 .contains("-Mode", "deploy-release", "-Environment", "backup",
                         "-ReleaseTag", "release-code-only-test-passed", "-ConfirmText", "PROD",
-                        "-RequireTested", "-ServerHost", "172.30.30.59",
+                        "-TestOperationId", "op-publish-test-pass", "-TestOperationEvidencePath",
+                        "-ServerHost", "172.30.30.59",
                         "-RemoteReleaseRoot", "/mnt/intruoyi-data/intruoyi-releases",
                         "-RemoteDataRoot", "/mnt/intruoyi-data/runtime-data",
                         "-RemoteDataDiskMount", "/mnt/intruoyi-data",
@@ -370,6 +389,8 @@ class RuntimeControlOriginalParityTest {
     void promoteProdPreviewAutoGeneratesDryRunEvidence() throws Exception {
         String releaseTag = "release-20260621-prod-dry-run-fixture";
         createRollbackPackage(releaseTag, true, false, true);
+        saveSuccessfulOperation("op-prod-dry-run-test", "test", "publish-test", "publish-test",
+                Map.of("releaseTag", releaseTag));
         Path localCacheReleaseDir = LOCAL_CACHE_ROOT.resolve("publish-int-ruoyi")
                 .resolve(releaseTag);
         resetDirectory(localCacheReleaseDir);
@@ -522,6 +543,8 @@ class RuntimeControlOriginalParityTest {
     void promoteProdPreviewUsesSanitizedPackageWorkspace() throws Exception {
         String releaseTag = "release-20260621-prod-dry-run-polluted-workspace";
         createRollbackPackage(releaseTag, true, false, true);
+        saveSuccessfulOperation("op-prod-sanitized-test", "test", "publish-test", "publish-test",
+                Map.of("releaseTag", releaseTag));
         Path localCacheReleaseDir = LOCAL_CACHE_ROOT.resolve("publish-int-ruoyi")
                 .resolve(releaseTag);
         resetDirectory(localCacheReleaseDir);
@@ -764,6 +787,8 @@ class RuntimeControlOriginalParityTest {
                                   "action": "mark-release-tested",
                                   "reason": "contract preview",
                                   "releaseTag": "release-forged",
+                                  "testOperationId": "client-forged-operation",
+                                  "testOperationEvidencePath": "C:/client/forged.json",
                                   "testConclusion": "回归通过，允许上线正式服",
                                   "selectedRecoverySetCandidateId": "restore:backup-20260616"
                                 }
@@ -773,7 +798,10 @@ class RuntimeControlOriginalParityTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString(StandardCharsets.UTF_8);
-        assertThat(preview).contains("-ReleaseTag", "release-current").doesNotContain("release-forged");
+        assertThat(preview)
+                .contains("-ReleaseTag", "release-current", "-TestOperationId", "op-current-test-release",
+                        "-TestOperationEvidencePath")
+                .doesNotContain("release-forged", "client-forged-operation", "C:/client/forged.json");
     }
 
     @Test
@@ -1042,17 +1070,31 @@ class RuntimeControlOriginalParityTest {
     private void createTestedMetadata(String directoryName) throws IOException {
         Path root = NAS_ROOT.resolve("Backup/ReleasePackage").resolve(directoryName);
         Files.createDirectories(root);
+        Path recoveryManifest = NAS_ROOT.resolve("Backup/BackupPackage/backup-20260616/manifest/manifest.json");
+        String recoveryManifestHash = Files.isRegularFile(recoveryManifest)
+                ? sha256(recoveryManifest)
+                : "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
         Files.writeString(root.resolve("tested.json"), """
                 {
+                  "schemaVersion": "v2",
+                  "releaseTag": "%s",
+                  "packageDirectoryName": "%s",
+                  "packageDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "manifestDigest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "testEnvironment": "test",
+                  "publishTestOperationId": "op-publish-test-success",
+                  "publishTestOperationStatus": "SUCCESS",
+                  "publishTestRequestedAt": "2026-06-16T00:05:00Z",
                   "testedAt": "2026-06-16T00:10:00Z",
-                  "operatorName": "local-operator",
+                  "testedBy": "local-operator",
+                  "testConclusion": "contract fixture passed",
                   "recoverySet": {
                     "selectedRecoverySetCandidateId": "restore:backup-20260616",
                     "recoverySetId": "backup-20260616",
-                    "recoverySetManifestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    "recoverySetManifestHash": "%s"
                   }
                 }
-                    """, StandardCharsets.UTF_8);
+                    """.formatted(directoryName, directoryName, recoveryManifestHash), StandardCharsets.UTF_8);
     }
 
     private static String jsonArray(List<String> values) {
@@ -1109,6 +1151,13 @@ class RuntimeControlOriginalParityTest {
         operationStore.save(new RuntimeDtos.RuntimeControlOperationRespVO(operationId, "local-operator",
                 Instant.now(), environment, component, action, action, parameters, "contract fixture",
                 "SUCCESS", "success", "target/runtime-control-original-parity.log"));
+    }
+
+    private void saveOperation(String operationId, String environment, String action, String status,
+                               String releaseTag) {
+        operationStore.save(new RuntimeDtos.RuntimeControlOperationRespVO(operationId, "local-operator",
+                Instant.parse("2026-09-07T12:34:56Z"), environment, "publish-test", action, action,
+                Map.of("releaseTag", releaseTag), "selector fixture", status, "fixture", "fixture.log"));
     }
 
     private static String sha256(Path path) throws IOException {

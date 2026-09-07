@@ -4,7 +4,7 @@ import path from 'node:path'
 import test from 'node:test'
 
 const root = path.resolve(import.meta.dirname, '../..')
-const script = fs.readFileSync(path.join(root, 'ops/deploy/publish-int-ruoyi.ps1'), 'utf8')
+const script = fs.readFileSync(path.join(root, 'ops/deploy/publish-int-ruoyi.ps1'), 'utf8').replace(/\r\n/g, '\n')
 
 test('frontend-only deploy-release does not require database SQL entries', () => {
   const deployBlockStart = script.indexOf("if ($Mode -eq 'deploy-release') {")

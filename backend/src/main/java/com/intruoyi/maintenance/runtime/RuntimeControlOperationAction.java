@@ -15,7 +15,7 @@ public enum RuntimeControlOperationAction {
             RuntimeControlOperationAction::buildReleaseArguments),
     PUBLISH_TEST("publish-test", "部署发布包到测试服", "test", false,
             "deploy/publish-int-ruoyi.ps1",
-            req -> deployReleaseArguments("test", req, false)),
+            req -> deployReleaseArguments("test", req)),
     APPLY_TEST_DB_SQL("apply-test-db-sql", "测试服数据库快应用", "test", false,
             "deploy/apply-test-db-sql.ps1",
             RuntimeControlOperationAction::applyTestDbSqlArguments),
@@ -24,10 +24,10 @@ public enum RuntimeControlOperationAction {
             RuntimeControlOperationAction::markReleaseTestedArguments),
     PROMOTE_PROD("promote-prod", "上线已验证发布包", "prod", true,
             "deploy/publish-int-ruoyi.ps1",
-            req -> deployReleaseArguments("prod", req, true)),
+            req -> deployReleaseArguments("prod", req)),
     PROMOTE_BACKUP("promote-backup", "上线备份服务器", "backup", true,
             "deploy/publish-int-ruoyi.ps1",
-            req -> deployReleaseArguments("backup", req, true)),
+            req -> deployReleaseArguments("backup", req)),
     BACKUP_NOW("backup-now", "立即备份", "prod", true,
             "backup-ops/scripts/backup-ops.ps1",
             req -> backupArguments("backup-now", req)),
@@ -268,8 +268,7 @@ public enum RuntimeControlOperationAction {
         return args;
     }
 
-    private static List<String> deployReleaseArguments(String environment, RuntimeControlActionReqVO req,
-                                                       boolean requireTested) {
+    private static List<String> deployReleaseArguments(String environment, RuntimeControlActionReqVO req) {
         List<String> args = new ArrayList<>();
         args.add("-Mode");
         args.add("deploy-release");
@@ -280,9 +279,6 @@ public enum RuntimeControlOperationAction {
         if ("prod".equals(environment) || "backup".equals(environment)) {
             args.add("-ConfirmText");
             args.add("PROD");
-        }
-        if (requireTested) {
-            args.add("-RequireTested");
         }
         if ("prod".equals(environment) && !isBlank(req.prodDryRunEvidencePath())) {
             args.add("-ProdDryRunEvidencePath");

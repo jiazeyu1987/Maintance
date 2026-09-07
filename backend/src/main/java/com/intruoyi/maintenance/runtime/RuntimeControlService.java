@@ -148,6 +148,7 @@ public class RuntimeControlService {
         guardWrite(environment, resolvedReq.reason(), resolvedReq.prodConfirmText(),
                 action.requiresProductionGuard(resolvedReq), action.requiresProdConfirmText(resolvedReq));
         RuntimeControlCommand command = action.buildCommand(resolvedReq, properties);
+        appendTestPublishEvidenceArguments(action, command, resolvedReq.releaseTag());
         appendNasReleaseArguments(action, command, operationId, previewOnly);
         appendManagedSourceArguments(action, command);
         appendBackendRuntimeBaseArguments(action, command);
@@ -334,6 +335,24 @@ public class RuntimeControlService {
         } catch (IOException ex) {
             throw new RuntimeControlException("无法写入 NAS 发布包配置: " + configPath, ex);
         }
+    }
+
+    private void appendTestPublishEvidenceArguments(RuntimeControlOperationAction action,
+                                                    RuntimeControlCommand command,
+                                                    String releaseTag) {
+        if (action != RuntimeControlOperationAction.MARK_RELEASE_TESTED
+                && action != RuntimeControlOperationAction.PROMOTE_PROD
+                && action != RuntimeControlOperationAction.PROMOTE_BACKUP) {
+            return;
+        }
+        RuntimeControlOperationRespVO operation = operationStore.findLatestSuccessfulTestPublish(releaseTag);
+        if (operation == null) {
+            throw new RuntimeControlException("releaseTag 缺少匹配的 test/publish-test/SUCCESS 操作证据: " + releaseTag);
+        }
+        command.arguments().add("-TestOperationId");
+        command.arguments().add(operation.operationId());
+        command.arguments().add("-TestOperationEvidencePath");
+        command.arguments().add(operationStore.operationPath(operation.operationId()).toAbsolutePath().normalize().toString());
     }
 
     private void appendManagedSourceArguments(RuntimeControlOperationAction action, RuntimeControlCommand command) {
@@ -1024,10 +1043,7 @@ public class RuntimeControlService {
         if ((action == RuntimeControlOperationAction.PROMOTE_PROD
                 || action == RuntimeControlOperationAction.PROMOTE_BACKUP)
                 && !Boolean.TRUE.equals(releasePackage.tested())) {
-            if (action != RuntimeControlOperationAction.PROMOTE_BACKUP
-                    || !hasSuccessfulCodeOnlyTestDeployment(releasePackage)) {
-                throw new RuntimeControlException("releaseTag 尚未测试通过: " + releaseTag);
-            }
+            throw new RuntimeControlException("releaseTag 尚未测试通过: " + releaseTag);
         }
         if (action == RuntimeControlOperationAction.PROMOTE_BACKUP
                 && hasText(releasePackage.testedRecoverySetCandidateId())) {
@@ -1040,24 +1056,6 @@ public class RuntimeControlService {
                 throw new RuntimeControlException("tested.json recoverySetManifestHash 与当前恢复集候选不一致");
             }
         }
-    }
-
-    private boolean hasSuccessfulCodeOnlyTestDeployment(RuntimeControlReleasePackageRespVO releasePackage) {
-        if (!RuntimeControlOperationAction.PUBLISH_SCOPE_CODE_ONLY.equals(releasePackage.publishScope())) {
-            return false;
-        }
-        return operationStore.listLatest(200).stream()
-                .filter(operation -> "test".equals(operation.environment()))
-                .filter(operation -> "publish-test".equals(operation.action()))
-                .filter(operation -> "SUCCESS".equals(operation.status()))
-                .map(RuntimeControlOperationRespVO::parameters)
-                .filter(parameters -> parameters != null && hasText(parameters.get("releaseTag")))
-                .map(parameters -> parameters.get("releaseTag").trim())
-                .anyMatch(value -> releaseTagMatchesPackage(releasePackage, value));
-    }
-
-    private boolean releaseTagMatchesPackage(RuntimeControlReleasePackageRespVO releasePackage, String value) {
-        return value.equals(releasePackage.releaseTag()) || value.equals(releasePackage.packageDirectoryName());
     }
 
     private RuntimeControlReleaseNotesRespVO buildCurrentReleaseNotes(RuntimeControlNasBrowser.NasConfig nasConfig,
@@ -1119,6 +1117,10 @@ public class RuntimeControlService {
         return new RuntimeControlReleaseNotesRespVO(environment, releaseTag, packageDirectoryName, manifestPath,
                 builtAt, publishScope, component, summary, changes, sourceRepos,
                 blockedReasons.isEmpty() ? STATUS_AVAILABLE : STATUS_BLOCKED, blockedReasons);
+    }
+
+    private boolean releaseTagMatchesPackage(RuntimeControlReleasePackageRespVO releasePackage, String value) {
+        return value.equals(releasePackage.releaseTag()) || value.equals(releasePackage.packageDirectoryName());
     }
 
     private List<String> releaseNoteChanges(JsonNode changeSet, String releaseTag, String component) {
@@ -1593,8 +1595,22 @@ public class RuntimeControlService {
         if (tested == null) {
             return TestedMetadata.empty();
         }
+        if (!"v2".equals(text(tested, "schemaVersion"))
+                || isBlank(text(tested, "releaseTag"))
+                || isBlank(text(tested, "packageDirectoryName"))
+                || isBlank(text(tested, "packageDigest"))
+                || isBlank(text(tested, "manifestDigest"))
+                || !"test".equals(text(tested, "testEnvironment"))
+                || isBlank(text(tested, "publishTestOperationId"))
+                || !"SUCCESS".equals(text(tested, "publishTestOperationStatus"))
+                || isBlank(text(tested, "publishTestRequestedAt"))
+                || isBlank(text(tested, "testedAt"))
+                || isBlank(text(tested, "testedBy"))
+                || isBlank(text(tested, "testConclusion"))) {
+            return TestedMetadata.empty();
+        }
         JsonNode recoverySet = node(tested, "recoverySet");
-        return new TestedMetadata(true, text(tested, "testedAt"), text(tested, "operatorName"),
+        return new TestedMetadata(true, text(tested, "testedAt"), text(tested, "testedBy"),
                 text(recoverySet, "selectedRecoverySetCandidateId"), text(recoverySet, "recoverySetId"),
                 text(recoverySet, "recoverySetManifestHash"));
     }
