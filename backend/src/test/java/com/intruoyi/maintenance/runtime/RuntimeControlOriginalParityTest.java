@@ -151,22 +151,6 @@ class RuntimeControlOriginalParityTest {
     }
 
     @Test
-    void operationStoreSelectsOnlyExactSuccessfulTestPublishForReleaseTag() {
-        saveOperation("wrong-environment", "prod", "publish-test", "SUCCESS", "release-selector");
-        saveOperation("wrong-action", "test", "promote-prod", "SUCCESS", "release-selector");
-        saveOperation("wrong-status", "test", "publish-test", "FAILED", "release-selector");
-        saveOperation("wrong-tag", "test", "publish-test", "SUCCESS", "other-release");
-        saveOperation("exact-success", "test", "publish-test", "SUCCESS", "release-selector");
-
-        RuntimeDtos.RuntimeControlOperationRespVO selected =
-                operationStore.findLatestSuccessfulTestPublish("release-selector");
-
-        assertThat(selected).isNotNull();
-        assertThat(selected.operationId()).isEqualTo("exact-success");
-        assertThat(operationStore.findLatestSuccessfulTestPublish("missing-release")).isNull();
-    }
-
-    @Test
     void publishTestPreviewAcceptsMatchingTargetEnvironmentFromFrontend() throws Exception {
         createRollbackPackage("release-publish-test-target", true, false, false);
 
@@ -332,6 +316,7 @@ class RuntimeControlOriginalParityTest {
         createRollbackPackage("release-code-only-test-passed", true, false, false);
         createRestorePoint("backup-20260616");
         createTestedMetadata("release-code-only-test-passed");
+        saveNonMatchingPublishOperations("backup-selector", "release-code-only-test-passed");
         saveSuccessfulOperation("op-publish-test-pass", "test", "publish-test", "publish-test",
                 Map.of("releaseTag", "release-code-only-test-passed"));
 
@@ -389,6 +374,7 @@ class RuntimeControlOriginalParityTest {
     void promoteProdPreviewAutoGeneratesDryRunEvidence() throws Exception {
         String releaseTag = "release-20260621-prod-dry-run-fixture";
         createRollbackPackage(releaseTag, true, false, true);
+        saveNonMatchingPublishOperations("prod-selector", releaseTag);
         saveSuccessfulOperation("op-prod-dry-run-test", "test", "publish-test", "publish-test",
                 Map.of("releaseTag", releaseTag));
         Path localCacheReleaseDir = LOCAL_CACHE_ROOT.resolve("publish-int-ruoyi")
@@ -534,6 +520,7 @@ class RuntimeControlOriginalParityTest {
         assertThat(preview)
                 .contains("-Mode", "deploy-release", "-Environment", "prod",
                         "-ReleaseTag", releaseTag,
+                        "-TestOperationId", "op-prod-dry-run-test", "-TestOperationEvidencePath",
                         "-ProdDryRunEvidencePath");
         assertThat(Files.exists(operationStore.stateDir().resolve("prod-preflight-release-evidence")
                 .resolve(releaseTag + "-preflight-release-dry-run.json"))).isTrue();
@@ -771,6 +758,7 @@ class RuntimeControlOriginalParityTest {
         createRollbackPackage("release-current", true, false, false);
         createRollbackPackage("release-tested", true, false, true);
         createRestorePoint("backup-20260616");
+        saveNonMatchingPublishOperations("mark-selector", "release-current");
         saveSuccessfulOperation("op-current-test-release", "test", "ops", "publish-test",
                 Map.of("releaseTag", "release-current"));
 
@@ -1158,6 +1146,13 @@ class RuntimeControlOriginalParityTest {
         operationStore.save(new RuntimeDtos.RuntimeControlOperationRespVO(operationId, "local-operator",
                 Instant.parse("2026-09-07T12:34:56Z"), environment, "publish-test", action, action,
                 Map.of("releaseTag", releaseTag), "selector fixture", status, "fixture", "fixture.log"));
+    }
+
+    private void saveNonMatchingPublishOperations(String prefix, String releaseTag) {
+        saveOperation(prefix + "-wrong-environment", "prod", "publish-test", "SUCCESS", releaseTag);
+        saveOperation(prefix + "-wrong-action", "test", "promote-prod", "SUCCESS", releaseTag);
+        saveOperation(prefix + "-wrong-status", "test", "publish-test", "FAILED", releaseTag);
+        saveOperation(prefix + "-wrong-tag", "test", "publish-test", "SUCCESS", releaseTag + "-other");
     }
 
     private static String sha256(Path path) throws IOException {

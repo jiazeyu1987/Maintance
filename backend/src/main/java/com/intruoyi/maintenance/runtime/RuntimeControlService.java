@@ -345,7 +345,7 @@ public class RuntimeControlService {
                 && action != RuntimeControlOperationAction.PROMOTE_BACKUP) {
             return;
         }
-        RuntimeControlOperationRespVO operation = operationStore.findLatestSuccessfulTestPublish(releaseTag);
+        RuntimeControlOperationRespVO operation = findLatestSuccessfulTestPublish(releaseTag);
         if (operation == null) {
             throw new RuntimeControlException("releaseTag 缺少匹配的 test/publish-test/SUCCESS 操作证据: " + releaseTag);
         }
@@ -353,6 +353,20 @@ public class RuntimeControlService {
         command.arguments().add(operation.operationId());
         command.arguments().add("-TestOperationEvidencePath");
         command.arguments().add(operationStore.operationPath(operation.operationId()).toAbsolutePath().normalize().toString());
+    }
+
+    private RuntimeControlOperationRespVO findLatestSuccessfulTestPublish(String releaseTag) {
+        if (isBlank(releaseTag)) {
+            throw new RuntimeControlException("releaseTag is required for publish-test operation evidence");
+        }
+        return operationStore.listLatest(Integer.MAX_VALUE).stream()
+                .filter(operation -> "test".equals(operation.environment()))
+                .filter(operation -> "publish-test".equals(operation.action()))
+                .filter(operation -> "SUCCESS".equals(operation.status()))
+                .filter(operation -> operation.parameters() != null)
+                .filter(operation -> releaseTag.equals(operation.parameters().get("releaseTag")))
+                .findFirst()
+                .orElse(null);
     }
 
     private void appendManagedSourceArguments(RuntimeControlOperationAction action, RuntimeControlCommand command) {

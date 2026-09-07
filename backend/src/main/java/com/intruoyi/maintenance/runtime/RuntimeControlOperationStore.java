@@ -105,20 +105,6 @@ public class RuntimeControlOperationStore {
         return Files.isRegularFile(path) ? read(path) : null;
     }
 
-    public RuntimeControlOperationRespVO findLatestSuccessfulTestPublish(String releaseTag) {
-        if (releaseTag == null || releaseTag.isBlank()) {
-            throw new RuntimeControlException("releaseTag is required for publish-test operation evidence");
-        }
-        return listLatest(Integer.MAX_VALUE).stream()
-                .filter(operation -> "test".equals(operation.environment()))
-                .filter(operation -> "publish-test".equals(operation.action()))
-                .filter(operation -> "SUCCESS".equals(operation.status()))
-                .filter(operation -> operation.parameters() != null)
-                .filter(operation -> releaseTag.equals(operation.parameters().get("releaseTag")))
-                .findFirst()
-                .orElse(null);
-    }
-
     public void updateStatus(String operationId, String status, String summary) {
         RuntimeControlOperationRespVO current = findById(operationId);
         if (current == null) {
