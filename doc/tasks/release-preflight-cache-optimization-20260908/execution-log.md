@@ -101,3 +101,17 @@ BDD: 缓存不降低 P0 门禁 -> Given Docker cache 命中 / When 生成包 / T
 ## Outstanding Blockers
 
 - None yet.
+
+## Integration And Closeout
+
+GREEN: implementation commits -> PASS，`f254555`、`5ff914b` 仅包含本任务实现/测试；`8fb5cd8`、`1f17a63` 记录任务证据。
+
+GREEN: int_main fast-forward -> PASS，任务分支全部提交已融合；并发主工作区改动未覆盖、未提交。
+
+GREEN: merged-main verification -> PASS，preflight/cache + P0 governance pytest 99、Node 6、Python compile/PowerShell AST 全部通过；Maven fixture 显式 UTC 后目标连续 3 次及全量 26 PASS。
+
+GREEN: task worktree cleanup -> PASS，worktree clean 且分支已合入主线，Git 注册和物理目录均已移除；任务 TEMP 已删除。
+
+GREEN: task-closeout-cleanup -> PASS，主工作区 preview=ready、apply=applied，无 blocker/warning。
+
+GREEN: experience-consolidation -> PASS，长期门禁合并到 `docs/release-build-preflight-lessons.md` 并更新索引。

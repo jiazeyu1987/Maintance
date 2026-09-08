@@ -9,7 +9,7 @@
 - [completed] M1：PRD/test plan 与设计审查。
 - [completed] M2：逐阶段严格 TDD 实现。
 - [completed] M3：独立测试与回归。
-- [in_progress] M4：提交、融合与收尾。
+- [completed] M4：提交、融合与收尾。
 
 ## Expected Verification
 
@@ -42,7 +42,22 @@
 
 ## Current Status
 
-ready_for_closeout
+completed
+
+## Closeout Evidence
+
+- `f254555`、`8fb5cd8`、`5ff914b`、`1f17a63` 已 fast-forward 融入 `int_main`。
+- 任务 worktree 与主线同为 `1f17a63`、状态 clean 后移除；Git 注册和物理路径均不存在。
+- `task-closeout-cleanup` 在 linked worktree preview 因主工作区并发脏改动保护而阻断；显式 fast-forward 和 worktree 删除后，在主工作区 preview=ready、apply=applied，无 blocked/warnings。
+- 系统 TEMP 下本任务 pytest 目录已删除。
+- `project-experience-consolidation` 已合并到现有发布经验文档和索引，未新建长期经验文档。
+
+## Final Verification
+
+- Spec completion 与 test-report schema validation PASS；T1-T10、P1-AC1..P2-AC5 全部完成。
+- 独立 worktree：focused 96、full pytest 188、JDK17 Maven 26、Node 6、PowerShell AST PASS。
+- 融合主工作区：preflight/cache + P0 governance pytest 99 PASS，Node 6 PASS，Python compile 与 PowerShell AST PASS。
+- Maven 首轮复现 fixture 时间碰撞后，以显式 UTC 修复；目标测试连续 3/3 PASS，全 Maven 26 PASS。生产 comparator 未修改。
 
 ## Completed Work
 
