@@ -1,0 +1,239 @@
+{
+  "schema_version": 2,
+  "task_id": "release-pipeline-hardening-20260907",
+  "mode": "full",
+  "status": "completed",
+  "current_phase": null,
+  "phase_statuses": [
+    {
+      "phase_id": "P1",
+      "title": "收口部署入口与生产级 scope",
+      "status": "completed",
+      "objective": "",
+      "owned_paths": [],
+      "dependencies": [],
+      "deliverables": [],
+      "evidence_expectation": "",
+      "acceptance_criteria": [
+        {
+          "ac_id": "P1-AC1",
+          "text": "`direct` 不在 ValidateSet 且 Mode 无默认并为 mandatory；`-Mode direct` 与缺失 Mode 非零退出，失败前无副作用。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P1",
+            "test-report.md#Final-Verdict"
+          ]
+        },
+        {
+          "ac_id": "P1-AC2",
+          "text": "经验证的 with-data 包对 prod、backup 明确失败，对 test 保持允许。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P1",
+            "test-report.md#Final-Verdict"
+          ]
+        },
+        {
+          "ac_id": "P1-AC3",
+          "text": "scope 判断发生在任何 SSH、远端环境、目录、Docker、数据库、MinIO 动作前，测试锁定顺序。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P1",
+            "test-report.md#Final-Verdict"
+          ]
+        },
+        {
+          "ac_id": "P1-AC4",
+          "text": "控制台仍只生成显式 build-release、deploy-release、mark-tested；合法 code-only test/prod/backup 参数合同通过。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P1",
+            "test-report.md#Final-Verdict"
+          ]
+        }
+      ],
+      "evidence": [
+        "execution-log.md#Phase-P1"
+      ],
+      "notes": "",
+      "last_reviewed_at": "2026-09-07T22:12:45"
+    },
+    {
+      "phase_id": "P2",
+      "title": "建立逐文件完整性与稳定摘要",
+      "status": "completed",
+      "objective": "",
+      "owned_paths": [],
+      "dependencies": [],
+      "deliverables": [],
+      "evidence_expectation": "",
+      "acceptance_criteria": [
+        {
+          "ac_id": "P2-AC1",
+          "text": "artifact 清单与不可变 payload 一一对应并包含 manifest.json；路径、bytes、hash 全部实算通过。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P2",
+            "test-report.md#Final-Verdict"
+          ]
+        },
+        {
+          "ac_id": "P2-AC2",
+          "text": "同内容在不同绝对根和路径分隔下 packageDigest 相同；任一 payload/manifest 变化改变摘要或失败。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P2",
+            "test-report.md#Final-Verdict"
+          ]
+        },
+        {
+          "ac_id": "P2-AC3",
+          "text": "篡改、缺失、额外文件、错误 bytes/hash、重复/大小写冲突、绝对/`..` 路径均非零失败并指出路径和原因。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P2",
+            "test-report.md#Final-Verdict"
+          ]
+        },
+        {
+          "ac_id": "P2-AC4",
+          "text": "build 在 NAS 前验证本地且复制后验证 NAS；deploy 下载后且远端动作前验证；mark-tested 写入前验证；失败不继续。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P2",
+            "test-report.md#Final-Verdict"
+          ]
+        },
+        {
+          "ac_id": "P2-AC5",
+          "text": "仅两个精确 attestation 文件可排除 payload；其他额外文件失败，attestation 自身由 P3 验证。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P2",
+            "test-report.md#Final-Verdict"
+          ]
+        }
+      ],
+      "evidence": [
+        "execution-log.md#Phase-P2"
+      ],
+      "notes": "- Planner revision 2 approved: controlled mutable deployment metadata whitelist added before P2 implementation.",
+      "last_reviewed_at": "2026-09-07T22:50:34"
+    },
+    {
+      "phase_id": "P3",
+      "title": "绑定真实测试操作并统一晋级门禁",
+      "status": "completed",
+      "objective": "",
+      "owned_paths": [],
+      "dependencies": [],
+      "deliverables": [],
+      "evidence_expectation": "",
+      "acceptance_criteria": [
+        {
+          "ac_id": "P3-AC1",
+          "text": "只接受 operation store 中 environment=test、action=publish-test、status=SUCCESS、parameters.releaseTag 完全相同的操作；其他情况阻断。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P3",
+            "execution-log.md#Phase-P3-Review-Revision",
+            "test-report.md#Final-Verdict",
+            "execution-log.md#P3-Integration-Revision",
+            "execution-log.md#P3-Deterministic-Ordering-Revision"
+          ]
+        },
+        {
+          "ac_id": "P3-AC2",
+          "text": "客户端不能提交/覆盖 operation ID、status、证据路径；它们由服务端选择，PowerShell 再读取 operation JSON 交叉验证。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P3",
+            "execution-log.md#Phase-P3-Review-Revision",
+            "test-report.md#Final-Verdict",
+            "execution-log.md#P3-Integration-Revision",
+            "execution-log.md#P3-Deterministic-Ordering-Revision"
+          ]
+        },
+        {
+          "ac_id": "P3-AC3",
+          "text": "tested 字段、格式、digest 绑定正确并原子替换；前置失败保持已有文件字节不变。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P3",
+            "execution-log.md#Phase-P3-Review-Revision",
+            "test-report.md#Final-Verdict",
+            "execution-log.md#P3-Integration-Revision",
+            "execution-log.md#P3-Deterministic-Ordering-Revision"
+          ]
+        },
+        {
+          "ac_id": "P3-AC4",
+          "text": "prod、backup 都重算 payload/package/manifest digest 并核对 tested 的 tag、目录、digest、test 环境、operation ID/status；任何陈旧或伪造值在远端写前失败。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P3",
+            "execution-log.md#Phase-P3-Review-Revision",
+            "test-report.md#Final-Verdict",
+            "execution-log.md#P3-Integration-Revision",
+            "execution-log.md#P3-Deterministic-Ordering-Revision"
+          ]
+        },
+        {
+          "ac_id": "P3-AC5",
+          "text": "删除 `TEMPORARY_BACKUP_RECOVERY_GATE_DISABLED` 和 `RequireTested` 放行语义；两个生产级环境按 Environment 无条件要求 tested。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P3",
+            "execution-log.md#Phase-P3-Review-Revision",
+            "test-report.md#Final-Verdict",
+            "execution-log.md#P3-Integration-Revision",
+            "execution-log.md#P3-Deterministic-Ordering-Revision"
+          ]
+        },
+        {
+          "ac_id": "P3-AC6",
+          "text": "合法 code-only + 成功 operation fixture 可完成 mark、prod gate、backup gate；全量本地 Java/Python/AST 回归通过且无外部连接。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P3",
+            "execution-log.md#Phase-P3-Review-Revision",
+            "test-report.md#Final-Verdict",
+            "execution-log.md#P3-Integration-Revision",
+            "execution-log.md#P3-Deterministic-Ordering-Revision"
+          ]
+        }
+      ],
+      "evidence": [
+        "execution-log.md#Phase-P3",
+        "execution-log.md#Phase-P3-Review-Revision",
+        "execution-log.md#P3-Integration-Revision",
+        "execution-log.md#P3-Deterministic-Ordering-Revision"
+      ],
+      "notes": "- Main review: selector regression test is ignored by repository exclude and would not ship; move coverage into a tracked test. Also block mark-tested before attestation when rollback compatibility status is BLOCKED.\n- Integration preflight found concurrent main-worktree changes in RuntimeControlOperationStore.java. Move exact successful publish-test selection into RuntimeControlService and restore OperationStore to baseline so task can integrate without overwriting unrelated work.\n- Independent post-integration test found nondeterministic current test release selection when operation files share lastModified; order by requestedAt then operationId deterministically inside RuntimeControlService.",
+      "last_reviewed_at": "2026-09-08T09:52:11"
+    }
+  ],
+  "planner_review_status": "approved",
+  "test_status": "passed",
+  "blocking_prereqs": [],
+  "iteration_counts": {
+    "planner_revisions": 2,
+    "executor_loops": 8,
+    "test_loops": 3
+  },
+  "created_at": "2026-09-07T21:07:40",
+  "updated_at": "2026-09-08T10:18:23",
+  "branch": "codex/release-pipeline-hardening-20260907",
+  "baseline_revision": "b085f32e4953138467223a17a1afbe03e6b1ad7d",
+  "workspace_root": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\release-pipeline-hardening-20260907\\m",
+  "tasks_root": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\release-pipeline-hardening-20260907\\m\\doc\\tasks",
+  "task_dir": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\release-pipeline-hardening-20260907\\m\\doc\\tasks\\release-pipeline-hardening-20260907",
+  "goal": "实施发布流水线 P0 优化：禁止 direct 直发和 with-data 晋级生产级环境，强制发布包完整性校验，将 tested 证明绑定真实测试操作与包摘要，并前移发布预检与受控构建缓存。",
+  "artifacts": {
+    "prd": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\release-pipeline-hardening-20260907\\m\\doc\\tasks\\release-pipeline-hardening-20260907\\prd.md",
+    "test_plan": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\release-pipeline-hardening-20260907\\m\\doc\\tasks\\release-pipeline-hardening-20260907\\test-plan.md",
+    "task_state": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\release-pipeline-hardening-20260907\\m\\doc\\tasks\\release-pipeline-hardening-20260907\\task-state.json",
+    "execution_log": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\release-pipeline-hardening-20260907\\m\\doc\\tasks\\release-pipeline-hardening-20260907\\execution-log.md",
+    "test_report": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\release-pipeline-hardening-20260907\\m\\doc\\tasks\\release-pipeline-hardening-20260907\\test-report.md"
+  }
+}
