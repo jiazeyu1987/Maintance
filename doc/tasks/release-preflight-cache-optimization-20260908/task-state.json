@@ -1,0 +1,197 @@
+{
+  "schema_version": 2,
+  "task_id": "release-preflight-cache-optimization-20260908",
+  "mode": "full",
+  "status": "completed",
+  "current_phase": null,
+  "phase_statuses": [
+    {
+      "phase_id": "P1",
+      "title": "Early Target-Bound Build Preflight",
+      "status": "completed",
+      "objective": "在任何昂贵构建前，以本次源码和 staged SQL 对测试服真实只读迁移台账执行一次不可复用的发布资格判断。",
+      "owned_paths": [
+        "`ops/deploy/publish-int-ruoyi.ps1`",
+        "`ops/release/release_preflight_plan.py`",
+        "optional focused module under `ops/release/lib/`",
+        "focused tests under `scripts/tests/`",
+        "relevant operator documentation."
+      ],
+      "dependencies": [
+        "P0 package governance",
+        "required SQL discovery/policy/staging",
+        "configured test server host",
+        "SSH",
+        "readable test migration ledger",
+        "Python 3.12."
+      ],
+      "deliverables": [
+        "prospective manifest contract",
+        "fresh target-state collector",
+        "deterministic external build-preflight evidence",
+        "blocked-status fail-fast gate",
+        "call-order tests."
+      ],
+      "evidence_expectation": "`execution-log.md` 记录 BDD、RED/GREEN 命令、修改路径及本地 fixture 结果；独立 tester 在 `test-report.md` 记录 T1-T5 结果。",
+      "acceptance_criteria": [
+        {
+          "ac_id": "P1-AC1",
+          "text": "`build-release` 在 required SQL staging 完成后、首次 Maven、frontend build 或 Docker build 之前构造仅含本次迁移决策所需字段的 prospective manifest，并使用测试服只读迁移台账调用现有 planner。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P1-Early-Target-Bound-Build-Preflight",
+            "execution-log.md#P1-Main-Review-Revision",
+            "test-report.md#Final-Verdict"
+          ]
+        },
+        {
+          "ac_id": "P1-AC2",
+          "text": "每次 `build-release` 都发起新的 target-state 采集；本地旧 evidence 不参与本次通过判定，采集命令失败、空输出、非法 JSON、缺少台账或 planner 异常均立即失败。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P1-Early-Target-Bound-Build-Preflight",
+            "execution-log.md#P1-Main-Review-Revision",
+            "test-report.md#Final-Verdict"
+          ]
+        },
+        {
+          "ac_id": "P1-AC3",
+          "text": "外部 evidence 使用稳定 schema，至少绑定 source commits/fingerprint、staged required SQL digest、prospective manifest digest、target-state digest、`targetEnvironment=test`、publish scope、采集 ID/UTC 时间和 planner items/status digest，且不记录密码、token、连接串或原始 `.env`。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P1-Early-Target-Bound-Build-Preflight",
+            "execution-log.md#P1-Main-Review-Revision",
+            "test-report.md#Final-Verdict"
+          ]
+        },
+        {
+          "ac_id": "P1-AC4",
+          "text": "evidence 中 `status=blocked`、任一 `BLOCKED_*` action、缺少必需绑定字段或重新计算摘要不一致时，脚本在昂贵构建前失败；只接受 planner 明确定义的 passed actions。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P1-Early-Target-Bound-Build-Preflight",
+            "execution-log.md#P1-Main-Review-Revision",
+            "test-report.md#Final-Verdict"
+          ]
+        },
+        {
+          "ac_id": "P1-AC5",
+          "text": "相同规范输入产生相同绑定摘要；源码、SQL、target-state、environment 或 publish scope 任一变化会改变对应摘要或导致验证失败。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P1-Early-Target-Bound-Build-Preflight",
+            "execution-log.md#P1-Main-Review-Revision",
+            "test-report.md#Final-Verdict"
+          ]
+        }
+      ],
+      "evidence": [
+        "execution-log.md#Phase-P1-Early-Target-Bound-Build-Preflight",
+        "execution-log.md#P1-Main-Review-Revision"
+      ],
+      "notes": "- Main review: prospective requiredSql and database.schemaMigrations can diverge because only requiredSql files are validated while planner consumes schemaMigrations. Require exact normalized semantic equivalence. Also require sourceRepos dirty=false and bind the clean-state fact; commit-only fingerprints must not qualify dirty worktrees.",
+      "last_reviewed_at": "2026-09-08T12:22:31"
+    },
+    {
+      "phase_id": "P2",
+      "title": "Verifiable Native Docker Cache",
+      "status": "completed",
+      "objective": "允许 Docker/BuildKit 根据内容复用应用镜像层，同时使缓存资格输入可复算、可失效并与最终安装包证据绑定。",
+      "owned_paths": [
+        "`ops/deploy/publish-int-ruoyi.ps1`",
+        "optional focused module under `ops/release/lib/`",
+        "focused tests under `scripts/tests/`",
+        "final manifest build metadata and relevant operator documentation."
+      ],
+      "dependencies": [
+        "P1 completed",
+        "existing minimal Docker build context",
+        "verified backend base tar/image digest contract",
+        "P0 final package integrity checks."
+      ],
+      "deliverables": [
+        "deterministic backend/frontend build-input fingerprint",
+        "validated Docker command arguments without `--no-cache`",
+        "before/after input consistency gate",
+        "manifest evidence",
+        "package-governance regressions."
+      ],
+      "evidence_expectation": "`execution-log.md` 记录 TDD 和真实 PowerShell/Python 合同测试结果；独立 tester 在 `test-report.md` 记录 T6-T10 及全量回归结果。",
+      "acceptance_criteria": [
+        {
+          "ac_id": "P2-AC1",
+          "text": "backend 和 frontend 应用镜像 build 命令不含 `--no-cache`，不增加弱校验开关，由 Docker/BuildKit 原生内容寻址机制处理缓存命中。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P2-Verifiable-Native-Docker-Cache",
+            "test-report.md#Final-Verdict"
+          ]
+        },
+        {
+          "ac_id": "P2-AC2",
+          "text": "backend 输入指纹覆盖 Dockerfile 字节、规范相对路径排序后的最小 context 文件内容、固定基础镜像 digest 和全部 build args；frontend 输入指纹覆盖其 Dockerfile、最小 context 和全部 build args。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P2-Verifiable-Native-Docker-Cache",
+            "test-report.md#Final-Verdict"
+          ]
+        },
+        {
+          "ac_id": "P2-AC3",
+          "text": "任一必需输入缺失、路径逃逸、重复/大小写冲突、基础镜像 digest 非法，或 Docker build 前后重新计算的指纹不一致时立即失败；不得执行后续 docker save 或包入库。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P2-Verifiable-Native-Docker-Cache",
+            "test-report.md#Final-Verdict"
+          ]
+        },
+        {
+          "ac_id": "P2-AC4",
+          "text": "最终 `manifest.json` 或等价不可变构建元数据记录各镜像的 input fingerprint、Dockerfile digest、context digest、base digest/build args digest 与实际镜像 ID/digest，使测试者可从本次文件复算。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P2-Verifiable-Native-Docker-Cache",
+            "test-report.md#Final-Verdict"
+          ]
+        },
+        {
+          "ac_id": "P2-AC5",
+          "text": "使用缓存后仍执行实际镜像检查、docker save、最终 release manifest 逐文件 SHA-256、package digest 和 NAS copy 后复验；缓存不得成为跳过 P0 门禁的条件。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P2-Verifiable-Native-Docker-Cache",
+            "test-report.md#Final-Verdict"
+          ]
+        }
+      ],
+      "evidence": [
+        "execution-log.md#Phase-P2-Verifiable-Native-Docker-Cache"
+      ],
+      "notes": "",
+      "last_reviewed_at": "2026-09-08T13:01:39"
+    }
+  ],
+  "planner_review_status": "approved",
+  "test_status": "passed",
+  "blocking_prereqs": [],
+  "iteration_counts": {
+    "planner_revisions": 0,
+    "executor_loops": 3,
+    "test_loops": 1
+  },
+  "created_at": "2026-09-08T11:13:31",
+  "updated_at": "2026-09-08T14:35:41",
+  "branch": "codex/release-preflight-cache-optimization-20260908",
+  "baseline_revision": "20b6328afb36131cca31ee4425fbc543d2e9c9ff",
+  "workspace_root": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\release-preflight-cache-optimization-20260908\\m",
+  "tasks_root": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\release-preflight-cache-optimization-20260908\\m\\doc\\tasks",
+  "task_dir": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\release-preflight-cache-optimization-20260908\\m\\doc\\tasks\\release-preflight-cache-optimization-20260908",
+  "goal": "实现构建前发布资格预检与可验证 Docker 构建缓存，减少测试服晚失败和重复全量打包，不执行真实发布。",
+  "artifacts": {
+    "prd": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\release-preflight-cache-optimization-20260908\\m\\doc\\tasks\\release-preflight-cache-optimization-20260908\\prd.md",
+    "test_plan": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\release-preflight-cache-optimization-20260908\\m\\doc\\tasks\\release-preflight-cache-optimization-20260908\\test-plan.md",
+    "task_state": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\release-preflight-cache-optimization-20260908\\m\\doc\\tasks\\release-preflight-cache-optimization-20260908\\task-state.json",
+    "execution_log": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\release-preflight-cache-optimization-20260908\\m\\doc\\tasks\\release-preflight-cache-optimization-20260908\\execution-log.md",
+    "test_report": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\release-preflight-cache-optimization-20260908\\m\\doc\\tasks\\release-preflight-cache-optimization-20260908\\test-report.md"
+  }
+}
