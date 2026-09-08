@@ -9,7 +9,7 @@
 - [completed] M1：PRD/test plan 与独立规划审查。
 - [completed] M2：逐阶段严格 TDD 实现。
 - [completed] M3：独立测试与回归验证。
-- [in_progress] M4：实现提交、融合验证和任务收尾。
+- [completed] M4：实现提交、融合验证和任务收尾。
 
 ## Expected Verification
 
@@ -42,7 +42,7 @@
 
 ## Current Status
 
-ready_for_closeout
+completed
 
 ## Completed Work
 
@@ -87,3 +87,17 @@ ready_for_closeout
 - `doc/tasks/release-pipeline-hardening-20260907/task-state.json`
 - `doc/tasks/release-pipeline-hardening-20260907/execution-log.md`
 - `doc/tasks/release-pipeline-hardening-20260907/test-report.md`
+
+## Closeout Evidence
+
+- Implementation commits `ad9bf60`、`82c4d44`、`4303126` 与任务证据提交 `ee93103` 已 fast-forward 融入 `int_main`。
+- 任务 worktree 已确认 clean、与 `int_main` 同为 `ee93103` 后移除；物理路径和 Git 注册均不存在。
+- `task-closeout-cleanup` 在 worktree preview 因主工作区并发脏改动保护而阻断；完成显式 fast-forward 和 worktree 清理后，在主工作区重新执行 preview=`ready`、apply=`applied`，无 blocked，唯一 warning 为已清理的 pytest 路径不存在。
+- `project-experience-consolidation` 已把 tested v2、完整性校验、恢复兼容与 operation 确定性排序合并到现有 `docs/release-build-preflight-lessons.md`，未新建长期经验文档。
+
+## Final Verification
+
+- 独立最终验证：T1-T15、P1-AC1..P3-AC6 全部 PASS；test-report schema validation PASS。
+- 隔离 worktree：governance 57、focused 65、full pytest 146、JDK17 Maven 26、Node 6、AST/verify_contracts/diff check 全部 PASS。
+- 融合主工作区：JDK17 Maven 27 PASS、Node 6 PASS、PowerShell AST 2 files PASS；并发 OperationStore 改动与其新增测试共同通过。
+- 主工作区相邻 pytest 123 PASS / 1 FAIL；唯一失败是本任务前已有 `frontend/src/App.vue` 删除导致 `FileNotFoundError`，隔离 worktree同一完整套件为 146 PASS。本任务未恢复或覆盖该并发删除。

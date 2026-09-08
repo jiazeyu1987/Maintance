@@ -216,3 +216,17 @@ REGRESSION: `node --test scripts/tests/*.test.mjs` -> PASS，`6 passed`；`pytho
 ## Outstanding Blockers
 
 - None yet.
+
+## Integration And Closeout
+
+GREEN: implementation commits -> PASS，`ad9bf60`、`82c4d44`、`4303126` 仅包含本任务发布代码与测试；任务证据提交 `ee93103` 包含 PRD/test plan/state/execution/test report。
+
+GREEN: int_main fast-forward -> PASS，主线与任务分支均为 `ee93103`；并发 `RuntimeControlOperationStore.java` 未提交改动保留且主工作区 Maven 27/27 PASS。
+
+GREEN: merged-main verification -> PASS_WITH_BOUNDARY，JDK17 Maven 27、Node 6、PowerShell AST 2 files PASS；治理相邻 pytest 123 PASS，唯一失败为任务前已有 `frontend/src/App.vue` 删除。隔离 worktree完整全量 pytest 146 PASS。
+
+GREEN: task worktree cleanup -> PASS，任务 pytest 临时目录已删除，worktree clean、提交已合入主线，Git worktree 注册与物理目录均已移除。
+
+GREEN: task-closeout-cleanup -> PASS，主工作区 preview=ready、apply=applied，无 blocker；warning 仅为 cleanup candidate 已先行删除。
+
+GREEN: experience-consolidation -> PASS，经验合并到 `docs/release-build-preflight-lessons.md` 并更新 `docs/experience-index.md`，未新建长期经验文档。
