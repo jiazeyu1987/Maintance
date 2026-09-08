@@ -1109,6 +1109,153 @@ function Assert-BackendRuntimeBaseImageAvailable {
     }
 }
 
+function Get-DockerImageIdentity {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$ImageReference
+    )
+
+    $inspectResult = Invoke-ProcessCapture -FilePath 'docker' -ArgumentList @(
+        'image', 'inspect', $ImageReference, '--format', '{{json .}}'
+    )
+    if ($inspectResult.ExitCode -ne 0) {
+        $safeOutput = Protect-ReleaseSensitiveText (($inspectResult.StdOut + "`n" + $inspectResult.StdErr).Trim())
+        Fail "Cannot inspect Docker image identity: $ImageReference`n$safeOutput"
+    }
+    $json = (($inspectResult.StdOut -split "`r?`n") | Where-Object {
+        -not [string]::IsNullOrWhiteSpace($_)
+    } | Select-Object -First 1)
+    if ([string]::IsNullOrWhiteSpace($json)) {
+        Fail "Docker image inspect returned blank output: $ImageReference"
+    }
+    try {
+        $image = $json | ConvertFrom-Json
+    } catch {
+        Fail "Docker image inspect returned invalid JSON for ${ImageReference}: $($_.Exception.Message)"
+    }
+    $imageId = ([string]$image.Id).Trim().ToLowerInvariant()
+    if ($imageId -notmatch '^sha256:[0-9a-f]{64}$') {
+        Fail "Docker image inspect returned invalid image id for ${ImageReference}: $imageId"
+    }
+    return [ordered]@{
+        reference = $ImageReference
+        id = $imageId
+        repoDigests = @($image.RepoDigests | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | Sort-Object)
+    }
+}
+
+function New-DockerBuildEvidenceSpec {
+    $components = @()
+    if ($publishBackend) {
+        if ($null -eq $backendRuntimeBaseConfig) {
+            Fail 'Backend runtime base config is required for Docker build evidence.'
+        }
+        $backendBaseIdentity = Get-DockerImageIdentity -ImageReference $backendRuntimeBaseConfig.Image
+        if ($backendBaseIdentity.id -ne $backendRuntimeBaseConfig.Digest) {
+            Fail "Backend base image changed before Docker build evidence: $($backendBaseIdentity.id) != $($backendRuntimeBaseConfig.Digest)"
+        }
+        $components += [ordered]@{
+            name = 'backend'
+            dockerfile = $backendDockerfile
+            contextRoot = $dockerBuildContextRoot
+            buildArgs = [ordered]@{
+                BACKEND_RUNTIME_BASE_IMAGE = $backendRuntimeBaseConfig.Image
+            }
+            baseImage = [ordered]@{
+                reference = $backendRuntimeBaseConfig.Image
+                digest = $backendBaseIdentity.id
+            }
+            imageReference = "intruoyi-backend:$packageDirectoryName"
+        }
+    }
+    if ($publishFrontend) {
+        $frontendBaseIdentity = Get-DockerImageIdentity -ImageReference $frontendRuntimeBaseImage
+        $components += [ordered]@{
+            name = 'frontend'
+            dockerfile = $frontendDockerfile
+            contextRoot = $dockerBuildContextRoot
+            buildArgs = [ordered]@{}
+            baseImage = [ordered]@{
+                reference = $frontendRuntimeBaseImage
+                digest = $frontendBaseIdentity.id
+            }
+            imageReference = "intruoyi-frontend:$packageDirectoryName"
+        }
+    }
+    if ($components.Count -eq 0) {
+        Fail 'Docker build evidence requires at least one application image component.'
+    }
+    return [ordered]@{
+        schemaVersion = 'release-docker-build-spec/v1'
+        components = @($components)
+    }
+}
+
+function Write-DockerBuildInputEvidence {
+    $runner = Join-Path $maintenanceReleaseScriptRoot 'release_docker_build_evidence.py'
+    if (-not (Test-Path -LiteralPath $runner -PathType Leaf)) {
+        Fail "Docker build evidence runner missing: $runner"
+    }
+    $script:DockerBuildEvidenceRoot = Join-Path $localTempRoot "docker-build-evidence-$packageDirectoryName"
+    if (Test-Path -LiteralPath $script:DockerBuildEvidenceRoot) {
+        Remove-Item -LiteralPath $script:DockerBuildEvidenceRoot -Recurse -Force
+    }
+    New-Item -ItemType Directory -Force -Path $script:DockerBuildEvidenceRoot | Out-Null
+    $script:DockerBuildEvidenceRunner = $runner
+    $script:DockerBuildSpecPath = Join-Path $script:DockerBuildEvidenceRoot 'docker-build-spec-before.json'
+    $script:DockerBuildInputEvidencePath = Join-Path $script:DockerBuildEvidenceRoot 'docker-build-input-evidence.json'
+    [System.IO.File]::WriteAllText(
+        $script:DockerBuildSpecPath,
+        ((New-DockerBuildEvidenceSpec) | ConvertTo-Json -Depth 12),
+        [System.Text.UTF8Encoding]::new($false)
+    )
+    Invoke-CheckedCommand -FilePath 'python' -ArgumentList @(
+        '-X', 'utf8', $script:DockerBuildEvidenceRunner,
+        'capture', '--spec', $script:DockerBuildSpecPath,
+        '--output', $script:DockerBuildInputEvidencePath
+    ) -WorkingDirectory $maintenanceReleaseScriptRoot
+}
+
+function Assert-DockerBuildInputsUnchanged {
+    $script:DockerBuildAfterSpecPath = Join-Path $script:DockerBuildEvidenceRoot 'docker-build-spec-after.json'
+    [System.IO.File]::WriteAllText(
+        $script:DockerBuildAfterSpecPath,
+        ((New-DockerBuildEvidenceSpec) | ConvertTo-Json -Depth 12),
+        [System.Text.UTF8Encoding]::new($false)
+    )
+    Invoke-CheckedCommand -FilePath 'python' -ArgumentList @(
+        '-X', 'utf8', $script:DockerBuildEvidenceRunner,
+        'verify-input', '--spec', $script:DockerBuildAfterSpecPath,
+        '--evidence', $script:DockerBuildInputEvidencePath
+    ) -WorkingDirectory $maintenanceReleaseScriptRoot
+}
+
+function Write-FinalDockerBuildEvidence {
+    $actualImages = [ordered]@{}
+    if ($publishBackend) {
+        $actualImages['backend'] = Get-DockerImageIdentity -ImageReference "intruoyi-backend:$packageDirectoryName"
+    }
+    if ($publishFrontend) {
+        $actualImages['frontend'] = Get-DockerImageIdentity -ImageReference "intruoyi-frontend:$packageDirectoryName"
+    }
+    $actualImagesPath = Join-Path $script:DockerBuildEvidenceRoot 'actual-images.json'
+    [System.IO.File]::WriteAllText(
+        $actualImagesPath,
+        ($actualImages | ConvertTo-Json -Depth 8),
+        [System.Text.UTF8Encoding]::new($false)
+    )
+    $manifestDirectory = Join-Path $releaseDir 'manifest'
+    New-Item -ItemType Directory -Force -Path $manifestDirectory | Out-Null
+    $finalEvidencePath = Join-Path $releaseDir 'manifest\docker-build-evidence.json'
+    Invoke-CheckedCommand -FilePath 'python' -ArgumentList @(
+        '-X', 'utf8', $script:DockerBuildEvidenceRunner,
+        'finalize', '--spec', $script:DockerBuildAfterSpecPath,
+        '--evidence', $script:DockerBuildInputEvidencePath,
+        '--actual-images', $actualImagesPath,
+        '--output', $finalEvidencePath
+    ) -WorkingDirectory $maintenanceReleaseScriptRoot
+}
+
 function Get-ProcessLockHintForPath {
     param(
         [Parameter(Mandatory = $true)]
@@ -3751,6 +3898,130 @@ function New-ReleaseMigrationPlanEntries {
     return @($entries)
 }
 
+function Invoke-BuildReleaseTargetPreflight {
+    if ($Mode -ne 'build-release' -or -not $publishBackend) {
+        return
+    }
+
+    $targetEnvironment = 'test'
+    $publishScope = if ($SkipDatabaseSync -and $SkipMinioSync) { 'code-only' } else { 'with-data' }
+    $preflightRunner = Join-Path $maintenanceReleaseScriptRoot 'release_build_preflight.py'
+    if (-not (Test-Path -LiteralPath $preflightRunner -PathType Leaf)) {
+        Fail "Build preflight runner missing: $preflightRunner"
+    }
+
+    $evidenceRoot = Join-Path $localTempRoot "build-preflight-$packageDirectoryName"
+    if (Test-Path -LiteralPath $evidenceRoot) {
+        Remove-Item -LiteralPath $evidenceRoot -Recurse -Force
+    }
+    New-Item -ItemType Directory -Force -Path $evidenceRoot | Out-Null
+    $prospectiveManifestPath = Join-Path $evidenceRoot 'prospective-manifest.json'
+    $targetStatePath = Join-Path $evidenceRoot 'target-state-test.json'
+    $evidencePath = Join-Path $evidenceRoot 'build-preflight-evidence.json'
+
+    $requiredSqlEntries = New-ReleaseRequiredSqlManifestEntries
+    $prospectiveManifest = [ordered]@{
+        schemaVersion = 'release-build-prospective/v1'
+        releaseTag = $ReleaseTag
+        sourceRepos = @(New-ReleaseSourceRepoManifestEntries)
+        publishScope = $publishScope
+        database = [ordered]@{
+            schemaMigrations = @(New-ReleaseMigrationPlanEntries -RequiredSqlEntries $requiredSqlEntries)
+        }
+        requiredSql = @($requiredSqlEntries)
+    }
+    [System.IO.File]::WriteAllText(
+        $prospectiveManifestPath,
+        ($prospectiveManifest | ConvertTo-Json -Depth 12),
+        [System.Text.UTF8Encoding]::new($false)
+    )
+
+    $collectionId = [System.Guid]::NewGuid().ToString()
+    $collectedAt = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ss.fffffffZ')
+    $stateSql = @"
+SELECT COALESCE(
+    JSON_OBJECTAGG(
+        migration_id,
+        JSON_OBJECT(
+            'sha256', REPLACE(sha256, 'sha256:', ''),
+            'status', CASE WHEN status IN ('APPLIED', 'SKIPPED_ALREADY_APPLIED') THEN 'APPLIED' ELSE status END
+        )
+    ),
+    JSON_OBJECT()
+)
+FROM infra_release_migration
+WHERE target_environment = 'test'
+  AND deleted = b'0'
+  AND status IN ('APPLIED', 'SKIPPED_ALREADY_APPLIED');
+"@
+    $remoteCommand = @"
+set -e
+mysql_password=`$(docker inspect -f '{{range .Config.Env}}{{println .}}{{end}}' intruoyi-mysql | sed -n 's/^MYSQL_ROOT_PASSWORD=//p' | tail -n 1)
+test -n "`$mysql_password"
+table_count=`$(docker exec -i -e MYSQL_PWD="`$mysql_password" intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names information_schema -e "SELECT COUNT(*) FROM tables WHERE table_schema='ruoyi-vue-pro' AND table_name='infra_release_migration';")
+test "`$table_count" = '1'
+cat <<'BUILD_PREFLIGHT_SQL' | docker exec -i -e MYSQL_PWD="`$mysql_password" intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro
+$stateSql
+BUILD_PREFLIGHT_SQL
+"@
+    $normalizedRemoteCommand = $remoteCommand -replace "`r`n", "`n" -replace "`r", "`n"
+    $sshArgs = @('-n') + (Get-SshCommonOptions) + @("$ServerUser@$TestServerHost", $normalizedRemoteCommand)
+    Info "Collecting fresh read-only migration ledger from test server: $TestServerHost (collectionId=$collectionId)"
+    $capture = Invoke-ProcessCapture -FilePath 'ssh' -ArgumentList $sshArgs
+    if ($capture.ExitCode -ne 0) {
+        $safeError = Protect-ReleaseSensitiveText (Remove-SshNoise ([string]$capture.StdErr))
+        Fail "Build preflight target-state collection failed: $safeError"
+    }
+    $ledgerJson = ([string]$capture.StdOut).Trim()
+    if ([string]::IsNullOrWhiteSpace($ledgerJson)) {
+        Fail 'Build preflight target-state collection returned blank output'
+    }
+    try {
+        $ledger = $ledgerJson | ConvertFrom-Json
+    } catch {
+        Fail "Build preflight target-state collection returned invalid JSON: $($_.Exception.Message)"
+    }
+    if ($null -eq $ledger -or $ledger -isnot [pscustomobject]) {
+        Fail 'Build preflight target-state migration ledger must be a JSON object'
+    }
+    $targetState = [ordered]@{
+        schemaVersion = 'release-target-state/v1'
+        collectionId = $collectionId
+        collectedAt = $collectedAt
+        targetEnvironment = $targetEnvironment
+        migrationLedger = $ledger
+    }
+    [System.IO.File]::WriteAllText(
+        $targetStatePath,
+        ($targetState | ConvertTo-Json -Depth 12),
+        [System.Text.UTF8Encoding]::new($false)
+    )
+
+    Invoke-CheckedCommand -FilePath 'python' -ArgumentList @(
+        '-X', 'utf8',
+        $preflightRunner,
+        'run',
+        '--prospective-manifest', $prospectiveManifestPath,
+        '--target-state', $targetStatePath,
+        '--target-environment', $targetEnvironment,
+        '--publish-scope', $publishScope,
+        '--package-root', $releaseDir,
+        '--output', $evidencePath
+    ) -WorkingDirectory $maintenanceReleaseScriptRoot
+    Invoke-CheckedCommand -FilePath 'python' -ArgumentList @(
+        '-X', 'utf8',
+        $preflightRunner,
+        'verify',
+        '--prospective-manifest', $prospectiveManifestPath,
+        '--target-state', $targetStatePath,
+        '--target-environment', $targetEnvironment,
+        '--publish-scope', $publishScope,
+        '--package-root', $releaseDir,
+        '--output', $evidencePath
+    ) -WorkingDirectory $maintenanceReleaseScriptRoot
+    Info "Build preflight passed: $evidencePath"
+}
+
 function Get-ReleaseSchemaDigest {
     param(
         [Parameter(Mandatory = $true)]
@@ -4205,6 +4476,7 @@ $frontendDockerfile = Join-Path $backendRepo 'script\deploy\int-ruoyi-test\Docke
 $composeTemplate = Join-Path $scriptDir 'int-ruoyi-test\docker-compose.yml'
 $websiteNginxTemplate = Join-Path $backendRepo 'script\deploy\int-ruoyi-test\website.nginx.conf'
 $onlyOfficeImage = 'onlyoffice/documentserver:latest'
+$frontendRuntimeBaseImage = 'nginx:1.27-alpine'
 $resolvedLocalCacheRoot = Resolve-LocalCacheRoot $LocalCacheRoot
 $buildReleaseRuntimeRestartGuardFile = Join-Path $resolvedLocalCacheRoot 'runtime\local-runtime-restart.guard'
 Enter-BuildReleaseRuntimeRestartGuard -GuardFile $buildReleaseRuntimeRestartGuardFile
@@ -5611,6 +5883,9 @@ Invoke-BackendSpringConstructorGate
 }
 if ($publishBackend) {
 Copy-RequiredDatabaseSqlScripts
+if ($Mode -eq 'build-release') {
+Invoke-BuildReleaseTargetPreflight
+}
 }
 
 if ($publishBackend) {
@@ -5697,10 +5972,15 @@ if ($publishBackend -or $publishFrontend) {
 
 if ($publishBackend) {
 Assert-BackendRuntimeBaseImageAvailable -Config $backendRuntimeBaseConfig
+}
+if ($publishBackend -or $publishFrontend) {
+Write-DockerBuildInputEvidence
+}
+
+if ($publishBackend) {
 Info 'Building backend image'
 Invoke-CheckedCommand -FilePath 'docker' -ArgumentList @(
     'build',
-    '--no-cache',
     '--build-arg', "BACKEND_RUNTIME_BASE_IMAGE=$($backendRuntimeBaseConfig.Image)",
     '-t', "intruoyi-backend:$packageDirectoryName",
     '-f', $backendDockerfile,
@@ -5712,11 +5992,15 @@ if ($publishFrontend) {
 Info 'Building frontend image'
 Invoke-CheckedCommand -FilePath 'docker' -ArgumentList @(
     'build',
-    '--no-cache',
     '-t', "intruoyi-frontend:$packageDirectoryName",
     '-f', $frontendDockerfile,
     $dockerBuildContextRoot
 )
+}
+
+if ($publishBackend -or $publishFrontend) {
+Assert-DockerBuildInputsUnchanged
+Write-FinalDockerBuildEvidence
 }
 
 if ($publishBackend -and $IncludeOnlyOffice) {
