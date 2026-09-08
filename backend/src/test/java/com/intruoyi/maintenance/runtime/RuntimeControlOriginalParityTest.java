@@ -836,14 +836,14 @@ class RuntimeControlOriginalParityTest {
                 List.of("完成页面全链路正式发布"));
         createReleasePackageWithNotes("release-backup-notes", "备份服当前版本：备份环境同步",
                 List.of("同步正式服已验证版本到备份服"));
-        saveSuccessfulOperation("op-old-history-release", "test", "ops", "publish-test",
-                Map.of("releaseTag", "release-old-history"));
-        saveSuccessfulOperation("op-current-test-release", "test", "ops", "publish-test",
-                Map.of("releaseTag", "release-test-notes"));
-        saveSuccessfulOperation("op-current-prod-release", "prod", "ops", "promote-prod",
-                Map.of("releaseTag", "release-prod-notes"));
-        saveSuccessfulOperation("op-current-backup-release", "backup", "ops", "promote-backup",
-                Map.of("releaseTag", "release-backup-notes"));
+        saveSuccessfulOperationAt("op-old-history-release", "test", "ops", "publish-test",
+                Map.of("releaseTag", "release-old-history"), Instant.parse("2026-09-08T01:00:00Z"));
+        saveSuccessfulOperationAt("op-current-test-release", "test", "ops", "publish-test",
+                Map.of("releaseTag", "release-test-notes"), Instant.parse("2026-09-08T02:00:00Z"));
+        saveSuccessfulOperationAt("op-current-prod-release", "prod", "ops", "promote-prod",
+                Map.of("releaseTag", "release-prod-notes"), Instant.parse("2026-09-08T03:00:00Z"));
+        saveSuccessfulOperationAt("op-current-backup-release", "backup", "ops", "promote-backup",
+                Map.of("releaseTag", "release-backup-notes"), Instant.parse("2026-09-08T04:00:00Z"));
 
         String response = mockMvc.perform(get("/admin-api/infra/runtime-control/release-status"))
                 .andExpect(status().isOk())
