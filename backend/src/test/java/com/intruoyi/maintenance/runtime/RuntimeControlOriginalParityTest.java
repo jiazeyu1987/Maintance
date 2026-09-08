@@ -17,6 +17,7 @@ import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
@@ -317,8 +318,13 @@ class RuntimeControlOriginalParityTest {
         createRestorePoint("backup-20260616");
         createTestedMetadata("release-code-only-test-passed");
         saveNonMatchingPublishOperations("backup-selector", "release-code-only-test-passed");
-        saveSuccessfulOperation("op-publish-test-pass", "test", "publish-test", "publish-test",
-                Map.of("releaseTag", "release-code-only-test-passed"));
+        saveSuccessfulOperationAt("op-publish-test-old", "test", "publish-test", "publish-test",
+                Map.of("releaseTag", "release-code-only-test-passed"), Instant.parse("2026-09-07T11:00:00Z"));
+        saveSuccessfulOperationAt("op-publish-test-alpha", "test", "publish-test", "publish-test",
+                Map.of("releaseTag", "release-code-only-test-passed"), Instant.parse("2026-09-07T13:00:00Z"));
+        saveSuccessfulOperationAt("op-publish-test-pass", "test", "publish-test", "publish-test",
+                Map.of("releaseTag", "release-code-only-test-passed"), Instant.parse("2026-09-07T13:00:00Z"));
+        tieOperationFileModificationTimes();
 
         String preview = mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -375,8 +381,13 @@ class RuntimeControlOriginalParityTest {
         String releaseTag = "release-20260621-prod-dry-run-fixture";
         createRollbackPackage(releaseTag, true, false, true);
         saveNonMatchingPublishOperations("prod-selector", releaseTag);
-        saveSuccessfulOperation("op-prod-dry-run-test", "test", "publish-test", "publish-test",
-                Map.of("releaseTag", releaseTag));
+        saveSuccessfulOperationAt("op-prod-dry-run-old", "test", "publish-test", "publish-test",
+                Map.of("releaseTag", releaseTag), Instant.parse("2026-09-07T11:00:00Z"));
+        saveSuccessfulOperationAt("op-prod-dry-run-alpha", "test", "publish-test", "publish-test",
+                Map.of("releaseTag", releaseTag), Instant.parse("2026-09-07T13:00:00Z"));
+        saveSuccessfulOperationAt("op-prod-dry-run-test", "test", "publish-test", "publish-test",
+                Map.of("releaseTag", releaseTag), Instant.parse("2026-09-07T13:00:00Z"));
+        tieOperationFileModificationTimes();
         Path localCacheReleaseDir = LOCAL_CACHE_ROOT.resolve("publish-int-ruoyi")
                 .resolve(releaseTag);
         resetDirectory(localCacheReleaseDir);
@@ -759,8 +770,11 @@ class RuntimeControlOriginalParityTest {
         createRollbackPackage("release-tested", true, false, true);
         createRestorePoint("backup-20260616");
         saveNonMatchingPublishOperations("mark-selector", "release-current");
-        saveSuccessfulOperation("op-current-test-release", "test", "ops", "publish-test",
-                Map.of("releaseTag", "release-current"));
+        saveSuccessfulOperationAt("op-current-test-alpha", "test", "ops", "publish-test",
+                Map.of("releaseTag", "release-current"), Instant.parse("2026-09-07T13:00:00Z"));
+        saveSuccessfulOperationAt("op-current-test-release", "test", "ops", "publish-test",
+                Map.of("releaseTag", "release-current"), Instant.parse("2026-09-07T13:00:00Z"));
+        tieOperationFileModificationTimes();
 
         mockMvc.perform(get("/admin-api/infra/runtime-control/release-status"))
                 .andExpect(status().isOk())
@@ -1136,8 +1150,13 @@ class RuntimeControlOriginalParityTest {
 
     private void saveSuccessfulOperation(String operationId, String environment, String component, String action,
                                          Map<String, String> parameters) {
+        saveSuccessfulOperationAt(operationId, environment, component, action, parameters, Instant.now());
+    }
+
+    private void saveSuccessfulOperationAt(String operationId, String environment, String component, String action,
+                                           Map<String, String> parameters, Instant requestedAt) {
         operationStore.save(new RuntimeDtos.RuntimeControlOperationRespVO(operationId, "local-operator",
-                Instant.now(), environment, component, action, action, parameters, "contract fixture",
+                requestedAt, environment, component, action, action, parameters, "contract fixture",
                 "SUCCESS", "success", "target/runtime-control-original-parity.log"));
     }
 
@@ -1153,6 +1172,15 @@ class RuntimeControlOriginalParityTest {
         saveOperation(prefix + "-wrong-action", "test", "promote-prod", "SUCCESS", releaseTag);
         saveOperation(prefix + "-wrong-status", "test", "publish-test", "FAILED", releaseTag);
         saveOperation(prefix + "-wrong-tag", "test", "publish-test", "SUCCESS", releaseTag + "-other");
+    }
+
+    private void tieOperationFileModificationTimes() throws IOException {
+        FileTime tiedTime = FileTime.from(Instant.parse("2026-09-07T14:00:00Z"));
+        try (var paths = Files.list(operationStore.stateDir())) {
+            for (Path path : paths.filter(item -> item.getFileName().toString().endsWith(".json")).toList()) {
+                Files.setLastModifiedTime(path, tiedTime);
+            }
+        }
     }
 
     private static String sha256(Path path) throws IOException {

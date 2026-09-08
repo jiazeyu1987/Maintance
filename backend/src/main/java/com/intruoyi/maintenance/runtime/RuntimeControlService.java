@@ -44,6 +44,10 @@ public class RuntimeControlService {
     private static final List<String> TEST_CURRENT_RELEASE_ACTIONS = List.of("publish-test");
     private static final List<String> PROD_CURRENT_RELEASE_ACTIONS = List.of("promote-prod");
     private static final List<String> BACKUP_CURRENT_RELEASE_ACTIONS = List.of("promote-backup");
+    private static final Comparator<RuntimeControlOperationRespVO> RELEASE_OPERATION_RECENCY =
+            Comparator.comparing(RuntimeControlOperationRespVO::requestedAt,
+                            Comparator.nullsLast(Comparator.reverseOrder()))
+                    .thenComparing(operation -> trimToEmpty(operation.operationId()), Comparator.reverseOrder());
     private static final String STATUS_AVAILABLE = "AVAILABLE";
     private static final String STATUS_BLOCKED = "BLOCKED";
     private static final String STATUS_NO_GO = "NO_GO";
@@ -365,6 +369,7 @@ public class RuntimeControlService {
                 .filter(operation -> "SUCCESS".equals(operation.status()))
                 .filter(operation -> operation.parameters() != null)
                 .filter(operation -> releaseTag.equals(operation.parameters().get("releaseTag")))
+                .sorted(RELEASE_OPERATION_RECENCY)
                 .findFirst()
                 .orElse(null);
     }
@@ -1244,6 +1249,7 @@ public class RuntimeControlService {
                 .filter(operation -> environment.equals(operation.environment()))
                 .filter(operation -> "SUCCESS".equals(operation.status()))
                 .filter(operation -> releaseActions.contains(operation.action()))
+                .sorted(RELEASE_OPERATION_RECENCY)
                 .map(RuntimeControlOperationRespVO::parameters)
                 .filter(parameters -> parameters != null && hasText(parameters.get("releaseTag")))
                 .map(parameters -> parameters.get("releaseTag").trim())
