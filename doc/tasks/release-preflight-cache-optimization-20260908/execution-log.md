@@ -87,6 +87,17 @@ BDD: 缓存不降低 P0 门禁 -> Given Docker cache 命中 / When 生成包 / T
 - Risk: 本轮按批准范围仅用本地文件 fixture 和发布脚本调用顺序合同验证，没有执行真实 Docker build/cache hit。真实 Docker 主机必须预先存在并可 inspect `nginx:1.27-alpine`；缺失时正式流程 fail fast，不自动 pull 或降级。Maven 首轮暴露一个与 P2 无关的既有时间排序不稳定用例，单独复跑已通过，未在本任务扩大修复范围。
 - Executor result: P2 implementation ready for independent tester；未提交，未修改 `task-state.json`、`prd.md`、`test-plan.md`、`test-report.md` 或 `task.md`。
 
+### Integration Fixture Revision
+
+- Bug: `RuntimeControlOriginalParityTest.releaseStatusExposesCurrentReleaseNotesForCurrentEnvironmentsOnly` 使用连续 `Instant.now()` 隐含表达 old/current 插入顺序；Windows 上 `requestedAt precise` 时间碰撞时两条 test 操作具有相同 `requestedAt`，生产按既定 operationId tie-break 合法选中 old fixture。
+- Expected: fixture 用显式不同 UTC 时间表达 old 早于 current；生产 comparator 保持不变。
+- RED: 融合验证 JDK 17 `mvn.cmd -f backend\pom.xml test` -> FAIL，`26 tests, 1 failure`；`$.data.testCurrentReleaseNotes.releaseTag` expected `release-test-notes`，actual `release-old-history`。修复前单独复跑偶发 PASS，符合时钟碰撞导致的 flaky 特征。
+- Fix: 仅修改 tracked `backend/src/test/java/com/intruoyi/maintenance/runtime/RuntimeControlOriginalParityTest.java` 目标用例，使用既有 `saveSuccessfulOperationAt` 分别写入 `01:00Z` old、`02:00Z` test current、`03:00Z` prod current、`04:00Z` backup current。
+- GREEN: 定向方法 JDK 17 Maven 连续运行 3 次 -> 3/3 PASS；每轮 `1 test, 0 failures, 0 errors, 0 skipped`。
+- REGRESSION: JDK 17 `mvn.cmd -f backend\pom.xml test` -> PASS，`26 tests, 0 failures, 0 errors, 0 skipped`，`BUILD SUCCESS`。
+- Evidence: `doc/tasks/release-preflight-cache-optimization-20260908/bug-regression-evidence.md`。
+- Risk: 仅修正测试 fixture 时间语义，不修改生产排序、接口、发布行为或运行时数据；无 blocker。
+
 ## Outstanding Blockers
 
 - None yet.

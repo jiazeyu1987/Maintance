@@ -60,6 +60,7 @@ ready_for_closeout
 ## Implementation Commit
 
 - `f254555`：前移发布预检并启用构建缓存。
+- `5ff914b`：为发布说明回归 fixture 固定明确 UTC 时间，消除 Windows 时钟碰撞导致的间歇失败。
 
 ## Remaining Blockers
 
@@ -73,3 +74,4 @@ ready_for_closeout
 - `doc/tasks/release-preflight-cache-optimization-20260908/task-state.json`
 - `doc/tasks/release-preflight-cache-optimization-20260908/execution-log.md`
 - `doc/tasks/release-preflight-cache-optimization-20260908/test-report.md`
+- `doc/tasks/release-preflight-cache-optimization-20260908/bug-regression-evidence.md`
