@@ -75,7 +75,7 @@ function Test-IsReleasePackageMutableMetadataPath {
         $RelativePath.StartsWith('backup-deployments/', [System.StringComparison]::Ordinal)
 }
 
-function Get-ReleasePackageImmutableArtifactEntries {
+function Get-ReleasePackageImmutableArtifactFileFacts {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
@@ -100,8 +100,8 @@ function Get-ReleasePackageImmutableArtifactEntries {
         }
         $entriesByPath.Add($relativePath, [pscustomobject][ordered]@{
             path = $relativePath
-            sha256 = Get-ReleaseSha256Hex -Path $file.FullName
             bytes = [int64]$file.Length
+            fullName = $file.FullName
         })
     }
     $sortedPaths = [string[]]@($entriesByPath.Keys)
@@ -109,12 +109,30 @@ function Get-ReleasePackageImmutableArtifactEntries {
     return @($sortedPaths | ForEach-Object { $entriesByPath[$_] })
 }
 
+function Get-ReleasePackageImmutableArtifactEntries {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$PackagePath,
+        [switch]$ExcludeManifestJson
+    )
+
+    return @(Get-ReleasePackageImmutableArtifactFileFacts -PackagePath $PackagePath -ExcludeManifestJson:$ExcludeManifestJson | ForEach-Object {
+        [pscustomobject][ordered]@{
+            path = $_.path
+            sha256 = Get-ReleaseSha256Hex -Path $_.fullName
+            bytes = [int64]$_.bytes
+        }
+    })
+}
+
 function Test-ReleasePackageIntegrity {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
         [string]$PackagePath,
-        [string]$ExpectedReleaseTag = ''
+        [string]$ExpectedReleaseTag = '',
+        [array]$PreverifiedArtifacts = @()
     )
 
     if (-not (Test-Path -LiteralPath $PackagePath -PathType Container)) {
@@ -153,6 +171,18 @@ function Test-ReleasePackageIntegrity {
     }
     if ($publishScope -cnotin @('code-only', 'with-data')) {
         throw "release-manifest.json: invalid publishScope: $publishScope"
+    }
+
+    $preverifiedByPath = [System.Collections.Generic.Dictionary[string, object]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($artifact in @($PreverifiedArtifacts)) {
+        if ($null -eq $artifact) {
+            continue
+        }
+        $preverifiedPath = ConvertTo-NormalizedReleaseArtifactPath -Path ([string]$artifact.path)
+        if ($preverifiedByPath.ContainsKey($preverifiedPath)) {
+            throw "${preverifiedPath}: duplicate preverified artifact path"
+        }
+        $preverifiedByPath.Add($preverifiedPath, $artifact)
     }
 
     $declaredPaths = [System.Collections.Generic.Dictionary[string, object]]::new([System.StringComparer]::OrdinalIgnoreCase)
@@ -197,7 +227,18 @@ function Test-ReleasePackageIntegrity {
         if ([int64]$actualFile.Length -ne [int64]$artifact.bytes) {
             throw "${relativePath}: bytes mismatch; declared=$($artifact.bytes) actual=$($actualFile.Length)"
         }
-        $actualHash = Get-ReleaseSha256Hex -Path $actualFile.FullName
+        $actualHash = ''
+        if ($preverifiedByPath.ContainsKey($relativePath)) {
+            $preverified = $preverifiedByPath[$relativePath]
+            $preverifiedHash = [string]$preverified.sha256
+            $preverifiedBytes = [int64]$preverified.bytes
+            if ($preverifiedHash -cne $declaredHash -or $preverifiedBytes -ne [int64]$actualFile.Length) {
+                throw "${relativePath}: preverified artifact mismatch"
+            }
+            $actualHash = $preverifiedHash
+        } else {
+            $actualHash = Get-ReleaseSha256Hex -Path $actualFile.FullName
+        }
         if ($actualHash -cne $declaredHash) {
             throw "${relativePath}: hash mismatch; declared=$declaredHash actual=$actualHash"
         }
@@ -211,9 +252,17 @@ function Test-ReleasePackageIntegrity {
     if (-not $declaredPaths.ContainsKey('manifest.json')) {
         throw 'manifest.json: missing artifact declaration'
     }
-    foreach ($actual in @(Get-ReleasePackageImmutableArtifactEntries -PackagePath $root)) {
-        if (-not $declaredPaths.ContainsKey([string]$actual.path)) {
-            throw "$($actual.path): undeclared file"
+    if ($preverifiedByPath.Count -gt 0) {
+        foreach ($actual in @(Get-ReleasePackageImmutableArtifactFileFacts -PackagePath $root)) {
+            if (-not $declaredPaths.ContainsKey([string]$actual.path)) {
+                throw "$($actual.path): undeclared file"
+            }
+        }
+    } else {
+        foreach ($actual in @(Get-ReleasePackageImmutableArtifactEntries -PackagePath $root)) {
+            if (-not $declaredPaths.ContainsKey([string]$actual.path)) {
+                throw "$($actual.path): undeclared file"
+            }
         }
     }
     if ($verifiedEntries.Count -ne $declaredPaths.Count) {

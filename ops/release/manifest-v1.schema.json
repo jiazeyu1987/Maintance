@@ -45,9 +45,9 @@
     "packageType": {
       "type": "string",
       "enum": [
-        "full-release",
+        "release-code",
         "smart-release",
-        "data-release",
+        "release-data-snapshot",
         "resource-check-only"
       ]
     },

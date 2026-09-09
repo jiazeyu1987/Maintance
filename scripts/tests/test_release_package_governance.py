@@ -197,6 +197,51 @@ def test_runtime_console_only_emits_explicit_package_modes_for_code_only_flow() 
     assert 'deployReleaseArguments("backup", req)' in source
 
 
+def test_build_release_defaults_to_code_only_and_requires_explicit_with_data_confirm() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+
+    assert "[ValidateSet('code-only', 'with-data')]" in script
+    assert "[string]$PublishScope = 'code-only'" in script
+    assert "Resolve-EffectiveBuildReleasePublishScope" in script
+    assert "Daily build-release defaults to code-only" in script
+    assert "Explicit confirmation required for with-data build-release: -ConfirmText WITH-DATA" in script
+    assert "with-data cannot be combined with -SkipDatabaseSync or -SkipMinioSync" in script
+
+
+def test_build_release_long_running_package_steps_are_observable() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+
+    assert "Invoke-ReleaseStage -Name 'release manifest generation'" in script
+    assert "Invoke-ReleaseStage -Name 'release package integrity verification'" in script
+    assert "Invoke-ReleaseStage -Name 'NAS release package upload and verification'" in script
+    assert "Copy-ReleaseDirectoryTree -SourceDirectory $releaseDir -DestinationDirectory $targetPath" in script
+    assert "Release directory copy summary:" in script
+    assert "Release package size summary:" in script
+
+
+def test_manifest_entries_are_reused_for_build_integrity_to_avoid_extra_scan() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    function_start = script.index("function Write-ReleaseManifest {")
+    function_end = script.index("if ($ReleaseTag.Contains('..')", function_start)
+    function_body = script[function_start:function_end]
+
+    assert "Set-ReleasePackageArtifactCache" in function_body
+    assert "Get-ReleasePackageArtifactCache" in script
+    assert "Test-ReleasePackageIntegrity -PackagePath $releaseDir -ExpectedReleaseTag $ReleaseTag -PreverifiedArtifacts $releaseManifestArtifacts" in script
+
+
+def test_release_manifest_schema_uses_split_code_and_data_package_types() -> None:
+    schema = (ROOT / "ops" / "release" / "manifest-v1.schema.json").read_text(encoding="utf-8")
+    validator = (ROOT / "ops" / "release" / "lib" / "ReleaseManifestValidator.psm1").read_text(encoding="utf-8")
+
+    for expected in ("release-code", "release-data-snapshot"):
+        assert expected in schema
+        assert expected in validator
+    for obsolete in ("full-release", "data-release"):
+        assert obsolete not in schema
+        assert obsolete not in validator
+
+
 def test_publish_script_has_valid_powershell_ast() -> None:
     command = "\n".join(
         [
@@ -417,7 +462,7 @@ def test_same_verifier_guards_all_four_package_lifecycle_points() -> None:
     copy_to_start = script.index("function Copy-ReleasePackageToNas")
     copy_to_end = script.index("function Copy-ReleasePackageFromNas", copy_to_start)
     copy_to = script[copy_to_start:copy_to_end]
-    assert copy_to.index("Copy-Item") < copy_to.index(verifier_call)
+    assert copy_to.index("Copy-ReleaseDirectoryTree") < copy_to.index(verifier_call)
     assert copy_to.index(verifier_call) < copy_to.index("Release package uploaded to NAS")
 
     copy_from_start = script.index("function Copy-ReleasePackageFromNas")

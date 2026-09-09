@@ -78,6 +78,8 @@ param(
     [string]$BackendRuntimeBaseDigest = $env:INTRUOYI_BACKEND_RUNTIME_BASE_DIGEST,
     [string]$BackendRuntimeBaseVersion = $env:INTRUOYI_BACKEND_RUNTIME_BASE_VERSION,
     [switch]$IncludeOnlyOffice,
+    [ValidateSet('code-only', 'with-data')]
+    [string]$PublishScope = 'code-only',
     [switch]$SkipDatabaseSync,
     [switch]$SkipMinioSync,
     [switch]$EnableSmartReleaseReport,
@@ -95,6 +97,7 @@ Import-Module -Force (Join-Path $PSScriptRoot '..\release\lib\ReleasePackageGove
 $script:ReleaseOperationLockHeld = $false
 $script:ReleaseOperationLockReleasing = $false
 $script:BuildReleaseRuntimeRestartGuardCreated = $false
+$script:ReleasePackageArtifactCache = @()
 $script:ReleaseErrorMessageMaxLength = 2048
 $releaseMigrationExecutableTypes = @('schema', 'data', 'menu', 'config', 'permission', 'seed')
 $releaseMigrationEvidenceOnlyTypes = @('preflight', 'backfill', 'postflight', 'rollback-dry-run')
@@ -119,6 +122,76 @@ function Fail([string]$Message) {
 
 function Info([string]$Message) {
     Write-Host "[INFO] $Message"
+}
+
+function Invoke-ReleaseStage {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Name,
+        [Parameter(Mandatory = $true)]
+        [scriptblock]$ScriptBlock
+    )
+
+    $stageStopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+    Info "Starting release stage: $Name"
+    try {
+        & $ScriptBlock
+    } finally {
+        $stageStopwatch.Stop()
+        Info ("Completed release stage: {0} ({1:n1}s)" -f $Name, $stageStopwatch.Elapsed.TotalSeconds)
+    }
+}
+
+function Resolve-EffectiveBuildReleasePublishScope {
+    if ($Mode -ne 'build-release') {
+        return ''
+    }
+
+    if ($PublishScope -eq 'code-only') {
+        if (-not $SkipDatabaseSync) {
+            $script:SkipDatabaseSync = $true
+        }
+        if (-not $SkipMinioSync) {
+            $script:SkipMinioSync = $true
+        }
+        Info 'Daily build-release defaults to code-only; database and MinIO snapshots are skipped unless -PublishScope with-data is explicitly confirmed.'
+        return 'code-only'
+    }
+
+    if ($SkipDatabaseSync -or $SkipMinioSync) {
+        Fail 'with-data cannot be combined with -SkipDatabaseSync or -SkipMinioSync'
+    }
+    if ($ConfirmText -ne 'WITH-DATA') {
+        Fail 'Explicit confirmation required for with-data build-release: -ConfirmText WITH-DATA'
+    }
+    Info 'Building explicit with-data release; data snapshot artifacts are treated as the data package for this releaseTag.'
+    return 'with-data'
+}
+
+function Set-ReleasePackageArtifactCache {
+    param(
+        [Parameter(Mandatory = $true)]
+        [array]$Artifacts
+    )
+    $script:ReleasePackageArtifactCache = @($Artifacts)
+}
+
+function Get-ReleasePackageArtifactCache {
+    if ($null -eq $script:ReleasePackageArtifactCache) {
+        return @()
+    }
+    return @($script:ReleasePackageArtifactCache)
+}
+
+function Write-ReleasePackageSizeSummary {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$PackagePath
+    )
+
+    $summaryFiles = @(Get-ChildItem -LiteralPath $PackagePath -Recurse -File -Force)
+    $summaryBytes = [int64](($summaryFiles | Measure-Object -Property Length -Sum).Sum)
+    Info ("Release package size summary: files={0}, bytes={1:n0}, gib={2:n2}" -f $summaryFiles.Count, $summaryBytes, ($summaryBytes / 1GB))
 }
 
 function Write-Utf8LfNoBomFile {
@@ -238,6 +311,7 @@ function Copy-ReleaseDirectoryTree {
             "destination files=$($destinationFiles.Count), bytes=$destinationBytes"
         )
     }
+    Info ("Release directory copy summary: sourceFiles={0}, destinationFiles={1}, bytes={2:n0}, gib={3:n2}" -f $sourceFiles.Count, $destinationFiles.Count, $sourceBytes, ($sourceBytes / 1GB))
 }
 
 function Remove-ReleaseDockerBuildContextFromPackage {
@@ -2889,7 +2963,7 @@ function Copy-ReleasePackageToNas {
             Fail "NAS release package already exists: $NasReleaseRoot/$packageDirectoryName"
         }
         New-Item -ItemType Directory -Force -Path $targetRoot | Out-Null
-        Copy-Item -LiteralPath $releaseDir -Destination $targetRoot -Recurse -Force
+        Copy-ReleaseDirectoryTree -SourceDirectory $releaseDir -DestinationDirectory $targetPath
         $null = Test-ReleasePackageIntegrity -PackagePath $targetPath -ExpectedReleaseTag $PackageTag
         Info "Release package uploaded to NAS: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
     } finally {
@@ -4261,7 +4335,7 @@ function Write-ReleaseManifestV1 {
     $sourceRepos = New-ReleaseSourceRepoManifestEntries
     $buildModules = New-ReleaseBuildModuleManifestEntries -Components $components -LegacyArtifacts $LegacyArtifacts -SourceRepos $sourceRepos -SchemaDigest $schemaDigest
     $artifacts = New-ReleaseArtifactManifestEntries -LegacyArtifacts $LegacyArtifacts -BuildModules $buildModules
-    $packageType = if ($SkipDatabaseSync -and $SkipMinioSync) { 'full-release' } else { 'data-release' }
+    $packageType = if ($SkipDatabaseSync -and $SkipMinioSync) { 'release-code' } else { 'release-data-snapshot' }
     $publishScopeValue = if ($SkipDatabaseSync -and $SkipMinioSync) { 'code-only' } else { 'with-data' }
 
     $effectiveOperatorName = if ([string]::IsNullOrWhiteSpace($OperatorName)) { 'local-operator' } else { $OperatorName.Trim() }
@@ -4282,6 +4356,8 @@ function Write-ReleaseManifestV1 {
         sourceRepos = $sourceRepos
         changeSet = New-ReleaseChangeSetManifest -PackageTag $PackageTag -SourceRepos $sourceRepos
         publishScope = $publishScopeValue
+        packageRole = $packageType
+        relatedReleaseTag = $PackageTag
         components = $components
         artifacts = $artifacts
         database = [ordered]@{
@@ -4379,12 +4455,15 @@ function Write-ReleaseManifest {
         $gitCommit = ''
     }
     $files = @(Get-ReleasePackageImmutableArtifactEntries -PackagePath $releaseDir)
+    Set-ReleasePackageArtifactCache -Artifacts $files
     $manifest = [ordered]@{
         releaseTag = $PackageTag
         packageDirectoryName = $packageDirectoryName
         builtAt = (Get-Date).ToUniversalTime().ToString('o')
         gitCommit = ([string]$gitCommit).Trim()
         publishScope = if ($SkipDatabaseSync -and $SkipMinioSync) { 'code-only' } else { 'with-data' }
+        packageRole = if ($SkipDatabaseSync -and $SkipMinioSync) { 'release-code' } else { 'release-data-snapshot' }
+        relatedReleaseTag = $PackageTag
         component = $Component
         includeShowroomBuildPackage = [bool]$publishWebsite
         onlyOfficeIncluded = [bool]$IncludeOnlyOffice
@@ -4470,6 +4549,7 @@ $websiteRepo = (Resolve-Path $WebsiteRepo).Path
 $publishBackend = $Component -in @('full', 'intruoyi', 'backend')
 $publishFrontend = $Component -in @('full', 'intruoyi', 'frontend')
 $publishWebsite = $Component -in @('full', 'website')
+$effectiveBuildPublishScope = Resolve-EffectiveBuildReleasePublishScope
 $backendJar = Join-Path $backendRepo 'yudao-server\target\yudao-server-exec.jar'
 $backendDockerfile = Join-Path $backendRepo 'script\deploy\int-ruoyi-test\Dockerfile.backend'
 $frontendDockerfile = Join-Path $backendRepo 'script\deploy\int-ruoyi-test\Dockerfile.frontend'
@@ -6067,16 +6147,27 @@ if ($publishBackend) { New-SchedulerSmokeRunnerPackage }
 Write-ReleaseRuntimeEnvPackage
 Copy-Item -LiteralPath $composeTemplate -Destination (Join-Path $releaseDir 'docker-compose.yml') -Force
 Remove-ReleaseDockerBuildContextFromPackage
-Write-ReleaseManifest -PackageTag $ReleaseTag
+Invoke-ReleaseStage -Name 'release manifest generation' -ScriptBlock {
+    Write-ReleasePackageSizeSummary -PackagePath $releaseDir
+    Write-ReleaseManifest -PackageTag $ReleaseTag
+}
 
 if ($smartReleaseReportOnlyEnabled -and $Mode -eq 'build-release') {
     Invoke-SmartReleaseBuildReportOnly -PackagePath $releaseDir
-    Write-ReleaseManifest -PackageTag $ReleaseTag
+    Invoke-ReleaseStage -Name 'release manifest generation' -ScriptBlock {
+        Write-ReleasePackageSizeSummary -PackagePath $releaseDir
+        Write-ReleaseManifest -PackageTag $ReleaseTag
+    }
 }
-$buildPackageIntegrity = Test-ReleasePackageIntegrity -PackagePath $releaseDir -ExpectedReleaseTag $ReleaseTag
+Invoke-ReleaseStage -Name 'release package integrity verification' -ScriptBlock {
+    $releaseManifestArtifacts = Get-ReleasePackageArtifactCache
+    $script:buildPackageIntegrity = Test-ReleasePackageIntegrity -PackagePath $releaseDir -ExpectedReleaseTag $ReleaseTag -PreverifiedArtifacts $releaseManifestArtifacts
+}
 
 if ($Mode -eq 'build-release') {
-    Copy-ReleasePackageToNas -PackageTag $ReleaseTag
+    Invoke-ReleaseStage -Name 'NAS release package upload and verification' -ScriptBlock {
+        Copy-ReleasePackageToNas -PackageTag $ReleaseTag
+    }
     Write-Host ''
     Write-Host "Release package built: $ReleaseTag"
     Write-Host "NAS release path: $NasReleaseRoot/$packageDirectoryName"

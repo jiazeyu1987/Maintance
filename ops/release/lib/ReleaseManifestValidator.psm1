@@ -2,9 +2,9 @@ Set-StrictMode -Version Latest
 
 $script:ValidationMode = 'manifest-v1-validation'
 $script:AllowedPackageTypes = @(
-    'full-release',
+    'release-code',
     'smart-release',
-    'data-release',
+    'release-data-snapshot',
     'resource-check-only'
 )
 $script:RequiredTopLevelFields = @(
