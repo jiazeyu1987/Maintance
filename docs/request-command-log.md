@@ -3520,3 +3520,11 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Verification: build operation `op-2026-08-31T175950833708200Z-2bced8b6-7544-44f4-ba35-338702f541bf` SUCCESS；publish operation `op-2026-08-31T182540028464Z-a9c8f0fc-93ee-4808-b9f8-96b3215b2fc1` SUCCESS；manifest/sourceRepos dirty=false；测试服 `.env IMAGE_TAG`、backend/frontend 镜像、health、frontend HTTP、release-info、release lock、migration ledger、助手 systemd/container/listen/direct-403 均通过。
 - E2E: Playwright 真实登录 `测试租户/aoteman`，菜单链 `ERP 系统 / 财务管理 / 发票凭证打印` 可见；点击后 ERP 签发短期票据，页面通过 `http://172.30.30.58:18733/auth/callback` iframe 加载助手，console/page error 均为 0。测试密码仅由当前进程注入，未写入文档。
 - Closeout: `task-closeout-cleanup` preview/apply 已清理本任务 artifacts；任务自有运行控制台已停止；三套 release worktree、残留 ignored 目录和本轮 stateDir 均已删除；任务状态 completed。
+
+## 2026-09-09 release-duration-optimization
+
+- Request: 用户要求按 6 步开始修改，防止以后测试服发布因默认全量数据包、重复扫描和 NAS 黑箱复制耗时过久。
+- Command intent: 仅修改本机维护仓发布脚本、manifest schema/validator、治理模块和合同测试；不执行真实 build-release、publish-test、NAS 上传、服务器写入、数据库写入或 MinIO 写入。
+- Implementation: build-release 默认 `PublishScope=code-only` 并自动跳过数据库/MinIO；with-data 必须 `-PublishScope with-data -ConfirmText WITH-DATA`；manifest 增加 `packageRole=release-code|release-data-snapshot`；本地 integrity 复用刚生成的 artifact hash 且仍枚举实际文件；NAS 上传改走 robocopy 封装；manifest/integrity/NAS upload 增加阶段耗时和文件/字节摘要。
+- Verification: 发布包治理与 deploy precheck 合同测试 `63 passed`；PowerShell AST `AST_OK`；CI/CD validator self-test PASS；`git diff --check` PASS。实现提交 `6639128`。
+- Boundary: 未操作正在运行的 r14 主线程发布进程，未访问远程服务器、NAS、数据库或 MinIO。

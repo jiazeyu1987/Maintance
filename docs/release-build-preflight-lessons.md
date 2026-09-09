@@ -1214,3 +1214,21 @@ HEAD-only 构建发布在维护仓或主程序仓主工作区 dirty，且需要�
 2. 推荐命令：`validate-release-manifest.ps1 -PackagePath <package> -OutputPath <state>.json`，以及读取 manifest 的短 JSON 摘要脚本。
 3. Fail Fast：manifest 缺失、validator 失败、source commit 不等于冻结 app HEAD、dirty 非 false、变更说明为空或无法对应提交、release-info 与 manifest 不一致。
 4. 必须记录：releaseTag、package path、source commit、dirty、changeSet、artifact SHA256、validator status。
+
+# 2026-09-09 build-release 默认 code-only 与全量数据包显式门禁
+
+### 门禁摘要
+
+- Trigger: build-release 耗时异常、发布日志长时间停在 manifest/integrity/NAS copy、默认打出数据库 dump 与 MinIO 快照、发布包超过 5GB、或用户只要求测试服代码发布。
+- Preflight check: 日常测试服发布必须确认 `PublishScope=code-only`，脚本默认等价于 `-SkipDatabaseSync -SkipMinioSync`；只有明确选择 `-PublishScope with-data -ConfirmText WITH-DATA` 才允许导出数据库与 MinIO 快照。manifest 生成后必须记录 `Release package size summary`，NAS 入库必须使用可校验的目录复制并输出 `Release directory copy summary`。
+- Blocker: 未明确确认却准备 with-data；with-data 同时传入 `-SkipDatabaseSync` 或 `-SkipMinioSync`；日志无法区分 manifest、integrity、NAS copy 阶段；或为了缩短发布时间跳过 manifest/P0 integrity/NAS 复验。
+- Verification: 合同测试必须覆盖默认 code-only、with-data 强确认、长阶段日志、NAS robocopy 复制、manifest artifact 缓存复用和 schema/validator 的 `release-code` / `release-data-snapshot` 包类型；真实发布时另核 publishScope、packageRole、package size、operation=SUCCESS、NAS path 和 releaseTag。
+- Forbidden action: 禁止把日常代码发布默认做成 with-data；禁止用 mock/占位文件、跳过 DCC inventory、取消完整性校验、或边复制边宣称 NAS 包可用来换取提速；禁止在正式/备份晋级使用 with-data 包。
+- Evidence: `doc/tasks/20260909-release-duration-optimization/execution-log.md`；实现提交 `6639128`。
+
+### 阶段必查项
+
+1. 构建范围：未明确 `WITH-DATA` 确认时必须是 `code-only`，并记录数据库/MinIO 快照被跳过。
+2. 数据快照：with-data 只作为显式数据快照包语义出现，manifest 使用 `packageRole=release-data-snapshot`；code-only 使用 `packageRole=release-code`。
+3. 完整性校验：本地 build 阶段允许复用刚生成的 artifact hash，但仍必须枚举实际文件防止未声明文件混入；NAS 目标包必须重新校验实际复制结果。
+4. 可观察性：manifest、integrity、NAS upload 三个阶段必须有开始、结束、耗时和文件/字节摘要，避免再次出现小时级黑箱等待。
