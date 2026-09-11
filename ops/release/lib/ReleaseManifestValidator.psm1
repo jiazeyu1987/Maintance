@@ -15,8 +15,11 @@ $script:RequiredTopLevelFields = @(
     'createdAt',
     'createdBy',
     'sourceRepos',
+    'sourceRoots',
+    'sourceRoles',
     'changeSet',
     'publishScope',
+    'packageDigest',
     'components',
     'artifacts',
     'database',
@@ -38,9 +41,7 @@ $script:RequiredTopLevelFields = @(
     'manifestChecksum'
 )
 $script:ImplicitPackageFiles = @(
-    'manifest.json',
-    'release-manifest.json',
-    'legacy-release-manifest.json'
+    'manifest.json'
 )
 $script:ScannableExtensions = @(
     '.json',
@@ -646,30 +647,8 @@ function Invoke-ReleaseManifestValidation {
     $checks = New-Object System.Collections.ArrayList
     $packageFullPath = [System.IO.Path]::GetFullPath($PackagePath)
     $manifestPath = Join-Path -Path $packageFullPath -ChildPath 'manifest.json'
-    $legacyManifestPath = Join-Path -Path $packageFullPath -ChildPath 'release-manifest.json'
 
     if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
-        if (Test-Path -LiteralPath $legacyManifestPath -PathType Leaf) {
-            $warning = New-ReleaseManifestDiagnostic `
-                -Status 'warning' `
-                -Code 'LEGACY_MANIFEST_V0' `
-                -Scope 'manifest' `
-                -Path $legacyManifestPath `
-                -Message 'Legacy release-manifest.json found without Manifest v1 manifest.json.' `
-                -Impact 'Smart Release Phase 1 can report this package but cannot apply v1 integrity and target checks.' `
-                -NextStep 'Generate manifest.json v1 for Smart Release validation while keeping legacy release flow explicit.'
-            [void]$warnings.Add($warning)
-            [void]$checks.Add((New-ReleaseManifestDiagnostic `
-                -Status 'warning' `
-                -Code 'LEGACY_MANIFEST_V0' `
-                -Scope 'manifest.presence' `
-                -Path $legacyManifestPath `
-                -Message 'Legacy v0 manifest was detected.' `
-                -Impact 'Validator stopped before v1 schema checks by design.' `
-                -NextStep 'Create manifest.json v1 before relying on Smart Release gates.'))
-            return New-ReleaseManifestValidationResult -PackagePath $packageFullPath -Mode $Mode -Errors $errors -Warnings $warnings -Checks $checks
-        }
-
         [void]$errors.Add((New-ReleaseManifestDiagnostic `
             -Status 'failed' `
             -Code 'MANIFEST_MISSING' `
@@ -677,7 +656,7 @@ function Invoke-ReleaseManifestValidation {
             -Path $packageFullPath `
             -Message 'manifest.json is missing from the release package.' `
             -Impact 'The release package has no Manifest v1 contract to validate.' `
-            -NextStep 'Add manifest.json at the package root or explicitly provide a legacy release-manifest.json.'))
+            -NextStep 'Add the authoritative manifest.json at the package root.'))
         [void]$checks.Add((New-ReleaseManifestDiagnostic `
             -Status 'failed' `
             -Code 'MANIFEST_MISSING' `

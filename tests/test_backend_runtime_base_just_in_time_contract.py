@@ -10,7 +10,8 @@ def test_backend_runtime_base_is_validated_early_and_loaded_at_point_of_use() ->
     integrity_call_index = text.index(
         "Assert-BackendRuntimeBaseTarIntegrity -Config $backendRuntimeBaseConfig"
     )
-    maven_index = text.index("Invoke-CheckedCommand -FilePath 'mvn'")
+    backend_jar_index = text.index("Info 'Building backend jar'")
+    maven_index = text.index("Invoke-CheckedCommand -FilePath 'mvn'", backend_jar_index)
     context_index = text.index("New-ReleaseDockerBuildContext `")
     image_call_index = text.index(
         "Assert-BackendRuntimeBaseImageAvailable -Config $backendRuntimeBaseConfig"

@@ -12,8 +12,11 @@
     "createdAt",
     "createdBy",
     "sourceRepos",
+    "sourceRoots",
+    "sourceRoles",
     "changeSet",
     "publishScope",
+    "packageDigest",
     "components",
     "artifacts",
     "database",
@@ -70,15 +73,28 @@
     "sourceRepos": {
       "type": "array"
     },
+    "sourceRoots": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "sourceRoles": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3
+    },
     "changeSet": {
       "type": "object"
     },
     "publishScope": {
       "type": "string",
       "enum": [
-        "code-only",
-        "with-data"
+        "app-release"
       ]
+    },
+    "packageDigest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
     },
     "components": {
       "type": "array",
@@ -105,7 +121,10 @@
           "artifactId",
           "componentName",
           "artifactType",
+          "path",
           "includedInPackage",
+          "sha256",
+          "bytes",
           "artifactHash",
           "sourceHash",
           "dependencyHash",
@@ -129,6 +148,10 @@
           "sha256": {
             "type": "string",
             "pattern": "^sha256:[a-fA-F0-9]{64}$"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0
           },
           "artifactHash": {
             "type": "string",

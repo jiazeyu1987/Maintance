@@ -55,11 +55,10 @@ def _write_package(
     package_dir: Path,
     *,
     release_tag: str = "release-p2-fixture",
-    publish_scope: str = "code-only",
+    publish_scope: str = "app-release",
 ) -> dict[str, object]:
     package_dir.mkdir(parents=True)
     payload = {
-        "manifest.json": b'{"manifestVersion":"1.0"}\n',
         "bin/app.bin": b"immutable-app-payload\x00\x01",
     }
     artifacts: list[dict[str, object]] = []
@@ -75,19 +74,34 @@ def _write_package(
             }
         )
     manifest: dict[str, object] = {
+        "schemaVersion": 2,
         "releaseTag": release_tag,
-        "packageDirectoryName": package_dir.name,
+        "packageId": package_dir.name,
         "publishScope": publish_scope,
+        "packageDigest": _sha256(
+            "".join(
+                f"{item['path']}\t{item['bytes']}\t{item['sha256']}\n"
+                for item in sorted(artifacts, key=lambda item: str(item["path"]).encode("utf-8"))
+            ).encode("utf-8")
+        ),
+        "sourceRoots": [
+            {"rootRole": "maintenance", "commit": "a" * 40, "dirty": False},
+            {"rootRole": "application", "commit": "b" * 40, "dirty": False},
+        ],
+        "sourceRoles": [
+            {"sourceRole": "maintenance", "rootRole": "maintenance", "commit": "a" * 40},
+            {"sourceRole": "backend", "rootRole": "application", "commit": "b" * 40},
+            {"sourceRole": "frontend", "rootRole": "application", "commit": "b" * 40},
+        ],
         "artifacts": artifacts,
     }
-    manifest_bytes = json.dumps(manifest, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
-    (package_dir / "release-manifest.json").write_bytes(manifest_bytes)
+    _rewrite_manifest(package_dir, manifest)
     return manifest
 
 
 def _rewrite_manifest(package_dir: Path, manifest: dict[str, object]) -> None:
     manifest_bytes = json.dumps(manifest, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
-    (package_dir / "release-manifest.json").write_bytes(manifest_bytes)
+    (package_dir / "manifest.json").write_bytes(manifest_bytes)
 
 
 def _verify_package(package_dir: Path | str) -> subprocess.CompletedProcess[str]:
@@ -133,10 +147,11 @@ def test_mode_is_mandatory_and_direct_is_rejected_before_script_body(tmp_path: P
 @pytest.mark.parametrize(
     ("environment", "publish_scope", "allowed"),
     [
-        ("test", "with-data", True),
-        ("test", "code-only", True),
-        ("prod", "code-only", True),
-        ("backup", "code-only", True),
+        ("test", "app-release", True),
+        ("prod", "app-release", True),
+        ("backup", "app-release", True),
+        ("test", "code-only", False),
+        ("test", "with-data", False),
         ("prod", "with-data", False),
         ("backup", "with-data", False),
     ],
@@ -160,7 +175,7 @@ def test_release_package_scope_matrix_blocks_production_data_packages_before_pro
         assert probe.read_text(encoding="utf-8") == "external-action-probe"
     else:
         assert result.returncode != 0
-        assert "requires a code-only release package" in result.stdout + result.stderr
+        assert "app-release" in result.stdout + result.stderr
         assert not probe.exists()
 
 
@@ -197,15 +212,16 @@ def test_runtime_console_only_emits_explicit_package_modes_for_code_only_flow() 
     assert 'deployReleaseArguments("backup", req)' in source
 
 
-def test_build_release_defaults_to_code_only_and_requires_explicit_with_data_confirm() -> None:
+def test_build_release_is_fixed_to_app_release_without_data_modes() -> None:
     script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
 
-    assert "[ValidateSet('code-only', 'with-data')]" in script
-    assert "[string]$PublishScope = 'code-only'" in script
+    assert "[ValidateSet('app-release')]" in script
+    assert "[string]$PublishScope = 'app-release'" in script
     assert "Resolve-EffectiveBuildReleasePublishScope" in script
-    assert "Daily build-release defaults to code-only" in script
-    assert "Explicit confirmation required for with-data build-release: -ConfirmText WITH-DATA" in script
-    assert "with-data cannot be combined with -SkipDatabaseSync or -SkipMinioSync" in script
+    assert "Standard build-release is app-release" in script
+    scope_start = script.index("function Resolve-EffectiveBuildReleasePublishScope")
+    scope_end = script.index("function Set-ReleasePackageArtifactCache", scope_start)
+    assert "with-data" not in script[scope_start:scope_end]
 
 
 def test_build_release_long_running_package_steps_are_observable() -> None:
@@ -254,7 +270,7 @@ def test_publish_script_has_valid_powershell_ast() -> None:
     assert result.returncode == 0, result.stdout + result.stderr
 
 
-def test_integrity_verifier_exactly_covers_payload_and_includes_manifest_json(tmp_path: Path) -> None:
+def test_integrity_verifier_exactly_covers_payload_and_excludes_manifest_self_reference(tmp_path: Path) -> None:
     package_dir = tmp_path / "package-exact"
     _write_package(package_dir)
 
@@ -262,8 +278,8 @@ def test_integrity_verifier_exactly_covers_payload_and_includes_manifest_json(tm
 
     assert verification["releaseTag"] == "release-p2-fixture"
     assert verification["packageDirectoryName"] == "package-exact"
-    assert verification["publishScope"] == "code-only"
-    assert [item["path"] for item in verification["artifacts"]] == ["bin/app.bin", "manifest.json"]
+    assert verification["publishScope"] == "app-release"
+    assert [item["path"] for item in verification["artifacts"]] == ["bin/app.bin"]
     assert all(re.fullmatch(r"[0-9a-f]{64}", item["sha256"]) for item in verification["artifacts"])
 
 
@@ -277,18 +293,15 @@ def test_package_digest_uses_fixed_vector_and_is_root_separator_independent(tmp_
     result_b = _verification_result(package_b)
     result_b_forward_slash = _verification_result(package_b.as_posix())
 
-    manifest_digest = f"sha256:{_sha256((package_a / 'release-manifest.json').read_bytes())}"
-    canonical_records = [f"manifestDigest={manifest_digest}\n"]
-    for artifact in sorted(result_a["artifacts"], key=lambda item: item["path"]):
-        canonical_records.append(
-            f"artifact={artifact['path']}\tsha256:{artifact['sha256']}\t{artifact['bytes']}\n"
-        )
-    expected_package_digest = f"sha256:{_sha256(''.join(canonical_records).encode('utf-8'))}"
+    manifest_digest = _sha256((package_a / "manifest.json").read_bytes())
+    canonical_records = "".join(
+        f"{artifact['path']}\t{artifact['bytes']}\t{artifact['sha256']}\n"
+        for artifact in sorted(result_a["artifacts"], key=lambda item: item["path"].encode("utf-8"))
+    )
+    expected_package_digest = _sha256(canonical_records.encode("utf-8"))
 
     assert result_a["manifestDigest"] == manifest_digest
     assert result_a["packageDigest"] == expected_package_digest
-    assert manifest_digest == "sha256:2d03b3a34a07105aec291600962fcfbf1494534055466a0d559ca7736db75c62"
-    assert expected_package_digest == "sha256:bca84ee56d15a8cf4b662442ba30d7f96000835ccaa63d6c6d402251cdde3276"
     assert result_b["packageDigest"] == expected_package_digest
     assert result_b_forward_slash["packageDigest"] == expected_package_digest
 
@@ -301,15 +314,14 @@ def test_package_digest_uses_fixed_vector_and_is_root_separator_independent(tmp_
         ("extra", "extra.txt: undeclared file"),
         ("bytes", "bin/app.bin: bytes mismatch"),
         ("hash", "bin/app.bin: hash mismatch"),
-        ("absolute", "C:/outside.bin: invalid artifact path"),
-        ("parent", "../outside.bin: invalid artifact path"),
-        ("backslash", "bin\\app.bin: invalid artifact path"),
-        ("duplicate", "bin/app.bin: duplicate artifact path"),
-        ("case-conflict", "BIN/APP.BIN: duplicate artifact path"),
+        ("absolute", "PACKAGE_PATH_INVALID"),
+        ("parent", "PACKAGE_PATH_INVALID"),
+        ("backslash", "PACKAGE_PATH_INVALID"),
+        ("duplicate", "PACKAGE_PATH_INVALID"),
+        ("case-conflict", "PACKAGE_PATH_INVALID"),
         ("uppercase-hash", "bin/app.bin: invalid sha256"),
         ("negative-bytes", "bin/app.bin: invalid bytes"),
         ("null-bytes", "bin/app.bin: invalid bytes"),
-        ("missing-manifest-declaration", "manifest.json: missing artifact declaration"),
         ("declared-missing", "ghost.bin: missing artifact"),
     ],
 )
@@ -322,45 +334,42 @@ def test_integrity_verifier_rejects_all_payload_drift(
     assert isinstance(artifacts, list)
 
     if mutation == "tamper":
-        (package_dir / "bin" / "app.bin").write_bytes(b"X" * int(artifacts[1]["bytes"]))
+        (package_dir / "bin" / "app.bin").write_bytes(b"X" * int(artifacts[0]["bytes"]))
     elif mutation == "missing":
         (package_dir / "bin" / "app.bin").unlink()
     elif mutation == "extra":
         (package_dir / "extra.txt").write_text("not declared", encoding="utf-8")
     elif mutation == "bytes":
-        artifacts[1]["bytes"] = int(artifacts[1]["bytes"]) + 1
+        artifacts[0]["bytes"] = int(artifacts[0]["bytes"]) + 1
         _rewrite_manifest(package_dir, manifest)
     elif mutation == "hash":
-        artifacts[1]["sha256"] = "0" * 64
+        artifacts[0]["sha256"] = "0" * 64
         _rewrite_manifest(package_dir, manifest)
     elif mutation == "absolute":
-        artifacts[1]["path"] = "C:/outside.bin"
+        artifacts[0]["path"] = "C:/outside.bin"
         _rewrite_manifest(package_dir, manifest)
     elif mutation == "parent":
-        artifacts[1]["path"] = "../outside.bin"
+        artifacts[0]["path"] = "../outside.bin"
         _rewrite_manifest(package_dir, manifest)
     elif mutation == "backslash":
-        artifacts[1]["path"] = "bin\\app.bin"
+        artifacts[0]["path"] = "bin\\app.bin"
         _rewrite_manifest(package_dir, manifest)
     elif mutation == "duplicate":
-        artifacts.append(dict(artifacts[1]))
+        artifacts.append(dict(artifacts[0]))
         _rewrite_manifest(package_dir, manifest)
     elif mutation == "case-conflict":
-        duplicate = dict(artifacts[1])
+        duplicate = dict(artifacts[0])
         duplicate["path"] = "BIN/APP.BIN"
         artifacts.append(duplicate)
         _rewrite_manifest(package_dir, manifest)
     elif mutation == "uppercase-hash":
-        artifacts[1]["sha256"] = str(artifacts[1]["sha256"]).upper()
+        artifacts[0]["sha256"] = str(artifacts[0]["sha256"]).upper()
         _rewrite_manifest(package_dir, manifest)
     elif mutation == "negative-bytes":
-        artifacts[1]["bytes"] = -1
+        artifacts[0]["bytes"] = -1
         _rewrite_manifest(package_dir, manifest)
     elif mutation == "null-bytes":
-        artifacts[1]["bytes"] = None
-        _rewrite_manifest(package_dir, manifest)
-    elif mutation == "missing-manifest-declaration":
-        artifacts.pop(0)
+        artifacts[0]["bytes"] = None
         _rewrite_manifest(package_dir, manifest)
     elif mutation == "declared-missing":
         artifacts.append({"path": "ghost.bin", "sha256": "0" * 64, "bytes": 0})
@@ -380,14 +389,14 @@ def test_payload_or_manifest_change_changes_digest_or_fails(tmp_path: Path) -> N
     shutil.copytree(baseline_dir, payload_changed_dir)
 
     baseline = _verification_result(baseline_dir)
-    manifest["publishScope"] = "with-data"
+    manifest["operatorNote"] = "manifest metadata changed"
     _rewrite_manifest(manifest_changed_dir, manifest)
     manifest_changed = _verification_result(manifest_changed_dir)
     (payload_changed_dir / "bin" / "app.bin").write_bytes(b"changed-without-manifest-update")
     payload_changed = _verify_package(payload_changed_dir)
 
     assert manifest_changed["manifestDigest"] != baseline["manifestDigest"]
-    assert manifest_changed["packageDigest"] != baseline["packageDigest"]
+    assert manifest_changed["packageDigest"] == baseline["packageDigest"]
     assert payload_changed.returncode != 0
     assert "bin/app.bin: bytes mismatch" in payload_changed.stdout + payload_changed.stderr
 
@@ -409,7 +418,7 @@ def test_only_controlled_mutable_metadata_is_excluded_from_payload(tmp_path: Pat
         target.write_bytes(content)
 
     verification = _verification_result(package_dir)
-    assert [item["path"] for item in verification["artifacts"]] == ["bin/app.bin", "manifest.json"]
+    assert [item["path"] for item in verification["artifacts"]] == ["bin/app.bin"]
 
     for invalid_extra in (
         "attestation.json",
@@ -443,16 +452,17 @@ def test_only_controlled_mutable_metadata_is_excluded_from_payload(tmp_path: Pat
     assert case_check.stdout.strip() == "False"
 
 
-def test_manifest_generation_avoids_self_reference_and_declares_manifest_json() -> None:
+def test_manifest_generation_uses_one_authoritative_manifest_without_self_reference() -> None:
     script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
     function_start = script.index("function Write-ReleaseManifest {")
     function_end = script.index("if ($ReleaseTag.Contains('..')", function_start)
     function_body = script[function_start:function_end]
 
-    v1_write = function_body.index("Write-ReleaseManifestV1")
-    final_collection = function_body.index("Get-ReleasePackageImmutableArtifactEntries", v1_write)
-    legacy_write = function_body.index("'release-manifest.json'", final_collection)
-    assert v1_write < final_collection < legacy_write
+    artifact_collection = function_body.index("Get-ReleasePackageImmutableArtifactEntries")
+    authoritative_write = function_body.index("Write-AuthoritativeReleaseManifest")
+    assert artifact_collection < authoritative_write
+    assert "-ExcludeManifestJson" in function_body
+    assert "release-manifest.json" not in function_body
 
 
 def test_same_verifier_guards_all_four_package_lifecycle_points() -> None:
@@ -468,7 +478,7 @@ def test_same_verifier_guards_all_four_package_lifecycle_points() -> None:
     copy_from_start = script.index("function Copy-ReleasePackageFromNas")
     copy_from_end = script.index("function Get-RequiredJsonPropertyValue", copy_from_start)
     copy_from = script[copy_from_start:copy_from_end]
-    assert copy_from.index("Copy-Item") < copy_from.index(verifier_call)
+    assert copy_from.index("Copy-ReleasePackageDirectory") < copy_from.index(verifier_call)
     assert copy_from.index(verifier_call) < copy_from.index("Release package downloaded from NAS")
 
     mark_start = script.index("function Mark-NasReleaseTested")

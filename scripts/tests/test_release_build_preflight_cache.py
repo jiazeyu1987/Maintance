@@ -51,7 +51,7 @@ def _write_inputs(tmp_path: Path) -> tuple[Path, Path]:
         "schemaVersion": "release-build-prospective/v1",
         "releaseTag": "release-20260908",
         "sourceRepos": source_repos,
-        "publishScope": "code-only",
+        "publishScope": "app-release",
         "database": {"schemaMigrations": [migration]},
         "requiredSql": [migration],
     }
@@ -90,7 +90,7 @@ def _run(tmp_path: Path, *extra: str) -> subprocess.CompletedProcess[str]:
             "--target-environment",
             "test",
             "--publish-scope",
-            "code-only",
+            "app-release",
             "--output",
             str(output),
             *extra,
@@ -109,7 +109,7 @@ def test_runner_writes_complete_deterministic_binding_evidence(tmp_path: Path) -
     assert evidence["schemaVersion"] == "release-build-preflight/v1"
     assert evidence["status"] == "passed"
     assert evidence["targetEnvironment"] == "test"
-    assert evidence["publishScope"] == "code-only"
+    assert evidence["publishScope"] == "app-release"
     assert evidence["collectionId"] == "11111111-1111-4111-8111-111111111111"
     assert evidence["collectedAt"] == "2026-09-08T03:00:00Z"
     assert evidence["sourceCommits"] == {"backend": "1" * 40, "frontend": "2" * 40}
@@ -124,7 +124,7 @@ def test_runner_writes_complete_deterministic_binding_evidence(tmp_path: Path) -
     }
     assert all(value.startswith("sha256:") for value in evidence["bindings"].values())
     assert evidence["bindings"]["preflightFingerprint"] == (
-        "sha256:c6ccff610bb929526fc72947c4d985ed811a28818461077882f5d867e9c25b54"
+        "sha256:77a1be24cb22b07c6fdef14c2554a59101b696f40cafb5ad85c31457ad97a30f"
     )
     assert evidence["planner"]["status"] == "passed"
     assert evidence["planner"]["items"][0]["action"] == "APPLY"
@@ -169,18 +169,18 @@ def test_material_input_drift_changes_binding_or_fails(tmp_path: Path, field: st
         target["targetEnvironment"] = "prod"
         command_extra = ["--target-environment", "prod"]
     else:
-        manifest["publishScope"] = "with-data"
-        command_extra = ["--publish-scope", "with-data"]
+        manifest["publishScope"] = "code-only"
+        command_extra = ["--publish-scope", "code-only"]
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
     target_path.write_text(json.dumps(target), encoding="utf-8")
     output = changed / "evidence.json"
     result = subprocess.run(
         [sys.executable, "-X", "utf8", str(RUNNER), "run", "--prospective-manifest", str(manifest_path),
-         "--target-state", str(target_path), "--target-environment", "test", "--publish-scope", "code-only",
+         "--target-state", str(target_path), "--target-environment", "test", "--publish-scope", "app-release",
          "--output", str(output), *command_extra],
         cwd=ROOT, text=True, capture_output=True, encoding="utf-8",
     )
-    if field == "environment":
+    if field in {"environment", "scope"}:
         assert result.returncode != 0
     else:
         assert result.returncode == 0, result.stderr
@@ -210,7 +210,7 @@ def test_invalid_target_state_fails_closed(tmp_path: Path, mutation: str) -> Non
     output = tmp_path / "evidence.json"
     result = subprocess.run(
         [sys.executable, "-X", "utf8", str(RUNNER), "run", "--prospective-manifest", str(manifest),
-         "--target-state", str(target), "--target-environment", "test", "--publish-scope", "code-only",
+         "--target-state", str(target), "--target-environment", "test", "--publish-scope", "app-release",
          "--output", str(output)],
         cwd=ROOT, text=True, capture_output=True, encoding="utf-8",
     )
@@ -234,7 +234,7 @@ def test_blocked_plan_is_written_but_cannot_qualify_build(tmp_path: Path) -> Non
 def _run_existing_inputs(manifest: Path, target: Path, output: Path, command: str = "run") -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [sys.executable, "-X", "utf8", str(RUNNER), command, "--prospective-manifest", str(manifest),
-         "--target-state", str(target), "--target-environment", "test", "--publish-scope", "code-only",
+         "--target-state", str(target), "--target-environment", "test", "--publish-scope", "app-release",
          "--output", str(output)],
         cwd=ROOT, text=True, capture_output=True, encoding="utf-8",
     )

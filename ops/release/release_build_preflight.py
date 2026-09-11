@@ -323,7 +323,7 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--prospective-manifest", required=True)
     parser.add_argument("--target-state", required=True)
     parser.add_argument("--target-environment", required=True)
-    parser.add_argument("--publish-scope", required=True, choices=("code-only", "with-data"))
+    parser.add_argument("--publish-scope", required=True, choices=("app-release",))
     parser.add_argument("--package-root")
     parser.add_argument("--output", required=True)
     return parser.parse_args(argv)

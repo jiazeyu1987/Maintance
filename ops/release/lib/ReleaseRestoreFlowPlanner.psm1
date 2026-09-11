@@ -361,13 +361,13 @@ function Invoke-ReleaseRestoreFlowPlan {
     }
 
     if ($Flow -eq 'publish-only' -and $null -ne $release) {
-        if ([string](Get-FlowProperty -Object $release -Name 'publishScope') -ne 'code-only') {
+        if ([string](Get-FlowProperty -Object $release -Name 'publishScope') -ne 'app-release') {
             [void]$errors.Add((New-FlowDiagnostic `
                 -Code 'PUBLISH_ONLY_MUST_NOT_SYNC_BUSINESS_DATA' `
                 -Scope 'publishScope' `
-                -Message 'publish-only requires release manifest publishScope code-only.' `
+                -Message 'publish-only requires manifest.json publishScope app-release.' `
                 -Impact 'Program deployment could import business data or synchronize DCC objects.' `
-                -NextStep 'Build a code-only release package or choose an explicit data restore flow.'))
+                -NextStep 'Build an app-release package; data restore remains a separate flow.'))
         }
         foreach ($forbiddenStep in @('import-business-data', 'sync-dcc-objects')) {
             if ($stepIds -contains $forbiddenStep) {

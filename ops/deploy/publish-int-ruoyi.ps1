@@ -78,8 +78,8 @@ param(
     [string]$BackendRuntimeBaseDigest = $env:INTRUOYI_BACKEND_RUNTIME_BASE_DIGEST,
     [string]$BackendRuntimeBaseVersion = $env:INTRUOYI_BACKEND_RUNTIME_BASE_VERSION,
     [switch]$IncludeOnlyOffice,
-    [ValidateSet('code-only', 'with-data')]
-    [string]$PublishScope = 'code-only',
+    [ValidateSet('app-release')]
+    [string]$PublishScope = 'app-release',
     [switch]$SkipDatabaseSync,
     [switch]$SkipMinioSync,
     [switch]$EnableSmartReleaseReport,
@@ -147,25 +147,13 @@ function Resolve-EffectiveBuildReleasePublishScope {
         return ''
     }
 
-    if ($PublishScope -eq 'code-only') {
-        if (-not $SkipDatabaseSync) {
-            $script:SkipDatabaseSync = $true
-        }
-        if (-not $SkipMinioSync) {
-            $script:SkipMinioSync = $true
-        }
-        Info 'Daily build-release defaults to code-only; database and MinIO snapshots are skipped unless -PublishScope with-data is explicitly confirmed.'
-        return 'code-only'
+    if ($PublishScope -ne 'app-release') {
+        Fail 'Standard release workflow requires PublishScope=app-release'
     }
-
-    if ($SkipDatabaseSync -or $SkipMinioSync) {
-        Fail 'with-data cannot be combined with -SkipDatabaseSync or -SkipMinioSync'
-    }
-    if ($ConfirmText -ne 'WITH-DATA') {
-        Fail 'Explicit confirmation required for with-data build-release: -ConfirmText WITH-DATA'
-    }
-    Info 'Building explicit with-data release; data snapshot artifacts are treated as the data package for this releaseTag.'
-    return 'with-data'
+    $script:SkipDatabaseSync = $true
+    $script:SkipMinioSync = $true
+    Info 'Standard build-release is app-release; database and MinIO snapshots are excluded.'
+    return 'app-release'
 }
 
 function Set-ReleasePackageArtifactCache {
@@ -323,6 +311,27 @@ function Remove-ReleaseDockerBuildContextFromPackage {
     Remove-Item -LiteralPath $dockerBuildContextRoot -Recurse -Force
     if (Test-Path -LiteralPath $dockerBuildContextRoot) {
         Fail "Release package still contains docker-build-context: $dockerBuildContextRoot"
+    }
+}
+
+function Copy-ReleasePackageDirectory {
+    param(
+        [Parameter(Mandatory = $true)][string]$SourceDirectory,
+        [Parameter(Mandatory = $true)][string]$DestinationDirectory
+    )
+    if (-not (Test-Path -LiteralPath $SourceDirectory -PathType Container)) {
+        Fail "Release package copy source missing: $SourceDirectory"
+    }
+    Require-Command 'robocopy'
+    New-Item -ItemType Directory -Force -Path $DestinationDirectory | Out-Null
+    $robocopyArgs = @(
+        $SourceDirectory, $DestinationDirectory,
+        '/E', '/PURGE', '/Z', '/MT:16', '/NFL', '/NDL', '/NJH', '/NJS', '/NP', '/R:3', '/W:5'
+    )
+    Info ("Run: robocopy {0} {1} /E /PURGE /Z /MT:16 /NFL /NDL /NJH /NJS /NP /R:3 /W:5" -f $SourceDirectory, $DestinationDirectory)
+    & robocopy @robocopyArgs | Out-Null
+    if ($LASTEXITCODE -ge 8) {
+        Fail "robocopy failed with exit code $LASTEXITCODE"
     }
 }
 
@@ -1075,7 +1084,7 @@ function Write-FrontendReleaseInfo {
         releaseTag = $PackageTag
         packageId = $packageDirectoryName
         createdAt = (Get-Date).ToUniversalTime().ToString('o')
-        publishScope = if ($SkipDatabaseSync -and $SkipMinioSync) { 'code-only' } else { 'with-data' }
+        publishScope = $PublishScope
         changeSet = New-ReleaseChangeSetManifest -PackageTag $PackageTag -SourceRepos $SourceRepos
         sourceRepos = $SourceRepos
     }
@@ -2985,11 +2994,8 @@ function Copy-ReleasePackageFromNas {
             $packageDirectoryName = ConvertTo-ReleasePackageDirectoryName -ReleaseTagValue $PackageTag
             Fail "NAS release package not found: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
         }
-        if (Test-Path -LiteralPath $releaseDir) {
-            Remove-Item -LiteralPath $releaseDir -Recurse -Force
-        }
         New-Item -ItemType Directory -Force -Path $localTempRoot | Out-Null
-        Copy-Item -LiteralPath $sourcePath -Destination $localTempRoot -Recurse -Force
+        Copy-ReleasePackageDirectory -SourceDirectory $sourcePath -DestinationDirectory $releaseDir
         $packageDirectoryName = ConvertTo-ReleasePackageDirectoryName -ReleaseTagValue $PackageTag
         $packageIntegrity = Test-ReleasePackageIntegrity -PackagePath $releaseDir -ExpectedReleaseTag $PackageTag
         if ($Environment -in @('prod', 'backup')) {
@@ -3024,49 +3030,6 @@ function Get-RequiredJsonPropertyValue {
     return $property.Value
 }
 
-function Read-NasReleaseManifestForCompatibility {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$PackagePath,
-        [Parameter(Mandatory = $true)]
-        [string]$PackageTag,
-        [Parameter(Mandatory = $true)]
-        [string]$PackageDirectoryName
-    )
-
-    $manifestPath = Join-Path $PackagePath 'release-manifest.json'
-    if (-not (Test-Path -LiteralPath $manifestPath)) {
-        Fail "release-manifest.json missing in NAS release package: $NasReleaseRoot/$PackageDirectoryName (releaseTag=$PackageTag)"
-    }
-
-    try {
-        $manifestText = [System.IO.File]::ReadAllText($manifestPath, [System.Text.UTF8Encoding]::new($false))
-        $manifest = $manifestText | ConvertFrom-Json
-    } catch {
-        Fail "release-manifest.json parse failed in NAS release package: $($_.Exception.Message)"
-    }
-
-    $manifestPackageDirectoryName = [string](Get-RequiredJsonPropertyValue -JsonObject $manifest -PropertyName 'packageDirectoryName' -ArtifactName 'release-manifest.json')
-    if ($manifestPackageDirectoryName -ne $PackageDirectoryName) {
-        Fail "release-manifest.json packageDirectoryName differs from package directory: $manifestPackageDirectoryName != $PackageDirectoryName"
-    }
-
-    $publishScope = [string](Get-RequiredJsonPropertyValue -JsonObject $manifest -PropertyName 'publishScope' -ArtifactName 'release-manifest.json')
-    if ($publishScope -notin @('code-only', 'with-data')) {
-        Fail "Invalid release package publishScope: $publishScope"
-    }
-
-    $onlyOfficeProperty = $manifest.PSObject.Properties['onlyOfficeIncluded']
-    if ($null -eq $onlyOfficeProperty) {
-        Fail 'release-manifest.json missing onlyOfficeIncluded; rebuild the release package'
-    }
-    if ($onlyOfficeProperty.Value -isnot [bool]) {
-        Fail "Invalid release package onlyOfficeIncluded: $($onlyOfficeProperty.Value)"
-    }
-
-    return $manifest
-}
-
 function New-RollbackCompatibilityEvidence {
     param(
         [Parameter(Mandatory = $true)]
@@ -3090,8 +3053,8 @@ function New-RollbackCompatibilityEvidence {
     )
 
     $blockedReasons = New-Object System.Collections.Generic.List[string]
-    if ($Manifest.publishScope -ne 'code-only') {
-        $blockedReasons.Add("release package publishScope=$($Manifest.publishScope) is not code-only")
+    if ($Manifest.publishScope -ne 'app-release') {
+        $blockedReasons.Add("release package publishScope=$($Manifest.publishScope) is not app-release")
     }
     if ($RecoverySetProgramVersion -ne $PackageDirectoryName) {
         $blockedReasons.Add("recoverySet programVersion=$RecoverySetProgramVersion differs from packageDirectoryName=$PackageDirectoryName")
@@ -3183,7 +3146,15 @@ function Mark-NasReleaseTested {
             Fail "NAS release package not found: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
         }
         $packageDirectoryName = ConvertTo-ReleasePackageDirectoryName -ReleaseTagValue $PackageTag
-        $manifest = Read-NasReleaseManifestForCompatibility -PackagePath $packagePath -PackageTag $PackageTag -PackageDirectoryName $packageDirectoryName
+        $manifestPath = Join-Path $packagePath 'manifest.json'
+        if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
+            Fail "manifest.json missing in NAS release package: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
+        }
+        try {
+            $manifest = ([System.IO.File]::ReadAllText($manifestPath, [System.Text.UTF8Encoding]::new($false))) | ConvertFrom-Json
+        } catch {
+            Fail "manifest.json parse failed in NAS release package: $($_.Exception.Message)"
+        }
         $packageIntegrity = Test-ReleasePackageIntegrity -PackagePath $packagePath -ExpectedReleaseTag $PackageTag
         $checkedAt = (Get-Date).ToUniversalTime().ToString('o')
         $recoverySet = @{
@@ -3221,16 +3192,16 @@ function Mark-NasReleaseTested {
 }
 
 function Read-ReleaseManifest {
-    $manifestPath = Join-Path $releaseDir 'release-manifest.json'
+    $manifestPath = Join-Path $releaseDir 'manifest.json'
     if (-not (Test-Path -LiteralPath $manifestPath)) {
-        Fail "release-manifest.json missing in release package: $manifestPath"
+        Fail "manifest.json missing in release package: $manifestPath"
     }
 
     try {
         $manifestText = [System.IO.File]::ReadAllText($manifestPath, [System.Text.UTF8Encoding]::new($false))
         return $manifestText | ConvertFrom-Json
     } catch {
-        Fail "release-manifest.json parse failed: $($_.Exception.Message)"
+        Fail "manifest.json parse failed: $($_.Exception.Message)"
     }
 }
 
@@ -3242,9 +3213,9 @@ function Resolve-DeployReleasePackageScope {
     }
 
     if ([string]::IsNullOrWhiteSpace($publishScope)) {
-        Fail 'release-manifest.json missing publishScope'
+        Fail 'manifest.json missing publishScope'
     }
-    if ($publishScope -notin @('code-only', 'with-data')) {
+    if ($publishScope -ne 'app-release') {
         Fail "Invalid release package publishScope: $publishScope"
     }
     return $publishScope
@@ -3253,7 +3224,7 @@ function Resolve-DeployReleasePackageScope {
 function Resolve-DeployReleasePackageOnlyOfficeIncluded {
     $manifest = Read-ReleaseManifest
     if ($null -eq $manifest.onlyOfficeIncluded) {
-        Fail 'release-manifest.json missing onlyOfficeIncluded; rebuild the release package'
+        Fail 'manifest.json missing onlyOfficeIncluded; rebuild the release package'
     }
     if ($manifest.onlyOfficeIncluded -isnot [bool]) {
         Fail "Invalid release package onlyOfficeIncluded: $($manifest.onlyOfficeIncluded)"
@@ -3278,7 +3249,7 @@ function Resolve-DeployReleasePackageComponent {
     }
 
     if ([string]::IsNullOrWhiteSpace($manifestComponent)) {
-        Fail 'release-manifest.json missing component; rebuild the release package or pass -Component explicitly'
+        Fail 'manifest.json missing component; rebuild the release package or pass -Component explicitly'
     }
     if ($manifestComponent -notin @('full', 'intruoyi', 'backend', 'frontend', 'website')) {
         Fail "Invalid release package component: $manifestComponent"
@@ -3978,7 +3949,7 @@ function Invoke-BuildReleaseTargetPreflight {
     }
 
     $targetEnvironment = 'test'
-    $publishScope = if ($SkipDatabaseSync -and $SkipMinioSync) { 'code-only' } else { 'with-data' }
+    $publishScope = $PublishScope
     $preflightRunner = Join-Path $maintenanceReleaseScriptRoot 'release_build_preflight.py'
     if (-not (Test-Path -LiteralPath $preflightRunner -PathType Leaf)) {
         Fail "Build preflight runner missing: $preflightRunner"
@@ -4096,6 +4067,95 @@ BUILD_PREFLIGHT_SQL
     Info "Build preflight passed: $evidencePath"
 }
 
+function Assert-ReleaseSourceFreeze {
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('before-build', 'before-package')]
+        [string]$VerificationPoint,
+        [AllowNull()]
+        [object]$ExpectedEvidence
+    )
+
+    $maintenanceRoot = Get-ReleaseGitValue -RepoPath $scriptDir -Arguments @('rev-parse', '--show-toplevel') -Purpose 'maintenance git root'
+    $applicationRoot = Get-ReleaseGitValue -RepoPath $backendRepo -Arguments @('rev-parse', '--show-toplevel') -Purpose 'application git root'
+    $frontendRoot = Get-ReleaseGitValue -RepoPath $frontendDir -Arguments @('rev-parse', '--show-toplevel') -Purpose 'frontend git root'
+    if ($applicationRoot -cne $frontendRoot) {
+        Fail "SOURCE_ROOT_MISMATCH: backend and frontend must share one IntRuoyi git root"
+    }
+
+    $rootFacts = @(
+        [ordered]@{ rootRole = 'maintenance'; path = $maintenanceRoot },
+        [ordered]@{ rootRole = 'application'; path = $applicationRoot }
+    )
+    $sourceRoots = @()
+    foreach ($rootFact in $rootFacts) {
+        $head = Get-ReleaseGitValue -RepoPath $rootFact.path -Arguments @('rev-parse', 'HEAD') -Purpose "$($rootFact.rootRole) source HEAD"
+        $status = & git -C $rootFact.path status --porcelain --untracked-files=all
+        if ($LASTEXITCODE -ne 0) {
+            Fail "SOURCE_STATUS_FAILED: $($rootFact.rootRole)"
+        }
+        if (-not [string]::IsNullOrWhiteSpace(($status -join "`n"))) {
+            Fail "SOURCE_DIRTY: $($rootFact.rootRole)"
+        }
+        $approvedCommit = $head
+        if ($null -ne $ExpectedEvidence) {
+            $expectedRoot = @($ExpectedEvidence.sourceRoots | Where-Object { $_.rootRole -eq $rootFact.rootRole }) | Select-Object -First 1
+            if ($null -eq $expectedRoot) {
+                Fail "SOURCE_ROOT_MISSING: $($rootFact.rootRole)"
+            }
+            $approvedCommit = [string]$expectedRoot.approvedCommit
+            if ($head -cne $approvedCommit) {
+                Fail "SOURCE_HEAD_DRIFT: $($rootFact.rootRole) expected=$approvedCommit actual=$head"
+            }
+        }
+        $sourceRoots += [ordered]@{
+            rootRole = [string]$rootFact.rootRole
+            normalizedRoot = ([System.IO.Path]::GetFullPath([string]$rootFact.path)).Replace('\', '/').ToLowerInvariant()
+            approvedCommit = $approvedCommit
+            commit = $head
+            dirty = $false
+        }
+    }
+
+    $maintenanceCommit = [string](@($sourceRoots | Where-Object { $_.rootRole -eq 'maintenance' })[0].commit)
+    $applicationCommit = [string](@($sourceRoots | Where-Object { $_.rootRole -eq 'application' })[0].commit)
+    return [pscustomobject][ordered]@{
+        verificationPoint = $VerificationPoint
+        sourceRoots = $sourceRoots
+        sourceRoles = @(
+            [ordered]@{ sourceRole = 'maintenance'; rootRole = 'maintenance'; relativePath = '.'; commit = $maintenanceCommit },
+            [ordered]@{ sourceRole = 'backend'; rootRole = 'application'; relativePath = 'IntRuoyiBackend'; commit = $applicationCommit },
+            [ordered]@{ sourceRole = 'frontend'; rootRole = 'application'; relativePath = 'IntRuoyiFronted'; commit = $applicationCommit }
+        )
+    }
+}
+
+function Invoke-StandardReleaseContractTests {
+    Info 'Running backend contract tests'
+    Invoke-CheckedCommand -FilePath 'mvn' -ArgumentList @(
+        '-f', (Join-Path $backendRepo 'pom.xml'),
+        '-pl', 'yudao-module-infra', '-am',
+        '-Dtest=ReleaseWorkflowContractTest,ReleaseSourceFreezeTest,ReleaseWorkflowGateOrderTest,ReleaseDigestVectorTest',
+        '-Dsurefire.failIfNoSpecifiedTests=false', 'test'
+    )
+    Info 'Running frontend contract tests'
+    Invoke-CheckedCommand -FilePath 'node' -ArgumentList @((Join-Path $frontendDir 'tests\e2e\runtime-control-one-button-static.spec.cjs'))
+    Invoke-CheckedCommand -FilePath 'corepack' -ArgumentList @('pnpm', '--dir', $frontendDir, 'ts:check')
+    Info 'Running release script tests'
+    $pytestRoot = Join-Path $resolvedLocalCacheRoot "release-workflow-test-temp\$packageDirectoryName"
+    Invoke-CheckedCommand -FilePath 'python' -ArgumentList @(
+        '-X', 'utf8', '-m', 'pytest', '-q',
+        (Join-Path $scriptDir '..\..\scripts\tests\test_release_workflow_preflight.py'),
+        (Join-Path $scriptDir '..\..\scripts\tests\test_release_digest_vectors.py'),
+        (Join-Path $scriptDir '..\..\scripts\tests\test_app_release_package_governance.py'),
+        '--basetemp', $pytestRoot
+    )
+    Invoke-CheckedCommand -FilePath 'powershell.exe' -ArgumentList @(
+        '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
+        (Join-Path $scriptDir '..\..\scripts\tests\verify-release-digest-vector.ps1')
+    )
+}
+
 function Get-ReleaseSchemaDigest {
     param(
         [Parameter(Mandatory = $true)]
@@ -4103,7 +4163,7 @@ function Get-ReleaseSchemaDigest {
     )
     $schemaContract = [ordered]@{
         requiredSql = @($RequiredSqlEntries)
-        publishScope = if ($SkipDatabaseSync -and $SkipMinioSync) { 'code-only' } else { 'with-data' }
+        publishScope = $PublishScope
     } | ConvertTo-Json -Depth 8 -Compress
     return ConvertTo-ReleaseStringSha256Digest -Value $schemaContract
 }
@@ -4272,6 +4332,7 @@ function New-ReleaseArtifactManifestEntries {
             includedInPackage = $true
             artifactCacheUri = $null
             sha256 = $digest
+            bytes = [int64]$artifact.bytes
             artifactHash = $digest
             size = [int64]$artifact.bytes
             digest = $digest
@@ -4312,7 +4373,7 @@ function Write-ReleaseResourceReferenceManifest {
     [System.IO.File]::WriteAllText((Join-Path $resourcesDir 'resource-reference-manifest.json'), $resourceReference, [System.Text.UTF8Encoding]::new($false))
 }
 
-function Write-ReleaseManifestV1 {
+function Write-AuthoritativeReleaseManifest {
     param(
         [Parameter(Mandatory = $true)]
         [string]$PackageTag,
@@ -4335,8 +4396,9 @@ function Write-ReleaseManifestV1 {
     $sourceRepos = New-ReleaseSourceRepoManifestEntries
     $buildModules = New-ReleaseBuildModuleManifestEntries -Components $components -LegacyArtifacts $LegacyArtifacts -SourceRepos $sourceRepos -SchemaDigest $schemaDigest
     $artifacts = New-ReleaseArtifactManifestEntries -LegacyArtifacts $LegacyArtifacts -BuildModules $buildModules
-    $packageType = if ($SkipDatabaseSync -and $SkipMinioSync) { 'release-code' } else { 'release-data-snapshot' }
-    $publishScopeValue = if ($SkipDatabaseSync -and $SkipMinioSync) { 'code-only' } else { 'with-data' }
+    $packageType = 'release-code'
+    $publishScopeValue = 'app-release'
+    $packageDigest = (Get-ReleasePackageDigest -Artifacts $LegacyArtifacts).PackageDigest
 
     $effectiveOperatorName = if ([string]::IsNullOrWhiteSpace($OperatorName)) { 'local-operator' } else { $OperatorName.Trim() }
 
@@ -4354,11 +4416,16 @@ function Write-ReleaseManifestV1 {
         createdAt = (Get-Date).ToUniversalTime().ToString('o')
         createdBy = $effectiveOperatorName
         sourceRepos = $sourceRepos
+        sourceRoots = @($script:ReleaseSourceFreezeEvidence.sourceRoots)
+        sourceRoles = @($script:ReleaseSourceFreezeEvidence.sourceRoles)
         changeSet = New-ReleaseChangeSetManifest -PackageTag $PackageTag -SourceRepos $sourceRepos
         publishScope = $publishScopeValue
+        packageDigest = $packageDigest
         packageRole = $packageType
         relatedReleaseTag = $PackageTag
         components = $components
+        component = $Component
+        onlyOfficeIncluded = [bool]$IncludeOnlyOffice
         artifacts = $artifacts
         database = [ordered]@{
             schemaMigrations = $migrationPlan
@@ -4438,7 +4505,7 @@ function Write-ReleaseManifestV1 {
     }
     $manifestWithoutChecksum = $manifestV1 | ConvertTo-Json -Depth 20 -Compress
     $manifestV1.manifestChecksum = ConvertTo-ReleaseStringSha256Digest -Value $manifestWithoutChecksum
-    $manifestJson = $manifestV1 | ConvertTo-Json -Depth 20
+    $manifestJson = (($manifestV1 | ConvertTo-Json -Depth 20) -replace "`r`n", "`n").TrimEnd("`r", "`n") + "`n"
     [System.IO.File]::WriteAllText((Join-Path $releaseDir 'manifest.json'), $manifestJson, [System.Text.UTF8Encoding]::new($false))
 }
 
@@ -4448,41 +4515,9 @@ function Write-ReleaseManifest {
         [string]$PackageTag
     )
     Write-ReleaseResourceReferenceManifest -PackageTag $PackageTag
-    $legacyArtifacts = @(Get-ReleasePackageImmutableArtifactEntries -PackagePath $releaseDir -ExcludeManifestJson)
-    Write-ReleaseManifestV1 -PackageTag $PackageTag -LegacyArtifacts $legacyArtifacts
-    $gitCommit = (& git -C $backendRepo rev-parse HEAD 2>$null)
-    if ($LASTEXITCODE -ne 0) {
-        $gitCommit = ''
-    }
-    $files = @(Get-ReleasePackageImmutableArtifactEntries -PackagePath $releaseDir)
-    Set-ReleasePackageArtifactCache -Artifacts $files
-    $manifest = [ordered]@{
-        releaseTag = $PackageTag
-        packageDirectoryName = $packageDirectoryName
-        builtAt = (Get-Date).ToUniversalTime().ToString('o')
-        gitCommit = ([string]$gitCommit).Trim()
-        publishScope = if ($SkipDatabaseSync -and $SkipMinioSync) { 'code-only' } else { 'with-data' }
-        packageRole = if ($SkipDatabaseSync -and $SkipMinioSync) { 'release-code' } else { 'release-data-snapshot' }
-        relatedReleaseTag = $PackageTag
-        component = $Component
-        includeShowroomBuildPackage = [bool]$publishWebsite
-        onlyOfficeIncluded = [bool]$IncludeOnlyOffice
-        artifacts = $files
-    }
-    if ($publishBackend -and $null -ne $backendRuntimeBaseConfig) {
-        $backendRuntimeBaseManifest = [ordered]@{
-            backendRuntimeBaseMode = $backendRuntimeBaseConfig.Mode
-            backendRuntimeBaseImage = $backendRuntimeBaseConfig.Image
-            backendRuntimeBaseDigest = $backendRuntimeBaseConfig.Digest
-            backendRuntimeBaseVersion = $backendRuntimeBaseConfig.Version
-            backendRuntimeBaseTarSha256 = $backendRuntimeBaseConfig.TarSha256
-        }
-        foreach ($entry in $backendRuntimeBaseManifest.GetEnumerator()) {
-            $manifest[$entry.Key] = $entry.Value
-        }
-    }
-    $manifest = $manifest | ConvertTo-Json -Depth 8
-    [System.IO.File]::WriteAllText((Join-Path $releaseDir 'release-manifest.json'), $manifest, [System.Text.UTF8Encoding]::new($false))
+    $artifacts = @(Get-ReleasePackageImmutableArtifactEntries -PackagePath $releaseDir -ExcludeManifestJson)
+    Write-AuthoritativeReleaseManifest -PackageTag $PackageTag -LegacyArtifacts $artifacts
+    Set-ReleasePackageArtifactCache -Artifacts $artifacts
 }
 
 if ($ReleaseTag.Contains('..') -or $ReleaseTag.Contains('/') -or $ReleaseTag.Contains('\')) {
@@ -5803,11 +5838,11 @@ if ($Mode -eq 'deploy-release') {
     Apply-ReleaseRuntimeEnvPackage -TargetEnvironment $Environment
     Require-Command 'ssh'
     Import-ExistingRemoteRuntimeEnvSettings
-    if ($releasePublishScope -eq 'code-only') {
+    if ($releasePublishScope -eq 'app-release') {
         $SkipDatabaseSync = $true
         $SkipMinioSync = $true
-    } elseif ($releasePublishScope -eq 'with-data') {
-        Info 'Deploying with-data release package'
+    } else {
+        Fail "Unsupported release package publishScope: $releasePublishScope"
     }
     if ($smartReleaseReportOnlyEnabled -and $Mode -eq 'deploy-release') {
         Invoke-SmartReleaseDeployPrecheckReportOnly -PackagePath $releaseDir
@@ -5935,6 +5970,11 @@ if ($requiresRemoteMinioCredentials -and (
     [string]::IsNullOrWhiteSpace($remoteMinioSecretKey)
 )) {
     Fail 'Missing remote MinIO credentials from running containers; target file storage rebind requires them'
+}
+
+if ($Mode -eq 'build-release') {
+    $script:ReleaseSourceFreezeEvidence = Assert-ReleaseSourceFreeze -VerificationPoint 'before-build'
+    Invoke-StandardReleaseContractTests
 }
 
 Info 'Checking local Docker daemon'
@@ -6149,6 +6189,7 @@ Copy-Item -LiteralPath $composeTemplate -Destination (Join-Path $releaseDir 'doc
 Remove-ReleaseDockerBuildContextFromPackage
 Invoke-ReleaseStage -Name 'release manifest generation' -ScriptBlock {
     Write-ReleasePackageSizeSummary -PackagePath $releaseDir
+    $script:ReleaseSourceFreezeEvidence = Assert-ReleaseSourceFreeze -VerificationPoint 'before-package' -ExpectedEvidence $script:ReleaseSourceFreezeEvidence
     Write-ReleaseManifest -PackageTag $ReleaseTag
 }
 
