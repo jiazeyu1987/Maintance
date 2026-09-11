@@ -651,6 +651,24 @@ def test_mark_tested_writes_atomic_v2_attestation_bound_to_package_and_operation
     assert list(package_dir.glob("tested.json.*.tmp")) == []
 
 
+def test_app_release_mark_tested_does_not_require_or_write_recovery_set() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    start = script.index("function Mark-NasReleaseTested")
+    end = script.index("function Read-ReleaseManifest", start)
+    mark = script[start:end]
+
+    for forbidden in (
+        "SelectedRecoverySetCandidateId is required",
+        "RecoverySetId is required",
+        "RecoverySetManifestHash is required",
+        "New-RollbackCompatibilityEvidence",
+        "Write-NasRollbackCompatibilityEvidence",
+        "-RecoverySet $recoverySet",
+    ):
+        assert forbidden not in mark
+    assert "Write-ReleaseTestedAttestation" in mark
+
+
 @pytest.mark.parametrize("environment", ["prod", "backup"])
 def test_valid_attestation_allows_both_production_grade_environments(
     tmp_path: Path, environment: str
@@ -772,13 +790,14 @@ def test_blocked_rollback_compatibility_preserves_existing_tested_attestation(tm
     assert tested_path.read_bytes() == original
 
 
-def test_mark_checks_rollback_compatibility_before_atomic_tested_write() -> None:
+def test_mark_checks_app_release_integrity_before_atomic_tested_write() -> None:
     script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
     mark_start = script.index("function Mark-NasReleaseTested")
     mark_end = script.index("function Read-ReleaseManifest", mark_start)
     mark = script[mark_start:mark_end]
 
-    compatibility_index = mark.index("$compatibility = New-RollbackCompatibilityEvidence")
-    gate_index = mark.index("Assert-ReleaseRollbackCompatibility")
+    integrity_index = mark.index("Test-ReleasePackageIntegrity")
     tested_write_index = mark.index("Write-ReleaseTestedAttestation")
-    assert compatibility_index < gate_index < tested_write_index
+    assert integrity_index < tested_write_index
+    assert "New-RollbackCompatibilityEvidence" not in mark
+    assert "RecoverySet" not in mark

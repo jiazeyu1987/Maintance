@@ -3130,28 +3130,6 @@ function Mark-NasReleaseTested {
         if ([string]::IsNullOrWhiteSpace($TestConclusion)) {
             Fail 'TestConclusion is required when marking a release package as tested.'
         }
-        if ([string]::IsNullOrWhiteSpace($SelectedRecoverySetCandidateId)) {
-            Fail 'SelectedRecoverySetCandidateId is required when marking a release package as tested.'
-        }
-        if ([string]::IsNullOrWhiteSpace($RecoverySetId)) {
-            Fail 'RecoverySetId is required when marking a release package as tested.'
-        }
-        if ([string]::IsNullOrWhiteSpace($RecoverySetManifestHash)) {
-            Fail 'RecoverySetManifestHash is required when marking a release package as tested.'
-        }
-        if ([string]::IsNullOrWhiteSpace($RecoverySetProgramVersion)) {
-            Fail 'RecoverySetProgramVersion is required when marking rollback compatibility evidence.'
-        }
-        if ([string]::IsNullOrWhiteSpace($RecoverySetRedisPolicy)) {
-            Fail 'RecoverySetRedisPolicy is required when marking rollback compatibility evidence.'
-        }
-        if ($RecoverySetManifestHash -notmatch '^[0-9a-fA-F]{64}$') {
-            Fail 'RecoverySetManifestHash must be a SHA-256 hex value when marking rollback compatibility evidence.'
-        }
-        $expectedRecoverySetCandidateId = "restore:$RecoverySetId"
-        if ($SelectedRecoverySetCandidateId -ne $expectedRecoverySetCandidateId) {
-            Fail "SelectedRecoverySetCandidateId must match RecoverySetId when marking rollback compatibility evidence: expected $expectedRecoverySetCandidateId"
-        }
         $mountInfo = Connect-NasReleaseShare -NasConfig $nasConfig
         $packagePath = Get-NasReleasePackagePath -NasRoot $mountInfo.Root -PackageTag $PackageTag
         if (-not (Test-Path -LiteralPath $packagePath)) {
@@ -3159,46 +3137,15 @@ function Mark-NasReleaseTested {
             Fail "NAS release package not found: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
         }
         $packageDirectoryName = ConvertTo-ReleasePackageDirectoryName -ReleaseTagValue $PackageTag
-        $manifestPath = Join-Path $packagePath 'manifest.json'
-        if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
-            Fail "manifest.json missing in NAS release package: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
-        }
-        try {
-            $manifest = ([System.IO.File]::ReadAllText($manifestPath, [System.Text.UTF8Encoding]::new($false))) | ConvertFrom-Json
-        } catch {
-            Fail "manifest.json parse failed in NAS release package: $($_.Exception.Message)"
-        }
         $packageIntegrity = Test-ReleasePackageIntegrity -PackagePath $packagePath -ExpectedReleaseTag $PackageTag
-        $checkedAt = (Get-Date).ToUniversalTime().ToString('o')
-        $recoverySet = @{
-            selectedRecoverySetCandidateId = $SelectedRecoverySetCandidateId
-            recoverySetId = $RecoverySetId
-            recoverySetManifestHash = $RecoverySetManifestHash
-            programVersion = $RecoverySetProgramVersion
-            redisPolicy = $RecoverySetRedisPolicy
-        }
-        $compatibility = New-RollbackCompatibilityEvidence `
-            -Manifest $manifest `
-            -PackageTag $PackageTag `
-            -PackageDirectoryName $packageDirectoryName `
-            -CheckedAt $checkedAt `
-            -SelectedRecoverySetCandidateId $SelectedRecoverySetCandidateId `
-            -RecoverySetId $RecoverySetId `
-            -RecoverySetManifestHash $RecoverySetManifestHash `
-            -RecoverySetProgramVersion $RecoverySetProgramVersion `
-            -RecoverySetRedisPolicy $RecoverySetRedisPolicy
-        Assert-ReleaseRollbackCompatibility -Compatibility $compatibility
         $null = Write-ReleaseTestedAttestation `
             -PackagePath $packagePath `
             -ExpectedReleaseTag $packageIntegrity.releaseTag `
             -TestOperationId $TestOperationId `
             -TestOperationEvidencePath $TestOperationEvidencePath `
             -TestedBy $OperatorName `
-            -TestConclusion $TestConclusion `
-            -RecoverySet $recoverySet
-        Write-NasRollbackCompatibilityEvidence -PackagePath $packagePath -Evidence $compatibility
+            -TestConclusion $TestConclusion
         Info "Release package marked as tested: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
-        Info "rollback-compatibility.json status=$($compatibility['status']) recorded: $NasReleaseRoot/$packageDirectoryName/rollback-compatibility.json"
     } finally {
         Disconnect-NasReleaseShare -MountInfo $mountInfo
     }

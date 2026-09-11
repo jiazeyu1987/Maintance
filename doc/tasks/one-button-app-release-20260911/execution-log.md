@@ -228,6 +228,16 @@ REGRESSION: `python -X utf8 -m pytest -q --basetemp .tmp-pytest-p3-regression2 s
 
 GREEN: `mvn -f IntRuoyiBackend\\pom.xml -pl yudao-module-infra "-Dtest=ReleaseWorkflowAuthorizationTest" test` -> PASS，3 tests；覆盖跨 workflow/tag/digest/环境绑定拒绝、正式写开关/PROD 要求、过期/撤销/已消费授权和一次性消费。
 
+GREEN: P3 orchestrator -> PASS，`ReleaseWorkflowOrchestratorTest` 6 tests；按钮请求只由服务端生成 releaseTag，build -> READY -> publish-test -> TEST_DEPLOYED -> TESTED 顺序持久化，测试验收使用已绑定 publish operation evidence，发布动作重复点击不重复 dispatch，未批准 sourceSelectionId 在 operation 前阻断。
+
+GREEN: P3 artifact binding -> PASS，workflow 持久化 packageDigest/manifestDigest 与 testOperationId/evidencePath；production authorization 只为 TESTED 且双摘要/测试证据完整的 workflow 创建，promote-prod 先做一次性授权 CAS 消费，再以同一 tag/双摘要/测试证明 dispatch，重放不产生第二次 operation。
+
+REGRESSION: app targeted Maven -> PASS，111 tests，0 failures；包含 source/digest/manifest consumer、workflow state/lease/recovery/security/authorization/orchestrator 和既有 runtime-control service/candidate tests。
+
+REGRESSION: maintenance release governance -> PASS，123 tests，0 failures；包含唯一 manifest、禁止数据/秘密制品、NAS staging + full hash + atomic READY、tested attestation 与 app-release 不写 recovery-set 数据。
+
+BLOCKER: P4/C05 -> `corepack pnpm --dir IntRuoyiFronted ts:check` 仍因任务 app worktree 缺 `node_modules/cross-env` 失败；按门禁未安装依赖，P4/P5 类型检查与真实 Playwright 保持阻塞。
+
 BLOCKER: C05/P4/P5 -> `corepack pnpm --dir IntRuoyiFronted ts:check` FAIL，任务 app worktree 缺 `node_modules/cross-env`；权威 Playwright 目录仍缺 1.60.0 依赖/可执行文件。未临时安装依赖或换版本兜底。
 
 AUTHORIZATION_BOUNDARY: 本轮未访问 NAS、MySQL、MinIO、SSH、测试服、正式服或审查服；未构建 Docker 镜像、未打安装包、未启动服务、未运行真实 E2E。P3 的远程写入、P4/P5 E2E 与最终发布仍需满足各自前置条件和当次授权。
