@@ -47,4 +47,15 @@ foreach ($invalidArtifacts in @(
     }
 }
 
+$upperAWithDiaeresis = [string][char]0x00C4
+$lowerAWithDiaeresis = [string][char]0x00E4
+$unicodeArtifacts = @(
+    [pscustomobject]@{ path = "Z/$upperAWithDiaeresis.txt"; bytes = [int64]3; sha256 = 'c5679a48c4061dd1740cdb6fd3932757f520a7cc5874b6b61d677546e399429f' },
+    [pscustomobject]@{ path = "z/$lowerAWithDiaeresis.txt"; bytes = [int64]4; sha256 = '5b22adcd5be685dd454dd4a9f7c5938219ac4691f2a784665f92eba7850e5a2f' }
+)
+$unicodePackage = Get-ReleasePackageDigest -Artifacts $unicodeArtifacts
+if ($unicodePackage.PackageDigest -cne '050f30bf371902978119b425701935f0b98f461ee22803d75fffcc2c3844dd75') {
+    throw "non-ASCII package digest mismatch: $($unicodePackage.PackageDigest)"
+}
+
 Write-Host 'PowerShell release digest vector passed'

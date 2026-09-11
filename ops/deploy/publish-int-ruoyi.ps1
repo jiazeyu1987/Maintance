@@ -2971,10 +2971,23 @@ function Copy-ReleasePackageToNas {
         if (Test-Path -LiteralPath $targetPath) {
             Fail "NAS release package already exists: $NasReleaseRoot/$packageDirectoryName"
         }
+        $stagingPath = Join-Path $targetRoot ('.' + $packageDirectoryName + '.staging-' + [Guid]::NewGuid().ToString('N'))
         New-Item -ItemType Directory -Force -Path $targetRoot | Out-Null
-        Copy-ReleaseDirectoryTree -SourceDirectory $releaseDir -DestinationDirectory $targetPath
-        $null = Test-ReleasePackageIntegrity -PackagePath $targetPath -ExpectedReleaseTag $PackageTag
-        Info "Release package uploaded to NAS: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
+        try {
+            # Copy-ReleaseDirectoryTree -SourceDirectory $releaseDir -DestinationDirectory $targetPath
+            Copy-ReleaseDirectoryTree -SourceDirectory $releaseDir -DestinationDirectory $stagingPath
+            $null = Test-ReleasePackageIntegrity -PackagePath $stagingPath -ExpectedReleaseTag $PackageTag
+            if (Test-Path -LiteralPath $targetPath) {
+                Fail "NAS release package appeared during staging: $NasReleaseRoot/$packageDirectoryName"
+            }
+            Move-Item -LiteralPath $stagingPath -Destination $targetPath
+            Info "Release package uploaded to NAS: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
+        } catch {
+            if (Test-Path -LiteralPath $stagingPath) {
+                Remove-Item -LiteralPath $stagingPath -Recurse -Force
+            }
+            throw
+        }
     } finally {
         Disconnect-NasReleaseShare -MountInfo $mountInfo
     }
@@ -4090,6 +4103,7 @@ function Assert-ReleaseSourceFreeze {
     $sourceRoots = @()
     foreach ($rootFact in $rootFacts) {
         $head = Get-ReleaseGitValue -RepoPath $rootFact.path -Arguments @('rev-parse', 'HEAD') -Purpose "$($rootFact.rootRole) source HEAD"
+        $normalizedRoot = ([System.IO.Path]::GetFullPath([string]$rootFact.path)).Replace('\', '/').ToLowerInvariant()
         $status = & git -C $rootFact.path status --porcelain --untracked-files=all
         if ($LASTEXITCODE -ne 0) {
             Fail "SOURCE_STATUS_FAILED: $($rootFact.rootRole)"
@@ -4103,6 +4117,9 @@ function Assert-ReleaseSourceFreeze {
             if ($null -eq $expectedRoot) {
                 Fail "SOURCE_ROOT_MISSING: $($rootFact.rootRole)"
             }
+            if ($normalizedRoot -cne [string]$expectedRoot.normalizedRoot) {
+                Fail "SOURCE_ROOT_PATH_DRIFT: $($rootFact.rootRole) expected=$($expectedRoot.normalizedRoot) actual=$normalizedRoot"
+            }
             $approvedCommit = [string]$expectedRoot.approvedCommit
             if ($head -cne $approvedCommit) {
                 Fail "SOURCE_HEAD_DRIFT: $($rootFact.rootRole) expected=$approvedCommit actual=$head"
@@ -4110,7 +4127,7 @@ function Assert-ReleaseSourceFreeze {
         }
         $sourceRoots += [ordered]@{
             rootRole = [string]$rootFact.rootRole
-            normalizedRoot = ([System.IO.Path]::GetFullPath([string]$rootFact.path)).Replace('\', '/').ToLowerInvariant()
+            normalizedRoot = $normalizedRoot
             approvedCommit = $approvedCommit
             commit = $head
             dirty = $false
@@ -4119,14 +4136,32 @@ function Assert-ReleaseSourceFreeze {
 
     $maintenanceCommit = [string](@($sourceRoots | Where-Object { $_.rootRole -eq 'maintenance' })[0].commit)
     $applicationCommit = [string](@($sourceRoots | Where-Object { $_.rootRole -eq 'application' })[0].commit)
+    $sourceRoles = @(
+        [ordered]@{ sourceRole = 'maintenance'; rootRole = 'maintenance'; relativePath = '.'; commit = $maintenanceCommit },
+        [ordered]@{ sourceRole = 'backend'; rootRole = 'application'; relativePath = 'IntRuoyiBackend'; commit = $applicationCommit },
+        [ordered]@{ sourceRole = 'frontend'; rootRole = 'application'; relativePath = 'IntRuoyiFronted'; commit = $applicationCommit }
+    )
+    if ($null -ne $ExpectedEvidence) {
+        foreach ($sourceRole in $sourceRoles) {
+            $expectedRole = @($ExpectedEvidence.sourceRoles | Where-Object { $_.sourceRole -eq $sourceRole.sourceRole }) | Select-Object -First 1
+            if ($null -eq $expectedRole) {
+                Fail "SOURCE_ROLE_SET_DRIFT: $($sourceRole.sourceRole)"
+            }
+            if ([string]$expectedRole.rootRole -cne [string]$sourceRole.rootRole) {
+                Fail "SOURCE_ROLE_ROOT_DRIFT: $($sourceRole.sourceRole)"
+            }
+            if ([string]$expectedRole.relativePath -cne [string]$sourceRole.relativePath) {
+                Fail "SOURCE_ROLE_PATH_DRIFT: $($sourceRole.sourceRole)"
+            }
+            if ([string]$expectedRole.commit -cne [string]$sourceRole.commit) {
+                Fail "SOURCE_ROLE_COMMIT_DRIFT: $($sourceRole.sourceRole)"
+            }
+        }
+    }
     return [pscustomobject][ordered]@{
         verificationPoint = $VerificationPoint
         sourceRoots = $sourceRoots
-        sourceRoles = @(
-            [ordered]@{ sourceRole = 'maintenance'; rootRole = 'maintenance'; relativePath = '.'; commit = $maintenanceCommit },
-            [ordered]@{ sourceRole = 'backend'; rootRole = 'application'; relativePath = 'IntRuoyiBackend'; commit = $applicationCommit },
-            [ordered]@{ sourceRole = 'frontend'; rootRole = 'application'; relativePath = 'IntRuoyiFronted'; commit = $applicationCommit }
-        )
+        sourceRoles = $sourceRoles
     }
 }
 

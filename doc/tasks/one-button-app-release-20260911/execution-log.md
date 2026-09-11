@@ -158,6 +158,22 @@ RED: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/tests/veri
 - NOT_RUN: P2-P5、Maven package、frontend build、Docker build、服务启动、真实 E2E、NAS、数据库、MinIO、SSH、测试服、正式服、审查服、mark-tested 和 promotion；均未获本阶段授权或不属于 P1。
 - REMAINING_RISK: P1 只建立合同与底层门禁；完整状态机/持久化/锁在 P2，部署事务在 P3，三按钮 UI 与真实浏览器验收在 P4/P5。
 
+## P1 Review Correction
+
+BDD: 二次冻结拒绝来源身份漂移 -> Given before-build 已冻结两个 root 和三个 role / When before-package 使用同 commit/clean 但 root 路径或 role root/path/commit 改变 / Then 分别返回稳定 drift errorCode 并禁止写 manifest。
+
+BDD: manifest 来源证据不可篡改 -> Given manifest 声明严格 sourceRoots/sourceRoles / When normalizedRoot、approvedCommit、commit、dirty 或 role 映射被篡改 / Then verifier 在 READY 前拒绝。
+
+BDD: 产品候选只读唯一 manifest -> Given NAS 程序包只有 `manifest.json` / When 主程序扫描发布包和回滚候选 / Then 从 packageId/createdAt/packageDigest/source evidence 构建候选；只有旧 manifest 的包被阻断且不 fallback。
+
+BDD: 三语言路径冲突键一致 -> Given ASCII 大小写冲突与仅非 ASCII 大小写不同路径 / When Java、Python、PowerShell 计算 collision key / Then 只折叠 ASCII A-Z，非 ASCII UTF-8 bytes 保持不变，三语言摘要一致。
+
+RED: P1 Java review suite -> FAIL；source freeze 3 tests 因缺 `verifyAgain` 合同失败，非 ASCII digest 向量报 path collision，产品 release package 列表为空，rollback candidate 7 failures/1 error 证明仍读取旧 manifest/packageDirectoryName。
+
+RED: maintenance review suite -> FAIL，1 个 freeze 静态合同、1 个非 ASCII digest、1 个 schema item 合同和 6 个 manifest source tamper 用例失败。
+
+RED: PowerShell digest vector -> FAIL，`Z/Ä.txt` 与 `z/ä.txt` 被 `OrdinalIgnoreCase` 错误折叠，实际摘要不等于 ASCII-only 固定向量。
+
 ## Phase P1 - 基线与契约收敛
 
 USER_AUTHORIZATION: 用户要求“根据文档进行开发”；本轮授权覆盖本机 P1 实现、测试和任务分支提交，不覆盖真实 E2E、NAS、测试服、正式服、审查服、数据库或 MinIO 写入。
@@ -173,3 +189,45 @@ GREEN: experience-preflight-p1 -> PASS，已读取本仓经验索引、按钮化
 ACTION: p1-isolated-worktrees -> 计划从维护仓 `int_main@08823268e9efe7571a06c261a7b919c890c45dad` 创建 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m`，从应用仓 `int_main@860496e330a8b47bcb421b8b65ece03c06df33d8` 创建 `D:\IntRuoyiWorktree\r260911-release-button\a`；两仓任务分支统一为 `codex/one-button-app-release-20260911`。原主工作区只读保留。
 
 DEFERRED: P4/P5 规定 Playwright 1.60.0 运行时缺失；真实测试服/正式服授权缺失。这些不阻塞不启动服务、不运行 E2E、不访问远程环境的 P1。
+
+GREEN: P1-review-correction -> PASS，产品 release package 与 rollback consumer 已统一读取 `manifest.json`/`packageId`/双摘要/来源证据；source freeze 补齐 root/role 身份漂移检查；PowerShell 5.1 非 ASCII digest 向量改为 codepoint 构造并通过。维护仓聚焦回归 37 tests PASS，PowerShell digest PASS；app manifest/source/digest/consumer 与既有 runtimecontrol 相关回归 91 tests PASS。
+
+## Phase P2 - ReleaseWorkflow 编排内核
+
+BDD: 持久化状态与恢复 -> Given workflow 在主程序运行时创建并经历阶段转换 / When 进程重启、CAS 版本冲突、JSON 损坏或写阶段心跳超时 / Then 状态和 event journal 可恢复，冲突/损坏/不确定写入进入明确阻断，不自动续跑。
+
+BDD: 同环境互斥租约与重复点击 -> Given build/test/prod 争用同一环境或相同受控来源被重复提交 / When 第二次点击或另一个进程尝试获取租约 / Then 返回现有活动 workflow 或租约冲突，不启动重复 operation。
+
+BDD: 客户端不能伪造成功 -> Given 客户端提交任意状态、scope、preset 或疑似秘密 / When 服务端创建或推进 workflow / Then scope/preset 由服务端固定，秘密输入在持久化前拒绝，只有 verifier 能推进状态。
+
+RED: `mvn -f IntRuoyiBackend\\pom.xml -pl yudao-module-infra "-Dtest=ReleaseWorkflowStoreTest,ReleaseWorkflowLeaseTest,ReleaseWorkflowRecoveryTest,ReleaseWorkflowSecurityTest" test` -> FAIL，预期缺少 ReleaseWorkflow 持久化、租约、恢复和 verifier 实现。
+
+GREEN: P2 focused Maven -> PASS，11 tests，0 failures；覆盖单文件原子 workflow+event journal、stateVersion CAS、同环境跨进程文件租约、重复提交返回现有 workflow、重启后 READY 保持、写阶段超时/取消进入 RECOVERY_REQUIRED、损坏状态阻断、非法 preset/秘密输入拒绝和客户端 verifier 拒绝。
+
+REGRESSION: P1+P2+runtimecontrol targeted Maven -> PASS，102 tests，0 failures；命令为 `mvn -f IntRuoyiBackend\\pom.xml -pl yudao-module-infra "-Dtest=ReleaseWorkflowContractTest,ReleaseSourceFreezeTest,ReleaseWorkflowGateOrderTest,ReleaseDigestVectorTest,RuntimeControlServiceImplTest,RuntimeRollbackCandidateServiceImplTest,ReleaseWorkflowStoreTest,ReleaseWorkflowLeaseTest,ReleaseWorkflowRecoveryTest,ReleaseWorkflowSecurityTest" test`。
+
+GREEN: P2 API surface -> PASS，主程序 `/infra/runtime-control/release-workflows` 提供创建、列表、详情与取消接口；创建请求只接受 `reason/sourceSelectionId`，响应仅包含 workflow 业务状态、受控来源引用和证据引用。
+
+## Phase P3 - 自包含制品与部署事务
+
+BDD: 迁移门禁前移 -> Given schema/data/menu migration 计划可能含历史数据约束、非幂等 DROP、schema ledger 漂移、隐式 MySQL socket 或 procedure 缺 delimiter / When 进入 Maven 前 preflight / Then 返回明确 errorCode/failedStage，Maven、Docker、NAS 和 SSH 均为零副作用。
+
+BDD: 测试部署事务可恢复 -> Given `.env` 与 actual image tag 已处于旧版本 / When 新版本验证失败 / Then `.env` 与实际镜像记录一起恢复，`.env.next` 被清理，失败 tag 退休且不假绿。
+
+RED: C03 planned selector -> FAIL，`test_release_migration_preflight_matrix.py` 与 `test_release_deployment_transaction.py` 不存在，证明 R31-R39 与部署事务还没有计划要求的可执行门禁。
+
+GREEN: `python -X utf8 -m pytest -q --basetemp .tmp-pytest-one-button-regression scripts\\tests\\test_release_migration_preflight_matrix.py scripts\\tests\\test_release_deployment_transaction.py scripts\\tests\\test_release_workflow_preflight.py scripts\\tests\\test_app_release_package_governance.py scripts\\tests\\test_release_digest_vectors.py` -> PASS，37 tests，0 failures；本地覆盖 target preflight 自动推导/引用/只读结果、schema-only 历史数据依赖、显式 TCP、幂等/ledger/delimiter 和失败恢复事务。
+
+GREEN: P4-static-slice -> `node IntRuoyiFronted\\tests\\e2e\\runtime-control-one-button-static.spec.cjs` PASS；标准页面已有“生成程序安装包 / 发布测试服 / 晋级正式服”及“程序包（不含数据）”，旧发布动作从通用运维工具栏移除。P3 部署/晋级事务未完成前后两个按钮 fail-closed。
+
+RED: `python -X utf8 -m pytest -q --basetemp .tmp-pytest-nas-red scripts\\tests\\test_release_package_governance.py -k test_nas_ready_requires_atomic_upload_and_full_hash` -> FAIL，上传逻辑直接写最终 NAS 目录，没有 workflow staging/全哈希后原子入库合同。
+
+GREEN: 同一命令 -> PASS；`Copy-ReleasePackageToNas` 现在写入唯一 `.staging-<nonce>` 目录，先执行完整 `Test-ReleasePackageIntegrity`，再同卷 `Move-Item` 为最终目录，失败清理 staging 且不删除既有最终包。
+
+REGRESSION: `python -X utf8 -m pytest -q --basetemp .tmp-pytest-p3-regression2 scripts\\tests\\test_release_package_governance.py scripts\\tests\\test_app_release_package_governance.py scripts\\tests\\test_release_build_preflight_cache.py` -> PASS，122 tests，0 failures。
+
+GREEN: `mvn -f IntRuoyiBackend\\pom.xml -pl yudao-module-infra "-Dtest=ReleaseWorkflowAuthorizationTest" test` -> PASS，3 tests；覆盖跨 workflow/tag/digest/环境绑定拒绝、正式写开关/PROD 要求、过期/撤销/已消费授权和一次性消费。
+
+BLOCKER: C05/P4/P5 -> `corepack pnpm --dir IntRuoyiFronted ts:check` FAIL，任务 app worktree 缺 `node_modules/cross-env`；权威 Playwright 目录仍缺 1.60.0 依赖/可执行文件。未临时安装依赖或换版本兜底。
+
+AUTHORIZATION_BOUNDARY: 本轮未访问 NAS、MySQL、MinIO、SSH、测试服、正式服或审查服；未构建 Docker 镜像、未打安装包、未启动服务、未运行真实 E2E。P3 的远程写入、P4/P5 E2E 与最终发布仍需满足各自前置条件和当次授权。

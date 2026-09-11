@@ -3,12 +3,12 @@
   "task_id": "one-button-app-release-20260911",
   "mode": "full",
   "status": "executing",
-  "current_phase": "P1",
+  "current_phase": "P3",
   "phase_statuses": [
     {
       "phase_id": "P1",
       "title": "基线与契约收敛",
-      "status": "in_progress",
+      "status": "completed",
       "objective": "在维护仓独立 worktree 与 `E:\\IntRuoyi` 根仓独立 app worktree 中审查并融合维护提交 8080c0d 与应用提交 713c641/等价修复，把标准发布范围、双摘要、三个 source role、preset 和测试顺序固化成唯一合同。",
       "owned_paths": [
         "两个 Git 仓的发布 scope/manifest/preset/来源合同、后端/前端 path role、对应测试和任务实施记录。"
@@ -20,46 +20,50 @@
         "app-release 唯一标准、参数所有权、数据流程边界、clean/frozen source 与 CI gate 合同。"
       ],
       "evidence_expectation": "Git/worktree 记录、API/manifest/preset/测试顺序合同和数据流程隔离测试。",
-      "evidence": [],
-      "notes": "- 用户已授权按文档开发；P1 在两个独立 worktree 中执行。P4/P5 Playwright 与远程授权作为后续阶段门禁，不阻塞 P1。",
-      "last_reviewed_at": "2026-09-11T13:25:18",
+      "evidence": [
+        "execution-log.md#Phase-P1-Executor-Evidence",
+        "execution-log.md#P1-Review-Correction",
+        "维护仓聚焦回归 37 tests PASS、PowerShell digest PASS；app P1/runtimecontrol 相关回归 91 tests PASS。"
+      ],
+      "notes": "P1 主审查修正已完成；两个独立 worktree、app-release、唯一 manifest、两个 Git root/三个 source role、两次冻结和三语言摘要合同均已验证。",
+      "last_reviewed_at": "2026-09-12T02:47:02",
       "acceptance_criteria": [
         {
           "ac_id": "P1-AC1",
           "text": "维护仓与 IntRuoyi 根仓分别使用任务独立 worktree，后者同时承载 IntRuoyiBackend/IntRuoyiFronted；差异审查证明维护提交 8080c0d 的 app-release/PURGE 能力和应用提交 713c641 的 active username 修复或等价实现已正式融合；最终融合前确认两个主工作区同路径 dirty 改动及维护仓 frontend/ 删除的归属，无法无损融合即阻塞且不覆盖用户改动。",
-          "status": "pending",
-          "evidence": []
+          "status": "completed",
+          "evidence": ["两个任务 worktree 已建立；8080c0d/713c641 能力按当前主线逐文件融合，原主工作区未修改。"]
         },
         {
           "ac_id": "P1-AC2",
           "text": "标准 build contract 固定 PublishScope=app-release；UI/API 不接受 with-data，也不把备份/恢复纳入发布 workflow；所有消费者只认唯一 `manifest.json`，不生成或读取 `release-manifest.json`。",
-          "status": "pending",
-          "evidence": []
+          "status": "completed",
+          "evidence": ["唯一 manifest.json/app-release/packageId 生产 consumer 与治理测试通过。"]
         },
         {
           "ac_id": "P1-AC3",
           "text": "后端生成 workflowId/releaseTag 并固定 preset；客户端不能提交 scope、host、NAS、MinIO、repo roots、LocalCacheRoot 或手填 releaseTag。",
-          "status": "pending",
-          "evidence": []
+          "status": "completed",
+          "evidence": ["create intent 仅含 reason/sourceSelectionId，服务端生成 workflowId/releaseTag/preset/scope。"]
         },
         {
           "ac_id": "P1-AC4",
           "text": "manifest/审计记录维护仓与 IntRuoyi 根仓两个规范化 Git root/批准 commit，并分别记录 maintenance/backend/frontend 三个 source role；构建前和打包前分别重验两个 Git worktree 的 HEAD 与 dirty=false，任一漂移立即阻断。",
-          "status": "pending",
-          "evidence": []
+          "status": "completed",
+          "evidence": ["ReleaseSourceFreezeContract 二次 root/role 身份漂移测试通过。"]
         },
         {
           "ac_id": "P1-AC5",
           "text": "CI 合同要求后端、前端和脚本测试在 Maven/frontend/Docker 构建前显式执行，不能只运行 Maven -DskipTests；Java、Python、PowerShell 双摘要固定向量必须完全一致。",
-          "status": "pending",
-          "evidence": []
+          "status": "completed",
+          "evidence": ["Java/Python/PowerShell 固定双摘要一致；测试顺序合同通过。"]
         }
       ]
     },
     {
       "phase_id": "P2",
       "title": "ReleaseWorkflow 编排内核",
-      "status": "pending",
+      "status": "completed",
       "objective": "在主程序 IntRuoyiBackend 的 yudao-module-infra runtimecontrol 模块建立可持久化、可并发保护、可靠超时且可在重启后恢复判断的产品 ReleaseWorkflow 编排层。",
       "owned_paths": [
         "`E:\\IntRuoyi\\IntRuoyiBackend\\yudao-module-infra\\src\\main\\java\\cn\\iocoder\\yudao\\module\\infra\\controller\\admin\\runtimecontrol\\`、`service\\runtimecontrol\\`、`framework\\runtimecontrol\\config\\` 及对应测试；维护仓 backend 仅在保留时承担独立诊断和合同同步，不得成为产品 workflow 的唯一实现。"
@@ -71,52 +75,56 @@
         "workflow domain/store/service/lease、状态转换、CAS、心跳/超时、恢复/取消/重试、preset 校验、底层 /actions 边界、脱敏审计。"
       ],
       "evidence_expectation": "后端状态机、原子持久化、并发锁、超时/心跳、取消、重启恢复、重试策略和秘密扫描测试。",
-      "evidence": [],
-      "notes": "",
+      "evidence": [
+        "ReleaseWorkflowStore/Lease/Recovery/SecurityTest 11 tests PASS；相关 infra targeted regression 102 tests PASS。",
+        "主程序 release-workflows API create/list/detail/cancel 已接入持久化内核。"
+      ],
+      "notes": "P2 状态机、单文件原子 workflow+event journal、CAS、租约、超时/取消恢复、重复提交去重、preset/secret input 验证和 verifier-only 推进已完成。",
+      "last_reviewed_at": "2026-09-12T02:47:02",
       "last_reviewed_at": null,
       "acceptance_criteria": [
         {
           "ac_id": "P2-AC1",
           "text": "产品 workflow 的实现与测试以主程序 IntRuoyiBackend `yudao-module-infra/.../runtimecontrol/` 为唯一运行时来源，维护仓 backend 仅可提供独立诊断或契约同步；workflow 与 event journal 在进程重启后恢复，状态转换使用原子写和 stateVersion/CAS，损坏状态直接阻塞。",
-          "status": "pending",
-          "evidence": []
+          "status": "completed",
+          "evidence": ["workflow record 与 event journal 同一 envelope 原子替换；损坏/分歧状态测试 fail fast。"]
         },
         {
           "ac_id": "P2-AC2",
           "text": "build/test/prod 使用同环境持久化租约锁；重复点击返回现有 workflow 或冲突，不能重复执行。",
-          "status": "pending",
-          "evidence": []
+          "status": "completed",
+          "evidence": ["同环境 OS file lock 互斥，重复 create 返回现有活动 workflow。"]
         },
         {
           "ac_id": "P2-AC3",
           "text": "心跳、可靠 timeout、取消和 RECOVERY_REQUIRED 有确定行为；进程重启或写阶段状态不明时不自动续跑，guard return 不产生 SUCCESS。",
-          "status": "pending",
-          "evidence": []
+          "status": "completed",
+          "evidence": ["心跳、读/写阶段取消、timeout 与重启 READY 恢复测试通过。"]
         },
         {
           "ac_id": "P2-AC4",
           "text": "阶段持久化 attempt、operationId、errorCode、failedStage、retryable 和证据引用；只有 verifier 可推进状态，客户端不能伪造 SUCCESS。",
-          "status": "pending",
-          "evidence": []
+          "status": "completed",
+          "evidence": ["attempt/operationId/errorCode/failedStage/retryable/evidenceRefs 持久化；客户端 advance 被拒绝。"]
         },
         {
           "ac_id": "P2-AC5",
           "text": "preset 固化基础设施参数与 secret 引用并在启动和执行前校验；API、预览、日志、异常和审计只返回脱敏摘要。",
-          "status": "pending",
-          "evidence": []
+          "status": "completed",
+          "evidence": ["preset/secretRef 启动与执行校验，疑似秘密 reason 在持久化前拒绝，API 不返回基础设施值。"]
         },
         {
           "ac_id": "P2-AC6",
           "text": "retry 只在服务端条件满足时开放；内容或迁移修复必须新包新 tag，正式服失败恢复后仍需新授权和 PROD。",
-          "status": "pending",
-          "evidence": []
+          "status": "completed",
+          "evidence": ["retry 仅服务端允许；内容/迁移变化强制新 workflow/new tag。"]
         }
       ]
     },
     {
       "phase_id": "P3",
       "title": "自包含制品与部署事务",
-      "status": "pending",
+      "status": "in_progress",
       "objective": "从批准提交生成唯一 tag 和 clean/frozen worktree，在昂贵构建前完成门禁，原子入库 app-release READY 包，并以同一 digest 完成测试发布和受守卫的正式晋级。",
       "owned_paths": [
         "ops/deploy/**、ops/release/**、scripts/tests/**、workflow build/deploy/promotion orchestration。"
@@ -128,8 +136,12 @@
         "preflight DAG、显式测试 gate、迁移演练、目标只读 preflight、包治理、自包含 verifier、NAS READY、.env.next 事务、完整 attestation、app-release 晋级守卫。"
       ],
       "evidence_expectation": "顺序/迁移/包治理/篡改/NAS/部署事务/晋级守卫测试；获授权后的真实测试服运行态证据，正式服只验证无写入守卫。",
-      "evidence": [],
-      "notes": "",
+      "evidence": [
+        "maintenance local regression 37 tests PASS，覆盖 R31-R39 migration preflight 与 deployment rollback transaction。",
+        "NAS/远程服务器/真实测试发布未执行；完整 P3 仍在进行。"
+      ],
+      "notes": "P3 本地门禁 slice 已完成；继续实现 NAS READY、部署成功 attestation 与正式授权守卫。",
+      "last_reviewed_at": "2026-09-12T02:47:02",
       "last_reviewed_at": null,
       "acceptance_criteria": [
         {
@@ -308,16 +320,16 @@
   "blocking_prereqs": [],
   "iteration_counts": {
     "planner_revisions": 1,
-    "executor_loops": 0,
+    "executor_loops": 1,
     "test_loops": 0
   },
   "created_at": "2026-09-11T09:20:03",
-  "updated_at": "2026-09-11T13:25:18",
+  "updated_at": "2026-09-11T23:46:27",
   "branch": "int_main",
   "baseline_revision": "eaaa47ac320dd197dba646d6870fed0cb7d2534c",
-  "workspace_root": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance",
-  "tasks_root": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks",
-  "task_dir": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\one-button-app-release-20260911",
+  "workspace_root": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260911-release-button\\m",
+  "tasks_root": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260911-release-button\\m\\doc\\tasks",
+  "task_dir": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260911-release-button\\m\\doc\\tasks\\one-button-app-release-20260911",
   "goal": "Design a programmatic button-driven immutable application release workflow. Packages must use PublishScope app-release and exclude all data snapshots.",
   "artifacts": {
     "prd": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\one-button-app-release-20260911\\prd.md",

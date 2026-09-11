@@ -10,7 +10,10 @@
 2. [completed] 产出 PRD，定义三按钮 workflow、状态机、授权边界、包边界和错误码。
 3. [completed] 产出测试计划，覆盖构建前门禁、不可变包、测试服发布、正式服晋级守卫、R31-R44 防复发用例。
 4. [completed] 完成文档结构校验和独立规划评审，明确实施前置条件。
-5. [in_progress] 已获用户授权开始开发，当前只执行 P1；在独立实施 worktree 中按 P1-P5 推进，不直接在当前脏主工作树改实现。
+5. [completed] P1 基线与唯一 app-release/manifest/摘要/来源合同已在两个独立 worktree 中收敛并完成复审修正。
+6. [completed] P2 ReleaseWorkflow 状态机、原子持久化、CAS、租约、心跳/恢复与 verifier-only 推进已实现并回归通过。
+7. [in_progress] P3 已实现本地迁移门禁与部署失败恢复事务；NAS/远程服务器执行和完整同 digest 发布链尚未开始。
+8. [pending] P4/P5 前端类型检查、真实 Playwright 验收、融合与收口。
 
 ## Expected Verification
 
@@ -38,7 +41,7 @@
 
 in_progress
 
-规划文档已通过独立复审；用户已授权按文档开发。当前阶段为 P1 基线与契约收敛，后续阶段在 P1 独立评审通过前不得启动。
+P1、P2 已完成，当前执行 P3 自包含制品与部署事务。标准程序发布页面已接入持久化 workflow 创建/查询，并明确显示“程序包（不含数据）”；测试/正式按钮在 P3 服务端事务完成前保持禁用。
 
 ## Verification Evidence
 
@@ -47,12 +50,16 @@ in_progress
 - PRD: 5 phases、32 acceptance IDs；test plan: 15 cases、32/32 acceptance coverage。
 - Independent planning review: final PASS after three review rounds。
 - UTF-8、trailing whitespace 与 diff checks: PASS；未运行产品构建、发布或服务器写入。
+- P1：maintenance 聚焦回归与三语言摘要均 PASS；app manifest/source/digest/consumer 定向回归 91 PASS；frontend P1 static PASS。
+- P2：ReleaseWorkflowStore/Lease/Recovery/Security 11 PASS；相关 infra 回归共 102 PASS。
+- P3：本地 Python gate 37 PASS，覆盖迁移 target preflight、显式 TCP、幂等/ledger/delimiter 和 `.env`/actual image 失败恢复。
+- `pnpm ts:check` 当前因任务 worktree 缺 `node_modules/cross-env` 阻塞；未安装依赖、未切换 Playwright 版本。
 
 ## Current Phase
 
-- P1 使用维护仓 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m` 与 IntRuoyi app worktree `D:\IntRuoyiWorktree\r260911-release-button\a`。
-- P1 从各自当前 `int_main` 创建任务分支，审查并融合 `8080c0d` 与 `713c641` 或等价能力，使用 BDD + RED/GREEN/REGRESSION。
-- P1 不启动本地服务，不访问 NAS、数据库或任何服务器，不运行真实 E2E。
+- P3 继续使用维护仓 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m` 与 IntRuoyi app worktree `D:\IntRuoyiWorktree\r260911-release-button\a`。
+- P3 当前只执行本地脚本、Java 和静态前端验证；不访问 NAS、数据库或服务器，不运行真实 E2E。
+- P4/P5 依赖缺失仍是明确 blocker，不能用临时下载或其他 Playwright 版本绕过。
 
 ## Deferred Gates
 

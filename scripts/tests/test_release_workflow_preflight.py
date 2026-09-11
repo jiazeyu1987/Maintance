@@ -55,6 +55,12 @@ def test_freeze_evidence_has_two_git_roots_and_three_source_roles() -> None:
         assert f"sourceRole = '{source_role}'" in freeze
     assert "SOURCE_HEAD_DRIFT" in freeze
     assert "SOURCE_DIRTY" in freeze
+    assert "SOURCE_ROOT_PATH_DRIFT" in freeze
+    assert "SOURCE_ROLE_ROOT_DRIFT" in freeze
+    assert "SOURCE_ROLE_PATH_DRIFT" in freeze
+    assert "SOURCE_ROLE_COMMIT_DRIFT" in freeze
+    assert "expectedRoot.normalizedRoot" in freeze
+    assert "ExpectedEvidence.sourceRoles" in freeze
 
 
 def test_standard_workflow_uses_only_authoritative_manifest_json() -> None:

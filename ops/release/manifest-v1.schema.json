@@ -76,12 +76,35 @@
     "sourceRoots": {
       "type": "array",
       "minItems": 2,
-      "maxItems": 2
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["rootRole", "normalizedRoot", "approvedCommit", "commit", "dirty"],
+        "properties": {
+          "rootRole": { "type": "string", "enum": ["maintenance", "application"] },
+          "normalizedRoot": { "type": "string", "minLength": 1, "pattern": "^[^\\\\]+$" },
+          "approvedCommit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+          "commit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+          "dirty": { "const": false }
+        }
+      }
     },
     "sourceRoles": {
       "type": "array",
       "minItems": 3,
-      "maxItems": 3
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sourceRole", "rootRole", "relativePath", "commit"],
+        "properties": {
+          "sourceRole": { "type": "string", "enum": ["maintenance", "backend", "frontend"] },
+          "rootRole": { "type": "string", "enum": ["maintenance", "application"] },
+          "relativePath": { "type": "string", "enum": [".", "IntRuoyiBackend", "IntRuoyiFronted"] },
+          "commit": { "type": "string", "pattern": "^[a-f0-9]{40}$" }
+        }
+      }
     },
     "changeSet": {
       "type": "object"

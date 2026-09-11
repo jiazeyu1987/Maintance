@@ -40,3 +40,12 @@ def test_python_rejects_backslashes_and_case_folded_collisions(paths: list[str])
     digest = _load_module()
     with pytest.raises(digest.PackagePathError, match="PACKAGE_PATH_INVALID"):
         digest.calculate_package_digest([digest.ArtifactBytes(path, b"x") for path in paths])
+
+
+def test_python_folds_ascii_case_only_and_keeps_non_ascii_bytes_distinct() -> None:
+    digest = _load_module()
+    result = digest.calculate_package_digest([
+        digest.ArtifactBytes("Z/Ä.txt", b"UP\n"),
+        digest.ArtifactBytes("z/ä.txt", b"low\n"),
+    ])
+    assert result.package_digest == "050f30bf371902978119b425701935f0b98f461ee22803d75fffcc2c3844dd75"

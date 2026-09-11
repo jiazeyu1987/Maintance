@@ -44,6 +44,10 @@ def _normalise_path(path: str) -> str:
     return path
 
 
+def _ascii_case_fold(path: str) -> str:
+    return "".join(chr(ord(char) + 32) if "A" <= char <= "Z" else char for char in path)
+
+
 def calculate_package_digest(artifacts: list[ArtifactBytes]) -> PackageDigestResult:
     seen: set[str] = set()
     entries: list[ArtifactDigest] = []
@@ -51,7 +55,7 @@ def calculate_package_digest(artifacts: list[ArtifactBytes]) -> PackageDigestRes
         if not isinstance(artifact.content, bytes):
             raise PackagePathError("PACKAGE_PATH_INVALID: artifact content must be bytes")
         path = _normalise_path(artifact.path)
-        folded = path.casefold()
+        folded = _ascii_case_fold(path)
         if folded in seen:
             raise PackagePathError(f"PACKAGE_PATH_INVALID: case-folded path collision: {path}")
         seen.add(folded)

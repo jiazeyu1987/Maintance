@@ -85,13 +85,15 @@ def _write_package(
             ).encode("utf-8")
         ),
         "sourceRoots": [
-            {"rootRole": "maintenance", "commit": "a" * 40, "dirty": False},
-            {"rootRole": "application", "commit": "b" * 40, "dirty": False},
+            {"rootRole": "maintenance", "normalizedRoot": "d:/fixture/maintenance", "approvedCommit": "a" * 40,
+             "commit": "a" * 40, "dirty": False},
+            {"rootRole": "application", "normalizedRoot": "d:/fixture/application", "approvedCommit": "b" * 40,
+             "commit": "b" * 40, "dirty": False},
         ],
         "sourceRoles": [
-            {"sourceRole": "maintenance", "rootRole": "maintenance", "commit": "a" * 40},
-            {"sourceRole": "backend", "rootRole": "application", "commit": "b" * 40},
-            {"sourceRole": "frontend", "rootRole": "application", "commit": "b" * 40},
+            {"sourceRole": "maintenance", "rootRole": "maintenance", "relativePath": ".", "commit": "a" * 40},
+            {"sourceRole": "backend", "rootRole": "application", "relativePath": "IntRuoyiBackend", "commit": "b" * 40},
+            {"sourceRole": "frontend", "rootRole": "application", "relativePath": "IntRuoyiFronted", "commit": "b" * 40},
         ],
         "artifacts": artifacts,
     }
@@ -496,6 +498,26 @@ def test_same_verifier_guards_all_four_package_lifecycle_points() -> None:
     deploy = script[deploy_start:deploy_end]
     assert "$releasePackageIntegrity = Copy-ReleasePackageFromNas" in deploy
     assert "$releasePublishScope = $releasePackageIntegrity.PublishScope" in deploy
+
+
+def test_nas_ready_requires_atomic_upload_and_full_hash() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    start = script.index("function Copy-ReleasePackageToNas")
+    end = script.index("function Copy-ReleasePackageFromNas", start)
+    upload = script[start:end]
+
+    assert "$stagingPath = Join-Path $targetRoot" in upload
+    assert ".staging-" in upload
+    assert "Copy-ReleaseDirectoryTree -SourceDirectory $releaseDir -DestinationDirectory $stagingPath" in upload
+    assert "Test-ReleasePackageIntegrity -PackagePath $stagingPath" in upload
+    assert "Move-Item -LiteralPath $stagingPath -Destination $targetPath" in upload
+    assert upload.index("Test-ReleasePackageIntegrity -PackagePath $stagingPath") < upload.index(
+        "Move-Item -LiteralPath $stagingPath -Destination $targetPath"
+    )
+    assert upload.index("Move-Item -LiteralPath $stagingPath -Destination $targetPath") < upload.index(
+        "Release package uploaded to NAS"
+    )
+    assert "Remove-Item -LiteralPath $targetPath" not in upload
 
 
 def _write_operation(
