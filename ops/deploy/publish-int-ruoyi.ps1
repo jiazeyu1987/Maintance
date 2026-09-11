@@ -4027,6 +4027,62 @@ BUILD_PREFLIGHT_SQL
     Info "Build preflight passed: $evidencePath"
 }
 
+function Invoke-BuildReleaseSchemaOnlyMigrationRehearsal {
+    if ($Mode -ne 'build-release' -or -not $publishBackend) {
+        return
+    }
+    $rehearsalRunner = Join-Path $maintenanceReleaseScriptRoot 'release_schema_rehearsal.py'
+    if (-not (Test-Path -LiteralPath $rehearsalRunner -PathType Leaf)) {
+        Fail "Schema-only migration rehearsal runner missing: $rehearsalRunner"
+    }
+
+    $imageCommand = @'
+set -e
+image_ref=$(docker inspect -f '{{.Config.Image}}' intruoyi-mysql)
+docker image inspect --format '{{index .RepoDigests 0}}' "$image_ref"
+'@
+    $imageCapture = Invoke-ProcessCapture -FilePath 'ssh' -ArgumentList (@('-n') + (Get-SshCommonOptions) + @(
+        "$ServerUser@$TestServerHost", (($imageCommand -replace "`r`n", "`n") -replace "`r", "`n")
+    ))
+    if ($imageCapture.ExitCode -ne 0) {
+        Fail "Schema-only rehearsal could not resolve the test MySQL image digest: $(Protect-ReleaseSensitiveText ([string]$imageCapture.StdErr))"
+    }
+    $mysqlImage = ([string]$imageCapture.StdOut).Trim()
+    if ($mysqlImage -notmatch '^[^\s@]+@sha256:[0-9a-f]{64}$') {
+        Fail "Schema-only rehearsal requires a digest-pinned test MySQL image: $mysqlImage"
+    }
+
+    $schemaCommand = @'
+set -e
+mysql_password=$(docker inspect -f '{{range .Config.Env}}{{println .}}{{end}}' intruoyi-mysql | sed -n 's/^MYSQL_ROOT_PASSWORD=//p' | tail -n 1)
+test -n "$mysql_password"
+docker exec -e MYSQL_PWD="$mysql_password" intruoyi-mysql mysqldump -uroot --default-character-set=utf8mb4 --no-data --routines --events --triggers --single-transaction --skip-lock-tables ruoyi-vue-pro
+'@
+    $schemaCapture = Invoke-ProcessCapture -FilePath 'ssh' -ArgumentList (@('-n') + (Get-SshCommonOptions) + @(
+        "$ServerUser@$TestServerHost", (($schemaCommand -replace "`r`n", "`n") -replace "`r", "`n")
+    ))
+    if ($schemaCapture.ExitCode -ne 0) {
+        Fail "Schema-only snapshot collection failed: $(Protect-ReleaseSensitiveText ([string]$schemaCapture.StdErr))"
+    }
+    $schemaPath = Join-Path $localTempRoot "schema-only-$packageDirectoryName.sql"
+    [System.IO.File]::WriteAllText($schemaPath, [string]$schemaCapture.StdOut, [System.Text.UTF8Encoding]::new($false))
+    $evidenceDirectory = Join-Path $releaseDir 'evidence'
+    New-Item -ItemType Directory -Force -Path $evidenceDirectory | Out-Null
+    $evidencePath = Join-Path $evidenceDirectory 'schema-only-migration-rehearsal.json'
+    $argumentList = @(
+        '-X', 'utf8', $rehearsalRunner,
+        '--mysql-image', $mysqlImage,
+        '--schema', $schemaPath,
+        '--output', $evidencePath
+    )
+    foreach ($entry in @(New-ReleaseRequiredSqlManifestEntries)) {
+        $migrationPath = Join-Path $releaseDir ([string]$entry.file).Replace('/', '\')
+        $argumentList += @('--migration', $migrationPath)
+    }
+    Invoke-CheckedCommand -FilePath 'python' -ArgumentList $argumentList -WorkingDirectory $maintenanceReleaseScriptRoot
+    Info "Schema-only migration rehearsal passed: $evidencePath"
+}
+
 function Assert-ReleaseSourceFreeze {
     param(
         [Parameter(Mandatory = $true)]
@@ -5987,6 +6043,7 @@ if ($publishBackend) {
 Copy-RequiredDatabaseSqlScripts
 if ($Mode -eq 'build-release') {
 Invoke-BuildReleaseTargetPreflight
+Invoke-BuildReleaseSchemaOnlyMigrationRehearsal
 }
 }
 

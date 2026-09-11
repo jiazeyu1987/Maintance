@@ -238,6 +238,16 @@ REGRESSION: maintenance release governance -> PASS，123 tests，0 failures；�
 
 BLOCKER: P4/C05 -> `corepack pnpm --dir IntRuoyiFronted ts:check` 仍因任务 app worktree 缺 `node_modules/cross-env` 失败；按门禁未安装依赖，P4/P5 类型检查与真实 Playwright 保持阻塞。
 
+RED: `python -X utf8 -m pytest -q --basetemp .tmp-pytest-schema-red scripts\\tests\\test_release_schema_rehearsal.py` -> FAIL，缺少 schema-only migration rehearsal 模块，无法证明不复制业务数据也能在 Maven 前演练迁移。
+
+GREEN: 同一用例 -> PASS，3 tests；新增 digest-pinned MySQL 镜像、`mysqldump --no-data`、显式 TCP、本次 required SQL 两轮执行、失败必清理临时容器合同，并由 `publish-int-ruoyi.ps1` 在 Maven 前调用，报告进入包内 `evidence/schema-only-migration-rehearsal.json`。
+
+REGRESSION: C08 maintenance Python -> PASS，234 tests，0 failures；C09 Node -> PASS，6 tests；PowerShell digest vector -> PASS；PowerShell AST parse -> PASS。
+
+REGRESSION: app P1-P3 targeted Maven -> PASS，111 tests，0 failures；frontend one-button static 与 release-package static -> PASS。
+
+IMPLEMENTATION_COMMITS: app `ea9b065e1`（workflow 内核）和 `daffa04b6`（build/test/prod 编排、同摘要与一次性授权）；maintenance `be19a78`（无数据门禁、迁移/部署事务、NAS 原子 READY）和 `93cff60`（app-release 测试验收去除 recovery-set 数据依赖）。后续 schema-only rehearsal 与证据记录仍待本轮提交。
+
 BLOCKER: C05/P4/P5 -> `corepack pnpm --dir IntRuoyiFronted ts:check` FAIL，任务 app worktree 缺 `node_modules/cross-env`；权威 Playwright 目录仍缺 1.60.0 依赖/可执行文件。未临时安装依赖或换版本兜底。
 
 AUTHORIZATION_BOUNDARY: 本轮未访问 NAS、MySQL、MinIO、SSH、测试服、正式服或审查服；未构建 Docker 镜像、未打安装包、未启动服务、未运行真实 E2E。P3 的远程写入、P4/P5 E2E 与最终发布仍需满足各自前置条件和当次授权。

@@ -140,7 +140,8 @@
         "maintenance local regression 37 tests PASS，覆盖 R31-R39 migration preflight 与 deployment rollback transaction。",
         "NAS/远程服务器/真实测试发布未执行；完整 P3 仍在进行。",
         "维护仓 release governance 123 tests PASS；NAS staging/full hash/atomic READY 与 app-release tested attestation 已验证。",
-        "app orchestrator/authorization targeted Maven 111 tests PASS；build->READY->publish-test->TESTED、双摘要绑定、一次性授权重放拒绝已验证。"
+        "app orchestrator/authorization targeted Maven 111 tests PASS；build->READY->publish-test->TESTED、双摘要绑定、一次性授权重放拒绝已验证。",
+        "C08 maintenance Python 234 tests PASS、C09 Node 6 tests PASS、PowerShell digest/AST PASS；schema-only no-data migration rehearsal 在 Maven 前执行并产出包内证据。"
       ],
       "notes": "P3 本地门禁 slice 已完成；继续实现 NAS READY、部署成功 attestation 与正式授权守卫。",
       "last_reviewed_at": "2026-09-12T02:47:02",

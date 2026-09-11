@@ -52,7 +52,7 @@ P1、P2 已完成，当前执行 P3 自包含制品与部署事务。标准程�
 - UTF-8、trailing whitespace 与 diff checks: PASS；未运行产品构建、发布或服务器写入。
 - P1：maintenance 聚焦回归与三语言摘要均 PASS；app manifest/source/digest/consumer 定向回归 91 PASS；frontend P1 static PASS。
 - P2：ReleaseWorkflowStore/Lease/Recovery/Security 11 PASS；相关 infra 回归共 102 PASS。
-- P3：本地 Python gate 37 PASS，覆盖迁移 target preflight、显式 TCP、幂等/ledger/delimiter 和 `.env`/actual image 失败恢复。
+- P3：维护仓全量 Python 234 PASS、Node 6 PASS、PowerShell digest/AST PASS；app P1-P3 targeted Maven 111 PASS；覆盖 target preflight、schema-only 两轮迁移演练、显式 TCP、幂等/ledger/delimiter、NAS 原子 READY、同摘要晋级授权和 `.env`/actual image 失败恢复。
 - `pnpm ts:check` 当前因任务 worktree 缺 `node_modules/cross-env` 阻塞；未安装依赖、未切换 Playwright 版本。
 
 ## Current Phase
