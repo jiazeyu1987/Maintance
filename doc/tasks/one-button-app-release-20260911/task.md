@@ -10,7 +10,7 @@
 2. [completed] 产出 PRD，定义三按钮 workflow、状态机、授权边界、包边界和错误码。
 3. [completed] 产出测试计划，覆盖构建前门禁、不可变包、测试服发布、正式服晋级守卫、R31-R44 防复发用例。
 4. [completed] 完成文档结构校验和独立规划评审，明确实施前置条件。
-5. [blocked] 后续在独立实施 worktree 中按 P1-P5 执行，不直接在当前脏主工作树改实现。
+5. [in_progress] 已获用户授权开始开发，当前只执行 P1；在独立实施 worktree 中按 P1-P5 推进，不直接在当前脏主工作树改实现。
 
 ## Expected Verification
 
@@ -36,9 +36,9 @@
 
 ## Current Status
 
-blocked
+in_progress
 
-规划文档已通过独立复审；功能尚未实现。规划期间另一发布线程已完成 R44 测试服发布与页面验证，本任务未执行该发布，也未触碰其 closeout。
+规划文档已通过独立复审；用户已授权按文档开发。当前阶段为 P1 基线与契约收敛，后续阶段在 P1 独立评审通过前不得启动。
 
 ## Verification Evidence
 
@@ -48,12 +48,16 @@ blocked
 - Independent planning review: final PASS after three review rounds。
 - UTF-8、trailing whitespace 与 diff checks: PASS；未运行产品构建、发布或服务器写入。
 
-## Blockers
+## Current Phase
 
-- P1 实施前必须创建独立任务 worktree，不能在当前脏 `int_main` 主工作区直接改实现。
-- 需要审查并融合已验证维护线 `8080c0d` 与当前 `int_main` 的分叉差异。
-- 当前主工作区存在 `frontend/` 删除和其它脏改动，实施前必须确认归属，不得覆盖。
-- 真实测试服写入需当次授权；正式服真实写入不在当前授权范围。
+- P1 使用维护仓 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m` 与 IntRuoyi app worktree `D:\IntRuoyiWorktree\r260911-release-button\a`。
+- P1 从各自当前 `int_main` 创建任务分支，审查并融合 `8080c0d` 与 `713c641` 或等价能力，使用 BDD + RED/GREEN/REGRESSION。
+- P1 不启动本地服务，不访问 NAS、数据库或任何服务器，不运行真实 E2E。
+
+## Deferred Gates
+
+- 最终融合前必须重新确认两个主工作区同路径 dirty 改动归属；不得覆盖并发任务。
+- 测试服真实写入需当次授权；正式服真实写入不在当前授权范围。
 - 项目规定的 Playwright 1.60.0 权威路径当前缺少依赖与可执行文件；P4/P5 在恢复前阻塞，禁止临时下载或换版本兜底。
 
 ## Artifacts

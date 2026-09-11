@@ -2,13 +2,13 @@
   "schema_version": 2,
   "task_id": "one-button-app-release-20260911",
   "mode": "full",
-  "status": "blocked",
+  "status": "executing",
   "current_phase": "P1",
   "phase_statuses": [
     {
       "phase_id": "P1",
       "title": "基线与契约收敛",
-      "status": "pending",
+      "status": "in_progress",
       "objective": "在维护仓独立 worktree 与 `E:\\IntRuoyi` 根仓独立 app worktree 中审查并融合维护提交 8080c0d 与应用提交 713c641/等价修复，把标准发布范围、双摘要、三个 source role、preset 和测试顺序固化成唯一合同。",
       "owned_paths": [
         "两个 Git 仓的发布 scope/manifest/preset/来源合同、后端/前端 path role、对应测试和任务实施记录。"
@@ -21,8 +21,8 @@
       ],
       "evidence_expectation": "Git/worktree 记录、API/manifest/preset/测试顺序合同和数据流程隔离测试。",
       "evidence": [],
-      "notes": "",
-      "last_reviewed_at": null,
+      "notes": "- 用户已授权按文档开发；P1 在两个独立 worktree 中执行。P4/P5 Playwright 与远程授权作为后续阶段门禁，不阻塞 P1。",
+      "last_reviewed_at": "2026-09-11T13:25:18",
       "acceptance_criteria": [
         {
           "ac_id": "P1-AC1",
@@ -305,19 +305,14 @@
   ],
   "planner_review_status": "approved",
   "test_status": "not_started",
-  "blocking_prereqs": [
-    "P1 前置未满足：必须在独立任务 worktree 中审查/融合 8080c0d 所需维护仓能力，当前 int_main 为脏工作树且该提交不在其祖先链。",
-    "P1 前置未满足：必须确认当前主工作区 frontend/ 未提交删除及其他脏改动的归属，实施不得覆盖。",
-    "真实测试服写入未获本轮授权；正式服真实写入未获本轮授权。",
-    "P4/P5 前置未满足：项目规定的 Playwright 1.60.0 权威路径缺少 package.json、node_modules/playwright 与 playwright.cmd；禁止临时下载或切换版本兜底。"
-  ],
+  "blocking_prereqs": [],
   "iteration_counts": {
     "planner_revisions": 1,
     "executor_loops": 0,
     "test_loops": 0
   },
   "created_at": "2026-09-11T09:20:03",
-  "updated_at": "2026-09-11T12:22:18",
+  "updated_at": "2026-09-11T13:25:18",
   "branch": "int_main",
   "baseline_revision": "eaaa47ac320dd197dba646d6870fed0cb7d2534c",
   "workspace_root": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance",
