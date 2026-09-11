@@ -2,7 +2,7 @@
   "schema_version": 2,
   "task_id": "one-button-app-release-20260911",
   "mode": "full",
-  "status": "executing",
+  "status": "blocked",
   "current_phase": "P3",
   "phase_statuses": [
     {
@@ -124,7 +124,7 @@
     {
       "phase_id": "P3",
       "title": "自包含制品与部署事务",
-      "status": "in_progress",
+      "status": "blocked",
       "objective": "从批准提交生成唯一 tag 和 clean/frozen worktree，在昂贵构建前完成门禁，原子入库 app-release READY 包，并以同一 digest 完成测试发布和受守卫的正式晋级。",
       "owned_paths": [
         "ops/deploy/**、ops/release/**、scripts/tests/**、workflow build/deploy/promotion orchestration。"
@@ -143,7 +143,7 @@
         "app orchestrator/authorization targeted Maven 111 tests PASS；build->READY->publish-test->TESTED、双摘要绑定、一次性授权重放拒绝已验证。",
         "C08 maintenance Python 234 tests PASS、C09 Node 6 tests PASS、PowerShell digest/AST PASS；schema-only no-data migration rehearsal 在 Maven 前执行并产出包内证据。"
       ],
-      "notes": "P3 本地门禁 slice 已完成；继续实现 NAS READY、部署成功 attestation 与正式授权守卫。",
+      "notes": "P3 本地实现与自动回归已完成；真实 NAS READY、测试服发布与组合运行态证据等待当次远程写入授权。",
       "last_reviewed_at": "2026-09-12T02:47:02",
       "last_reviewed_at": null,
       "acceptance_criteria": [
@@ -320,7 +320,10 @@
   ],
   "planner_review_status": "approved",
   "test_status": "not_started",
-  "blocking_prereqs": [],
+  "blocking_prereqs": [
+    "P3/P5 真实 NAS READY 与测试服发布需要用户针对本轮明确授权远程写入。",
+    "P4/P5 需要恢复任务 app worktree 的 node_modules/cross-env 及规定路径 Playwright 1.60.0 runtime；禁止临时下载或换版本兜底。"
+  ],
   "iteration_counts": {
     "planner_revisions": 1,
     "executor_loops": 1,

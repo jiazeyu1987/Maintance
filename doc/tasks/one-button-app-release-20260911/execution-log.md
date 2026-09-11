@@ -248,6 +248,16 @@ REGRESSION: app P1-P3 targeted Maven -> PASS，111 tests，0 failures；frontend
 
 IMPLEMENTATION_COMMITS: app `ea9b065e1`（workflow 内核）和 `daffa04b6`（build/test/prod 编排、同摘要与一次性授权）；maintenance `be19a78`（无数据门禁、迁移/部署事务、NAS 原子 READY）和 `93cff60`（app-release 测试验收去除 recovery-set 数据依赖）。后续 schema-only rehearsal 与证据记录仍待本轮提交。
 
+GREEN: production-authorization-cross-process-cas -> PASS，`ReleaseWorkflowAuthorizationTest` 4 tests；同一 grant 由两个 service instance 并发消费时，JVM 稳定锁和 OS 文件锁保证只有一次原子消费，第二次在任何正式 operation 前拒绝。App commit: `dacca914e`。
+
+IMPLEMENTATION_COMMIT: maintenance `d190854`，将结构快照 `--no-data`、digest-pinned MySQL 临时容器、两轮迁移和包内证据正式接入 Maven 前门禁。
+
+BLOCKER: P3-real-test-chain -> 未获得本轮测试服/NAS/SSH 写入授权，因此没有执行真实 build package、NAS READY、publish-test 或运行态组合校验；代码与本地回归通过不能替代该验收。
+
+BLOCKER: P4-P5-authoritative-frontend-runtime -> task app worktree 缺 `node_modules/cross-env`，规定 Playwright 1.60.0 路径缺 `package.json`、`node_modules/playwright` 和 `.bin/playwright.cmd`；禁止临时下载、切换版本或用其他浏览器工具兜底。
+
+CURRENT_RESULT: 本地实现已形成可提交发布控制面，但任务不得标记 completed；两个 worktree 保留，主工作区未修改，远程环境零写入。
+
 BLOCKER: C05/P4/P5 -> `corepack pnpm --dir IntRuoyiFronted ts:check` FAIL，任务 app worktree 缺 `node_modules/cross-env`；权威 Playwright 目录仍缺 1.60.0 依赖/可执行文件。未临时安装依赖或换版本兜底。
 
 AUTHORIZATION_BOUNDARY: 本轮未访问 NAS、MySQL、MinIO、SSH、测试服、正式服或审查服；未构建 Docker 镜像、未打安装包、未启动服务、未运行真实 E2E。P3 的远程写入、P4/P5 E2E 与最终发布仍需满足各自前置条件和当次授权。

@@ -12,8 +12,8 @@
 4. [completed] 完成文档结构校验和独立规划评审，明确实施前置条件。
 5. [completed] P1 基线与唯一 app-release/manifest/摘要/来源合同已在两个独立 worktree 中收敛并完成复审修正。
 6. [completed] P2 ReleaseWorkflow 状态机、原子持久化、CAS、租约、心跳/恢复与 verifier-only 推进已实现并回归通过。
-7. [in_progress] P3 已实现本地迁移门禁与部署失败恢复事务；NAS/远程服务器执行和完整同 digest 发布链尚未开始。
-8. [pending] P4/P5 前端类型检查、真实 Playwright 验收、融合与收口。
+7. [blocked] P3 本地实现与回归已完成；真实 NAS READY、测试服发布和组合运行态验证等待当次远程写入授权。
+8. [blocked] P4/P5 静态三按钮工作台已实现；完整类型检查和真实 Playwright 验收等待权威依赖恢复。
 
 ## Expected Verification
 
@@ -39,9 +39,9 @@
 
 ## Current Status
 
-in_progress
+blocked
 
-P1、P2 已完成，当前执行 P3 自包含制品与部署事务。标准程序发布页面已接入持久化 workflow 创建/查询，并明确显示“程序包（不含数据）”；测试/正式按钮在 P3 服务端事务完成前保持禁用。
+P1、P2 已完成；P3 本地实现和自动回归已完成但真实测试服链尚未授权。标准页面的三按钮已接入持久化 workflow，生成包固定 `app-release` 且不含数据；正式晋级固定同一双摘要并使用一次性授权。当前因远程写入授权及权威前端/Playwright 依赖缺失而阻塞，不执行 fallback。
 
 ## Verification Evidence
 
@@ -57,9 +57,9 @@ P1、P2 已完成，当前执行 P3 自包含制品与部署事务。标准程�
 
 ## Current Phase
 
-- P3 继续使用维护仓 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m` 与 IntRuoyi app worktree `D:\IntRuoyiWorktree\r260911-release-button\a`。
-- P3 当前只执行本地脚本、Java 和静态前端验证；不访问 NAS、数据库或服务器，不运行真实 E2E。
-- P4/P5 依赖缺失仍是明确 blocker，不能用临时下载或其他 Playwright 版本绕过。
+- P3 真实链路待授权：NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P4/P5 依赖待恢复：任务 app worktree `node_modules/cross-env` 与规定路径的 Playwright 1.60.0 runtime。
+- 两个实现 worktree 和已提交代码保留；未融合、未清理、未操作任何远程环境。
 
 ## Deferred Gates
 
