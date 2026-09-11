@@ -1,0 +1,334 @@
+{
+  "schema_version": 2,
+  "task_id": "one-button-app-release-20260911",
+  "mode": "full",
+  "status": "blocked",
+  "current_phase": "P1",
+  "phase_statuses": [
+    {
+      "phase_id": "P1",
+      "title": "基线与契约收敛",
+      "status": "pending",
+      "objective": "在维护仓独立 worktree 与 `E:\\IntRuoyi` 根仓独立 app worktree 中审查并融合维护提交 8080c0d 与应用提交 713c641/等价修复，把标准发布范围、双摘要、三个 source role、preset 和测试顺序固化成唯一合同。",
+      "owned_paths": [
+        "两个 Git 仓的发布 scope/manifest/preset/来源合同、后端/前端 path role、对应测试和任务实施记录。"
+      ],
+      "dependencies": [
+        "P1 从明确提交创建两个独立 worktree，不触碰主工作区；IntRuoyiBackend 与 IntRuoyiFronted 同属 `E:\\IntRuoyi` 根 Git 仓并位于同一个 app worktree。最终融合前才必须确认同路径 dirty 改动及维护仓 frontend/ 删除的归属，无法无损融合即阻塞。8080c0d 与 713c641/等价实现的精确差异必须先审查。"
+      ],
+      "deliverables": [
+        "app-release 唯一标准、参数所有权、数据流程边界、clean/frozen source 与 CI gate 合同。"
+      ],
+      "evidence_expectation": "Git/worktree 记录、API/manifest/preset/测试顺序合同和数据流程隔离测试。",
+      "evidence": [],
+      "notes": "",
+      "last_reviewed_at": null,
+      "acceptance_criteria": [
+        {
+          "ac_id": "P1-AC1",
+          "text": "维护仓与 IntRuoyi 根仓分别使用任务独立 worktree，后者同时承载 IntRuoyiBackend/IntRuoyiFronted；差异审查证明维护提交 8080c0d 的 app-release/PURGE 能力和应用提交 713c641 的 active username 修复或等价实现已正式融合；最终融合前确认两个主工作区同路径 dirty 改动及维护仓 frontend/ 删除的归属，无法无损融合即阻塞且不覆盖用户改动。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P1-AC2",
+          "text": "标准 build contract 固定 PublishScope=app-release；UI/API 不接受 with-data，也不把备份/恢复纳入发布 workflow；所有消费者只认唯一 `manifest.json`，不生成或读取 `release-manifest.json`。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P1-AC3",
+          "text": "后端生成 workflowId/releaseTag 并固定 preset；客户端不能提交 scope、host、NAS、MinIO、repo roots、LocalCacheRoot 或手填 releaseTag。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P1-AC4",
+          "text": "manifest/审计记录维护仓与 IntRuoyi 根仓两个规范化 Git root/批准 commit，并分别记录 maintenance/backend/frontend 三个 source role；构建前和打包前分别重验两个 Git worktree 的 HEAD 与 dirty=false，任一漂移立即阻断。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P1-AC5",
+          "text": "CI 合同要求后端、前端和脚本测试在 Maven/frontend/Docker 构建前显式执行，不能只运行 Maven -DskipTests；Java、Python、PowerShell 双摘要固定向量必须完全一致。",
+          "status": "pending",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "phase_id": "P2",
+      "title": "ReleaseWorkflow 编排内核",
+      "status": "pending",
+      "objective": "在主程序 IntRuoyiBackend 的 yudao-module-infra runtimecontrol 模块建立可持久化、可并发保护、可靠超时且可在重启后恢复判断的产品 ReleaseWorkflow 编排层。",
+      "owned_paths": [
+        "`E:\\IntRuoyi\\IntRuoyiBackend\\yudao-module-infra\\src\\main\\java\\cn\\iocoder\\yudao\\module\\infra\\controller\\admin\\runtimecontrol\\`、`service\\runtimecontrol\\`、`framework\\runtimecontrol\\config\\` 及对应测试；维护仓 backend 仅在保留时承担独立诊断和合同同步，不得成为产品 workflow 的唯一实现。"
+      ],
+      "dependencies": [
+        "P1 合同稳定；Java/Maven 可用。"
+      ],
+      "deliverables": [
+        "workflow domain/store/service/lease、状态转换、CAS、心跳/超时、恢复/取消/重试、preset 校验、底层 /actions 边界、脱敏审计。"
+      ],
+      "evidence_expectation": "后端状态机、原子持久化、并发锁、超时/心跳、取消、重启恢复、重试策略和秘密扫描测试。",
+      "evidence": [],
+      "notes": "",
+      "last_reviewed_at": null,
+      "acceptance_criteria": [
+        {
+          "ac_id": "P2-AC1",
+          "text": "产品 workflow 的实现与测试以主程序 IntRuoyiBackend `yudao-module-infra/.../runtimecontrol/` 为唯一运行时来源，维护仓 backend 仅可提供独立诊断或契约同步；workflow 与 event journal 在进程重启后恢复，状态转换使用原子写和 stateVersion/CAS，损坏状态直接阻塞。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P2-AC2",
+          "text": "build/test/prod 使用同环境持久化租约锁；重复点击返回现有 workflow 或冲突，不能重复执行。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P2-AC3",
+          "text": "心跳、可靠 timeout、取消和 RECOVERY_REQUIRED 有确定行为；进程重启或写阶段状态不明时不自动续跑，guard return 不产生 SUCCESS。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P2-AC4",
+          "text": "阶段持久化 attempt、operationId、errorCode、failedStage、retryable 和证据引用；只有 verifier 可推进状态，客户端不能伪造 SUCCESS。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P2-AC5",
+          "text": "preset 固化基础设施参数与 secret 引用并在启动和执行前校验；API、预览、日志、异常和审计只返回脱敏摘要。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P2-AC6",
+          "text": "retry 只在服务端条件满足时开放；内容或迁移修复必须新包新 tag，正式服失败恢复后仍需新授权和 PROD。",
+          "status": "pending",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "phase_id": "P3",
+      "title": "自包含制品与部署事务",
+      "status": "pending",
+      "objective": "从批准提交生成唯一 tag 和 clean/frozen worktree，在昂贵构建前完成门禁，原子入库 app-release READY 包，并以同一 digest 完成测试发布和受守卫的正式晋级。",
+      "owned_paths": [
+        "ops/deploy/**、ops/release/**、scripts/tests/**、workflow build/deploy/promotion orchestration。"
+      ],
+      "dependencies": [
+        "P2；NAS 与测试 preset 可验证；真实测试服步骤另需当次明确授权。"
+      ],
+      "deliverables": [
+        "preflight DAG、显式测试 gate、迁移演练、目标只读 preflight、包治理、自包含 verifier、NAS READY、.env.next 事务、完整 attestation、app-release 晋级守卫。"
+      ],
+      "evidence_expectation": "顺序/迁移/包治理/篡改/NAS/部署事务/晋级守卫测试；获授权后的真实测试服运行态证据，正式服只验证无写入守卫。",
+      "evidence": [],
+      "notes": "",
+      "last_reviewed_at": null,
+      "acceptance_criteria": [
+        {
+          "ac_id": "P3-AC1",
+          "text": "后端生成未占用 tag，并基于批准提交创建 clean/frozen worktree；构建前和打包前均验证 HEAD 与 dirty=false。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P3-AC2",
+          "text": "Maven 前完成 NAS、Docker、磁盘、容器、端口、secret、锁、目标状态和规范化 LocalCacheRoot 预检；LocalCacheRoot 尾部不得为 publish-int-ruoyi。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P3-AC3",
+          "text": "migration gate 强制目录 allowlist、metadata、delimiter、标识符、幂等性和 schema-only 同镜像隔离演练；需要 target preflight 的集合从本次计划自动推导。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P3-AC4",
+          "text": "非 schema 迁移及 type=schema 但 DDL 约束依赖历史数据的迁移必须 requiresTargetPreflight=true，并执行目标只读检查。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P3-AC5",
+          "text": "构建后和每次部署前均按白名单验包并拒绝全部禁止项；包包含自包含 verifier、required SQL、manifest、digest 和构建/迁移/smoke 证据，部署不依赖源码 worktree。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P3-AC6",
+          "text": "NAS 使用 workflow 唯一 staging，上传后复算全包哈希并同卷原子改名为 READY；本地 cache 非权威，只能使用唯一 staging 或严格 /PURGE 后全哈希。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P3-AC7",
+          "text": "测试发布只接受 READY app-release 的同一 tag/packageDigest/manifestDigest；.env.next 校验后原子替换，失败恢复旧 .env 并核旧 actual images，状态不确定进入 RECOVERY_REQUIRED。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P3-AC8",
+          "text": "成功同时满足 operation=SUCCESS、manifest/digests、.env IMAGE_TAG、backend/frontend actual tag、容器 running、backend JSON health=UP、frontend 200、release-info/lock/migration 无 FAILED/RUNNING；测试 attestation 绑定同一 digest。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P3-AC9",
+          "text": "promotion attestation 支持 app-release；正式 preview 只读并逐字段核验 authorizationGrantId 绑定的 workflowId、releaseTag、packageDigest、manifestDigest、targetEnvironment=prod、presetId+version、approvedScope、approver、issuedAt/validUntil、nonce、revokedAt、consumedAt。execute 还要求权限、production write 开关、TESTED、PROD 和无锁冲突，并以 CAS 一次性消费授权；跨 workflow/环境/摘要/preset/scope、过期、撤销、已消费和 nonce 重放测试均证明 operation/正式写入未开始，且全程禁止重新构建或修改包。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P3-AC10",
+          "text": "任一门禁或成功条件缺失均记录 errorCode/failedStage 并停止；失败 tag 退休，正式失败不自动重试或假绿。",
+          "status": "pending",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "phase_id": "P4",
+      "title": "三按钮发布工作台",
+      "status": "pending",
+      "objective": "在主程序 `/infra/monitors/runtime-control` 提供不暴露基础设施参数的三步 UI，显示阶段、失败证据、重试条件、测试验收动作和正式风险。",
+      "owned_paths": [
+        "`E:\\IntRuoyi\\IntRuoyiFronted\\src\\views\\infra\\runtime-control\\`、`src\\api\\infra\\runtimeControl\\index.ts`、主程序后端 workflow controller/DTO/API、前后端测试和 Playwright。"
+      ],
+      "dependencies": [
+        "P1-P3 API 在主程序 48081 稳定；维护仓 frontend/standalone 已从产品验收面排除。"
+      ],
+      "deliverables": [
+        "生成程序安装包、发布测试服、晋级正式服三个按钮，工作流详情、权限/禁用态、错误反馈、响应式与无障碍。"
+      ],
+      "evidence_expectation": "主程序 API 契约、Vue 单元、typecheck/build，以及 `output/playwright/one-button-app-release-20260911/` 下真实 Playwright 桌面/窄屏截图与 trace。",
+      "evidence": [],
+      "notes": "",
+      "last_reviewed_at": null,
+      "acceptance_criteria": [
+        {
+          "ac_id": "P4-AC1",
+          "text": "主程序 8081 页面及 48081 API 的 workflow 构建/测试请求只接受业务原因与受控来源；正式请求另接受授权引用和 PROD，不接受客户端基础设施参数；维护仓 48181 页面不作为产品验收入口。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P4-AC2",
+          "text": "标准 UI 只呈现生成程序安装包、发布测试服、晋级正式服三个按钮，并显示“程序包（不含数据）”；不存在 with-data。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P4-AC3",
+          "text": "UI 显示状态、阶段、耗时/心跳、tag、packageDigest、manifestDigest、errorCode、failedStage、证据、actual version 和 retry policy；刷新后一致。TEST_DEPLOYED 的工作流详情可记录测试验收并形成 TESTED，但该动作不是第四个主发布按钮。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P4-AC4",
+          "text": "按钮由服务端 eligibility 控制并显示禁用原因；重复点击不重复启动；正式确认显示目标、双摘要、测试证明、一次性授权绑定摘要并要求 PROD。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P4-AC5",
+          "text": "权限失败、API 错误和 secret 缺失可见；响应、预览、日志和复制内容不泄密；状态转换有审计。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P4-AC6",
+          "text": "UI 遵循统一控制台样式，桌面/窄屏无重叠，状态不只靠颜色，按钮可键盘操作并有可访问名称；Playwright 必须登录测试租户 `aoteman` 后打开 `/infra/monitors/runtime-control`，写操作只限测试租户且 API 仅用于最终校验。",
+          "status": "pending",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "phase_id": "P5",
+      "title": "防复发回归、独立验收与收口",
+      "status": "pending",
+      "objective": "将 R31-R44 和双摘要/授权重放固化为自动回归，通过主程序 8081 页面完成独立真实浏览器验收、运行手册、融合和清理。",
+      "owned_paths": [
+        "本任务测试、运行手册、错误码/恢复表、任务证据。"
+      ],
+      "dependencies": [
+        "P1-P4 完成；独立 tester 可用；测试租户 `aoteman` 可登录；任何测试服写入已有明确授权，正式服保持只读。"
+      ],
+      "deliverables": [
+        "回归套件、blind-first-pass 报告、任务目录外浏览器证据、真实测试服结论或授权 blocker、集成提交和 worktree 清理记录。"
+      ],
+      "evidence_expectation": "防复发报告、全量命令摘要、test-report.md、外部 Playwright 证据、授权记录或 blocker、Git/worktree 清理记录。",
+      "evidence": [],
+      "notes": "",
+      "last_reviewed_at": null,
+      "acceptance_criteria": [
+        {
+          "ac_id": "P5-AC1",
+          "text": "R31-R44 每项至少有一个自动化负例或恢复测试并证明昂贵构建/真实写入未开始；另有 Java/Python/PowerShell 双摘要固定向量、非法路径/大小写冲突和授权跨 workflow/环境/摘要/preset/scope 重放负例。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P5-AC2",
+          "text": "使用 app-release fixture 完整验证 build-release → NAS READY → publish-test SUCCESS → 工作流详情记录测试验收 → TESTED → promote-prod 使用同一 workflow/tag/packageDigest/manifestDigest，且过程中无重建；授权只消费一次。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P5-AC3",
+          "text": "主程序后端、主程序前端、维护脚本、包治理和真实浏览器全回归通过；blind-first-pass tester 只以主程序 8081/48081 为产品 surface，浏览器通过项均引用任务目录外证据。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P5-AC4",
+          "text": "运行手册记录环境、命令类别、secret owner、授权、错误码、恢复、制品和审计位置，不含秘密值。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P5-AC5",
+          "text": "获当次授权才由登录测试租户 `aoteman` 的真实 UI 路径执行测试服发布，写操作只限测试租户且 API 仅最终校验；正式服只验证 preview/守卫且零写入。维护仓与 IntRuoyi 根仓两个 Git 仓的实现提交只含本任务文件，并分别记录 maintenance/backend/frontend 三个 source role；融合前确认同路径 dirty/frontend 删除归属，融合结果复验后清理 task worktree。",
+          "status": "pending",
+          "evidence": []
+        }
+      ]
+    }
+  ],
+  "planner_review_status": "approved",
+  "test_status": "not_started",
+  "blocking_prereqs": [
+    "P1 前置未满足：必须在独立任务 worktree 中审查/融合 8080c0d 所需维护仓能力，当前 int_main 为脏工作树且该提交不在其祖先链。",
+    "P1 前置未满足：必须确认当前主工作区 frontend/ 未提交删除及其他脏改动的归属，实施不得覆盖。",
+    "真实测试服写入未获本轮授权；正式服真实写入未获本轮授权。",
+    "P4/P5 前置未满足：项目规定的 Playwright 1.60.0 权威路径缺少 package.json、node_modules/playwright 与 playwright.cmd；禁止临时下载或切换版本兜底。"
+  ],
+  "iteration_counts": {
+    "planner_revisions": 1,
+    "executor_loops": 0,
+    "test_loops": 0
+  },
+  "created_at": "2026-09-11T09:20:03",
+  "updated_at": "2026-09-11T12:22:18",
+  "branch": "int_main",
+  "baseline_revision": "eaaa47ac320dd197dba646d6870fed0cb7d2534c",
+  "workspace_root": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance",
+  "tasks_root": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks",
+  "task_dir": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\one-button-app-release-20260911",
+  "goal": "Design a programmatic button-driven immutable application release workflow. Packages must use PublishScope app-release and exclude all data snapshots.",
+  "artifacts": {
+    "prd": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\one-button-app-release-20260911\\prd.md",
+    "test_plan": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\one-button-app-release-20260911\\test-plan.md",
+    "task_state": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\one-button-app-release-20260911\\task-state.json",
+    "execution_log": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\one-button-app-release-20260911\\execution-log.md",
+    "test_report": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\one-button-app-release-20260911\\test-report.md"
+  }
+}
