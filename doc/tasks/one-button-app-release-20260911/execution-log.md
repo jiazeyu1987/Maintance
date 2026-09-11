@@ -104,6 +104,60 @@ GREEN: planner-review -> PASS，主线程按 review checklist 核对 scope、non
 
 - P1 implementation prerequisites and environment authorization gates remain as listed above.
 
+## Phase P1 Executor Evidence
+
+### BDD And RED
+
+BDD: 标准程序包固定无数据 -> Given 标准发布 workflow / When 解析构建意图 / Then scope 只能是 `app-release`，数据库/MinIO/DCC/runtime data 与秘密均不得进入安装包。
+
+BDD: 两次冻结批准源码 -> Given 维护仓与 IntRuoyi 根仓各有批准 commit / When 进入昂贵构建前和写 manifest 前 / Then 两个 Git root 的 HEAD/dirty 与 maintenance/backend/frontend 三个 source role 全部一致，否则 fail fast。
+
+BDD: 测试失败前移 -> Given 后端、前端或脚本合同任一失败 / When 标准构建准备执行 / Then Maven package、前端 build 和 Docker build 均不启动。
+
+BDD: 三语言双摘要一致 -> Given固定 artifact/manifest 原始 bytes / When Python、Java、PowerShell 计算摘要 / Then 四个固定 SHA-256 完全一致，并拒绝反斜杠及大小写折叠冲突路径。
+
+RED: `python -X utf8 -m pytest -q scripts/tests/test_release_workflow_preflight.py scripts/tests/test_release_digest_vectors.py` -> FAIL，旧脚本仍为 code-only/with-data 双范围、双 manifest、无两次冻结/显式测试顺序，且 Python 摘要模块不存在。
+
+RED: `python -X utf8 -m pytest -q scripts/tests/test_app_release_package_governance.py --basetemp <task-owned>` -> FAIL，11 个用例证明旧 verifier 仍只读取 `release-manifest.json`，且没有 app-release 禁止项/路径合同。
+
+RED: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/tests/verify-release-digest-vector.ps1` -> FAIL，`Get-ReleasePackageDigest` 尚不存在。
+
+### Verified-Line Review
+
+- 维护 `8080c0d` 不是当前任务分支祖先；其 `/PURGE` 修复位于已分叉的发布线，当前主线已退回 `Copy-Item + 删除本地目录`，需在当前基线重建可续传 `/PURGE` 下载并保留完整性校验顺序。
+- 应用 `713c641` 不是当前任务分支祖先；当前 SQL 与 H2 schema 确实恢复为“所有历史账号唯一”，需只移植活跃账号生成列/唯一索引及对应测试，保留当前主线其它新增内容。
+- 不盲目 cherry-pick 两条验证线，不覆盖原主工作区或当前主线后续变更。
+
+### GREEN And Regression
+
+- GREEN: C01（补 `-am -Dsurefire.failIfNoSpecifiedTests=false`）-> PASS，8 tests，0 failures/errors/skips；覆盖服务端 identity/preset、客户端字段拒绝、两 Git root/三 role、两次冻结、测试顺序和 Java 摘要。
+- GREEN: C04 P1 静态合同 -> PASS，workflow create intent 仅含 `reason/sourceSelectionId`，不含 releaseTag/scope/host/NAS/MinIO/repo roots/LocalCacheRoot。
+- GREEN: C11-PY -> PASS，3 tests；C11-JAVA -> PASS，2 tests；C11-PS -> PASS。三语言共同得到 packageDigest `b3920c523e8739501931bd5b68811bf7350b2a742960023b2fe1b7925adb0273` 和 manifestDigest `bb44ed6ea9550e067c1a2af3a105a0989503b046646f26bd1bac19455bee2800`，并拒绝反斜杠/大小写冲突。
+- GREEN: maintenance focused P1 + legacy governance -> PASS，80 tests；唯一 `manifest.json`、app-release 禁止项、摘要、attestation 和 `/PURGE` 回归均通过。
+- GREEN: C08 -> PASS，211 tests；C09 -> PASS，6 tests；C10 -> PASS，26 tests；PowerShell AST -> PASS。
+- GREEN: active username 验证线聚焦合同 -> PASS，2 tests、9 deselected；目标移植 `713c641` 的活跃账号唯一约束，保留当前主线后续测试/schema 内容。
+- GREEN: branch-runtime-port-guard -> PASS，`codex/one-button-app-release-20260911/int_main` 使用 slot 41、8256/48256；本阶段未启动服务。
+- REGRESSION: C07 全量 infra reactor -> FAIL，首个非 P1 失败为既有 `CodegenEngineVue2Test` / `CodegenEngineVue3Test` 模板快照差异，共 12 failures；P1 定向 Java 套件已全绿，未扩大修复。
+- BLOCKER: `corepack pnpm --dir IntRuoyiFronted ts:check` -> app worktree 缺 `node_modules/cross-env`；该命令属于 P4/C05 前置，本阶段未临时安装依赖或改用其它工具假绿。
+
+### Acceptance Coverage And Commits
+
+- P1-AC1: 两个独立 worktree 已建立；维护 `/PURGE` 与 app active username 能力按当前主线逐文件融合，未整链 cherry-pick，原主工作区未修改。
+- P1-AC2: 标准构建固定 `app-release`；数据备份/恢复不进入 workflow；构建、校验、NAS/deploy precheck/restore planner 消费唯一 `manifest.json`，第二 manifest 作为禁止项拒绝。
+- P1-AC3: Java/TypeScript create intent 只接受 reason/sourceSelectionId；workflowId/releaseTag/preset/scope 由服务端合同生成。
+- P1-AC4: manifest/source freeze 固定 maintenance/application 两个 root 与 maintenance/backend/frontend 三个 role；before-build/before-package 任一 HEAD/dirty 漂移 fail fast。
+- P1-AC5: 后端、前端、脚本测试先于 Maven/frontend/Docker build；Python/Java/PowerShell 固定双摘要一致。
+- Maintenance implementation commit: `045c8bca266201198b3bc9e2648c85c43cfe9880`。
+- IntRuoyi app implementation commit: `e9fed5ea86dfd8b8b63c779c37d523bc5d92df55`。
+- Worktrees remain for the main-thread independent P1 verifier; no merge to `int_main`, push, cleanup or worktree removal was performed by this executor.
+- Changed maintenance paths: `ops/deploy/publish-int-ruoyi.ps1`, release manifest/governance/preflight/restore modules, digest implementation, P1/legacy tests and standalone parity fixture.
+- Changed app paths: infra releaseworkflow contract classes/tests, workflow create VO, runtimeControl TypeScript intent, active username SQL/H2 fixture/test, and app task records.
+
+### Authorization Boundary Result
+
+- NOT_RUN: P2-P5、Maven package、frontend build、Docker build、服务启动、真实 E2E、NAS、数据库、MinIO、SSH、测试服、正式服、审查服、mark-tested 和 promotion；均未获本阶段授权或不属于 P1。
+- REMAINING_RISK: P1 只建立合同与底层门禁；完整状态机/持久化/锁在 P2，部署事务在 P3，三按钮 UI 与真实浏览器验收在 P4/P5。
+
 ## Phase P1 - 基线与契约收敛
 
 USER_AUTHORIZATION: 用户要求“根据文档进行开发”；本轮授权覆盖本机 P1 实现、测试和任务分支提交，不覆盖真实 E2E、NAS、测试服、正式服、审查服、数据库或 MinIO 写入。
