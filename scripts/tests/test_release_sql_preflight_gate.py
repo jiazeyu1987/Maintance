@@ -78,6 +78,32 @@ def test_migration_policy_gate_passes_unique_system_menu_ids(tmp_path: Path) -> 
     assert report["migrationCount"] == 2
 
 
+def test_migration_policy_gate_excludes_target_preflight_support_sql(tmp_path: Path) -> None:
+    policy_gate = importlib.import_module("ops.release.release_migration_policy_gate")
+    sql_root = tmp_path / "sql" / "mysql"
+    sql_root.mkdir(parents=True)
+    migration_sql = sql_root / "20260913_release_schema.sql"
+    migration_sql.write_text(
+        "-- release-migration: allowedEnvironments=test,backup,prod; dependsOn=; type=schema; riskLevel=medium\n"
+        "CREATE TABLE IF NOT EXISTS release_table (id bigint);\n",
+        encoding="utf-8",
+    )
+    support_dir = sql_root / "target-preflight"
+    support_dir.mkdir()
+    support_sql = support_dir / "20260913_release_schema.preflight.sql"
+    support_sql.write_text(
+        "SELECT 'release_table_exists' AS check_name, COUNT(*) AS actual_count FROM information_schema.tables;\n",
+        encoding="utf-8",
+    )
+
+    report = policy_gate.run_migration_policy_gate(sql_root)
+
+    assert report["status"] == "passed"
+    assert [entry["migrationId"] for entry in report["migrations"]] == [
+        "20260913_release_schema"
+    ]
+
+
 def test_migration_policy_gate_accepts_evidence_only_migration_types(tmp_path: Path) -> None:
     policy_gate = importlib.import_module("ops.release.release_migration_policy_gate")
     sql_root = tmp_path / "sql" / "mysql"

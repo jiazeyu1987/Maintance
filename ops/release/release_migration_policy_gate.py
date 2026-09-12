@@ -35,7 +35,12 @@ def _load_frozen_registry(path: Path | str | None) -> dict[str, str]:
 def _resolve_sql_paths(sql_root: Path, sql_paths: list[Path | str] | None) -> list[Path]:
     if sql_paths is None:
         return sorted(
-            (path for path in sql_root.rglob("20*.sql") if not is_rollback_migration(path)),
+            (
+                path
+                for path in sql_root.rglob("20*.sql")
+                if not is_rollback_migration(path)
+                and not _is_target_preflight_support_sql(sql_root, path)
+            ),
             key=lambda item: item.relative_to(sql_root).as_posix(),
         )
     resolved: list[Path] = []
@@ -49,6 +54,14 @@ def _resolve_sql_paths(sql_root: Path, sql_paths: list[Path | str] | None) -> li
             raise MigrationPolicyError(f"SQL file is outside SQL root: {path}") from exc
         resolved.append(path)
     return sorted(resolved, key=lambda item: item.relative_to(sql_root).as_posix())
+
+
+def _is_target_preflight_support_sql(sql_root: Path, path: Path) -> bool:
+    try:
+        relative = path.relative_to(sql_root)
+    except ValueError:
+        return False
+    return relative.parts[:1] == ("target-preflight",)
 
 
 def _require_explicit_metadata(sql_root: Path, sql_paths: list[Path] | None = None) -> None:
