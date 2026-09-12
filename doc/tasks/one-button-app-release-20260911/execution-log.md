@@ -402,3 +402,5 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - GREEN: final transport after binary-mode change -> PASS, read-only session probe returns 1 on the authorized test host.
 - GREEN: bug-regression evidence validator and CI/CD environment evidence validator -> PASS (document structure only, not deployment acceptance).
 - Remaining coverage is saved durably in target-preflight-gaps.md. No new build/release was attempted while this coverage remains missing. Task and global goal remain active; no worktree merge/delete or completed closeout is claimed.
+
+- Implementation commit: c26c705, task-owned local gate and cleanup corrections only. The staged whitespace check reported one trailing blank line in target-preflight-gaps.md; it was removed in the subsequent task-record correction. This documentation formatting issue does not change the observed 182-test result.
