@@ -276,7 +276,17 @@ GREEN: nas-release-target-preflight -> PASS，使用受控 NAS JSON 进行临时
 
 SOURCE_FREEZE_INPUT: maintenance `057f400`，application `fe548b1`；两个任务 worktree 均 clean。计划执行 `build-release`，releaseTag=`release-20260912-one-button-app-r1`，Component=`intruoyi`，PublishScope=`app-release`，显式 SkipDatabaseSync/SkipMinioSync；成功后只执行同 tag 的 test `deploy-release`。
 
+RED: build-release-r1-migration-metadata -> FAIL，`20260911_dcc_publish_direct_policy.sql` 缺少 `release-migration` 元数据；脚本在迁移策略门禁阶段停止，Maven、Docker、NAS 与测试服写入均未开始。按失败 tag 退休规则，r1 不再复用。
+
+GREEN: dcc-publish-direct-policy-metadata -> PASS，将该 SQL 按实际更新历史审批策略的行为声明为 `type=data`，依赖 `20260719_business_approval_policy` 与 `20260720_dcc_publish_form_policy_seed`；`test_dcc_publish_direct_policy_sql.py` 与 migration policy 共 10 tests PASS。
+
+GREEN: dcc-publish-direct-policy-metadata -> PASS，将该 SQL 按实际 UPDATE 历史审批策略行为声明为 `type=data`，依赖 `20260719_business_approval_policy` 与 `20260720_dcc_publish_form_policy_seed`；`test_dcc_publish_direct_policy_sql.py` 和 `test_release_migration_policy_gate.py` 共 10 tests PASS。
+
 RED: build-release-command-binding-r1 -> FAIL，手工命令将 `BackendRepoRoot` 误写为不存在的参数名，PowerShell 在参数绑定阶段退出；脚本主体、Maven、Docker、NAS 与服务器写入均未开始，releaseTag r1 仍未占用。修正为脚本声明的精确参数名并复用同一未启动 tag。
+
+RED: build-release-r1-migration-metadata -> FAIL，修正命令后 `20260911_dcc_publish_direct_policy.sql` 缺少 `release-migration` metadata；脚本在迁移策略门禁阶段停止，Maven/Docker/NAS/测试服写入均未开始。按失败 tag 退休规则，r1 不再复用。
+
+GREEN: `python -X utf8 -m pytest -...`
 
 BLOCKER: C05/P4/P5 -> `corepack pnpm --dir IntRuoyiFronted ts:check` FAIL，任务 app worktree 缺 `node_modules/cross-env`；权威 Playwright 目录仍缺 1.60.0 依赖/可执行文件。未临时安装依赖或换版本兜底。
 
