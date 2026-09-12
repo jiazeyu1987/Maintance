@@ -353,3 +353,11 @@ BDD: Windows Docker 镜像身份取证 -> Given 基础镜像已从受控离线 t
 RED: `python -X utf8 -m pytest -q scripts/tests/test_release_build_preflight_cache.py -k docker_image_identity` -> FAIL，旧实现仍包含 `--format {{json .}}`。
 
 GREEN: `python -X utf8 -m pytest -q scripts/tests/test_release_build_preflight_cache.py scripts/tests/test_release_schema_rehearsal.py` -> PASS，53 tests；本机真实 `docker image inspect` JSON 解析、镜像数量和 sha256 Id 校验 PASS。
+
+RED: build-release-r11-docker-context-cleanup -> FAIL，后端/前端镜像已成功构建并导出，但删除临时 `docker-build-context` 时 Windows 报前端 bundle 路径瞬时不存在；NAS 上传和测试服写入未开始，releaseTag `release-20260912-one-button-app-r11` 退休。
+
+BDD: Docker 构建上下文清理 -> Given 镜像导出完成 / When 删除包含大量前端 bundle 的临时上下文 / Then 进行有限次数、递增等待的可验证重试；5 次后仍残留必须明确失败，不能吞异常或把残留目录带入安装包。
+
+RED: `python -X utf8 -m pytest -q scripts/tests/test_release_build_preflight_cache.py -k docker_build_context_cleanup` -> FAIL，旧清理逻辑只有一次 `Remove-Item`。
+
+GREEN: `python -X utf8 -m pytest -q scripts/tests/test_release_build_preflight_cache.py scripts/tests/test_release_schema_rehearsal.py` -> PASS，54 tests；PowerShell AST PASS，清理重试合同已锁定。

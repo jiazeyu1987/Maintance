@@ -308,7 +308,22 @@ function Remove-ReleaseDockerBuildContextFromPackage {
     }
 
     Info 'Removing Docker build context from final release package'
-    Remove-Item -LiteralPath $dockerBuildContextRoot -Recurse -Force
+    $lastError = $null
+    for ($attempt = 1; $attempt -le 5; $attempt++) {
+        try {
+            Remove-Item -LiteralPath $dockerBuildContextRoot -Recurse -Force -ErrorAction Stop
+            $lastError = $null
+            break
+        } catch {
+            $lastError = $_
+            if ($attempt -lt 5) {
+                Start-Sleep -Milliseconds (250 * $attempt)
+            }
+        }
+    }
+    if ($null -ne $lastError) {
+        throw "Release Docker build context cleanup failed after 5 attempts: $($lastError.Exception.Message)"
+    }
     if (Test-Path -LiteralPath $dockerBuildContextRoot) {
         Fail "Release package still contains docker-build-context: $dockerBuildContextRoot"
     }
