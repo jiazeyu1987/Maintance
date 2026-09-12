@@ -365,3 +365,9 @@ GREEN: `python -X utf8 -m pytest -q scripts/tests/test_release_build_preflight_c
 RED: `python -X utf8 -m pytest -q scripts/tests/test_release_build_preflight_cache.py -k docker_build_context_cleanup` -> FAIL，PowerShell `Remove-Item -Recurse` 重试仍不能稳定删除大型 bundle 树；废弃 r12 上验证 .NET `Directory.Delete(path, true)` 可完成清理。
 
 GREEN: `python -X utf8 -m pytest -q scripts/tests/test_release_build_preflight_cache.py scripts/tests/test_release_schema_rehearsal.py` -> PASS，54 tests；清理实现改为 .NET 目录删除、有限重试和最终存在性核验，未保留 PowerShell 递归删除路径。
+
+RED: build-release-r13-docker-context-cleanup -> FAIL，即使改用 .NET `Directory.Delete(path, true)`，原始 `docker-build-context` 路径仍在大型前端 bundle 树上报 `Could not find a part of the path`；镜像和导出已成功，NAS/测试服写入未开始，releaseTag `release-20260912-one-button-app-r13` 退休。
+
+BDD: Docker 构建上下文隔离清理 -> Given 镜像构建读取已结束且 context 位于待发布包内 / When 开始清理 / Then 先用同卷 `Directory.Move` 原子移出包目录，再删除隔离目录并确认原目录与隔离目录均不存在；任一残留或删除失败都明确阻断。
+
+GREEN: `python -X utf8 -m pytest -q scripts/tests/test_release_build_preflight_cache.py scripts/tests/test_release_schema_rehearsal.py` -> PASS，54 tests；清理改为同卷原子移出后删除，PowerShell AST PASS。

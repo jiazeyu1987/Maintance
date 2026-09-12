@@ -308,10 +308,16 @@ function Remove-ReleaseDockerBuildContextFromPackage {
     }
 
     Info 'Removing Docker build context from final release package'
+    $cleanupRoot = Join-Path $localTempRoot ("docker-build-context-cleanup-" + $packageDirectoryName + '-' + [System.Guid]::NewGuid().ToString('N'))
     $lastError = $null
     for ($attempt = 1; $attempt -le 5; $attempt++) {
         try {
-            [System.IO.Directory]::Delete($dockerBuildContextRoot, $true)
+            if (Test-Path -LiteralPath $dockerBuildContextRoot) {
+                [System.IO.Directory]::Move($dockerBuildContextRoot, $cleanupRoot)
+            }
+            if (Test-Path -LiteralPath $cleanupRoot) {
+                [System.IO.Directory]::Delete($cleanupRoot, $true)
+            }
             $lastError = $null
             break
         } catch {
@@ -324,7 +330,7 @@ function Remove-ReleaseDockerBuildContextFromPackage {
     if ($null -ne $lastError) {
         throw "Release Docker build context cleanup failed after 5 attempts: $($lastError.Exception.Message)"
     }
-    if (Test-Path -LiteralPath $dockerBuildContextRoot) {
+    if ((Test-Path -LiteralPath $dockerBuildContextRoot) -or (Test-Path -LiteralPath $cleanupRoot)) {
         Fail "Release package still contains docker-build-context: $dockerBuildContextRoot"
     }
 }

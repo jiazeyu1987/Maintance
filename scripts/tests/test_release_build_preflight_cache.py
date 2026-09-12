@@ -564,5 +564,7 @@ def test_docker_build_context_cleanup_retries_and_fails_if_still_present() -> No
     assert "for ($attempt = 1; $attempt -le 5; $attempt++)" in body
     assert "Start-Sleep -Milliseconds (250 * $attempt)" in body
     assert "cleanup failed after 5 attempts" in body
-    assert "[System.IO.Directory]::Delete($dockerBuildContextRoot, $true)" in body
+    assert "[System.IO.Directory]::Delete($cleanupRoot, $true)" in body
     assert "Remove-Item -LiteralPath $dockerBuildContextRoot -Recurse" not in body
+    assert "[System.IO.Directory]::Move($dockerBuildContextRoot, $cleanupRoot)" in body
+    assert "docker-build-context-cleanup-" in body
