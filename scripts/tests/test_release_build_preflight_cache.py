@@ -331,8 +331,15 @@ def test_publish_script_orders_fresh_test_preflight_before_expensive_builds() ->
     assert "if ($capture.ExitCode -ne 0)" in function_body
     assert "target-state collection returned blank output" in function_body
     assert "target-state collection returned invalid JSON" in function_body
+    assert "$stateSqlBase64 = [Convert]::ToBase64String" in function_body
+    assert "printf '%s' '$stateSqlBase64' | base64 -d" in function_body
+    assert "BUILD_PREFLIGHT_SQL" not in function_body
     assert "release_build_preflight.py" in function_body
     assert "build-preflight-evidence.json" in function_body
+    assert "$stateSqlBase64 = [Convert]::ToBase64String" in function_body
+    assert "printf '%s' '$stateSqlBase64' | base64 -d | docker exec" in function_body
+    assert "BUILD_PREFLIGHT_SQL" not in function_body
+    assert "table_count=" not in function_body
 
 
 def _write_docker_spec(tmp_path: Path) -> tuple[Path, Path, Path]:

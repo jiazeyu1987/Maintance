@@ -3959,15 +3959,12 @@ WHERE target_environment = 'test'
   AND deleted = b'0'
   AND status IN ('APPLIED', 'SKIPPED_ALREADY_APPLIED');
 "@
+    $stateSqlBase64 = [Convert]::ToBase64String([System.Text.UTF8Encoding]::new($false).GetBytes($stateSql))
     $remoteCommand = @"
 set -e
 mysql_password=`$(docker inspect -f '{{range .Config.Env}}{{println .}}{{end}}' intruoyi-mysql | sed -n 's/^MYSQL_ROOT_PASSWORD=//p' | tail -n 1)
 test -n "`$mysql_password"
-table_count=`$(docker exec -i -e MYSQL_PWD="`$mysql_password" intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names information_schema -e "SELECT COUNT(*) FROM tables WHERE table_schema='ruoyi-vue-pro' AND table_name='infra_release_migration';")
-test "`$table_count" = '1'
-cat <<'BUILD_PREFLIGHT_SQL' | docker exec -i -e MYSQL_PWD="`$mysql_password" intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro
-$stateSql
-BUILD_PREFLIGHT_SQL
+printf '%s' '$stateSqlBase64' | base64 -d | docker exec -i -e MYSQL_PWD="`$mysql_password" intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro
 "@
     $normalizedRemoteCommand = $remoteCommand -replace "`r`n", "`n" -replace "`r", "`n"
     $sshArgs = @('-n') + (Get-SshCommonOptions) + @("$ServerUser@$TestServerHost", $normalizedRemoteCommand)
