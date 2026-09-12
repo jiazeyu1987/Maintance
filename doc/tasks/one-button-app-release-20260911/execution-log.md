@@ -337,3 +337,9 @@ BDD: ERP 菜单基线迁移 -> Given schema 文件包含 ERP 菜单存在性前�
 RED: build-release-r8-schema-rehearsal-history-menu -> FAIL，`20260907_dcc_publication_notification.sql` 在空结构库执行 DCC 审批权限菜单唯一性检查并报 `Missing or duplicate active DCC approve permission menu`；失败在正式 Maven/Docker/NAS/测试服写入前，releaseTag `release-20260912-one-button-app-r8` 退休。
 
 BDD: DCC 发布通知菜单基线迁移 -> Given SQL 会检查父菜单、审批权限菜单、角色和租户菜单包 / When 进入 app-release 构建演练 / Then 必须声明 `requiresTargetPreflight=true`，空结构演练不构造业务菜单，目标只读检查负责真实基线。
+
+RED: build-release-r9-schema-rehearsal-non-idempotent-ddl -> FAIL，`20260911_dcc_controlled_file_submit_idempotency.sql` 第一轮结构演练成功，第二轮在 `ALTER TABLE` 上报 `Duplicate column name 'submit_idempotency_key'`；失败在 Maven/Docker/NAS/测试服写入前，releaseTag `release-20260912-one-button-app-r9` 退休。
+
+BDD: DCC 提交幂等迁移重复执行 -> Given schema-only 演练对待应用 schema 迁移执行两轮 / When 迁移增加列和唯一索引 / Then 缺失对象才创建，已有对象必须校验定义且不重复添加；定义不兼容时明确失败。
+
+GREEN: `python -X utf8 -m pytest -q IntRuoyiBackend/script/tests/test_dcc_controlled_file_submit_idempotency_sql.py ...` -> PASS，5 tests；SQL 改为 information_schema 防护的可重复存储过程，并增加列/索引定义校验。
