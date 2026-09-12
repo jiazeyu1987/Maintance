@@ -3528,3 +3528,9 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Implementation: build-release 默认 `PublishScope=code-only` 并自动跳过数据库/MinIO；with-data 必须 `-PublishScope with-data -ConfirmText WITH-DATA`；manifest 增加 `packageRole=release-code|release-data-snapshot`；本地 integrity 复用刚生成的 artifact hash 且仍枚举实际文件；NAS 上传改走 robocopy 封装；manifest/integrity/NAS upload 增加阶段耗时和文件/字节摘要。
 - Verification: 发布包治理与 deploy precheck 合同测试 `63 passed`；PowerShell AST `AST_OK`；CI/CD validator self-test PASS；`git diff --check` PASS。实现提交 `6639128`。
 - Boundary: 未操作正在运行的 r14 主线程发布进程，未访问远程服务器、NAS、数据库或 MinIO。
+
+## 2026-09-12 一键无数据程序包测试服发布
+
+- Request: 用户授权继续完成一键程序发布任务的真实测试服验证。
+- Command intent: 固定任务 maintenance/app worktree 已提交 HEAD，生成唯一 `PublishScope=app-release` 程序包；构建阶段仅获取测试服数据库结构和迁移账本做只读门禁，不复制业务数据；安装包禁止 MySQL dump、MinIO 快照/同步、DCC inventory、runtime data 或秘密。构建成功后仅向测试服 `172.30.30.58` 发布同一 releaseTag/双摘要制品并验证完整运行态。
+- Boundary: 真实写入只限测试服和 NAS 新 releaseTag；禁止 `mark-tested`、`promote-prod`、`promote-backup`、正式服/审查服写入、with-data、删除 NAS 既有包或记录任何密码/token。

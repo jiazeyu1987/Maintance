@@ -270,6 +270,12 @@ RED: `corepack pnpm ts:check` -> FAIL，`runtime-control/index.vue` 缺少 `ElMe
 
 GREEN: `corepack pnpm ts:check` -> PASS；补充 `ElMessageBox` 显式导入后，任务 app worktree 前端类型检查退出码为 0。
 
+GREEN: remote-test-readonly-preflight -> PASS，SSH `root@172.30.30.58` 可达，Docker Compose v2.27.0，`/var/lib/docker` 使用率 27%，`intruoyi-mysql` healthy，backend/frontend 均 running；只读取状态，未修改测试服。
+
+GREEN: nas-release-target-preflight -> PASS，使用受控 NAS JSON 进行临时连接，只读确认 `Backup/ReleasePackage/release-20260912-one-button-app-r1` 不存在，随后断开映射；未读取或记录密码值。
+
+SOURCE_FREEZE_INPUT: maintenance `057f400`，application `fe548b1`；两个任务 worktree 均 clean。计划执行 `build-release`，releaseTag=`release-20260912-one-button-app-r1`，Component=`intruoyi`，PublishScope=`app-release`，显式 SkipDatabaseSync/SkipMinioSync；成功后只执行同 tag 的 test `deploy-release`。
+
 BLOCKER: C05/P4/P5 -> `corepack pnpm --dir IntRuoyiFronted ts:check` FAIL，任务 app worktree 缺 `node_modules/cross-env`；权威 Playwright 目录仍缺 1.60.0 依赖/可执行文件。未临时安装依赖或换版本兜底。
 
 AUTHORIZATION_BOUNDARY: 本轮未访问 NAS、MySQL、MinIO、SSH、测试服、正式服或审查服；未构建 Docker 镜像、未打安装包、未启动服务、未运行真实 E2E。P3 的远程写入、P4/P5 E2E 与最终发布仍需满足各自前置条件和当次授权。
