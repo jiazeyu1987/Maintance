@@ -285,6 +285,31 @@ def test_integrity_verifier_exactly_covers_payload_and_excludes_manifest_self_re
     assert all(re.fullmatch(r"[0-9a-f]{64}", item["sha256"]) for item in verification["artifacts"])
 
 
+def test_integrity_verifier_accepts_atomic_nas_staging_directory_name(tmp_path: Path) -> None:
+    package_dir = tmp_path / "release-staging-fixture"
+    _write_package(package_dir, release_tag="release-staging-fixture")
+    staging_dir = tmp_path / ".release-staging-fixture.staging-abcdef"
+    shutil.copytree(package_dir, staging_dir)
+    command = "\n".join(
+        [
+            "$ErrorActionPreference = 'Stop'",
+            f"Import-Module -Force '{GOVERNANCE_MODULE}'",
+            "Test-ReleasePackageIntegrity "
+            f"-PackagePath '{staging_dir}' "
+            "-ExpectedReleaseTag 'release-staging-fixture' "
+            "-ExpectedPackageDirectoryName 'release-staging-fixture' | "
+            "ConvertTo-Json -Depth 8 -Compress",
+        ]
+    )
+
+    result = _run_powershell(["-Command", command])
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    verification = json.loads(result.stdout.strip())
+    assert verification["releaseTag"] == "release-staging-fixture"
+    assert verification["packageDirectoryName"] == "release-staging-fixture"
+
+
 def test_package_digest_uses_fixed_vector_and_is_root_separator_independent(tmp_path: Path) -> None:
     package_a = tmp_path / "root-a" / "same-package"
     package_b = tmp_path / "root-b" / "same-package"
@@ -509,7 +534,7 @@ def test_nas_ready_requires_atomic_upload_and_full_hash() -> None:
     assert "$stagingPath = Join-Path $targetRoot" in upload
     assert ".staging-" in upload
     assert "Copy-ReleaseDirectoryTree -SourceDirectory $releaseDir -DestinationDirectory $stagingPath" in upload
-    assert "Test-ReleasePackageIntegrity -PackagePath $stagingPath" in upload
+    assert "Test-ReleasePackageIntegrity -PackagePath $stagingPath -ExpectedReleaseTag $PackageTag -ExpectedPackageDirectoryName $packageDirectoryName" in upload
     assert "Move-Item -LiteralPath $stagingPath -Destination $targetPath" in upload
     assert upload.index("Test-ReleasePackageIntegrity -PackagePath $stagingPath") < upload.index(
         "Move-Item -LiteralPath $stagingPath -Destination $targetPath"

@@ -3019,7 +3019,7 @@ function Copy-ReleasePackageToNas {
         try {
             # Copy-ReleaseDirectoryTree -SourceDirectory $releaseDir -DestinationDirectory $targetPath
             Copy-ReleaseDirectoryTree -SourceDirectory $releaseDir -DestinationDirectory $stagingPath
-            $null = Test-ReleasePackageIntegrity -PackagePath $stagingPath -ExpectedReleaseTag $PackageTag
+            $null = Test-ReleasePackageIntegrity -PackagePath $stagingPath -ExpectedReleaseTag $PackageTag -ExpectedPackageDirectoryName $packageDirectoryName
             if (Test-Path -LiteralPath $targetPath) {
                 Fail "NAS release package appeared during staging: $NasReleaseRoot/$packageDirectoryName"
             }

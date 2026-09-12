@@ -193,6 +193,7 @@ function Test-ReleasePackageIntegrity {
         [Parameter(Mandatory = $true)]
         [string]$PackagePath,
         [string]$ExpectedReleaseTag = '',
+        [string]$ExpectedPackageDirectoryName = '',
         [array]$PreverifiedArtifacts = @()
     )
 
@@ -240,8 +241,14 @@ function Test-ReleasePackageIntegrity {
     if (-not [string]::IsNullOrWhiteSpace($ExpectedReleaseTag) -and $releaseTag -cne $ExpectedReleaseTag) {
         throw "manifest.json: releaseTag mismatch: $releaseTag != $ExpectedReleaseTag"
     }
-    if ($packageDirectoryName -cne (Split-Path -Leaf $root)) {
-        throw "manifest.json: packageId mismatch: $packageDirectoryName != $(Split-Path -Leaf $root)"
+    $actualPackageDirectoryName = Split-Path -Leaf $root
+    $expectedDirectoryName = if ([string]::IsNullOrWhiteSpace($ExpectedPackageDirectoryName)) {
+        $actualPackageDirectoryName
+    } else {
+        $ExpectedPackageDirectoryName
+    }
+    if ($packageDirectoryName -cne $expectedDirectoryName) {
+        throw "manifest.json: packageId mismatch: $packageDirectoryName != $expectedDirectoryName"
     }
     if ($publishScope -cne 'app-release') {
         throw "manifest.json: invalid publishScope: $publishScope"
