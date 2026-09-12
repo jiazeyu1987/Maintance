@@ -525,6 +525,35 @@ def test_same_verifier_guards_all_four_package_lifecycle_points() -> None:
     assert "$releasePublishScope = $releasePackageIntegrity.PublishScope" in deploy
 
 
+def test_deploy_release_control_files_do_not_pollute_local_package_cache() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+
+    assert "$deployControlLocalRoot = Join-Path $localTempRoot" in script
+    assert '$remoteEnvNext = "$RemoteAppDir/.env.next"' in script
+    assert "$remoteEnvLocal = Join-Path $deployControlLocalRoot '.env'" in script
+    assert "$postImportSqlLocal = Join-Path $deployControlLocalRoot 'post-import.sql'" in script
+    assert "$remoteEnvLocal = Join-Path $releaseDir '.env'" not in script
+    assert "$postImportSqlLocal = Join-Path $releaseDir 'post-import.sql'" not in script
+
+
+def test_deploy_release_switches_env_after_migrations_and_verifies_actual_images() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    deploy_start = script.index("Copy-DeployControlFilesToServer -ComposeLocal $composeLocal")
+    deploy_end = script.index("Info 'Waiting for remote HTTP readiness'", deploy_start)
+    deploy = script[deploy_start:deploy_end]
+
+    assert "Assert-RemoteRuntimeEnvImageTag -Path $remoteEnvNext" in deploy
+    assert "Switch-RemoteRuntimeEnvNext" in script
+    assert "Assert-RemoteActualApplicationImages" in script
+    assert deploy.index("Copy-DeployControlFilesToServer") < deploy.index("docker load")
+    assert deploy.index("docker load") < deploy.index("Invoke-RequiredDatabaseSqlScripts")
+    assert deploy.index("Invoke-RequiredDatabaseSqlScripts") < deploy.index("Switch-RemoteRuntimeEnvNext")
+    assert deploy.index("Switch-RemoteRuntimeEnvNext") < deploy.index("docker compose up -d --force-recreate")
+    assert deploy.index("docker compose up -d --force-recreate") < deploy.index(
+        "Assert-RemoteActualApplicationImages"
+    )
+
+
 def test_nas_ready_requires_atomic_upload_and_full_hash() -> None:
     script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
     start = script.index("function Copy-ReleasePackageToNas")

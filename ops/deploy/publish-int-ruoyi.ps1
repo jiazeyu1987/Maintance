@@ -4726,11 +4726,12 @@ $buildReleaseRuntimeRestartGuardFile = Join-Path $resolvedLocalCacheRoot 'runtim
 Enter-BuildReleaseRuntimeRestartGuard -GuardFile $buildReleaseRuntimeRestartGuardFile
 $localTempRoot = Join-Path $resolvedLocalCacheRoot 'publish-int-ruoyi'
 $releaseDir = Join-Path $localTempRoot $packageDirectoryName
+$deployControlLocalRoot = Join-Path $localTempRoot ('.deploy-control-' + $packageDirectoryName)
 $dockerBuildContextRoot = Join-Path $releaseDir 'docker-build-context'
 $imageTar = Join-Path $releaseDir "intruoyi-images_$packageDirectoryName.tar"
 $dbDump = Join-Path $releaseDir 'ruoyi-vue-pro-current.sql'
 $resetDbSqlLocal = Join-Path $releaseDir 'reset-db.sql'
-$postImportSqlLocal = Join-Path $releaseDir 'post-import.sql'
+$postImportSqlLocal = Join-Path $deployControlLocalRoot 'post-import.sql'
 function Get-ReleaseDatabaseSqlSortKey {
     param(
         [Parameter(Mandatory = $true)]
@@ -4853,6 +4854,7 @@ $remoteRequiredSqlDir = "$remoteReleaseDir/required-sql"
 $remoteOpsRuntimeDir = '/opt/intruoyi/ops/backup-ops/linux-native'
 $remoteCompose = "$RemoteAppDir/docker-compose.yml"
 $remoteEnv = "$RemoteAppDir/.env"
+$remoteEnvNext = "$RemoteAppDir/.env.next"
 $remoteWebsiteDir = "$RemoteAppDir/website"
 $remoteWebsiteStagingDir = "$remoteReleaseDir/website"
 $remoteWebsitePreviousDir = "$RemoteAppDir/website.previous"
@@ -4895,7 +4897,11 @@ function ConvertTo-ShellSingleQuotedLiteral {
 }
 
 function Assert-RemoteRuntimeEnvImageTag {
-    $remoteEnvLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteEnv -Purpose 'remote runtime env path'
+    param(
+        [string]$Path = $remoteEnv,
+        [string]$Label = 'Remote runtime .env'
+    )
+    $remoteEnvLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $Path -Purpose 'remote runtime env path'
     $expectedImageTagLine = "IMAGE_TAG=$packageDirectoryName"
     $expectedImageTagLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $expectedImageTagLine -Purpose 'remote runtime IMAGE_TAG'
     $command = @"
@@ -4904,7 +4910,38 @@ test -f $remoteEnvLiteral
 grep -Fx $expectedImageTagLiteral $remoteEnvLiteral
 "@
     Invoke-SshCommand $command
-    Info "Remote runtime .env IMAGE_TAG verified: $packageDirectoryName"
+    Info "$Label IMAGE_TAG verified: $packageDirectoryName"
+}
+
+function Switch-RemoteRuntimeEnvNext {
+    $remoteEnvLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteEnv -Purpose 'remote runtime env path'
+    $remoteEnvNextLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteEnvNext -Purpose 'remote runtime env.next path'
+    $remoteEnvBackupLiteral = ConvertTo-ShellSingleQuotedLiteral -Value "$remoteReleaseDir/.env.before-switch" -Purpose 'remote runtime env backup path'
+    $command = @"
+set -eu
+test -f $remoteEnvNextLiteral
+if [ -f $remoteEnvLiteral ]; then
+  cp $remoteEnvLiteral $remoteEnvBackupLiteral
+fi
+mv $remoteEnvNextLiteral $remoteEnvLiteral
+"@
+    Invoke-SshCommand $command
+    Assert-RemoteRuntimeEnvImageTag
+}
+
+function Assert-RemoteActualApplicationImages {
+    $checks = @()
+    if ($publishBackend) {
+        $checks += "actual_backend=`$(docker inspect -f '{{.Config.Image}}' intruoyi-backend); test `"x`$actual_backend`" = `"xintruoyi-backend:$packageDirectoryName`""
+    }
+    if ($publishFrontend) {
+        $checks += "actual_frontend=`$(docker inspect -f '{{.Config.Image}}' intruoyi-frontend); test `"x`$actual_frontend`" = `"xintruoyi-frontend:$packageDirectoryName`""
+    }
+    if ($checks.Count -eq 0) {
+        return
+    }
+    Invoke-SshCommand ("set -eu`n" + ($checks -join "`n"))
+    Info "Remote actual application images verified: $packageDirectoryName"
 }
 
 function Assert-RemoteRuntimeEnvEdhrEndpoint {
@@ -5573,7 +5610,7 @@ function Copy-DeployControlFilesToServer {
         $remoteDeployControlArchiveLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteDeployControlArchive -Purpose 'deploy control archive'
         $remoteDeployControlExtractDirLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteDeployControlExtractDir -Purpose 'deploy control extract directory'
         $remoteComposeLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteCompose -Purpose 'remote compose path'
-        $remoteEnvLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteEnv -Purpose 'remote env path'
+        $remoteEnvLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteEnvNext -Purpose 'remote env.next path'
         $remoteWebsiteStagingDirLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteWebsiteStagingDir -Purpose 'remote website staging directory'
         $remoteResetDbSqlLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteResetDbSql -Purpose 'remote reset database SQL path'
         $remotePostImportSqlLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remotePostImportSql -Purpose 'remote post-import SQL path'
@@ -5687,6 +5724,10 @@ $edhrProtectedStorageSql
 
 $showroomFileStorageSql
 "@
+    $postImportSqlParent = Split-Path -Parent $postImportSqlLocal
+    if (-not (Test-Path -LiteralPath $postImportSqlParent -PathType Container)) {
+        New-Item -ItemType Directory -Force -Path $postImportSqlParent | Out-Null
+    }
     [System.IO.File]::WriteAllText($postImportSqlLocal, $postImportSql, [System.Text.UTF8Encoding]::new($false))
 }
 
@@ -6370,6 +6411,10 @@ if ($Mode -eq 'deploy-release' -and $publishWebsite) {
 }
 
 if ($Mode -eq 'deploy-release') {
+    if (Test-Path -LiteralPath $deployControlLocalRoot) {
+        Remove-Item -LiteralPath $deployControlLocalRoot -Recurse -Force
+    }
+    New-Item -ItemType Directory -Force -Path $deployControlLocalRoot | Out-Null
     if ($publishBackend) {
         Info 'Regenerating target-bound post-import SQL for deploy-release'
         Write-TargetBoundPostImportSql
@@ -6557,7 +6602,10 @@ RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_IMAGE=$BackendRuntimeBaseImage
 RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_DIGEST=$BackendRuntimeBaseDigest
 RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_VERSION=$BackendRuntimeBaseVersion
 "@
-$remoteEnvLocal = Join-Path $releaseDir '.env'
+$remoteEnvLocal = Join-Path $deployControlLocalRoot '.env'
+if (-not (Test-Path -LiteralPath $deployControlLocalRoot -PathType Container)) {
+    New-Item -ItemType Directory -Force -Path $deployControlLocalRoot | Out-Null
+}
 Write-Utf8LfNoBomFile -Path $remoteEnvLocal -Content $remoteEnvContent
 
 Info "Copying deploy control files to the $PublishTargetName server"
@@ -6567,7 +6615,7 @@ if (-not (Test-Path -LiteralPath $composeLocal)) {
 }
 Copy-DeployControlFilesToServer -ComposeLocal $composeLocal
 if ($publishBackend -or $publishFrontend) {
-    Assert-RemoteRuntimeEnvImageTag
+    Assert-RemoteRuntimeEnvImageTag -Path $remoteEnvNext -Label 'Remote runtime .env.next'
     if ($publishBackend) {
         Assert-RemoteRuntimeEnvEdhrEndpoint
     }
@@ -6678,6 +6726,11 @@ try {
         Invoke-SshCommand "test -f '$remoteWebsiteStagingDir/dist/index.html' && test -f '$remoteWebsiteStagingDir/nginx.conf' && rm -rf '$remoteWebsitePreviousDir' && if [ -d '$remoteWebsiteDir' ]; then mv '$remoteWebsiteDir' '$remoteWebsitePreviousDir'; fi && mv '$remoteWebsiteStagingDir' '$remoteWebsiteDir'"
     }
 
+    if ($publishBackend -or $publishFrontend) {
+        Info "Switching runtime .env to $packageDirectoryName on the $PublishTargetName server"
+        Switch-RemoteRuntimeEnvNext
+    }
+
     $runtimeServices = @()
     if ($IncludeOnlyOffice) { $runtimeServices += 'onlyoffice' }
     if ($publishBackend) { $runtimeServices += 'backend' }
@@ -6686,7 +6739,8 @@ try {
         $runtimeServicesArg = $runtimeServices -join ' '
         $runtimeServiceDependencyFlag = if ($IncludeOnlyOffice) { '' } else { '--no-deps ' }
         Info "Starting application services on the $PublishTargetName server: $runtimeServicesArg"
-        Invoke-SshCommand "cd '$RemoteAppDir' && docker compose up -d $runtimeServiceDependencyFlag$runtimeServicesArg"
+        Invoke-SshCommand "cd '$RemoteAppDir' && docker compose up -d --force-recreate $runtimeServiceDependencyFlag$runtimeServicesArg"
+        Assert-RemoteActualApplicationImages
     }
 
     if ($publishWebsite) {
@@ -6751,6 +6805,9 @@ try {
 
 Info 'Cleaning remote release temp files'
 Invoke-SshCommand "rm -f '$remoteImageTar' '$remoteDbDump' '$remoteResetDbSql' '$remotePostImportSql'"
+if ($Mode -eq 'deploy-release' -and (Test-Path -LiteralPath $deployControlLocalRoot)) {
+    Remove-Item -LiteralPath $deployControlLocalRoot -Recurse -Force
+}
 $remoteCleanupDirs = @()
 if ($publishBackend) {
     $remoteCleanupDirs += $remoteRequiredSqlDir

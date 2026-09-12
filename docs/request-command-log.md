@@ -3549,3 +3549,5 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Command intent: 重启后发现 `release-20260913-one-button-app-r18` 只是本地半成品缓存且缺少 `manifest.json`，按失败 tag 退休；改用新 tag `release-20260913-one-button-app-r19`，冻结维护 worktree `618da2d` 与应用 worktree `4fb258315`，继续执行 `app-release` build-release。
 - Result update: `release-20260913-one-button-app-r19` 因维护 worktree 含本轮任务记录未提交而触发 `SOURCE_DIRTY: maintenance`，脚本在昂贵构建和任何 NAS/测试服写入前停止；r19 已退休，下一轮改用 `release-20260913-one-button-app-r20`。
 - Result update: `release-20260913-one-button-app-r20` 生成本地 `app-release` 包与 manifest 后，在 NAS 配置解析阶段发现误传 YAML 给 JSON 参数；测试服部署未开始，r20 退休。已增加 NAS 配置和 source dirty 前置门禁，避免再次白跑 Maven/Docker。
+- Command intent: 本轮先提交继续发布前必须收敛的两个本地修正：应用 workflow 调用底层构建时固定 `app-release`，维护脚本 deploy-release 使用 `.env.next` 并在迁移成功后原子切换 `.env`、强制重建服务并校验实际镜像 tag。
+- Verification: RED app workflow 单测显示期望 `app-release` 但实际为 `code-only`；GREEN 同一单测通过，`ReleaseWorkflow*Test` 25 passed；维护仓 `test_release_package_governance.py` 66 passed；`publish-int-ruoyi.ps1` AST PASS。未访问服务器、NAS、数据库、MinIO 或正式服。

@@ -455,3 +455,12 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - GREEN: `python -X utf8 -m pytest -q scripts/tests/test_release_workflow_preflight.py -k "nas_config or tests_and_source_freeze" --basetemp .tmp-r20-nas-json-green` -> PASS，2 tests；`publish-int-ruoyi.ps1` PowerShell AST PASS。
 - REGRESSION: `python -X utf8 -m pytest -q --tb=short scripts/tests/test_release_workflow_preflight.py scripts/tests/test_release_package_governance.py scripts/tests/test_app_release_package_governance.py scripts/tests/test_release_build_preflight_cache.py --basetemp .tmp-r20-nas-config-regression` -> PASS，132 tests。
 - NEXT: 提交 NAS 配置前置门禁修复后，使用新 releaseTag `release-20260913-one-button-app-r21` 和现有受控 JSON NAS 配置重建 `app-release` 包；仍禁止 with-data、全量数据库、MinIO 数据同步和正式服写入。
+
+## r21 pre-commit fixes: app-release scope and deploy env transaction
+
+- BDD: workflow 构建动作固定 app-release -> Given 操作者通过三按钮 workflow 生成程序包 / When 后端编排调用底层 `build-release` / Then 服务端固定 `PublishScope=app-release`，不得继续传旧 `code-only`。
+- RED: `mvn -pl yudao-module-infra -Dtest=ReleaseWorkflowOrchestratorTest#buildButtonDispatchesOneServerOwnedAppReleaseOperation test` -> FAIL，断言期望 `app-release`，实际仍为 `code-only`；失败发生在本机单测，未访问服务器、NAS、数据库或 MinIO。
+- GREEN: app-workflow-scope -> PASS，同一 Maven 单测通过；随后 `mvn -pl yudao-module-infra -Dtest=ReleaseWorkflow*Test test` -> PASS，25 tests；workflow package 静态扫描确认不再存在 `setPublishScope("code-only")`。
+- BDD: deploy-release 先写 `.env.next` 后原子切换 -> Given READY 包已通过迁移和部署前验包 / When 测试服 deploy-release 准备重启服务 / Then 先上传部署控制文件到 `.env.next`，迁移成功后再切换 `.env` 并强制重建服务，最后校验实际 backend/frontend 镜像 tag。
+- GREEN: maintenance-deploy-transaction-regression -> PASS，`python -X utf8 -m pytest scripts/tests/test_release_package_governance.py -q --basetemp .tmp-pytest-one-button-p1` -> 66 passed；`publish-int-ruoyi.ps1` PowerShell AST PASS。
+- NEXT: 分别提交 app worktree 的 scope 修正与 maintenance worktree 的部署事务修正；提交后使用新 releaseTag 继续 `app-release` build-release -> publish-test，仅限测试服/NAS，不执行正式服、审查服、`mark-tested`、`promote-prod` 或 `promote-backup`。
