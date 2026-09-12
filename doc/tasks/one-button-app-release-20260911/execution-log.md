@@ -333,3 +333,7 @@ GREEN: 同一回归集合 -> PASS，115 tests；更新固定向量到新的规�
 RED: build-release-r7-schema-rehearsal-history-menu -> FAIL，`20260905_erp_kingdee_production_replenishment_list_sync.sql` 被账本判定为摘要变化后待重放，空结构库执行其 ERP 父菜单唯一性前置检查并报 `ERP production parent menu must exist exactly once`；失败在正式 Maven/Docker/NAS/测试服写入前，releaseTag `release-20260912-one-button-app-r7` 退休。
 
 BDD: ERP 菜单基线迁移 -> Given schema 文件包含 ERP 菜单存在性前置检查 / When 构建前分类迁移 / Then 必须声明 `requiresTargetPreflight=true`，由测试服只读目标检查负责，schema-only 空库不得伪造菜单数据。
+
+RED: build-release-r8-schema-rehearsal-history-menu -> FAIL，`20260907_dcc_publication_notification.sql` 在空结构库执行 DCC 审批权限菜单唯一性检查并报 `Missing or duplicate active DCC approve permission menu`；失败在正式 Maven/Docker/NAS/测试服写入前，releaseTag `release-20260912-one-button-app-r8` 退休。
+
+BDD: DCC 发布通知菜单基线迁移 -> Given SQL 会检查父菜单、审批权限菜单、角色和租户菜单包 / When 进入 app-release 构建演练 / Then 必须声明 `requiresTargetPreflight=true`，空结构演练不构造业务菜单，目标只读检查负责真实基线。
