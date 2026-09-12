@@ -22,3 +22,15 @@
 - GREEN validation evidence: PowerShell AST parse -> `AST_OK`；`git diff --check` -> PASS；CI/CD skill validator self-test -> PASS。
 - Manual approvals and blockers: 用户明确要求按 6 步开始修改；无阻塞。
 - Rollback procedure and validation: 回滚实现提交 `6639128` 即可恢复旧发布行为；回滚后需重跑发布包治理 pytest 与 PowerShell AST。
+
+## 2026-09-13 one-button app-release immutable package gate
+
+- Environments and deployment targets: 本次只修改维护仓发布脚本与合同测试；r23 本地包只读复核失败后判废，未继续测试服部署，未触碰正式服。
+- Build/package commands: 标准 `build-release` 仍固定 `PublishScope=app-release` 并排除数据库全量 dump、MinIO 同步、DCC inventory、runtime data 和秘密配置；本次新增要求 `ops-runtime` 在构建期进入 `manifest.json` 和 `packageDigest`。
+- Pipeline files changed: `ops/deploy/publish-int-ruoyi.ps1`、`scripts/tests/test_release_package_governance.py`。
+- Required secrets and owners: 未新增 secret；`backup-ops.secrets.json` 明确禁止进入包，NAS/SSH/MySQL 凭据仍由既有运行控制台配置提供。
+- Artifact and release output: r23 因部署阶段污染包目录而判废；下一轮必须使用新 releaseTag 重新构建，不复用 r23。
+- RED verification evidence: `python -X utf8 -m pytest -q scripts/tests/test_release_package_governance.py -k "ops_runtime" --basetemp .tmp-r23-ops-runtime-red` -> 2 failed，旧脚本没有构建期 ops-runtime 包含和部署期只读合同。
+- GREEN verification evidence: 定向 4 PASS；发布包治理、app-release governance、build preflight cache、schema rehearsal 宽回归 139 PASS；PowerShell AST PASS。
+- Manual approvals and blockers: 用户已授权继续测试服/NAS app-release 链路；本次修复后仍需先提交，再用新 tag 重新构建与发布测试服。
+- Rollback procedure and validation: 回滚本次维护提交会恢复部署阶段修改包目录的旧风险；若回滚，必须禁止继续 one-button app-release 发布并重跑上述回归。

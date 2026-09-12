@@ -342,9 +342,9 @@
   "planner_review_status": "approved",
   "test_status": "in_progress",
   "blocking_prereqs": [
-    "P3-AC4: r15 plan has 58 APPLY migrations requiring target read-only SQL checks; all 58 check files are absent from the approved application worktree. New fail-closed gate detects the whole set before SSH/Maven/package.",
-    "P1-AC1 requires renewed source-integration audit: the verified release line contains target-preflight SQL and schema/menu splits absent from this release worktree. Preserve newer task code while integrating the required fixes.",
-    "P3-AC5/7/8 and P4/P5 remain unverified: no READY package, no successful test deploy, no real UI acceptance, no integration or closeout."
+    "r23 local package is retired because deploy-release wrote ops-runtime into the package after manifest/packageDigest generation; this is now covered by a fail-fast immutable package gate.",
+    "Next build must use a new releaseTag after committing the ops-runtime build/deploy split; r23 must not be published or reused.",
+    "P3-AC5/7/8 and P4/P5 remain unverified: no successful new READY package after this fix, no successful test deploy, no real UI acceptance, no integration or closeout."
   ],
   "iteration_counts": {
     "planner_revisions": 1,
@@ -352,7 +352,7 @@
     "test_loops": 0
   },
   "created_at": "2026-09-11T09:20:03",
-  "updated_at": "2026-09-13T02:55:30+08:00",
+  "updated_at": "2026-09-13T06:58:00+08:00",
   "branch": "codex/one-button-app-release-20260911",
   "baseline_revision": "eaaa47ac320dd197dba646d6870fed0cb7d2534c",
   "workspace_root": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260911-release-button\\m",

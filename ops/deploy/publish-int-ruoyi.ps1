@@ -5657,8 +5657,8 @@ function Copy-DeployControlFilesToServer {
     }
 }
 
-function Copy-ReleaseOpsRuntimePackage {
-    Info 'Syncing runtime-control ops scripts to the target server'
+function New-ReleaseOpsRuntimePackage {
+    Info 'Preparing runtime-control ops scripts in release package'
     if (Test-Path -LiteralPath $opsRuntimeLocalDir) {
         Remove-Item -LiteralPath $opsRuntimeLocalDir -Recurse -Force
     }
@@ -5694,7 +5694,28 @@ function Copy-ReleaseOpsRuntimePackage {
     $targetDeployDirectory = Join-Path $opsRuntimeLocalDir 'script\deploy'
     New-Item -ItemType Directory -Force -Path $targetDeployDirectory | Out-Null
     Copy-Item -LiteralPath $remoteRootDiskScript -Destination (Join-Path $targetDeployDirectory 'manage-int-ruoyi-remote-root-disk.ps1') -Force
+}
 
+function Copy-ReleaseOpsRuntimePackage {
+    Info 'Syncing runtime-control ops scripts from release package to the target server'
+    if (-not (Test-Path -LiteralPath $opsRuntimeLocalDir -PathType Container)) {
+        Fail "Runtime-control ops package missing in release package: $opsRuntimeLocalDir"
+    }
+    foreach ($requiredPath in @(
+        'linux\backup-ops-linux.sh',
+        'scripts\backup-ops.ps1',
+        'actions',
+        'config',
+        'script\deploy\manage-int-ruoyi-remote-root-disk.ps1'
+    )) {
+        $candidate = Join-Path $opsRuntimeLocalDir $requiredPath
+        if (-not (Test-Path -LiteralPath $candidate)) {
+            Fail "Runtime-control ops package entry missing: ops-runtime/$($requiredPath.Replace('\', '/'))"
+        }
+    }
+    if (Test-Path -LiteralPath (Join-Path $opsRuntimeLocalDir 'config\backup-ops.secrets.json')) {
+        Fail 'Runtime-control ops package must not include backup-ops.secrets.json'
+    }
     $opsRuntimeArchivePath = Join-Path ([System.IO.Path]::GetTempPath()) "ops-runtime-$packageDirectoryName.tar"
     $remoteOpsRuntimeArchive = "$remoteReleaseDir/ops-runtime.tar"
     try {
@@ -6363,6 +6384,7 @@ if ($publishBackend -and $Mode -eq 'build-release' -and -not $SkipMinioSync) {
 }
 
 if ($publishBackend) { New-SchedulerSmokeRunnerPackage }
+if ($Mode -eq 'build-release' -and $publishBackend) { New-ReleaseOpsRuntimePackage }
 
 Write-ReleaseRuntimeEnvPackage
 Copy-Item -LiteralPath $composeTemplate -Destination (Join-Path $releaseDir 'docker-compose.yml') -Force

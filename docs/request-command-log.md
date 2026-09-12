@@ -3551,3 +3551,6 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Result update: `release-20260913-one-button-app-r20` 生成本地 `app-release` 包与 manifest 后，在 NAS 配置解析阶段发现误传 YAML 给 JSON 参数；测试服部署未开始，r20 退休。已增加 NAS 配置和 source dirty 前置门禁，避免再次白跑 Maven/Docker。
 - Command intent: 本轮先提交继续发布前必须收敛的两个本地修正：应用 workflow 调用底层构建时固定 `app-release`，维护脚本 deploy-release 使用 `.env.next` 并在迁移成功后原子切换 `.env`、强制重建服务并校验实际镜像 tag。
 - Verification: RED app workflow 单测显示期望 `app-release` 但实际为 `code-only`；GREEN 同一单测通过，`ReleaseWorkflow*Test` 25 passed；维护仓 `test_release_package_governance.py` 66 passed；`publish-int-ruoyi.ps1` AST PASS。未访问服务器、NAS、数据库、MinIO 或正式服。
+- Result update: r23 本地包复核失败，`ops-runtime/actions/01-立即备份.bat` 等部署运行脚本在 manifest 生成后才被写入发布包，导致不可变包摘要失效；r23 判废，不发布。
+- Implementation update: 维护脚本拆分 `New-ReleaseOpsRuntimePackage` 与 `Copy-ReleaseOpsRuntimePackage`，构建期把 `ops-runtime` 纳入 manifest/packageDigest，部署期只读取并上传包内文件；缺失或包含 `backup-ops.secrets.json` 直接失败。
+- Verification update: `test_release_package_governance.py -k ops_runtime` 先 RED；修复后定向 4 PASS，宽回归 139 PASS，PowerShell AST PASS。未执行测试服/正式服写入，未记录任何密码/token/私钥。

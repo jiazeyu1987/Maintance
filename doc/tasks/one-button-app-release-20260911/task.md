@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 已关闭 r15 target-preflight 覆盖缺口，下一步使用新 releaseTag 重新生成 without-data/app-release 程序包并验证测试服发布。标准页面的三按钮已接入持久化 workflow，生成包固定 `app-release` 且不含数据；正式服仍保持零写入。任务 worktree 前端依赖已按锁文件恢复，类型检查通过。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23 本地包复核发现部署阶段把 `ops-runtime` 写回已生成的发布包，导致 `manifest.json` 未登记新增文件，r23 判废不发布。已修复为“构建期纳入并登记 ops-runtime，部署期只读取包内已登记文件”，下一步提交修复后使用新 releaseTag 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
 
 ## Verification Evidence
 
@@ -58,10 +58,11 @@ P1、P2 已完成；P3 已关闭 r15 target-preflight 覆盖缺口，下一步�
 - P2：ReleaseWorkflowStore/Lease/Recovery/Security 11 PASS；相关 infra 回归共 102 PASS。
 - P3：维护仓全量 Python 234 PASS、Node 6 PASS、PowerShell digest/AST PASS；app P1-P3 targeted Maven 111 PASS；覆盖 target preflight、schema-only 两轮迁移演练、显式 TCP、幂等/ledger/delimiter、NAS 原子 READY、同摘要晋级授权和 `.env`/actual image 失败恢复。
 - `pnpm ts:check` 在补充 `ElMessageBox` 显式导入后通过；任务 worktree Playwright 为规定的 1.60.0。
+- r23 immutable package gate：本地 `Test-ReleasePackageIntegrity` 发现 `ops-runtime/actions/01-立即备份.bat: undeclared file`；新增回归先 RED 后 GREEN，发布包治理宽回归 139 PASS，PowerShell AST PASS。
 
 ## Current Phase
 
-- P3 正在执行：NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23 已判废，下一轮使用新 releaseTag 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 

@@ -536,6 +536,42 @@ def test_deploy_release_control_files_do_not_pollute_local_package_cache() -> No
     assert "$postImportSqlLocal = Join-Path $releaseDir 'post-import.sql'" not in script
 
 
+def test_build_release_declares_ops_runtime_before_manifest_integrity() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+
+    assert "function New-ReleaseOpsRuntimePackage" in script
+    assert "function Copy-ReleaseOpsRuntimePackage" in script
+    build_start = script.index("if ($Mode -eq 'build-release' -and $publishBackend)")
+    build_end = script.index("if ($smartReleaseReportOnlyEnabled -and $Mode -eq 'build-release')", build_start)
+    build_block = script[build_start:build_end]
+    assert "New-ReleaseOpsRuntimePackage" in build_block
+    assert "Write-ReleaseManifest -PackageTag $ReleaseTag" in build_block
+    assert build_block.index("New-ReleaseOpsRuntimePackage") < build_block.index(
+        "Write-ReleaseManifest -PackageTag $ReleaseTag"
+    )
+
+
+def test_deploy_release_uses_manifested_ops_runtime_without_mutating_package() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+
+    prepare_start = script.index("function New-ReleaseOpsRuntimePackage")
+    prepare_end = script.index("function Copy-ReleaseOpsRuntimePackage", prepare_start)
+    prepare = script[prepare_start:prepare_end]
+    publish_start = script.index("function Copy-ReleaseOpsRuntimePackage")
+    publish_end = script.index("function Write-TargetBoundPostImportSql", publish_start)
+    publish = script[publish_start:publish_end]
+
+    assert "Copy-Item -LiteralPath $sourceDirectory" in prepare
+    assert "Runtime-control ops package must not include backup-ops.secrets.json" in prepare
+    assert "Copy-Item -LiteralPath $sourceDirectory" not in publish
+    assert "Remove-Item -LiteralPath $opsRuntimeLocalDir -Recurse -Force" not in publish
+    assert "New-Item -ItemType Directory -Force -Path $opsRuntimeLocalDir" not in publish
+    assert "script\\backup-ops" not in publish
+    assert "Runtime-control ops package missing in release package" in publish
+    assert "backup-ops.secrets.json" in publish
+    assert "Invoke-CheckedCommand -FilePath 'tar'" in publish
+
+
 def test_deploy_release_switches_env_after_migrations_and_verifies_actual_images() -> None:
     script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
     deploy_start = script.index("Copy-DeployControlFilesToServer -ComposeLocal $composeLocal")

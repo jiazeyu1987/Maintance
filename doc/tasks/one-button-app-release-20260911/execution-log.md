@@ -464,3 +464,14 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - BDD: deploy-release 先写 `.env.next` 后原子切换 -> Given READY 包已通过迁移和部署前验包 / When 测试服 deploy-release 准备重启服务 / Then 先上传部署控制文件到 `.env.next`，迁移成功后再切换 `.env` 并强制重建服务，最后校验实际 backend/frontend 镜像 tag。
 - GREEN: maintenance-deploy-transaction-regression -> PASS，`python -X utf8 -m pytest scripts/tests/test_release_package_governance.py -q --basetemp .tmp-pytest-one-button-p1` -> 66 passed；`publish-int-ruoyi.ps1` PowerShell AST PASS。
 - NEXT: 分别提交 app worktree 的 scope 修正与 maintenance worktree 的部署事务修正；提交后使用新 releaseTag 继续 `app-release` build-release -> publish-test，仅限测试服/NAS，不执行正式服、审查服、`mark-tested`、`promote-prod` 或 `promote-backup`。
+
+## r23 immutable package gate: ops-runtime must be built into manifest
+
+- RED: package-integrity-r23-ops-runtime -> FAIL，本地复核 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260913-one-button-app-r23` 返回 `ops-runtime/actions/01-立即备份.bat: undeclared file`。r23 已有本地程序包和 `.deploy-control-*`，但未取得可验证的不可变包资格，不得继续 publish-test，也不得复用该 tag。
+- ROOT_CAUSE: `Copy-ReleaseOpsRuntimePackage` 在 `deploy-release` 阶段从应用 worktree 复制 `script/backup-ops/*` 到发布包目录 `ops-runtime/`，发生在 `manifest.json` 与 `packageDigest` 生成之后；这违反“同一不可变包”合同，也会让部署阶段依赖源码 worktree。
+- BDD: ops-runtime 是包内已登记制品 -> Given build-release 生成标准 `app-release` 程序包 / When 后续 deploy-release 同一 tag / Then `ops-runtime` 必须在构建期复制进包并进入 manifest/packageDigest，部署期只读取包内文件打包上传，不允许再次从源码 worktree 修改发布包。
+- RED: `python -X utf8 -m pytest -q scripts/tests/test_release_package_governance.py -k "ops_runtime" --basetemp .tmp-r23-ops-runtime-red` -> FAIL，2 failed，证明旧脚本没有构建期 `New-ReleaseOpsRuntimePackage` 且部署期会修改包。
+- GREEN: `python -X utf8 -m pytest -q scripts/tests/test_release_package_governance.py -k "ops_runtime or deploy_release_control_files_do_not_pollute_local_package_cache or nas_ready_requires_atomic_upload" --basetemp .tmp-r23-ops-runtime-green` -> PASS，4 tests；PowerShell AST 严格解析 PASS。
+- REGRESSION: `python -X utf8 -m pytest -q --tb=short scripts/tests/test_release_package_governance.py scripts/tests/test_app_release_package_governance.py scripts/tests/test_release_build_preflight_cache.py scripts/tests/test_release_schema_rehearsal.py --basetemp .tmp-r23-ops-runtime-regression` -> PASS，139 tests。
+- IMPLEMENTATION: 新增 `New-ReleaseOpsRuntimePackage`，仅在 `build-release` 构建期从源码复制并排除 `backup-ops.secrets.json`；`Copy-ReleaseOpsRuntimePackage` 改为只验证并上传包内 `ops-runtime`，缺失或含 secrets 立即失败。
+- NEXT: 提交维护仓修复后使用新 releaseTag `release-20260913-one-button-app-r24` 重新生成 `app-release` 包；r23 判废，不发布测试服，不执行正式服、审查服、`mark-tested`、`promote-prod` 或 `promote-backup`。
