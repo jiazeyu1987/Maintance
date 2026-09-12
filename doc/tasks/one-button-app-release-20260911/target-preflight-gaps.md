@@ -1,16 +1,17 @@
 # r15 目标只读检查覆盖缺口
 
-状态：未通过。本报告只记录既有 r15 输入的离线诊断，不赋予 r15 或新 releaseTag 发布资格。
+状态：已关闭。原报告只记录既有 r15 输入的离线诊断，不赋予 r15 或新 releaseTag 发布资格；应用 worktree 提交 `4fb258315` 补齐检查文件后，使用同一 r15 计划重新执行测试服只读门禁，58/58 通过。
 
 - 待验证检查：58
-- 已通过：0
-- 是否启动目标 SSH：false
-- 失败码：TARGET_PREFLIGHT_MISSING
+- 已通过：58
+- 是否启动目标 SSH：true
+- 失败码：无
 - 绑定计划：sha256:c98dd3f202040286a8234f8616526724789b3e46d886e31a1180069fc0ba0ea5
+- 新证据：`doc/tasks/one-button-app-release-20260911/evidence/r15-target-preflight-audit-after-app-4fb258315.json`
 
 应优先核对已验证应用分支中的现有查询与 schema/menu 拆分；仅选择性融合仍适用的修复，保留当前新增代码。不能删除迁移、修改账本或更改标记来消除缺口。每个保留的待应用数据依赖均需有真实谓词和执行证据。
 
-缺失的迁移检查文件（相对应用 `IntRuoyiBackend/sql/mysql/target-preflight/`）：
+原缺失清单（现已由应用提交 `4fb258315` 在 `IntRuoyiBackend/sql/mysql/target-preflight/` 补齐）：
 
 - `20260526_dcc_other_template_category.preflight.sql`
 - `20260629_mes_smart_scheduling_role_scope.preflight.sql`

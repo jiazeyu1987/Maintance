@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 已获本轮测试服/NAS 授权并进入真实链验证。标准页面的三按钮已接入持久化 workflow，生成包固定 `app-release` 且不含数据；正式服仍保持零写入。任务 worktree 前端依赖已按锁文件恢复，类型检查通过。
+P1、P2 已完成；P3 已关闭 r15 target-preflight 覆盖缺口，下一步使用新 releaseTag 重新生成 without-data/app-release 程序包并验证测试服发布。标准页面的三按钮已接入持久化 workflow，生成包固定 `app-release` 且不含数据；正式服仍保持零写入。任务 worktree 前端依赖已按锁文件恢复，类型检查通过。
 
 ## Verification Evidence
 

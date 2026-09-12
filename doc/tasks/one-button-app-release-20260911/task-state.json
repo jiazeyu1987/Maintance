@@ -32,31 +32,41 @@
           "ac_id": "P1-AC1",
           "text": "维护仓与 IntRuoyi 根仓分别使用任务独立 worktree，后者同时承载 IntRuoyiBackend/IntRuoyiFronted；差异审查证明维护提交 8080c0d 的 app-release/PURGE 能力和应用提交 713c641 的 active username 修复或等价实现已正式融合；最终融合前确认两个主工作区同路径 dirty 改动及维护仓 frontend/ 删除的归属，无法无损融合即阻塞且不覆盖用户改动。",
           "status": "completed",
-          "evidence": ["两个任务 worktree 已建立；8080c0d/713c641 能力按当前主线逐文件融合，原主工作区未修改。"]
+          "evidence": [
+            "两个任务 worktree 已建立；8080c0d/713c641 能力按当前主线逐文件融合，原主工作区未修改。"
+          ]
         },
         {
           "ac_id": "P1-AC2",
           "text": "标准 build contract 固定 PublishScope=app-release；UI/API 不接受 with-data，也不把备份/恢复纳入发布 workflow；所有消费者只认唯一 `manifest.json`，不生成或读取 `release-manifest.json`。",
           "status": "completed",
-          "evidence": ["唯一 manifest.json/app-release/packageId 生产 consumer 与治理测试通过。"]
+          "evidence": [
+            "唯一 manifest.json/app-release/packageId 生产 consumer 与治理测试通过。"
+          ]
         },
         {
           "ac_id": "P1-AC3",
           "text": "后端生成 workflowId/releaseTag 并固定 preset；客户端不能提交 scope、host、NAS、MinIO、repo roots、LocalCacheRoot 或手填 releaseTag。",
           "status": "completed",
-          "evidence": ["create intent 仅含 reason/sourceSelectionId，服务端生成 workflowId/releaseTag/preset/scope。"]
+          "evidence": [
+            "create intent 仅含 reason/sourceSelectionId，服务端生成 workflowId/releaseTag/preset/scope。"
+          ]
         },
         {
           "ac_id": "P1-AC4",
           "text": "manifest/审计记录维护仓与 IntRuoyi 根仓两个规范化 Git root/批准 commit，并分别记录 maintenance/backend/frontend 三个 source role；构建前和打包前分别重验两个 Git worktree 的 HEAD 与 dirty=false，任一漂移立即阻断。",
           "status": "completed",
-          "evidence": ["ReleaseSourceFreezeContract 二次 root/role 身份漂移测试通过。"]
+          "evidence": [
+            "ReleaseSourceFreezeContract 二次 root/role 身份漂移测试通过。"
+          ]
         },
         {
           "ac_id": "P1-AC5",
           "text": "CI 合同要求后端、前端和脚本测试在 Maven/frontend/Docker 构建前显式执行，不能只运行 Maven -DskipTests；Java、Python、PowerShell 双摘要固定向量必须完全一致。",
           "status": "completed",
-          "evidence": ["Java/Python/PowerShell 固定双摘要一致；测试顺序合同通过。"]
+          "evidence": [
+            "Java/Python/PowerShell 固定双摘要一致；测试顺序合同通过。"
+          ]
         }
       ]
     },
@@ -86,37 +96,49 @@
           "ac_id": "P2-AC1",
           "text": "产品 workflow 的实现与测试以主程序 IntRuoyiBackend `yudao-module-infra/.../runtimecontrol/` 为唯一运行时来源，维护仓 backend 仅可提供独立诊断或契约同步；workflow 与 event journal 在进程重启后恢复，状态转换使用原子写和 stateVersion/CAS，损坏状态直接阻塞。",
           "status": "completed",
-          "evidence": ["workflow record 与 event journal 同一 envelope 原子替换；损坏/分歧状态测试 fail fast。"]
+          "evidence": [
+            "workflow record 与 event journal 同一 envelope 原子替换；损坏/分歧状态测试 fail fast。"
+          ]
         },
         {
           "ac_id": "P2-AC2",
           "text": "build/test/prod 使用同环境持久化租约锁；重复点击返回现有 workflow 或冲突，不能重复执行。",
           "status": "completed",
-          "evidence": ["同环境 OS file lock 互斥，重复 create 返回现有活动 workflow。"]
+          "evidence": [
+            "同环境 OS file lock 互斥，重复 create 返回现有活动 workflow。"
+          ]
         },
         {
           "ac_id": "P2-AC3",
           "text": "心跳、可靠 timeout、取消和 RECOVERY_REQUIRED 有确定行为；进程重启或写阶段状态不明时不自动续跑，guard return 不产生 SUCCESS。",
           "status": "completed",
-          "evidence": ["心跳、读/写阶段取消、timeout 与重启 READY 恢复测试通过。"]
+          "evidence": [
+            "心跳、读/写阶段取消、timeout 与重启 READY 恢复测试通过。"
+          ]
         },
         {
           "ac_id": "P2-AC4",
           "text": "阶段持久化 attempt、operationId、errorCode、failedStage、retryable 和证据引用；只有 verifier 可推进状态，客户端不能伪造 SUCCESS。",
           "status": "completed",
-          "evidence": ["attempt/operationId/errorCode/failedStage/retryable/evidenceRefs 持久化；客户端 advance 被拒绝。"]
+          "evidence": [
+            "attempt/operationId/errorCode/failedStage/retryable/evidenceRefs 持久化；客户端 advance 被拒绝。"
+          ]
         },
         {
           "ac_id": "P2-AC5",
           "text": "preset 固化基础设施参数与 secret 引用并在启动和执行前校验；API、预览、日志、异常和审计只返回脱敏摘要。",
           "status": "completed",
-          "evidence": ["preset/secretRef 启动与执行校验，疑似秘密 reason 在持久化前拒绝，API 不返回基础设施值。"]
+          "evidence": [
+            "preset/secretRef 启动与执行校验，疑似秘密 reason 在持久化前拒绝，API 不返回基础设施值。"
+          ]
         },
         {
           "ac_id": "P2-AC6",
           "text": "retry 只在服务端条件满足时开放；内容或迁移修复必须新包新 tag，正式服失败恢复后仍需新授权和 PROD。",
           "status": "completed",
-          "evidence": ["retry 仅服务端允许；内容/迁移变化强制新 workflow/new tag。"]
+          "evidence": [
+            "retry 仅服务端允许；内容/迁移变化强制新 workflow/new tag。"
+          ]
         }
       ]
     },
@@ -140,11 +162,11 @@
         "NAS/远程服务器/真实测试发布未执行；完整 P3 仍在进行。",
         "维护仓 release governance 123 tests PASS；NAS staging/full hash/atomic READY 与 app-release tested attestation 已验证。",
         "app orchestrator/authorization targeted Maven 111 tests PASS；build->READY->publish-test->TESTED、双摘要绑定、一次性授权重放拒绝已验证。",
-        "C08 maintenance Python 234 tests PASS、C09 Node 6 tests PASS、PowerShell digest/AST PASS；schema-only no-data migration rehearsal 在 Maven 前执行并产出包内证据。"
+        "C08 maintenance Python 234 tests PASS、C09 Node 6 tests PASS、PowerShell digest/AST PASS；schema-only no-data migration rehearsal 在 Maven 前执行并产出包内证据。",
+        "target readonly preflight coverage closed after app commit 4fb258315: 58/58 checks PASS on test server in READ ONLY transactions; evidence/r15-target-preflight-audit-after-app-4fb258315.json."
       ],
-      "notes": "P3 本地实现与自动回归已完成；真实 NAS READY、测试服发布与组合运行态证据等待当次远程写入授权。",
-      "last_reviewed_at": "2026-09-12T02:47:02",
-      "last_reviewed_at": null,
+      "notes": "P3 target readonly preflight coverage gap is closed; r15 remains retired and next build must use a new releaseTag with app source at 4fb258315 or later.",
+      "last_reviewed_at": "2026-09-13T02:55:30+08:00",
       "acceptance_criteria": [
         {
           "ac_id": "P3-AC1",
@@ -330,7 +352,7 @@
     "test_loops": 0
   },
   "created_at": "2026-09-11T09:20:03",
-  "updated_at": "2026-09-12T23:19:12+08:00",
+  "updated_at": "2026-09-13T02:55:30+08:00",
   "branch": "codex/one-button-app-release-20260911",
   "baseline_revision": "eaaa47ac320dd197dba646d6870fed0cb7d2534c",
   "workspace_root": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260911-release-button\\m",

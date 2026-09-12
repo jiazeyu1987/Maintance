@@ -1,0 +1,421 @@
+{
+  "schemaVersion": "release-target-data-preflight/v1",
+  "status": "passed",
+  "requiredCount": 58,
+  "passedCount": 58,
+  "checks": [
+    {
+      "migrationId": "20260526_dcc_other_template_category",
+      "migrationSha256": "68559ff583edbb7eb41524174e78a7f531eb224ff953eb713880a4b0bc88181c",
+      "checkSha256": "dd33a37ff4b49a4e090b0aab5c39220ab3656524b7bcbca92d61a61c8efbc79c",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260629_mes_smart_scheduling_role_scope",
+      "migrationSha256": "93073955381700f755073177ec710d7f29d458f64588c7c2bc99abe04ba2dbdb",
+      "checkSha256": "1b59a6e18a23b6bdd16f68b74f4c9edf2841607f98e7731b80b48d74afaa0332",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260709_mes_rt000006_batch_record_mapping",
+      "migrationSha256": "36023b7f8d1a52ca8a8a909a3ef1d52ad8fed04d812286ac44a210a4feccbda9",
+      "checkSha256": "ab2ca32d13c6dcba5b185e00590dc357952e803303ead83dc3979ff9dad79d15",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260716_mes_balloon_xlsx_route_00002_invalid_process_cleanup",
+      "migrationSha256": "0c7f2b6aa9cf45c3d701fd02420d252cbb9dc076fb763402226fbfecae97c414",
+      "checkSha256": "e27c2140f07985fc80c8a36a8a044c0080c4ba64e9d7458f1773866e94338d3c",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260717_mes_balloon_excel_device_workstation_binding",
+      "migrationSha256": "87ff2fe9a3f386c60eeb5d78d6ba96fd4869d8dd97100d17bfc5edbaad7bd1c2",
+      "checkSha256": "2448b34d5a20afa199a39bd61105a787241be79972ee14aa4252fb1211a1d598",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260717_mes_invalid_process_reference_normalization",
+      "migrationSha256": "36e429ef6d74f419b388c1c6f73fd323b920f78e1f9764ccaa34e358fc5fb69b",
+      "checkSha256": "cba96576505988ab63055b859bb31134160c3ab4cb660e279b574d8b06cc2516",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260718_mes_puhui_schedule_admin_role_visibility",
+      "migrationSha256": "ec5f7f2fc6da7b5b35cf8c52727db81a92113bd55ec81bf7e8b2b7e0bb4b6d43",
+      "checkSha256": "92cc75ce4177cd74f61d9522d5fcadf14e65ce033adc54a9b0cbb0af9837a8d6",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260718_mes_route_version_bpm_notify_to_inbox",
+      "migrationSha256": "9bbb9f5f48d9b75b588218a6af0824821b3d17e765efca867abdad7d9ba86593",
+      "checkSha256": "d1249fcd7d81e0331e3fa632a3effc98f11fc7c8bfc473e63206ff0daa82d7cf",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260718_mes_route_version_withdraw_reopen_permission_menu",
+      "migrationSha256": "351f56e20743c0bc2e9c00ee3fe4dd9a57490d34fe647bf98d34e66bcbd04db8",
+      "checkSha256": "479d1276ea94846899bdfaa2c17c7beaa3eeb09741bad3a828d3fcff83ad2515",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260719_dcc_obsolete_form_policy_seed",
+      "migrationSha256": "12c383e387b4cde2413e91a78bbb0d32d88f63996f9afa52614b15d9977ed51b",
+      "checkSha256": "64cdfdf74040351c9c67ddccf57255f8d8a8e831d8bc976c2c2e31f3f343dbdc",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260720_edhr_release_void_form_policy_seed",
+      "migrationSha256": "1ad35159f9d3fb093d4f22655a82ca74fc1a84a88d9cbfeb0683b8d4622a3ca0",
+      "checkSha256": "1ecc54aae0796912e905c5fbeec8befd5328f19ef7a4aaa4f07d32279b97b92c",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260720_mes_edhr_work_task_runtime_entitlement_backfill",
+      "migrationSha256": "ff5f10ffdd8d41a1fcfb07db5272905b2d5f2909370aa9c6f858a8415a09bd3a",
+      "checkSha256": "9e5805a6125378561298f7ea88b94eaacbc47e515e4dbb6bbc45d8be7f618a81",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260720_mes_schedule_replan_form_policy_seed",
+      "migrationSha256": "a80d717287ccdf2444c56fb3f62912e19a87ac9395fee327ab3c240a7f0944ac",
+      "checkSha256": "df79647702c3614e4e681bbd8f9a21de0e92df6b2b7d4545de58d8a59d9a4088",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260721_batch_record_bpm_policy_seed",
+      "migrationSha256": "9b0895754f71e0adb6a058391b9edc6cf4cebae72dcbf60779c59b7fb30a5a25",
+      "checkSha256": "1ef07e113e873d6318de9699f3562ca469369668c3c5e91c88f5db185800345f",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260721_mes_route_version_publish_business_approval_policy_seed",
+      "migrationSha256": "2a1467af2d8ec57cf18c28d46ab85269c3a2eabf12365a667ff3486e9bc63a21",
+      "checkSha256": "296a049943d91fc055d91f5169bb02ccbf960b595f6ee1e21530a70b0dc82e91",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260721_mes_schedule_replan_approval_retire",
+      "migrationSha256": "e7d4edc0bea9013fda315ee4a4f248976cd60f76307b24e7234c2169ab14c4bb",
+      "checkSha256": "cf31654e42dd3a5300e6aa7d28cfaa4d8aac3f3430ee793b3b7a399ebb6ada37",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260722_edhr_release_form_policy_retire",
+      "migrationSha256": "ee9f96afc32ce0c81e13a3ebc418040b5b118d5b041da3af3f8b06aab74c81c1",
+      "checkSha256": "596b59f753b3dc56923570705e853edb9546f63fa1ff663a69e5d3d6359b665e",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260721_form_template_obsolete_bpm_policy_seed",
+      "migrationSha256": "34f3e657a1282f2cf3347ef8c177a9c9d7719f52a45381eac7c537226e4bc6fa",
+      "checkSha256": "8546ae6df6147ee8502463aa16ad9f8638a1c8deaedc7ff78f98091a927497f8",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260722_mes_route_creator_route_edit_permission_backfill",
+      "migrationSha256": "5f45deb68d425dd92e41ee3958bc079f996357852e8ae8dcc2e8dd215332cf01",
+      "checkSha256": "e758cd76be38c9d28a5941ac07ade2791ea23f99f3025c6d6d5977e7b91fd894",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260723_mes_route_form_business_approval_policy_backfill",
+      "migrationSha256": "e0a434fc9d75aaaa140fa1de06ecdbc0949c15d62a6cf17b57bf4a128e3e3059",
+      "checkSha256": "232d82e22a393bef2c675932c2d0942c8fb1e021b337ed1240f82dba1adfb909",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260723_mes_route_form_permission_rule_version_backfill",
+      "migrationSha256": "59ea8f94dddb2b700a899cdf0d2242f9f89d0ff2c824437fcb9e448a3a9f76f3",
+      "checkSha256": "d71c1b92b543914b34e0bff34e888c99d15df58e393a6ee3aa38aeacb73e1566",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260723_unify_form_action_policy_into_business_approval_policy",
+      "migrationSha256": "ff4d58bae1bb14673cd3af93aa86fec04388440e3ec39a8a1b49734aebe9a55f",
+      "checkSha256": "940df3c37bd859e7f4dfea978cede38119c54e3a43c9b8bac196ea0c15a2da18",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260723_z_edhr_batch_void_business_policy_all_state",
+      "migrationSha256": "8dc2f7ea2f81cbca37c466d5eca89db1957b7c3da3cb03081a468b4763ef54b5",
+      "checkSha256": "cbbdf5121099a3e3d148a70bbd769cf45cea9f3c1dddd83fc41527be19b8122e",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260725_system_backup_plan_menu",
+      "migrationSha256": "2827b003f95e8771bcb6668f01f00f2bb40bdeae4278a16c41c571642340b46d",
+      "checkSha256": "55858f3af1f8bd89e41d21619b66cac61ce9c78d7750539a94e6c6fb626f6d48",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260728_mes_scheduler_route_flow_list_permission",
+      "migrationSha256": "b2209e4f213bdbb7737c027c6ee34f336d2ea2a4bd122f605aa1b4ea1635366f",
+      "checkSha256": "5201b7dae4296a5fec9a8801e1487eb809f57dbf69329df97957736c728fec84",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260728_fix_mdm_product_menu_utf8_name",
+      "migrationSha256": "01b52975b19a132fa50f1ce9e9f3b0bcbf0b1d54bc538160efcdb8b5df628a60",
+      "checkSha256": "94bc2f70e32f0a74a8317e61829251b7a60d4875ba5808c64fc90fcdb09fa9be",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260728_user_list_access_role",
+      "migrationSha256": "2cd17c5dd36927d92a88224a97bfe4046fded99da5a3899e1961b6b98e14babe",
+      "checkSha256": "4cc1a6d37635a59f2b29762fb863ded9cc73c06a8c7e73097cab7fe3ef80076f",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260729_dcc_product_catalog_remove_subsidiary_source",
+      "migrationSha256": "659deeb115c6f85b533b5492af7979e5cf43c14cc9f953d1c84c13019a37575a",
+      "checkSha256": "76aea3ea14a1b87d92aeacf53cfb69f22e30eaf2e17bf9e8426e9b3d6a0cc473",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260807_test_tenant1_all_role_permission_sync",
+      "migrationSha256": "69f6f0bfda1c5caaaa7ec3f9868b49b6d3e2d7a3706f950cbdeace6fae2f74a5",
+      "checkSha256": "2cc3c1b4d7d867f299825a8cc5d2a5f4d6a8b9a77a7f989b3f0fc23cc5812ee7",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260808_mes_qa_optional_equipment_items",
+      "migrationSha256": "adcf23aee8a88a08cdd6d5f67517e274583271a8b740b41235802ff2eacf9e74",
+      "checkSha256": "6c214bcace33b8d8ca670103f8c73aa18df3fc64e82e69e2b49b66b6b11a8479",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260809_mes_team_leader_employee_scope_backfill",
+      "migrationSha256": "fe549e64af23ecee4fe67120d2ab4afacf5a695a95de56cdb193eb20fdb7617f",
+      "checkSha256": "f6f262a3d1408878a1716ae7b7e5fb0ee44d8133d04955ea895ff5cd3687fc2c",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260811_mes_process_pool_cleaning_wash_parameter_data",
+      "migrationSha256": "80cebd78cfffbfc42575b32a0cff98349a838e28a0db14484eee3a96e7fc42d2",
+      "checkSha256": "23166f580efa4d982fbedb478ef4465631d99c33dea766f07d5d393709070a2d",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260811_mes_process_pool_cleaning_process_parameter_data",
+      "migrationSha256": "f6546659e3f02852660575ec42520ff3ea6bfa7cc6224e8a1baacd955200f0ad",
+      "checkSha256": "2116e55acc3675a3c384cf1c79d19e3b80446142f3361acd39d40108fa45dcd2",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260811_mes_process_pool_uv1_metering_valid_parameter",
+      "migrationSha256": "2eea7583ebdf997994d07f0ee02770c61a401c4521050f7bd682e8f6182d5501",
+      "checkSha256": "ae69cb50f80a09d6bf16d3353cca39245f93ccb1752315c03792058e1a95126f",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260811_mes_process_pool_uv2_two_device_runtime_config",
+      "migrationSha256": "c3875352d5a51c64d18eb974d616037890498c25fc4fbcf00d553a79f6363483",
+      "checkSha256": "a825d8af984c5192fb9a29117a57c5097a16c216b0f36b692dac9a9decdee18a",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260811_mes_qa_pressure_pump_id_seed",
+      "migrationSha256": "01e1f1faa036d8034db506b8e785df3b32a2dfb34164dd1446125c7e6a956fc1",
+      "checkSha256": "545f5af662f26456600976db50d41c2ccad89938bb8e705a160928f4d2728b88",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260812_mes_pqc_dcc_qa_c00_preflight",
+      "migrationSha256": "7ea368f4963918b922058fca910751c13743fe622feee14833ddc9a35d6fa0bf",
+      "checkSha256": "e43099c24c945ee95ca27fc55e865edeb8ff9ead087cc93c03a84ed32c8cfe19",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260812_mes_pqc_dcc_qa_c00_backfill",
+      "migrationSha256": "898e9cb411f15f63a823c4beb332dcb7e95d726f7c9e24d9ffeb1fc70a8840b6",
+      "checkSha256": "44b59d8daa91263abe8944eec9b3015b672d76dea93d67157d8932ebb086a6db",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260812_mes_pqc_dcc_qa_c00_rollback",
+      "migrationSha256": "fbc8f3e88cc4e8f08f32292a4f520651c2281b92233e5a36156cb944b7e3d9c3",
+      "checkSha256": "0d215b219a40da2353f25b686731b1704104e44fbcc587538c892f77e68a87d5",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260812_mes_process_pool_b04091_cleaning_temperature_label",
+      "migrationSha256": "064b87f041e38218c9bbf08b802f92b77c39c5a10a137068d71bd941ea0324dd",
+      "checkSha256": "433ffc182213af7c9c48fa598024de3e07ca5a0b5f09d1aa9ca6faa18f7eb7f3",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260812_mes_process_pool_b09353_cleaning_temperature_label",
+      "migrationSha256": "4719fb181205ec211395ef212d674ba5d84ac0d2c1218499c4f3eea7b9eab086",
+      "checkSha256": "157dd13361db241be0b3ed45157962e1dcb3ae6d85caf7a968ac49c56d305d84",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260812_mes_qa_pressure_pump_idi_seed",
+      "migrationSha256": "2dffc5b9e03ea7d4d9713b8ea2dec5d96e1443053fc50b237f53288f68d6b712",
+      "checkSha256": "0d28d7bb0be7aeea11fe6e0fc0e36cfbd3cf33140e55b9406b3cd92dfaac9ab2",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260818_mes_pressure_pump_same_name_item_convergence",
+      "migrationSha256": "5b1a84a646c9d69ab405932164f2ecc36840cbd158939b86e5274b106b172558",
+      "checkSha256": "8cecb472e329a1b049ce5522a80b6cbdde72dcd2726f8f364c6d26caa35f1d46",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260829_mes_old_form_template_binding_switch",
+      "migrationSha256": "aa6797eddcf1d0331bad1516a0e1b1a85b10ba992d3c757b41e2858fb14917db",
+      "checkSha256": "6a016f4d7b9e633987ffa7b8070ed9bdf38119b79bc366630d92917549b9b698",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260829_registration_certificate_management_menu_hierarchy",
+      "migrationSha256": "001b367bc092cc4fcccd8a81491b6d0c251eae200a910548ebc2a372c55be6ef",
+      "checkSha256": "9891e33cd872872a5cc53c9f96b9554e657551aee8cfa33ec278a680ad379ef1",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260830_dcc_registration_certificate_associated_company_backfill",
+      "migrationSha256": "83438a51b7005a88ed430d21018312810c68c3a53776980aecf4b02067f801bf",
+      "checkSha256": "d5ec5cdcc5815d2bbb693972ef411dd84739ba247f7f6420796df7bc1c7a9f79",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260830_dcc_registration_certificate_notification_role_scope_backfill",
+      "migrationSha256": "77f431ea5aba0d38348df416960d53754fcde815276ebd904789fcd572f7b4a4",
+      "checkSha256": "019bb4a6d032850a2673597dac550529edd404d84e0634f6061072db04fdec7c",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260830_mdm_company_scope_crud_menu",
+      "migrationSha256": "458d5c5789607f22e84d294c07b59d8429af66397e3996bc52c32d7b9aaa4571",
+      "checkSha256": "43b4d3003fcdd491193ed032ebf70b85ee1d4d82428e1fe4eaafe4f8a3498472",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260830_mes_process_pool_idi_device_parameter_rules",
+      "migrationSha256": "710e6d411aa5b6062b768f06e521c5dc07947fa15a0b0c01631bf52551d81950",
+      "checkSha256": "40ebae9a3766931a91c14d321dbfec8b3754926f7f65e83a32688b1af0c53791",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260901_dcc_registration_certificate_change_submit_role_permission",
+      "migrationSha256": "37d4a9fedeef115561a1deff8e9009faa9ef01778630b59df436d1b3a032a997",
+      "checkSha256": "db78f035e0d2473875c613cbd7e509a514a7fc8d5037cfa73a7e309c15025d26",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260901_dcc_registration_certificate_threshold_notify_template",
+      "migrationSha256": "592d1c6db7ab4de2980feec9f29250d72871a75c14885441c11ae754af20f08a",
+      "checkSha256": "f02a8833e1b0149f425f785da87ca53410133e6efc6806f6bdb3c9e288235dbb",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260901_mes_pqc_leader_nonconformance_review_permission",
+      "migrationSha256": "8600907f960289dacf8a89c5251806abd2d683e244a4a69060d4d9edb0c86962",
+      "checkSha256": "f9a8dbd9dbfc2ad44bfea91999768a8b4b91647757d39c1f377bed6c58498f1b",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260905_erp_kingdee_production_replenishment_list_sync",
+      "migrationSha256": "57180d8169e8fb7d699db603ca854d624e7e6cbdce6968882982aace26b0c00f",
+      "checkSha256": "bb0dfa8196c2f37354db6b4917784d05f73dbc35d50344b170c8b3dbeb571071",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260907_dcc_publication_notification",
+      "migrationSha256": "5a16ff80e7c2b2f4b0b82d7b2af788cf40b6906558662380072a0afb64e67bdc",
+      "checkSha256": "c4b385e55359bc212b2f40da1c1bf0322b6762b113a7103cba8455a6bfd7361a",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260908_system_backup_evidence_export_permission",
+      "migrationSha256": "02850797141f2b6e0e483fb108f0c4a3e606c307ab6f2f0e56f21d4fb192efe1",
+      "checkSha256": "19d1e86e6d66c8919df4a1e0f5de2383c7d195e12f200718e0fad4a3d7d93d36",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260910_erp_finance_fenbeitong_assistant_menu",
+      "migrationSha256": "90eb85280f5b55847a08e7aca9ec1f2279742dea181f585a64ceb3e05e4fc27c",
+      "checkSha256": "b2abb4c0b3123f5d538bb0178a24429c2b51ad30309e1c2c881a54479b061111",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260911_dcc_publish_direct_policy",
+      "migrationSha256": "083f0cc72f97ae2b33cb6a6eac885b087d88a0414a75f424af0831685d22a7e3",
+      "checkSha256": "731c98bb686c961d2e51a29a25001c1dbe6b02e8593b9615ff700ae40f96aad3",
+      "readOnly": true,
+      "status": "passed"
+    },
+    {
+      "migrationId": "20260911_dcc_retire_form_center_upload_entry",
+      "migrationSha256": "5ac337b05e26aea4080720b721ce5457d7d0f40a973e3199c4a3283346114e8d",
+      "checkSha256": "dd0b6e194abc12fd83ff9709f41eba1ab4ef7194bcbed6f8a44525d4061c3b60",
+      "readOnly": true,
+      "status": "passed"
+    }
+  ],
+  "sshStarted": true,
+  "preflightFingerprint": "sha256:c98dd3f202040286a8234f8616526724789b3e46d886e31a1180069fc0ba0ea5",
+  "collectionId": "4bf187bc-6f74-4d16-8e19-b0dde13a9d9f",
+  "targetEnvironment": "test",
+  "server": "172.30.30.58",
+  "failedMigrationId": null,
+  "completedAt": "2026-09-12T18:55:06.831877+00:00"
+}
