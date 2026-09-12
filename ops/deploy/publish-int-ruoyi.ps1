@@ -322,6 +322,10 @@ function Remove-ReleaseDockerBuildContextFromPackage {
             break
         } catch {
             $lastError = $_
+            if (-not (Test-Path -LiteralPath $dockerBuildContextRoot) -and -not (Test-Path -LiteralPath $cleanupRoot)) {
+                $lastError = $null
+                break
+            }
             if ($attempt -lt 5) {
                 Start-Sleep -Milliseconds (250 * $attempt)
             }

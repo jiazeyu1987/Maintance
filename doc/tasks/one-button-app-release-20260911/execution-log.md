@@ -371,3 +371,7 @@ RED: build-release-r13-docker-context-cleanup -> FAIL，即使改用 .NET `Direc
 BDD: Docker 构建上下文隔离清理 -> Given 镜像构建读取已结束且 context 位于待发布包内 / When 开始清理 / Then 先用同卷 `Directory.Move` 原子移出包目录，再删除隔离目录并确认原目录与隔离目录均不存在；任一残留或删除失败都明确阻断。
 
 GREEN: `python -X utf8 -m pytest -q scripts/tests/test_release_build_preflight_cache.py scripts/tests/test_release_schema_rehearsal.py` -> PASS，54 tests；清理改为同卷原子移出后删除，PowerShell AST PASS。
+
+RED: build-release-r14-docker-context-cleanup -> FAIL，镜像和 tar 已成功生成，原 context 与隔离目录最终均不存在，但清理中的 `Directory.Delete` 瞬时找不到已消失的 bundle 文件，脚本仍错误抛出并未生成 manifest/NAS READY；releaseTag `release-20260912-one-button-app-r14` 退休。
+
+BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原 context 与 cleanupRoot 均已不存在 / Then 将结果判定为清理成功并继续 manifest；只有任一目录仍存在时才重试或失败，避免假失败也不吞残留。

@@ -568,3 +568,4 @@ def test_docker_build_context_cleanup_retries_and_fails_if_still_present() -> No
     assert "Remove-Item -LiteralPath $dockerBuildContextRoot -Recurse" not in body
     assert "[System.IO.Directory]::Move($dockerBuildContextRoot, $cleanupRoot)" in body
     assert "docker-build-context-cleanup-" in body
+    assert "if (-not (Test-Path -LiteralPath $dockerBuildContextRoot) -and -not (Test-Path -LiteralPath $cleanupRoot))" in body
