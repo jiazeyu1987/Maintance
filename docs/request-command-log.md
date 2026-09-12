@@ -3542,3 +3542,8 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Verification: 154 个相关回归 PASS、AST PASS；真实测试服仅查询 session.transaction_read_only 得到 1；本地覆盖报告一次列出 58 个缺失检查，0 通过、未启动 SSH。
 - Result: 已修复长路径清理与缺检查仍放行缺陷；真实迁移检查文件、已验证分支修复的选择性融合、部署/页面验收仍待完成，任务保持 in_progress。
 - Boundary: 未上传 NAS、未执行任何业务 SQL 写入、MinIO 同步或正式服操作；旧失败包未继续发布。
+## 2026-09-13 one-button app-release 测试服发布续跑
+
+- Request: 用户要求继续按钮化发布开发与测试服发布验证；标准安装包必须为 without-data，即 `PublishScope=app-release`，不包含全量数据库、MinIO 同步、DCC inventory、runtime data 或秘密配置。
+- Authorization: 仅覆盖测试服/NAS 的 `build-release -> publish-test` 真实链路及只读/运行态验证；不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod` 或 `promote-backup`。
+- Command intent: 重启后发现 `release-20260913-one-button-app-r18` 只是本地半成品缓存且缺少 `manifest.json`，按失败 tag 退休；改用新 tag `release-20260913-one-button-app-r19`，冻结维护 worktree `618da2d` 与应用 worktree `4fb258315`，继续执行 `app-release` build-release。- Result update: `release-20260913-one-button-app-r19` 因维护 worktree 含本轮任务记录未提交而触发 `SOURCE_DIRTY: maintenance`，脚本在昂贵构建和任何 NAS/测试服写入前停止；r19 已退休，下一轮改用 `release-20260913-one-button-app-r20`。

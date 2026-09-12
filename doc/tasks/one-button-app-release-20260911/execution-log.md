@@ -434,3 +434,13 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - GREEN: 同一目标用例 -> PASS，2 tests；`Test-ReleasePackageIntegrity` 新增 `ExpectedPackageDirectoryName`，`Copy-ReleasePackageToNas` 在 staging 复核时传入最终包名。
 - REGRESSION: `python -X utf8 -m pytest -q --tb=short --basetemp .tmp-r17-staging-regression scripts/tests/test_release_package_governance.py scripts/tests/test_app_release_package_governance.py scripts/tests/test_release_build_preflight_cache.py scripts/tests/test_release_schema_rehearsal.py` -> PASS，135 tests；`publish-int-ruoyi.ps1` PowerShell AST PASS。
 - NEXT: 使用新 releaseTag `release-20260913-one-button-app-r18` 重新 build-release；source freeze 必须更新为本次已提交维护修复提交，仍禁止 with-data、MinIO 数据同步、全量数据库和正式服写入。
+
+## Resume after r18 interrupted local build
+
+- USER_AUTHORIZATION: 用户回复“继续/授权”；本轮继续范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、`mark-tested` 或 `promote-prod`。
+- GREEN: experience-preflight-r19 -> PASS，已重读服务器访问、登录、发布备份恢复、worktree、PowerShell、测试服发布与 without-data/app-release 经验门禁；本轮继续禁止 with-data、全量数据库、MinIO 数据同步、正式服/审查服写入。
+- RED: build-release-r18-interrupted-local-cache -> FAIL，重启后发现本地 `release-20260913-one-button-app-r18` 仅存在 `evidence/` 与 `required-sql/` 且缺少 `manifest.json`，判定为未完成半成品缓存；未发现可放行安装包，按失败 tag 退休，不复用。
+- GREEN: r19-source-freeze -> PASS，维护 worktree `618da2d1dd53f0b5195957dede856fabbf29fafc` 与应用 worktree `4fb258315489dd789914bef0cc80ec08fc943db2` 均 clean；本地 `release-20260913-one-button-app-r19` 不存在；`publish-int-ruoyi.ps1` PowerShell AST PASS。
+- SOURCE_FREEZE_INPUT: maintenance `618da2d1dd53f0b5195957dede856fabbf29fafc`，application `4fb258315489dd789914bef0cc80ec08fc943db2`；计划执行新 releaseTag `release-20260913-one-button-app-r19`，`Component=intruoyi`，`PublishScope=app-release`，显式 `SkipDatabaseSync/SkipMinioSync`，成功后仅执行同 tag 测试服 `deploy-release`。
+- RED: build-release-r19-source-dirty -> FAIL，构建命令启动前已把本轮 `execution-log.md` 与 `docs/request-command-log.md` 记录写入维护 worktree，导致维护来源 dirty；脚本在 `SOURCE_DIRTY: maintenance` 门禁停止，Maven、Docker、NAS 上传和测试服写入均未开始。r19 退休，不复用。
+- NEXT: 先提交任务记录，再使用新 releaseTag `release-20260913-one-button-app-r20` 重新 build-release；source freeze 必须更新为提交后的维护 HEAD，仍禁止 with-data、全量数据库、MinIO 数据同步和正式服写入。
