@@ -325,3 +325,7 @@ BDD: schema-only 演练只消费目标预检计划的待应用集合 -> Given �
 RED: `python -X utf8 -m pytest -q scripts/tests/test_release_schema_rehearsal.py` -> FAIL，演练入口尚未读取 preflight planner 的迁移类型和 `requiresTargetPreflight`，会把类型为 data 或依赖历史业务基线的 schema 迁移错误送入空结构库。
 
 GREEN: `python -X utf8 -m pytest -q scripts/tests/test_release_schema_rehearsal.py scripts/tests/test_release_migration_preflight_matrix.py scripts/tests/test_release_sql_preflight_gate.py scripts/tests/test_showroom_release_sql_contract.py` -> PASS，78 tests；PowerShell AST PASS。新增 `requiresTargetPreflight` 元数据、planner item 类型绑定、schema-only 严格分流和迁移集合一致性校验；失败信息包含具体文件与 pass 编号。
+
+RED: `python -X utf8 -m pytest -q scripts/tests/test_release_build_preflight_cache.py scripts/tests/test_release_schema_rehearsal.py scripts/tests/test_release_migration_preflight_matrix.py scripts/tests/test_release_sql_preflight_gate.py` -> FAIL，1 个固定 preflight fingerprint 断言因 planner item 新增 type/requiresTargetPreflight 绑定而变化；没有放宽摘要校验。
+
+GREEN: 同一回归集合 -> PASS，115 tests；更新固定向量到新的规范化 planner 摘要，确保迁移分流字段继续参与不可变摘要。
