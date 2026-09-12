@@ -49,6 +49,8 @@
 
 ## 路由
 
+- PowerShell 5.1 清理 / Could not find a part of the path / MAX_PATH / 260字符 / Directory.Delete / 构建上下文删除 / targetPreflight 缺失 / requiresTargetPreflight 仅标记 / 只读查询未执行：`docs/release-build-preflight-lessons.md#2026-07-06-windows-发布-worktree-长路径门禁`，含真实PS5.1清理及目标数据门禁执行 checklist。
+
 - 发布耗时过久 / build-release 黑箱等待 / 默认 code-only / PublishScope with-data / WITH-DATA 确认 / 40GB 全量包 / NAS robocopy / release package size summary / PreverifiedArtifacts：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-09-build-release-默认-code-only-与全量数据包显式门禁`
 - 经验沉淀 / 新增经验 / 更新经验 / 经验文件格式 / 前置经验 / 经验门禁模板：先执行本文件“经验文档写入规范（强制）”，再按下方关键词选择目标文档。
 - 测试服发布 / 仅测试服 / current HEAD test release / publish-test / 运行态验收 / release-info 版本变更说明：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md`

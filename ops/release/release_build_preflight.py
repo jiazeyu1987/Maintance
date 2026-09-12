@@ -110,6 +110,10 @@ def _normalize_migration_contract(raw: object, label: str) -> dict[str, object]:
         if not isinstance(values, list):
             raise BuildPreflightError(f"{label} migration {field} must be an array")
         normalized[field] = sorted(str(value).strip() for value in values)
+    target_required = raw.get('requiresTargetPreflight', False)
+    if not isinstance(target_required, bool):
+        raise BuildPreflightError(f'{label} requiresTargetPreflight must be a boolean')
+    normalized['requiresTargetPreflight'] = target_required
     return normalized
 
 

@@ -115,8 +115,11 @@ def run_migration_preflight(
         _check_schema_ledger(migration)
         _check_explicit_tcp(migration)
         _check_delimiter(migration, sql_by_id.get(migration_id, ""))
-        if _requires_target_preflight(migration) and target_preflight_results.get(migration_id) is False:
-            _fail("TARGET_PREFLIGHT_FAILED", migration_id)
+        if _requires_target_preflight(migration):
+            if migration_id not in target_preflight_results:
+                _fail("TARGET_PREFLIGHT_RESULT_MISSING", migration_id)
+            if target_preflight_results[migration_id] is not True:
+                _fail("TARGET_PREFLIGHT_FAILED", migration_id)
         normalized.append(
             {
                 "migrationId": migration_id,

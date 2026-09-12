@@ -234,6 +234,26 @@
 
 ## 2026-07-06 Windows 发布 worktree 长路径门禁
 
+### PowerShell 5.1 构建上下文删除必须验证实际长路径
+
+- Trigger: `Directory.Delete` 或 `Remove-Item` 报 `Could not find a part of the path`，重复失败的前端 bundle 文件名很长，或 PS7 手工删除成功但发布失败。
+- Preflight check: 确认发布进程实际 PowerShell 版本、准确的 `LocalCacheRoot/publish-int-ruoyi` 下 context/隔离目录、最长完整路径和残留文件数；在 PowerShell 5.1 执行生产清理函数的真实 >260 字符 fixture，并保留同级哨兵。
+- Blocker: 只通过字符串断言、只在 PS7 验证、路径仍超长且未使用长路径 API、未核对真正隔离目录时，不得启动新一轮整包构建。
+- Verification: `python -X utf8 -m pytest scripts/tests/test_release_docker_context_cleanup.py -q`；验证 PS5.1、长路径消失、同级保留、文件占用报错、非法目标拒绝。
+- Forbidden action: 禁止未复现就把错误归因于并发；禁止换 API/加重试后直接重打整包；禁止把上一级目录没有残留误当子目录已清空；禁止异常被吞后当成功。
+- Evidence: `doc/tasks/one-button-app-release-20260911/bug-regression-evidence.md`，r11-r15 清理失败及恢复后的真实 PS5.1 RED/GREEN。
+
+### 目标数据门禁必须执行查询，迁移账本不能替代业务前置检查
+
+- Trigger: 非 schema 迁移，或 schema 迁移声明 `requiresTargetPreflight=true` 并退出空库演练。
+- Preflight check: 从同一来源/SQL/目标账本绑定的 APPLY 计划推导检查集合；检查文件、环境、只读 SQL 合同、摘要和实际执行结果全部具备后才进入构建。一次性报告全部缺失文件。
+- Blocker: 缺文件、缺执行结果、目标输出为空/多行/错误标记、计划被改动、SQL 含写入/客户端命令/可执行注释时立刻停止。
+- Verification: `python -X utf8 -m pytest scripts/tests/test_release_target_data_preflight.py -q --basetemp <task-cache>/target-preflight-tests`；真实运行证据必须含 requiredCount、passedCount、查询摘要、计划指纹及目标环境。
+- Forbidden action: 禁止只加 `requiresTargetPreflight` 来绕过演练；禁止凭 ledger APPLIED 或 mock 成功宣称实际数据依赖通过；禁止在 READ ONLY 外执行 mysql 客户端命令。
+- Evidence: `doc/tasks/one-button-app-release-20260911/bug-regression-evidence.md` 与 `execution-log.md#resume-audit-after-r15`。
+
+执行 checklist：先做局部真实故障回归，再核整个目标检查集合；任一失败只整改相关合同/输入，记录命令、运行时、退出码和零下游写入，不重复 Maven/Docker/NAS 全流程。
+
 - 触发场景：构建发布前为维护仓、后端仓、前端仓创建本轮专用 release worktree。
 - 失败现象：使用完整任务 ID 和完整仓库名组成深层 worktree 路径时，维护仓 checkout 历史 evidence 或构建产物路径可能触发 `Filename too long` 和 `fatal: Could not reset index file to revision 'HEAD'`，导致维护仓未完成检出而后端/前端已部分创建。
 - 前置门禁：发布 worktree 根路径必须采用短目录名，例如 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260706ce`；三仓子目录使用短名 `m`、`b`、`f`，并在任务文档记录短路径与完整 taskId 的映射。

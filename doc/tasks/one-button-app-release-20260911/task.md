@@ -12,7 +12,7 @@
 4. [completed] 完成文档结构校验和独立规划评审，明确实施前置条件。
 5. [completed] P1 基线与唯一 app-release/manifest/摘要/来源合同已在两个独立 worktree 中收敛并完成复审修正。
 6. [completed] P2 ReleaseWorkflow 状态机、原子持久化、CAS、租约、心跳/恢复与 verifier-only 推进已实现并回归通过。
-7. [in_progress] P3 本地实现与回归已完成；已获本轮授权，准备执行真实 NAS READY、测试服发布和组合运行态验证。
+7. [in_progress] P3 继续整改与真实验证：r15 已终止于本机上下文清理；清理根因及真实 target readonly preflight 接线尚待核实。暂停新一轮完整构建，先完成故障单独复现及门禁闭环。
 8. [in_progress] P4/P5 静态三按钮工作台已实现；任务 worktree 锁定依赖和 Playwright 1.60.0 已恢复，类型检查通过，真实页面验收待发布后执行。
 
 ## Expected Verification
@@ -45,6 +45,10 @@ P1、P2 已完成；P3 已获本轮测试服/NAS 授权并进入真实链验证�
 
 ## Verification Evidence
 
+- 本轮恢复验证：实际 PowerShell 5.1 长路径清理 8 个行为用例通过；发布清理、目标数据门禁、构建计划、schema-only 与相邻发布回归合计 154 PASS。该数字只证明这些局部检查，不代表 P3/P4/P5 完成。
+- `r15-target-preflight-audit.json`：按既有 r15 来源/SQL/账本重算绑定后，检查覆盖失败，requiredCount=58、passedCount=0、sshStarted=false；未进行新一轮构建。测试服真实只读连接查询 `@@session.transaction_read_only` 返回 1。
+- 长路径修复移除了无根据重试、原子移出和“目录消失即成功”的补丁，采用实际 PS5.1 可验证的 Windows 长路径调用；此前“竞态已修复”的结论以本轮记录为准。
+
 - `validate_artifacts.py`: `status=ok`, 0 errors, 0 warnings。
 - CI/CD evidence validator: PASS。
 - PRD: 5 phases、32 acceptance IDs；test plan: 15 cases、32/32 acceptance coverage。
@@ -62,6 +66,9 @@ P1、P2 已完成；P3 已获本轮测试服/NAS 授权并进入真实链验证�
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 
 ## Deferred Gates
+
+- 本轮恢复核验：r14/r15 隔离清理目录实际位于 `LocalCacheRoot/publish-int-ruoyi/`，仍各残留 763 个文件，最长路径 306 字符；此前从上一级目录查询后宣称“全部不存在/并发竞态”不成立。必须用 PowerShell 5.1 真实行为回归验证，不能靠代码字符串断言或 PowerShell 7 的手工结果放行。
+- `requiresTargetPreflight=true` 不能仅表示排除空库演练；所有排除的待应用迁移必须有实际目标只读检查及成功证据。覆盖缺口解决前不得发布。
 
 - 最终融合前必须重新确认两个主工作区同路径 dirty 改动归属；不得覆盖并发任务。
 - 测试服真实写入已获本轮授权；正式服真实写入不在当前授权范围。

@@ -3534,3 +3534,11 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Request: 用户授权继续完成一键程序发布任务的真实测试服验证。
 - Command intent: 固定任务 maintenance/app worktree 已提交 HEAD，生成唯一 `PublishScope=app-release` 程序包；构建阶段仅获取测试服数据库结构和迁移账本做只读门禁，不复制业务数据；安装包禁止 MySQL dump、MinIO 快照/同步、DCC inventory、runtime data 或秘密。构建成功后仅向测试服 `172.30.30.58` 发布同一 releaseTag/双摘要制品并验证完整运行态。
 - Boundary: 真实写入只限测试服和 NAS 新 releaseTag；禁止 `mark-tested`、`promote-prod`、`promote-backup`、正式服/审查服写入、with-data、删除 NAS 既有包或记录任何密码/token。
+
+## 一键无数据发布恢复核验：r15 之后
+
+- Request: 用户要求继续完成 one-button-app-release-20260911 开发验证，延续仅测试服/without-data 授权。
+- Command intent: 接回 r15 原会话确认 exit 1；独立复现 PowerShell 5.1 长路径清理；审查并接入实际目标只读检查；复用 r15 本地账本做覆盖诊断，不重复完整打包。
+- Verification: 154 个相关回归 PASS、AST PASS；真实测试服仅查询 session.transaction_read_only 得到 1；本地覆盖报告一次列出 58 个缺失检查，0 通过、未启动 SSH。
+- Result: 已修复长路径清理与缺检查仍放行缺陷；真实迁移检查文件、已验证分支修复的选择性融合、部署/页面验收仍待完成，任务保持 in_progress。
+- Boundary: 未上传 NAS、未执行任何业务 SQL 写入、MinIO 同步或正式服操作；旧失败包未继续发布。

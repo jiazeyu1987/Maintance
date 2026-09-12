@@ -303,39 +303,54 @@ function Copy-ReleaseDirectoryTree {
 }
 
 function Remove-ReleaseDockerBuildContextFromPackage {
-    if (-not (Test-Path -LiteralPath $dockerBuildContextRoot)) {
-        return
-    }
-
-    Info 'Removing Docker build context from final release package'
-    $cleanupRoot = Join-Path $localTempRoot ("docker-build-context-cleanup-" + $packageDirectoryName + '-' + [System.Guid]::NewGuid().ToString('N'))
-    $lastError = $null
-    for ($attempt = 1; $attempt -le 5; $attempt++) {
-        try {
-            if (Test-Path -LiteralPath $dockerBuildContextRoot) {
-                [System.IO.Directory]::Move($dockerBuildContextRoot, $cleanupRoot)
-            }
-            if (Test-Path -LiteralPath $cleanupRoot) {
-                [System.IO.Directory]::Delete($cleanupRoot, $true)
-            }
-            $lastError = $null
-            break
-        } catch {
-            $lastError = $_
-            if (-not (Test-Path -LiteralPath $dockerBuildContextRoot) -and -not (Test-Path -LiteralPath $cleanupRoot)) {
-                $lastError = $null
-                break
-            }
-            if ($attempt -lt 5) {
-                Start-Sleep -Milliseconds (250 * $attempt)
-            }
+    foreach ($path in @($localTempRoot, $releaseDir, $dockerBuildContextRoot)) {
+        if ([string]::IsNullOrWhiteSpace($path) -or -not [System.IO.Path]::IsPathRooted($path)) {
+            throw 'Release Docker build context cleanup requires absolute, non-empty paths'
         }
     }
-    if ($null -ne $lastError) {
-        throw "Release Docker build context cleanup failed after 5 attempts: $($lastError.Exception.Message)"
+    $temporaryPath = [System.IO.Path]::GetFullPath($localTempRoot).TrimEnd('\')
+    $packagePath = [System.IO.Path]::GetFullPath($releaseDir).TrimEnd('\')
+    $contextPath = [System.IO.Path]::GetFullPath($dockerBuildContextRoot).TrimEnd('\')
+    if ([string]::IsNullOrWhiteSpace($packageDirectoryName) -or
+        [System.IO.Path]::GetFileName($packagePath) -ne $packageDirectoryName -or
+        [System.IO.Path]::GetDirectoryName($packagePath) -ne $temporaryPath -or
+        $contextPath -ne [System.IO.Path]::Combine($packagePath, 'docker-build-context')) {
+        throw "Release Docker build context cleanup target is outside the expected package: $contextPath"
     }
-    if ((Test-Path -LiteralPath $dockerBuildContextRoot) -or (Test-Path -LiteralPath $cleanupRoot)) {
-        Fail "Release package still contains docker-build-context: $dockerBuildContextRoot"
+    # Windows PowerShell 5.1 uses .NET Framework: unprefixed recursive Delete
+    # reports DirectoryNotFoundException for existing descendants beyond MAX_PATH.
+    $extendedPath = if ($contextPath.StartsWith('\\')) {
+        '\\?\UNC\' + $contextPath.Substring(2)
+    } else {
+        '\\?\' + $contextPath
+    }
+    try {
+        try {
+            $attributes = [System.IO.File]::GetAttributes($extendedPath)
+        } catch [System.IO.FileNotFoundException] {
+            return
+        } catch [System.IO.DirectoryNotFoundException] {
+            return
+        }
+        if (-not ($attributes -band [System.IO.FileAttributes]::Directory)) {
+            throw "Cleanup target is not a directory: $contextPath"
+        }
+        # A junction in the target or its ancestors could redirect a valid text
+        # path outside the package. Reject it before any recursive deletion.
+        $ancestor = $contextPath
+        while ($ancestor) {
+            if ([System.IO.File]::GetAttributes($ancestor) -band [System.IO.FileAttributes]::ReparsePoint) {
+                throw "Cleanup path contains a reparse point: $ancestor"
+            }
+            $ancestor = [System.IO.Path]::GetDirectoryName($ancestor)
+        }
+        Info 'Removing Docker build context from final release package'
+        [System.IO.Directory]::Delete($extendedPath, $true)
+        if ([System.IO.Directory]::Exists($extendedPath)) {
+            throw "Release package still contains docker-build-context: $contextPath"
+        }
+    } catch {
+        throw "Release Docker build context cleanup failed: $($_.Exception.Message)"
     }
 }
 
@@ -4058,7 +4073,28 @@ printf '%s' '$stateSqlBase64' | base64 -d | docker exec -i -e MYSQL_PWD="`$mysql
         '--package-root', $releaseDir,
         '--output', $evidencePath
     ) -WorkingDirectory $maintenanceReleaseScriptRoot
-    Info "Build preflight passed: $evidencePath"
+    Info "Migration ledger plan passed: $evidencePath"
+}
+
+function Invoke-BuildReleaseTargetDataPreflight {
+    if ($Mode -ne 'build-release' -or -not $publishBackend) { return }
+    $runner = Join-Path $maintenanceReleaseScriptRoot 'release_target_data_preflight.py'
+    $planRoot = Join-Path $localTempRoot "build-preflight-$packageDirectoryName"
+    $reportPath = Join-Path $releaseDir 'evidence\target-data-preflight.json'
+    if (-not (Test-Path -LiteralPath $runner -PathType Leaf)) {
+        Fail "Target data preflight runner missing: $runner"
+    }
+    Invoke-CheckedCommand -FilePath 'python' -ArgumentList @(
+        '-X', 'utf8', $runner,
+        '--prospective-manifest', (Join-Path $planRoot 'prospective-manifest.json'),
+        '--target-state', (Join-Path $planRoot 'target-state-test.json'),
+        '--build-evidence', (Join-Path $planRoot 'build-preflight-evidence.json'),
+        '--package-root', $releaseDir,
+        '--checks-root', (Join-Path $backendRepo 'sql\mysql\target-preflight'),
+        '--server', $TestServerHost, '--user', $ServerUser,
+        '--output', $reportPath
+    ) -WorkingDirectory $maintenanceReleaseScriptRoot
+    Info "Target read-only data preflight passed: $reportPath"
 }
 
 function Invoke-BuildReleaseSchemaOnlyMigrationRehearsal {
@@ -4232,6 +4268,11 @@ function Invoke-StandardReleaseContractTests {
         (Join-Path $scriptDir '..\..\scripts\tests\test_release_workflow_preflight.py'),
         (Join-Path $scriptDir '..\..\scripts\tests\test_release_digest_vectors.py'),
         (Join-Path $scriptDir '..\..\scripts\tests\test_app_release_package_governance.py'),
+        (Join-Path $scriptDir '..\..\scripts\tests\test_release_docker_context_cleanup.py'),
+        (Join-Path $scriptDir '..\..\scripts\tests\test_release_target_data_preflight.py'),
+        (Join-Path $scriptDir '..\..\scripts\tests\test_release_migration_preflight_matrix.py'),
+        (Join-Path $scriptDir '..\..\scripts\tests\test_release_schema_rehearsal.py'),
+        (Join-Path $scriptDir '..\..\scripts\tests\test_release_build_preflight_cache.py'),
         '--basetemp', $pytestRoot
     )
     Invoke-CheckedCommand -FilePath 'powershell.exe' -ArgumentList @(
@@ -6089,6 +6130,7 @@ if ($publishBackend) {
 Copy-RequiredDatabaseSqlScripts
 if ($Mode -eq 'build-release') {
 Invoke-BuildReleaseTargetPreflight
+Invoke-BuildReleaseTargetDataPreflight
 Invoke-BuildReleaseSchemaOnlyMigrationRehearsal
 }
 }

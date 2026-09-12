@@ -553,19 +553,3 @@ def test_docker_image_identity_uses_native_inspect_json_without_spaced_format_te
     assert "'--format', '{{json .}}'" not in body
     assert "$images = @($parsedImages)" in body
     assert "$images.Count -ne 1" in body
-
-
-def test_docker_build_context_cleanup_retries_and_fails_if_still_present() -> None:
-    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
-    function_start = script.index("function Remove-ReleaseDockerBuildContextFromPackage")
-    function_end = script.index("\nfunction ", function_start + 1)
-    body = script[function_start:function_end]
-
-    assert "for ($attempt = 1; $attempt -le 5; $attempt++)" in body
-    assert "Start-Sleep -Milliseconds (250 * $attempt)" in body
-    assert "cleanup failed after 5 attempts" in body
-    assert "[System.IO.Directory]::Delete($cleanupRoot, $true)" in body
-    assert "Remove-Item -LiteralPath $dockerBuildContextRoot -Recurse" not in body
-    assert "[System.IO.Directory]::Move($dockerBuildContextRoot, $cleanupRoot)" in body
-    assert "docker-build-context-cleanup-" in body
-    assert "if (-not (Test-Path -LiteralPath $dockerBuildContextRoot) -and -not (Test-Path -LiteralPath $cleanupRoot))" in body
