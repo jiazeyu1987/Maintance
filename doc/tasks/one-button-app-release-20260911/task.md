@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23 本地包复核发现部署阶段把 `ops-runtime` 写回已生成的发布包，导致 `manifest.json` 未登记新增文件，r23 判废不发布。已修复为“构建期纳入并登记 ops-runtime，部署期只读取包内已登记文件”，下一步提交修复后使用新 releaseTag 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23 本地包复核发现部署阶段把 `ops-runtime` 写回已生成的发布包，导致 `manifest.json` 未登记新增文件，r23 判废不发布。维护仓已修复为“构建期纳入并登记 ops-runtime，部署期只读取包内已登记文件”；应用仓已补齐 `release_preflight_plan.py` 对 `app-release` scope 的 RED/GREEN 门禁并提交 `1fbf293cf`。下一步使用新 releaseTag 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
 
 ## Verification Evidence
 
@@ -62,7 +62,7 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 
 ## Current Phase
 
-- P3 正在执行：r23 已判废，下一轮使用新 releaseTag 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23 已判废，应用仓 `app-release` 迁移预检补丁已提交为 `1fbf293cf`；下一轮使用新 releaseTag 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 

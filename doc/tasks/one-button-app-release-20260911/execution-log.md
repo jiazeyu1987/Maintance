@@ -475,3 +475,13 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - REGRESSION: `python -X utf8 -m pytest -q --tb=short scripts/tests/test_release_package_governance.py scripts/tests/test_app_release_package_governance.py scripts/tests/test_release_build_preflight_cache.py scripts/tests/test_release_schema_rehearsal.py --basetemp .tmp-r23-ops-runtime-regression` -> PASS，139 tests。
 - IMPLEMENTATION: 新增 `New-ReleaseOpsRuntimePackage`，仅在 `build-release` 构建期从源码复制并排除 `backup-ops.secrets.json`；`Copy-ReleaseOpsRuntimePackage` 改为只验证并上传包内 `ops-runtime`，缺失或含 secrets 立即失败。
 - NEXT: 提交维护仓修复后使用新 releaseTag `release-20260913-one-button-app-r24` 重新生成 `app-release` 包；r23 判废，不发布测试服，不执行正式服、审查服、`mark-tested`、`promote-prod` 或 `promote-backup`。
+
+## r24 pre-build app preflight scope gate
+
+- BDD: app-release 迁移预检合同 -> Given 标准程序包固定为 `PublishScope=app-release` / When 应用仓生成迁移 preflight plan / Then CLI 与内部 allow-list 均接受 `app-release`，并继续执行版本化应用迁移；without-data 只禁止全量 MySQL dump、MinIO/DCC/runtime 数据包，不跳过版本化 SQL。
+- RED: `python -X utf8 -m pytest D:\IntRuoyiWorktree\r260911-release-button\a\IntRuoyiBackend\script\tests\test_release_preflight_plan.py -q -k "app_release" --basetemp D:\IntRuoyiWorktree\r260911-release-button\a\.tmp-pytest-one-button-app-release-red` -> FAIL，2 failed，旧 allow-list 拒绝 `app-release`。
+- GREEN: `python -X utf8 -m pytest D:\IntRuoyiWorktree\r260911-release-button\a\IntRuoyiBackend\script\tests\test_release_preflight_plan.py -q --basetemp D:\IntRuoyiWorktree\r260911-release-button\a\.tmp-pytest-one-button-app-release-green` -> PASS，19 passed。
+- GREEN: `git -C D:\IntRuoyiWorktree\r260911-release-button\a diff --check -- IntRuoyiBackend/script/release/release_preflight_plan.py IntRuoyiBackend/script/tests/test_release_preflight_plan.py doc/tasks/one-button-app-release-20260911/task.md doc/tasks/one-button-app-release-20260911/execution-log.md` -> PASS。
+- COMMIT: app preflight scope fix -> `1fbf293cf 任务: 接受app-release迁移预检`。
+- CLEANUP: `git -C D:\IntRuoyiWorktree\r260911-release-button\a clean -fd -- .tmp-pytest-one-button-app-release .tmp-pytest-one-button-app-release-red .tmp-pytest-one-button-app-release-green` -> removed task pytest temp dirs；app worktree status clean。
+- NEXT: 提交本维护仓任务记录后，以新 maintenance HEAD 与 application `1fbf293cf` 作为 r24 source freeze，继续生成 without-data/app-release 程序包；仍禁止 with-data、MinIO 数据同步、正式服、审查服、`mark-tested`、`promote-prod` 和 `promote-backup`。

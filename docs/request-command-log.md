@@ -3554,3 +3554,4 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Result update: r23 本地包复核失败，`ops-runtime/actions/01-立即备份.bat` 等部署运行脚本在 manifest 生成后才被写入发布包，导致不可变包摘要失效；r23 判废，不发布。
 - Implementation update: 维护脚本拆分 `New-ReleaseOpsRuntimePackage` 与 `Copy-ReleaseOpsRuntimePackage`，构建期把 `ops-runtime` 纳入 manifest/packageDigest，部署期只读取并上传包内文件；缺失或包含 `backup-ops.secrets.json` 直接失败。
 - Verification update: `test_release_package_governance.py -k ops_runtime` 先 RED；修复后定向 4 PASS，宽回归 139 PASS，PowerShell AST PASS。未执行测试服/正式服写入，未记录任何密码/token/私钥。
+- Result update: r24 前置补齐应用仓 `release_preflight_plan.py` 的 `app-release` scope 支持；RED 证明旧 allow-list 拒绝 `app-release`，GREEN 为 `test_release_preflight_plan.py` 19 passed，应用提交 `1fbf293cf 任务: 接受app-release迁移预检`。下一轮 source freeze 必须使用该应用提交或更新提交。
