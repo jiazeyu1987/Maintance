@@ -299,3 +299,17 @@ RED: build-release-r1-migration-metadata -> FAIL，修正命令后 `20260911_dcc
 BLOCKER: C05/P4/P5 -> `corepack pnpm --dir IntRuoyiFronted ts:check` FAIL，任务 app worktree 缺 `node_modules/cross-env`；权威 Playwright 目录仍缺 1.60.0 依赖/可执行文件。未临时安装依赖或换版本兜底。
 
 AUTHORIZATION_BOUNDARY: 本轮未访问 NAS、MySQL、MinIO、SSH、测试服、正式服或审查服；未构建 Docker 镜像、未打安装包、未启动服务、未运行真实 E2E。P3 的远程写入、P4/P5 E2E 与最终发布仍需满足各自前置条件和当次授权。
+
+RED: build-release-r3-readonly-migration-ledger -> FAIL，测试服只读 migration ledger SSH/Bash 命令在解析 SQL 时失败；失败发生在 Maven、Docker、NAS 和任何服务器写入之前，releaseTag `release-20260912-one-button-app-r3` 退休，不再复用。
+
+GREEN: readonly-migration-ledger-base64-sql -> PASS，将只读 ledger SQL 以 Base64 传入远端 Bash 后解码执行，避免 PowerShell/SSH/Bash 多层引号破坏 SQL；聚焦回归测试与 PowerShell AST 解析均 PASS。
+
+RED: build-release-r4-windows-command-line-length -> FAIL，只读 migration ledger 已通过，但 schema-only rehearsal 为 619 个 migration 分别追加 `--migration <path>`，触发 Windows 进程命令行长度上限；失败发生在 Docker 临时容器启动之前，Maven、Docker 构建、NAS 和服务器写入均未开始，releaseTag `release-20260912-one-button-app-r4` 退休，不再复用。
+
+BDD: schema rehearsal 使用迁移清单文件 -> Given 本次 app-release 包含 619 个 required migration / When PowerShell 调用 schema-only rehearsal / Then 将全部迁移路径写入 UTF-8 JSON 数组并只传 `--migration-list <json-file>` 单一参数，Python 严格读取非空字符串数组，避免 Windows 命令行超长且不引入 fallback。
+
+RED: `python -X utf8 -m pytest -q scripts/tests/test_release_schema_rehearsal.py --basetemp .tmp-schema-rehearsal-red` -> FAIL，2 failed、5 passed；发布脚本仍逐项追加 `--migration`，Python 虽声明 `--migration-list` 但没有读取 JSON 路径数组。
+
+GREEN: `python -X utf8 -m pytest -q scripts/tests/test_release_schema_rehearsal.py scripts/tests/test_release_build_preflight_cache.py --basetemp .tmp-schema-rehearsal-green` -> PASS，49 tests；覆盖 migration-list UTF-8 JSON 解析、非法对象/空数组/非字符串成员拒绝、PowerShell 单文件参数合同及相邻 build preflight cache 回归。
+
+GREEN: powershell-ast-schema-rehearsal-migration-list -> PASS，`publish-int-ruoyi.ps1` PowerShell AST 解析无错误；本轮修复未提交，也未操作服务器或 NAS。

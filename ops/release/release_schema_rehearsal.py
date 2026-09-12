@@ -35,6 +35,19 @@ def _require_file(path: Path, label: str) -> bytes:
     return content
 
 
+def _read_migration_list(path: Path) -> list[Path]:
+    content = _require_file(path, "migration list")
+    try:
+        values = json.loads(content.decode("utf-8", errors="strict"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise RehearsalError(f"migration list is not valid UTF-8 JSON: {path}") from exc
+    if not isinstance(values, list) or not values:
+        raise RehearsalError("migration list must be a non-empty JSON array")
+    if any(not isinstance(value, str) or not value.strip() for value in values):
+        raise RehearsalError("migration list entries must be non-blank strings")
+    return [Path(value) for value in values]
+
+
 def run_schema_rehearsal(
     *,
     mysql_image: str,
@@ -94,13 +107,19 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--mysql-image", required=True)
     parser.add_argument("--schema", required=True)
-    parser.add_argument("--migration", action="append", required=True)
+    migrations = parser.add_mutually_exclusive_group(required=True)
+    migrations.add_argument("--migration", action="append")
+    migrations.add_argument("--migration-list")
     parser.add_argument("--output", required=True)
     args = parser.parse_args(argv)
     report = run_schema_rehearsal(
         mysql_image=args.mysql_image,
         schema_path=Path(args.schema),
-        migration_paths=[Path(value) for value in args.migration],
+        migration_paths=(
+            _read_migration_list(Path(args.migration_list))
+            if args.migration_list
+            else [Path(value) for value in args.migration]
+        ),
     )
     Path(args.output).write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     return 0

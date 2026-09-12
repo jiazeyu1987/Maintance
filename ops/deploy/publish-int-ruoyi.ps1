@@ -4066,16 +4066,21 @@ docker exec -e MYSQL_PWD="$mysql_password" intruoyi-mysql mysqldump -uroot --def
     $evidenceDirectory = Join-Path $releaseDir 'evidence'
     New-Item -ItemType Directory -Force -Path $evidenceDirectory | Out-Null
     $evidencePath = Join-Path $evidenceDirectory 'schema-only-migration-rehearsal.json'
+    $migrationListPath = Join-Path $localTempRoot "schema-only-migrations-$packageDirectoryName.json"
+    $migrationPaths = @(
+        foreach ($entry in @(New-ReleaseRequiredSqlManifestEntries)) {
+            Join-Path $releaseDir ([string]$entry.file).Replace('/', '\')
+        }
+    )
+    $migrationListJson = ConvertTo-Json -InputObject ([object[]]$migrationPaths) -Compress
+    [System.IO.File]::WriteAllText($migrationListPath, $migrationListJson, [System.Text.UTF8Encoding]::new($false))
     $argumentList = @(
         '-X', 'utf8', $rehearsalRunner,
         '--mysql-image', $mysqlImage,
         '--schema', $schemaPath,
+        '--migration-list', $migrationListPath,
         '--output', $evidencePath
     )
-    foreach ($entry in @(New-ReleaseRequiredSqlManifestEntries)) {
-        $migrationPath = Join-Path $releaseDir ([string]$entry.file).Replace('/', '\')
-        $argumentList += @('--migration', $migrationPath)
-    }
     Invoke-CheckedCommand -FilePath 'python' -ArgumentList $argumentList -WorkingDirectory $maintenanceReleaseScriptRoot
     Info "Schema-only migration rehearsal passed: $evidencePath"
 }

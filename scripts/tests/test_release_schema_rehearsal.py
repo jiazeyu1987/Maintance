@@ -1,7 +1,9 @@
+import json
 from pathlib import Path
 
 import pytest
 
+from ops.release import release_schema_rehearsal
 from ops.release.release_schema_rehearsal import RehearsalError, run_schema_rehearsal
 
 
@@ -71,3 +73,50 @@ def test_publish_script_runs_schema_only_rehearsal_before_maven():
     assert rehearsal < maven
     assert "--no-data" in script
     assert "release_schema_rehearsal.py" in script
+    assert "--migration-list" in script
+    assert "$argumentList += @('--migration', $migrationPath)" not in script
+
+
+def test_main_reads_migrations_from_json_list(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    schema = tmp_path / "schema.sql"
+    output = tmp_path / "report.json"
+    migration_list = tmp_path / "migration-paths.json"
+    migration_paths = [tmp_path / "001.sql", tmp_path / "002.sql"]
+    migration_list.write_text(
+        json.dumps([str(path) for path in migration_paths]),
+        encoding="utf-8",
+    )
+    captured: dict[str, object] = {}
+
+    def fake_rehearsal(**kwargs: object) -> dict[str, object]:
+        captured.update(kwargs)
+        return {"status": "passed"}
+
+    monkeypatch.setattr(release_schema_rehearsal, "run_schema_rehearsal", fake_rehearsal)
+
+    result = release_schema_rehearsal.main([
+        "--mysql-image", "mysql@sha256:" + "a" * 64,
+        "--schema", str(schema),
+        "--migration-list", str(migration_list),
+        "--output", str(output),
+    ])
+
+    assert result == 0
+    assert captured["migration_paths"] == migration_paths
+
+
+@pytest.mark.parametrize("payload", ["{}", "[]", '["001.sql", 2]'])
+def test_main_rejects_invalid_json_migration_list(
+    tmp_path: Path,
+    payload: str,
+):
+    migration_list = tmp_path / "migration-paths.json"
+    migration_list.write_text(payload, encoding="utf-8")
+
+    with pytest.raises(RehearsalError):
+        release_schema_rehearsal.main([
+            "--mysql-image", "mysql@sha256:" + "a" * 64,
+            "--schema", str(tmp_path / "schema.sql"),
+            "--migration-list", str(migration_list),
+            "--output", str(tmp_path / "report.json"),
+        ])
