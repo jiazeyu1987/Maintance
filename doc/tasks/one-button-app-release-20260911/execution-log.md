@@ -343,3 +343,13 @@ RED: build-release-r9-schema-rehearsal-non-idempotent-ddl -> FAIL，`20260911_dc
 BDD: DCC 提交幂等迁移重复执行 -> Given schema-only 演练对待应用 schema 迁移执行两轮 / When 迁移增加列和唯一索引 / Then 缺失对象才创建，已有对象必须校验定义且不重复添加；定义不兼容时明确失败。
 
 GREEN: `python -X utf8 -m pytest -q IntRuoyiBackend/script/tests/test_dcc_controlled_file_submit_idempotency_sql.py ...` -> PASS，5 tests；SQL 改为 information_schema 防护的可重复存储过程，并增加列/索引定义校验。
+
+GREEN: build-release-r10-schema-rehearsal -> PASS，目标账本绑定的 schema-only 两轮演练首次完整通过，随后后端 31 模块 Maven package 与前端 build:test 均通过。
+
+RED: build-release-r10-docker-inspect-format -> FAIL，离线基础镜像已成功加载，但 `Get-DockerImageIdentity` 通过 Windows `Start-Process` 传递带空格的 `{{json .}}` format 模板时被拆成多个参数，Docker 报 `template parsing error: unclosed action`；业务镜像、NAS 上传和测试服写入均未开始，releaseTag `release-20260912-one-button-app-r10` 退休。
+
+BDD: Windows Docker 镜像身份取证 -> Given 基础镜像已从受控离线 tar 加载 / When 发布脚本读取镜像 Id 和 RepoDigests / Then 直接解析 `docker image inspect` 原生 JSON 数组并严格要求恰好一个镜像，不通过带空格的 format 模板跨进程传参。
+
+RED: `python -X utf8 -m pytest -q scripts/tests/test_release_build_preflight_cache.py -k docker_image_identity` -> FAIL，旧实现仍包含 `--format {{json .}}`。
+
+GREEN: `python -X utf8 -m pytest -q scripts/tests/test_release_build_preflight_cache.py scripts/tests/test_release_schema_rehearsal.py` -> PASS，53 tests；本机真实 `docker image inspect` JSON 解析、镜像数量和 sha256 Id 校验 PASS。

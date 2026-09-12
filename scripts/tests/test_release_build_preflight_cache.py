@@ -541,3 +541,15 @@ def test_publish_script_uses_native_cache_and_keeps_governance_order() -> None:
     finalize_body = script[finalize_function:finalize_function_end]
     assert "Get-DockerImageIdentity" in finalize_body
     assert "manifest\\docker-build-evidence.json" in finalize_body
+
+
+def test_docker_image_identity_uses_native_inspect_json_without_spaced_format_template() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    function_start = script.index("function Get-DockerImageIdentity")
+    function_end = script.index("\nfunction ", function_start + 1)
+    body = script[function_start:function_end]
+
+    assert "'image', 'inspect', $ImageReference" in body
+    assert "'--format', '{{json .}}'" not in body
+    assert "$images = @($parsedImages)" in body
+    assert "$images.Count -ne 1" in body

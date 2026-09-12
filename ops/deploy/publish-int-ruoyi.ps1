@@ -1199,23 +1199,26 @@ function Get-DockerImageIdentity {
     )
 
     $inspectResult = Invoke-ProcessCapture -FilePath 'docker' -ArgumentList @(
-        'image', 'inspect', $ImageReference, '--format', '{{json .}}'
+        'image', 'inspect', $ImageReference
     )
     if ($inspectResult.ExitCode -ne 0) {
         $safeOutput = Protect-ReleaseSensitiveText (($inspectResult.StdOut + "`n" + $inspectResult.StdErr).Trim())
         Fail "Cannot inspect Docker image identity: $ImageReference`n$safeOutput"
     }
-    $json = (($inspectResult.StdOut -split "`r?`n") | Where-Object {
-        -not [string]::IsNullOrWhiteSpace($_)
-    } | Select-Object -First 1)
+    $json = ([string]$inspectResult.StdOut).Trim()
     if ([string]::IsNullOrWhiteSpace($json)) {
         Fail "Docker image inspect returned blank output: $ImageReference"
     }
     try {
-        $image = $json | ConvertFrom-Json
+        $parsedImages = $json | ConvertFrom-Json
     } catch {
         Fail "Docker image inspect returned invalid JSON for ${ImageReference}: $($_.Exception.Message)"
     }
+    $images = @($parsedImages)
+    if ($images.Count -ne 1) {
+        Fail "Docker image inspect must return exactly one image for ${ImageReference}: $($images.Count)"
+    }
+    $image = $images[0]
     $imageId = ([string]$image.Id).Trim().ToLowerInvariant()
     if ($imageId -notmatch '^sha256:[0-9a-f]{64}$') {
         Fail "Docker image inspect returned invalid image id for ${ImageReference}: $imageId"
