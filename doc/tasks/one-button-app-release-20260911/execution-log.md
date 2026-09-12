@@ -258,6 +258,18 @@ BLOCKER: P4-P5-authoritative-frontend-runtime -> task app worktree 缺 `node_mod
 
 CURRENT_RESULT: 本地实现已形成可提交发布控制面，但任务不得标记 completed；两个 worktree 保留，主工作区未修改，远程环境零写入。
 
+USER_AUTHORIZATION: 用户在 2026-09-12 明确回复“授权”；本轮仅授权执行测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及其只读/运行态验证，不授权正式服写入、mark-tested 或 promote-prod。
+
+GREEN: experience-preflight-remote-test-release -> PASS，已读取 `server-access.md`、`release-backup-restore.md`、`worktree-memory.md`、`powershell-memory.md`；目标固定测试服 `172.30.30.58`，安装包固定 `PublishScope=app-release`，数据库与 MinIO 全量数据同步均关闭。
+
+GREEN: task-worktree-cleanup -> PASS，仅删除维护任务 worktree 下 `.tmp-pytest-*` 临时测试目录；未删除主工作区、源码、服务器或 NAS 内容。
+
+GREEN: frontend-dependency-preflight -> PASS，在任务 app worktree 的 `IntRuoyiFronted` 执行 `pnpm install --frozen-lockfile --ignore-scripts`，锁文件未变；`cross-env.cmd`、`vite.cmd`、`vue-tsc` 与 Playwright 1.60.0 均存在。
+
+RED: `corepack pnpm ts:check` -> FAIL，`runtime-control/index.vue` 缺少 `ElMessageBox` 显式导入；这是正式晋级确认对话框的 TypeScript 编译错误，必须在发布构建前修复。
+
+GREEN: `corepack pnpm ts:check` -> PASS；补充 `ElMessageBox` 显式导入后，任务 app worktree 前端类型检查退出码为 0。
+
 BLOCKER: C05/P4/P5 -> `corepack pnpm --dir IntRuoyiFronted ts:check` FAIL，任务 app worktree 缺 `node_modules/cross-env`；权威 Playwright 目录仍缺 1.60.0 依赖/可执行文件。未临时安装依赖或换版本兜底。
 
 AUTHORIZATION_BOUNDARY: 本轮未访问 NAS、MySQL、MinIO、SSH、测试服、正式服或审查服；未构建 Docker 镜像、未打安装包、未启动服务、未运行真实 E2E。P3 的远程写入、P4/P5 E2E 与最终发布仍需满足各自前置条件和当次授权。

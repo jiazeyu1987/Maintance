@@ -12,8 +12,8 @@
 4. [completed] 完成文档结构校验和独立规划评审，明确实施前置条件。
 5. [completed] P1 基线与唯一 app-release/manifest/摘要/来源合同已在两个独立 worktree 中收敛并完成复审修正。
 6. [completed] P2 ReleaseWorkflow 状态机、原子持久化、CAS、租约、心跳/恢复与 verifier-only 推进已实现并回归通过。
-7. [blocked] P3 本地实现与回归已完成；真实 NAS READY、测试服发布和组合运行态验证等待当次远程写入授权。
-8. [blocked] P4/P5 静态三按钮工作台已实现；完整类型检查和真实 Playwright 验收等待权威依赖恢复。
+7. [in_progress] P3 本地实现与回归已完成；已获本轮授权，准备执行真实 NAS READY、测试服发布和组合运行态验证。
+8. [in_progress] P4/P5 静态三按钮工作台已实现；任务 worktree 锁定依赖和 Playwright 1.60.0 已恢复，类型检查通过，真实页面验收待发布后执行。
 
 ## Expected Verification
 
@@ -39,9 +39,9 @@
 
 ## Current Status
 
-blocked
+in_progress
 
-P1、P2 已完成；P3 本地实现和自动回归已完成但真实测试服链尚未授权。标准页面的三按钮已接入持久化 workflow，生成包固定 `app-release` 且不含数据；正式晋级固定同一双摘要并使用一次性授权。当前因远程写入授权及权威前端/Playwright 依赖缺失而阻塞，不执行 fallback。
+P1、P2 已完成；P3 已获本轮测试服/NAS 授权并进入真实链验证。标准页面的三按钮已接入持久化 workflow，生成包固定 `app-release` 且不含数据；正式服仍保持零写入。任务 worktree 前端依赖已按锁文件恢复，类型检查通过。
 
 ## Verification Evidence
 
@@ -53,19 +53,19 @@ P1、P2 已完成；P3 本地实现和自动回归已完成但真实测试服链
 - P1：maintenance 聚焦回归与三语言摘要均 PASS；app manifest/source/digest/consumer 定向回归 91 PASS；frontend P1 static PASS。
 - P2：ReleaseWorkflowStore/Lease/Recovery/Security 11 PASS；相关 infra 回归共 102 PASS。
 - P3：维护仓全量 Python 234 PASS、Node 6 PASS、PowerShell digest/AST PASS；app P1-P3 targeted Maven 111 PASS；覆盖 target preflight、schema-only 两轮迁移演练、显式 TCP、幂等/ledger/delimiter、NAS 原子 READY、同摘要晋级授权和 `.env`/actual image 失败恢复。
-- `pnpm ts:check` 当前因任务 worktree 缺 `node_modules/cross-env` 阻塞；未安装依赖、未切换 Playwright 版本。
+- `pnpm ts:check` 在补充 `ElMessageBox` 显式导入后通过；任务 worktree Playwright 为规定的 1.60.0。
 
 ## Current Phase
 
-- P3 真实链路待授权：NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
-- P4/P5 依赖待恢复：任务 app worktree `node_modules/cross-env` 与规定路径的 Playwright 1.60.0 runtime。
-- 两个实现 worktree 和已提交代码保留；未融合、未清理、未操作任何远程环境。
+- P3 正在执行：NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
+- 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 
 ## Deferred Gates
 
 - 最终融合前必须重新确认两个主工作区同路径 dirty 改动归属；不得覆盖并发任务。
-- 测试服真实写入需当次授权；正式服真实写入不在当前授权范围。
-- 项目规定的 Playwright 1.60.0 权威路径当前缺少依赖与可执行文件；P4/P5 在恢复前阻塞，禁止临时下载或换版本兜底。
+- 测试服真实写入已获本轮授权；正式服真实写入不在当前授权范围。
+- Playwright 固定使用任务 app worktree 锁文件安装的 1.60.0，不切换版本。
 
 ## Artifacts
 
