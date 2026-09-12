@@ -48,6 +48,72 @@ def _read_migration_list(path: Path) -> list[Path]:
     return [Path(value) for value in values]
 
 
+def _select_planned_migrations(
+    migration_paths: list[Path],
+    preflight_evidence_path: Path,
+) -> list[Path]:
+    content = _require_file(preflight_evidence_path, "build preflight evidence")
+    try:
+        evidence = json.loads(content.decode("utf-8", errors="strict"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise RehearsalError(
+            f"build preflight evidence is not valid UTF-8 JSON: {preflight_evidence_path}"
+        ) from exc
+    if not isinstance(evidence, dict):
+        raise RehearsalError("build preflight evidence must be a JSON object")
+    if evidence.get("schemaVersion") != "release-build-preflight/v1":
+        raise RehearsalError("build preflight evidence schemaVersion is invalid")
+    if evidence.get("status") != "passed":
+        raise RehearsalError("build preflight evidence status must be passed")
+    if evidence.get("targetEnvironment") != "test" or evidence.get("publishScope") != "app-release":
+        raise RehearsalError("build preflight evidence target contract is invalid")
+    planner = evidence.get("planner")
+    if not isinstance(planner, dict) or planner.get("status") != "passed":
+        raise RehearsalError("build preflight planner status must be passed")
+    items = planner.get("items")
+    if not isinstance(items, list):
+        raise RehearsalError("build preflight planner items must be an array")
+
+    paths_by_name: dict[str, Path] = {}
+    for path in migration_paths:
+        if path.name in paths_by_name:
+            raise RehearsalError(f"duplicate migration filename: {path.name}")
+        paths_by_name[path.name] = path
+
+    planned_names: set[str] = set()
+    selected: list[Path] = []
+    allowed_actions = {
+        "APPLY",
+        "SKIP_ALREADY_APPLIED",
+        "SKIP_ENV_NOT_ALLOWED",
+        "SKIP_SCOPE_EXCLUDED",
+    }
+    for item in items:
+        if not isinstance(item, dict):
+            raise RehearsalError("build preflight planner item must be an object")
+        migration_id = str(item.get("migrationId", "")).strip()
+        relative_file = str(item.get("file", "")).strip().replace("\\", "/")
+        action = str(item.get("action", "")).strip()
+        expected_file = f"required-sql/{migration_id}.sql"
+        migration_type = str(item.get("type", "")).strip()
+        requires_target_preflight = bool(item.get("requiresTargetPreflight", False))
+        if not migration_id or relative_file != expected_file or action not in allowed_actions:
+            raise RehearsalError(f"build preflight planner item is invalid: {migration_id or '<blank>'}")
+        name = f"{migration_id}.sql"
+        if name in planned_names:
+            raise RehearsalError(f"duplicate build preflight migration: {migration_id}")
+        planned_names.add(name)
+        if action == "APPLY" and migration_type == "schema" and not requires_target_preflight:
+            path = paths_by_name.get(name)
+            if path is None:
+                raise RehearsalError(f"build preflight migration set does not match migration list: {name}")
+            selected.append(path)
+
+    if planned_names != set(paths_by_name):
+        raise RehearsalError("build preflight migration set does not match migration list")
+    return selected
+
+
 def run_schema_rehearsal(
     *,
     mysql_image: str,
@@ -71,7 +137,7 @@ def run_schema_rehearsal(
         runner([
             "docker", "run", "--detach", "--name", name,
             "--env", "MYSQL_ALLOW_EMPTY_PASSWORD=yes", mysql_image,
-            "--skip-log-bin",
+            "--skip-log-bin", "--lower_case_table_names=1",
         ], None)
         started = True
         for attempt in range(30):
@@ -88,12 +154,18 @@ def run_schema_rehearsal(
         runner(["docker", "exec", name, "mysql", "--protocol=TCP", "-h127.0.0.1", "-uroot",
                 "-e", "CREATE DATABASE `ruoyi-vue-pro` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"], None)
         runner(mysql, schema)
-        for _ in range(2):
-            for _, content in migrations:
-                runner(mysql, content)
+        for pass_number in range(1, 3):
+            for path, content in migrations:
+                try:
+                    runner(mysql, content)
+                except RehearsalError as exc:
+                    raise RehearsalError(
+                        f"migration failed: {path} (pass {pass_number}): {exc}"
+                    ) from exc
         return {
             "status": "passed",
             "mysqlImage": mysql_image,
+            "lowerCaseTableNames": 1,
             "schemaSha256": hashlib.sha256(schema).hexdigest(),
             "migrationCount": len(migrations),
             "passes": 2,
@@ -107,20 +179,31 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--mysql-image", required=True)
     parser.add_argument("--schema", required=True)
-    migrations = parser.add_mutually_exclusive_group(required=True)
-    migrations.add_argument("--migration", action="append")
-    migrations.add_argument("--migration-list")
+    parser.add_argument("--migration-list", required=True)
+    parser.add_argument("--preflight-evidence", required=True)
     parser.add_argument("--output", required=True)
     args = parser.parse_args(argv)
-    report = run_schema_rehearsal(
-        mysql_image=args.mysql_image,
-        schema_path=Path(args.schema),
-        migration_paths=(
-            _read_migration_list(Path(args.migration_list))
-            if args.migration_list
-            else [Path(value) for value in args.migration]
-        ),
+    migration_paths = _select_planned_migrations(
+        _read_migration_list(Path(args.migration_list)),
+        Path(args.preflight_evidence),
     )
+    if not migration_paths:
+        _require_file(Path(args.schema), "schema-only snapshot")
+        if not re.fullmatch(r"[^\s@]+@sha256:[0-9a-f]{64}", args.mysql_image):
+            raise RehearsalError("mysql image must be pinned by sha256 digest")
+        report = {
+            "status": "passed",
+            "mysqlImage": args.mysql_image,
+            "lowerCaseTableNames": 1,
+            "migrationCount": 0,
+            "passes": 0,
+        }
+    else:
+        report = run_schema_rehearsal(
+            mysql_image=args.mysql_image,
+            schema_path=Path(args.schema),
+            migration_paths=migration_paths,
+        )
     Path(args.output).write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     return 0
 

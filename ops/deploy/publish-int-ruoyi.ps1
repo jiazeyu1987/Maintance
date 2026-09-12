@@ -3750,6 +3750,7 @@ function Read-ReleaseMigrationMetadata {
         dependsOn = @()
         type = 'schema'
         riskLevel = 'medium'
+        requiresTargetPreflight = $false
     }
     foreach ($segment in ($match.Groups[1].Value -split ';')) {
         $trimmed = $segment.Trim()
@@ -3789,6 +3790,12 @@ function Read-ReleaseMigrationMetadata {
                 }
                 $metadata.riskLevel = [string]$values[0]
             }
+            'requiresTargetPreflight' {
+                if ($values.Count -ne 1 -or $values[0].ToLowerInvariant() -notin @('true', 'false')) {
+                    Fail "Invalid requiresTargetPreflight in release migration metadata: $SqlPath"
+                }
+                $metadata.requiresTargetPreflight = $values[0].ToLowerInvariant() -eq 'true'
+            }
             default {
                 Fail "Unknown release migration metadata key in ${SqlPath}: $key"
             }
@@ -3818,6 +3825,7 @@ function New-ReleaseRequiredSqlManifestEntries {
             allowedEnvironments = @($metadata.allowedEnvironments)
             dependsOn = @($metadata.dependsOn)
             riskLevel = [string]$metadata.riskLevel
+            requiresTargetPreflight = [bool]$metadata.requiresTargetPreflight
             sha256 = ConvertTo-ReleaseFileSha256Digest -Path $packageSqlPath
             requiredPreconditions = @(
                 [ordered]@{
@@ -3897,6 +3905,7 @@ function New-ReleaseMigrationPlanEntries {
             allowedEnvironments = @($requiredSql.allowedEnvironments)
             dependsOn = @($requiredSql.dependsOn)
             riskLevel = [string]$requiredSql.riskLevel
+            requiresTargetPreflight = [bool]$requiredSql.requiresTargetPreflight
             requiredPreflight = $true
         }
     }
@@ -4066,6 +4075,10 @@ docker exec -e MYSQL_PWD="$mysql_password" intruoyi-mysql mysqldump -uroot --def
     $evidenceDirectory = Join-Path $releaseDir 'evidence'
     New-Item -ItemType Directory -Force -Path $evidenceDirectory | Out-Null
     $evidencePath = Join-Path $evidenceDirectory 'schema-only-migration-rehearsal.json'
+    $buildPreflightEvidencePath = Join-Path (Join-Path $localTempRoot "build-preflight-$packageDirectoryName") 'build-preflight-evidence.json'
+    if (-not (Test-Path -LiteralPath $buildPreflightEvidencePath -PathType Leaf)) {
+        Fail "Schema-only migration rehearsal requires build preflight evidence: $buildPreflightEvidencePath"
+    }
     $migrationListPath = Join-Path $localTempRoot "schema-only-migrations-$packageDirectoryName.json"
     $migrationPaths = @(
         foreach ($entry in @(New-ReleaseRequiredSqlManifestEntries)) {
@@ -4079,6 +4092,7 @@ docker exec -e MYSQL_PWD="$mysql_password" intruoyi-mysql mysqldump -uroot --def
         '--mysql-image', $mysqlImage,
         '--schema', $schemaPath,
         '--migration-list', $migrationListPath,
+        '--preflight-evidence', $buildPreflightEvidencePath,
         '--output', $evidencePath
     )
     Invoke-CheckedCommand -FilePath 'python' -ArgumentList $argumentList -WorkingDirectory $maintenanceReleaseScriptRoot

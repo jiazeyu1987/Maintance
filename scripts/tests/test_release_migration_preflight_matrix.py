@@ -65,3 +65,8 @@ def test_procedure_without_delimiter_blocks_parser():
     migration = _migration(migrationId="20260912_proc")
     with pytest.raises(MigrationPreflightError, match="SQL_DELIMITER_INVALID"):
         run_migration_preflight([migration], sql_by_id={migration["migrationId"]: "CREATE PROCEDURE p() BEGIN SELECT 1; END"})
+
+
+def test_schema_requires_target_preflight_when_explicitly_marked():
+    with pytest.raises(MigrationPreflightError, match="TARGET_PREFLIGHT_MISSING"):
+        run_migration_preflight([_migration(requiresTargetPreflight=True)])

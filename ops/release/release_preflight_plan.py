@@ -30,6 +30,8 @@ def _item(migration: dict[str, object], action: str, reason: str) -> dict[str, o
         "migrationId": migration["migrationId"],
         "file": migration.get("file"),
         "sha256": migration.get("sha256"),
+        "type": migration.get("type"),
+        "requiresTargetPreflight": bool(migration.get("requiresTargetPreflight", False)),
         "action": action,
         "reason": reason,
     }

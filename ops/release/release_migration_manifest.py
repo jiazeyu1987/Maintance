@@ -38,7 +38,7 @@ def _relative_file(sql_root: Path, path: Path, file_prefix: str = "sql/mysql") -
     return f"{file_prefix.rstrip('/')}/{relative}"
 
 
-def _parse_metadata(path: Path) -> dict[str, list[str] | str]:
+def _parse_metadata(path: Path) -> dict[str, list[str] | str | bool]:
     text = path.read_text(encoding="utf-8")
     match = METADATA_PATTERN.search(text)
     if not match:
@@ -47,13 +47,15 @@ def _parse_metadata(path: Path) -> dict[str, list[str] | str]:
             "dependsOn": [],
             "type": DEFAULT_TYPE,
             "riskLevel": DEFAULT_RISK_LEVEL,
+            "requiresTargetPreflight": False,
         }
 
-    metadata: dict[str, list[str] | str] = {
+    metadata: dict[str, list[str] | str | bool] = {
         "allowedEnvironments": DEFAULT_ALLOWED_ENVIRONMENTS,
         "dependsOn": [],
         "type": DEFAULT_TYPE,
         "riskLevel": DEFAULT_RISK_LEVEL,
+        "requiresTargetPreflight": False,
     }
     for segment in match.group(1).split(";"):
         if not segment.strip():
@@ -79,6 +81,10 @@ def _parse_metadata(path: Path) -> dict[str, list[str] | str]:
             if len(values) != 1 or values[0] not in ALLOWED_RISK_LEVELS:
                 raise MigrationManifestError(f"invalid riskLevel in {path}: {value}")
             metadata[key] = values[0]
+        elif key == "requiresTargetPreflight":
+            if len(values) != 1 or values[0].lower() not in {"true", "false"}:
+                raise MigrationManifestError(f"invalid requiresTargetPreflight in {path}: {value}")
+            metadata[key] = values[0].lower() == "true"
         else:
             raise MigrationManifestError(f"unknown release-migration metadata key in {path}: {key}")
     return metadata
@@ -137,6 +143,7 @@ def build_migration_manifest(
                 "allowedEnvironments": metadata["allowedEnvironments"],
                 "dependsOn": metadata["dependsOn"],
                 "riskLevel": metadata["riskLevel"],
+                "requiresTargetPreflight": metadata["requiresTargetPreflight"],
             }
         )
 

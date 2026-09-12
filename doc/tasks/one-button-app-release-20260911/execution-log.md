@@ -313,3 +313,15 @@ RED: `python -X utf8 -m pytest -q scripts/tests/test_release_schema_rehearsal.py
 GREEN: `python -X utf8 -m pytest -q scripts/tests/test_release_schema_rehearsal.py scripts/tests/test_release_build_preflight_cache.py --basetemp .tmp-schema-rehearsal-green` -> PASS，49 tests；覆盖 migration-list UTF-8 JSON 解析、非法对象/空数组/非字符串成员拒绝、PowerShell 单文件参数合同及相邻 build preflight cache 回归。
 
 GREEN: powershell-ast-schema-rehearsal-migration-list -> PASS，`publish-int-ruoyi.ps1` PowerShell AST 解析无错误；本轮修复未提交，也未操作服务器或 NAS。
+
+RED: build-release-r5-schema-rehearsal-case-mode -> FAIL，619 条迁移已通过文件参数进入临时 MySQL，但 `20260518_dcc_approval_task_name_fix.sql` 引用大写 `ACT_RU_TASK`；测试服结构快照中的实际表名为小写，测试服 compose 固定 `lower_case_table_names=1`，临时容器遗漏该运行参数而报 `ERROR 1146`。失败发生在 Maven 正式打包、Docker 镜像构建、NAS 上传和测试服写入之前，releaseTag `release-20260912-one-button-app-r5` 退休，不再复用。
+
+BDD: schema-only 演练复制测试服表名大小写模式 -> Given 测试服 MySQL 以 `lower_case_table_names=1` 运行且结构快照包含小写 Flowable 表 / When 临时 MySQL 执行包含大写兼容引用的全部迁移 / Then 临时容器必须使用同一 `lower_case_table_names=1` 参数并继续严格执行全部迁移，不允许跳过或改写 SQL。
+
+RED: `python -X utf8 -m pytest -q scripts/tests/test_release_schema_rehearsal.py` -> FAIL，新增合同确认临时容器尚未带 `--lower_case_table_names=1`；同时要求后续错误必须直接报告失败迁移文件和第几轮演练，缩短排障路径。
+
+BDD: schema-only 演练只消费目标预检计划的待应用集合 -> Given 测试服只读迁移账本已生成绑定本次 619 条清单的 preflight plan / When 启动 schema-only 演练 / Then 计划为 `SKIP_ALREADY_APPLIED` 的历史迁移不得重跑，只有 `APPLY` 集合按计划顺序执行两轮；计划与清单集合不一致必须失败，不能静默遗漏。
+
+RED: `python -X utf8 -m pytest -q scripts/tests/test_release_schema_rehearsal.py` -> FAIL，演练入口尚未读取 preflight planner 的迁移类型和 `requiresTargetPreflight`，会把类型为 data 或依赖历史业务基线的 schema 迁移错误送入空结构库。
+
+GREEN: `python -X utf8 -m pytest -q scripts/tests/test_release_schema_rehearsal.py scripts/tests/test_release_migration_preflight_matrix.py scripts/tests/test_release_sql_preflight_gate.py scripts/tests/test_showroom_release_sql_contract.py` -> PASS，78 tests；PowerShell AST PASS。新增 `requiresTargetPreflight` 元数据、planner item 类型绑定、schema-only 严格分流和迁移集合一致性校验；失败信息包含具体文件与 pass 编号。
