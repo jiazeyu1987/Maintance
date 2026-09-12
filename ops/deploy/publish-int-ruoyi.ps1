@@ -4181,6 +4181,8 @@ function Invoke-StandardReleaseContractTests {
     Invoke-CheckedCommand -FilePath 'corepack' -ArgumentList @('pnpm', '--dir', $frontendDir, 'ts:check')
     Info 'Running release script tests'
     $pytestRoot = Join-Path $resolvedLocalCacheRoot "release-workflow-test-temp\$packageDirectoryName"
+    $pytestParent = Split-Path -Parent $pytestRoot
+    New-Item -ItemType Directory -Force -Path $pytestParent | Out-Null
     Invoke-CheckedCommand -FilePath 'python' -ArgumentList @(
         '-X', 'utf8', '-m', 'pytest', '-q',
         (Join-Path $scriptDir '..\..\scripts\tests\test_release_workflow_preflight.py'),

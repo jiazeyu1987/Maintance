@@ -280,6 +280,12 @@ RED: build-release-r1-migration-metadata -> FAIL，`20260911_dcc_publish_direct_
 
 GREEN: dcc-publish-direct-policy-metadata -> PASS，将该 SQL 按实际更新历史审批策略的行为声明为 `type=data`，依赖 `20260719_business_approval_policy` 与 `20260720_dcc_publish_form_policy_seed`；`test_dcc_publish_direct_policy_sql.py` 与 migration policy 共 10 tests PASS。
 
+RED: build-release-r2-pytest-basetemp-parent -> FAIL，后端合同 10 tests、前端静态合同和 `pnpm ts:check` 已通过，但脚本未创建 `--basetemp` 父目录，导致 release script tests 出现 17 个 setup errors；Maven package、Docker、NAS 最终目录与测试服部署均未开始，r2 退休。
+
+SIDE_EFFECT: edhr-object-lock-preflight-r2 -> 构建前既有 eDHR 保留策略验证写入 1 个受 COMPLIANCE retention 与 legal hold 保护的探针对象；该对象不是 MinIO 业务数据或发布数据同步，不能删除，已记录 versionId 的脱敏事实但不记录 endpoint/credentials。
+
+GREEN: pytest-basetemp-parent-fix -> PASS，`Invoke-StandardReleaseContractTests` 在 pytest 前显式创建 `$pytestParent`；维护合同 23 tests 和 PowerShell AST PASS。下一次构建使用新 tag `release-20260912-one-button-app-r3`。
+
 GREEN: dcc-publish-direct-policy-metadata -> PASS，将该 SQL 按实际 UPDATE 历史审批策略行为声明为 `type=data`，依赖 `20260719_business_approval_policy` 与 `20260720_dcc_publish_form_policy_seed`；`test_dcc_publish_direct_policy_sql.py` 和 `test_release_migration_policy_gate.py` 共 10 tests PASS。
 
 RED: build-release-command-binding-r1 -> FAIL，手工命令将 `BackendRepoRoot` 误写为不存在的参数名，PowerShell 在参数绑定阶段退出；脚本主体、Maven、Docker、NAS 与服务器写入均未开始，releaseTag r1 仍未占用。修正为脚本声明的精确参数名并复用同一未启动 tag。

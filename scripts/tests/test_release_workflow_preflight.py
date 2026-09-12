@@ -32,6 +32,9 @@ def test_tests_and_source_freeze_run_before_expensive_builds() -> None:
     assert tests.index("backend contract tests") < tests.index("frontend contract tests")
     assert tests.index("frontend contract tests") < tests.index("release script tests")
     assert "-Dsurefire.failIfNoSpecifiedTests=false" in tests
+    parent_create = tests.index("New-Item -ItemType Directory -Force -Path $pytestParent")
+    pytest_invoke = tests.index("'-X', 'utf8', '-m', 'pytest'")
+    assert parent_create < pytest_invoke
 
     first_freeze = source.index("Assert-ReleaseSourceFreeze -VerificationPoint 'before-build'")
     required_tests = source.index("Invoke-StandardReleaseContractTests", first_freeze)
