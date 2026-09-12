@@ -361,3 +361,7 @@ BDD: Docker 构建上下文清理 -> Given 镜像导出完成 / When 删除包�
 RED: `python -X utf8 -m pytest -q scripts/tests/test_release_build_preflight_cache.py -k docker_build_context_cleanup` -> FAIL，旧清理逻辑只有一次 `Remove-Item`。
 
 GREEN: `python -X utf8 -m pytest -q scripts/tests/test_release_build_preflight_cache.py scripts/tests/test_release_schema_rehearsal.py` -> PASS，54 tests；PowerShell AST PASS，清理重试合同已锁定。
+
+RED: `python -X utf8 -m pytest -q scripts/tests/test_release_build_preflight_cache.py -k docker_build_context_cleanup` -> FAIL，PowerShell `Remove-Item -Recurse` 重试仍不能稳定删除大型 bundle 树；废弃 r12 上验证 .NET `Directory.Delete(path, true)` 可完成清理。
+
+GREEN: `python -X utf8 -m pytest -q scripts/tests/test_release_build_preflight_cache.py scripts/tests/test_release_schema_rehearsal.py` -> PASS，54 tests；清理实现改为 .NET 目录删除、有限重试和最终存在性核验，未保留 PowerShell 递归删除路径。

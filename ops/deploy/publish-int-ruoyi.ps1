@@ -311,7 +311,7 @@ function Remove-ReleaseDockerBuildContextFromPackage {
     $lastError = $null
     for ($attempt = 1; $attempt -le 5; $attempt++) {
         try {
-            Remove-Item -LiteralPath $dockerBuildContextRoot -Recurse -Force -ErrorAction Stop
+            [System.IO.Directory]::Delete($dockerBuildContextRoot, $true)
             $lastError = $null
             break
         } catch {
