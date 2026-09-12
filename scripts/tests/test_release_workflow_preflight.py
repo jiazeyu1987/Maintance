@@ -48,6 +48,21 @@ def test_tests_and_source_freeze_run_before_expensive_builds() -> None:
     assert second_freeze < manifest
 
 
+def test_build_release_validates_nas_config_and_clean_sources_before_sql_scan() -> None:
+    source = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+
+    main_nas_preflight = source.index("$null = Read-NasReleaseConfig")
+    first_freeze = source.index("Assert-ReleaseSourceFreeze -VerificationPoint 'before-build'")
+    migration_scan = source.index("$requiredDatabaseSqlScripts = Get-ReleaseDatabaseSqlScripts")
+    migration_policy_gate = source.index("Invoke-ReleaseMigrationPolicyGate", migration_scan)
+    contract_tests = source.index("Invoke-StandardReleaseContractTests", migration_policy_gate)
+    maven_build = source.index("Info 'Building backend jar'", contract_tests)
+
+    assert main_nas_preflight < migration_scan
+    assert first_freeze < migration_scan
+    assert migration_scan < migration_policy_gate < contract_tests < maven_build
+
+
 def test_freeze_evidence_has_two_git_roots_and_three_source_roles() -> None:
     source = PUBLISH_SCRIPT.read_text(encoding="utf-8")
     freeze = _function(source, "Assert-ReleaseSourceFreeze", "Invoke-StandardReleaseContractTests")

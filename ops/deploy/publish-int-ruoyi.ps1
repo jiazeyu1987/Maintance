@@ -2820,7 +2820,11 @@ function Read-NasReleaseConfig {
         Fail "NAS release config file not found: $NasConfigPath"
     }
     $text = [System.IO.File]::ReadAllText($NasConfigPath, [System.Text.UTF8Encoding]::new($false))
-    $config = $text | ConvertFrom-Json
+    try {
+        $config = $text | ConvertFrom-Json
+    } catch {
+        Fail "NAS release config must be UTF-8 JSON: $NasConfigPath"
+    }
     foreach ($field in @('server', 'share', 'username', 'password')) {
         if ([string]::IsNullOrWhiteSpace([string]$config.$field)) {
             Fail "NAS release config missing field: $field"
@@ -4823,6 +4827,12 @@ function Get-ReleaseDatabaseSqlScripts {
     return $entries
 }
 
+$script:ReleaseSourceFreezeEvidence = $null
+if ($Mode -eq 'build-release') {
+    $null = Read-NasReleaseConfig
+    $script:ReleaseSourceFreezeEvidence = Assert-ReleaseSourceFreeze -VerificationPoint 'before-build'
+}
+
 $requiredDatabaseSqlScripts = @()
 if ($Mode -notin @('deploy-release', 'mark-tested')) {
     $requiredDatabaseSqlScripts = Get-ReleaseDatabaseSqlScripts
@@ -6098,7 +6108,9 @@ if ($requiresRemoteMinioCredentials -and (
 }
 
 if ($Mode -eq 'build-release') {
-    $script:ReleaseSourceFreezeEvidence = Assert-ReleaseSourceFreeze -VerificationPoint 'before-build'
+    if ($null -eq $script:ReleaseSourceFreezeEvidence) {
+        $script:ReleaseSourceFreezeEvidence = Assert-ReleaseSourceFreeze -VerificationPoint 'before-build'
+    }
     Invoke-StandardReleaseContractTests
 }
 

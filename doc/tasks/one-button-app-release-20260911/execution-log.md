@@ -444,3 +444,14 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - SOURCE_FREEZE_INPUT: maintenance `618da2d1dd53f0b5195957dede856fabbf29fafc`，application `4fb258315489dd789914bef0cc80ec08fc943db2`；计划执行新 releaseTag `release-20260913-one-button-app-r19`，`Component=intruoyi`，`PublishScope=app-release`，显式 `SkipDatabaseSync/SkipMinioSync`，成功后仅执行同 tag 测试服 `deploy-release`。
 - RED: build-release-r19-source-dirty -> FAIL，构建命令启动前已把本轮 `execution-log.md` 与 `docs/request-command-log.md` 记录写入维护 worktree，导致维护来源 dirty；脚本在 `SOURCE_DIRTY: maintenance` 门禁停止，Maven、Docker、NAS 上传和测试服写入均未开始。r19 退休，不复用。
 - NEXT: 先提交任务记录，再使用新 releaseTag `release-20260913-one-button-app-r20` 重新 build-release；source freeze 必须更新为提交后的维护 HEAD，仍禁止 with-data、全量数据库、MinIO 数据同步和正式服写入。
+
+## r20 fail-fast gap: NAS config format validated too late
+
+- SOURCE_FREEZE_INPUT: maintenance `7a4cc6a`，application `4fb258315`；两个任务 worktree 均 clean。执行 `release-20260913-one-button-app-r20`，`PublishScope=app-release`，显式 `SkipDatabaseSync/SkipMinioSync`。
+- GREEN: build-release-r20-pre-nas -> PASS，迁移策略 619 条通过，后端 workflow 合同 10 tests、前端静态合同、`pnpm ts:check`、发布脚本 125 tests、PowerShell digest、Docker daemon、Spring constructor、测试服 target data preflight 58/58、schema-only rehearsal、后端 Maven package、前端 `pnpm build:test`、前后端 Docker build、image save、manifest 生成与本地 integrity 均通过；本地包大小约 0.67GiB，仍为 `app-release` 且不含数据库/MinIO 数据包。
+- RED: build-release-r20-nas-config-json-late -> FAIL，命令错误地把 `runtime-control.local.yaml` 传给 `-NasConfigPath`，而脚本只接受 UTF-8 JSON；旧脚本到 NAS 上传阶段才 `ConvertFrom-Json` 失败，浪费了一轮 Maven/Docker 构建。测试服部署未开始；r20 按失败 tag 退休，不复用。
+- BDD: NAS 配置格式前置校验 -> Given build-release 必须最终上传 NAS READY 包 / When `-NasConfigPath` 缺失、不是 JSON 或来源 dirty / Then 必须在 SQL 扫描、测试、Maven、Docker 和 NAS 上传前失败，并输出明确错误。
+- RED: `python -X utf8 -m pytest -q scripts/tests/test_release_workflow_preflight.py -k nas_config --basetemp .tmp-r20-nas-json-red` -> FAIL，旧脚本没有在 SQL 扫描前调用 `Read-NasReleaseConfig`。
+- GREEN: `python -X utf8 -m pytest -q scripts/tests/test_release_workflow_preflight.py -k "nas_config or tests_and_source_freeze" --basetemp .tmp-r20-nas-json-green` -> PASS，2 tests；`publish-int-ruoyi.ps1` PowerShell AST PASS。
+- REGRESSION: `python -X utf8 -m pytest -q --tb=short scripts/tests/test_release_workflow_preflight.py scripts/tests/test_release_package_governance.py scripts/tests/test_app_release_package_governance.py scripts/tests/test_release_build_preflight_cache.py --basetemp .tmp-r20-nas-config-regression` -> PASS，132 tests。
+- NEXT: 提交 NAS 配置前置门禁修复后，使用新 releaseTag `release-20260913-one-button-app-r21` 和现有受控 JSON NAS 配置重建 `app-release` 包；仍禁止 with-data、全量数据库、MinIO 数据同步和正式服写入。
