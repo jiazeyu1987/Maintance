@@ -5954,7 +5954,7 @@ if ($publishBackend -and $Mode -ne 'build-release' -and [string]::IsNullOrWhiteS
 }
 
 $edhrProtectedStorageSettings = Get-EdhrProtectedStorageSettings
-if ($publishBackend) {
+if ($publishBackend -and $Mode -ne 'build-release') {
     Assert-EdhrProtectedStorageConfig -Context 'target publish environment' -Settings $edhrProtectedStorageSettings
     Set-EdhrStorageVerifierEnvironment -Settings $edhrProtectedStorageSettings
     Invoke-EdhrStorageRetentionVerifier -BackendRepo $backendRepo

@@ -286,13 +286,15 @@ SIDE_EFFECT: edhr-object-lock-preflight-r2 -> 构建前既有 eDHR 保留策略�
 
 GREEN: pytest-basetemp-parent-fix -> PASS，`Invoke-StandardReleaseContractTests` 在 pytest 前显式创建 `$pytestParent`；维护合同 23 tests 和 PowerShell AST PASS。下一次构建使用新 tag `release-20260912-one-button-app-r3`。
 
+RED: app-release-edhr-probe-side-effect -> FAIL，合同证明标准 build-release 在测试门禁前调用 `Invoke-EdhrStorageRetentionVerifier`，导致失败构建也写入受法律保留约束的探针对象。
+
+GREEN: app-release-edhr-probe-side-effect -> PASS，eDHR 写入型保留验证现仅在非 build-release 目标发布流程执行；标准 `app-release` 构建不再写对象存储探针。聚焦合同 1 test 与 PowerShell AST PASS。
+
 GREEN: dcc-publish-direct-policy-metadata -> PASS，将该 SQL 按实际 UPDATE 历史审批策略行为声明为 `type=data`，依赖 `20260719_business_approval_policy` 与 `20260720_dcc_publish_form_policy_seed`；`test_dcc_publish_direct_policy_sql.py` 和 `test_release_migration_policy_gate.py` 共 10 tests PASS。
 
 RED: build-release-command-binding-r1 -> FAIL，手工命令将 `BackendRepoRoot` 误写为不存在的参数名，PowerShell 在参数绑定阶段退出；脚本主体、Maven、Docker、NAS 与服务器写入均未开始，releaseTag r1 仍未占用。修正为脚本声明的精确参数名并复用同一未启动 tag。
 
 RED: build-release-r1-migration-metadata -> FAIL，修正命令后 `20260911_dcc_publish_direct_policy.sql` 缺少 `release-migration` metadata；脚本在迁移策略门禁阶段停止，Maven/Docker/NAS/测试服写入均未开始。按失败 tag 退休规则，r1 不再复用。
-
-GREEN: `python -X utf8 -m pytest -...`
 
 BLOCKER: C05/P4/P5 -> `corepack pnpm --dir IntRuoyiFronted ts:check` FAIL，任务 app worktree 缺 `node_modules/cross-env`；权威 Playwright 目录仍缺 1.60.0 依赖/可执行文件。未临时安装依赖或换版本兜底。
 
