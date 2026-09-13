@@ -3561,3 +3561,4 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Result update: r25 前先发现应用 worktree 有未提交路线菜单预检测试，RED 证明 `20260629_mes_smart_scheduling_role_scope` 仍硬编码旧 `900121/900122`，目标只读预检未验证 `20260709` 统一后的 `5726/5727` 活跃菜单组合。
 - Implementation update: 应用迁移改为解析当前活跃路线 query/update 菜单，优先 `5726/5727`，未统一旧库兼容 `900121/900122`；目标只读预检验证核心菜单和旧/新路线菜单任一完整组合。
 - Verification update: 应用仓定向 29 PASS、相邻回归 54 PASS、diff-check PASS；提交 `6079138ea 任务: 兼容路线菜单统一后的发布预检`。未执行正式服、审查服、MinIO 同步、全量数据库复制或 `mark-tested/promote-prod/promote-backup`。
+- Result update: r25 本地缓存存在但不是可发布包；完整性复核返回 `preflight-target-state-test.json: undeclared file`，且 manifest source commit 陈旧，未匹配当前应用提交 `6079138ea`。r25 判废，不发布测试服；下一轮改用 `release-20260913-one-button-app-r26`。

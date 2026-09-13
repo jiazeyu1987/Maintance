@@ -506,3 +506,11 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - REGRESSION: `python -X utf8 -m pytest -q script\tests\test_mes_smart_scheduling_role_scope_sql.py script\tests\test_release_target_preflight_files.py script\tests\test_mes_route_flow_config_migration_sql.py script\tests\test_release_preflight_plan.py --basetemp ..\.tmp-pytest-route-menu-regression-2` from `IntRuoyiBackend` -> PASS，54 passed。
 - COMMIT: app route-menu target preflight fix -> `6079138ea 任务: 兼容路线菜单统一后的发布预检`。
 - NEXT: 提交本维护仓任务记录后，以 maintenance HEAD 和 application `6079138ea` 作为新 source freeze，使用新 releaseTag `release-20260913-one-button-app-r25` 重新生成 without-data/app-release 程序包；仍禁止 with-data、MinIO 数据同步、正式服、审查服、`mark-tested`、`promote-prod` 和 `promote-backup`。
+
+## r25 retired before deploy: stale local package cache invalid
+
+- USER_AUTHORIZATION: 用户继续授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod` 或 `promote-backup`。
+- GREEN: r25-source-status -> PASS，维护 worktree `8eac852b0b9e6e2108c521213c2f8ab029465dc5` 与应用 worktree `6079138ea0ab614093c1c8b726d91c4ef12c5d95` 均 clean；测试服远端 `/var/lib/docker/intruoyi-releases/release-20260913-one-button-app-r25` 不存在。
+- RED: r25-local-package-integrity -> FAIL，本地缓存 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260913-one-button-app-r25` 已存在，`manifest.json` 显示 `publishScope=app-release`、`component=intruoyi`，但 `Test-ReleasePackageIntegrity -ExpectedPackageDirectoryName release-20260913-one-button-app-r25` 返回 `preflight-target-state-test.json: undeclared file`；该本地包不是完整不可变 READY 包，不得发布测试服，也不得复用该 tag。
+- ROOT_CAUSE: r25 本地包创建时间早于路线菜单修复提交 `6079138ea`，manifest source commits 仍指向旧应用提交 `ba1a6b718`，并残留未登记部署控制文件；属于旧失败缓存，不是当前 source freeze 的有效制品。
+- NEXT: r25 判废退休；提交本记录后使用新 releaseTag `release-20260913-one-button-app-r26`，source freeze 固定维护仓提交和应用 `6079138ea` 或后续提交，继续生成 without-data/app-release 程序包。仍禁止 with-data、MinIO 数据同步、全量数据库复制、正式服/审查服写入、`mark-tested`、`promote-prod` 和 `promote-backup`。

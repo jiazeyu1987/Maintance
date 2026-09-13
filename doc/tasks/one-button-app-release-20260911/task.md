@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23 本地包复核发现部署阶段把 `ops-runtime` 写回已生成的发布包，r24 又发现部署前置计划 `preflight-plan.json` / `preflight-target-state-test.json` 写回发布包根，均导致 `manifest.json` 未登记新增文件，旧 tag 判废不发布。维护仓已修复为“部署期 mutable 文件全部进入 `.deploy-control-*`，发布包根保持不可变”；应用仓已补齐 `release_preflight_plan.py` 对 `app-release` scope 的 RED/GREEN 门禁，并在 `6079138ea` 修复 `20260629_mes_smart_scheduling_role_scope` 对路线菜单统一后 `5726/5727` 的兼容。下一步使用新 releaseTag 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23 本地包复核发现部署阶段把 `ops-runtime` 写回已生成的发布包，r24 又发现部署前置计划 `preflight-plan.json` / `preflight-target-state-test.json` 写回发布包根，均导致 `manifest.json` 未登记新增文件，旧 tag 判废不发布。维护仓已修复为“部署期 mutable 文件全部进入 `.deploy-control-*`，发布包根保持不可变”；应用仓已补齐 `release_preflight_plan.py` 对 `app-release` scope 的 RED/GREEN 门禁，并在 `6079138ea` 修复 `20260629_mes_smart_scheduling_role_scope` 对路线菜单统一后 `5726/5727` 的兼容。r25 本地缓存复核仍含未登记 `preflight-target-state-test.json` 且 source commit 陈旧，已判废。下一步使用新 releaseTag `release-20260913-one-button-app-r26` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
 
 ## Verification Evidence
 
@@ -64,7 +64,7 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 
 ## Current Phase
 
-- P3 正在执行：r23/r24 已判废，应用仓 `app-release` 迁移预检与路线菜单目标预检补丁已提交至 `6079138ea`；下一轮使用新 releaseTag 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23/r24/r25 已判废，应用仓 `app-release` 迁移预检与路线菜单目标预检补丁已提交至 `6079138ea`；下一轮使用新 releaseTag `release-20260913-one-button-app-r26` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 
