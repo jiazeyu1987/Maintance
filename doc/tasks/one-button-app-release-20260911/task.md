@@ -64,10 +64,11 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 - r26 deploy-release：版本未切换；失败点为旧包内 `20260709_mes_rt000006_batch_record_mapping.sql`，错误 `Missing RT000006 pressure pump route`。当前应用 HEAD 已有等价修复，旧 r26 判废不复用。
 - app-release Object Lock probe gate：新增 RED/GREEN 测试，`deploy-release` 仅校验 `EDHR_S3_*` 配置，不调用写对象探针；聚焦测试 3 PASS，PowerShell AST PASS。
 - r28 deploy-release：build-release 与 NAS READY 成功，但测试服 required SQL 在版本切换前失败于 `20260716_mes_balloon_xlsx_route_00002_invalid_process_cleanup` 的 `target mismatch`；根因是测试库已是 `23+26=49` 的规范化路线，sort=26 为合法 `Z2620` 而非旧无效 `B320`。应用仓提交 `8e6c033c6` 已补 already-normalized no-op 和严格 target preflight，回归 11+40 PASS。
+- r29 deploy-release：build-release 与 NAS READY 成功，但测试服 required SQL 在版本切换前失败于 `20260717_mes_balloon_excel_device_workstation_binding` 的设备绑定数量硬编码 83；真实目标库只有 44 条可绑定设备种子。应用仓提交 `9d886766a` 已改为目标数据派生计数并增强 target preflight，定向 11 PASS、相邻回归 37 PASS、测试服只读 preflight PASS。
 
 ## Current Phase
 
-- P3 正在执行：r23/r24/r25/r26/r27/r28 已判废；应用仓当前可发布提交为 `8e6c033c6`，维护仓提交本轮 R28 失败记录后作为新 source freeze。下一轮使用新 releaseTag `release-20260914-one-button-app-r29` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23/r24/r25/r26/r27/r28/r29 已判废；应用仓当前可发布提交为 `9d886766a`，维护仓提交本轮 R29 失败记录后作为新 source freeze。下一轮使用新 releaseTag `release-20260914-one-button-app-r30` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 

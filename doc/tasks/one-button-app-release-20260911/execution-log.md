@@ -546,3 +546,14 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - ROOT_CAUSE: 测试库当前 `ROUTE-XLSX-00001=23`、`ROUTE-XLSX-00002=26`，总数已满足后续绑定迁移要求的 `49`；`ROUTE-XLSX-00002` sort=26 是合法 `Z2620`，不是旧脚本假设要删除的无效 `B320`。旧 target preflight 只验证弱条件，未在构建前覆盖 `B320/Z2620/49` 目标合同。
 - GREEN: app-balloon-cleanup-fix -> PASS，应用仓提交 `8e6c033c6` 增加 already-normalized no-op 分支和等价 target preflight；本地 cleanup/preflight 测试 11 passed，release migration 回归 40 passed，测试服只读执行新 preflight 返回 `TARGET_PREFLIGHT_PASS:20260716_mes_balloon_xlsx_route_00002_invalid_process_cleanup`。
 - RESULT: r28 判废不复用。下一轮必须使用新 releaseTag `release-20260914-one-button-app-r29`，source freeze 固定维护仓提交后 HEAD 与应用仓 `8e6c033c6`；继续禁止 with-data、MinIO 数据同步、全量数据库复制、正式服、审查服、`mark-tested`、`promote-prod` 和 `promote-backup`。
+
+## r29 retired: balloon Excel device seed count is target-derived
+
+- USER_AUTHORIZATION: 用户继续授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test` 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod` 或 `promote-backup`。
+- GREEN: build-release-r29 -> PASS，source freeze 为维护仓 `bf9703d496a95aabe79ade0181fe77684cf54284`、应用仓 `8e6c033c6e53cc925d773486121e3dc051139966`；target-data preflight 55/55、schema-only 演练、后端 Maven package、前端 `build:test`、Docker build/save、本地 package integrity 和 NAS 原子 READY 均通过；包为 `PublishScope=app-release`，`packageDigest=e50c27ecc1ac0938b52d43849b1d1e5f2bdb94829b2d6fdf0b2244aeaa868040`，`manifestDigest=b7484ce46567401ec4d7ee5070775213b088eb6cdafd8805f894f06bdfb43f51`，无数据库/MinIO 数据目录。
+- RED: deploy-release-r29-balloon-machine-count -> FAIL，测试服部署在版本切换前执行 required SQL `20260717_mes_balloon_excel_device_workstation_binding.sql` 时失败：`ERROR 1644 (45000): balloon Excel workstation machine count mismatch`；测试服 operation lock 已释放为 FAILED，`.env` 未切换到 r29，实际 backend/frontend 镜像仍为旧 tag。
+- ROOT_CAUSE: 旧迁移硬编码 `@target_workstation_machine_count=83`，但测试库真实 `mes_dv_machinery_process` 仅存在 `棘突球囊扩张导管` 44 条设备绑定种子；`ROUTE-XLSX-00001` 当前没有设备绑定数据，不能按旧 Excel 来源数量强制 83。旧 target preflight 只校验表和基础主数据存在，没有在构建前验证设备绑定种子计数。
+- BDD: 球囊 Excel 设备绑定计数由目标数据派生 -> Given without-data/app-release 只携带版本化 SQL / When 目标库只有当前有效设备绑定种子 / Then 迁移不得使用固定 83 阻断，target preflight 必须在发布前校验 route process=49 且可绑定设备种子数量大于 0。
+- RED: `python -X utf8 -m pytest -q script\tests\test_mes_balloon_excel_device_workstation_binding_sql.py --basetemp ..\.tmp-pytest-r29-balloon-machine-red` -> FAIL，3 failed，证明旧 SQL 仍硬编码 83 且 target preflight 未覆盖设备绑定种子。
+- GREEN: 应用仓提交 `9d886766a` 将迁移改为 `@minimum_workstation_machine_count=1` 与目标数据派生计数，并增强 `20260717_mes_balloon_excel_device_workstation_binding.preflight.sql`；定向测试 11 passed，相邻迁移/预检回归 37 passed，测试服只读 preflight 返回 `TARGET_PREFLIGHT_PASS:20260717_mes_balloon_excel_device_workstation_binding`。
+- RESULT: r29 判废不复用。下一轮必须使用新 releaseTag `release-20260914-one-button-app-r30`，source freeze 固定维护仓提交后 HEAD 与应用仓 `9d886766a`；继续禁止 with-data、MinIO 数据同步、全量数据库复制、正式服、审查服、`mark-tested`、`promote-prod` 和 `promote-backup`。

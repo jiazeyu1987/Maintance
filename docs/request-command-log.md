@@ -3571,3 +3571,8 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Implementation update: 维护脚本 `deploy-release` 保留目标 `EDHR_S3_*` 配置校验，但移除 `app-release` 路径的写对象 Object Lock verifier 调用；这避免 without-data 程序发布产生额外对象存储写副作用。
 - Verification update: `test_release_workflow_preflight.py -k edhr_storage_probe` 先 RED 后 GREEN；相邻 `nas_config` 与 `tests_and_source_freeze` 回归合计 3 PASS，`publish-int-ruoyi.ps1` AST PASS。
 - Boundary: 未操作正式服或审查服；未执行 `mark-tested`、`promote-prod`、`promote-backup`；未同步 MinIO 或全量数据库；未记录任何密码/token/私钥。
+- Result update: r28 包构建和 NAS READY 通过，但测试服 required SQL `20260716_mes_balloon_xlsx_route_00002_invalid_process_cleanup` 在版本切换前失败；应用仓提交 `8e6c033c6` 已修正 already-normalized no-op 与 target preflight，旧 r28 判废。
+- Result update: r29 包构建、manifest、packageDigest、本地完整性、NAS READY 均通过，包大小约 0.67GiB 且 `PublishScope=app-release`，不含数据库/MinIO 数据目录；测试服 deploy-release 在版本切换前失败于 `20260717_mes_balloon_excel_device_workstation_binding`，原因是旧 SQL 硬编码设备绑定数量 83，而测试库真实可绑定设备种子为 44。
+- Implementation update: 应用仓 `20260717_mes_balloon_excel_device_workstation_binding.sql` 改为目标数据派生设备绑定计数，只要求至少存在可绑定设备种子；对应 target preflight 增加 route process=49 与设备种子数量校验。
+- Verification update: RED 复现旧 SQL 和 preflight 缺口；修复后 `test_mes_balloon_excel_device_workstation_binding_sql.py` + `test_release_target_preflight_files.py` 定向 11 PASS，相邻回归 37 PASS，测试服只读 preflight 返回 PASS；应用提交 `9d886766a 任务: 修复球囊Excel设备绑定发布预检`。
+- Boundary: r29 判废不复用；测试服 `.env` 未切换到 r29，operation lock 为 FAILED；正式服/审查服/`mark-tested`/`promote-prod`/`promote-backup` 仍未执行。
