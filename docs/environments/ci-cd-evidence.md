@@ -1,5 +1,17 @@
 # CI/CD Evidence
 
+## 2026-09-14 one-button app-release deploy no-data gate
+
+- Environments and deployment targets: 测试服 `172.30.30.58` 仅在用户授权范围内执行 `app-release deploy-release`；正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup` 均未执行。
+- Build/package commands: r26 已判废；下一轮必须使用新 releaseTag `release-20260914-one-button-app-r27` 从当前维护/app 提交重新 `build-release`，继续固定 `PublishScope=app-release`、`SkipDatabaseSync`、`SkipMinioSync`。
+- Pipeline files changed: `ops/deploy/publish-int-ruoyi.ps1`、`scripts/tests/test_release_workflow_preflight.py`、`docs/release-build-preflight-lessons.md`、`docs/experience-index.md`、任务执行记录。
+- Required secrets and owners: 未新增 secret；NAS/SSH/MySQL/EDHR 配置仍由既有运行控制台/目标环境提供，证据只记录配置存在性和脱敏路径，不提交 secret 值。
+- Artifact and release output: r26 包完整性和 NAS READY 通过，但 manifest 绑定旧应用提交 `6079138ea`，缺少后续 RT000006 不适用修复；测试服版本未切换，失败 tag 不复用。
+- RED verification evidence: `python -X utf8 -m pytest -q scripts/tests/test_release_workflow_preflight.py -k "edhr_storage_probe" --basetemp .tmp-r27-edhr-probe-red` -> FAIL，旧脚本在 app-release deploy 路径调用写对象 verifier。
+- GREEN verification evidence: `python -X utf8 -m pytest -q scripts/tests/test_release_workflow_preflight.py -k "edhr_storage_probe or nas_config or tests_and_source_freeze" --basetemp .tmp-r27-edhr-probe-green` -> PASS，3 passed；`publish-int-ruoyi.ps1` PowerShell AST PASS。
+- Manual approvals and blockers: 用户已授权测试服/NAS app-release 续跑；r26 已失败，必须提交脚本门禁后用 r27 重建，不得继续 r26。
+- Rollback procedure and validation: 若回滚本次脚本门禁，`app-release deploy-release` 会恢复 Object Lock 探针写入风险；回滚后必须禁止 without-data 一键发布并重跑 `test_release_workflow_preflight.py -k edhr_storage_probe`。
+
 ## one-button-app-release 恢复验证
 
 - Environment: 本任务维护/app worktree；Windows PowerShell 5.1；测试服 172.30.30.58 仅执行已授权只读事务状态探针。本轮未重新打包或上传/部署。

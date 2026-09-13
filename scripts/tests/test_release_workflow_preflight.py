@@ -104,11 +104,10 @@ def test_nas_download_purges_stale_cache_before_integrity_check() -> None:
     assert copy < integrity
 
 
-def test_app_release_build_does_not_write_edhr_storage_probe() -> None:
+def test_app_release_workflow_never_writes_edhr_storage_probe() -> None:
     source = PUBLISH_SCRIPT.read_text(encoding="utf-8")
     call = "Invoke-EdhrStorageRetentionVerifier -BackendRepo $backendRepo"
 
-    call_index = source.index(call)
-    guard_index = source.rfind("if ($publishBackend -and $Mode -ne 'build-release')", 0, call_index)
-    assert guard_index >= 0
-    assert call_index - guard_index < 400
+    runtime_validation = source.split("$mySqlRootPassword = ''", 1)[0]
+    assert call not in runtime_validation
+    assert "Assert-EdhrProtectedStorageConfig -Context 'target publish environment'" in runtime_validation

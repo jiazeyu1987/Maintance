@@ -176,6 +176,15 @@
 - 运行控制台启动入口以维护仓当前脚本为准；本轮确认应使用 `scripts\start.ps1`，不要凭旧路径猜测 `ops\runtime-control\start-runtime-control.ps1`。
 - 不带数据发布的 manifest 必须显式验证 `publishScope=code-only`，并确认发布包中不存在 `database`、`mysql`、`minio`、`files` 等数据目录；仅看到 operation `SUCCESS` 不足以证明“不带数据”。
 
+### 2026-09-14 app-release 无数据部署不得写 eDHR Object Lock 探针
+
+- Trigger: 标准一键发布、without-data、`PublishScope=app-release`、`deploy-release`、用户要求不带业务数据/不做 MinIO 数据同步。
+- Preflight check: 发布脚本必须仅校验目标运行环境 `EDHR_S3_*` 配置存在和格式正确；不得在 `app-release deploy-release` 路径调用 `Invoke-EdhrStorageRetentionVerifier` 或任何会写对象存储探针的 verifier。执行前运行 `python -X utf8 -m pytest -q scripts/tests/test_release_workflow_preflight.py -k "edhr_storage_probe"`。
+- Blocker: 标准程序包部署阶段出现 Object Lock 探针对象上传、MinIO/S3 写入、`Invoke-EdhrStorageRetentionVerifier` 调用、或把对象探针失败作为程序包发布阻塞时必须停止并修脚本；不得继续用同一失败 releaseTag 发布。
+- Verification: 目标测试必须 RED/GREEN 留证，`publish-int-ruoyi.ps1` AST 解析通过；真实发布日志只允许出现 `eDHR protected storage settings validated`，不得出现 `Verifying eDHR protected storage/Object Lock target before publish`。
+- Forbidden action: 禁止把“探针不是 MinIO 同步”作为继续写对象的理由；禁止用 Object Lock verifier 替代无数据发布验证；禁止为了绕过失败关闭 EDHR 配置校验。
+- Evidence: `doc/tasks/one-button-app-release-20260911/execution-log.md`；r26 deploy-release 在真正切换版本前写入 eDHR protected object，随后 SQL 失败，证明写探针会给无数据程序发布制造额外副作用。
+
 ## 本次证据
 
 - 当前主分支测试服发布闭环任务：`doc/tasks/20260630-main-branch-build-publish-test-server/task.md`

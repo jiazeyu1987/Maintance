@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23 本地包复核发现部署阶段把 `ops-runtime` 写回已生成的发布包，r24 又发现部署前置计划 `preflight-plan.json` / `preflight-target-state-test.json` 写回发布包根，均导致 `manifest.json` 未登记新增文件，旧 tag 判废不发布。维护仓已修复为“部署期 mutable 文件全部进入 `.deploy-control-*`，发布包根保持不可变”；应用仓已补齐 `release_preflight_plan.py` 对 `app-release` scope 的 RED/GREEN 门禁，并在 `6079138ea` 修复 `20260629_mes_smart_scheduling_role_scope` 对路线菜单统一后 `5726/5727` 的兼容。r25 本地缓存复核仍含未登记 `preflight-target-state-test.json` 且 source commit 陈旧，已判废。下一步使用新 releaseTag `release-20260913-one-button-app-r26` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23/r24/r25 已判废；r26 本地与 NAS 包完整性通过，但 manifest 绑定的应用提交仍为 `6079138ea`，不包含后续 `8ec193169` 对 `20260709_mes_rt000006_batch_record_mapping.sql` 的“目标路线不存在即不适用”修复，测试服 deploy-release 在 required SQL 阶段失败于 `Missing RT000006 pressure pump route`，版本未切换。维护仓已补齐 `app-release deploy-release` 不写 eDHR Object Lock 探针对象的无数据门禁；下一步提交该门禁后，使用新 releaseTag `release-20260914-one-button-app-r27` 从维护仓最新提交和应用仓 `1bf4504cc` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
 
 ## Verification Evidence
 
@@ -61,10 +61,12 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 - r23 immutable package gate：本地 `Test-ReleasePackageIntegrity` 发现 `ops-runtime/actions/01-立即备份.bat: undeclared file`；新增回归先 RED 后 GREEN，发布包治理宽回归 139 PASS，PowerShell AST PASS。
 - r24 deploy-control pollution gate：本地 `Test-ReleasePackageIntegrity` 发现 `preflight-plan.json: undeclared file`；新增回归先 RED 后 GREEN，发布包治理宽回归 139 PASS，PowerShell AST PASS。
 - route-menu target preflight gate：应用仓 `20260629_mes_smart_scheduling_role_scope` 改为选择当前活跃的 `5726/5727` 或未统一前的 `900121/900122`；相邻脚本回归 54 PASS，提交 `6079138ea`。
+- r26 deploy-release：版本未切换；失败点为旧包内 `20260709_mes_rt000006_batch_record_mapping.sql`，错误 `Missing RT000006 pressure pump route`。当前应用 HEAD 已有等价修复，旧 r26 判废不复用。
+- app-release Object Lock probe gate：新增 RED/GREEN 测试，`deploy-release` 仅校验 `EDHR_S3_*` 配置，不调用写对象探针；聚焦测试 3 PASS，PowerShell AST PASS。
 
 ## Current Phase
 
-- P3 正在执行：r23/r24/r25 已判废，应用仓 `app-release` 迁移预检与路线菜单目标预检补丁已提交至 `6079138ea`；下一轮使用新 releaseTag `release-20260913-one-button-app-r26` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23/r24/r25/r26 已判废；应用仓当前可发布提交为 `1bf4504cc`，维护仓待提交本轮无数据门禁后作为新 source freeze。下一轮使用新 releaseTag `release-20260914-one-button-app-r27` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 

@@ -164,10 +164,12 @@
         "app orchestrator/authorization targeted Maven 111 tests PASS；build->READY->publish-test->TESTED、双摘要绑定、一次性授权重放拒绝已验证。",
         "C08 maintenance Python 234 tests PASS、C09 Node 6 tests PASS、PowerShell digest/AST PASS；schema-only no-data migration rehearsal 在 Maven 前执行并产出包内证据。",
         "target readonly preflight coverage closed after app commit 4fb258315: 58/58 checks PASS on test server in READ ONLY transactions; evidence/r15-target-preflight-audit-after-app-4fb258315.json.",
-        "route menu target preflight compatibility fixed in app commit 6079138ea; 54 adjacent script tests PASS."
+        "route menu target preflight compatibility fixed in app commit 6079138ea; 54 adjacent script tests PASS.",
+        "r26 deploy-release retired: package source was stale at app commit 6079138ea and failed required SQL 20260709_mes_rt000006_batch_record_mapping with Missing RT000006 pressure pump route before version switch.",
+        "app-release deploy Object Lock probe removed from standard without-data path: RED/GREEN test_release_workflow_preflight.py -k edhr_storage_probe, focused regression 3 PASS, PowerShell AST PASS."
       ],
-      "notes": "P3 target readonly preflight coverage gap is closed; route-menu unified-state compatibility is fixed; r15/r23/r24 remain retired and next build must use a new releaseTag with app source at 6079138ea or later.",
-      "last_reviewed_at": "2026-09-13T02:55:30+08:00",
+      "notes": "P3 target readonly preflight coverage gap is closed; route-menu unified-state compatibility is fixed; r15/r23/r24/r25/r26 remain retired. Next build must use release-20260914-one-button-app-r27 with maintenance HEAD after this gate commit and app source 1bf4504cc.",
+      "last_reviewed_at": "2026-09-14T00:00:00+08:00",
       "acceptance_criteria": [
         {
           "ac_id": "P3-AC1",

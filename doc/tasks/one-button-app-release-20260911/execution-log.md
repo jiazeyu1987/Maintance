@@ -514,3 +514,19 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - RED: r25-local-package-integrity -> FAIL，本地缓存 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260913-one-button-app-r25` 已存在，`manifest.json` 显示 `publishScope=app-release`、`component=intruoyi`，但 `Test-ReleasePackageIntegrity -ExpectedPackageDirectoryName release-20260913-one-button-app-r25` 返回 `preflight-target-state-test.json: undeclared file`；该本地包不是完整不可变 READY 包，不得发布测试服，也不得复用该 tag。
 - ROOT_CAUSE: r25 本地包创建时间早于路线菜单修复提交 `6079138ea`，manifest source commits 仍指向旧应用提交 `ba1a6b718`，并残留未登记部署控制文件；属于旧失败缓存，不是当前 source freeze 的有效制品。
 - NEXT: r25 判废退休；提交本记录后使用新 releaseTag `release-20260913-one-button-app-r26`，source freeze 固定维护仓提交和应用 `6079138ea` 或后续提交，继续生成 without-data/app-release 程序包。仍禁止 with-data、MinIO 数据同步、全量数据库复制、正式服/审查服写入、`mark-tested`、`promote-prod` 和 `promote-backup`。
+
+## r26 retired after stale package deploy attempt
+
+- USER_AUTHORIZATION: 用户继续授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod` 或 `promote-backup`。
+- GREEN: r26-local-and-nas-package-integrity -> PASS，本地 `Test-ReleasePackageIntegrity` 通过，NAS `Backup/ReleasePackage/release-20260913-one-button-app-r26` 存在；manifest 显示 `publishScope=app-release`、`component=intruoyi`、`packageDigest=13e67af60286046b3ba7a8d6cd1b4c766d7dce2cf9c526f91076531efab79564`，且包内无 `database/mysql/minio/files/data/dcc-object-inventory/runtime-data` 目录。
+- RED: deploy-release-r26-stale-app-source -> FAIL，r26 manifest 绑定应用提交 `6079138ea`，缺少后续 `8ec193169` 对 `20260709_mes_rt000006_batch_record_mapping.sql` 的“目标路线不存在即不适用”修复；测试服 required SQL 执行时报 `ERROR 1644 (45000): Missing RT000006 pressure pump route`。
+- SIDE_EFFECT: deploy-release-r26-edhr-probe -> r26 deploy-release 在版本切换前调用 eDHR Object Lock verifier 并写入一个受保护探针对象；该对象不是 MinIO 数据同步，但仍属于无数据程序发布不应产生的对象存储写入副作用。
+- RESULT: r26 未切换测试服版本；release operation lock 已释放为 FAILED。旧 r26 判废不复用；必须使用新 releaseTag 从当前维护/应用提交重新 build-release。
+
+## r27 app-release deploy must not write Object Lock probe
+
+- BDD: app-release 部署不写对象探针 -> Given 标准程序包固定为 `PublishScope=app-release` 且用户要求 without-data / When 执行 `deploy-release` / Then 只校验目标 `EDHR_S3_*` 配置存在和格式，不调用 `Invoke-EdhrStorageRetentionVerifier`，不写 Object Lock 探针对象。
+- RED: `python -X utf8 -m pytest -q scripts/tests/test_release_workflow_preflight.py -k "edhr_storage_probe" --basetemp .tmp-r27-edhr-probe-red` -> FAIL，旧脚本仍在 app-release deploy 路径调用 `Invoke-EdhrStorageRetentionVerifier -BackendRepo $backendRepo`。
+- GREEN: `python -X utf8 -m pytest -q scripts/tests/test_release_workflow_preflight.py -k "edhr_storage_probe or nas_config or tests_and_source_freeze" --basetemp .tmp-r27-edhr-probe-green` -> PASS，3 passed；`publish-int-ruoyi.ps1` PowerShell AST PASS。
+- IMPLEMENTATION: `deploy-release` 保留 `Assert-EdhrProtectedStorageConfig` fail-fast 配置校验，但移除 app-release 路径的写对象 verifier 调用；长期门禁已合并到 `docs/release-build-preflight-lessons.md` 并更新 `docs/experience-index.md` 路由。
+- NEXT: 提交维护仓修复后使用新 releaseTag `release-20260914-one-button-app-r27`，source freeze 固定维护仓提交后 HEAD 与应用仓 `1bf4504cc`，重新生成 without-data/app-release 程序包并发布测试服。

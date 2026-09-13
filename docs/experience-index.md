@@ -73,7 +73,7 @@
 - publish-int-ruoyi NasConfigPath / NAS JSON / runtime-control.local.yaml 误传 / ConvertFrom-Json maintenance：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
 - publish-int-ruoyi sourceRepos ordered dictionary / Get-ReleaseObjectPropertyText / codex.ps1 / empty Git change facts / frontend release-info gitChanges / detached HEAD pre-commit / No branch runtime profile：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-08-02-发布脚本-manifestchangeset-生成门禁`
 - 展厅图片 smoke gate / 远端 MySQL stdout 中文路径 / `infra_file.path` / `HEX(path)` / `EscapeDataString` / `showrooms[].products`：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-07-20-展厅图片-smoke-gate-中文路径解码门禁`
-- 不带数据发布 / code-only / SkipDatabaseSync / SkipMinioSync / manifest 无数据目录验证：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
+- 不带数据发布 / without-data / code-only / app-release / SkipDatabaseSync / SkipMinioSync / manifest 无数据目录验证 / Object Lock 探针 / eDHR protected storage verifier / MinIO 数据同步：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-14-app-release-无数据部署不得写-edhr-object-lock-探针`
 - release-migration dependsOn 缺失 / SQL 元数据依赖不存在 / rollback-migration 混入发布扫描根 / migration policy gate：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
 - DCC 分类 lifecycle_stage / NOT NULL 迁移 / required SQL 空值 / deleted=1 历史归档行：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
 - 测试服远端 MySQL 查询 / ruoyi-vue-pro 业务库 / 容器内 MYSQL_ROOT_PASSWORD / SSH 多层引号：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`

@@ -3562,3 +3562,12 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Implementation update: 应用迁移改为解析当前活跃路线 query/update 菜单，优先 `5726/5727`，未统一旧库兼容 `900121/900122`；目标只读预检验证核心菜单和旧/新路线菜单任一完整组合。
 - Verification update: 应用仓定向 29 PASS、相邻回归 54 PASS、diff-check PASS；提交 `6079138ea 任务: 兼容路线菜单统一后的发布预检`。未执行正式服、审查服、MinIO 同步、全量数据库复制或 `mark-tested/promote-prod/promote-backup`。
 - Result update: r25 本地缓存存在但不是可发布包；完整性复核返回 `preflight-target-state-test.json: undeclared file`，且 manifest source commit 陈旧，未匹配当前应用提交 `6079138ea`。r25 判废，不发布测试服；下一轮改用 `release-20260913-one-button-app-r26`。
+
+## 2026-09-14 one-button app-release 测试服发布续跑
+
+- Request: 用户授权继续 one-button app-release 开发与测试服发布验证，发布包仍固定为 without-data / `PublishScope=app-release`。
+- Command intent: 先复核 r26 本地/NAS 包完整性和测试服运行态，再执行同一 r26 的测试服 deploy-release；发现失败后废弃 r26，补齐无数据部署不得写 Object Lock 探针的长期门禁，后续改用新 tag `release-20260914-one-button-app-r27` 重建。
+- Result update: r26 包完整性和 NAS READY 均通过，但 manifest 绑定旧应用提交 `6079138ea`；测试服 required SQL 阶段失败于 `20260709_mes_rt000006_batch_record_mapping.sql`，错误为 `Missing RT000006 pressure pump route`，版本未切换，release lock 已释放为 FAILED。
+- Implementation update: 维护脚本 `deploy-release` 保留目标 `EDHR_S3_*` 配置校验，但移除 `app-release` 路径的写对象 Object Lock verifier 调用；这避免 without-data 程序发布产生额外对象存储写副作用。
+- Verification update: `test_release_workflow_preflight.py -k edhr_storage_probe` 先 RED 后 GREEN；相邻 `nas_config` 与 `tests_and_source_freeze` 回归合计 3 PASS，`publish-int-ruoyi.ps1` AST PASS。
+- Boundary: 未操作正式服或审查服；未执行 `mark-tested`、`promote-prod`、`promote-backup`；未同步 MinIO 或全量数据库；未记录任何密码/token/私钥。
