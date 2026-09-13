@@ -3578,3 +3578,5 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Boundary: r29 判废不复用；测试服 `.env` 未切换到 r29，operation lock 为 FAILED；正式服/审查服/`mark-tested`/`promote-prod`/`promote-backup` 仍未执行。
 2026-09-14T03:32:00+08:00	one-button-app-release-20260911	RESULT	R30 判废：本地缓存 release-20260914-one-button-app-r30 缺 manifest.json，包完整性校验失败；未发布测试服，未执行正式服/审查服/mark-tested/promote-prod/promote-backup。下一轮使用新 tag release-20260914-one-button-app-r31。
 2026-09-14T03:36:00+08:00	one-button-app-release-20260911	COMMAND_INTENT	启动 R31：维护源 76f1c78c30b6dc1f0072d488a1216c4cefea8210，应用源 9d886766aa67ab0597c07ec9f01926c4a264d218；目标仅测试服 172.30.30.58；发布范围 app-release/without-data；禁止正式服、审查服、mark-tested、promote-prod、promote-backup、MinIO 同步和全量数据库复制。
+2026-09-14T04:00:00+08:00	one-button-app-release-20260911	RESULT	R31 本地 app-release 包完整性通过，但包内 20260718_mes_puhui_schedule_admin_role_visibility.sql 缺少 target preflight 与 900120 父级兼容逻辑；未执行测试服 deploy-release，r31 判废不复用。
+2026-09-14T04:02:00+08:00	one-button-app-release-20260911	VERIFICATION	应用仓修复璞慧排产管理员目标预检：RED 证明 r31 包缺口，GREEN 定向 10 PASS、相邻迁移计划回归 29 PASS、diff-check PASS；提交 ccd0d9a3，下一轮使用 release-20260914-one-button-app-r32。
