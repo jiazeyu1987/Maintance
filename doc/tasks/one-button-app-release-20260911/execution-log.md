@@ -574,3 +574,11 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - RED: pre-deploy-r31-puhui-target-preflight-gap -> FAIL，R31 包内 `20260718_mes_puhui_schedule_admin_role_visibility.sql` 不含 `requiresTargetPreflight=true`、`v_smart_scheduling_parent_id` 或 `NOT IN (0, 5100)`，且包内不存在该迁移 target preflight；继续发布会把已知菜单层级漂移问题推迟到测试服 required SQL 阶段。
 - GREEN: app-puhui-target-preflight-fix -> PASS，应用仓提交 `ccd0d9a3a36d82888e4078a1ec262f251d186f7c` 增加璞慧排产管理员迁移目标只读预检与 `900120.parent_id IN (0,5100)` 兼容；定向 10 PASS，相邻迁移计划回归 29 PASS，diff-check PASS。
 - RESULT: r31 判废不复用，未执行测试服 `deploy-release`，未切换 `.env`，未写正式服/审查服，未执行 `mark-tested`、`promote-prod` 或 `promote-backup`。下一轮必须使用新 releaseTag `release-20260914-one-button-app-r32`，source freeze 固定维护仓提交后 HEAD 与应用仓 `ccd0d9a3`。
+
+## r32 source freeze
+
+- USER_AUTHORIZATION: 用户继续授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod` 或 `promote-backup`。
+- GREEN: experience-preflight-r32 -> PASS，已按 `docs/experience-index.md`、`docs/release-build-preflight-lessons.md`、`docs/release-agent-checklist.md`、`E:\IntRuoyi\docs\server-access.md`、`E:\IntRuoyi\docs\release-backup-restore.md`、`E:\IntRuoyi\docs\worktree-memory.md` 与 `E:\IntRuoyi\docs\powershell-memory.md` 复核 without-data/app-release、目标只读预检、NAS JSON、PowerShell、测试服发布成功判定和禁止事项；正式服/审查服/MinIO 数据同步保持零写入。
+- GREEN: source-freeze-r32 -> PASS，维护 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m` 将使用本段证据提交后的 clean HEAD（基线 `cecdc120fb09f335137d2f7abc2eaa6a42145f88`），应用 worktree `D:\IntRuoyiWorktree\r260911-release-button\a` 为 clean `ccd0d9a3a36d82888e4078a1ec262f251d186f7c`；本地缓存 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260914-one-button-app-r32` 不存在。
+- GREEN: config-preflight-r32 -> PASS，本轮 gitignored `config/runtime-control.local.yaml` 已复制到维护 worktree 并指向本轮应用 backend/frontend、维护 ops 与任务 state-dir；gitignored NAS JSON 已生成且 `server/share/username/password/nasReleaseRoot` 均 presence-check 通过，未输出 secret 值。
+- GREEN: local-regression-r32 -> PASS，维护仓发布门禁/包治理/摘要/target-data/schema/lock 回归 `184 passed`，`publish-int-ruoyi.ps1` PowerShell AST PASS；应用仓璞慧排产与目标只读预检相邻回归 `29 passed`。
