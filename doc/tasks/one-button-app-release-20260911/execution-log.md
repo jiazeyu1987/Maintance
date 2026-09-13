@@ -497,3 +497,12 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - REGRESSION: `python -X utf8 -m pytest -q --tb=short scripts/tests/test_release_package_governance.py scripts/tests/test_app_release_package_governance.py scripts/tests/test_release_build_preflight_cache.py scripts/tests/test_release_schema_rehearsal.py --basetemp .tmp-r24-preflight-pollution-regression` -> PASS，139 tests；`publish-int-ruoyi.ps1` PowerShell AST PASS。
 - CLEANUP: `git clean -fd -- .tmp-r24-preflight-pollution-regression` -> removed task pytest temp dirs；maintenance worktree retains only intended script/test/task-log changes.
 - NEXT: 提交维护仓修复后使用新 releaseTag `release-20260913-one-button-app-r25` 重新生成 `app-release` 包；r24 判废，不发布测试服，不执行正式服、审查服、`mark-tested`、`promote-prod` 或 `promote-backup`。
+
+## r25 app route-menu target preflight gate
+
+- BDD: 活跃路线菜单兼容旧库和统一后库 -> Given `20260709_mes_route_flow_config_unification` 会把旧排产路线菜单 `900121/900122` 迁移为工艺路线下的 `5726/5727` / When `20260629_mes_smart_scheduling_role_scope` 在目标库执行或执行目标只读预检 / Then SQL 必须选择当前活跃的 query/update 菜单，不因旧菜单已删除而阻断，也不得跳过版本化权限迁移。
+- RED: `python -X utf8 -m pytest -q IntRuoyiBackend\script\tests\test_mes_smart_scheduling_role_scope_sql.py IntRuoyiBackend\script\tests\test_release_target_preflight_files.py --basetemp .tmp-pytest-current-dirty-tests` -> FAIL，4 failed；旧迁移硬编码 `900121/900122`，目标只读预检没有验证旧/新路线菜单组合。
+- GREEN: `python -X utf8 -m pytest -q IntRuoyiBackend\script\tests\test_mes_smart_scheduling_role_scope_sql.py IntRuoyiBackend\script\tests\test_release_target_preflight_files.py --basetemp .tmp-pytest-route-menu-green` -> PASS，29 passed。
+- REGRESSION: `python -X utf8 -m pytest -q script\tests\test_mes_smart_scheduling_role_scope_sql.py script\tests\test_release_target_preflight_files.py script\tests\test_mes_route_flow_config_migration_sql.py script\tests\test_release_preflight_plan.py --basetemp ..\.tmp-pytest-route-menu-regression-2` from `IntRuoyiBackend` -> PASS，54 passed。
+- COMMIT: app route-menu target preflight fix -> `6079138ea 任务: 兼容路线菜单统一后的发布预检`。
+- NEXT: 提交本维护仓任务记录后，以 maintenance HEAD 和 application `6079138ea` 作为新 source freeze，使用新 releaseTag `release-20260913-one-button-app-r25` 重新生成 without-data/app-release 程序包；仍禁止 with-data、MinIO 数据同步、正式服、审查服、`mark-tested`、`promote-prod` 和 `promote-backup`。

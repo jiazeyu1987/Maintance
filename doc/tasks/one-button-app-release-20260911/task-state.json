@@ -163,9 +163,10 @@
         "维护仓 release governance 123 tests PASS；NAS staging/full hash/atomic READY 与 app-release tested attestation 已验证。",
         "app orchestrator/authorization targeted Maven 111 tests PASS；build->READY->publish-test->TESTED、双摘要绑定、一次性授权重放拒绝已验证。",
         "C08 maintenance Python 234 tests PASS、C09 Node 6 tests PASS、PowerShell digest/AST PASS；schema-only no-data migration rehearsal 在 Maven 前执行并产出包内证据。",
-        "target readonly preflight coverage closed after app commit 4fb258315: 58/58 checks PASS on test server in READ ONLY transactions; evidence/r15-target-preflight-audit-after-app-4fb258315.json."
+        "target readonly preflight coverage closed after app commit 4fb258315: 58/58 checks PASS on test server in READ ONLY transactions; evidence/r15-target-preflight-audit-after-app-4fb258315.json.",
+        "route menu target preflight compatibility fixed in app commit 6079138ea; 54 adjacent script tests PASS."
       ],
-      "notes": "P3 target readonly preflight coverage gap is closed; r15 remains retired and next build must use a new releaseTag with app source at 4fb258315 or later.",
+      "notes": "P3 target readonly preflight coverage gap is closed; route-menu unified-state compatibility is fixed; r15/r23/r24 remain retired and next build must use a new releaseTag with app source at 6079138ea or later.",
       "last_reviewed_at": "2026-09-13T02:55:30+08:00",
       "acceptance_criteria": [
         {
