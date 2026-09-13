@@ -537,3 +537,12 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - GREEN: r27-local-regression-recheck -> PASS，维护仓聚焦发布门禁 3 passed，包治理/schema/digest 回归 143 passed，`publish-int-ruoyi.ps1` PowerShell AST PASS；应用仓迁移预检 pytest 27 passed，ReleaseWorkflow Maven 合同 14 tests PASS。
 - RED: build-release-r27-interrupted-local-cache -> FAIL，本地缓存 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260914-one-button-app-r27` 已存在并包含 image tar、required-sql、ops-runtime 和 evidence，但缺少根目录 `manifest.json`；`Test-ReleasePackageIntegrity` 返回 `manifest.json: missing manifest`。测试服远端 `/var/lib/docker/intruoyi-releases/release-20260914-one-button-app-r27` 不存在，未发现活动构建进程，判定为重启/中断遗留半成品缓存。
 - RESULT: r27 不是完整 READY 包，不得发布测试服，不得复用该 tag。旧 r27 保留为本地失败证据，下一轮必须使用新 releaseTag `release-20260914-one-button-app-r28`，source freeze 固定维护仓提交后 HEAD 与应用仓 `1bf4504cc`。
+
+## r28 retired: balloon XLSX cleanup target already normalized
+
+- USER_AUTHORIZATION: 用户继续授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod` 或 `promote-backup`。
+- GREEN: build-release-r28 -> PASS，source freeze 为维护仓 `0e60e0d08d984dcb4c1ca5f901300723988e6bb4`、应用仓 `1bf4504cc9e972c0a61c258f338fcd65dcc2f15a`；迁移策略 619 条、target-data preflight 56/56、schema-only 演练、后端 Maven package、前端 `build:test`、Docker build/save、本地 package integrity 和 NAS 原子 READY 均通过；包为 `PublishScope=app-release`，`packageDigest=79891ff068bdd154142eb408c5b55522933b2026165fd3cf78249da80c31f532`，无数据库/MinIO 数据目录。
+- RED: deploy-release-r28-balloon-cleanup-target-mismatch -> FAIL，测试服部署在版本切换前执行 required SQL `20260716_mes_balloon_xlsx_route_00002_invalid_process_cleanup.sql` 时失败：`ERROR 1644 (45000): balloon XLSX route 00002 invalid process cleanup target mismatch`；release lock 已释放为 FAILED，测试服 `.env` 未切换到 r28。
+- ROOT_CAUSE: 测试库当前 `ROUTE-XLSX-00001=23`、`ROUTE-XLSX-00002=26`，总数已满足后续绑定迁移要求的 `49`；`ROUTE-XLSX-00002` sort=26 是合法 `Z2620`，不是旧脚本假设要删除的无效 `B320`。旧 target preflight 只验证弱条件，未在构建前覆盖 `B320/Z2620/49` 目标合同。
+- GREEN: app-balloon-cleanup-fix -> PASS，应用仓提交 `8e6c033c6` 增加 already-normalized no-op 分支和等价 target preflight；本地 cleanup/preflight 测试 11 passed，release migration 回归 40 passed，测试服只读执行新 preflight 返回 `TARGET_PREFLIGHT_PASS:20260716_mes_balloon_xlsx_route_00002_invalid_process_cleanup`。
+- RESULT: r28 判废不复用。下一轮必须使用新 releaseTag `release-20260914-one-button-app-r29`，source freeze 固定维护仓提交后 HEAD 与应用仓 `8e6c033c6`；继续禁止 with-data、MinIO 数据同步、全量数据库复制、正式服、审查服、`mark-tested`、`promote-prod` 和 `promote-backup`。
