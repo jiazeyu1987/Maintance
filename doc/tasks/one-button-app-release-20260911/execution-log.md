@@ -609,3 +609,5 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - USER_AUTHORIZATION: 用户继续授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod` 或 `promote-backup`。
 - GREEN: experience-preflight-r35 -> PASS，已复核 `docs/experience-index.md` 命中的 without-data/app-release、测试服发布、目标只读预检、NAS 原子 READY、PowerShell 编排、服务器访问、release-backup-restore 与 worktree 门禁；本轮继续禁止 with-data、MinIO 数据同步、全量数据库复制、正式服/审查服写入和旧 tag 复用。
 - GREEN: source-freeze-r35-plan -> PASS，维护 worktree 当前 clean `7f1e97f7959a00ef074cb778db6a2429b0926c90`，应用 worktree 当前 clean `c4ba9d3f78c4c8503c9f175c8bde4bf2fc896a03`；本地缓存 `release-20260914-one-button-app-r35` 不存在。实际构建 source freeze 以本段记录提交后的维护仓 clean HEAD 和应用仓 `c4ba9d3f` 为准。
+- RED: build-release-r35-nas-config-yaml -> FAIL，命令误将 `config/runtime-control.local.yaml` 传给 `-NasConfigPath`；脚本在构建前返回 `NAS release config must be UTF-8 JSON`，未进入 SQL 扫描、Maven、Docker、NAS 上传或测试服写入。本轮确认正确 JSON 为 `runtime/runtime-control/nas-release-config/release-package.json`，只做字段存在性检查且未输出凭据。
+- RESULT: r35 判废不复用。下一轮必须使用新 releaseTag `release-20260914-one-button-app-r36`，source freeze 固定维护仓本段证据提交后的 clean HEAD 与应用仓 `c4ba9d3f`。
