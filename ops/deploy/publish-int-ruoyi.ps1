@@ -4263,6 +4263,15 @@ function Invoke-StandardReleaseContractTests {
     Info 'Running frontend contract tests'
     Invoke-CheckedCommand -FilePath 'node' -ArgumentList @((Join-Path $frontendDir 'tests\e2e\runtime-control-one-button-static.spec.cjs'))
     Invoke-CheckedCommand -FilePath 'corepack' -ArgumentList @('pnpm', '--dir', $frontendDir, 'ts:check')
+    Info 'Running application migration static tests'
+    $applicationPytestRoot = Join-Path $resolvedLocalCacheRoot "release-application-test-temp\$packageDirectoryName"
+    $applicationPytestParent = Split-Path -Parent $applicationPytestRoot
+    New-Item -ItemType Directory -Force -Path $applicationPytestParent | Out-Null
+    Invoke-CheckedCommand -FilePath 'python' -ArgumentList @(
+        '-X', 'utf8', '-m', 'pytest', '-q',
+        (Join-Path $backendRepo 'script\tests\test_test_tenant1_all_role_permission_sync_sql.py'),
+        '--basetemp', $applicationPytestRoot
+    )
     Info 'Running release script tests'
     $pytestRoot = Join-Path $resolvedLocalCacheRoot "release-workflow-test-temp\$packageDirectoryName"
     $pytestParent = Split-Path -Parent $pytestRoot

@@ -30,10 +30,15 @@ def test_tests_and_source_freeze_run_before_expensive_builds() -> None:
     tests = _function(source, "Invoke-StandardReleaseContractTests", "Get-ReleaseSchemaDigest")
 
     assert tests.index("backend contract tests") < tests.index("frontend contract tests")
-    assert tests.index("frontend contract tests") < tests.index("release script tests")
+    assert tests.index("frontend contract tests") < tests.index("application migration static tests")
+    assert tests.index("application migration static tests") < tests.index("release script tests")
     assert "-Dsurefire.failIfNoSpecifiedTests=false" in tests
-    parent_create = tests.index("New-Item -ItemType Directory -Force -Path $pytestParent")
-    pytest_invoke = tests.index("'-X', 'utf8', '-m', 'pytest'")
+    application_parent_create = tests.index("New-Item -ItemType Directory -Force -Path $applicationPytestParent")
+    application_pytest = tests.index("'-X', 'utf8', '-m', 'pytest'", tests.index("application migration static tests"))
+    assert application_parent_create < application_pytest
+    script_test_start = tests.index("release script tests")
+    parent_create = tests.index("New-Item -ItemType Directory -Force -Path $pytestParent", script_test_start)
+    pytest_invoke = tests.index("'-X', 'utf8', '-m', 'pytest'", script_test_start)
     assert parent_create < pytest_invoke
 
     first_freeze = source.index("Assert-ReleaseSourceFreeze -VerificationPoint 'before-build'")
@@ -111,3 +116,12 @@ def test_app_release_workflow_never_writes_edhr_storage_probe() -> None:
     runtime_validation = source.split("$mySqlRootPassword = ''", 1)[0]
     assert call not in runtime_validation
     assert "Assert-EdhrProtectedStorageConfig -Context 'target publish environment'" in runtime_validation
+
+
+def test_application_sql_static_regressions_are_mandatory_build_gates() -> None:
+    source = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    tests = _function(source, "Invoke-StandardReleaseContractTests", "Get-ReleaseSchemaDigest")
+
+    assert "application migration static tests" in tests
+    assert "test_test_tenant1_all_role_permission_sync_sql.py" in tests
+    assert "Join-Path $backendRepo 'script\\tests\\test_test_tenant1_all_role_permission_sync_sql.py'" in tests
