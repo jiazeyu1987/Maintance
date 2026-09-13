@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r35 均已判废且不得复用；r32 包构建和 NAS READY 成功，但测试服 required SQL 在版本切换前失败于 `20260807_test_tenant1_all_role_permission_sync.sql` 的源角色权限计数 1676/1678 漂移。应用仓已提交 `c4ba9d3f` 修正计数，维护仓已提交 `b189ef1` 将该应用 SQL 静态测试纳入 build-release 前门禁。r33/r34 本地缓存虽验包完整，但 manifest 均绑定旧应用提交 `ccd0d9a3`，不含 `c4ba9d3f` 修复，已判废；r35 在构建前 fail-fast 于错误的 `NasConfigPath` YAML 参数，未生成本地包。下一步使用新 releaseTag `release-20260914-one-button-app-r36` 从维护仓本段证据提交后的 clean HEAD 和应用仓 `c4ba9d3f` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r36 均已判废且不得复用；r32 包构建和 NAS READY 成功，但测试服 required SQL 在版本切换前失败于 `20260807_test_tenant1_all_role_permission_sync.sql` 的源角色权限计数 1676/1678 漂移。应用仓已提交 `c4ba9d3f` 修正计数，维护仓已提交 `b189ef1` 将该应用 SQL 静态测试纳入 build-release 前门禁。r33/r34 本地缓存虽验包完整，但 manifest 均绑定旧应用提交 `ccd0d9a3`，不含 `c4ba9d3f` 修复，已判废；r35/r36 均在构建前 fail-fast 于直接脚本参数问题，未生成本地包。下一步使用新 releaseTag `release-20260914-one-button-app-r37` 从维护仓本段证据提交后的 clean HEAD 和应用仓 `c4ba9d3f` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
 
 ## Verification Evidence
 
@@ -69,10 +69,11 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 - r33 local cache：本地包完整性通过，但 manifest 绑定维护仓 `cecdc120` 与应用仓 `ccd0d9a3`，不是当前已修复的维护仓 `67ee44f` / 应用仓 `c4ba9d3f`，因此判废不发布。
 - r34 local cache：本地包完整性未作为可发布依据；manifest 同样绑定维护仓 `cecdc120` 与应用仓 `ccd0d9a3`，不是当前已修复来源，因此判废不发布。
 - r35 build command：构建前参数门禁失败，原因是把 `config/runtime-control.local.yaml` 误传给 `-NasConfigPath`；脚本要求 UTF-8 JSON，未进入 Maven、Docker、NAS 上传或测试服写入，r35 判废。
+- r36 build command：构建前参数门禁失败，原因是直接脚本未显式传入 `BackendRepoRoot`/`FrontendRepoRoot`，导致命令包装器进入错误/缺失工作目录；未进入 Maven、Docker、NAS 上传或测试服写入，r36 判废。
 
 ## Current Phase
 
-- P3 正在执行：r23-r35 已判废；R32 已证明包构建链路可到 NAS READY，但部署在 required SQL 前置执行阶段失败于测试租户角色权限同步静态计数漂移。应用仓当前可发布提交为 `c4ba9d3f`，维护仓提交本轮 R35 判废记录后作为新 source freeze。下一轮使用新 releaseTag `release-20260914-one-button-app-r36` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23-r36 已判废；R32 已证明包构建链路可到 NAS READY，但部署在 required SQL 前置执行阶段失败于测试租户角色权限同步静态计数漂移。应用仓当前可发布提交为 `c4ba9d3f`，维护仓提交本轮 R36 判废记录后作为新 source freeze。下一轮使用新 releaseTag `release-20260914-one-button-app-r37` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 

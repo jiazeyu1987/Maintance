@@ -611,3 +611,13 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - GREEN: source-freeze-r35-plan -> PASS，维护 worktree 当前 clean `7f1e97f7959a00ef074cb778db6a2429b0926c90`，应用 worktree 当前 clean `c4ba9d3f78c4c8503c9f175c8bde4bf2fc896a03`；本地缓存 `release-20260914-one-button-app-r35` 不存在。实际构建 source freeze 以本段记录提交后的维护仓 clean HEAD 和应用仓 `c4ba9d3f` 为准。
 - RED: build-release-r35-nas-config-yaml -> FAIL，命令误将 `config/runtime-control.local.yaml` 传给 `-NasConfigPath`；脚本在构建前返回 `NAS release config must be UTF-8 JSON`，未进入 SQL 扫描、Maven、Docker、NAS 上传或测试服写入。本轮确认正确 JSON 为 `runtime/runtime-control/nas-release-config/release-package.json`，只做字段存在性检查且未输出凭据。
 - RESULT: r35 判废不复用。下一轮必须使用新 releaseTag `release-20260914-one-button-app-r36`，source freeze 固定维护仓本段证据提交后的 clean HEAD 与应用仓 `c4ba9d3f`。
+
+## r36 retired: direct script source root parameters missing
+
+- RED: build-release-r36-source-root-parameters -> FAIL，使用正确 NAS JSON 后脚本仍在构建前失败于 `Start-Process` 工作目录不存在；直接脚本命令未显式传入 `BackendRepoRoot`/`FrontendRepoRoot`，导致默认源码根推断不符合本任务两个隔离 worktree 的合同。未进入 Maven、Docker、NAS 上传或测试服写入，本地 `release-20260914-one-button-app-r36` 目录不存在。
+- RESULT: r36 判废不复用。下一轮必须使用新 releaseTag `release-20260914-one-button-app-r37`，并显式传入 `BackendRepoRoot=D:\IntRuoyiWorktree\r260911-release-button\a\IntRuoyiBackend`、`FrontendRepoRoot=D:\IntRuoyiWorktree\r260911-release-button\a\IntRuoyiFronted`、正确 NAS JSON 与 backend runtime base 参数。
+
+## r37 source freeze
+
+- USER_AUTHORIZATION: 用户继续授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod` 或 `promote-backup`。
+- GREEN: source-freeze-r37-plan -> PASS，维护 worktree 当前 clean `a765588e6ec5cb13ba3429e195431053d06c5bcb`，应用 worktree 当前 clean `c4ba9d3f78c4c8503c9f175c8bde4bf2fc896a03`；本地缓存 `release-20260914-one-button-app-r37` 不存在；后端/前端工程、backend runtime base tar 和 NAS JSON 均存在。实际构建 source freeze 以本段记录提交后的维护仓 clean HEAD 和应用仓 `c4ba9d3f` 为准。

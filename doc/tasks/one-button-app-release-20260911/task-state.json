@@ -171,10 +171,11 @@
         "r29 deploy-release retired: app-release build and NAS READY passed, but test required SQL 20260717_mes_balloon_excel_device_workstation_binding failed before version switch because the migration hardcoded 83 workstation-machine seeds while the target has 44 current seeds; app commit 9d886766a makes the count target-derived and strengthens target preflight, 11+37 tests PASS plus live readonly preflight PASS.",
         "r33 local package integrity passed but source freeze was stale at maintenance cecdc120 and app ccd0d9a3; it lacks app commit c4ba9d3f and is retired without deploy.",
         "r34 local package manifest was also stale at maintenance cecdc120 and app ccd0d9a3; it is retired without deploy.",
-        "r35 failed fast before build because NasConfigPath was runtime-control.local.yaml instead of UTF-8 NAS JSON; no Maven, Docker, NAS upload or server write started. Next build tag is release-20260914-one-button-app-r36."
+        "r35 failed fast before build because NasConfigPath was runtime-control.local.yaml instead of UTF-8 NAS JSON; no Maven, Docker, NAS upload or server write started.",
+        "r36 failed fast before build because direct script invocation omitted BackendRepoRoot/FrontendRepoRoot and entered an invalid default working directory; no package, NAS upload or server write started. Next build tag is release-20260914-one-button-app-r37."
       ],
-      "notes": "P3 target readonly preflight coverage gap is closed; route-menu unified-state compatibility is fixed; r15/r23/r24/r25/r26/r27/r28/r29/r30/r31/r32/r33/r34/r35 remain retired. R31 lacked Puhui target preflight, R32 failed the test-tenant role-permission count, R33/R34 are stale local caches bound to old app source, and R35 failed before build on wrong NAS config format. Next build must use release-20260914-one-button-app-r36 with maintenance HEAD after this evidence commit and app source c4ba9d3f.",
-      "last_reviewed_at": "2026-09-14T06:38:00+08:00",
+      "notes": "P3 target readonly preflight coverage gap is closed; route-menu unified-state compatibility is fixed; r15/r23/r24/r25/r26/r27/r28/r29/r30/r31/r32/r33/r34/r35/r36 remain retired. R31 lacked Puhui target preflight, R32 failed the test-tenant role-permission count, R33/R34 are stale local caches bound to old app source, and R35/R36 failed before build on direct invocation parameter issues. Next build must use release-20260914-one-button-app-r37 with maintenance HEAD after this evidence commit and app source c4ba9d3f.",
+      "last_reviewed_at": "2026-09-14T06:47:00+08:00",
       "acceptance_criteria": [
         {
           "ac_id": "P3-AC1",
@@ -356,7 +357,7 @@
     "test_loops": 0
   },
   "created_at": "2026-09-11T09:20:03",
-  "updated_at": "2026-09-14T06:38:00+08:00",
+  "updated_at": "2026-09-14T06:47:00+08:00",
   "branch": "codex/one-button-app-release-20260911",
   "baseline_revision": "eaaa47ac320dd197dba646d6870fed0cb7d2534c",
   "workspace_root": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260911-release-button\\m",
