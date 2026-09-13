@@ -3577,3 +3577,4 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Verification update: RED 复现旧 SQL 和 preflight 缺口；修复后 `test_mes_balloon_excel_device_workstation_binding_sql.py` + `test_release_target_preflight_files.py` 定向 11 PASS，相邻回归 37 PASS，测试服只读 preflight 返回 PASS；应用提交 `9d886766a 任务: 修复球囊Excel设备绑定发布预检`。
 - Boundary: r29 判废不复用；测试服 `.env` 未切换到 r29，operation lock 为 FAILED；正式服/审查服/`mark-tested`/`promote-prod`/`promote-backup` 仍未执行。
 2026-09-14T03:32:00+08:00	one-button-app-release-20260911	RESULT	R30 判废：本地缓存 release-20260914-one-button-app-r30 缺 manifest.json，包完整性校验失败；未发布测试服，未执行正式服/审查服/mark-tested/promote-prod/promote-backup。下一轮使用新 tag release-20260914-one-button-app-r31。
+2026-09-14T03:36:00+08:00	one-button-app-release-20260911	COMMAND_INTENT	启动 R31：维护源 76f1c78c30b6dc1f0072d488a1216c4cefea8210，应用源 9d886766aa67ab0597c07ec9f01926c4a264d218；目标仅测试服 172.30.30.58；发布范围 app-release/without-data；禁止正式服、审查服、mark-tested、promote-prod、promote-backup、MinIO 同步和全量数据库复制。

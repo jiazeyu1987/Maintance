@@ -564,3 +564,9 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - GREEN: r30-source-continuation-audit -> PASS，维护 worktree 与应用 worktree 均为任务分支且工作区 clean；本轮没有复用主工作区脏改动。
 - RED: build-release-r30-interrupted-local-cache -> FAIL，本地缓存 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260914-one-button-app-r30` 已存在并包含 `docker-build-context/`、`evidence/`、`required-sql/`，但缺少根目录 `manifest.json`；`Test-ReleasePackageIntegrity -ExpectedPackageDirectoryName release-20260914-one-button-app-r30` 返回 `manifest.json: missing manifest`。
 - RESULT: r30 不是完整 READY 包，不得发布测试服，不得复用该 tag。旧 r30 保留为本地失败证据，下一轮必须使用新 releaseTag `release-20260914-one-button-app-r31`，source freeze 固定维护仓提交后 HEAD 与应用仓 `9d886766a`；继续禁止 with-data、MinIO 数据同步、全量数据库复制、正式服、审查服、`mark-tested`、`promote-prod` 和 `promote-backup`。
+
+## r31 source freeze
+
+- USER_AUTHORIZATION: 用户继续授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod` 或 `promote-backup`。
+- GREEN: experience-preflight-r31 -> PASS，已按 `docs/experience-index.md`、`E:\IntRuoyi\docs\server-access.md` 和 `E:\IntRuoyi\docs\release-backup-restore.md` 复核测试服、without-data/app-release、worktree、NAS JSON、PowerShell、发布成功判定和禁止事项；正式服/审查服保持零写入。
+- SOURCE_FREEZE_PLAN: maintenance 将使用本段证据提交后的 clean HEAD（基线 `76f1c78c30b6dc1f0072d488a1216c4cefea8210`），application 使用 `9d886766aa67ab0597c07ec9f01926c4a264d218`；两个任务 worktree 当前均 clean。计划执行新 releaseTag `release-20260914-one-button-app-r31`，`Component=intruoyi`，`PublishScope=app-release`，显式 `SkipDatabaseSync/SkipMinioSync`；成功后仅执行同 tag 测试服 `deploy-release`。
