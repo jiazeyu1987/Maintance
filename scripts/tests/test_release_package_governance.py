@@ -231,10 +231,30 @@ def test_build_release_long_running_package_steps_are_observable() -> None:
 
     assert "Invoke-ReleaseStage -Name 'release manifest generation'" in script
     assert "Invoke-ReleaseStage -Name 'release package integrity verification'" in script
+    assert "Invoke-ReleaseStage -Name 'release manifest validation'" in script
     assert "Invoke-ReleaseStage -Name 'NAS release package upload and verification'" in script
     assert "Copy-ReleaseDirectoryTree -SourceDirectory $releaseDir -DestinationDirectory $targetPath" in script
     assert "Release directory copy summary:" in script
     assert "Release package size summary:" in script
+
+
+def test_build_release_manifest_validation_is_hard_gate_before_nas_upload() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+
+    assert "ReleaseManifestValidator.psm1" in script
+    assert "function Invoke-ReleaseManifestValidationGate" in script
+    helper_start = script.index("function Invoke-ReleaseManifestValidationGate")
+    helper_end = script.index("function Write-ReleaseManifest", helper_start)
+    helper = script[helper_start:helper_end]
+    assert "Invoke-ReleaseManifestValidation -PackagePath $PackagePath -Mode 'report-only'" in helper
+    assert "$reportPath = Join-Path $planRoot 'manifest-validation-result.json'" in helper
+    assert "Release manifest validation failed" in helper
+    assert "Join-Path $PackagePath 'manifest-validation-result.json'" not in helper
+
+    integrity = script.index("Invoke-ReleaseStage -Name 'release package integrity verification'")
+    validation = script.index("Invoke-ReleaseStage -Name 'release manifest validation'")
+    nas = script.index("Invoke-ReleaseStage -Name 'NAS release package upload and verification'")
+    assert integrity < validation < nas
 
 
 def test_manifest_entries_are_reused_for_build_integrity_to_avoid_extra_scan() -> None:

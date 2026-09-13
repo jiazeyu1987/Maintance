@@ -94,6 +94,7 @@ if (Get-Variable -Name PSNativeCommandUseErrorActionPreference -ErrorAction Sile
 $PSNativeCommandUseErrorActionPreference = $false
 }
 Import-Module -Force (Join-Path $PSScriptRoot '..\release\lib\ReleasePackageGovernance.psm1')
+Import-Module -Force (Join-Path $PSScriptRoot '..\release\lib\ReleaseManifestValidator.psm1')
 $script:ReleaseOperationLockHeld = $false
 $script:ReleaseOperationLockReleasing = $false
 $script:BuildReleaseRuntimeRestartGuardCreated = $false
@@ -4650,6 +4651,26 @@ function Write-AuthoritativeReleaseManifest {
     [System.IO.File]::WriteAllText((Join-Path $releaseDir 'manifest.json'), $manifestJson, [System.Text.UTF8Encoding]::new($false))
 }
 
+function Invoke-ReleaseManifestValidationGate {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$PackagePath
+    )
+
+    $planRoot = Join-Path $localTempRoot "build-preflight-$packageDirectoryName"
+    if (-not (Test-Path -LiteralPath $planRoot -PathType Container)) {
+        New-Item -ItemType Directory -Force -Path $planRoot | Out-Null
+    }
+    $reportPath = Join-Path $planRoot 'manifest-validation-result.json'
+    $result = Invoke-ReleaseManifestValidation -PackagePath $PackagePath -Mode 'report-only'
+    $resultJson = ($result | ConvertTo-Json -Depth 20)
+    [System.IO.File]::WriteAllText($reportPath, $resultJson + [System.Environment]::NewLine, [System.Text.UTF8Encoding]::new($false))
+    if ($result.status -eq 'failed') {
+        Fail "Release manifest validation failed: $($result.code). Report: $reportPath"
+    }
+    Info "Release manifest validation passed: $reportPath"
+}
+
 function Write-ReleaseManifest {
     param(
         [Parameter(Mandatory = $true)]
@@ -6399,6 +6420,10 @@ if ($smartReleaseReportOnlyEnabled -and $Mode -eq 'build-release') {
 Invoke-ReleaseStage -Name 'release package integrity verification' -ScriptBlock {
     $releaseManifestArtifacts = Get-ReleasePackageArtifactCache
     $script:buildPackageIntegrity = Test-ReleasePackageIntegrity -PackagePath $releaseDir -ExpectedReleaseTag $ReleaseTag -PreverifiedArtifacts $releaseManifestArtifacts
+}
+
+Invoke-ReleaseStage -Name 'release manifest validation' -ScriptBlock {
+    Invoke-ReleaseManifestValidationGate -PackagePath $releaseDir
 }
 
 if ($Mode -eq 'build-release') {

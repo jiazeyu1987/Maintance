@@ -71,6 +71,7 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 - r35 build command：构建前参数门禁失败，原因是把 `config/runtime-control.local.yaml` 误传给 `-NasConfigPath`；脚本要求 UTF-8 JSON，未进入 Maven、Docker、NAS 上传或测试服写入，r35 判废。
 - r36 build command：构建前参数门禁失败，原因是直接脚本未显式传入 `BackendRepoRoot`/`FrontendRepoRoot`，导致命令包装器进入错误/缺失工作目录；未进入 Maven、Docker、NAS 上传或测试服写入，r36 判废。
 - r37 manifest validation：本地包生成后被 `validate-release-manifest.ps1` 阻断，包内 `evidence/target-data-preflight.json` 携带测试服 IP，`ops-runtime/config/*.json` 与 `script/deploy/manage-int-ruoyi-remote-root-disk.ps1` 携带目标 IP 或 secret-like 示例；新增 RED/GREEN 测试后，target preflight 证据改为构建临时证据，ops-runtime 包不再携带 target-bound config 或远程磁盘脚本；相邻回归 151 PASS，PowerShell AST PASS。
+- R38 前置 hard gate：`ReleaseManifestValidator.psm1` 已接入 `publish-int-ruoyi.ps1` 的 build-release 主链路，执行顺序固定为 package integrity -> manifest validation -> NAS upload；新增合同先 RED 后 GREEN，发布 workflow/app-release/package governance 回归 97 PASS。manifest validation 报告写入构建临时目录，不进入不可变包。
 
 ## Current Phase
 
