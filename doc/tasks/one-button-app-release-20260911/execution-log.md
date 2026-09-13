@@ -591,3 +591,10 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - RED: `python -X utf8 -m pytest -q scripts/tests/test_release_workflow_preflight.py --basetemp .tmp-r32-app-sql-gate-red` -> FAIL，证明维护仓 `Invoke-StandardReleaseContractTests` 旧逻辑没有在 build-release 前运行应用 SQL 静态迁移测试。
 - GREEN: maintenance-app-sql-static-gate -> PASS，维护仓提交 `b189ef17cd070896e529472e0b29813e18386a8d` 将 `test_test_tenant1_all_role_permission_sync_sql.py` 纳入 `Invoke-StandardReleaseContractTests`，并确认该门禁位于 Maven/frontend build/Docker 之前；维护脚本回归 `8 passed`，PowerShell AST PASS。
 - RESULT: r32 判废不复用。下一轮必须使用新 releaseTag `release-20260914-one-button-app-r33`，source freeze 固定维护仓本段证据提交后的 clean HEAD 与应用仓 `c4ba9d3f`；继续禁止 with-data、MinIO 数据同步、全量数据库复制、正式服、审查服、`mark-tested`、`promote-prod` 和 `promote-backup`。
+
+## r33 retired: stale local cache after restart
+
+- USER_AUTHORIZATION: 用户继续并授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod` 或 `promote-backup`。
+- GREEN: source-continuation-r33 -> PASS，维护 worktree 当前为 clean `67ee44f3e8998e6f7698bc731881129d21bb264f`，应用 worktree 当前为 clean `c4ba9d3f78c4c8503c9f175c8bde4bf2fc896a03`；原主工作区保持不触碰。
+- RED: r33-local-cache-source-mismatch -> FAIL，本地缓存 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260914-one-button-app-r33` 虽通过 `Test-ReleasePackageIntegrity`，但 `manifest.json` 绑定维护仓 `cecdc120fb09f335137d2f7abc2eaa6a42145f88` 与应用仓 `ccd0d9a3a36d82888e4078a1ec262f251d186f7c`，缺少后续 `c4ba9d3f` 测试租户权限同步计数修复。
+- RESULT: r33 判废不复用，未执行测试服 `deploy-release`，未切换 `.env`，未写正式服/审查服，未执行 `mark-tested`、`promote-prod` 或 `promote-backup`。下一轮必须使用新 releaseTag `release-20260914-one-button-app-r34`，source freeze 固定维护仓本段证据提交后的 clean HEAD 与应用仓 `c4ba9d3f`。
