@@ -635,3 +635,9 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - REGRESSION: `python -X utf8 -m pytest -q --tb=short --basetemp .tmp-r37-package-regression scripts/tests/test_release_package_governance.py scripts/tests/test_app_release_package_governance.py scripts/tests/test_release_sql_preflight_gate.py scripts/tests/test_release_workflow_preflight.py` -> PASS，151 passed。
 - GREEN: publish-script-ast-r37 -> PASS，`[System.Management.Automation.Language.Parser]::ParseFile(... publish-int-ruoyi.ps1 ...)` 无错误。
 - RESULT: r37 判废不复用；其本地包未发布测试服、未切换 `.env`、未执行 `mark-tested`、`promote-prod` 或 `promote-backup`。下一轮必须使用新 releaseTag `release-20260914-one-button-app-r38`，source freeze 固定维护仓本段证据提交后的 clean HEAD 与应用仓 `c4ba9d3f`，继续禁止 with-data、全量数据库、MinIO 数据同步和正式服写入。
+
+## r38 source freeze
+
+- USER_AUTHORIZATION: 用户继续并明确授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod` 或 `promote-backup`。
+- GREEN: experience-preflight-r38 -> PASS，已按 `docs/experience-index.md` 命中 without-data/app-release、目标只读预检、manifest forbidden scan、NAS JSON、PowerShell、测试服发布、server-access、release-backup-restore 与 worktree 门禁；R37 已判废且不得复用，下一轮必须新 tag。
+- GREEN: source-freeze-r38-plan -> PASS，维护 worktree 当前 clean `16d15ee01676cd18cdb13d304f31d0689c798859`，应用 worktree当前 clean `c4ba9d3f78c4c8503c9f175c8bde4bf2fc896a03`；本地缓存 `release-20260914-one-button-app-r38` 不存在；backend runtime base tar 与 SHA256 已按配置精确路径校验。实际构建 source freeze 以本段记录提交后的维护仓 clean HEAD 和应用仓 `c4ba9d3f` 为准。
