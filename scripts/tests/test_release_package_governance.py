@@ -532,8 +532,12 @@ def test_deploy_release_control_files_do_not_pollute_local_package_cache() -> No
     assert '$remoteEnvNext = "$RemoteAppDir/.env.next"' in script
     assert "$remoteEnvLocal = Join-Path $deployControlLocalRoot '.env'" in script
     assert "$postImportSqlLocal = Join-Path $deployControlLocalRoot 'post-import.sql'" in script
+    assert "$preflightPlanPath = Join-Path $deployControlLocalRoot 'preflight-plan.json'" in script
+    assert '$targetStatePath = Join-Path $deployControlLocalRoot "preflight-target-state-$Environment.json"' in script
     assert "$remoteEnvLocal = Join-Path $releaseDir '.env'" not in script
     assert "$postImportSqlLocal = Join-Path $releaseDir 'post-import.sql'" not in script
+    assert "$preflightPlanPath = Join-Path $releaseDir 'preflight-plan.json'" not in script
+    assert '$targetStatePath = Join-Path $releaseDir "preflight-target-state-$Environment.json"' not in script
 
 
 def test_build_release_declares_ops_runtime_before_manifest_integrity() -> None:

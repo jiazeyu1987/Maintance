@@ -5195,9 +5195,9 @@ function Get-ReleasePackageDatabaseSqlScripts {
 }
 
 function Read-ReleasePreflightPlan {
-    $preflightPlanPath = Join-Path $releaseDir 'preflight-plan.json'
+    $preflightPlanPath = Join-Path $deployControlLocalRoot 'preflight-plan.json'
     if (-not (Test-Path -LiteralPath $preflightPlanPath -PathType Leaf)) {
-        Fail "preflight-plan.json missing in release package; run preflight-release before deploy-release: $preflightPlanPath"
+        Fail "preflight-plan.json missing in deploy control directory; generate target-bound preflight plan before deploy-release: $preflightPlanPath"
     }
     try {
         $plan = [System.IO.File]::ReadAllText($preflightPlanPath, [System.Text.UTF8Encoding]::new($false)) | ConvertFrom-Json
@@ -5224,8 +5224,8 @@ function Read-ReleasePreflightPlan {
 
 function Write-ReleasePreflightPlan {
     $manifestPath = Join-Path $releaseDir 'manifest.json'
-    $targetStatePath = Join-Path $releaseDir "preflight-target-state-$Environment.json"
-    $preflightPlanPath = Join-Path $releaseDir 'preflight-plan.json'
+    $targetStatePath = Join-Path $deployControlLocalRoot "preflight-target-state-$Environment.json"
+    $preflightPlanPath = Join-Path $deployControlLocalRoot 'preflight-plan.json'
     $preflightScriptPath = Join-Path $backendRepo 'script\release\release_preflight_plan.py'
     if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
         Fail "manifest.json missing in release package for preflight: $manifestPath"

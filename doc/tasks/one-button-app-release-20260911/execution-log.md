@@ -485,3 +485,15 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - COMMIT: app preflight scope fix -> `1fbf293cf 任务: 接受app-release迁移预检`。
 - CLEANUP: `git -C D:\IntRuoyiWorktree\r260911-release-button\a clean -fd -- .tmp-pytest-one-button-app-release .tmp-pytest-one-button-app-release-red .tmp-pytest-one-button-app-release-green` -> removed task pytest temp dirs；app worktree status clean。
 - NEXT: 提交本维护仓任务记录后，以新 maintenance HEAD 与 application `1fbf293cf` 作为 r24 source freeze，继续生成 without-data/app-release 程序包；仍禁止 with-data、MinIO 数据同步、正式服、审查服、`mark-tested`、`promote-prod` 和 `promote-backup`。
+
+## r24 deploy-control pollution gate: preflight plan must stay outside immutable package
+
+- SOURCE_FREEZE_INPUT: maintenance `f52a13e`，application `1fbf293cf`；两个任务 worktree 均 clean。r24 本地目录 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260913-one-button-app-r24` 已存在且含 `manifest.json`，`publishScope=app-release`，`packageDigest=a9d1d37cd3ba0acfe5a321f9f1fa1c32a6b400f6352e4301c760d6e7629f86ab`，不含 database/mysql/minio/files/data/dcc-object-inventory/runtime-data 目录。
+- RED: package-integrity-r24-preflight-plan -> FAIL，本地 `Test-ReleasePackageIntegrity -PackagePath E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260913-one-button-app-r24 -ExpectedPackageDirectoryName release-20260913-one-button-app-r24` 返回 `preflight-plan.json: undeclared file`。该文件和 `preflight-target-state-test.json` 是部署期目标绑定控制文件，不属于已登记不可变发布包；r24 判废，不发布测试服，不复用该 tag。
+- ROOT_CAUSE: `Write-ReleasePreflightPlan` 在 `deploy-release` 阶段把目标账本和 preflight plan 写入 `$releaseDir`，发生在 `manifest.json` 与 `packageDigest` 生成之后，等价于部署期修改发布包根；这违反“同一不可变包”合同。
+- BDD: 部署控制文件不污染不可变包 -> Given READY app-release 包已完成 manifest/packageDigest / When deploy-release 生成目标绑定 `preflight-plan.json` 和 `preflight-target-state-<env>.json` / Then 两个文件必须写入 `.deploy-control-*` 并作为部署控制上传，不允许写回 `$releaseDir`。
+- RED: `python -X utf8 -m pytest -q scripts/tests/test_release_package_governance.py -k "deploy_release_control_files_do_not_pollute_local_package_cache" --basetemp .tmp-r24-preflight-pollution-red` -> FAIL，旧脚本仍把 preflight plan 写入 release package。
+- GREEN: 同一目标用例 -> PASS，1 test；`Read-ReleasePreflightPlan` 与 `Write-ReleasePreflightPlan` 改为读写 `$deployControlLocalRoot`。
+- REGRESSION: `python -X utf8 -m pytest -q --tb=short scripts/tests/test_release_package_governance.py scripts/tests/test_app_release_package_governance.py scripts/tests/test_release_build_preflight_cache.py scripts/tests/test_release_schema_rehearsal.py --basetemp .tmp-r24-preflight-pollution-regression` -> PASS，139 tests；`publish-int-ruoyi.ps1` PowerShell AST PASS。
+- CLEANUP: `git clean -fd -- .tmp-r24-preflight-pollution-regression` -> removed task pytest temp dirs；maintenance worktree retains only intended script/test/task-log changes.
+- NEXT: 提交维护仓修复后使用新 releaseTag `release-20260913-one-button-app-r25` 重新生成 `app-release` 包；r24 判废，不发布测试服，不执行正式服、审查服、`mark-tested`、`promote-prod` 或 `promote-backup`。

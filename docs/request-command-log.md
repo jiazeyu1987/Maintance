@@ -3555,3 +3555,6 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Implementation update: 维护脚本拆分 `New-ReleaseOpsRuntimePackage` 与 `Copy-ReleaseOpsRuntimePackage`，构建期把 `ops-runtime` 纳入 manifest/packageDigest，部署期只读取并上传包内文件；缺失或包含 `backup-ops.secrets.json` 直接失败。
 - Verification update: `test_release_package_governance.py -k ops_runtime` 先 RED；修复后定向 4 PASS，宽回归 139 PASS，PowerShell AST PASS。未执行测试服/正式服写入，未记录任何密码/token/私钥。
 - Result update: r24 前置补齐应用仓 `release_preflight_plan.py` 的 `app-release` scope 支持；RED 证明旧 allow-list 拒绝 `app-release`，GREEN 为 `test_release_preflight_plan.py` 19 passed，应用提交 `1fbf293cf 任务: 接受app-release迁移预检`。下一轮 source freeze 必须使用该应用提交或更新提交。
+- Result update: r24 本地包完整性复核失败，`preflight-plan.json` / `preflight-target-state-test.json` 是部署期目标绑定文件，却被写回 release package 根目录且未登记到 manifest；r24 判废，不发布测试服。
+- Implementation update: `Read-ReleasePreflightPlan` 与 `Write-ReleasePreflightPlan` 改为读写 `.deploy-control-*`，发布包根继续保持构建期 manifest/packageDigest 后不可变。
+- Verification update: `test_release_package_governance.py -k deploy_release_control_files_do_not_pollute_local_package_cache` 先 RED 后 GREEN；相邻回归 139 PASS，`publish-int-ruoyi.ps1` AST PASS。未执行测试服/正式服写入，未记录任何密码/token/私钥。
