@@ -68,7 +68,7 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 
 ## Current Phase
 
-- P3 正在执行：r23/r24/r25/r26/r27/r28/r29 已判废；应用仓当前可发布提交为 `9d886766a`，维护仓提交本轮 R29 失败记录后作为新 source freeze。下一轮使用新 releaseTag `release-20260914-one-button-app-r30` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23/r24/r25/r26/r27/r28/r29/r30 已判废；应用仓当前可发布提交为 `9d886766a`，维护仓提交本轮 R30 失败记录后作为新 source freeze。下一轮使用新 releaseTag `release-20260914-one-button-app-r31` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 

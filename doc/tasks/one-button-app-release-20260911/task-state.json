@@ -170,7 +170,7 @@
         "r28 deploy-release retired: app-release build and NAS READY passed, but test required SQL 20260716_mes_balloon_xlsx_route_00002_invalid_process_cleanup failed before version switch because target route data is already normalized at 49 processes; app commit 8e6c033c6 adds no-op and strict target preflight, 11+40 tests PASS.",
         "r29 deploy-release retired: app-release build and NAS READY passed, but test required SQL 20260717_mes_balloon_excel_device_workstation_binding failed before version switch because the migration hardcoded 83 workstation-machine seeds while the target has 44 current seeds; app commit 9d886766a makes the count target-derived and strengthens target preflight, 11+37 tests PASS plus live readonly preflight PASS."
       ],
-      "notes": "P3 target readonly preflight coverage gap is closed; route-menu unified-state compatibility is fixed; r15/r23/r24/r25/r26/r27/r28/r29 remain retired. Next build must use release-20260914-one-button-app-r30 with maintenance HEAD after this evidence commit and app source 9d886766a.",
+      "notes": "P3 target readonly preflight coverage gap is closed; route-menu unified-state compatibility is fixed; r15/r23/r24/r25/r26/r27/r28/r29/r30 remain retired. Next build must use release-20260914-one-button-app-r31 with maintenance HEAD after this evidence commit and app source 9d886766a.",
       "last_reviewed_at": "2026-09-14T00:00:00+08:00",
       "acceptance_criteria": [
         {
@@ -353,7 +353,7 @@
     "test_loops": 0
   },
   "created_at": "2026-09-11T09:20:03",
-  "updated_at": "2026-09-14T03:05:00+08:00",
+  "updated_at": "2026-09-14T03:32:00+08:00",
   "branch": "codex/one-button-app-release-20260911",
   "baseline_revision": "eaaa47ac320dd197dba646d6870fed0cb7d2534c",
   "workspace_root": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260911-release-button\\m",

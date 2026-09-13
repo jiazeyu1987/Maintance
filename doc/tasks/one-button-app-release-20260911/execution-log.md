@@ -557,3 +557,10 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - RED: `python -X utf8 -m pytest -q script\tests\test_mes_balloon_excel_device_workstation_binding_sql.py --basetemp ..\.tmp-pytest-r29-balloon-machine-red` -> FAIL，3 failed，证明旧 SQL 仍硬编码 83 且 target preflight 未覆盖设备绑定种子。
 - GREEN: 应用仓提交 `9d886766a` 将迁移改为 `@minimum_workstation_machine_count=1` 与目标数据派生计数，并增强 `20260717_mes_balloon_excel_device_workstation_binding.preflight.sql`；定向测试 11 passed，相邻迁移/预检回归 37 passed，测试服只读 preflight 返回 `TARGET_PREFLIGHT_PASS:20260717_mes_balloon_excel_device_workstation_binding`。
 - RESULT: r29 判废不复用。下一轮必须使用新 releaseTag `release-20260914-one-button-app-r30`，source freeze 固定维护仓提交后 HEAD 与应用仓 `9d886766a`；继续禁止 with-data、MinIO 数据同步、全量数据库复制、正式服、审查服、`mark-tested`、`promote-prod` 和 `promote-backup`。
+
+## r30 retired: interrupted local package cache
+
+- USER_AUTHORIZATION: 用户继续授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod` 或 `promote-backup`。
+- GREEN: r30-source-continuation-audit -> PASS，维护 worktree 与应用 worktree 均为任务分支且工作区 clean；本轮没有复用主工作区脏改动。
+- RED: build-release-r30-interrupted-local-cache -> FAIL，本地缓存 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260914-one-button-app-r30` 已存在并包含 `docker-build-context/`、`evidence/`、`required-sql/`，但缺少根目录 `manifest.json`；`Test-ReleasePackageIntegrity -ExpectedPackageDirectoryName release-20260914-one-button-app-r30` 返回 `manifest.json: missing manifest`。
+- RESULT: r30 不是完整 READY 包，不得发布测试服，不得复用该 tag。旧 r30 保留为本地失败证据，下一轮必须使用新 releaseTag `release-20260914-one-button-app-r31`，source freeze 固定维护仓提交后 HEAD 与应用仓 `9d886766a`；继续禁止 with-data、MinIO 数据同步、全量数据库复制、正式服、审查服、`mark-tested`、`promote-prod` 和 `promote-backup`。
