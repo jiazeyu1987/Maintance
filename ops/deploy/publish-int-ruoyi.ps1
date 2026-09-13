@@ -4084,7 +4084,10 @@ function Invoke-BuildReleaseTargetDataPreflight {
     if ($Mode -ne 'build-release' -or -not $publishBackend) { return }
     $runner = Join-Path $maintenanceReleaseScriptRoot 'release_target_data_preflight.py'
     $planRoot = Join-Path $localTempRoot "build-preflight-$packageDirectoryName"
-    $reportPath = Join-Path $releaseDir 'evidence\target-data-preflight.json'
+    if (-not (Test-Path -LiteralPath $planRoot -PathType Container)) {
+        New-Item -ItemType Directory -Force -Path $planRoot | Out-Null
+    }
+    $reportPath = Join-Path $planRoot 'target-data-preflight.json'
     if (-not (Test-Path -LiteralPath $runner -PathType Leaf)) {
         Fail "Target data preflight runner missing: $runner"
     }
@@ -5681,28 +5684,12 @@ function New-ReleaseOpsRuntimePackage {
         Copy-Item -LiteralPath $sourceDirectory -Destination (Join-Path $opsRuntimeLocalDir $directoryName) -Recurse -Force
     }
 
-    $sourceConfigDirectory = Join-Path $backendRepo 'script\backup-ops\config'
-    if (-not (Test-Path -LiteralPath $sourceConfigDirectory -PathType Container)) {
-        Fail "Runtime-control ops config directory missing: $sourceConfigDirectory"
-    }
     $targetConfigDirectory = Join-Path $opsRuntimeLocalDir 'config'
     New-Item -ItemType Directory -Force -Path $targetConfigDirectory | Out-Null
-    Get-ChildItem -LiteralPath $sourceConfigDirectory -File |
-        Where-Object { $_.Name -ne 'backup-ops.secrets.json' } |
-        ForEach-Object {
-            Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $targetConfigDirectory $_.Name) -Force
-        }
+    Info 'Skipping runtime-control ops config files; server-side config is preserved on the target host.'
     if (Test-Path -LiteralPath (Join-Path $targetConfigDirectory 'backup-ops.secrets.json')) {
         Fail 'Runtime-control ops package must not include backup-ops.secrets.json'
     }
-
-    $remoteRootDiskScript = Join-Path $backendRepo 'script\deploy\manage-int-ruoyi-remote-root-disk.ps1'
-    if (-not (Test-Path -LiteralPath $remoteRootDiskScript -PathType Leaf)) {
-        Fail "Runtime-control remote root disk script missing: $remoteRootDiskScript"
-    }
-    $targetDeployDirectory = Join-Path $opsRuntimeLocalDir 'script\deploy'
-    New-Item -ItemType Directory -Force -Path $targetDeployDirectory | Out-Null
-    Copy-Item -LiteralPath $remoteRootDiskScript -Destination (Join-Path $targetDeployDirectory 'manage-int-ruoyi-remote-root-disk.ps1') -Force
 }
 
 function Copy-ReleaseOpsRuntimePackage {
@@ -5714,8 +5701,7 @@ function Copy-ReleaseOpsRuntimePackage {
         'linux\backup-ops-linux.sh',
         'scripts\backup-ops.ps1',
         'actions',
-        'config',
-        'script\deploy\manage-int-ruoyi-remote-root-disk.ps1'
+        'config'
     )) {
         $candidate = Join-Path $opsRuntimeLocalDir $requiredPath
         if (-not (Test-Path -LiteralPath $candidate)) {
@@ -5738,7 +5724,7 @@ function Copy-ReleaseOpsRuntimePackage {
         }
         Copy-ToServer -LocalPath $opsRuntimeArchivePath -RemotePath $remoteOpsRuntimeArchive
         Info 'Extracting runtime-control ops package archive on target server'
-        Invoke-SshCommand "mkdir -p '$remoteOpsRuntimeDir' '$remoteOpsRuntimeDir/config' '$remoteOpsRuntimeDir/script/deploy' && rm -rf '$remoteOpsRuntimeDir/linux' '$remoteOpsRuntimeDir/scripts' '$remoteOpsRuntimeDir/actions' '$remoteOpsRuntimeDir/script/deploy/manage-int-ruoyi-remote-root-disk.ps1' && tar -xf '$remoteOpsRuntimeArchive' -C '$remoteOpsRuntimeDir' && rm -f '$remoteOpsRuntimeArchive' && test -f '$remoteOpsRuntimeDir/linux/backup-ops-linux.sh' && test -f '$remoteOpsRuntimeDir/script/deploy/manage-int-ruoyi-remote-root-disk.ps1'"
+        Invoke-SshCommand "mkdir -p '$remoteOpsRuntimeDir' '$remoteOpsRuntimeDir/config' && rm -rf '$remoteOpsRuntimeDir/linux' '$remoteOpsRuntimeDir/scripts' '$remoteOpsRuntimeDir/actions' && tar -xf '$remoteOpsRuntimeArchive' -C '$remoteOpsRuntimeDir' && rm -f '$remoteOpsRuntimeArchive' && test -f '$remoteOpsRuntimeDir/linux/backup-ops-linux.sh' && test -d '$remoteOpsRuntimeDir/config'"
     } finally {
         if (Test-Path -LiteralPath $opsRuntimeArchivePath -PathType Leaf) {
             Remove-Item -LiteralPath $opsRuntimeArchivePath -Force

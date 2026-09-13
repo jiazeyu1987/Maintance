@@ -185,6 +185,15 @@
 - Forbidden action: 禁止把“探针不是 MinIO 同步”作为继续写对象的理由；禁止用 Object Lock verifier 替代无数据发布验证；禁止为了绕过失败关闭 EDHR 配置校验。
 - Evidence: `doc/tasks/one-button-app-release-20260911/execution-log.md`；r26 deploy-release 在真正切换版本前写入 eDHR protected object，随后 SQL 失败，证明写探针会给无数据程序发布制造额外副作用。
 
+### 2026-09-14 app-release 包内禁止目标环境证据与 ops 配置
+
+- Trigger: 标准一键发布、without-data、`PublishScope=app-release`、`manifest.json` validation、`FORBIDDEN_HARDCODED_TARGET_IP`、`FORBIDDEN_SECRET_PATTERN`、`target-data-preflight.json`、`ops-runtime/config`、`manage-int-ruoyi-remote-root-disk.ps1`。
+- Preflight check: 构建后必须运行 `.\ops\release\validate-release-manifest.ps1 -PackagePath <package> -Mode report-only -OutputPath <evidence>`；`Invoke-BuildReleaseTargetDataPreflight` 的输出只能写在构建临时 evidence 目录，不能写入 `<package>\evidence`；`ops-runtime` 包只能包含无 secret、无 target-bound config 的运行脚本，保留远端 server-side config，不复制 `script\backup-ops\config` 或远程磁盘目标脚本。
+- Blocker: manifest validator 发现包内任一目标 IP、secret-like 示例、`ops-runtime/config/*.json`、远程磁盘管理脚本、target preflight 目标证据或其他环境绑定内容，必须立即判废当前 releaseTag。
+- Verification: `python -X utf8 -m pytest -q scripts/tests/test_release_package_governance.py -k "target_data_preflight_evidence or ops_runtime_package_excludes"` 先 RED 后 GREEN；相邻回归 `test_release_package_governance.py`、`test_app_release_package_governance.py`、`test_release_sql_preflight_gate.py`、`test_release_workflow_preflight.py` 通过；PowerShell AST 通过；新包的 manifest validation 必须 PASS。
+- Forbidden action: 禁止为了继续发布而放宽 manifest validator、把 IP/secret 文件加入白名单、手工删除包内文件后复用旧 digest、或把本地 package integrity 当作目标环境边界校验。
+- Evidence: `doc/tasks/one-button-app-release-20260911/execution-log.md`；r37 本地包命中 `FORBIDDEN_HARDCODED_TARGET_IP`，尚未 deploy-release 即判废。
+
 ## 本次证据
 
 - 当前主分支测试服发布闭环任务：`doc/tasks/20260630-main-branch-build-publish-test-server/task.md`
@@ -1205,11 +1214,11 @@ HEAD-only 构建发布在维护仓或主程序仓主工作区 dirty，且需要�
 ### 阶段补充：runtime-control ops 包上传
 
 1. 阶段名称：ops runtime 上传前。
-2. 必查项：本地 staging 必须包含 `linux`、`scripts`、`actions`、`config` 与 `script/deploy/manage-int-ruoyi-remote-root-disk.ps1`；staging 内不得包含 `backup-ops.secrets.json`；本机 `tar` 可用。
+2. 必查项：本地 staging 必须包含 `linux`、`scripts`、`actions` 与空 `config` 目录；staging 内不得包含 `backup-ops.secrets.json`、`backup-ops.config*.json`、`backup-ops.linux-local*.json` 或 `script/deploy/manage-int-ruoyi-remote-root-disk.ps1`；本机 `tar` 可用。
 3. 推荐命令：合同测试 `test_publish_script_uploads_ops_runtime_package_as_single_archive`；PowerShell AST parse；本机 `Get-Command tar,ssh,scp`。
-4. Fail Fast：仍对 `linux/scripts/actions/config` 多次 `Copy-ToServer`、ops tar 未生成、远端解包后关键文件缺失，或归档包含 secrets。
+4. Fail Fast：仍对 `linux/scripts/actions/config` 多次 `Copy-ToServer`、ops tar 未生成、远端解包后关键文件缺失，或归档包含 secrets、目标 IP、server-side config 示例或远程磁盘目标脚本。
 5. 必须记录：归档名、远端 `ops-runtime.tar`、关键文件校验、实现提交和未执行真实发布的边界。
-6. 禁止做法：禁止为省时整目录删除 `$remoteOpsRuntimeDir`，避免误删远端 `config` 下现有 secrets；只能清理受控脚本目录和受控 deploy 文件后解包覆盖。
+6. 禁止做法：禁止为省时整目录删除 `$remoteOpsRuntimeDir`，避免误删远端 `config` 下现有 secrets；禁止把 target-bound config 或目标主机脚本打进 app-release 包，只能覆盖受控脚本目录并保留远端 server-side config。
 7. Evidence: `doc/tasks/20260829-optimize-test-release-ops-runtime-upload/verification-report.md`；维护仓实现提交 `f33a8ec`（`任务: 优化发布ops运行包上传`）。
 
 ## 2026-08-29 r260829j clean HEAD 构建、manifest 与 DCC SQL 合同门禁

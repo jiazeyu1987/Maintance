@@ -555,6 +555,37 @@ def test_build_release_declares_ops_runtime_before_manifest_integrity() -> None:
     )
 
 
+def test_build_release_keeps_target_data_preflight_evidence_outside_package() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+
+    preflight_start = script.index("function Invoke-BuildReleaseTargetDataPreflight")
+    preflight_end = script.index("function Invoke-BuildReleaseSchemaOnlyMigrationRehearsal", preflight_start)
+    preflight = script[preflight_start:preflight_end]
+
+    assert "$reportPath = Join-Path $planRoot 'target-data-preflight.json'" in preflight
+    assert "Join-Path $releaseDir 'evidence\\target-data-preflight.json'" not in preflight
+
+
+def test_ops_runtime_package_excludes_target_bound_config_and_root_disk_script() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+
+    prepare_start = script.index("function New-ReleaseOpsRuntimePackage")
+    prepare_end = script.index("function Copy-ReleaseOpsRuntimePackage", prepare_start)
+    prepare = script[prepare_start:prepare_end]
+    publish_start = script.index("function Copy-ReleaseOpsRuntimePackage")
+    publish_end = script.index("function Write-TargetBoundPostImportSql", publish_start)
+    publish = script[publish_start:publish_end]
+
+    assert "server-side config is preserved on the target host" in prepare
+    assert "script\\backup-ops\\config" not in prepare
+    assert "backup-ops.config.json" not in prepare
+    assert "backup-ops.config.example.json" not in prepare
+    assert "backup-ops.linux-local.example.json" not in prepare
+    assert "backup-ops.secrets.example.json" not in prepare
+    assert "manage-int-ruoyi-remote-root-disk.ps1" not in prepare
+    assert "script\\deploy\\manage-int-ruoyi-remote-root-disk.ps1" not in publish
+
+
 def test_deploy_release_uses_manifested_ops_runtime_without_mutating_package() -> None:
     script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
 

@@ -1,5 +1,17 @@
 # CI/CD Evidence
 
+## 2026-09-14 one-button app-release target-bound package gate
+
+- Environments and deployment targets: 本次只在维护仓隔离 worktree 修复发布脚本和合同测试；r37 本地包只做本地 manifest validation，未执行测试服 `deploy-release`，正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup` 均未执行。
+- Build/package commands: r37 已判废；下一轮必须使用新 releaseTag `release-20260914-one-button-app-r38` 从当前维护/app clean HEAD 重新 `build-release`，继续固定 `PublishScope=app-release`、`SkipDatabaseSync`、`SkipMinioSync`。
+- Pipeline files changed: `ops/deploy/publish-int-ruoyi.ps1`、`scripts/tests/test_release_package_governance.py`、`docs/release-build-preflight-lessons.md`、`docs/experience-index.md`、任务执行记录。
+- Required secrets and owners: 未新增 secret；NAS/SSH/MySQL/EDHR 配置仍由既有运行控制台/目标环境提供，包内不再携带 target-bound config、secret 示例或目标服务器证据。
+- Artifact and release output: r37 本地包被 `validate-release-manifest.ps1` 阻断，原因是 `evidence/target-data-preflight.json`、`ops-runtime/config` 和远程磁盘脚本携带目标 IP/secret-like 内容；测试服版本未切换，失败 tag 不复用。
+- RED verification evidence: `python -X utf8 -m pytest -q scripts/tests/test_release_package_governance.py -k "target_data_preflight_evidence or ops_runtime_package_excludes" --basetemp .tmp-r37-forbidden-package-red` -> FAIL，2 failed。
+- GREEN verification evidence: 修复后同目标用例 PASS；相邻回归 `test_release_package_governance.py`、`test_app_release_package_governance.py`、`test_release_sql_preflight_gate.py`、`test_release_workflow_preflight.py` -> 151 passed；`publish-int-ruoyi.ps1` PowerShell AST PASS。
+- Manual approvals and blockers: 用户已授权测试服/NAS app-release 续跑；r37 已失败，必须提交脚本门禁后用 r38 重建，不得继续 r37。
+- Rollback procedure and validation: 若回滚本次脚本门禁，app-release 包会重新携带 target-bound evidence/config 并在 manifest validation 阶段失败；回滚后必须禁止 without-data 一键发布并重跑上述 RED/GREEN 用例。
+
 ## 2026-09-14 one-button app-release deploy no-data gate
 
 - Environments and deployment targets: 测试服 `172.30.30.58` 仅在用户授权范围内执行 `app-release deploy-release`；正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup` 均未执行。
