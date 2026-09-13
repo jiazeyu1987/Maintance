@@ -530,3 +530,10 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - GREEN: `python -X utf8 -m pytest -q scripts/tests/test_release_workflow_preflight.py -k "edhr_storage_probe or nas_config or tests_and_source_freeze" --basetemp .tmp-r27-edhr-probe-green` -> PASS，3 passed；`publish-int-ruoyi.ps1` PowerShell AST PASS。
 - IMPLEMENTATION: `deploy-release` 保留 `Assert-EdhrProtectedStorageConfig` fail-fast 配置校验，但移除 app-release 路径的写对象 verifier 调用；长期门禁已合并到 `docs/release-build-preflight-lessons.md` 并更新 `docs/experience-index.md` 路由。
 - NEXT: 提交维护仓修复后使用新 releaseTag `release-20260914-one-button-app-r27`，source freeze 固定维护仓提交后 HEAD 与应用仓 `1bf4504cc`，重新生成 without-data/app-release 程序包并发布测试服。
+
+## r27 retired: interrupted local package cache
+
+- USER_AUTHORIZATION: 用户继续授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod` 或 `promote-backup`。
+- GREEN: r27-local-regression-recheck -> PASS，维护仓聚焦发布门禁 3 passed，包治理/schema/digest 回归 143 passed，`publish-int-ruoyi.ps1` PowerShell AST PASS；应用仓迁移预检 pytest 27 passed，ReleaseWorkflow Maven 合同 14 tests PASS。
+- RED: build-release-r27-interrupted-local-cache -> FAIL，本地缓存 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260914-one-button-app-r27` 已存在并包含 image tar、required-sql、ops-runtime 和 evidence，但缺少根目录 `manifest.json`；`Test-ReleasePackageIntegrity` 返回 `manifest.json: missing manifest`。测试服远端 `/var/lib/docker/intruoyi-releases/release-20260914-one-button-app-r27` 不存在，未发现活动构建进程，判定为重启/中断遗留半成品缓存。
+- RESULT: r27 不是完整 READY 包，不得发布测试服，不得复用该 tag。旧 r27 保留为本地失败证据，下一轮必须使用新 releaseTag `release-20260914-one-button-app-r28`，source freeze 固定维护仓提交后 HEAD 与应用仓 `1bf4504cc`。
