@@ -816,3 +816,20 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - USER_AUTHORIZATION: 用户继续并明确授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。
 - GREEN: experience-preflight-r49 -> PASS，已复核 without-data/app-release、目标只读预检、manifest forbidden scan、NAS JSON、PowerShell、测试服发布、server-access、release-backup-restore 与 worktree 门禁；R48 已判废且不得复用，下一轮必须新 tag。
 - PLAN: 使用新 releaseTag `release-20260915-one-button-app-r49`；`build-release` 和 `deploy-release` 均从维护 worktree 根启动，并显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。
+
+## r49 retired: IDI QA legacy source baseline absent on target
+
+- GREEN: r49-local-package-and-manifest -> PASS，本地包 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260915-one-button-app-r49` 完整性和 manifest validation 均通过；`PublishScope=app-release`，component=`intruoyi`，sourceRoots 为维护仓 `0939f87bb0086d1c6281545ef6d24cef6ece3c12` 与应用仓 `63e57513f480242dd8e3154ee0be789867ccba1f`，sourceRoles 为 maintenance/backend/frontend 且 dirty=false；包内无 MySQL 全量 dump、MinIO、DCC inventory、runtime data、`.env` 或 `release-manifest.json`。
+- RED: deploy-release-r49-idi-qa-empty-source -> FAIL，测试服部署在版本切换前执行 required SQL `20260812_mes_qa_pressure_pump_idi_seed.sql` 时失败：`ERROR 1644 (45000) at line 365: IDI旧QA规程源数据必须唯一命中3条`；operation lock 已释放为 FAILED，测试服 `.env` 未切换到 R49，实际 backend/frontend 镜像仍为旧 R44。
+- ROOT_CAUSE: 测试服真实库 `dcc_project_code` 中 IDI/按压式球囊扩充压力泵/1 唯一存在，但 DCC-owned QA root 为 0，三条旧路线工序 QA 源规程匹配数均为 0；该迁移语义是“合并已有旧源规程”，应对空旧源基线 no-op，部分/重复/格式不完整旧源仍应阻断。旧 target preflight 只检查表存在，未把该目标数据合同前移。
+- BDD: IDI QA legacy source empty baseline -> Given without-data/app-release 在目标库有 IDI DCC 项目但不存在三条旧 QA 源规程 / When build-release 执行 target readonly preflight 且 deploy-release 执行对应 required SQL / Then 目标只读 preflight 应通过，迁移应 no-op 通过，不得因无旧源业务对象阻断版本切换。
+- RED: `python -X utf8 -m pytest -q script\tests\test_mes_qa_pressure_pump_idi_seed_sql.py --basetemp .tmp-r49-idi-seed-red` -> FAIL，3 failed，证明旧 SQL 不接受空旧源基线且旧 target preflight 只检查表存在。
+- GREEN: app-idi-qa-empty-source-fix -> PASS，应用仓提交 `dc8edfe5cf1e4daa84cc9523f0a5c8a1a7c5be34`：迁移在 `v_source_join_count=0 AND v_source_reg_count=0` 时 COMMIT/LEAVE no-op；target preflight 改为接受空旧源、完整旧源或已兼容 direct root，部分/重复/不完整仍阻断。
+- REGRESSION: `python -X utf8 -m pytest -q script\tests\test_mes_qa_pressure_pump_idi_seed_sql.py script\tests\test_release_target_preflight_files.py script\tests\test_release_preflight_plan.py --basetemp .tmp-r49-idi-seed-regression` -> PASS，27 passed。
+- GREEN: test-server-readonly-preflight-idi-qa -> PASS，使用新版 target preflight SQL 在测试服只读执行返回 `TARGET_PREFLIGHT_PASS:20260812_mes_qa_pressure_pump_idi_seed`；未修改测试服业务数据。
+- RESULT: R49 判废不复用；未执行正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。下一轮必须使用新 releaseTag `release-20260915-one-button-app-r50`，source freeze 固定维护仓本段证据提交后的 clean HEAD 与应用仓 `dc8edfe5cf1e4daa84cc9523f0a5c8a1a7c5be34`。
+
+## r50 source freeze
+
+- USER_AUTHORIZATION: 用户继续并明确授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。
+- PLAN: 使用新 releaseTag `release-20260915-one-button-app-r50`；`build-release` 和 `deploy-release` 均从维护 worktree 根启动，并显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。
