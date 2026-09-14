@@ -186,7 +186,7 @@
         "r46 local and NAS package integrity passed, but r46 is retired before publish because deploy skip actions did not clear stale FAILED migration ledger rows; maintenance fix records SKIP_ENV_NOT_ALLOWED as SKIPPED_ENV_NOT_ALLOWED and SKIP_SCOPE_EXCLUDED as SKIPPED_SCOPE_EXCLUDED, with 145 regression tests PASS and PowerShell AST PASS. Next build tag is release-20260915-one-button-app-r47.",
         "r47 source freeze plan PASS: maintenance clean 54a4630fcfa243ec18c3306f797c9dec573cb54d, application clean 4a9518d4ea56e05155e481499d7659f67f750371; local cache, deploy-control and remote test release directory are absent before build."
       ],
-      "notes": "P3 target readonly preflight coverage continues; r15/r23/r24/r25/r26/r27/r28/r29/r30/r31/r32/r33/r34/r35/r36/r37/r38/r39/r40/r41/r42/r43/r44/r45/r46 remain retired. R43 reached test required SQL before version switch; C00 collation comparisons have since been fixed in app source 4a9518d4e. R44 exposed maintenance cwd import drift; R45 is interrupted local cache without manifest.json. R46 package is READY but retired before publish because its package/runtime source lacks skip-ledger fix. Next build must use release-20260915-one-button-app-r47 from the maintenance worktree root; after this source-freeze documentation commit, use the resulting clean maintenance HEAD with application source 4a9518d4ea56e05155e481499d7659f67f750371.",
+      "notes": "P3 target readonly preflight coverage continues; r15/r23/r24/r25/r26/r27/r28/r29/r30/r31/r32/r33/r34/r35/r36/r37/r38/r39/r40/r41/r42/r43/r44/r45/r46/r47/r48 remain retired. R48 reached test required SQL before version switch and failed on B04091 cleaning temperature empty candidate hard-block; app source 63e57513f now makes B04091/B09353 empty-candidate migrations no-op and target preflights pass on the test server. Next build must use release-20260915-one-button-app-r49 from the maintenance worktree root; after this source-freeze documentation commit, use the resulting clean maintenance HEAD with application source 63e57513f480242dd8e3154ee0be789867ccba1f.",
       "last_reviewed_at": "2026-09-15T02:29:00+08:00",
       "acceptance_criteria": [
         {
@@ -369,7 +369,7 @@
     "test_loops": 0
   },
   "created_at": "2026-09-11T09:20:03",
-  "updated_at": "2026-09-15T02:29:00+08:00",
+  "updated_at": "2026-09-15T04:37:00+08:00",
   "branch": "codex/one-button-app-release-20260911",
   "baseline_revision": "eaaa47ac320dd197dba646d6870fed0cb7d2534c",
   "workspace_root": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260911-release-button\\m",
