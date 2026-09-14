@@ -735,3 +735,10 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - GREEN: experience-preflight-r44 -> PASS，已复核 without-data/app-release、目标只读预检、manifest forbidden scan、NAS JSON、PowerShell、测试服发布、server-access、release-backup-restore 与 worktree 门禁；R43 已判废且不得复用，下一轮必须新 tag。
 - GREEN: source-freeze-r44-plan -> PASS，维护 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m` 当前 clean `ba29829f19574fbb56ccc20e8bf13d8eebd5b20e`，应用 worktree `D:\IntRuoyiWorktree\r260911-release-button\a` 当前 clean `4a9518d4ea56e05155e481499d7659f67f750371`；本地缓存、deploy-control 与测试服远端目录 `release-20260915-one-button-app-r44` 均不存在。
 - PLAN: 使用新 releaseTag `release-20260915-one-button-app-r44`；构建和发布均显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON 和 backend runtime base 参数，并显式传入 `-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。
+
+## r44 retired: build command launched from wrong maintenance cwd
+
+- RED: build-release-r44-script-test-import -> FAIL，`build-release` 在后端合同测试、前端静态合同和前端类型检查通过后，进入维护仓发布脚本测试阶段失败：`ModuleNotFoundError: No module named 'ops.release.release_migration_preflight'` 与 `ImportError: cannot import name 'release_schema_rehearsal' from 'ops.release'`。
+- ROOT_CAUSE: 本轮由主维护目录 `D:\ProjectPackage\Int\IntRuoyiMaintance` 启动绝对路径脚本，pytest 的 import root 落到旧主工作区而不是本任务维护 worktree；目标模块在 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m\ops\release\` 实际存在。
+- GREEN: maintenance-cwd-import-recheck -> PASS，在维护 worktree 目录执行 `python -X utf8 -m pytest -q scripts\tests\test_release_migration_preflight_matrix.py scripts\tests\test_release_schema_rehearsal.py --basetemp E:\Int\CacheData\IntRuoyi\release-workflow-test-temp\r44-import-recheck`，20 passed。
+- RESULT: R44 未生成本地程序包、未上传 NAS、未发布测试服、未写正式服/审查服、未执行 `mark-tested`/`promote-prod`/`promote-backup`、未同步 MinIO 或全量数据库；R44 判废不复用。下一轮必须使用新 releaseTag `release-20260915-one-button-app-r45`，且 `build-release` 工作目录必须显式设为维护 worktree 根。
