@@ -833,3 +833,14 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 
 - USER_AUTHORIZATION: 用户继续并明确授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。
 - PLAN: 使用新 releaseTag `release-20260915-one-button-app-r50`；`build-release` 和 `deploy-release` 均从维护 worktree 根启动，并显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。
+
+## r50 retired: interrupted local package cache after restart
+
+- RED: build-release-r50-interrupted-local-cache -> FAIL，重启后本地 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260915-one-button-app-r50` 仅存在 `evidence/` 与 `required-sql/`，缺少根目录 `manifest.json`；未形成完整 app-release 程序安装包，不能作为 READY 或可发布证据。
+- RESULT: R50 判废不复用；未执行测试服 `deploy-release`，未切换测试服 `.env`，未执行正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。
+
+## r51 source freeze
+
+- USER_AUTHORIZATION: 用户继续并明确授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。
+- GREEN: experience-preflight-r51 -> PASS，已复核 without-data/app-release、目标只读预检、manifest forbidden scan、NAS JSON、PowerShell、测试服发布、server-access、release-backup-restore 与 worktree 门禁；R50 已判废且不得复用，下一轮必须新 tag。
+- PLAN: 使用新 releaseTag `release-20260915-one-button-app-r51`；`build-release` 和 `deploy-release` 均从维护 worktree 根启动，并显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。

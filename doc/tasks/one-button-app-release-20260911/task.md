@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r48 均已判废且不得复用；R48 本地包完整性、manifest validation 和测试服部署链路已推进到 required SQL，但在版本切换前失败于 `20260812_mes_process_pool_b04091_cleaning_temperature_label.sql` 的空候选硬阻断，operation lock 已释放为 FAILED，测试服 `.env` 未切换到 R48。应用仓已提交 `63e57513f`，将 B04091/B09353 清洗温度标签迁移改为无候选 no-op，并通过本机 RED/GREEN、相邻回归与测试服只读 preflight。下一步使用新 releaseTag `release-20260915-one-button-app-r49` 从维护仓 clean HEAD 和应用仓 `63e57513f` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r50 均已判废且不得复用；R49 本地包完整性和 manifest validation 通过，但测试服 required SQL 在版本切换前失败于 `20260812_mes_qa_pressure_pump_idi_seed.sql` 的 IDI 旧 QA 源空基线硬阻断，operation lock 已释放为 FAILED，测试服 `.env` 未切换到 R49。应用仓已提交 `dc8edfe5`，将 IDI QA 旧源为空时改为 no-op，并通过本机 RED/GREEN、相邻回归与测试服只读 preflight。R50 因重启/中断只留下本地半成品缓存，缺少 `manifest.json`，不得发布或复用。下一步使用新 releaseTag `release-20260915-one-button-app-r51` 从维护仓提交后的 clean HEAD 和应用仓 `dc8edfe5` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
 
 ## Verification Evidence
 
@@ -77,10 +77,12 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 - R41 local cache：重启后本地 `release-20260914-one-button-app-r41` 只含 `evidence/` 和 `required-sql/`，`Test-ReleasePackageIntegrity` 返回 `manifest.json: missing manifest`；R41 判废不复用，未发布测试服，未执行正式服/审查服/mark-tested/promote-prod/promote-backup/MinIO 数据同步/全量数据库同步。
 - R45 local cache：本地 `release-20260915-one-button-app-r45` 只含 `evidence/` 和 `required-sql/`，`Test-ReleasePackageIntegrity` 返回 `manifest.json: missing manifest`；R45 判废不复用，测试服远端目录不存在，未切换测试服 `.env`。
 - R48 deploy-release：本地包、manifest validation 与 without-data 禁止项扫描 PASS，`packageDigest=2196a318de9d61fc5e0dd0b7deca1c8d9ac0d0aaf7109ffda1b4e15771e82e18`，`manifestDigest=c5b25517163d0b791685e5fef370cc94c06064278209fda433434d338155cb87`；测试服 required SQL 在版本切换前失败于 `No active B04091 cleaning temperature parameter rule found`。应用仓提交 `63e57513f` 后，B04091/B09353 空候选 no-op 合同 RED/GREEN 通过，相邻 target preflight/release plan 回归 26 PASS、测试服只读 preflight PASS。
+- R49 deploy-release：本地包与 manifest validation PASS；测试服 required SQL 在版本切换前失败于 `IDI旧QA规程源数据必须唯一命中3条`。应用仓提交 `dc8edfe5` 后，IDI 旧 QA 源空基线 no-op 合同 RED/GREEN 通过，相邻 target preflight/release plan 回归 27 PASS、测试服只读 preflight PASS。
+- R50 local cache：重启后本地 `release-20260915-one-button-app-r50` 只含 `evidence/` 和 `required-sql/`，缺少 `manifest.json`；判定为中断半成品，不发布、不复用。
 
 ## Current Phase
 
-- P3 正在执行：r23-r48 已判废；R48 已证明本地包、manifest gate、NAS/远端包复制、`.env.next` 写入和 required SQL 入账链路可通过，且部署在 `.env` 切换前被 B04091 空候选 no-op 根因阻断；应用仓当前可发布提交为 `63e57513f480242dd8e3154ee0be789867ccba1f`。下一轮使用新 releaseTag `release-20260915-one-button-app-r49` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23-r50 已判废；R49 已证明本地包、manifest gate、NAS/远端包复制、`.env.next` 写入和 required SQL 入账链路可通过，且部署在 `.env` 切换前被 IDI 旧 QA 源空基线根因阻断；R50 是重启/中断半成品缓存。应用仓当前可发布提交为 `dc8edfe5cf1e4daa84cc9523f0a5c8a1a7c5be34`。下一轮使用新 releaseTag `release-20260915-one-button-app-r51` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 
