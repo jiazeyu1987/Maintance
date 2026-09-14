@@ -660,3 +660,9 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - GREEN: app-cleaning-process-empty-baseline-fix -> PASS，应用仓提交 `b286fd47d` 新增 `v_cleaning_rule_candidate_count` 和 target preflight CTE 分组校验；定向 RED/GREEN 2 passed，相邻 `test_release_target_preflight_files.py` / `test_release_preflight_plan.py` 回归共 26 passed。
 - GREEN: test-server-readonly-preflight -> PASS，测试服只读执行新版 `target-preflight/20260811_mes_process_pool_cleaning_process_parameter_data.preflight.sql` 返回 `TARGET_PREFLIGHT_PASS:20260811_mes_process_pool_cleaning_process_parameter_data`，诊断查询 `rules_total=0`、`rules_cleaning_process_join=0`。
 - RESULT: R38 判废不复用，未切换测试服 `.env`，未执行正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。下一轮必须使用新 releaseTag `release-20260914-one-button-app-r39`，source freeze 固定维护仓本段证据提交后的 clean HEAD 与应用仓 `b286fd47d`。
+
+## r39 source freeze
+
+- USER_AUTHORIZATION: 用户继续并明确授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod` 或 `promote-backup`。
+- GREEN: experience-preflight-r39 -> PASS，已复核 `docs/experience-index.md` 命中的 without-data/app-release、目标只读预检、manifest forbidden scan、NAS JSON、PowerShell、测试服发布、server-access、release-backup-restore 与 worktree 门禁；R38 已判废且不得复用，下一轮必须新 tag。
+- PLAN: 使用新 releaseTag `release-20260914-one-button-app-r39`，source freeze 固定维护仓 clean HEAD 与应用仓 `b286fd47d07a`；构建和发布均显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost`、`BackupServerHost`、NAS JSON 和 backend runtime base 参数，继续禁止 with-data、全量数据库、MinIO 数据同步和正式服写入。
