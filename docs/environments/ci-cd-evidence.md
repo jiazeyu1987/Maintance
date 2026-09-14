@@ -1,5 +1,17 @@
 # CI/CD Evidence
 
+## 2026-09-14 one-button app-release required SQL empty-candidate gate
+
+- Environments and deployment targets: 测试服 `172.30.30.58` 仅在用户授权范围内执行 `app-release deploy-release`；正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步和全量数据库同步均未执行。
+- Build/package commands: r38 本地包和 manifest validation 通过，但测试服 required SQL 在版本切换前失败；r38 已判废，下一轮必须使用新 releaseTag `release-20260914-one-button-app-r39`，继续固定 `PublishScope=app-release`、`SkipDatabaseSync`、`SkipMinioSync`。
+- Pipeline files changed: 应用仓 `20260811_mes_process_pool_cleaning_process_parameter_data.sql`、对应 `target-preflight`、新增 SQL 静态测试；维护仓 `docs/release-build-preflight-lessons.md`、`docs/experience-index.md`、任务执行记录。
+- Required secrets and owners: 未新增 secret；测试服 MySQL 密码仅在远端容器环境解析，任务证据只记录脱敏命令和聚合计数。
+- Artifact and release output: r38 `packageDigest=9387c858b542f3899a7162003e0b396fc2816f762c832e93def5271d7060a106`、`manifestDigest=f93bc66c3225c90563e8634ccba2e87cb775b91fb9aa95378ae86a18fdf04475`；部署失败发生在 `.env` 切换前，operation lock 已释放为 FAILED。
+- RED verification evidence: `python -X utf8 -m pytest -q D:\IntRuoyiWorktree\r260911-release-button\a\IntRuoyiBackend\script\tests\test_mes_process_pool_cleaning_process_parameter_data_sql.py --basetemp D:\IntRuoyiWorktree\r260911-release-button\a\IntRuoyiBackend\.tmp-r38-cleaning-process-red` -> FAIL，2 failed。
+- GREEN verification evidence: 修复后同目标用例 2 PASS；相邻 `test_release_target_preflight_files.py` / `test_release_preflight_plan.py` 回归 26 PASS；测试服只读 preflight 返回 `TARGET_PREFLIGHT_PASS:20260811_mes_process_pool_cleaning_process_parameter_data`。
+- Manual approvals and blockers: 用户已授权测试服/NAS app-release 续跑；r38 已失败，必须提交应用修复和维护证据后用 r39 重建，不得继续 r38。
+- Rollback procedure and validation: 若回滚应用提交 `b286fd47d`，空规则目标库会再次在 publish-test required SQL 阶段失败；回滚后必须禁止 without-data 一键发布并重跑新增 SQL 静态测试与目标只读 preflight。
+
 ## 2026-09-14 one-button app-release target-bound package gate
 
 - Environments and deployment targets: 本次只在维护仓隔离 worktree 修复发布脚本和合同测试；r37 本地包只做本地 manifest validation，未执行测试服 `deploy-release`，正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup` 均未执行。

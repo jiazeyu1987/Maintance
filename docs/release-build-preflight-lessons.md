@@ -194,6 +194,15 @@
 - Forbidden action: 禁止为了继续发布而放宽 manifest validator、把 IP/secret 文件加入白名单、手工删除包内文件后复用旧 digest、或把本地 package integrity 当作目标环境边界校验。
 - Evidence: `doc/tasks/one-button-app-release-20260911/execution-log.md`；r37 本地包命中 `FORBIDDEN_HARDCODED_TARGET_IP`，尚未 deploy-release 即判废。
 
+### 2026-09-14 required SQL 空候选数据必须 no-op 或 target preflight 精确阻断
+
+- Trigger: without-data/app-release 执行 required SQL，SQL 用于归一化已有业务配置、设备参数、菜单权限或历史数据，尤其命中 `20260811_mes_process_pool_cleaning_process_parameter_data.sql`、`mes_pro_process_pool_device_parameter_rule`、`No active ... rules found`。
+- Preflight check: 对“只修已有数据”的迁移，target preflight 必须区分三种状态：目标表/列缺失则阻断；候选数据为空则 PASS/no-op；候选数据存在但重复、缺项、状态不一致则阻断。执行前运行对应 SQL 静态测试和 `target-preflight/<migration>.preflight.sql` 只读实库验证。
+- Blocker: required SQL 在 publish-test 阶段因为候选行不存在而 `SIGNAL`，但该迁移语义只是归一化已有行；或 target preflight 只检查父对象存在，没有检查具体候选行、重复归一化冲突和不完整规则组。
+- Verification: 新增或修复迁移必须 RED/GREEN 记录空候选 no-op 测试、相邻 `test_release_target_preflight_files.py`/`test_release_preflight_plan.py` 通过，并在测试服只读执行新版 target preflight 返回 `TARGET_PREFLIGHT_PASS` 或明确 blocker。
+- Forbidden action: 禁止手工往测试库补候选业务数据、手工改 `infra_release_migration` 判绿、复用失败 releaseTag 继续发布、把 without-data 解释成可跳过版本化 SQL，或用空库演练替代真实目标只读 preflight。
+- Evidence: `doc/tasks/one-button-app-release-20260911/execution-log.md`；r38 deploy-release 在版本切换前失败于 `20260811_mes_process_pool_cleaning_process_parameter_data.sql`，真实测试库 `rules_total=0`，应用提交 `b286fd47d` 改为空候选 no-op 并补 target preflight。
+
 ## 本次证据
 
 - 当前主分支测试服发布闭环任务：`doc/tasks/20260630-main-branch-build-publish-test-server/task.md`

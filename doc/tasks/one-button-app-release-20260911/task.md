@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r37 均已判废且不得复用；r32 包构建和 NAS READY 成功，但测试服 required SQL 在版本切换前失败于 `20260807_test_tenant1_all_role_permission_sync.sql` 的源角色权限计数 1676/1678 漂移。应用仓已提交 `c4ba9d3f` 修正计数，维护仓已提交 `b189ef1` 将该应用 SQL 静态测试纳入 build-release 前门禁。r33/r34 本地缓存虽验包完整，但 manifest 均绑定旧应用提交 `ccd0d9a3`，不含 `c4ba9d3f` 修复，已判废；r35/r36 均在构建前 fail-fast 于直接脚本参数问题，未生成本地包；r37 本地包生成后被 manifest validator 阻断，原因是包内包含测试服 target preflight 证据和 target-bound ops 配置/脚本，命中 `FORBIDDEN_HARDCODED_TARGET_IP` / `FORBIDDEN_SECRET_PATTERN`。维护仓已补门禁，下一步使用新 releaseTag `release-20260914-one-button-app-r38` 从维护仓本段证据提交后的 clean HEAD 和应用仓 `c4ba9d3f` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r38 均已判废且不得复用；r38 本地包完整性、manifest validation、NAS 下载、镜像上传和 required SQL 入账链路已推进到测试服，但在版本切换前失败于 `20260811_mes_process_pool_cleaning_process_parameter_data.sql` 的空规则硬阻断，operation lock 已释放为 FAILED。根因是测试服 `mes_pro_process_pool_device_parameter_rule` 活跃规则数为 0，而该迁移应在无候选规则时 no-op；应用仓已提交 `b286fd47d` 修正 SQL 与 target preflight，并通过本机 RED/GREEN、相邻回归和测试服只读 preflight。下一步使用新 releaseTag `release-20260914-one-button-app-r39` 从维护仓本段证据提交后的 clean HEAD 和应用仓 `b286fd47d` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
 
 ## Verification Evidence
 
@@ -72,10 +72,11 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 - r36 build command：构建前参数门禁失败，原因是直接脚本未显式传入 `BackendRepoRoot`/`FrontendRepoRoot`，导致命令包装器进入错误/缺失工作目录；未进入 Maven、Docker、NAS 上传或测试服写入，r36 判废。
 - r37 manifest validation：本地包生成后被 `validate-release-manifest.ps1` 阻断，包内 `evidence/target-data-preflight.json` 携带测试服 IP，`ops-runtime/config/*.json` 与 `script/deploy/manage-int-ruoyi-remote-root-disk.ps1` 携带目标 IP 或 secret-like 示例；新增 RED/GREEN 测试后，target preflight 证据改为构建临时证据，ops-runtime 包不再携带 target-bound config 或远程磁盘脚本；相邻回归 151 PASS，PowerShell AST PASS。
 - R38 前置 hard gate：`ReleaseManifestValidator.psm1` 已接入 `publish-int-ruoyi.ps1` 的 build-release 主链路，执行顺序固定为 package integrity -> manifest validation -> NAS upload；新增合同先 RED 后 GREEN，发布 workflow/app-release/package governance 回归 97 PASS。manifest validation 报告写入构建临时目录，不进入不可变包。
+- R38 deploy-release：本地包和 manifest validation PASS，`packageDigest=9387c858b542f3899a7162003e0b396fc2816f762c832e93def5271d7060a106`，但测试服 required SQL 在版本切换前失败于 `No active cleaning process ultrasonic cleaner parameter rules found`；真实库只读诊断 `rules_total=0`。应用仓提交 `b286fd47d` 后，新增空规则 no-op RED/GREEN 2 PASS、相邻 target preflight/release plan 回归 26 PASS、测试服只读 preflight PASS。
 
 ## Current Phase
 
-- P3 正在执行：r23-r37 已判废；R32 已证明包构建链路可到 NAS READY，但部署在 required SQL 前置执行阶段失败于测试租户角色权限同步静态计数漂移。应用仓当前可发布提交为 `c4ba9d3f`，维护仓提交本轮 R37 包污染门禁修复后作为新 source freeze。下一轮使用新 releaseTag `release-20260914-one-button-app-r38` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23-r38 已判废；R38 已证明包和 manifest gate 可通过，且部署在 `.env` 切换前被 required SQL 根因阻断。应用仓当前可发布提交为 `b286fd47d`，维护仓提交本轮 R38 证据后作为新 source freeze。下一轮使用新 releaseTag `release-20260914-one-button-app-r39` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 

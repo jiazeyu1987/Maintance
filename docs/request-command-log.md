@@ -25,9 +25,9 @@
 - 命令意图：冻结维护仓/后端/前端 HEAD，创建干净临时 release worktree，构建维护控制台和测试发布包，校验 manifest、版本号、变更说明，执行 `publish-test` 并完成测试服真实运行态与运行控制台页面验证。
 - 敏感信息处理：不记录 SSH 密码、私钥、数据库密码、token、连接串或其它凭据原文。
 - 当前结果：已冻结 releaseId=`r260812a`；维护仓 HEAD=`3d980bb16a300020985f90d3b118fef45786336a`，主程序 HEAD=`5d503ea5e5d754461031ddb4271e5db77c2c4d91`；主工作区较脏，已创建 clean release worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260812a\m` 与 `D:\IntRuoyiWorktree\r260812a-release-app`，下一步仅从这两个路径构建。
-- 验证结果：migration policy gate 失败，冻结 app HEAD 的 `20260812_mes_pqc_dcc_qa_c00_backfill.sql` committed metadata 使用 `type=backfill`，冻结维护 HEAD 的 gate 和正式发布脚本仅允许 `schema/data/menu/config/permission/seed`。
+- 验证结果：migration policy gate 失败，冻结 app HEAD 的 `20260812_mes_pqc_dcc_qa_c00_backfill.sql` committed metadata 使用 	ype=backfill`，冻结维护 HEAD 的 gate 和正式发布脚本仅允许 `schema/data/menu/config/permission/seed`。
 - 处理结果：按 fail-fast 门禁停止本任务维护构建和前端依赖恢复进程；未生成发布包/manifest/版本号/变更说明，未执行 `publish-test`，测试服保持上一版本运行，正式服和备份服未操作。
-- 继续复验：中断后冻结 worktree HEAD 与 clean 状态未变、无任务残留进程；同一 migration policy gate 再次因 `type=backfill` 失败。已把跨仓 migration type 集合一致性检查合并到既有发布经验文档和索引。
+- 继续复验：中断后冻结 worktree HEAD 与 clean 状态未变、无任务残留进程；同一 migration policy gate 再次因 	ype=backfill` 失败。已把跨仓 migration type 集合一致性检查合并到既有发布经验文档和索引。
 - 修复意图：C00 `preflight/backfill/postflight/rollback-dry-run` 是 evidence-only SQL，不得被 build-release 当成 required migration 执行；将在维护仓独立修复 worktree 用严格 TDD 扩展 policy metadata 支持，并在 PowerShell required SQL 收集时 fail-safe 排除这些类型。
 
 ## 2026-08-03 当前 HEAD 仅测试服发布 r260803a
@@ -90,7 +90,7 @@
 - 用户需求：`构建并发布到测试服务器`
 - 命中经验：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-agent-checklist.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\powershell-preflight-lessons.md`。
 - 命令记录：核对维护仓已有发布任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260701-main-branch-test-server-release-closure\task.md` 与 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260701-schedule-calendar-capacity-horizon-release-test-server\task.md` 均为 `COMPLETED`，允许创建新任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260701-build-publish-test-server-current\`。
-- 命令记录：读取经验索引、发布前置清单、服务器访问、登录方式、PowerShell 编码门禁，并补写本轮任务台账 `task.md` 与 `execution-log.md`。
+- 命令记录：读取经验索引、发布前置清单、服务器访问、登录方式、PowerShell 编码门禁，并补写本轮任务台账 	ask.md` 与 `execution-log.md`。
 - 命令记录：执行三仓状态核对：
   - `git -C D:\ProjectPackage\Int\IntRuoyiMaintance status --short --branch`
   - `git -C D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro status --short --branch`
@@ -170,11 +170,11 @@
 
 - 用户需求：主程序合并修改了部分代码，担心原来的发布链路已经不对，要求重新通过页面前端点击操作完整走一遍 `构建发布包 -> 部署测试服 -> 标记测试通过 -> 上线正式服 -> 上线备份服`。
 - 命中经验：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`。
-- 命令记录：重新读取 `supervised-complex-delivery` 与 `playwright` 技能，以及 `artifact-contract.md`、`task-state-schema.md`，按新一轮高风险真实页面发布任务重新建档。
+- 命令记录：重新读取 `supervised-complex-delivery` 与 `playwright` 技能，以及 `artifact-contract.md`、	ask-state-schema.md`，按新一轮高风险真实页面发布任务重新建档。
 - 命令记录：核对上一维护仓任务 `doc/tasks/20260621-frontend-release-full-flow-rerun/task.md` 已 `COMPLETED`，允许开启新任务 `doc/tasks/20260621-frontend-release-full-flow-main-merge-rerun/`。
 - 命令记录：检查当前基线：后端仓 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro` 为干净 `int_main`，最新提交 `b83918fb22`；前端仓 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3` 最新提交 `37359a074`，仅有未跟踪 `.env.merged-e2e`；维护仓 `D:\ProjectPackage\Int\IntRuoyiMaintance` 当前分支 `int_main`，存在 `backup-ops` 相关未提交改动，但 `ops/deploy` 与页面发布链路未见未提交更改。
 - 命令记录：确认 `npx` 来源为 `D:\Programs\npx.ps1`；本机运行控制台健康接口 `http://127.0.0.1:48181/actuator/health` 当前可访问。
-- 结论记录：已新建 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260621-frontend-release-full-flow-main-merge-rerun\` 并写入 `task.md`、`request-analysis.md`、`prd.md`、`dev-plan.md`、`test-plan.md`、`task-state.json`、`execution-log.md`、`test-report.md`；下一步先记录 `experience-preflight`，再从页面真实执行新 releaseTag 的 build-release。
+- 结论记录：已新建 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260621-frontend-release-full-flow-main-merge-rerun\` 并写入 	ask.md`、`request-analysis.md`、`prd.md`、`dev-plan.md`、	est-plan.md`、	ask-state.json`、`execution-log.md`、	est-report.md`；下一步先记录 `experience-preflight`，再从页面真实执行新 releaseTag 的 build-release。
 
 ## 2026-06-30 任务：20260630-test-server-dcc-browser-cache-write-failure-rerelease
 
@@ -204,21 +204,21 @@
 
 - 用户需求：再次正式按“页面前端点击操作”的真实流程，完整走一遍构建发布到测试服、正式服、备份服；禁止直接调接口替代页面动作；每遇到问题先记录任务文档，修复后继续从页面走，直到整条流程能够一次性走通。
 - 命中经验：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`。
-- 命令记录：读取 `C:\Users\BJB110\.codex\skills\supervised-complex-delivery\SKILL.md`、`artifact-contract.md`、`review-gates.md`、`task-state-schema.md` 与 `C:\Users\BJB110\.codex\skills\playwright\SKILL.md`，确认本轮需要先把任务状态、计划和测试制品落盘。
+- 命令记录：读取 `C:\Users\BJB110\.codex\skills\supervised-complex-delivery\SKILL.md`、`artifact-contract.md`、`review-gates.md`、	ask-state-schema.md` 与 `C:\Users\BJB110\.codex\skills\playwright\SKILL.md`，确认本轮需要先把任务状态、计划和测试制品落盘。
 - 命令记录：检查维护仓 `doc/tasks` 最新任务，发现 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260621-backup-server-backup-restore-rehearsal\task.md` 仍为 `IN_PROGRESS`；按仓库规则先将其显式改为 `BLOCKED`，原因是用户当前线程优先级切换。
 - 命令记录：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260620-frontend-release-full-flow\{task.md,execution-log.md}` 与 `docs/request-command-log.md`，确认同类页面真实发布链路已在 `release-20260621-page-full-flow-v6` 上完整走通并提交。
 - 命令记录：检查当前工作树：`D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro` 为干净 `int_main`；`D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3` 仅有未跟踪 `.env.merged-e2e`；维护仓 `D:\ProjectPackage\Int\IntRuoyiMaintance` 仍保留上一个备份恢复任务的 `backup-ops` 脏改动。
-- 结论记录：已新建 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260621-frontend-release-full-flow-rerun\` 并落地 `task.md`、`request-analysis.md`、`prd.md`、`dev-plan.md`、`test-plan.md`、`task-state.json`、`execution-log.md`、`test-report.md`；当前主阻塞是“本轮到底重跑哪套发布基线”尚未明确，在此之前不得进入新的测试服/正式服/备份服真实写入。
-- 命令记录：改为按完成审计核现状，而不是直接重跑；读取 `20260620-frontend-release-full-flow` 任务文档、`runtime/runtime-control` 下 v6 五个 operation JSON/日志、`release-manifest.json`、`manifest.json`、`tested.json` 与正式 dry-run 证据，确认既有 v6 页面链路证据闭合。
+- 结论记录：已新建 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260621-frontend-release-full-flow-rerun\` 并落地 	ask.md`、`request-analysis.md`、`prd.md`、`dev-plan.md`、	est-plan.md`、	ask-state.json`、`execution-log.md`、	est-report.md`；当前主阻塞是“本轮到底重跑哪套发布基线”尚未明确，在此之前不得进入新的测试服/正式服/备份服真实写入。
+- 命令记录：改为按完成审计核现状，而不是直接重跑；读取 `20260620-frontend-release-full-flow` 任务文档、`runtime/runtime-control` 下 v6 五个 operation JSON/日志、`release-manifest.json`、`manifest.json`、	ested.json` 与正式 dry-run 证据，确认既有 v6 页面链路证据闭合。
 - 命令记录：通过只读 SSH 分别复核测试服 `172.30.30.58`、正式服 `172.30.30.57`、备份服 `172.30.30.59` 的 `/opt/intruoyi/runtime/.env`、`docker ps`、`127.0.0.1:48081/actuator/health`、`127.0.0.1:8081/` 与 `127.0.0.1:8081/pdfjs/pdf.worker.mjs`，三套环境当前均为 `release-20260621-page-full-flow-v6` 且入口健康。
-- 命令记录：运行 `python C:\\Users\\BJB110\\.codex\\skills\\task-closeout-cleanup\\scripts\\task_closeout.py --task-id 20260621-frontend-release-full-flow-rerun --mode preview`，结果 `status: ready`，默认保留 `task.md`、`execution-log.md`，其余新建计划/分析制品为可清理附属物，无阻塞项。
+- 命令记录：运行 `python C:\\Users\\BJB110\\.codex\\skills\\task-closeout-cleanup\\scripts\\task_closeout.py --task-id 20260621-frontend-release-full-flow-rerun --mode preview`，结果 `status: ready`，默认保留 	ask.md`、`execution-log.md`，其余新建计划/分析制品为可清理附属物，无阻塞项。
 - 结论记录：基于当前文件证据和三套环境运行态，已确认用户要求的真实页面发布链路目标实际上已经由 `release-20260621-page-full-flow-v6` 完成，并且当前状态仍保持该结果；本轮因此以完成审计收口，不再额外触发新的真实写入。
 
 ## 2026-06-20 当前最新程序发布任务复盘
 
 - 用户需求：执行 `$fupan`，把本轮“测试服发布 + 三角色真实验收 + 正式服预发布阻塞”沉淀为可复用经验，避免后续重复踩坑。
 - 命中技能：`C:\Users\BJB110\.codex\skills\fupan\SKILL.md`。
-- 命令记录：读取 `SKILL.md`、当前任务 `task.md`、`execution-log.md`，确认本轮已有足够证据支撑复盘。
+- 命令记录：读取 `SKILL.md`、当前任务 	ask.md`、`execution-log.md`，确认本轮已有足够证据支撑复盘。
 - 命令记录：读取 `references/project-memory-template.md`、既有 `docs/agent-memory/project-error-prevention.md` 与 `docs/request-command-log.md`，按“项目级规则 / 任务专项细节”拆分候选经验。
 - 命令记录：运行 `python -X utf8 C:\Users\BJB110\.codex\skills\fupan\scripts\collect_error_evidence.py --project-root D:\ProjectPackage\Int\IntRuoyiMaintance --glob doc\tasks\20260620-prod-release-current-latest\task.md --glob doc\tasks\20260620-prod-release-current-latest\execution-log.md --glob AGENTS.md --output D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260620-prod-release-current-latest\candidate-error-evidence.md`，生成本轮候选证据。
 - 命令记录：尝试运行 `update_project_memory.py` 追加“正式服 Smart Release prod preflight 证据闭合”规则，被脚本拒绝，原因是该条目目前仍偏本次发布链专项规则，不属于项目级通用短记忆。
@@ -229,7 +229,7 @@
 - 用户需求：正式按页面前端点击操作的真实流程，完整走一遍构建发布到测试服、正式服、备份服；过程中禁止直接调接口替代页面动作；遇到问题先记录任务文档，修复后继续从页面重走，直到整条流程一次性走通。
 - 命中经验：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`。
 - 命令记录：核对上一维护仓任务 `doc/tasks/20260620-fupan-prod-release-v7/task.md` 已 `COMPLETED`，允许开启新任务 `doc/tasks/20260620-frontend-release-full-flow/`。
-- 命令记录：读取并确认当前任务 `task.md`、`execution-log.md` 已落地 `BDD` 场景、`设计约束检查`、`经验门禁` 与 `GREEN: experience-preflight -> PASS`。
+- 命令记录：读取并确认当前任务 	ask.md`、`execution-log.md` 已落地 `BDD` 场景、`设计约束检查`、`经验门禁` 与 `GREEN: experience-preflight -> PASS`。
 - 命令记录：尝试按 `control-in-app-browser` 技能接入应用内浏览器，`node_repl/js` 返回环境级错误 `missing field sandboxPolicy`；该问题已记录到当前任务 `execution-log.md`，不属于页面业务链路问题。
 - 命令记录：只读验证 `http://127.0.0.1:48181/` 返回 `200`；核对维护仓前端打包产物与源码，确认运行控制台真实存在“构建发布包 / 部署测试服 / 上线正式服 / 上线备份服”按钮、预览命令弹窗和执行弹窗。
 - 结论记录：应用内浏览器工具层暂不可用，但页面入口和页面动作契约正常；后续改用 Playwright 包装器执行同一真实页面点击流，不用接口直调替代按钮。
@@ -260,7 +260,7 @@
 - 命令记录：`python -X utf8 C:\Users\BJB110\.codex\skills\database-schema-delivery\scripts\validate_database_schema.py --evidence doc\tasks\20260617-dcc-browser-migration-dependency\database-schema-evidence.md` 通过。
 - 命令记录：Playwright 使用新 release tag `release-20260617-1627-codeonly-e2e` 预览第三次构建发布包，范围检查 PASS。
 - 命令记录：Playwright 点击第三次构建发布包“执行”，operation `op-2026-06-17T082753879349700Z-c7f3f523-d9c6-4077-9b0f-eacc6cf5bf73` 初始状态 `RUNNING`。
-- 命令记录：第三次构建 operation `FAILED`；Maven 在 `yudao-module-dcc` 执行 clean 时无法删除 `target`，发布包未生成，禁止发布测试服。
+- 命令记录：第三次构建 operation `FAILED`；Maven 在 `yudao-module-dcc` 执行 clean 时无法删除 	arget`，发布包未生成，禁止发布测试服。
 - 命令记录：`mvn -f D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\pom.xml -pl yudao-module-dcc -DskipTests clean` PASS，DCC target 清理前置恢复。
 - 命令记录：Playwright 使用新 release tag `release-20260617-1632-codeonly-e2e` 预览第四次构建发布包，范围检查 PASS。
 - 命令记录：Playwright 点击第四次构建发布包“执行”，operation `op-2026-06-17T083241295814300Z-dc21fdce-0784-4465-a8d8-7e6ceb485990` 初始状态 `RUNNING`。
@@ -282,8 +282,8 @@
 - 命令记录：`curl http://172.30.30.58:48081/actuator/health` 返回 `{"status":"UP"}`，`curl -I http://172.30.30.58:8081/` 返回 `HTTP/1.1 200 OK`。
 - 命令记录：测试服 `infra_release_migration` 中 `20260617_dcc_browser_performance_indexes` 最新状态为 `APPLIED`。
 - 命令记录：Playwright 打开 `http://172.30.30.58:8081/`，HTTP 200，跳转到 `/login?redirect=/index`，页面标题为 `瑛泰管理系统 - 登录`，未发现 console error。
-- 命令记录：`task-closeout-cleanup --mode preview` PASS，仅计划删除 `runtime-control-start.out.log` 与 `runtime-control-start.err.log`。
-- 命令记录：停止本任务启动的本机维护控制台 `127.0.0.1:48181` 以释放日志文件锁；`task-closeout-cleanup --mode apply` PASS，已删除两个临时日志。
+- 命令记录：	ask-closeout-cleanup --mode preview` PASS，仅计划删除 `runtime-control-start.out.log` 与 `runtime-control-start.err.log`。
+- 命令记录：停止本任务启动的本机维护控制台 `127.0.0.1:48181` 以释放日志文件锁；	ask-closeout-cleanup --mode apply` PASS，已删除两个临时日志。
 
 ## 2026-06-17 新增本机前后端重启 bat
 
@@ -298,7 +298,7 @@
 - 命令记录：`cmd /d /c restart-frontend-backend.bat cancel` PASS，未触发真实重启。
 - 命令记录：PowerShell 静态检查 bat 必含原 IntRuoyi 重启脚本路径、`-Component full` 和 `cancel` 分支，PASS。
 - 命令记录：`git diff --check` PASS，仅有既有换行提示。
-- 命令记录：`task-closeout-cleanup --mode preview` PASS，无删除项、无阻塞、无警告。
+- 命令记录：	ask-closeout-cleanup --mode preview` PASS，无删除项、无阻塞、无警告。
 - 结论记录：已完成本机双击重启入口；验证阶段未执行真实重启、远端操作或数据写入。
 
 ## 2026-06-16 当前运行控制台与原版一致性审计
@@ -314,8 +314,8 @@
 - 命令记录：`python -X utf8 scripts\verify_contracts.py` PASS。
 - 命令记录：`mvn -f backend/pom.xml -Dtest=RuntimeControlOriginalParityTest test` PASS，7 tests, failures 0。
 - 命令记录：`pnpm --dir frontend typecheck` PASS。
-- 命令记录：`task-closeout-cleanup --mode preview` PASS，无删除项、无阻塞、无警告。
-- 命令记录：`task-closeout-cleanup --mode apply` PASS，无删除项、无阻塞、无警告。
+- 命令记录：	ask-closeout-cleanup --mode preview` PASS，无删除项、无阻塞、无警告。
+- 命令记录：	ask-closeout-cleanup --mode apply` PASS，无删除项、无阻塞、无警告。
 - 结论记录：核心运行控制台动作契约 PASS；若要求原版完整治理能力 1:1 复制，则为 PARTIAL。
 
 ## 2026-06-16 运行控制台剩余差异改成原版一致
@@ -330,8 +330,8 @@
 - 命令记录：`pnpm --dir frontend typecheck` PASS。
 - 命令记录：`pnpm --dir frontend build` PASS，Vite 仅提示现有大 chunk 体积。
 - 命令记录：`mvn -f backend/pom.xml test` PASS，12 tests, failures 0。
-- 命令记录：`task-closeout-cleanup --mode preview` PASS，无删除项、无阻塞、无警告。
-- 命令记录：`task-closeout-cleanup --mode apply` PASS，无删除项、无阻塞、无警告。
+- 命令记录：	ask-closeout-cleanup --mode preview` PASS，无删除项、无阻塞、无警告。
+- 命令记录：	ask-closeout-cleanup --mode apply` PASS，无删除项、无阻塞、无警告。
 
 ## 2026-06-16 运行控制台逻辑一致性审计
 
@@ -361,7 +361,7 @@
 - 命令记录：Playwright CLI 默认 Chromium 缺失，改用系统 Chrome channel 截图：`pnpm --dir frontend exec playwright screenshot --channel chrome --wait-for-timeout=3000 --viewport-size="1280,720" http://127.0.0.1:48181/ ...\runtime-control-standalone-e2e.png` PASS。
 - 命令记录：`python ...\validate_test_report.py --expected-outcome passed ...` PASS；`python ...\check_completion.py --apply` PASS，任务状态 completed。
 - 命令记录：`git diff --check` PASS，仅有 Windows 换行提示。
-- 命令记录：`task-closeout-cleanup --mode preview` PASS，blocked/warnings 均无；因预览会删除本次 spec-driven 任务的 PRD/test-plan/test-report/task-state 与 E2E 截图证据，未执行 apply。
+- 命令记录：	ask-closeout-cleanup --mode preview` PASS，blocked/warnings 均无；因预览会删除本次 spec-driven 任务的 PRD/test-plan/test-report/task-state 与 E2E 截图证据，未执行 apply。
 
 ## 2026-06-16 运行控制台前端视觉优化
 
@@ -373,7 +373,7 @@
 - 命令记录：`pnpm --dir frontend build` PASS；Vite 仅提示现有大 chunk 体积。
 - 命令记录：`.\scripts\build.ps1` PASS，随后本机维护应用 `http://127.0.0.1:48181/actuator/health` 返回 `{"status":"UP"}`。
 - 命令记录：Playwright 桌面与 390x844 移动视口打开 `http://127.0.0.1:48181/`，确认页面显示新版运行控制台、动作区无重叠、console error 为 0；未点击执行发布、备份、恢复、回滚、重启或远端清理动作。
-- 命令记录：`task-closeout-cleanup` 预览 PASS，无删除项、无阻塞、无警告；`apply` 也 PASS，无删除项、无阻塞、无警告。
+- 命令记录：	ask-closeout-cleanup` 预览 PASS，无删除项、无阻塞、无警告；`apply` 也 PASS，无删除项、无阻塞、无警告。
 
 ## 2026-06-16 拆分运行控制台独立应用
 
@@ -420,7 +420,7 @@
 - 命令记录：`GET /admin-api/infra/runtime-control/release-packages` 可见 `release-20260616-152022-codeonly-e2e` 且状态 `AVAILABLE`；维护应用操作记录中未出现发布、晋级、备份、恢复、回滚、重启动作。
 - 命令记录：Playwright 最终页面快照显示最新操作 `SUCCESS`，浏览器 console error 为 0，请求列表仅包含运行控制台读接口、预览和执行接口。
 - 命令记录：`mvn -f backend/pom.xml test` PASS；`python -X utf8 scripts\verify_contracts.py` PASS。
-- 命令记录：`task-closeout-cleanup` 预览 PASS，无删除项、无阻塞、无警告。
+- 命令记录：	ask-closeout-cleanup` 预览 PASS，无删除项、无阻塞、无警告。
 
 ## 2026-06-16 运行控制台原版一致性修复
 
@@ -432,7 +432,7 @@
 - 命令记录：`mvn -f backend/pom.xml test` PASS，14 tests。
 - 命令记录：`pnpm --dir frontend typecheck` PASS。
 - 命令记录：`pnpm --dir frontend build` PASS。
-- 命令记录：`task_closeout.py --task-id 20260616-runtime-control-full-original-parity-fix --mode preview` PASS，无删除项、无阻塞、无警告；`--mode apply` PASS，无删除项。
+- 命令记录：	ask_closeout.py --task-id 20260616-runtime-control-full-original-parity-fix --mode preview` PASS，无删除项、无阻塞、无警告；`--mode apply` PASS，无删除项。
 - 结论记录：独立版运行控制台已对齐原版在 Linux-local 参数、治理持久化、向导场景和前端日志入口上的核心语义；本次仍保持独立本机边界，不回接芋道权限体系。
 
 ## 2026-06-16 运行控制台原版逻辑一致性再审计
@@ -447,7 +447,7 @@
 - 命令记录：`pnpm --dir frontend build` PASS，Vite 仅提示现有单 chunk 体积超过 500 kB。
 - 命令记录：静态接口/动作比对 PASS，独立版与原版均为 33 个 HTTP 接口、10 个 action id。
 - 命令记录：脚本哈希比对显示 `apply-test-db-sql.ps1`、`backup-ops.ps1`、`show-int-ruoyi-local-status.ps1`、`restart-int-ruoyi-local.ps1` 字节级一致；`publish-int-ruoyi.ps1` 保留独立应用路径与 DCC inventory UTF-8/base64 修正差异。
-- 命令记录：`task-closeout-cleanup --mode preview` PASS，task.md / execution-log.md / verification-report.md 将保留；随后手动删除测试残留目录 `runtime/runtime-control-original-governance-parity-test`。
+- 命令记录：	ask-closeout-cleanup --mode preview` PASS，task.md / execution-log.md / verification-report.md 将保留；随后手动删除测试残留目录 `runtime/runtime-control-original-governance-parity-test`。
 - 结论记录：当前独立运行控制台在公开接口、核心动作、候选门禁、前端 payload 和主要脚本契约上与原版一致；权限体系、操作者、监听地址、配置来源、运行态目录和正式服默认禁写属于用户要求的独立化差异。
 
 ## 2026-06-17 构建发布目标独立验收
@@ -480,7 +480,7 @@
 - 用户需求：再次构建发布到测试服务器，然后发布到备份服务器。
 - 计划边界：拟通过运行控制台真实前端 E2E 构建 `code-only` 发布包，先发布测试服 `172.30.30.58` 验收，再发布备份服 `172.30.30.59`；不访问正式服 `172.30.30.57`，不执行备份、恢复、回滚、数据库同步或 MinIO/NAS 同步。
 - 命中经验：读取维护仓库发布预检清单、项目错误预防短记忆、原 IntRuoyi 发布/服务器/登录基线、CI/CD 技能和 Playwright 技能。
-- 命令记录：创建任务目录 `doc/tasks/20260617-build-test-backup-release/`，写入 `task.md` 和 `execution-log.md`。
+- 命令记录：创建任务目录 `doc/tasks/20260617-build-test-backup-release/`，写入 	ask.md` 和 `execution-log.md`。
 - 阻塞记录：备份服与正式服同等级门禁；当前缺少发布责任人和字面 `PROD` 确认，未执行构建、发布或远端写入动作。
 - 用户补充：责任人 `admin`。
 - 阻塞记录：已记录发布责任人；仍缺少字面 `PROD` 确认，因此备份服发布继续阻塞。测试服构建发布链路可先执行。
@@ -499,7 +499,7 @@
 - 命令记录：SSH 测试服查询 `infra_release_migration`，`20260617_dcc_browser_performance_indexes=SKIPPED_ALREADY_APPLIED`、`20260617_erp_kingdee_event_callback=APPLIED`。
 - 命令记录：Playwright Chromium 打开 `http://172.30.30.58:8081/`，HTTP 200，最终进入登录页 `/login?redirect=/index`，标题 `瑛泰管理系统 - 登录`，console error 为 0。
 - 阻塞记录：`GET /admin-api/infra/runtime-control/restore-candidates` 返回 `backupOps.nasUsername is required`；代码在 `mark-release-tested` 前强制解析恢复集候选，因此无法标记测试通过，备份服发布未执行。
-- 命令记录：`task-closeout-cleanup --mode preview` PASS，仅列出本任务四个临时启动日志；因任务未完成未执行 apply。
+- 命令记录：	ask-closeout-cleanup --mode preview` PASS，仅列出本任务四个临时启动日志；因任务未完成未执行 apply。
 - 用户补充：`这个intruoyi里有,我不动代码,你来找`；本轮只读定位原 IntRuoyi 中的 backup-ops/NAS 配置来源，避免暴露密码，不修改代码。
 - 命令记录：读取原 IntRuoyi `RuntimeBackupNasRepository` / `NasSettingsServiceImpl`，确认原运行控制台从 `infra_config` 的 `infra.nas.username` / `infra.nas.password` 读取 NAS 凭据，再使用 runtime-control 自身 `nasShare`。
 - 命令记录：只读查询本机 Docker MySQL `infra_config`，确认 NAS 服务地址、用户名键与密码键均存在；未在日志记录凭据明文。
@@ -507,12 +507,12 @@
 - 命令记录：重启本机维护控制台后端，PID `45080`，健康检查 `/actuator/health` 返回 `UP`。
 - 命令记录：`GET /admin-api/infra/runtime-control/restore-candidates` 不再报 `backupOps.nasUsername is required`，但返回 `data=[]`。
 - 阻塞记录：只读检查测试服 `/mnt/nas/backup/BackupPackage` 无最终可用备份点，历史 `20260611-231633` 仅存在于测试服临时目录 `/opt/intruoyi/runtime/data/backup-ops/tmp`，不能作为恢复集候选；因此仍无法标记测试通过，备份服发布未执行。
-- 命令记录：再次执行 `task-closeout-cleanup --mode preview` PASS，最新删除候选为六个本任务临时启动日志；任务未完成未执行 apply。
+- 命令记录：再次执行 	ask-closeout-cleanup --mode preview` PASS，最新删除候选为六个本任务临时启动日志；任务未完成未执行 apply。
 - 用户澄清：不要备份恢复，只要构建发布到测试服务器和备份服务器；询问是否实现。
 - 状态回答：测试服构建发布已实现，备份服发布尚未实现；缺少字面 `PROD` 确认且运行控制台标记测试通过入口仍受恢复集候选约束。
 - 用户确认：`PROD`。
 - 命令记录：记录备份服发布责任人 `admin` 与字面 `PROD` 确认；本轮继续只做 code-only 发布，不执行备份、恢复、回滚、恢复集标记或数据同步。
-- 复现记录：Playwright 真实前端预览“上线备份服”首次返回 `releaseTag 尚未测试通过`，定位为运行控制台后端只认 `tested.json`，不能识别 code-only 测试服成功部署 operation。
+- 复现记录：Playwright 真实前端预览“上线备份服”首次返回 `releaseTag 尚未测试通过`，定位为运行控制台后端只认 	ested.json`，不能识别 code-only 测试服成功部署 operation。
 - 命令记录：新增后端回归测试 `RuntimeControlOriginalParityTest#promoteBackupAcceptsCodeOnlyReleaseAfterSuccessfulTestDeployment`，修复前 RED，期望 code=0、实际 code=400。
 - 命令记录：修复 `RuntimeControlService.validateReleasePackageAvailability`，仅对 `PROMOTE_BACKUP + code-only + 同 releaseTag 的成功 publish-test operation` 放行；`PROMOTE_PROD`、`with-data` 和未测试发布包仍保持阻断。
 - 命令记录：`mvn -Dtest=RuntimeControlOriginalParityTest#promoteBackupAcceptsCodeOnlyReleaseAfterSuccessfulTestDeployment test` PASS；`mvn -Dtest=RuntimeControlOriginalParityTest test` PASS。
@@ -531,7 +531,7 @@
 - 授权记录：本轮备份服发布责任人沿用本线程已确认的 `admin`；用户本条消息已提供 `PROD` 授权。
 - 计划边界：通过运行控制台真实前端 E2E 构建新的 `code-only` 发布包，先发布测试服 `172.30.30.58` 验收，再发布备份服 `172.30.30.59`；不访问正式服 `172.30.30.57`，不执行备份、恢复、回滚、数据库同步或 MinIO/NAS 同步。
 - 命中经验：读取维护仓库发布预检清单、项目错误预防短记忆、原 IntRuoyi 发布/服务器/登录基线、CI/CD 技能和 Playwright 技能。
-- 命令记录：创建任务目录 `doc/tasks/20260618-build-test-backup-release/`，写入 `task.md` 和 `execution-log.md`。
+- 命令记录：创建任务目录 `doc/tasks/20260618-build-test-backup-release/`，写入 	ask.md` 和 `execution-log.md`。
 - 命令记录：本机运行控制台后端 `48181` 与前端 `48182` 健康；当前维护仓库 HEAD 为 `f8c1d57`。
 - 命令记录：预拉并 inspect `nginx:1.27-alpine`、`eclipse-temurin:21-jre-noble`、`eclipse-temurin:21-jre` 通过。
 - 命令记录：`python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql` PASS，扫描 149 个迁移。
@@ -544,13 +544,13 @@
 - 命令记录：只读核对测试服数据库，核心菜单 `900120/5590/5580/5262/5540` 与租户包 `900120` 条件存在，但缺少启用的 MES 排产/计划目标角色。
 - 命令记录：只读核对备份服数据库，核心菜单与租户包 `900120` 条件存在，满足 MES 排产/计划目标角色条件的记录数为 0。
 - 阻塞记录：测试服 `.env` 已写入 `IMAGE_TAG=release-20260618-0056-codeonly-e2e`，但 backend/frontend 容器仍运行上一版 `release-202606172114-codeonly-e2e`；迁移表中 `20260617_mes_scheduler_role_smart_scheduling_tab` 为 `RUNNING`。因测试服发布未完成且备份服前置条件同样缺失，未执行备份服发布。
-- 命令记录：`task-closeout-cleanup --mode preview` PASS，仅保留本任务 `task.md` 与 `execution-log.md`，无删除项、阻塞项或警告；任务未完成，未执行 apply。
+- 命令记录：	ask-closeout-cleanup --mode preview` PASS，仅保留本任务 	ask.md` 与 `execution-log.md`，无删除项、阻塞项或警告；任务未完成，未执行 apply。
 - 用户补充：`授权`。
-- 命令记录：按 `database-schema-delivery` 与真实库结构核对 `system_tenant`、`system_tenant_package`、`system_role`、`infra_release_operation_lock`、`infra_release_migration`，确认测试服与备份服 `tenant_id=122` 均缺少 `mes_scheduler` 角色且智能排程菜单树缺失 4 个子菜单。
-- 命令记录：测试服执行受控 SQL，克隆 `tenant_id=122` 当前套餐并切换到套餐 `114`，创建/启用 `mes_scheduler/排产员` 角色；将上一轮失败遗留的 release lock 与 migration `RUNNING` 状态改为 `FAILED`。
+- 命令记录：按 `database-schema-delivery` 与真实库结构核对 `system_tenant`、`system_tenant_package`、`system_role`、`infra_release_operation_lock`、`infra_release_migration`，确认测试服与备份服 	enant_id=122` 均缺少 `mes_scheduler` 角色且智能排程菜单树缺失 4 个子菜单。
+- 命令记录：测试服执行受控 SQL，克隆 	enant_id=122` 当前套餐并切换到套餐 `114`，创建/启用 `mes_scheduler/排产员` 角色；将上一轮失败遗留的 release lock 与 migration `RUNNING` 状态改为 `FAILED`。
 - 命令记录：测试服只读校验 PASS，`mes_scheduler` 角色数为 1，智能排程菜单树缺失数为 0。
-- 命令记录：备份服执行受控 SQL，克隆 `tenant_id=122` 当前套餐并切换到套餐 `113`，创建/启用 `mes_scheduler/排产员` 角色。
-- 命令记录：备份服只读校验 PASS，`mes_scheduler` 角色数为 1，智能排程菜单树缺失数为 0，`tenant_id=121` 仍保持原套餐 `111`。
+- 命令记录：备份服执行受控 SQL，克隆 	enant_id=122` 当前套餐并切换到套餐 `113`，创建/启用 `mes_scheduler/排产员` 角色。
+- 命令记录：备份服只读校验 PASS，`mes_scheduler` 角色数为 1，智能排程菜单树缺失数为 0，	enant_id=121` 仍保持原套餐 `111`。
 - 命令记录：`validate_database_schema.py --evidence doc\tasks\20260618-build-test-backup-release\database-schema-evidence.md` PASS。
 - 命令记录：Playwright 真实前端重新预览并执行“部署测试服”，operation `op-2026-06-18T010137328120900Z-1f312235-29b4-4954-b631-3f09874801a4` 最终 `SUCCESS`。
 - 命令记录：测试服 required SQL `20260617_mes_scheduler_role_smart_scheduling_tab` 成功执行并标记 `APPLIED`。
@@ -562,27 +562,27 @@
 - 命令记录：Playwright Chromium 打开 `http://172.30.30.59:8081/`，最终 `/login?redirect=/index`，标题 `瑛泰管理系统 - 登录`，console error 0，failed request 0。
 - 命令记录：`validate_cicd_environment.py --evidence doc\tasks\20260618-build-test-backup-release\ci-cd-evidence.md` PASS。
 - 结论记录：测试服与备份服均已发布 `release-20260618-0056-codeonly-e2e` 并通过验证。
-- 命令记录：`task-closeout-cleanup --mode preview` 与 `--mode apply` PASS，无删除项、阻塞项或警告，保留本任务四个记录/证据文件。
+- 命令记录：	ask-closeout-cleanup --mode preview` 与 `--mode apply` PASS，无删除项、阻塞项或警告，保留本任务四个记录/证据文件。
 
 ## 2026-06-18 缩小 code-only 发布包
 
 - 用户需求：低风险缩小发布包，只保留部署必需内容，去掉 `docker-build-context`。
 - 计划边界：修改本机维护仓库构建脚本和测试；不执行真实服务器发布、远端写入、备份、恢复或回滚。
 - 命中经验：读取发布预检清单、原 IntRuoyi 发布/备份恢复基线、项目错误预防短记忆和 CI/CD 技能。
-- 命令记录：创建任务目录 `doc/tasks/20260618-shrink-release-package/`，写入 `task.md` 与 `execution-log.md`。
+- 命令记录：创建任务目录 `doc/tasks/20260618-shrink-release-package/`，写入 	ask.md` 与 `execution-log.md`。
 - 命令记录：新增 `scripts/tests/test_release_package_slimming.py`，RED 运行 `python -m pytest scripts\tests\test_release_package_slimming.py` 失败，证明当前脚本未清理最终发布包中的 `docker-build-context`。
 - 命令记录：修改 `ops/deploy/publish-int-ruoyi.ps1`，在 `Write-ReleaseManifest` 前调用 `Remove-ReleaseDockerBuildContextFromPackage`，删除构建上下文并在残留时 fail fast。
 - 命令记录：GREEN 运行 `python -m pytest scripts\tests\test_release_package_slimming.py` PASS，2 个测试通过；PowerShell 解析检查 PASS。
 - 命令记录：`validate_cicd_environment.py --evidence doc\tasks\20260618-shrink-release-package\ci-cd-evidence.md` PASS。
 - 结论记录：后续 build-release 发布包会在 manifest 生成前去掉 `docker-build-context`；未改写已部署历史发布包，避免 manifest 审计记录漂移。
-- 命令记录：`task-closeout-cleanup --mode preview` 与 `--mode apply` PASS，无删除项、阻塞项或警告。
+- 命令记录：	ask-closeout-cleanup --mode preview` 与 `--mode apply` PASS，无删除项、阻塞项或警告。
 
 ## 2026-06-18 真实 E2E 验证发布包瘦身
 
 - 用户需求：进行真实的 E2E 测试。
 - 计划边界：通过运行控制台真实前端 E2E 触发新的 `code-only` 构建发布包并验证产物瘦身；不部署测试服、备份服或正式服，不执行备份、恢复、回滚、数据库同步或 MinIO/NAS 业务数据同步。
 - 命中经验：读取发布预检清单、原 IntRuoyi 发布/备份恢复基线、服务器访问基线、项目错误预防短记忆、CI/CD 技能和 Playwright 技能。
-- 命令记录：创建任务目录 `doc/tasks/20260618-e2e-release-package-slimming/`，写入 `task.md`、`execution-log.md` 和 `ci-cd-evidence.md`。
+- 命令记录：创建任务目录 `doc/tasks/20260618-e2e-release-package-slimming/`，写入 	ask.md`、`execution-log.md` 和 `ci-cd-evidence.md`。
 - 命令记录：本机运行控制台后端 `48181` 与前端 `48182` HTTP 200；`npx` 可用。
 - 命令记录：预拉并 inspect `nginx:1.27-alpine`、`eclipse-temurin:21-jre-noble`、`eclipse-temurin:21-jre` 通过。
 - 命令记录：`python -m pytest scripts\tests\test_release_package_slimming.py` PASS，2 个测试通过；`ops\deploy\publish-int-ruoyi.ps1` PowerShell 解析 PASS。
@@ -595,9 +595,9 @@
 - 命令记录：本地发布包 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260618-1006-slim-e2e` 大小 `775.98 MiB`，递归路径和 manifest 均未命中 `docker-build-context`。
 - 命令记录：与旧包 `release-20260618-0056-codeonly-e2e` 的 `1,392.39 MiB` 对比，新包减少 `616.42 MiB`。
 - 命令记录：`validate_cicd_environment.py --evidence doc\tasks\20260618-e2e-release-package-slimming\ci-cd-evidence.md` PASS。
-- 命令记录：Playwright Chromium 浏览器已关闭；`task-closeout-cleanup --mode preview` PASS，保留本任务三份记录/证据文件，无删除项、阻塞项或警告。
-- 阻塞记录：首次 `task-closeout-cleanup --mode apply` 读任务状态为 `unknown`，原因是任务文档只有中文 `当前状态`；已补充英文 `Current Status=completed` 后重试。
-- 命令记录：第二次 `task-closeout-cleanup --mode apply` PASS，无删除项、阻塞项或警告。
+- 命令记录：Playwright Chromium 浏览器已关闭；	ask-closeout-cleanup --mode preview` PASS，保留本任务三份记录/证据文件，无删除项、阻塞项或警告。
+- 阻塞记录：首次 	ask-closeout-cleanup --mode apply` 读任务状态为 `unknown`，原因是任务文档只有中文 `当前状态`；已补充英文 `Current Status=completed` 后重试。
+- 命令记录：第二次 	ask-closeout-cleanup --mode apply` PASS，无删除项、阻塞项或警告。
 - 结论记录：真实 E2E 构建发布包已完成；本轮未部署测试服、备份服或正式服，未执行备份、恢复、回滚或数据同步。
 
 ## 2026-06-18 部署瘦身发布包到测试服并验证
@@ -605,7 +605,7 @@
 - 用户需求：部署到测试服务器进行验证。
 - 计划边界：只部署测试服 `172.30.30.58`，发布包固定为 `release-20260618-1006-slim-e2e`；不部署备份服或正式服，不执行备份、恢复、回滚、数据库整库同步或 MinIO/NAS 业务数据同步。
 - 命中经验：读取发布预检清单、原 IntRuoyi 发布/备份恢复基线、服务器访问基线、登录访问基线、项目错误预防短记忆、CI/CD 技能和 Playwright 技能。
-- 命令记录：创建任务目录 `doc/tasks/20260618-deploy-test-slim-release/`，写入 `task.md`、`execution-log.md` 和 `ci-cd-evidence.md`。
+- 命令记录：创建任务目录 `doc/tasks/20260618-deploy-test-slim-release/`，写入 	ask.md`、`execution-log.md` 和 `ci-cd-evidence.md`。
 - 命令记录：本机运行控制台后端 `48181` 与前端 `48182` HTTP 200；`release-status` 可读回 `release-20260618-1006-slim-e2e`，状态 `AVAILABLE`，`checksumPresent=true`。
 - 命令记录：测试服发布前健康检查后端 `48081` 与前端 `8081` 均 HTTP 200；SSH 只读 preflight 确认 `/opt/intruoyi/runtime` 与 `/mnt/nas` 可写、`/mnt/nas/Backup/ReleasePackage` 可读、容量满足。
 - 命令记录：测试服发布前当前版本为 `IMAGE_TAG=release-20260618-0056-codeonly-e2e`，backend/frontend 均运行旧 tag。
@@ -618,7 +618,7 @@
 - 命令记录：Playwright 真实打开测试服前端入口，进入 `/login?redirect=/index`，标题 `瑛泰管理系统 - 登录`，console error `0`，failed request `0`。
 - 观察记录：额外只读登录探针显示测试服 `测试租户/aoteman` 当前返回“登录失败，账号密码不正确”；本任务未切换账号伪装通过，也未执行业务写入。
 - 命令记录：`validate_cicd_environment.py --evidence doc\tasks\20260618-deploy-test-slim-release\ci-cd-evidence.md` PASS。
-- 命令记录：`task-closeout-cleanup --mode preview` 与 `--mode apply` PASS，无删除项、阻塞项或警告。
+- 命令记录：	ask-closeout-cleanup --mode preview` 与 `--mode apply` PASS，无删除项、阻塞项或警告。
 
 ## 2026-06-18 维护仓智能排产冒烟发布配置固化
 
@@ -626,14 +626,14 @@
 - 命令记录：读取 `ci-cd-environment-delivery`、`quality-assurance-test-suite` 技能与契约。
 - 命令记录：读取 `AGENTS.md`、`docs/experience-index.md`、`docs/release-build-preflight-lessons.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`docs/agent-memory/project-error-prevention.md`。
 - 命令记录：检查上一任务 `doc/tasks/20260618-deploy-test-slim-release/task.md`，确认状态为 `completed`。
-- 命令记录：创建任务目录 `doc/tasks/20260618-maintenance-persist-scheduler-smoke-release/`，写入 `task.md`、`execution-log.md`、`ci-cd-evidence.md`、`qa-evidence.md`。
+- 命令记录：创建任务目录 `doc/tasks/20260618-maintenance-persist-scheduler-smoke-release/`，写入 	ask.md`、`execution-log.md`、`ci-cd-evidence.md`、`qa-evidence.md`。
 - 命令记录：新增 RED 契约测试 `scripts/tests/test_scheduler_smoke_release_config.py`，要求维护发布脚本使用维护仓 compose 模板并打包智能排产 smoke runner/config。
 - 命令记录：`python -X utf8 -m pytest scripts\tests\test_scheduler_smoke_release_config.py -q` -> RED，3 failed，确认维护发布链路缺少智能排产 smoke 固化。
 - 命令记录：修改 `ops/deploy/publish-int-ruoyi.ps1`，改用维护仓 `ops/deploy/int-ruoyi-test/docker-compose.yml`；新增 smoke runner 打包、远端复制、运行态断言和 `.env` smoke 默认项。
 - 命令记录：修改 `ops/deploy/int-ruoyi-test/docker-compose.yml`，新增 backend smoke 环境变量、Spring smoke 参数和 `/opt/intruoyi/runtime/smoke/bin/npm` 挂载。
 - 命令记录：`python -X utf8 -m pytest scripts\tests\test_scheduler_smoke_release_config.py -q` -> PASS，3 passed；PowerShell AST parse -> PASS；`python -X utf8 -m pytest scripts\tests -q` -> PASS，5 passed；Docker Compose config -> PASS。
-- 命令记录：`validate_cicd_environment.py` -> PASS；`validate_quality_assurance.py` 首次因缺少证据标记失败，补齐后 -> PASS；`git diff --check` 限定本任务文件 -> PASS；`task-closeout-cleanup --mode preview` -> PASS。
-- 命令记录：`task-closeout-cleanup --mode apply` -> PASS，无删除项、阻塞项、警告或删除路径。
+- 命令记录：`validate_cicd_environment.py` -> PASS；`validate_quality_assurance.py` 首次因缺少证据标记失败，补齐后 -> PASS；`git diff --check` 限定本任务文件 -> PASS；	ask-closeout-cleanup --mode preview` -> PASS。
+- 命令记录：	ask-closeout-cleanup --mode apply` -> PASS，无删除项、阻塞项、警告或删除路径。
 
 ## 2026-06-18 发布验证通用经验沉淀
 
@@ -643,13 +643,13 @@
 - 命令记录：`apply_patch` 已更新发布预检经验文档、短记忆、任务文档和本日志。
 - 命令记录：再次运行 `rg -n "唯一发布源头|配置必须代码化|验证发布产物|环境差异显式检查|目标环境真实运行态|故障补成门禁" docs\\release-build-preflight-lessons.md docs\\agent-memory\\project-error-prevention.md` -> PASS，六条基线可被命中。
 - 命令记录：`git diff --check -- docs/release-build-preflight-lessons.md docs/agent-memory/project-error-prevention.md doc/tasks/20260618-release-validation-experience-baseline docs/request-command-log.md` -> PASS，无空白错误。
-- 命令记录：`task-closeout-cleanup --mode preview` 与 `--mode apply` -> PASS，无删除项、阻塞项、警告或删除路径。
+- 命令记录：	ask-closeout-cleanup --mode preview` 与 `--mode apply` -> PASS，无删除项、阻塞项、警告或删除路径。
 
 ## 2026-06-18 维护仓构建发布到测试服务器
 
 - 用户需求：构建发布到测试服务器。
 - 命中经验：读取维护仓任务规范、发布预检经验、IntRuoyi 发布/备份恢复基线、服务器访问基线和登录访问基线；本次授权仅限测试服 `172.30.30.58`，禁止备份服、正式服、备份、恢复、回滚和数据同步。
-- 命令记录：创建任务目录 `doc/tasks/20260618-build-deploy-test-server-maintenance/`，写入 `task.md`、`execution-log.md`、`ci-cd-evidence.md`、`bug-regression-evidence.md`。
+- 命令记录：创建任务目录 `doc/tasks/20260618-build-deploy-test-server-maintenance/`，写入 	ask.md`、`execution-log.md`、`ci-cd-evidence.md`、`bug-regression-evidence.md`。
 - 命令记录：`python -X utf8 -m pytest scripts\tests\test_showroom_release_sql_contract.py -q` -> RED，3 failed，确认维护仓缺少 `sql/showroom` 奖项 SQL 发布契约和 schema preflight。
 - 命令记录：修改 `ops/deploy/publish-int-ruoyi.ps1`，新增 `sql/mysql` + 指定 `sql/showroom/20260613_showroom_award_and_hall_item_schema.sql` 发布根、release metadata 读取、migration policy gate 参数和远端 `showroom_award` schema preflight。
 - 命令记录：修改 `ops/release/release_migration_manifest.py`、`ops/release/release_migration_policy_gate.py`、`ops/release/run-release-migration-policy-gate.py`，支持 `sql_paths` / `file_prefix` / `--sql-file` / `--file-prefix`，并改为导入维护仓 `ops.release`。
@@ -662,20 +662,20 @@
 - 命令记录：真实前端 build-release operation `op-2026-06-18T094150771556100Z-0c41d8dd-8879-42b1-b068-4e0457975aa7` -> SUCCESS；releaseTag `release-20260618-1742-showroom-sql-vite`；发布包 `813535256 bytes` / `775.85 MiB`，无 `docker-build-context`。
 - 命令记录：首次测试服部署因旧 `release-20260618-1437-showroom-sql-smoke-env` 锁仍为 `RUNNING` 失败；只将该旧锁按事实收口为 `FAILED`，`updated_rows=1`。
 - 命令记录：第二次测试服部署因 `preflight-plan.json status=blocked` 失败，阻塞项为 `20260613_showroom_award_and_hall_item_schema` 缺依赖 `20260606_showroom_hall_product_canvas_layout`。
-- 命令记录：新增 RED 用例 `test_preflight_accepts_dependency_applied_earlier_in_same_plan`，修复 `release_preflight_plan.py` 按 manifest 顺序累积同包前置 `APPLY` 迁移；业务仓测试 `python -X utf8 -m pytest script\tests\test_release_preflight_plan.py -q` -> PASS，9 passed；维护仓/业务仓脚本哈希一致。
-- 命令记录：只将本次失败的 `test-release-20260618-1742-showroom-sql-vite` 锁收口为 `FAILED`，`updated_rows=1`，随后通过 Playwright 真实前端再次点击“部署测试服”。
+- 命令记录：新增 RED 用例 	est_preflight_accepts_dependency_applied_earlier_in_same_plan`，修复 `release_preflight_plan.py` 按 manifest 顺序累积同包前置 `APPLY` 迁移；业务仓测试 `python -X utf8 -m pytest script\tests\test_release_preflight_plan.py -q` -> PASS，9 passed；维护仓/业务仓脚本哈希一致。
+- 命令记录：只将本次失败的 	est-release-20260618-1742-showroom-sql-vite` 锁收口为 `FAILED`，`updated_rows=1`，随后通过 Playwright 真实前端再次点击“部署测试服”。
 - 命令记录：最终部署 operation `op-2026-06-18T111139027664400Z-8c8c1cd0-b797-4b05-ba38-56190a4fb52a` -> SUCCESS；日志显示 `Publish completed for test`。
 - 命令记录：测试服验证 PASS：`.env` `IMAGE_TAG=release-20260618-1742-showroom-sql-vite`；backend/frontend 镜像 tag 匹配并 running；后端健康 `UP`；前端 HTTP 200。
 - 命令记录：schema 验证 PASS：`20260606_showroom_hall_product_canvas_layout`、`20260613_showroom_award_and_hall_item_schema`、`20260618_showroom_publicity_role_menu_scope` 均 `APPLIED`；展厅奖项表、混合展厅项表、布局列和 6 个关键索引存在。
 - 命令记录：Playwright 真实打开测试服前端 `http://172.30.30.58:8081/`，标题 `瑛泰管理系统 - 登录`，console error 0，failed request 0，截图保存到任务目录。
 - 命令记录：维护仓测试、业务仓发布预检测试、前端构建契约测试、PowerShell AST、CI/CD/bug/database evidence validators 均 PASS。
-- 命令记录：`task-closeout-cleanup --mode preview` 与 `--mode apply` PASS，无删除项、阻塞项、警告或删除路径。
+- 命令记录：	ask-closeout-cleanup --mode preview` 与 `--mode apply` PASS，无删除项、阻塞项、警告或删除路径。
 
 ## 2026-06-18 发布后角色 E2E 门禁
 
 - 用户需求：每次发布后在测试服务器用芋道源码租户真实账号 `gaomin`、`zhaojie`、`wangsiyu` 全量验证角色页签隔离、子页访问和智能排产冒烟测试；遇到错误先全部记录，再统一修复、重新构建发布到测试服务器并复测直到满足目标。
 - 命中经验：读取发布预检经验、服务器访问基线、登录访问基线、备份/发布/恢复基线和项目错误预防短记忆；本次高风险动作授权仅限测试服 `172.30.30.58` 和指定三账号真实 E2E。
-- 命令记录：创建任务目录 `doc/tasks/20260618-post-release-role-e2e-gate/`，写入 `task.md`、`execution-log.md`、`qa-evidence.md`、`bug-regression-evidence.md`，记录 `GREEN: experience-preflight -> PASS`。
+- 命令记录：创建任务目录 `doc/tasks/20260618-post-release-role-e2e-gate/`，写入 	ask.md`、`execution-log.md`、`qa-evidence.md`、`bug-regression-evidence.md`，记录 `GREEN: experience-preflight -> PASS`。
 - 命令记录：读取前端 Playwright E2E 脚本、智能排产冒烟测试脚本、展厅和 DCC 菜单 SQL 线索，确认前端仓 `playwright` 依赖可解析。
 ## 2026-06-18 post-release-role-e2e-gate continuation
 
@@ -694,7 +694,7 @@
 - 用户需求：继续上个坏掉线程跑到一半的目标：每次发布后在测试服务器用 `芋道源码` 租户账号 `gaomin`、`zhaojie`、`wangsiyu` 全量验证权限页签、子页访问和智能排产冒烟；失败先全部记录，统一修复后重新构建发布到测试服并复测直到通过。
 - 执行命令：读取 `bug-regression-fix-loop`、`quality-assurance-test-suite`、`playwright` 技能与契约；读取 `doc/tasks/20260618-post-release-role-e2e-gate/` 任务文档、执行日志、QA/缺陷证据和最新 evidence 列表；读取 `docs/experience-index.md`、`docs/release-build-preflight-lessons.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`、`docs/agent-memory/project-error-prevention.md`。
 - 执行命令：摘要读取 `post-release-role-e2e-1781826823171.json` 与 `runtime-console-build-deploy-1781803561178.json`，确认最新发布成功但三角色 E2E 仍有 4 个失败。
-- 执行命令：新增并运行 RED 契约 `MesProAutoScheduleControllerContractTest`、`tests/e2e/mes-auto-schedule-dependency-post-static.spec.js`；运行 `test_scheduler_smoke_release_contract.py` 暴露 smoke 用户名契约失败。
+- 执行命令：新增并运行 RED 契约 `MesProAutoScheduleControllerContractTest`、	ests/e2e/mes-auto-schedule-dependency-post-static.spec.js`；运行 	est_scheduler_smoke_release_contract.py` 暴露 smoke 用户名契约失败。
 - 执行命令：修改后端 `/mes/pro/auto-schedule/dependencies` 增加 POST body、前端依赖查询改 POST、SQL/发布测试统一合法 smoke 用户名；`mvn -pl yudao-module-mes -Dtest=MesProAutoScheduleControllerContractTest test` PASS；`node tests\e2e\mes-auto-schedule-dependency-post-static.spec.js` PASS；`python -X utf8 -m pytest script\tests\test_scheduler_smoke_release_contract.py script\tests\test_post_release_role_e2e_gate_sql.py -q` PASS。
 - 执行命令：只读核对测试服数据库 154 条 `infra_file.config_id=28` 产品封面引用与 MinIO 对象缺口；从已有真实对象 evidence 生成 `minio-showroom-cover-20260602-repair-1781842832636.tar`，同步到测试服 MinIO 默认 `yudao` bucket，补齐对象数到 154，并用 `curl -I` 验证失败样例返回 `image/png`。
 - 执行命令：运行本地门禁、构建并发布 `release-20260619-1229-role-e2e-gate-post-deps-smoke-user` 到测试服；证据 `runtime-console-build-deploy-1781844498623.json` 为 PASS，测试服 `.env`、镜像 tag、后端 health、前端 HTTP 200 和 smoke username 迁移状态均通过。
@@ -704,11 +704,11 @@
 - 执行命令：发布后只读核验测试服 `release-20260619-1301-role-e2e-gate-smoke-password-freshness` 的后端 health、前端 HTTP 200、远端 `.env`、backend/frontend 镜像 tag、`20260619_post_release_role_e2e_gate_smoke_username_password_freshness_fix` 迁移状态与 smoke 账号 `password_update_time`。
 - 执行命令：准备以 `POST_RELEASE_ROLE_E2E_PASSWORD=<redacted>` 运行 `node doc/tasks/20260618-post-release-role-e2e-gate/scripts/post-release-role-e2e.cjs`，在测试服完整复测 `gaomin`、`zhaojie`、`wangsiyu`。
 - 执行命令：解析 `post-release-role-e2e-1781846902055.json` 与远端 `smoke-report.json`，确认第三轮失败只剩 `zhaojie` 智能排产 smoke，根因为默认 ERP 计划完工时间 `2026-06-20 17:27:00` 落在周六，被 Kingdee 车间工作日历拒绝。
-- 执行命令：新增 RED 静态合同并修复 `tests/e2e/smart-scheduling-smoke-real-flow.e2e.js`，将默认 `MES_SMOKE_ERP_PLANNED_FINISH_TIME` 改为下一个工作日；`node tests/e2e/smart-scheduling-smoke-real-flow-static.spec.js` -> PASS。
+- 执行命令：新增 RED 静态合同并修复 	ests/e2e/smart-scheduling-smoke-real-flow.e2e.js`，将默认 `MES_SMOKE_ERP_PLANNED_FINISH_TIME` 改为下一个工作日；`node tests/e2e/smart-scheduling-smoke-real-flow-static.spec.js` -> PASS。
 - 执行命令：准备重新构建发布测试服修复版 `release-20260619-1335-role-e2e-gate-weekday-smoke-finish`；命令为设置 `RUNTIME_CONSOLE_RELEASE_TAG`、`RUNTIME_CONSOLE_REASON`、`RUNTIME_CONSOLE_TIMEOUT_MS`、`RUNTIME_CONSOLE_POLL_INTERVAL_MS` 后运行 `node doc/tasks/20260618-post-release-role-e2e-gate/scripts/runtime-console-build-deploy.cjs`。
 - 执行命令：读取最新证据 `post-release-role-e2e-1781848897783.json` 与截图 `zhaojie-smoke-job-trigger-failure-1781848897783.png`，确认 `gaomin`/`wangsiyu` 已通过，`zhaojie` 仅剩 ERP 金蝶同步运行页生产工单“执行一次”按钮不可见。
 - 执行命令：只读查询测试服 `system_users`、`system_role`、`system_role_menu`、`system_menu`、`system_tenant`、`system_tenant_package`，并用 Playwright 真实登录 `messmokeerp` 读取 `get-permission-info`；确认旧 `infra:job:trigger` 绑定在定时任务父链下，被 `filterDisableMenus()` 因缺父链过滤出登录态权限。
-- 执行命令：新增 RED 契约 `test_post_release_role_gate_smoke_erp_job_permission_fix_surfaces_manual_trigger_button`，要求新增迁移在 ERP 同步菜单 `6013` 下补齐 `infra:job:query` 与 `infra:job:trigger` 按钮权限并绑定 ERP smoke 角色；首次运行 `python -X utf8 -m pytest script\tests\test_post_release_role_e2e_gate_sql.py -q` -> FAIL，缺少迁移文件。
+- 执行命令：新增 RED 契约 	est_post_release_role_gate_smoke_erp_job_permission_fix_surfaces_manual_trigger_button`，要求新增迁移在 ERP 同步菜单 `6013` 下补齐 `infra:job:query` 与 `infra:job:trigger` 按钮权限并绑定 ERP smoke 角色；首次运行 `python -X utf8 -m pytest script\tests\test_post_release_role_e2e_gate_sql.py -q` -> FAIL，缺少迁移文件。
 - 执行命令：新增 `sql/mysql/20260619_post_release_role_e2e_gate_smoke_z_erp_job_permission_fix.sql`；`python -X utf8 -m pytest script\tests\test_post_release_role_e2e_gate_sql.py -q` -> PASS，8 passed。
 - 执行命令：`python -X utf8 -m pytest script\tests\test_post_release_role_e2e_gate_sql.py script\tests\test_scheduler_smoke_release_contract.py script\tests\test_showroom_release_sql_contract.py script\tests\test_publish_int_ruoyi_to_test_tooling.py script\tests\test_showroom_product_revision_attachment_sql.py script\tests\test_showroom_sql_scripts.py -q` -> PASS，115 passed。
 - 执行命令：`python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql` -> PASS，migrationCount=157，包含 `20260619_post_release_role_e2e_gate_smoke_z_erp_job_permission_fix`。
@@ -774,7 +774,7 @@
 - 执行命令：读取 `bug-regression-fix-loop` 技能、`D:\ProjectPackage\Int\IntRuoyi\docs\experience-index.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、维护仓当前任务文档，以及后端上一任务 `20260619-post-release-role-e2e-gate-edhr-batch-trigger-gate/task.md`，建立新的后端任务 `20260619-post-release-role-e2e-gate-feedback-approver-identity`。
 - 执行命令：`ssh root@172.30.30.58 "grep -n 'MES_SMOKE_' /opt/intruoyi/runtime/.env"` -> PASS，确认测试服当前存在 `MES_SMOKE_SUPERVISOR_USERNAME=messmokesupervisor`，但没有 `MES_SMOKE_FEEDBACK_APPROVER_NAME`。
 - 执行命令：`ssh root@172.30.30.58 "cat /opt/intruoyi/runtime/smoke/yudao-ui-admin-vue3/output/artifacts/smoke-report.json"` -> FAIL，确认最新真实 smoke 失败点为 `/admin-api/mes/pro/feedback/import-record/attribute`，错误 `第三方报工导管报工第 2 行工段长匹配到多名用户：eDHR矩阵-审批人`。
-- 执行命令：只读查询测试服 `system_users`、`system_user_role`、`system_role`，确认 `tenant_id=1` 下 `mes_smoke_supervisor(id=910253)` 与 `messmokesupervisor(id=910260)` 均启用且共用 nickname `eDHR矩阵-审批人`，角色同为 `报工冒烟审批员`。
+- 执行命令：只读查询测试服 `system_users`、`system_user_role`、`system_role`，确认 	enant_id=1` 下 `mes_smoke_supervisor(id=910253)` 与 `messmokesupervisor(id=910260)` 均启用且共用 nickname `eDHR矩阵-审批人`，角色同为 `报工冒烟审批员`。
 - 执行命令：修改后端 `MesProFeedbackImportRecordServiceImpl` 与测试 `MesProFeedbackImportRecordServiceImplTest`，让审批人解析优先按 exact username 命中，未命中再按 exact nickname 保持原契约，同时对重复 nickname 继续 fail fast。
 - 执行命令：修改维护仓 `ops/deploy/publish-int-ruoyi.ps1`、`ops/deploy/int-ruoyi-test/docker-compose.yml` 与 `doc/tasks/20260618-post-release-role-e2e-gate/scripts/validate-maintenance-publish-contract.cjs`，显式输出并校验 `MES_SMOKE_FEEDBACK_APPROVER_NAME=$effectiveMesSmokeSupervisorUsername`。
 - 执行命令：`mvn -pl yudao-module-mes "-Dtest=MesProFeedbackImportRecordServiceImplTest" test` -> 先因负例存在未执行路径的多余 stub 导致 Mockito `UnnecessaryStubbingException`，删除多余 stub 后 -> PASS，6 passed。
@@ -795,9 +795,9 @@
 # 2026-06-20 发布后三角色 E2E 门禁收尾
 
 - 用户需求：继续把已通过的发布后三角色测试服验收任务做完收尾，清理附属产物、补齐任务归档，并在维护仓/后端仓做选择性提交。
-- 执行命令：读取 `task-closeout-cleanup` 技能与 `references/closeout-rules.md`，重新核对维护仓主任务 `doc/tasks/20260618-post-release-role-e2e-gate/task.md`、`execution-log.md` 与两个仓库 `git status --short`。
-- 执行命令：`python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260618-post-release-role-e2e-gate --mode preview` -> PASS，确认主任务仅应保留 `task.md`、`execution-log.md` 与最终 PASS 的构建/三角色 E2E evidence。
-- 执行命令：手工删除维护仓主任务 `Cleanup Candidates` 中的 `bug-regression-evidence.md`、`qa-evidence.md`、`scripts/`、中间 build/E2E evidence、screenshots、MinIO 同步附属目录与压缩包；对长路径残留目录改用 `\\?\\` 长路径删除后复核当前目录树仅剩 `task.md`、`execution-log.md` 和两份最终 evidence。
+- 执行命令：读取 	ask-closeout-cleanup` 技能与 `references/closeout-rules.md`，重新核对维护仓主任务 `doc/tasks/20260618-post-release-role-e2e-gate/task.md`、`execution-log.md` 与两个仓库 `git status --short`。
+- 执行命令：`python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260618-post-release-role-e2e-gate --mode preview` -> PASS，确认主任务仅应保留 	ask.md`、`execution-log.md` 与最终 PASS 的构建/三角色 E2E evidence。
+- 执行命令：手工删除维护仓主任务 `Cleanup Candidates` 中的 `bug-regression-evidence.md`、`qa-evidence.md`、`scripts/`、中间 build/E2E evidence、screenshots、MinIO 同步附属目录与压缩包；对长路径残留目录改用 `\\?\\` 长路径删除后复核当前目录树仅剩 	ask.md`、`execution-log.md` 和两份最终 evidence。
 - 执行命令：核对后端仓四个已完成子任务目录状态均为 `COMPLETED`，并盘点剩余未挂任务的发布契约/SQL/排产链路改动，准备补充后端收口任务目录后再做选择性提交。
 
 # 2026-06-20 当前最新程序测试服后再正式服发布
@@ -806,7 +806,7 @@
 - 执行命令：读取维护仓 `AGENTS.md`、`docs/experience-index.md`，确认本次为高风险发布任务，必须先建 `doc/tasks/<task-id>/`、补齐经验门禁并在 `execution-log.md` 记录 `GREEN: experience-preflight -> PASS`，之后才能进入服务器写入或发布动作。
 - 执行命令：读取 `$fupan` 技能说明、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`server-access.md`、`login-access.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`、`docs/agent-memory/project-error-prevention.md`，提炼本次发布强制门禁与正式服 `website` 数据保护边界。
 - 执行命令：核对上一维护仓任务 `doc/tasks/20260620-fupan-post-release-role-e2e-gate/task.md` 状态为 `COMPLETED`，允许开启新任务 `doc/tasks/20260620-prod-release-current-latest/`。
-- 执行命令：创建 `doc/tasks/20260620-prod-release-current-latest/`，新增 `task.md` 与 `execution-log.md`，记录用户授权、发布顺序、正式服数据边界、经验门禁与高风险动作前置状态；当前尚未执行测试服或正式服写入/发布动作。
+- 执行命令：创建 `doc/tasks/20260620-prod-release-current-latest/`，新增 	ask.md` 与 `execution-log.md`，记录用户授权、发布顺序、正式服数据边界、经验门禁与高风险动作前置状态；当前尚未执行测试服或正式服写入/发布动作。
 
 - 用户需求：继续。
 - 执行命令：读取正式服阻塞 SQL `20260617_mes_scheduler_role_smart_scheduling_tab.sql`、维护仓当前任务文档/执行日志、服务器访问基线与 `$fupan` 技能说明，明确下一步聚焦正式服真实阻塞排查。
@@ -823,7 +823,7 @@
 
 - 用户需求：正式走一遍构建发布到测试服务器、发布到正式服务器和备份服务器的全流程；全程使用页面前端进行操作，禁止直接调用接口；遇到问题先记录、修复后继续，直到全流程一次性走通。
 - 执行命令：读取 `docs/experience-index.md`，命中并读取 `docs/release-build-preflight-lessons.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`docs/agent-memory/project-error-prevention.md`，确认本任务必须通过运行控制台页面按钮触发 build/deploy，不能命令行或接口替代。
-- 执行命令：创建维护仓任务 `doc/tasks/20260620-frontend-release-full-flow/`，写入 `task.md` 与 `execution-log.md`，记录页面流、环境边界、备份服 `/mnt/intruoyi-data` 门禁和“先记录失败再修复重走”的约束。
+- 执行命令：创建维护仓任务 `doc/tasks/20260620-frontend-release-full-flow/`，写入 	ask.md` 与 `execution-log.md`，记录页面流、环境边界、备份服 `/mnt/intruoyi-data` 门禁和“先记录失败再修复重走”的约束。
 - 执行命令：只读核对 `backend/src/main/java/com/intruoyi/maintenance/runtime/RuntimeControlService.java`、`RuntimeControlOperationAction.java`、`frontend/src/App.vue`、`frontend/src/api/runtimeControl.ts`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md` 与历史请求日志；确认“标记测试通过”的恢复集候选来自 NAS `Backup/BackupPackage` 最终备份点，当前页面 `No data` 的根因是缺少最终可用恢复点，不是前端下拉异常，也不能手填旧候选 ID 绕过。
 - 执行命令：Playwright 在同一真实页面链路切换到“立即备份”并点击“预览命令”；页面返回 `环境未授权执行写动作: 正式环境写动作未授权，当前独立控制台默认禁止写入、重启、发布、回滚或恢复正式服务器`。
 - 执行命令：只读核对 `RuntimeControlService#guardWrite`、`backend/src/main/resources/application.yaml`、gitignored 的 `config/runtime-control.local.yaml`、`Get-NetTCPConnection -LocalPort 48181` 与当前 `java -jar backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar` 进程；确认本地 `production-write-enabled: true` 已存在，但 `prod.access-enabled` 仍沿用基础配置 `false`，因此正式环境写动作在页面预览前即被统一阻断。
@@ -841,12 +841,12 @@
 - 执行命令：只读跟踪该 operation 的本机日志、状态文件、Playwright 页面刷新结果及测试服 NAS 落盘证据；确认真实页面链路已完整跑过 MySQL 导出与对象备份，`/mnt/nas/Backup/BackupPackage/20260621-010849/mysql/ruoyi-vue-pro.sql.gz` 成功生成，对象阶段也已生成 `objects/manifest-object-copy-plan.tsv` 与 `manifest-object-copy.sh`。
 - 执行命令：operation `op-2026-06-20T170847988455500Z-6d597657-15b5-4356-9d19-078af36fd74c` 最终 `FAILED`；只读打开 `D:\IntRuoyi-BackupOps\tmp\20260621-010849\manifest\dcc-backup-manifest.json`、`D:\IntRuoyi-BackupOps\logs\202606\20260621_010849_backup-now_blocked.report.md` 与 `.log`，确认新的真实阻塞为 `INTBK-6001`：DCC 备份 manifest 校验发现 `dcc_object_inventory_missing` 共 `384` 条，唯一缺失对象 `288` 个，集中在 `codex-e2e/...pdf.original.pdf|published.pdf|stamped.pdf`；下一步需先排查对象是否真实缺失、inventory 是否漏采，或 DCC 快照是否残留脏引用，再从页面重走“立即备份”。
 - 执行命令：只读读取主仓历史任务 `D:\ProjectPackage\Int\IntRuoyi\doc\tasks\20260613-prod-data-backup\task.md`、`database-schema-evidence.md`、`affected-dcc-codex-e2e-records.csv` 与 `D:\ProjectPackage\Int\IntRuoyi\docs\request-command-log.md`；确认 2026-06-14 已存在同类正式备份阻塞处理记录：96 条测试租户 `122` 的 `CODEX-E2E%` 历史残留记录经导出回滚 SQL 后最小软删除，随后正式备份成功。
-- 执行命令：把当前最新正式备份快照 `D:\IntRuoyi-BackupOps\tmp\20260621-010849\manifest\dcc-database-snapshot.json` 中的 `tenant_id=122`、`CODEX-E2E-T4-*` 记录与历史 `affected-dcc-codex-e2e-records.csv` 进行集合比对 -> `EXACT_MATCH`；旧清单 `96` 条与当前快照 `96` 条完全一致，无新增、无缺失，说明当前正式服阻塞命中的正是历史已授权的同一批测试残留。
+- 执行命令：把当前最新正式备份快照 `D:\IntRuoyi-BackupOps\tmp\20260621-010849\manifest\dcc-database-snapshot.json` 中的 	enant_id=122`、`CODEX-E2E-T4-*` 记录与历史 `affected-dcc-codex-e2e-records.csv` 进行集合比对 -> `EXACT_MATCH`；旧清单 `96` 条与当前快照 `96` 条完全一致，无新增、无缺失，说明当前正式服阻塞命中的正是历史已授权的同一批测试残留。
 - 用户追加授权：明确授权在正式服沿用 2026-06-14 历史同一路径，对当前这 96 条测试租户 `CODEX-E2E-T4-*` 历史残留记录执行最小软删除修复；修复后继续真实页面链路“立即备份 -> 标记测试通过 -> 上线正式服 -> 上线备份服”。
 - 当前结论：已把“恢复集候选为空”的根因与下一步决策写入任务文档；后续必须继续走运行控制台页面真实动作“立即备份”，待候选生成后再继续“标记测试通过 -> 上线正式服 -> 上线备份服”。
 - 当前结论：任务已建档并进入页面入口确认阶段；后续发布动作必须通过运行控制台前端页面真实执行。
 - 用户追加授权：`明确授权`，允许在正式服沿用 2026-06-14 历史同一路径，对 96 条测试租户 `CODEX-E2E-T4-*` 历史残留记录执行最小软删除修复，用于解除正式备份 manifest 阻塞。
-- 执行命令：通过远端只读导出正式服修复前回滚 SQL，生成 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260620-frontend-release-full-flow\prod-dcc-repair-before-20260621.sql` -> PASS；内容覆盖 `tenant_id=122 AND status='ACTIVE' AND deleted=0 AND file_number LIKE 'CODEX-E2E-T4-%'` 的当前 `dcc_controlled_file` 行快照。
+- 执行命令：通过远端只读导出正式服修复前回滚 SQL，生成 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260620-frontend-release-full-flow\prod-dcc-repair-before-20260621.sql` -> PASS；内容覆盖 	enant_id=122 AND status='ACTIVE' AND deleted=0 AND file_number LIKE 'CODEX-E2E-T4-%'` 的当前 `dcc_controlled_file` 行快照。
 - 执行命令：在正式服执行最小软删除 `UPDATE dcc_controlled_file SET deleted=1, updater='codex-prod-backup-20260621', update_time=NOW() WHERE tenant_id=122 AND status='ACTIVE' AND deleted=0 AND file_number LIKE 'CODEX-E2E-T4-%';` -> PASS；返回 `repair_result=96`。
 - 执行命令：只读复核正式服修复后统计 -> PASS；返回 `post_deleted_summary 96 96 0`，确认 96 条目标记录已全部转为 `deleted=1`，无剩余 `ACTIVE AND deleted=0` 测试残留。
 - 执行命令：Playwright 回到运行控制台真实页面，再次执行“立即备份”，填写原因“页面真实发布全链路验证：立即备份生成恢复集（修复DCC测试残留后重试）”与确认文本 `PROD-BACKUP-172.30.30.57`，提交 operation `op-2026-06-20T223216314028100Z-b7fa2fe1-41f1-4818-b3a9-36058c47e64a` -> PASS。
@@ -885,36 +885,36 @@
 - 执行命令：Playwright 复用真实页面会话 `frontend-release-full-flow` 再次点击“构建发布包”；只读查询 `http://127.0.0.1:48181/admin-api/infra/runtime-control/operations` -> PASS，确认新 operation `op-2026-06-20T235900978902100Z-cd7053fd-48c2-4f27-ad42-9ac8cf36baea` 已生成并保持 `RUNNING`。
 - 执行命令：只读跟踪 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\logs\op-2026-06-20T235900978902100Z-cd7053fd-48c2-4f27-ad42-9ac8cf36baea.log` -> PASS；确认本轮页面构建已完成 `docker info`、backend runtime base image load 与 `mvn -f ... -pl yudao-server -am -DskipTests clean package`，得到 `BUILD SUCCESS`，随后进入 `node D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3\node_modules\vite\bin\vite.js build --mode test`。
 - 执行命令：Playwright 抓取真实页面快照、只读轮询 operation 接口、检查 operation log 文件时间戳/大小与本机相关进程 -> FAIL；页面与接口仍显示 `op-2026-06-20T235900978902100Z-cd7053fd-48c2-4f27-ad42-9ac8cf36baea` 为 `RUNNING`，日志文件自 `2026-06-21 08:01:52` 起不再增长，且本机存在对应进程 `node.exe (PID 16260)` 执行 `vite.js build --mode test`，当前新阻塞已转为“前端 vite 构建阶段疑似卡住/静默无进度”。
-- 执行命令：在 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3` 独立复现前端构建，显式设置 `NODE_OPTIONS=--max-old-space-size=8192`、`VITE_BASE_URL=''`、`VITE_BASE_PATH='/'`、`VITE_OUT_DIR='dist-intruoyi-test-repro'` 后运行 `node node_modules\vite\bin\vite.js build --mode test` -> FAIL/TIMEOUT；244 秒后命令仍未结束，被外层超时回收，证明当前问题在前端 `test` 模式 Vite 构建链本身，而不是页面提交或运行控制台调度。
+- 执行命令：在 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3` 独立复现前端构建，显式设置 `NODE_OPTIONS=--max-old-space-size=8192`、`VITE_BASE_URL=''`、`VITE_BASE_PATH='/'`、`VITE_OUT_DIR='dist-intruoyi-test-repro'` 后运行 `node node_modules\vite\bin\vite.js build --mode test` -> FAIL/TIMEOUT；244 秒后命令仍未结束，被外层超时回收，证明当前问题在前端 	est` 模式 Vite 构建链本身，而不是页面提交或运行控制台调度。
 - 执行命令：追加 `DEBUG='vite:*'` 启动独立前端构建并重定向到 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\vite-test-debug.stderr.log` -> PASS；日志显示构建经历长时间 `vite:resolve` 资源解析后，最终输出 `Build successful. Please see dist-intruoyi-test-debug directory`，说明此前“永久卡死”判断过早。
 - 执行命令：重新只读查询 `http://127.0.0.1:48181/admin-api/infra/runtime-control/operations` 并读取 operation log 尾部 -> PASS；确认真实页面 build operation `op-2026-06-20T235900978902100Z-cd7053fd-48c2-4f27-ad42-9ac8cf36baea` 已变为 `SUCCESS`，日志尾部显示 `Release package uploaded to NAS: Backup/ReleasePackage/release-20260621-page-full-flow-v2` 与 `Release package built: release-20260621-page-full-flow-v2`。
 - 当前结论：真实页面链路在“上线正式服”处暴露产品级缺口，必须先补齐前端/后端正式 dry-run 证据入口与透传，再返回页面重走正式服与备份服。
-- 执行命令：Playwright 在运行控制台真实页面切换到“部署测试服”，预览命令确认目标环境仍为 `test`、发布标签为 `release-20260621-page-full-flow-v2`，参数未漂移到 `prod/backup/rollback/restore`。
+- 执行命令：Playwright 在运行控制台真实页面切换到“部署测试服”，预览命令确认目标环境仍为 	est`、发布标签为 `release-20260621-page-full-flow-v2`，参数未漂移到 `prod/backup/rollback/restore`。
 - 执行命令：Playwright 在真实页面点击“部署测试服”执行，生成 operation `op-2026-06-21T002749215627300Z-ceee763a-3578-4831-8ff5-c075d7295215`。
 - 执行命令：只读读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\logs\op-2026-06-21T002749215627300Z-ceee763a-3578-4831-8ff5-c075d7295215.log` -> FAIL；确认 required SQL `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\sql\mysql\20260619_srm_d7_2_supplier_access_risk.sql` 执行时返回 MySQL `ERROR 1644 (45000) at line 321: Missing SRM supplier-profile route menu for get-permission-info`，但同一 operation 尾部已释放测试服发布锁 `LOCK_RELEASED`。
-- 执行命令：基于真实页面失败日志进入严格 TDD 修复；在 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\tests\test_srm_d7_d10_sql_contract.py` 新增回归测试 `test_srm_t1_route_menu_guards_do_not_confuse_query_buttons_with_pages`，要求 D7-2 SQL 的三个二级页面路由守卫不得把 `type=3` 查询按钮误判为页面已存在。
+- 执行命令：基于真实页面失败日志进入严格 TDD 修复；在 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\tests\test_srm_d7_d10_sql_contract.py` 新增回归测试 	est_srm_t1_route_menu_guards_do_not_confuse_query_buttons_with_pages`，要求 D7-2 SQL 的三个二级页面路由守卫不得把 	ype=3` 查询按钮误判为页面已存在。
 - 执行命令：`python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\tests\test_srm_d7_d10_sql_contract.py -q` -> FAIL；新断言命中旧守卫：
   - `(`id` = 991011 OR `component` = 'srm/supplier-access/index' OR `permission` = 'srm:supplier-access:query')`
   - `(`id` = 991020 OR `component` = 'srm/supplier-risk/index' OR `permission` = 'srm:supplier-risk:query')`
   - `(`id` = 991024 OR `component` = 'srm/supplier-profile/index' OR `permission` = 'srm:supplier-profile:query')`
-- 执行命令：在 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\sql\mysql\20260619_srm_d7_2_supplier_access_risk.sql` 修复三个页面路由守卫，统一收窄为仅接受同 `id`、同 `component`，或同 `permission` 且 `type=2` 的页面菜单，不再让查询按钮阻断页面路由插入。
+- 执行命令：在 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\sql\mysql\20260619_srm_d7_2_supplier_access_risk.sql` 修复三个页面路由守卫，统一收窄为仅接受同 `id`、同 `component`，或同 `permission` 且 	ype=2` 的页面菜单，不再让查询按钮阻断页面路由插入。
 - 执行命令：`python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\tests\test_srm_d7_d10_sql_contract.py -q` -> PASS，13 项测试全部通过。
 - 执行命令：`python -X utf8 D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\release\run-release-migration-policy-gate.py --sql-root sql\mysql` -> PASS，确认 D7-2 SQL 修复后发布迁移 metadata 仍完整可用。
 - 当前结论：`release-20260621-page-full-flow-v2` 已在本次修复之前构建完成，不包含新的 D7-2 SQL；不能直接继续页面部署测试服。下一步必须通过真实页面重新构建新的 release tag，再从页面重走测试服/正式服/备份服链路。
 - 执行命令：Playwright 复用真实页面会话 `frontend-release-full-flow`，在页面上重新填写 `releaseTag=release-20260621-page-full-flow-v3` 并触发“构建发布包”预览/执行，生成 operation `op-2026-06-21T024523486951200Z-fc58e07c-db7d-4604-8f5a-3539af0ad13d`。
 - 执行命令：只读轮询 `http://127.0.0.1:48181/admin-api/infra/runtime-control/operations`、operation 状态文件与 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\logs\op-2026-06-21T024523486951200Z-fc58e07c-db7d-4604-8f5a-3539af0ad13d.log` -> PASS；确认本轮真实页面构建先完成 backend `mvn ... clean package`，后续前端 `vite build --mode test` 处于长耗时解析阶段但 `node.exe` CPU 持续增长，最终于 2026-06-21 10:58:27 收口为 `SUCCESS`，并把发布包上传到 NAS `Backup/ReleasePackage/release-20260621-page-full-flow-v3`。
 - 当前结论：新的真实页面构建包 `release-20260621-page-full-flow-v3` 已就绪，下一步继续在页面执行“部署测试服”，不得用接口替代按钮提交。
-- 执行命令：Playwright 复用真实页面会话 `frontend-release-full-flow`，切换到“部署测试服”，将操作原因改为“页面真实发布全链路验证：部署测试服（v3）”，预览命令确认环境为 `test`、发布标签为 `release-20260621-page-full-flow-v3`，随后点击“执行”生成 operation `op-2026-06-21T030252892482500Z-0cf0dc70-5cbe-48bd-8d3c-740fbc777f96`。
+- 执行命令：Playwright 复用真实页面会话 `frontend-release-full-flow`，切换到“部署测试服”，将操作原因改为“页面真实发布全链路验证：部署测试服（v3）”，预览命令确认环境为 	est`、发布标签为 `release-20260621-page-full-flow-v3`，随后点击“执行”生成 operation `op-2026-06-21T030252892482500Z-0cf0dc70-5cbe-48bd-8d3c-740fbc777f96`。
 - 执行命令：只读轮询 `http://127.0.0.1:48181/admin-api/infra/runtime-control/operations`、Playwright 页面快照与 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\logs\op-2026-06-21T030252892482500Z-0cf0dc70-5cbe-48bd-8d3c-740fbc777f96.log` -> FAIL；确认该真实页面测试服发布先成功执行 `20260619_srm_d7_2_supplier_access_risk.sql`，随后在 required SQL `20260620_srm_phase1_supplier_access_profile.sql` 阶段被真实 MySQL `ERROR 1064 (42000)` 阻断，报错位置为 `ADD COLUMN IF NOT EXISTS \`portal_contact_name\``，并且同一 operation 尾部已释放测试服发布锁 `LOCK_RELEASED`。
 - 当前结论：新的真实页面阻塞已经从 D7-2 菜单守卫推进到 `20260620_srm_phase1_supplier_access_profile.sql` 的 MySQL 语法契约问题；下一步必须先记录并用严格 TDD 修复该 SQL，再回到页面重走测试服发布。
 - 执行命令：`python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\tests\test_srm_phase1_schema_sql.py -q` -> PASS，返回 `10 passed`；确认 access-profile SQL 正式幂等加列写法与 portal metadata 断言现已全部通过。
 - 执行命令：`python -X utf8 D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\release\run-release-migration-policy-gate.py --sql-root sql\mysql` -> PASS，返回 `status=passed`，依赖链正确保留 `20260620_srm_phase1_supplier_access_profile -> 20260621_srm_phase1_supplier_portal -> 20260621_srm_phase3_purchase_order`。
-- 执行命令：在后端仓创建任务目录 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\doc\tasks\20260621-srm-release-page-flow-sql-blockers\`，写入 `task.md`、`execution-log.md` 与 `bug-regression-evidence.md`，把 D7-2 路由守卫、Phase 1 portal metadata、Phase 1 access-profile syntax 三个页面发布阻塞统一收口到源码任务文档。
+- 执行命令：在后端仓创建任务目录 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\doc\tasks\20260621-srm-release-page-flow-sql-blockers\`，写入 	ask.md`、`execution-log.md` 与 `bug-regression-evidence.md`，把 D7-2 路由守卫、Phase 1 portal metadata、Phase 1 access-profile syntax 三个页面发布阻塞统一收口到源码任务文档。
 - 当前结论：页面链路暴露的 SRM 发布输入阻塞已在源码仓通过 TDD 收口；维护仓下一步必须通过真实页面重新构建新 tag `release-20260621-page-full-flow-v4`，再重走测试服/正式服/备份服链路。
 - 执行命令：Playwright 复用真实页面会话 `frontend-release-full-flow`，在“构建发布包”表单填写 `releaseTag=release-20260621-page-full-flow-v4` 与原因“页面真实发布全链路验证：Phase1 access-profile语法修复后重建发布包并重走测试服-正式服-备份服”，预览命令确认参数为 `-Mode build-release -ReleaseTag release-20260621-page-full-flow-v4 -Component intruoyi -SkipDatabaseSync -SkipMinioSync -TestServerHost 172.30.30.58 -BackupServerHost 172.30.30.59`。
 - 执行命令：Playwright 在真实页面预览弹窗点击“执行”，生成 operation `op-2026-06-21T033855757114300Z-eeb75421-362d-407a-82b3-b0887b4491e0`；随后只读轮询页面、`/admin-api/infra/runtime-control/operations`、operation 状态文件、本地 log、进程树以及本地/NAS 发布目录。
 - 当前结论：`op-2026-06-21T033855757114300Z-eeb75421-362d-407a-82b3-b0887b4491e0` 已最终 `SUCCESS`；虽然中途和前几轮一样在 `vite build --mode test` 阶段长时间无新日志，但后续已继续进入 backend image `docker build`、本地包落盘和 NAS 上传。已确认本地目录 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260621-page-full-flow-v4` 生成 `intruoyi-images_release-20260621-page-full-flow-v4.tar`、`release-manifest.json`、`manifest.json`，NAS 目录 `\\172.30.30.4\IT共享\Backup\ReleasePackage\release-20260621-page-full-flow-v4` 也已落盘。下一步继续用真实页面点击“部署测试服”。
-- 执行命令：Playwright 复用真实页面会话 `frontend-release-full-flow`，切换到“部署测试服”，将操作原因改为“页面真实发布全链路验证：部署测试服（v4）”，预览命令确认目标环境为 `test`、发布标签为 `release-20260621-page-full-flow-v4`，参数未漂移到 `prod/backup/rollback/restore`。
+- 执行命令：Playwright 复用真实页面会话 `frontend-release-full-flow`，切换到“部署测试服”，将操作原因改为“页面真实发布全链路验证：部署测试服（v4）”，预览命令确认目标环境为 	est`、发布标签为 `release-20260621-page-full-flow-v4`，参数未漂移到 `prod/backup/rollback/restore`。
 - 执行命令：Playwright 在真实页面点击“部署测试服”执行，生成 operation `op-2026-06-21T035603828833Z-c1598389-017f-4d4e-8c9c-43fb3fea82e5`；随后只读轮询页面、`/admin-api/infra/runtime-control/operations`、operation 状态文件与本机 log。
 - 执行命令：只读核对 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\logs\op-2026-06-21T035603828833Z-c1598389-017f-4d4e-8c9c-43fb3fea82e5.log` -> PASS；确认该真实页面测试服发布已成功执行 `20260620_srm_phase1_supplier_access_profile.sql`、`20260621_srm_phase1_supplier_portal.sql`、`20260621_srm_phase3_purchase_order.sql`，随后完成远端 Quartz/showroom schema 检查、`backend/frontend` 容器重建、HTTP readiness、scheduler smoke runtime 核对、发布锁释放与远端临时文件清理，最终收口为 `SUCCESS`。
 - 执行命令：只读核对测试服 `172.30.30.58` 的远端版本与入口 -> PASS；`ssh root@172.30.30.58 "grep '^IMAGE_TAG=' /opt/intruoyi/runtime/.env"` 返回 `IMAGE_TAG=release-20260621-page-full-flow-v4`，`docker ps` 显示 `intruoyi-backend` 与 `intruoyi-frontend` 都运行在 `release-20260621-page-full-flow-v4`，`http://172.30.30.58:48081/actuator/health`、`http://172.30.30.58:8081/` 与 `http://172.30.30.58:8081/pdfjs/pdf.worker.mjs` 均返回 HTTP `200`。
@@ -924,7 +924,7 @@
 - 执行命令：Playwright 在真实页面预览弹窗点击“执行”，生成 operation `op-2026-06-21T041405918994500Z-24330a04-ecfe-4786-8a55-8c95fc0e1f18`；随后只读轮询 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\op-2026-06-21T041405918994500Z-24330a04-ecfe-4786-8a55-8c95fc0e1f18.json` 与本机 log。
 - 执行命令：只读核对 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\logs\op-2026-06-21T041405918994500Z-24330a04-ecfe-4786-8a55-8c95fc0e1f18.log` -> PASS；确认该真实页面 `mark-tested` 已最终 `SUCCESS`，日志输出 `Release package marked as tested: Backup/ReleasePackage/release-20260621-page-full-flow-v4`，并记录 `rollback-compatibility.json status=BLOCKED` 元数据。
 - 当前结论：`release-20260621-page-full-flow-v4` 已在真实页面链路完成“构建发布包 -> 部署测试服 -> 标记测试通过”。下一步继续复用同一页面会话执行“上线正式服”，若出现新阻塞，先写入任务文档再修复重走。
-- 执行命令：Playwright 复用真实页面会话 `frontend-release-full-flow`，切换到“上线正式服”，确认页面表单显示 `targetEnvironment=正式服`、`releaseTag=release-20260621-page-full-flow-v4`、`prodConfirmText=PROD`，并点击“预览命令”。
+- 执行命令：Playwright 复用真实页面会话 `frontend-release-full-flow`，切换到“上线正式服”，确认页面表单显示 	argetEnvironment=正式服`、`releaseTag=release-20260621-page-full-flow-v4`、`prodConfirmText=PROD`，并点击“预览命令”。
 - 执行命令：只读核对页面返回 -> FAIL；页面未进入执行弹窗成功态，而是直接提示 `正式 deploy precheck report-only 失败: status=failed mode=report-only output=D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\prod-preflight-release-evidence\release-20260621-page-full-flow-v4-deploy-precheck-report.json`。
 - 执行命令：只读打开 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\prod-preflight-release-evidence\release-20260621-page-full-flow-v4-deploy-precheck-report.json` -> FAIL；确认根因是发布包 manifest 契约不完整，报告含大量 `PACKAGE_UNDECLARED_FILE`，例如 `.env`、`post-import.sql`、`preflight-plan.json`、`preflight-target-state-test.json`、`ops-runtime/actions/*.bat`、`ops-runtime/scripts/modules/Core/*.psm1` 等文件都在包内但未被 manifest 声明。
 - 当前结论：新的真实页面阻塞已从“缺 dry-run 入口”推进到“自动 dry-run 已跑，但 `report-only` 因未声明包文件而 fail-fast”。下一步必须先做严格 TDD 修复发布包/manifest 契约，再回页面重走“上线正式服 -> 上线备份服”。
@@ -964,7 +964,7 @@
 - 执行命令：只读核对 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\op-2026-06-21T070744282571900Z-f9bdfe1e-7382-4a1d-979f-da8fc18335e5.json` 与对应本机 log -> PASS；确认该真实页面 `mark-tested` 已最终 `SUCCESS`，并把 `release-20260621-page-full-flow-v5` 标记为测试通过，同时写入 `rollback-compatibility.json status=BLOCKED`。
 - 当前结论：`release-20260621-page-full-flow-v5` 已在真实页面链路完成“构建发布包 -> 部署测试服 -> 标记测试通过”；下一步继续在同一页面会话执行“上线正式服 -> 上线备份服”。
 - 执行命令：读取 `C:\Users\BJB110\.codex\skills\playwright\SKILL.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`，随后只读轮询正式服 operation 状态文件、对应本机 log、`release-20260621-page-full-flow-v5-preflight-release-dry-run.json` 与 Playwright 页面快照 -> FAIL；确认真实页面“上线正式服（v5）” operation `op-2026-06-21T071527391565200Z-43bbbf19-75ce-473f-9747-5693c04947ff` 已最终 `FAILED`，但正式 dry-run 证据仍为 `status=passed`。
-- 执行命令：通过只读 SQL 查询正式服 `infra_release_operation_lock` -> FAIL；确认当前 `target_environment='prod'` 仅有 1 条锁记录，且仍停留在旧链路 `operation_id=prod-release-20260621-page-full-flow-v4`、`release_tag=release-20260621-page-full-flow-v4`、`status=RUNNING`、`started_at=2026-06-21 13:04:44`、`finished_at=NULL`。
+- 执行命令：通过只读 SQL 查询正式服 `infra_release_operation_lock` -> FAIL；确认当前 	arget_environment='prod'` 仅有 1 条锁记录，且仍停留在旧链路 `operation_id=prod-release-20260621-page-full-flow-v4`、`release_tag=release-20260621-page-full-flow-v4`、`status=RUNNING`、`started_at=2026-06-21 13:04:44`、`finished_at=NULL`。
 - 当前结论：`release-20260621-page-full-flow-v5` 的真实页面正式服失败根因不是 dry-run 证据缺失，也不是发布包内容前置门禁，而是被旧 `v4` 失败链路残留的正式服发布锁阻断。下一步必须先修复正式服发布锁生命周期并清理陈旧锁，再回到真实页面继续“上线正式服 -> 上线备份服”。
 - 执行命令：读取 `C:\Users\BJB110\.codex\skills\bug-regression-fix-loop\SKILL.md`、新增 `D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_publish_release_lock_cleanup.py` 回归场景，并执行 `python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_publish_release_lock_cleanup.py -q` -> FAIL；稳定复现“持锁后 fail-fast 遗留正式服发布锁”的旧问题。
 - 执行命令：在 `D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1` 修复 `Fail()` 的锁释放路径，并执行 `python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_publish_release_lock_cleanup.py -q`、`python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_publish_release_lock_cleanup.py D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_release_package_slimming.py D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_scheduler_smoke_release_config.py D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_showroom_release_sql_contract.py -q` -> PASS；相关回归共 `10 passed`。
@@ -975,9 +975,9 @@
 - 执行命令：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\op-2026-06-21T075931265053700Z-7d81cab2-c347-4f49-8618-1427c837cf2f.json` 与 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\logs\op-2026-06-21T075931265053700Z-7d81cab2-c347-4f49-8618-1427c837cf2f.log -Tail 80` -> FAIL；确认真实页面“上线备份服（v5）” operation 已最终 `FAILED`，失败点位于 required SQL `20260618_post_release_role_e2e_gate.sql`，远端 MySQL 返回 `ERROR 1644 (45000) at line 226: Missing enabled scheduler role; cannot prepare zhaojie smart scheduling E2E account`。
 - 执行命令：读取 `C:\Users\BJB110\.codex\skills\playwright\SKILL.md`、`C:\Users\BJB110\.codex\skills\bug-regression-fix-loop\SKILL.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260620-frontend-release-full-flow\task.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260620-frontend-release-full-flow\execution-log.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\request-command-log.md` -> PASS；继续按“先记录阻塞、再区分环境前置条件和代码缺陷”的门禁推进本任务。
 - 当前结论：新的真实页面主阻塞已收敛到备份服 `20260618_post_release_role_e2e_gate.sql` 的角色前置条件/环境契约问题；下一步先做只读根因定位，确认这是备份环境数据缺前置角色，还是迁移 SQL 在 `backup` 环境不应硬失败。
-- 执行命令：切到业务仓 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro`，读取 `AGENTS.md`、创建任务目录 `doc/tasks/20260621-post-release-role-e2e-gate-backup-scheduler-role/`、补读 `docs/experience-index.md` 命中的 `release-backup-restore.md` 与 `server-access.md`，并只读对比测试服/备份服 `tenant_id=1 / 芋道源码` 的 `system_role/system_users/system_tenant` 基线 -> PASS；确认测试服有启用中的 `排产员` 角色，备份服仅有 `showroom_publicity` 与 `wenkong`。
+- 执行命令：切到业务仓 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro`，读取 `AGENTS.md`、创建任务目录 `doc/tasks/20260621-post-release-role-e2e-gate-backup-scheduler-role/`、补读 `docs/experience-index.md` 命中的 `release-backup-restore.md` 与 `server-access.md`，并只读对比测试服/备份服 	enant_id=1 / 芋道源码` 的 `system_role/system_users/system_tenant` 基线 -> PASS；确认测试服有启用中的 `排产员` 角色，备份服仅有 `showroom_publicity` 与 `wenkong`。
 - 执行命令：业务仓更新 `script/tests/test_post_release_role_e2e_gate_sql.py`，新增“缺排产员角色时必须自补齐”的 RED 契约；执行 `python -X utf8 -m pytest script\\tests\\test_post_release_role_e2e_gate_sql.py -q` -> FAIL；旧 SQL 稳定缺少 `INSERT INTO system_role` 自补齐逻辑。
-- 执行命令：业务仓更新 `sql/mysql/20260618_post_release_role_e2e_gate.sql`，使其在 `tenant_id=1` 缺排产员角色时插入新的 `排产员` 角色，在命中历史角色时统一启用并复用；执行 `python -X utf8 -m pytest script\\tests\\test_post_release_role_e2e_gate_sql.py -q`、`python -X utf8 -m pytest script\\tests\\test_post_release_role_e2e_gate_sql.py script\\tests\\test_mes_scheduler_role_smart_scheduling_tab_sql.py -q`、`python -X utf8 script\\release\\run-release-migration-policy-gate.py --sql-root sql\\mysql` -> PASS。
+- 执行命令：业务仓更新 `sql/mysql/20260618_post_release_role_e2e_gate.sql`，使其在 	enant_id=1` 缺排产员角色时插入新的 `排产员` 角色，在命中历史角色时统一启用并复用；执行 `python -X utf8 -m pytest script\\tests\\test_post_release_role_e2e_gate_sql.py -q`、`python -X utf8 -m pytest script\\tests\\test_post_release_role_e2e_gate_sql.py script\\tests\\test_mes_scheduler_role_smart_scheduling_tab_sql.py -q`、`python -X utf8 script\\release\\run-release-migration-policy-gate.py --sql-root sql\\mysql` -> PASS。
 - 执行命令：业务仓新增并校验 `doc/tasks/20260621-post-release-role-e2e-gate-backup-scheduler-role/bug-regression-evidence.md`，执行 `python C:\\Users\\BJB110\\.codex\\skills\\bug-regression-fix-loop\\scripts\\validate_bug_regression.py --evidence D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\doc\\tasks\\20260621-post-release-role-e2e-gate-backup-scheduler-role\\bug-regression-evidence.md` -> PASS。
 - 当前结论：备份服阻塞已在业务仓按严格 TDD 收口，但该修复改变了发布包输入，现有 `release-20260621-page-full-flow-v5` 不能继续使用；下一步必须回到真实页面重新构建新 release tag，并从测试服开始整链重走。
 - 执行命令：读取 `C:\Users\BJB110\.codex\skills\playwright\SKILL.md` 与 `references\cli.md/references\workflows.md`，确认继续使用 Playwright CLI 复用真实页面会话 `frontend-release-full-flow`；同时核对 `Get-Command npx`、`npx --yes --package @playwright/cli playwright-cli --session frontend-release-full-flow snapshot` -> PASS，确认 `http://127.0.0.1:48181/` 页面会话与 `releaseTag=release-20260621-page-full-flow-v6` 表单状态仍然可用。
@@ -1004,7 +1004,7 @@
 - 执行命令：持续只读轮询 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\op-2026-06-21T094430298907500Z-870bf604-f8f1-4b4d-a9a8-f193e5d6f9c2.json` 与对应本机日志 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\logs\op-2026-06-21T094430298907500Z-870bf604-f8f1-4b4d-a9a8-f193e5d6f9c2.log` -> PASS；确认该备份服真实页面发布最终 `SUCCESS`，并完成此前阻断 v5 的 `20260618_post_release_role_e2e_gate.sql` 及一整组 `post_release_role_e2e_gate_smoke_*` required SQL、容器重建、HTTP readiness、scheduler smoke、发布锁释放、NAS 发布历史与远端临时文件清理。
 - 执行命令：只读核对备份服 `172.30.30.59` 的 `/opt/intruoyi/runtime/.env`、`docker ps --format '{{.Names}} {{.Image}}' | grep -E 'intruoyi-(backend|frontend)'` 与 `http://172.30.30.59:48081/actuator/health`、`http://172.30.30.59:8081/`、`http://172.30.30.59:8081/pdfjs/pdf.worker.mjs` -> PASS；确认运行态 `IMAGE_TAG` 与 backend/frontend 镜像都已切到 `release-20260621-page-full-flow-v6`，三条入口均返回 HTTP `200`。
 - 执行命令：只读核对备份服展厅受保护 URL 边界，执行 `DESCRIBE infra_file` 与边界计数查询 -> PASS；确认 `config_id=28 AND path LIKE 'showroom/%' AND url LIKE '%127.0.0.1:9000%'` 的漂移记录数为 `0`，`url LIKE 'http://172.30.30.59:9000/yudao/%'` 的记录数为 `1434`。
-- 当前结论：`release-20260621-page-full-flow-v6` 已在真实页面链路一次性完整走通 `构建发布包 -> 部署测试服 -> 标记测试通过 -> 上线正式服 -> 上线备份服`，过程中未用接口替代页面提交；接下来进入任务收尾，先运行 `task-closeout-cleanup` 预览，再按本任务范围提交相关改动。
+- 当前结论：`release-20260621-page-full-flow-v6` 已在真实页面链路一次性完整走通 `构建发布包 -> 部署测试服 -> 标记测试通过 -> 上线正式服 -> 上线备份服`，过程中未用接口替代页面提交；接下来进入任务收尾，先运行 	ask-closeout-cleanup` 预览，再按本任务范围提交相关改动。
 - 2026-06-21 用户请求：`$fupan`。
 - 2026-06-21 执行记录：按 fupan 技能从真实页面发布全链路任务证据中提炼项目级防错短记忆；先创建 `doc/tasks/20260621-fupan-frontend-release-full-flow-v6/`，再采集候选证据、更新项目短记忆并提交本任务文档改动。
 - 2026-06-21 用户请求：`/goal 在备份服走一遍备份恢复的流程，如果出现错误进行修改并且记录，直到可以一次性走完一套完整的备份恢复流程`。
@@ -1012,43 +1012,43 @@
 - 2026-06-21 用户请求：`重新再走一遍，主程序合并修改了部分代码，怕已经不对了`。
 - 2026-06-21 执行记录：读取 `C:\Users\BJB110\.codex\skills\playwright\SKILL.md`、维护仓任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260621-frontend-release-full-flow-main-merge-rerun\{task.md,execution-log.md,task-state.json,test-report.md}`，并只读轮询运行态文件 `runtime\runtime-control\op-2026-06-21T152405848956Z-1ef14677-9eb1-4068-8859-7613a7f23209.json` 与对应 log，承接已由真实页面提交的 `build-release(v3)`。
 - 2026-06-21 执行记录：补读 `D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`，随后持续轮询 operation `op-2026-06-21T152405848956Z-1ef14677-9eb1-4068-8859-7613a7f23209` 直到收口为 `SUCCESS`。
-- 2026-06-21 执行记录：只读核对本地候选目录 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260621-page-full-flow-mainmerge-v3`、其中 `manifest.json` 的 `releaseTag`，并回写维护仓任务文档 `task.md`、`execution-log.md`、`task-state.json`、`test-report.md`，准备继续通过真实页面执行“部署测试服”。
+- 2026-06-21 执行记录：只读核对本地候选目录 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260621-page-full-flow-mainmerge-v3`、其中 `manifest.json` 的 `releaseTag`，并回写维护仓任务文档 	ask.md`、`execution-log.md`、	ask-state.json`、	est-report.md`，准备继续通过真实页面执行“部署测试服”。
 - 2026-06-21 执行记录：Playwright 复用真实页面会话 `frontend-release-full-flow-mainmerge`，切换到“部署测试服”，填写原因“主程序合并后重新验证页面发布全链路：部署测试服（v3）”，点击“预览命令”核对 `-Mode deploy-release -Environment test -ReleaseTag release-20260621-page-full-flow-mainmerge-v3` 后，再在真实弹窗点击“执行”，生成 operation `op-2026-06-21T153931119750100Z-4bd5851f-51cf-4e9e-bdcb-706e455f8fa0`。
 - 2026-06-22 执行记录：用户恢复“主程序合并后重新走页面发布全链路”任务后，重新读取 `C:\Users\BJB110\.codex\skills\playwright\SKILL.md` 与维护仓任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260621-frontend-release-full-flow-main-merge-rerun\{task.md,execution-log.md,task-state.json,test-report.md}`，并只读核对 `op-2026-06-21T160352403091200Z-0fa6c660-0ec3-4f8d-aaee-c211f9ce39ed` 的 operation JSON、对应 log 尾部与本地候选目录 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260621-page-full-flow-mainmerge-v4\manifest.json`。
 - 2026-06-22 执行记录：确认真实页面 `build-release(v4)` 已最终 `SUCCESS`，NAS 发布目录为 `Backup/ReleasePackage/release-20260621-page-full-flow-mainmerge-v4`，且 `manifest.json` 记录的后端源提交已更新为 `74f505d86b7cf7be9fe2d481d36ca5a7fe45f68a`、前端源提交为 `37359a074cedcc0a341f17cb0abdd1a71f838731`。
-- 2026-06-22 执行记录：回写维护仓任务文档 `task.md`、`execution-log.md`、`task-state.json`、`test-report.md`，将任务状态从暂停恢复为进行中，下一步继续通过真实页面执行“部署测试服（v4）”。
+- 2026-06-22 执行记录：回写维护仓任务文档 	ask.md`、`execution-log.md`、	ask-state.json`、	est-report.md`，将任务状态从暂停恢复为进行中，下一步继续通过真实页面执行“部署测试服（v4）”。
 - 2026-06-22 执行记录：Playwright 复用真实页面会话 `frontend-release-full-flow-mainmerge`，先点击“刷新”，再切换到“部署测试服”，填写原因“主程序合并后重新验证页面发布全链路：部署测试服（v4）”，点击“预览命令”核对 `-Mode deploy-release -Environment test -ReleaseTag release-20260621-page-full-flow-mainmerge-v4`，随后在真实弹窗点击“执行”，生成 operation `op-2026-06-21T162151191084700Z-02589c3a-5079-454a-b336-9b1fa37c588e`。
 - 2026-06-22 执行记录：持续只读轮询 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\op-2026-06-21T162151191084700Z-02589c3a-5079-454a-b336-9b1fa37c588e.json` 与对应本机 log；确认该真实页面测试服部署先成功跨过 `20260619_mes_edhr_deployment_license_interface.sql`，随后在 `20260618_mes_edhr_label_print_queue.sql` line 126 因 `Duplicate entry '900273' for key 'system_menu.PRIMARY'` 失败。
-- 2026-06-22 执行记录：按任务门禁先回写维护仓任务文档 `task.md`、`execution-log.md`、`task-state.json`、`test-report.md`，把当前阻塞更新为 `20260618_mes_edhr_label_print_queue.sql` 的 `system_menu` 主键冲突；下一步转入业务仓定位并修复该新根因。
-- 2026-06-22 执行记录：读取 `bug-regression-fix-loop` 技能、`bug-contract.md`、业务仓上一任务 `20260621-edhr-deployment-menu-id-collision-fix/task.md` 与 `20260621-post-release-role-e2e-gate-backup-scheduler-role/task.md`，确认上一后端任务已 `COMPLETED`，随后在业务仓新建任务目录 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\doc\tasks\20260622-edhr-label-print-menu-id-collision-fix\` 并落地 `task.md`、`execution-log.md`。
+- 2026-06-22 执行记录：按任务门禁先回写维护仓任务文档 	ask.md`、`execution-log.md`、	ask-state.json`、	est-report.md`，把当前阻塞更新为 `20260618_mes_edhr_label_print_queue.sql` 的 `system_menu` 主键冲突；下一步转入业务仓定位并修复该新根因。
+- 2026-06-22 执行记录：读取 `bug-regression-fix-loop` 技能、`bug-contract.md`、业务仓上一任务 `20260621-edhr-deployment-menu-id-collision-fix/task.md` 与 `20260621-post-release-role-e2e-gate-backup-scheduler-role/task.md`，确认上一后端任务已 `COMPLETED`，随后在业务仓新建任务目录 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\doc\tasks\20260622-edhr-label-print-menu-id-collision-fix\` 并落地 	ask.md`、`execution-log.md`。
 - 2026-06-22 执行记录：只读搜索源码与测试服真实 `system_menu`，确认 `20260618_mes_edhr_label_print_queue.sql` 复用了 `900272-900283`；其中 `900272-900279` 已被 `20260618_mes_edhr_form_instance.sql`/真实库“eDHR独立表单*”菜单占用，`900280-900283` 又被“eDHR报表目录 / 报表查询 / 报表导出审计 / 交付驾驶舱”占用；同时源码和测试库都未发现 `900320-900331` 冲突。
 - 2026-06-22 执行记录：先在 `script\\tests\\test_edhr_label_print_queue_schema_sql.py` 补 RED 回归，要求 label print 菜单切到独立 `900320-900331` 且不再复用 `900272-900283`；执行 `python -X utf8 -m pytest ...test_edhr_label_print_queue_schema_sql.py -q` -> FAIL。
 - 2026-06-22 执行记录：最小修改 `sql\\mysql\\20260618_mes_edhr_label_print_queue.sql`，把 label print 菜单整段从 `900272-900283` 切换到 `900320-900331`；执行 `python -X utf8 -m pytest script\\tests\\test_edhr_label_print_queue_schema_sql.py script\\tests\\test_edhr_form_schema_sql.py -q`、`python -X utf8 script\\release\\run-release-migration-policy-gate.py --sql-root sql\\mysql` 与 `python C:\\Users\\BJB110\\.codex\\skills\\bug-regression-fix-loop\\scripts\\validate_bug_regression.py --evidence D:\\ProjectPackage\\Int\\IntRuoyi\\ruoyi-vue-pro\\doc\\tasks\\20260622-edhr-label-print-menu-id-collision-fix\\bug-regression-evidence.md` -> PASS。
 - 2026-06-22 执行记录：回写维护仓主任务文档，明确 `release-20260621-page-full-flow-mainmerge-v4` 已失效，下一步必须通过真实页面重新构建新的 `release-20260621-page-full-flow-mainmerge-v5`，再从测试服开始重走整条发布链路。
 - 2026-06-21 执行记录：持续只读轮询 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\op-2026-06-21T153931119750100Z-4bd5851f-51cf-4e9e-bdcb-706e455f8fa0.json` 与对应本机 log；确认真实页面测试服部署最终 `FAILED`，失败点为 `20260619_mes_edhr_deployment_license_interface.sql` line 327 抛出 `Missing eDHR deployment system_menu rows; cannot merge tenant package menu_ids`，随后按任务门禁先回写维护仓任务文档。
 - 2026-06-21 执行记录：切到业务仓 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro`，读取 `20260619_mes_edhr_deployment_license_interface.sql`、`script\tests\test_edhr_deployment_schema_sql.py` 与既有任务 `doc\tasks\20260621-edhr-deployment-menu-id-collision-fix\{task.md,execution-log.md}`；随后通过只读 SSH 查询测试服 `system_menu`，确认当前仅有 `900315-900318` 四条 deployment 菜单、旧 `900300` 已不存在。
-- 2026-06-21 执行记录：在业务仓新增 RED 契约 `test_deployment_schema_cleans_legacy_rows_before_inserting_new_menu_ids`，执行 `python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\tests\test_edhr_deployment_schema_sql.py -q` -> FAIL；随后把 legacy cleanup 前移到 `900315-900319` 菜单插入之前，再执行同一 pytest -> PASS（6 passed），并执行 `python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql` -> PASS。
+- 2026-06-21 执行记录：在业务仓新增 RED 契约 	est_deployment_schema_cleans_legacy_rows_before_inserting_new_menu_ids`，执行 `python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\tests\test_edhr_deployment_schema_sql.py -q` -> FAIL；随后把 legacy cleanup 前移到 `900315-900319` 菜单插入之前，再执行同一 pytest -> PASS（6 passed），并执行 `python -X utf8 script\release\run-release-migration-policy-gate.py --sql-root sql\mysql` -> PASS。
 - 2026-06-21 执行记录：回写业务仓任务 `20260621-edhr-deployment-menu-id-collision-fix` 与维护仓主任务 `20260621-frontend-release-full-flow-main-merge-rerun`，明确本次修复再次改变发布包输入，下一步必须通过真实页面重新构建新的 `release-20260621-page-full-flow-mainmerge-v4` 并从测试服开始重走全链路。
 - 2026-06-21 用户请求：`在测试服务器，正式服务器，备份服务器配置好codex cli的运行环境，连接参数与本机相同，全部跑通视为目标完成`。
 - 2026-06-21 执行记录：读取 `spec-driven-delivery`、`ci-cd-environment-delivery`、`openai-docs` 技能；读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md` 命中的 `D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md` 与 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`；检查上一维护仓任务 `20260621-frontend-release-full-flow-main-merge-rerun`，并将其显式转为 `blocked`。
 - 2026-06-21 执行记录：执行本机只读核对 `codex --version`、读取 `C:\Users\BJB110\.codex\config.toml` / `auth.json` / `version.json`，并在临时移除当前 shell 的 `OPENAI_API_KEY` / `OPENAI_BASE_URL` 后执行 `codex -a never -s read-only exec --skip-git-repo-check -c model_reasoning_effort='"low"' --color never -o <temp> "Respond with exactly OK and nothing else."` -> PASS；确认最小可复制连接方案为 `auth.json + config.toml`。
 - 2026-06-21 执行记录：只读 SSH 预检三台服务器，执行 `uname -a`、`cat /etc/os-release`、`command -v curl/tar/node/npm/sudo`；确认测试服 `172.30.30.58` 与备份服 `172.30.30.59` 无 `node/npm`，正式服 `172.30.30.57` 已有 `node v22.22.2 / npm 10.9.7`，因此本任务统一采用官方 standalone installer。
-- 2026-06-21 执行记录：创建维护仓任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260621-codex-cli-three-server-setup\`，补齐 `task.md`、`prd.md`、`test-plan.md`、`execution-log.md`、`test-report.md`、`task-state.json` 与 `remote-config.toml`，并执行 `python C:\Users\BJB110\.codex\skills\spec-driven-delivery\scripts\validate_artifacts.py --cwd D:\ProjectPackage\Int\IntRuoyiMaintance --task-id 20260621-codex-cli-three-server-setup` -> PASS。
+- 2026-06-21 执行记录：创建维护仓任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260621-codex-cli-three-server-setup\`，补齐 	ask.md`、`prd.md`、	est-plan.md`、`execution-log.md`、	est-report.md`、	ask-state.json` 与 `remote-config.toml`，并执行 `python C:\Users\BJB110\.codex\skills\spec-driven-delivery\scripts\validate_artifacts.py --cwd D:\ProjectPackage\Int\IntRuoyiMaintance --task-id 20260621-codex-cli-three-server-setup` -> PASS。
 - 2026-06-22 用户请求：`在测试服务器，正式服务器，备份服务器配置好codex cli的运行环境，连接参数与本机相同，全部跑通视为目标完成`。
 - 2026-06-22 执行记录：继续推进 `20260621-codex-cli-three-server-setup`，依次执行 `ssh root@172.30.30.57/58/59` 的目录准备、`scp` 同步 `remote-install-codex-cli.sh` / `remote-smoke-codex.sh` / `remote-config.toml` / `auth.json`、`yum install -y bubblewrap`（test/prod）、`/root/codex-cli-setup/remote-smoke-codex.sh`（三台），并对备份服执行 `curl -I -L --max-time 60` 直连 release 资产检查与 `scp -3 root@172.30.30.58:/usr/local/bin/codex root@172.30.30.59:/usr/local/bin/codex` 受控中转 -> PASS。
 - 2026-06-22 执行记录：确认测试服、正式服、备份服均返回 `codex-cli 0.128.0` 且真实 `codex exec` 冒烟返回 `OK`；备份服因 GitHub release 直连超时，最终以测试服验证过的同版官方二进制中转完成安装，仍可正常运行。
-- 2026-06-22 执行记录：执行 `python C:\Users\BJB110\.codex\skills\spec-driven-delivery\scripts\validate_artifacts.py --cwd D:\ProjectPackage\Int\IntRuoyiMaintance --task-id 20260621-codex-cli-three-server-setup`、`validate_test_report.py`、`record_phase_review.py`、`record_test_review.py`、`check_completion.py --apply` -> PASS；随后按 `task-closeout-cleanup` 先预览、再在 `task.md` 补充英文 `## Current Status` 元数据后执行 `task_closeout.py --task-id 20260621-codex-cli-three-server-setup --mode apply`，仅保留 `task.md` 与 `execution-log.md`。
+- 2026-06-22 执行记录：执行 `python C:\Users\BJB110\.codex\skills\spec-driven-delivery\scripts\validate_artifacts.py --cwd D:\ProjectPackage\Int\IntRuoyiMaintance --task-id 20260621-codex-cli-three-server-setup`、`validate_test_report.py`、`record_phase_review.py`、`record_test_review.py`、`check_completion.py --apply` -> PASS；随后按 	ask-closeout-cleanup` 先预览、再在 	ask.md` 补充英文 `## Current Status` 元数据后执行 	ask_closeout.py --task-id 20260621-codex-cli-three-server-setup --mode apply`，仅保留 	ask.md` 与 `execution-log.md`。
 - 2026-06-21 用户请求：`/goal 在备份服走一遍备份恢复的流程，如果出现错误进行修改并且记录，直到可以一次性走完一套完整的备份恢复流程`。
 - 2026-06-21/22 执行记录：读取 `backup-disaster-recovery-readiness`、`bug-regression-fix-loop` 技能与 `D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`release-backup-restore.md`、`login-access.md`；创建/继续维护 `doc\tasks\20260621-backup-server-backup-restore-rehearsal\`，运行 `Invoke-Pester -Path ops\backup-ops\tests\BackupTargetEnvironment.Tests.ps1 -EnableExit` 与 `Invoke-Pester -Path ops\backup-ops\tests -EnableExit` 多轮 RED/GREEN，修复 backup 环境在 FileOps/DockerOps/MySqlOps/ObjectOps/DCC/Rehearsal 链路中的 test 硬编码。
 - 2026-06-21/22 执行记录：只读执行备份服状态脚本 `show-int-ruoyi-remote-status.ps1 -ServerHost 172.30.30.59 ... -Json`，并通过 SSH preflight 核对 `/mnt/intruoyi-data` 数据盘、`/mnt/intruoyi-data/Backup/BackupPackage`、`/mnt/intruoyi-data/backup-ops/rehearsal/runtime`、`/mnt/intruoyi-data/runtime-data/backup-ops/tmp`、`IMAGE_TAG=release-20260621-page-full-flow-v6` 与 `intruoyi-minio` 等容器；发现目录缺失后仅在数据盘下最小创建受保护目录并重跑 preflight -> PASS。
-- 2026-06-21/22 执行记录：执行 `backup-ops.ps1 -Mode backup-now -TargetEnvironment backup -NonInteractive -OperatorName codex`，先后记录 `20260621-185935` MinIO credential ValidateSet 失败、`20260621-191229` DCC manifest gate 阻塞，并在备份服测试租户 `tenant_id=122` 精确软删除 96 条 active 且引用 `/codex-e2e/%` 缺失对象的 DCC 测试残留主记录；最终备份点 `20260621-202814` 成功，产物 `manifest.json`、`dcc-backup-manifest.json`、`checksums.txt`、MySQL dump、object inventory 与 deploy 元数据均非空。
+- 2026-06-21/22 执行记录：执行 `backup-ops.ps1 -Mode backup-now -TargetEnvironment backup -NonInteractive -OperatorName codex`，先后记录 `20260621-185935` MinIO credential ValidateSet 失败、`20260621-191229` DCC manifest gate 阻塞，并在备份服测试租户 	enant_id=122` 精确软删除 96 条 active 且引用 `/codex-e2e/%` 缺失对象的 DCC 测试残留主记录；最终备份点 `20260621-202814` 成功，产物 `manifest.json`、`dcc-backup-manifest.json`、`checksums.txt`、MySQL dump、object inventory 与 deploy 元数据均非空。
 - 2026-06-21/22 执行记录：执行 `backup-ops.ps1 -Mode rehearsal -TargetEnvironment backup -SelectedBackupId 20260621-202814 -NonInteractive -OperatorName codex`，先后记录 DCC chain validator、MySQL rehearsal repository proof、rehearsal evidence 写回三处 backup 环境缺陷并按 RED/GREEN 修复；最终 `20260621_224143_rehearsal_success.log` 成功，校验 `backendHealth/frontendHttp200/loginReachable/fileDownloadSample` 均 `pass`，远端 manifest 更新为 `rehearsalStatus=PASSED`。
 - 2026-06-22 执行记录：执行 `backup-ops.ps1 -Mode restore-data -TargetEnvironment backup -SelectedBackupId 20260621-202814 -NonInteractive -OperatorName codex` -> PASS；恢复报告 `20260621_235941_restore-data_success.report.md` 记录 pre-restore 快照 `20260621_235953_pre-restore`，恢复后状态脚本确认备份服 `backend/frontend/pdfWorker/OnlyOffice=HTTP 200` 且 `currentReleaseTag=release-20260621-page-full-flow-v6`。
 - 2026-06-22 执行记录：执行 `Invoke-Pester -Path D:\ProjectPackage\Int\IntRuoyiMaintance\ops\backup-ops\tests -EnableExit` -> PASS，13/13；执行 `python -X utf8 C:\Users\BJB110\.codex\skills\bug-regression-fix-loop\scripts\validate_bug_regression.py --evidence D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260621-backup-server-backup-restore-rehearsal\bug-regression-evidence.md` -> PASS；执行 `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --workspace D:\ProjectPackage\Int\IntRuoyiMaintance --task-id 20260621-backup-server-backup-restore-rehearsal --mode preview --json` -> PASS，保留任务文档、执行日志和缺陷证据，无删除项。
 - 2026-06-22 用户请求：`再进行一次备份恢复`。
 - 2026-06-22 执行记录：创建维护仓任务 `doc\tasks\20260622-backup-server-backup-restore-rerun\`，读取 `backup-disaster-recovery-readiness`、`docs\experience-index.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`server-access.md`、`login-access.md` 与项目错误预防短记忆；目标限定为备份服 `172.30.30.59` 再次执行 `backup-now -> rehearsal -> restore-data`，高风险动作前需先记录 `experience-preflight`。
 - 2026-06-22 执行记录：执行备份服再次备份恢复演练 -> PASS；新备份点 `20260622-063253` 完成 `backup-now -TargetEnvironment backup`、`rehearsal -TargetEnvironment backup -SelectedBackupId 20260622-063253`、`restore-data -TargetEnvironment backup -SelectedBackupId 20260622-063253 -NonInteractive`；恢复报告 `D:\IntRuoyi-BackupOps\logs\202606\20260622_080523_restore-data_success.report.md` 记录结果 `success`，恢复后状态脚本确认 `backend/frontend/pdfWorker/OnlyOffice=HTTP 200` 且 `currentReleaseTag=release-20260621-page-full-flow-v6`。
-- 2026-06-22 执行记录：最终验证 `Invoke-Pester -Path D:\ProjectPackage\Int\IntRuoyiMaintance\ops\backup-ops\tests -EnableExit` -> PASS，13/13；执行 `task_closeout.py --workspace D:\ProjectPackage\Int\IntRuoyiMaintance --task-id 20260622-backup-server-backup-restore-rerun --mode preview --json` -> PASS，仅保留本轮 `task.md` 与 `execution-log.md`，无删除项。
+- 2026-06-22 执行记录：最终验证 `Invoke-Pester -Path D:\ProjectPackage\Int\IntRuoyiMaintance\ops\backup-ops\tests -EnableExit` -> PASS，13/13；执行 	ask_closeout.py --workspace D:\ProjectPackage\Int\IntRuoyiMaintance --task-id 20260622-backup-server-backup-restore-rerun --mode preview --json` -> PASS，仅保留本轮 	ask.md` 与 `execution-log.md`，无删除项。
 - 2026-06-22 用户请求：`重新再走一遍，主程序合并修改了部分代码，怕已经不对了`。
 - 2026-06-22 执行记录：重新读取 `C:\Users\BJB110\.codex\skills\playwright\SKILL.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\login-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`；业务仓标签打印冲突修复已提交为 `6d96efef31`，随后复用真实页面会话 `frontend-release-full-flow-mainmerge` 在 `http://127.0.0.1:48181/` 上完成 `build-release(v5)` 预览、提交与成功收口，发布包路径为 `Backup/ReleasePackage/release-20260621-page-full-flow-mainmerge-v5`。
 - 2026-06-22 执行记录：继续复用真实页面会话 `frontend-release-full-flow-mainmerge`，先 `snapshot` 确认 `build-release(v5)` 成功页态，再点击“部署测试服”、填写原因“主程序合并后重新验证页面发布全链路：部署测试服（v5）”、点击“预览命令”。
@@ -1057,7 +1057,7 @@
 - 2026-06-22 执行记录：按任务门禁先回写维护仓主任务 `doc/tasks/20260621-frontend-release-full-flow-main-merge-rerun/{task.md,execution-log.md}`，把当前阻塞更新为 OQ/PQ 菜单定义冲突；下一步转入业务仓定位并修复该新根因。
 - 2026-06-22 执行记录：读取 `C:\Users\BJB110\.codex\skills\bug-regression-fix-loop\SKILL.md`、`references\bug-contract.md`、`D:\ProjectPackage\Int\IntRuoyi\AGENTS.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`server-access.md`、`login-access.md`，并复核业务仓任务 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\doc\tasks\20260622-edhr-oq-pq-menu-definition-fix\{task.md,execution-log.md,bug-regression-evidence.md}` 与三项已通过验证命令 -> PASS。
 - 2026-06-22 执行记录：在业务仓只暂存 `script/tests/test_edhr_oq_pq_schema_sql.py`、`sql/mysql/20260618_mes_edhr_oq_pq_execution_deviation.sql`、`doc/tasks/20260622-edhr-oq-pq-menu-definition-fix/task.md`、`execution-log.md`，设置 `TDD_TASK_DIR=D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\doc\tasks\20260622-edhr-oq-pq-menu-definition-fix` 后执行 `git commit -m "任务: 修复OQ/PQ菜单定义冲突"` -> PASS，提交 `0d82319b98`。
-- 2026-06-22 执行记录：发现 `bug-regression-evidence.md` 被 `.gitignore` 拦截后，执行 `git add -f -- doc/tasks/20260622-edhr-oq-pq-menu-definition-fix/bug-regression-evidence.md`，继续沿用 `TDD_TASK_DIR=...20260622-edhr-oq-pq-menu-definition-fix` 执行 `git commit -m "任务: 补充OQ/PQ回归证据"` -> PASS，提交 `3ace5094ec`；随后回写维护仓主任务 `task.md` 与 `execution-log.md`，明确当前后端发布输入已更新到 `3ace5094ec7768237e7249b876a4eca67dad5e2a`，旧 `release-20260621-page-full-flow-mainmerge-v5` 已失效。
+- 2026-06-22 执行记录：发现 `bug-regression-evidence.md` 被 `.gitignore` 拦截后，执行 `git add -f -- doc/tasks/20260622-edhr-oq-pq-menu-definition-fix/bug-regression-evidence.md`，继续沿用 `TDD_TASK_DIR=...20260622-edhr-oq-pq-menu-definition-fix` 执行 `git commit -m "任务: 补充OQ/PQ回归证据"` -> PASS，提交 `3ace5094ec`；随后回写维护仓主任务 	ask.md` 与 `execution-log.md`，明确当前后端发布输入已更新到 `3ace5094ec7768237e7249b876a4eca67dad5e2a`，旧 `release-20260621-page-full-flow-mainmerge-v5` 已失效。
 - 当前结论：主程序合并后这轮真实页面发布链路当前停在“修复已提交、等待重新 build-release”状态；下一步必须继续复用真实页面会话 `frontend-release-full-flow-mainmerge`，用新标签 `release-20260621-page-full-flow-mainmerge-v6` 重新执行 `build-release -> deploy-test`，测试服通过后再继续 `mark-tested -> prod -> backup`。
 - 2026-06-22 执行记录：复用真实页面会话 `frontend-release-full-flow-mainmerge`，切回“构建发布包”，填写原因“主程序合并后重新验证页面发布全链路：oq-pq-menu修复后重建发布包（v6）”与 `releaseTag=release-20260621-page-full-flow-mainmerge-v6`，点击“预览命令”确认执行 `publish-int-ruoyi.ps1 -Mode build-release -ReleaseTag release-20260621-page-full-flow-mainmerge-v6 -Component intruoyi -SkipDatabaseSync -SkipMinioSync ...`，随后在真实弹窗点击“执行”，生成 operation `op-2026-06-21T232456287004700Z-51059473-149c-41e4-8fe3-14e2d4a9d7cb`。
 - 2026-06-22 执行记录：只读轮询 `runtime\runtime-control\op-2026-06-21T232456287004700Z-51059473-149c-41e4-8fe3-14e2d4a9d7cb.json` 与对应 log，确认 v6 真实页面构建依次完成 backend `mvn ... clean package`、frontend `vite build --mode test`、backend image 构建和 NAS 上传，最终 `SUCCESS`；本地目录 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260621-page-full-flow-mainmerge-v6` 生成 `manifest.json`、`release-manifest.json`、`intruoyi-images_release-20260621-page-full-flow-mainmerge-v6.tar`，NAS 发布目录为 `Backup/ReleasePackage/release-20260621-page-full-flow-mainmerge-v6`。
@@ -1065,7 +1065,7 @@
 - 当前结论：`build-release(v6)` 已真实页面成功，但当前候选包不是 clean merged-main 基线，而是混入未提交 DCC 工作树改动的 dirty baseline；在用户未明确这些未提交 DCC 改动是否应纳入本轮发布链路前，不能继续 `deploy-test(v6) -> mark-tested -> prod -> backup`。
 - 2026-06-22 执行记录：按 worktree 门禁新建成对 clean release worktree，后端 `D:\ProjectPackage\Int\IntRuoyi\worktrees\20260622-page-full-flow-mainmerge-release-clean\ruoyi-vue-pro` 与前端 `D:\ProjectPackage\Int\IntRuoyi\worktrees\20260622-page-full-flow-mainmerge-release-clean\yudao-ui-admin-vue3` 均切到 branch `codex/20260622-page-full-flow-mainmerge-release-clean`，分别停留在 `3ace5094ec` 与 `37359a074`，`git status --short` 为空 -> PASS。
 - 2026-06-22 执行记录：将本机运维台局部配置 `D:\ProjectPackage\Int\IntRuoyiMaintance\config\runtime-control.local.yaml` 的 `repo-root` / `frontend-root` 切换到上述 clean worktree，准备重启 `48181` 运维控制台后继续通过页面按钮推进 `deploy-test(v6)`；当前旧脏工作区保留不动，未做回滚或删除。
-- 2026-06-22 执行记录：复用维护仓任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260621-frontend-release-full-flow-main-merge-rerun\`，只读读取 `control-in-app-browser`、`playwright`、`bug-regression-fix-loop`、`database-schema-delivery` 技能和当前 `task.md` / `execution-log.md` / `task-state.json`，确认当前 clean release worktree 基线与 v8 真实页面构建成功证据。
+- 2026-06-22 执行记录：复用维护仓任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260621-frontend-release-full-flow-main-merge-rerun\`，只读读取 `control-in-app-browser`、`playwright`、`bug-regression-fix-loop`、`database-schema-delivery` 技能和当前 	ask.md` / `execution-log.md` / 	ask-state.json`，确认当前 clean release worktree 基线与 v8 真实页面构建成功证据。
 - 2026-06-22 执行记录：只读核对维护仓 operation `op-2026-06-22T001514869158500Z-1d251735-38f1-43d5-afe3-c40e4b603a8e` 日志，确认真实页面 `deploy-test(v8)` 已提交到测试服并在 `20260618_mes_edhr_oq_pq_execution_deviation.sql` line 399 因 `Missing eDHR OQ/PQ system_menu rows; cannot merge tenant package menu_ids` 失败；此前 `20260613_dcc_file_view_matrix_seed`、`20260615_showroom_hall_canvas_background`、`20260618_mes_edhr_label_print_queue`、`20260618_post_release_role_e2e_gate` 均已成功跨过。
 - 2026-06-22 执行记录：只读读取 `D:\ProjectPackage\Int\IntRuoyi\docs\experience-index.md`、`release-backup-restore.md`、`server-access.md` 与 `login-access.md`，并通过 `ssh root@172.30.30.58` + `docker exec intruoyi-mysql mysql ...` 的受控 SQL 文件查询核对测试服真实 `system_menu` 现场：`900332-900337` 仅存在 `900335-900337`，`900332-900334` 缺失，旧 OQ/PQ `900290-900292` 也已不存在。
 - 当前结论：`deploy-test(v8)` 的真实新阻塞不是旧 OQ/PQ 按钮定义冲突，而是 `20260618_mes_edhr_oq_pq_execution_deviation.sql` 的 cleanup 顺序缺陷。当前脚本会先因旧 `path/permission` 残留而跳过 `900332-900334` 新插入，再删除 legacy `900290-900292`，最终把页面/查询/创建三条删空，只剩 `900335-900337`；下一步必须在业务后端新建任务按严格 TDD 修复正式 SQL，然后回真实页面用 `release-20260621-page-full-flow-mainmerge-v9` 重新执行 `build-release -> deploy-test`。
@@ -1084,13 +1084,13 @@
 - 2026-06-22 执行命令：`npx --yes --package @playwright/cli playwright-cli --session frontend-release-full-flow-mainmerge click e1346`、`snapshot`，随后只读核对最新 operation `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\op-2026-06-22T031709289783300Z-b87c3859-b5bf-4f2c-b03f-008cf8d5e7b3.json` -> PASS；确认已在真实页面提交 `deploy-test(v10)`，operation `op-2026-06-22T031709289783300Z-b87c3859-b5bf-4f2c-b03f-008cf8d5e7b3` 当前为 `RUNNING`。
 - 2026-06-22 用户请求：`继续`。
 - 2026-06-22 执行记录：只读核对维护仓任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260621-frontend-release-full-flow-main-merge-rerun\{task.md,execution-log.md,task-state.json,test-report.md}`、运行态文件 `runtime\runtime-control\op-2026-06-22T031709289783300Z-b87c3859-b5bf-4f2c-b03f-008cf8d5e7b3.json` 与对应 log 尾部，确认真实页面 `deploy-test(v10)` 已最终 `FAILED`，新失败点切换为 `20260618_mes_edhr_dhr_template_lifecycle.sql` line `120` 的 `Duplicate entry '900293' for key 'system_menu.PRIMARY'`。
-- 2026-06-22 执行记录：按“先记录再修复”门禁，先回写维护仓主任务 `task.md`、`execution-log.md`、`task-state.json`、`test-report.md` 与本日志，明确 `release-20260621-page-full-flow-mainmerge-v10` 已失效，下一步必须在业务后端修复 DHR 模板菜单冲突后，用新的 `releaseTag` 从真实页面重新 `build-release -> deploy-test -> mark-tested -> prod -> backup`。
+- 2026-06-22 执行记录：按“先记录再修复”门禁，先回写维护仓主任务 	ask.md`、`execution-log.md`、	ask-state.json`、	est-report.md` 与本日志，明确 `release-20260621-page-full-flow-mainmerge-v10` 已失效，下一步必须在业务后端修复 DHR 模板菜单冲突后，用新的 `releaseTag` 从真实页面重新 `build-release -> deploy-test -> mark-tested -> prod -> backup`。
 - 2026-06-22 执行记录：在业务仓新建任务 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\doc\tasks\20260622-edhr-dhr-template-menu-id-collision-fix\`，按严格 TDD 修复 `20260618_mes_edhr_dhr_template_lifecycle.sql` 的菜单冲突：只读确认测试服 `900293-900299` 被 `eDHR统一变更` 占用后，先在 `script/tests/test_edhr_dhr_template_schema_sql.py` 补 RED 契约要求 DHR 模板按钮改用 `900347-900352`，执行 `python -X utf8 -m pytest ...test_edhr_dhr_template_schema_sql.py -q` -> FAIL；随后最小修改 SQL，把按钮段与 fail-fast/菜单合并列表整体切到 `900347-900352`，再执行同一 pytest、`python -X utf8 ...run-release-migration-policy-gate.py --sql-root ...` 与 `validate_bug_regression.py --evidence ...20260622-edhr-dhr-template-menu-id-collision-fix\\bug-regression-evidence.md` -> PASS。
 - 2026-06-22 执行记录：在业务仓只暂存 `script/tests/test_edhr_dhr_template_schema_sql.py`、`sql/mysql/20260618_mes_edhr_dhr_template_lifecycle.sql` 与任务目录 `doc/tasks/20260622-edhr-dhr-template-menu-id-collision-fix/`，设置 `TDD_TASK_DIR=D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\doc\tasks\20260622-edhr-dhr-template-menu-id-collision-fix` 后执行 `git commit -m "任务: 修复DHR模板菜单冲突"` -> PASS，提交 `e7a11af216`。
 - 2026-06-22 执行记录：执行 `git -C D:\ProjectPackage\Int\IntRuoyi\worktrees\20260622-page-full-flow-mainmerge-release-clean\ruoyi-vue-pro cherry-pick e7a11af216206d78dc698b0a52b6c3bac7f03281` -> PASS；已将 DHR 模板菜单冲突修复并入 clean release backend worktree，当前 HEAD 为 `d9606a65df`。随后回写维护仓主任务，明确下一步必须以新标签 `release-20260621-page-full-flow-mainmerge-v11` 通过真实页面重新执行 `build-release -> deploy-test -> mark-tested -> prod -> backup`。
 - 2026-06-22 执行记录：只读核对真实页面 `build-release(v11)` operation `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\op-2026-06-22T034606591995400Z-87264c6d-8e7b-4b5f-801f-e8b6e91e555f.json` 与对应 log，确认本机构建在 Maven/Vite 打包前被维护仓 SQL 预检门禁误报拦下，错误为 `system_menu.id must be an integer literal for release preflight: .../20260520_system_nas_management_menu.sql:11 -> \`name\``。
 - 2026-06-22 执行记录：按“先记录再修复”门禁，先回写维护仓主任务 `doc/tasks/20260621-frontend-release-full-flow-main-merge-rerun/{task.md,execution-log.md,task-state.json,test-report.md}`，将当前阶段回拨到 `build-release` 并明确旧标签 `release-20260621-page-full-flow-mainmerge-v11` 已失效；下一步必须先在维护仓按严格 TDD 修复 `ops/release/release_sql_contract_gate.py` 对 `ON DUPLICATE KEY UPDATE ... VALUES(...)` 的误解析，再改用新的 `releaseTag` 从真实页面重新执行 `build-release -> deploy-test -> mark-tested -> prod -> backup`。
-- 2026-06-22 执行记录：继续在维护仓任务 `doc/tasks/20260622-sql-preflight-gate/` 按严格 TDD 收口该误报；先在 `scripts/tests/test_release_sql_preflight_gate.py` 新增 `test_release_sql_contract_gate_allows_on_duplicate_key_update_values_clause`，执行 `python -X utf8 -m pytest ...test_release_sql_preflight_gate.py -q` -> FAIL，复现 `` `name` `` 被误解析为 `system_menu.id`。
+- 2026-06-22 执行记录：继续在维护仓任务 `doc/tasks/20260622-sql-preflight-gate/` 按严格 TDD 收口该误报；先在 `scripts/tests/test_release_sql_preflight_gate.py` 新增 	est_release_sql_contract_gate_allows_on_duplicate_key_update_values_clause`，执行 `python -X utf8 -m pytest ...test_release_sql_preflight_gate.py -q` -> FAIL，复现 `` `name` `` 被误解析为 `system_menu.id`。
 - 2026-06-22 执行记录：最小修改 `ops/release/release_sql_contract_gate.py` 的 `_extract_value_tuples()`，使其只连续解析真正的顶层 `VALUES (...)` 插入元组，遇到 `ON DUPLICATE KEY UPDATE` 这类非逗号分隔后续内容立即停止；随后执行 `python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_release_sql_preflight_gate.py -q` -> PASS（4 passed）、`python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_showroom_release_sql_contract.py -q` -> PASS（3 passed）、`python -X utf8 D:\ProjectPackage\Int\IntRuoyiMaintance\ops\release\run-release-migration-policy-gate.py --sql-root D:\ProjectPackage\Int\IntRuoyi\worktrees\20260622-page-full-flow-mainmerge-release-clean\ruoyi-vue-pro\sql\mysql` -> PASS（`migrationCount=186`）。
 - 2026-06-22 执行记录：补写维护仓 `doc/tasks/20260622-sql-preflight-gate/{task.md,execution-log.md,bug-regression-evidence.md}` 与主发布链路任务 `doc/tasks/20260621-frontend-release-full-flow-main-merge-rerun/{task.md,execution-log.md,test-report.md,task-state.json}`，明确维护仓 SQL 预检误判已收口；下一步将只提交本次维护仓修复后，回真实页面以新标签 `release-20260621-page-full-flow-mainmerge-v12` 重新执行 `build-release -> deploy-test -> mark-tested -> prod -> backup`。
 - 2026-06-22 执行记录：继续读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260621-frontend-release-full-flow-main-merge-rerun\{task.md,execution-log.md,test-report.md,task-state.json}`、轮询 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\op-2026-06-22T040752788980600Z-65f35dd8-4afa-4a4e-a9ee-5f04a5dd500a.json` 与对应 log，并只读核对 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260621-page-full-flow-mainmerge-v12\manifest.json` -> PASS；确认真实页面 `build-release(v12)` 已最终 `SUCCESS`，NAS 发布目录为 `Backup/ReleasePackage/release-20260621-page-full-flow-mainmerge-v12`，backend/front source commit 为 `d9606a65dfb4bfd4151970e3393e77be5f13a0c5` / `37359a074cedcc0a341f17cb0abdd1a71f838731`，两仓 `dirty=false`。
@@ -1099,7 +1099,7 @@
 - 2026-06-22 执行记录：持续只读轮询 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\op-2026-06-22T042335374179300Z-b8f08a6e-3f7d-431a-91b3-df481bd92388.json` 与对应 log，确认真实页面 `deploy-test(v12)` 已最终 `FAILED`；本轮已成功跨过镜像加载、测试服 `mysql/redis` 启动、`post-import.sql` 执行和 `20260613_infra_release_migration_state.sql` bootstrap，但随后在 `infra_release_operation_lock` 的测试环境锁获取步骤中，本机脚本通过 `grep '^LOCK_ACQUIRED$'` 断言锁获取结果时收到退出码 `1`，导致当前测试服部署提前中断。
 - 2026-06-22 执行记录：按“先记录再修复”门禁，先回写维护仓主任务 `doc/tasks/20260621-frontend-release-full-flow-main-merge-rerun/{task.md,execution-log.md,test-report.md}`，将本轮新阻塞更新为测试环境发布锁获取失败；下一步仅做只读核对测试服 `infra_release_operation_lock` 当前真实状态与维护仓锁契约，再决定是否需要在维护仓按严格 TDD 修复根因。
 - 2026-06-22 执行记录：执行 `python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_publish_release_lock_cleanup.py -q` -> PASS（`2 passed`），确认维护仓此前修复过的“持锁后 fail-fast 必须先释放 `infra_release_operation_lock` 再退出”契约未回退，本轮锁阻塞不是旧的发布锁释放代码回归。
-- 2026-06-22 执行记录：只读 SSH 审计测试服 `172.30.30.58` 的 `/opt/intruoyi/runtime/.env`、`infra_release_operation_lock`、`infra_release_migration`、`/var/lib/docker/intruoyi-releases` 与 `docker ps` -> PASS；确认此前阻断 `deploy-test(v12)` 的 `target_environment='test'` 锁实际来自外部链路 `test-20260622_121338 / 20260622_121338`，并已被其他流程收口为 `FAILED`（`finished_at=2026-06-22 12:45:12`，`error_message='Recovered stale RUNNING lock after 20260622 DCC preview release failures; later fixes require retry.'`）。同时确认测试服共享环境已发生漂移：`.env` 当前 `IMAGE_TAG=20260622_123255`，但运行容器仍混杂为 backend `release-20260621-page-full-flow-mainmerge-v10`、frontend `release-20260621-page-full-flow-v6`，说明当前主阻塞已切换为共享测试环境被外部失败发布链路改写成半切换态。
+- 2026-06-22 执行记录：只读 SSH 审计测试服 `172.30.30.58` 的 `/opt/intruoyi/runtime/.env`、`infra_release_operation_lock`、`infra_release_migration`、`/var/lib/docker/intruoyi-releases` 与 `docker ps` -> PASS；确认此前阻断 `deploy-test(v12)` 的 	arget_environment='test'` 锁实际来自外部链路 	est-20260622_121338 / 20260622_121338`，并已被其他流程收口为 `FAILED`（`finished_at=2026-06-22 12:45:12`，`error_message='Recovered stale RUNNING lock after 20260622 DCC preview release failures; later fixes require retry.'`）。同时确认测试服共享环境已发生漂移：`.env` 当前 `IMAGE_TAG=20260622_123255`，但运行容器仍混杂为 backend `release-20260621-page-full-flow-mainmerge-v10`、frontend `release-20260621-page-full-flow-v6`，说明当前主阻塞已切换为共享测试环境被外部失败发布链路改写成半切换态。
 - 2026-06-22 执行记录：回写维护仓主任务 `doc/tasks/20260621-frontend-release-full-flow-main-merge-rerun/{task.md,execution-log.md,test-report.md,task-state.json}`，明确本轮发布包输入未变化、维护仓锁释放回归已通过；下一步不重新 `build-release`，而是继续通过真实页面对同一 `release-20260621-page-full-flow-mainmerge-v12` 重试 `deploy-test`，待测试服重新回到本任务候选包后再继续 `mark-tested -> prod -> backup`。
 - 2026-06-22 用户请求：`现在有没有类似个人中心的页签，可以看到所有的任务`。
 - 2026-06-22 执行记录：创建维护仓任务 `doc/tasks/20260622-task-tab-inventory/`，只读核对 `docs/experience-index.md`、`docs/agent-memory/project-error-prevention.md`、上一任务 `doc/tasks/20260622-sql-preflight-gate/task.md` 完成状态，并登记本次盘点边界。
@@ -1111,19 +1111,19 @@
   - DCC 工作台含“我的审批待办”，可跳转到 `DCC审批任务`；
   - eDHR 工作任务页含 `我的待办 / 候选审核 / 逾期任务 / 我已处理`。
 - 2026-06-22 执行记录：只读核对菜单 SQL `sql/mysql/ruoyi-vue-pro.sql`、`sql/mysql/20260513_dcc_base_schema.sql`、`sql/mysql/20260611_mes_edhr_work_task_flow.sql`，确认 `审批中心`、`待办任务`、`已办任务`、`DCC审批任务`、`DCC我的文件`、`eDHR工作任务` 均已登记为真实菜单入口。
-- 2026-06-22 执行命令：`python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260622-task-tab-inventory --mode preview` -> PASS；预览结果仅保留 `task.md` 与 `execution-log.md`，无额外清理项。
+- 2026-06-22 执行命令：`python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260622-task-tab-inventory --mode preview` -> PASS；预览结果仅保留 	ask.md` 与 `execution-log.md`，无额外清理项。
 - 2026-06-22 用户请求：`$fupan`。
-- 2026-06-22 执行记录：创建维护仓复盘任务 `doc\tasks\20260622-fupan-backup-restore-rerun\`，读取 `C:\Users\BJB110\.codex\skills\fupan\SKILL.md`、`references\project-memory-template.md`、备份恢复再次演练任务 `task.md/execution-log.md`、本请求日志与 `docs\agent-memory\project-error-prevention.md`。
+- 2026-06-22 执行记录：创建维护仓复盘任务 `doc\tasks\20260622-fupan-backup-restore-rerun\`，读取 `C:\Users\BJB110\.codex\skills\fupan\SKILL.md`、`references\project-memory-template.md`、备份恢复再次演练任务 	ask.md/execution-log.md`、本请求日志与 `docs\agent-memory\project-error-prevention.md`。
 - 2026-06-22 执行命令：`python -X utf8 C:\Users\BJB110\.codex\skills\fupan\scripts\update_project_memory.py --memory-file D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md --max-file-chars 800 --entry "备份/恢复 preflight 用 UTF-8无BOM、LF 脚本；核数据盘/备份根/对象存储/IMAGE_TAG；证据: 20260622-backup-rerun"` -> PASS；短记忆长度为 `760` 字符，保留在默认 800 上限内。
 - 2026-06-22 执行命令：`python -X utf8 C:\Users\BJB110\.codex\skills\fupan\scripts\collect_error_evidence.py --project-root D:\ProjectPackage\Int\IntRuoyiMaintance --glob doc/tasks/20260622-backup-server-backup-restore-rerun/task.md --glob doc/tasks/20260622-backup-server-backup-restore-rerun/execution-log.md --glob docs/request-command-log.md --glob docs/agent-memory/project-error-prevention.md --output doc/tasks/20260622-fupan-backup-restore-rerun/candidate-error-evidence.md --context-lines 1 --max-matches-per-file 8` -> PASS；候选证据确认采纳规则具备项目级泛化价值，本次未提升到 `AGENTS.md`。
-- 2026-06-22 执行记录：继续推进主任务 `20260621-frontend-release-full-flow-main-merge-rerun`，先重读 `task.md`、`execution-log.md`、`test-report.md`、`task-state.json`、`docs/experience-index.md` 与 `D:\ProjectPackage\Int\IntRuoyi\docs\{release-backup-restore.md,server-access.md,login-access.md}`，确认本轮仍须坚持“先记证据，再恢复，再回页面”的门禁。
+- 2026-06-22 执行记录：继续推进主任务 `20260621-frontend-release-full-flow-main-merge-rerun`，先重读 	ask.md`、`execution-log.md`、	est-report.md`、	ask-state.json`、`docs/experience-index.md` 与 `D:\ProjectPackage\Int\IntRuoyi\docs\{release-backup-restore.md,server-access.md,login-access.md}`，确认本轮仍须坚持“先记证据，再恢复，再回页面”的门禁。
 - 2026-06-22 执行命令：只读核对测试服 `172.30.30.58` 当前进程与运行控制目录，执行 `ssh -o BatchMode=yes root@172.30.30.58 "pgrep -af 'publish-int-ruoyi|backup-ops|runtime-control|deploy-release|20260622_124533'; echo __SEP__; grep -R --line-number --fixed-strings '20260622_124533' /opt/intruoyi/runtime/data/runtime-control 2>/dev/null | head -20"` -> PASS；结果仅见长期驻留的运行控制 Java 进程，未发现可归属 `20260622_124533` 的活跃发布 shell，运行控制目录也未命中该 releaseTag。
 - 2026-06-22 执行命令：只读核对测试服运行态与外部残留目录，执行 `ssh -o BatchMode=yes root@172.30.30.58 "echo ENV; grep '^IMAGE_TAG=' /opt/intruoyi/runtime/.env; echo CONTAINERS; docker ps --format '{{.Names}} {{.Image}}' | grep -E 'intruoyi-(backend|frontend)'; echo RELEASE_DIR; stat -c '%y %n' /var/lib/docker/intruoyi-releases/20260622_124533"` -> PASS；确认 `.env=release-20260621-page-full-flow-mainmerge-v12`、backend 容器已是 `release-20260621-page-full-flow-mainmerge-v12`、frontend 仍为 `release-20260621-page-full-flow-v6`，且残留目录 `/var/lib/docker/intruoyi-releases/20260622_124533` 的时间戳为 `2026-06-22 12:55:59 +0800`。
-- 2026-06-22 执行命令：只读核对测试服数据库现场，执行 `ssh -o BatchMode=yes root@172.30.30.58 "docker exec intruoyi-mysql mysql -N -B -uroot -p<redacted> -e \"SHOW DATABASES;\""`、`ssh -o BatchMode=yes root@172.30.30.58 "docker exec intruoyi-mysql mysql -N -B -uroot -p<redacted> -D ruoyi-vue-pro -e \"SELECT operation_id,release_tag,target_environment,status,started_at,finished_at,IFNULL(error_message,'') FROM infra_release_operation_lock WHERE target_environment='test' ORDER BY started_at DESC LIMIT 5;\""`、`ssh -o BatchMode=yes root@172.30.30.58 "docker exec intruoyi-mysql mysql -N -B -uroot -p<redacted> -D ruoyi-vue-pro -e \"SELECT COUNT(*) FROM infra_release_migration WHERE status='RUNNING';\""` 与 `SELECT COUNT(*) FROM infra_release_operation_lock WHERE target_environment='test' AND status='RUNNING';` -> PASS；确认数据库名为 `ruoyi-vue-pro`，测试环境当前仅剩 `test-20260622_124533 / 20260622_124533 / RUNNING / 2026-06-22 12:56:16 / NULL` 这一条发布锁，`infra_release_migration` 的 RUNNING 数量为 `0`，测试环境 RUNNING 锁数量为 `1`。
-- 2026-06-22 执行记录：在主任务目录新增 `doc/tasks/20260621-frontend-release-full-flow-main-merge-rerun/database-schema-evidence.md`，记录本次仅对测试服单条 stale `RUNNING` 锁做恢复性收口的目标、风险分析、回滚计划与验证要求；并同步回写主任务 `task.md`、`execution-log.md`、`test-report.md`、`task-state.json`，将最新阻塞更新为“先恢复性收口 `test-20260622_124533`，再回真实页面继续 deploy-test(v12)”。
+- 2026-06-22 执行命令：只读核对测试服数据库现场，执行 `ssh -o BatchMode=yes root@172.30.30.58 "docker exec intruoyi-mysql mysql -N -B -uroot -p<redacted> -e \"SHOW DATABASES;\""`、`ssh -o BatchMode=yes root@172.30.30.58 "docker exec intruoyi-mysql mysql -N -B -uroot -p<redacted> -D ruoyi-vue-pro -e \"SELECT operation_id,release_tag,target_environment,status,started_at,finished_at,IFNULL(error_message,'') FROM infra_release_operation_lock WHERE target_environment='test' ORDER BY started_at DESC LIMIT 5;\""`、`ssh -o BatchMode=yes root@172.30.30.58 "docker exec intruoyi-mysql mysql -N -B -uroot -p<redacted> -D ruoyi-vue-pro -e \"SELECT COUNT(*) FROM infra_release_migration WHERE status='RUNNING';\""` 与 `SELECT COUNT(*) FROM infra_release_operation_lock WHERE target_environment='test' AND status='RUNNING';` -> PASS；确认数据库名为 `ruoyi-vue-pro`，测试环境当前仅剩 	est-20260622_124533 / 20260622_124533 / RUNNING / 2026-06-22 12:56:16 / NULL` 这一条发布锁，`infra_release_migration` 的 RUNNING 数量为 `0`，测试环境 RUNNING 锁数量为 `1`。
+- 2026-06-22 执行记录：在主任务目录新增 `doc/tasks/20260621-frontend-release-full-flow-main-merge-rerun/database-schema-evidence.md`，记录本次仅对测试服单条 stale `RUNNING` 锁做恢复性收口的目标、风险分析、回滚计划与验证要求；并同步回写主任务 	ask.md`、`execution-log.md`、	est-report.md`、	ask-state.json`，将最新阻塞更新为“先恢复性收口 	est-20260622_124533`，再回真实页面继续 deploy-test(v12)”。
 - 2026-06-22 执行命令：`python -X utf8 C:\Users\BJB110\.codex\skills\database-schema-delivery\scripts\validate_database_schema.py --evidence D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260621-frontend-release-full-flow-main-merge-rerun\database-schema-evidence.md` -> PASS；结果 `Database schema evidence is valid.`。
 - 2026-06-22 执行命令：在确认无活跃发布进程、无 runtime-control operation、且 `infra_release_migration` 无 RUNNING 后，对测试服 `infra_release_operation_lock` 执行最小恢复性回写：`UPDATE infra_release_operation_lock SET status='FAILED', finished_at=NOW(), error_message='Recovered stale RUNNING lock during 2026-06-22 main-merge rerun after confirming no active publish process or runtime-control operation evidence.', updater='codex', update_time=NOW() WHERE operation_id='test-20260622_124533' AND release_tag='20260622_124533' AND target_environment='test' AND status='RUNNING'; SELECT ROW_COUNT();` -> PASS；`ROW_COUNT()=1`。
-- 2026-06-22 执行命令：回读验证测试服锁与迁移状态，执行 `SELECT operation_id,release_tag,target_environment,status,started_at,finished_at,IFNULL(error_message,'') FROM infra_release_operation_lock WHERE target_environment='test' ORDER BY started_at DESC LIMIT 5; SELECT COUNT(*) FROM infra_release_operation_lock WHERE target_environment='test' AND status='RUNNING'; SELECT COUNT(*) FROM infra_release_migration WHERE status='RUNNING';` -> PASS；确认 `test-20260622_124533` 已变为 `FAILED`、`finished_at=2026-06-22 13:22:21`，测试环境 `RUNNING` 锁数量为 `0`，迁移 `RUNNING` 数量也为 `0`。同时再次只读核对 `.env` 与 `docker ps`，确认测试服当前仍是 `.env=v12`、backend=v12、frontend=v6` 的半切换态，下一步应立即回真实页面继续第三次 `deploy-test(v12)`。
+- 2026-06-22 执行命令：回读验证测试服锁与迁移状态，执行 `SELECT operation_id,release_tag,target_environment,status,started_at,finished_at,IFNULL(error_message,'') FROM infra_release_operation_lock WHERE target_environment='test' ORDER BY started_at DESC LIMIT 5; SELECT COUNT(*) FROM infra_release_operation_lock WHERE target_environment='test' AND status='RUNNING'; SELECT COUNT(*) FROM infra_release_migration WHERE status='RUNNING';` -> PASS；确认 	est-20260622_124533` 已变为 `FAILED`、`finished_at=2026-06-22 13:22:21`，测试环境 `RUNNING` 锁数量为 `0`，迁移 `RUNNING` 数量也为 `0`。同时再次只读核对 `.env` 与 `docker ps`，确认测试服当前仍是 `.env=v12`、backend=v12、frontend=v6` 的半切换态，下一步应立即回真实页面继续第三次 `deploy-test(v12)`。
 - 2026-06-22 执行记录：继续接管真实页面会话 `frontend-release-full-flow-mainmerge`，只读核对页面快照、运行态 JSON `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\op-2026-06-22T052654342734600Z-d5c5e3f1-3079-4fca-a3c5-668d0651985a.json`、对应本机日志与测试服 `.env/docker ps/HTTP` 运行态；确认恢复 stale 锁后的第三次 `deploy-test(v12)` 已最终 `SUCCESS`，测试服 `/opt/intruoyi/runtime/.env` 与 `intruoyi-backend/intruoyi-frontend` 镜像都已切到 `release-20260621-page-full-flow-mainmerge-v12`，`48081/8081` 均返回 HTTP `200`。
 - 2026-06-22 执行记录：同步回写主任务 `doc/tasks/20260621-frontend-release-full-flow-main-merge-rerun/{task.md,execution-log.md,test-report.md,task-state.json}`，将里程碑 T4 更新为已完成，并把下一步推进为继续通过真实页面执行 `mark-tested(v12)`，之后再走 `prod -> backup`。
 - 2026-06-22 执行记录：继续复用真实页面会话 `frontend-release-full-flow-mainmerge`，在“标记测试通过”表单保持原有值不变，点击“预览命令”确认执行 `publish-int-ruoyi.ps1 -Mode mark-tested -ReleaseTag release-20260621-page-full-flow-mainmerge-v12 -TestConclusion 回归通过，允许上线正式服（v12） -SelectedRecoverySetCandidateId restore:20260621-063218 -RecoverySetId 20260621-063218 ...`，随后在真实弹窗点击“执行”，生成 operation `op-2026-06-22T063134275225600Z-e0e3d514-ea55-432e-a8bd-c14693a7a321`。
@@ -1165,7 +1165,7 @@
 - 执行记录：在隔离后端 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-dcc-preview-release` 上继续推进，确认先前 `20260622_dcc_preview_codex_release_fix_2` 已解决 Codex CLI 120 秒超时，新的真实根因是样本 `dcc_controlled_file.id=2054545668044050095` 的源文件名只唯一命中项目名称 `PTCA球囊扩张导管`，旧实现只支持“文件名先识别项目编码”。
 - 执行命令：新增并回归 `源文件名唯一项目名称直连识别`，通过 `mvn -f D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-dcc-preview-release\pom.xml -pl yudao-module-dcc "-Dtest=DccControlledFileProjectCodeRecognitionServiceTest#recognizeProjectCode_uniqueProjectNameInSourceFileNameSkipsCodexAndFileContentRead,DccControlledFileProjectCodeRecognitionServiceTest#recognizeProjectCode_uniqueProjectCodeInSourceFileNameSkipsCodexAndFileContentRead,DccControlledFileProjectCodeRecognitionServiceTest#recognizeProjectCode_sourceFileNameUsesLongestUniqueProjectCodeBeforeCodex" test`、`mvn -f ... -pl yudao-module-dcc -am "-Dtest=DccControlledFileProjectCodeRecognitionServiceTest,DccProjectCodeCodexCliClientImplTest" "-Dsurefire.failIfNoSpecifiedTests=false" test`、`python -X utf8 -m pytest ...test_publish_int_ruoyi_to_test_tooling.py -q`（87 passed）、`python -X utf8 -m pytest ...test_edhr_release_transaction_schema_sql.py -q`（4 passed）与 `python -X utf8 ...run-release-migration-policy-gate.py --sql-root ...\\sql\\mysql`。
 - 执行命令：构建并部署测试服 backend 发布包 `20260622_dcc_preview_codex_release_fix_3`，使用 `publish-int-ruoyi.ps1 -Mode build-release ... -ReleaseTag 20260622_dcc_preview_codex_release_fix_3 ... -DccProjectCodeCodexCliCommand /opt/intruoyi/runtime/tools/codex -DccProjectCodeCodexHome /opt/intruoyi/runtime/backend-codex-home` 与 `publish-int-ruoyi.ps1 -Mode deploy-release ... -ReleaseTag 20260622_dcc_preview_codex_release_fix_3 ...` -> PASS。
-- 执行命令：使用测试租户真实接口验证，`POST http://172.30.30.58:48081/admin-api/system/auth/login` 携带 header `tenant-id: 122` 与 `aoteman/<redacted>` 登录成功；随后 `POST http://172.30.30.58:48081/admin-api/dcc/controlled-files/2054545668044050095/recognize-project-code` 返回 `code=0`，`dccProjectCodeId=1`、`projectCode=PTCABC`、`projectName=PTCA球囊扩张导管`、`matchType=PROJECT_NAME`。
+- 执行命令：使用测试租户真实接口验证，`POST http://172.30.30.58:48081/admin-api/system/auth/login` 携带 header 	enant-id: 122` 与 `aoteman/<redacted>` 登录成功；随后 `POST http://172.30.30.58:48081/admin-api/dcc/controlled-files/2054545668044050095/recognize-project-code` 返回 `code=0`，`dccProjectCodeId=1`、`projectCode=PTCABC`、`projectName=PTCA球囊扩张导管`、`matchType=PROJECT_NAME`。
 - 执行命令：通过 `ssh -o BatchMode=yes root@172.30.30.58` + `docker exec intruoyi-mysql mysql --default-character-set=utf8mb4 ...` 真实回读测试服数据库，确认 `dcc_controlled_file.id=2054545668044050095` 已写回 `file_name/title/product_name=PTCA球囊扩张导管`、`product_code=PTCABC`、`dcc_project_code_id=1`、`project_code_recognition_type=PROJECT_NAME`，并且其 `master_id=2054545668044045220` 对应的 `dcc_controlled_file_master.file_name` 也同步为 `PTCA球囊扩张导管`。
 - 结论记录：测试服 DCC 受控预览后端识别链路已跑通，当前会优先用源文件名中的唯一项目编码或唯一项目名称命中 DCC 基础数据，并把正确项目名称同步回写到受控文件与主链文件名；本轮未触碰正式服。
 - 2026-06-22 用户进一步确认：`D:\ProjectPackage\Int\IntRuoyi` 下项目后续都要按 `int_main` 方向融合。执行记录：只读核对后发现原始主工作区 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro` 虽处于 `int_main`，但存在大量未提交改动，且与本次 DCC 修复同文件重叠，不能直接把当前任务硬合进去。随后创建干净成对 worktree：后端 `D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-dcc-preview-int-main-clean`、前端 `D:\ProjectPackage\Int\IntRuoyiWorktrees\yudao-ui-admin-vue3-dcc-preview-int-main-clean`，分支同为 `codex/20260622-dcc-preview-int-main-clean`，基线分别来自 `int_main`。
@@ -1180,7 +1180,7 @@
 
 - 用户需求：`D:\ProjectPackage\Int\IntRuoyi` 下的改动后续真正要收口到 `int_main`，并要求这次按阶段执行、一次性融合。
 - 命中技能与经验：`supervised-complex-delivery`、`D:\ProjectPackage\Int\IntRuoyi\docs\worktree-memory.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`。
-- 命令记录：读取 `experience-index.md`、`worktree-memory.md`、`project-error-prevention.md` 与 `supervised-complex-delivery` 的 `artifact-contract.md`、`task-state-schema.md`、`review-gates.md`，把本轮定位为“holding 现场分组 + clean int_main 基线重放”的收口任务。
+- 命令记录：读取 `experience-index.md`、`worktree-memory.md`、`project-error-prevention.md` 与 `supervised-complex-delivery` 的 `artifact-contract.md`、	ask-state-schema.md`、`review-gates.md`，把本轮定位为“holding 现场分组 + clean int_main 基线重放”的收口任务。
 - 命令记录：复核维护仓 `doc/tasks`，确认最近已完成任务为 `20260622-task-tab-inventory`；同时发现 `20260621-frontend-release-full-flow-main-merge-rerun` 实际仍处于进行中，因此先将其按“用户优先级切换到 int_main 融合”显式改为 `BLOCKED`。
 - 命令记录：盘点 backend 原始工作区 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro` 当前分支 `codex/20260622-ruoyi-vue-pro-int-main-hold` 与 `git diff --stat`，确认未提交改动混有三组：`DCC 审阅矩阵`、`已进入 int_main 的 DCC 文件名识别残留`、`MES 自动排产/preflight`。
 - 命令记录：盘点 frontend 原始工作区 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3` 当前分支 `codex/20260622-yudao-ui-admin-vue3-int-main-hold` 与 `git diff --stat`，确认未提交改动主要为一组 `DCC 审阅矩阵页签`，另带 `.env.merged-e2e` 非主线文件。
@@ -1195,7 +1195,7 @@
 - 命令记录：backend 集成 worktree 先分别执行 `python -X utf8 ...task_closeout.py --task-id 20260622-dcc-review-matrix-tab --mode apply --worktree-closeout off` 与 `--task-id 20260622-mes-auto-schedule-preflight-gate --mode apply --worktree-closeout off`，删除两份 `backend-api-evidence.md`；随后设置 `TDD_TASK_DIR=...\\20260622-mes-auto-schedule-preflight-gate`，提交 cleanup `20e2e70305 任务: 清理DCC与MES收尾产物`，并在 backend 真正主线 worktree 执行 `git merge --ff-only codex/20260622-int-main-one-shot-integration` 与 `git worktree remove --force ...\\ruoyi-vue-pro-int-main-one-shot-integration` -> PASS。
 - 命令记录：frontend 集成 worktree 执行 `python -X utf8 ...task_closeout.py --task-id 20260622-dcc-review-matrix-tab --mode apply`，已删除 `dcc-review-matrix-tab-real-evidence.json` 与 `frontend-feature-evidence.md`，并生成 cleanup 提交 `db289300f 任务: 清理任务收尾产物 20260622-dcc-review-matrix-tab`；该提交已快进进入 frontend 真正的 `int_main`。随后因目录内 `node_modules` 长路径残留导致 `git worktree remove --force` 目录清空失败，经确认该路径已不再是 Git worktree 后，使用 Node `fs.rmSync(path,{recursive:true,force:true,maxRetries:10,retryDelay:200})` 删除剩余普通目录 -> PASS。
 - 结论记录：前后端本轮集成 worktree 已全部关闭，真正 `int_main` 分别停在 backend `20e2e70305`、frontend `db289300f`；当前只剩维护仓 `20260622-int-main-one-shot-integration` 任务目录自身按 keep/delete 计划执行 apply cleanup。
-- 命令记录：维护仓执行 `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260622-int-main-one-shot-integration --mode preview` 与 `--mode apply` -> PASS；已按默认规则保留 `task.md`、`execution-log.md`，并删除 `dev-plan.md`、`prd.md`、`request-analysis.md`、`task-state.json`、`test-plan.md`、`test-report.md`。
+- 命令记录：维护仓执行 `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260622-int-main-one-shot-integration --mode preview` 与 `--mode apply` -> PASS；已按默认规则保留 	ask.md`、`execution-log.md`，并删除 `dev-plan.md`、`prd.md`、`request-analysis.md`、	ask-state.json`、	est-plan.md`、	est-report.md`。
 - 结论记录：这次“按阶段一次性融合进 int_main”已经从分组收口走到真正收尾结束，前后端主线结果、holding 现场保留与维护台账清理三件事都已闭环。
 
 ## 2026-06-22 恢复原始工作区并清理 int_main 临时承载
@@ -1203,7 +1203,7 @@
 - 用户问题：`ruoyi-vue-pro-dcc-preview-int-main-clean`、`codex/20260622-ruoyi-vue-pro-int-main-hold`、`codex/20260622-yudao-ui-admin-vue3-int-main-hold` 分别是做什么的，融合进 `int_main` 后能不能删。
 - 命中经验：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md` 后命中 `D:\ProjectPackage\Int\IntRuoyi\docs\worktree-memory.md`，并按门禁先做 `experience-preflight`。
 - 命令记录：复核后发现前端原始目录 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3` 当前只剩 `.env.merged-e2e` 未跟踪文件，而 backend 原始目录 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro` 仍有 11 个脏文件与 `doc/tasks/20260622-dcc-preview-file-name-recognition/` 本地任务文档。
-- 命令记录：在 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3` 执行 `git switch --ignore-other-worktrees int_main` -> PASS，随后删除分支 `codex/20260622-yudao-ui-admin-vue3-int-main-hold`，再执行 `git worktree remove --force D:\ProjectPackage\Int\IntRuoyiWorktrees\yudao-ui-admin-vue3-dcc-preview-int-main-clean` -> PASS。结果：原始前端目录现在直接承载 `int_main`，原有本地改动 `RouteUsePage.vue`、3 个 `tests/e2e/*` 文件与 `.env.merged-e2e` 继续保留，没有丢失。
+- 命令记录：在 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3` 执行 `git switch --ignore-other-worktrees int_main` -> PASS，随后删除分支 `codex/20260622-yudao-ui-admin-vue3-int-main-hold`，再执行 `git worktree remove --force D:\ProjectPackage\Int\IntRuoyiWorktrees\yudao-ui-admin-vue3-dcc-preview-int-main-clean` -> PASS。结果：原始前端目录现在直接承载 `int_main`，原有本地改动 `RouteUsePage.vue`、3 个 	ests/e2e/*` 文件与 `.env.merged-e2e` 继续保留，没有丢失。
 - 命令记录：对 backend 原始目录的 11 个脏文件逐个与真正 `int_main` 内容做 SHA256 和 `git diff --ignore-cr-at-eol` 比对，确认其中 9 个仅剩行尾差异，但 `DccControlledFileProjectCodeRecognitionServiceImpl.java`、`DccControlledFileProjectCodeRecognitionServiceTest.java` 为真实语义差异；再与 `D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-dcc-preview-release` 比对后，确认这两处代码及 `doc/tasks/20260622-dcc-preview-file-name-recognition/{task.md,execution-log.md}` 也不等于现有 release worktree。
 - 命令记录：尝试在 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro` 执行 `git switch --ignore-other-worktrees int_main` 时，Git 明确报错“当前 11 个本地改动和 `doc/tasks/20260622-dcc-preview-file-name-recognition/{task.md,execution-log.md}` 会被 int_main 覆盖”，因此 backend 原始目录不能安全切到 `int_main`，`codex/20260622-ruoyi-vue-pro-int-main-hold` 也不能删。
 - 命令记录：由于 backend 原始目录未能接管真正主线，立即执行 `git worktree add D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-dcc-preview-int-main-clean int_main` 恢复 backend clean `int_main` worktree，保持真正主线仍有稳定承载目录。
@@ -1221,7 +1221,7 @@
 - 2026-06-22 执行记录：收到用户继续指令后，刷新本机运行控制台并确认旧 `v14` 正式服 operation 已为 `FAILED`，随后将页面切回“构建发布包”，更新原因为“主程序合并后重新验证页面发布全链路：release-transaction traveler号段修复后重建发布包（v15）”，发布标签更新为 `release-20260621-page-full-flow-mainmerge-v15`，预览弹窗再次核对 `-BackendRepoRoot/-FrontendRepoRoot` 仍指向 clean release worktrees。
 - 2026-06-22 执行命令：在真实页面预览弹窗点击“执行”，生成 operation `op-2026-06-22T121006967109700Z-6dc95b22-9d29-4a00-b432-9cdd4e34bc51`；随后轮询运行态 JSON 与日志，确认 `build-release(v15)` 已最终 `SUCCESS`，本地候选目录 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260621-page-full-flow-mainmerge-v15\` 已生成 `manifest.json`、`release-manifest.json` 与 `intruoyi-images_release-20260621-page-full-flow-mainmerge-v15.tar`，且 manifest 已核对 backend commit=`49248d9f20db9e3100bc5f492c7027d4de065f32`、frontend commit=`37359a074cedcc0a341f17cb0abdd1a71f838731`、两仓 `dirty=false`。
 - 2026-06-22 用户请求：`继续`。
-- 2026-06-22 执行记录：承接真实页面已提交的 `deploy-test(v15)`，补读 `playwright` 与 `ci-cd-environment-delivery` 技能、主任务 `task.md/execution-log.md/test-report.md/task-state.json` 以及当前 operation JSON/log，确认本轮必须先把 `deploy-test(v15)` 终态与只读运行态证据写回文档，再继续页面点击 `mark-tested(v15)`。
+- 2026-06-22 执行记录：承接真实页面已提交的 `deploy-test(v15)`，补读 `playwright` 与 `ci-cd-environment-delivery` 技能、主任务 	ask.md/execution-log.md/test-report.md/task-state.json` 以及当前 operation JSON/log，确认本轮必须先把 `deploy-test(v15)` 终态与只读运行态证据写回文档，再继续页面点击 `mark-tested(v15)`。
 - 2026-06-22 执行命令：持续轮询 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\op-2026-06-22T124343427998700Z-ff404f87-2e5b-4ec1-9e04-cab7342d49a3.json` 与 `runtime\runtime-control\logs\op-2026-06-22T124343427998700Z-ff404f87-2e5b-4ec1-9e04-cab7342d49a3.log` -> PASS；确认 `deploy-test(v15)` 在测试服已真实跨过 `20260618_mes_edhr_release_transaction_lifecycle.sql` 应用、`backend/frontend` 容器重建、HTTP readiness、scheduler smoke runtime 校验、测试服发布锁释放与远端临时文件清理，最终输出 `Publish completed for test.`。
 - 2026-06-22 执行命令：只读核对测试服运行态，执行 `Invoke-WebRequest -UseBasicParsing -Uri http://172.30.30.58:48081/actuator/health -TimeoutSec 10`、`Invoke-WebRequest -UseBasicParsing -Uri http://172.30.30.58:8081/ -TimeoutSec 10` 与 `ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 "grep '^IMAGE_TAG=' /opt/intruoyi/runtime/.env; docker ps --format '{{.Names}} {{.Image}}' | grep -E 'intruoyi-(backend|frontend)'"` -> PASS；确认测试服 `.env`、`intruoyi-backend`、`intruoyi-frontend` 均已切到 `release-20260621-page-full-flow-mainmerge-v15`，`48081/8081` 返回 HTTP `200`。
 - 2026-06-22 执行记录：按“先记文档再继续页面”门禁，已同步回写维护仓主任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260621-frontend-release-full-flow-main-merge-rerun\{task.md,execution-log.md,test-report.md,task-state.json}` 与本日志，将里程碑 T4 更新为已完成；下一步继续复用真实页面会话 `frontend-release-full-flow-mainmerge`，从页面真实执行 `mark-tested(v15)`，之后再继续 `prod -> backup`。
@@ -1229,7 +1229,7 @@
 - 2026-06-22 执行记录：打开真实页面“命令预览”弹窗并只读核对参数，确认执行 `publish-int-ruoyi.ps1 -Mode mark-tested -ReleaseTag release-20260621-page-full-flow-mainmerge-v15 -TestConclusion 回归通过，允许上线正式服（v15） -SelectedRecoverySetCandidateId restore:20260621-063218 -RecoverySetId 20260621-063218 ...`，且 `-BackendRepoRoot/-FrontendRepoRoot` 继续指向 clean release worktrees。
 - 2026-06-22 执行命令：在真实页面预览弹窗点击“执行”，生成 operation `op-2026-06-22T130722457390300Z-2411caa4-7048-451b-bbc4-a5448ee35343`；随后读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\op-2026-06-22T130722457390300Z-2411caa4-7048-451b-bbc4-a5448ee35343.json` 与对应 log -> PASS，确认 `mark-tested(v15)` 已最终 `SUCCESS`，日志输出 `Release package marked as tested: Backup/ReleasePackage/release-20260621-page-full-flow-mainmerge-v15`，并同步记录 `rollback-compatibility.json status=BLOCKED`。
 - 2026-06-22 执行记录：按“先记文档再继续页面”门禁，已同步回写维护仓主任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260621-frontend-release-full-flow-main-merge-rerun\{task.md,execution-log.md,test-report.md,task-state.json}` 与本日志，将里程碑 T5 更新为已完成；下一步继续复用真实页面会话 `frontend-release-full-flow-mainmerge`，从页面真实执行 `上线正式服(v15)`，之后再继续 `上线备份服(v15)`。
-- 2026-06-22 执行记录：尝试按 `development-plan-supervisor` 续跑当前任务时，执行 `python C:\Users\BJB110\.codex\skills\development-plan-delivery\scripts\init_or_resume_task.py --cwd D:\ProjectPackage\Int\IntRuoyiMaintance --task-dir D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260621-frontend-release-full-flow-main-merge-rerun` 与 `render_plan_status.py`；结果确认该旧任务目录缺少 `development-plan.md` 且 `task-state.json` 不含 `current_phase`，因此不适用该 skill，继续按现有 `task.md/task-state.json` 续跑而不重建计划。
+- 2026-06-22 执行记录：尝试按 `development-plan-supervisor` 续跑当前任务时，执行 `python C:\Users\BJB110\.codex\skills\development-plan-delivery\scripts\init_or_resume_task.py --cwd D:\ProjectPackage\Int\IntRuoyiMaintance --task-dir D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260621-frontend-release-full-flow-main-merge-rerun` 与 `render_plan_status.py`；结果确认该旧任务目录缺少 `development-plan.md` 且 	ask-state.json` 不含 `current_phase`，因此不适用该 skill，继续按现有 	ask.md/task-state.json` 续跑而不重建计划。
 - 2026-06-22 执行记录：通过真实页面会话 `frontend-release-full-flow-mainmerge` 抓取 `snapshot`，确认当前动作已切到“上线正式服”，原因仍为“主程序合并后重新验证页面发布全链路：上线正式服（v15）”，发布标签为 `release-20260621-page-full-flow-mainmerge-v15`，生产确认文本为 `PROD`；操作记录显示新 operation `op-2026-06-22T131359664055200Z-033d12b4-2e7d-467d-8c3e-50f7d312ac4b` 已提交。
 - 2026-06-22 执行命令：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\runtime\runtime-control\op-2026-06-22T131359664055200Z-033d12b4-2e7d-467d-8c3e-50f7d312ac4b.json` 与对应 log -> PASS，确认 `promote-prod(v15)` 已最终 `SUCCESS`，日志输出 `Publish completed for production.`，并包含 `SHOWROOM_FILE_CONFIG_28_PROTECTED` 保护标记。
 - 2026-06-22 执行命令：只读核对正式服运行态，执行 `ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.57 "grep '^IMAGE_TAG=' /opt/intruoyi/runtime/.env; echo __CONTAINERS__; docker ps --format '{{.Names}} {{.Image}}' | grep -E 'intruoyi-(backend|frontend)'; echo __HEALTH__; curl -s -o /dev/null -w '%{http_code} %{url_effective}\n' http://172.30.30.57:48081/actuator/health; curl -s -o /dev/null -w '%{http_code} %{url_effective}\n' http://172.30.30.57:8081/"` -> PASS；确认正式服 `.env`、`intruoyi-backend`、`intruoyi-frontend` 均已切到 `release-20260621-page-full-flow-mainmerge-v15`，`48081/8081` 返回 HTTP `200`。
@@ -1241,7 +1241,7 @@
 - 2026-06-22 执行命令：只读核对备份服运行态，执行 `ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.59 "grep '^IMAGE_TAG=' /opt/intruoyi/runtime/.env; echo __CONTAINERS__; docker ps --format '{{.Names}} {{.Image}}' | grep -E 'intruoyi-(backend|frontend)'; echo __HEALTH__; curl -s -o /dev/null -w '%{http_code} %{url_effective}\n' http://172.30.30.59:48081/actuator/health; curl -s -o /dev/null -w '%{http_code} %{url_effective}\n' http://172.30.30.59:8081/"` -> PASS；确认备份服 `.env`、`intruoyi-backend`、`intruoyi-frontend` 均已切到 `release-20260621-page-full-flow-mainmerge-v15`，`48081/8081` 返回 HTTP `200`。
 - 2026-06-22 执行命令：只读核对备份服 showroom 受保护边界，执行 `SELECT id,name,storage,master,config FROM infra_file_config WHERE id=28;`、`SELECT COUNT(*) FROM infra_file WHERE config_id=28 AND path LIKE 'showroom/%' AND url LIKE '%127.0.0.1:9000%';` 与 `SELECT COUNT(*) FROM infra_file WHERE config_id=28 AND path LIKE 'showroom/%' AND url LIKE 'http://172.30.30.59:9000/yudao/%';` -> PASS；确认 `infra_file_config.id=28` 仍为 `bucket=yudao`、`domain=http://172.30.30.59:9000/yudao`，且计数分别为 `0` 与 `1434`。
 - 2026-06-22 执行记录：同步回写维护仓主任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260621-frontend-release-full-flow-main-merge-rerun\{task.md,execution-log.md,test-report.md,task-state.json}` 与本日志，将里程碑 T7/T8 更新为已完成，并把任务总状态标记为 `completed`。
-- 2026-06-22 执行命令：运行 `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260621-frontend-release-full-flow-main-merge-rerun --mode preview` -> PASS；预览结果 `status=ready`、`blocked=<none>`，默认保留 `task.md` 与 `execution-log.md`，其余任务附属文档列为可删除候选。本轮仅保留预览证据，不在当前回合执行 apply 删除。
+- 2026-06-22 执行命令：运行 `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260621-frontend-release-full-flow-main-merge-rerun --mode preview` -> PASS；预览结果 `status=ready`、`blocked=<none>`，默认保留 	ask.md` 与 `execution-log.md`，其余任务附属文档列为可删除候选。本轮仅保留预览证据，不在当前回合执行 apply 删除。
 
 ## 2026-06-22 提交当前前后端代码
 
@@ -1262,7 +1262,7 @@
 - 执行记录：将原始 backend 目录 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro` 切回 `int_main` 并移除 `D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-dcc-preview-release`、`D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-mainmerge-release-clean`、`D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-dcc-preview-int-main-clean` 后，发现最后一组尾部现场 `20260622-edhr-readiness-template-bpm-hardening` 已有代码和任务档但尚未完全收口。
 - 执行命令：在原始 backend 目录先用 `mvn -f ...\\pom.xml -pl yudao-module-mes \"-Dtest=MesProEdhrRehearsalReadinessServiceTest\" test` 暴露真实失败，再用 `mvn --% -f ...\\pom.xml -pl yudao-module-mes clean -Dtest=MesProEdhrRehearsalReadinessServiceTest,MesProEdhrBatchExecutionControllerTest -Dsurefire.failIfNoSpecifiedTests=false test` 强制重编译，确认模板/BPM 门禁硬化测试 9 项通过；随后跑 `mvn --% -f ...\\pom.xml -pl yudao-module-mes -Dtest=MesProScheduleOrderPreflightServiceTest,MesProAutoScheduleAlgorithmContractTest,MesProAutoScheduleContractTest,MesProAutoScheduleServiceImplTest,MesProEdhrRehearsalReadinessServiceTest,MesProEdhrBatchExecutionControllerTest -Dsurefire.failIfNoSpecifiedTests=false test`（48 通过）与 `python C:\\Users\\BJB110\\.codex\\skills\\backend-api-delivery\\scripts\\validate_backend_api.py --evidence ...\\backend-api-evidence.md` -> PASS。
 - 结论记录：backend `int_main` 最终包含 `39b2d15f6b`、`9a96ca4f68`、`2b538ad5dd`、`fffbba0c89` 等收口提交；当前 `git worktree list` 仅剩 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro [int_main]` 这一份 backend worktree，`codex/20260622-ruoyi-vue-pro-int-main-hold` 只保留为 branch 指针。
-- 执行命令：在维护仓执行 `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260622-int-main-workspace-normalization --mode preview` -> PASS，结果 `status=ready`、`blocked=<none>`，默认保留 `task.md` 与 `execution-log.md`，并将 `task-state.json` 标记为可删除。
+- 执行命令：在维护仓执行 `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260622-int-main-workspace-normalization --mode preview` -> PASS，结果 `status=ready`、`blocked=<none>`，默认保留 	ask.md` 与 `execution-log.md`，并将 	ask-state.json` 标记为可删除。
 
 ## 2026-06-23 DCC 识别后续实现
 
@@ -1327,7 +1327,7 @@
   - 业务后端仓 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\deploy\int-ruoyi-test\docker-compose.yml` 与 `publish-int-ruoyi.ps1` 已包含 `DCC_PROJECT_CODE_CODEX_CLI_COMMAND`、`DCC_PROJECT_CODE_CODEX_HOME`、`CODEX_HOME`、`/opt/intruoyi/runtime/tools/codex`、`/opt/intruoyi/runtime/backend-codex-home`。
   - 维护仓 `D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\int-ruoyi-test\docker-compose.yml` 当前缺少同等 DCC Codex 运行时合同，是测试服内容识别未跑通的关键候选根因。
 - 执行命令：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-dcc-short-code-recognition-hardening-plan\` 与 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-test-server-dcc-content-recognition-enable-plan\`；随后对两个空目录执行 `python -X utf8 C:\Users\BJB110\.codex\skills\roadmap-node-dev-plan\scripts\validate_node_dev_plan.py --task-dir <task-dir>`，两次都按预期返回 `ERROR: Missing required file: task.md`。
-- 执行记录：补齐两个任务的 `task.md`、`prd.md`、`development-plan.md`、`test-plan.md`、`task-state.json` 与 `execution-log.md`，分别固化：
+- 执行记录：补齐两个任务的 	ask.md`、`prd.md`、`development-plan.md`、	est-plan.md`、	ask-state.json` 与 `execution-log.md`，分别固化：
   - 短编码风险硬化建议：边界感知匹配 + 低置信度短编码不再文件名直连。
   - 测试服内容识别跑通主线：修复维护仓发布链路缺少 DCC Codex 运行时合同的问题，再重建测试服 backend 并做真实内容识别验收。
 - 执行命令：分别对 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-dcc-short-code-recognition-hardening-plan` 与 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-test-server-dcc-content-recognition-enable-plan` 再次执行 `python -X utf8 C:\Users\BJB110\.codex\skills\roadmap-node-dev-plan\scripts\validate_node_dev_plan.py --task-dir <task-dir>` -> PASS，两个任务包结构均校验通过。
@@ -1338,7 +1338,7 @@
 - 命中技能：`C:\Users\BJB110\.codex\skills\doc\SKILL.md`。
 - 命中经验：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md` 后命中 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`；本任务为本机文档整理，不涉及服务器、发布或真实 E2E。
 - 执行记录：按仓库规则先检查上一任务，发现 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-test-server-dcc-content-recognition-enable-plan\task.md` 与 `...20260623-dcc-short-code-recognition-hardening-plan\task.md` 仍未完成，已在两个任务文档和执行日志中显式标记为 `BLOCKED`，原因是当前线程切换为领导文档交付。
-- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-leader-time-allocation-document\`，并先写入 `task.md`、`execution-log.md`；同时创建输出目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\` 与预览目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\tmp\docs\20260623-leader-time-allocation-document\`。
+- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-leader-time-allocation-document\`，并先写入 	ask.md`、`execution-log.md`；同时创建输出目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\` 与预览目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\tmp\docs\20260623-leader-time-allocation-document\`。
 - 执行命令：读取 `C:\Users\BJB110\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe` 环境并验证 `python-docx`、`pdf2image` 可用；确认本机可通过 Word COM 导出 PDF，`pypdfium2` 可渲染预览页。
 - 执行记录：生成最终源稿 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\group-subsidiary-time-allocation-20260623.md`，内容包含工作日/周末排班、集团阶段性项目占比、每周工时折算和特殊情况说明。
 - 执行命令：运行内联 Python 脚本基于 `python-docx` 生成 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\group-subsidiary-time-allocation-20260623.docx`，并通过 Word COM 导出 `D:\ProjectPackage\Int\IntRuoyiMaintance\tmp\docs\20260623-leader-time-allocation-document\group-subsidiary-time-allocation-20260623.pdf`。
@@ -1350,19 +1350,19 @@
 
 - 用户需求：附录一个 Excel 工作簿，把当前展厅、eDHR、DCC、智能排产的功能内容分别整理到独立 sheet 中，并要求“不要加函数名、模块名这种针对程序员的描述，要所有人都能看懂的”。
 - 命中经验：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md` 后命中 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`；本任务为本机盘点与 Excel 交付，不涉及服务器、发布或真实 E2E。
-- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-functional-module-excel-appendix\`，先写入 `task.md`、`execution-log.md`，并在 `output/doc/` 预留正式交付路径。
+- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-functional-module-excel-appendix\`，先写入 	ask.md`、`execution-log.md`，并在 `output/doc/` 预留正式交付路径。
 - 执行命令：定向盘点 `D:\ProjectPackage\Website`、`D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3`、`D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro` 中与展厅、eDHR、DCC、智能排产直接相关的视图目录、API 目录和后台控制器，确认当前能力边界。
 - 执行记录：根据用户追加要求，将交付口径改为全业务语言表达，Excel 内统一使用 `一级工作 / 二级工作 / 具体内容 / 主要使用场景 / 补充说明`，不直接出现函数名、接口名、控制器名或程序员式模块名。
 - 执行命令：使用 `openpyxl 3.1.5` 生成 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\functional-module-appendix-20260623.xlsx`，包含 `展厅`、`eDHR`、`DCC`、`智能排产` 四个 sheet。
 - 执行命令：复核 workbook 结构，确认 `sheetnames=['展厅','eDHR','DCC','智能排产']`，行列规模分别为 `展厅(22,6)`、`eDHR(27,6)`、`DCC(24,6)`、`智能排产(22,6)`。
-- 执行命令：运行 `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260623-functional-module-excel-appendix --mode preview` -> PASS，仅计划删除 `tmp/docs/20260623-functional-module-excel-appendix/`；随后执行同命令 `--mode apply` -> PASS，已删除该临时目录。
+- 执行命令：运行 `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260623-functional-module-excel-appendix --mode preview` -> PASS，仅计划删除 	mp/docs/20260623-functional-module-excel-appendix/`；随后执行同命令 `--mode apply` -> PASS，已删除该临时目录。
 - 结论记录：已生成一份适合直接附给领导的 Excel 附录，四个业务分别独立成 sheet，内容均按非技术人员可读方式整理。
 
 ## 2026-06-23 为功能模块 Excel 追加璞润 Sheet
 
 - 用户需求：在现有功能模块 Excel 中增加 `璞润` sheet，内容基于 `D:\Vein` 和 `D:\ocr3` 今年范围内的提交总结，并继续保持和其他 sheet 一样的非技术表达方式。
 - 命中经验：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md` 后命中 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`；本任务仅做本机 Git 提交盘点与 Excel 更新。
-- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-functional-module-excel-purun-sheet\`，写入 `task.md`、`execution-log.md`，并确认上一任务 `20260623-functional-module-excel-appendix` 已完成。
+- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-functional-module-excel-purun-sheet\`，写入 	ask.md`、`execution-log.md`，并确认上一任务 `20260623-functional-module-excel-appendix` 已完成。
 - 执行命令：只读获取 `D:\Vein` 与 `D:\ocr3` 在 `2026-01-01` 至 `2026-06-23` 期间的提交主题，按业务语言归并为治疗流程优化、图像与判定、算法与连接、机械臂与设备、水路与压力、界面与交互、报告与记录、诊断与发布等工作条目。
 - 执行记录：用户明确要求“不要加函数名、模块名这种针对程序员的描述，要所有人都能看懂的”，因此 `璞润` sheet 只保留业务工作语言，不直接写函数名、接口名、控制器名或提交哈希。
 - 执行命令：尝试直接写回 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\functional-module-appendix-20260623.xlsx` 时，`openpyxl` 返回 `PermissionError`；随后生成中间文件 `functional-module-appendix-20260623.tmp.xlsx`，并复制出可用替代交付文件 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\functional-module-appendix-20260623-purun.xlsx`。
@@ -1386,7 +1386,7 @@
 
 - 用户需求：将“展厅、QMS、eDHR、智能排产、瑛泰系统、璞润”的后续工作内容整理成更适合向领导汇报的正式表述，并优化“后续工作怎么加合适”的表达方式。
 - 命中经验：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md` 后命中 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`；本任务仅做本机文字整理，不涉及代码、服务器或真实 E2E。
-- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-followup-work-content-wording\`，写入 `task.md`、`execution-log.md`，并确认上一任务 `20260623-functional-module-excel-qms-yingtai-sheets` 已完成。
+- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-followup-work-content-wording\`，写入 	ask.md`、`execution-log.md`，并确认上一任务 `20260623-functional-module-excel-qms-yingtai-sheets` 已完成。
 - 执行记录：将原始较口语化内容统一整理为“当前进展 + 后续工作 + 依赖事项”风格，补齐展厅、QMS、eDHR、智能排产、瑛泰系统、璞润六个模块的正式汇报版口径。
 - 执行命令：生成交付文件 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\followup-work-content-20260623.md`。
 - 结论记录：已形成一份可直接用于领导汇报的后续工作内容文字稿；如需进一步增强管理视角，可在此基础上继续增加“负责人、时间节点、风险依赖”三列信息。
@@ -1396,7 +1396,7 @@
 - 用户需求：希望把刚整理好的“后续工作内容”整合进刚才生成的 Excel 或 Word 中，由 Agent 选择更合适的形式。
 - 处理判断：选择整合进现有 Excel，更适合与前面各模块 sheet 放在同一份工作簿内统一查看。
 - 命中经验：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md` 后命中 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`；本任务仅做本机 Excel 更新。
-- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-integrate-followup-sheet\`，写入 `task.md`、`execution-log.md`，并确认上一任务 `20260623-followup-work-content-wording` 已完成。
+- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-integrate-followup-sheet\`，写入 	ask.md`、`execution-log.md`，并确认上一任务 `20260623-followup-work-content-wording` 已完成。
 - 执行命令：直接更新 `D:\ProjectPackage\Int\IntRuoyiMaintance\output\doc\functional-module-appendix-20260623-qms-yingtai.xlsx`，新增 `后续工作` sheet，按与现有 sheet 一致的 `序号 / 一级工作 / 二级工作 / 具体内容 / 主要使用场景 / 补充说明` 六列表头整理展厅、QMS、eDHR、智能排产、瑛泰系统、璞润的后续工作安排。
 - 执行命令：复核更新后的 workbook，确认 sheetnames 为 `展厅 / eDHR / DCC / 智能排产 / 璞润 / 瑛泰系统 / 后续工作`，其中 `后续工作` 为 `12` 行 `6` 列。
 - 执行命令：运行 `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260623-integrate-followup-sheet --mode preview` -> PASS；随后执行同命令 `--mode apply` -> PASS，当前任务无删除项。
@@ -1461,31 +1461,31 @@
 
 - 用户需求：在软件左下角增加版本号，版本号要与构建包一致，并能在软件上看到测试服务器和备份服务器是什么版本。
 - 命中经验：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`，命中 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`、`D:\ProjectPackage\Int\IntPP\FRONTEND_STYLE.md`；本任务不执行服务器写入、发布或真实 E2E。
-- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-runtime-control-version-dock\`，写入 `task.md`、`execution-log.md`、`frontend-feature-evidence.md`、`backend-api-evidence.md`。
+- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-runtime-control-version-dock\`，写入 	ask.md`、`execution-log.md`、`frontend-feature-evidence.md`、`backend-api-evidence.md`。
 - RED 记录：`python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_frontend_version_badge_contract.py -q` 失败，前端未注入 `__APP_VERSION__`；`mvn -f D:\ProjectPackage\Int\IntRuoyiMaintance\backend\pom.xml -Dtest=RuntimeControlOriginalParityTest#releaseStatusExposesCurrentReleaseTagsForTestBackupAndProdLikeOriginal test` 失败，release-status 缺少正式服/备份服当前版本字段。
-- 实现记录：前端通过 Vite 从 `frontend/package.json` 注入构建版本 `2026.06.0`，页面左下角新增版本栏；后端 `release-status` 扩展 `testCurrentReleaseTag/prodCurrentReleaseTag/backupCurrentReleaseTag`，按最近成功发布操作解析当前发布包标签。
+- 实现记录：前端通过 Vite 从 `frontend/package.json` 注入构建版本 `2026.06.0`，页面左下角新增版本栏；后端 `release-status` 扩展 	estCurrentReleaseTag/prodCurrentReleaseTag/backupCurrentReleaseTag`，按最近成功发布操作解析当前发布包标签。
 - GREEN 记录：前端契约 pytest PASS；后端 MockMvc 单测 PASS；`pnpm --dir D:\ProjectPackage\Int\IntRuoyiMaintance\frontend typecheck` PASS；`pnpm --dir D:\ProjectPackage\Int\IntRuoyiMaintance\frontend build` PASS；`python -X utf8 D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\verify_contracts.py` PASS。
 - 视觉验证：Playwright 打开 `http://127.0.0.1:48182/`，左下角显示软件版本 `2026.06.0`、测试服版本 `release-20260623-random-erp-test-v1`、正式服/备份服 `未上报`；临时截图已目视检查并在收尾清理。
-- 收尾记录：执行 `task-closeout-cleanup` preview/apply，保留本任务 `task.md` 与 `execution-log.md`，清理 Vite 临时日志和本次 Playwright 临时截图。
+- 收尾记录：执行 	ask-closeout-cleanup` preview/apply，保留本任务 	ask.md` 与 `execution-log.md`，清理 Vite 临时日志和本次 Playwright 临时截图。
 
 ## 2026-06-23 更新本机运行控制台到提交后版本
 
 - 用户需求：`帮我更新到提交后的版本`
 - 命中经验：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`，命中 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md` 与 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`；本任务只重建并重启本机 48181，不执行远端服务器写入。
-- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-runtime-control-restart-to-commit\`，写入 `task.md` 与 `execution-log.md`。
-- RED 记录：当前 48181 旧 JS 资源不含 `console-version-dock` 与 `2026.06.0`，`release-status` 只有 `testCurrentReleaseTag`，没有 `prodCurrentReleaseTag/backupCurrentReleaseTag`。
+- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-runtime-control-restart-to-commit\`，写入 	ask.md` 与 `execution-log.md`。
+- RED 记录：当前 48181 旧 JS 资源不含 `console-version-dock` 与 `2026.06.0`，`release-status` 只有 	estCurrentReleaseTag`，没有 `prodCurrentReleaseTag/backupCurrentReleaseTag`。
 - 执行记录：停止旧 48181 进程 PID `29548`，随后运行 `powershell -NoProfile -ExecutionPolicy Bypass -File D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\build.ps1`，前端 typecheck/build 与 Maven 22 个测试均通过，jar 重新打包成功。
 - 阻塞与处理：首次启动失败，原因是本机 `runtime-control.local.yaml` 的 `repo-root/frontend-root` 指向已删除 clean release worktree；已按项目固定路径改回 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro` 与 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3`。
 - GREEN 记录：重新启动 48181 成功，最终保留运行 PID `35752`；`http://127.0.0.1:48181/` 已加载新资源 `index-BVR1hDry.js`，该 JS 包含 `console-version-dock` 与 `2026.06.0`。
-- 验证记录：`release-status` 已返回 `test/prod/backupCurrentReleaseTag`；Playwright 页面快照左下角显示软件版本 `2026.06.0`、测试服 `release-20260623-random-erp-test-v1`、正式服 `release-20260621-page-full-flow-mainmerge-v15`、备份服 `release-20260621-page-full-flow-mainmerge-v15`。
+- 验证记录：`release-status` 已返回 	est/prod/backupCurrentReleaseTag`；Playwright 页面快照左下角显示软件版本 `2026.06.0`、测试服 `release-20260623-random-erp-test-v1`、正式服 `release-20260621-page-full-flow-mainmerge-v15`、备份服 `release-20260621-page-full-flow-mainmerge-v15`。
 - 收尾记录：最终复核 PID `35752` 仍监听 `48181`，首页与 `release-status` 均 HTTP 200；运行日志转存到本机 `runtime/runtime-control/`，不占用任务目录。
-- 收尾记录：执行 `task-closeout-cleanup` preview/apply，保留本任务 `task.md` 与 `execution-log.md`，清理旧启动临时日志。
+- 收尾记录：执行 	ask-closeout-cleanup` preview/apply，保留本任务 	ask.md` 与 `execution-log.md`，清理旧启动临时日志。
 
 ## 2026-06-23：DCC 受控浏览页批量识别产品名称/编号
 
 - 用户需求：按已锁定方案，在 `DCC 受控浏览` 页查询区新增 `批量识别产品名称/编号` 按钮；先在本地实现并验证通过，再考虑测试服务器改造。
 - 命中经验：读取 `D:\ProjectPackage\Int\IntRuoyi\docs\experience-index.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\worktree-memory.md`、`D:\ProjectPackage\Int\IntPP\FRONTEND_STYLE.md`；本轮不做服务器写入、发布或真实 E2E。
-- 命令记录：在成对 worktree 建立/补齐任务目录 `doc/tasks/20260623-dcc-browser-batch-recognition/`，写入前后端 `task.md`、`execution-log.md`、`backend-api-evidence.md`、`frontend-feature-evidence.md`。
+- 命令记录：在成对 worktree 建立/补齐任务目录 `doc/tasks/20260623-dcc-browser-batch-recognition/`，写入前后端 	ask.md`、`execution-log.md`、`backend-api-evidence.md`、`frontend-feature-evidence.md`。
 - 命令记录：后端已实现批量识别任务表、Mapper、Service、Scheduler、Controller 接口和浏览页候选集查询复用；`mvn --% -f D:\ProjectPackage\Int\IntRuoyiWorktrees\ruoyi-vue-pro-dcc-batch-recognition-browser\pom.xml -pl yudao-module-dcc -Dtest=DccControlledFileBatchRecognitionControllerTest,DccControlledFileBatchRecognitionServiceTest,DccBaseSchemaTest -Dsurefire.failIfNoSpecifiedTests=false test` -> PASS。
 - 命令记录：前端已在 `D:\ProjectPackage\Int\IntRuoyiWorktrees\yudao-ui-admin-vue3-dcc-batch-recognition-browser\src\views\dcc\controlled-file\browser\index.vue` 增加批量识别按钮、确认弹窗、进度弹窗、轮询与终态刷新；`node tests/e2e/dcc-browser-batch-recognition-static.spec.js` -> PASS。
 - RED 记录：`$env:NODE_OPTIONS='--max-old-space-size=8192'; pnpm ts:check` 首次失败，原因是当前前端 worktree 缺少 `node_modules`，随后 `pnpm install` 又暴露坏锁文件缺项并自动修复 `pnpm-lock.yaml`。
@@ -1504,7 +1504,7 @@
 - 命令记录：真实登录前置 `node D:\ProjectPackage\Int\IntRuoyi\scripts\preflight\login-preflight.mjs --base-url http://127.0.0.1:8087 --tenant 芋道源码 --username admin --password <redacted> --target-path /dcc/controlled-file/browser --target-text 刷新列表` -> PASS。
 - 命令记录：只读采样目录后，选择中等规模目录 `质量管理/3.DMR/10.产品技术要求`，总数 `24`，空识别字段样本量充足。
 - 命令记录：`node D:\ProjectPackage\Int\IntRuoyiWorktrees\yudao-ui-admin-vue3-dcc-batch-recognition-browser\doc\tasks\20260623-dcc-browser-batch-recognition\verify-dcc-browser-batch-recognition-admin.e2e.mjs` -> PASS。
-- 结果摘要：真实批量任务 `taskId=1` 最终 `COMPLETED`，`processed=24 / success=7 / failed=17 / skipped=0`；浏览页按钮、确认弹窗、进度弹窗和自动刷新链路均通过。
+- 结果摘要：真实批量任务 	askId=1` 最终 `COMPLETED`，`processed=24 / success=7 / failed=17 / skipped=0`；浏览页按钮、确认弹窗、进度弹窗和自动刷新链路均通过。
 - 命令记录：真实库 `dcc_controlled_file` 回查 PASS，7 条成功样本已写回 `dcc_project_code_id / product_name / product_code / project_code_recognition_type=PROJECT_CODE`。
 - 风险记录：同批任务中 17 条失败，最后错误为 `S3 404 The specified key does not exist`；说明本地样本存在源文件对象缺失，属于数据/对象存储前置问题，不是批量识别 UI/任务调度链路阻塞。
 - 用户后续授权：继续把当前代码链路发布到测试服务器做真实验证。
@@ -1515,13 +1515,13 @@
 - 命令记录：`release-20260623-dcc-batch-recognition-test-v1` 部署测试服 -> PASS；测试服 `.env`、backend/frontend 镜像 tag、`/actuator/health`、前端入口和 pdf worker 都已通过。
 - 命令记录：远端数据库核验 `aoteman` 在测试租户中绑定 `doc_control`；`node scripts/preflight/login-preflight.mjs --base-url http://172.30.30.58:8081 --tenant 测试租户 --username aoteman --password <redacted> --target-path /dcc/controlled-file/browser --target-text 刷新列表` -> PASS。
 - 命令记录：测试服真实目录采样后选定 `DCC E2E Documents/1. QMS documents/3 RE 扫描件`（`directoryId=909031`，`33` 条）作为中等规模目录。
-- RED 记录：测试服批量任务 `taskId=1` -> `COMPLETED`，但 `33/33` 失败，最后错误为 `failed to start Codex CLI command [cmd.exe, /c, codex.cmd]`；说明测试服运行态仍回退到 Windows 默认命令。
+- RED 记录：测试服批量任务 	askId=1` -> `COMPLETED`，但 `33/33` 失败，最后错误为 `failed to start Codex CLI command [cmd.exe, /c, codex.cmd]`；说明测试服运行态仍回退到 Windows 默认命令。
 - 命令记录：维护仓发布链路继续修复，补齐 `DCC_PROJECT_CODE_CODEX_CLI_COMMAND`、`DCC_PROJECT_CODE_CODEX_HOME`、`CODEX_HOME` 和 codex 挂载；重新构建 backend-only `release-20260624-dcc-batch-recognition-codex-v2` 并部署测试服 -> PASS。
 - 命令记录：远端 `.env` 与容器环境已核验：
   - `DCC_PROJECT_CODE_CODEX_CLI_COMMAND=/opt/intruoyi/runtime/tools/codex`
   - `DCC_PROJECT_CODE_CODEX_HOME=/opt/intruoyi/runtime/backend-codex-home`
   - `CODEX_HOME=/opt/intruoyi/runtime/backend-codex-home`
-- RED 记录：同一目录测试服批量任务 `taskId=2` 最终 `COMPLETED`，但仍 `33/33` 失败；当前错误已从 `cmd.exe/codex.cmd` 收敛为 `Codex CLI timed out after 120 seconds` 与 `returned no DCC basic-data match`。
+- RED 记录：同一目录测试服批量任务 	askId=2` 最终 `COMPLETED`，但仍 `33/33` 失败；当前错误已从 `cmd.exe/codex.cmd` 收敛为 `Codex CLI timed out after 120 seconds` 与 `returned no DCC basic-data match`。
 - 当前结论：测试服“批量识别入口 + 异步任务 + 进度轮询 + Linux Codex 命令链路”已打通，但“Codex 内容识别结果已全部跑通”仍不能成立；正式阻塞已切换为 Codex 超时/无匹配。
 - 后续继续：读取 `bug-regression-fix-loop` 技能与 `bug-contract.md`，把测试服剩余问题继续收敛到两个方向：Codex 超时阈值和批量任务错误消息落库。
 - 命令记录：测试服容器内直接执行 `printf "hello from codex health probe" | /opt/intruoyi/runtime/tools/codex ... -` -> PASS，Codex CLI 可快速返回，说明 CLI 与认证链路本身可用。
@@ -1533,26 +1533,26 @@
 - 命令记录：修复 `DccControlledFileBatchRecognitionServiceImpl`，在写库前截断 `last_failure_message`；定向 Maven 回归 PASS。
 - 命令记录：发布 backend-only `release-20260624-dcc-batch-recognition-timeout-v3` 到测试服，远端 `.env` 确认 `DCC_PROJECT_CODE_CODEX_TIMEOUT_SECONDS=300`。
 - 命令记录：发布 backend-only `release-20260624-dcc-batch-recognition-timeout-v4` 到测试服，包含 `300s` 超时合同和“长错误消息截断”修复。
-- 命令记录：测试服重新使用中等规模目录 `DCC E2E Documents/1. QMS documents/2 GL 扫描件/作废文件`（`directoryId=909034`，`12` 条）执行真实批量识别 -> PASS，任务 `taskId=4` 最终 `COMPLETED`，`processed=12 / success=0 / failed=12 / skipped=0`，最后错误稳定为 `DCC project-code recognition returned no DCC basic-data match`，不再出现 `cmd.exe` 回退、`120s timeout` 或 `Data truncation`。
+- 命令记录：测试服重新使用中等规模目录 `DCC E2E Documents/1. QMS documents/2 GL 扫描件/作废文件`（`directoryId=909034`，`12` 条）执行真实批量识别 -> PASS，任务 	askId=4` 最终 `COMPLETED`，`processed=12 / success=0 / failed=12 / skipped=0`，最后错误稳定为 `DCC project-code recognition returned no DCC basic-data match`，不再出现 `cmd.exe` 回退、`120s timeout` 或 `Data truncation`。
 - 当前结论更新：测试服内容识别链路的运行时/发布合同问题已被修完，现阶段剩余问题已经收敛为“测试租户可见样本没有命中 DCC 基础数据”，而不是 Codex 启动、超时或任务状态写库问题。
 - 用户追加需求：要求“在测试服务器的芋道源码租户里再采样一个20个左右的文件夹做识别”。
 - 命令记录：在测试服 `芋道源码/admin/<redacted>` 下只读采样到多个约 20 条目录，包括 `质量管理/3.DMR/06.物料清单/05 有源类`（20 条）、`质量管理/3.DMR/04.物资采购清单/04 输注类`（20 条）、`质量管理/3.DMR/03.工艺文件/07 骨科类_工艺文件`（20 条）、`质量管理/3.DMR/07.检验、生产用设备清单`（18 条）、`质量管理/3.DMR/10.产品技术要求`（24 条）等。
-- 阻塞记录：测试服 `tenant_id=1` 数据库核验显示，`admin` 仅绑定 `common/super_admin/showroom_publicity`，`tenant_id=1` 下没有任何账号绑定 `doc_control`；因此 `芋道源码/admin` 真实打开 DCC 浏览页时不会显示 `批量识别产品名称/编号` 按钮，无法按现有权限合同对这些目录直接发起识别。
+- 阻塞记录：测试服 	enant_id=1` 数据库核验显示，`admin` 仅绑定 `common/super_admin/showroom_publicity`，	enant_id=1` 下没有任何账号绑定 `doc_control`；因此 `芋道源码/admin` 真实打开 DCC 浏览页时不会显示 `批量识别产品名称/编号` 按钮，无法按现有权限合同对这些目录直接发起识别。
 - 用户继续提供账号：`wangsiyu / 111111`。
 - 命令记录：测试服 `芋道源码/wangsiyu/<redacted>` 真实登录 PASS；登录态显示其原角色为 `wenkong / wenkong_download`，仍不具备 `doc_control`，直接调用批量任务接口返回 `Access Denied`。
 - 命令记录：通过测试服 `芋道源码/admin/<redacted>` 真实登录后的现有系统角色更新接口，将 `system_role.id=910233` 的角色码从 `wenkong` 更新为 `doc_control` -> PASS。
 - 命令记录：远端数据库回读 PASS，`wangsiyu` 与 `zhaohaichen` 现均继承 `doc_control`；`wangsiyu` 再次真实登录后，前端登录态已显示 `doc_control`。
-- 命令记录：使用测试服 `芋道源码/wangsiyu` 在 `质量管理/3.DMR/07.检验、生产用设备清单`（`directoryId=910505`，`18` 条）真实触发批量识别 -> PASS，任务 `taskId=5` 最终 `COMPLETED`，`processed=18 / success=4 / failed=14 / skipped=0`。
+- 命令记录：使用测试服 `芋道源码/wangsiyu` 在 `质量管理/3.DMR/07.检验、生产用设备清单`（`directoryId=910505`，`18` 条）真实触发批量识别 -> PASS，任务 	askId=5` 最终 `COMPLETED`，`processed=18 / success=4 / failed=14 / skipped=0`。
 - 当前结论再更新：测试服 `芋道源码` 租户里已经有约 20 条规模的真实目录样本，并且确实出现了 `4` 条成功命中，证明这条租户视角下的识别链路不再是“全部零命中”；但仍不能宣告“内容识别全部跑通”，因为同一目录还有 `14` 条 `no DCC basic-data match`。
 - 命令记录：继续使用测试服 `芋道源码/wangsiyu` 跑更多约 `20` 条目录样本：
-  - `质量管理/3.DMR/06.物料清单/05 有源类`（`directoryId=910524`，`20` 条） -> `taskId=6`，`processed=20 / success=1 / failed=19 / skipped=0`
-  - `质量管理/3.DMR/04.物资采购清单/04 输注类`（`directoryId=910648`，`20` 条） -> `taskId=7`，`processed=20 / success=1 / failed=19 / skipped=0`
-  - `质量管理/3.DMR/02.说明书/08 导管鞘类_说明书`（`directoryId=910960`，`18` 条） -> `taskId=8`，`processed=18 / success=0 / failed=18 / skipped=0`
-  - `质量管理/3.DMR/10.产品技术要求`（`directoryId=909098`，`24` 条） -> `taskId=9`，`processed=24 / success=7 / failed=17 / skipped=0`
+  - `质量管理/3.DMR/06.物料清单/05 有源类`（`directoryId=910524`，`20` 条） -> 	askId=6`，`processed=20 / success=1 / failed=19 / skipped=0`
+  - `质量管理/3.DMR/04.物资采购清单/04 输注类`（`directoryId=910648`，`20` 条） -> 	askId=7`，`processed=20 / success=1 / failed=19 / skipped=0`
+  - `质量管理/3.DMR/02.说明书/08 导管鞘类_说明书`（`directoryId=910960`，`18` 条） -> 	askId=8`，`processed=18 / success=0 / failed=18 / skipped=0`
+  - `质量管理/3.DMR/10.产品技术要求`（`directoryId=909098`，`24` 条） -> 	askId=9`，`processed=24 / success=7 / failed=17 / skipped=0`
 - 趋势记录：截至目前测试服 `芋道源码/wangsiyu` 的中等规模样本命中趋势为 `4成功 / 1成功 / 1成功 / 0成功 / 7成功`；最佳目录是 `10.产品技术要求`，说明真实内容识别在测试服已经具备稳定命中的样本池，但仍未达到“全部命中”。
 - 用户追加需求：查看测试服 `质量管理/2.DHF` 根目录下文件数量，并对这 `15644` 条文件逐条执行批量识别、同时统计进度。
 - 命令记录：远端数据库只读统计 `质量管理/2.DHF`（`directoryId=911730`）结果为“直属文件 `1` 条、递归文件 `15644` 条、递归目录节点 `2137` 个”。
-- 命令记录：使用测试服 `芋道源码/wangsiyu` 在 DCC 浏览页对 `质量管理/2.DHF` 真实触发批量识别 -> `taskId=10`，创建后状态 `RUNNING`，初始 `totalCount=15644 / remainingCount=15644`。
+- 命令记录：使用测试服 `芋道源码/wangsiyu` 在 DCC 浏览页对 `质量管理/2.DHF` 真实触发批量识别 -> 	askId=10`，创建后状态 `RUNNING`，初始 	otalCount=15644 / remainingCount=15644`。
 - 命令记录：通过远端数据库轮询 `dcc_controlled_file_batch_recognition_task.id=10` 两次，进度从 `processed=2 / failed=2 / remaining=15642` 增长到 `processed=3 / failed=3 / remaining=15641`，最后错误均为 `DCC project-code recognition returned no DCC basic-data match`。
 - 当前结论：`2.DHF` 的 `15644` 条大样本任务已在测试服后台持续运行，当前确认任务未卡死，但单条内容识别耗时较长，这轮统计需按长跑任务继续追踪。
 - 命令记录：基于 `2.DHF` 前几条真实失败样本，在后端 worktree 新增两轮严格 TDD 回归并本地修复：
@@ -1561,26 +1561,26 @@
 - 命令记录：本地后端回归通过：
   - `mvn --% -f ... -pl yudao-module-dcc -Dtest=DccControlledFileProjectCodeRecognitionServiceTest,DccProjectCodeCodexCliClientImplTest -Dsurefire.failIfNoSpecifiedTests=false test`
   - `mvn --% -f ... -pl yudao-module-dcc -Dtest=DccControlledFileBatchRecognitionControllerTest,DccControlledFileBatchRecognitionServiceTest,DccControlledFileProjectCodeRecognitionServiceTest,DccProjectCodeCodexCliClientImplTest -Dsurefire.failIfNoSpecifiedTests=false test`
-- 命令记录：发布 backend-only `release-20260624-dcc-batch-recognition-context-v5` 到测试服 -> PASS；backend 重启后，旧长跑 `taskId=10` 自动收口为 `FAILED`，最终 `processed=27 / success=0 / failed=27 / remaining=15617 / lastFailureMessage=Interrupted by application restart before batch recognition completed`。
-- 命令记录：在 v5 测试服上重新创建 `2.DHF` 任务 `taskId=11`；发布 v6 前该任务进度到 `processed=15 / success=0 / failed=15 / remaining=15629`，backend 重启后同样自动收口为 `FAILED`。
+- 命令记录：发布 backend-only `release-20260624-dcc-batch-recognition-context-v5` 到测试服 -> PASS；backend 重启后，旧长跑 	askId=10` 自动收口为 `FAILED`，最终 `processed=27 / success=0 / failed=27 / remaining=15617 / lastFailureMessage=Interrupted by application restart before batch recognition completed`。
+- 命令记录：在 v5 测试服上重新创建 `2.DHF` 任务 	askId=11`；发布 v6 前该任务进度到 `processed=15 / success=0 / failed=15 / remaining=15629`，backend 重启后同样自动收口为 `FAILED`。
 - 命令记录：发布 backend-only `release-20260624-dcc-batch-recognition-context-v6` 到测试服 -> PASS，backend 健康检查恢复正常。
-- 命令记录：通过真实登录接口 `POST http://172.30.30.58:48081/admin-api/system/auth/login`（`tenant-id=1`, `wangsiyu/<redacted>`）拿 token 后，再次对 `质量管理/2.DHF` 创建任务 `taskId=12` -> PASS。
-- 命令记录：`taskId=12` 三次轮询结果：
+- 命令记录：通过真实登录接口 `POST http://172.30.30.58:48081/admin-api/system/auth/login`（	enant-id=1`, `wangsiyu/<redacted>`）拿 token 后，再次对 `质量管理/2.DHF` 创建任务 	askId=12` -> PASS。
+- 命令记录：	askId=12` 三次轮询结果：
   - `95s`: `processed=307 / success=64 / failed=243 / skipped=0 / remaining=15337`
   - `190s`: `processed=308 / success=64 / failed=244 / skipped=0 / remaining=15336`
   - `285s`: `processed=309 / success=64 / failed=245 / skipped=0 / remaining=15335`
 - 当前结论更新：修复后的测试服 `2.DHF` 长跑任务已经从“前几条连续 0 成功”显著改善为“前 309 条出现 64 条成功命中”，说明本轮根因修复已真实生效，后续只需继续跟踪长跑任务最终统计。
-- 命令记录：继续对测试服 `taskId=12` 做连续 `4` 次 `95s` 轮询，结果依次为：
+- 命令记录：继续对测试服 	askId=12` 做连续 `4` 次 `95s` 轮询，结果依次为：
   - `23:44:48`: `processed=320 / success=64 / failed=256 / remaining=15324`
   - `23:46:24`: `processed=321 / success=64 / failed=257 / remaining=15323`
   - `23:47:59`: `processed=322 / success=64 / failed=258 / remaining=15322`
   - `23:49:35`: `processed=323 / success=64 / failed=259 / remaining=15321`
-- 当前结论再更新：`taskId=12` 仍在持续推进，没有卡死；但近 `5` 分钟仅新增 `3` 条处理且成功数停留在 `64`，说明当前已经进入慢速尾段，剩余大量样本仍需继续长时间轮询。
-- 命令记录：继续对 `taskId=12` 再做连续 `3` 次 `95s` 轮询，结果依次为：
+- 当前结论再更新：	askId=12` 仍在持续推进，没有卡死；但近 `5` 分钟仅新增 `3` 条处理且成功数停留在 `64`，说明当前已经进入慢速尾段，剩余大量样本仍需继续长时间轮询。
+- 命令记录：继续对 	askId=12` 再做连续 `3` 次 `95s` 轮询，结果依次为：
   - `23:50:59`: `processed=324 / success=64 / failed=260 / remaining=15320`
   - `23:52:35`: `processed=325 / success=64 / failed=261 / remaining=15319`
   - `23:54:10`: `processed=326 / success=64 / failed=262 / remaining=15318`
-- 当前结论再更新：`taskId=12` 仍在 RUNNING 且确实继续推进，但已经连续两段轮询都没有新增成功命中，说明当前尾段主要还是无匹配样本；要等“全部分析完”仍需要继续长期观察。
+- 当前结论再更新：	askId=12` 仍在 RUNNING 且确实继续推进，但已经连续两段轮询都没有新增成功命中，说明当前尾段主要还是无匹配样本；要等“全部分析完”仍需要继续长期观察。
 - 命令记录：继续跨到 `2026-06-25` 做连续轮询，结果依次为：
   - `23:56:37`: `processed=328 / success=64 / failed=264 / remaining=15316`
   - `23:58:12`: `processed=329 / success=64 / failed=265 / remaining=15315`
@@ -1588,7 +1588,7 @@
   - `00:01:24`: `processed=330 / success=64 / failed=266 / remaining=15314`
   - `00:01:39`: `processed=331 / success=64 / failed=267 / remaining=15313`
   - `00:03:40`: `processed=332 / success=64 / failed=268 / remaining=15312`
-- 当前结论再更新：`taskId=12` 的 `00:01:24` 只是单条慢样本带来的短暂停滞，任务随后继续推进；但这段新增处理仍全部落在失败计数，成功数继续停留在 `64`，说明当前仍处于慢速失败样本尾段。
+- 当前结论再更新：	askId=12` 的 `00:01:24` 只是单条慢样本带来的短暂停滞，任务随后继续推进；但这段新增处理仍全部落在失败计数，成功数继续停留在 `64`，说明当前仍处于慢速失败样本尾段。
 - 命令记录：为满足“持续检查直到全部分析完”，在 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-test-server-dcc-content-recognition-enable-plan\artifacts\task-12-monitor\` 新增：
   - `monitor-task.ps1`
   - `monitor_task.py`
@@ -1612,12 +1612,12 @@
 
 - 用户需求：只展示“当前测试服 / 正式服 / 备份服正在运行版本”的变动说明，不先做复杂历史版本库。
 - 命中经验：读取 `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`，命中 `release-build-preflight-lessons.md`、`project-error-prevention.md` 与 `D:\ProjectPackage\Int\IntPP\FRONTEND_STYLE.md`；本任务只修改并验证本机维护控制台，不执行远端服务器写入或发布。
-- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-runtime-control-current-release-notes\`，写入 `task.md`、`execution-log.md`、前后端 evidence，并完成 RED/GREEN 记录。
-- 实现记录：后端 `release-status` 增加 `testCurrentReleaseNotes/prodCurrentReleaseNotes/backupCurrentReleaseNotes`，从当前运行 releaseTag 对应发布包 `manifest.json` 的 `changeSet.summary` 与 `items/changes` 读取说明；缺失时返回 `status=BLOCKED` 与 `blockedReasons`，不伪造说明。
+- 执行记录：创建任务目录 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260623-runtime-control-current-release-notes\`，写入 	ask.md`、`execution-log.md`、前后端 evidence，并完成 RED/GREEN 记录。
+- 实现记录：后端 `release-status` 增加 	estCurrentReleaseNotes/prodCurrentReleaseNotes/backupCurrentReleaseNotes`，从当前运行 releaseTag 对应发布包 `manifest.json` 的 `changeSet.summary` 与 `items/changes` 读取说明；缺失时返回 `status=BLOCKED` 与 `blockedReasons`，不伪造说明。
 - 实现记录：前端左下角版本栏为测试服、正式服、备份服增加 `查看变更` 入口，弹窗显示版本号、构建时间、发布范围、组件、摘要、变动明细、源码提交和缺失信息。
 - 验证记录：新增后端契约测试 PASS，原 test/prod/backup 版本字段回归 PASS；前端契约 pytest PASS；`pnpm typecheck` PASS；`pnpm build` PASS；前后端 evidence 校验 PASS。
 - 运行态记录：执行 `scripts/build.ps1` PASS，Maven 全量测试 `23` 个通过；已重启本机 48181，当前 PID `46892`，首页加载 `assets/index-BriPWzK2.js`，接口已返回三个 notes 字段。
-- 收尾记录：执行 `task-closeout-cleanup` preview/apply，保留本任务 `task.md` 与 `execution-log.md`，清理 evidence 临时交付文件。
+- 收尾记录：执行 	ask-closeout-cleanup` preview/apply，保留本任务 	ask.md` 与 `execution-log.md`，清理 evidence 临时交付文件。
 # 2026-06-24 基于当前 HEAD 完整发布三环境
 
 - 用户需求：当前系统仍在开发中，本次只允许基于当前分支最新已提交代码进行构建和发布，未提交改动不得进入构建产物；完成维护控制台和发布包构建，依次发布测试服、正式服、备份服，校验真实运行态和运行控制台版本号/变更说明，并沉淀发布经验。
@@ -1646,7 +1646,7 @@
   - `git commit -m "任务: 修复统一电子签名菜单发布门禁"` -> PASS，新 HEAD `280bc71162deaf393af96f06cbb94b30f4d971f0`
 - 当前结论：第一次页面 `build-release` 已被真实门禁拦截并完成根因修复；后端主仓与前端主仓当前均为干净状态，可基于新后端 HEAD 和新 releaseTag 重新从页面走完整 build -> test -> mark-tested -> prod -> backup 单链路。
 - 命令记录：第四次页面 `build-release` operation `op-2026-06-26T204920464790500Z-8df740fe-ea40-4a32-958a-6fb7a2cc7189` 的日志显示后端 Maven 打包已 `BUILD SUCCESS`，但前端 `src/views/dcc/controlled-file/approval-tasks/index.vue` 因空模板触发 `vue/valid-template-root`，发布包仍未生成。
-- 命令记录：在前端仓创建任务目录 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3\doc\tasks\20260627-frontend-release-redirect-template-root-fix\`，新增 `tests/e2e/redirect-template-root-static.spec.js` 后先 RED 复现空模板根节点失败，再为 `src/views/dcc/controlled-file/approval-tasks/index.vue` 与 `src/views/mes/pro/edhr/ApprovalPage.vue` 补充最小合法根节点；随后 `node tests/e2e/redirect-template-root-static.spec.js`、`node tests/e2e/approval-center-phase5-retirement-static.spec.mjs`、`pnpm build:test` 均 PASS。
+- 命令记录：在前端仓创建任务目录 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3\doc\tasks\20260627-frontend-release-redirect-template-root-fix\`，新增 	ests/e2e/redirect-template-root-static.spec.js` 后先 RED 复现空模板根节点失败，再为 `src/views/dcc/controlled-file/approval-tasks/index.vue` 与 `src/views/mes/pro/edhr/ApprovalPage.vue` 补充最小合法根节点；随后 `node tests/e2e/redirect-template-root-static.spec.js`、`node tests/e2e/approval-center-phase5-retirement-static.spec.mjs`、`pnpm build:test` 均 PASS。
 - 问题记录：前端源码修复后，直接执行运行控制台同款命令 `node D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3\node_modules\vite\bin\vite.js build --mode test` 继续暴露默认 Node heap OOM，说明真实阻塞已转移到发布脚本构建入口而不是页面源码本身。
 - 命令记录：检索 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\deploy\publish-int-ruoyi.ps1` 并定位 `Invoke-FrontendViteBuild` 仍直接调用 `node vite.js build --mode test`；随后在后端仓创建任务目录 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\doc\tasks\20260627-release-build-frontend-memory-guard\`，先在 `script\tests\test_publish_int_ruoyi_to_test_tooling.py` 增加构建入口契约取得 RED，再将脚本改为执行 `pnpm build:test` 复用前端正式 8GB heap 构建入口，最终 `python -X utf8 -m pytest ...test_publish_int_ruoyi_to_test_tooling.py -q` -> PASS (`90 passed`)。
 - 当前结论更新：本轮 build-release 新暴露的前端页面空模板与发布脚本默认 heap 两层阻塞均已完成根因修复，并分别在前端/后端仓通过回归；下一步返回运行控制台，以新的 releaseTag 重新执行真实 `build-release`，再继续测试服、正式服、备份服发布。
@@ -1655,7 +1655,7 @@
 - 命令记录：切换本机运行控制台配置 `D:\ProjectPackage\Int\IntRuoyiMaintance\config\runtime-control.local.yaml` 的 `nas-username` 为 `int`；随后本机 `net use "\\172.30.30.4\IT共享" /user:int <redacted>` 已返回成功。
 - 命令记录：复核当前运行控制台 Java 进程 `60664` 的命令行，确认其通过 `--spring.config.import=optional:file:D:/ProjectPackage/Int/IntRuoyiMaintance/config/runtime-control.local.yaml` 读取本机最新 NAS 配置；当前可直接回页面用新的 release tag 继续真实 `build-release`。
 - 命令记录：继续轮询真实页面触发的 `build-release` operation `op-2026-06-27T031133631088Z-69fa15c1-af7a-4d05-967a-b2e476c2466d`，前段日志显示已通过 eDHR Object Lock 校验、Docker 预检并进入 `mvn -f D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\pom.xml -pl yudao-server -am -DskipTests clean package`。
-- 问题记录：同一 operation 最终 `FAILED`，失败点不是 NAS，而是 Maven 在 `yudao-module-mes` 的 `testCompile` 阶段报错 `MesProRouteServiceImplTest` 无法访问 `private DEFAULT_SCHEDULE_USE_CONFIG_VERSION` 且 `AssertUtils.assertEquals(...)` 签名不匹配。
+- 问题记录：同一 operation 最终 `FAILED`，失败点不是 NAS，而是 Maven 在 `yudao-module-mes` 的 	estCompile` 阶段报错 `MesProRouteServiceImplTest` 无法访问 `private DEFAULT_SCHEDULE_USE_CONFIG_VERSION` 且 `AssertUtils.assertEquals(...)` 签名不匹配。
 - 结论记录：只读核对 `D:\ProjectPackage\Int\IntRuoyiMaintance\config\runtime-control.local.yaml` 发现本机 `repo-root/frontend-root` 目前仍指向主工作区 `D:/ProjectPackage/Int/IntRuoyi/ruoyi-vue-pro` 与 `.../yudao-ui-admin-vue3`，而非干净 release worktree；进一步 `git status --short --branch` 证实主后端仓存在未提交 `yudao-module-mes` 改动，且本次编译失败正落在这些未提交文件上。因此该失败不属于“当前已提交 HEAD 发布输入”的合法阻塞，本轮候选必须作废，先把运行控制台源码根切回干净 release worktree 后再重新从页面发起新的 `build-release`。
 - 命令记录：停止旧 `48181` 运行控制台进程后，改为直接以前台/后台方式从 `D:\ProjectPackage\Int\release-worktrees\IntRuoyiMaintance-20260627-3eb9047\backend\target\runtime-control-maintenance-2026.06-SNAPSHOT.jar` 启动，并显式传入 `--spring.config.import=optional:file:D:/ProjectPackage/Int/IntRuoyiMaintance/config/runtime-control.local.yaml`；`http://127.0.0.1:48181/actuator/health` 返回 `UP`，且运行中 Java 命令行不再携带主工作区 `repo-root/frontend-root` 覆盖参数。
 - 命令记录：刷新真实页面后，旧错误与旧操作记录已清空；重新填写原因 `dirty 主工作区偏差修正后重新执行 HEAD 全链路发布`、发布标签 `release-20260627-2330-head-full-v5`，预览弹窗确认 `-BackendRepoRoot D:/ProjectPackage/Int/release-worktrees/IntRuoyi-backend-20260627-72705e1`、`-FrontendRepoRoot D:/ProjectPackage/Int/release-worktrees/IntRuoyi-frontend-20260627-ae9c007`，随后从真实页面点击“执行”生成 operation `op-2026-06-27T032830617333Z-b6d06255-379f-4e61-bd2e-cd146749fb5d`。
@@ -1668,7 +1668,7 @@
 - 命令记录：继续从真实页面发起新的 `build-release`，release tag=`release-20260627-2350-head-full-v6`，生成 operation `op-2026-06-27T034552307086100Z-d5d79836-4ec1-4ee5-b0ef-bdff8e971f94`。
 - 命令记录：该 operation 最终 `SUCCESS`；operation 日志确认已完成后端打包、前端 `pnpm build:test`、前后端镜像构建、镜像导出、manifest 生成与 NAS 上传，日志包含 `Release package uploaded to NAS: Backup/ReleasePackage/release-20260627-2350-head-full-v6` 与 `Release package built: release-20260627-2350-head-full-v6`。
 - 命令记录：核对本地 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260627-2350-head-full-v6\manifest.json` 与 NAS `\\172.30.30.4\IT共享\Backup\ReleasePackage\release-20260627-2350-head-full-v6\manifest.json`，后端 commit=`ebabbfcfbf6cbde468f602c5ea18c12346013699`、前端 commit=`76328963748ce4bcceaa1d50240e844f1fd3db5d`，两个 sourceRepos 均为 `dirty=false`。
-- 命令记录：运行控制台 `release-packages` 已出现 `release-20260627-2350-head-full-v6`，状态 `AVAILABLE`，`tested=false`；当前下一步进入测试服真实页面发布与运行态验证。
+- 命令记录：运行控制台 `release-packages` 已出现 `release-20260627-2350-head-full-v6`，状态 `AVAILABLE`，	ested=false`；当前下一步进入测试服真实页面发布与运行态验证。
 - 命令记录：通过真实页面切换到“部署测试服”，填写原因 `HEAD 全链路发布：先发测试服并验证运行态`、发布标签 `release-20260627-2350-head-full-v6`，预览弹窗确认参数为 `-Mode deploy-release -Environment test -ReleaseTag release-20260627-2350-head-full-v6 -ServerHost 172.30.30.58`，随后点击“执行”，生成 operation `op-2026-06-27T040320387887200Z-cf7a52cd-2025-43d3-b485-f8b027c4f58f`。
 - 命令记录：该 operation 先后完成测试服 SSH 检查、`docker compose version` 检查、数据盘与远端目录预检、`.env` 下发与 `IMAGE_TAG=release-20260627-2350-head-full-v6` 核对、发布包下载、`required-sql` 同步、`ops-runtime` 同步，并开始在测试服逐条执行 `required-sql`、回写 `infra_release_migration`。
 - 问题记录：在执行 `20260624_dcc_view_matrix_independent_seed.sql` 时，测试服远端 MySQL 返回 `ERROR 1644 (45000) at line 736: VIEW_MATRIX_SEED_TENANT_REQUIRED: set @dcc_view_matrix_seed_tenant_id before sourcing this SQL`；发布脚本随后把该 migration 标记为 `FAILED`，并将 `infra_release_operation_lock` 释放为 `FAILED`。
@@ -1711,9 +1711,9 @@
 - 命令记录：继续轮询真实页面测试服重跑 operation `op-2026-06-27T072114322041600Z-826c3463-e987-40cb-a9af-9a14a903c669`，确认维护仓脚本排序修复已在真实发布中生效：日志 line 1784 出现 `Applying required database SQL: 20260624_dcc_view_matrix_test_tenant_prereq.sql`，line 1803 出现 `Applying required database SQL: 20260624_dcc_view_matrix_independent_seed.sql`，说明 prerequisite 已先于 independent seed 真实执行。
 - 问题记录：同一 operation 继续推进后，在 `20260625_dcc_fvm_matrix_retain_other_completion.sql` 处失败；测试服远端 MySQL 返回 `ERROR 1644 (45000) at line 404: DCC_FVM_RETAIN_OTHER_COMPLETION_CATEGORY_BASELINE_CHANGED`，operation JSON 最终状态 `FAILED`、摘要 `命令退出码非 0: 1`。
 - 结论记录：当前真实 blocker 已从“prerequisite 根本没执行”前进到“测试服当前分类基线不满足 `20260625_dcc_fvm_matrix_retain_other_completion.sql` 的前置校验”。在该 SQL 根因收敛并修复前，测试服仍未通过，`mark-tested`、正式服与备份服不得继续。
-- 命令记录：继续只读查询测试服 `172.30.30.58` 的 `tenant_id=1` 分类基线，确认 `20260625_dcc_fvm_matrix_retain_other_completion.sql` 首道断言写死为 `active_total=60`、`dcc_fvm_count=59`、`other_count=1`，但测试服真实结果为 `active_total=81`、`dcc_fvm_count=32`、`other_count=1`、`intauth_count=48`。
+- 命令记录：继续只读查询测试服 `172.30.30.58` 的 	enant_id=1` 分类基线，确认 `20260625_dcc_fvm_matrix_retain_other_completion.sql` 首道断言写死为 `active_total=60`、`dcc_fvm_count=59`、`other_count=1`，但测试服真实结果为 `active_total=81`、`dcc_fvm_count=32`、`other_count=1`、`intauth_count=48`。
 - 结论记录：本轮最新真实根因已收敛为“`20260625_dcc_fvm_matrix_retain_other_completion.sql` 的旧分类基线假设过期”，不是维护仓 prerequisite 排序问题，也不是测试服 prerequisite 未执行。下一步需要回真实后端仓按严格 TDD 修正该 SQL，再重新构建候选包并从真实页面重走测试服发布。
-- 命令记录：真实后端仓已将 `20260625_dcc_fvm_matrix_retain_other_completion.sql` 的 `allowedEnvironments` 从 `test,backup,prod` 收敛为 `backup,prod`，并新增 `script/tests/test_dcc_fvm_matrix_retain_other_completion_sql.py` 回归；`python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\tests\test_dcc_fvm_matrix_retain_other_completion_sql.py -q` -> PASS（`5 passed`），`python -X utf8 D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\release\run-release-migration-policy-gate.py --sql-root D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\sql\mysql` -> PASS（`status=passed`, `migrationCount=218`），并提交为后端新 HEAD `dec48d81d531dbdc4ff38251b37dec806392bfa9`。
+- 命令记录：真实后端仓已将 `20260625_dcc_fvm_matrix_retain_other_completion.sql` 的 `allowedEnvironments` 从 	est,backup,prod` 收敛为 `backup,prod`，并新增 `script/tests/test_dcc_fvm_matrix_retain_other_completion_sql.py` 回归；`python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\tests\test_dcc_fvm_matrix_retain_other_completion_sql.py -q` -> PASS（`5 passed`），`python -X utf8 D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\release\run-release-migration-policy-gate.py --sql-root D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\sql\mysql` -> PASS（`status=passed`, `migrationCount=218`），并提交为后端新 HEAD `dec48d81d531dbdc4ff38251b37dec806392bfa9`。
 - 命令记录：已创建干净后端发布 worktree `D:\ProjectPackage\Int\release-worktrees\IntRuoyi-backend-20260627-dec48d8`，并把本机 `D:\ProjectPackage\Int\IntRuoyiMaintance\config\runtime-control.local.yaml` 的 `repo-root` 切换到该新 worktree；前端仍使用 `D:\ProjectPackage\Int\release-worktrees\IntRuoyi-frontend-20260627-7632896`。
 - 命令记录：通过真实页面重新执行 `build-release`，生成 operation `op-2026-06-27T081234904927200Z-72754ee9-de72-41d8-800c-88dabbda60c3`，release tag=`release-20260628-1615-head-full-v9`；继续轮询确认该 operation 最终 `SUCCESS`，日志包含后端 Maven `BUILD SUCCESS`、前端 `pnpm build:test` 成功、前后端镜像构建、`docker save` 导出、NAS 上传以及结束语 `Release package built: release-20260628-1615-head-full-v9`。
 - 命令记录：已核对本地 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260628-1615-head-full-v9\manifest.json`，后端 commit=`dec48d81d531dbdc4ff38251b37dec806392bfa9`、前端 commit=`76328963748ce4bcceaa1d50240e844f1fd3db5d`，两个 sourceRepos 均为 `dirty=false`；当前候选包满足继续真实页面测试服发布门禁。
@@ -1748,14 +1748,14 @@
 - 结论记录：这把根因进一步收敛为“真实 applyItems 生成/排序时把 schema_seed_runtime 丢失或提前打乱”，而不是 SQL 元数据缺失，也不是 preflight 计划依赖声明错误。
 - 命令记录：继续并排比对后端真实仓 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\deploy\publish-int-ruoyi.ps1` 与当前运行维护 worktree `D:\ProjectPackage\Int\release-worktrees\IntRuoyiMaintance-20260627-3eb9047\ops\deploy\publish-int-ruoyi.ps1` 的 `Sort-RequiredDatabaseSqlApplyItems` / `Invoke-RequiredDatabaseSqlScripts` 实现。
 - 问题记录：已确认新的真实根因是维护脚本再次分叉。后端真实仓脚本已通过 `OriginalOrder` 保留 non-priority required SQL 的 `preflight-plan` 原始顺序；但当前维护脚本仍把非优先 migration 按 `migrationId` 字母序排序，导致 `20260626_showroom_keyword_bu_seed_runtime` 被排到 `20260626_showroom_keyword_schema_seed_runtime` 前面。
-- 命令记录：在维护仓先补 RED 契约测试 `test_publish_script_preserves_preflight_dependency_order_for_non_priority_required_sql`，执行 `python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_release_sql_preflight_gate.py -q` 先得到 `1 failed, 5 passed`，精确卡在当前旧排序实现缺少 `OriginalOrder`。
+- 命令记录：在维护仓先补 RED 契约测试 	est_publish_script_preserves_preflight_dependency_order_for_non_priority_required_sql`，执行 `python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_release_sql_preflight_gate.py -q` 先得到 `1 failed, 5 passed`，精确卡在当前旧排序实现缺少 `OriginalOrder`。
 - 命令记录：随后已把 `D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1` 与当前运行 worktree `D:\ProjectPackage\Int\release-worktrees\IntRuoyiMaintance-20260627-3eb9047\ops\deploy\publish-int-ruoyi.ps1` 的 `Sort-RequiredDatabaseSqlApplyItems` 修正为：仅保留 DCC prerequisite 显式优先级，其余 applyItems 按 `OriginalOrder` 保持 preflight 原始依赖顺序。
 - 命令记录：修复后回归 `python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_release_sql_preflight_gate.py -q` -> PASS（`6 passed`）。下一步回到真实页面重新发起测试服发布，继续验证 `schema_seed_runtime` 是否先于 `bu_seed_runtime` 执行。
 - 命令记录：延续最新测试服真实发布失败排障，确认 `op-2026-06-27T094707808570600Z-965ba79d-53d0-4848-8ee2-479dfc61b761` 的新 blocker 已从 showroom keyword 顺序问题切换为 `20260626_showroom_product_current_bu_normalization.sql` 的 unknown guard。
-- 问题记录：只读核对候选包 SQL 与测试服数据后确认，当前唯一未识别记录是 `revision_id=4574`、`product_id=252`、`tenant_id=0`、`pipeline_layout=NULL`、`pipeline_layout_en='Null value probe'`；该探针行触发了 `must_be_empty int NOT NULL` 的 fail-fast guard，报错 `ERROR 1048 (23000) at line 75: Column 'must_be_empty' cannot be null`。
-- 结论记录：当前根因不是业务 BU 大面积识别缺失，而是 `showroom_product_current_bu_normalization` 把 `tenant_id=0` 的非业务探针记录纳入 guard 范围。下一步需回真实后端仓按严格 TDD 建新任务文档、补 RED 回归并正式排除探针记录，再重建候选包重新发布测试服。
-- 命令记录：真实后端仓已为 `20260626_showroom_product_current_bu_normalization.sql` 补充定向 RED/GREEN 回归 `script/tests/test_showroom_product_bu_normalization_sql.py`，覆盖 `tenant_id=0 + pipeline_layout_en='Null value probe'` 探针排除和业务 unknown guard 保留；`python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\tests\test_showroom_product_bu_normalization_sql.py -q` -> PASS（`7 passed`）。
-- 命令记录：SQL 已做最小正式修复，只排除 `tenant_id=0`、中文 BU 为空且英文值为 `Null value probe` 的探针记录，未放宽其他未知业务 BU。随后执行 `python -X utf8 D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\release\run-release-migration-policy-gate.py --sql-root D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\sql\mysql` -> PASS（`status=passed`, `migrationCount=218`）。
+- 问题记录：只读核对候选包 SQL 与测试服数据后确认，当前唯一未识别记录是 `revision_id=4574`、`product_id=252`、	enant_id=0`、`pipeline_layout=NULL`、`pipeline_layout_en='Null value probe'`；该探针行触发了 `must_be_empty int NOT NULL` 的 fail-fast guard，报错 `ERROR 1048 (23000) at line 75: Column 'must_be_empty' cannot be null`。
+- 结论记录：当前根因不是业务 BU 大面积识别缺失，而是 `showroom_product_current_bu_normalization` 把 	enant_id=0` 的非业务探针记录纳入 guard 范围。下一步需回真实后端仓按严格 TDD 建新任务文档、补 RED 回归并正式排除探针记录，再重建候选包重新发布测试服。
+- 命令记录：真实后端仓已为 `20260626_showroom_product_current_bu_normalization.sql` 补充定向 RED/GREEN 回归 `script/tests/test_showroom_product_bu_normalization_sql.py`，覆盖 	enant_id=0 + pipeline_layout_en='Null value probe'` 探针排除和业务 unknown guard 保留；`python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\tests\test_showroom_product_bu_normalization_sql.py -q` -> PASS（`7 passed`）。
+- 命令记录：SQL 已做最小正式修复，只排除 	enant_id=0`、中文 BU 为空且英文值为 `Null value probe` 的探针记录，未放宽其他未知业务 BU。随后执行 `python -X utf8 D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\script\release\run-release-migration-policy-gate.py --sql-root D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\sql\mysql` -> PASS（`status=passed`, `migrationCount=218`）。
 - 命令记录：真实后端仓已提交本轮发布修复 `git commit -m "任务: 修复发布期产品BU探针拦截"` -> commit `8632c424ba2cb80ba2ac4c4342945fc859a6edc3`；随后基于该提交创建新的干净后端发布 worktree `D:\ProjectPackage\Int\release-worktrees\IntRuoyi-backend-20260627-8632c42`，并将 `D:\ProjectPackage\Int\IntRuoyiMaintance\config\runtime-control.local.yaml` 的 `repo-root` 切换到该路径。
 - 命令记录：已按本机配置重启 48181 维护控制台，健康检查 `http://127.0.0.1:48181/actuator/health` 返回 `UP`；随后通过真实页面“构建发布包 -> 预览命令 -> 执行”重新发起构建，生成 operation `op-2026-06-27T101820542591Z-7b85c77c-eb8d-48b1-89b7-f3f35968efce`，release tag=`release-20260628-1835-head-full-v11`。
 - 过程记录：本轮构建预览已核对关键参数为 `-BackendRepoRoot D:/ProjectPackage/Int/release-worktrees/IntRuoyi-backend-20260627-8632c42`、`-FrontendRepoRoot D:/ProjectPackage/Int/release-worktrees/IntRuoyi-frontend-20260627-7632896`；当前构建日志已推进到 `docker load` 成功并开始 `mvn -f D:\\ProjectPackage\\Int\\release-worktrees\\IntRuoyi-backend-20260627-8632c42\\pom.xml -pl yudao-server -am -DskipTests clean package`。
@@ -1804,7 +1804,7 @@
   - line 1886 `ERROR: 命令退出码非 0: 1`
 - 结论记录：这轮真实失败并不是再次执行到 `docker compose up -d --no-deps backend frontend` 才炸；真正新根因是维护仓脚本 `Sort-RequiredDatabaseSqlApplyItems` 在当前测试服状态下拿到空 `APPLY` 集合时直接参数绑定失败。此前 `intruoyi-backend` 的 `Created + mount source path` 错误属于历史残留容器状态，不是本轮 operation 的真实失败点。
 - 命令记录：在维护仓按严格 TDD 补充空集合回归：
-  - 先修改 `D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_release_sql_preflight_gate.py`，新增 `test_publish_script_allows_empty_required_sql_apply_items`
+  - 先修改 `D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_release_sql_preflight_gate.py`，新增 	est_publish_script_allows_empty_required_sql_apply_items`
   - 执行 `python -X utf8 -m pytest D:\ProjectPackage\Int\IntRuoyiMaintance\scripts\tests\test_release_sql_preflight_gate.py -q` -> RED，`1 failed, 6 passed`
   - 在 `D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1` 的 `Sort-RequiredDatabaseSqlApplyItems` 中为 `Items` 增加 `[AllowNull()]`，并补 `if ($null -eq $Items -or $Items.Count -eq 0) { return @() }`
   - 同步把相同修复写入当前运行 worktree `D:\ProjectPackage\Int\release-worktrees\IntRuoyiMaintance-20260627-3eb9047\ops\deploy\publish-int-ruoyi.ps1`
@@ -1835,7 +1835,7 @@
 - 当前结果：后端镜像入口问题已完成最小正式修复并独立提交；下一步需把运行控制台 `repo-root` 继续指向该修复后 worktree，以新后端提交 `d3ee53edaf015f98ec3bfebf9f91602103568b6d` 重新执行真实页面 `build-release -> deploy test`。
 - 命令记录：继续轮询真实页面重试构建 operation `op-2026-06-27T113224282720200Z-dd2ed29c-419b-4309-9e8d-8504c7c578c0` 后，确认该轮 `release-20260628-1935-head-full-v12` 未成功收敛；后端 Maven `BUILD SUCCESS` 后，backend image `docker build` 在 `COPY ruoyi-vue-pro/yudao-server/target/yudao-server-exec.jar app.jar` 阶段失败，报错 `not found`。
 - 结论记录：新的真实 blocker 不是后端仓 Dockerfile 回退，而是维护控制台发布脚本 `publish-int-ruoyi.ps1` 仍把构建产物复制/引用为 `yudao-server.jar`，没有与后端仓新的 `yudao-server-exec.jar` 契约同步，因此 Docker build context 中根本没有 `exec jar`。
-- 命令记录：在维护仓按严格 TDD 补充发布脚本契约测试 `test_publish_script_uses_exec_backend_jar_for_release_image`，并同步修正：
+- 命令记录：在维护仓按严格 TDD 补充发布脚本契约测试 	est_publish_script_uses_exec_backend_jar_for_release_image`，并同步修正：
   - `D:\ProjectPackage\Int\IntRuoyiMaintance\ops\deploy\publish-int-ruoyi.ps1`
   - `D:\ProjectPackage\Int\release-worktrees\IntRuoyiMaintance-20260627-3eb9047\ops\deploy\publish-int-ruoyi.ps1`
   修复内容为：
@@ -1947,7 +1947,7 @@
 - 阻塞记录：本轮真实构建已越过前端发布门禁，新的失败点来自 migration policy gate：`dependsOn missing migration '20260629_menu_title_srm_dcc_rename' for migrationId '20260629_srm_admin_role_visibility'`。当前“已提交 git 版本”发布的唯一 blocker 已收敛为后端 SQL 迁移依赖声明缺失；下一步仅需修复该 migration 契约，再重新执行真实 `build-release -> publish-test`。
 - 命令记录：继续只读核对后端主仓 `git log --oneline -- sql/mysql/20260629_menu_title_srm_dcc_rename.sql`、`git show --stat --oneline HEAD`、旧后端发布 worktree `git rev-parse HEAD` 与维护控制台 `runtime-control.local.yaml`。确认后端主仓当前 HEAD 已前进到 `e4d82d1703f8238f283a91a7a4f81cdddbb90755`，且 `sql/mysql/20260629_menu_title_srm_dcc_rename.sql` 已在这个已提交版本中；真实阻塞不再是“文件未提交”，而是 runtime-control 仍指向旧后端干净 worktree `D:\ProjectPackage\Int\release-worktrees\IntRuoyi-backend-20260629-c1302d1`，其 HEAD 仍为 `c1302d1f85f8ff940c9b3fe1fb45e92a8464bb17`。下一步将重建指向最新后端已提交 HEAD 的干净 worktree，切换 runtime-control 发布输入后重新执行真实 `build-release -> publish-test`。
 - 命令记录：重建后端干净 worktree `D:\ProjectPackage\Int\release-worktrees\IntRuoyi-backend-20260629-e4d82d1`，维护控制台配置切到该路径后重新执行真实 `build-release`，operation=`op-2026-06-29T092655969557Z-4db8951d-758f-418c-856e-c862a3ce63cf`，releaseTag=`release-20260629-1730-committed-head-v2`。
-- 阻塞记录：`build-release v2` 失败点不再是 migration gate，而是后端 `yudao-spring-boot-starter-security` 模块 `testCompile` 缺少 `org.junit.jupiter.api`、`org.mockito` 等测试依赖。核对主工作区发现 `yudao-framework/yudao-spring-boot-starter-security/pom.xml` 存在未提交最小修复；已新建后端任务 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\doc\tasks\20260629-security-starter-test-deps-release-fix\`，定向验证后仅提交该 `pom.xml` 与任务台账，commit=`7e2fa923c86a7a3db2eabcdbe34288e7cf77e27c`，提交信息 `任务: 补齐安全模块测试依赖放行发布构建`。
+- 阻塞记录：`build-release v2` 失败点不再是 migration gate，而是后端 `yudao-spring-boot-starter-security` 模块 	estCompile` 缺少 `org.junit.jupiter.api`、`org.mockito` 等测试依赖。核对主工作区发现 `yudao-framework/yudao-spring-boot-starter-security/pom.xml` 存在未提交最小修复；已新建后端任务 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\doc\tasks\20260629-security-starter-test-deps-release-fix\`，定向验证后仅提交该 `pom.xml` 与任务台账，commit=`7e2fa923c86a7a3db2eabcdbe34288e7cf77e27c`，提交信息 `任务: 补齐安全模块测试依赖放行发布构建`。
 - 命令记录：基于后端新提交 `7e2fa923c86a7a3db2eabcdbe34288e7cf77e27c` 重建干净 worktree `D:\ProjectPackage\Int\release-worktrees\IntRuoyi-backend-20260629-7e2fa92`，重启维护控制台后预览确认 `-BackendRepoRoot D:/ProjectPackage/Int/release-worktrees/IntRuoyi-backend-20260629-7e2fa92` 与 `-FrontendRepoRoot D:/ProjectPackage/Int/release-worktrees/IntRuoyi-frontend-20260629-1ffcdca`。
 - 命令记录：再次通过 runtime-control 执行真实 `build-release`，operation=`op-2026-06-29T093521215077Z-ee2add7b-9660-474b-a464-55a2d8192828`，releaseTag=`release-20260629-1745-committed-head-v3`，最终 `SUCCESS`；manifest 核对后端 commit=`7e2fa923c86a7a3db2eabcdbe34288e7cf77e27c`、前端 commit=`1ffcdca22b735df762a581b2eed207a4581e8a71`，且两者 `dirty=false`。
 - 命令记录：通过 runtime-control 预览并执行真实 `publish-test`，operation=`op-2026-06-29T094854332306600Z-4d5b2a05-4674-4679-8309-84b1c36c58ce`，releaseTag=`release-20260629-1745-committed-head-v3`；预览参数已确认 `-Environment test -ServerHost 172.30.30.58 -RemoteAppDir /opt/intruoyi/runtime`。
@@ -1994,8 +1994,8 @@
   - 命令：核对 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\20260630_210433\manifest.json`，确认后端 `commit=6303d61a849f4413bab823a88c9aa3d3a60e5aed branch=int_main dirty=false`，前端 `commit=513adf9a53f62c8c2fca318a0c75b137f794df89 branch=int_main dirty=false`，满足“只发布 Git 已提交版本”。
   - 命令：通过 runtime-control 执行真实 `publish-test`，operation=`op-2026-06-30T132211004358500Z-c04dfcb5-47c3-4061-a657-86ce57e8420e`，releaseTag=`20260630_210433`；持续只读轮询 operation JSON 与 result log，确认日志按 NAS 下载 -> required SQL -> 容器重建 -> readiness -> runtime smoke -> `LOCK_RELEASED` 的顺序持续推进，最终 `SUCCESS`。
   - 验证命令：只读 SSH 测试服核验 `/opt/intruoyi/runtime/.env`、运行镜像、后端健康检查与前端入口，确认 `.env IMAGE_TAG=20260630_210433`，`intruoyi-backend|intruoyi-backend:20260630_210433`，`intruoyi-frontend|intruoyi-frontend:20260630_210433`，后端 `http://172.30.30.58:48081/actuator/health` 返回 HTTP `200` / `UP`，前端 `http://172.30.30.58:8081/` 返回 HTTP `200`。
-  - 命令：执行 `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260630-main-branch-build-publish-test-server --mode preview`，结果 `status: ready`，当前仅保留 `task.md` 与 `execution-log.md`，无可删附属物、无阻塞、无警告。
-  - 命令：执行 `$fupan`；读取 `C:\Users\BJB110\.codex\skills\fupan\SKILL.md`、`references/project-memory-template.md`、当前任务 `task.md`、`execution-log.md`、`docs/agent-memory/project-error-prevention.md`，并运行 `collect_error_evidence.py` 生成 `doc/tasks/20260630-main-branch-build-publish-test-server/candidate-error-evidence.md`。
+  - 命令：执行 `python -X utf8 C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260630-main-branch-build-publish-test-server --mode preview`，结果 `status: ready`，当前仅保留 	ask.md` 与 `execution-log.md`，无可删附属物、无阻塞、无警告。
+  - 命令：执行 `$fupan`；读取 `C:\Users\BJB110\.codex\skills\fupan\SKILL.md`、`references/project-memory-template.md`、当前任务 	ask.md`、`execution-log.md`、`docs/agent-memory/project-error-prevention.md`，并运行 `collect_error_evidence.py` 生成 `doc/tasks/20260630-main-branch-build-publish-test-server/candidate-error-evidence.md`。
   - 结论记录：本轮复盘接受的稳定经验继续优先保留在事前文档 `docs/release-build-preflight-lessons.md` 与既有 `AGENTS.md` / `docs/release-agent-checklist.md`，不再重复压缩进 `project-error-prevention.md`；任务级复盘结论另存为 `doc/tasks/20260630-main-branch-build-publish-test-server/release-main-branch-fupan.md`。
   - 当前结果：本轮已基于三仓主分支 `int_main` 完成真实 `build-release -> publish-test -> 测试服运行态验收` 闭环，并严格停在测试服，不推进 `mark-tested`、正式服或备份服。
 - 请求：`当前用zhaojie的账号登录看不到图里的按钮和图里的页签`、`当前用zhaojie的账号登录看不到图里的按钮,需要什么权限才能看到`
@@ -2003,16 +2003,16 @@
   - 命令记录：读取维护仓 `AGENTS.md`、`docs/experience-index.md`、`docs/powershell-preflight-lessons.md`、`docs/request-command-log.md`，核对上一维护仓任务状态并新建任务台账 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260630-zhaojie-button-permission-audit\`。
   - 命令记录：只读搜索 `D:\ProjectPackage\Int\IntRuoyi\yudao-ui-admin-vue3\src` 与 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\sql\mysql` 中的 `第三方导入`、`模拟报工`、`审批`、`创建 ERP 测试单`、`v-hasPermi`、`mes:pro-feedback:*`、`mes:pro-work-order:*`。
   - 命令记录：只读核对 `src/views/mes/pro/feedback/index.vue`、`src/views/mes/pro/workorder/index.vue`、`sql/mysql/ruoyi-vue-pro.sql`、`sql/mysql/20260611_mes_work_order_create_erp_order.sql`、`sql/mysql/20260629_mes_smart_scheduling_role_scope.sql` 与历史任务 `20260629-test-server-zhaojie-scheduler-update-permission-fix`、`20260630-test-server-zhaojie-replan-preview-permission-fix`、`20260630-scheduler-role-scope-gap-analysis`。
-  - 命令记录：只读查询本机 Docker MySQL `int-ruoyi-mysql` 中 `system_users`、`system_user_role`、`system_role_menu`、`system_menu`，确认 `zhaojie` 在 `tenant_id=1` 当前仅有 `900120/5530/5531/5550`，在 `tenant_id=122` 当前已有 `900120/5530/5531/5532/5550/5552/900200`。
+  - 命令记录：只读查询本机 Docker MySQL `int-ruoyi-mysql` 中 `system_users`、`system_user_role`、`system_role_menu`、`system_menu`，确认 `zhaojie` 在 	enant_id=1` 当前仅有 `900120/5530/5531/5550`，在 	enant_id=122` 当前已有 `900120/5530/5531/5532/5550/5552/900200`。
   - 结论记录：生产报工按钮权限为 `mes:pro-feedback:create/export/approve`；生产工单按钮权限为 `mes:pro-work-order:create/export/create-erp`；`审批` 还要求当前行为审批人；`正式报工/待归属` 页签没有单独权限码；若 `zhaojie` 使用的是 `排产员` 正式角色，则当前白名单默认不含 `5532`、`5535`、`5555`、`5969`，因此对应按钮不会显示。
 - 请求：`5532 mes:pro-work-order:create 900200 mes:pro-work-order:create-erp 5552 mes:pro-feedback:create 5555 mes:pro-feedback:export 5969 mes:pro-feedback:approve 如果还要把导出也全放开，再补：5535 mes:pro-work-order:export 这些有对应的角色吗?如果没有,把这些权限也加在排产员上`
   - 命中经验：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\experience-index.md`、`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\powershell-preflight-lessons.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\experience-index.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\powershell-memory.md`。
   - 命令记录：新建维护仓任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260630-zhaojie-scheduler-button-permission-fix\` 与后端仓任务 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\doc\tasks\20260630-zhaojie-scheduler-button-permission-fix\`。
   - 命令记录：只读查询本机 Docker MySQL `int-ruoyi-mysql` 的 `system_role_menu/system_role/system_menu`，确认：
   - `super_admin` 已拥有 `5532/5535/5552/5555/5969/900200`；
-  - `tenant_id=122` 的 `mes_scheduler` 已拥有 `5532/5552/900200`；
+  - 	enant_id=122` 的 `mes_scheduler` 已拥有 `5532/5552/900200`；
   - `mes_team_leader` 已拥有 `5552`；
-  - `tenant_id=1` 的 `mes_scheduler` 仍缺 `5532/5535/5555/5969/900200`，且运行态也缺失 `5552` 绑定。
+  - 	enant_id=1` 的 `mes_scheduler` 仍缺 `5532/5535/5555/5969/900200`，且运行态也缺失 `5552` 绑定。
   - 命令记录：只读核对 `D:\ProjectPackage\Int\IntRuoyi\ruoyi-vue-pro\sql\mysql\20260629_mes_smart_scheduling_role_scope.sql`，确认正式 SQL 已包含 `5552`，但尚未包含 `5532/5535/5555/5969/900200`，且菜单基线校验也未覆盖这些依赖菜单。
 - 请求：`继续`（承接 `2026-09-10 AUTO-DAY 班次产能缺失` 根因修复）
   - 当前处理：后端根因修复已提交 `b0d401af1eba3a71befc3c8b5d07552a3425ed85`；本轮在维护仓创建任务 `D:\ProjectPackage\Int\IntRuoyiMaintance\doc\tasks\20260701-schedule-calendar-capacity-horizon-release-test-server\`，按“只发布已提交 git 版本”路径推进测试服发布验证。
@@ -2042,7 +2042,7 @@
   - 命令记录：修改 `ops/deploy/int-ruoyi-test/docker-compose.yml`，向后端 JVM 参数透传 `--yudao.dcc.project-code-recognition.worker-count=${DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT}`。
   - 命令记录：修改 `scripts/tests/test_publish_dcc_codex_runtime_contract.py`，补充 worker-count 发布合同断言。
   - 验证命令：`python -m pytest scripts\tests\test_publish_dcc_codex_runtime_contract.py -q` -> PASS，确认维护仓发布链路写入 `DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT`，compose 已透传 worker-count。
-  - 收尾命令：`python C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --workspace D:\ProjectPackage\Int\IntRuoyiMaintance --task-id 20260701-dcc-batch-recognition-five-workers --mode preview` -> PASS，ready，保留 `task.md` 与 `execution-log.md`，无阻塞。
+  - 收尾命令：`python C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --workspace D:\ProjectPackage\Int\IntRuoyiMaintance --task-id 20260701-dcc-batch-recognition-five-workers --mode preview` -> PASS，ready，保留 	ask.md` 与 `execution-log.md`，无阻塞。
 
 ## 2026-07-02：发布经验自动沉淀
 
@@ -2244,7 +2244,7 @@
 
 ## 2026-07-04 23:44:12 +08:00 任务 20260704-codeonly-three-env-release 启动
 - 请求：执行 IntRuoyi 不带数据完整三环境发布闭环；使用后端、前端、维护仓当前 `int_main` 已提交 HEAD；新建本次专用临时发布 worktree；构建使用 `SkipDatabaseSync` 与 `SkipMinioSync`；按同一 releaseTag 完成 build-release、publish-test、mark-tested、promote-prod、promote-backup；正式/备份授权口径为 `PROD`。
-- 初始命令：读取三个仓库 branch/HEAD/dirty 状态；读取上一任务完成状态；创建 `doc/tasks/20260704-codeonly-three-env-release/` 并写入 `task.md`、`execution-log.md`。
+- 初始命令：读取三个仓库 branch/HEAD/dirty 状态；读取上一任务完成状态；创建 `doc/tasks/20260704-codeonly-three-env-release/` 并写入 	ask.md`、`execution-log.md`。
 - 前置命令：读取 `docs/experience-index.md`、`docs/release-build-preflight-lessons.md`、`docs/release-agent-checklist.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\release-backup-restore.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\server-access.md`、`D:\ProjectPackage\Int\IntRuoyi\docs\worktree-memory.md`。
 - 结果：`GREEN: experience-preflight -> PASS` 已写入执行日志；后续允许进入临时 release worktree 创建与发布前置检查。
 
@@ -2512,7 +2512,7 @@
 ## 2026-07-09 14:46:36 code-only required SQL 修复
 - 用户请求：继续执行 IntRuoyi code-only 三环境发布闭环。
 - 命令：`python -X utf8 -m pytest tests/test_code_only_required_sql_contract.py -q`。
-- 结果：PASS；已修复维护脚本在 `publishScope=code-only` 时仍执行 `type=data` required SQL 的发布契约问题。
+- 结果：PASS；已修复维护脚本在 `publishScope=code-only` 时仍执行 	ype=data` required SQL 的发布契约问题。
 
 
 ## 2026-07-09 15:06:02 v7 manifest 范围失败处理
@@ -2807,7 +2807,7 @@
 2026-07-16T00:00:00+08:00	20260716-current-head-codeonly-three-env	REQUEST	用户要求执行 IntRuoyi code-only / 不带数据完整三环境发布闭环；使用维护仓、后端仓、前端仓当前 int_main 已提交 HEAD，新建本次专用干净 release worktree，构建必须使用 SkipDatabaseSync 与 SkipMinioSync，不执行备份/恢复/回滚，正式服和备份服 promotion 授权口径为 PROD。
 2026-07-16T00:05:00+08:00	20260716-current-head-codeonly-three-env	COMMAND_INTENT	创建任务目录并读取发布、服务器、worktree、PowerShell 和 closeout 前置门禁；下一步冻结三仓 HEAD 到短路径 release worktree，确认 commit/branch/dirty=false 后切换运行控制台并执行 code-only build-release。
 2026-07-16T00:30:00+08:00	20260716-current-head-codeonly-three-env	RESULT	RED: 首轮 `release-20260716-intmain-codeonly-three-env-r260716a-r1` build-release 失败；operation `op-2026-07-15T162751592993800Z-07bd38b2-499b-4708-84a9-7b358734b779` 在 manifest 创建前失败，根因是 `20260714_signature_my_signature_admin_menu.sql` 的 release preflight 菜单 ID 清单使用变量 `@unified_signature_menu_id`，触发 `system_menu.id must be an integer literal for release preflight`。失败证据已冻结，经验门禁已更新；该 releaseTag 判废，下一步修复 SQL/测试并重建新 releaseTag。
-2026-07-16T00:52:00+08:00	20260716-current-head-codeonly-three-env	RESULT	RED: 第二轮 `release-20260716-intmain-codeonly-three-env-r260716b-r1` build-release 失败；operation `op-2026-07-15T164733908318700Z-b740f44f-6170-46ed-910a-63aa3ba1c3b1` 在 manifest 创建前失败，日志报 `duplicate system_menu.id detected across release SQL history: 900411`。冻结证据后复核 SQL 行号，确认第二个位置实际为 `tmp_signature_regular_menu_ids` 临时授权清单，根因是维护仓 `release_sql_contract_gate` 把 `INSERT INTO system_menu ... SELECT ... ON DUPLICATE KEY UPDATE VALUES(...)` 误解析到后续非 system_menu `VALUES`；已先更新经验门禁，下一步按 TDD 修复维护仓解析器并重建新 releaseTag。
+2026-07-16T00:52:00+08:00	20260716-current-head-codeonly-three-env	RESULT	RED: 第二轮 `release-20260716-intmain-codeonly-three-env-r260716b-r1` build-release 失败；operation `op-2026-07-15T164733908318700Z-b740f44f-6170-46ed-910a-63aa3ba1c3b1` 在 manifest 创建前失败，日志报 `duplicate system_menu.id detected across release SQL history: 900411`。冻结证据后复核 SQL 行号，确认第二个位置实际为 	mp_signature_regular_menu_ids` 临时授权清单，根因是维护仓 `release_sql_contract_gate` 把 `INSERT INTO system_menu ... SELECT ... ON DUPLICATE KEY UPDATE VALUES(...)` 误解析到后续非 system_menu `VALUES`；已先更新经验门禁，下一步按 TDD 修复维护仓解析器并重建新 releaseTag。
 2026-07-16T01:15:00+08:00	20260716-current-head-codeonly-three-env	RESULT	RED: 第三轮 `release-20260716-intmain-codeonly-three-env-r260716c-r1` build-release 失败；operation `op-2026-07-15T170422234564100Z-32d8180b-c6c1-448f-8541-5bf8a9adf666` 在业务前端 `pnpm build:test` 阶段失败，根因是 `ProcessWipTable.vue` 的 `sortColumnAttrs` 与 `handleTemplateSortChange` slot 变量未使用，触发 `vue/no-unused-vars`。失败证据已冻结，经验门禁已更新；前端修复提交 `8853c30b5` 已通过 `pnpm build:test`，下一步重建新 releaseTag。
 
 2026-07-16T03:00:14+08:00	20260716-current-head-codeonly-three-env	RESULT	PASS: release-20260716-intmain-codeonly-three-env-r260716d-r1 completed build-release, publish-test, mark-tested, promote-prod, and promote-backup; all five operations SUCCESS; test/prod/backup .env IMAGE_TAG, backend/frontend image tags, backend health UP, frontend HTTP 200, PDF worker HTTP 200, and release-info tag verified; backup /mnt/intruoyi-data mount /dev/mapper/cl-home, release dir, and data root verified; runtime-control restored to main workspace health UP; r260716a/b/c/d temp release worktrees and state dirs removed; raw secret-bearing outputs were not committed.
@@ -2822,7 +2822,7 @@
 2026-07-19T00:53:19+08:00	20260719-current-head-codeonly-three-env	COMMAND_INTENT	创建任务目录并读取发布、服务器、worktree、PowerShell、登录和 closeout 前置门禁；已冻结待发布 committed HEAD：maintenance=002118b6319182bffce540c658a67f26927b6367，backend=55bd93ef4de8f07ad0b1fbe6195068e2d91f873c，frontend=8ce396654f846893ad454106fd66513454c770ea；主工作区存在无关脏改，发布包只允许来自即将创建的干净临时 release worktree。
 2026-07-19T01:05:00+08:00	20260719-current-head-codeonly-three-env	RESULT	RED: `r260719a` 后端 migration policy gate 在 build-release 前失败；`sql/mysql/20260718_system_entitlement_management.sql` 缺少 `release-migration` 元数据。失败 JSON 已冻结，未提交 build-release/publish-test/mark-tested/promote-prod/promote-backup；已先沉淀 system entitlement 迁移元数据前置门禁，下一步按 TDD 修复 SQL 元数据并重建新的 releaseTag。
 2026-07-19T01:20:00+08:00	20260719-current-head-codeonly-three-env	RESULT	RED: `r260719a` 后端 migration policy gate 继续在 build-release 前失败；`20260715_mes_schedule_capacity_mode_unification.sql` 使用说明式首行触发 `unknown release-migration metadata key`，并且预发布契约复核发现 `20260718_mes_feedback_import_record_direct_progress.sql` 的 `dependsOn` 带 `.sql` 后缀会触发 `dependsOn missing migration`。失败 JSON 已冻结，已更新结构化 `release-migration` 与 `dependsOn` 后缀前置门禁；下一步补测试 RED 并修复干净 release 输入后提交。
-2026-07-19T01:28:00+08:00	20260719-current-head-codeonly-three-env	RESULT	RED: `r260719a` 后端 migration policy gate 在四个元数据修复后仍在 build-release 前失败；`20260717_bpm_form_center.sql` 使用 `type=schema,menu` 触发 `invalid type`。失败 JSON 已冻结，已把 `type` 必须为单一枚举值沉淀进发布前置门禁；下一步补测试 RED 并修复该 SQL 元数据。
+2026-07-19T01:28:00+08:00	20260719-current-head-codeonly-three-env	RESULT	RED: `r260719a` 后端 migration policy gate 在四个元数据修复后仍在 build-release 前失败；`20260717_bpm_form_center.sql` 使用 	ype=schema,menu` 触发 `invalid type`。失败 JSON 已冻结，已把 	ype` 必须为单一枚举值沉淀进发布前置门禁；下一步补测试 RED 并修复该 SQL 元数据。
 2026-07-19T01:36:00+08:00	20260719-current-head-codeonly-three-env	RESULT	PASS: 后端 SQL 元数据修复完成并提交到 `int_main`，提交 `4caaad95c0c3fce9a6a0406fcd74384e8e27e75a`；目标 pytest 21 tests PASS，全量 migration policy gate PASS，未提交无关主工作区改动；下一步创建新的干净 release worktree `r260719b` 并重新 build-release。
 2026-07-19T01:46:08+08:00	20260719-current-head-codeonly-three-env	RESULT	RED: `r260719b` build-release 在 manifest 创建前失败；releaseTag=`release-20260719-intmain-codeonly-three-env-r260719b-r1`，operation=`op-2026-07-18T174249577677300Z-c5a943af-322e-4b82-b906-1e07637a94de`，状态 `FAILED`，根因是后端 `yudao-module-mes` 已提交实现引用了未提交的 VO/Mapper/Service companion contract，包括 `setReleaseActionLocked`、`getWorkTaskId`、`setBatchRecordVersionNo`、`withdrawVoidBatchExecution`、`updateApprovalFieldsToDraft`。operation JSON、日志快照、预览参数和 manifest absent 状态已冻结，raw log 不提交。
 2026-07-19T02:02:00+08:00	20260719-current-head-codeonly-three-env	RESULT	PASS: 后端 MES companion contract 修复完成并提交到 `int_main`，提交 `5e86ae1d145220f5354f12a2ea577022ffe3629e`；静态合同测试 5 tests PASS、Java 合同测试 3 tests PASS、`mvn.cmd -pl yudao-module-mes -am "-DskipTests" compile` PASS；下一步创建新的干净 release worktree 并重建 releaseTag。
@@ -2832,7 +2832,7 @@
 2026-07-19T03:28:00+08:00	20260719-current-head-codeonly-three-env	RESULT	PASS: 已先沉淀 publish-test required SQL collation 前置门禁；后端 `20260717_mes_edhr_filler_minimal_permissions.sql` 改为由 `20260718_system_entitlement_management.sql` 动态 entitlement 接管的无副作用迁移，提交 `e0d940292c`；目标 pytest PASS，全量 migration policy gate PASS；下一步创建新的 clean release worktree `r260719e` 并重建新的 releaseTag。
 2026-07-19T04:11:09+08:00	20260719-current-head-codeonly-three-env	RESULT	RED: `r260719e` build-release 成功但 publish-test 失败；releaseTag=`release-20260719-intmain-codeonly-three-env-r260719e-r1`，publish-test operation=`op-2026-07-18T195310630559800Z-2b5f6c24-bd91-4ee0-b02c-cb23ba489531`，测试服 required SQL `20260718_bpm_admin_role_assignment.sql` 报 MySQL `ERROR 1644 Role id 910311 is already occupied by another role`；远端快照显示 `910311` 已属于 `electronic_signature_admin`。operation JSON、脱敏日志、manifest state、远端锁表/迁移状态和 `.env IMAGE_TAG` 已冻结；未执行 mark-tested/promote-prod/promote-backup。
 2026-07-19T04:11:09+08:00	20260719-current-head-codeonly-three-env	COMMAND_INTENT	已先沉淀 publish-test 角色 ID 硬编码占用门禁到 `docs/release-build-preflight-lessons.md` 并更新 `docs/experience-index.md`；下一步在后端独立 fix worktree 中按 RED/GREEN 修复 `bpm_admin` 角色动态 ID 解析，提交后重建新的 releaseTag。
-2026-07-19T04:20:00+08:00	20260719-current-head-codeonly-three-env	RESULT	PASS: 后端 `20260718_bpm_admin_role_assignment.sql` 已改为先按 `tenant_id + code` 查找 `bpm_admin`，首选 ID `910311` 空闲时才使用，否则由数据库生成新 ID；目标 pytest 6 tests PASS，全量 migration policy gate PASS；后端提交 `728b250070` 已快进到 `int_main`，下一步创建新的 clean release worktree `r260719f` 并重建新的 releaseTag。
+2026-07-19T04:20:00+08:00	20260719-current-head-codeonly-three-env	RESULT	PASS: 后端 `20260718_bpm_admin_role_assignment.sql` 已改为先按 	enant_id + code` 查找 `bpm_admin`，首选 ID `910311` 空闲时才使用，否则由数据库生成新 ID；目标 pytest 6 tests PASS，全量 migration policy gate PASS；后端提交 `728b250070` 已快进到 `int_main`，下一步创建新的 clean release worktree `r260719f` 并重建新的 releaseTag。
 2026-07-19T04:52:00+08:00	20260719-current-head-codeonly-three-env	RESULT	RED: `r260719f` build-release 未生成 manifest；releaseTag=`release-20260719-intmain-codeonly-three-env-r260719f-r1`，operation=`op-2026-07-18T202626396944800Z-8c4bfa91-2d6e-4617-9752-81248bd0be23`，在 backend Docker image build 阶段遇到 Docker Desktop Linux engine / BuildKit 健康命令超时或 `_ping`/500，终止本任务构建子进程后 operation 收口为 `FAILED`。已冻结 operation JSON、脱敏日志、Docker 健康输出、进程快照和 manifest absent 状态；该 releaseTag 不进入 publish-test。
 2026-07-19T04:52:00+08:00	20260719-current-head-codeonly-three-env	COMMAND_INTENT	已先沉淀 `build-release Docker BuildKit 卡顿诊断门禁` 到 `docs/release-build-preflight-lessons.md` 并更新 `docs/experience-index.md`；下一步恢复本机 Docker 前置条件，再创建新的 clean release worktree / 新 releaseTag 重建，禁止复用 `r260719f`。
 2026-07-19T05:21:00+08:00	20260719-current-head-codeonly-three-env	RESULT	PASS: 清理本任务失败 release worktree/state 后释放 D: 空间并重启 Docker Desktop，Docker CLI/BuildKit 连续健康检查通过；运行控制台主路径 health=UP。
@@ -2850,15 +2850,15 @@
 2026-07-19T09:44:00+08:00	20260719-current-head-codeonly-three-env	COMMAND_INTENT	已先补强 `build-release Docker BuildKit 卡顿诊断门禁` 和索引关键词；下一步恢复 Docker Desktop / BuildKit 健康状态，再创建新的 clean release worktree 和新的 releaseTag 重建，禁止复用 `r260719j`。
 2026-07-19T11:47:00+08:00	20260719-current-head-codeonly-three-env	RESULT	PASS: `release-20260719-intmain-codeonly-three-env-r260719k-r1` 完成同一 releaseTag 的完整 `build-release -> publish-test -> mark-tested -> promote-prod -> promote-backup`；operation `op-2026-07-19T023501496894Z-7cbfaca7-6264-47c9-a4b0-d7ac417221a1`、`op-2026-07-19T024848412034900Z-8029f7eb-6767-4fd8-9f12-1514ab862b5c`、`op-2026-07-19T030718085468800Z-969cf333-7696-4396-93c5-93d22891ce4e`、`op-2026-07-19T031012133519600Z-4ec662b5-c6aa-4a33-b84c-76a7f64568e4`、`op-2026-07-19T032735334471Z-f9f5e047-7742-4d46-94d2-45043905d53c` 均为 `SUCCESS`。
 2026-07-19T11:48:00+08:00	20260719-current-head-codeonly-three-env	RESULT	PASS: 测试服 `172.30.30.58`、正式服 `172.30.30.57`、备份服 `172.30.30.59` 均已只读核对 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、backend health `UP`、frontend HTTP `200`、`pdfjs/pdf.worker.mjs` HTTP `200` 和 `release-info.json`；备份服额外确认 `/mnt/intruoyi-data` 挂载自 `/dev/mapper/cl-home`、release 目录和 runtime-data 目录存在。运行控制台已恢复主维护仓路径并 health=UP；本任务临时 release worktree/state 已删除。
-2026-07-19T11:49:00+08:00	20260719-current-head-codeonly-three-env	CLOSEOUT	PASS: task-closeout preview 返回 `status=ready`、blocked=`<none>`、warnings=`<none>`，保留 `task.md`、`execution-log.md`、`verification-report.md`，其余任务附属临时证据文件按 closeout 规则清理；未提交原始含凭据日志。
-2026-07-19T11:50:00+08:00	20260719-current-head-codeonly-three-env	CLOSEOUT	PASS: task-closeout apply 返回 `status=applied`，任务状态已标记 completed；最终保留 `task.md`、`execution-log.md`、`verification-report.md`，准备按提交隔离规则只提交本任务记录、请求日志和必要经验门禁文件。
+2026-07-19T11:49:00+08:00	20260719-current-head-codeonly-three-env	CLOSEOUT	PASS: task-closeout preview 返回 `status=ready`、blocked=`<none>`、warnings=`<none>`，保留 	ask.md`、`execution-log.md`、`verification-report.md`，其余任务附属临时证据文件按 closeout 规则清理；未提交原始含凭据日志。
+2026-07-19T11:50:00+08:00	20260719-current-head-codeonly-three-env	CLOSEOUT	PASS: task-closeout apply 返回 `status=applied`，任务状态已标记 completed；最终保留 	ask.md`、`execution-log.md`、`verification-report.md`，准备按提交隔离规则只提交本任务记录、请求日志和必要经验门禁文件。
 2026-07-19T11:58:00+08:00	20260719-project-experience-consolidation-r260719k	REQUEST	用户调用 project-experience-consolidation 技能，要求继续沉淀 r260719k 三环境 code-only 发布闭环的可复用经验。
 2026-07-19T11:58:00+08:00	20260719-project-experience-consolidation-r260719k	COMMAND_INTENT	读取既有经验索引、发布前置经验、发布执行清单、主项目发布/备份恢复与 worktree 记忆，优先合并到已有长期文档，不新建经验文档；只记录可复用门禁，不写一次性流水。
 2026-07-19T12:08:00+08:00	20260719-project-experience-consolidation-r260719k	RESULT	PASS: 已将 r260719k 完整三环境 code-only 发布的复发防止经验合并到既有 `docs/release-agent-checklist.md`，并在 `docs/experience-index.md` 增加关键词路由；未新建长期经验文档，未执行构建、发布、备份、恢复、回滚或服务器写入。
 2026-07-19T12:09:00+08:00	20260719-project-experience-consolidation-r260719k	CLOSEOUT	PASS: task-closeout preview/apply 均通过，delete=`<none>`、blocked=`<none>`、warnings=`<none>`；准备按提交隔离规则只提交本任务记录、请求日志当前任务条目和必要经验门禁。
 2026-07-20T09:35:50+08:00	20260720-chatgpt-config-openai-provider-repair	REQUEST	用户要求修复本机 `config.toml` 的 `Model provider "OpenAI" not found`，保存后重新打开当前对话串。
 2026-07-20T09:35:50+08:00	20260720-chatgpt-config-openai-provider-repair	COMMAND_INTENT	创建任务目录并应用 PowerShell UTF-8 门禁；只读核对 `C:\Users\BJB110\.codex\config.toml` 的 provider 定义后，以最小改动补齐 `[model_providers.OpenAI]`，解析验证通过后删除临时备份并重新打开对话串。
-2026-07-20T09:35:50+08:00	20260720-chatgpt-config-openai-provider-repair	RESULT	PASS: 当前用户级 `config.toml` 仅定义了 `asxs`，缺少 `[model_providers.OpenAI]`；已补齐该 provider，`python -X utf8` + `tomllib` 验证 `DEFINED_PROVIDERS=OpenAI,asxs`，活动 provider 仍为 `asxs`，未改变现有默认模型来源。
+2026-07-20T09:35:50+08:00	20260720-chatgpt-config-openai-provider-repair	RESULT	PASS: 当前用户级 `config.toml` 仅定义了 `asxs`，缺少 `[model_providers.OpenAI]`；已补齐该 provider，`python -X utf8` + 	omllib` 验证 `DEFINED_PROVIDERS=OpenAI,asxs`，活动 provider 仍为 `asxs`，未改变现有默认模型来源。
 2026-07-20T09:35:50+08:00	20260720-chatgpt-config-openai-provider-repair	CLOSEOUT	PASS: 本任务临时备份 `C:\Users\BJB110\.codex\config.toml.bak-20260720-093130` 已删除；对话串 `019f416a-1250-7ef3-a9a9-f5c2a53de186` 已重新打开；任务状态已标记 completed。
 2026-07-22T15:45:00+08:00	20260722-dcc-distribution-backend-test-release	REQUEST	用户要求继续修复测试服务器 `请求地址不存在:admin-api/dcc/distribution-tasks/my-page`。
 2026-07-22T15:45:00+08:00	20260722-dcc-distribution-backend-test-release	COMMAND_INTENT	仅对测试服 `172.30.30.58` 发布后端 code-only 包；先按 required SQL fail-fast 门禁修复迁移脚本并重建唯一 releaseTag，再执行 `publish-test` 和真实登录/E2E 验收；不执行 `mark-tested`、正式服或备份服动作。
@@ -3010,7 +3010,7 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 2026-08-03T11:14:00+08:00	20260803-fix-dcc-base-schema-menu-id-release	CLOSEOUT	PASS: 最终复核发现 `E:\IntRuoyi` 已有后续其它任务提交到 HEAD `134434c78`，但本任务提交 `6b1fd19eb` 仍为当前 HEAD 祖先；目标两文件无本任务遗留暂存/工作区改动。
 2026-08-06T14:06:39+08:00	20260806-head-test-only-release	REQUEST	用户要求仅基于当前分支开始时最新已提交 HEAD 构建维护控制台与测试发布包并仅发布测试服；未提交改动不得进入产物，禁止正式服/备份服/mark-tested/promote，发布后必须验证真实运行态、运行控制台版本变更说明、记录问题并沉淀前置经验。
 2026-08-06T14:06:39+08:00	20260806-head-test-only-release	COMMAND_INTENT	维护仓 branch=int_main HEAD=c1b10cc3a20fd5f4f5d228219ae4c046ad320256 dirty；主程序仓 branch=int_main HEAD=6f75f2a93628eadaa339d9f44cbd3db2aae5a4e6 dirty 且 behind origin/int_main 7；按用户要求不 fetch/不追远端，创建 r260806a clean release worktree 后构建 release-20260806-intmain-head-test-r260806a-r1 并仅执行 publish-test。
-2026-08-06T14:14:00+08:00	20260806-head-test-only-release	BLOCKED	migration policy gate 在构建前失败：冻结主程序 HEAD 的 `20260805_erp_nas_table_auto_sync.sql` release-migration 头部声明 `type=schema,job`，脚本返回 `invalid type ...: schema,job`；按发布门禁未执行 build-release、未生成 manifest、未执行 publish-test、未操作测试服务器。
+2026-08-06T14:14:00+08:00	20260806-head-test-only-release	BLOCKED	migration policy gate 在构建前失败：冻结主程序 HEAD 的 `20260805_erp_nas_table_auto_sync.sql` release-migration 头部声明 	ype=schema,job`，脚本返回 `invalid type ...: schema,job`；按发布门禁未执行 build-release、未生成 manifest、未执行 publish-test、未操作测试服务器。
 2026-08-06T15:09:00+08:00	20260806-head-test-only-release	COMMAND_INTENT	用户确认 migration metadata 阻塞已修复；重新冻结 r260806b clean release worktree，维护 HEAD=c1b10cc3a20fd5f4f5d228219ae4c046ad320256，主程序 HEAD=04d71d4328bff04833b3e97fe77439c1d00e5f72，releaseTag=release-20260806-intmain-head-test-r260806b-r1；r260806b migration policy gate passed/migrationCount=444，后续仅执行 build-release -> publish-test，禁止 mark-tested/promote-prod/promote-backup。
 2026-08-06T19:08:00+08:00	20260806-head-test-only-release	RESULT	PASS: r260806b 主程序/维护前端依赖 frozen install 完成，pnpm ignored-builds 均通过外部 onlyBuiltDependencies JSON + rebuild --pending 清零且两个 release worktree clean；维护控制台 scripts\build.ps1 成功，Maven tests 26 passed，jar SHA256=88de607dc08503fe3db9dd7d74fc29ed94ec49a2c35e0b0009ed7350c7f146e7。
 2026-08-06T19:09:00+08:00	20260806-head-test-only-release	BLOCKED	build-release operation op-2026-08-06T104239041834700Z-8592eb5e-6941-457d-954d-02b7b595b377 FAILED：后端 Maven build SUCCESS、前端 build:test SUCCESS，但前端 Docker image 在 nginx:1.27-alpine metadata 解析阶段无法访问 Docker Hub；docker pull nginx:1.27-alpine 同样失败，hubproxy.docker.internal:5555/library/nginx 与 /nginx 均 not found。发布包仅有 docker-build-context/required-sql，缺 manifest/release-manifest/镜像 tar/版本号/变更说明，不得 publish-test；未执行 mark-tested/promote-prod/promote-backup，测试服未修改。
@@ -3179,9 +3179,9 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - 用户意图：仅基于发布开始时冻结的当前分支最新已提交代码构建维护控制台和测试发布包，并仅发布测试服务器；未提交改动不得进入产物，测试服成功后再做完整运行态和运行控制台版本说明验收。
 - 命令意图：读取发布、服务器、登录、PowerShell、worktree、测试服发布和经验门禁；创建/复用任务目录 `doc/tasks/20260819-test-only-head-release`；从维护仓和主程序仓冻结 HEAD 创建本轮 clean release worktree；启动本轮维护控制台并通过运行控制台 API 预览/执行 `build-release`，禁止 `mark-tested`、`promote-prod`、`promote-backup`。
 - 冻结证据：维护仓 `int_main@eba06a66a78ee3027397e54cea412ee6b8b0b741`，release worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260819a\m`；主程序仓 `int_main@037e55c280c346df8aa8d89453240ce5c7e0c83a`，release worktree `D:\IntRuoyiWorktree\r260819a\a`；两个 release worktree 均 clean，主工作区脏改未进入构建输入。
-- 构建结果：`build-release` 预览去除错误 `targetEnvironment` 后通过，但唯一 operation `op-2026-08-18T174311645827300Z-818527d7-fab1-4411-9cec-bb27e29acdec` 在 manifest 生成前失败，原因是实际维护仓 ops migration policy gate 拒绝 `20260814_mes_c015_route_dcc_qa_reconciliation_schema`（schema）依赖 `20260814_mes_c015_route_dcc_qa_reconciliation_backfill`（backfill/evidence-only）。
+- 构建结果：`build-release` 预览去除错误 	argetEnvironment` 后通过，但唯一 operation `op-2026-08-18T174311645827300Z-818527d7-fab1-4411-9cec-bb27e29acdec` 在 manifest 生成前失败，原因是实际维护仓 ops migration policy gate 拒绝 `20260814_mes_c015_route_dcc_qa_reconciliation_schema`（schema）依赖 `20260814_mes_c015_route_dcc_qa_reconciliation_backfill`（backfill/evidence-only）。
 - 边界结论：发布包、manifest、版本号和变更说明均未生成；未执行 `publish-test`，未写测试服、正式服或备份服；失败 releaseTag `release-20260819-intmain-head-test-r260819a-r1` 判废，不允许复用。
-- 问题记录：任务日志已记录 PowerShell 换行转义、主工作区脏、宽泛搜索输出过大、build-release payload 误带 `targetEnvironment`、app gate 与实际 ops gate 规则不一致、完整 runtime config 取证粒度过大、实际迁移依赖闭包阻塞等问题。
+- 问题记录：任务日志已记录 PowerShell 换行转义、主工作区脏、宽泛搜索输出过大、build-release payload 误带 	argetEnvironment`、app gate 与实际 ops gate 规则不一致、完整 runtime config 取证粒度过大、实际迁移依赖闭包阻塞等问题。
 - 经验沉淀：已更新 `docs/release-build-preflight-lessons.md`、`docs/test-release-preflight.md` 和 `docs/experience-index.md`，要求发布前以 preview 指向的实际维护仓 ops gate 为准，拦截 executable migration 依赖 evidence-only migration；凭据和配置只记录脱敏白名单字段。
 ## 2026-08-19 仅测试服发布 r260819b
 
@@ -3249,7 +3249,7 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Request/authorization: 用户要求仅基于发布开始时冻结的已提交 HEAD 构建并发布测试服；用户已回复“授权”“继续”；允许测试服写入和真实运行态验证，未授权正式服、备份服、`mark-tested`、`promote-prod`、`promote-backup`。
 - Frozen inputs: maintenance `66c4ea05dda04459433bc22471ea2b6f4f3dfc32`，app `12a773ef285ff34bf2bd25036fd3dff2930912bc`；worktrees `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260821h\m` / `D:\IntRuoyiWorktree\r260821h\a`；package `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260821-intmain-head-test-r260821h-r4`。
 - Build commands/evidence: maintenance `scripts\build.ps1` PASS；`build-release` operation `op-2026-08-21T204711713137200Z-9de34c7d-990f-4236-8d47-70be7309ce14` SUCCESS；manifest validator `MANIFEST_VALIDATION_PASSED`；tar SHA-256=`b9735d8aaf43e4665aec5ea262a7fa92e8c66e16bbbadad7e31ca5203cb5c040`。
-- Publish command/evidence: preview action=`publish-test`、environment=`test`、host=`172.30.30.58`、remote=`/opt/intruoyi/runtime`；唯一 publish operation `op-2026-08-21T210307402431400Z-d11e3d45-06fb-4026-a039-a1ee4f70086b` FAILED；未执行其它环境动作。
+- Publish command/evidence: preview action=`publish-test`、environment=	est`、host=`172.30.30.58`、remote=`/opt/intruoyi/runtime`；唯一 publish operation `op-2026-08-21T210307402431400Z-d11e3d45-06fb-4026-a039-a1ee4f70086b` FAILED；未执行其它环境动作。
 - Failure: route snapshot BACKFILL 运行报告启动时 `MesProRouteVersionSnapshotMigrationRunner` 报 `No default constructor found`；r4 判废，不重试、不改 lock/migration、不改冻结 app 代码。
 - Failure-state verification: `.env IMAGE_TAG` 为 r4，但 actual backend=`hotfix-20260814-route-submit-order-r1`、actual frontend=`release-20260813-intmain-head-test-r260812b-r2`；旧容器 running、backend health UP、frontend HTTP 200，frontend release-info 仍旧版本；旧 `.env` 基线无法安全证明，任务状态 blocked。
 - Problems/lessons: P026 Docker `InvalidDefaultArgInFrom` warning；P027 raw operation log 暴露密码参数形态；P028 publish failure 后 `.env`/actual images/release-info 漂移；P029 Spring multi-constructor Bean 缺显式 `@Autowired`。问题完整字段、处理结果和自动化建议见 `doc/tasks/20260821-test-only-head-release/execution-log.md`。
@@ -3260,7 +3260,7 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Request/authorization: 用户继续并已授权仅测试服发布；本轮必须从开始时记录的冻结提交构建，只允许 `build-release -> publish-test`，禁止正式服、备份服、`mark-tested`、`promote-prod`、`promote-backup`。
 - Frozen inputs: maintenance=`66c4ea05dda04459433bc22471ea2b6f4f3dfc32`，app=`c4d2c637bf1f2cea723876ee363f311b1128aaf4`；worktrees=`D:\ProjectPackage\Int\IntRuoyiWorktrees\r260822a\m` / `D:\IntRuoyiWorktree\r260822a\a`；package=`E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260822-intmain-head-test-r260822a-r2`。
 - Build commands/evidence: app `pnpm build:test` PASS；maintenance `scripts\build.ps1` PASS；build-release operation=`op-2026-08-22T033833931534300Z-c3389b33-a5b1-44e0-9b17-e63dc07cce7e` SUCCESS；manifest validator PASS；tar SHA-256=`aa2c8e5d2b8748798f2c6f2966806e7c91fb5bedc115a103bddd6c22826ddb68`。
-- Publish commands/evidence: preview and high-risk preflight PASS；唯一 publish operation=`op-2026-08-22T035621436028400Z-55335b7f-e740-4d0f-a9d1-a85f875648fa`，target=`test` host=`172.30.30.58` remote=`/opt/intruoyi/runtime`。
+- Publish commands/evidence: preview and high-risk preflight PASS；唯一 publish operation=`op-2026-08-22T035621436028400Z-55335b7f-e740-4d0f-a9d1-a85f875648fa`，target=	est` host=`172.30.30.58` remote=`/opt/intruoyi/runtime`。
 - Result: route snapshot BACKFILL report=`BLOCKED`、`blockerCount=882`；临时 runner 已按任务边界清理，live backend/frontend 未切换；operation API/state 未形成 SUCCESS，任务判定 `NO-GO/blocked`，r260822a-r2 不得复用。
 - Problems: P038-P042 已记录 route snapshot blocker、runner 不退出、operation stale RUNNING、串行迁移耗时和 raw log secret redaction；脱敏日志未记录凭据原文。
 - Secret handling: 不记录密码、token、私钥、完整 `.env` 或 raw operation log；仅记录脱敏状态、tag、hash、计数、路径和退出结论。
@@ -3297,7 +3297,7 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 
 - Request/authorization: 用户明确授权对测试服历史 route snapshot 执行受控数据修复；范围仅为 `172.30.30.58`，不触碰正式服、备份服、`mark-tested`、`promote-prod`、`promote-backup`。
 - Command intent: 使用 task-owned UTF-8 SQL `doc/tasks/20260821-test-only-head-release/evidence/route-snapshot-repair-r260822a-r2.sql`，通过官方 `E:\IntRuoyi\IntRuoyiBackend\script\deploy\apply-test-db-sql.ps1` 写入测试库；随后对 `/opt/intruoyi/runtime` 执行与发布脚本同源的 BACKFILL/READINESS runner 复核。
-- SQL evidence: `repairedCount=27`，tenant counts=`tenant 1:26`、`tenant 122:1`，SQL SHA-256=`06d8e6dfcbc1043625d9d50067c6bb84bd6b33a547eb12b1b93dea0f6b5dd5ae`；未记录凭据原文。
+- SQL evidence: `repairedCount=27`，tenant counts=	enant 1:26`、	enant 122:1`，SQL SHA-256=`06d8e6dfcbc1043625d9d50067c6bb84bd6b33a547eb12b1b93dea0f6b5dd5ae`；未记录凭据原文。
 - Apply result: `APPLY_TEST_DB_SQL_OK`，测试服数据库写入成功；远端只读后置查询确认 `mes_pro_route_version` 47/47 条快照非空，身份列 47/47 暂为空，等待正式 BACKFILL 回填。
 - Boundary: 未访问正式服或备份服，未执行 `mark-tested`、`promote-prod`、`promote-backup`，未重试已判废的 r260822a-r2 publish operation。
 
@@ -3399,7 +3399,7 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Request: 用户要求继续修复未完成任务中的发布阻塞。
 - Command intent: 只读核对 code-only 迁移依赖闭包与正式库基线漂移；先运行 RED，再用任务目录隔离临时目录运行 backend/maintenance 合同测试；不修改正式库、migration ledger、manifest 或失败 releaseTag。
 - RED: backend 默认 pytest 临时目录因 `WinError 5` 产生 `14 passed, 3 errors`；正式 r11 preflight 仍为 `status=blocked`、`BLOCKED_SCOPE_DEPENDENCY=6`，`20260607_product_master_data` checksum 与 r11 manifest 不一致。
-- GREEN: backend `test_release_preflight_plan.py` 使用任务目录 `--basetemp` -> `17 passed`；maintenance `test_release_sql_preflight_gate.py` -> `32 passed`。
+- GREEN: backend 	est_release_preflight_plan.py` 使用任务目录 `--basetemp` -> `17 passed`；maintenance 	est_release_sql_preflight_gate.py` -> `32 passed`。
 - Conclusion: 当前维护仓与 backend 的 scope-aware 迁移依赖闭包实现一致且测试通过，无安全本地代码补丁；正式服仍需正式 reconciliation 方案和授权，禁止手工改库、改台账或重试失败包。
 - Boundary: 未执行服务器写入、数据库写入、发布、mark-tested、promote-prod、promote-backup 或 E2E。
 
@@ -3423,14 +3423,14 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 
 - Request: 用户要求继续完成当前分支已提交代码的仅测试服发布；未提交改动不得进入构建产物。
 - Command intent: 先复核上一轮阻塞，再只提交两个发布阻塞修复：维护仓 rollback-only SQL 排除契约、app 仓培训规则只读页恢复；随后重新冻结新 HEAD 到本轮专用 release worktree 并仅执行 `build-release -> publish-test`。
-- Verification so far: 维护仓 `test_release_sql_preflight_gate.py` -> `35 passed`；app 静态契约 `dcc-training-ux-prechecks-static.spec.cjs` 与 `dcc-training-rules-context-static.spec.js` 均由 FAIL 转 PASS。
+- Verification so far: 维护仓 	est_release_sql_preflight_gate.py` -> `35 passed`；app 静态契约 `dcc-training-ux-prechecks-static.spec.cjs` 与 `dcc-training-rules-context-static.spec.js` 均由 FAIL 转 PASS。
 - Boundary: 尚未执行服务器写入、`build-release`、`publish-test`、`mark-tested`、`promote-prod` 或 `promote-backup`；未记录密码、token、私钥或连接串。
 
 ## 2026-08-29 测试服发布链路耗时优化
 
 - Request: 用户要求优化 Codex 测试服发布链路，减少下次发布时间。
 - Command intent: 仅修改维护仓发布脚本和发布合同测试；把 required SQL 上传从逐文件 `scp` 优化为一次 tar 归档上传和远端解包；把 `SKIP_ALREADY_APPLIED` 迁移状态从逐条远端 MySQL 写入优化为批量写入；补齐 SSH 命令日志和异常文本脱敏。不执行真实服务器发布、数据库写入、备份、恢复、正式服或备份服操作。
-- Verification: RED `test_release_sql_preflight_gate.py` -> 3 failed；GREEN 同文件 -> `42 passed`；REGRESSION 发布合同测试集合 -> `53 passed`；PowerShell AST parse -> `PSSCRIPT_PARSE_OK`；`git diff --check` 通过；本机 `tar/ssh/scp` 命令存在。
+- Verification: RED 	est_release_sql_preflight_gate.py` -> 3 failed；GREEN 同文件 -> `42 passed`；REGRESSION 发布合同测试集合 -> `53 passed`；PowerShell AST parse -> `PSSCRIPT_PARSE_OK`；`git diff --check` 通过；本机 	ar/ssh/scp` 命令存在。
 - Commit: 维护仓实现提交 `9c5d64f`（`任务: 优化测试服发布链路`），范围仅 `ops/deploy/publish-int-ruoyi.ps1` 与 `scripts/tests/test_release_sql_preflight_gate.py`。
 - Boundary: 相邻前端合同测试因本任务前已有 `frontend/` 目录删除状态失败，未恢复、覆盖或提交并行脏改动；未记录密码、token、私钥或连接串。
 
@@ -3438,7 +3438,7 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 
 - Request: 用户要求继续优化发布链路耗时。
 - Command intent: 仅修改维护仓发布脚本和合同测试；将 runtime-control ops package 从 5 次目录/文件 `Copy-ToServer` 改为本地 tar 归档、一次上传、远端解包并校验关键文件；保留远端 `config` 目录避免误删 secrets。不执行真实服务器发布、数据库写入、备份、恢复、正式服或备份服操作。
-- Verification: RED `test_publish_script_uploads_ops_runtime_package_as_single_archive` -> `1 failed, 43 passed`；GREEN `test_release_sql_preflight_gate.py` -> `44 passed`；REGRESSION 发布合同测试集合 -> `55 passed`；PowerShell AST parse -> `PSSCRIPT_PARSE_OK`；`git diff --check` 通过；本机 `tar/ssh/scp` 命令存在。
+- Verification: RED 	est_publish_script_uploads_ops_runtime_package_as_single_archive` -> `1 failed, 43 passed`；GREEN 	est_release_sql_preflight_gate.py` -> `44 passed`；REGRESSION 发布合同测试集合 -> `55 passed`；PowerShell AST parse -> `PSSCRIPT_PARSE_OK`；`git diff --check` 通过；本机 	ar/ssh/scp` 命令存在。
 - Commit: 维护仓实现提交 `f33a8ec`（`任务: 优化发布ops运行包上传`），范围仅 `ops/deploy/publish-int-ruoyi.ps1` 与 `scripts/tests/test_release_sql_preflight_gate.py`。
 - Boundary: 未恢复、覆盖或提交并行脏改动；未记录密码、token、私钥或连接串。
 
@@ -3446,7 +3446,7 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 
 - Request: 用户要求继续优化发布链路耗时。
 - Command intent: 仅修改维护仓发布脚本和合同测试；将 required SQL 远端 tar 解包校验从“非空”升级为“远端 SQL 文件数等于本地计划数”，并取消每个 APPLY 项前额外的 `ssh test -f` 文件存在性检查。不执行真实服务器发布、数据库写入、备份、恢复、正式服或备份服操作。
-- Verification: RED 新增 2 个合同测试 -> `2 failed, 44 passed`；GREEN `test_release_sql_preflight_gate.py` -> `46 passed`；REGRESSION 发布合同测试集合 -> `57 passed`；PowerShell AST parse -> `PSSCRIPT_PARSE_OK`；`git diff --check` 通过；本机 `tar/ssh/scp` 命令存在。
+- Verification: RED 新增 2 个合同测试 -> `2 failed, 44 passed`；GREEN 	est_release_sql_preflight_gate.py` -> `46 passed`；REGRESSION 发布合同测试集合 -> `57 passed`；PowerShell AST parse -> `PSSCRIPT_PARSE_OK`；`git diff --check` 通过；本机 	ar/ssh/scp` 命令存在。
 - Commit: 维护仓实现提交 `079c6a6`（`任务: 优化required SQL远端校验`），范围仅 `ops/deploy/publish-int-ruoyi.ps1` 与 `scripts/tests/test_release_sql_preflight_gate.py`。
 - Boundary: 未恢复、覆盖或提交并行脏改动；未记录密码、token、私钥或连接串。
 
@@ -3454,7 +3454,7 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 
 - Request: 用户要求继续优化发布链路耗时。
 - Command intent: 仅修改维护仓发布脚本和合同测试；将每个 required SQL APPLY 成功路径的远端文件检查、`RUNNING` 入账、SQL 执行、`APPLIED` 入账合并到单次 SSH 会话；SQL 执行失败仍由外层 catch 写 `FAILED` 并抛出。不执行真实服务器发布、数据库写入、备份、恢复、正式服或备份服操作。
-- Verification: RED 新增 2 个合同测试 -> `2 failed, 46 passed`；GREEN `test_release_sql_preflight_gate.py` -> `48 passed`；REGRESSION 发布合同测试集合 -> `59 passed`；PowerShell AST parse -> `PSSCRIPT_PARSE_OK`；`git diff --check` 通过；本机 `tar/ssh/scp` 命令存在。
+- Verification: RED 新增 2 个合同测试 -> `2 failed, 46 passed`；GREEN 	est_release_sql_preflight_gate.py` -> `48 passed`；REGRESSION 发布合同测试集合 -> `59 passed`；PowerShell AST parse -> `PSSCRIPT_PARSE_OK`；`git diff --check` 通过；本机 	ar/ssh/scp` 命令存在。
 - Commit: 维护仓实现提交 `e4bc1e5`（`任务: 优化required SQL状态入账`），范围仅 `ops/deploy/publish-int-ruoyi.ps1` 与 `scripts/tests/test_release_sql_preflight_gate.py`。
 - Boundary: 未恢复、覆盖或提交并行脏改动；未记录密码、token、私钥或连接串。
 
@@ -3462,7 +3462,7 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 
 - Request: 用户要求继续优化发布链路耗时。
 - Command intent: 仅修改维护仓发布脚本和合同测试；将 required SQL 中 route snapshot 身份迁移 hook 的“运行一次性 backend”和“检查 report READY/blockerCount”从每个模式 2 次 SSH 合并为 1 次 SSH；保留 `set -e` fail-fast 和 report 校验。不执行真实服务器发布、数据库写入、备份、恢复、正式服或备份服操作。
-- Verification: RED 新增合同测试 -> `1 failed`；GREEN 新合同 -> `1 passed`；GREEN `test_release_sql_preflight_gate.py` -> `49 passed`；REGRESSION 发布合同测试集合 -> `60 passed`；PowerShell AST parse -> `PSSCRIPT_PARSE_OK`；`git diff --check` 通过。
+- Verification: RED 新增合同测试 -> `1 failed`；GREEN 新合同 -> `1 passed`；GREEN 	est_release_sql_preflight_gate.py` -> `49 passed`；REGRESSION 发布合同测试集合 -> `60 passed`；PowerShell AST parse -> `PSSCRIPT_PARSE_OK`；`git diff --check` 通过。
 - Commit: 维护仓实现提交 `f035655`（`任务: 优化route snapshot发布hook校验`），范围仅 `ops/deploy/publish-int-ruoyi.ps1` 与 `scripts/tests/test_release_sql_preflight_gate.py`。
 - Boundary: 未恢复、覆盖或提交并行脏改动；未记录密码、token、私钥或连接串。
 
@@ -3470,7 +3470,7 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 
 - Request: 用户要求继续优化发布链路耗时。
 - Command intent: 仅修改维护仓发布脚本和合同测试；将 compose、`.env`、website runtime、reset-db.sql、post-import.sql 等小控制文件按原条件 staging 后打包为 `deploy-control.tar` 一次上传，远端解包并校验关键文件；镜像 tar 和数据库 dump 仍走原大文件路径。不执行真实服务器发布、数据库写入、备份、恢复、正式服或备份服操作。
-- Verification: RED 新增合同测试 -> `1 failed`；GREEN 新合同 -> `1 passed`；GREEN `test_release_sql_preflight_gate.py` -> `50 passed`；REGRESSION 发布合同测试集合 -> `61 passed`；PowerShell AST parse -> `PSSCRIPT_PARSE_OK`；`git diff --check` 通过；本机 `tar/ssh/scp` 命令存在。
+- Verification: RED 新增合同测试 -> `1 failed`；GREEN 新合同 -> `1 passed`；GREEN 	est_release_sql_preflight_gate.py` -> `50 passed`；REGRESSION 发布合同测试集合 -> `61 passed`；PowerShell AST parse -> `PSSCRIPT_PARSE_OK`；`git diff --check` 通过；本机 	ar/ssh/scp` 命令存在。
 - Commit: 维护仓实现提交 `ff1368a`（`任务: 优化deploy控制文件上传`），范围仅 `ops/deploy/publish-int-ruoyi.ps1` 与 `scripts/tests/test_release_sql_preflight_gate.py`。
 - Boundary: 未恢复、覆盖或提交并行脏改动；未记录密码、token、私钥或连接串。
 
@@ -3481,7 +3481,7 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Verification: 维护仓 clean pytest `72 passed`；app 注册证静态契约 `4 passed`；app DCC Maven 合同 `Tests run: 1` 且 `BUILD SUCCESS`；维护控制台 JAR SHA256=`3A93FEE01504C96194B7BF0461C14E6CB0B4FC33BF1FA8F2B6331FD29D18E945`；build operation `op-2026-08-29T074248158573400Z-4ec035f6-02a6-49ee-a41c-c598d4cd2cee` SUCCESS；publish operation `op-2026-08-29T080003811407100Z-9e826bd7-61ca-44e3-bc28-f8a3794035bb` SUCCESS；final gate 全部 true。
 - Runtime: 测试服 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、container running、backend health UP、frontend HTTP 200、frontend `release-info.json`、运行控制台 release-status 和 Playwright 页面均匹配 `release-20260829-frozen-head-test-r260829j-r1`。
 - Experience: 已将注册证 SQL 旧表列合同/CHECK 表达式、manifest 摘要校验、runtime-control state 根目录、SSH stdin/IO warning、Playwright snapshot 脱敏和运行控制台端口标签问题沉淀到前置经验与索引。
-- Closeout: `task_closeout.py preview/apply` 均通过；Playwright 浏览器关闭；任务拥有的 release 控制台 Java 进程停止；44 个 release worktree 的 Git 注册、物理路径和进程引用最终均为 0。
+- Closeout: 	ask_closeout.py preview/apply` 均通过；Playwright 浏览器关闭；任务拥有的 release 控制台 Java 进程停止；44 个 release worktree 的 Git 注册、物理路径和进程引用最终均为 0。
 - Boundary: 未执行 `mark-tested`、`promote-prod`、`promote-backup`；未发布正式服或备份服；未记录密码、token、私钥、完整 `.env`、完整本机 local config 或 raw operation log。
 
 ## 2026-08-29 带分段耗时统计的仅测试服真实发布
@@ -3500,7 +3500,7 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Result: PASS，已完成 closeout。助手服务已部署并监听 `172.30.30.58:18733`；主程序 releaseTag `release-20260830-invoice-assistant-test-r260830k-r1` 完成仅测试服 `build-release -> publish-test`，build `1121.255s`，publish `307.292s`。
 - Verification: 本地 manifest 存在且 backend/frontend sourceRepos 均为 `60fb439d75659a4a9276e39a241f28f005292218`、dirty=false；测试服 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、backend health、frontend HTTP、release-info、release lock 和 migration ledger 均通过；helper systemd active、容器 `erp-invoice-voucher-print-assistant:92d47d5` running、`18733` LISTEN、直连 403。
 - E2E: 修正任务 Playwright 登录脚本的租户选择器后，真实打开 `http://172.30.30.58:8081`；`测试租户/aoteman` 通过 ERP 菜单加载 `18733` 助手 iframe；`测试租户/dccmatrixregsvc` 无目标权限且看不到菜单；直连助手返回 403。测试密码仅由当前进程注入，未写入文档。
-- Closeout: `task-closeout-cleanup --mode apply` 已删除本任务临时 artifacts；任务拥有的 helper、主程序和维护仓临时发布 worktree 已删除；任务状态标记 `completed`。
+- Closeout: 	ask-closeout-cleanup --mode apply` 已删除本任务临时 artifacts；任务拥有的 helper、主程序和维护仓临时发布 worktree 已删除；任务状态标记 `completed`。
 - Boundary: 未执行 `mark-tested`、`promote-prod`、`promote-backup`；未发布正式服或备份服；未记录 token、私钥、连接串、完整 `.env` 或 raw secret-bearing 日志。
 ## 2026-08-31 发票打印助手独立测试服重发
 
@@ -3509,7 +3509,7 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Boundary: 只允许测试服助手服务 `18733`；禁止正式服/备份服、IntRuoyi `build-release` / `publish-test` / `mark-tested` / `promote-prod` / `promote-backup`、手工改库或记录明文凭据。
 - Result: PASS。助手仓新镜像 `erp-invoice-voucher-print-assistant:ba55fb8` 已在测试服运行，替换旧镜像 `erp-invoice-voucher-print-assistant:92d47d5`；主程序前端与后端保持健康。
 - Verification: 发布 worktree 内 `node --check server.js` 和 4 个静态合同均 PASS；源 artifact size `317440` bytes、SHA256 `3E6B6502AE2CD88AB8F17512EFA3DE42F106C5FF740C435F903EC6E3E0FCD5AB`，远端 SHA 复核一致；远端 systemd active、容器 running、`0.0.0.0:18733` LISTEN；本机访问助手 HTTP 403 且显示无权访问，`8081` HTTP 200，`48081/actuator/health` HTTP 200 且 `UP`。
-- Closeout: `task-closeout-cleanup` preview/apply 已删除本任务 artifacts；助手发布 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\invoice-assistant-standalone-r260831d` 已移除。
+- Closeout: 	ask-closeout-cleanup` preview/apply 已删除本任务 artifacts；助手发布 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\invoice-assistant-standalone-r260831d` 已移除。
 
 ## 2026-09-01 主系统与发票打印助手联合测试服发布
 
@@ -3519,7 +3519,7 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Result: PASS。主系统 releaseTag `release-20260901-main-invoice-assistant-test-r260901a-r1` 发布成功；发票打印助手镜像 `erp-invoice-voucher-print-assistant:ba55fb8` 在测试服运行。
 - Verification: build operation `op-2026-08-31T175950833708200Z-2bced8b6-7544-44f4-ba35-338702f541bf` SUCCESS；publish operation `op-2026-08-31T182540028464Z-a9c8f0fc-93ee-4808-b9f8-96b3215b2fc1` SUCCESS；manifest/sourceRepos dirty=false；测试服 `.env IMAGE_TAG`、backend/frontend 镜像、health、frontend HTTP、release-info、release lock、migration ledger、助手 systemd/container/listen/direct-403 均通过。
 - E2E: Playwright 真实登录 `测试租户/aoteman`，菜单链 `ERP 系统 / 财务管理 / 发票凭证打印` 可见；点击后 ERP 签发短期票据，页面通过 `http://172.30.30.58:18733/auth/callback` iframe 加载助手，console/page error 均为 0。测试密码仅由当前进程注入，未写入文档。
-- Closeout: `task-closeout-cleanup` preview/apply 已清理本任务 artifacts；任务自有运行控制台已停止；三套 release worktree、残留 ignored 目录和本轮 stateDir 均已删除；任务状态 completed。
+- Closeout: 	ask-closeout-cleanup` preview/apply 已清理本任务 artifacts；任务自有运行控制台已停止；三套 release worktree、残留 ignored 目录和本轮 stateDir 均已删除；任务状态 completed。
 
 ## 2026-09-09 release-duration-optimization
 
@@ -3550,14 +3550,14 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Result update: `release-20260913-one-button-app-r19` 因维护 worktree 含本轮任务记录未提交而触发 `SOURCE_DIRTY: maintenance`，脚本在昂贵构建和任何 NAS/测试服写入前停止；r19 已退休，下一轮改用 `release-20260913-one-button-app-r20`。
 - Result update: `release-20260913-one-button-app-r20` 生成本地 `app-release` 包与 manifest 后，在 NAS 配置解析阶段发现误传 YAML 给 JSON 参数；测试服部署未开始，r20 退休。已增加 NAS 配置和 source dirty 前置门禁，避免再次白跑 Maven/Docker。
 - Command intent: 本轮先提交继续发布前必须收敛的两个本地修正：应用 workflow 调用底层构建时固定 `app-release`，维护脚本 deploy-release 使用 `.env.next` 并在迁移成功后原子切换 `.env`、强制重建服务并校验实际镜像 tag。
-- Verification: RED app workflow 单测显示期望 `app-release` 但实际为 `code-only`；GREEN 同一单测通过，`ReleaseWorkflow*Test` 25 passed；维护仓 `test_release_package_governance.py` 66 passed；`publish-int-ruoyi.ps1` AST PASS。未访问服务器、NAS、数据库、MinIO 或正式服。
+- Verification: RED app workflow 单测显示期望 `app-release` 但实际为 `code-only`；GREEN 同一单测通过，`ReleaseWorkflow*Test` 25 passed；维护仓 	est_release_package_governance.py` 66 passed；`publish-int-ruoyi.ps1` AST PASS。未访问服务器、NAS、数据库、MinIO 或正式服。
 - Result update: r23 本地包复核失败，`ops-runtime/actions/01-立即备份.bat` 等部署运行脚本在 manifest 生成后才被写入发布包，导致不可变包摘要失效；r23 判废，不发布。
 - Implementation update: 维护脚本拆分 `New-ReleaseOpsRuntimePackage` 与 `Copy-ReleaseOpsRuntimePackage`，构建期把 `ops-runtime` 纳入 manifest/packageDigest，部署期只读取并上传包内文件；缺失或包含 `backup-ops.secrets.json` 直接失败。
-- Verification update: `test_release_package_governance.py -k ops_runtime` 先 RED；修复后定向 4 PASS，宽回归 139 PASS，PowerShell AST PASS。未执行测试服/正式服写入，未记录任何密码/token/私钥。
-- Result update: r24 前置补齐应用仓 `release_preflight_plan.py` 的 `app-release` scope 支持；RED 证明旧 allow-list 拒绝 `app-release`，GREEN 为 `test_release_preflight_plan.py` 19 passed，应用提交 `1fbf293cf 任务: 接受app-release迁移预检`。下一轮 source freeze 必须使用该应用提交或更新提交。
+- Verification update: 	est_release_package_governance.py -k ops_runtime` 先 RED；修复后定向 4 PASS，宽回归 139 PASS，PowerShell AST PASS。未执行测试服/正式服写入，未记录任何密码/token/私钥。
+- Result update: r24 前置补齐应用仓 `release_preflight_plan.py` 的 `app-release` scope 支持；RED 证明旧 allow-list 拒绝 `app-release`，GREEN 为 	est_release_preflight_plan.py` 19 passed，应用提交 `1fbf293cf 任务: 接受app-release迁移预检`。下一轮 source freeze 必须使用该应用提交或更新提交。
 - Result update: r24 本地包完整性复核失败，`preflight-plan.json` / `preflight-target-state-test.json` 是部署期目标绑定文件，却被写回 release package 根目录且未登记到 manifest；r24 判废，不发布测试服。
 - Implementation update: `Read-ReleasePreflightPlan` 与 `Write-ReleasePreflightPlan` 改为读写 `.deploy-control-*`，发布包根继续保持构建期 manifest/packageDigest 后不可变。
-- Verification update: `test_release_package_governance.py -k deploy_release_control_files_do_not_pollute_local_package_cache` 先 RED 后 GREEN；相邻回归 139 PASS，`publish-int-ruoyi.ps1` AST PASS。未执行测试服/正式服写入，未记录任何密码/token/私钥。
+- Verification update: 	est_release_package_governance.py -k deploy_release_control_files_do_not_pollute_local_package_cache` 先 RED 后 GREEN；相邻回归 139 PASS，`publish-int-ruoyi.ps1` AST PASS。未执行测试服/正式服写入，未记录任何密码/token/私钥。
 - Result update: r25 前先发现应用 worktree 有未提交路线菜单预检测试，RED 证明 `20260629_mes_smart_scheduling_role_scope` 仍硬编码旧 `900121/900122`，目标只读预检未验证 `20260709` 统一后的 `5726/5727` 活跃菜单组合。
 - Implementation update: 应用迁移改为解析当前活跃路线 query/update 菜单，优先 `5726/5727`，未统一旧库兼容 `900121/900122`；目标只读预检验证核心菜单和旧/新路线菜单任一完整组合。
 - Verification update: 应用仓定向 29 PASS、相邻回归 54 PASS、diff-check PASS；提交 `6079138ea 任务: 兼容路线菜单统一后的发布预检`。未执行正式服、审查服、MinIO 同步、全量数据库复制或 `mark-tested/promote-prod/promote-backup`。
@@ -3569,12 +3569,12 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Command intent: 先复核 r26 本地/NAS 包完整性和测试服运行态，再执行同一 r26 的测试服 deploy-release；发现失败后废弃 r26，补齐无数据部署不得写 Object Lock 探针的长期门禁，后续改用新 tag `release-20260914-one-button-app-r27` 重建。
 - Result update: r26 包完整性和 NAS READY 均通过，但 manifest 绑定旧应用提交 `6079138ea`；测试服 required SQL 阶段失败于 `20260709_mes_rt000006_batch_record_mapping.sql`，错误为 `Missing RT000006 pressure pump route`，版本未切换，release lock 已释放为 FAILED。
 - Implementation update: 维护脚本 `deploy-release` 保留目标 `EDHR_S3_*` 配置校验，但移除 `app-release` 路径的写对象 Object Lock verifier 调用；这避免 without-data 程序发布产生额外对象存储写副作用。
-- Verification update: `test_release_workflow_preflight.py -k edhr_storage_probe` 先 RED 后 GREEN；相邻 `nas_config` 与 `tests_and_source_freeze` 回归合计 3 PASS，`publish-int-ruoyi.ps1` AST PASS。
+- Verification update: 	est_release_workflow_preflight.py -k edhr_storage_probe` 先 RED 后 GREEN；相邻 `nas_config` 与 	ests_and_source_freeze` 回归合计 3 PASS，`publish-int-ruoyi.ps1` AST PASS。
 - Boundary: 未操作正式服或审查服；未执行 `mark-tested`、`promote-prod`、`promote-backup`；未同步 MinIO 或全量数据库；未记录任何密码/token/私钥。
 - Result update: r28 包构建和 NAS READY 通过，但测试服 required SQL `20260716_mes_balloon_xlsx_route_00002_invalid_process_cleanup` 在版本切换前失败；应用仓提交 `8e6c033c6` 已修正 already-normalized no-op 与 target preflight，旧 r28 判废。
 - Result update: r29 包构建、manifest、packageDigest、本地完整性、NAS READY 均通过，包大小约 0.67GiB 且 `PublishScope=app-release`，不含数据库/MinIO 数据目录；测试服 deploy-release 在版本切换前失败于 `20260717_mes_balloon_excel_device_workstation_binding`，原因是旧 SQL 硬编码设备绑定数量 83，而测试库真实可绑定设备种子为 44。
 - Implementation update: 应用仓 `20260717_mes_balloon_excel_device_workstation_binding.sql` 改为目标数据派生设备绑定计数，只要求至少存在可绑定设备种子；对应 target preflight 增加 route process=49 与设备种子数量校验。
-- Verification update: RED 复现旧 SQL 和 preflight 缺口；修复后 `test_mes_balloon_excel_device_workstation_binding_sql.py` + `test_release_target_preflight_files.py` 定向 11 PASS，相邻回归 37 PASS，测试服只读 preflight 返回 PASS；应用提交 `9d886766a 任务: 修复球囊Excel设备绑定发布预检`。
+- Verification update: RED 复现旧 SQL 和 preflight 缺口；修复后 	est_mes_balloon_excel_device_workstation_binding_sql.py` + 	est_release_target_preflight_files.py` 定向 11 PASS，相邻回归 37 PASS，测试服只读 preflight 返回 PASS；应用提交 `9d886766a 任务: 修复球囊Excel设备绑定发布预检`。
 - Boundary: r29 判废不复用；测试服 `.env` 未切换到 r29，operation lock 为 FAILED；正式服/审查服/`mark-tested`/`promote-prod`/`promote-backup` 仍未执行。
 2026-09-14T03:32:00+08:00	one-button-app-release-20260911	RESULT	R30 判废：本地缓存 release-20260914-one-button-app-r30 缺 manifest.json，包完整性校验失败；未发布测试服，未执行正式服/审查服/mark-tested/promote-prod/promote-backup。下一轮使用新 tag release-20260914-one-button-app-r31。
 2026-09-14T03:36:00+08:00	one-button-app-release-20260911	COMMAND_INTENT	启动 R31：维护源 76f1c78c30b6dc1f0072d488a1216c4cefea8210，应用源 9d886766aa67ab0597c07ec9f01926c4a264d218；目标仅测试服 172.30.30.58；发布范围 app-release/without-data；禁止正式服、审查服、mark-tested、promote-prod、promote-backup、MinIO 同步和全量数据库复制。
@@ -3590,3 +3590,7 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 2026-09-14T07:11:00+08:00	one-button-app-release-20260911	VERIFICATION	维护仓新增 R37 防复发门禁：target preflight 证据移到构建临时目录，ops-runtime 包不再携带 backup-ops config、secret 示例或 manage-int-ruoyi-remote-root-disk.ps1；RED 2 failed，GREEN 定向 PASS，相邻回归 151 passed，publish-int-ruoyi.ps1 AST PASS。下一轮必须提交后使用 release-20260914-one-button-app-r38 重建。
 2026-09-14T07:14:00+08:00	one-button-app-release-20260911	COMMAND_INTENT	启动 R38：维护源使用本段记录提交后的 clean HEAD，应用源 c4ba9d3f78c4c8503c9f175c8bde4bf2fc896a03；目标仅测试服 172.30.30.58；发布范围 app-release/without-data；禁止正式服、审查服、mark-tested、promote-prod、promote-backup、MinIO 数据同步和全量数据库复制。
 2026-09-14T07:35:00+08:00	one-button-app-release-20260911	VERIFICATION	维护仓补齐 build-release manifest validation 硬门禁：`publish-int-ruoyi.ps1` 在 package integrity 之后、NAS upload 之前执行 `ReleaseManifestValidator.psm1` report-only；RED 显示 stage 缺失，GREEN 定向 2 PASS，回归 97 PASS。报告写入构建临时目录，不进入不可变包。
+
+2026-09-14T07:49:00+08:00	one-button-app-release-20260911	RESULT	R38 build-release 本地包和 manifest validation 通过，PublishScope=app-release，packageDigest=9387c858b542f3899a7162003e0b396fc2816f762c832e93def5271d7060a106，manifestDigest=f93bc66c3225c90563e8634ccba2e87cb775b91fb9aa95378ae86a18fdf04475；包内无数据库/MinIO 数据目录。
+2026-09-14T08:05:00+08:00	one-button-app-release-20260911	RESULT	R38 deploy-release 在测试服版本切换前失败于 20260811_mes_process_pool_cleaning_process_parameter_data.sql：No active cleaning process ultrasonic cleaner parameter rules found；operation lock 已释放为 FAILED，未执行正式服/审查服/mark-tested/promote-prod/promote-backup/MinIO 数据同步/全量数据库同步。
+2026-09-14T08:17:00+08:00	one-button-app-release-20260911	VERIFICATION	应用仓提交 b286fd47d 修复清洗工序参数空规则基线：RED 2 failed，GREEN 2 PASS，相邻 target preflight/release plan 回归 26 PASS，测试服只读 preflight 返回 TARGET_PREFLIGHT_PASS。下一轮使用 release-20260914-one-button-app-r39。
