@@ -691,3 +691,9 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - USER_AUTHORIZATION: 用户继续并明确授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod` 或 `promote-backup`。
 - GREEN: experience-preflight-r41 -> PASS，已复核 without-data/app-release、目标只读预检、manifest forbidden scan、NAS JSON、PowerShell、测试服发布、server-access、release-backup-restore 与 worktree 门禁；R40 已判废且不得复用，下一轮必须新 tag。
 - PLAN: 使用新 releaseTag `release-20260914-one-button-app-r41`，source freeze 固定维护仓本段证据提交后的 clean HEAD 与应用仓 `00adc544bcae`；构建和发布均显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost`、`BackupServerHost`、NAS JSON 和 backend runtime base 参数，并显式传入 `-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。
+
+## r41 retired: interrupted local package cache
+
+- RED: r41-local-package-integrity -> FAIL，本地缓存 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260914-one-button-app-r41` 已存在，但仅包含 `evidence/` 和 `required-sql/`，缺少根目录 `manifest.json`；`Test-ReleasePackageIntegrity -ExpectedReleaseTag release-20260914-one-button-app-r41 -ExpectedPackageDirectoryName release-20260914-one-button-app-r41` 返回 `manifest.json: missing manifest`。
+- RESULT: R41 是重启/中断遗留半成品缓存，不是 READY 包；不得发布测试服，不得复用该 tag。未执行正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。
+- NEXT: 使用新 releaseTag `release-20260914-one-button-app-r42`，source freeze 固定维护仓本段证据提交后的 clean HEAD 与应用仓 `00adc544bcae`；构建和发布均显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost`、`BackupServerHost`、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。

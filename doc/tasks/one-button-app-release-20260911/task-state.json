@@ -173,11 +173,14 @@
         "r34 local package manifest was also stale at maintenance cecdc120 and app ccd0d9a3; it is retired without deploy.",
         "r35 failed fast before build because NasConfigPath was runtime-control.local.yaml instead of UTF-8 NAS JSON; no Maven, Docker, NAS upload or server write started.",
         "r36 failed fast before build because direct script invocation omitted BackendRepoRoot/FrontendRepoRoot and entered an invalid default working directory; no package, NAS upload or server write started.",
-        "r37 local package was retired before deploy because manifest validation found target-bound content in evidence/target-data-preflight.json and ops-runtime config/root-disk script files; maintenance fix keeps target preflight evidence outside the immutable package and excludes target-bound ops config/scripts, with 151 regression tests PASS and PowerShell AST PASS. Next build tag is release-20260914-one-button-app-r38.",
-        "r38 deploy-release retired before version switch: package and manifest validation passed, but required SQL 20260811_mes_process_pool_cleaning_process_parameter_data failed on empty target rule baseline; app commit b286fd47d makes empty candidates no-op and strengthens target preflight, with RED/GREEN 2 PASS, adjacent 26 PASS, and live readonly preflight PASS. Next build tag is release-20260914-one-button-app-r39."
+        "r37 local package was retired before deploy because manifest validation found target-bound content in evidence/target-data-preflight.json and ops-runtime config/root-disk script files; maintenance fix keeps target preflight evidence outside the immutable package and excludes target-bound ops config/scripts, with 151 regression tests PASS and PowerShell AST PASS.",
+        "r38 deploy-release retired before version switch: package and manifest validation passed, but required SQL 20260811_mes_process_pool_cleaning_process_parameter_data failed on empty target rule baseline; app commit b286fd47d makes empty candidates no-op and strengthens target preflight, with RED/GREEN 2 PASS, adjacent 26 PASS, and live readonly preflight PASS.",
+        "r39 local package was retired because interrupted cache lacked manifest.json; no deploy or server write started.",
+        "r40 deploy-release retired before version switch: package, manifest validation and NAS READY passed, but required SQL 20260811_mes_process_pool_uv1_metering_valid_parameter failed on empty A05075 UV curing I source baseline; app commit 00adc544bcae makes UV1/UV2 empty source candidates no-op and strengthens target preflight, with 30 adjacent tests PASS and live readonly preflight PASS.",
+        "r41 local package was retired because interrupted cache only contained evidence/ and required-sql/ and lacked manifest.json; no deploy or server write started. Next build tag is release-20260914-one-button-app-r42."
       ],
-      "notes": "P3 target readonly preflight coverage continues; r15/r23/r24/r25/r26/r27/r28/r29/r30/r31/r32/r33/r34/r35/r36/r37/r38 remain retired. R38 built a valid app-release package but failed test deploy before version switch because cleaning process parameter normalization treated empty target rule baseline as an error. App source b286fd47d fixes the migration and target preflight; next build must use release-20260914-one-button-app-r39 with maintenance HEAD after this evidence commit and app source b286fd47d.",
-      "last_reviewed_at": "2026-09-14T08:17:00+08:00",
+      "notes": "P3 target readonly preflight coverage continues; r15/r23/r24/r25/r26/r27/r28/r29/r30/r31/r32/r33/r34/r35/r36/r37/r38/r39/r40/r41 remain retired. R40 built a valid app-release package and reached test required SQL before version switch; UV1/UV2 empty source migration has since been fixed in app source 00adc544bcae. R41 is interrupted local cache without manifest.json. Next build must use release-20260914-one-button-app-r42 with maintenance HEAD after this evidence commit and app source 00adc544bcae.",
+      "last_reviewed_at": "2026-09-14T09:31:00+08:00",
       "acceptance_criteria": [
         {
           "ac_id": "P3-AC1",
@@ -359,7 +362,7 @@
     "test_loops": 0
   },
   "created_at": "2026-09-11T09:20:03",
-  "updated_at": "2026-09-14T08:17:00+08:00",
+  "updated_at": "2026-09-14T09:31:00+08:00",
   "branch": "codex/one-button-app-release-20260911",
   "baseline_revision": "eaaa47ac320dd197dba646d6870fed0cb7d2534c",
   "workspace_root": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260911-release-button\\m",
