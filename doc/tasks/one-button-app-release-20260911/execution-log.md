@@ -774,3 +774,9 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - REGRESSION: `python -X utf8 -m pytest -q scripts\tests\test_release_sql_preflight_gate.py scripts\tests\test_release_package_governance.py scripts\tests\test_app_release_package_governance.py --basetemp .tmp-r46-skip-ledger-regression` -> PASS，145 tests；`python -X utf8 -m py_compile ops\release\release_deploy_executor.py` PASS；`publish-int-ruoyi.ps1` PowerShell AST PASS。
 - CLEANUP_GUARD: `.gitignore` 增加 `/.tmp-*/` 与 `/doc/tasks/*/tmp/`，本轮 pytest basetemp 和临时 manifest 校验报告不再污染 source freeze；不把可再生临时产物纳入提交。
 - RESULT: R46 虽已生成 READY 包，但包内 `ops-runtime` 和 source freeze 不包含本次 ledger 修复；为避免把已知缺陷带上测试服，R46 判废不发布、不复用。下一轮必须使用新 releaseTag `release-20260915-one-button-app-r47`，source freeze 固定维护仓本次提交后的 clean HEAD 与应用仓 `4a9518d4ea56e05155e481499d7659f67f750371`。
+
+## r47 source freeze
+
+- USER_AUTHORIZATION: 用户继续并明确授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。
+- GREEN: source-freeze-r47-plan -> PASS，维护 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m` 当前 clean `54a4630fcfa243ec18c3306f797c9dec573cb54d`，应用 worktree `D:\IntRuoyiWorktree\r260911-release-button\a` 当前 clean `4a9518d4ea56e05155e481499d7659f67f750371`；本地缓存、deploy-control 与测试服远端目录 `release-20260915-one-button-app-r47` 均不存在；测试服当前运行容器仍为 R44，`.env IMAGE_TAG` 仍为 R21，发布后必须核对运行镜像与 `.env` 一致。
+- PLAN: 使用新 releaseTag `release-20260915-one-button-app-r47`；`build-release` 和 `deploy-release` 均从维护 worktree 根启动，并显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。
