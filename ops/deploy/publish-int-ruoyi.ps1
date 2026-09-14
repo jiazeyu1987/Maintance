@@ -5372,7 +5372,7 @@ function New-ReleaseMigrationStateUpsertSql {
     $statusSql = ConvertTo-SqlStringLiteral -Value $Status
     return @"
 INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
-VALUES ($releaseTagSql, $migrationIdSql, $fileNameSql, $sha256Sql, $environmentSql, $statusSql, NOW(), CASE WHEN $statusSql IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, $errorSqlExpression, $releaseTagSql, 'release-system', NOW(), 'release-system', NOW(), b'0')
+VALUES ($releaseTagSql, $migrationIdSql, $fileNameSql, $sha256Sql, $environmentSql, $statusSql, NOW(), CASE WHEN $statusSql IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED', 'SKIPPED_ENV_NOT_ALLOWED', 'SKIPPED_SCOPE_EXCLUDED') THEN NOW() ELSE NULL END, $errorSqlExpression, $releaseTagSql, 'release-system', NOW(), 'release-system', NOW(), b'0')
 ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
 "@
 }
@@ -5942,10 +5942,14 @@ function Invoke-RequiredDatabaseSqlScripts {
     $preflightPlan = Read-ReleasePreflightPlan
     $skipAlreadyAppliedItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ALREADY_APPLIED' })
     Invoke-ReleaseMigrationStateBatchUpdate -Items $skipAlreadyAppliedItems -Status 'SKIPPED_ALREADY_APPLIED'
-    foreach ($item in @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ENV_NOT_ALLOWED' })) {
+    $skipEnvNotAllowedItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ENV_NOT_ALLOWED' })
+    Invoke-ReleaseMigrationStateBatchUpdate -Items $skipEnvNotAllowedItems -Status 'SKIPPED_ENV_NOT_ALLOWED'
+    foreach ($item in $skipEnvNotAllowedItems) {
         Info "Skipping required database SQL outside target environment: $($item.migrationId)"
     }
-    foreach ($item in @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_SCOPE_EXCLUDED' })) {
+    $skipScopeExcludedItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_SCOPE_EXCLUDED' })
+    Invoke-ReleaseMigrationStateBatchUpdate -Items $skipScopeExcludedItems -Status 'SKIPPED_SCOPE_EXCLUDED'
+    foreach ($item in $skipScopeExcludedItems) {
         Info "Skipping required database SQL excluded by publish scope ${releasePublishScope}: $($item.migrationId)"
     }
     $preflightApplyItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'APPLY' })

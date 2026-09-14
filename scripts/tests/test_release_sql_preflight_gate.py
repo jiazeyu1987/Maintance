@@ -887,6 +887,22 @@ def test_publish_script_batches_skip_already_applied_migration_state_updates() -
     assert "foreach ($item in @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ALREADY_APPLIED' }))" not in invoke_block
 
 
+def test_publish_script_batches_environment_and_scope_skips_to_clear_stale_failed_rows() -> None:
+    script = read_publish_script()
+
+    assert "$skipEnvNotAllowedItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ENV_NOT_ALLOWED' })" in script
+    assert "Invoke-ReleaseMigrationStateBatchUpdate -Items $skipEnvNotAllowedItems -Status 'SKIPPED_ENV_NOT_ALLOWED'" in script
+    assert "$skipScopeExcludedItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_SCOPE_EXCLUDED' })" in script
+    assert "Invoke-ReleaseMigrationStateBatchUpdate -Items $skipScopeExcludedItems -Status 'SKIPPED_SCOPE_EXCLUDED'" in script
+    assert "'SKIPPED_ENV_NOT_ALLOWED', 'SKIPPED_SCOPE_EXCLUDED'" in script
+
+    invoke_start = script.index("function Invoke-RequiredDatabaseSqlScripts")
+    invoke_end = script.index("if ($Mode -eq 'mark-tested')", invoke_start)
+    invoke_block = script[invoke_start:invoke_end]
+    assert "foreach ($item in @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ENV_NOT_ALLOWED' }))" not in invoke_block
+    assert "foreach ($item in @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_SCOPE_EXCLUDED' }))" not in invoke_block
+
+
 def test_release_migration_state_batch_update_streams_sql_over_ssh_stdin() -> None:
     script = read_publish_script()
 
