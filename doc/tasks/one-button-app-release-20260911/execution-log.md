@@ -742,3 +742,10 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - ROOT_CAUSE: 本轮由主维护目录 `D:\ProjectPackage\Int\IntRuoyiMaintance` 启动绝对路径脚本，pytest 的 import root 落到旧主工作区而不是本任务维护 worktree；目标模块在 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m\ops\release\` 实际存在。
 - GREEN: maintenance-cwd-import-recheck -> PASS，在维护 worktree 目录执行 `python -X utf8 -m pytest -q scripts\tests\test_release_migration_preflight_matrix.py scripts\tests\test_release_schema_rehearsal.py --basetemp E:\Int\CacheData\IntRuoyi\release-workflow-test-temp\r44-import-recheck`，20 passed。
 - RESULT: R44 未生成本地程序包、未上传 NAS、未发布测试服、未写正式服/审查服、未执行 `mark-tested`/`promote-prod`/`promote-backup`、未同步 MinIO 或全量数据库；R44 判废不复用。下一轮必须使用新 releaseTag `release-20260915-one-button-app-r45`，且 `build-release` 工作目录必须显式设为维护 worktree 根。
+
+## r45 source freeze
+
+- USER_AUTHORIZATION: 用户继续并明确授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。
+- GREEN: experience-preflight-r45 -> PASS，已复核 without-data/app-release、目标只读预检、manifest forbidden scan、NAS JSON、PowerShell、测试服发布、server-access、release-backup-restore 与 worktree 门禁；R44 已判废且不得复用，下一轮必须新 tag。
+- GREEN: source-freeze-r45-plan -> PASS，维护 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m` 当前 clean `2b10653863c6747f560e6d2738ee048d76a0ff9b`，应用 worktree `D:\IntRuoyiWorktree\r260911-release-button\a` 当前 clean `4a9518d4ea56e05155e481499d7659f67f750371`；本地缓存、deploy-control 与测试服远端目录 `release-20260915-one-button-app-r45` 均不存在。
+- PLAN: 使用新 releaseTag `release-20260915-one-button-app-r45`；`build-release` 和 `deploy-release` 均从维护 worktree 根启动，并显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。
