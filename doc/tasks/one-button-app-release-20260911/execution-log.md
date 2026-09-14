@@ -677,3 +677,17 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - USER_AUTHORIZATION: 用户继续并明确授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod` 或 `promote-backup`。
 - GREEN: experience-preflight-r40 -> PASS，已复核 without-data/app-release、目标只读预检、manifest forbidden scan、NAS JSON、PowerShell、测试服发布、server-access、release-backup-restore 与 worktree 门禁；R39 已判废且不得复用，下一轮必须新 tag。
 - PLAN: 使用新 releaseTag `release-20260914-one-button-app-r40`，source freeze 固定维护仓本段证据提交后的 clean HEAD 与应用仓 `b286fd47d07a`；构建和发布均显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost`、`BackupServerHost`、NAS JSON 和 backend runtime base 参数，并显式传入 `-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。
+
+## r40 retired: UV curing I source configuration absent on target
+
+- GREEN: build-release-r40 -> PASS，source freeze 为维护仓 `504486f800c6a5442d4794bdda54b79375e7e001`、应用仓 `b286fd47d07ad80ebe3e5810e7ba259e11827bb6`；应用迁移静态测试 6 passed、维护脚本测试 127 passed、PowerShell 摘要 PASS、target-data preflight 26/26、schema-only rehearsal、Maven package、前端 build、Docker build/save、本地 package integrity、manifest validation 和 NAS 原子 READY 均通过；包为 `PublishScope=app-release`，`packageDigest=e9d359fb674ec341835abcf0ec23370dc4bf26091f860da8fc189b36cd0b5d74`，`manifestChecksum=sha256:966e9de0efdc3351d13cb7c97911606d63451a93a97723de184ca114d5d2ed92`，无 database/mysql/minio/files/data/dcc-object-inventory/runtime-data 目录。
+- RED: deploy-release-r40-uv1-empty-source -> FAIL，测试服部署在版本切换前执行 required SQL `20260811_mes_process_pool_uv1_metering_valid_parameter.sql` 时失败：`ERROR 1644 (45000) at line 791: Missing enabled A05075 UV curing I source configuration`；release lock 已释放为 FAILED，测试服 `.env` 未切换到 R40。
+- ROOT_CAUSE: 测试服真实库存在光固Ⅰ/Ⅱ工序，但启用的 A05075/A05059 来源设备配置和候选参数规则均为 0；UV1/UV2 迁移语义应在无候选来源时 no-op，旧 target preflight 只检查表存在，未把空来源基线和冲突合同前移到 build-release。
+- GREEN: app-uv1-uv2-empty-source-fix -> PASS，应用仓提交 `00adc544bcae` 移除 UV1/UV2 “来源配置为 0 即 SIGNAL”的硬阻断，target preflight 改为读取候选数量、目标设备/绑定/规则冲突；定向/回归测试 30 passed，新版 UV1/UV2 target preflight 在测试服均返回 `TARGET_PREFLIGHT_PASS`。
+- RESULT: R40 判废不复用，未执行正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。下一轮必须使用新 releaseTag `release-20260914-one-button-app-r41`，source freeze 固定维护仓本段证据提交后的 clean HEAD 与应用仓 `00adc544bcae`。
+
+## r41 source freeze
+
+- USER_AUTHORIZATION: 用户继续并明确授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod` 或 `promote-backup`。
+- GREEN: experience-preflight-r41 -> PASS，已复核 without-data/app-release、目标只读预检、manifest forbidden scan、NAS JSON、PowerShell、测试服发布、server-access、release-backup-restore 与 worktree 门禁；R40 已判废且不得复用，下一轮必须新 tag。
+- PLAN: 使用新 releaseTag `release-20260914-one-button-app-r41`，source freeze 固定维护仓本段证据提交后的 clean HEAD 与应用仓 `00adc544bcae`；构建和发布均显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost`、`BackupServerHost`、NAS JSON 和 backend runtime base 参数，并显式传入 `-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。
