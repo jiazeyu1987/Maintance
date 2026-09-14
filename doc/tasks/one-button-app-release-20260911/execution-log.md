@@ -728,3 +728,10 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - ROOT_CAUSE: `1ce06b795` 只修复了 C00 临时表列定义，未覆盖 `SHA2(...)`、`JSON_UNQUOTE(...)`、`piece_detail_sha256`、`submitted_content_hash` 与旧表列之间的所有文本比较；这些表达式仍可能继承 MySQL 8 默认 `utf8mb4_0900_ai_ci`。
 - GREEN: app-c00-comparison-collation-fix -> PASS，应用仓提交 `4a9518d4e` 将 C00 回填 SQL 的规则键、hash 和 JSON 文本比较显式固定到 `utf8mb4_unicode_ci`；新增静态合同先 RED 后 GREEN，定向 3 PASS，相邻发布预检回归 27 PASS。
 - RESULT: R43 判废不复用，未执行正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。下一轮必须使用新 releaseTag `release-20260915-one-button-app-r44`，source freeze 固定维护仓本段证据提交后的 clean HEAD 与应用仓 `4a9518d4ea56e05155e481499d7659f67f750371`。
+
+## r44 source freeze
+
+- USER_AUTHORIZATION: 用户继续并明确授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。
+- GREEN: experience-preflight-r44 -> PASS，已复核 without-data/app-release、目标只读预检、manifest forbidden scan、NAS JSON、PowerShell、测试服发布、server-access、release-backup-restore 与 worktree 门禁；R43 已判废且不得复用，下一轮必须新 tag。
+- GREEN: source-freeze-r44-plan -> PASS，维护 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m` 当前 clean `ba29829f19574fbb56ccc20e8bf13d8eebd5b20e`，应用 worktree `D:\IntRuoyiWorktree\r260911-release-button\a` 当前 clean `4a9518d4ea56e05155e481499d7659f67f750371`；本地缓存、deploy-control 与测试服远端目录 `release-20260915-one-button-app-r44` 均不存在。
+- PLAN: 使用新 releaseTag `release-20260915-one-button-app-r44`；构建和发布均显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON 和 backend runtime base 参数，并显式传入 `-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。
