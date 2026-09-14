@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r41 均已判废且不得复用；r40 本地包完整性、manifest validation、NAS 原子 READY、镜像上传和 required SQL 入账链路已推进到测试服，但在版本切换前失败于 `20260811_mes_process_pool_uv1_metering_valid_parameter.sql` 的空来源硬阻断，operation lock 已释放为 FAILED。根因是测试服存在光固Ⅰ/Ⅱ工序但没有启用的 A05075/A05059 来源设备配置，迁移应在无候选来源时 no-op；应用仓已提交 `00adc544bcae` 修正 UV1/UV2 SQL 与 target preflight，并通过本机 RED/GREEN、相邻回归和测试服只读 preflight。r41 为重启后发现的本地半成品缓存，只有 `evidence/` 和 `required-sql/`，缺少根目录 `manifest.json`，不得发布测试服。下一步使用新 releaseTag `release-20260914-one-button-app-r42` 从维护仓本段证据提交后的 clean HEAD 和应用仓 `00adc544bcae` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r43 均已判废且不得复用；R43 本地包完整性、manifest validation、NAS 下载、镜像上传和 required SQL 入账链路已推进到测试服，但在版本切换前仍失败于 `20260812_mes_pqc_dcc_qa_c00_backfill.sql` 的旧表/派生文本排序规则冲突，operation lock 已释放为 FAILED。根因是 C00 SQL 仍有 `SHA2(...)`、`JSON_UNQUOTE(...)`、hash 字段与旧表列之间的隐式文本比较；应用仓已提交 `4a9518d4e` 修正所有相关 C00 文本比较并通过本机 RED/GREEN 与相邻回归。下一步使用新 releaseTag `release-20260915-one-button-app-r44` 从维护仓本段证据提交后的 clean HEAD 和应用仓 `4a9518d4e` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
 
 ## Verification Evidence
 
@@ -78,7 +78,7 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 
 ## Current Phase
 
-- P3 正在执行：r23-r41 已判废；R40 已证明包、manifest gate 和 NAS READY 可通过，且部署在 `.env` 切换前被 UV1 required SQL 根因阻断；R41 是本地中断半成品缓存，缺少 `manifest.json`，不能复用。应用仓当前可发布提交为 `00adc544bcae`，维护仓提交本轮 R41 证据后作为新 source freeze。下一轮使用新 releaseTag `release-20260914-one-button-app-r42` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23-r43 已判废；R43 已证明本地包、manifest gate、NAS 包读取、镜像上传和 required SQL 入账链路可通过，且部署在 `.env` 切换前被 C00 collation 根因阻断；应用仓当前可发布提交为 `4a9518d4ea56e05155e481499d7659f67f750371`，维护仓提交本轮 R43 证据后作为新 source freeze。下一轮使用新 releaseTag `release-20260915-one-button-app-r44` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 
