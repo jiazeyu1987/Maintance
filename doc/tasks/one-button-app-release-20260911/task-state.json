@@ -178,10 +178,14 @@
         "r39 local package was retired because interrupted cache lacked manifest.json; no deploy or server write started.",
         "r40 deploy-release retired before version switch: package, manifest validation and NAS READY passed, but required SQL 20260811_mes_process_pool_uv1_metering_valid_parameter failed on empty A05075 UV curing I source baseline; app commit 00adc544bcae makes UV1/UV2 empty source candidates no-op and strengthens target preflight, with 30 adjacent tests PASS and live readonly preflight PASS.",
         "r41 local package was retired because interrupted cache only contained evidence/ and required-sql/ and lacked manifest.json; no deploy or server write started.",
-        "r42 source freeze plan PASS: maintenance clean 5b11f79332f3ed162350460bc93f118f2e806b95, application clean 00adc544bcaee7c7ceb6bc73cc9d0f57a7a1b0ea, local r42 cache absent; next build tag is release-20260914-one-button-app-r42."
+        "r42 source freeze plan PASS: maintenance clean 5b11f79332f3ed162350460bc93f118f2e806b95, application clean 00adc544bcaee7c7ceb6bc73cc9d0f57a7a1b0ea, local r42 cache absent; next build tag is release-20260914-one-button-app-r42.",
+        "r43 deploy-release retired before version switch: package, manifest validation, NAS download, image upload and required SQL ledger chain reached test server, but required SQL 20260812_mes_pqc_dcc_qa_c00_backfill still had implicit collation comparisons; app commit 4a9518d4e fixes rule-key/hash/JSON text comparisons and adjacent regression passed.",
+        "r44 build-release retired before package generation because it was launched from the main maintenance directory, causing pytest import root drift for ops.release modules; running the same focused tests from the maintenance worktree root passed 20 tests.",
+        "r45 local package was retired because interrupted cache only contained evidence/ and required-sql/ and lacked manifest.json; remote test release directory was absent and test .env stayed on release-20260913-one-button-app-r21.",
+        "r46 source freeze plan PASS: maintenance clean 371cc8e844cad93cfb253c2838c69b27eb27b388, application clean 4a9518d4ea56e05155e481499d7659f67f750371; next build tag is release-20260915-one-button-app-r46 and must be launched from the maintenance worktree root."
       ],
-      "notes": "P3 target readonly preflight coverage continues; r15/r23/r24/r25/r26/r27/r28/r29/r30/r31/r32/r33/r34/r35/r36/r37/r38/r39/r40/r41 remain retired. R40 built a valid app-release package and reached test required SQL before version switch; UV1/UV2 empty source migration has since been fixed in app source 00adc544bcae. R41 is interrupted local cache without manifest.json. Next build must use release-20260914-one-button-app-r42 with maintenance HEAD after this evidence commit and app source 00adc544bcae.",
-      "last_reviewed_at": "2026-09-14T09:34:00+08:00",
+      "notes": "P3 target readonly preflight coverage continues; r15/r23/r24/r25/r26/r27/r28/r29/r30/r31/r32/r33/r34/r35/r36/r37/r38/r39/r40/r41/r42/r43/r44/r45 remain retired. R43 reached test required SQL before version switch; C00 collation comparisons have since been fixed in app source 4a9518d4e. R44 exposed maintenance cwd import drift; R45 is interrupted local cache without manifest.json. Next build must use release-20260915-one-button-app-r46 from the maintenance worktree root with maintenance HEAD 371cc8e844cad93cfb253c2838c69b27eb27b388 and app source 4a9518d4ea56e05155e481499d7659f67f750371.",
+      "last_reviewed_at": "2026-09-15T02:29:00+08:00",
       "acceptance_criteria": [
         {
           "ac_id": "P3-AC1",
@@ -363,7 +367,7 @@
     "test_loops": 0
   },
   "created_at": "2026-09-11T09:20:03",
-  "updated_at": "2026-09-14T09:34:00+08:00",
+  "updated_at": "2026-09-15T02:29:00+08:00",
   "branch": "codex/one-button-app-release-20260911",
   "baseline_revision": "eaaa47ac320dd197dba646d6870fed0cb7d2534c",
   "workspace_root": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260911-release-button\\m",

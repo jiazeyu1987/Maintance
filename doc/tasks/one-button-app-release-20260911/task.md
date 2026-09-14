@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r44 均已判废且不得复用；R43 本地包完整性、manifest validation、NAS 下载、镜像上传和 required SQL 入账链路已推进到测试服，但在版本切换前仍失败于 `20260812_mes_pqc_dcc_qa_c00_backfill.sql` 的旧表/派生文本排序规则冲突，operation lock 已释放为 FAILED；应用仓已提交 `4a9518d4e` 修正所有相关 C00 文本比较并通过本机 RED/GREEN 与相邻回归。R44 因 build-release 从旧主维护目录启动，发布脚本测试阶段导入到错误 Python 根而 fail fast，未生成包、未上传 NAS、未发布测试服。下一步使用新 releaseTag `release-20260915-one-button-app-r45` 从维护仓本段证据提交后的 clean HEAD 和应用仓 `4a9518d4e` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r45 均已判废且不得复用；R43 本地包完整性、manifest validation、NAS 下载、镜像上传和 required SQL 入账链路已推进到测试服，但在版本切换前仍失败于 `20260812_mes_pqc_dcc_qa_c00_backfill.sql` 的旧表/派生文本排序规则冲突，operation lock 已释放为 FAILED；应用仓已提交 `4a9518d4e` 修正所有相关 C00 文本比较并通过本机 RED/GREEN 与相邻回归。R44 因 build-release 从旧主维护目录启动，发布脚本测试阶段导入到错误 Python 根而 fail fast，未生成包、未上传 NAS、未发布测试服；R45 是重启/中断遗留半成品缓存，仅有 `evidence/` 和 `required-sql/`，缺少 `manifest.json`。下一步使用新 releaseTag `release-20260915-one-button-app-r46` 从维护仓 clean HEAD 和应用仓 `4a9518d4e` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
 
 ## Verification Evidence
 
@@ -75,10 +75,11 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 - R38 deploy-release：本地包和 manifest validation PASS，`packageDigest=9387c858b542f3899a7162003e0b396fc2816f762c832e93def5271d7060a106`，但测试服 required SQL 在版本切换前失败于 `No active cleaning process ultrasonic cleaner parameter rules found`；真实库只读诊断 `rules_total=0`。应用仓提交 `b286fd47d` 后，新增空规则 no-op RED/GREEN 2 PASS、相邻 target preflight/release plan 回归 26 PASS、测试服只读 preflight PASS。
 - R40 deploy-release：本地包、manifest validation 与 NAS READY PASS，`packageDigest=e9d359fb674ec341835abcf0ec23370dc4bf26091f860da8fc189b36cd0b5d74`，但测试服 required SQL 在版本切换前失败于 `Missing enabled A05075 UV curing I source configuration`；真实库只读诊断显示 UV1/UV2 来源候选为 0。应用仓提交 `00adc544bcae` 后，UV1/UV2 空来源 no-op 与 target preflight 回归 30 PASS、测试服只读 preflight PASS。
 - R41 local cache：重启后本地 `release-20260914-one-button-app-r41` 只含 `evidence/` 和 `required-sql/`，`Test-ReleasePackageIntegrity` 返回 `manifest.json: missing manifest`；R41 判废不复用，未发布测试服，未执行正式服/审查服/mark-tested/promote-prod/promote-backup/MinIO 数据同步/全量数据库同步。
+- R45 local cache：本地 `release-20260915-one-button-app-r45` 只含 `evidence/` 和 `required-sql/`，`Test-ReleasePackageIntegrity` 返回 `manifest.json: missing manifest`；R45 判废不复用，测试服远端目录不存在，未切换测试服 `.env`。
 
 ## Current Phase
 
-- P3 正在执行：r23-r44 已判废；R43 已证明本地包、manifest gate、NAS 包读取、镜像上传和 required SQL 入账链路可通过，且部署在 `.env` 切换前被 C00 collation 根因阻断；R44 只暴露命令工作目录错误且没有生成包。应用仓当前可发布提交为 `4a9518d4ea56e05155e481499d7659f67f750371`，维护仓提交本轮 R44 证据后作为新 source freeze。下一轮使用新 releaseTag `release-20260915-one-button-app-r45` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23-r45 已判废；R43 已证明本地包、manifest gate、NAS 包读取、镜像上传和 required SQL 入账链路可通过，且部署在 `.env` 切换前被 C00 collation 根因阻断；R44 只暴露命令工作目录错误且没有生成包；R45 是缺 `manifest.json` 的半成品本地缓存。应用仓当前可发布提交为 `4a9518d4ea56e05155e481499d7659f67f750371`，维护仓当前 clean HEAD `371cc8e844cad93cfb253c2838c69b27eb27b388` 作为新 source freeze。下一轮使用新 releaseTag `release-20260915-one-button-app-r46` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 

@@ -749,3 +749,16 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - GREEN: experience-preflight-r45 -> PASS，已复核 without-data/app-release、目标只读预检、manifest forbidden scan、NAS JSON、PowerShell、测试服发布、server-access、release-backup-restore 与 worktree 门禁；R44 已判废且不得复用，下一轮必须新 tag。
 - GREEN: source-freeze-r45-plan -> PASS，维护 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m` 当前 clean `2b10653863c6747f560e6d2738ee048d76a0ff9b`，应用 worktree `D:\IntRuoyiWorktree\r260911-release-button\a` 当前 clean `4a9518d4ea56e05155e481499d7659f67f750371`；本地缓存、deploy-control 与测试服远端目录 `release-20260915-one-button-app-r45` 均不存在。
 - PLAN: 使用新 releaseTag `release-20260915-one-button-app-r45`；`build-release` 和 `deploy-release` 均从维护 worktree 根启动，并显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。
+
+## r45 retired: interrupted local package cache
+
+- RED: r45-local-package-integrity -> FAIL，本地缓存 `E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260915-one-button-app-r45` 已存在，但仅包含 `evidence/` 和 `required-sql/`，缺少根目录 `manifest.json`；`Test-ReleasePackageIntegrity -ExpectedReleaseTag release-20260915-one-button-app-r45 -ExpectedPackageDirectoryName release-20260915-one-button-app-r45` 返回 `manifest.json: missing manifest`。
+- GREEN: r45-side-effect-check -> PASS，测试服远端 `/var/lib/docker/intruoyi-releases/release-20260915-one-button-app-r45` 不存在，当前测试服 `.env IMAGE_TAG=release-20260913-one-button-app-r21`；R45 未发布测试服，未切换版本，未执行正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。
+- RESULT: R45 是重启/中断遗留半成品缓存，不是 READY 包；不得发布测试服，不得复用该 tag。下一轮必须使用新 releaseTag `release-20260915-one-button-app-r46`。
+
+## r46 source freeze
+
+- USER_AUTHORIZATION: 用户继续并明确授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。
+- GREEN: experience-preflight-r46 -> PASS，已复核 without-data/app-release、目标只读预检、manifest forbidden scan、NAS JSON、PowerShell、测试服发布、server-access、release-backup-restore 与 worktree 门禁；R45 已判废且不得复用，下一轮必须新 tag。
+- GREEN: source-freeze-r46-plan -> PASS，维护 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m` 当前 clean `371cc8e844cad93cfb253c2838c69b27eb27b388`，应用 worktree `D:\IntRuoyiWorktree\r260911-release-button\a` 当前 clean `4a9518d4ea56e05155e481499d7659f67f750371`；本地缓存、deploy-control 与测试服远端目录 `release-20260915-one-button-app-r46` 均需在 build 前复核为不存在。
+- PLAN: 使用新 releaseTag `release-20260915-one-button-app-r46`；`build-release` 和 `deploy-release` 均从维护 worktree 根启动，并显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。
