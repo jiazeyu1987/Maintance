@@ -3623,3 +3623,4 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 
 2026-09-15T15:55:00+08:00	one-button-app-release-20260911	REVIEW	独立代码审查判定六项通用机制仍未闭环：来源 commits 未绑定、data/target-preflight 未进入隔离 rehearsal、迁移测试非自动发现、后台阶段事件/恢复缺失、取消未终止底层 operation、脚本存在 migrationId 特例。R55 证据纠正为未知列前已有 definition INSERT，不得宣称完全零写入。
 2026-09-15T17:30:00+08:00	one-button-app-release-20260911	VERIFICATION	应用提交 edeb22846：workflow 持久化 approved maintenance/application/frontend commits，build 传递 expected commits/sourceSelectionId，运行中 operation 取消 fail-closed；Java targeted 7+65 tests PASS。通用后台执行/迁移隔离/hooks 仍未完成，未生成 R56。
+2026-09-15T18:35:00+08:00	one-button-app-release-20260911	VERIFICATION	维护仓通用合同继续收敛：schema rehearsal 纳入 schema/data/menu/config/permission/seed 与 target-preflight 可执行迁移；manifest/preflight 统一读取 applyOrder/sessionProfile/approvedHook/resultAssertion。维护回归 74 PASS、迁移矩阵/ rehearsal 20 PASS、PowerShell AST_PASS。未启动 R56、未发布、未修改服务器；后台阶段事件、heartbeat/recovery 与真实隔离数据库 rehearsal 仍阻塞。

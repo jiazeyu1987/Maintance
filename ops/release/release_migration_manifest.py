@@ -14,6 +14,7 @@ EXECUTABLE_TYPES = {"schema", "data", "menu", "config", "permission", "seed"}
 EVIDENCE_ONLY_TYPES = {"preflight", "backfill", "postflight", "rollback-dry-run"}
 ALLOWED_TYPES = EXECUTABLE_TYPES | EVIDENCE_ONLY_TYPES
 ALLOWED_RISK_LEVELS = {"low", "medium", "high"}
+CONTRACT_TOKEN_PATTERN = re.compile(r"[a-z0-9][a-z0-9._-]{0,63}")
 DEFAULT_ALLOWED_ENVIRONMENTS = ["test", "backup", "prod"]
 DEFAULT_TYPE = "schema"
 DEFAULT_RISK_LEVEL = "medium"
@@ -38,7 +39,7 @@ def _relative_file(sql_root: Path, path: Path, file_prefix: str = "sql/mysql") -
     return f"{file_prefix.rstrip('/')}/{relative}"
 
 
-def _parse_metadata(path: Path) -> dict[str, list[str] | str | bool]:
+def _parse_metadata(path: Path) -> dict[str, list[str] | str | bool | int | None]:
     text = path.read_text(encoding="utf-8")
     match = METADATA_PATTERN.search(text)
     if not match:
@@ -48,14 +49,22 @@ def _parse_metadata(path: Path) -> dict[str, list[str] | str | bool]:
             "type": DEFAULT_TYPE,
             "riskLevel": DEFAULT_RISK_LEVEL,
             "requiresTargetPreflight": False,
+            "applyOrder": None,
+            "sessionProfile": "",
+            "approvedHook": "",
+            "resultAssertion": "",
         }
 
-    metadata: dict[str, list[str] | str | bool] = {
+    metadata: dict[str, list[str] | str | bool | int | None] = {
         "allowedEnvironments": DEFAULT_ALLOWED_ENVIRONMENTS,
         "dependsOn": [],
         "type": DEFAULT_TYPE,
         "riskLevel": DEFAULT_RISK_LEVEL,
         "requiresTargetPreflight": False,
+        "applyOrder": None,
+        "sessionProfile": "",
+        "approvedHook": "",
+        "resultAssertion": "",
     }
     for segment in match.group(1).split(";"):
         if not segment.strip():
@@ -85,6 +94,14 @@ def _parse_metadata(path: Path) -> dict[str, list[str] | str | bool]:
             if len(values) != 1 or values[0].lower() not in {"true", "false"}:
                 raise MigrationManifestError(f"invalid requiresTargetPreflight in {path}: {value}")
             metadata[key] = values[0].lower() == "true"
+        elif key == "applyOrder":
+            if len(values) != 1 or not values[0].isdigit() or int(values[0]) < 0:
+                raise MigrationManifestError(f"invalid applyOrder in {path}: {value}")
+            metadata[key] = int(values[0])
+        elif key in {"sessionProfile", "approvedHook", "resultAssertion"}:
+            if len(values) != 1 or not CONTRACT_TOKEN_PATTERN.fullmatch(values[0]):
+                raise MigrationManifestError(f"invalid {key} in {path}: {value}")
+            metadata[key] = values[0]
         else:
             raise MigrationManifestError(f"unknown release-migration metadata key in {path}: {key}")
     return metadata
@@ -144,6 +161,10 @@ def build_migration_manifest(
                 "dependsOn": metadata["dependsOn"],
                 "riskLevel": metadata["riskLevel"],
                 "requiresTargetPreflight": metadata["requiresTargetPreflight"],
+                "applyOrder": metadata["applyOrder"],
+                "sessionProfile": metadata["sessionProfile"],
+                "approvedHook": metadata["approvedHook"],
+                "resultAssertion": metadata["resultAssertion"],
             }
         )
 

@@ -174,7 +174,7 @@ def test_main_rejects_preflight_migration_set_mismatch(tmp_path: Path):
         ])
 
 
-def test_main_excludes_non_schema_and_target_preflight_items(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+def test_main_includes_executable_data_and_target_preflight_items(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     schema = tmp_path / "schema.sql"
     schema.write_text("CREATE TABLE t(id BIGINT PRIMARY KEY);\n", encoding="utf-8")
     migrations = [tmp_path / "001.sql", tmp_path / "002.sql", tmp_path / "003.sql"]
@@ -209,7 +209,7 @@ def test_main_excludes_non_schema_and_target_preflight_items(tmp_path: Path, mon
         "--preflight-evidence", str(preflight),
         "--output", str(tmp_path / "report.json"),
     ]) == 0
-    assert captured["migration_paths"] == [migrations[0]]
+    assert captured["migration_paths"] == migrations
 
 
 @pytest.mark.parametrize("payload", ["{}", "[]", '["001.sql", 2]'])

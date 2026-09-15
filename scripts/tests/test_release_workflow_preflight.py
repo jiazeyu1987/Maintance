@@ -30,11 +30,11 @@ def test_tests_and_source_freeze_run_before_expensive_builds() -> None:
     tests = _function(source, "Invoke-StandardReleaseContractTests", "Get-ReleaseSchemaDigest")
 
     assert tests.index("backend contract tests") < tests.index("frontend contract tests")
-    assert tests.index("frontend contract tests") < tests.index("application migration static tests")
-    assert tests.index("application migration static tests") < tests.index("release script tests")
+    assert tests.index("frontend contract tests") < tests.index("Discovering application migration tests")
+    assert tests.index("Discovering application migration tests") < tests.index("release script tests")
     assert "-Dsurefire.failIfNoSpecifiedTests=false" in tests
     application_parent_create = tests.index("New-Item -ItemType Directory -Force -Path $applicationPytestParent")
-    application_pytest = tests.index("'-X', 'utf8', '-m', 'pytest'", tests.index("application migration static tests"))
+    application_pytest = tests.index("'-X', 'utf8', '-m', 'pytest'", tests.index("Discovering application migration tests"))
     assert application_parent_create < application_pytest
     script_test_start = tests.index("release script tests")
     parent_create = tests.index("New-Item -ItemType Directory -Force -Path $pytestParent", script_test_start)
@@ -122,6 +122,6 @@ def test_application_sql_static_regressions_are_mandatory_build_gates() -> None:
     source = PUBLISH_SCRIPT.read_text(encoding="utf-8")
     tests = _function(source, "Invoke-StandardReleaseContractTests", "Get-ReleaseSchemaDigest")
 
-    assert "application migration static tests" in tests
-    assert "test_test_tenant1_all_role_permission_sync_sql.py" in tests
-    assert "Join-Path $backendRepo 'script\\tests\\test_test_tenant1_all_role_permission_sync_sql.py'" in tests
+    assert "Assert-ApplicationMigrationTestsDiscovered" in tests
+    assert "MIGRATION_TEST_MISSING" in source
+    assert "Get-ReleaseGitValue -RepoPath $applicationRoot" in tests

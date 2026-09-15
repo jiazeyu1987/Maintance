@@ -3803,6 +3803,10 @@ function Read-ReleaseMigrationMetadata {
         type = 'schema'
         riskLevel = 'medium'
         requiresTargetPreflight = $false
+        applyOrder = $null
+        sessionProfile = ''
+        approvedHook = ''
+        resultAssertion = ''
     }
     foreach ($segment in ($match.Groups[1].Value -split ';')) {
         $trimmed = $segment.Trim()
@@ -3848,6 +3852,30 @@ function Read-ReleaseMigrationMetadata {
                 }
                 $metadata.requiresTargetPreflight = $values[0].ToLowerInvariant() -eq 'true'
             }
+            'applyOrder' {
+                if ($values.Count -ne 1 -or $values[0] -notmatch '^[0-9]+$') {
+                    Fail "Invalid applyOrder in release migration metadata: $SqlPath"
+                }
+                $metadata.applyOrder = [int]$values[0]
+            }
+            'sessionProfile' {
+                if ($values.Count -ne 1 -or $values[0] -notmatch '^[a-z0-9][a-z0-9._-]{0,63}$') {
+                    Fail "Invalid sessionProfile in release migration metadata: $SqlPath"
+                }
+                $metadata.sessionProfile = [string]$values[0]
+            }
+            'approvedHook' {
+                if ($values.Count -ne 1 -or $values[0] -notmatch '^[a-z0-9][a-z0-9._-]{0,63}$') {
+                    Fail "Invalid approvedHook in release migration metadata: $SqlPath"
+                }
+                $metadata.approvedHook = [string]$values[0]
+            }
+            'resultAssertion' {
+                if ($values.Count -ne 1 -or $values[0] -notmatch '^[a-z0-9][a-z0-9._-]{0,63}$') {
+                    Fail "Invalid resultAssertion in release migration metadata: $SqlPath"
+                }
+                $metadata.resultAssertion = [string]$values[0]
+            }
             default {
                 Fail "Unknown release migration metadata key in ${SqlPath}: $key"
             }
@@ -3878,6 +3906,10 @@ function New-ReleaseRequiredSqlManifestEntries {
             dependsOn = @($metadata.dependsOn)
             riskLevel = [string]$metadata.riskLevel
             requiresTargetPreflight = [bool]$metadata.requiresTargetPreflight
+            applyOrder = $metadata.applyOrder
+            sessionProfile = [string]$metadata.sessionProfile
+            approvedHook = [string]$metadata.approvedHook
+            resultAssertion = [string]$metadata.resultAssertion
             sha256 = ConvertTo-ReleaseFileSha256Digest -Path $packageSqlPath
             requiredPreconditions = @(
                 [ordered]@{
@@ -5845,9 +5877,9 @@ function Get-RequiredDatabaseSqlSessionPreamble {
         [Parameter(Mandatory = $true)]
         [string]$TargetEnvironment
     )
-    $migrationId = [string]$Item.migrationId
-    switch ($migrationId) {
-        '20260624_dcc_view_matrix_independent_seed' {
+    $sessionProfile = [string]$Item.sessionProfile
+    switch ($sessionProfile) {
+        'dcc-view-matrix-seed' {
             $seedTenantId = switch ($TargetEnvironment) {
                 'test' { '122' }
                 'prod' { '1' }
@@ -5864,8 +5896,11 @@ function Get-RequiredDatabaseSqlSessionPreamble {
             }
             return $sessionLines -join [Environment]::NewLine
         }
-        default {
+        '' {
             return ''
+        }
+        default {
+            Fail "Unsupported migration session profile: $sessionProfile"
         }
     }
 }
@@ -5881,17 +5916,8 @@ function Sort-RequiredDatabaseSqlApplyItems {
         [string]$TargetEnvironment
     )
 
-    if ($TargetEnvironment -ne 'test') {
-        return @($Items)
-    }
-
     if ($null -eq $Items -or $Items.Count -eq 0) {
         return @()
-    }
-
-    $priorityMap = @{
-        '20260624_dcc_view_matrix_test_tenant_prereq' = 10
-        '20260624_dcc_view_matrix_independent_seed' = 20
     }
 
     $indexedItems = @()
@@ -5906,9 +5932,9 @@ function Sort-RequiredDatabaseSqlApplyItems {
         $indexedItems |
             Sort-Object `
                 @{ Expression = {
-                    $migrationId = [string]$_.Item.migrationId
-                    if ($priorityMap.ContainsKey($migrationId)) {
-                        return [int]$priorityMap[$migrationId]
+                    $applyOrder = $_.Item.applyOrder
+                    if ($null -ne $applyOrder -and -not [string]::IsNullOrWhiteSpace([string]$applyOrder)) {
+                        return [int]$applyOrder
                     }
                     return 1000 + [int]$_.OriginalOrder
                 } }, `
@@ -5956,8 +5982,8 @@ function Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement {
         $Item
     )
 
-    $migrationId = [string]$Item.migrationId
-    if ($migrationId -ne '20260812_mes_route_version_snapshot_identity_enforce') {
+    $approvedHook = [string]$Item.approvedHook
+    if ($approvedHook -ne 'route-snapshot-identity') {
         return
     }
 

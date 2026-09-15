@@ -922,3 +922,12 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 
 - GREEN: 应用 worktree 已将来源 commit 持久化、build 参数绑定和运行中 operation 取消 fail-closed 检查提交为 `edeb22846`；应用 targeted orchestrator 7 tests、RuntimeControlServiceImpl 65 tests PASS。
 - BLOCKER: 该提交只关闭来源绑定和取消误报风险，不能替代底层终止 API、后台 scheduler、真实阶段事件或统一迁移隔离执行；维护仓保持 blocked，不启动 R56。
+
+## Unified migration contract and rehearsal slice
+
+- BDD: 通用 rehearsal 覆盖所有可执行迁移 -> Given release manifest 中存在 schema/data/menu/config/permission/seed 及 target-preflight 条目 / When build-release 执行隔离 schema rehearsal / Then 所有会产生数据库行为的迁移都必须进入隔离执行集合，不能只执行 schema 且跳过 target-preflight。
+- RED: 旧 `release_schema_rehearsal.py` 只选 schema 且排除 requiresTargetPreflight；新增合同先失败，无法证明 data/menu/config/permission/seed 的 SQL 可执行性。
+- GREEN: rehearsal 选择器改为声明式 migration type 集合，统一纳入可执行条目；`python -X utf8 -m pytest -q scripts/tests/test_release_sql_preflight_gate.py scripts/tests/test_release_workflow_preflight.py scripts/tests/test_release_schema_rehearsal.py --basetemp .tmp-generic-hook-green3` -> PASS，74 tests；`python -X utf8 -m pytest -q scripts/tests/test_release_migration_preflight_matrix.py scripts/tests/test_release_schema_rehearsal.py --basetemp .tmp-metadata-regression3` -> PASS，20 tests；PowerShell AST -> `AST_PASS`。
+- BDD: 新迁移参数与批准 hook -> Given migration SQL 需要顺序、session profile 或受批准的 hook / When 维护脚本解析 manifest / Then 只能读取 SQL 元数据声明，不得按 migrationId 增加隐式分支。
+- GREEN: `applyOrder/sessionProfile/approvedHook/resultAssertion` 已由通用 manifest/preflight 合同传递；现有脚本仅按声明字段排序、生成 session preamble 与调用批准 hook。无 fallback、无吞异常。
+- BLOCKER: 后台阶段事件、heartbeat/recovery scheduler、真实迁移隔离数据库与完整 publish-test 仍未闭环；本 slice 不启动 R56。

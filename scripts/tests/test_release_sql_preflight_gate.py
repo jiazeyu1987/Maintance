@@ -350,11 +350,11 @@ def test_publish_script_executes_dcc_view_matrix_prereq_before_seed_on_test() ->
     invoke_block = script[invoke_start:invoke_end]
 
     assert "function Sort-RequiredDatabaseSqlApplyItems" in script
-    assert "'20260624_dcc_view_matrix_test_tenant_prereq' = 10" in script
-    assert "'20260624_dcc_view_matrix_independent_seed' = 20" in script
+    assert "applyOrder = $_.Item.applyOrder" in script
+    assert "sessionProfile" in script
     assert "$preflightApplyItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'APPLY' })" in invoke_block
     assert "$applyItems = Sort-RequiredDatabaseSqlApplyItems -Items $preflightApplyItems -TargetEnvironment $Environment" in invoke_block
-    assert "'20260624_dcc_view_matrix_independent_seed'" in helper_block
+    assert "'dcc-view-matrix-seed'" in helper_block
     assert "'test' { '122' }" in helper_block
     assert "SET @dcc_view_matrix_seed_tenant_id := $seedTenantId;" in helper_block
 
@@ -397,8 +397,7 @@ def test_publish_script_preserves_preflight_dependency_order_for_non_priority_re
     invoke_start = script.index("function Invoke-RequiredDatabaseSqlScripts")
     sort_block = script[sort_start:invoke_start]
 
-    assert "'20260624_dcc_view_matrix_test_tenant_prereq' = 10" in sort_block
-    assert "'20260624_dcc_view_matrix_independent_seed' = 20" in sort_block
+    assert "applyOrder = $_.Item.applyOrder" in sort_block
     assert "OriginalOrder" in sort_block
     assert "return 1000 + [int]$_.OriginalOrder" in sort_block
     assert "Sort-Object" in sort_block
@@ -411,7 +410,8 @@ def test_publish_script_runs_route_snapshot_identity_backfill_before_enforcement
 
     assert "function Invoke-RouteSnapshotIdentityMigrationCommand" in script
     assert "function Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement" in script
-    assert "20260812_mes_route_version_snapshot_identity_enforce" in script
+    assert "approvedHook" in script
+    assert "route-snapshot-identity" in script
     assert "route-snapshot-identity-backfill.json" in script
     assert "route-snapshot-identity-readiness.json" in script
     assert "yudao.mes.route-snapshot-migration.mode=$MigrationMode" in script
