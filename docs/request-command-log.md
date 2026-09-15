@@ -3528,3 +3528,7 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Implementation: build-release 默认 `PublishScope=code-only` 并自动跳过数据库/MinIO；with-data 必须 `-PublishScope with-data -ConfirmText WITH-DATA`；manifest 增加 `packageRole=release-code|release-data-snapshot`；本地 integrity 复用刚生成的 artifact hash 且仍枚举实际文件；NAS 上传改走 robocopy 封装；manifest/integrity/NAS upload 增加阶段耗时和文件/字节摘要。
 - Verification: 发布包治理与 deploy precheck 合同测试 `63 passed`；PowerShell AST `AST_OK`；CI/CD validator self-test PASS；`git diff --check` PASS。实现提交 `6639128`。
 - Boundary: 未操作正在运行的 r14 主线程发布进程，未访问远程服务器、NAS、数据库或 MinIO。
+2026-09-15T18:54:23+08:00	20260915-test-prod-server-connection-doc	REQUEST	用户要求将测试服务器、正式服务器的连接方式写入一个文档中。
+2026-09-15T18:54:23+08:00	20260915-test-prod-server-connection-doc	COMMAND_INTENT	创建任务目录，读取经验索引、PowerShell 门禁和权威服务器访问说明；仅生成非敏感测试/正式服务器连接方式文档，不执行远端访问、构建、发布、重启、数据库或服务器写入。
+2026-09-15T18:59:48+08:00	20260915-test-prod-server-connection-doc	RESULT	PASS: 已生成 `docs/test-prod-server-connection-handoff.md`，包含测试服务器 `172.30.30.58`、正式服务器 `172.30.30.57`、SSH 示例、前端入口、后端健康检查、展厅入口、运维脚本、发布参数、访问边界和完成判定；UTF-8 读取、关键字段检索、task-owned secret pattern scan 和 `git diff --check` 均通过。未执行远端访问、构建、发布、重启、数据库或服务器写入。
+2026-09-15T19:04:20+08:00	20260915-test-prod-server-connection-doc	CLOSEOUT	PASS: task-closeout cleanup preview/apply 均通过，未删除文件；project-experience-consolidation 检索确认已有 `E:\IntRuoyi\docs\server-access.md` 覆盖本轮长期经验归宿，未新建经验文档；任务状态 completed。
