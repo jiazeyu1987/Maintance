@@ -893,3 +893,9 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 
 - GREEN: source-freeze-r55-plan -> PASS，维护 worktree 将在本段记录提交后保持 clean；应用 worktree `D:\IntRuoyiWorktree\r260911-release-button\a` clean，应用迁移修复提交为 `c82ee4841`，R54 仅在 source freeze 阶段失败，未进入昂贵构建。
 - PLAN: 使用新 releaseTag `release-20260915-one-button-app-r55`；`build-release` 和 `deploy-release` 均从维护 worktree 根启动，并显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。
+
+## r55 build-release READY
+
+- GREEN: build-release-r55 -> PASS，命令从维护 worktree 根执行；迁移策略 619 passed，后端 release workflow 合同 10 tests PASS，前端静态合同与 `pnpm ts:check` PASS，维护脚本回归 127 passed，PowerShell digest PASS，target data preflight 15/15 PASS，schema-only rehearsal PASS，后端 Maven `yudao-server -am clean package` BUILD SUCCESS，前端 `pnpm build:test` PASS，前后端 Docker build/save 与 Docker evidence PASS。
+- GREEN: r55-local-package-and-manifest -> PASS，本地 `Test-ReleasePackageIntegrity` 与 `validate-release-manifest.ps1 -Mode report-only` 通过；`PublishScope=app-release`，`packageDigest=bdf1a470f7d82ea37503f2abf32aa37340178492288676ed3e6d7f5d8ce9e6ba`，`manifestDigest=f01abe94e08887590ca6bd3c33d47479e8d0abbc79b9163088f5a2d9bc051f50`，artifactCount=661；source freeze 为维护仓 `a3829c70a065a6d4b4238f159453e940ba312617`、应用仓 `c82ee484130686e362d1946fd1a443cf02106868`，sourceRoles 为 maintenance/backend/frontend 且 dirty=false。
+- GREEN: r55-nas-ready -> PASS，NAS `Backup/ReleasePackage/release-20260915-one-button-app-r55` 原子入库完成，远端 manifest SHA-256 与本地 `f01abe94e08887590ca6bd3c33d47479e8d0abbc79b9163088f5a2d9bc051f50` 一致；包内无 database/mysql/minio/files/data/dcc-object-inventory/runtime-data、`.env` 或 `release-manifest.json`。下一步执行同一 R55 包测试服 `deploy-release`。
