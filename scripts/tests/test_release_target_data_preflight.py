@@ -179,7 +179,20 @@ def test_new_runtime_regressions_are_mandatory_build_gates():
     script = (ROOT / 'ops/deploy/publish-int-ruoyi.ps1').read_text(encoding='utf-8')
     start = script.index('function Invoke-StandardReleaseContractTests')
     body = script[start:script.index('\nfunction ', start + 1)]
+    assert 'Assert-ApplicationMigrationTestsDiscovered' in body
+    assert 'MIGRATION_TEST_MISSING' in script
+    assert 'test_test_tenant1_all_role_permission_sync_sql.py' not in body
     for name in ('test_release_docker_context_cleanup.py', 'test_release_target_data_preflight.py',
                  'test_release_migration_preflight_matrix.py', 'test_release_schema_rehearsal.py',
                  'test_release_build_preflight_cache.py'):
         assert name in body
+
+
+def test_source_approval_commits_are_required_and_forwarded_to_release_script():
+    script = (ROOT / 'ops/deploy/publish-int-ruoyi.ps1').read_text(encoding='utf-8')
+    assert '[string]$ExpectedMaintenanceCommit' in script
+    assert '[string]$ExpectedApplicationCommit' in script
+    assert '[string]$ExpectedFrontendCommit' in script
+    assert '[string]$SourceSelectionId' in script
+    assert 'SOURCE_APPROVED_COMMIT_MISMATCH' in script
+    assert 'SOURCE_APPROVAL_REQUIRED' in script

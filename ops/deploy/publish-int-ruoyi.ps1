@@ -44,6 +44,10 @@ param(
     [string]$WebsiteRepo = $env:INT_RUOYI_WEBSITE_REPO,
     [string]$BackendRepoRoot = $env:INT_RUOYI_BACKEND_REPO,
     [string]$FrontendRepoRoot = $env:INT_RUOYI_FRONTEND_REPO,
+    [string]$ExpectedMaintenanceCommit = $env:INT_RUOYI_EXPECTED_MAINTENANCE_COMMIT,
+    [string]$ExpectedApplicationCommit = $env:INT_RUOYI_EXPECTED_APPLICATION_COMMIT,
+    [string]$ExpectedFrontendCommit = $env:INT_RUOYI_EXPECTED_FRONTEND_COMMIT,
+    [string]$SourceSelectionId = $env:INT_RUOYI_SOURCE_SELECTION_ID,
     [string]$Tag = '',
     [string]$DccSignatureEvidenceHmacSecret = $env:DCC_SIGNATURE_EVIDENCE_HMAC_SECRET,
     [string]$DccSignatureEvidenceKeyVersion = $env:DCC_SIGNATURE_EVIDENCE_KEY_VERSION,
@@ -4183,6 +4187,30 @@ function Assert-ReleaseSourceFreeze {
     $maintenanceRoot = Get-ReleaseGitValue -RepoPath $scriptDir -Arguments @('rev-parse', '--show-toplevel') -Purpose 'maintenance git root'
     $applicationRoot = Get-ReleaseGitValue -RepoPath $backendRepo -Arguments @('rev-parse', '--show-toplevel') -Purpose 'application git root'
     $frontendRoot = Get-ReleaseGitValue -RepoPath $frontendDir -Arguments @('rev-parse', '--show-toplevel') -Purpose 'frontend git root'
+    if ($Mode -eq 'build-release') {
+        foreach ($approval in @(
+            @{ name = 'ExpectedMaintenanceCommit'; value = $ExpectedMaintenanceCommit },
+            @{ name = 'ExpectedApplicationCommit'; value = $ExpectedApplicationCommit },
+            @{ name = 'ExpectedFrontendCommit'; value = $ExpectedFrontendCommit },
+            @{ name = 'SourceSelectionId'; value = $SourceSelectionId }
+        )) {
+            if ([string]::IsNullOrWhiteSpace([string]$approval.value)) {
+                Fail "SOURCE_APPROVAL_REQUIRED: $($approval.name)"
+            }
+        }
+        if ($SourceSelectionId -notmatch '^[a-z0-9][a-z0-9.-]{2,63}$') {
+            Fail "SOURCE_SELECTION_INVALID: $SourceSelectionId"
+        }
+        foreach ($approval in @(
+            @{ name = 'ExpectedMaintenanceCommit'; value = $ExpectedMaintenanceCommit },
+            @{ name = 'ExpectedApplicationCommit'; value = $ExpectedApplicationCommit },
+            @{ name = 'ExpectedFrontendCommit'; value = $ExpectedFrontendCommit }
+        )) {
+            if ([string]$approval.value -notmatch '^[0-9a-fA-F]{40}$') {
+                Fail "SOURCE_COMMIT_INVALID: $($approval.name)"
+            }
+        }
+    }
     if ($applicationRoot -cne $frontendRoot) {
         Fail "SOURCE_ROOT_MISMATCH: backend and frontend must share one IntRuoyi git root"
     }
@@ -4203,6 +4231,13 @@ function Assert-ReleaseSourceFreeze {
             Fail "SOURCE_DIRTY: $($rootFact.rootRole)"
         }
         $approvedCommit = $head
+        $expectedCommit = switch ([string]$rootFact.rootRole) {
+            'maintenance' { $ExpectedMaintenanceCommit }
+            'application' { $ExpectedApplicationCommit }
+        }
+        if ($Mode -eq 'build-release' -and $head -cne [string]$expectedCommit) {
+            Fail "SOURCE_APPROVED_COMMIT_MISMATCH: $($rootFact.rootRole) expected=$expectedCommit actual=$head"
+        }
         if ($null -ne $ExpectedEvidence) {
             $expectedRoot = @($ExpectedEvidence.sourceRoots | Where-Object { $_.rootRole -eq $rootFact.rootRole }) | Select-Object -First 1
             if ($null -eq $expectedRoot) {
@@ -4232,6 +4267,9 @@ function Assert-ReleaseSourceFreeze {
         [ordered]@{ sourceRole = 'backend'; rootRole = 'application'; relativePath = 'IntRuoyiBackend'; commit = $applicationCommit },
         [ordered]@{ sourceRole = 'frontend'; rootRole = 'application'; relativePath = 'IntRuoyiFronted'; commit = $applicationCommit }
     )
+    if ($Mode -eq 'build-release' -and $ExpectedFrontendCommit -cne $applicationCommit) {
+        Fail "SOURCE_APPROVED_COMMIT_MISMATCH: frontend expected=$ExpectedFrontendCommit actual=$applicationCommit"
+    }
     if ($null -ne $ExpectedEvidence) {
         foreach ($sourceRole in $sourceRoles) {
             $expectedRole = @($ExpectedEvidence.sourceRoles | Where-Object { $_.sourceRole -eq $sourceRole.sourceRole }) | Select-Object -First 1
@@ -4267,15 +4305,18 @@ function Invoke-StandardReleaseContractTests {
     Info 'Running frontend contract tests'
     Invoke-CheckedCommand -FilePath 'node' -ArgumentList @((Join-Path $frontendDir 'tests\e2e\runtime-control-one-button-static.spec.cjs'))
     Invoke-CheckedCommand -FilePath 'corepack' -ArgumentList @('pnpm', '--dir', $frontendDir, 'ts:check')
-    Info 'Running application migration static tests'
-    $applicationPytestRoot = Join-Path $resolvedLocalCacheRoot "release-application-test-temp\$packageDirectoryName"
-    $applicationPytestParent = Split-Path -Parent $applicationPytestRoot
-    New-Item -ItemType Directory -Force -Path $applicationPytestParent | Out-Null
-    Invoke-CheckedCommand -FilePath 'python' -ArgumentList @(
-        '-X', 'utf8', '-m', 'pytest', '-q',
-        (Join-Path $backendRepo 'script\tests\test_test_tenant1_all_role_permission_sync_sql.py'),
-        '--basetemp', $applicationPytestRoot
-    )
+    Info 'Discovering application migration tests from the frozen source diff'
+    $applicationTestFiles = Assert-ApplicationMigrationTestsDiscovered
+    if ($applicationTestFiles.Count -gt 0) {
+        $applicationPytestRoot = Join-Path $resolvedLocalCacheRoot "release-application-test-temp\$packageDirectoryName"
+        $applicationPytestParent = Split-Path -Parent $applicationPytestRoot
+        New-Item -ItemType Directory -Force -Path $applicationPytestParent | Out-Null
+        Invoke-CheckedCommand -FilePath 'python' -ArgumentList @(
+            '-X', 'utf8', '-m', 'pytest', '-q',
+            $applicationTestFiles,
+            '--basetemp', $applicationPytestRoot
+        )
+    }
     Info 'Running release script tests'
     $pytestRoot = Join-Path $resolvedLocalCacheRoot "release-workflow-test-temp\$packageDirectoryName"
     $pytestParent = Split-Path -Parent $pytestRoot
@@ -4296,6 +4337,34 @@ function Invoke-StandardReleaseContractTests {
         '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
         (Join-Path $scriptDir '..\..\scripts\tests\verify-release-digest-vector.ps1')
     )
+}
+
+function Assert-ApplicationMigrationTestsDiscovered {
+    $applicationRoot = Get-ReleaseGitValue -RepoPath $backendRepo -Arguments @('rev-parse', '--show-toplevel') -Purpose 'application git root'
+    $diffFiles = @(Get-ReleaseGitValue -RepoPath $applicationRoot -Arguments @('diff', '--name-only', 'HEAD^', 'HEAD', '--', 'IntRuoyiBackend/sql/mysql') -Purpose 'application migration source diff' |
+        Where-Object { [string]$_ -match '(^|/)20[0-9]{6}_[A-Za-z0-9_.-]+\.sql$' })
+    $migrationIds = @($diffFiles | ForEach-Object {
+        $name = Split-Path -Leaf ([string]$_)
+        if ($name -match '^(20[0-9]{6}_[A-Za-z0-9_.-]+)\.sql$') { $Matches[1] }
+    } | Select-Object -Unique)
+    if ($migrationIds.Count -eq 0) {
+        return @()
+    }
+    $testRoots = @(
+        (Join-Path $backendRepo 'script\tests'),
+        (Join-Path $applicationRoot 'scripts\tests')
+    )
+    $testFiles = @($testRoots | Where-Object { Test-Path -LiteralPath $_ -PathType Container } |
+        ForEach-Object { Get-ChildItem -LiteralPath $_ -File -Include 'test_*.py','*.test.mjs' -Recurse })
+    $discovered = @()
+    foreach ($migrationId in $migrationIds) {
+        $matches = @($testFiles | Select-String -SimpleMatch -Pattern $migrationId | Select-Object -ExpandProperty Path -Unique)
+        if ($matches.Count -eq 0) {
+            Fail "MIGRATION_TEST_MISSING: $migrationId"
+        }
+        $discovered += $matches
+    }
+    return @($discovered | Select-Object -Unique)
 }
 
 function Get-ReleaseSchemaDigest {

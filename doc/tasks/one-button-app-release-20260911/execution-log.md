@@ -907,3 +907,13 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - CLOSED: 已有 source dirty/head/path drift、manifest/source commit+digest、append-only journal/CAS/lease、timeout/interruption 进程树终止、迁移 metadata/dependency/policy gate、target readonly preflight 保护；这些不等于六项审查项完成。
 - OPEN: 需要先以 BDD/RED/GREEN 补齐统一迁移合同与隔离执行、迁移测试自动发现、来源 commit 持久化、后台阶段事件/恢复/取消一致性和版本化 hook/参数声明；新迁移不得推动发布引擎增加业务分支。
 - CORRECTION: R55 失败证据不得表述为“所有 DML 前/数据库完全没有业务写入”。20260829 在未知列错误前已有 definition INSERT；后续只可依据事务边界与真实只读状态描述，不能把“版本未切换”当作零写入证明。
+
+## Source approval and migration test-gate slice
+
+- BDD: 来源批准绑定 -> Given 服务端收到受控 sourceSelectionId / When 创建 workflow 并启动 build / Then workflow 持久化 maintenance/application/frontend 预期 commit，执行器将同一 commit 传给发布脚本并在冻结时校验，不再把当前 HEAD 自动视为批准源。
+- RED: 旧实现仅持久化 `approved-source` 字符串，未有 expected commits；新增 `ReleaseWorkflowSourceBindingTest` 与编排器参数断言证明该缺口。
+- GREEN: 应用提交 `e109b707c` 后，workflow record/store 持久化三个 approved commit，build action 将 expected commit 与 sourceSelectionId 传给脚本；新增 Java 2 tests，既有编排器/存储测试 10 PASS，RuntimeControlServiceImplTest 65 PASS。
+- BDD: 迁移测试自动发现 -> Given 冻结提交包含版本化迁移 SQL / When 进入昂贵构建前测试门禁 / Then 从 source diff 自动发现对应测试，缺失映射以 `MIGRATION_TEST_MISSING` 阻断，不能固定单一业务测试文件。
+- RED: 旧 `Invoke-StandardReleaseContractTests` 固定调用 `test_test_tenant1_all_role_permission_sync_sql.py`，新增脚本合同先失败。
+- GREEN: 维护仓脚本新增 `Assert-ApplicationMigrationTestsDiscovered`，根据冻结应用提交差异查找对应迁移测试并缺失即阻断；`test_release_target_data_preflight.py` 与相邻 schema rehearsal 回归 37 PASS，PowerShell AST PASS。
+- BLOCKER: 后台阶段事件、底层取消/恢复 scheduler、统一迁移隔离执行和版本化 migration hook/参数声明仍未实现，不能生成 R56 或宣称通用发布完成。
