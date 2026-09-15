@@ -1096,3 +1096,18 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - REGRESSION: `python -X utf8 -m pytest -q scripts\tests\test_release_workflow_preflight.py scripts\tests\test_release_target_data_preflight.py scripts\tests\test_release_sql_preflight_gate.py scripts\tests\test_release_package_governance.py --basetemp .tmp-r72-surefire-guard-regression` -> PASS，166 tests；`publish-int-ruoyi.ps1` PowerShell AST -> PASS。
 - GREEN: direct-maven-surefire-guard -> PASS，临时设置 `JDK_JAVA_OPTIONS=-Djdk.net.URLClassPath.disableClassPathURLCheck=true` 后直接复跑发布脚本同款 Maven 合同命令，`ReleaseWorkflowContractTest`、`ReleaseSourceFreezeTest`、`ReleaseWorkflowGateOrderTest`、`ReleaseDigestVectorTest` 共 10 tests PASS，总耗时 6.468s；确认不再卡在 surefire fork 启动期。
 - RESULT: R72 判废且不得复用；提交维护仓修复后使用全新 releaseTag `release-20260916-one-button-app-r73`，source freeze 绑定维护仓新提交与应用仓 `e554302ef9b546910abafa1b6c35b742c0346cd0`。范围仍为测试服 `app-release/without-data`，正式服、审查服和数据同步保持零写入。
+
+## 2026-09-16 one-button app-release R73 application tooling contract sync
+
+- RED: build-release-r73-application-tooling-contract -> FAIL，R73 在 `Discovering application migration tests from the frozen source diff` 阶段执行应用仓自动发现测试，`test_publish_int_ruoyi_to_test_tooling.py` 2 failed / 131 passed；失败点为旧 Dockerfile CMD 断言未跟随 `INTRUOYI_EXTRA_ARGS` runtime 合同，以及应用仓 `script/deploy/publish-int-ruoyi.ps1` 不识别 `requiresTargetPreflight` 并把 rollback-only SQL 当 required SQL。失败发生在后端 Maven package、Docker build、NAS 上传和测试服写入前，本地 `release/build-preflight/.deploy-control` R73 目录均不存在。
+- ROOT_CAUSE: 应用仓发布脚本仍停留在旧 release-migration metadata 解析合同，只接受 `allowedEnvironments/dependsOn/type/riskLevel`；而当前通用按钮发布已经要求 `requiresTargetPreflight/applyOrder/sessionProfile/approvedHook/resultAssertion` 贯穿 manifest、preflight、rehearsal 与 deploy。应用仓 Dockerfile 测试也仍断言旧 CMD，未把当前可扩展启动参数视为正式 runtime 合同。
+- BDD: 应用仓发布合同随通用按钮发布演进 -> Given 版本化迁移声明 target-preflight、执行顺序、会话 profile、批准 hook 和结果断言 / When build-release 自动发现并运行应用仓发布测试 / Then 应用脚本必须解析、校验、manifest 投影并排除 rollback/evidence-only SQL；Dockerfile 合同必须验证当前 runtime 扩展参数，而不是旧字符串。
+- GREEN: app-release-tooling-contract-sync -> PASS。应用仓提交 `27f2ceccec7e` 同步 `publish-int-ruoyi.ps1` 的 metadata 解析、manifest 投影、rollback/evidence-only 分类排除，并更新 Dockerfile 测试合同；随后提交 `b30cdb3639b2` 记录任务证据。
+- REGRESSION: 应用仓精确回归 `5 passed`；R73 自动发现同组回归 `135 passed`；相邻 release manifest/policy/preflight/validator 回归 `58 passed`；PowerShell AST for app `publish-int-ruoyi.ps1` -> PASS。
+- RESULT: R73 判废且不得复用；下一轮使用全新 releaseTag `release-20260916-one-button-app-r74`，source freeze 绑定维护仓本段记录提交后的 clean HEAD 与应用仓 `b30cdb3639b2013515be0455d81a0bd60d51940a`。范围仍为测试服 `app-release/without-data`，正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步和全量数据库复制保持零写入。
+
+## r74 source freeze
+
+- USER_AUTHORIZATION: 用户要求继续修复，目标是通用、长期可用的一键按钮发布能力；本轮授权覆盖本机修复、验证、不可变 `app-release` 构建、NAS READY 和测试服 `publish-test` 验收，不覆盖正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库复制。
+- GREEN: experience-preflight-r74 -> PASS，已复核 without-data/app-release、source freeze、target readonly preflight、manifest forbidden scan、NAS JSON、PowerShell 编排、server-access、release-backup-restore、worktree 与失败 releaseTag 不复用门禁；R73 未形成任何本地发布目录或远端副作用。
+- PLAN: 使用新 releaseTag `release-20260916-one-button-app-r74`；先提交本段任务记录以保持维护 worktree clean，再从维护 worktree 根执行 `build-release`，显式传入 `Component=intruoyi`、`SourceSelectionId=r74-approved-sources`、`BackendRepoRoot`、`FrontendRepoRoot`、`ExpectedMaintenanceCommit`、`ExpectedApplicationCommit`、`ExpectedFrontendCommit`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。若 R74 失败，先冻结失败证据并按通用按钮发布门禁修根因，再换全新 releaseTag。
