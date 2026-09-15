@@ -723,6 +723,33 @@ function Resolve-SmartReleaseInputFilePath {
     return $fullPath
 }
 
+function Resolve-MaintenanceRepoRelativeFilePath {
+    param(
+        [AllowNull()]
+        [string]$PathValue,
+        [Parameter(Mandatory = $true)]
+        [string]$ArgumentName
+    )
+
+    if ([string]::IsNullOrWhiteSpace($PathValue)) {
+        Fail "Missing $ArgumentName; release package modes require an explicit file path."
+    }
+
+    $trimmedPath = $PathValue.Trim()
+    if ([System.IO.Path]::IsPathRooted($trimmedPath)) {
+        $candidatePath = $trimmedPath
+    } else {
+        $maintenanceRoot = (Resolve-Path (Join-Path $scriptDir '..\..')).Path
+        $candidatePath = Join-Path $maintenanceRoot $trimmedPath
+    }
+
+    $fullPath = [System.IO.Path]::GetFullPath($candidatePath)
+    if (-not (Test-Path -LiteralPath $fullPath -PathType Leaf)) {
+        Fail "$ArgumentName does not exist: $fullPath"
+    }
+    return $fullPath
+}
+
 function New-SmartReleaseReportDirectory {
     param(
         [Parameter(Mandatory = $true)]
@@ -2818,17 +2845,12 @@ mkdir -p '$RemoteAppDir/data/mysql' '$RemoteAppDir/data/redis' '$RemoteAppDir/da
 }
 
 function Read-NasReleaseConfig {
-    if ([string]::IsNullOrWhiteSpace($NasConfigPath)) {
-        Fail 'Missing NasConfigPath; release package modes must use NAS Management configuration.'
-    }
-    if (-not (Test-Path -LiteralPath $NasConfigPath)) {
-        Fail "NAS release config file not found: $NasConfigPath"
-    }
-    $text = [System.IO.File]::ReadAllText($NasConfigPath, [System.Text.UTF8Encoding]::new($false))
+    $resolvedNasConfigPath = Resolve-MaintenanceRepoRelativeFilePath -PathValue $NasConfigPath -ArgumentName 'NasConfigPath'
+    $text = [System.IO.File]::ReadAllText($resolvedNasConfigPath, [System.Text.UTF8Encoding]::new($false))
     try {
         $config = $text | ConvertFrom-Json
     } catch {
-        Fail "NAS release config must be UTF-8 JSON: $NasConfigPath"
+        Fail "NAS release config must be UTF-8 JSON: $resolvedNasConfigPath"
     }
     foreach ($field in @('server', 'share', 'username', 'password')) {
         if ([string]::IsNullOrWhiteSpace([string]$config.$field)) {

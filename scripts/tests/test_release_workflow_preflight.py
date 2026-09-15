@@ -68,6 +68,17 @@ def test_build_release_validates_nas_config_and_clean_sources_before_sql_scan() 
     assert migration_scan < migration_policy_gate < contract_tests < maven_build
 
 
+def test_nas_config_path_resolves_against_maintenance_repo_not_caller_cwd() -> None:
+    source = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    reader = _function(source, "Read-NasReleaseConfig", "Join-NasRelativePath")
+
+    assert "Resolve-MaintenanceRepoRelativeFilePath" in source
+    assert "Resolve-MaintenanceRepoRelativeFilePath -PathValue $NasConfigPath -ArgumentName 'NasConfigPath'" in reader
+    assert "[System.IO.Path]::IsPathRooted($trimmedPath)" in source
+    assert "Join-Path $maintenanceRoot $trimmedPath" in source
+    assert "[System.IO.File]::ReadAllText($resolvedNasConfigPath" in reader
+
+
 def test_freeze_evidence_has_two_git_roots_and_three_source_roles() -> None:
     source = PUBLISH_SCRIPT.read_text(encoding="utf-8")
     freeze = _function(source, "Assert-ReleaseSourceFreeze", "Invoke-StandardReleaseContractTests")
