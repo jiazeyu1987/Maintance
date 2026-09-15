@@ -940,3 +940,11 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - USER_AUTHORIZATION: 用户继续并明确授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。
 - GREEN: experience-preflight-r56 -> PASS，已复核 without-data/app-release、目标只读预检、manifest forbidden scan、NAS JSON、PowerShell、测试服发布、server-access、release-backup-restore 与 worktree 门禁；R55 因迁移 SQL schema contract 失败退休且不得复用。
 - PLAN: 使用新 releaseTag `release-20260915-one-button-app-r56`；`build-release` 和后续 `deploy-release` 均从维护 worktree 根启动，显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`ExpectedMaintenanceCommit`、`ExpectedApplicationCommit`、`ExpectedFrontendCommit`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。构建前本地缓存、deploy-control 与测试服远端 R56 目录必须不存在。
+
+## r56 retired and r57 source freeze
+
+- RED: build-release-r56-migration-test-discovery -> FAIL，R56 在应用迁移测试自动发现阶段返回 `MIGRATION_TEST_MISSING: 20260812_mes_route_version_snapshot_identity_enforce`；未进入后端打包、Docker、NAS 上传或测试服写入，R56 未形成包且不得复用。
+- GREEN: app-route-snapshot-migration-test -> PASS，应用仓提交 `1cdd51be514f84c7352b164604216e32796a6a83` 新增同名迁移合同测试；`test_mes_route_version_snapshot_identity_enforce_sql.py` + `test_mes_route_version_lifecycle_sql.py` 7 passed，target-preflight/release-plan 相邻回归 25 passed；应用 worktree clean。
+- USER_AUTHORIZATION: 用户继续并明确授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。
+- GREEN: experience-preflight-r57 -> PASS，R56 已在昂贵打包/服务器写入前失败并退休；R57 使用新 releaseTag，source freeze 绑定维护仓本段记录提交后的 clean HEAD 与应用仓 `1cdd51be514f84c7352b164604216e32796a6a83`。
+- PLAN: 使用新 releaseTag `release-20260915-one-button-app-r57`；构建和发布仍只面向测试服 `172.30.30.58`，显式传入 source commits、NAS JSON、backend runtime base 与 `-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。
