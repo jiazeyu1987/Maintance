@@ -5410,7 +5410,7 @@ function Write-ReleasePreflightPlan {
     $manifestPath = Join-Path $releaseDir 'manifest.json'
     $targetStatePath = Join-Path $deployControlLocalRoot "preflight-target-state-$Environment.json"
     $preflightPlanPath = Join-Path $deployControlLocalRoot 'preflight-plan.json'
-    $preflightScriptPath = Join-Path $backendRepo 'script\release\release_preflight_plan.py'
+    $preflightScriptPath = Join-Path $maintenanceReleaseScriptRoot 'release_preflight_plan.py'
     if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
         Fail "manifest.json missing in release package for preflight: $manifestPath"
     }

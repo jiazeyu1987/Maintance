@@ -560,6 +560,17 @@ def test_deploy_release_control_files_do_not_pollute_local_package_cache() -> No
     assert '$targetStatePath = Join-Path $releaseDir "preflight-target-state-$Environment.json"' not in script
 
 
+def test_deploy_release_preflight_planner_uses_maintenance_release_toolchain() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    block_start = script.index("function Write-ReleasePreflightPlan")
+    block_end = script.index("function Assert-ProdDryRunEvidence", block_start)
+    block = script[block_start:block_end]
+
+    assert "$preflightScriptPath = Join-Path $maintenanceReleaseScriptRoot 'release_preflight_plan.py'" in block
+    assert "Join-Path $backendRepo 'script\\release\\release_preflight_plan.py'" not in block
+    assert "release preflight planner missing: $preflightScriptPath" in block
+
+
 def test_build_release_declares_ops_runtime_before_manifest_integrity() -> None:
     script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
 

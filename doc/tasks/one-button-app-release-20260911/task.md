@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r73 均已判废且不得复用；R72 的 Windows 跨盘 Maven/Surefire forked JVM 启动卡死已由维护仓 `ff079b9` 修复并验证，R73 随后在应用仓自动发现测试阶段 fail-fast，暴露应用发布脚本未同步通用 migration metadata 与 rollback/evidence-only required SQL 分类。应用仓已提交 `27f2ceccec7e` 修复合同并提交 `b30cdb3639b2` 记录证据；精确 5 PASS、R73 同组 135 PASS、相邻发布回归 58 PASS、PowerShell AST PASS。下一步提交维护仓记录后使用新 releaseTag `release-20260916-one-button-app-r74` 从 clean HEAD 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r76 均已判废且不得复用；R76 本地与 NAS READY 包存在，但测试服 `deploy-release` 在版本切换前失败于 deploy 预检 planner 工具链路径绑定，错误为 `release_preflight_plan.py` 被错误地从 backend `script\release` 查找。维护仓已新增 RED/GREEN 合同并把 deploy planner 绑定到维护仓 `ops\release`；聚焦与相邻发布回归 114 PASS、PowerShell AST PASS、py_compile PASS。下一步提交维护仓修复后使用新 releaseTag `release-20260916-one-button-app-r77` 从 clean HEAD 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
 
 ## Verification Evidence
 
@@ -82,7 +82,7 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 
 ## Current Phase
 
-- P3 正在执行：r23-r73 已判废；R73 是构建前应用发布合同测试失败，未形成包、未上传 NAS、未写测试服。应用仓当前可发布提交为 `b30cdb3639b2013515be0455d81a0bd60d51940a`，维护仓当前可发布提交将在本段记录提交后固定。下一轮使用新 releaseTag `release-20260916-one-button-app-r74` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23-r76 已判废；R76 是 deploy 阶段 preflight planner 路径绑定失败，未切换测试服 `.env` 或容器版本。应用仓当前可发布提交为 `40765346359700641bc3df93d57c4db27ca4741a`，维护仓当前可发布提交将在本段修复提交后固定。下一轮使用新 releaseTag `release-20260916-one-button-app-r77` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 
