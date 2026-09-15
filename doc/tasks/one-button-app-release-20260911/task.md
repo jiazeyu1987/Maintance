@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r61 均已判废且不得复用；R61 仅留下本地半成品 `evidence/` 与 `required-sql/`，缺少 `manifest.json` 和镜像 tar，且当前无相关构建/发布进程。应用 worktree 已补齐后台 scheduler 自动 reconcile、长构建日志 mtime 刷新 heartbeat、旧表单模板 Jimu schema 语义 target preflight，并通过 12 个 SQL/target-preflight 回归与 19 个 Maven workflow 回归；维护仓发布合同回归 132 PASS。下一步使用新 releaseTag `release-20260916-one-button-app-r62` 从维护仓提交后的 clean HEAD 和应用仓 `e5ee2c9393157131f8b48c6b58230f8aff6fcb6e` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r62 均已判废且不得复用；R62 在执行会话中断后仅留下本地 `required-sql/` 半成品，缺少 `manifest.json`、镜像 tar、ops-runtime、resources、smoke 和 evidence，且本机无相关构建/发布进程、测试服远端 R62 目录不存在。应用 worktree 已补齐后台 scheduler 自动 reconcile、长构建日志 mtime 刷新 heartbeat、旧表单模板 Jimu schema 语义 target preflight，并通过 12 个 SQL/target-preflight 回归与 19 个 Maven workflow 回归；维护仓发布合同回归 132 PASS。下一步使用新 releaseTag `release-20260916-one-button-app-r63` 从维护仓提交后的 clean HEAD 和应用仓 `e5ee2c9393157131f8b48c6b58230f8aff6fcb6e` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
 
 ## Verification Evidence
 
@@ -82,7 +82,7 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 
 ## Current Phase
 
-- P3 正在执行：r23-r61 已判废；R61 是中断半成品，无 `manifest.json` 和镜像 tar，不复用。应用仓当前可发布提交为 `e5ee2c9393157131f8b48c6b58230f8aff6fcb6e`，维护仓当前可发布提交将在本段记录提交后固定。下一轮使用新 releaseTag `release-20260916-one-button-app-r62` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23-r62 已判废；R62 是中断半成品，仅有 `required-sql/`，无 `manifest.json` 和镜像 tar，不复用。应用仓当前可发布提交为 `e5ee2c9393157131f8b48c6b58230f8aff6fcb6e`，维护仓当前可发布提交将在本段记录提交后固定。下一轮使用新 releaseTag `release-20260916-one-button-app-r63` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 

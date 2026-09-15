@@ -3638,3 +3638,5 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - 结果：R53/R55/R61 均不得复用；R61 本地目录只有 `evidence/` 与 `required-sql/`，缺少 `manifest.json` 和镜像 tar，且没有相关构建/发布进程。应用 worktree 已有长期机制修复：后台 scheduler 自动 reconcile、长构建日志 mtime 刷新 heartbeat、Jimu schema target preflight 语义覆盖。
 - 验证：应用 SQL/target-preflight 回归 12 PASS；应用 release workflow Maven 回归 19 PASS；维护仓发布合同回归 132 PASS。
 - 下一步：提交本记录后使用新 releaseTag `release-20260916-one-button-app-r62` 重建 `app-release` 程序包并仅发布测试服；不执行正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库复制。
+
+2026-09-16T00:24:00+08:00	one-button-app-release-20260911	RESULT	R62 现场复核为执行中断半成品：本地 release-20260916-one-button-app-r62 仅有 `required-sql/`，缺少 manifest、镜像 tar、ops-runtime、resources、smoke 和 evidence；本机无相关构建/发布进程，测试服远端 R62 目录不存在，测试服仍运行旧版本。R62 判废且不得复用；下一轮使用新 tag `release-20260916-one-button-app-r63`，继续只覆盖 without-data/app-release 的测试服 build-release -> publish-test 验证。
