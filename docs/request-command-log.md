@@ -3640,3 +3640,5 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - 下一步：提交本记录后使用新 releaseTag `release-20260916-one-button-app-r62` 重建 `app-release` 程序包并仅发布测试服；不执行正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库复制。
 
 2026-09-16T00:24:00+08:00	one-button-app-release-20260911	RESULT	R62 现场复核为执行中断半成品：本地 release-20260916-one-button-app-r62 仅有 `required-sql/`，缺少 manifest、镜像 tar、ops-runtime、resources、smoke 和 evidence；本机无相关构建/发布进程，测试服远端 R62 目录不存在，测试服仍运行旧版本。R62 判废且不得复用；下一轮使用新 tag `release-20260916-one-button-app-r63`，继续只覆盖 without-data/app-release 的测试服 build-release -> publish-test 验证。
+
+2026-09-16T00:46:00+08:00	one-button-app-release-20260911	RESULT	R63 build-release 在真实测试服 target readonly preflight 阶段失败：`20260829_mes_old_form_template_binding_switch.preflight.sql` 少闭合一层 `AND NOT EXISTS` 右括号，MySQL 1064；R63 未进入后端打包/Docker/NAS/测试服写入且不得复用。应用仓提交 `053bb3c23890eca08dfaa3caa4bcf48f7af1d8ed` 增加通用外层 CASE 括号合同并修复 SQL，定向回归 12 PASS，测试服只读单文件与完整 17/17 target preflight PASS。下一轮使用新 tag `release-20260916-one-button-app-r64`。
