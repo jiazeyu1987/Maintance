@@ -3,7 +3,7 @@
   "task_id": "one-button-app-release-20260911",
   "mode": "full",
   "status": "executing",
-  "current_phase": "P3",
+  "current_phase": "P2",
   "phase_statuses": [
     {
       "phase_id": "P1",
@@ -73,7 +73,7 @@
     {
       "phase_id": "P2",
       "title": "ReleaseWorkflow 编排内核",
-      "status": "completed",
+      "status": "needs_revision",
       "objective": "在主程序 IntRuoyiBackend 的 yudao-module-infra runtimecontrol 模块建立可持久化、可并发保护、可靠超时且可在重启后恢复判断的产品 ReleaseWorkflow 编排层。",
       "owned_paths": [
         "`E:\\IntRuoyi\\IntRuoyiBackend\\yudao-module-infra\\src\\main\\java\\cn\\iocoder\\yudao\\module\\infra\\controller\\admin\\runtimecontrol\\`、`service\\runtimecontrol\\`、`framework\\runtimecontrol\\config\\` 及对应测试；维护仓 backend 仅在保留时承担独立诊断和合同同步，不得成为产品 workflow 的唯一实现。"
@@ -87,15 +87,16 @@
       "evidence_expectation": "后端状态机、原子持久化、并发锁、超时/心跳、取消、重启恢复、重试策略和秘密扫描测试。",
       "evidence": [
         "ReleaseWorkflowStore/Lease/Recovery/SecurityTest 11 tests PASS；相关 infra targeted regression 102 tests PASS。",
-        "主程序 release-workflows API create/list/detail/cancel 已接入持久化内核。"
+        "主程序 release-workflows API create/list/detail/cancel 已接入持久化内核。",
+        "execution-log.md#通用按钮发布机制审查纠偏-2026-09-15"
       ],
-      "notes": "P2 状态机、单文件原子 workflow+event journal、CAS、租约、超时/取消恢复、重复提交去重、preset/secret input 验证和 verifier-only 推进已完成。",
-      "last_reviewed_at": "2026-09-12T02:47:02",
+      "notes": "P2 状态机、单文件原子 workflow+event journal、CAS、租约、超时/取消恢复、重复提交去重、preset/secret input 验证和 verifier-only 推进已完成。\n- 独立代码审查确认来源 commits、后台阶段事件、进程取消、heartbeat/recovery 生产接线未完成；旧完成结论撤回。",
+      "last_reviewed_at": "2026-09-15T15:58:06",
       "acceptance_criteria": [
         {
           "ac_id": "P2-AC1",
           "text": "产品 workflow 的实现与测试以主程序 IntRuoyiBackend `yudao-module-infra/.../runtimecontrol/` 为唯一运行时来源，维护仓 backend 仅可提供独立诊断或契约同步；workflow 与 event journal 在进程重启后恢复，状态转换使用原子写和 stateVersion/CAS，损坏状态直接阻塞。",
-          "status": "completed",
+          "status": "needs_revision",
           "evidence": [
             "workflow record 与 event journal 同一 envelope 原子替换；损坏/分歧状态测试 fail fast。"
           ]
@@ -111,7 +112,7 @@
         {
           "ac_id": "P2-AC3",
           "text": "心跳、可靠 timeout、取消和 RECOVERY_REQUIRED 有确定行为；进程重启或写阶段状态不明时不自动续跑，guard return 不产生 SUCCESS。",
-          "status": "completed",
+          "status": "needs_revision",
           "evidence": [
             "心跳、读/写阶段取消、timeout 与重启 READY 恢复测试通过。"
           ]
@@ -119,7 +120,7 @@
         {
           "ac_id": "P2-AC4",
           "text": "阶段持久化 attempt、operationId、errorCode、failedStage、retryable 和证据引用；只有 verifier 可推进状态，客户端不能伪造 SUCCESS。",
-          "status": "completed",
+          "status": "needs_revision",
           "evidence": [
             "attempt/operationId/errorCode/failedStage/retryable/evidenceRefs 持久化；客户端 advance 被拒绝。"
           ]
@@ -365,11 +366,11 @@
   "blocking_prereqs": [],
   "iteration_counts": {
     "planner_revisions": 1,
-    "executor_loops": 1,
+    "executor_loops": 2,
     "test_loops": 0
   },
   "created_at": "2026-09-11T09:20:03",
-  "updated_at": "2026-09-15T04:37:00+08:00",
+  "updated_at": "2026-09-15T15:58:06",
   "branch": "codex/one-button-app-release-20260911",
   "baseline_revision": "eaaa47ac320dd197dba646d6870fed0cb7d2534c",
   "workspace_root": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260911-release-button\\m",

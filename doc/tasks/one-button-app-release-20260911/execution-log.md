@@ -900,3 +900,10 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - GREEN: r55-local-package-and-manifest -> PASS，本地 `Test-ReleasePackageIntegrity` 与 `validate-release-manifest.ps1 -Mode report-only` 通过；`PublishScope=app-release`，`packageDigest=bdf1a470f7d82ea37503f2abf32aa37340178492288676ed3e6d7f5d8ce9e6ba`，`manifestDigest=f01abe94e08887590ca6bd3c33d47479e8d0abbc79b9163088f5a2d9bc051f50`，artifactCount=661；source freeze 为维护仓 `a3829c70a065a6d4b4238f159453e940ba312617`、应用仓 `c82ee484130686e362d1946fd1a443cf02106868`，sourceRoles 为 maintenance/backend/frontend 且 dirty=false。
 - GREEN: r55-nas-ready -> PASS，NAS `Backup/ReleasePackage/release-20260915-one-button-app-r55` 原子入库完成，远端 manifest SHA-256 与本地 `f01abe94e08887590ca6bd3c33d47479e8d0abbc79b9163088f5a2d9bc051f50` 一致；包内无 database/mysql/minio/files/data/dcc-object-inventory/runtime-data、`.env` 或 `release-manifest.json`。下一步执行同一 R55 包测试服 `deploy-release`。
 - GREEN: experience-preflight-r55-deploy -> PASS，已复核测试服写入授权、`server-access.md`、`release-backup-restore.md`、PowerShell 编排、NAS 原子 READY、target readonly preflight、测试租户与默认展厅受保护资源门禁；本次仅允许测试服 `172.30.30.58`，禁止正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步和全量数据库复制。
+
+## 通用按钮发布机制审查纠偏（2026-09-15）
+
+- REVIEW: independent-code-audit -> FAIL。当前实现保留按钮、状态存储、CAS/lease、摘要和验包保护，但六项通用机制尚未闭环：来源选择未绑定预期 commits；schema rehearsal 排除 data/target-preflight 迁移；应用迁移测试入口固定单文件；workflow 阶段由一次 operation 成功后连续补写且无后台协调器；取消/heartbeat/recovery 未接到底层进程与 scheduler；发布脚本仍按具体 migrationId 注入参数、排序和钩子。
+- CLOSED: 已有 source dirty/head/path drift、manifest/source commit+digest、append-only journal/CAS/lease、timeout/interruption 进程树终止、迁移 metadata/dependency/policy gate、target readonly preflight 保护；这些不等于六项审查项完成。
+- OPEN: 需要先以 BDD/RED/GREEN 补齐统一迁移合同与隔离执行、迁移测试自动发现、来源 commit 持久化、后台阶段事件/恢复/取消一致性和版本化 hook/参数声明；新迁移不得推动发布引擎增加业务分支。
+- CORRECTION: R55 失败证据不得表述为“所有 DML 前/数据库完全没有业务写入”。20260829 在未知列错误前已有 definition INSERT；后续只可依据事务边界与真实只读状态描述，不能把“版本未切换”当作零写入证明。
