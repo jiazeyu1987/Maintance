@@ -37,3 +37,14 @@
 - GREEN command and passing result: 同目标测试 -> PASS；相邻发布入口回归 `test_release_workflow_preflight.py test_release_target_data_preflight.py test_release_sql_preflight_gate.py test_release_package_governance.py` -> PASS，166 tests；PowerShell AST -> PASS；直接复跑发布脚本同款 Maven 合同命令 10 tests PASS，总耗时 6.468s。
 - Risk and regression scope: 只改变发布脚本对 Maven 命令的临时环境，不修改业务代码、不弱化测试、不跳过后端合同；`finally` 恢复原 `JDK_JAVA_OPTIONS`，避免污染后续 node/docker/ssh 阶段。
 - Blockers and follow-up actions: R72 半成品判废不复用；提交维护仓修复后使用 R73 重新 build-release，并以同一 tag 继续测试服 publish 验证。
+
+## R77 Route Snapshot Hook Package Binding
+
+- Bug summary and expected behavior: 标准按钮发布执行 `approvedHook=route-snapshot-identity` 时，必须使用待发布包 `.env.next` 解析 backend image；不得在版本切换前误用当前运行态 `.env` 的旧镜像。hook 失败必须输出机器可读报告或明确报告缺失码。
+- Reproduction command or path: R77 `deploy-release` 已下载 READY 包并 load R77 镜像，但测试服 operation lock 记录 `FAILED`；远端 `.env.next` 指向 R77、当前 `.env` 仍指向旧 tag，`runtime-reports/route-snapshot-identity-backfill.json` 为 READY，readiness 报告缺失。
+- Root cause: `Invoke-RouteSnapshotIdentityMigrationCommand` 调用 `docker compose run --rm --no-deps ... backend` 时没有传 `--env-file $remoteEnvNextLiteral`，compose 使用运行目录旧 `.env`；并且 `set -e` 在 hook 非零退出时直接中断，导致报告缺失或报告内容不会进入发布日志。
+- Regression test added or updated: `scripts/tests/test_release_sql_preflight_gate.py::test_publish_script_runs_route_snapshot_identity_backfill_before_enforcement_sql` 与 `test_publish_script_combines_route_snapshot_run_and_report_check_in_single_ssh_session`。
+- RED command and expected failure: `git show HEAD:ops/deploy/publish-int-ruoyi.ps1` 合同检查 -> FAIL，旧脚本缺少 `.env.next` 绑定和 `ROUTE_SNAPSHOT_IDENTITY_REPORT_MISSING` 诊断。
+- GREEN command and passing result: 定向回归 2 passed；相邻发布回归 158 passed；`py_compile` PASS；PowerShell AST PASS；`git diff --check` PASS（仅 CRLF 提示）。
+- Risk and regression scope: 只调整 deploy 阶段 route snapshot hook 的 compose env 绑定和错误输出，不改变 required SQL 内容、不修改测试服业务数据、不引入 fallback；R77 已写 FAILED 锁，必须用 R78 新 tag 重建发布包。
+- Blockers and follow-up actions: 提交维护仓修复后，使用全新 `release-20260916-one-button-app-r78` 重走 source freeze、build-release、NAS READY、测试服 deploy 和最终运行态验收。

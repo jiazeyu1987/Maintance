@@ -419,6 +419,8 @@ def test_publish_script_runs_route_snapshot_identity_backfill_before_enforcement
     assert "Invoke-RouteSnapshotIdentityMigrationCommand -MigrationMode 'READINESS'" in script
     assert "-e INTRUOYI_EXTRA_ARGS=" in script
     assert "-e ARGS=" not in script
+    assert "docker compose --env-file $remoteEnvNextLiteral run --rm --no-deps" in script
+    assert "test -f $remoteEnvNextLiteral" in script
 
     hook_index = script.index("Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement -Item $item")
     sql_apply_index = script.index("Invoke-RequiredDatabaseSqlScriptWithState -Item $item", hook_index)
@@ -433,7 +435,9 @@ def test_publish_script_combines_route_snapshot_run_and_report_check_in_single_s
     helper_block = script[helper_start:helper_end]
 
     assert helper_block.count("Invoke-SshCommand") == 1
-    assert "docker compose run --rm --no-deps" in helper_block
+    assert "docker compose --env-file $remoteEnvNextLiteral run --rm --no-deps" in helper_block
+    assert "cat $remoteReportFileLiteral" in helper_block
+    assert "ROUTE_SNAPSHOT_IDENTITY_REPORT_MISSING" in helper_block
     assert "test -f $remoteReportFileLiteral" in helper_block
     assert "grep -q '\"status\" : \"READY\"' $remoteReportFileLiteral" in helper_block
     assert "grep -q '\"blockerCount\" : 0' $remoteReportFileLiteral" in helper_block

@@ -6009,16 +6009,27 @@ function Invoke-RouteSnapshotIdentityMigrationCommand {
     $remoteReportFileLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteReportFile -Purpose 'route snapshot migration report file'
     $remoteAppDirLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $RemoteAppDir -Purpose 'remote app directory'
     $reportVolumeLiteral = ConvertTo-ShellSingleQuotedLiteral -Value "${remoteReportDir}:/runtime-reports" -Purpose 'route snapshot migration report volume'
+    $remoteEnvNextLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteEnvNext -Purpose 'remote runtime env.next path'
     $extraArgsValue = "--server.port=0 --yudao.mes.route-snapshot-migration.mode=$MigrationMode --yudao.mes.route-snapshot-migration.report-file=/runtime-reports/$ReportFileName"
     $extraArgsLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $extraArgsValue -Purpose 'route snapshot migration extra args'
 
     Info "Running MES route snapshot identity $MigrationMode before NOT NULL enforcement"
     $command = @"
-set -e
+set -u
 mkdir -p $remoteReportDirLiteral
 rm -f $remoteReportFileLiteral
 cd $remoteAppDirLiteral
-docker compose run --rm --no-deps -v $reportVolumeLiteral -e INTRUOYI_EXTRA_ARGS=$extraArgsLiteral backend
+test -f $remoteEnvNextLiteral
+set +e
+docker compose --env-file $remoteEnvNextLiteral run --rm --no-deps -v $reportVolumeLiteral -e INTRUOYI_EXTRA_ARGS=$extraArgsLiteral backend
+`$route_snapshot_exit=`$?
+set -e
+if [ -f $remoteReportFileLiteral ]; then
+  cat $remoteReportFileLiteral
+else
+  echo 'ROUTE_SNAPSHOT_IDENTITY_REPORT_MISSING: route snapshot identity hook did not write its report'
+fi
+test "`$route_snapshot_exit" -eq 0
 test -f $remoteReportFileLiteral
 grep -q '"status" : "READY"' $remoteReportFileLiteral
 grep -q '"blockerCount" : 0' $remoteReportFileLiteral

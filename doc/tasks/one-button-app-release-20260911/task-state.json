@@ -3,7 +3,7 @@
   "task_id": "one-button-app-release-20260911",
   "mode": "full",
   "status": "executing",
-  "current_phase": "P2",
+  "current_phase": "P3",
   "phase_statuses": [
     {
       "phase_id": "P1",
@@ -185,10 +185,11 @@
         "r45 local package was retired because interrupted cache only contained evidence/ and required-sql/ and lacked manifest.json; remote test release directory was absent and test .env stayed on release-20260913-one-button-app-r21.",
         "r46 source freeze plan PASS: maintenance clean 371cc8e844cad93cfb253c2838c69b27eb27b388, application clean 4a9518d4ea56e05155e481499d7659f67f750371; next build tag is release-20260915-one-button-app-r46 and must be launched from the maintenance worktree root.",
         "r46 local and NAS package integrity passed, but r46 is retired before publish because deploy skip actions did not clear stale FAILED migration ledger rows; maintenance fix records SKIP_ENV_NOT_ALLOWED as SKIPPED_ENV_NOT_ALLOWED and SKIP_SCOPE_EXCLUDED as SKIPPED_SCOPE_EXCLUDED, with 145 regression tests PASS and PowerShell AST PASS. Next build tag is release-20260915-one-button-app-r47.",
-        "r47 source freeze plan PASS: maintenance clean 54a4630fcfa243ec18c3306f797c9dec573cb54d, application clean 4a9518d4ea56e05155e481499d7659f67f750371; local cache, deploy-control and remote test release directory are absent before build."
+        "r47 source freeze plan PASS: maintenance clean 54a4630fcfa243ec18c3306f797c9dec573cb54d, application clean 4a9518d4ea56e05155e481499d7659f67f750371; local cache, deploy-control and remote test release directory are absent before build.",
+        "r77 build-release/local manifest validation/NAS READY/test package download/image load passed, but deploy-release failed before version switch because route-snapshot-identity hook used current .env old image instead of .env.next package image and omitted structured report-missing diagnostics; maintenance fix RED/GREEN passed, next tag is release-20260916-one-button-app-r78."
       ],
-      "notes": "P3 target readonly preflight coverage continues; r15/r23/r24/r25/r26/r27/r28/r29/r30/r31/r32/r33/r34/r35/r36/r37/r38/r39/r40/r41/r42/r43/r44/r45/r46/r47/r48 remain retired. R48 reached test required SQL before version switch and failed on B04091 cleaning temperature empty candidate hard-block; app source 63e57513f now makes B04091/B09353 empty-candidate migrations no-op and target preflights pass on the test server. Next build must use release-20260915-one-button-app-r49 from the maintenance worktree root; after this source-freeze documentation commit, use the resulting clean maintenance HEAD with application source 63e57513f480242dd8e3154ee0be789867ccba1f.",
-      "last_reviewed_at": "2026-09-15T02:29:00+08:00",
+      "notes": "P3 target readonly preflight and deploy transaction coverage continues; r23-r77 remain retired and must not be reused. R77 failed before version switch at the route-snapshot-identity runtime hook: SQL ledger had no FAILED migrations, .env.next still pointed to R77, current .env and running containers remained old. The maintenance hook now binds docker compose run to .env.next and emits ROUTE_SNAPSHOT_IDENTITY_REPORT_MISSING when no report is written. Next build must use release-20260916-one-button-app-r78 from the maintenance worktree root after the fix commit, with application source 40765346359700641bc3df93d57c4db27ca4741a.",
+      "last_reviewed_at": "2026-09-16T07:12:36+08:00",
       "acceptance_criteria": [
         {
           "ac_id": "P3-AC1",
