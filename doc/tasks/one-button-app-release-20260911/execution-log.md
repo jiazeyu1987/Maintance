@@ -931,3 +931,12 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - BDD: 新迁移参数与批准 hook -> Given migration SQL 需要顺序、session profile 或受批准的 hook / When 维护脚本解析 manifest / Then 只能读取 SQL 元数据声明，不得按 migrationId 增加隐式分支。
 - GREEN: `applyOrder/sessionProfile/approvedHook/resultAssertion` 已由通用 manifest/preflight 合同传递；现有脚本仅按声明字段排序、生成 session preamble 与调用批准 hook。无 fallback、无吞异常。
 - BLOCKER: 后台阶段事件、heartbeat/recovery scheduler、真实迁移隔离数据库与完整 publish-test 仍未闭环；本 slice 不启动 R56。
+
+## r55 retired and r56 source freeze
+
+- RED: deploy-release-r55-batch-version-columns -> FAIL，测试服 `deploy-release` 在版本切换前失败于 `20260829_mes_old_form_template_binding_switch.sql`，真实表 `mes_pro_batch_record_version` 缺少 `child_form_member_count/child_form_member_hash`，MySQL ERROR 1054；operation lock 已释放为 FAILED，测试服 `.env` 与实际镜像仍未切换到 R55。
+- GREEN: app-batch-version-schema-contract-fix -> PASS，应用仓提交 `3098b3319` 移除未发布字段引用，target preflight 增加当前正式 21 列 `information_schema.columns` 检查；随后应用仓继续提交 `edeb22846` 与 `f32f5b4f`，当前应用 source freeze 以 `f32f5b4fd9b6be77c4b6358b7fd5c55a3892f1e4` 为准。
+- GREEN: local-targeted-regression-r55-fix -> PASS，`python -X utf8 -m pytest -q IntRuoyiBackend\script\tests\test_mes_old_form_template_binding_switch_sql.py IntRuoyiBackend\script\tests\test_release_target_preflight_files.py --basetemp .tmp-r55-batch-record-version-regression` -> 11 passed；临时 pytest 目录已删除，应用 worktree clean。
+- USER_AUTHORIZATION: 用户继续并明确授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。
+- GREEN: experience-preflight-r56 -> PASS，已复核 without-data/app-release、目标只读预检、manifest forbidden scan、NAS JSON、PowerShell、测试服发布、server-access、release-backup-restore 与 worktree 门禁；R55 因迁移 SQL schema contract 失败退休且不得复用。
+- PLAN: 使用新 releaseTag `release-20260915-one-button-app-r56`；`build-release` 和后续 `deploy-release` 均从维护 worktree 根启动，显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`ExpectedMaintenanceCommit`、`ExpectedApplicationCommit`、`ExpectedFrontendCommit`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。构建前本地缓存、deploy-control 与测试服远端 R56 目录必须不存在。

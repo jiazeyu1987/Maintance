@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r50 均已判废且不得复用；R49 本地包完整性和 manifest validation 通过，但测试服 required SQL 在版本切换前失败于 `20260812_mes_qa_pressure_pump_idi_seed.sql` 的 IDI 旧 QA 源空基线硬阻断，operation lock 已释放为 FAILED，测试服 `.env` 未切换到 R49。应用仓已提交 `dc8edfe5`，将 IDI QA 旧源为空时改为 no-op，并通过本机 RED/GREEN、相邻回归与测试服只读 preflight。R50 因重启/中断只留下本地半成品缓存，缺少 `manifest.json`，不得发布或复用。下一步使用新 releaseTag `release-20260915-one-button-app-r51` 从维护仓提交后的 clean HEAD 和应用仓 `dc8edfe5` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r55 均已判废且不得复用；R55 本地包、manifest validation 与 NAS READY 均通过，但测试服 `deploy-release` 在版本切换前失败于 `20260829_mes_old_form_template_binding_switch.sql`，原因是 SQL 引用真实表 `mes_pro_batch_record_version` 不存在的 `child_form_member_count/child_form_member_hash`。应用仓已提交 `3098b3319` 修复该迁移列契约并通过本机定向回归，后续来源绑定、取消安全和迁移元数据合同提交推进到 `f32f5b4f`。下一步使用新 releaseTag `release-20260915-one-button-app-r56` 从维护仓提交后的 clean HEAD 和应用仓 `f32f5b4fd9b6be77c4b6358b7fd5c55a3892f1e4` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
 
 ## Verification Evidence
 
@@ -82,7 +82,7 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 
 ## Current Phase
 
-- P3 正在执行：r23-r50 已判废；R49 已证明本地包、manifest gate、NAS/远端包复制、`.env.next` 写入和 required SQL 入账链路可通过，且部署在 `.env` 切换前被 IDI 旧 QA 源空基线根因阻断；R50 是重启/中断半成品缓存。应用仓当前可发布提交为 `dc8edfe5cf1e4daa84cc9523f0a5c8a1a7c5be34`。下一轮使用新 releaseTag `release-20260915-one-button-app-r51` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23-r55 已判废；R55 已证明本地包、manifest gate、NAS READY、`.env.next` 写入和 required SQL 入账链路可通过，且部署在 `.env` 切换前被 20260829 批记录版本真实列契约阻断。应用仓当前可发布提交为 `f32f5b4fd9b6be77c4b6358b7fd5c55a3892f1e4`。下一轮使用新 releaseTag `release-20260915-one-button-app-r56` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 
