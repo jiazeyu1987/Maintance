@@ -883,3 +883,13 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 
 - CORRECTION: 上一条 r53 记录把“测试服远端 release 目录不存在”误写成“NAS READY 缺失”；独立连接受控 NAS `\\172.30.30.4\IT共享\Backup/ReleasePackage\release-20260915-one-button-app-r53` 后确认根目录完整包含 `manifest.json`、镜像 tar、required-sql、ops-runtime、resources、smoke 和 evidence，且 manifest 存在。测试服远端目录在 deploy-release 下载前不存在是预期状态，不构成 R53 判废。
 - STATUS: R53 恢复为可发布 READY 包；R54 暂不启动、不占用 tag。下一步使用同一 R53 `packageDigest=2fdd3ff0184c9c3db3fc5f1394a4baccffa642795873f53dd6a7fc4d766726f6` 执行测试服 `deploy-release`。
+
+## r54 retired: maintenance request log dirty at source freeze
+
+- RED: build-release-r54-source-dirty -> FAIL，脚本在 SQL 扫描、测试、Maven、Docker、NAS 或服务器写入前返回 `SOURCE_DIRTY: maintenance`；原因是本次 R53 更正/应用修复证据追加到了 `docs/request-command-log.md` 但尚未提交，R54 未生成包或产生新远端副作用。
+- RESULT: R54 未占用 READY 包，按失败 tag 退休且不得复用。提交维护仓记录后使用新 releaseTag `release-20260915-one-button-app-r55`，source freeze 应绑定应用提交 `c82ee4841`。
+
+## r55 source freeze
+
+- GREEN: source-freeze-r55-plan -> PASS，维护 worktree 将在本段记录提交后保持 clean；应用 worktree `D:\IntRuoyiWorktree\r260911-release-button\a` clean，应用迁移修复提交为 `c82ee4841`，R54 仅在 source freeze 阶段失败，未进入昂贵构建。
+- PLAN: 使用新 releaseTag `release-20260915-one-button-app-r55`；`build-release` 和 `deploy-release` 均从维护 worktree 根启动，并显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。
