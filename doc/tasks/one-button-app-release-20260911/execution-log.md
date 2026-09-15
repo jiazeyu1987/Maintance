@@ -917,3 +917,8 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - RED: 旧 `Invoke-StandardReleaseContractTests` 固定调用 `test_test_tenant1_all_role_permission_sync_sql.py`，新增脚本合同先失败。
 - GREEN: 维护仓脚本新增 `Assert-ApplicationMigrationTestsDiscovered`，根据冻结应用提交差异查找对应迁移测试并缺失即阻断；`test_release_target_data_preflight.py` 与相邻 schema rehearsal 回归 37 PASS，PowerShell AST PASS。
 - BLOCKER: 后台阶段事件、底层取消/恢复 scheduler、统一迁移隔离执行和版本化 migration hook/参数声明仍未实现，不能生成 R56 或宣称通用发布完成。
+
+## Source approval follow-up
+
+- GREEN: 应用 worktree 已将来源 commit 持久化、build 参数绑定和运行中 operation 取消 fail-closed 检查提交为 `edeb22846`；应用 targeted orchestrator 7 tests、RuntimeControlServiceImpl 65 tests PASS。
+- BLOCKER: 该提交只关闭来源绑定和取消误报风险，不能替代底层终止 API、后台 scheduler、真实阶段事件或统一迁移隔离执行；维护仓保持 blocked，不启动 R56。
