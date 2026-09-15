@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r56 均已判废且不得复用；R56 在构建前应用迁移测试自动发现阶段被 `MIGRATION_TEST_MISSING: 20260812_mes_route_version_snapshot_identity_enforce` 阻断，未形成包、未上传 NAS、未写测试服。应用仓已提交 `1cdd51be5` 补齐同名迁移合同测试并通过定向/相邻回归。下一步使用新 releaseTag `release-20260915-one-button-app-r57` 从维护仓提交后的 clean HEAD 和应用仓 `1cdd51be514f84c7352b164604216e32796a6a83` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r57 均已判废且不得复用；R57 在构建前维护脚本回归阶段发现 deterministic preflight 固定向量陈旧，未形成包、未上传 NAS、未写测试服。维护仓已完成测试向量修复并通过定向/相邻回归。下一步使用新 releaseTag `release-20260915-one-button-app-r58` 从维护仓提交后的 clean HEAD 和应用仓 `1cdd51be514f84c7352b164604216e32796a6a83` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
 
 ## Verification Evidence
 
@@ -82,7 +82,7 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 
 ## Current Phase
 
-- P3 正在执行：r23-r56 已判废；R56 已证明新迁移测试自动发现门禁能在后端打包/Docker/NAS/测试服写入前阻断缺失测试。应用仓当前可发布提交为 `1cdd51be514f84c7352b164604216e32796a6a83`。下一轮使用新 releaseTag `release-20260915-one-button-app-r57` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23-r57 已判废；R57 已证明构建前维护脚本回归能在后端打包/Docker/NAS/测试服写入前阻断陈旧 deterministic preflight 固定向量。应用仓当前可发布提交为 `1cdd51be514f84c7352b164604216e32796a6a83`。下一轮使用新 releaseTag `release-20260915-one-button-app-r58` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 

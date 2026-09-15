@@ -124,7 +124,7 @@ def test_runner_writes_complete_deterministic_binding_evidence(tmp_path: Path) -
     }
     assert all(value.startswith("sha256:") for value in evidence["bindings"].values())
     assert evidence["bindings"]["preflightFingerprint"] == (
-        "sha256:286afd5cadf65cf236c45f114a550427ea0e002c87be3304be4e03bbed54ef82"
+        "sha256:b95cc7cb57c8eb8e222b33fc0efcf8dd6f44d1f065c5ab45dca93ea97981dbf8"
     )
     assert evidence["planner"]["status"] == "passed"
     assert evidence["planner"]["items"][0]["action"] == "APPLY"
