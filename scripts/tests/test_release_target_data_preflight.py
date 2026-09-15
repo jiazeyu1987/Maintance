@@ -188,6 +188,14 @@ def test_new_runtime_regressions_are_mandatory_build_gates():
         assert name in body
 
 
+def test_application_migration_discovery_ignores_target_preflight_support_sql():
+    script = (ROOT / 'ops/deploy/publish-int-ruoyi.ps1').read_text(encoding='utf-8')
+    start = script.index('function Assert-ApplicationMigrationTestsDiscovered')
+    body = script[start:script.index('\nfunction ', start + 1)]
+    assert "IntRuoyiBackend/sql/mysql/target-preflight/" in body
+    assert "-notmatch" in body
+
+
 def test_source_approval_commits_are_required_and_forwarded_to_release_script():
     script = (ROOT / 'ops/deploy/publish-int-ruoyi.ps1').read_text(encoding='utf-8')
     assert '[string]$ExpectedMaintenanceCommit' in script

@@ -4374,6 +4374,7 @@ function Invoke-StandardReleaseContractTests {
 function Assert-ApplicationMigrationTestsDiscovered {
     $applicationRoot = Get-ReleaseGitValue -RepoPath $backendRepo -Arguments @('rev-parse', '--show-toplevel') -Purpose 'application git root'
     $diffFiles = @(Get-ReleaseGitValue -RepoPath $applicationRoot -Arguments @('diff', '--name-only', 'HEAD^', 'HEAD', '--', 'IntRuoyiBackend/sql/mysql') -Purpose 'application migration source diff' |
+        Where-Object { [string]$_ -notmatch '^IntRuoyiBackend/sql/mysql/target-preflight/' } |
         Where-Object { [string]$_ -match '(^|/)20[0-9]{6}_[A-Za-z0-9_.-]+\.sql$' })
     $migrationIds = @($diffFiles | ForEach-Object {
         $name = Split-Path -Leaf ([string]$_)
