@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r71 均已判废且不得复用；R69 已修复 migration metadata 漂移，R70 已判定为中断半成品，R71 在本地隔离 MySQL schema rehearsal 阶段发现 `20260624_dcc_view_matrix_independent_seed.sql` 漏写 `dcc_file_category.lifecycle_stage`。应用仓已将 lifecycle_stage 纳入显式种子合同并提交 `e554302ef9b546910abafa1b6c35b742c0346cd0`，定向与相邻迁移回归 31 PASS。下一步使用新 releaseTag `release-20260916-one-button-app-r72` 从维护仓本段记录提交后的 clean HEAD 和应用仓 `e554302ef9b546910abafa1b6c35b742c0346cd0` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r72 均已判废且不得复用；R71 在本地隔离 MySQL schema rehearsal 阶段发现 `20260624_dcc_view_matrix_independent_seed.sql` 漏写 `dcc_file_category.lifecycle_stage`，应用仓已提交 `e554302ef9b546910abafa1b6c35b742c0346cd0` 并通过 31 PASS。R72 随后在发布脚本后端合同测试阶段暴露 Windows 跨盘 Maven/Surefire forked JVM 启动卡死；维护仓已补 `Invoke-CheckedMavenCommand`，在 Maven 命令期间显式注入 `-Djdk.net.URLClassPath.disableClassPathURLCheck=true` 并恢复原 `JDK_JAVA_OPTIONS`，发布入口回归 166 PASS、PowerShell AST PASS。下一步提交维护仓修复后使用新 releaseTag `release-20260916-one-button-app-r73` 从 clean HEAD 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
 
 ## Verification Evidence
 
@@ -82,7 +82,7 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 
 ## Current Phase
 
-- P3 正在执行：r23-r71 已判废；R71 是构建前 schema rehearsal 失败，未进入后端打包、Docker build、NAS READY 或测试服发布。应用仓当前可发布提交为 `e554302ef9b546910abafa1b6c35b742c0346cd0`，维护仓当前可发布提交将在本段记录提交后固定。下一轮使用新 releaseTag `release-20260916-one-button-app-r72` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23-r72 已判废；R72 是构建前 Maven/Surefire 启动期工具链卡死，未形成包、未上传 NAS、未写测试服。应用仓当前可发布提交为 `e554302ef9b546910abafa1b6c35b742c0346cd0`，维护仓当前可发布提交将在本段修复记录提交后固定。下一轮使用新 releaseTag `release-20260916-one-button-app-r73` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 

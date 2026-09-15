@@ -26,3 +26,14 @@
 - 58 个实际迁移前置检查文件仍缺失；已验证应用分支中的 16 个检查及 schema/menu 拆分需要选择性融合，不得覆盖当前新增迁移。
 - 部署前重新检查、自包含验证器、NAS READY、真实页面验收、合并及收尾尚未验证。P1-P5 全任务不予放行。
 - 独立审查反馈已落实到本轮回归；独立全任务复审仍待后续补齐检查后完成，不能把本轮局部 GREEN 写成任务完成。
+
+## R72 Maven/Surefire Startup Guard
+
+- Bug summary and expected behavior: 标准按钮发布在构建前运行后端 Maven 合同测试时，必须在 Windows 跨盘 worktree/Maven repository/surefire temp 组合下稳定进入测试并可终止；不得长期卡在 forked JVM 启动期，也不得跳过 Maven 门禁。
+- Reproduction command or path: R72 `build-release` 卡在 `Invoke-StandardReleaseContractTests` 的 Maven 命令；`jcmd` 显示 surefire 子进程主线程停在 `ForkedBooter.lookupDecoderFactory`，dumpstream 提示 Boot Manifest-JAR 绝对 classpath 与 `other has different root`。
+- Root cause: 发布脚本没有在 Maven 命令期间向 JDK 21 / Surefire forked JVM 注入 `-Djdk.net.URLClassPath.disableClassPathURLCheck=true`，C/D/E 跨盘路径组合触发 classpath URL 检查启动期阻塞。
+- Regression test added: `scripts/tests/test_release_workflow_preflight.py::test_backend_contract_maven_uses_windows_surefire_classpath_guard`。
+- RED command and expected failure: `python -X utf8 -m pytest -q scripts\tests\test_release_workflow_preflight.py::test_backend_contract_maven_uses_windows_surefire_classpath_guard --basetemp .tmp-r72-surefire-guard-red` -> FAIL，缺少 `Invoke-CheckedMavenCommand` 和 `JDK_JAVA_OPTIONS` guard。
+- GREEN command and passing result: 同目标测试 -> PASS；相邻发布入口回归 `test_release_workflow_preflight.py test_release_target_data_preflight.py test_release_sql_preflight_gate.py test_release_package_governance.py` -> PASS，166 tests；PowerShell AST -> PASS；直接复跑发布脚本同款 Maven 合同命令 10 tests PASS，总耗时 6.468s。
+- Risk and regression scope: 只改变发布脚本对 Maven 命令的临时环境，不修改业务代码、不弱化测试、不跳过后端合同；`finally` 恢复原 `JDK_JAVA_OPTIONS`，避免污染后续 node/docker/ssh 阶段。
+- Blockers and follow-up actions: R72 半成品判废不复用；提交维护仓修复后使用 R73 重新 build-release，并以同一 tag 继续测试服 publish 验证。

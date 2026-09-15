@@ -1,5 +1,17 @@
 # CI/CD Evidence
 
+## 2026-09-16 one-button app-release Maven/Surefire guard
+
+- Environments and deployment targets: 本次只修改维护仓发布脚本和合同测试；R72 在本机构建前 Maven 门禁中断，未生成发布包、未上传 NAS、未写测试服；正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步和全量数据库同步均未执行。
+- Build/package commands: R72 判废；下一轮必须使用新 releaseTag `release-20260916-one-button-app-r73` 从当前维护/app clean HEAD 重新 `build-release`，继续固定 `PublishScope=app-release`、`SkipDatabaseSync`、`SkipMinioSync`。
+- Pipeline files changed: `ops/deploy/publish-int-ruoyi.ps1`、`scripts/tests/test_release_workflow_preflight.py`、任务执行记录和本 CI/CD evidence。
+- Required secrets and owners: 未新增 secret；NAS/SSH/MySQL/EDHR 配置仍由既有运行控制台/目标环境提供，修复不输出或提交 secret。
+- Artifact and release output: R72 无 `manifest.json`、镜像 tar、NAS READY 或测试服 operation；卡点为 Maven/Surefire forked JVM 启动期。
+- RED verification evidence: `python -X utf8 -m pytest -q scripts\tests\test_release_workflow_preflight.py::test_backend_contract_maven_uses_windows_surefire_classpath_guard --basetemp .tmp-r72-surefire-guard-red` -> FAIL。
+- GREEN verification evidence: 同目标测试 -> PASS；相邻回归 `test_release_workflow_preflight.py test_release_target_data_preflight.py test_release_sql_preflight_gate.py test_release_package_governance.py` -> 166 passed；`publish-int-ruoyi.ps1` PowerShell AST -> PASS；直接复跑发布脚本同款 Maven 合同命令 10 tests PASS，总耗时 6.468s。
+- Manual approvals and blockers: 用户已授权测试服/NAS app-release 续跑；R72 已中断并判废，必须提交脚本门禁后用 R73 重建，不得继续 R72。
+- Rollback procedure and validation: 回滚本次维护提交会恢复 Windows 跨盘 Surefire 启动卡死风险；若回滚，必须禁止一键发布构建并重跑上述 RED/GREEN 用例。
+
 ## 2026-09-14 one-button app-release required SQL empty-candidate gate
 
 - Environments and deployment targets: 测试服 `172.30.30.58` 仅在用户授权范围内执行 `app-release deploy-release`；正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步和全量数据库同步均未执行。

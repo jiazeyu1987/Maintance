@@ -994,6 +994,27 @@ function Invoke-CheckedCommand {
     }
 }
 
+function Invoke-CheckedMavenCommand {
+    param(
+        [string[]]$ArgumentList = @(),
+        [string]$WorkingDirectory = $null
+    )
+
+    $requiredJdkOption = '-Djdk.net.URLClassPath.disableClassPathURLCheck=true'
+    $previousJdkJavaOptions = $env:JDK_JAVA_OPTIONS
+    try {
+        $currentJdkJavaOptions = if ($null -eq $previousJdkJavaOptions) { '' } else { $previousJdkJavaOptions.Trim() }
+        if ([string]::IsNullOrWhiteSpace($currentJdkJavaOptions)) {
+            $env:JDK_JAVA_OPTIONS = $requiredJdkOption
+        } elseif ($currentJdkJavaOptions -notmatch [regex]::Escape($requiredJdkOption)) {
+            $env:JDK_JAVA_OPTIONS = "$currentJdkJavaOptions $requiredJdkOption"
+        }
+        Invoke-CheckedCommand -FilePath 'mvn' -ArgumentList $ArgumentList -WorkingDirectory $WorkingDirectory
+    } finally {
+        $env:JDK_JAVA_OPTIONS = $previousJdkJavaOptions
+    }
+}
+
 function Invoke-CheckedShell {
     param(
         [Parameter(Mandatory = $true)]
@@ -4356,7 +4377,7 @@ function Invoke-StandardReleaseContractTests {
     $maintenanceRoot = (Resolve-Path (Join-Path $scriptDir '..\..')).Path
 
     Info 'Running backend contract tests'
-    Invoke-CheckedCommand -FilePath 'mvn' -ArgumentList @(
+    Invoke-CheckedMavenCommand -ArgumentList @(
         '-f', (Join-Path $backendRepo 'pom.xml'),
         '-pl', 'yudao-module-infra', '-am',
         '-Dtest=ReleaseWorkflowContractTest,ReleaseSourceFreezeTest,ReleaseWorkflowGateOrderTest,ReleaseDigestVectorTest',
@@ -6354,7 +6375,7 @@ Invoke-BuildReleaseSchemaOnlyMigrationRehearsal
 
 if ($publishBackend) {
 Info 'Building backend jar'
-Invoke-CheckedCommand -FilePath 'mvn' -ArgumentList @(
+Invoke-CheckedMavenCommand -ArgumentList @(
     '-f', (Join-Path $backendRepo 'pom.xml'),
     '-pl', 'yudao-server',
     '-am',

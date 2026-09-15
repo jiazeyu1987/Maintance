@@ -88,6 +88,17 @@ def test_release_script_pytest_runs_from_maintenance_repo_root() -> None:
     assert "-WorkingDirectory $maintenanceRoot" in release_script_tests
 
 
+def test_backend_contract_maven_uses_windows_surefire_classpath_guard() -> None:
+    source = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    tests = _function(source, "Invoke-StandardReleaseContractTests", "Get-ReleaseSchemaDigest")
+    helper = _function(source, "Invoke-CheckedMavenCommand", "Invoke-CheckedShell")
+
+    assert "Invoke-CheckedMavenCommand -ArgumentList @(" in tests
+    assert "$env:JDK_JAVA_OPTIONS" in helper
+    assert "-Djdk.net.URLClassPath.disableClassPathURLCheck=true" in helper
+    assert "finally" in helper and "$env:JDK_JAVA_OPTIONS = $previousJdkJavaOptions" in helper
+
+
 def test_freeze_evidence_has_two_git_roots_and_three_source_roles() -> None:
     source = PUBLISH_SCRIPT.read_text(encoding="utf-8")
     freeze = _function(source, "Assert-ReleaseSourceFreeze", "Invoke-StandardReleaseContractTests")
