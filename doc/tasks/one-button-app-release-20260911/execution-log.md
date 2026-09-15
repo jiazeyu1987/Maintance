@@ -1040,3 +1040,9 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - GREEN: release-script-pytest-maintenance-cwd-fix -> PASS，`Invoke-StandardReleaseContractTests` 解析 `$maintenanceRoot = scriptDir/../..`，并对维护仓 pytest 与 PowerShell 摘要向量校验显式传入 `-WorkingDirectory $maintenanceRoot`。
 - REGRESSION: `python -X utf8 -m pytest -q scripts/tests/test_release_workflow_preflight.py scripts/tests/test_release_sql_preflight_gate.py scripts/tests/test_release_package_governance.py scripts/tests/test_app_release_package_governance.py --basetemp .tmp-r67-release-pytest-cwd-regression` -> PASS，155 passed；`publish-int-ruoyi.ps1` PowerShell AST -> PASS。
 - RESULT: R67 判废且不得复用。提交本修复后使用全新 releaseTag `release-20260916-one-button-app-r68`，source freeze 绑定维护仓修复提交后的 clean HEAD 与应用仓 `053bb3c23890eca08dfaa3caa4bcf48f7af1d8ed`；范围仍为测试服 `app-release/without-data`，正式服和数据同步保持零写入。
+
+## r68 source freeze
+
+- STATUS: 2026-09-16 02:20:41+08:00 接手复核确认，真实最新任务记录位于维护隔离 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m`；主工作区任务日志停在 R53 不是发布进程仍在运行，而是旧工作区记录未同步。
+- GREEN: experience-preflight-r68 -> PASS，已复核 without-data/app-release、source freeze、半成品不可复用、target readonly preflight、manifest forbidden scan、NAS JSON、PowerShell UTF-8/worktree、测试服发布、server-access、release-backup-restore 与受保护 NAS 门禁；本轮仍只允许测试服 `172.30.30.58` 的 `build-release -> publish-test`，禁止正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步和全量数据库复制。
+- PLAN: 使用新 releaseTag `release-20260916-one-button-app-r68`；先提交本段任务记录以保持维护 worktree clean，再从维护 worktree 根执行 `build-release`，显式传入 `Component=intruoyi`、`SourceSelectionId=r68-approved-sources`、`BackendRepoRoot`、`FrontendRepoRoot`、`ExpectedMaintenanceCommit`、`ExpectedApplicationCommit`、`ExpectedFrontendCommit`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。若 R68 失败，先冻结失败证据并按通用按钮发布门禁修根因，再换全新 releaseTag。
