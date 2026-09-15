@@ -79,6 +79,15 @@ def test_nas_config_path_resolves_against_maintenance_repo_not_caller_cwd() -> N
     assert "[System.IO.File]::ReadAllText($resolvedNasConfigPath" in reader
 
 
+def test_release_script_pytest_runs_from_maintenance_repo_root() -> None:
+    source = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    tests = _function(source, "Invoke-StandardReleaseContractTests", "Get-ReleaseSchemaDigest")
+    release_script_tests = tests[tests.index("Info 'Running release script tests'"):]
+
+    assert "$maintenanceRoot = (Resolve-Path (Join-Path $scriptDir '..\\..')).Path" in tests
+    assert "-WorkingDirectory $maintenanceRoot" in release_script_tests
+
+
 def test_freeze_evidence_has_two_git_roots_and_three_source_roles() -> None:
     source = PUBLISH_SCRIPT.read_text(encoding="utf-8")
     freeze = _function(source, "Assert-ReleaseSourceFreeze", "Invoke-StandardReleaseContractTests")

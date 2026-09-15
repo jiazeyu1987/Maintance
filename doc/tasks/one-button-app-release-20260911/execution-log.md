@@ -1030,3 +1030,13 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - GREEN: nas-config-maintenance-root-path-fix -> PASS，`publish-int-ruoyi.ps1` 新增 `Resolve-MaintenanceRepoRelativeFilePath`，`Read-NasReleaseConfig` 对相对路径先按 `scriptDir/../..` 的维护仓根解析，绝对路径仍按原路径读取；未引入 fallback、未吞异常、未改变 NAS JSON 字段校验。
 - REGRESSION: `python -X utf8 -m pytest -q scripts/tests/test_release_workflow_preflight.py scripts/tests/test_release_sql_preflight_gate.py scripts/tests/test_release_package_governance.py scripts/tests/test_app_release_package_governance.py --basetemp .tmp-r66-nas-path-regression` -> PASS，154 passed；`publish-int-ruoyi.ps1` PowerShell AST -> PASS。
 - RESULT: R66 判废且不得复用。提交本修复后使用全新 releaseTag `release-20260916-one-button-app-r67`，source freeze 绑定维护仓修复提交后的 clean HEAD 与应用仓 `053bb3c23890eca08dfaa3caa4bcf48f7af1d8ed`；范围仍为测试服 `app-release/without-data`，正式服和数据同步保持零写入。
+
+## r67 retired: release script pytest must use maintenance-root cwd
+
+- RED: build-release-r67-release-script-test-cwd -> FAIL，R67 从主工作区 cwd 调用维护隔离脚本，已越过 NAS 路径、后端合同、前端静态合同与 `ts:check`，但在 `Running release script tests` 阶段失败；Python 以调用方 cwd 导入到主工作区旧 `ops.release` 包，导致 `test_release_migration_preflight_matrix.py` / `test_release_schema_rehearsal.py` 报 `ModuleNotFoundError` / `ImportError`。R67 未进入后端打包、Docker、NAS 上传或测试服写入，本地包目录和 deploy-control 目录均不存在。
+- ROOT_CAUSE: `Invoke-StandardReleaseContractTests` 对发布脚本 pytest 传了绝对测试文件路径，但没有固定 `WorkingDirectory`；Python import path 仍受调用方 cwd 影响。按钮后台、运行控制台或人工从任意目录启动都会有同类漂移风险。
+- BDD: 发布脚本测试固定维护仓导入根 -> Given build-release 由 ReleaseWorkflow 后台从非维护仓 cwd 启动 / When 执行维护仓发布脚本 pytest / Then pytest 工作目录必须固定为发布脚本所在维护仓根，确保 `ops.release.*` 从冻结维护源导入，不能从主工作区或旧源码导入。
+- RED: `python -X utf8 -m pytest -q scripts/tests/test_release_workflow_preflight.py::test_release_script_pytest_runs_from_maintenance_repo_root --basetemp .tmp-r67-release-pytest-cwd-red` -> FAIL，旧脚本未设置 `$maintenanceRoot` / `-WorkingDirectory $maintenanceRoot`。
+- GREEN: release-script-pytest-maintenance-cwd-fix -> PASS，`Invoke-StandardReleaseContractTests` 解析 `$maintenanceRoot = scriptDir/../..`，并对维护仓 pytest 与 PowerShell 摘要向量校验显式传入 `-WorkingDirectory $maintenanceRoot`。
+- REGRESSION: `python -X utf8 -m pytest -q scripts/tests/test_release_workflow_preflight.py scripts/tests/test_release_sql_preflight_gate.py scripts/tests/test_release_package_governance.py scripts/tests/test_app_release_package_governance.py --basetemp .tmp-r67-release-pytest-cwd-regression` -> PASS，155 passed；`publish-int-ruoyi.ps1` PowerShell AST -> PASS。
+- RESULT: R67 判废且不得复用。提交本修复后使用全新 releaseTag `release-20260916-one-button-app-r68`，source freeze 绑定维护仓修复提交后的 clean HEAD 与应用仓 `053bb3c23890eca08dfaa3caa4bcf48f7af1d8ed`；范围仍为测试服 `app-release/without-data`，正式服和数据同步保持零写入。

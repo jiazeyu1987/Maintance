@@ -4349,6 +4349,8 @@ function Assert-ReleaseSourceFreeze {
 }
 
 function Invoke-StandardReleaseContractTests {
+    $maintenanceRoot = (Resolve-Path (Join-Path $scriptDir '..\..')).Path
+
     Info 'Running backend contract tests'
     Invoke-CheckedCommand -FilePath 'mvn' -ArgumentList @(
         '-f', (Join-Path $backendRepo 'pom.xml'),
@@ -4386,11 +4388,11 @@ function Invoke-StandardReleaseContractTests {
         (Join-Path $scriptDir '..\..\scripts\tests\test_release_schema_rehearsal.py'),
         (Join-Path $scriptDir '..\..\scripts\tests\test_release_build_preflight_cache.py'),
         '--basetemp', $pytestRoot
-    )
+    ) -WorkingDirectory $maintenanceRoot
     Invoke-CheckedCommand -FilePath 'powershell.exe' -ArgumentList @(
         '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
         (Join-Path $scriptDir '..\..\scripts\tests\verify-release-digest-vector.ps1')
-    )
+    ) -WorkingDirectory $maintenanceRoot
 }
 
 function Assert-ApplicationMigrationTestsDiscovered {

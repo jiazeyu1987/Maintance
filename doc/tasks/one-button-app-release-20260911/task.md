@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r66 均已判废且不得复用；R66 在构建前因 `NasConfigPath` 相对路径依赖调用方 cwd fail-fast，未生成本地包目录、未进入 Maven/Docker/NAS/测试服写入。维护仓已修复 `publish-int-ruoyi.ps1`，将相对 NAS 配置路径锚定到发布脚本所在维护仓根，并通过发布入口回归 154 PASS。下一步使用新 releaseTag `release-20260916-one-button-app-r67` 从维护仓修复提交后的 clean HEAD 和应用仓 `053bb3c23890eca08dfaa3caa4bcf48f7af1d8ed` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r67 均已判废且不得复用；R67 从主工作区 cwd 调用隔离脚本时，在发布脚本 pytest 阶段导入到旧主工作区 `ops.release`，未进入 Maven 打包/Docker/NAS/测试服写入。维护仓已修复 `Invoke-StandardReleaseContractTests`，将发布脚本 pytest 与摘要向量校验工作目录固定为维护仓根，并通过发布入口回归 155 PASS。下一步使用新 releaseTag `release-20260916-one-button-app-r68` 从维护仓修复提交后的 clean HEAD 和应用仓 `053bb3c23890eca08dfaa3caa4bcf48f7af1d8ed` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
 
 ## Verification Evidence
 
@@ -82,7 +82,7 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 
 ## Current Phase
 
-- P3 正在执行：r23-r66 已判废；R66 是构建前路径合同失败，未生成包、未上传 NAS、未写测试服。应用仓当前可发布提交为 `053bb3c23890eca08dfaa3caa4bcf48f7af1d8ed`，维护仓当前可发布提交将在本段修复提交后固定。下一轮使用新 releaseTag `release-20260916-one-button-app-r67` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23-r67 已判废；R67 是构建前发布脚本 pytest cwd 合同失败，未生成包、未上传 NAS、未写测试服。应用仓当前可发布提交为 `053bb3c23890eca08dfaa3caa4bcf48f7af1d8ed`，维护仓当前可发布提交将在本段修复提交后固定。下一轮使用新 releaseTag `release-20260916-one-button-app-r68` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 
