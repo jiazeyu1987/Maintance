@@ -878,3 +878,8 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - USER_AUTHORIZATION: 用户继续并明确授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。
 - GREEN: experience-preflight-r54 -> PASS，R53 已在 NAS READY 门禁失败后退休；重新复核 without-data/app-release、manifest forbidden scan、NAS JSON、PowerShell、测试服发布、server-access、release-backup-restore 与 worktree 门禁。
 - PLAN: 使用新 releaseTag `release-20260915-one-button-app-r54`；`build-release` 和 `deploy-release` 均从维护 worktree 根启动，并显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。
+
+## r53 correction: NAS READY verified
+
+- CORRECTION: 上一条 r53 记录把“测试服远端 release 目录不存在”误写成“NAS READY 缺失”；独立连接受控 NAS `\\172.30.30.4\IT共享\Backup/ReleasePackage\release-20260915-one-button-app-r53` 后确认根目录完整包含 `manifest.json`、镜像 tar、required-sql、ops-runtime、resources、smoke 和 evidence，且 manifest 存在。测试服远端目录在 deploy-release 下载前不存在是预期状态，不构成 R53 判废。
+- STATUS: R53 恢复为可发布 READY 包；R54 暂不启动、不占用 tag。下一步使用同一 R53 `packageDigest=2fdd3ff0184c9c3db3fc5f1394a4baccffa642795873f53dd6a7fc4d766726f6` 执行测试服 `deploy-release`。
