@@ -12,7 +12,7 @@
 4. [completed] 完成文档结构校验和独立规划评审，明确实施前置条件。
 5. [completed] P1 基线与唯一 app-release/manifest/摘要/来源合同已在两个独立 worktree 中收敛并完成复审修正。
 6. [completed] P2 ReleaseWorkflow 状态机、原子持久化、CAS、租约、心跳/恢复与 verifier-only 推进已实现并回归通过。
-7. [in_progress] P3 继续整改与真实验证：r23-r77 已按不可变规则逐一判废；当前最新失败为 R77 deploy 前置 hook 使用旧 `.env` 镜像并且失败诊断不完整，维护脚本已按包绑定修复并回归通过，下一轮必须使用全新 R78。
+7. [in_progress] P3 继续整改与真实验证：r23-r77 已按不可变规则逐一判废；R78 已完成 clean source freeze、build-release、本地包完整性校验、manifest validation 与 NAS READY，下一步执行同一 releaseTag 的测试服 publish-test/运行态验收。
 8. [in_progress] P4/P5 静态三按钮工作台已实现；任务 worktree 锁定依赖和 Playwright 1.60.0 已恢复，类型检查通过，真实页面验收待发布后执行。
 
 ## Expected Verification
@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r77 均已判废且不得复用；R77 build-release、本地验包、manifest validation、NAS READY 与测试服包下载/镜像加载均成功，但测试服 `deploy-release` 在版本切换前失败于 `route-snapshot-identity` 运行 hook：脚本用当前运行目录 `.env` 解析旧镜像，而不是使用待发布包生成的 `.env.next` 绑定新镜像；同时失败时没有输出 readiness 报告缺失的结构化诊断。维护仓已新增 RED/GREEN 合同，hook 改为 `docker compose --env-file .env.next run` 并在失败时输出报告或 `ROUTE_SNAPSHOT_IDENTITY_REPORT_MISSING`。下一步提交维护仓修复后使用新 releaseTag `release-20260916-one-button-app-r78` 从 clean HEAD 重新生成 without-data/app-release 程序包并验证测试服发布。正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步和全量数据库复制仍保持零写入。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r77 均已判废且不得复用；R78 已从 clean 维护 worktree `f476e5777c058da71147251c4bbf70abc02c7466` 与应用 worktree `40765346359700641bc3df93d57c4db27ca4741a` 重新生成 without-data/app-release 程序包，build-release 退出码 0，本地包完整性、manifest validation 与 NAS READY 均通过。下一步仅执行同一 releaseTag `release-20260916-one-button-app-r78` 的测试服 publish-test 与运行态/按钮验收。正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步和全量数据库复制仍保持零写入。
 
 ## Verification Evidence
 
@@ -72,6 +72,7 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 - r36 build command：构建前参数门禁失败，原因是直接脚本未显式传入 `BackendRepoRoot`/`FrontendRepoRoot`，导致命令包装器进入错误/缺失工作目录；未进入 Maven、Docker、NAS 上传或测试服写入，r36 判废。
 - r37 manifest validation：本地包生成后被 `validate-release-manifest.ps1` 阻断，包内 `evidence/target-data-preflight.json` 携带测试服 IP，`ops-runtime/config/*.json` 与 `script/deploy/manage-int-ruoyi-remote-root-disk.ps1` 携带目标 IP 或 secret-like 示例；新增 RED/GREEN 测试后，target preflight 证据改为构建临时证据，ops-runtime 包不再携带 target-bound config 或远程磁盘脚本；相邻回归 151 PASS，PowerShell AST PASS。
 - R38 前置 hard gate：`ReleaseManifestValidator.psm1` 已接入 `publish-int-ruoyi.ps1` 的 build-release 主链路，执行顺序固定为 package integrity -> manifest validation -> NAS upload；新增合同先 RED 后 GREEN，发布 workflow/app-release/package governance 回归 97 PASS。manifest validation 报告写入构建临时目录，不进入不可变包。
+- R78 build-release：`release-20260916-one-button-app-r78` 已通过 schema-only rehearsal、后端 Maven package、前端 `pnpm build:test`、前后端 Docker build/save、包完整性、manifest validation 和 NAS READY；`packageDigest=d9f93f1f2f20dc47513c2cd2015643d3a5c6ad572ffa09d8c2681beab35f45f3`，`manifestChecksum=sha256:83ad9ca3d6dcadd02f0f0c845848540614b3469abb0b4c3f5a5079a8aeafdde4`，artifactCount=661。
 - R38 deploy-release：本地包和 manifest validation PASS，`packageDigest=9387c858b542f3899a7162003e0b396fc2816f762c832e93def5271d7060a106`，但测试服 required SQL 在版本切换前失败于 `No active cleaning process ultrasonic cleaner parameter rules found`；真实库只读诊断 `rules_total=0`。应用仓提交 `b286fd47d` 后，新增空规则 no-op RED/GREEN 2 PASS、相邻 target preflight/release plan 回归 26 PASS、测试服只读 preflight PASS。
 - R40 deploy-release：本地包、manifest validation 与 NAS READY PASS，`packageDigest=e9d359fb674ec341835abcf0ec23370dc4bf26091f860da8fc189b36cd0b5d74`，但测试服 required SQL 在版本切换前失败于 `Missing enabled A05075 UV curing I source configuration`；真实库只读诊断显示 UV1/UV2 来源候选为 0。应用仓提交 `00adc544bcae` 后，UV1/UV2 空来源 no-op 与 target preflight 回归 30 PASS、测试服只读 preflight PASS。
 - R41 local cache：重启后本地 `release-20260914-one-button-app-r41` 只含 `evidence/` 和 `required-sql/`，`Test-ReleasePackageIntegrity` 返回 `manifest.json: missing manifest`；R41 判废不复用，未发布测试服，未执行正式服/审查服/mark-tested/promote-prod/promote-backup/MinIO 数据同步/全量数据库同步。
@@ -82,7 +83,7 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 
 ## Current Phase
 
-- P3 正在执行：r23-r77 已判废；R77 是 deploy 阶段 `route-snapshot-identity` hook 绑定旧 `.env` 镜像且诊断不足，未切换测试服 `.env` 或容器版本。应用仓当前可发布提交为 `40765346359700641bc3df93d57c4db27ca4741a`，维护仓当前可发布提交将在本段修复提交后固定。下一轮使用新 releaseTag `release-20260916-one-button-app-r78` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23-r77 已判废；R78 已形成不可变 `app-release` READY 包并上传 NAS。下一步执行测试服 publish-test，成功证据必须绑定同一 `release-20260916-one-button-app-r78` 的 operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 
