@@ -844,3 +844,25 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - USER_AUTHORIZATION: 用户继续并明确授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。
 - GREEN: experience-preflight-r51 -> PASS，已复核 without-data/app-release、目标只读预检、manifest forbidden scan、NAS JSON、PowerShell、测试服发布、server-access、release-backup-restore 与 worktree 门禁；R50 已判废且不得复用，下一轮必须新 tag。
 - PLAN: 使用新 releaseTag `release-20260915-one-button-app-r51`；`build-release` 和 `deploy-release` 均从维护 worktree 根启动，并显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。
+
+## r51 retired: NAS upload interrupted after local package completion
+
+- GREEN: r51-source-and-runtime-preflight -> PASS，维护仓 `905fe19` 与应用仓 `7f116de4c` 均 clean；R51 本地缓存已有完整 `manifest.json`、镜像 tar、required-sql、ops-runtime、resources、smoke 和 evidence，runtime base tar 存在且 SHA-256 为已批准固定值。
+- RED: r51-nas-ready-integrity -> FAIL，测试服远端 `/var/lib/docker/intruoyi-releases/release-20260915-one-button-app-r51` 仅有镜像 tar、`post-import.sql` 和 `required-sql`，缺少根目录 `manifest.json`、manifest/resource/ops-runtime/smoke/evidence 等 READY 包内容；不能作为 NAS READY 包或发布输入。
+- RESULT: R51 判废且不得复用；未执行测试服 `deploy-release`、未切换测试服 `.env`、未执行正式服/审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。下一轮必须使用新 releaseTag `release-20260915-one-button-app-r52`。
+
+## r52 source freeze
+
+- USER_AUTHORIZATION: 用户继续并明确授权；范围仍只覆盖测试服/NAS 的 `app-release` build-release -> publish-test 真实链路及只读/运行态验证，不覆盖正式服写入、审查服写入、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库同步。
+- GREEN: experience-preflight-r52 -> PASS，已复核 without-data/app-release、目标只读预检、manifest forbidden scan、NAS JSON、PowerShell、测试服发布、server-access、release-backup-restore 与 worktree 门禁；R51 已判废且不得复用，R52 使用全新 releaseTag。
+- PLAN: 使用新 releaseTag `release-20260915-one-button-app-r52`；`build-release` 和 `deploy-release` 均从维护 worktree 根启动，并显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。
+
+## r52 retired: source freeze rejected task-log dirtiness
+
+- RED: build-release-r52-source-dirty -> FAIL，`publish-int-ruoyi.ps1 -Mode build-release` 在进入 SQL 扫描、测试、Maven、Docker、NAS 或服务器写入前返回 `SOURCE_DIRTY: maintenance`，原因是本任务刚追加的 R51/R52 记录尚未提交；未产生 R52 程序包或远端副作用。
+- RESULT: R52 未占用任何 READY 包，仍按失败 tag 退休且不得复用；先提交本任务记录，再使用全新 releaseTag `release-20260915-one-button-app-r53`。
+
+## r53 source freeze
+
+- GREEN: source-freeze-r53-plan -> PASS，R52 失败已在昂贵构建前停止；本次仅提交本任务日志，随后维护仓必须 clean，应用仓仍固定 `7f116de4c`。
+- PLAN: 使用新 releaseTag `release-20260915-one-button-app-r53`；`build-release` 和 `deploy-release` 均从维护 worktree 根启动，并显式传入 `BackendRepoRoot`、`FrontendRepoRoot`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。
