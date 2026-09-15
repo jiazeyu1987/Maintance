@@ -47,6 +47,13 @@ def _order_migrations_by_dependencies(migrations: list[dict[str, object]]) -> li
     indegree = {migration_id: 0 for migration_id in migration_by_id}
     edges: dict[str, list[str]] = defaultdict(list)
 
+    def sort_key(migration_id: str) -> tuple[int, int]:
+        migration = migration_by_id[migration_id]
+        apply_order = migration.get("applyOrder")
+        if isinstance(apply_order, int) and not isinstance(apply_order, bool):
+            return apply_order, original_index[migration_id]
+        return 1000 + original_index[migration_id], original_index[migration_id]
+
     for migration in migrations:
         migration_id = str(migration["migrationId"])
         for dependency in migration.get("dependsOn", []):
@@ -57,19 +64,19 @@ def _order_migrations_by_dependencies(migrations: list[dict[str, object]]) -> li
             indegree[migration_id] += 1
 
     ready = [
-        (original_index[migration_id], migration_id)
+        (*sort_key(migration_id), migration_id)
         for migration_id, degree in sorted(indegree.items(), key=lambda item: original_index[item[0]])
         if degree == 0
     ]
     heapq.heapify(ready)
     ordered_ids: list[str] = []
     while ready:
-        _, migration_id = heapq.heappop(ready)
+        _, _, migration_id = heapq.heappop(ready)
         ordered_ids.append(migration_id)
-        for child_id in sorted(edges.get(migration_id, []), key=lambda item: original_index[item]):
+        for child_id in sorted(edges.get(migration_id, []), key=sort_key):
             indegree[child_id] -= 1
             if indegree[child_id] == 0:
-                heapq.heappush(ready, (original_index[child_id], child_id))
+                heapq.heappush(ready, (*sort_key(child_id), child_id))
 
     if len(ordered_ids) != len(migrations):
         return migrations

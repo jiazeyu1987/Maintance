@@ -174,10 +174,10 @@ def test_main_rejects_preflight_migration_set_mismatch(tmp_path: Path):
         ])
 
 
-def test_main_includes_executable_data_and_target_preflight_items(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+def test_main_rehearses_only_schema_items_without_target_data_preflight(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     schema = tmp_path / "schema.sql"
     schema.write_text("CREATE TABLE t(id BIGINT PRIMARY KEY);\n", encoding="utf-8")
-    migrations = [tmp_path / "001.sql", tmp_path / "002.sql", tmp_path / "003.sql"]
+    migrations = [tmp_path / "001.sql", tmp_path / "002.sql", tmp_path / "003.sql", tmp_path / "004.sql"]
     migration_list = tmp_path / "migration-paths.json"
     migration_list.write_text(json.dumps([str(path) for path in migrations]), encoding="utf-8")
     preflight = tmp_path / "build-preflight-evidence.json"
@@ -192,6 +192,7 @@ def test_main_includes_executable_data_and_target_preflight_items(tmp_path: Path
                 {"migrationId": "001", "file": "required-sql/001.sql", "type": "schema", "requiresTargetPreflight": False, "action": "APPLY"},
                 {"migrationId": "002", "file": "required-sql/002.sql", "type": "data", "requiresTargetPreflight": True, "action": "APPLY"},
                 {"migrationId": "003", "file": "required-sql/003.sql", "type": "schema", "requiresTargetPreflight": True, "action": "APPLY"},
+                {"migrationId": "004", "file": "required-sql/004.sql", "type": "seed", "requiresTargetPreflight": False, "action": "APPLY"},
             ],
         },
     }), encoding="utf-8")
@@ -209,7 +210,7 @@ def test_main_includes_executable_data_and_target_preflight_items(tmp_path: Path
         "--preflight-evidence", str(preflight),
         "--output", str(tmp_path / "report.json"),
     ]) == 0
-    assert [item.path for item in captured["migration_paths"]] == migrations
+    assert [item.path for item in captured["migration_paths"]] == [migrations[0]]
 
 
 def test_main_preserves_session_profile_for_rehearsal_items(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
@@ -231,8 +232,8 @@ def test_main_preserves_session_profile_for_rehearsal_items(tmp_path: Path, monk
                 {
                     "migrationId": migration.stem,
                     "file": f"required-sql/{migration.name}",
-                    "type": "seed",
-                    "requiresTargetPreflight": True,
+                    "type": "schema",
+                    "requiresTargetPreflight": False,
                     "sessionProfile": "dcc-view-matrix-seed",
                     "action": "APPLY",
                 },

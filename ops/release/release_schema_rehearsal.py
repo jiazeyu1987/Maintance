@@ -110,7 +110,8 @@ def _select_planned_migrations(
         if name in planned_names:
             raise RehearsalError(f"duplicate build preflight migration: {migration_id}")
         planned_names.add(name)
-        if action == "APPLY" and migration_type in {"schema", "data", "menu", "config", "permission", "seed"}:
+        requires_target_preflight = bool(item.get("requiresTargetPreflight", False))
+        if action == "APPLY" and migration_type == "schema" and not requires_target_preflight:
             path = paths_by_name.get(name)
             if path is None:
                 raise RehearsalError(f"build preflight migration set does not match migration list: {name}")
