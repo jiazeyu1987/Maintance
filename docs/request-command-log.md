@@ -3655,3 +3655,9 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 2026-09-16T02:24:00+08:00	one-button-app-release-20260911	COMMAND_INTENT	启动 R69：维护源使用本段记录提交后的 clean HEAD，应用源 053bb3c23890eca08dfaa3caa4bcf48f7af1d8ed；目标仅测试服 172.30.30.58；发布范围 app-release/without-data；build-release/deploy-release 均从维护 worktree 根启动；禁止正式服、审查服、mark-tested、promote-prod、promote-backup、MinIO 数据同步和全量数据库复制。
 2026-09-16T02:52:54+08:00	one-button-app-release-20260911	RESULT	R69 构建前隔离 schema rehearsal 失败：`20260624_dcc_view_matrix_independent_seed.sql` 缺 `dcc-view-matrix-seed` 会话变量；失败前已通过后端合同、前端合同、ts:check、维护脚本 131 PASS、Docker/ledger、target preflight 17/17。根因是 `database.schemaMigrations` 未保留 `requiredSql` 的 applyOrder/sessionProfile/approvedHook/resultAssertion，preflight 校验也未比较这些字段。已补 RED/GREEN：14 PASS、发布链路回归 215 PASS、PowerShell AST PASS。R69 不复用，下一轮使用 `release-20260916-one-button-app-r70`。
 2026-09-16T02:52:54+08:00	one-button-app-release-20260911	COMMAND_INTENT	启动 R70：维护源使用本段修复提交后的 clean HEAD，应用源 053bb3c23890eca08dfaa3caa4bcf48f7af1d8ed；目标仅测试服 172.30.30.58；发布范围 app-release/without-data；build-release/deploy-release 均从维护 worktree 根启动；禁止正式服、审查服、mark-tested、promote-prod、promote-backup、MinIO 数据同步和全量数据库复制。
+## 2026-09-16 one-button app-release R71
+
+- Intent: 退休 R70 本地中断半成品，使用全新 `release-20260916-one-button-app-r71` 继续 `without-data/app-release` 测试服发布闭环。
+- Scope: 仅测试服 `172.30.30.58` 的 `build-release -> publish-test`；禁止正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步和全量数据库复制。
+- Command intent: 从维护 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m` 调用 `ops\deploy\publish-int-ruoyi.ps1 -Mode build-release`，显式传入三 source commits、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。
+- Evidence policy: 输出只记录 releaseTag、commit、digest、manifest、operation、状态码和脱敏摘要；不记录密码、token、私钥、连接串或 secret-bearing 原始配置。
