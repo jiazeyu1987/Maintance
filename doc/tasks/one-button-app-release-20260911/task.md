@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r70 均已判废且不得复用；R69 已通过后端合同、前端合同、`ts:check`、维护脚本测试、Docker/ledger 与测试服只读 target preflight 17/17，但在本地隔离 MySQL schema rehearsal 阶段发现 migration metadata 漂移，维护仓已修复 manifest 生成、manifest 校验与 rehearsal session preamble，并通过定向 14 PASS、发布链路回归 215 PASS、PowerShell AST PASS。R70 在 build preflight 与测试服 target readonly preflight 17/17 通过后中断，仅留下 `required-sql/` 与 `evidence/` 半成品，缺少 `manifest.json`、schema rehearsal 证据和最终制品，不是 READY 包。下一步使用新 releaseTag `release-20260916-one-button-app-r71` 从维护仓本段记录提交后的 clean HEAD 和应用仓 `053bb3c23890eca08dfaa3caa4bcf48f7af1d8ed` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r71 均已判废且不得复用；R69 已修复 migration metadata 漂移，R70 已判定为中断半成品，R71 在本地隔离 MySQL schema rehearsal 阶段发现 `20260624_dcc_view_matrix_independent_seed.sql` 漏写 `dcc_file_category.lifecycle_stage`。应用仓已将 lifecycle_stage 纳入显式种子合同并提交 `e554302ef9b546910abafa1b6c35b742c0346cd0`，定向与相邻迁移回归 31 PASS。下一步使用新 releaseTag `release-20260916-one-button-app-r72` 从维护仓本段记录提交后的 clean HEAD 和应用仓 `e554302ef9b546910abafa1b6c35b742c0346cd0` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
 
 ## Verification Evidence
 
@@ -82,7 +82,7 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 
 ## Current Phase
 
-- P3 正在执行：r23-r70 已判废；R70 是构建前中断半成品，未生成 manifest、未进入 NAS READY、未发布测试服。应用仓当前可发布提交为 `053bb3c23890eca08dfaa3caa4bcf48f7af1d8ed`，维护仓当前可发布提交将在本段记录提交后固定。下一轮使用新 releaseTag `release-20260916-one-button-app-r71` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23-r71 已判废；R71 是构建前 schema rehearsal 失败，未进入后端打包、Docker build、NAS READY 或测试服发布。应用仓当前可发布提交为 `e554302ef9b546910abafa1b6c35b742c0346cd0`，维护仓当前可发布提交将在本段记录提交后固定。下一轮使用新 releaseTag `release-20260916-one-button-app-r72` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 
