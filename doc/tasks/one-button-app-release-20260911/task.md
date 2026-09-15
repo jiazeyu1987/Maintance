@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r67 均已判废且不得复用；R67 从主工作区 cwd 调用隔离脚本时，在发布脚本 pytest 阶段导入到旧主工作区 `ops.release`，未进入 Maven 打包/Docker/NAS/测试服写入。维护仓已修复 `Invoke-StandardReleaseContractTests`，将发布脚本 pytest 与摘要向量校验工作目录固定为维护仓根，并通过发布入口回归 155 PASS。下一步使用新 releaseTag `release-20260916-one-button-app-r68` 从维护仓修复提交后的 clean HEAD 和应用仓 `053bb3c23890eca08dfaa3caa4bcf48f7af1d8ed` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r69 均已判废且不得复用；R69 已通过后端合同、前端合同、`ts:check`、维护脚本测试、Docker/ledger 与测试服只读 target preflight 17/17，但在本地隔离 MySQL schema rehearsal 阶段发现 migration metadata 漂移：`database.schemaMigrations` 未携带 `applyOrder/sessionProfile/approvedHook/resultAssertion`，导致 `20260624_dcc_view_matrix_independent_seed.sql` 缺 `dcc-view-matrix-seed` 会话变量。维护仓已修复 manifest 生成、manifest 校验与 rehearsal session preamble，并通过定向 14 PASS、发布链路回归 215 PASS、PowerShell AST PASS。下一步使用新 releaseTag `release-20260916-one-button-app-r70` 从维护仓修复提交后的 clean HEAD 和应用仓 `053bb3c23890eca08dfaa3caa4bcf48f7af1d8ed` 重新生成 without-data/app-release 程序包并验证测试服发布。正式服仍保持零写入。
 
 ## Verification Evidence
 
@@ -82,7 +82,7 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 
 ## Current Phase
 
-- P3 正在执行：r23-r67 已判废；R67 是构建前发布脚本 pytest cwd 合同失败，未生成包、未上传 NAS、未写测试服。应用仓当前可发布提交为 `053bb3c23890eca08dfaa3caa4bcf48f7af1d8ed`，维护仓当前可发布提交将在本段修复提交后固定。下一轮使用新 releaseTag `release-20260916-one-button-app-r68` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23-r69 已判废；R69 是构建前隔离 MySQL schema rehearsal 合同失败，未进入后端打包、Docker build、NAS 上传或测试服写入。应用仓当前可发布提交为 `053bb3c23890eca08dfaa3caa4bcf48f7af1d8ed`，维护仓当前可发布提交将在本段修复提交后固定。下一轮使用新 releaseTag `release-20260916-one-button-app-r70` 重新生成不可变 `app-release` 包，再执行 NAS 原子 READY、测试服 publish、operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 

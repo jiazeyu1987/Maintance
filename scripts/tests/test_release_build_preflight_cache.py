@@ -284,6 +284,10 @@ def test_evidence_excludes_sensitive_manifest_material(tmp_path: Path) -> None:
         ("allowedEnvironments", ["test"]),
         ("dependsOn", ["different-dependency"]),
         ("riskLevel", "high"),
+        ("applyOrder", 20),
+        ("sessionProfile", "dcc-view-matrix-seed"),
+        ("approvedHook", "route-snapshot-identity"),
+        ("resultAssertion", "route-snapshot-ready"),
     ],
 )
 def test_planner_migrations_must_exactly_match_required_sql(
@@ -296,6 +300,19 @@ def test_planner_migrations_must_exactly_match_required_sql(
     result = _run_existing_inputs(manifest, target, tmp_path / "evidence.json")
     assert result.returncode != 0
     assert "schemaMigrations must exactly match requiredSql" in result.stderr
+
+
+def test_publish_script_copies_migration_metadata_to_database_plan_entries() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+
+    function_start = script.index("function New-ReleaseMigrationPlanEntries")
+    function_end = script.index("\nfunction ", function_start + 1)
+    function_body = script[function_start:function_end]
+
+    assert "applyOrder = $requiredSql.applyOrder" in function_body
+    assert "sessionProfile = [string]$requiredSql.sessionProfile" in function_body
+    assert "approvedHook = [string]$requiredSql.approvedHook" in function_body
+    assert "resultAssertion = [string]$requiredSql.resultAssertion" in function_body
 
 
 @pytest.mark.parametrize("dirty", [True, None, "false"])

@@ -30,6 +30,7 @@ ALLOWED_ACTIONS = {
 }
 SHA256_PATTERN = re.compile(r"^sha256:[0-9a-f]{64}$")
 COMMIT_PATTERN = re.compile(r"^[0-9a-f]{40,64}$")
+CONTRACT_TOKEN_PATTERN = re.compile(r"^[a-z0-9][a-z0-9._-]{0,63}$")
 
 
 class BuildPreflightError(ValueError):
@@ -114,6 +115,18 @@ def _normalize_migration_contract(raw: object, label: str) -> dict[str, object]:
     if not isinstance(target_required, bool):
         raise BuildPreflightError(f'{label} requiresTargetPreflight must be a boolean')
     normalized['requiresTargetPreflight'] = target_required
+    apply_order = raw.get("applyOrder")
+    if apply_order is None:
+        normalized["applyOrder"] = None
+    elif isinstance(apply_order, int) and not isinstance(apply_order, bool) and apply_order >= 0:
+        normalized["applyOrder"] = apply_order
+    else:
+        raise BuildPreflightError(f"{label} applyOrder must be a non-negative integer or null")
+    for field in ("sessionProfile", "approvedHook", "resultAssertion"):
+        value = str(raw.get(field) or "").strip()
+        if value and not CONTRACT_TOKEN_PATTERN.fullmatch(value):
+            raise BuildPreflightError(f"{label} {field} is invalid")
+        normalized[field] = value
     return normalized
 
 

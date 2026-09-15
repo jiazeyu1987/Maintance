@@ -4012,6 +4012,10 @@ function New-ReleaseMigrationPlanEntries {
             dependsOn = @($requiredSql.dependsOn)
             riskLevel = [string]$requiredSql.riskLevel
             requiresTargetPreflight = [bool]$requiredSql.requiresTargetPreflight
+            applyOrder = $requiredSql.applyOrder
+            sessionProfile = [string]$requiredSql.sessionProfile
+            approvedHook = [string]$requiredSql.approvedHook
+            resultAssertion = [string]$requiredSql.resultAssertion
             requiredPreflight = $true
         }
     }

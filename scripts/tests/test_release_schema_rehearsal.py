@@ -154,7 +154,7 @@ def test_main_reads_migrations_from_json_list(tmp_path: Path, monkeypatch: pytes
     ])
 
     assert result == 0
-    assert captured["migration_paths"] == [migration_paths[1]]
+    assert [item.path for item in captured["migration_paths"]] == [migration_paths[1]]
 
 
 def test_main_rejects_preflight_migration_set_mismatch(tmp_path: Path):
@@ -209,7 +209,86 @@ def test_main_includes_executable_data_and_target_preflight_items(tmp_path: Path
         "--preflight-evidence", str(preflight),
         "--output", str(tmp_path / "report.json"),
     ]) == 0
-    assert captured["migration_paths"] == migrations
+    assert [item.path for item in captured["migration_paths"]] == migrations
+
+
+def test_main_preserves_session_profile_for_rehearsal_items(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    schema = tmp_path / "schema.sql"
+    schema.write_text("CREATE TABLE t(id BIGINT PRIMARY KEY);\n", encoding="utf-8")
+    migration = tmp_path / "20260624_dcc_view_matrix_independent_seed.sql"
+    migration.write_text("SELECT @dcc_view_matrix_seed_tenant_id;\n", encoding="utf-8")
+    migration_list = tmp_path / "migration-paths.json"
+    migration_list.write_text(json.dumps([str(migration)]), encoding="utf-8")
+    preflight = tmp_path / "build-preflight-evidence.json"
+    preflight.write_text(json.dumps({
+        "schemaVersion": "release-build-preflight/v1",
+        "status": "passed",
+        "targetEnvironment": "test",
+        "publishScope": "app-release",
+        "planner": {
+            "status": "passed",
+            "items": [
+                {
+                    "migrationId": migration.stem,
+                    "file": f"required-sql/{migration.name}",
+                    "type": "seed",
+                    "requiresTargetPreflight": True,
+                    "sessionProfile": "dcc-view-matrix-seed",
+                    "action": "APPLY",
+                },
+            ],
+        },
+    }), encoding="utf-8")
+    captured: dict[str, object] = {}
+
+    def fake_rehearsal(**kwargs: object) -> dict[str, object]:
+        captured.update(kwargs)
+        return {"status": "passed"}
+
+    monkeypatch.setattr(release_schema_rehearsal, "run_schema_rehearsal", fake_rehearsal)
+    assert release_schema_rehearsal.main([
+        "--mysql-image", "mysql@sha256:" + "a" * 64,
+        "--schema", str(schema),
+        "--migration-list", str(migration_list),
+        "--preflight-evidence", str(preflight),
+        "--output", str(tmp_path / "report.json"),
+    ]) == 0
+
+    selected = captured["migration_paths"]
+    assert selected[0].path == migration
+    assert selected[0].session_profile == "dcc-view-matrix-seed"
+
+
+def test_schema_only_rehearsal_prepends_declared_session_profile(tmp_path: Path):
+    schema = tmp_path / "schema.sql"
+    migration = tmp_path / "20260624_dcc_view_matrix_independent_seed.sql"
+    schema.write_text("CREATE TABLE t(id BIGINT PRIMARY KEY);\n", encoding="utf-8")
+    migration.write_text("SELECT @dcc_view_matrix_seed_tenant_id;\n", encoding="utf-8")
+    runner = FakeRunner()
+
+    run_schema_rehearsal(
+        mysql_image="mysql@sha256:" + "a" * 64,
+        schema_path=schema,
+        migration_paths=[
+            release_schema_rehearsal.PlannedMigration(
+                path=migration,
+                session_profile="dcc-view-matrix-seed",
+            )
+        ],
+        runner=runner,
+        container_name="release-rehearsal-session",
+    )
+
+    migration_payloads = [
+        stdin.decode("utf-8")
+        for _, stdin in runner.calls
+        if stdin and b"SELECT @dcc_view_matrix_seed_tenant_id;" in stdin
+    ]
+    assert migration_payloads
+    assert migration_payloads[0].startswith(
+        "SET @dcc_view_matrix_seed_tenant_id := 122;\n"
+        "SET @dcc_view_matrix_seed_allow_yudao_tenant := NULL;\n"
+    )
 
 
 @pytest.mark.parametrize("payload", ["{}", "[]", '["001.sql", 2]'])

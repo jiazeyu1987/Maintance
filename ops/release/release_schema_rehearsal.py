@@ -7,6 +7,7 @@ import re
 import subprocess
 import time
 import uuid
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
 
@@ -16,6 +17,12 @@ class RehearsalError(RuntimeError):
 
 
 Runner = Callable[[list[str], bytes | None], str]
+
+
+@dataclass(frozen=True)
+class PlannedMigration:
+    path: Path
+    session_profile: str = ""
 
 
 def _default_runner(args: list[str], stdin: bytes | None = None) -> str:
@@ -51,7 +58,7 @@ def _read_migration_list(path: Path) -> list[Path]:
 def _select_planned_migrations(
     migration_paths: list[Path],
     preflight_evidence_path: Path,
-) -> list[Path]:
+) -> list[PlannedMigration]:
     content = _require_file(preflight_evidence_path, "build preflight evidence")
     try:
         evidence = json.loads(content.decode("utf-8", errors="strict"))
@@ -96,7 +103,7 @@ def _select_planned_migrations(
         action = str(item.get("action", "")).strip()
         expected_file = f"required-sql/{migration_id}.sql"
         migration_type = str(item.get("type", "")).strip()
-        requires_target_preflight = bool(item.get("requiresTargetPreflight", False))
+        session_profile = str(item.get("sessionProfile", "")).strip()
         if not migration_id or relative_file != expected_file or action not in allowed_actions:
             raise RehearsalError(f"build preflight planner item is invalid: {migration_id or '<blank>'}")
         name = f"{migration_id}.sql"
@@ -107,27 +114,58 @@ def _select_planned_migrations(
             path = paths_by_name.get(name)
             if path is None:
                 raise RehearsalError(f"build preflight migration set does not match migration list: {name}")
-            selected.append(path)
+            _session_preamble_for_profile(session_profile, "test")
+            selected.append(PlannedMigration(path=path, session_profile=session_profile))
 
     if planned_names != set(paths_by_name):
         raise RehearsalError("build preflight migration set does not match migration list")
     return selected
 
 
+def _normalize_planned_migration(value: Path | PlannedMigration) -> PlannedMigration:
+    if isinstance(value, PlannedMigration):
+        return PlannedMigration(path=Path(value.path), session_profile=value.session_profile)
+    return PlannedMigration(path=Path(value))
+
+
+def _session_preamble_for_profile(session_profile: str, target_environment: str) -> bytes:
+    if session_profile == "":
+        return b""
+    if session_profile == "dcc-view-matrix-seed":
+        if target_environment == "test":
+            seed_tenant_id = "122"
+            allow_yudao_tenant = "NULL"
+        elif target_environment in {"prod", "backup"}:
+            seed_tenant_id = "1"
+            allow_yudao_tenant = "1"
+        else:
+            raise RehearsalError(f"unsupported DCC view matrix seed environment: {target_environment}")
+        return (
+            f"SET @dcc_view_matrix_seed_tenant_id := {seed_tenant_id};\n"
+            f"SET @dcc_view_matrix_seed_allow_yudao_tenant := {allow_yudao_tenant};\n"
+        ).encode("utf-8")
+    raise RehearsalError(f"unsupported migration session profile: {session_profile}")
+
+
 def run_schema_rehearsal(
     *,
     mysql_image: str,
     schema_path: Path,
-    migration_paths: list[Path],
+    migration_paths: list[Path | PlannedMigration],
     runner: Runner = _default_runner,
     container_name: str | None = None,
+    target_environment: str = "test",
 ) -> dict[str, object]:
     if not re.fullmatch(r"[^\s@]+@sha256:[0-9a-f]{64}", mysql_image):
         raise RehearsalError("mysql image must be pinned by sha256 digest")
     if not migration_paths:
         raise RehearsalError("at least one migration is required")
     schema = _require_file(Path(schema_path), "schema-only snapshot")
-    migrations = [(Path(path), _require_file(Path(path), "migration")) for path in migration_paths]
+    planned_migrations = [_normalize_planned_migration(path) for path in migration_paths]
+    migrations = [
+        (planned, _require_file(planned.path, "migration"))
+        for planned in planned_migrations
+    ]
     name = container_name or "release-schema-rehearsal-" + uuid.uuid4().hex[:16]
     if not re.fullmatch(r"[a-z0-9][a-z0-9_.-]{7,62}", name):
         raise RehearsalError("container name is invalid")
@@ -155,12 +193,16 @@ def run_schema_rehearsal(
                 "-e", "CREATE DATABASE `ruoyi-vue-pro` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"], None)
         runner(mysql, schema)
         for pass_number in range(1, 3):
-            for path, content in migrations:
+            for planned, content in migrations:
                 try:
-                    runner(mysql, content)
+                    session_preamble = _session_preamble_for_profile(
+                        planned.session_profile,
+                        target_environment,
+                    )
+                    runner(mysql, session_preamble + content)
                 except RehearsalError as exc:
                     raise RehearsalError(
-                        f"migration failed: {path} (pass {pass_number}): {exc}"
+                        f"migration failed: {planned.path} (pass {pass_number}): {exc}"
                     ) from exc
         return {
             "status": "passed",
