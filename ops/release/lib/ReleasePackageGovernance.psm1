@@ -532,6 +532,7 @@ function Write-ReleaseTestedAttestation {
         [string]$TestOperationId,
         [Parameter(Mandatory = $true)]
         [string]$TestOperationEvidencePath,
+        [string]$TestResult = '',
         [Parameter(Mandatory = $true)]
         [string]$TestedBy,
         [Parameter(Mandatory = $true)]
@@ -541,6 +542,9 @@ function Write-ReleaseTestedAttestation {
 
     if ([string]::IsNullOrWhiteSpace($TestedBy)) {
         throw 'testedBy invalid: value is required'
+    }
+    if ($TestResult -cne 'PASS') {
+        throw 'testResult invalid: PASS is required'
     }
     if ([string]::IsNullOrWhiteSpace($TestConclusion)) {
         throw 'testConclusion invalid: value is required'
@@ -561,6 +565,7 @@ function Write-ReleaseTestedAttestation {
         publishTestOperationStatus = [string]$operation.status
         publishTestRequestedAt = [string]$operation.requestedAt
         testedAt = (Get-Date).ToUniversalTime().ToString('o')
+        testResult = 'PASS'
         testedBy = $TestedBy.Trim()
         testConclusion = $TestConclusion.Trim()
     }

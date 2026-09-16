@@ -703,14 +703,18 @@ def _write_operation(
     path.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
 
 
-def _write_tested_attestation(package_dir: Path, operation_path: Path) -> subprocess.CompletedProcess[str]:
+def _write_tested_attestation(
+    package_dir: Path, operation_path: Path, *, test_result: str | None = "PASS"
+) -> subprocess.CompletedProcess[str]:
+    result_argument = "" if test_result is None else f"-TestResult '{test_result}' "
     command = "\n".join(
         [
             "$ErrorActionPreference = 'Stop'",
             f"Import-Module -Force '{GOVERNANCE_MODULE}'",
             f"Write-ReleaseTestedAttestation -PackagePath '{package_dir}' -ExpectedReleaseTag 'release-p3-fixture' "
             f"-TestOperationId 'op-publish-test-success' -TestOperationEvidencePath '{operation_path}' "
-            "-TestedBy 'local-operator' -TestConclusion 'all acceptance checks passed' | ConvertTo-Json -Depth 8 -Compress",
+            f"{result_argument}-TestedBy 'local-operator' -TestConclusion 'all acceptance checks passed' | "
+            "ConvertTo-Json -Depth 8 -Compress",
         ]
     )
     return _run_powershell(["-Command", command])
@@ -781,6 +785,22 @@ def test_mark_tested_rejects_missing_or_malformed_operation_without_creating_att
         assert not (package_dir / "tested.json").exists()
 
 
+@pytest.mark.parametrize("test_result", [None, "FAIL"])
+def test_mark_tested_requires_explicit_pass_result_before_creating_attestation(
+    tmp_path: Path, test_result: str | None
+) -> None:
+    package_dir = tmp_path / "release-p3-fixture"
+    _write_package(package_dir, release_tag="release-p3-fixture")
+    operation_path = tmp_path / "operation.json"
+    _write_operation(operation_path)
+
+    result = _write_tested_attestation(package_dir, operation_path, test_result=test_result)
+
+    assert result.returncode != 0
+    assert "testResult invalid" in result.stdout + result.stderr
+    assert not (package_dir / "tested.json").exists()
+
+
 def test_mark_tested_writes_atomic_v2_attestation_bound_to_package_and_operation(tmp_path: Path) -> None:
     package_dir = tmp_path / "release-p3-fixture"
     _write_package(package_dir, release_tag="release-p3-fixture")
@@ -801,6 +821,7 @@ def test_mark_tested_writes_atomic_v2_attestation_bound_to_package_and_operation
     assert written["publishTestOperationId"] == "op-publish-test-success"
     assert written["publishTestOperationStatus"] == "SUCCESS"
     assert written["publishTestRequestedAt"] == "2026-09-07T12:34:56Z"
+    assert written["testResult"] == "PASS"
     assert written["testedBy"] == "local-operator"
     assert written["testConclusion"] == "all acceptance checks passed"
     assert re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z", written["testedAt"])
@@ -953,7 +974,9 @@ def test_mark_checks_app_release_integrity_before_atomic_tested_write() -> None:
     mark = script[mark_start:mark_end]
 
     integrity_index = mark.index("Test-ReleasePackageIntegrity")
+    result_index = mark.index("TestResult PASS is required")
     tested_write_index = mark.index("Write-ReleaseTestedAttestation")
-    assert integrity_index < tested_write_index
+    assert result_index < integrity_index < tested_write_index
+    assert "-TestResult $TestResult" in mark
     assert "New-RollbackCompatibilityEvidence" not in mark
     assert "RecoverySet" not in mark

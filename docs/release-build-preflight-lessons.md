@@ -203,6 +203,21 @@
 - Forbidden action: 禁止手工往测试库补候选业务数据、手工改 `infra_release_migration` 判绿、复用失败 releaseTag 继续发布、把 without-data 解释成可跳过版本化 SQL，或用空库演练替代真实目标只读 preflight。
 - Evidence: `doc/tasks/one-button-app-release-20260911/execution-log.md`；r38 deploy-release 在版本切换前失败于 `20260811_mes_process_pool_cleaning_process_parameter_data.sql`，真实测试库 `rules_total=0`，应用提交 `b286fd47d` 改为空候选 no-op 并补 target preflight。
 
+### 2026-09-16 ReleaseWorkflow 授权后未知态与阶段事件门禁
+
+- Trigger: 发布按钮、`ReleaseWorkflow`、`PROMOTING_PROD_EXECUTION_COMMITTED`、`RELEASE_WORKFLOW_STAGE`、同一 `reason/sourceSelectionId` 重复生成安装包、超时恢复、正式授权消费后异常、构建阶段失败定位。
+- Preflight check: 发布按钮或 app-release workflow 变更必须先用 BDD/TDD 覆盖来源 tuple、租约释放、派发后未知态、正式发布前置拒绝和阶段事件合同；应用仓运行 `mvn.cmd -pl yudao-module-infra clean test '-Dtest=ReleaseWorkflowOrchestratorTest,ReleaseWorkflowSourceBindingTest,ReleaseWorkflowAuthorizationTest,ReleaseWorkflowRecoveryTest,ReleaseWorkflowStoreTest' '-Dsurefire.failIfNoSpecifiedTests=false'`，维护仓运行 `python -X utf8 -m pytest scripts/tests/test_release_workflow_preflight.py`。
+- Blocker: 去重只比较 `reason/sourceSelectionId` 而不比较批准 commits/preset/scope；超时恢复把 workflow 置终态但未释放已确认安全结束的 lease；授权已消费或 operation 已派发后仍把异常当作未开始执行并释放环境锁；`productionWriteEnabled=false` 或确认文本无效时将 `TESTED` 包推进 `FAILED`；构建成功后补写 `TESTING/BUILDING`，而不是从执行日志读取真实阶段事件。
+- Verification: R1-R5 修复必须留下 RED/GREEN 证据；应用仓目标测试至少覆盖 `ReleaseWorkflowSourceBindingTest#sameReasonAndSourceSelectionCreatesNewWorkflowWhenApprovedCommitChanges`、`ReleaseWorkflowOrchestratorTest#stalePreflightFailureReleasesBuildLeaseForNextWorkflow`、`#postDispatchBindingMismatchKeepsTestWorkflowIsolated`、`#consumedProductionAuthorizationDispatchFailureKeepsWorkflowIsolated`、`#productionWriteDisabledRejectsBeforeStateChangeOrDispatch`、`#buildLogStageMarkersAdvanceRunningWorkflowBeforeOperationCompletes`、`#failedBuildUsesLastObservedBuildStage`；维护仓脚本测试必须确认 `TESTING` marker 早于合同测试、`BUILDING` marker 早于后端/前端/Docker 构建。
+- Forbidden action: 禁止用重启服务回收本地 lease；禁止把已消费授权回滚成“未执行”；禁止在缺少 `RELEASE_WORKFLOW_STAGE=BUILDING` 时将 build-release 标为 READY；禁止为了通过静态审查回退到 `code-only/with-data` 或隐藏旧 direct action；禁止用 mock 成功替代真实脚本合同测试。
+- Evidence: `doc/tasks/20260916-release-button-remediation/bug-regression-evidence.md`、`execution-log.md`、`verification-report.md`；静态复查 R1-R5；应用 worktree `D:\IntRuoyiWorktree\r260911-release-button\a`；维护 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m`。
+
+1. 阶段 1：发布按钮工作流代码变更前。
+2. 必查项：当前批准的 maintenance/application/frontend commit 与 preset/scope 必须进入 workflow 身份；所有执行前拒绝必须早于状态推进、授权消费和底层派发。
+3. 推荐命令：运行上述 Maven 目标测试和维护仓 pytest；再运行 bug evidence validator 与 task-owned `git diff --check`。
+4. Fail Fast：任何目标测试失败、阶段 marker 缺失、未知执行态释放 lease、或前置拒绝污染 `TESTED` 包时停止，不得进入真实发布或按钮验收。
+5. 必须记录：RED/GREEN 命令、失败原因、lease 是否保留/释放、授权是否消费、operationId/日志阶段 marker、以及未执行的真实发布/E2E/服务器动作边界。
+
 ## 本次证据
 
 - 当前主分支测试服发布闭环任务：`doc/tasks/20260630-main-branch-build-publish-test-server/task.md`

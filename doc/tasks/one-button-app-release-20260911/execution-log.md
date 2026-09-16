@@ -1222,3 +1222,13 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - SOURCE_FREEZE: releaseTag=`release-20260916-one-button-app-r81`；维护源为本段 source-freeze 记录提交后的 clean HEAD，应用/前端源固定为 `c3220239de7f06a6c2eabc31c9b840d9a599d768`；目标仅测试服 `172.30.30.58`，审查服 host 仅作为 build-release 合同参数 `BackupServerHost=172.30.30.59`。
 - PLAN: 从维护 worktree 根执行 `ops\deploy\publish-int-ruoyi.ps1 -Mode build-release -Component intruoyi -ReleaseTag release-20260916-one-button-app-r81 -SourceSelectionId r81-approved-sources -PublishScope app-release -SkipDatabaseSync -SkipMinioSync`，显式传入 Backend/FrontendRepoRoot、三 source commits、NAS JSON、backend runtime base、TestServerHost 与 BackupServerHost；build-release 成功后仅对同一 R81 执行测试服 deploy-release/publish-test 验收。
 - FORBIDDEN: 不执行正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库复制；若 R81 失败，冻结证据并换全新 releaseTag，不手工补包、不重试同一失败 tag。
+
+## 2026-09-16 release button R1-R5 durable corrective result
+
+- STATUS: 用户要求继续按“通用、长期可用的按钮发布功能”修复；R81 只绑定应用提交 `c3220239d`，未包含本轮 R1-R5 修复，不能作为按钮功能放行或测试服成功证据。
+- BDD: build-release 真实阶段事件 -> Given 标准 workflow 通过按钮生成 `app-release` 包 / When 维护脚本进入构建前测试与昂贵构建块 / Then 脚本必须输出 `RELEASE_WORKFLOW_STAGE=TESTING` 与 `RELEASE_WORKFLOW_STAGE=BUILDING`，供应用 workflow 按真实阶段推进和定位失败。
+- RED: `python -m pytest scripts\tests\test_release_workflow_preflight.py -q` 在新增测试前对 `Write-ReleaseWorkflowStage`/阶段标记无保护；本轮把阶段事件纳入维护脚本静态合同，防止继续依赖应用侧“成功后补写阶段”。
+- GREEN: `python -m pytest scripts\tests\test_release_workflow_preflight.py -q` -> PASS，12 tests。
+- GREEN: `python -m pytest scripts\tests\test_release_workflow_preflight.py scripts\tests\test_release_package_governance.py scripts\tests\test_release_sql_preflight_gate.py -q --basetemp D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m\.tmp-pytest-release-button` -> PASS，140 tests。
+- GREEN: PowerShell AST for `ops\deploy\publish-int-ruoyi.ps1` -> PASS；`git diff --check` -> PASS（仅 CRLF 提示）。
+- RESULT: 维护脚本已在标准 release workflow 中输出阶段标记；应用仓同时修复来源 tuple 去重、lease/recovery、派发后隔离、正式准入前置和真实阶段读取。下一步必须分别提交应用仓与维护仓修复，然后使用全新 releaseTag（不得复用 R81）重新执行 build-release -> publish-test。

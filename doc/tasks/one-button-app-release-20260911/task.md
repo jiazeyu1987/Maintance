@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。R79 已完成 build-release、manifest validation 和 NAS READY，但 publish-test 在版本切换前因应用侧路线快照 runner 的 Spring 聚合退出码失败；报告本身为 `READY` 且 `blockerCount=0`，测试服 `.env` 与实际容器仍为旧版本。应用仓已完成 runner 退出码根因修复和清洁 Maven 定向回归，下一步提交任务记录后使用全新 `release-20260916-one-button-app-r80` 重建并继续测试服 publish-test 与运行态/按钮验收。正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步和全量数据库复制仍保持零写入。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。R81 已形成本地包，但绑定的是静态复查仍 FAIL 的应用提交 `c3220239d`，不得作为后续 publish-test 或按钮放行依据。本轮已在应用仓修复 R1-R5 通用按钮机制，并在维护脚本输出 build-release 真实阶段事件；下一步提交两仓修复后使用全新 releaseTag 重建并继续测试服 publish-test 与运行态/按钮验收。正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步和全量数据库复制仍保持零写入。
 
 ## Verification Evidence
 
@@ -81,10 +81,11 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 - R48 deploy-release：本地包、manifest validation 与 without-data 禁止项扫描 PASS，`packageDigest=2196a318de9d61fc5e0dd0b7deca1c8d9ac0d0aaf7109ffda1b4e15771e82e18`，`manifestDigest=c5b25517163d0b791685e5fef370cc94c06064278209fda433434d338155cb87`；测试服 required SQL 在版本切换前失败于 `No active B04091 cleaning temperature parameter rule found`。应用仓提交 `63e57513f` 后，B04091/B09353 空候选 no-op 合同 RED/GREEN 通过，相邻 target preflight/release plan 回归 26 PASS、测试服只读 preflight PASS。
 - R49 deploy-release：本地包与 manifest validation PASS；测试服 required SQL 在版本切换前失败于 `IDI旧QA规程源数据必须唯一命中3条`。应用仓提交 `dc8edfe5` 后，IDI 旧 QA 源空基线 no-op 合同 RED/GREEN 通过，相邻 target preflight/release plan 回归 27 PASS、测试服只读 preflight PASS。
 - R50 local cache：重启后本地 `release-20260915-one-button-app-r50` 只含 `evidence/` 和 `required-sql/`，缺少 `manifest.json`；判定为中断半成品，不发布、不复用。
+- R1-R5 durable corrective slice：应用仓 ReleaseWorkflow clean 定向 21 PASS、ReleaseWorkflow/RuntimeControl 周边 58 PASS、前端 `pnpm ts:check` PASS；维护仓 release workflow/package governance/SQL preflight 140 PASS，PowerShell AST 与 diff-check PASS。修复范围覆盖来源 tuple 去重、stale lease 释放、派发后隔离、正式写入准入前置和脚本阶段事件。
 
 ## Current Phase
 
-- P3 正在执行：r23-r78 已判废；下一步使用全新 `release-20260916-one-button-app-r79` 重新构建不可变 `app-release` READY 包并执行测试服 publish-test，成功证据必须绑定同一 R79 的 operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23-r81 已判废或不可复用；下一步使用两仓新提交和全新 releaseTag 重新构建不可变 `app-release` READY 包并执行测试服 publish-test，成功证据必须绑定同一 releaseTag 的 operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 

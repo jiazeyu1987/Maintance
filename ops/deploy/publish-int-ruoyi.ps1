@@ -10,6 +10,8 @@ param(
     [string]$NasServer = '172.30.30.4',
     [string]$NasShare = '',
     [string]$OperatorName = $env:USERNAME,
+    [ValidateSet('', 'PASS', 'FAIL')]
+    [string]$TestResult = '',
     [string]$TestConclusion = '',
     [string]$TestOperationId = '',
     [string]$TestOperationEvidencePath = '',
@@ -3241,6 +3243,9 @@ function Mark-NasReleaseTested {
         if ([string]::IsNullOrWhiteSpace($TestConclusion)) {
             Fail 'TestConclusion is required when marking a release package as tested.'
         }
+        if ($TestResult -cne 'PASS') {
+            Fail 'TestResult PASS is required when marking a release package as tested.'
+        }
         $mountInfo = Connect-NasReleaseShare -NasConfig $nasConfig
         $packagePath = Get-NasReleasePackagePath -NasRoot $mountInfo.Root -PackageTag $PackageTag
         if (-not (Test-Path -LiteralPath $packagePath)) {
@@ -3254,6 +3259,7 @@ function Mark-NasReleaseTested {
             -ExpectedReleaseTag $packageIntegrity.releaseTag `
             -TestOperationId $TestOperationId `
             -TestOperationEvidencePath $TestOperationEvidencePath `
+            -TestResult $TestResult `
             -TestedBy $OperatorName `
             -TestConclusion $TestConclusion
         Info "Release package marked as tested: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
