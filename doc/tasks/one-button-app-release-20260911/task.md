@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r77 均已判废且不得复用；R78 已从 clean 维护 worktree `f476e5777c058da71147251c4bbf70abc02c7466` 与应用 worktree `40765346359700641bc3df93d57c4db27ca4741a` 重新生成 without-data/app-release 程序包，build-release 退出码 0，本地包完整性、manifest validation 与 NAS READY 均通过。下一步仅执行同一 releaseTag `release-20260916-one-button-app-r78` 的测试服 publish-test 与运行态/按钮验收。正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步和全量数据库复制仍保持零写入。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r78 均已判废且不得复用；R78 已完成 build-release、manifest validation 与 NAS READY，但测试服 `deploy-release` 在版本切换前因 route-snapshot hook bash 退出码变量写法错误失败。维护仓已提交通用修复 `6e748a0966630452a20d208eaaafa0e4d239d506`，下一步使用全新 releaseTag `release-20260916-one-button-app-r79` 重新生成 without-data/app-release 程序包并执行测试服 publish-test 与运行态/按钮验收。正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步和全量数据库复制仍保持零写入。
 
 ## Verification Evidence
 
@@ -72,7 +72,8 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 - r36 build command：构建前参数门禁失败，原因是直接脚本未显式传入 `BackendRepoRoot`/`FrontendRepoRoot`，导致命令包装器进入错误/缺失工作目录；未进入 Maven、Docker、NAS 上传或测试服写入，r36 判废。
 - r37 manifest validation：本地包生成后被 `validate-release-manifest.ps1` 阻断，包内 `evidence/target-data-preflight.json` 携带测试服 IP，`ops-runtime/config/*.json` 与 `script/deploy/manage-int-ruoyi-remote-root-disk.ps1` 携带目标 IP 或 secret-like 示例；新增 RED/GREEN 测试后，target preflight 证据改为构建临时证据，ops-runtime 包不再携带 target-bound config 或远程磁盘脚本；相邻回归 151 PASS，PowerShell AST PASS。
 - R38 前置 hard gate：`ReleaseManifestValidator.psm1` 已接入 `publish-int-ruoyi.ps1` 的 build-release 主链路，执行顺序固定为 package integrity -> manifest validation -> NAS upload；新增合同先 RED 后 GREEN，发布 workflow/app-release/package governance 回归 97 PASS。manifest validation 报告写入构建临时目录，不进入不可变包。
-- R78 build-release：`release-20260916-one-button-app-r78` 已通过 schema-only rehearsal、后端 Maven package、前端 `pnpm build:test`、前后端 Docker build/save、包完整性、manifest validation 和 NAS READY；`packageDigest=d9f93f1f2f20dc47513c2cd2015643d3a5c6ad572ffa09d8c2681beab35f45f3`，`manifestChecksum=sha256:83ad9ca3d6dcadd02f0f0c845848540614b3469abb0b4c3f5a5079a8aeafdde4`，artifactCount=661。
+- R78 build-release：`release-20260916-one-button-app-r78` 已通过 schema-only rehearsal、后端 Maven package、前端 `pnpm build:test`、前后端 Docker build/save、包完整性、manifest validation 和 NAS READY；`packageDigest=d9f93f1f2f20dc47513c2cd2015643d3a5c6ad572ffa09d8c2681beab35f45f3`，`manifestChecksum=sha256:83ad9ca3d6dcadd02f0f0c845848540614b3469abb0b4c3f5a5079a8aeafdde4`，artifactCount=661。R78 deploy-release 在版本切换前失败于 route-snapshot hook bash 退出码变量写法错误；lock=FAILED，测试服 `.env` 与实际镜像仍为旧版本，R78 判废。
+- R79 source freeze：维护仓 `6e748a0966630452a20d208eaaafa0e4d239d506`，应用仓 `40765346359700641bc3df93d57c4db27ca4741a`；发布范围仍为 `app-release/without-data`，仅测试服。
 - R38 deploy-release：本地包和 manifest validation PASS，`packageDigest=9387c858b542f3899a7162003e0b396fc2816f762c832e93def5271d7060a106`，但测试服 required SQL 在版本切换前失败于 `No active cleaning process ultrasonic cleaner parameter rules found`；真实库只读诊断 `rules_total=0`。应用仓提交 `b286fd47d` 后，新增空规则 no-op RED/GREEN 2 PASS、相邻 target preflight/release plan 回归 26 PASS、测试服只读 preflight PASS。
 - R40 deploy-release：本地包、manifest validation 与 NAS READY PASS，`packageDigest=e9d359fb674ec341835abcf0ec23370dc4bf26091f860da8fc189b36cd0b5d74`，但测试服 required SQL 在版本切换前失败于 `Missing enabled A05075 UV curing I source configuration`；真实库只读诊断显示 UV1/UV2 来源候选为 0。应用仓提交 `00adc544bcae` 后，UV1/UV2 空来源 no-op 与 target preflight 回归 30 PASS、测试服只读 preflight PASS。
 - R41 local cache：重启后本地 `release-20260914-one-button-app-r41` 只含 `evidence/` 和 `required-sql/`，`Test-ReleasePackageIntegrity` 返回 `manifest.json: missing manifest`；R41 判废不复用，未发布测试服，未执行正式服/审查服/mark-tested/promote-prod/promote-backup/MinIO 数据同步/全量数据库同步。
@@ -83,7 +84,7 @@ P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布
 
 ## Current Phase
 
-- P3 正在执行：r23-r77 已判废；R78 已形成不可变 `app-release` READY 包并上传 NAS。下一步执行测试服 publish-test，成功证据必须绑定同一 `release-20260916-one-button-app-r78` 的 operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P3 正在执行：r23-r78 已判废；下一步使用全新 `release-20260916-one-button-app-r79` 重新构建不可变 `app-release` READY 包并执行测试服 publish-test，成功证据必须绑定同一 R79 的 operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
 - P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
 - 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 
