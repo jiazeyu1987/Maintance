@@ -53,6 +53,23 @@ def test_tests_and_source_freeze_run_before_expensive_builds() -> None:
     assert second_freeze < manifest
 
 
+def test_build_release_emits_workflow_stage_markers_before_test_and_build_blocks() -> None:
+    source = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+
+    assert "function Write-ReleaseWorkflowStage" in source
+    assert "RELEASE_WORKFLOW_STAGE=$State" in source
+    testing_marker = source.index("Write-ReleaseWorkflowStage -State 'TESTING'")
+    backend_contract = source.index("Info 'Running backend contract tests'")
+    building_marker = source.index("Write-ReleaseWorkflowStage -State 'BUILDING'")
+    backend_build = source.index("Info 'Building backend jar'")
+    frontend_build = source.index('Info "Building frontend static assets')
+    docker_build = source.index("Info 'Building backend image'")
+
+    assert testing_marker < backend_contract
+    assert backend_contract < building_marker
+    assert building_marker < min(backend_build, frontend_build, docker_build)
+
+
 def test_build_release_validates_nas_config_and_clean_sources_before_sql_scan() -> None:
     source = PUBLISH_SCRIPT.read_text(encoding="utf-8")
 

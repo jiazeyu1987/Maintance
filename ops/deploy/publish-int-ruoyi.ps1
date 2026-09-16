@@ -129,6 +129,22 @@ function Info([string]$Message) {
     Write-Host "[INFO] $Message"
 }
 
+function Write-ReleaseWorkflowStage {
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('TESTING', 'BUILDING')]
+        [string]$State,
+        [Parameter(Mandatory = $true)]
+        [string]$Evidence
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Evidence)) {
+        Fail 'Release workflow stage evidence is required.'
+    }
+    $safeEvidence = ([string]$Evidence).Trim() -replace '[^A-Za-z0-9._:/=-]', '_'
+    Write-Host "RELEASE_WORKFLOW_STAGE=$State evidence=$safeEvidence"
+}
+
 function Invoke-ReleaseStage {
     param(
         [Parameter(Mandatory = $true)]
@@ -4376,6 +4392,7 @@ function Assert-ReleaseSourceFreeze {
 function Invoke-StandardReleaseContractTests {
     $maintenanceRoot = (Resolve-Path (Join-Path $scriptDir '..\..')).Path
 
+    Write-ReleaseWorkflowStage -State 'TESTING' -Evidence 'standard-release-contract-tests'
     Info 'Running backend contract tests'
     Invoke-CheckedMavenCommand -ArgumentList @(
         '-f', (Join-Path $backendRepo 'pom.xml'),
@@ -6349,6 +6366,7 @@ if ($Mode -eq 'build-release') {
         $script:ReleaseSourceFreezeEvidence = Assert-ReleaseSourceFreeze -VerificationPoint 'before-build'
     }
     Invoke-StandardReleaseContractTests
+    Write-ReleaseWorkflowStage -State 'BUILDING' -Evidence 'application-artifact-build'
 }
 
 Info 'Checking local Docker daemon'
