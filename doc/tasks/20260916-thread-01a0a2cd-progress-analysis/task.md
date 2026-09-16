@@ -10,6 +10,7 @@ completed
 1. [completed] 已读取目标任务要求、近期执行与当前状态，定位维护和应用 worktree。
 2. [completed] 已核对 R53 至 R79 证据、P2/P3/P4/P5 状态及发布 hook 的代码和测试。
 3. [completed] 分析结果已写入 verification-report.md；当前分析任务 preview/apply 均通过，零删除，无 worktree 融合或移除。
+4. [completed] 用户追加授权的执行纠偏已通过 send_message_to_thread 成功发送；要求先完成 R79 真实进程链行为验证、统一参数路径、验收状态对齐，再继续新 tag 发布和真实按钮验收。
 
 ## 经验门禁
 - 明确 UTF-8 读取中文；日志只记录脱敏后的执行意图与证据。

@@ -19,3 +19,11 @@
 - GREEN: task-closeout preview -> PASS；保留当前任务 4 个正式记录，delete/blocked/warnings 均为空。
 - GREEN: task-closeout apply -> PASS；零删除，当前工作区为主工作区，无需融合或移除 worktree。
 - 最终状态：completed，仅表示当前分析任务完成；目标发布任务仍未完成。
+
+## 用户追加：发送执行纠偏要求
+- 2026-09-16 08:46 +08:00，用户明确要求“你把正确的方式发给它”；本轮允许向指定任务发送后续指令。
+- 发送前快照：目标仍 active/inProgress，最新消息为先补 R79 READY 报告与非零退出的失败回归；在此实际进展基础上发送纠偏，不要求从旧 R53 重做。
+- GREEN: send_message_to_thread -> PASS；工具返回目标 threadId=01a0a2cd-5812-7b80-84eb-4ab27f82da42，无错误。消息要求先实际验证 Java/容器/Compose/shell/SSH 的报告与退出链，集中关闭相关合同缺口、统一按钮参数路径和状态记录，再运行新 tag 测试服发布及真实 Playwright 按钮验收；维持原授权边界。
+- 本轮发送成功不代表目标任务已实施或验收完成；不将投递结果写成修复完成。
+- 发送后快照发现目标最新消息拟将 READY 报告作为唯一成功依据、非零退出只作诊断；已追加第二条明确纠偏，要求保留退出码门禁、先定位真实失败来源，不提交该放宽方案或据此启动新发布。第二条消息工具投递同样成功。
+- GREEN: follow-up closeout preview/apply -> PASS，仍仅保留 4 个任务记录且零删除；本轮没有新增长期经验或产品改动，沿用已核对的契约/失败终态门禁。状态 completed 仅表示指令投递完成。
