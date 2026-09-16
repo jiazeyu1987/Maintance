@@ -1215,3 +1215,10 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - GREEN: 应用 worktree 已完成静态审查纠偏切片；后端目标测试 `RuntimeControlServiceImplTest,ReleaseWorkflowOrchestratorTest` -> PASS，80 tests；前端静态合同 -> PASS；`corepack pnpm run ts:check` -> PASS；旧脚本路径、旧 `code-only/with-data` scope 与 `releaseWorkflows.value[0]` 源码扫描无命中。
 - FIXED_SCOPE: 低层发布动作仅接受 `app-release`，发布脚本固定维护仓 `ops/deploy/publish-int-ruoyi.ps1`，旧 `/actions` 发布类动作必须带 workflow context，workflow 派发前先持久化 operationId，READY/TEST_DEPLOYED/TESTED 不参与 heartbeat 超时，test/prod lease 按 workflowId+environment 隔离并在 TESTED 后释放，前端改为显式选择 workflowId。
 - RESULT: R80 仍判废且不得复用；应用修复已提交为 `c3220239d`，维护仓下一轮 source freeze 必须绑定该应用提交，使用全新 releaseTag 执行 build-release -> publish-test。正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步和全量数据库复制继续禁止。
+
+## 2026-09-16 one-button app-release R81 source freeze
+
+- GREEN: `experience-preflight-r81` -> PASS；已复核 release-backup-restore、server-access、worktree-memory 与 PowerShell 门禁。R80 因静态审查 FAIL 判废且不复用；本地 R81 release/build-preflight/deploy-control 目录不存在，测试服远端 R81 目录不存在。
+- SOURCE_FREEZE: releaseTag=`release-20260916-one-button-app-r81`；维护源为本段 source-freeze 记录提交后的 clean HEAD，应用/前端源固定为 `c3220239de7f06a6c2eabc31c9b840d9a599d768`；目标仅测试服 `172.30.30.58`，审查服 host 仅作为 build-release 合同参数 `BackupServerHost=172.30.30.59`。
+- PLAN: 从维护 worktree 根执行 `ops\deploy\publish-int-ruoyi.ps1 -Mode build-release -Component intruoyi -ReleaseTag release-20260916-one-button-app-r81 -SourceSelectionId r81-approved-sources -PublishScope app-release -SkipDatabaseSync -SkipMinioSync`，显式传入 Backend/FrontendRepoRoot、三 source commits、NAS JSON、backend runtime base、TestServerHost 与 BackupServerHost；build-release 成功后仅对同一 R81 执行测试服 deploy-release/publish-test 验收。
+- FORBIDDEN: 不执行正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库复制；若 R81 失败，冻结证据并换全新 releaseTag，不手工补包、不重试同一失败 tag。
