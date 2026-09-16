@@ -1203,3 +1203,15 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - PLAN: 从维护 worktree 根执行 `doc\tasks\one-button-app-release-20260911\tmp\run-r80-build.ps1`，显式使用 `Component=intruoyi`、`SourceSelectionId=r80-approved-sources`、`PublishScope=app-release`、`SkipDatabaseSync`、`SkipMinioSync`、NAS JSON 与固定 backend runtime base；build-release 成功后仅对同一 R80 执行 publish-test。
 - GATE: 构建前必须继续通过 migration policy、backend/frontend contract、schema-only rehearsal、target readonly preflight、package integrity、manifest validation 和 NAS READY；任一失败则冻结 R80 证据、标记失败并换新 releaseTag，不手工补包、不重试同一失败 tag。
 - FORBIDDEN: 不执行正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库复制。
+
+## 2026-09-16 release button static-review fail pause
+
+- REVIEW: static-code-review -> FAIL。审查确认当前按钮实现存在 F1-F8：低层 action 不接受 `app-release`、按钮仍绑定应用仓旧脚本、旧 `/actions` 可绕过 workflow 授权、READY/TEST_DEPLOYED/TESTED 等等待态会被心跳误杀、TESTED 后 test lease 泄漏、底层进程派发早于 workflow operation 绑定、失败阶段仍可能显示 PREFLIGHTING、前端只操作排序第一条 workflow。
+- DECISION: 暂停 R80 的后续 publish-test 和运行态验收；先在应用 worktree 修复通用按钮机制并通过 RED/GREEN 后端与前端静态合同，再使用全新应用 commit 和全新 releaseTag 继续。R80 source freeze 记录不作为可继续发布依据，不复用失败或静态不可放行的包。
+- SCOPE: 本轮仍仅限本机修复、验证、后续不可变 `app-release` 构建、NAS READY 和测试服 publish-test；不执行正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库复制。
+
+## 2026-09-16 release button static-review corrective result
+
+- GREEN: 应用 worktree 已完成静态审查纠偏切片；后端目标测试 `RuntimeControlServiceImplTest,ReleaseWorkflowOrchestratorTest` -> PASS，80 tests；前端静态合同 -> PASS；`corepack pnpm run ts:check` -> PASS；旧脚本路径、旧 `code-only/with-data` scope 与 `releaseWorkflows.value[0]` 源码扫描无命中。
+- FIXED_SCOPE: 低层发布动作仅接受 `app-release`，发布脚本固定维护仓 `ops/deploy/publish-int-ruoyi.ps1`，旧 `/actions` 发布类动作必须带 workflow context，workflow 派发前先持久化 operationId，READY/TEST_DEPLOYED/TESTED 不参与 heartbeat 超时，test/prod lease 按 workflowId+environment 隔离并在 TESTED 后释放，前端改为显式选择 workflowId。
+- RESULT: R80 仍判废且不得复用；应用修复已提交为 `c3220239d`，维护仓下一轮 source freeze 必须绑定该应用提交，使用全新 releaseTag 执行 build-release -> publish-test。正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步和全量数据库复制继续禁止。
