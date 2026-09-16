@@ -1,0 +1,11 @@
+{
+  "task_id": "20260916-release-button-static-review",
+  "status": "completed",
+  "review_mode": "static_read_only",
+  "review_decision": "fail",
+  "reviewed_application_commit": "8ef8b1a5f0ddbdacd53c2a4bcdb3e94839c98936",
+  "reviewed_maintenance_commit": "a2c73110a90eb7344c6ae5f4eceb1085954426ca",
+  "findings": {"P1": 6, "P2": 2},
+  "runtime_verified": false,
+  "independent_agent_review_completed": false
+}
