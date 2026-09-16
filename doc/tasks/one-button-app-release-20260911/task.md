@@ -41,7 +41,7 @@
 
 in_progress
 
-P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。r23-r78 均已判废且不得复用；R78 已完成 build-release、manifest validation 与 NAS READY，但测试服 `deploy-release` 在版本切换前因 route-snapshot hook bash 退出码变量写法错误失败。维护仓已提交通用修复 `6e748a0966630452a20d208eaaafa0e4d239d506`，下一步使用全新 releaseTag `release-20260916-one-button-app-r79` 重新生成 without-data/app-release 程序包并执行测试服 publish-test 与运行态/按钮验收。正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步和全量数据库复制仍保持零写入。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。R79 已完成 build-release、manifest validation 和 NAS READY，但 publish-test 在版本切换前因应用侧路线快照 runner 的 Spring 聚合退出码失败；报告本身为 `READY` 且 `blockerCount=0`，测试服 `.env` 与实际容器仍为旧版本。应用仓已完成 runner 退出码根因修复和清洁 Maven 定向回归，下一步提交任务记录后使用全新 `release-20260916-one-button-app-r80` 重建并继续测试服 publish-test 与运行态/按钮验收。正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步和全量数据库复制仍保持零写入。
 
 ## Verification Evidence
 

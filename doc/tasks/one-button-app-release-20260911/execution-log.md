@@ -1188,3 +1188,11 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - USER_AUTHORIZATION: 用户要求“你来修复”，目标继续保持通用、长期可用的一键按钮发布能力；本轮授权覆盖本机修复、验证、不可变 `app-release` 构建、NAS READY 和测试服 `publish-test` 验收，不覆盖正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库复制。
 - GREEN: experience-preflight-r79 -> PASS，已复核 without-data/app-release、source freeze、失败 releaseTag 不复用、目标只读预检、manifest forbidden scan、NAS JSON、PowerShell 编排、server-access、release-backup-restore、worktree 与测试服发布门禁；R78 已因脚本变量缺陷释放测试服 lock 为 FAILED，测试服仍运行旧版本。
 - PLAN: 使用新 releaseTag `release-20260916-one-button-app-r79`；先提交本段任务记录以保持维护 worktree clean，再从维护 worktree 根执行 `build-release`，显式传入 `Component=intruoyi`、`SourceSelectionId=r79-approved-sources`、`BackendRepoRoot`、`FrontendRepoRoot`、`ExpectedMaintenanceCommit`、`ExpectedApplicationCommit`、`ExpectedFrontendCommit`、`TestServerHost=172.30.30.58`、`BackupServerHost=172.30.30.59`、NAS JSON、backend runtime base 参数、`-PublishScope app-release -SkipDatabaseSync -SkipMinioSync`。若 R79 失败，先冻结失败证据并按通用按钮发布门禁修根因，再换全新 releaseTag。
+
+## 2026-09-16 one-button app-release R79 route-snapshot runner exit-code failure
+
+- RED: `deploy-release-r79-route-snapshot-runner-exit-code` -> FAIL。R79 本地包、manifest validation 和 NAS READY 均通过；测试服远端 route-snapshot backfill 报告 `status=READY`、`blockerCount=0`，但 runner SSH 返回 exit 1，operation lock=FAILED，版本切换前 `.env` 与实际 backend/frontend 容器仍为旧 tag。
+- ROOT_CAUSE: 应用仓 `MesProRouteVersionSnapshotMigrationRunner` 调用 `SpringApplication.exit(applicationContext, () -> EXIT_READY)`，容器中无关的 Spring `ExitCodeGenerator` 聚合结果覆盖了命令 READY 码。发布脚本正确把非零 runner 作为失败处理，不能通过放宽 hook 门禁掩盖。
+- BDD: Given 路线快照命令返回 READY 且容器存在无关非零退出码生成器 / When 按钮发布执行 route-snapshot hook / Then 进程退出码必须等于命令结果，报告 READY 且 blockerCount=0 才能继续；非 READY 必须保留非零失败。
+- GREEN: 应用仓 runner 改为直接 `processExit.accept(command.run(...))`，非 READY 继续抛出明确异常；应用仓清洁 Maven 定向测试 6 tests PASS。
+- RESULT: R79 判废且不得复用；下一轮使用全新 `release-20260916-one-button-app-r80`，source freeze 绑定新的应用提交与维护仓任务记录提交；仍只允许测试服 `app-release/without-data`，禁止正式服、审查服、mark-tested、promote-prod、promote-backup、MinIO 数据同步和全量数据库复制。
