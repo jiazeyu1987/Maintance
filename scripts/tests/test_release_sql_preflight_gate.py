@@ -436,6 +436,8 @@ def test_publish_script_combines_route_snapshot_run_and_report_check_in_single_s
 
     assert helper_block.count("Invoke-SshCommand") == 1
     assert "docker compose --env-file $remoteEnvNextLiteral run --rm --no-deps" in helper_block
+    assert "route_snapshot_exit=`$?" in helper_block
+    assert "`$route_snapshot_exit=`$?" not in helper_block
     assert "cat $remoteReportFileLiteral" in helper_block
     assert "ROUTE_SNAPSHOT_IDENTITY_REPORT_MISSING" in helper_block
     assert "test -f $remoteReportFileLiteral" in helper_block

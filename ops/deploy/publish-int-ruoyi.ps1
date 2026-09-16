@@ -6022,7 +6022,7 @@ cd $remoteAppDirLiteral
 test -f $remoteEnvNextLiteral
 set +e
 docker compose --env-file $remoteEnvNextLiteral run --rm --no-deps -v $reportVolumeLiteral -e INTRUOYI_EXTRA_ARGS=$extraArgsLiteral backend
-`$route_snapshot_exit=`$?
+route_snapshot_exit=`$?
 set -e
 if [ -f $remoteReportFileLiteral ]; then
   cat $remoteReportFileLiteral
