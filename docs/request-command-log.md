@@ -3538,3 +3538,4 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 2026-09-16T08:42:00+08:00	20260916-thread-01a0a2cd-progress-analysis	RESULT	PASS：原因分析完成；确认 R79 发布失败、跨进程合同验证不足、手工调用返工和任务状态漂移，P4/P5 真实按钮验收仍未完成。
 2026-09-16T08:45:00+08:00	20260916-thread-01a0a2cd-progress-analysis	CLOSEOUT	PASS：分析文档完成，经验去重检查与 cleanup preview/apply 通过，零删除；不改变目标任务运行。
 2026-09-16T08:49:28.9819087+08:00	20260916-thread-01a0a2cd-progress-analysis	DISPATCH	用户要求发送正确方式；已向目标任务投递完整纠偏方案，并追加禁止将非零退出降为诊断的指令；工具成功，尚不代表已采纳。cleanup preview/apply 通过，零删除。
+2026-09-16T08:52:02.1540824+08:00	20260916-thread-01a0a2cd-progress-analysis	DISPATCH_CORRECTION	完整方案首次发送成功，已包含禁止放宽退出码检查；额外强调消息两次因目标无 active turn id 失败，未送达，不能确认已采纳。此条纠正前一条 DISPATCH 对补充消息状态的描述。
