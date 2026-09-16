@@ -1196,3 +1196,10 @@ BDD: 已完成清理的竞态错误处理 -> Given 删除异常发生 / When 原
 - BDD: Given 路线快照命令返回 READY 且容器存在无关非零退出码生成器 / When 按钮发布执行 route-snapshot hook / Then 进程退出码必须等于命令结果，报告 READY 且 blockerCount=0 才能继续；非 READY 必须保留非零失败。
 - GREEN: 应用仓 runner 改为直接 `processExit.accept(command.run(...))`，非 READY 继续抛出明确异常；应用仓清洁 Maven 定向测试 6 tests PASS。
 - RESULT: R79 判废且不得复用；下一轮使用全新 `release-20260916-one-button-app-r80`，source freeze 绑定新的应用提交与维护仓任务记录提交；仍只允许测试服 `app-release/without-data`，禁止正式服、审查服、mark-tested、promote-prod、promote-backup、MinIO 数据同步和全量数据库复制。
+
+## 2026-09-16 one-button app-release R80 source freeze
+
+- GREEN: `experience-preflight-r80` -> PASS；R79 失败包不复用，R80 使用全新 releaseTag，维护源 `609fccfa6ddc672f2231b303c95410b47b5a16fe`，应用/前端源 `8ef8b1a5f0ddbdacd53c2a4bcdb3e94839c98936`，两仓 clean，目标仅测试服 `172.30.30.58`。
+- PLAN: 从维护 worktree 根执行 `doc\tasks\one-button-app-release-20260911\tmp\run-r80-build.ps1`，显式使用 `Component=intruoyi`、`SourceSelectionId=r80-approved-sources`、`PublishScope=app-release`、`SkipDatabaseSync`、`SkipMinioSync`、NAS JSON 与固定 backend runtime base；build-release 成功后仅对同一 R80 执行 publish-test。
+- GATE: 构建前必须继续通过 migration policy、backend/frontend contract、schema-only rehearsal、target readonly preflight、package integrity、manifest validation 和 NAS READY；任一失败则冻结 R80 证据、标记失败并换新 releaseTag，不手工补包、不重试同一失败 tag。
+- FORBIDDEN: 不执行正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步或全量数据库复制。
