@@ -3,9 +3,10 @@
   "status": "completed",
   "review_mode": "static_read_only",
   "review_decision": "fail",
-  "reviewed_application_commit": "8ef8b1a5f0ddbdacd53c2a4bcdb3e94839c98936",
-  "reviewed_maintenance_commit": "a2c73110a90eb7344c6ae5f4eceb1085954426ca",
-  "findings": {"P1": 6, "P2": 2},
+  "reviewed_application_commit": "c3220239de7f06a6c2eabc31c9b840d9a599d768",
+  "reviewed_maintenance_commit": "71b86b719d70bff77f37966a54ddd9a6e8c51a13",
+  "findings": {"P1": 3, "P2": 2},
   "runtime_verified": false,
-  "independent_agent_review_completed": false
+  "independent_agent_review_completed": false,
+  "report_dispatch": "sent"
 }

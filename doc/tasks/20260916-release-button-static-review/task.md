@@ -10,6 +10,8 @@ completed
 1. [completed] 已识别主程序新按钮、API、编排、旧 action/executor 和两套发布脚本。
 2. [completed] 静态检查发现 6 项 P1 和 2 项 P2；详见 verification-report.md。
 3. [completed] 报告已保存，当前审查任务 preview/apply 通过，仅删除当前任务中断的审查运行元数据；不放行被审功能。
+4. [completed] 更新后的复查报告与五项当前缺陷已成功发送到指定发布任务，工具返回目标 threadId 且无错误。
+5. [completed] 已复查 c3220239d / 71b86b7：首轮六项已在代码层面修正，派发异常处理部分修正、阶段推进仍未修正；当前报告列出 3 项 P1 和 2 项 P2，已投递且记录收尾通过。
 
 ## 经验门禁
 - 上一任务 20260916-thread-01a0a2cd-progress-analysis 已完成；目标发布任务仍为其他任务，本轮只读审查其代码。
@@ -28,11 +30,9 @@ completed
 - project-experience-consolidation 已复用本会话既有经验检查：当前问题属于已有发布入口统一、参数合同与真实状态门禁，具体缺陷留在报告，不重复新建长期经验。
 
 ## Verification Evidence
+- 最新复查（17:40）：应用 HEAD c3220239de7f06a6c2eabc31c9b840d9a599d768、维护 HEAD 71b86b719d70bff77f37966a54ddd9a6e8c51a13；静态结论仍 FAIL，见报告顶部最新部分。以下 HEAD 是首轮历史。
 - 应用 HEAD 8ef8b1a5f0ddbdacd53c2a4bcdb3e94839c98936、维护 HEAD a2c73110a90eb7344c6ae5f4eceb1085954426ca 开始/结束一致，所审文件没有未提交差异。
 - 未执行构建、测试或服务器请求；结论是静态审查 FAIL，记录工作本身已完成。
-
-## Cleanup Candidates
-- .review-fix-loop/runs/20260916-release-button-static-review
 
 ## Cleanup Keep
 - doc/tasks/20260916-release-button-static-review/task-state.json

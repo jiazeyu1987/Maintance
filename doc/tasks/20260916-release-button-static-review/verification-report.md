@@ -1,5 +1,75 @@
 # 发布按钮静态代码审查
 
+## 最新复查结论（2026-09-16 17:40 +08:00）
+
+**仍为 FAIL，但不能继续沿用下方首轮 6 项 P1 全部未修的结论。** 应用最新提交为 `c3220239de7f06a6c2eabc31c9b840d9a599d768`，维护最新提交为 `71b86b719d70bff77f37966a54ddd9a6e8c51a13`。审查根与首轮相同；应用所审文件无未提交差异，维护 ops/deploy 与 ops/release 相对首轮无代码差异。主工作区仍为 `cd147f697dcdf69b7ff7e551c8c9aaf8edf8bcde`，不能把 worktree 修复当作主线已经运行。
+
+### 首轮问题的当前状态
+
+| 原问题 | 本轮静态复核 |
+| --- | --- |
+| F1 app-release 被拒绝 | 已修正：Action 只接受正式 app-release，并生成对应 scope 与禁数据同步参数。 |
+| F2 旧脚本绑定 | 已修正：发布动作使用 releaseWorkflow.publishScriptPath，workingDirectory 绑定 maintenanceRepoRoot，build 显式传应用前后端根目录。真实配置仍需在运行验收中确认。 |
+| F3 旧 actions 授权旁路 | 已封堵原外部请求旁路：新增必需的内部 workflow context，三个字段 @JsonIgnore，外部 JSON 无法填充它们，缺少 context 会被 guard 拒绝。 |
+| F4 等待状态超时 | 已修正：isHeartbeatMonitored 明确排除 READY/TEST_DEPLOYED/TESTED。 |
+| F5 TESTED 锁泄漏 | 正常验收成功路径已修正：TESTED 释放 test lease，map 改为 workflowId:environment。另有超时恢复路径泄漏，见 R2。 |
+| F6 派发早于持久化 | 主要顺序已修正：预分配 operationId 并先保存状态再派发；派发成功后异常的处理仍不完整，见 R3。 |
+| F7 成功后补写阶段 | 仍存在，见 R5。 |
+| F8 无法选择工作流 | 已修正：新增 selectedReleaseWorkflowId 和选择框，刷新时保留有效选择。 |
+
+这里的“已修正”均为代码层面确认；本轮没有执行产品测试或真实按钮验收。
+
+### 当前剩余问题
+
+#### R1 / P1：批准提交变化后，“生成程序安装包”可能直接返回旧包
+
+- `ReleaseWorkflowService.java:53` 的去重只比较非终态、reason、sourceSelectionId，未比较批准的 maintenance/application/frontend commits 和 preset。
+- `ReleaseWorkflowOrchestrator.java:61` 创建后，只要已有 operationId 就直接 reconcile 返回；不会重新执行源码冻结或构建。
+- 触发：A 包处于 READY 或 TESTED；服务端批准源码从 A 更新为 B，但仍使用同一合法 sourceSelectionId 和同一发布原因。前端 `index.vue:1271` 固定传 approved-source，默认原因也相同，因此该场景并非只靠非法参数才能发生。
+- 后果：点击生成新包返回 A 的旧 workflow/tag，B 不会构建。页面仍提示已创建工作流，可能让操作者误认为拿到新源码产物。
+- 修复：去重绑定完整已批准来源 tuple，或使用明确的一次请求幂等键；不能仅用可重复的原因文本作为身份。
+
+#### R2 / P1：超时取消构建后仍可能永久占用 build 锁
+
+- `ReleaseWorkflowOrchestrator.java:343` 取消超时 operation 后，`:352` 直接调用 service 的恢复方法；未释放相应 lease。
+- `ReleaseWorkflowService.java:199` 将非写阶段标成 FAILED；正常实际构建一直处于 PREFLIGHTING，因此会走此分支。
+- 后续 `reconcileActiveWorkflows:266` 跳过 terminal；直接 reconcile 在 `:232` 也提前返回，没有机会进入 `:246` 的释放逻辑。
+- `ReleaseWorkflowLease.java:51` 只把 ttlSeconds 写进文件，没有定时释放机制；OS lock 需 `Handle.close:86` 才会正常释放。
+- 后果：底层进程确认终止且 workflow 已失败后，build lease 仍保存在 activeLeases，新构建持续锁冲突。不能用重启服务代替正式生命周期处理。
+- 修复：对恢复返回的终态逐项释放已确认安全结束的对应租约；RECOVERY_REQUIRED 的隔离锁按恢复合同保留，不能一概释放。
+
+#### R3 / P1：派发成功后的异常仍会提前释放锁
+
+- 当前已先保存 operation 关联，原顺序缺陷不再完整适用。
+- 但 `startTestPublish:127` 派发返回后仍执行 `requireOperationBinding:128` 和 `workflowService.require:129`；持久化文件读取异常或 operation 绑定异常会进入 `:130`，直接释放 test lease、尝试记 FAILED，却未确认已派发进程停止。build 和正式晋级存在同型 catch。
+- 后果：在这一异常触发条件下，部署可能仍执行，workflow 却已失败且环境锁释放。它不是正常点击必现问题，但属于真实 I/O/一致性故障路径。
+- 修复：区分派发前拒绝与派发后状态未知；后者应保留隔离并进入恢复流程，确认底层终态和目标状态后再处理锁。
+
+#### R4 / P2：正式发布开关关闭时，会把已验收包判废
+
+- `ReleaseWorkflowOrchestrator.java:201` 调用 authorizationService.preview；该方法以 execute=false 校验，`:154` 的 productionWriteEnabled/PROD 检查只在 execute=true 时执行。
+- 编排器在 `:206-210` 已把 TESTED 推进到 PROMOTING_PROD，`:211` 才执行正式开关/确认校验；被拒绝后 `:225` 把 workflow 置 FAILED。
+- 触发：已验收包和有效 grant，productionWriteEnabled=false（默认值）或确认文本不合要求。
+- 后果：没有启动底层发布也没有消费授权，仍使合法 TESTED 包变成 FAILED，之后不能直接重试。这是前置拒绝被当成发布失败，违背 PRD 的“preview/参数/授权拒绝保留 TESTED”行为。
+- 修复：在占用正式执行状态和创建 operation 意图前完成全部只读准入检查；真正进入执行后的失败再按退休规则处理。
+
+#### R5 / P2：真实阶段和失败定位仍未接入
+
+- `startBuild:75` 进入 PREFLIGHTING，只有在 operation 整体 succeeded 后，`advanceSucceeded:371-385` 才依次补写 TESTING、BUILDING、READY。
+- Maven、前端和 Docker 执行中不会显示相应阶段，失败仍使用 `reconcile:243` 的当前状态报 PREFLIGHTING；阶段 evidenceRefs 仍为拼接路径而非逐阶段验证产物。
+- 修复：让受控执行器输出真实阶段事件并绑定实际证据，不能把最终 succeeded 回填成各阶段均已验证。
+
+### 本轮证据与建议顺序
+
+- 通过 git diff 逐项核对 c3220239d 相对首轮的 12 个相关生产文件改动，并回读完整失败/恢复分支、授权服务、租约实现和新增测试。
+- 新增测试已覆盖 scope/toolchain、直接 action 拒绝、READY 等待、TESTED 释放和预分配 ID；本轮只读取测试，没有将其视作本次运行通过。
+- 建议先修 R1/R2/R3，再修 R4/R5；保持已修复六项的回归，随后再进行已授权范围内的真实按钮验收。
+- 本轮未运行构建、产品测试、E2E、远端操作或修改生产代码，未启用子 Agent。
+
+---
+
+下方为 12:49 首轮审查历史，旧问题状态以上方最新复查为准。
+
 ## 结论与审查边界
 
 **结论：FAIL，当前发布按钮逻辑不能放行。** 存在新旧调用合同断裂、授权旁路、状态超时与锁生命周期问题。下面结论来自静态调用链，不等同于已执行按钮、构建、发布或远端验证。

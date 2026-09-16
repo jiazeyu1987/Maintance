@@ -3543,3 +3543,5 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 2026-09-16T12:53:25.7551468+08:00	20260916-release-button-static-review	REQUEST	静态检查当前发布按钮代码逻辑是否正确。
 2026-09-16T12:53:25.7551468+08:00	20260916-release-button-static-review	COMMAND_INTENT	只读追踪主程序按钮/API/后台编排/动作执行器/发布脚本，核对源码版本、权限、参数、状态与锁；不构建、不测试、不发布、不访问服务器。
 2026-09-16T12:53:25.7551468+08:00	20260916-release-button-static-review	RESULT	静态审查FAIL，6项P1与2项P2，详见任务verification-report；审查记录完成，UTF-8与cleanup preview/apply通过。产品代码未修改。
+2026-09-16T17:44:45.1309365+08:00	20260916-release-button-static-review	RECHECK	用户再次要求静态检查；已复查应用c3220239d及维护71b86b7，首轮六项代码级修正，仍确认3项P1和2项P2；未运行产品测试、构建、服务器操作。
+2026-09-16T17:44:45.1309365+08:00	20260916-release-button-static-review	REPORT_SENT	最新报告成功发送到01a0a2cd-5812-7b80-84eb-4ab27f82da42，目标进入运行态；cleanup preview/apply零删除通过，仅代表审查与投递完成。
