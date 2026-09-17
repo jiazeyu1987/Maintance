@@ -3,9 +3,12 @@
   "status": "completed",
   "review_mode": "static_read_only",
   "review_decision": "fail",
-  "application_commit": "3f059bec334d6b5ecec6dd7b413c379315c36415",
-  "maintenance_commit": "ade217a07f0ea9c0ecf36ae7f484096b893c7c50",
-  "findings": {"P1": 2, "P2": 1},
+  "application_commit": "1c44505eed919a67ac8504585e7c42d5460abbbd",
+  "maintenance_commit": "13d34b5b50d2be60b6e0d5be01d51c622abe6825",
+  "includes_uncommitted_source": true,
+  "orchestrator_sha256": "fe78f6c4ff9c46bd073e9a9d9a21a50b5bf62989b5dcffcb281b5ebde204cbb3",
+  "governance_sha256": "c22c1a2495cdb7caf9ac6b62dbf3aee44a9d1989bc2f4db9e4ba84e05e0d2bc1",
+  "findings": {"P1": 1, "P2": 1},
   "runtime_verified": false,
   "subagents_used": false
 }

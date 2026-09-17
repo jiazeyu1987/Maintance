@@ -20,3 +20,11 @@
 - RESULT: current-static-review -> FAIL；T1正在执行PASS时FAIL请求绕过验收锁并释放锁；T2晋级凭证读取未检查testResult=PASS；T3失败验收原因/人员未进入业务持久化记录。当前2项P1/1项P2。
 - GREEN: experience-preflight -> PASS；本轮只更新原任务记录，无新临时产物，沿用已读经验沉淀和closeout技能；不操作被审worktree、外部任务或运行环境。
 - GREEN: current-recheck-closeout -> PASS；preview/apply零删除，保留四份任务记录；审查任务completed，被审代码仍FAIL。
+
+## 2026-09-17 18:18 磁盘当前版本复查
+- 用户再次要求当前两个 worktree 的按钮静态检查；实际应用 HEAD 1c44505eed919a67ac8504585e7c42d5460abbbd，维护 HEAD 13d34b5b50d2be60b6e0d5be01d51c622abe6825，代码存在 staged/unstaged 修复。
+- 已告知版本及未提交差异；本轮以当前文件快照审查，不切换分支、不改动对方文件或 index、不运行测试/发布，不启用子 Agent。
+- GREEN: snapshot-stability -> PASS；118个相关文件两次SHA-256一致，关键hash写入报告与task-state。
+- RESULT: current-static-review -> FAIL；T1-T3已在当前未提交代码修正；U1无法确认终止时写failed并在预检/测试超时释放锁（P1）；U2展示层只凭JSON存在判tested而不核凭证（P2），最终维护脚本PASS硬门禁仍有效。
+- GREEN: experience-preflight -> PASS；本轮仅更新原审查记录，无临时产物；沿用经验归档/收尾规则，不新增长期经验、不操作被审worktree。
+- GREEN: 18:23 closeout preview/apply -> PASS；零删除，正式任务记录保留；审查任务completed，被审当前快照仍FAIL。

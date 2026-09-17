@@ -1,5 +1,47 @@
 # 指定提交发布按钮静态复查报告
 
+## 最新磁盘快照复查：2026-09-17 18:21 +08:00
+
+**FAIL：当前磁盘源码确认 1 项 P1、1 项 P2。** 用户列出的 548c5b151 / 0e0869 已不是当前 HEAD。应用 HEAD 为 `1c44505eed919a67ac8504585e7c42d5460abbbd`，维护 HEAD 为 `13d34b5b50d2be60b6e0d5be01d51c622abe6825`；两边均有尚未提交的修复，因此本结论明确包含 staged/unstaged 源码，不代表 HEAD 提交本身已包含这些修复。
+
+18:19-18:21 对相关 service/controller Java、页面/API 和维护脚本共 118 个文件计算 SHA-256，前后无变化。关键快照：
+
+- 应用 ReleaseWorkflowOrchestrator.java：`fe78f6c4ff9c46bd073e9a9d9a21a50b5bf62989b5dcffcb281b5ebde204cbb3`。
+- 维护 ReleasePackageGovernance.psm1：`c22c1a2495cdb7caf9ac6b62dbf3aee44a9d1989bc2f4db9e4ba84e05e0d2bc1`。
+
+### 上一轮 T1-T3 在当前代码中的状态
+
+- T1 已修：acceptTest 在处理 PASS/FAIL 前检查现有 running mark-release-tested，拒绝冲突请求，保留正在执行的验收及租约。
+- T2 已修：晋级读取 tested.json 时明确要求 testResult 存在且严格等于 PASS。
+- T3 已修：FAIL 通过 failTestAcceptance 将失败原因、验收人、时间、workflow/tag/摘要及发布证据原子写入同一事件 envelope，不再仅保存一个未创建的文件引用。
+- 这些修复目前有未提交部分，只确认当前源码逻辑，不宣称已合入、已构建或已运行通过。
+
+### U1 / P1：终止未确认被改写为确定失败，可能释放仍在使用的构建锁
+
+- 位置：[ReleaseWorkflowOrchestrator.java:402](/D:/IntRuoyiWorktree/r260911-release-button/a/IntRuoyiBackend/yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/service/runtimecontrol/releaseworkflow/ReleaseWorkflowOrchestrator.java:402)，属于当前未暂存改动。
+- 当前代码在 runtimeControlService.cancelOperation 返回 false 时，直接 operationStore.updateStatus(..., failed)，并写入“runtime restart”说明。随后回读刚被自己写为 failed 的 operation，自然无法再被 running 检查拦截。
+- 但 [RuntimeControlCommandExecutorImpl.java:92](/D:/IntRuoyiWorktree/r260911-release-button/a/IntRuoyiBackend/yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/service/runtimecontrol/RuntimeControlCommandExecutorImpl.java:92) 在找不到进程或容器句柄时返回 false；这只表示没有终止证明，不能证明进程已退出，也不能证明一定发生了 runtime restart。RuntimeControlServiceImpl 在这一分支保持 false 并移除取消标记，并未验证实际进程终态。
+- 当 workflow 仍处于 PREFLIGHTING/TESTING 时，[ReleaseWorkflowService.java:265](/D:/IntRuoyiWorktree/r260911-release-button/a/IntRuoyiBackend/yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/service/runtimecontrol/releaseworkflow/ReleaseWorkflowService.java:265) 把超时项写为 FAILED、zeroWriteEvidence=true；随后 orchestrator:412-413 调用 releaseLeasesForState，605-607 行释放锁。
+- 后果：无法确认终止的旧执行仍可能存活，却被记录为确定失败并解除隔离，下一轮构建可重入。BUILDING/部署阶段可能继续保留 RECOVERY_REQUIRED，但 operation 已被伪造为确定 failed，同样失去真实状态语义。
+- 建议：取消结果 false 必须保留“状态未知/终止未确认”，进入或保持恢复隔离；仅在核验进程终态和相应目标证据后判失败并释放租约，禁止通过改 operation JSON 状态满足后续检查。
+
+### U2 / P2：页面“已验证”状态仍只看 tested.json 能否解析
+
+- 位置：[RuntimeControlServiceImpl.java:708](/D:/IntRuoyiWorktree/r260911-release-button/a/IntRuoyiBackend/yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/service/runtimecontrol/RuntimeControlServiceImpl.java:708)。populateReleasePackageTestedMetadata 只要 JSON 对象非 null 就设置 tested=true，没有验证 testResult、tag、双摘要或测试 operation。
+- 例如合法 JSON `{}` 或 testResult=FAIL 的凭证，在目录/manifest 其他条件满足时也会被展示层标为 tested。getReleaseStatus 使用该标记计算 latestTestedReleaseTag；前端 index.vue:1142/1155 用同一标记计算已验证集合和候选。
+- 这不是上一轮 T2 的重复结论：当前维护晋级脚本已补 PASS 硬校验，因此这里不声称可绕过最终发布门禁；缺陷是后台/UI 提前宣称“已验证”、展示不可晋级的候选，到执行阶段才失败。
+- 建议：展示层使用同一凭证有效性合同；无效/缺字段凭证应明确显示阻断原因，不能把 JSON 可解析等同于验收通过。
+
+### 本轮范围
+
+- 当前修改仍在其他任务 worktree 内进行，本报告只约束上述哈希快照；没有写入被审代码或修改其暂存区。
+- 本轮读取相关测试与改动，未执行产品测试、构建、E2E、服务器请求；未启用子 Agent。
+- 对用户列出的旧固定提交，00:27 历史结论仍适用；对当前 worktree，以本节为准。
+
+---
+
+以下为早前快照的审查历史，不能将其未修复项直接套到当前文件。
+
 ## 最新复查：2026-09-17 09:08 +08:00
 
 **当前 worktree 仍为 FAIL，确认 2 项 P1、1 项 P2。** 用户再次列出的 548c5b151 / 0e0869 为旧提交；实际 HEAD 已推进至应用 `3f059bec334d6b5ecec6dd7b413c379315c36415`、维护 `ade217a07f0ea9c0ecf36ae7f484096b893c7c50`。已告知版本差异，本轮按当前磁盘源码复查；相关生产和测试源码无未提交差异。旧提交的下方审查保留为历史。

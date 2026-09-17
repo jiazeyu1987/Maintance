@@ -3550,3 +3550,4 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 2026-09-17T00:30:45.5434088+08:00	20260917-release-button-static-review	COMMAND_INTENT	只读核对提交、源码差异、按钮调用链、恢复状态、取消锁、验收结果与验收人传递；不构建、不运行产品测试、不操作服务器。
 2026-09-17T00:30:45.5434088+08:00	20260917-release-button-static-review	RESULT	静态FAIL，3项P1/1项P2；上轮R1-R5主路径已修，本轮具体发现见verification-report。任务记录UTF-8与closeout preview/apply通过，零删除。
 2026-09-17T09:11:14.7316471+08:00	20260917-release-button-static-review	CURRENT_RECHECK	用户再次要求当前两个worktree静态审查；发现HEAD更新为应用3f059bec3/维护ade217a并告知；原S1-S4已修正，仍确认T1验收并发锁、T2晋级未核testResult、T3失败验收证据丢失，2项P1/1项P2。只读审查未执行产品测试或发布；记录UTF-8和closeout通过。
+2026-09-17T18:24:11.3739146+08:00	20260917-release-button-static-review	DISK_SNAPSHOT_RECHECK	按用户重复请求检查当前磁盘代码：应用HEAD1c44505ee、维护HEAD13d34b5且含未提交修复，118文件哈希前后稳定；旧T1-T3已修，当前U1终止未确认改failed并解除隔离/P1、U2tested展示标记未验证凭证/P2，静态FAIL。未测试、发布或改被审代码；UTF-8与closeout记录验证通过。
