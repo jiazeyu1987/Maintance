@@ -28,3 +28,9 @@
 - RESULT: current-static-review -> FAIL；T1-T3已在当前未提交代码修正；U1无法确认终止时写failed并在预检/测试超时释放锁（P1）；U2展示层只凭JSON存在判tested而不核凭证（P2），最终维护脚本PASS硬门禁仍有效。
 - GREEN: experience-preflight -> PASS；本轮仅更新原审查记录，无临时产物；沿用经验归档/收尾规则，不新增长期经验、不操作被审worktree。
 - GREEN: 18:23 closeout preview/apply -> PASS；零删除，正式任务记录保留；审查任务completed，被审当前快照仍FAIL。
+
+## 发布不成功的直接阻断诊断
+- 用户明确要求验证造成发布不成功的问题，修正本轮关注范围：从真实当前operation、构建/发布日志与按钮执行代码定位失败，不以展示或罕见异常风险代替失败根因。
+- 沿用只读边界，不主动触发新发布、构建、重启或服务器写入。
+- 已按用户重点在同任务链20260917-release-failure-cause-analysis完成真实阻断验证：当前第四次构建被16:09:35系统重启中断，恢复后仍running/BUILDING，无今日publish-test。旧静态风险不作为当前失败根因。
+- GREEN: scope-closeout preview/apply -> PASS，零删除；本静态任务completed，实际阻断证据和最终结论见新分析报告。

@@ -3551,3 +3551,7 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 2026-09-17T00:30:45.5434088+08:00	20260917-release-button-static-review	RESULT	静态FAIL，3项P1/1项P2；上轮R1-R5主路径已修，本轮具体发现见verification-report。任务记录UTF-8与closeout preview/apply通过，零删除。
 2026-09-17T09:11:14.7316471+08:00	20260917-release-button-static-review	CURRENT_RECHECK	用户再次要求当前两个worktree静态审查；发现HEAD更新为应用3f059bec3/维护ade217a并告知；原S1-S4已修正，仍确认T1验收并发锁、T2晋级未核testResult、T3失败验收证据丢失，2项P1/1项P2。只读审查未执行产品测试或发布；记录UTF-8和closeout通过。
 2026-09-17T18:24:11.3739146+08:00	20260917-release-button-static-review	DISK_SNAPSHOT_RECHECK	按用户重复请求检查当前磁盘代码：应用HEAD1c44505ee、维护HEAD13d34b5且含未提交修复，118文件哈希前后稳定；旧T1-T3已修，当前U1终止未确认改failed并解除隔离/P1、U2tested展示标记未验证凭证/P2，静态FAIL。未测试、发布或改被审代码；UTF-8与closeout记录验证通过。
+
+2026-09-17T18:36:14.4794679+08:00	20260917-release-failure-cause-analysis	REQUEST	用户要求只验证导致发布不成功的实际原因。
+2026-09-17T18:36:14.4794679+08:00	20260917-release-failure-cause-analysis	COMMAND_INTENT	只读核对四次按钮operation/workflow/日志、本地manifest、系统启动时间、任务进程与执行器代码；不触发发布或服务器操作。
+2026-09-17T18:36:14.4794679+08:00	20260917-release-failure-cause-analysis	RESULT	当前第四次构建在前端构建阶段被16:09:35重启中断，原本机进程已不存在，恢复后终止未确认导致running/BUILDING悬挂；包缺manifest、无今日publish-test。此前编码/NAS错目标/manifest读取合同均已有修复及后续证据。分析与closeout通过，发布未完成。

@@ -1,0 +1,11 @@
+{
+  "task_id": "20260917-release-failure-cause-analysis",
+  "status": "completed",
+  "analysis_status": "verified",
+  "release_status": "not_completed",
+  "current_workflow": "rw-d12f1b2d7a7e",
+  "current_operation": "fee8558c-bfe5-4f44-adec-e46147a7ed64",
+  "current_blocker": "Build interrupted by OS restart; running operation not reconciled to terminal or recovery state",
+  "publish_test_observed": false,
+  "mutated_runtime": false
+}
