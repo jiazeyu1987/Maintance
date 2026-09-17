@@ -96,6 +96,10 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$releaseConsoleEncoding = [System.Text.UTF8Encoding]::new($false)
+[Console]::InputEncoding = $releaseConsoleEncoding
+[Console]::OutputEncoding = $releaseConsoleEncoding
+$OutputEncoding = $releaseConsoleEncoding
 if (Get-Variable -Name PSNativeCommandUseErrorActionPreference -ErrorAction SilentlyContinue) {
 $PSNativeCommandUseErrorActionPreference = $false
 }

@@ -1,5 +1,15 @@
 # 构建发布耗时问题预防清单
 
+## Windows 发布日志 UTF-8 合同
+
+- Trigger: 发布按钮列表报 RELEASE_WORKFLOW_STAGE_LOG_INVALID / MalformedInputException，或 Windows PowerShell 子进程输出中文。
+- Preflight check: 发布脚本在模块加载和首次输出前设置 Console.InputEncoding、Console.OutputEncoding、OutputEncoding 为 UTF-8；用 CP936 初始控制台启动动态回归，验证 stdout/stderr 均能严格 UTF-8 解码。
+- Blocker: 输出仍含非法 UTF-8、脚本回归失败或活动构建无法证明已终止时，停止后续部署。
+- Verification: test_release_bootstrap_emits_utf8_even_with_legacy_console_encoding 通过；已明确失败的构建坏日志显示 FAILED/LOG_DECODING 并保留证据，运行中/成功任务的坏日志继续阻断。
+- Forbidden action: 禁止读取端猜测编码、丢弃坏字节、重写原日志、手工修改 workflow 状态或复用失败 releaseTag。
+- Evidence: doc/tasks/20260916-release-button-remediation/execution-log.md。
+- 阶段必查项：启动前检查三项编码；构建中以 operation 状态、进程和阶段证据共同判断；终止后检查 operation 终态再处理工作流。推荐命令为上述动态 pytest 和工作流定向 JUnit；任一失败必须 Fail Fast，记录 operationId、错误类型、停止 PID 与 RED/GREEN。
+
 ## 适用范围
 
 当任务涉及 IntRuoyi 运行控制台真实 E2E 构建发布包、发布到测试服、发布包候选验收或构建发布失败重试时，先读本文。

@@ -1,10 +1,28 @@
 from __future__ import annotations
 
 from pathlib import Path
+import subprocess
 
 
 ROOT = Path(__file__).resolve().parents[2]
 PUBLISH_SCRIPT = ROOT / "ops" / "deploy" / "publish-int-ruoyi.ps1"
+
+
+def test_release_bootstrap_emits_utf8_even_with_legacy_console_encoding() -> None:
+    source = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    bootstrap = source[source.index("$ErrorActionPreference = 'Stop'"):source.index("Import-Module -Force")]
+    command = (
+        "[Console]::OutputEncoding = [System.Text.Encoding]::GetEncoding(936); "
+        + bootstrap
+        + "\n$text = [string][char]0x4e2d + [char]0x6587; "
+        + "[Console]::WriteLine($text); [Console]::Error.WriteLine($text)"
+    )
+    result = subprocess.run(
+        ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", command],
+        capture_output=True, check=True, timeout=30,
+    )
+    assert result.stdout.decode("utf-8").strip() == "\u4e2d\u6587"
+    assert result.stderr.decode("utf-8").strip() == "\u4e2d\u6587"
 
 
 def _function(source: str, name: str, next_name: str) -> str:

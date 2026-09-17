@@ -1,5 +1,7 @@
 # 项目经验索引
 
+- 发布日志编码 / RELEASE_WORKFLOW_STAGE_LOG_INVALID / MalformedInputException / CP936 / LOG_DECODING：`docs/release-build-preflight-lessons.md#Windows-发布日志-UTF-8-合同`。
+
 任务启动顺序固定为：先创建或识别 `doc/tasks/<task-id>/` 并写入最小 `task.md`（目标、里程碑、预期验证、当前状态），再读本文件并只打开命中的经验文档，随后把适用门禁补入任务文档；不要全量阅读所有经验。唯一例外：PowerShell / Windows shell 任务可先执行只读 UTF-8 bootstrap 读取适用规则，bootstrap 完成后必须立即创建或更新任务文档。
 
 ## 经验文档写入规范（强制）
