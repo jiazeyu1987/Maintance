@@ -6061,7 +6061,7 @@ test -f $remoteReportFileLiteral
 grep -q '"status" : "READY"' $remoteReportFileLiteral
 grep -q '"blockerCount" : 0' $remoteReportFileLiteral
 "@
-    Invoke-SshCommand $command
+    Invoke-SshCommandWithInput -Command 'bash -s' -StandardInput $command
 }
 
 function Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement {
