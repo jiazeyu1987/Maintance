@@ -1,5 +1,53 @@
 # 指定提交发布按钮静态复查报告
 
+## 最新复查：2026-09-17 09:08 +08:00
+
+**当前 worktree 仍为 FAIL，确认 2 项 P1、1 项 P2。** 用户再次列出的 548c5b151 / 0e0869 为旧提交；实际 HEAD 已推进至应用 `3f059bec334d6b5ecec6dd7b413c379315c36415`、维护 `ade217a07f0ea9c0ecf36ae7f484096b893c7c50`。已告知版本差异，本轮按当前磁盘源码复查；相关生产和测试源码无未提交差异。旧提交的下方审查保留为历史。
+
+### 上次四项已修正
+
+- S1：reconcile 对 RECOVERY_REQUIRED 提前返回，阶段观察器只处理活动构建状态。
+- S2：取消后改用 releaseLeasesForState，RECOVERY_REQUIRED 不直接释放隔离锁。
+- S3：UI/API 新增显式 PASS/FAIL；FAIL 不直接派发 mark-tested，正常失败路径会退休 workflow；脚本写凭证只接受 PASS。
+- S4：mark-tested 明确传入后台认证操作者作为 OperatorName，不再依赖机器账户。
+
+这些修正均为静态确认，没有在本轮运行产品测试。
+
+### T1 / P1：FAIL 请求可打断正在写入的 PASS 验收状态并提前放锁
+
+- 前置：workflow=TEST_DEPLOYED，用户 A 提交 PASS；后台已异步启动 mark-release-tested，operation=running，test lease 仍持有。
+- 此时用户 B 或另一页面提交 FAIL。方法级 synchronized 只串行处理请求，并不等待异步脚本结束。
+- [ReleaseWorkflowOrchestrator.java:154](/D:/IntRuoyiWorktree/r260911-release-button/a/IntRuoyiBackend/yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/service/runtimecontrol/releaseworkflow/ReleaseWorkflowOrchestrator.java:154) 先 reconcile；running operation 在 279-280 行原样返回，workflow 仍是 TEST_DEPLOYED。
+- [同文件:162](/D:/IntRuoyiWorktree/r260911-release-button/a/IntRuoyiBackend/yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/service/runtimecontrol/releaseworkflow/ReleaseWorkflowOrchestrator.java:162) 的 FAIL 分支位于 acquireEnvironmentLease 之前，不检查正在执行的验收，直接写 FAILED 并在 166 行调用 releaseLeasesForState，释放该 workflow 的 test 锁。
+- 后果：PASS 进程未被取消，仍可能成功写出 tested.json；workflow 却已 FAILED，且另一测试服发布可取得已释放的环境锁。出现工作流与成功凭证冲突及未结束操作失去隔离的窗口。
+- 修复方向：PASS/FAIL 共用验收串行门禁；正在执行验收时拒绝互斥结果，或进入明确取消/恢复流程后再决定结果。不能只靠前端按钮 loading 或 synchronized 方法代替异步操作生命周期锁。
+- 当前新增失败验收测试只覆盖“无运行中 PASS”的单请求，不覆盖本情形。
+
+### T2 / P1：晋级读取凭证时未检查新增 testResult=PASS
+
+- 维护提交 ade217a 的写入端要求 TestResult=PASS，并把 testResult 写入 tested.json。
+- [ReleasePackageGovernance.psm1:629](/D:/ProjectPackage/Int/IntRuoyiWorktrees/r260911-release-button/m/ops/release/lib/ReleasePackageGovernance.psm1:629) 的 Test-ReleasePromotionAttestation 必填字段列表没有 testResult；638-648 行的期望值映射也没有 testResult='PASS'，最后仍只检查 testConclusion 非空。
+- 因而当其他 tag、摘要、operation、schemaVersion 与日期字段合法时，testResult 缺失或为 FAIL 的凭证不会在此门禁被拒绝。旧 schemaVersion=v2 凭证也可能没有这个新字段，不能认为写入端新增校验已修复读取端的信任边界。
+- [publish-int-ruoyi.ps1:3128](/D:/ProjectPackage/Int/IntRuoyiWorktrees/r260911-release-button/m/ops/deploy/publish-int-ruoyi.ps1:3128) 正式晋级仍消费该验证函数。
+- 修复方向：晋级时显式要求 testResult 存在且严格为 PASS；补缺失、FAIL 和非法值负例，保持正常 PASS 凭证可用。本结论没有声称当前正常写入路径会主动生成 FAIL 凭证。
+
+### T3 / P2：失败验收未保存用户填写的原因和实际验收人
+
+- [ReleaseWorkflowOrchestrator.java:152](/D:/IntRuoyiWorktree/r260911-release-button/a/IntRuoyiBackend/yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/service/runtimecontrol/releaseworkflow/ReleaseWorkflowOrchestrator.java:152) 校验 normalizedConclusion，但 FAIL 分支 162-167 行没有使用它，也没有使用 requestedBy。
+- 该分支只保存通用错误码和 `workflow/test-acceptance-failed.json` 字符串引用。ReleaseWorkflowService.verifyAdvance 使用固定 VERIFIER_ACTOR；ReleaseWorkflowStore.update 保留原始创建者和创建原因，persistEvent 只写 workflow envelope，没有创建该引用对应的失败验收文件。
+- 后果：页面提示“测试不通过记录已提交”，但业务工作流及其事件缺少用户实际填写的失败原因和失败验收人，不能通过刷新/重启后的业务记录还原这次判定。通用访问日志即使存在，也不替代正式验收证据。
+- 修复方向：原子保存结构化失败验收记录（FAIL、原因、验收人、时间、workflow/tag/双摘要），并把事件绑定到实际存在的证据；不把字符串路径当作已落盘证据。
+
+### 当前结论和范围
+
+- 上次 S1-S4 均已有针对性修正，不能继续把它们列为当前未修复项。
+- 当前剩余 T1/T2 为放行阻塞，T3 为验收审计完整性问题。
+- 当前审查仍仅为静态代码与契约检查，未执行发布、产品测试、E2E、服务器请求或产品代码修改；未启用子 Agent。
+
+---
+
+以下为 00:27 对旧指定提交 548c5b151 / 0e0869 的历史报告。
+
 ## 结论
 
 **FAIL：当前指定两份代码仍有 3 项 P1、1 项 P2。** 上一轮 R1-R5 已有实质代码修复，本轮没有沿用旧问题全部未修的结论；剩余问题是恢复状态与阶段解析、取消隔离、验收失败分支和验收人传递。

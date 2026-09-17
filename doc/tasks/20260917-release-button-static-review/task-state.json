@@ -3,9 +3,9 @@
   "status": "completed",
   "review_mode": "static_read_only",
   "review_decision": "fail",
-  "application_commit": "548c5b151693c6ebb1ac3b1201364c561673a2a2",
-  "maintenance_commit": "0e08698ab0205b3643ea23bac1df6f5a058243c1",
-  "findings": {"P1": 3, "P2": 1},
+  "application_commit": "3f059bec334d6b5ecec6dd7b413c379315c36415",
+  "maintenance_commit": "ade217a07f0ea9c0ecf36ae7f484096b893c7c50",
+  "findings": {"P1": 2, "P2": 1},
   "runtime_verified": false,
   "subagents_used": false
 }

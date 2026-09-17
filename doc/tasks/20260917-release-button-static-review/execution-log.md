@@ -12,3 +12,11 @@
 - GREEN: experience-preflight -> PASS；本次没有临时产品、worktree 或进程，收尾只保留四份正式任务记录，不触碰其他任务。
 - 本轮文档验证不等于产品测试通过；不因审查记录完成而放行被审功能。
 - GREEN: task-closeout preview/apply -> PASS；保留四份正式记录，零删除，无 worktree 合并/删除、无进程操作。任务 completed，仅表示审查完成。
+
+## 2026-09-17 09:05 当前 worktree 再复查
+- 用户重复要求静态检查当前两个 worktree，所列旧提交仍可解析，但当前 HEAD 已为应用 3f059bec334d6b5ecec6dd7b413c379315c36415、维护 ade217a07f0ea9c0ecf36ae7f484096b893c7c50。
+- 已明确告知版本变化，本轮按当前代码检查，不把旧 S1-S4 未修结论直接沿用到新提交。
+- GREEN: current-code-diff-review -> PASS；当前应用3f059bec3、维护ade217a，所审源码与HEAD一致；S1-S4均已代码级修正。
+- RESULT: current-static-review -> FAIL；T1正在执行PASS时FAIL请求绕过验收锁并释放锁；T2晋级凭证读取未检查testResult=PASS；T3失败验收原因/人员未进入业务持久化记录。当前2项P1/1项P2。
+- GREEN: experience-preflight -> PASS；本轮只更新原任务记录，无新临时产物，沿用已读经验沉淀和closeout技能；不操作被审worktree、外部任务或运行环境。
+- GREEN: current-recheck-closeout -> PASS；preview/apply零删除，保留四份任务记录；审查任务completed，被审代码仍FAIL。
