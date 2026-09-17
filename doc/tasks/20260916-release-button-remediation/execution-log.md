@@ -32,3 +32,13 @@
 - GREEN: `python -X utf8 -m pytest scripts/tests/test_release_workflow_preflight.py scripts/tests/test_release_package_governance.py --basetemp .pytest-tmp-release-button-current-all` -> PASS，86 tests。
 - GREEN: `git diff --check` -> PASS，应用仓和维护仓均仅有 CRLF 提示。
 - RESULT: S1-S4 与补充的直接 mark-tested 前端合同均已本机验证通过；下一步提交两仓实现，创建新的临时发布 worktree，通过按钮执行全新 releaseTag 的测试服发布。
+
+## 2026-09-17 菜单身份冲突根因闭环与 R82 冻结
+- USER_REQUEST: 用户要求不要空等，按“通用、长期可用的一键按钮发布”方向修复；发布包必须先在本地验证成功，再发布测试服；最终使用芋道源码/admin 进行只读页面验收。
+- GREEN: `app-registration-certificate-menu-regression` -> PASS，应用 worktree `D:\IntRuoyiWorktree\r260917-button-publish7\a` 提交 `6435dfc54c37291f2b54a4c734aea43475155fd5` 的 `test_registration_certificate_management_menu_hierarchy_sql.py` 与 `test_release_target_preflight_files.py` 共 12 tests 通过。
+- RED: `publish-test` operation `42384949-c0d1-40b7-baa5-8ec14adc5d4c` -> FAIL，旧应用提交 `d7f4901aa65bec54c2b56b44fbc2e387a2be07e1` 执行 `20260829_registration_certificate_management_menu_hierarchy.sql` 在第 543 行返回 `ERROR 1644: Registration certificate management retired menu contract mismatch: enterprise company scope`；测试服 `.env` 与实际容器未切换，发布锁已写回 `FAILED` 并释放。
+- ROOT_CAUSE: 旧 SQL 将退休菜单 `(605071320, 605071321)` 当作固定身份直接退休，同时又对 ID 605071320 的历史身份做强一致性断言；测试服存在同 ID 的企业公司范围身份漂移，造成迁移在版本切换前失败。当前修复将退休集合改为“完整旧身份匹配才加入”，避免错误删除或因可保留的未知身份阻断发布。
+- BDD: retired menu identity drift is safe and explicit -> Given target `system_menu` may contain a reused legacy ID with a different active identity / When registration certificate menu hierarchy migration runs / Then the migration only retires rows matching the complete legacy identity, preserves unknown identities, and the SQL contract test forbids blind fixed-ID retirement.
+- GREEN: `python -X utf8 -m pytest -q script/tests/test_registration_certificate_management_menu_hierarchy_sql.py script/tests/test_release_target_preflight_files.py --basetemp D:\IntRuoyiWorktree\r260917-button-publish7\a\.pytest-temp\registration-certificate-fix` -> PASS，12 tests。
+- SOURCE_FREEZE: 新 releaseTag=`release-20260917-one-button-app-r82`；维护源 `7381c6e4d27b183cca79fafda623bccb52f8a2f6`；应用/前端源 `6435dfc54c37291f2b54a4c734aea43475155fd5`；仅测试服 `172.30.30.58`，`PublishScope=app-release`，禁止 `mark-tested`、正式服、备份服、全量数据库复制和 MinIO 同步。
+- NEXT: 先提交本段任务记录保持维护 worktree clean，再在新的发布 worktree 完成本地 build-release、schema-only rehearsal、package integrity 与 manifest validation；仅本地全部通过后，才执行同一 R82 的测试服 publish-test。

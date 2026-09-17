@@ -11,7 +11,7 @@ in_progress
 2. [completed] 定向验证 `ops/deploy/publish-int-ruoyi.ps1` 在测试块和构建块前输出 `RELEASE_WORKFLOW_STAGE`。
 3. [completed] 更新任务记录和验证报告；不执行真实发布、服务器写入、数据库写入或 worktree 清理。
 4. [completed] 先补脚本合同回归测试取得 RED，再实现显式 PASS 结果、操作人透传和失败分支约束。
-5. [pending] 在应用、维护提交结果上创建新的临时发布 worktree，完成脚本发布前置验证。
+5. [in_progress] 在应用、维护提交结果上创建新的临时发布 worktree，完成脚本发布前置验证。
 6. [pending] 支持并验证一次测试服发布按钮调用，记录 releaseTag、运行态和发布后问题处理结果。
 7. [pending] 完成维护仓 task-owned 清理与最终记录。
 
@@ -35,3 +35,8 @@ in_progress
 
 ## 当前阻塞
 - 暂无已确认阻塞；发布前置、测试服访问或脚本合同不满足时必须 fail fast 并记录精确影响。
+
+## 2026-09-17 续跑状态
+- 失败根因：旧应用提交 `d7f4901aa65bec54c2b56b44fbc2e387a2be07e1` 的注册证菜单迁移对退休菜单 ID 605071320/605071321 采用盲目身份假设，测试服真实数据在 `605071320` 上存在企业公司范围身份漂移，导致 `ERROR 1644`。
+- 已修复提交：应用仓 `6435dfc54c37291f2b54a4c734aea43475155fd5`，退休菜单仅在完整旧身份匹配时加入待退休集合；不覆盖未知身份，不吞 SQL 失败。
+- 新发布冻结：releaseTag=`release-20260917-one-button-app-r82`；维护源 `7381c6e4d27b183cca79fafda623bccb52f8a2f6`；应用/前端源 `6435dfc54c37291f2b54a4c734aea43475155fd5`；目标仅测试服 `172.30.30.58`，范围 `app-release/without-data`。
