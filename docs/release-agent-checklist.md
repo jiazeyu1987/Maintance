@@ -207,6 +207,15 @@ Codex 必须把完整发布任务视为以下严格顺序：
 
 ## 5. 正式服发布与验证
 
+### 5.0 “已测试包发布正式服”按钮入口门禁
+
+- Trigger: 运行控制台新增或使用“发布到正式服务器/晋级正式服”按钮。
+- Preflight check: 按钮必须绑定服务端 `TESTED` release workflow、同一 `releaseTag`、package digest、manifest digest、测试 operation/验收证据和服务端正式目标；点击后先生成只读 production preview，再由服务端签发短时一次性授权；确认请求只能携带 workflow/preview/grant/状态版本/幂等键/原因/精确 `PROD`，不得由客户端传 host、path、targetEnvironment、releaseTag 或 evidence path。
+- Blocker: 维护 standalone console 或通用动作选择器仍允许手填 releaseTag/目标环境直接调用旧 `/actions` 生产动作；缺少专用 production 权限、preview blockers、摘要绑定、幂等键、最终运行态证据或 `RECOVERY_REQUIRED` 隔离时，不得放行按钮。
+- Verification: Playwright 从真实工作流页面选择 `TESTED` 包，核对 preview checks、摘要、测试验收和确认顺序；最终只在 operation、manifest、正式 `.env IMAGE_TAG`、实际镜像、backend health、frontend HTTP、页面版本和生产锁全部一致时显示成功；不自动执行 promote-backup。
+- Forbidden action: 禁止把旧 generic `promote-prod` radio/手填包入口当成新按钮；禁止 API-only/mock 代替真实按钮路径；禁止在派发或写入不明后释放生产隔离或允许普通重试；禁止重新构建已测试包。
+- Evidence: `doc/tasks/20260918-prod-promotion-button-design/`；应用候选 `IntRuoyiFronted/src/views/infra/runtime-control/index.vue` 与 `RuntimeControlController` 的现状审计；维护 standalone `frontend/src/App.vue` 的 generic action 风险审计。
+
 ### 必做动作
 
 - 预览正式服发布命令，逐项核对：

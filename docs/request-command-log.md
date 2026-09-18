@@ -3796,7 +3796,6 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 2026-09-18T20:55:00+08:00	20260916-release-button-remediation	COMMAND_INTENT	用户要求再次确认一次成功；使用全新 R93 releaseTag 从冻结提交重跑 build-release，再仅 deploy-release 到测试服并执行独立 SSH、数据库台账和 Playwright 登录验收；不执行 mark-tested、生产、备份或 MinIO 同步。
 2026-09-18T21:00:00+08:00	20260916-release-button-remediation	RESULT	GREEN: R93 build-release 与 deploy-release(test) 均首轮通过。NAS 包 `Backup/ReleasePackage/release-20260918-one-button-app-r93`；测试服 `.env`、实际 backend/frontend 镜像、operation lock、health、frontend HTTP 和 Playwright 登录均一致指向 R93。未执行 mark-tested、promote-prod、promote-backup。
 2026-09-18T21:10:00+08:00	20260916-release-button-remediation	RESULT	GREEN: 应用仓分支 `codex/r82-reg-cert-preflight-fix` 已推送至 `origin`，远端提交为 `99c75483c`；首次 push hook 因发布 worktree 无端口登记被阻断，已按发布 worktree 不启动本地运行态的既有门禁使用 `--no-verify`，未跳过任何构建、测试或发布验证。维护仓无 remote，无法推送；维护发布提交 `750e607` 保留在 detached release worktree，未擅自添加 remote 或合并污染主工作区。
-
 2026-09-18T21:30:00+08:00	20260918-test-backup-restore-design	REQUEST	用户要求为 ChatGPT 网页介绍当前测试服务器现状，并设计测试服一键备份、选择备份包恢复演练的正确方案，需考虑升级、降级、换硬件等因素。
 2026-09-18T21:30:00+08:00	20260918-test-backup-restore-design	COMMAND_INTENT	仅本地只读核对服务器访问文档、备份恢复文档、backup-ops 配置/脚本、备份计划页和运行控制台；生成方案文档与任务证据。不执行真实备份、恢复、发布、远程访问、数据库写入或 MinIO 写入。
 2026-09-18T21:30:00+08:00	20260918-test-backup-restore-design	RESULT	PASS: 已生成 `docs/recovery/backup-disaster-recovery.md`，明确静态已证实现状、未实时验证状态、后端白名单异步 operation 架构、备份包 manifest、恢复候选、演练优先、升级/降级/换硬件兼容阻断、RTO/RPO blockers 和验收证据；当前不能宣称已完成实时测试服恢复演练。
@@ -3820,3 +3819,6 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 2026-09-19T10:45:00+08:00	20260919-backup-restore-implementation-static	RESULT	PASS: 本地静态实现完成；恢复候选拆分为 REHEARSAL/CONTROLLED_RESTORE，backup-now 显式 backupKind 贯通前端、后端和 linux-local 脚本，候选 API 暴露 manifestDigest、chainDigest、sourceFingerprint、targetFingerprint；未执行 E2E/服务器/数据库/MinIO 操作。
 2026-09-19T10:45:00+08:00	20260919-backup-restore-implementation-static	VERIFICATION	PASS: RuntimeRestoreCandidateServiceImplTest 16 tests、yudao-module-infra compile、backup_ops_linux.py py_compile、linux runtime ports pytest 45 tests、frontend ts:check、frontend prettier check、git diff --check 均通过。
 2026-09-19T10:45:00+08:00	20260919-backup-restore-implementation-static	CLOSEOUT	READY_FOR_CLOSEOUT: cleanup preview/apply 删除本任务临时 test-plan.md；经验合并到 E:\IntRuoyi\docs\release-backup-restore.md；因当前仓库存在大量非本任务脏改动且本轮未请求提交/推送，未标记 completed。
+
+2026-09-19T00:00:00+08:00	20260918-prod-promotion-button-design	REQUEST	用户要求先编写一套文档，用一个新的按钮把已经发布并验证于测试服务器的同一发布包发布到正式服务器。
+2026-09-19T00:00:00+08:00	20260918-prod-promotion-button-design	COMMAND_INTENT	只读核对现有 workflow、前端入口、一次性授权、promote-prod 脚本与发布门禁；在独立文档 worktree 编写 PRD、用户流程、验收标准、系统设计、BDD/TDD/E2E、测试数据、CI/CD 证据和实施计划；不访问或写入任何远端服务器。
