@@ -3502,6 +3502,24 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - E2E: 修正任务 Playwright 登录脚本的租户选择器后，真实打开 `http://172.30.30.58:8081`；`测试租户/aoteman` 通过 ERP 菜单加载 `18733` 助手 iframe；`测试租户/dccmatrixregsvc` 无目标权限且看不到菜单；直连助手返回 403。测试密码仅由当前进程注入，未写入文档。
 - Closeout: `task-closeout-cleanup --mode apply` 已删除本任务临时 artifacts；任务拥有的 helper、主程序和维护仓临时发布 worktree 已删除；任务状态标记 `completed`。
 - Boundary: 未执行 `mark-tested`、`promote-prod`、`promote-backup`；未发布正式服或备份服；未记录 token、私钥、连接串、完整 `.env` 或 raw secret-bearing 日志。
+
+## 2026-08-31 当前 HEAD 仅测试服发布
+
+- Request: 用户要求锁定任务启动时当前分支最新已提交代码，在干净临时 worktree 构建维护控制台和测试发布包，仅发布测试服务器；验证真实运行态、运行控制台版本号与变更说明，记录全部问题并沉淀前置经验。
+- Command intent: 先完成 UTF-8 bootstrap、任务文档和经验门禁；随后只读冻结维护仓与 IntRuoyi 当前分支 HEAD，创建本轮专用 release worktree，在冻结 worktree 执行构建、`build-release`、manifest/版本/变更说明校验、`publish-test` 和真实运行态/Playwright 页面验收；发布目标冻结后不再获取新提交。
+- Boundary: 禁止未提交改动进入产物；禁止执行 `mark-tested`、`promote-prod`、`promote-backup` 或操作正式服/备份服；命令与证据必须脱敏，不记录密码、token、私钥、连接串、完整 `.env` 或 raw secret-bearing 日志。
+- Status: blocked。
+- Result: BLOCKED。冻结 maintenance `ed282ac4` / app `584792424` 构建成功，官方 manifest validator 与镜像内 release-info 通过；仅测试服 publish operation `op-2026-08-30T181715327908800Z-09fe2159-482a-4211-beac-03d01dd4e554` 在 target preflight 因 `BLOCKED_SCOPE_DEPENDENCY=1` 失败：schema `20260830_mes_batch_record_report_project_code` 依赖尚未应用的 data `20260829_mes_old_form_template_binding_switch`。
+- Failure state: 测试服 `.env IMAGE_TAG` 已变为失败 r1，但实际 backend/frontend 仍运行上一版本且健康；release lock=FAILED、RUNNING=0、本轮 migration count=0。未手工改 SQL、迁移台账、lock、`.env`，未执行 mark/prod/backup；本轮 worktree/state/package 保留，等待正式 data 前置方案或迁移依赖修复授权。
+- Read-only root cause audit: `20260830_mes_batch_record_report_project_code.sql` 只为 `mes_pro_batch_record_report` 加列，真实建表迁移 `20260514_mes_batch_record_report` 已在测试服 APPLIED；其当前 dependsOn 指向未应用高风险 data `20260829_mes_old_form_template_binding_switch` 不符合实际依赖。推荐授权主分支 BDD+TDD 修正迁移元数据并用新 HEAD/releaseTag 重建，不建议以 with-data 扩大范围绕过。
+- Authorization: 用户明确回复“授权”，允许恢复测试服 `.env`、按 BDD+TDD 修正错误迁移依赖、提交新 HEAD，并以全新 releaseTag 重新构建和仅测试服发布；继续禁止手工 data SQL、ledger/lock 修改、正式服/备份服和 mark/promote 动作。
+- Recovery result: 测试服 `.env IMAGE_TAG` 已原子恢复到实际运行版本 `release-20260830-invoice-assistant-test-r260830k-r1`；backend/frontend 同 tag running、backend health=UP、frontend HTTP 200；失败 r1 lock 保持 FAILED、本轮 migration=0，未重启容器、未修改 ledger/lock。
+- Fix and new release status: 错误迁移 dependsOn 已严格 TDD 修正并合入 app `int_main@c3a134a7`；r260831b maintenance/app release worktree 已从 `ed282ac4/c3a134a7` clean 冻结，快速门禁、前端依赖和维护控制台构建全部通过；计划 releaseTag=`release-20260831-project-code-dependency-test-r260831b-r1`。
+- R260831B result: build-release SUCCESS 且 manifest/source/version/notes 通过；publish-test 因历史 migration `20260726_mes_batch_record_cell_link_work_order_source` 对已存在 `source_type` 执行裸 ADD COLUMN 而 FAILED。实际旧版本容器保持健康，`.env` 漂移到失败 r260831b，lock=FAILED、RUNNING=0；未 mark/prod/backup、未手工改 schema/ledger。
+- Final result: SUCCESS。历史 migration 已严格 TDD 改为逐列幂等并合入 app `int_main@735f6978`；最终 `release-20260831-cell-link-idempotency-test-r260831c-r1` 在 clean release worktree 完成 build-release/publish-test。远端 `.env`、实际镜像、containers、health、frontend HTTP/release-info、lock/migration、运行控制台 API 和 Playwright 页面全部通过；final gate 28/28。未执行 mark/prod/backup，正式服/备份服未访问。
+- Experience: 已把 target-bound plan 前移、历史 ADD COLUMN 幂等、失败 env 精确恢复、跨 JS/PowerShell/SSH 载荷假绿、Playwright/final gate 等经验合并到现有发布/测试服/PowerShell preflight 文档、索引和发布清单；未创建新长期经验文件。
+- Closeout: task-closeout preview/apply、任务自有控制台停止、8 worktree/slots/state/Playwright 临时产物清理和清理后远端复核全部通过；app 子任务收尾 commit=`7ad8cde64`，主任务状态 completed。
+
 ## 2026-08-31 发票打印助手独立测试服重发
 
 - Request: 用户要求先整理并提交 `E:\ProjectPackage\erp-invoice-voucher-print-assistant` 当前改动，再将新的提交单独发布到测试服务器；主程序端口已经正常运行。
@@ -3521,6 +3539,145 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - E2E: Playwright 真实登录 `测试租户/aoteman`，菜单链 `ERP 系统 / 财务管理 / 发票凭证打印` 可见；点击后 ERP 签发短期票据，页面通过 `http://172.30.30.58:18733/auth/callback` iframe 加载助手，console/page error 均为 0。测试密码仅由当前进程注入，未写入文档。
 - Closeout: `task-closeout-cleanup` preview/apply 已清理本任务 artifacts；任务自有运行控制台已停止；三套 release worktree、残留 ignored 目录和本轮 stateDir 均已删除；任务状态 completed。
 
+## 2026-09-02 主程序与发票助手测试服发布
+
+- Request: 用户要求将 IntRuoyi 主程序和发票凭证打印助手发布到测试服务器。
+- Command intent: 基于 clean release worktree 固定维护、主程序、助手已提交输入，仅执行测试服 `build-release -> publish-test`；先校验助手和主程序构建输入、manifest、测试服运行态及 target-bound code-only migration plan，禁止正式服、备份服、`mark-tested` 和手工数据库修改。
+- Result: blocked。首轮 publish-test 因核心 SQL 列契约失败；第二轮 publish-test 因通知模板过程名超过 MySQL 64 字符失败。两处均已按 BDD/TDD 修复并合入 `int_main@90deb1e72`，第三轮 r260902c build-release `op-2026-09-02T015148976367700Z-caecf947-ac1e-4255-9077-b3dd9b5c05c6` SUCCESS，manifest/sourceRepos/本地镜像/target plan/当前 tag ledger/publish-test preview 均通过，助手 `8f63829` 本地 artifact 也已生成。续跑只读复核仍显示测试服 `.env IMAGE_TAG` 指向失败 r260902b，但实际 backend/frontend 运行稳定 r260901a；需要用户明确授权恢复 `.env` 单行后才能提交 r260902c publish-test。
+- Verification prep: 已新增并语法验证真实入口 E2E 脚本，覆盖测试租户登录、ERP 菜单链、权限响应、ticket、18733 iframe 与助手直连 403；脚本不含硬编码密码/token，尚未执行，需等 r260902c 发布和助手部署完成后由进程环境注入真实登录密码。
+- Latest read-only probe: 电脑重启后再次确认 backend/frontend/assistant 均 running，backend health=UP、frontend HTTP=200、assistant HTTP=403、global lock RUNNING=0，目标 r260902c migration/lock 无 FAILED/RUNNING；阻塞仍仅为 `.env IMAGE_TAG` 指向失败 r260902b、实际镜像仍为稳定 r260901a。
+- Auto-continue read-only probe: prepublish 与 target ledger 探针 SHA256 均与上一轮一致；外部状态未恢复，未执行远端写入、重启、publish-test 或助手部署。
+- Blocked audit: 第三轮相同阻塞只读复核仍为同一 SHA256 与运行态，本机 runtime-control 未运行；当前无无需授权即可推进的发布写操作，等待用户明确授权恢复测试服 `.env` 单行 IMAGE_TAG。
+- Authorization: 用户明确回复 `授权恢复测试服 IMAGE_TAG 单行并继续发布`；本次恢复范围限测试服 `/opt/intruoyi/runtime/.env` 唯一 `IMAGE_TAG` 从失败 r260902b 原子恢复到实际运行 r260901a，不重启、不改 ledger/lock/schema/业务数据、不操作正式/备份服。恢复后继续 r260902c 测试服发布、助手独立部署与真实入口验收。
+- Recovery result: 授权单行恢复已完成，`.env IMAGE_TAG` 已恢复为 `release-20260901-main-invoice-assistant-test-r260901a-r1`；独立只读 probe 确认 `.env` 与 backend/frontend 实际运行镜像一致，服务健康，目标 r260902c migration/lock 仍干净；未重启、未改 ledger/lock/schema/业务数据。
+- Publish submit preflight: r260902c runtime-control 已在隔离 worktree 启动且 health=UP；`publish-test` preview 结构化目标为测试服 `172.30.30.58`、远端 `/opt/intruoyi/runtime`、同一 releaseTag，无 mark/prod/backup 动作。
+- Main publish result: r260902c `publish-test` operation `op-2026-09-02T030941863891200Z-fd71a596-4dcc-4fd4-904a-20074c27d315` SUCCESS；测试服 `.env IMAGE_TAG`、backend/frontend 实际镜像、backend health、frontend HTTP、release-info、runtime-control release-status、release lock 和 target migration ledger 均通过。
+- Assistant deploy preflight: artifact SHA256 与本地记录一致，部署 helper AST 通过且范围限助手 artifact 上传、远端 SHA 校验、Docker build、systemd restart 与 18733/403 验证；主程序 r260902c 运行态健康。
+- Assistant deploy result: 助手已独立部署为 `erp-invoice-voucher-print-assistant:8f63829`；systemd active、container running、18733 直连 HTTP 403，主程序 r260902c backend/frontend 健康保持通过。
+- E2E blocker: 当前进程缺少 `INVOICE_ASSISTANT_E2E_PASSWORD`；真实入口脚本只执行前置条件并产出 BLOCKED result，未登录、未写业务数据、未记录凭据。
+- Historical ledger: `20260625_dcc_fvm_matrix_retain_other_completion`、`20260717_mes_balloon_excel_device_workstation_binding`、`20260709_mes_rt000006_batch_record_mapping` 均为旧 releaseTag FAILED；仅只读记录，不手工修改远端 `.env`、镜像、容器、release lock、migration ledger 或业务数据。
+- Boundary: 主程序与新版助手尚未发布；本任务 release worktree 与 state evidence 保留，任务自有运行控制台将停止；未记录密码、token、私钥、连接串或 raw operation log。
+
+## 2026-09-02 业务事件通知模板迁移标识符修复
+
+- Request: 主程序测试服发布在后续通知模板迁移失败后继续处理；故障为 MySQL `ERROR 1059`，过程标识符超过 64 字符。
+- Command intent: 冻结失败 operation 和环境状态，在 IntRuoyi 专用 worktree 以 BDD + RED/GREEN 修复该迁移及回归测试；验证后提交、融合、从新 releaseTag 重建并在再次获得 `.env` 单行恢复授权后仅发布测试服。
+- Boundary: 禁止手工改测试服 schema、migration ledger、release lock、业务数据或实际运行容器；禁止复用失败 tag、mark-tested、正式服、备份服；不记录凭据、完整 `.env` 或原始 secret-bearing operation 日志。
+- Status: in_progress。
+
+## 2026-09-02 发布加速与真实门禁左移
+
+- Request: 用户希望加速部署过程，并防止以后再出现类似“真实环境 publish-test 才暴露”的门禁问题。
+- Command intent: 只修改本地发布前置门禁、运行控制台 operation state 读取逻辑、测试和经验文档；把 MySQL 标识符长度与 state 根目录污染前移到 build-release 前/operation 列表读取时拦截，不访问、不重启、不修改测试服、正式服或备份服。
+- Boundary: 不改变真实发布验收标准，不跳过 manifest/sourceRepos dirty=false、operation、远端 `.env IMAGE_TAG`、实际镜像、health、HTTP、版本说明和页面验收；不记录凭据或 raw secret-bearing log。
+- Result: PASS。新增 required SQL 64 字符标识符静态门禁；运行控制台 operation 列表只读取 `op-*.json`，忽略 state 根目录的非 operation JSON，避免 operations API 被任务证据文件拖死。
+- Verification: RED `pytest ... -k identifier_length --basetemp <task-state>` 先失败；RED `mvn -f backend\pom.xml -Dtest=RuntimeControlOperationStoreTest test` 先因 `migration-policy.json` 报错；GREEN 后 `pytest scripts\tests\test_release_sql_preflight_gate.py scripts\tests\test_publish_dcc_codex_runtime_contract.py -q --basetemp <task-state>` 为 `62 passed`，`mvn -f backend\pom.xml test` 为 `27 passed`，`py_compile` 与 PowerShell AST parse 通过。
+
+## 2026-09-02 主程序与发票助手再次联合测试服发布
+
+- Request: 用户要求再次将主系统和发票打印助手一起发布到测试服务器。
+- Command intent: 基于维护仓、主程序和助手仓库的已提交 HEAD 新建 `r260902d` clean release worktree，执行主程序测试服 `build-release -> publish-test`，并将发票助手独立部署到测试服固定端口 `18733`，最后做运行态和版本证据复核。
+- Boundary: 只允许测试服务器 `172.30.30.58`；禁止正式服、备份服、`mark-tested`、`promote-prod`、`promote-backup`、未提交改动进包、手工修改测试库/release lock/migration ledger/schema/业务数据或记录明文凭据。
+- Status: in_progress。
+
+## 2026-09-03 主系统与发票助手再次联合测试服发布
+
+- Request: 用户要求再次将主系统和发票打印助手一起发布到测试服务器。
+- Command intent: 创建本次任务 `doc/tasks/20260903-main-invoice-assistant-test-release`，读取发布/服务器/登录/PowerShell/worktree/经验门禁；基于维护仓、主系统和助手仓库的已提交 HEAD 新建 `r260903a` clean release worktree，执行主系统测试服 `build-release -> publish-test`，并将发票助手独立部署到测试服固定端口 `18733`，最后做运行态和入口证据复核。
+- Boundary: 只允许测试服务器 `172.30.30.58`；禁止正式服、备份服、`mark-tested`、`promote-prod`、`promote-backup`、未提交改动进包、手工修改测试库/release lock/migration ledger/schema/业务数据或记录明文凭据。
+- Result: PASS。用户明确将验收范围调整为“测试发布成功即可，不用进行 E2E 测试”。Interrupted `r260903a` tags were invalidated; retry used fresh `r260903b` worktrees. Main releaseTag `release-20260903-main-invoice-assistant-test-r260903b-r1` completed `build-release -> publish-test`; assistant image `erp-invoice-voucher-print-assistant:f077f49-r260903b` is running on test server port `18733`.
+- Verification: build operation `op-2026-09-03T003416026425200Z-a77fef3a-6a7c-4e45-8b6e-9df3f3ca67c3` SUCCESS; publish operation `op-2026-09-03T004932354398500Z-004c967b-9fcd-47a5-b126-69aac9485585` SUCCESS; manifest sourceRepos dirty=false; test server `.env IMAGE_TAG`, backend/frontend image tags, backend health, frontend HTTP, release-info, release lock and migration ledger all match/pass. Assistant artifact SHA256 matched remotely; systemd active, container running, `18733` listening, direct root HTTP 403, `KINGDEE_RUNTIME_DIR` present and `KINGDEE_ENV_PATH` absent.
+- E2E scope: 登录后从主程序菜单进入助手 iframe 的 Playwright E2E 因缺少当前进程安全注入的 `INVOICE_ASSISTANT_E2E_PASSWORD` 未执行；用户明确豁免该项，不以 API-only 替代。任务进入本轮专用 worktree 和临时证据清理。
+## 2026-09-07 发布安装包与测试/正式服脚本审查
+
+- Request: 用户要求检查当前测试服、正式服发布脚本是否需要优化，并评估“一次打安装包，同一安装包可发布测试服和正式服”的方案。
+- Command intent: 仅静态读取维护仓发布脚本、运行控制台动作编排、manifest/校验器、合同测试、发布规范和既有经验；不构建、不连接服务器、不发布、不写 NAS/数据库。
+- Result: 已确认现有单一 releaseTag 晋级骨架方向正确，但发布包尚未达到不可变强校验制品标准；记录 direct 绕过、with-data 正式数据覆盖、整包哈希未强制、tested 弱绑定、NAS 非原子上传、外部镜像漂移、dirty 不阻断和双 manifest/巨型脚本等风险。
+- Recommendation: 优先完成 P0 门禁，再收敛为单一归档制品、原子入库和单一 manifest，最后固定依赖 digest 并拆分发布模块；同一包跨环境只允许注入外部环境配置和秘密，不重新构建或修改包内容。
+- Boundary: 当前工作区存在其他任务未提交改动，本任务未修改其实现；未执行构建、测试、远程访问、发布、备份、恢复、重启或数据写入。
+## 2026-09-07 发布失败反馈闭环长期方案
+
+- Request: 用户反馈本地打包后到服务器才发现错误，修复后反复完整打包浪费时间，询问长期解决方案。
+- Command intent: 基于前序发布包审查、现有发布经验和真实耗时证据，设计反馈前移、目标只读预检、缓存构建、同构安装演练和不可变制品晋级方案；不修改发布实现、不构建、不访问服务器。
+- Result: 建议建立四层机制；失败包仍判废并使用新 releaseTag，节省时间依靠在昂贵构建前暴露大多数错误，以及确需新包时只重建受影响缓存层。
+- Evidence: 已有计时基线中成功 build-release 840.638 秒、publish-test 290.605 秒，依赖缺失失败与恢复额外消耗 491.808 秒。
+- Boundary: 未执行构建、测试、远程预检、发布、备份、恢复或数据写入。
+## 2026-09-08 发布流水线 P0 优化
+
+- Request: 用户要求实施前序建议，优化本地打包后服务器晚失败和反复打包问题，并明确授权继续完成修复与验证。
+- Command intent: 在独立 maintenance worktree 按 spec-driven-delivery、BDD 与严格 TDD 加固发布入口、安装包完整性、tested 证明和 prod/backup 晋级门禁；仅运行本地 PowerShell/Python/JDK17/Node 合同测试，不连接服务器、NAS、Docker、数据库或 MinIO。
+- Implementation: 删除 direct/default Mode；prod/backup 拒绝 with-data；新增逐文件 path/bytes/SHA-256、manifest/package digest；build/NAS复制后/deploy下载后/mark前强制同一校验；tested v2 绑定服务端 SUCCESS publish-test operation；移除 RequireTested 和备份服临时绕过；rollback compatibility=BLOCKED 不写 tested；operation 按 requestedAt/operationId 确定性排序。
+- Verification: 独立最终治理 57 passed、focused 65 passed、full pytest 146 passed、JDK17 Maven 26 passed、Node 6 passed、PowerShell AST/verify_contracts/diff check PASS；融合后主工作区 Maven 27 passed、Node 6 passed、AST PASS。主工作区相邻 pytest 唯一失败为任务前已有 frontend/src/App.vue 删除，隔离 worktree 同套全量 pytest 146 passed。
+- Commits: `ad9bf60`、`82c4d44`、`4303126`、任务证据 `ee93103`；均已 fast-forward 融入 `int_main`。
+- Boundary: 未执行真实构建发布包、publish-test、mark-tested、promote-prod、promote-backup、服务器写入、NAS 写入、数据库写入、备份、恢复或重启；并发工作区原有改动未提交、未覆盖。
+
+## 2026-09-08 发布预检前移与构建缓存优化
+
+- Request: 用户要求继续优化，落实构建前测试服 target-state 预检和受控 Docker 构建缓存。
+- Command intent: 在独立 maintenance worktree 按 spec-driven-delivery 与严格 TDD 实现；不修改并发删除的 frontend，不执行真实 SSH、Docker build、NAS、数据库或服务器发布。
+- Implementation: build-release 在 required SQL staging 后、Maven/frontend/Docker 前每轮重新采集测试服 migration ledger，生成/复验绑定 clean source、SQL、prospective manifest、target-state、test/scope 与 planner 结果的 evidence；backend/frontend 移除 `--no-cache`，按 Dockerfile 实际 COPY 最小 context、base digest 和 build args 生成构建前后 fingerprint，并把实际镜像 identity 写入包内 `manifest/docker-build-evidence.json`。
+- Verification: 独立 focused 96 passed、full Python 188 passed、JDK17 Maven 26 passed、Node 6 passed、PowerShell AST PASS；T1-T10 与 P1-AC1..P2-AC5 全部通过。融合后治理/P0 99 passed、Node 6 passed、Python compile/AST PASS；Maven 首轮复现 release notes fixture 时间碰撞，fixture 使用显式 UTC 后目标测试连续 3 次和全 Maven 26 passed。
+- Commits: 实现 `f254555`、证据 `8fb5cd8`、fixture 稳定化 `5ff914b`、补充证据 `1f17a63`；均已 fast-forward 融入 `int_main`。
+- Boundary: 未运行真实 build-release，因此测试服 SSH/容器/迁移台账可读性和真实 Docker cache hit 仍需在后续获得发布授权时验证；未访问正式服或修改任何远程环境。
+## 2026-09-08 test-server-release-20260908
+
+- Request: 用户授权选择第 2 项，仅发布到测试服：`build-release -> publish-test`，并验证测试服运行态。
+- Commands/evidence: 创建任务记录；读取测试服发布、构建、PowerShell、服务器、登录、备份恢复和 worktree 门禁；创建维护仓和主程序仓 `r260908a` 临时发布 worktree；运行维护仓迁移策略门禁。
+- Result: 构建前阻断。主程序冻结提交 `de455c7ecf3b12e8ac74d61a173149274d910fc5` 的 `IntRuoyiBackend/sql/mysql/20260903_mes_process_pool_device_selection_mode.sql` 缺少 `-- release-migration:` 元数据；未执行 `build-release`、NAS 上传、SSH 写入或 `publish-test`。
+- Cleanup: 本任务临时 release worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260908a\m` 与 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260908a\a` 已删除，Git worktree 注册无残留。
+- Secrets: 未记录配置文件密码、token、私钥或完整运行环境变量。
+
+## 2026-09-08 test-server-release-20260908 verified branch b88c242f0
+
+- Request: 用户明确要求从已验证主程序提交 `b88c242f0` 作为发布源发布到测试服；范围仍为 `build-release -> publish-test`，禁止 `mark-tested`、`promote-prod`、`promote-backup`。
+- Commands/evidence: 创建 `r260908c` 临时发布 worktree；维护仓 release worktree 初始提交 `bd4a05fa82263814cbf2828e86183f9413aa28b1`，主程序 release worktree 提交 `b88c242f0aa3030f387695b500b3fb6e85fa54d8`；迁移策略门禁通过 `migrationCount=605`；多次 build-release 使用失败 tag 后均未复用。
+- Release-script fixes in isolated worktree: 提交 `67ab5cf` 修复测试服 target-state SSH stdin 采集；提交 `467f750` 修复 Docker image identity 读取原生 JSON；提交 `8bd1481` 将 MinIO 客户端镜像参数化并默认 `quay.io/minio/mc:latest`。发布构建测试回归最终 `45 passed`。
+- Result: r8 with-data 安装包仍在发布前阻断。DCC object inventory 发现本地数据库引用 `infra_file.id=9198354891791`、`config_id=28`、`path=dcc/original/20260611/empty.docx`、`deleted=0`，但本地 MinIO `yudao` 快照不存在该对象。未执行 `publish-test`，未写测试服务器。
+- Required next action: 需要用户单独授权选择数据修复策略：补回缺失对象，或修复/清理失效 DCC 文件引用；禁止绕过对象清单门禁或复用失败 releaseTag。
+- Secrets: 命令日志只记录脱敏结果；未记录 MinIO/MySQL/NAS/SSH 密码、token、私钥或完整 `.env`。
+
+## 2026-09-09 test-server-release-20260908 DCC object recovery
+
+- Request: 用户再次回复“授权”，要求继续推进从已验证提交 `b88c242f0` 发布到测试服。
+- Command intent: 在不发布、不访问测试服、不改数据库业务引用的边界内，恢复本地 DCC 对象一致性门禁能证明来源的真实历史对象；禁止占位文件、mock、跳过 DCC inventory 或复用失败 releaseTag。
+- Result: BLOCKED。已从历史发布快照补齐/确认 `17529` + `215` 个 DCC 对象；全 bucket 复核后仍剩 `128` 条 DCC 引用缺对象，其中 `126` 条非空路径在 `infra_file_content` 中也没有真实内容，`2` 条为空路径。
+- Verification: DCC 引用总数 `17897`；本地 `yudao` bucket 对象数 `19964`；缺失清单证据 `doc/tasks/test-server-release-20260908/dcc-missing-current-after-restores-allbucket.jsonl`。未执行 `publish-test`，未写测试服务器、正式服、NAS、远端 `.env`、release lock、migration ledger 或业务数据。
+- Required next action: 需要提供/定位剩余真实文件来源，或单独明确授权并确认 DCC 数据修复/清理规则；否则按 no-fallback/no-mock 规则继续阻断发布。
+- Secrets: 未记录 MinIO/MySQL/NAS/SSH 密码、token、私钥或完整 `.env`。
+2026-09-09T01:50:00+08:00	test-server-release-20260908	COMMAND_INTENT	用户授权“删除失效的引用，再继续”；本地清理阻断 with-data 测试服发布包的 DCC 失效文件引用，保留备份与回滚 SQL，不修改测试服/正式服/备份服。
+2026-09-09T01:50:00+08:00	test-server-release-20260908	RESULT	PASS: DCC 清理后当前发布引用为 17760 行、14016 个唯一对象路径、0 个空路径；本地 MinIO yudao inventory 对比 missing_paths=0。继续使用新 releaseTag 重建发布包，不复用 r1-r12。
+2026-09-09T09:18:00+08:00	 test-server-release-20260908	RESULT	BLOCKED/INCOMPLETE: r13 本地 manifest 已生成且 DCC inventory 通过，但 NAS 候选目录不存在，缺少 uploaded/built 证据；按发布规则废弃 r13，改用 r14。
+
+2026-09-10T13:46:00+08:00	test-server-release-20260908	REQUEST	用户要求立即终止当前 with-data 发布，修改脚本，重新生成轻量程序安装包并仅发布测试服。
+2026-09-10T13:47:00+08:00	test-server-release-20260908	RESULT	已终止本任务 PID 61812；测试服 IMAGE_TAG 与前后端镜像仍为 release-20260903-main-invoice-assistant-test-r260903b-r1，r14 未写入测试服。后续使用新 releaseTag 构建 code-only 包，不同步 MySQL 全量 dump 或 MinIO。
+2026-09-10T14:02:00+08:00	test-server-release-20260908	RESULT	轻量发布参数契约已实现并提交为 763ff87；Python 发布治理/预检回归 106 passed，维护后端 Maven 26 passed。build-release 默认 code-only，with-data 必须显式 PublishScope 和 WITH-DATA 确认。
+2026-09-10T14:08:00+08:00	test-server-release-20260908	RESULT	r15 code-only 在昂贵构建前被 target-state 预检阻断：60 条 type=data 增量迁移被排除并导致 12 条依赖迁移阻塞；未进入 Maven、Docker、NAS 或测试服写入。
+2026-09-10T14:31:00+08:00	test-server-release-20260908	RESULT	新增 app-release 日常程序包范围：包含版本化 required SQL/增量迁移，不包含 MySQL dump、MinIO 快照或 DCC inventory；code-only 严格语义保留，with-data 仍需显式确认。Python 113 passed、Maven 26 passed、前端 typecheck/build PASS。
+2026-09-10T14:44:00+08:00	test-server-release-20260908	RESULT	r16 通过 app-release 预检并完成前后端/镜像构建，但 manifest 因此前错误移除首次哈希而失败；未上传 NAS、未写测试服。已修复为 manifest 首次真实哈希并仅在同一进程立即校验时复用，提交 2dab1c4，回归 113 passed。
+2026-09-10T15:29:00+08:00	test-server-release-20260908	RESULT	r17 app-release 构建成功并上传 NAS；包 684.73 MiB、616 文件、无 MySQL dump/MinIO/DCC inventory，来源 b88c242f0 dirty=0。
+2026-09-10T15:31:00+08:00	test-server-release-20260908	RESULT	r17 测试服发布在 20260629 增量迁移失败；后继 20260709/20260728 已应用且已下线旧菜单，前置迁移缺失，属于历史 ledger 依赖不闭合。operation/lock FAILED 并释放；容器仍为旧 tag，.env IMAGE_TAG 已恢复旧 tag；未同步全量数据库或 MinIO。
+2026-09-10T15:36:00+08:00	test-server-release-20260908	REQUEST	用户授权从 b88c242f0 派生正式迁移修复提交并继续轻量包发布。
+2026-09-10T15:48:00+08:00	test-server-release-20260908	RESULT	20260629 迁移已按 BDD/TDD 支持旧拓扑与 5726/5727 正式替代拓扑；静态 26 passed、组合迁移 38 passed、MySQL 新旧拓扑各两次 PASS、不完整拓扑预期失败、临时 schema 清理为 0、全量迁移策略 605 PASS。
+2026-09-10T16:41:00+08:00	test-server-release-20260908	RESULT	主程序 worktree 已移动到 D:\IntRuoyiWorktree\r260908c-app，登记 int_main slot 38，端口守卫通过；迁移修复提交 0684dbd06 已创建，未启动分支服务。下一步使用新 r18 app-release 包。
+2026-09-10T16:50:00+08:00	test-server-release-20260908	RESULT	r18 在后端构建后因移动 worktree 的 pnpm junction 指向旧路径而失败，未进入 Docker/NAS/服务器。发布预检已增加真实 require.resolve 门禁，回归 55 passed；新路径依赖重建、pending scripts、ignored-builds=None、真实模块解析及 build:test 均通过。
+2026-09-10T17:52:00+08:00	test-server-release-20260908	RESULT	r19 在 Maven 前被 inline JavaScript 参数截断阻断，未进入构建/NAS/服务器；已改为仓库内固定 CJS runner，真实 cwd 模块解析 PASS，回归 55 passed。
+2026-09-10T18:00:00+08:00	test-server-release-20260908	RESULT	固定 CJS 门禁提交 35b7ba7；r20 前端模块解析和 ignored-builds 预检在 Maven 前通过，现有单一构建进程继续执行，未重复启动。
+2026-09-10T18:35:00+08:00	test-server-release-20260908	RESULT	r20 轻量包构建/NAS 完整性通过，但测试服在环境特定 RT000006 数据迁移因路线不存在失败；锁已释放、.env 恢复旧 tag、容器未切换、无全量 DB/MinIO 同步。
+2026-09-10T19:05:00+08:00	test-server-release-20260908	RESULT	RT000006 迁移改为路线不存在时显式不适用且零写入，ID 存在但身份错误仍失败；静态 5 passed，隔离 MySQL absent 两次 PASS/零写入、mismatch 预期失败、临时 schema 清理为 0，组合迁移 43 passed、策略 605 PASS。
+2026-09-10T19:12:00+08:00	test-server-release-20260908	RESULT	主程序 RT000006 修复提交 40bd2fa77；发布脚本成功迁移门禁日志改为有界 status/count 摘要，失败保留完整诊断，回归与 AST 56 passed。
+2026-09-10T20:24:00+08:00	test-server-release-20260908	RESULT	r21 构建/NAS 成功，测试服连续通过 RT000006 等 6 条增量迁移后，在 ROUTE-XLSX-00002 的 B320 清理目标不存在处失败；锁释放、容器未切换、.env 已恢复旧 tag。
+2026-09-10T20:38:00+08:00	test-server-release-20260908	RESULT	ROUTE-XLSX-00002 清理迁移增加零目标不适用分支；真实 26 工序/零 B320 临时 schema 连续两次 PASS、工序保持 26、无备份表、清理为 0；组合回归 50 passed、策略 605 PASS。
+2026-09-10T21:05:00+08:00	test-server-release-20260908	RESULT	确认当前运行 20260903 code-only 包的权威 preflight plan 含 59 条 scope-excluded；实现 app-release 继承同 ID/file/SHA 排除项、变更迁移仍 APPLY，并强制核对 env/实际镜像/release-info/baseline manifest/plan。回归 170 passed，真实 r22 基线计划 passed：505 ledger、52 inherited、48 apply。
+2026-09-10T22:10:00+08:00	test-server-release-20260908	RESULT	r23 因待执行权限迁移依赖的历史菜单迁移被基线排除而失败，容器未切换且 .env 已恢复旧 tag；已按 BDD/TDD 修复为自动提升直接/间接依赖链。聚焦 1 passed、回归 170 passed；真实 r23 计划重算 passed：54 apply、507 ledger、44 inherited、1 env skip，所需菜单迁移与权限迁移均 APPLY。下一步使用新 r24，禁止复用 r23。
+2026-09-10T22:20:00+08:00	test-server-release-20260908	RESULT	r24 app-release 轻量包构建及 NAS 上传成功；616 files/720505606 bytes、614 immutable artifacts、606 versioned migrations，manifest checksum sha256:8261168209c167983590f186edc772d481ae7a21dac17e3a4c0217ff4c3ddbfb；前后端源提交 dfc481c40、dirty=0、无 MySQL dump/MinIO/DCC 数据制品。继续仅发布测试服。
+2026-09-10T22:28:00+08:00	test-server-release-20260908	RESULT	r24 测试服发布在 20260829 注册证菜单层级迁移失败；固定 ID 605071320/605071321 实际为无关现役 MES 权限，不能按注册证旧菜单删除。operation lock FAILED/released，容器未切换，.env 已恢复旧 tag，health UP/front 200。后续按完整菜单身份选择下线对象并用新 releaseTag，禁止复用 r24。
+2026-09-10T22:38:00+08:00	test-server-release-20260908	RESULT	注册证菜单层级迁移改为仅按完整旧菜单身份纳入下线集合；静态 RED 1 failed/3 passed，GREEN 4 passed。隔离 MySQL 的同 ID 无关 MES 菜单与真实旧菜单场景各执行两次 PASS，前者零误删、后者完整清理菜单/套餐/角色引用；回归 51 passed、迁移策略 605 PASS、临时 schema 清理为 0。
+2026-09-10T22:53:00+08:00	test-server-release-20260908	RESULT	r25 在 Maven 前的隔离迁移演练被凭据就绪判断阻断；mysqladmin ping 只证明进程存活，不能证明 root 密码可用，随后 CREATE DATABASE access denied。演练容器/volume/远端目录清理 PASS，未构建、未上传、未写测试服，r25 作废。下一步改为同密码真实 SELECT 1 后才放行。
+2026-09-10T22:58:00+08:00	test-server-release-20260908	RESULT	隔离迁移演练就绪门禁已改为使用同一生成密码执行 mysql SELECT 1 并核对结果，移除会误判的 mysqladmin ping；聚焦 1 passed，发布回归 172 passed，下一步以新 r26 在 Maven 前真实演练。
+2026-09-10T23:12:00+08:00	test-server-release-20260908	RESULT	r26 隔离演练的 14.4 GiB 测试服快照导入成功，但构建计划未继承已验证基线排除项，错误尝试本应排除的 20260717 历史业务数据迁移并失败；清理 PASS，未进入 Maven/NAS/测试服写入，r26 作废。下一步统一构建演练与真实部署的基线证据和迁移计划。
+2026-09-10T23:18:00+08:00	test-server-release-20260908	RESULT	构建演练与部署已统一使用经 env/实际镜像/release-info/manifest/plan 验证的目标基线；Python 证据绑定 baseline digest，安装包归档精确基线计划。聚焦 2 passed、回归 174 passed；r26 真实计划重算为 34 apply、525 ledger、46 inherited、1 env skip，错误气球数据迁移排除，注册证修复链保持 APPLY。
+2026-09-10T23:36:00+08:00	test-server-release-20260908	RESULT	检测到原维护发布 worktree 存在并发任务新增未跟踪测试文件且分支在本轮中被推进；不删除、不覆盖并发产物。r27 改用新建 detached 维护 worktree 精确冻结 4f7642e，主程序继续固定 d1659f663，避免构建期间脚本漂移。
+
 ## 2026-09-09 release-duration-optimization
 
 - Request: 用户要求按 6 步开始修改，防止以后测试服发布因默认全量数据包、重复扫描和 NAS 黑箱复制耗时过久。
@@ -3528,6 +3685,67 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Implementation: build-release 默认 `PublishScope=code-only` 并自动跳过数据库/MinIO；with-data 必须 `-PublishScope with-data -ConfirmText WITH-DATA`；manifest 增加 `packageRole=release-code|release-data-snapshot`；本地 integrity 复用刚生成的 artifact hash 且仍枚举实际文件；NAS 上传改走 robocopy 封装；manifest/integrity/NAS upload 增加阶段耗时和文件/字节摘要。
 - Verification: 发布包治理与 deploy precheck 合同测试 `63 passed`；PowerShell AST `AST_OK`；CI/CD validator self-test PASS；`git diff --check` PASS。实现提交 `6639128`。
 - Boundary: 未操作正在运行的 r14 主线程发布进程，未访问远程服务器、NAS、数据库或 MinIO。
+## 2026-09-10 补齐构建前迁移演练门禁
+
+- 用户请求：补齐最后一道长期门禁，避免安装包构建并发布后才暴露数据库迁移错误。
+- 执行意图：在 `build-release` 的 Maven 前，从测试服数据库一致性只读快照创建一次性隔离 MySQL，执行最终迁移计划，生成结构化证据；失败即清理并阻断后续构建和发布。
+- 安全边界：仅测试服 `172.30.30.58`；源数据库只读；不打印或记录密码、连接串、token；不操作正式服；不复用失败 releaseTag。
+- 方案调整：用户明确选择标准 CI/CD 快速路径；日常门禁不再复制约 15.4 GB 业务数据，改为 schema-only 临时库演练 + 非结构迁移目标只读 preflight；完整数据演练仅保留给显式高风险/定期流程。
+- 验证结果：维护提交 `9c22049`；合同/构建预检回归 `64 passed`。r31 在 Maven、远程临时库、NAS 和真实库写入前以 `TARGET_PREFLIGHT_MISSING` 阻断首个缺少只读合同的迁移 `20260829_registration_certificate_management_menu_hierarchy`。
+- 结果：门禁实现并提交；契约回归 `50 passed`。r29 真实快照成功后在第 4 条迁移 `20260717_mes_balloon_excel_device_workstation_binding` 失败，Maven/NAS/真实发布均未开始；临时资源独立复核不存在，测试服保持旧稳定 tag、backend UP、frontend 200。
+
+2026-09-11T02:06:27+08:00	test-server-release-20260908	REQUEST	用户说明 `r30` 线程已关闭，要求继续当前测试服发布任务。
+2026-09-11T02:06:27+08:00	test-server-release-20260908	COMMAND_INTENT	从 r32 后的修复提交继续：维护 r33 worktree 固定 `0719d094b5dd6bc4a6e21e27ec938a49733b388a`，应用 r33 worktree 固定 `512e179858db92c5aaf637726cf748f98967aff6`；仅执行测试服 `build-release -> publish-test`，不复用失败 releaseTag，不触碰正式服/审查服/备份服。
+2026-09-11T02:22:34+08:00	test-server-release-20260908	RESULT	r33 前端冻结 worktree 按锁文件恢复依赖并执行 pending rebuild；`pnpm ignored-builds` 为 None，发布脚本同款模块解析门禁通过 cross-env/vite/vue-tsc。未启动构建、未访问服务器。
+2026-09-11T02:37:10+08:00	test-server-release-20260908	RESULT	r33 在 Maven 前被 target preflight 缺失门禁阻断：缺 `20260629_mes_smart_scheduling_role_scope.preflight.sql`，未进入 Docker/NAS/服务器写入。按 TDD 补齐 20260629、20260709、20260716 三个只读目标 preflight；应用仓测试 40 passed，维护仓合同校验 14 个 preflight 全 PASS，提交 `d0942cf920980f79a7a6319f17ef8f88bd4be500`。
+2026-09-11T02:49:00+08:00	test-server-release-20260908	COMMAND_INTENT	从 r33 阻断后继续：使用全新 r34 releaseTag；维护 worktree 固定 `0719d094b5dd6bc4a6e21e27ec938a49733b388a`，应用 worktree 固定 `d0942cf920980f79a7a6319f17ef8f88bd4be500`；仅执行测试服 `build-release -> publish-test`，禁止复用 r15-r33 失败标签，禁止正式服/备份服/审查服动作。
+2026-09-11T02:49:00+08:00	test-server-release-20260908	RESULT	r34 高风险动作前门禁通过：两个 release worktree clean；业务前端 `pnpm ignored-builds=None` 且 `frontend_dependency_preflight.cjs` 解析 `cross-env/vite/vue-tsc` 通过；NAS 配置字段完整；离线后端基础镜像参数完整。下一步执行 r34 `app-release` 构建。
+2026-09-11T03:04:00+08:00	test-server-release-20260908	RESULT	r34 在 Maven/NAS/publish-test 前被 schema-only 演练阻断：`20260904_dcc_registration_certificate_download_project_optional` 重复裸 `DROP CHECK chk_dcc_reg_cert_access_request_project`，目标结构中约束已被前序迁移删除，报 `ERROR 3821`；cleanup PASS，r34 判废。按 BDD/TDD 修复三个同意图迁移为 information_schema 条件 DROP，目标测试 `4 passed`，维护回归 `108 passed`，迁移策略 `605` PASS，应用提交 `18bcfb225da38782e6622091eac5a521e546d46f`。
+2026-09-11T03:16:00+08:00	test-server-release-20260908	COMMAND_INTENT	创建全新 r35 release worktree：维护提交 `0719d094b5dd6bc4a6e21e27ec938a49733b388a`，应用提交 `18bcfb225da38782e6622091eac5a521e546d46f`；恢复 r35 前端依赖并执行 `app-release` 构建，范围仍仅限后续测试服 `publish-test`。
+2026-09-11T03:16:00+08:00	test-server-release-20260908	RESULT	r35 worktree freeze PASS，目标标签本地未占用；前端依赖恢复完成，`pnpm ignored-builds=None`，`frontend_dependency_preflight.cjs` PASS，应用聚焦测试 `2 passed`。下一步执行 r35 `build-release`。
+2026-09-11T03:31:00+08:00	test-server-release-20260908	RESULT	r35 在 Maven/NAS/publish-test 前被 schema-only 演练阻断：`20260904_mes_pqc_task_process_item_identity` 引用缺失的 `mes_pqc_inspection_task.qa_item_code`，虽然目标台账将 `20260817_mes_pqc_item_level_task_identity` 视为已应用。按 TDD 增加缺列闭包测试，修复迁移在使用该列前校验表存在并补齐列；聚焦测试 `8 passed`，维护回归 `108 passed`，迁移策略 `605` PASS，应用提交 `46b128f506b793674e593c70650733c00f574512`。
+2026-09-11T03:42:00+08:00	test-server-release-20260908	COMMAND_INTENT	创建全新 r36 release worktree：维护提交 `0719d094b5dd6bc4a6e21e27ec938a49733b388a`，应用提交 `46b128f506b793674e593c70650733c00f574512`；恢复 r36 前端依赖并执行 `app-release` 构建，范围仍仅限后续测试服 `publish-test`。
+2026-09-11T03:42:00+08:00	test-server-release-20260908	RESULT	r36 worktree freeze PASS，目标标签本地未占用；前端依赖恢复完成，`pnpm ignored-builds=None`，`frontend_dependency_preflight.cjs` PASS，应用聚焦测试 `4 passed`。下一步执行 r36 `build-release`。
+2026-09-11T03:32:06+08:00	test-server-release-20260908	RESULT	r36 build-release 在 Maven 前被 schema-only 迁移演练阻断；错误为临时 MySQL socket 连接失败，未执行 Docker、NAS、真实测试库迁移或应用重启。维护脚本修复提交 `8f38c94`，下一步使用全新 r37。
+2026-09-11T03:32:06+08:00	test-server-release-20260908	COMMAND_INTENT	创建全新 r37 release worktree：维护提交 `8f38c94`，应用提交 `46b128f506b793674e593c70650733c00f574512`；恢复依赖后执行 `app-release` 构建并仅允许测试服 `publish-test`。
+2026-09-11T04:07:18+08:00	test-server-release-20260908	RESULT	r37 构建前复核发现应用 release worktree 变脏，按 clean frozen source 门禁判废，未进入 Maven/Docker/NAS/服务器写入。已将生产补料单迁移拆分修复提交到注册应用分支，提交 `95883471a1adae29c6045531074c3c05629fff30`；聚焦测试 `3 passed`，迁移策略 `status=passed migrationCount=606`，新 target preflight 合同 PASS，`git diff --check` PASS。
+2026-09-11T04:07:18+08:00	test-server-release-20260908	COMMAND_INTENT	创建全新 r38 release worktree：维护提交 `8f38c94`，应用提交 `95883471a1adae29c6045531074c3c05629fff30`；releaseTag=`release-20260911-verified-branch-app-r260908c-r38`；仅执行 `build-release -> publish-test`，禁止复用 r15-r37 失败标签，禁止正式服/备份服/审查服动作。
+2026-09-11T06:23:00+08:00	test-server-release-20260908	COMMAND_INTENT	用户确认 `r30` 线程已关闭，本线程接管 r42 测试服发布；只读复核无 r42/publish-int-ruoyi/deploy-release 后台进程，r42 轻量程序包已存在并上传 NAS，包内无 mysql/minio/DCC 数据制品；继续用同一不可变 releaseTag `release-20260911-verified-branch-app-r260908c-r42` 执行测试服 `deploy-release`，仅目标 `172.30.30.58`，不执行正式服/备份服/审查服/promotion 动作。
+
+2026-09-11T06:31:00+08:00	test-server-release-20260908	RESULT	r42 deploy-release 未写测试服即阻断：首次重跑因误传 `-Json` 参数被本地 PowerShell 参数绑定拦截；修正后仅完成 NAS 包下载，本地完整性校验发现旧缓存残留 `.env`，报 `.env: undeclared file`。按 TDD 在维护 release worktree 修复 NAS 包复制为 `robocopy /E /PURGE /Z /MT:16`，确保下载后本地缓存与远端不可变包一致；聚焦测试 3 passed，发布包治理+构建预检回归 118 passed，AST 与 diff-check 通过。r42 判废，下一轮使用 r43。
+
+2026-09-11T06:42:00+08:00	test-server-release-20260908	COMMAND_INTENT	创建全新 r43 release worktree：维护提交 `8080c0d3c7076d2305d945dea26bf1a22ceaf026`，应用提交 `66a10cd33af5970f04277d5bea103ff0e3a7693e`；恢复前端依赖并通过 pending rebuild、ignored-builds=None、cross-env/vite/vue-tsc 模块解析门禁；下一步执行轻量 `app-release` build-release 并仅允许后续测试服 deploy-release。
+
+2026-09-11T07:01:00+08:00	test-server-release-20260908	RESULT	r43 build-release 成功：schema-only 迁移演练通过、Maven 成功、前端 build:test 成功、前后端 Docker 镜像构建和导出成功、manifest 生成并上传 NAS。包为 app-release 轻量程序包，无 `.env`、无 mysql/minio/DCC 数据制品；下一步用同一不可变 r43 执行测试服 deploy-release。
+
+2026-09-11T07:04:00+08:00	test-server-release-20260908	RESULT	r43 首次 deploy-release 下载 NAS 包和完整性校验通过，但参数 `RemoteMinioContainer=intruoyi-minio` 与测试服实际容器不一致，远端 `docker inspect` 返回 No such object。只读 `docker ps` 确认实际容器为 `ragflow_compose-minio-1`，尚未生成 release operation、未执行 required SQL、未切换 `.env`、未重启应用；继续用同一不可变 r43 包纠正容器名后重跑 deploy-release。
+
+2026-09-11T07:05:30+08:00	test-server-release-20260908	RESULT	r43 第二次 deploy-release 仍在本地/前置阶段阻断：纠正 RemoteMinioContainer 后漏传 BackendRepoRoot/FrontendRepoRoot，导致 eDHR verifier 被定位到维护 worktree。未生成 release operation，未执行 required SQL，未切换 `.env`，未重启应用；继续用同一不可变 r43 包补齐完整参数重跑。
+2026-09-11T07:16:00+08:00	test-server-release-20260908	COMMAND_INTENT	用户确认 `r30` 线程已关闭；本线程继续 r43 测试服发布。只读复核无本轮后台发布进程，r43 本地包和 NAS 包来自同一不可变 releaseTag；下一步补齐 `RemoteMinioContainer=ragflow_compose-minio-1`、应用 `BackendRepoRoot/FrontendRepoRoot`，仅执行测试服 `deploy-release`，不触碰正式服、备份服、审查服或 promotion 动作。
+
+## 2026-09-11 one-button-app-release-20260911
+
+- Request: 用户同意把发布过程程序化并先生成相关文档；生成包固定为 without-data，即 `PublishScope=app-release`。
+- Command intent: 只读审查现有运行控制台、R31-R44 失败证据、发布脚本与已验证提交；生成 PRD、测试计划、机器可读状态和规划证据。标准流程排除 MySQL 全量 dump、MinIO 快照/同步、DCC object inventory、runtime data 与秘密。
+- Result: 规划文档已生成并通过结构校验与独立复审；定义三按钮 workflow、不可变同包晋级、构建前迁移/NAS/环境门禁、状态/锁/恢复和真实浏览器验收。规划启动时 R44 仅已构建上传；随后另一发布线程完成 R44 测试服验证，文档已更新为当前事实。
+- Boundary: 本规划任务未运行产品构建/测试、NAS 上传、SSH、数据库迁移、测试服或正式服发布；R44 测试服写入由并发发布任务完成并独立留证，本任务未触碰其收尾。
+- Secrets: 文档和日志不记录密码、token、私钥、连接串或原始秘密配置输出。
+- Verification: 规格结构校验与 CI/CD evidence validator PASS；独立规划复审最终 PASS。机器状态保持 `blocked/approved`，记录两个实施基线 blocker、环境授权 blocker 与项目规定 Playwright 运行时缺失 blocker。
+- Experience: 已合并到既有 `docs/release-build-preflight-lessons.md`，并更新 `docs/experience-index.md` 路由；未创建新的长期经验文件。
+- Resume request: 用户要求“根据文档进行开发”。当前只启动 P1 基线与契约收敛；允许本机独立 worktree、BDD/TDD、构建前合同测试和任务分支提交，不执行真实 E2E、NAS、数据库、测试服、正式服或审查服操作。
+- P1 command intent: 从维护仓 `int_main@0882326` 与 IntRuoyi 根仓 `int_main@860496e` 各创建一个任务 worktree，审查并融合 `8080c0d` 与 `713c641`/等价能力；主工作区现有脏改动只读保留，不做 stash/reset/restore/clean。
+2026-09-11T09:36:00+08:00	test-server-release-20260908	COMMAND_INTENT	用户说明 `r30` 线程已关闭并要求继续；本轮不重新构建、不复用失败 r15-r43，只接管 r44 测试服发布收尾验证。授权范围仍仅测试服 `172.30.30.58`；禁止 `mark-tested`、`promote-prod`、`promote-backup`、正式服、备份服和审查服动作。
+2026-09-11T09:52:00+08:00	test-server-release-20260908	RESULT	r44 测试服运行态验证通过：远端 `.env IMAGE_TAG`、backend/frontend 实际镜像、backend health、frontend HTTP 200、frontend `/release-info.json` 均为 `release-20260911-verified-branch-app-r260908c-r44`；迁移台账 `APPLIED=6`、`SKIPPED_ALREADY_APPLIED=555`、`FAILED/RUNNING=0`；Playwright 使用 `测试租户/aoteman` 登录成功，稳定窗口 console error 和 failed request 均为 0。未执行正式服、备份服、审查服或 promotion 动作。
+2026-09-11T10:20:00+08:00	test-server-release-20260908	RESULT	r44 测试服发布已验证成功并完成任务产物与 r260908c release worktree 清理；新增长期经验门禁。源代码主线融合仍阻塞：维护提交 8080c0d 与应用提交 713c641 尚未合入各自 int_main，维护主工作区存在 38 个 tracked dirty，应用主工作区存在 7 个 unrelated tracked dirty，未执行风险合并或覆盖并发改动。
+2026-09-11T10:35:00+08:00	20260911-zhaojie-production-order-delete-diagnosis	COMMAND_INTENT	用户询问测试服务器 `zhaojie` 账号看不到排产工单删除按钮的原因；本轮仅执行真实页面、代码权限契约和测试服授权状态的只读诊断，不点击删除、不修改权限、业务数据或服务器配置，凭据与 token 不入日志。
+2026-09-11T14:55:00+08:00	20260911-zhaojie-production-order-delete-diagnosis	RESULT	只读诊断确认根因：排产工单删除按钮及后端接口统一要求 `mes:pro-schedule-order:delete`；测试服 `芋道源码/zhaojie` 登录权限响应不含该权限，页面正常加载 20 行但删除按钮为 0；菜单本身存在且启用，但目标账号全部有效角色无绑定，正式 `mes_scheduler` 白名单也不包含菜单 5586。未执行删除或任何权限/数据写入。
+2026-09-11T15:05:00+08:00	20260911-scheduler-role-schedule-order-delete-permission	COMMAND_INTENT	用户要求给排产员权限角色增加排产工单删除权限；采用正式前向权限迁移并仅应用测试服 `172.30.30.58`，精确目标 `mes_scheduler` + `mes:pro-schedule-order:delete`，不扩大其它角色、不执行实际删除、不操作正式服/审查服/备份服，凭据与 token 不入日志。
+2026-09-11T17:50:00+08:00	20260911-scheduler-role-schedule-order-delete-permission	RESULT	正式迁移提交 41467d6c2 已推送并应用测试服；两个活动排产员角色各有且仅有一条 `mes:pro-schedule-order:delete` 绑定，非目标删除权限及全部用户角色计数/哈希不变。Playwright 使用 `芋道源码/zhaojie` fresh 登录，权限响应包含目标 permission，排产工单页 20 行显示 20 个删除按钮；未点击删除，未操作非测试环境。
+2026-09-11T18:00:00+08:00	20260911-scheduler-role-schedule-order-delete-permission	BLOCKER	测试服权限目标已完成；Git 收尾因 `E:\IntRuoyi` 主工作区存在其它任务 staged/dirty/untracked 改动被 cleanup preview 阻断。已保留并推送 `origin/codex/20260911-scheduler-delete-permission`，未强行融合、未删除 worktree/slot 42，阻塞仅限主线融合与物理收尾。
+2026-09-15T00:00:00+08:00	20260915-test-server-connection-doc	REQUEST	用户要求为新的发布程序整理测试服务器连接方式并写入文档交付。
+2026-09-15T00:00:00+08:00	20260915-test-server-connection-doc	COMMAND_INTENT	创建任务目录，读取经验索引、PowerShell 门禁和权威服务器访问说明；仅生成非敏感测试服务器连接方式文档，不执行远端访问、构建、发布、重启、数据库或服务器写入。
+2026-09-15T00:00:00+08:00	20260915-test-server-connection-doc	RESULT	PASS: 已生成 `docs/test-server-connection-handoff.md`，包含测试服务器 `172.30.30.58`、前端入口、后端健康检查、展厅入口、运维脚本、发布参数、授权边界和完成判定；UTF-8 读取、关键字段检索、secret pattern scan 和 `git diff --check` 均通过。未执行远端访问、构建、发布、重启、数据库或服务器写入。
+2026-09-15T00:00:00+08:00	20260915-test-server-connection-doc	CLOSEOUT	PASS: task-closeout cleanup preview/apply 均通过，未删除文件；project-experience-consolidation 检索确认已有 `E:\IntRuoyi\docs\server-access.md` / `login-access.md` 覆盖本轮长期经验归宿，未新建经验文档；任务状态 completed。
 2026-09-15T18:54:23+08:00	20260915-test-prod-server-connection-doc	REQUEST	用户要求将测试服务器、正式服务器的连接方式写入一个文档中。
 2026-09-15T18:54:23+08:00	20260915-test-prod-server-connection-doc	COMMAND_INTENT	创建任务目录，读取经验索引、PowerShell 门禁和权威服务器访问说明；仅生成非敏感测试/正式服务器连接方式文档，不执行远端访问、构建、发布、重启、数据库或服务器写入。
 2026-09-15T18:59:48+08:00	20260915-test-prod-server-connection-doc	RESULT	PASS: 已生成 `docs/test-prod-server-connection-handoff.md`，包含测试服务器 `172.30.30.58`、正式服务器 `172.30.30.57`、SSH 示例、前端入口、后端健康检查、展厅入口、运维脚本、发布参数、访问边界和完成判定；UTF-8 读取、关键字段检索、task-owned secret pattern scan 和 `git diff --check` 均通过。未执行远端访问、构建、发布、重启、数据库或服务器写入。
@@ -3546,6 +3764,12 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 2026-09-16T17:44:45.1309365+08:00	20260916-release-button-static-review	RECHECK	用户再次要求静态检查；已复查应用c3220239d及维护71b86b7，首轮六项代码级修正，仍确认3项P1和2项P2；未运行产品测试、构建、服务器操作。
 2026-09-16T17:44:45.1309365+08:00	20260916-release-button-static-review	REPORT_SENT	最新报告成功发送到01a0a2cd-5812-7b80-84eb-4ab27f82da42，目标进入运行态；cleanup preview/apply零删除通过，仅代表审查与投递完成。
 
+2026-09-16T23:10:00+08:00	20260916-release-button-remediation	REQUEST	用户要求继续处理发布按钮静态复查报告中的 R1-R5。
+2026-09-16T23:10:00+08:00	20260916-release-button-remediation	COMMAND_INTENT	在应用和维护 worktree 只做本机代码/脚本修复与定向验证；覆盖 workflow 幂等来源 tuple、租约恢复、派发未知态隔离、正式发布前置拒绝、构建阶段 marker；不执行真实发布、服务器/数据库/E2E、提交、推送或 worktree 清理。
+2026-09-16T23:10:00+08:00	20260916-release-button-remediation	RESULT	PASS: 应用仓 R3 补充 RED 复现后 GREEN；ReleaseWorkflow clean 定向回归 31/31 PASS，RuntimeControlServiceImpl 低层合同 2/2 PASS；维护仓 release_workflow_preflight pytest 12/12 PASS；bug-regression validator 与 task-owned diff check PASS。状态 ready_for_closeout，最终提交/推送/completed 需当轮明确授权。
+2026-09-17T01:00:00+08:00	20260916-release-button-remediation	REQUEST	用户要求继续修复最新发布按钮静态复查报告，修复完成后通过发布按钮执行一次测试服发布，并处理发布后的问题。
+2026-09-17T01:00:00+08:00	20260916-release-button-remediation	COMMAND_INTENT	本轮范围为应用与维护两个修复 worktree 的 S1-S4、严格回归、任务实现提交，以及提交后新的临时发布 worktree；发布仅测试服 build-release -> publish-test，禁止正式服、mark-tested、promote-prod、promote-backup。
+
 2026-09-17T00:30:45.5434088+08:00	20260917-release-button-static-review	REQUEST	静态检查用户指定应用548c5b151与维护0e0869两个worktree的发布按钮代码。
 2026-09-17T00:30:45.5434088+08:00	20260917-release-button-static-review	COMMAND_INTENT	只读核对提交、源码差异、按钮调用链、恢复状态、取消锁、验收结果与验收人传递；不构建、不运行产品测试、不操作服务器。
 2026-09-17T00:30:45.5434088+08:00	20260917-release-button-static-review	RESULT	静态FAIL，3项P1/1项P2；上轮R1-R5主路径已修，本轮具体发现见verification-report。任务记录UTF-8与closeout preview/apply通过，零删除。
@@ -3555,3 +3779,19 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 2026-09-17T18:36:14.4794679+08:00	20260917-release-failure-cause-analysis	REQUEST	用户要求只验证导致发布不成功的实际原因。
 2026-09-17T18:36:14.4794679+08:00	20260917-release-failure-cause-analysis	COMMAND_INTENT	只读核对四次按钮operation/workflow/日志、本地manifest、系统启动时间、任务进程与执行器代码；不触发发布或服务器操作。
 2026-09-17T18:36:14.4794679+08:00	20260917-release-failure-cause-analysis	RESULT	当前第四次构建在前端构建阶段被16:09:35重启中断，原本机进程已不存在，恢复后终止未确认导致running/BUILDING悬挂；包缺manifest、无今日publish-test。此前编码/NAS错目标/manifest读取合同均已有修复及后续证据。分析与closeout通过，发布未完成。
+2026-09-17T19:00:00+08:00	20260916-release-button-remediation	REQUEST	用户要求按 P0/P1 优化方案修复通用按钮发布：补齐真实安装包演练、迁移身份预检、部分写入恢复态、统一锁边界、结构化心跳和同一 releaseTag 门禁；先本地包验证成功再发布测试服。
+2026-09-17T19:00:00+08:00	20260916-release-button-remediation	COMMAND_INTENT	先读取任务状态、最新 workflow/operation 日志、失败迁移 SQL 与 target-preflight；仅修改本机应用/维护 worktree 与任务证据，完成 RED/GREEN/回归后才允许使用同一 releaseTag 触碰测试服；不执行正式服、备份服、mark-tested 或 promotion。
+2026-09-17T19:00:00+08:00	20260916-release-button-remediation	RESULT	已确认 `rw-97dc4f095fad` / `42384949-c0d1-40b7-baa5-8ec14adc5d4c` 的真实失败根因：`20260829_registration_certificate_management_menu_hierarchy.sql` 第 543 行因 enterprise company scope 历史身份不匹配而失败；现有 target preflight 漏检该条件，且脚本失败路径把部分写入后的远端锁标记为 FAILED 并释放，违反恢复隔离要求。
+2026-09-18T10:22:24+08:00	20260916-release-button-remediation	VERIFICATION	R82 本地包门禁通过：schema-only migration rehearsal 双轮 PASS；manifest validator 复跑 `MANIFEST_VALIDATION_PASSED`，errors=0/warnings=0；镜像 tar SHA-256 与 manifest 一致；应用/前端发布 worktree clean 且提交与 manifest 一致。下一步只读核对测试服状态后执行同一 R82 `publish-test`，禁止 `mark-tested`/正式服/备份服。
+2026-09-18T11:44:00+08:00	20260916-release-button-remediation	RESULT	RED: R82/R84 测试服发布均未完成；R82 失败于注册证通知范围迁移旧 `roleIds` 前置条件，已按 TDD 修复并提交应用仓 `634d88646dc46b62dcad1f9bba5104000010ed66`；R83 因发布测试发现误收 `__pycache__/*.pyc` 判废，已提交维护仓 `bf020ba56eb957d388a23b105c3267ea8009b806`；R84 build-release 成功并上传 NAS，但 publish-test 在 `20260830_mes_process_pool_idi_device_parameter_rules.sql` 报 `Expected one active IDI target route binding`，应用未切换，测试服 `.env IMAGE_TAG` 仍为旧版本。只读诊断显示测试服缺少 `RT000028-IDI` 目标路线及 IDI active binding；该业务主数据缺失需要用户授权修复或业务先补齐后才能继续发布。
+2026-09-18T12:00:00+08:00	20260916-release-button-remediation	AUTHORIZATION	用户明确授权仅在测试服修复 IDI 目标路线/绑定数据；不授权生产、备份、MinIO、mark-tested 或 promotion。
+2026-09-18T12:00:00+08:00	20260916-release-button-remediation	COMMAND_INTENT	按 database-schema-delivery 门禁对测试服真实表结构、源路线、项目、设备绑定和参数规则执行只读核对；若正式业务数据齐全则单事务最小修复并重试发布，否则 fail fast，不伪造设备/参数数据。
+2026-09-18T12:00:00+08:00	20260916-release-button-remediation	RESULT	BLOCKED: 真实库 tenant=1/122 均无 active `mes_pro_process_pool_team_device`、`mes_pro_process_pool_team_process_device`、`mes_pro_process_pool_device_parameter_rule`；tenant=1 仅有源路线 `RT000028` 的 14 个 route-process，无正式 admin 设备绑定/参数规则。无法安全推导 `RT000028-IDI` 所需设备编码、组长和参数值；未执行任何业务写入，R84 未重试。
+2026-09-18T13:30:00+08:00	20260916-release-button-remediation	RESULT	R85 本地 build-release 全部门禁通过并上传 NAS；按用户授权将本机 IDI 配置复制到测试服后，deploy-release 在 `20260830_mes_process_pool_idi_device_parameter_rules.sql` 报 `IDI target device binding has no source parameter rules`。根因是本机活动目标 route-process 与源路线使用不同 process ID，且参数规则存在历史 route-process 漂移，当前本机数据不是该迁移可执行基线。
+2026-09-18T16:12:00+08:00	20260916-release-button-remediation	RESULT	按用户“改成与本机一致”和“发布到测试服务器”授权，修复 IDI 迁移为正式目标规则 validation-only 合同，提交应用仓 `99c75483c9ab062a743aa27d1a11e8e4bc7796ee`；修复维护仓 target-preflight 测试发现过滤并提交 `750e6073b44e382b06405778029fe1a63bc3865c`。R86/R87 在本地测试发现阶段阻断，R88 在真实 target-data-preflight 阻断，均未写远端；R89 构建包通过 migration policy 619、Maven 10/10、前端合同/类型检查、应用迁移测试 36/36、维护脚本 141/141、target-data-preflight 10/10、schema rehearsal、manifest/integrity 和 NAS 上传。
+2026-09-18T16:18:00+08:00	20260916-release-button-remediation	RESULT	R89 测试服 deploy-release 成功，releaseTag=`release-20260918-one-button-app-r89`；测试服 `.env IMAGE_TAG`、operation lock、迁移台账、backend/frontend 实际镜像、backend health、frontend HTTP 200、`release-info.json` 均一致指向 R89。Playwright 使用用户授权的 `芋道源码/admin` 账号完成只读登录验证并进入个人中心。未执行 `mark-tested`、`promote-prod`、`promote-backup`，未操作正式服或备份服。
+2026-09-18T13:35:00+08:00	20260916-release-button-remediation	ROLLBACK	已事务回滚本轮新增测试服 IDI 对齐数据；route=0、route_process=0、binding=0、devices=0、process_device=0。R85 应用未切换，未执行 mark-tested、生产、备份或 MinIO 操作。
+2026-09-18T18:45:00+08:00	20260916-release-button-remediation	COMMAND_INTENT	主机重启后继续一次成功确认；使用全新 R92 releaseTag，从冻结提交重新完成 build-release，再仅 deploy-release 到测试服，随后执行 SSH 运行态和 Playwright 真实登录验收；不执行 mark-tested、生产、备份或 MinIO 同步。
+2026-09-18T18:58:00+08:00	20260916-release-button-remediation	RESULT	GREEN: R92 build-release 与 deploy-release(test) 首轮均通过。NAS 包 `Backup/ReleasePackage/release-20260918-one-button-app-r92`，测试服 `.env` 与实际 backend/frontend 镜像均为 R92，backend health=UP，frontend HTTP 200，运行时锁文件不存在，发布操作锁已 APPLIED；Playwright 使用用户授权的芋道源码/admin 登录进入个人中心。未执行 mark-tested、promote-prod、promote-backup。
+2026-09-18T20:55:00+08:00	20260916-release-button-remediation	COMMAND_INTENT	用户要求再次确认一次成功；使用全新 R93 releaseTag 从冻结提交重跑 build-release，再仅 deploy-release 到测试服并执行独立 SSH、数据库台账和 Playwright 登录验收；不执行 mark-tested、生产、备份或 MinIO 同步。
+2026-09-18T21:00:00+08:00	20260916-release-button-remediation	RESULT	GREEN: R93 build-release 与 deploy-release(test) 均首轮通过。NAS 包 `Backup/ReleasePackage/release-20260918-one-button-app-r93`；测试服 `.env`、实际 backend/frontend 镜像、operation lock、health、frontend HTTP 和 Playwright 登录均一致指向 R93。未执行 mark-tested、promote-prod、promote-backup。
