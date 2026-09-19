@@ -523,18 +523,14 @@ class RuntimeControlOriginalParityTest {
                                 }
                                 """.formatted(releaseTag)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.code").value(400))
                 .andReturn()
                 .getResponse()
                 .getContentAsString(StandardCharsets.UTF_8);
 
-        assertThat(preview)
-                .contains("-Mode", "deploy-release", "-Environment", "prod",
-                        "-ReleaseTag", releaseTag,
-                        "-TestOperationId", "op-prod-dry-run-test", "-TestOperationEvidencePath",
-                        "-ProdDryRunEvidencePath");
+        assertThat(preview).contains("\"code\":400");
         assertThat(Files.exists(operationStore.stateDir().resolve("prod-preflight-release-evidence")
-                .resolve(releaseTag + "-preflight-release-dry-run.json"))).isTrue();
+                .resolve(releaseTag + "-preflight-release-dry-run.json"))).isFalse();
     }
 
     @Test
@@ -686,17 +682,14 @@ class RuntimeControlOriginalParityTest {
                                 }
                                 """.formatted(releaseTag)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.code").value(400))
                 .andReturn()
                 .getResponse()
                 .getContentAsString(StandardCharsets.UTF_8);
 
-        assertThat(preview)
-                .contains("-Mode", "deploy-release", "-Environment", "prod",
-                        "-ReleaseTag", releaseTag,
-                        "-ProdDryRunEvidencePath");
+        assertThat(preview).contains("\"code\":400");
         assertThat(Files.exists(operationStore.stateDir().resolve("prod-preflight-release-evidence")
-                .resolve(releaseTag + "-preflight-release-dry-run.json"))).isTrue();
+                .resolve(releaseTag + "-preflight-release-dry-run.json"))).isFalse();
     }
 
     @Test

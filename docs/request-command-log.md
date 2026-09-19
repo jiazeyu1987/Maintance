@@ -3822,3 +3822,6 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 
 2026-09-19T00:00:00+08:00	20260918-prod-promotion-button-design	REQUEST	用户要求先编写一套文档，用一个新的按钮把已经发布并验证于测试服务器的同一发布包发布到正式服务器。
 2026-09-19T00:00:00+08:00	20260918-prod-promotion-button-design	COMMAND_INTENT	只读核对现有 workflow、前端入口、一次性授权、promote-prod 脚本与发布门禁；在独立文档 worktree 编写 PRD、用户流程、验收标准、系统设计、BDD/TDD/E2E、测试数据、CI/CD 证据和实施计划；不访问或写入任何远端服务器。
+2026-09-19T11:15:00+08:00	20260919-prod-promotion-button-implementation	REQUEST	用户要求继续实现“已发布到测试服务器的包发布到正式服务器”的新按钮；本轮只做本地静态代码验证，不执行 E2E、服务器写入、数据库写入或发布。
+2026-09-19T11:15:00+08:00	20260919-prod-promotion-button-implementation	COMMAND_INTENT	在专用应用/维护 worktree 实现 production preview、专用权限、preview/stateVersion/artifact/test evidence 绑定、幂等正式服 promote、旧通用 promote-prod 阻断、前端新按钮和维护控制台旧入口阻断；运行后端定向测试、前端类型/构建、维护仓测试/构建、迁移策略和 diff check。
+2026-09-19T11:15:00+08:00	20260919-prod-promotion-button-implementation	RESULT	GREEN: 目标静态验证通过。应用后端定向 36/36 PASS，应用前端 static/ts/build PASS，维护后端 26/26 PASS，维护前端 typecheck/build PASS，migration policy status=passed/migrationCount=620，diff-check PASS；未执行 E2E、服务器写入、数据库写入、发布、重启或正式服探测。

@@ -129,6 +129,7 @@ public class RuntimeControlService {
     }
 
     public RuntimeControlOperationRespVO executeAction(RuntimeControlActionReqVO req) {
+        rejectLegacyProductionPromotion(req);
         String operationId = nextOperationId();
         PreparedAction prepared = prepareAction(req, operationId, false);
         Path logPath = operationStore.operationLogPath(operationId);
@@ -137,11 +138,19 @@ public class RuntimeControlService {
     }
 
     public RuntimeControlActionPreviewRespVO previewAction(RuntimeControlActionReqVO req) {
+        rejectLegacyProductionPromotion(req);
         PreparedAction prepared = prepareAction(req, "preview", true);
         return new RuntimeControlActionPreviewRespVO(prepared.action(), prepared.actionLabel(), prepared.environment(),
                 prepared.component(), prepared.command().scriptPath(), prepared.command().arguments(),
                 prepared.parameters(), Boolean.TRUE.equals(req.enableSmartReleaseReport()),
                 "本机操作者 " + properties.getOperatorId() + " 将执行 " + prepared.actionLabel());
+    }
+
+    private void rejectLegacyProductionPromotion(RuntimeControlActionReqVO req) {
+        if (req != null && "promote-prod".equals(req.action())) {
+            throw new RuntimeControlException(
+                    "正式服发布必须从应用侧已测试工作流按钮发起，禁止使用通用运维动作");
+        }
     }
 
     private PreparedAction prepareAction(RuntimeControlActionReqVO req, String operationId, boolean previewOnly) {
