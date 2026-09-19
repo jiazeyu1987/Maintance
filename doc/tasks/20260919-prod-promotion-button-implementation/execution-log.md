@@ -46,5 +46,13 @@ GREEN: maintenance-commit -> PASS, `git commit -m "任务: 阻断旧正式发布
 
 BLOCKER: task-closeout-cleanup-preview -> Main worktree is dirty and cannot receive ff-only merge: `D:\ProjectPackage\Int\IntRuoyiMaintance`; preview would keep `task.md` and `execution-log.md`, delete task-local `migration-policy-gate.json`, but apply is blocked before deletion/merge/worktree removal. The dirty main workspace contains many unrelated changes and untracked/deleted files, so this task must not clean or overwrite it.
 
+GREEN: main-worktree-preservation-commit -> PASS, 按用户“先提交主干”要求，在 `int_main` 先提交既有主干改动 `9d7a620`，再提交正式任务文档/配置类新增文件 `4242511`；临时 pytest/review/output 产物未提交，仅写入本地 `.git/info/exclude` 隐藏以避免阻断 closeout。
+
+GREEN: maintenance-rebase-after-main-commit -> PASS, 维护任务分支 rebase 到 `int_main`；冲突处理策略为保留 request-command-log 双方追加记录，并尊重主干已删除 `frontend/src/App.vue` 的结果。
+
+GREEN: task-closeout-cleanup-apply -> PASS, `python C:\Users\BJB110\.codex\skills\task-closeout-cleanup\scripts\task_closeout.py --task-id 20260919-prod-promotion-button-implementation --mode apply` -> status `applied`; 删除 `migration-policy-gate.json`；ff-only 合回 `D:\ProjectPackage\Int\IntRuoyiMaintance`；移除维护 linked worktree。
+
+GREEN: final-status -> PASS, task status set to `completed`; 本轮仍未执行 E2E、服务器写入、数据库写入、发布、重启或正式服探测。
+
 ## Verification Scope
 - 本轮不执行 Playwright E2E、远端登录、正式服探测、发布、重启或数据库写入。

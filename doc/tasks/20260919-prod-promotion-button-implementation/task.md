@@ -1,7 +1,7 @@
 # 20260919 已测试包正式服按钮实现
 
 ## Current Status
-ready_for_closeout
+completed
 
 ## 任务目标
 实现已在测试服验收通过的不可变发布包晋级正式服按钮；本轮只做静态代码、类型、单元/合同验证，不执行 E2E、服务器写入或正式发布。
@@ -35,7 +35,8 @@ ready_for_closeout
 - 静态代码验证已通过；未执行 E2E、服务器写入、数据库写入、发布、重启或正式服探测。
 - 正式服发布入口改为独立按钮链路：production preview -> 授权 -> 幂等 promote；旧通用 `promote-prod` 动作已在应用侧和维护控制台侧阻断。
 - 实现不接受客户端传入正式服 host/path/releaseTag/evidence 等写入边界字段；正式目标、包摘要、manifest 摘要、测试服证据和状态版本均由服务端绑定。
-- 收尾尚未完成：待提交、推送、合并/清理 worktree 后才能标记 `completed`。
+- 收尾已完成：维护仓 linked worktree 已通过 task-closeout-cleanup apply 合回 `int_main` 并从 Git worktree 列表移除；任务状态标记为 `completed`。
 - 提交状态：应用仓提交 `88614c25c` 已推送到 `origin/codex/prod-promotion-button-implementation`；维护仓提交 `75eea84` 已在本地完成，维护仓当前未配置 remote，无法推送。
 - Hook 说明：应用仓 commit/push 的普通 hook 因临时 worktree 未登记运行端口阻断；本轮不启动本地运行态，已仅对该端口登记 hook 使用 `--no-verify`，未跳过任何静态验证。
-- Closeout 阻断：`task-closeout-cleanup --mode preview` 已确认维护仓当前 worktree 是 linked worktree，但主工作区 `D:\ProjectPackage\Int\IntRuoyiMaintance` 存在大量未归属 dirty/untracked/deleted 状态，不能安全执行 ff-only merge 或删除本任务临时 worktree；本任务不修改或清理这些未归属改动。
+- 主干提交状态：为解除 closeout 阻断，已按用户“先提交主干”要求在 `int_main` 保存既有主干改动为 `9d7a620` 与 `4242511`；本任务维护分支 rebase 后合入主干，当前主干为 `f98e042`，最终 completed 记录另行提交。
+- Closeout 结果：`task-closeout-cleanup --mode preview` -> ready；`--mode apply` -> applied，删除本任务临时 `migration-policy-gate.json`，保留 `task.md` 与 `execution-log.md`。
