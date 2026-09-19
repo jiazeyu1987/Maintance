@@ -1,0 +1,19 @@
+{
+  "operationId" : "op-2026-08-18T174311645827300Z-818527d7-fab1-4411-9cec-bb27e29acdec",
+  "requestedBy" : "local-operator",
+  "requestedAt" : 1787074991.649412800,
+  "environment" : "release",
+  "component" : "build-release",
+  "action" : "build-release",
+  "actionLabel" : "构建发布包",
+  "parameters" : {
+    "publishScope" : "code-only",
+    "includeOnlyOffice" : "false",
+    "includeShowroomBuildPackage" : "false",
+    "releaseTag" : "release-20260819-intmain-head-test-r260819a-r1"
+  },
+  "reason" : "20260819 仅测试服发布：基于冻结 HEAD 构建测试发布包",
+  "status" : "FAILED",
+  "summary" : "命令退出码非 0: 1",
+  "resultLogPath" : "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260819a-state\\runtime-control\\logs\\op-2026-08-18T174311645827300Z-818527d7-fab1-4411-9cec-bb27e29acdec.log"
+}

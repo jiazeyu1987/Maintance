@@ -1,0 +1,26 @@
+{
+  "attempt": "r260819g",
+  "releaseTag": "release-20260819-intmain-head-test-r260819g-r1",
+  "maintenance": {
+    "branch": "int_main",
+    "head": "c3c85e7c476392520412f107165f15d277ae4064",
+    "subject": "任务: 绑定发布变更说明与提交",
+    "worktree": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260819g\\m",
+    "gitStatus": "## HEAD (no branch)"
+  },
+  "app": {
+    "branch": "detached-from-recorded-commit",
+    "head": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+    "subject": "任务: 修复C00发布后空哈希",
+    "worktree": "D:\\IntRuoyiWorktree\\r260819g\\a",
+    "gitStatus": "## HEAD (no branch)"
+  },
+  "stateRoot": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260819g-state",
+  "packageRoot": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi",
+  "scope": "test-only build-release -> publish-test",
+  "forbidden": [
+    "mark-tested",
+    "promote-prod",
+    "promote-backup"
+  ]
+}

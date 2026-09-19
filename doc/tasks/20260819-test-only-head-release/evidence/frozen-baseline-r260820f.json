@@ -1,0 +1,29 @@
+{
+  "attempt": "r260820f",
+  "releaseTag": "release-20260820-frozen-head-test-r260820f-r1",
+  "maintenance": {
+    "path": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260820f\\m",
+    "head": "45d0d781baf91ae1ecc2bdb286e07bfdf52ab95f",
+    "status": "## HEAD (no branch)"
+  },
+  "app": {
+    "path": "D:\\IntRuoyiWorktree\\r260820f\\a",
+    "head": "12a773ef285ff34bf2bd25036fd3dff2930912bc",
+    "status": "## HEAD (no branch)"
+  },
+  "configChecks": {
+    "repoRoot": true,
+    "frontendRoot": true,
+    "opsRoot": true,
+    "stateDir": true,
+    "testAccess": true,
+    "prodDisabled": true,
+    "backupDisabled": true
+  },
+  "configSummary": {
+    "rawConfigLogged": false,
+    "testAccessEnabled": true,
+    "prodAccessEnabled": false,
+    "backupAccessEnabled": false
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "status": "passed",
+  "failedChecks": [],
+  "checkedAt": "2026-08-19T20:31:34.4826380+08:00",
+  "releaseTag": "release-20260819-intmain-head-test-r260819e-r2",
+  "packagePath": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260819-intmain-head-test-r260819e-r2",
+  "buildOperationId": "op-2026-08-19T121423036383400Z-1e9f029e-514c-4bcc-97ce-94b38a0912cc",
+  "expectedMaintenanceHead": "74b3a87bf60be40d0f5ccf6bbe37874a5a7ea465",
+  "expectedAppHead": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+  "manifest": {
+    "manifestVersion": "1.0",
+    "packageType": "full-release",
+    "packageId": "release-20260819-intmain-head-test-r260819e-r2",
+    "releaseTag": "release-20260819-intmain-head-test-r260819e-r2",
+    "publishScope": "code-only",
+    "component": "intruoyi",
+    "createdAt": "2026-08-19T12:27:30.323151Z",
+    "changeSetSummary": "Release package release-20260819-intmain-head-test-r260819e-r2",
+    "changeSetItems": [
+      "发布包：release-20260819-intmain-head-test-r260819e-r2",
+      "组件范围：intruoyi"
+    ]
+  },
+  "legacy": {
+    "releaseTag": "release-20260819-intmain-head-test-r260819e-r2",
+    "gitCommit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+    "publishScope": "code-only",
+    "component": "intruoyi",
+    "builtAt": "2026-08-19T12:27:25.8168059Z"
+  },
+  "frontendImageReleaseInfo": {
+    "releaseTag": "release-20260819-intmain-head-test-r260819e-r2",
+    "packageId": "release-20260819-intmain-head-test-r260819e-r2",
+    "publishScope": "code-only",
+    "changeSetSummary": "Release package release-20260819-intmain-head-test-r260819e-r2",
+    "backendCommit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+    "frontendCommit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb"
+  },
+  "sourceRepos": [
+    {
+      "name": "ruoyi-vue-pro",
+      "pathRole": "backend",
+      "commit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+      "branch": "HEAD",
+      "dirty": false
+    },
+    {
+      "name": "yudao-ui-admin-vue3",
+      "pathRole": "admin-frontend",
+      "commit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+      "branch": "HEAD",
+      "dirty": false
+    }
+  ],
+  "artifactCount": 516,
+  "artifactFailures": [],
+  "checks": {
+    "operationSuccess": true,
+    "packageExists": true,
+    "manifestExists": true,
+    "legacyManifestExists": true,
+    "manifestPackageId": true,
+    "manifestReleaseTag": true,
+    "manifestPublishScope": true,
+    "manifestComponent": true,
+    "sourceReposPresent": true,
+    "backendCommit": true,
+    "frontendCommit": true,
+    "sourceReposClean": true,
+    "sourceReposNoWebsite": true,
+    "legacyTag": true,
+    "legacyGitCommit": true,
+    "legacyComponent": true,
+    "frontendImageInfoTag": true,
+    "frontendImageInfoPackageId": true,
+    "frontendImageInfoChangeSet": true,
+    "frontendImageInfoBackendCommit": true,
+    "frontendImageInfoFrontendCommit": true,
+    "artifactsHashOk": true,
+    "maintenanceWorktreeHead": true,
+    "appWorktreeHead": true,
+    "maintenanceWorktreeClean": true,
+    "appWorktreeClean": true
+  }
+}

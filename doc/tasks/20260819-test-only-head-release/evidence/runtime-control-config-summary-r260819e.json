@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "config": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260819e\\m\\config\\runtime-control.local.yaml",
+  "repoRoot": "D:/IntRuoyiWorktree/r260819e/a/IntRuoyiBackend",
+  "frontendRoot": "D:/IntRuoyiWorktree/r260819e/a/IntRuoyiFronted",
+  "opsRoot": "D:/ProjectPackage/Int/IntRuoyiWorktrees/r260819e/m/ops",
+  "stateDir": "D:/ProjectPackage/Int/IntRuoyiWorktrees/r260819e-state/runtime-control",
+  "testAccessEnabled": true,
+  "prodWriteEnabled": false,
+  "backupAccessEnabled": false,
+  "checkedAt": "2026-08-19T15:01:57.7559291+08:00"
+}

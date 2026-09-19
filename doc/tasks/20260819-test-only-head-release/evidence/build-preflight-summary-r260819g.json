@@ -1,0 +1,12 @@
+{
+  "maintenanceJar": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260819g\\m\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar",
+  "maintenanceJarSha256": "B0EA72B99B02A1DDC0EE2F8834F782FB17995FE00321C881AE993B3FFA59CEB7",
+  "maintenanceTests": 26,
+  "maintenanceFailures": 0,
+  "maintenanceIgnoredBuilds": "None",
+  "appDist": "D:\\IntRuoyiWorktree\\r260819g\\a\\IntRuoyiFronted\\dist-test",
+  "appDistIndex": true,
+  "appDistFileCount": 3037,
+  "appIgnoredBuilds": "None",
+  "packageJsonRestored": true
+}

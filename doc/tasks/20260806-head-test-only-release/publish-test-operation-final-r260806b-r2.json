@@ -1,0 +1,16 @@
+{
+  "operationId": "op-2026-08-06T114908393935900Z-ded107d0-7996-4d3f-b7b4-ceadb49e489a",
+  "requestedBy": "local-operator",
+  "requestedAt": "2026-08-06T11:49:08.919263900Z",
+  "environment": "test",
+  "component": "publish-test",
+  "action": "publish-test",
+  "actionLabel": "部署发布包到测试服",
+  "parameters": {
+    "releaseTag": "release-20260806-intmain-head-test-r260806b-r2"
+  },
+  "reason": "20260806 test-only publish from frozen r260806b release package",
+  "status": "FAILED",
+  "summary": "命令退出码非 0: 1",
+  "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260806b-state\\runtime-control\\logs\\op-2026-08-06T114908393935900Z-ded107d0-7996-4d3f-b7b4-ceadb49e489a.log"
+}

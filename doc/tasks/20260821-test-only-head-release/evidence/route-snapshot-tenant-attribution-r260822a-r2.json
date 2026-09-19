@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "releaseTag": "release-20260822-intmain-head-test-r260822a-r2",
+  "sourceReport": "route-snapshot-identity-backfill-r260822a-r2.json",
+  "query": "SELECT id, tenant_id FROM mes_pro_route_version ORDER BY id",
+  "sshExitCode": 0,
+  "routeVersionRows": 47,
+  "blockerRows": 882,
+  "mappedBlockerRows": 882,
+  "unmappedBlockerRows": 0,
+  "tenantReasonCounts": [
+    {
+      "tenantId": 1,
+      "tenantName": "芋道源码",
+      "reasonCode": "FLOW_NODES_MISSING",
+      "count": 7
+    },
+    {
+      "tenantId": 1,
+      "tenantName": "芋道源码",
+      "reasonCode": "ROUTE_ID_MISSING",
+      "count": 2
+    },
+    {
+      "tenantId": 1,
+      "tenantName": "芋道源码",
+      "reasonCode": "PROCESS_ID_INVALID",
+      "count": 436
+    },
+    {
+      "tenantId": 1,
+      "tenantName": "芋道源码",
+      "reasonCode": "PRODUCT_BOM_IDENTITY_INVALID",
+      "count": 436
+    },
+    {
+      "tenantId": 122,
+      "tenantName": "测试租户",
+      "reasonCode": "FLOW_NODES_MISSING",
+      "count": 1
+    }
+  ],
+  "writePerformed": false,
+  "secretScan": "not_applicable_no_secret_values_captured"
+}

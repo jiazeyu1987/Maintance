@@ -1,0 +1,166 @@
+{
+  "baseUrl": "http://172.30.30.58:8081",
+  "username": "wangsiyu",
+  "controlledFileId": "2054545668044081212",
+  "targetPath": "/dcc/controlled-file/detail/2054545668044081212?viewer=1&from=project-code",
+  "login": {
+    "status": 200,
+    "code": 0,
+    "msg": "",
+    "hasAccessToken": true
+  },
+  "permissionInfo": null,
+  "requests": [
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/auth/get-permission-info",
+      "method": "GET",
+      "headers": {
+        "hasAuthorization": true,
+        "authorizationIsBearer": true,
+        "tenantId": "1",
+        "hasVisitTenantId": false,
+        "hasViewerToken": false,
+        "hasViewerTokenId": false,
+        "hasViewerTokenNonce": false,
+        "hasAccessEventCode": false,
+        "hasWatermarkTraceCode": false,
+        "cacheControl": "no-cache",
+        "pragma": "no-cache"
+      }
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/auth/get-permission-info",
+      "method": "GET",
+      "headers": {
+        "hasAuthorization": true,
+        "authorizationIsBearer": true,
+        "tenantId": "1",
+        "hasVisitTenantId": false,
+        "hasViewerToken": false,
+        "hasViewerTokenId": false,
+        "hasViewerTokenNonce": false,
+        "hasAccessEventCode": false,
+        "hasWatermarkTraceCode": false,
+        "cacheControl": "no-cache",
+        "pragma": "no-cache"
+      }
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/auth/get-permission-info",
+      "method": "GET",
+      "headers": {
+        "hasAuthorization": true,
+        "authorizationIsBearer": true,
+        "tenantId": "1",
+        "hasVisitTenantId": false,
+        "hasViewerToken": false,
+        "hasViewerTokenId": false,
+        "hasViewerTokenNonce": false,
+        "hasAccessEventCode": false,
+        "hasWatermarkTraceCode": false,
+        "cacheControl": "no-cache",
+        "pragma": "no-cache"
+      }
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/dcc/controlled-files/2054545668044081212/preview-metadata",
+      "method": "GET",
+      "headers": {
+        "hasAuthorization": true,
+        "authorizationIsBearer": true,
+        "tenantId": "1",
+        "hasVisitTenantId": false,
+        "hasViewerToken": false,
+        "hasViewerTokenId": false,
+        "hasViewerTokenNonce": false,
+        "hasAccessEventCode": false,
+        "hasWatermarkTraceCode": false,
+        "cacheControl": "no-cache",
+        "pragma": "no-cache"
+      }
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/dcc/controlled-files/2054545668044081212/preview",
+      "method": "GET",
+      "headers": {
+        "hasAuthorization": true,
+        "authorizationIsBearer": true,
+        "tenantId": "1",
+        "hasVisitTenantId": false,
+        "hasViewerToken": true,
+        "hasViewerTokenId": true,
+        "hasViewerTokenNonce": true,
+        "hasAccessEventCode": true,
+        "hasWatermarkTraceCode": true,
+        "cacheControl": "no-cache",
+        "pragma": "no-cache"
+      }
+    }
+  ],
+  "responses": [
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/auth/get-permission-info",
+      "status": 200,
+      "contentType": "application/json",
+      "json": {
+        "code": 0,
+        "msg": "",
+        "hasControlledFileQuery": true,
+        "hasProjectCodeQuery": true,
+        "hasFormInstanceCreate": false,
+        "hasSignatureManage": false
+      }
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/auth/get-permission-info",
+      "status": 200,
+      "contentType": "application/json",
+      "json": {
+        "code": 0,
+        "msg": "",
+        "hasControlledFileQuery": true,
+        "hasProjectCodeQuery": true,
+        "hasFormInstanceCreate": false,
+        "hasSignatureManage": false
+      }
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/auth/get-permission-info",
+      "status": 200,
+      "contentType": "application/json",
+      "json": {
+        "code": 0,
+        "msg": "",
+        "hasControlledFileQuery": true,
+        "hasProjectCodeQuery": true,
+        "hasFormInstanceCreate": false,
+        "hasSignatureManage": false
+      }
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/dcc/controlled-files/2054545668044081212/preview-metadata",
+      "status": 200,
+      "contentType": "application/json",
+      "json": {
+        "code": 0,
+        "msg": "",
+        "hasControlledFileQuery": false,
+        "hasProjectCodeQuery": false,
+        "hasFormInstanceCreate": false,
+        "hasSignatureManage": false
+      }
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/dcc/controlled-files/2054545668044081212/preview",
+      "status": 200,
+      "contentType": "application/pdf",
+      "json": null
+    }
+  ],
+  "failingResponses": [],
+  "nonSuccessApiResponses": [],
+  "consoleErrors": [],
+  "pageMessages": [],
+  "finalUrl": "http://172.30.30.58:8081/dcc/controlled-file/detail/2054545668044081212?viewer=1&from=project-code",
+  "previewLayoutVisible": true
+}

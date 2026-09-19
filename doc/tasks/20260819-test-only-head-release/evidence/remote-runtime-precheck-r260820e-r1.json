@@ -1,0 +1,25 @@
+{
+  "sshExit": 0,
+  "checks": {
+    "FRONTEND_BYTES": "138",
+    "BACKEND_HEALTH_HTTP": "000",
+    "ENV_IMAGE_TAG": "release-20260820-frozen-head-test-r260820d-r1",
+    "BACKEND_HEALTH_BODY": "",
+    "FRONTEND_HTTP_HOST": "302"
+  },
+  "raw": [
+    "BACKEND_HEALTH_HTTP\t000",
+    "BACKEND_HEALTH_BODY\t",
+    "FRONTEND_HTTP_HOST\t302",
+    "FRONTEND_BYTES\t138",
+    "ENV_IMAGE_TAG\trelease-20260820-frozen-head-test-r260820d-r1",
+    "COMPOSE",
+    "intruoyi-backend|running|intruoyi-backend:hotfix-20260814-route-submit-order-r1",
+    "intruoyi-frontend|running|intruoyi-frontend:release-20260813-intmain-head-test-r260812b-r2",
+    "intruoyi-mysql|running|mysql:8.0.39",
+    "intruoyi-onlyoffice|running|onlyoffice/documentserver:latest",
+    "intruoyi-redis|running|redis:7-alpine",
+    "intruoyi-website|running|nginx:1.27-alpine"
+  ],
+  "checkedAt": "2026-08-20T14:30:48"
+}

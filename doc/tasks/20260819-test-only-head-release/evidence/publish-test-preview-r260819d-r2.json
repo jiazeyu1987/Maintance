@@ -1,0 +1,63 @@
+{
+  "status": "passed",
+  "releaseTag": "release-20260819-intmain-head-test-r260819d-r2",
+  "requestPayload": {
+    "targetEnvironment": "test",
+    "releaseTag": "release-20260819-intmain-head-test-r260819d-r2",
+    "reason": "r260819d-r2 test-only publish from frozen HEAD",
+    "action": "publish-test"
+  },
+  "preview": {
+    "action": "publish-test",
+    "actionLabel": "部署发布包到测试服",
+    "environment": "test",
+    "component": "publish-test",
+    "scriptPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260819d\\m\\ops\\deploy\\publish-int-ruoyi.ps1",
+    "arguments": [
+      "-Mode",
+      "deploy-release",
+      "-Environment",
+      "test",
+      "-ReleaseTag",
+      "release-20260819-intmain-head-test-r260819d-r2",
+      "-ServerHost",
+      "172.30.30.58",
+      "-ServerUser",
+      "root",
+      "-RemoteAppDir",
+      "/opt/intruoyi/runtime",
+      "-RemoteReleaseRoot",
+      "/var/lib/docker/intruoyi-releases",
+      "-RemoteDataRoot",
+      "/var/lib/docker/intruoyi-data/runtime-data",
+      "-RemoteDataDiskMount",
+      "/var/lib/docker",
+      "-RemoteDataDiskDevice",
+      "/dev/vdb",
+      "-RemoteMinioContainer",
+      "ragflow_compose-minio-1",
+      "-TestServerHost",
+      "172.30.30.58",
+      "-BackupServerHost",
+      "172.30.30.59",
+      "-NasServer",
+      "172.30.30.4",
+      "-NasShare",
+      "IT共享",
+      "-NasReleaseRoot",
+      "Backup/ReleasePackage",
+      "-BackendRepoRoot",
+      "D:/IntRuoyiWorktree/r260819d/a/IntRuoyiBackend",
+      "-FrontendRepoRoot",
+      "D:/IntRuoyiWorktree/r260819d/a/IntRuoyiFronted",
+      "-WebsiteRepo",
+      "D:/ProjectPackage/Website"
+    ],
+    "parameters": {
+      "releaseTag": "release-20260819-intmain-head-test-r260819d-r2"
+    },
+    "enableSmartReleaseReport": false,
+    "summary": "本机操作者 local-operator 将执行 部署发布包到测试服"
+  },
+  "checkedAt": "2026-08-19T13:07:18.2677154+08:00"
+}

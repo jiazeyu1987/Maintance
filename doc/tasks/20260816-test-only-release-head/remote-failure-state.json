@@ -1,0 +1,38 @@
+{
+  "releaseTag": "release-20260816-intmain-head-test-r260816a-r1",
+  "targetEnvironment": "test",
+  "releaseLock": {
+    "status": "FAILED",
+    "runningLockCount": 0
+  },
+  "migrations": {
+    "applied": 6,
+    "skippedAlreadyApplied": 428,
+    "failed": 1,
+    "failedMigrationId": "20260813_form_template_menu_before_form_center"
+  },
+  "livePrecondition": {
+    "menuId": 605071200,
+    "menuName": "表单中心",
+    "actualParentId": 1186,
+    "actualParentName": "流程管理",
+    "requiredParentId": 990200,
+    "requiredParentName": "基础数据",
+    "passed": false
+  },
+  "runtime": {
+    "envImageTag": "release-20260816-intmain-head-test-r260816a-r1",
+    "composeBackendImage": "intruoyi-backend:release-20260816-intmain-head-test-r260816a-r1",
+    "composeFrontendImage": "intruoyi-frontend:release-20260816-intmain-head-test-r260816a-r1",
+    "actualBackendImage": "intruoyi-backend:hotfix-20260814-route-submit-order-r1",
+    "actualFrontendImage": "intruoyi-frontend:release-20260813-intmain-head-test-r260812b-r2",
+    "backendContainerState": "running",
+    "frontendContainerState": "running",
+    "backendHealth": "UP",
+    "frontendHttpStatus": 200,
+    "frontendReleaseTag": "release-20260813-intmain-head-test-r260812b-r2",
+    "targetVersionRunning": false
+  },
+  "readOnlyAuditPassed": true,
+  "publishSucceeded": false
+}

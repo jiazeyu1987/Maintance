@@ -1,0 +1,15 @@
+{
+  "attempt": "r260820g",
+  "dependencyCache": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260820e\\m\\frontend\\node_modules",
+  "frontendChangedBetweenCacheAndCurrent": false,
+  "frontendTypecheck": "PASS",
+  "frontendBuild": "PASS",
+  "mavenTests": 26,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "jar": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260820g\\m\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar",
+  "sha256": "27ABCA27805FC3665051E21ABEE314400A8F845D037411C0DEB9722A79FB3842",
+  "statusAfter": "",
+  "summaryFix": "original build command ended code 1 only after BUILD SUCCESS due PowerShell boolean literal typo while writing evidence"
+}

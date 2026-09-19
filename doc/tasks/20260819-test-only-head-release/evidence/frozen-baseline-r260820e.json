@@ -1,0 +1,19 @@
+{
+  "round": "r260820e",
+  "releaseTag": "release-20260820-frozen-head-test-r260820e-r1",
+  "maintenanceWorktree": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260820e\\m",
+  "maintenanceHead": "6277231993e2c8ac2f4b20363594015a35e596a0",
+  "maintenanceStatus": [],
+  "appWorktree": "D:\\IntRuoyiWorktree\\r260820e\\a",
+  "appHead": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+  "appStatus": [],
+  "configPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260820e\\m\\config\\runtime-control.local.yaml",
+  "configSha256": "2E1DA62774028B46C06F09D18EE08797AC9392E169BFA080233721CC3098037C",
+  "repoRootBound": true,
+  "frontendRootBound": true,
+  "opsRootBound": true,
+  "stateDirBound": true,
+  "oldRoundPresent": false,
+  "testAccessEnabled": true,
+  "prodBackupAccessDisabled": true
+}

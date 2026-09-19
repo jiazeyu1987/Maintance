@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "file": "IntRuoyiBackend/yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/processpool/team/MesTeamLeaderProcessConfigServiceImpl.java",
+  "constructorCount": 2,
+  "hasAutowiredImport": true,
+  "hasPublicConstructorAutowired": true,
+  "head": "19173d2b41442e6b2df3c16c424c11713b3dbbcc"
+}

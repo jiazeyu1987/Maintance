@@ -1,0 +1,14 @@
+image_tag=release-20260901-main-invoice-assistant-test-r260901a-r1
+backend_image=intruoyi-backend:release-20260901-main-invoice-assistant-test-r260901a-r1
+backend_state=running
+frontend_image=intruoyi-frontend:release-20260901-main-invoice-assistant-test-r260901a-r1
+frontend_state=running
+assistant_image=erp-invoice-voucher-print-assistant:ba55fb8
+assistant_state=running
+assistant_unit=active
+backend_health={"status":"UP"}
+frontend_http=200
+assistant_http=403
+status	varchar(32)	NO	MUL	NULL	
+running_locks=0
+test_failed_running_migrations=4

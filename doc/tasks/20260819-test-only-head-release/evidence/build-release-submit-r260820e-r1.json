@@ -1,0 +1,31 @@
+{
+  "requestPayload": {
+    "action": "build-release",
+    "reason": "r260820e build-release after Spring scheduling hook isolation fix",
+    "releaseTag": "release-20260820-frozen-head-test-r260820e-r1",
+    "publishScope": "code-only",
+    "includeOnlyOffice": "false",
+    "includeShowroomBuildPackage": "false"
+  },
+  "response": {
+    "operationId": "op-2026-08-20T063610355181400Z-087ba530-5f4d-4843-baab-8ce879587b01",
+    "requestedBy": "local-operator",
+    "requestedAt": "2026-08-20T06:36:10.359300800Z",
+    "environment": "release",
+    "component": "build-release",
+    "action": "build-release",
+    "actionLabel": "构建发布包",
+    "parameters": {
+      "publishScope": "code-only",
+      "includeOnlyOffice": "false",
+      "includeShowroomBuildPackage": "false",
+      "releaseTag": "release-20260820-frozen-head-test-r260820e-r1"
+    },
+    "reason": "r260820e build-release after Spring scheduling hook isolation fix",
+    "status": "RUNNING",
+    "summary": "命令已提交到本机执行队列",
+    "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260820e-state\\runtime-control\\logs\\op-2026-08-20T063610355181400Z-087ba530-5f4d-4843-baab-8ce879587b01.log"
+  },
+  "responseCode": 0,
+  "submittedAt": "2026-08-20T14:36:10.4078033+08:00"
+}

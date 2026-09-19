@@ -1,0 +1,7 @@
+{
+  "releaseTag": "release-20260820-frozen-head-test-r260820d-r1",
+  "exitCode": 0,
+  "stdout": "ENV_IMAGE_TAG=release-20260820-frozen-head-test-r260820a-r2\nBACKEND_HEALTH={\"status\":\"UP\"}\nFRONTEND_HTTP=200\nLOCK_ROWS=0\nMIGRATION_BAD_ROWS=0\nRUNNING_LOCKS=0\n",
+  "stderr": "close - IO is still pending on closed socket. read:1, write:0, io:0000017F4C835A90\r\n",
+  "checkedAt": "2026-08-20T10:37:25"
+}

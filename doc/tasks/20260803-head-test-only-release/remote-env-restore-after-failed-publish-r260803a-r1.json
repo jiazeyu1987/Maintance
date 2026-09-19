@@ -1,0 +1,8 @@
+{
+  "host": "172.30.30.58",
+  "failedTag": "release-20260803-intmain-head-test-r260803a-r1",
+  "restoreTag": "release-20260802-feedback-fix-test-r260802h-r1",
+  "returncode": 0,
+  "stdout": "RESTORE_OK before=release-20260803-intmain-head-test-r260803a-r1 after=release-20260802-feedback-fix-test-r260802h-r1 frontend=intruoyi-frontend:release-20260802-feedback-fix-test-r260802h-r1 backend=intruoyi-backend:release-20260802-feedback-fix-test-r260802h-r1\n",
+  "stderr": "close - IO is still pending on closed socket. read:1, write:0, io:000001E6BA6176E0\r\n"
+}

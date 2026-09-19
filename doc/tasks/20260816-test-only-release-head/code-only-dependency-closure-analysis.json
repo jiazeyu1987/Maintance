@@ -1,0 +1,72 @@
+{
+  "releaseTag": "release-20260816-intmain-head-test-r260816a-r1",
+  "manifestMigrationCount": 490,
+  "preflightPlanStatus": "passed",
+  "publishScope": "code-only",
+  "artifactCount": 500,
+  "withDataRequiredArtifacts": {
+    "databaseDumpCount": 0,
+    "minioSnapshotCount": 0,
+    "available": false
+  },
+  "nonDataMigrationsWithAnyDataAncestor": 42,
+  "applyMigrationsWithPendingDataAncestorExcludedByCodeOnly": 3,
+  "hazards": [
+    {
+      "applyMigrationId": "20260813_form_template_menu_before_form_center",
+      "pendingDataAncestorId": "20260721_form_center_menu_under_basic_data",
+      "path": [
+        "20260813_form_template_menu_before_form_center",
+        "20260722_form_center_policy_menu_hide",
+        "20260721_form_center_menu_under_basic_data"
+      ]
+    },
+    {
+      "applyMigrationId": "20260813_mes_process_pool_event_revision_nullable_work_order",
+      "pendingDataAncestorId": "20260729_dcc_product_catalog_remove_subsidiary_source",
+      "path": [
+        "20260813_mes_process_pool_event_revision_nullable_work_order",
+        "20260808_mes_process_pool_frontline_no_work_order",
+        "20260803_mes_process_pool_event_idempotency",
+        "20260803_mes_process_pool_pqc_structured_binding",
+        "20260730_mes_process_pool_foundation",
+        "20260729_dcc_product_catalog_remove_subsidiary_source"
+      ]
+    },
+    {
+      "applyMigrationId": "20260813_z_form_center_menu_hide",
+      "pendingDataAncestorId": "20260721_form_center_menu_under_basic_data",
+      "path": [
+        "20260813_z_form_center_menu_hide",
+        "20260813_form_template_menu_before_form_center",
+        "20260722_form_center_policy_menu_hide",
+        "20260721_form_center_menu_under_basic_data"
+      ]
+    }
+  ],
+  "relevantPlanActions": {
+    "20260721_form_center_menu_under_basic_data": "APPLY",
+    "20260722_form_center_business_action_page_retire": "SKIP_ALREADY_APPLIED",
+    "20260722_form_center_policy_menu_hide": "SKIP_ALREADY_APPLIED",
+    "20260813_form_template_menu_before_form_center": "APPLY",
+    "20260729_dcc_product_catalog_remove_subsidiary_source": "APPLY",
+    "20260730_mes_process_pool_foundation": "SKIP_ALREADY_APPLIED",
+    "20260813_mes_process_pool_event_revision_nullable_work_order": "APPLY"
+  },
+  "rootCause": "The preflight plan is built before publish-scope filtering. It marks dependency chains satisfied, then Get-ReleasePreflightApplyItems removes pending type=data APPLY items without revalidating APPLY descendants against the filtered graph.",
+  "supportedPathWithoutChangingFrozenInput": false,
+  "whyNoSupportedPath": [
+    "Retrying the same releaseTag reproduces the same deterministic plan and live-state failure.",
+    "Editing the package, manifest, SQL, preflight plan, or migration ledger would break the frozen committed-input contract.",
+    "Using with-data would require a different package scope and would execute unrelated business-data migrations outside the approved code-only release boundary.",
+    "Manually applying skipped SQL would be an unapproved fallback and would not address the second pending data dependency chain."
+  ],
+  "formalFixSurface": [
+    "IntRuoyiBackend/script/release/release_preflight_plan.py and its tests must become publish-scope aware and reject APPLY descendants of pending excluded data ancestors.",
+    "The maintenance copy and publish-int-ruoyi.ps1 contract tests must be kept in sync so filtering cannot occur after a passed dependency plan without revalidation.",
+    "20260721_form_center_menu_under_basic_data metadata and test require formal classification review because the SQL changes menu/package/role structure rather than ordinary business data.",
+    "The unrelated dependency from 20260730_mes_process_pool_foundation to 20260729_dcc_product_catalog_remove_subsidiary_source requires a formal dependency-graph correction and regression tests."
+  ],
+  "requiresNewCommittedHead": true,
+  "requiresNewReleaseTag": true
+}

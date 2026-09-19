@@ -1,0 +1,17 @@
+{
+  "releaseTag": "release-20260821-intmain-head-test-r260821e-r1",
+  "scriptPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260821e\\m\\ops\\deploy\\publish-int-ruoyi.ps1",
+  "checks": {
+    "actionBuildRelease": true,
+    "modeBuildRelease": true,
+    "releaseTagMatches": true,
+    "componentIntruoyi": true,
+    "skipDatabaseSync": true,
+    "skipMinioSync": true,
+    "backendRepoRootR260821e": true,
+    "frontendRepoRootR260821e": true,
+    "noTargetEnvironment": true,
+    "noDeployOrPromote": true
+  },
+  "passed": true
+}

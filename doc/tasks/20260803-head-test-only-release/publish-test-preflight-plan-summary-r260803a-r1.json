@@ -1,0 +1,222 @@
+{
+  "status": "passed",
+  "targetEnvironment": "test",
+  "actionCounts": {
+    "SKIP_ALREADY_APPLIED": 377,
+    "APPLY": 41,
+    "SKIP_ENV_NOT_ALLOWED": 1
+  },
+  "applyCount": 41,
+  "firstApplyItems": [
+    {
+      "migrationId": "20260513_dcc_base_schema",
+      "file": "required-sql/20260513_dcc_base_schema.sql",
+      "sha256": "4751b23cf28e932d936f3c6a81d9aee109afbd6fa509189dd50d589ac6abfe28",
+      "action": "APPLY",
+      "reason": "target checksum differs from manifest; reapply current required SQL"
+    },
+    {
+      "migrationId": "20260629_mes_smart_scheduling_role_scope",
+      "file": "required-sql/20260629_mes_smart_scheduling_role_scope.sql",
+      "sha256": "93073955381700f755073177ec710d7f29d458f64588c7c2bc99abe04ba2dbdb",
+      "action": "APPLY",
+      "reason": "target checksum differs from manifest; reapply current required SQL"
+    },
+    {
+      "migrationId": "20260709_mes_rt000006_batch_record_mapping",
+      "file": "required-sql/20260709_mes_rt000006_batch_record_mapping.sql",
+      "sha256": "36023b7f8d1a52ca8a8a909a3ef1d52ad8fed04d812286ac44a210a4feccbda9",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260710_mes_schedule_order_topology_snapshot_backfill",
+      "file": "required-sql/20260710_mes_schedule_order_topology_snapshot_backfill.sql",
+      "sha256": "fb763b619f7b2a5d004f03c4e2cefd81107bcab658997a1febc26158b33604a1",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260710_mes_edhr_batch_task_topology_snapshot_backfill",
+      "file": "required-sql/20260710_mes_edhr_batch_task_topology_snapshot_backfill.sql",
+      "sha256": "99931911ff9f77db09af2a64d119dcce879e212df873b14e3a35802394061b86",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260715_showroom_notify_template_garbled_repair",
+      "file": "required-sql/20260715_showroom_notify_template_garbled_repair.sql",
+      "sha256": "b2abf02387ee9855049dc0858674a21c17575d8decf9596b0d737c30bebae535",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260716_mes_balloon_xlsx_route_00002_invalid_process_cleanup",
+      "file": "required-sql/20260716_mes_balloon_xlsx_route_00002_invalid_process_cleanup.sql",
+      "sha256": "0c7f2b6aa9cf45c3d701fd02420d252cbb9dc076fb763402226fbfecae97c414",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260716_mes_route_version_permission_menu",
+      "file": "required-sql/20260716_mes_route_version_permission_menu.sql",
+      "sha256": "ca5d90dcc8038a36c587cbe3d4aaf1e5b27d3de6ed0e80df5e2ed406e4f6855c",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260717_mes_balloon_excel_device_workstation_binding",
+      "file": "required-sql/20260717_mes_balloon_excel_device_workstation_binding.sql",
+      "sha256": "87ff2fe9a3f386c60eeb5d78d6ba96fd4869d8dd97100d17bfc5edbaad7bd1c2",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260717_mes_invalid_process_reference_normalization",
+      "file": "required-sql/20260717_mes_invalid_process_reference_normalization.sql",
+      "sha256": "36e429ef6d74f419b388c1c6f73fd323b920f78e1f9764ccaa34e358fc5fb69b",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260718_mes_puhui_schedule_admin_role_visibility",
+      "file": "required-sql/20260718_mes_puhui_schedule_admin_role_visibility.sql",
+      "sha256": "ec5f7f2fc6da7b5b35cf8c52727db81a92113bd55ec81bf7e8b2b7e0bb4b6d43",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260718_mes_route_version_bpm_notify_to_inbox",
+      "file": "required-sql/20260718_mes_route_version_bpm_notify_to_inbox.sql",
+      "sha256": "9bbb9f5f48d9b75b588218a6af0824821b3d17e765efca867abdad7d9ba86593",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260718_mes_route_version_withdraw_reopen_permission_menu",
+      "file": "required-sql/20260718_mes_route_version_withdraw_reopen_permission_menu.sql",
+      "sha256": "351f56e20743c0bc2e9c00ee3fe4dd9a57490d34fe647bf98d34e66bcbd04db8",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260719_dcc_upload_form_policy_seed",
+      "file": "required-sql/20260719_dcc_upload_form_policy_seed.sql",
+      "sha256": "059042e6847aba56722c1176efcb3547cd59ee7e0e647a2de58287cce88fbbbd",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260719_dcc_obsolete_form_policy_seed",
+      "file": "required-sql/20260719_dcc_obsolete_form_policy_seed.sql",
+      "sha256": "e5f1e0d1fc21649e801fba500c21642a639669421c7dd2b12875e36eb24a71fb",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260720_dcc_publish_form_policy_seed",
+      "file": "required-sql/20260720_dcc_publish_form_policy_seed.sql",
+      "sha256": "ae7bcded6478a90044a7a8dbb3394e5bcbd1d020a79539bfcdcafedac629b6dc",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260720_edhr_release_void_form_policy_seed",
+      "file": "required-sql/20260720_edhr_release_void_form_policy_seed.sql",
+      "sha256": "1ad35159f9d3fb093d4f22655a82ca74fc1a84a88d9cbfeb0683b8d4622a3ca0",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260720_mes_edhr_work_task_runtime_entitlement_backfill",
+      "file": "required-sql/20260720_mes_edhr_work_task_runtime_entitlement_backfill.sql",
+      "sha256": "ff5f10ffdd8d41a1fcfb07db5272905b2d5f2909370aa9c6f858a8415a09bd3a",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260720_mes_schedule_replan_form_policy_seed",
+      "file": "required-sql/20260720_mes_schedule_replan_form_policy_seed.sql",
+      "sha256": "a80d717287ccdf2444c56fb3f62912e19a87ac9395fee327ab3c240a7f0944ac",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260721_batch_record_bpm_policy_seed",
+      "file": "required-sql/20260721_batch_record_bpm_policy_seed.sql",
+      "sha256": "9b0895754f71e0adb6a058391b9edc6cf4cebae72dcbf60779c59b7fb30a5a25",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260721_form_center_menu_under_basic_data",
+      "file": "required-sql/20260721_form_center_menu_under_basic_data.sql",
+      "sha256": "d2da5243aa599b3ce190e59582fde48bed69255454edb6b2f99dadec8ef61d40",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260721_mes_route_version_publish_business_approval_policy_seed",
+      "file": "required-sql/20260721_mes_route_version_publish_business_approval_policy_seed.sql",
+      "sha256": "2a1467af2d8ec57cf18c28d46ab85269c3a2eabf12365a667ff3486e9bc63a21",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260721_mes_schedule_replan_approval_retire",
+      "file": "required-sql/20260721_mes_schedule_replan_approval_retire.sql",
+      "sha256": "e7d4edc0bea9013fda315ee4a4f248976cd60f76307b24e7234c2169ab14c4bb",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260722_edhr_release_form_policy_retire",
+      "file": "required-sql/20260722_edhr_release_form_policy_retire.sql",
+      "sha256": "ee9f96afc32ce0c81e13a3ebc418040b5b118d5b041da3af3f8b06aab74c81c1",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260721_form_template_obsolete_bpm_policy_seed",
+      "file": "required-sql/20260721_form_template_obsolete_bpm_policy_seed.sql",
+      "sha256": "34f3e657a1282f2cf3347ef8c177a9c9d7719f52a45381eac7c537226e4bc6fa",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260722_mes_route_creator_route_edit_permission_backfill",
+      "file": "required-sql/20260722_mes_route_creator_route_edit_permission_backfill.sql",
+      "sha256": "5f45deb68d425dd92e41ee3958bc079f996357852e8ae8dcc2e8dd215332cf01",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260723_mes_route_form_business_approval_policy_backfill",
+      "file": "required-sql/20260723_mes_route_form_business_approval_policy_backfill.sql",
+      "sha256": "e0a434fc9d75aaaa140fa1de06ecdbc0949c15d62a6cf17b57bf4a128e3e3059",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260723_mes_route_form_permission_rule_version_backfill",
+      "file": "required-sql/20260723_mes_route_form_permission_rule_version_backfill.sql",
+      "sha256": "59ea8f94dddb2b700a899cdf0d2242f9f89d0ff2c824437fcb9e448a3a9f76f3",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260723_unify_form_action_policy_into_business_approval_policy",
+      "file": "required-sql/20260723_unify_form_action_policy_into_business_approval_policy.sql",
+      "sha256": "ff4d58bae1bb14673cd3af93aa86fec04388440e3ec39a8a1b49734aebe9a55f",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    },
+    {
+      "migrationId": "20260723_z_edhr_batch_void_business_policy_all_state",
+      "file": "required-sql/20260723_z_edhr_batch_void_business_policy_all_state.sql",
+      "sha256": "8dc2f7ea2f81cbca37c466d5eca89db1957b7c3da3cb03081a468b4763ef54b5",
+      "action": "APPLY",
+      "reason": "migration is pending and prerequisites are satisfied"
+    }
+  ]
+}

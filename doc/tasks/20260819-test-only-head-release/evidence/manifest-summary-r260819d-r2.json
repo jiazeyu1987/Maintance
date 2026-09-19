@@ -1,0 +1,22 @@
+{
+  "releaseTag": "release-20260819-intmain-head-test-r260819d-r2",
+  "packageId": "release-20260819-intmain-head-test-r260819d-r2",
+  "manifestVersion": "1.0",
+  "packageType": "full-release",
+  "publishScope": "code-only",
+  "changeSetSummary": "Release package release-20260819-intmain-head-test-r260819d-r2",
+  "backend": {
+    "name": "ruoyi-vue-pro",
+    "pathRole": "backend",
+    "commit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+    "branch": "HEAD",
+    "dirty": false
+  },
+  "frontend": {
+    "name": "yudao-ui-admin-vue3",
+    "pathRole": "admin-frontend",
+    "commit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+    "branch": "HEAD",
+    "dirty": false
+  }
+}

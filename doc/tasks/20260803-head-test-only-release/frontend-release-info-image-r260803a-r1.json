@@ -1,0 +1,34 @@
+{
+    "releaseTag":  "release-20260803-intmain-head-test-r260803a-r1",
+    "packageId":  "release-20260803-intmain-head-test-r260803a-r1",
+    "createdAt":  "2026-08-02T16:56:14.7506906Z",
+    "publishScope":  "code-only",
+    "changeSet":  {
+                      "summary":  "Release package release-20260803-intmain-head-test-r260803a-r1",
+                      "component":  "intruoyi",
+                      "items":  [
+                                    "发布包：release-20260803-intmain-head-test-r260803a-r1",
+                                    "组件范围：intruoyi"
+                                ],
+                      "includeShowroomBuildPackage":  false,
+                      "includeOnlyOffice":  false
+                  },
+    "sourceRepos":  [
+                        {
+                            "name":  "ruoyi-vue-pro",
+                            "pathRole":  "backend",
+                            "commit":  "1606947b7598eca15e904362759a7236a255dbbf",
+                            "branch":  "HEAD",
+                            "dirty":  false,
+                            "dirtySummaryHash":  null
+                        },
+                        {
+                            "name":  "yudao-ui-admin-vue3",
+                            "pathRole":  "admin-frontend",
+                            "commit":  "1606947b7598eca15e904362759a7236a255dbbf",
+                            "branch":  "HEAD",
+                            "dirty":  false,
+                            "dirtySummaryHash":  null
+                        }
+                    ]
+}

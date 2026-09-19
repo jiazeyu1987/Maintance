@@ -1,0 +1,14 @@
+{
+  "config": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260819b\\m\\config\\runtime-control.local.yaml",
+  "repoRoot": "D:/IntRuoyiWorktree/r260819b/a/IntRuoyiBackend",
+  "frontendRoot": "D:/IntRuoyiWorktree/r260819b/a/IntRuoyiFronted",
+  "opsRoot": "D:/ProjectPackage/Int/IntRuoyiWorktrees/r260819b/m/ops",
+  "stateDir": "D:/ProjectPackage/Int/IntRuoyiWorktrees/r260819b-state/runtime-control",
+  "productionWriteEnabled": false,
+  "testAccess": true,
+  "prodAccess": false,
+  "backupAccess": false,
+  "releaseNasCredentialPresent": true,
+  "backupNasCredentialPresent": true,
+  "baseImageTarConfigured": true
+}

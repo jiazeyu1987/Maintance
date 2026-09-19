@@ -1,0 +1,23 @@
+{
+  "code": 0,
+  "data": {
+    "operationId": "op-2026-08-19T192646294424900Z-d928c010-38e9-41c0-af4f-f2c6c41c028e",
+    "requestedBy": "local-operator",
+    "requestedAt": "2026-08-19T19:26:46.298695600Z",
+    "environment": "release",
+    "component": "build-release",
+    "action": "build-release",
+    "actionLabel": "构建发布包",
+    "parameters": {
+      "publishScope": "code-only",
+      "includeOnlyOffice": "false",
+      "includeShowroomBuildPackage": "false",
+      "releaseTag": "release-20260820-frozen-head-test-r260820a-r1"
+    },
+    "reason": "r260820a repaired release notes and test env boundary",
+    "status": "RUNNING",
+    "summary": "命令已提交到本机执行队列",
+    "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260820a-state\\runtime-control\\logs\\op-2026-08-19T192646294424900Z-d928c010-38e9-41c0-af4f-f2c6c41c028e.log"
+  },
+  "msg": ""
+}

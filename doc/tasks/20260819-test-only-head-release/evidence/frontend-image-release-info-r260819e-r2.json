@@ -1,0 +1,35 @@
+{
+  "releaseTag": "release-20260819-intmain-head-test-r260819e-r2",
+  "packageId": "release-20260819-intmain-head-test-r260819e-r2",
+  "publishScope": "code-only",
+  "changeSetSummary": "Release package release-20260819-intmain-head-test-r260819e-r2",
+  "changeSetItems": [
+    "发布包：release-20260819-intmain-head-test-r260819e-r2",
+    "组件范围：intruoyi"
+  ],
+  "backend": {
+    "name": "ruoyi-vue-pro",
+    "pathRole": "backend",
+    "commit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+    "branch": "HEAD",
+    "dirty": false,
+    "dirtySummaryHash": null
+  },
+  "frontend": {
+    "name": "yudao-ui-admin-vue3",
+    "pathRole": "admin-frontend",
+    "commit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+    "branch": "HEAD",
+    "dirty": false,
+    "dirtySummaryHash": null
+  },
+  "checks": {
+    "releaseTag": true,
+    "packageId": true,
+    "publishScope": true,
+    "changeSetPresent": true,
+    "backendCommit": true,
+    "frontendCommit": true,
+    "clean": true
+  }
+}

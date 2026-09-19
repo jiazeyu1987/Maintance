@@ -1,0 +1,58 @@
+IMAGE_TAG=release-20260806-intmain-head-test-r260806b-r2
+COMPOSE_PS_START
+{"Command":"\"/__cacert_entrypoin…\"","CreatedAt":"2026-08-06 20:11:26 +0800 CST","ExitCode":0,"Health":"","ID":"e406e8d73c7f","Image":"intruoyi-backend:release-20260806-intmain-head-test-r260806b-r2","Labels":"com.docker.compose.depends_on=,com.docker.compose.image=sha256:cf3bfeeb8b3661b196b050920341a43ce8d5bf0b62b0ef08586ab25b29a4509e,com.docker.compose.project.config_files=/opt/intruoyi/runtime/docker-compose.yml,com.docker.compose.config-hash=3f225b1fda2fef3d8c652bc44e810b2ff6d8c74f33be9d79190dd8fcfd142234,com.docker.compose.oneoff=False,com.docker.compose.project=intruoyi-runtime,com.docker.compose.project.working_dir=/opt/intruoyi/runtime,com.docker.compose.replace=45c0007c62c901ea5822ed0f1e33dbd3ce83f9a9da39c912d2321ad9022276d1,com.docker.compose.service=backend,com.docker.compose.version=2.27.0,org.opencontainers.image.version=24.04,com.docker.compose.container-number=1","LocalVolumes":"0","Mounts":"/mnt/nas/Backu…,/opt/intruoyi/…,/backup,/opt/intruoyi/…,/opt/intruoyi/…,/opt/intruoyi/…,/opt/intruoyi/…,/var/run/docke…,/opt/intruoyi/…","Name":"intruoyi-backend","Names":"intruoyi-backend","Networks":"intruoyi-runtime_intruoyi_net","Ports":"0.0.0.0:48081-\u003e48081/tcp, :::48081-\u003e48081/tcp","Project":"intruoyi-runtime","Publishers":[{"URL":"0.0.0.0","TargetPort":48081,"PublishedPort":48081,"Protocol":"tcp"},{"URL":"::","TargetPort":48081,"PublishedPort":48081,"Protocol":"tcp"}],"RunningFor":"6 minutes ago","Service":"backend","Size":"0B","State":"running","Status":"Up 8 seconds"}
+{"Command":"\"/docker-entrypoint.…\"","CreatedAt":"2026-08-06 20:11:30 +0800 CST","ExitCode":0,"Health":"","ID":"0d14c14fd2e1","Image":"intruoyi-frontend:release-20260806-intmain-head-test-r260806b-r2","Labels":"com.docker.compose.replace=5e1287fd62d7c13b123d8a01585dcd1c5d893961425c40830f1c43493d7c6480,com.docker.compose.service=frontend,com.docker.compose.container-number=1,com.docker.compose.depends_on=backend:service_started:false,com.docker.compose.image=sha256:84b97ce3e307407fcfb3d247c3ab452239bf32a971e97896815eb2459df760e0,com.docker.compose.oneoff=False,com.docker.compose.project.config_files=/opt/intruoyi/runtime/docker-compose.yml,com.docker.compose.project.working_dir=/opt/intruoyi/runtime,com.docker.compose.version=2.27.0,maintainer=NGINX Docker Maintainers \u003cdocker-maint@nginx.com\u003e,com.docker.compose.config-hash=c827389612f6706c0575a437c2810d75f1e500477a59b4e62cca36d2e60e5835,com.docker.compose.project=intruoyi-runtime","LocalVolumes":"0","Mounts":"","Name":"intruoyi-frontend","Names":"intruoyi-frontend","Networks":"intruoyi-runtime_intruoyi_net","Ports":"0.0.0.0:8081-\u003e80/tcp, :::8081-\u003e80/tcp","Project":"intruoyi-runtime","Publishers":[{"URL":"0.0.0.0","TargetPort":80,"PublishedPort":8081,"Protocol":"tcp"},{"URL":"::","TargetPort":80,"PublishedPort":8081,"Protocol":"tcp"}],"RunningFor":"6 minutes ago","Service":"frontend","Size":"0B","State":"running","Status":"Up 6 minutes"}
+
+COMPOSE_PS_END
+BACKEND_IMAGE=intruoyi-backend:release-20260806-intmain-head-test-r260806b-r2
+FRONTEND_IMAGE=intruoyi-frontend:release-20260806-intmain-head-test-r260806b-r2
+BACKEND_RUNNING=running
+FRONTEND_RUNNING=running
+BACKEND_HEALTH_BODY=curl: (56) Recv failure: 连接被对方重设 
+BACKEND_HEALTH_EXIT=56
+FRONTEND_HTTP_CODE=200
+FRONTEND_TITLE=瑛泰管理系统
+RELEASE_INFO_START
+{
+    "releaseTag":  "release-20260806-intmain-head-test-r260806b-r2",
+    "packageId":  "release-20260806-intmain-head-test-r260806b-r2",
+    "createdAt":  "2026-08-06T11:39:07.6104301Z",
+    "publishScope":  "code-only",
+    "changeSet":  {
+                      "summary":  "Release package release-20260806-intmain-head-test-r260806b-r2",
+                      "component":  "intruoyi",
+                      "items":  [
+                                    "发布包：release-20260806-intmain-head-test-r260806b-r2",
+                                    "组件范围：intruoyi"
+                                ],
+                      "includeShowroomBuildPackage":  false,
+                      "includeOnlyOffice":  false
+                  },
+    "sourceRepos":  [
+                        {
+                            "name":  "ruoyi-vue-pro",
+                            "pathRole":  "backend",
+                            "commit":  "04d71d4328bff04833b3e97fe77439c1d00e5f72",
+                            "branch":  "HEAD",
+                            "dirty":  false,
+                            "dirtySummaryHash":  null
+                        },
+                        {
+                            "name":  "yudao-ui-admin-vue3",
+                            "pathRole":  "admin-frontend",
+                            "commit":  "04d71d4328bff04833b3e97fe77439c1d00e5f72",
+                            "branch":  "HEAD",
+                            "dirty":  false,
+                            "dirtySummaryHash":  null
+                        }
+                    ]
+}
+RELEASE_INFO_END
+LOCK_AND_MIGRATIONS_START
+lock=test:release-20260806-intmain-head-test-r260806b-r2:FAILED:Remote URL did not become ready within 180 seconds: http://127.0.0.1:48081/actuator/health curl: (56) Recv failure: 杩炴帴琚鏂归噸璁?close - IO is still pending on closed socket. read:1, write:0, io:000001B7479462A0
+migration_status=APPLIED:34
+migration_status=SKIPPED_ALREADY_APPLIED:378
+migration_failed_running=0
+LOCK_AND_MIGRATIONS_END
+mysql: [Warning] Using a password on the command line interface can be insecure.
+close - IO is still pending on closed socket. read:1, write:0, io:0000029D7EC95E40

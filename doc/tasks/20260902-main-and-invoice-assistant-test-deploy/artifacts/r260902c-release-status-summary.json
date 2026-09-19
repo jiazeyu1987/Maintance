@@ -1,0 +1,37 @@
+{
+  "code": 0,
+  "testCurrentReleaseTag": "release-20260902-main-invoice-assistant-test-r260902c-r1",
+  "latestOperation": {
+    "operationId": "op-2026-09-02T030941863891200Z-fd71a596-4dcc-4fd4-904a-20074c27d315",
+    "action": "publish-test",
+    "environment": "test",
+    "status": "SUCCESS",
+    "summary": "命令执行完成"
+  },
+  "testCurrentReleaseNotes": {
+    "releaseTag": "release-20260902-main-invoice-assistant-test-r260902c-r1",
+    "summary": "经验: 增加迁移过程名长度门禁",
+    "changes": [
+      "发布包：release-20260902-main-invoice-assistant-test-r260902c-r1",
+      "组件范围：intruoyi",
+      "提交：90deb1e72c22 经验: 增加迁移过程名长度门禁"
+    ],
+    "sourceRepos": [
+      {
+        "name": "ruoyi-vue-pro",
+        "pathRole": "backend",
+        "commit": "90deb1e72c224dc1fc010178db53f0ba3dc41ea3",
+        "branch": "HEAD",
+        "dirty": false
+      },
+      {
+        "name": "yudao-ui-admin-vue3",
+        "pathRole": "admin-frontend",
+        "commit": "90deb1e72c224dc1fc010178db53f0ba3dc41ea3",
+        "branch": "HEAD",
+        "dirty": false
+      }
+    ],
+    "status": "AVAILABLE"
+  }
+}

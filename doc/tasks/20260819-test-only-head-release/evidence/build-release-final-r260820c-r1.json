@@ -1,0 +1,19 @@
+{
+  "operationId": "op-2026-08-19T234923044851500Z-7e04040e-bcca-4de7-9bab-4459efe98c65",
+  "requestedBy": "local-operator",
+  "requestedAt": "2026-08-19T23:49:23.050471500Z",
+  "environment": "release",
+  "component": "build-release",
+  "action": "build-release",
+  "actionLabel": "构建发布包",
+  "parameters": {
+    "publishScope": "code-only",
+    "includeOnlyOffice": "false",
+    "includeShowroomBuildPackage": "false",
+    "releaseTag": "release-20260820-frozen-head-test-r260820c-r1"
+  },
+  "reason": "r260820c build-release after runtime-env boundary and manifest validator fixes",
+  "status": "FAILED",
+  "summary": "命令退出码非 0: 1",
+  "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260820c-state\\runtime-control\\logs\\op-2026-08-19T234923044851500Z-7e04040e-bcca-4de7-9bab-4459efe98c65.log"
+}

@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "maintenanceHead": "eba06a66a78ee3027397e54cea412ee6b8b0b741",
+  "testsPassed": 26,
+  "jarPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260819c\\m\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar",
+  "jarSize": 35141811,
+  "jarSha256": "73c7ee3e2f36dc4579e3bb6356fe5ae980496b080ffc559a56464053068007e6",
+  "frontendIndexSha256": "01bafdb3d7ffc12222bd3b084e15f25cd0e65600dbc20efcf19901f7bb2d58b6",
+  "ignoredBuilds": "None",
+  "runtimeGeneratedAndRemoved": true,
+  "gitStatus": [
+    "## HEAD (no branch)"
+  ],
+  "builtAt": "2026-08-19T09:31:26.9006645+08:00"
+}

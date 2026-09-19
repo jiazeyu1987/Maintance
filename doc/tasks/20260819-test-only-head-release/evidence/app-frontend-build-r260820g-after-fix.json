@@ -1,0 +1,8 @@
+{
+  "attempt": "r260820g",
+  "red": "pnpm ts:check failed before fix: missing handleNavigatePqcProcess",
+  "fix": "added minimal PQC process navigation handler in app release worktree",
+  "tsCheck": "PASS",
+  "buildTest": "PASS",
+  "status": "## HEAD (no branch)\r\n M IntRuoyiFronted/src/views/mes/pro/feedback/FrontlineFixedTemplatePanel.vue"
+}

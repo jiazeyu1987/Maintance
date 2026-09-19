@@ -1,0 +1,12 @@
+{
+  "status": "BLOCKED",
+  "reason": "missing-prerequisite",
+  "missing": [
+    {
+      "name": "INVOICE_ASSISTANT_E2E_PASSWORD",
+      "description": "测试服真实登录密码，必须由当前进程注入，不得写入脚本或任务记录。"
+    }
+  ],
+  "impact": "无法执行测试服真实登录和发票助手 iframe 验收。",
+  "verifiedAt": "2026-09-02T15:38:18.953Z"
+}

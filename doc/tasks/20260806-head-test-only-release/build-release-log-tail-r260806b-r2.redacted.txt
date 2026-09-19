@@ -1,0 +1,1492 @@
+   "status": "PASS",
+      "detail": "Object legal hold evidence is ON; expected ON.",
+      "evidence": {
+        "legalHoldStatus": "ON"
+      }
+    },
+    {
+      "name": "deleteProtectedVersion",
+      "status": "PASS",
+      "detail": "DeleteObject for the protected version was rejected.",
+      "evidence": {
+        "code": "InvalidRequest",
+        "message": "Object is WORM protected and cannot be overwritten",
+        "httpStatus": 400
+      }
+    },
+    {
+      "name": "protectedVersionReadable",
+      "status": "PASS",
+      "detail": "Protected object version remains readable after rejected delete attempt.",
+      "evidence": {
+        "versionId": "a62b568d-2223-493d-bcd0-8fba9761c8f5"
+      }
+    }
+  ]
+}
+[INFO] Checking local Docker daemon
+[INFO] Run: docker info
+Client:
+ Version:    29.2.1
+ Context:    desktop-linux
+ Debug Mode: false
+ Plugins:
+  agent: create or run AI agents (Docker Inc.)
+    Version:  v1.27.1
+    Path:     C:\Program Files\Docker\cli-plugins\docker-agent.exe
+  ai: Docker AI Agent - Ask Gordon (Docker Inc.)
+    Version:  v1.18.0
+    Path:     C:\Program Files\Docker\cli-plugins\docker-ai.exe
+  buildx: Docker Buildx (Docker Inc.)
+    Version:  v0.31.1-desktop.1
+    Path:     C:\Program Files\Docker\cli-plugins\docker-buildx.exe
+  compose: Docker Compose (Docker Inc.)
+    Version:  v5.0.2
+    Path:     C:\Program Files\Docker\cli-plugins\docker-compose.exe
+  debug: Get a shell into any image or container (Docker Inc.)
+    Version:  0.0.47
+    Path:     C:\Program Files\Docker\cli-plugins\docker-debug.exe
+  desktop: Docker Desktop commands (Docker Inc.)
+    Version:  v0.3.0
+    Path:     C:\Program Files\Docker\cli-plugins\docker-desktop.exe
+  extension: Manages Docker extensions (Docker Inc.)
+    Version:  v0.2.31
+    Path:     C:\Program Files\Docker\cli-plugins\docker-extension.exe
+  init: Creates Docker-related starter files for your project (Docker Inc.)
+    Version:  v1.4.0
+    Path:     C:\Program Files\Docker\cli-plugins\docker-init.exe
+  mcp: Docker MCP Plugin (Docker Inc.)
+    Version:  v0.40.1
+    Path:     C:\Program Files\Docker\cli-plugins\docker-mcp.exe
+  model: Docker Model Runner (Docker Inc.)
+    Version:  v1.1.1
+    Path:     C:\Program Files\Docker\cli-plugins\docker-model.exe
+  offload: Docker Offload (Docker Inc.)
+    Version:  v0.5.56
+    Path:     C:\Program Files\Docker\cli-plugins\docker-offload.exe
+  pass: Docker Pass Secrets Manager Plugin (beta) (Docker Inc.)
+    Version:  v0.0.24
+    Path:     C:\Program Files\Docker\cli-plugins\docker-pass.exe
+  sandbox: Docker Sandbox (Docker Inc.)
+    Version:  v0.12.0
+    Path:     C:\Program Files\Docker\cli-plugins\docker-sandbox.exe
+  sbom: View the packaged-based Software Bill Of Materials (SBOM) for an image (Anchore Inc.)
+    Version:  0.6.0
+    Path:     C:\Program Files\Docker\cli-plugins\docker-sbom.exe
+  scout: Docker Scout (Docker Inc.)
+    Version:  v1.20.0
+    Path:     C:\Program Files\Docker\cli-plugins\docker-scout.exe
+Server:
+ Containers: 4
+  Running: 4
+  Paused: 0
+  Stopped: 0
+ Images: 7
+ Server Version: 29.2.1
+ Storage Driver: overlayfs
+  driver-type: io.containerd.snapshotter.v1
+ Logging Driver: json-file
+ Cgroup Driver: cgroupfs
+ Cgroup Version: 2
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog
+ CDI spec directories:
+  /etc/cdi
+  /var/run/cdi
+ Discovered Devices:
+  cdi: docker.com/gpu=webgpu
+ Swarm: inactive
+ Runtimes: io.containerd.runc.v2 nvidia runc
+ Default Runtime: runc
+ Init Binary: docker-init
+ containerd version: dea7da592f5d1d2b7755e3a161be07f43fad8f75
+ runc version: v1.3.4-0-gd6d73eb8
+ init version: de40ad0
+ Security Options:
+  seccomp
+   Profile: builtin
+  cgroupns
+ Kernel Version: 6.6.87.2-microsoft-standard-WSL2
+ Operating System: Docker Desktop
+ OSType: linux
+ Architecture: x86_64
+ CPUs: 32
+ Total Memory: 7.75GiB
+ Name: docker-desktop
+ ID: 415a4d51-1949-4283-8f6a-3bcb3ac07c56
+ Docker Root Dir: /var/lib/docker
+ Debug Mode: false
+ HTTP Proxy: http.docker.internal:3128
+ HTTPS Proxy: http.docker.internal:3128
+ No Proxy: hubproxy.docker.internal
+ Labels:
+  com.docker.desktop.address=npipe://\\.\pipe\docker_cli
+ Experimental: false
+ Insecure Registries:
+  hubproxy.docker.internal:5555
+  127.0.0.0/8
+  ::1/128
+ Live Restore Enabled: false
+ Firewall Backend: iptables
+[INFO] Loading backend runtime base image: D:\ProjectPackage\Int\BaseImages\intruoyi-backend-runtime-base-2026.06.05-jre21-noble-docker29.2.1.tar
+[INFO] Run: docker load -i D:\ProjectPackage\Int\BaseImages\intruoyi-backend-runtime-base-2026.06.05-jre21-noble-docker29.2.1.tar
+Loaded image: intruoyi-backend-runtime-base:2026.06.05-jre21-noble-docker29.2.1
+[INFO] Building backend jar
+[INFO] Run: mvn -f D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\pom.xml -pl yudao-server -am -DskipTests clean package
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] yudao                                                              [pom]
+[INFO] yudao-framework                                                    [pom]
+[INFO] yudao-common                                                       [jar]
+[INFO] yudao-spring-boot-starter-web                                      [jar]
+[INFO] yudao-spring-boot-starter-security                                 [jar]
+[INFO] yudao-spring-boot-starter-mybatis                                  [jar]
+[INFO] yudao-spring-boot-starter-redis                                    [jar]
+[INFO] yudao-spring-boot-starter-mq                                       [jar]
+[INFO] yudao-spring-boot-starter-job                                      [jar]
+[INFO] yudao-spring-boot-starter-test                                     [jar]
+[INFO] yudao-spring-boot-starter-biz-tenant                               [jar]
+[INFO] yudao-spring-boot-starter-websocket                                [jar]
+[INFO] yudao-spring-boot-starter-monitor                                  [jar]
+[INFO] yudao-spring-boot-starter-protection                               [jar]
+[INFO] yudao-spring-boot-starter-biz-ip                                   [jar]
+[INFO] yudao-spring-boot-starter-excel                                    [jar]
+[INFO] yudao-spring-boot-starter-biz-data-permission                      [jar]
+[INFO] yudao-module-infra                                                 [jar]
+[INFO] yudao-module-system                                                [jar]
+[INFO] yudao-module-report                                                [jar]
+[INFO] yudao-module-bpm                                                   [jar]
+[INFO] yudao-module-crm                                                   [jar]
+[INFO] yudao-module-erp                                                   [jar]
+[INFO] yudao-module-mdm                                                   [jar]
+[INFO] yudao-module-dcc                                                   [jar]
+[INFO] yudao-module-srm                                                   [jar]
+[INFO] yudao-module-ai                                                    [jar]
+[INFO] yudao-module-mes                                                   [jar]
+[INFO] yudao-module-showroom                                              [jar]
+[INFO] yudao-server                                                       [jar]
+[INFO] 
+[INFO] -----------------------< cn.iocoder.boot:yudao >------------------------
+[INFO] Building yudao 2026.04-SNAPSHOT                                   [1/30]
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao ---
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\.flattened-pom.xml
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao:pom:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] ------------------< cn.iocoder.boot:yudao-framework >-------------------
+[INFO] Building yudao-framework 2026.04-SNAPSHOT                         [2/30]
+[INFO]   from yudao-framework\pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-framework ---
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-framework ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\.flattened-pom.xml
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-framework ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-framework:pom:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --------------------< cn.iocoder.boot:yudao-common >--------------------
+[INFO] Building yudao-common 2026.04-SNAPSHOT                            [3/30]
+[INFO]   from yudao-framework\yudao-common\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-common ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-common\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-common ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-common\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-common ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-common\src\main\resources
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-common ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-common:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-common ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 74 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-common ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-common\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-common ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 3 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-common ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-common ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-common\target\yudao-common-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] -----------< cn.iocoder.boot:yudao-spring-boot-starter-web >------------
+[INFO] Building yudao-spring-boot-starter-web 2026.04-SNAPSHOT           [4/30]
+[INFO]   from yudao-framework\yudao-spring-boot-starter-web\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-spring-boot-starter-web ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-web\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-spring-boot-starter-web ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-web\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-spring-boot-starter-web ---
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-spring-boot-starter-web ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-spring-boot-starter-web:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-spring-boot-starter-web ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 67 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-spring-boot-starter-web ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-web\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-spring-boot-starter-web ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 5 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-spring-boot-starter-web ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-spring-boot-starter-web ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-web\target\yudao-spring-boot-starter-web-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ---------< cn.iocoder.boot:yudao-spring-boot-starter-security >---------
+[INFO] Building yudao-spring-boot-starter-security 2026.04-SNAPSHOT      [5/30]
+[INFO]   from yudao-framework\yudao-spring-boot-starter-security\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-spring-boot-starter-security ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-security\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-spring-boot-starter-security ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-security\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-spring-boot-starter-security ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-spring-boot-starter-security ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-spring-boot-starter-security:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-spring-boot-starter-security ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 17 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-spring-boot-starter-security ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-security\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-spring-boot-starter-security ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-spring-boot-starter-security ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-spring-boot-starter-security ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-security\target\yudao-spring-boot-starter-security-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ---------< cn.iocoder.boot:yudao-spring-boot-starter-mybatis >----------
+[INFO] Building yudao-spring-boot-starter-mybatis 2026.04-SNAPSHOT       [6/30]
+[INFO]   from yudao-framework\yudao-spring-boot-starter-mybatis\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-spring-boot-starter-mybatis ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-mybatis\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-spring-boot-starter-mybatis ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-mybatis\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-spring-boot-starter-mybatis ---
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-spring-boot-starter-mybatis ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-spring-boot-starter-mybatis:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-spring-boot-starter-mybatis ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 25 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-spring-boot-starter-mybatis ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-mybatis\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-spring-boot-starter-mybatis ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-spring-boot-starter-mybatis ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-spring-boot-starter-mybatis ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-mybatis\target\yudao-spring-boot-starter-mybatis-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ----------< cn.iocoder.boot:yudao-spring-boot-starter-redis >-----------
+[INFO] Building yudao-spring-boot-starter-redis 2026.04-SNAPSHOT         [7/30]
+[INFO]   from yudao-framework\yudao-spring-boot-starter-redis\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-spring-boot-starter-redis ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-redis\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-spring-boot-starter-redis ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-redis\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-spring-boot-starter-redis ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-spring-boot-starter-redis ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-spring-boot-starter-redis:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-spring-boot-starter-redis ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 5 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-spring-boot-starter-redis ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-redis\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-spring-boot-starter-redis ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-spring-boot-starter-redis ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-spring-boot-starter-redis ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-redis\target\yudao-spring-boot-starter-redis-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ------------< cn.iocoder.boot:yudao-spring-boot-starter-mq >------------
+[INFO] Building yudao-spring-boot-starter-mq 2026.04-SNAPSHOT            [8/30]
+[INFO]   from yudao-framework\yudao-spring-boot-starter-mq\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[WARNING] 1 problem was encountered while building the effective model for org.javassist:javassist:jar:3.21.0-GA during dependency collection step for project (use -X to see details)
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-spring-boot-starter-mq ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-mq\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-spring-boot-starter-mq ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-mq\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-spring-boot-starter-mq ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-spring-boot-starter-mq ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-spring-boot-starter-mq:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-spring-boot-starter-mq ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 16 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-spring-boot-starter-mq ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-mq\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-spring-boot-starter-mq ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-spring-boot-starter-mq ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-spring-boot-starter-mq ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-mq\target\yudao-spring-boot-starter-mq-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] -----------< cn.iocoder.boot:yudao-spring-boot-starter-job >------------
+[INFO] Building yudao-spring-boot-starter-job 2026.04-SNAPSHOT           [9/30]
+[INFO]   from yudao-framework\yudao-spring-boot-starter-job\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-spring-boot-starter-job ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-job\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-spring-boot-starter-job ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-job\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-spring-boot-starter-job ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-spring-boot-starter-job ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-spring-boot-starter-job:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-spring-boot-starter-job ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 9 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-spring-boot-starter-job ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-job\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-spring-boot-starter-job ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-spring-boot-starter-job ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-spring-boot-starter-job ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-job\target\yudao-spring-boot-starter-job-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] -----------< cn.iocoder.boot:yudao-spring-boot-starter-test >-----------
+[INFO] Building yudao-spring-boot-starter-test 2026.04-SNAPSHOT         [10/30]
+[INFO]   from yudao-framework\yudao-spring-boot-starter-test\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-spring-boot-starter-test ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-test\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-spring-boot-starter-test ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-test\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-spring-boot-starter-test ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-test\src\main\resources
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-spring-boot-starter-test ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-spring-boot-starter-test:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-spring-boot-starter-test ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 10 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-spring-boot-starter-test ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-test\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-spring-boot-starter-test ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-spring-boot-starter-test ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-spring-boot-starter-test ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-test\target\yudao-spring-boot-starter-test-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] --------< cn.iocoder.boot:yudao-spring-boot-starter-biz-tenant >--------
+[INFO] Building yudao-spring-boot-starter-biz-tenant 2026.04-SNAPSHOT   [11/30]
+[INFO]   from yudao-framework\yudao-spring-boot-starter-biz-tenant\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-spring-boot-starter-biz-tenant ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-biz-tenant\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-spring-boot-starter-biz-tenant ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-biz-tenant\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-spring-boot-starter-biz-tenant ---
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-spring-boot-starter-biz-tenant ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-spring-boot-starter-biz-tenant:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-spring-boot-starter-biz-tenant ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 26 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-spring-boot-starter-biz-tenant ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-biz-tenant\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-spring-boot-starter-biz-tenant ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-spring-boot-starter-biz-tenant ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-spring-boot-starter-biz-tenant ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-biz-tenant\target\yudao-spring-boot-starter-biz-tenant-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] --------< cn.iocoder.boot:yudao-spring-boot-starter-websocket >---------
+[INFO] Building yudao-spring-boot-starter-websocket 2026.04-SNAPSHOT    [12/30]
+[INFO]   from yudao-framework\yudao-spring-boot-starter-websocket\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-spring-boot-starter-websocket ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-websocket\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-spring-boot-starter-websocket ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-websocket\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-spring-boot-starter-websocket ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-spring-boot-starter-websocket ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-spring-boot-starter-websocket:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-spring-boot-starter-websocket ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 27 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-spring-boot-starter-websocket ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-websocket\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-spring-boot-starter-websocket ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-spring-boot-starter-websocket ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-spring-boot-starter-websocket ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-websocket\target\yudao-spring-boot-starter-websocket-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ---------< cn.iocoder.boot:yudao-spring-boot-starter-monitor >----------
+[INFO] Building yudao-spring-boot-starter-monitor 2026.04-SNAPSHOT      [13/30]
+[INFO]   from yudao-framework\yudao-spring-boot-starter-monitor\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-spring-boot-starter-monitor ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-monitor\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-spring-boot-starter-monitor ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-monitor\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-spring-boot-starter-monitor ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-spring-boot-starter-monitor ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-spring-boot-starter-monitor:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-spring-boot-starter-monitor ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 8 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-spring-boot-starter-monitor ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-monitor\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-spring-boot-starter-monitor ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-spring-boot-starter-monitor ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-spring-boot-starter-monitor ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-monitor\target\yudao-spring-boot-starter-monitor-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] --------< cn.iocoder.boot:yudao-spring-boot-starter-protection >--------
+[INFO] Building yudao-spring-boot-starter-protection 2026.04-SNAPSHOT   [14/30]
+[INFO]   from yudao-framework\yudao-spring-boot-starter-protection\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-spring-boot-starter-protection ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-protection\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-spring-boot-starter-protection ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-protection\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-spring-boot-starter-protection ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-spring-boot-starter-protection ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-spring-boot-starter-protection:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-spring-boot-starter-protection ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 29 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-spring-boot-starter-protection ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-protection\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-spring-boot-starter-protection ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-spring-boot-starter-protection ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-spring-boot-starter-protection ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-protection\target\yudao-spring-boot-starter-protection-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ----------< cn.iocoder.boot:yudao-spring-boot-starter-biz-ip >----------
+[INFO] Building yudao-spring-boot-starter-biz-ip 2026.04-SNAPSHOT       [15/30]
+[INFO]   from yudao-framework\yudao-spring-boot-starter-biz-ip\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-spring-boot-starter-biz-ip ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-biz-ip\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-spring-boot-starter-biz-ip ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-biz-ip\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-spring-boot-starter-biz-ip ---
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-spring-boot-starter-biz-ip ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-spring-boot-starter-biz-ip:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-spring-boot-starter-biz-ip ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 5 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-spring-boot-starter-biz-ip ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-biz-ip\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-spring-boot-starter-biz-ip ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-spring-boot-starter-biz-ip ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-spring-boot-starter-biz-ip ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-biz-ip\target\yudao-spring-boot-starter-biz-ip-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ----------< cn.iocoder.boot:yudao-spring-boot-starter-excel >-----------
+[INFO] Building yudao-spring-boot-starter-excel 2026.04-SNAPSHOT        [16/30]
+[INFO]   from yudao-framework\yudao-spring-boot-starter-excel\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-spring-boot-starter-excel ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-excel\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-spring-boot-starter-excel ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-excel\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-spring-boot-starter-excel ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-spring-boot-starter-excel ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-spring-boot-starter-excel:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-spring-boot-starter-excel ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 17 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-spring-boot-starter-excel ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-excel\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-spring-boot-starter-excel ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-spring-boot-starter-excel ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-spring-boot-starter-excel ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-excel\target\yudao-spring-boot-starter-excel-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ---< cn.iocoder.boot:yudao-spring-boot-starter-biz-data-permission >----
+[INFO] Building yudao-spring-boot-starter-biz-data-permission 2026.04-SNAPSHOT [17/30]
+[INFO]   from yudao-framework\yudao-spring-boot-starter-biz-data-permission\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-spring-boot-starter-biz-data-permission ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-biz-data-permission\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-spring-boot-starter-biz-data-permission ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-biz-data-permission\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-spring-boot-starter-biz-data-permission ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-spring-boot-starter-biz-data-permission ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-spring-boot-starter-biz-data-permission:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-spring-boot-starter-biz-data-permission ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 15 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-spring-boot-starter-biz-data-permission ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-biz-data-permission\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-spring-boot-starter-biz-data-permission ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 6 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-spring-boot-starter-biz-data-permission ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-spring-boot-starter-biz-data-permission ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-framework\yudao-spring-boot-starter-biz-data-permission\target\yudao-spring-boot-starter-biz-data-permission-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] -----------------< cn.iocoder.boot:yudao-module-infra >-----------------
+[INFO] Building yudao-module-infra 2026.04-SNAPSHOT                     [18/30]
+[INFO]   from yudao-module-infra\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-module-infra ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-infra\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-module-infra ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-infra\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-module-infra ---
+[INFO] Copying 83 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-module-infra ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-module-infra:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-module-infra ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 339 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/framework/file/core/client/s3/S3FileClient.java: ĳЩ�����ļ�ʹ�û򸲸����ѹ�ʱ�� API��
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/framework/file/core/client/s3/S3FileClient.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:deprecation ���±��롣
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-module-infra ---
+[INFO] Copying 790 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-module-infra ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 62 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-module-infra ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-module-infra ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-infra\target\yudao-module-infra-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ----------------< cn.iocoder.boot:yudao-module-system >-----------------
+[INFO] Building yudao-module-system 2026.04-SNAPSHOT                    [19/30]
+[INFO]   from yudao-module-system\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-module-system ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-system\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-module-system ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-system\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-module-system ---
+[INFO] Copying 37 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-module-system ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-module-system:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-module-system ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 521 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-module-system ---
+[INFO] Copying 4 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-module-system ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 69 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-module-system ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-module-system ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-system\target\yudao-module-system-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ----------------< cn.iocoder.boot:yudao-module-report >-----------------
+[INFO] Building yudao-module-report 2026.04-SNAPSHOT                    [20/30]
+[INFO]   from yudao-module-report\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-module-report ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-report\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-module-report ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-report\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-module-report ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-module-report ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-module-report:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-module-report ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 36 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-module-report ---
+[INFO] Copying 4 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-module-report ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 10 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-module-report ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-module-report ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-report\target\yudao-module-report-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ------------------< cn.iocoder.boot:yudao-module-bpm >------------------
+[INFO] Building yudao-module-bpm 2026.04-SNAPSHOT                       [21/30]
+[INFO]   from yudao-module-bpm\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-module-bpm ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-bpm\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-module-bpm ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-bpm\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-module-bpm ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-bpm\src\main\resources
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-module-bpm ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-module-bpm:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-module-bpm ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 382 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-module-bpm ---
+[INFO] Copying 4 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-module-bpm ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 62 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-bpm/src/test/java/cn/iocoder/yudao/module/bpm/framework/flowable/core/candidate/expression/BpmTaskAssignLeaderExpressionTest.java: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-bpm\src\test\java\cn\iocoder\yudao\module\bpm\framework\flowable\core\candidate\expression\BpmTaskAssignLeaderExpressionTest.javaʹ�û򸲸����ѹ�ʱ�� API��
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-bpm/src/test/java/cn/iocoder/yudao/module/bpm/framework/flowable/core/candidate/expression/BpmTaskAssignLeaderExpressionTest.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:deprecation ���±��롣
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-module-bpm ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-module-bpm ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-bpm\target\yudao-module-bpm-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ------------------< cn.iocoder.boot:yudao-module-crm >------------------
+[INFO] Building yudao-module-crm 2026.04-SNAPSHOT                       [22/30]
+[INFO]   from yudao-module-crm\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-module-crm ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-crm\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-module-crm ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-crm\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-module-crm ---
+[INFO] Copying 5 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-module-crm ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-module-crm:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-module-crm ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 251 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-module-crm ---
+[INFO] Copying 2 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-module-crm ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-module-crm ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-module-crm ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-crm\target\yudao-module-crm-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ------------------< cn.iocoder.boot:yudao-module-erp >------------------
+[INFO] Building yudao-module-erp 2026.04-SNAPSHOT                       [23/30]
+[INFO]   from yudao-module-erp\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-module-erp ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-erp\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-module-erp ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-erp\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-module-erp ---
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-module-erp ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-module-erp:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-module-erp ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 360 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-module-erp ---
+[INFO] Copying 3 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-module-erp ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 25 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-erp/src/test/java/cn/iocoder/yudao/module/erp/service/product/sync/ErpKingdeeProductSyncServiceImplTest.java: ĳЩ�����ļ�ʹ����δ�����򲻰�ȫ�Ĳ�����
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-erp/src/test/java/cn/iocoder/yudao/module/erp/service/product/sync/ErpKingdeeProductSyncServiceImplTest.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:unchecked ���±��롣
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-module-erp ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-module-erp ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-erp\target\yudao-module-erp-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ------------------< cn.iocoder.boot:yudao-module-mdm >------------------
+[INFO] Building yudao-module-mdm 2026.04-SNAPSHOT                       [24/30]
+[INFO]   from yudao-module-mdm\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-module-mdm ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-mdm\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-module-mdm ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-mdm\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-module-mdm ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-mdm\src\main\resources
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-module-mdm ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-module-mdm:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-module-mdm ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 28 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-module-mdm ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-mdm\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-module-mdm ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 4 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-module-mdm ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-module-mdm ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-mdm\target\yudao-module-mdm-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ------------------< cn.iocoder.boot:yudao-module-dcc >------------------
+[INFO] Building yudao-module-dcc 2026.04-SNAPSHOT                       [25/30]
+[INFO]   from yudao-module-dcc\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-module-dcc ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-dcc\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-module-dcc ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-dcc\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-module-dcc ---
+[INFO] Copying 3 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-module-dcc ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-module-dcc:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-module-dcc ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 736 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-dcc/src/main/java/cn/iocoder/yudao/module/dcc/service/directory/DccDirectoryAdminServiceImpl.java: ĳЩ�����ļ�ʹ�û򸲸����ѹ�ʱ�� API��
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-dcc/src/main/java/cn/iocoder/yudao/module/dcc/service/directory/DccDirectoryAdminServiceImpl.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:deprecation ���±��롣
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-module-dcc ---
+[INFO] Copying 3 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-module-dcc ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 155 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-dcc/src/test/java/cn/iocoder/yudao/module/dcc/service/permission/DccNasPrincipalMappingServiceTest.java:[200,85] ���һ������ʹ���˲�׼ȷ�ı������͵� varargs �����ķ� varargs ����; 
+  ���� varargs ����, Ӧʹ�� cn.iocoder.yudao.module.dcc.dal.dataobject.permission.DccNasAclIdentityMappingDO
+  ���ڷ� varargs ����, Ӧʹ�� cn.iocoder.yudao.module.dcc.dal.dataobject.permission.DccNasAclIdentityMappingDO[], ����Ҳ�������ƴ˾���
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-dcc/src/test/java/cn/iocoder/yudao/module/dcc/service/directory/DccDirectoryAdminServiceImplTest.java: ĳЩ�����ļ�ʹ�û򸲸����ѹ�ʱ�� API��
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-dcc/src/test/java/cn/iocoder/yudao/module/dcc/service/directory/DccDirectoryAdminServiceImplTest.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:deprecation ���±��롣
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-dcc/src/test/java/cn/iocoder/yudao/module/dcc/controller/admin/file/DccControlledFileBrowserPageControllerTest.java: ĳЩ�����ļ�ʹ����δ�����򲻰�ȫ�Ĳ�����
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-dcc/src/test/java/cn/iocoder/yudao/module/dcc/controller/admin/file/DccControlledFileBrowserPageControllerTest.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:unchecked ���±��롣
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-module-dcc ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-module-dcc ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-dcc\target\yudao-module-dcc-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ------------------< cn.iocoder.boot:yudao-module-srm >------------------
+[INFO] Building yudao-module-srm 2026.04-SNAPSHOT                       [26/30]
+[INFO]   from yudao-module-srm\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-module-srm ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-srm\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-module-srm ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-srm\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-module-srm ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-module-srm ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-module-srm:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-module-srm ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 226 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-srm/src/main/java/cn/iocoder/yudao/module/srm/service/nonbidding/SrmNonBiddingProcurementServiceImpl.java: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-srm\src\main\java\cn\iocoder\yudao\module\srm\service\nonbidding\SrmNonBiddingProcurementServiceImpl.javaʹ�û򸲸����ѹ�ʱ�� API��
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-srm/src/main/java/cn/iocoder/yudao/module/srm/service/nonbidding/SrmNonBiddingProcurementServiceImpl.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:deprecation ���±��롣
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-module-srm ---
+[INFO] Copying 3 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-module-srm ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 18 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[63,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[63,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[63,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[63,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[63,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[65,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[65,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[65,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[65,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[65,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[67,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[67,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[67,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[67,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-srm/src/test/java/cn/iocoder/yudao/module/srm/service/naslocator/SrmNasLocatorServiceTest.java:[67,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-module-srm ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-module-srm ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-srm\target\yudao-module-srm-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ------------------< cn.iocoder.boot:yudao-module-ai >-------------------
+[INFO] Building yudao-module-ai 2026.04-SNAPSHOT                        [27/30]
+[INFO]   from yudao-module-ai\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[WARNING] 2 problems were encountered while building the effective model for org.apache.yetus:audience-annotations:jar:0.5.0 during dependency collection step for project (use -X to see details)
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-module-ai ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-ai\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-module-ai ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-ai\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-module-ai ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-ai\src\main\resources
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-module-ai ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-module-ai:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-module-ai ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 200 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-module-ai ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-ai\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-module-ai ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 38 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-module-ai ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-module-ai ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-ai\target\yudao-module-ai-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ------------------< cn.iocoder.boot:yudao-module-mes >------------------
+[INFO] Building yudao-module-mes 2026.04-SNAPSHOT                       [28/30]
+[INFO]   from yudao-module-mes\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-module-mes ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-mes\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-module-mes ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-mes\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-module-mes ---
+[INFO] Copying 6 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-module-mes ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-module-mes:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-module-mes ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2538 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/schedule/MesProAutoScheduleServiceImpl.java:[1199,87] ���һ������ʹ���˲�׼ȷ�ı������͵� varargs �����ķ� varargs ����; 
+  ���� varargs ����, Ӧʹ�� java.lang.Object
+  ���ڷ� varargs ����, Ӧʹ�� java.lang.Object[], ����Ҳ�������ƴ˾���
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/batchrecord/MesProBatchRecordExecutionFieldAuditHasher.java: ĳЩ�����ļ�ʹ�û򸲸����ѹ�ʱ�� API��
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-mes/src/main/java/cn/iocoder/yudao/module/mes/service/pro/batchrecord/MesProBatchRecordExecutionFieldAuditHasher.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:deprecation ���±��롣
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-module-mes ---
+[INFO] Copying 6 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-module-mes ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 396 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/service/pro/batchrecord/MesProEdhrBatchExecutionLegacyProcessTest.java: ĳЩ�����ļ�ʹ�û򸲸����ѹ�ʱ�� API��
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/service/pro/batchrecord/MesProEdhrBatchExecutionLegacyProcessTest.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:deprecation ���±��롣
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/MesProRouteVersionAndCopyTest.java: ĳЩ�����ļ�ʹ����δ�����򲻰�ȫ�Ĳ�����
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/MesProRouteVersionAndCopyTest.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:unchecked ���±��롣
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-module-mes ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-module-mes ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-mes\target\yudao-module-mes-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] ---------------< cn.iocoder.boot:yudao-module-showroom >----------------
+[INFO] Building yudao-module-showroom 2026.04-SNAPSHOT                  [29/30]
+[INFO]   from yudao-module-showroom\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-module-showroom ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-showroom\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-module-showroom ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-showroom\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-module-showroom ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-module-showroom ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-module-showroom:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-module-showroom ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 237 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/main/java/cn/iocoder/yudao/module/showroom/release/ShowroomReleaseAssembler.java: ĳЩ�����ļ�ʹ����δ�����򲻰�ȫ�Ĳ�����
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/main/java/cn/iocoder/yudao/module/showroom/release/ShowroomReleaseAssembler.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:unchecked ���±��롣
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-module-showroom ---
+[INFO] Copying 3 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-module-showroom ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 77 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/AbstractShowroomReleaseDbTest.java:[106,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/AbstractShowroomReleaseDbTest.java:[106,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/AbstractShowroomReleaseDbTest.java:[106,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/AbstractShowroomReleaseDbTest.java:[106,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/AbstractShowroomReleaseDbTest.java:[106,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/AbstractShowroomReleaseDbTest.java:[108,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/AbstractShowroomReleaseDbTest.java:[108,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/AbstractShowroomReleaseDbTest.java:[108,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/AbstractShowroomReleaseDbTest.java:[108,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/AbstractShowroomReleaseDbTest.java:[108,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/configpackage/ShowroomHallConfigPackageServiceTest.java:[73,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/configpackage/ShowroomHallConfigPackageServiceTest.java:[73,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/configpackage/ShowroomHallConfigPackageServiceTest.java:[73,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/configpackage/ShowroomHallConfigPackageServiceTest.java:[73,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/configpackage/ShowroomHallConfigPackageServiceTest.java:[73,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/content/ShowroomPersistentContentServiceTest.java:[37,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/content/ShowroomPersistentContentServiceTest.java:[37,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/content/ShowroomPersistentContentServiceTest.java:[37,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/content/ShowroomPersistentContentServiceTest.java:[37,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/content/ShowroomPersistentContentServiceTest.java:[37,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/content/ShowroomProductAttachmentTest.java:[31,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/content/ShowroomProductAttachmentTest.java:[31,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/content/ShowroomProductAttachmentTest.java:[31,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/content/ShowroomProductAttachmentTest.java:[31,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/content/ShowroomProductAttachmentTest.java:[31,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[70,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[70,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[70,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[70,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[70,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[73,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[73,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[73,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[73,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[73,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[76,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[76,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[76,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[76,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[76,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[79,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[79,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[79,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[79,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[79,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[82,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[82,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[82,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[82,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[82,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[85,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[85,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[85,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[85,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/cover/ShowroomProductCoverBatchTaskServiceTest.java:[85,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[114,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[114,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[114,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[114,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[114,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[116,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[116,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[116,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[116,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[116,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[118,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[118,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[118,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[118,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[118,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[120,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[120,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[120,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[120,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[120,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[122,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[122,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[122,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[122,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[122,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[124,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[124,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[124,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[124,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[124,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[126,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[126,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[126,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[126,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[126,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[128,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[128,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[128,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[128,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[128,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[130,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[130,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[130,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[WARNING] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java:[130,6] org.springframework.boot.test.mock.mockito �е� org.springframework.boot.test.mock.mockito.MockBean �ѹ�ʱ, �ұ��Ϊ��ɾ��
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/integration/ShowroomAppConfigCompanyFieldsContractTest.java: ĳЩ�����ļ�����ʹ�û򸲸��˱��Ϊ��ɾ�����ѹ�ʱ API��
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/ShowroomLegacyWebsiteConfigConditionalRequestTest.java: ĳЩ�����ļ�ʹ����δ�����򲻰�ȫ�Ĳ�����
+[INFO] /D:/IntRuoyiWorktree/r260806b-release-app/IntRuoyiBackend/yudao-module-showroom/src/test/java/cn/iocoder/yudao/module/showroom/release/ShowroomLegacyWebsiteConfigConditionalRequestTest.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:unchecked ���±��롣
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-module-showroom ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-module-showroom ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-module-showroom\target\yudao-module-showroom-2026.04-SNAPSHOT.jar
+[INFO] 
+[INFO] --------------------< cn.iocoder.boot:yudao-server >--------------------
+[INFO] Building yudao-server 2026.04-SNAPSHOT                           [30/30]
+[INFO]   from yudao-server\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ yudao-server ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-server\target
+[INFO] 
+[INFO] --- flatten:1.7.2:clean (flatten.clean) @ yudao-server ---
+[INFO] Deleting D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-server\.flattened-pom.xml
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ yudao-server ---
+[INFO] Copying 4 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- flatten:1.7.2:flatten (flatten) @ yudao-server ---
+[INFO] Generating flattened POM of project cn.iocoder.boot:yudao-server:jar:2026.04-SNAPSHOT...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ yudao-server ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [target 17] to target\classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- dependency:3.7.0:unpack (unpack-report-openpdf-phrase-override) @ yudao-server ---
+[INFO] Configured Artifact: cn.iocoder.boot:yudao-module-report:2026.04-SNAPSHOT:jar
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ yudao-server ---
+[INFO] skip non existing resourceDirectory D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-server\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ yudao-server ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 15 source files with javac [target 17] to target\test-classes
+[WARNING] δ�� -source 17 һ������ϵͳģ��·��
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ yudao-server ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ yudao-server ---
+[INFO] Building jar: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-server\target\yudao-server.jar
+[INFO] 
+[INFO] --- spring-boot:3.5.9:repackage (default) @ yudao-server ---
+[INFO] Attaching repackaged archive D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\yudao-server\target\yudao-server-exec.jar with classifier exec
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for yudao 2026.04-SNAPSHOT:
+[INFO] 
+[INFO] yudao .............................................. SUCCESS [  0.868 s]
+[INFO] yudao-framework .................................... SUCCESS [  0.099 s]
+[INFO] yudao-common ....................................... SUCCESS [  9.728 s]
+[INFO] yudao-spring-boot-starter-web ...................... SUCCESS [  3.654 s]
+[INFO] yudao-spring-boot-starter-security ................. SUCCESS [  3.559 s]
+[INFO] yudao-spring-boot-starter-mybatis .................. SUCCESS [  5.071 s]
+[INFO] yudao-spring-boot-starter-redis .................... SUCCESS [  0.977 s]
+[INFO] yudao-spring-boot-starter-mq ....................... SUCCESS [  3.470 s]
+[INFO] yudao-spring-boot-starter-job ...................... SUCCESS [  0.755 s]
+[INFO] yudao-spring-boot-starter-test ..................... SUCCESS [  1.250 s]
+[INFO] yudao-spring-boot-starter-biz-tenant ............... SUCCESS [  1.904 s]
+[INFO] yudao-spring-boot-starter-websocket ................ SUCCESS [  1.715 s]
+[INFO] yudao-spring-boot-starter-monitor .................. SUCCESS [  1.177 s]
+[INFO] yudao-spring-boot-starter-protection ............... SUCCESS [  2.122 s]
+[INFO] yudao-spring-boot-starter-biz-ip ................... SUCCESS [  1.421 s]
+[INFO] yudao-spring-boot-starter-excel .................... SUCCESS [  2.095 s]
+[INFO] yudao-spring-boot-starter-biz-data-permission ...... SUCCESS [  1.768 s]
+[INFO] yudao-module-infra ................................. SUCCESS [ 12.368 s]
+[INFO] yudao-module-system ................................ SUCCESS [ 11.553 s]
+[INFO] yudao-module-report ................................ SUCCESS [  4.593 s]
+[INFO] yudao-module-bpm ................................... SUCCESS [  8.889 s]
+[INFO] yudao-module-crm ................................... SUCCESS [  5.124 s]
+[INFO] yudao-module-erp ................................... SUCCESS [  7.361 s]
+[INFO] yudao-module-mdm ................................... SUCCESS [  2.284 s]
+[INFO] yudao-module-dcc ................................... SUCCESS [ 16.857 s]
+[INFO] yudao-module-srm ................................... SUCCESS [  6.416 s]
+[INFO] yudao-module-ai .................................... SUCCESS [ 18.373 s]
+[INFO] yudao-module-mes ................................... SUCCESS [ 43.346 s]
+[INFO] yudao-module-showroom .............................. SUCCESS [  8.374 s]
+[INFO] yudao-server ....................................... SUCCESS [ 17.633 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  03:27 min
+[INFO] Finished at: 2026-08-06T19:33:49+08:00
+[INFO] ------------------------------------------------------------------------
+[INFO] Building frontend static assets for the test server
+[INFO] Run: pnpm build:test
+> yudao-ui-admin-vue3@2026.04-snapshot build:test D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiFronted
+> cross-env NODE_OPTIONS=--max-old-space-size=8192 vite build --mode test
+[33mThe CJS build of Vite's Node API is deprecated. See https://vitejs.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+Browserslist: browsers data (caniuse-lite) is 21 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Build successful. Please see dist-intruoyi-test directory
+[INFO] Frontend release info written: D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiFronted\dist-intruoyi-test\release-info.json
+[INFO] Preparing Docker build context from current worktree artifacts
+[INFO] Building backend image
+[INFO] Run: docker build --no-cache --build-arg BACKEND_RUNTIME_BASE_IMAGE=intruoyi-backend-runtime-base:2026.06.05-jre21-noble-docker29.2.1 -t intruoyi-backend:release-20260806-intmain-head-test-r260806b-r2 -f D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\script\deploy\int-ruoyi-test\Dockerfile.backend E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260806-intmain-head-test-r260806b-r2\docker-build-context
+#0 building with "desktop-linux" instance using docker driver
+#1 [internal] load build definition from Dockerfile.backend
+#1 transferring dockerfile: 435B 0.0s done
+#1 WARN: InvalidDefaultArgInFrom: Default value for ARG ${BACKEND_RUNTIME_BASE_IMAGE} results in empty or invalid base image name (line 2)
+#1 DONE 0.1s
+#2 [internal] load metadata for docker.io/library/intruoyi-backend-runtime-base:2026.06.05-jre21-noble-docker29.2.1
+#2 DONE 0.1s
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+#4 [internal] load build context
+#4 ...
+#5 [1/4] FROM docker.io/library/intruoyi-backend-runtime-base:2026.06.05-jre21-noble-docker29.2.1@sha256:b4f7d85f325665c3b372379e6d352c3c8be2d3a08add68ac0dc151f720160be7
+#5 resolve docker.io/library/intruoyi-backend-runtime-base:2026.06.05-jre21-noble-docker29.2.1@sha256:b4f7d85f325665c3b372379e6d352c3c8be2d3a08add68ac0dc151f720160be7 0.1s done
+#5 CACHED
+#4 [internal] load build context
+#4 ...
+#6 [2/4] RUN mkdir -p /yudao-server
+#6 DONE 0.8s
+#4 [internal] load build context
+#4 ...
+#7 [3/4] WORKDIR /yudao-server
+#7 DONE 0.2s
+#4 [internal] load build context
+#4 transferring context: 99.05MB 5.1s
+#4 transferring context: 197.57MB 10.1s
+#4 transferring context: 296.46MB 15.2s
+#4 transferring context: 398.36MB 20.2s
+#4 transferring context: 498.42MB 25.2s
+#4 transferring context: 502.19MB 25.4s done
+#4 DONE 25.4s
+#8 [4/4] COPY ruoyi-vue-pro/yudao-server/target/yudao-server-exec.jar app.jar
+#8 DONE 1.7s
+#9 exporting to image
+#9 exporting layers
+#9 exporting layers 11.2s done
+#9 exporting manifest sha256:7c01cd11e967d12e685a494ba9aef0f85922c7cc8f5fb4d5e1a0329a70dce3dd 0.0s done
+#9 exporting config sha256:cf3bfeeb8b3661b196b050920341a43ce8d5bf0b62b0ef08586ab25b29a4509e 0.0s done
+#9 exporting attestation manifest sha256:a7100c824cbacdbe79cb2e29508d25f2cb974c33f1da3649b41ce5e2f2d578db
+#9 exporting attestation manifest sha256:a7100c824cbacdbe79cb2e29508d25f2cb974c33f1da3649b41ce5e2f2d578db 0.1s done
+#9 exporting manifest list sha256:e8ceb6111541a55e2b2dc8301e35cca2ac74d14fc7a8e470f737af8777ffced9 0.0s done
+#9 naming to docker.io/library/intruoyi-backend:release-20260806-intmain-head-test-r260806b-r2
+#9 naming to docker.io/library/intruoyi-backend:release-20260806-intmain-head-test-r260806b-r2 done
+#9 unpacking to docker.io/library/intruoyi-backend:release-20260806-intmain-head-test-r260806b-r2
+#9 unpacking to docker.io/library/intruoyi-backend:release-20260806-intmain-head-test-r260806b-r2 2.4s done
+#9 DONE 13.8s
+ [33m1 warning found (use docker --debug to expand):
+[0m - InvalidDefaultArgInFrom: Default value for ARG ${BACKEND_RUNTIME_BASE_IMAGE} results in empty or invalid base image name (line 2)
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/mvp1g0kec6skz5lvhzz29sxxr
+[INFO] Building frontend image
+[INFO] Run: docker build --no-cache -t intruoyi-frontend:release-20260806-intmain-head-test-r260806b-r2 -f D:\IntRuoyiWorktree\r260806b-release-app\IntRuoyiBackend\script\deploy\int-ruoyi-test\Dockerfile.frontend E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260806-intmain-head-test-r260806b-r2\docker-build-context
+#0 building with "desktop-linux" instance using docker driver
+#1 [internal] load build definition from Dockerfile.frontend
+#1 transferring dockerfile: 234B done
+#1 DONE 0.0s
+#2 [internal] load metadata for docker.io/library/nginx:1.27-alpine
+#2 DONE 0.1s
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+#4 [internal] load build context
+#4 ...
+#5 [1/3] FROM docker.io/library/nginx:1.27-alpine@sha256:d5d4c28b63f06e03bf35813ddf2c1d653bd344c5bbdf4b9e94d3d91531362c0b
+#5 resolve docker.io/library/nginx:1.27-alpine@sha256:d5d4c28b63f06e03bf35813ddf2c1d653bd344c5bbdf4b9e94d3d91531362c0b 0.0s done
+#5 DONE 0.5s
+#4 [internal] load build context
+#4 transferring context: 6.66MB 5.0s
+#4 transferring context: 16.98MB 10.1s
+#4 transferring context: 33.66MB 15.0s done
+#4 DONE 15.1s
+#6 [2/3] COPY ruoyi-vue-pro/script/deploy/int-ruoyi-test/nginx.conf /etc/nginx/conf.d/default.conf
+#6 DONE 0.1s
+#7 [3/3] COPY yudao-ui-admin-vue3/dist-intruoyi-test/ /usr/share/nginx/html/
+#7 DONE 0.9s
+#8 exporting to image
+#8 exporting layers
+#8 exporting layers 1.4s done
+#8 exporting manifest sha256:9f6ac8d2462e2769413a0204dfad7c53551ca0e0148df44be6f37b295495b8a0 0.1s done
+#8 exporting config sha256:84b97ce3e307407fcfb3d247c3ab452239bf32a971e97896815eb2459df760e0 0.1s done
+#8 exporting attestation manifest sha256:9ab112510264b5572ece8a84fc2cb576eeb3695fc40c8904880c296edf0c281c 0.1s done
+#8 exporting manifest list sha256:3c610bac6865162193ba4e1af259629b3a681cf188057afe43947a0914ed92f5
+#8 exporting manifest list sha256:3c610bac6865162193ba4e1af259629b3a681cf188057afe43947a0914ed92f5 0.0s done
+#8 naming to docker.io/library/intruoyi-frontend:release-20260806-intmain-head-test-r260806b-r2 done
+#8 unpacking to docker.io/library/intruoyi-frontend:release-20260806-intmain-head-test-r260806b-r2
+#8 unpacking to docker.io/library/intruoyi-frontend:release-20260806-intmain-head-test-r260806b-r2 0.9s done
+#8 DONE 2.6s
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/hivqh8taeieq47dwt35eg955w
+[INFO] Exporting release images
+[INFO] Run: docker save -o E:\Int\CacheData\IntRuoyi\publish-int-ruoyi\release-20260806-intmain-head-test-r260806b-r2\intruoyi-images_release-20260806-intmain-head-test-r260806b-r2.tar intruoyi-backend:release-20260806-intmain-head-test-r260806b-r2 intruoyi-frontend:release-20260806-intmain-head-test-r260806b-r2
+[INFO] Removing Docker build context from final release package
+[INFO] Mounting NAS release repository: \\172.30.30.4\IT����\Backup/ReleasePackage
+[INFO] Run shell: net use "\\172.30.30.4\IT����" /user:int <redacted>
+[INFO] Release package uploaded to NAS: Backup/ReleasePackage/release-20260806-intmain-head-test-r260806b-r2 (releaseTag=release-20260806-intmain-head-test-r260806b-r2)
+[INFO] Run shell: net use "\\172.30.30.4\IT����" /delete /y
+\\172.30.30.4\IT���� �Ѿ�ɾ����
+
+Release package built: release-20260806-intmain-head-test-r260806b-r2
+NAS release path: Backup/ReleasePackage/release-20260806-intmain-head-test-r260806b-r2

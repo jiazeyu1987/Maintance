@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "requestPayload": {
+    "action": "publish-test",
+    "reason": "r260820d test-only publish after manifest, provenance, and runtime-env validation",
+    "targetEnvironment": "test",
+    "releaseTag": "release-20260820-frozen-head-test-r260820d-r1"
+  },
+  "response": {
+    "operationId": "op-2026-08-20T035749033642700Z-9fd70534-dc8f-4f9a-a974-e2d6103bae22",
+    "requestedBy": "local-operator",
+    "requestedAt": "2026-08-20T03:57:51.521072Z",
+    "environment": "test",
+    "component": "publish-test",
+    "action": "publish-test",
+    "actionLabel": "部署发布包到测试服",
+    "parameters": {
+      "releaseTag": "release-20260820-frozen-head-test-r260820d-r1"
+    },
+    "reason": "r260820d test-only publish after manifest, provenance, and runtime-env validation",
+    "status": "RUNNING",
+    "summary": "命令已提交到本机执行队列",
+    "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260820d-state\\runtime-control\\logs\\op-2026-08-20T035749033642700Z-9fd70534-dc8f-4f9a-a974-e2d6103bae22.log"
+  },
+  "responseCode": 0,
+  "failedChecks": [],
+  "checkedAt": "2026-08-20T03:57:51.523248+00:00"
+}

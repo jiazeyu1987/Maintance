@@ -1,0 +1,108 @@
+{
+  "status": "passed",
+  "versionIdentifier": {
+    "type": "releaseTag",
+    "value": "release-20260821-intmain-head-test-r260821h-r4",
+    "manifestPackageId": "release-20260821-intmain-head-test-r260821h-r4",
+    "releaseInfoPackageId": "release-20260821-intmain-head-test-r260821h-r4"
+  },
+  "releaseTag": "release-20260821-intmain-head-test-r260821h-r4",
+  "app": {
+    "worktree": "D:\\IntRuoyiWorktree\\r260821h\\a",
+    "commit": "12a773ef285ff34bf2bd25036fd3dff2930912bc",
+    "subject": "任务: 修复发布Hook镜像参数",
+    "status": "## HEAD (no branch)",
+    "frontendVersion": "2026.04-snapshot"
+  },
+  "maintenance": {
+    "worktree": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260821h\\m",
+    "commit": "66c4ea05dda04459433bc22471ea2b6f4f3dfc32",
+    "subject": "任务: 修复build-release密钥导入",
+    "status": "## HEAD (no branch)",
+    "jar": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260821h\\m\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar",
+    "jarSha256": "ddeeae6b07d8c56287a77a5be1a997b106541fb3e4d81ac6199cd6d21719614e",
+    "jarVersion": "2026.06-SNAPSHOT"
+  },
+  "manifest": {
+    "path": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260821-intmain-head-test-r260821h-r4\\manifest.json",
+    "manifestVersion": "1.0",
+    "packageType": "full-release",
+    "publishScope": "code-only",
+    "sourceRepos": [
+      {
+        "name": "ruoyi-vue-pro",
+        "pathRole": "backend",
+        "commit": "12a773ef285ff34bf2bd25036fd3dff2930912bc",
+        "branch": "HEAD",
+        "dirty": false,
+        "dirtySummaryHash": null
+      },
+      {
+        "name": "yudao-ui-admin-vue3",
+        "pathRole": "admin-frontend",
+        "commit": "12a773ef285ff34bf2bd25036fd3dff2930912bc",
+        "branch": "HEAD",
+        "dirty": false,
+        "dirtySummaryHash": null
+      }
+    ],
+    "changeSet": {
+      "summary": "任务: 修复发布Hook镜像参数",
+      "component": "intruoyi",
+      "items": [
+        "发布包：release-20260821-intmain-head-test-r260821h-r4",
+        "组件范围：intruoyi",
+        "提交：12a773ef285f 任务: 修复发布Hook镜像参数"
+      ],
+      "includeShowroomBuildPackage": false,
+      "includeOnlyOffice": false
+    },
+    "validator": "MANIFEST_VALIDATION_PASSED"
+  },
+  "legacyManifest": {
+    "path": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260821-intmain-head-test-r260821h-r4\\release-manifest.json",
+    "gitCommit": "12a773ef285ff34bf2bd25036fd3dff2930912bc",
+    "onlyOfficeIncluded": false,
+    "backendRuntimeBaseVersion": "2026.06.05-jre21-noble-docker29.2.1"
+  },
+  "frontendReleaseInfo": {
+    "path": "D:\\IntRuoyiWorktree\\r260821h\\a\\IntRuoyiFronted\\dist-intruoyi-test\\release-info.json",
+    "releaseTag": "release-20260821-intmain-head-test-r260821h-r4",
+    "changeSet": {
+      "summary": "任务: 修复发布Hook镜像参数",
+      "component": "intruoyi",
+      "items": [
+        "发布包：release-20260821-intmain-head-test-r260821h-r4",
+        "组件范围：intruoyi",
+        "提交：12a773ef285f 任务: 修复发布Hook镜像参数"
+      ],
+      "includeShowroomBuildPackage": false,
+      "includeOnlyOffice": false
+    },
+    "sourceRepos": [
+      {
+        "name": "ruoyi-vue-pro",
+        "pathRole": "backend",
+        "commit": "12a773ef285ff34bf2bd25036fd3dff2930912bc",
+        "branch": "HEAD",
+        "dirty": false,
+        "dirtySummaryHash": null
+      },
+      {
+        "name": "yudao-ui-admin-vue3",
+        "pathRole": "admin-frontend",
+        "commit": "12a773ef285ff34bf2bd25036fd3dff2930912bc",
+        "branch": "HEAD",
+        "dirty": false,
+        "dirtySummaryHash": null
+      }
+    ]
+  },
+  "artifact": {
+    "tar": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260821-intmain-head-test-r260821h-r4\\intruoyi-images_release-20260821-intmain-head-test-r260821h-r4.tar",
+    "sha256": "b9735d8aaf43e4665aec5ea262a7fa92e8c66e16bbbadad7e31ca5203cb5c040",
+    "bytes": 706557952,
+    "dockerBackend": "[intruoyi-backend:release-20260821-intmain-head-test-r260821h-r4] sha256:8957a47c4653bec3cee532362afcb36e8bad0c2bd4ef538a87aa220f8a832e19",
+    "dockerFrontend": "[intruoyi-frontend:release-20260821-intmain-head-test-r260821h-r4] sha256:f515153f036a1c949c979189b4ff2e3d95402e4fe40a98248dbd8a8ddbdb49ed"
+  }
+}

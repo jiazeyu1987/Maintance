@@ -1,0 +1,26 @@
+{
+  "code": 0,
+  "data": {
+    "operationId": "op-2026-08-19T054832513814100Z-aaa182a1-d168-4007-bfbb-e253ce9ceda9",
+    "requestedBy": "local-operator",
+    "requestedAt": "2026-08-19T05:48:34.498388800Z",
+    "environment": "test",
+    "component": "publish-test",
+    "action": "publish-test",
+    "actionLabel": "部署发布包到测试服",
+    "parameters": {
+      "releaseTag": "release-20260819-intmain-head-test-r260819d-r2"
+    },
+    "reason": "r260819d-r2 test-only publish retry after test eDHR preflight",
+    "status": "RUNNING",
+    "summary": "命令已提交到本机执行队列",
+    "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260819d-state\\runtime-control\\logs\\op-2026-08-19T054832513814100Z-aaa182a1-d168-4007-bfbb-e253ce9ceda9.log"
+  },
+  "requestPayload": {
+    "action": "publish-test",
+    "reason": "r260819d-r2 test-only publish retry after test eDHR preflight",
+    "targetEnvironment": "test",
+    "releaseTag": "release-20260819-intmain-head-test-r260819d-r2"
+  },
+  "submittedAt": "2026-08-19T13:48:34.5458770+08:00"
+}

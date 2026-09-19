@@ -1,0 +1,24 @@
+{
+  "httpStatus": 200,
+  "body": {
+    "code": 0,
+    "data": {
+      "operationId": "op-2026-08-19T203001206932200Z-f5c82283-e451-4caa-a857-c962aa575ac8",
+      "requestedBy": "local-operator",
+      "requestedAt": "2026-08-19T20:30:03.421346200Z",
+      "environment": "test",
+      "component": "publish-test",
+      "action": "publish-test",
+      "actionLabel": "部署发布包到测试服",
+      "parameters": {
+        "releaseTag": "release-20260820-frozen-head-test-r260820a-r2"
+      },
+      "reason": "r260820a-r2 test-only publish after manifest/runtime-env validation",
+      "status": "RUNNING",
+      "summary": "命令已提交到本机执行队列",
+      "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260820a-state\\runtime-control\\logs\\op-2026-08-19T203001206932200Z-f5c82283-e451-4caa-a857-c962aa575ac8.log"
+    },
+    "msg": ""
+  },
+  "submittedAt": "2026-08-19T20:30:03.427Z"
+}

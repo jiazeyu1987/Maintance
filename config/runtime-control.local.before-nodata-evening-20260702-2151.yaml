@@ -1,0 +1,34 @@
+maintenance:
+  runtime-control:
+    production-write-enabled: true
+    repo-root: D:/ProjectPackage/Int/release-worktrees/IntRuoyi-backend-20260701-2320-mes-scheduler
+    frontend-root: D:/ProjectPackage/Int/release-worktrees/IntRuoyi-frontend-20260701-2320-mes-scheduler
+    website-root: D:/ProjectPackage/Website
+    ops-root: D:/ProjectPackage/Int/IntRuoyiMaintance/ops
+    state-dir: D:/ProjectPackage/Int/IntRuoyiMaintance/runtime/runtime-control
+    backup-ops:
+      execution-mode: powershell
+      config-path: backup-ops/config/backup-ops.config.json
+      nas-server: '172.30.30.4'
+      nas-share: 'IT共享'
+      nas-username: 'int'
+      nas-password: 'Kdlyx123'
+      nas-domain: ''
+      nas-backup-points-root: 'Backup/BackupPackage'
+    release-package:
+      nas-server: '172.30.30.4'
+      nas-share: 'IT共享'
+      nas-username: 'int'
+      nas-password: 'Kdlyx123'
+      nas-domain: ''
+      nas-release-root: 'Backup/ReleasePackage'
+      smart-release-target-config-path: 'D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20260620-prod-release-current-latest/prod-target-config.json'
+      backend-runtime-base-mode: 'offline-tar'
+      backend-runtime-base-tar-path: 'D:/ProjectPackage/Int/BaseImages/intruoyi-backend-runtime-base-2026.06.05-jre21-noble-docker29.2.1.tar'
+      backend-runtime-base-tar-sha256: '5bcd568b46ba9f28bfa7ac8ee67e283aea95bd585a89842a14cc40827fa71603'
+      backend-runtime-base-image: 'intruoyi-backend-runtime-base:2026.06.05-jre21-noble-docker29.2.1'
+      backend-runtime-base-digest: 'sha256:b4f7d85f325665c3b372379e6d352c3c8be2d3a08add68ac0dc151f720160be7'
+      backend-runtime-base-version: '2026.06.05-jre21-noble-docker29.2.1'
+    environments:
+      prod:
+        access-enabled: true

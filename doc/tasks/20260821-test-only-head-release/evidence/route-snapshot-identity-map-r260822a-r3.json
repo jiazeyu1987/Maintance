@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "ROUTE_SNAPSHOT_ROUTE_PROCESS_MAPPING_V1",
+  "checkedAt": "2026-08-23T00:00:00+08:00",
+  "releaseTag": "release-20260822-intmain-head-test-r260822a-r2",
+  "targetHost": "172.30.30.58",
+  "targetDatabase": "ruoyi-vue-pro",
+  "routeVersionId": 3,
+  "routeId": 900025,
+  "historicalSourceTable": "m3syncbk_20260731025926_schedproc",
+  "currentSource": "mes_pro_route_version.route_snapshot_json.configSnapshots.flowGraph.nodes[*]",
+  "mapping": [
+    {
+      "oldRouteProcessId": 900124,
+      "historicalProcessId": 900331,
+      "historicalProcessCode": "B010",
+      "historicalProcessName": "吹球囊成型",
+      "currentRouteProcessId": 926785,
+      "currentProcessId": 922894,
+      "currentProcessCode": "Z2630",
+      "currentProcessName": "吹球囊成型",
+      "sort": 1
+    },
+    {
+      "oldRouteProcessId": 900125,
+      "historicalProcessId": 900333,
+      "historicalProcessCode": "B030",
+      "historicalProcessName": "球囊裁剪",
+      "currentRouteProcessId": 926786,
+      "currentProcessId": 922895,
+      "currentProcessCode": "Z3710",
+      "currentProcessName": "球囊裁剪",
+      "sort": 2
+    },
+    {
+      "oldRouteProcessId": 900126,
+      "historicalProcessId": 900370,
+      "historicalProcessCode": "PROC-XLSX-00001",
+      "historicalProcessName": "外管拉伸2",
+      "currentRouteProcessId": 926787,
+      "currentProcessId": 922896,
+      "currentProcessCode": "Z2775",
+      "currentProcessName": "外管拉伸2",
+      "sort": 3
+    },
+    {
+      "oldRouteProcessId": 900127,
+      "historicalProcessId": 900371,
+      "historicalProcessCode": "PROC-XLSX-00002",
+      "historicalProcessName": "内管拉伸2",
+      "currentRouteProcessId": 926788,
+      "currentProcessId": 922897,
+      "currentProcessCode": "Z2772",
+      "currentProcessName": "内管拉伸2",
+      "sort": 4
+    }
+  ],
+  "uniquenessProof": {
+    "sameOrdinalOrder": true,
+    "sameProcessName": true,
+    "distinctCurrentRouteProcessIds": true,
+    "distinctHistoricalRouteProcessIds": true,
+    "conclusion": "UNIQUE_1_TO_1_MAPPING"
+  },
+  "notes": [
+    "This mapping is limited to the test server route snapshot repair scope.",
+    "No prod/backup changes are included.",
+    "The mapping is sufficient to rewrite only scheduleConfigs[0..3].routeProcessId and rerun BACKFILL."
+  ]
+}

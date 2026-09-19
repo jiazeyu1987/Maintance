@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "MES_ROUTE_SNAPSHOT_ORPHAN_HISTORY_EVIDENCE_V1",
+  "checkedDate": "2026-08-22",
+  "releaseTag": "release-20260822-intmain-head-test-r260822a-r2",
+  "targetEnvironment": "test",
+  "targetHost": "172.30.30.58",
+  "database": "ruoyi-vue-pro",
+  "readOnly": true,
+  "writesPerformed": false,
+  "routeVersionId": 3,
+  "routeId": 900025,
+  "historicalRouteProcessEvidence": [
+    {
+      "oldRouteProcessId": 900124,
+      "oldProcessId": 900331,
+      "oldProcessCode": "B010",
+      "oldProcessName": "吹球囊成型",
+      "historicalScheduleConfigId": 203
+    },
+    {
+      "oldRouteProcessId": 900125,
+      "oldProcessId": 900333,
+      "oldProcessCode": "B030",
+      "oldProcessName": "球囊裁剪",
+      "historicalScheduleConfigId": 204
+    },
+    {
+      "oldRouteProcessId": 900126,
+      "oldProcessId": 900370,
+      "oldProcessCode": "PROC-XLSX-00001",
+      "oldProcessName": "外管拉伸2",
+      "historicalScheduleConfigId": 205
+    },
+    {
+      "oldRouteProcessId": 900127,
+      "oldProcessId": 900371,
+      "oldProcessCode": "PROC-XLSX-00002",
+      "oldProcessName": "内管拉伸2",
+      "historicalScheduleConfigId": 206
+    }
+  ],
+  "currentRouteProcessEvidence": {
+    "routeProcessCount": 23,
+    "firstFour": [
+      { "routeProcessId": 926785, "processId": 922894, "processCode": "Z2630", "processName": "吹球囊成型", "sort": 1 },
+      { "routeProcessId": 926786, "processId": 922895, "processCode": "Z3710", "processName": "球囊裁剪", "sort": 2 },
+      { "routeProcessId": 926787, "processId": 922896, "processCode": "Z2775", "processName": "外管拉伸2", "sort": 3 },
+      { "routeProcessId": 926788, "processId": 922897, "processCode": "Z2772", "processName": "内管拉伸2", "sort": 4 }
+    ]
+  },
+  "historicalSources": [
+    "m3syncbk_20260731025047_schedproc",
+    "m3syncbk_20260731025254_schedproc",
+    "m3syncbk_20260731025525_schedproc"
+  ],
+  "mappingSourceFound": false,
+  "mappingAssessment": "Historical tables preserve the old routeProcessId and old process identity, but do not provide an old-to-current routeProcessId mapping. Names overlap, while process IDs and codes changed and the current route contains 23 processes instead of 4. Name, sort, or positional matching is not an auditable identity mapping.",
+  "conclusion": "BLOCKED",
+  "requiredNextInput": "A formal old-to-current routeProcessId mapping or an approved repair design with explicit business identity and rollback evidence."
+}

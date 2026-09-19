@@ -1,0 +1,15 @@
+IMAGE_TAG=release-20260806-intmain-head-test-r260806b-r2
+BACKEND_IMAGE=intruoyi-backend:release-20260806-intmain-head-test-r260806b-r2
+FRONTEND_IMAGE=intruoyi-frontend:release-20260806-intmain-head-test-r260806b-r2
+BACKEND_RUNNING=running
+FRONTEND_RUNNING=running
+BACKEND_HEALTH_BODY=curl: (56) Recv failure: 连接被对方重设 
+BACKEND_HEALTH_EXIT=56
+FRONTEND_HTTP_CODE=200
+FRONTEND_TITLE=<title>瑛泰管理系统</title>
+LOCK_AND_MIGRATIONS_START
+lock=test:release-20260806-intmain-head-test-r260806b-r2:FAILED:Remote URL did not become ready within 180 seconds: http://127.0.0.1:48081/actuator/health curl: (56) Recv failure: 杩炴帴琚鏂归噸璁?close - IO is still pending on closed socket. read:1, write:0, io:000001B7479462A0
+target_migration_failed_running=0
+LOCK_AND_MIGRATIONS_END
+mysql: [Warning] Using a password on the command line interface can be insecure.
+close - IO is still pending on closed socket. read:1, write:0, io:000001B5098A8D30

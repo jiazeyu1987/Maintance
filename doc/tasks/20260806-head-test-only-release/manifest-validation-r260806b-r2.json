@@ -1,0 +1,53 @@
+{
+  "releaseDir": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260806-intmain-head-test-r260806b-r2",
+  "checks": {
+    "releaseTag_manifest": true,
+    "releaseTag_legacy": true,
+    "component_legacy": true,
+    "publishScope_legacy": true,
+    "onlyOffice_false": true,
+    "showroom_false": true,
+    "sourceRepos_count": true,
+    "sourceRepos_commit": true,
+    "sourceRepos_clean": true,
+    "changeSet_items": true,
+    "image_tar_artifact": true,
+    "docker_compose_artifact": true,
+    "manifest_exists": true,
+    "legacy_manifest_exists": true,
+    "image_tar_exists": true,
+    "legacy_artifact_hashes_all_match": true
+  },
+  "passed": true,
+  "legacyArtifactCount": 458,
+  "hashMismatchCount": 0,
+  "hashMismatches": [],
+  "sourceRepos": [
+    {
+      "name": "ruoyi-vue-pro",
+      "pathRole": "backend",
+      "commit": "04d71d4328bff04833b3e97fe77439c1d00e5f72",
+      "branch": "HEAD",
+      "dirty": false,
+      "dirtySummaryHash": null
+    },
+    {
+      "name": "yudao-ui-admin-vue3",
+      "pathRole": "admin-frontend",
+      "commit": "04d71d4328bff04833b3e97fe77439c1d00e5f72",
+      "branch": "HEAD",
+      "dirty": false,
+      "dirtySummaryHash": null
+    }
+  ],
+  "changeSet": {
+    "summary": "Release package release-20260806-intmain-head-test-r260806b-r2",
+    "component": "intruoyi",
+    "items": [
+      "发布包：release-20260806-intmain-head-test-r260806b-r2",
+      "组件范围：intruoyi"
+    ],
+    "includeShowroomBuildPackage": false,
+    "includeOnlyOffice": false
+  }
+}

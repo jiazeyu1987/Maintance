@@ -1,0 +1,75 @@
+{
+  "status": "PASS",
+  "missingPrerequisites": [],
+  "bucket": "edhr-retention-verifier-20260530",
+  "key": "edhr-retention-verifier/20260819T155526Z-7c7443923918422c86c56d706465e2dd.txt",
+  "versionId": "53f2ab9e-c3e6-48b8-9958-ad4546f336fe",
+  "retentionMode": "COMPLIANCE",
+  "retainUntil": "2026-08-26T15:55:26Z",
+  "legalHoldStatus": "ON",
+  "checks": [
+    {
+      "name": "requiredEnvironment",
+      "status": "PASS",
+      "detail": "All required environment variables are present."
+    },
+    {
+      "name": "pythonDependencies",
+      "status": "PASS",
+      "detail": "boto3 and botocore are importable."
+    },
+    {
+      "name": "bucketVersioning",
+      "status": "PASS",
+      "detail": "Bucket versioning is Enabled."
+    },
+    {
+      "name": "objectLockConfiguration",
+      "status": "PASS",
+      "detail": "Bucket ObjectLockEnabled is Enabled."
+    },
+    {
+      "name": "putProtectedObject",
+      "status": "PASS",
+      "detail": "Protected object uploaded with retention headers and returned a VersionId.",
+      "evidence": {
+        "versionId": "53f2ab9e-c3e6-48b8-9958-ad4546f336fe"
+      }
+    },
+    {
+      "name": "getObjectRetention",
+      "status": "PASS",
+      "detail": "Object retention evidence matches the requested mode and retain-until policy.",
+      "evidence": {
+        "mode": "COMPLIANCE",
+        "retainUntil": "2026-08-26T15:55:26Z"
+      }
+    },
+    {
+      "name": "getObjectLegalHold",
+      "status": "PASS",
+      "detail": "Object legal hold evidence is ON; expected ON.",
+      "evidence": {
+        "legalHoldStatus": "ON"
+      }
+    },
+    {
+      "name": "deleteProtectedVersion",
+      "status": "PASS",
+      "detail": "DeleteObject for the protected version was rejected.",
+      "evidence": {
+        "code": "InvalidRequest",
+        "message": "Object is WORM protected and cannot be overwritten",
+        "httpStatus": 400
+      }
+    },
+    {
+      "name": "protectedVersionReadable",
+      "status": "PASS",
+      "detail": "Protected object version remains readable after rejected delete attempt.",
+      "evidence": {
+        "versionId": "53f2ab9e-c3e6-48b8-9958-ad4546f336fe"
+      }
+    }
+  ]
+}

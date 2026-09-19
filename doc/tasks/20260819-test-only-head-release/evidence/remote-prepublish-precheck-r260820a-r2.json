@@ -1,0 +1,45 @@
+{
+  "imageTag": "release-20260819-intmain-head-test-r260819e-r2",
+  "backendImage": "intruoyi-backend:hotfix-20260814-route-submit-order-r1",
+  "backendStatus": "running",
+  "frontendImage": "intruoyi-frontend:release-20260813-intmain-head-test-r260812b-r2",
+  "frontendStatus": "running",
+  "health": {"status":"UP"},
+  "frontendHttp": "200",
+  "releaseInfo": {
+    "releaseTag":  "release-20260813-intmain-head-test-r260812b-r2",
+    "packageId":  "release-20260813-intmain-head-test-r260812b-r2",
+    "createdAt":  "2026-08-12T19:15:29.1636838Z",
+    "publishScope":  "code-only",
+    "changeSet":  {
+                      "summary":  "Release package release-20260813-intmain-head-test-r260812b-r2",
+                      "component":  "intruoyi",
+                      "items":  [
+                                    "发布包：release-20260813-intmain-head-test-r260812b-r2",
+                                    "组件范围：intruoyi"
+                                ],
+                      "includeShowroomBuildPackage":  false,
+                      "includeOnlyOffice":  false
+                  },
+    "sourceRepos":  [
+                        {
+                            "name":  "ruoyi-vue-pro",
+                            "pathRole":  "backend",
+                            "commit":  "5d503ea5e5d754461031ddb4271e5db77c2c4d91",
+                            "branch":  "HEAD",
+                            "dirty":  false,
+                            "dirtySummaryHash":  null
+                        },
+                        {
+                            "name":  "yudao-ui-admin-vue3",
+                            "pathRole":  "admin-frontend",
+                            "commit":  "5d503ea5e5d754461031ddb4271e5db77c2c4d91",
+                            "branch":  "HEAD",
+                            "dirty":  false,
+                            "dirtySummaryHash":  null
+                        }
+                    ]
+},
+  "lockSummaryBase64": "",
+  "migrationSummaryBase64": "U0tJUFBFRF9BTFJFQURZX0FQUExJRUQJNDM5CkFQUExJRUQJMwpGQUlMRUQJNQ=="
+}

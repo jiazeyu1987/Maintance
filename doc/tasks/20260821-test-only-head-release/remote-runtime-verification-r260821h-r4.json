@@ -1,0 +1,36 @@
+{
+  "releaseTag": "release-20260821-intmain-head-test-r260821h-r4",
+  "environment": "test",
+  "host": "172.30.30.58",
+  "remoteAppDir": "/opt/intruoyi/runtime",
+  "envImageTag": "release-20260821-intmain-head-test-r260821h-r4",
+  "composeResolvedImages": {
+    "backend": "intruoyi-backend:release-20260821-intmain-head-test-r260821h-r4",
+    "frontend": "intruoyi-frontend:release-20260821-intmain-head-test-r260821h-r4"
+  },
+  "actualContainers": {
+    "backend": {
+      "image": "intruoyi-backend:hotfix-20260814-route-submit-order-r1",
+      "state": "running",
+      "healthcheck": "none"
+    },
+    "frontend": {
+      "image": "intruoyi-frontend:release-20260813-intmain-head-test-r260812b-r2",
+      "state": "running",
+      "healthcheck": "none"
+    }
+  },
+  "backendHealth": {
+    "httpStatus": 200,
+    "status": "UP"
+  },
+  "frontend": {
+    "httpStatus": 200,
+    "releaseInfoReleaseTag": "release-20260813-intmain-head-test-r260812b-r2"
+  },
+  "consistentWithTarget": false,
+  "rollback": {
+    "attempted": false,
+    "reason": "pre-publish .env baseline was not safely provable; no guessed remote write"
+  }
+}

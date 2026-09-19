@@ -1,0 +1,16 @@
+{
+  "operationId": "op-2026-08-02T171256308397600Z-05598a68-af1a-4f8f-8db2-3b7806418241",
+  "requestedBy": "local-operator",
+  "requestedAt": "2026-08-02T17:12:56.498802100Z",
+  "environment": "test",
+  "component": "publish-test",
+  "action": "publish-test",
+  "actionLabel": "部署发布包到测试服",
+  "parameters": {
+    "releaseTag": "release-20260803-intmain-head-test-r260803a-r1"
+  },
+  "reason": "20260803 HEAD-only test server release deploy from frozen worktree r260803a",
+  "status": "FAILED",
+  "summary": "命令退出码非 0: 1",
+  "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260803a-state\\runtime-control\\logs\\op-2026-08-02T171256308397600Z-05598a68-af1a-4f8f-8db2-3b7806418241.log"
+}

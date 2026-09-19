@@ -1,0 +1,46 @@
+{
+  "status": "passed",
+  "releaseTag": "release-20260806-intmain-head-test-r260806c-r1",
+  "chrome": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "clicked": "查看变更",
+  "checks": {
+    "frontendHttp200": true,
+    "frontendTitlePresent": true,
+    "frontendConsoleErrorsZero": true,
+    "frontendFailedRequestsZero": true,
+    "runtimeHttp200": true,
+    "runtimeReleaseTagVisible": true,
+    "runtimePackageVisible": true,
+    "runtimeComponentVisible": true,
+    "runtimeChangeNotesVisible": true,
+    "runtimeConsoleErrorsZero": true,
+    "runtimeFailedRequestsZero": true
+  },
+  "frontend": {
+    "url": "http://172.30.30.58:8081/",
+    "status": 200,
+    "finalUrl": "http://172.30.30.58:8081/login?redirect=/user/profile",
+    "title": "瑛泰管理系统 - 登录",
+    "bodyTextSample": "瑛泰数字化平台\n登录\n芋道源码\n记住我\n忘记密码?\n登录",
+    "consoleErrors": [],
+    "failedRequests": [],
+    "screenshotPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\r260806c-release\\test-frontend-r260806c.png"
+  },
+  "runtime": {
+    "initial": {
+      "url": "http://127.0.0.1:48181/",
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:48181/",
+      "title": "运行控制台",
+      "bodyTextSample": "本机运维台 · 127.0.0.1:48181\n\n运行控制台\n\nlocal-operator\n\n容量 PASS\n刷新\n运行实例\n2\n异常/停止\n2\n操作记录\n2\n容量状态\nPASS\n实例状态\n4 项\n环境\n\t\n组件\n\t\n状态\n\t\nHTTP\n\t\n地址\n\t\n动作\nlocal\n\t\nintruoyi-frontend\n\t\nRUNNING\n\t\n200\n\t\nhttp://127.0.0.1:8081/\n\t\n\n\nlocal\n\t\nintruoyi-backend\n\t\nSTOPPED\n\t\n\t\nhttp://127.0.0.1:48081/actuator/health\n\t\n\n\nlocal\n\t\nintruoyi-full\n\t\nRUNNING\n\t\n200\n\t\nhttp://127.0.0.1:8081/\n\t\n\n\nlocal\n\t\nwebsite-frontend\n\t\nSTOPPED\n\t\n\t\nhttp://127.0.0.1:4173/\n\t\n运维动作\n常规\n当前动作\n构建发布包\n\n生成发布包，不直接部署到任何环境\n\n构建发布包\n部署测试服\n测试服数据库快应用\n标记测试通过\n上线正式服\n上线备份服\n立即备份\n回滚应用\n恢复数据\n恢复演练\n操作原因\n发布范围\n仅代码\n发布标签\n生产确认\n包含 OnlyOffice\n包含展厅包\n智能发布报告\n预览命令\n操作记录\nSUCCESS\n部署发布包到测试服\n编号\n\t\n操作者\n\t\n环境\n\t\n动作\n\t\n状态\n\t\n结果\n\t\n日志\nop-2026-08-06T134301524868800Z-58d50c52-dab5-43b8-8ce9-81849d0c96ef\n\t\nlocal-operator\n\t\ntest\n\t\n部署发布包到测试服\n\t\nSUCCESS\n\t\n命令执行完成\n\t\n\n\nop-2026-08-06T131808382264900Z-1a134a91-d2eb-434d-b0a6-b0da5018a2f7\n\t\nlocal-operator\n\t\nrelease\n\t\n构建发布包\n\t\nSUCCESS\n\t\n命令执行完成\n\t\n软件版本\n2026.06.0\n测试服\nrelease-20260806-intmain-head-test-r260806c-r1\n查看变更\n正式服\n未上报\n备份服\n未上报",
+      "consoleErrors": [],
+      "failedRequests": [],
+      "screenshotPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\r260806c-release\\runtime-console-initial-r260806c.png"
+    },
+    "observerStatus": 200,
+    "textSample": "本机运维台 · 127.0.0.1:48181\n\n运行控制台\n\nlocal-operator\n\n容量 PASS\n刷新\n运行实例\n2\n异常/停止\n2\n操作记录\n2\n容量状态\nPASS\n实例状态\n4 项\n环境\n\t\n组件\n\t\n状态\n\t\nHTTP\n\t\n地址\n\t\n动作\nlocal\n\t\nintruoyi-frontend\n\t\nRUNNING\n\t\n200\n\t\nhttp://127.0.0.1:8081/\n\t\n\n\nlocal\n\t\nintruoyi-backend\n\t\nSTOPPED\n\t\n\t\nhttp://127.0.0.1:48081/actuator/health\n\t\n\n\nlocal\n\t\nintruoyi-full\n\t\nRUNNING\n\t\n200\n\t\nhttp://127.0.0.1:8081/\n\t\n\n\nlocal\n\t\nwebsite-frontend\n\t\nSTOPPED\n\t\n\t\nhttp://127.0.0.1:4173/\n\t\n运维动作\n常规\n当前动作\n构建发布包\n\n生成发布包，不直接部署到任何环境\n\n构建发布包\n部署测试服\n测试服数据库快应用\n标记测试通过\n上线正式服\n上线备份服\n立即备份\n回滚应用\n恢复数据\n恢复演练\n操作原因\n发布范围\n仅代码\n发布标签\n生产确认\n包含 OnlyOffice\n包含展厅包\n智能发布报告\n预览命令\n操作记录\nSUCCESS\n部署发布包到测试服\n编号\n\t\n操作者\n\t\n环境\n\t\n动作\n\t\n状态\n\t\n结果\n\t\n日志\nop-2026-08-06T134301524868800Z-58d50c52-dab5-43b8-8ce9-81849d0c96ef\n\t\nlocal-operator\n\t\ntest\n\t\n部署发布包到测试服\n\t\nSUCCESS\n\t\n命令执行完成\n\t\n\n\nop-2026-08-06T131808382264900Z-1a134a91-d2eb-434d-b0a6-b0da5018a2f7\n\t\nlocal-operator\n\t\nrelease\n\t\n构建发布包\n\t\nSUCCESS\n\t\n命令执行完成\n\t\n软件版本\n2026.06.0\n测试服\nrelease-20260806-intmain-head-test-r260806c-r1\n查看变更\n正式服\n未上报\n备份服\n未上报\n本机运维台 · 127.0.0.1:48181\n\n运行控制台\n\nlocal-operator\n\n容量 PASS\n刷新\n运行实例\n2\n异常/停止\n2\n操作记录\n2\n容量状态\nPASS\n实例状态\n4 项\n环境\n\t\n组件\n\t\n状态\n\t\nHTTP\n\t\n地址\n\t\n动作\nlocal\n\t\nintruoyi-frontend\n\t\nRUNNING\n\t\n200\n\t\nhttp://127.0.0.1:8081/\n\t\n\n\nlocal\n\t\nintruoyi-backend\n\t\nSTOPPED\n\t\n\t\nhttp://127.0.0.1:48081/actuator/health\n\t\n\n\nlocal\n\t\nintruoyi-full\n\t\nRUNNING\n\t\n200\n\t\nhttp://127.0.0.1:8081/\n\t\n\n\nlocal\n\t\nwebsite-frontend\n\t\nSTOPPED\n\t\n\t\nhttp://127.0.0.1:4173/\n\t\n运维动作\n常规\n当前动作\n构建发布包\n\n生成发布包，不直接部署到任何环境\n\n构建发布包\n部署测试服\n测试服数据库快应用\n标记测试通过\n上线正式服\n上线备份服\n立即备份\n回滚应用\n恢复数据\n恢复演练\n操作原因\n发布范围\n仅代码\n发布标签\n生产确认\n包含 OnlyOffice\n包含展厅包\n智能发布报告\n预览命令\n操作记录\nSUCCESS\n部署发布包到测试服\n编号\n\t\n操作者\n\t\n环境\n\t\n动作\n\t\n状态\n\t\n结果\n\t\n日志\nop-2026-08-06T134301524868800Z-58d50c52-dab5-43b8-8ce9-81849d0c96ef\n\t\nlocal-operator\n\t\ntest\n\t\n部署发布包到测试服\n\t\nSUCCESS\n\t\n命令执行完成\n\t\n\n\nop-2026-08-06T131808382264900Z-1a134a91-d2eb-434d-b0a6-b0da5018a2f7\n\t\nlocal-operator\n\t\nrelease\n\t\n构建发布包\n\t\nSUCCESS\n\t\n命令执行完成\n\t\n版本变更说明\n版本号\nrelease-20260806-intmain-head-test-r260806c-r1\n变更说明\n发布包：release-20260806-intmain-head-test-r260806c-r1\n组件范围：intruoyi\n软件版本\n2026.06.0\n测试服\nrelease-20260806-intmain-head-test-r260806c-r1\n查看变更\n正式服\n未上报\n备份服\n未上报",
+    "consoleErrors": [],
+    "failedRequests": [],
+    "releaseInfoScreenshotPath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\r260806c-release\\runtime-console-release-info-r260806c.png"
+  }
+}

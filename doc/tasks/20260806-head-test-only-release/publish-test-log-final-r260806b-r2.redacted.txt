@@ -1,0 +1,240 @@
+[INFO] Applying required database SQL: 20260805_erp_nas_table_auto_sync.sql
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 test -f '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260805_erp_nas_table_auto_sync.sql' && echo REQUIRED_SQL_EXISTS
+REQUIRED_SQL_EXISTS
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260805_erp_nas_table_auto_sync', '20260805_erp_nas_table_auto_sync.sql', 'd44430ac56e835e9eff2cb2b0a145169c5409c5be3bbde3fe5840932b8cd70b2', 'test', 'RUNNING', NOW(), CASE WHEN 'RUNNING' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260805_erp_nas_table_auto_sync.sql' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260805_erp_nas_table_auto_sync', '20260805_erp_nas_table_auto_sync.sql', 'd44430ac56e835e9eff2cb2b0a145169c5409c5be3bbde3fe5840932b8cd70b2', 'test', 'APPLIED', NOW(), CASE WHEN 'APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Applying required database SQL: 20260805_mes_edhr_frontline_pqc_menu.sql
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 test -f '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260805_mes_edhr_frontline_pqc_menu.sql' && echo REQUIRED_SQL_EXISTS
+REQUIRED_SQL_EXISTS
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260805_mes_edhr_frontline_pqc_menu', '20260805_mes_edhr_frontline_pqc_menu.sql', 'b8a5d9f5e2b2ea4723393bb54dece004c94b8da56797b3e9550147d9e77d5894', 'test', 'RUNNING', NOW(), CASE WHEN 'RUNNING' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260805_mes_edhr_frontline_pqc_menu.sql' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260805_mes_edhr_frontline_pqc_menu', '20260805_mes_edhr_frontline_pqc_menu.sql', 'b8a5d9f5e2b2ea4723393bb54dece004c94b8da56797b3e9550147d9e77d5894', 'test', 'APPLIED', NOW(), CASE WHEN 'APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Applying required database SQL: 20260805_mes_pqc_process_inspection_aggregate_detail.sql
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 test -f '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260805_mes_pqc_process_inspection_aggregate_detail.sql' && echo REQUIRED_SQL_EXISTS
+REQUIRED_SQL_EXISTS
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260805_mes_pqc_process_inspection_aggregate_detail', '20260805_mes_pqc_process_inspection_aggregate_detail.sql', 'ade9cf166dd06c5f4ca57f4e23d43efefa22460d9f269b131a9e8f025cb3bdf7', 'test', 'RUNNING', NOW(), CASE WHEN 'RUNNING' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260805_mes_pqc_process_inspection_aggregate_detail.sql' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260805_mes_pqc_process_inspection_aggregate_detail', '20260805_mes_pqc_process_inspection_aggregate_detail.sql', 'ade9cf166dd06c5f4ca57f4e23d43efefa22460d9f269b131a9e8f025cb3bdf7', 'test', 'APPLIED', NOW(), CASE WHEN 'APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Applying required database SQL: 20260805_mes_process_loss_reasons.sql
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 test -f '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260805_mes_process_loss_reasons.sql' && echo REQUIRED_SQL_EXISTS
+REQUIRED_SQL_EXISTS
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260805_mes_process_loss_reasons', '20260805_mes_process_loss_reasons.sql', 'fe0c554bad7ebb7aabba3e14e3735e78f2ee90b20466caff9b40ec519f9e374e', 'test', 'RUNNING', NOW(), CASE WHEN 'RUNNING' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260805_mes_process_loss_reasons.sql' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260805_mes_process_loss_reasons', '20260805_mes_process_loss_reasons.sql', 'fe0c554bad7ebb7aabba3e14e3735e78f2ee90b20466caff9b40ec519f9e374e', 'test', 'APPLIED', NOW(), CASE WHEN 'APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Applying required database SQL: 20260805_mes_process_pool_ac_m16_terminal_constraints.sql
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 test -f '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260805_mes_process_pool_ac_m16_terminal_constraints.sql' && echo REQUIRED_SQL_EXISTS
+REQUIRED_SQL_EXISTS
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260805_mes_process_pool_ac_m16_terminal_constraints', '20260805_mes_process_pool_ac_m16_terminal_constraints.sql', '19e84e76e50c75c3867d1d818ab3e1af2f4f1bdfd70e9404121393edd17fd9d2', 'test', 'RUNNING', NOW(), CASE WHEN 'RUNNING' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260805_mes_process_pool_ac_m16_terminal_constraints.sql' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260805_mes_process_pool_ac_m16_terminal_constraints', '20260805_mes_process_pool_ac_m16_terminal_constraints.sql', '19e84e76e50c75c3867d1d818ab3e1af2f4f1bdfd70e9404121393edd17fd9d2', 'test', 'APPLIED', NOW(), CASE WHEN 'APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Applying required database SQL: 20260805_mes_process_pool_ac_m20_pqc_review_closure.sql
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 test -f '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260805_mes_process_pool_ac_m20_pqc_review_closure.sql' && echo REQUIRED_SQL_EXISTS
+REQUIRED_SQL_EXISTS
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260805_mes_process_pool_ac_m20_pqc_review_closure', '20260805_mes_process_pool_ac_m20_pqc_review_closure.sql', '314453842d9b3a008f3b16dba5d952e6808daa840a3748137f8343b18df03e8b', 'test', 'RUNNING', NOW(), CASE WHEN 'RUNNING' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260805_mes_process_pool_ac_m20_pqc_review_closure.sql' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+1
+1
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260805_mes_process_pool_ac_m20_pqc_review_closure', '20260805_mes_process_pool_ac_m20_pqc_review_closure.sql', '314453842d9b3a008f3b16dba5d952e6808daa840a3748137f8343b18df03e8b', 'test', 'APPLIED', NOW(), CASE WHEN 'APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Applying required database SQL: 20260805_mes_pqc_process_inspection_aggregate_runtime_closure.sql
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 test -f '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260805_mes_pqc_process_inspection_aggregate_runtime_closure.sql' && echo REQUIRED_SQL_EXISTS
+REQUIRED_SQL_EXISTS
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260805_mes_pqc_process_inspection_aggregate_runtime_closure', '20260805_mes_pqc_process_inspection_aggregate_runtime_closure.sql', '5bcf61df86f2a24b4ba2841288c761b4c2741759ebe6d1e1e72be90b7ff48aa5', 'test', 'RUNNING', NOW(), CASE WHEN 'RUNNING' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260805_mes_pqc_process_inspection_aggregate_runtime_closure.sql' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260805_mes_pqc_process_inspection_aggregate_runtime_closure', '20260805_mes_pqc_process_inspection_aggregate_runtime_closure.sql', '5bcf61df86f2a24b4ba2841288c761b4c2741759ebe6d1e1e72be90b7ff48aa5', 'test', 'APPLIED', NOW(), CASE WHEN 'APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Applying required database SQL: 20260805_mes_process_pool_device_parameter_route_process_constraints.sql
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 test -f '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260805_mes_process_pool_device_parameter_route_process_constraints.sql' && echo REQUIRED_SQL_EXISTS
+REQUIRED_SQL_EXISTS
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260805_mes_process_pool_device_parameter_route_process_constraints', '20260805_mes_process_pool_device_parameter_route_process_constraints.sql', 'd11115aa9fc57032f2a017c056416c91ecf77dbcde980f16ef8d65187e2fab8d', 'test', 'RUNNING', NOW(), CASE WHEN 'RUNNING' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260805_mes_process_pool_device_parameter_route_process_constraints.sql' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260805_mes_process_pool_device_parameter_route_process_constraints', '20260805_mes_process_pool_device_parameter_route_process_constraints.sql', 'd11115aa9fc57032f2a017c056416c91ecf77dbcde980f16ef8d65187e2fab8d', 'test', 'APPLIED', NOW(), CASE WHEN 'APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Applying required database SQL: 20260805_mes_process_pool_production_personnel.sql
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 test -f '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260805_mes_process_pool_production_personnel.sql' && echo REQUIRED_SQL_EXISTS
+REQUIRED_SQL_EXISTS
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260805_mes_process_pool_production_personnel', '20260805_mes_process_pool_production_personnel.sql', '8719f3d89da9869273f55cd6bb8c0da40ebfaae3a08cf566c2b8ce43f9b5b0fe', 'test', 'RUNNING', NOW(), CASE WHEN 'RUNNING' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260805_mes_process_pool_production_personnel.sql' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260805_mes_process_pool_production_personnel', '20260805_mes_process_pool_production_personnel.sql', '8719f3d89da9869273f55cd6bb8c0da40ebfaae3a08cf566c2b8ce43f9b5b0fe', 'test', 'APPLIED', NOW(), CASE WHEN 'APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Applying required database SQL: 20260805_mes_qa_final_inspection_applicability.sql
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 test -f '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260805_mes_qa_final_inspection_applicability.sql' && echo REQUIRED_SQL_EXISTS
+REQUIRED_SQL_EXISTS
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260805_mes_qa_final_inspection_applicability', '20260805_mes_qa_final_inspection_applicability.sql', 'dee06e5a83f8e4066a6fd56677351d98b338f59dd8411c96d3a70f276ae181eb', 'test', 'RUNNING', NOW(), CASE WHEN 'RUNNING' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260805_mes_qa_final_inspection_applicability.sql' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260805_mes_qa_final_inspection_applicability', '20260805_mes_qa_final_inspection_applicability.sql', 'dee06e5a83f8e4066a6fd56677351d98b338f59dd8411c96d3a70f276ae181eb', 'test', 'APPLIED', NOW(), CASE WHEN 'APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Applying required database SQL: 20260806_mes_pqc_leader_role_permission_tab.sql
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 test -f '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260806_mes_pqc_leader_role_permission_tab.sql' && echo REQUIRED_SQL_EXISTS
+REQUIRED_SQL_EXISTS
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260806_mes_pqc_leader_role_permission_tab', '20260806_mes_pqc_leader_role_permission_tab.sql', '00d2164aaaa24f7ce8a4c5f795d82f04bc6bca2f8fb75c4449dad4d0785f1613', 'test', 'RUNNING', NOW(), CASE WHEN 'RUNNING' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260806_mes_pqc_leader_role_permission_tab.sql' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260806_mes_pqc_leader_role_permission_tab', '20260806_mes_pqc_leader_role_permission_tab.sql', '00d2164aaaa24f7ce8a4c5f795d82f04bc6bca2f8fb75c4449dad4d0785f1613', 'test', 'APPLIED', NOW(), CASE WHEN 'APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Applying required database SQL: 20260806_mes_qa_role_permission_tab.sql
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 test -f '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260806_mes_qa_role_permission_tab.sql' && echo REQUIRED_SQL_EXISTS
+REQUIRED_SQL_EXISTS
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260806_mes_qa_role_permission_tab', '20260806_mes_qa_role_permission_tab.sql', '3d406d174d03edcdec053d07f9ec4ab84284a36cbd1f0b01db042081306fa833', 'test', 'RUNNING', NOW(), CASE WHEN 'RUNNING' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat '/var/lib/docker/intruoyi-releases/release-20260806-intmain-head-test-r260806b-r2/required-sql/20260806_mes_qa_role_permission_tab.sql' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database>
+INSERT INTO infra_release_migration (release_tag, migration_id, file_name, sha256, target_environment, status, started_at, finished_at, error_message, operation_id, creator, create_time, updater, update_time, deleted)
+VALUES ('release-20260806-intmain-head-test-r260806b-r2', '20260806_mes_qa_role_permission_tab', '20260806_mes_qa_role_permission_tab.sql', '3d406d174d03edcdec053d07f9ec4ab84284a36cbd1f0b01db042081306fa833', 'test', 'APPLIED', NOW(), CASE WHEN 'APPLIED' IN ('APPLIED', 'FAILED', 'SKIPPED_ALREADY_APPLIED') THEN NOW() ELSE NULL END, NULLIF('', ''), 'release-20260806-intmain-head-test-r260806b-r2', 'release-system', NOW(), 'release-system', NOW(), b'0')
+ON DUPLICATE KEY UPDATE status = VALUES(status), file_name = VALUES(file_name), sha256 = VALUES(sha256), release_tag = VALUES(release_tag), finished_at = VALUES(finished_at), error_message = VALUES(error_message), operation_id = VALUES(operation_id), updater = VALUES(updater), update_time = NOW(), deleted = b'0';
+SQL
+mysql: [Warning] Using a password on the command line interface can be insecure.
+[INFO] Checking remote Quartz schema
+[INFO] Checking remote showroom runtime schema
+[INFO] Showroom file storage config 28 is protected and target-bound
+[INFO] Starting application services on the test server: backend frontend
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cd '/opt/intruoyi/runtime' && docker compose up -d --no-deps backend frontend
+Container intruoyi-backend  Recreate
+ Container intruoyi-backend  Recreated
+ Container intruoyi-frontend  Recreate
+ Container intruoyi-frontend  Recreated
+ Container intruoyi-backend  Starting
+ Container intruoyi-backend  Started
+ Container intruoyi-frontend  Starting
+ Container intruoyi-frontend  Started
+[INFO] Waiting for remote HTTP readiness
+[FAIL] Remote URL did not become ready within 180 seconds: http://127.0.0.1:48081/actuator/health
+curl: (56) Recv failure: 连接被对方重�?close - IO is still pending on closed socket. read:1, write:0, io:000001B7479462A0
+[INFO] Run: ssh -n -o BatchMode=yes -o ConnectTimeout=10 -o ConnectionAttempts=1 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=no root@172.30.30.58 cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p<redacted> --default-character-set=utf8mb4 <database> --skip-column-names ruoyi-vue-p<redacted> | grep '^LOCK_RELEASED$'
+UPDATE infra_release_operation_lock
+SET status = 'FAILED',
+    finished_at = NOW(),
+    error_message = NULLIF('Remote URL did not become ready within 180 seconds: http://127.0.0.1:48081/actuator/health
+curl: (56) Recv failure: 连接被对方重�?close - IO is still pending on closed socket. read:1, write:0, io:000001B7479462A0', ''),
+    updater = 'release-system',
+    update_time = NOW()
+WHERE target_environment = 'test'
+  AND operation_id = 'test-release-20260806-intmain-head-test-r260806b-r2'
+  AND status = 'RUNNING';
+SELECT CASE WHEN status = 'FAILED' THEN 'LOCK_RELEASED' ELSE CONCAT('LOCK_RELEASE_FAILED:', operation_id, ':', status) END
+FROM infra_release_operation_lock
+WHERE target_environment = 'test';
+SQL
+LOCK_RELEASED
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR: 命令退出码非 0: 1

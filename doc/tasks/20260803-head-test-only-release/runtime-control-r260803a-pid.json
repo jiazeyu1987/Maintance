@@ -1,0 +1,10 @@
+{
+  "pid": 52044,
+  "root": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260803a\\m",
+  "jar": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260803a\\m\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar",
+  "stdout": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260803-head-test-only-release\\runtime-control-r260803a.out.log",
+  "stderr": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260803-head-test-only-release\\runtime-control-r260803a.err.log",
+  "healthOk": true,
+  "healthBody": "{\"status\":\"UP\"}",
+  "lastError": "URLError(TimeoutError('timed out'))"
+}

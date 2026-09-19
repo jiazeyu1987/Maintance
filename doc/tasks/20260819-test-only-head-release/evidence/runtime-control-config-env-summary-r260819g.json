@@ -1,0 +1,11 @@
+{
+  "prod": {
+    "access-enabled": "false"
+  },
+  "backup": {
+    "access-enabled": "false"
+  },
+  "test": {
+    "access-enabled": "true"
+  }
+}

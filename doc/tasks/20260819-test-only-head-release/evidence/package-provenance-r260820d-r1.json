@@ -1,0 +1,31 @@
+{
+  "status": "passed",
+  "releaseTag": "release-20260820-frozen-head-test-r260820d-r1",
+  "packagePath": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260820-frozen-head-test-r260820d-r1",
+  "frozenCommit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+  "changeSummary": "任务: 修复C00发布后空哈希",
+  "checks": {
+    "manifestValidatorPassed": true,
+    "manifestTagMatches": true,
+    "legacyManifestMatches": true,
+    "sourceReposFrozenAndClean": true,
+    "changeSetBoundToCommit": true,
+    "frontendReleaseInfoMatches": true,
+    "imageArchiveDeclaredAndHashed": true,
+    "runtimeEnvironmentBoundary": true
+  },
+  "artifacts": {
+    "imageArchive": {
+      "path": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260820-frozen-head-test-r260820d-r1\\intruoyi-images_release-20260820-frozen-head-test-r260820d-r1.tar",
+      "sha256": "2376b733ecd114cd2add3dba3d5a890bb5ad1c7aeebcc34f101c7c62ea138ca4",
+      "bytes": 735168512
+    },
+    "requiredSqlCount": 506
+  },
+  "runtimeEnvironment": {
+    "testEdhrEndpoint": "http://172.30.30.58:9000",
+    "prodEdhrEndpointConfigured": false,
+    "backupEdhrEndpointConfigured": false
+  },
+  "failures": []
+}

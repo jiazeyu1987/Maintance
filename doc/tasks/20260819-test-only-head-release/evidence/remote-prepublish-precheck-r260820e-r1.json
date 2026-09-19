@@ -1,0 +1,17 @@
+{
+  "releaseTag": "release-20260820-frozen-head-test-r260820e-r1",
+  "sshExit": 0,
+  "checks": {
+    "TARGET_LOCK_ROWS": "0",
+    "BAD_MIGRATIONS": "0",
+    "TARGET_MIGRATION_ROWS": "0",
+    "RUNNING_LOCKS": "0"
+  },
+  "raw": [
+    "TARGET_LOCK_ROWS\t0",
+    "RUNNING_LOCKS\t0",
+    "TARGET_MIGRATION_ROWS\t0",
+    "BAD_MIGRATIONS\t0"
+  ],
+  "checkedAt": "2026-08-20T14:28:49"
+}

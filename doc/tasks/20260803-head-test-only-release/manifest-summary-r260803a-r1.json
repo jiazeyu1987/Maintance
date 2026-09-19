@@ -1,0 +1,115 @@
+{
+  "releaseTag": "release-20260803-intmain-head-test-r260803a-r1",
+  "packagePath": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260803-intmain-head-test-r260803a-r1",
+  "packageType": "full-release",
+  "publishScope": "code-only",
+  "createdAt": "2026-08-02T17:00:24.0100707Z",
+  "sourceRepos": [
+    {
+      "name": "ruoyi-vue-pro",
+      "pathRole": "backend",
+      "commit": "1606947b7598eca15e904362759a7236a255dbbf",
+      "branch": "HEAD",
+      "dirty": false,
+      "dirtySummaryHash": null
+    },
+    {
+      "name": "yudao-ui-admin-vue3",
+      "pathRole": "admin-frontend",
+      "commit": "1606947b7598eca15e904362759a7236a255dbbf",
+      "branch": "HEAD",
+      "dirty": false,
+      "dirtySummaryHash": null
+    }
+  ],
+  "changeSet": {
+    "summary": "Release package release-20260803-intmain-head-test-r260803a-r1",
+    "component": "intruoyi",
+    "items": [
+      "发布包：release-20260803-intmain-head-test-r260803a-r1",
+      "组件范围：intruoyi"
+    ],
+    "includeShowroomBuildPackage": false,
+    "includeOnlyOffice": false
+  },
+  "components": [
+    "backend",
+    "database-contract",
+    "required-sql",
+    "runtime-env",
+    "admin-frontend",
+    "packaging-manifest"
+  ],
+  "artifactCount": 429,
+  "requiredSqlCount": 419,
+  "releaseManifestGitCommit": "1606947b7598eca15e904362759a7236a255dbbf",
+  "releaseManifestBuiltAt": "2026-08-02T17:00:21.7332672Z",
+  "validator": {
+    "status": "passed",
+    "mode": "report-only",
+    "code": "MANIFEST_VALIDATION_PASSED",
+    "scope": "manifest",
+    "path": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260803-intmain-head-test-r260803a-r1",
+    "message": "Manifest v1 validation passed.",
+    "impact": "The release package contract is structurally valid for Phase 1 report-only gates.",
+    "nextStep": "Continue build intake or deploy precheck report-only validation.",
+    "errors": [],
+    "warnings": [],
+    "checks": [
+      {
+        "status": "passed",
+        "code": "MANIFEST_PRESENT",
+        "scope": "manifest.presence",
+        "path": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260803-intmain-head-test-r260803a-r1\\manifest.json",
+        "message": "manifest.json was found.",
+        "impact": "Manifest JSON parsing can continue.",
+        "nextStep": "Parse Manifest v1 JSON."
+      },
+      {
+        "status": "passed",
+        "code": "MANIFEST_JSON_VALID",
+        "scope": "manifest.parse",
+        "path": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260803-intmain-head-test-r260803a-r1\\manifest.json",
+        "message": "manifest.json parsed successfully.",
+        "impact": "Schema and package integrity checks can continue.",
+        "nextStep": "Validate Manifest v1 required fields and package type."
+      },
+      {
+        "status": "passed",
+        "code": "MANIFEST_REQUIRED_FIELDS_PRESENT",
+        "scope": "manifest.required",
+        "path": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260803-intmain-head-test-r260803a-r1\\manifest.json",
+        "message": "All required Manifest v1 top-level fields are present.",
+        "impact": "Schema-level validation can continue.",
+        "nextStep": "Continue package type, baseline, file, checksum, and forbidden field checks."
+      },
+      {
+        "status": "passed",
+        "code": "MANIFEST_SCHEMA_CORE_VALID",
+        "scope": "manifest.schema",
+        "path": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260803-intmain-head-test-r260803a-r1\\manifest.json",
+        "message": "Manifest v1 core schema checks passed.",
+        "impact": "Package type and smart-release baseline requirements are explicit.",
+        "nextStep": "Continue file declaration and forbidden field checks."
+      },
+      {
+        "status": "passed",
+        "code": "PACKAGE_DECLARATIONS_VALID",
+        "scope": "package.files",
+        "path": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260803-intmain-head-test-r260803a-r1",
+        "message": "Package file declaration and sha256 checks passed.",
+        "impact": "Every package file is declared and every declared sha256 matched.",
+        "nextStep": "Continue forbidden target and secret scanning."
+      },
+      {
+        "status": "passed",
+        "code": "FORBIDDEN_CONTENT_SCAN_PASSED",
+        "scope": "forbiddenFieldsCheck",
+        "path": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260803-intmain-head-test-r260803a-r1",
+        "message": "Forbidden target IP and secret scans passed.",
+        "impact": "No hardcoded target address or secret pattern was detected in manifest-scanned package files.",
+        "nextStep": "Manifest validator has completed."
+      }
+    ]
+  }
+}

@@ -1,0 +1,223 @@
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":22679,"ExitCode":0,"Error":"","StartedAt":"2026-08-06T12:17:25.780676025Z","FinishedAt":"2026-08-06T12:17:25.313049396Z"}
+BACKEND_LOG_START
+2026-08-06 20:16:15.203 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'serverAnnotatedBeanRegistry' of type [org.springframework.ai.mcp.server.common.autoconfigure.annotations.McpServerAnnotationScannerAutoConfiguration$ServerMcpAnnotatedBeans] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-p<redacted> Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [serverAnnotatedMethodBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-p<redacted> declare it with ROLE_INFRASTRUCTURE.
+2026-08-06 20:16:15.222 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'spring.ai.mcp.server.annotation-scanner-org.springframework.ai.mcp.server.common.autoconfigure.annotations.McpServerAnnotationScannerProperties' of type [org.springframework.ai.mcp.server.common.autoconfigure.annotations.McpServerAnnotationScannerProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-p<redacted> Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [serverAnnotatedMethodBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-p<redacted> declare it with ROLE_INFRASTRUCTURE.
+2026-08-06 20:16:15.908 [main] [34mINFO [0;39m [36mo.s.boot.web.embedded.tomcat.TomcatWebServer:111[0;39m - Tomcat initialized with port 48081 (http)
+2026-08-06 20:16:15.933 [main] [34mINFO [0;39m [36morg.apache.coyote.http11.Http11NioProtocol:168[0;39m - Initializing ProtocolHandler ["http-nio-48081"]
+2026-08-06 20:16:15.937 [main] [34mINFO [0;39m [36morg.apache.catalina.core.StandardService:168[0;39m - Starting service [Tomcat]
+2026-08-06 20:16:15.937 [main] [34mINFO [0;39m [36morg.apache.catalina.core.StandardEngine:168[0;39m - Starting Servlet engine: [Apache Tomcat/10.1.54]
+2026-08-06 20:16:16.010 [main] [34mINFO [0;39m [36mo.a.c.core.ContainerBase.[Tomcat].[localhost].[/]:168[0;39m - Initializing Spring embedded WebApplicationContext
+2026-08-06 20:16:16.010 [main] [34mINFO [0;39m [36mo.s.b.w.s.c.ServletWebServerApplicationContext:301[0;39m - Root WebApplicationContext: initialization completed in 14389 ms
+
+================================================================================================
+            _ _ __  __       ____                       _   
+           | (_)  \/  |_   _|  _ \ ___ _ __   ___  _ __| |_ 
+        _  | | | |\/| | | | | |_) / _ \ '_ \ / _ \| '__| __|
+       | |_| | | |  | | |_| |  _ <  __/ |_) | (_) | |  | |_ 
+        \___/|_|_|  |_|\__,_|_| \_\___| .__/ \___/|_|   \__|
+                                      |_|                   
+		Version: 2.3.2
+		打造 “简单|智能|专业 ” 的数据可视化报表。
+		官网：https://jimureport.com
+================================================================================================
+2026-08-06 20:16:17.142 [main] [34mINFO [0;39m [36mcom.alibaba.druid.pool.DruidDataSource:673[0;39m - {dataSource-1,master} inited
+2026-08-06 20:16:17.150 [main] [34mINFO [0;39m [36mc.b.dynamic.datasource.DynamicRoutingDataSource:158[0;39m - dynamic-datasource - add a datasource named [slave] success
+2026-08-06 20:16:17.150 [main] [34mINFO [0;39m [36mc.b.dynamic.datasource.DynamicRoutingDataSource:158[0;39m - dynamic-datasource - add a datasource named [master] success
+2026-08-06 20:16:17.151 [main] [34mINFO [0;39m [36mc.b.dynamic.datasource.DynamicRoutingDataSource:241[0;39m - dynamic-datasource initial loaded [2] datasource,primary datasource named [master]
+2026-08-06 20:16:23.070 [main] [34mINFO [0;39m [36morg.redisson.Version:43[0;39m - Redisson 4.3.1
+2026-08-06 20:16:23.918 [redisson-netty-1-5] [34mINFO [0;39m [36morg.redisson.connection.ConnectionsHolder:152[0;39m - 1 connections initialized for redis/192.168.48.2:6379
+2026-08-06 20:16:24.031 [redisson-netty-1-20] [34mINFO [0;39m [36morg.redisson.connection.ConnectionsHolder:152[0;39m - 24 connections initialized for redis/192.168.48.2:6379
+2026-08-06 20:16:30.601 [main] [34mINFO [0;39m [36mc.a.c.config.AjCaptchaServiceAutoConfiguration:33[0;39m - 自定义配置项：
+AjCaptchaProperties{type=BLOCKPUZZLE, jigsaw='classpath:images/jigsaw', picClick='classpath:images/pic-click', waterMark='瑛泰源码', waterFont='WenQuanZhengHei.ttf', fontType='WenQuanZhengHei.ttf', slipOffset='5', aesStatus=true, interferenceOptions='0', cacheNumber='1000', timingClear='180', cacheType=redis, reqFrequencyLimitEnable=false, reqGetLockLimit=5, reqGetLockSeconds=10, reqGetMinuteLimit=30, reqCheckMinuteLimit=60, reqVerifyMinuteLimit=60}
+2026-08-06 20:16:30.625 [main] [34mINFO [0;39m [36mcom.anji.captcha.util.ImageUtils:71[0;39m - 自定义resource底图:[SLIDING_BLOCK=[Ljava.lang.String;@d614b8e, ORIGINAL=[Ljava.lang.String;@48d41bbf, PIC_CLICK=[Ljava.lang.String;@1d120fb2]
+2026-08-06 20:16:30.629 [main] [34mINFO [0;39m [36mc.anji.captcha.service.impl.CaptchaServiceFactory:52[0;39m - supported-captchaCache-service:[redis, local]
+2026-08-06 20:16:30.640 [main] [34mINFO [0;39m [36mc.anji.captcha.service.impl.CaptchaServiceFactory:57[0;39m - supported-captchaTypes-service:[clickWord, default, blockPuzzle, pictureWord]
+2026-08-06 20:16:30.640 [main] [34mINFO [0;39m [36mc.a.c.service.impl.BlockPuzzleCaptchaServiceImpl:80[0;39m - --->>>初始化验证码底图<<<---blockPuzzle
+2026-08-06 20:16:37.355 [main] [34mINFO [0;39m [36morg.quartz.impl.StdSchedulerFactory:1222[0;39m - Using default implementation for ThreadExecutor
+2026-08-06 20:16:37.386 [main] [34mINFO [0;39m [36morg.quartz.core.SchedulerSignalerImpl:62[0;39m - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2026-08-06 20:16:37.386 [main] [34mINFO [0;39m [36morg.quartz.core.QuartzScheduler:224[0;39m - Quartz Scheduler v2.5.2 created.
+2026-08-06 20:16:37.408 [main] [34mINFO [0;39m [36mo.s.scheduling.quartz.LocalDataSourceJobStore:676[0;39m - Using db table-based data access locking (synchronization).
+2026-08-06 20:16:37.411 [main] [34mINFO [0;39m [36mo.s.scheduling.quartz.LocalDataSourceJobStore:147[0;39m - JobStoreCMT initialized.
+2026-08-06 20:16:37.412 [main] [34mINFO [0;39m [36morg.quartz.core.QuartzScheduler:289[0;39m - Scheduler meta-data: Quartz Scheduler (v2.5.2) 'schedulerName' with instanceId 'e406e8d73c7f1786018597358'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 25 threads.
+  Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. and is clustered.
+
+2026-08-06 20:16:37.413 [main] [34mINFO [0;39m [36morg.quartz.impl.StdSchedulerFactory:1376[0;39m - Quartz scheduler 'schedulerName' initialized from an externally provided properties instance.
+2026-08-06 20:16:37.413 [main] [34mINFO [0;39m [36morg.quartz.impl.StdSchedulerFactory:1378[0;39m - Quartz scheduler version: 2.5.2
+2026-08-06 20:16:37.413 [main] [34mINFO [0;39m [36morg.quartz.core.QuartzScheduler:2250[0;39m - JobFactory set to: org.springframework.scheduling.quartz.SpringBeanJobFactory@4ae307cc
+2026-08-06 20:16:38.506 [main] [34mINFO [0;39m [36mo.f.s.b.e.EventRegistryAutoConfiguration:106[0;39m - No deployment resources were found for autodeployment
+2026-08-06 20:16:39.094 [main] [34mINFO [0;39m [36mo.f.c.engine.impl.async.DefaultAsyncTaskExecutor:132[0;39m - Creating thread pool queue of size 100
+2026-08-06 20:16:39.094 [main] [34mINFO [0;39m [36mo.f.c.engine.impl.async.DefaultAsyncTaskExecutor:138[0;39m - Creating thread factory with naming pattern flowable-async-task-invoker-%d
+2026-08-06 20:16:39.096 [main] [34mINFO [0;39m [36mo.f.c.engine.impl.async.DefaultAsyncTaskExecutor:146[0;39m - Creating executor service with corePoolSize 8, maxPoolSize 8 and keepAliveTime 5000
+2026-08-06 20:16:39.458 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1076[0;39m - Found 2 Engine Configurators in total:
+2026-08-06 20:16:39.459 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1078[0;39m - class org.flowable.eventregistry.spring.configurator.SpringEventRegistryConfigurator (priority:100000)
+2026-08-06 20:16:39.459 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1078[0;39m - class org.flowable.idm.engine.configurator.IdmEngineConfigurator (priority:150000)
+2026-08-06 20:16:39.459 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1104[0;39m - Executing beforeInit() of class org.flowable.eventregistry.spring.configurator.SpringEventRegistryConfigurator (priority:100000)
+2026-08-06 20:16:39.469 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1104[0;39m - Executing beforeInit() of class org.flowable.idm.engine.configurator.IdmEngineConfigurator (priority:150000)
+2026-08-06 20:16:41.314 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1111[0;39m - Executing configure() of class org.flowable.eventregistry.spring.configurator.SpringEventRegistryConfigurator (priority:100000)
+2026-08-06 20:16:41.365 [main] [34mINFO [0;39m [36mo.f.eventregistry.impl.EventRegistryEngineImpl:53[0;39m - EventRegistryEngine default created
+2026-08-06 20:16:41.367 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1111[0;39m - Executing configure() of class org.flowable.idm.engine.configurator.IdmEngineConfigurator (priority:150000)
+2026-08-06 20:16:41.414 [main] [34mINFO [0;39m [36morg.flowable.idm.engine.impl.IdmEngineImpl:52[0;39m - IdmEngine default created
+2026-08-06 20:16:41.561 [main] [34mINFO [0;39m [36morg.flowable.engine.impl.ProcessEngineImpl:89[0;39m - ProcessEngine default created
+2026-08-06 20:16:41.647 [main] [34mINFO [0;39m [36mo.flowable.engine.impl.cmd.ValidateV5EntitiesCmd:43[0;39m - Total of v5 deployments found: 0
+2026-08-06 20:17:11.148 [main] [34mINFO [0;39m [36mc.i.yudao.module.ai.tool.method.PersonServiceImpl:145[0;39m - Initializing PersonService data store...
+2026-08-06 20:17:11.156 [main] [34mINFO [0;39m [36mc.i.yudao.module.ai.tool.method.PersonServiceImpl:148[0;39m - PersonService initialized with 100 records. Next ID: 101
+2026-08-06 20:17:23.854 [main] [31mWARN [0;39m [36mo.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext:636[0;39m - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'mesProcessPoolTeamLeaderController' defined in URL [jar:nested:/yudao-server/app.jar/!BOOT-INF/lib/yudao-module-mes-2026.04-SNAPSHOT.jar!/cn/iocoder/yudao/module/mes/controller/admin/pro/processpool/team/MesProcessPoolTeamLeaderController.class]: Unsatisfied dependency expressed through constructor parameter 5: Error creating bean with name 'mesTeamLeaderProcessConfigServiceImpl' defined in URL [jar:nested:/yudao-server/app.jar/!BOOT-INF/lib/yudao-module-mes-2026.04-SNAPSHOT.jar!/cn/iocoder/yudao/module/mes/service/pro/processpool/team/MesTeamLeaderProcessConfigServiceImpl.class]: Failed to instantiate [cn.iocoder.yudao.module.mes.service.pro.processpool.team.MesTeamLeaderProcessConfigServiceImpl]: No default constructor found
+2026-08-06 20:17:23.893 [main] [34mINFO [0;39m [36mo.s.scheduling.quartz.SchedulerFactoryBean:845[0;39m - Shutting down Quartz Scheduler
+2026-08-06 20:17:23.893 [main] [34mINFO [0;39m [36morg.quartz.core.QuartzScheduler:656[0;39m - Scheduler schedulerName_$_e406e8d73c7f1786018597358 shutting down.
+2026-08-06 20:17:23.894 [main] [34mINFO [0;39m [36morg.quartz.core.QuartzScheduler:576[0;39m - Scheduler schedulerName_$_e406e8d73c7f1786018597358 paused.
+2026-08-06 20:17:24.385 [main] [34mINFO [0;39m [36morg.quartz.core.QuartzScheduler:728[0;39m - Scheduler schedulerName_$_e406e8d73c7f1786018597358 shutdown complete.
+2026-08-06 20:17:24.463 [main] [34mINFO [0;39m [36mc.b.dynamic.datasource.DynamicRoutingDataSource:215[0;39m - dynamic-datasource start closing ....
+2026-08-06 20:17:24.466 [main] [34mINFO [0;39m [36mcom.alibaba.druid.pool.DruidDataSource:1880[0;39m - {dataSource-0} closing ...
+2026-08-06 20:17:24.466 [main] [34mINFO [0;39m [36mc.b.d.d.destroyer.DefaultDataSourceDestroyer:98[0;39m - dynamic-datasource close the datasource named [slave] success,
+2026-08-06 20:17:24.466 [main] [34mINFO [0;39m [36mcom.alibaba.druid.pool.DruidDataSource:1880[0;39m - {dataSource-1} closing ...
+2026-08-06 20:17:24.473 [main] [34mINFO [0;39m [36mcom.alibaba.druid.pool.DruidDataSource:1953[0;39m - {dataSource-1} closed
+2026-08-06 20:17:24.473 [main] [34mINFO [0;39m [36mc.b.d.d.destroyer.DefaultDataSourceDestroyer:98[0;39m - dynamic-datasource close the datasource named [master] success,
+2026-08-06 20:17:24.473 [main] [34mINFO [0;39m [36mc.b.dynamic.datasource.DynamicRoutingDataSource:219[0;39m - dynamic-datasource all closed success,bye
+2026-08-06 20:17:24.527 [main] [34mINFO [0;39m [36morg.apache.catalina.core.StandardService:168[0;39m - Stopping service [Tomcat]
+2026-08-06 20:17:24.675 [main] [34mINFO [0;39m [36mo.s.b.a.logging.ConditionEvaluationReportLogger:82[0;39m - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-08-06 20:17:24.735 [main] [1;31mERROR[0;39m [36morg.springframework.boot.SpringApplication:857[0;39m - Application run failed
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'mesProcessPoolTeamLeaderController' defined in URL [jar:nested:/yudao-server/app.jar/!BOOT-INF/lib/yudao-module-mes-2026.04-SNAPSHOT.jar!/cn/iocoder/yudao/module/mes/controller/admin/pro/processpool/team/MesProcessPoolTeamLeaderController.class]: Unsatisfied dependency expressed through constructor parameter 5: Error creating bean with name 'mesTeamLeaderProcessConfigServiceImpl' defined in URL [jar:nested:/yudao-server/app.jar/!BOOT-INF/lib/yudao-module-mes-2026.04-SNAPSHOT.jar!/cn/iocoder/yudao/module/mes/service/pro/processpool/team/MesTeamLeaderProcessConfigServiceImpl.class]: Failed to instantiate [cn.iocoder.yudao.module.mes.service.pro.processpool.team.MesTeamLeaderProcessConfigServiceImpl]: No default constructor found
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:804)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1395)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1232)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.instantiateSingleton(DefaultListableBeanFactory.java:1228)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingleton(DefaultListableBeanFactory.java:1194)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:1130)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:991)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:628)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350)
+	at cn.iocoder.yudao.server.YudaoServerApplication.main(YudaoServerApplication.java:24)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:106)
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:64)
+	at org.springframework.boot.loader.launch.JarLauncher.main(JarLauncher.java:40)
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'mesTeamLeaderProcessConfigServiceImpl' defined in URL [jar:nested:/yudao-server/app.jar/!BOOT-INF/lib/yudao-module-mes-2026.04-SNAPSHOT.jar!/cn/iocoder/yudao/module/mes/service/pro/processpool/team/MesTeamLeaderProcessConfigServiceImpl.class]: Failed to instantiate [cn.iocoder.yudao.module.mes.service.pro.processpool.team.MesTeamLeaderProcessConfigServiceImpl]: No default constructor found
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateBean(AbstractAutowireCapableBeanFactory.java:1357)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1242)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1770)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1653)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791)
+	... 26 common frames omitted
+Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [cn.iocoder.yudao.module.mes.service.pro.processpool.team.MesTeamLeaderProcessConfigServiceImpl]: No default constructor found
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:119)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateBean(AbstractAutowireCapableBeanFactory.java:1351)
+	... 38 common frames omitted
+Caused by: java.lang.NoSuchMethodException: cn.iocoder.yudao.module.mes.service.pro.processpool.team.MesTeamLeaderProcessConfigServiceImpl.<init>()
+	at java.base/java.lang.Class.getConstructor0(Unknown Source)
+	at java.base/java.lang.Class.getDeclaredConstructor(Unknown Source)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:115)
+	... 39 common frames omitted
+2026-08-06 20:17:28.950 [background-p<redacted> [34mINFO [0;39m [36morg.hibernate.validator.internal.util.Version:21[0;39m - HV000001: Hibernate Validator 8.0.3.Final
+瑛泰源码 http://www.iocoder.cn
+Application Version: 1.0.0
+Spring Boot Version: 3.5.14
+
+.__   __.   ______      .______    __    __    _______
+|  \ |  |  /  __  \     |   _  \  |  |  |  |  /  _____|
+|   \|  | |  |  |  |    |  |_)  | |  |  |  | |  |  __
+|  . `  | |  |  |  |    |   _  <  |  |  |  | |  | |_ |
+|  |\   | |  `--'  |    |  |_)  | |  `--'  | |  |__| |
+|__| \__|  \______/     |______/   \______/   \______|
+
+███╗   ██╗ ██████╗     ██████╗ ██╗   ██╗ ██████╗
+████╗  ██║██╔═══██╗    ██╔══██╗██║   ██║██╔════╝
+██╔██╗ ██║██║   ██║    ██████╔╝██║   ██║██║  ███╗
+██║╚██╗██║██║   ██║    ██╔══██╗██║   ██║██║   ██║
+██║ ╚████║╚██████╔╝    ██████╔╝╚██████╔╝╚██████╔╝
+╚═╝  ╚═══╝ ╚═════╝     ╚═════╝  ╚═════╝  ╚═════╝
+
+2026-08-06 20:17:29.104 [main] [34mINFO [0;39m [36mcn.iocoder.yudao.server.YudaoServerApplication:53[0;39m - Starting YudaoServerApplication using Java 21.0.11 with PID 1 (/yudao-server/app.jar started by root in /yudao-server)
+2026-08-06 20:17:29.106 [main] [34mINFO [0;39m [36mcn.iocoder.yudao.server.YudaoServerApplication:658[0;39m - The following 1 profile is active: "dev"
+2026-08-06 20:17:39.509 [main] [34mINFO [0;39m [36mo.j.minidao.auto.MinidaoAutoConfiguration:23[0;39m -  ******************* init miniDao config [ begin ] *********************** 
+2026-08-06 20:17:39.510 [main] [34mINFO [0;39m [36mo.j.minidao.auto.MinidaoAutoConfiguration:26[0;39m -  ------ minidao.base-p<redacted> ------- org.jeecg.modules.jmreport.*,org.jeecg.modules.drag.*
+2026-08-06 20:17:39.511 [main] [34mINFO [0;39m [36mo.j.minidao.auto.MinidaoAutoConfiguration:50[0;39m -  *******************  init miniDao config  [ end ] *********************** 
+2026-08-06 20:17:40.867 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportCategoryDao }
+2026-08-06 20:17:40.869 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportDao }
+2026-08-06 20:17:40.870 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportDataSourceDao }
+2026-08-06 20:17:40.870 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportDbDao }
+2026-08-06 20:17:40.870 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportDbFieldDao }
+2026-08-06 20:17:40.870 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportDbParamDao }
+2026-08-06 20:17:40.870 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportDictDao }
+2026-08-06 20:17:40.870 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportDictItemDao }
+2026-08-06 20:17:40.870 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportExportJobDao }
+2026-08-06 20:17:40.870 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportExportLogDao }
+2026-08-06 20:17:40.871 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportExtDataDao }
+2026-08-06 20:17:40.871 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportLinkDao }
+2026-08-06 20:17:40.871 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportMapDao }
+2026-08-06 20:17:40.871 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportShareDao }
+2026-08-06 20:17:40.871 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.jmreport.desreport.dao.JimuReportSheetDao }
+2026-08-06 20:17:40.872 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.JimuDragCategoryDao }
+2026-08-06 20:17:40.872 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.JimuDragMapDao }
+2026-08-06 20:17:40.872 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.JimuReportIconLibDao }
+2026-08-06 20:17:40.872 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.OnlDragCompDao }
+2026-08-06 20:17:40.872 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.OnlDragDataSourceDao }
+2026-08-06 20:17:40.872 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.OnlDragDatasetHeadDao }
+2026-08-06 20:17:40.872 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.OnlDragDatasetItemDao }
+2026-08-06 20:17:40.872 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.OnlDragDatasetParamDao }
+2026-08-06 20:17:40.873 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.OnlDragPageCompDao }
+2026-08-06 20:17:40.873 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.OnlDragPageDao }
+2026-08-06 20:17:40.873 [main] [34mINFO [0;39m [36mo.j.minidao.factory.MiniDaoClassPathMapperScanner:55[0;39m - register minidao name is { org.jeecg.modules.drag.dao.OnlDragShareDao }
+2026-08-06 20:17:41.655 [main] [34mINFO [0;39m [36mc.g.y.a.MybatisPlusJoinAutoConfiguration:142[0;39m - MPJ SqlSessionFactory bean definition: sqlSessionFactory factoryBeanName: com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration factoryMethodName: sqlSessionFactory source: com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration.sqlSessionFactory(javax.sql.DataSource)
+2026-08-06 20:17:42.210 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'org.springframework.ai.model.anthropic.autoconfigure.StringToToolChoiceConverter' of type [org.springframework.ai.model.anthropic.autoconfigure.StringToToolChoiceConverter] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-p<redacted> Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [threadPoolTaskExecutorBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-p<redacted> declare it with ROLE_INFRASTRUCTURE.
+2026-08-06 20:17:42.814 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'com.mzt.logapi.starter.configuration.LogRecordProxyAutoConfiguration' of type [com.mzt.logapi.starter.configuration.LogRecordProxyAutoConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-p<redacted> Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [threadPoolTaskExecutorBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-p<redacted> declare it with ROLE_INFRASTRUCTURE.
+2026-08-06 20:17:42.830 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'mzt.log.record-com.mzt.logapi.starter.configuration.LogRecordProperties' of type [com.mzt.logapi.starter.configuration.LogRecordProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-p<redacted> Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [threadPoolTaskExecutorBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-p<redacted> declare it with ROLE_INFRASTRUCTURE.
+2026-08-06 20:17:42.844 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'logRecordPerformanceMonitor' of type [com.mzt.logapi.service.impl.DefaultLogRecordPerformanceMonitor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-p<redacted> Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [threadPoolTaskExecutorBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-p<redacted> declare it with ROLE_INFRASTRUCTURE.
+2026-08-06 20:17:42.889 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'cn.iocoder.yudao.framework.datapermission.config.YudaoDataPermissionAutoConfiguration' of type [cn.iocoder.yudao.framework.datapermission.config.YudaoDataPermissionAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-p<redacted> Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [threadPoolTaskExecutorBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-p<redacted> declare it with ROLE_INFRASTRUCTURE.
+2026-08-06 20:17:42.894 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'dataPermissionAnnotationAdvisor' of type [cn.iocoder.yudao.framework.datapermission.core.aop.DataPermissionAnnotationAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-p<redacted> Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [threadPoolTaskExecutorBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-p<redacted> declare it with ROLE_INFRASTRUCTURE.
+2026-08-06 20:17:42.895 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:429[0;39m - Bean 'cn.iocoder.yudao.framework.quartz.config.YudaoAsyncAutoConfiguration' of type [cn.iocoder.yudao.framework.quartz.config.YudaoAsyncAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-p<redacted> The currently created BeanPostProcessor [threadPoolTaskExecutorBeanPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-08-06 20:17:42.899 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:429[0;39m - Bean 'cn.iocoder.yudao.module.report.framework.jmreport.config.JmReportPdfExportAutoConfiguration' of type [cn.iocoder.yudao.module.report.framework.jmreport.config.JmReportPdfExportAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-p<redacted> The currently created BeanPostProcessor [jmReportPdfExportBeanPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-08-06 20:17:42.909 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'jmReportPdfFontRegistry' of type [cn.iocoder.yudao.module.report.framework.jmreport.core.pdf.JmReportPdfFontRegistry] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-p<redacted> Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [jmReportPdfExportBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-p<redacted> declare it with ROLE_INFRASTRUCTURE.
+2026-08-06 20:17:42.939 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'org.springframework.ai.mcp.server.common.autoconfigure.annotations.McpServerAnnotationScannerAutoConfiguration' of type [org.springframework.ai.mcp.server.common.autoconfigure.annotations.McpServerAnnotationScannerAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-p<redacted> Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [serverAnnotatedMethodBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-p<redacted> declare it with ROLE_INFRASTRUCTURE.
+2026-08-06 20:17:42.944 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'serverAnnotatedBeanRegistry' of type [org.springframework.ai.mcp.server.common.autoconfigure.annotations.McpServerAnnotationScannerAutoConfiguration$ServerMcpAnnotatedBeans] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-p<redacted> Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [serverAnnotatedMethodBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-p<redacted> declare it with ROLE_INFRASTRUCTURE.
+2026-08-06 20:17:42.953 [main] [31mWARN [0;39m [36mo.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker:437[0;39m - Bean 'spring.ai.mcp.server.annotation-scanner-org.springframework.ai.mcp.server.common.autoconfigure.annotations.McpServerAnnotationScannerProperties' of type [org.springframework.ai.mcp.server.common.autoconfigure.annotations.McpServerAnnotationScannerProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-p<redacted> Is this bean getting eagerly injected/applied to a currently created BeanPostProcessor [serverAnnotatedMethodBeanPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies/advisors. If this bean does not have to be post-p<redacted> declare it with ROLE_INFRASTRUCTURE.
+2026-08-06 20:17:43.766 [main] [34mINFO [0;39m [36mo.s.boot.web.embedded.tomcat.TomcatWebServer:111[0;39m - Tomcat initialized with port 48081 (http)
+2026-08-06 20:17:43.791 [main] [34mINFO [0;39m [36morg.apache.coyote.http11.Http11NioProtocol:168[0;39m - Initializing ProtocolHandler ["http-nio-48081"]
+2026-08-06 20:17:43.795 [main] [34mINFO [0;39m [36morg.apache.catalina.core.StandardService:168[0;39m - Starting service [Tomcat]
+2026-08-06 20:17:43.795 [main] [34mINFO [0;39m [36morg.apache.catalina.core.StandardEngine:168[0;39m - Starting Servlet engine: [Apache Tomcat/10.1.54]
+2026-08-06 20:17:43.867 [main] [34mINFO [0;39m [36mo.a.c.core.ContainerBase.[Tomcat].[localhost].[/]:168[0;39m - Initializing Spring embedded WebApplicationContext
+2026-08-06 20:17:43.867 [main] [34mINFO [0;39m [36mo.s.b.w.s.c.ServletWebServerApplicationContext:301[0;39m - Root WebApplicationContext: initialization completed in 14279 ms
+
+================================================================================================
+            _ _ __  __       ____                       _   
+           | (_)  \/  |_   _|  _ \ ___ _ __   ___  _ __| |_ 
+        _  | | | |\/| | | | | |_) / _ \ '_ \ / _ \| '__| __|
+       | |_| | | |  | | |_| |  _ <  __/ |_) | (_) | |  | |_ 
+        \___/|_|_|  |_|\__,_|_| \_\___| .__/ \___/|_|   \__|
+                                      |_|                   
+		Version: 2.3.2
+		打造 “简单|智能|专业 ” 的数据可视化报表。
+		官网：https://jimureport.com
+================================================================================================
+2026-08-06 20:17:45.027 [main] [34mINFO [0;39m [36mcom.alibaba.druid.pool.DruidDataSource:673[0;39m - {dataSource-1,master} inited
+2026-08-06 20:17:45.037 [main] [34mINFO [0;39m [36mc.b.dynamic.datasource.DynamicRoutingDataSource:158[0;39m - dynamic-datasource - add a datasource named [slave] success
+2026-08-06 20:17:45.038 [main] [34mINFO [0;39m [36mc.b.dynamic.datasource.DynamicRoutingDataSource:158[0;39m - dynamic-datasource - add a datasource named [master] success
+2026-08-06 20:17:45.038 [main] [34mINFO [0;39m [36mc.b.dynamic.datasource.DynamicRoutingDataSource:241[0;39m - dynamic-datasource initial loaded [2] datasource,primary datasource named [master]
+BACKEND_LOG_END

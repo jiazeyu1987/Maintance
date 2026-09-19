@@ -1,0 +1,8 @@
+{
+  "round": "r260820e",
+  "health": "UP",
+  "pid": 53392,
+  "commandLine": "\"C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.10.7-hotspot\\bin\\java.exe\" -jar D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260820e\\m\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar --server.port=48182",
+  "commandLineMatches": true,
+  "runningOperationCount": 0
+}

@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "releaseTag": "release-20260819-intmain-head-test-r260819e-r2",
+  "checkedAt": "2026-08-19T20:35:52.7506954+08:00",
+  "sshExitCode": 0,
+  "sshStderrSanitized": "close - IO is still pending on closed socket. read:1, write:0, io:0000029FB725EAC0\r\n",
+  "imageTagBeforePublish": "release-20260819-intmain-head-test-r260819d-r2",
+  "edhrEndpointBeforePublish": "http://172.30.30.58:9000",
+  "composeRows": [
+    "intruoyi-backend|intruoyi-backend:hotfix-20260814-route-submit-order-r1|running|Up 4 days",
+    "intruoyi-frontend|intruoyi-frontend:release-20260813-intmain-head-test-r260812b-r2|running|Up 6 days",
+    "intruoyi-mysql|mysql:8.0.39|running|Up 2 months (healthy)",
+    "intruoyi-onlyoffice|onlyoffice/documentserver:latest|running|Up 6 days (healthy)",
+    "intruoyi-redis|redis:7-alpine|running|Up 2 months (healthy)",
+    "intruoyi-website|nginx:1.27-alpine|running|Up 4 weeks"
+  ],
+  "backendHealthBeforePublish": "{\"status\":\"UP\"}",
+  "frontendHttpBeforePublish": "200",
+  "runningLockRows": null,
+  "targetTagMigrationRows": null,
+  "recentTestLocks": "test|release-20260819-intmain-head-test-r260819d-r2|FAILED|2026-08-19 14:13:42",
+  "checks": {
+    "sshOk": true,
+    "noRunningTestLock": true,
+    "noTargetTagMigrations": true,
+    "backendHealthReadable": true,
+    "frontendHttp200": true
+  },
+  "failedChecks": []
+}

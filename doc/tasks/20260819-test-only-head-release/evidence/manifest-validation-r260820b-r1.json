@@ -1,0 +1,98 @@
+{
+    "status":  "failed",
+    "mode":  "report-only",
+    "code":  "FORBIDDEN_HARDCODED_TARGET_IP",
+    "scope":  "forbiddenFieldsCheck.hardcodedIpMatches",
+    "path":  "runtime-env/backup.env",
+    "message":  "Forbidden hardcoded deploy target IP \u0027172.30.30.58\u0027 found in \u0027runtime-env/backup.env\u0027.",
+    "impact":  "Release packages must use logical environment requirements, not concrete server addresses.",
+    "nextStep":  "Remove the IP from the package and use server-side Runtime Control target config.",
+    "errors":  [
+                   {
+                       "status":  "failed",
+                       "code":  "FORBIDDEN_HARDCODED_TARGET_IP",
+                       "scope":  "forbiddenFieldsCheck.hardcodedIpMatches",
+                       "path":  "runtime-env/backup.env",
+                       "message":  "Forbidden hardcoded deploy target IP \u0027172.30.30.58\u0027 found in \u0027runtime-env/backup.env\u0027.",
+                       "impact":  "Release packages must use logical environment requirements, not concrete server addresses.",
+                       "nextStep":  "Remove the IP from the package and use server-side Runtime Control target config."
+                   },
+                   {
+                       "status":  "failed",
+                       "code":  "FORBIDDEN_HARDCODED_TARGET_IP",
+                       "scope":  "forbiddenFieldsCheck.hardcodedIpMatches",
+                       "path":  "runtime-env/prod.env",
+                       "message":  "Forbidden hardcoded deploy target IP \u0027172.30.30.58\u0027 found in \u0027runtime-env/prod.env\u0027.",
+                       "impact":  "Release packages must use logical environment requirements, not concrete server addresses.",
+                       "nextStep":  "Remove the IP from the package and use server-side Runtime Control target config."
+                   },
+                   {
+                       "status":  "failed",
+                       "code":  "FORBIDDEN_HARDCODED_TARGET_IP",
+                       "scope":  "forbiddenFieldsCheck.hardcodedIpMatches",
+                       "path":  "runtime-env/test.env",
+                       "message":  "Forbidden hardcoded deploy target IP \u0027172.30.30.58\u0027 found in \u0027runtime-env/test.env\u0027.",
+                       "impact":  "Release packages must use logical environment requirements, not concrete server addresses.",
+                       "nextStep":  "Remove the IP from the package and use server-side Runtime Control target config."
+                   }
+               ],
+    "warnings":  [
+
+                 ],
+    "checks":  [
+                   {
+                       "status":  "passed",
+                       "code":  "MANIFEST_PRESENT",
+                       "scope":  "manifest.presence",
+                       "path":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260820-frozen-head-test-r260820b-r1\\manifest.json",
+                       "message":  "manifest.json was found.",
+                       "impact":  "Manifest JSON parsing can continue.",
+                       "nextStep":  "Parse Manifest v1 JSON."
+                   },
+                   {
+                       "status":  "passed",
+                       "code":  "MANIFEST_JSON_VALID",
+                       "scope":  "manifest.parse",
+                       "path":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260820-frozen-head-test-r260820b-r1\\manifest.json",
+                       "message":  "manifest.json parsed successfully.",
+                       "impact":  "Schema and package integrity checks can continue.",
+                       "nextStep":  "Validate Manifest v1 required fields and package type."
+                   },
+                   {
+                       "status":  "passed",
+                       "code":  "MANIFEST_REQUIRED_FIELDS_PRESENT",
+                       "scope":  "manifest.required",
+                       "path":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260820-frozen-head-test-r260820b-r1\\manifest.json",
+                       "message":  "All required Manifest v1 top-level fields are present.",
+                       "impact":  "Schema-level validation can continue.",
+                       "nextStep":  "Continue package type, baseline, file, checksum, and forbidden field checks."
+                   },
+                   {
+                       "status":  "passed",
+                       "code":  "MANIFEST_SCHEMA_CORE_VALID",
+                       "scope":  "manifest.schema",
+                       "path":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260820-frozen-head-test-r260820b-r1\\manifest.json",
+                       "message":  "Manifest v1 core schema checks passed.",
+                       "impact":  "Package type and smart-release baseline requirements are explicit.",
+                       "nextStep":  "Continue file declaration and forbidden field checks."
+                   },
+                   {
+                       "status":  "passed",
+                       "code":  "PACKAGE_DECLARATIONS_VALID",
+                       "scope":  "package.files",
+                       "path":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260820-frozen-head-test-r260820b-r1",
+                       "message":  "Package file declaration and sha256 checks passed.",
+                       "impact":  "Every package file is declared and every declared sha256 matched.",
+                       "nextStep":  "Continue forbidden target and secret scanning."
+                   },
+                   {
+                       "status":  "failed",
+                       "code":  "FORBIDDEN_CONTENT_SCAN_FAILED",
+                       "scope":  "forbiddenFieldsCheck",
+                       "path":  "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260820-frozen-head-test-r260820b-r1",
+                       "message":  "Forbidden target IP or secret scan failed.",
+                       "impact":  "The package violates Smart Release target and credential boundaries.",
+                       "nextStep":  "Remove the reported IP or secret-like values and rerun validation."
+                   }
+               ]
+}

@@ -1,0 +1,11 @@
+{
+  "round": "r260820e",
+  "source": "ssh root@172.30.30.58:/opt/intruoyi/runtime/.env.copytest",
+  "endpoint": "http://172.30.30.58:9000",
+  "bucket": "edhr-retention-verifier-20260530",
+  "accessKeyPresent": true,
+  "secretKeyPresent": true,
+  "genericAndTestWillMatch": true,
+  "controlPort": 48182,
+  "capturedAt": "2026-08-20T14:18:23"
+}

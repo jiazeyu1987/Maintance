@@ -1,0 +1,12 @@
+{
+  "operationId": "op-2026-08-15T183354112639300Z-271fd4fe-4a9c-456d-93e4-bc3a14ae3c4f",
+  "action": "publish-test",
+  "environment": "test",
+  "releaseTag": "release-20260816-intmain-head-test-r260816a-r1",
+  "status": "FAILED",
+  "failedMigrationId": "20260813_form_template_menu_before_form_center",
+  "failureCode": "MYSQL_SIGNAL_45000",
+  "failureSummary": "Required form-center menu live-state precondition failed: menu 605071200 is not under global basic-data menu 990200.",
+  "retrySubmitted": false,
+  "forbiddenActionsExecuted": []
+}

@@ -1,0 +1,7 @@
+{
+  "branch": "refs/heads/codex/20260821-pqc-nav-tscheck-release-fix",
+  "parent": "12a773ef285ff34bf2bd25036fd3dff2930912bc",
+  "commit": "9a6fd45c7278085f13b1cd2f8e1cc6fd8aa71b81",
+  "tempIndexUsed": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260819-test-only-head-release\\evidence\\app-fix-temp-index-r260820g-f3498c6add634b39b8634984e200d984",
+  "reason": "worktree index.lock from aborted git add; used temporary index without deleting lock"
+}

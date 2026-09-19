@@ -1,0 +1,79 @@
+{
+  "status": "passed",
+  "releaseTag": "release-20260819-intmain-head-test-r260819c-r1",
+  "maintenanceCommit": "eba06a66a78ee3027397e54cea412ee6b8b0b741",
+  "appCommit": "22fce6c341c770cb6ac78eb5b2f9f82d5bbcd843",
+  "packageRoot": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260819-intmain-head-test-r260819c-r1",
+  "manifestVersion": "1.0",
+  "manifestFileSha256": "d292e28c9028e033e118021de65454a261e426e137e04489409e86fede8a1f49",
+  "legacyManifestSha256": "5085e492bba5ca9e51803e84e105f7670395ef0fb13aee1c8ee6380455538f5a",
+  "imageTarSha256": "3960199bafb8c269b5fc5fa85e76a67781f2342e6efd835e5404d34cf8c12e70",
+  "artifactCount": 516,
+  "requiredSqlCount": 506,
+  "migrationCount": 506,
+  "sourceRepos": [
+    {
+      "name": "ruoyi-vue-pro",
+      "pathRole": "backend",
+      "commit": "22fce6c341c770cb6ac78eb5b2f9f82d5bbcd843",
+      "branch": "HEAD",
+      "dirty": false,
+      "dirtySummaryHash": null
+    },
+    {
+      "name": "yudao-ui-admin-vue3",
+      "pathRole": "admin-frontend",
+      "commit": "22fce6c341c770cb6ac78eb5b2f9f82d5bbcd843",
+      "branch": "HEAD",
+      "dirty": false,
+      "dirtySummaryHash": null
+    }
+  ],
+  "changeSet": {
+    "summary": "Release package release-20260819-intmain-head-test-r260819c-r1",
+    "component": "intruoyi",
+    "items": [
+      "发布包：release-20260819-intmain-head-test-r260819c-r1",
+      "组件范围：intruoyi"
+    ],
+    "includeShowroomBuildPackage": false,
+    "includeOnlyOffice": false
+  },
+  "legacy": {
+    "releaseTag": "release-20260819-intmain-head-test-r260819c-r1",
+    "packageDirectoryName": "release-20260819-intmain-head-test-r260819c-r1",
+    "builtAt": "2026-08-19T02:00:50.3140682Z",
+    "gitCommit": "22fce6c341c770cb6ac78eb5b2f9f82d5bbcd843",
+    "publishScope": "code-only",
+    "component": "intruoyi",
+    "onlyOfficeIncluded": false,
+    "includeShowroomBuildPackage": false,
+    "backendRuntimeBaseMode": "offline-tar",
+    "backendRuntimeBaseImage": "intruoyi-backend-runtime-base:2026.06.05-jre21-noble-docker29.2.1",
+    "backendRuntimeBaseDigest": "sha256:b4f7d85f325665c3b372379e6d352c3c8be2d3a08add68ac0dc151f720160be7",
+    "backendRuntimeBaseVersion": "2026.06.05-jre21-noble-docker29.2.1",
+    "backendRuntimeBaseTarSha256": "5bcd568b46ba9f28bfa7ac8ee67e283aea95bd585a89842a14cc40827fa71603"
+  },
+  "nasManifestPath": "Backup/ReleasePackage/release-20260819-intmain-head-test-r260819c-r1/release-manifest.json",
+  "checks": {
+    "package_root_exists": true,
+    "manifest_validation_passed": true,
+    "manifest_release_tag": true,
+    "legacy_release_tag": true,
+    "legacy_git_commit": true,
+    "scope_component": true,
+    "source_repo_count": true,
+    "source_repos_frozen_commit": true,
+    "source_repos_clean": true,
+    "release_info_tag": true,
+    "release_info_sources_match_manifest": true,
+    "release_info_changes_match_manifest": true,
+    "change_set_present": true,
+    "artifact_counts_match": true,
+    "required_sql_migration_counts_match": true,
+    "docker_context_removed": true,
+    "image_tar_present": true,
+    "nas_manifest_readable": true,
+    "all_passed": true
+  }
+}

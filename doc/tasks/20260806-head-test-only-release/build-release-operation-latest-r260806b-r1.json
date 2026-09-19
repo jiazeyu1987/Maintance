@@ -1,0 +1,19 @@
+{
+  "operationId": "op-2026-08-06T104239041834700Z-8592eb5e-6941-457d-954d-02b7b595b377",
+  "requestedBy": "local-operator",
+  "requestedAt": "2026-08-06T10:42:39.047349100Z",
+  "environment": "release",
+  "component": "build-release",
+  "action": "build-release",
+  "actionLabel": "构建发布包",
+  "parameters": {
+    "publishScope": "code-only",
+    "includeOnlyOffice": "false",
+    "includeShowroomBuildPackage": "false",
+    "releaseTag": "release-20260806-intmain-head-test-r260806b-r1"
+  },
+  "reason": "20260806 test-only release build from frozen r260806b clean worktrees",
+  "status": "FAILED",
+  "summary": "命令退出码非 0: 1",
+  "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260806b-state\\runtime-control\\logs\\op-2026-08-06T104239041834700Z-8592eb5e-6941-457d-954d-02b7b595b377.log"
+}

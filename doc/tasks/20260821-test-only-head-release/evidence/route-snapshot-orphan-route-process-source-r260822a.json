@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "mes-route-snapshot-orphan-route-process-source-v1",
+  "checkedDate": "2026-08-22",
+  "releaseTag": "release-20260822-intmain-head-test-r260822a-r2",
+  "targetHost": "172.30.30.58",
+  "database": "ruoyi-vue-pro",
+  "routeVersionId": 3,
+  "routeId": 900025,
+  "backfillReport": {
+    "path": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260821-test-only-head-release\\evidence\\route-snapshot-identity-backfill-authorized-r260822a.json",
+    "status": "BLOCKED",
+    "blockerCount": 8,
+    "reasonCode": "ROUTE_PROCESS_UNRESOLVED"
+  },
+  "orphanRouteProcessIds": [
+    900124,
+    900125,
+    900126,
+    900127
+  ],
+  "scheduleConfigSource": {
+    "table": "mes_pro_route_schedule_config",
+    "routeVersionId": 3,
+    "matchingRows": 4,
+    "routeProcessIds": [
+      900124,
+      900125,
+      900126,
+      900127
+    ]
+  },
+  "routeProcessSource": {
+    "table": "mes_pro_route_process",
+    "matchingRowsIncludingDeleted": 0,
+    "currentRouteIdRows": 23,
+    "currentRouteProcessIdsAreDifferent": true
+  },
+  "mappingSourceFound": false,
+  "writesPerformedDuringSourceCheck": false,
+  "conclusion": "BLOCKED: no auditable old-to-current routeProcessId mapping exists; do not guess by sort, delete schedule configs, empty snapshot arrays, or continue release."
+}

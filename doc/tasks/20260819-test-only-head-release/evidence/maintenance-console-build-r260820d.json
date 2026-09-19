@@ -1,0 +1,11 @@
+{
+  "round": "r260820d",
+  "jar": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260820d\\m\\backend\\target\\runtime-control-maintenance-2026.06-SNAPSHOT.jar",
+  "jarSha256": "9C82D28C0953BDFCF250E95D0B66EFC2B918DDE9339C8107D4CE4B01133919D6",
+  "jarBytes": 35141811,
+  "frontendDistExists": true,
+  "mavenTests": 26,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0
+}

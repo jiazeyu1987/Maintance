@@ -1,0 +1,23 @@
+{
+  "code": 0,
+  "data": {
+    "operationId": "op-2026-08-19T224525115195600Z-50db2c45-a29d-43e2-baed-425a6b616f6c",
+    "requestedBy": "local-operator",
+    "requestedAt": "2026-08-19T22:45:25.119509600Z",
+    "environment": "release",
+    "component": "build-release",
+    "action": "build-release",
+    "actionLabel": "构建发布包",
+    "parameters": {
+      "publishScope": "code-only",
+      "includeOnlyOffice": "false",
+      "includeShowroomBuildPackage": "false",
+      "releaseTag": "release-20260820-frozen-head-test-r260820b-r1"
+    },
+    "reason": "r260820b build-release after route hook scheduler disabled",
+    "status": "RUNNING",
+    "summary": "命令已提交到本机执行队列",
+    "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260820b-state\\runtime-control\\logs\\op-2026-08-19T224525115195600Z-50db2c45-a29d-43e2-baed-425a6b616f6c.log"
+  },
+  "msg": ""
+}

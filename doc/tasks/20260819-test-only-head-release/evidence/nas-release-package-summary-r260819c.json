@@ -1,0 +1,26 @@
+{
+  "status": "passed",
+  "releaseTag": "release-20260819-intmain-head-test-r260819c-r1",
+  "matchCount": 1,
+  "package": {
+    "releaseTag": "release-20260819-intmain-head-test-r260819c-r1",
+    "packageDirectoryName": "release-20260819-intmain-head-test-r260819c-r1",
+    "manifestPath": "Backup/ReleasePackage/release-20260819-intmain-head-test-r260819c-r1/release-manifest.json",
+    "builtAt": "2026-08-19T02:00:50.3140682Z",
+    "publishScope": "code-only",
+    "component": "intruoyi",
+    "includeShowroomBuildPackage": false,
+    "onlyOfficeIncluded": false,
+    "imageTag": "release-20260819-intmain-head-test-r260819c-r1",
+    "checksumPresent": true,
+    "tested": false,
+    "testedAt": null,
+    "operatorName": null,
+    "testedRecoverySetCandidateId": null,
+    "testedRecoverySetId": null,
+    "testedRecoverySetManifestHash": null,
+    "status": "AVAILABLE",
+    "blockedReasons": []
+  },
+  "checkedAt": "2026-08-19T10:04:55.9607640+08:00"
+}

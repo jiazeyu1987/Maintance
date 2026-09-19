@@ -1,0 +1,20 @@
+{
+  "code": 0,
+  "data": {
+    "operationId": "op-2026-08-19T123706070455900Z-1dfb7779-a297-4a37-9f7c-c378926f64f6",
+    "requestedBy": "local-operator",
+    "requestedAt": "2026-08-19T12:37:08.143617100Z",
+    "environment": "test",
+    "component": "publish-test",
+    "action": "publish-test",
+    "actionLabel": "部署发布包到测试服",
+    "parameters": {
+      "releaseTag": "release-20260819-intmain-head-test-r260819e-r2"
+    },
+    "reason": "r260819e-r2 test-only publish after build manifest and remote prechecks",
+    "status": "RUNNING",
+    "summary": "命令已提交到本机执行队列",
+    "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260819e-state\\runtime-control\\logs\\op-2026-08-19T123706070455900Z-1dfb7779-a297-4a37-9f7c-c378926f64f6.log"
+  },
+  "msg": ""
+}

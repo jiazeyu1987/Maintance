@@ -1,0 +1,38 @@
+{
+  "status": "passed",
+  "checkedAt": "2026-08-19T12:29:10.6136881+08:00",
+  "results": [
+    {
+      "name": "app",
+      "dir": "D:\\IntRuoyiWorktree\\r260819d\\a\\IntRuoyiFronted",
+      "packageJsonHashBefore": "47782a38676ea56c3f6865862a23c655f0a913fab9fb73e12dc63c0c4183dc37",
+      "packageJsonHashAfter": "47782a38676ea56c3f6865862a23c655f0a913fab9fb73e12dc63c0c4183dc37",
+      "packageJsonRestored": true,
+      "ignoredBefore": "Automatically ignored builds during installation:\n  None",
+      "ignoredAfter": "Automatically ignored builds during installation:\n  None",
+      "ignoredClear": true,
+      "gitStatus": "",
+      "binChecks": {
+        "cross-env.cmd": true,
+        "vite.cmd": true,
+        "vue-tsc.cmd": true
+      }
+    },
+    {
+      "name": "maintenance",
+      "dir": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260819d\\m\\frontend",
+      "packageJsonHashBefore": "1afed986819263b45f078ac8e2113c4294d0c571f12c9a50542c1e70a60a62a1",
+      "packageJsonHashAfter": "1afed986819263b45f078ac8e2113c4294d0c571f12c9a50542c1e70a60a62a1",
+      "packageJsonRestored": true,
+      "ignoredBefore": "Automatically ignored builds during installation:\n  esbuild\n  vue-demi\nhint: To allow the execution of build scripts for a package, add its name to \"pnpm.onlyBuiltDependencies\" in your \"package.json\", then run \"pnpm rebuild\".\nhint: If you don't want to build a package, add it to the \"pnpm.ignoredBuiltDependencies\" list.",
+      "ignoredAfter": "Automatically ignored builds during installation:\n  None",
+      "ignoredClear": true,
+      "gitStatus": "",
+      "binChecks": {
+        "cross-env.cmd": false,
+        "vite.cmd": true,
+        "vue-tsc.cmd": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "attempt": "r260820g",
+  "configPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260820g\\m\\config\\runtime-control.local.yaml",
+  "appRoot": "D:/IntRuoyiWorktree/r260820f/a",
+  "maintRoot": "D:/ProjectPackage/Int/IntRuoyiWorktrees/r260820g/m",
+  "stateDir": "D:/ProjectPackage/Int/IntRuoyiWorktrees/r260820g-state/runtime-control",
+  "checks": {
+    "repoRoot": true,
+    "frontendRoot": true,
+    "opsRoot": true,
+    "stateDir": true,
+    "testAccess": true,
+    "prodDisabled": true,
+    "backupDisabled": true
+  },
+  "secretsPrinted": false
+}

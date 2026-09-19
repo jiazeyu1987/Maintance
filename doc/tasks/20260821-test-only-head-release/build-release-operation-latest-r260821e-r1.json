@@ -1,0 +1,19 @@
+{
+  "operationId": "op-2026-08-20T212717109994600Z-fd20c0b4-59a1-49d0-9dd9-bac5010e49e8",
+  "requestedBy": "local-operator",
+  "requestedAt": "2026-08-20T21:27:17.114013800Z",
+  "environment": "release",
+  "component": "build-release",
+  "action": "build-release",
+  "actionLabel": "构建发布包",
+  "parameters": {
+    "publishScope": "code-only",
+    "includeOnlyOffice": "false",
+    "includeShowroomBuildPackage": "false",
+    "releaseTag": "release-20260821-intmain-head-test-r260821e-r1"
+  },
+  "reason": "20260821 r260821e rebuild after eDHR target endpoint fix",
+  "status": "FAILED",
+  "summary": "命令退出码非 0: 1",
+  "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260821e\\state\\runtime-control\\logs\\op-2026-08-20T212717109994600Z-fd20c0b4-59a1-49d0-9dd9-bac5010e49e8.log"
+}

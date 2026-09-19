@@ -1,0 +1,23 @@
+{
+  "code": 0,
+  "data": {
+    "operationId": "op-2026-08-15T174726309062300Z-9a359a99-a27b-4b1b-97a9-0d45c3bffd89",
+    "requestedBy": "local-operator",
+    "requestedAt": "2026-08-15T17:47:26.312871900Z",
+    "environment": "release",
+    "component": "build-release",
+    "action": "build-release",
+    "actionLabel": "构建发布包",
+    "parameters": {
+      "publishScope": "code-only",
+      "includeOnlyOffice": "false",
+      "includeShowroomBuildPackage": "false",
+      "releaseTag": "release-20260816-intmain-head-test-r260816a-r1"
+    },
+    "reason": "20260816 frozen HEAD test-only release r260816a build",
+    "status": "RUNNING",
+    "summary": "命令已提交到本机执行队列",
+    "resultLogPath": "D:\\IntRuoyiWorktree\\r260816a-state\\logs\\op-2026-08-15T174726309062300Z-9a359a99-a27b-4b1b-97a9-0d45c3bffd89.log"
+  },
+  "msg": ""
+}

@@ -1,0 +1,57 @@
+IMAGE_TAG=release-20260806-intmain-head-test-r260806c-r1
+BACKEND_IMAGE=intruoyi-backend:release-20260806-intmain-head-test-r260806c-r1
+FRONTEND_IMAGE=intruoyi-frontend:release-20260806-intmain-head-test-r260806c-r1
+BACKEND_RUNNING=running
+FRONTEND_RUNNING=running
+COMPOSE_PS_START
+{"Command":"\"/__cacert_entrypoin…\"","CreatedAt":"2026-08-06 22:00:51 +0800 CST","ExitCode":0,"Health":"","ID":"34583252a68c","Image":"intruoyi-backend:release-20260806-intmain-head-test-r260806c-r1","Labels":"com.docker.compose.project.config_files=/opt/intruoyi/runtime/docker-compose.yml,com.docker.compose.project.working_dir=/opt/intruoyi/runtime,com.docker.compose.service=backend,com.docker.compose.version=2.27.0,com.docker.compose.config-hash=f55334849ce3abecc9c109b8bd8886c316257c18bed805cc7d81a88576a0b8e6,com.docker.compose.depends_on=,com.docker.compose.oneoff=False,com.docker.compose.project=intruoyi-runtime,com.docker.compose.replace=e406e8d73c7fb6daf6f8c80d19bc11958efd94dace04b5268158e507dcd1edbb,org.opencontainers.image.version=24.04,com.docker.compose.container-number=1,com.docker.compose.image=sha256:b58ae2e84b7537256c98d390c43b9429a62be43b77eb0e16104966ec357dafa7","LocalVolumes":"0","Mounts":"/backup,/opt/intruoyi/…,/opt/intruoyi/…,/mnt/nas/Backu…,/opt/intruoyi/…,/opt/intruoyi/…,/opt/intruoyi/…,/opt/intruoyi/…,/var/run/docke…","Name":"intruoyi-backend","Names":"intruoyi-backend","Networks":"intruoyi-runtime_intruoyi_net","Ports":"0.0.0.0:48081-\u003e48081/tcp, :::48081-\u003e48081/tcp","Project":"intruoyi-runtime","Publishers":[{"URL":"0.0.0.0","TargetPort":48081,"PublishedPort":48081,"Protocol":"tcp"},{"URL":"::","TargetPort":48081,"PublishedPort":48081,"Protocol":"tcp"}],"RunningFor":"About an hour ago","Service":"backend","Size":"0B","State":"running","Status":"Up About an hour"}
+{"Command":"\"/docker-entrypoint.…\"","CreatedAt":"2026-08-06 22:01:01 +0800 CST","ExitCode":0,"Health":"","ID":"16ebdbe108a2","Image":"intruoyi-frontend:release-20260806-intmain-head-test-r260806c-r1","Labels":"com.docker.compose.image=sha256:2056ed4a91fa26b41ef5ad1595b287588d6304046d10a9319b72fdc7a040f1c4,com.docker.compose.oneoff=False,com.docker.compose.project.working_dir=/opt/intruoyi/runtime,com.docker.compose.replace=0d14c14fd2e1597f6c3f127fa7bc73e14a64605d9bc8b87be68b3fc8a1cf8466,com.docker.compose.service=frontend,com.docker.compose.config-hash=c3676dde2290be6ee15e81f93d03be0a25426b0366ce8248ece2797814cd58ad,com.docker.compose.container-number=1,com.docker.compose.depends_on=backend:service_started:false,com.docker.compose.version=2.27.0,maintainer=NGINX Docker Maintainers \u003cdocker-maint@nginx.com\u003e,com.docker.compose.project=intruoyi-runtime,com.docker.compose.project.config_files=/opt/intruoyi/runtime/docker-compose.yml","LocalVolumes":"0","Mounts":"","Name":"intruoyi-frontend","Names":"intruoyi-frontend","Networks":"intruoyi-runtime_intruoyi_net","Ports":"0.0.0.0:8081-\u003e80/tcp, :::8081-\u003e80/tcp","Project":"intruoyi-runtime","Publishers":[{"URL":"0.0.0.0","TargetPort":80,"PublishedPort":8081,"Protocol":"tcp"},{"URL":"::","TargetPort":80,"PublishedPort":8081,"Protocol":"tcp"}],"RunningFor":"About an hour ago","Service":"frontend","Size":"0B","State":"running","Status":"Up About an hour"}
+
+COMPOSE_PS_END
+BACKEND_HEALTH_BODY={"status":"UP"} 
+BACKEND_HEALTH_EXIT=0
+FRONTEND_HTTP_CODE=200
+FRONTEND_TITLE=<title>瑛泰管理系统</title>
+RELEASE_INFO_START
+{
+    "releaseTag":  "release-20260806-intmain-head-test-r260806c-r1",
+    "packageId":  "release-20260806-intmain-head-test-r260806c-r1",
+    "createdAt":  "2026-08-06T13:29:09.9106159Z",
+    "publishScope":  "code-only",
+    "changeSet":  {
+                      "summary":  "Release package release-20260806-intmain-head-test-r260806c-r1",
+                      "component":  "intruoyi",
+                      "items":  [
+                                    "发布包：release-20260806-intmain-head-test-r260806c-r1",
+                                    "组件范围：intruoyi"
+                                ],
+                      "includeShowroomBuildPackage":  false,
+                      "includeOnlyOffice":  false
+                  },
+    "sourceRepos":  [
+                        {
+                            "name":  "ruoyi-vue-pro",
+                            "pathRole":  "backend",
+                            "commit":  "19173d2b41442e6b2df3c16c424c11713b3dbbcc",
+                            "branch":  "HEAD",
+                            "dirty":  false,
+                            "dirtySummaryHash":  null
+                        },
+                        {
+                            "name":  "yudao-ui-admin-vue3",
+                            "pathRole":  "admin-frontend",
+                            "commit":  "19173d2b41442e6b2df3c16c424c11713b3dbbcc",
+                            "branch":  "HEAD",
+                            "dirty":  false,
+                            "dirtySummaryHash":  null
+                        }
+                    ]
+}
+RELEASE_INFO_END
+LOCK_AND_MIGRATIONS_START
+lock=test:release-20260806-intmain-head-test-r260806c-r1:APPLIED:
+migration_status=SKIPPED_ALREADY_APPLIED:412
+migration_failed_running=0
+LOCK_AND_MIGRATIONS_END
+mysql: [Warning] Using a password on the command line interface can be insecure.
+close - IO is still pending on closed socket. read:1, write:0, io:000001FFC8F1C2A0

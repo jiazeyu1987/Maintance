@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "releaseTagBeforePublish": "release-20260819-intmain-head-test-r260819c-r1",
+  "edhrEndpointBeforePublish": "http://172.30.30.57:9000",
+  "containers": [
+    "intruoyi-backend|intruoyi-backend:hotfix-20260814-route-submit-order-r1|Up 4 days",
+    "intruoyi-onlyoffice|onlyoffice/documentserver:latest|Up 6 days (healthy)",
+    "intruoyi-frontend|intruoyi-frontend:release-20260813-intmain-head-test-r260812b-r2|Up 6 days",
+    "intruoyi-website|nginx:1.27-alpine|Up 4 weeks",
+    "intruoyi-rehearsal-frontend|intruoyi-frontend:20260611_dcc_incremental_codeonly_2031|Up 2 months",
+    "intruoyi-rehearsal-backend|intruoyi-backend:20260611_dcc_incremental_codeonly_2031|Up 2 months",
+    "intruoyi-rehearsal-mysql|mysql:8.0.39|Up 2 months (healthy)",
+    "intruoyi-rehearsal-redis|redis:7-alpine|Up 2 months (healthy)",
+    "intruoyi-mysql|mysql:8.0.39|Up 2 months (healthy)",
+    "intruoyi-redis|redis:7-alpine|Up 2 months (healthy)"
+  ],
+  "backendHealth": "UP",
+  "frontendHttp": 200,
+  "checkedAt": "2026-08-19T13:48:09.5745770+08:00"
+}

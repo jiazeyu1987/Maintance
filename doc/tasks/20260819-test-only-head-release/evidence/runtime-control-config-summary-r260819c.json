@@ -1,0 +1,16 @@
+{
+  "config": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260819c\\m\\config\\runtime-control.local.yaml",
+  "repoRoot": "D:/IntRuoyiWorktree/r260819c/a/IntRuoyiBackend",
+  "frontendRoot": "D:/IntRuoyiWorktree/r260819c/a/IntRuoyiFronted",
+  "opsRoot": "D:/ProjectPackage/Int/IntRuoyiWorktrees/r260819c/m/ops",
+  "stateDir": "D:/ProjectPackage/Int/IntRuoyiWorktrees/r260819c-state/runtime-control",
+  "productionWriteEnabled": false,
+  "environmentAccess": {
+    "test": true,
+    "prod": false,
+    "backup": false
+  },
+  "releasePackageRequiredFieldsPresent": true,
+  "missingReleasePackageFields": [],
+  "secretsRedacted": true
+}

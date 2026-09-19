@@ -1,0 +1,25 @@
+{
+  "releaseTag": "release-20260819-intmain-head-test-r260819d-r2",
+  "checkedAt": "2026-08-19T14:16:03.3823018+08:00",
+  "lockRows": [
+    {
+      "environment": "test",
+      "operationId": "test-release-20260819-intmain-head-test-r260819d-r2",
+      "releaseTag": "release-20260819-intmain-head-test-r260819d-r2",
+      "status": "FAILED"
+    }
+  ],
+  "migrationCounts": {
+    "APPLIED": 2,
+    "FAILED": 1,
+    "SKIPPED_ALREADY_APPLIED": 435
+  },
+  "badMigrationCount": 1,
+  "failedRows": [
+    {
+      "migrationId": "20260812_mes_route_version_snapshot_identity_enforce",
+      "fileName": "20260812_mes_route_version_snapshot_identity_enforce.sql",
+      "errorMessage": "Command failed with exit code 1: ssh\nmysql: [Warning] Using a password on the command line interface can be insecure.\nERROR 1644 (45000) at line 48: route snapshot identity blockers must be zero before enforcement"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "releaseId": "r260819b",
+  "releaseTag": "release-20260819-intmain-head-test-r260819b-r1",
+  "maintenance": {
+    "mainBranch": "int_main",
+    "targetHead": "eba06a66a78ee3027397e54cea412ee6b8b0b741",
+    "worktree": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260819b\\m",
+    "worktreeStatus": "## HEAD (no branch)"
+  },
+  "app": {
+    "mainBranch": "int_main",
+    "targetHead": "037e55c280c346df8aa8d89453240ce5c7e0c83a",
+    "worktree": "D:\\IntRuoyiWorktree\\r260819b\\a",
+    "worktreeStatus": "## HEAD (no branch)"
+  },
+  "buildReleaseExecuted": false,
+  "publishTestExecuted": false,
+  "failureEvidence": "doc/tasks/20260819-test-only-head-release/evidence/ops-migration-policy-gate-r260819b.json"
+}

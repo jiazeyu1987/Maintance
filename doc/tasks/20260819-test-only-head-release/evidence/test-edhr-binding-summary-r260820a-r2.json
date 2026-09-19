@@ -1,0 +1,11 @@
+{
+  "endpoint": "http://172.30.30.58:9000",
+  "bucket": "edhr-retention-verifier-20260530",
+  "region": "us-east-1",
+  "hasAccessKey": true,
+  "hasSecretKey": true,
+  "retentionMode": "COMPLIANCE",
+  "retainUntilDays": "7",
+  "requireLegalHold": "true",
+  "endpointIsTest": true
+}

@@ -1,0 +1,747 @@
+0 04:50:05.942 [main] [34mINFO [0;39m [36mcom.anji.captcha.util.ImageUtils:71[0;39m - �Զ���resource��
+ͼ:[    SLIDING_BLOCK=[Ljava.lang.String;@1806f12a, ORIGINAL=[Ljava.lang.String;@787edbf6, PIC_CLICK=[Ljava.lang.String
+;@3    5394fbf]
+    2026-08-20 04:50:05.947 [main] [34mINFO [0;39m [36mc.anji.captcha.service.impl.CaptchaServiceFactory:52[0;39m  
+   - supported-captchaCache-service:[redis, local]
+    2026-08-20 04:50:05.985 [main] [34mINFO [0;39m [36mc.anji.captcha.service.impl.CaptchaServiceFactory:57[0;39m  
+   - supported-captchaTypes-service:[clickWord, default, blockPuzzle, pictureWord]
+    2026-08-20 04:50:05.986 [main] [34mINFO [0;39m [36mc.a.c.service.impl.BlockPuzzleCaptchaServiceImpl:80[0;39m - 
+    --->>>��ʼ����֤���ͼ<<<---blockPuzzle
+    2026-08-20 04:50:11.895 [main] [34mINFO [0;39m [36morg.quartz.impl.StdSchedulerFactory:1222[0;39m - Using defa 
+   ult implementation for ThreadExecutor
+    2026-08-20 04:50:11.929 [main] [34mINFO [0;39m [36morg.quartz.core.SchedulerSignalerImpl:62[0;39m - Initialize 
+   d Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+    2026-08-20 04:50:11.930 [main] [34mINFO [0;39m [36morg.quartz.core.QuartzScheduler:224[0;39m - Quartz Schedule    r v2.5.2 created.
+    2026-08-20 04:50:11.957 [main] [34mINFO [0;39m [36mo.s.scheduling.quartz.LocalDataSourceJobStore:676[0;39m - U 
+   sing db table-based data access locking (synchronization).
+    2026-08-20 04:50:11.962 [main] [34mINFO [0;39m [36mo.s.scheduling.quartz.LocalDataSourceJobStore:147[0;39m - J 
+   obStoreCMT initialized.
+    2026-08-20 04:50:11.963 [main] [34mINFO [0;39m [36morg.quartz.core.QuartzScheduler:289[0;39m - Scheduler meta- 
+   data: Quartz Scheduler (v2.5.2) 'schedulerName' with instanceId 'ad5450e981081787172611899'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 25 threads.
+      Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. an 
+   d is clustered.
+    2026-08-20 04:50:11.964 [main] [34mINFO [0;39m [36morg.quartz.impl.StdSchedulerFactory:1376[0;39m - Quartz sch 
+   eduler 'schedulerName' initialized from an externally provided properties instance.
+    2026-08-20 04:50:11.964 [main] [34mINFO [0;39m [36morg.quartz.impl.StdSchedulerFactory:1378[0;39m - Quartz sch    eduler version: 2.5.2
+    2026-08-20 04:50:11.964 [main] [34mINFO [0;39m [36morg.quartz.core.QuartzScheduler:2250[0;39m - JobFactory set 
+    to: org.springframework.scheduling.quartz.SpringBeanJobFactory@3b6cb260
+    2026-08-20 04:50:13.173 [main] [34mINFO [0;39m [36mo.f.s.b.e.EventRegistryAutoConfiguration:106[0;39m - No dep 
+   loyment resources were found for autodeployment
+    2026-08-20 04:50:13.712 [main] [34mINFO [0;39m [36mo.f.c.engine.impl.async.DefaultAsyncTaskExecutor:132[0;39m  
+   - Creating thread pool queue of size 100
+    2026-08-20 04:50:13.713 [main] [34mINFO [0;39m [36mo.f.c.engine.impl.async.DefaultAsyncTaskExecutor:138[0;39m  
+   - Creating thread factory with naming pattern flowable-async-task-invoker-%d
+    2026-08-20 04:50:13.715 [main] [34mINFO [0;39m [36mo.f.c.engine.impl.async.DefaultAsyncTaskExecutor:146[0;39m  
+   - Creating executor service with corePoolSize 8, maxPoolSize 8 and keepAliveTime 5000
+    2026-08-20 04:50:14.041 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1076[0;3 
+   9m - Found 2 Engine Configurators in total:
+    2026-08-20 04:50:14.041 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1078[0;3 
+   9m - class org.flowable.eventregistry.spring.configurator.SpringEventRegistryConfigurator (priority:100000)
+    2026-08-20 04:50:14.041 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1078[0;3 
+   9m - class org.flowable.idm.engine.configurator.IdmEngineConfigurator (priority:150000)
+    2026-08-20 04:50:14.042 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1104[0;3 
+   9m - Executing beforeInit() of class org.flowable.eventregistry.spring.configurator.SpringEventRegistryConfigurato  
+  r (priority:100000)
+    2026-08-20 04:50:14.052 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1104[0;3 
+   9m - Executing beforeInit() of class org.flowable.idm.engine.configurator.IdmEngineConfigurator (priority:150000)
+    2026-08-20 04:50:15.990 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1111[0;3 
+   9m - Executing configure() of class org.flowable.eventregistry.spring.configurator.SpringEventRegistryConfigurator  
+   (priority:100000)
+    2026-08-20 04:50:16.041 [main] [34mINFO [0;39m [36mo.f.eventregistry.impl.EventRegistryEngineImpl:53[0;39m - E 
+   ventRegistryEngine default created
+    2026-08-20 04:50:16.043 [main] [34mINFO [0;39m [36mo.flowable.spring.SpringProcessEngineConfiguration:1111[0;3 
+   9m - Executing configure() of class org.flowable.idm.engine.configurator.IdmEngineConfigurator (priority:150000)
+    2026-08-20 04:50:16.090 [main] [34mINFO [0;39m [36morg.flowable.idm.engine.impl.IdmEngineImpl:52[0;39m - IdmEn    gine default created
+    2026-08-20 04:50:16.239 [main] [34mINFO [0;39m [36morg.flowable.engine.impl.ProcessEngineImpl:89[0;39m - Proce 
+   ssEngine default created
+    2026-08-20 04:50:16.312 [main] [34mINFO [0;39m [36mo.flowable.engine.impl.cmd.ValidateV5EntitiesCmd:43[0;39m - 
+    Total of v5 deployments found: 0
+    2026-08-20 04:50:52.558 [main] [34mINFO [0;39m [36mc.i.yudao.module.ai.tool.method.PersonServiceImpl:145[0;39m 
+    - Initializing PersonService data store...
+    2026-08-20 04:50:52.566 [main] [34mINFO [0;39m [36mc.i.yudao.module.ai.tool.method.PersonServiceImpl:148[0;39m 
+    - PersonService initialized with 100 records. Next ID: 101
+    2026-08-20 04:51:15.944 [main] [34mINFO [0;39m [36mo.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$Ini 
+   tializeUserDetailsManagerConfigurer:110[0;39m - Global AuthenticationManager configured with UserDetailsService b  
+  ean with name adminUserDetailsManager
+    2026-08-20 04:51:16.933 [main] [34mINFO [0;39m [36mo.s.b.actuate.endpoint.web.EndpointLinksResolver:60[0;39m - 
+    Exposing 16 endpoints beneath base path '/actuator'
+    2026-08-20 04:51:18.516 [main] [34mINFO [0;39m [36mc.i.yudao.framework.dict.core.DictFrameworkUtils:44[0;39m - 
+    [init][��ʼ�� DictFrameworkUtils �ɹ�]
+    2026-08-20 04:51:19.675 [main] [34mINFO [0;39m [36mc.b.m.e.spring.MybatisPlusApplicationContextAware:43[0;39m  
+   - Register ApplicationContext instances org.springframework.boot.web.servlet.context.AnnotationConfigServletWebSer  
+  verApplicationContext@301aa982
+    2026-08-20 04:51:19.687 [main] [34mINFO [0;39m [36mcom.fhs.common.spring.SpringContextUtil:38[0;39m - ------Sp 
+   ringContextUtil setApplicationContext-------
+    2026-08-20 04:51:20.852 [main] [31mWARN [0;39m [36mo.s.mcp.provider.tool.SyncMcpToolProvider:141[0;39m - No to 
+   ol methods found in the provided tool objects: []
+    2026-08-20 04:51:21.201 [main] [34mINFO [0;39m [36mc.a.core.http.netty.implementation.NettyUtility:375[0;39m - 
+    {"az.sdk.message":"The following Netty versions were found on the classpath and have a mismatch with the versions  
+   used by azure-core-http-netty. If your application runs without issue this message can be ignored, otherwise plea   
+ se align the Netty versions used in your application. For more information, see https://aka.ms/azsdk/java/dependen    
+cy/troubleshoot.","azure-netty-version":"4.1.130.Final","azure-netty-native-version":"2.0.74.Final","classpath-net    t
+y-version-io.netty:netty-common":"4.2.12.Final","classpath-netty-version-io.netty:netty-handler":"4.2.12.Final","    cl
+asspath-netty-version-io.netty:netty-handler-proxy":"4.2.12.Final","classpath-netty-version-io.netty:netty-buffe    r":
+"4.2.12.Final","classpath-netty-version-io.netty:netty-codec":"4.2.12.Final","classpath-netty-version-io.netty:    nett
+y-codec-http":"4.2.12.Final","classpath-netty-version-io.netty:netty-codec-http2":"4.2.12.Final","classpath-ne    tty-v
+ersion-io.netty:netty-transport-native-unix-common":"4.2.12.Final","classpath-netty-version-io.netty:netty-tr    anspor
+t-native-epoll":"4.1.100.Final","classpath-netty-version-io.netty:netty-transport-native-kqueue":"4.2.12.Fin    al","cl
+asspath-native-netty-version-io.netty:netty-tcnative-boringssl-static":"2.0.75.Final"}
+    2026-08-20 04:51:24.132 [main] [34mINFO [0;39m [36mo.f.j.s.impl.asyncexecutor.AbstractAsyncExecutor:102[0;39m  
+   - Starting up the async job executor [org.flowable.spring.job.service.SpringAsyncExecutor] for engine bpmn
+    2026-08-20 04:51:24.148 [Thread-23] [34mINFO [0;39m [36mo.f.j.s.i.asyncexecutor.ResetExpiredJobsRunnable:63[0; 
+   39m - starting to reset expired jobs for engine bpmn
+    2026-08-20 04:51:24.149 [main] [34mINFO [0;39m [36morg.apache.coyote.http11.Http11NioProtocol:168[0;39m - Star 
+   ting ProtocolHandler ["http-nio-48081"]
+    2026-08-20 04:51:24.150 [Thread-21] [34mINFO [0;39m [36mo.f.j.s.i.a.AcquireAsyncJobsDueRunnable:106[0;39m - st 
+   arting to acquire async jobs due for engine bpmn
+    2026-08-20 04:51:24.150 [Thread-22] [34mINFO [0;39m [36mo.f.j.s.i.asyncexecutor.AcquireTimerJobsRunnable:109[0 
+   ;39m - starting to acquire async jobs due for engine bpmn
+    2026-08-20 04:51:24.168 [main] [34mINFO [0;39m [36mo.s.boot.web.embedded.tomcat.TomcatWebServer:243[0;39m - To 
+   mcat started on port 48081 (http) with context path '/'
+    2026-08-20 04:51:24.172 [main] [34mINFO [0;39m [36mo.s.scheduling.quartz.SchedulerFactoryBean:730[0;39m - Star 
+   ting Quartz Scheduler now
+    2026-08-20 04:51:24.248 [main] [34mINFO [0;39m [36morg.quartz.core.QuartzScheduler:541[0;39m - Scheduler sched 
+   ulerName_$_ad5450e981081787172611899 started.
+    2026-08-20 04:51:24.300 [main] [34mINFO [0;39m [36mcn.iocoder.yudao.server.YudaoServerApplication:59[0;39m - S 
+   tarted YudaoServerApplication in 112.518 seconds (process running for 114.442)
+    2026-08-20 04:51:24.416 [main] [34mINFO [0;39m [36mc.i.y.m.s.s.p.PermissionCacheStartupRefreshRunner:38[0;39m  
+   - [run][�����׶�������Ȩ�޻���: [role, user_role_ids, menu_role_ids, permission_menu_ids]]
+    2026-08-20 04:51:24.740 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(5) handlerName(payNotifyJob) ͬ�����]
+    2026-08-20 04:51:24.782 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(17) handlerName(payOrderSyncJob) ͬ�����]
+    2026-08-20 04:51:24.811 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(18) handlerName(payOrderExpireJob) ͬ�����]
+    2026-08-20 04:51:24.835 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(19) handlerName(payRefundSyncJob) ͬ�����]
+    2026-08-20 04:51:24.859 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(21) handlerName(tradeOrderAutoCancelJob) ͬ�����]
+    2026-08-20 04:51:24.881 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(22) handlerName(tradeOrderAutoReceiveJob) ͬ�����]
+    2026-08-20 04:51:24.905 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(23) handlerName(tradeOrderAutoCommentJob) ͬ�����]
+    2026-08-20 04:51:24.925 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(24) handlerName(brokerageRecordUnfreezeJob) ͬ�����]
+    2026-08-20 04:51:24.947 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(25) handlerName(accessLogCleanJob) ͬ�����]
+    2026-08-20 04:51:24.971 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(26) handlerName(errorLogCleanJob) ͬ�����]
+    2026-08-20 04:51:24.995 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(27) handlerName(jobLogCleanJob) ͬ�����]
+    2026-08-20 04:51:25.011 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(33) handlerName(demoJob) ͬ�����]
+    2026-08-20 04:51:25.028 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(35) handlerName(payTransferSyncJob) ͬ�����]
+    2026-08-20 04:51:25.044 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(36) handlerName(iotDeviceOfflineCheckJob) ͬ�����]
+    2026-08-20 04:51:25.061 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(37) handlerName(iotOtaUpgradeJob) ͬ�����]
+    2026-08-20 04:51:25.076 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(38) handlerName(combinationRecordExpireJob) ͬ�����]
+    2026-08-20 04:51:25.091 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(39) handlerName(couponExpireJob) ͬ�����]
+    2026-08-20 04:51:25.108 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(40) handlerName(productStatisticsJob) ͬ�����]
+    2026-08-20 04:51:25.121 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(5600) handlerName(kingdeeProductionOrderSyncJob) ͬ�����]
+    2026-08-20 04:51:25.134 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(5601) handlerName(mesProNightlyReplanJob) ͬ�����]
+    2026-08-20 04:51:25.152 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(5602) handlerName(kingdeeProductItemSyncJob) ͬ�����]
+    2026-08-20 04:51:25.169 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(5603) handlerName(kingdeeStockSyncJob) ͬ�����]
+    2026-08-20 04:51:25.185 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(5604) handlerName(kingdeePurchaseOrderSyncJob) ͬ�����]
+    2026-08-20 04:51:25.200 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(5605) handlerName(kingdeeSaleOrderSyncJob) ͬ�����]
+    2026-08-20 04:51:25.216 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(5606) handlerName(kingdeeBomSyncJob) ͬ�����]
+    2026-08-20 04:51:25.232 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(5607) handlerName(kingdeeProductionMaterialListSyncJob) ͬ�����]
+    2026-08-20 04:51:25.247 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(5608) handlerName(erpNasTableAutoSyncJob) ͬ�����]
+    2026-08-20 04:51:25.262 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(5609) handlerName(erpKingdeeTableAutoSyncJob) ͬ�����]
+    2026-08-20 04:51:25.277 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(5610) handlerName(kingdeeStockMoveSyncJob) ͬ�����]
+    2026-08-20 04:51:25.293 [main] [34mINFO [0;39m [36mc.i.yudao.module.infra.service.job.JobServiceImpl:156[0;39m 
+    - [syncJob][id(5612) handlerName(kingdeeProductionPickListSyncJob) ͬ�����]
+    2026-08-20 04:51:25.332 [main] [34mINFO [0;39m [36mc.i.y.m.infra.service.job.JobStartupSyncRunner:32[0;39m - [ 
+   run][��ʱ������ͬ���� Quartz]
+    2026-08-20 04:51:26.338 [pool-18-thread-1] [34mINFO [0;39m [36mc.i.y.f.banner.core.BannerApplicationRunner:23[    0;39m - 
+----------------------------------------------------------
+	��Ŀ�����ɹ���
+	�ӿ��ĵ�: 	https://doc.iocoder.cn/api-doc/ 
+	�����ĵ�: 	https://doc.iocoder.cn 
+	��Ƶ�̳�: 	https://t.zsxq.com/02Yf6M7Qn 
+----------------------------------------------------------
+[�̳�ϵͳ yudao-module-mall - �ѽ���][�ο� https://doc.iocoder.cn/mall/build/ ����]
+[΢�Ź��ں� yudao-module-mp - �ѽ���][�ο� https://doc.iocoder.cn/mp/build/ ����]
+[֧��ϵͳ yudao-module-pay - �ѽ���][�ο� https://doc.iocoder.cn/pay/build/ ����]
+[IoT ������ yudao-module-iot - �ѽ���][�ο� https://doc.iocoder.cn/iot/build/ ����]
+    2026-08-20 04:52:03.397 [scheduled-thread-jm-5] [1;31mERROR[0;39m [36mc.i.y.m.s.job.ShowroomReleaseAutoPublishS 
+   cheduler:122[0;39m - [logResult][tenantId(1) siteKey(yingtai-showroom) stage(TEST) showroom release �Զ�����ʧ��][m
+essa    ge(SHOWROOM_RELEASE_HALL_BLOCKED: hallId=1 hallCode=hall_01 reason=SHOWROOM_RELEASE_SOURCE_MISSING: failed to r
+ead     file 2272)]
+    2026-08-20 04:53:00.370 [scheduled-thread-jm-8] [1;31mERROR[0;39m [36mc.i.y.m.s.job.ShowroomReleaseAutoPublishS 
+   cheduler:122[0;39m - [logResult][tenantId(1) siteKey(yingtai-showroom) stage(TEST) showroom release �Զ�����ʧ��][m
+essa    ge(SHOWROOM_RELEASE_HALL_BLOCKED: hallId=1 hallCode=hall_01 reason=SHOWROOM_RELEASE_SOURCE_MISSING: failed to r
+ead     file 2272)]
+    2026-08-20 04:54:00.297 [scheduled-thread-jm-8] [1;31mERROR[0;39m [36mc.i.y.m.s.job.ShowroomReleaseAutoPublishS 
+   cheduler:122[0;39m - [logResult][tenantId(1) siteKey(yingtai-showroom) stage(TEST) showroom release �Զ�����ʧ��][m
+essa    ge(SHOWROOM_RELEASE_HALL_BLOCKED: hallId=1 hallCode=hall_01 reason=SHOWROOM_RELEASE_SOURCE_MISSING: failed to r
+ead     file 2272)]
+    2026-08-20 04:55:00.413 [scheduled-thread-jm-6] [1;31mERROR[0;39m [36mc.i.y.m.s.job.ShowroomReleaseAutoPublishS 
+   cheduler:122[0;39m - [logResult][tenantId(1) siteKey(yingtai-showroom) stage(TEST) showroom release �Զ�����ʧ��][m
+essa    ge(SHOWROOM_RELEASE_HALL_BLOCKED: hallId=1 hallCode=hall_01 reason=SHOWROOM_RELEASE_SOURCE_MISSING: failed to r
+ead     file 2272)]
+    2026-08-20 04:55:00.542 [ForkJoinPool.commonPool-worker-3] [31mWARN [0;39m [36mo.s.beans.factory.xml.ResourceEn 
+   tityResolver:147[0;39m - DTD/XSD XML entity [https://www.springframework.org/schema/beans/spring-beans.xsd] not f  
+  ound, falling back to remote https resolution
+    2026-08-20 04:55:01.727 [ForkJoinPool.commonPool-worker-2] [1;31mERROR[0;39m [36mc.i.y.framework.tenant.core.jo 
+   b.TenantJobAspect:51[0;39m - [execute][�⻧(1) ִ�� Job �����쳣
+org.springframework.jdbc.BadSqlGrammarException: 
+    ### Error querying database.  Cause: java.sql.SQLSyntaxErrorException: Unknown column 'pqc_release_application_sco 
+   pe_id' in 'field list'
+    ### The error may exist in cn/iocoder/yudao/module/mes/dal/mysql/pro/batchrecord/MesProEdhrWorkTaskMapper.java (be 
+   st guess)
+### The error may involve defaultParameterMap
+### The error occurred while setting parameters
+    ### SQL: SELECT id, task_code, task_type, batch_execution_id, batch_task_id, business_scope_type, business_scope_i 
+   d, pqc_release_application_scope_id, execution_id, source_execution_id, work_order_id, work_order_code, batch_code  
+  , route_id, route_process_id, process_id, process_name, assignee_user_id, candidate_source_type, candidate_source_   
+ id, candidate_user_snapshot, source_user_id, responsibility_source_type, responsibility_source_key, responsibility    
+_source_version, responsibility_source_digest, responsibility_scope_json, ownership_locked, ownership_last_transfe    r
+red_at, ownership_last_transferred_by, signature_cell_key, signature_row_index, signature_column_index, review_so    ur
+ce_type, review_source_id, review_source_name, bpm_task_id, status, due_time, overdue_at, overdue_reason, starte    d_a
+t, completed_at, action_url, reason, remark, create_time, update_time, creator, updater, deleted FROM mes_pro_e    dhr_
+work_task WHERE deleted = 0 AND (status IN (?, ?) AND due_time IS NOT NULL AND due_time <= ?) AND tenant_id =     1 ORD
+ER BY due_time ASC, id ASC LIMIT 200
+### Cause: java.sql.SQLSyntaxErrorException: Unknown column 'pqc_release_application_scope_id' in 'field list'
+; bad SQL grammar []
+    	at org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator.doTranslate(SQLErrorCodeSQLExceptionTransl 
+   ator.java:246)
+    	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLException 
+   Translator.java:107)
+    	at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:95) 
+   
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:347)
+	at jdk.proxy2/jdk.proxy2.$Proxy153.selectList(Unknown Source)
+	at org.mybatis.spring.SqlSessionTemplate.selectList(SqlSessionTemplate.java:194)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperMethod.executeForMany(MybatisMapperMethod.java:164)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperMethod.execute(MybatisMapperMethod.java:77)
+    	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy$PlainMethodInvoker.invoke(MybatisMapperProxy.java:15 
+   6)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy.invoke(MybatisMapperProxy.java:93)
+	at jdk.proxy2/jdk.proxy2.$Proxy370.selectList(Unknown Source)
+    	at cn.iocoder.yudao.module.mes.dal.mysql.pro.batchrecord.MesProEdhrWorkTaskMapper.selectDueActiveTasks(MesProEdhr 
+   WorkTaskMapper.java:121)
+	at java.base/java.lang.invoke.MethodHandle.invokeWithArguments(Unknown Source)
+    	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy$DefaultMethodInvoker.invoke(MybatisMapperProxy.java: 
+   182)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy.invoke(MybatisMapperProxy.java:93)
+	at jdk.proxy2/jdk.proxy2.$Proxy370.selectDueActiveTasks(Unknown Source)
+    	at cn.iocoder.yudao.module.mes.service.pro.batchrecord.MesProEdhrWorkTaskServiceImpl.processOverdueTasksWithSumma 
+   ry(MesProEdhrWorkTaskServiceImpl.java:1682)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
+    	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:1 
+   96)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+    	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspect 
+   Support.java:380)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
+    	at cn.iocoder.yudao.module.mes.service.pro.batchrecord.MesProEdhrWorkTaskServiceImpl$$SpringCGLIB$$0.processOverd 
+   ueTasksWithSummary(<generated>)
+    	at cn.iocoder.yudao.module.mes.job.batchrecord.MesEdhrWorkTaskOverdueJob.execute(MesEdhrWorkTaskOverdueJob.java:2 
+   7)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
+    	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:1 
+   96)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+    	at org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint.proceed(MethodInvocationProceedingJoinPoin 
+   t.java:89)
+	at cn.iocoder.yudao.framework.tenant.core.job.TenantJobAspect.lambda$around$0(TenantJobAspect.java:48)
+	at cn.iocoder.yudao.framework.tenant.core.util.TenantUtils.execute(TenantUtils.java:33)
+	at cn.iocoder.yudao.framework.tenant.core.job.TenantJobAspect.lambda$around$1(TenantJobAspect.java:46)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(Unknown Source)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(Unknown Source)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(Unknown Source)
+	at java.base/java.util.stream.ForEachOps$ForEachTask.compute(Unknown Source)
+	at java.base/java.util.concurrent.CountedCompleter.exec(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinPool.scan(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(Unknown Source)
+Caused by: java.sql.SQLSyntaxErrorException: Unknown column 'pqc_release_application_scope_id' in 'field list'
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:988)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.execute(ClientPreparedStatement.java:383)
+	at com.alibaba.druid.filter.FilterChainImpl.preparedStatement_execute(FilterChainImpl.java:3462)
+	at com.alibaba.druid.filter.FilterEventAdapter.preparedStatement_execute(FilterEventAdapter.java:434)
+	at com.alibaba.druid.filter.FilterChainImpl.preparedStatement_execute(FilterChainImpl.java:3460)
+	at com.alibaba.druid.proxy.jdbc.PreparedStatementProxyImpl.execute(PreparedStatementProxyImpl.java:158)
+	at com.alibaba.druid.pool.DruidPooledPreparedStatement.execute(DruidPooledPreparedStatement.java:483)
+	at org.apache.ibatis.executor.statement.PreparedStatementHandler.query(PreparedStatementHandler.java:65)
+	at org.apache.ibatis.executor.statement.RoutingStatementHandler.query(RoutingStatementHandler.java:80)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:61)
+	at jdk.proxy2/jdk.proxy2.$Proxy683.query(Unknown Source)
+	at org.apache.ibatis.executor.SimpleExecutor.doQuery(SimpleExecutor.java:65)
+	at org.apache.ibatis.executor.BaseExecutor.queryFromDatabase(BaseExecutor.java:336)
+	at org.apache.ibatis.executor.BaseExecutor.query(BaseExecutor.java:158)
+	at org.apache.ibatis.executor.CachingExecutor.query(CachingExecutor.java:110)
+	at com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor.intercept(MybatisPlusInterceptor.java:81)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:59)
+	at jdk.proxy2/jdk.proxy2.$Proxy682.query(Unknown Source)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.apache.ibatis.plugin.Invocation.proceed(Invocation.java:61)
+	at com.github.yulichang.interceptor.MPJInterceptor.intercept(MPJInterceptor.java:85)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:59)
+	at jdk.proxy2/jdk.proxy2.$Proxy682.query(Unknown Source)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:154)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:147)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:142)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:333)
+	... 43 common frames omitted
+    2026-08-20 04:55:01.727 [ForkJoinPool.commonPool-worker-1] [1;31mERROR[0;39m [36mc.i.y.framework.tenant.core.jo 
+   b.TenantJobAspect:51[0;39m - [execute][�⻧(121) ִ�� Job �����쳣
+org.springframework.jdbc.BadSqlGrammarException: 
+    ### Error querying database.  Cause: java.sql.SQLSyntaxErrorException: Unknown column 'pqc_release_application_sco 
+   pe_id' in 'field list'
+    ### The error may exist in cn/iocoder/yudao/module/mes/dal/mysql/pro/batchrecord/MesProEdhrWorkTaskMapper.java (be 
+   st guess)
+### The error may involve defaultParameterMap
+### The error occurred while setting parameters
+    ### SQL: SELECT id, task_code, task_type, batch_execution_id, batch_task_id, business_scope_type, business_scope_i 
+   d, pqc_release_application_scope_id, execution_id, source_execution_id, work_order_id, work_order_code, batch_code  
+  , route_id, route_process_id, process_id, process_name, assignee_user_id, candidate_source_type, candidate_source_   
+ id, candidate_user_snapshot, source_user_id, responsibility_source_type, responsibility_source_key, responsibility    
+_source_version, responsibility_source_digest, responsibility_scope_json, ownership_locked, ownership_last_transfe    r
+red_at, ownership_last_transferred_by, signature_cell_key, signature_row_index, signature_column_index, review_so    ur
+ce_type, review_source_id, review_source_name, bpm_task_id, status, due_time, overdue_at, overdue_reason, starte    d_a
+t, completed_at, action_url, reason, remark, create_time, update_time, creator, updater, deleted FROM mes_pro_e    dhr_
+work_task WHERE deleted = 0 AND (status IN (?, ?) AND due_time IS NOT NULL AND due_time <= ?) AND tenant_id =     121 O
+RDER BY due_time ASC, id ASC LIMIT 200
+### Cause: java.sql.SQLSyntaxErrorException: Unknown column 'pqc_release_application_scope_id' in 'field list'
+; bad SQL grammar []
+    	at org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator.doTranslate(SQLErrorCodeSQLExceptionTransl 
+   ator.java:246)
+    	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLException 
+   Translator.java:107)
+    	at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:95) 
+   
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:347)
+	at jdk.proxy2/jdk.proxy2.$Proxy153.selectList(Unknown Source)
+	at org.mybatis.spring.SqlSessionTemplate.selectList(SqlSessionTemplate.java:194)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperMethod.executeForMany(MybatisMapperMethod.java:164)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperMethod.execute(MybatisMapperMethod.java:77)
+    	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy$PlainMethodInvoker.invoke(MybatisMapperProxy.java:15 
+   6)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy.invoke(MybatisMapperProxy.java:93)
+	at jdk.proxy2/jdk.proxy2.$Proxy370.selectList(Unknown Source)
+    	at cn.iocoder.yudao.module.mes.dal.mysql.pro.batchrecord.MesProEdhrWorkTaskMapper.selectDueActiveTasks(MesProEdhr 
+   WorkTaskMapper.java:121)
+	at java.base/java.lang.invoke.MethodHandle.invokeWithArguments(Unknown Source)
+    	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy$DefaultMethodInvoker.invoke(MybatisMapperProxy.java: 
+   182)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy.invoke(MybatisMapperProxy.java:93)
+	at jdk.proxy2/jdk.proxy2.$Proxy370.selectDueActiveTasks(Unknown Source)
+    	at cn.iocoder.yudao.module.mes.service.pro.batchrecord.MesProEdhrWorkTaskServiceImpl.processOverdueTasksWithSumma 
+   ry(MesProEdhrWorkTaskServiceImpl.java:1682)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
+    	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:1 
+   96)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+    	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspect 
+   Support.java:380)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
+    	at cn.iocoder.yudao.module.mes.service.pro.batchrecord.MesProEdhrWorkTaskServiceImpl$$SpringCGLIB$$0.processOverd 
+   ueTasksWithSummary(<generated>)
+    	at cn.iocoder.yudao.module.mes.job.batchrecord.MesEdhrWorkTaskOverdueJob.execute(MesEdhrWorkTaskOverdueJob.java:2 
+   7)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
+    	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:1 
+   96)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+    	at org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint.proceed(MethodInvocationProceedingJoinPoin 
+   t.java:89)
+	at cn.iocoder.yudao.framework.tenant.core.job.TenantJobAspect.lambda$around$0(TenantJobAspect.java:48)
+	at cn.iocoder.yudao.framework.tenant.core.util.TenantUtils.execute(TenantUtils.java:33)
+	at cn.iocoder.yudao.framework.tenant.core.job.TenantJobAspect.lambda$around$1(TenantJobAspect.java:46)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(Unknown Source)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(Unknown Source)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(Unknown Source)
+	at java.base/java.util.stream.ForEachOps$ForEachTask.compute(Unknown Source)
+	at java.base/java.util.concurrent.CountedCompleter.exec(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinPool.scan(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(Unknown Source)
+Caused by: java.sql.SQLSyntaxErrorException: Unknown column 'pqc_release_application_scope_id' in 'field list'
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:988)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.execute(ClientPreparedStatement.java:383)
+	at com.alibaba.druid.filter.FilterChainImpl.preparedStatement_execute(FilterChainImpl.java:3462)
+	at com.alibaba.druid.filter.FilterEventAdapter.preparedStatement_execute(FilterEventAdapter.java:434)
+	at com.alibaba.druid.filter.FilterChainImpl.preparedStatement_execute(FilterChainImpl.java:3460)
+	at com.alibaba.druid.proxy.jdbc.PreparedStatementProxyImpl.execute(PreparedStatementProxyImpl.java:158)
+	at com.alibaba.druid.pool.DruidPooledPreparedStatement.execute(DruidPooledPreparedStatement.java:483)
+	at org.apache.ibatis.executor.statement.PreparedStatementHandler.query(PreparedStatementHandler.java:65)
+	at org.apache.ibatis.executor.statement.RoutingStatementHandler.query(RoutingStatementHandler.java:80)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:61)
+	at jdk.proxy2/jdk.proxy2.$Proxy683.query(Unknown Source)
+	at org.apache.ibatis.executor.SimpleExecutor.doQuery(SimpleExecutor.java:65)
+	at org.apache.ibatis.executor.BaseExecutor.queryFromDatabase(BaseExecutor.java:336)
+	at org.apache.ibatis.executor.BaseExecutor.query(BaseExecutor.java:158)
+	at org.apache.ibatis.executor.CachingExecutor.query(CachingExecutor.java:110)
+	at com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor.intercept(MybatisPlusInterceptor.java:81)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:59)
+	at jdk.proxy2/jdk.proxy2.$Proxy682.query(Unknown Source)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.apache.ibatis.plugin.Invocation.proceed(Invocation.java:61)
+	at com.github.yulichang.interceptor.MPJInterceptor.intercept(MPJInterceptor.java:85)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:59)
+	at jdk.proxy2/jdk.proxy2.$Proxy682.query(Unknown Source)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:154)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:147)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:142)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:333)
+	... 43 common frames omitted
+    2026-08-20 04:55:01.727 [ForkJoinPool.commonPool-worker-3] [1;31mERROR[0;39m [36mc.i.y.framework.tenant.core.jo 
+   b.TenantJobAspect:51[0;39m - [execute][�⻧(162) ִ�� Job �����쳣
+org.springframework.jdbc.BadSqlGrammarException: 
+    ### Error querying database.  Cause: java.sql.SQLSyntaxErrorException: Unknown column 'pqc_release_application_sco 
+   pe_id' in 'field list'
+    ### The error may exist in cn/iocoder/yudao/module/mes/dal/mysql/pro/batchrecord/MesProEdhrWorkTaskMapper.java (be 
+   st guess)
+### The error may involve defaultParameterMap
+### The error occurred while setting parameters
+    ### SQL: SELECT id, task_code, task_type, batch_execution_id, batch_task_id, business_scope_type, business_scope_i 
+   d, pqc_release_application_scope_id, execution_id, source_execution_id, work_order_id, work_order_code, batch_code  
+  , route_id, route_process_id, process_id, process_name, assignee_user_id, candidate_source_type, candidate_source_   
+ id, candidate_user_snapshot, source_user_id, responsibility_source_type, responsibility_source_key, responsibility    
+_source_version, responsibility_source_digest, responsibility_scope_json, ownership_locked, ownership_last_transfe    r
+red_at, ownership_last_transferred_by, signature_cell_key, signature_row_index, signature_column_index, review_so    ur
+ce_type, review_source_id, review_source_name, bpm_task_id, status, due_time, overdue_at, overdue_reason, starte    d_a
+t, completed_at, action_url, reason, remark, create_time, update_time, creator, updater, deleted FROM mes_pro_e    dhr_
+work_task WHERE deleted = 0 AND (status IN (?, ?) AND due_time IS NOT NULL AND due_time <= ?) AND tenant_id =     162 O
+RDER BY due_time ASC, id ASC LIMIT 200
+### Cause: java.sql.SQLSyntaxErrorException: Unknown column 'pqc_release_application_scope_id' in 'field list'
+; bad SQL grammar []
+    	at org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator.doTranslate(SQLErrorCodeSQLExceptionTransl 
+   ator.java:246)
+    	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLException 
+   Translator.java:107)
+    	at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:95) 
+   
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:347)
+	at jdk.proxy2/jdk.proxy2.$Proxy153.selectList(Unknown Source)
+	at org.mybatis.spring.SqlSessionTemplate.selectList(SqlSessionTemplate.java:194)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperMethod.executeForMany(MybatisMapperMethod.java:164)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperMethod.execute(MybatisMapperMethod.java:77)
+    	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy$PlainMethodInvoker.invoke(MybatisMapperProxy.java:15 
+   6)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy.invoke(MybatisMapperProxy.java:93)
+	at jdk.proxy2/jdk.proxy2.$Proxy370.selectList(Unknown Source)
+    	at cn.iocoder.yudao.module.mes.dal.mysql.pro.batchrecord.MesProEdhrWorkTaskMapper.selectDueActiveTasks(MesProEdhr 
+   WorkTaskMapper.java:121)
+	at java.base/java.lang.invoke.MethodHandle.invokeWithArguments(Unknown Source)
+    	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy$DefaultMethodInvoker.invoke(MybatisMapperProxy.java: 
+   182)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy.invoke(MybatisMapperProxy.java:93)
+	at jdk.proxy2/jdk.proxy2.$Proxy370.selectDueActiveTasks(Unknown Source)
+    	at cn.iocoder.yudao.module.mes.service.pro.batchrecord.MesProEdhrWorkTaskServiceImpl.processOverdueTasksWithSumma 
+   ry(MesProEdhrWorkTaskServiceImpl.java:1682)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
+    	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:1 
+   96)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+    	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspect 
+   Support.java:380)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
+    	at cn.iocoder.yudao.module.mes.service.pro.batchrecord.MesProEdhrWorkTaskServiceImpl$$SpringCGLIB$$0.processOverd 
+   ueTasksWithSummary(<generated>)
+    	at cn.iocoder.yudao.module.mes.job.batchrecord.MesEdhrWorkTaskOverdueJob.execute(MesEdhrWorkTaskOverdueJob.java:2 
+   7)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
+    	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:1 
+   96)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+    	at org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint.proceed(MethodInvocationProceedingJoinPoin 
+   t.java:89)
+	at cn.iocoder.yudao.framework.tenant.core.job.TenantJobAspect.lambda$around$0(TenantJobAspect.java:48)
+	at cn.iocoder.yudao.framework.tenant.core.util.TenantUtils.execute(TenantUtils.java:33)
+	at cn.iocoder.yudao.framework.tenant.core.job.TenantJobAspect.lambda$around$1(TenantJobAspect.java:46)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(Unknown Source)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(Unknown Source)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(Unknown Source)
+	at java.base/java.util.stream.ForEachOps$ForEachTask.compute(Unknown Source)
+	at java.base/java.util.concurrent.CountedCompleter.exec(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinPool.scan(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(Unknown Source)
+Caused by: java.sql.SQLSyntaxErrorException: Unknown column 'pqc_release_application_scope_id' in 'field list'
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:988)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.execute(ClientPreparedStatement.java:383)
+	at com.alibaba.druid.filter.FilterChainImpl.preparedStatement_execute(FilterChainImpl.java:3462)
+	at com.alibaba.druid.filter.FilterEventAdapter.preparedStatement_execute(FilterEventAdapter.java:434)
+	at com.alibaba.druid.filter.FilterChainImpl.preparedStatement_execute(FilterChainImpl.java:3460)
+	at com.alibaba.druid.proxy.jdbc.PreparedStatementProxyImpl.execute(PreparedStatementProxyImpl.java:158)
+	at com.alibaba.druid.pool.DruidPooledPreparedStatement.execute(DruidPooledPreparedStatement.java:483)
+	at org.apache.ibatis.executor.statement.PreparedStatementHandler.query(PreparedStatementHandler.java:65)
+	at org.apache.ibatis.executor.statement.RoutingStatementHandler.query(RoutingStatementHandler.java:80)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:61)
+	at jdk.proxy2/jdk.proxy2.$Proxy683.query(Unknown Source)
+	at org.apache.ibatis.executor.SimpleExecutor.doQuery(SimpleExecutor.java:65)
+	at org.apache.ibatis.executor.BaseExecutor.queryFromDatabase(BaseExecutor.java:336)
+	at org.apache.ibatis.executor.BaseExecutor.query(BaseExecutor.java:158)
+	at org.apache.ibatis.executor.CachingExecutor.query(CachingExecutor.java:110)
+	at com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor.intercept(MybatisPlusInterceptor.java:81)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:59)
+	at jdk.proxy2/jdk.proxy2.$Proxy682.query(Unknown Source)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.apache.ibatis.plugin.Invocation.proceed(Invocation.java:61)
+	at com.github.yulichang.interceptor.MPJInterceptor.intercept(MPJInterceptor.java:85)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:59)
+	at jdk.proxy2/jdk.proxy2.$Proxy682.query(Unknown Source)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:154)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:147)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:142)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:333)
+	... 43 common frames omitted
+    2026-08-20 04:55:01.727 [schedulerName_Worker-1] [1;31mERROR[0;39m [36mc.i.y.framework.tenant.core.job.TenantJo 
+   bAspect:51[0;39m - [execute][�⻧(122) ִ�� Job �����쳣
+org.springframework.jdbc.BadSqlGrammarException: 
+    ### Error querying database.  Cause: java.sql.SQLSyntaxErrorException: Unknown column 'pqc_release_application_sco 
+   pe_id' in 'field list'
+    ### The error may exist in cn/iocoder/yudao/module/mes/dal/mysql/pro/batchrecord/MesProEdhrWorkTaskMapper.java (be 
+   st guess)
+### The error may involve defaultParameterMap
+### The error occurred while setting parameters
+    ### SQL: SELECT id, task_code, task_type, batch_execution_id, batch_task_id, business_scope_type, business_scope_i 
+   d, pqc_release_application_scope_id, execution_id, source_execution_id, work_order_id, work_order_code, batch_code  
+  , route_id, route_process_id, process_id, process_name, assignee_user_id, candidate_source_type, candidate_source_   
+ id, candidate_user_snapshot, source_user_id, responsibility_source_type, responsibility_source_key, responsibility    
+_source_version, responsibility_source_digest, responsibility_scope_json, ownership_locked, ownership_last_transfe    r
+red_at, ownership_last_transferred_by, signature_cell_key, signature_row_index, signature_column_index, review_so    ur
+ce_type, review_source_id, review_source_name, bpm_task_id, status, due_time, overdue_at, overdue_reason, starte    d_a
+t, completed_at, action_url, reason, remark, create_time, update_time, creator, updater, deleted FROM mes_pro_e    dhr_
+work_task WHERE deleted = 0 AND (status IN (?, ?) AND due_time IS NOT NULL AND due_time <= ?) AND tenant_id =     122 O
+RDER BY due_time ASC, id ASC LIMIT 200
+### Cause: java.sql.SQLSyntaxErrorException: Unknown column 'pqc_release_application_scope_id' in 'field list'
+; bad SQL grammar []
+    	at org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator.doTranslate(SQLErrorCodeSQLExceptionTransl 
+   ator.java:246)
+    	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLException 
+   Translator.java:107)
+    	at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:95) 
+   
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:347)
+	at jdk.proxy2/jdk.proxy2.$Proxy153.selectList(Unknown Source)
+	at org.mybatis.spring.SqlSessionTemplate.selectList(SqlSessionTemplate.java:194)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperMethod.executeForMany(MybatisMapperMethod.java:164)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperMethod.execute(MybatisMapperMethod.java:77)
+    	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy$PlainMethodInvoker.invoke(MybatisMapperProxy.java:15 
+   6)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy.invoke(MybatisMapperProxy.java:93)
+	at jdk.proxy2/jdk.proxy2.$Proxy370.selectList(Unknown Source)
+    	at cn.iocoder.yudao.module.mes.dal.mysql.pro.batchrecord.MesProEdhrWorkTaskMapper.selectDueActiveTasks(MesProEdhr 
+   WorkTaskMapper.java:121)
+	at java.base/java.lang.invoke.MethodHandle.invokeWithArguments(Unknown Source)
+    	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy$DefaultMethodInvoker.invoke(MybatisMapperProxy.java: 
+   182)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy.invoke(MybatisMapperProxy.java:93)
+	at jdk.proxy2/jdk.proxy2.$Proxy370.selectDueActiveTasks(Unknown Source)
+    	at cn.iocoder.yudao.module.mes.service.pro.batchrecord.MesProEdhrWorkTaskServiceImpl.processOverdueTasksWithSumma 
+   ry(MesProEdhrWorkTaskServiceImpl.java:1682)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
+    	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:1 
+   96)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+    	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspect 
+   Support.java:380)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
+    	at cn.iocoder.yudao.module.mes.service.pro.batchrecord.MesProEdhrWorkTaskServiceImpl$$SpringCGLIB$$0.processOverd 
+   ueTasksWithSummary(<generated>)
+    	at cn.iocoder.yudao.module.mes.job.batchrecord.MesEdhrWorkTaskOverdueJob.execute(MesEdhrWorkTaskOverdueJob.java:2 
+   7)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:360)
+    	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:1 
+   96)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+    	at org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint.proceed(MethodInvocationProceedingJoinPoin 
+   t.java:89)
+	at cn.iocoder.yudao.framework.tenant.core.job.TenantJobAspect.lambda$around$0(TenantJobAspect.java:48)
+	at cn.iocoder.yudao.framework.tenant.core.util.TenantUtils.execute(TenantUtils.java:33)
+	at cn.iocoder.yudao.framework.tenant.core.job.TenantJobAspect.lambda$around$1(TenantJobAspect.java:46)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(Unknown Source)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(Unknown Source)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(Unknown Source)
+	at java.base/java.util.stream.ForEachOps$ForEachTask.compute(Unknown Source)
+	at java.base/java.util.concurrent.CountedCompleter.exec(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(Unknown Source)
+	at java.base/java.util.concurrent.ForkJoinTask.invoke(Unknown Source)
+	at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateParallel(Unknown Source)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateParallel(Unknown Source)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(Unknown Source)
+	at java.base/java.util.stream.ReferencePipeline.forEach(Unknown Source)
+	at java.base/java.util.stream.ReferencePipeline$Head.forEach(Unknown Source)
+	at cn.iocoder.yudao.framework.tenant.core.job.TenantJobAspect.around(TenantJobAspect.java:44)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+    	at org.springframework.aop.aspectj.AbstractAspectJAdvice.invokeAdviceMethodWithGivenArgs(AbstractAspectJAdvice.ja 
+   va:649)
+	at org.springframework.aop.aspectj.AbstractAspectJAdvice.invokeAdviceMethod(AbstractAspectJAdvice.java:631)
+	at org.springframework.aop.aspectj.AspectJAroundAdvice.invoke(AspectJAroundAdvice.java:71)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:173)
+	at org.springframework.aop.interceptor.ExposeInvocationInterceptor.invoke(ExposeInvocationInterceptor.java:97)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:728)
+	at cn.iocoder.yudao.module.mes.job.batchrecord.MesEdhrWorkTaskOverdueJob$$SpringCGLIB$$0.execute(<generated>)
+	at cn.iocoder.yudao.framework.quartz.core.handler.JobHandlerInvoker.executeInternal(JobHandlerInvoker.java:73)
+	at cn.iocoder.yudao.framework.quartz.core.handler.JobHandlerInvoker.executeInternal(JobHandlerInvoker.java:56)
+	at org.springframework.scheduling.quartz.QuartzJobBean.execute(QuartzJobBean.java:75)
+	at org.quartz.core.JobRunShell.run(JobRunShell.java:203)
+	at org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:566)
+Caused by: java.sql.SQLSyntaxErrorException: Unknown column 'pqc_release_application_scope_id' in 'field list'
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:988)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.execute(ClientPreparedStatement.java:383)
+	at com.alibaba.druid.filter.FilterChainImpl.preparedStatement_execute(FilterChainImpl.java:3462)
+	at com.alibaba.druid.filter.FilterEventAdapter.preparedStatement_execute(FilterEventAdapter.java:434)
+	at com.alibaba.druid.filter.FilterChainImpl.preparedStatement_execute(FilterChainImpl.java:3460)
+	at com.alibaba.druid.proxy.jdbc.PreparedStatementProxyImpl.execute(PreparedStatementProxyImpl.java:158)
+	at com.alibaba.druid.pool.DruidPooledPreparedStatement.execute(DruidPooledPreparedStatement.java:483)
+	at org.apache.ibatis.executor.statement.PreparedStatementHandler.query(PreparedStatementHandler.java:65)
+	at org.apache.ibatis.executor.statement.RoutingStatementHandler.query(RoutingStatementHandler.java:80)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:61)
+	at jdk.proxy2/jdk.proxy2.$Proxy683.query(Unknown Source)
+	at org.apache.ibatis.executor.SimpleExecutor.doQuery(SimpleExecutor.java:65)
+	at org.apache.ibatis.executor.BaseExecutor.queryFromDatabase(BaseExecutor.java:336)
+	at org.apache.ibatis.executor.BaseExecutor.query(BaseExecutor.java:158)
+	at org.apache.ibatis.executor.CachingExecutor.query(CachingExecutor.java:110)
+	at com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor.intercept(MybatisPlusInterceptor.java:81)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:59)
+	at jdk.proxy2/jdk.proxy2.$Proxy682.query(Unknown Source)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.apache.ibatis.plugin.Invocation.proceed(Invocation.java:61)
+	at com.github.yulichang.interceptor.MPJInterceptor.intercept(MPJInterceptor.java:85)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:59)
+	at jdk.proxy2/jdk.proxy2.$Proxy682.query(Unknown Source)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:154)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:147)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:142)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:333)
+	... 61 common frames omitted
+    2026-08-20 04:55:01.762 [schedulerName_Worker-1] [34mINFO [0;39m [36mo.s.s.a.AnnotationAsyncExecutionIntercepto 
+   r:254[0;39m - More than one TaskExecutor bean found within the context, and none is named 'taskExecutor'. Mark on  
+  e of them as primary or name it 'taskExecutor' (possibly as an alias) in order to use it for async processing: [jm   
+ ReportTaskExecutor, jmTaskScheduler, applicationTaskExecutor]
+    2026-08-20 04:56:00.253 [scheduled-thread-jm-1] [1;31mERROR[0;39m [36mc.i.y.m.s.job.ShowroomReleaseAutoPublishS 
+   cheduler:122[0;39m - [logResult][tenantId(1) siteKey(yingtai-showroom) stage(TEST) showroom release �Զ�����ʧ��][m
+essa    ge(SHOWROOM_RELEASE_HALL_BLOCKED: hallId=1 hallCode=hall_01 reason=SHOWROOM_RELEASE_SOURCE_MISSING: failed to r
+ead     file 2272)]
+    2026-08-20 04:57:00.297 [scheduled-thread-jm-7] [1;31mERROR[0;39m [36mc.i.y.m.s.job.ShowroomReleaseAutoPublishS 
+   cheduler:122[0;39m - [logResult][tenantId(1) siteKey(yingtai-showroom) stage(TEST) showroom release �Զ�����ʧ��][m
+essa    ge(SHOWROOM_RELEASE_HALL_BLOCKED: hallId=1 hallCode=hall_01 reason=SHOWROOM_RELEASE_SOURCE_MISSING: failed to r
+ead     file 2272)]
+    2026-08-20 04:58:00.264 [scheduled-thread-jm-8] [1;31mERROR[0;39m [36mc.i.y.m.s.job.ShowroomReleaseAutoPublishS 
+   cheduler:122[0;39m - [logResult][tenantId(1) siteKey(yingtai-showroom) stage(TEST) showroom release �Զ�����ʧ��][m
+essa    ge(SHOWROOM_RELEASE_HALL_BLOCKED: hallId=1 hallCode=hall_01 reason=SHOWROOM_RELEASE_SOURCE_MISSING: failed to r
+ead     file 2272)]
+    2026-08-20 04:58:03.374 [SpringApplicationShutdownHook] [34mINFO [0;39m [36morg.quartz.core.QuartzScheduler:576 
+   [0;39m - Scheduler schedulerName_$_ad5450e981081787172611899 paused.
+    2026-08-20 04:58:03.379 [SpringApplicationShutdownHook] [34mINFO [0;39m [36mo.s.boot.web.embedded.tomcat.Gracef 
+   ulShutdown:54[0;39m - Commencing graceful shutdown. Waiting for active requests to complete
+    2026-08-20 04:58:03.382 [tomcat-shutdown] [34mINFO [0;39m [36mo.s.boot.web.embedded.tomcat.GracefulShutdown:76 
+   [0;39m - Graceful shutdown complete
+    2026-08-20 04:58:05.530 [SpringApplicationShutdownHook] [34mINFO [0;39m [36mo.f.j.s.impl.asyncexecutor.Abstract 
+   AsyncExecutor:159[0;39m - Shutting down the async job executor [org.flowable.spring.job.service.SpringAsyncExecut  
+  or] for engine bpmn
+    2026-08-20 04:58:05.531 [flowable-bpmn-reset-expired-jobs] [34mINFO [0;39m [36mo.f.j.s.i.asyncexecutor.ResetExp 
+   iredJobsRunnable:90[0;39m - stopped resetting expired jobs for engine bpmn
+    2026-08-20 04:58:05.531 [flowable-bpmn-acquire-async-jobs] [34mINFO [0;39m [36mo.f.j.s.i.a.AcquireAsyncJobsDueR 
+   unnable:143[0;39m - stopped async job due acquisition for engine bpmn
+    2026-08-20 04:58:05.531 [flowable-bpmn-acquire-timer-jobs] [34mINFO [0;39m [36mo.f.j.s.i.asyncexecutor.AcquireT 
+   imerJobsRunnable:131[0;39m - stopped async job due acquisition for engine bpmn
+    2026-08-20 04:58:05.550 [SpringApplicationShutdownHook] [34mINFO [0;39m [36mo.s.scheduling.quartz.SchedulerFact 
+   oryBean:845[0;39m - Shutting down Quartz Scheduler
+    2026-08-20 04:58:05.551 [SpringApplicationShutdownHook] [34mINFO [0;39m [36morg.quartz.core.QuartzScheduler:656 
+   [0;39m - Scheduler schedulerName_$_ad5450e981081787172611899 shutting down.
+    2026-08-20 04:58:05.551 [SpringApplicationShutdownHook] [34mINFO [0;39m [36morg.quartz.core.QuartzScheduler:576 
+   [0;39m - Scheduler schedulerName_$_ad5450e981081787172611899 paused.
+    2026-08-20 04:58:05.822 [SpringApplicationShutdownHook] [34mINFO [0;39m [36morg.quartz.core.QuartzScheduler:728 
+   [0;39m - Scheduler schedulerName_$_ad5450e981081787172611899 shutdown complete.
+    2026-08-20 04:58:05.904 [SpringApplicationShutdownHook] [34mINFO [0;39m [36mc.b.dynamic.datasource.DynamicRouti 
+   ngDataSource:215[0;39m - dynamic-datasource start closing ....
+    2026-08-20 04:58:05.907 [SpringApplicationShutdownHook] [34mINFO [0;39m [36mcom.alibaba.druid.pool.DruidDataSou 
+   rce:1880[0;39m - {dataSource-0} closing ...
+    2026-08-20 04:58:05.908 [SpringApplicationShutdownHook] [34mINFO [0;39m [36mc.b.d.d.destroyer.DefaultDataSource 
+   Destroyer:98[0;39m - dynamic-datasource close the datasource named [slave] success,
+    2026-08-20 04:58:05.908 [SpringApplicationShutdownHook] [34mINFO [0;39m [36mcom.alibaba.druid.pool.DruidDataSou 
+   rce:1880[0;39m - {dataSource-1} closing ...
+    2026-08-20 04:58:05.915 [SpringApplicationShutdownHook] [34mINFO [0;39m [36mcom.alibaba.druid.pool.DruidDataSou 
+   rce:1953[0;39m - {dataSource-1} closed
+    2026-08-20 04:58:05.916 [SpringApplicationShutdownHook] [34mINFO [0;39m [36mc.b.d.d.destroyer.DefaultDataSource 
+   Destroyer:98[0;39m - dynamic-datasource close the datasource named [master] success,
+    2026-08-20 04:58:05.916 [SpringApplicationShutdownHook] [34mINFO [0;39m [36mc.b.dynamic.datasource.DynamicRouti 
+   ngDataSource:219[0;39m - dynamic-datasource all closed success,bye
+ 
+ERROR: 命令退出码非 0: 1

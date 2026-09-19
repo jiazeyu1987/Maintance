@@ -1,0 +1,81 @@
+{
+  "releaseTag": "release-20260820-frozen-head-test-r260820a-r2",
+  "manifestVersion": "1.0",
+  "packageType": "full-release",
+  "publishScope": "code-only",
+  "sourceRepos": [
+    {
+      "name": "ruoyi-vue-pro",
+      "pathRole": "backend",
+      "commit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+      "branch": "HEAD",
+      "dirty": false,
+      "dirtySummaryHash": null
+    },
+    {
+      "name": "yudao-ui-admin-vue3",
+      "pathRole": "admin-frontend",
+      "commit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+      "branch": "HEAD",
+      "dirty": false,
+      "dirtySummaryHash": null
+    }
+  ],
+  "legacyGitCommit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+  "legacyPublishScope": "code-only",
+  "changeSet": {
+    "summary": "任务: 修复C00发布后空哈希",
+    "component": "intruoyi",
+    "items": [
+      "发布包：release-20260820-frozen-head-test-r260820a-r2",
+      "组件范围：intruoyi",
+      "提交：adeb3aabc89e 任务: 修复C00发布后空哈希"
+    ],
+    "includeShowroomBuildPackage": false,
+    "includeOnlyOffice": false
+  },
+  "releaseInfo": {
+    "releaseTag": "release-20260820-frozen-head-test-r260820a-r2",
+    "packageId": "release-20260820-frozen-head-test-r260820a-r2",
+    "publishScope": "code-only",
+    "changeSet": {
+      "summary": "任务: 修复C00发布后空哈希",
+      "component": "intruoyi",
+      "items": [
+        "发布包：release-20260820-frozen-head-test-r260820a-r2",
+        "组件范围：intruoyi",
+        "提交：adeb3aabc89e 任务: 修复C00发布后空哈希"
+      ],
+      "includeShowroomBuildPackage": false,
+      "includeOnlyOffice": false
+    },
+    "sourceRepos": [
+      {
+        "name": "ruoyi-vue-pro",
+        "pathRole": "backend",
+        "commit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+        "branch": "HEAD",
+        "dirty": false,
+        "dirtySummaryHash": null
+      },
+      {
+        "name": "yudao-ui-admin-vue3",
+        "pathRole": "admin-frontend",
+        "commit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+        "branch": "HEAD",
+        "dirty": false,
+        "dirtySummaryHash": null
+      }
+    ]
+  },
+  "runtimeEnv": {
+    "endpoint": "EDHR_S3_ENDPOINT=http://172.30.30.58:9000",
+    "bucket": "EDHR_S3_BUCKET=edhr-retention-verifier-20260530",
+    "imageTag": "",
+    "hasAccessKey": true,
+    "hasSecretKey": true,
+    "hasProdHost": false,
+    "endpointHasBackupHost": false
+  },
+  "artifactCount": 516
+}

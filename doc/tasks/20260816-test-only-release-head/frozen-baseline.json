@@ -1,0 +1,39 @@
+{
+  "taskId": "20260816-test-only-release-head",
+  "frozenAt": "2026-08-16T00:41:42.4706042+08:00",
+  "releaseTag": "release-20260816-intmain-head-test-r260816a-r1",
+  "targetEnvironment": "test",
+  "targetHost": "172.30.30.58",
+  "forbiddenActions": [
+    "mark-tested",
+    "promote-prod",
+    "promote-backup"
+  ],
+  "repositories": {
+    "maintenance": {
+      "sourcePath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance",
+      "branch": "int_main",
+      "commit": "3cd1f3e7e99fa397497107708a9ba977d5879749",
+      "sourceStatus": {
+        "dirtyCount": 49,
+        "staged": 0,
+        "unstaged": 20,
+        "untracked": 29
+      },
+      "worktreePath": "D:\\IntRuoyiWorktree\\r260816a\\m"
+    },
+    "application": {
+      "sourcePath": "E:\\IntRuoyi",
+      "branch": "int_main",
+      "commit": "cb0464ce886973f16136ed31b4d5812d28927eb3",
+      "sourceStatus": {
+        "dirtyCount": 252,
+        "staged": 0,
+        "unstaged": 34,
+        "untracked": 218
+      },
+      "worktreePath": "D:\\IntRuoyiWorktree\\r260816a\\a"
+    }
+  },
+  "statePath": "D:\\IntRuoyiWorktree\\r260816a-state"
+}

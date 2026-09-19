@@ -1,0 +1,35 @@
+{
+    "releaseTag":  "release-20260820-frozen-head-test-r260820e-r1",
+    "packageId":  "release-20260820-frozen-head-test-r260820e-r1",
+    "createdAt":  "2026-08-20T06:46:19.9066017Z",
+    "publishScope":  "code-only",
+    "changeSet":  {
+                      "summary":  "任务: 修复C00发布后空哈希",
+                      "component":  "intruoyi",
+                      "items":  [
+                                    "发布包：release-20260820-frozen-head-test-r260820e-r1",
+                                    "组件范围：intruoyi",
+                                    "提交：adeb3aabc89e 任务: 修复C00发布后空哈希"
+                                ],
+                      "includeShowroomBuildPackage":  false,
+                      "includeOnlyOffice":  false
+                  },
+    "sourceRepos":  [
+                        {
+                            "name":  "ruoyi-vue-pro",
+                            "pathRole":  "backend",
+                            "commit":  "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+                            "branch":  "HEAD",
+                            "dirty":  false,
+                            "dirtySummaryHash":  null
+                        },
+                        {
+                            "name":  "yudao-ui-admin-vue3",
+                            "pathRole":  "admin-frontend",
+                            "commit":  "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+                            "branch":  "HEAD",
+                            "dirty":  false,
+                            "dirtySummaryHash":  null
+                        }
+                    ]
+}

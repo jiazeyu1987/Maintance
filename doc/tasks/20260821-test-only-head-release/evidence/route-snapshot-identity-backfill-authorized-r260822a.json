@@ -1,0 +1,58 @@
+{
+  "schemaVersion" : "MES_ROUTE_SNAPSHOT_MIGRATION_REPORT_V1",
+  "mode" : "BACKFILL",
+  "status" : "BLOCKED",
+  "generatedAt" : "2026-08-22T17:08:06.858431432Z",
+  "scannedCount" : 47,
+  "updatedCount" : 0,
+  "blockerCount" : 8,
+  "blockers" : [ {
+    "routeVersionId" : 3,
+    "routeId" : 900025,
+    "versionNo" : "V1",
+    "reasonCode" : "ROUTE_PROCESS_UNRESOLVED",
+    "detail" : "$.configSnapshots.scheduleConfigs[0].routeProcessId=900124"
+  }, {
+    "routeVersionId" : 3,
+    "routeId" : 900025,
+    "versionNo" : "V1",
+    "reasonCode" : "ROUTE_PROCESS_UNRESOLVED",
+    "detail" : "$.configSnapshots.scheduleConfigs[1].routeProcessId=900125"
+  }, {
+    "routeVersionId" : 3,
+    "routeId" : 900025,
+    "versionNo" : "V1",
+    "reasonCode" : "ROUTE_PROCESS_UNRESOLVED",
+    "detail" : "$.configSnapshots.scheduleConfigs[2].routeProcessId=900126"
+  }, {
+    "routeVersionId" : 3,
+    "routeId" : 900025,
+    "versionNo" : "V1",
+    "reasonCode" : "ROUTE_PROCESS_UNRESOLVED",
+    "detail" : "$.configSnapshots.scheduleConfigs[3].routeProcessId=900127"
+  }, {
+    "routeVersionId" : 3,
+    "routeId" : 900025,
+    "versionNo" : "V1",
+    "reasonCode" : "ROUTE_PROCESS_UNRESOLVED",
+    "detail" : "configSnapshots.scheduleConfigs[0].routeProcessId=900124"
+  }, {
+    "routeVersionId" : 3,
+    "routeId" : 900025,
+    "versionNo" : "V1",
+    "reasonCode" : "ROUTE_PROCESS_UNRESOLVED",
+    "detail" : "configSnapshots.scheduleConfigs[1].routeProcessId=900125"
+  }, {
+    "routeVersionId" : 3,
+    "routeId" : 900025,
+    "versionNo" : "V1",
+    "reasonCode" : "ROUTE_PROCESS_UNRESOLVED",
+    "detail" : "configSnapshots.scheduleConfigs[2].routeProcessId=900126"
+  }, {
+    "routeVersionId" : 3,
+    "routeId" : 900025,
+    "versionNo" : "V1",
+    "reasonCode" : "ROUTE_PROCESS_UNRESOLVED",
+    "detail" : "configSnapshots.scheduleConfigs[3].routeProcessId=900127"
+  } ]
+}

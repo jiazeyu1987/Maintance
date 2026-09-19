@@ -1,0 +1,52 @@
+{
+  "releaseTag": "release-20260822-intmain-head-test-r260822a-r2",
+  "publishOperationId": "op-2026-08-22T035621436028400Z-55335b7f-e740-4d0f-a9d1-a85f875648fa",
+  "publishScope": "code-only",
+  "targetEnvironment": "test",
+  "targetHost": "172.30.30.58",
+  "routeSnapshotBackfill": {
+    "status": "BLOCKED",
+    "scannedCount": 47,
+    "updatedCount": 0,
+    "blockerCount": 882,
+    "blockerReasonCounts": {
+      "FLOW_NODES_MISSING": 8,
+      "ROUTE_ID_MISSING": 2,
+      "PROCESS_ID_INVALID": 436,
+      "PRODUCT_BOM_IDENTITY_INVALID": 436
+    },
+    "tenantDistribution": {
+      "tenant1_芋道源码": 46,
+      "tenant122_测试租户": 1
+    },
+    "snapshotIdentityColumns": {
+      "route_snapshot_sha256_null": 47,
+      "route_snapshot_format_version_null": 47
+    },
+    "acceptance": "FAIL"
+  },
+  "operationState": {
+    "apiStatus": "RUNNING",
+    "requiredSuccess": true,
+    "acceptance": "FAIL"
+  },
+  "liveContainersAfterTemporaryRunnerCleanup": {
+    "backend": "intruoyi-backend:hotfix-20260814-route-submit-order-r1",
+    "frontend": "intruoyi-frontend:release-20260813-intmain-head-test-r260812b-r2",
+    "backendRunning": true,
+    "frontendRunning": true,
+    "targetReleaseLive": false
+  },
+  "forbiddenActionsExecuted": [],
+  "rawLogRetained": false,
+  "issues": ["P038", "P039", "P040", "P041", "P042", "P043", "P044", "P045", "P046", "P047", "P048"],
+  "readOnlyDiagnosis": {
+    "reportEvidence": "evidence/route-snapshot-identity-backfill-r260822a-r2.json",
+    "businessDataWrites": false,
+    "migrationLedgerWrites": false,
+    "releaseLockEdits": false,
+    "rootCause": "Historical route snapshots violate the strict identity/structure contract; 46 blocker-bearing rows belong to protected tenant 1.",
+    "nextPrecondition": "Formal authorized historical snapshot remediation plan; no release retry before remediation."
+  },
+  "decision": "NO-GO"
+}

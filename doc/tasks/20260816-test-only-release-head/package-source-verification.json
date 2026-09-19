@@ -1,0 +1,64 @@
+{
+  "releaseTag": "release-20260816-intmain-head-test-r260816a-r1",
+  "packagePath": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260816-intmain-head-test-r260816a-r1",
+  "expectedMaintenanceCommit": "3cd1f3e7e99fa397497107708a9ba977d5879749",
+  "expectedApplicationCommit": "cb0464ce886973f16136ed31b4d5812d28927eb3",
+  "checks": {
+    "releaseTag": true,
+    "manifestVersion": true,
+    "publishScope": true,
+    "sourceRepoCount": true,
+    "sourceCommits": true,
+    "sourceClean": true,
+    "legacyTag": true,
+    "legacyCommit": true,
+    "legacyScope": true,
+    "releaseInfoTag": true,
+    "releaseInfoScope": true,
+    "releaseInfoCommits": true,
+    "releaseInfoClean": true,
+    "changeSummary": true,
+    "changeItems": true,
+    "imageArtifact": true,
+    "manifestValidator": true,
+    "maintenanceHead": true,
+    "appHead": true,
+    "maintenanceClean": true,
+    "appClean": true
+  },
+  "manifestChecksum": "sha256:31e8b389f361c6bffb9ee137c967d9a1e9512546b03a85b3c24e0e97fb3b0b60",
+  "imageArtifactPath": "intruoyi-images_release-20260816-intmain-head-test-r260816a-r1.tar",
+  "imageArtifactSize": 734803456,
+  "imageArtifactSha256": "sha256:5fcf767e219192674690b3f45787aeb8c9852f05689398056cec37fab2a8f7f7",
+  "changeSet": {
+    "summary": "Release package release-20260816-intmain-head-test-r260816a-r1",
+    "component": "intruoyi",
+    "items": [
+      "发布包：release-20260816-intmain-head-test-r260816a-r1",
+      "组件范围：intruoyi"
+    ],
+    "includeShowroomBuildPackage": false,
+    "includeOnlyOffice": false
+  },
+  "sourceRepos": [
+    {
+      "name": "ruoyi-vue-pro",
+      "pathRole": "backend",
+      "commit": "cb0464ce886973f16136ed31b4d5812d28927eb3",
+      "branch": "HEAD",
+      "dirty": false,
+      "dirtySummaryHash": null
+    },
+    {
+      "name": "yudao-ui-admin-vue3",
+      "pathRole": "admin-frontend",
+      "commit": "cb0464ce886973f16136ed31b4d5812d28927eb3",
+      "branch": "HEAD",
+      "dirty": false,
+      "dirtySummaryHash": null
+    }
+  ],
+  "failedChecks": [
+    null
+  ]
+}

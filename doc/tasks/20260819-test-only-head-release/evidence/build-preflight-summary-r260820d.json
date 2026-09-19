@@ -1,0 +1,15 @@
+{
+  "round": "r260820d",
+  "appMigrationGate": "passed",
+  "appMigrationCount": 505,
+  "opsMigrationGate": "passed",
+  "opsMigrationCount": 505,
+  "maintenanceJarSha256": "9C82D28C0953BDFCF250E95D0B66EFC2B918DDE9339C8107D4CE4B01133919D6",
+  "maintenanceIgnoredBuilds": "Automatically ignored builds during installation:\n  None",
+  "appIgnoredBuilds": "Automatically ignored builds during installation:\n  None",
+  "appTsCheck": "passed",
+  "appBuildTest": "passed",
+  "appDistTestExists": true,
+  "maintenanceStatus": [],
+  "appStatus": []
+}

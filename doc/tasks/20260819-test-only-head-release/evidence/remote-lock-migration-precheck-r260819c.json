@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "exitCode": 0,
+  "tableCountLine": "TABLE_COUNT\t2",
+  "lockRows": [
+    "test\ttest-release-20260817-intmain-head-test-r260817i-r2\trelease-20260817-intmain-head-test-r260817i-r2\tFAILED\t2026-08-17 22:16:26\t2026-08-17 22:16:30"
+  ],
+  "targetMigrationCounts": [],
+  "targetBad": [],
+  "checkedAt": "2026-08-19T10:11:04.0123002+08:00"
+}

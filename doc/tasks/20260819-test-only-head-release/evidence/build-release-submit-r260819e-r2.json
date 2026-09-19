@@ -1,0 +1,23 @@
+{
+  "code": 0,
+  "data": {
+    "operationId": "op-2026-08-19T121423036383400Z-1e9f029e-514c-4bcc-97ce-94b38a0912cc",
+    "requestedBy": "local-operator",
+    "requestedAt": "2026-08-19T12:14:23.040333300Z",
+    "environment": "release",
+    "component": "build-release",
+    "action": "build-release",
+    "actionLabel": "构建发布包",
+    "parameters": {
+      "publishScope": "code-only",
+      "includeOnlyOffice": "false",
+      "includeShowroomBuildPackage": "false",
+      "releaseTag": "release-20260819-intmain-head-test-r260819e-r2"
+    },
+    "reason": "r260819e-r2 rebuild from frozen worktrees after stale r1 half-package",
+    "status": "RUNNING",
+    "summary": "命令已提交到本机执行队列",
+    "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260819e-state\\runtime-control\\logs\\op-2026-08-19T121423036383400Z-1e9f029e-514c-4bcc-97ce-94b38a0912cc.log"
+  },
+  "msg": ""
+}

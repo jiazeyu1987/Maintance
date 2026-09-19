@@ -1,0 +1,10 @@
+releaseTag=release-20260819-intmain-head-test-r260819e-r2
+operationId=test-release-20260819-intmain-head-test-r260819e-r2
+target=test@172.30.30.58
+transport=single-command
+exitCode=0
+outputSanitized:
+before|test|test-release-20260819-intmain-head-test-r260819e-r2|release-20260819-intmain-head-test-r260819e-r2|RUNNING|
+lockAffected=1
+after|test|test-release-20260819-intmain-head-test-r260819e-r2|release-20260819-intmain-head-test-r260819e-r2|FAILED|manual stale lock cleanup after r260819e-r2 publish hook ARGS failure; releaseTag invalid; no container switch
+migration|SKIPPED_ALREADY_APPLIED|437

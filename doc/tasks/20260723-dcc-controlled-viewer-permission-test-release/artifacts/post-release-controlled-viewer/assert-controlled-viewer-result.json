@@ -1,0 +1,258 @@
+{
+  "baseUrl": "http://172.30.30.58:8081",
+  "username": "wangsiyu",
+  "controlledFileId": "2054545668044081212",
+  "targetPath": "/dcc/controlled-file/detail/2054545668044081212?viewer=1&from=project-code",
+  "finalUrl": "http://172.30.30.58:8081/dcc/controlled-file/detail/2054545668044081212?viewer=1&from=project-code",
+  "login": {
+    "status": 200,
+    "code": 0,
+    "hasAccessToken": true
+  },
+  "permissionInfo": {
+    "status": 200,
+    "code": 0,
+    "hasControlledFileQuery": true,
+    "hasProjectCodeQuery": true,
+    "hasFormInstanceCreate": false,
+    "hasSignatureManage": false
+  },
+  "previewMetadata": {
+    "url": "http://172.30.30.58:8081/admin-api/dcc/controlled-files/2054545668044081212/preview-metadata",
+    "method": "GET",
+    "status": 200,
+    "contentType": "application/json",
+    "code": 0,
+    "msg": ""
+  },
+  "preview": {
+    "url": "http://172.30.30.58:8081/admin-api/dcc/controlled-files/2054545668044081212/preview",
+    "method": "GET",
+    "status": 200,
+    "contentType": "application/pdf"
+  },
+  "previewLayoutVisible": true,
+  "apiResponses": [
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/tenant/get-by-website?website=172.30.30.58:8081",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/tenant/get-by-website?website=172.30.30.58:8081",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/tenant/get-id-by-name?name=%E8%8A%8B%E9%81%93%E6%BA%90%E7%A0%81",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/tenant/get-id-by-name?name=%E8%8A%8B%E9%81%93%E6%BA%90%E7%A0%81",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/auth/login",
+      "method": "POST",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/auth/login",
+      "method": "POST",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/dict-data/simple-list",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/dict-data/simple-list",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/auth/get-permission-info",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/auth/get-permission-info",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/auth/get-permission-info",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/user-table-column-config/get?tableKey=dcc.controlledFile.detail.signatureEvidence",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/notify-message/get-unread-count",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/dcc/training-tasks/my-page?pageNo=1&pageSize=1&status=PENDING_VIEW",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/dcc/training-tasks/my-page?pageNo=1&pageSize=1&status=READY_TO_ACKNOWLEDGE",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/dcc/distribution-tasks/my-page?pageNo=1&pageSize=1&status=READY_TO_ACKNOWLEDGE",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/approval-center/tasks/page?pageNo=1&pageSize=10&viewType=TODO",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/dept/simple-list",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/dcc/file-categories",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/dcc/controlled-files/2054545668044081212/paper-distributions/records",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/dcc/approval-print-template/active",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/dcc/controlled-files/2054545668044081212",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/system/user/simple-list",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/dcc/controlled-files/2054545668044081212/preview-metadata",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/dcc/directories/tree",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "url": "http://172.30.30.58:8081/admin-api/dcc/controlled-files/2054545668044081212/preview",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/pdf"
+    }
+  ],
+  "nonSuccessApiResponses": [],
+  "pageMessages": [],
+  "consoleErrors": [],
+  "assertions": {
+    "loginOk": true,
+    "permissionBaselineOk": true,
+    "previewMetadataOk": true,
+    "previewPdfOk": true,
+    "noActiveInstanceCall": true,
+    "noSignatureManagePageCall": true,
+    "noRoundedControlledFileId": true,
+    "noUnauthorizedMessage": true,
+    "noFailedAdminApi": true,
+    "previewLayoutVisible": true
+  }
+}

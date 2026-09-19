@@ -1,0 +1,23 @@
+{
+  "code": 0,
+  "data": {
+    "operationId": "op-2026-08-19T180049486993900Z-80ba1fa0-ce21-4d11-af00-57e975290771",
+    "requestedBy": "local-operator",
+    "requestedAt": "2026-08-19T18:00:49.491515900Z",
+    "environment": "release",
+    "component": "build-release",
+    "action": "build-release",
+    "actionLabel": "构建发布包",
+    "parameters": {
+      "publishScope": "code-only",
+      "includeOnlyOffice": "false",
+      "includeShowroomBuildPackage": "false",
+      "releaseTag": "release-20260819-intmain-head-test-r260819g-r1"
+    },
+    "reason": "r260819g commit-bound change notes test-only release",
+    "status": "RUNNING",
+    "summary": "命令已提交到本机执行队列",
+    "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260819g-state\\runtime-control\\logs\\op-2026-08-19T180049486993900Z-80ba1fa0-ce21-4d11-af00-57e975290771.log"
+  },
+  "msg": ""
+}

@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "scope": "runtime-control-process-only",
+  "targetEnvironment": "test",
+  "endpoint": "http://172.30.30.58:9000",
+  "bucket": "edhr-retention-verifier-20260530",
+  "region": "us-east-1",
+  "retentionMode": "COMPLIANCE",
+  "retainUntilDays": 7,
+  "requireLegalHold": true,
+  "credentialsPresent": true,
+  "pythonPathWorkaround": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260819-test-only-head-release\\evidence\\python-runtime-workaround",
+  "source": "test server ragflow_compose-minio-1 environment, values held only in process memory",
+  "checkedAt": "2026-08-19T13:48:09.5762656+08:00"
+}

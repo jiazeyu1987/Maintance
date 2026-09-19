@@ -1,0 +1,23 @@
+{
+  "code": 0,
+  "data": {
+    "operationId": "op-2026-08-19T195248423659Z-98c05bbf-d614-43fe-b0d0-6fdbeb824a45",
+    "requestedBy": "local-operator",
+    "requestedAt": "2026-08-19T19:52:48.427371800Z",
+    "environment": "release",
+    "component": "build-release",
+    "action": "build-release",
+    "actionLabel": "构建发布包",
+    "parameters": {
+      "publishScope": "code-only",
+      "includeOnlyOffice": "false",
+      "includeShowroomBuildPackage": "false",
+      "releaseTag": "release-20260820-frozen-head-test-r260820a-r2"
+    },
+    "reason": "r260820a-r2 rebuilt with test eDHR runtime binding",
+    "status": "RUNNING",
+    "summary": "命令已提交到本机执行队列",
+    "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260820a-state\\runtime-control\\logs\\op-2026-08-19T195248423659Z-98c05bbf-d614-43fe-b0d0-6fdbeb824a45.log"
+  },
+  "msg": ""
+}

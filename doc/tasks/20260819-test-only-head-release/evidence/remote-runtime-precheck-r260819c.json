@@ -1,0 +1,35 @@
+{
+  "status": "passed",
+  "checkedAt": "2026-08-19T10:37:09.0039091+08:00",
+  "backend": {
+    "status": "running",
+    "httpStatus": "HTTP 200",
+    "runtimeState": "running",
+    "blockedReason": "",
+    "currentReleaseTag": "release-20260817-intmain-head-test-r260817i-r2"
+  },
+  "frontend": {
+    "status": "running",
+    "httpStatus": "frontend=HTTP 200; pdfWorker=HTTP 200 application/javascript",
+    "runtimeState": "running",
+    "blockedReason": "",
+    "currentReleaseTag": "release-20260817-intmain-head-test-r260817i-r2"
+  },
+  "envTag": "release-20260817-intmain-head-test-r260817i-r2",
+  "inspect": [
+    {
+      "name": "/intruoyi-backend",
+      "image": "intruoyi-backend:hotfix-20260814-route-submit-order-r1",
+      "status": "running",
+      "health": "none"
+    },
+    {
+      "name": "/intruoyi-frontend",
+      "image": "intruoyi-frontend:release-20260813-intmain-head-test-r260812b-r2",
+      "status": "running",
+      "health": "none"
+    }
+  ],
+  "backendHealth": "UP",
+  "frontendHttpStatus": 200
+}

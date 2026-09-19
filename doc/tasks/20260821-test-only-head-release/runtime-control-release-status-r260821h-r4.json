@@ -1,0 +1,9 @@
+{
+  "console": "http://127.0.0.1:48185",
+  "operationId": "op-2026-08-21T210307402431400Z-d11e3d45-06fb-4026-a039-a1ee4f70086b",
+  "operationStatus": "FAILED",
+  "testCurrentReleaseTag": null,
+  "testCurrentReleaseNotes": null,
+  "pageVersionAcceptance": "not-run-because-publish-failed",
+  "prodOrBackupActions": false
+}

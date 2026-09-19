@@ -1,0 +1,59 @@
+{
+  "status": "passed",
+  "manifestPath": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260819-intmain-head-test-r260819c-r1\\manifest.json",
+  "manifestFileSha256": "d292e28c9028e033e118021de65454a261e426e137e04489409e86fede8a1f49",
+  "manifestVersion": "1.0",
+  "packageId": "release-20260819-intmain-head-test-r260819c-r1",
+  "releaseTag": "release-20260819-intmain-head-test-r260819c-r1",
+  "packageType": "full-release",
+  "createdAt": "2026-08-19T02:00:54.8559143Z",
+  "publishScope": "code-only",
+  "components": [
+    "backend",
+    "database-contract",
+    "required-sql",
+    "runtime-env",
+    "admin-frontend",
+    "packaging-manifest"
+  ],
+  "sourceRepos": [
+    {
+      "name": "ruoyi-vue-pro",
+      "pathRole": "backend",
+      "commit": "22fce6c341c770cb6ac78eb5b2f9f82d5bbcd843",
+      "branch": "HEAD",
+      "dirty": false,
+      "dirtySummaryHash": null
+    },
+    {
+      "name": "yudao-ui-admin-vue3",
+      "pathRole": "admin-frontend",
+      "commit": "22fce6c341c770cb6ac78eb5b2f9f82d5bbcd843",
+      "branch": "HEAD",
+      "dirty": false,
+      "dirtySummaryHash": null
+    }
+  ],
+  "changeSet": {
+    "summary": "Release package release-20260819-intmain-head-test-r260819c-r1",
+    "component": "intruoyi",
+    "items": [
+      "发布包：release-20260819-intmain-head-test-r260819c-r1",
+      "组件范围：intruoyi"
+    ],
+    "includeShowroomBuildPackage": false,
+    "includeOnlyOffice": false
+  },
+  "artifactCount": 516,
+  "requiredSqlCount": 506,
+  "migrationCount": 506,
+  "schemaVersion": "schema-digest-c5db760f38c40185",
+  "schemaDigest": "sha256:c5db760f38c40185b707fed383f757efcc6ce33c680a5c2d94168456d3c10e20",
+  "manifestChecksum": "sha256:81b1893ca8bbc6ffd29e42bd48458f18c94d6068edfb429a3bdd5014d43cd78c",
+  "forbiddenFieldsCheck": {
+    "status": "pending-validation",
+    "hardcodedIpMatches": [],
+    "secretPatternMatches": [],
+    "packageExternalPathReferences": []
+  }
+}

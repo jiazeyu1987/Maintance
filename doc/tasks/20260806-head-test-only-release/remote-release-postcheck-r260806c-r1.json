@@ -1,0 +1,94 @@
+{
+  "status": "passed",
+  "releaseTag": "release-20260806-intmain-head-test-r260806c-r1",
+  "checks": {
+    "sshExitZero": true,
+    "imageTagMatches": true,
+    "backendImageMatches": true,
+    "frontendImageMatches": true,
+    "backendRunning": true,
+    "frontendRunning": true,
+    "backendHealthExitZero": true,
+    "backendHealthUp": true,
+    "frontendHttp200": true,
+    "frontendTitlePresent": true,
+    "releaseInfoTagMatches": true,
+    "releaseInfoSourceDirtyFalse": true,
+    "releaseLockApplied": true,
+    "migrationFailedRunningZero": true
+  },
+  "fields": {
+    "IMAGE_TAG": [
+      "release-20260806-intmain-head-test-r260806c-r1"
+    ],
+    "BACKEND_IMAGE": [
+      "intruoyi-backend:release-20260806-intmain-head-test-r260806c-r1"
+    ],
+    "FRONTEND_IMAGE": [
+      "intruoyi-frontend:release-20260806-intmain-head-test-r260806c-r1"
+    ],
+    "BACKEND_RUNNING": [
+      "running"
+    ],
+    "FRONTEND_RUNNING": [
+      "running"
+    ],
+    "BACKEND_HEALTH_BODY": [
+      "{\"status\":\"UP\"} "
+    ],
+    "BACKEND_HEALTH_EXIT": [
+      "0"
+    ],
+    "FRONTEND_HTTP_CODE": [
+      "200"
+    ],
+    "FRONTEND_TITLE": [
+      "<title>瑛泰管理系统</title>"
+    ],
+    "lock": [
+      "test:release-20260806-intmain-head-test-r260806c-r1:APPLIED:"
+    ],
+    "migration_status": [
+      "SKIPPED_ALREADY_APPLIED:412"
+    ],
+    "migration_failed_running": [
+      "0"
+    ]
+  },
+  "releaseInfo": {
+    "releaseTag": "release-20260806-intmain-head-test-r260806c-r1",
+    "packageId": "release-20260806-intmain-head-test-r260806c-r1",
+    "createdAt": "2026-08-06T13:29:09.9106159Z",
+    "publishScope": "code-only",
+    "changeSet": {
+      "summary": "Release package release-20260806-intmain-head-test-r260806c-r1",
+      "component": "intruoyi",
+      "items": [
+        "发布包：release-20260806-intmain-head-test-r260806c-r1",
+        "组件范围：intruoyi"
+      ],
+      "includeShowroomBuildPackage": false,
+      "includeOnlyOffice": false
+    },
+    "sourceRepos": [
+      {
+        "name": "ruoyi-vue-pro",
+        "pathRole": "backend",
+        "commit": "19173d2b41442e6b2df3c16c424c11713b3dbbcc",
+        "branch": "HEAD",
+        "dirty": false,
+        "dirtySummaryHash": null
+      },
+      {
+        "name": "yudao-ui-admin-vue3",
+        "pathRole": "admin-frontend",
+        "commit": "19173d2b41442e6b2df3c16c424c11713b3dbbcc",
+        "branch": "HEAD",
+        "dirty": false,
+        "dirtySummaryHash": null
+      }
+    ]
+  },
+  "rawEvidencePath": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260806-head-test-only-release\\remote-release-postcheck-r260806c-r1.txt",
+  "sshReturnCode": 0
+}

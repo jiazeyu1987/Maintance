@@ -1,0 +1,25 @@
+{
+  "releaseTag": "release-20260819-intmain-head-test-r260819c-r1",
+  "checkedAt": "2026-08-19T11:02:22.961926+08:00",
+  "lockRows": [
+    {
+      "environment": "test",
+      "operationId": "test-release-20260819-intmain-head-test-r260819c-r1",
+      "releaseTag": "release-20260819-intmain-head-test-r260819c-r1",
+      "status": "FAILED"
+    }
+  ],
+  "migrationCounts": {
+    "APPLIED": 2,
+    "FAILED": 1,
+    "SKIPPED_ALREADY_APPLIED": 433
+  },
+  "badMigrationCount": 1,
+  "failedRows": [
+    {
+      "migrationId": "20260812_mes_pqc_dcc_qa_c00_postflight",
+      "fileName": "20260812_mes_pqc_dcc_qa_c00_postflight.sql",
+      "errorMessage": "Command failed with exit code 1: ssh\nmysql: [Warning] Using a password on the command line interface can be insecure.\nERROR 1048 (23000) at line 80: Column 'input_manifest_sha256' cannot be null"
+    }
+  ]
+}

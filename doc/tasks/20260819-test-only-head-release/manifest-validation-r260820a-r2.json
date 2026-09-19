@@ -1,0 +1,4800 @@
+{
+  "package": "E:\\Int\\CacheData\\IntRuoyi\\publish-int-ruoyi\\release-20260820-frozen-head-test-r260820a-r2",
+  "releaseTag": "release-20260820-frozen-head-test-r260820a-r2",
+  "expectedAppCommit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+  "expectedSubject": "任务: 修复C00发布后空哈希",
+  "checks": {
+    "manifestExists": true,
+    "legacyExists": true,
+    "rootEnvExists": true,
+    "runtimeEnvExists": true,
+    "manifestReleaseTagMatches": true,
+    "manifestPublishScope": "code-only",
+    "manifestPackageId": "release-20260820-frozen-head-test-r260820a-r2",
+    "sourceRepos": [
+      {
+        "name": "ruoyi-vue-pro",
+        "pathRole": "backend",
+        "commit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+        "dirty": false,
+        "commitMatches": true,
+        "dirtyOk": true
+      },
+      {
+        "name": "yudao-ui-admin-vue3",
+        "pathRole": "admin-frontend",
+        "commit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+        "dirty": false,
+        "commitMatches": true,
+        "dirtyOk": true
+      }
+    ],
+    "changeSet": {
+      "summary": "任务: 修复C00发布后空哈希",
+      "component": "intruoyi",
+      "items": [
+        "发布包：release-20260820-frozen-head-test-r260820a-r2",
+        "组件范围：intruoyi",
+        "提交：adeb3aabc89e 任务: 修复C00发布后空哈希"
+      ],
+      "includeShowroomBuildPackage": false,
+      "includeOnlyOffice": false
+    },
+    "changeSetContainsSubject": true,
+    "changeSetContainsCommit": true,
+    "legacy": {
+      "releaseTag": "release-20260820-frozen-head-test-r260820a-r2",
+      "gitCommit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+      "component": "intruoyi",
+      "publishScope": "code-only",
+      "releaseTagMatches": true,
+      "gitCommitMatches": true
+    },
+    "artifacts": [
+      {
+        "path": "docker-compose.yml",
+        "exists": true,
+        "sizeBytes": 10608,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "1d90d5be0307b722",
+        "sha256Matches": true
+      },
+      {
+        "path": "intruoyi-images_release-20260820-frozen-head-test-r260820a-r2.tar",
+        "exists": true,
+        "sizeBytes": 735165952,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "97d4b7da8979759b",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260512_ai_base_schema.sql",
+        "exists": true,
+        "sizeBytes": 13164,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d9977ca86d5760a8",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260512_ai_codex_seed.sql",
+        "exists": true,
+        "sizeBytes": 1789,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c5735057d5b21b57",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260512_bpm_base_schema.sql",
+        "exists": true,
+        "sizeBytes": 7592,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "0a386a33454778ad",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260512_crm_base_schema.sql",
+        "exists": true,
+        "sizeBytes": 17628,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "a0a8ec15becd3b64",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260512_erp_base_schema.sql",
+        "exists": true,
+        "sizeBytes": 33197,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "92fbb071c7f96a24",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260512_erp_kingdee_purchase_order_sync.sql",
+        "exists": true,
+        "sizeBytes": 1975,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "4155e0de8527beb8",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260512_mes_base_schema.sql",
+        "exists": true,
+        "sizeBytes": 140579,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "94e5e0e238f7d4b1",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260512_mes_schema.sql",
+        "exists": true,
+        "sizeBytes": 20350,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "3b23d00b102edb20",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260513_dcc_base_schema.sql",
+        "exists": true,
+        "sizeBytes": 80067,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2a57d12b24548501",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260513_dcc_id_auto_increment_fix.sql",
+        "exists": true,
+        "sizeBytes": 1435,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c84ff459b7bae560",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260513_dcc_notify_template_seed.sql",
+        "exists": true,
+        "sizeBytes": 9439,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "150580df67b86910",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260513_erp_kingdee_supplier_sync_record.sql",
+        "exists": true,
+        "sizeBytes": 1142,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "286fab41af1f4139",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260513_erp_product_standard_expand.sql",
+        "exists": true,
+        "sizeBytes": 188,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "334c607cd1bc09f7",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260513_kingdee_multi_sync.sql",
+        "exists": true,
+        "sizeBytes": 4643,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "107ddfac21af32df",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260513_mes_dv_machinery_extend.sql",
+        "exists": true,
+        "sizeBytes": 2320,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c56c2b4664521a88",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260513_mes_dv_machinery_process_process_id.sql",
+        "exists": true,
+        "sizeBytes": 1239,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "b63f61a22a95c0f6",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260513_mes_md_workstation_capacity.sql",
+        "exists": true,
+        "sizeBytes": 1026,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "243feb87b3165d72",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260514_erp_kingdee_config_page.sql",
+        "exists": true,
+        "sizeBytes": 3174,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "396c84f073474b11",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260514_mes_batch_record_report.sql",
+        "exists": true,
+        "sizeBytes": 2071,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "47a43375adc20200",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260515_dcc_governance_split_menu.sql",
+        "exists": true,
+        "sizeBytes": 1911,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "983fb4865262e7aa",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260515_dcc_runtime_schema_repair.sql",
+        "exists": true,
+        "sizeBytes": 41939,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "77115f5b5ae37ec6",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260515_dcc_runtime_seed_name_fix.sql",
+        "exists": true,
+        "sizeBytes": 872,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "3b2e19cf4fa1e477",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260515_mes_md_item_specification_512.sql",
+        "exists": true,
+        "sizeBytes": 190,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "0865d768cdf4597d",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260516_dcc_electronic_signature_management.sql",
+        "exists": true,
+        "sizeBytes": 1504,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ec256a1f4a8e5692",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260516_dcc_training_closed_loop_menu.sql",
+        "exists": true,
+        "sizeBytes": 681,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "420f094c7c277a74",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260516_mes_batch_record_report_route_key.sql",
+        "exists": true,
+        "sizeBytes": 2372,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "f53d09367feeeb47",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260517_infra_file_content_longblob.sql",
+        "exists": true,
+        "sizeBytes": 1136,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "99beeafdbabb1e8a",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260518_dcc_approval_task_name_fix.sql",
+        "exists": true,
+        "sizeBytes": 3722,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "e8468085b1ef813d",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260520_dcc_signature_menu_restore.sql",
+        "exists": true,
+        "sizeBytes": 1598,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "b3223f60bbfc705c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260520_system_nas_management_menu.sql",
+        "exists": true,
+        "sizeBytes": 6310,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "1fddc252b69ce620",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260521_showroom_company_cover_image.sql",
+        "exists": true,
+        "sizeBytes": 871,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d4fc8e362c6af766",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260522_mes_route_process_batch_record_binding.sql",
+        "exists": true,
+        "sizeBytes": 1028,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "1ec2c375258a27e9",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260522_showroom_product_cover_batch_task.sql",
+        "exists": true,
+        "sizeBytes": 2851,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "f7b78eccb50938ac",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260523_dcc_nas_transfer_task.sql",
+        "exists": true,
+        "sizeBytes": 3689,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d481711d4a58fe83",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260523_infra_runtime_control_menu.sql",
+        "exists": true,
+        "sizeBytes": 3585,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d4ad23b8bcc4c279",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260523_mes_batch_record_execution_edhr_v1.sql",
+        "exists": true,
+        "sizeBytes": 5544,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "5806f06243d3460f",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260524_edhr_permission_restore.sql",
+        "exists": true,
+        "sizeBytes": 6313,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "0b5621e017abcb05",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260524_showroom_company_version_menu_visibility.sql",
+        "exists": true,
+        "sizeBytes": 4402,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "8c6da5628f9087af",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260524_showroom_prompt_menu_visibility.sql",
+        "exists": true,
+        "sizeBytes": 4159,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2a68a2f5fbf112ef",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260524_showroom_prompt_version.sql",
+        "exists": true,
+        "sizeBytes": 4404,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c7e63bbdd417625e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260525_dcc_screenshot_t1.sql",
+        "exists": true,
+        "sizeBytes": 1504,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "7d9b22d9694ad0a9",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260525_dcc_screenshot_t3.sql",
+        "exists": true,
+        "sizeBytes": 1071,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "55a479a0955143e4",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260525_dcc_screenshot_t5.sql",
+        "exists": true,
+        "sizeBytes": 2153,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "e87ce029d9bcbe21",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260525_edhr_archive_permission.sql",
+        "exists": true,
+        "sizeBytes": 8514,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "02007a15eeb0112c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260525_edhr_archive_schema.sql",
+        "exists": true,
+        "sizeBytes": 4646,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c10909f0e404609b",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260525_showroom_hall_name_suffix_showcase.sql",
+        "exists": true,
+        "sizeBytes": 556,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c8f25a4754d3e93c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260525_system_password_policy.sql",
+        "exists": true,
+        "sizeBytes": 1128,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c1139f929dbf97be",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260526_dcc_electronic_signature_hardening.sql",
+        "exists": true,
+        "sizeBytes": 21772,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c2ec3173f21b1b08",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260526_dcc_other_template_category.sql",
+        "exists": true,
+        "sizeBytes": 13176,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "de87fedb43d82ccf",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260526_edhr_approval_archive_schema_contract.sql",
+        "exists": true,
+        "sizeBytes": 27899,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c5173dbe7c2b4945",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260526_edhr_field_audit_schema.sql",
+        "exists": true,
+        "sizeBytes": 23404,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "8dc63122b2d91384",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260527_dcc_approval_print_template.sql",
+        "exists": true,
+        "sizeBytes": 1556,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "f6fc0099e7ffda74",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260527_dcc_controlled_file_status_widen.sql",
+        "exists": true,
+        "sizeBytes": 213,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2d2f73b3ddc0ff7f",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260527_dcc_directory_access_rule_subject_type_contract.sql",
+        "exists": true,
+        "sizeBytes": 460,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "e387da27a2916793",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260527_dcc_external_file_review.sql",
+        "exists": true,
+        "sizeBytes": 1634,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "313219207fbcee93",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260527_dcc_nas_acl_snapshot_restore.sql",
+        "exists": true,
+        "sizeBytes": 11644,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "71b2f5e98d712d3c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260527_infra_runtime_control_notify_template_seed.sql",
+        "exists": true,
+        "sizeBytes": 672,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "53d01127f604f567",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260528_dcc_controlled_file_protection.sql",
+        "exists": true,
+        "sizeBytes": 10922,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "a658c910a28a40e9",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260528_edhr_archive_worm_guard.sql",
+        "exists": true,
+        "sizeBytes": 2616,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "bbeff878c812653d",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260528_edhr_domain_trace_schema.sql",
+        "exists": true,
+        "sizeBytes": 15500,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "081b78bd8a0143a3",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260528_signature_governance_menu.sql",
+        "exists": true,
+        "sizeBytes": 7288,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d04e6c5a94bb9b87",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260529_dcc_audit_menu_permission.sql",
+        "exists": true,
+        "sizeBytes": 1858,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "913c5a2d46ff1c0a",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260529_dcc_training_mine_menu_restore.sql",
+        "exists": true,
+        "sizeBytes": 2160,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "dcaedccea18545f0",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260530_dcc_exact_nas_identifier_collation.sql",
+        "exists": true,
+        "sizeBytes": 686,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "13250f2e982e1988",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260530_dcc_long_file_name_length.sql",
+        "exists": true,
+        "sizeBytes": 438,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "7611cece5f37c534",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260530_dcc_long_nas_source_remark.sql",
+        "exists": true,
+        "sizeBytes": 185,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "5bce098672619900",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260530_dcc_tenant_scoped_code_indexes.sql",
+        "exists": true,
+        "sizeBytes": 2151,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "0bdf2cb1bcb69227",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260601_showroom_hall_descriptions.sql",
+        "exists": true,
+        "sizeBytes": 4920,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "35eaefa11c010558",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260604_dcc_controlled_file_product_name.sql",
+        "exists": true,
+        "sizeBytes": 713,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "046f68bb969c5914",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260605_showroom_product_revision_attachment_schema.sql",
+        "exists": true,
+        "sizeBytes": 1346,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "e321194a00e89c9b",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260606_mes_puhui_schedule_menu.sql",
+        "exists": true,
+        "sizeBytes": 8458,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "0260af826c798426",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260606_showroom_hall_product_canvas_layout.sql",
+        "exists": true,
+        "sizeBytes": 3177,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "122bc4341fbdf909",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260607_product_master_data.sql",
+        "exists": true,
+        "sizeBytes": 8634,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "111c3764d90c95ec",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260608_edhr_batch_execution_schema.sql",
+        "exists": true,
+        "sizeBytes": 23243,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "7d4bbfdad10ed25f",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260609_mes_md_workstation_shift_hours.sql",
+        "exists": true,
+        "sizeBytes": 775,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "21a1898321cb2703",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260609_mes_workstation_default_single_capacity_30.sql",
+        "exists": true,
+        "sizeBytes": 1369,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "52527ecf1c332522",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260609_mes_work_order_code_erp_unification.sql",
+        "exists": true,
+        "sizeBytes": 4367,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c2b09347c9a8b107",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260610_mes_admin_edhr_approval_v1_seed.sql",
+        "exists": true,
+        "sizeBytes": 9110,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "39bd3299b6ce73ab",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260610_mes_admin_edhr_task_dedupe.sql",
+        "exists": true,
+        "sizeBytes": 805,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "b81b1656f8407c35",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260610_mes_auto_schedule_schedule_order_p5.sql",
+        "exists": true,
+        "sizeBytes": 1551,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c2fa6fa0f09b4e68",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260610_mes_feedback_import_attribution_p6.sql",
+        "exists": true,
+        "sizeBytes": 9481,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "7d2516307a0d287c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260610_mes_route_use_config_p3.sql",
+        "exists": true,
+        "sizeBytes": 2549,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "7db68a8255bd59ce",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260610_mes_scheduler_workbench_p7.sql",
+        "exists": true,
+        "sizeBytes": 2588,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "41e02a50a775bbe9",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260610_mes_schedule_order_p1.sql",
+        "exists": true,
+        "sizeBytes": 14838,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "698c30f834c84660",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260610_mes_schedule_resource_adjustment_p4.sql",
+        "exists": true,
+        "sizeBytes": 1864,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2e6233116fd09cd3",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260610_mes_schedule_snapshot_p2.sql",
+        "exists": true,
+        "sizeBytes": 2267,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ffd007a5763bd039",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260611_mes_edhr_batch_processing_tabs.sql",
+        "exists": true,
+        "sizeBytes": 10553,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "fde310587c5bac93",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260611_mes_edhr_execution_list_hide_menu.sql",
+        "exists": true,
+        "sizeBytes": 2010,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d24d27d2d5aeb991",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260611_mes_edhr_multi_signature_approval.sql",
+        "exists": true,
+        "sizeBytes": 7434,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2df70410b165b368",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260611_mes_edhr_rejection_revision_flow.sql",
+        "exists": true,
+        "sizeBytes": 6558,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d9acb539f7eb1de8",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260611_mes_edhr_work_task_flow.sql",
+        "exists": true,
+        "sizeBytes": 17604,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "16a29de3f5e31b4e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260611_mes_scheduler_workbench_smart_scheduling_tab.sql",
+        "exists": true,
+        "sizeBytes": 8565,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "e0747bbea4d5864b",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260611_mes_smart_scheduling_extra_tabs.sql",
+        "exists": true,
+        "sizeBytes": 6096,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "5981c2f70a8da004",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260611_mes_smart_scheduling_tabs.sql",
+        "exists": true,
+        "sizeBytes": 8470,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "93f6e529118dea9c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260611_mes_work_order_create_erp_order.sql",
+        "exists": true,
+        "sizeBytes": 4632,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "775c98cb880af21b",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260612_erp_bom_sync_job.sql",
+        "exists": true,
+        "sizeBytes": 1454,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "b1dfa981bfd71e36",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260612_erp_kingdee_sync_menu.sql",
+        "exists": true,
+        "sizeBytes": 2189,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "950c4215af3297e3",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260612_erp_kingdee_sync_runtime.sql",
+        "exists": true,
+        "sizeBytes": 3369,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d2314dd9eed4ed0c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260612_erp_product_item_sync_job.sql",
+        "exists": true,
+        "sizeBytes": 1250,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ea3a42663258173c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260612_erp_purchase_sale_kingdee_status.sql",
+        "exists": true,
+        "sizeBytes": 2657,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "e0814f328f464f17",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260612_erp_purchase_sale_sync_jobs.sql",
+        "exists": true,
+        "sizeBytes": 2197,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "eca27e4d82a63698",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260612_erp_stock_sync_job.sql",
+        "exists": true,
+        "sizeBytes": 1184,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "feaa479204dc6f6b",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260612_erp_sync_menu_base_data.sql",
+        "exists": true,
+        "sizeBytes": 1322,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "0eb08ca95ad1592c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260612_mes_batch_record_report_name.sql",
+        "exists": true,
+        "sizeBytes": 896,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "49c39a64a634e64e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260612_mes_edhr_attachment_ledger.sql",
+        "exists": true,
+        "sizeBytes": 5163,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "9740ef3ba0368b59",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260612_mes_edhr_final_archive_work_task.sql",
+        "exists": true,
+        "sizeBytes": 8405,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "cc62740e733b0d3e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260612_mes_edhr_final_inspection_dossier.sql",
+        "exists": true,
+        "sizeBytes": 3232,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "5caa12143cdf3d47",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260612_mes_edhr_multi_batch_route.sql",
+        "exists": true,
+        "sizeBytes": 9697,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "a2c98da722ea9ca5",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260612_mes_edhr_record_change_menu.sql",
+        "exists": true,
+        "sizeBytes": 8175,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "370008fd4dae7a02",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260612_mes_edhr_void_reopen_supplement.sql",
+        "exists": true,
+        "sizeBytes": 8162,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "1008701d77f16997",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260612_mes_kingdee_production_sync_record_tenant_source.sql",
+        "exists": true,
+        "sizeBytes": 538,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "fb9c0f145a7ed021",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260612_mes_process_use_route_tabs.sql",
+        "exists": true,
+        "sizeBytes": 14522,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "1fce54f6ad642735",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260612_mes_qc_oqc_finish_permission.sql",
+        "exists": true,
+        "sizeBytes": 2465,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "05a9be39a750be15",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260613_dcc_file_view_matrix_seed.sql",
+        "exists": true,
+        "sizeBytes": 53311,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "1d6de667778b0f3a",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260613_dcc_nas_local_folder_import.sql",
+        "exists": true,
+        "sizeBytes": 2063,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "25af5f48a6e56dc3",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260613_erp_bom_list_menu.sql",
+        "exists": true,
+        "sizeBytes": 2895,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "edd0c5a4799d6906",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260613_erp_disable_base_realtime_sync_jobs.sql",
+        "exists": true,
+        "sizeBytes": 578,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "779866a22788d0a9",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260613_erp_inventory_list_menu.sql",
+        "exists": true,
+        "sizeBytes": 2811,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "64f6f2780508b2b4",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260613_erp_kingdee_inventory_list.sql",
+        "exists": true,
+        "sizeBytes": 2074,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "55e68e5b341a1269",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260613_erp_kingdee_sync_record_tenant_unique.sql",
+        "exists": true,
+        "sizeBytes": 3000,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "dd4dbf6f12e04b63",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260613_erp_production_material_list_menu.sql",
+        "exists": true,
+        "sizeBytes": 4008,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "3aefe6bb6910ea77",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260613_infra_release_migration_state.sql",
+        "exists": true,
+        "sizeBytes": 3109,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2a6e1eed3a6fa818",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260613_mes_edhr_special_nodes.sql",
+        "exists": true,
+        "sizeBytes": 2278,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "5ee490cbbf5634a6",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260613_mes_kingdee_bom_list.sql",
+        "exists": true,
+        "sizeBytes": 2444,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "343dc9ac41ebf652",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260613_mes_kingdee_production_material_list.sql",
+        "exists": true,
+        "sizeBytes": 3236,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "a2a6b91920f0d0c9",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260613_mes_kingdee_production_material_list_sync_job.sql",
+        "exists": true,
+        "sizeBytes": 1302,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "74f8114bb6c691de",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260613_mes_nightly_replan_job_2am.sql",
+        "exists": true,
+        "sizeBytes": 1230,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "352ecc517e63686c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260613_mes_schedule_order_sync_progress_permission.sql",
+        "exists": true,
+        "sizeBytes": 7324,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "02ce1d29eada233e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260613_mes_smart_scheduling_t1_schema.sql",
+        "exists": true,
+        "sizeBytes": 19933,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "45c0a3b688b49d2e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260613_runtime_control_release_package_config.sql",
+        "exists": true,
+        "sizeBytes": 2822,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "fa9edd69787e66f3",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260613_showroom_award_and_hall_item_schema.sql",
+        "exists": true,
+        "sizeBytes": 5407,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "7c8c557e3e10185e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260614_dcc_master_directory_identity.sql",
+        "exists": true,
+        "sizeBytes": 3465,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "db018d5b42bb60c3",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260614_dcc_nas_local_folder_large_import.sql",
+        "exists": true,
+        "sizeBytes": 4935,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "7a8011f604cf1a20",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260614_dcc_nas_transfer_product_master.sql",
+        "exists": true,
+        "sizeBytes": 1154,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "912840f2f9fe0b26",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260614_dcc_optional_product_binding.sql",
+        "exists": true,
+        "sizeBytes": 1105,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "79f29cc2cbe099e1",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260614_dcc_product_visibility_group.sql",
+        "exists": true,
+        "sizeBytes": 4434,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "08537e9497f8ee89",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260614_disable_runtime_nightly_release_job.sql",
+        "exists": true,
+        "sizeBytes": 2257,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "771e4c2a7066838f",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260614_mes_edhr_work_task_candidate_pool.sql",
+        "exists": true,
+        "sizeBytes": 2748,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "7875e13610179e94",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260614_mes_pro_task_status_in_progress.sql",
+        "exists": true,
+        "sizeBytes": 604,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "9253e3319cb6cb41",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260614_mes_route_version_backfill.sql",
+        "exists": true,
+        "sizeBytes": 1106,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "e89584c4ffc0f24c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260614_mes_schedule_order_auto_schedulable_backfill.sql",
+        "exists": true,
+        "sizeBytes": 662,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "554025b27f3b7eba",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260615_dcc_local_folder_chunk_upload.sql",
+        "exists": true,
+        "sizeBytes": 1754,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "f9a553e82c66b371",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260615_mes_edhr_tail_four_goals.sql",
+        "exists": true,
+        "sizeBytes": 27119,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ddbe4f01552d2708",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260615_mes_pro_work_order_menu_route_restore.sql",
+        "exists": true,
+        "sizeBytes": 1566,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "f2ea1b5f941803be",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260615_mes_scheduler_workbench_only_summary.sql",
+        "exists": true,
+        "sizeBytes": 5432,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "07e4693f8cd1ebb0",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260615_mes_schedule_order_usability_permission.sql",
+        "exists": true,
+        "sizeBytes": 8731,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "23a13dac6f60a534",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260615_quartz_scheduler_schema.sql",
+        "exists": true,
+        "sizeBytes": 11147,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "3563dd0a06f0136d",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260615_showroom_hall_canvas_background.sql",
+        "exists": true,
+        "sizeBytes": 676,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "6d988ee0b646f56e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260615_system_config_package_data_governance.sql",
+        "exists": true,
+        "sizeBytes": 20003,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "58462b72d2e527d3",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260615_system_config_package_menu.sql",
+        "exists": true,
+        "sizeBytes": 6962,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "93150ecb2cd1f8bd",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260617_dcc_browser_performance_indexes.sql",
+        "exists": true,
+        "sizeBytes": 1754,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "b055b86410a8807e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260617_erp_kingdee_event_callback.sql",
+        "exists": true,
+        "sizeBytes": 1966,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "768927e8c7df9ad4",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260617_mes_scheduler_role_smart_scheduling_tab.sql",
+        "exists": true,
+        "sizeBytes": 6309,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "b02fbd4113491709",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_dcc_project_code_recognition_link.sql",
+        "exists": true,
+        "sizeBytes": 3036,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "3b67b535ed2462a9",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_mes_edhr_delivery_cockpit.sql",
+        "exists": true,
+        "sizeBytes": 12229,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "124ac59dd22e3dfc",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_mes_edhr_dhr_template_lifecycle.sql",
+        "exists": true,
+        "sizeBytes": 16604,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "8106d3392a123902",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_mes_edhr_flow_intervention_log.sql",
+        "exists": true,
+        "sizeBytes": 21715,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "77a044d267610ae3",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_mes_edhr_form_instance.sql",
+        "exists": true,
+        "sizeBytes": 15453,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "adefeec2555957ae",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_mes_edhr_init_batch_precheck.sql",
+        "exists": true,
+        "sizeBytes": 14971,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "fd205044272b16ce",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_mes_edhr_label_print_queue.sql",
+        "exists": true,
+        "sizeBytes": 19702,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d23a5610e523bc69",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_mes_edhr_oq_pq_execution_deviation.sql",
+        "exists": true,
+        "sizeBytes": 21915,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2cfd3a735efaaf55",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_mes_edhr_print_policy_reissue_void.sql",
+        "exists": true,
+        "sizeBytes": 15968,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "14573b0f20ba43df",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_mes_edhr_recordbook_management.sql",
+        "exists": true,
+        "sizeBytes": 23518,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "1152121d197fcf4e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_mes_edhr_release_precheck_engine.sql",
+        "exists": true,
+        "sizeBytes": 15901,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "5cd36f2ba7568991",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_mes_edhr_release_transaction_lifecycle.sql",
+        "exists": true,
+        "sizeBytes": 15727,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "7cec30dd14a6550e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_mes_edhr_report_catalog.sql",
+        "exists": true,
+        "sizeBytes": 32815,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "da9a2f2f73a763ac",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_mes_edhr_traveler_instance_binding.sql",
+        "exists": true,
+        "sizeBytes": 14513,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "3f9c5212e44f89b3",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_mes_edhr_unified_change_impact.sql",
+        "exists": true,
+        "sizeBytes": 16708,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "90f1701cf04b8498",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_mes_edhr_validation_package_matrix.sql",
+        "exists": true,
+        "sizeBytes": 13154,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "9dcf786bce0dce7a",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_post_release_role_e2e_gate.sql",
+        "exists": true,
+        "sizeBytes": 9760,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c2a8854d25dc3e32",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_post_release_role_e2e_gate_password_fix.sql",
+        "exists": true,
+        "sizeBytes": 1814,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c167337050e82711",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_post_release_role_e2e_gate_smoke_contract.sql",
+        "exists": true,
+        "sizeBytes": 10908,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d4ae726feba4f94a",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_showroom_publicity_role_menu_scope.sql",
+        "exists": true,
+        "sizeBytes": 3330,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "aaf2d3f960af9d83",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260618_srm_d7_1_code_rule_baseline.sql",
+        "exists": true,
+        "sizeBytes": 12909,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c33865abd28b67d7",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260619_mes_edhr_deployment_license_interface.sql",
+        "exists": true,
+        "sizeBytes": 17043,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c21a34ff2111da26",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260619_mes_schedule_order_process_snapshot_identity_p8.sql",
+        "exists": true,
+        "sizeBytes": 2313,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "6ff20dacb9d4fbea",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260619_post_release_role_e2e_gate_smoke_admin_resource_capacity_fix.sql",
+        "exists": true,
+        "sizeBytes": 3542,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c0d37b742489ad4c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260619_post_release_role_e2e_gate_smoke_route_900026_line_fix.sql",
+        "exists": true,
+        "sizeBytes": 3497,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "121858c6276712b0",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260619_post_release_role_e2e_gate_smoke_username_fix.sql",
+        "exists": true,
+        "sizeBytes": 5916,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "f0c21644fd0f078b",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260619_post_release_role_e2e_gate_smoke_username_password_freshness_fix.sql",
+        "exists": true,
+        "sizeBytes": 1906,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "8f98d9df5c03b489",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260619_post_release_role_e2e_gate_smoke_z_erp_job_permission_fix.sql",
+        "exists": true,
+        "sizeBytes": 6743,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "b90028109c29d054",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260619_srm_d7_2_supplier_access_risk.sql",
+        "exists": true,
+        "sizeBytes": 19565,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "4b5f2fb6e92173e6",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260619_srm_d7_3_plan_framework.sql",
+        "exists": true,
+        "sizeBytes": 28957,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ed2b59192b0cbc5f",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260619_srm_d8_1_non_bidding.sql",
+        "exists": true,
+        "sizeBytes": 15345,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "92f4289a1f06300e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260620_srm_d10_1_tender.sql",
+        "exists": true,
+        "sizeBytes": 20697,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "b4d0adcf04542d41",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260620_srm_d9_1_contract.sql",
+        "exists": true,
+        "sizeBytes": 14359,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "4520438739426b59",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260620_srm_phase1_supplier_access_profile.sql",
+        "exists": true,
+        "sizeBytes": 5541,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "468595404e839c73",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260621_srm_phase1_supplier_portal.sql",
+        "exists": true,
+        "sizeBytes": 4397,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "f8ff3a2655d1c886",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260621_srm_phase3_purchase_order.sql",
+        "exists": true,
+        "sizeBytes": 20973,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "02a5877f6d4e55c9",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260621_srm_phase45_simulated_execution.sql",
+        "exists": true,
+        "sizeBytes": 29398,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "a41369e2f5406d08",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260622_mes_edhr_bpm_notify_to_inbox.sql",
+        "exists": true,
+        "sizeBytes": 3003,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d372f21205bc5ada",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260623_dcc_browser_batch_recognition_task.sql",
+        "exists": true,
+        "sizeBytes": 2083,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d33e7101d1fd0f2e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260623_dcc_view_matrix_independent_source.sql",
+        "exists": true,
+        "sizeBytes": 1678,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "41b197d89eb38f67",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260624_dcc_view_matrix_independent_seed.sql",
+        "exists": true,
+        "sizeBytes": 63287,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "35eedf4bd7bbebb1",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260624_dcc_view_matrix_test_tenant_prereq.sql",
+        "exists": true,
+        "sizeBytes": 15681,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "cfcf2492eeb0e6d0",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260624_mes_auto_schedule_permission_split.sql",
+        "exists": true,
+        "sizeBytes": 4510,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ef638e2753086f50",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260624_mes_edhr_release_transaction_lifecycle_column_repair.sql",
+        "exists": true,
+        "sizeBytes": 6370,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "875b2430eb77e7c6",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260624_mes_feedback_surplus_pool.sql",
+        "exists": true,
+        "sizeBytes": 4941,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "68d42dcdb84dcf07",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260624_mes_scheduler_workbench_permission_split.sql",
+        "exists": true,
+        "sizeBytes": 3807,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "655fb23530ae112b",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260624_mes_schedule_issue_structured_backflow.sql",
+        "exists": true,
+        "sizeBytes": 6199,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "6c4f036d59bdbbbf",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260624_mes_schedule_order_freeze_audit.sql",
+        "exists": true,
+        "sizeBytes": 9721,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "8366d040b0dcedd5",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260624_unified_approval_phase5_retire_legacy_menus.sql",
+        "exists": true,
+        "sizeBytes": 965,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "9fd27631df406400",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260624_unified_electronic_signature_menu.sql",
+        "exists": true,
+        "sizeBytes": 14901,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "aa1babd639bb7779",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260625_dcc_fvm_matrix_retain_other_completion.sql",
+        "exists": true,
+        "sizeBytes": 16128,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d3507eddf6c2590c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260625_dcc_review_matrix_rule_metadata.sql",
+        "exists": true,
+        "sizeBytes": 3997,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "a39f8d4a41e1c6ac",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260625_showroom_keyword_menu_visibility.sql",
+        "exists": true,
+        "sizeBytes": 4430,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "e19065f027540a52",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260626_dcc_access_rule_manual_binding.sql",
+        "exists": true,
+        "sizeBytes": 1212,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c477e6ceb4ad223b",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260626_dcc_access_rule_menu_retire.sql",
+        "exists": true,
+        "sizeBytes": 465,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "be6f7769d622b467",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260626_dcc_basic_data_global_submenu.sql",
+        "exists": true,
+        "sizeBytes": 5245,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "4e21fce50611f6a6",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260626_dcc_merge_view_preview_permission.sql",
+        "exists": true,
+        "sizeBytes": 711,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "17be5bec07c08a20",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260626_dcc_permission_menu_rename.sql",
+        "exists": true,
+        "sizeBytes": 428,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "a8e75326df606ebe",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260626_mes_edhr_flow_intervention_runtime.sql",
+        "exists": true,
+        "sizeBytes": 5251,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "5a7112b9dd127a81",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260626_mes_feedback_import_reattribute_link.sql",
+        "exists": true,
+        "sizeBytes": 1975,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "29c3214af4963978",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260626_mes_replan_operation_log_reason_nullable.sql",
+        "exists": true,
+        "sizeBytes": 1446,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "feedcce4aa3e24db",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260626_mes_schedule_issue_lifecycle.sql",
+        "exists": true,
+        "sizeBytes": 4680,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "bb60754385afa7cd",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260626_role_management_split_rename_navigation.sql",
+        "exists": true,
+        "sizeBytes": 6590,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "f8ee881733e2fc07",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260626_role_name_garbled_repair.sql",
+        "exists": true,
+        "sizeBytes": 2072,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2aba864012f6aac1",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260626_showroom_keyword_bu_seed_runtime.sql",
+        "exists": true,
+        "sizeBytes": 1509,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d0e08842b586d9f3",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260626_showroom_keyword_healing_seed_runtime.sql",
+        "exists": true,
+        "sizeBytes": 1216,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "e006d477bbbd0c48",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260626_showroom_keyword_schema_seed_runtime.sql",
+        "exists": true,
+        "sizeBytes": 4852,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "a1bd28f25feb5b99",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260626_showroom_product_current_bu_normalization.sql",
+        "exists": true,
+        "sizeBytes": 10872,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ff9fa70b19534d88",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260626_showroom_product_translate_publish_batch_task.sql",
+        "exists": true,
+        "sizeBytes": 3939,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "7482ec050f5cbbab",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260628_srm_t6_nas_locator.sql",
+        "exists": true,
+        "sizeBytes": 10109,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2a07922841794792",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260629_dcc_batch_recognition_task_schema_repair.sql",
+        "exists": true,
+        "sizeBytes": 1043,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "afbeeca8d7a975ad",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260629_dcc_controlled_file_recognition_claim.sql",
+        "exists": true,
+        "sizeBytes": 1165,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "dfe8c0e566251f2a",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260629_dcc_controlled_file_recognition_record.sql",
+        "exists": true,
+        "sizeBytes": 2263,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "3654e1949403b2bd",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260629_dcc_subtab_four_char_rename.sql",
+        "exists": true,
+        "sizeBytes": 1740,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "346584017a75a8dc",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260629_menu_title_srm_dcc_rename.sql",
+        "exists": true,
+        "sizeBytes": 632,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "daecadd9a1e40eb2",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260629_mes_schedule_order_manual_finish.sql",
+        "exists": true,
+        "sizeBytes": 13345,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "fdca7694c6f946f9",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260629_mes_smart_scheduling_role_assignment.sql",
+        "exists": true,
+        "sizeBytes": 4096,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "b957773984ffa309",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260629_mes_smart_scheduling_role_scope.sql",
+        "exists": true,
+        "sizeBytes": 16320,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "93073955381700f7",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260629_srm_admin_role_visibility.sql",
+        "exists": true,
+        "sizeBytes": 6139,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "960e7a43385e3de7",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260630_approval_center_role_visibility.sql",
+        "exists": true,
+        "sizeBytes": 7432,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "72460d0ad1fbda25",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260630_dcc_admin_full_config_managed_scope.sql",
+        "exists": true,
+        "sizeBytes": 955,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "24e3c9f656dcd961",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260630_dcc_admin_full_config_menu.sql",
+        "exists": true,
+        "sizeBytes": 2154,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ff8821732b497d20",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260630_erp_production_admin_role.sql",
+        "exists": true,
+        "sizeBytes": 7545,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "441f5c78d6c5d07b",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260630_mes_pro_work_order_erp_snapshot_fields.sql",
+        "exists": true,
+        "sizeBytes": 7109,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "a6696dbac77464b4",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260701_dcc_batch_recognition_worker_ledger_export.sql",
+        "exists": true,
+        "sizeBytes": 2545,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "f5570dcccf29172b",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260701_srm_admin_role_menu_scope_cleanup.sql",
+        "exists": true,
+        "sizeBytes": 3377,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "30d4137c9295ce98",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260701_srm_t6_nas_locator_blacklist_config.sql",
+        "exists": true,
+        "sizeBytes": 5438,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2e59012517b267fe",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260702_dcc_recognition_file_type_levels.sql",
+        "exists": true,
+        "sizeBytes": 4933,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2ee0538c01f4952d",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260702_mes_edhr_seven_visible_tabs.sql",
+        "exists": true,
+        "sizeBytes": 14236,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "5c0bd0fd89b07965",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260703_dcc_project_code_alias_mapping.sql",
+        "exists": true,
+        "sizeBytes": 2704,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "518f41d7a1a1b09e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260704_showroom_product_target_market_text.sql",
+        "exists": true,
+        "sizeBytes": 590,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "82522340d739ffa7",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260705_showroom_legacy_product_code_auto_confirmable_draft.sql",
+        "exists": true,
+        "sizeBytes": 12051,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "fa4ec464698dc283",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260705_showroom_legacy_product_code_mapping.sql",
+        "exists": true,
+        "sizeBytes": 435,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "eb9365d209e4af0a",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260705_showroom_legacy_product_code_name_backfill.sql",
+        "exists": true,
+        "sizeBytes": 51238,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "0a9fffce62c6205e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260706_dcc_batch_recognition_existing_record_policy.sql",
+        "exists": true,
+        "sizeBytes": 1646,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "808dbbfed9ca5bf4",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260706_dcc_recognition_traceable_failure_messages.sql",
+        "exists": true,
+        "sizeBytes": 1586,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "f67780a2ed6b4c8b",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260706_dcc_signature_image_evidence_chain.sql",
+        "exists": true,
+        "sizeBytes": 4264,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "3a9176b8eaf13491",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260706_mes_edhr_process_form_permission_rule.sql",
+        "exists": true,
+        "sizeBytes": 9290,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "099e05549ec93393",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260706_showroom_current_empty_legacy_product_code_backfill.sql",
+        "exists": true,
+        "sizeBytes": 5714,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "676bec7e99c72072",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260706_showroom_legacy_product_code_english_name_backfill.sql",
+        "exists": true,
+        "sizeBytes": 5873,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "eb9d0c05cf49b1da",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260707_dcc_ai_category_permission_menu.sql",
+        "exists": true,
+        "sizeBytes": 3957,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "e2cd7cdbc7af7c74",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260707_mes_batch_record_extra_form_slots.sql",
+        "exists": true,
+        "sizeBytes": 17966,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "029e20f5589d3390",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260707_mes_feedback_import_record_allow_repeat_source_row.sql",
+        "exists": true,
+        "sizeBytes": 1505,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "7390122cc4f6ae76",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260707_mes_pro_process_er_prefix.sql",
+        "exists": true,
+        "sizeBytes": 960,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "0dc61d0af3df0224",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260707_mes_route_use_config_enabled.sql",
+        "exists": true,
+        "sizeBytes": 811,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "a1bf09763f71ba54",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260707_system_role_category_management.sql",
+        "exists": true,
+        "sizeBytes": 9736,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "866f170935c2d0a4",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260708_infra_api_access_log_operate_name_length.sql",
+        "exists": true,
+        "sizeBytes": 382,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c7e2e9f5d44fa5ad",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260708_mes_balloon_process_device_capacity.sql",
+        "exists": true,
+        "sizeBytes": 45166,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "4e5e33f199554b89",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260708_mes_batch_record_version_phase_one.sql",
+        "exists": true,
+        "sizeBytes": 31141,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "b490298f06824705",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260708_mes_scheduler_edhr_route_900025_route_edit_permission.sql",
+        "exists": true,
+        "sizeBytes": 6718,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "f44f0e147906ef8f",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260708_mes_scheduler_edhr_route_900026_route_edit_permission.sql",
+        "exists": true,
+        "sizeBytes": 6718,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "b17648dd0357d3a7",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260708_mes_scheduler_process_route_save_permission.sql",
+        "exists": true,
+        "sizeBytes": 2496,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "0ac7d022638d2328",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260708_mes_schedule_order_export_permission.sql",
+        "exists": true,
+        "sizeBytes": 7248,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "e1bcf71e38492a05",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260708_mes_schedule_route_process_quantity_factor.sql",
+        "exists": true,
+        "sizeBytes": 1706,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "a086035106a0e609",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260708_system_user_table_column_config.sql",
+        "exists": true,
+        "sizeBytes": 1084,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "a7271c1b1ad9aa14",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260709_mes_route_flow_config_unification.sql",
+        "exists": true,
+        "sizeBytes": 15508,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2a1c8398f04cbaf6",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260709_mes_route_process_flow_graph.sql",
+        "exists": true,
+        "sizeBytes": 3636,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "f68793f98ed00421",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260709_mes_route_process_master_alignment.sql",
+        "exists": true,
+        "sizeBytes": 8605,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "b2200e03570a94d9",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260709_mes_rt000006_batch_record_mapping.sql",
+        "exists": true,
+        "sizeBytes": 16660,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "36023b7f8d1a52ca",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260710_dcc_batch_recognition_active_task_unique_guard.sql",
+        "exists": true,
+        "sizeBytes": 2468,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2d130231df6c2e37",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260710_dcc_file_category_batch_task.sql",
+        "exists": true,
+        "sizeBytes": 3359,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "b996874c78646081",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260710_dcc_product_catalog_database.sql",
+        "exists": true,
+        "sizeBytes": 71227,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2a17bc9ff3845e4c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260710_dcc_recognition_structured_failure.sql",
+        "exists": true,
+        "sizeBytes": 1520,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "7ceba08d8ee6e391",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260710_mes_edhr_batch_task_topology_snapshot_backfill.sql",
+        "exists": true,
+        "sizeBytes": 8945,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "99931911ff9f77db",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260710_mes_pro_replan_explanation_snapshot.sql",
+        "exists": true,
+        "sizeBytes": 1628,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ec58f92916f57852",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260710_mes_route_process_flow_boundary_edge.sql",
+        "exists": true,
+        "sizeBytes": 9917,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "05c3fb38179d387f",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260710_mes_route_process_single_entry_multi_exit.sql",
+        "exists": true,
+        "sizeBytes": 5096,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "5623d41be0d16010",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260710_mes_route_schedule_config_unification.sql",
+        "exists": true,
+        "sizeBytes": 25767,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "f71c2b387d6c4dcc",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260710_mes_schedule_order_topology_snapshot_backfill.sql",
+        "exists": true,
+        "sizeBytes": 3482,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "fb763b619f7b2a5d",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260711_mes_batch_record_cell_link_rule.sql",
+        "exists": true,
+        "sizeBytes": 5939,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "32397b3cecb16857",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260712_dcc_project_code_assignment_audit.sql",
+        "exists": true,
+        "sizeBytes": 11219,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "6d1b3bd81a49138b",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260713_dcc_project_code_assignment_assignee_menu_repair.sql",
+        "exists": true,
+        "sizeBytes": 3352,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "96a0536f27fe726a",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260713_mes_edhr_form_fill_log_menu.sql",
+        "exists": true,
+        "sizeBytes": 7692,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "a062006375b2394a",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260714_approval_center_workflow_menu_consolidation.sql",
+        "exists": true,
+        "sizeBytes": 13795,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "da5aa734faf163ba",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260714_bpm_category_seed_fix.sql",
+        "exists": true,
+        "sizeBytes": 2353,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d43b49802200202b",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260714_dcc_controlled_file_logs_consolidation.sql",
+        "exists": true,
+        "sizeBytes": 9829,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ac341952b1dd0082",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260714_dcc_distribution_training_menu_retire.sql",
+        "exists": true,
+        "sizeBytes": 550,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "984f4abf06135989",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260714_dcc_hide_legacy_menu_tabs_admin_only.sql",
+        "exists": true,
+        "sizeBytes": 1231,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "e97291e0b9c0e1ab",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260714_dcc_personal_file_decommission.sql",
+        "exists": true,
+        "sizeBytes": 1065,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "534fab9150b7694e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260714_dcc_route_upload_approval_rename.sql",
+        "exists": true,
+        "sizeBytes": 471,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "fbd161c03614273d",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260714_mes_batch_record_version_approval_bpm_seed.sql",
+        "exists": true,
+        "sizeBytes": 20851,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "6ce721bca7377ac9",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260714_mes_edhr_batch_execution_active_context.sql",
+        "exists": true,
+        "sizeBytes": 2697,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "f71df9fc8746ad69",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260714_mes_edhr_batch_execution_void_bpm_seed.sql",
+        "exists": true,
+        "sizeBytes": 12522,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "55f882754f0e38f8",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260714_mes_edhr_form_trace_menu.sql",
+        "exists": true,
+        "sizeBytes": 6811,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "aea4c39c9a7a32b1",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260714_mes_edhr_release_trace_menu.sql",
+        "exists": true,
+        "sizeBytes": 1556,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "dca1353808e36155",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260714_mes_edhr_version_governance_menu_removal.sql",
+        "exists": true,
+        "sizeBytes": 5164,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "db8ba6fb7ea78733",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260714_signature_my_signature_admin_menu.sql",
+        "exists": true,
+        "sizeBytes": 12057,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c93342989a9feda1",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260714_unified_signature_records_menu.sql",
+        "exists": true,
+        "sizeBytes": 4135,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "59d486a83e4053b4",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260715_bpm_approval_signature_record.sql",
+        "exists": true,
+        "sizeBytes": 2819,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "e65a337a493f388d",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260715_dcc_controlled_file_change_type.sql",
+        "exists": true,
+        "sizeBytes": 919,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c0d25093cd4d16e2",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260715_mes_edhr_form_trace_change_menu.sql",
+        "exists": true,
+        "sizeBytes": 5213,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "f45f9f745b2634b8",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260715_mes_edhr_notify_template_garbled_repair.sql",
+        "exists": true,
+        "sizeBytes": 6673,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2589dc40224950d3",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260715_mes_edhr_template_config_menu_removal.sql",
+        "exists": true,
+        "sizeBytes": 8846,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "32ac1f5184ea295f",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260715_mes_route_version_lifecycle.sql",
+        "exists": true,
+        "sizeBytes": 6498,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ef3c2904873f769d",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260715_mes_schedule_capacity_mode_unification.sql",
+        "exists": true,
+        "sizeBytes": 6403,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "6de30ce3c8347718",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260715_showroom_notify_template_garbled_repair.sql",
+        "exists": true,
+        "sizeBytes": 19457,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "b2abf02387ee9855",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260716_mes_balloon_xlsx_route_00002_invalid_process_cleanup.sql",
+        "exists": true,
+        "sizeBytes": 18139,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "0c7f2b6aa9cf45c3",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260716_mes_route_version_permission_menu.sql",
+        "exists": true,
+        "sizeBytes": 4223,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ca5d90dcc8038a36",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260717_bpm_approval_signature_traceability.sql",
+        "exists": true,
+        "sizeBytes": 3135,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d526c7e986c2afc8",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260717_bpm_form_center.sql",
+        "exists": true,
+        "sizeBytes": 20652,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "efbb62110581dda5",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260717_dcc_applicant_rework_bpmn_contract.sql",
+        "exists": true,
+        "sizeBytes": 5553,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ef4d6c5956b836ff",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260717_mes_balloon_excel_device_workstation_binding.sql",
+        "exists": true,
+        "sizeBytes": 16975,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "87ff2fe9a3f386c6",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260717_mes_edhr_filler_minimal_permissions.sql",
+        "exists": true,
+        "sizeBytes": 553,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "6bf1a59c384df05f",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260717_mes_invalid_process_reference_normalization.sql",
+        "exists": true,
+        "sizeBytes": 40430,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "36e429ef6d74f419",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260717_mes_route_process_workstation_binding.sql",
+        "exists": true,
+        "sizeBytes": 3210,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "4a05dcf429f49290",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260717_mes_route_schedule_config_default_resource_mode.sql",
+        "exists": true,
+        "sizeBytes": 683,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "94ceeae15c85a551",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260717_mes_route_version_approval_bpm_seed.sql",
+        "exists": true,
+        "sizeBytes": 20813,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "4c60ed397f4e8627",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260717_mes_route_version_approval_instance_id_string.sql",
+        "exists": true,
+        "sizeBytes": 1024,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "4790dab188606696",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260717_mes_workstation_current_process_rebind.sql",
+        "exists": true,
+        "sizeBytes": 8952,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "3ce5c07683c35031",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260718_bpm_admin_role_assignment.sql",
+        "exists": true,
+        "sizeBytes": 11181,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "89f4cb6c4740b083",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260718_controlled_content_lifecycle.sql",
+        "exists": true,
+        "sizeBytes": 18454,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "a3b8bf9d3e27198b",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260718_mes_edhr_fill_task_reassignment_notify.sql",
+        "exists": true,
+        "sizeBytes": 1138,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "57d2af5b492ac11e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260718_mes_edhr_work_task_ownership.sql",
+        "exists": true,
+        "sizeBytes": 4474,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "06b42ec9245e51e3",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260718_mes_feedback_import_record_direct_progress.sql",
+        "exists": true,
+        "sizeBytes": 4282,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "00696715e960aa20",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260718_mes_puhui_schedule_admin_role_visibility.sql",
+        "exists": true,
+        "sizeBytes": 9716,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ec5f7f2fc6da7b5b",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260718_mes_route_version_bpm_notify_to_inbox.sql",
+        "exists": true,
+        "sizeBytes": 3379,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "9bbb9f5f48d9b75b",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260718_mes_route_version_single_open_candidate.sql",
+        "exists": true,
+        "sizeBytes": 2184,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "6c7821addffce486",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260718_mes_route_version_withdraw_reopen_permission_menu.sql",
+        "exists": true,
+        "sizeBytes": 3803,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "351f56e20743c0bc",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260718_system_entitlement_management.sql",
+        "exists": true,
+        "sizeBytes": 6268,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d215c9e812c43482",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260719_business_approval_policy.sql",
+        "exists": true,
+        "sizeBytes": 5050,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "3c51d352f2d0245e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260719_business_approval_policy_menu.sql",
+        "exists": true,
+        "sizeBytes": 9222,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c8f3a79657a92f2e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260719_dcc_file_type_taxonomy.sql",
+        "exists": true,
+        "sizeBytes": 8973,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "28ee75f74c4d0260",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260719_dcc_obsolete_form_policy_seed.sql",
+        "exists": true,
+        "sizeBytes": 4232,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "e5f1e0d1fc21649e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260719_dcc_upload_form_policy_seed.sql",
+        "exists": true,
+        "sizeBytes": 5254,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "059042e6847aba56",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260719_mes_edhr_release_lifecycle_adapter.sql",
+        "exists": true,
+        "sizeBytes": 3027,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2fd0eb1071c86c62",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260720_dcc_obsolete_approval_bpm_seed.sql",
+        "exists": true,
+        "sizeBytes": 14914,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "67f46da506124d3f",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260720_dcc_publish_form_policy_seed.sql",
+        "exists": true,
+        "sizeBytes": 4254,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ae7bcded6478a900",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260720_edhr_release_void_form_policy_seed.sql",
+        "exists": true,
+        "sizeBytes": 7353,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "1ad35159f9d3fb09",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260720_mes_batch_shared_form_binding.sql",
+        "exists": true,
+        "sizeBytes": 6826,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c54080b23c85d9d8",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260720_mes_edhr_approval_reviewer_runtime_entitlement.sql",
+        "exists": true,
+        "sizeBytes": 2286,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "0b708d57cb73e191",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260720_mes_edhr_filler_tracking_signature_entitlement.sql",
+        "exists": true,
+        "sizeBytes": 7356,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "99467d4ad5cbe5aa",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260720_mes_edhr_work_task_runtime_entitlement_backfill.sql",
+        "exists": true,
+        "sizeBytes": 11338,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ff5f10ffdd8d41a1",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260720_mes_schedule_replan_approval_bpm_seed.sql",
+        "exists": true,
+        "sizeBytes": 20181,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "bcfe2eb77c166933",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260720_mes_schedule_replan_form_policy_seed.sql",
+        "exists": true,
+        "sizeBytes": 4609,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "a80d717287ccdf24",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260721_admin_full_scope_role_standardization.sql",
+        "exists": true,
+        "sizeBytes": 12224,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "061d49b62a7bd866",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260721_approval_center_admin_role_scope.sql",
+        "exists": true,
+        "sizeBytes": 2291,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "85cf00ab219bb190",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260721_batch_record_bpm_policy_seed.sql",
+        "exists": true,
+        "sizeBytes": 7006,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "9b0895754f71e0ad",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260721_form_action_policy_approval_mode.sql",
+        "exists": true,
+        "sizeBytes": 2569,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "adf3dd0af0740775",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260721_form_center_menu_under_basic_data.sql",
+        "exists": true,
+        "sizeBytes": 5956,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c70d329b69d583de",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260721_form_template_obsolete_bpm_policy_seed.sql",
+        "exists": true,
+        "sizeBytes": 5524,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "34f3e657a1282f2c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260721_form_template_upgrade_bpm_seed.sql",
+        "exists": true,
+        "sizeBytes": 27793,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "0dff9aac463180b2",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260721_mes_edhr_execution_list_retire.sql",
+        "exists": true,
+        "sizeBytes": 5963,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "0fbb0474571c7742",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260721_mes_edhr_golden_finger_admin_permission.sql",
+        "exists": true,
+        "sizeBytes": 7277,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "55c8db841e24c188",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260721_mes_route_version_publish_business_approval_policy_seed.sql",
+        "exists": true,
+        "sizeBytes": 4962,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2a1467af2d8ec57c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260721_mes_schedule_replan_approval_retire.sql",
+        "exists": true,
+        "sizeBytes": 1766,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "e7d4edc0bea9013f",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260722_dcc_upload_browser_label_rename.sql",
+        "exists": true,
+        "sizeBytes": 724,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "a490f2ef4cdce892",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260722_edhr_release_form_policy_retire.sql",
+        "exists": true,
+        "sizeBytes": 1820,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ee9f96afc32ce0c8",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260722_form_center_business_action_page_retire.sql",
+        "exists": true,
+        "sizeBytes": 5748,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "a4931139dd59d23c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260722_form_center_policy_menu_hide.sql",
+        "exists": true,
+        "sizeBytes": 1809,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "764a137b8f2f8745",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260722_form_template_obsolete_bpm_process_seed.sql",
+        "exists": true,
+        "sizeBytes": 24476,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "5c8dfcba5ea57935",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260722_mes_batch_record_version_direct_event_nullable.sql",
+        "exists": true,
+        "sizeBytes": 1257,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "3230a8c0395aa057",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260722_mes_edhr_quality_terminal_reopen_reexecute.sql",
+        "exists": true,
+        "sizeBytes": 3466,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "e81330824c668691",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260722_mes_recordbook_batch_controlled_sync.sql",
+        "exists": true,
+        "sizeBytes": 5477,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "60db0bbd2adc42a5",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260722_mes_route_creator_route_edit_permission_backfill.sql",
+        "exists": true,
+        "sizeBytes": 6035,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "5f45deb68d425dd9",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260722_mes_route_form_center_runtime_columns.sql",
+        "exists": true,
+        "sizeBytes": 9456,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "8629192d151e3d95",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260722_mes_route_form_slot_filler_snapshot.sql",
+        "exists": true,
+        "sizeBytes": 2153,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "90bc27853d297687",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260723_mes_edhr_assignment_rule_candidate_nullable.sql",
+        "exists": true,
+        "sizeBytes": 926,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "6a4c407e221f6c33",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260723_mes_edhr_process_form_permission_rule_version_index_repair.sql",
+        "exists": true,
+        "sizeBytes": 5288,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "7d9159c85304ea51",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260723_mes_route_form_business_approval_policy_backfill.sql",
+        "exists": true,
+        "sizeBytes": 10668,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "e0a434fc9d75aaaa",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260723_mes_route_form_permission_rule_version_backfill.sql",
+        "exists": true,
+        "sizeBytes": 6973,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "59ea8f94dddb2b70",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260723_unify_form_action_policy_into_business_approval_policy.sql",
+        "exists": true,
+        "sizeBytes": 11751,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ff4d58bae1bb1467",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260723_z_edhr_batch_void_business_policy_all_state.sql",
+        "exists": true,
+        "sizeBytes": 5783,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "8dc2f7ea2f81cbca",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260724_system_codex_test_management.sql",
+        "exists": true,
+        "sizeBytes": 17640,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "aff90254c99cee9b",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260725_mes_edhr_recordbook_global_setting.sql",
+        "exists": true,
+        "sizeBytes": 2187,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "7645e114ee7488ca",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260725_system_backup_plan_menu.sql",
+        "exists": true,
+        "sizeBytes": 8057,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2cbf0fae22285570",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260726_dcc_codex_test_items_seed.sql",
+        "exists": true,
+        "sizeBytes": 17919,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "9299952c4fa4b5dd",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260726_mes_batch_record_cell_link_work_order_source.sql",
+        "exists": true,
+        "sizeBytes": 559,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "cdfa22daf8241a6a",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260726_mes_edhr_release_dossier_requirements.sql",
+        "exists": true,
+        "sizeBytes": 3431,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "8979ebce1f2ad98c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260726_system_codex_smart_scheduling_test_items.sql",
+        "exists": true,
+        "sizeBytes": 15458,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "57b75bbdec2ea3d9",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260726_system_codex_test_case_project.sql",
+        "exists": true,
+        "sizeBytes": 3396,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "45d3818c3e78a3db",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260726_system_codex_test_record_menu.sql",
+        "exists": true,
+        "sizeBytes": 7335,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "1e62e4c5c5fd784d",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260726_system_codex_test_run_monitor_progress.sql",
+        "exists": true,
+        "sizeBytes": 2152,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "9abe29114e750819",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260727_mes_edhr_visual_fill_config_scope.sql",
+        "exists": true,
+        "sizeBytes": 8683,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2539a87ca9af758d",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260727_mes_edhr_work_task_responsibility_scope.sql",
+        "exists": true,
+        "sizeBytes": 1210,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "504bec30f8a9b06a",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260727_system_codex_test_node_chain.sql",
+        "exists": true,
+        "sizeBytes": 3793,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "eaac20d06d376e79",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260727_system_profile_workbench_task_visibility.sql",
+        "exists": true,
+        "sizeBytes": 1549,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "54eca547cb966aac",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260728_dcc_nas_transfer_project_code.sql",
+        "exists": true,
+        "sizeBytes": 1149,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "90470dd6e08d522d",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260728_fix_mdm_product_menu_utf8_name.sql",
+        "exists": true,
+        "sizeBytes": 575,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "01b52975b19a132f",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260728_mes_scheduler_route_flow_list_permission.sql",
+        "exists": true,
+        "sizeBytes": 8434,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "b2209e4f213bdbb7",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260728_rename_mdm_product_menu.sql",
+        "exists": true,
+        "sizeBytes": 512,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "dabae062c3d34bbe",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260728_user_list_access_role.sql",
+        "exists": true,
+        "sizeBytes": 4682,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2cd17c5dd36927d9",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260729_dcc_product_catalog_project_code_columns.sql",
+        "exists": true,
+        "sizeBytes": 8307,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "f4ec57c985ddb875",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260729_dcc_product_catalog_remove_subsidiary_source.sql",
+        "exists": true,
+        "sizeBytes": 566,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c4e6b8a6157a06da",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260730_dcc_nas_control_audit.sql",
+        "exists": true,
+        "sizeBytes": 3580,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "3836782c4015ecd3",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260730_mes_process_pool_event_revision.sql",
+        "exists": true,
+        "sizeBytes": 4125,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c7f97eb8229600bc",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260730_mes_process_pool_fifo_allocation.sql",
+        "exists": true,
+        "sizeBytes": 2401,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "69b90f233eade846",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260730_mes_process_pool_foundation.sql",
+        "exists": true,
+        "sizeBytes": 8018,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "9d3bf2ca5eb69769",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260730_mes_process_pool_review_copy.sql",
+        "exists": true,
+        "sizeBytes": 4799,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "5038703d6153d969",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260730_mes_process_pool_team_leader.sql",
+        "exists": true,
+        "sizeBytes": 19300,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "460d23e4ae4717e2",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260730_mes_process_readonly_catalog_menu.sql",
+        "exists": true,
+        "sizeBytes": 7582,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "e9fbaa6d894ab23c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260730_signature_regular_users_my_signature_only.sql",
+        "exists": true,
+        "sizeBytes": 6441,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "1dd0a59928732afc",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260731_dcc_file_category_match_rule.sql",
+        "exists": true,
+        "sizeBytes": 1473,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "8deb1e038ff55088",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260731_dcc_file_category_match_rule_seed.sql",
+        "exists": true,
+        "sizeBytes": 5433,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ef549cf4cc0e342f",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260731_mes_process_catalog_from_pressure_pump_xlsx.sql",
+        "exists": true,
+        "sizeBytes": 13936,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "47b38bd43f4c6bd3",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260731_mes_process_pool_team_leader_p1_runtime_config.sql",
+        "exists": true,
+        "sizeBytes": 7363,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d8103f35ecaa50ca",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260801_mes_process_pool_team_leader_p3_report_allocation.sql",
+        "exists": true,
+        "sizeBytes": 2071,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "5fea211b006221f7",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260801_mes_process_pool_team_leader_p4_order_completion_backfill.sql",
+        "exists": true,
+        "sizeBytes": 6785,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "06f5f26d3a7407bb",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260802_dcc_controlled_print_record.sql",
+        "exists": true,
+        "sizeBytes": 2731,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "7bccccead6f16253",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260802_dcc_product_catalog_project_code_schema_guard.sql",
+        "exists": true,
+        "sizeBytes": 2149,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "721a667412ee9a8e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260802_mes_pqc_inspection_task.sql",
+        "exists": true,
+        "sizeBytes": 3804,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "16c4449fc86590d5",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260802_mes_process_pool_active_order_authority.sql",
+        "exists": true,
+        "sizeBytes": 4495,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "a3fcd66906375ab1",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260802_mes_process_pool_active_order_process_snapshot.sql",
+        "exists": true,
+        "sizeBytes": 1959,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "82c8dfb5fa83ad94",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260802_mes_process_pool_active_order_transfer_trace.sql",
+        "exists": true,
+        "sizeBytes": 3216,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "6711b87356a69676",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260802_mes_process_pool_team_leader_scope_extended.sql",
+        "exists": true,
+        "sizeBytes": 2602,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "37526703528556cc",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260802_mes_qa_inspection_regulation.sql",
+        "exists": true,
+        "sizeBytes": 5065,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2daf3a1d9b228ff1",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260802_role_requirement_matrix_m6_migration_preflight.sql",
+        "exists": true,
+        "sizeBytes": 4091,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "3bc4719e2cf4d371",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260803_dcc_nas_control_audit_file.sql",
+        "exists": true,
+        "sizeBytes": 3828,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "de48d5d35c071cf5",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260803_dcc_nas_uncontrolled_import_task_snapshot.sql",
+        "exists": true,
+        "sizeBytes": 14358,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "7ca589d60f533c83",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260803_dcc_product_onboarding_flow.sql",
+        "exists": true,
+        "sizeBytes": 4456,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "3f1becba9dd15ac0",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260803_dcc_unclassified_upload_directory_seed.sql",
+        "exists": true,
+        "sizeBytes": 2884,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "5f2ab84668df2525",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260803_dcc_upload_size_policy_default_seed.sql",
+        "exists": true,
+        "sizeBytes": 5268,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "e7fc19c1724ec7d6",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260803_mes_frontline_pressure_pump_all_process_permission.sql",
+        "exists": true,
+        "sizeBytes": 7718,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "867fae4f21d9836f",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260803_mes_pqc_item_equipment_standard_snapshot.sql",
+        "exists": true,
+        "sizeBytes": 7255,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "81623e425bfb7a94",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260803_mes_process_pool_event_idempotency.sql",
+        "exists": true,
+        "sizeBytes": 3128,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "a193bb10c442dda3",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260803_mes_process_pool_pqc_event_source.sql",
+        "exists": true,
+        "sizeBytes": 852,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "212eab5b58fd7bd0",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260803_mes_process_pool_pqc_process_inspection_aggregation.sql",
+        "exists": true,
+        "sizeBytes": 2341,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "eba9c7f954fcf736",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260803_mes_process_pool_pqc_structured_binding.sql",
+        "exists": true,
+        "sizeBytes": 2090,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "039ed9cebe28c496",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260803_mes_process_pool_quantity_fragment_submit_root.sql",
+        "exists": true,
+        "sizeBytes": 3024,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "33cd7eda993bb3d7",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260803_mes_process_pool_team_leader_review_signature.sql",
+        "exists": true,
+        "sizeBytes": 2129,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2e70472d896e62a3",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260804_mes_edhr_qa_menu.sql",
+        "exists": true,
+        "sizeBytes": 19433,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c5d49d55081a498c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260804_mes_pqc_piece_detail_legacy_equipment_nullable.sql",
+        "exists": true,
+        "sizeBytes": 2171,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c053cd68dacef486",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260804_mes_process_pool_timeline_performance_indexes.sql",
+        "exists": true,
+        "sizeBytes": 2980,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "550195204e134fba",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260805_erp_kingdee_table_auto_sync.sql",
+        "exists": true,
+        "sizeBytes": 4440,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "9a5ec8cb97f125f9",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260805_erp_nas_table_auto_sync.sql",
+        "exists": true,
+        "sizeBytes": 8063,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d44430ac56e835e9",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260805_mes_edhr_frontline_pqc_menu.sql",
+        "exists": true,
+        "sizeBytes": 11359,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "b8a5d9f5e2b2ea47",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260805_mes_pqc_process_inspection_aggregate_detail.sql",
+        "exists": true,
+        "sizeBytes": 4104,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ade9cf166dd06c5f",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260805_mes_pqc_process_inspection_aggregate_runtime_closure.sql",
+        "exists": true,
+        "sizeBytes": 6247,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "5bcf61df86f2a24b",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260805_mes_process_loss_reasons.sql",
+        "exists": true,
+        "sizeBytes": 3453,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "fe0c554bad7ebb7a",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260805_mes_process_pool_ac_m16_terminal_constraints.sql",
+        "exists": true,
+        "sizeBytes": 1384,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "19e84e76e50c75c3",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260805_mes_process_pool_ac_m20_pqc_review_closure.sql",
+        "exists": true,
+        "sizeBytes": 6987,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "314453842d9b3a00",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260805_mes_process_pool_device_parameter_route_process_constraints.sql",
+        "exists": true,
+        "sizeBytes": 4963,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d11115aa9fc57032",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260805_mes_process_pool_production_personnel.sql",
+        "exists": true,
+        "sizeBytes": 5004,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "8719f3d89da98692",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260805_mes_qa_final_inspection_applicability.sql",
+        "exists": true,
+        "sizeBytes": 1758,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "dee06e5a83f8e406",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260806_mes_pqc_leader_role_permission_tab.sql",
+        "exists": true,
+        "sizeBytes": 17656,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "00d2164aaaa24f7c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260806_mes_qa_role_permission_tab.sql",
+        "exists": true,
+        "sizeBytes": 12124,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "3d406d174d03edcd",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260807_mes_pqc_task_identity_closure.sql",
+        "exists": true,
+        "sizeBytes": 8292,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "b3534965e53803a9",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260807_mes_process_pool_device_parameter_standard_text.sql",
+        "exists": true,
+        "sizeBytes": 3024,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "3ee77f79753cc73e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260807_test_tenant1_all_role_permission_sync.sql",
+        "exists": true,
+        "sizeBytes": 156754,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "b364e6915fdc5038",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260808_mes_active_order_release_application.sql",
+        "exists": true,
+        "sizeBytes": 5004,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "8af87dc526f38518",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260808_mes_edhr_batch_record_test_menu.sql",
+        "exists": true,
+        "sizeBytes": 11802,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "82b5fa249bfca537",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260808_mes_pqc_record_production_submit_nullable.sql",
+        "exists": true,
+        "sizeBytes": 1016,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ae434d68105081cc",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260808_mes_process_pool_frontline_no_work_order.sql",
+        "exists": true,
+        "sizeBytes": 5421,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "bff8f7a36314b4ae",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260808_mes_qa_optional_equipment_items.sql",
+        "exists": true,
+        "sizeBytes": 4391,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "adcf23aee8a88a08",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260808_system_codex_test_analysis_mode.sql",
+        "exists": true,
+        "sizeBytes": 3356,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "1c4a26d873a9d1b8",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260809_mes_process_pool_active_order_manual_sort.sql",
+        "exists": true,
+        "sizeBytes": 5217,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "1694590431bfe708",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260809_mes_process_pool_report_shared_allocation.sql",
+        "exists": true,
+        "sizeBytes": 16515,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "8d7e0822ce559591",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260809_mes_qa_inspection_item_display_fields.sql",
+        "exists": true,
+        "sizeBytes": 1731,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d751a97eb40b1517",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260809_mes_team_leader_employee_scope_backfill.sql",
+        "exists": true,
+        "sizeBytes": 5458,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "fe549e64af23ecee",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260810_erp_kingdee_stock_move_readonly_sync.sql",
+        "exists": true,
+        "sizeBytes": 7307,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2934d9e898ee97cf",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260810_mes_process_pool_device_parameter_select_options.sql",
+        "exists": true,
+        "sizeBytes": 2634,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2cd0ebc4d342b1c9",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260811_dcc_signature_copy_binding.sql",
+        "exists": true,
+        "sizeBytes": 2252,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c9c27ec0aba03620",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260811_dcc_source_ownership.sql",
+        "exists": true,
+        "sizeBytes": 2531,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "65064b7423cfb236",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260811_dcc_upload_slot_idempotency.sql",
+        "exists": true,
+        "sizeBytes": 2479,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "940ad1507e52d22a",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260811_mes_process_pool_cleaning_process_parameter_data.sql",
+        "exists": true,
+        "sizeBytes": 13739,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "f6546659e3f02852",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260811_mes_process_pool_cleaning_wash_parameter_data.sql",
+        "exists": true,
+        "sizeBytes": 8327,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "80cebd78cfffbfc4",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260811_mes_process_pool_pqc_repeat_review_constraint.sql",
+        "exists": true,
+        "sizeBytes": 5537,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "f48e91b4d7f668c3",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260811_mes_process_pool_uv1_metering_valid_parameter.sql",
+        "exists": true,
+        "sizeBytes": 32819,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2eea7583ebdf9979",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260811_mes_process_pool_uv2_two_device_runtime_config.sql",
+        "exists": true,
+        "sizeBytes": 20214,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "c3875352d5a51c64",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260811_mes_qa_dcc_project_scope.sql",
+        "exists": true,
+        "sizeBytes": 14053,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "0f38a4e5559f44c8",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260811_mes_qa_pressure_pump_id_seed.sql",
+        "exists": true,
+        "sizeBytes": 25068,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "01e1f1faa036d803",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260812_mes_active_order_parameter_snapshot.sql",
+        "exists": true,
+        "sizeBytes": 667,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2f06a2adb14f9819",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260812_mes_pqc_dcc_qa_c00_backfill.sql",
+        "exists": true,
+        "sizeBytes": 68064,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "898e9cb411f15f63",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260812_mes_pqc_dcc_qa_c00_postflight.sql",
+        "exists": true,
+        "sizeBytes": 9036,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "e1ebfb53af45e8ca",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260812_mes_pqc_dcc_qa_c00_preflight.sql",
+        "exists": true,
+        "sizeBytes": 5084,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "7ea368f4963918b9",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260812_mes_pqc_dcc_qa_c00_rollback.sql",
+        "exists": true,
+        "sizeBytes": 2301,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "fbc8f3e88cc4e8f0",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260812_mes_pqc_dcc_qa_c00_schema.sql",
+        "exists": true,
+        "sizeBytes": 6272,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "906c6ac4ccb3145b",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260812_mes_process_pool_b04091_cleaning_temperature_label.sql",
+        "exists": true,
+        "sizeBytes": 3472,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "064b87f041e38218",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260812_mes_process_pool_b09353_cleaning_temperature_label.sql",
+        "exists": true,
+        "sizeBytes": 3474,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "4719fb181205ec21",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260812_mes_qa_pressure_pump_idi_seed.sql",
+        "exists": true,
+        "sizeBytes": 17498,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "2dffc5b9e03ea7d4",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260812_mes_route_version_snapshot_identity.sql",
+        "exists": true,
+        "sizeBytes": 1476,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "f2d14395331c3175",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260812_mes_route_version_snapshot_identity_enforce.sql",
+        "exists": true,
+        "sizeBytes": 2108,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "1cd2f6c77346c10c",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260813_dcc_explicit_data_scope_permissions.sql",
+        "exists": true,
+        "sizeBytes": 3274,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "529abdb2ec25c4d6",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260813_dcc_project_assignment_candidate_index.sql",
+        "exists": true,
+        "sizeBytes": 949,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "479a586605f576ab",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260813_dcc_signature_binding_object_key.sql",
+        "exists": true,
+        "sizeBytes": 1936,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "4ba4b4ee0b1a0080",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260813_erp_kingdee_production_pick_list_sync.sql",
+        "exists": true,
+        "sizeBytes": 10144,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "05a6e95c2e3ff94e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260813_form_template_menu_before_form_center.sql",
+        "exists": true,
+        "sizeBytes": 4474,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d102b7595dc820c7",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260813_mes_active_order_qa_decoupling.sql",
+        "exists": true,
+        "sizeBytes": 1793,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "186668799f6828af",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260813_mes_process_pool_event_revision_nullable_work_order.sql",
+        "exists": true,
+        "sizeBytes": 2119,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "15736d8a619f29ab",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260813_mes_production_report_management_summary.sql",
+        "exists": true,
+        "sizeBytes": 10225,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "62a9ff3e9fc29eeb",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260813_mes_route_dcc_project_binding_schema.sql",
+        "exists": true,
+        "sizeBytes": 2597,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "5e0cab2f6e360977",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260813_z_form_center_menu_hide.sql",
+        "exists": true,
+        "sizeBytes": 4130,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "d66b14f1318dbd3d",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260814_dcc_signature_evidence_reissue_log.sql",
+        "exists": true,
+        "sizeBytes": 2186,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "ac8458455a67033e",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260814_mes_batch_record_repeat_row_group.sql",
+        "exists": true,
+        "sizeBytes": 2493,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "8ed6b711ebf34ff1",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260814_mes_c015_route_dcc_qa_reconciliation_bootstrap.sql",
+        "exists": true,
+        "sizeBytes": 2537,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "53419ab220e551f2",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260814_mes_c015_route_dcc_qa_reconciliation_schema.sql",
+        "exists": true,
+        "sizeBytes": 5827,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "911442490082de02",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260814_mes_frontline_selected_initial_allocation.sql",
+        "exists": true,
+        "sizeBytes": 2796,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "02a11929827ed2ab",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260814_mes_production_release_flow.sql",
+        "exists": true,
+        "sizeBytes": 18429,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "8bb3bb6d3b1d53c0",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260814_mes_production_release_roles.sql",
+        "exists": true,
+        "sizeBytes": 20020,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "04440cb8827c2a04",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260815_system_notify_message_business_key.sql",
+        "exists": true,
+        "sizeBytes": 3199,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "227eb5c335b0726d",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260817_mes_pqc_item_level_task_identity.sql",
+        "exists": true,
+        "sizeBytes": 4018,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "3005a37ea9339026",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260817_mes_pqc_item_level_task_identity_rollback.sql",
+        "exists": true,
+        "sizeBytes": 1831,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "aac77c15090e7f88",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260817_mes_route_form_global_sync_key.sql",
+        "exists": true,
+        "sizeBytes": 1630,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "beb944180da134de",
+        "sha256Matches": true
+      },
+      {
+        "path": "required-sql/20260818_mes_pressure_pump_same_name_item_convergence.sql",
+        "exists": true,
+        "sizeBytes": 6153,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "5b1a84a646c9d69a",
+        "sha256Matches": true
+      },
+      {
+        "path": "resources/resource-reference-manifest.json",
+        "exists": true,
+        "sizeBytes": 242,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "71ea07f8480e057a",
+        "sha256Matches": true
+      },
+      {
+        "path": "runtime-env/backup.env",
+        "exists": true,
+        "sizeBytes": 906,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "18e2c21654cc68c8",
+        "sha256Matches": true
+      },
+      {
+        "path": "runtime-env/prod.env",
+        "exists": true,
+        "sizeBytes": 906,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "18e2c21654cc68c8",
+        "sha256Matches": true
+      },
+      {
+        "path": "runtime-env/test.env",
+        "exists": true,
+        "sizeBytes": 906,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "18e2c21654cc68c8",
+        "sha256Matches": true
+      },
+      {
+        "path": "smoke/bin/npm",
+        "exists": true,
+        "sizeBytes": 1454,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "6e0b7af565004da7",
+        "sha256Matches": true
+      },
+      {
+        "path": "smoke/yudao-ui-admin-vue3/package.json",
+        "exists": true,
+        "sizeBytes": 368,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "6b1ed4c67e320fa0",
+        "sha256Matches": true
+      },
+      {
+        "path": "smoke/yudao-ui-admin-vue3/tests/e2e/smart-scheduling-smoke-real-flow-static.spec.js",
+        "exists": true,
+        "sizeBytes": 17270,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "f808260ffdfed4b4",
+        "sha256Matches": true
+      },
+      {
+        "path": "smoke/yudao-ui-admin-vue3/tests/e2e/smart-scheduling-smoke-real-flow.e2e.js",
+        "exists": true,
+        "sizeBytes": 70246,
+        "expectedSizeBytes": null,
+        "sizeMatches": null,
+        "sha256Prefix": "04da032e91171067",
+        "sha256Matches": true
+      }
+    ],
+    "runtimeEnv": {
+      "rootSummary": {
+        "IMAGE_TAG": "release-20260820-frozen-head-test-r260820a-r2",
+        "EDHR_S3_ENDPOINT": "http://172.30.30.58:9000",
+        "EDHR_S3_BUCKET": "edhr-retention-verifier-20260530",
+        "EDHR_S3_TEST_ENDPOINT": null,
+        "EDHR_S3_TEST_BUCKET": null,
+        "EDHR_S3_ACCESS_KEY": {
+          "present": true,
+          "length": 8
+        },
+        "EDHR_S3_SECRET_KEY": {
+          "present": true,
+          "length": 15
+        },
+        "EDHR_S3_TEST_ACCESS_KEY": null,
+        "EDHR_S3_TEST_SECRET_KEY": null
+      },
+      "summary": {
+        "IMAGE_TAG": null,
+        "EDHR_S3_ENDPOINT": "http://172.30.30.58:9000",
+        "EDHR_S3_BUCKET": "edhr-retention-verifier-20260530",
+        "EDHR_S3_TEST_ENDPOINT": null,
+        "EDHR_S3_TEST_BUCKET": null,
+        "EDHR_S3_ACCESS_KEY": {
+          "present": true,
+          "length": 8
+        },
+        "EDHR_S3_SECRET_KEY": {
+          "present": true,
+          "length": 15
+        },
+        "EDHR_S3_TEST_ACCESS_KEY": null,
+        "EDHR_S3_TEST_SECRET_KEY": null
+      },
+      "rootImageTagMatches": true,
+      "containsTestHost": true,
+      "edhrContainsTestHost": true,
+      "edhrContainsForbiddenHosts": {
+        "172.30.30.57": false,
+        "172.30.30.59": false
+      },
+      "nonEdhrForbiddenHostKeys": [
+        "RUNTIME_CONTROL_BACKUP_SERVER_HOST"
+      ]
+    },
+    "docker": {
+      "intruoyi-backend:release-20260820-frozen-head-test-r260820a-r2": {
+        "inspectExitCode": 0,
+        "imageIdPrefix": "sha256:acdd65cee4575e3b21dcbd518",
+        "stderr": ""
+      },
+      "intruoyi-frontend:release-20260820-frozen-head-test-r260820a-r2": {
+        "inspectExitCode": 0,
+        "imageIdPrefix": "sha256:3dc60bf31b3ed40881814ea58",
+        "stderr": ""
+      },
+      "frontendReleaseInfo": {
+        "catExitCode": 0,
+        "stderr": ""
+      }
+    },
+    "frontendReleaseInfo": {
+      "releaseTag": "release-20260820-frozen-head-test-r260820a-r2",
+      "packageId": "release-20260820-frozen-head-test-r260820a-r2",
+      "sourceRepos": [
+        {
+          "name": "ruoyi-vue-pro",
+          "pathRole": "backend",
+          "commit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+          "branch": "HEAD",
+          "dirty": false,
+          "dirtySummaryHash": null
+        },
+        {
+          "name": "yudao-ui-admin-vue3",
+          "pathRole": "admin-frontend",
+          "commit": "adeb3aabc89e03d1f231552015d37bc78e0f2adb",
+          "branch": "HEAD",
+          "dirty": false,
+          "dirtySummaryHash": null
+        }
+      ],
+      "changeSet": {
+        "summary": "任务: 修复C00发布后空哈希",
+        "component": "intruoyi",
+        "items": [
+          "发布包：release-20260820-frozen-head-test-r260820a-r2",
+          "组件范围：intruoyi",
+          "提交：adeb3aabc89e 任务: 修复C00发布后空哈希"
+        ],
+        "includeShowroomBuildPackage": false,
+        "includeOnlyOffice": false
+      },
+      "releaseTagMatches": true,
+      "changeSetContainsSubject": true,
+      "sourceReposMatch": true
+    }
+  },
+  "issues": [],
+  "passed": true
+}

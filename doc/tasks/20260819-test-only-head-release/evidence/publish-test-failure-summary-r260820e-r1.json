@@ -1,0 +1,28 @@
+{
+  "releaseTag": "release-20260820-frozen-head-test-r260820e-r1",
+  "operationId": "op-2026-08-20T072045658834100Z-7bfc14b8-b9eb-469d-9b96-91d891f386af",
+  "operationStatus": "FAILED",
+  "operationSummary": "命令退出码非 0: 1",
+  "envImageTag": "release-20260820-frozen-head-test-r260820e-r1",
+  "actualBackendImage": "intruoyi-backend:hotfix-20260814-route-submit-order-r1",
+  "actualFrontendImage": "intruoyi-frontend:release-20260813-intmain-head-test-r260812b-r2",
+  "backendHealth": "200/UP",
+  "frontendHttp": "200",
+  "releaseInfoTag": "release-20260813-intmain-head-test-r260812b-r2",
+  "migrationCounts": {
+    "SKIPPED_ALREADY_APPLIED": 437,
+    "badMigrationCount": 0
+  },
+  "releaseLock": {
+    "targetEnvironment": "test",
+    "finishedAt": "2026-08-20 15:55:48",
+    "status": "FAILED"
+  },
+  "hookReportGenerated": false,
+  "forbiddenActions": {
+    "promoteProd": false,
+    "promoteBackup": false,
+    "markTested": false
+  },
+  "assessedAt": "2026-08-20T16:01:02.4363938+08:00"
+}

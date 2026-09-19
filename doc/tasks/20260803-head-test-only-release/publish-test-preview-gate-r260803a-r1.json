@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "environment": "test",
+  "action": "publish-test",
+  "mode": "deploy-release",
+  "targetEnvironment": "test",
+  "releaseTag": "release-20260803-intmain-head-test-r260803a-r1",
+  "serverHost": "172.30.30.58",
+  "remoteAppDir": "/opt/intruoyi/runtime",
+  "scriptPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260803a\\m\\ops\\deploy\\publish-int-ruoyi.ps1",
+  "scriptUnderReleaseWorktree": true,
+  "forbiddenActionsPresent": [],
+  "notes": "BackupServerHost is metadata for deploy script compatibility; target ServerHost remains test server."
+}

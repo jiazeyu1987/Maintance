@@ -1,0 +1,7 @@
+{
+  "status": "running",
+  "httpStatus": "backend=HTTP 200; frontend=HTTP 200; pdfWorker=HTTP 200 application/javascript; OnlyOffice=HTTP 200",
+  "runtimeState": "backend=running; frontend=running; onlyoffice=running",
+  "blockedReason": "",
+  "currentReleaseTag": "release-20260819-intmain-head-test-r260819c-r1"
+}

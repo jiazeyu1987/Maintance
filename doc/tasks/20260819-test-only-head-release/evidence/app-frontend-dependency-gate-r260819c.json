@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "pnpmVersion": "10.22.0",
+  "ignoredBuilds": "Automatically ignored builds during installation:\n  None",
+  "crossEnv": true,
+  "vite": true,
+  "vueTsc": true,
+  "packageSha256": "47782a38676ea56c3f6865862a23c655f0a913fab9fb73e12dc63c0c4183dc37",
+  "appGitStatus": [
+    "## HEAD (no branch)"
+  ],
+  "checkedAt": "2026-08-19T09:29:39.2848090+08:00"
+}

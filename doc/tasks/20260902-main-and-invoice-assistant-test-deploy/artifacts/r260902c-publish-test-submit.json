@@ -1,0 +1,20 @@
+{
+  "code": 0,
+  "data": {
+    "operationId": "op-2026-09-02T030941863891200Z-fd71a596-4dcc-4fd4-904a-20074c27d315",
+    "requestedBy": "local-operator",
+    "requestedAt": "2026-09-02T03:09:50.564134300Z",
+    "environment": "test",
+    "component": "publish-test",
+    "action": "publish-test",
+    "actionLabel": "部署发布包到测试服",
+    "parameters": {
+      "releaseTag": "release-20260902-main-invoice-assistant-test-r260902c-r1"
+    },
+    "reason": "授权恢复 IMAGE_TAG 后继续 r260902c 主程序仅测试服发布",
+    "status": "RUNNING",
+    "summary": "命令已提交到本机执行队列",
+    "resultLogPath": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260902c-state\\logs\\op-2026-09-02T030941863891200Z-fd71a596-4dcc-4fd4-904a-20074c27d315.log"
+  },
+  "msg": ""
+}

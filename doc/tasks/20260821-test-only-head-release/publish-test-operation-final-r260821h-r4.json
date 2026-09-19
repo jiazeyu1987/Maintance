@@ -1,0 +1,20 @@
+{
+  "releaseTag": "release-20260821-intmain-head-test-r260821h-r4",
+  "operationId": "op-2026-08-21T210307402431400Z-d11e3d45-06fb-4026-a039-a1ee4f70086b",
+  "action": "publish-test",
+  "environment": "test",
+  "targetHost": "172.30.30.58",
+  "remoteAppDir": "/opt/intruoyi/runtime",
+  "status": "FAILED",
+  "exitCode": 1,
+  "summary": "命令退出码非 0: 1",
+  "failureClass": "spring-context-startup",
+  "failureMessage": "MesProRouteVersionSnapshotMigrationRunner: No default constructor found",
+  "forbiddenActionsObserved": {
+    "markTested": false,
+    "promoteProd": false,
+    "promoteBackup": false
+  },
+  "rawLogCommitted": false,
+  "evidenceLog": "operation log was reviewed with secret-bearing command output excluded from task evidence"
+}

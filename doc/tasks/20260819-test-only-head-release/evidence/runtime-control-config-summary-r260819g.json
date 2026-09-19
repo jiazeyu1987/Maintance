@@ -1,0 +1,13 @@
+{
+  "repo-root": "D:/IntRuoyiWorktree/r260819g/a/IntRuoyiBackend",
+  "frontend-root": "D:/IntRuoyiWorktree/r260819g/a/IntRuoyiFronted",
+  "ops-root": "D:/ProjectPackage/Int/IntRuoyiWorktrees/r260819g/m/ops",
+  "state-dir": "D:/ProjectPackage/Int/IntRuoyiWorktrees/r260819g-state/runtime-control",
+  "production-write-enabled": "false",
+  "test.host": null,
+  "test.access-enabled": "true",
+  "prod.host": null,
+  "prod.access-enabled": "false",
+  "backup.host": null,
+  "backup.access-enabled": "false"
+}

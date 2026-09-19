@@ -1,0 +1,8 @@
+image_tag=release-20260902-main-invoice-assistant-test-r260902c-r1
+backend=intruoyi-backend:release-20260902-main-invoice-assistant-test-r260902c-r1 running
+frontend=intruoyi-frontend:release-20260902-main-invoice-assistant-test-r260902c-r1 running
+assistant=erp-invoice-voucher-print-assistant:webapi-r260902i running
+assistant_unit=activating
+backend_health={"status":"UP"}
+frontend_http=200
+assistant_http=403

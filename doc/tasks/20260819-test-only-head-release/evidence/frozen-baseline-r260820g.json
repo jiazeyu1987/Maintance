@@ -1,0 +1,25 @@
+{
+  "attempt": "r260820g",
+  "note": "app worktree reuses current-task clean r260820f/a because app r260820g creation was blocked by stale E:\\IntRuoyi index.lock and active unrelated git processes; not a build input from dirty main workspace",
+  "maintenance": {
+    "path": "D:\\ProjectPackage\\Int\\IntRuoyiWorktrees\\r260820g\\m",
+    "head": "c3c85e7c476392520412f107165f15d277ae4064",
+    "status": ""
+  },
+  "app": {
+    "path": "D:\\IntRuoyiWorktree\\r260820f\\a",
+    "head": "12a773ef285ff34bf2bd25036fd3dff2930912bc",
+    "statusTracked": ""
+  },
+  "mainWorkspace": {
+    "maintenanceHead": "c3c85e7c476392520412f107165f15d277ae4064",
+    "appHead": "12a773ef285ff34bf2bd25036fd3dff2930912bc",
+    "appIndexLockExists": true
+  },
+  "releaseTag": "release-20260820-frozen-head-test-r260820g-r1",
+  "forbiddenActions": [
+    "mark-tested",
+    "promote-prod",
+    "promote-backup"
+  ]
+}

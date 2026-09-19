@@ -1,0 +1,14 @@
+{
+    "releaseTag":  "release-20260820-frozen-head-test-r260820b-r1",
+    "checkedAt":  "2026-08-20T06:44:50.5060734+08:00",
+    "lockRows":  [
+
+                 ],
+    "migrationCounts":  {
+
+                        },
+    "badMigrationCount":  0,
+    "failedRows":  [
+
+                   ]
+}
