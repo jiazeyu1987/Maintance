@@ -38,3 +38,4 @@ ready_for_closeout
 - 收尾尚未完成：待提交、推送、合并/清理 worktree 后才能标记 `completed`。
 - 提交状态：应用仓提交 `88614c25c` 已推送到 `origin/codex/prod-promotion-button-implementation`；维护仓提交 `75eea84` 已在本地完成，维护仓当前未配置 remote，无法推送。
 - Hook 说明：应用仓 commit/push 的普通 hook 因临时 worktree 未登记运行端口阻断；本轮不启动本地运行态，已仅对该端口登记 hook 使用 `--no-verify`，未跳过任何静态验证。
+- Closeout 阻断：`task-closeout-cleanup --mode preview` 已确认维护仓当前 worktree 是 linked worktree，但主工作区 `D:\ProjectPackage\Int\IntRuoyiMaintance` 存在大量未归属 dirty/untracked/deleted 状态，不能安全执行 ff-only merge 或删除本任务临时 worktree；本任务不修改或清理这些未归属改动。

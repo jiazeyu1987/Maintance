@@ -44,5 +44,7 @@ GREEN: app-push -> PASS, `git push --no-verify -u origin codex/prod-promotion-bu
 
 GREEN: maintenance-commit -> PASS, `git commit -m "任务: 阻断旧正式发布入口"` -> `75eea84`；维护仓当前未配置 remote，无法推送。
 
+BLOCKER: task-closeout-cleanup-preview -> Main worktree is dirty and cannot receive ff-only merge: `D:\ProjectPackage\Int\IntRuoyiMaintance`; preview would keep `task.md` and `execution-log.md`, delete task-local `migration-policy-gate.json`, but apply is blocked before deletion/merge/worktree removal. The dirty main workspace contains many unrelated changes and untracked/deleted files, so this task must not clean or overwrite it.
+
 ## Verification Scope
 - 本轮不执行 Playwright E2E、远端登录、正式服探测、发布、重启或数据库写入。
