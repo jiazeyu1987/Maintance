@@ -1,7 +1,7 @@
 # 20260916 发布按钮复查遗留问题修复
 
 ## Current Status
-ready_for_closeout
+blocked
 
 ## 任务目标
 继续修复指定提交发布按钮静态复查报告中的 S1-S4：恢复态列表读取、写阶段取消隔离、测试验收显式 PASS/FAIL、可信 TestedBy；随后在新的临时发布 worktree 中通过真实发布按钮执行一次测试服发布，并闭环处理发布后的运行态问题。
@@ -55,3 +55,4 @@ ready_for_closeout
 ## 当前阻塞
 - 发布阻塞：无。R89 已完成测试服发布与真实登录验证。
 - 收尾阻塞：主维护仓 `D:\ProjectPackage\Int\IntRuoyiMaintance` 与主程序仓 `E:\IntRuoyi` 存在大量既有未归属改动，其中维护主工作区还包含发布脚本/测试同类文件改动；按“不得覆盖无关用户/其他任务改动”和临时 worktree 规则，当前不能安全合并 R89 提交或删除 `D:\IntRuoyiWorktree\r260917-button-publish9`。需要先由用户/相关任务归档或明确这些主工作区改动归属，再执行最终合并和 worktree 清理。
+- 收尾预览：`task-closeout-cleanup` preview 仅建议删除 `bug-regression-evidence.md` 与 `database-schema-evidence.md`，但未覆盖外部发布 worktree 的合并/删除前置条件；本轮未执行 apply、未删除文件、未合并或移除任何 worktree。

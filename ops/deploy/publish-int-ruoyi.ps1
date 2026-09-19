@@ -133,12 +133,18 @@ function Invoke-ReleaseStage {
     )
 
     $stageStopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+    $stageCompleted = $false
     Info "Starting release stage: $Name"
     try {
         & $ScriptBlock
+        $stageCompleted = $true
     } finally {
         $stageStopwatch.Stop()
-        Info ("Completed release stage: {0} ({1:n1}s)" -f $Name, $stageStopwatch.Elapsed.TotalSeconds)
+        if ($stageCompleted) {
+            Info ("Completed release stage: {0} ({1:n1}s)" -f $Name, $stageStopwatch.Elapsed.TotalSeconds)
+        } else {
+            Info ("Failed release stage: {0} ({1:n1}s)" -f $Name, $stageStopwatch.Elapsed.TotalSeconds)
+        }
     }
 }
 
@@ -186,11 +192,11 @@ function Get-ReleasePackageArtifactCache {
 function Write-ReleasePackageSizeSummary {
     param(
         [Parameter(Mandatory = $true)]
-        [string]$PackagePath
+        [array]$Artifacts
     )
 
-    $summaryFiles = @(Get-ChildItem -LiteralPath $PackagePath -Recurse -File -Force)
-    $summaryBytes = [int64](($summaryFiles | Measure-Object -Property Length -Sum).Sum)
+    $summaryFiles = @($Artifacts)
+    $summaryBytes = [int64](($summaryFiles | Measure-Object -Property bytes -Sum).Sum)
     Info ("Release package size summary: files={0}, bytes={1:n0}, gib={2:n2}" -f $summaryFiles.Count, $summaryBytes, ($summaryBytes / 1GB))
 }
 
@@ -2964,7 +2970,7 @@ function Copy-ReleasePackageToNas {
         }
         New-Item -ItemType Directory -Force -Path $targetRoot | Out-Null
         Copy-ReleaseDirectoryTree -SourceDirectory $releaseDir -DestinationDirectory $targetPath
-        $null = Test-ReleasePackageIntegrity -PackagePath $targetPath -ExpectedReleaseTag $PackageTag
+        $null = Test-ReleasePackageIntegrity -PackagePath $targetPath -ExpectedReleaseTag $PackageTag -EmitProgress
         Info "Release package uploaded to NAS: $NasReleaseRoot/$packageDirectoryName (releaseTag=$PackageTag)"
     } finally {
         Disconnect-NasReleaseShare -MountInfo $mountInfo
@@ -4448,13 +4454,13 @@ function Write-ReleaseManifest {
         [string]$PackageTag
     )
     Write-ReleaseResourceReferenceManifest -PackageTag $PackageTag
-    $legacyArtifacts = @(Get-ReleasePackageImmutableArtifactEntries -PackagePath $releaseDir -ExcludeManifestJson)
+    $legacyArtifacts = @(Get-ReleasePackageImmutableArtifactEntries -PackagePath $releaseDir -ExcludeManifestJson -EmitProgress)
     Write-ReleaseManifestV1 -PackageTag $PackageTag -LegacyArtifacts $legacyArtifacts
     $gitCommit = (& git -C $backendRepo rev-parse HEAD 2>$null)
     if ($LASTEXITCODE -ne 0) {
         $gitCommit = ''
     }
-    $files = @(Get-ReleasePackageImmutableArtifactEntries -PackagePath $releaseDir)
+    $files = @(Get-ReleasePackageImmutableArtifactEntries -PackagePath $releaseDir -EmitProgress)
     Set-ReleasePackageArtifactCache -Artifacts $files
     $manifest = [ordered]@{
         releaseTag = $PackageTag
@@ -6148,20 +6154,20 @@ Write-ReleaseRuntimeEnvPackage
 Copy-Item -LiteralPath $composeTemplate -Destination (Join-Path $releaseDir 'docker-compose.yml') -Force
 Remove-ReleaseDockerBuildContextFromPackage
 Invoke-ReleaseStage -Name 'release manifest generation' -ScriptBlock {
-    Write-ReleasePackageSizeSummary -PackagePath $releaseDir
     Write-ReleaseManifest -PackageTag $ReleaseTag
+    Write-ReleasePackageSizeSummary -Artifacts (Get-ReleasePackageArtifactCache)
 }
 
 if ($smartReleaseReportOnlyEnabled -and $Mode -eq 'build-release') {
     Invoke-SmartReleaseBuildReportOnly -PackagePath $releaseDir
     Invoke-ReleaseStage -Name 'release manifest generation' -ScriptBlock {
-        Write-ReleasePackageSizeSummary -PackagePath $releaseDir
         Write-ReleaseManifest -PackageTag $ReleaseTag
+        Write-ReleasePackageSizeSummary -Artifacts (Get-ReleasePackageArtifactCache)
     }
 }
 Invoke-ReleaseStage -Name 'release package integrity verification' -ScriptBlock {
     $releaseManifestArtifacts = Get-ReleasePackageArtifactCache
-    $script:buildPackageIntegrity = Test-ReleasePackageIntegrity -PackagePath $releaseDir -ExpectedReleaseTag $ReleaseTag -PreverifiedArtifacts $releaseManifestArtifacts
+    $script:buildPackageIntegrity = Test-ReleasePackageIntegrity -PackagePath $releaseDir -ExpectedReleaseTag $ReleaseTag -PreverifiedArtifacts $releaseManifestArtifacts -EmitProgress
 }
 
 if ($Mode -eq 'build-release') {

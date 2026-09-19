@@ -55,6 +55,30 @@ def test_release_sql_contract_gate_blocks_duplicate_system_menu_ids(tmp_path: Pa
     assert "20260622_feature_b.sql" in message
 
 
+def test_release_sql_contract_gate_blocks_mysql_identifier_over_64_chars(tmp_path: Path) -> None:
+    gate = importlib.import_module("ops.release.release_sql_contract_gate")
+    sql_path = tmp_path / "20260902_dcc_registration_contract.sql"
+    long_constraint_name = "chk_dcc_registration_certificate_core_exact_status_and_source_type_alignment_v1"
+    assert len(long_constraint_name) > 64
+    sql_path.write_text(
+        "-- release-migration: allowedEnvironments=test,backup,prod; dependsOn=; type=schema; riskLevel=high\n"
+        "ALTER TABLE dcc_registration_certificate_core\n"
+        f"  ADD CONSTRAINT `{long_constraint_name}` CHECK (`source_type` IN ('ERP', 'MANUAL'));\n",
+        encoding="utf-8",
+    )
+
+    try:
+        gate.assert_release_sql_contracts([sql_path])
+    except gate.ReleaseSqlContractError as exc:
+        message = str(exc)
+    else:
+        raise AssertionError("expected MySQL identifier length preflight failure")
+
+    assert "MySQL identifier length exceeds 64 characters" in message
+    assert long_constraint_name in message
+    assert "20260902_dcc_registration_contract.sql" in message
+
+
 def test_migration_policy_gate_passes_unique_system_menu_ids(tmp_path: Path) -> None:
     policy_gate = importlib.import_module("ops.release.release_migration_policy_gate")
     sql_root = tmp_path / "sql" / "mysql"
@@ -76,6 +100,31 @@ def test_migration_policy_gate_passes_unique_system_menu_ids(tmp_path: Path) -> 
 
     assert report["status"] == "passed"
     assert report["migrationCount"] == 2
+
+
+def test_migration_policy_gate_propagates_mysql_identifier_length_contract(tmp_path: Path) -> None:
+    policy_gate = importlib.import_module("ops.release.release_migration_policy_gate")
+    sql_root = tmp_path / "sql" / "mysql"
+    sql_root.mkdir(parents=True)
+    sql_path = sql_root / "20260902_identifier_length_contract.sql"
+    long_index_name = "idx_mes_route_snapshot_projection_identity_source_reference_and_batch_marker_v1"
+    assert len(long_index_name) > 64
+    sql_path.write_text(
+        "-- release-migration: allowedEnvironments=test,backup,prod; dependsOn=; type=schema; riskLevel=high\n"
+        "ALTER TABLE mes_route_snapshot_projection\n"
+        f"  ADD INDEX `{long_index_name}` (`source_reference`, `batch_marker`);\n",
+        encoding="utf-8",
+    )
+
+    try:
+        policy_gate.run_migration_policy_gate(sql_root)
+    except policy_gate.MigrationPolicyError as exc:
+        message = str(exc)
+    else:
+        raise AssertionError("expected migration policy gate to propagate identifier length failure")
+
+    assert "MySQL identifier length exceeds 64 characters" in message
+    assert long_index_name in message
 
 
 def test_migration_policy_gate_accepts_evidence_only_migration_types(tmp_path: Path) -> None:

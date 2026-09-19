@@ -56,3 +56,10 @@ GREEN: `python -X utf8 -m pytest scripts/tests/test_release_sql_preflight_gate.p
 - 处理结论：未修改 r11 包、manifest、迁移台账或正式库；仍需正式发布负责人批准并实施可审计的迁移基线对账，或授权重新构建合规发布包后才能继续。
 - 依赖表探针：正式库仅存在 `mdm_product`，不存在 `dcc_product_onboarding_request`、`mdm_enterprise`、`mdm_user_company_scope`、`mdm_role_company_scope`；因此后续 r11 schema 迁移确实尚未落地，不能用旧容器健康或已有 `mdm_product` 表替代依赖闭包验证。
 - 范围对照（只读假设）：使用同一 r11 manifest/正式库 target-state，仅将预检输入临时假设为 `publishScope=with-data` 时计划返回 `status=passed`；该结果不代表可发布，因为 r11 manifest 固定为 `code-only`，且包不含 with-data 所需数据库/对象快照，临时计划已删除。
+
+## 继续核查（2026-08-25，本轮）
+
+- 只读正式服状态脚本：show-int-ruoyi-remote-status.ps1 -ServerHost 172.30.30.57 -Component full -Json -> PASS；结果为 status=running、backend/frontend/OnlyOffice HTTP 200、backend/frontend/OnlyOffice running，当前 releaseTag=release-20260716-intmain-codeonly-three-env-r260716d-r1，并非 r11。
+- 只读 SSH 运行态复核：正式服 .env IMAGE_TAG=release-20260716-intmain-codeonly-three-env-r260716d-r1；backend/frontend 实际镜像均为 release-20260723-intmain-codeonly-three-env-r260723s-r1，均 Up 4 weeks。因此旧运行态健康不能证明 r11 已发布。
+- 问题记录：阶段=正式服只读复核；现象=一次嵌套 SSH/MySQL 查询因 PowerShell 引号传递错误输出 mysql usage，且本地 carrier 报 2>/dev/null || true 被当作命令；影响=该次锁查询证据无效，未产生远程写入、未改变运行态；原因判断=Windows PowerShell 双层引号与远端 shell 重解析；处理动作=不采信该次输出，改用项目状态脚本及无嵌套 SQL 的只读容器检查；结果=状态脚本和镜像检查均通过，r11 仍未运行。可前置检查=是；可自动化=是；下次避免=远端 SQL 一律用 UTF-8 LF stdin/结构化脚本承载，禁止在 PowerShell 双引号中内嵌 SQL。
+- 结论：本轮未重复提交 promote-prod，未访问备份服，未修改正式库、release lock、migration、manifest 或 r11 包；阻塞仍为正式库迁移 checksum/scope dependency 未完成对账。

@@ -6,12 +6,16 @@ BDD: 大包复制与校验可观察 -> Given 发布包包含大量文件或大�
 
 GREEN: experience-preflight -> PASS，已按索引命中 release-build-preflight、test-release-preflight、PowerShell 编排门禁；本任务只修改本机维护仓脚本/测试/文档，不操作服务器、不发布、不上传 NAS。
 
-RED: python -X utf8 -m pytest scripts\tests\test_release_package_governance.py -q -> FAIL，新增契约复现脚本缺少默认 `PublishScope=code-only`、with-data 显式确认、长耗时阶段日志、NAS 可观察复制和 manifest artifact 缓存复用；同时遇到系统临时目录 `pytest-of-BJB110` 权限阻塞，后续改用仓库内 `--basetemp`。
-GREEN: implementation-commit -> PASS，实现提交 `6639128`，只包含发布脚本、manifest schema/validator、治理模块和合同测试 5 个实现文件。
-GREEN: pytest-release-governance -> PASS，`python -X utf8 -m pytest scripts\tests\test_release_package_governance.py scripts\tests\test_deploy_precheck_report_contract.py -q --basetemp .tmp-pytest-release-duration` -> `63 passed in 36.43s`。
-GREEN: powershell-ast -> PASS，`publish-int-ruoyi.ps1` 与 `ReleasePackageGovernance.psm1` AST parse 输出 `AST_OK`。
-GREEN: cicd-validator -> PASS，`python -X utf8 C:\Users\BJB110\.codex\skills\ci-cd-environment-delivery\scripts\validate_cicd_environment.py --self-test` -> PASS。
-GREEN: diff-check -> PASS，`git diff --check` 覆盖本任务实现、schema、测试和任务文档。
-GREEN: closeout-preview -> PASS，task-closeout-cleanup preview 仅识别本任务临时 pytest 目录可删除，任务三件套保留，无 blocked/warning。
-GREEN: closeout-apply -> PASS，已删除 `.tmp-pytest-release-duration`；当前为主工作区，无 worktree 合并/删除动作。
-FINAL: task completed -> PASS，未执行真实发布；实现提交 `6639128`，收尾证据与长期经验已记录。
+BDD: runtime-console with-data scope is preserved -> Given 运行控制台请求 `publishScope=with-data`, When 生成 `build-release` 命令预览, Then 必须下传 `-PublishScope with-data -ConfirmText WITH-DATA` 且不得带 `-SkipDatabaseSync` 或 `-SkipMinioSync`。
+
+RED: `mvn -Dtest=RuntimeControlContractTest#buildReleaseWithDataPreviewContainsNasAndRuntimeBaseArguments test -q` -> FAIL，运行控制台预览没有把 `with-data` 范围和确认参数传给发布脚本，实际会落回脚本默认的 `code-only`。
+GREEN: `mvn -Dtest=RuntimeControlContractTest#buildReleaseCodeOnlyPreviewSkipsDatabaseAndMinioData+buildReleaseWithDataPreviewContainsNasAndRuntimeBaseArguments test -q` -> PASS。
+
+BDD: 发布阶段失败状态可观察 -> Given manifest、完整性校验或 NAS 复制阶段抛出异常, When `Invoke-ReleaseStage` 结束, Then 日志输出 `Failed release stage`，不输出误导性的 `Completed release stage`，并保留原始异常传播。
+BDD: 包大小统计复用已有事实 -> Given manifest 已生成 artifact path/bytes/hash, When 输出包大小摘要, Then 只使用已生成的 artifact facts，不对整个包目录再做一次递归枚举。
+RED: `python -X utf8 -m pytest scripts\tests\test_release_package_governance.py -q --basetemp .tmp-pytest-release-duration-static-review` -> FAIL，新增阶段失败状态和大小摘要复用断言各 1 项失败，证明旧实现会误报完成且重复扫描。
+GREEN: `python -X utf8 -m pytest scripts\tests\test_release_package_governance.py -q --basetemp .tmp-pytest-release-duration-static-review` -> PASS，`64 passed`。
+GREEN: `python -X utf8 -m pytest scripts\tests\test_release_package_slimming.py scripts\tests\test_deploy_precheck_report_contract.py -q --basetemp .tmp-pytest-release-duration-governance-review` -> PASS，`7 passed`。
+GREEN: `python -X utf8 -m pytest scripts\tests\test_release_build_preflight_cache.py -q --basetemp .tmp-pytest-release-duration-preflight-review` -> PASS，`42 passed`；使用独立 basetemp 避免并发临时目录竞争。
+GREEN: powershell-ast -> PASS，发布脚本与治理模块 `AST_OK`。
+GREEN: cicd-validator -> PASS，CI/CD evidence 自检通过。

@@ -119,3 +119,19 @@ GREEN: experience-preflight-p1 -> PASS，已读取本仓经验索引、按钮化
 ACTION: p1-isolated-worktrees -> 计划从维护仓 `int_main@08823268e9efe7571a06c261a7b919c890c45dad` 创建 `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m`，从应用仓 `int_main@860496e330a8b47bcb421b8b65ece03c06df33d8` 创建 `D:\IntRuoyiWorktree\r260911-release-button\a`；两仓任务分支统一为 `codex/one-button-app-release-20260911`。原主工作区只读保留。
 
 DEFERRED: P4/P5 规定 Playwright 1.60.0 运行时缺失；真实测试服/正式服授权缺失。这些不阻塞不启动服务、不运行 E2E、不访问远程环境的 P1。
+
+## Release Attempt: R53 (2026-09-15)
+
+USER_AUTHORIZATION: 用户授权继续当前发布任务；范围限定 `without-data` / `PublishScope=app-release` / 测试服，不执行 `mark-tested`、`promote-prod` 或 `promote-backup`。
+
+BDD: R53 测试服发布 fail-fast -> Given R53 已通过本地包完整性校验且测试服仍运行旧版本 / When 使用同一 releaseTag 执行测试服 `deploy-release` / Then 包下载、镜像加载、锁与目标预检通过后，任一 required SQL 失败必须停止版本切换、释放锁为 FAILED，并保留失败迁移证据。
+
+GREEN: r53-package-validation -> PASS；包路径 `E:\Int\CacheData\IntRuoyi\publish-int\publish-int-ruoyi\release-20260915-one-button-app-r53`，官方 validator 返回 `status=passed` / `MANIFEST_VALIDATION_PASSED`；`publishScope=app-release`，`packageDigest=2fdd3ff0184c9c3db3fc5f1394a4baccffa642795873f53dd6a7fc4d766726f6`，`manifestChecksum=sha256:662566e0...d6386`，662 files / 719269459 bytes，forbidden-name scan=0，未发现 MinIO、数据库 dump、runtime data、`.env` 或秘密文件；sourceRepos backend/admin-frontend 均为 commit `7f116de4cea26db71d1ce4b3d0e224bff2a7203c`、`dirty=false`。
+
+GREEN: r53-release-preflight -> PASS；使用专用维护 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m` 的发布脚本，NAS 下载、6 个镜像分片上传、619 个 required SQL 上传/解包、镜像 load、MySQL/Redis 健康、`app-release` scope 与 target preflight 均通过；未复制 MySQL 全量 dump，未同步 MinIO。
+
+RED: r53-publish-test -> FAIL；唯一发布 operation `test-release-20260915-one-button-app-r53` 在 required SQL `20260829_mes_old_form_template_binding_switch.sql` 执行时返回 MySQL `ERROR 1644 (45000) at line 1023: Form template Jimu schema is invalid`。脚本已将 `infra_release_operation_lock` 收口为 `FAILED`，未切换 `.env IMAGE_TAG` 或 backend/frontend 容器版本；测试服真实状态仍为 `release-20260913-one-button-app-r21`，backend/frontend HTTP 200 且 running。
+
+BLOCKER: R53 已判废；不得重试同一 releaseTag、不得 `mark-tested`、不得手工更新远端 migration ledger/发布锁、不得修改业务数据绕过错误。必须先冻结失败 SQL 的真实目标表/字段与目标状态证据，补充 RED 回归与正式迁移契约修复，提交新 commit 后使用全新 releaseTag 重建并重新走测试服发布。
+
+Evidence: `runtime/r53-manifest-validation.json`；专用 worktree HEAD 与 manifest sourceRepos；远端测试服状态快照；R53 deploy operation 输出（敏感值已脱敏）。

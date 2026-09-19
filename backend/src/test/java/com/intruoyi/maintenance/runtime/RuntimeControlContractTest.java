@@ -114,7 +114,8 @@ class RuntimeControlContractTest {
                 .getContentAsString(StandardCharsets.UTF_8);
 
         assertThat(response)
-                .contains("-Mode", "build-release", "-SkipDatabaseSync", "-SkipMinioSync",
+                .contains("-Mode", "build-release", "-PublishScope", "code-only",
+                        "-SkipDatabaseSync", "-SkipMinioSync",
                         "-NasServer", "-NasShare", "-NasReleaseRoot",
                         "-TestServerHost", "172.30.30.58",
                         "-BackupServerHost", "172.30.30.59",
@@ -152,6 +153,9 @@ class RuntimeControlContractTest {
                         "-BackupServerHost", "172.30.30.59",
                         "-ProdServerHost", "172.30.30.57",
                         "-BackendRuntimeBaseDigest", "-BackendRuntimeBaseVersion");
+        assertThat(response)
+                .contains("-PublishScope", "with-data", "-ConfirmText", "WITH-DATA")
+                .doesNotContain("-SkipDatabaseSync", "-SkipMinioSync");
         assertThat(response)
                 .doesNotContain("-SkipDatabaseSync")
                 .doesNotContain("-SkipMinioSync")

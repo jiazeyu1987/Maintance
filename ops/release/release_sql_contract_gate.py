@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
+MYSQL_IDENTIFIER_MAX_LENGTH = 64
 BLOCK_COMMENT_PATTERN = re.compile(r"/\*.*?\*/", re.DOTALL)
 LINE_COMMENT_PATTERN = re.compile(r"(?m)^\s*--.*$")
 SYSTEM_MENU_INSERT_PATTERN = re.compile(
@@ -25,6 +26,54 @@ TEMP_TABLE_TEXT_COLUMN_PATTERN = re.compile(
     re.IGNORECASE,
 )
 TEMP_TABLE_CONTRACT_START_DATE = "20260801"
+MYSQL_IDENTIFIER_TOKEN = r"(?:`[^`]+`|[a-z_][a-z0-9_$]*)"
+MYSQL_QUALIFIED_IDENTIFIER_TOKEN = rf"{MYSQL_IDENTIFIER_TOKEN}(?:\s*\.\s*{MYSQL_IDENTIFIER_TOKEN})?"
+MYSQL_IDENTIFIER_DECLARATION_PATTERNS = (
+    (
+        "constraint",
+        re.compile(rf"\bconstraint\s+(?P<identifier>{MYSQL_QUALIFIED_IDENTIFIER_TOKEN})", re.IGNORECASE),
+    ),
+    (
+        "index",
+        re.compile(
+            rf"\b(?:unique\s+|fulltext\s+|spatial\s+)?(?:index|key)\s+"
+            rf"(?:if\s+not\s+exists\s+)?(?P<identifier>{MYSQL_QUALIFIED_IDENTIFIER_TOKEN})",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "trigger",
+        re.compile(
+            rf"\bcreate\s+(?:or\s+replace\s+)?(?:definer\s*=\s*\S+\s+)?trigger\s+"
+            rf"(?:if\s+not\s+exists\s+)?(?P<identifier>{MYSQL_QUALIFIED_IDENTIFIER_TOKEN})",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "procedure",
+        re.compile(
+            rf"\bcreate\s+(?:or\s+replace\s+)?(?:definer\s*=\s*\S+\s+)?procedure\s+"
+            rf"(?:if\s+not\s+exists\s+)?(?P<identifier>{MYSQL_QUALIFIED_IDENTIFIER_TOKEN})",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "function",
+        re.compile(
+            rf"\bcreate\s+(?:or\s+replace\s+)?(?:definer\s*=\s*\S+\s+)?function\s+"
+            rf"(?:if\s+not\s+exists\s+)?(?P<identifier>{MYSQL_QUALIFIED_IDENTIFIER_TOKEN})",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "event",
+        re.compile(
+            rf"\bcreate\s+(?:or\s+replace\s+)?(?:definer\s*=\s*\S+\s+)?event\s+"
+            rf"(?:if\s+not\s+exists\s+)?(?P<identifier>{MYSQL_QUALIFIED_IDENTIFIER_TOKEN})",
+            re.IGNORECASE,
+        ),
+    ),
+)
 
 
 class ReleaseSqlContractError(RuntimeError):
@@ -95,6 +144,25 @@ def _iter_sql_statements(text: str) -> list[tuple[str, int]]:
     if trailing.strip():
         statements.append((trailing, start))
     return statements
+
+
+def _normalize_mysql_identifier(identifier: str) -> str:
+    parts = [part.strip().strip("`") for part in re.split(r"\s*\.\s*", identifier.strip()) if part.strip()]
+    return parts[-1] if parts else identifier.strip().strip("`")
+
+
+def _assert_mysql_identifier_lengths(path: Path, text: str) -> None:
+    masked = _mask_sql_string_literals(_mask_sql_comments(text))
+    for identifier_kind, pattern in MYSQL_IDENTIFIER_DECLARATION_PATTERNS:
+        for match in pattern.finditer(masked):
+            identifier = _normalize_mysql_identifier(match.group("identifier"))
+            if len(identifier) <= MYSQL_IDENTIFIER_MAX_LENGTH:
+                continue
+            line = text.count("\n", 0, match.start("identifier")) + 1
+            raise ReleaseSqlContractError(
+                "MySQL identifier length exceeds 64 characters: "
+                f"{identifier_kind} `{identifier}` length={len(identifier)} in {path.as_posix()}:{line}"
+            )
 
 
 def _extract_parenthesized_text(statement: str, start: int) -> str:
@@ -415,6 +483,7 @@ def assert_release_sql_contracts(sql_paths: list[Path | str]) -> None:
     for raw_path in sql_paths:
         path = Path(raw_path).resolve()
         sql_text = path.read_text(encoding="utf-8")
+        _assert_mysql_identifier_lengths(path, sql_text)
         _assert_temp_table_contracts(path, sql_text)
         for occurrence in _iter_system_menu_insert_occurrences(path):
             occurrences_by_menu_id[occurrence.menu_id].append(occurrence)

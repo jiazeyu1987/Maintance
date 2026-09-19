@@ -125,6 +125,7 @@ services:
         --yudao.dcc.project-code-recognition.timeout-seconds=${DCC_PROJECT_CODE_CODEX_TIMEOUT_SECONDS}
         --yudao.dcc.project-code-recognition.version=${DCC_PROJECT_CODE_RECOGNITION_VERSION}
         --yudao.dcc.project-code-recognition.worker-count=${DCC_PROJECT_CODE_RECOGNITION_WORKER_COUNT}
+        --yudao.ai.codex-cli.command=${SHOWROOM_CODEX_CLI_COMMAND}
         --yudao.runtime-control.repo-root=/opt/intruoyi/ops/backup-ops/linux-native
         --yudao.runtime-control.state-dir=/opt/intruoyi/ops/runtime-control
         --yudao.runtime-control.backup-ops.execution-mode=linux-local

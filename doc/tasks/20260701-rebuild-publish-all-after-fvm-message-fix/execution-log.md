@@ -62,3 +62,5 @@ RED: python -X utf8 -m pytest scripts/tests/test_publish_dcc_codex_runtime_contr
 GREEN: python -X utf8 -m pytest scripts/tests/test_publish_dcc_codex_runtime_contract.py scripts/tests/test_release_package_slimming.py scripts/tests/test_release_sql_preflight_gate.py -q -> PASS
 
 GREEN: powershell-parse -> PASS, command=[System.Management.Automation.Language.Parser]::ParseFile(ops/deploy/publish-int-ruoyi.ps1)
+
+GREEN: build-release-start -> PASS, releaseTag=release-20260701-1720-mes-scheduler-dcc-inventory-fast, operation=op-2026-07-01T221723175750800Z-10540648-baef-461d-a1c6-39667c8aec6c

@@ -249,11 +249,17 @@ public enum RuntimeControlOperationAction {
             args.add("-IncludeOnlyOffice");
         }
         if (PUBLISH_SCOPE_CODE_ONLY.equals(req.publishScope())) {
+            args.add("-PublishScope");
+            args.add(PUBLISH_SCOPE_CODE_ONLY);
             args.add("-SkipDatabaseSync");
             args.add("-SkipMinioSync");
             return args;
         }
         if (PUBLISH_SCOPE_WITH_DATA.equals(req.publishScope())) {
+            args.add("-PublishScope");
+            args.add(PUBLISH_SCOPE_WITH_DATA);
+            args.add("-ConfirmText");
+            args.add("WITH-DATA");
             return args;
         }
         throw new RuntimeControlException("Invalid publishScope: " + req.publishScope());

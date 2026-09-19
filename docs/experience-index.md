@@ -49,11 +49,18 @@
 
 ## 路由
 
-- 发布耗时过久 / build-release 黑箱等待 / 默认 code-only / PublishScope with-data / WITH-DATA 确认 / 40GB 全量包 / NAS robocopy / release package size summary / PreverifiedArtifacts：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-09-build-release-默认-code-only-与全量数据包显式门禁`
+- 反复打包 / 本地打包成功服务器失败 / 错误前移 / target-state 前移 / release-preflight / 同构安装演练 / BuildKit 缓存 / 构建缓存：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-07-服务器错误前移与反复打包收敛门禁`
+- 一键发布 / 按钮化发布 / 发布流程程序化 / without-data / app-release / 三按钮 / ReleaseWorkflow / 环境租约 / packageDigest / manifestDigest / R31-R44 防复发：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-11-按钮化-app-release-工作流设计前置门禁`
+- build-release fresh target-state / release_build_preflight.py / prospective manifest / migration arrays drift / source dirty / release_docker_build_evidence.py / Docker COPY context fingerprint / manifest/docker-build-evidence.json / 移除 --no-cache：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-08-构建前-target-state-与-docker-原生缓存门禁`
+- with-data DCC 对象清单 / DCC_OBJECT_SNAPSHOT_MISSING / infra_file.path MinIO 缺失 / MinIO yudao 本地对象漂移 / quay.io/minio/mc / minio/mc:latest / docker inspect unclosed action：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-08-with-data-安装包-dcc-对象一致性与工具镜像门禁`
+
+- 安装包 / 不可变发布包 / build once deploy many / direct 直发 / tested attestation / package digest / manifest digest / operation mtime 相同 / requestedAt 排序 / with-data 正式服 / rollback compatibility BLOCKED / 镜像 latest：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-07-不可变安装包跨环境晋级审查门禁`
+
 - 经验沉淀 / 新增经验 / 更新经验 / 经验文件格式 / 前置经验 / 经验门禁模板：先执行本文件“经验文档写入规范（强制）”，再按下方关键词选择目标文档。
 - 测试服发布 / 仅测试服 / current HEAD test release / publish-test / 运行态验收 / release-info 版本变更说明：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md`
 - Keywords: 发布后登录页租户选择器, 测试租户未选中, 默认芋道源码, Element Plus el-select 登录租户, tenantFieldFilled, 发票凭证打印助手 E2E -> `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md#2026-08-30-发布后登录页租户选择器门禁`
 - Keywords: publish-test 远端 staging 空目录, /var/lib/docker/intruoyi-releases releaseTag empty, 本地发布包 manifest 权威, 远端 release-info 交叉验证, r260830k manifest -> `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md#2026-08-30-publish-test-远端-staging-清理与-manifest-权威门禁`
+- Keywords: 发票打印助手 systemd, erp-invoice-voucher-print-assistant.service, 18733, 助手容器 tag 漂移, docker run name conflict, same-name container conflict, auto-restart, KINGDEE_ENV_PATH, KINGDEE_RUNTIME_DIR -> `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md#2026-09-03-发票打印助手-systemd-与容器-tag-漂移门禁`
 - 反馈修复测试服发布 / 本机可以测试服不行 / release-info gitChanges / 版本变更说明未生成 / 李萍.xlsx / WORK_ORDER_NOT_FOUND / ACTIVE_TASK_NOT_FOUND / WORKSTATION_NOT_FOUND：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md#2026-08-02-反馈修复测试服发布与业务数据分层门禁`
 - publish-test preview 崩溃 / release package candidate scan / dead RUNNING operation / runtime-control JVM 退出：`docs/release-build-preflight-lessons.md#2026-07-11-runtime-control-发布候选扫描与-dead-operation-门禁`。
 - PowerShell host:port 插值 / SSH IO pending / bash `$()` / Playwright 浏览器缓存 / release-info mojibake：`docs/powershell-preflight-lessons.md`，标题“2026-07-11 PowerShell/SSH/Playwright 发布验收门禁”。
@@ -79,6 +86,8 @@
 - 发布 / 备份 / 恢复 / 服务器容量：`E:\IntRuoyi\docs\release-backup-restore.md`
 - 备份脚本唯一源码 / backup-ops source of truth / 维护仓副本漂移 / 计划任务 principal S4U ACL / RepositoryEnvironment / backup-ops.ps1 RepositoryEnvironment / productionBackupConfirmText secrets / completedAt 新鲜度：`E:\IntRuoyi\docs\release-backup-restore.md#正式服备份计划任务状态门禁`
 - 正式服 backup-now + 备份服 rehearsal / production source -> backup repository / same backupId / TargetEnvironment prod backup mismatch / backup-source NAS 未就绪 / INTBK-2003 / MySQL 恢复 dump 不在受保护 BackupPackage / INTBK-3002 / source temp dump / MinIO 对象备份 / INTBK-4001 / Invalid JSON primitive: Unable / Docker pull status lines / mc --json / DCC manifest / INTBK-6001 / dcc_object_inventory_missing / 对象 inventory 覆盖率 / checksums / Get-FileHash 缺失 / INTBK-6003 / rehearsalStatus verified PASSED 冲突 / backendHealth frontendHttp200 loginReachable fileDownloadSample / rehearsal bucket runtime 隔离：`E:\IntRuoyi\docs\release-backup-restore.md#正式源备份到备份服隔离演练仓库门禁`
+- ChatGPT 网页备份恢复 / 按钮化备份恢复 / 立即备份按钮 / 选择备份包恢复 / backup-now BackupKind / restore-data 恢复候选 / restore-candidates / selectedBackupId 服务端候选解析 / 演练候选 / 受控恢复候选 / candidateType / NOT_RUN / PASSED / chainDigest / manifestDigest / 候选过期 / UNKNOWN / 版本化恢复目录 / `.bat` 入口漂移 / 静态现状 vs 实时恢复就绪：`E:\IntRuoyi\docs\release-backup-restore.md#按钮化备份恢复入口门禁`
+- 几百 GB 备份恢复里程碑 / 第一版真实增量 / 全量增量链恢复 / M1-M6 / 大数据量备份顺序 / 增量不能后置 / 整链恢复不能后置 / 独立恢复控制平面 / 独立故障域备份 / 源账号不能删除 / binlog purge / 最大链年龄 / 支持矩阵：`E:\IntRuoyi\docs\release-backup-restore.md#大数据量备份恢复首版里程碑顺序门禁`
 - 服务器访问 / 重启 / 远端联调：`E:\IntRuoyi\docs\server-access.md`
 - 前端页面 / 表格 / 样式：`D:\ProjectPackage\Int\IntPP\FRONTEND_STYLE.md`
 - 项目错误预防短记忆：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\agent-memory\project-error-prevention.md`
@@ -251,3 +260,12 @@
 - Keywords: release worktree config/state-dir/PID, cross-repository worktree command, old console source root -> `E:\IntRuoyi\docs\worktree-memory.md#发布-worktree-与控制台身份一致性门禁`
 - Keywords: test-server expired password, tenant selector empty, authenticated page blocked, Playwright login baseline -> `E:\IntRuoyi\docs\login-access.md#发布后页面登录基线门禁`
 - Keywords: promote-prod scope dependency blocked, code-only migration closure, target preflight status blocked, prod env restore, release lock FAILED -> `docs\release-agent-checklist.md#promote-prod-目标库迁移依赖` and `docs\test-release-preflight.md#2026-08-16-code-only-迁移依赖闭包与真实状态门禁`
+- Keywords: r260831c only test release success, release-20260831-cell-link-idempotency-test-r260831c-r1, final gate 28, project_code dependsOn fix, cell link migration idempotency -> `docs/test-release-preflight.md#2026-08-31-r260831c-仅测试服成功闭环与发布失败恢复门禁`
+- Keywords: BLOCKED_SCOPE_DEPENDENCY before upload, target-bound preflight before env write, manifest three migration projections, live schema ledger drift, ERROR 1060 Duplicate column source_type, historical ADD COLUMN idempotency -> `docs/release-build-preflight-lessons.md#2026-08-31-code-only-target-planlive-schemaledger-漂移与-required-sql-可重放门禁`
+- Keywords: publish failure env drift exact restore, payload bytes sha remote marker, no restart ledger unchanged -> `docs/release-build-preflight-lessons.md#阶段-3发布失败-env-补偿`
+- Keywords: foreach in missing space, Get-History H alias, JS template PowerShell interpolation, Unexpected identifier t0, empty stdin ssh exit 0 fake green, wait cell not found -> `docs/powershell-preflight-lessons.md#2026-08-31-发布长链路跨层载荷powershell-语法与假绿门禁`
+- Keywords: docker run rm cat hangs, release-info image inspection, docker create cp rm, Playwright standard directory missing module, exact Playwright 1.60.0 -> `docs/test-release-preflight.md#阶段-3浏览器与-final-gate`
+- Keywords: MySQL ERROR 1059, Identifier name is too long, MySQL identifier 64, constraint index trigger procedure function event length, release_sql_contract_gate.py, operation state root unknown json, migration-policy.json, runtime-control operations 400, release preflight speedup, 真实门禁左移 -> `docs/release-build-preflight-lessons.md#2026-09-02-发布加速与真实门禁左移`
+- 安装包构建前迁移演练 / schema-only / mysqldump --no-data / target-preflight / 目标只读依赖检查 / migration-rehearsal-evidence / Maven 前阻断 / 失败 releaseTag：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-10-安装包构建前必须执行结构迁移演练与目标只读预检`
+- Keywords: system_users duplicate tenant canonical username, ACTIVE_DUP_GROUPS, active_canonical_username, generated column unique active user, r43 ERROR 1644, r44 电子签名用户名唯一约束, deploy-release cache .env 污染 -> `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-11-迁移唯一约束业务范围与发布包缓存清洁门禁`
+- Keywords: Playwright 登录稳定窗口, postLoginConsoleErrorCount, postLoginFailedRequestCount, net::ERR_ABORTED, 测试租户 aoteman 发布后页面验收, r44 页面验收 -> `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md#2026-09-11-发布后-playwright-登录稳定窗口门禁`

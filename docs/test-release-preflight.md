@@ -902,6 +902,25 @@ ssh root@172.30.30.58 bash -s
 4. Fail Fast：manifest 缺失、JSON 解析失败、commit/dirty 漂移、远端运行态漂移。
 5. 必须记录：manifest path、sourceRepos 摘要、artifact 摘要、远端运行态摘要。
 
+## 2026-09-03 发票打印助手 systemd 与容器 tag 漂移门禁
+
+### 门禁摘要
+
+- Trigger: 联合发布或独立发布发票打印助手到测试服 `18733`，或发现 `erp-invoice-voucher-print-assistant.service` 非 active/running。
+- Preflight check: 发布前只读核对 `systemctl cat/status erp-invoice-voucher-print-assistant.service`、`docker ps -a --filter name=erp-invoice-voucher-print-assistant`、`ss -ltnp | grep :18733` 和直连 HTTP；必须同时记录 systemd 单元中的 image tag、实际同名容器 image tag、service active 状态和容器 name 冲突日志。
+- Blocker: systemd 单元 tag 与实际容器 tag 不一致、service 处于 `activating`/auto-restart、同名容器由旧 tag 占用导致 `docker run --name` 冲突、`18733` 未监听、直连根路径不是 403、或容器存在 `KINGDEE_ENV_PATH` 全局配置。
+- Verification: 新版 source artifact SHA256 本地/远端一致；远端 Docker image tag 与冻结助手 commit/tag 对齐；部署只停止 `erp-invoice-voucher-print-assistant.service` 并移除同名旧容器；重启后 service active、container running、`0.0.0.0:18733` listening、direct HTTP 403、`KINGDEE_RUNTIME_DIR` 存在且 `KINGDEE_ENV_PATH` 不存在；主系统 backend/frontend health 保持通过。
+- Forbidden action: 禁止补全局 `.env.kingdee` 或 `KINGDEE_ENV_PATH` 掩盖旧包；禁止因旧容器 HTTP 可访问就忽略 systemd auto-restart；禁止删除无关容器、重启主系统或修改数据库来修助手部署问题；禁止记录完整 service secret/env、密码或 raw secret-bearing 日志。
+- Evidence: `doc/tasks/20260903-main-invoice-assistant-test-release/execution-log.md`；助手镜像 `erp-invoice-voucher-print-assistant:f077f49-r260903b`。
+
+### 阶段必查项
+
+1. 发布前：核 systemd unit tag、service active 状态、同名容器 image/status、`18733` listen、direct HTTP。
+2. 构建前：用冻结助手 worktree 生成 source artifact，记录 bytes 和 SHA256，远端 extraction 前复核 SHA256。
+3. 部署时：仅停止助手 service 和同名旧容器，安装新 tag unit，`daemon-reload` 后 restart。
+4. Fail Fast：service/container tag 漂移、同名容器冲突、artifact SHA 不一致、`18733` 不监听或直连非 403。
+5. 必须记录：旧 tag/new tag、artifact hash、远端 image、systemd active、container running、listen/HTTP 和主系统健康保持结果。
+
 ## 2026-08-31 r260831c 仅测试服成功闭环与发布失败恢复门禁
 
 ### 门禁摘要
@@ -931,3 +950,12 @@ ssh root@172.30.30.58 bash -s
 2. 镜像内 release-info 读取优先 `docker create + docker cp + docker rm`，避免短命 `docker run --rm cat` 客户端/状态悬挂。
 3. 测试服公开登录页与认证后业务页结论分层；缺远端测试账号凭据时不得猜密码。本次公开页只证明前端可见，运行控制台页面负责版本说明验收。
 4. Final gate 至少汇总 worktree/head/clean、两 operation、manifest、runtime、ledger、release-status、Playwright、禁止动作；输出 false 清单，全部 true 才进入 closeout。
+
+## 2026-09-11 发布后 Playwright 登录稳定窗口门禁
+
+- Trigger: 测试服发布后 Playwright 登录 `测试租户/aoteman`，首次登录跳转、二次导航或外部资源请求产生 `net::ERR_ABORTED`，需要判断页面是否真实可用。
+- Preflight check: Playwright 必须先完成真实登录、确认最终进入认证后业务路由，并等待权限接口返回目标用户、菜单和 permissions；登录完成前的导航中止单独记录为登录过程事件。进入认证后页面并清零计数器后，再采集固定稳定窗口内的 console error 和 failed request。
+- Blocker: 登录业务码非成功、未进入认证后路由、权限响应为空或不属于目标账号、稳定窗口内出现 console error、业务接口 failed request、页面 title/URL 异常，或证据中包含密码、token、cookie 等敏感值。
+- Verification: 记录 Playwright 版本/浏览器路径、base URL、最终 URL、页面 title、租户/账号标签、menuCount、permissionCount、稳定窗口秒数、postLoginConsoleErrorCount、postLoginFailedRequestCount、截图和脱敏 summary JSON。
+- Forbidden action: 禁止把所有 `net::ERR_ABORTED` 一律忽略；禁止只看前端 HTTP 200 或登录页可见就判定发布成功；禁止用 API-only 代替真实页面登录；禁止保存含密码/token 的 snapshot。
+- Evidence: `doc/tasks/test-server-release-20260908/execution-log.md`；r44 首次登录成功但登录过程 abort 被单独隔离，最终认证后稳定窗口 `consoleErrors=0`、`failedRequests=0`。

@@ -1167,6 +1167,14 @@ HEAD-only 构建发布在维护仓或主程序仓主工作区 dirty，且需要�
 6. 优化规则：APPLY 成功路径可将远端文件检查、`RUNNING`、required SQL 执行、`APPLIED` 合并到单次 SSH 会话；SQL 失败必须由外层 catch 继续写 `FAILED` 并抛出，不得吞异常或标记成功。
 7. Evidence: `doc/tasks/20260829-optimize-required-sql-apply-state-ssh/verification-report.md`；维护仓实现提交 `e4bc1e5`（`任务: 优化required SQL状态入账`）。
 
+1. 阶段名称：route snapshot 身份迁移 hook。
+2. 必查项：`Invoke-RouteSnapshotIdentityMigrationCommand` 必须在一次 SSH 会话内完成 report 目录准备、一次性 backend runner、report 文件存在检查和 `"status" : "READY"` / `"blockerCount" : 0` 校验。
+3. 推荐命令：合同测试 `test_publish_script_combines_route_snapshot_run_and_report_check_in_single_ssh_session`；PowerShell AST parse。
+4. Fail Fast：运行 backend 和检查 report 分裂成多次 SSH、缺少 report 文件校验、缺少 READY/blockerCount 校验、或把 hook 失败吞掉继续执行 required SQL。
+5. 必须记录：hook 模式、report 文件名、单 SSH 合同测试结果、未执行真实远端写入的边界。
+6. 优化规则：可压缩 SSH 往返，但不得跳过 route snapshot BACKFILL/READINESS 任一模式，不得删除 report 校验，不得用口头 READY 代替 report 内容校验。
+7. Evidence: `doc/tasks/20260829-optimize-required-sql-plan-ssh/verification-report.md`；维护仓实现提交 `f035655`（`任务: 优化route snapshot发布hook校验`）。
+
 1. 阶段名称：发布日志脱敏。
 2. 必查项：所有 SSH command/capture 输出路径、异常路径和 task 证据路径。
 3. 推荐命令：合同测试 `test_ssh_command_logs_and_errors_are_secret_redacted`；secret-pattern scan operation log。
@@ -1182,6 +1190,16 @@ HEAD-only 构建发布在维护仓或主程序仓主工作区 dirty，且需要�
 5. 必须记录：归档名、远端 `ops-runtime.tar`、关键文件校验、实现提交和未执行真实发布的边界。
 6. 禁止做法：禁止为省时整目录删除 `$remoteOpsRuntimeDir`，避免误删远端 `config` 下现有 secrets；只能清理受控脚本目录和受控 deploy 文件后解包覆盖。
 7. Evidence: `doc/tasks/20260829-optimize-test-release-ops-runtime-upload/verification-report.md`；维护仓实现提交 `f33a8ec`（`任务: 优化发布ops运行包上传`）。
+
+### 阶段补充：deploy 控制文件上传
+
+1. 阶段名称：deploy 主段控制文件上传前。
+2. 必查项：`Copy-DeployControlFilesToServer` 必须将 compose、`.env`、website runtime、小 SQL 控制文件按原条件 staging 后打包为 `deploy-control.tar`；远端解包后必须校验 `app/docker-compose.yml`、`app/.env`、`website/dist/index.html`、`website/nginx.conf`、`sql/reset-db.sql`、`sql/post-import.sql` 等对应条件下的关键文件。
+3. 推荐命令：合同测试 `test_publish_script_uploads_deploy_control_files_as_single_archive`；PowerShell AST parse；本机 `Get-Command tar,ssh,scp`。
+4. Fail Fast：控制文件仍逐个 `Copy-ToServer`、归档缺关键文件、远端解包后未校验关键文件、或把镜像 tar / 数据库 dump 混入 deploy-control 小文件归档。
+5. 必须记录：归档名、包含条件、远端解包校验、实现提交和未执行真实发布的边界。
+6. 禁止做法：禁止为省时把 image tar、db dump 或 secret-bearing raw log 混入小文件归档；禁止缺文件时回退到逐个 scp 或跳过 post-import/reset SQL。
+7. Evidence: `doc/tasks/20260829-optimize-deploy-control-file-upload/verification-report.md`；维护仓实现提交 `ff1368a`（`任务: 优化deploy控制文件上传`）。
 
 ## 2026-08-29 r260829j clean HEAD 构建、manifest 与 DCC SQL 合同门禁
 
@@ -1215,20 +1233,142 @@ HEAD-only 构建发布在维护仓或主程序仓主工作区 dirty，且需要�
 3. Fail Fast：manifest 缺失、validator 失败、source commit 不等于冻结 app HEAD、dirty 非 false、变更说明为空或无法对应提交、release-info 与 manifest 不一致。
 4. 必须记录：releaseTag、package path、source commit、dirty、changeSet、artifact SHA256、validator status。
 
-# 2026-09-09 build-release 默认 code-only 与全量数据包显式门禁
+## 2026-08-29 带计时真实发布的 app 前端依赖预热与耗时归因门禁
 
 ### 门禁摘要
 
-- Trigger: build-release 耗时异常、发布日志长时间停在 manifest/integrity/NAS copy、默认打出数据库 dump 与 MinIO 快照、发布包超过 5GB、或用户只要求测试服代码发布。
-- Preflight check: 日常测试服发布必须确认 `PublishScope=code-only`，脚本默认等价于 `-SkipDatabaseSync -SkipMinioSync`；只有明确选择 `-PublishScope with-data -ConfirmText WITH-DATA` 才允许导出数据库与 MinIO 快照。manifest 生成后必须记录 `Release package size summary`，NAS 入库必须使用可校验的目录复制并输出 `Release directory copy summary`。
-- Blocker: 未明确确认却准备 with-data；with-data 同时传入 `-SkipDatabaseSync` 或 `-SkipMinioSync`；日志无法区分 manifest、integrity、NAS copy 阶段；或为了缩短发布时间跳过 manifest/P0 integrity/NAS 复验。
-- Verification: 合同测试必须覆盖默认 code-only、with-data 强确认、长阶段日志、NAS robocopy 复制、manifest artifact 缓存复用和 schema/validator 的 `release-code` / `release-data-snapshot` 包类型；真实发布时另核 publishScope、packageRole、package size、operation=SUCCESS、NAS path 和 releaseTag。
-- Forbidden action: 禁止把日常代码发布默认做成 with-data；禁止用 mock/占位文件、跳过 DCC inventory、取消完整性校验、或边复制边宣称 NAS 包可用来换取提速；禁止在正式/备份晋级使用 with-data 包。
-- Evidence: `doc/tasks/20260909-release-duration-optimization/execution-log.md`；实现提交 `6639128`。
+- Trigger: 仅测试服真实发布、带分段耗时统计、clean app release worktree、`build-release` 前置检查报 `cross-env.cmd` / `vite.cmd` / `vue-tsc.cmd` 缺失，或需要判断发布链路优化是否真的省时。
+- Preflight check: 新建本轮 maintenance/app release worktree 后、提交 `build-release` 前，先对冻结 app 前端运行 `scripts\prepare-frontend-dependencies.ps1 -FrontendDir <app-worktree>\IntRuoyiFronted -RequiredBinary @('cross-env.cmd','vite.cmd','vue-tsc.cmd')`，并记录 `node_modules\.release-dependencies.json`、三个关键二进制存在性、`pnpm ignored-builds` 结果和该步骤耗时；runtime-control、build-release、publish-test、远端验收、Playwright 页面验收和 closeout 必须分别计时。
+- Blocker: clean app worktree 的关键前端二进制缺失、依赖 stamp 与 `package.json` / `pnpm-lock.yaml` / Node / pnpm 版本不匹配、`pnpm ignored-builds` 非空，或分段计时无法区分前置依赖恢复、正式 build-release、publish-test 和验收耗时。
+- Verification: 成功 releaseTag 必须同一轮完成 `build-release -> publish-test`，并记录 operation=SUCCESS、manifest、远端 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、backend health=UP、frontend HTTP 200、release-info/release-status 和 Playwright 页面版本说明；耗时报告至少包含 successful build-release、successful publish-test、r1/失败重试开销、前置准备和 closeout。
+- Forbidden action: 禁止先提交 build-release 再等缺依赖失败后补装；禁止把依赖安装耗时混入 build-release 优化结论；禁止复用失败 releaseTag、旧 worktree、旧 node_modules 或跳过页面/运行态验收来制造耗时下降。
+- Evidence: `doc/tasks/20260829-timed-test-release/verification-report.md`；成功 releaseTag `release-20260829-timed-head-test-r260829k-r2`；r1 因缺 `cross-env.cmd` 30.172s 后失败，依赖恢复耗时 461.456s；r2 build-release 840.638s，publish-test 290.605s，核心发布链路 1131.243s，核心链路加验收 1155.638s。
+
+### 阶段补充：耗时归因
+
+1. 必查项：冻结 HEAD、两个 release worktree 路径、runtime-control JAR hash、r1/r2 releaseTag 与 operation id、Manifest SQL/Artifact 计数、远端运行态、页面验收、closeout。
+2. 推荐命令：`scripts\prepare-frontend-dependencies.ps1 -FrontendDir <app-worktree>\IntRuoyiFronted`、runtime-control `build-release` / `publish-test` preview 与 operation 轮询、短 JSON manifest/runtime 摘要脚本、Playwright 打开控制台版本说明。
+3. Fail Fast：任何阶段无法绑定 releaseTag/operation/commit，或无法证明测试服实际运行镜像就是成功 releaseTag。
+4. 必须记录：每个阶段的 startedAt/endedAt/duration、失败 releaseTag 作废原因、可避免开销与不可避免核心耗时。
+
+## 2026-08-31 code-only target plan、live schema/ledger 漂移与 required SQL 可重放门禁
+
+- Trigger: code-only `publish-test`、`BLOCKED_SCOPE_DEPENDENCY`、`ERROR 1060 Duplicate column`、target migration ledger 无 APPLIED 但 live schema 已存在列、历史 required SQL checksum 变化或需要重放。
+- Preflight check: 最终 manifest 生成后、任何远端 `.env` 写入或镜像上传前，必须针对目标测试库生成 target state 和 `release_preflight_plan.py` 结果；要求 `status=passed`、`BLOCKED*=0`，并逐项检查 APPLY migration 的 `type/dependsOn/checksum`。对 `ALTER TABLE ... ADD COLUMN` 的 APPLY 项，再用只读 `information_schema.COLUMNS` 与 ledger 交叉检查；列已存在但 ledger/checksum 不一致时，SQL 必须逐列幂等而不是手工补台账。
+- Blocker: target plan blocked、schema migration 依赖 scope 排除的 data migration、live 列已存在但 SQL 使用裸 ADD、表/字段职责不清、或 publish 脚本会在 target plan passed 前修改 `.env` 时停止。
+- Verification: `python -X utf8 <backend>\script\release\release_preflight_plan.py --manifest <manifest> --target-state <target-state> --target-environment test --publish-scope code-only --output <plan>`；记录 status、blocked/apply/skip 数量和目标 migration action。最终发布还要核 lock=APPLIED、FAILED/RUNNING=0、目标 migration checksum 与 manifest 一致。
+- Forbidden action: 禁止用 with-data 扩大范围绕过错误 dependsOn；禁止手工执行 data SQL、更新 ledger/lock、在 release worktree 临时改 SQL、复用失败 tag，或因列已存在就把 migration 标成 APPLIED。
+- Evidence: `doc/tasks/20260831-test-only-release-head/execution-log.md` ISSUE-015/016/026；app commits `7949cedc9`、`273b5dad6`；成功 releaseTag `release-20260831-cell-link-idempotency-test-r260831c-r1`。
+
+### 阶段 1：target-bound plan 前移
+
+1. 必查项：最终 manifest 三份 migration 投影（`requiredSql`、`migrationPlan`、`database.schemaMigrations`）必须对同一 migrationId 的 dependsOn/type/sha256 一致；target state 来自当前目标库。
+2. 推荐命令：正式构建 manifest 后立即运行 target plan；若使用验证副本，必须枚举并断言同一 migration 的全部投影数量和值一致。
+3. Fail Fast：只更新一份 manifest 投影、target state 过期、计划 blocked、或目标 APPLY 队列包含 scope-excluded data 依赖。
+4. 必须记录：manifest hash、target state 时间、plan status/counts、目标 migration action/reason。
+
+### 阶段 2：历史 ADD COLUMN 幂等合同
+
+1. 必查项：每个历史 `ADD COLUMN` 对目标表和每个列分别使用 `information_schema` 守卫；表缺失必须 SIGNAL，已有列 no-op，缺列才 ALTER；后续 width/index migration 职责不得被前移吞并。
+2. 推荐命令：为具体 SQL 新增 `script/tests` 静态合同，并把 target schema 的 `COLUMN_NAME/COLUMN_TYPE/NULL/DEFAULT` 与后续 migration 一起核对。
+3. Fail Fast：一个 ALTER 同时裸添加多列、只检查首列、用错误吞异常、或为了过测试改成不受目标 MySQL 版本确认的语法。
+4. 必须记录：RED/GREEN、真实 schema、ledger 状态、最终 SQL hash、发布后的 APPLIED checksum。
+
+### 阶段 3：发布失败 env 补偿
+
+1. 必查项：失败后同时冻结 operation、`.env IMAGE_TAG`、backend/frontend actual image、container、health、lock/migration；只有 `.env` 精确等于失败 tag 且两个 actual image 精确等于同一稳定 tag 时，才允许按已授权恢复单一 IMAGE_TAG 行。
+2. Verification: 恢复脚本必须校验 payload 非空/bytes/SHA256、远端业务成功标记、恢复后 `.env=actual image`、health=UP、frontend=200；不重启容器、不改 ledger/lock。
+3. Forbidden action: 禁止把 ssh exit 0 当作恢复成功，禁止空 stdin/本地异常后继续，禁止 source 完整 `.env` 或输出凭据。
+
+## 2026-09-02 发布加速与真实门禁左移
+
+### 门禁摘要
+
+- Trigger: 仅测试服发布、required SQL、MySQL `ERROR 1059 Identifier name ... is too long`、运行控制台 operations API 400、operation state root unknown JSON、重复 build-release/publish-test、发布加速。
+- Preflight check: 在依赖恢复、前端构建、Maven 打包和远端 publish-test 前，先运行维护仓 `release_sql_contract_gate.py` / `run-release-migration-policy-gate.py`；SQL 约束、索引、触发器、过程、函数、事件名超过 MySQL 64 字符必须 fail fast。运行控制台 `state-dir` 根目录只作为 operation store，任务自定义证据 JSON 写入 `evidence/` 等子目录；operation 列表只读取 `op-*.json`。
+- Blocker: SQL 标识符长度超过 64、migration policy gate 未执行或输出不属于本轮 clean release worktree、state 根目录混入会被 operation API 误读的 JSON、或为了提速跳过 manifest/sourceRepos/dirty/health/HTTP/版本说明真实验收。
+- Verification: `python -X utf8 -m pytest scripts\tests\test_release_sql_preflight_gate.py scripts\tests\test_publish_dcc_codex_runtime_contract.py -q --basetemp <task-state>`、`mvn -f backend\pom.xml test`、`python -X utf8 -m py_compile ops\release\release_sql_contract_gate.py`、PowerShell AST parse；发布任务还必须记录 build/publish operation、manifest、远端 `.env IMAGE_TAG`、实际镜像、backend health、frontend HTTP 和页面版本说明。
+- Forbidden action: 禁止把 MySQL 真实失败留到 publish-test 才发现；禁止手工改测试库、ledger、lock 或复用失败 releaseTag；禁止把 state 根目录污染问题改成吞异常或假绿；禁止用跳过真实验收换取发布提速。
+- Evidence: `doc/tasks/20260902-release-preflight-speedup/execution-log.md`；实现覆盖 `ops/release/release_sql_contract_gate.py`、`RuntimeControlOperationStore` 和对应测试。
 
 ### 阶段必查项
 
-1. 构建范围：未明确 `WITH-DATA` 确认时必须是 `code-only`，并记录数据库/MinIO 快照被跳过。
-2. 数据快照：with-data 只作为显式数据快照包语义出现，manifest 使用 `packageRole=release-data-snapshot`；code-only 使用 `packageRole=release-code`。
-3. 完整性校验：本地 build 阶段允许复用刚生成的 artifact hash，但仍必须枚举实际文件防止未声明文件混入；NAS 目标包必须重新校验实际复制结果。
-4. 可观察性：manifest、integrity、NAS upload 三个阶段必须有开始、结束、耗时和文件/字节摘要，避免再次出现小时级黑箱等待。
+1. 构建前本地门禁：先执行 migration policy gate 与 SQL 合同测试，再做依赖恢复、前端构建和后端打包。
+2. SQL 标识符：检查 `CONSTRAINT`、`INDEX/KEY`、`TRIGGER`、`PROCEDURE`、`FUNCTION`、`EVENT` 的实际标识符长度，超过 64 立即失败并指出文件/行号。
+3. State 目录：`state-dir` 根目录的 operation 文件必须以 `op-` 开头；任务证据 JSON 放入独立 `evidence/` 子目录，避免 operations API 因非 operation JSON 阻塞发布观察。
+4. 加速边界：可压缩 SSH/复制/状态入账往返，但不得删减 releaseTag、manifest、sourceRepos dirty=false、镜像 tag、health、HTTP、版本说明和真实页面验收。
+# 2026-09-07 不可变安装包跨环境晋级审查门禁
+
+- Trigger: 安装包、发布包、build once deploy many、同一制品发布测试服和正式服、制品晋级、publish-test、promote-prod、promote-backup。
+- Preflight check: 在任何远端写入前，验证发布入口仅消费已入库不可变制品；重算 manifest 声明的全部不可变文件 path/bytes/SHA-256 和稳定 package digest；确认 sourceRepos commit 固定且 dirty=false；正式/备份晋级只接受 schema v2 tested attestation，且其 package digest、manifest digest、test 环境、SUCCESS publish-test operation ID/requestedAt 与服务端 operation JSON 完全一致；多条 operation 必须按 requestedAt 降序、operationId 确定性排序，不得依赖文件 mtime 或枚举顺序；确认 publishScope=code-only，恢复兼容状态必须为 COMPATIBLE。
+- Blocker: 仍可通过 direct 从当前工作区直发、包哈希仅检查字段存在、存在未声明/篡改/缺失文件、tested 仅检查文件存在、with-data 尝试晋级 prod/backup、rollback compatibility=BLOCKED、operation 证据环境/动作/状态/tag 不匹配、或相同 mtime 下版本选择不确定时必须停止晋级。
+- Verification: 记录 releaseTag、package digest、manifest digest、全文件哈希验证结果、sourceRepos commit/dirty、测试服 SUCCESS operation ID/requestedAt、tested v2、恢复兼容状态、目标环境、正式发布 dry-run和发布后 operation/IMAGE_TAG/实际镜像/health/HTTP 证据；合同测试必须包含相同 mtime、多条同时间成功 operation 和错误环境/动作/状态/tag。
+- Forbidden action: 禁止绕过安装包直接发布当前工作区；禁止把任意非空测试结论当放行；禁止以包已存在或 checksum 字段存在替代内容校验；禁止把本机数据库/MinIO 快照作为普通应用包晋级正式服；禁止在最终 NAS 候选目录内边复制边暴露；禁止保留临时禁用恢复兼容门禁。
+- Evidence: `doc/tasks/release-package-script-review-20260907/verification-report.md`；实现任务 `doc/tasks/release-pipeline-hardening-20260907/execution-log.md` 与独立 `test-report.md`；实现提交 `ad9bf60`、`82c4d44`、`4303126`。
+# 2026-09-07 服务器错误前移与反复打包收敛门禁
+
+- Trigger: 本地打包成功但服务器发布失败、反复完整打包、反馈过晚、target-state 漂移、构建耗时高、依赖重复恢复。
+- Preflight check: 在创建 releaseTag 和昂贵构建前依次执行源码/依赖/SQL/manifest 快速门禁，并只读采集目标 schema、migration ledger、配置存在性、磁盘、Docker/Compose、端口、挂载和外部依赖，生成 target-bound preflight-plan；通过后才允许缓存化构建。构建出的真实包还必须在可销毁同构环境执行安装、迁移、health、smoke 和回滚验证。
+- Blocker: 可只读或静态判断的问题仍要等 publish-test 才发现；目标状态未采集；缓存键未绑定 lockfile/源码/构建参数；同构演练从源码启动而非消费真实包；或失败包被修改、拼接证据、复用 releaseTag 时必须停止。
+- Verification: 记录失败发现阶段和耗时、preflight blocker 数、每个成功发布的完整构建次数、Maven/pnpm/Docker 缓存命中、安装演练结果，以及测试服/正式服一致的 package digest。
+- Forbidden action: 禁止通过修改失败包、手工修服务器、跳过门禁、复用失败 releaseTag 或降低测试标准节省时间；禁止让缓存绕过最终产物哈希和 manifest 校验。
+- Evidence: `doc/tasks/release-feedback-loop-strategy-20260907/verification-report.md`；`doc/tasks/20260829-timed-test-release/timing-summary.md` 的 build-release、publish-test 和依赖恢复耗时基线。
+
+# 2026-09-08 构建前 target-state 与 Docker 原生缓存门禁
+
+- Trigger: build-release、测试服 migration ledger 晚失败、target-bound preflight、反复完整构建、Docker `--no-cache`、BuildKit cache、docker-build-evidence。
+- Preflight check: required SQL staging 后、首次 Maven/frontend/Docker build 前，每轮重新只读采集测试服 `infra_release_migration`；prospective manifest 的 `database.schemaMigrations` 与 `requiredSql` 必须在 migrationId/file/sha256/type/allowedEnvironments/dependsOn/riskLevel 上完全一致，sourceRepos 必须显式 dirty=false；evidence 绑定 clean source、SQL、manifest、target-state、environment=test、scope、fresh collection ID/time 和 planner status/items。Docker build 前后用同一 spec 复算 Dockerfile、实际 COPY 最小 context、全部 build args、base image ID/digest 和目标 image reference，随后再读取实际镜像 identity。
+- Blocker: 采集失败/空白/非法 JSON、台账缺失、planner 为 blocked 或未知 action、evidence 缺字段/摘要漂移、source dirty、两个迁移数组漂移、Dockerfile/COPY 输入缺失/逃逸/重复/大小写冲突、base digest 非法、构建前后 fingerprint 不一致、或实际镜像身份无效时立即停止；不得进入后续昂贵构建、docker save 或 NAS 入库阶段。
+- Verification: 聚焦测试覆盖 fresh collection、旧 evidence 不复用、所有输入漂移、secret 排除、固定 digest 向量、Dockerfile COPY 解析、cache input 失效和调用顺序；最终证据 `manifest/docker-build-evidence.json` 必须被 release manifest 与 P0 package integrity 纳入。真实发布时另记录 build preflight evidence、Docker cache 日志、actual image identity、package digest 与 NAS 复验。
+- Forbidden action: 禁止用旧 target-state、空 ledger、客户端成功标记或替代环境放行；禁止恢复 `--no-cache` 作为失败兜底；禁止自建未验证缓存索引、跳过构建后复算、image inspect、docker save、manifest/P0 哈希或 NAS copy 校验。
+- Evidence: `doc/tasks/release-preflight-cache-optimization-20260908/execution-log.md`、独立 `test-report.md`、`bug-regression-evidence.md`；实现提交 `f254555`，fixture 稳定化提交 `5ff914b`。
+
+# 2026-09-08 with-data 安装包 DCC 对象一致性与工具镜像门禁
+
+- Trigger: `build-release`、`with-data`、`-SkipDatabaseSync` 未启用、`-SkipMinioSync` 未启用、DCC 文件引用、MinIO yudao bucket、`DCC_OBJECT_SNAPSHOT_MISSING`、`minio/mc:latest` 拉取失败、Docker Go template `unclosed action`。
+- Preflight check: 在正式 Maven/frontend/Docker build 前，先确认所有构建工具镜像可用且固定来源；MinIO 客户端镜像必须由发布脚本参数或配置显式指定，默认与备份配置一致使用 `quay.io/minio/mc:latest`，不得裸用 `minio/mc:latest`。with-data 发布还必须在昂贵构建前左移 DCC 数据/对象一致性检查：只读枚举数据库中未删除、受发布包约束的 DCC `infra_file` 引用，并确认每个 `path` 在本地 MinIO `yudao` 源对象中可读取。
+- Blocker: 本地数据库存在未删除 DCC 文件引用但 MinIO 源对象缺失、对象路径为空或含不安全片段、工具镜像未缓存且固定 registry 拉取失败、发布脚本对 Docker inspect 依赖易被 shell/Start-Process 改写的 Go template、或 DCC 对象清单只能在 Maven/frontend/Docker 完成后才首次暴露缺失对象。
+- Verification: 记录 releaseTag、publishScope、DCC 引用总数、缺失对象首项与汇总、只读 DB 证据、只读对象存储证据、MinIO 客户端镜像引用与 digest、Docker inspect 原生 JSON 解析测试、发布脚本测试回归；成功发布前必须证明 package 内 DCC object inventory 完整且被 manifest/P0 校验纳入。
+- Forbidden action: 禁止用 `-SkipMinioSync` 或 code-only 扩大/缩小范围绕过 with-data 依赖；禁止补空文件、删除 DB 引用、手工改测试库/对象存储或跳过 inventory 来制造安装包成功；禁止复用已失败 releaseTag；禁止把工具镜像 `latest` 隐式绑定到 Docker Hub。
+- Evidence: `doc/tasks/test-server-release-20260908/execution-log.md`；维护发布 worktree 提交 `467f750` 修复 Docker inspect 原生 JSON 读取，提交 `8bd1481` 固定 MinIO 客户端镜像；真实 r8 阻塞于 `infra_file.id=9198354891791` 引用的 `dcc/original/20260611/empty.docx` 在本地 MinIO 快照缺失，未执行 `publish-test`。
+## 2026-09-10 安装包构建前必须执行结构迁移演练与目标只读预检
+
+- Trigger: 执行 `publish-int-ruoyi.ps1 -Mode build-release` 且安装包包含 backend/required SQL，或新增、修改、重新纳入任何版本化迁移。
+- Preflight check: 在 Maven、前端构建、Docker 构建和 NAS 上传前，从测试服当前 MySQL 只导出 schema（`mysqldump --no-data --routines --triggers --events`），导入同镜像、`--network none`、无端口的一次性 MySQL，并只执行最终计划中 `type=schema` 的 APPLY 迁移。对 data/menu/permission/config/seed 等非结构迁移，必须提供 `sql/mysql/target-preflight/<migrationId>.preflight.sql`；先由 `release_target_preflight_contract.py` 证明它是绑定 migrationId 的单条只读 SELECT/CTE，再以只读 session 对测试服执行并核唯一 PASS 标记。
+- Blocker: 新鲜 target-state/最终计划缺失、结构导出或临时 MySQL 失败、schema 迁移失败、非结构迁移缺少 target preflight、preflight 含写入/DDL/锁/CALL/OUTFILE、只读断言不通过、或临时资源无法精确清理时，必须在 Maven 前停止；当前 releaseTag 立即判废。
+- Verification: 构建日志中 `Build migration rehearsal passed` 必须早于 `Building backend jar`；安装包 `manifest/` 必须包含 `migration-rehearsal-evidence.json`、`build-preflight-plan-test.json`、`build-preflight-evidence-test.json` 和 `build-preflight-target-state-test.json`，记录 schemaMigrationCount/schemaAppliedCount、targetPreflightCount/targetPreflightPassedCount、target、MySQL image digest、preflightFingerprint、耗时和 cleanupStatus。远端复核临时 container、volume、staging 路径均不存在，真实应用容器与迁移台账未被写入。
+- Forbidden action: 禁止每次日常构建复制完整业务数据；禁止把空结构库执行结果当成数据迁移兼容证据；禁止在真实测试库试跑写迁移；禁止用 mock、旧 dump、跳过失败迁移或缺失 preflight 制造假绿；禁止在失败后继续 Maven/NAS/发布；禁止把 MySQL dump 或 MinIO 放入轻量程序包。
+- Evidence: `doc/tasks/test-server-release-20260908/execution-log.md`；r29 证明完整数据演练能发现业务数据不兼容但耗时约 900 秒；变更评审 `docs/changes/20260910-structure-only-migration-gate.md`；维护提交 `9c22049`；r31 在远程临时资源和 Maven 前以 `TARGET_PREFLIGHT_MISSING` 阻断。
+
+### 阶段 checklist
+
+- 构建前：确认 release worktree clean、目标状态新鲜、最终计划 passed、测试服只读访问、MySQL 同镜像和 target preflight 合同齐全。
+- 结构阶段：确认源端只运行 `--no-data` schema dump；目标容器 `--network none` 且无 published port；只执行计划中的 schema APPLY。
+- 数据依赖阶段：每个非结构 APPLY 必须有只读 preflight；合同校验与目标断言全部通过，首个缺失或失败立即记录 migrationId 并停止。
+- 清理阶段：无论成功或失败，精确验证本 releaseTag 的 container、volume、archive/staging 路径不存在。
+- 必须记录：releaseTag、源提交、维护脚本提交、target collectionId/preflightFingerprint、schema 与 target preflight 计划/通过数、失败 migrationId、cleanupStatus、Maven 是否开始。
+
+## 2026-09-11 迁移唯一约束业务范围与发布包缓存清洁门禁
+
+- Trigger: `deploy-release` 执行版本化迁移时出现 `ERROR 1644`、`system_users contains duplicate tenant canonical username values`、`ALL_DUP_GROUPS>0` 但 `ACTIVE_DUP_GROUPS=0`，或本地 release cache 在部署后出现 `.env` 等运行态文件导致安装包证据混淆。
+- Preflight check: 为唯一约束类迁移先明确业务不变量是“全表唯一”还是“仅有效数据唯一”；全表 `NOT NULL` / 全表唯一必须检查 `deleted=1` 历史行，有效数据唯一必须在 SQL 中编码有效范围，例如 generated column 返回 `NULL` 排除已删除行，并只对有效行做重复阻断。`deploy-release` 从 NAS 下载包前必须先清洁本地 release cache，安装包证据以 `manifest.json`、NAS 入库哈希和远端 `/release-info.json` 为准，不以部署后混入的本地 `.env` 判断包内容。
+- Blocker: 迁移没有说明唯一约束覆盖范围；只用 `COUNT(DISTINCT ...)` 或全表重复检查替代业务范围判断；目标库存在有效行重复；SQL 生成列/索引与目标 MySQL 版本不兼容；release cache 未清洁或无法证明 `.env` 是部署运行态而非安装包内容。
+- Verification: 迁移测试同时覆盖“有效行重复必须失败”和“已删除历史行重复不阻断有效唯一键”；目标库只读检查输出 `ALL_DUP_GROUPS`、`ACTIVE_DUP_GROUPS`、目标列和唯一键；发布后核 `infra_release_operation_lock=APPLIED`、迁移 `FAILED/RUNNING=0`、远端 `.env IMAGE_TAG`、实际镜像、health、HTTP 和 `/release-info.json` 均一致。
+- Forbidden action: 禁止为通过迁移手工删除历史账号、伪造 migration ledger、跳过重复检查、复用失败 releaseTag，或把本地 cache 中部署后生成的运行态文件当成不可变安装包组成部分。
+- Evidence: `doc/tasks/test-server-release-20260908/execution-log.md`；r43 被 `20260908_system_signature_password_t1` 全表重复误拦截，r44 通过 `active_canonical_username` 与唯一键 `(tenant_id, active_canonical_username)` 完成测试服发布。
+
+## 2026-09-11 按钮化 app-release 工作流设计前置门禁
+
+- Trigger: 一键发布、按钮化发布、发布流程程序化、without-data 安装包、`PublishScope=app-release`、反复打包、R31-R44 防复发。
+- Preflight check: 先把用户的“不带数据”固定为 `app-release`，只允许程序镜像、版本化 required SQL、唯一 `manifest.json`、构建/迁移/smoke 证据；构建后和部署前都反向拒绝 MySQL dump、MinIO 快照/目录、DCC inventory、runtime data、`.env`、秘密和第二份 manifest。产品入口必须是主程序 `localhost:8081` 的运行控制台，由主程序 48081 API 编排；维护仓脚本仅作受控执行器。实施前确认维护仓与 IntRuoyi 根仓两个独立 worktree、批准 commit、dirty=false、已验证发布线差异和当前主工作区同路径改动归属。
+- Blocker: 仅把现有脚本直接套一个按钮、UI 仍允许手填 releaseTag/scope/host/NAS/MinIO/repo root/cache root、with-data 仍出现在标准发布、缺少持久化 workflow/环境租约/阶段证据/失败恢复、`app-release` 无法用同一双摘要晋级、当前验证线未融合、或规定 Playwright 运行时缺失时停止实现或验收。
+- Verification: 规划阶段先通过 PRD/test-plan 结构校验和独立审查；实现阶段按 BDD + RED/GREEN/REGRESSION 逐阶段验证两个 Git root/三个 source role、固定 packageDigest/manifestDigest 向量、R31-R44 独立命令/错误码/失败阶段/副作用、NAS 原子 READY、`.env.next` 事务、测试服完整运行态和正式服零写入守卫。真实 E2E 登录测试租户后只经 `localhost:8081/infra/monitors/runtime-control` 操作，API 仅最终校验。
+- Forbidden action: 禁止在脏主工作区实现，禁止把 `code-only` 或 `with-data` 冒充日常程序升级包，禁止复制数据库/MinIO 业务数据，禁止兼容第二 manifest、失败 tag 复用、客户端伪造 SUCCESS、自动正式发布、绕过当次授权/PROD，或用临时 Playwright 版本兜底。
+- Evidence: `doc/tasks/one-button-app-release-20260911/prd.md`、`test-plan.md`、`execution-log.md`、`task-state.json`；规划门禁独立复审 PASS，功能尚未实现，机器状态按实际前置保持 `blocked`。
+
+### 阶段 checklist
+
+1. 阶段 1：基线收敛。必查两个 Git worktree、批准提交、当前 dirty 归属、`8080c0d`/`713c641` 或等价差异；Fail Fast：无法无损融合；必须记录两个 Git root 与 maintenance/backend/frontend 三个 source role。
+2. 阶段 2：制品合同。必查 `app-release` 白名单、禁止项双扫描、唯一 manifest、三语言固定摘要向量、NAS staging/READY；Fail Fast：出现任何数据制品、秘密、未声明文件、路径冲突或摘要漂移；必须记录双摘要和全文件验证。
+3. 阶段 3：编排与部署。必查持久化状态转换、CAS、环境租约、心跳/超时/取消、`RECOVERY_REQUIRED`、目标只读 preflight、`.env.next` 与失败 tag 退休；Fail Fast：operation/锁/写入后仍允许原 tag 重试或成功条件缺项；必须记录 errorCode、failedStage、operation 和恢复证据。
+4. 阶段 4：产品入口与验收。必查主程序 8081 页面、权限、三个主按钮、禁用原因、测试验收详情动作、一次性正式授权、桌面/窄屏 Playwright；Fail Fast：维护仓 standalone 被当成产品 PASS、UI 暴露基础设施自由参数、规定 Playwright 缺失或正式服缺授权；必须记录任务目录外浏览器证据。

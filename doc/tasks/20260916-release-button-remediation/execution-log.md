@@ -161,3 +161,5 @@
 - GREEN: deploy-release R93 -> PASS；仅测试服完成同一 R93 包下载、镜像导入、required SQL 检查、运行环境切换、backend/frontend 重建、健康检查、前端 HTTP 检查和发布锁释放；脚本输出 `Publish completed for test`，未执行 mark-tested、promote-prod 或 promote-backup。
 - GREEN: independent-runtime-verification-r93 -> PASS；独立 SSH 核验确认 `.env IMAGE_TAG=release-20260918-one-button-app-r93`、实际 backend/frontend 镜像均为 R93、backend health=`{"status":"UP"}`、frontend HTTP 200、运行时锁文件不存在；`infra_release_operation_lock` 为 R93 `APPLIED`，`infra_release_migration` 中 IDI 迁移为 `SKIPPED_ALREADY_APPLIED`。
 - GREEN: real-login-verification-r93 -> PASS；Playwright 打开 `http://172.30.30.58:8081`，使用用户授权的 `芋道源码/admin` 完成登录，页面进入 `/user/profile`，标题为 `瑛泰管理系统 - 个人中心`；页面顶部显示 releaseTag `release-20260918-one-button-app-r93`，未执行业务写入。
+
+- BLOCKER: task-closeout-cleanup -> 前序任务收尾预览已完成但未执行 apply；维护主工作区和主程序主工作区存在大量未归属改动，且 `D:\IntRuoyiWorktree\r260917-button-publish9` 仍包含待安全融合的任务提交，无法满足 clean main worktree 与 ff-only 合并/删除门禁。任务状态由 `ready_for_closeout` 明确标记为 `blocked`；未删除任务证据、未合并或移除任何 worktree。

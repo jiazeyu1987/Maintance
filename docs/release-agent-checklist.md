@@ -78,6 +78,9 @@ Codex 必须把完整发布任务视为以下严格顺序：
   - migration policy gate
   - 影响发布链路的 SQL 契约测试
   - 影响产物契约的发布脚本测试
+- required SQL 静态门禁必须覆盖 MySQL 64 字符标识符限制；约束、索引、触发器、过程、函数和事件名超长时必须在 build-release 前失败。
+- 运行控制台 `state-dir` 根目录不得放任务自定义证据 JSON；operation 列表只应读取 `op-*.json`，其他证据放入 `evidence/`、`logs/` 或约定子目录。
+- 快速、只读、可 fail-fast 的 migration/manifest/脚本契约门禁必须先于依赖恢复、前端构建、Maven 打包等耗时步骤；门禁失败后只停止本任务进程，不继续等待或并发重启无发布价值的构建。
 - 确认本机运行控制台是当前版本，必要时重启后再核对。
 - 核对构建预览命令包含：
   - `-Mode build-release`
@@ -361,6 +364,15 @@ Codex 必须按这个顺序排查：
 - 发布包不得包含 `database`、`db-dump`、`mysql-dump`、`minio`、`files`、`runtime-data`、`data`、`docker-build-context` 等数据目录。
 - 允许存在 `required-sql`、`resources`、`runtime-env`、`smoke` 等代码发布必要目录；operation `SUCCESS` 不能替代 manifest 与目录检查。
 
+### promote-prod 目标库迁移依赖
+
+- Trigger: 对测试服已验证包执行 `promote-prod`，尤其是 `publishScope=code-only`。
+- Preflight check: 在任何远程应用容器切换前，必须针对正式库生成 target-bound `preflight-plan.json`，检查 `status=passed`，并展开所有 `BLOCKED_SCOPE_DEPENDENCY` 的依赖链。
+- Blocker: code-only 不代表跳过 schema/required SQL；正式库缺失依赖、依赖路径被 scope 排除或 checksum 不一致时必须 fail fast，不能把预览 PASS 或旧容器健康误判为新包可发布。
+- Verification: 失败后确认正式服 `.env`、实际容器镜像、backend health、frontend HTTP 和 release lock 已恢复/保持发布前状态；记录失败 operation 与恢复动作。
+- Forbidden action: 禁止手工补迁移、更新迁移状态/lock/tested、修改已构建包或用 `-SkipDatabaseSync` 绕过 scope dependency。
+- Evidence: 保存 target preflight report、operation 日志、远端旧运行态检查和下一次放行前的依赖修复证据。
+
 ## 9. 完成判定
 
 Codex 只有在以下条件同时成立时，才能判定完整发布完成：
@@ -397,4 +409,32 @@ Codex 只有在以下条件同时成立时，才能判定完整发布完成：
 - Host:port URL 用 `${hostIp}` 写法。
 - bash `$()`/`||` 不放入 PowerShell 双引号。
 - Playwright 先检查模块与浏览器路径；可用已安装 Chrome/Edge，不在发布验收中临时安装浏览器。
+- 同一 Playwright CLI 会话的 `open/resize/snapshot/click/find/console/close` 必须串行执行；出现 `ECOMPROMISED Lock compromised` 时本轮组合结果不可放行，改为串行重验并取得页面字段与 console errors=0。
 - release-info 中文说明以 UTF-8 parser 或浏览器页面为准；PowerShell mojibake 只记录为采集问题。
+
+### 独立探针与稳定控制台收尾
+
+- 远端数据库探针必须先从冻结 migration 和真实库 `DESCRIBE` 确认表/字段；容器未定义 Docker healthcheck 时只核 `state=running`，应用健康必须独立核 Actuator HTTP 200/UP。
+- 删除 release worktree 前，48181 PID/命令行/JAR 必须指向主维护路径，完整 `/admin-api/infra/runtime-control/release-status` 必须显示目标 tag、notes 和 changes；只看 health=UP 不足以收尾。
+- 同 HEAD 重新构建的 Spring Boot JAR 可能因归档元数据产生不同 hash；必须记录并验证本次实际产物 hash，不得用历史重建 hash 作为当前复制/恢复门禁。
+- 外部 release worktree/state 先按 `E:\IntRuoyi\docs\worktree-memory.md` 验证 Git 注册、物理路径、进程和 allowlist 后清理；再运行仓库内 task-closeout preview/apply，禁止绕过 workspace 边界。
+
+## 8.3 2026-08-31 code-only target plan 与历史 ADD COLUMN 幂等门禁
+
+### publish-test 提交前
+
+- 最终 manifest 生成后，先针对测试服当前 target state 运行 `release_preflight_plan.py`；必须 `status=passed`、`BLOCKED*=0`，并记录 APPLY/SKIP 数量和目标 migration action。
+- 校验 manifest 的 `requiredSql`、`migrationPlan`、`database.schemaMigrations` 三份投影对同一 migrationId 的 type/dependsOn/sha256 一致。
+- 对 APPLY 中的历史 `ALTER TABLE ADD COLUMN`，只读查询 live `information_schema.COLUMNS` 与 ledger；列已存在但 ledger/checksum 不一致时，SQL 必须逐列可重放。
+- 以上 gate 必须在远端 `.env IMAGE_TAG` 修改、镜像上传和 release lock 获取前通过；当前脚本若尚未自动前移，Agent 必须手工完成并保存结构化证据。
+
+### Fail Fast
+
+- `BLOCKED_SCOPE_DEPENDENCY`、schema 依赖 scope-excluded data、裸多列 ADD 命中已存在列、target state 过期、manifest 三投影不一致、或 `.env` 已改但 actual image 未切换。
+- 失败 tag 立即判废；禁止 with-data/手工 SQL/ledger 修改绕过。修复需独立 worktree、严格 TDD、提交融合、新 releaseTag 重建。
+
+### 发布后
+
+- 核 lock=APPLIED、FAILED/RUNNING=0、target migration APPLIED/checksum；`.env`、compose/actual image、containers、health、HTTP、release-info、release-status、Playwright 和 final gate 全通过。
+- 运行控制台发布标签输入框可能有历史默认值，preview/submit 必须始终显式传入并结构化核对本轮 tag，不得信任 UI 默认值。
+- 日常 backend `build-release` 在 Maven 前必须完成 schema-only 临时库迁移演练；不得复制完整业务数据或 MinIO。最终计划中的非 schema APPLY 必须存在 `sql/mysql/target-preflight/<migrationId>.preflight.sql`，通过只读合同校验和测试服只读断言；缺失或失败即废弃 releaseTag。

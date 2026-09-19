@@ -14,11 +14,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import static com.intruoyi.maintenance.runtime.RuntimeDtos.RuntimeControlOperationRespVO;
 
 @Component
 public class RuntimeControlOperationStore {
+
+    private static final Pattern OPERATION_STATE_FILE_PATTERN = Pattern.compile("^op-[A-Za-z0-9._-]+\\.json$");
 
     private static final Set<String> RELEASE_ACTIONS = Set.of(
             "build-release",
@@ -82,7 +85,8 @@ public class RuntimeControlOperationStore {
                 return List.of();
             }
             try (var stream = Files.list(stateDir())) {
-                return stream.filter(path -> path.getFileName().toString().endsWith(".json"))
+                return stream.filter(Files::isRegularFile)
+                        .filter(RuntimeControlOperationStore::isOperationStateFile)
                         .sorted(Comparator.comparing((Path path) -> path.toFile().lastModified()).reversed())
                         .limit(limit)
                         .map(this::read)
@@ -130,6 +134,10 @@ public class RuntimeControlOperationStore {
 
     public Path stateDir() {
         return properties.stateDirPath();
+    }
+
+    private static boolean isOperationStateFile(Path path) {
+        return OPERATION_STATE_FILE_PATTERN.matcher(path.getFileName().toString()).matches();
     }
 
     private RuntimeControlOperationRespVO read(Path path) {

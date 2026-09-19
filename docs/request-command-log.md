@@ -3796,3 +3796,27 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 2026-09-18T20:55:00+08:00	20260916-release-button-remediation	COMMAND_INTENT	用户要求再次确认一次成功；使用全新 R93 releaseTag 从冻结提交重跑 build-release，再仅 deploy-release 到测试服并执行独立 SSH、数据库台账和 Playwright 登录验收；不执行 mark-tested、生产、备份或 MinIO 同步。
 2026-09-18T21:00:00+08:00	20260916-release-button-remediation	RESULT	GREEN: R93 build-release 与 deploy-release(test) 均首轮通过。NAS 包 `Backup/ReleasePackage/release-20260918-one-button-app-r93`；测试服 `.env`、实际 backend/frontend 镜像、operation lock、health、frontend HTTP 和 Playwright 登录均一致指向 R93。未执行 mark-tested、promote-prod、promote-backup。
 2026-09-18T21:10:00+08:00	20260916-release-button-remediation	RESULT	GREEN: 应用仓分支 `codex/r82-reg-cert-preflight-fix` 已推送至 `origin`，远端提交为 `99c75483c`；首次 push hook 因发布 worktree 无端口登记被阻断，已按发布 worktree 不启动本地运行态的既有门禁使用 `--no-verify`，未跳过任何构建、测试或发布验证。维护仓无 remote，无法推送；维护发布提交 `750e607` 保留在 detached release worktree，未擅自添加 remote 或合并污染主工作区。
+
+2026-09-18T21:30:00+08:00	20260918-test-backup-restore-design	REQUEST	用户要求为 ChatGPT 网页介绍当前测试服务器现状，并设计测试服一键备份、选择备份包恢复演练的正确方案，需考虑升级、降级、换硬件等因素。
+2026-09-18T21:30:00+08:00	20260918-test-backup-restore-design	COMMAND_INTENT	仅本地只读核对服务器访问文档、备份恢复文档、backup-ops 配置/脚本、备份计划页和运行控制台；生成方案文档与任务证据。不执行真实备份、恢复、发布、远程访问、数据库写入或 MinIO 写入。
+2026-09-18T21:30:00+08:00	20260918-test-backup-restore-design	RESULT	PASS: 已生成 `docs/recovery/backup-disaster-recovery.md`，明确静态已证实现状、未实时验证状态、后端白名单异步 operation 架构、备份包 manifest、恢复候选、演练优先、升级/降级/换硬件兼容阻断、RTO/RPO blockers 和验收证据；当前不能宣称已完成实时测试服恢复演练。
+2026-09-18T21:30:00+08:00	20260918-test-backup-restore-design	CLOSEOUT	PASS: backup-disaster-recovery validator、UTF-8 复读和 diff-check 通过；cleanup preview/apply 删除 0 个文件；经验合并到 `E:\IntRuoyi\docs\release-backup-restore.md#按钮化备份恢复入口门禁` 并更新 `docs/experience-index.md` 路由；未执行服务器或数据写入。
+2026-09-18T22:30:00+08:00	20260918-backup-restore-milestone-review	REQUEST	用户要求评审备份恢复 6 个 Milestone 是否合理，重点确认几百 GB 数据下全量、真实增量和全量+增量链恢复是否应全部纳入第一版。
+2026-09-18T22:30:00+08:00	20260918-backup-restore-milestone-review	COMMAND_INTENT	仅读取用户贴文、备份恢复规则和灾备合同，评审里程碑顺序与验收边界；不执行真实备份、恢复、部署、远程服务器访问或数据写入。
+2026-09-18T22:30:00+08:00	20260918-backup-restore-milestone-review	RESULT	PASS: 6 个里程碑总体保留；确认 M2 全量+全量恢复、M3 真实增量+整链恢复必须进入第一版；补充独立恢复控制平面、数据库主方案实测、演练与覆盖恢复分离、支持矩阵和 M6 最终放行门。
+2026-09-18T22:30:00+08:00	20260918-backup-restore-milestone-review	CLOSEOUT	PASS: UTF-8、关键词路由、维护仓与 IntRuoyi diff-check、cleanup preview/apply 均通过；删除 0 个文件；经验合并到 `E:\IntRuoyi\docs\release-backup-restore.md#大数据量备份恢复首版里程碑顺序门禁`。
+2026-09-18T23:00:00+08:00	20260918-backup-restore-milestone-document	REQUEST	用户要求提供优化后的备份恢复六个里程碑正式文档，覆盖几百 GB 数据、真实增量、全量加增量整链恢复、按钮化、升级/降级、换硬件和最终验收。
+2026-09-18T23:00:00+08:00	20260918-backup-restore-milestone-document	COMMAND_INTENT	仅读取本地方案和经验文档并编写正式 Markdown 文档；不执行远端服务器、备份、恢复、发布、数据库、MinIO 或真实 E2E 操作。
+2026-09-18T23:20:00+08:00	20260918-backup-restore-milestone-document	RESULT	PASS: 已生成 `docs/recovery/backup-restore-milestones.md`，保留 6 个主里程碑并补齐独立恢复控制平面、实际规模数据库方案实测、FULL/INCREMENTAL 整链、演练与覆盖恢复分离、支持矩阵、恢复后新备份世代和 M6 最终放行门；当前静态设计不冒充真实恢复演练。
+2026-09-18T23:20:00+08:00	20260918-backup-restore-milestone-document	CLOSEOUT	PASS: 六个里程碑结构、关键合同、UTF-8、灾备基础验证器和 diff-check 通过；cleanup preview/apply 删除 0 个文件，任务 completed；未执行服务器或数据写入。
+2026-09-18T23:30:00+08:00	20260918-backup-restore-milestone-document-review	REQUEST	用户要求 review 优化后的备份恢复六个里程碑文档，并修复可能出现的问题。
+2026-09-18T23:30:00+08:00	20260918-backup-restore-milestone-document-review	COMMAND_INTENT	使用灾备恢复合同与独立验证门禁审查并修订本地 Markdown，保持六个主里程碑；不执行服务器、备份、恢复、发布、数据库、MinIO 或真实 E2E 操作。
+2026-09-19T00:30:00+08:00	20260918-backup-restore-milestone-document-review	RESULT	首轮审查发现 10 项 P1/P2 文档合同问题并完成修复：候选循环依赖、manifest 动态状态、RPO/RTO 口径、隔离副作用、半恢复环境、源/仓库权限、链连续性、审计终态、保留/法规边界和当前实现差异。
+2026-09-19T00:30:00+08:00	20260918-backup-restore-milestone-document-review	VERIFICATION	PASS: 两份正式文档 UTF-8/结构/关键合同/行尾空白检查，灾备验证器；当前实现候选分层和真实 M2-M6 演练仍记录为 blocker；未执行服务器或数据写入。
+2026-09-19T00:45:00+08:00	20260918-backup-restore-milestone-document-review	RECHECK	发现关联总体设计旧的 freshness/RPO、空目标 snapshot 和 `FAIL` 终态表述，已修正并重新执行文档验证；仍未执行服务器或数据写入。
+2026-09-19T01:00:00+08:00	20260918-backup-restore-milestone-document-review	CLOSEOUT	PASS: 关联设计复审修复后，文档 UTF-8/结构/关键合同/灾备验证器通过；cleanup preview/apply 第二轮删除 0 个文件，任务 completed；未执行服务器或数据写入。
+2026-09-19T09:00:00+08:00	20260919-backup-restore-implementation-static	REQUEST	用户要求完成备份恢复六个里程碑文档中的开发工作，先不做 E2E，只做静态代码验证并持续修复直到静态检查通过。
+2026-09-19T09:00:00+08:00	20260919-backup-restore-implementation-static	COMMAND_INTENT	仅修改本地 IntRuoyi 后端备份恢复脚本/接口、前端候选模型与操作入口及对应测试；先补 BDD/TDD 证据，再运行 Java、PowerShell、TypeScript 和静态契约检查；不访问服务器、不执行备份恢复、不写数据库/MinIO、不做 Playwright E2E。
+2026-09-19T10:45:00+08:00	20260919-backup-restore-implementation-static	RESULT	PASS: 本地静态实现完成；恢复候选拆分为 REHEARSAL/CONTROLLED_RESTORE，backup-now 显式 backupKind 贯通前端、后端和 linux-local 脚本，候选 API 暴露 manifestDigest、chainDigest、sourceFingerprint、targetFingerprint；未执行 E2E/服务器/数据库/MinIO 操作。
+2026-09-19T10:45:00+08:00	20260919-backup-restore-implementation-static	VERIFICATION	PASS: RuntimeRestoreCandidateServiceImplTest 16 tests、yudao-module-infra compile、backup_ops_linux.py py_compile、linux runtime ports pytest 45 tests、frontend ts:check、frontend prettier check、git diff --check 均通过。
+2026-09-19T10:45:00+08:00	20260919-backup-restore-implementation-static	CLOSEOUT	READY_FOR_CLOSEOUT: cleanup preview/apply 删除本任务临时 test-plan.md；经验合并到 E:\IntRuoyi\docs\release-backup-restore.md；因当前仓库存在大量非本任务脏改动且本轮未请求提交/推送，未标记 completed。

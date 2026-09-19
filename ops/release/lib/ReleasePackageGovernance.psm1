@@ -114,16 +114,27 @@ function Get-ReleasePackageImmutableArtifactEntries {
     param(
         [Parameter(Mandatory = $true)]
         [string]$PackagePath,
-        [switch]$ExcludeManifestJson
+        [switch]$ExcludeManifestJson,
+        [switch]$EmitProgress
     )
 
-    return @(Get-ReleasePackageImmutableArtifactFileFacts -PackagePath $PackagePath -ExcludeManifestJson:$ExcludeManifestJson | ForEach-Object {
-        [pscustomobject][ordered]@{
-            path = $_.path
-            sha256 = Get-ReleaseSha256Hex -Path $_.fullName
-            bytes = [int64]$_.bytes
+    $facts = @(Get-ReleasePackageImmutableArtifactFileFacts -PackagePath $PackagePath -ExcludeManifestJson:$ExcludeManifestJson)
+    $entries = [System.Collections.Generic.List[object]]::new()
+    $processedFiles = 0
+    $processedBytes = [int64]0
+    foreach ($fact in $facts) {
+        $processedFiles++
+        $processedBytes += [int64]$fact.bytes
+        [void]$entries.Add([pscustomobject][ordered]@{
+            path = $fact.path
+            sha256 = Get-ReleaseSha256Hex -Path $fact.fullName
+            bytes = [int64]$fact.bytes
+        })
+        if ($EmitProgress -and (($processedFiles % 128 -eq 0) -or $processedFiles -eq $facts.Count)) {
+            Write-Host ("[INFO] Release artifact hashing progress: files={0}/{1}, bytes={2:n0}, gib={3:n2}" -f $processedFiles, $facts.Count, $processedBytes, ($processedBytes / 1GB))
         }
-    })
+    }
+    return @($entries.ToArray())
 }
 
 function Test-ReleasePackageIntegrity {
@@ -132,7 +143,8 @@ function Test-ReleasePackageIntegrity {
         [Parameter(Mandatory = $true)]
         [string]$PackagePath,
         [string]$ExpectedReleaseTag = '',
-        [array]$PreverifiedArtifacts = @()
+        [array]$PreverifiedArtifacts = @(),
+        [switch]$EmitProgress
     )
 
     if (-not (Test-Path -LiteralPath $PackagePath -PathType Container)) {
@@ -259,7 +271,7 @@ function Test-ReleasePackageIntegrity {
             }
         }
     } else {
-        foreach ($actual in @(Get-ReleasePackageImmutableArtifactEntries -PackagePath $root)) {
+        foreach ($actual in @(Get-ReleasePackageImmutableArtifactEntries -PackagePath $root -EmitProgress:$EmitProgress)) {
             if (-not $declaredPaths.ContainsKey([string]$actual.path)) {
                 throw "$($actual.path): undeclared file"
             }

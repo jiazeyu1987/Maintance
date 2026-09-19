@@ -69,6 +69,17 @@ def test_publish_runtime_preserves_dcc_codex_linux_contract() -> None:
     assert "- /opt/intruoyi/runtime/backend-codex-home:/opt/intruoyi/runtime/backend-codex-home" in compose
 
 
+def test_publish_runtime_preserves_showroom_codex_linux_contract() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    compose = COMPOSE_TEMPLATE.read_text(encoding="utf-8")
+
+    assert "[string]$ShowroomCodexCliCommand = $env:SHOWROOM_CODEX_CLI_COMMAND" in script
+    assert "SHOWROOM_CODEX_CLI_COMMAND=$ShowroomCodexCliCommand" in script
+    assert "$effectiveShowroomCodexCliCommand" in script
+    assert "else { '/opt/intruoyi/runtime/tools/codex' }" in script
+    assert "--yudao.ai.codex-cli.command=${SHOWROOM_CODEX_CLI_COMMAND}" in compose
+
+
 def test_publish_runtime_maps_backend_host_port_to_actual_container_port() -> None:
     compose = COMPOSE_TEMPLATE.read_text(encoding="utf-8")
     dockerfile = BACKEND_DOCKERFILE.read_text(encoding="utf-8")

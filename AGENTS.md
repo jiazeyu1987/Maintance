@@ -42,6 +42,7 @@
 ## Agent Task Documentation Policy
 
 - Before starting any task, the Agent must create or identify the task directory under `doc/tasks/<task-id>/` and write the task document first.
+- Thread baseline: PowerShell / Windows shell 任务允许在任务文档写入前先执行唯一只读 UTF-8 bootstrap；该 bootstrap 只能读取适用的 `AGENTS.md`、上一任务状态、`docs/experience-index.md` 和 `E:\IntRuoyi\docs\powershell-memory.md`，不得写文件、调用外部服务、执行构建/测试/发布或通过管道传递业务文本；bootstrap 完成后必须立即创建或更新任务文档并摘取经验门禁。
 - Thread baseline: 每次任务将用户需求、执行命令意图和验证结果记录到 `docs/request-command-log.md`；密码、token、私钥、连接串和其他凭据必须脱敏，含明文凭据的原始日志不得提交。
 - Thread baseline: 每次任务创建或识别任务目录后，必须先读取 `docs/experience-index.md`，按索引只打开命中的经验文档，并在任务文档写入 `经验门禁` 小节，列出本任务适用的强制门禁；不得只写“已阅读”而不摘取门禁。
 - Thread baseline: 后续新增经验默认优先写入事前文档入口；仅事后复盘内容才写入 error-prevention 类文档。

@@ -219,6 +219,43 @@ def test_build_release_long_running_package_steps_are_observable() -> None:
     assert "Release package size summary:" in script
 
 
+def test_release_stage_reports_failure_instead_of_completed_on_exception() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    function_start = script.index("function Invoke-ReleaseStage {")
+    function_end = script.index("function Resolve-EffectiveBuildReleasePublishScope", function_start)
+    function_body = script[function_start:function_end]
+
+    assert "$stageCompleted = $false" in function_body
+    assert "Failed release stage:" in function_body
+    assert "if ($stageCompleted)" in function_body
+    assert "finally" in function_body
+    assert "catch" not in function_body
+
+
+def test_release_artifact_hashing_reports_periodic_progress() -> None:
+    governance = (ROOT / "ops" / "release" / "lib" / "ReleasePackageGovernance.psm1").read_text(
+        encoding="utf-8"
+    )
+
+    assert "Release artifact hashing progress:" in governance
+    assert "Get-ReleasePackageImmutableArtifactFileFacts" in governance
+
+
+def test_release_package_size_summary_reuses_manifest_artifact_facts() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    summary_start = script.index("function Write-ReleasePackageSizeSummary {")
+    summary_end = script.index("function Write-Utf8LfNoBomFile", summary_start)
+    summary_body = script[summary_start:summary_end]
+    manifest_start = script.index("Invoke-ReleaseStage -Name 'release manifest generation'")
+    manifest_end = script.index("if ($smartReleaseReportOnlyEnabled", manifest_start)
+    manifest_stage = script[manifest_start:manifest_end]
+
+    assert "[array]$Artifacts" in summary_body
+    assert "Get-ChildItem" not in summary_body
+    assert "Write-ReleaseManifest -PackageTag $ReleaseTag" in manifest_stage
+    assert "Write-ReleasePackageSizeSummary -Artifacts (Get-ReleasePackageArtifactCache)" in manifest_stage
+
+
 def test_manifest_entries_are_reused_for_build_integrity_to_avoid_extra_scan() -> None:
     script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
     function_start = script.index("function Write-ReleaseManifest {")
