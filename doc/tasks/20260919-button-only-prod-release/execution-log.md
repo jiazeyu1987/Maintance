@@ -92,3 +92,13 @@
 - GREEN: frontend-one-button-static-contract-r20-regression -> PASS, `node IntRuoyiFronted\tests\e2e\runtime-control-one-button-static.spec.cjs` 返回 `PASS: runtime-control one-button release static contract is wired`。
 - GREEN: app-main-push-dependency-approval -> PASS, 应用主干提交 `7576d8292 任务: 固定前端发布依赖构建审批` 已通过 branch runtime port guard 并推送到 `origin/int_main`。
 - BLOCKER: maintenance-int-main-fusion -> STILL_BLOCKED, 主工作区存在与本任务无关的脏改动，继续禁止在脏主工作区强行融合；发布继续使用专用维护 worktree。
+
+## 2026-09-20 20:xx CST — r21 目标数据预检阻断与修复
+
+- BDD: release target preflight source completeness -> Given 发布计划包含需要目标数据核验的迁移, When 真实按钮开始 build-release, Then 应用发布 worktree 必须携带每个 migrationId 对应的版本化只读 `.preflight.sql`，缺失时在 SSH 前阻断。
+- GREEN: experience-preflight -> PASS；r21 继续使用专用维护 worktree 和应用批准提交，未绕过页面按钮，未手工修改测试服/正式服数据库、锁、`.env` 或成功状态。
+- RED: `release-20260920-button-prod-r21` build-release -> FAIL；operation `op-2026-09-20T110404074517700Z-90bbf866-7f72-4b87-888f-573b108e19aa` 通过 Maven、前端静态合同、`ts:check`、141 项发布脚本测试、Docker、迁移策略和依赖门禁后，在目标数据预检阶段报 `TARGET_PREFLIGHT_MISSING`，28 个计划迁移全部缺失检查文件，报告 `sshStarted=false`，未产生远程写入。
+- ROOT-CAUSE: 应用发布 worktree `D:\IntRuoyiWorktree\r260920-main-integrate-promotion\a\IntRuoyiBackend\sql\mysql\target-preflight` 原先不存在；当前 Git 分支 `codex/r82-reg-cert-preflight-fix` 提供了与当前迁移契约匹配的 60 个版本化检查文件，不能从旧脏 worktree 复制。
+- GREEN: target-preflight-contract-regression -> PASS；`python -X utf8 -m pytest scripts/tests/test_release_target_data_preflight.py scripts/tests/test_release_migration_preflight_matrix.py -q`，38 passed；`python -X utf8 -m pytest scripts/tests/test_release_sql_preflight_gate.py scripts/tests/test_release_package_governance.py -q`，132 passed。
+- GREEN: app-target-preflight-integration -> PASS；使用 `git restore --source=codex/r82-reg-cert-preflight-fix -- IntRuoyiBackend/sql/mysql/target-preflight` 恢复 60 个受版本控制文件，提交 `86463ae96 任务: 补齐发布目标数据预检`，branch runtime port guard 通过并推送 `origin/int_main`。
+- BLOCKER: r21-retired -> NEEDS_NEW_RELEASE_TAG；r21 不得复用，必须在目标预检通过且控制台实际加载应用提交 `86463ae96` 后使用新的 releaseTag 重走按钮链路。
