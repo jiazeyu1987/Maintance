@@ -102,3 +102,12 @@
 - GREEN: target-preflight-contract-regression -> PASS；`python -X utf8 -m pytest scripts/tests/test_release_target_data_preflight.py scripts/tests/test_release_migration_preflight_matrix.py -q`，38 passed；`python -X utf8 -m pytest scripts/tests/test_release_sql_preflight_gate.py scripts/tests/test_release_package_governance.py -q`，132 passed。
 - GREEN: app-target-preflight-integration -> PASS；使用 `git restore --source=codex/r82-reg-cert-preflight-fix -- IntRuoyiBackend/sql/mysql/target-preflight` 恢复 60 个受版本控制文件，提交 `86463ae96 任务: 补齐发布目标数据预检`，branch runtime port guard 通过并推送 `origin/int_main`。
 - BLOCKER: r21-retired -> NEEDS_NEW_RELEASE_TAG；r21 不得复用，必须在目标预检通过且控制台实际加载应用提交 `86463ae96` 后使用新的 releaseTag 重走按钮链路。
+
+## 2026-09-20 20:xx CST — r22 目标预检收敛与新增缺口
+
+- BDD: complete target migration preflight coverage -> Given 发布计划包含 28 个待执行迁移, When 按钮构建在 SSH 前执行目标数据预检, Then 每个 migrationId 都必须有真实只读 `.preflight.sql`，且检查其迁移前置条件与幂等后置状态。
+- RED: `release-20260920-button-prod-r22` build-release -> FAIL；operation `op-2026-09-20T114339055753500Z-119f74f1-29e1-4545-858e-847f2286ce81` 通过构建、前端合同、类型检查、141 项发布测试、Docker 和迁移门禁后，在目标数据预检阶段报 `TARGET_PREFLIGHT_MISSING`，28 个迁移中仍缺 7 个检查文件，`sshStarted=false`，未产生远程写入；r22 判废。
+- ROOT-CAUSE: 应用主干虽已集成 60 个历史目标预检文件，但以下当前迁移没有对应检查：`20260915_mes_team_leader_cleanup_permission_menu`、`20260917_mes_edhr_batch_execution_admin_visible`、`20260918_mes_edhr_batch_execution_upload_permission`、`20260918_mes_edhr_label_print_menu_removal`、`20260918_mes_management_representative_admin_permission`、`20260918_mes_pqc_release_owner_admin_assignment`、`20260919_dcc_dual_version_download_permissions`。
+- GREEN: seven-target-preflight-tests -> PASS；新增 7 个基于实际迁移前置条件和后置状态的只读检查文件，发布合同、迁移矩阵、SQL 预检和包治理测试共 `170 passed`。
+- GREEN: app-target-preflight-commit -> PASS；应用提交 `e8f30e8bb 任务: 补齐近期迁移目标预检` 已通过 branch runtime port guard；首次推送因 GitHub TLS `unexpected eof` 失败，未宣称已推送，需在新 release 前重试并核对远端提交。
+- BLOCKER: r22-retired -> NEEDS_NEW_RELEASE_TAG；必须先确认 `e8f30e8bb` 已进入 `origin/int_main`，再用全新 releaseTag 通过真实按钮重走构建与后续发布门禁。
