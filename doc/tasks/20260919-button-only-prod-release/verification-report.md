@@ -36,5 +36,5 @@ PASS (code gate) / RELEASE DEFERRED — 13 项中的代码、静态和隔离行�
 
 ## Remaining Gates
 
-1. GitHub 网络恢复后将应用本地 `int_main=4b556f2de` 非强制推送到 `origin/int_main`；当前代理 TLS EOF、直连 reset，不修改用户代理进程或仓库历史绕过。
+1. GitHub 网络/认证恢复后将应用本地 `int_main=4b556f2de` 非强制推送到 `origin/int_main`；当前代理 TLS EOF、直连 reset，SSH 22/443 无公钥授权，GitHub CLI 未安装，不修改用户代理/凭据或仓库历史绕过。
 2. 用户后续授权发布时，创建全新临时发布 worktree，以同一 releaseTag 通过真实页面按钮完成 build-release、publish-test、真实测试验收、mark-tested、promote-prod 和正式运行态验收。
