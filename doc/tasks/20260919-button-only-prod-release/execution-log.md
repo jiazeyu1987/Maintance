@@ -263,3 +263,4 @@
 - GREEN: maintenance-latest-main-semantic-merge -> PASS；保留发布候选的正式晋级、锁恢复、源码快照 token、`onlyBuiltDependencies`，并合入主干的 FULL/INCREMENTAL 备份参数及登录/tenant 请求头；合并结果后端全量/package PASS，前端 typecheck/build PASS，发布套件 212 passed。
 - GREEN: project-experience-consolidation -> PASS；本轮可复用经验已合并到现有 `docs/release-build-preflight-lessons.md`，新增“已执行迁移不可变与外部目标预检”、“所有远程组件首写入前取锁与失权实链”门禁，并更新 `docs/experience-index.md` 关键词路由；未新建经验文档。
 - BLOCKER: shared-request-log-mainline -> 候选分支的 `docs/request-command-log.md` 除本任务记录外还包含历史编码损坏，且维护主工作区对同文件有并行未提交改动。主干候选不携带该共享日志差异，仅保留专用任务目录权威证据；禁止覆盖主工作区日志。
+- GREEN: experience-preflight -> PASS；候选提交 `c126589` 已将共享请求日志恢复为最新主干已提交版，当前主干候选 73 个变更文件与主工作区 11 个并行改动交集为 0；允许仅执行 `git merge --ff-only codex/r260921-maintenance-main-integration`，禁止暂存、提交或覆盖并行改动。
