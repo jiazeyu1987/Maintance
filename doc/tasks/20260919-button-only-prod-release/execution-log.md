@@ -208,3 +208,6 @@
 - RED: r98-build-release-migration-test-runner -> FAIL；真实按钮通过 Maven、前端 ts:check、发布回归和目标预检 `28/28` 后，在应用迁移测试发现阶段把合法 `script/tests/dcc-other-template-sql.test.mjs` 交给 pytest，返回 `no tests ran`；未上传 NAS、未写测试服或正式服，r98 判废。
 - GREEN: migration-test-runner-contract -> PASS；发布器按扩展名将 `test_*.py` 交给 pytest、`.test.mjs` 交给 node；静态合同 `python -X utf8 -m pytest -q scripts/tests/test_release_workflow_preflight.py` -> 14 passed。
 - BLOCKER: r98 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r99`。
+- RED: r99-build-release-node-test-path -> FAIL；真实按钮已通过 Maven、ts:check、迁移 Python 测试和目标预检，但 Node 迁移合同使用 `process.cwd()`，发布器从维护根执行时错误读取 `m/ops/sql/mysql/...`，返回 ENOENT；未上传 NAS、未写测试服或正式服，r99 判废。
+- GREEN: node-migration-test-path -> PASS；应用合同测试按 `import.meta.dirname` 定位 `IntRuoyiBackend/sql/mysql`，直接 Node 执行 PASS；应用提交 `05674dbc6` 已合入发布 worktree。
+- BLOCKER: r99 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r100`。

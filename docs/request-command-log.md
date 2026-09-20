@@ -4062,3 +4062,4 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - 2026-09-21T03:20:00+08:00	20260919-button-only-prod-release	RESULT	r96 在源码冻结阶段因维护任务记录未提交而阻断，未发生 NAS/测试服/正式服写入；提交记录后以新批准维护提交和新 releaseTag r97 重跑。
 - 2026-09-21T03:25:00+08:00	20260919-button-only-prod-release	RESULT	r97 在本机 schema rehearsal 发现历史数据依赖未声明 `requiresTargetPreflight`，未发生 NAS/测试服/正式服写入；应用本地提交 `a9081e509` 修复，发布 worktree 已更新，GitHub 推送因 TLS EOF 仍未确认，下一轮使用 r98。
 - 2026-09-21T03:50:00+08:00	20260919-button-only-prod-release	RESULT	r98 在应用迁移测试发现阶段因 Node 合同被 pytest 执行而失败，未发生 NAS/测试服/正式服写入；已修复发布器按扩展名分别调用 pytest/node，下一轮使用 r99。
+- 2026-09-21T04:05:00+08:00	20260919-button-only-prod-release	RESULT	r99 的 Node 迁移合同路径在维护根 cwd 下错误，未发生 NAS/测试服/正式服写入；应用提交 `05674dbc6` 修复为按测试文件目录解析 SQL，下一轮使用 r100。
