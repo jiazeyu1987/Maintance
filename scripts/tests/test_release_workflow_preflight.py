@@ -191,3 +191,12 @@ def test_application_sql_static_regressions_are_mandatory_build_gates() -> None:
     assert "Assert-ApplicationMigrationTestsDiscovered" in tests
     assert "MIGRATION_TEST_MISSING" in source
     assert "Get-ReleaseGitValue -RepoPath $applicationRoot" in tests
+
+
+def test_application_migration_tests_use_runner_for_each_file_type() -> None:
+    source = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    tests = _function(source, "Invoke-StandardReleaseContractTests", "Get-ReleaseSchemaDigest")
+
+    assert "applicationPytestFiles" in tests
+    assert "applicationNodeTestFiles" in tests
+    assert "Invoke-CheckedCommand -FilePath 'node'" in tests

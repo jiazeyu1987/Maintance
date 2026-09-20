@@ -4424,15 +4424,20 @@ function Invoke-StandardReleaseContractTests {
     Invoke-CheckedCommand -FilePath 'corepack' -ArgumentList @('pnpm', '--dir', $frontendDir, 'ts:check')
     Info 'Discovering application migration tests from the frozen source diff'
     $applicationTestFiles = Assert-ApplicationMigrationTestsDiscovered
-    if ($applicationTestFiles.Count -gt 0) {
+    $applicationPytestFiles = @($applicationTestFiles | Where-Object { $_ -match '\.py$' })
+    $applicationNodeTestFiles = @($applicationTestFiles | Where-Object { $_ -match '\.test\.mjs$' })
+    if ($applicationPytestFiles.Count -gt 0) {
         $applicationPytestRoot = Join-Path $resolvedLocalCacheRoot "release-application-test-temp\$packageDirectoryName"
         $applicationPytestParent = Split-Path -Parent $applicationPytestRoot
         New-Item -ItemType Directory -Force -Path $applicationPytestParent | Out-Null
         Invoke-CheckedCommand -FilePath 'python' -ArgumentList @(
             '-X', 'utf8', '-m', 'pytest', '-q',
-            $applicationTestFiles,
+            $applicationPytestFiles,
             '--basetemp', $applicationPytestRoot
         )
+    }
+    foreach ($applicationNodeTestFile in $applicationNodeTestFiles) {
+        Invoke-CheckedCommand -FilePath 'node' -ArgumentList @($applicationNodeTestFile)
     }
     Info 'Running release script tests'
     $pytestRoot = Join-Path $resolvedLocalCacheRoot "release-workflow-test-temp\$packageDirectoryName"

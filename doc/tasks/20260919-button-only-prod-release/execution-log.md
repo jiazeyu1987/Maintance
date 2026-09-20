@@ -205,3 +205,6 @@
 - GREEN: `python -X utf8 -m pytest -q script/tests/test_recent_permission_migrations_mysql.py script/tests/test_release_migration_policy_gate.py` -> 14 passed；应用提交 `a9081e509` 增加 parser 支持和迁移 metadata `requiresTargetPreflight=true`；发布 worktree 应用源已 fast-forward 到该提交。
 - BLOCKER: GitHub `git push origin int_main` 连续 TLS EOF，已记录为推送阻塞，未宣称远端已包含 `a9081e509`；本机发布冻结可引用该已验证提交对象，待推送恢复后再核对远端。
 - BLOCKER: r97 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r98`。
+- RED: r98-build-release-migration-test-runner -> FAIL；真实按钮通过 Maven、前端 ts:check、发布回归和目标预检 `28/28` 后，在应用迁移测试发现阶段把合法 `script/tests/dcc-other-template-sql.test.mjs` 交给 pytest，返回 `no tests ran`；未上传 NAS、未写测试服或正式服，r98 判废。
+- GREEN: migration-test-runner-contract -> PASS；发布器按扩展名将 `test_*.py` 交给 pytest、`.test.mjs` 交给 node；静态合同 `python -X utf8 -m pytest -q scripts/tests/test_release_workflow_preflight.py` -> 14 passed。
+- BLOCKER: r98 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r99`。
