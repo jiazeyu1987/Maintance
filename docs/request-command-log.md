@@ -4057,3 +4057,15 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Integration evidence: 实际 `recover-release-operation-lock.ps1 -> SSH -> 测试服 intruoyi-mysql` 已在随机 `release_lock_it_*` 临时库通过活跃心跳阻断和并发单赢家验证；临时库已清零，未访问业务库表或修改真实发布状态。应用修复提交 `83c0e1c80` 已推送 `origin/int_main`。
 - 2026-09-21T02:00:00+08:00	20260919-button-only-prod-release	RESULT	维护修复已在独立融合 worktree `D:\IntRuoyiWorktree\r260921-maintenance-main-integration\m` 基于主干 `b45027592a68cbf8f68b98fcf09a7616da9dc654` 完成语义合并；后端 package、发布回归 189 项、前端依赖门禁/typecheck/build 均通过。未合回主工作区、未构建发布包、未写测试服或正式服。
 - 2026-09-21T02:20:00+08:00	20260919-button-only-prod-release	COMMAND_INTENT	准备新发布专用 worktree：维护源固定融合提交 `f11a998`，应用/前端源固定已推送 `83c0e1c80`；先通过真实控制台按钮 build-release、publish-test、mark-tested，再以同一 releaseTag promote-prod；任何门禁失败立即停止，不手工改库/锁/.env/成功状态。
+- 2026-09-21T02:47:00+08:00	20260919-button-only-prod-release	RESULT	真实按钮 r94 在脚本参数校验阶段失败，根因是 UI `code-only` 与脚本 `app-release` 契约断开；未发生远端写入。后端已修复映射，r94 判废，下一轮必须使用新 releaseTag r95。
+- 2026-09-21T02:56:00+08:00	20260919-button-only-prod-release	RESULT	真实按钮 r95 在前端 `ts:check` 前置依赖缺失处失败，未上传 NAS、未写测试服或正式服；已在专用应用 worktree 按锁文件安装 1103 依赖并通过 `ts:check`，r95 判废，下一轮使用 r96。
+- 2026-09-21T03:20:00+08:00	20260919-button-only-prod-release	RESULT	r96 在源码冻结阶段因维护任务记录未提交而阻断，未发生 NAS/测试服/正式服写入；提交记录后以新批准维护提交和新 releaseTag r97 重跑。
+- 2026-09-21T03:25:00+08:00	20260919-button-only-prod-release	RESULT	r97 在本机 schema rehearsal 发现历史数据依赖未声明 `requiresTargetPreflight`，未发生 NAS/测试服/正式服写入；应用本地提交 `a9081e509` 修复，发布 worktree 已更新，GitHub 推送因 TLS EOF 仍未确认，下一轮使用 r98。
+- 2026-09-21T03:50:00+08:00	20260919-button-only-prod-release	RESULT	r98 在应用迁移测试发现阶段因 Node 合同被 pytest 执行而失败，未发生 NAS/测试服/正式服写入；已修复发布器按扩展名分别调用 pytest/node，下一轮使用 r99。
+- 2026-09-21T04:05:00+08:00	20260919-button-only-prod-release	RESULT	r99 的 Node 迁移合同路径在维护根 cwd 下错误，未发生 NAS/测试服/正式服写入；应用提交 `05674dbc6` 修复为按测试文件目录解析 SQL，下一轮使用 r100。
+- 2026-09-21T04:20:00+08:00	20260919-button-only-prod-release	RESULT	r100 在 schema rehearsal 第二轮重放早期迁移时发现后续列扩展导致合同 mismatch，未发生 NAS/测试服/正式服写入；已修复 rehearsal 按迁移连续双跑，下一轮使用 r101。
+- 2026-09-21T05:00:00+08:00	20260919-button-only-prod-release	RESULT	r101 确认 schema-only 当前快照已包含后续收件人列，早期注册证提醒迁移必须走真实目标预检而非当前快照重放；应用提交 `01b303531` 补 metadata 与预检，下一轮使用 r102。
+- 2026-09-21T05:20:00+08:00	20260919-button-only-prod-release	RESULT	r102 的迁移测试发现未按任意 Git 根形式排除 target-preflight，未发生 NAS/测试服/正式服写入；已按路径段修复过滤，下一轮使用 r103。
+- 2026-09-21T05:30:00+08:00	20260919-button-only-prod-release	RESULT	r103 仅剩旧静态测试固定路径断言失败，未发生 NAS/测试服/正式服写入；更新断言后完整发布脚本套件 143 passed，下一轮使用 r104。
+- 2026-09-21T06:00:00+08:00	20260919-button-only-prod-release	RESULT	r104 在测试服只读目标预检失败，未发生 NAS/测试服/正式服写入；根因是已执行注册证提醒迁移被修改后摘要漂移。按用户要求暂停发布，先以 BDD/TDD 恢复迁移不可变性、将目标预检关联外置，再执行静态检查。
+- 2026-09-21T06:01:29+08:00	20260919-button-only-prod-release	RESULT	已恢复已执行注册证提醒迁移的不可变内容，发布清单改为从同名外部预检合同推导；迁移写入函数新增强制租约栅栏。维护相关 208 passed，应用 15 passed，迁移策略 632 PASS，AST/compileall/diff-check PASS；本轮未执行发布。

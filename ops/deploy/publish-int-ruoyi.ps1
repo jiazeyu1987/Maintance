@@ -3974,16 +3974,22 @@ function New-ReleaseRequiredSqlManifestEntries {
         $sourceRelativePath = $relativePath.Replace('/', [System.IO.Path]::DirectorySeparatorChar)
         $sourcePath = Join-Path $backendRepo $sourceRelativePath
         $metadata = Read-ReleaseMigrationMetadata -SqlPath $sourcePath
+        $migrationId = [System.IO.Path]::GetFileNameWithoutExtension($fileName)
+        $targetPreflightPath = Join-Path $backendRepo (Join-Path 'sql\mysql\target-preflight' "$migrationId.preflight.sql")
+        $hasTargetPreflight = Test-Path -LiteralPath $targetPreflightPath -PathType Leaf
+        if ([bool]$metadata.requiresTargetPreflight -and -not $hasTargetPreflight) {
+            Fail "Release migration requires target preflight but contract is missing: $targetPreflightPath"
+        }
         $entries += [ordered]@{
-            id = [System.IO.Path]::GetFileNameWithoutExtension($fileName)
-            migrationId = [System.IO.Path]::GetFileNameWithoutExtension($fileName)
+            id = $migrationId
+            migrationId = $migrationId
             file = "required-sql/$fileName"
             sourcePath = $relativePath
             type = [string]$metadata.type
             allowedEnvironments = @($metadata.allowedEnvironments)
             dependsOn = @($metadata.dependsOn)
             riskLevel = [string]$metadata.riskLevel
-            requiresTargetPreflight = [bool]$metadata.requiresTargetPreflight
+            requiresTargetPreflight = ([bool]$metadata.requiresTargetPreflight -or $hasTargetPreflight)
             applyOrder = $metadata.applyOrder
             sessionProfile = [string]$metadata.sessionProfile
             approvedHook = [string]$metadata.approvedHook
@@ -5584,6 +5590,7 @@ function Invoke-ReleaseMigrationStateBatchUpdate {
     if ($null -eq $Items -or $Items.Count -eq 0) {
         return
     }
+    Assert-ReleaseOperationWriteFence
     Info "Batch updating release migration state: $Status ($($Items.Count))"
     $stateSql = @(
         foreach ($item in $Items) {
@@ -5759,6 +5766,16 @@ SQL"
         $script:ReleaseOperationLockHeld = $false
         throw "RELEASE_OPERATION_LOCK_LOST: heartbeat renewal failed: $($heartbeat.Output)"
     }
+}
+
+function Assert-ReleaseOperationWriteFence {
+    if ($Mode -ne 'deploy-release') {
+        return
+    }
+    if (-not $script:ReleaseOperationLockHeld) {
+        throw 'RELEASE_OPERATION_LOCK_NOT_HELD: deploy-release write refused before ownership verification'
+    }
+    Assert-ReleaseOperationLockOwnership
 }
 
 function Invoke-ReleaseOperationLockRelease {
@@ -6216,6 +6233,7 @@ function Invoke-RequiredDatabaseSqlScriptWithState {
         [string]$SessionPreamble = ''
     )
 
+    Assert-ReleaseOperationWriteFence
     $runningSql = New-ReleaseMigrationStateUpsertSql -Item $Item -Status 'RUNNING'
     $appliedSql = New-ReleaseMigrationStateUpsertSql -Item $Item -Status 'APPLIED'
     $remoteSqlPathLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $RemoteSqlPath -Purpose 'required database SQL remote path'
@@ -6270,6 +6288,7 @@ function Invoke-RequiredDatabaseSqlScripts {
         $remoteSqlPath = "$remoteRequiredSqlDir/$fileName"
         $sessionPreamble = Get-RequiredDatabaseSqlSessionPreamble -Item $item -TargetEnvironment $Environment
         Info "Applying required database SQL: $fileName"
+        Assert-ReleaseOperationWriteFence
         Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement -Item $item
         try {
             Invoke-RequiredDatabaseSqlScriptWithState -Item $item -RemoteSqlPath $remoteSqlPath -SessionPreamble $sessionPreamble
@@ -7084,12 +7103,14 @@ if ($publishBackend) {
 }
 
 if ($publishBackend -and -not $SkipDatabaseSync) {
+    Assert-ReleaseOperationWriteFence
     Info 'Replacing remote MySQL database with the current local dump'
     Invoke-SshCommand "cat '$remoteResetDbSql' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword"
     Invoke-SshCommand "cat '$remoteDbDump' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword"
 }
 
 if ($publishBackend -and $Mode -ne 'build-release') {
+    Assert-ReleaseOperationWriteFence
     Info 'Applying target-bound post-import SQL'
     Invoke-SshCommand "cat '$remotePostImportSql' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword -D ruoyi-vue-pro"
 }

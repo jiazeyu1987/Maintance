@@ -192,3 +192,46 @@
 - RED: merged-recovery-lf-crlf-integration -> FAIL；融合 worktree 的实际 PowerShell→SSH→bash 链因 checkout 行尾将 `set -eu`/heredoc 传成 CRLF，测试服临时库验证返回 bash 语法错误，临时库已自动清理。
 - GREEN: merged-recovery-lf-crlf-integration -> PASS；恢复脚本在 base64 前统一远端 payload 为 LF，实际临时库验证返回活跃心跳阻断、并发恢复单赢家和最终 FAILED；本轮临时库 `release_lock_it_1172268bcafa` 已清理。
 - GREEN: release-source-freeze-preflight -> PASS；后续发布只允许使用维护融合提交 `f11a998`（本 worktree clean）与应用 `origin/int_main=83c0e1c80`（应用 worktree clean）；新建独立发布 worktree，禁止复用当前融合开发 worktree，禁止主工作区参与构建。
+- RED: r94-build-release-button -> FAIL；真实页面按钮 operation `op-2026-09-20T183458352894400Z-b9a93f96-6bd8-4efe-8e3e-716c173ac810` 在 PowerShell 参数校验前失败：前端提交 `-PublishScope code-only`，发布脚本正式契约只接受 `app-release`；未进入 Maven/Docker/NAS/服务器写入。
+- GREEN: publish-scope-contract-regression -> PASS；后端执行参数将用户可见 `code-only` 映射为脚本 `app-release`，保留 `-SkipDatabaseSync -SkipMinioSync`；`RuntimeControlContractTest#buildReleaseCodeOnlyPreviewSkipsDatabaseAndMinioData` PASS。
+- BLOCKER: r94 已判废，禁止复用；必须提交修复并以新 releaseTag `release-20260921-button-prod-r95` 重新通过页面预览和执行。
+- RED: r95-build-release-button -> FAIL；真实按钮已完成 Maven BUILD SUCCESS、迁移策略和 Docker 前置，但在应用前端 `ts:check` 处因专用 worktree 缺少 `node_modules` 报 `cross-env is not recognized`；未上传 NAS、未写测试服或正式服，r95 判废。
+- GREEN: r95-frontend-dependency-preflight -> PASS；在同一专用应用 worktree 执行 `corepack pnpm install --frozen-lockfile`，1103 个依赖安装完成，`cross-env`/`vue-tsc` 可用，`corepack pnpm ts:check` PASS。
+- BLOCKER: r95 已判废，禁止复用；必须使用新 releaseTag `release-20260921-button-prod-r96`。
+- RED: r96-build-release-source-freeze -> FAIL；真实按钮已通过参数映射、Maven、Docker、前端依赖和 `ts:check` 前置，但维护 worktree 有本任务日志未提交改动，源码冻结返回 `SOURCE_DIRTY: maintenance`；未上传 NAS、未写测试服或正式服，r96 判废。
+- GREEN: source-freeze-cleanup -> PASS；仅提交本任务维护记录后，维护 worktree 将重新构建 jar 并以新的批准提交执行；r96 不复用。
+- RED: r97-build-release-schema-rehearsal -> FAIL；真实按钮已通过 Maven、应用前端 `ts:check`、141 项发布脚本、目标测试服预检 `28/28`，随后本机真实 schema rehearsal 在 `20260526_dcc_other_template_category.sql` 阻断：`Missing active DCC source template category: 产品技术要求`。未上传 NAS、未写测试服或正式服，r97 判废。
+- ROOT_CAUSE: 该迁移依赖真实业务库的 `产品技术要求`/`其他` 分类，已有 target-preflight，但应用迁移 manifest parser 不支持 `requiresTargetPreflight` 元数据，导致它错误进入空库 rehearsal；不是允许补造分类或跳过目标检查。
+- GREEN: `python -X utf8 -m pytest -q script/tests/test_recent_permission_migrations_mysql.py script/tests/test_release_migration_policy_gate.py` -> 14 passed；应用提交 `a9081e509` 增加 parser 支持和迁移 metadata `requiresTargetPreflight=true`；发布 worktree 应用源已 fast-forward 到该提交。
+- BLOCKER: GitHub `git push origin int_main` 连续 TLS EOF，已记录为推送阻塞，未宣称远端已包含 `a9081e509`；本机发布冻结可引用该已验证提交对象，待推送恢复后再核对远端。
+- BLOCKER: r97 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r98`。
+- RED: r98-build-release-migration-test-runner -> FAIL；真实按钮通过 Maven、前端 ts:check、发布回归和目标预检 `28/28` 后，在应用迁移测试发现阶段把合法 `script/tests/dcc-other-template-sql.test.mjs` 交给 pytest，返回 `no tests ran`；未上传 NAS、未写测试服或正式服，r98 判废。
+- GREEN: migration-test-runner-contract -> PASS；发布器按扩展名将 `test_*.py` 交给 pytest、`.test.mjs` 交给 node；静态合同 `python -X utf8 -m pytest -q scripts/tests/test_release_workflow_preflight.py` -> 14 passed。
+- BLOCKER: r98 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r99`。
+- RED: r99-build-release-node-test-path -> FAIL；真实按钮已通过 Maven、ts:check、迁移 Python 测试和目标预检，但 Node 迁移合同使用 `process.cwd()`，发布器从维护根执行时错误读取 `m/ops/sql/mysql/...`，返回 ENOENT；未上传 NAS、未写测试服或正式服，r99 判废。
+- GREEN: node-migration-test-path -> PASS；应用合同测试按 `import.meta.dirname` 定位 `IntRuoyiBackend/sql/mysql`，直接 Node 执行 PASS；应用提交 `05674dbc6` 已合入发布 worktree。
+- BLOCKER: r99 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r100`。
+- RED: r100-build-release-schema-rehearsal-order -> FAIL；真实按钮通过 Maven、ts:check、141 项发布回归、Node/Python 应用迁移测试和目标预检后，本机 schema rehearsal 在第二轮重放 `20260818_dcc_registration_certificate_reminder.sql` 时因后续 `threshold_recipient_user_ids_json` 列扩展触发旧合同 mismatch；未上传 NAS、未写测试服或正式服，r100 判废。
+- ROOT_CAUSE: rehearsal 原实现先执行全部迁移再整体第二轮，跨越后续 schema 扩展后重跑早期严格合同，制造非真实历史漂移。
+- GREEN: schema-rehearsal-order-regression -> PASS；迁移演练改为每个迁移连续执行两次后再推进下一个，`python -X utf8 -m pytest -q scripts/tests/test_release_schema_rehearsal.py` -> 13 passed。
+- BLOCKER: r100 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r101`。
+- RED: r101-build-release-schema-baseline -> FAIL；修正双跑顺序后仍在 `20260818_dcc_registration_certificate_reminder.sql` 第一次执行失败；只读核对 schema-only 快照已包含后续 `threshold_recipient_user_ids_json` 列，早期严格列合同不能在后续 schema 基线上重放。未上传 NAS、未写测试服或正式服，r101 判废。
+- GREEN: registration-reminder-target-preflight -> PASS；将提醒基础迁移声明 `requiresTargetPreflight=true` 并新增只读目标预检，应用提交 `01b303531`；应用合同 15 passed、迁移策略 632 PASS，发布 worktree 已更新。
+- BLOCKER: r101 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r102`。
+- RED: r102-build-release-preflight-test-discovery -> FAIL；真实按钮在应用迁移测试发现阶段把 `target-preflight/20260818...preflight.sql` 误识别为正式迁移，报 `MIGRATION_TEST_MISSING`；未上传 NAS、未写测试服或正式服，r102 判废。
+- GREEN: target-preflight-test-discovery-filter -> PASS；按规范化路径段排除任意 Git 根形式的 `target-preflight/`，发布工作流合同 14 passed。
+- BLOCKER: r102 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r103`。
+- RED: r103-build-release-static-contract -> FAIL；发布器路径段过滤实现通过，但旧测试仍断言固定 Git 根前缀，143 项套件为 142 passed/1 failed；未上传 NAS、未写测试服或正式服，r103 判废。
+- GREEN: release-workflow-regression -> PASS；更新断言为 `(^|/)target-preflight/` 任意 Git 根合同，完整发布脚本套件 143 passed。
+- BLOCKER: r103 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r104`。
+- RED: r104-build-release-migration-identity -> FAIL；真实按钮 operation `op-2026-09-20T213142089964Z-db58ce71-4940-4553-b68d-1763746ea9aa` 在测试服只读目标预检阶段失败，报告为 `15/29` 并指向 `20260818_dcc_registration_certificate_reminder`；未上传 NAS，未执行测试服或正式服写入，r104 判废。
+- ROOT_CAUSE: 测试服 `infra_release_migration` 已记录该迁移 `APPLIED` 且摘要为 `03a9b6aa...fabca48`；当前源码修改了已执行迁移的角色参数和元数据，导致摘要漂移并被错误规划为再次执行。
+- BDD: 已执行迁移不可变且预检外置 -> Given 测试服已执行注册证提醒迁移，When 后续需要将其排除于结构演练并在真实目标上预检，Then 不得修改旧 SQL 摘要，发布器必须通过同名 `.preflight.sql` 外部合同推导 `requiresTargetPreflight`。
+- RED: `python -X utf8 -m pytest -q script/tests/test_recent_permission_migrations_mysql.py -k immutable` -> FAIL，当前迁移内容与已执行摘要对应的不可变内容不一致。
+- RED: `python -X utf8 -m pytest -q scripts/tests/test_release_sql_preflight_gate.py -k external_contract` -> FAIL，当前发布清单仅从旧 SQL 头元数据读取 `requiresTargetPreflight`，不会从外部预检合同推导。
+- BDD: 失权执行器的写入函数自我阻断 -> Given deploy-release 执行器已不持有发布锁，When 迁移台账批量更新或单条迁移执行函数被调用，Then 函数必须在 SSH/MySQL 写入前以 `RELEASE_OPERATION_LOCK_NOT_HELD` 失败，不得仅依赖外层调用顺序。
+- RED: `python -X utf8 -m pytest -q scripts/tests/test_publish_release_lock_cleanup.py -k actual_migration_writers` -> FAIL，实际发布函数中尚无 `Assert-ReleaseOperationWriteFence`，失权时写入函数不能自我阻断。
+- GREEN: 同一命令 -> PASS；测试通过 PowerShell AST 提取并执行生产函数体，证明未持锁时迁移台账更新和单条迁移均在 SSH 前失败，`sshCalled=false`。
+- GREEN: immutable-migration-and-external-preflight -> PASS；应用迁移定向测试 15 passed，注册证提醒迁移原始字节 SHA-256 与测试服已执行台账一致，外部预检合同存在；应用提交 `61b6a98e5`。
+- GREEN: static-regression -> PASS；维护发布/锁/预检套件 `208 passed`，迁移策略 `migrationCount=632`，`git diff --check`、PowerShell AST、Python compileall 全部通过。`PSScriptAnalyzer` 本机未安装，未将其伪造为通过证据。
+- INFO: 按用户本轮“先不发布”要求，未启动新 build-release、publish-test、mark-tested 或 promote-prod。

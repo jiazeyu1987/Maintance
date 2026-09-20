@@ -1,4 +1,7 @@
 import importlib
+import base64
+import json
+import subprocess
 from pathlib import Path
 
 
@@ -792,6 +795,60 @@ def test_publish_script_runs_frontend_dependency_preflight_before_backend_build(
     preflight_index = script.index("Assert-FrontendBuildPreflight -FrontendDir $frontendDir")
     backend_build_index = script.index("Info 'Building backend jar'")
     assert preflight_index < backend_build_index
+
+
+def test_required_sql_manifest_infers_target_preflight_from_external_contract(tmp_path: Path) -> None:
+    backend = tmp_path / "backend"
+    migration_root = backend / "sql/mysql"
+    preflight_root = migration_root / "target-preflight"
+    package_root = tmp_path / "package/required-sql"
+    preflight_root.mkdir(parents=True)
+    package_root.mkdir(parents=True)
+    migration_id = "20260818_fixture"
+    migration = migration_root / f"{migration_id}.sql"
+    migration.write_text(
+        "-- release-migration: allowedEnvironments=test,backup,prod; dependsOn=; type=schema; riskLevel=high\nSELECT 1;\n",
+        encoding="utf-8",
+    )
+    (preflight_root / f"{migration_id}.preflight.sql").write_text(
+        f"-- release-target-preflight: migrationId={migration_id}; allowedEnvironments=test,backup,prod\n"
+        f"SELECT 'TARGET_PREFLIGHT_PASS:{migration_id}';\n",
+        encoding="utf-8",
+    )
+    (package_root / migration.name).write_bytes(migration.read_bytes())
+    powershell = f"""
+$ErrorActionPreference = 'Stop'
+$tokens = $null
+$errors = $null
+$ast = [System.Management.Automation.Language.Parser]::ParseFile('{str(PUBLISH_SCRIPT).replace("'", "''")}', [ref]$tokens, [ref]$errors)
+if ($errors.Count -gt 0) {{ throw 'publish script parse failed' }}
+foreach ($name in @('Read-ReleaseMigrationMetadata', 'New-ReleaseRequiredSqlManifestEntries')) {{
+  $definition = $ast.FindAll({{ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq $name }}, $true) | Select-Object -First 1
+  if ($null -eq $definition) {{ throw "function missing: $name" }}
+  Invoke-Expression $definition.Extent.Text
+}}
+function Fail {{ param([string]$Message) throw $Message }}
+function Get-RequiredDatabaseSqlFileName {{ param([string]$RelativePath) return [System.IO.Path]::GetFileName($RelativePath) }}
+function ConvertTo-ReleaseFileSha256Digest {{ param([string]$Path) return 'sha256:fixture' }}
+$releaseMigrationAllowedTypes = @('schema', 'data', 'menu', 'permission', 'config', 'seed')
+$backendRepo = '{str(backend).replace("'", "''")}'
+$requiredSqlLocalDir = '{str(package_root).replace("'", "''")}'
+$requiredDatabaseSqlScripts = @(@{{ Path = 'sql/mysql/{migration.name}'; Environments = @('test', 'backup', 'prod') }})
+Write-Output (@(New-ReleaseRequiredSqlManifestEntries) | ConvertTo-Json -Depth 8 -Compress)
+"""
+    encoded_command = base64.b64encode(powershell.encode("utf-16le")).decode("ascii")
+    result = subprocess.run(
+        ["powershell", "-NoProfile", "-NonInteractive", "-EncodedCommand", encoded_command],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(result.stdout.strip())
+    entry = payload[0] if isinstance(payload, list) else payload
+    assert entry["migrationId"] == migration_id
+    assert entry["requiresTargetPreflight"] is True
 
 
 def test_publish_script_accepts_multiline_none_ignored_builds() -> None:

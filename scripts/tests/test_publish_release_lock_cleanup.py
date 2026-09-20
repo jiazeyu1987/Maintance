@@ -1,3 +1,6 @@
+import base64
+import json
+import subprocess
 from pathlib import Path
 
 
@@ -81,6 +84,44 @@ def test_lock_ownership_is_fenced_by_lease_and_executor_identity() -> None:
     assert "lease_token = '$($script:ReleaseOperationLeaseToken.Replace(\"'\", \"''\"))'" in script
     assert "function Ensure-ReleaseOperationLockLeaseSchema" in script
     assert "Ensure-ReleaseOperationLockLeaseSchema" in script
+
+
+def test_actual_migration_writers_block_before_ssh_when_lock_is_not_held() -> None:
+    harness = f"""
+$ErrorActionPreference = 'Stop'
+$tokens = $null
+$errors = $null
+$ast = [System.Management.Automation.Language.Parser]::ParseFile('{str(PUBLISH_SCRIPT).replace("'", "''")}', [ref]$tokens, [ref]$errors)
+if ($errors.Count -gt 0) {{ throw 'publish script parse failed' }}
+foreach ($name in @('Assert-ReleaseOperationWriteFence', 'Invoke-ReleaseMigrationStateBatchUpdate', 'Invoke-RequiredDatabaseSqlScriptWithState')) {{
+  $definition = $ast.FindAll({{ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq $name }}, $true) | Select-Object -First 1
+  if ($null -eq $definition) {{ throw "function missing: $name" }}
+  Invoke-Expression $definition.Extent.Text
+}}
+function Info {{ param([string]$Message) }}
+function New-ReleaseMigrationStateUpsertSql {{ param($Item, [string]$Status, [string]$ErrorMessage = '') return 'SELECT 1;' }}
+function Invoke-SshCommandWithInput {{ param([string]$Command, [string]$StandardInput) $script:sshCalled = $true }}
+function Invoke-SshCommand {{ param([string]$Command) $script:sshCalled = $true }}
+$Mode = 'deploy-release'
+$script:ReleaseOperationLockHeld = $false
+$script:sshCalled = $false
+$batchBlocked = $false
+$applyBlocked = $false
+try {{ Invoke-ReleaseMigrationStateBatchUpdate -Items @([pscustomobject]@{{ migrationId = 'm1' }}) -Status 'RUNNING' }} catch {{ $batchBlocked = $_.Exception.Message -like 'RELEASE_OPERATION_LOCK_NOT_HELD*' }}
+try {{ Invoke-RequiredDatabaseSqlScriptWithState -Item ([pscustomobject]@{{ migrationId = 'm1' }}) -RemoteSqlPath '/tmp/m1.sql' }} catch {{ $applyBlocked = $_.Exception.Message -like 'RELEASE_OPERATION_LOCK_NOT_HELD*' }}
+Write-Output ([ordered]@{{ batchBlocked = $batchBlocked; applyBlocked = $applyBlocked; sshCalled = $script:sshCalled }} | ConvertTo-Json -Compress)
+"""
+    encoded_command = base64.b64encode(harness.encode("utf-16le")).decode("ascii")
+    result = subprocess.run(
+        ["powershell", "-NoProfile", "-NonInteractive", "-EncodedCommand", encoded_command],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    evidence = json.loads(result.stdout.strip())
+    assert evidence == {"batchBlocked": True, "applyBlocked": True, "sshCalled": False}
 
 
 def test_explicit_lock_recovery_requires_executor_and_migration_evidence_checks() -> None:
