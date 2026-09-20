@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(properties = {
         "maintenance.runtime-control.ops-root=../ops",
         "maintenance.runtime-control.state-dir=../runtime/runtime-control-test",
-        "maintenance.runtime-control.status-timeout-millis=50",
+        "maintenance.runtime-control.status-timeout-millis=5000",
         "maintenance.runtime-control.release-package.nas-server=172.30.30.4",
         "maintenance.runtime-control.release-package.nas-share=IT共享",
         "maintenance.runtime-control.release-package.nas-username=test-user",
@@ -224,6 +224,46 @@ class RuntimeControlContractTest {
                 .contains("-ExpectedApplicationCommit")
                 .contains("-ExpectedFrontendCommit")
                 .contains("-SourceSelectionId", "release-source-approval");
+    }
+
+    @Test
+    void buildReleaseExecutionRequiresPreviewSourceSnapshotToken() throws Exception {
+        String previewResponse = mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "action": "build-release",
+                                  "reason": "contract preview source snapshot",
+                                  "publishScope": "code-only",
+                                  "includeOnlyOffice": false,
+                                  "includeShowroomBuildPackage": false,
+                                  "releaseTag": "release-source-snapshot"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.data.sourceSnapshotToken").isString())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        assertThat(previewResponse).contains("sourceSnapshotToken");
+
+        mockMvc.perform(post("/admin-api/infra/runtime-control/actions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "action": "build-release",
+                                  "reason": "contract execute without source snapshot",
+                                  "publishScope": "code-only",
+                                  "includeOnlyOffice": false,
+                                  "includeShowroomBuildPackage": false,
+                                  "releaseTag": "release-source-snapshot"
+                                }
+                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.msg").value(org.hamcrest.Matchers.containsString("sourceSnapshotToken")));
     }
 
     @Test

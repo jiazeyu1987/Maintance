@@ -4,6 +4,8 @@ param(
     [string]$ServerUser = 'root',
     [Parameter(Mandatory = $true)]
     [string]$RemoteAppDir,
+    [ValidatePattern('^[A-Za-z0-9_]+$')]
+    [string]$DatabaseName = 'ruoyi-vue-pro',
     [Parameter(Mandatory = $true)]
     [string]$ExpectedOperationId,
     [Parameter(Mandatory = $true)]
@@ -68,7 +70,7 @@ if [ -z "`$MYSQL_ROOT_PASSWORD" ]; then
   exit 42
 fi
 export MYSQL_ROOT_PASSWORD
-docker exec -i -e MYSQL_PWD="`$MYSQL_ROOT_PASSWORD" intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro <<'SQL'
+docker exec -i -e MYSQL_PWD="`$MYSQL_ROOT_PASSWORD" intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names '$DatabaseName' <<'SQL'
 SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 START TRANSACTION;
 SELECT CASE

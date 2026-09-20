@@ -58,7 +58,8 @@ public final class RuntimeDtos {
             String recoverySetManifestHash,
             String recoverySetProgramVersion,
             String recoverySetRedisPolicy,
-            String prodDryRunEvidencePath
+            String prodDryRunEvidencePath,
+            String sourceSnapshotToken
     ) {
     }
 
@@ -71,7 +72,8 @@ public final class RuntimeDtos {
             List<String> arguments,
             Map<String, String> parameters,
             boolean enableSmartReleaseReport,
-            String summary
+            String summary,
+            String sourceSnapshotToken
     ) {
     }
 

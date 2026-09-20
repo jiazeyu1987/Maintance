@@ -3747,3 +3747,11 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Evidence: SQL 定向合同 `7 passed`；维护后端 `RuntimeControlContractTest,RuntimeControlOriginalParityTest,RuntimeControlOriginalGovernanceParityTest,RuntimeReleaseLockInspectorTest` PASS；维护发布/锁/包治理回归 `146 passed`；PowerShell AST PASS。
 - Evidence: `mvn -q test` 阶段通过；`mvn -q test package` 的 `repackage` 因当前维护控制台占用 target jar 失败，未强杀控制台，未伪造 package 成功。
 - Deployment status: 未执行测试服/正式服写入；真实 PowerShell/SSH/MySQL 失权集成、预览快照绑定、维护仓主干融合和最终正式按钮闭环仍为 BLOCKER。
+
+## 2026-09-21 01:xx CST — 13 项审阅问题静态检查继续收敛
+
+- User request: 先完成 13 项问题修复并进行静态代码检查；全部解决前不发布，最终目标为真实按钮正式服发布成功。
+- Action intent: 在现有维护和应用 worktree 中补预览源码快照、跨控制台构建租约、失败终态优先、命令中断进程树、租约异常脱敏、真实 MySQL 迁移回滚及预检一致性；不写测试服或正式服。
+- Evidence: 维护后端 `mvn -q test package` PASS；维护前端 typecheck/build PASS；维护发布回归 146 passed、目标预检矩阵 170 passed；应用真实 MySQL/合同 10 passed；迁移策略门禁 PASS（632）；PowerShell AST PASS。
+- Deployment status: 未执行任何测试服/正式服发布写入。真实 PowerShell/SSH/MySQL 失权整链、维护仓主干融合及真实按钮正式发布仍未关闭。
+- Integration evidence: 实际 `recover-release-operation-lock.ps1 -> SSH -> 测试服 intruoyi-mysql` 已在随机 `release_lock_it_*` 临时库通过活跃心跳阻断和并发单赢家验证；临时库已清零，未访问业务库表或修改真实发布状态。应用修复提交 `83c0e1c80` 已推送 `origin/int_main`。

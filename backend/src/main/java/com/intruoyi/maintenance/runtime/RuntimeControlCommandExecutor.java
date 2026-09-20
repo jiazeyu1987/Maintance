@@ -63,14 +63,16 @@ public class RuntimeControlCommandExecutor {
         ProcessBuilder builder = new ProcessBuilder(executable)
                 .directory(properties.opsRootPath().toFile())
                 .redirectErrorStream(true);
+        Process process = null;
+        CompletableFuture<Void> outputPump = null;
         try {
-            Process process = builder.start();
-            CompletableFuture<Void> outputPump = CompletableFuture.runAsync(() -> pumpOutput(process, logPath));
+            process = builder.start();
+            Process runningProcess = process;
+            outputPump = CompletableFuture.runAsync(() -> pumpOutput(runningProcess, logPath));
             Duration timeout = properties.commandTimeout();
             boolean completed = process.waitFor(timeout.toMillis(), TimeUnit.MILLISECONDS);
             if (!completed) {
-                process.descendants().forEach(ProcessHandle::destroyForcibly);
-                process.destroyForcibly();
+                terminateProcessTree(process);
                 outputPump.cancel(true);
                 throw new RuntimeControlException("命令执行超时: " + timeout.toSeconds() + " 秒");
             }
@@ -82,9 +84,21 @@ public class RuntimeControlCommandExecutor {
         } catch (IOException ex) {
             throw new RuntimeControlException("无法启动命令: " + sanitizeCommand(executable), ex);
         } catch (InterruptedException ex) {
+            if (process != null) {
+                terminateProcessTree(process);
+            }
+            if (outputPump != null) {
+                outputPump.cancel(true);
+            }
             Thread.currentThread().interrupt();
             throw new RuntimeControlException("命令执行被中断", ex);
         }
+    }
+
+    private void terminateProcessTree(Process process) {
+        List<ProcessHandle> descendants = process.descendants().toList();
+        descendants.forEach(ProcessHandle::destroyForcibly);
+        process.destroyForcibly();
     }
 
     private void pumpOutput(Process process, Path logPath) {

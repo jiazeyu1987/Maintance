@@ -5,7 +5,11 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -14,11 +18,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.intruoyi.maintenance.runtime.RuntimeDtos.RuntimeControlOperationRespVO;
 
 @Component
 public class RuntimeControlOperationStore {
+
+    private static final String BUILD_LEASE_FILE = "build-release.lease";
 
     private static final Set<String> RELEASE_ACTIONS = Set.of(
             "build-release",
@@ -30,6 +37,7 @@ public class RuntimeControlOperationStore {
 
     private final RuntimeControlProperties properties;
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    private final Map<String, BuildLease> buildLeases = new ConcurrentHashMap<>();
 
     public RuntimeControlOperationStore(RuntimeControlProperties properties) {
         this.properties = properties;
@@ -128,8 +136,79 @@ public class RuntimeControlOperationStore {
         writeReleaseExperienceCandidate(updated);
     }
 
+    public void completeOperation(String operationId, String status, String summary, Path logPath,
+                                  String diagnosticLog) {
+        updateStatus(operationId, status, summary);
+        if (!isBlank(diagnosticLog)) {
+            appendLog(logPath, diagnosticLog + System.lineSeparator());
+        }
+    }
+
+    public boolean tryAcquireBuildLease(String operationId) {
+        FileChannel channel = null;
+        FileLock lock = null;
+        try {
+            Files.createDirectories(stateDir());
+            channel = FileChannel.open(buildLeasePath(), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+            try {
+                lock = channel.tryLock();
+            } catch (OverlappingFileLockException ex) {
+                channel.close();
+                return false;
+            }
+            if (lock == null) {
+                channel.close();
+                return false;
+            }
+            channel.truncate(0);
+            channel.position(0);
+            channel.write(ByteBuffer.wrap(operationId.getBytes(StandardCharsets.UTF_8)));
+            channel.force(true);
+            buildLeases.put(operationId, new BuildLease(channel, lock));
+            return true;
+        } catch (IOException ex) {
+            closeBuildLease(channel, lock, ex);
+            throw new RuntimeControlException("无法取得构建占用: " + buildLeasePath(), ex);
+        }
+    }
+
+    public boolean releaseBuildLease(String operationId) {
+        BuildLease lease = buildLeases.remove(operationId);
+        if (lease == null) {
+            return false;
+        }
+        try {
+            lease.lock().release();
+            lease.channel().close();
+            return true;
+        } catch (IOException ex) {
+            throw new RuntimeControlException("无法释放构建占用: " + buildLeasePath(), ex);
+        }
+    }
+
+    private void closeBuildLease(FileChannel channel, FileLock lock, IOException primaryFailure) {
+        try {
+            if (lock != null && lock.isValid()) {
+                lock.release();
+            }
+        } catch (IOException closeFailure) {
+            primaryFailure.addSuppressed(closeFailure);
+        }
+        try {
+            if (channel != null && channel.isOpen()) {
+                channel.close();
+            }
+        } catch (IOException closeFailure) {
+            primaryFailure.addSuppressed(closeFailure);
+        }
+    }
+
     public Path stateDir() {
         return properties.stateDirPath();
+    }
+
+    private Path buildLeasePath() {
+        return stateDir().resolve(BUILD_LEASE_FILE);
     }
 
     private RuntimeControlOperationRespVO read(Path path) {
@@ -237,5 +316,8 @@ public class RuntimeControlOperationStore {
 
     private static String trimToEmpty(String value) {
         return value == null ? "" : value.trim();
+    }
+
+    private record BuildLease(FileChannel channel, FileLock lock) {
     }
 }

@@ -282,7 +282,7 @@ function handleActionChange(value: string | number | boolean) {
   actionForm.selectedRecoverySetCandidateId = ''
 }
 
-function requestPayload() {
+function requestPayload(includePreviewSnapshot = false) {
   const action = selectedAction.value.action
   const releaseTag = actionForm.releaseTag.trim()
   return {
@@ -312,7 +312,8 @@ function requestPayload() {
       : undefined,
     testConclusion: operationUsesTestConclusion(selectedAction.value.action)
       ? actionForm.testConclusion.trim() || undefined
-      : undefined
+      : undefined,
+    sourceSnapshotToken: includePreviewSnapshot ? preview.value?.sourceSnapshotToken : undefined
   }
 }
 
@@ -358,7 +359,7 @@ async function previewAction() {
   previewLoading.value = true
   apiError.value = ''
   try {
-    preview.value = await previewRuntimeControlAction(requestPayload())
+    preview.value = await previewRuntimeControlAction(requestPayload(false))
     previewDialogVisible.value = true
   } catch (error) {
     apiError.value = error instanceof Error ? error.message : String(error)
@@ -371,7 +372,7 @@ async function executeAction() {
   previewLoading.value = true
   apiError.value = ''
   try {
-    const operation = await executeRuntimeControlAction(requestPayload())
+    const operation = await executeRuntimeControlAction(requestPayload(true))
     operations.value = [operation, ...operations.value]
     previewDialogVisible.value = false
   } catch (error) {

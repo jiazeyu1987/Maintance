@@ -75,6 +75,7 @@ export interface RuntimeControlActionReqVO {
   selectedImageCandidateId?: string
   selectedRecoverySetCandidateId?: string
   prodDryRunEvidencePath?: string
+  sourceSnapshotToken?: string
 }
 
 export interface RuntimeControlRestartReqVO {
@@ -94,6 +95,7 @@ export interface RuntimeControlActionPreviewVO {
   parameters?: Record<string, string>
   enableSmartReleaseReport: boolean
   summary?: string
+  sourceSnapshotToken?: string
 }
 
 export interface RuntimeControlReleasePackageVO {

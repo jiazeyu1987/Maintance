@@ -134,15 +134,20 @@ public class RuntimeControlService {
     public synchronized RuntimeControlOperationRespVO executeAction(RuntimeControlActionReqVO req) {
         String operationId = nextOperationId();
         PreparedAction prepared = prepareAction(req, operationId, false);
-        if ("build-release".equals(prepared.action())
-                && operationStore.listLatest(200).stream()
-                .anyMatch(operation -> "build-release".equals(operation.action())
-                        && "RUNNING".equals(operation.status()))) {
-            throw new RuntimeControlException("已有构建正在运行，同一工作树拒绝并发构建");
+        boolean buildRelease = "build-release".equals(prepared.action());
+        if (buildRelease && !operationStore.tryAcquireBuildLease(operationId)) {
+            throw new RuntimeControlException("已有构建占用当前工作树，拒绝并发构建");
         }
         Path logPath = operationStore.operationLogPath(operationId);
-        return startOperation(operationId, prepared.environment(), prepared.component(), prepared.action(),
-                prepared.actionLabel(), prepared.parameters(), req.reason(), prepared.command(), logPath);
+        try {
+            return startOperation(operationId, prepared.environment(), prepared.component(), prepared.action(),
+                    prepared.actionLabel(), prepared.parameters(), req.reason(), prepared.command(), logPath);
+        } catch (RuntimeException ex) {
+            if (buildRelease) {
+                operationStore.releaseBuildLease(operationId);
+            }
+            throw ex;
+        }
     }
 
     public RuntimeControlActionPreviewRespVO previewAction(RuntimeControlActionReqVO req) {
@@ -150,7 +155,8 @@ public class RuntimeControlService {
         return new RuntimeControlActionPreviewRespVO(prepared.action(), prepared.actionLabel(), prepared.environment(),
                 prepared.component(), prepared.command().scriptPath(), prepared.command().arguments(),
                 prepared.parameters(), Boolean.TRUE.equals(req.enableSmartReleaseReport()),
-                "本机操作者 " + properties.getOperatorId() + " 将执行 " + prepared.actionLabel());
+                "本机操作者 " + properties.getOperatorId() + " 将执行 " + prepared.actionLabel(),
+                prepared.sourceSnapshotToken());
     }
 
     private PreparedAction prepareAction(RuntimeControlActionReqVO req, String operationId, boolean previewOnly) {
@@ -164,7 +170,8 @@ public class RuntimeControlService {
         appendRecoverTestReleaseLockOwnerArguments(action, command, resolvedReq.releaseTag(), previewOnly);
         appendTestPublishEvidenceArguments(action, command, resolvedReq.releaseTag());
         appendNasReleaseArguments(action, command, operationId, previewOnly);
-        appendSourceApprovalArguments(action, command, resolvedReq.releaseTag());
+        String sourceSnapshotToken = appendSourceApprovalArguments(action, command, resolvedReq.releaseTag(),
+                resolvedReq.sourceSnapshotToken(), previewOnly);
         appendManagedSourceArguments(action, command);
         appendBackendRuntimeBaseArguments(action, command);
         Path scriptPath = commandExecutor.resolveScriptPath(command.scriptPath());
@@ -174,7 +181,7 @@ public class RuntimeControlService {
         RuntimeControlCommand resolvedCommand = new RuntimeControlCommand(command.environment(), command.component(),
                 scriptPath.toString(), command.arguments());
         return new PreparedAction(action.action(), action.label(), environment, action.action(),
-                action.safeParameters(resolvedReq), resolvedCommand);
+                action.safeParameters(resolvedReq), resolvedCommand, sourceSnapshotToken);
     }
 
     private RuntimeControlActionReqVO validateAndResolveAction(RuntimeControlOperationAction action,
@@ -416,18 +423,39 @@ public class RuntimeControlService {
         appendRequiredArgument(command.arguments(), "-WebsiteRepo", properties.getWebsiteRoot());
     }
 
-    private void appendSourceApprovalArguments(RuntimeControlOperationAction action, RuntimeControlCommand command,
-                                               String releaseTag) {
+    private String appendSourceApprovalArguments(RuntimeControlOperationAction action, RuntimeControlCommand command,
+                                                 String releaseTag, String requestedSourceSnapshotToken,
+                                                 boolean previewOnly) {
         if (action != RuntimeControlOperationAction.BUILD_RELEASE) {
-            return;
+            return "";
         }
         String maintenanceCommit = gitHead(properties.opsRootPath(), "maintenance source approval");
         String applicationCommit = gitHead(properties.repoRootPath(), "application source approval");
+        String sourceSelectionId = hasText(releaseTag) ? releaseTag.trim() : "runtime-control-build";
+        String sourceSnapshotToken = sourceSnapshotToken(sourceSelectionId, maintenanceCommit, applicationCommit);
+        if (!previewOnly && !sourceSnapshotToken.equals(trimToEmpty(requestedSourceSnapshotToken))) {
+            throw new RuntimeControlException("sourceSnapshotToken 已失效或缺失，请重新预览后再执行");
+        }
         appendRequiredArgument(command.arguments(), "-ExpectedMaintenanceCommit", maintenanceCommit);
         appendRequiredArgument(command.arguments(), "-ExpectedApplicationCommit", applicationCommit);
         appendRequiredArgument(command.arguments(), "-ExpectedFrontendCommit", applicationCommit);
-        appendRequiredArgument(command.arguments(), "-SourceSelectionId",
-                hasText(releaseTag) ? releaseTag.trim() : "runtime-control-build");
+        appendRequiredArgument(command.arguments(), "-SourceSelectionId", sourceSelectionId);
+        return sourceSnapshotToken;
+    }
+
+    private String sourceSnapshotToken(String sourceSelectionId, String maintenanceCommit, String applicationCommit) {
+        String material = String.join("|", "v1", sourceSelectionId, properties.opsRootPath().toString(),
+                properties.repoRootPath().toString(), maintenanceCommit, applicationCommit);
+        byte[] digest = sha256(material.getBytes(StandardCharsets.UTF_8));
+        return "v1:" + HexFormat.of().formatHex(digest);
+    }
+
+    private byte[] sha256(byte[] value) {
+        try {
+            return MessageDigest.getInstance("SHA-256").digest(value);
+        } catch (java.security.NoSuchAlgorithmException ex) {
+            throw new RuntimeControlException("SHA-256 摘要算法不可用", ex);
+        }
     }
 
     private String gitHead(Path path, String description) {
@@ -435,12 +463,12 @@ public class RuntimeControlService {
                 .redirectErrorStream(true);
         try {
             Process process = builder.start();
-            String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();
             boolean completed = process.waitFor(properties.statusTimeout().toMillis(), TimeUnit.MILLISECONDS);
             if (!completed) {
                 process.destroyForcibly();
                 throw new RuntimeControlException(description + " git HEAD 读取超时");
             }
+            String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();
             if (process.exitValue() != 0) {
                 throw new RuntimeControlException(description + " git HEAD 读取失败: " + output);
             }
@@ -873,8 +901,12 @@ public class RuntimeControlService {
                 commandExecutor.run(command, logPath);
                 operationStore.updateStatus(operationId, "SUCCESS", "命令执行完成");
             } catch (RuntimeException ex) {
-                operationStore.appendLog(logPath, "ERROR: " + ex.getMessage() + System.lineSeparator());
-                operationStore.updateStatus(operationId, "FAILED", ex.getMessage());
+                operationStore.completeOperation(operationId, "FAILED", ex.getMessage(), logPath,
+                        "ERROR: " + ex.getMessage());
+            } finally {
+                if ("build-release".equals(action)) {
+                    operationStore.releaseBuildLease(operationId);
+                }
             }
         });
         return operation;
@@ -2139,7 +2171,8 @@ public class RuntimeControlService {
                 req.includeShowroomBuildPackage(), req.enableSmartReleaseReport(), req.releaseTag(),
                 req.testConclusion(), req.sqlPath(), req.selectedImageCandidateId(), selectedImageTag,
                 req.selectedRecoverySetCandidateId(), selectedBackupId, recoverySetId, recoverySetManifestHash,
-                recoverySetProgramVersion, recoverySetRedisPolicy, req.prodDryRunEvidencePath());
+                recoverySetProgramVersion, recoverySetRedisPolicy, req.prodDryRunEvidencePath(),
+                req.sourceSnapshotToken());
     }
 
     private RuntimeControlActionReqVO copyActionReqWithSqlPath(RuntimeControlActionReqVO req, String sqlPath) {
@@ -2149,7 +2182,7 @@ public class RuntimeControlService {
                 req.testConclusion(), sqlPath, req.selectedImageCandidateId(), req.selectedImageTag(),
                 req.selectedRecoverySetCandidateId(), req.selectedBackupId(), req.recoverySetId(),
                 req.recoverySetManifestHash(), req.recoverySetProgramVersion(), req.recoverySetRedisPolicy(),
-                req.prodDryRunEvidencePath());
+                req.prodDryRunEvidencePath(), req.sourceSnapshotToken());
     }
 
     private RuntimeControlActionReqVO copyActionReqWithReleaseTag(RuntimeControlActionReqVO req, String releaseTag) {
@@ -2159,7 +2192,7 @@ public class RuntimeControlService {
                 req.testConclusion(), req.sqlPath(), req.selectedImageCandidateId(), req.selectedImageTag(),
                 req.selectedRecoverySetCandidateId(), req.selectedBackupId(), req.recoverySetId(),
                 req.recoverySetManifestHash(), req.recoverySetProgramVersion(), req.recoverySetRedisPolicy(),
-                req.prodDryRunEvidencePath());
+                req.prodDryRunEvidencePath(), req.sourceSnapshotToken());
     }
 
     private RuntimeControlActionReqVO copyActionReqWithProdDryRunEvidencePath(RuntimeControlActionReqVO req,
@@ -2170,7 +2203,7 @@ public class RuntimeControlService {
                 req.testConclusion(), req.sqlPath(), req.selectedImageCandidateId(), req.selectedImageTag(),
                 req.selectedRecoverySetCandidateId(), req.selectedBackupId(), req.recoverySetId(),
                 req.recoverySetManifestHash(), req.recoverySetProgramVersion(), req.recoverySetRedisPolicy(),
-                prodDryRunEvidencePath);
+                prodDryRunEvidencePath, req.sourceSnapshotToken());
     }
 
     private Map<String, String> componentSummary(JsonNode recoverySet) {
@@ -2374,7 +2407,8 @@ public class RuntimeControlService {
             String environment,
             String component,
             Map<String, String> parameters,
-            RuntimeControlCommand command
+            RuntimeControlCommand command,
+            String sourceSnapshotToken
     ) {
     }
 }

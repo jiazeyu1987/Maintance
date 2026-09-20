@@ -157,3 +157,30 @@
 - GREEN: PowerShell AST -> PASS；发布脚本取得锁后的完整部署段已纳入统一 try/catch，APPLIED 释放移动到 HTTP/PDF/历史记录验收之后；命令执行器改为独立超时等待、异步日志泵、进程树终止及租约 token 脱敏；经验归档失败不再改写已持久化执行终态。
 - BLOCKER: `mvn -q test package` -> 测试阶段通过，但 Spring Boot `repackage` 无法重命名正在被当前维护控制台使用的 `target/runtime-control-maintenance-2026.06-SNAPSHOT.jar`；未强杀控制台、未伪造打包成功。需先走受控控制台重启/停机，再补 package 验证。
 - BLOCKER: 13 项中的真实 PowerShell/SSH/MySQL 端到端失权写入验证、预览快照绑定、维护仓主干融合和真实“晋级正式服”按钮验收尚未完成；在这些证据补齐前不得发布。
+
+## 2026-09-21 01:xx CST — 预览快照与本机执行原子性复核
+
+- BDD: 构建预览绑定源码快照 -> Given 用户已预览构建操作并取得服务端源码快照 token，When 执行时维护仓或应用仓 HEAD 已变化、token 缺失或不匹配，Then 后端必须拒绝执行并要求重新预览，不得使用与预览不同的源码。
+- RED: `mvn -q -Dtest=RuntimeControlContractTest#buildReleaseExecutionRequiresPreviewSourceSnapshotToken -Dsurefire.failIfNoSpecifiedTests=true test` -> FAIL，预览响应原先不返回源码快照 token，执行也未校验该 token。
+- GREEN: 同一命令 -> PASS；预览返回绑定维护仓 HEAD、应用仓 HEAD、源码路径与 releaseTag 的 SHA-256 token，执行缺失或不匹配时返回 400。
+- BDD: 跨控制台构建互斥 -> Given 两个维护控制台实例共享同一 state/target/dist/cache，When 同时提交 build-release，Then 只有一个 operation 能原子取得构建占用，另一个必须明确失败；占用只能由相同 operationId 释放。
+- BDD: 执行失败终态优先 -> Given 发布命令失败且错误日志路径随后不可写，When 异步执行器收口 operation，Then operation 必须先持久化为 FAILED，日志归档失败只能作为独立诊断错误，不能让状态停在 RUNNING。
+- BDD: 命令执行线程中断终止进程树 -> Given 发布命令仍在运行，When 控制台执行线程被中断，Then 必须终止该命令及全部后代进程并收口为失败，不得让旧执行器在失去本机任务后继续写入。
+- RED: `mvn -q -Dtest=RuntimeControlOperationStoreTest -Dsurefire.failIfNoSpecifiedTests=true test` -> FAIL，生产代码缺少跨实例构建租约和终态优先收口接口。
+- GREEN: `mvn -q -Dtest=RuntimeControlOperationStoreTest,RuntimeControlContractTest#buildReleaseExecutionRequiresPreviewSourceSnapshotToken -Dsurefire.failIfNoSpecifiedTests=true test` -> PASS；两个独立 store 竞争同一租约只有一个成功，非所有者不能释放，日志失败后 operation 仍为 FAILED。
+- RED: `mvn -q -Dtest=RuntimeControlCommandExecutorTest -Dsurefire.failIfNoSpecifiedTests=true test` -> FAIL，执行线程中断后 PowerShell 子进程仍存活超过 5 秒。
+- GREEN: 同一命令 -> PASS；中断和超时共用进程树强制终止逻辑，启动失败异常中的 `ExpectedLeaseToken` 只显示 `<redacted>`。
+- BDD: 目标预检与正式迁移空 JSON 判断一致 -> Given `system_tenant_package.menu_ids=''`，When 先执行标签菜单退休预检，Then 必须与正式迁移一样阻断，不得跳过非法 JSON。
+- RED: `python -X utf8 -m pytest -q script/tests/test_recent_permission_migrations_mysql.py` -> FAIL，真实 MySQL 中预检对空字符串返回 PASS。
+- GREEN: `python -X utf8 -m pytest -q script/tests/test_recent_permission_migrations_mysql.py script/tests/test_edhr_label_print_menu_removal_sql.py script/tests/test_mes_management_representative_admin_permission_sql.py` -> PASS，10 passed；同组真实 MySQL 测试还证明标签菜单迁移和管理者代表权限迁移在后续触发器故障时完整回滚。
+- RED: `python -X utf8 script/release/run-release-migration-policy-gate.py --sql-root sql/mysql` -> FAIL，默认发现把 `target-preflight/*.preflight.sql` 误当正式迁移并要求 `release-migration` 元数据。
+- GREEN: `python -X utf8 -m pytest -q script/tests/test_release_migration_policy_gate.py` -> PASS，10 passed；完整迁移策略门禁随后 PASS，migrationCount=632。
+- REGRESSION: maintenance-backend -> `mvn -q test package` PASS，维护 jar 已重建。
+- REGRESSION: maintenance-frontend -> `corepack pnpm typecheck` 与 `corepack pnpm build` PASS。
+- REGRESSION: release-scripts -> 发布锁/SQL/包治理 146 passed；目标预检/迁移矩阵/SQL/包治理 170 passed；两个 PowerShell 发布脚本 AST PASS。
+- BLOCKER: 本轮只完成代码修复和静态/本机实库验证，尚未完成真实 PowerShell/SSH/MySQL 失权写入链集成证据、维护仓主干融合及真实按钮完整发布；当前禁止进入正式服发布。
+- GREEN: experience-preflight -> PASS；真实锁恢复集成目标仅为测试服 `172.30.30.58` 的随机 `release_lock_it_*` 临时数据库，使用实际 `recover-release-operation-lock.ps1 -> SSH -> intruoyi-mysql` 链；已只读确认 `/opt/intruoyi/runtime/.env` 存在、MySQL 容器 running；禁止访问业务库表、修改真实发布锁、`.env`、镜像或容器，验证器 finally 按精确临时库名删除。
+- RED: stale-build-lease-marker -> FAIL；预建 `build-release.lease` 且没有活跃执行器时，`CREATE_NEW` 方案仍永久拒绝新构建，不满足控制台重启恢复要求。
+- GREEN: `mvn -q -Dtest=RuntimeControlOperationStoreTest -Dsurefire.failIfNoSpecifiedTests=true test` -> PASS；build-release 改用跨 JVM OS 文件锁，活跃实例互斥、非所有者不能释放、进程退出后遗留诊断文件不再阻断新实例。
+- GREEN: actual-recovery-powershell-ssh-mysql -> PASS；`python -X utf8 scripts/tests/verify_recover_release_lock_remote_integration.py` 使用实际恢复脚本、SSH 和测试服 `intruoyi-mysql` 随机临时库，活跃心跳阻断、两个并发恢复只有一个成功、最终精确锁为 FAILED；复核 `SHOW DATABASES LIKE 'release_lock_it_%'` 为空，临时库清理完成。
+- GREEN: app-main-push -> PASS；应用事务/预检/迁移门禁修复提交 `83c0e1c80` 已 fast-forward 推送 `origin/int_main`。
