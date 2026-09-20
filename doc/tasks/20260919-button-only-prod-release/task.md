@@ -6,7 +6,7 @@
 
 ## Current Status
 
-in_progress — 当前专用 worktree 为 `D:\IntRuoyiWorktree\r260917-button-publish7\m`。已通过页面按钮新增并执行“恢复测试服发布锁”入口，远端旧 r4 测试锁已从 `RUNNING` 恢复为 `FAILED`，且只读核对旧 r4/r14 迁移证据为 0。恢复操作期间发现 Windows OpenSSH 在远端 SQL 成功后仍可能返回 `close - IO is still pending on closed socket`，已在 worktree 脚本中修复为必须看到 `LOCK_RECOVERED` 且无真实阻塞/SQL/连接错误时才接受该噪音；相关测试 65/65 通过。下一步需提交该修复后使用新的 releaseTag 重新通过页面按钮构建并发布测试服。
+blocked — 第二轮复审确认当前应用提交 `2692fb881` 曾包含未经业务批准的通知角色替代逻辑；已在后续提交 `5486de0d4` 移除该逻辑并修正 detached HEAD 钩子，在维护提交 `7b6b615` 中补齐租约/心跳/原子恢复与真实 MySQL 隔离测试。当前仍有两个放行阻塞：正式通知角色、租户和公司范围尚无批准来源；全量数据库重置后的租约持久性尚未完成真实演练。未重新构建或部署，禁止继续 publish-test、mark-tested 或 promote-prod。
 
 ## Milestones
 
@@ -29,6 +29,14 @@ in_progress — 当前专用 worktree 为 `D:\IntRuoyiWorktree\r260917-button-pu
 - 是否引入 fallback/降级/吞异常：否；Windows OpenSSH socket close 噪音仅在 `LOCK_RECOVERED` 明确出现且无真实错误证据时被归类为已知传输噪音，不会掩盖阻塞、SQL 错误或连接失败。
 - 是否从根因和长期维护角度解决：是；发布锁恢复由受控按钮、精确 operation/releaseTag、执行器检查、迁移证据检查和结构化脚本共同约束。
 - 是否存在临时补丁或绕过：否。
+
+## 修复门禁
+
+- 通知角色只能来自正式批准的 `infra_job.handler_param.roleIds` 契约；query-current 权限不是通知接收人依据，缺失映射必须 fail-fast。
+- `infra_job` 参数与 role-company scope 写入必须由同一显式事务保护，并有真实 MySQL 正常、缺失角色、租户隔离、失败回滚和幂等证据。
+- 锁恢复必须绑定 operation、宿主、进程、身份、租约和心跳；恢复更新使用精确所有权条件，旧执行器失去写入资格，SSH 非零结果不得以成功字符串放行。
+- 完整定向测试必须 6/6 通过；新增静态测试不能替代真实 SQL/锁行为验证；禁止 `--no-verify`。
+- 新发布前必须同步批准提交、确认控制台实际加载提交、确认无并发 RUNNING 构建并使用项目固定 Playwright 版本。
 
 ## 经验门禁
 
