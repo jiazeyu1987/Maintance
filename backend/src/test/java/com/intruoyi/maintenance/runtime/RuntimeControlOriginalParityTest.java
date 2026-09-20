@@ -1031,6 +1031,11 @@ class RuntimeControlOriginalParityTest {
                   "releaseTag": "%s",
                   "packageId": "%s",
                   "createdAt": "2026-06-16T00:00:00Z",
+                  "publishScope": "%s",
+                  "component": "intruoyi",
+                  "includeShowroomBuildPackage": false,
+                  "onlyOfficeIncluded": false,
+                  "artifacts": [%s],
                   "sourceRepos": [
                     {"name": "ruoyi-vue-pro", "pathRole": "backend", "commit": "backend-%s", "branch": "test", "dirty": false},
                     {"name": "yudao-ui-admin-vue3", "pathRole": "admin-frontend", "commit": "frontend-%s", "branch": "test", "dirty": false}
@@ -1044,8 +1049,9 @@ class RuntimeControlOriginalParityTest {
                     "storageProfileIds": ["minio-yudao-default"]
                   }
                 }
-                """.formatted(directoryName, directoryName, directoryName, directoryName, jsonString(summary),
-                jsonArray(changes)), StandardCharsets.UTF_8);
+                """.formatted(directoryName, directoryName, publishScope,
+                withChecksum ? "{\"path\":\"image.tar\",\"sha256\":\"abc123\",\"includedInPackage\":true}" : "",
+                directoryName, directoryName, jsonString(summary), jsonArray(changes)), StandardCharsets.UTF_8);
         if (withRollbackEvidence) {
             Files.writeString(root.resolve("prod-latest.json"), """
                     {"releaseTag":"%s","packageDirectoryName":"%s","environment":"prod"}

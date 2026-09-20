@@ -26,12 +26,11 @@ public class RuntimeReleaseLockInspector {
         String operationId = "test-" + requireText(releaseTag, "releaseTag");
         String sql = """
                 SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
-                SELECT CONCAT_WS('\\t', 'LOCK_OWNER',
+                SELECT 'LOCK_OWNER',
                   COALESCE(executor_host, ''),
                   COALESCE(executor_pid, ''),
                   COALESCE(executor_identity, ''),
                   COALESCE(lease_token, '')
-                )
                 FROM infra_release_operation_lock
                 WHERE target_environment = 'test'
                   AND operation_id = '%s'
@@ -48,7 +47,7 @@ public class RuntimeReleaseLockInspector {
                   exit 42
                 fi
                 export MYSQL_ROOT_PASSWORD
-                docker exec -i -e MYSQL_PWD="$MYSQL_ROOT_PASSWORD" intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro <<'SQL'
+                docker exec -i -e MYSQL_PWD="$MYSQL_ROOT_PASSWORD" intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --raw --skip-column-names ruoyi-vue-pro <<'SQL'
                 %s
                 SQL
                 """.formatted(requireText(environment.getRemoteAppDir(), "test.remoteAppDir"), sql);
@@ -56,12 +55,13 @@ public class RuntimeReleaseLockInspector {
         ProcessBuilder builder = new ProcessBuilder(command).redirectErrorStream(true);
         try {
             Process process = builder.start();
-            String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
             boolean completed = process.waitFor(Duration.ofSeconds(30).toMillis(), TimeUnit.MILLISECONDS);
             if (!completed) {
                 process.destroyForcibly();
+                process.waitFor(5, TimeUnit.SECONDS);
                 throw new RuntimeControlException("恢复锁所有权读取超时");
             }
+            String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
             if (process.exitValue() != 0) {
                 throw new RuntimeControlException("恢复锁所有权读取失败: exit=" + process.exitValue());
             }
@@ -74,7 +74,7 @@ public class RuntimeReleaseLockInspector {
         }
     }
 
-    private ReleaseOperationLockOwner parseOwner(String output, String operationId) {
+    ReleaseOperationLockOwner parseOwner(String output, String operationId) {
         String ownerLine = output.lines()
                 .filter(line -> line.startsWith(OWNER_PREFIX))
                 .reduce((first, second) -> second)
