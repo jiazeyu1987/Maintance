@@ -4070,3 +4070,4 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - 2026-09-21T06:00:00+08:00	20260919-button-only-prod-release	RESULT	r104 在测试服只读目标预检失败，未发生 NAS/测试服/正式服写入；根因是已执行注册证提醒迁移被修改后摘要漂移。按用户要求暂停发布，先以 BDD/TDD 恢复迁移不可变性、将目标预检关联外置，再执行静态检查。
 - 2026-09-21T06:01:29+08:00	20260919-button-only-prod-release	RESULT	已恢复已执行注册证提醒迁移的不可变内容，发布清单改为从同名外部预检合同推导；迁移写入函数新增强制租约栅栏。维护相关 208 passed，应用 15 passed，迁移策略 632 PASS，AST/compileall/diff-check PASS；本轮未执行发布。
 - 2026-09-21T06:10:00+08:00	20260919-button-only-prod-release	RESULT	应用修复已融入本地集成提交 `2442863e9`；维护 r94-r104 完整修复链已融入本地集成提交 `df634b6`。融合结果应用 15 passed / 632 PASS，维护 208 passed / AST / compileall / diff-check PASS；未启动任何发布。
+- 2026-09-21T06:16:00+08:00	20260919-button-only-prod-release	RESULT	完成融合后完成度补审：维护后端 40 tests/package PASS，前端 typecheck/build PASS；DCC 完整定向类首轮 5/6 暴露旧测试要求改写历史迁移，修正为“历史摘要不变+后续迁移收口 910218”后 6/6 PASS，配套回归 18 passed；未发布。

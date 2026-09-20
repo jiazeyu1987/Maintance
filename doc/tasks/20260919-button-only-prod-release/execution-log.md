@@ -236,3 +236,8 @@
 - GREEN: static-regression -> PASS；维护发布/锁/预检套件 `208 passed`，迁移策略 `migrationCount=632`，`git diff --check`、PowerShell AST、Python compileall 全部通过。`PSScriptAnalyzer` 本机未安装，未将其伪造为通过证据。
 - INFO: 按用户本轮“先不发布”要求，未启动新 build-release、publish-test、mark-tested 或 promote-prod。
 - GREEN: local-integration-final -> PASS；应用修复提交 `61b6a98e5` 已融入本地应用集成分支为 `2442863e9`，完整应用门禁为 15 passed / migrationCount=632；维护发布分支 r94-r104 全部代码修复与最新写入栅栏已融入本地维护集成分支 `df634b6`，融合结果 208 passed、AST/compileall/diff-check PASS。
+- RED: final-dcc-class-regression -> FAIL；在应用融合结果运行完整 `DccRegistrationCertificateReminderSchemaTest` 得到 5/6，失败断言仍要求已执行历史迁移直接包含 `roleIds:[910218]`；该断言与“旧迁移不可变、后续迁移收口为 910218”冲突。
+- BDD: 历史迁移与当前角色契约分层验证 -> Given 早期提醒迁移已在环境执行且后续业务批准仅使用 910218，When 执行 DCC 完整定向测试，Then 测试必须验证早期 SQL 冻结内容不变，并单独验证后续迁移将当前有效角色收口为 910218。
+- GREEN: final-dcc-class-regression -> PASS；`mvn -q "-Dtest=DccRegistrationCertificateReminderSchemaTest" "-Dsurefire.failIfNoSpecifiedTests=true" test` -> 6/6 passed；早期迁移断言恢复为冻结历史种子 `[910218,910231]`，后续迁移测试独立断言 `JSON_ARRAY(910218)` 且禁止 `910231`。
+- REGRESSION: final-application-contracts -> `python -X utf8 -m pytest -q script/tests/test_dcc_registration_certificate_notification_role_scope_backfill_sql.py script/tests/test_recent_permission_migrations_mysql.py script/tests/test_release_migration_policy_gate.py` -> 18 passed。
+- REGRESSION: final-maintenance-build -> `mvn -q test package` -> 40 tests, 0 failures/errors，jar 生成；`corepack pnpm typecheck` 和 `corepack pnpm build` -> PASS。

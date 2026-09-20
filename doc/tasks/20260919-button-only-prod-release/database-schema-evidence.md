@@ -12,9 +12,9 @@
 
 ## Schema, migration, fixture, seed, index, or constraint changes
 
-- `20260818_dcc_registration_certificate_reminder.sql`：注册证提醒任务种子参数改为 `roleIds:[910218]`。
+- `20260818_dcc_registration_certificate_reminder.sql`：保持已执行的历史种子内容与摘要不变（历史值为 `roleIds:[910218,910231]`）；不通过改写旧迁移实现当前业务规则。
 - `20260830_dcc_registration_certificate_notification_role_scope_backfill.sql`：在同一显式事务内将任务参数修正为 `roleIds:[910218]`，再基于该正式角色回填公司范围；无权限推断、无补造角色、无静默删除。
-- `scripts/tests/test_dcc_notification_role_scope_mysql.py` 与应用仓对应静态/JUnit 测试同步验证 `[910218]` 契约。
+- `scripts/tests/test_dcc_notification_role_scope_mysql.py` 与应用仓对应静态/JUnit 测试分别验证历史迁移不可变和后续迁移的 `[910218]` 最终契约。
 
 ## Data safety analysis
 
@@ -37,7 +37,7 @@
 
 ## BDD scenarios
 
-- BDD: 注册证通知角色收口为 910218 -> Given 业务确认注册证通知只发送给现有角色 `910218`，When 迁移修正任务参数并回填公司范围，Then SQL 必须写入 `[910218]`，不得包含或要求 `910231`。
+- BDD: 注册证通知角色收口为 910218 -> Given 业务确认注册证通知只发送给现有角色 `910218`，When 后续迁移修正任务参数并回填公司范围，Then 后续 SQL 必须写入 `[910218]`且不得包含或要求 `910231`，同时早期已执行 SQL 必须保持不可变。
 - BDD: 通知角色修正事务回滚 -> Given `infra_job.handler_param` 只有 `actorId` 且 scope 写入后发生数据库异常，When 执行迁移，Then `infra_job.handler_param` 与 `mdm_role_company_scope` 必须一起回滚。
 
 ## RED command and expected failure
@@ -52,13 +52,13 @@
 
 ## Migration verification
 
-- `python -X utf8 script/release/run-release-migration-policy-gate.py --sql-root sql/mysql` -> `status=passed`，`migrationCount=620`。
-- `rg -n "910231" ...` -> 仅测试断言中存在“不得包含 910231”的检查，业务 SQL 不再引用该角色。
+- `python -X utf8 script/release/run-release-migration-policy-gate.py --sql-root sql/mysql` -> `status=passed`，`migrationCount=632`。
+- `rg -n "910231" ...` -> 已执行的历史提醒种子为不可变证据；当前有效的后续角色收口迁移不引用 `910231`。
 
 ## Verification
 
-- `python -X utf8 script/release/run-release-migration-policy-gate.py --sql-root sql/mysql` -> `status=passed`，`migrationCount=620`。
-- `rg -n "910231" ...` -> 仅测试断言中存在“不得包含 910231”的检查，业务 SQL 不再引用该角色。
+- `python -X utf8 script/release/run-release-migration-policy-gate.py --sql-root sql/mysql` -> `status=passed`，`migrationCount=632`。
+- `rg -n "910231" ...` -> 历史迁移中的冻结值保留；后续有效迁移仅写入 `910218`。
 
 ## Blockers
 

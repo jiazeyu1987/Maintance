@@ -29,8 +29,10 @@ PASS (code gate) / RELEASE DEFERRED — 13 项中的代码、静态和隔离行�
 - 维护发布、锁、预检与包治理回归 -> `208 passed`。
 - 目标预检/迁移矩阵/SQL/包治理回归 -> `170 passed`。
 - 应用迁移真实 MySQL 与合同 -> `15 passed`。
+- DCC 注册证完整定向类 -> `6/6 passed`；配套迁移合同/真实 MySQL/策略定向回归 -> `18 passed`。
 - 应用迁移策略门禁 -> PASS，`migrationCount=632`。
 - `publish-int-ruoyi.ps1`、`recover-release-operation-lock.ps1` AST -> PASS。
+- 维护后端全量 `mvn -q test package` -> 40 tests，0 failures/errors，package PASS；维护前端 typecheck/build -> PASS。
 
 ## Remaining Gates
 
