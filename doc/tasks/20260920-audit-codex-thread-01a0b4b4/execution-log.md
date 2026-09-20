@@ -35,3 +35,13 @@
 - 经验沉淀复核继续使用已加载的 project-experience-consolidation：现有唯一源码、模块验证、终态和隔离门禁已覆盖原则；本轮作为相同问题的复发证据留在审查记录，不新建长期文档。
 - GREEN: experience-preflight -> PASS，第二轮 closeout 仅审查目录，无删除候选、不操作原任务资源。
 - GREEN: second-review-closeout -> PASS，UTF-8、diff-check、cleanup preview/apply 均通过；删除 0 项。第二轮审查 completed，原任务状态不作更改。
+
+## 第二轮纠偏传达
+- 用户明确要求再次把正确做法发给原任务并让其据此执行。
+- 继续同一已完成审查任务的协调里程碑；既有授权覆盖发送，不重新请求确认。
+- 传达范围：复核实时状态、停止重复启动未经充分验证的昂贵演练、外部脚本加载与 Java 打包区分、证据生成行为验证、增量链保护、终态/中断收束与隔离工作区。
+- GREEN: second-guidance-send -> PASS，send_message_to_thread 向精确目标 threadId 返回成功；要求先逐项回应已确认/待修复/验证通过/阻塞，再自主执行整改。未变更对方模型设置。
+- 送达和整改落实分别判断，不以工具接受消息宣称已执行；不停止正在安全写入的演练，也不在本审查任务操作原任务资源。
+- GREEN: experience-preflight -> PASS，本次只协调与更新自有记录，复用既有经验门禁，无新增可删除产物。
+- GREEN: second-guidance-context-delivery -> PASS，目标 rollout 于 2026-09-20 15:02:37 +08:00 记录本轮完整指导的 codex_delegation 工具输出，确认进入执行上下文；仍不代表已落实。
+- GREEN: second-guidance-closeout -> PASS，preview/apply 删除 0 项、无 blocker；协调里程碑 completed。
