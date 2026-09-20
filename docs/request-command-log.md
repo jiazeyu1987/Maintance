@@ -3711,3 +3711,10 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Action intent: 在最新应用远程主干补齐正式晋级按钮合同测试，并用最终集成 SQL 重跑真实 MySQL 回滚/幂等验证。
 - Evidence: 应用远程 `origin/int_main=014b45832133848077a39ec163596d9fc1d63369`；`RuntimeControlOperationActionPromotionTest` PASS；DCC SQL 静态 3 passed；DCC JUnit 6 passed；migration policy `passed/632`；最终 SQL 真实 MySQL 5 passed。
 - Deployment status: 仅提交/推送与本地验证，未重新构建、未部署测试服、未 mark-tested、未晋级正式服。
+
+## 2026-09-20 18:12 CST — 维护修复链验证与主干融合阻塞
+
+- User request: 核清维护仓发布修复是否进入主干，并补齐真实验证。
+- Action intent: 验证维护仓恢复锁读取器、恢复脚本所有权、发布锁行为和最终 SQL 实库测试；检查本地维护 `int_main` 是否可安全融合。
+- Evidence: 维护后端 `RuntimeControlContractTest,RuntimeControlOriginalParityTest,RuntimeControlOriginalGovernanceParityTest,RuntimeReleaseLockInspectorTest` -> 32 passed；Python 发布锁/SQL 行为回归 -> 19 passed；修复链保护分支 `codex/r260920-button-prod-release-final-verification=9b9df6bd551a91cd2ae94a84e658192bb5481cbe`。
+- Blocker: 维护仓主工作区 `D:\ProjectPackage\Int\IntRuoyiMaintance` 的 `int_main` 有 21 项未提交/未跟踪改动，不能强行融合覆盖；维护仓无 remote，不能远程推送。
