@@ -81,3 +81,14 @@
 - 经验沉淀复核沿用 project-experience-consolidation：不可变 manifest、目标绑定、整链恢复和真实保护点均命中既有 release-backup-restore 门禁；缺陷及精确行号保留本任务报告，不重复新建长期规则。
 - GREEN: experience-preflight -> PASS，本轮只收尾自有审查记录，无删除候选、无本任务运行资源。
 - GREEN: extended-review-closeout -> PASS，审查文档 UTF-8、diff-check、preview/apply 通过，删除 0 项；追加审查 completed，不代表产品缺口关闭。
+
+## 第二次追加审查
+- 用户再次追问其他问题；续用已有任务记录，前序审查已 completed。
+- 本轮只读检查此前未覆盖的并发操作、恢复失败终态、数据库/对象覆盖一致性；沿用 UTF-8、凭据脱敏、生产者消费者交叉核对和不干预执行器门禁。
+- 基线：22:30 整改 worktree 仍干净，HEAD=e20b77d50。
+- 四项新增：对象载荷校验在数据库 DROP/导入之后；部分恢复失败仅记 failed 并释放 mutex，缺少环境隔离；rollback-app 不在相同 mutex 集合但会重启服务；latestUnknownOperation 只搜索全局最近 200 条，且 blocked 请求也先保存新记录，会挤出旧 unknown。
+- GREEN: extended-review-round2 -> PASS，已核对恢复 use case、数据库/对象实际执行、runner 状态、环境门禁及 operation store 顺序；未执行并发或破坏性实验。
+- 排除未经证实问题：数据库恢复存在 DROP/CREATE；主对象恢复使用 --remove，未将其他辅助路径表现混入主路径结论。
+- 经验沉淀复核：复用 project-experience-consolidation 及现有完整性前置检查、环境互斥、UNKNOWN 持续保护门禁；精确缺陷保留任务报告，不新建重复长期经验文档。
+- GREEN: experience-preflight -> PASS，本轮只收尾自有审查记录，无删除候选和任务运行资源。
+- GREEN: extended-review-round2-closeout -> PASS，审查文档 UTF-8、diff-check、preview/apply 通过，删除 0 项；本轮审查 completed，原任务缺陷仍待修复验证。

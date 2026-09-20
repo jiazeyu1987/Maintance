@@ -268,3 +268,42 @@ detached runner 已改善 Java 生命周期耦合，但独立 runner 自身被�
 
 ### 放行意见
 当前正常演练可继续收束并保留真实结果；在上述证据绑定和覆盖前数据保护等缺口关闭前，不应执行受控覆盖恢复。它们是源码审查发现，尚未在本轮通过破坏性实验复现，更没有观察到实际数据丢失。
+
+## 第二次追加审查：2026-09-20 22:30 后，基线 e20b77d50
+
+以下四项是本轮新确认的代码路径缺口。未执行恢复、回滚、并发操作或破坏性复现，不声称已发生数据事故。
+
+### P1：对象完整性校验晚于数据库破坏性覆盖
+`RestoreData.psm1:278` 先导入数据库，281 行才恢复对象。`MySqlOps.psm1:440–451` 明确构造 DROP DATABASE / CREATE DATABASE 与导入命令，565–571 行按该顺序执行。`ObjectOps.psm1:1212–1243` 在对象恢复阶段才读取对象清单、检查 SHA-256、读取仓库对象并校验实际内容。
+
+恢复前候选检查仅证明必要文件存在和部分元数据合格，`RestoreData` 未在数据库覆盖之前调用已有 Test-BackupOpsObjectBucketIntegrity。若备份对象已丢失或损坏，当前流程可能先替换数据库，再发现附件无法恢复，留下数据库与对象不一致的现场。先前演练通过不能代替此次覆盖前对实际载荷的完整检查。
+
+修正方向：在任何 DROP/覆盖动作之前完成整个恢复集的数据库、对象、配置和依赖载荷校验，并固定执行计划和仓库引用；不能只逐阶段发现下一部分不可用。
+
+### P1：破坏性恢复失败后没有持续环境隔离
+`RestoreData.psm1:314` 统一转入 New-RestoreDataFailureResult，默认状态 fail，主要写报告和通知；没有按是否已经执行 DROP/导入/对象覆盖区分“未写入失败”与“现场部分恢复”。外层 `backup-ops.ps1:374–377` 不论是否已进入破坏性阶段都会释放本机 mutex。
+
+Windows detached runner 在 `RuntimeControlCommandExecutorImpl.java:236–239` 将非零退出或异常标为 failed。`RuntimeControlServiceImpl.java:1079–1098` 的持续写保护只拦 unknown，不拦上述部分恢复的 failed。因此一旦恢复中途失败，下次操作不会因“目标处于不一致恢复现场”而持续被该门禁阻断；普通 restart/rollback 可能重新启动未恢复完整的环境。
+
+修正方向：持久化破坏性执行阶段及独立的环境隔离/恢复责任状态，故障后保持写保护，直到确认远端写入者退出、数据一致并完成明确处置。禁止把“任何失败都启动服务”当作修复，也不能仅靠进程存活期 mutex 承担故障后隔离。
+
+### P1：应用回滚没有进入与数据恢复相同的互斥范围
+`backup-ops.ps1:338` 的互斥动作集包含 backup-now、backup-scheduled、rehearsal、restore-data，却遗漏 rollback-app。同一入口仍在 361–362 行执行 RollbackApp use case；`RollbackApp.psm1:143–146` 会更新 IMAGE_TAG 并重启 backend/frontend。
+
+Java service 使用可并发执行的 operationExecutor；环境门禁只检查 unknown，不检查活动 running 的备份/恢复。对于其他参数和候选均有效的同目标回滚请求，这条实现路径没有与正在进行的数据恢复共享互斥，存在恢复数据库期间回滚程序并启动业务写入的风险。
+
+这比上一轮“跨环境锁尚待核验”更具体：本轮已确认同一个 PowerShell 入口内 rollback-app 被明确排除。仍不据此推断所有部署子系统均无锁。
+
+修正方向：备份、恢复、回滚及会修改同一目标运行态的操作必须共享目标环境级互斥/租约，在服务端原子取得执行权；前端按钮禁用只能作为辅助。
+
+### P1：UNKNOWN 写保护会被操作历史数量挤出
+`RuntimeControlServiceImpl.java:1095` 使用 `operationStore.listLatest(200)` 搜索 unknown。`RuntimeControlOperationStore.java:65–69` 是先按所有状态文件修改时间排序并截取 200 条，再做环境和状态过滤；它不是查询全部未解决的 unknown。
+
+另外 `executeAction` 在 209–224 行先保存新的 operation，228 行才运行门禁，失败后又保存 blocked。因此即使只是后续被阻断的尝试，也会产生更新的历史记录。当未处理 unknown 落到最近 200 条之外时，该方法返回 null，写保护未经人工确认便失效；其他环境的新操作同样能占用这个窗口。
+
+修正方向：环境安全状态必须由独立持久记录或所有未解决操作的完整查询决定，不能复用 UI 历史分页。增加“超过 200 条后 unknown 仍阻断”及“blocked 尝试不能解除隔离”的行为测试。
+
+### 本轮排除项与审查边界
+已确认当前数据库恢复确实先 DROP/CREATE，不能再提出“导入后残留旧表”的未经证实问题；当前主对象恢复路径使用 `mc mirror --overwrite --remove`，不能仅凭其他归档辅助路径缺少 --remove 就认定主路径必然残留对象。
+
+本轮仍是静态路径核对。前面所有发现应作为一张整改清单统一复审和验证，而不是每发现一项就再执行一次完整恢复。当前日志编码、manifest 证据绑定、真实数据保护点、整链恢复及本轮并发/失败隔离等放行缺口尚未共同关闭。
