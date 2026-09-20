@@ -3704,3 +3704,10 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Action intent: 调整注册证通知角色迁移和真实 MySQL 回滚测试，确认 query-current 权限不会作为通知角色 fallback。
 - Evidence: `test_dcc_notification_role_scope_mysql.py` 5 passed；应用仓静态 SQL 测试 3 passed；`DccRegistrationCertificateReminderSchemaTest` 6 passed；迁移策略门禁 `status=passed`。
 - Deployment status: 未重新构建、未部署测试服、未 mark-tested、未晋级正式服。
+
+## 2026-09-20 18:10 CST — 应用主干补齐正式晋级合同与最终 SQL 实库验证
+
+- User request: 核清并融合所有必要改动，在最终版本上补验证，再冻结同一发布包完成真实按钮晋级。
+- Action intent: 在最新应用远程主干补齐正式晋级按钮合同测试，并用最终集成 SQL 重跑真实 MySQL 回滚/幂等验证。
+- Evidence: 应用远程 `origin/int_main=014b45832133848077a39ec163596d9fc1d63369`；`RuntimeControlOperationActionPromotionTest` PASS；DCC SQL 静态 3 passed；DCC JUnit 6 passed；migration policy `passed/632`；最终 SQL 真实 MySQL 5 passed。
+- Deployment status: 仅提交/推送与本地验证，未重新构建、未部署测试服、未 mark-tested、未晋级正式服。

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import re
 import subprocess
 import uuid
@@ -7,13 +8,18 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-MIGRATION = (
-    ROOT.parent
-    / "a"
-    / "IntRuoyiBackend"
-    / "sql"
-    / "mysql"
-    / "20260830_dcc_registration_certificate_notification_role_scope_backfill.sql"
+MIGRATION = Path(
+    os.environ.get(
+        "DCC_NOTIFICATION_ROLE_SCOPE_MIGRATION",
+        str(
+            ROOT.parent
+            / "a"
+            / "IntRuoyiBackend"
+            / "sql"
+            / "mysql"
+            / "20260830_dcc_registration_certificate_notification_role_scope_backfill.sql"
+        ),
+    )
 )
 
 
