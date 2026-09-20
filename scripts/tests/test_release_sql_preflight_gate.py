@@ -509,6 +509,19 @@ def test_release_runtime_env_rebinds_generic_edhr_endpoint_to_target_host() -> N
     assert "-TargetServerHost $TargetServerHost" in content_block
 
 
+def test_release_runtime_env_endpoint_gate_checks_env_next_before_switch() -> None:
+    script = read_publish_script()
+
+    start = script.index("function Assert-RemoteRuntimeEnvEdhrEndpoint")
+    end = script.index("function Prepare-RemoteReleaseTree", start)
+    block = script[start:end]
+
+    assert "$remoteEnvNextLiteral" in block
+    assert "test -f $remoteEnvNextLiteral" in block
+    assert "grep -Fx $expectedEndpointLiteral $remoteEnvNextLiteral" in block
+    assert "grep -Fx $expectedEndpointLiteral $remoteEnvLiteral" not in block
+
+
 def test_deploy_release_imports_remote_runtime_env_before_secret_gates() -> None:
     script = read_publish_script()
 

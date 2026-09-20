@@ -5166,16 +5166,16 @@ function Assert-RemoteRuntimeEnvEdhrEndpoint {
     if ([string]::IsNullOrWhiteSpace($EdhrS3Endpoint)) {
         Fail 'EDHR_S3_ENDPOINT is required before writing the target runtime environment.'
     }
-    $remoteEnvLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteEnv -Purpose 'remote runtime env path'
+    $remoteEnvNextLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteEnvNext -Purpose 'remote runtime env.next path'
     $expectedEndpointLine = "EDHR_S3_ENDPOINT=$EdhrS3Endpoint"
     $expectedEndpointLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $expectedEndpointLine -Purpose 'remote runtime EDHR endpoint'
     $command = @"
 set -eu
-test -f $remoteEnvLiteral
-grep -Fx $expectedEndpointLiteral $remoteEnvLiteral
+test -f $remoteEnvNextLiteral
+grep -Fx $expectedEndpointLiteral $remoteEnvNextLiteral
 "@
     Invoke-SshCommand $command
-    Info "Remote runtime .env EDHR_S3_ENDPOINT verified: $EdhrS3Endpoint"
+    Info "Remote runtime .env.next EDHR_S3_ENDPOINT verified: $EdhrS3Endpoint"
 }
 
 function Prepare-RemoteReleaseTree {
