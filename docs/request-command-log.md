@@ -4058,3 +4058,5 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - 2026-09-21T02:00:00+08:00	20260919-button-only-prod-release	RESULT	维护修复已在独立融合 worktree `D:\IntRuoyiWorktree\r260921-maintenance-main-integration\m` 基于主干 `b45027592a68cbf8f68b98fcf09a7616da9dc654` 完成语义合并；后端 package、发布回归 189 项、前端依赖门禁/typecheck/build 均通过。未合回主工作区、未构建发布包、未写测试服或正式服。
 - 2026-09-21T02:20:00+08:00	20260919-button-only-prod-release	COMMAND_INTENT	准备新发布专用 worktree：维护源固定融合提交 `f11a998`，应用/前端源固定已推送 `83c0e1c80`；先通过真实控制台按钮 build-release、publish-test、mark-tested，再以同一 releaseTag promote-prod；任何门禁失败立即停止，不手工改库/锁/.env/成功状态。
 - 2026-09-21T02:47:00+08:00	20260919-button-only-prod-release	RESULT	真实按钮 r94 在脚本参数校验阶段失败，根因是 UI `code-only` 与脚本 `app-release` 契约断开；未发生远端写入。后端已修复映射，r94 判废，下一轮必须使用新 releaseTag r95。
+- 2026-09-21T02:56:00+08:00	20260919-button-only-prod-release	RESULT	真实按钮 r95 在前端 `ts:check` 前置依赖缺失处失败，未上传 NAS、未写测试服或正式服；已在专用应用 worktree 按锁文件安装 1103 依赖并通过 `ts:check`，r95 判废，下一轮使用 r96。
+- 2026-09-21T03:20:00+08:00	20260919-button-only-prod-release	RESULT	r96 在源码冻结阶段因维护任务记录未提交而阻断，未发生 NAS/测试服/正式服写入；提交记录后以新批准维护提交和新 releaseTag r97 重跑。

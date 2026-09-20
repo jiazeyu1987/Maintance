@@ -195,3 +195,8 @@
 - RED: r94-build-release-button -> FAIL；真实页面按钮 operation `op-2026-09-20T183458352894400Z-b9a93f96-6bd8-4efe-8e3e-716c173ac810` 在 PowerShell 参数校验前失败：前端提交 `-PublishScope code-only`，发布脚本正式契约只接受 `app-release`；未进入 Maven/Docker/NAS/服务器写入。
 - GREEN: publish-scope-contract-regression -> PASS；后端执行参数将用户可见 `code-only` 映射为脚本 `app-release`，保留 `-SkipDatabaseSync -SkipMinioSync`；`RuntimeControlContractTest#buildReleaseCodeOnlyPreviewSkipsDatabaseAndMinioData` PASS。
 - BLOCKER: r94 已判废，禁止复用；必须提交修复并以新 releaseTag `release-20260921-button-prod-r95` 重新通过页面预览和执行。
+- RED: r95-build-release-button -> FAIL；真实按钮已完成 Maven BUILD SUCCESS、迁移策略和 Docker 前置，但在应用前端 `ts:check` 处因专用 worktree 缺少 `node_modules` 报 `cross-env is not recognized`；未上传 NAS、未写测试服或正式服，r95 判废。
+- GREEN: r95-frontend-dependency-preflight -> PASS；在同一专用应用 worktree 执行 `corepack pnpm install --frozen-lockfile`，1103 个依赖安装完成，`cross-env`/`vue-tsc` 可用，`corepack pnpm ts:check` PASS。
+- BLOCKER: r95 已判废，禁止复用；必须使用新 releaseTag `release-20260921-button-prod-r96`。
+- RED: r96-build-release-source-freeze -> FAIL；真实按钮已通过参数映射、Maven、Docker、前端依赖和 `ts:check` 前置，但维护 worktree 有本任务日志未提交改动，源码冻结返回 `SOURCE_DIRTY: maintenance`；未上传 NAS、未写测试服或正式服，r96 判废。
+- GREEN: source-freeze-cleanup -> PASS；仅提交本任务维护记录后，维护 worktree 将重新构建 jar 并以新的批准提交执行；r96 不复用。
