@@ -65,6 +65,7 @@ export interface RuntimeControlActionReqVO {
   reason: string
   prodConfirmText?: string
   targetEnvironment?: RuntimeControlTargetEnvironment
+  backupKind?: 'FULL' | 'INCREMENTAL'
   publishScope?: RuntimeControlPublishScope
   includeOnlyOffice?: boolean
   includeShowroomBuildPackage?: boolean
