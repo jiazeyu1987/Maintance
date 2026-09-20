@@ -1444,3 +1444,28 @@ HEAD-only 构建发布在维护仓或主程序仓主工作区 dirty，且需要�
 2. 阶段 2：制品合同。必查 `app-release` 白名单、禁止项双扫描、唯一 manifest、三语言固定摘要向量、NAS staging/READY；Fail Fast：出现任何数据制品、秘密、未声明文件、路径冲突或摘要漂移；必须记录双摘要和全文件验证。
 3. 阶段 3：编排与部署。必查持久化状态转换、CAS、环境租约、心跳/超时/取消、`RECOVERY_REQUIRED`、目标只读 preflight、`.env.next` 与失败 tag 退休；Fail Fast：operation/锁/写入后仍允许原 tag 重试或成功条件缺项；必须记录 errorCode、failedStage、operation 和恢复证据。
 4. 阶段 4：产品入口与验收。必查主程序 8081 页面、权限、三个主按钮、禁用原因、测试验收详情动作、一次性正式授权、桌面/窄屏 Playwright；Fail Fast：维护仓 standalone 被当成产品 PASS、UI 暴露基础设施自由参数、规定 Playwright 缺失或正式服缺授权；必须记录任务目录外浏览器证据。
+
+## 2026-09-21 已执行迁移不可变与外部目标预检门禁
+
+- Trigger: 历史迁移已在任一环境 APPLIED，但因结构演练、业务角色收口、新元数据或 `requiresTargetPreflight` 需求考虑修改旧 SQL。
+- Preflight check: 修改前同时读取源文件原始字节 SHA-256 和目标 `infra_release_migration` 已执行摘要，区分 LF/CRLF 字节影响；需要目标数据断言时，通过同名 `sql/mysql/target-preflight/<migrationId>.preflight.sql` 或外部注册表关联，不修改已执行 SQL；业务规则变更必须新增后续迁移。
+- Blocker: APPLIED migrationId 的源码摘要与台账不一致，planner 因摘要漂移把旧迁移重新规划为 APPLY，或演练跳过数据依赖迁移却没有可执行的外部只读预检时立即停止。
+- Verification: 回归测试固定已执行迁移的规范化摘要，并执行发布清单生成函数证明同名外部预检会生成 `requiresTargetPreflight=true`；用新鲜 target-state 证明旧 migrationId 为 `SKIP_ALREADY_APPLIED`，后续迁移独立验证当前业务契约。
+- Forbidden action: 禁止在旧 SQL 头追加元数据、直接改旧种子数据、覆盖 ledger 摘要或放宽预检来制造一致；禁止把后续有效规则的测试断言写到历史迁移上。
+- Evidence: `doc/tasks/20260919-button-only-prod-release/execution-log.md`，r104 失败证据与应用提交 `61b6a98e5`、`4b556f2de`。
+
+## 2026-09-21 所有远程组件首写入前取锁与失权实链门禁
+
+- Trigger: `deploy-release`、远程目录创建/清理、数据盘挂载、镜像上传、`.env` 切换、backend/frontend/Website 单组件部署、发布锁恢复或租约异常。
+- Preflight check: 只读检查 `infra_release_operation_lock` / `infra_release_migration` 及 executor/lease/heartbeat/write_fence 列完整；锁 schema 缺失时 fail fast 并走独立环境初始化，不在发布中无锁 ALTER。任一 backend/frontend/Website 远程组件都必须先取同一环境锁，再执行首次 `mkdir/mount/rm/upload/switch/start`；每个迁移台账和业务写入函数内部再校验精确 operation/releaseTag/executor/lease 所有权。
+- Blocker: 任何远程写入早于取锁，只有 backend 组件持锁，锁恢复后旧执行器仍可写入，或 SSH 非零退出被 stderr 文本/成功字符串掩盖时必须停止。
+- Verification: 除静态顺序和单元测试外，必须在测试服随机临时库执行实际 PowerShell→SSH→MySQL 产品函数：有效租约写入成功，替换租约后返回 `RELEASE_OPERATION_LOCK_LOST` 且第二条台账不存在；并发恢复只有一个赢家，结束后 `SHOW DATABASES LIKE 'release_lock_it_%'` 必须为空。
+- Forbidden action: 禁止用 Python 内存锁、字符串包含断言或替身 SSH 单独宣称真实锁行为通过；禁止为发布自动修补锁 schema、手工改业务库锁/台账或以日志字符串替代退出码。
+- Evidence: `doc/tasks/20260919-button-only-prod-release/execution-log.md`；`verify_recover_release_lock_remote_integration.py`；维护提交 `a6b8cfa`、`362e5cf`。
+
+### 阶段 checklist
+
+1. 发布前：只读确认锁 schema 完整，记录 operation/releaseTag/executor/lease；schema 缺失立即阻断。
+2. 首写入：先 acquire + ownership/heartbeat，再执行挂载、目录、上传和切换；任一组件都不例外。
+3. 迁移与切换：每个写入入口内再执行 write fence，失权后不更新迁移台账、`.env`、镜像或运行态。
+4. 验证与清理：实际临时库链同时验证正向写入、失权阻断、并发恢复单赢家及临时库清零。

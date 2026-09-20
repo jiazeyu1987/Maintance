@@ -261,3 +261,4 @@
 - BLOCKER: application-int-main-push -> GitHub HTTPS 上的标准 push 与单次 HTTP/1.1 push 均返回 `TLS unexpected eof while reading`；本地主干已融合，但不伪造远程推送成功。
 - RED: maintenance-latest-main-merge-conflicts -> FAIL；独立维护集成 worktree 合入最新 `int_main=4701511` 时，`frontend/package.json`、`App.vue`、`runtimeControl.ts` 产生 add/add 冲突。
 - GREEN: maintenance-latest-main-semantic-merge -> PASS；保留发布候选的正式晋级、锁恢复、源码快照 token、`onlyBuiltDependencies`，并合入主干的 FULL/INCREMENTAL 备份参数及登录/tenant 请求头；合并结果后端全量/package PASS，前端 typecheck/build PASS，发布套件 212 passed。
+- GREEN: project-experience-consolidation -> PASS；本轮可复用经验已合并到现有 `docs/release-build-preflight-lessons.md`，新增“已执行迁移不可变与外部目标预检”、“所有远程组件首写入前取锁与失权实链”门禁，并更新 `docs/experience-index.md` 关键词路由；未新建经验文档。

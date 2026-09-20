@@ -53,6 +53,8 @@
 
 - 反复打包 / 本地打包成功服务器失败 / 错误前移 / target-state 前移 / release-preflight / 同构安装演练 / BuildKit 缓存 / 构建缓存：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-07-服务器错误前移与反复打包收敛门禁`
 - 一键发布 / 按钮化发布 / 发布流程程序化 / without-data / app-release / 三按钮 / ReleaseWorkflow / 环境租约 / packageDigest / manifestDigest / R31-R44 防复发：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-11-按钮化-app-release-工作流设计前置门禁`
+- 已执行迁移不可变 / APPLIED 摘要漂移 / 改旧 SQL 头 / requiresTargetPreflight 外置 / 同名 preflight / 旧 migration 被重新 APPLY：`docs/release-build-preflight-lessons.md#2026-09-21-已执行迁移不可变与外部目标预检门禁`。
+- 首次远程写入前取锁 / frontend-only Website-only 环境锁 / RELEASE_OPERATION_LOCK_LOST / 租约替换无写入 / PowerShell SSH MySQL 真实锁集成：`docs/release-build-preflight-lessons.md#2026-09-21-所有远程组件首写入前取锁与失权实链门禁`。
 - build-release fresh target-state / release_build_preflight.py / prospective manifest / migration arrays drift / source dirty / release_docker_build_evidence.py / Docker COPY context fingerprint / manifest/docker-build-evidence.json / 移除 --no-cache：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-08-构建前-target-state-与-docker-原生缓存门禁`
 - with-data DCC 对象清单 / DCC_OBJECT_SNAPSHOT_MISSING / infra_file.path MinIO 缺失 / MinIO yudao 本地对象漂移 / quay.io/minio/mc / minio/mc:latest / docker inspect unclosed action：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-08-with-data-安装包-dcc-对象一致性与工具镜像门禁`
 
