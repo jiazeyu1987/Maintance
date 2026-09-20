@@ -221,3 +221,6 @@
 - RED: r102-build-release-preflight-test-discovery -> FAIL；真实按钮在应用迁移测试发现阶段把 `target-preflight/20260818...preflight.sql` 误识别为正式迁移，报 `MIGRATION_TEST_MISSING`；未上传 NAS、未写测试服或正式服，r102 判废。
 - GREEN: target-preflight-test-discovery-filter -> PASS；按规范化路径段排除任意 Git 根形式的 `target-preflight/`，发布工作流合同 14 passed。
 - BLOCKER: r102 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r103`。
+- RED: r103-build-release-static-contract -> FAIL；发布器路径段过滤实现通过，但旧测试仍断言固定 Git 根前缀，143 项套件为 142 passed/1 failed；未上传 NAS、未写测试服或正式服，r103 判废。
+- GREEN: release-workflow-regression -> PASS；更新断言为 `(^|/)target-preflight/` 任意 Git 根合同，完整发布脚本套件 143 passed。
+- BLOCKER: r103 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r104`。

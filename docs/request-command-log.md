@@ -4066,3 +4066,4 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - 2026-09-21T04:20:00+08:00	20260919-button-only-prod-release	RESULT	r100 在 schema rehearsal 第二轮重放早期迁移时发现后续列扩展导致合同 mismatch，未发生 NAS/测试服/正式服写入；已修复 rehearsal 按迁移连续双跑，下一轮使用 r101。
 - 2026-09-21T05:00:00+08:00	20260919-button-only-prod-release	RESULT	r101 确认 schema-only 当前快照已包含后续收件人列，早期注册证提醒迁移必须走真实目标预检而非当前快照重放；应用提交 `01b303531` 补 metadata 与预检，下一轮使用 r102。
 - 2026-09-21T05:20:00+08:00	20260919-button-only-prod-release	RESULT	r102 的迁移测试发现未按任意 Git 根形式排除 target-preflight，未发生 NAS/测试服/正式服写入；已按路径段修复过滤，下一轮使用 r103。
+- 2026-09-21T05:30:00+08:00	20260919-button-only-prod-release	RESULT	r103 仅剩旧静态测试固定路径断言失败，未发生 NAS/测试服/正式服写入；更新断言后完整发布脚本套件 143 passed，下一轮使用 r104。
