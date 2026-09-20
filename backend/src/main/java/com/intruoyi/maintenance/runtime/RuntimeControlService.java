@@ -854,14 +854,14 @@ public class RuntimeControlService {
                                                                            RuntimeControlNasBrowser.NasEntry entry) {
         String directoryName = entry.name();
         String packagePath = normalizeNasPath(entry.path());
-        String manifestPath = childPath(packagePath, "release-manifest.json");
+        String manifestPath = childPath(packagePath, "manifest.json");
         List<String> blockedReasons = new ArrayList<>();
         List<String> packageFileNames = listFileNames(nasConfig, packagePath, blockedReasons);
-        JsonNode manifest = packageFileNames.contains("release-manifest.json")
-                ? readJson(nasConfig, manifestPath, "release-manifest.json", blockedReasons)
+        JsonNode manifest = packageFileNames.contains("manifest.json")
+                ? readJson(nasConfig, manifestPath, "manifest.json", blockedReasons)
                 : null;
-        if (!packageFileNames.contains("release-manifest.json")) {
-            blockedReasons.add("缺少 release-manifest.json");
+        if (!packageFileNames.contains("manifest.json")) {
+            blockedReasons.add("缺少 manifest.json");
         }
 
         String releaseTag = directoryName;
@@ -875,31 +875,38 @@ public class RuntimeControlService {
 
         if (manifest != null) {
             releaseTag = blankToDefault(text(manifest, "releaseTag"), directoryName);
-            packageDirectoryName = text(manifest, "packageDirectoryName");
-            builtAt = text(manifest, "builtAt");
+            packageDirectoryName = blankToDefault(text(manifest, "packageId"), directoryName);
+            builtAt = text(manifest, "createdAt");
             publishScope = text(manifest, "publishScope");
-            component = text(manifest, "component");
+            JsonNode changeSet = node(manifest, "changeSet");
+            component = blankToDefault(text(manifest, "component"), text(changeSet, "component"));
             includeShowroomBuildPackage = booleanValue(manifest, "includeShowroomBuildPackage");
+            if (includeShowroomBuildPackage == null) {
+                includeShowroomBuildPackage = booleanValue(changeSet, "includeShowroomBuildPackage");
+            }
             onlyOfficeIncluded = booleanValue(manifest, "onlyOfficeIncluded");
+            if (onlyOfficeIncluded == null) {
+                onlyOfficeIncluded = booleanValue(changeSet, "includeOnlyOffice");
+            }
             if (isBlank(component)) {
-                blockedReasons.add("release-manifest.json 缺少 component");
+                blockedReasons.add("manifest.json 缺少 component");
             } else if (!List.of("full", "intruoyi", "backend", "frontend", "website").contains(component)) {
-                blockedReasons.add("release-manifest.json component 非法");
+                blockedReasons.add("manifest.json component 非法");
             }
             if (includeShowroomBuildPackage == null) {
-                blockedReasons.add("release-manifest.json 缺少 includeShowroomBuildPackage");
+                blockedReasons.add("manifest.json 缺少 includeShowroomBuildPackage");
             }
             if (onlyOfficeIncluded == null) {
-                blockedReasons.add("release-manifest.json 缺少 onlyOfficeIncluded");
+                blockedReasons.add("manifest.json 缺少 onlyOfficeIncluded");
             }
             if (isBlank(packageDirectoryName)) {
-                blockedReasons.add("release-manifest.json 缺少 packageDirectoryName");
+                blockedReasons.add("manifest.json 缺少 packageId");
             } else if (!directoryName.equals(packageDirectoryName)) {
-                blockedReasons.add("release-manifest packageDirectoryName 与目录不一致");
+                blockedReasons.add("manifest packageId 与目录不一致");
             }
             checksumPresent = hasReleasePackageChecksum(manifest);
             if (!checksumPresent) {
-                blockedReasons.add("release-manifest.json 缺少 artifact sha256");
+                blockedReasons.add("manifest.json 缺少 artifact sha256");
             }
         }
 

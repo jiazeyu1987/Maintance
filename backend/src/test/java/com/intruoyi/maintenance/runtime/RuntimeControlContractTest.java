@@ -54,6 +54,15 @@ class RuntimeControlContractTest {
     }
 
     @Test
+    void releasePackageCandidateUsesManifestV1AsTheOnlyAuthority() throws Exception {
+        String service = Files.readString(Path.of(
+                "src/main/java/com/intruoyi/maintenance/runtime/RuntimeControlService.java"), StandardCharsets.UTF_8);
+        assertThat(service).contains("childPath(packagePath, \"manifest.json\")");
+        assertThat(service).contains("readJson(nasConfig, manifestPath, \"manifest.json\", blockedReasons)");
+        assertThat(service).doesNotContain("缺少 release-manifest.json");
+    }
+
+    @Test
     void missingConfigurationFailsFast() {
         RuntimeControlProperties properties = new RuntimeControlProperties();
         properties.setRepoRoot("");
