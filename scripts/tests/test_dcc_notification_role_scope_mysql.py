@@ -40,10 +40,16 @@ def _database() -> str:
     return "dcc_role_scope_test_" + uuid.uuid4().hex[:12]
 
 
-def _schema(database: str, *, missing_role: bool = False, tenant_two_certificate: bool = False) -> str:
+def _schema(
+    database: str,
+    *,
+    missing_role: bool = False,
+    tenant_two_certificate: bool = False,
+    fail_after_scope_write: bool = False,
+) -> str:
     role = "" if missing_role else "INSERT INTO system_role (id, tenant_id, status, deleted) VALUES (1001, 1, 0, b'0');"
     cert_tenant = 2 if tenant_two_certificate else 1
-    return f"""
+    schema = f"""
 CREATE DATABASE `{database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `{database}`;
 CREATE TABLE infra_job (
@@ -97,6 +103,18 @@ INSERT INTO dcc_registration_certificate (id, tenant_id, owner_company_id, statu
 VALUES (300, {cert_tenant}, 200, 'ACTIVE', b'0');
 {role}
 """
+    if fail_after_scope_write:
+        return schema + """
+DELIMITER $$
+CREATE TRIGGER fail_after_notification_scope_insert
+AFTER INSERT ON mdm_role_company_scope
+FOR EACH ROW
+BEGIN
+  SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'forced post-write failure';
+END$$
+DELIMITER ;
+"""
+    return schema
 
 
 def _run_migration(database: str) -> subprocess.CompletedProcess[str]:
@@ -139,6 +157,20 @@ def test_notification_role_scope_migration_fails_closed_and_rolls_back_missing_r
         result = _run_migration(database)
         assert result.returncode != 0
         assert "notification role mapping" in (result.stderr + result.stdout).lower()
+        assert _query(database, "SELECT COUNT(*) FROM mdm_role_company_scope;") == "0"
+        assert _query(database, "SELECT handler_param FROM infra_job;") == '{"actorId": 1, "roleIds": [1001]}'
+    finally:
+        _drop(database)
+
+
+def test_notification_role_scope_migration_rolls_back_after_scope_write_failure() -> None:
+    database = _database()
+    try:
+        setup = _mysql(_schema(database, fail_after_scope_write=True))
+        assert setup.returncode == 0, setup.stderr
+        result = _run_migration(database)
+        assert result.returncode != 0
+        assert "forced post-write failure" in (result.stderr + result.stdout).lower()
         assert _query(database, "SELECT COUNT(*) FROM mdm_role_company_scope;") == "0"
         assert _query(database, "SELECT handler_param FROM infra_job;") == '{"actorId": 1, "roleIds": [1001]}'
     finally:
