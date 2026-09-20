@@ -19,7 +19,7 @@ PASS (code gate) / RELEASE DEFERRED — 13 项中的代码、静态和隔离行�
 | 9 | 预检与迁移条件一致 | 空 `menu_ids` 真实 MySQL RED/GREEN；目标预检矩阵 170 passed | PASS（已知审阅范围） |
 | 10 | 真实生产执行链行为测试 | 实际恢复脚本经 PowerShell→SSH→bash→测试服 intruoyi-mysql 临时库通过；新测试通过 AST 提取并执行生产迁移写入函数，失权时在 SSH/MySQL 前阻断 | PASS（隔离集成） |
 | 11 | 正确诊断顺序 | 本轮先真实谓词/实库复现，再修复和全量静态回归，未以按钮构建逐项试错 | PASS |
-| 12 | 维护仓主干融合与收尾 | 修复仍在保护 worktree；维护主工作区脏且维护仓无 remote | FAIL |
+| 12 | 维护仓主干融合与收尾 | 完整修复链已融入本地维护集成分支 `df634b6`，融合结果 208 passed；维护仓无 remote，不伪造推送证据 | PASS（本地融合） |
 | 13 | 一键正式发布最终验收 | 尚未执行同一 releaseTag 的真实按钮完整链路和正式运行态验收；本轮用户明确要求暂不发布 | DEFERRED |
 
 ## Verification Commands
@@ -34,5 +34,4 @@ PASS (code gate) / RELEASE DEFERRED — 13 项中的代码、静态和隔离行�
 
 ## Remaining Gates
 
-1. 将本轮两仓提交融合到各自本地集成 worktree，在融合结果上复验静态门禁。
-2. 用户后续授权发布时，创建全新临时发布 worktree，以同一 releaseTag 通过真实页面按钮完成 build-release、publish-test、真实测试验收、mark-tested、promote-prod 和正式运行态验收。
+1. 用户后续授权发布时，创建全新临时发布 worktree，以同一 releaseTag 通过真实页面按钮完成 build-release、publish-test、真实测试验收、mark-tested、promote-prod 和正式运行态验收。

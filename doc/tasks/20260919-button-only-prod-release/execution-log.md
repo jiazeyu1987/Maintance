@@ -235,3 +235,4 @@
 - GREEN: immutable-migration-and-external-preflight -> PASS；应用迁移定向测试 15 passed，注册证提醒迁移原始字节 SHA-256 与测试服已执行台账一致，外部预检合同存在；应用提交 `61b6a98e5`。
 - GREEN: static-regression -> PASS；维护发布/锁/预检套件 `208 passed`，迁移策略 `migrationCount=632`，`git diff --check`、PowerShell AST、Python compileall 全部通过。`PSScriptAnalyzer` 本机未安装，未将其伪造为通过证据。
 - INFO: 按用户本轮“先不发布”要求，未启动新 build-release、publish-test、mark-tested 或 promote-prod。
+- GREEN: local-integration-final -> PASS；应用修复提交 `61b6a98e5` 已融入本地应用集成分支为 `2442863e9`，完整应用门禁为 15 passed / migrationCount=632；维护发布分支 r94-r104 全部代码修复与最新写入栅栏已融入本地维护集成分支 `df634b6`，融合结果 208 passed、AST/compileall/diff-check PASS。
