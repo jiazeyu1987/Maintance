@@ -211,3 +211,7 @@
 - RED: r99-build-release-node-test-path -> FAIL；真实按钮已通过 Maven、ts:check、迁移 Python 测试和目标预检，但 Node 迁移合同使用 `process.cwd()`，发布器从维护根执行时错误读取 `m/ops/sql/mysql/...`，返回 ENOENT；未上传 NAS、未写测试服或正式服，r99 判废。
 - GREEN: node-migration-test-path -> PASS；应用合同测试按 `import.meta.dirname` 定位 `IntRuoyiBackend/sql/mysql`，直接 Node 执行 PASS；应用提交 `05674dbc6` 已合入发布 worktree。
 - BLOCKER: r99 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r100`。
+- RED: r100-build-release-schema-rehearsal-order -> FAIL；真实按钮通过 Maven、ts:check、141 项发布回归、Node/Python 应用迁移测试和目标预检后，本机 schema rehearsal 在第二轮重放 `20260818_dcc_registration_certificate_reminder.sql` 时因后续 `threshold_recipient_user_ids_json` 列扩展触发旧合同 mismatch；未上传 NAS、未写测试服或正式服，r100 判废。
+- ROOT_CAUSE: rehearsal 原实现先执行全部迁移再整体第二轮，跨越后续 schema 扩展后重跑早期严格合同，制造非真实历史漂移。
+- GREEN: schema-rehearsal-order-regression -> PASS；迁移演练改为每个迁移连续执行两次后再推进下一个，`python -X utf8 -m pytest -q scripts/tests/test_release_schema_rehearsal.py` -> 13 passed。
+- BLOCKER: r100 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r101`。

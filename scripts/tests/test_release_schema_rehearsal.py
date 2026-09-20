@@ -22,6 +22,37 @@ class FakeRunner:
         return ""
 
 
+def test_schema_rehearsal_replays_each_migration_before_advancing(tmp_path: Path):
+    schema = tmp_path / "schema.sql"
+    first = tmp_path / "001.sql"
+    second = tmp_path / "002.sql"
+    schema.write_text("CREATE TABLE t(id BIGINT PRIMARY KEY);\n", encoding="utf-8")
+    first.write_text("ALTER TABLE t ADD COLUMN first_name VARCHAR(20);\n", encoding="utf-8")
+    second.write_text("ALTER TABLE t ADD COLUMN second_name VARCHAR(20);\n", encoding="utf-8")
+    runner = FakeRunner()
+
+    run_schema_rehearsal(
+        mysql_image="mysql@sha256:" + "a" * 64,
+        schema_path=schema,
+        migration_paths=[first, second],
+        runner=runner,
+        container_name="release-rehearsal-order",
+    )
+
+    migration_calls = [
+        stdin.decode("utf-8").replace("\r\n", "\n")
+        for args, stdin in runner.calls
+        if stdin and "mysql --protocol=TCP -h127.0.0.1" in " ".join(args)
+        and b"ALTER TABLE" in stdin
+    ]
+    assert migration_calls == [
+        "ALTER TABLE t ADD COLUMN first_name VARCHAR(20);\n",
+        "ALTER TABLE t ADD COLUMN first_name VARCHAR(20);\n",
+        "ALTER TABLE t ADD COLUMN second_name VARCHAR(20);\n",
+        "ALTER TABLE t ADD COLUMN second_name VARCHAR(20);\n",
+    ]
+
+
 def _write_preflight(path: Path, migrations: list[Path], apply_names: set[str] | None = None) -> None:
     selected = apply_names if apply_names is not None else {migration.name for migration in migrations}
     path.write_text(
