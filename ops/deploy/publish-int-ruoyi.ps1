@@ -4464,7 +4464,14 @@ function Assert-ApplicationMigrationTestsDiscovered {
         (Join-Path $applicationRoot 'scripts\tests')
     )
     $testFiles = @($testRoots | Where-Object { Test-Path -LiteralPath $_ -PathType Container } |
-        ForEach-Object { Get-ChildItem -LiteralPath $_ -File -Include 'test_*.py','*.test.mjs' -Recurse })
+        ForEach-Object {
+            Get-ChildItem -LiteralPath $_ -File -Recurse |
+                Where-Object {
+                    $_.FullName -notmatch '[\\/](?:__pycache__|\.pytest_cache)(?:[\\/]|$)' -and
+                    $_.Name -notmatch '\.pyc$' -and
+                    ($_.Name -match '^test_.*\.py$' -or $_.Name -match '\.test\.mjs$')
+                }
+        })
     $discovered = @()
     foreach ($migrationId in $migrationIds) {
         $matches = @($testFiles | Select-String -SimpleMatch -Pattern $migrationId | Select-Object -ExpandProperty Path -Unique)

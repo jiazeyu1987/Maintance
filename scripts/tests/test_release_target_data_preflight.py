@@ -194,6 +194,8 @@ def test_application_migration_discovery_ignores_target_preflight_support_sql():
     body = script[start:script.index('\nfunction ', start + 1)]
     assert "IntRuoyiBackend/sql/mysql/target-preflight/" in body
     assert "-notmatch" in body
+    assert "__pycache__" in body
+    assert ".pyc" in body
 
 
 def test_source_approval_commits_are_required_and_forwarded_to_release_script():
