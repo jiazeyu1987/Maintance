@@ -131,9 +131,15 @@ public class RuntimeControlService {
                 Map.of("component", req.component()), req.reason(), command, logPath);
     }
 
-    public RuntimeControlOperationRespVO executeAction(RuntimeControlActionReqVO req) {
+    public synchronized RuntimeControlOperationRespVO executeAction(RuntimeControlActionReqVO req) {
         String operationId = nextOperationId();
         PreparedAction prepared = prepareAction(req, operationId, false);
+        if ("build-release".equals(prepared.action())
+                && operationStore.listLatest(200).stream()
+                .anyMatch(operation -> "build-release".equals(operation.action())
+                        && "RUNNING".equals(operation.status()))) {
+            throw new RuntimeControlException("已有构建正在运行，同一工作树拒绝并发构建");
+        }
         Path logPath = operationStore.operationLogPath(operationId);
         return startOperation(operationId, prepared.environment(), prepared.component(), prepared.action(),
                 prepared.actionLabel(), prepared.parameters(), req.reason(), prepared.command(), logPath);

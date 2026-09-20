@@ -6,7 +6,7 @@
 
 ## Current Status
 
-in_progress — 用户确认“以本机为准”后，r25 暴露管理者代表权限预检仍把本机/测试服共有的 `query=2、approve=1` 历史菜单树误判为冲突。已修正 `20260918_mes_management_representative_admin_permission` 迁移与目标预检：每个业务权限至少存在一个有效菜单即可，迁移绑定所有匹配菜单，不删除、合并或手工改目标数据。测试服只读预检返回 PASS，四组发布预检/迁移矩阵/SQL 合同/包治理测试 `170 passed`；应用提交 `c5dd152dc` 已推送 `origin/int_main`。下一步必须使用新 releaseTag 通过真实按钮重新构建，不复用 r25。
+in_progress — 已按最新 13 项审阅清单完成第一轮根因修复：两个多步 SQL 迁移加入显式事务、异常回滚和真实 RED/GREEN 合同；发布脚本取得锁后的完整部署段纳入统一 try/catch，锁释放延后到 HTTP/PDF/历史记录验收之后；维护命令执行器改为独立超时计时、异步日志读取、进程树终止和租约 token 脱敏；执行终态与经验归档解耦；同一工作树 build-release 增加服务端拒绝并发。后端 4 个定向测试通过，维护发布回归 `146 passed`，SQL 合同 `7 passed`。仍阻塞：真实 PowerShell/SSH/MySQL 失权写入集成验证、预览源码快照绑定、预检与正式迁移逐项行为对齐、维护仓主干融合及真实“点击正式晋级→同一已测包→正式运行态”验收。
 
 ## Milestones
 

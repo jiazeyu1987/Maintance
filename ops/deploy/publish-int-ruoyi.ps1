@@ -6960,14 +6960,15 @@ if (-not (Test-Path -LiteralPath $deployControlLocalRoot -PathType Container)) {
 }
 Write-Utf8LfNoBomFile -Path $remoteEnvLocal -Content $remoteEnvContent
 
-if ($publishBackend -and $Mode -ne 'build-release') {
-    Ensure-ReleaseMigrationStateSchema
-    Ensure-ReleaseOperationLockLeaseSchema
-    Invoke-ReleaseOperationLockAcquire
-    Assert-ReleaseOperationLockOwnership
-}
+try {
+    if ($publishBackend -and $Mode -ne 'build-release') {
+        Ensure-ReleaseMigrationStateSchema
+        Ensure-ReleaseOperationLockLeaseSchema
+        Invoke-ReleaseOperationLockAcquire
+        Assert-ReleaseOperationLockOwnership
+    }
 
-Info "Copying deploy control files to the $PublishTargetName server"
+    Info "Copying deploy control files to the $PublishTargetName server"
 $composeLocal = Join-Path $releaseDir 'docker-compose.yml'
 if (-not (Test-Path -LiteralPath $composeLocal)) {
     $composeLocal = $composeTemplate
@@ -7088,7 +7089,6 @@ if ($publishBackend -and $Mode -ne 'build-release') {
     Invoke-SshCommand "cat '$remotePostImportSql' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword -D ruoyi-vue-pro"
 }
 
-try {
     if ($publishBackend) {
         Write-ReleasePreflightPlan
         Invoke-RequiredDatabaseSqlScripts
@@ -7143,10 +7143,6 @@ try {
         Wait-RemoteHttpOk -Url "http://127.0.0.1:$WebsiteHostPort/showroom" -TimeoutSeconds 180
     }
 
-    if ($publishBackend) {
-        Invoke-ReleaseOperationLockRelease -Status 'APPLIED'
-    }
-
     if ($publishBackend) { Wait-HttpOk -Url "http://${ServerHost}:$BackendPort/actuator/health" -TimeoutSeconds 180 }
     if ($publishFrontend) { Wait-HttpOk -Url "http://${ServerHost}:$FrontendPort/" -TimeoutSeconds 180 }
     if ($publishFrontend) {
@@ -7168,6 +7164,10 @@ try {
 
     if ($Mode -eq 'deploy-release' -and @('prod', 'backup') -contains $Environment) {
         Write-NasReleaseDeploymentHistory -PackageTag $ReleaseTag -HistoryAction 'deploy' -HistoryEnvironment $Environment
+    }
+    if ($publishBackend) {
+        Assert-ReleaseOperationLockOwnership
+        Invoke-ReleaseOperationLockRelease -Status 'APPLIED'
     }
 } catch {
     if ($publishBackend) {

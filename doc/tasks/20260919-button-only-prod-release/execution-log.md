@@ -145,3 +145,14 @@
 - GREEN: preflight-contract-regression -> PASS；`python -X utf8 -m pytest -q scripts/tests/test_release_target_data_preflight.py scripts/tests/test_release_migration_preflight_matrix.py scripts/tests/test_release_sql_preflight_gate.py scripts/tests/test_release_package_governance.py` -> `170 passed in 45.56s`。
 - INFO: migration-policy-targeted -> historical dependency chain blocks local ad-hoc targeted gate；手工局部运行 `run-release-migration-policy-gate.py` 会沿 `20260814_mes_production_release_roles` 追到历史依赖 `20260611_mes_edhr_work_task_flow`，当前源码中无同名迁移文件。该问题非本次 SQL 差异引入，且 r25 构建路径已通过发布脚本内置迁移门禁后才进入目标预检；本轮不扩大为历史迁移元数据整改。
 - GREEN: app-main-push -> PASS；应用提交 `c5dd152dc 任务: 放宽管理者代表菜单预检` 已通过 branch runtime port guard 并推送 `origin/int_main`。
+
+## 2026-09-20 23:xx CST — 13 项审阅问题第一轮根因修复
+
+- BDD: migration rollback safety -> Given 标签打印退休和管理者代表权限迁移包含多步写入, When 任一后续 SQL 失败, Then 所有业务表写入必须由同一显式事务回滚并原样抛出错误。
+- RED: `python -X utf8 -m pytest -q script\tests\test_edhr_label_print_menu_removal_sql.py script\tests\test_mes_management_representative_admin_permission_sql.py` -> FAIL, 新增事务合同 2 项失败，两个 SQL 均无 `START TRANSACTION`/`COMMIT`/异常 `ROLLBACK`。
+- GREEN: 同一命令 -> PASS，`7 passed`；两个迁移均加入 `DECLARE EXIT HANDLER FOR SQLEXCEPTION`、`START TRANSACTION`、`COMMIT`、`ROLLBACK`、`RESIGNAL`。
+- BDD: release lock and command lifecycle -> Given 发布脚本已取得锁并执行上传/镜像/环境/HTTP/历史记录验收, When 任一步骤抛错或正常完成, Then 统一 try/catch 必须清理本操作锁，且锁保持到强制验收和历史记录完成；命令超时必须独立于日志 EOF 计时并终止进程树。
+- GREEN: `mvn -q -Dtest=RuntimeControlContractTest,RuntimeControlOriginalParityTest,RuntimeControlOriginalGovernanceParityTest,RuntimeReleaseLockInspectorTest test` -> PASS。
+- GREEN: `python -X utf8 -m pytest -q scripts/tests/test_release_sql_preflight_gate.py scripts/tests/test_release_operation_lock_behavior.py scripts/tests/test_release_operation_lock_mysql_behavior.py scripts/tests/test_publish_release_lock_cleanup.py scripts/tests/test_release_package_governance.py` -> `146 passed`。
+- GREEN: PowerShell AST -> PASS；发布脚本取得锁后的完整部署段已纳入统一 try/catch，APPLIED 释放移动到 HTTP/PDF/历史记录验收之后；命令执行器改为独立超时等待、异步日志泵、进程树终止及租约 token 脱敏；经验归档失败不再改写已持久化执行终态。
+- BLOCKER: 13 项中的真实 PowerShell/SSH/MySQL 端到端失权写入验证、预览快照绑定、维护仓主干融合和真实“晋级正式服”按钮验收尚未完成；在这些证据补齐前不得发布。

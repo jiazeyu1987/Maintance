@@ -3739,3 +3739,10 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Action intent: 不手工改测试服数据库；把管理者代表权限预检从“query/approve 合计恰好 2 个菜单”修正为“query 与 approve 每个业务权限至少存在一个有效菜单”，迁移继续绑定所有匹配菜单。
 - Evidence: 本机与测试服只读核对均为 `mes:pro-edhr-release:query=2`、`mes:pro-edhr-release:approve=1`；修正后远端只读预检返回 `TARGET_PREFLIGHT_PASS:20260918_mes_management_representative_admin_permission`；本地合同测试 `170 passed`；应用提交 `c5dd152dc` 已推送 `origin/int_main`。
 - Deployment status: r25 在只读目标预检失败，未执行迁移写入且判废；下一步使用新 releaseTag 通过真实按钮重跑。
+
+## 2026-09-20 23:xx CST — 13 项审阅问题第一轮修复验证
+
+- User request: 按最后一次源码核对的 13 项问题继续修复，不在缺陷包上部署。
+- Action intent: 先以 BDD/RED/GREEN 修复 SQL 事务、锁持有边界、命令超时/进程树、租约脱敏、执行终态与经验归档解耦、同一工作树并发构建拒绝；不启动新的远端发布。
+- Evidence: SQL 定向合同 `7 passed`；维护后端 `RuntimeControlContractTest,RuntimeControlOriginalParityTest,RuntimeControlOriginalGovernanceParityTest,RuntimeReleaseLockInspectorTest` PASS；维护发布/锁/包治理回归 `146 passed`；PowerShell AST PASS。
+- Deployment status: 未执行测试服/正式服写入；真实 PowerShell/SSH/MySQL 失权集成、预览快照绑定、维护仓主干融合和最终正式按钮闭环仍为 BLOCKER。

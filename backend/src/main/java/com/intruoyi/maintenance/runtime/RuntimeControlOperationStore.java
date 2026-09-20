@@ -124,8 +124,8 @@ public class RuntimeControlOperationStore {
                 summary,
                 current.resultLogPath()
         );
-        writeReleaseExperienceCandidate(updated);
         save(updated);
+        writeReleaseExperienceCandidate(updated);
     }
 
     public Path stateDir() {
@@ -153,13 +153,15 @@ public class RuntimeControlOperationStore {
             Files.writeString(candidatePath, releaseExperienceCandidate(operation), StandardCharsets.UTF_8,
                     StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (IOException ex) {
-            save(new RuntimeControlOperationRespVO(operation.operationId(), operation.requestedBy(),
-                    operation.requestedAt(), operation.environment(), operation.component(), operation.action(),
-                    operation.actionLabel(), operation.parameters(), operation.reason(), "FAILED",
-                    "自动生成发布经验候选失败: " + stateDir().resolve("release-experience-candidates.md"),
-                    operation.resultLogPath()));
-            throw new RuntimeControlException("自动生成发布经验候选失败: " + stateDir()
-                    .resolve("release-experience-candidates.md"), ex);
+            Path errorPath = stateDir().resolve("release-experience-candidates.errors.log");
+            try {
+                Files.createDirectories(errorPath.getParent());
+                Files.writeString(errorPath,
+                        operation.operationId() + ": " + ex.getMessage() + System.lineSeparator(),
+                        StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+            } catch (IOException ignored) {
+                // Execution status is already persisted; archive failure is separately observable.
+            }
         }
     }
 
