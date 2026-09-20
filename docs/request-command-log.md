@@ -4067,3 +4067,5 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - 2026-09-21T05:00:00+08:00	20260919-button-only-prod-release	RESULT	r101 确认 schema-only 当前快照已包含后续收件人列，早期注册证提醒迁移必须走真实目标预检而非当前快照重放；应用提交 `01b303531` 补 metadata 与预检，下一轮使用 r102。
 - 2026-09-21T05:20:00+08:00	20260919-button-only-prod-release	RESULT	r102 的迁移测试发现未按任意 Git 根形式排除 target-preflight，未发生 NAS/测试服/正式服写入；已按路径段修复过滤，下一轮使用 r103。
 - 2026-09-21T05:30:00+08:00	20260919-button-only-prod-release	RESULT	r103 仅剩旧静态测试固定路径断言失败，未发生 NAS/测试服/正式服写入；更新断言后完整发布脚本套件 143 passed，下一轮使用 r104。
+- 2026-09-21T06:00:00+08:00	20260919-button-only-prod-release	RESULT	r104 在测试服只读目标预检失败，未发生 NAS/测试服/正式服写入；根因是已执行注册证提醒迁移被修改后摘要漂移。按用户要求暂停发布，先以 BDD/TDD 恢复迁移不可变性、将目标预检关联外置，再执行静态检查。
+- 2026-09-21T06:01:29+08:00	20260919-button-only-prod-release	RESULT	已恢复已执行注册证提醒迁移的不可变内容，发布清单改为从同名外部预检合同推导；迁移写入函数新增强制租约栅栏。维护相关 208 passed，应用 15 passed，迁移策略 632 PASS，AST/compileall/diff-check PASS；本轮未执行发布。

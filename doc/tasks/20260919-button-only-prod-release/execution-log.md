@@ -224,3 +224,14 @@
 - RED: r103-build-release-static-contract -> FAIL；发布器路径段过滤实现通过，但旧测试仍断言固定 Git 根前缀，143 项套件为 142 passed/1 failed；未上传 NAS、未写测试服或正式服，r103 判废。
 - GREEN: release-workflow-regression -> PASS；更新断言为 `(^|/)target-preflight/` 任意 Git 根合同，完整发布脚本套件 143 passed。
 - BLOCKER: r103 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r104`。
+- RED: r104-build-release-migration-identity -> FAIL；真实按钮 operation `op-2026-09-20T213142089964Z-db58ce71-4940-4553-b68d-1763746ea9aa` 在测试服只读目标预检阶段失败，报告为 `15/29` 并指向 `20260818_dcc_registration_certificate_reminder`；未上传 NAS，未执行测试服或正式服写入，r104 判废。
+- ROOT_CAUSE: 测试服 `infra_release_migration` 已记录该迁移 `APPLIED` 且摘要为 `03a9b6aa...fabca48`；当前源码修改了已执行迁移的角色参数和元数据，导致摘要漂移并被错误规划为再次执行。
+- BDD: 已执行迁移不可变且预检外置 -> Given 测试服已执行注册证提醒迁移，When 后续需要将其排除于结构演练并在真实目标上预检，Then 不得修改旧 SQL 摘要，发布器必须通过同名 `.preflight.sql` 外部合同推导 `requiresTargetPreflight`。
+- RED: `python -X utf8 -m pytest -q script/tests/test_recent_permission_migrations_mysql.py -k immutable` -> FAIL，当前迁移内容与已执行摘要对应的不可变内容不一致。
+- RED: `python -X utf8 -m pytest -q scripts/tests/test_release_sql_preflight_gate.py -k external_contract` -> FAIL，当前发布清单仅从旧 SQL 头元数据读取 `requiresTargetPreflight`，不会从外部预检合同推导。
+- BDD: 失权执行器的写入函数自我阻断 -> Given deploy-release 执行器已不持有发布锁，When 迁移台账批量更新或单条迁移执行函数被调用，Then 函数必须在 SSH/MySQL 写入前以 `RELEASE_OPERATION_LOCK_NOT_HELD` 失败，不得仅依赖外层调用顺序。
+- RED: `python -X utf8 -m pytest -q scripts/tests/test_publish_release_lock_cleanup.py -k actual_migration_writers` -> FAIL，实际发布函数中尚无 `Assert-ReleaseOperationWriteFence`，失权时写入函数不能自我阻断。
+- GREEN: 同一命令 -> PASS；测试通过 PowerShell AST 提取并执行生产函数体，证明未持锁时迁移台账更新和单条迁移均在 SSH 前失败，`sshCalled=false`。
+- GREEN: immutable-migration-and-external-preflight -> PASS；应用迁移定向测试 15 passed，注册证提醒迁移原始字节 SHA-256 与测试服已执行台账一致，外部预检合同存在；应用提交 `61b6a98e5`。
+- GREEN: static-regression -> PASS；维护发布/锁/预检套件 `208 passed`，迁移策略 `migrationCount=632`，`git diff --check`、PowerShell AST、Python compileall 全部通过。`PSScriptAnalyzer` 本机未安装，未将其伪造为通过证据。
+- INFO: 按用户本轮“先不发布”要求，未启动新 build-release、publish-test、mark-tested 或 promote-prod。
