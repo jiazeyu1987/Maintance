@@ -256,3 +256,4 @@
 - GREEN: all-remote-components-lock -> PASS；新增 `$requiresReleaseOperationLock = deploy-release && (backend || frontend || Website)`，三类远程组件统一取锁、成功释放与异常释放，数据盘、目录、部署控制文件、Website 切换、`.env` 切换及服务启动前均复核写入栅栏。
 - RED: full-release-gate-old-lock-assertion -> FAIL；完整 212 项首轮为 211 passed/1 failed，唯一失败是旧静态测试仍断言 catch 使用 `$publishBackend`，与新的全组件锁契约相反；更新为断言 `$requiresReleaseOperationLock`。
 - GREEN: final-release-gates -> PASS；完整静态/行为套件 212 passed，实际 PowerShell→SSH→测试服临时 MySQL 验证再次 PASS，PowerShell AST、Python compileall、`git diff --check` PASS；复核 `SHOW DATABASES LIKE 'release_lock_it_%'` 为空集。
+- GREEN: experience-preflight -> PASS；应用 `int_main` 当前 36 个已跟踪/未跟踪改动与本任务 83 个分支变更文件交集为 0，可执行 `--ff-only` 且保留用户改动；维护 `int_main` 与本任务在 `docs/request-command-log.md` 存在交集，禁止对维护主工作区合并、stash 或覆盖。

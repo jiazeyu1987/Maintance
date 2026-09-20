@@ -4073,3 +4073,4 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - 2026-09-21T06:16:00+08:00	20260919-button-only-prod-release	RESULT	完成融合后完成度补审：维护后端 40 tests/package PASS，前端 typecheck/build PASS；DCC 完整定向类首轮 5/6 暴露旧测试要求改写历史迁移，修正为“历史摘要不变+后续迁移收口 910218”后 6/6 PASS，配套回归 18 passed；未发布。
 - 2026-09-21T06:25:00+08:00	20260919-button-only-prod-release	RESULT	完成首远程写入锁边界修正与真实失权写入验证：数据盘/remote tree 写入已移到取锁后，锁 schema 缺失时只读阻断；实际发布函数经 PowerShell/SSH/测试服临时 MySQL 证明持锁写入成功、失权写入无落库，恢复并发单赢家仍通过，临时库已清零。完整静态回归 211 passed；未发布。
 - 2026-09-21T06:30:00+08:00	20260919-button-only-prod-release	RESULT	环境锁扩展为 backend/frontend/Website 所有 deploy-release 远程组件共用，成功与异常路径统一精确释放；完整静态/行为回归 212 passed，实际远程临时库链再次 PASS 且临时库清零；未发布。
+- 2026-09-21T06:45:00+08:00	20260919-button-only-prod-release	COMMAND_INTENT	应用 int_main 现有 36 个用户/并行任务改动与本任务 83 个变更文件交集为 0，仅对应用仓执行 fast-forward 合并并复验；维护 int_main 存在文档交集，不合并、不 stash、不覆盖。
