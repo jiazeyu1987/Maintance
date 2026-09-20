@@ -68,3 +68,53 @@
 - 没有重跑产品测试，没有新建远程连接，没有执行删除、停服、备份或恢复。
 - 运行数据属于时间快照；源码缺陷与建议是审查结果，不是本任务完成的修复。
 - 凭据未写入本报告。
+
+## 第二轮复审：2026-09-20 14:50–14:56 +08:00
+
+### 总体判断
+目标任务仍在真实推进全量恢复演练，但没有把上次整改作为完整执行顺序落地。它继续采用“完整大数据量演练 -> 最后遇到模块错误 -> 增加一个导出/字符串测试 -> 主工作区打包重启 -> 再次演练”的方式。新修复对当前异常有针对性，但缺少对报告生成调用链的完整验证，主要安全缺口仍未关闭，不能放行覆盖恢复。
+
+### 整改消息送达核对
+- 前次工具返回成功只能证明提交成功；本轮进一步检查精确 threadId 的 rollout，确认 12:55:43 的 `function_call_output` 包含完整 `<codex_delegation>` 指令及本审查线程来源。
+- 因此消息已进入目标执行上下文，不只是“可能仍在排队”。普通 role=user 消息列表未显示该消息，是消息载体不同，不能据此否认送达。
+- 在已检查的后续执行中，未发现按八项整改重排任务、阅读完整审查报告或切入隔离 worktree 的证据；原 task/execution-log 仍停留 M12，未同步本轮 M13 异常和整改清单。
+- 不推断其主观意图，只评价可见行为与代码。
+
+### 当前真实状态
+- operation `2ebe8812-bb45-43a5-9757-2e1b361e711d` 的演练从 12:02:53 运行到 14:30:12，约 2 小时 27 分钟，整体 fail。
+- 报告 backendHealth/frontendHttp200/loginReachable/fileDownloadSample 为 pass，但证据写回调用 `Get-BackupOpsRemoteFileText` 不可见。该报告不能作为 PASSED 恢复证明，也不能把 loginReachable 探针等同于完整业务登录流程。
+- 14:38 提交 `70d5b8792`，只修改 DockerOps.psm1 的导出列表和 RehearsalModuleContract.Tests.ps1，合计 2 个文件、8 行新增、1 行删除。
+- 14:43 从 `E:/IntRuoyi/IntRuoyiBackend` 执行 `mvn -pl yudao-server -am -DskipTests package`，并准备替换本地 48081 后端进程。最新可见执行正处于打包及进程检查阶段，不是还在导入数据库。
+- 审查时两轮已失败演练的 operation JSON 均仍 running；没有新的演练成功或受控恢复成功报告。
+
+### 第一轮问题复核
+| 问题 | 本轮结果 |
+| --- | --- |
+| 通用清理先删除父链，导致增量失败 | 未修复：BackupNow.psm1:101 仍在分支前调用仓库重置，增量工具检查仍在 109 行之后 |
+| 超时强杀与服务恢复责任不闭合 | 未修复：执行器仍为 12 小时 waitFor，超时 terminateCommandProcess，服务恢复仍依赖脚本 finally |
+| 失败报告与 operation running 不一致 | 仍可观察到：12:02 和 08:58 两轮均已生成 fail 报告，记录仍 running |
+| 静态字符串检查代替调用链行为测试 | 有一点改进：额外执行 Import-Module + Get-Command 检查导出成功；仍未实际执行完整证据生成路径 |
+| 共享主工作区编译重启 | 仍存在：14:43 的 Maven package 工作目录是主工作区，当前有大量其他任务 DCC/MES 未提交修改 |
+
+### 新增明确问题：仅脚本修复却重新打包 Java
+本轮提交没有 Java 代码变更。RuntimeControlOperationAction.java:50 指定演练脚本 `script/backup-ops/scripts/backup-ops.ps1`；RuntimeControlCommandExecutorImpl.java:95 从配置 repoRoot 解析外部脚本并启动新进程；backup-ops.ps1:324 从磁盘逐个 `Import-Module -Force`。
+
+按这条 Windows 执行链，外部模块修复应在下一次新脚本进程启动时加载，不需要仅为该变更重新构建 Java Jar。若实际运行指向另一脚本副本，应先核对当前 repoRoot、入口绝对路径、脚本/模块哈希，再以受控方式同步相应运行产物；未见本轮有必须 Java 打包的依赖证据。反复全 reactor package 会额外消耗时间，混入并发源码，并增加共享控制台重启和状态遗失风险。
+
+### 为什么本轮方式仍不正确
+前一轮 08:58–11:34 因私有转义函数不可见失败，本轮 12:02–14:30 又因文件读取函数未导出失败，连续两次耗时全量恢复在同一报告生成阶段触发同类问题。新增正则只验证导出名字出现；Get-Command 的导出可见性检查是进步，但不足以证明 Rehearsal 模块实际调用、远端摘要读取、manifest/chain 绑定和报告写回完整执行。
+
+### 当前建议
+1. 当前数据恢复阶段已结束，不应立即再开始第三次同类全量重放；先核对残留执行器、报告和服务状态并收束失败记录。
+2. 在隔离工作区对“从 Rehearsal 模块实际调用到证据报告写回”的整条路径做行为验证，连同上次清理/增量和中断状态问题一起修复。验证替身只可用于局部控制流测试，不能替代真实恢复验收。
+3. 明确实际脚本路径和加载方式，按变更内容决定是否重启/构建，避免为外部脚本变更打包 Java。
+4. 前置与行为测试通过后，再进行一次完整真实演练；既有 fail 报告不得补写成 PASSED，只有新验证完成才能产生新的有效恢复证据。
+5. 受控恢复必须继续等待清理链、互斥、终态、保护点及目标指纹等门禁通过，不因四个探针 pass 提前放行。
+
+### 本轮证据
+- `D:/IntRuoyi-BackupOps/logs/202609/20260920_120253_rehearsal_fail.report.md`
+- `D:/IntRuoyi-BackupOps/logs/202609/20260920_085809_rehearsal_fail.report.md`
+- `E:/IntRuoyi/IntRuoyiBackend/runtime/runtime-control/2ebe8812-bb45-43a5-9757-2e1b361e711d.json`
+- `E:/IntRuoyi/IntRuoyiBackend/runtime/runtime-control/461d2b3f-1a9b-49e6-b6b8-6dd6ec2a4b83.json`
+- 提交 `70d5b8792`、对应模块/测试现状、目标任务 12:55 指令与 14:34–14:45 执行记录。
+- 本轮为只读审查，未重新运行产品测试、未操作服务器或目标任务进程；失败与修复结果均按本地真实记录核对。
