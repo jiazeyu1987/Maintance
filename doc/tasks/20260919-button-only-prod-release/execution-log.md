@@ -192,3 +192,6 @@
 - RED: merged-recovery-lf-crlf-integration -> FAIL；融合 worktree 的实际 PowerShell→SSH→bash 链因 checkout 行尾将 `set -eu`/heredoc 传成 CRLF，测试服临时库验证返回 bash 语法错误，临时库已自动清理。
 - GREEN: merged-recovery-lf-crlf-integration -> PASS；恢复脚本在 base64 前统一远端 payload 为 LF，实际临时库验证返回活跃心跳阻断、并发恢复单赢家和最终 FAILED；本轮临时库 `release_lock_it_1172268bcafa` 已清理。
 - GREEN: release-source-freeze-preflight -> PASS；后续发布只允许使用维护融合提交 `f11a998`（本 worktree clean）与应用 `origin/int_main=83c0e1c80`（应用 worktree clean）；新建独立发布 worktree，禁止复用当前融合开发 worktree，禁止主工作区参与构建。
+- RED: r94-build-release-button -> FAIL；真实页面按钮 operation `op-2026-09-20T183458352894400Z-b9a93f96-6bd8-4efe-8e3e-716c173ac810` 在 PowerShell 参数校验前失败：前端提交 `-PublishScope code-only`，发布脚本正式契约只接受 `app-release`；未进入 Maven/Docker/NAS/服务器写入。
+- GREEN: publish-scope-contract-regression -> PASS；后端执行参数将用户可见 `code-only` 映射为脚本 `app-release`，保留 `-SkipDatabaseSync -SkipMinioSync`；`RuntimeControlContractTest#buildReleaseCodeOnlyPreviewSkipsDatabaseAndMinioData` PASS。
+- BLOCKER: r94 已判废，禁止复用；必须提交修复并以新 releaseTag `release-20260921-button-prod-r95` 重新通过页面预览和执行。

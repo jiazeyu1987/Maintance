@@ -46,6 +46,7 @@ public enum RuntimeControlOperationAction {
 
     public static final String PUBLISH_SCOPE_CODE_ONLY = "code-only";
     public static final String PUBLISH_SCOPE_WITH_DATA = "with-data";
+    private static final String SCRIPT_PUBLISH_SCOPE_APP_RELEASE = "app-release";
 
     private final String action;
     private final String label;
@@ -257,7 +258,7 @@ public enum RuntimeControlOperationAction {
         }
         if (PUBLISH_SCOPE_CODE_ONLY.equals(req.publishScope())) {
             args.add("-PublishScope");
-            args.add(PUBLISH_SCOPE_CODE_ONLY);
+            args.add(SCRIPT_PUBLISH_SCOPE_APP_RELEASE);
             args.add("-SkipDatabaseSync");
             args.add("-SkipMinioSync");
             return args;
