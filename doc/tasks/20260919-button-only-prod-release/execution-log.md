@@ -155,4 +155,5 @@
 - GREEN: `mvn -q -Dtest=RuntimeControlContractTest,RuntimeControlOriginalParityTest,RuntimeControlOriginalGovernanceParityTest,RuntimeReleaseLockInspectorTest test` -> PASS。
 - GREEN: `python -X utf8 -m pytest -q scripts/tests/test_release_sql_preflight_gate.py scripts/tests/test_release_operation_lock_behavior.py scripts/tests/test_release_operation_lock_mysql_behavior.py scripts/tests/test_publish_release_lock_cleanup.py scripts/tests/test_release_package_governance.py` -> `146 passed`。
 - GREEN: PowerShell AST -> PASS；发布脚本取得锁后的完整部署段已纳入统一 try/catch，APPLIED 释放移动到 HTTP/PDF/历史记录验收之后；命令执行器改为独立超时等待、异步日志泵、进程树终止及租约 token 脱敏；经验归档失败不再改写已持久化执行终态。
+- BLOCKER: `mvn -q test package` -> 测试阶段通过，但 Spring Boot `repackage` 无法重命名正在被当前维护控制台使用的 `target/runtime-control-maintenance-2026.06-SNAPSHOT.jar`；未强杀控制台、未伪造打包成功。需先走受控控制台重启/停机，再补 package 验证。
 - BLOCKER: 13 项中的真实 PowerShell/SSH/MySQL 端到端失权写入验证、预览快照绑定、维护仓主干融合和真实“晋级正式服”按钮验收尚未完成；在这些证据补齐前不得发布。

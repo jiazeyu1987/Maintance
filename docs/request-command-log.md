@@ -3745,4 +3745,5 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - User request: 按最后一次源码核对的 13 项问题继续修复，不在缺陷包上部署。
 - Action intent: 先以 BDD/RED/GREEN 修复 SQL 事务、锁持有边界、命令超时/进程树、租约脱敏、执行终态与经验归档解耦、同一工作树并发构建拒绝；不启动新的远端发布。
 - Evidence: SQL 定向合同 `7 passed`；维护后端 `RuntimeControlContractTest,RuntimeControlOriginalParityTest,RuntimeControlOriginalGovernanceParityTest,RuntimeReleaseLockInspectorTest` PASS；维护发布/锁/包治理回归 `146 passed`；PowerShell AST PASS。
+- Evidence: `mvn -q test` 阶段通过；`mvn -q test package` 的 `repackage` 因当前维护控制台占用 target jar 失败，未强杀控制台，未伪造 package 成功。
 - Deployment status: 未执行测试服/正式服写入；真实 PowerShell/SSH/MySQL 失权集成、预览快照绑定、维护仓主干融合和最终正式按钮闭环仍为 BLOCKER。
