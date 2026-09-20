@@ -200,3 +200,8 @@
 - BLOCKER: r95 已判废，禁止复用；必须使用新 releaseTag `release-20260921-button-prod-r96`。
 - RED: r96-build-release-source-freeze -> FAIL；真实按钮已通过参数映射、Maven、Docker、前端依赖和 `ts:check` 前置，但维护 worktree 有本任务日志未提交改动，源码冻结返回 `SOURCE_DIRTY: maintenance`；未上传 NAS、未写测试服或正式服，r96 判废。
 - GREEN: source-freeze-cleanup -> PASS；仅提交本任务维护记录后，维护 worktree 将重新构建 jar 并以新的批准提交执行；r96 不复用。
+- RED: r97-build-release-schema-rehearsal -> FAIL；真实按钮已通过 Maven、应用前端 `ts:check`、141 项发布脚本、目标测试服预检 `28/28`，随后本机真实 schema rehearsal 在 `20260526_dcc_other_template_category.sql` 阻断：`Missing active DCC source template category: 产品技术要求`。未上传 NAS、未写测试服或正式服，r97 判废。
+- ROOT_CAUSE: 该迁移依赖真实业务库的 `产品技术要求`/`其他` 分类，已有 target-preflight，但应用迁移 manifest parser 不支持 `requiresTargetPreflight` 元数据，导致它错误进入空库 rehearsal；不是允许补造分类或跳过目标检查。
+- GREEN: `python -X utf8 -m pytest -q script/tests/test_recent_permission_migrations_mysql.py script/tests/test_release_migration_policy_gate.py` -> 14 passed；应用提交 `a9081e509` 增加 parser 支持和迁移 metadata `requiresTargetPreflight=true`；发布 worktree 应用源已 fast-forward 到该提交。
+- BLOCKER: GitHub `git push origin int_main` 连续 TLS EOF，已记录为推送阻塞，未宣称远端已包含 `a9081e509`；本机发布冻结可引用该已验证提交对象，待推送恢复后再核对远端。
+- BLOCKER: r97 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r98`。
