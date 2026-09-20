@@ -127,6 +127,32 @@ def test_migration_policy_gate_propagates_mysql_identifier_length_contract(tmp_p
     assert long_index_name in message
 
 
+def test_migration_policy_gate_excludes_target_preflight_support_sql(tmp_path: Path) -> None:
+    policy_gate = importlib.import_module("ops.release.release_migration_policy_gate")
+    sql_root = tmp_path / "sql" / "mysql"
+    sql_root.mkdir(parents=True)
+    migration_sql = sql_root / "20260913_release_schema.sql"
+    migration_sql.write_text(
+        "-- release-migration: allowedEnvironments=test,backup,prod; dependsOn=; type=schema; riskLevel=medium\n"
+        "CREATE TABLE IF NOT EXISTS release_table (id bigint);\n",
+        encoding="utf-8",
+    )
+    support_dir = sql_root / "target-preflight"
+    support_dir.mkdir()
+    support_sql = support_dir / "20260913_release_schema.preflight.sql"
+    support_sql.write_text(
+        "SELECT 'release_table_exists' AS check_name, COUNT(*) AS actual_count FROM information_schema.tables;\n",
+        encoding="utf-8",
+    )
+
+    report = policy_gate.run_migration_policy_gate(sql_root)
+
+    assert report["status"] == "passed"
+    assert [entry["migrationId"] for entry in report["migrations"]] == [
+        "20260913_release_schema"
+    ]
+
+
 def test_migration_policy_gate_accepts_evidence_only_migration_types(tmp_path: Path) -> None:
     policy_gate = importlib.import_module("ops.release.release_migration_policy_gate")
     sql_root = tmp_path / "sql" / "mysql"
@@ -373,11 +399,11 @@ def test_publish_script_executes_dcc_view_matrix_prereq_before_seed_on_test() ->
     invoke_block = script[invoke_start:invoke_end]
 
     assert "function Sort-RequiredDatabaseSqlApplyItems" in script
-    assert "'20260624_dcc_view_matrix_test_tenant_prereq' = 10" in script
-    assert "'20260624_dcc_view_matrix_independent_seed' = 20" in script
+    assert "applyOrder = $_.Item.applyOrder" in script
+    assert "sessionProfile" in script
     assert "$preflightApplyItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'APPLY' })" in invoke_block
     assert "$applyItems = Sort-RequiredDatabaseSqlApplyItems -Items $preflightApplyItems -TargetEnvironment $Environment" in invoke_block
-    assert "'20260624_dcc_view_matrix_independent_seed'" in helper_block
+    assert "'dcc-view-matrix-seed'" in helper_block
     assert "'test' { '122' }" in helper_block
     assert "SET @dcc_view_matrix_seed_tenant_id := $seedTenantId;" in helper_block
 
@@ -420,8 +446,7 @@ def test_publish_script_preserves_preflight_dependency_order_for_non_priority_re
     invoke_start = script.index("function Invoke-RequiredDatabaseSqlScripts")
     sort_block = script[sort_start:invoke_start]
 
-    assert "'20260624_dcc_view_matrix_test_tenant_prereq' = 10" in sort_block
-    assert "'20260624_dcc_view_matrix_independent_seed' = 20" in sort_block
+    assert "applyOrder = $_.Item.applyOrder" in sort_block
     assert "OriginalOrder" in sort_block
     assert "return 1000 + [int]$_.OriginalOrder" in sort_block
     assert "Sort-Object" in sort_block
@@ -434,7 +459,8 @@ def test_publish_script_runs_route_snapshot_identity_backfill_before_enforcement
 
     assert "function Invoke-RouteSnapshotIdentityMigrationCommand" in script
     assert "function Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement" in script
-    assert "20260812_mes_route_version_snapshot_identity_enforce" in script
+    assert "approvedHook" in script
+    assert "route-snapshot-identity" in script
     assert "route-snapshot-identity-backfill.json" in script
     assert "route-snapshot-identity-readiness.json" in script
     assert "yudao.mes.route-snapshot-migration.mode=$MigrationMode" in script
@@ -442,6 +468,8 @@ def test_publish_script_runs_route_snapshot_identity_backfill_before_enforcement
     assert "Invoke-RouteSnapshotIdentityMigrationCommand -MigrationMode 'READINESS'" in script
     assert "-e INTRUOYI_EXTRA_ARGS=" in script
     assert "-e ARGS=" not in script
+    assert "docker compose --env-file $remoteEnvNextLiteral run --rm --no-deps" in script
+    assert "test -f $remoteEnvNextLiteral" in script
 
     hook_index = script.index("Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement -Item $item")
     sql_apply_index = script.index("Invoke-RequiredDatabaseSqlScriptWithState -Item $item", hook_index)
@@ -456,10 +484,27 @@ def test_publish_script_combines_route_snapshot_run_and_report_check_in_single_s
     helper_block = script[helper_start:helper_end]
 
     assert helper_block.count("Invoke-SshCommand") == 1
-    assert "docker compose run --rm --no-deps" in helper_block
+    assert "docker compose --env-file $remoteEnvNextLiteral run --rm --no-deps" in helper_block
+    assert "route_snapshot_exit=`$?" in helper_block
+    assert "`$route_snapshot_exit=`$?" not in helper_block
+    assert "cat $remoteReportFileLiteral" in helper_block
+    assert "ROUTE_SNAPSHOT_IDENTITY_REPORT_MISSING" in helper_block
     assert "test -f $remoteReportFileLiteral" in helper_block
     assert "grep -q '\"status\" : \"READY\"' $remoteReportFileLiteral" in helper_block
     assert "grep -q '\"blockerCount\" : 0' $remoteReportFileLiteral" in helper_block
+
+
+def test_publish_script_streams_route_snapshot_shell_script_over_ssh_stdin() -> None:
+    script = read_publish_script()
+
+    helper_start = script.index("function Invoke-RouteSnapshotIdentityMigrationCommand")
+    helper_end = script.index("function Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement", helper_start)
+    helper_block = script[helper_start:helper_end]
+
+    assert "Invoke-SshCommandWithInput" in helper_block
+    assert "-Command 'bash -s'" in helper_block
+    assert "-StandardInput $command" in helper_block
+    assert "Invoke-SshCommand $command" not in helper_block
 
 
 def test_backend_image_appends_one_shot_extra_args_without_overriding_compose_args() -> None:
@@ -511,6 +556,19 @@ def test_release_runtime_env_rebinds_generic_edhr_endpoint_to_target_host() -> N
     assert "Resolve-TargetEdhrS3Endpoint" in resolver_block
     assert "-TargetServerHost $TargetServerHost" in defaults_block
     assert "-TargetServerHost $TargetServerHost" in content_block
+
+
+def test_release_runtime_env_endpoint_gate_checks_env_next_before_switch() -> None:
+    script = read_publish_script()
+
+    start = script.index("function Assert-RemoteRuntimeEnvEdhrEndpoint")
+    end = script.index("function Prepare-RemoteReleaseTree", start)
+    block = script[start:end]
+
+    assert "$remoteEnvNextLiteral" in block
+    assert "test -f $remoteEnvNextLiteral" in block
+    assert "grep -Fx $expectedEndpointLiteral $remoteEnvNextLiteral" in block
+    assert "grep -Fx $expectedEndpointLiteral $remoteEnvLiteral" not in block
 
 
 def test_deploy_release_imports_remote_runtime_env_before_secret_gates() -> None:
@@ -908,6 +966,22 @@ def test_publish_script_batches_skip_already_applied_migration_state_updates() -
     invoke_end = script.index("if ($Mode -eq 'mark-tested')", invoke_start)
     invoke_block = script[invoke_start:invoke_end]
     assert "foreach ($item in @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ALREADY_APPLIED' }))" not in invoke_block
+
+
+def test_publish_script_batches_environment_and_scope_skips_to_clear_stale_failed_rows() -> None:
+    script = read_publish_script()
+
+    assert "$skipEnvNotAllowedItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ENV_NOT_ALLOWED' })" in script
+    assert "Invoke-ReleaseMigrationStateBatchUpdate -Items $skipEnvNotAllowedItems -Status 'SKIPPED_ENV_NOT_ALLOWED'" in script
+    assert "$skipScopeExcludedItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_SCOPE_EXCLUDED' })" in script
+    assert "Invoke-ReleaseMigrationStateBatchUpdate -Items $skipScopeExcludedItems -Status 'SKIPPED_SCOPE_EXCLUDED'" in script
+    assert "'SKIPPED_ENV_NOT_ALLOWED', 'SKIPPED_SCOPE_EXCLUDED'" in script
+
+    invoke_start = script.index("function Invoke-RequiredDatabaseSqlScripts")
+    invoke_end = script.index("if ($Mode -eq 'mark-tested')", invoke_start)
+    invoke_block = script[invoke_start:invoke_end]
+    assert "foreach ($item in @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ENV_NOT_ALLOWED' }))" not in invoke_block
+    assert "foreach ($item in @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_SCOPE_EXCLUDED' }))" not in invoke_block
 
 
 def test_release_migration_state_batch_update_streams_sql_over_ssh_stdin() -> None:

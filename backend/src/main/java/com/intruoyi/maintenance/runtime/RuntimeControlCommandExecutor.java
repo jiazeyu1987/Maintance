@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -62,31 +63,64 @@ public class RuntimeControlCommandExecutor {
         ProcessBuilder builder = new ProcessBuilder(executable)
                 .directory(properties.opsRootPath().toFile())
                 .redirectErrorStream(true);
+        Process process = null;
+        CompletableFuture<Void> outputPump = null;
         try {
-            Process process = builder.start();
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    Files.writeString(logPath, line + System.lineSeparator(), StandardCharsets.UTF_8,
-                            java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND);
-                }
-            }
+            process = builder.start();
+            Process runningProcess = process;
+            outputPump = CompletableFuture.runAsync(() -> pumpOutput(runningProcess, logPath));
             Duration timeout = properties.commandTimeout();
             boolean completed = process.waitFor(timeout.toMillis(), TimeUnit.MILLISECONDS);
             if (!completed) {
-                process.destroyForcibly();
+                terminateProcessTree(process);
+                outputPump.cancel(true);
                 throw new RuntimeControlException("命令执行超时: " + timeout.toSeconds() + " 秒");
             }
+            outputPump.join();
             int exitCode = process.exitValue();
             if (exitCode != 0) {
                 throw new RuntimeControlException("命令退出码非 0: " + exitCode);
             }
         } catch (IOException ex) {
-            throw new RuntimeControlException("无法启动命令: " + executable, ex);
+            throw new RuntimeControlException("无法启动命令: " + sanitizeCommand(executable), ex);
         } catch (InterruptedException ex) {
+            if (process != null) {
+                terminateProcessTree(process);
+            }
+            if (outputPump != null) {
+                outputPump.cancel(true);
+            }
             Thread.currentThread().interrupt();
             throw new RuntimeControlException("命令执行被中断", ex);
         }
+    }
+
+    private void terminateProcessTree(Process process) {
+        List<ProcessHandle> descendants = process.descendants().toList();
+        descendants.forEach(ProcessHandle::destroyForcibly);
+        process.destroyForcibly();
+    }
+
+    private void pumpOutput(Process process, Path logPath) {
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Files.writeString(logPath, line + System.lineSeparator(), StandardCharsets.UTF_8,
+                        java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND);
+            }
+        } catch (IOException ex) {
+            throw new RuntimeControlException("无法写入命令日志: " + logPath, ex);
+        }
+    }
+
+    private List<String> sanitizeCommand(List<String> command) {
+        List<String> sanitized = new ArrayList<>(command);
+        for (int index = 0; index < sanitized.size() - 1; index++) {
+            if ("-ExpectedLeaseToken".equals(sanitized.get(index))) {
+                sanitized.set(index + 1, "<redacted>");
+            }
+        }
+        return sanitized;
     }
 }

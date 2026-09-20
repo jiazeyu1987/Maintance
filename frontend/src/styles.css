@@ -1,0 +1,781 @@
+:root {
+  --console-accent: #1677ff;
+  --console-line: #dbe3ef;
+  --console-text: #172033;
+  --console-muted: #637083;
+  --console-soft: #f7f9fc;
+  --console-soft-blue: #eef6ff;
+  --console-panel: #ffffff;
+  --console-border-soft: #e5ebf3;
+  --console-danger: #d93025;
+  --console-warning: #b76a00;
+  --console-success: #16803d;
+  color: var(--console-text);
+  background: var(--console-soft);
+  font-family:
+    Geist, Satoshi, "SF Pro Display", "Segoe UI", ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  --el-color-primary: var(--console-accent);
+  --el-border-radius-base: 6px;
+  --el-border-color: var(--console-line);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--console-soft);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.console-shell {
+  width: min(1440px, calc(100vw - 32px));
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: 20px 0 92px;
+  position: relative;
+}
+
+.console-header,
+.console-header-actions,
+.surface-head,
+.section-title,
+.command-row,
+.switch-row,
+.latest-operation,
+.status-pill {
+  display: flex;
+  align-items: center;
+}
+
+.console-header {
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 18px 16px;
+  border: 1px solid var(--console-line);
+  border-radius: 8px 8px 0 0;
+  background: var(--console-panel);
+}
+
+.console-title-block {
+  min-width: 0;
+}
+
+.eyebrow,
+.console-subtitle,
+.surface-meta,
+.summary-card span,
+.command-summary span,
+.command-summary p,
+.latest-operation {
+  color: var(--console-muted);
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+}
+
+.console-header h1 {
+  margin: 0;
+  color: var(--console-text);
+  font-size: 26px;
+  font-weight: 750;
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+
+.console-subtitle {
+  margin: 6px 0 0;
+  font-size: 13px;
+}
+
+.console-header-actions {
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.console-refresh,
+.primary-command,
+.table-icon-button {
+  transition:
+    transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.console-refresh:active,
+.primary-command:active,
+.table-icon-button:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.status-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-right: 1px solid var(--console-line);
+  border-left: 1px solid var(--console-line);
+  background: var(--console-panel);
+}
+
+.summary-card {
+  display: grid;
+  gap: 7px;
+  min-height: 86px;
+  padding: 16px 18px;
+  border-right: 1px solid var(--console-border-soft);
+  border-top: 1px solid var(--console-border-soft);
+  background: var(--console-panel);
+}
+
+.summary-card:last-child {
+  border-right: none;
+}
+
+.summary-card span {
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.summary-card strong {
+  color: var(--console-text);
+  font-size: 26px;
+  font-weight: 760;
+  letter-spacing: 0;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary-card--success {
+  border-top-color: #bde8cc;
+}
+
+.summary-card--danger {
+  border-top-color: #f1c4c0;
+}
+
+.summary-card--warning {
+  border-top-color: #f0d3a4;
+}
+
+.summary-card--info {
+  border-top-color: #b7d8ff;
+}
+
+.console-alert {
+  margin-top: 12px;
+  border-radius: 6px;
+}
+
+.workbench-grid {
+  display: grid;
+  grid-template-columns: minmax(620px, 1fr) minmax(430px, 520px);
+  gap: 14px;
+  align-items: start;
+  margin-top: 14px;
+}
+
+.control-surface {
+  overflow: hidden;
+  border: 1px solid var(--console-line);
+  border-radius: 8px;
+  background: var(--console-panel);
+  box-shadow: 0 16px 34px rgba(23, 32, 51, 0.055);
+}
+
+.surface-head {
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 50px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--console-border-soft);
+  background: #fafcff;
+}
+
+.section-title {
+  gap: 8px;
+  min-width: 0;
+  color: var(--console-text);
+  font-size: 15px;
+  font-weight: 730;
+}
+
+.section-title .el-icon {
+  color: var(--console-accent);
+}
+
+.surface-meta,
+.latest-operation {
+  font-size: 12px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.status-surface .el-table,
+.operation-table-shell .el-table {
+  border-radius: 0 0 8px 8px;
+}
+
+.console-table {
+  --el-table-header-bg-color: #f7f9fc;
+  --el-table-row-hover-bg-color: #fafcff;
+  --el-table-border-color: var(--console-border-soft);
+  --el-table-text-color: #263247;
+  --el-table-header-text-color: #4b5563;
+  font-size: 0.9rem;
+}
+
+.console-table .el-table__cell {
+  padding: 7px 10px;
+}
+
+.console-table .el-table__header .el-table__cell {
+  height: 46px;
+  font-weight: 700;
+}
+
+.console-table .el-table__row {
+  height: 52px;
+}
+
+.console-table .cell {
+  line-height: 1.35;
+}
+
+.status-pill {
+  width: fit-content;
+  min-height: 24px;
+  gap: 6px;
+  padding: 3px 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 720;
+  line-height: 1.2;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: currentColor;
+  animation: status-breathe 1.9s ease-in-out infinite;
+}
+
+.status-pill--success {
+  border-color: #bde8cc;
+  background: #effaf3;
+  color: var(--console-success);
+}
+
+.status-pill--warn {
+  border-color: #efd29a;
+  background: #fff8ea;
+  color: var(--console-warning);
+}
+
+.status-pill--danger {
+  border-color: #efc0bc;
+  background: #fff2f1;
+  color: var(--console-danger);
+}
+
+.status-pill--muted {
+  border-color: #dce3ec;
+  background: #f4f7fb;
+  color: #5f6f84;
+}
+
+.table-icon-button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 6px;
+}
+
+.action-surface {
+  padding-bottom: 14px;
+}
+
+.command-summary {
+  display: grid;
+  gap: 8px;
+  margin: 14px;
+  padding: 12px 12px 13px;
+  border: 1px solid #cfe1f7;
+  border-radius: 8px;
+  background: var(--console-soft-blue);
+}
+
+.command-summary div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.command-summary span {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.command-summary strong {
+  color: var(--console-text);
+  font-size: 16px;
+  letter-spacing: 0;
+}
+
+.command-summary p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.action-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  width: calc(100% - 28px);
+  margin: 0 14px 14px;
+  padding: 5px;
+  border: 1px solid var(--console-border-soft);
+  border-radius: 8px;
+  background: #f7f9fc;
+}
+
+.action-choice {
+  min-width: 0;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: #40506a;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 680;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition:
+    transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.18s ease,
+    background-color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.action-choice:hover {
+  border-color: #c8d9ee;
+  background: #ffffff;
+  color: var(--console-text);
+}
+
+.action-choice:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.action-choice.is-active {
+  border-color: var(--console-accent);
+  background: var(--console-accent);
+  color: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.action-form {
+  padding: 0 14px;
+}
+
+.action-form .el-form-item {
+  margin-bottom: 13px;
+}
+
+.action-form .el-form-item__label {
+  margin-bottom: 5px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 680;
+}
+
+.action-form .el-input__wrapper,
+.action-form .el-textarea__inner,
+.action-form .el-select__wrapper {
+  min-height: 40px;
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px var(--console-border-soft) inset;
+}
+
+.action-form .el-textarea__inner {
+  padding: 9px 11px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 12px;
+}
+
+.switch-row {
+  gap: 12px 16px;
+  flex-wrap: wrap;
+  margin: 2px 0 14px;
+}
+
+.switch-row .el-checkbox {
+  margin-right: 0;
+}
+
+.command-row {
+  justify-content: flex-end;
+  padding-top: 2px;
+}
+
+.primary-command {
+  min-width: 132px;
+  min-height: 40px;
+  border-radius: 6px;
+  font-weight: 720;
+}
+
+.operation-table-shell {
+  margin-top: 14px;
+}
+
+.latest-operation {
+  gap: 8px;
+}
+
+.preview-box {
+  display: grid;
+  gap: 12px;
+}
+
+.preview-box p {
+  margin: 0;
+  color: var(--console-muted);
+}
+
+.preview-command-code,
+code {
+  display: inline-block;
+  max-width: 100%;
+  white-space: normal;
+  word-break: break-word;
+  color: #233044;
+  font-family: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.preview-dialog .el-dialog {
+  border-radius: 8px;
+}
+
+.operation-log-panel {
+  min-height: 260px;
+}
+
+.operation-log-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 0 0 10px;
+  color: var(--console-muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.operation-log-content {
+  overflow: auto;
+  min-height: 260px;
+  max-height: 56vh;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--console-line);
+  border-radius: 6px;
+  background: #0f1724;
+  color: #dce7f7;
+  font-size: 12px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.console-version-dock {
+  position: fixed;
+  left: 18px;
+  bottom: 16px;
+  z-index: 20;
+  display: grid;
+  gap: 6px;
+  min-width: 250px;
+  max-width: min(460px, calc(100vw - 36px));
+  padding: 10px 12px;
+  border: 1px solid var(--console-line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 10px 22px rgba(23, 32, 51, 0.06);
+  backdrop-filter: blur(6px);
+}
+
+.console-version-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  color: var(--console-text);
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.console-version-copy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.console-version-copy span {
+  flex: 0 0 auto;
+  color: var(--console-muted);
+  font-weight: 700;
+}
+
+.console-version-copy strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--console-text);
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.console-version-change-button {
+  flex: 0 0 auto;
+  min-height: 22px;
+  padding: 0 2px;
+  color: var(--console-accent);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.console-version-item--build .console-version-copy strong {
+  color: var(--console-accent);
+}
+
+.console-version-item--info .console-version-copy strong {
+  color: var(--console-accent);
+}
+
+.console-version-item--warning .console-version-copy strong {
+  color: var(--console-warning);
+}
+
+.console-version-item--success .console-version-copy strong {
+  color: var(--console-success);
+}
+
+.console-version-item--muted .console-version-copy strong {
+  color: #5f6f84;
+}
+
+.release-notes-dialog .el-dialog__body {
+  padding-top: 10px;
+}
+
+.release-notes-content {
+  display: grid;
+  gap: 12px;
+  color: var(--console-text);
+}
+
+.release-notes-version span,
+.release-notes-section-title {
+  color: var(--console-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.release-notes-version {
+  display: grid;
+  gap: 4px;
+}
+
+.release-notes-version strong {
+  overflow-wrap: anywhere;
+  color: var(--console-accent);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.release-notes-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.release-notes-list li {
+  padding: 9px 10px;
+  border: 1px solid var(--console-line);
+  border-radius: 6px;
+  background: #fff;
+  line-height: 1.45;
+}
+
+.release-notes-empty {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--console-line);
+  border-radius: 6px;
+  background: #f7f9fc;
+  color: var(--console-muted);
+  line-height: 1.45;
+}
+
+.skeleton-table {
+  display: grid;
+  gap: 1px;
+  padding: 8px 0;
+  background: var(--console-border-soft);
+}
+
+.skeleton-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 88px;
+  gap: 14px;
+  align-items: center;
+  min-height: 52px;
+  padding: 0 14px;
+  background: var(--console-panel);
+}
+
+.skeleton-line {
+  display: block;
+  height: 12px;
+  border-radius: 999px;
+  background: #e8eef6;
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+.skeleton-line--short {
+  width: 72%;
+}
+
+.skeleton-line--tiny {
+  width: 46px;
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.42;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes status-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 1180px) {
+  .workbench-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 860px) {
+  .console-shell {
+    width: min(100vw - 20px, 760px);
+    padding-top: 10px;
+  }
+
+  .console-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .console-header-actions {
+    justify-content: flex-start;
+  }
+
+  .status-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .summary-card:nth-child(2n) {
+    border-right: none;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .console-shell {
+    width: min(100vw - 14px, 520px);
+  }
+
+  .console-header,
+  .surface-head,
+  .command-summary,
+  .action-form {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .status-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-card {
+    border-right: none;
+  }
+
+  .command-summary div,
+  .surface-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .action-choice-grid {
+    width: calc(100% - 20px);
+    margin-right: 10px;
+    margin-left: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .console-version-dock {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    min-width: 0;
+    max-width: none;
+  }
+}

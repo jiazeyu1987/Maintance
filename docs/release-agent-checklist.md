@@ -369,9 +369,10 @@ Codex 必须按这个顺序排查：
 
 ### no-data manifest
 
-- no-data 发布必须验证 manifest `publishScope=code-only`。
+- 标准一键 without-data 发布必须验证 manifest `publishScope=app-release`；历史 `code-only` 只作为旧链路兼容术语，不得作为新 workflow 放行条件。
 - 发布包不得包含 `database`、`db-dump`、`mysql-dump`、`minio`、`files`、`runtime-data`、`data`、`docker-build-context` 等数据目录。
 - 允许存在 `required-sql`、`resources`、`runtime-env`、`smoke` 等代码发布必要目录；operation `SUCCESS` 不能替代 manifest 与目录检查。
+- `target-data-preflight.json` 等目标服务器证据不得写入不可变包；`ops-runtime` 不得携带 `backup-ops.config*.json`、secret 示例或 `manage-int-ruoyi-remote-root-disk.ps1` 等 target-bound 文件。
 
 ### promote-prod 目标库迁移依赖
 

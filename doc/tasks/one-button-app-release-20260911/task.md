@@ -10,7 +10,10 @@
 2. [completed] 产出 PRD，定义三按钮 workflow、状态机、授权边界、包边界和错误码。
 3. [completed] 产出测试计划，覆盖构建前门禁、不可变包、测试服发布、正式服晋级守卫、R31-R44 防复发用例。
 4. [completed] 完成文档结构校验和独立规划评审，明确实施前置条件。
-5. [in_progress] 已获用户授权开始开发，当前只执行 P1；在独立实施 worktree 中按 P1-P5 推进，不直接在当前脏主工作树改实现。
+5. [completed] P1 基线与唯一 app-release/manifest/摘要/来源合同已在两个独立 worktree 中收敛并完成复审修正。
+6. [completed] P2 ReleaseWorkflow 状态机、原子持久化、CAS、租约、心跳/恢复与 verifier-only 推进已实现并回归通过。
+7. [in_progress] P3 继续整改与真实验证：r23-r77 已按不可变规则逐一判废；R78 已完成 clean source freeze、build-release、本地包完整性校验、manifest validation 与 NAS READY，下一步执行同一 releaseTag 的测试服 publish-test/运行态验收。
+8. [in_progress] P4/P5 静态三按钮工作台已实现；任务 worktree 锁定依赖和 Playwright 1.60.0 已恢复，类型检查通过，真实页面验收待发布后执行。
 
 ## Expected Verification
 
@@ -38,27 +41,62 @@
 
 in_progress
 
-规划文档已通过独立复审；用户已授权按文档开发。当前阶段为 P1 基线与契约收敛，后续阶段在 P1 独立评审通过前不得启动。
+P1、P2 已完成；P3 继续执行真实 `app-release` 构建与测试服发布闭环。R81 已形成本地包，但绑定的是静态复查仍 FAIL 的应用提交 `c3220239d`，不得作为后续 publish-test 或按钮放行依据。本轮已在应用仓修复 R1-R5 通用按钮机制，并在维护脚本输出 build-release 真实阶段事件；下一步提交两仓修复后使用全新 releaseTag 重建并继续测试服 publish-test 与运行态/按钮验收。正式服、审查服、`mark-tested`、`promote-prod`、`promote-backup`、MinIO 数据同步和全量数据库复制仍保持零写入。
 
 ## Verification Evidence
+
+- 本轮恢复验证：实际 PowerShell 5.1 长路径清理 8 个行为用例通过；发布清理、目标数据门禁、构建计划、schema-only 与相邻发布回归合计 154 PASS。该数字只证明这些局部检查，不代表 P3/P4/P5 完成。
+- `r15-target-preflight-audit.json`：按既有 r15 来源/SQL/账本重算绑定后，检查覆盖失败，requiredCount=58、passedCount=0、sshStarted=false；未进行新一轮构建。测试服真实只读连接查询 `@@session.transaction_read_only` 返回 1。
+- 长路径修复移除了无根据重试、原子移出和“目录消失即成功”的补丁，采用实际 PS5.1 可验证的 Windows 长路径调用；此前“竞态已修复”的结论以本轮记录为准。
 
 - `validate_artifacts.py`: `status=ok`, 0 errors, 0 warnings。
 - CI/CD evidence validator: PASS。
 - PRD: 5 phases、32 acceptance IDs；test plan: 15 cases、32/32 acceptance coverage。
 - Independent planning review: final PASS after three review rounds。
 - UTF-8、trailing whitespace 与 diff checks: PASS；未运行产品构建、发布或服务器写入。
+- P1：maintenance 聚焦回归与三语言摘要均 PASS；app manifest/source/digest/consumer 定向回归 91 PASS；frontend P1 static PASS。
+- P2：ReleaseWorkflowStore/Lease/Recovery/Security 11 PASS；相关 infra 回归共 102 PASS。
+- P3：维护仓全量 Python 234 PASS、Node 6 PASS、PowerShell digest/AST PASS；app P1-P3 targeted Maven 111 PASS；覆盖 target preflight、schema-only 两轮迁移演练、显式 TCP、幂等/ledger/delimiter、NAS 原子 READY、同摘要晋级授权和 `.env`/actual image 失败恢复。
+- `pnpm ts:check` 在补充 `ElMessageBox` 显式导入后通过；任务 worktree Playwright 为规定的 1.60.0。
+- r23 immutable package gate：本地 `Test-ReleasePackageIntegrity` 发现 `ops-runtime/actions/01-立即备份.bat: undeclared file`；新增回归先 RED 后 GREEN，发布包治理宽回归 139 PASS，PowerShell AST PASS。
+- r24 deploy-control pollution gate：本地 `Test-ReleasePackageIntegrity` 发现 `preflight-plan.json: undeclared file`；新增回归先 RED 后 GREEN，发布包治理宽回归 139 PASS，PowerShell AST PASS。
+- route-menu target preflight gate：应用仓 `20260629_mes_smart_scheduling_role_scope` 改为选择当前活跃的 `5726/5727` 或未统一前的 `900121/900122`；相邻脚本回归 54 PASS，提交 `6079138ea`。
+- r26 deploy-release：版本未切换；失败点为旧包内 `20260709_mes_rt000006_batch_record_mapping.sql`，错误 `Missing RT000006 pressure pump route`。当前应用 HEAD 已有等价修复，旧 r26 判废不复用。
+- app-release Object Lock probe gate：新增 RED/GREEN 测试，`deploy-release` 仅校验 `EDHR_S3_*` 配置，不调用写对象探针；聚焦测试 3 PASS，PowerShell AST PASS。
+- r28 deploy-release：build-release 与 NAS READY 成功，但测试服 required SQL 在版本切换前失败于 `20260716_mes_balloon_xlsx_route_00002_invalid_process_cleanup` 的 `target mismatch`；根因是测试库已是 `23+26=49` 的规范化路线，sort=26 为合法 `Z2620` 而非旧无效 `B320`。应用仓提交 `8e6c033c6` 已补 already-normalized no-op 和严格 target preflight，回归 11+40 PASS。
+- r29 deploy-release：build-release 与 NAS READY 成功，但测试服 required SQL 在版本切换前失败于 `20260717_mes_balloon_excel_device_workstation_binding` 的设备绑定数量硬编码 83；真实目标库只有 44 条可绑定设备种子。应用仓提交 `9d886766a` 已改为目标数据派生计数并增强 target preflight，定向 11 PASS、相邻回归 37 PASS、测试服只读 preflight PASS。
+- r32 deploy-release：build-release 与 NAS READY 成功，但测试服 required SQL 在版本切换前失败于 `20260807_test_tenant1_all_role_permission_sync.sql` 的源角色权限计数硬编码 1676；实际源数据为 1678。应用仓提交 `c4ba9d3f` 修正 SQL 与静态测试，维护仓提交 `b189ef1` 将该应用 SQL 静态测试纳入 build-release 前门禁。
+- r33 local cache：本地包完整性通过，但 manifest 绑定维护仓 `cecdc120` 与应用仓 `ccd0d9a3`，不是当前已修复的维护仓 `67ee44f` / 应用仓 `c4ba9d3f`，因此判废不发布。
+- r34 local cache：本地包完整性未作为可发布依据；manifest 同样绑定维护仓 `cecdc120` 与应用仓 `ccd0d9a3`，不是当前已修复来源，因此判废不发布。
+- r35 build command：构建前参数门禁失败，原因是把 `config/runtime-control.local.yaml` 误传给 `-NasConfigPath`；脚本要求 UTF-8 JSON，未进入 Maven、Docker、NAS 上传或测试服写入，r35 判废。
+- r36 build command：构建前参数门禁失败，原因是直接脚本未显式传入 `BackendRepoRoot`/`FrontendRepoRoot`，导致命令包装器进入错误/缺失工作目录；未进入 Maven、Docker、NAS 上传或测试服写入，r36 判废。
+- r37 manifest validation：本地包生成后被 `validate-release-manifest.ps1` 阻断，包内 `evidence/target-data-preflight.json` 携带测试服 IP，`ops-runtime/config/*.json` 与 `script/deploy/manage-int-ruoyi-remote-root-disk.ps1` 携带目标 IP 或 secret-like 示例；新增 RED/GREEN 测试后，target preflight 证据改为构建临时证据，ops-runtime 包不再携带 target-bound config 或远程磁盘脚本；相邻回归 151 PASS，PowerShell AST PASS。
+- R38 前置 hard gate：`ReleaseManifestValidator.psm1` 已接入 `publish-int-ruoyi.ps1` 的 build-release 主链路，执行顺序固定为 package integrity -> manifest validation -> NAS upload；新增合同先 RED 后 GREEN，发布 workflow/app-release/package governance 回归 97 PASS。manifest validation 报告写入构建临时目录，不进入不可变包。
+- R78 build-release：`release-20260916-one-button-app-r78` 已通过 schema-only rehearsal、后端 Maven package、前端 `pnpm build:test`、前后端 Docker build/save、包完整性、manifest validation 和 NAS READY；`packageDigest=d9f93f1f2f20dc47513c2cd2015643d3a5c6ad572ffa09d8c2681beab35f45f3`，`manifestChecksum=sha256:83ad9ca3d6dcadd02f0f0c845848540614b3469abb0b4c3f5a5079a8aeafdde4`，artifactCount=661。R78 deploy-release 在版本切换前失败于 route-snapshot hook bash 退出码变量写法错误；lock=FAILED，测试服 `.env` 与实际镜像仍为旧版本，R78 判废。
+- R79 source freeze：维护仓 `6e748a0966630452a20d208eaaafa0e4d239d506`，应用仓 `40765346359700641bc3df93d57c4db27ca4741a`；发布范围仍为 `app-release/without-data`，仅测试服。
+- R38 deploy-release：本地包和 manifest validation PASS，`packageDigest=9387c858b542f3899a7162003e0b396fc2816f762c832e93def5271d7060a106`，但测试服 required SQL 在版本切换前失败于 `No active cleaning process ultrasonic cleaner parameter rules found`；真实库只读诊断 `rules_total=0`。应用仓提交 `b286fd47d` 后，新增空规则 no-op RED/GREEN 2 PASS、相邻 target preflight/release plan 回归 26 PASS、测试服只读 preflight PASS。
+- R40 deploy-release：本地包、manifest validation 与 NAS READY PASS，`packageDigest=e9d359fb674ec341835abcf0ec23370dc4bf26091f860da8fc189b36cd0b5d74`，但测试服 required SQL 在版本切换前失败于 `Missing enabled A05075 UV curing I source configuration`；真实库只读诊断显示 UV1/UV2 来源候选为 0。应用仓提交 `00adc544bcae` 后，UV1/UV2 空来源 no-op 与 target preflight 回归 30 PASS、测试服只读 preflight PASS。
+- R41 local cache：重启后本地 `release-20260914-one-button-app-r41` 只含 `evidence/` 和 `required-sql/`，`Test-ReleasePackageIntegrity` 返回 `manifest.json: missing manifest`；R41 判废不复用，未发布测试服，未执行正式服/审查服/mark-tested/promote-prod/promote-backup/MinIO 数据同步/全量数据库同步。
+- R45 local cache：本地 `release-20260915-one-button-app-r45` 只含 `evidence/` 和 `required-sql/`，`Test-ReleasePackageIntegrity` 返回 `manifest.json: missing manifest`；R45 判废不复用，测试服远端目录不存在，未切换测试服 `.env`。
+- R48 deploy-release：本地包、manifest validation 与 without-data 禁止项扫描 PASS，`packageDigest=2196a318de9d61fc5e0dd0b7deca1c8d9ac0d0aaf7109ffda1b4e15771e82e18`，`manifestDigest=c5b25517163d0b791685e5fef370cc94c06064278209fda433434d338155cb87`；测试服 required SQL 在版本切换前失败于 `No active B04091 cleaning temperature parameter rule found`。应用仓提交 `63e57513f` 后，B04091/B09353 空候选 no-op 合同 RED/GREEN 通过，相邻 target preflight/release plan 回归 26 PASS、测试服只读 preflight PASS。
+- R49 deploy-release：本地包与 manifest validation PASS；测试服 required SQL 在版本切换前失败于 `IDI旧QA规程源数据必须唯一命中3条`。应用仓提交 `dc8edfe5` 后，IDI 旧 QA 源空基线 no-op 合同 RED/GREEN 通过，相邻 target preflight/release plan 回归 27 PASS、测试服只读 preflight PASS。
+- R50 local cache：重启后本地 `release-20260915-one-button-app-r50` 只含 `evidence/` 和 `required-sql/`，缺少 `manifest.json`；判定为中断半成品，不发布、不复用。
+- R1-R5 durable corrective slice：应用仓 ReleaseWorkflow clean 定向 21 PASS、ReleaseWorkflow/RuntimeControl 周边 58 PASS、前端 `pnpm ts:check` PASS；维护仓 release workflow/package governance/SQL preflight 140 PASS，PowerShell AST 与 diff-check PASS。修复范围覆盖来源 tuple 去重、stale lease 释放、派发后隔离、正式写入准入前置和脚本阶段事件。
 
 ## Current Phase
 
-- P1 使用维护仓 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m` 与 IntRuoyi app worktree `D:\IntRuoyiWorktree\r260911-release-button\a`。
-- P1 从各自当前 `int_main` 创建任务分支，审查并融合 `8080c0d` 与 `713c641` 或等价能力，使用 BDD + RED/GREEN/REGRESSION。
-- P1 不启动本地服务，不访问 NAS、数据库或任何服务器，不运行真实 E2E。
+- P3 正在执行：r23-r81 已判废或不可复用；下一步使用两仓新提交和全新 releaseTag 重新构建不可变 `app-release` READY 包并执行测试服 publish-test，成功证据必须绑定同一 releaseTag 的 operation/manifest/.env/实际镜像/容器/health/frontend/release-info/lock/migration 组合验证。
+- P4/P5 运行时前置已恢复；真实页面验证必须在测试服发布成功后执行。
+- 两个实现 worktree 和已提交代码保留；正式服、审查服及 MinIO 数据同步不在本轮范围。
 
 ## Deferred Gates
 
+- 本轮恢复核验：r14/r15 隔离清理目录实际位于 `LocalCacheRoot/publish-int-ruoyi/`，仍各残留 763 个文件，最长路径 306 字符；此前从上一级目录查询后宣称“全部不存在/并发竞态”不成立。必须用 PowerShell 5.1 真实行为回归验证，不能靠代码字符串断言或 PowerShell 7 的手工结果放行。
+- `requiresTargetPreflight=true` 不能仅表示排除空库演练；所有排除的待应用迁移必须有实际目标只读检查及成功证据。覆盖缺口解决前不得发布。
+
 - 最终融合前必须重新确认两个主工作区同路径 dirty 改动归属；不得覆盖并发任务。
-- 测试服真实写入需当次授权；正式服真实写入不在当前授权范围。
-- 项目规定的 Playwright 1.60.0 权威路径当前缺少依赖与可执行文件；P4/P5 在恢复前阻塞，禁止临时下载或换版本兜底。
+- 测试服真实写入已获本轮授权；正式服真实写入不在当前授权范围。
+- Playwright 固定使用任务 app worktree 锁文件安装的 1.60.0，不切换版本。
 
 ## Artifacts
 

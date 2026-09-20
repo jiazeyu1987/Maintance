@@ -1,5 +1,66 @@
 Set-StrictMode -Version Latest
 
+function Get-ReleaseBytesSha256Hex {
+    param([Parameter(Mandatory = $true)][byte[]]$Bytes)
+    $sha256 = [System.Security.Cryptography.SHA256]::Create()
+    try {
+        return ([System.BitConverter]::ToString($sha256.ComputeHash($Bytes))).Replace('-', '').ToLowerInvariant()
+    } finally {
+        $sha256.Dispose()
+    }
+}
+
+function ConvertTo-ReleaseAsciiCaseFoldPath {
+    param([Parameter(Mandatory = $true)][string]$Path)
+    $builder = [System.Text.StringBuilder]::new($Path.Length)
+    foreach ($character in $Path.ToCharArray()) {
+        $code = [int][char]$character
+        if ($code -ge 65 -and $code -le 90) {
+            [void]$builder.Append([char]($code + 32))
+        } else {
+            [void]$builder.Append($character)
+        }
+    }
+    return $builder.ToString()
+}
+
+function Get-ReleasePackageDigest {
+    param([Parameter(Mandatory = $true)][array]$Artifacts)
+    $seen = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+    $entries = @()
+    foreach ($artifact in @($Artifacts)) {
+        $path = [string]$artifact.path
+        if ([string]::IsNullOrWhiteSpace($path) -or $path -cne $path.Trim() -or $path.Contains('\') -or
+            $path.StartsWith('/') -or $path -match '^[A-Za-z]:' -or $path -match '[\x00-\x1f\x7f]') {
+            throw "PACKAGE_PATH_INVALID: $path"
+        }
+        $segments = $path.Split('/')
+        if (@($segments | Where-Object { $_ -in @('', '.', '..') }).Count -gt 0) {
+            throw "PACKAGE_PATH_INVALID: $path"
+        }
+        if (-not $seen.Add((ConvertTo-ReleaseAsciiCaseFoldPath -Path $path))) {
+            throw "PACKAGE_PATH_INVALID: case-folded path collision: $path"
+        }
+        $sha256 = [string]$artifact.sha256
+        if ($sha256 -notmatch '^[0-9a-f]{64}$') {
+            throw "PACKAGE_PATH_INVALID: invalid sha256 for $path"
+        }
+        $sortKey = ([System.BitConverter]::ToString([System.Text.UTF8Encoding]::new($false).GetBytes($path))).Replace('-', '')
+        $entries += [pscustomobject]@{ path = $path; bytes = [int64]$artifact.bytes; sha256 = $sha256.ToLowerInvariant(); sortKey = $sortKey }
+    }
+    $sortedInternal = @($entries | Sort-Object -Property sortKey)
+    $sorted = @($sortedInternal | ForEach-Object {
+        [pscustomobject]@{ path = $_.path; bytes = $_.bytes; sha256 = $_.sha256 }
+    })
+    $canonical = (($sorted | ForEach-Object { "$($_.path)`t$($_.bytes)`t$($_.sha256)`n" }) -join '')
+    $canonicalBytes = [System.Text.UTF8Encoding]::new($false).GetBytes($canonical)
+    return [pscustomobject]@{
+        Artifacts = $sorted
+        CanonicalInput = $canonicalBytes
+        PackageDigest = Get-ReleaseBytesSha256Hex -Bytes $canonicalBytes
+    }
+}
+
 function Get-ReleaseSha256Hex {
     param(
         [Parameter(Mandatory = $true)]
@@ -41,18 +102,18 @@ function ConvertTo-NormalizedReleaseArtifactPath {
     )
 
     if ([string]::IsNullOrWhiteSpace($Path) -or $Path -cne $Path.Trim()) {
-        throw "${Path}: invalid artifact path"
+        throw "PACKAGE_PATH_INVALID: $Path"
     }
     if ($Path.Contains('\') -or $Path -match '^[A-Za-z]:' -or [System.IO.Path]::IsPathRooted($Path)) {
-        throw "${Path}: invalid artifact path"
+        throw "PACKAGE_PATH_INVALID: $Path"
     }
     if ($Path -match '[\x00-\x1f]' -or $Path.Contains('|')) {
-        throw "${Path}: invalid artifact path"
+        throw "PACKAGE_PATH_INVALID: $Path"
     }
 
     $segments = @($Path.Split('/'))
     if ($segments.Count -eq 0 -or @($segments | Where-Object { $_ -in @('', '.', '..') }).Count -gt 0) {
-        throw "${Path}: invalid artifact path"
+        throw "PACKAGE_PATH_INVALID: $Path"
     }
     return ($segments -join '/')
 }
@@ -92,7 +153,7 @@ function Get-ReleasePackageImmutableArtifactFileFacts {
     $entriesByPath = [System.Collections.Generic.Dictionary[string, object]]::new([System.StringComparer]::Ordinal)
     foreach ($file in Get-ChildItem -LiteralPath $root -File -Recurse) {
         $relativePath = $file.FullName.Substring($rootPrefix.Length).Replace('\', '/')
-        if ($relativePath -ceq 'release-manifest.json' -or (Test-IsReleasePackageMutableMetadataPath -RelativePath $relativePath)) {
+        if (Test-IsReleasePackageMutableMetadataPath -RelativePath $relativePath) {
             continue
         }
         if ($ExcludeManifestJson -and $relativePath -ceq 'manifest.json') {
@@ -143,6 +204,7 @@ function Test-ReleasePackageIntegrity {
         [Parameter(Mandatory = $true)]
         [string]$PackagePath,
         [string]$ExpectedReleaseTag = '',
+        [string]$ExpectedPackageDirectoryName = '',
         [array]$PreverifiedArtifacts = @(),
         [switch]$EmitProgress
     )
@@ -151,76 +213,143 @@ function Test-ReleasePackageIntegrity {
         throw "Release package directory missing: $PackagePath"
     }
     $root = [System.IO.Path]::GetFullPath($PackagePath)
-    $manifestPath = Join-Path $root 'release-manifest.json'
-    if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
-        throw 'release-manifest.json: missing manifest'
+    $rootPrefix = $root.TrimEnd([char[]]@('\', '/')) + [System.IO.Path]::DirectorySeparatorChar
+    foreach ($file in Get-ChildItem -LiteralPath $root -File -Recurse -Force) {
+        $relativePath = $file.FullName.Substring($rootPrefix.Length).Replace('\', '/')
+        $leaf = [System.IO.Path]::GetFileName($relativePath)
+        if ($relativePath -ceq 'release-manifest.json' -or
+            $leaf -cin @('ruoyi-vue-pro-current.sql', 'reset-db.sql', 'post-import.sql') -or
+            $relativePath.StartsWith('minio/', [System.StringComparison]::OrdinalIgnoreCase) -or
+            $relativePath -ieq 'manifest/dcc-object-inventory.json' -or
+            $relativePath.StartsWith('runtime/', [System.StringComparison]::OrdinalIgnoreCase) -or
+            $leaf -ieq '.env' -or $leaf.StartsWith('.env.', [System.StringComparison]::OrdinalIgnoreCase) -or
+            $leaf.EndsWith('.rdb', [System.StringComparison]::OrdinalIgnoreCase) -or
+            $leaf.EndsWith('.dump', [System.StringComparison]::OrdinalIgnoreCase)) {
+            throw "PACKAGE_CONTENT_FORBIDDEN: $relativePath"
+        }
     }
 
+    $manifestPath = Join-Path $root 'manifest.json'
+    if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
+        throw 'manifest.json: missing manifest'
+    }
     $manifestBytes = [System.IO.File]::ReadAllBytes($manifestPath)
     try {
-        $manifestText = [System.Text.UTF8Encoding]::new($false, $true).GetString($manifestBytes)
-        $manifest = $manifestText | ConvertFrom-Json
+        $manifest = ([System.Text.UTF8Encoding]::new($false, $true).GetString($manifestBytes)) | ConvertFrom-Json
     } catch {
-        throw "release-manifest.json: invalid JSON: $($_.Exception.Message)"
+        throw "manifest.json: invalid JSON: $($_.Exception.Message)"
     }
-
-    foreach ($propertyName in @('releaseTag', 'packageDirectoryName', 'publishScope', 'artifacts')) {
+    foreach ($propertyName in @('releaseTag', 'packageId', 'publishScope', 'packageDigest', 'sourceRoots', 'sourceRoles', 'artifacts')) {
         if ($manifest.PSObject.Properties.Name -cnotcontains $propertyName) {
-            throw "release-manifest.json: missing $propertyName"
+            throw "manifest.json: missing $propertyName"
         }
     }
     $releaseTag = [string]$manifest.releaseTag
-    $packageDirectoryName = [string]$manifest.packageDirectoryName
+    $packageDirectoryName = [string]$manifest.packageId
     $publishScope = [string]$manifest.publishScope
     if ([string]::IsNullOrWhiteSpace($releaseTag)) {
-        throw 'release-manifest.json: invalid releaseTag'
+        throw 'manifest.json: invalid releaseTag'
     }
     if (-not [string]::IsNullOrWhiteSpace($ExpectedReleaseTag) -and $releaseTag -cne $ExpectedReleaseTag) {
-        throw "release-manifest.json: releaseTag mismatch: $releaseTag != $ExpectedReleaseTag"
+        throw "manifest.json: releaseTag mismatch: $releaseTag != $ExpectedReleaseTag"
     }
-    if ($packageDirectoryName -cne (Split-Path -Leaf $root)) {
-        throw "release-manifest.json: packageDirectoryName mismatch: $packageDirectoryName != $(Split-Path -Leaf $root)"
+    $actualPackageDirectoryName = Split-Path -Leaf $root
+    $expectedDirectoryName = if ([string]::IsNullOrWhiteSpace($ExpectedPackageDirectoryName)) {
+        $actualPackageDirectoryName
+    } else {
+        $ExpectedPackageDirectoryName
     }
-    if ($publishScope -cnotin @('code-only', 'with-data')) {
-        throw "release-manifest.json: invalid publishScope: $publishScope"
+    if ($packageDirectoryName -cne $expectedDirectoryName) {
+        throw "manifest.json: packageId mismatch: $packageDirectoryName != $expectedDirectoryName"
+    }
+    if ($publishScope -cne 'app-release') {
+        throw "manifest.json: invalid publishScope: $publishScope"
+    }
+    $rootRoles = @($manifest.sourceRoots | ForEach-Object { [string]$_.rootRole } | Sort-Object)
+    $sourceRoles = @($manifest.sourceRoles | ForEach-Object { [string]$_.sourceRole } | Sort-Object)
+    if (($rootRoles -join ',') -cne 'application,maintenance' -or
+        ($sourceRoles -join ',') -cne 'backend,frontend,maintenance') {
+        throw 'manifest.json: source root or role set invalid'
+    }
+    $rootCommits = @{}
+    foreach ($sourceRoot in @($manifest.sourceRoots)) {
+        foreach ($propertyName in @('rootRole', 'normalizedRoot', 'approvedCommit', 'commit', 'dirty')) {
+            if ($sourceRoot.PSObject.Properties.Name -cnotcontains $propertyName) {
+                throw "MANIFEST_SOURCE_ROOT_INVALID: $($sourceRoot.rootRole) missing $propertyName"
+            }
+        }
+        $normalizedRoot = [string]$sourceRoot.normalizedRoot
+        $approvedCommit = [string]$sourceRoot.approvedCommit
+        $commit = [string]$sourceRoot.commit
+        if ([string]::IsNullOrWhiteSpace($normalizedRoot) -or $normalizedRoot -cne $normalizedRoot.Trim() -or
+            $normalizedRoot.Contains('\') -or $normalizedRoot.Contains('/../') -or $normalizedRoot.Contains('/./') -or
+            $sourceRoot.dirty -isnot [bool] -or [bool]$sourceRoot.dirty -or
+            $approvedCommit -cnotmatch '^[0-9a-f]{40}$' -or $commit -cnotmatch '^[0-9a-f]{40}$' -or
+            $approvedCommit -cne $commit) {
+            throw "MANIFEST_SOURCE_ROOT_INVALID: $($sourceRoot.rootRole)"
+        }
+        $rootCommits[[string]$sourceRoot.rootRole] = $commit
+    }
+    $expectedRoleRoots = @{ maintenance = 'maintenance'; backend = 'application'; frontend = 'application' }
+    $expectedRolePaths = @{ maintenance = '.'; backend = 'IntRuoyiBackend'; frontend = 'IntRuoyiFronted' }
+    foreach ($sourceRole in @($manifest.sourceRoles)) {
+        foreach ($propertyName in @('sourceRole', 'rootRole', 'relativePath', 'commit')) {
+            if ($sourceRole.PSObject.Properties.Name -cnotcontains $propertyName) {
+                throw "MANIFEST_SOURCE_ROLE_INVALID: $($sourceRole.sourceRole) missing $propertyName"
+            }
+        }
+        $roleName = [string]$sourceRole.sourceRole
+        $rootRole = [string]$sourceRole.rootRole
+        $relativePath = [string]$sourceRole.relativePath
+        $commit = [string]$sourceRole.commit
+        if ($rootRole -cne [string]$expectedRoleRoots[$roleName] -or
+            $relativePath -cne [string]$expectedRolePaths[$roleName] -or
+            $commit -cnotmatch '^[0-9a-f]{40}$' -or $commit -cne [string]$rootCommits[$rootRole]) {
+            throw "MANIFEST_SOURCE_ROLE_INVALID: $roleName"
+        }
     }
 
-    $preverifiedByPath = [System.Collections.Generic.Dictionary[string, object]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    $preverifiedByPath = [System.Collections.Generic.Dictionary[string, object]]::new([System.StringComparer]::Ordinal)
     foreach ($artifact in @($PreverifiedArtifacts)) {
         if ($null -eq $artifact) {
             continue
         }
         $preverifiedPath = ConvertTo-NormalizedReleaseArtifactPath -Path ([string]$artifact.path)
-        if ($preverifiedByPath.ContainsKey($preverifiedPath)) {
-            throw "${preverifiedPath}: duplicate preverified artifact path"
+        $preverifiedKey = ConvertTo-ReleaseAsciiCaseFoldPath -Path $preverifiedPath
+        if ($preverifiedByPath.ContainsKey($preverifiedKey)) {
+            throw "PACKAGE_PATH_INVALID: duplicate preverified artifact path: $preverifiedPath"
         }
-        $preverifiedByPath.Add($preverifiedPath, $artifact)
+        $preverifiedByPath.Add($preverifiedKey, $artifact)
     }
 
-    $declaredPaths = [System.Collections.Generic.Dictionary[string, object]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    $declaredPaths = [System.Collections.Generic.Dictionary[string, object]]::new([System.StringComparer]::Ordinal)
     $verifiedEntries = @()
     foreach ($artifact in @($manifest.artifacts)) {
         if ($null -eq $artifact) {
-            throw 'release-manifest.json: invalid artifact entry'
+            throw 'manifest.json: invalid artifact entry'
         }
         foreach ($propertyName in @('path', 'sha256', 'bytes')) {
             if ($artifact.PSObject.Properties.Name -cnotcontains $propertyName) {
-                throw "release-manifest.json: artifact missing $propertyName"
+                throw "manifest.json: artifact missing $propertyName"
             }
         }
         $declaredPath = [string]$artifact.path
         $relativePath = ConvertTo-NormalizedReleaseArtifactPath -Path $declaredPath
-        if ($relativePath -ceq 'release-manifest.json' -or (Test-IsReleasePackageMutableMetadataPath -RelativePath $relativePath)) {
-            throw "${relativePath}: invalid artifact path"
+        $relativePathKey = ConvertTo-ReleaseAsciiCaseFoldPath -Path $relativePath
+        if ($relativePath -ceq 'manifest.json' -or (Test-IsReleasePackageMutableMetadataPath -RelativePath $relativePath)) {
+            throw "PACKAGE_PATH_INVALID: $relativePath"
         }
-        if ($declaredPaths.ContainsKey($relativePath)) {
-            throw "${relativePath}: duplicate artifact path"
+        if ($declaredPaths.ContainsKey($relativePathKey)) {
+            throw "PACKAGE_PATH_INVALID: duplicate or case-folded artifact path: $relativePath"
         }
-        $declaredPaths.Add($relativePath, $artifact)
+        $declaredPaths.Add($relativePathKey, $artifact)
 
         $declaredHash = [string]$artifact.sha256
-        if ($declaredHash -cnotmatch '^[0-9a-f]{64}$') {
+        if ($declaredHash -cnotmatch '^(sha256:)?[0-9a-f]{64}$') {
             throw "${relativePath}: invalid sha256"
+        }
+        if ($declaredHash.StartsWith('sha256:')) {
+            $declaredHash = $declaredHash.Substring(7)
         }
         $validIntegerTypes = @(
             [byte], [sbyte], [int16], [uint16], [int32], [uint32], [int64], [uint64]
@@ -240,8 +369,8 @@ function Test-ReleasePackageIntegrity {
             throw "${relativePath}: bytes mismatch; declared=$($artifact.bytes) actual=$($actualFile.Length)"
         }
         $actualHash = ''
-        if ($preverifiedByPath.ContainsKey($relativePath)) {
-            $preverified = $preverifiedByPath[$relativePath]
+        if ($preverifiedByPath.ContainsKey($relativePathKey)) {
+            $preverified = $preverifiedByPath[$relativePathKey]
             $preverifiedHash = [string]$preverified.sha256
             $preverifiedBytes = [int64]$preverified.bytes
             if ($preverifiedHash -cne $declaredHash -or $preverifiedBytes -ne [int64]$actualFile.Length) {
@@ -261,39 +390,29 @@ function Test-ReleasePackageIntegrity {
         }
     }
 
-    if (-not $declaredPaths.ContainsKey('manifest.json')) {
-        throw 'manifest.json: missing artifact declaration'
-    }
     if ($preverifiedByPath.Count -gt 0) {
-        foreach ($actual in @(Get-ReleasePackageImmutableArtifactFileFacts -PackagePath $root)) {
-            if (-not $declaredPaths.ContainsKey([string]$actual.path)) {
+        foreach ($actual in @(Get-ReleasePackageImmutableArtifactFileFacts -PackagePath $root -ExcludeManifestJson)) {
+            if (-not $declaredPaths.ContainsKey((ConvertTo-ReleaseAsciiCaseFoldPath -Path ([string]$actual.path)))) {
                 throw "$($actual.path): undeclared file"
             }
         }
     } else {
-        foreach ($actual in @(Get-ReleasePackageImmutableArtifactEntries -PackagePath $root -EmitProgress:$EmitProgress)) {
-            if (-not $declaredPaths.ContainsKey([string]$actual.path)) {
+        foreach ($actual in @(Get-ReleasePackageImmutableArtifactEntries -PackagePath $root -ExcludeManifestJson -EmitProgress:$EmitProgress)) {
+            if (-not $declaredPaths.ContainsKey((ConvertTo-ReleaseAsciiCaseFoldPath -Path ([string]$actual.path)))) {
                 throw "$($actual.path): undeclared file"
             }
         }
     }
     if ($verifiedEntries.Count -ne $declaredPaths.Count) {
-        throw 'release-manifest.json: artifact set mismatch'
+        throw 'manifest.json: artifact set mismatch'
     }
 
-    $verifiedByPath = [System.Collections.Generic.Dictionary[string, object]]::new([System.StringComparer]::Ordinal)
-    foreach ($entry in $verifiedEntries) {
-        $verifiedByPath.Add([string]$entry.path, $entry)
+    $digest = Get-ReleasePackageDigest -Artifacts $verifiedEntries
+    $packageDigest = [string]$digest.PackageDigest
+    if ([string]$manifest.packageDigest -cne $packageDigest) {
+        throw "manifest.json: packageDigest mismatch: $($manifest.packageDigest) != $packageDigest"
     }
-    $sortedVerifiedPaths = [string[]]@($verifiedByPath.Keys)
-    [System.Array]::Sort($sortedVerifiedPaths, [System.StringComparer]::Ordinal)
-    $verifiedEntries = @($sortedVerifiedPaths | ForEach-Object { $verifiedByPath[$_] })
-    $manifestDigest = 'sha256:' + (Get-ReleaseSha256Hex -Path $manifestPath)
-    $canonicalRecords = "manifestDigest=$manifestDigest`n"
-    foreach ($artifact in $verifiedEntries) {
-        $canonicalRecords += "artifact=$($artifact.path)`tsha256:$($artifact.sha256)`t$($artifact.bytes)`n"
-    }
-    $packageDigest = 'sha256:' + (Get-ReleaseStringSha256Hex -Value $canonicalRecords)
+    $manifestDigest = Get-ReleaseBytesSha256Hex -Bytes $manifestBytes
 
     return [pscustomobject][ordered]@{
         releaseTag = $releaseTag
@@ -301,7 +420,9 @@ function Test-ReleasePackageIntegrity {
         publishScope = $publishScope
         manifestDigest = $manifestDigest
         packageDigest = $packageDigest
-        artifacts = @($verifiedEntries)
+        sourceRoots = @($manifest.sourceRoots)
+        sourceRoles = @($manifest.sourceRoles)
+        artifacts = @($digest.Artifacts)
     }
 }
 
@@ -312,12 +433,12 @@ function Assert-ReleasePackageDeploymentScope {
         [ValidateSet('test', 'prod', 'backup')]
         [string]$TargetEnvironment,
         [Parameter(Mandatory = $true)]
-        [ValidateSet('code-only', 'with-data')]
+        [ValidateSet('app-release')]
         [string]$PublishScope
     )
 
-    if ($TargetEnvironment -in @('prod', 'backup') -and $PublishScope -ne 'code-only') {
-        throw "Production-grade environment '$TargetEnvironment' requires a code-only release package; publishScope=$PublishScope"
+    if ($PublishScope -ne 'app-release') {
+        throw "Standard workflow requires an app-release package; publishScope=$PublishScope"
     }
 }
 
@@ -423,6 +544,7 @@ function Write-ReleaseTestedAttestation {
         [string]$TestOperationId,
         [Parameter(Mandatory = $true)]
         [string]$TestOperationEvidencePath,
+        [string]$TestResult = '',
         [Parameter(Mandatory = $true)]
         [string]$TestedBy,
         [Parameter(Mandatory = $true)]
@@ -432,6 +554,9 @@ function Write-ReleaseTestedAttestation {
 
     if ([string]::IsNullOrWhiteSpace($TestedBy)) {
         throw 'testedBy invalid: value is required'
+    }
+    if ($TestResult -cne 'PASS') {
+        throw 'testResult invalid: PASS is required'
     }
     if ([string]::IsNullOrWhiteSpace($TestConclusion)) {
         throw 'testConclusion invalid: value is required'
@@ -452,6 +577,7 @@ function Write-ReleaseTestedAttestation {
         publishTestOperationStatus = [string]$operation.status
         publishTestRequestedAt = [string]$operation.requestedAt
         testedAt = (Get-Date).ToUniversalTime().ToString('o')
+        testResult = 'PASS'
         testedBy = $TestedBy.Trim()
         testConclusion = $TestConclusion.Trim()
     }
@@ -494,8 +620,8 @@ function Test-ReleasePromotionAttestation {
     )
 
     $integrity = Test-ReleasePackageIntegrity -PackagePath $PackagePath -ExpectedReleaseTag $ExpectedReleaseTag
-    if ($integrity.publishScope -cne 'code-only') {
-        throw "publishScope mismatch: $($integrity.publishScope) != code-only"
+    if ($integrity.publishScope -cne 'app-release') {
+        throw "publishScope mismatch: $($integrity.publishScope) != app-release"
     }
     $operation = Assert-PublishTestOperationEvidence `
         -EvidencePath $TestOperationEvidencePath `
@@ -559,6 +685,8 @@ Export-ModuleMember -Function @(
     'Assert-ReleasePackageDeploymentScope',
     'Assert-PublishTestOperationEvidence',
     'Assert-ReleaseRollbackCompatibility',
+    'Get-ReleaseBytesSha256Hex',
+    'Get-ReleasePackageDigest',
     'Get-ReleasePackageImmutableArtifactEntries',
     'Test-IsReleasePackageMutableMetadataPath',
     'Test-ReleasePackageIntegrity',

@@ -55,11 +55,10 @@ def _write_package(
     package_dir: Path,
     *,
     release_tag: str = "release-p2-fixture",
-    publish_scope: str = "code-only",
+    publish_scope: str = "app-release",
 ) -> dict[str, object]:
     package_dir.mkdir(parents=True)
     payload = {
-        "manifest.json": b'{"manifestVersion":"1.0"}\n',
         "bin/app.bin": b"immutable-app-payload\x00\x01",
     }
     artifacts: list[dict[str, object]] = []
@@ -75,19 +74,36 @@ def _write_package(
             }
         )
     manifest: dict[str, object] = {
+        "schemaVersion": 2,
         "releaseTag": release_tag,
-        "packageDirectoryName": package_dir.name,
+        "packageId": package_dir.name,
         "publishScope": publish_scope,
+        "packageDigest": _sha256(
+            "".join(
+                f"{item['path']}\t{item['bytes']}\t{item['sha256']}\n"
+                for item in sorted(artifacts, key=lambda item: str(item["path"]).encode("utf-8"))
+            ).encode("utf-8")
+        ),
+        "sourceRoots": [
+            {"rootRole": "maintenance", "normalizedRoot": "d:/fixture/maintenance", "approvedCommit": "a" * 40,
+             "commit": "a" * 40, "dirty": False},
+            {"rootRole": "application", "normalizedRoot": "d:/fixture/application", "approvedCommit": "b" * 40,
+             "commit": "b" * 40, "dirty": False},
+        ],
+        "sourceRoles": [
+            {"sourceRole": "maintenance", "rootRole": "maintenance", "relativePath": ".", "commit": "a" * 40},
+            {"sourceRole": "backend", "rootRole": "application", "relativePath": "IntRuoyiBackend", "commit": "b" * 40},
+            {"sourceRole": "frontend", "rootRole": "application", "relativePath": "IntRuoyiFronted", "commit": "b" * 40},
+        ],
         "artifacts": artifacts,
     }
-    manifest_bytes = json.dumps(manifest, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
-    (package_dir / "release-manifest.json").write_bytes(manifest_bytes)
+    _rewrite_manifest(package_dir, manifest)
     return manifest
 
 
 def _rewrite_manifest(package_dir: Path, manifest: dict[str, object]) -> None:
     manifest_bytes = json.dumps(manifest, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
-    (package_dir / "release-manifest.json").write_bytes(manifest_bytes)
+    (package_dir / "manifest.json").write_bytes(manifest_bytes)
 
 
 def _verify_package(package_dir: Path | str) -> subprocess.CompletedProcess[str]:
@@ -133,10 +149,11 @@ def test_mode_is_mandatory_and_direct_is_rejected_before_script_body(tmp_path: P
 @pytest.mark.parametrize(
     ("environment", "publish_scope", "allowed"),
     [
-        ("test", "with-data", True),
-        ("test", "code-only", True),
-        ("prod", "code-only", True),
-        ("backup", "code-only", True),
+        ("test", "app-release", True),
+        ("prod", "app-release", True),
+        ("backup", "app-release", True),
+        ("test", "code-only", False),
+        ("test", "with-data", False),
         ("prod", "with-data", False),
         ("backup", "with-data", False),
     ],
@@ -160,7 +177,7 @@ def test_release_package_scope_matrix_blocks_production_data_packages_before_pro
         assert probe.read_text(encoding="utf-8") == "external-action-probe"
     else:
         assert result.returncode != 0
-        assert "requires a code-only release package" in result.stdout + result.stderr
+        assert "app-release" in result.stdout + result.stderr
         assert not probe.exists()
 
 
@@ -197,15 +214,16 @@ def test_runtime_console_only_emits_explicit_package_modes_for_code_only_flow() 
     assert 'deployReleaseArguments("backup", req)' in source
 
 
-def test_build_release_defaults_to_code_only_and_requires_explicit_with_data_confirm() -> None:
+def test_build_release_is_fixed_to_app_release_without_data_modes() -> None:
     script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
 
-    assert "[ValidateSet('code-only', 'with-data')]" in script
-    assert "[string]$PublishScope = 'code-only'" in script
+    assert "[ValidateSet('app-release')]" in script
+    assert "[string]$PublishScope = 'app-release'" in script
     assert "Resolve-EffectiveBuildReleasePublishScope" in script
-    assert "Daily build-release defaults to code-only" in script
-    assert "Explicit confirmation required for with-data build-release: -ConfirmText WITH-DATA" in script
-    assert "with-data cannot be combined with -SkipDatabaseSync or -SkipMinioSync" in script
+    assert "Standard build-release is app-release" in script
+    scope_start = script.index("function Resolve-EffectiveBuildReleasePublishScope")
+    scope_end = script.index("function Set-ReleasePackageArtifactCache", scope_start)
+    assert "with-data" not in script[scope_start:scope_end]
 
 
 def test_build_release_long_running_package_steps_are_observable() -> None:
@@ -213,8 +231,9 @@ def test_build_release_long_running_package_steps_are_observable() -> None:
 
     assert "Invoke-ReleaseStage -Name 'release manifest generation'" in script
     assert "Invoke-ReleaseStage -Name 'release package integrity verification'" in script
+    assert "Invoke-ReleaseStage -Name 'release manifest validation'" in script
     assert "Invoke-ReleaseStage -Name 'NAS release package upload and verification'" in script
-    assert "Copy-ReleaseDirectoryTree -SourceDirectory $releaseDir -DestinationDirectory $targetPath" in script
+    assert "Copy-ReleaseDirectoryTree -SourceDirectory $releaseDir -DestinationDirectory $stagingPath" in script
     assert "Release directory copy summary:" in script
     assert "Release package size summary:" in script
 
@@ -256,6 +275,25 @@ def test_release_package_size_summary_reuses_manifest_artifact_facts() -> None:
     assert "Write-ReleasePackageSizeSummary -Artifacts (Get-ReleasePackageArtifactCache)" in manifest_stage
 
 
+def test_build_release_manifest_validation_is_hard_gate_before_nas_upload() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+
+    assert "ReleaseManifestValidator.psm1" in script
+    assert "function Invoke-ReleaseManifestValidationGate" in script
+    helper_start = script.index("function Invoke-ReleaseManifestValidationGate")
+    helper_end = script.index("function Write-ReleaseManifest", helper_start)
+    helper = script[helper_start:helper_end]
+    assert "Invoke-ReleaseManifestValidation -PackagePath $PackagePath -Mode 'report-only'" in helper
+    assert "$reportPath = Join-Path $planRoot 'manifest-validation-result.json'" in helper
+    assert "Release manifest validation failed" in helper
+    assert "Join-Path $PackagePath 'manifest-validation-result.json'" not in helper
+
+    integrity = script.index("Invoke-ReleaseStage -Name 'release package integrity verification'")
+    validation = script.index("Invoke-ReleaseStage -Name 'release manifest validation'")
+    nas = script.index("Invoke-ReleaseStage -Name 'NAS release package upload and verification'")
+    assert integrity < validation < nas
+
+
 def test_manifest_entries_are_reused_for_build_integrity_to_avoid_extra_scan() -> None:
     script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
     function_start = script.index("function Write-ReleaseManifest {")
@@ -291,7 +329,7 @@ def test_publish_script_has_valid_powershell_ast() -> None:
     assert result.returncode == 0, result.stdout + result.stderr
 
 
-def test_integrity_verifier_exactly_covers_payload_and_includes_manifest_json(tmp_path: Path) -> None:
+def test_integrity_verifier_exactly_covers_payload_and_excludes_manifest_self_reference(tmp_path: Path) -> None:
     package_dir = tmp_path / "package-exact"
     _write_package(package_dir)
 
@@ -299,9 +337,34 @@ def test_integrity_verifier_exactly_covers_payload_and_includes_manifest_json(tm
 
     assert verification["releaseTag"] == "release-p2-fixture"
     assert verification["packageDirectoryName"] == "package-exact"
-    assert verification["publishScope"] == "code-only"
-    assert [item["path"] for item in verification["artifacts"]] == ["bin/app.bin", "manifest.json"]
+    assert verification["publishScope"] == "app-release"
+    assert [item["path"] for item in verification["artifacts"]] == ["bin/app.bin"]
     assert all(re.fullmatch(r"[0-9a-f]{64}", item["sha256"]) for item in verification["artifacts"])
+
+
+def test_integrity_verifier_accepts_atomic_nas_staging_directory_name(tmp_path: Path) -> None:
+    package_dir = tmp_path / "release-staging-fixture"
+    _write_package(package_dir, release_tag="release-staging-fixture")
+    staging_dir = tmp_path / ".release-staging-fixture.staging-abcdef"
+    shutil.copytree(package_dir, staging_dir)
+    command = "\n".join(
+        [
+            "$ErrorActionPreference = 'Stop'",
+            f"Import-Module -Force '{GOVERNANCE_MODULE}'",
+            "Test-ReleasePackageIntegrity "
+            f"-PackagePath '{staging_dir}' "
+            "-ExpectedReleaseTag 'release-staging-fixture' "
+            "-ExpectedPackageDirectoryName 'release-staging-fixture' | "
+            "ConvertTo-Json -Depth 8 -Compress",
+        ]
+    )
+
+    result = _run_powershell(["-Command", command])
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    verification = json.loads(result.stdout.strip())
+    assert verification["releaseTag"] == "release-staging-fixture"
+    assert verification["packageDirectoryName"] == "release-staging-fixture"
 
 
 def test_package_digest_uses_fixed_vector_and_is_root_separator_independent(tmp_path: Path) -> None:
@@ -314,18 +377,15 @@ def test_package_digest_uses_fixed_vector_and_is_root_separator_independent(tmp_
     result_b = _verification_result(package_b)
     result_b_forward_slash = _verification_result(package_b.as_posix())
 
-    manifest_digest = f"sha256:{_sha256((package_a / 'release-manifest.json').read_bytes())}"
-    canonical_records = [f"manifestDigest={manifest_digest}\n"]
-    for artifact in sorted(result_a["artifacts"], key=lambda item: item["path"]):
-        canonical_records.append(
-            f"artifact={artifact['path']}\tsha256:{artifact['sha256']}\t{artifact['bytes']}\n"
-        )
-    expected_package_digest = f"sha256:{_sha256(''.join(canonical_records).encode('utf-8'))}"
+    manifest_digest = _sha256((package_a / "manifest.json").read_bytes())
+    canonical_records = "".join(
+        f"{artifact['path']}\t{artifact['bytes']}\t{artifact['sha256']}\n"
+        for artifact in sorted(result_a["artifacts"], key=lambda item: item["path"].encode("utf-8"))
+    )
+    expected_package_digest = _sha256(canonical_records.encode("utf-8"))
 
     assert result_a["manifestDigest"] == manifest_digest
     assert result_a["packageDigest"] == expected_package_digest
-    assert manifest_digest == "sha256:2d03b3a34a07105aec291600962fcfbf1494534055466a0d559ca7736db75c62"
-    assert expected_package_digest == "sha256:bca84ee56d15a8cf4b662442ba30d7f96000835ccaa63d6c6d402251cdde3276"
     assert result_b["packageDigest"] == expected_package_digest
     assert result_b_forward_slash["packageDigest"] == expected_package_digest
 
@@ -338,15 +398,14 @@ def test_package_digest_uses_fixed_vector_and_is_root_separator_independent(tmp_
         ("extra", "extra.txt: undeclared file"),
         ("bytes", "bin/app.bin: bytes mismatch"),
         ("hash", "bin/app.bin: hash mismatch"),
-        ("absolute", "C:/outside.bin: invalid artifact path"),
-        ("parent", "../outside.bin: invalid artifact path"),
-        ("backslash", "bin\\app.bin: invalid artifact path"),
-        ("duplicate", "bin/app.bin: duplicate artifact path"),
-        ("case-conflict", "BIN/APP.BIN: duplicate artifact path"),
+        ("absolute", "PACKAGE_PATH_INVALID"),
+        ("parent", "PACKAGE_PATH_INVALID"),
+        ("backslash", "PACKAGE_PATH_INVALID"),
+        ("duplicate", "PACKAGE_PATH_INVALID"),
+        ("case-conflict", "PACKAGE_PATH_INVALID"),
         ("uppercase-hash", "bin/app.bin: invalid sha256"),
         ("negative-bytes", "bin/app.bin: invalid bytes"),
         ("null-bytes", "bin/app.bin: invalid bytes"),
-        ("missing-manifest-declaration", "manifest.json: missing artifact declaration"),
         ("declared-missing", "ghost.bin: missing artifact"),
     ],
 )
@@ -359,45 +418,42 @@ def test_integrity_verifier_rejects_all_payload_drift(
     assert isinstance(artifacts, list)
 
     if mutation == "tamper":
-        (package_dir / "bin" / "app.bin").write_bytes(b"X" * int(artifacts[1]["bytes"]))
+        (package_dir / "bin" / "app.bin").write_bytes(b"X" * int(artifacts[0]["bytes"]))
     elif mutation == "missing":
         (package_dir / "bin" / "app.bin").unlink()
     elif mutation == "extra":
         (package_dir / "extra.txt").write_text("not declared", encoding="utf-8")
     elif mutation == "bytes":
-        artifacts[1]["bytes"] = int(artifacts[1]["bytes"]) + 1
+        artifacts[0]["bytes"] = int(artifacts[0]["bytes"]) + 1
         _rewrite_manifest(package_dir, manifest)
     elif mutation == "hash":
-        artifacts[1]["sha256"] = "0" * 64
+        artifacts[0]["sha256"] = "0" * 64
         _rewrite_manifest(package_dir, manifest)
     elif mutation == "absolute":
-        artifacts[1]["path"] = "C:/outside.bin"
+        artifacts[0]["path"] = "C:/outside.bin"
         _rewrite_manifest(package_dir, manifest)
     elif mutation == "parent":
-        artifacts[1]["path"] = "../outside.bin"
+        artifacts[0]["path"] = "../outside.bin"
         _rewrite_manifest(package_dir, manifest)
     elif mutation == "backslash":
-        artifacts[1]["path"] = "bin\\app.bin"
+        artifacts[0]["path"] = "bin\\app.bin"
         _rewrite_manifest(package_dir, manifest)
     elif mutation == "duplicate":
-        artifacts.append(dict(artifacts[1]))
+        artifacts.append(dict(artifacts[0]))
         _rewrite_manifest(package_dir, manifest)
     elif mutation == "case-conflict":
-        duplicate = dict(artifacts[1])
+        duplicate = dict(artifacts[0])
         duplicate["path"] = "BIN/APP.BIN"
         artifacts.append(duplicate)
         _rewrite_manifest(package_dir, manifest)
     elif mutation == "uppercase-hash":
-        artifacts[1]["sha256"] = str(artifacts[1]["sha256"]).upper()
+        artifacts[0]["sha256"] = str(artifacts[0]["sha256"]).upper()
         _rewrite_manifest(package_dir, manifest)
     elif mutation == "negative-bytes":
-        artifacts[1]["bytes"] = -1
+        artifacts[0]["bytes"] = -1
         _rewrite_manifest(package_dir, manifest)
     elif mutation == "null-bytes":
-        artifacts[1]["bytes"] = None
-        _rewrite_manifest(package_dir, manifest)
-    elif mutation == "missing-manifest-declaration":
-        artifacts.pop(0)
+        artifacts[0]["bytes"] = None
         _rewrite_manifest(package_dir, manifest)
     elif mutation == "declared-missing":
         artifacts.append({"path": "ghost.bin", "sha256": "0" * 64, "bytes": 0})
@@ -417,14 +473,14 @@ def test_payload_or_manifest_change_changes_digest_or_fails(tmp_path: Path) -> N
     shutil.copytree(baseline_dir, payload_changed_dir)
 
     baseline = _verification_result(baseline_dir)
-    manifest["publishScope"] = "with-data"
+    manifest["operatorNote"] = "manifest metadata changed"
     _rewrite_manifest(manifest_changed_dir, manifest)
     manifest_changed = _verification_result(manifest_changed_dir)
     (payload_changed_dir / "bin" / "app.bin").write_bytes(b"changed-without-manifest-update")
     payload_changed = _verify_package(payload_changed_dir)
 
     assert manifest_changed["manifestDigest"] != baseline["manifestDigest"]
-    assert manifest_changed["packageDigest"] != baseline["packageDigest"]
+    assert manifest_changed["packageDigest"] == baseline["packageDigest"]
     assert payload_changed.returncode != 0
     assert "bin/app.bin: bytes mismatch" in payload_changed.stdout + payload_changed.stderr
 
@@ -446,7 +502,7 @@ def test_only_controlled_mutable_metadata_is_excluded_from_payload(tmp_path: Pat
         target.write_bytes(content)
 
     verification = _verification_result(package_dir)
-    assert [item["path"] for item in verification["artifacts"]] == ["bin/app.bin", "manifest.json"]
+    assert [item["path"] for item in verification["artifacts"]] == ["bin/app.bin"]
 
     for invalid_extra in (
         "attestation.json",
@@ -480,16 +536,17 @@ def test_only_controlled_mutable_metadata_is_excluded_from_payload(tmp_path: Pat
     assert case_check.stdout.strip() == "False"
 
 
-def test_manifest_generation_avoids_self_reference_and_declares_manifest_json() -> None:
+def test_manifest_generation_uses_one_authoritative_manifest_without_self_reference() -> None:
     script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
     function_start = script.index("function Write-ReleaseManifest {")
     function_end = script.index("if ($ReleaseTag.Contains('..')", function_start)
     function_body = script[function_start:function_end]
 
-    v1_write = function_body.index("Write-ReleaseManifestV1")
-    final_collection = function_body.index("Get-ReleasePackageImmutableArtifactEntries", v1_write)
-    legacy_write = function_body.index("'release-manifest.json'", final_collection)
-    assert v1_write < final_collection < legacy_write
+    artifact_collection = function_body.index("Get-ReleasePackageImmutableArtifactEntries")
+    authoritative_write = function_body.index("Write-AuthoritativeReleaseManifest")
+    assert artifact_collection < authoritative_write
+    assert "-ExcludeManifestJson" in function_body
+    assert "release-manifest.json" not in function_body
 
 
 def test_same_verifier_guards_all_four_package_lifecycle_points() -> None:
@@ -505,7 +562,7 @@ def test_same_verifier_guards_all_four_package_lifecycle_points() -> None:
     copy_from_start = script.index("function Copy-ReleasePackageFromNas")
     copy_from_end = script.index("function Get-RequiredJsonPropertyValue", copy_from_start)
     copy_from = script[copy_from_start:copy_from_end]
-    assert copy_from.index("Copy-Item") < copy_from.index(verifier_call)
+    assert copy_from.index("Copy-ReleasePackageDirectory") < copy_from.index(verifier_call)
     assert copy_from.index(verifier_call) < copy_from.index("Release package downloaded from NAS")
 
     mark_start = script.index("function Mark-NasReleaseTested")
@@ -523,6 +580,137 @@ def test_same_verifier_guards_all_four_package_lifecycle_points() -> None:
     deploy = script[deploy_start:deploy_end]
     assert "$releasePackageIntegrity = Copy-ReleasePackageFromNas" in deploy
     assert "$releasePublishScope = $releasePackageIntegrity.PublishScope" in deploy
+
+
+def test_deploy_release_control_files_do_not_pollute_local_package_cache() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+
+    assert "$deployControlLocalRoot = Join-Path $localTempRoot" in script
+    assert '$remoteEnvNext = "$RemoteAppDir/.env.next"' in script
+    assert "$remoteEnvLocal = Join-Path $deployControlLocalRoot '.env'" in script
+    assert "$postImportSqlLocal = Join-Path $deployControlLocalRoot 'post-import.sql'" in script
+    assert "$preflightPlanPath = Join-Path $deployControlLocalRoot 'preflight-plan.json'" in script
+    assert '$targetStatePath = Join-Path $deployControlLocalRoot "preflight-target-state-$Environment.json"' in script
+    assert "$remoteEnvLocal = Join-Path $releaseDir '.env'" not in script
+    assert "$postImportSqlLocal = Join-Path $releaseDir 'post-import.sql'" not in script
+    assert "$preflightPlanPath = Join-Path $releaseDir 'preflight-plan.json'" not in script
+    assert '$targetStatePath = Join-Path $releaseDir "preflight-target-state-$Environment.json"' not in script
+
+
+def test_deploy_release_preflight_planner_uses_maintenance_release_toolchain() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    block_start = script.index("function Write-ReleasePreflightPlan")
+    block_end = script.index("function Assert-ProdDryRunEvidence", block_start)
+    block = script[block_start:block_end]
+
+    assert "$preflightScriptPath = Join-Path $maintenanceReleaseScriptRoot 'release_preflight_plan.py'" in block
+    assert "Join-Path $backendRepo 'script\\release\\release_preflight_plan.py'" not in block
+    assert "release preflight planner missing: $preflightScriptPath" in block
+
+
+def test_build_release_declares_ops_runtime_before_manifest_integrity() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+
+    assert "function New-ReleaseOpsRuntimePackage" in script
+    assert "function Copy-ReleaseOpsRuntimePackage" in script
+    build_start = script.index("if ($Mode -eq 'build-release' -and $publishBackend)")
+    build_end = script.index("if ($smartReleaseReportOnlyEnabled -and $Mode -eq 'build-release')", build_start)
+    build_block = script[build_start:build_end]
+    assert "New-ReleaseOpsRuntimePackage" in build_block
+    assert "Write-ReleaseManifest -PackageTag $ReleaseTag" in build_block
+    assert build_block.index("New-ReleaseOpsRuntimePackage") < build_block.index(
+        "Write-ReleaseManifest -PackageTag $ReleaseTag"
+    )
+
+
+def test_build_release_keeps_target_data_preflight_evidence_outside_package() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+
+    preflight_start = script.index("function Invoke-BuildReleaseTargetDataPreflight")
+    preflight_end = script.index("function Invoke-BuildReleaseSchemaOnlyMigrationRehearsal", preflight_start)
+    preflight = script[preflight_start:preflight_end]
+
+    assert "$reportPath = Join-Path $planRoot 'target-data-preflight.json'" in preflight
+    assert "Join-Path $releaseDir 'evidence\\target-data-preflight.json'" not in preflight
+
+
+def test_ops_runtime_package_excludes_target_bound_config_and_root_disk_script() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+
+    prepare_start = script.index("function New-ReleaseOpsRuntimePackage")
+    prepare_end = script.index("function Copy-ReleaseOpsRuntimePackage", prepare_start)
+    prepare = script[prepare_start:prepare_end]
+    publish_start = script.index("function Copy-ReleaseOpsRuntimePackage")
+    publish_end = script.index("function Write-TargetBoundPostImportSql", publish_start)
+    publish = script[publish_start:publish_end]
+
+    assert "server-side config is preserved on the target host" in prepare
+    assert "script\\backup-ops\\config" not in prepare
+    assert "backup-ops.config.json" not in prepare
+    assert "backup-ops.config.example.json" not in prepare
+    assert "backup-ops.linux-local.example.json" not in prepare
+    assert "backup-ops.secrets.example.json" not in prepare
+    assert "manage-int-ruoyi-remote-root-disk.ps1" not in prepare
+    assert "script\\deploy\\manage-int-ruoyi-remote-root-disk.ps1" not in publish
+
+
+def test_deploy_release_uses_manifested_ops_runtime_without_mutating_package() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+
+    prepare_start = script.index("function New-ReleaseOpsRuntimePackage")
+    prepare_end = script.index("function Copy-ReleaseOpsRuntimePackage", prepare_start)
+    prepare = script[prepare_start:prepare_end]
+    publish_start = script.index("function Copy-ReleaseOpsRuntimePackage")
+    publish_end = script.index("function Write-TargetBoundPostImportSql", publish_start)
+    publish = script[publish_start:publish_end]
+
+    assert "Copy-Item -LiteralPath $sourceDirectory" in prepare
+    assert "Runtime-control ops package must not include backup-ops.secrets.json" in prepare
+    assert "Copy-Item -LiteralPath $sourceDirectory" not in publish
+    assert "Remove-Item -LiteralPath $opsRuntimeLocalDir -Recurse -Force" not in publish
+    assert "New-Item -ItemType Directory -Force -Path $opsRuntimeLocalDir" not in publish
+    assert "script\\backup-ops" not in publish
+    assert "Runtime-control ops package missing in release package" in publish
+    assert "backup-ops.secrets.json" in publish
+    assert "Invoke-CheckedCommand -FilePath 'tar'" in publish
+
+
+def test_deploy_release_switches_env_after_migrations_and_verifies_actual_images() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    deploy_start = script.index("Copy-DeployControlFilesToServer -ComposeLocal $composeLocal")
+    deploy_end = script.index("Info 'Waiting for remote HTTP readiness'", deploy_start)
+    deploy = script[deploy_start:deploy_end]
+
+    assert "Assert-RemoteRuntimeEnvImageTag -Path $remoteEnvNext" in deploy
+    assert "Switch-RemoteRuntimeEnvNext" in script
+    assert "Assert-RemoteActualApplicationImages" in script
+    assert deploy.index("Copy-DeployControlFilesToServer") < deploy.index("docker load")
+    assert deploy.index("docker load") < deploy.index("Invoke-RequiredDatabaseSqlScripts")
+    assert deploy.index("Invoke-RequiredDatabaseSqlScripts") < deploy.index("Switch-RemoteRuntimeEnvNext")
+    assert deploy.index("Switch-RemoteRuntimeEnvNext") < deploy.index("docker compose up -d --force-recreate")
+    assert deploy.index("docker compose up -d --force-recreate") < deploy.index(
+        "Assert-RemoteActualApplicationImages"
+    )
+
+
+def test_nas_ready_requires_atomic_upload_and_full_hash() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    start = script.index("function Copy-ReleasePackageToNas")
+    end = script.index("function Copy-ReleasePackageFromNas", start)
+    upload = script[start:end]
+
+    assert "$stagingPath = Join-Path $targetRoot" in upload
+    assert ".staging-" in upload
+    assert "Copy-ReleaseDirectoryTree -SourceDirectory $releaseDir -DestinationDirectory $stagingPath" in upload
+    assert "Test-ReleasePackageIntegrity -PackagePath $stagingPath -ExpectedReleaseTag $PackageTag -ExpectedPackageDirectoryName $packageDirectoryName" in upload
+    assert "Move-Item -LiteralPath $stagingPath -Destination $targetPath" in upload
+    assert upload.index("Test-ReleasePackageIntegrity -PackagePath $stagingPath") < upload.index(
+        "Move-Item -LiteralPath $stagingPath -Destination $targetPath"
+    )
+    assert upload.index("Move-Item -LiteralPath $stagingPath -Destination $targetPath") < upload.index(
+        "Release package uploaded to NAS"
+    )
+    assert "Remove-Item -LiteralPath $targetPath" not in upload
 
 
 def _write_operation(
@@ -552,14 +740,18 @@ def _write_operation(
     path.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
 
 
-def _write_tested_attestation(package_dir: Path, operation_path: Path) -> subprocess.CompletedProcess[str]:
+def _write_tested_attestation(
+    package_dir: Path, operation_path: Path, *, test_result: str | None = "PASS"
+) -> subprocess.CompletedProcess[str]:
+    result_argument = "" if test_result is None else f"-TestResult '{test_result}' "
     command = "\n".join(
         [
             "$ErrorActionPreference = 'Stop'",
             f"Import-Module -Force '{GOVERNANCE_MODULE}'",
             f"Write-ReleaseTestedAttestation -PackagePath '{package_dir}' -ExpectedReleaseTag 'release-p3-fixture' "
             f"-TestOperationId 'op-publish-test-success' -TestOperationEvidencePath '{operation_path}' "
-            "-TestedBy 'local-operator' -TestConclusion 'all acceptance checks passed' | ConvertTo-Json -Depth 8 -Compress",
+            f"{result_argument}-TestedBy 'local-operator' -TestConclusion 'all acceptance checks passed' | "
+            "ConvertTo-Json -Depth 8 -Compress",
         ]
     )
     return _run_powershell(["-Command", command])
@@ -630,6 +822,22 @@ def test_mark_tested_rejects_missing_or_malformed_operation_without_creating_att
         assert not (package_dir / "tested.json").exists()
 
 
+@pytest.mark.parametrize("test_result", [None, "FAIL"])
+def test_mark_tested_requires_explicit_pass_result_before_creating_attestation(
+    tmp_path: Path, test_result: str | None
+) -> None:
+    package_dir = tmp_path / "release-p3-fixture"
+    _write_package(package_dir, release_tag="release-p3-fixture")
+    operation_path = tmp_path / "operation.json"
+    _write_operation(operation_path)
+
+    result = _write_tested_attestation(package_dir, operation_path, test_result=test_result)
+
+    assert result.returncode != 0
+    assert "testResult invalid" in result.stdout + result.stderr
+    assert not (package_dir / "tested.json").exists()
+
+
 def test_mark_tested_writes_atomic_v2_attestation_bound_to_package_and_operation(tmp_path: Path) -> None:
     package_dir = tmp_path / "release-p3-fixture"
     _write_package(package_dir, release_tag="release-p3-fixture")
@@ -650,10 +858,29 @@ def test_mark_tested_writes_atomic_v2_attestation_bound_to_package_and_operation
     assert written["publishTestOperationId"] == "op-publish-test-success"
     assert written["publishTestOperationStatus"] == "SUCCESS"
     assert written["publishTestRequestedAt"] == "2026-09-07T12:34:56Z"
+    assert written["testResult"] == "PASS"
     assert written["testedBy"] == "local-operator"
     assert written["testConclusion"] == "all acceptance checks passed"
     assert re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z", written["testedAt"])
     assert list(package_dir.glob("tested.json.*.tmp")) == []
+
+
+def test_app_release_mark_tested_does_not_require_or_write_recovery_set() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    start = script.index("function Mark-NasReleaseTested")
+    end = script.index("function Read-ReleaseManifest", start)
+    mark = script[start:end]
+
+    for forbidden in (
+        "SelectedRecoverySetCandidateId is required",
+        "RecoverySetId is required",
+        "RecoverySetManifestHash is required",
+        "New-RollbackCompatibilityEvidence",
+        "Write-NasRollbackCompatibilityEvidence",
+        "-RecoverySet $recoverySet",
+    ):
+        assert forbidden not in mark
+    assert "Write-ReleaseTestedAttestation" in mark
 
 
 @pytest.mark.parametrize("environment", ["prod", "backup"])
@@ -777,13 +1004,16 @@ def test_blocked_rollback_compatibility_preserves_existing_tested_attestation(tm
     assert tested_path.read_bytes() == original
 
 
-def test_mark_checks_rollback_compatibility_before_atomic_tested_write() -> None:
+def test_mark_checks_app_release_integrity_before_atomic_tested_write() -> None:
     script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
     mark_start = script.index("function Mark-NasReleaseTested")
     mark_end = script.index("function Read-ReleaseManifest", mark_start)
     mark = script[mark_start:mark_end]
 
-    compatibility_index = mark.index("$compatibility = New-RollbackCompatibilityEvidence")
-    gate_index = mark.index("Assert-ReleaseRollbackCompatibility")
+    integrity_index = mark.index("Test-ReleasePackageIntegrity")
+    result_index = mark.index("TestResult PASS is required")
     tested_write_index = mark.index("Write-ReleaseTestedAttestation")
-    assert compatibility_index < gate_index < tested_write_index
+    assert result_index < integrity_index < tested_write_index
+    assert "-TestResult $TestResult" in mark
+    assert "New-RollbackCompatibilityEvidence" not in mark
+    assert "RecoverySet" not in mark

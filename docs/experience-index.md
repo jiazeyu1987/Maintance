@@ -1,5 +1,7 @@
 # 项目经验索引
 
+- 发布日志编码 / RELEASE_WORKFLOW_STAGE_LOG_INVALID / MalformedInputException / CP936 / LOG_DECODING：`docs/release-build-preflight-lessons.md#Windows-发布日志-UTF-8-合同`。
+
 任务启动顺序固定为：先创建或识别 `doc/tasks/<task-id>/` 并写入最小 `task.md`（目标、里程碑、预期验证、当前状态），再读本文件并只打开命中的经验文档，随后把适用门禁补入任务文档；不要全量阅读所有经验。唯一例外：PowerShell / Windows shell 任务可先执行只读 UTF-8 bootstrap 读取适用规则，bootstrap 完成后必须立即创建或更新任务文档。
 
 ## 经验文档写入规范（强制）
@@ -56,6 +58,9 @@
 
 - 安装包 / 不可变发布包 / build once deploy many / direct 直发 / tested attestation / package digest / manifest digest / operation mtime 相同 / requestedAt 排序 / with-data 正式服 / rollback compatibility BLOCKED / 镜像 latest：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-07-不可变安装包跨环境晋级审查门禁`
 
+- PowerShell 5.1 清理 / Could not find a part of the path / MAX_PATH / 260字符 / Directory.Delete / 构建上下文删除 / targetPreflight 缺失 / requiresTargetPreflight 仅标记 / 只读查询未执行：`docs/release-build-preflight-lessons.md#2026-07-06-windows-发布-worktree-长路径门禁`，含真实PS5.1清理及目标数据门禁执行 checklist。
+
+- 发布耗时过久 / build-release 黑箱等待 / 默认 code-only / PublishScope with-data / WITH-DATA 确认 / 40GB 全量包 / NAS robocopy / release package size summary / PreverifiedArtifacts：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-09-build-release-默认-code-only-与全量数据包显式门禁`
 - 经验沉淀 / 新增经验 / 更新经验 / 经验文件格式 / 前置经验 / 经验门禁模板：先执行本文件“经验文档写入规范（强制）”，再按下方关键词选择目标文档。
 - 测试服发布 / 仅测试服 / current HEAD test release / publish-test / 运行态验收 / release-info 版本变更说明：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md`
 - Keywords: 发布后登录页租户选择器, 测试租户未选中, 默认芋道源码, Element Plus el-select 登录租户, tenantFieldFilled, 发票凭证打印助手 E2E -> `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md#2026-08-30-发布后登录页租户选择器门禁`
@@ -78,7 +83,10 @@
 - publish-int-ruoyi NasConfigPath / NAS JSON / runtime-control.local.yaml 误传 / ConvertFrom-Json maintenance：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
 - publish-int-ruoyi sourceRepos ordered dictionary / Get-ReleaseObjectPropertyText / codex.ps1 / empty Git change facts / frontend release-info gitChanges / detached HEAD pre-commit / No branch runtime profile：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-08-02-发布脚本-manifestchangeset-生成门禁`
 - 展厅图片 smoke gate / 远端 MySQL stdout 中文路径 / `infra_file.path` / `HEX(path)` / `EscapeDataString` / `showrooms[].products`：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-07-20-展厅图片-smoke-gate-中文路径解码门禁`
-- 不带数据发布 / code-only / SkipDatabaseSync / SkipMinioSync / manifest 无数据目录验证：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
+- 不带数据发布 / without-data / code-only / app-release / SkipDatabaseSync / SkipMinioSync / manifest 无数据目录验证 / Object Lock 探针 / eDHR protected storage verifier / MinIO 数据同步：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-14-app-release-无数据部署不得写-edhr-object-lock-探针`
+- FORBIDDEN_HARDCODED_TARGET_IP / FORBIDDEN_SECRET_PATTERN / target-data-preflight.json / ops-runtime config / backup-ops.config.json / backup-ops.secrets.example.json / manage-int-ruoyi-remote-root-disk.ps1 / 包内目标环境证据：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-14-app-release-包内禁止目标环境证据与-ops-配置`
+- required SQL 空候选 / no-op / 清洗工序参数 / mes_pro_process_pool_device_parameter_rule / No active cleaning process ultrasonic cleaner parameter rules found / candidate_rule_count / target preflight 精确阻断：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-14-required-sql-空候选数据必须-no-op-或-target-preflight-精确阻断`
+- ReleaseWorkflow 授权消费后派发失败 / PROMOTING_PROD_EXECUTION_COMMITTED / RELEASE_WORKFLOW_STAGE / BUILDING marker missing / 生成程序安装包复用旧包 / environment lease / productionWriteEnabled：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-16-releaseworkflow-授权后未知态与阶段事件门禁`
 - release-migration dependsOn 缺失 / SQL 元数据依赖不存在 / rollback-migration 混入发布扫描根 / migration policy gate：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
 - DCC 分类 lifecycle_stage / NOT NULL 迁移 / required SQL 空值 / deleted=1 历史归档行：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
 - 测试服远端 MySQL 查询 / ruoyi-vue-pro 业务库 / 容器内 MYSQL_ROOT_PASSWORD / SSH 多层引号：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`

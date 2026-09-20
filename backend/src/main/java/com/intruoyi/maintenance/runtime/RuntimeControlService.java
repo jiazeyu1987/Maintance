@@ -83,17 +83,20 @@ public class RuntimeControlService {
     private final RuntimeControlOperationStore operationStore;
     private final RuntimeControlCommandExecutor commandExecutor;
     private final RuntimeControlNasBrowser nasBrowser;
+    private final RuntimeReleaseLockInspector releaseLockInspector;
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     private final ExecutorService executor = Executors.newCachedThreadPool();
 
     public RuntimeControlService(RuntimeControlProperties properties,
                                  RuntimeControlOperationStore operationStore,
                                  RuntimeControlCommandExecutor commandExecutor,
-                                 RuntimeControlNasBrowser nasBrowser) {
+                                 RuntimeControlNasBrowser nasBrowser,
+                                 RuntimeReleaseLockInspector releaseLockInspector) {
         this.properties = properties;
         this.operationStore = operationStore;
         this.commandExecutor = commandExecutor;
         this.nasBrowser = nasBrowser;
+        this.releaseLockInspector = releaseLockInspector;
     }
 
     public RuntimeControlOverviewRespVO getOverview() {
@@ -128,13 +131,24 @@ public class RuntimeControlService {
                 Map.of("component", req.component()), req.reason(), command, logPath);
     }
 
-    public RuntimeControlOperationRespVO executeAction(RuntimeControlActionReqVO req) {
+    public synchronized RuntimeControlOperationRespVO executeAction(RuntimeControlActionReqVO req) {
         rejectLegacyProductionPromotion(req);
         String operationId = nextOperationId();
         PreparedAction prepared = prepareAction(req, operationId, false);
+        boolean buildRelease = "build-release".equals(prepared.action());
+        if (buildRelease && !operationStore.tryAcquireBuildLease(operationId)) {
+            throw new RuntimeControlException("已有构建占用当前工作树，拒绝并发构建");
+        }
         Path logPath = operationStore.operationLogPath(operationId);
-        return startOperation(operationId, prepared.environment(), prepared.component(), prepared.action(),
-                prepared.actionLabel(), prepared.parameters(), req.reason(), prepared.command(), logPath);
+        try {
+            return startOperation(operationId, prepared.environment(), prepared.component(), prepared.action(),
+                    prepared.actionLabel(), prepared.parameters(), req.reason(), prepared.command(), logPath);
+        } catch (RuntimeException ex) {
+            if (buildRelease) {
+                operationStore.releaseBuildLease(operationId);
+            }
+            throw ex;
+        }
     }
 
     public RuntimeControlActionPreviewRespVO previewAction(RuntimeControlActionReqVO req) {
@@ -143,7 +157,8 @@ public class RuntimeControlService {
         return new RuntimeControlActionPreviewRespVO(prepared.action(), prepared.actionLabel(), prepared.environment(),
                 prepared.component(), prepared.command().scriptPath(), prepared.command().arguments(),
                 prepared.parameters(), Boolean.TRUE.equals(req.enableSmartReleaseReport()),
-                "本机操作者 " + properties.getOperatorId() + " 将执行 " + prepared.actionLabel());
+                "本机操作者 " + properties.getOperatorId() + " 将执行 " + prepared.actionLabel(),
+                prepared.sourceSnapshotToken());
     }
 
     private void rejectLegacyProductionPromotion(RuntimeControlActionReqVO req) {
@@ -161,8 +176,11 @@ public class RuntimeControlService {
         guardWrite(environment, resolvedReq.reason(), resolvedReq.prodConfirmText(),
                 action.requiresProductionGuard(resolvedReq), action.requiresProdConfirmText(resolvedReq));
         RuntimeControlCommand command = action.buildCommand(resolvedReq, properties);
+        appendRecoverTestReleaseLockOwnerArguments(action, command, resolvedReq.releaseTag(), previewOnly);
         appendTestPublishEvidenceArguments(action, command, resolvedReq.releaseTag());
         appendNasReleaseArguments(action, command, operationId, previewOnly);
+        String sourceSnapshotToken = appendSourceApprovalArguments(action, command, resolvedReq.releaseTag(),
+                resolvedReq.sourceSnapshotToken(), previewOnly);
         appendManagedSourceArguments(action, command);
         appendBackendRuntimeBaseArguments(action, command);
         Path scriptPath = commandExecutor.resolveScriptPath(command.scriptPath());
@@ -172,7 +190,7 @@ public class RuntimeControlService {
         RuntimeControlCommand resolvedCommand = new RuntimeControlCommand(command.environment(), command.component(),
                 scriptPath.toString(), command.arguments());
         return new PreparedAction(action.action(), action.label(), environment, action.action(),
-                action.safeParameters(resolvedReq), resolvedCommand);
+                action.safeParameters(resolvedReq), resolvedCommand, sourceSnapshotToken);
     }
 
     private RuntimeControlActionReqVO validateAndResolveAction(RuntimeControlOperationAction action,
@@ -205,7 +223,9 @@ public class RuntimeControlService {
         if (action == RuntimeControlOperationAction.APPLY_TEST_DB_SQL) {
             return copyActionReqWithSqlPath(resolvedReq, validateSqlPath(resolvedReq.sqlPath()));
         }
-        validateReleasePackageAvailability(action, resolvedReq.releaseTag());
+        if (action != RuntimeControlOperationAction.RECOVER_TEST_RELEASE_LOCK) {
+            validateReleasePackageAvailability(action, resolvedReq.releaseTag());
+        }
         if (action == RuntimeControlOperationAction.PROMOTE_PROD) {
             return copyActionReqWithProdDryRunEvidencePath(resolvedReq, resolveProdDryRunEvidencePath(resolvedReq));
         }
@@ -332,6 +352,26 @@ public class RuntimeControlService {
         command.arguments().add(nasReleaseRoot);
     }
 
+    private void appendRecoverTestReleaseLockOwnerArguments(RuntimeControlOperationAction action,
+                                                            RuntimeControlCommand command,
+                                                            String releaseTag,
+                                                            boolean previewOnly) {
+        if (action != RuntimeControlOperationAction.RECOVER_TEST_RELEASE_LOCK) {
+            return;
+        }
+        ReleaseOperationLockOwner owner = releaseLockInspector.requireTestLockOwner(releaseTag);
+        command.arguments().add("-ExpectedExecutorHost");
+        command.arguments().add(owner.executorHost());
+        command.arguments().add("-ExpectedExecutorPid");
+        command.arguments().add(owner.executorPid());
+        command.arguments().add("-ExpectedExecutorIdentity");
+        command.arguments().add(owner.executorIdentity());
+        command.arguments().add("-ExpectedLeaseToken");
+        command.arguments().add(previewOnly ? "<resolved-from-remote-lock>" : owner.leaseToken());
+        command.arguments().add("-ExecutorTerminalState");
+        command.arguments().add("TERMINATED");
+    }
+
     private Path writeNasReleaseConfig(String operationId, RuntimeControlProperties.ReleasePackage releasePackage) {
         Path configPath = properties.stateDirPath().resolve("nas-release-config").resolve(operationId + ".json");
         Map<String, String> payload = new LinkedHashMap<>();
@@ -390,6 +430,67 @@ public class RuntimeControlService {
         appendRequiredArgument(command.arguments(), "-BackendRepoRoot", properties.getRepoRoot());
         appendRequiredArgument(command.arguments(), "-FrontendRepoRoot", properties.getFrontendRoot());
         appendRequiredArgument(command.arguments(), "-WebsiteRepo", properties.getWebsiteRoot());
+    }
+
+    private String appendSourceApprovalArguments(RuntimeControlOperationAction action, RuntimeControlCommand command,
+                                                 String releaseTag, String requestedSourceSnapshotToken,
+                                                 boolean previewOnly) {
+        if (action != RuntimeControlOperationAction.BUILD_RELEASE) {
+            return "";
+        }
+        String maintenanceCommit = gitHead(properties.opsRootPath(), "maintenance source approval");
+        String applicationCommit = gitHead(properties.repoRootPath(), "application source approval");
+        String sourceSelectionId = hasText(releaseTag) ? releaseTag.trim() : "runtime-control-build";
+        String sourceSnapshotToken = sourceSnapshotToken(sourceSelectionId, maintenanceCommit, applicationCommit);
+        if (!previewOnly && !sourceSnapshotToken.equals(trimToEmpty(requestedSourceSnapshotToken))) {
+            throw new RuntimeControlException("sourceSnapshotToken 已失效或缺失，请重新预览后再执行");
+        }
+        appendRequiredArgument(command.arguments(), "-ExpectedMaintenanceCommit", maintenanceCommit);
+        appendRequiredArgument(command.arguments(), "-ExpectedApplicationCommit", applicationCommit);
+        appendRequiredArgument(command.arguments(), "-ExpectedFrontendCommit", applicationCommit);
+        appendRequiredArgument(command.arguments(), "-SourceSelectionId", sourceSelectionId);
+        return sourceSnapshotToken;
+    }
+
+    private String sourceSnapshotToken(String sourceSelectionId, String maintenanceCommit, String applicationCommit) {
+        String material = String.join("|", "v1", sourceSelectionId, properties.opsRootPath().toString(),
+                properties.repoRootPath().toString(), maintenanceCommit, applicationCommit);
+        byte[] digest = sha256(material.getBytes(StandardCharsets.UTF_8));
+        return "v1:" + HexFormat.of().formatHex(digest);
+    }
+
+    private byte[] sha256(byte[] value) {
+        try {
+            return MessageDigest.getInstance("SHA-256").digest(value);
+        } catch (java.security.NoSuchAlgorithmException ex) {
+            throw new RuntimeControlException("SHA-256 摘要算法不可用", ex);
+        }
+    }
+
+    private String gitHead(Path path, String description) {
+        ProcessBuilder builder = new ProcessBuilder("git", "-C", path.toString(), "rev-parse", "HEAD")
+                .redirectErrorStream(true);
+        try {
+            Process process = builder.start();
+            boolean completed = process.waitFor(properties.statusTimeout().toMillis(), TimeUnit.MILLISECONDS);
+            if (!completed) {
+                process.destroyForcibly();
+                throw new RuntimeControlException(description + " git HEAD 读取超时");
+            }
+            String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();
+            if (process.exitValue() != 0) {
+                throw new RuntimeControlException(description + " git HEAD 读取失败: " + output);
+            }
+            if (!output.matches("^[0-9a-fA-F]{40}$")) {
+                throw new RuntimeControlException(description + " git HEAD 格式不合法: " + output);
+            }
+            return output;
+        } catch (IOException ex) {
+            throw new RuntimeControlException("无法启动 " + description + " git HEAD 读取", ex);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeControlException(description + " git HEAD 读取被中断", ex);
+        }
     }
 
     private void appendBackendRuntimeBaseArguments(RuntimeControlOperationAction action, RuntimeControlCommand command) {
@@ -804,16 +905,30 @@ public class RuntimeControlService {
         executor.submit(() -> {
             try {
                 operationStore.appendLog(logPath, "operator=" + properties.getOperatorId() + System.lineSeparator());
-                operationStore.appendLog(logPath, "command=" + String.join(" ", commandExecutor.executableCommand(command))
+                operationStore.appendLog(logPath, "command=" + String.join(" ", commandForLog(command))
                         + System.lineSeparator());
                 commandExecutor.run(command, logPath);
                 operationStore.updateStatus(operationId, "SUCCESS", "命令执行完成");
             } catch (RuntimeException ex) {
-                operationStore.appendLog(logPath, "ERROR: " + ex.getMessage() + System.lineSeparator());
-                operationStore.updateStatus(operationId, "FAILED", ex.getMessage());
+                operationStore.completeOperation(operationId, "FAILED", ex.getMessage(), logPath,
+                        "ERROR: " + ex.getMessage());
+            } finally {
+                if ("build-release".equals(action)) {
+                    operationStore.releaseBuildLease(operationId);
+                }
             }
         });
         return operation;
+    }
+
+    private List<String> commandForLog(RuntimeControlCommand command) {
+        List<String> executable = new ArrayList<>(commandExecutor.executableCommand(command));
+        for (int index = 0; index < executable.size() - 1; index++) {
+            if ("-ExpectedLeaseToken".equals(executable.get(index))) {
+                executable.set(index + 1, "<redacted>");
+            }
+        }
+        return executable;
     }
 
     private RuntimeControlStatusRespVO inspectTarget(String environmentKey,
@@ -863,14 +978,14 @@ public class RuntimeControlService {
                                                                            RuntimeControlNasBrowser.NasEntry entry) {
         String directoryName = entry.name();
         String packagePath = normalizeNasPath(entry.path());
-        String manifestPath = childPath(packagePath, "release-manifest.json");
+        String manifestPath = childPath(packagePath, "manifest.json");
         List<String> blockedReasons = new ArrayList<>();
         List<String> packageFileNames = listFileNames(nasConfig, packagePath, blockedReasons);
-        JsonNode manifest = packageFileNames.contains("release-manifest.json")
-                ? readJson(nasConfig, manifestPath, "release-manifest.json", blockedReasons)
+        JsonNode manifest = packageFileNames.contains("manifest.json")
+                ? readJson(nasConfig, manifestPath, "manifest.json", blockedReasons)
                 : null;
-        if (!packageFileNames.contains("release-manifest.json")) {
-            blockedReasons.add("缺少 release-manifest.json");
+        if (!packageFileNames.contains("manifest.json")) {
+            blockedReasons.add("缺少 manifest.json");
         }
 
         String releaseTag = directoryName;
@@ -884,31 +999,38 @@ public class RuntimeControlService {
 
         if (manifest != null) {
             releaseTag = blankToDefault(text(manifest, "releaseTag"), directoryName);
-            packageDirectoryName = text(manifest, "packageDirectoryName");
-            builtAt = text(manifest, "builtAt");
+            packageDirectoryName = blankToDefault(text(manifest, "packageId"), directoryName);
+            builtAt = text(manifest, "createdAt");
             publishScope = text(manifest, "publishScope");
-            component = text(manifest, "component");
+            JsonNode changeSet = node(manifest, "changeSet");
+            component = blankToDefault(text(manifest, "component"), text(changeSet, "component"));
             includeShowroomBuildPackage = booleanValue(manifest, "includeShowroomBuildPackage");
+            if (includeShowroomBuildPackage == null) {
+                includeShowroomBuildPackage = booleanValue(changeSet, "includeShowroomBuildPackage");
+            }
             onlyOfficeIncluded = booleanValue(manifest, "onlyOfficeIncluded");
+            if (onlyOfficeIncluded == null) {
+                onlyOfficeIncluded = booleanValue(changeSet, "includeOnlyOffice");
+            }
             if (isBlank(component)) {
-                blockedReasons.add("release-manifest.json 缺少 component");
+                blockedReasons.add("manifest.json 缺少 component");
             } else if (!List.of("full", "intruoyi", "backend", "frontend", "website").contains(component)) {
-                blockedReasons.add("release-manifest.json component 非法");
+                blockedReasons.add("manifest.json component 非法");
             }
             if (includeShowroomBuildPackage == null) {
-                blockedReasons.add("release-manifest.json 缺少 includeShowroomBuildPackage");
+                blockedReasons.add("manifest.json 缺少 includeShowroomBuildPackage");
             }
             if (onlyOfficeIncluded == null) {
-                blockedReasons.add("release-manifest.json 缺少 onlyOfficeIncluded");
+                blockedReasons.add("manifest.json 缺少 onlyOfficeIncluded");
             }
             if (isBlank(packageDirectoryName)) {
-                blockedReasons.add("release-manifest.json 缺少 packageDirectoryName");
+                blockedReasons.add("manifest.json 缺少 packageId");
             } else if (!directoryName.equals(packageDirectoryName)) {
-                blockedReasons.add("release-manifest packageDirectoryName 与目录不一致");
+                blockedReasons.add("manifest packageId 与目录不一致");
             }
             checksumPresent = hasReleasePackageChecksum(manifest);
             if (!checksumPresent) {
-                blockedReasons.add("release-manifest.json 缺少 artifact sha256");
+                blockedReasons.add("manifest.json 缺少 artifact sha256");
             }
         }
 
@@ -1064,10 +1186,19 @@ public class RuntimeControlService {
                 && action != RuntimeControlOperationAction.PROMOTE_BACKUP) {
             return;
         }
-        RuntimeControlReleasePackageRespVO releasePackage = getReleasePackages().stream()
-                .filter(item -> releaseTag.equals(item.releaseTag()) || releaseTag.equals(item.packageDirectoryName()))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeControlException("releaseTag 发布包缺少 manifest/checksum 或不存在: " + releaseTag));
+        RuntimeControlNasBrowser.NasConfig nasConfig = releaseNasConfig();
+        String packagePath = childPath(nasConfig.root(), releaseTag);
+        RuntimeControlReleasePackageRespVO releasePackage = buildReleasePackageResponse(nasConfig,
+                new RuntimeControlNasBrowser.NasEntry(releaseTag, packagePath, true));
+        if (!STATUS_AVAILABLE.equals(releasePackage.status())
+                || (!releaseTag.equals(releasePackage.releaseTag())
+                && !releaseTag.equals(releasePackage.packageDirectoryName()))) {
+            String blockedReason = releasePackage.blockedReasons() == null || releasePackage.blockedReasons().isEmpty()
+                    ? "发布包不存在或不可用"
+                    : String.join("；", releasePackage.blockedReasons());
+            throw new RuntimeControlException("releaseTag 发布包缺少 manifest/checksum 或不存在: "
+                    + releaseTag + "；" + blockedReason);
+        }
         if ((action == RuntimeControlOperationAction.PROMOTE_PROD
                 || action == RuntimeControlOperationAction.PROMOTE_BACKUP)
                 && !Boolean.TRUE.equals(releasePackage.tested())) {
@@ -2049,7 +2180,8 @@ public class RuntimeControlService {
                 req.includeShowroomBuildPackage(), req.enableSmartReleaseReport(), req.releaseTag(),
                 req.testConclusion(), req.sqlPath(), req.selectedImageCandidateId(), selectedImageTag,
                 req.selectedRecoverySetCandidateId(), selectedBackupId, recoverySetId, recoverySetManifestHash,
-                recoverySetProgramVersion, recoverySetRedisPolicy, req.prodDryRunEvidencePath());
+                recoverySetProgramVersion, recoverySetRedisPolicy, req.prodDryRunEvidencePath(),
+                req.sourceSnapshotToken());
     }
 
     private RuntimeControlActionReqVO copyActionReqWithSqlPath(RuntimeControlActionReqVO req, String sqlPath) {
@@ -2059,7 +2191,7 @@ public class RuntimeControlService {
                 req.testConclusion(), sqlPath, req.selectedImageCandidateId(), req.selectedImageTag(),
                 req.selectedRecoverySetCandidateId(), req.selectedBackupId(), req.recoverySetId(),
                 req.recoverySetManifestHash(), req.recoverySetProgramVersion(), req.recoverySetRedisPolicy(),
-                req.prodDryRunEvidencePath());
+                req.prodDryRunEvidencePath(), req.sourceSnapshotToken());
     }
 
     private RuntimeControlActionReqVO copyActionReqWithReleaseTag(RuntimeControlActionReqVO req, String releaseTag) {
@@ -2069,7 +2201,7 @@ public class RuntimeControlService {
                 req.testConclusion(), req.sqlPath(), req.selectedImageCandidateId(), req.selectedImageTag(),
                 req.selectedRecoverySetCandidateId(), req.selectedBackupId(), req.recoverySetId(),
                 req.recoverySetManifestHash(), req.recoverySetProgramVersion(), req.recoverySetRedisPolicy(),
-                req.prodDryRunEvidencePath());
+                req.prodDryRunEvidencePath(), req.sourceSnapshotToken());
     }
 
     private RuntimeControlActionReqVO copyActionReqWithProdDryRunEvidencePath(RuntimeControlActionReqVO req,
@@ -2080,7 +2212,7 @@ public class RuntimeControlService {
                 req.testConclusion(), req.sqlPath(), req.selectedImageCandidateId(), req.selectedImageTag(),
                 req.selectedRecoverySetCandidateId(), req.selectedBackupId(), req.recoverySetId(),
                 req.recoverySetManifestHash(), req.recoverySetProgramVersion(), req.recoverySetRedisPolicy(),
-                prodDryRunEvidencePath);
+                prodDryRunEvidencePath, req.sourceSnapshotToken());
     }
 
     private Map<String, String> componentSummary(JsonNode recoverySet) {
@@ -2284,7 +2416,8 @@ public class RuntimeControlService {
             String environment,
             String component,
             Map<String, String> parameters,
-            RuntimeControlCommand command
+            RuntimeControlCommand command,
+            String sourceSnapshotToken
     ) {
     }
 }

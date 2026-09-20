@@ -1042,7 +1042,6 @@ function Invoke-DeployPrecheckReport {
     }
 
     $manifestPath = Join-Path -Path $packageFullPath -ChildPath 'manifest.json'
-    $legacyManifestPath = Join-Path -Path $packageFullPath -ChildPath 'release-manifest.json'
     $manifest = $null
     if (Test-Path -LiteralPath $manifestPath -PathType Leaf) {
         try {
@@ -1060,40 +1059,6 @@ function Invoke-DeployPrecheckReport {
                 -Warnings $warnings `
                 -Checks $checks
         }
-    } elseif (Test-Path -LiteralPath $legacyManifestPath -PathType Leaf) {
-        try {
-            $legacyManifest = Read-JsonFile -Path $legacyManifestPath
-            $packageId = Get-ObjectPropertyValue -Object $legacyManifest -Name 'packageId'
-        } catch {
-            $packageId = $null
-        }
-        $manifestVersion = 'legacy-v0'
-        Add-DeployDiagnostic `
-            -Collection $warnings `
-            -Code 'LEGACY_DEPLOY_PRECHECK_REPORT_ONLY' `
-            -Status 'warning' `
-            -Scope 'manifest' `
-            -Message 'Legacy release package detected; Manifest v1 deploy precheck checks are not available.' `
-            -Impact 'Smart Release Phase 1 can only report legacy package status and target config checks.' `
-            -NextStep 'Generate Manifest v1 before relying on Smart Release deploy precheck gates.'
-        Add-DeployDiagnostic `
-            -Collection $checks `
-            -Code 'LEGACY_DEPLOY_PRECHECK_REPORT_ONLY' `
-            -Status 'warning' `
-            -Scope 'manifest' `
-            -Message 'Legacy package warning was recorded.' `
-            -Impact 'V1 artifact, resource, and target requirement checks were skipped by design.' `
-            -NextStep 'Create manifest.json v1 for full deploy precheck coverage.'
-        Add-RemoteProbeDiagnostics -TargetConfig $targetConfig -TargetConfigUsable ([bool]$targetState.IsUsable) -Warnings $warnings -Checks $checks
-        return New-DeployPrecheckResult `
-            -Mode $Mode `
-            -Environment $environmentValue `
-            -PackageId $packageId `
-            -ManifestVersion $manifestVersion `
-            -TargetConfigId $targetConfigId `
-            -Errors $errors `
-            -Warnings $warnings `
-            -Checks $checks
     } else {
         return New-DeployPrecheckResult `
             -Mode $Mode `

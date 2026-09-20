@@ -12,6 +12,12 @@ APPLY_ACTION = "APPLY"
 SKIP_ACTIONS = {
     "SKIP_ALREADY_APPLIED",
     "SKIP_ENV_NOT_ALLOWED",
+    "SKIP_SCOPE_EXCLUDED",
+}
+SKIP_STATUS_BY_ACTION = {
+    "SKIP_ALREADY_APPLIED": "SKIPPED_ALREADY_APPLIED",
+    "SKIP_ENV_NOT_ALLOWED": "SKIPPED_ENV_NOT_ALLOWED",
+    "SKIP_SCOPE_EXCLUDED": "SKIPPED_SCOPE_EXCLUDED",
 }
 BLOCKED_ACTIONS = {
     "BLOCKED_CHECKSUM_MISMATCH",
@@ -49,8 +55,7 @@ def execute_preflight_apply_migrations(
         migration_id = str(entry.get("migrationId") or "")
         action = str(entry.get("action") or "")
         if action in SKIP_ACTIONS:
-            if action == "SKIP_ALREADY_APPLIED":
-                record_state(entry, "SKIPPED_ALREADY_APPLIED", None)
+            record_state(entry, SKIP_STATUS_BY_ACTION[action], None)
             summary["skipped"].append(migration_id)
             continue
 

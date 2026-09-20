@@ -2,8 +2,11 @@ package com.intruoyi.maintenance.runtime;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -22,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(properties = {
         "maintenance.runtime-control.ops-root=../ops",
         "maintenance.runtime-control.state-dir=../runtime/runtime-control-test",
-        "maintenance.runtime-control.status-timeout-millis=50",
+        "maintenance.runtime-control.status-timeout-millis=5000",
         "maintenance.runtime-control.release-package.nas-server=172.30.30.4",
         "maintenance.runtime-control.release-package.nas-share=IT共享",
         "maintenance.runtime-control.release-package.nas-username=test-user",
@@ -41,6 +44,21 @@ class RuntimeControlContractTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @TestConfiguration
+    static class LockInspectorTestConfig {
+        @Bean
+        @Primary
+        RuntimeReleaseLockInspector runtimeReleaseLockInspector(RuntimeControlProperties properties) {
+            return new RuntimeReleaseLockInspector(properties) {
+                @Override
+                public ReleaseOperationLockOwner requireTestLockOwner(String releaseTag) {
+                    return new ReleaseOperationLockOwner("HOST-A", "12345", "operator@HOST-A",
+                            "lease-token-from-remote-lock");
+                }
+            };
+        }
+    }
+
     @Test
     void noSpringSecurityDependency() throws Exception {
         String pom = Files.readString(Path.of("pom.xml"), StandardCharsets.UTF_8);
@@ -51,6 +69,65 @@ class RuntimeControlContractTest {
         assertThat(controller).doesNotContain("@PreAuthorize");
         assertThatThrownBy(() -> Class.forName("org.springframework.security.access.prepost.PreAuthorize"))
                 .isInstanceOf(ClassNotFoundException.class);
+    }
+
+    @Test
+    void releasePackageCandidateUsesManifestV1AsTheOnlyAuthority() throws Exception {
+        String service = Files.readString(Path.of(
+                "src/main/java/com/intruoyi/maintenance/runtime/RuntimeControlService.java"), StandardCharsets.UTF_8);
+        assertThat(service).contains("childPath(packagePath, \"manifest.json\")");
+        assertThat(service).contains("readJson(nasConfig, manifestPath, \"manifest.json\", blockedReasons)");
+        assertThat(service).doesNotContain("缺少 release-manifest.json");
+    }
+
+    @Test
+    void releasePackageValidationChecksRequestedTagDirectly() throws Exception {
+        String service = Files.readString(Path.of(
+                "src/main/java/com/intruoyi/maintenance/runtime/RuntimeControlService.java"), StandardCharsets.UTF_8);
+        int start = service.indexOf("private void validateReleasePackageAvailability");
+        String body = service.substring(start, service.indexOf("\n    private ", start + 1));
+        assertThat(body).contains("buildReleasePackageResponse(nasConfig,")
+                .contains("new RuntimeControlNasBrowser.NasEntry(releaseTag, packagePath, true)");
+        assertThat(body).doesNotContain("getReleasePackages()");
+    }
+
+    @Test
+    void exposesExplicitTestReleaseLockRecoveryAction() throws Exception {
+        String action = Files.readString(Path.of(
+                "src/main/java/com/intruoyi/maintenance/runtime/RuntimeControlOperationAction.java"),
+                StandardCharsets.UTF_8);
+        assertThat(action).contains("RECOVER_TEST_RELEASE_LOCK(\"recover-test-release-lock\", \"恢复测试服发布锁\"");
+        assertThat(action).contains("deploy/recover-release-operation-lock.ps1");
+        assertThat(action).contains("RECOVER-TEST-LOCK");
+    }
+
+    @Test
+    void recoverTestReleaseLockPreviewUsesRemoteLockOwnerContractWithoutExposingLeaseToken() throws Exception {
+        String response = mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "action": "recover-test-release-lock",
+                                  "reason": "contract preview",
+                                  "releaseTag": "release-lock-contract"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        assertThat(response)
+                .contains("-ExpectedOperationId", "test-release-lock-contract",
+                        "-ExpectedReleaseTag", "release-lock-contract",
+                        "-ExpectedExecutorHost", "HOST-A",
+                        "-ExpectedExecutorPid", "12345",
+                        "-ExpectedExecutorIdentity", "operator@HOST-A",
+                        "-ExpectedLeaseToken", "<resolved-from-remote-lock>",
+                        "-ExecutorTerminalState", "TERMINATED",
+                        "-ConfirmText", "RECOVER-TEST-LOCK")
+                .doesNotContain("lease-token-from-remote-lock");
     }
 
     @Test
@@ -121,6 +198,73 @@ class RuntimeControlContractTest {
                         "-BackupServerHost", "172.30.30.59",
                         "-ProdServerHost", "172.30.30.57")
                 .doesNotContain("test-password");
+    }
+
+    @Test
+    void buildReleaseCodeOnlyPreviewForwardsApprovedSourceCommits() throws Exception {
+        String response = mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "action": "build-release",
+                                  "reason": "contract preview code only source approval",
+                                  "publishScope": "code-only",
+                                  "includeOnlyOffice": false,
+                                  "includeShowroomBuildPackage": false,
+                                  "releaseTag": "release-source-approval"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        assertThat(response)
+                .contains("-ExpectedMaintenanceCommit")
+                .contains("-ExpectedApplicationCommit")
+                .contains("-ExpectedFrontendCommit")
+                .contains("-SourceSelectionId", "release-source-approval");
+    }
+
+    @Test
+    void buildReleaseExecutionRequiresPreviewSourceSnapshotToken() throws Exception {
+        String previewResponse = mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "action": "build-release",
+                                  "reason": "contract preview source snapshot",
+                                  "publishScope": "code-only",
+                                  "includeOnlyOffice": false,
+                                  "includeShowroomBuildPackage": false,
+                                  "releaseTag": "release-source-snapshot"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.data.sourceSnapshotToken").isString())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        assertThat(previewResponse).contains("sourceSnapshotToken");
+
+        mockMvc.perform(post("/admin-api/infra/runtime-control/actions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "action": "build-release",
+                                  "reason": "contract execute without source snapshot",
+                                  "publishScope": "code-only",
+                                  "includeOnlyOffice": false,
+                                  "includeShowroomBuildPackage": false,
+                                  "releaseTag": "release-source-snapshot"
+                                }
+                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.msg").value(org.hamcrest.Matchers.containsString("sourceSnapshotToken")));
     }
 
     @Test

@@ -51,7 +51,7 @@ def _write_inputs(tmp_path: Path) -> tuple[Path, Path]:
         "schemaVersion": "release-build-prospective/v1",
         "releaseTag": "release-20260908",
         "sourceRepos": source_repos,
-        "publishScope": "code-only",
+        "publishScope": "app-release",
         "database": {"schemaMigrations": [migration]},
         "requiredSql": [migration],
     }
@@ -90,7 +90,7 @@ def _run(tmp_path: Path, *extra: str) -> subprocess.CompletedProcess[str]:
             "--target-environment",
             "test",
             "--publish-scope",
-            "code-only",
+            "app-release",
             "--output",
             str(output),
             *extra,
@@ -109,7 +109,7 @@ def test_runner_writes_complete_deterministic_binding_evidence(tmp_path: Path) -
     assert evidence["schemaVersion"] == "release-build-preflight/v1"
     assert evidence["status"] == "passed"
     assert evidence["targetEnvironment"] == "test"
-    assert evidence["publishScope"] == "code-only"
+    assert evidence["publishScope"] == "app-release"
     assert evidence["collectionId"] == "11111111-1111-4111-8111-111111111111"
     assert evidence["collectedAt"] == "2026-09-08T03:00:00Z"
     assert evidence["sourceCommits"] == {"backend": "1" * 40, "frontend": "2" * 40}
@@ -124,7 +124,7 @@ def test_runner_writes_complete_deterministic_binding_evidence(tmp_path: Path) -
     }
     assert all(value.startswith("sha256:") for value in evidence["bindings"].values())
     assert evidence["bindings"]["preflightFingerprint"] == (
-        "sha256:c6ccff610bb929526fc72947c4d985ed811a28818461077882f5d867e9c25b54"
+        "sha256:b95cc7cb57c8eb8e222b33fc0efcf8dd6f44d1f065c5ab45dca93ea97981dbf8"
     )
     assert evidence["planner"]["status"] == "passed"
     assert evidence["planner"]["items"][0]["action"] == "APPLY"
@@ -169,18 +169,18 @@ def test_material_input_drift_changes_binding_or_fails(tmp_path: Path, field: st
         target["targetEnvironment"] = "prod"
         command_extra = ["--target-environment", "prod"]
     else:
-        manifest["publishScope"] = "with-data"
-        command_extra = ["--publish-scope", "with-data"]
+        manifest["publishScope"] = "code-only"
+        command_extra = ["--publish-scope", "code-only"]
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
     target_path.write_text(json.dumps(target), encoding="utf-8")
     output = changed / "evidence.json"
     result = subprocess.run(
         [sys.executable, "-X", "utf8", str(RUNNER), "run", "--prospective-manifest", str(manifest_path),
-         "--target-state", str(target_path), "--target-environment", "test", "--publish-scope", "code-only",
+         "--target-state", str(target_path), "--target-environment", "test", "--publish-scope", "app-release",
          "--output", str(output), *command_extra],
         cwd=ROOT, text=True, capture_output=True, encoding="utf-8",
     )
-    if field == "environment":
+    if field in {"environment", "scope"}:
         assert result.returncode != 0
     else:
         assert result.returncode == 0, result.stderr
@@ -210,7 +210,7 @@ def test_invalid_target_state_fails_closed(tmp_path: Path, mutation: str) -> Non
     output = tmp_path / "evidence.json"
     result = subprocess.run(
         [sys.executable, "-X", "utf8", str(RUNNER), "run", "--prospective-manifest", str(manifest),
-         "--target-state", str(target), "--target-environment", "test", "--publish-scope", "code-only",
+         "--target-state", str(target), "--target-environment", "test", "--publish-scope", "app-release",
          "--output", str(output)],
         cwd=ROOT, text=True, capture_output=True, encoding="utf-8",
     )
@@ -234,7 +234,7 @@ def test_blocked_plan_is_written_but_cannot_qualify_build(tmp_path: Path) -> Non
 def _run_existing_inputs(manifest: Path, target: Path, output: Path, command: str = "run") -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [sys.executable, "-X", "utf8", str(RUNNER), command, "--prospective-manifest", str(manifest),
-         "--target-state", str(target), "--target-environment", "test", "--publish-scope", "code-only",
+         "--target-state", str(target), "--target-environment", "test", "--publish-scope", "app-release",
          "--output", str(output)],
         cwd=ROOT, text=True, capture_output=True, encoding="utf-8",
     )
@@ -284,6 +284,10 @@ def test_evidence_excludes_sensitive_manifest_material(tmp_path: Path) -> None:
         ("allowedEnvironments", ["test"]),
         ("dependsOn", ["different-dependency"]),
         ("riskLevel", "high"),
+        ("applyOrder", 20),
+        ("sessionProfile", "dcc-view-matrix-seed"),
+        ("approvedHook", "route-snapshot-identity"),
+        ("resultAssertion", "route-snapshot-ready"),
     ],
 )
 def test_planner_migrations_must_exactly_match_required_sql(
@@ -296,6 +300,19 @@ def test_planner_migrations_must_exactly_match_required_sql(
     result = _run_existing_inputs(manifest, target, tmp_path / "evidence.json")
     assert result.returncode != 0
     assert "schemaMigrations must exactly match requiredSql" in result.stderr
+
+
+def test_publish_script_copies_migration_metadata_to_database_plan_entries() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+
+    function_start = script.index("function New-ReleaseMigrationPlanEntries")
+    function_end = script.index("\nfunction ", function_start + 1)
+    function_body = script[function_start:function_end]
+
+    assert "applyOrder = $requiredSql.applyOrder" in function_body
+    assert "sessionProfile = [string]$requiredSql.sessionProfile" in function_body
+    assert "approvedHook = [string]$requiredSql.approvedHook" in function_body
+    assert "resultAssertion = [string]$requiredSql.resultAssertion" in function_body
 
 
 @pytest.mark.parametrize("dirty", [True, None, "false"])
@@ -331,8 +348,15 @@ def test_publish_script_orders_fresh_test_preflight_before_expensive_builds() ->
     assert "if ($capture.ExitCode -ne 0)" in function_body
     assert "target-state collection returned blank output" in function_body
     assert "target-state collection returned invalid JSON" in function_body
+    assert "$stateSqlBase64 = [Convert]::ToBase64String" in function_body
+    assert "printf '%s' '$stateSqlBase64' | base64 -d" in function_body
+    assert "BUILD_PREFLIGHT_SQL" not in function_body
     assert "release_build_preflight.py" in function_body
     assert "build-preflight-evidence.json" in function_body
+    assert "$stateSqlBase64 = [Convert]::ToBase64String" in function_body
+    assert "printf '%s' '$stateSqlBase64' | base64 -d | docker exec" in function_body
+    assert "BUILD_PREFLIGHT_SQL" not in function_body
+    assert "table_count=" not in function_body
 
 
 def _write_docker_spec(tmp_path: Path) -> tuple[Path, Path, Path]:
@@ -534,3 +558,15 @@ def test_publish_script_uses_native_cache_and_keeps_governance_order() -> None:
     finalize_body = script[finalize_function:finalize_function_end]
     assert "Get-DockerImageIdentity" in finalize_body
     assert "manifest\\docker-build-evidence.json" in finalize_body
+
+
+def test_docker_image_identity_uses_native_inspect_json_without_spaced_format_template() -> None:
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    function_start = script.index("function Get-DockerImageIdentity")
+    function_end = script.index("\nfunction ", function_start + 1)
+    body = script[function_start:function_end]
+
+    assert "'image', 'inspect', $ImageReference" in body
+    assert "'--format', '{{json .}}'" not in body
+    assert "$images = @($parsedImages)" in body
+    assert "$images.Count -ne 1" in body

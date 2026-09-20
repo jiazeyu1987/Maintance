@@ -16,6 +16,9 @@ public enum RuntimeControlOperationAction {
     PUBLISH_TEST("publish-test", "部署发布包到测试服", "test", false,
             "deploy/publish-int-ruoyi.ps1",
             req -> deployReleaseArguments("test", req)),
+    RECOVER_TEST_RELEASE_LOCK("recover-test-release-lock", "恢复测试服发布锁", "test", false,
+            "deploy/recover-release-operation-lock.ps1",
+            RuntimeControlOperationAction::recoverTestReleaseLockArguments),
     APPLY_TEST_DB_SQL("apply-test-db-sql", "测试服数据库快应用", "test", false,
             "deploy/apply-test-db-sql.ps1",
             RuntimeControlOperationAction::applyTestDbSqlArguments),
@@ -117,6 +120,8 @@ public enum RuntimeControlOperationAction {
         }
         if (this == APPLY_TEST_DB_SQL) {
             appendApplyTestDbSqlTargetArguments(args, properties);
+        } else if (this == RECOVER_TEST_RELEASE_LOCK) {
+            appendRecoverTestReleaseLockTargetArguments(args, properties);
         }
         if (this == BUILD_RELEASE) {
             appendReleaseTargetHostArguments(args, properties, true);
@@ -149,7 +154,8 @@ public enum RuntimeControlOperationAction {
                         String.valueOf(Boolean.TRUE.equals(req.includeShowroomBuildPackage())));
                 parameters.put("releaseTag", text(req.releaseTag()));
             }
-            case PUBLISH_TEST, PROMOTE_PROD, PROMOTE_BACKUP -> parameters.put("releaseTag", text(req.releaseTag()));
+            case PUBLISH_TEST, PROMOTE_PROD, PROMOTE_BACKUP, RECOVER_TEST_RELEASE_LOCK ->
+                    parameters.put("releaseTag", text(req.releaseTag()));
             case APPLY_TEST_DB_SQL -> parameters.put("sqlPath", text(req.sqlPath()));
             case MARK_RELEASE_TESTED -> {
                 parameters.put("releaseTag", text(req.releaseTag()));
@@ -219,7 +225,8 @@ public enum RuntimeControlOperationAction {
     }
 
     private boolean requiresReleaseTag() {
-        return this == PUBLISH_TEST || this == MARK_RELEASE_TESTED || this == PROMOTE_PROD || this == PROMOTE_BACKUP;
+        return this == PUBLISH_TEST || this == MARK_RELEASE_TESTED || this == PROMOTE_PROD
+                || this == PROMOTE_BACKUP || this == RECOVER_TEST_RELEASE_LOCK;
     }
 
     public boolean requiresResponsibilityGate() {
@@ -290,6 +297,17 @@ public enum RuntimeControlOperationAction {
             args.add("-ProdDryRunEvidencePath");
             args.add(text(req.prodDryRunEvidencePath()));
         }
+        return args;
+    }
+
+    private static List<String> recoverTestReleaseLockArguments(RuntimeControlActionReqVO req) {
+        List<String> args = new ArrayList<>();
+        args.add("-ExpectedOperationId");
+        args.add("test-" + text(req.releaseTag()));
+        args.add("-ExpectedReleaseTag");
+        args.add(text(req.releaseTag()));
+        args.add("-ConfirmText");
+        args.add("RECOVER-TEST-LOCK");
         return args;
     }
 
@@ -395,6 +413,17 @@ public enum RuntimeControlOperationAction {
         addRequiredArgument(args, "-ServerUser", environment.getServerUser());
         addRequiredArgument(args, "-RemoteAppDir", environment.getRemoteAppDir());
         addRequiredArgument(args, "-ExpectedServerHost", environment.getHost());
+    }
+
+    private static void appendRecoverTestReleaseLockTargetArguments(List<String> args,
+                                                                     RuntimeControlProperties properties) {
+        RuntimeControlProperties.Environment environment = properties.requireEnvironment("test");
+        if (environment.isLocal()) {
+            throw new RuntimeControlException("测试服发布锁恢复目标不能是本机环境");
+        }
+        addRequiredArgument(args, "-ServerHost", environment.getHost());
+        addRequiredArgument(args, "-ServerUser", environment.getServerUser());
+        addRequiredArgument(args, "-RemoteAppDir", environment.getRemoteAppDir());
     }
 
     private static void appendReleaseTargetHostArguments(List<String> args, RuntimeControlProperties properties,

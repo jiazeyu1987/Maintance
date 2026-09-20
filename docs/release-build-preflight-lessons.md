@@ -1,5 +1,15 @@
 # 构建发布耗时问题预防清单
 
+## Windows 发布日志 UTF-8 合同
+
+- Trigger: 发布按钮列表报 RELEASE_WORKFLOW_STAGE_LOG_INVALID / MalformedInputException，或 Windows PowerShell 子进程输出中文。
+- Preflight check: 发布脚本在模块加载和首次输出前设置 Console.InputEncoding、Console.OutputEncoding、OutputEncoding 为 UTF-8；用 CP936 初始控制台启动动态回归，验证 stdout/stderr 均能严格 UTF-8 解码。
+- Blocker: 输出仍含非法 UTF-8、脚本回归失败或活动构建无法证明已终止时，停止后续部署。
+- Verification: test_release_bootstrap_emits_utf8_even_with_legacy_console_encoding 通过；已明确失败的构建坏日志显示 FAILED/LOG_DECODING 并保留证据，运行中/成功任务的坏日志继续阻断。
+- Forbidden action: 禁止读取端猜测编码、丢弃坏字节、重写原日志、手工修改 workflow 状态或复用失败 releaseTag。
+- Evidence: doc/tasks/20260916-release-button-remediation/execution-log.md。
+- 阶段必查项：启动前检查三项编码；构建中以 operation 状态、进程和阶段证据共同判断；终止后检查 operation 终态再处理工作流。推荐命令为上述动态 pytest 和工作流定向 JUnit；任一失败必须 Fail Fast，记录 operationId、错误类型、停止 PID 与 RED/GREEN。
+
 ## 适用范围
 
 当任务涉及 IntRuoyi 运行控制台真实 E2E 构建发布包、发布到测试服、发布包候选验收或构建发布失败重试时，先读本文。
@@ -176,6 +186,48 @@
 - 运行控制台启动入口以维护仓当前脚本为准；本轮确认应使用 `scripts\start.ps1`，不要凭旧路径猜测 `ops\runtime-control\start-runtime-control.ps1`。
 - 不带数据发布的 manifest 必须显式验证 `publishScope=code-only`，并确认发布包中不存在 `database`、`mysql`、`minio`、`files` 等数据目录；仅看到 operation `SUCCESS` 不足以证明“不带数据”。
 
+### 2026-09-14 app-release 无数据部署不得写 eDHR Object Lock 探针
+
+- Trigger: 标准一键发布、without-data、`PublishScope=app-release`、`deploy-release`、用户要求不带业务数据/不做 MinIO 数据同步。
+- Preflight check: 发布脚本必须仅校验目标运行环境 `EDHR_S3_*` 配置存在和格式正确；不得在 `app-release deploy-release` 路径调用 `Invoke-EdhrStorageRetentionVerifier` 或任何会写对象存储探针的 verifier。执行前运行 `python -X utf8 -m pytest -q scripts/tests/test_release_workflow_preflight.py -k "edhr_storage_probe"`。
+- Blocker: 标准程序包部署阶段出现 Object Lock 探针对象上传、MinIO/S3 写入、`Invoke-EdhrStorageRetentionVerifier` 调用、或把对象探针失败作为程序包发布阻塞时必须停止并修脚本；不得继续用同一失败 releaseTag 发布。
+- Verification: 目标测试必须 RED/GREEN 留证，`publish-int-ruoyi.ps1` AST 解析通过；真实发布日志只允许出现 `eDHR protected storage settings validated`，不得出现 `Verifying eDHR protected storage/Object Lock target before publish`。
+- Forbidden action: 禁止把“探针不是 MinIO 同步”作为继续写对象的理由；禁止用 Object Lock verifier 替代无数据发布验证；禁止为了绕过失败关闭 EDHR 配置校验。
+- Evidence: `doc/tasks/one-button-app-release-20260911/execution-log.md`；r26 deploy-release 在真正切换版本前写入 eDHR protected object，随后 SQL 失败，证明写探针会给无数据程序发布制造额外副作用。
+
+### 2026-09-14 app-release 包内禁止目标环境证据与 ops 配置
+
+- Trigger: 标准一键发布、without-data、`PublishScope=app-release`、`manifest.json` validation、`FORBIDDEN_HARDCODED_TARGET_IP`、`FORBIDDEN_SECRET_PATTERN`、`target-data-preflight.json`、`ops-runtime/config`、`manage-int-ruoyi-remote-root-disk.ps1`。
+- Preflight check: 构建后必须运行 `.\ops\release\validate-release-manifest.ps1 -PackagePath <package> -Mode report-only -OutputPath <evidence>`；`Invoke-BuildReleaseTargetDataPreflight` 的输出只能写在构建临时 evidence 目录，不能写入 `<package>\evidence`；`ops-runtime` 包只能包含无 secret、无 target-bound config 的运行脚本，保留远端 server-side config，不复制 `script\backup-ops\config` 或远程磁盘目标脚本。
+- Blocker: manifest validator 发现包内任一目标 IP、secret-like 示例、`ops-runtime/config/*.json`、远程磁盘管理脚本、target preflight 目标证据或其他环境绑定内容，必须立即判废当前 releaseTag。
+- Verification: `python -X utf8 -m pytest -q scripts/tests/test_release_package_governance.py -k "target_data_preflight_evidence or ops_runtime_package_excludes"` 先 RED 后 GREEN；相邻回归 `test_release_package_governance.py`、`test_app_release_package_governance.py`、`test_release_sql_preflight_gate.py`、`test_release_workflow_preflight.py` 通过；PowerShell AST 通过；新包的 manifest validation 必须 PASS。
+- Forbidden action: 禁止为了继续发布而放宽 manifest validator、把 IP/secret 文件加入白名单、手工删除包内文件后复用旧 digest、或把本地 package integrity 当作目标环境边界校验。
+- Evidence: `doc/tasks/one-button-app-release-20260911/execution-log.md`；r37 本地包命中 `FORBIDDEN_HARDCODED_TARGET_IP`，尚未 deploy-release 即判废。
+
+### 2026-09-14 required SQL 空候选数据必须 no-op 或 target preflight 精确阻断
+
+- Trigger: without-data/app-release 执行 required SQL，SQL 用于归一化已有业务配置、设备参数、菜单权限或历史数据，尤其命中 `20260811_mes_process_pool_cleaning_process_parameter_data.sql`、`mes_pro_process_pool_device_parameter_rule`、`No active ... rules found`。
+- Preflight check: 对“只修已有数据”的迁移，target preflight 必须区分三种状态：目标表/列缺失则阻断；候选数据为空则 PASS/no-op；候选数据存在但重复、缺项、状态不一致则阻断。执行前运行对应 SQL 静态测试和 `target-preflight/<migration>.preflight.sql` 只读实库验证。
+- Blocker: required SQL 在 publish-test 阶段因为候选行不存在而 `SIGNAL`，但该迁移语义只是归一化已有行；或 target preflight 只检查父对象存在，没有检查具体候选行、重复归一化冲突和不完整规则组。
+- Verification: 新增或修复迁移必须 RED/GREEN 记录空候选 no-op 测试、相邻 `test_release_target_preflight_files.py`/`test_release_preflight_plan.py` 通过，并在测试服只读执行新版 target preflight 返回 `TARGET_PREFLIGHT_PASS` 或明确 blocker。
+- Forbidden action: 禁止手工往测试库补候选业务数据、手工改 `infra_release_migration` 判绿、复用失败 releaseTag 继续发布、把 without-data 解释成可跳过版本化 SQL，或用空库演练替代真实目标只读 preflight。
+- Evidence: `doc/tasks/one-button-app-release-20260911/execution-log.md`；r38 deploy-release 在版本切换前失败于 `20260811_mes_process_pool_cleaning_process_parameter_data.sql`，真实测试库 `rules_total=0`，应用提交 `b286fd47d` 改为空候选 no-op 并补 target preflight。
+
+### 2026-09-16 ReleaseWorkflow 授权后未知态与阶段事件门禁
+
+- Trigger: 发布按钮、`ReleaseWorkflow`、`PROMOTING_PROD_EXECUTION_COMMITTED`、`RELEASE_WORKFLOW_STAGE`、同一 `reason/sourceSelectionId` 重复生成安装包、超时恢复、正式授权消费后异常、构建阶段失败定位。
+- Preflight check: 发布按钮或 app-release workflow 变更必须先用 BDD/TDD 覆盖来源 tuple、租约释放、派发后未知态、正式发布前置拒绝和阶段事件合同；应用仓运行 `mvn.cmd -pl yudao-module-infra clean test '-Dtest=ReleaseWorkflowOrchestratorTest,ReleaseWorkflowSourceBindingTest,ReleaseWorkflowAuthorizationTest,ReleaseWorkflowRecoveryTest,ReleaseWorkflowStoreTest' '-Dsurefire.failIfNoSpecifiedTests=false'`，维护仓运行 `python -X utf8 -m pytest scripts/tests/test_release_workflow_preflight.py`。
+- Blocker: 去重只比较 `reason/sourceSelectionId` 而不比较批准 commits/preset/scope；超时恢复把 workflow 置终态但未释放已确认安全结束的 lease；授权已消费或 operation 已派发后仍把异常当作未开始执行并释放环境锁；`productionWriteEnabled=false` 或确认文本无效时将 `TESTED` 包推进 `FAILED`；构建成功后补写 `TESTING/BUILDING`，而不是从执行日志读取真实阶段事件。
+- Verification: R1-R5 修复必须留下 RED/GREEN 证据；应用仓目标测试至少覆盖 `ReleaseWorkflowSourceBindingTest#sameReasonAndSourceSelectionCreatesNewWorkflowWhenApprovedCommitChanges`、`ReleaseWorkflowOrchestratorTest#stalePreflightFailureReleasesBuildLeaseForNextWorkflow`、`#postDispatchBindingMismatchKeepsTestWorkflowIsolated`、`#consumedProductionAuthorizationDispatchFailureKeepsWorkflowIsolated`、`#productionWriteDisabledRejectsBeforeStateChangeOrDispatch`、`#buildLogStageMarkersAdvanceRunningWorkflowBeforeOperationCompletes`、`#failedBuildUsesLastObservedBuildStage`；维护仓脚本测试必须确认 `TESTING` marker 早于合同测试、`BUILDING` marker 早于后端/前端/Docker 构建。
+- Forbidden action: 禁止用重启服务回收本地 lease；禁止把已消费授权回滚成“未执行”；禁止在缺少 `RELEASE_WORKFLOW_STAGE=BUILDING` 时将 build-release 标为 READY；禁止为了通过静态审查回退到 `code-only/with-data` 或隐藏旧 direct action；禁止用 mock 成功替代真实脚本合同测试。
+- Evidence: `doc/tasks/20260916-release-button-remediation/bug-regression-evidence.md`、`execution-log.md`、`verification-report.md`；静态复查 R1-R5；应用 worktree `D:\IntRuoyiWorktree\r260911-release-button\a`；维护 worktree `D:\ProjectPackage\Int\IntRuoyiWorktrees\r260911-release-button\m`。
+
+1. 阶段 1：发布按钮工作流代码变更前。
+2. 必查项：当前批准的 maintenance/application/frontend commit 与 preset/scope 必须进入 workflow 身份；所有执行前拒绝必须早于状态推进、授权消费和底层派发。
+3. 推荐命令：运行上述 Maven 目标测试和维护仓 pytest；再运行 bug evidence validator 与 task-owned `git diff --check`。
+4. Fail Fast：任何目标测试失败、阶段 marker 缺失、未知执行态释放 lease、或前置拒绝污染 `TESTED` 包时停止，不得进入真实发布或按钮验收。
+5. 必须记录：RED/GREEN 命令、失败原因、lease 是否保留/释放、授权是否消费、operationId/日志阶段 marker、以及未执行的真实发布/E2E/服务器动作边界。
+
 ## 本次证据
 
 - 当前主分支测试服发布闭环任务：`doc/tasks/20260630-main-branch-build-publish-test-server/task.md`
@@ -233,6 +285,26 @@
 - 2026-07-19 复现证据：任务 `20260719-current-head-codeonly-three-env` 的 `publish-test-preview-r260719i.utf8.json` 返回 `{"code":400,"data":null,"msg":"publishScope"}`，未创建 operation；重新预览前必须删除部署动作请求体中的 `publishScope/includeOnlyOffice/includeShowroomBuildPackage`。
 
 ## 2026-07-06 Windows 发布 worktree 长路径门禁
+
+### PowerShell 5.1 构建上下文删除必须验证实际长路径
+
+- Trigger: `Directory.Delete` 或 `Remove-Item` 报 `Could not find a part of the path`，重复失败的前端 bundle 文件名很长，或 PS7 手工删除成功但发布失败。
+- Preflight check: 确认发布进程实际 PowerShell 版本、准确的 `LocalCacheRoot/publish-int-ruoyi` 下 context/隔离目录、最长完整路径和残留文件数；在 PowerShell 5.1 执行生产清理函数的真实 >260 字符 fixture，并保留同级哨兵。
+- Blocker: 只通过字符串断言、只在 PS7 验证、路径仍超长且未使用长路径 API、未核对真正隔离目录时，不得启动新一轮整包构建。
+- Verification: `python -X utf8 -m pytest scripts/tests/test_release_docker_context_cleanup.py -q`；验证 PS5.1、长路径消失、同级保留、文件占用报错、非法目标拒绝。
+- Forbidden action: 禁止未复现就把错误归因于并发；禁止换 API/加重试后直接重打整包；禁止把上一级目录没有残留误当子目录已清空；禁止异常被吞后当成功。
+- Evidence: `doc/tasks/one-button-app-release-20260911/bug-regression-evidence.md`，r11-r15 清理失败及恢复后的真实 PS5.1 RED/GREEN。
+
+### 目标数据门禁必须执行查询，迁移账本不能替代业务前置检查
+
+- Trigger: 非 schema 迁移，或 schema 迁移声明 `requiresTargetPreflight=true` 并退出空库演练。
+- Preflight check: 从同一来源/SQL/目标账本绑定的 APPLY 计划推导检查集合；检查文件、环境、只读 SQL 合同、摘要和实际执行结果全部具备后才进入构建。一次性报告全部缺失文件。
+- Blocker: 缺文件、缺执行结果、目标输出为空/多行/错误标记、计划被改动、SQL 含写入/客户端命令/可执行注释时立刻停止。
+- Verification: `python -X utf8 -m pytest scripts/tests/test_release_target_data_preflight.py -q --basetemp <task-cache>/target-preflight-tests`；真实运行证据必须含 requiredCount、passedCount、查询摘要、计划指纹及目标环境。
+- Forbidden action: 禁止只加 `requiresTargetPreflight` 来绕过演练；禁止凭 ledger APPLIED 或 mock 成功宣称实际数据依赖通过；禁止在 READ ONLY 外执行 mysql 客户端命令。
+- Evidence: `doc/tasks/one-button-app-release-20260911/bug-regression-evidence.md` 与 `execution-log.md#resume-audit-after-r15`。
+
+执行 checklist：先做局部真实故障回归，再核整个目标检查集合；任一失败只整改相关合同/输入，记录命令、运行时、退出码和零下游写入，不重复 Maven/Docker/NAS 全流程。
 
 - 触发场景：构建发布前为维护仓、后端仓、前端仓创建本轮专用 release worktree。
 - 失败现象：使用完整任务 ID 和完整仓库名组成深层 worktree 路径时，维护仓 checkout 历史 evidence 或构建产物路径可能触发 `Filename too long` 和 `fatal: Could not reset index file to revision 'HEAD'`，导致维护仓未完成检出而后端/前端已部分创建。
@@ -1184,11 +1256,11 @@ HEAD-only 构建发布在维护仓或主程序仓主工作区 dirty，且需要�
 ### 阶段补充：runtime-control ops 包上传
 
 1. 阶段名称：ops runtime 上传前。
-2. 必查项：本地 staging 必须包含 `linux`、`scripts`、`actions`、`config` 与 `script/deploy/manage-int-ruoyi-remote-root-disk.ps1`；staging 内不得包含 `backup-ops.secrets.json`；本机 `tar` 可用。
+2. 必查项：本地 staging 必须包含 `linux`、`scripts`、`actions` 与空 `config` 目录；staging 内不得包含 `backup-ops.secrets.json`、`backup-ops.config*.json`、`backup-ops.linux-local*.json` 或 `script/deploy/manage-int-ruoyi-remote-root-disk.ps1`；本机 `tar` 可用。
 3. 推荐命令：合同测试 `test_publish_script_uploads_ops_runtime_package_as_single_archive`；PowerShell AST parse；本机 `Get-Command tar,ssh,scp`。
-4. Fail Fast：仍对 `linux/scripts/actions/config` 多次 `Copy-ToServer`、ops tar 未生成、远端解包后关键文件缺失，或归档包含 secrets。
+4. Fail Fast：仍对 `linux/scripts/actions/config` 多次 `Copy-ToServer`、ops tar 未生成、远端解包后关键文件缺失，或归档包含 secrets、目标 IP、server-side config 示例或远程磁盘目标脚本。
 5. 必须记录：归档名、远端 `ops-runtime.tar`、关键文件校验、实现提交和未执行真实发布的边界。
-6. 禁止做法：禁止为省时整目录删除 `$remoteOpsRuntimeDir`，避免误删远端 `config` 下现有 secrets；只能清理受控脚本目录和受控 deploy 文件后解包覆盖。
+6. 禁止做法：禁止为省时整目录删除 `$remoteOpsRuntimeDir`，避免误删远端 `config` 下现有 secrets；禁止把 target-bound config 或目标主机脚本打进 app-release 包，只能覆盖受控脚本目录并保留远端 server-side config。
 7. Evidence: `doc/tasks/20260829-optimize-test-release-ops-runtime-upload/verification-report.md`；维护仓实现提交 `f33a8ec`（`任务: 优化发布ops运行包上传`）。
 
 ### 阶段补充：deploy 控制文件上传

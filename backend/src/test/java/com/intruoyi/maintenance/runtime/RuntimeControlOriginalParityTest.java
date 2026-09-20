@@ -407,17 +407,27 @@ class RuntimeControlOriginalParityTest {
                   "manifestVersion": "1.0",
                   "packageId": "%s",
                   "releaseTag": "%s",
-                  "packageType": "full-release",
+                  "packageType": "release-code",
                   "createdAt": "2026-06-20T00:00:00Z",
                   "createdBy": "test",
                   "sourceRepos": [],
+                  "sourceRoots": [
+                    {"rootRole":"maintenance","commit":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","dirty":false},
+                    {"rootRole":"application","commit":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","dirty":false}
+                  ],
+                  "sourceRoles": [
+                    {"sourceRole":"maintenance","rootRole":"maintenance","commit":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+                    {"sourceRole":"backend","rootRole":"application","commit":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},
+                    {"sourceRole":"frontend","rootRole":"application","commit":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}
+                  ],
                   "changeSet": {
                     "summary": "test release package",
                     "component": "intruoyi",
                     "includeShowroomBuildPackage": false,
                     "includeOnlyOffice": false
                   },
-                  "publishScope": "code-only",
+                  "publishScope": "app-release",
+                  "packageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                   "components": ["runtime-env", "packaging-manifest"],
                   "artifacts": [
                     {
@@ -427,7 +437,8 @@ class RuntimeControlOriginalParityTest {
                       "path": "docker-compose.yml",
                       "includedInPackage": true,
                       "artifactCacheUri": null,
-                      "sha256": "sha256:%s"
+                      "sha256": "sha256:%s",
+                      "bytes": 13
                     }
                   ],
                   "database": {
@@ -499,19 +510,6 @@ class RuntimeControlOriginalParityTest {
                 }
                 """.formatted(releaseTag, releaseTag, sha256(localCacheReleaseDir.resolve("docker-compose.yml"))),
                 StandardCharsets.UTF_8);
-        Files.writeString(localCacheReleaseDir.resolve("release-manifest.json"), """
-                {
-                  "releaseTag": "%s",
-                  "packageDirectoryName": "%s",
-                  "builtAt": "2026-06-20T00:00:00Z",
-                  "publishScope": "code-only",
-                  "component": "intruoyi",
-                  "includeShowroomBuildPackage": false,
-                  "onlyOfficeIncluded": false,
-                  "artifacts": [{"name":"image.tar","sha256":"abc123"}]
-                }
-                """.formatted(releaseTag, releaseTag), StandardCharsets.UTF_8);
-
         String preview = mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -558,17 +556,27 @@ class RuntimeControlOriginalParityTest {
                   "manifestVersion": "1.0",
                   "packageId": "%s",
                   "releaseTag": "%s",
-                  "packageType": "full-release",
+                  "packageType": "release-code",
                   "createdAt": "2026-06-20T00:00:00Z",
                   "createdBy": "test",
                   "sourceRepos": [],
+                  "sourceRoots": [
+                    {"rootRole":"maintenance","commit":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","dirty":false},
+                    {"rootRole":"application","commit":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","dirty":false}
+                  ],
+                  "sourceRoles": [
+                    {"sourceRole":"maintenance","rootRole":"maintenance","commit":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+                    {"sourceRole":"backend","rootRole":"application","commit":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},
+                    {"sourceRole":"frontend","rootRole":"application","commit":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}
+                  ],
                   "changeSet": {
                     "summary": "test release package",
                     "component": "intruoyi",
                     "includeShowroomBuildPackage": false,
                     "includeOnlyOffice": false
                   },
-                  "publishScope": "code-only",
+                  "publishScope": "app-release",
+                  "packageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                   "components": ["runtime-env", "packaging-manifest"],
                   "artifacts": [
                     {
@@ -578,7 +586,8 @@ class RuntimeControlOriginalParityTest {
                       "path": "docker-compose.yml",
                       "includedInPackage": true,
                       "artifactCacheUri": null,
-                      "sha256": "sha256:%s"
+                      "sha256": "sha256:%s",
+                      "bytes": 13
                     }
                   ],
                   "database": {
@@ -650,19 +659,6 @@ class RuntimeControlOriginalParityTest {
                 }
                 """.formatted(releaseTag, releaseTag, sha256(localCacheReleaseDir.resolve("docker-compose.yml"))),
                 StandardCharsets.UTF_8);
-        Files.writeString(localCacheReleaseDir.resolve("release-manifest.json"), """
-                {
-                  "releaseTag": "%s",
-                  "packageDirectoryName": "%s",
-                  "builtAt": "2026-06-20T00:00:00Z",
-                  "publishScope": "code-only",
-                  "component": "intruoyi",
-                  "includeShowroomBuildPackage": false,
-                  "onlyOfficeIncluded": false,
-                  "artifacts": [{"name":"image.tar","sha256":"abc123"}]
-                }
-                """.formatted(releaseTag, releaseTag), StandardCharsets.UTF_8);
-
         Files.writeString(localCacheReleaseDir.resolve(".env"), "IMAGE_TAG=" + releaseTag + "\n",
                 StandardCharsets.UTF_8);
         Files.writeString(localCacheReleaseDir.resolve("preflight-plan.json"), """
@@ -1028,6 +1024,11 @@ class RuntimeControlOriginalParityTest {
                   "releaseTag": "%s",
                   "packageId": "%s",
                   "createdAt": "2026-06-16T00:00:00Z",
+                  "publishScope": "%s",
+                  "component": "intruoyi",
+                  "includeShowroomBuildPackage": false,
+                  "onlyOfficeIncluded": false,
+                  "artifacts": [%s],
                   "sourceRepos": [
                     {"name": "ruoyi-vue-pro", "pathRole": "backend", "commit": "backend-%s", "branch": "test", "dirty": false},
                     {"name": "yudao-ui-admin-vue3", "pathRole": "admin-frontend", "commit": "frontend-%s", "branch": "test", "dirty": false}
@@ -1041,8 +1042,9 @@ class RuntimeControlOriginalParityTest {
                     "storageProfileIds": ["minio-yudao-default"]
                   }
                 }
-                """.formatted(directoryName, directoryName, directoryName, directoryName, jsonString(summary),
-                jsonArray(changes)), StandardCharsets.UTF_8);
+                """.formatted(directoryName, directoryName, publishScope,
+                withChecksum ? "{\"path\":\"image.tar\",\"sha256\":\"abc123\",\"includedInPackage\":true}" : "",
+                directoryName, directoryName, jsonString(summary), jsonArray(changes)), StandardCharsets.UTF_8);
         if (withRollbackEvidence) {
             Files.writeString(root.resolve("prod-latest.json"), """
                     {"releaseTag":"%s","packageDirectoryName":"%s","environment":"prod"}
