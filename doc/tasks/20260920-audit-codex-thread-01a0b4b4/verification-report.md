@@ -118,3 +118,59 @@
 - `E:/IntRuoyi/IntRuoyiBackend/runtime/runtime-control/461d2b3f-1a9b-49e6-b6b8-6dd6ec2a4b83.json`
 - 提交 `70d5b8792`、对应模块/测试现状、目标任务 12:55 指令与 14:34–14:45 执行记录。
 - 本轮为只读审查，未重新运行产品测试、未操作服务器或目标任务进程；失败与修复结果均按本地真实记录核对。
+
+## 第三轮复审：2026-09-20，15:58 后核对
+
+### 当前状态与结论
+目标任务现名“备份恢复”，应用状态为 idle，15:57 最新答复交付了前置整改分支。它已经按纠偏方向采取实质行动，执行方式明显改善；但这只是部分前置整改，不是用户要求的“点击按钮完成备份恢复”已成功。
+
+- 15:04 用户在原任务直接列出六项整改，任务随后明确暂停新的真实演练和覆盖恢复。
+- 15:21 建立独立 worktree `D:/IntRuoyiWorktree/backup-restore-remediation/backend`，分支 `codex/backup-restore-remediation-20260920`。
+- 15:51 提交 `e00d22cc7`（修复备份链和演练状态收束），实际涉及 5 个文件。
+- 15:57 任务停止，报告 ready_for_closeout；尚未合并、部署或执行新的真实演练。
+- `git merge-base --is-ancestor e00d22cc7 int_main` 返回 1，证明整改提交尚未进入主线；worktree 状态干净。
+- 最新真实恢复报告仍是 14:30 的 fail；历史 operation JSON 仍 running。不能用尚未部署的代码宣称现场状态已修复。
+
+### 做法已经改正的部分
+1. 不再重复启动耗时恢复来逐个暴露问题，也没有人工改历史报告为成功。
+2. 真正在独立 worktree 编码、验证并提交，没有继续修改共享主工作区的这些实现文件。
+3. `BackupNow.psm1` 将 reset 放进 FULL 分支，INCREMENTAL 不再无条件清空父链和 object-store，关闭了第一轮明确指出的增量必然失去基线问题（代码级，未真实链验收）。
+4. 增加实际调用 `Write-BackupOpsRehearsalEvidence` 的 Pester 测试，从纯文本检查进步到验证本地证据产物及调用顺序。
+5. `getOperations()` 读取已注册日志并更新可识别的终态，使列表读取可收束旧 running；执行器返回 timeout/interruption/cleanup failed 时持久化为 unknown，保留既有写保护。
+6. 已核对 Windows 的实际 repoRoot 为 `E:/IntRuoyi/IntRuoyiBackend`，理解 PowerShell-only 变更无需 Java 构建，而新 Java 状态逻辑需要后续部署。
+
+### 验证证据核对
+- 15:28 `RuntimeControlServiceImplTest`：68 tests，2 failures；15:32 同类 68 tests，0 failures，形成有效行为 RED/GREEN。
+- 15:40 Surefire XML：执行器 7 tests + 服务层 68 tests，failures/errors/skipped 均 0；共 75 个 Java 定向测试通过。
+- Pester 多轮执行结果通过，新增证据调用链测试确实执行真实函数；没有把本地测试替代真实恢复验收。
+- 增量保护新增测试依然是源码正则及位置检查，没有实际运行 FULL -> INCREMENTAL 并证明链与对象可恢复。
+- 证据生成用例只验证成功路径，测试内重定义文件读取与 SSH/传输函数；作为局部单元测试可以使用这些替身，但它不证明正式模块导出集成，也不覆盖读取/摘要/传输失败时不得出现有效 PASSED 的要求。
+
+### 仍应补齐的问题
+
+**P1：FULL 清理仍未限定到精确授权集合。**
+生产修改只是把 reset 包在 FULL 条件下。FileOps 的实现未改，仍遍历日期目录并删除 object-store/.restore-stage；没有新增本次显式重置选项、来源归属/链引用/正在演练占用检查，也没有先完整验证删除集合再执行。全量入口在新工作目录、当前镜像标签与后续工具检查前即调用 reset。不能把“增量不再删除”扩大为“备份清理整体安全”。用户要求删除上一份数据，不等同于自动删除所有历史恢复链。
+
+**P1：UNKNOWN 分类不是完整中断恢复机制。**
+新提交没有修改命令执行器和备份脚本的服务恢复逻辑，只在服务层匹配异常文本，将 timeout/interruption/cleanup failed 标记 unknown。已有测试证明 timeout 分类正确；未证明进程强杀后自有服务恢复、远端执行器/子进程退出、控制台进程崩溃后恢复责任、没有终态日志时的状态收束。控制台崩溃可能根本无法进入当前 catch；getOperations 缺日志或缺终态时依旧保留 running。写保护是进步，不能等同于完整生命周期已完成。
+
+**P2：证据生成测试仍欠缺失败分支与正式加载集成。**
+新增一个成功用例直接在 Rehearsal 模块作用域定义 `Get-BackupOpsRemoteFileText` 等替身，会绕过之前实际发生的跨模块可见性问题。应在正式模块加载顺序下验证导出与真实调用衔接，并覆盖 digest/manifest 错误、远程发送失败和不完整报告不能成为恢复授权等行为，再开展下一轮昂贵演练。
+
+**交付缺口：整改尚未进入运行态，前端按钮闭环未验收。**
+本轮 15:04 后没有新浏览器操作记录，没有新的备份/演练/恢复 operation。作为先整改后演练的阶段，这是正确顺序；但不能当作按钮功能交付完成。任务仍需完成代码审查、集成后验证、部署新运行控制台，再通过真实页面操作验收。
+
+### 按用户明确要求的下一验收顺序
+1. 关闭 FULL 精确清理、证据失败路径和中断责任缺口，并修正对应完成声明。
+2. 安全集成任务提交，验证合并结果并部署需要更新的 Java 状态逻辑；先在页面操作列表验证历史终态能按真实日志收束。
+3. 用 Playwright 登录真实页面，通过“立即备份”及必要选项发起备份，核对页面进度、参数和结果；不得用手工 SSH、脚本或 API 提交替代按钮。
+4. 从页面选择有效备份包并点击“恢复演练”，取得当前目标绑定的真实 PASSED。
+5. 保护点/空目标、容量、互斥等全部通过后，再点击“恢复数据”并确认，核对页面最终结果、实际业务数据和文件一致性。
+6. 清理本任务资源并完成文档收尾。当前只有前置整改阶段，用户的最终目标尚未完成。
+
+### 证据入口
+- `D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20260920-backup-restore-remediation/task.md`
+- `D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20260920-backup-restore-remediation/execution-log.md`
+- `D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20260920-backup-restore-remediation/verification-report.md`
+- `e00d22cc7` 实际 diff、独立 worktree 的 Surefire XML 和目标任务最后答复。
+- 本审查未重跑产品测试、未干预目标任务或服务器。

@@ -45,3 +45,15 @@
 - GREEN: experience-preflight -> PASS，本次只协调与更新自有记录，复用既有经验门禁，无新增可删除产物。
 - GREEN: second-guidance-context-delivery -> PASS，目标 rollout 于 2026-09-20 15:02:37 +08:00 记录本轮完整指导的 codex_delegation 工具输出，确认进入执行上下文；仍不代表已落实。
 - GREEN: second-guidance-closeout -> PASS，preview/apply 删除 0 项、无 blocker；协调里程碑 completed。
+
+## 第三轮审查
+- 用户要求再次分析原任务当前行为和方法正确性；此前明确验收入口必须是点击前端按钮/控件。
+- 前序自有任务已 completed，本轮续用同一审查记录，保留前两轮时间快照。
+- 本轮只读对话、代码与运行证据，不启动/停止原任务、不操作服务器、不触发备份恢复。
+- 第三轮结论：原任务已按正确方向在独立 worktree 提交 e00d22cc7，75 个 Java 定向测试 XML 通过；但 FULL 精确清理、完整中断恢复及证据失败路径未充分覆盖，整改尚未进入主线和运行态。
+- `git merge-base --is-ancestor e00d22cc7 int_main` -> 1（预期，尚未合并）；worktree 干净；最新真实报告仍 fail。
+- 原任务 15:04 后无新浏览器操作，属于前置整改阶段，不能判为按钮恢复通过，也不能将阶段性暂停判为绕过前端。
+- GREEN: third-review-evidence -> PASS，当前任务状态、真实提交差异、Surefire XML、整改文档及历史 operation/report 已交叉核对。
+- 经验沉淀复核继续沿用已加载的 project-experience-consolidation：本次重申代码/集成/运行态/真实按钮证据层级，以及局部测试不能替代集成门禁；现有经验入口已覆盖，不新增重复长期文件。
+- GREEN: experience-preflight -> PASS，本轮只收尾自有审查记录，无删除候选、不触碰整改 worktree。
+- GREEN: third-review-closeout -> PASS，UTF-8、diff-check、cleanup preview/apply 通过，删除 0 项；第三轮审查 completed，不代表原任务完成。
