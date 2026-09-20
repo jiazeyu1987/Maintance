@@ -74,6 +74,16 @@ class RuntimeControlContractTest {
     }
 
     @Test
+    void exposesExplicitTestReleaseLockRecoveryAction() throws Exception {
+        String action = Files.readString(Path.of(
+                "src/main/java/com/intruoyi/maintenance/runtime/RuntimeControlOperationAction.java"),
+                StandardCharsets.UTF_8);
+        assertThat(action).contains("RECOVER_TEST_RELEASE_LOCK(\"recover-test-release-lock\", \"恢复测试服发布锁\"");
+        assertThat(action).contains("deploy/recover-release-operation-lock.ps1");
+        assertThat(action).contains("RECOVER-TEST-LOCK");
+    }
+
+    @Test
     void missingConfigurationFailsFast() {
         RuntimeControlProperties properties = new RuntimeControlProperties();
         properties.setRepoRoot("");

@@ -42,6 +42,7 @@ interface RuntimeAction {
 const actions: RuntimeAction[] = [
   { action: 'build-release', label: '构建发布包', level: 'normal', publishScope: 'code-only' },
   { action: 'publish-test', label: '部署测试服', level: 'normal', targetEnvironment: 'test' },
+  { action: 'recover-test-release-lock', label: '恢复测试服发布锁', level: 'warning', targetEnvironment: 'test' },
   { action: 'apply-test-db-sql', label: '测试服数据库快应用', level: 'warning', targetEnvironment: 'test' },
   { action: 'mark-release-tested', label: '标记测试通过', level: 'normal', targetEnvironment: 'test' },
   { action: 'promote-prod', label: '上线正式服', level: 'danger', targetEnvironment: 'prod' },
@@ -123,6 +124,7 @@ const statusSummary = computed(() => [
 const actionDescriptions: Record<string, string> = {
   'build-release': '生成发布包，不直接部署到任何环境',
   'publish-test': '将已构建发布包部署到测试服',
+  'recover-test-release-lock': '仅在确认旧执行者终止且无迁移证据时恢复测试服发布锁',
   'apply-test-db-sql': '只应用明确 SQL，不同步数据库整库、MinIO 或发布包状态',
   'mark-release-tested': '记录发布包测试通过结论',
   'promote-prod': '正式服写入动作，必须满足生产确认',
@@ -232,7 +234,7 @@ function operationRequiresTargetEnvironment(action: string) {
 }
 
 function operationUsesReleaseTag(action: string) {
-  return ['build-release', 'publish-test', 'promote-prod', 'promote-backup'].includes(action)
+  return ['build-release', 'publish-test', 'recover-test-release-lock', 'promote-prod', 'promote-backup'].includes(action)
 }
 
 function operationUsesTestConclusion(action: string) {

@@ -196,7 +196,9 @@ public class RuntimeControlService {
         if (action == RuntimeControlOperationAction.APPLY_TEST_DB_SQL) {
             return copyActionReqWithSqlPath(resolvedReq, validateSqlPath(resolvedReq.sqlPath()));
         }
-        validateReleasePackageAvailability(action, resolvedReq.releaseTag());
+        if (action != RuntimeControlOperationAction.RECOVER_TEST_RELEASE_LOCK) {
+            validateReleasePackageAvailability(action, resolvedReq.releaseTag());
+        }
         if (action == RuntimeControlOperationAction.PROMOTE_PROD) {
             return copyActionReqWithProdDryRunEvidencePath(resolvedReq, resolveProdDryRunEvidencePath(resolvedReq));
         }

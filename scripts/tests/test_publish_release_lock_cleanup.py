@@ -3,10 +3,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PUBLISH_SCRIPT = ROOT / "ops" / "deploy" / "publish-int-ruoyi.ps1"
+RECOVERY_SCRIPT = ROOT / "ops" / "deploy" / "recover-release-operation-lock.ps1"
 
 
 def read_publish_script() -> str:
     return PUBLISH_SCRIPT.read_text(encoding="utf-8")
+
+
+def read_recovery_script() -> str:
+    return RECOVERY_SCRIPT.read_text(encoding="utf-8")
 
 
 def test_fail_releases_held_release_lock_before_exit() -> None:
@@ -59,6 +64,17 @@ def test_lock_acquire_reports_current_holder_without_setting_held() -> None:
     assert "RELEASE_OPERATION_LOCK_HELD" in acquire_function
     assert "$script:ReleaseOperationLockHeld = $true" in acquire_function
     assert acquire_function.index("RELEASE_OPERATION_LOCK_HELD") < acquire_function.index("$script:ReleaseOperationLockHeld = $true")
+
+
+def test_explicit_lock_recovery_requires_executor_and_migration_evidence_checks() -> None:
+    script = read_recovery_script()
+
+    assert "RECOVER-TEST-LOCK" in script
+    assert "RECOVER_BLOCKED_ACTIVE_EXECUTOR" in script
+    assert "RECOVER_BLOCKED_MIGRATION_EVIDENCE" in script
+    assert "status = 'RUNNING'" in script
+    assert "LOCK_RECOVERED" in script
+    assert "operation_id = '$operationLiteral'" in script
 
 
 def test_build_release_holds_local_runtime_restart_guard_only_for_its_own_window() -> None:
