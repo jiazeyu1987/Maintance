@@ -92,3 +92,13 @@
 - 经验沉淀复核：复用 project-experience-consolidation 及现有完整性前置检查、环境互斥、UNKNOWN 持续保护门禁；精确缺陷保留任务报告，不新建重复长期经验文档。
 - GREEN: experience-preflight -> PASS，本轮只收尾自有审查记录，无删除候选和任务运行资源。
 - GREEN: extended-review-round2-closeout -> PASS，审查文档 UTF-8、diff-check、preview/apply 通过，删除 0 项；本轮审查 completed，原任务缺陷仍待修复验证。
+
+## 完整问题清单
+- 用户要求列出完整问题列表；本轮汇总本线程已确认问题与待验证项，不扩大为未经执行的全系统穷尽审计。
+- 复核整改基线、任务记录与当前操作状态后，按稳定问题编号去重，保留已修复历史项并明确验收范围。
+- 22:38 核对：HEAD 仍 e20b77d50 且干净；新 FULL succeeded、演练 running，状态未被新提交改变。
+- 生成正式清单 issue-list.md：P01–P10 待修复、V01–V08 待验收、H01–H13 历史修正/改善，并列明不应继续误判的授权、真实按钮和现有保护。
+- GREEN: issue-inventory -> PASS，逐项映射到既有审查证据，未把历史已修复问题继续列为未修复，也未把未知运行结果写为失败或成功。
+- 经验沉淀复核：复用已加载的 project-experience-consolidation；本次是既有发现的任务级清单，不新增长期规则或重复经验入口。
+- GREEN: experience-preflight -> PASS，本轮只收尾自有记录；issue-list.md 是用户要求的正式交付物，已加入 Cleanup Keep。
+- GREEN: issue-list-closeout -> PASS，UTF-8、diff-check、preview/apply 通过，删除 0 项，保留问题清单；汇总交付 completed，不代表原任务全部修复。
