@@ -222,3 +222,49 @@ detached runner 已改善 Java 生命周期耦合，但独立 runner 自身被�
 
 ### 本轮审查边界
 仅只读检查目标对话、代码、测试 XML、本地 operation、进程及日志字节；未重跑产品测试，未访问服务器，未触发任何按钮或改动运行资源。之前三轮结论作为历史快照保留，不覆盖本轮进展。
+
+## 追加深入审查：2026-09-20 22:21 后，基线 e20b77d50
+
+以下为新增的代码级问题，不重复第四轮日志编码和状态文件原子写入问题。审查开始时整改 worktree 干净、HEAD=e20b77d50；未执行覆盖恢复或破坏性复现。
+
+### P1：演练成功路径会使自己的 manifestDigest 失效
+调用顺序明确为：
+1. `Rehearsal.psm1:357` 调用 Write-BackupOpsRehearsalEvidence；该函数在 173–182 行计算并记录当前 manifest.json 的 SHA-256。
+2. 紧接着 358 行调用 Set-BackupOpsRehearsalVerificationState。
+3. `DockerOps.psm1:1941` 修改同一 manifest 的 rehearsalStatus，1942 行写入新的 lastRehearsedAt，1956–1959 行重新序列化并上传覆盖原文件。
+4. `RuntimeOpsCandidateServiceImpl.java:483` 为页面候选重新计算修改后 manifest 的 SHA-256，366 行要求它与旧报告 manifestDigest 完全相等。
+
+因此按当前正常成功路径，报告绑定的是修改前的 manifest，候选读取的是修改后的 manifest，即使数据恢复和探针都通过，CONTROLLED_RESTORE 仍会因摘要不一致阻断。这是跨模块调用顺序的确定性矛盾，局部证据生成成功用例没有覆盖“写报告 -> 更新状态 -> 页面重新列候选”。
+
+修正方向：保持备份 manifest 不可变，将演练状态、时间及验证结果移到独立证据中；让生产者和候选消费者使用相同不可变对象。不得删除或放松 hash 比对来使按钮可用。
+
+### P1：恢复前“保护快照”只保存配置，无法保护被覆盖数据
+`DockerOps.psm1:1155` 的 New-BackupOpsPreRestoreSnapshot 完整实现仅下载 runtime.env 与 docker-compose.yml，再生成 snapshot.json；没有数据库导出、对象数据副本、存储快照或可恢复的数据保护点。
+
+`RestoreData.psm1:270` 将它作为“pre-restore 保护快照”，取得 SnapshotId 后在 275 行停服务、278 行导入 MySQL、281 行恢复对象。该快照本身不能找回恢复前现有的业务数据与文件；较早生成的 FULL 也不自动等于覆盖前最新的一致保护点。
+
+修正方向：覆盖前创建并验证数据库与对象共同一致的恢复保护点；若使用空目标模式，必须有当前目标确为空且不覆盖业务数据的明确证据。仅配置副本不得作为数据恢复放行门禁。
+
+### P1：演练支持增量链，但“恢复数据”仍走单个 FULL dump
+`DockerOps.psm1:2006` 的演练路径先导入 candidate.baseBackupId 的 FULL，再在 2007 行 Replay-BackupOpsMySqlBinlogChain 到所选目标点。
+
+而正式受控恢复路径存在两处不同：
+- `DockerOps.psm1:993–1009` 的 Get-BackupOpsRestoreCandidates 要求所选 BackupId 自身目录有 mysql/<database>.sql.gz，否则剔除；正常增量点主要包含增量段，并不重复保存完整 FULL dump。
+- `RestoreData.psm1:278` 将所选 BackupId 直接传入 Import-BackupOpsMySqlDump；`MySqlOps.psm1:1217` 构造该 ID 下的完整 dump 路径，受控恢复流程没有调用整链重放。
+
+因此“增量不再删父链”和“增量演练可能通过”不等于“恢复数据按钮支持该增量恢复点”。当前实现会拒绝正常增量候选；即便放松候选检查，也仍没有正确整链恢复执行路径。不能靠补放一个全量文件或隐藏增量选项掩盖合同差异。
+
+修正方向：演练与受控恢复共享同一份经校验的 FULL+增量恢复计划，差异仅为目标槽位、保护点及执行授权；对中间点和最新点分别做真实按钮验收。
+
+### P1：目标指纹比较的是两份备份元数据，不是当前目标环境
+`Rehearsal.psm1:186–187` 从备份 manifest 的 targetEnvironment、targetHost、deploy.imageTag 拼出 targetFingerprint；`RuntimeOpsCandidateServiceImpl.java:454–463` 同样从同一备份 manifest 重建指纹，再与报告字符串比较。这里没有采集当前目标主机身份、实际 schema、数据库/对象存储版本或运行镜像摘要。
+
+`RestoreData.psm1:77–82` 确实额外读取当前 IMAGE_TAG 并做相等校验，因此不能说完全没有现场检查；但标签相同无法证明同 IP 换机、数据库结构漂移、存储/配置变化仍与演练目标相同。当前 targetFingerprint 不能承担设计中“绑定当前恢复目标”的职责。
+
+修正方向：在预览和执行前获取目标实际身份与兼容性指纹，绑定当前演练证据；目标变化后将候选置为 STALE/阻断并要求重新验证。元数据自洽不等于现场兼容。
+
+### 尚未作为本轮已确认缺陷的范围
+已看到本机 `Global\IntRuoyi-BackupOps` mutex，覆盖 backup-now、backup-scheduled、rehearsal、restore-data；因此不作“完全没有互斥”的结论。跨控制台、跨主机、发布和应用回滚的共享环境租约仍需进一步核验，本轮不以单一目录未搜索到锁就断言全系统没有保护。
+
+### 放行意见
+当前正常演练可继续收束并保留真实结果；在上述证据绑定和覆盖前数据保护等缺口关闭前，不应执行受控覆盖恢复。它们是源码审查发现，尚未在本轮通过破坏性实验复现，更没有观察到实际数据丢失。

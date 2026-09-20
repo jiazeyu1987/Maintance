@@ -70,3 +70,14 @@
 - 经验沉淀复核沿用 project-experience-consolidation：本次编码缺陷命中既有 PowerShell 显式 UTF-8 和禁止默认重定向门禁，原子状态及真实按钮证据已由现有规则覆盖，复发细节留在审查报告，不新增重复长期文档。
 - GREEN: experience-preflight -> PASS，本轮 closeout 只保留自有审查记录，无删除候选、无自有后台进程，未操作原任务资源。
 - GREEN: fourth-review-closeout -> PASS，审查文档 UTF-8、diff-check、preview/apply 通过，删除 0 项；第四轮审查 completed，产品日志缺陷明确保留为审查发现。
+
+## 追加深入审查
+- 用户追问是否还有其他问题；续用已完成审查任务目录，扩展只读代码审查，不实施修复或干预演练。
+- 重点：恢复候选及证据绑定、失败时旧证据是否失效、独立执行器结果分类与并发写保护、备份暂存归属；不把前四轮问题重复包装成新问题。
+- 基线：追加审查时整改 worktree 干净，HEAD=e20b77d50。
+- 新发现：Rehearsal 先计算 manifestDigest 后由 DockerOps 修改同一 manifest，Java 候选按新文件 hash 比对造成冲突；pre-restore snapshot 仅下载配置，不能保护覆盖前数据；演练会 replay 增量而 restore-data 只导入指定 ID 的 FULL dump；目标 fingerprint 来自 manifest，只有额外 IMAGE_TAG 现场相等检查。
+- GREEN: extended-static-review -> PASS，各发现完成生产者、消费者与调用顺序的交叉核对；未运行破坏性测试，未将代码缺口写成已发生的数据事故。
+- 已发现本机备份 mutex，故不声称系统完全没有互斥；跨主机/发布租约未充分核对，不列为确认缺陷。
+- 经验沉淀复核沿用 project-experience-consolidation：不可变 manifest、目标绑定、整链恢复和真实保护点均命中既有 release-backup-restore 门禁；缺陷及精确行号保留本任务报告，不重复新建长期规则。
+- GREEN: experience-preflight -> PASS，本轮只收尾自有审查记录，无删除候选、无本任务运行资源。
+- GREEN: extended-review-closeout -> PASS，审查文档 UTF-8、diff-check、preview/apply 通过，删除 0 项；追加审查 completed，不代表产品缺口关闭。
