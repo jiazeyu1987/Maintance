@@ -65,6 +65,7 @@ export interface RuntimeControlActionReqVO {
   reason: string
   prodConfirmText?: string
   targetEnvironment?: RuntimeControlTargetEnvironment
+  backupKind?: 'FULL' | 'INCREMENTAL'
   publishScope?: RuntimeControlPublishScope
   includeOnlyOffice?: boolean
   includeShowroomBuildPackage?: boolean
@@ -411,9 +412,32 @@ export interface RuntimeControlRemoteRootCleanupVO {
 }
 
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
+  const tokenEntry = localStorage.getItem('ACCESS_TOKEN')
+  const tenantEntry = localStorage.getItem('tenantId')
+  let accessToken = ''
+  let tenantId = ''
+  if (tokenEntry) {
+    try {
+      const parsed = JSON.parse(tokenEntry) as { v?: string }
+      const rawValue = parsed.v || ''
+      accessToken = rawValue.startsWith('"') ? JSON.parse(rawValue) : rawValue
+    } catch {
+      throw new Error('登录状态无效，请重新登录')
+    }
+  }
+  if (tenantEntry) {
+    try {
+      const parsed = JSON.parse(tenantEntry) as { v?: string | number }
+      tenantId = parsed.v === undefined ? '' : String(parsed.v)
+    } catch {
+      throw new Error('租户登录状态无效，请重新登录')
+    }
+  }
   const response = await fetch(url.startsWith(API_BASE) ? url : `${API_BASE}${url}`, {
     headers: {
       'Content-Type': 'application/json',
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+      ...(tenantId ? { 'tenant-id': tenantId } : {}),
       ...(init?.headers ?? {})
     },
     ...init

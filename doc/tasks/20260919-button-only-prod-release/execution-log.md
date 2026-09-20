@@ -257,3 +257,7 @@
 - RED: full-release-gate-old-lock-assertion -> FAIL；完整 212 项首轮为 211 passed/1 failed，唯一失败是旧静态测试仍断言 catch 使用 `$publishBackend`，与新的全组件锁契约相反；更新为断言 `$requiresReleaseOperationLock`。
 - GREEN: final-release-gates -> PASS；完整静态/行为套件 212 passed，实际 PowerShell→SSH→测试服临时 MySQL 验证再次 PASS，PowerShell AST、Python compileall、`git diff --check` PASS；复核 `SHOW DATABASES LIKE 'release_lock_it_%'` 为空集。
 - GREEN: experience-preflight -> PASS；应用 `int_main` 当前 36 个已跟踪/未跟踪改动与本任务 83 个分支变更文件交集为 0，可执行 `--ff-only` 且保留用户改动；维护 `int_main` 与本任务在 `docs/request-command-log.md` 存在交集，禁止对维护主工作区合并、stash 或覆盖。
+- GREEN: application-int-main-fast-forward -> PASS；应用主工作区 `int_main` 已从 `64f45c958` fast-forward 到 `4b556f2de`，分支/tree 与已验证集成工作树完全一致，36 个用户/并行改动仍保留，分支运行端口钩子 PASS。
+- BLOCKER: application-int-main-push -> GitHub HTTPS 上的标准 push 与单次 HTTP/1.1 push 均返回 `TLS unexpected eof while reading`；本地主干已融合，但不伪造远程推送成功。
+- RED: maintenance-latest-main-merge-conflicts -> FAIL；独立维护集成 worktree 合入最新 `int_main=4701511` 时，`frontend/package.json`、`App.vue`、`runtimeControl.ts` 产生 add/add 冲突。
+- GREEN: maintenance-latest-main-semantic-merge -> PASS；保留发布候选的正式晋级、锁恢复、源码快照 token、`onlyBuiltDependencies`，并合入主干的 FULL/INCREMENTAL 备份参数及登录/tenant 请求头；合并结果后端全量/package PASS，前端 typecheck/build PASS，发布套件 212 passed。

@@ -84,6 +84,7 @@ const actionForm = reactive({
   releaseTag: '',
   publishScope: 'code-only' as 'code-only' | 'with-data',
   targetEnvironment: 'test' as 'test' | 'prod' | 'backup',
+  backupKind: 'FULL' as 'FULL' | 'INCREMENTAL',
   sqlPath: '',
   testConclusion: '回归通过，允许上线正式服',
   selectedImageCandidateId: '',
@@ -292,6 +293,7 @@ function requestPayload(includePreviewSnapshot = false) {
     targetEnvironment: operationRequiresTargetEnvironment(selectedAction.value.action)
       ? actionForm.targetEnvironment || selectedAction.value.targetEnvironment
       : undefined,
+    backupKind: action === 'backup-now' ? actionForm.backupKind : undefined,
     publishScope: operationSupportsPublishScope(selectedAction.value.action)
       ? actionForm.publishScope
       : undefined,
@@ -567,6 +569,15 @@ onMounted(loadData)
                 <el-option label="仅代码" value="code-only" />
                 <el-option label="含数据" value="with-data" />
               </el-select>
+            </el-form-item>
+            <el-form-item v-if="selectedAction.action === 'backup-now'" label="备份类型">
+              <el-segmented
+                v-model="actionForm.backupKind"
+                :options="[
+                  { label: '全量', value: 'FULL' },
+                  { label: '增量', value: 'INCREMENTAL' }
+                ]"
+              />
             </el-form-item>
             <el-form-item v-if="operationUsesReleaseTag(selectedAction.action)" label="发布标签">
               <el-input v-model="actionForm.releaseTag" placeholder="release-YYYYMMDD-HHmm" />
