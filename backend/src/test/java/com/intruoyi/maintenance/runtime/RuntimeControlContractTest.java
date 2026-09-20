@@ -191,7 +191,7 @@ class RuntimeControlContractTest {
                 .getContentAsString(StandardCharsets.UTF_8);
 
         assertThat(response)
-                .contains("-Mode", "build-release", "-PublishScope", "code-only",
+                .contains("-Mode", "build-release", "-PublishScope", "app-release",
                         "-SkipDatabaseSync", "-SkipMinioSync",
                         "-NasServer", "-NasShare", "-NasReleaseRoot",
                         "-TestServerHost", "172.30.30.58",

@@ -192,8 +192,7 @@ def test_application_migration_discovery_ignores_target_preflight_support_sql():
     script = (ROOT / 'ops/deploy/publish-int-ruoyi.ps1').read_text(encoding='utf-8')
     start = script.index('function Assert-ApplicationMigrationTestsDiscovered')
     body = script[start:script.index('\nfunction ', start + 1)]
-    assert "IntRuoyiBackend/sql/mysql/target-preflight/" in body
-    assert "-notmatch" in body
+    assert "-notmatch '(^|/)target-preflight/'" in body
     assert "__pycache__" in body
     assert ".pyc" in body
 

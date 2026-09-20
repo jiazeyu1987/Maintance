@@ -4430,15 +4430,20 @@ function Invoke-StandardReleaseContractTests {
     Invoke-CheckedCommand -FilePath 'corepack' -ArgumentList @('pnpm', '--dir', $frontendDir, 'ts:check')
     Info 'Discovering application migration tests from the frozen source diff'
     $applicationTestFiles = Assert-ApplicationMigrationTestsDiscovered
-    if ($applicationTestFiles.Count -gt 0) {
+    $applicationPytestFiles = @($applicationTestFiles | Where-Object { $_ -match '\.py$' })
+    $applicationNodeTestFiles = @($applicationTestFiles | Where-Object { $_ -match '\.test\.mjs$' })
+    if ($applicationPytestFiles.Count -gt 0) {
         $applicationPytestRoot = Join-Path $resolvedLocalCacheRoot "release-application-test-temp\$packageDirectoryName"
         $applicationPytestParent = Split-Path -Parent $applicationPytestRoot
         New-Item -ItemType Directory -Force -Path $applicationPytestParent | Out-Null
         Invoke-CheckedCommand -FilePath 'python' -ArgumentList @(
             '-X', 'utf8', '-m', 'pytest', '-q',
-            $applicationTestFiles,
+            $applicationPytestFiles,
             '--basetemp', $applicationPytestRoot
         )
+    }
+    foreach ($applicationNodeTestFile in $applicationNodeTestFiles) {
+        Invoke-CheckedCommand -FilePath 'node' -ArgumentList @($applicationNodeTestFile)
     }
     Info 'Running release script tests'
     $pytestRoot = Join-Path $resolvedLocalCacheRoot "release-workflow-test-temp\$packageDirectoryName"
@@ -4465,7 +4470,7 @@ function Invoke-StandardReleaseContractTests {
 function Assert-ApplicationMigrationTestsDiscovered {
     $applicationRoot = Get-ReleaseGitValue -RepoPath $backendRepo -Arguments @('rev-parse', '--show-toplevel') -Purpose 'application git root'
     $diffFiles = @(Get-ReleaseGitValue -RepoPath $applicationRoot -Arguments @('diff', '--name-only', 'HEAD^', 'HEAD', '--', 'IntRuoyiBackend/sql/mysql') -Purpose 'application migration source diff' |
-        Where-Object { [string]$_ -notmatch '^IntRuoyiBackend/sql/mysql/target-preflight/' } |
+        Where-Object { ([string]$_).Replace('\', '/') -notmatch '(^|/)target-preflight/' } |
         Where-Object { [string]$_ -match '(^|/)20[0-9]{6}_[A-Za-z0-9_.-]+\.sql$' })
     $migrationIds = @($diffFiles | ForEach-Object {
         $name = Split-Path -Leaf ([string]$_)

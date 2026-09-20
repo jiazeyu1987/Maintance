@@ -193,8 +193,8 @@ def run_schema_rehearsal(
         runner(["docker", "exec", name, "mysql", "--protocol=TCP", "-h127.0.0.1", "-uroot",
                 "-e", "CREATE DATABASE `ruoyi-vue-pro` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"], None)
         runner(mysql, schema)
-        for pass_number in range(1, 3):
-            for planned, content in migrations:
+        for planned, content in migrations:
+            for pass_number in range(1, 3):
                 try:
                     session_preamble = _session_preamble_for_profile(
                         planned.session_profile,
