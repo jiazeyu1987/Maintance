@@ -7,6 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 PUBLISH_SCRIPT = ROOT / "ops" / "deploy" / "publish-int-ruoyi.ps1"
 RECOVERY_SCRIPT = ROOT / "ops" / "deploy" / "recover-release-operation-lock.ps1"
+REMOTE_INTEGRATION = ROOT / "scripts" / "tests" / "verify_recover_release_lock_remote_integration.py"
 
 
 def read_publish_script() -> str:
@@ -86,6 +87,36 @@ def test_lock_ownership_is_fenced_by_lease_and_executor_identity() -> None:
     assert "Ensure-ReleaseOperationLockLeaseSchema" in script
 
 
+def test_deploy_acquires_lock_before_first_remote_mutation() -> None:
+    script = read_publish_script()
+    deploy_runtime = script[script.index("Info 'Writing remote compose environment file locally'"):]
+    protected_try = deploy_runtime.index("try {")
+    schema_gate = deploy_runtime.index("Assert-ReleaseOperationLockSchemaReady", protected_try)
+    acquire = deploy_runtime.index("Invoke-ReleaseOperationLockAcquire", schema_gate)
+    data_disk = deploy_runtime.index("Assert-RemoteRuntimeDataOnDataDisk", acquire)
+    release_tree = deploy_runtime.index("Prepare-RemoteReleaseTree", data_disk)
+
+    assert protected_try < schema_gate < acquire < data_disk < release_tree
+    assert "Ensure-ReleaseMigrationStateSchema" not in deploy_runtime[schema_gate:acquire]
+    assert "Ensure-ReleaseOperationLockLeaseSchema" not in deploy_runtime[schema_gate:acquire]
+
+
+def test_pre_acquire_lock_schema_gate_is_read_only_and_complete() -> None:
+    script = read_publish_script()
+    start = script.index("function Assert-ReleaseOperationLockSchemaReady")
+    end = script.index("function Invoke-ReleaseOperationLockAcquire", start)
+    block = script[start:end]
+
+    assert "information_schema.TABLES" in block
+    assert "information_schema.COLUMNS" in block
+    for column in ("executor_host", "executor_pid", "executor_identity", "lease_token", "heartbeat_at", "write_fence"):
+        assert column in block
+    assert "LOCK_SCHEMA_READY" in block
+    assert "ALTER TABLE" not in block
+    assert "INSERT INTO" not in block
+    assert "UPDATE " not in block
+
+
 def test_actual_migration_writers_block_before_ssh_when_lock_is_not_held() -> None:
     harness = f"""
 $ErrorActionPreference = 'Stop'
@@ -153,6 +184,17 @@ def test_lock_recovery_never_accepts_nonzero_ssh_exit_even_with_success_text() -
     assert "if ($exitCode -ne 0)" in script
     assert "close - IO is still pending on closed socket" not in script
     assert "RECOVER_BLOCKED_|LOCK_RECOVERY_FAILED|ERROR [0-9]+|Permission denied|Connection timed out|Could not resolve" in script
+
+
+def test_remote_integration_executes_actual_publish_writer_before_and_after_lease_loss() -> None:
+    integration = REMOTE_INTEGRATION.read_text(encoding="utf-8")
+
+    assert "def run_publish_migration_state_update" in integration
+    assert "Invoke-ReleaseMigrationStateBatchUpdate" in integration
+    assert "allowed-write" in integration
+    assert "blocked-after-lease-loss" in integration
+    assert "RELEASE_OPERATION_LOCK_LOST" in integration
+    assert "SELECT migration_id, status FROM infra_release_migration" in integration
 
 
 def test_build_release_holds_local_runtime_restart_guard_only_for_its_own_window() -> None:

@@ -12,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 RECOVERY_SCRIPT = ROOT / "ops/deploy/recover-release-operation-lock.ps1"
+PUBLISH_SCRIPT = ROOT / "ops/deploy/publish-int-ruoyi.ps1"
 SERVER_HOST = "172.30.30.58"
 REMOTE_APP_DIR = "/opt/intruoyi/runtime"
 
@@ -66,6 +67,130 @@ def run_recovery(database: str, release_tag: str, lease_token: str) -> subproces
     )
 
 
+def run_publish_migration_state_update(
+    database: str,
+    release_tag: str,
+    lease_token: str,
+    migration_id: str,
+) -> subprocess.CompletedProcess[str]:
+    computer = os.environ["COMPUTERNAME"]
+    identity = f"{os.environ['USERNAME']}@{computer}"
+    harness = r'''
+$ErrorActionPreference = 'Stop'
+$tokens = $null
+$errors = $null
+$ast = [System.Management.Automation.Language.Parser]::ParseFile('__PUBLISH_SCRIPT__', [ref]$tokens, [ref]$errors)
+if ($errors.Count -gt 0) { throw 'publish script parse failed' }
+$functionNames = @(
+  'ConvertTo-SqlStringLiteral',
+  'Protect-ReleaseSensitiveText',
+  'ConvertTo-ReleaseErrorMessage',
+  'ConvertTo-ReleaseErrorBase64',
+  'Get-RequiredDatabaseSqlFileName',
+  'New-ReleaseMigrationStateUpsertSql',
+  'Assert-ReleaseOperationLockOwnership',
+  'Assert-ReleaseOperationWriteFence',
+  'Invoke-ReleaseMigrationStateBatchUpdate'
+)
+foreach ($name in $functionNames) {
+  $definition = $ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq $name }, $true) | Select-Object -First 1
+  if ($null -eq $definition) { throw "function missing: $name" }
+  Invoke-Expression $definition.Extent.Text
+}
+
+function Info { param([string]$Message) }
+
+function Invoke-IntegrationSsh {
+  param(
+    [Parameter(Mandatory = $true)][string]$Command,
+    [AllowNull()][string]$StandardInput = $null
+  )
+  $rewritten = $Command.Replace('ruoyi-vue-pro', $DatabaseName)
+  $rewritten = $rewritten.Replace('MYSQL_PWD=integration-placeholder', 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD"')
+  $rewritten = $rewritten.Replace('-pintegration-placeholder', '-p"$MYSQL_ROOT_PASSWORD"')
+  $prefix = @'
+set -eu
+MYSQL_ROOT_PASSWORD=$(grep -E '^MYSQL_ROOT_PASSWORD=' '/opt/intruoyi/runtime/.env' | head -n 1 | cut -d= -f2-)
+test -n "$MYSQL_ROOT_PASSWORD"
+export MYSQL_ROOT_PASSWORD
+'@
+  if ($null -ne $StandardInput) {
+    $encodedInput = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($StandardInput))
+    $remoteBody = $prefix + "`nprintf '%s' '$encodedInput' | base64 -d | " + $rewritten
+  } else {
+    $remoteBody = $prefix + "`n" + $rewritten
+  }
+  $remoteBody = $remoteBody -replace "`r`n", "`n" -replace "`r", "`n"
+  $payload = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($remoteBody))
+  $runner = "PAYLOAD='$payload'; printf '%s' `"`$PAYLOAD`" | base64 -d | bash"
+  $previousErrorActionPreference = $ErrorActionPreference
+  $ErrorActionPreference = 'Continue'
+  try {
+    $output = & ssh.exe -n -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=no root@172.30.30.58 $runner 2>&1
+    $exitCode = $LASTEXITCODE
+  } finally {
+    $ErrorActionPreference = $previousErrorActionPreference
+  }
+  return @{
+    Ok = ($exitCode -eq 0)
+    Output = (($output | ForEach-Object { [string]$_ }) -join "`n").Trim()
+    ExitCode = $exitCode
+  }
+}
+
+function Invoke-SshCapture {
+  param([Parameter(Mandatory = $true)][string]$Command, [switch]$IgnoreExitCode)
+  $result = Invoke-IntegrationSsh -Command $Command
+  if (-not $result.Ok -and -not $IgnoreExitCode) { throw "SSH command failed: $($result.Output)" }
+  return $result
+}
+
+function Invoke-SshCommandWithInput {
+  param([Parameter(Mandatory = $true)][string]$Command, [AllowNull()][string]$StandardInput = '')
+  $result = Invoke-IntegrationSsh -Command $Command -StandardInput $StandardInput
+  if (-not $result.Ok) { throw "SSH command failed: $($result.Output)" }
+}
+
+$DatabaseName = '__DATABASE__'
+$Mode = 'deploy-release'
+$Environment = 'test'
+$ReleaseTag = '__RELEASE_TAG__'
+$mySqlRootPassword = 'integration-placeholder'
+$script:ReleaseOperationLockHeld = $true
+$script:ReleaseOperationLeaseToken = '__LEASE_TOKEN__'
+$script:ReleaseOperationExecutorHost = '__EXECUTOR_HOST__'
+$script:ReleaseOperationExecutorPid = '2147483000'
+$script:ReleaseOperationExecutorIdentity = '__EXECUTOR_IDENTITY__'
+$script:ReleaseErrorMessageMaxLength = 2048
+$item = [pscustomobject]@{
+  migrationId = '__MIGRATION_ID__'
+  file = 'required-sql/__MIGRATION_ID__.sql'
+  sha256 = 'sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+}
+Invoke-ReleaseMigrationStateBatchUpdate -Items @($item) -Status 'RUNNING'
+Write-Output 'PUBLISH_WRITE_COMPLETED:__MIGRATION_ID__'
+'''
+    replacements = {
+        "__PUBLISH_SCRIPT__": str(PUBLISH_SCRIPT).replace("'", "''"),
+        "__DATABASE__": database,
+        "__RELEASE_TAG__": release_tag,
+        "__LEASE_TOKEN__": lease_token,
+        "__EXECUTOR_HOST__": computer,
+        "__EXECUTOR_IDENTITY__": identity,
+        "__MIGRATION_ID__": migration_id,
+    }
+    for marker, value in replacements.items():
+        harness = harness.replace(marker, value)
+    encoded = base64.b64encode(harness.encode("utf-16le")).decode("ascii")
+    return subprocess.run(
+        ["powershell.exe", "-NoProfile", "-NonInteractive", "-EncodedCommand", encoded],
+        text=True,
+        encoding="utf-8",
+        capture_output=True,
+        check=False,
+    )
+
+
 def require_success(result: subprocess.CompletedProcess[str], step: str) -> None:
     if result.returncode != 0:
         raise AssertionError(f"{step} failed: exit={result.returncode}, stderr={result.stderr.strip()}")
@@ -106,9 +231,23 @@ CREATE TABLE infra_release_operation_lock (
 ) ENGINE=InnoDB;
 CREATE TABLE infra_release_migration (
   id bigint PRIMARY KEY AUTO_INCREMENT,
-  target_environment varchar(32) NOT NULL,
   release_tag varchar(128) NOT NULL,
+  migration_id varchar(191) NOT NULL,
+  file_name varchar(512) NOT NULL,
+  sha256 varchar(80) NOT NULL,
+  target_environment varchar(32) NOT NULL,
   status varchar(32) NOT NULL
+  ,started_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  ,finished_at datetime NULL
+  ,error_message text NULL
+  ,operation_id varchar(128) NOT NULL
+  ,creator varchar(64) DEFAULT ''
+  ,create_time datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  ,updater varchar(64) DEFAULT ''
+  ,update_time datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  ,deleted bit(1) NOT NULL DEFAULT b'0'
+  ,tenant_id bigint NOT NULL DEFAULT 0
+  ,UNIQUE KEY uk_infra_release_migration_env_id (target_environment, migration_id)
 ) ENGINE=InnoDB;
 INSERT INTO infra_release_operation_lock (
   target_environment, operation_id, release_tag, status, started_at,
@@ -122,6 +261,42 @@ INSERT INTO infra_release_operation_lock (
 """
     try:
         require_success(remote_mysql(None, setup_sql), "setup")
+
+        allowed = run_publish_migration_state_update(database, release_tag, lease_token, "allowed-write")
+        require_success(allowed, "actual publish writer with owned lease")
+        if "PUBLISH_WRITE_COMPLETED:allowed-write" not in allowed.stdout:
+            raise AssertionError(f"owned publish write lacks completion evidence: {allowed.stdout!r}")
+
+        require_success(
+            remote_mysql(
+                database,
+                "UPDATE infra_release_operation_lock SET lease_token='replacement-lease', write_fence=write_fence+1;",
+            ),
+            "replace publish lease",
+        )
+        blocked = run_publish_migration_state_update(
+            database, release_tag, lease_token, "blocked-after-lease-loss"
+        )
+        if blocked.returncode == 0 or "RELEASE_OPERATION_LOCK_LOST" not in (blocked.stdout + blocked.stderr):
+            raise AssertionError(
+                "lost lease did not block the actual publish writer: "
+                f"exit={blocked.returncode}, stdout={blocked.stdout!r}, stderr={blocked.stderr!r}"
+            )
+        migration_state = remote_mysql(
+            database,
+            "SELECT migration_id, status FROM infra_release_migration ORDER BY migration_id;",
+        )
+        require_success(migration_state, "verify actual publish writer fence")
+        if migration_state.stdout.strip() != "allowed-write\tRUNNING":
+            raise AssertionError(f"unexpected migration writes after lease loss: {migration_state.stdout.strip()}")
+        require_success(
+            remote_mysql(
+                database,
+                f"DELETE FROM infra_release_migration; "
+                f"UPDATE infra_release_operation_lock SET lease_token='{lease_token}', heartbeat_at=NOW();",
+            ),
+            "restore recovery fixture",
+        )
 
         active = run_recovery(database, release_tag, lease_token)
         if active.returncode == 0 or "RECOVER_BLOCKED_ACTIVE_HEARTBEAT" not in (active.stdout + active.stderr):

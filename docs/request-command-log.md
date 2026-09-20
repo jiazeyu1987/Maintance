@@ -4071,3 +4071,4 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - 2026-09-21T06:01:29+08:00	20260919-button-only-prod-release	RESULT	已恢复已执行注册证提醒迁移的不可变内容，发布清单改为从同名外部预检合同推导；迁移写入函数新增强制租约栅栏。维护相关 208 passed，应用 15 passed，迁移策略 632 PASS，AST/compileall/diff-check PASS；本轮未执行发布。
 - 2026-09-21T06:10:00+08:00	20260919-button-only-prod-release	RESULT	应用修复已融入本地集成提交 `2442863e9`；维护 r94-r104 完整修复链已融入本地集成提交 `df634b6`。融合结果应用 15 passed / 632 PASS，维护 208 passed / AST / compileall / diff-check PASS；未启动任何发布。
 - 2026-09-21T06:16:00+08:00	20260919-button-only-prod-release	RESULT	完成融合后完成度补审：维护后端 40 tests/package PASS，前端 typecheck/build PASS；DCC 完整定向类首轮 5/6 暴露旧测试要求改写历史迁移，修正为“历史摘要不变+后续迁移收口 910218”后 6/6 PASS，配套回归 18 passed；未发布。
+- 2026-09-21T06:25:00+08:00	20260919-button-only-prod-release	RESULT	完成首远程写入锁边界修正与真实失权写入验证：数据盘/remote tree 写入已移到取锁后，锁 schema 缺失时只读阻断；实际发布函数经 PowerShell/SSH/测试服临时 MySQL 证明持锁写入成功、失权写入无落库，恢复并发单赢家仍通过，临时库已清零。完整静态回归 211 passed；未发布。

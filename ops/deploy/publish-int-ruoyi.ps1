@@ -5668,6 +5668,45 @@ ALTER TABLE `infra_release_operation_lock`
         -StandardInput $leaseSchemaSql
 }
 
+function Assert-ReleaseOperationLockSchemaReady {
+    $schemaSql = @"
+SELECT CASE
+  WHEN (SELECT COUNT(*)
+          FROM information_schema.TABLES
+         WHERE TABLE_SCHEMA = 'ruoyi-vue-pro'
+           AND TABLE_NAME IN ('infra_release_migration', 'infra_release_operation_lock')) = 2
+   AND (SELECT COUNT(*)
+          FROM information_schema.COLUMNS
+         WHERE TABLE_SCHEMA = 'ruoyi-vue-pro'
+           AND TABLE_NAME = 'infra_release_operation_lock'
+           AND COLUMN_NAME IN (
+             'target_environment', 'operation_id', 'release_tag', 'status', 'started_at',
+             'finished_at', 'error_message', 'executor_host', 'executor_pid',
+             'executor_identity', 'lease_token', 'heartbeat_at', 'write_fence', 'creator',
+             'create_time', 'updater', 'update_time', 'deleted', 'tenant_id'
+           )) = 19
+   AND (SELECT COUNT(*)
+          FROM information_schema.COLUMNS
+         WHERE TABLE_SCHEMA = 'ruoyi-vue-pro'
+           AND TABLE_NAME = 'infra_release_migration'
+           AND COLUMN_NAME IN (
+             'release_tag', 'migration_id', 'file_name', 'sha256', 'target_environment',
+             'status', 'started_at', 'finished_at', 'error_message', 'operation_id',
+             'creator', 'create_time', 'updater', 'update_time', 'deleted'
+           )) = 15
+  THEN 'LOCK_SCHEMA_READY'
+  ELSE 'LOCK_SCHEMA_NOT_READY'
+END;
+"@
+    $capture = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | docker exec -i -e MYSQL_PWD=$mySqlRootPassword intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --raw --skip-column-names information_schema
+$schemaSql
+SQL"
+    $evidence = ($capture.Output -split "`r?`n" | Where-Object { $_ -match '^LOCK_SCHEMA_' } | Select-Object -Last 1)
+    if (-not $capture.Ok -or $evidence -ne 'LOCK_SCHEMA_READY') {
+        throw 'RELEASE_OPERATION_LOCK_SCHEMA_NOT_READY: initialize the release lock contract before deployment'
+    }
+}
+
 function Invoke-ReleaseOperationLockAcquire {
     $operationId = "$Environment-$ReleaseTag"
     $script:ReleaseOperationLeaseToken = [guid]::NewGuid().ToString('N')
@@ -6805,12 +6844,6 @@ if ($Mode -eq 'deploy-release') {
     Write-TargetBoundPostImportSql
 }
 
-Info 'Preparing remote runtime data disk'
-Assert-RemoteRuntimeDataOnDataDisk
-
-Info 'Preparing remote release directories'
-Prepare-RemoteReleaseTree
-
 Info 'Writing remote compose environment file locally'
 if (($publishBackend -or $publishFrontend) -and $Mode -ne 'build-release' -and $existingRemoteEnv.Count -eq 0) {
     Import-ExistingRemoteRuntimeEnvSettings
@@ -6991,11 +7024,16 @@ Write-Utf8LfNoBomFile -Path $remoteEnvLocal -Content $remoteEnvContent
 
 try {
     if ($publishBackend -and $Mode -ne 'build-release') {
-        Ensure-ReleaseMigrationStateSchema
-        Ensure-ReleaseOperationLockLeaseSchema
+        Assert-ReleaseOperationLockSchemaReady
         Invoke-ReleaseOperationLockAcquire
         Assert-ReleaseOperationLockOwnership
     }
+
+    Info 'Preparing remote runtime data disk'
+    Assert-RemoteRuntimeDataOnDataDisk
+
+    Info 'Preparing remote release directories'
+    Prepare-RemoteReleaseTree
 
     Info "Copying deploy control files to the $PublishTargetName server"
 $composeLocal = Join-Path $releaseDir 'docker-compose.yml'
