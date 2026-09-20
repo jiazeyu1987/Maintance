@@ -3725,3 +3725,10 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Action intent: 补齐 r22 暴露的 7 个迁移目标预检，修正“前置条件/幂等完成状态”语义，提交并推送应用主干，随后用新 releaseTag 通过页面按钮验证。
 - Evidence: 应用 `4568e1c1b` 已推送 `origin/int_main`；发布预检/迁移矩阵/SQL 合同/包治理测试 `170 passed`；r24 预览确认维护 `d66b2ba`、应用/前端 `4568e1c1b`；r24 目标预检 `24/28`，`sshStarted=true`，在 `20260918_mes_edhr_label_print_menu_removal` 阻断。
 - Deployment status: r23、r24 均未执行迁移写入；未部署测试服、未 mark-tested、未晋级正式服。当前任务阻塞，禁止手工改库、改锁、改 `.env` 或补写成功状态。
+
+## 2026-09-20 22:xx CST — 以本机为准修正标签打印退休预检
+
+- User request: 确认以本机的标签打印退休状态为准。
+- Action intent: 不手工改测试服数据库；修正目标预检，让测试服全部 active 的待迁移状态允许正式退休迁移执行，并继续阻断部分退休状态。
+- Evidence: 测试服只读核对 21 个标签打印菜单全部 active、套餐 JSON 有效；修正后远端只读预检返回 `TARGET_PREFLIGHT_PASS:20260918_mes_edhr_label_print_menu_removal`；本地合同测试 `170 passed`；应用提交 `13c2517a5` 已推送 `origin/int_main`。
+- Deployment status: 仍未部署测试服、未 mark-tested、未晋级正式服；下一步使用新 releaseTag 通过真实按钮重跑。

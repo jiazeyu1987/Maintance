@@ -127,3 +127,11 @@
 - GREEN: r24 已通过 Maven、前端合同、类型检查、141 项发布测试、Docker、依赖、构建证据和迁移台账计划；目标预检实际连接测试服，`sshStarted=true`，24/28 检查通过。
 - BLOCKER: r24 在 `20260918_mes_edhr_label_print_menu_removal` 的目标数据前置检查失败，operation `op-2026-09-20T132451702289300Z-7ea53a64-e53a-4f42-9d7e-81d617ac1252` 终态 FAILED，未执行迁移写入；该迁移明确拒绝部分退休状态，必须先由正式数据负责人确认并通过按钮提供受控修复/恢复方案，禁止手工改库或伪造预检通过。
 - BLOCKER: r23 与 r24 操作记录一度同时显示 RUNNING，说明控制台在前一构建终态刷新前仍允许提交下一操作；本任务停止继续发布，待确认两者真实终态并修复并发门禁后再重试。
+
+## 2026-09-20 22:xx CST — 标签打印退休预检修正
+
+- BDD: label print retirement preflight follows local baseline -> Given 本机基准要求 eDHR 标签打印入口退休, When 测试服仍处于 21 个标签打印菜单全部 active 的待迁移状态, Then 目标预检应允许正式迁移执行退休；若目标已全部 retired 则允许幂等重跑；若处于部分退休则阻断。
+- RED: remote-label-preflight-r24-current -> FAIL；直接在测试服只读执行当前预检返回 `TARGET_PREFLIGHT_BLOCKED:20260918_mes_edhr_label_print_menu_removal`，而只读核对显示 `system_menu` 21/21 行存在且全部 active、`system_tenant_package.menu_ids` JSON 有效，说明阻断来自预检残留的“必须已退休”条件。
+- GREEN: remote-label-preflight-fixed -> PASS；预检改为 `active_count IN (0, 21)`，直接在测试服只读执行返回 `TARGET_PREFLIGHT_PASS:20260918_mes_edhr_label_print_menu_removal`。
+- GREEN: preflight-contract-regression -> PASS；四组发布预检/迁移矩阵/SQL 合同/包治理测试 `170 passed`。
+- GREEN: app-main-push -> PASS；应用提交 `13c2517a5 任务: 修正标签打印退休预检` 已通过 branch runtime port guard 并推送 `origin/int_main`。

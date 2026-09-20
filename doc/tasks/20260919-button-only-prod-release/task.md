@@ -6,7 +6,7 @@
 
 ## Current Status
 
-blocked — r24 通过真实按钮构建并进入测试服远端只读目标预检；Maven、前端合同、类型检查、141 项发布脚本测试、Docker、依赖、构建证据和迁移台账计划均通过，应用提交 `4568e1c1b` 已推送 `origin/int_main`。阻断点为 `20260918_mes_edhr_label_print_menu_removal`：目标测试服不满足该迁移明示的“标签打印菜单全部未退休或全部已退休”一致性前置条件，预检 24/28 后安全失败，未执行迁移写入。r23/r24 操作记录曾同时显示 RUNNING，下一轮发布前还必须确认真实终态并修复/验证同工作目录运行中构建门禁。当前禁止继续部署测试服、mark-tested 或正式服晋级，禁止手工改库、改锁、改 `.env` 或补写成功状态。
+in_progress — 用户确认“以本机为准”后，只读核对本机标签打印入口为退休基准；测试服 21 个标签打印菜单全部 active，属于正式迁移应处理的待退休状态。已修正 `20260918_mes_edhr_label_print_menu_removal` 目标预检语义为允许全部 active 或全部 retired、阻断部分退休，直接在测试服只读执行返回 PASS；应用提交 `13c2517a5` 已推送 `origin/int_main`，四组发布预检/迁移矩阵/SQL 合同/包治理测试 `170 passed`。下一步必须使用新 releaseTag 通过真实按钮重新构建，不复用 r24。
 
 ## Milestones
 
