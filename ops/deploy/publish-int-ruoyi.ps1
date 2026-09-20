@@ -107,6 +107,10 @@ Import-Module -Force (Join-Path $PSScriptRoot '..\release\lib\ReleasePackageGove
 Import-Module -Force (Join-Path $PSScriptRoot '..\release\lib\ReleaseManifestValidator.psm1')
 $script:ReleaseOperationLockHeld = $false
 $script:ReleaseOperationLockReleasing = $false
+$script:ReleaseOperationLeaseToken = ''
+$script:ReleaseOperationExecutorHost = [string]$env:COMPUTERNAME
+$script:ReleaseOperationExecutorPid = [string]$PID
+$script:ReleaseOperationExecutorIdentity = "$([string]$env:USERNAME)@$([string]$env:COMPUTERNAME)"
 $script:BuildReleaseRuntimeRestartGuardCreated = $false
 $script:ReleasePackageArtifactCache = @()
 $script:ReleaseErrorMessageMaxLength = 2048
@@ -5617,11 +5621,46 @@ SQL"
     }
 }
 
+function Ensure-ReleaseOperationLockLeaseSchema {
+    $probeSql = @"
+SELECT COUNT(*)
+FROM information_schema.COLUMNS
+WHERE TABLE_SCHEMA = 'ruoyi-vue-pro'
+  AND TABLE_NAME = 'infra_release_operation_lock'
+  AND COLUMN_NAME = 'lease_token';
+"@
+    $probeResult = Invoke-SshCapture "cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 --batch --skip-column-names information_schema
+$probeSql
+SQL"
+    if (([string]$probeResult.Output).Trim() -eq '1') {
+        return
+    }
+
+    Info 'Bootstrapping release operation lock lease columns on target server'
+    $leaseSchemaSql = @'
+ALTER TABLE `infra_release_operation_lock`
+  ADD COLUMN `executor_host` varchar(255) DEFAULT NULL COMMENT '执行宿主',
+  ADD COLUMN `executor_pid` varchar(64) DEFAULT NULL COMMENT '执行进程身份',
+  ADD COLUMN `executor_identity` varchar(255) DEFAULT NULL COMMENT '执行身份',
+  ADD COLUMN `lease_token` varchar(128) DEFAULT NULL COMMENT '锁租约令牌',
+  ADD COLUMN `heartbeat_at` datetime DEFAULT NULL COMMENT '最近心跳',
+  ADD COLUMN `write_fence` bigint NOT NULL DEFAULT 0 COMMENT '写入栅栏版本';
+'@
+    Invoke-SshCommandWithInput `
+        -Command "docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 ruoyi-vue-pro" `
+        -StandardInput $leaseSchemaSql
+}
+
 function Invoke-ReleaseOperationLockAcquire {
     $operationId = "$Environment-$ReleaseTag"
+    $script:ReleaseOperationLeaseToken = [guid]::NewGuid().ToString('N')
+    $leaseToken = $script:ReleaseOperationLeaseToken.Replace("'", "''")
+    $executorHost = $script:ReleaseOperationExecutorHost.Replace("'", "''")
+    $executorPid = $script:ReleaseOperationExecutorPid.Replace("'", "''")
+    $executorIdentity = $script:ReleaseOperationExecutorIdentity.Replace("'", "''")
     $lockSql = @"
-INSERT INTO infra_release_operation_lock (target_environment, operation_id, release_tag, status, started_at, finished_at, error_message, creator, create_time, updater, update_time, deleted, tenant_id)
-SELECT '$Environment', '$operationId', '$ReleaseTag', 'RUNNING', NOW(), NULL, NULL, 'release-system', NOW(), 'release-system', NOW(), b'0', 0
+INSERT INTO infra_release_operation_lock (target_environment, operation_id, release_tag, status, started_at, finished_at, error_message, executor_host, executor_pid, executor_identity, lease_token, heartbeat_at, write_fence, creator, create_time, updater, update_time, deleted, tenant_id)
+SELECT '$Environment', '$operationId', '$ReleaseTag', 'RUNNING', NOW(), NULL, NULL, '$executorHost', '$executorPid', '$executorIdentity', '$leaseToken', NOW(), 1, 'release-system', NOW(), 'release-system', NOW(), b'0', 0
 WHERE NOT EXISTS (
   SELECT 1 FROM infra_release_operation_lock WHERE target_environment = '$Environment' AND status = 'RUNNING'
 )
@@ -5632,10 +5671,16 @@ ON DUPLICATE KEY UPDATE
   finished_at = IF(status = 'RUNNING', finished_at, NULL),
   error_message = IF(status = 'RUNNING', error_message, NULL),
   status = IF(status = 'RUNNING', status, 'RUNNING'),
+  executor_host = IF(status = 'RUNNING', executor_host, '$executorHost'),
+  executor_pid = IF(status = 'RUNNING', executor_pid, '$executorPid'),
+  executor_identity = IF(status = 'RUNNING', executor_identity, '$executorIdentity'),
+  lease_token = IF(status = 'RUNNING', lease_token, '$leaseToken'),
+  heartbeat_at = IF(status = 'RUNNING', heartbeat_at, NOW()),
+  write_fence = IF(status = 'RUNNING', write_fence, write_fence + 1),
   updater = 'release-system',
   update_time = NOW(),
   deleted = b'0';
-SELECT CASE WHEN operation_id = '$operationId' AND status = 'RUNNING' THEN 'LOCK_ACQUIRED' ELSE CONCAT('LOCK_HELD:', operation_id, ':', release_tag) END
+SELECT CASE WHEN operation_id = '$operationId' AND status = 'RUNNING' AND lease_token = '$leaseToken' THEN CONCAT('LOCK_ACQUIRED:', lease_token) ELSE CONCAT('LOCK_HELD:', operation_id, ':', release_tag) END
 FROM infra_release_operation_lock
 WHERE target_environment = '$Environment';
 "@
@@ -5649,8 +5694,66 @@ SQL"
     if ($lockResult -like 'LOCK_HELD:*') {
         throw "RELEASE_OPERATION_LOCK_HELD: $lockResult"
     }
+    if ($lockResult -ne "LOCK_ACQUIRED:$($script:ReleaseOperationLeaseToken)") {
+        throw "RELEASE_OPERATION_LOCK_ACQUIRE_FAILED: unexpected ownership evidence '$lockResult'"
+    }
     $script:ReleaseOperationLockHeld = $true
     $script:ReleaseOperationLockReleasing = $false
+}
+
+function Assert-ReleaseOperationLockOwnership {
+    if (-not $script:ReleaseOperationLockHeld) {
+        return
+    }
+    $operationId = "$Environment-$ReleaseTag"
+    $leaseToken = $script:ReleaseOperationLeaseToken.Replace("'", "''")
+    $ownershipSql = @"
+SELECT CASE
+  WHEN operation_id = '$operationId'
+   AND release_tag = '$ReleaseTag'
+   AND status = 'RUNNING'
+   AND lease_token = '$leaseToken'
+   AND executor_host = '$($script:ReleaseOperationExecutorHost.Replace("'", "''"))'
+   AND executor_pid = '$($script:ReleaseOperationExecutorPid.Replace("'", "''"))'
+   AND executor_identity = '$($script:ReleaseOperationExecutorIdentity.Replace("'", "''"))'
+  THEN 'LOCK_OWNED'
+  ELSE 'LOCK_LOST'
+END
+FROM infra_release_operation_lock
+WHERE target_environment = '$Environment';
+"@
+    $capture = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | docker exec -i -e MYSQL_PWD=$mySqlRootPassword intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro
+$ownershipSql
+SQL"
+    $evidence = ($capture.Output -split "`r?`n" | Where-Object { $_ -match '^(LOCK_OWNED|LOCK_LOST)$' } | Select-Object -Last 1)
+    if (-not $capture.Ok -or $evidence -ne 'LOCK_OWNED') {
+        $script:ReleaseOperationLockHeld = $false
+        throw "RELEASE_OPERATION_LOCK_LOST: expected ownership evidence, got '$($capture.Output)'"
+    }
+    $heartbeatSql = @"
+UPDATE infra_release_operation_lock
+SET heartbeat_at = NOW(),
+    write_fence = write_fence + 1,
+    updater = 'release-system',
+    update_time = NOW()
+WHERE target_environment = '$Environment'
+  AND operation_id = '$operationId'
+  AND release_tag = '$ReleaseTag'
+  AND status = 'RUNNING'
+  AND lease_token = '$leaseToken'
+  AND executor_host = '$($script:ReleaseOperationExecutorHost.Replace("'", "''"))'
+  AND executor_pid = '$($script:ReleaseOperationExecutorPid.Replace("'", "''"))'
+  AND executor_identity = '$($script:ReleaseOperationExecutorIdentity.Replace("'", "''"))';
+SELECT CASE WHEN ROW_COUNT() = 1 THEN 'HEARTBEAT_RENEWED' ELSE 'HEARTBEAT_RENEW_FAILED' END;
+"@
+    $heartbeat = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | docker exec -i -e MYSQL_PWD=$mySqlRootPassword intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro
+$heartbeatSql
+SQL"
+    $heartbeatEvidence = ($heartbeat.Output -split "`r?`n" | Where-Object { $_ -match '^HEARTBEAT_' } | Select-Object -Last 1)
+    if (-not $heartbeat.Ok -or $heartbeatEvidence -ne 'HEARTBEAT_RENEWED') {
+        $script:ReleaseOperationLockHeld = $false
+        throw "RELEASE_OPERATION_LOCK_LOST: heartbeat renewal failed: $($heartbeat.Output)"
+    }
 }
 
 function Invoke-ReleaseOperationLockRelease {
@@ -5675,8 +5778,13 @@ SET status = '$Status',
     update_time = NOW()
 WHERE target_environment = '$Environment'
   AND operation_id = '$operationId'
+  AND release_tag = '$ReleaseTag'
+  AND lease_token = '$($script:ReleaseOperationLeaseToken.Replace("'", "''"))'
+  AND executor_host = '$($script:ReleaseOperationExecutorHost.Replace("'", "''"))'
+  AND executor_pid = '$($script:ReleaseOperationExecutorPid.Replace("'", "''"))'
+  AND executor_identity = '$($script:ReleaseOperationExecutorIdentity.Replace("'", "''"))'
   AND status = 'RUNNING';
-SELECT CASE WHEN status = '$Status' THEN 'LOCK_RELEASED' ELSE CONCAT('LOCK_RELEASE_FAILED:', operation_id, ':', status) END
+SELECT CASE WHEN status = '$Status' AND lease_token = '$($script:ReleaseOperationLeaseToken.Replace("'", "''"))' THEN 'LOCK_RELEASED' ELSE CONCAT('LOCK_RELEASE_FAILED:', operation_id, ':', status) END
 FROM infra_release_operation_lock
 WHERE target_environment = '$Environment';
 "@
@@ -5685,6 +5793,7 @@ $lockSql
 SQL"
     $script:ReleaseOperationLockHeld = $false
     $script:ReleaseOperationLockReleasing = $false
+    $script:ReleaseOperationLeaseToken = ''
 }
 
 function Copy-RequiredDatabaseSqlScripts {
@@ -6851,6 +6960,13 @@ if (-not (Test-Path -LiteralPath $deployControlLocalRoot -PathType Container)) {
 }
 Write-Utf8LfNoBomFile -Path $remoteEnvLocal -Content $remoteEnvContent
 
+if ($publishBackend -and $Mode -ne 'build-release') {
+    Ensure-ReleaseMigrationStateSchema
+    Ensure-ReleaseOperationLockLeaseSchema
+    Invoke-ReleaseOperationLockAcquire
+    Assert-ReleaseOperationLockOwnership
+}
+
 Info "Copying deploy control files to the $PublishTargetName server"
 $composeLocal = Join-Path $releaseDir 'docker-compose.yml'
 if (-not (Test-Path -LiteralPath $composeLocal)) {
@@ -6858,16 +6974,22 @@ if (-not (Test-Path -LiteralPath $composeLocal)) {
 }
 Copy-DeployControlFilesToServer -ComposeLocal $composeLocal
 if ($publishBackend -or $publishFrontend) {
+    Assert-ReleaseOperationLockOwnership
     Assert-RemoteRuntimeEnvImageTag -Path $remoteEnvNext -Label 'Remote runtime .env.next'
     if ($publishBackend) {
         Assert-RemoteRuntimeEnvEdhrEndpoint
     }
 }
-if ($publishBackend) { Copy-SchedulerSmokeRunnerToServer }
+if ($publishBackend) {
+    Assert-ReleaseOperationLockOwnership
+    Copy-SchedulerSmokeRunnerToServer
+}
 if ($publishBackend -or $publishFrontend) {
+    Assert-ReleaseOperationLockOwnership
     Copy-LargeFileToServerInChunks -LocalPath $imageTar -RemotePath $remoteImageTar
 }
 if ($publishBackend) {
+    Assert-ReleaseOperationLockOwnership
     Copy-RequiredDatabaseSqlScriptsToServer
     Copy-ReleaseOpsRuntimePackage
 }
@@ -6890,6 +7012,7 @@ if ($publishWebsite) {
 }
 
 if ($publishBackend -and -not $SkipDatabaseSync) {
+    Assert-ReleaseOperationLockOwnership
     Copy-ToServer -LocalPath $dbDump -RemotePath $remoteDbDump
 }
 
@@ -6900,11 +7023,13 @@ if ($publishBackend -and $Mode -ne 'build-release') {
 }
 
 if ($publishBackend -or $publishFrontend) {
+    Assert-ReleaseOperationLockOwnership
     Info "Loading release images on the $PublishTargetName server"
     Invoke-SshCommand "docker load -i '$remoteImageTar'"
 }
 
 if ($publishBackend) {
+    Assert-ReleaseOperationLockOwnership
     if (-not $SkipMinioSync) {
         if ($Mode -eq 'deploy-release') {
             $minioSnapshotLocal = Join-Path $releaseDir 'minio\yudao'
@@ -6923,12 +7048,14 @@ if ($publishBackend) {
 }
 
 if ($publishBackend -and -not $SkipDatabaseSync) {
+    Assert-ReleaseOperationLockOwnership
     Info 'Resetting remote MySQL container and data directory before import'
     Invoke-SshCommand "docker rm -f intruoyi-mysql 2>/dev/null || true"
     Invoke-SshCommand "rm -rf '$RemoteAppDir/data/mysql' && mkdir -p '$RemoteAppDir/data/mysql'"
 }
 
 if ($publishBackend) {
+    Assert-ReleaseOperationLockOwnership
     Info "Starting MySQL and Redis on the $PublishTargetName server"
     Invoke-SshCommand "cd '$RemoteAppDir' && docker compose up -d mysql redis"
 }
@@ -6937,6 +7064,17 @@ if ($publishBackend) {
     Info 'Waiting for remote MySQL health'
     Wait-RemoteContainerHealth -ContainerName 'intruoyi-mysql' -TimeoutSeconds 180
     Wait-RemoteMySqlReady -TimeoutSeconds 180
+    Ensure-ReleaseMigrationStateSchema
+    Ensure-ReleaseOperationLockLeaseSchema
+    if (-not $SkipDatabaseSync) {
+        $script:ReleaseOperationLockHeld = $false
+        $script:ReleaseOperationLeaseToken = ''
+        Invoke-ReleaseOperationLockAcquire
+    } elseif (-not $script:ReleaseOperationLockHeld) {
+        Invoke-ReleaseOperationLockAcquire
+    } else {
+        Assert-ReleaseOperationLockOwnership
+    }
 }
 
 if ($publishBackend -and -not $SkipDatabaseSync) {
@@ -6952,8 +7090,6 @@ if ($publishBackend -and $Mode -ne 'build-release') {
 
 try {
     if ($publishBackend) {
-        Ensure-ReleaseMigrationStateSchema
-        Invoke-ReleaseOperationLockAcquire
         Write-ReleasePreflightPlan
         Invoke-RequiredDatabaseSqlScripts
         Assert-RemoteQuartzSchemaReady

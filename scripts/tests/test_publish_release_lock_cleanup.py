@@ -66,24 +66,50 @@ def test_lock_acquire_reports_current_holder_without_setting_held() -> None:
     assert acquire_function.index("RELEASE_OPERATION_LOCK_HELD") < acquire_function.index("$script:ReleaseOperationLockHeld = $true")
 
 
+def test_lock_ownership_is_fenced_by_lease_and_executor_identity() -> None:
+    script = read_publish_script()
+
+    assert "$script:ReleaseOperationLeaseToken" in script
+    assert "executor_host" in script
+    assert "executor_pid" in script
+    assert "executor_identity" in script
+    assert "heartbeat_at" in script
+    assert "write_fence" in script
+    assert "function Assert-ReleaseOperationLockOwnership" in script
+    assert "LOCK_LOST" in script
+    assert "HEARTBEAT_RENEWED" in script
+    assert "lease_token = '$($script:ReleaseOperationLeaseToken.Replace(\"'\", \"''\"))'" in script
+    assert "function Ensure-ReleaseOperationLockLeaseSchema" in script
+    assert "Ensure-ReleaseOperationLockLeaseSchema" in script
+
+
 def test_explicit_lock_recovery_requires_executor_and_migration_evidence_checks() -> None:
     script = read_recovery_script()
 
     assert "RECOVER-TEST-LOCK" in script
-    assert "RECOVER_BLOCKED_ACTIVE_EXECUTOR" in script
+    assert "RECOVER_BLOCKED_ACTIVE_LOCAL_EXECUTOR" in script
+    assert "ExpectedExecutorHost" in script
+    assert "ExpectedExecutorPid" in script
+    assert "ExpectedExecutorIdentity" in script
+    assert "ExpectedLeaseToken" in script
+    assert "ExecutorTerminalState" in script
+    assert "RECOVER_BLOCKED_OWNERSHIP_MISMATCH" in script
+    assert "RECOVER_BLOCKED_ACTIVE_HEARTBEAT" in script
     assert "RECOVER_BLOCKED_MIGRATION_EVIDENCE" in script
+    assert "START TRANSACTION;" in script
+    assert "lease_token = '$leaseTokenLiteral'" in script
+    assert "executor_host = '$executorHostLiteral'" in script
     assert "status = 'RUNNING'" in script
     assert "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;" in script
     assert "LOCK_RECOVERED" in script
-    assert "operation_id = '$operationLiteral'" in script
+    assert "AND @recovery_eligibility = 'RECOVER_ELIGIBLE';" in script
 
 
-def test_lock_recovery_accepts_windows_ssh_close_noise_only_after_recovered_evidence() -> None:
+def test_lock_recovery_never_accepts_nonzero_ssh_exit_even_with_success_text() -> None:
     script = read_recovery_script()
 
-    assert "$hasRecoveredEvidence = $resultText -match 'LOCK_RECOVERED'" in script
-    assert "$hasOnlyKnownWindowsSshCloseNoise = $resultText -match 'close - IO is still pending on closed socket'" in script
-    assert "$exitCode -ne 0 -and -not ($hasRecoveredEvidence -and $hasOnlyKnownWindowsSshCloseNoise)" in script
+    assert "if ($exitCode -ne 0)" in script
+    assert "close - IO is still pending on closed socket" not in script
     assert "RECOVER_BLOCKED_|LOCK_RECOVERY_FAILED|ERROR [0-9]+|Permission denied|Connection timed out|Could not resolve" in script
 
 
