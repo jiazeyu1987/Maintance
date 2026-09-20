@@ -3718,3 +3718,10 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Action intent: 验证维护仓恢复锁读取器、恢复脚本所有权、发布锁行为和最终 SQL 实库测试；检查本地维护 `int_main` 是否可安全融合。
 - Evidence: 维护后端 `RuntimeControlContractTest,RuntimeControlOriginalParityTest,RuntimeControlOriginalGovernanceParityTest,RuntimeReleaseLockInspectorTest` -> 32 passed；Python 发布锁/SQL 行为回归 -> 19 passed；修复链保护分支 `codex/r260920-button-prod-release-final-verification=9b9df6bd551a91cd2ae94a84e658192bb5481cbe`。
 - Blocker: 维护仓主工作区 `D:\ProjectPackage\Int\IntRuoyiMaintance` 的 `int_main` 有 21 项未提交/未跟踪改动，不能强行融合覆盖；维护仓无 remote，不能远程推送。
+
+## 2026-09-20 21:30 CST — 目标预检补齐与按钮验证
+
+- User request: 按正确方式继续，并通过真实按钮验证发布链路。
+- Action intent: 补齐 r22 暴露的 7 个迁移目标预检，修正“前置条件/幂等完成状态”语义，提交并推送应用主干，随后用新 releaseTag 通过页面按钮验证。
+- Evidence: 应用 `4568e1c1b` 已推送 `origin/int_main`；发布预检/迁移矩阵/SQL 合同/包治理测试 `170 passed`；r24 预览确认维护 `d66b2ba`、应用/前端 `4568e1c1b`；r24 目标预检 `24/28`，`sshStarted=true`，在 `20260918_mes_edhr_label_print_menu_removal` 阻断。
+- Deployment status: r23、r24 均未执行迁移写入；未部署测试服、未 mark-tested、未晋级正式服。当前任务阻塞，禁止手工改库、改锁、改 `.env` 或补写成功状态。
