@@ -3698,3 +3698,9 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 2026-09-20T17:12:00+08:00	20260919-button-only-prod-release	REQUEST	用户复审指出上一轮误查主程序仓，遗漏维护仓“恢复测试服发布锁”按钮真实入口；要求修复维护仓真实调用契约，并把锁测试接到实际 MySQL 发布锁行为。
 2026-09-20T17:12:00+08:00	20260919-button-only-prod-release	RESULT	PASS_WITH_BLOCKER: 已修复维护仓恢复锁按钮调用契约：后端从远端测试服 `infra_release_operation_lock` RUNNING 记录读取 executor_host、executor_pid、executor_identity、lease_token，预览 token 占位、执行日志 token 脱敏，再传给 `recover-release-operation-lock.ps1`；新增真实 MySQL 锁表行为测试。验证：维护脚本/SQL 19 passed，维护后端契约/治理 11 passed，PowerShell AST PASS。阻塞仍在：通知角色业务契约未批准，`RuntimeControlOriginalParityTest` 仍有 9 个既有 release package fixture/manifest 基线失败，未部署、未写服务器。
 2026-09-20T17:26:00+08:00	20260919-button-only-prod-release	RESULT	PASS_WITH_BLOCKER: 修复锁读取器协议和超时缺陷：MySQL 改为 `--raw` 多列 TSV，Java 先 waitFor 限时再读 stdout；补 `RuntimeReleaseLockInspectorTest`。同时升级维护控制台 release package 测试夹具，清零 9 个正式晋级/发布包识别/测试通过状态相关回归失败。验证：维护后端相关 32 tests PASS，维护脚本/SQL 19 passed，PowerShell AST PASS。仍未部署、未写服务器；通知角色业务契约仍阻塞。
+## 2026-09-20 17:40 CST — 注册证通知角色方案 2
+
+- User request: 选择方案 2，仅使用现有角色 `910218` 作为注册证通知接收角色，不包含、不要求 `910231`。
+- Action intent: 调整注册证通知角色迁移和真实 MySQL 回滚测试，确认 query-current 权限不会作为通知角色 fallback。
+- Evidence: `test_dcc_notification_role_scope_mysql.py` 5 passed；应用仓静态 SQL 测试 3 passed；`DccRegistrationCertificateReminderSchemaTest` 6 passed；迁移策略门禁 `status=passed`。
+- Deployment status: 未重新构建、未部署测试服、未 mark-tested、未晋级正式服。

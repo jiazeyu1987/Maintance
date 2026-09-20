@@ -6,7 +6,7 @@
 
 ## Current Status
 
-blocked — 第二轮复审确认当前应用提交 `2692fb881` 曾包含未经业务批准的通知角色替代逻辑；已在后续提交 `5486de0d4` 移除该逻辑并修正 detached HEAD 钩子，在维护提交 `7b6b615` 中补齐租约/心跳/原子恢复与真实 MySQL 隔离测试。本轮复审后又补充了正式晋级按钮参数单测、维护仓恢复锁按钮真实调用契约、发布锁 MySQL 所有权行为测试、以及 MySQL 写入路径失败后的完整回滚测试；随后修复锁读取器 `mysql --batch` 转义协议和 `readAllBytes()` 抢先阻塞风险，并清零维护控制台 9 项 release package fixture/manifest 回归失败。当前仍有放行阻塞：正式通知角色、租户和公司范围尚无批准来源；全量数据库重置分支不纳入本次“不带数据的应用晋级”验收主线，需要单独任务处理。未重新构建或部署，禁止继续 publish-test、mark-tested 或 promote-prod。
+blocked — 第二轮复审确认当前应用提交 `2692fb881` 曾包含未经业务批准的通知角色替代逻辑；已在后续提交 `5486de0d4` 移除该逻辑并修正 detached HEAD 钩子，在维护提交 `7b6b615` 中补齐租约/心跳/原子恢复与真实 MySQL 隔离测试。本轮复审后又补充了正式晋级按钮参数单测、维护仓恢复锁按钮真实调用契约、发布锁 MySQL 所有权行为测试、以及 MySQL 写入路径失败后的完整回滚测试；随后修复锁读取器 `mysql --batch` 转义协议和 `readAllBytes()` 抢先阻塞风险，并清零维护控制台 9 项 release package fixture/manifest 回归失败。用户已选择通知角色方案 2：仅使用现有角色 `910218` 作为注册证通知接收角色，不包含、不要求 `910231`；相关 SQL 与真实 MySQL 回滚测试已按该业务决策调整。当前仍未重新构建或部署；提交同步与新 releaseTag 的按钮链路验证完成前，禁止继续 publish-test、mark-tested 或 promote-prod。
 
 ## Milestones
 
@@ -32,7 +32,7 @@ blocked — 第二轮复审确认当前应用提交 `2692fb881` 曾包含未经�
 
 ## 修复门禁
 
-- 通知角色只能来自正式批准的 `infra_job.handler_param.roleIds` 契约；query-current 权限不是通知接收人依据，缺失映射必须 fail-fast。
+- 通知角色正式批准为现有角色 `910218`；query-current 权限不是通知接收人依据，不得推断、补造或扩大到 `910231`。
 - `infra_job` 参数与 role-company scope 写入必须由同一显式事务保护，并有真实 MySQL 正常、缺失角色、租户隔离、失败回滚和幂等证据。
 - 锁恢复必须绑定 operation、宿主、进程、身份、租约和心跳；恢复更新使用精确所有权条件，旧执行器失去写入资格，SSH 非零结果不得以成功字符串放行。
 - 完整定向测试必须 6/6 通过；新增静态测试不能替代真实 SQL/锁行为验证；禁止 `--no-verify`。

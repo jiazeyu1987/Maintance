@@ -47,7 +47,7 @@ def _schema(
     tenant_two_certificate: bool = False,
     fail_after_scope_write: bool = False,
 ) -> str:
-    role = "" if missing_role else "INSERT INTO system_role (id, tenant_id, status, deleted) VALUES (1001, 1, 0, b'0');"
+    role = "" if missing_role else "INSERT INTO system_role (id, tenant_id, status, deleted) VALUES (910218, 1, 0, b'0');"
     cert_tenant = 2 if tenant_two_certificate else 1
     schema = f"""
 CREATE DATABASE `{database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -95,7 +95,7 @@ CREATE TABLE mdm_role_company_scope (
 ) ENGINE=InnoDB;
 INSERT INTO infra_job (handler_name, handler_param, deleted, updater, update_time)
 VALUES ('registrationCertificateReminderDailyJob',
-        '{{"actorId":1,"roleIds":[1001]}}',
+        '{{"actorId":1}}',
         b'0', 'seed', NOW());
 INSERT INTO mdm_enterprise (id, tenant_id, type, status, deleted)
 VALUES (200, {cert_tenant}, 'OWNED_COMPANY', 'ENABLE', b'0');
@@ -141,7 +141,7 @@ def test_notification_role_scope_migration_executes_idempotently_in_real_mysql()
         first = _run_migration(database)
         assert first.returncode == 0, first.stderr
         assert _query(database, "SELECT COUNT(*) FROM mdm_role_company_scope;") == "1"
-        assert _query(database, "SELECT handler_param FROM infra_job;") == '{"actorId": 1, "roleIds": [1001]}'
+        assert _query(database, "SELECT JSON_EXTRACT(handler_param, '$.roleIds[0]') FROM infra_job;") == "910218"
         second = _run_migration(database)
         assert second.returncode == 0, second.stderr
         assert _query(database, "SELECT COUNT(*) FROM mdm_role_company_scope;") == "1"
@@ -158,7 +158,7 @@ def test_notification_role_scope_migration_fails_closed_and_rolls_back_missing_r
         assert result.returncode != 0
         assert "notification role mapping" in (result.stderr + result.stdout).lower()
         assert _query(database, "SELECT COUNT(*) FROM mdm_role_company_scope;") == "0"
-        assert _query(database, "SELECT handler_param FROM infra_job;") == '{"actorId": 1, "roleIds": [1001]}'
+        assert _query(database, "SELECT handler_param FROM infra_job;") == '{"actorId": 1}'
     finally:
         _drop(database)
 
@@ -172,7 +172,7 @@ def test_notification_role_scope_migration_rolls_back_after_scope_write_failure(
         assert result.returncode != 0
         assert "forced post-write failure" in (result.stderr + result.stdout).lower()
         assert _query(database, "SELECT COUNT(*) FROM mdm_role_company_scope;") == "0"
-        assert _query(database, "SELECT handler_param FROM infra_job;") == '{"actorId": 1, "roleIds": [1001]}'
+        assert _query(database, "SELECT handler_param FROM infra_job;") == '{"actorId": 1}'
     finally:
         _drop(database)
 
