@@ -174,3 +174,51 @@
 - `D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20260920-backup-restore-remediation/verification-report.md`
 - `e00d22cc7` 实际 diff、独立 worktree 的 Surefire XML 和目标任务最后答复。
 - 本审查未重跑产品测试、未干预目标任务或服务器。
+
+## 第四轮复审：2026-09-20 22:10–22:15 +08:00
+
+### 当前结论
+目标任务正在按用户要求的前端按钮流程执行，整改方式较前三轮有实质改善。新的 FULL 备份已成功，随后页面触发的恢复演练仍在运行；没有受控恢复成功证据。不能继续把“还没部署修复”作为当前结论：e20b77d50 已部署到隔离运行态，但尚未合入主线。
+
+本轮新发现是 Windows detached runner 产生非 UTF-8 的操作日志，与服务层 UTF-8 读取合同冲突；该缺陷直接关系页面操作状态读取，必须在完整按钮验收前关闭。
+
+### 实际按钮证据与授权
+- 17:13:29 Playwright 工具输出包含 `page.getByRole('button', { name: '立即备份' }).click()`，对话框展示 FULL 选项；17:13:54 输出包含点击“确认执行”。
+- FULL operation `87da58cc-96e0-4b00-b631-f6b191071024` 当前状态 succeeded，参数为 targetEnvironment=test、backupKind=FULL，备份点 `20260920-171349`。任务已记录远端正式目录、manifest、对象计划、dump 和 SHA-256 校验。
+- 用户在原任务于 21:05 明确回复“允许使用芋道源码”；随后使用该租户进行本次恢复写入验证符合该追加授权，不应再按默认租户规则判为越权。
+- 21:09:33 Playwright 输出包含点击“恢复演练”；21:10:19 输出包含选择 `rehearsal:20260920-171349` 并点击“确认执行”，页面出现“恢复演练 dispatched”。因此这次按钮路径有工具证据，非仅文档自述。
+- 新演练 operation `cb1cfa1f-48bc-49bc-8cdd-087b7bef9847` 于 21:10 创建；22:15 JSON 仍 running，本机 runner/子脚本 PID 27760、63684 仍存在。目标任务最近的远端只读记录显示 21:40 已启动演练 MySQL，22:00 容器仍 running；本审查没有额外访问服务器，不将“进程存在”扩大为完整恢复已成功。
+- 尚无本轮新的成功演练报告，尚未点击“恢复数据”。当前继续观察同一 operation、等待真实终态是正确做法。
+
+### 本轮已修正的实现
+- e20b77d50 将全量预清理收窄到当前 backupId 的 `.creating` 目录，要求 `.backup-ops-owner.json` 标记匹配；不再全仓删除成功点、object-store 和恢复阶段目录。
+- 证据报告先写 `.uploading`，远端发布成功后才形成本地正式报告；补充模块加载、读取/传输失败测试。
+- Windows 备份/演练/恢复使用 detached PowerShell runner，Java 调度不再用 12 小时同步等待直接终止整段脚本。
+- 在隔离 worktree 中构建并运行新 Java，后端 48082、实际前端 8083；运行 repoRoot 指向整改 worktree。此次 Java 执行器有实际变更，构建是必要的，不同于第二轮的 PowerShell-only 重打包。
+- Surefire XML 确认执行器 8 tests、服务层 68 tests，全为 0 failures/errors/skipped，共 76 tests。任务记录 Pester 22 tests 通过。
+- `git merge-base --is-ancestor e20b77d50 int_main` 返回 1，尚未合入主线；在隔离运行态验收后再集成是合理阶段顺序。
+
+### 新发现 P1：操作日志编码违反页面读取合同
+`RuntimeControlCommandExecutorImpl.java:230` 的 Windows runner 用 `>> $LogPath 2>&1` 追加输出，254 行起明确启动 `powershell.exe`，没有为重定向输出设置显式 UTF-8。日志前置内容由 Java UTF-8 写入，后续追加方式与其不一致。
+
+本轮直接读取实际文件原始字节并严格 UTF-8 解码，结果为：
+- `state/logs/87da58cc-96e0-4b00-b631-f6b191071024.log`：1997 bytes，在 offset 643 失败（invalid continuation byte），含 519 个 NUL 字节。
+- `state/logs/cb1cfa1f-48bc-49bc-8cdd-087b7bef9847.log`：643 bytes，在 offset 543 失败（invalid start byte），含 31 个 NUL 字节。
+
+`RuntimeControlServiceImpl.java:414` 对 running operation 使用 `Files.readString(logPath, StandardCharsets.UTF_8)`，读取异常会在 416 行抛出操作存储错误。因此当前 active rehearsal 的日志已不满足列表读取前提，存在页面操作列表/状态轮询失败的确定代码路径。审查未新开浏览器重现 HTTP 错误，应区分“已确认日志编码缺陷”和“尚待页面复验的呈现结果”。本审查没有尝试默认编码/替换字符来掩盖读取失败，也未改写原日志。
+
+建议由执行器统一写出 UTF-8，保留受影响日志原始证据；增加带中文输出的真实 Windows runner 测试，并验证 `getOperations()` 和页面日志读取成功。仅看 JSON succeeded 或后台进程不能证明前端用户能正常看结果。
+
+### 新发现 P2：operation 文件未原子发布
+同一执行器 223–226 行先写临时文件，却又直接 WriteAllText 覆盖正式 operation JSON，随后删除临时文件，没有以原子替换方式发布。并发页面读取可能撞到部分 JSON，崩溃时也可能留下不完整状态文件。该问题是代码风险，本轮没有观察到具体 JSON 损坏。
+
+detached runner 已改善 Java 生命周期耦合，但独立 runner 自身被终止/主机重启时如何恢复 running、确认远端写入者及安全收束，仍需要明确验证，不能仅用成功子进程测试宣称全部中断场景通过。
+
+### 当前正确的下一步
+1. 保持本次正常运行中的演练，不因审查发现重启或强杀自有执行器；继续核对真实阶段、终态报告和服务状态。
+2. 将日志 UTF-8 和 operation 原子写入列为按钮验收缺口，在隔离代码与测试中修复；先证明前端列表、进度和日志可以稳定读取。
+3. 演练确实 PASSED 且链摘要、目标指纹、保护点、容量与互斥门禁通过后，再从页面点击“恢复数据”，验证数据、文件和最终页面结果。
+4. 只有真实按钮完整闭环、合并结果验证和本任务运行态/资源收尾通过后，才标记总体完成；当前仍为在执行中的演练。
+
+### 本轮审查边界
+仅只读检查目标对话、代码、测试 XML、本地 operation、进程及日志字节；未重跑产品测试，未访问服务器，未触发任何按钮或改动运行资源。之前三轮结论作为历史快照保留，不覆盖本轮进展。

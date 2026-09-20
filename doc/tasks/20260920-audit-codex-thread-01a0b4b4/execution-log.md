@@ -57,3 +57,16 @@
 - 经验沉淀复核继续沿用已加载的 project-experience-consolidation：本次重申代码/集成/运行态/真实按钮证据层级，以及局部测试不能替代集成门禁；现有经验入口已覆盖，不新增重复长期文件。
 - GREEN: experience-preflight -> PASS，本轮只收尾自有审查记录，无删除候选、不触碰整改 worktree。
 - GREEN: third-review-closeout -> PASS，UTF-8、diff-check、cleanup preview/apply 通过，删除 0 项；第三轮审查 completed，不代表原任务完成。
+
+## 第四轮审查
+- 用户再次要求审查同一备份恢复任务；前序自有审查已 completed，本轮继续使用同一目录并保留历史快照。
+- 审查标准沿用已读取的按钮化备份恢复门禁：真实页面触发、代码/集成/运行态分层、有效演练与受控恢复分开、凭据脱敏和任务归属隔离。
+- 仅做只读核对与更新审查记录，不干预原任务或服务器。
+- 已确认 e20b77d50 的独立运行态以及真实 Playwright 点击备份/演练；17:13 FULL succeeded，21:10 演练截至 22:15 running，两个自有 PowerShell 进程仍存在。用户 21:05 明确允许本次使用芋道源码租户。
+- 已核对 76 个 Java 定向测试 XML 全通过，主线 ancestry 返回 1（尚未融合）；清理范围与报告发布顺序已有实际修改。
+- RED: operation-log-utf8-read -> FAIL，两份真实日志严格 UTF-8 解码分别在 offset 643 / 543 失败；保留字节证据，不尝试替代编码读写。审查确认问题而非修复，故此失败不阻塞审查结论交付。
+- 根因关联：Windows runner 使用 powershell.exe 的默认 `>>` 重定向，Java 操作列表却按 UTF-8 读取；补充发现临时状态文件未用于原子替换正式 JSON。
+- GREEN: fourth-review-evidence -> PASS，结论分别标明实际观测、代码推断和未执行的页面复验，未把 running 或探针通过写成完整恢复成功。
+- 经验沉淀复核沿用 project-experience-consolidation：本次编码缺陷命中既有 PowerShell 显式 UTF-8 和禁止默认重定向门禁，原子状态及真实按钮证据已由现有规则覆盖，复发细节留在审查报告，不新增重复长期文档。
+- GREEN: experience-preflight -> PASS，本轮 closeout 只保留自有审查记录，无删除候选、无自有后台进程，未操作原任务资源。
+- GREEN: fourth-review-closeout -> PASS，审查文档 UTF-8、diff-check、preview/apply 通过，删除 0 项；第四轮审查 completed，产品日志缺陷明确保留为审查发现。
