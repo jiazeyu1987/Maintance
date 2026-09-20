@@ -83,17 +83,20 @@ public class RuntimeControlService {
     private final RuntimeControlOperationStore operationStore;
     private final RuntimeControlCommandExecutor commandExecutor;
     private final RuntimeControlNasBrowser nasBrowser;
+    private final RuntimeReleaseLockInspector releaseLockInspector;
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     private final ExecutorService executor = Executors.newCachedThreadPool();
 
     public RuntimeControlService(RuntimeControlProperties properties,
                                  RuntimeControlOperationStore operationStore,
                                  RuntimeControlCommandExecutor commandExecutor,
-                                 RuntimeControlNasBrowser nasBrowser) {
+                                 RuntimeControlNasBrowser nasBrowser,
+                                 RuntimeReleaseLockInspector releaseLockInspector) {
         this.properties = properties;
         this.operationStore = operationStore;
         this.commandExecutor = commandExecutor;
         this.nasBrowser = nasBrowser;
+        this.releaseLockInspector = releaseLockInspector;
     }
 
     public RuntimeControlOverviewRespVO getOverview() {
@@ -152,6 +155,7 @@ public class RuntimeControlService {
         guardWrite(environment, resolvedReq.reason(), resolvedReq.prodConfirmText(),
                 action.requiresProductionGuard(resolvedReq), action.requiresProdConfirmText(resolvedReq));
         RuntimeControlCommand command = action.buildCommand(resolvedReq, properties);
+        appendRecoverTestReleaseLockOwnerArguments(action, command, resolvedReq.releaseTag(), previewOnly);
         appendTestPublishEvidenceArguments(action, command, resolvedReq.releaseTag());
         appendNasReleaseArguments(action, command, operationId, previewOnly);
         appendManagedSourceArguments(action, command);
@@ -323,6 +327,26 @@ public class RuntimeControlService {
         command.arguments().add(nasShare);
         command.arguments().add("-NasReleaseRoot");
         command.arguments().add(nasReleaseRoot);
+    }
+
+    private void appendRecoverTestReleaseLockOwnerArguments(RuntimeControlOperationAction action,
+                                                            RuntimeControlCommand command,
+                                                            String releaseTag,
+                                                            boolean previewOnly) {
+        if (action != RuntimeControlOperationAction.RECOVER_TEST_RELEASE_LOCK) {
+            return;
+        }
+        ReleaseOperationLockOwner owner = releaseLockInspector.requireTestLockOwner(releaseTag);
+        command.arguments().add("-ExpectedExecutorHost");
+        command.arguments().add(owner.executorHost());
+        command.arguments().add("-ExpectedExecutorPid");
+        command.arguments().add(owner.executorPid());
+        command.arguments().add("-ExpectedExecutorIdentity");
+        command.arguments().add(owner.executorIdentity());
+        command.arguments().add("-ExpectedLeaseToken");
+        command.arguments().add(previewOnly ? "<resolved-from-remote-lock>" : owner.leaseToken());
+        command.arguments().add("-ExecutorTerminalState");
+        command.arguments().add("TERMINATED");
     }
 
     private Path writeNasReleaseConfig(String operationId, RuntimeControlProperties.ReleasePackage releasePackage) {
@@ -797,7 +821,7 @@ public class RuntimeControlService {
         executor.submit(() -> {
             try {
                 operationStore.appendLog(logPath, "operator=" + properties.getOperatorId() + System.lineSeparator());
-                operationStore.appendLog(logPath, "command=" + String.join(" ", commandExecutor.executableCommand(command))
+                operationStore.appendLog(logPath, "command=" + String.join(" ", commandForLog(command))
                         + System.lineSeparator());
                 commandExecutor.run(command, logPath);
                 operationStore.updateStatus(operationId, "SUCCESS", "命令执行完成");
@@ -807,6 +831,16 @@ public class RuntimeControlService {
             }
         });
         return operation;
+    }
+
+    private List<String> commandForLog(RuntimeControlCommand command) {
+        List<String> executable = new ArrayList<>(commandExecutor.executableCommand(command));
+        for (int index = 0; index < executable.size() - 1; index++) {
+            if ("-ExpectedLeaseToken".equals(executable.get(index))) {
+                executable.set(index + 1, "<redacted>");
+            }
+        }
+        return executable;
     }
 
     private RuntimeControlStatusRespVO inspectTarget(String environmentKey,

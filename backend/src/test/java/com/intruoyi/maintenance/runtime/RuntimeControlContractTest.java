@@ -2,8 +2,11 @@ package com.intruoyi.maintenance.runtime;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -40,6 +43,21 @@ class RuntimeControlContractTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @TestConfiguration
+    static class LockInspectorTestConfig {
+        @Bean
+        @Primary
+        RuntimeReleaseLockInspector runtimeReleaseLockInspector(RuntimeControlProperties properties) {
+            return new RuntimeReleaseLockInspector(properties) {
+                @Override
+                public ReleaseOperationLockOwner requireTestLockOwner(String releaseTag) {
+                    return new ReleaseOperationLockOwner("HOST-A", "12345", "operator@HOST-A",
+                            "lease-token-from-remote-lock");
+                }
+            };
+        }
+    }
 
     @Test
     void noSpringSecurityDependency() throws Exception {
@@ -81,6 +99,35 @@ class RuntimeControlContractTest {
         assertThat(action).contains("RECOVER_TEST_RELEASE_LOCK(\"recover-test-release-lock\", \"恢复测试服发布锁\"");
         assertThat(action).contains("deploy/recover-release-operation-lock.ps1");
         assertThat(action).contains("RECOVER-TEST-LOCK");
+    }
+
+    @Test
+    void recoverTestReleaseLockPreviewUsesRemoteLockOwnerContractWithoutExposingLeaseToken() throws Exception {
+        String response = mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "action": "recover-test-release-lock",
+                                  "reason": "contract preview",
+                                  "releaseTag": "release-lock-contract"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        assertThat(response)
+                .contains("-ExpectedOperationId", "test-release-lock-contract",
+                        "-ExpectedReleaseTag", "release-lock-contract",
+                        "-ExpectedExecutorHost", "HOST-A",
+                        "-ExpectedExecutorPid", "12345",
+                        "-ExpectedExecutorIdentity", "operator@HOST-A",
+                        "-ExpectedLeaseToken", "<resolved-from-remote-lock>",
+                        "-ExecutorTerminalState", "TERMINATED",
+                        "-ConfirmText", "RECOVER-TEST-LOCK")
+                .doesNotContain("lease-token-from-remote-lock");
     }
 
     @Test

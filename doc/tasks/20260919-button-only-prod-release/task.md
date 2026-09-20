@@ -6,7 +6,7 @@
 
 ## Current Status
 
-blocked — 第二轮复审确认当前应用提交 `2692fb881` 曾包含未经业务批准的通知角色替代逻辑；已在后续提交 `5486de0d4` 移除该逻辑并修正 detached HEAD 钩子，在维护提交 `7b6b615` 中补齐租约/心跳/原子恢复与真实 MySQL 隔离测试。本轮复审后又补充了正式晋级按钮参数单测、发布锁并发/所有权行为测试、以及 MySQL 写入路径失败后的完整回滚测试。当前仍有放行阻塞：正式通知角色、租户和公司范围尚无批准来源；全量数据库重置分支不纳入本次“不带数据的应用晋级”验收主线，需要单独任务处理。未重新构建或部署，禁止继续 publish-test、mark-tested 或 promote-prod。
+blocked — 第二轮复审确认当前应用提交 `2692fb881` 曾包含未经业务批准的通知角色替代逻辑；已在后续提交 `5486de0d4` 移除该逻辑并修正 detached HEAD 钩子，在维护提交 `7b6b615` 中补齐租约/心跳/原子恢复与真实 MySQL 隔离测试。本轮复审后又补充了正式晋级按钮参数单测、维护仓恢复锁按钮真实调用契约、发布锁 MySQL 所有权行为测试、以及 MySQL 写入路径失败后的完整回滚测试。当前仍有放行阻塞：正式通知角色、租户和公司范围尚无批准来源；`RuntimeControlOriginalParityTest` 仍有 9 个既有 release package fixture/manifest 基线失败；全量数据库重置分支不纳入本次“不带数据的应用晋级”验收主线，需要单独任务处理。未重新构建或部署，禁止继续 publish-test、mark-tested 或 promote-prod。
 
 ## Milestones
 
