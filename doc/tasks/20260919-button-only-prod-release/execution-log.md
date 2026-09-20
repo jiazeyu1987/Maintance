@@ -191,3 +191,4 @@
 - BLOCKER: 本融合 worktree尚未合回被并行脏改动阻塞的主工作区 `int_main`，也未开始同一 releaseTag 的真实按钮测试服/正式服晋级；融合提交前禁止发布。
 - RED: merged-recovery-lf-crlf-integration -> FAIL；融合 worktree 的实际 PowerShell→SSH→bash 链因 checkout 行尾将 `set -eu`/heredoc 传成 CRLF，测试服临时库验证返回 bash 语法错误，临时库已自动清理。
 - GREEN: merged-recovery-lf-crlf-integration -> PASS；恢复脚本在 base64 前统一远端 payload 为 LF，实际临时库验证返回活跃心跳阻断、并发恢复单赢家和最终 FAILED；本轮临时库 `release_lock_it_1172268bcafa` 已清理。
+- GREEN: release-source-freeze-preflight -> PASS；后续发布只允许使用维护融合提交 `f11a998`（本 worktree clean）与应用 `origin/int_main=83c0e1c80`（应用 worktree clean）；新建独立发布 worktree，禁止复用当前融合开发 worktree，禁止主工作区参与构建。

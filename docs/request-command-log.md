@@ -4056,3 +4056,4 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Deployment status: 未执行任何测试服/正式服发布写入。真实 PowerShell/SSH/MySQL 失权整链、维护仓主干融合及真实按钮正式发布仍未关闭。
 - Integration evidence: 实际 `recover-release-operation-lock.ps1 -> SSH -> 测试服 intruoyi-mysql` 已在随机 `release_lock_it_*` 临时库通过活跃心跳阻断和并发单赢家验证；临时库已清零，未访问业务库表或修改真实发布状态。应用修复提交 `83c0e1c80` 已推送 `origin/int_main`。
 - 2026-09-21T02:00:00+08:00	20260919-button-only-prod-release	RESULT	维护修复已在独立融合 worktree `D:\IntRuoyiWorktree\r260921-maintenance-main-integration\m` 基于主干 `b45027592a68cbf8f68b98fcf09a7616da9dc654` 完成语义合并；后端 package、发布回归 189 项、前端依赖门禁/typecheck/build 均通过。未合回主工作区、未构建发布包、未写测试服或正式服。
+- 2026-09-21T02:20:00+08:00	20260919-button-only-prod-release	COMMAND_INTENT	准备新发布专用 worktree：维护源固定融合提交 `f11a998`，应用/前端源固定已推送 `83c0e1c80`；先通过真实控制台按钮 build-release、publish-test、mark-tested，再以同一 releaseTag promote-prod；任何门禁失败立即停止，不手工改库/锁/.env/成功状态。
