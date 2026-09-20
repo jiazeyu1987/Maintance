@@ -111,3 +111,11 @@
 - GREEN: seven-target-preflight-tests -> PASS；新增 7 个基于实际迁移前置条件和后置状态的只读检查文件，发布合同、迁移矩阵、SQL 预检和包治理测试共 `170 passed`。
 - GREEN: app-target-preflight-commit -> PASS；应用提交 `e8f30e8bb 任务: 补齐近期迁移目标预检` 已通过 branch runtime port guard；首次推送因 GitHub TLS `unexpected eof` 失败，未宣称已推送，需在新 release 前重试并核对远端提交。
 - BLOCKER: r22-retired -> NEEDS_NEW_RELEASE_TAG；必须先确认 `e8f30e8bb` 已进入 `origin/int_main`，再用全新 releaseTag 通过真实按钮重走构建与后续发布门禁。
+
+## 2026-09-20 21:xx CST — r23 发现并修正预检语义错误
+
+- RED: `release-20260920-button-prod-r23` build-release -> FAIL；operation `op-2026-09-20T130651803709600Z-e97e2979-235e-4881-9374-a7f1f9039aba` 已实际进入远端只读目标预检，`sshStarted=true`，21/28 检查通过，首个失败为 `20260915_mes_team_leader_cleanup_permission_menu`，报告 `TARGET_PREFLIGHT_FAILED`；未执行迁移写入。
+- ROOT-CAUSE: 新增检查错误地要求“迁移后状态”在迁移执行前已存在，未区分可执行的前置条件与已完成的幂等状态，导致合法待执行迁移被错误阻断。
+- GREEN: preflight semantics regression -> PASS；7 个检查改为校验真实迁移前置条件、冲突安全和已完成状态可重复执行，既不放宽角色/租户范围，也不伪造成功；四组发布预检测试 `170 passed`。
+- GREEN: app-main-push -> PASS；应用提交 `4568e1c1b 任务: 修正迁移前置预检语义` 已通过 branch runtime port guard 并推送 `origin/int_main`。
+- BLOCKER: r23-retired -> NEEDS_NEW_RELEASE_TAG；r23 已停止在远端写入前的只读预检阶段，禁止复用；下一轮必须以维护提交、应用提交 `4568e1c1b` 和全新 releaseTag 重新点击构建按钮。
