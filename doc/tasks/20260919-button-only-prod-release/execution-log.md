@@ -218,3 +218,6 @@
 - RED: r101-build-release-schema-baseline -> FAIL；修正双跑顺序后仍在 `20260818_dcc_registration_certificate_reminder.sql` 第一次执行失败；只读核对 schema-only 快照已包含后续 `threshold_recipient_user_ids_json` 列，早期严格列合同不能在后续 schema 基线上重放。未上传 NAS、未写测试服或正式服，r101 判废。
 - GREEN: registration-reminder-target-preflight -> PASS；将提醒基础迁移声明 `requiresTargetPreflight=true` 并新增只读目标预检，应用提交 `01b303531`；应用合同 15 passed、迁移策略 632 PASS，发布 worktree 已更新。
 - BLOCKER: r101 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r102`。
+- RED: r102-build-release-preflight-test-discovery -> FAIL；真实按钮在应用迁移测试发现阶段把 `target-preflight/20260818...preflight.sql` 误识别为正式迁移，报 `MIGRATION_TEST_MISSING`；未上传 NAS、未写测试服或正式服，r102 判废。
+- GREEN: target-preflight-test-discovery-filter -> PASS；按规范化路径段排除任意 Git 根形式的 `target-preflight/`，发布工作流合同 14 passed。
+- BLOCKER: r102 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r103`。

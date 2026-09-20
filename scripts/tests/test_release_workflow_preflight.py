@@ -200,3 +200,4 @@ def test_application_migration_tests_use_runner_for_each_file_type() -> None:
     assert "applicationPytestFiles" in tests
     assert "applicationNodeTestFiles" in tests
     assert "Invoke-CheckedCommand -FilePath 'node'" in tests
+    assert "-notmatch '(^|/)target-preflight/'" in tests
