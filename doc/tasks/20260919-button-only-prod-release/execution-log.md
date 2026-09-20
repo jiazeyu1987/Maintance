@@ -266,3 +266,4 @@
 - GREEN: experience-preflight -> PASS；候选提交 `c126589` 已将共享请求日志恢复为最新主干已提交版，当前主干候选 73 个变更文件与主工作区 11 个并行改动交集为 0；允许仅执行 `git merge --ff-only codex/r260921-maintenance-main-integration`，禁止暂存、提交或覆盖并行改动。
 - RED: maintenance-fast-forward-untracked-task-docs -> FAIL；主工作区将未跟踪目录折叠为单条状态，首轮交集计算未展开 3 个本任务旧文档；Git 在写入前以 `untracked working tree files would be overwritten` 安全阻断，未改动主干。
 - GREEN: experience-preflight -> PASS；阻断文件仅为本任务旧版 `task.md`、`execution-log.md`、`verification-report.md`，候选版是其经完整验证的后继。删除前已使用 `git hash-object -w` 写入可恢复 blob：`6a3be947...`、`fe3b35f0...`、`91b467f0...`；只允许精确移除这 3 个文件，fast-forward 必须立即恢复同路径候选版。
+- GREEN: maintenance-int-main-fast-forward -> PASS；精确移除 3 个已备份的旧任务文档后，维护 `int_main` 从 `4701511` fast-forward 到 `5db3aad`；同路径文档已由候选版恢复，HEAD 与候选一致，主工作区原有 11 个并行改动数量和路径不变。

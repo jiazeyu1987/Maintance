@@ -19,7 +19,7 @@ PASS (code gate) / RELEASE DEFERRED — 13 项中的代码、静态和隔离行�
 | 9 | 预检与迁移条件一致 | 空 `menu_ids` 真实 MySQL RED/GREEN；目标预检矩阵 170 passed | PASS（已知审阅范围） |
 | 10 | 真实生产执行链行为测试 | 生产迁移写入函数经实际 PowerShell→SSH→测试服 MySQL 临时库验证：持锁写入成功，租约替换后写入失败且无新台账；实际恢复脚本的活跃心跳、并发单赢家和精确终态同步通过，临时库已清零 | PASS（隔离真实链） |
 | 11 | 正确诊断顺序 | 本轮先真实谓词/实库复现，再修复和全量静态回归，未以按钮构建逐项试错 | PASS |
-| 12 | 维护仓主干融合与收尾 | 完整修复链已在独立 worktree 与最新本地 `int_main=4701511` 语义融合，合并结果后端/package、前端 typecheck/build 及 212 项发布回归通过；维护主工作区的并行脏改动存在文档交集，未覆盖；维护仓无 remote | PASS（最新主干候选融合） |
+| 12 | 维护仓主干融合与收尾 | 完整修复链已与最新本地主干语义融合并 fast-forward 到 `int_main=5db3aad`；合并结果后端/package、前端 typecheck/build 及 212 项发布回归通过，主工作区 11 个并发改动完整保留；维护仓无 remote | PASS（本地主干已融合） |
 | 13 | 一键正式发布最终验收 | 尚未执行同一 releaseTag 的真实按钮完整链路和正式运行态验收；本轮用户明确要求暂不发布 | DEFERRED |
 
 ## Verification Commands
