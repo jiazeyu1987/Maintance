@@ -215,3 +215,6 @@
 - ROOT_CAUSE: rehearsal 原实现先执行全部迁移再整体第二轮，跨越后续 schema 扩展后重跑早期严格合同，制造非真实历史漂移。
 - GREEN: schema-rehearsal-order-regression -> PASS；迁移演练改为每个迁移连续执行两次后再推进下一个，`python -X utf8 -m pytest -q scripts/tests/test_release_schema_rehearsal.py` -> 13 passed。
 - BLOCKER: r100 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r101`。
+- RED: r101-build-release-schema-baseline -> FAIL；修正双跑顺序后仍在 `20260818_dcc_registration_certificate_reminder.sql` 第一次执行失败；只读核对 schema-only 快照已包含后续 `threshold_recipient_user_ids_json` 列，早期严格列合同不能在后续 schema 基线上重放。未上传 NAS、未写测试服或正式服，r101 判废。
+- GREEN: registration-reminder-target-preflight -> PASS；将提醒基础迁移声明 `requiresTargetPreflight=true` 并新增只读目标预检，应用提交 `01b303531`；应用合同 15 passed、迁移策略 632 PASS，发布 worktree 已更新。
+- BLOCKER: r101 已判废，禁止复用；下一轮使用新 releaseTag `release-20260921-button-prod-r102`。
