@@ -62,3 +62,14 @@
 - GREEN: build-release-preview -> PASS, Playwright 页面“预览命令”显示 `-BackendRepoRoot D:/IntRuoyiWorktree/r260920-main-integrate-promotion/a/IntRuoyiBackend` 与 `-FrontendRepoRoot D:/IntRuoyiWorktree/r260920-main-integrate-promotion/a/IntRuoyiFronted`，releaseTag=`release-20260920-button-prod-r18`。
 - GREEN: release-status-preflight -> PASS, `/release-status` 返回成功；`release-20260920-button-prod-r18` 尚不存在，recent operations 未显示 RUNNING，`latestTestedReleaseTag=null`，测试/正式运行态等待实际部署后验收。
 - GREEN: experience-preflight -> PASS, 本轮高风险写入前已核对单一 releaseTag、应用目标提交、维护控制台实际加载路径、无 RUNNING 本机 operation；维护仓 `int_main` 仍因主工作区脏改动未融合，继续作为收尾阻塞记录，不用脏主工作区执行发布。
+
+## 2026-09-20 18:30 CST — r18 失败与源码批准按钮契约修复
+
+- RED: r18-build-release-button -> FAIL, 页面按钮执行 `release-20260920-button-prod-r18` 后 operation `op-2026-09-20T102335995748100Z-f21115c7-30d7-4976-bc9a-985f2d5f0ebe` 失败，日志为 `SOURCE_APPROVAL_REQUIRED: ExpectedMaintenanceCommit`；构建前门禁阻断，未形成新发布包，r18 判废。
+- BDD: source approval contract -> Given 用户通过按钮构建发布包, When 后端生成 `publish-int-ruoyi.ps1 -Mode build-release` 参数, Then 必须从当前维护/应用 git HEAD 自动传递 `ExpectedMaintenanceCommit`、`ExpectedApplicationCommit`、`ExpectedFrontendCommit` 和 `SourceSelectionId`，禁止依赖人工环境变量。
+- RED: `mvn -f backend\pom.xml '-Dtest=RuntimeControlContractTest#buildReleaseCodeOnlyPreviewForwardsApprovedSourceCommits' '-Dsurefire.failIfNoSpecifiedTests=true' test` -> FAIL, 预览响应缺少 `-ExpectedMaintenanceCommit`。
+- GREEN: `mvn -f backend\pom.xml '-Dtest=RuntimeControlContractTest#buildReleaseCodeOnlyPreviewForwardsApprovedSourceCommits' '-Dsurefire.failIfNoSpecifiedTests=true' test` -> PASS, 后端预览已自动加入源码批准参数。
+- GREEN: `mvn -f backend\pom.xml '-Dtest=RuntimeControlContractTest,RuntimeControlOriginalParityTest,RuntimeControlOriginalGovernanceParityTest,RuntimeReleaseLockInspectorTest' test` -> PASS, 33 tests。
+- GREEN: `python -X utf8 -m pytest .\scripts\tests\test_publish_release_lock_cleanup.py .\scripts\tests\test_release_operation_lock_behavior.py .\scripts\tests\test_release_operation_lock_mysql_behavior.py .\scripts\tests\test_dcc_notification_role_scope_mysql.py -q` -> PASS, 19 passed。
+- GREEN: `mvn -f backend\pom.xml test package` -> PASS, 33 tests and maintenance jar rebuilt.
+- GREEN: maintenance-fix-commit -> PASS, `59c4c41 任务: 自动传递发布源码批准提交`。
