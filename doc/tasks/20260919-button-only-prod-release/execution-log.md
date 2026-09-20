@@ -80,3 +80,15 @@
 - BDD: frontend one-button contract -> Given 发布脚本要求运行 `runtime-control-one-button-static.spec.cjs`, When 应用前端主干包含运行控制台页面, Then 该静态合同必须验证构建、测试服部署、标记测试通过和正式晋级按钮均存在且绑定 releaseTag/publishScope/PROD/testConclusion/recoverySet 参数。
 - GREEN: `node IntRuoyiFronted\tests\e2e\runtime-control-one-button-static.spec.cjs` -> PASS, 应用前端补回合同测试。
 - GREEN: app-main-push -> PASS, 应用主干推送 `aff15aad8 任务: 补回发布按钮前端合同测试`；下一轮必须使用新 tag `release-20260920-button-prod-r20` 和应用批准提交 `aff15aad8e...`。
+
+## 2026-09-20 19:10 CST — r20 前端依赖门禁修复
+
+- BDD: deterministic frontend dependency install for release worktree -> Given 按钮发布在临时应用 worktree 中执行 `pnpm install --frozen-lockfile` 和 `pnpm ts:check`, When 依赖包含需要构建脚本的包, Then 构建脚本审批必须由源码配置显式声明，不能依赖人工交互或被 pnpm 自动忽略。
+- RED: r20-build-release-button -> FAIL, operation `op-2026-09-20T103835358200500Z-c344ca3a-d791-46d8-bb05-21065acb11d0` 已通过后端发布合同和前端静态合同，但 `corepack pnpm --dir ... ts:check` 因 `'cross-env' is not recognized` 失败；发布包未形成，r20 判废。
+- RED: frontend-dependency-preflight -> FAIL, `corepack pnpm ignored-builds` 报告 `core-js`, `esbuild`, `@parcel/watcher`, `vue-demi`, `@swc/core`, `core-js-pure`, `es5-ext` 被自动忽略。
+- GREEN: frontend-dependency-approval-config -> PASS, 应用前端 `package.json` 增加 pnpm `onlyBuiltDependencies` 显式允许列表；`corepack pnpm install --frozen-lockfile` 完成且相关 postinstall/build 脚本实际执行。
+- GREEN: frontend-dependency-preflight-rerun -> PASS, `corepack pnpm ignored-builds` 返回 `None`；`cross-env`, `vite`, `vue-tsc` 二进制均存在。
+- GREEN: frontend-ts-check-r20-regression -> PASS, 在应用 worktree 执行 `corepack pnpm ts:check` 退出码 0，已越过 r20 的原始失败点。
+- GREEN: frontend-one-button-static-contract-r20-regression -> PASS, `node IntRuoyiFronted\tests\e2e\runtime-control-one-button-static.spec.cjs` 返回 `PASS: runtime-control one-button release static contract is wired`。
+- GREEN: app-main-push-dependency-approval -> PASS, 应用主干提交 `7576d8292 任务: 固定前端发布依赖构建审批` 已通过 branch runtime port guard 并推送到 `origin/int_main`。
+- BLOCKER: maintenance-int-main-fusion -> STILL_BLOCKED, 主工作区存在与本任务无关的脏改动，继续禁止在脏主工作区强行融合；发布继续使用专用维护 worktree。
