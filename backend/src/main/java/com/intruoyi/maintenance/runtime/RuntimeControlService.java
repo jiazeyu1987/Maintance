@@ -1062,10 +1062,19 @@ public class RuntimeControlService {
                 && action != RuntimeControlOperationAction.PROMOTE_BACKUP) {
             return;
         }
-        RuntimeControlReleasePackageRespVO releasePackage = getReleasePackages().stream()
-                .filter(item -> releaseTag.equals(item.releaseTag()) || releaseTag.equals(item.packageDirectoryName()))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeControlException("releaseTag 发布包缺少 manifest/checksum 或不存在: " + releaseTag));
+        RuntimeControlNasBrowser.NasConfig nasConfig = releaseNasConfig();
+        String packagePath = childPath(nasConfig.root(), releaseTag);
+        RuntimeControlReleasePackageRespVO releasePackage = buildReleasePackageResponse(nasConfig,
+                new RuntimeControlNasBrowser.NasEntry(releaseTag, packagePath, true));
+        if (!STATUS_AVAILABLE.equals(releasePackage.status())
+                || (!releaseTag.equals(releasePackage.releaseTag())
+                && !releaseTag.equals(releasePackage.packageDirectoryName()))) {
+            String blockedReason = releasePackage.blockedReasons() == null || releasePackage.blockedReasons().isEmpty()
+                    ? "发布包不存在或不可用"
+                    : String.join("；", releasePackage.blockedReasons());
+            throw new RuntimeControlException("releaseTag 发布包缺少 manifest/checksum 或不存在: "
+                    + releaseTag + "；" + blockedReason);
+        }
         if ((action == RuntimeControlOperationAction.PROMOTE_PROD
                 || action == RuntimeControlOperationAction.PROMOTE_BACKUP)
                 && !Boolean.TRUE.equals(releasePackage.tested())) {

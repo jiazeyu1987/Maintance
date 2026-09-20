@@ -63,6 +63,17 @@ class RuntimeControlContractTest {
     }
 
     @Test
+    void releasePackageValidationChecksRequestedTagDirectly() throws Exception {
+        String service = Files.readString(Path.of(
+                "src/main/java/com/intruoyi/maintenance/runtime/RuntimeControlService.java"), StandardCharsets.UTF_8);
+        int start = service.indexOf("private void validateReleasePackageAvailability");
+        String body = service.substring(start, service.indexOf("\n    private ", start + 1));
+        assertThat(body).contains("buildReleasePackageResponse(nasConfig,")
+                .contains("new RuntimeControlNasBrowser.NasEntry(releaseTag, packagePath, true)");
+        assertThat(body).doesNotContain("getReleasePackages()");
+    }
+
+    @Test
     void missingConfigurationFailsFast() {
         RuntimeControlProperties properties = new RuntimeControlProperties();
         properties.setRepoRoot("");
