@@ -119,3 +119,11 @@
 - GREEN: preflight semantics regression -> PASS；7 个检查改为校验真实迁移前置条件、冲突安全和已完成状态可重复执行，既不放宽角色/租户范围，也不伪造成功；四组发布预检测试 `170 passed`。
 - GREEN: app-main-push -> PASS；应用提交 `4568e1c1b 任务: 修正迁移前置预检语义` 已通过 branch runtime port guard 并推送 `origin/int_main`。
 - BLOCKER: r23-retired -> NEEDS_NEW_RELEASE_TAG；r23 已停止在远端写入前的只读预检阶段，禁止复用；下一轮必须以维护提交、应用提交 `4568e1c1b` 和全新 releaseTag 重新点击构建按钮。
+
+## 2026-09-20 21:xx CST — r24 目标环境真实前置条件阻断
+
+- BDD: target preflight must reflect executable migration prerequisites -> Given 目标测试服存在待执行迁移, When 通过按钮构建发布包, Then 只读预检必须阻断真实不满足迁移前置条件的数据状态，且不得继续 SSH 写入。
+- GREEN: `release-20260920-button-prod-r24` 预览确认维护提交 `d66b2ba22422e1251664eb5d37dfe392d45563a6`、应用/前端提交 `4568e1c1b7be15ee75e5981908c32edb288ca51d`，随后由真实页面按钮执行。
+- GREEN: r24 已通过 Maven、前端合同、类型检查、141 项发布测试、Docker、依赖、构建证据和迁移台账计划；目标预检实际连接测试服，`sshStarted=true`，24/28 检查通过。
+- BLOCKER: r24 在 `20260918_mes_edhr_label_print_menu_removal` 的目标数据前置检查失败，operation `op-2026-09-20T132451702289300Z-7ea53a64-e53a-4f42-9d7e-81d617ac1252` 终态 FAILED，未执行迁移写入；该迁移明确拒绝部分退休状态，必须先由正式数据负责人确认并通过按钮提供受控修复/恢复方案，禁止手工改库或伪造预检通过。
+- BLOCKER: r23 与 r24 操作记录一度同时显示 RUNNING，说明控制台在前一构建终态刷新前仍允许提交下一操作；本任务停止继续发布，待确认两者真实终态并修复并发门禁后再重试。
