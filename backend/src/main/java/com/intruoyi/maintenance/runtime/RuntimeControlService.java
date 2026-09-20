@@ -158,6 +158,7 @@ public class RuntimeControlService {
         appendRecoverTestReleaseLockOwnerArguments(action, command, resolvedReq.releaseTag(), previewOnly);
         appendTestPublishEvidenceArguments(action, command, resolvedReq.releaseTag());
         appendNasReleaseArguments(action, command, operationId, previewOnly);
+        appendSourceApprovalArguments(action, command, resolvedReq.releaseTag());
         appendManagedSourceArguments(action, command);
         appendBackendRuntimeBaseArguments(action, command);
         Path scriptPath = commandExecutor.resolveScriptPath(command.scriptPath());
@@ -407,6 +408,46 @@ public class RuntimeControlService {
         appendRequiredArgument(command.arguments(), "-BackendRepoRoot", properties.getRepoRoot());
         appendRequiredArgument(command.arguments(), "-FrontendRepoRoot", properties.getFrontendRoot());
         appendRequiredArgument(command.arguments(), "-WebsiteRepo", properties.getWebsiteRoot());
+    }
+
+    private void appendSourceApprovalArguments(RuntimeControlOperationAction action, RuntimeControlCommand command,
+                                               String releaseTag) {
+        if (action != RuntimeControlOperationAction.BUILD_RELEASE) {
+            return;
+        }
+        String maintenanceCommit = gitHead(properties.opsRootPath(), "maintenance source approval");
+        String applicationCommit = gitHead(properties.repoRootPath(), "application source approval");
+        appendRequiredArgument(command.arguments(), "-ExpectedMaintenanceCommit", maintenanceCommit);
+        appendRequiredArgument(command.arguments(), "-ExpectedApplicationCommit", applicationCommit);
+        appendRequiredArgument(command.arguments(), "-ExpectedFrontendCommit", applicationCommit);
+        appendRequiredArgument(command.arguments(), "-SourceSelectionId",
+                hasText(releaseTag) ? releaseTag.trim() : "runtime-control-build");
+    }
+
+    private String gitHead(Path path, String description) {
+        ProcessBuilder builder = new ProcessBuilder("git", "-C", path.toString(), "rev-parse", "HEAD")
+                .redirectErrorStream(true);
+        try {
+            Process process = builder.start();
+            String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();
+            boolean completed = process.waitFor(properties.statusTimeout().toMillis(), TimeUnit.MILLISECONDS);
+            if (!completed) {
+                process.destroyForcibly();
+                throw new RuntimeControlException(description + " git HEAD 读取超时");
+            }
+            if (process.exitValue() != 0) {
+                throw new RuntimeControlException(description + " git HEAD 读取失败: " + output);
+            }
+            if (!output.matches("^[0-9a-fA-F]{40}$")) {
+                throw new RuntimeControlException(description + " git HEAD 格式不合法: " + output);
+            }
+            return output;
+        } catch (IOException ex) {
+            throw new RuntimeControlException("无法启动 " + description + " git HEAD 读取", ex);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeControlException(description + " git HEAD 读取被中断", ex);
+        }
     }
 
     private void appendBackendRuntimeBaseArguments(RuntimeControlOperationAction action, RuntimeControlCommand command) {

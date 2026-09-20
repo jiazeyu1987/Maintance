@@ -200,6 +200,33 @@ class RuntimeControlContractTest {
     }
 
     @Test
+    void buildReleaseCodeOnlyPreviewForwardsApprovedSourceCommits() throws Exception {
+        String response = mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "action": "build-release",
+                                  "reason": "contract preview code only source approval",
+                                  "publishScope": "code-only",
+                                  "includeOnlyOffice": false,
+                                  "includeShowroomBuildPackage": false,
+                                  "releaseTag": "release-source-approval"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        assertThat(response)
+                .contains("-ExpectedMaintenanceCommit")
+                .contains("-ExpectedApplicationCommit")
+                .contains("-ExpectedFrontendCommit")
+                .contains("-SourceSelectionId", "release-source-approval");
+    }
+
+    @Test
     void buildReleaseWithDataPreviewContainsNasAndRuntimeBaseArguments() throws Exception {
         String response = mockMvc.perform(post("/admin-api/infra/runtime-control/actions/preview")
                         .contentType(MediaType.APPLICATION_JSON)
