@@ -73,3 +73,10 @@
 - GREEN: `python -X utf8 -m pytest .\scripts\tests\test_publish_release_lock_cleanup.py .\scripts\tests\test_release_operation_lock_behavior.py .\scripts\tests\test_release_operation_lock_mysql_behavior.py .\scripts\tests\test_dcc_notification_role_scope_mysql.py -q` -> PASS, 19 passed。
 - GREEN: `mvn -f backend\pom.xml test package` -> PASS, 33 tests and maintenance jar rebuilt.
 - GREEN: maintenance-fix-commit -> PASS, `59c4c41 任务: 自动传递发布源码批准提交`。
+
+## 2026-09-20 18:36 CST — r19 前端合同测试缺失修复
+
+- RED: r19-build-release-button -> FAIL, 页面按钮执行 `release-20260920-button-prod-r19` 后 operation `op-2026-09-20T103240115196400Z-e7b6081b-1ed6-4632-81a7-aeac78990cff` 越过源码批准门禁并完成后端发布合同测试，但前端合同阶段失败：`Cannot find module 'D:\IntRuoyiWorktree\r260920-main-integrate-promotion\a\IntRuoyiFronted\tests\e2e\runtime-control-one-button-static.spec.cjs'`；r19 判废，未形成可用发布包。
+- BDD: frontend one-button contract -> Given 发布脚本要求运行 `runtime-control-one-button-static.spec.cjs`, When 应用前端主干包含运行控制台页面, Then 该静态合同必须验证构建、测试服部署、标记测试通过和正式晋级按钮均存在且绑定 releaseTag/publishScope/PROD/testConclusion/recoverySet 参数。
+- GREEN: `node IntRuoyiFronted\tests\e2e\runtime-control-one-button-static.spec.cjs` -> PASS, 应用前端补回合同测试。
+- GREEN: app-main-push -> PASS, 应用主干推送 `aff15aad8 任务: 补回发布按钮前端合同测试`；下一轮必须使用新 tag `release-20260920-button-prod-r20` 和应用批准提交 `aff15aad8e...`。
