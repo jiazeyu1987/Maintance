@@ -36,6 +36,31 @@ def test_release_lock_state_tracks_acquire_and_release_paths() -> None:
     assert "$script:ReleaseOperationLockHeld = $false" in release_function
 
 
+def test_lock_acquire_failure_does_not_cleanup_unheld_lock() -> None:
+    script = read_publish_script()
+
+    catch_start = script.index("} catch {", script.index("Invoke-ReleaseOperationLockRelease -Status 'APPLIED'"))
+    catch_end = script.index("    throw", catch_start)
+    catch_block = script[catch_start:catch_end]
+
+    assert "if ($publishBackend)" in catch_block
+    assert "if ($script:ReleaseOperationLockHeld)" in catch_block
+    assert "Invoke-ReleaseOperationLockRelease -Status 'FAILED'" in catch_block
+
+
+def test_lock_acquire_reports_current_holder_without_setting_held() -> None:
+    script = read_publish_script()
+
+    acquire_start = script.index("function Invoke-ReleaseOperationLockAcquire")
+    release_start = script.index("function Invoke-ReleaseOperationLockRelease")
+    acquire_function = script[acquire_start:release_start]
+
+    assert "Invoke-SshCapture" in acquire_function
+    assert "RELEASE_OPERATION_LOCK_HELD" in acquire_function
+    assert "$script:ReleaseOperationLockHeld = $true" in acquire_function
+    assert acquire_function.index("RELEASE_OPERATION_LOCK_HELD") < acquire_function.index("$script:ReleaseOperationLockHeld = $true")
+
+
 def test_build_release_holds_local_runtime_restart_guard_only_for_its_own_window() -> None:
     script = read_publish_script()
 

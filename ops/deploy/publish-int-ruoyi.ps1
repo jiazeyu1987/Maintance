@@ -5639,9 +5639,16 @@ SELECT CASE WHEN operation_id = '$operationId' AND status = 'RUNNING' THEN 'LOCK
 FROM infra_release_operation_lock
 WHERE target_environment = '$Environment';
 "@
-    Invoke-SshCommand "cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro | grep '^LOCK_ACQUIRED$'
+    $capture = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | docker exec -i -e MYSQL_PWD=$mySqlRootPassword intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro | grep -E '^(LOCK_ACQUIRED|LOCK_HELD:)'
 $lockSql
 SQL"
+    $lockResult = ($capture.Output -split "`r?`n" | Where-Object { $_ -match '^(LOCK_ACQUIRED|LOCK_HELD:)' } | Select-Object -Last 1)
+    if (-not $capture.Ok -or [string]::IsNullOrWhiteSpace($lockResult)) {
+        throw "RELEASE_OPERATION_LOCK_ACQUIRE_FAILED: $($capture.Output)"
+    }
+    if ($lockResult -like 'LOCK_HELD:*') {
+        throw "RELEASE_OPERATION_LOCK_HELD: $lockResult"
+    }
     $script:ReleaseOperationLockHeld = $true
     $script:ReleaseOperationLockReleasing = $false
 }
@@ -5673,7 +5680,7 @@ SELECT CASE WHEN status = '$Status' THEN 'LOCK_RELEASED' ELSE CONCAT('LOCK_RELEA
 FROM infra_release_operation_lock
 WHERE target_environment = '$Environment';
 "@
-    Invoke-SshCommand "cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro | grep '^LOCK_RELEASED$'
+    Invoke-SshCommand "cat <<'SQL' | docker exec -i -e MYSQL_PWD=$mySqlRootPassword intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro | grep '^LOCK_RELEASED$'
 $lockSql
 SQL"
     $script:ReleaseOperationLockHeld = $false
@@ -7029,11 +7036,13 @@ try {
 } catch {
     if ($publishBackend) {
         $releaseErrorMessage = $_.Exception.Message
-        try {
-            Invoke-ReleaseOperationLockRelease -Status 'FAILED' -ErrorMessage $releaseErrorMessage
-        } catch {
-            $cleanupMessage = ConvertTo-ReleaseErrorMessage -Value $_.Exception.Message
-            Write-Host "[FAIL] Release operation lock cleanup failed: $cleanupMessage" -ForegroundColor Red
+        if ($script:ReleaseOperationLockHeld) {
+            try {
+                Invoke-ReleaseOperationLockRelease -Status 'FAILED' -ErrorMessage $releaseErrorMessage
+            } catch {
+                $cleanupMessage = ConvertTo-ReleaseErrorMessage -Value $_.Exception.Message
+                Write-Host "[FAIL] Release operation lock cleanup failed: $cleanupMessage" -ForegroundColor Red
+            }
         }
     }
     throw
