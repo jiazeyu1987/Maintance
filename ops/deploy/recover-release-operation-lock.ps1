@@ -44,6 +44,7 @@ if [ -z "`$MYSQL_ROOT_PASSWORD" ]; then
 fi
 export MYSQL_ROOT_PASSWORD
 docker exec -i -e MYSQL_PWD="`$MYSQL_ROOT_PASSWORD" intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro <<'SQL'
+SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 SET @expected_operation_id := '$operationLiteral';
 SET @expected_release_tag := '$sqlLiteral';
 SELECT CASE
@@ -64,6 +65,7 @@ SELECT CASE
 END;
 SQL
 eligibility=`$(docker exec -i -e MYSQL_PWD="`$MYSQL_ROOT_PASSWORD" intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro <<'SQL'
+SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 SELECT CASE
   WHEN NOT EXISTS (
     SELECT 1 FROM infra_release_operation_lock
@@ -87,6 +89,7 @@ if [ "`$eligibility" != 'RECOVER_ELIGIBLE' ]; then
   exit 43
 fi
 docker exec -i -e MYSQL_PWD="`$MYSQL_ROOT_PASSWORD" intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro <<'SQL'
+SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 UPDATE infra_release_operation_lock
 SET status = 'FAILED',
     finished_at = NOW(),
@@ -101,19 +104,28 @@ SELECT CASE WHEN ROW_COUNT() = 1 THEN 'LOCK_RECOVERED' ELSE 'LOCK_RECOVERY_FAILE
 SQL
 "@
 
-$temp = Join-Path $env:TEMP ("recover-release-lock-" + [guid]::NewGuid().ToString('N') + ".sh")
+$remotePayload = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($remote))
+$remoteCommand = "PAYLOAD='$remotePayload'; printf '%s' ""`$PAYLOAD"" | base64 -d | bash"
 try {
-    [System.IO.File]::WriteAllText($temp, $remote, [System.Text.UTF8Encoding]::new($false))
-    $result = Get-Content -LiteralPath $temp -Raw | & ssh @sshArgs "bash -s" 2>&1
-    $exitCode = $LASTEXITCODE
+    $previousErrorActionPreference = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = 'Continue'
+        $result = & ssh @sshArgs $remoteCommand 2>&1
+        $exitCode = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+    }
     $result | ForEach-Object { Write-Host $_ }
-    if ($exitCode -ne 0) {
+    $resultText = $result | Out-String
+    $hasRecoveredEvidence = $resultText -match 'LOCK_RECOVERED'
+    $hasOnlyKnownWindowsSshCloseNoise = $resultText -match 'close - IO is still pending on closed socket' -and
+        $resultText -notmatch 'RECOVER_BLOCKED_|LOCK_RECOVERY_FAILED|ERROR [0-9]+|Permission denied|Connection timed out|Could not resolve'
+    if ($exitCode -ne 0 -and -not ($hasRecoveredEvidence -and $hasOnlyKnownWindowsSshCloseNoise)) {
         throw "RECOVER_RELEASE_LOCK_FAILED: exit code $exitCode"
     }
-    if (-not (($result | Out-String) -match 'LOCK_RECOVERED')) {
+    if (-not $hasRecoveredEvidence) {
         throw 'RECOVER_RELEASE_LOCK_FAILED: missing LOCK_RECOVERED evidence'
     }
     Write-Host "Release operation lock recovered: $ExpectedOperationId"
 } finally {
-    Remove-Item -LiteralPath $temp -Force -ErrorAction SilentlyContinue
 }

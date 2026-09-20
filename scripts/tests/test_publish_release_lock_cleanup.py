@@ -73,8 +73,18 @@ def test_explicit_lock_recovery_requires_executor_and_migration_evidence_checks(
     assert "RECOVER_BLOCKED_ACTIVE_EXECUTOR" in script
     assert "RECOVER_BLOCKED_MIGRATION_EVIDENCE" in script
     assert "status = 'RUNNING'" in script
+    assert "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;" in script
     assert "LOCK_RECOVERED" in script
     assert "operation_id = '$operationLiteral'" in script
+
+
+def test_lock_recovery_accepts_windows_ssh_close_noise_only_after_recovered_evidence() -> None:
+    script = read_recovery_script()
+
+    assert "$hasRecoveredEvidence = $resultText -match 'LOCK_RECOVERED'" in script
+    assert "$hasOnlyKnownWindowsSshCloseNoise = $resultText -match 'close - IO is still pending on closed socket'" in script
+    assert "$exitCode -ne 0 -and -not ($hasRecoveredEvidence -and $hasOnlyKnownWindowsSshCloseNoise)" in script
+    assert "RECOVER_BLOCKED_|LOCK_RECOVERY_FAILED|ERROR [0-9]+|Permission denied|Connection timed out|Could not resolve" in script
 
 
 def test_build_release_holds_local_runtime_restart_guard_only_for_its_own_window() -> None:
