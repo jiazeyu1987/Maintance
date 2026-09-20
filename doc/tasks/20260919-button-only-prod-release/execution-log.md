@@ -135,3 +135,13 @@
 - GREEN: remote-label-preflight-fixed -> PASS；预检改为 `active_count IN (0, 21)`，直接在测试服只读执行返回 `TARGET_PREFLIGHT_PASS:20260918_mes_edhr_label_print_menu_removal`。
 - GREEN: preflight-contract-regression -> PASS；四组发布预检/迁移矩阵/SQL 合同/包治理测试 `170 passed`。
 - GREEN: app-main-push -> PASS；应用提交 `13c2517a5 任务: 修正标签打印退休预检` 已通过 branch runtime port guard 并推送 `origin/int_main`。
+
+## 2026-09-20 22:xx CST — r25 管理者代表菜单预检修正
+
+- BDD: management representative permission preflight follows local baseline -> Given 本机和测试服均存在两个 active `mes:pro-edhr-release:query` 菜单和一个 active `mes:pro-edhr-release:approve` 菜单, When 管理者代表权限迁移为现有管理者代表角色授权, Then 预检应要求每个业务权限至少存在一个有效菜单，并由迁移绑定所有匹配菜单；不得删除、合并或手工改写目标环境菜单。
+- RED: `release-20260920-button-prod-r25` build-release -> FAIL；operation `op-2026-09-20T140509483300100Z-fe2ea217-0ce0-4054-9117-a3ed83084020` 已通过前序构建门禁并进入测试服只读目标预检，失败于 `20260918_mes_management_representative_admin_permission`，`sshStarted=true`；未执行迁移写入，r25 判废不得复用。
+- ROOT-CAUSE: 原预检与迁移要求 `query/approve` 两个权限合计恰好 2 个有效菜单；真实本机基准与测试服均为 `query=2`、`approve=1`。该差异不是目标脏数据，而是历史菜单树中父/子查询入口共用同一权限。
+- GREEN: remote-management-preflight-fixed -> PASS；修正后直接在测试服只读执行 `20260918_mes_management_representative_admin_permission.preflight.sql` 返回 `TARGET_PREFLIGHT_PASS:20260918_mes_management_representative_admin_permission`。
+- GREEN: preflight-contract-regression -> PASS；`python -X utf8 -m pytest -q scripts/tests/test_release_target_data_preflight.py scripts/tests/test_release_migration_preflight_matrix.py scripts/tests/test_release_sql_preflight_gate.py scripts/tests/test_release_package_governance.py` -> `170 passed in 45.56s`。
+- INFO: migration-policy-targeted -> historical dependency chain blocks local ad-hoc targeted gate；手工局部运行 `run-release-migration-policy-gate.py` 会沿 `20260814_mes_production_release_roles` 追到历史依赖 `20260611_mes_edhr_work_task_flow`，当前源码中无同名迁移文件。该问题非本次 SQL 差异引入，且 r25 构建路径已通过发布脚本内置迁移门禁后才进入目标预检；本轮不扩大为历史迁移元数据整改。
+- GREEN: app-main-push -> PASS；应用提交 `c5dd152dc 任务: 放宽管理者代表菜单预检` 已通过 branch runtime port guard 并推送 `origin/int_main`。

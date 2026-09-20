@@ -3732,3 +3732,10 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - Action intent: 不手工改测试服数据库；修正目标预检，让测试服全部 active 的待迁移状态允许正式退休迁移执行，并继续阻断部分退休状态。
 - Evidence: 测试服只读核对 21 个标签打印菜单全部 active、套餐 JSON 有效；修正后远端只读预检返回 `TARGET_PREFLIGHT_PASS:20260918_mes_edhr_label_print_menu_removal`；本地合同测试 `170 passed`；应用提交 `13c2517a5` 已推送 `origin/int_main`。
 - Deployment status: 仍未部署测试服、未 mark-tested、未晋级正式服；下一步使用新 releaseTag 通过真实按钮重跑。
+
+## 2026-09-20 22:xx CST — 以本机为准修正管理者代表权限预检
+
+- User request: 以本机的为准。
+- Action intent: 不手工改测试服数据库；把管理者代表权限预检从“query/approve 合计恰好 2 个菜单”修正为“query 与 approve 每个业务权限至少存在一个有效菜单”，迁移继续绑定所有匹配菜单。
+- Evidence: 本机与测试服只读核对均为 `mes:pro-edhr-release:query=2`、`mes:pro-edhr-release:approve=1`；修正后远端只读预检返回 `TARGET_PREFLIGHT_PASS:20260918_mes_management_representative_admin_permission`；本地合同测试 `170 passed`；应用提交 `c5dd152dc` 已推送 `origin/int_main`。
+- Deployment status: r25 在只读目标预检失败，未执行迁移写入且判废；下一步使用新 releaseTag 通过真实按钮重跑。

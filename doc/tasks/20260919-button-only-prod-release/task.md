@@ -6,7 +6,7 @@
 
 ## Current Status
 
-in_progress — 用户确认“以本机为准”后，只读核对本机标签打印入口为退休基准；测试服 21 个标签打印菜单全部 active，属于正式迁移应处理的待退休状态。已修正 `20260918_mes_edhr_label_print_menu_removal` 目标预检语义为允许全部 active 或全部 retired、阻断部分退休，直接在测试服只读执行返回 PASS；应用提交 `13c2517a5` 已推送 `origin/int_main`，四组发布预检/迁移矩阵/SQL 合同/包治理测试 `170 passed`。下一步必须使用新 releaseTag 通过真实按钮重新构建，不复用 r24。
+in_progress — 用户确认“以本机为准”后，r25 暴露管理者代表权限预检仍把本机/测试服共有的 `query=2、approve=1` 历史菜单树误判为冲突。已修正 `20260918_mes_management_representative_admin_permission` 迁移与目标预检：每个业务权限至少存在一个有效菜单即可，迁移绑定所有匹配菜单，不删除、合并或手工改目标数据。测试服只读预检返回 PASS，四组发布预检/迁移矩阵/SQL 合同/包治理测试 `170 passed`；应用提交 `c5dd152dc` 已推送 `origin/int_main`。下一步必须使用新 releaseTag 通过真实按钮重新构建，不复用 r25。
 
 ## Milestones
 
