@@ -251,3 +251,8 @@
 - RED: actual-publish-writer-remote-password-form -> FAIL；实际所有权查询使用 `MYSQL_PWD=`，迁移台账写入使用 `-p...`，harness 首轮仅替换前者，因此写入以占位密码得到 `ERROR 1045`；临时库已清理。新增 `-p...` 远程运行时替换，不将明文密码传入本地命令或日志。
 - GREEN: actual-publish-writer-remote-integration -> PASS；`python -X utf8 scripts/tests/verify_recover_release_lock_remote_integration.py` 经实际 PowerShell→SSH→测试服 MySQL 临时库执行生产 `Invoke-ReleaseMigrationStateBatchUpdate`：有效租约写入 `allowed-write/RUNNING`，替换租约后 `blocked-after-lease-loss` 返回 `RELEASE_OPERATION_LOCK_LOST` 且台账仅保留第一条；随后实际恢复脚本的活跃心跳阻断、并发单赢家仍通过。最终 `SHOW DATABASES LIKE 'release_lock_it_%'` 返回空集。
 - REGRESSION: final-release-static-suite -> 211 passed；PowerShell AST、Python compileall、`git diff --check` PASS。
+- BDD: 所有远程组件共用环境锁 -> Given 发布包可能只包含 backend、frontend 或 Website 组件，When deploy-release 将任一组件写入目标环境，Then 都必须取得同一环境锁并在成功/失败终态精确释放，不得仅 backend 发布持锁。
+- RED: `python -X utf8 -m pytest -q scripts/tests/test_publish_release_lock_cleanup.py -k all_remote_deploy_components` -> FAIL，当前取锁、成功释放和异常释放均以 `$publishBackend` 为条件，frontend/Website-only 远程写入无锁。
+- GREEN: all-remote-components-lock -> PASS；新增 `$requiresReleaseOperationLock = deploy-release && (backend || frontend || Website)`，三类远程组件统一取锁、成功释放与异常释放，数据盘、目录、部署控制文件、Website 切换、`.env` 切换及服务启动前均复核写入栅栏。
+- RED: full-release-gate-old-lock-assertion -> FAIL；完整 212 项首轮为 211 passed/1 failed，唯一失败是旧静态测试仍断言 catch 使用 `$publishBackend`，与新的全组件锁契约相反；更新为断言 `$requiresReleaseOperationLock`。
+- GREEN: final-release-gates -> PASS；完整静态/行为套件 212 passed，实际 PowerShell→SSH→测试服临时 MySQL 验证再次 PASS，PowerShell AST、Python compileall、`git diff --check` PASS；复核 `SHOW DATABASES LIKE 'release_lock_it_%'` 为空集。

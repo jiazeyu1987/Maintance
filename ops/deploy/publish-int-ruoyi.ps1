@@ -7021,20 +7021,24 @@ if (-not (Test-Path -LiteralPath $deployControlLocalRoot -PathType Container)) {
     New-Item -ItemType Directory -Force -Path $deployControlLocalRoot | Out-Null
 }
 Write-Utf8LfNoBomFile -Path $remoteEnvLocal -Content $remoteEnvContent
+$requiresReleaseOperationLock = ($Mode -eq 'deploy-release') -and ($publishBackend -or $publishFrontend -or $publishWebsite)
 
 try {
-    if ($publishBackend -and $Mode -ne 'build-release') {
+    if ($requiresReleaseOperationLock) {
         Assert-ReleaseOperationLockSchemaReady
         Invoke-ReleaseOperationLockAcquire
         Assert-ReleaseOperationLockOwnership
     }
 
+    Assert-ReleaseOperationWriteFence
     Info 'Preparing remote runtime data disk'
     Assert-RemoteRuntimeDataOnDataDisk
 
+    Assert-ReleaseOperationWriteFence
     Info 'Preparing remote release directories'
     Prepare-RemoteReleaseTree
 
+    Assert-ReleaseOperationWriteFence
     Info "Copying deploy control files to the $PublishTargetName server"
 $composeLocal = Join-Path $releaseDir 'docker-compose.yml'
 if (-not (Test-Path -LiteralPath $composeLocal)) {
@@ -7170,11 +7174,13 @@ if ($publishBackend -and $Mode -ne 'build-release') {
     }
 
     if ($publishWebsite) {
+        Assert-ReleaseOperationWriteFence
         Info "Switching Website runtime directory on the $PublishTargetName server"
         Invoke-SshCommand "test -f '$remoteWebsiteStagingDir/dist/index.html' && test -f '$remoteWebsiteStagingDir/nginx.conf' && rm -rf '$remoteWebsitePreviousDir' && if [ -d '$remoteWebsiteDir' ]; then mv '$remoteWebsiteDir' '$remoteWebsitePreviousDir'; fi && mv '$remoteWebsiteStagingDir' '$remoteWebsiteDir'"
     }
 
     if ($publishBackend -or $publishFrontend) {
+        Assert-ReleaseOperationWriteFence
         Info "Switching runtime .env to $packageDirectoryName on the $PublishTargetName server"
         Switch-RemoteRuntimeEnvNext
     }
@@ -7184,6 +7190,7 @@ if ($publishBackend -and $Mode -ne 'build-release') {
     if ($publishBackend) { $runtimeServices += 'backend' }
     if ($publishFrontend) { $runtimeServices += 'frontend' }
     if ($runtimeServices.Count -gt 0) {
+        Assert-ReleaseOperationWriteFence
         $runtimeServicesArg = $runtimeServices -join ' '
         $runtimeServiceDependencyFlag = if ($IncludeOnlyOffice) { '' } else { '--no-deps ' }
         Info "Starting application services on the $PublishTargetName server: $runtimeServicesArg"
@@ -7192,6 +7199,7 @@ if ($publishBackend -and $Mode -ne 'build-release') {
     }
 
     if ($publishWebsite) {
+        Assert-ReleaseOperationWriteFence
         Info "Starting Website on the $PublishTargetName server"
     }
     if ($publishWebsite) { Invoke-SshCommand "cd '$RemoteAppDir' && docker compose up -d --force-recreate website" }
@@ -7234,12 +7242,12 @@ if ($publishBackend -and $Mode -ne 'build-release') {
     if ($Mode -eq 'deploy-release' -and @('prod', 'backup') -contains $Environment) {
         Write-NasReleaseDeploymentHistory -PackageTag $ReleaseTag -HistoryAction 'deploy' -HistoryEnvironment $Environment
     }
-    if ($publishBackend) {
+    if ($requiresReleaseOperationLock) {
         Assert-ReleaseOperationLockOwnership
         Invoke-ReleaseOperationLockRelease -Status 'APPLIED'
     }
 } catch {
-    if ($publishBackend) {
+    if ($requiresReleaseOperationLock) {
         $releaseErrorMessage = $_.Exception.Message
         if ($script:ReleaseOperationLockHeld) {
             try {

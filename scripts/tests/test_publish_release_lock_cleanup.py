@@ -52,7 +52,7 @@ def test_lock_acquire_failure_does_not_cleanup_unheld_lock() -> None:
     catch_end = script.index("    throw", catch_start)
     catch_block = script[catch_start:catch_end]
 
-    assert "if ($publishBackend)" in catch_block
+    assert "if ($requiresReleaseOperationLock)" in catch_block
     assert "if ($script:ReleaseOperationLockHeld)" in catch_block
     assert "Invoke-ReleaseOperationLockRelease -Status 'FAILED'" in catch_block
 
@@ -115,6 +115,17 @@ def test_pre_acquire_lock_schema_gate_is_read_only_and_complete() -> None:
     assert "ALTER TABLE" not in block
     assert "INSERT INTO" not in block
     assert "UPDATE " not in block
+
+
+def test_all_remote_deploy_components_share_the_environment_lock() -> None:
+    script = read_publish_script()
+    runtime = script[script.index("Info 'Writing remote compose environment file locally'"):]
+
+    assert "$requiresReleaseOperationLock = ($Mode -eq 'deploy-release') -and ($publishBackend -or $publishFrontend -or $publishWebsite)" in runtime
+    assert "if ($requiresReleaseOperationLock) {" in runtime
+    assert runtime.count("if ($requiresReleaseOperationLock)") >= 3
+    assert "if ($publishBackend) {\n        Assert-ReleaseOperationLockSchemaReady" not in runtime
+    assert "if ($publishBackend) {\n        Assert-ReleaseOperationLockOwnership\n        Invoke-ReleaseOperationLockRelease" not in runtime
 
 
 def test_actual_migration_writers_block_before_ssh_when_lock_is_not_held() -> None:
