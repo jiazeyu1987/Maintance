@@ -72,6 +72,9 @@ def run_publish_migration_state_update(
     release_tag: str,
     lease_token: str,
     migration_id: str,
+    *,
+    enter_lock: bool = False,
+    required_sql_dir: Path | None = None,
 ) -> subprocess.CompletedProcess[str]:
     computer = os.environ["COMPUTERNAME"]
     identity = f"{os.environ['USERNAME']}@{computer}"
@@ -88,6 +91,12 @@ $functionNames = @(
   'ConvertTo-ReleaseErrorBase64',
   'Get-RequiredDatabaseSqlFileName',
   'New-ReleaseMigrationStateUpsertSql',
+  'Get-ReleaseOperationLockSchemaState',
+  'Assert-ReleaseOperationLockSchemaReady',
+  'Invoke-ReleaseOperationLegacyLockAcquire',
+  'Invoke-ReleaseOperationLockLeaseUpgrade',
+  'Enter-ReleaseOperationLock',
+  'Invoke-ReleaseOperationLockAcquire',
   'Assert-ReleaseOperationLockOwnership',
   'Assert-ReleaseOperationWriteFence',
   'Invoke-ReleaseMigrationStateBatchUpdate'
@@ -156,12 +165,21 @@ $Mode = 'deploy-release'
 $Environment = 'test'
 $ReleaseTag = '__RELEASE_TAG__'
 $mySqlRootPassword = 'integration-placeholder'
+$requiredSqlLocalDir = '__REQUIRED_SQL_DIR__'
 $script:ReleaseOperationLockHeld = $true
+$script:ReleaseOperationLegacyLockHeld = $false
 $script:ReleaseOperationLeaseToken = '__LEASE_TOKEN__'
 $script:ReleaseOperationExecutorHost = '__EXECUTOR_HOST__'
 $script:ReleaseOperationExecutorPid = '2147483000'
 $script:ReleaseOperationExecutorIdentity = '__EXECUTOR_IDENTITY__'
 $script:ReleaseErrorMessageMaxLength = 2048
+if ('__ENTER_LOCK__' -eq 'true') {
+  $script:ReleaseOperationLockHeld = $false
+  $script:ReleaseOperationLeaseToken = ''
+  Enter-ReleaseOperationLock
+  Write-Output "LOCK_ENTRY_COMPLETED:$($script:ReleaseOperationLeaseToken)"
+  exit 0
+}
 $item = [pscustomobject]@{
   migrationId = '__MIGRATION_ID__'
   file = 'required-sql/__MIGRATION_ID__.sql'
@@ -175,6 +193,8 @@ Write-Output 'PUBLISH_WRITE_COMPLETED:__MIGRATION_ID__'
         "__DATABASE__": database,
         "__RELEASE_TAG__": release_tag,
         "__LEASE_TOKEN__": lease_token,
+        "__REQUIRED_SQL_DIR__": str(required_sql_dir or ROOT).replace("'", "''"),
+        "__ENTER_LOCK__": "true" if enter_lock else "false",
         "__EXECUTOR_HOST__": computer,
         "__EXECUTOR_IDENTITY__": identity,
         "__MIGRATION_ID__": migration_id,
@@ -200,7 +220,12 @@ def main() -> int:
     suffix = uuid.uuid4().hex[:12]
     database = f"release_lock_it_{suffix}"
     release_tag = f"integration-{suffix}"
-    lease_token = f"lease-{suffix}"
+    lease_token = ""
+    app_backend_root = Path(os.environ.get("INTRUOYI_APP_BACKEND_ROOT", "E:/IntRuoyi/IntRuoyiBackend"))
+    required_sql_dir = app_backend_root / "sql/mysql"
+    lease_migration = required_sql_dir / "20260921_infra_release_operation_lock_lease_fencing.sql"
+    if not lease_migration.is_file():
+        raise AssertionError(f"lease migration missing: {lease_migration}")
     computer = os.environ["COMPUTERNAME"]
     identity = f"{os.environ['USERNAME']}@{computer}"
     setup_sql = f"""
@@ -215,12 +240,6 @@ CREATE TABLE infra_release_operation_lock (
   started_at datetime NOT NULL,
   finished_at datetime NULL,
   error_message varchar(1024) NULL,
-  executor_host varchar(255) NULL,
-  executor_pid varchar(64) NULL,
-  executor_identity varchar(255) NULL,
-  lease_token varchar(128) NULL,
-  heartbeat_at datetime NULL,
-  write_fence bigint NOT NULL DEFAULT 0,
   creator varchar(64) NOT NULL,
   create_time datetime NOT NULL,
   updater varchar(64) NOT NULL,
@@ -249,18 +268,40 @@ CREATE TABLE infra_release_migration (
   ,tenant_id bigint NOT NULL DEFAULT 0
   ,UNIQUE KEY uk_infra_release_migration_env_id (target_environment, migration_id)
 ) ENGINE=InnoDB;
-INSERT INTO infra_release_operation_lock (
-  target_environment, operation_id, release_tag, status, started_at,
-  executor_host, executor_pid, executor_identity, lease_token, heartbeat_at,
-  creator, create_time, updater, update_time
-) VALUES (
-  'test', 'test-{release_tag}', '{release_tag}', 'RUNNING', NOW(),
-  '{computer}', '2147483000', '{identity}', '{lease_token}', NOW(),
-  'integration-test', NOW(), 'integration-test', NOW()
-);
 """
     try:
         require_success(remote_mysql(None, setup_sql), "setup")
+
+        entered = run_publish_migration_state_update(
+            database,
+            release_tag,
+            "",
+            "unused",
+            enter_lock=True,
+            required_sql_dir=required_sql_dir,
+        )
+        require_success(entered, "actual legacy lock entry and lease upgrade")
+        evidence_lines = [
+            line.strip() for line in entered.stdout.splitlines()
+            if line.strip().startswith("LOCK_ENTRY_COMPLETED:")
+        ]
+        if len(evidence_lines) != 1:
+            raise AssertionError(f"legacy lock entry evidence missing: {entered.stdout!r}")
+        lease_token = evidence_lines[0].split(":", 1)[1]
+        if not lease_token:
+            raise AssertionError("legacy lock entry returned a blank lease token")
+        upgraded = remote_mysql(
+            database,
+            "SELECT COUNT(*) FROM information_schema.COLUMNS "
+            "WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='infra_release_operation_lock' "
+            "AND COLUMN_NAME IN ('executor_host','executor_pid','executor_identity','lease_token','heartbeat_at','write_fence'); "
+            "SELECT operation_id,status,executor_pid,lease_token FROM infra_release_operation_lock WHERE target_environment='test';",
+        )
+        require_success(upgraded, "verify legacy lock lease upgrade")
+        upgraded_lines = [line.strip() for line in upgraded.stdout.splitlines() if line.strip()]
+        expected_owner = f"test-{release_tag}\tRUNNING\t2147483000\t{lease_token}"
+        if upgraded_lines != ["6", expected_owner]:
+            raise AssertionError(f"unexpected upgraded lock state: {upgraded_lines!r}")
 
         allowed = run_publish_migration_state_update(database, release_tag, lease_token, "allowed-write")
         require_success(allowed, "actual publish writer with owned lease")

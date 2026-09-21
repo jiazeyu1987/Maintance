@@ -106,6 +106,7 @@ $PSNativeCommandUseErrorActionPreference = $false
 Import-Module -Force (Join-Path $PSScriptRoot '..\release\lib\ReleasePackageGovernance.psm1')
 Import-Module -Force (Join-Path $PSScriptRoot '..\release\lib\ReleaseManifestValidator.psm1')
 $script:ReleaseOperationLockHeld = $false
+$script:ReleaseOperationLegacyLockHeld = $false
 $script:ReleaseOperationLockReleasing = $false
 $script:ReleaseOperationLeaseToken = ''
 $script:ReleaseOperationExecutorHost = [string]$env:COMPUTERNAME
@@ -5638,37 +5639,7 @@ SQL"
     }
 }
 
-function Ensure-ReleaseOperationLockLeaseSchema {
-    $probeSql = @"
-SELECT COUNT(*)
-FROM information_schema.COLUMNS
-WHERE TABLE_SCHEMA = 'ruoyi-vue-pro'
-  AND TABLE_NAME = 'infra_release_operation_lock'
-  AND COLUMN_NAME = 'lease_token';
-"@
-    $probeResult = Invoke-SshCapture "cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 --batch --skip-column-names information_schema
-$probeSql
-SQL"
-    if (([string]$probeResult.Output).Trim() -eq '1') {
-        return
-    }
-
-    Info 'Bootstrapping release operation lock lease columns on target server'
-    $leaseSchemaSql = @'
-ALTER TABLE `infra_release_operation_lock`
-  ADD COLUMN `executor_host` varchar(255) DEFAULT NULL COMMENT '执行宿主',
-  ADD COLUMN `executor_pid` varchar(64) DEFAULT NULL COMMENT '执行进程身份',
-  ADD COLUMN `executor_identity` varchar(255) DEFAULT NULL COMMENT '执行身份',
-  ADD COLUMN `lease_token` varchar(128) DEFAULT NULL COMMENT '锁租约令牌',
-  ADD COLUMN `heartbeat_at` datetime DEFAULT NULL COMMENT '最近心跳',
-  ADD COLUMN `write_fence` bigint NOT NULL DEFAULT 0 COMMENT '写入栅栏版本';
-'@
-    Invoke-SshCommandWithInput `
-        -Command "docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 ruoyi-vue-pro" `
-        -StandardInput $leaseSchemaSql
-}
-
-function Assert-ReleaseOperationLockSchemaReady {
+function Get-ReleaseOperationLockSchemaState {
     $schemaSql = @"
 SELECT CASE
   WHEN (SELECT COUNT(*)
@@ -5680,31 +5651,158 @@ SELECT CASE
          WHERE TABLE_SCHEMA = 'ruoyi-vue-pro'
            AND TABLE_NAME = 'infra_release_operation_lock'
            AND COLUMN_NAME IN (
-             'target_environment', 'operation_id', 'release_tag', 'status', 'started_at',
-             'finished_at', 'error_message', 'executor_host', 'executor_pid',
-             'executor_identity', 'lease_token', 'heartbeat_at', 'write_fence', 'creator',
-             'create_time', 'updater', 'update_time', 'deleted', 'tenant_id'
-           )) = 19
+             'id', 'target_environment', 'operation_id', 'release_tag', 'status', 'started_at',
+             'finished_at', 'error_message', 'creator', 'create_time', 'updater', 'update_time',
+             'deleted', 'tenant_id'
+           )) = 14
    AND (SELECT COUNT(*)
           FROM information_schema.COLUMNS
          WHERE TABLE_SCHEMA = 'ruoyi-vue-pro'
-           AND TABLE_NAME = 'infra_release_migration'
+           AND TABLE_NAME = 'infra_release_operation_lock'
            AND COLUMN_NAME IN (
-             'release_tag', 'migration_id', 'file_name', 'sha256', 'target_environment',
-             'status', 'started_at', 'finished_at', 'error_message', 'operation_id',
-             'creator', 'create_time', 'updater', 'update_time', 'deleted'
-           )) = 15
+             'executor_host', 'executor_pid', 'executor_identity', 'lease_token',
+             'heartbeat_at', 'write_fence'
+           )) = 6
   THEN 'LOCK_SCHEMA_READY'
-  ELSE 'LOCK_SCHEMA_NOT_READY'
+  WHEN (SELECT COUNT(*)
+          FROM information_schema.TABLES
+         WHERE TABLE_SCHEMA = 'ruoyi-vue-pro'
+           AND TABLE_NAME IN ('infra_release_migration', 'infra_release_operation_lock')) = 2
+   AND (SELECT COUNT(*)
+          FROM information_schema.COLUMNS
+         WHERE TABLE_SCHEMA = 'ruoyi-vue-pro'
+           AND TABLE_NAME = 'infra_release_operation_lock'
+           AND COLUMN_NAME IN (
+             'id', 'target_environment', 'operation_id', 'release_tag', 'status', 'started_at',
+             'finished_at', 'error_message', 'creator', 'create_time', 'updater', 'update_time',
+             'deleted', 'tenant_id'
+           )) = 14
+   AND (SELECT COUNT(*)
+          FROM information_schema.COLUMNS
+         WHERE TABLE_SCHEMA = 'ruoyi-vue-pro'
+           AND TABLE_NAME = 'infra_release_operation_lock'
+           AND COLUMN_NAME IN (
+             'executor_host', 'executor_pid', 'executor_identity', 'lease_token',
+             'heartbeat_at', 'write_fence'
+           )) = 0
+  THEN 'LOCK_SCHEMA_LEGACY'
+  ELSE 'LOCK_SCHEMA_INVALID'
 END;
 "@
     $capture = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | docker exec -i -e MYSQL_PWD=$mySqlRootPassword intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --raw --skip-column-names information_schema
 $schemaSql
 SQL"
     $evidence = ($capture.Output -split "`r?`n" | Where-Object { $_ -match '^LOCK_SCHEMA_' } | Select-Object -Last 1)
-    if (-not $capture.Ok -or $evidence -ne 'LOCK_SCHEMA_READY') {
-        throw 'RELEASE_OPERATION_LOCK_SCHEMA_NOT_READY: initialize the release lock contract before deployment'
+    if (-not $capture.Ok -or $evidence -notin @('LOCK_SCHEMA_READY', 'LOCK_SCHEMA_LEGACY', 'LOCK_SCHEMA_INVALID')) {
+        throw "RELEASE_OPERATION_LOCK_SCHEMA_CHECK_FAILED: $($capture.Output)"
     }
+    return $evidence
+}
+
+function Assert-ReleaseOperationLockSchemaReady {
+    $state = Get-ReleaseOperationLockSchemaState
+    if ($state -ne 'LOCK_SCHEMA_READY') {
+        throw "RELEASE_OPERATION_LOCK_SCHEMA_NOT_READY: state=$state"
+    }
+}
+
+function Invoke-ReleaseOperationLegacyLockAcquire {
+    $operationId = "$Environment-$ReleaseTag"
+    $lockSql = @"
+INSERT INTO infra_release_operation_lock (target_environment, operation_id, release_tag, status, started_at, finished_at, error_message, creator, create_time, updater, update_time, deleted, tenant_id)
+SELECT '$Environment', '$operationId', '$ReleaseTag', 'RUNNING', NOW(), NULL, NULL, 'release-system', NOW(), 'release-system', NOW(), b'0', 0
+WHERE NOT EXISTS (
+  SELECT 1 FROM infra_release_operation_lock WHERE target_environment = '$Environment' AND status = 'RUNNING'
+)
+ON DUPLICATE KEY UPDATE
+  operation_id = IF(status = 'RUNNING', operation_id, VALUES(operation_id)),
+  release_tag = IF(status = 'RUNNING', release_tag, VALUES(release_tag)),
+  started_at = IF(status = 'RUNNING', started_at, VALUES(started_at)),
+  finished_at = IF(status = 'RUNNING', finished_at, NULL),
+  error_message = IF(status = 'RUNNING', error_message, NULL),
+  status = IF(status = 'RUNNING', status, 'RUNNING'),
+  updater = 'release-system',
+  update_time = NOW(),
+  deleted = b'0';
+SELECT CASE WHEN operation_id = '$operationId' AND release_tag = '$ReleaseTag' AND status = 'RUNNING'
+  THEN 'LEGACY_LOCK_ACQUIRED' ELSE CONCAT('LOCK_HELD:', operation_id, ':', release_tag) END
+FROM infra_release_operation_lock
+WHERE target_environment = '$Environment';
+"@
+    $capture = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | docker exec -i -e MYSQL_PWD=$mySqlRootPassword intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --raw --skip-column-names ruoyi-vue-pro
+$lockSql
+SQL"
+    $evidence = ($capture.Output -split "`r?`n" | Where-Object { $_ -match '^(LEGACY_LOCK_ACQUIRED|LOCK_HELD:)' } | Select-Object -Last 1)
+    if (-not $capture.Ok -or $evidence -ne 'LEGACY_LOCK_ACQUIRED') {
+        throw "RELEASE_OPERATION_LOCK_HELD: $($capture.Output)"
+    }
+    $script:ReleaseOperationLockHeld = $true
+    $script:ReleaseOperationLegacyLockHeld = $true
+    $script:ReleaseOperationLockReleasing = $false
+}
+
+function Invoke-ReleaseOperationLockLeaseUpgrade {
+    if (-not $script:ReleaseOperationLegacyLockHeld) {
+        throw 'RELEASE_OPERATION_LEGACY_LOCK_NOT_HELD: lease schema upgrade refused'
+    }
+    $migrationFileName = '20260921_infra_release_operation_lock_lease_fencing.sql'
+    $migrationPath = Join-Path $requiredSqlLocalDir $migrationFileName
+    if (-not (Test-Path -LiteralPath $migrationPath -PathType Leaf)) {
+        throw "RELEASE_OPERATION_LOCK_MIGRATION_MISSING: $migrationFileName"
+    }
+    $migrationSql = [System.IO.File]::ReadAllText($migrationPath, [System.Text.UTF8Encoding]::new($false))
+    Invoke-SshCommandWithInput `
+        -Command "docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 ruoyi-vue-pro" `
+        -StandardInput $migrationSql
+
+    $operationId = "$Environment-$ReleaseTag"
+    $leaseToken = [guid]::NewGuid().ToString('N')
+    $leaseTokenSql = $leaseToken.Replace("'", "''")
+    $executorHost = $script:ReleaseOperationExecutorHost.Replace("'", "''")
+    $executorPid = $script:ReleaseOperationExecutorPid.Replace("'", "''")
+    $executorIdentity = $script:ReleaseOperationExecutorIdentity.Replace("'", "''")
+    $transitionSql = @"
+UPDATE infra_release_operation_lock
+SET executor_host = '$executorHost',
+    executor_pid = '$executorPid',
+    executor_identity = '$executorIdentity',
+    lease_token = '$leaseTokenSql',
+    heartbeat_at = NOW(),
+    write_fence = write_fence + 1,
+    updater = 'release-system',
+    update_time = NOW()
+WHERE target_environment = '$Environment'
+  AND operation_id = '$operationId'
+  AND release_tag = '$ReleaseTag'
+  AND status = 'RUNNING'
+  AND lease_token IS NULL;
+SELECT CASE WHEN ROW_COUNT() = 1 THEN CONCAT('LOCK_UPGRADED:', '$leaseTokenSql') ELSE 'LOCK_UPGRADE_FAILED' END;
+"@
+    $capture = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | docker exec -i -e MYSQL_PWD=$mySqlRootPassword intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --raw --skip-column-names ruoyi-vue-pro
+$transitionSql
+SQL"
+    $evidence = ($capture.Output -split "`r?`n" | Where-Object { $_ -match '^LOCK_UPGRADE' } | Select-Object -Last 1)
+    if (-not $capture.Ok -or $evidence -ne "LOCK_UPGRADED:$leaseToken") {
+        throw "RELEASE_OPERATION_LOCK_UPGRADE_FAILED: $($capture.Output)"
+    }
+    $script:ReleaseOperationLeaseToken = $leaseToken
+    $script:ReleaseOperationLegacyLockHeld = $false
+}
+
+function Enter-ReleaseOperationLock {
+    $state = Get-ReleaseOperationLockSchemaState
+    if ($state -eq 'LOCK_SCHEMA_READY') {
+        Invoke-ReleaseOperationLockAcquire
+        Assert-ReleaseOperationLockOwnership
+        return
+    }
+    if ($state -eq 'LOCK_SCHEMA_LEGACY') {
+        Invoke-ReleaseOperationLegacyLockAcquire
+        Invoke-ReleaseOperationLockLeaseUpgrade
+        Assert-ReleaseOperationLockOwnership
+        return
+    }
+    throw "RELEASE_OPERATION_LOCK_SCHEMA_NOT_READY: state=$state"
 }
 
 function Invoke-ReleaseOperationLockAcquire {
@@ -5822,12 +5920,50 @@ function Assert-ReleaseOperationWriteFence {
     Assert-ReleaseOperationLockOwnership
 }
 
+function Invoke-ReleaseOperationLegacyLockRelease {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Status,
+        [string]$ErrorMessage = ''
+    )
+    $operationId = "$Environment-$ReleaseTag"
+    $encodedErrorMessage = ConvertTo-ReleaseErrorBase64 -Value $ErrorMessage
+    $errorSqlExpression = if ([string]::IsNullOrWhiteSpace($encodedErrorMessage)) {
+        'NULL'
+    } else {
+        "CONVERT(FROM_BASE64('$encodedErrorMessage') USING utf8mb4)"
+    }
+    $lockSql = @"
+UPDATE infra_release_operation_lock
+SET status = '$Status', finished_at = NOW(), error_message = $errorSqlExpression,
+    updater = 'release-system', update_time = NOW()
+WHERE target_environment = '$Environment'
+  AND operation_id = '$operationId'
+  AND release_tag = '$ReleaseTag'
+  AND status = 'RUNNING';
+SELECT CASE WHEN ROW_COUNT() = 1 THEN 'LEGACY_LOCK_RELEASED' ELSE 'LEGACY_LOCK_RELEASE_FAILED' END;
+"@
+    $capture = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | docker exec -i -e MYSQL_PWD=$mySqlRootPassword intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --raw --skip-column-names ruoyi-vue-pro
+$lockSql
+SQL"
+    if (-not $capture.Ok -or $capture.Output -notmatch 'LEGACY_LOCK_RELEASED') {
+        throw "RELEASE_OPERATION_LEGACY_LOCK_RELEASE_FAILED: $($capture.Output)"
+    }
+    $script:ReleaseOperationLockHeld = $false
+    $script:ReleaseOperationLegacyLockHeld = $false
+    $script:ReleaseOperationLockReleasing = $false
+}
+
 function Invoke-ReleaseOperationLockRelease {
     param(
         [Parameter(Mandatory = $true)]
         [string]$Status,
         [string]$ErrorMessage = ''
     )
+    if ($script:ReleaseOperationLegacyLockHeld) {
+        Invoke-ReleaseOperationLegacyLockRelease -Status $Status -ErrorMessage $ErrorMessage
+        return
+    }
     $operationId = "$Environment-$ReleaseTag"
     $encodedErrorMessage = ConvertTo-ReleaseErrorBase64 -Value $ErrorMessage
     $errorSqlExpression = if ([string]::IsNullOrWhiteSpace($encodedErrorMessage)) {
@@ -5858,6 +5994,7 @@ WHERE target_environment = '$Environment';
 $lockSql
 SQL"
     $script:ReleaseOperationLockHeld = $false
+    $script:ReleaseOperationLegacyLockHeld = $false
     $script:ReleaseOperationLockReleasing = $false
     $script:ReleaseOperationLeaseToken = ''
 }
@@ -7025,9 +7162,7 @@ $requiresReleaseOperationLock = ($Mode -eq 'deploy-release') -and ($publishBacke
 
 try {
     if ($requiresReleaseOperationLock) {
-        Assert-ReleaseOperationLockSchemaReady
-        Invoke-ReleaseOperationLockAcquire
-        Assert-ReleaseOperationLockOwnership
+        Enter-ReleaseOperationLock
     }
 
     Assert-ReleaseOperationWriteFence
@@ -7137,7 +7272,7 @@ if ($publishBackend) {
     Wait-RemoteContainerHealth -ContainerName 'intruoyi-mysql' -TimeoutSeconds 180
     Wait-RemoteMySqlReady -TimeoutSeconds 180
     Ensure-ReleaseMigrationStateSchema
-    Ensure-ReleaseOperationLockLeaseSchema
+    Assert-ReleaseOperationLockSchemaReady
     if (-not $SkipDatabaseSync) {
         $script:ReleaseOperationLockHeld = $false
         $script:ReleaseOperationLeaseToken = ''

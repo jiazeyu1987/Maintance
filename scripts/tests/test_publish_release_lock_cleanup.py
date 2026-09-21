@@ -83,28 +83,27 @@ def test_lock_ownership_is_fenced_by_lease_and_executor_identity() -> None:
     assert "LOCK_LOST" in script
     assert "HEARTBEAT_RENEWED" in script
     assert "lease_token = '$($script:ReleaseOperationLeaseToken.Replace(\"'\", \"''\"))'" in script
-    assert "function Ensure-ReleaseOperationLockLeaseSchema" in script
-    assert "Ensure-ReleaseOperationLockLeaseSchema" in script
+    assert "function Get-ReleaseOperationLockSchemaState" in script
+    assert "function Enter-ReleaseOperationLock" in script
+    assert "20260921_infra_release_operation_lock_lease_fencing.sql" in script
 
 
 def test_deploy_acquires_lock_before_first_remote_mutation() -> None:
     script = read_publish_script()
     deploy_runtime = script[script.index("Info 'Writing remote compose environment file locally'"):]
     protected_try = deploy_runtime.index("try {")
-    schema_gate = deploy_runtime.index("Assert-ReleaseOperationLockSchemaReady", protected_try)
-    acquire = deploy_runtime.index("Invoke-ReleaseOperationLockAcquire", schema_gate)
+    acquire = deploy_runtime.index("Enter-ReleaseOperationLock", protected_try)
     data_disk = deploy_runtime.index("Assert-RemoteRuntimeDataOnDataDisk", acquire)
     release_tree = deploy_runtime.index("Prepare-RemoteReleaseTree", data_disk)
 
-    assert protected_try < schema_gate < acquire < data_disk < release_tree
-    assert "Ensure-ReleaseMigrationStateSchema" not in deploy_runtime[schema_gate:acquire]
-    assert "Ensure-ReleaseOperationLockLeaseSchema" not in deploy_runtime[schema_gate:acquire]
+    assert protected_try < acquire < data_disk < release_tree
+    assert "Ensure-ReleaseMigrationStateSchema" not in deploy_runtime[protected_try:acquire]
 
 
 def test_pre_acquire_lock_schema_gate_is_read_only_and_complete() -> None:
     script = read_publish_script()
-    start = script.index("function Assert-ReleaseOperationLockSchemaReady")
-    end = script.index("function Invoke-ReleaseOperationLockAcquire", start)
+    start = script.index("function Get-ReleaseOperationLockSchemaState")
+    end = script.index("function Assert-ReleaseOperationLockSchemaReady", start)
     block = script[start:end]
 
     assert "information_schema.TABLES" in block
@@ -112,9 +111,33 @@ def test_pre_acquire_lock_schema_gate_is_read_only_and_complete() -> None:
     for column in ("executor_host", "executor_pid", "executor_identity", "lease_token", "heartbeat_at", "write_fence"):
         assert column in block
     assert "LOCK_SCHEMA_READY" in block
+    assert "LOCK_SCHEMA_LEGACY" in block
+    assert "LOCK_SCHEMA_INVALID" in block
     assert "ALTER TABLE" not in block
     assert "INSERT INTO" not in block
     assert "UPDATE " not in block
+
+
+def test_legacy_lock_schema_is_upgraded_only_after_exact_legacy_lock_acquire() -> None:
+    script = read_publish_script()
+    assert "function Get-ReleaseOperationLockSchemaState" in script
+    assert "LOCK_SCHEMA_LEGACY" in script
+    assert "LOCK_SCHEMA_INVALID" in script
+    assert "function Invoke-ReleaseOperationLegacyLockAcquire" in script
+    assert "function Invoke-ReleaseOperationLockLeaseUpgrade" in script
+    assert "function Enter-ReleaseOperationLock" in script
+
+    enter_start = script.index("function Enter-ReleaseOperationLock")
+    enter_end = script.index("function Invoke-ReleaseOperationLockAcquire", enter_start)
+    enter = script[enter_start:enter_end]
+    legacy_branch = enter[enter.index("if ($state -eq 'LOCK_SCHEMA_LEGACY')"):]
+    state = enter.index("Get-ReleaseOperationLockSchemaState")
+    legacy = legacy_branch.index("Invoke-ReleaseOperationLegacyLockAcquire")
+    upgrade = legacy_branch.index("Invoke-ReleaseOperationLockLeaseUpgrade")
+    ownership = legacy_branch.index("Assert-ReleaseOperationLockOwnership")
+    assert state >= 0 and legacy < upgrade < ownership
+    assert "20260921_infra_release_operation_lock_lease_fencing.sql" in script
+    assert "ALTER TABLE" not in enter
 
 
 def test_all_remote_deploy_components_share_the_environment_lock() -> None:
