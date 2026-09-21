@@ -6,7 +6,7 @@
 
 ## Current Status
 
-in_progress — 正式发布已有条件授权：授权边界是整改代码和验证门禁全部通过后，使用真实页面按钮将同一不可变 releaseTag 从测试服晋级正式服；不扩大到其它环境或业务变更，也不重复索取同一授权。13 项代码修复、最新主干融合和静态门禁已收敛：SQL 事务回滚、发布锁持有边界、首次远程写入前取锁、所有远程组件共享环境锁、并发构建互斥、命令超时/进程树、预览快照绑定、终态归档解耦、租约脱敏、预检对齐和写入级租约栅栏均已有代码及行为测试证据。r104 暴露的已执行迁移摘要漂移已修正，注册证提醒迁移原始字节摘要恢复为测试服台账的 `03a9b6aa...fabca48`，目标预检改为由同名外部合同推导。应用最终修复与 6/6 DCC 完整定向测试已融入本地及远端 `int_main=4b556f2de`；维护 `int_main=5bde76f` 已包含发布脚本修复，原有并行改动完整保留。维护发布/锁/预检 212 项、应用迁移 18 项、迁移策略 632 项、维护后端 40 项及 package、维护前端 typecheck/build、PowerShell AST、Python compileall 均通过。实际发布写入函数已经过 PowerShell→SSH→测试服临时 MySQL 验证：持锁写入成功，租约替换后写入阻断且无台账残留。当前技术门禁满足，下一步创建专用发布 worktree 并通过真实按钮执行测试服部署、测试验收、mark-tested 和正式晋级；任一实际门禁失败则保留证据并停止。
+in_progress — 整改/待独立复检。用户新增强制门禁：整改完成后必须通知用户安排审阅任务 `codex://threads/01a0bd1f-ea37-7112-bdc5-4673055ff2c0` 复检；只有该任务明确给出“同意发布”结论，才能执行测试服部署、mark-tested 或正式服晋级。原有正式发布条件授权仍有效，但不能越过这项更新的复检条件。r105 构建 operation `op-2026-09-21T044719435296100Z-00dbe90b-dc79-46ba-b36f-488d3ebd32e2` 已 FAILED 于本机结构演练，未见本轮部署写入，r105 判废。应用修复提交 `f97a25ea6`、维护修复提交 `e357a53` 已通过定向验证；第九轮复审进一步确认主程序产品入口仍调用应用仓旧发布脚本，维护 standalone 通用按钮不能替代产品验收。当前任务只做调用链整改、本地/隔离验证及只读核查，不启动 r106 构建或任何部署，复检前不把 code gate PASS 宣称为发布成功。
 
 ## Milestones
 
@@ -19,11 +19,17 @@ in_progress — 正式发布已有条件授权：授权边界是整改代码和�
 
 ## 本轮发布冻结
 
-- releaseTag: `release-20260921-button-prod-r106`（r105 在本地 schema rehearsal 失败并判废）
+- releaseTag: `release-20260921-button-prod-r106` 仅为待复检候选；r105 在本地 schema rehearsal 失败并判废。整改如改变冻结源，复检后须重新冻结并使用新 tag。
 - 维护 worktree: `D:\IntRuoyiWorktree\r260921-prod-release2\m` @ `e357a531da0f8e5e9fbc9c1bbc824fddd9f365bc`
 - 应用/前端 worktree: `D:\IntRuoyiWorktree\r260921-prod-release2\a` @ `f97a25ea6ce28abeceed4a6ce1a3e859adf9c357`
 - 发布范围: `app-release`，不复制 MySQL/MinIO 业务数据，只执行版本化 required SQL。
-- 执行入口: 本轮独立运行控制台真实页面；所有写入动作必须通过按钮。
+- 执行入口: 主程序运行控制台专用 workflow 页面/API；维护仓发布脚本仅作受控执行器。维护 standalone 通用动作不作为正式晋级验收。
+
+## 复检放行门禁
+
+- 整改完成后先提供源码提交、调用链/发布器指纹、测试、页面非发布路径证据和未覆盖项，通知用户安排上述审阅任务复检。
+- 审阅任务明确给出“同意发布”之前，禁止测试服部署、mark-tested、正式服晋级；不得用 standalone、通用 `/actions`、脚本直调或手工改目标状态绕过。
+- 本任务本地 PASS、自动续跑和时间经过均不构成复检放行。
 
 ## Expected Verification
 

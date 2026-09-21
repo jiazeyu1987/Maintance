@@ -279,3 +279,7 @@
 - GREEN: optional-project-migration-immutable -> PASS；恢复幂等已执行内容并新增摘要回归，应用 19 passed，migration policy 633 PASS；提交 `f97a25ea6` 已 fast-forward 并推送 `origin/int_main`。
 - GREEN: release-console-refresh -> PASS；本任务维护控制台已用融合后 JAR 重启，PID `69084`，JAR SHA-256 `60356A36026A6FD1F8B54EF7CE5480CAE95F8D264DE18AE3569400E5CA61C41C`，`48181/actuator/health=UP`；源码根指向本轮 clean worktree。
 - GREEN: r106-source-freeze -> PASS；新 tag `release-20260921-button-prod-r106`，维护 `e357a531da0f8e5e9fbc9c1bbc824fddd9f365bc`，应用/前端 `f97a25ea6ce28abeceed4a6ce1a3e859adf9c357`，两仓 clean；禁止复用 r105 任何包/证据。
+- BLOCKER: independent-review-before-release -> 用户新增强制复检门禁：本任务整改后先请用户安排审阅任务 `codex://threads/01a0bd1f-ea37-7112-bdc5-4673055ff2c0`，只有其明确“同意发布”才可发布。本任务暂停 r106 按钮构建及测试服/正式服写入；自检 PASS 不代替独立复检。
+- GREEN: r105-terminal-audit -> PASS；最新本机 operation 为 `FAILED`，失败阶段是 schema rehearsal `20260904_dcc_registration_certificate_download_optional_project_code.sql` 的 `ERROR 3821`，未发生本轮部署、mark-tested 或正式晋级。历史迁移不可变修复提交 `f97a25ea6` 已推送，r105 不复用。
+- BDD: 主程序专用正式晋级调用链 -> Given 已测试同一不可发布包和审阅放行，When 从主程序专用按钮提交晋级，Then 服务端必须绑定 workflow/preview/grant/幂等键、正式目标和同一包摘要，实际执行经受控维护发布器的最新锁/租约/验收逻辑，不重建不换包；通用 `/actions` 正式入口被拒绝。
+- RED: production-entry-drift -> FAIL；当前主程序 `RuntimeControlOperationAction.PROMOTE_PROD` 指向 `script/deploy/publish-int-ruoyi.ps1`，主程序源脚本哈希与维护 `ops/deploy/publish-int-ruoyi.ps1` 不同，且未包含 `Enter-ReleaseOperationLock`；专用 workflow 按钮/授权实现仅存在未融合分支 `codex/prod-promotion-button-implementation`，不得用维护 standalone 代替。
