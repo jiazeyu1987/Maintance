@@ -2,7 +2,7 @@
 
 ## Verdict
 
-PASS (code gate) / RELEASE AUTHORIZED — 13 项代码、静态和隔离行为门禁已通过；正式发布条件授权已存在，真实按钮闭环尚未执行，不能把代码门禁当作正式发布成功。
+REMEDIATION IN PROGRESS / REVIEW REQUIRED — 既有代码门禁有通过证据，但第九轮复审发现主程序正式晋级入口与已验证维护发布器断开。用户新增独立复检门禁；审阅任务明确“同意发布”之前不得执行测试服部署、mark-tested 或正式晋级。r105 构建已 FAILED，未完成发布。
 
 ## Requirement Evidence
 
@@ -20,7 +20,7 @@ PASS (code gate) / RELEASE AUTHORIZED — 13 项代码、静态和隔离行为�
 | 10 | 真实生产执行链行为测试 | 生产迁移写入函数经实际 PowerShell→SSH→测试服 MySQL 临时库验证：持锁写入成功，租约替换后写入失败且无新台账；实际恢复脚本的活跃心跳、并发单赢家和精确终态同步通过，临时库已清零 | PASS（隔离真实链） |
 | 11 | 正确诊断顺序 | 本轮先真实谓词/实库复现，再修复和全量静态回归，未以按钮构建逐项试错 | PASS |
 | 12 | 维护仓主干融合与收尾 | 完整修复链已与最新本地主干语义融合并 fast-forward 到 `int_main=5bde76f`；合并结果后端/package、前端 typecheck/build 及 212 项发布回归通过，主工作区并发改动完整保留；维护仓无 remote | PASS（本地主干已融合） |
-| 13 | 一键正式发布最终验收 | 正式发布条件授权已存在；尚未执行同一 releaseTag 的真实按钮完整链路和正式运行态验收 | PENDING（授权已满足） |
+| 13 | 一键正式发布最终验收 | 主程序专用 workflow/preview/grant 入口未融入当前主干，实际动作仍解析应用仓旧发布脚本；r105 本地构建失败、无部署成功。独立复检尚未放行 | BLOCKED（整改/待复检） |
 
 ## Verification Commands
 
@@ -37,4 +37,5 @@ PASS (code gate) / RELEASE AUTHORIZED — 13 项代码、静态和隔离行为�
 ## Remaining Gates
 
 1. 已确认应用本地 `int_main=4b556f2de` 与 `origin/int_main` 一致；维护本地 `int_main=5bde76f` 已包含发布整改。无需再等待远端同步授权。
-2. 创建全新临时发布 worktree，以同一 releaseTag 通过真实页面按钮完成 build-release、publish-test、真实测试验收、mark-tested、promote-prod 和正式运行态验收；任何技术门禁失败都必须停止并记录准确阶段/副作用。
+2. 融合主程序专用正式晋级入口，将实际执行链统一到已验证发布器，保留 TESTED 同包、preview、一次性授权、幂等和状态隔离；仅用本地/隔离与页面非发布路径验证。
+3. 整改完成后通知用户安排 `codex://threads/01a0bd1f-ea37-7112-bdc5-4673055ff2c0` 复检。只有其明确“同意发布”后，才能重新冻结新包并通过真实主程序按钮执行测试服和正式服闭环。
