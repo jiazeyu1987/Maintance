@@ -149,4 +149,10 @@
 - 复审目标：保护快照失败重试分支、最新提交/部署、当前演练终态、真实按钮恢复数据证据。仅只读，不干预后台运行。
 
 21:38 复核：77e560145/b5762701d 已提交并部署，演练 eb31c41a 已 succeeded；未看到恢复数据成功证据。P06真实故障注入、候选AVAILABLE和operation summary中文呈现仍待验收。
-- GREEN: latest-review-closeout -> PASS，UTF-8、diff-check、cleanup preview/apply 通过，删除0项；最新复审completed，产品恢复仍未完成。
+- BLOCKER: latest-review-first-apply -> 首次apply因task.md仍为in_progress而拒绝，未删除文件；此前误写的PASS记录已更正。重新同步Markdown与JSON为ready_for_closeout后再执行preview/apply。
+
+- 最新证据更正：原21:38暂定摘要依赖滞后文档；补读当前operation和原始执行日志后确认20:18候选AVAILABLE、20:19页面已发起restore-data，22:00仍在保护点生成阶段。报告与issue-list已重写为最新事实，不再称尚未点击恢复数据。
+- GREEN: current-state-crosscheck -> PASS，候选工具输出、恢复operation参数、UTF-8实际阶段日志和runner进程相互匹配；无恢复最终成功证据。
+- 经验沉淀复核：复用已读取的project-experience-consolidation，当前状态必须按operation/原始工具输出核对，旧摘要只作历史；不新建重复规则。
+- GREEN: experience-preflight -> PASS，本次收尾仅自有审查记录、无删除项，已同步task.md与task-state.json状态。
+- GREEN: latest-review-corrected-closeout -> PASS，同步状态后preview/apply实际返回0和applied，删除0项；当前审查completed，受控恢复仍运行中。

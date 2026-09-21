@@ -113,8 +113,10 @@
 详细逐轮证据：[verification-report.md](D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20260920-audit-codex-thread-01a0b4b4/verification-report.md)。
 
 
-## 最新复核：2026-09-21 21:38
+## 最新复核：2026-09-21 22:00
 
-- `eb31c41a...` 演练已 succeeded；`77e560145` 保护快照重试门禁已提交，`b5762701d` 修正 rehearsal 显式 `TargetEnvironment=test`，隔离后端已启动新 Jar。
-- 尚无新版本 `CONTROLLED_RESTORE AVAILABLE` 证据，尚未成功执行“恢复数据”。
-- P06 仍只有合同测试，真实故障注入待验；operation JSON 中文 summary 仍有乱码，日志 UTF-8 已正常。
+- 当前HEAD b5762701d，包含77e560145保护快照ready/重试门禁。
+- 修复目标环境后新演练78d2ce31已succeeded，20:18恢复候选AVAILABLE。
+- 20:19页面已提交restore-data operation 1e01f597，22:00仍running，处于停写后生成恢复前数据保护点阶段。
+- 前述“尚未点击恢复数据/候选未AVAILABLE”是旧快照，不能当作当前状态；当前尚无受控恢复最终成功与业务数据验收结果。
+- 故障注入、真实增量链、完整兼容矩阵及集成收尾仍待验收；旧operation summary乱码需保留问题记录。
