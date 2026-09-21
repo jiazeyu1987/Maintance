@@ -114,3 +114,13 @@
 - 经验沉淀复核沿用 project-experience-consolidation；现有模块合同、写入屏障、证据层级和状态复核规则已覆盖本轮原则，新增精确缺口保留在任务报告。
 - GREEN: experience-preflight -> PASS，仅清理/提交自有审查记录，无删除候选和本任务运行资源。
 - GREEN: sep21-review-closeout -> PASS，审查文档 UTF-8、diff-check、preview/apply 通过，删除 0 项；本轮审查 completed，原业务目标未被标记完成。
+
+## 向续接任务发送最新修改意见
+- 用户明确要求将修改意见发送给“备份恢复 (2)”；目标已由上一轮 list_threads/read_thread 确认为 01a0bfc0-5616-74f2-8e7e-de290a9e3c09。
+- 发送范围：先复核后台备份、P04 指纹生产消费合同、P03 增量候选入口、P02 快照共同一致点、P01 不可变证据、P06 故障验收、两链保留与最终真实按钮闭环；不接管执行器或直接修改产品。
+- GREEN: continuation-guidance-send -> PASS，send_message_to_thread 对 01a0bfc0-5616-74f2-8e7e-de290a9e3c09 返回 isError=false；包含精确生产者/消费者路径、行为测试、运行状态复核和真实前端按钮验收要求，未更改模型。
+- 发送成功不代表修复完成；本轮仅协调，不中断正常后台备份，不操作目标运行环境。
+- 经验沉淀复核继续复用既有技能与经验入口；本次传达没有新增长期规则。
+- GREEN: experience-preflight -> PASS，只收尾自有审查记录，无删除候选与本任务运行进程。
+- GREEN: continuation-guidance-context-delivery -> PASS，目标 rollout 于 2026-09-21T03:27:28.101Z 记录完整意见的 codex_delegation 工具输出，确认进入执行上下文；不等同于已落实。
+- GREEN: continuation-guidance-closeout -> PASS，preview/apply 删除 0 项、无 blocker，文档 UTF-8 与 diff-check 通过；本次协调 completed。
