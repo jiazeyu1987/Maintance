@@ -135,3 +135,11 @@
 - 经验沉淀复核沿用已加载 project-experience-consolidation；保护点真实完整性与故障状态分层是既有门禁，本轮精确分支缺口写入审查报告，不新增重复长期文档。
 - GREEN: experience-preflight -> PASS，本轮收尾仅自有审查记录，无删除候选和任务自有运行资源。
 - GREEN: f742-review-closeout -> PASS，审查文档 UTF-8、diff-check、preview/apply 通过，删除0项；本轮审查completed，产品恢复放行仍受残余缺口限制。
+
+## 保护快照重试修改意见传达
+- 用户明确要求发送至 01a0bfc0-5616-74f2-8e7e-de290a9e3c09；已发送具体代码路径、snapshot-ready/破坏性阶段区分、同点重试、保护点完整性和故障测试要求。
+- GREEN: snapshot-retry-guidance-send -> PASS，发送工具返回 isError=false。要求先核对当前演练、不重复提交或强杀正常执行器，修复前不放行恢复数据；实际验收仍走前端按钮。
+- 工具接受消息不等于对方已落实修复。本轮仅协调，未修改产品或运行环境。
+- 经验沉淀复核沿用既有技能及保护点完整性门禁，无新增长期规则。
+- GREEN: experience-preflight -> PASS，收尾仅涉及自有审查记录，无删除候选、无自有运行资源。
+- GREEN: snapshot-guidance-closeout -> PASS，preview/apply 无阻塞、删除0项；文档 UTF-8 与 diff-check 通过，协调事项 completed。
