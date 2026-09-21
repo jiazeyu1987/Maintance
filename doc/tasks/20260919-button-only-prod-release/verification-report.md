@@ -2,7 +2,14 @@
 
 ## Verdict
 
-BLOCKED / NOT READY FOR INDEPENDENT RECHECK — 第十轮 R10-1 预览真实证据核验在隔离组件和本机 PowerShell 合同中转绿；R10-2 新版主程序通过真实 admin 页面可达，但测试租户凭据缺失、本机 promote-prod 菜单尚未迁移、总览自动远端只读探测失败，权限及页面验收未闭合。审阅任务仍为 BLOCKED；未明确“同意发布”前禁止构建、部署、mark-tested 或晋级。r105 已判废，r106 从未构建。
+BLOCKED / NOT READY FOR INDEPENDENT RECHECK — 第十一轮已修复本机 SSH/Bash 只读状态脚本，并在授权测试服执行 status 只读复验成功；本地主干已融合 `489c63728`，运行控制回归、前端类型、脚本 6/6、迁移策略 638 通过。测试租户凭据缺失、专用 promote-prod 菜单/绑定未完成，主程序页面权限验收仍未闭合。审阅任务仍 BLOCKED；未明确“同意发布”前禁止构建、部署、mark-tested 或晋级。r105 已判废，r106 从未构建。
+
+## 第十一轮增量
+
+- RED：旧 remote-root-disk 脚本经 SSH 参数承载 CRLF 多行 Bash，真实页面错误为 `set: -\r invalid option`/unexpected EOF。
+- GREEN：改用 UTF-8 无 BOM/LF stdin + `bash -s`，Windows PowerShell 字节合同与脚本 6/6 PASS；测试服只读 status exit 0，返回目标 host、mountPoint、容量/inode 指标；未执行 cleanup、迁移、容器、.env 或发布写入。
+- GREEN：应用工作树提交 `489c63728`，已快进融合本地主干；主工作区并行改动未覆盖。融合结果 Maven `RuntimeControl*Test,ReleaseWorkflow*Test`、前端类型、按钮静态合同和迁移策略 `migrationCount=638` PASS。
+- BLOCKER：测试租户 `aoteman` 真实密码无安全来源，不能猜测；本机数据库尚无新 `infra:runtime-control:promote-prod` 菜单，未执行权限迁移/角色绑定；admin 只读截图不替代测试租户结论。审查服不在本轮范围。
 
 ## 第十轮增量（当前）
 

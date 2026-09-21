@@ -1,7 +1,7 @@
 {
   "taskId": "20260919-button-only-prod-release",
   "status": "blocked",
-  "phase": "r10-local-readonly-review",
+  "phase": "r11-local-readonly-review",
   "independentReview": "BLOCKED",
   "releaseAllowed": false,
   "releaseOperations": {
@@ -10,12 +10,12 @@
   },
   "milestones": {
     "r10EvidencePreview": "verified_local_components",
-    "r10LocalBrowser": "partial_blocked",
+    "r10LocalBrowser": "partial_blocked_r11_readonly_status_fixed",
     "independentRecheck": "not_requested_until_blockers_resolved",
     "testAndProductionDeployment": "not_started"
   },
   "commits": {
-    "applicationLocal": "c8edc935cd1d757242d4f44f009c042c7355c922",
+    "applicationLocal": "489c63728",
     "maintenanceLocal": "1ce47efe7e3e958524cca529ea22b47b478c0d33"
   },
   "localRuntime": {
@@ -23,7 +23,9 @@
     "backendPort": 48086,
     "backendJarSha256": "8F85E6B2EACC1A3C44C0D28343D747A9753840B696E626FACBFD28EB7A2D65B3",
     "productionWriteEnabled": false,
-    "taskProcessesRunning": false
+    "taskProcessesRunning": false,
+    "testServerReadonlyStatus": "PASS",
+    "migrationPolicyCount": 638
   },
   "blockers": [
     "TEST_TENANT_CREDENTIAL_MISSING",
