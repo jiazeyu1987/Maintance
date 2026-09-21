@@ -25,6 +25,7 @@ in_progress — 本地静态/隔离整改完成，待独立复检和真实按钮
 - 发布范围: `app-release`，不复制 MySQL/MinIO 业务数据，只执行版本化 required SQL。
 - 执行入口: 主程序运行控制台专用 workflow 页面/API；维护仓发布脚本仅作受控执行器。维护 standalone 通用动作不作为正式晋级验收。
 - 本轮整改提交: 应用 `f797a49fa99bc8be12590b2f6d4aa2c4e5d3ff8d`；维护实现 `b55c9d2`、融合主干 `1ce47efe7e3e958524cca529ea22b47b478c0d33`。本轮两处临时 worktree 均已提交，未删除；不可当作下一次发布 worktree 复用。
+- 应用 `origin/int_main` 已推送到 `f797a49fa`；维护仓无 remote，主干仅本地提交。共享请求日志包含并行任务改动，未作为本任务提交暂存。
 
 ## 复检放行门禁
 

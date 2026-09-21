@@ -320,3 +320,4 @@
 - GREEN: maintenance-int-main-fast-forward -> 主工作区从 `9118b96` 快进到 `1ce47ef`，分支新增 3 个文件与主工作区 24 个并行 tracked/untracked 路径交集 0；未处理并行文件。两个任务工作树提交后均 clean，但仍保留，不当作未来发布 worktree 复用。
 - BLOCKER: release-runtime-binding -> 同一维护提交在主工作区与任务工作树的脚本文件 SHA-256 分别为 `EBDDC665...`、`746A5ED5...`（Git 换行转换）；必须在未来新建的本次专用发布 worktree 内对实际文件取 SHA 并绑定运行配置，不能复制上述历史 SHA。控制台尚未加载应用新提交，批准角色/权限、真实页面与服务器验收未完成。r106 未构建且源已变，放行后须新 tag。
 - GREEN: project-experience-consolidation -> PASS；执行器实际文件 SHA/双摘要和权限菜单业务身份/只读预检已合并到现有 `docs/release-build-preflight-lessons.md`，索引路由与 `docs/release-agent-checklist.md#5.0` 同步；没有新建长期经验文档，保留任务一次性状态在本目录。
+- GREEN: application-origin-push -> `git push origin int_main` PASS；远端从 `f97a25ea6` 前进到 `f797a49fa`，运行端口 hook PASS；未触发本任务发布操作。维护仓无 remote，仅本地 `int_main=140a72c`（含实现/经验/阶段记录）。
