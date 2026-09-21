@@ -19,9 +19,9 @@ in_progress — 正式发布已有条件授权：授权边界是整改代码和�
 
 ## 本轮发布冻结
 
-- releaseTag: `release-20260921-button-prod-r105`
-- 维护 worktree: `D:\IntRuoyiWorktree\r260921-prod-release2\m` @ `654f8225bfd08d8ccc03a7677478c8bf985f3578`
-- 应用/前端 worktree: `D:\IntRuoyiWorktree\r260921-prod-release2\a` @ `4b556f2de5d0f47cd7eb9dbcfc68dbe46461fe8b`
+- releaseTag: `release-20260921-button-prod-r106`（r105 在本地 schema rehearsal 失败并判废）
+- 维护 worktree: `D:\IntRuoyiWorktree\r260921-prod-release2\m` @ `e357a531da0f8e5e9fbc9c1bbc824fddd9f365bc`
+- 应用/前端 worktree: `D:\IntRuoyiWorktree\r260921-prod-release2\a` @ `f97a25ea6ce28abeceed4a6ce1a3e859adf9c357`
 - 发布范围: `app-release`，不复制 MySQL/MinIO 业务数据，只执行版本化 required SQL。
 - 执行入口: 本轮独立运行控制台真实页面；所有写入动作必须通过按钮。
 
