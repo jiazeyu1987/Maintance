@@ -426,6 +426,27 @@ function Test-ReleasePackageIntegrity {
     }
 }
 
+function Assert-ReleaseWorkflowPackageBinding {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$PackageIntegrity,
+        [string]$ExpectedPackageDigest,
+        [string]$ExpectedManifestDigest
+    )
+
+    if ($ExpectedPackageDigest -cnotmatch '^[0-9a-f]{64}$' -or
+        $ExpectedManifestDigest -cnotmatch '^[0-9a-f]{64}$') {
+        throw 'RELEASE_WORKFLOW_EXPECTED_DIGEST_REQUIRED'
+    }
+    if ([string]$PackageIntegrity.packageDigest -cne $ExpectedPackageDigest) {
+        throw 'RELEASE_WORKFLOW_PACKAGE_DIGEST_MISMATCH'
+    }
+    if ([string]$PackageIntegrity.manifestDigest -cne $ExpectedManifestDigest) {
+        throw 'RELEASE_WORKFLOW_MANIFEST_DIGEST_MISMATCH'
+    }
+}
+
 function Assert-ReleasePackageDeploymentScope {
     [CmdletBinding()]
     param(
@@ -682,6 +703,7 @@ function Test-ReleasePromotionAttestation {
 }
 
 Export-ModuleMember -Function @(
+    'Assert-ReleaseWorkflowPackageBinding',
     'Assert-ReleasePackageDeploymentScope',
     'Assert-PublishTestOperationEvidence',
     'Assert-ReleaseRollbackCompatibility',

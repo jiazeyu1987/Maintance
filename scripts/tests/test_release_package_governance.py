@@ -123,6 +123,38 @@ def _verification_result(package_dir: Path | str) -> dict[str, object]:
     return json.loads(result.stdout.strip())
 
 
+def test_deployment_requires_exact_workflow_package_and_manifest_digests(tmp_path: Path) -> None:
+    package_dir = tmp_path / "release-workflow-digest-fixture"
+    _write_package(package_dir)
+    actual = _verification_result(package_dir)
+    script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
+    download = script[script.index("function Copy-ReleasePackageFromNas"):script.index("function Get-RequiredJsonPropertyValue")]
+    assert "Assert-ReleaseWorkflowPackageBinding -PackageIntegrity $packageIntegrity" in download
+    assert "[string]$ExpectedPackageDigest" in script
+    assert "[string]$ExpectedManifestDigest" in script
+
+    for expected_package, expected_manifest, expected_code in (
+        (actual["packageDigest"], actual["manifestDigest"], "PASS"),
+        ("0" * 64, actual["manifestDigest"], "RELEASE_WORKFLOW_PACKAGE_DIGEST_MISMATCH"),
+        (actual["packageDigest"], "0" * 64, "RELEASE_WORKFLOW_MANIFEST_DIGEST_MISMATCH"),
+    ):
+        command = "\n".join((
+            "$ErrorActionPreference = 'Stop'",
+            f"Import-Module -Force '{GOVERNANCE_MODULE}'",
+            f"$actual = Test-ReleasePackageIntegrity -PackagePath '{package_dir}'",
+            f"Assert-ReleaseWorkflowPackageBinding -PackageIntegrity $actual -ExpectedPackageDigest '{expected_package}' -ExpectedManifestDigest '{expected_manifest}'",
+            "'PASS'",
+        ))
+        result = _run_powershell(["-Command", command], timeout=30)
+        output = result.stdout + result.stderr
+        if expected_code == "PASS":
+            assert result.returncode == 0, output
+            assert output.strip().endswith("PASS")
+        else:
+            assert result.returncode != 0
+            assert expected_code in output
+
+
 def test_mode_is_mandatory_and_direct_is_rejected_before_script_body(tmp_path: Path) -> None:
     script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
     mode_declaration = re.search(

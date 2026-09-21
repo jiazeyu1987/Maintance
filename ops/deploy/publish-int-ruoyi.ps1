@@ -15,6 +15,8 @@ param(
     [string]$TestConclusion = '',
     [string]$TestOperationId = '',
     [string]$TestOperationEvidencePath = '',
+    [string]$ExpectedPackageDigest = '',
+    [string]$ExpectedManifestDigest = '',
     [string]$SelectedRecoverySetCandidateId = '',
     [string]$RecoverySetId = '',
     [string]$RecoverySetManifestHash = '',
@@ -3138,6 +3140,8 @@ function Copy-ReleasePackageFromNas {
         Copy-ReleasePackageDirectory -SourceDirectory $sourcePath -DestinationDirectory $releaseDir
         $packageDirectoryName = ConvertTo-ReleasePackageDirectoryName -ReleaseTagValue $PackageTag
         $packageIntegrity = Test-ReleasePackageIntegrity -PackagePath $releaseDir -ExpectedReleaseTag $PackageTag
+        Assert-ReleaseWorkflowPackageBinding -PackageIntegrity $packageIntegrity `
+            -ExpectedPackageDigest $ExpectedPackageDigest -ExpectedManifestDigest $ExpectedManifestDigest
         if ($Environment -in @('prod', 'backup')) {
             $null = Test-ReleasePromotionAttestation `
                 -PackagePath $releaseDir `
@@ -3268,6 +3272,8 @@ function Mark-NasReleaseTested {
         }
         $packageDirectoryName = ConvertTo-ReleasePackageDirectoryName -ReleaseTagValue $PackageTag
         $packageIntegrity = Test-ReleasePackageIntegrity -PackagePath $packagePath -ExpectedReleaseTag $PackageTag
+        Assert-ReleaseWorkflowPackageBinding -PackageIntegrity $packageIntegrity `
+            -ExpectedPackageDigest $ExpectedPackageDigest -ExpectedManifestDigest $ExpectedManifestDigest
         $null = Write-ReleaseTestedAttestation `
             -PackagePath $packagePath `
             -ExpectedReleaseTag $packageIntegrity.releaseTag `
