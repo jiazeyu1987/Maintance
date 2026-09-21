@@ -1501,3 +1501,19 @@ HEAD-only 构建发布在维护仓或主程序仓主工作区 dirty，且需要�
 2. 目标只读：查真实表结构、父菜单业务身份、权限归属和 ID 占用；未确认则 fail fast。
 3. 隔离测试：同一 SQL 在随机临时库执行正常、冲突、回滚、幂等；记录数据库名称前缀与清零结果。
 4. 部署前：新鲜目标 preflight 必须 PASS；权限角色绑定须另有正式授权依据，不由迁移猜测。
+
+## 本地主程序页面审阅前的隐式远端读门禁
+
+- Trigger: 在隔离 worktree 启动运行控制台并用 Playwright 验证页面、权限或发布预览，即使计划中不点击发布按钮。
+- Preflight check: 启动前检查页面挂载时自动请求的 overview、release-status、remote-root-disk/status、probes 等只读接口及后端状态脚本的目标环境；逐项确认本轮对测试服/正式服/审查服的只读访问授权和脚本退出码合同。`accessEnabled=false` 只代表禁写，不可推断状态探测被禁用。核 PID/JAR 文件 SHA、提交、独立端口和生产写开关，再从真实登录页进入。
+- Blocker: 只获本机页面授权却会自动连接远端、目标读权限未确认、SSH/shell 状态脚本失败或页面长期等待时立即停止远端页面重试；保留脱敏诊断并请求明确边界，不通过 mock 网络或改写环境语义制造页面绿灯。
+- Verification: Playwright 只保存页面截图和请求方法/路径/HTTP 状态，分别标记 admin 只读对照与测试租户验收；记录进程归属、任务独立端口、实际 JAR 哈希、已发出的远端只读探测及结果，并复查关闭后的任务端口不监听。
+- Forbidden action: 禁止把 `productionWriteEnabled=false` 或 `accessEnabled=false` 当作禁用远端读的证明；禁止按端口盲停其它任务进程、猜测试租户密码、用 admin 代替测试租户权限结论、点击构建/部署来获取预览证据。
+- Evidence: `doc/tasks/20260919-button-only-prod-release/execution-log.md` 的第十轮本机页面审阅，read-only overview 引发状态脚本错误后停止本任务实例。
+
+### 阶段 checklist
+
+1. 运行前：读页面自动 GET 与后端状态脚本目标，确认各远端环境只读授权；缺项 fail fast。
+2. 绑定：确认工作树 clean、JAR/前端来源、独立 PID/端口和生产写开关；记录实际文件 SHA。
+3. 页面：使用固定 Playwright 和真实租户登录，只保留脱敏网络与截图；脚本非零或真实页面错误不静默重试。
+4. 退出：只停止本任务进程，检查任务端口和临时输出归属；保留其它任务服务。
