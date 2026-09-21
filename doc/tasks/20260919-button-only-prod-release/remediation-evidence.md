@@ -41,4 +41,12 @@ MySQL 8.0.39，正向迁移由发布器读取 `sql/mysql/20260919_runtime_contro
 
 ## Blockers
 
-应用 `int_main=f797a49fa`、维护 `int_main=1ce47ef` 已融合；实际控制台未加载新提交。权限绑定给哪个运维角色尚无本任务批准依据，迁移不会自动授予。缺少 Playwright 真实页面非发布路径和同一包测试/正式服运行态证据。用户要求独立审阅任务 `01a0bd1f-ea37-7112-bdc5-4673055ff2c0` 明确“同意发布”之前，禁止发布写入；本轮静态和隔离测试不能代替该授权。
+前序阶段应用 `int_main=f797a49fa`、维护 `int_main=1ce47ef` 已融合；当时控制台未加载新提交。权限绑定给哪个运维角色尚无本任务批准依据，迁移不会自动授予。真实 TESTED 包的测试/正式服运行态证据仍缺失。用户要求独立审阅任务 `01a0bd1f-ea37-7112-bdc5-4673055ff2c0` 明确“同意发布”之前，禁止发布写入；静态和隔离测试不能代替该授权。
+
+## R10 Review Remediation
+
+- BDD: Given 已有 TESTED 工作流，但真实 NAS manifest/tested、原始测试 operation、标准证明或执行器指纹任一缺失/漂移，When production preview/authorize/promote，Then 展示 BLOCKED、保留 TESTED、无 grant/生产 operation/服务器写入。
+- RED: 新 preview 和 orchestrator 两项测试 2/2 FAIL：只有 TESTED 字段时旧预览错误 eligible；损坏原始 operation 初轮抛错而非 blocker；正式目标缺失初轮抛错。
+- GREEN: 应用 `c8edc935c` 的只读重检、真实 NAS 字节解析、标准 UTC/SUCCESS 证明、执行器共用文件 SHA 合同；扩大运行控制 Maven 回归 PASS，真实本机 PowerShell 模块验证生成证明 PASS；前端类型与按钮静态合同 PASS。组件夹具不能代替真实 NAS 或正式服证据。
+- Verification: clean 提交的 JAR SHA-256 `8F85E6B2...` 在本任务 48086 实例运行；Playwright 1.60.0 真登录、真实菜单进 8086 主程序，工作流 GET=200，空原因时构建按钮禁用、填写原因后仅观察启用，零发布点击。页面截图与脱敏网络 JSON 在任务输出目录。
+- Blockers: 测试租户登录凭据缺失、本机 promote-prod 菜单尚未迁移；现有总览会自动远端只读探测且脚本报错，本轮不继续远端访问。无合格 TESTED 包，production preview 正向页面路径不可执行；独立审阅结论仍 BLOCKED。应用新提交只在任务工作树，尚未融合/推送主干。

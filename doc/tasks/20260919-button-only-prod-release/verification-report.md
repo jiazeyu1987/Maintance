@@ -2,7 +2,20 @@
 
 ## Verdict
 
-REMEDIATION IN PROGRESS / REVIEW REQUIRED — 主程序工作流、专用按钮和维护发布器的路径/摘要绑定已提交并融合两个本地主干；实际控制台尚未加载新代码，配置/权限和真实按钮验收均未完成。用户新增独立复检门禁；审阅任务明确“同意发布”之前不得执行测试服部署、mark-tested 或正式晋级。r105 构建已 FAILED，未完成发布。
+BLOCKED / NOT READY FOR INDEPENDENT RECHECK — 第十轮 R10-1 预览真实证据核验在隔离组件和本机 PowerShell 合同中转绿；R10-2 新版主程序通过真实 admin 页面可达，但测试租户凭据缺失、本机 promote-prod 菜单尚未迁移、总览自动远端只读探测失败，权限及页面验收未闭合。审阅任务仍为 BLOCKED；未明确“同意发布”前禁止构建、部署、mark-tested 或晋级。r105 已判废，r106 从未构建。
+
+## 第十轮增量（当前）
+
+| 项目 | 证据 | 状态 |
+|---|---|---|
+| R10-1 正式预览 | `c8edc935c`：预览只读重读 NAS manifest/tested、成功测试 operation/标准文件及维护发布器实际 SHA；eligible 快照在 grant/派发前重检。缺失、字段漂移、损坏原始 operation、执行器指纹错误均 BLOCKED，TESTED 不变、无 grant/生产 operation；执行阶段原双摘要/脚本检验保留 | 本地组件 PASS，实际 NAS/正式环境 NOT RUN |
+| 跨仓证明合同 | 应用 operation 成功后原子写标准 `SUCCESS`/UTC 证明；`ReleaseWorkflowTestEvidenceStoreTest` 真实调用维护 `ReleasePackageGovernance.psm1` 的 `Assert-PublishTestOperationEvidence` PASS；NAS tested.json 按原始字节解析并计 SHA，损坏 JSON 拒绝 | 本机真实模块 PASS |
+| 回归 | 扩大 `RuntimeControl*Test,ReleaseWorkflow*Test` Maven、前端 `ts:check`、静态按钮合同、`git diff --check` 均 exit 0；代码提交 `c8edc935c` 尚在同任务分支，未合主干/推送 | PASS（本地） |
+| 新版本运行身份 | clean `c8edc935c` 构建本机 JAR SHA-256 `8F85E6B2...`，PID 9884 曾运行于 48086，前端 8086；进程 JAR 路径/哈希与构建文件一致，生产写开关 false、Quartz 和本地 job-control false；GET `/admin-api/infra/runtime-control/release-workflows` 200；任务进程现已退出 | 部分 PASS |
+| Playwright 页面 | 固定 1.60.0 + 显式 Chromium 1223，从 8086 登录页经真实菜单进入 `/infra/monitors/runtime-control`。工作流面板可见；发布原因为空时构建按钮禁用，填写后仅观察启用、不点击；无合格 TESTED 包，晋级按钮 0，旧通用正式按钮 0。浏览器只记录脱敏 GET 路径/状态；截图在任务输出目录 | admin 只读 PASS；测试租户 NOT RUN |
+| 权限和总览 | 只读库核测试租户 122 的 `aoteman` 现有 super_admin 与 query/operate/restart 角色绑定；本地尚无新增 promote-prod 菜单。既有总览自动调用远端只读状态脚本并出现 SSH/shell 错误；不能以禁写配置误当禁读，也不在未明确边界下继续远端探测 | BLOCKED |
+
+未覆盖：缺真实合格 TESTED 包，不能在页面点 production preview 正向路径或做实际 NAS/目标运行态复验；缺测试租户登录凭据与明确远端只读边界，无法完成该身份的菜单/独立生产权限和错误反馈 E2E。没有执行任何新发布写入或创建生产 operation；本轮页面证据不证明可正式发布。
 
 ## Requirement Evidence
 
@@ -30,7 +43,7 @@ REMEDIATION IN PROGRESS / REVIEW REQUIRED — 主程序工作流、专用按钮�
 - 以上均不是生产环境页面验收或实际发布成功证明。控制台未加载本轮新提交，`productionWriteEnabled` 与批准提交/脚本 SHA 配置尚待冻结后的明确设置。
 - 本轮提交与融合：应用 `f797a49fa`、维护实现 `b55c9d2` / 本地主干 `1ce47ef`；维护融合后的 124 项发布相关测试 PASS。r106 从未构建且原源码冻结失效，后续必须新 worktree/new tag。
 
-## Verification Commands
+## 前序验证命令（历史，非第十轮发布许可）
 
 - `mvn -q test package` -> PASS。
 - `corepack pnpm typecheck`、`corepack pnpm build` -> PASS。
@@ -44,6 +57,6 @@ REMEDIATION IN PROGRESS / REVIEW REQUIRED — 主程序工作流、专用按钮�
 
 ## Remaining Gates
 
-1. 已确认应用本地 `int_main=4b556f2de` 与 `origin/int_main` 一致；维护本地 `int_main=5bde76f` 已包含发布整改。无需再等待远端同步授权。
-2. 本地主干已融合；需独立复检，且实际控制台加载新提交前不得开始发布。发布配置必须绑定新的冻结 worktree、批准提交和该工作树上维护脚本的实际文件 SHA，不能使用默认主工作区路径、空摘要或别的工作树 SHA。权限 SQL 不自动给任何角色授权，正式晋级操作人必须有经批准的菜单角色绑定或原有超管权限。
-3. 整改完成后通知用户安排 `codex://threads/01a0bd1f-ea37-7112-bdc5-4673055ff2c0` 复检。只有其明确“同意发布”后，才能新建本次专用发布 worktree、重新冻结新 releaseTag，通过真实主程序按钮执行测试服和正式服闭环；在此之前不做发布写入。
+1. 应用 `int_main/origin=int_main=f797a49fa` 为前轮基线；本轮预览整改 `c8edc935c` 仅在任务分支，未融合/推送。维护本地主干含上轮修复且无 remote，不得将基线提交当作本轮代码运行身份。
+2. 测试租户 `aoteman` 真实登录凭据缺失；本机新 permission 菜单尚未执行迁移，不能扩大主租户或其它角色权限制造按钮可见。需确认本地控制台总览自动只读探测远端的授权边界，并修复/记录既有 SSH 脚本失败后，才能继续该页面 E2E；不能通过 mock 或禁读伪装。没有 TESTED 包时正向 production preview 合理 NOT RUN。
+3. 补齐 R10-2 后更新机器状态与脱敏页面证据，通知用户安排 `codex://threads/01a0bd1f-ea37-7112-bdc5-4673055ff2c0` 复检。只有其明确“同意发布”后，才能新建专用冻结 worktree、绑定实际脚本 SHA 和批准提交并使用新 releaseTag；在此之前不做发布写入。
