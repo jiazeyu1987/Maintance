@@ -143,3 +143,10 @@
 - 经验沉淀复核沿用既有技能及保护点完整性门禁，无新增长期规则。
 - GREEN: experience-preflight -> PASS，收尾仅涉及自有审查记录，无删除候选、无自有运行资源。
 - GREEN: snapshot-guidance-closeout -> PASS，preview/apply 无阻塞、删除0项；文档 UTF-8 与 diff-check 通过，协调事项 completed。
+
+## 最新复审
+- 用户再次要求分析指定原任务；同时检查续接任务“备份恢复 (2)”的最新状态。
+- 复审目标：保护快照失败重试分支、最新提交/部署、当前演练终态、真实按钮恢复数据证据。仅只读，不干预后台运行。
+
+21:38 复核：77e560145/b5762701d 已提交并部署，演练 eb31c41a 已 succeeded；未看到恢复数据成功证据。P06真实故障注入、候选AVAILABLE和operation summary中文呈现仍待验收。
+- GREEN: latest-review-closeout -> PASS，UTF-8、diff-check、cleanup preview/apply 通过，删除0项；最新复审completed，产品恢复仍未完成。

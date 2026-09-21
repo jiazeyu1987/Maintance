@@ -111,3 +111,10 @@
 先让当前演练安全收束并保留证据；随后集中修复 A 节，不通过重复昂贵恢复来逐个发现局部错误。先验证证据与候选合同、完整载荷和保护点、并发与失败隔离、UTF-8/原子状态，再完成 B 节真实按钮及故障场景验收。未满足受控恢复门禁前，不应点击“恢复数据”。
 
 详细逐轮证据：[verification-report.md](D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20260920-audit-codex-thread-01a0b4b4/verification-report.md)。
+
+
+## 最新复核：2026-09-21 21:38
+
+- `eb31c41a...` 演练已 succeeded；`77e560145` 保护快照重试门禁已提交，`b5762701d` 修正 rehearsal 显式 `TargetEnvironment=test`，隔离后端已启动新 Jar。
+- 尚无新版本 `CONTROLLED_RESTORE AVAILABLE` 证据，尚未成功执行“恢复数据”。
+- P06 仍只有合同测试，真实故障注入待验；operation JSON 中文 summary 仍有乱码，日志 UTF-8 已正常。
