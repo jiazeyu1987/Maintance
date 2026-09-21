@@ -17,8 +17,8 @@ BLOCKED / NOT READY FOR INDEPENDENT RECHECK — 第十一轮已修复本机 SSH/
 |---|---|---|
 | R10-1 正式预览 | `c8edc935c`：预览只读重读 NAS manifest/tested、成功测试 operation/标准文件及维护发布器实际 SHA；eligible 快照在 grant/派发前重检。缺失、字段漂移、损坏原始 operation、执行器指纹错误均 BLOCKED，TESTED 不变、无 grant/生产 operation；执行阶段原双摘要/脚本检验保留 | 本地组件 PASS，实际 NAS/正式环境 NOT RUN |
 | 跨仓证明合同 | 应用 operation 成功后原子写标准 `SUCCESS`/UTC 证明；`ReleaseWorkflowTestEvidenceStoreTest` 真实调用维护 `ReleasePackageGovernance.psm1` 的 `Assert-PublishTestOperationEvidence` PASS；NAS tested.json 按原始字节解析并计 SHA，损坏 JSON 拒绝 | 本机真实模块 PASS |
-| 回归 | 扩大 `RuntimeControl*Test,ReleaseWorkflow*Test` Maven、前端 `ts:check`、静态按钮合同、`git diff --check` 均 exit 0；代码提交 `c8edc935c` 尚在同任务分支，未合主干/推送 | PASS（本地） |
-| 新版本运行身份 | clean `c8edc935c` 构建本机 JAR SHA-256 `8F85E6B2...`，PID 9884 曾运行于 48086，前端 8086；进程 JAR 路径/哈希与构建文件一致，生产写开关 false、Quartz 和本地 job-control false；GET `/admin-api/infra/runtime-control/release-workflows` 200；任务进程现已退出 | 部分 PASS |
+| 回归 | 融合主干 `489c63728` 上扩大 `RuntimeControl*Test,ReleaseWorkflow*Test` Maven、前端 `ts:check`、静态按钮合同、remote-root-disk 脚本 6/6、`git diff --check` 均通过；应用已推送 origin，维护仓无 remote | PASS（本地） |
+| 新版本运行身份 | clean `c8edc935c` 构建本机 JAR SHA-256 `8F85E6B2...`，PID 9884 曾运行于 48086，前端 8086；进程 JAR 路径/哈希与构建文件一致，生产写开关 false、Quartz 和本地 job-control false；GET `/admin-api/infra/runtime-control/release-workflows` 200；任务进程现已退出。融合代码提交 `489c63728` 已推送 origin | 部分 PASS |
 | Playwright 页面 | 固定 1.60.0 + 显式 Chromium 1223，从 8086 登录页经真实菜单进入 `/infra/monitors/runtime-control`。工作流面板可见；发布原因为空时构建按钮禁用，填写后仅观察启用、不点击；无合格 TESTED 包，晋级按钮 0，旧通用正式按钮 0。浏览器只记录脱敏 GET 路径/状态；截图在任务输出目录 | admin 只读 PASS；测试租户 NOT RUN |
 | 权限和总览 | 只读库核测试租户 122 的 `aoteman` 现有 super_admin 与 query/operate/restart 角色绑定；本地尚无新增 promote-prod 菜单。既有总览自动调用远端只读状态脚本并出现 SSH/shell 错误；不能以禁写配置误当禁读，也不在未明确边界下继续远端探测 | BLOCKED |
 
