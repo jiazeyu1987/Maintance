@@ -102,3 +102,15 @@
 - 经验沉淀复核：复用已加载的 project-experience-consolidation；本次是既有发现的任务级清单，不新增长期规则或重复经验入口。
 - GREEN: experience-preflight -> PASS，本轮只收尾自有记录；issue-list.md 是用户要求的正式交付物，已加入 Cleanup Keep。
 - GREEN: issue-list-closeout -> PASS，UTF-8、diff-check、preview/apply 通过，删除 0 项，保留问题清单；汇总交付 completed，不代表原任务全部修复。
+
+## 2026-09-21 最新复审
+- 用户要求再次分析原任务当前执行和方法正确性；续用同一已完成审查任务，基于 P01–P10 清单验证进展。
+- 门禁沿用：只读核对当前源码、任务/运行证据和真实页面入口；区分代码已改、测试通过、运行生效和完整恢复已验收；UTF-8 和凭据脱敏；不干预原任务或服务器。
+- 发现原 rollout 已移入 archived_sessions，原任务 00:57 中断；通过 list_threads/read_thread 确认“备份恢复 (2)”为明确续接，用户追加 NAS 最多两份及重启迁移授权。仅审查该相关续接任务。
+- 最新证据：昨晚 rehearsal 23:27 success；03:30 FULL 06:03 retention fail；06:59 INCREMENTAL mysqlbinlog 缺失 fail；07:10 FULL 截至 08:50 running。Java PID 44764 加载 3a245aabb，新日志 UTF-8 中文正常。
+- 已核对 06:18 Surefire 8+68=76 项通过，worktree 干净且有 4c6c08787/3a245aabb 提交；原任务当前文档的未提交/未部署及旧 running 内容已过期。
+- R1：报告已用 64 hex 现场指纹，但 RuntimeOpsCandidateServiceImpl 仍拼旧文本并严格比较。R2：增量重放已加，候选仍在读 backupKind 前要求完整 dump。R3：保护快照虽有数据，仍在停止写入前先后导出数据库和对象，缺共同一致点。
+- GREEN: sep21-review-evidence -> PASS，已交叉核对生产者/消费者/入口顺序，未以旧问题概括新实现，也未将代码级修正等同于真实闭环成功。
+- 经验沉淀复核沿用 project-experience-consolidation；现有模块合同、写入屏障、证据层级和状态复核规则已覆盖本轮原则，新增精确缺口保留在任务报告。
+- GREEN: experience-preflight -> PASS，仅清理/提交自有审查记录，无删除候选和本任务运行资源。
+- GREEN: sep21-review-closeout -> PASS，审查文档 UTF-8、diff-check、preview/apply 通过，删除 0 项；本轮审查 completed，原业务目标未被标记完成。
