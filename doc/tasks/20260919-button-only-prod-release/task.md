@@ -17,6 +17,14 @@ in_progress — 正式发布已有条件授权：授权边界是整改代码和�
 5. 通过页面按钮执行“上线已验证发布包”，只读验证正式服 operation、manifest、`.env IMAGE_TAG`、实际镜像、backend health、frontend HTTP。
 6. 更新任务记录、Go/No-Go 与请求命令日志；若失败，记录真实阻塞并停止。
 
+## 本轮发布冻结
+
+- releaseTag: `release-20260921-button-prod-r105`
+- 维护 worktree: `D:\IntRuoyiWorktree\r260921-prod-release2\m` @ `654f8225bfd08d8ccc03a7677478c8bf985f3578`
+- 应用/前端 worktree: `D:\IntRuoyiWorktree\r260921-prod-release2\a` @ `4b556f2de5d0f47cd7eb9dbcfc68dbe46461fe8b`
+- 发布范围: `app-release`，不复制 MySQL/MinIO 业务数据，只执行版本化 required SQL。
+- 执行入口: 本轮独立运行控制台真实页面；所有写入动作必须通过按钮。
+
 ## Expected Verification
 
 - 所有写入型发布动作均有 Playwright 页面按钮点击证据。
