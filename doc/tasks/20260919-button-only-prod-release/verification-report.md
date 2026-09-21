@@ -2,7 +2,7 @@
 
 ## Verdict
 
-PASS (code gate) / RELEASE DEFERRED — 13 项中的代码、静态和隔离行为门禁已通过；真实按钮发布按用户要求暂不执行，因此不宣称发布完成。
+PASS (code gate) / RELEASE AUTHORIZED — 13 项代码、静态和隔离行为门禁已通过；正式发布条件授权已存在，真实按钮闭环尚未执行，不能把代码门禁当作正式发布成功。
 
 ## Requirement Evidence
 
@@ -19,8 +19,8 @@ PASS (code gate) / RELEASE DEFERRED — 13 项中的代码、静态和隔离行�
 | 9 | 预检与迁移条件一致 | 空 `menu_ids` 真实 MySQL RED/GREEN；目标预检矩阵 170 passed | PASS（已知审阅范围） |
 | 10 | 真实生产执行链行为测试 | 生产迁移写入函数经实际 PowerShell→SSH→测试服 MySQL 临时库验证：持锁写入成功，租约替换后写入失败且无新台账；实际恢复脚本的活跃心跳、并发单赢家和精确终态同步通过，临时库已清零 | PASS（隔离真实链） |
 | 11 | 正确诊断顺序 | 本轮先真实谓词/实库复现，再修复和全量静态回归，未以按钮构建逐项试错 | PASS |
-| 12 | 维护仓主干融合与收尾 | 完整修复链已与最新本地主干语义融合并 fast-forward 到 `int_main=5db3aad`；合并结果后端/package、前端 typecheck/build 及 212 项发布回归通过，主工作区 11 个并发改动完整保留；维护仓无 remote | PASS（本地主干已融合） |
-| 13 | 一键正式发布最终验收 | 尚未执行同一 releaseTag 的真实按钮完整链路和正式运行态验收；本轮用户明确要求暂不发布 | DEFERRED |
+| 12 | 维护仓主干融合与收尾 | 完整修复链已与最新本地主干语义融合并 fast-forward 到 `int_main=5bde76f`；合并结果后端/package、前端 typecheck/build 及 212 项发布回归通过，主工作区并发改动完整保留；维护仓无 remote | PASS（本地主干已融合） |
+| 13 | 一键正式发布最终验收 | 正式发布条件授权已存在；尚未执行同一 releaseTag 的真实按钮完整链路和正式运行态验收 | PENDING（授权已满足） |
 
 ## Verification Commands
 
@@ -36,5 +36,5 @@ PASS (code gate) / RELEASE DEFERRED — 13 项中的代码、静态和隔离行�
 
 ## Remaining Gates
 
-1. GitHub 网络/认证恢复后将应用本地 `int_main=4b556f2de` 非强制推送到 `origin/int_main`；当前代理 TLS EOF、直连 reset，SSH 22/443 无公钥授权，GitHub CLI 未安装，不修改用户代理/凭据或仓库历史绕过。
-2. 用户后续授权发布时，创建全新临时发布 worktree，以同一 releaseTag 通过真实页面按钮完成 build-release、publish-test、真实测试验收、mark-tested、promote-prod 和正式运行态验收。
+1. 已确认应用本地 `int_main=4b556f2de` 与 `origin/int_main` 一致；维护本地 `int_main=5bde76f` 已包含发布整改。无需再等待远端同步授权。
+2. 创建全新临时发布 worktree，以同一 releaseTag 通过真实页面按钮完成 build-release、publish-test、真实测试验收、mark-tested、promote-prod 和正式运行态验收；任何技术门禁失败都必须停止并记录准确阶段/副作用。

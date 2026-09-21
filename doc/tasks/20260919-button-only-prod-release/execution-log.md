@@ -269,3 +269,4 @@
 - GREEN: maintenance-int-main-fast-forward -> PASS；精确移除 3 个已备份的旧任务文档后，维护 `int_main` 从 `4701511` fast-forward 到 `5db3aad`；同路径文档已由候选版恢复，HEAD 与候选一致，主工作区原有 11 个并行改动数量和路径不变。
 - BLOCKER: application-origin-push-network -> 应用本地 `int_main=4b556f2de`，`origin/int_main=83c0e1c80`。标准 HTTPS、强制 HTTP/1.1、schannel 三次 push 均失败；诊断确认 GitHub 专用代理为 `127.0.0.1:7890` 且 FlClash 正在监听，代理路径 TLS EOF，单次绕过代理的只读 `ls-remote` 又被直连 reset。未修改用户代理配置、未停止代理进程、未伪造推送成功。
 - BLOCKER: application-origin-push-auth-alternatives -> GitHub SSH 22 与 `ssh.github.com:443` 均可连接但返回 `Permission denied (publickey)`，本机无授权 SSH key；`gh auth status` 显示 GitHub CLI 未安装。不读取/输出 credential manager token，不自行安装或修改用户认证配置。
+- GREEN: authorization-and-sync-correction -> PASS；第八轮复审要求已纳入本任务：正式发布为整改通过后的条件授权，不再沿用旧任务 (2) 的“暂不发布/后续授权”口径；当前应用 `int_main=4b556f2de` 与 `origin/int_main` 已一致，维护 `int_main=5bde76f` 已包含发布整改。上述旧网络/认证阻塞已关闭，不再作为发布前置条件。
