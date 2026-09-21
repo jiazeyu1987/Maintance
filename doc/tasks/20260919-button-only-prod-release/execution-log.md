@@ -283,3 +283,40 @@
 - GREEN: r105-terminal-audit -> PASS；最新本机 operation 为 `FAILED`，失败阶段是 schema rehearsal `20260904_dcc_registration_certificate_download_optional_project_code.sql` 的 `ERROR 3821`，未发生本轮部署、mark-tested 或正式晋级。历史迁移不可变修复提交 `f97a25ea6` 已推送，r105 不复用。
 - BDD: 主程序专用正式晋级调用链 -> Given 已测试同一不可发布包和审阅放行，When 从主程序专用按钮提交晋级，Then 服务端必须绑定 workflow/preview/grant/幂等键、正式目标和同一包摘要，实际执行经受控维护发布器的最新锁/租约/验收逻辑，不重建不换包；通用 `/actions` 正式入口被拒绝。
 - RED: production-entry-drift -> FAIL；当前主程序 `RuntimeControlOperationAction.PROMOTE_PROD` 指向 `script/deploy/publish-int-ruoyi.ps1`，主程序源脚本哈希与维护 `ops/deploy/publish-int-ruoyi.ps1` 不同，且未包含 `Enter-ReleaseOperationLock`；专用 workflow 按钮/授权实现仅存在未融合分支 `codex/prod-promotion-button-implementation`，不得用维护 standalone 代替。
+- BDD: 主程序发布入口单一化 -> Given 维护发布器指纹由服务端批准且工作流保存同一包摘要，When 页面选择 READY/TEST_DEPLOYED/TESTED 工作流，Then 分别调用专用测试部署、验收和正式预览/授权/晋级 API，通用 `/actions` 不接受发布类动作，预览失败不得晋级。
+- RED: `python -X utf8 -m pytest -q IntRuoyiBackend/script/tests/test_production_promotion_entry_contract.py` -> FAIL (2/2)；当前主程序无专用路由/UI，仍指向不同摘要的应用仓旧发布器。
+- GREEN: 同一静态合同 -> PASS (2/2)；`node IntRuoyiFronted/src/views/infra/runtime-control/productionPromotionButton.static.spec.cjs` -> PASS；`corepack pnpm ts:check` -> PASS。专用工作流路由/UI 与受控维护发布器路径/摘要检查已接入，通用页面发布按钮移除；这些是本机静态证据，非真实页面/部署验收。
+- BDD: 旧运维安全约束保留 -> Given UNKNOWN 终态或受控恢复候选/备份类型，When 恢复导入的工作流代码，Then UNKNOWN 持续写保护、恢复候选匹配指定类型、Linux FULL/INCREMENTAL 传递 `--backup-kind`。
+- RED: 完整定向 Maven 套件 -> FAIL (103 项中 19 failures/11 errors)，包含 UNKNOWN/备份类型真实回归及旧通用发布合同冲突。
+- GREEN: `mvn -q -pl yudao-module-infra -am -Dtest=RuntimeControlServiceImplTest#executeBackupNowShouldUseLinuxLocalBackupOpsWhenConfigured+getOperationLogShouldReconcileRunningStatusFromTerminalUnknownLogAndKeepWriteProtection -Dsurefire.failIfNoSpecifiedTests=false test` -> PASS (2/2)，恢复旧保护。
+- BDD: 指纹错误产生确定终态 -> Given operation 已初始化，When 维护发布器摘要与批准值不一致，Then 不派发执行器，operation 记录 `blocked` 而不是滞留 RUNNING。
+- RED: `mvn -q -pl yudao-module-infra -am -Dtest=RuntimeControlServiceImplTest#executeWorkflowBuildShouldBlockOperationWhenExecutorFingerprintCannotBeVerified -Dsurefire.failIfNoSpecifiedTests=false test` -> FAIL，expected blocked but was running。
+- GREEN: 同一测试加 UNKNOWN/备份类型定向回归 -> PASS (3/3)；派发准备失败进入 blocked 终态，临时 NAS 配置清理。
+- REGRESSION: 包测试 fixture 改用权威 `manifest.json` 后，103 项定向回归仍为 14 failures/10 errors；余项是旧通用发布测试和新工作流上下文/发布包合同冲突，尚未完成收束，不得提交实现、请求复检或发布。应用整改工作树 `D:\IntRuoyiWorktree\r260921-prod-release2\a` 当前存在本任务未提交修改；维护 `m` worktree clean。未启动新 releaseTag、测试服或正式服写入。
+- GREEN: experience-preflight -> PASS；权限迁移测试只允许在本机 `int-ruoyi-mysql` 的随机 `release_promotion_perm_<uuid>` 隔离库创建简化 `system_menu`，测试最终 `DROP` 同一随机库；已只读 `DESCRIBE ruoyi-vue-pro.system_menu` 并核 ID、父菜单、权限身份，发现本机 `900104` 属于 `mes:pro-puhui-schedule:query`，运行控制父菜单 ID 为 `980115`。绝不写入现有 `ruoyi-vue-pro`/测试租户，未读取或输出 MySQL 密码，未执行任何服务器发布动作。
+- BDD: 晋级权限迁移身份冲突 -> Given 旧固定 ID 已被其他菜单占用，When 在隔离库执行新增晋级权限迁移，Then 仍创建唯一 `infra:runtime-control:promote-prod` 子权限并保持原菜单不变；父菜单缺失/重复时失败且不新增权限，重复执行幂等。
+- RED: 当前 `20260919_runtime_control_production_promotion_permission.sql` 使用 `SELECT 900104 ... WHERE NOT EXISTS(id=900104)`，本机真实数据已存在不同身份的 `900104`，会静默跳过；将以隔离 MySQL 行为测试复现后修复。
+- RED: `python -X utf8 -m pytest -q IntRuoyiBackend/script/tests/test_runtime_control_production_promotion_permission_mysql.py` -> FAIL (2/2)：固定 ID 冲突产生 0 条晋级权限，缺失父菜单返回成功。
+- GREEN: 同一隔离 MySQL 用例 -> PASS (4/4)：自动分配 ID、父菜单缺失/重复和已有权限父节点错误均 SIGNAL 失败；触发器注入插入失败时事务回滚；重复执行保持唯一权限。`SHOW DATABASES LIKE 'release_promotion_perm_%'` 无残留库。该新迁移不推断或自动赋予任何角色权限，角色授权另由审批流程决定。
+- BDD: 同一已测试不可变包 -> Given 工作流已保存 build 时的 packageDigest/manifestDigest，When 测试部署、mark-tested 或正式晋级，Then 请求必须绑定这两个摘要，维护脚本拷贝 NAS 包并验证完整性后在远端写入前逐项比对；摘要不同、缺失或非法必须阻断。
+- RED: `python -X utf8 -m pytest -q scripts/tests/test_release_package_governance.py -k exact_workflow_package` -> FAIL；脚本未校验工作流批准摘要。后端新增工作流参数断言编译期 FAIL：`getExpectedPackageDigest/getExpectedManifestDigest` 不存在。
+- GREEN: 维护包治理 `78 passed`，三种真实包验证包括匹配、packageDigest 不匹配和 manifestDigest 不匹配；`RuntimeControlServiceImplTest#executePublishTestShouldBlockChangedManifestBeforeDispatch` PASS，脚本参数由工作流服务端填入，NAS manifest 再核对，不从前端接收摘要。维护脚本和治理模块 PowerShell AST PASS。
+- REGRESSION: `mvn -q -pl yudao-module-infra -am -Dtest=RuntimeControlServiceImplTest,RuntimeControlHighRiskActionContractTest,RuntimeControlCanonicalContractTest,ReleaseWorkflowOrchestratorTest,ReleaseWorkflowProductionPreviewTest -Dsurefire.failIfNoSpecifiedTests=false test` -> PASS (104 项)；扩大到 `RuntimeControl*Test,ReleaseWorkflow*Test` -> PASS（本轮最后一次完整运行 0 failures/errors；前一轮曾因 Windows 临时目录释放竞态与过期断言各失败一次，单项和随后全组均复验通过）。
+- REGRESSION: 维护 `test_release_workflow_preflight.py`、`test_publish_release_lock_cleanup.py`、`test_app_release_package_governance.py` -> 46 passed；应用静态入口 2 passed、按钮合同 PASS、前端 `corepack pnpm ts:check` PASS；应用全量迁移策略门禁 `migrationCount=634` PASS。单文件过滤时仅因未包含 dependsOn 迁移而失败，不作为迁移判定。
+- STATUS: 当前仅本机代码/隔离 MySQL/静态与定向回归；应用与维护整改分支仍未提交或融合，未部署新控制台，也未通过 Playwright 真实产品按钮验收。复检门禁未放行，r105 FAILED，r106 未构建，任何服务器发布写入仍禁止。
+- BDD: 正式目标预览漂移失效 -> Given TESTED 工作流生成 eligible 预览，When 正式服 host/路径或访问开关改变，Then 原 preview 不得继续绑定，正式访问禁用时预览明确 BLOCKED。
+- RED: `mvn -q -pl yudao-module-infra -am -Dtest=ReleaseWorkflowProductionPreviewTest -Dsurefire.failIfNoSpecifiedTests=false test` -> FAIL (4 项中 2 FAIL)；原指纹只哈希 preset/version，正式 host 改变未被识别，accessEnabled=false 未进入 blocker。
+- GREEN: 加入结构化正式目标字段、访问状态、写开关的指纹与预览检查后，同一预览/Orchestrator 定向测试 PASS。
+- BDD: 显式维护工作目录不依赖旧 repoRoot -> Given 新工作流命令已指定维护工作树路径，旧应用默认 repoRoot 不存在，When 执行真实 PowerShell 子进程，Then 在维护路径运行；未指定时仍校验旧 repoRoot。
+- RED: `RuntimeControlCommandExecutorImplTest#executeForOutputShouldUseExplicitWorkflowWorkingDirectoryWithoutLegacyRepoRoot` -> FAIL，旧 repoRoot directory not found。
+- GREEN: 显式工作目录与旧 repoRoot 缺失/正常三项进程测试 PASS；扩大 `RuntimeControl*Test,ReleaseWorkflow*Test` 重跑 PASS，前端 `corepack pnpm ts:check` PASS。
+- GREEN: experience-preflight -> PASS；准备融合前应用任务分支 `f797a49fa` 比 `int_main=f97a25ea6` 多 58 个任务文件，主工作区 132 个并行 tracked/untracked 脏文件与本分支增量同路径交集为 0；只允许 fast-forward 任务提交，保留 132 个并行文件，不运行共享 target/dist 构建。维护任务分支 `b55c9d2` 比分叉点 `e357a53` 只多 3 个脚本/测试文件，维护主干另有本任务既有文档提交 `9118b96`；先在干净分支合入主干，再审计主工作区文件交集后 fast-forward。合并后以同提交工作树运行所需回归；复检前不构建/部署。
+- BDD: 权限目标预检与迁移谓词一致 -> Given 父菜单缺失/重复、旧权限挂在错误父节点或正常身份，When 执行只读 target-preflight，Then 分别 BLOCKED/BLOCKED/BLOCKED/PASS；迁移执行结果与判断一致。
+- RED: 新隔离 MySQL 用例 -> FAIL (3/4)，缺少 `target-preflight/20260919_runtime_control_production_promotion_permission.preflight.sql`。
+- GREEN: 为迁移增加 `requiresTargetPreflight=true` 和同谓词预检，隔离 MySQL 4/4 PASS；全量迁移策略 634 PASS；`SHOW DATABASES LIKE 'release_promotion_perm_%'` 空集。
+- GREEN: app-implementation-commit -> `f797a49fa99bc8be12590b2f6d4aa2c4e5d3ff8d`，58 个任务文件，普通 git hook 的运行端口门禁 PASS，未使用 `--no-verify`；提交后任务 worktree clean。
+- GREEN: app-int-main-fast-forward -> 主工作区从 `f97a25ea6` 快进到 `f797a49fa`，任务增量 58 个文件与主工作区并行 tracked/untracked 132 个路径交集 0；并行改动未暂存、未覆盖；合并结果与已测试任务提交一致。
+- GREEN: maintenance-implementation-commit -> `b55c9d2`，仅 3 个受控发布器/包治理脚本测试文件；随后在干净任务分支合并维护主干 `9118b96` 得 `1ce47efe7e3e958524cca529ea22b47b478c0d33`，融合结果 124 个发布相关测试 PASS。
+- GREEN: maintenance-int-main-fast-forward -> 主工作区从 `9118b96` 快进到 `1ce47ef`，分支新增 3 个文件与主工作区 24 个并行 tracked/untracked 路径交集 0；未处理并行文件。两个任务工作树提交后均 clean，但仍保留，不当作未来发布 worktree 复用。
+- BLOCKER: release-runtime-binding -> 同一维护提交在主工作区与任务工作树的脚本文件 SHA-256 分别为 `EBDDC665...`、`746A5ED5...`（Git 换行转换）；必须在未来新建的本次专用发布 worktree 内对实际文件取 SHA 并绑定运行配置，不能复制上述历史 SHA。控制台尚未加载应用新提交，批准角色/权限、真实页面与服务器验收未完成。r106 未构建且源已变，放行后须新 tag。
+- GREEN: project-experience-consolidation -> PASS；执行器实际文件 SHA/双摘要和权限菜单业务身份/只读预检已合并到现有 `docs/release-build-preflight-lessons.md`，索引路由与 `docs/release-agent-checklist.md#5.0` 同步；没有新建长期经验文档，保留任务一次性状态在本目录。

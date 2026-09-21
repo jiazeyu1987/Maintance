@@ -2,7 +2,7 @@
 
 ## Verdict
 
-REMEDIATION IN PROGRESS / REVIEW REQUIRED — 既有代码门禁有通过证据，但第九轮复审发现主程序正式晋级入口与已验证维护发布器断开。用户新增独立复检门禁；审阅任务明确“同意发布”之前不得执行测试服部署、mark-tested 或正式晋级。r105 构建已 FAILED，未完成发布。
+REMEDIATION IN PROGRESS / REVIEW REQUIRED — 主程序工作流、专用按钮和维护发布器的路径/摘要绑定已提交并融合两个本地主干；实际控制台尚未加载新代码，配置/权限和真实按钮验收均未完成。用户新增独立复检门禁；审阅任务明确“同意发布”之前不得执行测试服部署、mark-tested 或正式晋级。r105 构建已 FAILED，未完成发布。
 
 ## Requirement Evidence
 
@@ -19,8 +19,16 @@ REMEDIATION IN PROGRESS / REVIEW REQUIRED — 既有代码门禁有通过证据�
 | 9 | 预检与迁移条件一致 | 空 `menu_ids` 真实 MySQL RED/GREEN；目标预检矩阵 170 passed | PASS（已知审阅范围） |
 | 10 | 真实生产执行链行为测试 | 生产迁移写入函数经实际 PowerShell→SSH→测试服 MySQL 临时库验证：持锁写入成功，租约替换后写入失败且无新台账；实际恢复脚本的活跃心跳、并发单赢家和精确终态同步通过，临时库已清零 | PASS（隔离真实链） |
 | 11 | 正确诊断顺序 | 本轮先真实谓词/实库复现，再修复和全量静态回归，未以按钮构建逐项试错 | PASS |
-| 12 | 维护仓主干融合与收尾 | 完整修复链已与最新本地主干语义融合并 fast-forward 到 `int_main=5bde76f`；合并结果后端/package、前端 typecheck/build 及 212 项发布回归通过，主工作区并发改动完整保留；维护仓无 remote | PASS（本地主干已融合） |
-| 13 | 一键正式发布最终验收 | 主程序专用 workflow/preview/grant 入口未融入当前主干，实际动作仍解析应用仓旧发布脚本；r105 本地构建失败、无部署成功。独立复检尚未放行 | BLOCKED（整改/待复检） |
+| 12 | 维护仓主干融合与收尾 | 前序修复已融合；本轮追加发布器摘要绑定融合到维护 `int_main=1ce47ef`，应用工作流融合到 `int_main=f797a49fa`。并行脏文件同路径交集均为 0；维护融合结果 124 项发布回归 PASS，维护仓无 remote。临时 worktree 尚保留以待审阅/发布后收尾 | PARTIAL（融合通过，任务未收尾） |
+| 13 | 一键正式发布最终验收 | 本地主干已有专用 workflow/preview/grant、页面按钮、同包摘要校验和受控维护发布器指纹绑定；实际控制台未加载新版本，更无真实按钮部署与正式服验收。独立复检未放行 | BLOCKED（待复检/真实验收） |
+
+## 本轮增量验证
+
+- 本机维护包治理 78/78、发布预检/锁/应用治理 46/46；PowerShell AST PASS。
+- 主程序运行控制定向 104/104 与扩大 `RuntimeControl*Test,ReleaseWorkflow*Test` 最后一轮 PASS；前端 `ts:check`、专用按钮静态合同、入口静态测试 2/2 PASS。
+- 新权限 SQL 的隔离 MySQL 测试 4/4，含本机真实菜单 ID 冲突、缺失/重复父菜单、错误父节点、插入异常回滚及幂等；全部临时库已删除。全量迁移策略 634 PASS。
+- 以上均不是生产环境页面验收或实际发布成功证明。控制台未加载本轮新提交，`productionWriteEnabled` 与批准提交/脚本 SHA 配置尚待冻结后的明确设置。
+- 本轮提交与融合：应用 `f797a49fa`、维护实现 `b55c9d2` / 本地主干 `1ce47ef`；维护融合后的 124 项发布相关测试 PASS。r106 从未构建且原源码冻结失效，后续必须新 worktree/new tag。
 
 ## Verification Commands
 
@@ -37,5 +45,5 @@ REMEDIATION IN PROGRESS / REVIEW REQUIRED — 既有代码门禁有通过证据�
 ## Remaining Gates
 
 1. 已确认应用本地 `int_main=4b556f2de` 与 `origin/int_main` 一致；维护本地 `int_main=5bde76f` 已包含发布整改。无需再等待远端同步授权。
-2. 融合主程序专用正式晋级入口，将实际执行链统一到已验证发布器，保留 TESTED 同包、preview、一次性授权、幂等和状态隔离；仅用本地/隔离与页面非发布路径验证。
-3. 整改完成后通知用户安排 `codex://threads/01a0bd1f-ea37-7112-bdc5-4673055ff2c0` 复检。只有其明确“同意发布”后，才能重新冻结新包并通过真实主程序按钮执行测试服和正式服闭环。
+2. 本地主干已融合；需独立复检，且实际控制台加载新提交前不得开始发布。发布配置必须绑定新的冻结 worktree、批准提交和该工作树上维护脚本的实际文件 SHA，不能使用默认主工作区路径、空摘要或别的工作树 SHA。权限 SQL 不自动给任何角色授权，正式晋级操作人必须有经批准的菜单角色绑定或原有超管权限。
+3. 整改完成后通知用户安排 `codex://threads/01a0bd1f-ea37-7112-bdc5-4673055ff2c0` 复检。只有其明确“同意发布”后，才能新建本次专用发布 worktree、重新冻结新 releaseTag，通过真实主程序按钮执行测试服和正式服闭环；在此之前不做发布写入。

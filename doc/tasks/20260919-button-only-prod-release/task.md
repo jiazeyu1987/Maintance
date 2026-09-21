@@ -6,7 +6,7 @@
 
 ## Current Status
 
-in_progress — 整改/待独立复检。用户新增强制门禁：整改完成后必须通知用户安排审阅任务 `codex://threads/01a0bd1f-ea37-7112-bdc5-4673055ff2c0` 复检；只有该任务明确给出“同意发布”结论，才能执行测试服部署、mark-tested 或正式服晋级。原有正式发布条件授权仍有效，但不能越过这项更新的复检条件。r105 构建 operation `op-2026-09-21T044719435296100Z-00dbe90b-dc79-46ba-b36f-488d3ebd32e2` 已 FAILED 于本机结构演练，未见本轮部署写入，r105 判废。应用修复提交 `f97a25ea6`、维护修复提交 `e357a53` 已通过定向验证；第九轮复审进一步确认主程序产品入口仍调用应用仓旧发布脚本，维护 standalone 通用按钮不能替代产品验收。当前任务只做调用链整改、本地/隔离验证及只读核查，不启动 r106 构建或任何部署，复检前不把 code gate PASS 宣称为发布成功。
+in_progress — 本地静态/隔离整改完成，待独立复检和真实按钮验收。用户新增强制门禁：整改完成后必须通知用户安排审阅任务 `codex://threads/01a0bd1f-ea37-7112-bdc5-4673055ff2c0` 复检；只有该任务明确给出“同意发布”结论，才能执行测试服部署、mark-tested 或正式服晋级。r105 构建 operation `op-2026-09-21T044719435296100Z-00dbe90b-dc79-46ba-b36f-488d3ebd32e2` 已 FAILED 于本机结构演练，未见本轮部署写入，r105 判废。主程序专用 workflow/API/UI、维护发布器指纹与同包摘要校验、UNKNOWN/备份类型保护及权限迁移 ID 冲突修复已提交并融合本地应用 `int_main=f797a49fa`、维护 `int_main=1ce47ef`；定向/扩大回归、维护 124 项发布套件、权限迁移隔离 MySQL、前端类型及 634 个迁移策略通过。实际控制台尚未加载新提交，配置批准提交/指纹及权限角色授权尚未完成，真实页面与运行态均无新证据，不能宣称发布成功。r106 从未构建且源码冻结已失效；复检前不启动新的构建或任何部署。
 
 ## Milestones
 
@@ -19,11 +19,12 @@ in_progress — 整改/待独立复检。用户新增强制门禁：整改完成
 
 ## 本轮发布冻结
 
-- releaseTag: `release-20260921-button-prod-r106` 仅为待复检候选；r105 在本地 schema rehearsal 失败并判废。整改如改变冻结源，复检后须重新冻结并使用新 tag。
+- releaseTag: `release-20260921-button-prod-r106` 原为待复检候选，但本轮整改改变了冻结源，r106 从未构建且不再作为执行候选；复检放行后另建新 worktree、绑定新提交并使用新 tag。r105 在本地 schema rehearsal 失败并判废。
 - 维护 worktree: `D:\IntRuoyiWorktree\r260921-prod-release2\m` @ `e357a531da0f8e5e9fbc9c1bbc824fddd9f365bc`
 - 应用/前端 worktree: `D:\IntRuoyiWorktree\r260921-prod-release2\a` @ `f97a25ea6ce28abeceed4a6ce1a3e859adf9c357`
 - 发布范围: `app-release`，不复制 MySQL/MinIO 业务数据，只执行版本化 required SQL。
 - 执行入口: 主程序运行控制台专用 workflow 页面/API；维护仓发布脚本仅作受控执行器。维护 standalone 通用动作不作为正式晋级验收。
+- 本轮整改提交: 应用 `f797a49fa99bc8be12590b2f6d4aa2c4e5d3ff8d`；维护实现 `b55c9d2`、融合主干 `1ce47efe7e3e958524cca529ea22b47b478c0d33`。本轮两处临时 worktree 均已提交，未删除；不可当作下一次发布 worktree 复用。
 
 ## 复检放行门禁
 

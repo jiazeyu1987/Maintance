@@ -1469,3 +1469,35 @@ HEAD-only 构建发布在维护仓或主程序仓主工作区 dirty，且需要�
 2. 首写入：先 acquire + ownership/heartbeat，再执行挂载、目录、上传和切换；任一组件都不例外。
 3. 迁移与切换：每个写入入口内再执行 write fence，失权后不更新迁移台账、`.env`、镜像或运行态。
 4. 验证与清理：实际临时库链同时验证正向写入、失权阻断、并发恢复单赢家及临时库清零。
+
+## 2026-09-21 产品按钮执行器与包摘要绑定门禁
+
+- Trigger: 主程序专用发布按钮调用维护发布器；同一已测包跨测试服/正式服晋级；工作树切换或 Windows Git 换行转换。
+- Preflight check: 先记录实际执行宿主、维护/应用冻结 worktree 路径与批准提交，在**该执行 worktree 的实际脚本文件**上计算 SHA-256，配置并核对 `expected-publish-script-sha256`；确认命令工作目录是维护 worktree 且不依赖旧应用 `repoRoot`。测试部署、mark-tested、正式晋级都由服务端传入同一 packageDigest/manifestDigest；从 NAS 下载后先验证包完整性和这两个批准摘要，再发生目标写入。
+- Blocker: 入口仍用应用仓旧脚本、运行配置指向脏主工作区、仅比较 Git 提交而不比较实际文件字节、缺少任一摘要、预览后目标 host/目录/访问开关漂移、NAS 包摘要不一致时停止；不能把失败 operation 保持 RUNNING。
+- Verification: 记录实际文件 SHA、批准提交、工作目录、preview 目标指纹、原包与 NAS 下载后双摘要；用真实本地包分别验证匹配通过及两种摘要不匹配阻断，运行命令执行器的旧 repoRoot 缺失/显式工作目录用例，核 FAILED/BLOCKED 终态。
+- Forbidden action: 禁止从另一 worktree 复制脚本文件 SHA、只用源码提交摘要冒充执行文件字节、绕过工作流调用 generic `/actions`、重建已测包或直接修改 NAS 包/状态来制造一致。
+- Evidence: `doc/tasks/20260919-button-only-prod-release/execution-log.md`，应用提交 `f797a49fa`、维护实现提交 `b55c9d2`。
+
+### 阶段 checklist
+
+1. 冻结：创建本次专用 worktree，确认 Git clean、批准提交和实际执行脚本 SHA；缺项 fail fast，记录路径/提交/字节 SHA。
+2. 预览：只读核对 TESTED、目标配置指纹、包与 manifest 双摘要、测试 operation/evidence；任一漂移 fail fast，记录阻断码。
+3. 派发：服务端绑定两个摘要，下载并验证不可变包后、首次目标写入前再次比对；失败写入 BLOCKED/FAILED，不释放未知写入环境隔离。
+4. 验收：以同一 releaseTag 核 operation、manifest、远端镜像与页面；必须记录浏览器操作证据，不以静态/单元测试代替。
+
+## 2026-09-21 权限菜单身份冲突与只读目标预检门禁
+
+- Trigger: 新增发布权限菜单、在历史菜单 ID 区间插入菜单、目标数据库菜单数据与源码种子不一致。
+- Preflight check: 从真实目标只读 `DESCRIBE system_menu`，按 `permission + type + parent` 业务身份核父菜单唯一性及现有权限归属；同迁移的只读 target-preflight 必须覆盖缺失/重复父菜单、错误父节点和已完成幂等态。新增菜单由自增主键分配 ID，不能以固定 ID 空闲作为业务身份依据。
+- Blocker: 固定 ID 被不同业务占用、父菜单非唯一、已有同 permission 指向错误父节点，或 SQL 仅用 `NOT EXISTS(id)` 静默跳过写入时停止。
+- Verification: 随机隔离 MySQL 同时运行 target-preflight 与最终迁移，覆盖 ID 冲突、父菜单缺失/重复、错误父节点、后续插入失败回滚和重复执行；临时库清零，目标环境写入前核 preflight 唯一 PASS。
+- Forbidden action: 禁止覆盖其他菜单、补造角色/扩大角色授权、手工改目标库 ID、忽略 0 行插入、重写已执行迁移或用静态字符串检查代替真实 MySQL 执行。
+- Evidence: `doc/tasks/20260919-button-only-prod-release/execution-log.md`，隔离迁移测试与应用提交 `f797a49fa`。
+
+### 阶段 checklist
+
+1. 源码：锁定迁移身份/依赖及只读 preflight 对应关系；核已执行迁移不可变。
+2. 目标只读：查真实表结构、父菜单业务身份、权限归属和 ID 占用；未确认则 fail fast。
+3. 隔离测试：同一 SQL 在随机临时库执行正常、冲突、回滚、幂等；记录数据库名称前缀与清零结果。
+4. 部署前：新鲜目标 preflight 必须 PASS；权限角色绑定须另有正式授权依据，不由迁移猜测。
