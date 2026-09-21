@@ -343,5 +343,9 @@
 - BDD: R11 只读远端状态脚本 -> Given 本机 Windows PowerShell 5.1 脚本以 CRLF 保存，When 运行控制台对已授权 test/prod 请求只读根分区状态，Then 通过 SSH stdin 向 `bash -s` 发送 UTF-8 无 BOM 的 LF 脚本；目标 host/IP 自证、SSH 非零退出与结构化 metric 缺失均失败，不发生 cleanup/发布写入。
 - RED: 当前 `manage-int-ruoyi-remote-root-disk.ps1` 在 `Get-RemoteStatus` 使用 CRLF here-string，`Invoke-SshCapture` 将多行 `$Command` 经 `Start-Process -ArgumentList` 作为 SSH 位置参数并带 `-n` 禁用 stdin；真实页面显示远端 `bash set` 无效选项和 unexpected EOF。先以本地子进程捕获 stdin 字节验证 CR/LF、参数和模式，再做最小实现。
 - GREEN: experience-preflight -> PASS；已读 `server-access.md`、`login-access.md`、`release-backup-restore.md`、`worktree-memory.md` 和 PowerShell 编码/SSH 门禁；本轮只针对测试服/正式服原有只读排查授权，审查服不访问、不执行 cleanup。应用工作树 `D:\IntRuoyiWorktree\r260921-prod-release2\a` clean HEAD `c8edc935c`，无本任务构建/发布进程；维护主工作区 dirty 属其它任务或本任务记录，绝不覆盖。
+- RED: 旧 `manage-int-ruoyi-remote-root-disk.ps1` 经 SSH 参数承载 CRLF 多行 Bash，真实页面错误为 `set: -\\r invalid option`/unexpected EOF。
+- GREEN: 改用 UTF-8 无 BOM/LF stdin + `bash -s`，Windows PowerShell 字节合同与脚本 6/6 PASS；测试服只读 status exit 0，返回目标 host、mountPoint、容量/inode 指标；未执行 cleanup、迁移、容器、.env 或发布写入。
+- GREEN: 应用提交 `c8edc935c`、`489c63728` 已快进融合本地主干，运行控制 Maven、前端类型、迁移策略 638 PASS；`git push origin int_main` 从 `f797a49fa` 前进到 `489c63728`，运行端口 hook PASS。维护仓无 remote。
+- BLOCKER: 测试租户真实凭据和专用 promote-prod 菜单/绑定仍缺失；admin 只读不能替代测试租户结论。审查服不访问，发布门禁仍关闭。
 - RED: `python -X utf8 -m pytest -q IntRuoyiBackend/script/tests/test_runtime_control_remote_root_disk_script.py -k 'status_remote_script_uses_lf_stdin or process_capture_preserves_lf_script_bytes'` -> FAIL 2/2；旧 `Invoke-SshCapture` 通过 `Start-Process -ArgumentList` 传多行脚本并用 `-n` 关闭 stdin，触发 `set: -\r invalid option`/unexpected EOF。
 - GREEN: `manage-int-ruoyi-remote-root-disk.ps1` 改为 UTF-8 无 BOM/LF stdin 经 `ssh -T ... bash -s` 传输；真实 Windows PowerShell stdin 字节合同与完整脚本套件 `6 passed`，AST PASS。按已有测试服只读授权执行 status：exit=0，结构化 `targetEnvironment=test`、目标 host、mountPoint=/ 和磁盘指标返回；未执行 cleanup、迁移、容器、.env 或发布写入。正式服本轮未连，审查服不连。
