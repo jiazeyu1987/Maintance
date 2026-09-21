@@ -359,3 +359,41 @@ Java service 使用可并发执行的 operationExecutor；环境门禁只检查 
 当前 FULL 可安全继续观察，不应因 Agent 任务中断就强杀后台执行器。下一步应先闭合 R1–R3、确认 mysqlbinlog 前提及 NAS 两链清理真实结果，再统一验证“新报告→真实候选→页面恢复预览→受控恢复”。当前没有“恢复数据”成功证据，旧演练成功也不能替代新修复版本的完整按钮验收。
 
 本轮只读复核原任务、明确续接任务、源码、日志、测试报告和本机运行进程，未操作远程环境或修改产品代码。
+
+## 2026-09-21 16:57 复审：f742c4b37 已进入真实演练
+
+### 当前在做什么
+- 原任务仍 notLoaded/已中断，实际继续者为“备份恢复 (2)”。续接任务 16:54 被用户中断，应用现 idle，但独立执行器继续运行；不能将 Agent 暂停等同于演练停止。
+- 新提交 `f742c4b37`（补齐恢复放行安全门禁）包含 22 个任务文件，工作区干净；新 Jar 已构建。电脑重启后，14:40 的 Java PID 47432 运行此 worktree 的 yudao-server-exec.jar。
+- 07:10 FULL operation 已 succeeded；任务记录远端只保留 `20260921-033003`、`20260921-071037` 两套正式链，无 .creating。两链数量来自目标任务的远端检查证据，本审查没有重复连接服务器。
+- 15:03 已通过 Playwright 页面选择 `rehearsal:20260921-071037` 并提交新演练 `eb31c41a-f2d7-49ba-afdf-476216b03174`。
+- 16:57 operation 仍 running，runner PID 42780、实际脚本 PID 47764 存活，操作日志严格 UTF-8 解码通过。目标任务记录对象暂存目录从 16:46 的 83G/29134 个文件增加到 16:53 的 94G/30467 个文件，有实际推进证据，不能按耗时或 running 单一状态判为卡死。
+- 当前仍没有恢复数据按钮成功证据。正确顺序仍为本轮演练终态、有效候选和保护门禁通过后才覆盖恢复。
+
+### 上轮三项意见已发生实质修正
+1. P04：Java 新增 RuntimeTargetFingerprintProvider，通过正式 `target-fingerprint` 脚本入口获取现场 64 位 SHA-256；RuntimeOpsCandidateServiceImpl 已使用该值，移除原旧文本指纹比较。演练指纹也改为覆盖目标的稳定身份，排除容器运行/停止状态导致的自我漂移。
+2. P03：Java 和 PowerShell 候选按 FULL/base/parent/segment 解析增量计划，不再要求增量点自身有 FULL dump；新增 I1 真实目录形状的候选测试。mysqlbinlog 已采用独立、版本锁定工具镜像，任务记录测试服验证 8.0.39；不能再沿用“容器缺工具且无正式方案”作为当前结论，但真实增量链仍需按钮验收。
+3. P02：RestoreData 已先写隔离标记、停止 frontend/backend、核对活动事务排空，再生成数据库与对象保护快照，原“先快照后停写”的顺序问题已修正。
+4. P01：独立 rehearsal-report 成为候选/备份点演练状态源，成功路径不再要求修改 immutable manifest；报告消费端也有实际测试。
+
+### 验证证据
+本轮直接读取 Surefire XML，13:51 回归合计 100 tests：RuntimeRestoreCandidateServiceImplTest 19、RuntimeBackupDrillServiceImplTest 11、RuntimeTargetFingerprintProviderImplTest 2、RuntimeControlServiceImplTest 68，全部 failures/errors=0。相比之前只跑控制台测试，本轮确实覆盖候选消费者及指纹入口。任务记录 Pester 36 passed，本审查未重跑。
+
+### 新确认的剩余阻塞：快照失败后重试会跳过不完整保护点（P06/P02）
+`RestoreData.psm1:336–339` 在快照真正生成前先写入 snapshotId 和 active isolation，phase 为 write-barrier-pending；347 行改为 snapshotting，349 行才实际创建快照。
+
+若停止/排空或快照生成失败，398–400 行将 marker 改为 failed-isolated 并保持服务停止，这是正确的保守处理。但再次对同一 backupId 执行时：
+- 327–334 行看到 existingIsolation，只复制 snapshotId，不核对保护点是否已经成功生成；
+- 346 行只有 existingIsolation 为空才调用 New-BackupOpsPreRestoreSnapshot；
+- 353–355 行随即进入数据库覆盖和增量重放。
+
+`DockerOps.psm1:1037` 的 marker 读取校验仅要求 state=active、backupId/snapshotId 非空；1119 行策略也只检查同一 backupId，没有保护点完成状态和载荷完整性验证。因此“首次快照未完成→同点重试”会跳过保护点建立，之后可能在没有有效回退保护的情况下覆盖数据。这是源码可确认的分支错误，本审查未做破坏性复现。
+
+修复要求：分开记录写屏障、snapshot-ready、destructive-started 等阶段；只有已经完成并验证的保护点才能复用。快照尚未完成且尚未覆盖时，应在持续停写下补齐保护点或明确阻断；已经进入覆盖阶段则不得用当前部分恢复数据重新覆盖原保护点。需增加首次快照中断/失败后同点重试的行为测试和实际故障验收，不能仅凭 marker 存在放行。
+
+### 方法结论与剩余工作
+当前方法总体正确：集中修复跨模块合同、增加消费者测试、按提交构建、部署隔离运行态、真实按钮发起、观察同一 operation 进度，无重复提交和人工改成功证据。可以继续当前正常演练，但 P06 的上述重试分支是覆盖恢复放行阻塞。
+
+本轮结束后仍需：有效 PASSED 报告与 Java 候选一致；快照失败/重试等故障路径通过；页面恢复数据闭环；真实增量链与两链保留结果；合并后验证和任务资源收尾。任务当前状态入口仍写“新提交未部署”，与后续 reboot-runtime-recovery 和实际 Java 已启动不一致，应更新摘要而保留历史记录。
+
+本次仅只读核对；未访问服务器、未控制浏览器或干预后台演练。

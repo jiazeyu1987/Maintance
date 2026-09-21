@@ -124,3 +124,14 @@
 - GREEN: experience-preflight -> PASS，只收尾自有审查记录，无删除候选与本任务运行进程。
 - GREEN: continuation-guidance-context-delivery -> PASS，目标 rollout 于 2026-09-21T03:27:28.101Z 记录完整意见的 codex_delegation 工具输出，确认进入执行上下文；不等同于已落实。
 - GREEN: continuation-guidance-closeout -> PASS，preview/apply 删除 0 项、无 blocker，文档 UTF-8 与 diff-check 通过；本次协调 completed。
+
+## 最新意见发送后的复审
+- 用户再次要求分析原任务；同时核对明确续接任务“备份恢复 (2)”，以实际代码与运行证据验证意见落实。
+- 前序自有任务已 completed；沿用同一目录与既有只读、UTF-8、脱敏、版本与证据分层门禁，不操作原任务进程或远程环境。
+- 16:57 复核：HEAD=f742c4b37，原任务未恢复执行，续接 task 16:54 中断但新演练 eb31c41a 仍 running；Java/runner/脚本均存活，目标任务最近对象进度 94G/30467 文件。
+- 三项意见与 P01 已在代码贯通：实时指纹provider、Java/PowerShell增量计划、先停写/排空再快照、独立报告状态消费。Surefire XML 确认 19+11+2+68=100 tests，failures/errors均0。
+- 新残余：已有 isolation 时直接复用 snapshotId 并跳过快照；首次在 snapshot-ready 前失败也保留该 marker，同点重试会继续覆盖，GetIsolationState只验证非空ID不验证完整保护点。
+- GREEN: latest-followup-review -> PASS，已核对具体失败与重试分支及生产者消费者合同；未执行破坏性复现或声称真实覆盖已通过。
+- 经验沉淀复核沿用已加载 project-experience-consolidation；保护点真实完整性与故障状态分层是既有门禁，本轮精确分支缺口写入审查报告，不新增重复长期文档。
+- GREEN: experience-preflight -> PASS，本轮收尾仅自有审查记录，无删除候选和任务自有运行资源。
+- GREEN: f742-review-closeout -> PASS，审查文档 UTF-8、diff-check、preview/apply 通过，删除0项；本轮审查completed，产品恢复放行仍受残余缺口限制。
