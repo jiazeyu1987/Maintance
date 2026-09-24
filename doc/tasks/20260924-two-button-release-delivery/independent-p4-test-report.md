@@ -38,6 +38,7 @@
 - GREEN: frontend-typecheck -> PASS
   - Command: `pnpm.cmd ts:check`
   - Result: exit code `0`.
+- RED: required-playwright-entry -> FAIL, the named P4 script is absent from the implementation history/worktree; no replacement was accepted because T5 requires the approved two-entry real-user path.
 
 ## P4 acceptance result
 
