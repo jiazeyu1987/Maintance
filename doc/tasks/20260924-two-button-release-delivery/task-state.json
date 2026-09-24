@@ -1,0 +1,286 @@
+{
+  "schema_version": 2,
+  "task_id": "20260924-two-button-release-delivery",
+  "mode": "full",
+  "status": "blocked",
+  "current_phase": "P2",
+  "phase_statuses": [
+    {
+      "phase_id": "P1",
+      "title": "基线隔离与锁/状态证据",
+      "status": "completed",
+      "objective": "选择性合入已审核发布提交；用生产生成 SQL 复现/验证锁顺序；验证 Orchestrator dispatched、Service verifyAdvance retryable、reconcile 终态和 RuntimeControl 先 save/guard 边界，区分明确 zero-write blocked 与执行后未知。",
+      "owned_paths": [
+        "应用/维护独立 worktree、锁代码与后端状态测试。"
+      ],
+      "dependencies": [
+        "主代理只读调查、隔离 MySQL、`0e5d785...`。"
+      ],
+      "deliverables": [
+        "差异归属、真实 RED/GREEN、未知态合同和持久目标缺口清单。"
+      ],
+      "evidence_expectation": "",
+      "evidence": [
+        "task.md",
+        "execution-log.md#Phase-P1-Maintenance-Review",
+        "execution-log.md#Phase-P1-Application-Review"
+      ],
+      "notes": "- Planning approved after revision; Luna executor owns P1, main owns integration review.\n- Baseline integration reviewed; Java 136 tests, frontend type check and maintenance 113 tests pass. Lock review requires true same-tag old-lease fence and carrier tests; backend state slice is still executing. P2 not authorized yet.\n- Maintenance lock implementation and targeted regression accepted. Application P1-AC3 still pending; no publication approval.\n- All P1 AC reviewed. Maintenance 772fc46 and application d30f7ee02 committed locally. Advance only to P2; no release GO.",
+      "last_reviewed_at": "2026-09-24T12:38:45",
+      "acceptance_criteria": [
+        {
+          "ac_id": "P1-AC1",
+          "text": "app 10、maintenance 8 个差异逐项归属；当前 main 选择性保留必要已审核提交，`0e5d785...` 父提交关系可追踪，冻结 worktree 未修改。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P1-Application-Review",
+            "execution-log.md#Phase-P1-Maintenance-Review",
+            "task.md"
+          ]
+        },
+        {
+          "ac_id": "P1-AC2",
+          "text": "生产生成锁 SQL 在隔离 MySQL 证明新 operation 不继承旧 lease；活动锁拒绝、失权零业务写入、终态一致。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P1-Application-Review",
+            "execution-log.md#Phase-P1-Maintenance-Review",
+            "task.md"
+          ]
+        },
+        {
+          "ac_id": "P1-AC3",
+          "text": "行为测试证明 dispatched 仅凭返回值不能判零写入；`verifyAdvance` retryable 不绕过 zeroWriteEvidence；reconcile 区分 preflight 明确 blocked 与执行后未知；save/guard/submit 边界可观察。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P1-Application-Review",
+            "execution-log.md#Phase-P1-Maintenance-Review",
+            "task.md"
+          ]
+        },
+        {
+          "ac_id": "P1-AC4",
+          "text": "P1 形成持久 target 缺口、四阶段不变量和新 GO/远程门禁；无 fallback/mock/静默降级。",
+          "status": "completed",
+          "evidence": [
+            "execution-log.md#Phase-P1-Application-Review",
+            "execution-log.md#Phase-P1-Maintenance-Review",
+            "task.md"
+          ]
+        }
+      ]
+    },
+    {
+      "phase_id": "P2",
+      "title": "持久目标与后台自动推进",
+      "status": "blocked",
+      "objective": "持久化测试发布目标、源冻结和阶段意图；READY 自动 publish-test；关页/重启/并发不重复派发，历史 READY/FAILED 不接管。",
+      "owned_paths": [
+        "ReleaseWorkflow Record/Store/Service/Orchestrator/Scheduler/API 与测试；维护仓固定 publish-int-ruoyi.ps1 的受控源准备/清理模式、ops/release 准备模块与对应测试。"
+      ],
+      "dependencies": [
+        "P1 状态合同。"
+      ],
+      "deliverables": [
+        "stateVersion/CAS/lease/operation 证据、防重和未知写入阻断。"
+      ],
+      "evidence_expectation": "",
+      "evidence": [],
+      "notes": "- P2 interface frozen in PRD: controlled preparation/cleanup modes, two Git roots, durable intent and request identity. Maintenance and Java file ownership separated.\n- First maintenance slice rejected: dependency stamp fixture is not installation evidence; source repository must not be conflated with immutable checkout; OS locking, atomic evidence and ownership replay checks required before integration.\n- Requested Luna service failed HTTP 503 repeatedly; P2 draft review not passed. Preserve worktrees and resume from verification-report.md.",
+      "last_reviewed_at": "2026-09-24T13:47:05",
+      "acceptance_criteria": [
+        {
+          "ac_id": "P2-AC1",
+          "text": "一次请求持久化唯一 workflow/operation、批准源、目标、幂等身份，并由受控代码自动创建本轮专用隔离 worktree、依赖准备和清理事实，客户端不提供路径或命令。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P2-AC2",
+          "text": "后台 `build-release → READY → publish-test` 自动至 TEST_DEPLOYED，关页/重启可续接。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P2-AC3",
+          "text": "并发/重试只产生一个有效阶段 operation；不重复构建、迁移或部署。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P2-AC4",
+          "text": "历史 READY/FAILED 不自动部署；部分/未知写入隔离并保留实际证据。",
+          "status": "pending",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "phase_id": "P3",
+      "title": "两入口前端与晋级门禁",
+      "status": "pending",
+      "objective": "顶层只显示两个入口；测试验收/恢复候选进入晋级弹窗，复用 preview/grant/stateVersion/同包晋级。",
+      "owned_paths": [
+        "前端 runtime-control、API 类型、组件测试。"
+      ],
+      "dependencies": [
+        "P2 API 合同、IntPP 样式。"
+      ],
+      "deliverables": [
+        "一次测试发布提交、阶段反馈、真实错误、取消/过期/漂移阻断。"
+      ],
+      "evidence_expectation": "",
+      "evidence": [],
+      "notes": "",
+      "last_reviewed_at": null,
+      "acceptance_criteria": [
+        {
+          "ac_id": "P3-AC1",
+          "text": "顶层只有“发布到测试服”“晋级正式服”，按钮提交意图并展示阶段/错误。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P3-AC2",
+          "text": "缺真实结论、恢复候选或证据过期时不形成 TESTED/grant/正式 operation。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P3-AC3",
+          "text": "已 TESTED 复用 preview/grant/stateVersion 和同一包，禁止正式重构建。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P3-AC4",
+          "text": "取消、过期、stateVersion/目标/提交/执行器 SHA/摘要漂移均阻断并可见。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P3-AC5",
+          "text": "请求失败真实暴露，不空 catch、静默 toast 或默认 PASS。",
+          "status": "pending",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "phase_id": "P4",
+      "title": "集成故障回归与独立验证",
+      "status": "pending",
+      "objective": "覆盖锁占用/失权、双击/双推进者、关页、重启、派发临界、摘要/证据/授权过期、迁移失败；blind-first-pass tester 独立验证。",
+      "owned_paths": [
+        "集成/Playwright 测试和 test-report。"
+      ],
+      "dependencies": [
+        "P1–P3、真实运行时。"
+      ],
+      "deliverables": [
+        "每个 AC 的可复核证据，tester 不改代码。"
+      ],
+      "evidence_expectation": "",
+      "evidence": [],
+      "notes": "",
+      "last_reviewed_at": null,
+      "acceptance_criteria": [
+        {
+          "ac_id": "P4-AC1",
+          "text": "新代码通过独立预发布门禁；tester 首轮只读 PRD/test-plan，使用 real-browser/playwright，隐藏 execution-log/task-state。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P4-AC2",
+          "text": "故障矩阵覆盖双击、并发、关页、重启、临界中断、锁失权、迁移失败、摘要/证据/授权失效。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P4-AC3",
+          "text": "浏览器通过用例均有截图/trace/HAR 等现存证据；只写测试租户。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P4-AC4",
+          "text": "独立报告逐项覆盖 AC；缺前提记录 BLOCKER，不以 mock/旧 GO/单 HTTP 200 通过。",
+          "status": "pending",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "phase_id": "P5",
+      "title": "新 GO 后真实双按钮闭环与收尾",
+      "status": "pending",
+      "objective": "新批准提交、新 worktree/new tag；页面一次发布测试服，再用同包晋级正式服并完成运行态核验。",
+      "owned_paths": [
+        "本任务发布 worktree、脱敏运行证据和 closeout。"
+      ],
+      "dependencies": [
+        "P4 通过、独立 GO、服务器/恢复/镜像前提。"
+      ],
+      "deliverables": [
+        "operation SUCCESS、manifest、远端 IMAGE_TAG、实际镜像 tag、health UP、HTTP 200、业务页面和清理记录。"
+      ],
+      "evidence_expectation": "",
+      "evidence": [],
+      "notes": "",
+      "last_reviewed_at": null,
+      "acceptance_criteria": [
+        {
+          "ac_id": "P5-AC1",
+          "text": "新 GO 后干净 worktree/new tag 构建；测试/正式使用同一 package/manifest/digest。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P5-AC2",
+          "text": "真实登录点击测试发布一次，关闭/刷新仍完成，测试服版本说明、健康和业务页通过。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P5-AC3",
+          "text": "晋级弹窗真实验收/恢复候选后正式运行态同时满足 operation SUCCESS、manifest、远端 `.env IMAGE_TAG`、实际镜像 tag、backend UP、frontend HTTP 200 和页面结果。",
+          "status": "pending",
+          "evidence": []
+        },
+        {
+          "ac_id": "P5-AC4",
+          "text": "发布只由按钮触发，接口仅最终只读核验；无 GO/前提不足不远程发布；closeout 后才 completed。",
+          "status": "pending",
+          "evidence": []
+        }
+      ]
+    }
+  ],
+  "planner_review_status": "approved",
+  "test_status": "not_started",
+  "blocking_prereqs": [
+    "GPT-5.6 Luna service unavailable: three consecutive application-agent HTTP 503 errors and maintenance-agent HTTP 503.",
+    "P2 intent/CAS, real source preparation and safe cleanup remain unverified; no release GO."
+  ],
+  "iteration_counts": {
+    "planner_revisions": 1,
+    "executor_loops": 1,
+    "test_loops": 0
+  },
+  "created_at": "2026-09-24T10:49:16",
+  "updated_at": "2026-09-24T13:47:05",
+  "branch": "int_main",
+  "baseline_revision": "7230ddc81aff1a3b53d2ce02df226c57a4dc3c61",
+  "workspace_root": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance",
+  "tasks_root": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks",
+  "task_dir": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260924-two-button-release-delivery",
+  "goal": "用 GPT-5.6 Luna 子代理按已确认两入口发布计划开发；主代理review和把控方向。复用现有四阶段，先基线/锁/状态，再后台自动推进和UI，严格BDD/TDD及独立验证。",
+  "artifacts": {
+    "prd": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260924-two-button-release-delivery\\prd.md",
+    "test_plan": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260924-two-button-release-delivery\\test-plan.md",
+    "task_state": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260924-two-button-release-delivery\\task-state.json",
+    "execution_log": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260924-two-button-release-delivery\\execution-log.md",
+    "test_report": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\doc\\tasks\\20260924-two-button-release-delivery\\test-report.md"
+  }
+}
