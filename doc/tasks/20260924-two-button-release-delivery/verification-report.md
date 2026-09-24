@@ -32,4 +32,5 @@ P1基线、锁与状态修复已通过主审并提交；P2尚未通过，P3两�
 - 分支均为codex/two-button-release-delivery。应用slot33，端口8208/48208；本次检查未发现这两端口监听，也未发现匹配本任务标识的运行中开发/测试进程。
 - 中央task-state唯一由主代理维护；应用侧任务日志保存Java TDD证据，中央日志保存维护及主审证据。
 - 当前P2续接：P2 intent候选需补目标身份、active-request冲突、跨进程状态CAS覆盖/并发测试；source prepare已有改进但cleanup仍未放行。通过后才继续scheduler/API自动推进。不得重做P1、接管历史READY、改冻结R22工作区或沿用旧GO发布新代码。
+- 应用 scheduler 草稿已撤回：它曾尝试 READY 直接派发 publish-test，绕过持久 prepare/cleanup 证据；未保留其 GREEN 测试结果。当前后台链必须先接入 prepare operation、build、cleanup，再允许 publish-test。
 - 当前不是ready_for_closeout：保留两个工作区及草稿，不合回int_main、不清理或删除工作区、不宣布整项完成。
