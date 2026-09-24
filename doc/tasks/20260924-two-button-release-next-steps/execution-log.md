@@ -1,0 +1,13 @@
+# 执行记录
+- 用户已确认两个顶层入口方向，要求分析下一步；本轮输出实施计划，不启动未经复检的新发布版本。
+- 前序自有审查 completed；已读取 UTF-8 bootstrap、经验索引及 PowerShell 共同门禁。
+- 应用change-request-triage和bdd-tdd-acceptance-planner并读取配套合同；用户确认方向，实施和发布不在本轮执行范围。
+- 已核对Orchestrator、Record、RecoveryScheduler、前端四入口及既有测试，识别主线与批准R22分支差异；M0必须先对齐。
+- 形成M0–M5计划与AC01–AC16场景，首批交付是基线及锁/失败状态真实验证；生产验收保留且移入晋级弹窗，不默认PASS。
+- 初次多文件补丁因task.md内hunk顺序错误被工具拒绝；确认未写入新文件后按正确顺序重新写入，未影响生产代码。
+- 经验门禁：新实现需新精确GO、单包同tag晋级、真实命令测试、未知写入隔离、不可变旧迁移/target-preflight保持、页面隐式远端GET也受授权限制。
+- GREEN: change-request-plan-validator -> PASS，变更评估文档结构校验返回0。
+- GREEN: acceptance-plan-validator -> PASS，BDD/TDD/E2E/测试数据四文档校验返回0；没有声称产品测试已执行。
+- 经验沉淀复核沿用已读取的project-experience-consolidation：本轮是下一步实施计划，稳定原则已有工作流/状态/锁门禁覆盖，不新建重复长期规则。
+- GREEN: experience-preflight -> PASS，收尾仅本规划目录，正式计划及验收文档已列Cleanup Keep，无删除项或任务运行进程。
+- GREEN: planning-closeout -> PASS，preview/apply返回0、删除0项，保留9份正式规划记录；UTF-8和diff-check通过。completed只表示分析计划交付，不表示实现或发布完成。
