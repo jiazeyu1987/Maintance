@@ -25,11 +25,10 @@ P1基线、锁与状态修复已通过主审并提交；P2尚未通过，P3两�
 
 ## 工作区与续接
 
-- 维护：D:/IntRuoyiWorktree/two-button-release-delivery-maintenance；P1提交后P2草稿为publish-int-ruoyi.ps1、release_input_preparation.py及测试，未提交。
-- 维护P2准备提交：d316da9（任务: 加固发布输入准备与清理证据）；3项隔离测试通过。该提交只覆盖本地输入准备/清理合同，不证明真实依赖安装成功。
+- 维护：D:/IntRuoyiWorktree/two-button-release-delivery-maintenance；P2准备提交为d316da9（任务: 加固发布输入准备与清理证据）；3项隔离测试通过。该提交只覆盖本地输入准备/清理合同，不证明真实依赖安装成功。
 - 真实本机准备演练：workflow `rw-p2-proof-20260924` 使用 maintenance=`d316da978e5bcf169d08ec33b110132a124a103e`、application/frontend=`d0824cc97245bc68783d511f923bc95ed1d08f28`，调用正式 `prepare-frontend-dependencies.ps1` 后生成 PREPARED；脚本摘要、lockfile摘要、dependency stamp摘要均持久化。未启动服务、未占端口、未写远端。
 - 该演练的 cleanup 已成功校验 prepared digest 和两路径摘要，Git 注册已解除并删除 maintenance worktree；Windows 删除含 node_modules 的 application 目录返回 `Result too large`，该目录仍是本任务唯一临时 proof 目录，不能记为 cleanup 完成，也不能清理其他路径。
-- 应用：D:/IntRuoyiWorktree/two-button-release-delivery-app；P1提交后P2草稿为Record/Store/Service、IntentTest及应用侧执行记录，未提交。
+- 应用：D:/IntRuoyiWorktree/two-button-release-delivery-app；P2意图/CAS提交为d0824cc97，后续Store加锁和竞争测试仍在同一工作区待提交；已验证151项Maven通过。
 - 分支均为codex/two-button-release-delivery。应用slot33，端口8208/48208；本次检查未发现这两端口监听，也未发现匹配本任务标识的运行中开发/测试进程。
 - 中央task-state唯一由主代理维护；应用侧任务日志保存Java TDD证据，中央日志保存维护及主审证据。
 - 当前P2续接：P2 intent候选需补目标身份、active-request冲突、跨进程状态CAS覆盖/并发测试；source prepare已有改进但cleanup仍未放行。通过后才继续scheduler/API自动推进。不得重做P1、接管历史READY、改冻结R22工作区或沿用旧GO发布新代码。

@@ -97,3 +97,5 @@ Append one reviewed section per executor pass using real phase ids and real evid
 ## P2 source preparation review result
 - 维护prepare/cleanup草稿已加入批准commit对象检查、detached LF worktree、workflow ownership、prepare-journal、prepared摘要复核和ExpectedPreparationDigest cleanup门槛；当前窄测试为2 passed，但没有真实依赖安装成功证据。
 - 主代理不放行真实cleanup或发布；必须先补完整失败清理、路径/HEAD/摘要重验证、实时进度/退出码，再接入受控执行器。
+- 维护P2准备实现已提交：d316da9（任务: 加固发布输入准备与清理证据）；窄测试3 passed。未把测试fixture的阻断结果写成真实依赖成功。
+- 真实准备proof cleanup因Windows node_modules目录删除返回Result too large；Git worktree注册已解除，maintenance已删，application proof目录保留为任务临时产物。未强行绕过删除保护。
