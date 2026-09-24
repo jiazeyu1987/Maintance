@@ -1,9 +1,9 @@
 # 两入口发布开发交付
 
 ## Current Status
-blocked
+in_progress
 
-P1已完成并提交；P2未通过审查。指定GPT-5.6 Luna后端子任务连续三次HTTP 503，维护子任务也503，开发服务不可用。未擅自切换模型；草稿及工作区保留，详见verification-report.md。
+P1已完成并提交。用户确认Luna服务恢复并要求续接；P2恢复执行，先修复intent身份/跨实例状态写入和源准备失败续接，再继续cleanup、scheduler/API与自动推进。P3两入口页面尚未开始。
 
 ## 用户授权与目标
 用户已确认复用现有构建、部署、验收、晋级阶段并收敛为两个顶层入口，明确要求用 GPT-5.6 Luna 子代理开发，主代理 review 和把控方向。按照已提交计划 `doc/tasks/20260924-two-button-release-next-steps/implementation-plan.md` 执行，不能只改按钮名称或用前端请求串联后台阶段。
@@ -11,7 +11,7 @@ P1已完成并提交；P2未通过审查。指定GPT-5.6 Luna后端子任务连�
 ## 里程碑
 1. PRD/测试合同与当前基线审查（完成，首轮修订后validator PASS，主代理approved）。
 2. 独立 worktree 基线对齐、锁与状态修复（完成，P1主审通过；维护772fc46、应用d30f7ee02）。
-3. 后端持久目标/自动推进和前端两入口（P2进行中后因Luna服务503阻塞，P3未开始）。
+3. 后端持久目标/自动推进和前端两入口（P2恢复进行中，P3未开始）。
 4. 独立验证、修复闭环及新版本复检（待执行）。
 5. 满足授权和门禁后的真实按钮验收、集成与收尾（待执行）。
 
@@ -33,8 +33,7 @@ P1已完成并提交；P2未通过审查。指定GPT-5.6 Luna后端子任务连�
 - spec-driven-delivery的五份核心文件均保留；另按项目规则保留本task.md及最终verification-report，不因技能默认文件数删除项目必需记录。
 
 ## 当前阻塞
-- 指定Luna开发服务连续HTTP 503；后端已重试三次，维护子任务也受影响。
-- P2代码仍有未放行项，不能提交该草稿或执行发布；主审完整缺口与续接点已记录verification-report.md。
+- P2仍有未放行项：API/scheduler/后台自动推进尚未接入；真实准备演练成功但proof application目录因Windows node_modules删除返回Result too large而残留，不能把cleanup写成完成。
 
 ## 隔离工作区
 - 应用：D:/IntRuoyiWorktree/two-button-release-delivery-app，基线f46b0bdc20d80ee7fa6e5d6b86898bcae0d0b357，已无冲突合入b15b52e0c4c14ed46ebe0772ba4aea2caa8df090，待验证后提交。注册slot33，前端8208/后端48208，port guard PASS。

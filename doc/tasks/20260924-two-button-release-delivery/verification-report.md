@@ -2,7 +2,7 @@
 
 ## 当前结论
 
-BLOCKED：P1基线、锁与状态修复已通过主审并提交；P2尚未通过，P3两入口页面尚未开发。指定GPT-5.6 Luna后端子任务连续三次HTTP 503，维护子任务也返回HTTP 503。未切换开发模型，未执行测试服/正式服发布。
+P1基线、锁与状态修复已通过主审并提交；P2尚未通过，P3两入口页面尚未开发。用户现已确认Luna恢复并要求续接；同一P2 worktree草稿继续审查与修复。未切换开发模型，未执行测试服/正式服发布。
 
 ## 已通过的P1
 
@@ -26,8 +26,11 @@ BLOCKED：P1基线、锁与状态修复已通过主审并提交；P2尚未通过
 ## 工作区与续接
 
 - 维护：D:/IntRuoyiWorktree/two-button-release-delivery-maintenance；P1提交后P2草稿为publish-int-ruoyi.ps1、release_input_preparation.py及测试，未提交。
+- 维护P2准备提交：d316da9（任务: 加固发布输入准备与清理证据）；3项隔离测试通过。该提交只覆盖本地输入准备/清理合同，不证明真实依赖安装成功。
+- 真实本机准备演练：workflow `rw-p2-proof-20260924` 使用 maintenance=`d316da978e5bcf169d08ec33b110132a124a103e`、application/frontend=`d0824cc97245bc68783d511f923bc95ed1d08f28`，调用正式 `prepare-frontend-dependencies.ps1` 后生成 PREPARED；脚本摘要、lockfile摘要、dependency stamp摘要均持久化。未启动服务、未占端口、未写远端。
+- 该演练的 cleanup 已成功校验 prepared digest 和两路径摘要，Git 注册已解除并删除 maintenance worktree；Windows 删除含 node_modules 的 application 目录返回 `Result too large`，该目录仍是本任务唯一临时 proof 目录，不能记为 cleanup 完成，也不能清理其他路径。
 - 应用：D:/IntRuoyiWorktree/two-button-release-delivery-app；P1提交后P2草稿为Record/Store/Service、IntentTest及应用侧执行记录，未提交。
 - 分支均为codex/two-button-release-delivery。应用slot33，端口8208/48208；本次检查未发现这两端口监听，也未发现匹配本任务标识的运行中开发/测试进程。
 - 中央task-state唯一由主代理维护；应用侧任务日志保存Java TDD证据，中央日志保存维护及主审证据。
-- 服务恢复后从P2窄切片继续，先完成持久intent/CAS与安全prepare，再审cleanup和后台自动推进。不得重做P1、接管历史READY、改冻结R22工作区或沿用旧GO发布新代码。
+- 当前P2续接：P2 intent候选需补目标身份、active-request冲突、跨进程状态CAS覆盖/并发测试；source prepare已有改进但cleanup仍未放行。通过后才继续scheduler/API自动推进。不得重做P1、接管历史READY、改冻结R22工作区或沿用旧GO发布新代码。
 - 当前不是ready_for_closeout：保留两个工作区及草稿，不合回int_main、不清理或删除工作区、不宣布整项完成。
