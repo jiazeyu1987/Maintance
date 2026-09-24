@@ -12,3 +12,12 @@
 - 经验沉淀复核使用project-experience-consolidation：既有凭据脱敏、精确发布锁门禁和真实命令测试要求覆盖原则，本轮源码缺口与状态放入审查报告，不新建重复长期规则。
 - GREEN: experience-preflight -> PASS，本审查仅主工作区自有记录，无临时删除项或任务运行进程，不清理其他任务worktree/暂存。
 - GREEN: audit-closeout -> PASS，preview/apply实际返回0/applied，删除0项；文档UTF-8、diff-check通过。仅提交本审查目录，目标日志及共享请求日志的其他改动不纳入。
+
+## 两按钮执行链核对
+- 用户明确希望点击按钮发布测试服、点击按钮晋级正式服，所有操作由按钮触发代码完成；本轮只核对现状，不擅自重构发布流程或触发发布。
+- 继续已完成审查目录，核对前端动作、后端工作流、构建/部署/验收/正式预览边界。
+- 已核对前端77–99及1360–1450行：四个独立阶段入口，部署按钮只接受READY；正式晋级先preview再确认授权。后端ReleaseWorkflowService/Orchestrator按固定状态执行。
+- GREEN: button-contract-review -> PASS，当前确有按钮触发后端固定代码，但尚不是把构建/准备一起编排到测试部署入口的两按钮封装；用户要求已作为审查口径记录，未擅自实施或触发发布。
+- 经验沉淀复核：既有专用工作流/同包晋级/真实验收规则已覆盖原则，不新增重复长期文档。
+- GREEN: experience-preflight -> PASS，本轮只收尾本审查目录，无删除候选或运行资源。
+- GREEN: button-review-closeout -> PASS，preview/apply删除0项、无阻塞；UTF-8及diff-check通过。本轮现状核对completed，不代表两按钮产品改造已完成。
