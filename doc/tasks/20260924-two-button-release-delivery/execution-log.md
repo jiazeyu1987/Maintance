@@ -54,6 +54,8 @@ Append one reviewed section per executor pass using real phase ids and real evid
 - GREEN: `python -X utf8 -m pytest scripts/tests/test_release_input_preparation.py -q` -> PASS, 2 passed; real temporary Git repositories and commits covered prepare/cleanup and source HEAD drift rejection.
 - Implementation: added `ops/release/release_input_preparation.py` plus internal PowerShell modes and explicit workflow/source/state parameters. Preparation is local-only, uses Git worktree with LF settings, ownership/prepared/cleanup evidence, and requires the real frontend dependency stamp; cleanup validates prepared identity, clean worktrees, source Git registration, and controlled roots.
 - P2 review correction: source repositories are allowed to contain unrelated dirty/advanced development state; preparation validates that the approved 40-character commit objects exist, then creates clean detached worktrees from those objects. It no longer requires source HEAD/dirty cleanliness. The fixture no longer commits a fake dependency stamp; the approved helper is invoked and missing generated stamp blocks preparation. Git/dependency deadlines are configurable (default 1800 seconds) rather than a 60-second checkout limit. The prior 2-test GREEN was only a controlled fixture contract and is not evidence of successful real dependency installation.
+- P2 resume hardening: added BDD coverage for untrusted cleanup digest (`test_cleanup_requires_saved_preparation_digest`) and replay/approved-object blocking; `python -X utf8 -m pytest scripts/tests/test_release_input_preparation.py -q` -> PASS, 3 passed. Ownership is now acquired under the OS lock, prepared replay revalidates both exact controlled roots, approved HEADs, clean state, publish/lock/dependency digests, and cleanup requires `ExpectedPreparationDigest` before any deletion. Preparation writes atomic per-stage journal evidence (`STARTED`, `MAINTENANCE_CREATED`, `APPLICATION_CREATED`, `PREPARED`).
+- Remaining blockers: a real successful dependency installation chain and fully streamed helper heartbeat were not claimed in this slice; the disposable helper fixture intentionally blocks because it does not produce a real stamp. Cleanup was not run against any actual developer source or R22 worktree.
 
 - MAIN REVIEW: NOT ACCEPTED. 上述首段2 PASS只证明测试fixture的Git操作；fixture把手写dependency stamp提交进node_modules，代码当时未调用正式依赖helper，不能作为真实依赖准备证据。首段“仅clean源/HEAD相同”的前提也不符合批准Git对象隔离合同。清理尚缺完整双路径/HEAD/所有权/重入验证，不得按上述Implementation描述放行。已要求逐段修正prepare，再审cleanup；P2仍未完成，禁止在真实开发仓上调用草稿cleanup。
 
@@ -84,4 +86,14 @@ Append one reviewed section per executor pass using real phase ids and real evid
 ## Blocked checkpoint
 - 应用侧阻塞记录已单独提交2f789e604；P1产品实现仍为d30f7ee02，P2生产/测试草稿未提交。
 - 中央规划/状态/审查记录结构校验通过；未启动最终独立tester，test_status保持not_started。
-- 当前blocked不满足ready_for_closeout条件，不运行清理/合并或删除工作区。
+- 原blocked于用户明确要求Luna服务恢复后继续时解除；随后主代理复跑prepare窄测2 passed、intent窄测3 passed，进入P2主审，不能据此宣称P2完成。
+- P2当前剩余：intent的FileLock未涵盖所有工作流写方法/API仍走旧startBuild；prepare部分失败恢复与cleanup安全证据未完成。继续保留两WT草稿，不运行真实cleanup、不发布。
+
+## P2 intent/store review result
+- 主代理审查通过意图/CAS窄切片：`d0824cc97`，验证命令 `mvn.cmd -B -pl yudao-module-infra -am '-Dtest=ReleaseWorkflow*,RuntimeControlServiceImplTest' '-Dsurefire.failIfNoSpecifiedTests=false' test` -> PASS, 151 tests, 0 failures/errors/skips。
+- 覆盖：固定test目标、同键同载荷回读、同键异载荷冲突、不同键同源活动冲突、双Store并行回放、双Store同stateVersion CAS单赢家；所有主要Store写路径使用ReentrantLock+OS FileLock。
+- 边界：controller仍调用旧startBuild，scheduler/prepare/cleanup未接入；P2不可标记完成。
+
+## P2 source preparation review result
+- 维护prepare/cleanup草稿已加入批准commit对象检查、detached LF worktree、workflow ownership、prepare-journal、prepared摘要复核和ExpectedPreparationDigest cleanup门槛；当前窄测试为2 passed，但没有真实依赖安装成功证据。
+- 主代理不放行真实cleanup或发布；必须先补完整失败清理、路径/HEAD/摘要重验证、实时进度/退出码，再接入受控执行器。
