@@ -40,7 +40,26 @@
   - Result: exit code `0`.
 - RED: required-playwright-entry -> FAIL, the named P4 script is absent from the implementation history/worktree; no replacement was accepted because T5 requires the approved two-entry real-user path.
 
-## P4 acceptance result
+## Follow-up evidence review (2026-09-25)
+
+- GREEN: admin-override-browser-evidence-review -> PASS with scope limitation
+  - Reviewed implementation commit `d353b633f1ea9dfbd149333e0c61f82d3f86e237` and the later local admin-override artifacts under `IntRuoyiFronted/tests/e2e/output/runtime-control-two-entry-release/admin-override/`.
+  - `node --check tests/e2e/runtime-control-two-entry-release.e2e.cjs` passed.
+  - The real Playwright evidence contains screenshots for the two-entry page, intent creation, refresh, cancellation, and no-candidate promotion blocking; the report records frontend/backend HTTP 200, zero page errors, and zero request failures.
+  - The HAR shows one `POST /release-workflows` with `reason`, `sourceSelectionId`, and `idempotencyKey`, one cancel POST, refresh GETs, and no legacy `/actions` or browser-driven `/publish-test` POST.
+  - The user explicitly authorized this local isolated admin identity override; this is valid evidence of the local UI contract only.
+- BLOCKER: tenant-boundary-evidence -> the actual HAR login is tenant `芋道源码` / user `admin`, while the required test tenant `测试租户` / `aoteman` was unavailable. The admin override is explicitly authorized for local verification, but it does not prove the required test-tenant write boundary.
+- BLOCKER: trace-secret-leak -> the admin-override Playwright trace contains the configured admin password literal in `trace.trace` and one trace resource JSON. The HAR is redacted, but the trace cannot be accepted as clean evidence until regenerated without credential capture or removed from the evidence set.
+- BLOCKER: fault-matrix-coverage -> the executed script covers login, two buttons, one publish-intent POST, refresh, cancel, and no-candidate promotion blocking. It does not provide executed evidence for double-click, concurrent推进者, close/refresh continuation after an in-flight operation, restart recovery, dispatch-boundary interruption, lease loss, migration failure, digest drift, evidence expiry, or authorization expiry. The script contains branches for some guards, but the recorded run did not exercise them.
+
+## Final P4 acceptance review
+
+- **P4-AC1: PASS with qualification.** A real Playwright path and required entry now exist and were exercised in the isolated local runtime; the admin identity was used only under the user's explicit authorization. This does not satisfy the normal test-tenant identity requirement.
+- **P4-AC2: BLOCKER.** The required independent fault matrix is not fully executed or evidenced.
+- **P4-AC3: BLOCKER.** Browser artifacts exist, but the trace contains a credential and the run used `芋道源码/admin` instead of `测试租户/aoteman`; the safety and tenant-boundary requirements are therefore not proven.
+- **P4-AC4: PASS for honest independent reporting only.** The missing matrix, tenant mismatch, and trace leak are explicitly recorded as blockers; no mock, API-only substitute, remote publish, or production action was used. Overall P4 remains **BLOCKED**.
+
+## Initial P4 acceptance result (before `d353b633f`)
 
 - **P4-AC1: BLOCKER.** Static/backend gates passed, but the required real-browser entry `tests/e2e/runtime-control-two-entry-release.e2e.cjs` is absent from the app worktree. The task requires a blind-first real-browser pass; no substitute or mock was used.
 - **P4-AC2: BLOCKER / unverified.** No authenticated independent runtime was available for injecting the required fault matrix. The backend targeted tests cover only part of the matrix and cannot substitute for independent runtime verification.
