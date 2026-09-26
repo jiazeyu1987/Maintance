@@ -492,3 +492,18 @@
 - 维护int_main由3f3aabd快进至8f0d840；39路径与独立受验源码规范换行后完全一致，预存126个dirty文件的原始字节全部保持。checklist只应用T7已验证顶部hunk，原其他任务段落保留。应用main未触碰。
 - GREEN: python -X utf8 -m pytest -q -x --tb=short scripts/tests/test_release_target_bound_plan.py scripts/tests/test_release_full_package_contract.py --junitxml <task-cache>/maintenance-merged-contracts.xml -> PASS，157/157，70.49s，真实退出0；工作目录为维护融合结果，应用合同环境变量固定任务切片。仅为功能融合验证，不是build-release或现场发布。
 - 证据：maintenance-integration-manifest.json保留任务路径、来源哈希、main原dirty哈希及融合结果；原失败和最终完整报告全部保留。维护无origin限制已先行报告，后续只提交自身文档，不能伪造push。
+
+## 收尾精确清理门禁
+- task-closeout-cleanup preview在维护主目录退出0：9份正式任务记录全部keep，delete为空，blocked/warnings为空；当前machine/Markdown均ready_for_closeout。
+- GREEN: experience-preflight -> PASS（任务资源/维护worktree收尾）。完整独立验收已结束、所有代理测试已退出；只清理本任务两个独占外层引擎（MySQL ded0e154...、classic1243a95...）及对应两任务卷，先严格helper和原始inspect在内存核ID/标签/隔离/唯一挂载消费者、零fixture/系统库，再逐个停止删除，验证不存在；不得全局prune。正式JUnit/Surefire/summary/trace、官方输入归档及私有配置保留。
+- 维护实现8f0d840已合入int_main，正式task/runbook/经验提交031f82b已落盘；维护worktree剩余checklist片段和task指针均已保存在main正式记录，按规范回读并验证后仅清理这两个自身残留，再git worktree remove。应用worktree固定af5acd为用户范围纠正后待交接切片，保留，不合入应用main、不删除或清理其产物。
+- 临时pytest目录在外部缓存，先形成单独精确清单，确认路径全位于任务cache、无链接与正式报告，再做删除；不触碰cache父目录和其他任务。当前无本任务运行控制台需恢复，测试仅在隔离引擎内运行。
+
+- 清理前调用完整回归helper误缺RELEASE_TEST_APPLICATION_BACKEND_ROOT，会话最终exit1并明确报该变量必需；未操作引擎。等待中仅拟停止匹配PID，身份门禁发现进程已退出而拒绝停止，实际未杀任何进程。此为主管清理载体输入遗漏，不改写已通过的C7/C6-J结果。下一步只执行清理需要的精确容器/卷归属检查（不重复与删除无关的922MB归档扫描），使用固定任务配置并验证零fixture/独占/隔离；不降低任何资源所有权门禁。
+
+## 2026-09-27 收尾结果与保留项
+- 任务cleanup preview/apply均exit0，9正式记录keep、delete/blocked/warnings为空。维护worktree已核分支祖先、40项实现全部保存（39于8f0d840、checklist于031f82b）、中央正式记录已提交；只还原已保存的自有checklist、归档/删除指针后，git worktree remove成功，物理目录/注册均不存在。应用af5acd worktree按用户新范围保留为接口切片。
+- 清理专项扫描首次把已批准flock工具目录当fixture而拒绝；未删除资源。按配置返回的精确工具目录核对排除后PASS，其余fixture为0、仅4系统schema、classic内层0。再次原始inspect在内存确认完整ID、任务label、network none、无port、单独占volume及唯一消费者；精确stop/rm两任务容器及volume，逐步证据cleanup-resources-preview.json最终REMOVED，不操作共享业务资源。
+- 已将本轮three-baseline-evidence.json复制至正式C7根，与Luna实际文件名tc7-tc12-t7-dispatch-boundary-evidence.json一起保留；JUnit SHA与原证据一致。首次检查把文件名误写为c7而非tc7时明确失败，核真实文件后继续，未删除唯一证据。
+- 临时目录preview：4个c7/pytest根均位于明确task-cache内部、非链接，10524文件/27631979字节；正式报告和动态证据在根外保留。Windows原生Remove-Item精确命令被工具策略拒绝：blocked by policy，未提供更具体原因；未执行、未使用别的工具绕过。回读4目录仍存在，记录BLOCKED而非PASS。
+- 维护git remote仍为空；不猜origin、不尝试虚假push。功能已通过，机器/Markdown最终状态blocked仅表示推送与临时目录收尾限制。无本任务运行控制台待恢复，所有本任务测试已退出。

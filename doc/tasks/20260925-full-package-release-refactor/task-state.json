@@ -1,11 +1,14 @@
 {
   "task_id": "20260925-full-package-release-refactor",
   "goal": "建立可复用的完整包发布流程：逐目标预检升级、数据保留、内容身份核验与持久失败恢复门禁；不针对当前主仓版本发布",
-  "status": "ready_for_closeout",
-  "current_stage": "closeout",
+  "status": "blocked",
+  "current_stage": "closeout_blocked",
   "planner_review_status": "approved",
   "plan_review_status": "approved",
-  "blocking_prereqs": [],
+  "blocking_prereqs": [
+    "维护仓无origin，无法按仓库规则推送并最终标completed。",
+    "4个已预览pytest临时目录删除被工具策略拒绝（blocked by policy）；未执行，保留现场。"
+  ],
   "closeout_limitations": [
     "维护仓未配置origin；推送无法执行，未阻止本地实现。"
   ],
@@ -274,7 +277,7 @@
   "baseline": "3f3aabdc82ab5e85e2f872173a665a361f022725",
   "remoteMutationAuthorized": false,
   "predecessorTask": "20260925-three-server-package-portability",
-  "updated_at": "2026-09-26T15:50:48.090198+00:00",
+  "updated_at": "2026-09-26T16:09:36.418628+00:00",
   "application_worktree": "D:/IntRuoyiWorktree/full-package-release-application",
   "application_baseline": "840b9ef0dca94e5ad2780f8182f1072209aa7b35",
   "supervisor_thread": "01a0d939-187a-7ae3-a242-654bd7e8aaf2",
@@ -310,9 +313,13 @@
       "cleanup_owner": "supervisor",
       "evidence": "E:/Int/CacheData/IntRuoyi/tests/full-package-release-refactor/image/classic-load-evidence.json",
       "previous_container_id": "1077b4a2af5f527ad2f57b99a72734d03578e256e0552f60fbaf48518d8a13fb",
-      "status": "ready",
+      "status": "removed_after_verification",
       "rebuild_evidence": "E:/Int/CacheData/IntRuoyi/tests/full-package-release-refactor/t7-classic-rebuild.json",
       "old_container_and_volume_removed": true
+    },
+    "mysql": {
+      "container": "release-fullpkg-8bea35",
+      "status": "removed_after_verification"
     }
   },
   "workflow_readiness_status": "independently_verified",
@@ -330,5 +337,19 @@
     "commit": "8f0d8401eda0cdf1d7c762e42ad6b9f9b78e0266",
     "merged_contract_tests": 157,
     "unrelated_dirty_preserved": true
+  },
+  "active_workspace": "D:\\ProjectPackage\\Int\\IntRuoyiMaintance",
+  "closeout": {
+    "task_cleanup_preview": "PASS",
+    "task_cleanup_apply": "PASS; 9 records kept, no deletions",
+    "maintenance_worktree_removed": true,
+    "application_interface_worktree": "retained as user-scoped handoff; no application main merge",
+    "task_containers_removed": 2,
+    "task_volumes_removed": 2,
+    "pytest_temporary_directories": "retained: deletion rejected by tool policy",
+    "formal_reports": "preserved",
+    "remote_push": "not attempted: origin absent",
+    "implementation_commit": "8f0d8401eda0cdf1d7c762e42ad6b9f9b78e0266",
+    "documentation_commit": "031f82b"
   }
 }
