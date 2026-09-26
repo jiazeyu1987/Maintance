@@ -7,6 +7,8 @@ from pathlib import Path
 
 import pytest
 
+from test_release_full_package_contract import complete_package_payload
+
 
 ROOT = Path(__file__).resolve().parents[2]
 GOVERNANCE = ROOT / "ops" / "release" / "lib" / "ReleasePackageGovernance.psm1"
@@ -19,11 +21,9 @@ def _sha256(value: bytes) -> str:
 def _write_package(package_dir: Path) -> None:
     package_dir.mkdir()
     (package_dir / "required-sql").mkdir()
-    files = {
-        "docker-compose.yml": b"services:\n",
-        "required-sql/001.sql": b"SELECT 1;\n",
-    }
+    files, complete_metadata = complete_package_payload(package_dir.name)
     for relative, content in files.items():
+        (package_dir / relative).parent.mkdir(parents=True, exist_ok=True)
         (package_dir / relative).write_bytes(content)
     artifacts = [
         {"path": path, "bytes": len(content), "sha256": _sha256(content)}
@@ -34,6 +34,7 @@ def _write_package(package_dir: Path) -> None:
     ).encode("utf-8")
     manifest = {
         "schemaVersion": 2,
+        **complete_metadata,
         "packageId": package_dir.name,
         "releaseTag": "release-p1",
         "publishScope": "app-release",
@@ -82,7 +83,7 @@ def test_manifest_json_is_the_only_authoritative_app_release_manifest(tmp_path: 
     assert result.returncode == 0, result.stdout + result.stderr
     verification = json.loads(result.stdout.strip().splitlines()[-1])
     assert verification["publishScope"] == "app-release"
-    assert verification["packageDigest"] == "b3920c523e8739501931bd5b68811bf7350b2a742960023b2fe1b7925adb0273"
+    assert verification["packageDigest"] == json.loads((package_dir / "manifest.json").read_text(encoding="utf-8"))["packageDigest"]
     assert verification["manifestDigest"] == _sha256((package_dir / "manifest.json").read_bytes())
     assert len(verification["sourceRoots"]) == 2
     assert len(verification["sourceRoles"]) == 3

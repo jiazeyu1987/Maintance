@@ -1,3 +1,9 @@
+"""Legacy local-file simulator only; not deployment rollback or recovery proof.
+
+Real PowerShell/SQL/filesystem failure evidence is verified by
+test_release_durable_deployment_evidence.py. The simulator's automatic restore
+must never be described as behavior of the production deployment entry point.
+"""
 import json
 
 import pytest

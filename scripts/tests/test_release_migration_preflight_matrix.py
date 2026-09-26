@@ -70,3 +70,43 @@ def test_procedure_without_delimiter_blocks_parser():
 def test_schema_requires_target_preflight_when_explicitly_marked():
     with pytest.raises(MigrationPreflightError, match="TARGET_PREFLIGHT_MISSING"):
         run_migration_preflight([_migration(requiresTargetPreflight=True)])
+
+
+def test_supersession_requires_target_preflight_and_known_legacy_ids():
+    with pytest.raises(MigrationPreflightError, match="MIGRATION_SUPERSESSION_PREFLIGHT_REQUIRED"):
+        run_migration_preflight(
+            [
+                _migration(migrationId="legacy"),
+                _migration(migrationId="successor", supersedes=["legacy"]),
+            ]
+        )
+
+    with pytest.raises(MigrationPreflightError, match="MIGRATION_SUPERSESSION_INVALID"):
+        run_migration_preflight(
+            [
+                _migration(
+                    migrationId="successor",
+                    requiresTargetPreflight=True,
+                    supersedes=["missing"],
+                )
+            ]
+        )
+
+
+def test_supersession_rejects_two_successor_owners():
+    with pytest.raises(MigrationPreflightError, match="MIGRATION_SUPERSESSION_DUPLICATE"):
+        run_migration_preflight(
+            [
+                _migration(migrationId="legacy"),
+                _migration(
+                    migrationId="successor-a",
+                    requiresTargetPreflight=True,
+                    supersedes=["legacy"],
+                ),
+                _migration(
+                    migrationId="successor-b",
+                    requiresTargetPreflight=True,
+                    supersedes=["legacy"],
+                ),
+            ]
+        )

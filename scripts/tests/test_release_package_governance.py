@@ -9,6 +9,8 @@ from pathlib import Path
 
 import pytest
 
+from test_release_full_package_contract import complete_package_payload
+
 
 ROOT = Path(__file__).resolve().parents[2]
 PUBLISH_SCRIPT = ROOT / "ops" / "deploy" / "publish-int-ruoyi.ps1"
@@ -58,9 +60,7 @@ def _write_package(
     publish_scope: str = "app-release",
 ) -> dict[str, object]:
     package_dir.mkdir(parents=True)
-    payload = {
-        "bin/app.bin": b"immutable-app-payload\x00\x01",
-    }
+    payload, complete_metadata = complete_package_payload(package_dir.name)
     artifacts: list[dict[str, object]] = []
     for relative_path, content in payload.items():
         target = package_dir / Path(relative_path)
@@ -75,6 +75,7 @@ def _write_package(
         )
     manifest: dict[str, object] = {
         "schemaVersion": 2,
+        **complete_metadata,
         "releaseTag": release_tag,
         "packageId": package_dir.name,
         "publishScope": publish_scope,
@@ -215,7 +216,7 @@ def test_release_package_scope_matrix_blocks_production_data_packages_before_pro
 
 def test_scope_gate_is_wired_before_remote_or_deployment_actions() -> None:
     script = PUBLISH_SCRIPT.read_text(encoding="utf-8")
-    deploy_start = script.index("if ($Mode -eq 'deploy-release') {")
+    deploy_start = script.index('Info "Deploying release package: $ReleaseTag"')
     deploy_end = script.index("if ($Mode -eq 'build-release' -and $publishBackend)", deploy_start)
     deploy_block = script[deploy_start:deploy_end]
 
@@ -223,9 +224,10 @@ def test_scope_gate_is_wired_before_remote_or_deployment_actions() -> None:
     scope_index = deploy_block.index("$releasePublishScope = $releasePackageIntegrity.PublishScope")
     gate_index = deploy_block.index("Assert-ReleasePackageDeploymentScope")
     assert integrity_index < scope_index < gate_index
+    assert "Apply-ReleaseRuntimeEnvPackage" not in deploy_block
+    assert integrity_index < deploy_block.index("Assert-ReleaseExecutorSourceBinding") < scope_index
     for later_action in (
         "Assert-DeployReleasePackageArtifactsForScope",
-        "Apply-ReleaseRuntimeEnvPackage",
         "Require-Command 'ssh'",
         "Import-ExistingRemoteRuntimeEnvSettings",
         "Invoke-SmartReleaseDeployPrecheckReportOnly",
@@ -370,7 +372,7 @@ def test_integrity_verifier_exactly_covers_payload_and_excludes_manifest_self_re
     assert verification["releaseTag"] == "release-p2-fixture"
     assert verification["packageDirectoryName"] == "package-exact"
     assert verification["publishScope"] == "app-release"
-    assert [item["path"] for item in verification["artifacts"]] == ["bin/app.bin"]
+    assert [item["path"] for item in verification["artifacts"]] == sorted(complete_package_payload(package_dir.name)[0])
     assert all(re.fullmatch(r"[0-9a-f]{64}", item["sha256"]) for item in verification["artifacts"])
 
 
@@ -534,7 +536,7 @@ def test_only_controlled_mutable_metadata_is_excluded_from_payload(tmp_path: Pat
         target.write_bytes(content)
 
     verification = _verification_result(package_dir)
-    assert [item["path"] for item in verification["artifacts"]] == ["bin/app.bin"]
+    assert [item["path"] for item in verification["artifacts"]] == sorted(complete_package_payload(package_dir.name)[0])
 
     for invalid_extra in (
         "attestation.json",

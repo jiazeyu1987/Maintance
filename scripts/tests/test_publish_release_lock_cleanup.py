@@ -2,6 +2,7 @@ import base64
 import json
 import subprocess
 from pathlib import Path
+from test_release_full_package_contract import _functions, _ps
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -18,18 +19,14 @@ def read_recovery_script() -> str:
     return RECOVERY_SCRIPT.read_text(encoding="utf-8")
 
 
-def test_fail_releases_held_release_lock_before_exit() -> None:
-    script = read_publish_script()
-
-    fail_start = script.index("function Fail([string]$Message)")
-    fail_end = script.index("function Info([string]$Message)")
-    fail_function = script[fail_start:fail_end]
-
-    assert "$script:ReleaseOperationLockHeld = $false" in script
-    assert "$script:ReleaseOperationLockReleasing = $false" in script
-    assert "if ($script:ReleaseOperationLockHeld -and -not $script:ReleaseOperationLockReleasing)" in fail_function
-    assert "Invoke-ReleaseOperationLockRelease -Status 'FAILED' -ErrorMessage $Message" in fail_function
-    assert fail_function.index("Invoke-ReleaseOperationLockRelease -Status 'FAILED' -ErrorMessage $Message") < fail_function.index("exit 1")
+def test_fail_unwinds_to_durable_failure_handler_without_claiming_lock_release() -> None:
+    result=_ps(_functions('Fail')+"""
+$script:ReleaseOperationLockHeld=$true;$script:calls=0
+function Invoke-ReleaseOperationLockRelease {$script:calls++}
+try{Fail 'original failure';throw 'unexpected success'}catch{@{error=$_.Exception.Message;held=$script:ReleaseOperationLockHeld;calls=$script:calls}|ConvertTo-Json -Compress}
+""")
+    assert result.returncode==0,result.stdout+result.stderr
+    assert json.loads(result.stdout)=={'error':'original failure','held':True,'calls':0}
 
 
 def test_release_lock_state_tracks_acquire_and_release_paths() -> None:
@@ -46,15 +43,14 @@ def test_release_lock_state_tracks_acquire_and_release_paths() -> None:
 
 
 def test_lock_acquire_failure_does_not_cleanup_unheld_lock() -> None:
-    script = read_publish_script()
-
-    catch_start = script.index("} catch {", script.index("Invoke-ReleaseOperationLockRelease -Status 'APPLIED'"))
-    catch_end = script.index("    throw", catch_start)
-    catch_block = script[catch_start:catch_end]
-
-    assert "if ($requiresReleaseOperationLock)" in catch_block
-    assert "if ($script:ReleaseOperationLockHeld)" in catch_block
-    assert "Invoke-ReleaseOperationLockRelease -Status 'FAILED'" in catch_block
+    result=_ps(_functions('Register-ReleaseDeploymentFailure','Protect-ReleaseSensitiveText')+"""
+$script:DeploymentOperation=$null;$script:ReleaseOperationLockHeld=$false;$script:calls=0
+function Invoke-ReleaseOperationLockRelease {$script:calls++}
+Register-ReleaseDeploymentFailure -OriginalError 'acquire failed'
+$script:calls
+""")
+    assert result.returncode==0,result.stdout+result.stderr
+    assert result.stdout.strip()=='0'
 
 
 def test_lock_acquire_reports_current_holder_without_setting_held() -> None:
@@ -118,26 +114,19 @@ def test_pre_acquire_lock_schema_gate_is_read_only_and_complete() -> None:
     assert "UPDATE " not in block
 
 
-def test_legacy_lock_schema_is_upgraded_only_after_exact_legacy_lock_acquire() -> None:
-    script = read_publish_script()
-    assert "function Get-ReleaseOperationLockSchemaState" in script
-    assert "LOCK_SCHEMA_LEGACY" in script
-    assert "LOCK_SCHEMA_INVALID" in script
-    assert "function Invoke-ReleaseOperationLegacyLockAcquire" in script
-    assert "function Invoke-ReleaseOperationLockLeaseUpgrade" in script
-    assert "function Enter-ReleaseOperationLock" in script
-
-    enter_start = script.index("function Enter-ReleaseOperationLock")
-    enter_end = script.index("function Invoke-ReleaseOperationLockAcquire", enter_start)
-    enter = script[enter_start:enter_end]
-    legacy_branch = enter[enter.index("if ($state -eq 'LOCK_SCHEMA_LEGACY')"):]
-    state = enter.index("Get-ReleaseOperationLockSchemaState")
-    legacy = legacy_branch.index("Invoke-ReleaseOperationLegacyLockAcquire")
-    upgrade = legacy_branch.index("Invoke-ReleaseOperationLockLeaseUpgrade")
-    ownership = legacy_branch.index("Assert-ReleaseOperationLockOwnership")
-    assert state >= 0 and legacy < upgrade < ownership
-    assert "20260921_infra_release_operation_lock_lease_fencing.sql" in script
-    assert "ALTER TABLE" not in enter
+def test_legacy_lock_schema_requires_explicit_platform_preparation() -> None:
+    result=_ps(_functions('Enter-ReleaseOperationLock')+"""
+$script:writes=0
+function Get-ReleaseOperationLockSchemaState {'LOCK_SCHEMA_LEGACY'}
+function Invoke-ReleaseOperationLegacyLockAcquire {$script:writes++}
+function Invoke-ReleaseOperationLockLeaseUpgrade {$script:writes++}
+function Invoke-ReleaseOperationLockAcquire {$script:writes++}
+try{Enter-ReleaseOperationLock;$outcome='passed'}catch{$outcome=$_.Exception.Message}
+@{error=$outcome;writes=$script:writes}|ConvertTo-Json -Compress
+""")
+    assert result.returncode==0,result.stdout+result.stderr
+    value=json.loads(result.stdout)
+    assert value['error'].startswith('RELEASE_OPERATION_LOCK_SCHEMA_NOT_READY') and value['writes']==0
 
 
 def test_all_remote_deploy_components_share_the_environment_lock() -> None:
@@ -146,7 +135,7 @@ def test_all_remote_deploy_components_share_the_environment_lock() -> None:
 
     assert "$requiresReleaseOperationLock = ($Mode -eq 'deploy-release') -and ($publishBackend -or $publishFrontend -or $publishWebsite)" in runtime
     assert "if ($requiresReleaseOperationLock) {" in runtime
-    assert runtime.count("if ($requiresReleaseOperationLock)") >= 3
+    assert runtime.index('Enter-ReleaseOperationLock') < runtime.index('Initialize-ReleaseDeploymentEvidence') < runtime.index('Prepare-RemoteReleaseTree')
     assert "if ($publishBackend) {\n        Assert-ReleaseOperationLockSchemaReady" not in runtime
     assert "if ($publishBackend) {\n        Assert-ReleaseOperationLockOwnership\n        Invoke-ReleaseOperationLockRelease" not in runtime
 

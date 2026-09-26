@@ -2,7 +2,7 @@ param(
     [Parameter(Mandatory = $true)]
     [ValidateSet('build-release', 'deploy-release', 'mark-tested')]
     [string]$Mode,
-    [ValidateSet('full', 'intruoyi', 'backend', 'frontend', 'website')]
+    [ValidateSet('full', 'intruoyi')]
     [string]$Component = 'full',
     [string]$ReleaseTag = '',
     [string]$NasConfigPath = '',
@@ -36,6 +36,9 @@ param(
     [string]$RemoteDataRoot = '/var/lib/docker/intruoyi-data/runtime-data',
     [string]$RemoteDataDiskMount = '/var/lib/docker',
     [string]$RemoteDataDiskDevice = '/dev/vdb',
+    # Platform floor only; review migration-specific temporary/log growth separately.
+    [ValidateRange(1073741824, 9223372036854775807)]
+    [int64]$DatabaseCapacityReserveBytes = 1073741824,
     [int]$FrontendPort = 8081,
     [int]$BackendPort = 48081,
     [int]$WebsiteHostPort = 8083,
@@ -107,6 +110,18 @@ $PSNativeCommandUseErrorActionPreference = $false
 }
 Import-Module -Force (Join-Path $PSScriptRoot '..\release\lib\ReleasePackageGovernance.psm1')
 Import-Module -Force (Join-Path $PSScriptRoot '..\release\lib\ReleaseManifestValidator.psm1')
+Import-Module -Force (Join-Path $PSScriptRoot '..\release\lib\ReleaseDeploymentEvidence.psm1')
+$script:DeploymentState = $null
+$script:DeploymentOperation = $null
+$script:DeploymentGateBeforeLock = $null
+$script:ReleaseMigrationFailureErrors = @()
+$script:ReleaseHistoryFailureErrors = @()
+if ($Mode -eq 'deploy-release' -and $PSBoundParameters.ContainsKey('Component')) {
+    throw 'DEPLOY_COMPONENT_OVERRIDE_FORBIDDEN: component selection is fixed by the complete package'
+}
+if ($Mode -eq 'deploy-release' -and $PSBoundParameters.ContainsKey('IncludeOnlyOffice')) {
+    throw 'DEPLOY_ONLYOFFICE_OVERRIDE_FORBIDDEN: OnlyOffice selection is fixed by the complete package'
+}
 $script:ReleaseOperationLockHeld = $false
 $script:ReleaseOperationLegacyLockHeld = $false
 $script:ReleaseOperationLockReleasing = $false
@@ -122,20 +137,9 @@ $releaseMigrationEvidenceOnlyTypes = @('preflight', 'backfill', 'postflight', 'r
 $releaseMigrationAllowedTypes = @($releaseMigrationExecutableTypes + $releaseMigrationEvidenceOnlyTypes)
 
 function Fail([string]$Message) {
-    Write-Host "[FAIL] $Message" -ForegroundColor Red
-    if ($script:ReleaseOperationLockHeld -and -not $script:ReleaseOperationLockReleasing) {
-        try {
-            $script:ReleaseOperationLockReleasing = $true
-            Invoke-ReleaseOperationLockRelease -Status 'FAILED' -ErrorMessage $Message
-        } catch {
-            $cleanupMessage = ConvertTo-ReleaseErrorMessage -Value $_.Exception.Message
-            Write-Host "[FAIL] Release operation lock cleanup failed: $cleanupMessage" -ForegroundColor Red
-        } finally {
-            $script:ReleaseOperationLockHeld = $false
-            $script:ReleaseOperationLockReleasing = $false
-        }
-    }
-    exit 1
+    # All failures must reach the deployment catch so durable evidence is kept.
+    # An in-memory flag is never proof that the remote lease was released.
+    throw $Message
 }
 
 function Info([string]$Message) {
@@ -800,7 +804,14 @@ function New-SmartReleaseReportDirectory {
         Fail "PackagePath does not exist: $packageFullPath"
     }
 
-    $reportDirectory = Join-Path $packageFullPath 'smart-release-report'
+    $reportRoot = $packageFullPath
+    if ($Mode -eq 'deploy-release') {
+        $reportRoot = [IO.Path]::GetFullPath($deployControlLocalRoot)
+        if ($reportRoot -eq $packageFullPath -or $reportRoot.StartsWith($packageFullPath.TrimEnd('\', '/') + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
+            Fail 'PACKAGE_CONTROL_PATH_INVALID: deployment reports must be outside the immutable package'
+        }
+    }
+    $reportDirectory = Join-Path $reportRoot 'smart-release-report'
     New-Item -ItemType Directory -Force -Path $reportDirectory | Out-Null
     return $reportDirectory
 }
@@ -888,7 +899,7 @@ function Invoke-SmartReleaseDeployPrecheckReportOnly {
     $targetConfigPath = Resolve-SmartReleaseInputFilePath -PathValue $SmartReleaseTargetConfigPath -ArgumentName '-SmartReleaseTargetConfigPath'
     $reportDirectory = New-SmartReleaseReportDirectory -PackagePath $PackagePath
     $deployPrecheckOutputPath = Join-Path $reportDirectory 'deploy-precheck-result.json'
-    $releaseScriptRoot = Join-Path $backendRepo 'script\release'
+    $releaseScriptRoot = $maintenanceReleaseScriptRoot
 
     $precheckResult = Invoke-SmartReleaseReportProcess `
         -ScriptPath (Join-Path $releaseScriptRoot 'run-deploy-precheck-report.ps1') `
@@ -1354,6 +1365,7 @@ function Get-DockerImageIdentity {
     return [ordered]@{
         reference = $ImageReference
         id = $imageId
+        sizeBytes = [int64]$image.Size
         repoDigests = @($image.RepoDigests | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | Sort-Object)
     }
 }
@@ -2186,7 +2198,8 @@ function ConvertTo-SqlStringLiteral {
 function Protect-ReleaseSensitiveText {
     param(
         [AllowNull()]
-        [string]$Value
+        [string]$Value,
+        [string[]]$SensitiveValues = @()
     )
 
     if ($null -eq $Value) {
@@ -2194,6 +2207,15 @@ function Protect-ReleaseSensitiveText {
     }
 
     $text = $Value
+    # Lease ownership credentials must stay intact in dispatched SQL, but must
+    # never enter the display command, exceptions, or persisted error evidence.
+    foreach($secret in (@($script:ReleaseOperationLeaseToken)+@($SensitiveValues))) {
+        if(-not [string]::IsNullOrEmpty([string]$secret)) {
+            $text=$text.Replace(([string]$secret).Replace("'","''"),'<redacted>')
+            $text=$text.Replace([string]$secret,'<redacted>')
+        }
+    }
+    $text=[regex]::Replace($text,'(?i)(LOCK_(?:ACQUIRED|UPGRADED):)[A-Za-z0-9_-]+','$1<redacted>')
     $patterns = @(
         '(?i)(MYSQL_PWD=)[^\s''"`;\r\n]+'
         '(?i)(?<!-)(-p)[^\s''"`;\r\n]+'
@@ -2863,12 +2885,14 @@ function Assert-RemoteRuntimeDataOnDataDisk {
 
     $command = @"
 set -eu
-data_disk_source=`$(findmnt -n -o SOURCE --target '$RemoteDataDiskMount' 2>/dev/null || true)
+data_disk_source=`$(findmnt -n -o SOURCE --target '$RemoteDataDiskMount')
 if [ "`$data_disk_source" != '$RemoteDataDiskDevice' ]; then
   echo "Expected $RemoteDataDiskMount to be mounted from $RemoteDataDiskDevice, got: `$data_disk_source" >&2
   exit 1
 fi
-mkdir -p '$RemoteDataRoot' '$RemoteReleaseRoot' '$RemoteAppDir'
+test -d '$RemoteDataRoot'
+test -d '$RemoteReleaseRoot'
+test -d '$RemoteAppDir'
 release_source=`$(df -P '$RemoteReleaseRoot' | awk 'NR==2 {print `$1}')
 if [ "`$release_source" != '$RemoteDataDiskDevice' ]; then
   echo "Expected $RemoteReleaseRoot to be stored on $RemoteDataDiskDevice, got: `$release_source" >&2
@@ -2878,24 +2902,17 @@ if [ -e '$RemoteAppDir/data' ] && [ ! -d '$RemoteAppDir/data' ]; then
   echo "Remote runtime data path exists but is not a directory: $RemoteAppDir/data" >&2
   exit 1
 fi
-mkdir -p '$RemoteAppDir/data'
-if ! mountpoint -q '$RemoteAppDir/data'; then
-  if [ -n "`$(find '$RemoteAppDir/data' -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]; then
-    echo "Remote runtime data dir is not mounted and is not empty: $RemoteAppDir/data" >&2
-    exit 1
-  fi
-  mount --bind '$RemoteDataRoot' '$RemoteAppDir/data'
-fi
+test -d '$RemoteAppDir/data'
+mountpoint -q '$RemoteAppDir/data'
 data_dir_source=`$(df -P '$RemoteAppDir/data' | awk 'NR==2 {print `$1}')
 if [ "`$data_dir_source" != '$RemoteDataDiskDevice' ]; then
   echo "Expected $RemoteAppDir/data to be stored on $RemoteDataDiskDevice, got: `$data_dir_source" >&2
   exit 1
 fi
-fstab_line='$RemoteDataRoot $RemoteAppDir/data none bind 0 0'
-if ! grep -Fqs "`$fstab_line" /etc/fstab; then
-  printf '%s\n' "`$fstab_line" >> /etc/fstab
-fi
-mkdir -p '$RemoteAppDir/data/mysql' '$RemoteAppDir/data/redis' '$RemoteAppDir/data/backend-logs' '$RemoteAppDir/data/minio'
+test -d '$RemoteAppDir/data/mysql'
+test -d '$RemoteAppDir/data/redis'
+test -d '$RemoteAppDir/data/backend-logs'
+test -d '$RemoteAppDir/data/minio'
 "@
     Invoke-SshCommand $command
 }
@@ -3319,6 +3336,10 @@ function Resolve-DeployReleasePackageScope {
 }
 
 function Resolve-DeployReleasePackageOnlyOfficeIncluded {
+    param([bool]$IncludeOnlyOfficeExplicit = $false)
+    if ($IncludeOnlyOfficeExplicit) {
+        Fail 'DEPLOY_ONLYOFFICE_OVERRIDE_FORBIDDEN: OnlyOffice selection is fixed by the complete package'
+    }
     $manifest = Read-ReleaseManifest
     if ($null -eq $manifest.onlyOfficeIncluded) {
         Fail 'manifest.json missing onlyOfficeIncluded; rebuild the release package'
@@ -3336,7 +3357,7 @@ function Resolve-DeployReleasePackageComponent {
     )
 
     if ($ComponentExplicit) {
-        return $Component
+        Fail 'DEPLOY_COMPONENT_OVERRIDE_FORBIDDEN: component selection is fixed by the complete package'
     }
 
     $manifest = Read-ReleaseManifest
@@ -3346,10 +3367,10 @@ function Resolve-DeployReleasePackageComponent {
     }
 
     if ([string]::IsNullOrWhiteSpace($manifestComponent)) {
-        Fail 'manifest.json missing component; rebuild the release package or pass -Component explicitly'
+        Fail 'manifest.json missing component; rebuild the complete release package'
     }
-    if ($manifestComponent -notin @('full', 'intruoyi', 'backend', 'frontend', 'website')) {
-        Fail "Invalid release package component: $manifestComponent"
+    if ($manifestComponent -cnotin @('full', 'intruoyi')) {
+        Fail "PACKAGE_COMPONENT_INVALID: $manifestComponent; rebuild the complete release package"
     }
     return $manifestComponent
 }
@@ -3593,8 +3614,12 @@ function Write-NasReleaseDeploymentHistory {
     )
     $nasConfig = Read-NasReleaseConfig
     $mountInfo = $null
+    $primaryError = $null
+    $evidence = $null
     try {
+        Start-ReleaseDeploymentPhase -Name 'history-connect' -Finalizing
         $mountInfo = Connect-NasReleaseShare -NasConfig $nasConfig
+        Complete-ReleaseDeploymentPhase
         $packagePath = Get-NasReleasePackagePath -NasRoot $mountInfo.Root -PackageTag $PackageTag
         if (-not (Test-Path -LiteralPath $packagePath)) {
             $historyPackageDirectoryName = ConvertTo-ReleasePackageDirectoryName -ReleaseTagValue $PackageTag
@@ -3610,19 +3635,61 @@ function Write-NasReleaseDeploymentHistory {
             environment = $HistoryEnvironment
             deployedAt = $deployedAt.ToString('o')
             operatorName = $OperatorName
+            attemptId = $script:DeploymentOperation.attemptId
+            packageDigest = $script:DeploymentOperation.binding.packageDigest
+            manifestDigest = $script:DeploymentOperation.binding.manifestDigest
         } | ConvertTo-Json -Depth 4
         $historyDirectoryName = if ($HistoryEnvironment -eq 'backup') { 'backup-deployments' } else { 'prod-deployments' }
         $latestFileName = if ($HistoryEnvironment -eq 'backup') { 'backup-latest.json' } else { 'prod-latest.json' }
         $historyDir = Join-Path $packagePath $historyDirectoryName
+        Start-ReleaseDeploymentPhase -Name 'history-file' -Finalizing
         New-Item -ItemType Directory -Force -Path $historyDir | Out-Null
-        $historyFile = Join-Path $historyDir ($deployedAt.ToString('yyyyMMdd_HHmmss') + "_$HistoryAction.json")
-        $encoding = [System.Text.UTF8Encoding]::new($false)
-        [System.IO.File]::WriteAllText($historyFile, $record, $encoding)
-        [System.IO.File]::WriteAllText((Join-Path $packagePath $latestFileName), $record, $encoding)
+        $historyFileName = $script:DeploymentOperation.attemptId + '.json'
+        $historyFile = Join-Path $historyDir $historyFileName
+        Write-ReleaseLocalAtomicEvidence -Path $historyFile -Text $record -CreateOnly
+        Complete-ReleaseDeploymentPhase
+        Start-ReleaseDeploymentPhase -Name 'history-latest' -Finalizing
+        Write-ReleaseLocalAtomicEvidence -Path (Join-Path $packagePath $latestFileName) -Text $record
+        Complete-ReleaseDeploymentPhase
+        $evidence=[pscustomobject]@{status='verified';packageTag=$PackageTag;environment=$HistoryEnvironment;historyDirectory=$historyDirectoryName;historyFile=$historyFileName;latestFile=$latestFileName;sha256=(Get-DeploymentEvidenceDigest ([Text.Encoding]::UTF8.GetBytes($record)))}
         Info "$HistoryEnvironment release history recorded: $NasReleaseRoot/$historyPackageDirectoryName/$latestFileName"
-    } finally {
-        Disconnect-NasReleaseShare -MountInfo $mountInfo
+    } catch {
+        $primaryError=$_
     }
+    try {
+        Start-ReleaseDeploymentPhase -Name 'nas-disconnect' -Finalizing
+        Disconnect-NasReleaseShare -MountInfo $mountInfo
+        Complete-ReleaseDeploymentPhase
+    } catch {
+        if($null -eq $primaryError){throw}
+        $script:DeploymentOperation.finalizationErrors+=Protect-ReleaseSensitiveText $_.Exception.Message
+    }
+    if($null -ne $primaryError){throw $primaryError}
+    return $evidence
+}
+
+function Assert-NasReleaseDeploymentHistoryEvidence {
+    param($History)
+    if($History.status -cne 'verified' -or $History.environment -cnotin @('prod','backup') -or
+       $History.historyFile -cnotmatch '^[0-9a-f]{64}\.json$' -or $History.sha256 -cnotmatch '^[0-9a-f]{64}$' -or
+       $History.historyDirectory -cne "$($History.environment)-deployments" -or $History.latestFile -cne "$($History.environment)-latest.json") {throw 'RELEASE_DEPLOYMENT_EVIDENCE_HISTORY_INVALID'}
+    $mount=$null
+    $primaryError=$null
+    try {
+        $mount=Connect-NasReleaseShare -NasConfig (Read-NasReleaseConfig)
+        $root=Get-NasReleasePackagePath -NasRoot $mount.Root -PackageTag $History.packageTag
+        foreach($path in @((Join-Path (Join-Path $root $History.historyDirectory) $History.historyFile),(Join-Path $root $History.latestFile))) {
+            if((ConvertTo-ReleaseFileSha256Hex -Path $path) -cne $History.sha256){throw 'RELEASE_DEPLOYMENT_EVIDENCE_HISTORY_READBACK_MISMATCH'}
+        }
+    }catch{$primaryError=$_}
+    try {Disconnect-NasReleaseShare -MountInfo $mount}
+    catch {
+        $secondary=Protect-ReleaseSensitiveText $_.Exception.Message
+        if($null -eq $primaryError){throw "RELEASE_DEPLOYMENT_EVIDENCE_HISTORY_DISCONNECT_FAILED: $secondary"}
+        $script:ReleaseHistoryFailureErrors+= $secondary
+        Write-Host "[FAIL] History verification disconnect also failed: $secondary"
+    }
+    if($null -ne $primaryError){throw $primaryError}
 }
 
 function ConvertTo-ReleaseStringSha256Digest {
@@ -3888,6 +3955,8 @@ function Read-ReleaseMigrationMetadata {
         type = 'schema'
         riskLevel = 'medium'
         requiresTargetPreflight = $false
+        supersedes = @()
+        allowedPublishScopes = @()
         applyOrder = $null
         sessionProfile = ''
         approvedHook = ''
@@ -3918,6 +3987,23 @@ function Read-ReleaseMigrationMetadata {
             }
             'dependsOn' {
                 $metadata.dependsOn = @($values)
+            }
+            'supersedes' {
+                if ($values.Count -eq 0) {
+                    Fail "Invalid supersedes in release migration metadata: $SqlPath"
+                }
+                $metadata.supersedes = @($values)
+            }
+            'allowedPublishScopes' {
+                if ($values.Count -eq 0) {
+                    Fail "Invalid allowedPublishScopes in release migration metadata: $SqlPath"
+                }
+                foreach ($value in $values) {
+                    if ($value -notin @('app-release', 'code-only', 'with-data')) {
+                        Fail "Invalid allowedPublishScopes value in release migration metadata: $SqlPath -> $value"
+                    }
+                }
+                $metadata.allowedPublishScopes = @($values)
             }
             'type' {
                 if ($values.Count -ne 1 -or $values[0] -notin $releaseMigrationAllowedTypes) {
@@ -3987,6 +4073,15 @@ function New-ReleaseRequiredSqlManifestEntries {
         if ([bool]$metadata.requiresTargetPreflight -and -not $hasTargetPreflight) {
             Fail "Release migration requires target preflight but contract is missing: $targetPreflightPath"
         }
+        $targetPreflight = $null
+        if ($hasTargetPreflight) {
+            $reference = "target-preflight/$migrationId.preflight.sql"
+            $packagedCheck = Join-Path (Split-Path -Parent $requiredSqlLocalDir) $reference
+            if (-not (Test-Path -LiteralPath $packagedCheck -PathType Leaf)) {
+                Fail "PACKAGE_TARGET_PREFLIGHT_INVALID: missing staged $reference"
+            }
+            $targetPreflight = [ordered]@{ reference = $reference; sha256 = ConvertTo-ReleaseFileSha256Digest -Path $packagedCheck; readOnly = $true }
+        }
         $entries += [ordered]@{
             id = $migrationId
             migrationId = $migrationId
@@ -3997,6 +4092,9 @@ function New-ReleaseRequiredSqlManifestEntries {
             dependsOn = @($metadata.dependsOn)
             riskLevel = [string]$metadata.riskLevel
             requiresTargetPreflight = ([bool]$metadata.requiresTargetPreflight -or $hasTargetPreflight)
+            targetPreflight = $targetPreflight
+            supersedes = @($metadata.supersedes)
+            allowedPublishScopes = @($metadata.allowedPublishScopes)
             applyOrder = $metadata.applyOrder
             sessionProfile = [string]$metadata.sessionProfile
             approvedHook = [string]$metadata.approvedHook
@@ -4081,6 +4179,9 @@ function New-ReleaseMigrationPlanEntries {
             dependsOn = @($requiredSql.dependsOn)
             riskLevel = [string]$requiredSql.riskLevel
             requiresTargetPreflight = [bool]$requiredSql.requiresTargetPreflight
+            targetPreflight = $requiredSql.targetPreflight
+            supersedes = @($requiredSql.supersedes)
+            allowedPublishScopes = @($requiredSql.allowedPublishScopes)
             applyOrder = $requiredSql.applyOrder
             sessionProfile = [string]$requiredSql.sessionProfile
             approvedHook = [string]$requiredSql.approvedHook
@@ -4229,7 +4330,7 @@ function Invoke-BuildReleaseTargetDataPreflight {
         '--target-state', (Join-Path $planRoot 'target-state-test.json'),
         '--build-evidence', (Join-Path $planRoot 'build-preflight-evidence.json'),
         '--package-root', $releaseDir,
-        '--checks-root', (Join-Path $backendRepo 'sql\mysql\target-preflight'),
+        '--checks-root', (Join-Path $releaseDir 'target-preflight'),
         '--server', $TestServerHost, '--user', $ServerUser,
         '--output', $reportPath
     ) -WorkingDirectory $maintenanceReleaseScriptRoot
@@ -4780,6 +4881,8 @@ function Write-AuthoritativeReleaseManifest {
         components = $components
         component = $Component
         onlyOfficeIncluded = [bool]$IncludeOnlyOffice
+        installationContractVersion = 'full-app-release/v1'
+        runtimeImages = @($script:ReleaseRuntimeImages)
         artifacts = $artifacts
         database = [ordered]@{
             schemaMigrations = $migrationPlan
@@ -4821,6 +4924,7 @@ function Write-AuthoritativeReleaseManifest {
             requiresDatabaseMigrationPrecheck = [bool]$publishBackend
             requiresRequiredDataPrecheck = [bool]$publishBackend
             requiresResourceDeltaProof = $false
+            platformPrerequisites = @(Get-ReleasePlatformPrerequisites -Component $Component)
         }
         buildContract = [ordered]@{
             mode = 'report-only'
@@ -4921,32 +5025,37 @@ $componentExplicit = $PSBoundParameters.ContainsKey('Component')
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $maintenanceReleaseScriptRoot = Join-Path $scriptDir '..\release'
 $defaultBackendRepo = (Resolve-Path (Join-Path $scriptDir '..\..')).Path
-if ([string]::IsNullOrWhiteSpace($BackendRepoRoot)) {
-    $backendRepo = $defaultBackendRepo
-} else {
-    $backendRepo = (Resolve-Path -LiteralPath $BackendRepoRoot).Path
-}
-$workspaceRoot = (Resolve-Path (Join-Path $backendRepo '..')).Path
-$frontendDir = if ([string]::IsNullOrWhiteSpace($FrontendRepoRoot)) {
-    Join-Path $workspaceRoot 'yudao-ui-admin-vue3'
-} else {
-    (Resolve-Path -LiteralPath $FrontendRepoRoot).Path
-}
-if (-not (Test-Path -LiteralPath $frontendDir)) {
-    $worktreePortMapPath = Join-Path $scriptDir 'worktree-port-map.ps1'
-    if (Test-Path -LiteralPath $worktreePortMapPath) {
-        . $worktreePortMapPath
-        try {
-            $worktreePortContext = Get-IntRuoyiWorktreePortContext -CurrentBackendRepoRoot $backendRepo
-            if (-not [string]::IsNullOrWhiteSpace($worktreePortContext.WorkspaceRoot)) {
-                $workspaceRoot = $worktreePortContext.WorkspaceRoot
+$backendRepo = $defaultBackendRepo
+$workspaceRoot = Split-Path -Parent $backendRepo
+$frontendDir = ''
+if ($Mode -eq 'build-release') {
+    if ([string]::IsNullOrWhiteSpace($BackendRepoRoot)) {
+        $backendRepo = $defaultBackendRepo
+    } else {
+        $backendRepo = (Resolve-Path -LiteralPath $BackendRepoRoot).Path
+    }
+    $workspaceRoot = (Resolve-Path (Join-Path $backendRepo '..')).Path
+    $frontendDir = if ([string]::IsNullOrWhiteSpace($FrontendRepoRoot)) {
+        Join-Path $workspaceRoot 'yudao-ui-admin-vue3'
+    } else {
+        (Resolve-Path -LiteralPath $FrontendRepoRoot).Path
+    }
+    if (-not (Test-Path -LiteralPath $frontendDir)) {
+        $worktreePortMapPath = Join-Path $scriptDir 'worktree-port-map.ps1'
+        if (Test-Path -LiteralPath $worktreePortMapPath) {
+            . $worktreePortMapPath
+            try {
+                $worktreePortContext = Get-IntRuoyiWorktreePortContext -CurrentBackendRepoRoot $backendRepo
+                if (-not [string]::IsNullOrWhiteSpace($worktreePortContext.WorkspaceRoot)) {
+                    $workspaceRoot = $worktreePortContext.WorkspaceRoot
+                }
+                if (-not [string]::IsNullOrWhiteSpace($worktreePortContext.FrontendPath)) {
+                    $frontendDir = $worktreePortContext.FrontendPath
+                }
+            } catch {
+                # Keep the legacy sibling lookup so the later explicit frontend existence check
+                # still fails with the original actionable message if worktree resolution is unavailable.
             }
-            if (-not [string]::IsNullOrWhiteSpace($worktreePortContext.FrontendPath)) {
-                $frontendDir = $worktreePortContext.FrontendPath
-            }
-        } catch {
-            # Keep the legacy sibling lookup so the later explicit frontend existence check
-            # still fails with the original actionable message if worktree resolution is unavailable.
         }
     }
 }
@@ -4954,10 +5063,13 @@ $defaultWebsiteRepo = 'D:\ProjectPackage\Website'
 if ([string]::IsNullOrWhiteSpace($WebsiteRepo)) {
     $WebsiteRepo = $defaultWebsiteRepo
 }
-$websiteRepo = (Resolve-Path $WebsiteRepo).Path
-$publishBackend = $Component -in @('full', 'intruoyi', 'backend')
-$publishFrontend = $Component -in @('full', 'intruoyi', 'frontend')
-$publishWebsite = $Component -in @('full', 'website')
+$websiteRepo = ''
+if ($Mode -eq 'build-release' -and $Component -eq 'full') {
+    $websiteRepo = (Resolve-Path -LiteralPath $WebsiteRepo).Path
+}
+$publishBackend = $Component -in @('full', 'intruoyi')
+$publishFrontend = $Component -in @('full', 'intruoyi')
+$publishWebsite = $Component -eq 'full'
 $effectiveBuildPublishScope = Resolve-EffectiveBuildReleasePublishScope
 $backendJar = Join-Path $backendRepo 'yudao-server\target\yudao-server-exec.jar'
 $backendDockerfile = Join-Path $backendRepo 'script\deploy\int-ruoyi-test\Dockerfile.backend'
@@ -5089,7 +5201,7 @@ if ($publishBackend -and $Mode -eq 'build-release') {
 $requiredSqlLocalDir = Join-Path $releaseDir 'required-sql'
 $opsRuntimeLocalDir = Join-Path $releaseDir 'ops-runtime'
 $websiteRuntimeLocal = Join-Path $releaseDir 'website'
-$websiteNginxLocal = Join-Path $websiteRuntimeLocal 'nginx.conf'
+$websiteNginxLocal = Join-Path $deployControlLocalRoot 'website\nginx.conf'
 $remoteReleaseDir = "$RemoteReleaseRoot/$packageDirectoryName"
 $remoteImageTar = "$remoteReleaseDir/intruoyi-images_$packageDirectoryName.tar"
 $remoteDbDump = "$remoteReleaseDir/ruoyi-vue-pro-current.sql"
@@ -5106,6 +5218,7 @@ $remoteWebsitePreviousDir = "$RemoteAppDir/website.previous"
 $schedulerSmokeFrontendDirectory = '/opt/intruoyi/runtime/smoke/yudao-ui-admin-vue3'
 $schedulerSmokeScriptName = 'e2e:mes:smart-scheduling-smoke'
 $schedulerSmokeNodeImage = 'mcr.microsoft.com/playwright:v1.60.0-noble'
+$script:ReleaseRuntimeVerification = [ordered]@{ loadedImages=@(); images=@(); website=$null; checks=@() }
 $schedulerSmokeRunnerLocalDir = Join-Path $releaseDir 'smoke'
 $remoteSchedulerSmokeRoot = "$RemoteAppDir/smoke"
 $remoteSchedulerSmokeFrontendDir = "$remoteSchedulerSmokeRoot/yudao-ui-admin-vue3"
@@ -5175,18 +5288,157 @@ mv $remoteEnvNextLiteral $remoteEnvLiteral
 }
 
 function Assert-RemoteActualApplicationImages {
-    $checks = @()
-    if ($publishBackend) {
-        $checks += "actual_backend=`$(docker inspect -f '{{.Config.Image}}' intruoyi-backend); test `"x`$actual_backend`" = `"xintruoyi-backend:$packageDirectoryName`""
+    $script:ReleaseRuntimeVerification.images = @()
+    foreach ($image in @(Get-ReleaseTargetImageIdentities | Where-Object { $_.name -cne 'scheduler-smoke' })) {
+        $container = 'intruoyi-' + $image.name
+        $literal = ConvertTo-ShellSingleQuotedLiteral -Value $container -Purpose 'managed container'
+        $capture = Invoke-SshCapture -IgnoreExitCode -Command "docker container inspect --format '{{.Image}}|{{.State.Running}}' $literal"
+        $facts = @(([string]$capture.Output).Trim() -split '\|')
+        $actual = if ($capture.Ok -and $facts.Count -eq 2) { $facts[0] } else { $null }
+        $running = $capture.Ok -and $facts.Count -eq 2 -and $facts[1] -ceq 'true'
+        $matched = $running -and $actual -ceq $image.configDigest
+        $script:ReleaseRuntimeVerification.images += [pscustomobject][ordered]@{
+            name=$image.name; reference=$image.reference; container=$container; buildImageId=$image.buildImageId
+            expectedImageId=$image.configDigest; actualImageId=$actual; running=$running; matched=$matched
+        }
+        if (-not $matched) { Fail "RELEASE_RUNTIME_IMAGE_MISMATCH: $($image.name); expected $($image.configDigest), actual $actual, running=$running" }
     }
-    if ($publishFrontend) {
-        $checks += "actual_frontend=`$(docker inspect -f '{{.Config.Image}}' intruoyi-frontend); test `"x`$actual_frontend`" = `"xintruoyi-frontend:$packageDirectoryName`""
+    Info "Remote application content identities verified: $packageDirectoryName"
+}
+
+function Assert-RemoteWebsitePayloadIdentity {
+    param([AllowNull()][AllowEmptyCollection()][object[]]$ExpectedReceiptFiles,[switch]$BindCurrentPackage)
+    $fromReceipt=$PSBoundParameters.ContainsKey('ExpectedReceiptFiles')
+    if (-not $publishWebsite -and -not $fromReceipt) { return }
+    $expected = @()
+    if($fromReceipt) {
+        $paths=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+        foreach($item in @($ExpectedReceiptFiles)) {
+            if($null -eq $item -or [string]::IsNullOrWhiteSpace([string]$item.path) -or
+               ($item.path -cne 'nginx.conf' -and -not ([string]$item.path).StartsWith('dist/',[StringComparison]::Ordinal)) -or
+               $item.path -match '(^|/)\.\.?(?:/|$)' -or $item.path.Contains('\') -or
+               ($item.bytes -isnot [int] -and $item.bytes -isnot [long]) -or $item.bytes -lt 0 -or
+               $item.sha256 -cnotmatch '^[0-9a-f]{64}$' -or -not $paths.Add([string]$item.path)) {Fail 'RELEASE_WEBSITE_RECEIPT_INVALID: exact regular-file evidence is required'}
+            $expected+=[ordered]@{path=[string]$item.path;bytes=[int64]$item.bytes;sha256=[string]$item.sha256}
+        }
+        if($expected.Count -lt 2 -or -not $paths.Contains('nginx.conf')){Fail 'RELEASE_WEBSITE_RECEIPT_INVALID: complete static content and configuration are required'}
+        if($BindCurrentPackage) {
+            $artifacts=@($releasePackageIntegrity.artifacts|Where-Object{$_.path.StartsWith('website/dist/',[StringComparison]::Ordinal)})
+            if($artifacts.Count -ne $expected.Count-1){Fail 'RELEASE_WEBSITE_RECEIPT_INVALID: package artifact set differs'}
+            foreach($artifact in $artifacts) {
+                $match=@($expected|Where-Object{$_.path -ceq ([string]$artifact.path).Substring(8)})
+                if($match.Count -ne 1 -or $match[0].bytes -ne $artifact.bytes -or $match[0].sha256 -cne $artifact.sha256){Fail 'RELEASE_WEBSITE_RECEIPT_INVALID: package artifact binding differs'}
+            }
+        }
+    } else {
+        foreach ($artifact in @($releasePackageIntegrity.artifacts | Where-Object { $_.path.StartsWith('website/dist/', [StringComparison]::Ordinal) })) {
+            $expected += [ordered]@{ path=([string]$artifact.path).Substring(8); bytes=[int64]$artifact.bytes; sha256=[string]$artifact.sha256 }
+        }
+        if ($expected.Count -eq 0 -or -not (Test-Path -LiteralPath $websiteNginxLocal -PathType Leaf)) {
+            Fail 'RELEASE_WEBSITE_CONTENT_MISMATCH: verified static artifacts and rendered nginx configuration are required'
+        }
+        $config = Get-Item -LiteralPath $websiteNginxLocal
+        $expected += [ordered]@{ path='nginx.conf'; bytes=$config.Length; sha256=(ConvertTo-ReleaseFileSha256Hex -Path $websiteNginxLocal) }
     }
-    if ($checks.Count -eq 0) {
-        return
+    $rootLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $remoteWebsiteDir -Purpose 'website runtime root'
+    # Each external command is checked by set -e. The only pipe has a shell
+    # builtin producer and base64 as its final (and only external) command.
+    $probe = @'
+set -eu
+test -d __ROOT__ && test ! -L __ROOT__
+cd __ROOT__
+find . -mindepth 1 -exec sh -c '
+set -eu
+for file do
+  encoded=$(printf "%s" "$file" | base64 -w 0)
+  if [ -L "$file" ]; then
+    printf "INVALID\t%s\n" "$encoded"
+  elif [ -d "$file" ]; then
+    :
+  elif [ -f "$file" ]; then
+    size=$(stat -c %s -- "$file")
+    digest=$(sha256sum < "$file")
+    digest=${digest%% *}
+    printf "FILE\t%s\t%s\t%s\n" "$size" "$digest" "$encoded"
+  else
+    printf "INVALID\t%s\n" "$encoded"
+  fi
+done
+' sh {} +
+printf 'WEBSITE_SCAN_COMPLETE\n'
+'@
+    $capture = Invoke-SshCapture -IgnoreExitCode -Command $probe.Replace('__ROOT__', $rootLiteral)
+    if (-not $capture.Ok) {
+        $script:ReleaseRuntimeVerification.website = @{status='unknown';expected=$expected;actual=$null;errors=@('remote observation failed')}
+        Fail 'RELEASE_WEBSITE_CONTENT_MISMATCH: remote content observation failed'
     }
-    Invoke-SshCommand ("set -eu`n" + ($checks -join "`n"))
-    Info "Remote actual application images verified: $packageDirectoryName"
+    $actualMap = [Collections.Generic.Dictionary[string,object]]::new([StringComparer]::Ordinal)
+    $errors = @()
+    $lines = @(([string]$capture.Output).TrimEnd("`r","`n") -split "`r?`n")
+    if ($lines.Count -eq 0 -or $lines[-1] -cne 'WEBSITE_SCAN_COMPLETE') { $errors += 'incomplete observation' }
+    foreach ($line in @($lines | Select-Object -SkipLast 1)) {
+        if ($line.StartsWith("INVALID`t", [StringComparison]::Ordinal)) { $errors += 'non-regular or linked entry'; continue }
+        if ($line -cnotmatch '^FILE\t([0-9]+)\t([0-9a-f]{64})\t([A-Za-z0-9+/=]+)$') { $errors += 'malformed file observation'; continue }
+        $sizeText=$Matches[1];$hash=$Matches[2];$encodedPath=$Matches[3]
+        try {
+            $path = [Text.UTF8Encoding]::new($false,$true).GetString([Convert]::FromBase64String($encodedPath))
+            if (-not $path.StartsWith('./',[StringComparison]::Ordinal)) { throw 'relative path required' }
+            $path=$path.Substring(2)
+            $actualMap.Add($path, [ordered]@{path=$path;bytes=[int64]$sizeText;sha256=$hash})
+        } catch { $errors += 'invalid or duplicate file observation' }
+    }
+    if ($actualMap.Count -ne $expected.Count) { $errors += 'file set mismatch' }
+    foreach ($item in $expected) {
+        if (-not $actualMap.ContainsKey($item.path) -or $actualMap[$item.path].bytes -ne $item.bytes -or $actualMap[$item.path].sha256 -cne $item.sha256) {
+            $errors += "file size or digest mismatch: $($item.path)"
+        }
+    }
+    [string[]]$paths = @($actualMap.Keys)
+    [Array]::Sort($paths,[StringComparer]::Ordinal)
+    $actual = @($paths | ForEach-Object { $actualMap[$_] })
+    $evidence = [pscustomobject]@{status=$(if($errors.Count){'failed'}else{'passed'});expected=@($expected | Sort-Object {$_.path});actual=$actual;errors=$errors}
+    $script:ReleaseRuntimeVerification.website = $evidence
+    if ($evidence.status -cne 'passed') { Fail ('RELEASE_WEBSITE_CONTENT_MISMATCH: ' + (@($evidence.errors) -join '; ')) }
+}
+
+function Assert-ReleaseWebsiteVerificationPrerequisites {
+    if (-not $publishWebsite) { return }
+    $command = @'
+set -eu
+for tool in find stat sha256sum base64; do
+  command -v "$tool" >/dev/null || { printf 'WEBSITE_VERIFICATION_TOOL_MISSING:%s\n' "$tool"; exit 41; }
+done
+base64 -w 0 </dev/null >/dev/null
+printf 'WEBSITE_VERIFICATION_TOOLS_READY'
+'@
+    $result = Invoke-SshCapture -IgnoreExitCode -Command $command
+    if (-not $result.Ok -or ([string]$result.Output).Trim() -cne 'WEBSITE_VERIFICATION_TOOLS_READY') {
+        Fail 'TARGET_WEBSITE_VERIFICATION_NOT_READY: require find, GNU-compatible stat/sha256sum/base64 before deployment'
+    }
+}
+
+function Invoke-ReleaseRuntimeVerificationCheck {
+    param([Parameter(Mandatory=$true)][string]$Name, [Parameter(Mandatory=$true)][scriptblock]$Action)
+    $record = [pscustomobject][ordered]@{ name=$Name; status='started'; actual=$null; error=$null }
+    $script:ReleaseRuntimeVerification.checks += $record
+    try {
+        $record.actual = & $Action
+        $record.status = 'passed'
+    } catch {
+        $record.status = 'failed'
+        $record.error = $_.Exception.Message
+        throw
+    }
+}
+
+function Assert-RemoteBackendHealthStatus {
+    $url = "http://127.0.0.1:$BackendPort/actuator/health"
+    $capture = Invoke-SshCapture -IgnoreExitCode -Command "curl -fsS '$url'"
+    if (-not $capture.Ok) { Fail 'RELEASE_BACKEND_HEALTH_NOT_UP: backend health request failed' }
+    try { $health = ([string]$capture.Output) | ConvertFrom-Json }
+    catch { Fail 'RELEASE_BACKEND_HEALTH_NOT_UP: backend health response is not JSON' }
+    if ($null -eq $health -or $health.status -cne 'UP') { Fail 'RELEASE_BACKEND_HEALTH_NOT_UP: backend health status must be UP' }
+    return [pscustomobject]@{ url=$url; status=[string]$health.status }
 }
 
 function Assert-RemoteRuntimeEnvEdhrEndpoint {
@@ -5272,7 +5524,7 @@ set -eu
 : "`${MES_SMOKE_NODE_IMAGE:?MES_SMOKE_NODE_IMAGE is required}"
 NODE_IMAGE="`${MES_SMOKE_NODE_IMAGE}"
 WORKDIR="`${PWD:-$schedulerSmokeFrontendDirectory}"
-exec docker run --rm --network host \
+exec docker run --rm --pull=never --network host \
   -v /opt/intruoyi/runtime:/opt/intruoyi/runtime \
   -w "`$WORKDIR" \
 $envArgs
@@ -5282,6 +5534,7 @@ $envArgs
 }
 
 function New-SchedulerSmokeRunnerPackage {
+    param([Parameter(Mandatory = $true)][ValidatePattern('^sha256:[0-9a-f]{64}$')][string]$RuntimeImageId)
     if (-not $publishBackend) {
         return
     }
@@ -5306,24 +5559,59 @@ function New-SchedulerSmokeRunnerPackage {
     $localBinDir = Join-Path $schedulerSmokeRunnerLocalDir 'bin'
     New-Item -ItemType Directory -Force -Path $localTestsDir, $localInputDir, $localOutputDir, $localBinDir | Out-Null
 
-    $packageJson = @"
-{
-  "name": "intruoyi-scheduler-smoke-runner",
-  "private": true,
-  "scripts": {
-    "e2e:mes:smart-scheduling-smoke:check": "node tests/e2e/smart-scheduling-smoke-real-flow-static.spec.js",
-    "e2e:mes:smart-scheduling-smoke": "node tests/e2e/smart-scheduling-smoke-real-flow.e2e.js"
-  },
-  "devDependencies": {
-    "playwright": "1.60.0",
-    "xlsx": "0.18.5"
-  }
-}
-"@
-    Write-Utf8LfNoBomFile -Path (Join-Path $localFrontendDir 'package.json') -Content $packageJson
+    $smokeDependencyRoot = Join-Path $maintenanceReleaseScriptRoot 'smoke'
+    foreach ($fileName in @('package.json', 'package-lock.json')) {
+        $source = Join-Path $smokeDependencyRoot $fileName
+        if (-not (Test-Path -LiteralPath $source -PathType Leaf)) {
+            Fail "Smoke dependency contract missing: $source"
+        }
+        Copy-Item -LiteralPath $source -Destination (Join-Path $localFrontendDir $fileName) -Force
+    }
     Copy-Item -LiteralPath $realFlowSource -Destination (Join-Path $localTestsDir 'smart-scheduling-smoke-real-flow.e2e.js') -Force
     Copy-Item -LiteralPath $staticSpecSource -Destination (Join-Path $localTestsDir 'smart-scheduling-smoke-real-flow-static.spec.js') -Force
     Write-Utf8LfNoBomFile -Path (Join-Path $localBinDir 'npm') -Content (New-SchedulerSmokeNpmWrapperContent)
+    $containerName = 'release-smoke-' + [Guid]::NewGuid().ToString('N')
+    $created = $false
+    $dependencyCommand = @'
+set -eu
+mkdir -p /work
+cp /inputs/package.json /inputs/package-lock.json /work/
+cd /work
+npm ci --ignore-scripts --no-audit --no-fund
+node -e 'const p=require("./package.json"); for(const name of ["playwright","xlsx"]) { if(require(name+"/package.json").version!==p.devDependencies[name]) throw Error("Smoke dependency version mismatch: "+name); }'
+node -e 'const {chromium}=require("playwright"); (async()=>{const browser=await chromium.launch({headless:true}); await browser.close();})().catch(error=>{console.error(error);process.exit(1)})'
+tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf /tmp/dependencies.tar node_modules
+'@
+    $dependencyScriptPath = Join-Path $localFrontendDir '.prepare-dependencies.sh'
+    Write-Utf8LfNoBomFile -Path $dependencyScriptPath -Content $dependencyCommand
+    try {
+        Info "Preparing Linux smoke dependencies in task container: $containerName"
+        Invoke-CheckedCommand -FilePath 'docker' -ArgumentList @(
+            'create', '--name', $containerName, '--label', 'intruoyi.release-smoke=true',
+            '--mount', "type=bind,source=$localFrontendDir,target=/inputs,readonly",
+            '-e', 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1', '-e', 'npm_config_cache=/tmp/npm-cache',
+            $RuntimeImageId, 'sh', '/inputs/.prepare-dependencies.sh'
+        )
+        $created = $true
+        Invoke-CheckedCommand -FilePath 'docker' -ArgumentList @('start', '--attach', $containerName)
+        $containerExit = Invoke-ProcessCapture -FilePath 'docker' -ArgumentList @('inspect', '--format', '{{.State.ExitCode}}', $containerName)
+        if ($containerExit.ExitCode -ne 0 -or $containerExit.StdOut.Trim() -ne '0') {
+            Fail "Linux smoke dependency preparation failed in container $containerName"
+        }
+        $archive = Join-Path $localFrontendDir 'dependencies.tar'
+        Invoke-CheckedCommand -FilePath 'docker' -ArgumentList @('cp', "${containerName}:/tmp/dependencies.tar", $archive)
+        if (-not (Test-Path -LiteralPath $archive -PathType Leaf) -or (Get-Item -LiteralPath $archive).Length -le 0) {
+            Fail 'Linux smoke dependency archive missing or empty after preparation'
+        }
+    } finally {
+        try {
+            if ($created) {
+                Invoke-CheckedCommand -FilePath 'docker' -ArgumentList @('rm', '--force', $containerName)
+            }
+        } finally {
+            Remove-Item -LiteralPath $dependencyScriptPath -Force
+        }
+    }
 }
 
 function Get-RemoteSchedulerSmokeNodeImageBootstrapCommand {
@@ -5344,16 +5632,13 @@ function Copy-SchedulerSmokeRunnerToServer {
     }
 
     if (-not (Test-Path -LiteralPath (Join-Path $schedulerSmokeRunnerLocalDir 'yudao-ui-admin-vue3\package.json') -PathType Leaf)) {
-        New-SchedulerSmokeRunnerPackage
+        Fail 'PACKAGE_REQUIRED_ARTIFACT_MISSING: smoke/yudao-ui-admin-vue3/package.json; rebuild the complete package'
     }
     Info "Copying scheduler smoke runner to the $PublishTargetName server"
     Invoke-SshCommand "mkdir -p '$RemoteAppDir' '$remoteSchedulerSmokeRoot' '$remoteSchedulerSmokeFrontendDir/input' '$remoteSchedulerSmokeFrontendDir/output/artifacts' '$remoteSchedulerSmokeBinDir'"
     Copy-ToServer -LocalPath $schedulerSmokeRunnerLocalDir -RemotePath $RemoteAppDir -Recursive
     Invoke-SshCommand "chmod +x '$remoteSchedulerSmokeNpmWrapper' && test -f '$remoteSchedulerSmokeFrontendDir/package.json' && test -f '$remoteSchedulerSmokeFrontendDir/tests/e2e/smart-scheduling-smoke-real-flow.e2e.js'"
-    $remoteSmokeNodeImageBootstrap = Get-RemoteSchedulerSmokeNodeImageBootstrapCommand
-    Invoke-SshCommand "$remoteSmokeNodeImageBootstrap
-cd '$remoteSchedulerSmokeFrontendDir'
-'$remoteSchedulerSmokeNpmWrapper' install --no-audit --no-fund"
+    Invoke-SshCommand "test -f '$remoteSchedulerSmokeFrontendDir/dependencies.tar' && rm -rf '$remoteSchedulerSmokeFrontendDir/node_modules' && tar -xf '$remoteSchedulerSmokeFrontendDir/dependencies.tar' -C '$remoteSchedulerSmokeFrontendDir' && test -f '$remoteSchedulerSmokeFrontendDir/node_modules/playwright/package.json' && test -f '$remoteSchedulerSmokeFrontendDir/node_modules/xlsx/package.json'"
 }
 
 function Assert-RemoteSchedulerSmokeRuntime {
@@ -5431,12 +5716,310 @@ function Get-ReleasePackageDatabaseSqlScripts {
             MigrationId = [string]$_.migrationId
             File = [string]$_.file
             Sha256 = [string]$_.sha256
+            Supersedes = @($_.supersedes)
         }
     })
     if ($entries.Count -eq 0) {
         Fail "Release package contains no required SQL entries: $manifestPath"
     }
     return $entries
+}
+
+function Get-ReleaseCurrentDeploymentScope {
+    # Completion must be recognized before migration planning. A completed
+    # APPLY plan will naturally differ from a fresh SKIP plan.
+    $envMap=Get-RemoteRuntimeEnvMap
+    if(-not $envMap.ContainsKey('MYSQL_DATABASE') -or $envMap['MYSQL_DATABASE'] -cnotmatch '^[A-Za-z][A-Za-z0-9_-]{0,63}$'){throw 'RELEASE_DEPLOYMENT_EVIDENCE_DATABASE_IDENTITY_REQUIRED'}
+    $script:TargetMySqlDatabase=[string]$envMap['MYSQL_DATABASE']
+    $machine=Invoke-SshCapture -IgnoreExitCode -Command 'cat /etc/machine-id'
+    if(-not $machine.Ok -or ([string]$machine.Output).Trim() -cnotmatch '^[0-9a-f]{32}$'){throw 'RELEASE_DEPLOYMENT_EVIDENCE_MACHINE_IDENTITY_REQUIRED'}
+    $database=Get-ReleaseTargetDatabaseSnapshot
+    if($database.databaseIdentity.name -cne $script:TargetMySqlDatabase){throw 'RELEASE_DEPLOYMENT_EVIDENCE_DATABASE_IDENTITY_MISMATCH'}
+    return [pscustomobject]@{environment=$Environment;host=$ServerHost;machineId=([string]$machine.Output).Trim();database=$script:TargetMySqlDatabase;serverUuid=[string]$database.databaseIdentity.serverUuid}
+}
+
+function Assert-ReleaseCommittedRuntime {
+    param($State,[switch]$SamePackage)
+    $receipt=$State.receipt
+    if($null -eq $receipt.runtime -or $receipt.runtime.config.status -cne 'observed' -or $receipt.runtime.database.status -cne 'observed'){throw 'RELEASE_DEPLOYMENT_EVIDENCE_COMPLETION_RUNTIME_REQUIRED'}
+    $observed=Get-ReleaseDeploymentFailureObservation -ComponentNames @($receipt.verification.images|ForEach-Object{[string]$_.name})
+    if(@($observed.errors).Count -or $observed.config.status -cne 'observed' -or $observed.database.status -cne 'observed'){throw 'RELEASE_DEPLOYMENT_EVIDENCE_COMPLETION_OBSERVATION_UNAVAILABLE'}
+    $keys=@($receipt.runtime.config.values.PSObject.Properties.Name)
+    if($keys.Count -ne $observed.config.values.Count){throw 'RELEASE_DEPLOYMENT_EVIDENCE_COMPLETION_CONFIG_DRIFT'}
+    foreach($key in $keys){
+        if(-not $observed.config.values.Contains($key) -or [string]$receipt.runtime.config.values.$key -cne [string]$observed.config.values[$key]){throw 'RELEASE_DEPLOYMENT_EVIDENCE_COMPLETION_CONFIG_DRIFT'}
+    }
+    if($receipt.runtime.database.databaseIdentity.name -cne $observed.database.databaseIdentity.name -or
+       $receipt.runtime.database.databaseIdentity.serverUuid -cne $observed.database.databaseIdentity.serverUuid -or
+       $receipt.runtime.database.schemaDigest -cne $observed.database.schemaDigest){throw 'RELEASE_DEPLOYMENT_EVIDENCE_COMPLETION_DATABASE_DRIFT'}
+    $columns=@('migrationId','sha256','status','releaseTag','file','operationId','startedAt','finishedAt')
+    $oldLedger=ConvertTo-Json -InputObject @($receipt.runtime.database.migrationLedger|Select-Object -Property $columns) -Depth 10 -Compress
+    $newLedger=ConvertTo-Json -InputObject @($observed.database.migrationLedger|Select-Object -Property $columns) -Depth 10 -Compress
+    if($oldLedger -cne $newLedger){throw 'RELEASE_DEPLOYMENT_EVIDENCE_COMPLETION_MIGRATION_DRIFT'}
+    $images=@($receipt.verification.images)
+    $names=[Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    if($images.Count -lt 2){throw 'RELEASE_DEPLOYMENT_EVIDENCE_COMPLETION_IMAGES_REQUIRED'}
+    foreach($image in $images){
+        if($image.name -cnotin @('backend','frontend','website','onlyoffice') -or -not $names.Add([string]$image.name) -or
+           $image.matched -isnot [bool] -or $image.matched -ne $true -or $image.running -isnot [bool] -or $image.running -ne $true -or
+           $image.actualImageId -cnotmatch '^sha256:[0-9a-f]{64}$' -or $image.actualImageId -cne $image.expectedImageId){throw 'RELEASE_DEPLOYMENT_EVIDENCE_COMPLETION_IMAGES_INVALID'}
+        $actual=Invoke-SshCapture -IgnoreExitCode -Command "docker container inspect --format '{{.Image}}|{{.State.Running}}' 'intruoyi-$($image.name)'"
+        if(-not $actual.Ok -or ([string]$actual.Output).Trim() -cne ($image.actualImageId+'|true')){throw "RELEASE_DEPLOYMENT_EVIDENCE_COMPLETION_IMAGE_DRIFT: $($image.name)"}
+        $checkName=$image.name+'-health'
+        $proof=@($receipt.verification.checks|Where-Object{$_.name -ceq $checkName})
+        if($proof.Count -ne 1 -or $proof[0].status -cne 'passed'){throw 'RELEASE_DEPLOYMENT_EVIDENCE_COMPLETION_HEALTH_PROOF_INVALID'}
+        switch($image.name){
+            'backend' {Wait-RemoteHttpOk -Url "http://127.0.0.1:$BackendPort/actuator/health" -TimeoutSeconds 180;$null=Assert-RemoteBackendHealthStatus;Assert-RemoteBackendContainerMinioReachable}
+            'frontend' {Wait-RemoteHttpOk -Url "http://127.0.0.1:$FrontendPort/" -TimeoutSeconds 180}
+            'website' {Wait-RemoteHttpOk -Url "http://127.0.0.1:$WebsiteHostPort/showroom" -TimeoutSeconds 180}
+            'onlyoffice' {Wait-RemoteHttpOk -Url "http://127.0.0.1:$OnlyOfficeHostPort/healthcheck" -TimeoutSeconds 180}
+        }
+    }
+    if(-not $names.Contains('backend') -or -not $names.Contains('frontend')){throw 'RELEASE_DEPLOYMENT_EVIDENCE_COMPLETION_IMAGES_INVALID'}
+    if($names.Contains('website')){
+        if($null -eq $receipt.verification.website -or $receipt.verification.website.status -cne 'passed'){throw 'RELEASE_DEPLOYMENT_EVIDENCE_COMPLETION_WEBSITE_REQUIRED'}
+        Assert-RemoteWebsitePayloadIdentity -ExpectedReceiptFiles @($receipt.verification.website.expected) -BindCurrentPackage:$SamePackage
+    }
+    if($SamePackage){
+        Assert-ReleaseSelectedImagesLoaded
+        Assert-RemoteActualApplicationImages
+        Assert-RemoteRuntimeEnvImageTag
+    }
+}
+
+function Test-ReleaseDeploymentAlreadyCommitted {
+    $state=Read-ReleaseDeploymentState -Root "$RemoteAppDir/.release-state/$Environment" -Scope (Get-ReleaseCurrentDeploymentScope) -Capture {param($c) Invoke-SshCapture -IgnoreExitCode -Command $c}
+    if($state.gate.state -ceq 'COMMITTED'){
+        Assert-ReleaseDeploymentCompletionEvidence -State $state
+        $sameTag=$state.operation.binding.releaseTag -ceq $ReleaseTag
+        $samePackage=$sameTag -and $state.operation.binding.packageDigest -ceq $releasePackageIntegrity.packageDigest -and $state.operation.binding.manifestDigest -ceq $releasePackageIntegrity.manifestDigest
+        if($sameTag -and -not $samePackage){throw 'RELEASE_DEPLOYMENT_EVIDENCE_COMPLETED_PACKAGE_MISMATCH'}
+        Assert-ReleaseCommittedRuntime -State $state -SamePackage:$samePackage
+        # Re-read the authority after observing runtime facts. Do not report a
+        # stale completion if another attempt changed the gate during reads.
+        $fresh=Read-ReleaseDeploymentState -Root "$RemoteAppDir/.release-state/$Environment" -Scope $state.gate.scope -Capture {param($c) Invoke-SshCapture -IgnoreExitCode -Command $c}
+        if($fresh.gateDigest -cne $state.gateDigest){throw 'RELEASE_DEPLOYMENT_EVIDENCE_COMPLETION_GATE_DRIFT'}
+        Assert-ReleaseDeploymentCompletionEvidence -State $fresh
+        $script:DeploymentState=$fresh
+        return $samePackage
+    }
+    if($state.gate.state -ceq 'ZERO_WRITE_FAILED'){Assert-ReleaseDeploymentCompletionEvidence -State $state}
+    Assert-ReleaseDeploymentGate -State $state -CompletionVerified:($state.gate.state -ceq 'ZERO_WRITE_FAILED')
+    return $false
+}
+
+function Get-ReleaseDeploymentScope {
+    $plan=Read-ReleasePreflightPlan
+    return [pscustomobject]@{environment=$Environment;host=[string]$plan.binding.hostIdentity.host;machineId=[string]$plan.binding.hostIdentity.machineId;database=[string]$plan.binding.databaseIdentity.name;serverUuid=[string]$plan.binding.databaseIdentity.serverUuid}
+}
+
+function Get-ReleaseDeploymentFenceCommand {
+    param([string[]]$Statuses=@('RUNNING'))
+    $op=$script:DeploymentOperation
+    if($null -eq $op){throw 'RELEASE_DEPLOYMENT_EVIDENCE_OPERATION_REQUIRED'}
+    foreach($status in $Statuses){if($status -cnotin @('RUNNING','FAILED','APPLIED')){throw 'RELEASE_DEPLOYMENT_EVIDENCE_LOCK_STATUS_INVALID'}}
+    $states=($Statuses|ForEach-Object{"'$_'"}) -join ','
+    $binding=$op.binding
+    $command=Get-ReleaseTargetMySqlCommand
+    return @"
+$command <<'EVIDENCE_SQL'
+SELECT CASE WHEN COUNT(*)=1 AND @@server_uuid='$($binding.scope.serverUuid)' AND DATABASE()='$($binding.scope.database)' THEN 'EVIDENCE_FENCE_OK' ELSE 'EVIDENCE_FENCE_LOST' END FROM infra_release_operation_lock WHERE target_environment='$Environment' AND operation_id='$($binding.lockOperationId)' AND release_tag='$($binding.releaseTag)' AND SHA2(lease_token,256)='$($binding.leaseTokenDigest)' AND status IN ($states);
+EVIDENCE_SQL
+"@
+}
+
+function Assert-ReleasePersistentDeploymentGate {
+    param([switch]$Verify)
+    $scope=Get-ReleaseDeploymentScope
+    $root="$RemoteAppDir/.release-state/$Environment"
+    $state=Read-ReleaseDeploymentState -Root $root -Scope $scope -Capture {param($c) Invoke-SshCapture -IgnoreExitCode -Command $c}
+    if($Verify) {
+        if($null -eq $script:DeploymentGateBeforeLock -or $state.gateDigest -cne $script:DeploymentGateBeforeLock.gateDigest){throw 'RELEASE_DEPLOYMENT_EVIDENCE_LOCKED_GATE_DRIFT'}
+        Assert-ReleaseOperationLockOwnership
+        Assert-ReleaseDeploymentGate -State $state -CompletionVerified:($state.gate.state -cin @('COMMITTED','ZERO_WRITE_FAILED'))
+    } else {
+        if($state.gate.state -cin @('COMMITTED','ZERO_WRITE_FAILED')){Assert-ReleaseDeploymentCompletionEvidence -State $state}
+        Assert-ReleaseDeploymentGate -State $state -CompletionVerified:($state.gate.state -cin @('COMMITTED','ZERO_WRITE_FAILED'))
+        $script:DeploymentGateBeforeLock=$state
+    }
+    $script:DeploymentState=$state
+}
+
+function Initialize-ReleaseDeploymentEvidence {
+    $plan=Read-ReleasePreflightPlan
+    $before=Get-ReleaseDeploymentFailureObservation
+    $script:DeploymentOperation=New-ReleaseDeploymentOperation -Scope (Get-ReleaseDeploymentScope) -LockOperationId "$Environment-$ReleaseTag" -ReleaseTag $ReleaseTag -LeaseToken $script:ReleaseOperationLeaseToken -PackageDigest $releasePackageIntegrity.packageDigest -ManifestDigest $releasePackageIntegrity.manifestDigest -PlanDigest $plan.planDigest -Before $before -Target @{imageTag=$packageDirectoryName;verifiedImageContent=$script:ReleaseVerifiedImageContent}
+    $script:DeploymentState=Save-ReleaseDeploymentState -Root "$RemoteAppDir/.release-state/$Environment" -State $script:DeploymentState -Operation $script:DeploymentOperation -Capture {param($c) Invoke-SshCapture -IgnoreExitCode -Command $c} -FenceCommand (Get-ReleaseDeploymentFenceCommand) -Create
+    $script:DeploymentOperation=$script:DeploymentState.operation
+}
+
+function Save-CurrentReleaseDeploymentEvidence {
+    param([string[]]$LockStatuses=@('RUNNING'))
+    $script:DeploymentState=Save-ReleaseDeploymentState -Root "$RemoteAppDir/.release-state/$Environment" -State $script:DeploymentState -Operation $script:DeploymentOperation -Capture {param($c) Invoke-SshCapture -IgnoreExitCode -Command $c} -FenceCommand (Get-ReleaseDeploymentFenceCommand -Statuses $LockStatuses)
+    $script:DeploymentOperation=$script:DeploymentState.operation
+}
+
+function Start-ReleaseDeploymentPhase {
+    param([string]$Name,[switch]$Finalizing)
+    if($null -eq $script:DeploymentOperation){throw 'RELEASE_DEPLOYMENT_EVIDENCE_OPERATION_REQUIRED'}
+    $script:DeploymentOperation.state=if($Finalizing){'FINALIZING'}else{'STARTED'}
+    $script:DeploymentOperation.phase=$Name
+    $script:DeploymentOperation.writeAttempted=$true
+    $script:DeploymentOperation.phases+= [pscustomobject]@{name=$Name;status='STARTED';startedAt=(Get-Date).ToUniversalTime().ToString('o');completedAt=$null}
+    Save-CurrentReleaseDeploymentEvidence
+}
+
+function Complete-ReleaseDeploymentPhase {
+    param([string[]]$LockStatuses=@('RUNNING'))
+    $phase=@($script:DeploymentOperation.phases)[-1]
+    $phase.status='COMPLETED';$phase.completedAt=(Get-Date).ToUniversalTime().ToString('o')
+    $script:DeploymentOperation.verification=$script:ReleaseRuntimeVerification
+    Save-CurrentReleaseDeploymentEvidence -LockStatuses $LockStatuses
+}
+
+function Get-ReleaseDeploymentFailureObservation {
+    param([AllowEmptyCollection()][string[]]$ComponentNames)
+    if($PSBoundParameters.ContainsKey('ComponentNames')){
+        if($ComponentNames.Count -lt 2 -or @($ComponentNames|Select-Object -Unique).Count -ne $ComponentNames.Count -or @($ComponentNames|Where-Object{$_ -cnotin @('backend','frontend','website','onlyoffice')}).Count -or $ComponentNames -cnotcontains 'backend' -or $ComponentNames -cnotcontains 'frontend'){throw 'RELEASE_DEPLOYMENT_EVIDENCE_OBSERVATION_COMPONENTS_INVALID'}
+    }else{$ComponentNames=@($script:ReleaseVerifiedImageContent|Where-Object{$_.name -cne 'scheduler-smoke'}|ForEach-Object{[string]$_.name})}
+    $images=@();$errors=@();$database=$null;$config=$null
+    foreach($component in $ComponentNames) {
+        try {
+            $r=Invoke-SshCapture -IgnoreExitCode -Command "docker container inspect --format '{{.Image}}' 'intruoyi-$component'"
+            if(-not $r.Ok -or ([string]$r.Output).Trim() -cnotmatch '^sha256:[0-9a-f]{64}$'){throw 'image observation unavailable'}
+            $images+=[pscustomobject]@{name=$component;status='observed';imageId=([string]$r.Output).Trim()}
+        }catch{$images+=[pscustomobject]@{name=$component;status='unknown';imageId=$null};$errors+=Protect-ReleaseSensitiveText $_.Exception.Message}
+    }
+    try {$db=Get-ReleaseTargetDatabaseSnapshot;$database=@{status='observed';databaseIdentity=$db.databaseIdentity;migrationLedger=$db.migrationLedger;schemaDigest=(Get-DeploymentEvidenceDigest ([Text.Encoding]::UTF8.GetBytes(($db.schemaEvidence|ConvertTo-Json -Depth 50 -Compress))))}}
+    catch{$database=@{status='unknown'};$errors+=Protect-ReleaseSensitiveText $_.Exception.Message}
+    try {
+        $envMap=Get-RemoteRuntimeEnvMap
+        $required=@('IMAGE_TAG','MYSQL_DATABASE','EDHR_S3_ENDPOINT','EDHR_S3_BUCKET','EDHR_S3_REGION','BACKEND_HOST_PORT','FRONTEND_HOST_PORT')
+        if($ComponentNames -ccontains 'website'){$required+='WEBSITE_HOST_PORT'}
+        if($ComponentNames -ccontains 'onlyoffice'){$required+='ONLYOFFICE_HOST_PORT'}
+        foreach($key in $required){if(-not $envMap.ContainsKey($key) -or [string]::IsNullOrWhiteSpace([string]$envMap[$key])){throw "Formal runtime configuration observation missing required key: $key"}}
+        $values=[ordered]@{}
+        foreach($key in @('IMAGE_TAG','MYSQL_DATABASE','EDHR_S3_ENDPOINT','EDHR_S3_BUCKET','EDHR_S3_REGION','BACKEND_HOST_PORT','FRONTEND_HOST_PORT','WEBSITE_HOST_PORT','ONLYOFFICE_HOST_PORT')) {
+            if($envMap.ContainsKey($key)){
+                if($key -ceq 'EDHR_S3_ENDPOINT'){
+                    $uri=$null
+                    if(-not [Uri]::TryCreate([string]$envMap[$key],[UriKind]::Absolute,[ref]$uri) -or $uri.Scheme -cnotin @('http','https') -or $uri.UserInfo -or $uri.Query -or $uri.Fragment){throw 'Endpoint observation refused: credentials or non-endpoint URL components are not persistable'}
+                }
+                $values[$key]=$envMap[$key]
+            }
+        }
+        $config=@{status='observed';values=$values}
+    }catch{$config=@{status='unknown';values=$null};$errors+=Protect-ReleaseSensitiveText $_.Exception.Message}
+    return @{images=$images;database=$database;config=$config;errors=$errors}
+}
+
+function Register-ReleaseDeploymentFailure {
+    param([string]$OriginalError)
+    $safe=Protect-ReleaseSensitiveText $OriginalError
+    if($null -ne $script:DeploymentOperation) {
+        try {
+            $fresh=Read-ReleaseDeploymentState -Root "$RemoteAppDir/.release-state/$Environment" -Scope $script:DeploymentOperation.binding.scope -Capture {param($c) Invoke-SshCapture -IgnoreExitCode -Command $c}
+            if($fresh.gate.state -ceq 'COMMITTED') {
+                Assert-ReleaseDeploymentCompletionEvidence -State $fresh
+                Write-Host '[FAIL] Deployment commit exists but caller acknowledgement failed; do not replay.'
+                return
+            }
+            if($fresh.gate.attemptId -cne $script:DeploymentOperation.attemptId){throw 'RELEASE_DEPLOYMENT_EVIDENCE_FAILURE_ATTEMPT_MISMATCH'}
+            $script:DeploymentState=$fresh;$script:DeploymentOperation=$fresh.operation
+            $script:DeploymentOperation.originalError=$safe
+            $script:DeploymentOperation.state=if($script:DeploymentOperation.writeAttempted){'RECOVERY_REQUIRED'}else{'PREPARED'}
+            $observation=Get-ReleaseDeploymentFailureObservation
+            $script:DeploymentOperation.observation=$observation
+            $script:DeploymentOperation.observationErrors=@($script:ReleaseMigrationFailureErrors)+@($observation.errors)
+            $script:DeploymentOperation.finalizationErrors=@($script:DeploymentOperation.finalizationErrors)+@($script:ReleaseHistoryFailureErrors)
+            Save-CurrentReleaseDeploymentEvidence -LockStatuses @('RUNNING','FAILED','APPLIED')
+        }catch{Write-Host ('[FAIL] Persistent deployment failure observation unavailable: '+(Protect-ReleaseSensitiveText $_.Exception.Message))}
+    }
+    if($script:ReleaseOperationLockHeld) {
+        try {
+            Invoke-ReleaseOperationLockRelease -Status 'FAILED' -ErrorMessage $safe
+            if($null -ne $script:DeploymentOperation -and -not $script:DeploymentOperation.writeAttempted){
+                $script:DeploymentOperation.state='ZERO_WRITE_FAILED'
+                Save-CurrentReleaseDeploymentEvidence -LockStatuses @('FAILED')
+            }
+        }
+        catch {
+            $cleanup=Protect-ReleaseSensitiveText $_.Exception.Message
+            Write-Host "[FAIL] Release operation lock cleanup failed: $cleanup"
+            if($null -ne $script:DeploymentOperation) {
+                try {$script:DeploymentOperation.finalizationErrors+= $cleanup;Save-CurrentReleaseDeploymentEvidence -LockStatuses @('RUNNING','FAILED','APPLIED')}
+                catch{Write-Host ('[FAIL] Lock failure evidence update unavailable: '+(Protect-ReleaseSensitiveText $_.Exception.Message))}
+            }
+        }
+    }
+}
+
+function Remove-ReleaseDeploymentTemporaryFiles {
+    Start-ReleaseDeploymentPhase -Name 'cleanup-local' -Finalizing
+    if(Test-Path -LiteralPath $deployControlLocalRoot){Remove-Item -LiteralPath $deployControlLocalRoot -Recurse -Force -ErrorAction Stop}
+    if(Test-Path -LiteralPath $deployControlLocalRoot){throw 'RELEASE_DEPLOYMENT_LOCAL_CLEANUP_NOT_CONFIRMED'}
+    Complete-ReleaseDeploymentPhase
+    Start-ReleaseDeploymentPhase -Name 'cleanup-remote' -Finalizing
+    $files=@($remoteImageTar,$remoteDbDump,$remoteResetDbSql,$remotePostImportSql)
+    $literal=Join-ShellQuotedPathList -Paths $files
+    Invoke-SshCommand "set -eu`nrm -f -- $literal`nfor file in $literal; do test ! -e `"`$file`"; done"
+    $directories=@()
+    if($publishBackend){$directories+=$remoteRequiredSqlDir}
+    if($publishWebsite){$directories+=$remoteWebsitePreviousDir}
+    if($directories.Count){$quoted=Join-ShellQuotedPathList -Paths $directories;Invoke-SshCommand "set -eu`nrm -rf -- $quoted`nfor directory in $quoted; do test ! -e `"`$directory`"; done"}
+    Complete-ReleaseDeploymentPhase
+}
+
+function Complete-ReleaseDeployment {
+    Start-ReleaseDeploymentPhase -Name 'finalizing' -Finalizing
+    $finalRuntime=Get-ReleaseDeploymentFailureObservation
+    if(@($finalRuntime.errors).Count){throw 'RELEASE_DEPLOYMENT_EVIDENCE_FINAL_OBSERVATION_UNAVAILABLE'}
+    Remove-ReleaseDeploymentTemporaryFiles
+    if($Environment -cin @('prod','backup')) {
+        # The history writer persists phases and replaces the current operation.
+        # Bind its returned proof only after that replacement has completed.
+        $history=Write-NasReleaseDeploymentHistory -PackageTag $ReleaseTag -HistoryAction deploy -HistoryEnvironment $Environment
+        $script:DeploymentOperation.history=$history
+    } else {
+        Start-ReleaseDeploymentPhase -Name 'history-not-required' -Finalizing
+        $script:DeploymentOperation.history=@{status='not-required';environment='test'}
+        Complete-ReleaseDeploymentPhase
+    }
+    Start-ReleaseDeploymentPhase -Name 'receipt' -Finalizing
+    $receipt=[ordered]@{schemaVersion='release-deployment-receipt/v1';attemptId=$script:DeploymentOperation.attemptId;binding=$script:DeploymentOperation.binding;verification=$script:ReleaseRuntimeVerification;runtime=$finalRuntime;history=$script:DeploymentOperation.history;createdAt=(Get-Date).ToUniversalTime().ToString('o')}
+    $script:DeploymentOperation.receiptDigest=Write-ReleaseDeploymentReceipt -Root "$RemoteAppDir/.release-state/$Environment" -State $script:DeploymentState -Receipt $receipt -Capture {param($c) Invoke-SshCapture -IgnoreExitCode -Command $c} -FenceCommand (Get-ReleaseDeploymentFenceCommand)
+    Complete-ReleaseDeploymentPhase
+    Start-ReleaseDeploymentPhase -Name 'lock-applied' -Finalizing
+    Assert-ReleaseOperationLockOwnership
+    Invoke-ReleaseOperationLockRelease -Status APPLIED
+    Assert-ReleaseDeploymentCompletionEvidence -State $script:DeploymentState -BeforeCommit
+    $script:DeploymentOperation.completion=@{lockApplied=$true;historyVerified=$true;cleanupVerified=$true;completedAt=(Get-Date).ToUniversalTime().ToString('o')}
+    Complete-ReleaseDeploymentPhase -LockStatuses @('APPLIED')
+    $script:DeploymentOperation.state='COMMITTED';$script:DeploymentOperation.phase='complete'
+    Save-CurrentReleaseDeploymentEvidence -LockStatuses @('APPLIED')
+}
+
+function Assert-ReleaseDeploymentCompletionEvidence {
+    param($State,[switch]$BeforeCommit)
+    $saved=$script:DeploymentOperation
+    try {
+        $script:DeploymentOperation=$State.operation
+        $statuses=if($State.gate.state -ceq 'ZERO_WRITE_FAILED'){@('FAILED')}else{@('APPLIED')}
+        $r=Invoke-SshCapture -IgnoreExitCode -Command (Get-ReleaseDeploymentFenceCommand -Statuses $statuses)
+        if(-not $r.Ok -or ([string]$r.Output).Trim() -cne 'EVIDENCE_FENCE_OK'){throw 'RELEASE_DEPLOYMENT_EVIDENCE_LOCK_COMPLETION_NOT_CONFIRMED'}
+        if($State.gate.state -ceq 'ZERO_WRITE_FAILED') {
+            if($State.operation.writeAttempted){throw 'RELEASE_DEPLOYMENT_EVIDENCE_ZERO_WRITE_INVALID'}
+            return
+        }
+        if($null -eq $State.receipt){throw 'RELEASE_DEPLOYMENT_EVIDENCE_RECEIPT_REQUIRED'}
+        if($State.operation.binding.scope.environment -cin @('prod','backup')){
+            $history=$State.receipt.history
+            if($null -eq $history -or $history.environment -cne $State.operation.binding.scope.environment -or
+               $history.packageTag -cne $State.operation.binding.releaseTag -or $history.historyFile -cne ($State.operation.attemptId+'.json')){throw 'RELEASE_DEPLOYMENT_EVIDENCE_HISTORY_BINDING_MISMATCH'}
+            Assert-NasReleaseDeploymentHistoryEvidence -History $history
+        }
+        elseif($State.receipt.history.status -cne 'not-required'){throw 'RELEASE_DEPLOYMENT_EVIDENCE_HISTORY_INVALID'}
+    }finally{$script:DeploymentOperation=$saved}
 }
 
 function Read-ReleasePreflightPlan {
@@ -5449,6 +6032,10 @@ function Read-ReleasePreflightPlan {
     } catch {
         Fail "preflight-plan.json parse failed: $($_.Exception.Message)"
     }
+    if ([string]$plan.schemaVersion -ne 'release-deploy-plan/v1' -or [string]$plan.planKind -ne 'deploy' -or
+        $null -eq $plan.binding -or [string]::IsNullOrWhiteSpace([string]$plan.planDigest)) {
+        Fail 'TARGET_BOUND_PLAN_REQUIRED: deployment requires a verified target-bound plan'
+    }
     if ([string]$plan.publishScope -ne $releasePublishScope) {
         Fail "preflight-plan.json publishScope does not match release package: $($plan.publishScope) != $releasePublishScope"
     }
@@ -5460,14 +6047,544 @@ function Read-ReleasePreflightPlan {
         if ($action.StartsWith('BLOCKED_')) {
             Fail "preflight-plan.json contains blocked migration: $($item.migrationId) -> $action"
         }
-        if ($action -notin @('APPLY', 'SKIP_ALREADY_APPLIED', 'SKIP_ENV_NOT_ALLOWED', 'SKIP_SCOPE_EXCLUDED')) {
+        if ($action -notin @('APPLY', 'SKIP_ALREADY_APPLIED', 'SKIP_ENV_NOT_ALLOWED', 'SKIP_SCOPE_EXCLUDED', 'SKIP_IMMUTABLE')) {
             Fail "preflight-plan.json contains unsupported migration action: $($item.migrationId) -> $action"
         }
     }
     return $plan
 }
 
+function Get-ReleaseTargetMySqlCommand {
+    param([string]$DatabaseName = $script:TargetMySqlDatabase)
+    if ($DatabaseName -notmatch '^[A-Za-z0-9_-]{1,64}$') {
+        Fail 'TARGET_DATABASE_CONFIG_INVALID: MYSQL_DATABASE must be explicitly configured'
+    }
+    # The credential is expanded only inside the existing target container.
+    return ('docker exec -i intruoyi-mysql sh -lc ''MYSQL_PWD="$MYSQL_ROOT_PASSWORD" exec mysql --protocol=TCP -h127.0.0.1 -uroot --default-character-set=utf8mb4 --binary-mode --batch --raw --skip-column-names "$1"'' sh ''' + $DatabaseName + '''')
+}
+
+function Assert-ReleaseExecutorSourceBinding {
+    param([Parameter(Mandatory = $true)]$PackageIntegrity)
+    $roots = @($PackageIntegrity.sourceRoots | Where-Object { $_.rootRole -ceq 'maintenance' })
+    if ($roots.Count -ne 1 -or $roots[0].approvedCommit -cne $roots[0].commit) {
+        Fail 'RELEASE_EXECUTOR_SOURCE_INVALID: package maintenance source binding is missing'
+    }
+    $maintenanceRoot = (Resolve-Path -LiteralPath (Join-Path $scriptDir '..\..')).Path
+    $head = Invoke-ProcessCapture -FilePath 'git' -ArgumentList @('-C', $maintenanceRoot, 'rev-parse', 'HEAD')
+    if ($head.ExitCode -ne 0 -or $head.StdOut.Trim() -cne $roots[0].approvedCommit) {
+        Fail "RELEASE_EXECUTOR_SOURCE_MISMATCH: HEAD=$($head.StdOut.Trim()); package=$($roots[0].approvedCommit)"
+    }
+    $status = Invoke-ProcessCapture -FilePath 'git' -ArgumentList @('-C', $maintenanceRoot, 'status', '--porcelain', '--untracked-files=all', '--', 'ops/deploy', 'ops/release')
+    if ($status.ExitCode -ne 0 -or -not [string]::IsNullOrWhiteSpace($status.StdOut)) {
+        Fail 'RELEASE_EXECUTOR_SOURCE_DIRTY: tracked or untracked maintenance toolchain changes must be committed and packaged'
+    }
+    # Git-ignored executable source can shadow an import too. Only interpreter
+    # caches are excluded; ignored source is never treated as approved code.
+    $ignored = Invoke-ProcessCapture -FilePath 'git' -ArgumentList @('-C', $maintenanceRoot, 'ls-files', '--others', '--ignored', '--exclude-standard', '--', 'ops/deploy', 'ops/release')
+    if ($ignored.ExitCode -ne 0) { Fail 'RELEASE_EXECUTOR_SOURCE_CHECK_FAILED: cannot inventory ignored toolchain files' }
+    foreach ($relative in ($ignored.StdOut -split "`r?`n")) {
+        if ($relative -match '(^|/)__pycache__/' -and $relative -match '\.pyc$') { continue }
+        if ($relative -match '\.(ps1|psm1|psd1|py|pyw|pyc|pyd|dll|exe|so|sh|bat|cmd|js|mjs|cjs)$') {
+            Fail "RELEASE_EXECUTOR_SOURCE_DIRTY: ignored executable source $relative"
+        }
+    }
+}
+
+function Get-ReleaseTargetImageIdentities {
+    $names = @('backend','frontend','scheduler-smoke')
+    if ($publishWebsite) { $names += 'website' }
+    if ($IncludeOnlyOffice) { $names += 'onlyoffice' }
+    $images = @($script:ReleaseVerifiedImageContent)
+    if ($images.Count -ne $names.Count -or @($script:ReleaseRuntimeImages).Count -ne $names.Count) {
+        Fail 'RELEASE_IMAGE_IDENTITY_REQUIRED: complete verified image content is required'
+    }
+    foreach ($name in $names) {
+        $items = @($images | Where-Object { $_.name -ceq $name })
+        $build = @($script:ReleaseRuntimeImages | Where-Object { $_.name -ceq $name })
+        if ($items.Count -ne 1 -or $build.Count -ne 1 -or $items[0].configDigest -cnotmatch '^sha256:[0-9a-f]{64}$' -or
+            $items[0].reference -cne $build[0].reference -or $items[0].buildImageId -cne $build[0].id) {
+            Fail "RELEASE_IMAGE_IDENTITY_REQUIRED: invalid verified content for $name"
+        }
+        $items[0]
+    }
+}
+
+function Assert-ReleaseSelectedImagesLoaded {
+    $images = @(Get-ReleaseTargetImageIdentities)
+    # This release contract supports classic overlay2 only. A descriptor is a
+    # build identity; it is never an alternative accepted target image ID.
+    $platform = Invoke-SshCapture -IgnoreExitCode -Command "docker info --format '{{.OSType}}|{{.Architecture}}|{{.Driver}}'"
+    $facts = @(([string]$platform.Output).Trim() -split '\|')
+    if (-not $platform.Ok -or $facts.Count -ne 3 -or $facts[2] -cne 'overlay2') { Fail 'RELEASE_TARGET_IMAGE_STORE_UNSUPPORTED: classic overlay2 is required' }
+    $architecture = $facts[1]
+    # Docker daemon uses the uname spelling; OCI config uses the canonical name.
+    if ($architecture -ceq 'x86_64') { $architecture = 'amd64' }
+    if ($architecture -ceq 'aarch64') { $architecture = 'arm64' }
+    $script:ReleaseRuntimeVerification.loadedImages = @()
+    foreach ($image in $images) {
+        if ($image.platform.os -cne $facts[0] -or $image.platform.architecture -cne $architecture) {
+            Fail "RELEASE_TARGET_IMAGE_PLATFORM_MISMATCH: $($image.name); archive platform differs from the target daemon"
+        }
+        $reference = ConvertTo-ShellSingleQuotedLiteral -Value ([string]$image.reference) -Purpose 'packaged image reference'
+        $capture = Invoke-SshCapture -IgnoreExitCode -Command "docker image inspect --format '{{.Id}}' $reference"
+        $actual = if ($capture.Ok) { ([string]$capture.Output).Trim() } else { $null }
+        $matched = $capture.Ok -and $actual -ceq $image.configDigest
+        $script:ReleaseRuntimeVerification.loadedImages += [pscustomobject][ordered]@{
+            name=$image.name; reference=$image.reference; buildImageId=$image.buildImageId
+            expectedImageId=$image.configDigest; actualImageId=$actual; matched=$matched
+        }
+        if (-not $matched) {
+            Fail "RELEASE_IMAGE_NOT_LOADED: $($image.name); load and verify the complete package image archive before application start"
+        }
+    }
+}
+
+function Get-ReleaseTargetSchemaCollectionSql {
+    if ($Environment -notin @('test', 'prod', 'backup')) { Fail 'TARGET_ENVIRONMENT_INVALID' }
+    $sections = @(
+        @{ name='tables'; source='TABLES'; filter='TABLE_SCHEMA = DATABASE()'; order='TABLE_NAME'; fields="'name',TABLE_NAME,'type',TABLE_TYPE,'engine',ENGINE,'collation',TABLE_COLLATION,'options',CREATE_OPTIONS" },
+        @{ name='columns'; source='COLUMNS'; filter='TABLE_SCHEMA = DATABASE()'; order='TABLE_NAME,ORDINAL_POSITION'; fields="'table',TABLE_NAME,'name',COLUMN_NAME,'position',ORDINAL_POSITION,'type',COLUMN_TYPE,'nullable',IS_NULLABLE,'default',COLUMN_DEFAULT,'charset',CHARACTER_SET_NAME,'collation',COLLATION_NAME,'extra',EXTRA,'expression',GENERATION_EXPRESSION" },
+        @{ name='indexes'; source='STATISTICS'; filter='TABLE_SCHEMA = DATABASE()'; order='TABLE_NAME,INDEX_NAME,SEQ_IN_INDEX'; fields="'table',TABLE_NAME,'name',INDEX_NAME,'position',SEQ_IN_INDEX,'column',COLUMN_NAME,'unique',NON_UNIQUE,'subPart',SUB_PART,'type',INDEX_TYPE,'visible',IS_VISIBLE,'expression',EXPRESSION" },
+        @{ name='constraints'; source='TABLE_CONSTRAINTS'; filter='TABLE_SCHEMA = DATABASE()'; order='TABLE_NAME,CONSTRAINT_NAME'; fields="'table',TABLE_NAME,'name',CONSTRAINT_NAME,'type',CONSTRAINT_TYPE,'enforced',ENFORCED" },
+        @{ name='foreignKeys'; source='KEY_COLUMN_USAGE'; filter='TABLE_SCHEMA = DATABASE()'; order='TABLE_NAME,CONSTRAINT_NAME,ORDINAL_POSITION'; fields="'table',TABLE_NAME,'constraint',CONSTRAINT_NAME,'column',COLUMN_NAME,'position',ORDINAL_POSITION,'referencedTable',REFERENCED_TABLE_NAME,'referencedColumn',REFERENCED_COLUMN_NAME" },
+        @{ name='checks'; source='CHECK_CONSTRAINTS'; filter='CONSTRAINT_SCHEMA = DATABASE()'; order='CONSTRAINT_NAME'; fields="'name',CONSTRAINT_NAME,'clause',CHECK_CLAUSE" },
+        @{ name='routines'; source='ROUTINES'; filter='ROUTINE_SCHEMA = DATABASE()'; order='ROUTINE_NAME,ROUTINE_TYPE'; fields="'name',ROUTINE_NAME,'type',ROUTINE_TYPE,'definition',ROUTINE_DEFINITION,'dataType',DTD_IDENTIFIER,'deterministic',IS_DETERMINISTIC,'access',SQL_DATA_ACCESS,'security',SECURITY_TYPE,'sqlMode',SQL_MODE" },
+        @{ name='triggers'; source='TRIGGERS'; filter='TRIGGER_SCHEMA = DATABASE()'; order='TRIGGER_NAME'; fields="'name',TRIGGER_NAME,'table',EVENT_OBJECT_TABLE,'event',EVENT_MANIPULATION,'timing',ACTION_TIMING,'order',ACTION_ORDER,'statement',ACTION_STATEMENT,'sqlMode',SQL_MODE" },
+        @{ name='views'; source='VIEWS'; filter='TABLE_SCHEMA = DATABASE()'; order='TABLE_NAME'; fields="'name',TABLE_NAME,'definition',VIEW_DEFINITION,'checkOption',CHECK_OPTION,'security',SECURITY_TYPE" }
+    )
+    $sql = @(
+        'SET SESSION TRANSACTION READ ONLY;',
+        'START TRANSACTION READ ONLY;',
+        "SELECT CONCAT('identity', CHAR(9), JSON_OBJECT('name',DATABASE(),'serverUuid',@@server_uuid));"
+    )
+    foreach ($section in $sections) {
+        $sql += "SELECT CONCAT('count:$($section.name)', CHAR(9), COUNT(*)) FROM information_schema.$($section.source) WHERE $($section.filter);"
+        $sql += "SELECT CONCAT('$($section.name)', CHAR(9), JSON_OBJECT($($section.fields))) FROM information_schema.$($section.source) WHERE $($section.filter) ORDER BY $($section.order);"
+    }
+    $sql += "SELECT CONCAT('count:ledger',CHAR(9),COUNT(*)) FROM infra_release_migration WHERE target_environment='$Environment';"
+    $sql += "SELECT CONCAT('ledger',CHAR(9),JSON_OBJECT('migrationId',migration_id,'sha256',sha256,'status',status,'releaseTag',release_tag,'file',file_name,'operationId',operation_id,'startedAt',DATE_FORMAT(started_at,'%Y-%m-%dT%H:%i:%sZ'),'finishedAt',DATE_FORMAT(finished_at,'%Y-%m-%dT%H:%i:%sZ'))) FROM infra_release_migration WHERE target_environment='$Environment' ORDER BY migration_id,id;"
+    $sql += @('ROLLBACK;', "SELECT 'COLLECTION_COMPLETE';")
+    return $sql -join "`n"
+}
+
+function Get-ReleaseTargetDatabaseSnapshot {
+    $mysqlCommand = Get-ReleaseTargetMySqlCommand
+    $sql = Get-ReleaseTargetSchemaCollectionSql
+    $capture = Invoke-SshCapture -IgnoreExitCode -Command "cat <<'RELEASE_SQL' | $mysqlCommand`n$sql`nRELEASE_SQL"
+    if (-not $capture.Ok) { Fail 'TARGET_SCHEMA_COLLECTION_FAILED: read-only MySQL collection failed' }
+    $sections = @{}
+    $counts = @{}
+    $identity = $null
+    $complete = 0
+    foreach ($line in ([string]$capture.Output -split "`r?`n")) {
+        if ($line -eq 'COLLECTION_COMPLETE') { $complete++; continue }
+        $pair = $line.Split([char]9, 2)
+        if ($pair.Count -ne 2) { Fail 'TARGET_SCHEMA_COLLECTION_INVALID: malformed or truncated evidence' }
+        if ($pair[0].StartsWith('count:')) {
+            $key = $pair[0].Substring(6)
+            if ($counts.ContainsKey($key) -or $pair[1] -notmatch '^\d+$') { Fail 'TARGET_SCHEMA_COLLECTION_INVALID: duplicate/invalid row count' }
+            $counts[$key] = [int64]$pair[1]
+            $sections[$key] = @()
+        } elseif ($pair[0] -eq 'identity') {
+            if ($null -ne $identity) { Fail 'TARGET_SCHEMA_COLLECTION_INVALID: duplicate database identity' }
+            $identity = $pair[1] | ConvertFrom-Json
+        } else {
+            if (-not $sections.ContainsKey($pair[0])) { Fail 'TARGET_SCHEMA_COLLECTION_INVALID: undeclared evidence section' }
+            $sections[$pair[0]] += ($pair[1] | ConvertFrom-Json)
+        }
+    }
+    $expectedSections = @('tables','columns','indexes','constraints','foreignKeys','checks','routines','triggers','views','ledger')
+    if ($complete -ne 1 -or $null -eq $identity -or $counts.Count -ne $expectedSections.Count) { Fail 'TARGET_SCHEMA_COLLECTION_INCOMPLETE' }
+    foreach ($key in $expectedSections) {
+        if (-not $counts.ContainsKey($key) -or $sections[$key].Count -ne $counts[$key]) { Fail "TARGET_SCHEMA_COLLECTION_INCOMPLETE: $key" }
+    }
+    $schema = [ordered]@{}
+    foreach ($key in $expectedSections) { if ($key -ne 'ledger') { $schema[$key] = @($sections[$key]) } }
+    return @{ databaseIdentity=$identity; schemaEvidence=$schema; migrationLedger=@($sections['ledger']) }
+}
+
+function Assert-ReleaseTargetControlSchema {
+    param([Parameter(Mandatory = $true)]$DatabaseSnapshot)
+    $schema = $DatabaseSnapshot.schemaEvidence
+    $requiredColumns = @{
+        infra_release_migration=@('id','release_tag','migration_id','file_name','sha256','target_environment','status','started_at','finished_at','error_message','operation_id','creator','create_time','updater','update_time','deleted','tenant_id')
+        infra_release_operation_lock=@('id','target_environment','operation_id','release_tag','status','started_at','finished_at','error_message','creator','create_time','updater','update_time','deleted','tenant_id','executor_host','executor_pid','executor_identity','lease_token','heartbeat_at','write_fence')
+    }
+    foreach ($table in $requiredColumns.Keys) {
+        $present = @($schema.columns | Where-Object { $_.table -ceq $table } | ForEach-Object { $_.name })
+        foreach ($column in $requiredColumns[$table]) {
+            if ($present -cnotcontains $column) { Fail "RELEASE_CONTROL_SCHEMA_NOT_READY: $table.$column; run approved platform preparation separately" }
+        }
+    }
+    foreach ($entry in @(@{table='infra_release_operation_lock';columns='target_environment'}, @{table='infra_release_migration';columns='target_environment,migration_id'})) {
+        $valid = $false
+        foreach ($index in @($schema.indexes | Where-Object { $_.table -ceq $entry.table -and $_.unique -eq 0 } | Group-Object name)) {
+            if ((@($index.Group | Sort-Object position | ForEach-Object { $_.column }) -join ',') -ceq $entry.columns) { $valid=$true }
+        }
+        if (-not $valid) { Fail "RELEASE_CONTROL_SCHEMA_NOT_READY: $($entry.table) unique ownership index" }
+    }
+}
+
+function ConvertTo-ReleaseCapacityInteger {
+    param($Value, [string]$Label, [switch]$Positive)
+    $types = @([byte], [sbyte], [int16], [uint16], [int32], [uint32], [int64], [uint64])
+    if ($null -eq $Value -or $types -cnotcontains $Value.GetType() -or
+        [decimal]$Value -lt 0 -or [decimal]$Value -gt [int64]::MaxValue -or
+        ($Positive -and [decimal]$Value -eq 0)) {
+        Fail "TARGET_CAPACITY_INPUT_INVALID: $Label must be an in-range integer"
+    }
+    return [decimal]$Value
+}
+
+function Read-ReleaseArchiveCapacity {
+    # Read members without extracting or following links on the host. Stdin and
+    # the existing argument-array transport preserve Windows paths and Unicode.
+    $reader = @'
+import collections, json, posixpath, sys, tarfile
+
+def safe_path(value):
+    if not isinstance(value, str) or not value or chr(0) in value:
+        raise ValueError('invalid archive path')
+    normalized = posixpath.normpath(value)
+    if normalized.startswith('/') or normalized == '..' or normalized.startswith('../'):
+        raise ValueError('archive member escapes root')
+    return normalized
+
+def members(archive, image=False):
+    counts, entries, directories, hardlinks = collections.Counter(), {}, set(), {}
+    for member in archive:
+        name = safe_path(member.name)
+        if name == '.':
+            continue
+        if name in entries:
+            raise ValueError('duplicate archive member')
+        entries[name] = member
+        parent = posixpath.dirname(name)
+        while parent and parent != '.':
+            directories.add(parent)
+            parent = posixpath.dirname(parent)
+        if member.isdir():
+            directories.add(name)
+        elif member.isfile():
+            if member.size < 0:
+                raise ValueError('negative member size')
+            counts[max(1, member.size)] += 1
+        elif member.issym():
+            target = member.linkname
+            if target.startswith('/'):
+                if not image:
+                    raise ValueError('absolute dependency symlink')
+                safe_path(target.lstrip('/'))
+            else:
+                safe_path(posixpath.join(posixpath.dirname(name), target))
+            counts[max(1, len(target.encode('utf-8')))] += 1
+        elif member.islnk():
+            hardlinks[name] = safe_path(member.linkname)
+            counts[1] += 1
+        else:
+            raise ValueError('unsupported member type')
+    for name, target in hardlinks.items():
+        visited = {name}
+        while target in hardlinks:
+            if target in visited:
+                raise ValueError('cyclic hardlink')
+            visited.add(target)
+            target = hardlinks[target]
+        if target not in entries or not entries[target].isfile():
+            raise ValueError('hardlink target is not a regular member')
+    counts[1] += len(directories)
+    return counts
+
+def histogram(counter):
+    return [{'bytes': size, 'count': count} for size, count in sorted(counter.items()) if count]
+
+with tarfile.open(sys.argv[1], 'r:*') as archive:
+    smoke = members(archive)
+with tarfile.open(sys.argv[2], 'r:*') as archive:
+    manifest = json.load(archive.extractfile('manifest.json'))
+    docker, layers, configs = collections.Counter(), set(), set()
+    for image in manifest:
+        config = safe_path(image['Config'])
+        if config not in configs:
+            item = archive.getmember(config)
+            if not item.isfile():
+                raise ValueError('image config is not a file')
+            docker[max(1, item.size)] += 1
+            configs.add(config)
+        for layer in image['Layers']:
+            layer = safe_path(layer)
+            if layer in layers:
+                continue
+            item = archive.getmember(layer)
+            if not item.isfile():
+                raise ValueError('image layer is not a file')
+            with archive.extractfile(item) as stream:
+                with tarfile.open(fileobj=stream, mode='r|*') as contents:
+                    docker.update(members(contents, image=True))
+            # Classic overlay2 layer directories and registration records.
+            docker[1] += 8
+            layers.add(layer)
+print(json.dumps({'smoke': histogram(smoke), 'docker': histogram(docker)}, separators=(',', ':')))
+'@
+    $result = Invoke-ProcessCaptureWithInput -FilePath 'python' -ArgumentList @(
+        '-X','utf8','-', (Join-Path $releaseDir 'smoke/yudao-ui-admin-vue3/dependencies.tar'),
+        (Join-Path $releaseDir "intruoyi-images_$packageDirectoryName.tar")
+    ) -StandardInput $reader
+    if ($result.ExitCode -ne 0) { Fail ("TARGET_CAPACITY_INPUT_INVALID: archive member inspection failed: " + $result.StdErr.Trim()) }
+    try { return $result.StdOut | ConvertFrom-Json } catch { Fail 'TARGET_CAPACITY_INPUT_INVALID: archive capacity evidence is invalid' }
+}
+
+function Get-ReleaseCapacityReservation {
+    param([int64]$DatabaseReserveBytes = 1073741824)
+    # Keep the reservation tied to the actual copy/extract lifecycle below. Existing
+    # target bytes are already excluded from available space; never reclaim them here.
+    $parts = @{release=@();runtime=@();ops=@();docker=@();data=@([decimal]$DatabaseReserveBytes)}
+    if ($DatabaseReserveBytes -lt 1073741824) { Fail 'TARGET_CAPACITY_INPUT_INVALID: database platform reserve must be at least 1 GiB; increase it for planned migration growth' }
+    $seen = @{}
+    $imageArchive = "intruoyi-images_$packageDirectoryName.tar"
+    $artifacts = @($releasePackageIntegrity.artifacts)
+    if ($artifacts.Count -eq 0) { Fail 'TARGET_CAPACITY_INPUT_INVALID: verified artifacts are required' }
+    foreach ($entry in $artifacts) {
+        $path = [string]$entry.path
+        if ([string]::IsNullOrWhiteSpace($path) -or $seen.ContainsKey($path)) { Fail 'TARGET_CAPACITY_INPUT_INVALID: artifact path is missing or duplicated' }
+        $seen[$path] = $true
+        $bytes = ConvertTo-ReleaseCapacityInteger -Value $entry.bytes -Label "artifact $path"
+        # bsdtar emits a 512-byte header plus padded payload and possible PAX/name
+        # records. Include every parent directory, long UTF-8 path and end padding.
+        $tarMetadata = [decimal](2048 + [Text.Encoding]::UTF8.GetByteCount($path) + 512 * $path.Split('/').Count)
+        if ($path -ceq $imageArchive) {
+            # All chunks coexist with the merged tar; docker load later extracts
+            # its import tar while registering the uncompressed image layers.
+            $parts.release += @($bytes,$bytes)
+            $parts.docker += $bytes
+        } elseif ($path -ceq 'docker-compose.yml' -or $path.StartsWith('website/', [StringComparison]::Ordinal)) {
+            $parts.release += @($bytes,$bytes,$tarMetadata)
+            $parts.runtime += $bytes
+        } elseif ($path.StartsWith('required-sql/', [StringComparison]::Ordinal)) {
+            $parts.release += @($bytes,$bytes,$tarMetadata)
+        } elseif ($path.StartsWith('ops-runtime/', [StringComparison]::Ordinal)) {
+            $parts.release += @($bytes,$tarMetadata)
+            $parts.ops += $bytes
+        } elseif ($path.StartsWith('smoke/', [StringComparison]::Ordinal)) {
+            $parts.runtime += $bytes
+        }
+    }
+    if (-not $seen.ContainsKey($imageArchive) -or -not $seen.ContainsKey('smoke/yudao-ui-admin-vue3/dependencies.tar')) {
+        Fail 'TARGET_CAPACITY_INPUT_INVALID: image/dependency archive is required'
+    }
+    if (@($script:ReleaseRuntimeImages).Count -eq 0) { Fail 'TARGET_CAPACITY_INPUT_INVALID: runtimeImages are required' }
+    [decimal]$declaredImageBytes = 0
+    foreach ($image in $script:ReleaseRuntimeImages) {
+        $declaredImageBytes += ConvertTo-ReleaseCapacityInteger -Value $image.sizeBytes -Label "image $($image.name)" -Positive
+        if ($declaredImageBytes -gt [int64]::MaxValue) { Fail 'TARGET_CAPACITY_INPUT_INVALID: declared image size overflow' }
+    }
+    $archiveMembers = Read-ReleaseArchiveCapacity
+    $parts['runtimeMembers'] = @($archiveMembers.smoke)
+    $parts['dockerMembers'] = @($archiveMembers.docker)
+    $parts['declaredImageBytes'] = $declaredImageBytes
+    $controls = @($remoteEnvLocal)
+    if ($publishWebsite) { $controls += $websiteNginxLocal }
+    foreach ($path in $controls) {
+        if ([string]::IsNullOrWhiteSpace($path) -or -not (Test-Path -LiteralPath $path -PathType Leaf)) { Fail 'TARGET_CAPACITY_INPUT_INVALID: rendered deployment control is missing' }
+        $bytes = ConvertTo-ReleaseCapacityInteger -Value (Get-Item -LiteralPath $path).Length -Label 'rendered control' -Positive
+        $parts.release += @($bytes,$bytes,[decimal]4096)
+        $parts.runtime += $bytes
+    }
+    # Each of the three transfer archives has its own tar end padding. Keeping
+    # all their reservations is conservative even though uploads are sequential.
+    $parts.release += @([decimal]10240,[decimal]10240,[decimal]10240)
+    foreach ($role in @('release','runtime','ops','docker','data')) {
+        [decimal]$total = 0
+        foreach ($bytes in $parts[$role]) { $total += $bytes }
+        if ($total -gt [int64]::MaxValue) { Fail "TARGET_CAPACITY_INPUT_INVALID: $role reservation overflow" }
+    }
+    return $parts
+}
+
+function Assert-ReleaseTargetCapacity {
+    param([int64]$DatabaseReserveBytes = 1073741824)
+    $reservation = Get-ReleaseCapacityReservation -DatabaseReserveBytes $DatabaseReserveBytes
+    $docker = Invoke-SshCapture -IgnoreExitCode -Command "docker info --format '{`"driver`":{{json .Driver}},`"root`":{{json .DockerRootDir}},`"status`":{{json .DriverStatus}}}'"
+    if (-not $docker.Ok) { Fail 'TARGET_CAPACITY_NOT_READY: Docker storage inspection failed' }
+    try { $storage = $docker.Output | ConvertFrom-Json } catch { Fail 'TARGET_CAPACITY_NOT_READY: invalid Docker storage facts' }
+    # containerd image storage can be outside DockerRootDir. Only the classic
+    # overlay2 layout is supported here; never guess another store's location.
+    if ($storage.driver -cne 'overlay2' -or [string]::IsNullOrWhiteSpace([string]$storage.root) -or
+        -not ([string]$storage.root).StartsWith('/') -or (($storage.status | ConvertTo-Json -Compress) -match 'containerd')) {
+        Fail 'TARGET_CAPACITY_NOT_READY: unsupported Docker image storage; approved classic overlay2 layout is required'
+    }
+    $destinations = @(
+        @{role='release';path=$RemoteReleaseRoot}, @{role='runtime';path=$RemoteAppDir},
+        @{role='ops';path=$remoteOpsRuntimeDir}, @{role='docker';path=[string]$storage.root}, @{role='data';path=$RemoteDataRoot}
+    )
+    $filesystems = @{}
+    foreach ($target in $destinations) {
+        $path = [string]$target.path
+        if ([string]::IsNullOrWhiteSpace($path) -or -not $path.StartsWith('/')) { Fail "TARGET_CAPACITY_INPUT_INVALID: $($target.role) destination" }
+        $literal = ConvertTo-ShellSingleQuotedLiteral -Value $path -Purpose 'capacity destination'
+        $command = @"
+set -eu
+# RELEASE_CAPACITY: read existing destination only; do not create or clean it.
+capacity_path=$literal
+test -d "`$capacity_path"
+printf '%s ' "`$(stat -Lc '%d' "`$capacity_path")"
+stat -f -c '%a %S' "`$capacity_path"
+"@
+        $capture = Invoke-SshCapture -IgnoreExitCode -Command $command
+        if (-not $capture.Ok -or ([string]$capture.Output).Trim() -cnotmatch '^(\d+) (\d+) (\d+)$') { Fail "TARGET_CAPACITY_NOT_READY: invalid filesystem facts for $path" }
+        $id = $Matches[1]
+        [decimal]$availableBlocks = 0; [decimal]$blockSize = 0
+        if (-not [decimal]::TryParse($Matches[2], [ref]$availableBlocks) -or -not [decimal]::TryParse($Matches[3], [ref]$blockSize) -or
+            $blockSize -le 0 -or $blockSize -gt [int64]::MaxValue -or $availableBlocks -gt [int64]::MaxValue / $blockSize) {
+            Fail "TARGET_CAPACITY_NOT_READY: invalid filesystem capacity for $path"
+        }
+        $available = $availableBlocks * $blockSize
+        if (-not $filesystems.ContainsKey($id)) {
+            $filesystems[$id] = @{fileSystemId=$id;availableBytes=[int64]$available;requiredBytes=[decimal]0;blockBytes=[int64]$blockSize;paths=@();roles=@()}
+        }
+        $fs = $filesystems[$id]
+        if ($fs.blockBytes -ne $blockSize) { Fail "TARGET_CAPACITY_NOT_READY: inconsistent filesystem block size for $path" }
+        $fs.availableBytes = [int64][Math]::Min([decimal]$fs.availableBytes,$available)
+        $fs.paths += $path; $fs.roles += $target.role
+        foreach ($bytes in $reservation[$target.role]) {
+            $fs.requiredBytes += [Math]::Ceiling([decimal]$bytes / $blockSize) * $blockSize
+            if ($fs.requiredBytes -gt [int64]::MaxValue) { Fail 'TARGET_CAPACITY_INPUT_INVALID: combined filesystem reservation overflow' }
+        }
+        [decimal]$expandedBytes = 0
+        if ($target.role -in @('runtime','docker')) {
+            foreach ($group in $reservation["$($target.role)Members"]) {
+                $memberBytes = ConvertTo-ReleaseCapacityInteger -Value $group.bytes -Label 'archive member bytes' -Positive
+                $memberCount = ConvertTo-ReleaseCapacityInteger -Value $group.count -Label 'archive member count' -Positive
+                $expandedBytes += [Math]::Ceiling($memberBytes / $blockSize) * $blockSize * $memberCount
+            }
+            if ($target.role -eq 'docker') {
+                $expandedBytes = [Math]::Max($expandedBytes, [Math]::Ceiling($reservation.declaredImageBytes / $blockSize) * $blockSize)
+            }
+        }
+        $fs.requiredBytes += $expandedBytes
+        if ($fs.requiredBytes -gt [int64]::MaxValue) { Fail 'TARGET_CAPACITY_INPUT_INVALID: expanded filesystem reservation overflow' }
+    }
+    foreach ($id in @($filesystems.Keys | Sort-Object)) {
+        $fs = $filesystems[$id]
+        if ($fs.availableBytes -lt $fs.requiredBytes) {
+            Fail "TARGET_CAPACITY_NOT_READY: filesystem=$id paths=$($fs.paths -join ',') requiredBytes=$($fs.requiredBytes) availableBytes=$($fs.availableBytes)"
+        }
+    }
+    foreach ($id in @($filesystems.Keys | Sort-Object)) {
+        $filesystems[$id].requiredBytes = [int64]$filesystems[$id].requiredBytes
+        [pscustomobject]$filesystems[$id]
+    }
+}
+
+function Read-ReleaseTargetSnapshot {
+    param([switch]$Verify)
+    if ($publishWebsite) { Assert-ReleaseWebsiteVerificationPrerequisites }
+    Assert-RemoteRuntimeDataOnDataDisk
+    $freshEnv = Get-RemoteRuntimeEnvMap
+    foreach ($key in @('MYSQL_DATABASE','MYSQL_ROOT_PASSWORD','IMAGE_TAG','SERVER_HOST','BACKEND_HOST_PORT','FRONTEND_HOST_PORT','EDHR_S3_ENDPOINT','EDHR_S3_BUCKET','EDHR_S3_REGION')) {
+        if (-not $freshEnv.ContainsKey($key) -or [string]::IsNullOrWhiteSpace([string]$freshEnv[$key])) { Fail "TARGET_CONFIG_NOT_READY: $key" }
+    }
+    if ($freshEnv['MYSQL_DATABASE'] -notmatch '^[A-Za-z0-9_-]{1,64}$') { Fail 'TARGET_DATABASE_CONFIG_INVALID' }
+    $script:TargetMySqlDatabase = [string]$freshEnv['MYSQL_DATABASE']
+    $credential = Get-RemoteContainerEnvValue -ContainerName 'intruoyi-mysql' -Key 'MYSQL_ROOT_PASSWORD'
+    if ([string]::IsNullOrEmpty($credential) -or $credential -cne [string]$freshEnv['MYSQL_ROOT_PASSWORD']) { Fail 'TARGET_MYSQL_CREDENTIAL_CONFIG_MISMATCH: target container and formal environment disagree' }
+    if ($freshEnv['SERVER_HOST'] -cne $ServerHost) { Fail 'TARGET_HOST_CONFIG_MISMATCH: SERVER_HOST differs from requested target' }
+    $controlRoot = "$RemoteAppDir/.release-state/$Environment"
+    $controlLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $controlRoot -Purpose 'persistent release control root'
+    $control = Invoke-SshCapture -IgnoreExitCode -Command "test -d $controlLiteral && test -w $controlLiteral && test -d $controlLiteral/operations && test -w $controlLiteral/operations && printf 'CONTROL_ROOT_READY'"
+    if (-not $control.Ok -or $control.Output -ne 'CONTROL_ROOT_READY') { Fail 'RELEASE_CONTROL_ROOT_NOT_READY: complete explicit persistent-state directory preparation' }
+    $machine = Invoke-SshCapture -IgnoreExitCode -Command 'cat /etc/machine-id'
+    if (-not $machine.Ok -or ([string]$machine.Output).Trim() -notmatch '^[0-9a-f]{32}$') { Fail 'TARGET_MACHINE_ID_INVALID' }
+    $database = Get-ReleaseTargetDatabaseSnapshot
+    Assert-ReleaseTargetControlSchema -DatabaseSnapshot $database
+    if ($database.databaseIdentity.name -cne $freshEnv['MYSQL_DATABASE']) { Fail 'TARGET_DATABASE_CONFIG_MISMATCH' }
+    $mounts = @()
+    $redisState = Invoke-SshCapture -IgnoreExitCode -Command "docker inspect --format '{{.State.Running}}' intruoyi-redis"
+    if (-not $redisState.Ok -or ([string]$redisState.Output).Trim() -cne 'true') { Fail 'TARGET_PLATFORM_NOT_READY: intruoyi-redis is not running' }
+    $capacity = @(Assert-ReleaseTargetCapacity -DatabaseReserveBytes $DatabaseCapacityReserveBytes)
+    $script:ReleaseTargetCapacityEvidence = $capacity
+    $capacityIdentity = (@($capacity | Select-Object fileSystemId,paths,roles) | ConvertTo-Json -Depth 6 -Compress)
+    if ($Verify) {
+        if ([string]::IsNullOrWhiteSpace($script:ReleaseTargetCapacityIdentity) -or $script:ReleaseTargetCapacityIdentity -cne $capacityIdentity) {
+            Fail 'TARGET_CAPACITY_IDENTITY_DRIFT: deployment filesystem changed since the pre-lock snapshot'
+        }
+    } else {
+        $script:ReleaseTargetCapacityIdentity = $capacityIdentity
+    }
+    foreach ($item in @(@{role='mysql';container='intruoyi-mysql';destination='/var/lib/mysql'}, @{role='redis';container='intruoyi-redis';destination='/data'})) {
+        $capture = Invoke-SshCapture -IgnoreExitCode -Command "docker inspect --format '{{json .Mounts}}' '$($item.container)'"
+        if (-not $capture.Ok) { Fail "TARGET_PLATFORM_NOT_RUNNING: $($item.role)" }
+        $parsed = $capture.Output | ConvertFrom-Json
+        $selected = @($parsed | Where-Object { $_.Destination -ceq $item.destination })
+        if ($selected.Count -ne 1 -or $selected[0].Type -ne 'bind') { Fail "TARGET_PERSISTENT_MOUNT_INVALID: $($item.role); expected approved bind mount" }
+        $source = [string]$selected[0].Source
+        if ($source -cne "$RemoteAppDir/data/$($item.role)") { Fail "TARGET_PERSISTENT_MOUNT_MISMATCH: $($item.role)" }
+        $literal = ConvertTo-ShellSingleQuotedLiteral -Value $source -Purpose 'persistent data source'
+        $identity = Invoke-SshCapture -IgnoreExitCode -Command "test -d $literal && stat -Lc '%d:%i' $literal && findmnt -n -o SOURCE,FSTYPE,UUID --target $literal"
+        if (-not $identity.Ok -or [string]::IsNullOrWhiteSpace($identity.Output)) { Fail "TARGET_PERSISTENT_MOUNT_UNREADABLE: $($item.role)" }
+        $mounts += [ordered]@{role=$item.role;type='bind';source=$source;destination=$item.destination;identity=(([string]$identity.Output -split "`r?`n") -join '|')}
+    }
+    $tools = @()
+    foreach ($prerequisite in @(Get-ReleasePlatformPrerequisites -Component $Component)) {
+        $pathKey=[string]$prerequisite.pathEnv; $hashKey=[string]$prerequisite.sha256Env
+        if (-not $freshEnv.ContainsKey($pathKey) -or -not $freshEnv.ContainsKey($hashKey) -or $freshEnv[$hashKey] -cnotmatch '^[0-9a-f]{64}$' -or -not ([string]$freshEnv[$pathKey]).StartsWith('/')) { Fail "PLATFORM_IDENTITY_NOT_CONFIGURED: $($prerequisite.toolId)" }
+        $path=ConvertTo-ShellSingleQuotedLiteral -Value $freshEnv[$pathKey] -Purpose 'approved platform executable'
+        $actual=Invoke-SshCapture -IgnoreExitCode -Command "test -f $path && test -x $path && sha256sum $path"
+        $hash=([string]$actual.Output -split '\s+')[0]
+        if (-not $actual.Ok -or $hash -cne $freshEnv[$hashKey]) { Fail "PLATFORM_IDENTITY_MISMATCH: $($prerequisite.toolId)" }
+        $tools += [ordered]@{toolId=$prerequisite.toolId;path=$freshEnv[$pathKey];approvedSha256=$freshEnv[$hashKey];actualSha256=$hash;executable=$true}
+    }
+    $config=[ordered]@{MYSQL_DATABASE=$freshEnv['MYSQL_DATABASE'];IMAGE_TAG=$freshEnv['IMAGE_TAG'];REMOTE_APP_DIR=$RemoteAppDir;DATA_ROOT=$RemoteDataRoot;BACKEND_PORT=$freshEnv['BACKEND_HOST_PORT'];FRONTEND_PORT=$freshEnv['FRONTEND_HOST_PORT'];EDHR_STORAGE_ENDPOINT=$freshEnv['EDHR_S3_ENDPOINT'];EDHR_STORAGE_BUCKET=$freshEnv['EDHR_S3_BUCKET'];EDHR_STORAGE_REGION=$freshEnv['EDHR_S3_REGION']}
+    if ($Component -eq 'full') { $config['WEBSITE_PORT']=[string]$freshEnv['WEBSITE_HOST_PORT'] }
+    if ($IncludeOnlyOffice) { $config['ONLYOFFICE_PORT']=[string]$freshEnv['ONLYOFFICE_HOST_PORT'] }
+    return [ordered]@{
+        schemaVersion='release-deploy-target-state/v1';capturedAt=(Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ss.fffffffZ')
+        targetEnvironment=$Environment;hostIdentity=@{host=$ServerHost;machineId=([string]$machine.Output).Trim()}
+        databaseIdentity=$database.databaseIdentity;schemaEvidence=$database.schemaEvidence
+        migrationLedgerComplete=$true;migrationLedger=@($database.migrationLedger);nonSecretConfig=$config
+        persistentMounts=@($mounts);platformPrerequisites=@($tools)
+    }
+}
+
+function Assert-ReleaseTargetDataPreconditions {
+    param([Parameter(Mandatory = $true)]$Plan)
+    $manifest = Read-ReleaseManifest
+    $checks = @()
+    foreach ($item in @($Plan.items | Where-Object { $_.action -ceq 'APPLY' })) {
+        $matches = @($manifest.requiredSql | Where-Object { $_.migrationId -ceq $item.migrationId })
+        if ($matches.Count -ne 1) { Fail "TARGET_PREFLIGHT_INPUT_INVALID: $($item.migrationId) manifest entry" }
+        $entry=$matches[0]
+        $sqlPath=Join-Path $releaseDir ([string]$entry.file)
+        $metadata=Read-ReleaseMigrationMetadata -SqlPath $sqlPath
+        if ([string]$metadata.type -cne [string]$entry.type) { Fail "TARGET_PREFLIGHT_INPUT_INVALID: $($item.migrationId) SQL type differs from manifest" }
+        $required=([string]$metadata.type -cne 'schema') -or [bool]$metadata.requiresTargetPreflight -or [bool]$entry.requiresTargetPreflight
+        if ($null -eq $entry.targetPreflight) {
+            if ($required) { Fail "TARGET_PREFLIGHT_MISSING: $($item.migrationId) requires packaged read-only checks" }
+            continue
+        }
+        $check=$entry.targetPreflight
+        $expectedReference="target-preflight/$($item.migrationId).preflight.sql"
+        if ([string]$check.reference -cne $expectedReference -or $check.readOnly -isnot [bool] -or -not $check.readOnly) { Fail "TARGET_PREFLIGHT_INPUT_INVALID: $($item.migrationId)" }
+        $path=Join-Path $releaseDir $expectedReference
+        if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { Fail "TARGET_PREFLIGHT_MISSING: $expectedReference" }
+        $actual=ConvertTo-ReleaseFileSha256Hex -Path $path
+        if ($actual -cne (([string]$check.sha256) -creplace '^sha256:', '')) { Fail "TARGET_PREFLIGHT_CHECKSUM_MISMATCH: $expectedReference" }
+        Invoke-CheckedCommand -FilePath 'python' -ArgumentList @('-X','utf8',(Join-Path $maintenanceReleaseScriptRoot 'release_target_preflight_contract.py'),'--migration-id',[string]$item.migrationId,'--path',$path)
+        $content=[IO.File]::ReadAllText($path,[Text.UTF8Encoding]::new($false))
+        $match=[regex]::Match($content,'(?m)^\s*--\s*release-target-preflight:\s*migrationId=[A-Za-z0-9_.-]+;\s*allowedEnvironments=([A-Za-z0-9_,-]+)\s*$')
+        if (-not $match.Success -or ($match.Groups[1].Value.Split(',')) -cnotcontains $Environment) { Fail "TARGET_PREFLIGHT_ENVIRONMENT_NOT_ALLOWED: $($item.migrationId)" }
+        $checks += @{id=[string]$item.migrationId;content=$content}
+    }
+    foreach ($check in $checks) {
+        $sql="SET SESSION TRANSACTION READ ONLY;`nSTART TRANSACTION READ ONLY;`n$($check.content)`nROLLBACK;"
+        $mysql=Get-ReleaseTargetMySqlCommand
+        $result=Invoke-SshCapture -IgnoreExitCode -Command "cat <<'TARGET_PREFLIGHT_SQL' | $mysql`n$sql`nTARGET_PREFLIGHT_SQL"
+        if (-not $result.Ok -or ([string]$result.Output).Trim() -cne "TARGET_PREFLIGHT_PASS:$($check.id)") { Fail "TARGET_PREFLIGHT_FAILED: $($check.id); read-only data check did not produce its exact PASS marker" }
+    }
+}
+
 function Write-ReleasePreflightPlan {
+    param([switch]$Verify)
     $manifestPath = Join-Path $releaseDir 'manifest.json'
     $targetStatePath = Join-Path $deployControlLocalRoot "preflight-target-state-$Environment.json"
     $preflightPlanPath = Join-Path $deployControlLocalRoot 'preflight-plan.json'
@@ -5479,40 +6596,24 @@ function Write-ReleasePreflightPlan {
         Fail "release preflight planner missing: $preflightScriptPath"
     }
 
-    Info "Generating target-bound release preflight plan for $Environment"
-    $stateSql = @"
-SELECT COALESCE(
-    JSON_OBJECTAGG(
-        migration_id,
-        JSON_OBJECT(
-            'sha256', REPLACE(sha256, 'sha256:', ''),
-            'status', CASE WHEN status IN ('APPLIED', 'SKIPPED_ALREADY_APPLIED') THEN 'APPLIED' ELSE status END
-        )
-    ),
-    JSON_OBJECT()
-)
-FROM infra_release_migration
-WHERE target_environment = '$Environment'
-  AND deleted = b'0'
-  AND status IN ('APPLIED', 'SKIPPED_ALREADY_APPLIED');
-"@
-    $capture = Invoke-SshCapture "cat <<'SQL' | docker exec -i -e MYSQL_PWD=$mySqlRootPassword intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro
-$stateSql
-SQL"
-    $targetStateJson = ([string]$capture.Output).Trim()
-    if ([string]::IsNullOrWhiteSpace($targetStateJson)) {
-        Fail 'Target release migration state query returned blank output'
-    }
+    Info "Collecting fresh read-only target state for $Environment"
+    $snapshot = Read-ReleaseTargetSnapshot -Verify:$Verify
+    $targetStateJson = $snapshot | ConvertTo-Json -Depth 50
     [System.IO.File]::WriteAllText($targetStatePath, $targetStateJson, [System.Text.UTF8Encoding]::new($false))
-    Invoke-CheckedCommand -FilePath 'python' -ArgumentList @(
+    $arguments = @(
         '-X', 'utf8',
         $preflightScriptPath,
         '--manifest', $manifestPath,
         '--target-state', $targetStatePath,
         '--target-environment', $Environment,
         '--publish-scope', $releasePublishScope,
+        '--executor', (Join-Path $scriptDir 'publish-int-ruoyi.ps1'),
         '--output', $preflightPlanPath
     )
+    if ($Verify) { $arguments += '--verify' }
+    Invoke-CheckedCommand -FilePath 'python' -ArgumentList $arguments
+    $plan=Read-ReleasePreflightPlan
+    Assert-ReleaseTargetDataPreconditions -Plan $plan
 }
 
 function Assert-ProdDryRunEvidence {
@@ -5610,7 +6711,7 @@ function Invoke-ReleaseMigrationStateBatchUpdate {
         }
     ) -join "`n"
     Invoke-SshCommandWithInput `
-        -Command "docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 ruoyi-vue-pro" `
+        -Command "$(Get-ReleaseTargetMySqlCommand)" `
         -StandardInput $stateSql
 }
 
@@ -5624,10 +6725,10 @@ function Ensure-ReleaseMigrationStateSchema {
     $probeSql = @"
 SELECT COUNT(*)
 FROM information_schema.tables
-WHERE table_schema = 'ruoyi-vue-pro'
+WHERE table_schema = DATABASE()
   AND table_name IN ('infra_release_migration', 'infra_release_operation_lock');
 "@
-    $probeResult = Invoke-SshCapture "cat <<'SQL' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 --batch --skip-column-names information_schema
+    $probeResult = Invoke-SshCapture "cat <<'SQL' | $(Get-ReleaseTargetMySqlCommand)
 $probeSql
 SQL"
     $existingCount = ([string]$probeResult.Output).Trim()
@@ -5641,7 +6742,7 @@ SQL"
         Fail "Release state schema SQL missing locally: $packageSqlPath"
     }
     if (-not [string]::IsNullOrWhiteSpace($remoteStateSchemaPath)) {
-        Invoke-SshCommand "cat '$remoteStateSchemaPath' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 ruoyi-vue-pro"
+        Invoke-SshCommand "cat '$remoteStateSchemaPath' | $(Get-ReleaseTargetMySqlCommand)"
     }
 }
 
@@ -5650,11 +6751,11 @@ function Get-ReleaseOperationLockSchemaState {
 SELECT CASE
   WHEN (SELECT COUNT(*)
           FROM information_schema.TABLES
-         WHERE TABLE_SCHEMA = 'ruoyi-vue-pro'
+         WHERE TABLE_SCHEMA = DATABASE()
            AND TABLE_NAME IN ('infra_release_migration', 'infra_release_operation_lock')) = 2
    AND (SELECT COUNT(*)
           FROM information_schema.COLUMNS
-         WHERE TABLE_SCHEMA = 'ruoyi-vue-pro'
+         WHERE TABLE_SCHEMA = DATABASE()
            AND TABLE_NAME = 'infra_release_operation_lock'
            AND COLUMN_NAME IN (
              'id', 'target_environment', 'operation_id', 'release_tag', 'status', 'started_at',
@@ -5663,7 +6764,7 @@ SELECT CASE
            )) = 14
    AND (SELECT COUNT(*)
           FROM information_schema.COLUMNS
-         WHERE TABLE_SCHEMA = 'ruoyi-vue-pro'
+         WHERE TABLE_SCHEMA = DATABASE()
            AND TABLE_NAME = 'infra_release_operation_lock'
            AND COLUMN_NAME IN (
              'executor_host', 'executor_pid', 'executor_identity', 'lease_token',
@@ -5672,11 +6773,11 @@ SELECT CASE
   THEN 'LOCK_SCHEMA_READY'
   WHEN (SELECT COUNT(*)
           FROM information_schema.TABLES
-         WHERE TABLE_SCHEMA = 'ruoyi-vue-pro'
+         WHERE TABLE_SCHEMA = DATABASE()
            AND TABLE_NAME IN ('infra_release_migration', 'infra_release_operation_lock')) = 2
    AND (SELECT COUNT(*)
           FROM information_schema.COLUMNS
-         WHERE TABLE_SCHEMA = 'ruoyi-vue-pro'
+         WHERE TABLE_SCHEMA = DATABASE()
            AND TABLE_NAME = 'infra_release_operation_lock'
            AND COLUMN_NAME IN (
              'id', 'target_environment', 'operation_id', 'release_tag', 'status', 'started_at',
@@ -5685,7 +6786,7 @@ SELECT CASE
            )) = 14
    AND (SELECT COUNT(*)
           FROM information_schema.COLUMNS
-         WHERE TABLE_SCHEMA = 'ruoyi-vue-pro'
+         WHERE TABLE_SCHEMA = DATABASE()
            AND TABLE_NAME = 'infra_release_operation_lock'
            AND COLUMN_NAME IN (
              'executor_host', 'executor_pid', 'executor_identity', 'lease_token',
@@ -5695,7 +6796,7 @@ SELECT CASE
   ELSE 'LOCK_SCHEMA_INVALID'
 END;
 "@
-    $capture = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | docker exec -i -e MYSQL_PWD=$mySqlRootPassword intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --raw --skip-column-names information_schema
+    $capture = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | $(Get-ReleaseTargetMySqlCommand)
 $schemaSql
 SQL"
     $evidence = ($capture.Output -split "`r?`n" | Where-Object { $_ -match '^LOCK_SCHEMA_' } | Select-Object -Last 1)
@@ -5735,7 +6836,7 @@ SELECT CASE WHEN operation_id = '$operationId' AND release_tag = '$ReleaseTag' A
 FROM infra_release_operation_lock
 WHERE target_environment = '$Environment';
 "@
-    $capture = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | docker exec -i -e MYSQL_PWD=$mySqlRootPassword intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --raw --skip-column-names ruoyi-vue-pro
+    $capture = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | $(Get-ReleaseTargetMySqlCommand)
 $lockSql
 SQL"
     $evidence = ($capture.Output -split "`r?`n" | Where-Object { $_ -match '^(LEGACY_LOCK_ACQUIRED|LOCK_HELD:)' } | Select-Object -Last 1)
@@ -5758,7 +6859,7 @@ function Invoke-ReleaseOperationLockLeaseUpgrade {
     }
     $migrationSql = [System.IO.File]::ReadAllText($migrationPath, [System.Text.UTF8Encoding]::new($false))
     Invoke-SshCommandWithInput `
-        -Command "docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 ruoyi-vue-pro" `
+        -Command "$(Get-ReleaseTargetMySqlCommand)" `
         -StandardInput $migrationSql
 
     $operationId = "$Environment-$ReleaseTag"
@@ -5784,12 +6885,12 @@ WHERE target_environment = '$Environment'
   AND lease_token IS NULL;
 SELECT CASE WHEN ROW_COUNT() = 1 THEN CONCAT('LOCK_UPGRADED:', '$leaseTokenSql') ELSE 'LOCK_UPGRADE_FAILED' END;
 "@
-    $capture = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | docker exec -i -e MYSQL_PWD=$mySqlRootPassword intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --raw --skip-column-names ruoyi-vue-pro
+    $capture = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | $(Get-ReleaseTargetMySqlCommand)
 $transitionSql
 SQL"
     $evidence = ($capture.Output -split "`r?`n" | Where-Object { $_ -match '^LOCK_UPGRADE' } | Select-Object -Last 1)
     if (-not $capture.Ok -or $evidence -ne "LOCK_UPGRADED:$leaseToken") {
-        throw "RELEASE_OPERATION_LOCK_UPGRADE_FAILED: $($capture.Output)"
+        throw "RELEASE_OPERATION_LOCK_UPGRADE_FAILED: $(Protect-ReleaseSensitiveText -Value $capture.Output -SensitiveValues @($leaseToken))"
     }
     $script:ReleaseOperationLeaseToken = $leaseToken
     $script:ReleaseOperationLegacyLockHeld = $false
@@ -5799,12 +6900,6 @@ function Enter-ReleaseOperationLock {
     $state = Get-ReleaseOperationLockSchemaState
     if ($state -eq 'LOCK_SCHEMA_READY') {
         Invoke-ReleaseOperationLockAcquire
-        Assert-ReleaseOperationLockOwnership
-        return
-    }
-    if ($state -eq 'LOCK_SCHEMA_LEGACY') {
-        Invoke-ReleaseOperationLegacyLockAcquire
-        Invoke-ReleaseOperationLockLeaseUpgrade
         Assert-ReleaseOperationLockOwnership
         return
     }
@@ -5820,42 +6915,39 @@ function Invoke-ReleaseOperationLockAcquire {
     $executorIdentity = $script:ReleaseOperationExecutorIdentity.Replace("'", "''")
     $lockSql = @"
 INSERT INTO infra_release_operation_lock (target_environment, operation_id, release_tag, status, started_at, finished_at, error_message, executor_host, executor_pid, executor_identity, lease_token, heartbeat_at, write_fence, creator, create_time, updater, update_time, deleted, tenant_id)
-SELECT '$Environment', '$operationId', '$ReleaseTag', 'RUNNING', NOW(), NULL, NULL, '$executorHost', '$executorPid', '$executorIdentity', '$leaseToken', NOW(), 1, 'release-system', NOW(), 'release-system', NOW(), b'0', 0
-WHERE NOT EXISTS (
-  SELECT 1 FROM infra_release_operation_lock WHERE target_environment = '$Environment' AND status = 'RUNNING'
-)
+VALUES ('$Environment', '$operationId', '$ReleaseTag', 'RUNNING', NOW(), NULL, NULL, '$executorHost', '$executorPid', '$executorIdentity', '$leaseToken', NOW(), 1, 'release-system', NOW(), 'release-system', NOW(), b'0', 0)
 ON DUPLICATE KEY UPDATE
   operation_id = IF(status = 'RUNNING', operation_id, VALUES(operation_id)),
   release_tag = IF(status = 'RUNNING', release_tag, VALUES(release_tag)),
   started_at = IF(status = 'RUNNING', started_at, VALUES(started_at)),
   finished_at = IF(status = 'RUNNING', finished_at, NULL),
   error_message = IF(status = 'RUNNING', error_message, NULL),
-  status = IF(status = 'RUNNING', status, 'RUNNING'),
   executor_host = IF(status = 'RUNNING', executor_host, '$executorHost'),
   executor_pid = IF(status = 'RUNNING', executor_pid, '$executorPid'),
   executor_identity = IF(status = 'RUNNING', executor_identity, '$executorIdentity'),
   lease_token = IF(status = 'RUNNING', lease_token, '$leaseToken'),
   heartbeat_at = IF(status = 'RUNNING', heartbeat_at, NOW()),
   write_fence = IF(status = 'RUNNING', write_fence, write_fence + 1),
-  updater = 'release-system',
-  update_time = NOW(),
-  deleted = b'0';
+  updater = IF(status = 'RUNNING', updater, 'release-system'),
+  update_time = IF(status = 'RUNNING', update_time, NOW()),
+  deleted = IF(status = 'RUNNING', deleted, b'0'),
+  status = IF(status = 'RUNNING', status, 'RUNNING');
 SELECT CASE WHEN operation_id = '$operationId' AND status = 'RUNNING' AND lease_token = '$leaseToken' THEN CONCAT('LOCK_ACQUIRED:', lease_token) ELSE CONCAT('LOCK_HELD:', operation_id, ':', release_tag) END
 FROM infra_release_operation_lock
 WHERE target_environment = '$Environment';
 "@
-    $capture = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | docker exec -i -e MYSQL_PWD=$mySqlRootPassword intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro | grep -E '^(LOCK_ACQUIRED|LOCK_HELD:)'
+    $capture = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | $(Get-ReleaseTargetMySqlCommand)
 $lockSql
 SQL"
     $lockResult = ($capture.Output -split "`r?`n" | Where-Object { $_ -match '^(LOCK_ACQUIRED|LOCK_HELD:)' } | Select-Object -Last 1)
     if (-not $capture.Ok -or [string]::IsNullOrWhiteSpace($lockResult)) {
-        throw "RELEASE_OPERATION_LOCK_ACQUIRE_FAILED: $($capture.Output)"
+        throw "RELEASE_OPERATION_LOCK_ACQUIRE_FAILED: $(Protect-ReleaseSensitiveText -Value $capture.Output)"
     }
     if ($lockResult -like 'LOCK_HELD:*') {
-        throw "RELEASE_OPERATION_LOCK_HELD: $lockResult"
+        throw "RELEASE_OPERATION_LOCK_HELD: $(Protect-ReleaseSensitiveText -Value $lockResult)"
     }
     if ($lockResult -ne "LOCK_ACQUIRED:$($script:ReleaseOperationLeaseToken)") {
-        throw "RELEASE_OPERATION_LOCK_ACQUIRE_FAILED: unexpected ownership evidence '$lockResult'"
+        throw "RELEASE_OPERATION_LOCK_ACQUIRE_FAILED: unexpected ownership evidence '$(Protect-ReleaseSensitiveText -Value $lockResult)'"
     }
     $script:ReleaseOperationLockHeld = $true
     $script:ReleaseOperationLockReleasing = $false
@@ -5882,13 +6974,13 @@ END
 FROM infra_release_operation_lock
 WHERE target_environment = '$Environment';
 "@
-    $capture = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | docker exec -i -e MYSQL_PWD=$mySqlRootPassword intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro
+    $capture = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | $(Get-ReleaseTargetMySqlCommand)
 $ownershipSql
 SQL"
     $evidence = ($capture.Output -split "`r?`n" | Where-Object { $_ -match '^(LOCK_OWNED|LOCK_LOST)$' } | Select-Object -Last 1)
     if (-not $capture.Ok -or $evidence -ne 'LOCK_OWNED') {
         $script:ReleaseOperationLockHeld = $false
-        throw "RELEASE_OPERATION_LOCK_LOST: expected ownership evidence, got '$($capture.Output)'"
+        throw "RELEASE_OPERATION_LOCK_LOST: expected ownership evidence, got '$(Protect-ReleaseSensitiveText -Value $capture.Output)'"
     }
     $heartbeatSql = @"
 UPDATE infra_release_operation_lock
@@ -5906,13 +6998,13 @@ WHERE target_environment = '$Environment'
   AND executor_identity = '$($script:ReleaseOperationExecutorIdentity.Replace("'", "''"))';
 SELECT CASE WHEN ROW_COUNT() = 1 THEN 'HEARTBEAT_RENEWED' ELSE 'HEARTBEAT_RENEW_FAILED' END;
 "@
-    $heartbeat = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | docker exec -i -e MYSQL_PWD=$mySqlRootPassword intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro
+    $heartbeat = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | $(Get-ReleaseTargetMySqlCommand)
 $heartbeatSql
 SQL"
     $heartbeatEvidence = ($heartbeat.Output -split "`r?`n" | Where-Object { $_ -match '^HEARTBEAT_' } | Select-Object -Last 1)
     if (-not $heartbeat.Ok -or $heartbeatEvidence -ne 'HEARTBEAT_RENEWED') {
         $script:ReleaseOperationLockHeld = $false
-        throw "RELEASE_OPERATION_LOCK_LOST: heartbeat renewal failed: $($heartbeat.Output)"
+        throw "RELEASE_OPERATION_LOCK_LOST: heartbeat renewal failed: $(Protect-ReleaseSensitiveText -Value $heartbeat.Output)"
     }
 }
 
@@ -5949,7 +7041,7 @@ WHERE target_environment = '$Environment'
   AND status = 'RUNNING';
 SELECT CASE WHEN ROW_COUNT() = 1 THEN 'LEGACY_LOCK_RELEASED' ELSE 'LEGACY_LOCK_RELEASE_FAILED' END;
 "@
-    $capture = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | docker exec -i -e MYSQL_PWD=$mySqlRootPassword intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --raw --skip-column-names ruoyi-vue-pro
+    $capture = Invoke-SshCapture -IgnoreExitCode "cat <<'SQL' | $(Get-ReleaseTargetMySqlCommand)
 $lockSql
 SQL"
     if (-not $capture.Ok -or $capture.Output -notmatch 'LEGACY_LOCK_RELEASED') {
@@ -5996,9 +7088,12 @@ SELECT CASE WHEN status = '$Status' AND lease_token = '$($script:ReleaseOperatio
 FROM infra_release_operation_lock
 WHERE target_environment = '$Environment';
 "@
-    Invoke-SshCommand "cat <<'SQL' | docker exec -i -e MYSQL_PWD=$mySqlRootPassword intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names ruoyi-vue-pro | grep '^LOCK_RELEASED$'
+    Invoke-SshCommand "set -eu
+lock_result=`$($(Get-ReleaseTargetMySqlCommand) <<'SQL'
 $lockSql
-SQL"
+SQL
+)
+test `"`$lock_result`" = 'LOCK_RELEASED'"
     $script:ReleaseOperationLockHeld = $false
     $script:ReleaseOperationLegacyLockHeld = $false
     $script:ReleaseOperationLockReleasing = $false
@@ -6010,6 +7105,9 @@ function Copy-RequiredDatabaseSqlScripts {
         Remove-Item -LiteralPath $requiredSqlLocalDir -Recurse -Force
     }
     New-Item -ItemType Directory -Force -Path $requiredSqlLocalDir | Out-Null
+    $targetPreflightRoot = Join-Path $releaseDir 'target-preflight'
+    if (Test-Path -LiteralPath $targetPreflightRoot) { Remove-Item -LiteralPath $targetPreflightRoot -Recurse -Force }
+    New-Item -ItemType Directory -Force -Path $targetPreflightRoot | Out-Null
 
     foreach ($entry in $requiredDatabaseSqlScripts) {
         $relativePath = [string]$entry.Path
@@ -6021,6 +7119,12 @@ function Copy-RequiredDatabaseSqlScripts {
 
         $targetPath = Join-Path $requiredSqlLocalDir (Get-RequiredDatabaseSqlFileName -RelativePath $relativePath)
         Copy-Item -LiteralPath $sourcePath -Destination $targetPath -Force
+        $migrationId = [IO.Path]::GetFileNameWithoutExtension($targetPath)
+        $checkSource = Join-Path $backendRepo "sql\mysql\target-preflight\$migrationId.preflight.sql"
+        if (Test-Path -LiteralPath $checkSource -PathType Leaf) {
+            Invoke-CheckedCommand -FilePath 'python' -ArgumentList @('-X', 'utf8', (Join-Path $maintenanceReleaseScriptRoot 'release_target_preflight_contract.py'), '--migration-id', $migrationId, '--path', $checkSource)
+            Copy-Item -LiteralPath $checkSource -Destination (Join-Path $targetPreflightRoot "$migrationId.preflight.sql") -Force
+        }
     }
 }
 
@@ -6077,6 +7181,35 @@ function Copy-RequiredDatabaseSqlScriptsToServer {
     }
 }
 
+function Write-ReleaseWebsiteDeployControl {
+    $templatePath = Join-Path $websiteRuntimeLocal 'nginx.template.conf'
+    if (-not (Test-Path -LiteralPath $templatePath -PathType Leaf)) {
+        Fail 'PACKAGE_REQUIRED_ARTIFACT_MISSING: website/nginx.template.conf; rebuild the complete package'
+    }
+    $template = [IO.File]::ReadAllText($templatePath, [Text.UTF8Encoding]::new($false))
+    if (-not $template.Contains('__BACKEND_ORIGIN__')) {
+        Fail 'PACKAGE_WEBSITE_TEMPLATE_INVALID: missing __BACKEND_ORIGIN__'
+    }
+    $controlWebsiteRoot = Join-Path $deployControlLocalRoot 'website'
+    New-Item -ItemType Directory -Force -Path $controlWebsiteRoot | Out-Null
+    Write-Utf8LfNoBomFile -Path $websiteNginxLocal -Content ($template.Replace('__BACKEND_ORIGIN__', "${ServerHost}:$BackendPort"))
+}
+
+function Get-ReleasePlatformIdentityEnvironmentLines {
+    $lines = @()
+    foreach ($prerequisite in @(Get-ReleasePlatformPrerequisites -Component $Component)) {
+        $key = [string]$prerequisite.sha256Env
+        if (-not $existingRemoteEnv.ContainsKey($key) -or [string]$existingRemoteEnv[$key] -cnotmatch '^[0-9a-f]{64}$') {
+            Fail "PLATFORM_IDENTITY_NOT_CONFIGURED: $key; complete approved target platform preparation before deployment"
+        }
+        $lines += "$key=$($existingRemoteEnv[$key])"
+    }
+    if ($Component -eq 'intruoyi' -and $existingRemoteEnv.ContainsKey('SHOWROOM_CODEX_CLI_SHA256')) {
+        $lines += "SHOWROOM_CODEX_CLI_SHA256=$($existingRemoteEnv['SHOWROOM_CODEX_CLI_SHA256'])"
+    }
+    return $lines
+}
+
 function Copy-DeployControlFilesToServer {
     param(
         [Parameter(Mandatory = $true)]
@@ -6116,6 +7249,10 @@ function Copy-DeployControlFilesToServer {
                 Fail "Website runtime directory missing before archive upload: $websiteRuntimeLocal"
             }
             Copy-Item -LiteralPath $websiteRuntimeLocal -Destination (Join-Path $deployControlArchiveRoot 'website') -Recurse -Force
+            if (-not (Test-Path -LiteralPath $websiteNginxLocal -PathType Leaf)) {
+                Fail "Website deploy configuration missing: $websiteNginxLocal"
+            }
+            Copy-Item -LiteralPath $websiteNginxLocal -Destination (Join-Path $deployControlArchiveRoot 'website\nginx.conf') -Force
             $hasDeployControlFiles = $true
         }
 
@@ -6129,15 +7266,6 @@ function Copy-DeployControlFilesToServer {
             $hasDeployControlFiles = $true
         }
 
-        if ($publishBackend -and $Mode -ne 'build-release') {
-            if (-not (Test-Path -LiteralPath $postImportSqlLocal -PathType Leaf)) {
-                Fail "Target-bound post-import SQL missing before archive upload: $postImportSqlLocal"
-            }
-            $sqlControlRoot = Join-Path $deployControlArchiveRoot 'sql'
-            New-Item -ItemType Directory -Force -Path $sqlControlRoot | Out-Null
-            Copy-Item -LiteralPath $postImportSqlLocal -Destination (Join-Path $sqlControlRoot 'post-import.sql') -Force
-            $hasDeployControlFiles = $true
-        }
 
         if (-not $hasDeployControlFiles) {
             return
@@ -6183,10 +7311,6 @@ function Copy-DeployControlFilesToServer {
             $remoteCommands += "test -f $remoteDeployControlExtractDirLiteral/sql/reset-db.sql"
             $remoteCommands += "cp $remoteDeployControlExtractDirLiteral/sql/reset-db.sql $remoteResetDbSqlLiteral"
         }
-        if ($publishBackend -and $Mode -ne 'build-release') {
-            $remoteCommands += "test -f $remoteDeployControlExtractDirLiteral/sql/post-import.sql"
-            $remoteCommands += "cp $remoteDeployControlExtractDirLiteral/sql/post-import.sql $remotePostImportSqlLiteral"
-        }
         $remoteCommands += "rm -rf $remoteDeployControlExtractDirLiteral"
         $remoteCommands += "rm -f $remoteDeployControlArchiveLiteral"
         Invoke-SshCommand ($remoteCommands -join "`n")
@@ -6231,8 +7355,7 @@ function Copy-ReleaseOpsRuntimePackage {
     foreach ($requiredPath in @(
         'linux\backup-ops-linux.sh',
         'scripts\backup-ops.ps1',
-        'actions',
-        'config'
+        'actions'
     )) {
         $candidate = Join-Path $opsRuntimeLocalDir $requiredPath
         if (-not (Test-Path -LiteralPath $candidate)) {
@@ -6424,7 +7547,7 @@ function Invoke-RequiredDatabaseSqlScriptWithState {
     $runningSql = New-ReleaseMigrationStateUpsertSql -Item $Item -Status 'RUNNING'
     $appliedSql = New-ReleaseMigrationStateUpsertSql -Item $Item -Status 'APPLIED'
     $remoteSqlPathLiteral = ConvertTo-ShellSingleQuotedLiteral -Value $RemoteSqlPath -Purpose 'required database SQL remote path'
-    $mysqlCommand = "docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword --default-character-set=utf8mb4 ruoyi-vue-pro"
+    $mysqlCommand = Get-ReleaseTargetMySqlCommand
     if ([string]::IsNullOrWhiteSpace($SessionPreamble)) {
         $applySqlCommand = "cat $remoteSqlPathLiteral"
     } else {
@@ -6457,19 +7580,20 @@ function Invoke-RequiredDatabaseSqlScripts {
     Info 'Applying required database SQL scripts'
     $preflightPlan = Read-ReleasePreflightPlan
     $skipAlreadyAppliedItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ALREADY_APPLIED' })
-    Invoke-ReleaseMigrationStateBatchUpdate -Items $skipAlreadyAppliedItems -Status 'SKIPPED_ALREADY_APPLIED'
     $skipEnvNotAllowedItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ENV_NOT_ALLOWED' })
-    Invoke-ReleaseMigrationStateBatchUpdate -Items $skipEnvNotAllowedItems -Status 'SKIPPED_ENV_NOT_ALLOWED'
     foreach ($item in $skipEnvNotAllowedItems) {
         Info "Skipping required database SQL outside target environment: $($item.migrationId)"
     }
     $skipScopeExcludedItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_SCOPE_EXCLUDED' })
-    Invoke-ReleaseMigrationStateBatchUpdate -Items $skipScopeExcludedItems -Status 'SKIPPED_SCOPE_EXCLUDED'
     foreach ($item in $skipScopeExcludedItems) {
         Info "Skipping required database SQL excluded by publish scope ${releasePublishScope}: $($item.migrationId)"
     }
+    $skipImmutableItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_IMMUTABLE' })
+    foreach ($item in $skipImmutableItems) {
+        Info "Skipping superseded immutable migration without ledger mutation: $($item.migrationId)"
+    }
     $preflightApplyItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'APPLY' })
-    $applyItems = Sort-RequiredDatabaseSqlApplyItems -Items $preflightApplyItems -TargetEnvironment $Environment
+    $applyItems = @($preflightApplyItems)
     foreach ($item in $applyItems) {
         $fileName = Get-RequiredDatabaseSqlFileName -RelativePath ([string]$item.file)
         $remoteSqlPath = "$remoteRequiredSqlDir/$fileName"
@@ -6480,8 +7604,10 @@ function Invoke-RequiredDatabaseSqlScripts {
         try {
             Invoke-RequiredDatabaseSqlScriptWithState -Item $item -RemoteSqlPath $remoteSqlPath -SessionPreamble $sessionPreamble
         } catch {
-            Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'FAILED' -ErrorMessage $_.Exception.Message
-            throw
+            $migrationError=$_
+            try {Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'FAILED' -ErrorMessage $migrationError.Exception.Message}
+            catch {$script:ReleaseMigrationFailureErrors=@($script:ReleaseMigrationFailureErrors)+(Protect-ReleaseSensitiveText $_.Exception.Message)}
+            throw $migrationError
         }
     }
 }
@@ -6555,21 +7681,24 @@ function Resolve-ExistingRuntimeEnvValue {
 if ($Mode -eq 'deploy-release') {
     Info "Deploying release package: $ReleaseTag"
     $releasePackageIntegrity = Copy-ReleasePackageFromNas -PackageTag $ReleaseTag
+    Assert-ReleaseExecutorSourceBinding -PackageIntegrity $releasePackageIntegrity
     $Component = Resolve-DeployReleasePackageComponent -ComponentExplicit $componentExplicit
-    $publishBackend = $Component -in @('full', 'intruoyi', 'backend')
-    $publishFrontend = $Component -in @('full', 'intruoyi', 'frontend')
-    $publishWebsite = $Component -in @('full', 'website')
+    $publishBackend = $Component -in @('full', 'intruoyi')
+    $publishFrontend = $Component -in @('full', 'intruoyi')
+    $publishWebsite = $Component -eq 'full'
     $releasePublishScope = $releasePackageIntegrity.PublishScope
     Assert-ReleasePackageDeploymentScope -TargetEnvironment $Environment -PublishScope $releasePublishScope
     Assert-ProdDryRunEvidence
-    $releaseOnlyOfficeIncluded = Resolve-DeployReleasePackageOnlyOfficeIncluded
+    $releaseOnlyOfficeIncluded = Resolve-DeployReleasePackageOnlyOfficeIncluded -IncludeOnlyOfficeExplicit $PSBoundParameters.ContainsKey('IncludeOnlyOffice')
     $IncludeOnlyOffice = $releaseOnlyOfficeIncluded
+    $script:ReleaseRuntimeImages = @($releasePackageIntegrity.runtimeImages)
+    $script:ReleaseVerifiedImageContent = @($releasePackageIntegrity.verifiedImageContent)
+    $schedulerSmokeNodeImage = [string](@(Get-ReleaseTargetImageIdentities | Where-Object { $_.name -ceq 'scheduler-smoke' })[0].configDigest)
     Assert-DeployReleasePackageArtifactsForScope -PublishScope $releasePublishScope
     if ($publishBackend) {
         $requiredDatabaseSqlScripts = Get-ReleasePackageDatabaseSqlScripts
         Assert-RequiredDatabaseSqlScriptsInRelease
     }
-    Apply-ReleaseRuntimeEnvPackage -TargetEnvironment $Environment
     Require-Command 'ssh'
     Import-ExistingRemoteRuntimeEnvSettings
     if ($releasePublishScope -eq 'app-release') {
@@ -6655,7 +7784,11 @@ if ($publishBackend -and $Mode -ne 'build-release') {
 
 $mySqlRootPassword = ''
 if ($publishBackend) {
-    $mySqlRootPassword = Get-LocalContainerEnvValue -ContainerName $LocalMySqlContainer -Key 'MYSQL_ROOT_PASSWORD'
+    if ($Mode -eq 'deploy-release') {
+        if ($existingRemoteEnv.ContainsKey('MYSQL_ROOT_PASSWORD')) { $mySqlRootPassword = [string]$existingRemoteEnv['MYSQL_ROOT_PASSWORD'] }
+    } else {
+        $mySqlRootPassword = Get-LocalContainerEnvValue -ContainerName $LocalMySqlContainer -Key 'MYSQL_ROOT_PASSWORD'
+    }
     if ([string]::IsNullOrWhiteSpace($mySqlRootPassword)) {
         Fail "Missing MYSQL_ROOT_PASSWORD in local container $LocalMySqlContainer"
     }
@@ -6802,13 +7935,7 @@ if (-not (Test-Path -LiteralPath $websiteDistSource)) {
     Fail "Website build output missing: $websiteDistSource"
 }
 
-if ($Mode -eq 'build-release') {
-    Copy-Item -LiteralPath $websiteNginxTemplate -Destination (Join-Path $websiteRuntimeLocal 'nginx.template.conf') -Force
-} else {
-    $websiteNginxTemplateText = [System.IO.File]::ReadAllText($websiteNginxTemplate, [System.Text.UTF8Encoding]::new($false))
-    $websiteNginxText = $websiteNginxTemplateText.Replace('__BACKEND_ORIGIN__', "${ServerHost}:$BackendPort")
-    [System.IO.File]::WriteAllText($websiteNginxLocal, $websiteNginxText, [System.Text.UTF8Encoding]::new($false))
-}
+Copy-Item -LiteralPath $websiteNginxTemplate -Destination (Join-Path $websiteRuntimeLocal 'nginx.template.conf') -Force
 }
 
 if ($publishBackend -or $publishFrontend) {
@@ -6870,10 +7997,14 @@ if ($publishBackend -and $IncludeOnlyOffice) {
     )
 }
 
-$releaseImages = @()
-if ($publishBackend) { $releaseImages += "intruoyi-backend:$packageDirectoryName" }
-if ($publishFrontend) { $releaseImages += "intruoyi-frontend:$packageDirectoryName" }
-if ($publishBackend -and $IncludeOnlyOffice) { $releaseImages += $onlyOfficeImage }
+$managedImageReferences = Get-ReleaseManagedImageReferences -Component $Component -PackageId $packageDirectoryName -OnlyOfficeIncluded ([bool]$IncludeOnlyOffice)
+$releaseImages = @($managedImageReferences.Values)
+$script:ReleaseRuntimeImages = @(
+    foreach ($name in $managedImageReferences.Keys) {
+        $identity = Get-DockerImageIdentity -ImageReference $managedImageReferences[$name]
+        [ordered]@{ name = $name; reference = $identity.reference; id = $identity.id; sizeBytes = $identity.sizeBytes }
+    }
+)
 if ($releaseImages.Count -gt 0) {
     Info 'Exporting release images'
     Invoke-CheckedCommand -FilePath 'docker' -ArgumentList (@('save', '-o', $imageTar) + $releaseImages)
@@ -6920,7 +8051,10 @@ if ($publishBackend -and $Mode -eq 'build-release' -and -not $SkipMinioSync) {
     }
 }
 
-if ($publishBackend) { New-SchedulerSmokeRunnerPackage }
+if ($publishBackend) {
+    $smokeRuntimeIdentity = @($script:ReleaseRuntimeImages | Where-Object { $_.name -eq 'scheduler-smoke' })[0]
+    New-SchedulerSmokeRunnerPackage -RuntimeImageId $smokeRuntimeIdentity.id
+}
 if ($Mode -eq 'build-release' -and $publishBackend) { New-ReleaseOpsRuntimePackage }
 
 Write-ReleaseRuntimeEnvPackage
@@ -6962,29 +8096,16 @@ if ($Mode -eq 'build-release') {
     Exit-BuildReleaseRuntimeRestartGuard -GuardFile $buildReleaseRuntimeRestartGuardFile
 }
 
-if ($Mode -eq 'deploy-release' -and $publishWebsite) {
-    $websiteTemplateInPackage = Join-Path $websiteRuntimeLocal 'nginx.template.conf'
-    if (Test-Path -LiteralPath $websiteTemplateInPackage) {
-        $websiteNginxTemplateText = [System.IO.File]::ReadAllText($websiteTemplateInPackage, [System.Text.UTF8Encoding]::new($false))
-    } else {
-        $websiteNginxTemplateText = [System.IO.File]::ReadAllText($websiteNginxTemplate, [System.Text.UTF8Encoding]::new($false))
-    }
-    $websiteNginxText = $websiteNginxTemplateText.Replace('__BACKEND_ORIGIN__', "${ServerHost}:$BackendPort")
-    [System.IO.File]::WriteAllText($websiteNginxLocal, $websiteNginxText, [System.Text.UTF8Encoding]::new($false))
-}
 
 if ($Mode -eq 'deploy-release') {
     if (Test-Path -LiteralPath $deployControlLocalRoot) {
         Remove-Item -LiteralPath $deployControlLocalRoot -Recurse -Force
     }
     New-Item -ItemType Directory -Force -Path $deployControlLocalRoot | Out-Null
-    if ($publishBackend) {
-        Info 'Regenerating target-bound post-import SQL for deploy-release'
-        Write-TargetBoundPostImportSql
-    }
-} elseif ($publishBackend -and $Mode -ne 'build-release' -and -not (Test-Path -LiteralPath $postImportSqlLocal)) {
-    Info 'Generating target-bound post-import SQL for deployment'
-    Write-TargetBoundPostImportSql
+}
+
+if ($Mode -eq 'deploy-release' -and $publishWebsite) {
+    Write-ReleaseWebsiteDeployControl
 }
 
 Info 'Writing remote compose environment file locally'
@@ -7028,7 +8149,7 @@ $effectiveSchedulerSmokeScriptName = $schedulerSmokeScriptName
 $effectiveMesSmokeBaseUrl = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_BASE_URL' -DefaultValue "http://127.0.0.1:$FrontendPort"
 $effectiveMesSmokeExcelFile = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_EXCEL_FILE' -DefaultValue "$schedulerSmokeFrontendDirectory/input/smart-scheduling-smoke-feedback.xlsx"
 $effectiveMesSmokeArtifactDir = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_ARTIFACT_DIR' -DefaultValue "$schedulerSmokeFrontendDirectory/output/artifacts"
-$effectiveMesSmokeNodeImage = Resolve-ExistingRuntimeEnvValue -Name 'MES_SMOKE_NODE_IMAGE' -DefaultValue $schedulerSmokeNodeImage
+$effectiveMesSmokeNodeImage = $schedulerSmokeNodeImage
 $mesSmokeTenantName = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('6IqL6YGT5rqQ56CB'))
 $defaultMesSmokeProductCode = 'YXN.069.001.1003'
 $defaultMesSmokeErpUnitNumber = 'zhi'
@@ -7160,17 +8281,42 @@ RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_DIGEST=$BackendRuntimeBaseDigest
 RUNTIME_CONTROL_BACKEND_RUNTIME_BASE_VERSION=$BackendRuntimeBaseVersion
 "@
 $remoteEnvLocal = Join-Path $deployControlLocalRoot '.env'
+if ($Mode -eq 'deploy-release') {
+    if ($existingRemoteEnv.Count -eq 0) { Fail 'TARGET_CONFIG_NOT_READY: formal target environment is required' }
+    $targetEnvironmentLines = @()
+    foreach ($existingKey in @($existingRemoteEnv.Keys | Sort-Object)) {
+        if ($existingKey -in @('IMAGE_TAG', 'MES_SMOKE_NODE_IMAGE')) { continue }
+        $targetEnvironmentLines += "$existingKey=$($existingRemoteEnv[$existingKey])"
+    }
+    $targetEnvironmentLines += "IMAGE_TAG=$packageDirectoryName"
+    $targetEnvironmentLines += "MES_SMOKE_NODE_IMAGE=$schedulerSmokeNodeImage"
+    $remoteEnvContent = ($targetEnvironmentLines -join "`n") + "`n"
+} else {
+    $remoteEnvContent += "`n" + ((Get-ReleasePlatformIdentityEnvironmentLines) -join "`n") + "`n"
+}
 if (-not (Test-Path -LiteralPath $deployControlLocalRoot -PathType Container)) {
     New-Item -ItemType Directory -Force -Path $deployControlLocalRoot | Out-Null
 }
 Write-Utf8LfNoBomFile -Path $remoteEnvLocal -Content $remoteEnvContent
 $requiresReleaseOperationLock = ($Mode -eq 'deploy-release') -and ($publishBackend -or $publishFrontend -or $publishWebsite)
 
+function Invoke-ReleaseDeploymentExecution {
 try {
+    if ($Mode -eq 'deploy-release') {
+        if(Test-ReleaseDeploymentAlreadyCommitted){Info 'Existing committed deployment verified without replay';return}
+        Write-ReleasePreflightPlan
+        Assert-ReleasePersistentDeploymentGate
+    }
     if ($requiresReleaseOperationLock) {
         Enter-ReleaseOperationLock
     }
+    if ($Mode -eq 'deploy-release') {
+        Write-ReleasePreflightPlan -Verify
+        Assert-ReleasePersistentDeploymentGate -Verify
+        Initialize-ReleaseDeploymentEvidence
+    }
 
+    Start-ReleaseDeploymentPhase -Name 'preparing'
     Assert-ReleaseOperationWriteFence
     Info 'Preparing remote runtime data disk'
     Assert-RemoteRuntimeDataOnDataDisk
@@ -7182,8 +8328,8 @@ try {
     Assert-ReleaseOperationWriteFence
     Info "Copying deploy control files to the $PublishTargetName server"
 $composeLocal = Join-Path $releaseDir 'docker-compose.yml'
-if (-not (Test-Path -LiteralPath $composeLocal)) {
-    $composeLocal = $composeTemplate
+if (-not (Test-Path -LiteralPath $composeLocal -PathType Leaf)) {
+    Fail 'PACKAGE_REQUIRED_ARTIFACT_MISSING: docker-compose.yml; rebuild the complete package'
 }
 Copy-DeployControlFilesToServer -ComposeLocal $composeLocal
 if ($publishBackend -or $publishFrontend) {
@@ -7224,87 +8370,17 @@ if ($publishWebsite) {
     Assert-RemoteComposeService -Services $remoteComposeServices -ServiceName 'website'
 }
 
-if ($publishBackend -and -not $SkipDatabaseSync) {
-    Assert-ReleaseOperationLockOwnership
-    Copy-ToServer -LocalPath $dbDump -RemotePath $remoteDbDump
-}
-
-if ($publishBackend -and $Mode -ne 'build-release') {
-    if (-not (Test-Path -LiteralPath $postImportSqlLocal)) {
-        Fail "Target-bound post-import SQL missing: $postImportSqlLocal"
-    }
-}
-
+Complete-ReleaseDeploymentPhase
+Start-ReleaseDeploymentPhase -Name 'loading'
 if ($publishBackend -or $publishFrontend) {
     Assert-ReleaseOperationLockOwnership
     Info "Loading release images on the $PublishTargetName server"
     Invoke-SshCommand "docker load -i '$remoteImageTar'"
 }
+Complete-ReleaseDeploymentPhase
 
-if ($publishBackend) {
-    Assert-ReleaseOperationLockOwnership
-    if (-not $SkipMinioSync) {
-        if ($Mode -eq 'deploy-release') {
-            $minioSnapshotLocal = Join-Path $releaseDir 'minio\yudao'
-            if (-not (Test-Path -LiteralPath $minioSnapshotLocal)) {
-                Fail "Release package MinIO snapshot missing: $minioSnapshotLocal"
-            }
-            Info "Syncing MinIO bucket yudao from release package to the $PublishTargetName server"
-            $minioSyncCommand = "docker run --rm -v `"${minioSnapshotLocal}:/snapshot/yudao:ro`" --entrypoint /bin/sh minio/mc -c 'mc alias set dst http://${ServerHost}:9000 $remoteMinioAccessKey $remoteMinioSecretKey && mc mb --ignore-existing dst/yudao && mc mirror --overwrite --disable-multipart --retry /snapshot/yudao dst/yudao && mc anonymous set download dst/yudao'"
-            Invoke-CheckedShell -Command $minioSyncCommand -DisplayCommand 'docker run --rm -v "<release>/minio/yudao:/snapshot/yudao:ro" --entrypoint /bin/sh minio/mc -c "mc alias set dst <redacted> && mc mb --ignore-existing dst/yudao && mc mirror --overwrite --disable-multipart --retry /snapshot/yudao dst/yudao && mc anonymous set download dst/yudao"'
-        } else {
-            Info "Syncing MinIO bucket yudao from local host to the $PublishTargetName server"
-            $minioSyncCommand = "docker run --rm --add-host host.docker.internal:host-gateway --entrypoint /bin/sh minio/mc -c 'mc alias set src http://host.docker.internal:9000 $localMinioAccessKey $localMinioSecretKey && mc alias set dst http://${ServerHost}:9000 $remoteMinioAccessKey $remoteMinioSecretKey && mc mb --ignore-existing dst/yudao && mc mirror --overwrite --disable-multipart --retry src/yudao dst/yudao && mc anonymous set download dst/yudao'"
-            Invoke-CheckedShell -Command $minioSyncCommand -DisplayCommand 'docker run --rm --add-host host.docker.internal:host-gateway --entrypoint /bin/sh minio/mc -c "mc alias set src <redacted> && mc alias set dst <redacted> && mc mb --ignore-existing dst/yudao && mc mirror --overwrite --disable-multipart --retry src/yudao dst/yudao && mc anonymous set download dst/yudao"'
-        }
-    }
-}
-
-if ($publishBackend -and -not $SkipDatabaseSync) {
-    Assert-ReleaseOperationLockOwnership
-    Info 'Resetting remote MySQL container and data directory before import'
-    Invoke-SshCommand "docker rm -f intruoyi-mysql 2>/dev/null || true"
-    Invoke-SshCommand "rm -rf '$RemoteAppDir/data/mysql' && mkdir -p '$RemoteAppDir/data/mysql'"
-}
-
-if ($publishBackend) {
-    Assert-ReleaseOperationLockOwnership
-    Info "Starting MySQL and Redis on the $PublishTargetName server"
-    Invoke-SshCommand "cd '$RemoteAppDir' && docker compose up -d mysql redis"
-}
-
-if ($publishBackend) {
-    Info 'Waiting for remote MySQL health'
-    Wait-RemoteContainerHealth -ContainerName 'intruoyi-mysql' -TimeoutSeconds 180
-    Wait-RemoteMySqlReady -TimeoutSeconds 180
-    Ensure-ReleaseMigrationStateSchema
-    Assert-ReleaseOperationLockSchemaReady
-    if (-not $SkipDatabaseSync) {
-        $script:ReleaseOperationLockHeld = $false
-        $script:ReleaseOperationLeaseToken = ''
-        Invoke-ReleaseOperationLockAcquire
-    } elseif (-not $script:ReleaseOperationLockHeld) {
-        Invoke-ReleaseOperationLockAcquire
-    } else {
-        Assert-ReleaseOperationLockOwnership
-    }
-}
-
-if ($publishBackend -and -not $SkipDatabaseSync) {
-    Assert-ReleaseOperationWriteFence
-    Info 'Replacing remote MySQL database with the current local dump'
-    Invoke-SshCommand "cat '$remoteResetDbSql' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword"
-    Invoke-SshCommand "cat '$remoteDbDump' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword"
-}
-
-if ($publishBackend -and $Mode -ne 'build-release') {
-    Assert-ReleaseOperationWriteFence
-    Info 'Applying target-bound post-import SQL'
-    Invoke-SshCommand "cat '$remotePostImportSql' | docker exec -i intruoyi-mysql mysql -uroot -p$mySqlRootPassword -D ruoyi-vue-pro"
-}
-
+    Start-ReleaseDeploymentPhase -Name 'migrating'
     if ($publishBackend) {
-        Write-ReleasePreflightPlan
         Invoke-RequiredDatabaseSqlScripts
         Assert-RemoteQuartzSchemaReady
         Assert-RemoteShowroomAwardSchemaReady
@@ -7313,7 +8389,9 @@ if ($publishBackend -and $Mode -ne 'build-release') {
     if ($publishBackend) {
         Assert-RemoteFileStorageConfigRebound
     }
+    Complete-ReleaseDeploymentPhase
 
+    Start-ReleaseDeploymentPhase -Name 'switching'
     if ($publishWebsite) {
         Assert-ReleaseOperationWriteFence
         Info "Switching Website runtime directory on the $PublishTargetName server"
@@ -7332,93 +8410,67 @@ if ($publishBackend -and $Mode -ne 'build-release') {
     if ($publishFrontend) { $runtimeServices += 'frontend' }
     if ($runtimeServices.Count -gt 0) {
         Assert-ReleaseOperationWriteFence
+        Assert-ReleaseSelectedImagesLoaded
         $runtimeServicesArg = $runtimeServices -join ' '
-        $runtimeServiceDependencyFlag = if ($IncludeOnlyOffice) { '' } else { '--no-deps ' }
         Info "Starting application services on the $PublishTargetName server: $runtimeServicesArg"
-        Invoke-SshCommand "cd '$RemoteAppDir' && docker compose up -d --force-recreate $runtimeServiceDependencyFlag$runtimeServicesArg"
-        Assert-RemoteActualApplicationImages
+        Invoke-SshCommand "cd '$RemoteAppDir' && docker compose up -d --force-recreate --no-deps --pull never $runtimeServicesArg"
     }
 
     if ($publishWebsite) {
         Assert-ReleaseOperationWriteFence
         Info "Starting Website on the $PublishTargetName server"
     }
-    if ($publishWebsite) { Invoke-SshCommand "cd '$RemoteAppDir' && docker compose up -d --force-recreate website" }
+    if ($publishWebsite) { Invoke-SshCommand "cd '$RemoteAppDir' && docker compose up -d --force-recreate --no-deps --pull never website" }
+    Complete-ReleaseDeploymentPhase
+    Start-ReleaseDeploymentPhase -Name 'verifying'
+    Assert-RemoteActualApplicationImages
+    if ($publishWebsite) { Assert-RemoteWebsitePayloadIdentity }
 
     Info 'Waiting for remote HTTP readiness'
     if ($publishBackend) {
-        Wait-RemoteHttpOk -Url "http://127.0.0.1:$BackendPort/actuator/health" -TimeoutSeconds 180
-        Assert-RemoteBackendContainerMinioReachable
+        Invoke-ReleaseRuntimeVerificationCheck -Name 'backend-health' -Action { Wait-RemoteHttpOk -Url "http://127.0.0.1:$BackendPort/actuator/health" -TimeoutSeconds 180; Assert-RemoteBackendHealthStatus }
+        Invoke-ReleaseRuntimeVerificationCheck -Name 'backend-minio-config' -Action { Assert-RemoteBackendContainerMinioReachable }
     }
     if ($publishFrontend) {
-        Wait-RemoteHttpOk -Url "http://127.0.0.1:$FrontendPort/" -TimeoutSeconds 180
+        Invoke-ReleaseRuntimeVerificationCheck -Name 'frontend-health' -Action { Wait-RemoteHttpOk -Url "http://127.0.0.1:$FrontendPort/" -TimeoutSeconds 180 }
     }
-    if ($publishBackend) { Assert-RemoteSchedulerSmokeRuntime }
+    if ($publishBackend) { Invoke-ReleaseRuntimeVerificationCheck -Name 'scheduler-smoke-config' -Action { Assert-RemoteSchedulerSmokeRuntime } }
     if ($IncludeOnlyOffice) {
-        Wait-RemoteHttpOk -Url "http://127.0.0.1:$OnlyOfficeHostPort/healthcheck" -TimeoutSeconds 180
+        Invoke-ReleaseRuntimeVerificationCheck -Name 'onlyoffice-health' -Action { Wait-RemoteHttpOk -Url "http://127.0.0.1:$OnlyOfficeHostPort/healthcheck" -TimeoutSeconds 180 }
     }
     if ($publishWebsite) {
-        Wait-RemoteHttpOk -Url "http://127.0.0.1:$WebsiteHostPort/showroom" -TimeoutSeconds 180
+        Invoke-ReleaseRuntimeVerificationCheck -Name 'website-health' -Action { Wait-RemoteHttpOk -Url "http://127.0.0.1:$WebsiteHostPort/showroom" -TimeoutSeconds 180 }
     }
 
-    if ($publishBackend) { Wait-HttpOk -Url "http://${ServerHost}:$BackendPort/actuator/health" -TimeoutSeconds 180 }
-    if ($publishFrontend) { Wait-HttpOk -Url "http://${ServerHost}:$FrontendPort/" -TimeoutSeconds 180 }
+    if ($publishBackend) { Invoke-ReleaseRuntimeVerificationCheck -Name 'backend-public-health' -Action { Wait-HttpOk -Url "http://${ServerHost}:$BackendPort/actuator/health" -TimeoutSeconds 180 } }
+    if ($publishFrontend) { Invoke-ReleaseRuntimeVerificationCheck -Name 'frontend-public-health' -Action { Wait-HttpOk -Url "http://${ServerHost}:$FrontendPort/" -TimeoutSeconds 180 } }
     if ($publishFrontend) {
-        Wait-HttpContentTypeOk -Url "http://${ServerHost}:$FrontendPort/pdfjs/pdf.worker.mjs" -ExpectedContentType 'application/javascript' -TimeoutSeconds 180
+        Invoke-ReleaseRuntimeVerificationCheck -Name 'frontend-worker-content-type' -Action { Wait-HttpContentTypeOk -Url "http://${ServerHost}:$FrontendPort/pdfjs/pdf.worker.mjs" -ExpectedContentType 'application/javascript' -TimeoutSeconds 180 }
     }
     $verifyShowroomMediaContent = $publishWebsite -or (-not $SkipMinioSync)
     if ($publishFrontend -and $verifyShowroomMediaContent) {
-        Assert-RemoteShowroomSmokeImageContent
+        Invoke-ReleaseRuntimeVerificationCheck -Name 'showroom-media-content' -Action { Assert-RemoteShowroomSmokeImageContent }
     } elseif ($publishFrontend) {
         Info 'Skipping showroom smoke image content check for code-only deploy without Website or MinIO data sync'
     }
     if ($publishBackend -and $IncludeOnlyOffice) {
-        Wait-HttpOk -Url "http://${ServerHost}:$OnlyOfficeHostPort/healthcheck" -TimeoutSeconds 180
+        Invoke-ReleaseRuntimeVerificationCheck -Name 'onlyoffice-public-health' -Action { Wait-HttpOk -Url "http://${ServerHost}:$OnlyOfficeHostPort/healthcheck" -TimeoutSeconds 180 }
     }
-    if ($publishWebsite) { Wait-HttpOk -Url "http://${ServerHost}:$WebsiteHostPort/" -TimeoutSeconds 180 }
-    if ($publishWebsite) { Wait-HttpOk -Url "http://${ServerHost}:$WebsiteHostPort/showroom" -TimeoutSeconds 180 }
-    if ($publishWebsite) { Assert-PublicWebsiteEntryReadback }
-    if ($publishWebsite) { Assert-PublicWebsiteScopedReleaseCurrent }
+    if ($publishWebsite) { Invoke-ReleaseRuntimeVerificationCheck -Name 'website-root-public-health' -Action { Wait-HttpOk -Url "http://${ServerHost}:$WebsiteHostPort/" -TimeoutSeconds 180 } }
+    if ($publishWebsite) { Invoke-ReleaseRuntimeVerificationCheck -Name 'website-public-health' -Action { Wait-HttpOk -Url "http://${ServerHost}:$WebsiteHostPort/showroom" -TimeoutSeconds 180 } }
+    if ($publishWebsite) { Invoke-ReleaseRuntimeVerificationCheck -Name 'website-entry-content' -Action { Assert-PublicWebsiteEntryReadback } }
+    if ($publishWebsite) { Invoke-ReleaseRuntimeVerificationCheck -Name 'website-current-release' -Action { Assert-PublicWebsiteScopedReleaseCurrent } }
 
-    if ($Mode -eq 'deploy-release' -and @('prod', 'backup') -contains $Environment) {
-        Write-NasReleaseDeploymentHistory -PackageTag $ReleaseTag -HistoryAction 'deploy' -HistoryEnvironment $Environment
-    }
-    if ($requiresReleaseOperationLock) {
-        Assert-ReleaseOperationLockOwnership
-        Invoke-ReleaseOperationLockRelease -Status 'APPLIED'
-    }
+    Complete-ReleaseDeploymentPhase
+    Complete-ReleaseDeployment
 } catch {
-    if ($requiresReleaseOperationLock) {
-        $releaseErrorMessage = $_.Exception.Message
-        if ($script:ReleaseOperationLockHeld) {
-            try {
-                Invoke-ReleaseOperationLockRelease -Status 'FAILED' -ErrorMessage $releaseErrorMessage
-            } catch {
-                $cleanupMessage = ConvertTo-ReleaseErrorMessage -Value $_.Exception.Message
-                Write-Host "[FAIL] Release operation lock cleanup failed: $cleanupMessage" -ForegroundColor Red
-            }
-        }
-    }
+    $releaseErrorMessage=$_.Exception.Message
+    Register-ReleaseDeploymentFailure -OriginalError $releaseErrorMessage
     throw
 }
-
-Info 'Cleaning remote release temp files'
-Invoke-SshCommand "rm -f '$remoteImageTar' '$remoteDbDump' '$remoteResetDbSql' '$remotePostImportSql'"
-if ($Mode -eq 'deploy-release' -and (Test-Path -LiteralPath $deployControlLocalRoot)) {
-    Remove-Item -LiteralPath $deployControlLocalRoot -Recurse -Force
-}
-$remoteCleanupDirs = @()
-if ($publishBackend) {
-    $remoteCleanupDirs += $remoteRequiredSqlDir
-}
-if ($publishWebsite) {
-    $remoteCleanupDirs += $remoteWebsitePreviousDir
-}
-if ($remoteCleanupDirs.Count -gt 0) {
-    $remoteCleanupDirsArg = Join-ShellQuotedPathList -Paths $remoteCleanupDirs
-    Invoke-SshCommand "rm -rf $remoteCleanupDirsArg"
 }
 
+Invoke-ReleaseDeploymentExecution
 Write-Host ''
 Write-Host "Publish completed for $PublishTargetName."
 if ($publishFrontend) {

@@ -94,6 +94,7 @@ def _select_planned_migrations(
         "SKIP_ALREADY_APPLIED",
         "SKIP_ENV_NOT_ALLOWED",
         "SKIP_SCOPE_EXCLUDED",
+        "SKIP_IMMUTABLE",
     }
     for item in items:
         if not isinstance(item, dict):

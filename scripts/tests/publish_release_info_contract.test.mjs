@@ -50,3 +50,16 @@ test('release change-set labels use unicode-safe concatenation for manifest and 
   assert.match(script, /\('\{0\}\{1\}\{2\}' -f \$componentScopeLabel, \$fullWidthColon, \$Component\)/)
   assert.match(script, /\('\{0\}\{1\}\{2\} \{3\}' -f \$commitLabel, \$fullWidthColon, \$shortCommit, \$subject\)/)
 })
+
+test('deployment smoke and runtime acceptance use verified config identities and record independent health checks', () => {
+  assert.match(script, /ReleaseVerifiedImageContent\s*=\s*@\(\$releasePackageIntegrity\.verifiedImageContent\)/)
+  assert.match(script, /\$schedulerSmokeNodeImage\s*=.*Get-ReleaseTargetImageIdentities.*\.configDigest/)
+  for (const name of ['backend-health', 'frontend-health', 'onlyoffice-health', 'website-health', 'backend-minio-config', 'scheduler-smoke-config']) {
+    assert.ok(script.includes(`Invoke-ReleaseRuntimeVerificationCheck -Name '${name}' -Action`), name)
+  }
+  const start = script.indexOf('    $runtimeServices = @()')
+  const end = script.indexOf("    Info 'Waiting for remote HTTP readiness'", start)
+  const segment = script.slice(start, end)
+  assert.ok(segment.indexOf('--pull never website') < segment.indexOf('Assert-RemoteActualApplicationImages'))
+  assert.ok(segment.includes('Assert-RemoteWebsitePayloadIdentity'))
+})

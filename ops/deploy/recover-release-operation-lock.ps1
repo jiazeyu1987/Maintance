@@ -1,14 +1,18 @@
 param(
     [Parameter(Mandatory = $true)]
+    [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9.-]*$')]
     [string]$ServerHost,
     [string]$ServerUser = 'root',
     [Parameter(Mandatory = $true)]
+    [ValidatePattern('^/[A-Za-z0-9_./-]+$')]
     [string]$RemoteAppDir,
-    [ValidatePattern('^[A-Za-z0-9_]+$')]
+    [ValidatePattern('^[A-Za-z][A-Za-z0-9_-]{0,63}$')]
     [string]$DatabaseName = 'ruoyi-vue-pro',
     [Parameter(Mandatory = $true)]
+    [ValidatePattern('^test-[A-Za-z0-9][A-Za-z0-9._-]{0,127}$')]
     [string]$ExpectedOperationId,
     [Parameter(Mandatory = $true)]
+    [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$')]
     [string]$ExpectedReleaseTag,
     [Parameter(Mandatory = $true)]
     [string]$ExpectedExecutorHost,
@@ -27,6 +31,10 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$encoding=[Text.UTF8Encoding]::new($false)
+[Console]::InputEncoding=$encoding;[Console]::OutputEncoding=$encoding;$OutputEncoding=$encoding
+Import-Module -Force (Join-Path $PSScriptRoot '..\release\lib\ReleaseDeploymentEvidence.psm1')
+if($RemoteAppDir -match '(^|/)\.\.?(?:/|$)' -or $RemoteAppDir.EndsWith('/')){throw 'RECOVER_RELEASE_LOCK_PATH_INVALID'}
 if ($ConfirmText -ne 'RECOVER-TEST-LOCK') {
     throw 'RECOVER_RELEASE_LOCK_CONFIRMATION_REQUIRED'
 }
@@ -56,21 +64,46 @@ $sshArgs = @(
     "$ServerUser@$ServerHost"
 )
 
+function Invoke-RecoveryEvidenceCapture {
+    param([string]$Command)
+    $payload=[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(($Command -replace "`r`n","`n")))
+    $native="printf '%s' '$payload' | base64 -d | bash"
+    $prior=$ErrorActionPreference
+    try {$ErrorActionPreference='Continue';$text=@(& ssh @sshArgs $native 2>&1);$code=$LASTEXITCODE}
+    finally{$ErrorActionPreference=$prior}
+    return @{Ok=($code -eq 0);Output=($text -join "`n")}
+}
+
+$mysqlCommand="docker exec -i intruoyi-mysql sh -lc 'MYSQL_PWD=`"`$MYSQL_ROOT_PASSWORD`" exec mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names `"`$1`"' sh '$DatabaseName'"
+$machine=Invoke-RecoveryEvidenceCapture -Command 'cat /etc/machine-id'
+$database=Invoke-RecoveryEvidenceCapture -Command "$mysqlCommand <<'RECOVERY_IDENTITY_SQL'`nSELECT @@server_uuid;`nRECOVERY_IDENTITY_SQL"
+if(-not $machine.Ok -or -not $database.Ok){throw 'RECOVER_RELEASE_LOCK_TARGET_IDENTITY_UNAVAILABLE'}
+$scope=[pscustomobject]@{environment='test';host=$ServerHost;machineId=([string]$machine.Output).Trim();database=$DatabaseName;serverUuid=([string]$database.Output).Trim()}
+$evidenceRoot="$RemoteAppDir/.release-state/test"
+$evidence=Read-ReleaseDeploymentState -Root $evidenceRoot -Scope $scope -Capture {param($c) Invoke-RecoveryEvidenceCapture -Command $c}
+Assert-ReleaseDeploymentGate -State $evidence -Recovery -ExpectedOperationId $ExpectedOperationId -ExpectedReleaseTag $ExpectedReleaseTag -ExpectedLeaseToken $ExpectedLeaseToken
+
 $sqlLiteral = $ExpectedReleaseTag.Replace("'", "''")
 $operationLiteral = $ExpectedOperationId.Replace("'", "''")
 $executorHostLiteral = $ExpectedExecutorHost.Replace("'", "''")
 $executorPidLiteral = $ExpectedExecutorPid.Replace("'", "''")
 $executorIdentityLiteral = $ExpectedExecutorIdentity.Replace("'", "''")
 $leaseTokenLiteral = $ExpectedLeaseToken.Replace("'", "''")
+$operationReadback=if($evidence.gate.state -ceq 'READY') {
+    "test -z `"`$(find '$evidenceRoot/operations' -mindepth 1 -maxdepth 1 -print -quit)`""
+}else{
+    "operation_hash=`$(sha256sum <'$evidenceRoot/operations/$($evidence.gate.attemptId).json')`ntest `"`${operation_hash%% *}`" = '$($evidence.gate.operationDigest)'"
+}
 $remote = @"
 set -eu
-MYSQL_ROOT_PASSWORD=`$(grep -E '^MYSQL_ROOT_PASSWORD=' '$RemoteAppDir/.env' | head -n 1 | cut -d= -f2-)
-if [ -z "`$MYSQL_ROOT_PASSWORD" ]; then
-  echo 'RECOVER_BLOCKED_MISSING_DB_CREDENTIAL' >&2
-  exit 42
-fi
-export MYSQL_ROOT_PASSWORD
-docker exec -i -e MYSQL_PWD="`$MYSQL_ROOT_PASSWORD" intruoyi-mysql mysql -uroot --default-character-set=utf8mb4 --batch --skip-column-names '$DatabaseName' <<'SQL'
+test -f '$evidenceRoot/gate.lock'
+test ! -L '$evidenceRoot/gate.lock'
+exec 9<'$evidenceRoot/gate.lock'
+flock -x 9
+current=`$(sha256sum <'$evidenceRoot/gate.json')
+test "`${current%% *}" = '$($evidence.gateDigest)'
+$operationReadback
+$mysqlCommand <<'SQL'
 SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 START TRANSACTION;
 SELECT CASE
@@ -145,6 +178,18 @@ try {
     }
     if ($resultText -notmatch 'RECOVER_ELIGIBLE' -or $resultText -notmatch 'LOCK_RECOVERED') {
         throw 'RECOVER_RELEASE_LOCK_FAILED: missing explicit eligibility or recovery evidence'
+    }
+    if($null -ne $evidence.operation) {
+        $operation=$evidence.operation
+        $operation.state='ZERO_WRITE_FAILED';$operation.phase='explicit-zero-write-recovery'
+        $operation.originalError='Explicit recovery confirmed zero runtime writes and FAILED lease'
+        $leaseDigest=$operation.binding.leaseTokenDigest
+        $fence=@"
+$mysqlCommand <<'RECOVERY_FENCE_SQL'
+SELECT CASE WHEN COUNT(*)=1 AND @@server_uuid='$($scope.serverUuid)' THEN 'EVIDENCE_FENCE_OK' ELSE 'EVIDENCE_FENCE_LOST' END FROM infra_release_operation_lock WHERE target_environment='test' AND operation_id='$operationLiteral' AND release_tag='$sqlLiteral' AND SHA2(lease_token,256)='$leaseDigest' AND status='FAILED';
+RECOVERY_FENCE_SQL
+"@
+        $null=Save-ReleaseDeploymentState -Root $evidenceRoot -State $evidence -Operation $operation -Capture {param($c) Invoke-RecoveryEvidenceCapture -Command $c} -FenceCommand $fence
     }
     Write-Host "Release operation lock recovered: $ExpectedOperationId"
 } finally {

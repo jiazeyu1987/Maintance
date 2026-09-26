@@ -89,6 +89,30 @@ def _check_delimiter(migration: dict[str, object], sql: str) -> None:
         _fail("SQL_DELIMITER_INVALID", str(migration.get("migrationId", "<unknown>")))
 
 
+def _check_supersession_contract(migrations: list[dict[str, object]]) -> None:
+    known_ids = {
+        str(migration.get("migrationId", "")).strip()
+        for migration in migrations
+        if not str(migration.get("file", "")).strip().startswith("target-preflight/")
+    }
+    owners: dict[str, str] = {}
+    for migration in migrations:
+        migration_id = str(migration.get("migrationId", "")).strip()
+        supersedes = migration.get("supersedes", []) or []
+        if not isinstance(supersedes, list):
+            _fail("MIGRATION_SUPERSESSION_INVALID", migration_id or "<unknown>")
+        if supersedes and not bool(migration.get("requiresTargetPreflight", False)):
+            _fail("MIGRATION_SUPERSESSION_PREFLIGHT_REQUIRED", migration_id or "<unknown>")
+        for legacy_value in supersedes:
+            legacy_id = str(legacy_value).strip()
+            if not legacy_id or legacy_id not in known_ids or legacy_id == migration_id:
+                _fail("MIGRATION_SUPERSESSION_INVALID", f"{migration_id}:{legacy_id}")
+            previous_owner = owners.get(legacy_id)
+            if previous_owner is not None and previous_owner != migration_id:
+                _fail("MIGRATION_SUPERSESSION_DUPLICATE", legacy_id)
+            owners[legacy_id] = migration_id
+
+
 def run_migration_preflight(
     migrations: Iterable[dict[str, object]],
     *,
@@ -99,9 +123,11 @@ def run_migration_preflight(
 
     sql_by_id = sql_by_id or {}
     target_preflight_results = target_preflight_results or {}
+    migration_list = list(migrations)
+    _check_supersession_contract(migration_list)
     normalized: list[dict[str, object]] = []
     seen: set[str] = set()
-    for migration in migrations:
+    for migration in migration_list:
         migration_id = str(migration.get("migrationId", "")).strip()
         if not migration_id or migration_id in seen:
             _fail("MIGRATION_ID_INVALID", migration_id or "<blank>")

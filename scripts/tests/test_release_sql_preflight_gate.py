@@ -4,6 +4,8 @@ import json
 import subprocess
 from pathlib import Path
 
+from release_test_runtime import application_backend_root
+
 
 ROOT = Path(__file__).resolve().parents[2]
 PUBLISH_SCRIPT = ROOT / "ops" / "deploy" / "publish-int-ruoyi.ps1"
@@ -405,7 +407,8 @@ def test_publish_script_executes_dcc_view_matrix_prereq_before_seed_on_test() ->
     assert "applyOrder = $_.Item.applyOrder" in script
     assert "sessionProfile" in script
     assert "$preflightApplyItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'APPLY' })" in invoke_block
-    assert "$applyItems = Sort-RequiredDatabaseSqlApplyItems -Items $preflightApplyItems -TargetEnvironment $Environment" in invoke_block
+    assert "$applyItems = Sort-RequiredDatabaseSqlApplyItems -Items $preflightApplyItems -TargetEnvironment $Environment" not in invoke_block
+    assert "$applyItems = @($preflightApplyItems)" in invoke_block
     assert "'dcc-view-matrix-seed'" in helper_block
     assert "'test' { '122' }" in helper_block
     assert "SET @dcc_view_matrix_seed_tenant_id := $seedTenantId;" in helper_block
@@ -578,12 +581,12 @@ def test_deploy_release_imports_remote_runtime_env_before_secret_gates() -> None
     script = read_publish_script()
 
     import_start = script.index("function Import-ExistingRemoteRuntimeEnvSettings")
-    deploy_start = script.index("if ($Mode -eq 'deploy-release')")
+    deploy_start = script.index('Info "Deploying release package: $ReleaseTag"')
     defaults_index = script.index("Set-PublishRuntimeDefaultsForTarget", deploy_start)
     secret_gate_index = script.index("$edhrProtectedStorageSettings = Get-EdhrProtectedStorageSettings", deploy_start)
     import_call_index = script.index("Import-ExistingRemoteRuntimeEnvSettings", deploy_start)
 
-    import_block = script[import_start:deploy_start]
+    import_block = script[import_start:script.index("function Resolve-ExistingRuntimeEnvValue",import_start)]
     assert "Get-RemoteRuntimeEnvMap" in import_block
     assert "Set-PublishRuntimeValuesFromSettings -Settings $existingRemoteEnv" in import_block
     assert deploy_start < import_call_index < defaults_index < secret_gate_index
@@ -595,7 +598,7 @@ def test_build_release_imports_remote_runtime_env_before_secret_gates() -> None:
     import_start = script.index("function Import-ExistingRemoteRuntimeEnvSettings")
     resolve_existing_start = script.index("function Resolve-ExistingRuntimeEnvValue")
     import_block = script[import_start:resolve_existing_start]
-    deploy_start = script.index("if ($Mode -eq 'deploy-release')")
+    deploy_start = script.index('Info "Deploying release package: $ReleaseTag"')
     defaults_index = script.index("Set-PublishRuntimeDefaultsForTarget", deploy_start)
     secret_gate_index = script.index("$edhrProtectedStorageSettings = Get-EdhrProtectedStorageSettings", deploy_start)
     build_import_index = script.index("if ($Mode -eq 'build-release' -and $publishBackend)", deploy_start)
@@ -686,7 +689,7 @@ def test_release_sql_contract_gate_blocks_repeated_nested_temp_table_reference(t
 
 
 def test_production_release_role_sql_passes_temp_table_reopen_contract() -> None:
-    backend_sql = Path(r"E:\IntRuoyi\IntRuoyiBackend\sql\mysql\20260814_mes_production_release_roles.sql")
+    backend_sql = application_backend_root() / "sql/mysql/20260814_mes_production_release_roles.sql"
     assert backend_sql.is_file(), f"required backend migration is missing: {backend_sql}"
 
     gate = importlib.import_module("ops.release.release_sql_contract_gate")
@@ -816,6 +819,9 @@ def test_required_sql_manifest_infers_target_preflight_from_external_contract(tm
         encoding="utf-8",
     )
     (package_root / migration.name).write_bytes(migration.read_bytes())
+    staged_checks = package_root.parent / "target-preflight"
+    staged_checks.mkdir()
+    (staged_checks / f"{migration_id}.preflight.sql").write_bytes((preflight_root / f"{migration_id}.preflight.sql").read_bytes())
     powershell = f"""
 $ErrorActionPreference = 'Stop'
 $tokens = $null
@@ -849,6 +855,58 @@ Write-Output (@(New-ReleaseRequiredSqlManifestEntries) | ConvertTo-Json -Depth 8
     entry = payload[0] if isinstance(payload, list) else payload
     assert entry["migrationId"] == migration_id
     assert entry["requiresTargetPreflight"] is True
+    assert entry["targetPreflight"]["reference"] == f"target-preflight/{migration_id}.preflight.sql"
+    assert entry["targetPreflight"]["readOnly"] is True
+
+
+def test_required_sql_manifest_binds_allowed_publish_scopes_through_powershell(
+    tmp_path: Path,
+) -> None:
+    backend = tmp_path / "backend"
+    migration_root = backend / "sql/mysql"
+    package_root = tmp_path / "package/required-sql"
+    migration_root.mkdir(parents=True)
+    package_root.mkdir(parents=True)
+    migration_id = "20260923_scope_fixture"
+    migration = migration_root / f"{migration_id}.sql"
+    migration.write_text(
+        "-- release-migration: allowedEnvironments=test,backup,prod; "
+        "allowedPublishScopes=code-only; dependsOn=; type=schema; riskLevel=high\n"
+        "SELECT 1;\n",
+        encoding="utf-8",
+    )
+    (package_root / migration.name).write_bytes(migration.read_bytes())
+    powershell = f"""
+$ErrorActionPreference = 'Stop'
+$tokens = $null
+$errors = $null
+$ast = [System.Management.Automation.Language.Parser]::ParseFile('{str(PUBLISH_SCRIPT).replace("'", "''")}', [ref]$tokens, [ref]$errors)
+if ($errors.Count -gt 0) {{ throw 'publish script parse failed' }}
+foreach ($name in @('Read-ReleaseMigrationMetadata', 'New-ReleaseRequiredSqlManifestEntries')) {{
+  $definition = $ast.FindAll({{ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq $name }}, $true) | Select-Object -First 1
+  if ($null -eq $definition) {{ throw "function missing: $name" }}
+  Invoke-Expression $definition.Extent.Text
+}}
+function Fail {{ param([string]$Message) throw $Message }}
+function Get-RequiredDatabaseSqlFileName {{ param([string]$RelativePath) return [System.IO.Path]::GetFileName($RelativePath) }}
+function ConvertTo-ReleaseFileSha256Digest {{ param([string]$Path) return 'sha256:fixture' }}
+$releaseMigrationAllowedTypes = @('schema', 'data', 'menu', 'permission', 'config', 'seed')
+$backendRepo = '{str(backend).replace("'", "''")}'
+$requiredSqlLocalDir = '{str(package_root).replace("'", "''")}'
+$requiredDatabaseSqlScripts = @(@{{ Path = 'sql/mysql/{migration.name}'; Environments = @('test', 'backup', 'prod') }})
+Write-Output (@(New-ReleaseRequiredSqlManifestEntries) | ConvertTo-Json -Depth 8 -Compress)
+"""
+    encoded_command = base64.b64encode(powershell.encode("utf-16le")).decode("ascii")
+    result = subprocess.run(
+        ["powershell", "-NoProfile", "-NonInteractive", "-EncodedCommand", encoded_command],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(result.stdout.strip())
+    entry = payload[0] if isinstance(payload, list) else payload
+    assert entry["allowedPublishScopes"] == ["code-only"]
 
 
 def test_publish_script_accepts_multiline_none_ignored_builds() -> None:
@@ -956,11 +1014,13 @@ def test_publish_script_records_failed_required_sql_after_combined_apply_failure
     invoke_block = script[invoke_start:invoke_end]
 
     helper_call = "Invoke-RequiredDatabaseSqlScriptWithState -Item $item -RemoteSqlPath $remoteSqlPath -SessionPreamble $sessionPreamble"
-    failed_update = "Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'FAILED' -ErrorMessage $_.Exception.Message"
+    failed_update = "Invoke-ReleaseMigrationStateUpdate -Item $item -Status 'FAILED' -ErrorMessage $migrationError.Exception.Message"
     assert helper_call in invoke_block
     assert failed_update in invoke_block
     assert invoke_block.index(helper_call) < invoke_block.index(failed_update)
-    assert "throw" in invoke_block[invoke_block.index(failed_update):]
+    assert "$migrationError=$_" in invoke_block
+    assert "throw $migrationError" in invoke_block[invoke_block.index(failed_update):]
+    assert "$script:ReleaseMigrationFailureErrors" in invoke_block
 
 
 def test_publish_script_uploads_ops_runtime_package_as_single_archive() -> None:
@@ -1001,7 +1061,7 @@ def test_publish_script_uploads_deploy_control_files_as_single_archive() -> None
     assert "test -f $remoteDeployControlExtractDirLiteral/website/dist/index.html" in helper_block
     assert "test -f $remoteDeployControlExtractDirLiteral/website/nginx.conf" in helper_block
     assert "test -f $remoteDeployControlExtractDirLiteral/sql/reset-db.sql" in helper_block
-    assert "test -f $remoteDeployControlExtractDirLiteral/sql/post-import.sql" in helper_block
+    assert "test -f $remoteDeployControlExtractDirLiteral/sql/post-import.sql" not in helper_block
     assert "Copy-DeployControlFilesToServer -ComposeLocal $composeLocal" in deploy_block
     assert "Copy-ToServer -LocalPath $composeLocal -RemotePath $remoteCompose" not in deploy_block
     assert "Copy-ToServer -LocalPath $remoteEnvLocal -RemotePath $remoteEnv" not in deploy_block
@@ -1011,13 +1071,13 @@ def test_publish_script_uploads_deploy_control_files_as_single_archive() -> None
     assert "Copy-LargeFileToServerInChunks -LocalPath $imageTar -RemotePath $remoteImageTar" in deploy_block
 
 
-def test_publish_script_batches_skip_already_applied_migration_state_updates() -> None:
+def test_publish_script_preserves_already_applied_migration_history() -> None:
     script = read_publish_script()
 
     assert "function Invoke-ReleaseMigrationStateBatchUpdate" in script
     assert "Batch updating release migration state" in script
     assert "$skipAlreadyAppliedItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ALREADY_APPLIED' })" in script
-    assert "Invoke-ReleaseMigrationStateBatchUpdate -Items $skipAlreadyAppliedItems -Status 'SKIPPED_ALREADY_APPLIED'" in script
+    assert "Invoke-ReleaseMigrationStateBatchUpdate -Items $skipAlreadyAppliedItems -Status 'SKIPPED_ALREADY_APPLIED'" not in script
 
     invoke_start = script.index("function Invoke-RequiredDatabaseSqlScripts")
     invoke_end = script.index("if ($Mode -eq 'mark-tested')", invoke_start)
@@ -1025,13 +1085,13 @@ def test_publish_script_batches_skip_already_applied_migration_state_updates() -
     assert "foreach ($item in @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ALREADY_APPLIED' }))" not in invoke_block
 
 
-def test_publish_script_batches_environment_and_scope_skips_to_clear_stale_failed_rows() -> None:
+def test_publish_script_preserves_failed_history_for_environment_and_scope_skips() -> None:
     script = read_publish_script()
 
     assert "$skipEnvNotAllowedItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_ENV_NOT_ALLOWED' })" in script
-    assert "Invoke-ReleaseMigrationStateBatchUpdate -Items $skipEnvNotAllowedItems -Status 'SKIPPED_ENV_NOT_ALLOWED'" in script
+    assert "Invoke-ReleaseMigrationStateBatchUpdate -Items $skipEnvNotAllowedItems -Status 'SKIPPED_ENV_NOT_ALLOWED'" not in script
     assert "$skipScopeExcludedItems = @($preflightPlan.items | Where-Object { [string]$_.action -eq 'SKIP_SCOPE_EXCLUDED' })" in script
-    assert "Invoke-ReleaseMigrationStateBatchUpdate -Items $skipScopeExcludedItems -Status 'SKIPPED_SCOPE_EXCLUDED'" in script
+    assert "Invoke-ReleaseMigrationStateBatchUpdate -Items $skipScopeExcludedItems -Status 'SKIPPED_SCOPE_EXCLUDED'" not in script
     assert "'SKIPPED_ENV_NOT_ALLOWED', 'SKIPPED_SCOPE_EXCLUDED'" in script
 
     invoke_start = script.index("function Invoke-RequiredDatabaseSqlScripts")

@@ -27,6 +27,7 @@ ALLOWED_ACTIONS = {
     "SKIP_ALREADY_APPLIED",
     "SKIP_ENV_NOT_ALLOWED",
     "SKIP_SCOPE_EXCLUDED",
+    "SKIP_IMMUTABLE",
 }
 SHA256_PATTERN = re.compile(r"^sha256:[0-9a-f]{64}$")
 COMMIT_PATTERN = re.compile(r"^[0-9a-f]{40,64}$")
@@ -111,6 +112,14 @@ def _normalize_migration_contract(raw: object, label: str) -> dict[str, object]:
         if not isinstance(values, list):
             raise BuildPreflightError(f"{label} migration {field} must be an array")
         normalized[field] = sorted(str(value).strip() for value in values)
+    supersedes = raw.get("supersedes", [])
+    if not isinstance(supersedes, list):
+        raise BuildPreflightError(f"{label} migration supersedes must be an array")
+    normalized["supersedes"] = sorted(str(value).strip() for value in supersedes)
+    allowed_scopes = raw.get("allowedPublishScopes", [])
+    if not isinstance(allowed_scopes, list):
+        raise BuildPreflightError(f"{label} migration allowedPublishScopes must be an array")
+    normalized["allowedPublishScopes"] = sorted(str(value).strip() for value in allowed_scopes)
     target_required = raw.get('requiresTargetPreflight', False)
     if not isinstance(target_required, bool):
         raise BuildPreflightError(f'{label} requiresTargetPreflight must be a boolean')

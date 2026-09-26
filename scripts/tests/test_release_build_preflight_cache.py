@@ -124,10 +124,32 @@ def test_runner_writes_complete_deterministic_binding_evidence(tmp_path: Path) -
     }
     assert all(value.startswith("sha256:") for value in evidence["bindings"].values())
     assert evidence["bindings"]["preflightFingerprint"] == (
-        "sha256:b95cc7cb57c8eb8e222b33fc0efcf8dd6f44d1f065c5ab45dca93ea97981dbf8"
+        "sha256:8c7d7a8cdc01e29a118aaa4eab06543905d9023f3d7670439734ba1f4bda786c"
     )
     assert evidence["planner"]["status"] == "passed"
     assert evidence["planner"]["items"][0]["action"] == "APPLY"
+
+
+def test_verify_rejects_allowed_publish_scope_change_after_evidence_binding(tmp_path: Path) -> None:
+    result = _run(tmp_path)
+    assert result.returncode == 0, result.stderr
+    manifest = tmp_path / "prospective-manifest.json"
+    payload = json.loads(manifest.read_text(encoding="utf-8"))
+    for collection in (payload["database"]["schemaMigrations"], payload["requiredSql"]):
+        collection[0]["allowedPublishScopes"] = ["code-only"]
+    manifest.write_text(json.dumps(payload), encoding="utf-8")
+
+    verified = _run_existing_inputs(
+        manifest,
+        tmp_path / "target-state.json",
+        tmp_path / "build-preflight-evidence.json",
+        command="verify",
+    )
+
+    assert verified.returncode != 0
+    assert "evidence does not match recomputed bindings" in (
+        verified.stdout + verified.stderr
+    )
 
 
 def test_runner_is_deterministic_except_fresh_collection_identity(tmp_path: Path) -> None:
@@ -182,6 +204,14 @@ def test_material_input_drift_changes_binding_or_fails(tmp_path: Path, field: st
     )
     if field in {"environment", "scope"}:
         assert result.returncode != 0
+    elif field == "target":
+        assert result.returncode != 0
+        changed_evidence = json.loads(output.read_text(encoding="utf-8"))
+        assert changed_evidence["status"] == "blocked"
+        assert changed_evidence["planner"]["items"][0]["action"] == "BLOCKED_CHECKSUM_MISMATCH"
+        baseline_evidence = json.loads((baseline / "build-preflight-evidence.json").read_text(encoding="utf-8"))
+        assert changed_evidence["bindings"]["preflightFingerprint"] != baseline_evidence["bindings"]["preflightFingerprint"]
+        assert _run_existing_inputs(manifest_path, target_path, output, command="verify").returncode != 0
     else:
         assert result.returncode == 0, result.stderr
         baseline_evidence = json.loads((baseline / "build-preflight-evidence.json").read_text(encoding="utf-8"))
@@ -229,6 +259,28 @@ def test_blocked_plan_is_written_but_cannot_qualify_build(tmp_path: Path) -> Non
     evidence = json.loads((tmp_path / "evidence.json").read_text(encoding="utf-8"))
     assert evidence["status"] == "blocked"
     assert evidence["planner"]["items"][0]["action"] == "BLOCKED_DEPENDENCY_MISSING"
+
+
+def test_checksum_drift_cannot_reapply_even_with_missing_dependency(tmp_path: Path) -> None:
+    manifest, target = _write_inputs(tmp_path)
+    payload = json.loads(manifest.read_text(encoding="utf-8"))
+    for entries in (payload["database"]["schemaMigrations"], payload["requiredSql"]):
+        entries[0]["dependsOn"] = ["missing-parent"]
+    manifest.write_text(json.dumps(payload), encoding="utf-8")
+    ledger = json.loads(target.read_text(encoding="utf-8"))
+    ledger["migrationLedger"] = {
+        "20260908_contract": {"status": "APPLIED", "sha256": "b" * 64}
+    }
+    target.write_text(json.dumps(ledger), encoding="utf-8")
+    output = tmp_path / "evidence.json"
+
+    result = _run_existing_inputs(manifest, target, output)
+
+    assert result.returncode != 0
+    evidence = json.loads(output.read_text(encoding="utf-8"))
+    assert evidence["status"] == "blocked"
+    assert evidence["planner"]["items"][0]["action"] == "BLOCKED_CHECKSUM_MISMATCH"
+    assert _run_existing_inputs(manifest, target, output, command="verify").returncode != 0
 
 
 def _run_existing_inputs(manifest: Path, target: Path, output: Path, command: str = "run") -> subprocess.CompletedProcess[str]:

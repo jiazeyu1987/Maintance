@@ -157,6 +157,50 @@ def test_publish_script_runs_schema_only_rehearsal_before_maven():
     assert "$argumentList += @('--migration', $migrationPath)" not in script
 
 
+def test_select_planned_migrations_accepts_skip_immutable_and_selects_only_apply(tmp_path: Path):
+    legacy = tmp_path / "20260904_legacy.sql"
+    successor = tmp_path / "20260923_successor.sql"
+    legacy.write_text("SELECT 'legacy';\n", encoding="utf-8")
+    successor.write_text("SELECT 'successor';\n", encoding="utf-8")
+    evidence = tmp_path / "build-preflight.json"
+    evidence.write_text(
+        json.dumps(
+            {
+                "schemaVersion": "release-build-preflight/v1",
+                "status": "passed",
+                "targetEnvironment": "test",
+                "publishScope": "app-release",
+                "planner": {
+                    "status": "passed",
+                    "items": [
+                        {
+                            "migrationId": legacy.stem,
+                            "file": f"required-sql/{legacy.name}",
+                            "type": "schema",
+                            "requiresTargetPreflight": False,
+                            "action": "SKIP_IMMUTABLE",
+                        },
+                        {
+                            "migrationId": successor.stem,
+                            "file": f"required-sql/{successor.name}",
+                            "type": "schema",
+                            "requiresTargetPreflight": False,
+                            "action": "APPLY",
+                        },
+                    ],
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    selected = release_schema_rehearsal._select_planned_migrations(
+        [legacy, successor], evidence
+    )
+
+    assert [item.path for item in selected] == [successor]
+
+
 def test_main_reads_migrations_from_json_list(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     schema = tmp_path / "schema.sql"
     output = tmp_path / "report.json"

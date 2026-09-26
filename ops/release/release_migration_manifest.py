@@ -10,6 +10,7 @@ class MigrationManifestError(RuntimeError):
 
 
 ALLOWED_ENVIRONMENTS = {"test", "backup", "prod"}
+ALLOWED_PUBLISH_SCOPES = {"app-release", "code-only", "with-data"}
 EXECUTABLE_TYPES = {"schema", "data", "menu", "config", "permission", "seed"}
 EVIDENCE_ONLY_TYPES = {"preflight", "backfill", "postflight", "rollback-dry-run"}
 ALLOWED_TYPES = EXECUTABLE_TYPES | EVIDENCE_ONLY_TYPES
@@ -49,6 +50,8 @@ def _parse_metadata(path: Path) -> dict[str, list[str] | str | bool | int | None
             "type": DEFAULT_TYPE,
             "riskLevel": DEFAULT_RISK_LEVEL,
             "requiresTargetPreflight": False,
+            "supersedes": [],
+            "allowedPublishScopes": [],
             "applyOrder": None,
             "sessionProfile": "",
             "approvedHook": "",
@@ -61,6 +64,8 @@ def _parse_metadata(path: Path) -> dict[str, list[str] | str | bool | int | None
         "type": DEFAULT_TYPE,
         "riskLevel": DEFAULT_RISK_LEVEL,
         "requiresTargetPreflight": False,
+        "supersedes": [],
+        "allowedPublishScopes": [],
         "applyOrder": None,
         "sessionProfile": "",
         "approvedHook": "",
@@ -81,6 +86,17 @@ def _parse_metadata(path: Path) -> dict[str, list[str] | str | bool | int | None
                 raise MigrationManifestError(f"invalid allowedEnvironments in {path}: {', '.join(invalid)}")
             metadata[key] = values
         elif key == "dependsOn":
+            metadata[key] = values
+        elif key == "supersedes":
+            if not values:
+                raise MigrationManifestError(f"supersedes is empty in {path}")
+            metadata[key] = values
+        elif key == "allowedPublishScopes":
+            invalid = [item for item in values if item not in ALLOWED_PUBLISH_SCOPES]
+            if not values or invalid:
+                raise MigrationManifestError(
+                    f"invalid allowedPublishScopes in {path}: {value}"
+                )
             metadata[key] = values
         elif key == "type":
             if len(values) != 1 or values[0] not in ALLOWED_TYPES:
@@ -161,6 +177,8 @@ def build_migration_manifest(
                 "dependsOn": metadata["dependsOn"],
                 "riskLevel": metadata["riskLevel"],
                 "requiresTargetPreflight": metadata["requiresTargetPreflight"],
+                "supersedes": metadata["supersedes"],
+                "allowedPublishScopes": metadata["allowedPublishScopes"],
                 "applyOrder": metadata["applyOrder"],
                 "sessionProfile": metadata["sessionProfile"],
                 "approvedHook": metadata["approvedHook"],

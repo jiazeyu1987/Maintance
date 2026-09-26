@@ -1,5 +1,33 @@
 # 测试服发布前置门禁
 
+## 完整包本机回归与可重建资源门禁
+
+- Trigger: `run-full-package-release-tests.ps1`、C5/C6/C7、任务 classic 重建后复验。
+- Preflight check: 由资源负责人提供任务专用 MySQL 和 classic；MySQL 保持原 task/container/volume/password 配置，新增显式 taskCache（绝对目录）、prefix（以 release- 开头并以 - 结尾）、mysqlFlockDirectory（容器内绝对目录）、classic={container,containerId,volume}、officialArchive={path,bytes,sha256,configDigest}。原始 JSON 留在本机私有缓存，禁止打印、提交或复制进报告。
+- Blocker: 缺字段/错误类型/无效路径、完整 ID 与名称不一致、任务标签不符、非 running、卷或精确挂载/唯一消费者不符、非 network none、发布端口、宿主 Docker socket、错误官方基础镜像/版本/驱动、不可执行工具、归档字节/摘要/内容身份不符时，在首次 fixture 写入前停止。不得选择共享引擎、回落旧 ID 或跳过引擎测试。
+- Verification: `release_test_runtime.py` 是唯一运行配置解析/归属校验入口；C5/C6直接运行也必须设置相同配置。官方 dind 固定 `docker.io/library/docker@sha256:dd43b430341a40d88f4f30edb03865daa9d6fa39c9b1da70f27e2a89cec3eae1`、Docker 26.1.4、classic overlay2；官方 Playwright 1.60.0 内容 configDigest 固定 `sha256:ab853f51b03036cd52e74771c2dd07ee1471c408645048e928af67db6beae6d7`。归档 bytes/SHA 与 descriptor/config/layers 分别核对，不用一次性容器 ID 代替内容身份。
+- Forbidden action: 测试者不得创建/删除外层引擎或卷、改挂载/宿主 Docker 配置、换镜像/版本、重打包官方归档、伪造 hostname/stdlib、并发运行重套件、把进度100%或无效报告记为 PASS；不得操作三服或共享业务数据。
+- Evidence: 新旧完整容器 ID、正式配置非秘密摘要、归档 bytes/SHA/官方内容身份、工具哈希、运行前后资源清单、完整进程退出码、有效 JUnit/Surefire、受验源码 SHA。正式脱敏报告保留；临时配置副本/fixture 由归属者清理。
+
+### 准备、执行和清理顺序
+
+1. 资源负责人在旧 fixture 归属和残留全部核实后精确清理，重建任务 classic，使用独占数据卷、network none、无端口、无宿主 Docker socket；写入新的完整 ID 和精确卷名，不能永留旧实例绕过清理。只载入同一已验证官方归档，不重新打包。
+2. MySQL flock 工具由资源负责人从同一官方 dind 准备到显式私有目录：busybox SHA256=`42de297577993675efecf295acf0260e26128458048b3081451e1ac43f611b49`、musl loader SHA256=`60d0ed88672b260b8337bf1e5b721f9ca9c877f4d901886472b8195a38ff3630`；验证真实可执行及依赖完整。只在任务测试运输会话修改 PATH，不改系统 PATH。
+3. taskCache 下的 `smoke-payload` 必须含 T2P 的真实 Linux 载荷，固定官方 Playwright 1.60.0/xlsx 0.18.5；缺输入直接失败。逐轮使用唯一报告目录，完整套件串行运行，不复用旧 JUnit 冒充本轮结果。
+
+```powershell
+$env:PYTHONUTF8 = '1'
+$env:RELEASE_TEST_MYSQL_RUNTIME_CONFIG = '<私有配置绝对路径>'
+$env:RELEASE_TEST_APPLICATION_BACKEND_ROOT = '<本任务应用worktree>/IntRuoyiBackend'
+powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/tests/run-full-package-release-tests.ps1 -RuntimeConfigPath $env:RELEASE_TEST_MYSQL_RUNTIME_CONFIG -ApplicationBackendRoot $env:RELEASE_TEST_APPLICATION_BACKEND_ROOT
+```
+
+runner 去重执行 C1～C6/C2P 与两个 T7 模块共24个 pytest 模块、三个 Node 文件、PS 摘要向量、生产 AST 和 diff 检查；首错停止，修复后必须完整重跑。C6-J 另在同一应用 worktree 按标准 Maven 运行 `RuntimeControlServiceImplTest,ReleaseWorkflowOrchestratorTest,ReleaseWorkflowRecoveryTest`，核三个 Surefire 报告实际计数/零失败，不手工 javac 或跳过目标测试。
+
+4. 所有验证完成后先冻结源码交独立验收；记录任务 schema、内层容器/镜像与 `/tmp`、`/var/lib/docker/task-inputs` 的所属 fixture 残留。独立验收通过后由主管执行 task-closeout preview/apply；先保存正式证据，再删除任务临时配置副本和 fixture，最后按精确身份处理外层引擎/卷及 worktree。遇归属不明或未合并变更停止，禁止全局 prune。
+
+现场测试服发布仍须按下文原发布授权流程执行；本机三个逻辑环境不是实际三服。旧包、新持久控制根/READY gate、classic 支持边界和人工恢复流程见 `docs/release-agent-checklist.md` 的“完整包、逐目标计划与持久恢复门禁”，缺正式前提不得发布。
+
 ## 目的
 
 本文是 Codex 执行 IntRuoyi 仅测试服构建发布前的主入口。目标是把长篇经验拆成可执行门禁：先按本文逐项检查，失败时再跳转到对应经验文档诊断。

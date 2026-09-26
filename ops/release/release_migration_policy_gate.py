@@ -128,6 +128,56 @@ def _check_executable_dependency_closure(entries: list[dict[str, object]]) -> No
             )
 
 
+def _check_supersession_scope_contract(entries: list[dict[str, object]]) -> None:
+    for entry in entries:
+        scopes = entry.get("allowedPublishScopes", [])
+        if scopes is None:
+            continue
+        if not isinstance(scopes, list):
+            raise MigrationPolicyError(
+                f"allowedPublishScopes must be an array for migrationId '{entry['migrationId']}'"
+            )
+
+
+def _check_supersession_contract(entries: list[dict[str, object]]) -> None:
+    known_ids = {str(entry["migrationId"]) for entry in entries}
+    owners: dict[str, str] = {}
+    for entry in entries:
+        migration_id = str(entry["migrationId"])
+        supersedes = entry.get("supersedes", [])
+        if supersedes is None:
+            supersedes = []
+        if not isinstance(supersedes, list):
+            raise MigrationPolicyError(
+                f"supersedes must be an array for migrationId '{migration_id}'"
+            )
+        if supersedes and not bool(entry.get("requiresTargetPreflight", False)):
+            raise MigrationPolicyError(
+                f"superseding migration '{migration_id}' requires target preflight"
+            )
+        for legacy_value in supersedes:
+            legacy_id = str(legacy_value).strip()
+            if not legacy_id:
+                raise MigrationPolicyError(
+                    f"supersedes contains an empty migrationId for '{migration_id}'"
+                )
+            if legacy_id == migration_id:
+                raise MigrationPolicyError(
+                    f"migrationId '{migration_id}' cannot supersede itself"
+                )
+            if legacy_id not in known_ids:
+                raise MigrationPolicyError(
+                    f"supersedes missing migration '{legacy_id}' for migrationId '{migration_id}'"
+                )
+            previous_owner = owners.get(legacy_id)
+            if previous_owner is not None and previous_owner != migration_id:
+                raise MigrationPolicyError(
+                    f"multiple supersession owners for migration '{legacy_id}': "
+                    f"'{previous_owner}' and '{migration_id}'"
+                )
+            owners[legacy_id] = migration_id
+
+
 def run_migration_policy_gate(
     sql_root: Path | str,
     *,
@@ -142,7 +192,9 @@ def run_migration_policy_gate(
         entries = build_migration_manifest(root, sql_paths=paths, file_prefix=file_prefix)
     except MigrationManifestError as exc:
         raise MigrationPolicyError(str(exc)) from exc
+    _check_supersession_contract(entries)
     _check_dependency_environment_contract(entries)
+    _check_supersession_scope_contract(entries)
     _check_executable_dependency_closure(entries)
     _check_frozen_checksums(entries, _load_frozen_registry(frozen_registry_path))
     try:

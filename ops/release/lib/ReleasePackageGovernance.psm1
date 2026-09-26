@@ -198,6 +198,322 @@ function Get-ReleasePackageImmutableArtifactEntries {
     return @($entries.ToArray())
 }
 
+function Get-ReleasePlatformPrerequisites {
+    param([Parameter(Mandatory = $true)][ValidateSet('intruoyi', 'full')][string]$Component)
+    $items = @([ordered]@{
+        toolId = 'dcc-codex'
+        pathEnv = 'DCC_PROJECT_CODE_CODEX_CLI_COMMAND'
+        sha256Env = 'DCC_PROJECT_CODE_CODEX_CLI_SHA256'
+    })
+    if ($Component -eq 'full') {
+        $items += [ordered]@{
+            toolId = 'showroom-codex'
+            pathEnv = 'SHOWROOM_CODEX_CLI_COMMAND'
+            sha256Env = 'SHOWROOM_CODEX_CLI_SHA256'
+        }
+    }
+    return $items
+}
+
+function Get-ReleaseManagedImageReferences {
+    param(
+        [Parameter(Mandatory = $true)][ValidateSet('intruoyi', 'full')][string]$Component,
+        [Parameter(Mandatory = $true)][string]$PackageId,
+        [Parameter(Mandatory = $true)][bool]$OnlyOfficeIncluded
+    )
+    $images = [ordered]@{
+        backend = "intruoyi-backend:$PackageId"
+        frontend = "intruoyi-frontend:$PackageId"
+        'scheduler-smoke' = 'mcr.microsoft.com/playwright:v1.60.0-noble'
+    }
+    if ($Component -eq 'full') { $images['website'] = 'nginx:1.27-alpine' }
+    if ($OnlyOfficeIncluded) { $images['onlyoffice'] = 'onlyoffice/documentserver:latest' }
+    return $images
+}
+
+function Get-ReleaseTarConfigBytes {
+    param([string]$ArchivePath, [string]$EntryPath, [switch]$DigestOnly)
+    if ($EntryPath -cnotmatch '^((blobs/sha256/)?[0-9a-f]{64}(\.json)?|index\.json|oci-layout)$') {
+        throw 'PACKAGE_IMAGE_ARCHIVE_INVALID: unsafe Docker config path'
+    }
+    $startInfo = [Diagnostics.ProcessStartInfo]::new()
+    $startInfo.FileName = (Get-Command tar -ErrorAction Stop).Source
+    $startInfo.Arguments = '-xOf "' + $ArchivePath + '" "' + $EntryPath + '"'
+    $startInfo.UseShellExecute = $false
+    $startInfo.CreateNoWindow = $true
+    $startInfo.RedirectStandardOutput = $true
+    $startInfo.RedirectStandardError = $true
+    $process = [Diagnostics.Process]::new()
+    $process.StartInfo = $startInfo
+    $bytes = [IO.MemoryStream]::new()
+    try {
+        [void]$process.Start()
+        $stderr = $process.StandardError.ReadToEndAsync()
+        if ($DigestOnly) {
+            $hash = [Security.Cryptography.SHA256]::Create()
+            try {
+                $buffer = New-Object byte[] (1024 * 1024)
+                [int64]$length = 0
+                while (($count = $process.StandardOutput.BaseStream.Read($buffer, 0, $buffer.Length)) -gt 0) {
+                    [void]$hash.TransformBlock($buffer, 0, $count, $null, 0)
+                    $length += $count
+                }
+                [void]$hash.TransformFinalBlock([byte[]]@(), 0, 0)
+                $digest = ([BitConverter]::ToString($hash.Hash)).Replace('-', '').ToLowerInvariant()
+            } finally { $hash.Dispose() }
+        } else {
+            $process.StandardOutput.BaseStream.CopyTo($bytes)
+        }
+        $process.WaitForExit()
+        [void]$stderr.GetAwaiter().GetResult()
+        if ($process.ExitCode -ne 0) { throw 'PACKAGE_IMAGE_ARCHIVE_INVALID: cannot read Docker config bytes' }
+        if ($DigestOnly) { return @{ sha256 = $digest; bytes = $length } }
+        return ,$bytes.ToArray()
+    } finally {
+        $bytes.Dispose()
+        $process.Dispose()
+    }
+}
+
+function Assert-ReleaseArchiveImageIdentity {
+    param([string]$ArchivePath, [array]$ArchivePaths, [object]$ArchiveImage, [object]$Identity)
+    $name = [string]$Identity.name
+    $configPath = [string]$ArchiveImage.Config
+    foreach ($entry in (@($configPath) + @($ArchiveImage.Layers))) {
+        if (@($ArchivePaths | Where-Object { $_ -ceq $entry }).Count -ne 1) {
+            throw "PACKAGE_IMAGE_PAYLOAD_MISSING: $name/$entry missing or duplicated"
+        }
+    }
+    $configBytes = Get-ReleaseTarConfigBytes -ArchivePath $ArchivePath -EntryPath $configPath
+    $configDigest = Get-ReleaseBytesSha256Hex -Bytes $configBytes
+    $configName = [IO.Path]::GetFileName($configPath) -replace '\.json$', ''
+    if ($configName -cne $configDigest) {
+        throw "PACKAGE_IMAGE_IDENTITY_MISMATCH: $name Docker config content"
+    }
+    $utf8 = [Text.UTF8Encoding]::new($false, $true)
+    $config = $utf8.GetString($configBytes) | ConvertFrom-Json
+    if ([string]::IsNullOrWhiteSpace([string]$config.os) -or [string]::IsNullOrWhiteSpace([string]$config.architecture) -or
+        $null -eq $config.rootfs -or $config.rootfs.type -cne 'layers' -or $null -eq $config.rootfs.diff_ids) {
+        throw "PACKAGE_IMAGE_IDENTITY_MISMATCH: $name platform/rootfs metadata"
+    }
+    foreach ($diffId in @($config.rootfs.diff_ids)) {
+        if ($diffId -cnotmatch '^sha256:[0-9a-f]{64}$') { throw "PACKAGE_IMAGE_IDENTITY_MISMATCH: $name rootfs digest" }
+    }
+    $verified = [pscustomobject][ordered]@{
+        name = $name
+        reference = [string]$Identity.reference
+        buildImageId = [string]$Identity.id
+        descriptorDigest = $null
+        configDigest = "sha256:$configDigest"
+        platform = [pscustomobject]@{ os = [string]$config.os; architecture = [string]$config.architecture }
+        rootfsDiffIds = @($config.rootfs.diff_ids)
+    }
+    # Classic Docker stores image identity as the config digest. Containerd's
+    # content store uses an OCI/Docker manifest descriptor identity instead.
+    if ($Identity.id -ceq "sha256:$configDigest") { return $verified }
+    foreach ($entry in @('oci-layout', 'index.json')) {
+        if (@($ArchivePaths | Where-Object { $_ -ceq $entry }).Count -ne 1) {
+            throw "PACKAGE_IMAGE_IDENTITY_MISMATCH: $name requires an OCI descriptor"
+        }
+    }
+    $utf8 = [Text.UTF8Encoding]::new($false, $true)
+    $layout = $utf8.GetString((Get-ReleaseTarConfigBytes -ArchivePath $ArchivePath -EntryPath 'oci-layout')) | ConvertFrom-Json
+    $index = $utf8.GetString((Get-ReleaseTarConfigBytes -ArchivePath $ArchivePath -EntryPath 'index.json')) | ConvertFrom-Json
+    if ($layout.imageLayoutVersion -cne '1.0.0' -or $index.schemaVersion -ne 2) {
+        throw "PACKAGE_IMAGE_ARCHIVE_INVALID: $name unsupported OCI layout/index"
+    }
+    $descriptors = @($index.manifests | Where-Object {
+        $_.digest -ceq $Identity.id -and $_.annotations.'io.containerd.image.name' -ceq $Identity.reference
+    })
+    if ($descriptors.Count -ne 1) { throw "PACKAGE_IMAGE_IDENTITY_MISMATCH: $name OCI reference binding" }
+    $descriptor = $descriptors[0]
+    $manifestTypes = @('application/vnd.oci.image.manifest.v1+json', 'application/vnd.docker.distribution.manifest.v2+json')
+    if ($descriptor.mediaType -cnotin $manifestTypes -or $descriptor.digest -cnotmatch '^sha256:[0-9a-f]{64}$') {
+        throw "PACKAGE_IMAGE_ARCHIVE_INVALID: $name unsupported OCI image descriptor"
+    }
+    $manifestPath = 'blobs/sha256/' + $descriptor.digest.Substring(7)
+    if (@($ArchivePaths | Where-Object { $_ -ceq $manifestPath }).Count -ne 1) {
+        throw "PACKAGE_IMAGE_PAYLOAD_MISSING: $name manifest blob"
+    }
+    $manifestBytes = Get-ReleaseTarConfigBytes -ArchivePath $ArchivePath -EntryPath $manifestPath
+    if ($descriptor.size -isnot [ValueType] -or $descriptor.size -ne $manifestBytes.Length -or
+        ('sha256:' + (Get-ReleaseBytesSha256Hex -Bytes $manifestBytes)) -cne $descriptor.digest) {
+        throw "PACKAGE_IMAGE_IDENTITY_MISMATCH: $name OCI manifest bytes"
+    }
+    $manifest = $utf8.GetString($manifestBytes) | ConvertFrom-Json
+    if ($manifest.schemaVersion -ne 2 -or $manifest.mediaType -cne $descriptor.mediaType -or
+        $manifest.config.digest -cne "sha256:$configDigest" -or
+        $manifest.config.size -isnot [ValueType] -or $manifest.config.size -ne $configBytes.Length -or
+        $configPath -cne "blobs/sha256/$configDigest") {
+        throw "PACKAGE_IMAGE_IDENTITY_MISMATCH: $name OCI config binding"
+    }
+    if (@($manifest.layers).Count -ne @($ArchiveImage.Layers).Count) {
+        throw "PACKAGE_IMAGE_IDENTITY_MISMATCH: $name OCI layer count"
+    }
+    for ($i = 0; $i -lt @($manifest.layers).Count; $i++) {
+        $layer = @($manifest.layers)[$i]
+        if ($layer.digest -cnotmatch '^sha256:[0-9a-f]{64}$' -or $layer.size -isnot [ValueType] -or $layer.size -le 0) {
+            throw "PACKAGE_IMAGE_ARCHIVE_INVALID: $name OCI layer descriptor"
+        }
+        $layerPath = 'blobs/sha256/' + $layer.digest.Substring(7)
+        if (@($ArchiveImage.Layers)[$i] -cne $layerPath) {
+            throw "PACKAGE_IMAGE_IDENTITY_MISMATCH: $name OCI ordered layer binding"
+        }
+        $fact = Get-ReleaseTarConfigBytes -ArchivePath $ArchivePath -EntryPath $layerPath -DigestOnly
+        if ($fact.bytes -ne $layer.size -or ('sha256:' + $fact.sha256) -cne $layer.digest) {
+            throw "PACKAGE_IMAGE_IDENTITY_MISMATCH: $name OCI layer bytes"
+        }
+    }
+    $verified.descriptorDigest = [string]$descriptor.digest
+    return $verified
+}
+
+function Assert-ReleaseInstallationContract {
+    param([string]$PackagePath, [object]$Manifest, [array]$Artifacts)
+    foreach ($field in @('installationContractVersion', 'component', 'components', 'onlyOfficeIncluded', 'runtimeImages', 'targetRequirements')) {
+        if ($Manifest.PSObject.Properties.Name -cnotcontains $field) {
+            throw "PACKAGE_INSTALLATION_CONTRACT_INVALID: missing $field; rebuild the complete package"
+        }
+    }
+    if ($Manifest.installationContractVersion -cne 'full-app-release/v1') {
+        throw 'PACKAGE_INSTALLATION_CONTRACT_INVALID: unsupported installation contract; rebuild the complete package'
+    }
+    if ($Manifest.component -cnotin @('intruoyi', 'full')) {
+        throw "PACKAGE_COMPONENT_INVALID: $($Manifest.component); backend and frontend must be delivered together"
+    }
+    if ($Manifest.onlyOfficeIncluded -isnot [bool]) {
+        throw 'PACKAGE_INSTALLATION_CONTRACT_INVALID: onlyOfficeIncluded must be a boolean'
+    }
+    $expectedComponents = @('backend', 'admin-frontend', 'database-contract', 'required-sql', 'runtime-env', 'packaging-manifest')
+    if ($Manifest.component -eq 'full') { $expectedComponents += 'website' }
+    if ($Manifest.onlyOfficeIncluded) { $expectedComponents += 'onlyoffice' }
+    if ((@($Manifest.components | Sort-Object) -join ',') -cne (@($expectedComponents | Sort-Object) -join ',')) {
+        throw 'PACKAGE_COMPONENT_SET_MISMATCH: manifest component set differs from the complete profile'
+    }
+    if ($null -eq $Manifest.targetRequirements -or $null -eq $Manifest.targetRequirements.PSObject.Properties['platformPrerequisites']) {
+        throw 'PACKAGE_INSTALLATION_CONTRACT_INVALID: missing platformPrerequisites; rebuild the complete package'
+    }
+    $expectedPrerequisites = @(Get-ReleasePlatformPrerequisites -Component $Manifest.component)
+    $prerequisites = @($Manifest.targetRequirements.platformPrerequisites)
+    if ($prerequisites.Count -ne $expectedPrerequisites.Count) {
+        throw 'PACKAGE_INSTALLATION_CONTRACT_INVALID: platformPrerequisites set mismatch'
+    }
+    foreach ($expected in $expectedPrerequisites) {
+        $matches = @($prerequisites | Where-Object { $_.toolId -ceq $expected.toolId })
+        if ($matches.Count -ne 1 -or $matches[0].pathEnv -cne $expected.pathEnv -or $matches[0].sha256Env -cne $expected.sha256Env) {
+            throw "PACKAGE_INSTALLATION_CONTRACT_INVALID: platformPrerequisites mismatch for $($expected.toolId)"
+        }
+    }
+    $requiredPaths = @(
+        'docker-compose.yml', "intruoyi-images_$($Manifest.packageId).tar", 'manifest/docker-build-evidence.json',
+        'ops-runtime/linux/backup-ops-linux.sh', 'ops-runtime/scripts/backup-ops.ps1', 'smoke/bin/npm',
+        'smoke/yudao-ui-admin-vue3/package.json', 'smoke/yudao-ui-admin-vue3/package-lock.json',
+        'smoke/yudao-ui-admin-vue3/dependencies.tar',
+        'smoke/yudao-ui-admin-vue3/tests/e2e/smart-scheduling-smoke-real-flow.e2e.js',
+        'smoke/yudao-ui-admin-vue3/tests/e2e/smart-scheduling-smoke-real-flow-static.spec.js'
+    )
+    if ($Manifest.component -eq 'full') { $requiredPaths += @('website/nginx.template.conf', 'website/dist/index.html') }
+    $paths = @($Artifacts | ForEach-Object { [string]$_.path })
+    foreach ($path in $requiredPaths) {
+        if ($paths -cnotcontains $path) { throw "PACKAGE_REQUIRED_ARTIFACT_MISSING: $path; rebuild the complete package" }
+        if ([int64](@($Artifacts | Where-Object { $_.path -ceq $path })[0].bytes) -le 0) {
+            throw "PACKAGE_REQUIRED_ARTIFACT_EMPTY: $path; rebuild the complete package"
+        }
+    }
+    foreach ($prefix in @('required-sql/', 'ops-runtime/actions/')) {
+        if (@($paths | Where-Object { $_.StartsWith($prefix, [StringComparison]::Ordinal) }).Count -eq 0) {
+            throw "PACKAGE_REQUIRED_ARTIFACT_MISSING: $prefix"
+        }
+    }
+    if ($paths -ccontains 'website/nginx.conf') { throw 'PACKAGE_CONTENT_FORBIDDEN: website/nginx.conf is target configuration' }
+    if (-not (Get-Command tar -ErrorAction SilentlyContinue)) { throw 'PACKAGE_VALIDATION_PREREQUISITE_MISSING: tar' }
+    $archivePath = Join-Path $PackagePath "intruoyi-images_$($Manifest.packageId).tar"
+    $archivePaths = @(& tar -tf $archivePath 2>&1)
+    if ($LASTEXITCODE -ne 0) { throw 'PACKAGE_IMAGE_ARCHIVE_INVALID: unable to list Docker image archive' }
+    $archiveManifestText = (& tar -xOf $archivePath 'manifest.json' 2>&1) -join "`n"
+    if ($LASTEXITCODE -ne 0) { throw 'PACKAGE_IMAGE_ARCHIVE_INVALID: missing Docker manifest.json' }
+    try {
+        $parsedArchiveImages = $archiveManifestText | ConvertFrom-Json
+        $archiveImages = @($parsedArchiveImages)
+    }
+    catch { throw "PACKAGE_IMAGE_ARCHIVE_INVALID: $($_.Exception.Message)" }
+    $references = Get-ReleaseManagedImageReferences -Component $Manifest.component -PackageId $Manifest.packageId -OnlyOfficeIncluded $Manifest.onlyOfficeIncluded
+    if (@($Manifest.runtimeImages).Count -ne $references.Count) { throw 'PACKAGE_IMAGE_SET_MISMATCH: runtimeImages count' }
+    $verifiedImageContent = @()
+    foreach ($name in $references.Keys) {
+        $reference = [string]$references[$name]
+        $identities = @($Manifest.runtimeImages | Where-Object { $_.name -ceq $name })
+        if ($identities.Count -ne 1 -or $identities[0].reference -cne $reference -or
+            $identities[0].id -cnotmatch '^sha256:[0-9a-f]{64}$' -or $identities[0].sizeBytes -le 0) {
+            throw "PACKAGE_IMAGE_IDENTITY_INVALID: $name"
+        }
+        $matches = @($archiveImages | Where-Object { @($_.RepoTags) -ccontains $reference })
+        if ($matches.Count -ne 1) { throw "PACKAGE_IMAGE_MISSING: $reference" }
+        $verifiedImageContent += Assert-ReleaseArchiveImageIdentity -ArchivePath $archivePath -ArchivePaths $archivePaths -ArchiveImage $matches[0] -Identity $identities[0]
+    }
+    foreach ($entry in $archiveImages) {
+        foreach ($reference in @($entry.RepoTags)) {
+            if (@($references.Values) -cnotcontains $reference) { throw "PACKAGE_IMAGE_UNDECLARED: $reference" }
+        }
+    }
+    $buildEvidence = [IO.File]::ReadAllText((Join-Path $PackagePath 'manifest/docker-build-evidence.json'), [Text.UTF8Encoding]::new($false)) | ConvertFrom-Json
+    if ($buildEvidence.schemaVersion -cne 'release-docker-build-evidence/v1') { throw 'PACKAGE_BUILD_EVIDENCE_INVALID: schemaVersion' }
+    foreach ($name in @('backend', 'frontend')) {
+        $entries = @($buildEvidence.components | Where-Object { $_.name -ceq $name })
+        $identity = @($Manifest.runtimeImages | Where-Object { $_.name -ceq $name })[0]
+        if ($entries.Count -ne 1 -or $entries[0].actualImage.id -cne $identity.id -or $entries[0].actualImage.reference -cne $identity.reference) {
+            throw "PACKAGE_BUILD_EVIDENCE_INVALID: $name"
+        }
+    }
+    $dependencyArchive = Join-Path $PackagePath 'smoke/yudao-ui-admin-vue3/dependencies.tar'
+    $dependencyPaths = @(& tar -tf $dependencyArchive 2>&1)
+    if ($LASTEXITCODE -ne 0) { throw 'PACKAGE_SMOKE_DEPENDENCIES_INVALID: archive unreadable' }
+    foreach ($entry in @('node_modules/playwright/package.json', 'node_modules/xlsx/package.json')) {
+        if ($dependencyPaths -cnotcontains $entry) { throw "PACKAGE_SMOKE_DEPENDENCIES_INVALID: missing $entry" }
+    }
+    return $verifiedImageContent
+}
+
+function Assert-ReleaseTargetPreflightArtifacts {
+    param([object]$Manifest, [array]$Artifacts)
+    if ($null -eq $Manifest.PSObject.Properties['requiredSql']) { return }
+    foreach ($migration in @($Manifest.requiredSql)) {
+        $hasReference = $null -ne $migration.PSObject.Properties['targetPreflight'] -and $null -ne $migration.targetPreflight
+        $required = $null -ne $migration.PSObject.Properties['requiresTargetPreflight'] -and $migration.requiresTargetPreflight -eq $true
+        if (-not $hasReference -and -not $required) { continue }
+        $id = [string]$migration.migrationId
+        if (-not $hasReference) { throw "PACKAGE_TARGET_PREFLIGHT_INVALID: $id requires a packaged check" }
+        $check = $migration.targetPreflight
+        foreach ($field in @('reference', 'sha256', 'readOnly')) {
+            if ($null -eq $check.PSObject.Properties[$field]) { throw "PACKAGE_TARGET_PREFLIGHT_INVALID: $id missing $field" }
+        }
+        $digest = ([string]$check.sha256) -creplace '^sha256:', ''
+        if ($check.reference -cne "target-preflight/$id.preflight.sql" -or $check.readOnly -isnot [bool] -or
+            -not $check.readOnly -or $digest -cnotmatch '^[0-9a-f]{64}$') {
+            throw "PACKAGE_TARGET_PREFLIGHT_INVALID: $id reference/hash/readOnly contract"
+        }
+        $files = @($Artifacts | Where-Object { $_.path -ceq $check.reference })
+        if ($files.Count -ne 1 -or $files[0].sha256 -cne $digest -or $files[0].bytes -le 0) {
+            throw "PACKAGE_TARGET_PREFLIGHT_INVALID: $id missing or mismatched $($check.reference)"
+        }
+        if ($null -eq $Manifest.PSObject.Properties['database'] -or $null -eq $Manifest.database.PSObject.Properties['schemaMigrations'] -or
+            $null -eq $Manifest.PSObject.Properties['migrationPlan']) {
+            throw "PACKAGE_TARGET_PREFLIGHT_INVALID: $id requires all three migration projections"
+        }
+        foreach ($projection in @(@{ entries = @($Manifest.database.schemaMigrations) }, @{ entries = @($Manifest.migrationPlan) })) {
+            $matches = @($projection.entries | Where-Object { $_.migrationId -ceq $id })
+            if ($matches.Count -ne 1 -or $null -eq $matches[0].PSObject.Properties['targetPreflight'] -or $null -eq $matches[0].targetPreflight) {
+                throw "PACKAGE_TARGET_PREFLIGHT_INVALID: $id projection missing check"
+            }
+            $other = $matches[0].targetPreflight
+            if ($other.reference -cne $check.reference -or (([string]$other.sha256) -creplace '^sha256:', '') -cne $digest -or
+                $other.readOnly -isnot [bool] -or $other.readOnly -ne $true) {
+                throw "PACKAGE_TARGET_PREFLIGHT_INVALID: $id projection contract mismatch"
+            }
+        }
+    }
+}
+
 function Test-ReleasePackageIntegrity {
     [CmdletBinding()]
     param(
@@ -222,6 +538,7 @@ function Test-ReleasePackageIntegrity {
             $relativePath.StartsWith('minio/', [System.StringComparison]::OrdinalIgnoreCase) -or
             $relativePath -ieq 'manifest/dcc-object-inventory.json' -or
             $relativePath.StartsWith('runtime/', [System.StringComparison]::OrdinalIgnoreCase) -or
+            ($relativePath.StartsWith('runtime-env/', [System.StringComparison]::OrdinalIgnoreCase) -and $leaf.EndsWith('.env', [System.StringComparison]::OrdinalIgnoreCase)) -or
             $leaf -ieq '.env' -or $leaf.StartsWith('.env.', [System.StringComparison]::OrdinalIgnoreCase) -or
             $leaf.EndsWith('.rdb', [System.StringComparison]::OrdinalIgnoreCase) -or
             $leaf.EndsWith('.dump', [System.StringComparison]::OrdinalIgnoreCase)) {
@@ -413,6 +730,8 @@ function Test-ReleasePackageIntegrity {
         throw "manifest.json: packageDigest mismatch: $($manifest.packageDigest) != $packageDigest"
     }
     $manifestDigest = Get-ReleaseBytesSha256Hex -Bytes $manifestBytes
+    $verifiedImageContent = @(Assert-ReleaseInstallationContract -PackagePath $root -Manifest $manifest -Artifacts $digest.Artifacts)
+    Assert-ReleaseTargetPreflightArtifacts -Manifest $manifest -Artifacts $digest.Artifacts
 
     return [pscustomobject][ordered]@{
         releaseTag = $releaseTag
@@ -423,6 +742,12 @@ function Test-ReleasePackageIntegrity {
         sourceRoots = @($manifest.sourceRoots)
         sourceRoles = @($manifest.sourceRoles)
         artifacts = @($digest.Artifacts)
+        component = [string]$manifest.component
+        components = @($manifest.components)
+        onlyOfficeIncluded = [bool]$manifest.onlyOfficeIncluded
+        runtimeImages = @($manifest.runtimeImages)
+        verifiedImageContent = $verifiedImageContent
+        platformPrerequisites = @($manifest.targetRequirements.platformPrerequisites)
     }
 }
 
@@ -703,6 +1028,8 @@ function Test-ReleasePromotionAttestation {
 }
 
 Export-ModuleMember -Function @(
+    'Get-ReleasePlatformPrerequisites',
+    'Get-ReleaseManagedImageReferences',
     'Assert-ReleaseWorkflowPackageBinding',
     'Assert-ReleasePackageDeploymentScope',
     'Assert-PublishTestOperationEvidence',

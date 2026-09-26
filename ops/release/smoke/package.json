@@ -1,0 +1,13 @@
+{
+  "name": "intruoyi-scheduler-smoke-runner",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "e2e:mes:smart-scheduling-smoke:check": "node tests/e2e/smart-scheduling-smoke-real-flow-static.spec.js",
+    "e2e:mes:smart-scheduling-smoke": "node tests/e2e/smart-scheduling-smoke-real-flow.e2e.js"
+  },
+  "devDependencies": {
+    "playwright": "1.60.0",
+    "xlsx": "0.18.5"
+  }
+}
