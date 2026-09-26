@@ -11,6 +11,30 @@
 
 ## 适用范围
 
+### Python JUnit 收尾与 Windows WMI
+
+- Trigger: pytest 显示 100% 但进程不退出、JUnit 文件为 0 字节，或 PowerShell/CIM 同时无响应。
+- Preflight check: 区分测试主体和报告收尾；核实际安装的 pytest/Python 调用链，使用有超时的独立 `platform.node()` 探针，读取 `sc.exe queryex winmgmt` 与 `sc.exe enumdepend winmgmt`。并核宿主可用物理内存和 commit 余量；PowerShell 800705af、Go heap OOM 属于资源失败，不能当业务 RED。
+- Blocker: 查询超时、报告未落盘、缺真实退出码或宿主资源不足时，不放行完整回归。系统服务恢复需要管理员权限，Codex 完全访问不等于 Windows 管理员。
+- Verification: 恢复后重新验证查询实际返回、服务状态/PID、原进程终态和有效 JUnit；服务重启命令报错不等于服务最终仍不可用。保留旧失败报告，资源恢复后串行重跑受影响重型套件。
+- Forbidden action: 禁止伪造 hostname、修改 stdlib、跳过 JUnit、把进度条当 PASS，或未经归属核验批量终止 Python/WMI/Docker 进程。不得因宿主 OOM 放宽产品合同。
+- Evidence: `doc/tasks/20260925-full-package-release-refactor/execution-log.md` 与 `task.md` 的 WMI 阻塞/恢复记录；报告收尾曾经由 platform.node 调用 WMI，用户服务操作后以查询成功和报告落盘确认恢复。
+
+阶段必查项：先保留原会话/报告并查调用链，再进行有界查询，最后核服务恢复与报告退出码。推荐探针：`python -X utf8 -c "import subprocess,sys; subprocess.run([sys.executable, '-c', 'import platform; assert platform.node()'], timeout=15, check=True)"`。Fail Fast：探针超时或依旧缺有效报告即停止放行，不重复堆叠测试进程。必须记录查询耗时、服务 PID、进程归属、JUnit 大小/计数及资源错误摘要，禁止输出完整 EncodedCommand、凭据或租约原文。
+
+### AST 测试载体与生产入口前提一致性
+
+- Trigger: 测试通过 AST 抽取发布函数或在 SSH/SQL 运输边界注入故障，出现 stdin BOM、中文字节漂移、ConvertFrom-Json 数组嵌套、故障命中错误阶段或尚未到达目标行为的失败。
+- Preflight check: 对照真实入口的 Console.InputEncoding、Console.OutputEncoding、OutputEncoding、StrictMode 及必要脚本变量；在同一 PowerShell 版本复用这些前提。JSON 数组先解析到变量再用 @($parsed) 枚举，并核元素数量/类型；比较输入输出原始 UTF-8 字节的 SHA256。
+- Blocker: 测试遗漏生产初始化、首个失败发生在载体绑定、数组形状或脚本变量准备时，不能记为产品 RED，不能据此修改生产编码/命令函数。
+- Verification: 相同真实入口初始化下重跑字节与行为断言；记录产品 RED、载体错误和新增覆盖观察的区别。最终运行受影响的完整合同套件并保留 JUnit 与源码 SHA。
+- Forbidden action: 禁止省略入口初始化后把测试错误归因于生产，禁止增加吞异常/自动补默认值使载体转绿，禁止未达到目标动作却宣称行为已验证。
+- Evidence: doc/tasks/20260925-full-package-release-refactor/execution-log.md；stdin BOM 归因已通过真实入口 bootstrap 复核更正，TC07 数组载体失败单独记录。
+
+故障注入补充门禁：执行前核对实际生成命令的语义位置，不能只凭 SQL 包含 `FAILED` 判断正在写 FAILED 台账；正常 RUNNING/APPLIED 的 CASE 列表也可能包含该词。先证明前置真实动作已发生，再证明注入只命中指定更新值/调用次数。缺少这两项证据时标为载体错误，撤回原产品 RED 解释；禁止根据过宽匹配改生产逻辑。验证使用 `python -X utf8 -m pytest -q scripts/tests/test_release_durable_deployment_evidence.py -k f04 --junitxml <任务缓存>/fault-carrier.xml`，运行前须核本任务独占引擎，替换缓存路径，并记录首条 DDL/业务行、第二条原始错误、失败台账错误及实际命中阶段，日志不得含凭据。
+
+阶段必查项：先核入口前提，再核载体数据形状，然后运行目标行为。推荐命令：在任务隔离 worktree、测试配置已就绪的前提下运行 `python -X utf8 -m pytest -q scripts/tests/test_release_readonly_deploy_gate.py -k process_stdin --junitxml <任务缓存>/stdin-junit.xml`，缓存路径须替换为本任务实际路径。Fail Fast：缺少入口初始化、测试配置或正确数组形状时停止解释产品结论。必须记录 PowerShell 版本、原始字节 hash、实际用例数、被测源码 hash 和首个失败阶段。
+
 当任务涉及 Windows PowerShell 5.1 命令执行、脚本排查、中文文件读取、中文日志输出或多条命令串联时，先读本文。
 
 PowerShell 共同基础规则以 `E:\IntRuoyi\docs\powershell-memory.md` 为唯一权威来源；本文只沉淀维护仓、运行控制台和构建发布专项增量。若文字重复，以共同规则为准；维护仓更严格的专项门禁继续叠加执行。具体业务发布、备份、恢复和 E2E 规则仍以对应业务文档为准。

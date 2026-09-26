@@ -1,5 +1,12 @@
 # 项目经验索引
 
+- full-app-release/v1 / 同包逐目标计划 / .release-state / READY gate / attemptId / RECOVERY_REQUIRED / classic overlay2 / 1GiB最低余量：`docs/release-agent-checklist.md#完整包逐目标计划与持久恢复门禁`。
+- C7 / 可重建测试引擎 / RuntimeConfigPath / containerId / mysqlFlockDirectory / 官方归档身份 / 24模块：`docs/test-release-preflight.md#完整包本机回归与可重建资源门禁`。
+
+- pytest 100% 不退出 / JUnit 0字节 / platform.node / Winmgmt / WMI / 800705af / Go heap OOM：`docs/powershell-preflight-lessons.md#python-junit-收尾与-windows-wmi`。
+
+- AST 抽取发布函数 / stdin BOM / bootstrap 缺失 / ConvertFrom-Json 嵌套数组 / 载体错误冒充 RED / 故障注入过宽 / FAILED SQL CASE 误匹配：`docs/powershell-preflight-lessons.md#ast-测试载体与生产入口前提一致性`。
+
 - 发布日志编码 / RELEASE_WORKFLOW_STAGE_LOG_INVALID / MalformedInputException / CP936 / LOG_DECODING：`docs/release-build-preflight-lessons.md#Windows-发布日志-UTF-8-合同`。
 - 产品按钮执行器 SHA / Git 换行造成脚本指纹差异 / expected-publish-script-sha256 / 同包双摘要 / 目标 preview 漂移：`docs/release-build-preflight-lessons.md#2026-09-21-产品按钮执行器与包摘要绑定门禁`。
 - 发布权限菜单固定 ID 冲突 / NOT EXISTS(id) 静默跳过 / 父菜单身份 / target-preflight：`docs/release-build-preflight-lessons.md#2026-09-21-权限菜单身份冲突与只读目标预检门禁`。

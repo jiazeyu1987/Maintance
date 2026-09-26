@@ -3828,3 +3828,49 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 2026-09-19T11:25:00+08:00	20260919-prod-promotion-button-implementation	RESULT	GREEN: 应用仓提交 `88614c25c` 已推送到 `origin/codex/prod-promotion-button-implementation`；维护仓提交 `75eea84` 已本地完成但仓库无 remote，未推送。应用仓 commit/push 仅因临时 worktree 无端口登记对本地运行态 hook 使用 `--no-verify`，未跳过任何静态验证。
 2026-09-19T11:35:00+08:00	20260919-prod-promotion-button-implementation	BLOCKER	task-closeout-cleanup preview 阻断：维护仓当前 linked worktree 需要 ff-only 合回 `D:\ProjectPackage\Int\IntRuoyiMaintance`，但主工作区存在大量未归属 dirty/untracked/deleted 状态；本任务未清理或覆盖这些改动，临时 worktree closeout/delete 暂停。
 2026-09-19T11:50:00+08:00	20260919-prod-promotion-button-implementation	CLOSEOUT	PASS: 按用户“先提交主干”要求，`int_main` 保存既有主干改动为 `9d7a620` 与 `4242511`；临时产物未提交，仅本地 exclude；维护任务分支 rebase 后 task-closeout apply 成功，删除本任务临时 migration-policy-gate.json，ff-only 合回主工作区并移除维护 linked worktree。未执行 E2E、服务器写入、数据库写入、发布、重启或正式服探测。
+
+## 2026-09-25 完整程序包发布改造实施
+- 用户授权：帮我进行修改；采用现有基础结构化改造，完整程序包、保留业务数据、同包按目标状态升级、实际版本与失败状态一致。
+- 执行意图：创建独立维护worktree；规划/分解/执行/独立测试分工；先复用已验证P1锁与迁移依赖，再严格BDD/TDD实施完整包、前置计划、实际身份和持久恢复门禁。
+- 当前准备：主线3f3aabd；独立分支codex/full-package-release-refactor；任务隔离MySQL8.0.39容器已就绪，禁止使用共享业务库。未调用服务器发布或改变远端状态。
+- 证据：doc/tasks/20260925-full-package-release-refactor/；凭据只在本地ignored运行配置，日志不记录秘密值。
+- 阶段验证：T1独立273项及生产锁29项通过；T3独立167项通过；T6J独立Maven122项通过并提交应用隔离分支af5acd8266。T2完整包合同冻结后交独立验收；所有命令均在任务隔离目录和任务自有MySQL执行。
+- 用户反馈代理恢复后，原官方Playwright 1.60.0镜像引用重试仍registry HEAD EOF；未替换镜像/版本/依赖源、未关闭TLS。T2P真实Linux验证保持阻塞，独立代码改造继续。
+
+## 2026-09-26 完整包发布任务接管
+- 用户需求：接管 01a0d754-73b2-72a3-a08e-ad8b83ab16db 后续开发，授权计划更名，并继续。
+- 命令意图：只读核对原任务停止状态、任务 worktree、执行日志和镜像回执；更新当前任务接管与机器状态。
+- 结果：原任务 idle/interrupted；保留已验收 T1/T2/T3/T6J，继续 T4；T2P 取得依赖不等于真实载荷验收。未操作远端，未输出凭据。
+
+- 后续验证：Docker inspect/CIM 沙箱权限拒绝；同一只读检查正式申请 require_escalated 时自动审批服务 503，未执行。任务标记 blocked，未提交或清理，待审批服务恢复。
+
+## 2026-09-26 继续至三环境可发布
+- 用户需求：完成开发直到测试、正式、审核服务器可发布；用户确认审核服务器即原备份服务器。
+- 核查：当前 server-access.md 映射 test/prod/backup 为 .58/.57/.59；按正式文档保留 backup 技术接口。只读梳理 T4 容量根因和剩余发布门禁，生成任务 verification-report。
+- 执行结果：Docker 只读命令正式权限申请仍被审批服务 503 阻断，未执行；不绕过、不宣称就绪。
+
+- 审批恢复：用户指定 gpt-6-astra；正式审批成功后仅更新个人 review_model 并校验，原 Docker/CIM 检查再次正式获批且 exit 0。任务隔离资源正常，恢复 T4 开发。没有修改凭据、安全策略或服务器。
+
+- 继续执行结果：T2P独立2/2+身份10/10PASS，T4执行者C4206/206PASS；新建任务Docker26 classic隔离引擎证明同归档跨存储身份。最终C2两次审批超时、新TC07载体修正503未执行，均不算产品验证成功。任务blocked，保留现场。
+
+- 用户将当前任务改为完全访问并要求继续；移除已失效的审批 blocker，恢复T4测试载体修正/最终C2/独立验收。遵守宿主要求不传sandbox_permissions，未扩大服务器写入范围。
+
+## 2026-09-26 续接T6真实故障恢复验证
+- 用户要求：继续刚才的任务，保留测试/正式/备份三环境可发布目标。
+- 执行意图：读取当前任务状态和发布模块，继续任务隔离MySQL/classic Docker故障矩阵，补持久CAS、锁文件存在性和回执绑定负例。
+- 结果：T6矩阵尚未完成，已复现缺陷交唯一执行者修复；不将片段通过视为最终验收，不操作服务器或输出凭据。
+
+- T6续接环境诊断：C2/C6显示100%但JUnit为0字节，独立platform.node探针与CIM查询停滞；Winmgmt为RUNNING、无依赖服务，当前非管理员。任务缓存I/O探针121ms成功，排除该路径基本读写故障。准备仅重启Winmgmt的管理员脚本并AST PASS，未重启系统服务；精确终止本任务诊断pip，保留pytest与所有业务资源。需管理员恢复WMI后继续，不把进度条作PASS。
+
+- 用户反馈Restart-Service Winmgmt停止失败；只读复核服务已RUNNING且PID更换、独立platform.node 0.25s PASS、旧报告已落盘，无需重复重启。原三组报告存在代码/载体/宿主OOM失败，已恢复唯一执行者按-x定向修复并串行重跑必需套件；未重启系统服务或修改内存设置。首个Python探针因shell引号SyntaxError未执行，已改UTF-8 here-string正确复测，不记产品失败。
+
+- 后续开发：T6执行侧C6 194/C4 230/C5 48/C2 165全部通过；独立测试者再完整C6 194/194及Node/PS/AST通过，源码哈希未变，T6正式放行。修复历史回执对象赋值、日志租约泄露，并补实际kill/同包只读复核/后续包保留历史证据。
+- T7准备与执行：按任务归属删除旧classic容器/专用卷及两个旧fixture根，重建新ID1243a95b18bfe7819c396d22f5502676680bd84cb1469360d38c16fe81835ddf；固定官方dind/Playwright归档内容未变，真实load与禁网Node探针通过。私有运行配置仅本机原子更新，凭据未打印/提交。新两模块45/45和C6-J122/122通过；TC12动态补证经独立只读审查关闭，最终24模块C7从头运行，未操作服务器、未提交或合并。
+
+- T7执行侧最终C7 845/845（24模块）、Node7/PS/AST/diff以及C6-J122/122通过；最终独立原runner在第227项遇15秒PowerShell超时后首错停止，226项通过。保留有效失败JUnit并有界诊断，未放宽门禁、未操作服务器。宿主CIM与内存只读检查当前正常，不能直接归因原WMI故障。
+
+- 用户指定gpt-5.6-luna extra high检查完整回归；已实际创建该模型/xhigh独立子代理负责最终验收，保留原唯一runner进程，避免并行重套件。
+
+- 用户纠正目标为建立可复用发布流程、无需关注持续变化的主程序主仓；已接受并停止main追踪/融合预审，将当前版本构建和三服实际发布移出本轮门禁。原完整流程回归与Luna独立验收继续，源码/阈值不变。
+
+- Luna/xhigh最终独立验收PASS：C7 845、Java122、Node7及PS/AST/diff通过。维护流程实现8f0d840（39路径）快进合入维护int_main，126个原dirty文件字节未变；融合后157合同测试通过。仅融合维护发布流程，不操作主程序main或服务器。

@@ -1,5 +1,27 @@
 # IntRuoyi Codex 发布执行检查清单
 
+## 完整包、逐目标计划与持久恢复门禁
+
+- Trigger: 构建或部署 `full-app-release/v1`，或处理部署中断、失败重试。
+- Preflight check: `intruoyi` 固定 backend/frontend；`full` 另含 Website；OnlyOffice 在构建时决定。核对唯一 manifest、全部制品、来源提交、包双摘要及 tested v2；目标端不能覆盖组件或用工作区模板补包。旧包缺少新合同必须重新构建。
+- Blocker: 历史 FAILED/RUNNING、未知状态、摘要漂移、缺控制 schema/工具/持久挂载、未解决 operation、锁内事实变化均拒绝；常规部署不自动准备平台、不补目录/表/存储过程、不重新派发可能写入的失败。
+- Verification: 先本地验包，再目标只读采集/目标数据检查/规划，再持久门禁和既有租约锁，锁内重采复核后才能执行 APPLY。SKIP 历史不重写。保存逐目标计划与期望/实际内容身份、配置、完整台账及健康结果；最终化、历史、回执和锁终态全部成功才完成。
+- Forbidden action: 禁止源库 dump 覆盖、MinIO 快照导入、重建平台数据服务、自动回滚或清理失败证据；过期 heartbeat 不是恢复授权。标签相同不能替代 imageId/configDigest、静态文件集合及 SHA 校验。
+- Evidence: 包外控制目录中的计划；目标 `$RemoteAppDir/.release-state/$Environment/` 的 `gate.json`、`gate.lock`、`operations/<attemptId>.json` 与回执；数据库原 operationId/lease fence。只保留 leaseTokenDigest，日志不保存凭据或租约明文。
+
+### 独立的平台准备（需要后续目标环境明确授权）
+
+1. 核对目标服务器、部署用户/组和正式 RemoteAppDir；持久状态根不能在每版临时目录，也不能在受保护 `/mnt/nas` 共享盘。确认父目录、所有权、0700 权限、备份/保留约定以及受支持控制 schema。
+2. 经授权后使用目标配置中的真实值执行 `install -d -m 0700 -o <部署用户> -g <部署组> -- <已核对的持久控制路径>/operations`；占位值禁止原样执行。由部署用户复核属主、可写性、非符号链接，并独立建立同属主可用的 `gate.lock`。
+3. 只有核实没有旧 operation/未决恢复事实后，才可在单独的受审准备动作中原子初始化 `gate.json`：schemaVersion=`release-deployment-gate/v1`、revision=0、state=`READY`、attemptId/operationDigest/receiptDigest=null；scope 必须采用真实 environment/host/machineId/database/serverUuid。不能覆盖已有 gate 或用新 READY 遮蔽历史故障。普通发布不会初始化这些文件。
+4. 当前容量/存储支持限定可核验路径的 Docker classic `overlay2`；containerd/未知驱动明确拒绝。数据库 1 GiB 是最低预留，不是任意 DDL 足够空间的承诺；按真实迁移增长另行提高并核对所有实际目的文件系统。
+
+### 中断与恢复
+
+先保全包双摘要、目标身份、gate/operation/receipt/历史及数据库锁/完整台账；核实已执行 SQL、配置和容器实际内容、未知观测及原始错误。执行过或可能执行过写入时保持 `RECOVERY_REQUIRED`，不得直接重试或按超时清锁。显式恢复入口 `ops/deploy/recover-release-operation-lock.ps1` 会消费同一持久门禁，仅满足其零运行写入、身份、旧租约与锁内复核条件时才可按后续批准流程执行；它不是自动回滚或数据恢复工具。人工修复、数据恢复或现场 bootstrap 必须另立授权任务。
+
+本任务的本机 MySQL/classic 集成只证明相应 SQL、文件、计划、身份与失败合同；不代表三台服务器旧基线可升级、真实 backend UP、产品 E2E 或远端发布完成。
+
 ## 触发条件
 
 当任务涉及以下任一事项时，Codex 必须先读本文，再决定是否进入真实发布动作：
@@ -19,6 +41,10 @@
 - 仅测试服发布还必须先读：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md`
 
 ## 执行模型
+
+- Windows 发布测试显示100%但JUnit未落盘时，先执行 `docs/powershell-preflight-lessons.md` 的“Python JUnit 收尾与 Windows WMI”检查；缺进程退出码/有效报告不得放行，宿主OOM恢复后重型套件串行运行。
+
+- 发布函数通过 AST 抽取测试时，先执行 `docs/powershell-preflight-lessons.md` 的“AST 测试载体与生产入口前提一致性”门禁，核对真实 UTF-8 初始化、JSON 数组形状及故障注入实际命中阶段；SQL 包含 FAILED 不等于正在更新 FAILED。载体失败不得充当产品 RED 或驱动未经验证的生产修改。
 
 Codex 必须把完整发布任务视为以下严格顺序：
 

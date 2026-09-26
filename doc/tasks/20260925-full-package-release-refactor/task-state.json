@@ -1,0 +1,334 @@
+{
+  "task_id": "20260925-full-package-release-refactor",
+  "goal": "建立可复用的完整包发布流程：逐目标预检升级、数据保留、内容身份核验与持久失败恢复门禁；不针对当前主仓版本发布",
+  "status": "ready_for_closeout",
+  "current_stage": "closeout",
+  "planner_review_status": "approved",
+  "plan_review_status": "approved",
+  "blocking_prereqs": [],
+  "closeout_limitations": [
+    "维护仓未配置origin；推送无法执行，未阻止本地实现。"
+  ],
+  "iteration_counts": {
+    "planner_revisions": 0,
+    "plan_revisions": 1,
+    "executor_loops": 1,
+    "test_loops": 1
+  },
+  "tasks": [
+    {
+      "task_id": "T1",
+      "title": "在本任务主线复现并选择性接入 P1",
+      "status": "completed",
+      "dependency_ids": [],
+      "write_scope": [
+        "ops/deploy/publish-int-ruoyi.ps1",
+        "ops/release/release_build_preflight.py",
+        "ops/release/release_migration_manifest.py",
+        "ops/release/release_migration_policy_gate.py",
+        "ops/release/release_migration_preflight.py",
+        "ops/release/release_preflight_plan.py",
+        "ops/release/release_schema_rehearsal.py",
+        "scripts/tests/test_release_build_preflight_cache.py",
+        "scripts/tests/test_release_migration_preflight_matrix.py",
+        "scripts/tests/test_release_migration_supersession_contract.py",
+        "scripts/tests/test_release_operation_lock_mysql_behavior.py",
+        "scripts/tests/test_release_package_governance.py",
+        "scripts/tests/test_release_preflight_r20_regressions.py",
+        "scripts/tests/test_release_schema_rehearsal.py",
+        "scripts/tests/test_release_sql_preflight_gate.py",
+        "scripts/tests/release_test_runtime.py"
+      ],
+      "acceptance_ids": [
+        "AC-03",
+        "AC-04",
+        "AC-06",
+        "AC-11",
+        "AC-12"
+      ],
+      "owner_agent": "release_dependency_executor",
+      "last_outcome": "独立C1 273PASS + 独立实际锁29PASS；5个新增生产release覆盖补齐，0失败/跳过、无残留任务schema。"
+    },
+    {
+      "task_id": "T2",
+      "title": "固定组件集合和全部安装输入",
+      "status": "completed",
+      "dependency_ids": [
+        "T1"
+      ],
+      "write_scope": [
+        "ops/deploy/publish-int-ruoyi.ps1",
+        "ops/release/lib/ReleasePackageGovernance.psm1",
+        "scripts/tests/test_release_full_package_contract.py",
+        "scripts/tests/test_release_package_governance.py",
+        "scripts/tests/test_app_release_package_governance.py",
+        "scripts/tests/test_runtime_control_frontend_deploy_contract.py",
+        "scripts/tests/publish_frontend_deploy_sql_gate_contract.test.mjs",
+        "ops/release/smoke/package.json",
+        "ops/release/smoke/package-lock.json"
+      ],
+      "acceptance_ids": [
+        "AC-01",
+        "AC-02",
+        "AC-12"
+      ],
+      "owner_agent": "release_dependency_executor",
+      "last_outcome": "真实准备器/OCI身份缺陷修复，独立C2最终163/163及T2P真实验证通过；原旧合同失败已关闭。"
+    },
+    {
+      "task_id": "T3",
+      "title": "相同包按各目标真实起点形成固定计划",
+      "status": "completed",
+      "dependency_ids": [
+        "T1"
+      ],
+      "write_scope": [
+        "ops/release/release_preflight_plan.py",
+        "ops/release/release_target_state_collector.py",
+        "ops/release/release_deploy_executor.py",
+        "scripts/tests/test_release_target_bound_plan.py",
+        "scripts/tests/test_release_preflight_plan_order.py",
+        "scripts/tests/test_release_migration_preflight_matrix.py",
+        "scripts/tests/test_release_preflight_r20_regressions.py"
+      ],
+      "acceptance_ids": [
+        "AC-03",
+        "AC-04",
+        "AC-05"
+      ],
+      "owner_agent": "release_decomposer",
+      "last_outcome": "独立C3 167PASS；原真实重复status文件经公开collector立即拒绝，F01关闭。T4仍待T2。",
+      "verification_revisions": 1
+    },
+    {
+      "task_id": "T4",
+      "title": "真实采集、平台前提和锁内复核",
+      "status": "completed",
+      "dependency_ids": [
+        "T2",
+        "T3"
+      ],
+      "write_scope": [
+        "ops/deploy/publish-int-ruoyi.ps1",
+        "scripts/tests/test_release_readonly_deploy_gate.py",
+        "scripts/tests/test_release_operation_lock_mysql_behavior.py",
+        "scripts/tests/test_release_workflow_preflight.py",
+        "scripts/tests/test_release_sql_preflight_gate.py",
+        "ops/release/lib/ReleasePackageGovernance.psm1",
+        "scripts/tests/test_release_full_package_contract.py",
+        "scripts/tests/test_publish_release_lock_cleanup.py",
+        "scripts/tests/test_release_package_governance.py"
+      ],
+      "acceptance_ids": [
+        "AC-04",
+        "AC-05",
+        "AC-06",
+        "AC-07",
+        "AC-12"
+      ],
+      "scope_note": "为实际目标只读数据预检补齐包内target-preflight声明/载荷/治理，变更后完整回归C2；所有应用compose up --no-deps --pull never。 已批准同步更新package_governance的旧Apply-ReleaseRuntimeEnvPackage消费断言及锁cleanup的旧自动升级断言，不保留空壳/自动升级迎合旧测试。",
+      "owner_agent": "t4_finish",
+      "last_outcome": "独立判定PASS；新C4 226/226、新C2 163/163，Node/PSdigest/diff-check通过，三个冻结hash一致，随机schema清零；独立tester已记正式报告。"
+    },
+    {
+      "task_id": "T5",
+      "title": "验收所有受管镜像与静态载荷",
+      "status": "completed",
+      "dependency_ids": [
+        "T4"
+      ],
+      "write_scope": [
+        "ops/deploy/publish-int-ruoyi.ps1",
+        "ops/release/release_docker_build_evidence.py",
+        "scripts/tests/test_release_runtime_identity.py",
+        "scripts/tests/publish_release_info_contract.test.mjs",
+        "scripts/tests/publish_image_tar_transfer_contract.test.mjs",
+        "ops/release/lib/ReleasePackageGovernance.psm1",
+        "scripts/tests/test_release_full_package_contract.py",
+        "scripts/tests/test_release_readonly_deploy_gate.py"
+      ],
+      "acceptance_ids": [
+        "AC-08",
+        "AC-09"
+      ],
+      "scope_note": "基于已实测 containerd/overlay2 身份差异，批准治理三个函数返回 verifiedImageContent 与必要合同测试；不改包，仍AC08/09，T4独立通过后才实施。；批准readonly测试两处镜像输入提供verifiedImageContent，保持TC07断言且全回归C4，不能缺失时fallback到build id。",
+      "owner_agent": "t4_finish",
+      "last_outcome": "独立正式PASS：新C548/C2165/C4230全部通过，4文件hash一致，实际任务资源清零，健康合同与现场运行明确区分。"
+    },
+    {
+      "task_id": "T6",
+      "title": "中断和部分写入保持可恢复的阻断状态",
+      "status": "completed",
+      "dependency_ids": [
+        "T5"
+      ],
+      "write_scope": [
+        "ops/deploy/publish-int-ruoyi.ps1",
+        "ops/deploy/recover-release-operation-lock.ps1",
+        "ops/release/lib/ReleaseDeploymentEvidence.psm1",
+        "scripts/tests/test_release_durable_deployment_evidence.py",
+        "scripts/tests/test_release_operation_lock_mysql_behavior.py",
+        "scripts/tests/test_publish_release_lock_cleanup.py",
+        "scripts/tests/test_release_deployment_transaction.py",
+        "scripts/tests/release_test_runtime.py",
+        "scripts/tests/test_release_readonly_deploy_gate.py",
+        "scripts/tests/test_release_sql_preflight_gate.py",
+        "scripts/tests/test_release_runtime_identity.py"
+      ],
+      "acceptance_ids": [
+        "AC-09",
+        "AC-10",
+        "AC-11",
+        "AC-12"
+      ],
+      "owner_agent": "t6_resume",
+      "last_outcome": "正式独立PASS：亲自C6 194/194、Node7/PS向量/3AST/diff通过，11源SHA不变；独立JUnit bbe782610add9ba59ac5ff98aa0836b7496c15b8f033eb341fdc93b9949171d0。可解锁T7，整体发布就绪仍未完成。",
+      "scope_note": "允许测试schema安全白名单支持连字符并shlex.quote；允许既有AST载体加入新持久入口正式依赖并保留断言。正式READY revision0+空operations为bootstrap，缺gate阻断；flock/tmp/mv等工具必须首写前检查，不用remotePython。；批准Website显式receipt期望输入的只读完成对账与C5回归，正常部署合同保持；同包完成事实不重放。"
+    },
+    {
+      "task_id": "T6J",
+      "title": "修正上层错误映射与底层恢复门禁的矛盾",
+      "status": "completed",
+      "dependency_ids": [],
+      "write_scope": [
+        "yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/controller/admin/runtimecontrol/vo/RuntimeControlOperationRespVO.java",
+        "yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/service/runtimecontrol/RuntimeControlServiceImpl.java",
+        "yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/service/runtimecontrol/releaseworkflow/ReleaseWorkflowOrchestrator.java",
+        "yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/service/runtimecontrol/releaseworkflow/ReleaseWorkflowService.java",
+        "yudao-module-infra/src/test/java/cn/iocoder/yudao/module/infra/service/runtimecontrol/RuntimeControlServiceImplTest.java",
+        "yudao-module-infra/src/test/java/cn/iocoder/yudao/module/infra/service/runtimecontrol/releaseworkflow/ReleaseWorkflowOrchestratorTest.java",
+        "yudao-module-infra/src/test/java/cn/iocoder/yudao/module/infra/service/runtimecontrol/releaseworkflow/ReleaseWorkflowRecoveryTest.java"
+      ],
+      "acceptance_ids": [
+        "AC-10",
+        "AC-11",
+        "AC-12"
+      ],
+      "owner_agent": "release_application_executor",
+      "last_outcome": "独立修复复验PASS：标准Maven122/122，真实损坏operation文件先隔离后抛错，原异常保留，7文件/4参数合同不变。",
+      "implementation_commit": "af5acd8266e4ca1eb71e1d0581ece77fa4743d48"
+    },
+    {
+      "task_id": "T7",
+      "title": "证明整体行为并写明现场验收边界",
+      "status": "completed",
+      "dependency_ids": [
+        "T2P",
+        "T6",
+        "T6J"
+      ],
+      "write_scope": [
+        "scripts/tests/test_release_full_package_mysql_integration.py",
+        "scripts/tests/test_release_full_package_workflow_integration.py",
+        "scripts/tests/release_test_runtime.py",
+        "scripts/tests/run-full-package-release-tests.ps1",
+        "docs/release-agent-checklist.md",
+        "docs/test-release-preflight.md",
+        "scripts/tests/test_release_runtime_identity.py",
+        "scripts/tests/test_release_durable_deployment_evidence.py"
+      ],
+      "acceptance_ids": [
+        "AC-01",
+        "AC-02",
+        "AC-03",
+        "AC-04",
+        "AC-05",
+        "AC-06",
+        "AC-07",
+        "AC-08",
+        "AC-09",
+        "AC-10",
+        "AC-11",
+        "AC-12"
+      ],
+      "scope_note": "主审通过T7测试复跑合同窄补充：既有RuntimeConfigPath/helper集中显式classic ID/卷/归档/flock工具配置，两个已验收测试仅改配置消费不弱化业务断言。T6独立完成后主管重建不同真实ID，新ID上全C7/C6-J及独立验收；官方内容摘要不放宽。",
+      "owner_agent": "t7_executor",
+      "last_outcome": "gpt-5.6-luna/xhigh最终独立PASS：C7轮次2 845/845、Node7/PS向量/AST/diff通过，114源/身份/资源稳定；亲跑C6-J122/122，AC01-12及TC01-14逐条通过并注明边界。",
+      "verification_owner_agent": "luna_full_regression",
+      "verification_model": "gpt-5.6-luna",
+      "verification_reasoning_effort": "xhigh",
+      "runner_operator_agent": "release_verifier"
+    },
+    {
+      "task_id": "T2P",
+      "title": "真实Linux smoke载荷验证",
+      "status": "completed",
+      "dependency_ids": [
+        "T2"
+      ],
+      "write_scope": [
+        "ops/release/smoke/package.json",
+        "ops/release/smoke/package-lock.json",
+        "scripts/tests/test_scheduler_smoke_linux_payload_integration.py"
+      ],
+      "acceptance_ids": [
+        "AC-02",
+        "AC-12"
+      ],
+      "last_outcome": "独立C2P2/2、归档身份10/10PASS；真实禁网依赖/Chromium/xlsx通过，PS/治理前后SHA一致；整体AC02仍待T4/T7。",
+      "owner_agent": "t2p_executor"
+    }
+  ],
+  "worktree": "D:/IntRuoyiWorktree/full-package-release-maintenance",
+  "branch": "codex/full-package-release-refactor",
+  "baseline": "3f3aabdc82ab5e85e2f872173a665a361f022725",
+  "remoteMutationAuthorized": false,
+  "predecessorTask": "20260925-three-server-package-portability",
+  "updated_at": "2026-09-26T15:50:48.090198+00:00",
+  "application_worktree": "D:/IntRuoyiWorktree/full-package-release-application",
+  "application_baseline": "840b9ef0dca94e5ad2780f8182f1072209aa7b35",
+  "supervisor_thread": "01a0d939-187a-7ae3-a242-654bd7e8aaf2",
+  "plan_file": "development-plan.md",
+  "release_readiness_targets": [
+    {
+      "environment": "test",
+      "host": "172.30.30.58"
+    },
+    {
+      "environment": "prod",
+      "host": "172.30.30.57"
+    },
+    {
+      "environment": "backup",
+      "host": "172.30.30.59",
+      "display_name": "审查服务器",
+      "confirmed_by_user": true
+    }
+  ],
+  "release_readiness_status": "out_of_scope_current_release",
+  "local_test_resources": {
+    "classic_engine": {
+      "container": "release-fullpkg-8bea35-classic",
+      "container_id": "1243a95b18bfe7819c396d22f5502676680bd84cb1469360d38c16fe81835ddf",
+      "volume": "release-fullpkg-8bea35-classic-data",
+      "image": "docker.io/library/docker@sha256:dd43b430341a40d88f4f30edb03865daa9d6fa39c9b1da70f27e2a89cec3eae1",
+      "network": "none",
+      "driver": "overlay2",
+      "server_version": "26.1.4",
+      "host_ports": [],
+      "host_socket_mounted": false,
+      "cleanup_owner": "supervisor",
+      "evidence": "E:/Int/CacheData/IntRuoyi/tests/full-package-release-refactor/image/classic-load-evidence.json",
+      "previous_container_id": "1077b4a2af5f527ad2f57b99a72734d03578e256e0552f60fbaf48518d8a13fb",
+      "status": "ready",
+      "rebuild_evidence": "E:/Int/CacheData/IntRuoyi/tests/full-package-release-refactor/t7-classic-rebuild.json",
+      "old_container_and_volume_removed": true
+    }
+  },
+  "workflow_readiness_status": "independently_verified",
+  "current_release_execution_in_scope": false,
+  "track_or_merge_application_main": false,
+  "scope_change": "CR-20260926-PROCESS: 用户明确以发布流程为交付目标；不追踪或合并当前主程序main，不以当前候选构建、三服现场计划或实际部署作为本轮门禁。",
+  "verification_evidence": {
+    "c7": "E:/Int/CacheData/IntRuoyi/tests/full-package-release-refactor/c7-20260926T132901-27955b0f",
+    "c7_junit_sha256": "0424d8f54545728277c66dd6a374b8b58d32a094da825b9b6a8b0b90f626a703",
+    "c6j": "E:/Int/CacheData/IntRuoyi/tests/full-package-release-refactor/c6-j-20260926T224300-luna"
+  },
+  "implementation_commit": "8f0d8401eda0cdf1d7c762e42ad6b9f9b78e0266",
+  "maintenance_integration": {
+    "branch": "int_main",
+    "commit": "8f0d8401eda0cdf1d7c762e42ad6b9f9b78e0266",
+    "merged_contract_tests": 157,
+    "unrelated_dirty_preserved": true
+  }
+}
