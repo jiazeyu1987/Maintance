@@ -1,0 +1,919 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "backup-restore-modular-contract/v1",
+  "$defs": {
+    "Pin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "bytes",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "OperationRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operationId",
+        "requestId",
+        "action",
+        "mode",
+        "selectedPointPin",
+        "sourceOrTargetRef",
+        "policyPin",
+        "authorizationRefs",
+        "leaseRef",
+        "schemaVersion",
+        "inputPins",
+        "deadlineMilliseconds"
+      ],
+      "properties": {
+        "operationId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "enum": [
+            "BACKUP_FULL",
+            "BACKUP_INCREMENTAL",
+            "LIST_POINTS",
+            "POINT_DETAIL",
+            "READBACK_VERIFY",
+            "RETENTION_PLAN",
+            "RETENTION_EXECUTE",
+            "RESTORE_PREFLIGHT",
+            "PREPARE_TARGET",
+            "RESTORE_EXECUTE",
+            "START_APPLICATION",
+            "VERIFY_RECOVERY",
+            "REHEARSAL",
+            "CONTROLLED_CUTOVER",
+            "OBSERVE_OPERATION",
+            "DIAGNOSE_EXECUTION",
+            "PLAN_REHEARSAL"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "REHEARSAL",
+            "CONTROLLED_RESTORE"
+          ]
+        },
+        "selectedPointPin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Pin"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sourceOrTargetRef": {
+          "$ref": "#/$defs/Pin"
+        },
+        "policyPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "authorizationRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "leaseRef": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Pin"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "schemaVersion": {
+          "const": "backup-restore-operation/v1"
+        },
+        "inputPins": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "repositoryPoint": {
+              "$ref": "#/$defs/Pin"
+            },
+            "restorePlan": {
+              "$ref": "#/$defs/Pin"
+            },
+            "recoveryTarget": {
+              "$ref": "#/$defs/Pin"
+            },
+            "restoreExecutionResult": {
+              "$ref": "#/$defs/Pin"
+            },
+            "applicationStartResult": {
+              "$ref": "#/$defs/Pin"
+            },
+            "recoveryVerificationReport": {
+              "$ref": "#/$defs/Pin"
+            },
+            "retentionPlan": {
+              "$ref": "#/$defs/Pin"
+            },
+            "operationStatus": {
+              "$ref": "#/$defs/Pin"
+            },
+            "executionEvidence": {
+              "$ref": "#/$defs/Pin"
+            }
+          }
+        },
+        "deadlineMilliseconds": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "OperationStatus": {
+      "type": "object",
+      "required": [
+        "operationId",
+        "phase",
+        "state",
+        "originalResultPins",
+        "nextAction",
+        "waitReason",
+        "updatedAt",
+        "requestId",
+        "action",
+        "failureCode"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "operationId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "phase": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state": {
+          "enum": [
+            "QUEUED",
+            "RUNNING",
+            "SUCCEEDED",
+            "FAILED_RETAINED",
+            "TERMINAL_UNKNOWN",
+            "BLOCKED"
+          ]
+        },
+        "originalResultPins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "nextAction": {
+          "type": "string",
+          "minLength": 1
+        },
+        "waitReason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "enum": [
+            "BACKUP_FULL",
+            "BACKUP_INCREMENTAL",
+            "LIST_POINTS",
+            "POINT_DETAIL",
+            "READBACK_VERIFY",
+            "RETENTION_PLAN",
+            "RETENTION_EXECUTE",
+            "RESTORE_PREFLIGHT",
+            "PREPARE_TARGET",
+            "RESTORE_EXECUTE",
+            "START_APPLICATION",
+            "VERIFY_RECOVERY",
+            "REHEARSAL",
+            "CONTROLLED_CUTOVER",
+            "OBSERVE_OPERATION",
+            "DIAGNOSE_EXECUTION",
+            "PLAN_REHEARSAL"
+          ]
+        },
+        "failureCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "RepositoryPoint": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "backupId",
+        "generationId",
+        "pointType",
+        "parentPointPins",
+        "commonRecoveryPoint",
+        "manifestPin",
+        "payloadRefs",
+        "readbackEvidencePin",
+        "ownerCloseEvidencePin",
+        "originalExitEvidencePin",
+        "integrityState",
+        "blockedReason",
+        "rehearsalEligible",
+        "controlledRestoreEligible"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "backupId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "generationId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pointType": {
+          "enum": [
+            "FULL",
+            "INCREMENTAL"
+          ]
+        },
+        "parentPointPins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "commonRecoveryPoint": {
+          "type": "string",
+          "minLength": 1
+        },
+        "manifestPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "payloadRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "readbackEvidencePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "ownerCloseEvidencePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "originalExitEvidencePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "integrityState": {
+          "enum": [
+            "COMPLETE",
+            "INCOMPLETE",
+            "CORRUPT"
+          ]
+        },
+        "schemaVersion": {
+          "const": "RepositoryPoint/v1"
+        },
+        "blockedReason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rehearsalEligible": {
+          "type": "boolean"
+        },
+        "controlledRestoreEligible": {
+          "type": "boolean"
+        }
+      }
+    },
+    "RestorePlan": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "operationId",
+        "restoreId",
+        "mode",
+        "candidatePin",
+        "orderedChainPins",
+        "recoveryPoint",
+        "targetRef",
+        "supportedVersionPins",
+        "toolPins",
+        "plannedWrites",
+        "sideEffectPolicyPin",
+        "authorizationRefs",
+        "leaseRef",
+        "immutableInputsSha256"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "operationId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "restoreId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mode": {
+          "enum": [
+            "REHEARSAL",
+            "CONTROLLED_RESTORE"
+          ]
+        },
+        "candidatePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "orderedChainPins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "recoveryPoint": {
+          "type": "string",
+          "minLength": 1
+        },
+        "targetRef": {
+          "$ref": "#/$defs/Pin"
+        },
+        "supportedVersionPins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "toolPins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "plannedWrites": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "resource",
+              "action",
+              "targetIdentityPin"
+            ],
+            "properties": {
+              "resource": {
+                "type": "string",
+                "minLength": 1
+              },
+              "action": {
+                "type": "string",
+                "minLength": 1
+              },
+              "targetIdentityPin": {
+                "$ref": "#/$defs/Pin"
+              }
+            }
+          }
+        },
+        "sideEffectPolicyPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "authorizationRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "leaseRef": {
+          "$ref": "#/$defs/Pin"
+        },
+        "immutableInputsSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "schemaVersion": {
+          "const": "RestorePlan/v1"
+        }
+      }
+    },
+    "RecoveryTarget": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "targetId",
+        "targetIdentityPin",
+        "resourcesProofPin",
+        "isolationProofPin",
+        "versionPins",
+        "configurationPin",
+        "secretRefs",
+        "sideEffectIsolationPin",
+        "leaseRef",
+        "modePreconditionsPin"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "targetId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "targetIdentityPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "resourcesProofPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "isolationProofPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "versionPins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "configurationPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "secretRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "sideEffectIsolationPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "leaseRef": {
+          "$ref": "#/$defs/Pin"
+        },
+        "modePreconditionsPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "schemaVersion": {
+          "const": "RecoveryTarget/v1"
+        }
+      }
+    },
+    "RestoreExecutionResult": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "operationId",
+        "restoreId",
+        "planPin",
+        "targetIdentityPin",
+        "recoveryPoint",
+        "dbStepEvidencePins",
+        "objectStepEvidencePins",
+        "consistencyEvidencePin",
+        "originalInvocationPins",
+        "state",
+        "writeProtectionState"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "operationId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "restoreId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "planPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "targetIdentityPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "recoveryPoint": {
+          "type": "string",
+          "minLength": 1
+        },
+        "dbStepEvidencePins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "objectStepEvidencePins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "consistencyEvidencePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "originalInvocationPins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "state": {
+          "enum": [
+            "SUCCEEDED",
+            "FAILED_RETAINED",
+            "TERMINAL_UNKNOWN"
+          ]
+        },
+        "writeProtectionState": {
+          "enum": [
+            "ENFORCED",
+            "RELEASED",
+            "UNKNOWN"
+          ]
+        },
+        "schemaVersion": {
+          "const": "RestoreExecutionResult/v1"
+        }
+      }
+    },
+    "ApplicationStartResult": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "operationId",
+        "restoreId",
+        "targetIdentityPin",
+        "restoreResultPin",
+        "imagePins",
+        "configurationPin",
+        "sideEffectIsolationPin",
+        "originalStartResultPins",
+        "healthEvidencePin",
+        "state"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "operationId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "restoreId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "targetIdentityPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "restoreResultPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "imagePins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "configurationPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "sideEffectIsolationPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "originalStartResultPins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "healthEvidencePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "state": {
+          "enum": [
+            "SUCCEEDED",
+            "FAILED_RETAINED",
+            "TERMINAL_UNKNOWN"
+          ]
+        },
+        "schemaVersion": {
+          "const": "ApplicationStartResult/v1"
+        }
+      }
+    },
+    "RecoveryVerificationReport": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "reportId",
+        "operationId",
+        "restoreId",
+        "mode",
+        "backupAndChainPins",
+        "planPin",
+        "targetIdentityPin",
+        "sourceScopePin",
+        "toolAndVersionPins",
+        "restoreResultPin",
+        "applicationStartPin",
+        "dataEvidencePins",
+        "playwrightEvidencePins",
+        "rtoObservation",
+        "rpoObservation",
+        "targetApprovalRefs",
+        "verdict",
+        "invalidatedBy"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "reportId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "restoreId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mode": {
+          "enum": [
+            "REHEARSAL",
+            "CONTROLLED_RESTORE"
+          ]
+        },
+        "backupAndChainPins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "planPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "targetIdentityPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "sourceScopePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "toolAndVersionPins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "restoreResultPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "applicationStartPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "dataEvidencePins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "playwrightEvidencePins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "rtoObservation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "observedMilliseconds",
+            "objectiveMilliseconds",
+            "evidencePins"
+          ],
+          "properties": {
+            "state": {
+              "enum": [
+                "MEASURED",
+                "BLOCKED",
+                "UNKNOWN"
+              ]
+            },
+            "observedMilliseconds": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "objectiveMilliseconds": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "evidencePins": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Pin"
+              }
+            }
+          }
+        },
+        "rpoObservation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "observedMilliseconds",
+            "objectiveMilliseconds",
+            "evidencePins"
+          ],
+          "properties": {
+            "state": {
+              "enum": [
+                "MEASURED",
+                "BLOCKED",
+                "UNKNOWN"
+              ]
+            },
+            "observedMilliseconds": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "objectiveMilliseconds": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "evidencePins": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Pin"
+              }
+            }
+          }
+        },
+        "targetApprovalRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "verdict": {
+          "enum": [
+            "PASSED",
+            "FAILED",
+            "BLOCKED",
+            "UNKNOWN",
+            "STALE"
+          ]
+        },
+        "invalidatedBy": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "schemaVersion": {
+          "const": "RecoveryVerificationReport/v1"
+        }
+      }
+    },
+    "OperationResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "operationId",
+        "requestId",
+        "action",
+        "state",
+        "failureCode",
+        "message",
+        "data",
+        "originalResultPins",
+        "startedAt",
+        "finishedAt",
+        "actualExitCode"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "backup-restore-operation-result/v1"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "enum": [
+            "BACKUP_FULL",
+            "BACKUP_INCREMENTAL",
+            "LIST_POINTS",
+            "POINT_DETAIL",
+            "READBACK_VERIFY",
+            "RETENTION_PLAN",
+            "RETENTION_EXECUTE",
+            "RESTORE_PREFLIGHT",
+            "PREPARE_TARGET",
+            "RESTORE_EXECUTE",
+            "START_APPLICATION",
+            "VERIFY_RECOVERY",
+            "REHEARSAL",
+            "CONTROLLED_CUTOVER",
+            "OBSERVE_OPERATION",
+            "DIAGNOSE_EXECUTION",
+            "PLAN_REHEARSAL"
+          ]
+        },
+        "state": {
+          "enum": [
+            "SUCCEEDED",
+            "FAILED_RETAINED",
+            "TERMINAL_UNKNOWN"
+          ]
+        },
+        "failureCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "originalResultPins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          }
+        },
+        "startedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "finishedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "actualExitCode": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

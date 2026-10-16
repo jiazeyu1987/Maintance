@@ -1,0 +1,1067 @@
+{
+  "schemaVersion": "W08ConsumerInterface/v3",
+  "observedAt": "2026-10-14T10:26:18.092417+00:00",
+  "observationKind": "Exact owner-published runtime transport and original-byte observations plus actual W01 pure metadata/action inspection; no native Registry or authority execution.",
+  "metadataTool": {
+    "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/registration.py",
+    "functions": [
+      "validate(value)",
+      "missing(value, action, target_ref=None)",
+      "redis_inputs(value, action, target_ref=None, scope=\"RUNTIME\")",
+      "ui_request(value, action, operation_id, parent=None, point=None, target=None)"
+    ],
+    "redisProjectionSchema": "ApplicationRedisInputs/v1",
+    "redisProjectionFields": [
+      "schemaVersion",
+      "schemaRevision",
+      "applicationId",
+      "action",
+      "projectionScope",
+      "sourceConfigRef",
+      "targetConfigRef",
+      "sourceKeyspace",
+      "instance",
+      "secretReference",
+      "recovery",
+      "derivedClass",
+      "expiryRule",
+      "restoreExpectations",
+      "runtimeMissing",
+      "executionReadiness"
+    ],
+    "semanticProjectionPins": {
+      "source": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/source.redis-semantic-inputs.json",
+        "bytes": 5856,
+        "sha256": "9d439188f3f0e3ab127f88e2718bef57893bc424cff160ca2ec0d8abd7622f49"
+      },
+      "target": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/target.redis-semantic-inputs.json",
+        "bytes": 5824,
+        "sha256": "079d6c4e9bafc8fc5e7b64024d524c8a3a368586b3f39bcf3015bbb950b9fa9d"
+      }
+    },
+    "projectionMeaning": "Explicit semantic inputs include actual observed runtime fields and exact remaining private/native gaps; executionReadiness remains NOT_EVALUATED, RUNTIME still refuses."
+  },
+  "W02": {
+    "currentThreeComponentDelivery": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-full-incremental-capture-dev/smallapp-three-component-20261014/source-delivery.json",
+      "bytes": 14507,
+      "sha256": "850bbfff94e371af0194eb12526feb033478f910e02a87892057eab8d9abc13c"
+    },
+    "currentThreeComponentArtifact": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-full-incremental-capture-dev/smallapp-three-component-20261014/smallapp-20261014-r2-redis-source.tar.gz",
+      "bytes": 44409,
+      "sha256": "aaa21b180ac2d21d250943c27fe87f091300b22df3002a5efbbf3e9f2d79dfe3"
+    },
+    "version": "smallapp-20261014-r2-redis",
+    "sourceMembers": {
+      "config-contract.json": {
+        "snapshotPin": {
+          "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/r2-contracts/config-contract.json",
+          "bytes": 4350,
+          "sha256": "bc25ec1668843c59faa3576350b103a8e627ba0b091b3fdc6b578bdba523d24d"
+        },
+        "producerMemberPin": {
+          "path": "D:/IntRuoyiWorktree/three-env-20260927-app/IntRuoyiBackend/script/backup-ops/lab/smallapp/config-contract.json",
+          "bytes": 4350,
+          "sha256": "bc25ec1668843c59faa3576350b103a8e627ba0b091b3fdc6b578bdba523d24d"
+        },
+        "archiveMember": "source/config-contract.json"
+      },
+      "redis-policy.json": {
+        "snapshotPin": {
+          "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/r2-contracts/redis-policy.json",
+          "bytes": 1985,
+          "sha256": "b2128045af3d5a377731afff41a2832c23d4efdea15a4ab68980fa9ef2a3a61f"
+        },
+        "producerMemberPin": {
+          "path": "D:/IntRuoyiWorktree/three-env-20260927-app/IntRuoyiBackend/script/backup-ops/lab/smallapp/redis-policy.json",
+          "bytes": 1985,
+          "sha256": "b2128045af3d5a377731afff41a2832c23d4efdea15a4ab68980fa9ef2a3a61f"
+        },
+        "archiveMember": "source/redis-policy.json"
+      },
+      "recovery-semantics.json": {
+        "snapshotPin": {
+          "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/r2-contracts/recovery-semantics.json",
+          "bytes": 4791,
+          "sha256": "09344914ef6e9a8610c66a20079f756292f9ba33e87a07487c3d6be9cdb3572a"
+        },
+        "producerMemberPin": {
+          "path": "D:/IntRuoyiWorktree/three-env-20260927-app/IntRuoyiBackend/script/backup-ops/lab/smallapp/recovery-semantics.json",
+          "bytes": 4791,
+          "sha256": "09344914ef6e9a8610c66a20079f756292f9ba33e87a07487c3d6be9cdb3572a"
+        },
+        "archiveMember": "source/recovery-semantics.json"
+      },
+      "ui-contract.json": {
+        "snapshotPin": {
+          "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/r2-contracts/ui-contract.json",
+          "bytes": 3616,
+          "sha256": "e09a7851f855d30a30e5b6b8060018030d12933175d11c5233bd94ee59967fd0"
+        },
+        "producerMemberPin": {
+          "path": "D:/IntRuoyiWorktree/three-env-20260927-app/IntRuoyiBackend/script/backup-ops/lab/smallapp/ui-contract.json",
+          "bytes": 3616,
+          "sha256": "e09a7851f855d30a30e5b6b8060018030d12933175d11c5233bd94ee59967fd0"
+        },
+        "archiveMember": "source/ui-contract.json"
+      },
+      "redis_cache.py": {
+        "snapshotPin": {
+          "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/r2-contracts/redis_cache.py",
+          "bytes": 7464,
+          "sha256": "c6add350f52739de46c563e961a6abd3e6df746f2138fab36b5e6b0d390a9005"
+        },
+        "producerMemberPin": {
+          "path": "D:/IntRuoyiWorktree/three-env-20260927-app/IntRuoyiBackend/script/backup-ops/lab/smallapp/redis_cache.py",
+          "bytes": 7464,
+          "sha256": "c6add350f52739de46c563e961a6abd3e6df746f2138fab36b5e6b0d390a9005"
+        },
+        "archiveMember": "source/redis_cache.py"
+      },
+      "capture_binding.py": {
+        "snapshotPin": {
+          "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/r2-contracts/capture_binding.py",
+          "bytes": 5829,
+          "sha256": "e5efef9a69692686ebb04bac532b9f6adc6f9c5da979a575767953482150809a"
+        },
+        "producerMemberPin": {
+          "path": "D:/IntRuoyiWorktree/three-env-20260927-app/IntRuoyiBackend/script/backup-ops/lab/smallapp/capture_binding.py",
+          "bytes": 5829,
+          "sha256": "e5efef9a69692686ebb04bac532b9f6adc6f9c5da979a575767953482150809a"
+        },
+        "archiveMember": "source/capture_binding.py"
+      },
+      "core.py": {
+        "snapshotPin": {
+          "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/r2-contracts/core.py",
+          "bytes": 31907,
+          "sha256": "b3b59625843d162fb41b963c2993ed82c84a72bb6885c70ce074b10199005367"
+        },
+        "producerMemberPin": {
+          "path": "D:/IntRuoyiWorktree/three-env-20260927-app/IntRuoyiBackend/script/backup-ops/lab/smallapp/core.py",
+          "bytes": 31907,
+          "sha256": "b3b59625843d162fb41b963c2993ed82c84a72bb6885c70ce074b10199005367"
+        },
+        "archiveMember": "source/core.py"
+      },
+      "README.md": {
+        "snapshotPin": {
+          "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/r2-contracts/README.md",
+          "bytes": 7892,
+          "sha256": "3e5064e8fd0ad59207ea60a7e94a535b78b3ad16b8469eb5292a7df07edb873f"
+        },
+        "producerMemberPin": {
+          "path": "D:/IntRuoyiWorktree/three-env-20260927-app/IntRuoyiBackend/script/backup-ops/lab/smallapp/README.md",
+          "bytes": 7892,
+          "sha256": "3e5064e8fd0ad59207ea60a7e94a535b78b3ad16b8469eb5292a7df07edb873f"
+        },
+        "archiveMember": "source/README.md"
+      },
+      "schema.sql": {
+        "snapshotPin": {
+          "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/r2-contracts/schema.sql",
+          "bytes": 2484,
+          "sha256": "5d4cc68450e2ef459f13dd619895b5fe936ec9286c9931027bdd6eaf2f1fa98e"
+        },
+        "producerMemberPin": {
+          "path": "D:/IntRuoyiWorktree/three-env-20260927-app/IntRuoyiBackend/script/backup-ops/lab/smallapp/schema.sql",
+          "bytes": 2484,
+          "sha256": "5d4cc68450e2ef459f13dd619895b5fe936ec9286c9931027bdd6eaf2f1fa98e"
+        },
+        "archiveMember": "source/schema.sql"
+      },
+      "requirements.txt": {
+        "snapshotPin": {
+          "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/r2-contracts/requirements.txt",
+          "bytes": 185,
+          "sha256": "a4c6747925ef11c83388ffa4a9502ec06b28bc60f7fa3a7370b7338a77114cb5"
+        },
+        "producerMemberPin": {
+          "path": "D:/IntRuoyiWorktree/three-env-20260927-app/IntRuoyiBackend/script/backup-ops/lab/smallapp/requirements.txt",
+          "bytes": 185,
+          "sha256": "a4c6747925ef11c83388ffa4a9502ec06b28bc60f7fa3a7370b7338a77114cb5"
+        },
+        "archiveMember": "source/requirements.txt"
+      }
+    },
+    "semanticDeliveryConsumed": true,
+    "requiredSourceDeliveryStillMissing": false,
+    "declaredDependencyCount": 11,
+    "runtimeInstallationVerified": true,
+    "semanticBinding": "Exact SmallAppConfigurationDescriptor/v2, SmallAppRedisRecoveryPolicy/v1, SmallAppRecoverySemantics/v1 and sealed redis_cache.py are mapped; stable source/target aliases retained.",
+    "derivedClass": {
+      "classification": "REBUILD",
+      "requiredForBusiness": true,
+      "executorKey": "smallapp.redis-session-cache.mysql.v1",
+      "rebuildFrom": "DATABASE",
+      "configurationReferences": [
+        {
+          "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/r2-contracts/redis-policy.json",
+          "bytes": 1985,
+          "sha256": "b2128045af3d5a377731afff41a2832c23d4efdea15a4ab68980fa9ef2a3a61f"
+        }
+      ]
+    },
+    "existingAdapterContractPin": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-full-incremental-capture-dev/smallapp-three-component-20261014/existing-derived-adapter-contract.json",
+      "bytes": 3178,
+      "sha256": "fdbaa3054a6c9819fbd27bde6887e3ed4b9bb8ea71f50ae1ead1abcc02ba9e03"
+    },
+    "runtimeInstallationVerificationScope": "26 installed Linux source pins match producer bytes/hash/suffix through exact W05 owner originals; W08 makes no direct Linux filesystem or signed/native authority verification.",
+    "nativeReceiptBinding": {
+      "owner": "W01/W05",
+      "transportSourceDeliveryPin": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-full-incremental-capture-dev/smallapp-three-component-20261014/source-delivery.json",
+        "bytes": 14507,
+        "sha256": "850bbfff94e371af0194eb12526feb033478f910e02a87892057eab8d9abc13c"
+      },
+      "transportAdapterContractPin": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-full-incremental-capture-dev/smallapp-three-component-20261014/existing-derived-adapter-contract.json",
+        "bytes": 3178,
+        "sha256": "fdbaa3054a6c9819fbd27bde6887e3ed4b9bb8ea71f50ae1ead1abcc02ba9e03"
+      },
+      "nativeSourceDeliveryOriginalPin": null,
+      "nativeAdapterContractOriginalPin": null,
+      "required": "Transport/authenticate exact source-delivery and existing-adapter contract receipts on Linux, preserve original bytes and verify authority; Windows producer/snapshot paths are not native Linux originals.",
+      "installedMemberMappings": {
+        "config-contract.json": {
+          "bytes": 4350,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/context/source/config-contract.json",
+          "sha256": "bc25ec1668843c59faa3576350b103a8e627ba0b091b3fdc6b578bdba523d24d"
+        },
+        "redis-policy.json": {
+          "bytes": 1985,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/context/source/redis-policy.json",
+          "sha256": "b2128045af3d5a377731afff41a2832c23d4efdea15a4ab68980fa9ef2a3a61f"
+        },
+        "recovery-semantics.json": {
+          "bytes": 4791,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/context/source/recovery-semantics.json",
+          "sha256": "09344914ef6e9a8610c66a20079f756292f9ba33e87a07487c3d6be9cdb3572a"
+        },
+        "ui-contract.json": {
+          "bytes": 3616,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/context/source/ui-contract.json",
+          "sha256": "e09a7851f855d30a30e5b6b8060018030d12933175d11c5233bd94ee59967fd0"
+        },
+        "redis_cache.py": {
+          "bytes": 7464,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/context/source/redis_cache.py",
+          "sha256": "c6add350f52739de46c563e961a6abd3e6df746f2138fab36b5e6b0d390a9005"
+        },
+        "capture_binding.py": {
+          "bytes": 5829,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/context/source/capture_binding.py",
+          "sha256": "e5efef9a69692686ebb04bac532b9f6adc6f9c5da979a575767953482150809a"
+        },
+        "core.py": {
+          "bytes": 31907,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/context/source/core.py",
+          "sha256": "b3b59625843d162fb41b963c2993ed82c84a72bb6885c70ce074b10199005367"
+        },
+        "README.md": {
+          "bytes": 7892,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/context/source/README.md",
+          "sha256": "3e5064e8fd0ad59207ea60a7e94a535b78b3ad16b8469eb5292a7df07edb873f"
+        },
+        "schema.sql": {
+          "bytes": 2484,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/context/source/schema.sql",
+          "sha256": "5d4cc68450e2ef459f13dd619895b5fe936ec9286c9931027bdd6eaf2f1fa98e"
+        },
+        "requirements.txt": {
+          "bytes": 185,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/context/source/requirements.txt",
+          "sha256": "a4c6747925ef11c83388ffa4a9502ec06b28bc60f7fa3a7370b7338a77114cb5"
+        }
+      }
+    }
+  },
+  "W05": {
+    "preservedObservationPin": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/w05-installation-observation.json",
+      "bytes": 3163,
+      "sha256": "bb134a768969650b3322cd5be2a7527099ad75464d36926d66f19aaa4a0eecd8"
+    },
+    "publishedAt": "2026-10-14T09:09:47.382943+00:00",
+    "actualSourceVersion": "smallapp-20261014-r2-redis",
+    "businessDataWritten": false,
+    "protectedStartupExecuted": true,
+    "currentR2InstallationAccepted": false,
+    "currentRedisNativeBinding": null,
+    "requiredDelta": "Installed r2 source/image/Linux Python/eleven dependencies/five configs and isolated Redis are consumed. Supply actual signed-installation/runtime trust/proof/service inputs through W01 issuer; bind actual private resolver roles to native Registry/bridge. Whole-target freshness remains target-only; business-use proof follows separately authorized real login.",
+    "preservedObservationMeaning": "Historical r1 03:09 snapshot only; current r2 installation is described separately.",
+    "currentR2Installed": true,
+    "actualRuntimeObservationPin": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/runtime-binding-observation.json",
+      "bytes": 51018,
+      "sha256": "8fbffc343a6d8532bb50be89b29e0ec7cb928ab395d710672f88cc8fcb499d3e"
+    },
+    "transportPins": {
+      "stage": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-recovery-environment-dev/smallapp-r2-install-20261014/stage.json",
+        "bytes": 937670,
+        "sha256": "9b94afa80adc8eae592b10e6209e206d90303dea4d4e8a6fd5c251575aa30f1e"
+      },
+      "configure": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-recovery-environment-dev/smallapp-r2-install-20261014/configure.json",
+        "bytes": 3546,
+        "sha256": "4800705744dd32f6f3556a13cbc89cdf9cb7ee869cff14f8551c82f5cb217c2b"
+      },
+      "verify": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-recovery-environment-dev/smallapp-r2-install-20261014/verify.json",
+        "bytes": 5893,
+        "sha256": "d7e22c6eeec176ac5e670022b625413ae1370071e8486000acbb74834e2ac809"
+      },
+      "target_configure": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-recovery-environment-dev/smallapp-r2-install-20261014/target_configure.json",
+        "bytes": 3642,
+        "sha256": "bdc6d2a3fa6e48fe29738473406a6e6bd65c6718c72ed36b89601efa49533e47"
+      },
+      "engine": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-recovery-environment-dev/smallapp-r2-install-20261014/engine.json",
+        "bytes": 59889,
+        "sha256": "f094e697d57363308cf63e099ead6ebb7575e1df413c0f33d813528335310cca"
+      },
+      "build": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-recovery-environment-dev/smallapp-r2-install-20261014/build.json",
+        "bytes": 5117,
+        "sha256": "ddd72d1a203e86db17d1f621567f2418fb0031053c8c002e86a3cbbba4af527f"
+      },
+      "materialize": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-recovery-environment-dev/smallapp-r2-install-20261014/materialize.json",
+        "bytes": 3087,
+        "sha256": "895f0c0c0d8b4e2e8a1b45804ec0b155cd0db6a453395a404324f168367b9a90"
+      },
+      "target_materialize": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-recovery-environment-dev/smallapp-r2-install-20261014/target_materialize.json",
+        "bytes": 3087,
+        "sha256": "f9e1e45dcef73e7512e30f53c77c9e4acc60b722fd287a7acd6cd118623d233b"
+      },
+      "common-refresh": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-recovery-environment-dev/smallapp-r2-install-20261014/common-refresh.json",
+        "bytes": 23944,
+        "sha256": "d746b3f09b9f90bf3434dd2f46d95441ddd1dd9014307c4496fad19b5ccfe0b7"
+      }
+    },
+    "nativePhaseOriginalPins": {
+      "stage": {
+        "bytes": 937410,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/evidence/stage-result.json",
+        "sha256": "7180cb92474f0b56039b7d9900b54af5b39668e6d39c11a1030fe8a7f260c3c7"
+      },
+      "configure": {
+        "bytes": 3284,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/evidence/configure-result.json",
+        "sha256": "84daeccfe869791214f4b04e5a4545afd37997d4851e8bc4a1945da7f5a36e69"
+      },
+      "verify": {
+        "bytes": 5634,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/evidence/verify-result.json",
+        "sha256": "71e0c0a49a151b2fab6db2ebb79e3279df7d5c927be414b0684afcd1c692e409"
+      },
+      "target_configure": {
+        "bytes": 3373,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/evidence/target_configure-result.json",
+        "sha256": "f926d6f5012fc283a31eb566f51aea1c0d09ba4f9f1f436a578c9e6027d263bb"
+      },
+      "engine": {
+        "bytes": 59629,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/evidence/engine-result.json",
+        "sha256": "a7ba099c95acbd872c0b1517c7e348fc44cedd30c83959463b2203693906b9a7"
+      },
+      "build": {
+        "bytes": 4859,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/evidence/build-result.json",
+        "sha256": "3037b67e39bd0b650bcdaf558ed01bbf13841e0ed74b0cd80ebdfeba87e255d1"
+      },
+      "materialize": {
+        "bytes": 2823,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/evidence/materialize-result.json",
+        "sha256": "e0d53c160218ef514936337badea78aec47085baeea8ef7dae525c5753104305"
+      },
+      "target_materialize": {
+        "bytes": 2816,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/evidence/target_materialize-result.json",
+        "sha256": "582c12b219962b8907c8eda83790d3a31885b5ab844d9233c1bf91dedec510c4"
+      },
+      "common-refresh": {
+        "bytes": 23646,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/refresh-result.original.json",
+        "sha256": "2ea4c2d86410a791b0ed8ef1465f3779b3b98bdbbdd71a274643d24e768a796a"
+      }
+    },
+    "currentRedisObservedAllocated": true,
+    "currentRedisHealthIsBusinessProof": false,
+    "currentCommonRefresh": {
+      "at": "2026-10-14T10:26:18.092417+00:00",
+      "state": "CURRENT_COMMON_REFRESH_REGISTRATION_BOUND_NATIVE_AUTHORITY_PENDING",
+      "transportPin": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-recovery-environment-dev/smallapp-r2-install-20261014/common-refresh.json",
+        "bytes": 23944,
+        "sha256": "d746b3f09b9f90bf3434dd2f46d95441ddd1dd9014307c4496fad19b5ccfe0b7"
+      },
+      "nativeOriginalPin": {
+        "bytes": 23646,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/refresh-result.original.json",
+        "sha256": "2ea4c2d86410a791b0ed8ef1465f3779b3b98bdbbdd71a274643d24e768a796a"
+      },
+      "currentObservedSelection": {
+        "engineSelectionRef": "common-engine-smallapp-r2-20261014",
+        "engineArtifactPin": {
+          "bytes": 332335,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-engine.tar.gz",
+          "sha256": "6f0b261fb191aa3f5fc00bd5d73b08493fbdf3e2e969cfa3c04dfd1a68edb0e2"
+        },
+        "engineVersionPin": {
+          "bytes": 56922,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-engine-version.json",
+          "sha256": "34392ca1ce897ac625f5755fe273823c4ec5303b9b99a60ac2c4c0a81730dbe0"
+        },
+        "engineEntryPin": {
+          "bytes": 56366,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_executor.py",
+          "sha256": "8316efd41335b55805c19f3531d6b04c19b4641145939e5b224be3bd57d48474"
+        }
+      },
+      "currentObservedClosurePin": {
+        "bytes": 971225,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-installed-closure.original.json",
+        "sha256": "abb4ead7418ebcc9ece8eb5b153fbcfa9ef688110298b045af54d3e8c0461f83"
+      },
+      "changedMemberCount": 3,
+      "currentInstalledCommonMemberCount": 63,
+      "actualLinuxImportExitCodeFromOwner": 0,
+      "checksPin": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/checks-common-refresh.json",
+        "bytes": 11696,
+        "sha256": "89cfa958b36f8ba7058b3dd963b7ea8f77a8e1ebe2e3c7e4150d5d30f5bc436b"
+      },
+      "applicationSourceRuntimeResourcesUnchanged": true,
+      "independentSignedInstallationAccepted": false,
+      "nativeSourceBindingAccepted": false,
+      "archiveServiceAccepted": false,
+      "runtimeAcceptance": false,
+      "previousDelivery": "history/pre-common-refresh-20261014/delivery.json",
+      "verificationScope": "Only supplied refresh originals and affected registration/current engine/closure/projection/pure parser checks; no full 20-Pin suite or environment probing."
+    }
+  },
+  "W01": {
+    "source": "D:/ProjectPackage/Int/IntRuoyiMaintance/backend/src/main/resources/recovery_control_registration.py",
+    "entrypoints": [
+      "metadata",
+      "Registry.import_registration",
+      "Registry.bind_source",
+      "Registry.bind_target",
+      "Registry.selections"
+    ],
+    "nativeEntry": "backend/src/main/resources/recovery_control_smallapp_native.py:Native.import_registration/Native.selections",
+    "currentWorkingSourcePin": null,
+    "metadataObservation": {
+      "observedAt": "2026-10-14T10:24:25.357119+00:00",
+      "redisInstanceFields": [
+        "state",
+        "role",
+        "configRef",
+        "containerId",
+        "endpoint",
+        "databaseIndex",
+        "keyPrefix",
+        "serverVersion",
+        "runtimeConfigurationPin",
+        "secretRole",
+        "resourceProofPin",
+        "applicationUseProofPin",
+        "instanceId",
+        "secretReference"
+      ],
+      "structureAccepted": true,
+      "errorCode": null,
+      "actionChecksPin": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/checks-common-refresh.json",
+        "bytes": 11696,
+        "sha256": "89cfa958b36f8ba7058b3dd963b7ea8f77a8e1ebe2e3c7e4150d5d30f5bc436b"
+      },
+      "installedParserCorrespondenceVerified": true,
+      "installedParserPin": {
+        "bytes": 47671,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_registration.py",
+        "sha256": "559e0e607626fd93bf76cdf995f89c4c9b4f5832759996619a5a07ce85da0264"
+      },
+      "nativeAcceptance": false
+    },
+    "requiredDelta": [
+      "Actual current metadata accepts exact r2 actual-field registration. Original action_missing is recorded independently of W08 missing; pure acceptance does not execute Registry, Native or source/target binding.",
+      "Actual runtime config uses public alias smallapp.redis in both roles; known private logical references differ. Source runtime roles remain unresolved in the native registry and bridge until actual owner binding is supplied.",
+      "Verify actual installed config descriptor, 26 application members and current Linux configuration against producer bytes; W05 owner originals are consumed, not invented code-candidate pins.",
+      "Authenticate sourceDeliveryPin, adapter recipePin and sealed semantics/policy/cache on Linux. Current Windows receipt paths are explicit transport inputs; native originals are unknown pending W01/W05 transport/authentication.",
+      "First FULL requires no future parent/point/target. Actual W01 RESTORE still requires original source resourceBindingPin/nativeConfigPin and installed metadata, plus chosen target and archive; it does not require current source business-use proof or live source process/Redis credentials.",
+      "Actual source FULL additionally requires real login/Redis readback with SQL authority, exact native source resources/config, archive repository/service/policy and actual private role resolutions. UP/DB0 empty proves client health only.",
+      "Original signed installation/trust/runtime proof/service configuration, real private bridge/current grant/HELD lease and actual engine approval remain unknown. No metadata path publishes fullReady.",
+      "Use target independent browser relogin after authorized OPEN, preserve SQL original expiry, and bind actual W04 approved target derived result. W04 expiry-evidence repair gates target final acceptance only; installed new package requires current bindings."
+    ],
+    "registryInvariant": "Same original Registry/resources/engine selectors; import never grants native authority.",
+    "priorBindingObservationMeaning": "Recipe/private/login binding differences were seen in a finite earlier active-code read. The latest pure parser now accepts exact metadata; no claim is made that those earlier code observations describe a final owner delivery.",
+    "priorMetadataObservation": {
+      "observedAt": "2026-10-14T03:49:21.041701+00:00",
+      "redisInstanceFields": [
+        "state",
+        "role",
+        "configRef",
+        "containerId",
+        "endpoint",
+        "databaseIndex",
+        "keyPrefix",
+        "serverVersion",
+        "runtimeConfigurationPin",
+        "secretRole",
+        "resourceProofPin",
+        "applicationUseProofPin"
+      ],
+      "structureAccepted": false,
+      "errorCode": "REGISTRATION_REDIS_FIELDS_INVALID"
+    },
+    "actualActionMissing": {
+      "FULL": {
+        "targetConfigRef": null,
+        "w08Missing": [
+          {
+            "field": "source.redis.secretReference.ownerResolution",
+            "owner": "W05"
+          },
+          {
+            "field": "source.redis.applicationUseProofPin",
+            "owner": "W05/W06"
+          },
+          {
+            "field": "source.resourceBindingPin",
+            "owner": "W01/W05"
+          },
+          {
+            "field": "source.nativeConfigPin",
+            "owner": "W03/W02/W05"
+          },
+          {
+            "field": "secretReferences.sourceRuntimeResolution",
+            "owner": "W05"
+          },
+          {
+            "field": "archive.repositoryId",
+            "owner": "W03"
+          },
+          {
+            "field": "archive.servicePin",
+            "owner": "W03"
+          },
+          {
+            "field": "archive.policyPin",
+            "owner": "W03"
+          }
+        ],
+        "w01Missing": [
+          {
+            "field": "source.resourceBindingPin",
+            "owner": "W01/W05"
+          },
+          {
+            "field": "source.nativeConfigPin",
+            "owner": "W01/W05"
+          },
+          {
+            "field": "archive.repositoryId",
+            "owner": "W03"
+          },
+          {
+            "field": "archive.servicePin",
+            "owner": "W03"
+          },
+          {
+            "field": "archive.policyPin",
+            "owner": "W03"
+          },
+          {
+            "field": "source.redis.applicationUseProofPin",
+            "owner": "W05/W06"
+          },
+          {
+            "field": "source.redis.secretReference.smallapp.control",
+            "owner": "W05"
+          },
+          {
+            "field": "source.redis.secretReference.smallapp.mysql",
+            "owner": "W05"
+          },
+          {
+            "field": "source.redis.secretReference.smallapp.s3",
+            "owner": "W05"
+          },
+          {
+            "field": "source.redis.secretReference.smallapp.redis",
+            "owner": "W05"
+          }
+        ]
+      },
+      "INCREMENTAL": {
+        "targetConfigRef": null,
+        "w08Missing": [
+          {
+            "field": "source.redis.secretReference.ownerResolution",
+            "owner": "W05"
+          },
+          {
+            "field": "source.redis.applicationUseProofPin",
+            "owner": "W05/W06"
+          },
+          {
+            "field": "source.resourceBindingPin",
+            "owner": "W01/W05"
+          },
+          {
+            "field": "source.nativeConfigPin",
+            "owner": "W03/W02/W05"
+          },
+          {
+            "field": "secretReferences.sourceRuntimeResolution",
+            "owner": "W05"
+          },
+          {
+            "field": "archive.repositoryId",
+            "owner": "W03"
+          },
+          {
+            "field": "archive.servicePin",
+            "owner": "W03"
+          },
+          {
+            "field": "archive.policyPin",
+            "owner": "W03"
+          },
+          {
+            "field": "archive.fullParentChainRef",
+            "owner": "W01/W03"
+          }
+        ],
+        "w01Missing": [
+          {
+            "field": "source.resourceBindingPin",
+            "owner": "W01/W05"
+          },
+          {
+            "field": "source.nativeConfigPin",
+            "owner": "W01/W05"
+          },
+          {
+            "field": "archive.repositoryId",
+            "owner": "W03"
+          },
+          {
+            "field": "archive.servicePin",
+            "owner": "W03"
+          },
+          {
+            "field": "archive.policyPin",
+            "owner": "W03"
+          },
+          {
+            "field": "source.redis.applicationUseProofPin",
+            "owner": "W05/W06"
+          },
+          {
+            "field": "source.redis.secretReference.smallapp.control",
+            "owner": "W05"
+          },
+          {
+            "field": "source.redis.secretReference.smallapp.mysql",
+            "owner": "W05"
+          },
+          {
+            "field": "source.redis.secretReference.smallapp.s3",
+            "owner": "W05"
+          },
+          {
+            "field": "source.redis.secretReference.smallapp.redis",
+            "owner": "W05"
+          }
+        ]
+      },
+      "START_APPLICATION": {
+        "targetConfigRef": null,
+        "w08Missing": [
+          {
+            "field": "source.redis.secretReference.ownerResolution",
+            "owner": "W05"
+          },
+          {
+            "field": "source.resourceBindingPin",
+            "owner": "W01/W05"
+          },
+          {
+            "field": "source.nativeConfigPin",
+            "owner": "W03/W02/W05"
+          },
+          {
+            "field": "secretReferences.sourceRuntimeResolution",
+            "owner": "W05"
+          }
+        ],
+        "w01Missing": [
+          {
+            "field": "source.resourceBindingPin",
+            "owner": "W01/W05"
+          },
+          {
+            "field": "source.nativeConfigPin",
+            "owner": "W01/W05"
+          },
+          {
+            "field": "source.redis.secretReference.smallapp.control",
+            "owner": "W05"
+          },
+          {
+            "field": "source.redis.secretReference.smallapp.mysql",
+            "owner": "W05"
+          },
+          {
+            "field": "source.redis.secretReference.smallapp.s3",
+            "owner": "W05"
+          },
+          {
+            "field": "source.redis.secretReference.smallapp.redis",
+            "owner": "W05"
+          }
+        ]
+      },
+      "RESTORE": {
+        "targetConfigRef": "smallapp-20261014-target-r1",
+        "w08Missing": [
+          {
+            "field": "allowedRestoreTargets.smallapp-20261014-target-r1.freshnessProofPin",
+            "owner": "W05"
+          },
+          {
+            "field": "archive.repositoryId",
+            "owner": "W03"
+          },
+          {
+            "field": "archive.servicePin",
+            "owner": "W03"
+          },
+          {
+            "field": "archive.policyPin",
+            "owner": "W03"
+          },
+          {
+            "field": "archive.recoveryPointRef",
+            "owner": "W01/W03"
+          },
+          {
+            "field": "allowedRestoreTargets.smallapp-20261014-target-r1.resourceBindingPin",
+            "owner": "W01/W05"
+          },
+          {
+            "field": "allowedRestoreTargets.smallapp-20261014-target-r1.nativeConfigPin",
+            "owner": "W01/W04/W05"
+          }
+        ],
+        "w01Missing": [
+          {
+            "field": "source.resourceBindingPin",
+            "owner": "W01/W05"
+          },
+          {
+            "field": "source.nativeConfigPin",
+            "owner": "W01/W05"
+          },
+          {
+            "field": "archive.repositoryId",
+            "owner": "W03"
+          },
+          {
+            "field": "archive.servicePin",
+            "owner": "W03"
+          },
+          {
+            "field": "archive.policyPin",
+            "owner": "W03"
+          },
+          {
+            "field": "allowedRestoreTargets.smallapp-20261014-target-r1.resourceBindingPin",
+            "owner": "W05/W01"
+          },
+          {
+            "field": "allowedRestoreTargets.smallapp-20261014-target-r1.nativeConfigPin",
+            "owner": "W05/W01"
+          },
+          {
+            "field": "allowedRestoreTargets.smallapp-20261014-target-r1.freshnessProofPin",
+            "owner": "W05/W01"
+          }
+        ]
+      }
+    }
+  },
+  "Spug": {
+    "source": "D:/ProjectPackage/Int/IntRuoyiMaintance/ops/spug/smallapp_entry.py",
+    "entrypoints": [
+      "settings",
+      "validated_selections",
+      "admit_selection"
+    ],
+    "actualSelectionRoute": "GET /selections via existing authenticated W01 origin",
+    "displayProjectionFields": [
+      "applicationId",
+      "displayName",
+      "sourceConfigRef",
+      "targetConfigRefs",
+      "engineSelectionRef",
+      "registrationSha256"
+    ],
+    "deliveredProjectionPin": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/spug-display-projections.json",
+      "bytes": 718,
+      "sha256": "937cd18a7ea22323283df6445da9185959b41724aa8bca781c9bbecb5594eeb9"
+    },
+    "requiredDelta": "Apply this applications fragment with exact current registration SHA after W01 imports it; reuse existing tasks 7/8/9 and three manual actions, live authenticated selection and actual transport/auth. Fragment is not complete settings or execution admission."
+  },
+  "W04": {
+    "existingEntry": "ops/recovery/recovery_data_derived.py:restore_derived (existing DERIVED_DATA stage)",
+    "adapterContractPin": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-full-incremental-capture-dev/smallapp-three-component-20261014/existing-derived-adapter-contract.json",
+      "bytes": 3178,
+      "sha256": "fdbaa3054a6c9819fbd27bde6887e3ed4b9bb8ea71f50ae1ead1abcc02ba9e03"
+    },
+    "actualApprovedScriptPin": null,
+    "actualRegistrationPin": null,
+    "actualReadbackResultPin": null,
+    "requiredDelta": "Bind approved target DERIVED_DATA executor/trust/registration and real plan/request/DATABASE result/current target lock/guard/deadline/readback. W07-R2-01 expiry evidence fix affects target final acceptance; after actual installation refresh affected package/closure/version/trust pins, never claim permanent acceptance or freeze source FULL for this target fix."
+  },
+  "W03": {
+    "requiredDelta": "Bind actual archive repositoryId/servicePin/policyPin. Produce authentic FULL before later I1 parent, and real selected recovery point before RESTORE."
+  },
+  "runtimeExecutionReady": false,
+  "runtimeBindingContinuation20261014": {
+    "observedAt": "2026-10-14T10:26:18.092417+00:00",
+    "actualRuntimeBindingObservationPin": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/runtime-binding-observation.json",
+      "bytes": 51018,
+      "sha256": "8fbffc343a6d8532bb50be89b29e0ec7cb928ab395d710672f88cc8fcb499d3e"
+    },
+    "affectedChecksPin": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/checks-common-refresh.json",
+      "bytes": 11696,
+      "sha256": "89cfa958b36f8ba7058b3dd963b7ea8f77a8e1ebe2e3c7e4150d5d30f5bc436b"
+    },
+    "sourceR2Installed": true,
+    "targetConfigurationKnown": true,
+    "currentW01PureMetadataAccepted": true,
+    "runtimeAcceptance": false,
+    "sourceFullWaitsForWholeTarget": false,
+    "W04ExpiryFixScope": "TARGET_FINAL_ACCEPTANCE_ONLY",
+    "actualNewPackageRequiresRebinding": true,
+    "commonRefresh20261014": {
+      "at": "2026-10-14T10:26:18.092417+00:00",
+      "state": "CURRENT_COMMON_REFRESH_REGISTRATION_BOUND_NATIVE_AUTHORITY_PENDING",
+      "transportPin": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-recovery-environment-dev/smallapp-r2-install-20261014/common-refresh.json",
+        "bytes": 23944,
+        "sha256": "d746b3f09b9f90bf3434dd2f46d95441ddd1dd9014307c4496fad19b5ccfe0b7"
+      },
+      "nativeOriginalPin": {
+        "bytes": 23646,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/refresh-result.original.json",
+        "sha256": "2ea4c2d86410a791b0ed8ef1465f3779b3b98bdbbdd71a274643d24e768a796a"
+      },
+      "currentObservedSelection": {
+        "engineSelectionRef": "common-engine-smallapp-r2-20261014",
+        "engineArtifactPin": {
+          "bytes": 332335,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-engine.tar.gz",
+          "sha256": "6f0b261fb191aa3f5fc00bd5d73b08493fbdf3e2e969cfa3c04dfd1a68edb0e2"
+        },
+        "engineVersionPin": {
+          "bytes": 56922,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-engine-version.json",
+          "sha256": "34392ca1ce897ac625f5755fe273823c4ec5303b9b99a60ac2c4c0a81730dbe0"
+        },
+        "engineEntryPin": {
+          "bytes": 56366,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_executor.py",
+          "sha256": "8316efd41335b55805c19f3531d6b04c19b4641145939e5b224be3bd57d48474"
+        }
+      },
+      "currentObservedClosurePin": {
+        "bytes": 971225,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-installed-closure.original.json",
+        "sha256": "abb4ead7418ebcc9ece8eb5b153fbcfa9ef688110298b045af54d3e8c0461f83"
+      },
+      "changedMemberCount": 3,
+      "currentInstalledCommonMemberCount": 63,
+      "actualLinuxImportExitCodeFromOwner": 0,
+      "checksPin": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/checks-common-refresh.json",
+        "bytes": 11696,
+        "sha256": "89cfa958b36f8ba7058b3dd963b7ea8f77a8e1ebe2e3c7e4150d5d30f5bc436b"
+      },
+      "applicationSourceRuntimeResourcesUnchanged": true,
+      "independentSignedInstallationAccepted": false,
+      "nativeSourceBindingAccepted": false,
+      "archiveServiceAccepted": false,
+      "runtimeAcceptance": false,
+      "previousDelivery": "history/pre-common-refresh-20261014/delivery.json",
+      "verificationScope": "Only supplied refresh originals and affected registration/current engine/closure/projection/pure parser checks; no full 20-Pin suite or environment probing."
+    }
+  },
+  "commonEngineObservation": {
+    "stageEngineSelectionPins": {
+      "engineArtifactPin": {
+        "bytes": 325642,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-engine-r2.tar.gz",
+        "sha256": "b0a71893b240bd9b0fdbf8ccec9afa8c0b1128ce78474b55dc7ecc41a9c40441"
+      },
+      "engineVersionPin": {
+        "bytes": 16785,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-engine-version.json",
+        "sha256": "8eb9804fb5c1904c97e9fdae822673c8528e3825d95b54c364c576fd89fd8c0b"
+      },
+      "engineEntryPin": {
+        "bytes": 56366,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_executor.py",
+        "sha256": "8316efd41335b55805c19f3531d6b04c19b4641145939e5b224be3bd57d48474"
+      },
+      "restoreEntryPin": {
+        "bytes": 35884,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_cli.py",
+        "sha256": "663a4316099af5a2a9979a99278687ff2c4c0bc53b04dc17703a6ec560bfd2ef"
+      }
+    },
+    "stageRuntimeMembers": 62,
+    "stageExcludedTestMember": "scripts/tests/test_repository_capture_configuration.py",
+    "currentObservedSelection": {
+      "engineSelectionRef": "common-engine-smallapp-r2-20261014",
+      "engineArtifactPin": {
+        "bytes": 332335,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-engine.tar.gz",
+        "sha256": "6f0b261fb191aa3f5fc00bd5d73b08493fbdf3e2e969cfa3c04dfd1a68edb0e2"
+      },
+      "engineVersionPin": {
+        "bytes": 56922,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-engine-version.json",
+        "sha256": "34392ca1ce897ac625f5755fe273823c4ec5303b9b99a60ac2c4c0a81730dbe0"
+      },
+      "engineEntryPin": {
+        "bytes": 56366,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_executor.py",
+        "sha256": "8316efd41335b55805c19f3531d6b04c19b4641145939e5b224be3bd57d48474"
+      }
+    },
+    "currentRestoreEntryPin": {
+      "bytes": 35884,
+      "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_cli.py",
+      "sha256": "663a4316099af5a2a9979a99278687ff2c4c0bc53b04dc17703a6ec560bfd2ef"
+    },
+    "currentObservedClosurePin": {
+      "bytes": 971225,
+      "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-installed-closure.original.json",
+      "sha256": "abb4ead7418ebcc9ece8eb5b153fbcfa9ef688110298b045af54d3e8c0461f83"
+    },
+    "currentRuntimeMembers": 63,
+    "countDisposition": {
+      "additionalCurrentRuntimeContract": 1,
+      "localTestExcluded": 1,
+      "transportRuntime": 62
+    },
+    "engineNativeOriginalPin": {
+      "bytes": 23646,
+      "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/refresh-result.original.json",
+      "sha256": "2ea4c2d86410a791b0ed8ef1465f3779b3b98bdbbdd71a274643d24e768a796a"
+    },
+    "runtimePythonVersion": "3.12.7",
+    "runtimeProbe": {
+      "platform": "linux",
+      "pythonVersion": "3.12.7",
+      "versions": {
+        "attrs": "25.4.0",
+        "cryptography": "46.0.5",
+        "jsonschema": "4.26.0",
+        "jsonschema-specifications": "2025.9.1",
+        "redis": "5.2.1",
+        "referencing": "0.37.0",
+        "rpds-py": "0.30.0",
+        "typing_extensions": "4.15.0"
+      }
+    },
+    "currentEngineApproved": false,
+    "intRuoyiNativeEquivalenceVerified": false,
+    "validity": "Current exact common-refresh installed owner original: three members updated, 60 preserved, 63 total, actual Linux import exit0. Independent signed installation/trust/proof/approval and native source/service binding remain pending. Target final acceptance is separate; future actual package changes require affected current pins.",
+    "commonRefreshChangedMembers": [
+      {
+        "currentInstalledPin": {
+          "bytes": 47671,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_registration.py",
+          "sha256": "559e0e607626fd93bf76cdf995f89c4c9b4f5832759996619a5a07ce85da0264"
+        },
+        "previousPin": {
+          "bytes": 47029,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_registration.py",
+          "sha256": "212056ec1b6f208f632f477c28ae4414fb3fbb4e8e983a4bbda08210dcf6fbac"
+        },
+        "sourceOriginalPin": {
+          "bytes": 47671,
+          "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/backend/src/main/resources/recovery_control_registration.py",
+          "sha256": "559e0e607626fd93bf76cdf995f89c4c9b4f5832759996619a5a07ce85da0264"
+        }
+      },
+      {
+        "currentInstalledPin": {
+          "bytes": 13597,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_smallapp_controls.py",
+          "sha256": "7bc20ee42888b72c30a7d93c086c77d93ca46907bf4d34e904bead0c5a236390"
+        },
+        "previousPin": {
+          "bytes": 10506,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_smallapp_controls.py",
+          "sha256": "e8e0426e5d29d15882023de913f2e9ce0f393f8877d0cb13233f4118e904d271"
+        },
+        "sourceOriginalPin": {
+          "bytes": 13597,
+          "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/backend/src/main/resources/recovery_control_smallapp_controls.py",
+          "sha256": "7bc20ee42888b72c30a7d93c086c77d93ca46907bf4d34e904bead0c5a236390"
+        }
+      },
+      {
+        "currentInstalledPin": {
+          "bytes": 24693,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_data_redis_sessions.py",
+          "sha256": "47b41fd55bff02d41b3eeaa65b2fc33da80fbac953199dc27675ad474c0db796"
+        },
+        "previousPin": {
+          "bytes": 17595,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_data_redis_sessions.py",
+          "sha256": "1bb463cba21e250e209a6f8280d1534be014f7bfbc5689c2d1bda4535189c0ce"
+        },
+        "sourceOriginalPin": {
+          "bytes": 24693,
+          "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/ops/recovery/recovery_data_redis_sessions.py",
+          "sha256": "47b41fd55bff02d41b3eeaa65b2fc33da80fbac953199dc27675ad474c0db796"
+        }
+      }
+    ],
+    "actualChangedMemberRuntimeProbe": {
+      "imports": {
+        "recovery_control_registration": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_registration.py",
+        "recovery_control_smallapp_controls": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_smallapp_controls.py",
+        "recovery_data_redis_sessions": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_data_redis_sessions.py"
+      },
+      "platform": "linux"
+    },
+    "changedMemberRuntimeImportExitCode": 0,
+    "currentInstalledMemberManifestPin": {
+      "bytes": 23646,
+      "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/refresh-result.original.json",
+      "sha256": "2ea4c2d86410a791b0ed8ef1465f3779b3b98bdbbdd71a274643d24e768a796a"
+    }
+  }
+}

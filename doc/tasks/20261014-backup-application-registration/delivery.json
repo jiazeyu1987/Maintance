@@ -1,0 +1,541 @@
+{
+  "schemaVersion": "W08ApplicationRegistrationDelivery/v3",
+  "taskId": "20261014-backup-application-registration",
+  "moduleId": "W08",
+  "at": "2026-10-14T10:26:18.092417+00:00",
+  "state": "waiting_dependency",
+  "phase": "current_common_refresh_registration_bound",
+  "localScopeComplete": true,
+  "readyForCloseout": true,
+  "usable": true,
+  "usableMeaning": "Actual owner-observed installed r2 runtime/config/isolated Redis facts and original W01 pure metadata/action inputs; native execution and real login/E2E acceptance remain false.",
+  "registrationSchema": "ApplicationRegistration/v1",
+  "schemaRevision": "three-component-20261014-r1",
+  "requiredComponents": [
+    "MySQL",
+    "MinIO",
+    "Redis"
+  ],
+  "sourceDeliveryConsumed": true,
+  "sourceDeliveryPin": {
+    "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-full-incremental-capture-dev/smallapp-three-component-20261014/source-delivery.json",
+    "bytes": 14507,
+    "sha256": "850bbfff94e371af0194eb12526feb033478f910e02a87892057eab8d9abc13c"
+  },
+  "sourceArtifactPin": {
+    "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-full-incremental-capture-dev/smallapp-three-component-20261014/smallapp-20261014-r2-redis-source.tar.gz",
+    "bytes": 44409,
+    "sha256": "aaa21b180ac2d21d250943c27fe87f091300b22df3002a5efbbf3e9f2d79dfe3"
+  },
+  "sourceVersion": "smallapp-20261014-r2-redis",
+  "artifacts": {
+    "smallapp.registration.json": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/smallapp.registration.json",
+      "bytes": 29922,
+      "sha256": "47fb0cbaba7fba26a533ef7c13f2af9d6dee302e74204ddcbd83aad55ef69d38"
+    },
+    "intruoyi.registration.json": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/intruoyi.registration.json",
+      "bytes": 3639,
+      "sha256": "e673622fd7394f84b2ede80cf8fe3b3781c02aa8f34c2355c0abbb5738328ef8"
+    },
+    "registration.py": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/registration.py",
+      "bytes": 40488,
+      "sha256": "a65797c6923f30e360dec985bb8ba3779c8f99d87498c2654b996939d755ca5f"
+    },
+    "check_r2_registration.py": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/check_r2_registration.py",
+      "bytes": 16324,
+      "sha256": "1cf437ef3826630af4b1d0bc81702332c89892d1c176c0252c9e60a527be5c67"
+    },
+    "checks-redis.json": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/checks-redis.json",
+      "bytes": 3433,
+      "sha256": "179dc6f4836141a2f4bec988f97e1da91ec2ee9fadccd5acca64501bb8aef3f8"
+    },
+    "schema-delta.json": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/schema-delta.json",
+      "bytes": 13381,
+      "sha256": "2fbe568421723b753ffc15325fffa149f060bdc2a96354f2dee91df7fa50b066"
+    },
+    "consumer-interface.json": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/consumer-interface.json",
+      "bytes": 52923,
+      "sha256": "a4ab0c2eeed42980f536511c65946d00ccb9e54a122e791e4734a80805db27f9"
+    },
+    "source.redis-semantic-inputs.json": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/source.redis-semantic-inputs.json",
+      "bytes": 5856,
+      "sha256": "9d439188f3f0e3ab127f88e2718bef57893bc424cff160ca2ec0d8abd7622f49"
+    },
+    "target.redis-semantic-inputs.json": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/target.redis-semantic-inputs.json",
+      "bytes": 5824,
+      "sha256": "079d6c4e9bafc8fc5e7b64024d524c8a3a368586b3f39bcf3015bbb950b9fa9d"
+    },
+    "spug-display-projections.json": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/spug-display-projections.json",
+      "bytes": 718,
+      "sha256": "937cd18a7ea22323283df6445da9185959b41724aa8bca781c9bbecb5594eeb9"
+    },
+    "remaining-inputs.json": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/remaining-inputs.json",
+      "bytes": 65473,
+      "sha256": "1776b65ec503cc46bf1b2f33497d051037045c4d52fc42dc62e0f8270385fc5c"
+    },
+    "source-delivery-observation.json": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/source-delivery-observation.json",
+      "bytes": 9879,
+      "sha256": "bba05b276a4448aaa8f86007057b61eba34e5f2a10e0ee21d56bc1d526ff1a43"
+    },
+    "w05-installation-observation.json": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/w05-installation-observation.json",
+      "bytes": 3163,
+      "sha256": "bb134a768969650b3322cd5be2a7527099ad75464d36926d66f19aaa4a0eecd8"
+    },
+    "package-verification.json": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/package-verification.json",
+      "bytes": 1686,
+      "sha256": "875159df07184790e90d43ccf1fccaaf63ac846dae97a2b1c11acbf402aed4d0"
+    },
+    "README.md": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/README.md",
+      "bytes": 9895,
+      "sha256": "2a0d21d262f2f50e9b170e20d9a95caaf62b0cabf58bb4ba7659dfaeff04c311"
+    },
+    "task.md": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/task.md",
+      "bytes": 7055,
+      "sha256": "f3bbcfe8671a3fdfdb2f95b5bde9de3896aaa2f6eba02724c3f1536503358e02"
+    },
+    "task-state.json": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/task-state.json",
+      "bytes": 8730,
+      "sha256": "86252cbab82df7bf88da0aea46134fd3f384e232a7aeda9389fdbb2a14b858c3"
+    },
+    "runtime-binding-observation.json": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/runtime-binding-observation.json",
+      "bytes": 51018,
+      "sha256": "8fbffc343a6d8532bb50be89b29e0ec7cb928ab395d710672f88cc8fcb499d3e"
+    },
+    "check_runtime_binding.py": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/check_runtime_binding.py",
+      "bytes": 7722,
+      "sha256": "4e0d982851a21edd604c380c19e71d7db233464458ab3bed93094441801dbe04"
+    },
+    "checks-runtime-binding.json": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/checks-runtime-binding.json",
+      "bytes": 7993,
+      "sha256": "9e6a73f04d78b73044692fac36f46f91794dd03f34e47b20bf1d97877a68c83e"
+    },
+    "checks-common-refresh.json": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/checks-common-refresh.json",
+      "bytes": 11696,
+      "sha256": "89cfa958b36f8ba7058b3dd963b7ea8f77a8e1ebe2e3c7e4150d5d30f5bc436b"
+    }
+  },
+  "validation": {
+    "passed": true,
+    "groupedChecks": "Affected common-refresh checks passed; prior runtime and 8/8 semantic checks reused",
+    "evidence": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/checks-common-refresh.json",
+      "bytes": 11696,
+      "sha256": "89cfa958b36f8ba7058b3dd963b7ea8f77a8e1ebe2e3c7e4150d5d30f5bc436b"
+    },
+    "packageEvidence": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/package-verification.json",
+      "bytes": 1686,
+      "sha256": "875159df07184790e90d43ccf1fccaaf63ac846dae97a2b1c11acbf402aed4d0"
+    },
+    "successfulConfiguredSemanticProjectionVerified": true,
+    "successfulConfiguredRuntimeProjectionVerified": false,
+    "currentW01PureMetadataAccepted": true,
+    "actualInstalledRedisUseVerified": false,
+    "nativeAcceptance": false,
+    "repeatPolicy": "No full 20-Pin suite, runtime suite or environment probing repeated; only affected supplied originals and registration checked.",
+    "historicalEvidence": [
+      "history/r1/checks.json:13/13 historical r1",
+      "history/pre-r2-consumption/checks-redis.json:9/9 historical unknown-semantics augmentation",
+      "history/pre-runtime-binding/checks-redis.json:8/8 prior immutable semantic scope",
+      "history/pre-common-refresh-20261014/package-verification.json: prior 20-Pin package result reused, not repeated"
+    ],
+    "W02ExistingVerificationReused": "Pinned r2 verification.json 19/19; not repeated by W08.",
+    "remoteCalls": 0,
+    "businessWrites": 0,
+    "backupRestoreExecuted": false,
+    "nativeApplicationFilePinsNotVerified": 26,
+    "wholePackagePinSuiteRepeated": false
+  },
+  "actualRedisSemantics": {
+    "classification": "REBUILD",
+    "authority": "MYSQL",
+    "rebuildFrom": "DATABASE",
+    "executorKey": "smallapp.redis-session-cache.mysql.v1",
+    "policyPin": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/r2-contracts/redis-policy.json",
+      "bytes": 1985,
+      "sha256": "b2128045af3d5a377731afff41a2832c23d4efdea15a4ab68980fa9ef2a3a61f"
+    },
+    "existingAdapterContractPin": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-full-incremental-capture-dev/smallapp-three-component-20261014/existing-derived-adapter-contract.json",
+      "bytes": 3178,
+      "sha256": "fdbaa3054a6c9819fbd27bde6887e3ed4b9bb8ea71f50ae1ead1abcc02ba9e03"
+    },
+    "sourcePrefix": "brlab-20261012:smallapp:122:source:",
+    "targetPrefix": "brlab-20261012:smallapp:122:target:",
+    "declaredDatabaseIndex": 0,
+    "actualServerVersion": "7.4.8",
+    "publicAliasForBothRoles": "smallapp.redis",
+    "privateBindingScope": "Actual distinct SOURCE/TARGET logical references are known; native registry/bridge resolver unresolved, no OWNER_BOUND assertion.",
+    "freshTargetInitialState": "Redis empty at owner observation; whole-target current freshness and final restore acceptance remain unknown",
+    "startupState": "PROTECTED",
+    "reloginRequired": true,
+    "reloginMeaning": "Independent target browser after authorized OPEN; preserve valid restored SQL sessions and original expiry."
+  },
+  "preservedW05R1": {
+    "at": "2026-10-14T03:09:47.938848+00:00",
+    "state": "SOURCE_V1_PROTECTED_INSTALLED_WAITING_EXACT_W02_THREE_COMPONENT_DELIVERY",
+    "actualSourceVersion": "smallapp-20261014-r1",
+    "actualSourceSchema": "brlab_20261012_smallapp_source_20261014_r1",
+    "actualSourceBucket": "brlab-20261012-smallapp-source-20261014-r1",
+    "sourceSchemaReady": true,
+    "sourceApplicationReadyScope": "Installed historical 22-file MySQL/MinIO v1 only",
+    "applicationProtectedStartupExecuted": true,
+    "currentThreeComponentCandidateReady": false,
+    "redisApplicationConsumerInstalled": false,
+    "businessDataWritten": false,
+    "artifacts": {
+      "actualImage": {
+        "bytes": 5376,
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-recovery-environment-dev/smallapp-install-20261014/build_compatible.json",
+        "sha256": "b2e20f9d2d2664f97e4eedbdabe68fa81c34d86e313f7a142a2aeef47e0820ef"
+      },
+      "actualInstallation": {
+        "bytes": 901075,
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-recovery-environment-dev/smallapp-install-20261014/source-final-v1-actual-installation.json",
+        "sha256": "a94044705a40c474a636439253194483dff2daee1fe315e3a9623325681329f2"
+      },
+      "actualRuntimeClosure": {
+        "bytes": 882223,
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-recovery-environment-dev/smallapp-install-20261014/stage_reconcile.json",
+        "sha256": "0b7879ff15b5e8e4d3db0bc6523b401b85dbeffa9b1dff1b07ad42bda5879b09"
+      },
+      "consumedFiveConfiguration": {
+        "bytes": 5374,
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-recovery-environment-dev/smallapp-install-20261014/configure_r2.json",
+        "sha256": "cb06aee4d2315e21040abb0ab7fe92dd8f08d7bf1ac0b7e77571db02736709b7"
+      },
+      "criticalChecks": {
+        "bytes": 1326,
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-recovery-environment-dev/smallapp-resource-20261014/critical-checks.json",
+        "sha256": "a09de1db80100f66d91b22da5544fef805b91fb53fe3e7ab201eddae2992a7a7"
+      },
+      "sourceBootstrap": {
+        "bytes": 7706,
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-recovery-environment-dev/smallapp-install-20261014/complete_bootstrap_utf8.json",
+        "sha256": "c7b014d8de2e525eabea4f0b48a9df286d15589bb2a97843c66ae4cc377302bf"
+      },
+      "sourceStart": {
+        "bytes": 10748,
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-recovery-environment-dev/smallapp-install-20261014/verify_source_final.json",
+        "sha256": "3f6f800c984fc0d200105e98a32659f77e00bdc8907b9230434bf58fac0b1829"
+      }
+    }
+  },
+  "currentR2InstallationAccepted": false,
+  "consumption": {
+    "sameOriginalRegistry": true,
+    "newRegistryOrSigningSystem": false,
+    "nativeRegistryWired": false,
+    "executionReady": false,
+    "commonEngineSelectionRef": "common-engine-smallapp-r2-20261014",
+    "commonEngineArtifactVersionEntryVerified": false,
+    "uiWireChanged": false,
+    "pureRedisInterface": "registration.redis_inputs(value, action, target_ref=None, scope=\"RUNTIME\") -> ApplicationRedisInputs/v1; explicit SEMANTIC scope succeeds with runtimeMissing.",
+    "spugDisplayInterface": "Exact six-field applications fragment with current SHA; original owner supplies actual settings/selection/transport.",
+    "currentW01MetadataObservation": {
+      "observedAt": "2026-10-14T10:24:25.357119+00:00",
+      "redisInstanceFields": [
+        "state",
+        "role",
+        "configRef",
+        "containerId",
+        "endpoint",
+        "databaseIndex",
+        "keyPrefix",
+        "serverVersion",
+        "runtimeConfigurationPin",
+        "secretRole",
+        "resourceProofPin",
+        "applicationUseProofPin",
+        "instanceId",
+        "secretReference"
+      ],
+      "structureAccepted": true,
+      "errorCode": null,
+      "actionChecksPin": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/checks-common-refresh.json",
+        "bytes": 11696,
+        "sha256": "89cfa958b36f8ba7058b3dd963b7ea8f77a8e1ebe2e3c7e4150d5d30f5bc436b"
+      },
+      "installedParserCorrespondenceVerified": true,
+      "installedParserPin": {
+        "bytes": 47671,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_registration.py",
+        "sha256": "559e0e607626fd93bf76cdf995f89c4c9b4f5832759996619a5a07ce85da0264"
+      },
+      "nativeAcceptance": false
+    },
+    "commonEngineObservedPins": {
+      "engineSelectionRef": "common-engine-smallapp-r2-20261014",
+      "engineArtifactPin": {
+        "bytes": 332335,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-engine.tar.gz",
+        "sha256": "6f0b261fb191aa3f5fc00bd5d73b08493fbdf3e2e969cfa3c04dfd1a68edb0e2"
+      },
+      "engineVersionPin": {
+        "bytes": 56922,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-engine-version.json",
+        "sha256": "34392ca1ce897ac625f5755fe273823c4ec5303b9b99a60ac2c4c0a81730dbe0"
+      },
+      "engineEntryPin": {
+        "bytes": 56366,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_executor.py",
+        "sha256": "8316efd41335b55805c19f3531d6b04c19b4641145939e5b224be3bd57d48474"
+      }
+    },
+    "commonEngineObservedPinsMeaning": "Owner installation original observation only; engine approval and actual IntRuoyi deployment equivalence are not verified.",
+    "currentW01ActionInputsPin": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/checks-common-refresh.json",
+      "bytes": 11696,
+      "sha256": "89cfa958b36f8ba7058b3dd963b7ea8f77a8e1ebe2e3c7e4150d5d30f5bc436b"
+    },
+    "commonEngineObservedClosurePin": {
+      "bytes": 971225,
+      "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-installed-closure.original.json",
+      "sha256": "abb4ead7418ebcc9ece8eb5b153fbcfa9ef688110298b045af54d3e8c0461f83"
+    }
+  },
+  "waiting": {
+    "W05": "Installed r2 source/image/Linux Python/eleven dependencies/five configs and isolated Redis are consumed. Supply actual signed-installation/runtime trust/proof/service inputs through W01 issuer; bind actual private resolver roles to native Registry/bridge. Whole-target freshness remains target-only; business-use proof follows separately authorized real login.",
+    "W01": "Bind original authenticated source/target resourceBindingPin/nativeConfigPin, installed runtime/trust/service originals, current selected engine approval and real private bridge/authentication/current grant/HELD lease. Authenticate producer receipts on Linux. Actual IntRuoyi same-engine deployment equivalence is still unverified.",
+    "Spug": "Apply current registration SHA to existing tasks 7/8/9 and authenticated original W01 selections, actual bridge transport/authentication; projection is a fragment, not complete settings or authority.",
+    "W03": "Bind actual archive repositoryId/servicePin/policyPin. Produce authentic FULL before later I1 parent, and real selected recovery point before RESTORE.",
+    "W04": "Bind approved target DERIVED_DATA executor/trust/registration and real plan/request/DATABASE result/current target lock/guard/deadline/readback. W07-R2-01 expiry evidence fix affects target final acceptance; after actual installation refresh affected package/closure/version/trust pins, never claim permanent acceptance or freeze source FULL for this target fix.",
+    "root": "Finite grouped review is complete. Explicit staged real-business/FULL/I1/RESTORE release remains false at the consumed root observation; release each stage when its actual prerequisites are satisfied. No all-target/W05 completion prerequisite for source FULL."
+  },
+  "parentAlignmentPointer": "doc/tasks/20261010-backup-restore-modular-development/backup-server-rehearsal-20261012.json#mainChainDependencyReset20261013.smallAppSpugRehearsal20261014.firstSpugRunConvergence20261014.runtimeBindingContinuation20261014",
+  "retainedHistory": [
+    "history/r1/",
+    "history/pre-r2-consumption/",
+    "history/three-component/checks-initial.json",
+    "history/r2-checks-before-artifact-guard.json",
+    "history/pre-runtime-binding/",
+    "history/pre-common-refresh-20261014/"
+  ],
+  "runtimeAcceptance": {
+    "smallApp": false,
+    "IntRuoyi": false,
+    "Redis": false,
+    "FULL": false,
+    "INCREMENTAL": false,
+    "RESTORE": false,
+    "START_APPLICATION": false
+  },
+  "scope": {
+    "retainedWrites": "doc/tasks/20261014-backup-application-registration/ only",
+    "threadsOrAgentsCreated": 0,
+    "outgoingMessages": 0,
+    "monitorState": "PAUSED",
+    "remoteOperations": 0,
+    "businessWrites": 0,
+    "committed": false,
+    "pushed": false
+  },
+  "currentR2Installed": true,
+  "runtimeBindingContinuation20261014": {
+    "observedAt": "2026-10-14T10:26:18.092417+00:00",
+    "actualRuntimeBindingObservationPin": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/runtime-binding-observation.json",
+      "bytes": 51018,
+      "sha256": "8fbffc343a6d8532bb50be89b29e0ec7cb928ab395d710672f88cc8fcb499d3e"
+    },
+    "affectedChecksPin": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/checks-common-refresh.json",
+      "bytes": 11696,
+      "sha256": "89cfa958b36f8ba7058b3dd963b7ea8f77a8e1ebe2e3c7e4150d5d30f5bc436b"
+    },
+    "sourceR2Installed": true,
+    "targetConfigurationKnown": true,
+    "currentW01PureMetadataAccepted": true,
+    "runtimeAcceptance": false,
+    "sourceFullWaitsForWholeTarget": false,
+    "W04ExpiryFixScope": "TARGET_FINAL_ACCEPTANCE_ONLY",
+    "actualNewPackageRequiresRebinding": true,
+    "commonRefresh20261014": {
+      "at": "2026-10-14T10:26:18.092417+00:00",
+      "state": "CURRENT_COMMON_REFRESH_REGISTRATION_BOUND_NATIVE_AUTHORITY_PENDING",
+      "transportPin": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-recovery-environment-dev/smallapp-r2-install-20261014/common-refresh.json",
+        "bytes": 23944,
+        "sha256": "d746b3f09b9f90bf3434dd2f46d95441ddd1dd9014307c4496fad19b5ccfe0b7"
+      },
+      "nativeOriginalPin": {
+        "bytes": 23646,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/refresh-result.original.json",
+        "sha256": "2ea4c2d86410a791b0ed8ef1465f3779b3b98bdbbdd71a274643d24e768a796a"
+      },
+      "currentObservedSelection": {
+        "engineSelectionRef": "common-engine-smallapp-r2-20261014",
+        "engineArtifactPin": {
+          "bytes": 332335,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-engine.tar.gz",
+          "sha256": "6f0b261fb191aa3f5fc00bd5d73b08493fbdf3e2e969cfa3c04dfd1a68edb0e2"
+        },
+        "engineVersionPin": {
+          "bytes": 56922,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-engine-version.json",
+          "sha256": "34392ca1ce897ac625f5755fe273823c4ec5303b9b99a60ac2c4c0a81730dbe0"
+        },
+        "engineEntryPin": {
+          "bytes": 56366,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_executor.py",
+          "sha256": "8316efd41335b55805c19f3531d6b04c19b4641145939e5b224be3bd57d48474"
+        }
+      },
+      "currentObservedClosurePin": {
+        "bytes": 971225,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-installed-closure.original.json",
+        "sha256": "abb4ead7418ebcc9ece8eb5b153fbcfa9ef688110298b045af54d3e8c0461f83"
+      },
+      "changedMemberCount": 3,
+      "currentInstalledCommonMemberCount": 63,
+      "actualLinuxImportExitCodeFromOwner": 0,
+      "checksPin": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/checks-common-refresh.json",
+        "bytes": 11696,
+        "sha256": "89cfa958b36f8ba7058b3dd963b7ea8f77a8e1ebe2e3c7e4150d5d30f5bc436b"
+      },
+      "applicationSourceRuntimeResourcesUnchanged": true,
+      "independentSignedInstallationAccepted": false,
+      "nativeSourceBindingAccepted": false,
+      "archiveServiceAccepted": false,
+      "runtimeAcceptance": false,
+      "previousDelivery": "history/pre-common-refresh-20261014/delivery.json",
+      "verificationScope": "Only supplied refresh originals and affected registration/current engine/closure/projection/pure parser checks; no full 20-Pin suite or environment probing."
+    }
+  },
+  "actualKnownRuntimeInputs": {
+    "observationPin": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/runtime-binding-observation.json",
+      "bytes": 51018,
+      "sha256": "8fbffc343a6d8532bb50be89b29e0ec7cb928ab395d710672f88cc8fcb499d3e"
+    },
+    "sourceVersion": "smallapp-20261014-r2-redis",
+    "installedSourceFileCount": 26,
+    "pythonVersion": "3.12.7",
+    "declaredDependencyCount": 11,
+    "consumedSourceConfigurationCount": 5,
+    "targetConfigurationKnown": true,
+    "redisServerVersion": "7.4.8",
+    "sourceWriterState": "PROTECTED",
+    "sourceClientHealth": "UP",
+    "sourceRedisDbSize": 0,
+    "businessDataWritten": false,
+    "applicationUseProofPin": null,
+    "currentEngineSelection": {
+      "engineSelectionRef": "common-engine-smallapp-r2-20261014",
+      "engineArtifactPin": {
+        "bytes": 332335,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-engine.tar.gz",
+        "sha256": "6f0b261fb191aa3f5fc00bd5d73b08493fbdf3e2e969cfa3c04dfd1a68edb0e2"
+      },
+      "engineVersionPin": {
+        "bytes": 56922,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-engine-version.json",
+        "sha256": "34392ca1ce897ac625f5755fe273823c4ec5303b9b99a60ac2c4c0a81730dbe0"
+      },
+      "engineEntryPin": {
+        "bytes": 56366,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_executor.py",
+        "sha256": "8316efd41335b55805c19f3531d6b04c19b4641145939e5b224be3bd57d48474"
+      }
+    },
+    "engineApproved": false,
+    "currentEngineClosurePin": {
+      "bytes": 971225,
+      "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-installed-closure.original.json",
+      "sha256": "abb4ead7418ebcc9ece8eb5b153fbcfa9ef688110298b045af54d3e8c0461f83"
+    },
+    "currentCommonRefresh": {
+      "at": "2026-10-14T10:26:18.092417+00:00",
+      "state": "CURRENT_COMMON_REFRESH_REGISTRATION_BOUND_NATIVE_AUTHORITY_PENDING",
+      "transportPin": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-recovery-environment-dev/smallapp-r2-install-20261014/common-refresh.json",
+        "bytes": 23944,
+        "sha256": "d746b3f09b9f90bf3434dd2f46d95441ddd1dd9014307c4496fad19b5ccfe0b7"
+      },
+      "nativeOriginalPin": {
+        "bytes": 23646,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/refresh-result.original.json",
+        "sha256": "2ea4c2d86410a791b0ed8ef1465f3779b3b98bdbbdd71a274643d24e768a796a"
+      },
+      "currentObservedSelection": {
+        "engineSelectionRef": "common-engine-smallapp-r2-20261014",
+        "engineArtifactPin": {
+          "bytes": 332335,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-engine.tar.gz",
+          "sha256": "6f0b261fb191aa3f5fc00bd5d73b08493fbdf3e2e969cfa3c04dfd1a68edb0e2"
+        },
+        "engineVersionPin": {
+          "bytes": 56922,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-engine-version.json",
+          "sha256": "34392ca1ce897ac625f5755fe273823c4ec5303b9b99a60ac2c4c0a81730dbe0"
+        },
+        "engineEntryPin": {
+          "bytes": 56366,
+          "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_executor.py",
+          "sha256": "8316efd41335b55805c19f3531d6b04c19b4641145939e5b224be3bd57d48474"
+        }
+      },
+      "currentObservedClosurePin": {
+        "bytes": 971225,
+        "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common-refresh-source-phase-20261014/common-installed-closure.original.json",
+        "sha256": "abb4ead7418ebcc9ece8eb5b153fbcfa9ef688110298b045af54d3e8c0461f83"
+      },
+      "changedMemberCount": 3,
+      "currentInstalledCommonMemberCount": 63,
+      "actualLinuxImportExitCodeFromOwner": 0,
+      "checksPin": {
+        "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/checks-common-refresh.json",
+        "bytes": 11696,
+        "sha256": "89cfa958b36f8ba7058b3dd963b7ea8f77a8e1ebe2e3c7e4150d5d30f5bc436b"
+      },
+      "applicationSourceRuntimeResourcesUnchanged": true,
+      "independentSignedInstallationAccepted": false,
+      "nativeSourceBindingAccepted": false,
+      "archiveServiceAccepted": false,
+      "runtimeAcceptance": false,
+      "previousDelivery": "history/pre-common-refresh-20261014/delivery.json",
+      "verificationScope": "Only supplied refresh originals and affected registration/current engine/closure/projection/pure parser checks; no full 20-Pin suite or environment probing."
+    }
+  },
+  "nativeUnconfigured": {
+    "installationPin": null,
+    "nativeRuntimeTrustPin": null,
+    "nativeRuntimeProofPin": null,
+    "serviceConfigurationPin": null,
+    "sourceResourceBindingPin": null,
+    "sourceNativeConfigPin": null,
+    "targetResourceBindingPin": null,
+    "targetNativeConfigPin": null,
+    "bridgeEndpoint": null,
+    "bridgePrivateAuthenticationBinding": null,
+    "currentGrantPin": null,
+    "currentHeldLeasePin": null,
+    "approvedDerivedExecutorBinding": null
+  },
+  "runtimeAcceptanceMeaning": "All execution/native/business-use/E2E acceptance fields remain false; actual installed/public runtime inputs are independently usable by owners.",
+  "previousDelivery": "history/pre-common-refresh-20261014/delivery.json"
+}

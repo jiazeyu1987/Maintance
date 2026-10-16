@@ -1,0 +1,342 @@
+{
+  "schemaVersion": "backup-restore-execution-contract/v1",
+  "taskId": "20261010-backup-restore-modular-development",
+  "status": "frozen_for_code_development",
+  "authorization": "latest explicit user instruction: module decomposition and code development; completion-only messaging; code before static review",
+  "rootThreadId": "01a11ee6-3845-7470-920b-ee6e52671dd2",
+  "rootImplementsProduct": false,
+  "scopeFunctions": 63,
+  "logicalModules": 7,
+  "executionGroups": 7,
+  "maxDepth": 3,
+  "communication": {
+    "initialAssignmentAllowed": true,
+    "messagesBeforeTaskCompletion": false,
+    "peerMessaging": false,
+    "intermediateProgressMessaging": false,
+    "ackRequired": false,
+    "finalDeliveryOnce": true,
+    "rootReadOnlyObservationAllowed": true,
+    "staticReviewAfterAllCodeTasksComplete": true
+  },
+  "runtime": {
+    "mode": "active_root_dispatcher",
+    "backgroundAutomation": false,
+    "monitoringAfterRootTurnEnds": "not_promised",
+    "snapshotSource": "Codex wait_threads",
+    "continuationTool": "send_message_to_thread",
+    "pollIntervalSeconds": 60
+  },
+  "phases": [
+    "interfaces_frozen",
+    "code_development",
+    "static_review",
+    "fix_and_integration",
+    "appropriate_validation"
+  ],
+  "assignments": [
+    {
+      "group": "W01",
+      "title": "备份恢复控制台与调度开发",
+      "threadId": null,
+      "hostId": null,
+      "taskId": "20261010-backup-recovery-control-dev",
+      "modules": [
+        "W01"
+      ],
+      "workspace": "D:/ProjectPackage/Int/IntRuoyiMaintance",
+      "baselineHead": "5c362fa541a5818152a26bbe9a45442c9d80bbbf",
+      "functionIds": [
+        "F02.1",
+        "F02.2",
+        "F02.3",
+        "F02.4",
+        "F02.5",
+        "F11.1"
+      ],
+      "phase": "code_development",
+      "creationState": "pending_create",
+      "writeScopeRef": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-backup-restore-modular-development/interface-contract.md",
+      "moduleExit": [
+        "assigned code implemented with concrete function coverage",
+        "appropriate local checks after implementation",
+        "stable source and evidence pins",
+        "one final delivery; missing real environment truthfully recorded"
+      ],
+      "maySpawnThreads": false,
+      "maySpawnSubagents": false
+    },
+    {
+      "group": "W02",
+      "title": "全量增量备份采集开发",
+      "threadId": null,
+      "hostId": null,
+      "taskId": "20261010-full-incremental-capture-dev",
+      "modules": [
+        "W02"
+      ],
+      "workspace": "D:/IntRuoyiWorktree/three-env-20260927-app/IntRuoyiBackend",
+      "baselineHead": "b08c05524702c4e3503034d7fe13f7dd87032ccf",
+      "functionIds": [
+        "F01.1",
+        "F01.2",
+        "F01.3",
+        "F03.1",
+        "F03.2",
+        "F03.3",
+        "F03.4",
+        "F03.5",
+        "F03.6",
+        "F04.1",
+        "F04.2"
+      ],
+      "phase": "code_development",
+      "creationState": "pending_create",
+      "writeScopeRef": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-backup-restore-modular-development/interface-contract.md",
+      "moduleExit": [
+        "assigned code implemented with concrete function coverage",
+        "appropriate local checks after implementation",
+        "stable source and evidence pins",
+        "one final delivery; missing real environment truthfully recorded"
+      ],
+      "maySpawnThreads": false,
+      "maySpawnSubagents": false
+    },
+    {
+      "group": "W03",
+      "title": "NAS归档与备份链开发",
+      "threadId": null,
+      "hostId": null,
+      "taskId": "20261010-nas-repository-chain-dev",
+      "modules": [
+        "W03"
+      ],
+      "workspace": "C:/Users/BJB110/.codex/worktrees/instance-snapshot-integration/IntRuoyiMaintance",
+      "baselineHead": "1fac5e7cb23d0cb7c41dbabffac7fbad0be7191b",
+      "functionIds": [
+        "F04.3",
+        "F04.5",
+        "F05.1",
+        "F05.2",
+        "F05.3",
+        "F05.4",
+        "F05.5",
+        "F05.6",
+        "F11.3",
+        "F11.4"
+      ],
+      "phase": "code_development",
+      "creationState": "pending_create",
+      "writeScopeRef": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-backup-restore-modular-development/interface-contract.md",
+      "moduleExit": [
+        "assigned code implemented with concrete function coverage",
+        "appropriate local checks after implementation",
+        "stable source and evidence pins",
+        "one final delivery; missing real environment truthfully recorded"
+      ],
+      "maySpawnThreads": false,
+      "maySpawnSubagents": false
+    },
+    {
+      "group": "W04",
+      "title": "备份整链与数据恢复开发",
+      "threadId": null,
+      "hostId": null,
+      "taskId": "20261010-recovery-data-chain-dev",
+      "modules": [
+        "W04"
+      ],
+      "workspace": "D:/ProjectPackage/Int/IntRuoyiMaintance",
+      "baselineHead": "5c362fa541a5818152a26bbe9a45442c9d80bbbf",
+      "functionIds": [
+        "F01.4",
+        "F04.4",
+        "F06.1",
+        "F06.2",
+        "F06.3",
+        "F06.4",
+        "F06.5",
+        "F07.1",
+        "F07.2",
+        "F07.3",
+        "F07.4",
+        "F07.5",
+        "F07.6",
+        "F10.1",
+        "F10.3",
+        "F10.4",
+        "F10.5"
+      ],
+      "phase": "code_development",
+      "creationState": "pending_create",
+      "writeScopeRef": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-backup-restore-modular-development/interface-contract.md",
+      "moduleExit": [
+        "assigned code implemented with concrete function coverage",
+        "appropriate local checks after implementation",
+        "stable source and evidence pins",
+        "one final delivery; missing real environment truthfully recorded"
+      ],
+      "maySpawnThreads": false,
+      "maySpawnSubagents": false
+    },
+    {
+      "group": "W05",
+      "title": "恢复环境与应用启动开发",
+      "threadId": null,
+      "hostId": null,
+      "taskId": "20261010-recovery-environment-dev",
+      "modules": [
+        "W05"
+      ],
+      "workspace": "D:/ProjectPackage/Int/IntRuoyiMaintance",
+      "baselineHead": "5c362fa541a5818152a26bbe9a45442c9d80bbbf",
+      "functionIds": [
+        "F01.5",
+        "F08.1",
+        "F08.2",
+        "F08.3",
+        "F08.4",
+        "F08.5",
+        "F10.2"
+      ],
+      "phase": "code_development",
+      "creationState": "pending_create",
+      "writeScopeRef": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-backup-restore-modular-development/interface-contract.md",
+      "moduleExit": [
+        "assigned code implemented with concrete function coverage",
+        "appropriate local checks after implementation",
+        "stable source and evidence pins",
+        "one final delivery; missing real environment truthfully recorded"
+      ],
+      "maySpawnThreads": false,
+      "maySpawnSubagents": false
+    },
+    {
+      "group": "W06",
+      "title": "恢复独立验证能力开发",
+      "threadId": null,
+      "hostId": null,
+      "taskId": "20261010-recovery-verification-dev",
+      "modules": [
+        "W06"
+      ],
+      "workspace": "D:/ProjectPackage/Int/IntRuoyiMaintance",
+      "baselineHead": "5c362fa541a5818152a26bbe9a45442c9d80bbbf",
+      "functionIds": [
+        "F09.1",
+        "F09.2",
+        "F09.3",
+        "F09.4",
+        "F09.5",
+        "F12.4"
+      ],
+      "phase": "code_development",
+      "creationState": "pending_create",
+      "writeScopeRef": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-backup-restore-modular-development/interface-contract.md",
+      "moduleExit": [
+        "assigned code implemented with concrete function coverage",
+        "appropriate local checks after implementation",
+        "stable source and evidence pins",
+        "one final delivery; missing real environment truthfully recorded"
+      ],
+      "maySpawnThreads": false,
+      "maySpawnSubagents": false
+    },
+    {
+      "group": "W07",
+      "title": "备份恢复诊断与持续验收开发",
+      "threadId": null,
+      "hostId": null,
+      "taskId": "20261010-recovery-observation-dev",
+      "modules": [
+        "W07"
+      ],
+      "workspace": "D:/ProjectPackage/Int/IntRuoyiMaintance",
+      "baselineHead": "5c362fa541a5818152a26bbe9a45442c9d80bbbf",
+      "functionIds": [
+        "F11.2",
+        "F11.5",
+        "F12.1",
+        "F12.2",
+        "F12.3",
+        "F12.5"
+      ],
+      "phase": "code_development",
+      "creationState": "pending_create",
+      "writeScopeRef": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-backup-restore-modular-development/interface-contract.md",
+      "moduleExit": [
+        "assigned code implemented with concrete function coverage",
+        "appropriate local checks after implementation",
+        "stable source and evidence pins",
+        "one final delivery; missing real environment truthfully recorded"
+      ],
+      "maySpawnThreads": false,
+      "maySpawnSubagents": false
+    }
+  ],
+  "inputPins": [
+    {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-backup-restore-modular-development/interface-contract.md",
+      "bytes": 18012,
+      "sha256": "c160612883ed4203ee99f50172a8bc117e4a790dddd9d43eb24716a026cf7481"
+    },
+    {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-backup-restore-modular-development/record-schemas.json",
+      "bytes": 22254,
+      "sha256": "ed38d1ea14aa1f0019aed08bffad3e40db91c47c28b07c5c8eb5df668c2cd3cb"
+    },
+    {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-backup-restore-global-decomposition/functional-decomposition.json",
+      "bytes": 28233,
+      "sha256": "32d779d43b8b79432222281ccaaf6802d89209bef4a9e20e7e61d4d95b108d24"
+    },
+    {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-backup-restore-global-decomposition/hierarchical-delivery-plan.json",
+      "bytes": 104540,
+      "sha256": "5e140947200dcbf4c31af5b6c8367ba803b52da58c343cc661ae951c11bd1045"
+    },
+    {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-backup-cross-thread-interfaces/interface-contract.json",
+      "bytes": 17942,
+      "sha256": "2e46a13129b7b38b5370387b1134770606e4f40cbd6dba143edc5151c015f070"
+    },
+    {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-backup-cross-thread-interfaces/schemas.json",
+      "bytes": 34063,
+      "sha256": "3778883e1bbfbc14c42f21ebac1a95db0bf90a3881e2e52b34ee47225276e621"
+    },
+    {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-backup-cross-thread-interfaces/delivery-manifest-v1.json",
+      "bytes": 3911,
+      "sha256": "2cd8ce09b54473eecb191d2dff588d59a2cf2026c669c428f088fbeed8eca537"
+    },
+    {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-backup-cross-thread-interfaces/owner-task-routing-v2.json",
+      "bytes": 5350,
+      "sha256": "5fb54ef7dfb3df55850851af2997e4f8325d9193b81be77330481459e4b74ca0"
+    },
+    {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-backup-cross-thread-interfaces/control-response-addendum-v2.json",
+      "bytes": 12311,
+      "sha256": "e7eaf5ce98d10f4470ee1bba0f3d77be52dd8cc680fe3f695f0e395925e5163f"
+    },
+    {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261010-backup-cross-thread-interfaces/coordination-addenda-v2-manifest.json",
+      "bytes": 1351,
+      "sha256": "9aa21f7acc8d77d300aa62ed6b2eb343d5f789272edf8b574de84d395f05c081"
+    }
+  ],
+  "deliveryFormat": "backup-restore-module-delivery/v1",
+  "actualRuntimeActionsAuthorized": false,
+  "commitPushDeployRequired": false,
+  "independentReviewRequired": "after all seven code tasks complete",
+  "threadCreation": {
+    "userRequest": "不要复用，hierarchical-task-delivery 技能里要求怎么创建线程的就怎么创建",
+    "mode": "new_independent_codex_project_threads",
+    "projectId": "local-e42161af1f7e37ce3281d1f462a196c0",
+    "environment": "local",
+    "subagents": false,
+    "priorFourThreads": "not_loaded; last turns interrupted; no dispatch sent; must not be resumed concurrently on transferred write scopes",
+    "actualIdsRef": "thread-creation-results.json"
+  }
+}

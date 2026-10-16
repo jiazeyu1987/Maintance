@@ -1,0 +1,2113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "Path": {
+      "type": "string",
+      "pattern": "^/[^\\x00]*$"
+    },
+    "Pin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "bytes",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/Path"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "Security": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capEff",
+        "capPrm",
+        "capInh",
+        "capBnd",
+        "capAmb",
+        "ambientState",
+        "ambientEvidencePin",
+        "noNewPrivs",
+        "getNoNewPrivsEvidencePin",
+        "supplementaryGroups",
+        "securityOriginalPin"
+      ],
+      "properties": {
+        "capEff": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{1,16}$"
+        },
+        "capPrm": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{1,16}$"
+        },
+        "capInh": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{1,16}$"
+        },
+        "capBnd": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{1,16}$"
+        },
+        "capAmb": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{1,16}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ambientState": {
+          "enum": [
+            "PRESENT",
+            "UNSUPPORTED_PROVEN"
+          ]
+        },
+        "ambientEvidencePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "noNewPrivs": {
+          "const": 1
+        },
+        "getNoNewPrivsEvidencePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "supplementaryGroups": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "minItems": 0,
+          "maxItems": 0
+        },
+        "securityOriginalPin": {
+          "$ref": "#/$defs/Pin"
+        }
+      }
+    },
+    "MeasuredIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pid",
+        "parentPid",
+        "startTicks",
+        "uid",
+        "gid",
+        "realUid",
+        "savedUid",
+        "filesystemUid",
+        "realGid",
+        "savedGid",
+        "filesystemGid",
+        "hostId",
+        "bootId",
+        "pidNamespace",
+        "mountNamespace",
+        "networkNamespace",
+        "userNamespace",
+        "rootDevice",
+        "rootInode",
+        "exePin",
+        "security",
+        "kernelIdentityOriginalPin"
+      ],
+      "properties": {
+        "pid": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "parentPid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "startTicks": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "uid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "gid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "realUid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "savedUid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "filesystemUid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "realGid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "savedGid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "filesystemGid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "hostId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "bootId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "pidNamespace": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "mountNamespace": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "networkNamespace": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "userNamespace": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "rootDevice": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "rootInode": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "exePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "security": {
+          "$ref": "#/$defs/Security"
+        },
+        "kernelIdentityOriginalPin": {
+          "$ref": "#/$defs/Pin"
+        }
+      }
+    },
+    "SourceAccess": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pin",
+        "ownerUid",
+        "ownerGid",
+        "mode",
+        "roles"
+      ],
+      "properties": {
+        "pin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "ownerUid": {
+          "const": 0
+        },
+        "ownerGid": {
+          "const": 0
+        },
+        "mode": {
+          "enum": [
+            "0444",
+            "0555"
+          ]
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[\\x20-\\x7e]+$"
+          },
+          "minItems": 1,
+          "maxItems": 8
+        }
+      }
+    },
+    "DirectoryAccess": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "ownerUid",
+        "ownerGid",
+        "mode",
+        "readOnly",
+        "usage"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/Path"
+        },
+        "ownerUid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ownerGid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mode": {
+          "enum": [
+            "0555",
+            "0750",
+            "0700"
+          ]
+        },
+        "readOnly": {
+          "type": "boolean"
+        },
+        "usage": {
+          "enum": [
+            "SOURCE_ANCESTOR",
+            "BROWSER_CWD",
+            "BROWSER_OUTPUT",
+            "SIGNER_SOCKET_PARENT",
+            "SIGNED_PUBLICATION_PARENT",
+            "A_SECRET_PARENT"
+          ]
+        }
+      }
+    },
+    "CommandSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "commandId",
+        "argv",
+        "cwd",
+        "sourcePins"
+      ],
+      "properties": {
+        "action": {
+          "enum": [
+            "BROWSER_NATIVE_CAPABILITY_PROBE",
+            "BROWSER_ABOUT_BLANK"
+          ]
+        },
+        "commandId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "argv": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[\\x20-\\x7e]+$"
+          },
+          "minItems": 1,
+          "maxItems": 32
+        },
+        "cwd": {
+          "$ref": "#/$defs/Path"
+        },
+        "sourcePins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          },
+          "minItems": 1,
+          "maxItems": 4096
+        }
+      }
+    },
+    "Environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "PATH",
+        "LC_ALL",
+        "LANG",
+        "PYTHONUTF8",
+        "PYTHONDONTWRITEBYTECODE",
+        "HOME",
+        "TMPDIR"
+      ],
+      "properties": {
+        "PATH": {
+          "const": "/usr/sbin:/usr/bin:/sbin:/bin"
+        },
+        "LC_ALL": {
+          "const": "C"
+        },
+        "LANG": {
+          "const": "C"
+        },
+        "PYTHONUTF8": {
+          "const": "1"
+        },
+        "PYTHONDONTWRITEBYTECODE": {
+          "const": "1"
+        },
+        "HOME": {
+          "$ref": "#/$defs/Path"
+        },
+        "TMPDIR": {
+          "$ref": "#/$defs/Path"
+        }
+      }
+    },
+    "IdentitySelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "rehearsalId",
+        "selectionId",
+        "hostId",
+        "targetId",
+        "executorId",
+        "sourceScopePin",
+        "executorInstallationPin",
+        "controllerIdentityPin",
+        "controllerRuntimeProofPin",
+        "authorityKeyPin",
+        "browserUid",
+        "browserGid",
+        "signerUid",
+        "signerGid",
+        "bootstrapMode",
+        "bootstrapLauncherPin",
+        "pidNamespaceMode",
+        "browserRootPath",
+        "signerRootPath",
+        "workingDirectory",
+        "evidenceRoot",
+        "signerSocketPath",
+        "signedPublicationRoot",
+        "privateKeyPin",
+        "environment",
+        "sourceAccess",
+        "directoryAccess",
+        "browserExecutablePin",
+        "capabilityProbeEntryPin",
+        "capabilityProbeArgv",
+        "producerEntryPin",
+        "signerEntryPin",
+        "maximumAgeMilliseconds",
+        "maximumRecords",
+        "issuedAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "RepositoryLabBrowserIdentitySelection/v1"
+        },
+        "rehearsalId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "selectionId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "hostId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "targetId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "executorId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "sourceScopePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "executorInstallationPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "controllerIdentityPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "controllerRuntimeProofPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "authorityKeyPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "browserUid": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4294967294
+        },
+        "browserGid": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4294967294
+        },
+        "signerUid": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4294967294
+        },
+        "signerGid": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4294967294
+        },
+        "bootstrapMode": {
+          "const": "INDEPENDENT_PRIVILEGED_LAUNCHER_BEFORE_IDENTITY_DROP"
+        },
+        "bootstrapLauncherPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "pidNamespaceMode": {
+          "const": "SHARED_WITH_SELECTED_ROOT_PID1_AND_A"
+        },
+        "browserRootPath": {
+          "$ref": "#/$defs/Path"
+        },
+        "signerRootPath": {
+          "$ref": "#/$defs/Path"
+        },
+        "workingDirectory": {
+          "$ref": "#/$defs/Path"
+        },
+        "evidenceRoot": {
+          "$ref": "#/$defs/Path"
+        },
+        "signerSocketPath": {
+          "$ref": "#/$defs/Path"
+        },
+        "signedPublicationRoot": {
+          "$ref": "#/$defs/Path"
+        },
+        "privateKeyPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "environment": {
+          "$ref": "#/$defs/Environment"
+        },
+        "sourceAccess": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceAccess"
+          },
+          "minItems": 1,
+          "maxItems": 4096
+        },
+        "directoryAccess": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DirectoryAccess"
+          },
+          "minItems": 1,
+          "maxItems": 4096
+        },
+        "browserExecutablePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "capabilityProbeEntryPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "capabilityProbeArgv": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[\\x20-\\x7e]+$"
+          },
+          "minItems": 1,
+          "maxItems": 32
+        },
+        "producerEntryPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "signerEntryPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "maximumAgeMilliseconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 300000
+        },
+        "maximumRecords": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        },
+        "issuedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        }
+      }
+    },
+    "BrowserTrust": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "rehearsalId",
+        "runtimeId",
+        "runtimeRole",
+        "labRoot",
+        "backingRootPath",
+        "literalRoots",
+        "browserIdentitySelectionPin",
+        "immutableRuntimeArtifactDigest",
+        "vendorArtifactPins",
+        "nativeFilePins",
+        "installedSourcePins"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "RepositoryLabBrowserRuntimeTrust/v1"
+        },
+        "rehearsalId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "runtimeId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "runtimeRole": {
+          "const": "BROWSER_PRODUCER"
+        },
+        "labRoot": {
+          "$ref": "#/$defs/Path"
+        },
+        "backingRootPath": {
+          "$ref": "#/$defs/Path"
+        },
+        "literalRoots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Path"
+          },
+          "minItems": 1,
+          "maxItems": 16
+        },
+        "browserIdentitySelectionPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "immutableRuntimeArtifactDigest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "vendorArtifactPins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          },
+          "minItems": 1,
+          "maxItems": 4096
+        },
+        "nativeFilePins": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pin",
+              "roles",
+              "vendorArtifactPins"
+            ],
+            "properties": {
+              "pin": {
+                "$ref": "#/$defs/Pin"
+              },
+              "roles": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^[\\x20-\\x7e]+$"
+                },
+                "minItems": 1,
+                "maxItems": 8
+              },
+              "vendorArtifactPins": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Pin"
+                },
+                "minItems": 1,
+                "maxItems": 4096
+              }
+            }
+          },
+          "minItems": 1,
+          "maxItems": 4096
+        },
+        "installedSourcePins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          },
+          "minItems": 1,
+          "maxItems": 4096
+        }
+      }
+    },
+    "BrowserProof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "rehearsalId",
+        "runtimeId",
+        "runtimeRole",
+        "browserIdentitySelectionPin",
+        "nativeRuntimeTrustPin",
+        "executorInstallationPin",
+        "controllerIdentityPin",
+        "controllerRuntimeProofPin",
+        "managerIdentity",
+        "producerIdentity",
+        "signerIdentity",
+        "immutableRuntimeArtifactDigest",
+        "readOnlyMountEvidencePin",
+        "managerIdentityEvidencePin",
+        "nativeLinkageEvidencePin",
+        "directoryAccessEvidencePin",
+        "completeSourceReadEvidencePin",
+        "workerKeyDenialEvidencePin",
+        "bootstrapOriginalPin",
+        "issuedAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "RepositoryLabBrowserRuntimeProof/v1"
+        },
+        "rehearsalId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "runtimeId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "runtimeRole": {
+          "const": "BROWSER_PRODUCER"
+        },
+        "browserIdentitySelectionPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "nativeRuntimeTrustPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "executorInstallationPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "controllerIdentityPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "controllerRuntimeProofPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "managerIdentity": {
+          "$ref": "#/$defs/MeasuredIdentity"
+        },
+        "producerIdentity": {
+          "$ref": "#/$defs/MeasuredIdentity"
+        },
+        "signerIdentity": {
+          "$ref": "#/$defs/MeasuredIdentity"
+        },
+        "immutableRuntimeArtifactDigest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "readOnlyMountEvidencePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "managerIdentityEvidencePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "nativeLinkageEvidencePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "directoryAccessEvidencePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "completeSourceReadEvidencePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "workerKeyDenialEvidencePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "bootstrapOriginalPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "issuedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        }
+      }
+    },
+    "ParticipantIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "rehearsalId",
+        "role",
+        "browserIdentitySelectionPin",
+        "browserRuntimeProofPin",
+        "identity",
+        "issuedAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "RepositoryLabBrowserParticipantIdentity/v1"
+        },
+        "rehearsalId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "role": {
+          "enum": [
+            "BROWSER_PRODUCER",
+            "AUTHORITY_A"
+          ]
+        },
+        "browserIdentitySelectionPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "browserRuntimeProofPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "identity": {
+          "$ref": "#/$defs/MeasuredIdentity"
+        },
+        "issuedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        }
+      }
+    },
+    "GuardMeasurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "rehearsalId",
+        "browserIdentitySelectionPin",
+        "browserRuntimeProofPin",
+        "qualificationIntentPin",
+        "authorizationPin",
+        "leasePin",
+        "controllerIdentity",
+        "managerIdentity",
+        "producerIdentity",
+        "signerIdentity",
+        "directoryAccessEvidencePin",
+        "completeSourceReadEvidencePin",
+        "workerKeyDenialEvidencePin",
+        "measuredAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "RepositoryLabBrowserGuardMeasurement/v1"
+        },
+        "rehearsalId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "browserIdentitySelectionPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "browserRuntimeProofPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "qualificationIntentPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "authorizationPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "leasePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "controllerIdentity": {
+          "$ref": "#/$defs/MeasuredIdentity"
+        },
+        "managerIdentity": {
+          "$ref": "#/$defs/MeasuredIdentity"
+        },
+        "producerIdentity": {
+          "$ref": "#/$defs/MeasuredIdentity"
+        },
+        "signerIdentity": {
+          "$ref": "#/$defs/MeasuredIdentity"
+        },
+        "directoryAccessEvidencePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "completeSourceReadEvidencePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "workerKeyDenialEvidencePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "measuredAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        }
+      }
+    },
+    "ProbeItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "state",
+        "returnValue",
+        "errno",
+        "originalPin"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "state": {
+          "enum": [
+            "PASSED",
+            "FAILED",
+            "UNSUPPORTED",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "returnValue": {
+          "type": "integer"
+        },
+        "errno": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "originalPin": {
+          "$ref": "#/$defs/Pin"
+        }
+      }
+    },
+    "SandboxCapabilityResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "rehearsalId",
+        "browserIdentitySelectionPin",
+        "browserRuntimeProofPin",
+        "qualificationIntentPin",
+        "processResultPin",
+        "kernelRelease",
+        "kernelConfigurationEvidencePin",
+        "containerSecurityPolicyEvidencePin",
+        "probes",
+        "issuedAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "RepositoryLabBrowserSandboxCapabilityResult/v1"
+        },
+        "rehearsalId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "browserIdentitySelectionPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "browserRuntimeProofPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "qualificationIntentPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "processResultPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "kernelRelease": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "kernelConfigurationEvidencePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "containerSecurityPolicyEvidencePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "probes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ProbeItem"
+          },
+          "minItems": 1,
+          "maxItems": 32
+        },
+        "issuedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        }
+      }
+    },
+    "SandboxEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "rehearsalId",
+        "browserIdentitySelectionPin",
+        "browserRuntimeProofPin",
+        "qualificationIntentPin",
+        "sandboxCapabilityResultPin",
+        "browserPid",
+        "browserStartTicks",
+        "descendantKernelOriginalPins",
+        "namespaceMappingOriginalPins",
+        "seccompFilterOriginalPins",
+        "selectedSandbox",
+        "setuidSandboxUsed",
+        "sandboxDisabled",
+        "observedAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "RepositoryLabBrowserSandboxEvidence/v1"
+        },
+        "rehearsalId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "browserIdentitySelectionPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "browserRuntimeProofPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "qualificationIntentPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "sandboxCapabilityResultPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "browserPid": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "browserStartTicks": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "descendantKernelOriginalPins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          },
+          "minItems": 1,
+          "maxItems": 4096
+        },
+        "namespaceMappingOriginalPins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          },
+          "minItems": 1,
+          "maxItems": 4096
+        },
+        "seccompFilterOriginalPins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          },
+          "minItems": 1,
+          "maxItems": 4096
+        },
+        "selectedSandbox": {
+          "const": "USER_NAMESPACE_AND_SECCOMP_BPF"
+        },
+        "setuidSandboxUsed": {
+          "const": false
+        },
+        "sandboxDisabled": {
+          "const": false
+        },
+        "observedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        }
+      }
+    },
+    "AuthorityReady": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "browserIdentitySelectionPin",
+        "browserRuntimeProofPin",
+        "authorityIdentityPin"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "RepositoryLabNativeAuthorityReady/v2"
+        },
+        "browserIdentitySelectionPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "browserRuntimeProofPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "authorityIdentityPin": {
+          "$ref": "#/$defs/Pin"
+        }
+      }
+    },
+    "SignerRequest": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "originalPin",
+            "browserIdentitySelectionPin",
+            "browserRuntimeProofPin"
+          ],
+          "properties": {
+            "originalPin": {
+              "$ref": "#/$defs/Pin"
+            },
+            "browserIdentitySelectionPin": {
+              "$ref": "#/$defs/Pin"
+            },
+            "browserRuntimeProofPin": {
+              "$ref": "#/$defs/Pin"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "guardRuntimeProofPin",
+            "browserIdentitySelectionPin"
+          ],
+          "properties": {
+            "guardRuntimeProofPin": {
+              "$ref": "#/$defs/Pin"
+            },
+            "browserIdentitySelectionPin": {
+              "$ref": "#/$defs/Pin"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "finishLaunchPin",
+            "browserIdentitySelectionPin",
+            "browserRuntimeProofPin"
+          ],
+          "properties": {
+            "finishLaunchPin": {
+              "$ref": "#/$defs/Pin"
+            },
+            "browserIdentitySelectionPin": {
+              "$ref": "#/$defs/Pin"
+            },
+            "browserRuntimeProofPin": {
+              "$ref": "#/$defs/Pin"
+            }
+          }
+        }
+      ]
+    },
+    "SignerResponse": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "signedPin"
+          ],
+          "properties": {
+            "signedPin": {
+              "$ref": "#/$defs/Pin"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "measurementPin",
+            "authorityIdentityPin"
+          ],
+          "properties": {
+            "measurementPin": {
+              "$ref": "#/$defs/Pin"
+            },
+            "authorityIdentityPin": {
+              "$ref": "#/$defs/Pin"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "finishedLaunchPin"
+          ],
+          "properties": {
+            "finishedLaunchPin": {
+              "$ref": "#/$defs/Pin"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "schemas": {
+    "RepositoryLabNativeQualificationIntent/v2": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "authorityKeyPin",
+        "authorizationPin",
+        "commandSelections",
+        "deadlineMilliseconds",
+        "executorId",
+        "expiresAt",
+        "hostId",
+        "installationPin",
+        "issuedAt",
+        "leasePin",
+        "operationId",
+        "phase",
+        "qualificationId",
+        "rehearsalId",
+        "sourceScopePin",
+        "targetId",
+        "browserIdentitySelectionPin",
+        "browserRuntimeProofPin",
+        "sandboxCapabilityResultPin"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "RepositoryLabNativeQualificationIntent/v2"
+        },
+        "authorityKeyPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "authorizationPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "commandSelections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CommandSelection"
+          },
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "deadlineMilliseconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 300000
+        },
+        "executorId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "hostId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "installationPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "issuedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "leasePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "phase": {
+          "enum": [
+            "NATIVE_BROWSER_CAPABILITY",
+            "NATIVE_BROWSER_QUALIFICATION"
+          ]
+        },
+        "qualificationId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "rehearsalId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "sourceScopePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "targetId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "browserIdentitySelectionPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "browserRuntimeProofPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "sandboxCapabilityResultPin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Pin"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "RepositoryLabNativeQualificationAuthorization/v2": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "actions",
+        "approved",
+        "executorId",
+        "expiresAt",
+        "hostId",
+        "notBefore",
+        "operationId",
+        "phase",
+        "qualificationId",
+        "rehearsalId",
+        "targetId",
+        "browserIdentitySelectionPin",
+        "browserRuntimeProofPin",
+        "sourceScopePin",
+        "installationPin"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "RepositoryLabNativeQualificationAuthorization/v2"
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "BROWSER_NATIVE_CAPABILITY_PROBE",
+              "BROWSER_ABOUT_BLANK"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "approved": {
+          "const": true
+        },
+        "executorId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "hostId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "notBefore": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "phase": {
+          "enum": [
+            "NATIVE_BROWSER_CAPABILITY",
+            "NATIVE_BROWSER_QUALIFICATION"
+          ]
+        },
+        "qualificationId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "rehearsalId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "targetId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "browserIdentitySelectionPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "browserRuntimeProofPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "sourceScopePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "installationPin": {
+          "$ref": "#/$defs/Pin"
+        }
+      }
+    },
+    "RepositoryLabNativeQualificationLease/v2": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "executorId",
+        "expiresAt",
+        "fenceToken",
+        "hostId",
+        "leaseId",
+        "notBefore",
+        "operationId",
+        "phase",
+        "qualificationId",
+        "rehearsalId",
+        "state",
+        "targetId",
+        "browserIdentitySelectionPin",
+        "browserRuntimeProofPin",
+        "sourceScopePin",
+        "installationPin"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "RepositoryLabNativeQualificationLease/v2"
+        },
+        "executorId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "fenceToken": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "hostId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "leaseId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "notBefore": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "phase": {
+          "enum": [
+            "NATIVE_BROWSER_CAPABILITY",
+            "NATIVE_BROWSER_QUALIFICATION"
+          ]
+        },
+        "qualificationId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "rehearsalId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "state": {
+          "const": "HELD"
+        },
+        "targetId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "browserIdentitySelectionPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "browserRuntimeProofPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "sourceScopePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "installationPin": {
+          "$ref": "#/$defs/Pin"
+        }
+      }
+    },
+    "RepositoryLabNativeQualificationLaunch/v2": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "allowedCallerPin",
+        "authorityKeyPin",
+        "authorizationPin",
+        "evidenceRoot",
+        "expiresAt",
+        "installationPin",
+        "issuedAt",
+        "leasePin",
+        "observationSocketPath",
+        "producerEntryPin",
+        "qualificationIntentPin",
+        "rehearsalId",
+        "signerEntryPin",
+        "browserIdentitySelectionPin",
+        "browserRuntimeProofPin"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "RepositoryLabNativeQualificationLaunch/v2"
+        },
+        "allowedCallerPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "authorityKeyPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "authorizationPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "evidenceRoot": {
+          "$ref": "#/$defs/Path"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "installationPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "issuedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "leasePin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "observationSocketPath": {
+          "$ref": "#/$defs/Path"
+        },
+        "producerEntryPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "qualificationIntentPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "rehearsalId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "signerEntryPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "browserIdentitySelectionPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "browserRuntimeProofPin": {
+          "$ref": "#/$defs/Pin"
+        }
+      }
+    },
+    "RepositoryLabNativeQualificationProvision/v2": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "launchPin",
+        "maximumAgeMilliseconds",
+        "maximumObservations",
+        "privateKeyPin",
+        "producerIdentityPin",
+        "rehearsalId",
+        "signerGid",
+        "signerRootPath",
+        "signerSocketPath",
+        "signerUid",
+        "workingDirectory",
+        "browserIdentitySelectionPin",
+        "browserRuntimeProofPin",
+        "producerUid",
+        "producerGid",
+        "controllerIdentityPin"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "RepositoryLabNativeQualificationProvision/v2"
+        },
+        "launchPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "maximumAgeMilliseconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 300000
+        },
+        "maximumObservations": {
+          "const": 1
+        },
+        "privateKeyPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "producerIdentityPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "rehearsalId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "signerGid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "signerRootPath": {
+          "$ref": "#/$defs/Path"
+        },
+        "signerSocketPath": {
+          "$ref": "#/$defs/Path"
+        },
+        "signerUid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "workingDirectory": {
+          "$ref": "#/$defs/Path"
+        },
+        "browserIdentitySelectionPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "browserRuntimeProofPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "producerUid": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4294967294
+        },
+        "producerGid": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4294967294
+        },
+        "controllerIdentityPin": {
+          "$ref": "#/$defs/Pin"
+        }
+      }
+    },
+    "RepositoryLabNativeQualificationProcessInvocation/v2": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "actualExitCode",
+        "argv",
+        "bootId",
+        "childPid",
+        "childStartTicks",
+        "command",
+        "commandId",
+        "cwd",
+        "descendantState",
+        "executorId",
+        "finishedAt",
+        "gid",
+        "hostId",
+        "mountNamespace",
+        "nativeRuntimeProofPin",
+        "networkNamespace",
+        "operationId",
+        "phase",
+        "pidNamespace",
+        "pythonPin",
+        "qualificationId",
+        "rehearsalId",
+        "resultPin",
+        "sourcePins",
+        "startedAt",
+        "stderrPin",
+        "stdoutPin",
+        "supervisorPid",
+        "supervisorPin",
+        "supervisorStartTicks",
+        "targetId",
+        "terminationKind",
+        "uid",
+        "userNamespace",
+        "waitStatus",
+        "browserIdentitySelectionPin",
+        "browserRuntimeProofPin",
+        "producerIdentityPin",
+        "authorityIdentityPin",
+        "currentGuardMeasurementPins",
+        "sandboxEvidencePin"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "RepositoryLabNativeQualificationProcessInvocation/v2"
+        },
+        "actualExitCode": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "argv": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[\\x20-\\x7e]+$"
+          },
+          "minItems": 1,
+          "maxItems": 32
+        },
+        "bootId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "childPid": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "childStartTicks": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "command": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "commandId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "cwd": {
+          "$ref": "#/$defs/Path"
+        },
+        "descendantState": {
+          "enum": [
+            "REAPED",
+            "UNKNOWN"
+          ]
+        },
+        "executorId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "finishedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "gid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "hostId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "mountNamespace": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "nativeRuntimeProofPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "networkNamespace": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "phase": {
+          "enum": [
+            "NATIVE_BROWSER_CAPABILITY",
+            "NATIVE_BROWSER_QUALIFICATION"
+          ]
+        },
+        "pidNamespace": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "pythonPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "qualificationId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "rehearsalId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "resultPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "sourcePins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          },
+          "minItems": 1,
+          "maxItems": 4096
+        },
+        "startedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "stderrPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "stdoutPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "supervisorPid": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supervisorPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "supervisorStartTicks": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "targetId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "terminationKind": {
+          "enum": [
+            "EXITED",
+            "SIGNALED",
+            "UNKNOWN"
+          ]
+        },
+        "uid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "userNamespace": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "waitStatus": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "browserIdentitySelectionPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "browserRuntimeProofPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "producerIdentityPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "authorityIdentityPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "currentGuardMeasurementPins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          },
+          "minItems": 1,
+          "maxItems": 16
+        },
+        "sandboxEvidencePin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Pin"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "RepositoryLabNativeQualificationResult/v2": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "authorityIdentityPin",
+        "expiresAt",
+        "invocationPins",
+        "issuedAt",
+        "launchPin",
+        "operationId",
+        "phase",
+        "provisionPin",
+        "qualificationId",
+        "qualificationIntentPin",
+        "rehearsalId",
+        "state",
+        "browserIdentitySelectionPin",
+        "browserRuntimeProofPin"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "RepositoryLabNativeQualificationResult/v2"
+        },
+        "authorityIdentityPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "invocationPins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Pin"
+          },
+          "minItems": 1,
+          "maxItems": 4096
+        },
+        "issuedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        },
+        "launchPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "phase": {
+          "enum": [
+            "NATIVE_BROWSER_CAPABILITY",
+            "NATIVE_BROWSER_QUALIFICATION"
+          ]
+        },
+        "provisionPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "qualificationId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "qualificationIntentPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "rehearsalId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[\\x20-\\x7e]+$"
+        },
+        "state": {
+          "enum": [
+            "SUCCEEDED",
+            "FAILED",
+            "UNKNOWN"
+          ]
+        },
+        "browserIdentitySelectionPin": {
+          "$ref": "#/$defs/Pin"
+        },
+        "browserRuntimeProofPin": {
+          "$ref": "#/$defs/Pin"
+        }
+      }
+    }
+  }
+}

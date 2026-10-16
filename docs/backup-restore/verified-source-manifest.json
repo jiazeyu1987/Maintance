@@ -1,0 +1,2805 @@
+{
+  "verifiedAt": "2026-10-16",
+  "scope": "standard small application, two real FULL/incremental/fresh-target restore cycles",
+  "branch": "codex/backup-restore-verified-20261016",
+  "files": [
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/VERIFIED-20261016.md",
+      "sha256": "637842caa1f92adb48aff9011455ba203c13f9b580cc74fa1609c2a6801fbe8e",
+      "bytes": 1371,
+      "reason": "verified standard application success record"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/.dockerignore",
+      "sha256": "d11baa4f3aac1de3ff1a611f2c90e2708389b59e2c829abeea2d5baa253bb9d2",
+      "bytes": 75,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/Dockerfile",
+      "sha256": "0a8836065aa808bff975d2d68880935a5073a60a35abbc8b8fc1333bf8263dda",
+      "bytes": 463,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/README.md",
+      "sha256": "16d45d35a6ec2c3bb892f576aa790e8e04cbe1dc05afb358db2cbfc4b460d064",
+      "bytes": 8169,
+      "reason": "existing program readme with verified status update"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/capture_binding.py",
+      "sha256": "e5efef9a69692686ebb04bac532b9f6adc6f9c5da979a575767953482150809a",
+      "bytes": 5829,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/config-contract.json",
+      "sha256": "bc25ec1668843c59faa3576350b103a8e627ba0b091b3fdc6b578bdba523d24d",
+      "bytes": 4350,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/control_client.py",
+      "sha256": "8d3c45b032d3cb8ddfc4257c201e1612f404438120ec6fce5e63dd0d419b6846",
+      "bytes": 2609,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/core.py",
+      "sha256": "b3b59625843d162fb41b963c2993ed82c84a72bb6885c70ce074b10199005367",
+      "bytes": 31907,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/critical_checks.py",
+      "sha256": "b4b93f23e97c45415223329816f92dd5119d35e4881d8700354ea9cb0034b4ec",
+      "bytes": 13092,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/frontend.py",
+      "sha256": "d7bfb57248bd518e74d12acc0b4087d48211afafa3b226b0ee32e27aa35b4e41",
+      "bytes": 7462,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/http_contract.py",
+      "sha256": "754359c0bb9f0bd9952515ea4b59e393c8016cef04081551bbae487fc659a53d",
+      "bytes": 3401,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/install.py",
+      "sha256": "2b285e444f383b6a87eaa6f8c2262ac4ca3a48b468b8010bf89ba08ba148f73e",
+      "bytes": 2531,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/launch.py",
+      "sha256": "421c6abf93c16374ed34ae9c5422b39eefb1745b5e124fea7f237900245ef1b3",
+      "bytes": 1672,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/materialize.py",
+      "sha256": "213d054614d60997d3e85dfda98daf86390770df00db14730cd5a6348b4fc6d7",
+      "bytes": 3543,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/package_source.py",
+      "sha256": "6b870dee69d7f15b0794c51857f93bb5654ee0c02ed4d94ac52e5c7ac8a0bd3e",
+      "bytes": 3158,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/recovery-semantics.json",
+      "sha256": "09344914ef6e9a8610c66a20079f756292f9ba33e87a07487c3d6be9cdb3572a",
+      "bytes": 4791,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/redis-policy.json",
+      "sha256": "b2128045af3d5a377731afff41a2832c23d4efdea15a4ab68980fa9ef2a3a61f",
+      "bytes": 1985,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/redis_cache.py",
+      "sha256": "c6add350f52739de46c563e961a6abd3e6df746f2138fab36b5e6b0d390a9005",
+      "bytes": 7464,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/redis_checks.py",
+      "sha256": "c79ccf9a40aaea6642b524a3aefb34125936f1fb16493b0e05b975b2c804055d",
+      "bytes": 8015,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/requirements.txt",
+      "sha256": "a4c6747925ef11c83388ffa4a9502ec06b28bc60f7fa3a7370b7338a77114cb5",
+      "bytes": 185,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/schema.sql",
+      "sha256": "5d4cc68450e2ef459f13dd619895b5fe936ec9286c9931027bdd6eaf2f1fa98e",
+      "bytes": 2484,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/server.py",
+      "sha256": "1a3b6ab2d3b14c32cee2365e250fc67e86d2c9ecc30b29665e545350a210318d",
+      "bytes": 13439,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/static/app.js",
+      "sha256": "16fe51f8d38d99f649d1ab2605b8b101283b2d8e63873a784856d0adf565b215",
+      "bytes": 9416,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/static/index.html",
+      "sha256": "b453ea38c6e4717d8970e3a6c7bae0862b9b481e8661825ca0eb3e69894c770c",
+      "bytes": 3320,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/static/style.css",
+      "sha256": "c8c202f56c0514c3504881a3eaefb85fd5e5007fa630a45b529c3696a5531c31",
+      "bytes": 2165,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/ui-contract.json",
+      "sha256": "e09a7851f855d30a30e5b6b8060018030d12933175d11c5233bd94ee59967fd0",
+      "bytes": 3616,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/lab/smallapp/verify_runtime.py",
+      "sha256": "bc62820df0cd7913a037630b2d8661a689d2de84a44427928ac901e46cbbdee2",
+      "bytes": 2939,
+      "reason": "standard MySQL MinIO Redis test application"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/backup-ops-linux.sh",
+      "sha256": "0ef6db97541fd8dfa78d7ede6654f0acf3ca9a6f6b76090171b372a338792992",
+      "bytes": 1638,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/backup_ops_linux.py",
+      "sha256": "5c93bf3edccaea0337209431ddd02a1db27cac8530ba8e525dc4b7067d659f89",
+      "bytes": 131390,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_backup_lab.py",
+      "sha256": "9fa6f8016ea3c32564a152927204b4393411cde9cf32bd5bb501e06c2db861b7",
+      "bytes": 54464,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_binlog_scope.py",
+      "sha256": "00a3ed1f084436e844f2a3b60055e47df998f75bb2f27e1c2865941d683b6eb1",
+      "bytes": 6476,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_boot_observation.py",
+      "sha256": "c5b8489a1d5531af36659437df8f889a572b50ad16271467dfa289da602058c8",
+      "bytes": 9612,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_boot_state.py",
+      "sha256": "c0153f38731b49c48a7e5482299783469765dc0fe4829bf40d0fca82c892d9f9",
+      "bytes": 14598,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_capture_budget.py",
+      "sha256": "cd4a92bc09f64c9d92a8638e6fba822dde525ee6e9bf9966371e4d5c065bb38b",
+      "bytes": 17501,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_capture_failure_recovery.py",
+      "sha256": "1a9c0f015f10fb95ab6338215437d55dd1f7b31e4052207c8e3ac2a65b2162d9",
+      "bytes": 14545,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_capture_incremental.py",
+      "sha256": "5d98fa7e3b4ddadea9c7d663455dd0312648d748103770a2632ab8e6a348a504",
+      "bytes": 34009,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_capture_producer.py",
+      "sha256": "04eb743aac611f009dbe8499045d1ee910a72b61f4541cad26763cecc9cd3770",
+      "bytes": 219088,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_capture_recovery_inputs.py",
+      "sha256": "b47acdf218d58a9d4d96ac77b562f97bc27c2e9dcd43c46a1bd9f8a0ffc9e118",
+      "bytes": 25424,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_capture_semantics.py",
+      "sha256": "93c28ebdd015a1a411cf1f5633ead2e073790572c3d873455af882e7eea6f44a",
+      "bytes": 43415,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_controlled_container_sources.py",
+      "sha256": "ca4a968e9c2140e7bc14f9a5be19a53a91a2d2f9aa91b310f0a45318f2e16985",
+      "bytes": 30537,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_data_evidence.py",
+      "sha256": "d64dab2ebf30cd62bc78037ddf62b040ac3f72aef5324e2683faac2056c6d6f2",
+      "bytes": 18698,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_external_callers.py",
+      "sha256": "53b4e043c7409dba47d14058ea73ea6f0ed4b6ac4538157b50beb7fbbab88b08",
+      "bytes": 32563,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_filesystem_watchdog.py",
+      "sha256": "e877489911c48c17e37abcc84e946667e4bc7b36bd811d6a8d5b661af5bb6576",
+      "bytes": 22955,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_host_admission.py",
+      "sha256": "c23de65d4374f996b9f1d9f3c32259579c6089ff55e67e5fa5b4d9fab9d826bd",
+      "bytes": 45281,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_host_derived_work.py",
+      "sha256": "e350b4184ab9394fc91b4db2d3b0193b9e8331a7ac704099c44ee07c86d20ea6",
+      "bytes": 19542,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_ingress_control.py",
+      "sha256": "70ae44097c350dc87cbbcfb9b4a536aaa5938763ada2063597927f0ebfccb607",
+      "bytes": 20871,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_jvm_identity.py",
+      "sha256": "5e80155b7af61b9ab76920df8f49bbd91d7c923e75be74f098293cae4e588605",
+      "bytes": 11173,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_live_control.py",
+      "sha256": "cbd01518dfca63d4ebdc31bb6f7c1012a0e5132f46b27e5b70cfdbcde7c1f787",
+      "bytes": 20801,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_native_owner_transport.py",
+      "sha256": "db1090546ab0ada6acc08fe8956e9b30e14cee131c9e7f6069eecaeef3753df0",
+      "bytes": 10519,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_native_runtime.sh",
+      "sha256": "cc2acd9c734d929a70aebf289b088c281935a970f218dc630534d0ee120374f8",
+      "bytes": 4306,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_normal_owner.py",
+      "sha256": "aac8ed5da48fcf79e6a7e9d3414a5b78dff2d6296a3bc316d5ea10379a6508c5",
+      "bytes": 59403,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_normal_owner_assembly.py",
+      "sha256": "ccb229c6ec8e3d3e0880a9490eb13226dd7c10c17643a3b9e991eae7b3d2ead0",
+      "bytes": 24552,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_normal_owner_entry.py",
+      "sha256": "ff80e2f8d5b8e882988fbacff63e8b2cae756307b74a3d3b06d792aad7ad5a48",
+      "bytes": 15420,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_open_authorization.py",
+      "sha256": "19ef9c9e39990da538ff8aedc6387abb6e2338ff5e94253c927aad146f943e82",
+      "bytes": 33121,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_original_launch.py",
+      "sha256": "7c478e9716c2e1b0b1e172d3f8c6093f6461dce0e8e522fb47b41d2a53c65237",
+      "bytes": 37089,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_original_launch_capture.py",
+      "sha256": "031280bc9e2b680224b22f4dc4749c8660987c16936bd7349fe06dba027062a9",
+      "bytes": 37639,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_original_open_writer.py",
+      "sha256": "6e46bb12f2096c357a26d5193bc135a96917d4dd0557f7d7dcfd890450dfe20d",
+      "bytes": 52365,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_persisted_work.py",
+      "sha256": "0f588f594d00dfc464691eb4b4ad60ed21875f93d5f9b94d10cdc15b7ced791b",
+      "bytes": 20728,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_physical_restore_producer.py",
+      "sha256": "1356a0367698b8432edaa4326b7d9e962960b29ca63cfbd38f6954d58bb4c636",
+      "bytes": 6704,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_physical_restore_readback.py",
+      "sha256": "2b64fe9a7ca240e1d3e8f0b37d7cc5e36d74cce190c3b50a3219e65bf6094a0a",
+      "bytes": 10492,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_replica_gate.py",
+      "sha256": "7bb63b07168479ed424508d97912c2316ed8d28eca185ffffd5041316da1345a",
+      "bytes": 24859,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_replica_producer.py",
+      "sha256": "80db4e1f8192003fbc45a94d3f7066004bc4d9ea0f726f9ccd2c905d5b2cbc97",
+      "bytes": 5275,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_restore_producer.py",
+      "sha256": "d60935e41819b13a3ff02356396e74d532535400a03e7bfd57a2278c59925da7",
+      "bytes": 8425,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_s3_exec_transport.py",
+      "sha256": "f90852cbd41ddf1bc9a3879c9354a08cba8f9ef3226c2b407bbcedeeb1520b8b",
+      "bytes": 9072,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_s3_export.py",
+      "sha256": "2afa4daa3d710700a3860d0c5056927546c8ee21eb0be8d891adbcfafc51a200",
+      "bytes": 40158,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_schema_evidence.py",
+      "sha256": "c174a1bab42bc7df6c6576fc30948c2e390274e64c9337f2b04b2dc246455211",
+      "bytes": 17486,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_selected_config_capture.py",
+      "sha256": "ce498e435794012467e5b2c750619381af11de64d3f363a3156a461181abfb00",
+      "bytes": 15841,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_selected_protection_attempt.py",
+      "sha256": "4382c47e47292744350f1a17e910e049dc9005da26da4f1da07dca525008528d",
+      "bytes": 13607,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_selected_release_entry.py",
+      "sha256": "fdb32b17108c6e5c9d1b795e13581fe6285123ba2209d14cdd052906fc53688b",
+      "bytes": 12248,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_selected_resource_admission.py",
+      "sha256": "3cc91888886abd66d320bf70b2ff5dc65e37e71364b00a2541de20200d47657b",
+      "bytes": 16794,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_selected_resource_observer.py",
+      "sha256": "a3b0e4a31a17cc244cad979eeccea0eb28a7be8c178a98b9bf5e24490a5fa5e3",
+      "bytes": 11341,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_selected_service_consumption.py",
+      "sha256": "733a3de527c0061dd870e72b72da66951cd9b7f91d2b22fc4d1cd5563fb6c528",
+      "bytes": 11199,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_service_health.py",
+      "sha256": "0d7796c7503549ad08b402fe545003cec04a2db7eb3be3e86726a20c76a29fb3",
+      "bytes": 41632,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_snapshot_linux.py",
+      "sha256": "404b50f2d6b9bbd8b1a4f4928391465fad2a53cd3ecb3bc1b19b3dfdc01e80e7",
+      "bytes": 77481,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_source_migration_ledger.py",
+      "sha256": "e8fe416c2a03a3492ea0baf148ccaf7af79a3320f1770b52e2426064e956a28f",
+      "bytes": 19073,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_split_capture.py",
+      "sha256": "e0ec5dbb467a89d2d87d7247e487af17e3abf7654b46e0a721ff8270ea53cc0c",
+      "bytes": 60359,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/formal_sql_restore.py",
+      "sha256": "a8d765f8e4e9d368635b2a87968c444b629697eba0072433a60073fb4e6fe2d3",
+      "bytes": 27338,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/minimal-capture.configuration.example.json",
+      "sha256": "29f392e802206eee7472b2cf323cc0ddbc018a0a03be5e4e0c6bde5dd4372da7",
+      "bytes": 1886,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/minimal-capture.md",
+      "sha256": "73c1ccbb8bf277db4d610650a5f62f8052e6c22c859542b035a1a59f95a3567e",
+      "bytes": 9992,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/minimal_capture_entry.py",
+      "sha256": "a931e4a5080e0413df854f4f57c5a47ef54a1a607fb354ee9eb19ab20065f507",
+      "bytes": 12100,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/minimal_capture_support.py",
+      "sha256": "5e335b68ff118cbd85157b650fab96069d51e53969b070e1a6619ac70e454bdd",
+      "bytes": 19915,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/minimal_capture_worker.py",
+      "sha256": "198bc8daa7264ec496610bbb1161c2d838af327b8e1f7369467d351c679e96dc",
+      "bytes": 32896,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/tests/.pytest_cache/README.md",
+      "sha256": "420e808d79a6c25d3cda0af33bc4782314a14949866682c68ce8149e89b66b70",
+      "bytes": 310,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/tests/fixtures/w05_mount_order_inspects_20261015.json",
+      "sha256": "4514ed21f868fcfd26dba4a1ab5d13668f3dab7f2c4f38290daf96b4431c18f9",
+      "bytes": 8866,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/tests/test_capture_endpoint.py",
+      "sha256": "ab73b6dfa31aa746e31ff0d8ffc62e6d4e9fab5576fd93376478874cfb1f230e",
+      "bytes": 8076,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/tests/test_minimal_capture.py",
+      "sha256": "bbc1969e952faca7a3419ad2ee6024231edbfdc0bf66946a2bed5cafebaf5b6f",
+      "bytes": 12060,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/tests/test_minimal_capture_diagnostics.py",
+      "sha256": "bf008623a75c3470fd4d45ff59c085145e64e85a31264ec622619d9bccf92d19",
+      "bytes": 8927,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/linux/tests/test_minimal_mount_order.py",
+      "sha256": "394b842e85112af519cc0a149fbec6317e72c0298597d58fa77753a7c737bd51",
+      "bytes": 13587,
+      "reason": "capture engine and focused source tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/fixtures/external_callers_real_driver.py",
+      "sha256": "70400c30769effce84664e23b83974a284c97854c921e2239386e79325f6f24c",
+      "bytes": 10364,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/fixtures/owned_ext4_fence.py",
+      "sha256": "6c818aa65d5003c97dfd9d4fb83d307bdfe9bab1e3a1be691d4faf821e49b521",
+      "bytes": 22187,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_backup_lab_contract.py",
+      "sha256": "7a8ce969ba56934f1776ed7313daeade78387df2a38a09dd96818d121f43e40c",
+      "bytes": 7602,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_capture_binlog_scope.py",
+      "sha256": "fbe6d0ee86ce0cf5aa419a6f89a71c767bfdf999a10da3ca86ee671514afab0e",
+      "bytes": 8584,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_capture_semantics_contract.py",
+      "sha256": "cab2ba97d5a78a59ff405f4f9c35ce1e3aa8b5f3896886181d1540a632d5007f",
+      "bytes": 11060,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_capture_series_contract.py",
+      "sha256": "b5274a15b8a5264c93f9dc94ae206a05f28e922edec9e09f41ef223f07198872",
+      "bytes": 20449,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_capture_budget.py",
+      "sha256": "1ee156b9aaa1db49b58130c7410af629204a5f1d12a09df97e28a71b35a45c3a",
+      "bytes": 18315,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_capture_producer_entry.py",
+      "sha256": "1881eeade88cc02df31b83ceead59a3397e526a355532eae35f1a851752e2dc8",
+      "bytes": 328791,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_claimed_capture.py",
+      "sha256": "9691c06af31d5f8aae5e7aa9416f37bf28ca567385e2cc66eed3e11f51d00eb6",
+      "bytes": 6646,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_claimed_containers.py",
+      "sha256": "8f1da189632165bf4aa81584815475438783fe2426000ecb74440a0685ec620b",
+      "bytes": 7391,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_claimed_database_probe.py",
+      "sha256": "d05230529e8b9521c2bed47bc5eba507936839bbba6ee9f1629bc904156647ca",
+      "bytes": 4585,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_config_descriptor_author.py",
+      "sha256": "f6cd31dd43ec4a16d425c98c290e590368fc322312c91415db29b12ec4c94f7d",
+      "bytes": 11785,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_controlled_container_sources.py",
+      "sha256": "c4fe535557a8e921413fe2ec67599b791138f0527cadbe6fbe3ea58a44f6894b",
+      "bytes": 29809,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_data_evidence.py",
+      "sha256": "9c80edf3d2af8b0163e116f40ecfe93b7823009ada10ff4a9b7fda809c74562a",
+      "bytes": 13319,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_database_fence.py",
+      "sha256": "9d129f2444042066cff193392a3178b33452d126faefe6e9706c2c49949ee567",
+      "bytes": 1959,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_dependency_stop.py",
+      "sha256": "13156df0c76f439893c5207102674028670b33ddbd8413cd47d1466244ff2b82",
+      "bytes": 10079,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_external_callers.py",
+      "sha256": "76a91dbe6c33fe2a18a8508fdcc9d7597284f38f6b7fb4a3fa1da67b33f8d7f6",
+      "bytes": 22705,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_external_recovery_entry.py",
+      "sha256": "66a9366e00c1909da698605547c0800fb3fc4d83112af3a4c36104a912e3c6fc",
+      "bytes": 7685,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_filesystem_watchdog_real.py",
+      "sha256": "16882488aafd78c6a85bfb732e4b55c98b5f4f7a5d89ad4d92b9bbff29e97e40",
+      "bytes": 1939,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_host_admission.py",
+      "sha256": "8dcb2a0d56f57616836d2f68dd5fe31df08c7c64be5747dc03d52dfcf32dbf01",
+      "bytes": 65512,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_host_derived_entry.py",
+      "sha256": "77b8af2863d6475a59573aa1d87d0343eb8227e43e7c25044bea2c3f375c07e5",
+      "bytes": 9679,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_ingress_control.py",
+      "sha256": "4b9e2b0c921b428d8bbb18d99737fc87b4220120343a88c3449be9617ce779ac",
+      "bytes": 9860,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_initialization_mutation_guards.py",
+      "sha256": "dfaad30605fb447bb653d13bd1accf076abb1d557fd4a3ee81ade9504daf2882",
+      "bytes": 10294,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_journal_parser.py",
+      "sha256": "66e00f596df66f25f41daa5d3fd79f5e641de05e26f4cd7b547e3a3d2f75c009",
+      "bytes": 863,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_live_control.py",
+      "sha256": "350e1233b22874fb5ae19243171961d006f87a1c42bd1496670c8c14c8978e3f",
+      "bytes": 18725,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_maintenance_claim.py",
+      "sha256": "0aea419eea8de0acb5bbecc2f3aba07b863bc87144d746965d84b35e6d55c266",
+      "bytes": 10966,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_mysql_dump_current_guard.py",
+      "sha256": "d819b2cb0d872a96b643324a467584784604be8066bcb0cacbb29367d40059be",
+      "bytes": 10533,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_mysql_rejection_probe.py",
+      "sha256": "3226b17c6075d64a9cac1ea735eab9b89fa2ad4617614627cb79ddca5eebae4f",
+      "bytes": 3033,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_native_capture_current_guard.py",
+      "sha256": "60777600d3f2bb68a525205da2ac968d4e37977bb98f3c7100d730765cbd01c8",
+      "bytes": 10660,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_native_runtime_install.py",
+      "sha256": "7b84393f736ed06278287a8083262d94fffa5dd42e39400c5bb3b7679afca382",
+      "bytes": 8559,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_normal_owner.py",
+      "sha256": "9abf0d379012ef097563b72032358896762e4d73769fb56edca9e69e119738fb",
+      "bytes": 7671,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_open_authorization.py",
+      "sha256": "310baea56545453eace375fb5b0a01a13711a368b58cec5cc42289edd4d75ab5",
+      "bytes": 22536,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_open_cross_impl.py",
+      "sha256": "92ffe98a229232464314d705141a9b6d2141a1a24bbd1557d1a7dcfc20fb6fbb",
+      "bytes": 1263,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_original_initialization_entry.py",
+      "sha256": "cbd66bc1c1f1e35644e07529552155ff1094e8a1b32fb89f09cab68dc249f58f",
+      "bytes": 14491,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_original_launch.py",
+      "sha256": "0d643209bfb0da23f44c3a838bf3fb8dc1f99e46298b05fdc0f25644de86839b",
+      "bytes": 7316,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_original_launch_capture.py",
+      "sha256": "3c3690c592b47ab4801ac36b08f3f7b387a946a48fe705f2d5d8249824c46129",
+      "bytes": 137114,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_original_lifecycle_owner.py",
+      "sha256": "8858b36efd88232271cbb3580088ab0821874865893e34635d695095ca56318d",
+      "bytes": 53491,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_original_open_writer.py",
+      "sha256": "cb8cee19aed00f94781beb3ef0a2d6dffe2813aed40d4bff60b895631810ffef",
+      "bytes": 17577,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_persisted_approval.py",
+      "sha256": "b9961f700d2096f9c51aced493464bb00987368d482c9e31d9528e09c6341df1",
+      "bytes": 15459,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_persisted_work.py",
+      "sha256": "6360f51178fae8b13be3037d766cf43eb534f1df8fe346c0759a46b5f0b0415b",
+      "bytes": 7098,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_physical_restore_producer.py",
+      "sha256": "5b4b8e409b44d971ee6ced7bc4b4f0f1e590c563549b225bd56fdc32470eb9c7",
+      "bytes": 8267,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_physical_restore_readback.py",
+      "sha256": "14de457b463f94afd9b7b1b0237d3ef604a442265ca15202032ae49e4eaebe71",
+      "bytes": 7735,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_replica_creator.py",
+      "sha256": "28ea95c187bac90353a12b53dcb69c6a0f0a8d570491572c5da1244d57f32314",
+      "bytes": 2910,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_replica_dependency_readback.py",
+      "sha256": "30852852cd1a83c8c9841650935d3c250f285c7135c9150284e426080ce9d719",
+      "bytes": 7603,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_replica_export_current_guard.py",
+      "sha256": "cebaad242ef8856c9e13f02589c8f8b92dfdf8ef37155819d4e38e087a3e7588",
+      "bytes": 9298,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_replica_gate.py",
+      "sha256": "6e6ab7da0ee2ee0389d66d815fe5128892814c719fca8f056b4b5df839557e77",
+      "bytes": 5865,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_replica_producer.py",
+      "sha256": "02ff178e8fd33693351a69dc16de3fb9fc5dcfa73fdeb16548f076a981d4367f",
+      "bytes": 2463,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_replica_producer_entry.py",
+      "sha256": "2bbe45c0fca7b41a330bc1cdea8dc19ccb2932e181d3384f1d7b74e42c703389",
+      "bytes": 1967,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_replica_runtime.py",
+      "sha256": "b5f339463d9fd44c2972af4bb6b48b468fe9c9090f0e504e6048adeac4a35f42",
+      "bytes": 4207,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_restore_inspection_guard.py",
+      "sha256": "39aed96be2d3567c296f86852fdb6aea3c6244835f78db97fc534b975190655c",
+      "bytes": 8072,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_restore_producer_entry.py",
+      "sha256": "962a6bcc5602278a171978690ae582976acb0f8e73acc032a97e1c97147badb3",
+      "bytes": 5327,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_s3_bucket_mapping.py",
+      "sha256": "316098e5a50bcaf644c9bace887b3b5d74e5f2e4140b3492d9ab5d775d429c6d",
+      "bytes": 7610,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_s3_dependencies.py",
+      "sha256": "a499c8c31f65b8268974e2586203e1625b67b43b1c616e2a090e357178767d6b",
+      "bytes": 4098,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_s3_exec_transport.py",
+      "sha256": "bb9358cd26db8f780e88ad179df1e63eb0ae7931d6306a6374016b5f4b628e51",
+      "bytes": 4118,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_s3_export.py",
+      "sha256": "c5e5086ccafe6d7d0848a5b696c002b8e0ed7d373c5865351aca997beeb4f764",
+      "bytes": 8853,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_s3_protection_restore.py",
+      "sha256": "4181286b46c91371c947e8f6d4a139b2663197824009e8273cb0bf1681009501",
+      "bytes": 2643,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_s3_restore.py",
+      "sha256": "9ba11b4fb5c4f155cb5287d170f0a6598c22d2b6df2098bfcb5859c4300b1865",
+      "bytes": 9166,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_s3_writer.py",
+      "sha256": "3eb36d2d97a52b610d6c3c75f830c1461bfcf8d8742939bfeb44d695da78896e",
+      "bytes": 3498,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_schema_evidence.py",
+      "sha256": "3ce33b44a71c60ea9d32354ce018777767b01da5596f87159f431ff3cfd2f075",
+      "bytes": 13647,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_selected_config_capture.py",
+      "sha256": "19cc68c271807346c2b98ba4fc0697227467cf85557f6391e9036976a3dd27af",
+      "bytes": 10152,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_selected_protection_attempt.py",
+      "sha256": "c2677cc023ddfc208aa5a9d417eb16800e065ecce4d57124d595d1db1951181f",
+      "bytes": 17182,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_service_health.py",
+      "sha256": "539c0d347bfc52e15c54c804628d53a14ca933b08454a3767afe673b7decaffc",
+      "bytes": 12211,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_shell_checkout_contract.py",
+      "sha256": "3333125248c9e0bd75d7518988b1fe6c9ecced34234b544e2c7cc2b5018a9e3e",
+      "bytes": 709,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_snapshot_capture.py",
+      "sha256": "6352338c038eada54be84ed6dc826575bc9de88134914d07820010914b1e5b66",
+      "bytes": 12494,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_snapshot_container_barrier.py",
+      "sha256": "bc8cba71ca18ef468ebd13e591e07eb4a048767e45122d64e9dcc64ec2b77310",
+      "bytes": 2614,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_snapshot_mysql.py",
+      "sha256": "45509096ee5fbb1943ad7b607e70f436e2d3814e6253f206e07aaabf6581c06e",
+      "bytes": 12705,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_snapshot_objects.py",
+      "sha256": "e582d903897b97adb77c5bec33e684d22b58ddffa5c98f41de015e79daf87696",
+      "bytes": 3224,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_snapshot_physical_copy.py",
+      "sha256": "a4f8a49e064d706d5caf4ef4ed19dd7f43c4e7afc7c673fdcbfe528d8eb338b0",
+      "bytes": 5396,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_source_ledger_lifecycle.py",
+      "sha256": "edfe1b0a463092a403a9527f47bf46b58b1cf6c6543005e5901f8781fadb3d9d",
+      "bytes": 45113,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_source_migration_ledger.py",
+      "sha256": "16a2cbcc18d748ef0b3fb1e30fd60da4aa99b679a4486fd3f1b32a477ed0ce41",
+      "bytes": 12168,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_split_capture.py",
+      "sha256": "f4369d1eb2a57f1c39d2ad291c35fb40172882f7ab2da5a5fadf47d23df6694d",
+      "bytes": 55904,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_sql_import_guard.py",
+      "sha256": "0b5073c65724214a0ad03e4fc8acb28d4f1b6b4ebf6c188623203ff2438e5c37",
+      "bytes": 6503,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_sql_restore.py",
+      "sha256": "e8f7995c421ba41c01f7a96a3fd98080e4608f4223cfe59d368ccdb98100643d",
+      "bytes": 13549,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_formal_watchdog_runtime.py",
+      "sha256": "074ead132dd6cc94f5270c3ba3c177cbec338dd8ed3f7717fc959c0eee527a23",
+      "bytes": 3095,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_linux_runner_execution.py",
+      "sha256": "be2bd1f490777151d7d51776827e7e202c6c79183c43bd88c727dfc6f244575d",
+      "bytes": 2424,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_native_r3_repairs.py",
+      "sha256": "f6adff5b42361d77eab054a79553d7f1411c7894547eec6bf6197d4324c7e21d",
+      "bytes": 12723,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_native_r6_installation.py",
+      "sha256": "a219dd2a240a71544ce91a7008132194b5af8596dffa1b9caa2f90b21697464b",
+      "bytes": 7327,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_selected_release_entry_native.py",
+      "sha256": "2d4a683b87064f85498ac6df41bb243e9ca3a691d8b02659c2a9106e0bf7f8fd",
+      "bytes": 14640,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_selected_resource_admission.py",
+      "sha256": "67acbc44248dfb3709d575ab4e262073370a1b146e8cd8253599397dd70652ff",
+      "bytes": 16206,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_selected_resource_observer_native.py",
+      "sha256": "6f30e439ebb58d6eb3ed5c198929558c31e6c73094ebb731a4cf3cb15aa85040",
+      "bytes": 2829,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_selected_service_authorization.py",
+      "sha256": "9191d93d235872d814a70328ce56d0cce90a1191f45a8934985c635e0e6e054e",
+      "bytes": 15997,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_selected_service_authorization_native.py",
+      "sha256": "296ed82acde66e29c0ec09e9727dbcde0c12d917805bbdf604f8d107e76531c2",
+      "bytes": 6523,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/test_selected_service_consumption_native.py",
+      "sha256": "0513877d437b9c55a26829fa1d0b2f06003aab5d4c4a91cab85fa16a647deca9",
+      "bytes": 11136,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/verify_formal_boot_observation_native.py",
+      "sha256": "6debe8e68bc7b6225c26e40d51b91660722e53d95481773708be2cfadd761ad3",
+      "bytes": 14003,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/verify_formal_boot_state_native.py",
+      "sha256": "c8e181410e9dbc28620f7bde2e028f50a95263062b2415da651483b069316f7b",
+      "bytes": 19606,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/verify_formal_data_real.py",
+      "sha256": "f2422c209df6ce66f569c4f860d512da1020c340de5b28f4d35a67775e749a59",
+      "bytes": 11359,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/verify_formal_dump_events_real.py",
+      "sha256": "b0b596cb97d9cbc2266b5c4ea29e712052ac0fb4264f7a36763f6e4e2fcb64a0",
+      "bytes": 9078,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/verify_formal_external_callers_real.py",
+      "sha256": "0479eb84ed7cad3d78732500296827bfcad347b3da01324b66b055902dcc2b98",
+      "bytes": 5082,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/verify_formal_external_ssh_health_readonly.py",
+      "sha256": "159b2141724a77366cff32fbd6ad5e08c97fcd520870895691633e814e177997",
+      "bytes": 6031,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/verify_formal_health_real.py",
+      "sha256": "53650cd3d2a48053dca724e9f06dc53fa6744156823e892d4dd2bf380040938e",
+      "bytes": 16076,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/verify_formal_ingress_real.py",
+      "sha256": "590ef1b0d713a601b45cebaaaa3e4e181909b9f5afadd3354a46e0af320cc704",
+      "bytes": 16821,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/verify_formal_mysql_private_real.py",
+      "sha256": "da36e9ff27d4f8ae468c02bf39636dd4f294f6761393e39fbf11526316c0e67a",
+      "bytes": 1805,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/verify_formal_persisted_real.py",
+      "sha256": "bf5ea5a364da950b657293a1e8616d26c117edf22d79a1dbf2c32d171317f60c",
+      "bytes": 10381,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/verify_formal_shared_phase_real.py",
+      "sha256": "36a2eede9ec05e2089d7a02a79c095660576e067b73d061fc691583da2fbbf08",
+      "bytes": 21836,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "application",
+      "path": "IntRuoyiBackend/script/backup-ops/tests/verify_linux_runner_real.py",
+      "sha256": "1c164bdbf4815f5a52f5292412434f454d48956d719583ecc6ae0103fd3a6c39",
+      "bytes": 1156,
+      "reason": "existing backup engine tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "backend/src/main/resources/recovery-control-browser-private-contract.json",
+      "sha256": "6025e38135982f1b0326919153fc81f434e3c7041560be7f95d7da4303d8f330",
+      "bytes": 53360,
+      "reason": "public schemas, no secrets"
+    },
+    {
+      "repository": "maintenance",
+      "path": "backend/src/main/resources/recovery-control-record-schemas.json",
+      "sha256": "ed38d1ea14aa1f0019aed08bffad3e40db91c47c28b07c5c8eb5df668c2cd3cb",
+      "bytes": 22254,
+      "reason": "public schemas, no secrets"
+    },
+    {
+      "repository": "maintenance",
+      "path": "backend/src/main/resources/recovery_control_executor.py",
+      "sha256": "5b69c014cfe2838891a9cc1b22965d5e5288306e4344dd8fd3a25a8499f8c136",
+      "bytes": 61479,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_executor.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "backend/src/main/resources/recovery_control_lab.py",
+      "sha256": "f14503e335738ac51d23bd78dc6f7f04f60451f9ea7d4d8dc14b80a9b50eb719",
+      "bytes": 22700,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_lab.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "backend/src/main/resources/recovery_control_registration.py",
+      "sha256": "559e0e607626fd93bf76cdf995f89c4c9b4f5832759996619a5a07ce85da0264",
+      "bytes": 47671,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_registration.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "backend/src/main/resources/recovery_control_smallapp.py",
+      "sha256": "a5dfbb9173a77eae43227869f92e834abccb195d2bcd4020322501386690d508",
+      "bytes": 12867,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_smallapp.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "backend/src/main/resources/recovery_control_smallapp_controls.py",
+      "sha256": "7bc20ee42888b72c30a7d93c086c77d93ca46907bf4d34e904bead0c5a236390",
+      "bytes": 13597,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_smallapp_controls.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "backend/src/main/resources/recovery_control_smallapp_http.py",
+      "sha256": "f7b6d093bbf6397721713e109ad0e944b6a55db262d988b9407b0ccc1fbfacc1",
+      "bytes": 5169,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_smallapp_http.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "backend/src/main/resources/recovery_control_smallapp_issuer.py",
+      "sha256": "3f5513430c7989507ad709e255f9fbfafb7644979c22ccc8a0e6a1b7b6056056",
+      "bytes": 118489,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_smallapp_issuer.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "backend/src/main/resources/recovery_control_smallapp_native.py",
+      "sha256": "40952438c9417b26b9cfc704613b1b40db8c5231d77c4eabac4b42981750be9a",
+      "bytes": 42021,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/backend/src/main/resources/recovery_control_smallapp_native.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "doc/tasks/20261010-backup-restore-modular-development/execution-contract.json",
+      "sha256": "03daad32188896c4270b3313ff30d10e6828857e89c05bde576b65dfc934b6e3",
+      "bytes": 12614,
+      "reason": "existing record schemas consumed by engine"
+    },
+    {
+      "repository": "maintenance",
+      "path": "doc/tasks/20261010-backup-restore-modular-development/interface-contract.md",
+      "sha256": "c160612883ed4203ee99f50172a8bc117e4a790dddd9d43eb24716a026cf7481",
+      "bytes": 18012,
+      "reason": "existing record schemas consumed by engine"
+    },
+    {
+      "repository": "maintenance",
+      "path": "doc/tasks/20261010-backup-restore-modular-development/record-schemas.json",
+      "sha256": "ed38d1ea14aa1f0019aed08bffad3e40db91c47c28b07c5c8eb5df668c2cd3cb",
+      "bytes": 22254,
+      "reason": "existing record schemas consumed by engine"
+    },
+    {
+      "repository": "maintenance",
+      "path": "doc/tasks/20261010-spug-integration/smallapp-manual-tasks-20261014.json",
+      "bytes": 3606,
+      "sha256": "d489558a6e8a10c67ab382e8f9e014048a46f51df97704d3b8f910d7919ff3ef",
+      "reason": "existing Spug task id mapping"
+    },
+    {
+      "repository": "maintenance",
+      "path": "doc/tasks/20261014-backup-application-registration/README.md",
+      "sha256": "2a0d21d262f2f50e9b170e20d9a95caaf62b0cabf58bb4ba7659dfaeff04c311",
+      "bytes": 9895,
+      "reason": "application registration data consumed by Spug"
+    },
+    {
+      "repository": "maintenance",
+      "path": "doc/tasks/20261014-backup-application-registration/check_r2_registration.py",
+      "bytes": 16324,
+      "sha256": "1cf437ef3826630af4b1d0bc81702332c89892d1c176c0252c9e60a527be5c67",
+      "reason": "registration verification helper"
+    },
+    {
+      "repository": "maintenance",
+      "path": "doc/tasks/20261014-backup-application-registration/check_runtime_binding.py",
+      "bytes": 7722,
+      "sha256": "4e0d982851a21edd604c380c19e71d7db233464458ab3bed93094441801dbe04",
+      "reason": "registration verification helper"
+    },
+    {
+      "repository": "maintenance",
+      "path": "doc/tasks/20261014-backup-application-registration/consumer-interface.json",
+      "sha256": "a4ab0c2eeed42980f536511c65946d00ccb9e54a122e791e4734a80805db27f9",
+      "bytes": 52923,
+      "reason": "application registration data consumed by Spug"
+    },
+    {
+      "repository": "maintenance",
+      "path": "doc/tasks/20261014-backup-application-registration/delivery.json",
+      "sha256": "a86774ad731ff76a40d1e59b775088d927da3f70f10b6659d864733df3d0ba57",
+      "bytes": 30772,
+      "reason": "application registration data consumed by Spug"
+    },
+    {
+      "repository": "maintenance",
+      "path": "doc/tasks/20261014-backup-application-registration/intruoyi.registration.json",
+      "sha256": "e673622fd7394f84b2ede80cf8fe3b3781c02aa8f34c2355c0abbb5738328ef8",
+      "bytes": 3639,
+      "reason": "application registration data consumed by Spug"
+    },
+    {
+      "repository": "maintenance",
+      "path": "doc/tasks/20261014-backup-application-registration/registration.py",
+      "sha256": "a65797c6923f30e360dec985bb8ba3779c8f99d87498c2654b996939d755ca5f",
+      "bytes": 40488,
+      "reason": "application registration data consumed by Spug"
+    },
+    {
+      "repository": "maintenance",
+      "path": "doc/tasks/20261014-backup-application-registration/smallapp.registration.json",
+      "sha256": "47fb0cbaba7fba26a533ef7c13f2af9d6dee302e74204ddcbd83aad55ef69d38",
+      "bytes": 29922,
+      "reason": "application registration data consumed by Spug"
+    },
+    {
+      "repository": "maintenance",
+      "path": "docs/backup-restore/README.md",
+      "sha256": "ee8cd0376b03acc89108dcfa98ed5af5f779c5545d37cede6797c1d4682d8370",
+      "bytes": 3926,
+      "reason": "verified standard application success record"
+    },
+    {
+      "repository": "maintenance",
+      "path": "docs/backup-restore/verification-20261016/cycle2-backup-evidence.json",
+      "sha256": "9c1a3ff5c85e33780159fe149ca909fb16fb76e4a9aed25412846f2b44b6b96d",
+      "bytes": 2693,
+      "reason": "successful rehearsal evidence only"
+    },
+    {
+      "repository": "maintenance",
+      "path": "docs/backup-restore/verification-20261016/cycle2-baseline.json",
+      "sha256": "4848ed6c291811d507a4da1f4b4fac725d91e433f6e168c7fa13f32e58f306c4",
+      "bytes": 1515,
+      "reason": "successful rehearsal evidence only"
+    },
+    {
+      "repository": "maintenance",
+      "path": "docs/backup-restore/verification-20261016/cycle2-expected-state.json",
+      "sha256": "9b4e20644c38d924ae18ea3c94ed004b9abbb73bb25b4b35841350c202af1f92",
+      "bytes": 8169,
+      "reason": "successful rehearsal evidence only"
+    },
+    {
+      "repository": "maintenance",
+      "path": "docs/backup-restore/verification-20261016/cycle2-final-evidence.json",
+      "sha256": "30b9086ce63804038e5d8d69b8d4bd4c5c14aa37dd74ad8a442657775fc7cd6b",
+      "bytes": 1728,
+      "reason": "successful rehearsal evidence only"
+    },
+    {
+      "repository": "maintenance",
+      "path": "docs/backup-restore/verification-20261016/cycle2-final-readback.json",
+      "sha256": "8c1fab6fda2b18b5142db3693b9c3585263fe180ae174111f5dd49ccfe3b3dae",
+      "bytes": 4839,
+      "reason": "successful rehearsal evidence only"
+    },
+    {
+      "repository": "maintenance",
+      "path": "docs/backup-restore/verification-20261016/cycle2-full-status.json",
+      "sha256": "d810cb611f6a58c9cd1ae13e786868621440185c8b002d356653c4e90d209360",
+      "bytes": 856,
+      "reason": "successful rehearsal evidence only"
+    },
+    {
+      "repository": "maintenance",
+      "path": "docs/backup-restore/verification-20261016/cycle2-incremental-status.json",
+      "sha256": "cc652b0719ab8efe7291b38a43b622da6cd1c68d1cf72c97c43279e9128a153f",
+      "bytes": 909,
+      "reason": "successful rehearsal evidence only"
+    },
+    {
+      "repository": "maintenance",
+      "path": "docs/backup-restore/verification-20261016/cycle2-mutations.json",
+      "sha256": "61c88a22c5711134bfd2ff0d3d9d25632eb0dedcac14ef2b8105a251c3ded3e6",
+      "bytes": 2106,
+      "reason": "successful rehearsal evidence only"
+    },
+    {
+      "repository": "maintenance",
+      "path": "docs/backup-restore/verification-20261016/cycle2-restore-status.json",
+      "sha256": "246e76a87d0147d5cbb7ef8c0d9a55c8b592e950ca110640e21f05c4b88b1e76",
+      "bytes": 926,
+      "reason": "successful rehearsal evidence only"
+    },
+    {
+      "repository": "maintenance",
+      "path": "docs/backup-restore/verification-20261016/cycle2-target-ui-acceptance.json",
+      "sha256": "d3eeb4ed8658dfb9cfd077b21703b70344609001ef70c5b50a1b016b49a28a50",
+      "bytes": 1961,
+      "reason": "successful rehearsal evidence only"
+    },
+    {
+      "repository": "maintenance",
+      "path": "docs/backup-restore/verification-20261016/downloaded-attachment.txt",
+      "sha256": "cc56d1b8be24f4038d48e8a4a7913fab597c1cb95da7dce6d1f73cac4e2c95c8",
+      "bytes": 6240,
+      "reason": "actual attachment downloaded through restored application UI"
+    },
+    {
+      "repository": "maintenance",
+      "path": "docs/backup-restore/verification-20261016/restore-r6-succeeded.json",
+      "sha256": "fdec081bc7a940ad530497b7342bf8e00c9c2a9b94317696cf97e92c9d441cd6",
+      "bytes": 926,
+      "reason": "successful rehearsal evidence only"
+    },
+    {
+      "repository": "maintenance",
+      "path": "docs/backup-restore/verification-20261016/target-r6-final-readback.json",
+      "sha256": "68b74b286d407711d7f90e303412e9eda742988f923e7f5db42c41eeaedcee6e",
+      "bytes": 5060,
+      "reason": "successful rehearsal evidence only"
+    },
+    {
+      "repository": "maintenance",
+      "path": "docs/backup-restore/verification-20261016/target-r6-ui-acceptance.json",
+      "sha256": "0fb4685e7077ab930579f4cf19aeaa76a8122d822bddf248e6ea4c661128bd9a",
+      "bytes": 2519,
+      "reason": "successful rehearsal evidence only"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/diagnostics_cli.py",
+      "sha256": "5c34d438958ee15874af6e187b32051427f606cf9ae1f39bd64515dee3702d54",
+      "bytes": 5496,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/environment_cli.py",
+      "sha256": "2cfaf900845e4be8d60f3dbd1c15e15fe98a4fa627faf3eba582efbb3212b542",
+      "bytes": 3787,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_application.py",
+      "sha256": "beffe15bd938f4bede3bf8b1cca890bda8afb0214f7f3414d9408d0e1a920308",
+      "bytes": 9426,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_application_mechanism.py",
+      "sha256": "d3a9c6f2216316170f7d9b667e5c89f1f6551a8b928950751bc550a9b45e2e00",
+      "bytes": 30401,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_application_protection.py",
+      "sha256": "e1cf06bc618d71af0b7d398d8e1e0ac5a20273d3dc5d341933d3e352a61cdcbf",
+      "bytes": 13987,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_application_restore.py",
+      "sha256": "9b4152c7fefd022006cd59aad33321e37db2ef3d64a525641fc7429bbe306e3e",
+      "bytes": 13759,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_cli.py",
+      "sha256": "663a4316099af5a2a9979a99278687ff2c4c0bc53b04dc17703a6ec560bfd2ef",
+      "bytes": 35884,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_cli.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_cutover.py",
+      "sha256": "c75319e17cddeefefd42ce0ddb20e96fa961b1b7daafc65628ad01f55ac347f0",
+      "bytes": 11249,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_cutover.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_cutover_fence.py",
+      "sha256": "f687c1b670d66e4d058c463a8804e8b1867bb321c949a16e99ad14cace92555c",
+      "bytes": 7541,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_cutover_fence.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_cutover_orchestration.py",
+      "sha256": "9c45d676cdcc4d9e03f455322e259d8034c807fa5bc6d6176d895e6ac8a96101",
+      "bytes": 8981,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_cutover_orchestration.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_cutover_terminal.py",
+      "sha256": "edbd366a1f1753725fc9d53518106e42eb5f4c8338a476cd94f06b2b6940b4f0",
+      "bytes": 6929,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_cutover_terminal.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_cutover_worker.py",
+      "sha256": "64d6cb57960c8598634c6925039bfe6dfde5838a7c2758d6e75593ac40c391cd",
+      "bytes": 13975,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_cutover_worker.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_data.py",
+      "sha256": "5a3b00d7b1551634514a4dd9ba3c9d883ee375f9eb8c81e63baab879142c37d0",
+      "bytes": 54264,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_data.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_data_derived.py",
+      "sha256": "f2bcc29bcb1953a7fb5f73724499277843498d2c4c957ecc720fafd30d2a6ddf",
+      "bytes": 5268,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_data_derived.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_data_files.py",
+      "sha256": "d514fc7ffca43e5d2a66e6c523d7d0f86f92a622bcad4a18eb57952cf20c3a4e",
+      "bytes": 7311,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_data_files.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_data_objects.py",
+      "sha256": "05cfc1a98c3358a48acd91b100df809fbc139e7e8b7faa2cd895636df11d03a9",
+      "bytes": 12079,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_data_objects.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_data_redis_sessions.py",
+      "sha256": "47b41fd55bff02d41b3eeaa65b2fc33da80fbac953199dc27675ad474c0db796",
+      "bytes": 24693,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_data_redis_sessions.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_diagnostics.py",
+      "sha256": "db4d1e4d3b3540ab1d6a4abfc6222ef604cb899231d78cefa1d452873c6c5d1a",
+      "bytes": 32060,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_diagnostics_evidence.py",
+      "sha256": "16514e7b0daf23eb3e48b6d28e4fd4cbc2829d4b610f3f1c63107111a89ced17",
+      "bytes": 12546,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_diagnostics_io.py",
+      "sha256": "3d2ae23fb875bfd1fd465e2254e22135979958982622a154b8b138b8d58b6018",
+      "bytes": 8425,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_diagnostics_originals.py",
+      "sha256": "de8eb6a01a3609cb4800c23fbfa3e7f6faef1918276fca458f44728177bd602b",
+      "bytes": 15663,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_engine.py",
+      "sha256": "c5dca9ff5104f613c8088fa985d7fcb1836a1043cff595abecd9c09722599b30",
+      "bytes": 18009,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_engine.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_engine_read_guard.py",
+      "sha256": "38f74fdc8fb68836a4e1270c636c067a8af7c3106d32abc2d4ed5b7707c444eb",
+      "bytes": 10664,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_engine_read_guard.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_engine_state.py",
+      "sha256": "9c025d5a1bf1e18e72b0f6fca85755656f256e88364327f1f7d0fb80938e3759",
+      "bytes": 6501,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_engine_state.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_environment.py",
+      "sha256": "be038f958bfabaa7c7627e8c0d1c5ce2ae549d2091bc78fb46b926cdd409fdc8",
+      "bytes": 61658,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_environment_contract.py",
+      "sha256": "ace96d183903ec34fdf05dcf8682a7d1451bff1c2c4e68245807414e06c40a8a",
+      "bytes": 14131,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_environment_contract.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_environment_fence.py",
+      "sha256": "34515a9d13c4ba547607fb513fd7d697efbcabf7635dc6cb61f36fe547dba1b1",
+      "bytes": 8011,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_environment_observer.py",
+      "sha256": "c86cc4768d1015cf78062569a51c1f16c54597c6a912857502e12977d621d6f8",
+      "bytes": 28949,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_environment_probe.py",
+      "sha256": "0c72cb0c08ba60bffa35c36aadd35a0c3603efd6385ea88c4aaa8558f1c123b9",
+      "bytes": 9153,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_environment_runtime.py",
+      "sha256": "14c4a658b98d1567c08314d17fd80aacac7dba92ac394047f15d020ea58a25c2",
+      "bytes": 42912,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_environment_supervisor.py",
+      "sha256": "dbe268951963234da96d3f3bd420ca15195afe57473f5b466c197af5f586191d",
+      "bytes": 22795,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_environment_supervisor.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_minimal.md",
+      "sha256": "6a2c9e10bd1a44f696d6e7be269048215f5371cfe256758d99edf0b06edd9da9",
+      "bytes": 11031,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_minimal.py",
+      "sha256": "d8c38146b28471e9ca33aaed64f6d0de82184c60f3505f8a17f9bd94f067c5e0",
+      "bytes": 10443,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_minimal.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_minimal_derived.py",
+      "sha256": "39d323691cb8971f9587a5847dd3462cede09ad227fb72a1b5083779f0f154b0",
+      "bytes": 4733,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_minimal_derived.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_minimal_plan.py",
+      "sha256": "a061b2327d48264e3c49bf5ddfc7193998148bc3794eb7cd9ee6f95f3d0da478",
+      "bytes": 9318,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_minimal_plan.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_minimal_runtime.py",
+      "sha256": "d06faec9cda8023a62cb0eb4b04ccb27afac460c42e77a48c77c0aa9d598a9d4",
+      "bytes": 25273,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_minimal_runtime.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_minimal_worker.py",
+      "sha256": "4b44ccce564819a5431e52b558978c35ba0736da7038f266bfbf281210938e4c",
+      "bytes": 2477,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_minimal_worker.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_native_browser.py",
+      "sha256": "cfa1bed69c36164099d18cfe5d6d994e41173b02a7e4c295cb67b9fc9defa78d",
+      "bytes": 91974,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_native_browser.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_native_browser_contract.json",
+      "sha256": "6025e38135982f1b0326919153fc81f434e3c7041560be7f95d7da4303d8f330",
+      "bytes": 53360,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_native_browser_contract.json"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_native_browser_measurement.py",
+      "sha256": "dff791a78b84d87dbac59705c9324d348289906365422ac5922e6b39119d3fad",
+      "bytes": 33293,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_native_browser_measurement.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_native_goview_authority.py",
+      "sha256": "eb596b520ead39cfec39e30e991c0cb65ced49d633efe33f8a9a37a49c582d2f",
+      "bytes": 31991,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_native_goview_deadline.py",
+      "sha256": "e451c51e8b6d3aaff4828f837571ea887ff230a028b41742be9c6c849930da56",
+      "bytes": 32657,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_native_goview_errors.py",
+      "sha256": "cc69b6b34685264eb1a75ae026e3ae3d09718006f93a104d14fc0c1318f9c775",
+      "bytes": 2861,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_native_installation_admission.py",
+      "sha256": "18a9c78d7df4f2833ddada00167a2d9bde35b055257d3ed7bbca096d1fcfe0f1",
+      "bytes": 10783,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_native_installation_admission.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_native_launcher.py",
+      "sha256": "c98cdebdebdbf473d93f1a79463e8768cc7de5c382345b76bf6c8c6603121fc7",
+      "bytes": 94269,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_native_launcher.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_native_observation.py",
+      "sha256": "825417ae3881114ca3c7c8de9a91b8abfcd2d495a6f69cd4ec3f051359d86f33",
+      "bytes": 10255,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_native_observation.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_native_process.py",
+      "sha256": "000dc76110ae3d1cf528441d87981d937c08e78b59ef724d62490ba8fab35dee",
+      "bytes": 31821,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_native_process.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_native_service_identity.py",
+      "sha256": "855696ad8f706e4961fe3d79ffe90e9f347a5e1819949e9ca4b66b0ed565008b",
+      "bytes": 13754,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_native_service_identity.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_native_signer.py",
+      "sha256": "d622b2f5a5ef0a1b5a7f0cce548c0441a75706d1865c89a583380300ca30e649",
+      "bytes": 16301,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_native_signer.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_plan.py",
+      "sha256": "98bd2657049ee0f7adb5ca03be75a742478784a55d92ddfea243f6e5a187c2c7",
+      "bytes": 29102,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_plan.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_plan_application.py",
+      "sha256": "7d92ef0eeeb89ef684054128f7fdc966f4a3f74f1e3336c9c65c99f687419058",
+      "bytes": 8553,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_plan_application.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_plan_lab.py",
+      "sha256": "431bf29321ff9ca777b980a77afcc0bac8e390fd89397a7e763885800d45f5e0",
+      "bytes": 32636,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_plan_lab.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_plan_objects.py",
+      "sha256": "541973f8e8211b1a0e142b66807adfadce592e9cf7fc2649dc481d2bd99c199b",
+      "bytes": 11124,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_plan_objects.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/recovery_plan_tree.py",
+      "sha256": "38fe812922fddfa3f03d3ae50cbcb76d695c632570afa9b760292e789d43a635",
+      "bytes": 2206,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/recovery_plan_tree.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_binding.py",
+      "sha256": "46cfc7f00bd6cdc1430da8a1f3f1d2139b92a1d40beb0f9ee374725d41d7f93d",
+      "bytes": 7575,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_binding.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_catalog.py",
+      "sha256": "363513312e7f1c00f04f85faccc08ba51598f12c0b77e7154a4873d9fe02a2df",
+      "bytes": 19491,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_catalog.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_cli.py",
+      "sha256": "d71435be8ea624ad09ec087c29d8ee6224841cdd30a7efd895768a141f919d7f",
+      "bytes": 23787,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_cli.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_host_view.py",
+      "sha256": "2597e6554dee5f086aaafe5bdb776b6895ea96a741eac7c73c81b74d4a2bad60",
+      "bytes": 4544,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_host_view.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_installer.py",
+      "sha256": "a72cf983ac65e88b9c26f65b5e16847f2bebbcf9a3287cc402bc259ce3b5bf31",
+      "bytes": 6746,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_installer.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_minimal.py",
+      "sha256": "011bbb654d05e538810941dfc6833ef8b227d00911c6a8b7f0784c4c5855f276",
+      "bytes": 43707,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_minimal.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_native_archive.py",
+      "sha256": "2c07e943b32f4d31e567b0be574805ac85dfd7c784ee40521e1fdca8c64a7a43",
+      "bytes": 5063,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_native_archive.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_native_archive_reader.py",
+      "sha256": "5ed0396e2f56a807d221c5f79bdb586022ad76fa386cd78f99f815825fb730bf",
+      "bytes": 12621,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_native_archive_reader.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_native_bridge.py",
+      "sha256": "1a9cab4f8738e499e47eeac649c74e23f03544a202b244f460d9e53aa02d1672",
+      "bytes": 7059,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_native_bridge.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_native_browser.py",
+      "sha256": "df375960a00e0feb66ff08e86bd8d576138d7f9d3507ad7b1b01e918669f35d1",
+      "bytes": 89061,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_native_browser.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_native_browser_resources.py",
+      "sha256": "68ee9413bdfc9ec008e134aa65b409938b26e322a2da69a62b22572cd141b131",
+      "bytes": 102630,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_native_browser_resources.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_native_browser_schemas.json",
+      "sha256": "2de76465c364ab86cb4528b0cf09a2c96aab828a203a8f3c90713308fb0a80ca",
+      "bytes": 53347,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_native_browser_schemas.json"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_native_initializer.py",
+      "sha256": "d62b24e1db4bca2d1ee46af035c095e8cb54fe109ab6a15dcc40e611e1f0f61d",
+      "bytes": 8621,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_native_initializer.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_native_lab.py",
+      "sha256": "fe9637efca31aea35613676a537bc03dc75dd8dc50156d5fc061a43d664e67e7",
+      "bytes": 49499,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_native_lab.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_native_launch.py",
+      "sha256": "302c8ee1f54701089a6c36ed416c40548d2fdafcc0702558be6bbb1e681b7722",
+      "bytes": 5220,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_native_launch.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_native_peer.py",
+      "sha256": "0ac1fc51a8fca94cdd8c4fce910da03567de486a9399b5d4eb15efdd6cfea17d",
+      "bytes": 59346,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_native_peer.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_native_publisher.py",
+      "sha256": "75f5bfec201df4b8f1b0558d1454fe240cffd16bb07d17daaa0d60694cb17421",
+      "bytes": 33081,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_native_publisher.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_native_readback.py",
+      "sha256": "f48751f408188e02951e59e1121fd78206a5f38f680653be7815b5b609a9e6f4",
+      "bytes": 11853,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_native_readback.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_native_runtime.py",
+      "sha256": "f71075da6cdb3b4f27227e8bd9828c3ce33516df081007821d782954fdb90984",
+      "bytes": 53770,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_native_runtime.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_publish.py",
+      "sha256": "ccb71f37f90565b69bedd729dad5c27335b4e2bad65fb028a51b85dd3e59c9ba",
+      "bytes": 14513,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_publish.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_readback_cli.py",
+      "sha256": "b46167aea464b108e5386c450b125f3934ce3eb7d0c9d132064f05aa913121e9",
+      "bytes": 832,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_readback_cli.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_records.py",
+      "sha256": "09240903fb188341c6e4e69651fc939aa516d375fc6381f25989ed0a3f341882",
+      "bytes": 19063,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_records.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_retention.py",
+      "sha256": "43aabaa34671e6b6f5b7d6daa33bbc529afbd3b35d7bb59774359c42bf52fef6",
+      "bytes": 13186,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_retention.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_wsl_carrier.py",
+      "sha256": "9644f1ae0cdc8c10d31f9079fbc1ba6ba831248d60260cab4d21036799761100",
+      "bytes": 7420,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_wsl_carrier.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/repository_wsl_dispatcher.py",
+      "sha256": "7b7d0a2ec096a1aff851df23c8e08dedb23f50fc377aa2f7e61529eeb93bd3c6",
+      "bytes": 6629,
+      "reason": "matches installed rehearsal source",
+      "installedPath": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/common/ops/recovery/repository_wsl_dispatcher.py"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/test_recovery_minimal.py",
+      "sha256": "4d1053822ef897da535e0447ee9b3420bae9afa28388936112213a2050606655",
+      "bytes": 16822,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/recovery/w05_controlled_eligibility.py",
+      "sha256": "8cf21836ce2450b17a5eec5767977020e3775670cc6239ac18e41f4098b142a7",
+      "bytes": 19412,
+      "reason": "recovery dependency and local checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/spug/smallapp-entry.locations.conf",
+      "sha256": "d29f53fbacdaee90c9c7beae060cd083e7fdad9c445806a321bfff6e29de189a",
+      "bytes": 763,
+      "reason": "Spug backup restore UI and adapter"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/spug/smallapp-ui/app.js",
+      "sha256": "ea39ba1ea8e9ca59ea607187e0550c10951b90aa542b5a3620966349ab5912b8",
+      "bytes": 16232,
+      "reason": "Spug backup restore UI"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/spug/smallapp-ui/index.html",
+      "sha256": "9645d94df3534c855bf2c431ec39f9f56cab8980c71d1e44c1ce0b86a99a29cd",
+      "bytes": 3592,
+      "reason": "Spug backup restore UI"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/spug/smallapp-ui/style.css",
+      "sha256": "345c895782c96f65b889267853417fbc46b1e25da56834bc8e3eafef9df9b161",
+      "bytes": 2918,
+      "reason": "Spug backup restore UI"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/spug/smallapp_adapter.py",
+      "sha256": "afaffc166221e79c4e8767a777c85ad99b37507460dcc53986b40a0e831b2e88",
+      "bytes": 16596,
+      "reason": "Spug backup restore UI and adapter"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/spug/smallapp_bootstrap.sh",
+      "sha256": "ed4b0960fbbe1ab4d8f43c0a0c0eff7b760ecf617928266127ee578876e431e5",
+      "bytes": 276,
+      "reason": "Spug backup restore UI and adapter"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/spug/smallapp_browser.mjs",
+      "sha256": "37d8f57a7b4b8acb1ac58b25882f8b8a87a68b2b0c2e58e1b69516f6e2e92b35",
+      "bytes": 6802,
+      "reason": "Spug backup restore UI and adapter"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/spug/smallapp_checks.py",
+      "sha256": "b4cf7ed60843677e38da55413567b1adc691099c423d2f0643999fabc11ea90f",
+      "bytes": 15735,
+      "reason": "Spug backup restore UI and adapter"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/spug/smallapp_entry.py",
+      "sha256": "641c67a32235e4b503fa6798779b0f421d28010d678182c7757b717b4ac3ed91",
+      "bytes": 23104,
+      "reason": "Spug backup restore UI and adapter"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/spug/smallapp_entry_install.py",
+      "sha256": "539aa9cc8671dc9f6e690ae20639f7b1152d10c25b97da9a75af98969ca7a2f5",
+      "bytes": 2494,
+      "reason": "Spug backup restore UI and adapter"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/spug/smallapp_registration_settings.py",
+      "sha256": "a324439ba31033d23149fbfbce6903d4885fa4e56b13216896ea457ae2841043",
+      "bytes": 3484,
+      "reason": "Spug backup restore UI and adapter"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/spug/smallapp_restore_result.test.cjs",
+      "sha256": "dfb08c86cc4e7ec16b8ae88ec452651c9e1ad07f8893d0b66c245fc9d46c3fbe",
+      "bytes": 2412,
+      "reason": "Spug backup restore UI and adapter"
+    },
+    {
+      "repository": "maintenance",
+      "path": "ops/spug/smallapp_tasks.mjs",
+      "sha256": "2dc03166fc7e5d57fe89dccdc74f5c8dd2039e8e0ee63ee872935678ff026c49",
+      "bytes": 7415,
+      "reason": "Spug backup restore UI and adapter"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/README.md",
+      "sha256": "fb1a5ed80cb98e063ed0b0bbc961222076d8b1d6f950c0f8760ddf06a91e1f87",
+      "bytes": 29265,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/application_protection.py",
+      "sha256": "ba99d004e9906923c32af133d186247bdbccc366bdf5774875e8d5b517408030",
+      "bytes": 6614,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/bind_caller.py",
+      "sha256": "b612eab285a44a802dcbfc2060f3906bf5af3b8a17811fd1abbb81cc63aab108",
+      "bytes": 3009,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/collect_data.py",
+      "sha256": "13c7c48c9db74f336539cc827fd39a2440c2f02f936132e9872d0da599359195",
+      "bytes": 13238,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/collect_playwright.py",
+      "sha256": "e38451c84116e4f88eb53181b38b42ec8a58d7897c84563919553bab64dc3af3",
+      "bytes": 11304,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/collect_recovery.py",
+      "sha256": "e0a34f007d09f8c24ecbee58b246fd3593102e1bd035394cf4940247c0ee39c2",
+      "bytes": 10913,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/collection_originals.py",
+      "sha256": "6f1107d66fe084381da0d70848783e5047de059326614af8f7d31ace62d817c1",
+      "bytes": 3929,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/controlled_eligibility.py",
+      "sha256": "7a2a6bab6ceba5304f9a8678bb29611e3ee211559fb905c8e4922efa6dc72f1c",
+      "bytes": 10810,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/core.py",
+      "sha256": "b0f2d41dca54079e8c1ff4852798bbebc7a28008e2bc2c602b72de49fed854f8",
+      "bytes": 8516,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/derived_state.py",
+      "sha256": "9313fc9093bffd4d77689470d18b7f34706fd921d394ce6d9a90d9d9363e398b",
+      "bytes": 7412,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/evidence.py",
+      "sha256": "20c828e31bd28d838ca63d8ae4ac84e78222ab61c98dd8ef7b23af4262aef6a3",
+      "bytes": 37223,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/integrity.py",
+      "sha256": "3746e64feb0d5cb0c9fe758ea00a28e536ebc5b1de330307acef8196e44b31fb",
+      "bytes": 10241,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/lab_boundary.py",
+      "sha256": "151931aa03fbf6e0d6132440d9430659ead940fa0be1e019ec61b451ba8a4367",
+      "bytes": 19318,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/native_observe.py",
+      "sha256": "3da346c1763178af930d950cc81ffd629129ce48757960321474957d9f6ca9d9",
+      "bytes": 27018,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/native_originals.py",
+      "sha256": "86b5315bced72af56ebefccc3cc25cd195087aa6966bde243a838fba3d348ad6",
+      "bytes": 26796,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/peer_installation.py",
+      "sha256": "6ba6a9e43aea27623db734793cb58522a84aaf90e2aa459f7f157c15b567eec9",
+      "bytes": 10129,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/report_currency.py",
+      "sha256": "1254d579bc1ff1a12deec8b69516f1076324c83a01f74adb493868f8af276fb9",
+      "bytes": 3080,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/run_ui_recovery.py",
+      "sha256": "0af0361e966370258b108f827685f629ca475692fb55998542c265bde7bf8f56",
+      "bytes": 23851,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/ruoyi_ui.py",
+      "sha256": "b1653c2a4fc82744de657b77637b7bd5cf56ed556d7a46fc5c26c526771b995d",
+      "bytes": 23141,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/service_identity.py",
+      "sha256": "f792288c04ec75bd3622fc84044fa7d978a929bc8e9f8d4f6ba93296a4f21865",
+      "bytes": 19459,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/recovery_verification/verify_recovery.py",
+      "sha256": "bb4f8098bf2fff07c4df413ae8af747eadab3336093403a961f3fc157fc20d6a",
+      "bytes": 17970,
+      "reason": "existing independent recovery verification"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_application_gates.py",
+      "sha256": "ef3856724be3f760be072e8de0e32380617ca84f41bdf1050c7a363bef06fce0",
+      "bytes": 16076,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_application_mechanism.py",
+      "sha256": "c1ab626dd7f73c7b9068e066aea14df26cf820a0c67d3850d8e8d39a1c37012a",
+      "bytes": 7625,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_application_repair.py",
+      "sha256": "b1b6972b1b032368223fa520ecacf6304816ea30663825d73b5d680610d6864e",
+      "bytes": 31084,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_cutover_terminal.py",
+      "sha256": "98e568fb6dd94d2009a9ccd94ac63e14c3282f95a2ae4883e9b0eca1a75cf699",
+      "bytes": 4379,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_data_files.py",
+      "sha256": "14549202b7a3232757e536528c799ea7ba62b9ec25c7bfed87797da8281e82f6",
+      "bytes": 4640,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_data_import_sql_subprocess.py",
+      "sha256": "c1448b0bc3d3463028db698e67cea0dd206fe010a0e19423f4cc808c786d5532",
+      "bytes": 5557,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_database_settings.py",
+      "sha256": "ea7243ad94207b90ce119492e2e107fb4e0f1c4208511a0c6243e3fe7ea5c9fe",
+      "bytes": 2188,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_diagnostics.py",
+      "sha256": "3e37057aed508d839dd0324b4e42ed2c1be83a4a18e6140f58968418c188c467",
+      "bytes": 63128,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_engine_protocol.py",
+      "sha256": "50f197029a962875b4e2d0eefefe51f3d7606ef1504be55cb43e4edf001f3c16",
+      "bytes": 6909,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_environment_contract.py",
+      "sha256": "055ac688572a33f836fd9f87d9bed2dff1fd7e1fee4fb8f47f5cac0a767d2528",
+      "bytes": 19142,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_environment_fixtures.py",
+      "sha256": "acc374f5eb9a1fadd4d10ec054c6f0b53fc3e7d554d30ed4cc00948a59046fa1",
+      "bytes": 21062,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_environment_journal_guard.py",
+      "sha256": "eff21b21002aa88bf801a331a2d31c11f0a89a13ec3fd2d5d7acb26b661a3564",
+      "bytes": 9054,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_environment_observer.py",
+      "sha256": "e0af2000016daced531cd16fc1badd35232fc189948c8d40a53cc0b2d50b5209",
+      "bytes": 17731,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_environment_supervision.py",
+      "sha256": "2be9ec678ed5c582680fcb36acc7eec887801945de16a42ccb88fb10891c69a4",
+      "bytes": 1443,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_native_launch.py",
+      "sha256": "b791a420be871f80998afb3e2e2bb5466aa835efc66545aa964eccd3999908ee",
+      "bytes": 5589,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_native_producers.py",
+      "sha256": "164ee899f27c1036c57214d2cb65441ae607944b486d7654311d7a4f49e4f1ba",
+      "bytes": 9471,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_native_r10.py",
+      "sha256": "39e107f44da9e791cf421975661e2ae3bc7ad12da7679d99ae3250c382a298f6",
+      "bytes": 18033,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_native_r11.py",
+      "sha256": "3169a85041fee40b48c1e44adb04db2bd270fd5b80bd396b17a207c9fd765cbc",
+      "bytes": 11562,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_native_r12.py",
+      "sha256": "53964a7164457c8a49a9579e6a0047bf49cf14f8314e8bcfc3a4f1643713237d",
+      "bytes": 23056,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_native_r12_consolidated.py",
+      "sha256": "0344a49db441f316b41c2fab68d31fba3e1fb89e3c344fb35ae82e25c7f40345",
+      "bytes": 22729,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_native_r8.py",
+      "sha256": "973e16c8bc9e762788ddcabf58f19f15fc2f3fb10538e25e6a023bc7a3b5f92f",
+      "bytes": 11232,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_native_r9.py",
+      "sha256": "c11b1867020033404e1a29ae065dd967bf735e59e828239610596d9055e6b995",
+      "bytes": 10043,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_plan_application.py",
+      "sha256": "8e07e6bb88e8bbdff855a06780eba341886dc810a0ae6fde21cb64d1466de118",
+      "bytes": 15681,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_plan_evidence.py",
+      "sha256": "bff69e8cb2738511759ad8f3d575cb768a0e58231d6d6643b1fe5f59bff4bddd",
+      "bytes": 2283,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_plan_lab.py",
+      "sha256": "df01b21d7c4013024ac1fb77db532a73362432dce71ea97c47a6fd64bfbd0348",
+      "bytes": 32822,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_plan_lab_context_repair.py",
+      "sha256": "1c7cf4445a7ea11c5f5a60d46fd1fa69abfcc429da5d082c5d2699ad7df468cb",
+      "bytes": 11032,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_plan_lab_native_r6.py",
+      "sha256": "53b9c0370a0cb9a0ce3af97cdb5ad87e8543f3834f364df9cf1384b396bc1d92",
+      "bytes": 8369,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_plan_objects.py",
+      "sha256": "1a551e79d6093925c1cc0b76434ce6c68b448b75ed19c420f454d2264acf0c4d",
+      "bytes": 7580,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_redis_sessions_adapter.py",
+      "sha256": "ef4be447c9b8cbb062f5b3ab3bae301861ce2ed0c8fbaf5fc91c5886a05fc645",
+      "bytes": 15163,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_residual_r2.py",
+      "sha256": "ad7b59d2210ede18aa1f8e93acbb253a465f825d6dc2dbaee59c4c7a18f1ecaa",
+      "bytes": 13539,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_residual_r3.py",
+      "sha256": "02f0337052eee89af91b595e2dcd7117125ea7eb7dded1e3c1f699087d2a9763",
+      "bytes": 9519,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_stage_guards.py",
+      "sha256": "420b54134efc416d8ea7da13dc27fd587f296c2a49b5dbb1abf3d3413fe9dfce",
+      "bytes": 4585,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_static_repair_r4.py",
+      "sha256": "4e7abdce87beaa090b31146a1cae7b67aef99357dcf6544ca107893eed508bcc",
+      "bytes": 31558,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_static_repair_r5_residual_r2_w04.py",
+      "sha256": "3df97a15d5651c2b5049d1866eca91d60cb44f67fb8667c8a4505eee6b94799c",
+      "bytes": 19580,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_static_repair_r5_residual_r3_w04.py",
+      "sha256": "cdb8ebfe16bf0c479c2482ed7ec67cfd07c5b557757907d8e0f138a2ae2e0983",
+      "bytes": 8836,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_static_repair_r5_residual_w04.py",
+      "sha256": "a65506369953102fde6911cbc9966366b922ae44fa22242fc338e9cbc68c5a4d",
+      "bytes": 14680,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_static_repair_r5_w04.py",
+      "sha256": "064b70b12f186efb3a4c18494d3c2681d1b8083e4b35bf7bebbddb305d16f4fa",
+      "bytes": 18992,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_verification_admission_v2.py",
+      "sha256": "190336892b64a9064b0ce8a09c82adbdbcca1c434c67ab0dca5a10655c1f6c47",
+      "bytes": 12615,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_verification_final_residual.py",
+      "sha256": "3b65eb4240ca1860459f21e9dd8f9f4ca3bd0656b931985ea3db8a8b2aacc7e1",
+      "bytes": 22683,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_verification_integration_fixes.py",
+      "sha256": "5cc3e469bfadd7d25895766a3d1f47e0822495789cf900ec8dfc3b893ee342b6",
+      "bytes": 28857,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_verification_lab.py",
+      "sha256": "d6ae4665c8294c6f54ab6c3458415e563c2ad68a25bb97485a17e4e77dd557ef",
+      "bytes": 15560,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_verification_lab_actions_r3.py",
+      "sha256": "768047c1f2e34a9cd6dc82eda6c5048910ab22ef91fde9e193fe2998dc694666",
+      "bytes": 4632,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_verification_native_contract_r6.py",
+      "sha256": "1066dba52612bfd7cb91989595f6f9354208d650a4c000500774a1f77050f8d6",
+      "bytes": 23607,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_verification_native_fixture.py",
+      "sha256": "9ef2560c866c535b3f19c4d2bd242fb90d8f5167370c51c82fa05166461e1acf",
+      "bytes": 18540,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_verification_native_observe_r7.py",
+      "sha256": "75602093495084156bdea3ba4ba5539a8c19e93f19d578c225e494f23babfc3b",
+      "bytes": 12460,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_verification_peer_admission_r8.py",
+      "sha256": "8e82d66df2b59c0c65b97ce0518a487898fb07f6d8723f427d1a677831501ef9",
+      "bytes": 10687,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_verification_repair_r3.py",
+      "sha256": "a0fd5b710de0bc602bcae75700abb6c7b19281228f6d15acab7141f42f0222db",
+      "bytes": 10930,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_verification_report.py",
+      "sha256": "91e5816ffcb353930d1276f30a5687f6c8287c4809d8c75fa58d44ae9eb6d03e",
+      "bytes": 27750,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/test_recovery_verification_ui_stages.py",
+      "sha256": "f439f73b7f9821e4516e0add22174bae7488970c70f0079611278509614a142e",
+      "bytes": 4262,
+      "reason": "existing recovery tests"
+    },
+    {
+      "repository": "maintenance",
+      "path": "scripts/tests/verify_recovery_database_settings_real.py",
+      "sha256": "38b754709733f0a7c0d72596872d921d36d8e29cbbcb861a8fd188ce2d1ce809",
+      "bytes": 9242,
+      "reason": "real MySQL setting verification utility"
+    },
+    {
+      "repository": "maintenance",
+      "path": "tests/test_recovery_control_fresh_targets.py",
+      "sha256": "02b8d0a42a983f9859ff2268314cab4017a906ec411bdb297f2de563e6871285",
+      "bytes": 7512,
+      "reason": "control regression checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "tests/test_recovery_control_operation_id.py",
+      "sha256": "4fa031735c043576c11feea5345eab7216690e9ea61da9e0cb71a406524fb912",
+      "bytes": 4695,
+      "reason": "control regression checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "tests/test_recovery_control_single_operator.py",
+      "sha256": "e98b36fb65c41b414f9a54cb522d0f1c351212a7a99d1ff70f218d255a8f0b64",
+      "bytes": 10086,
+      "reason": "control regression checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "tests/test_recovery_control_terminal_refresh.py",
+      "sha256": "58f6385d30a2a7550188ed1f333aa42e7690fa1a9da9e7523f97cb4ca8453b7c",
+      "bytes": 12426,
+      "reason": "control regression checks"
+    },
+    {
+      "repository": "maintenance",
+      "path": "tests/test_recovery_control_true_terminal_projection.py",
+      "sha256": "1f80a2089c7f543c76c4c57bf2ad315484e23b75f3afb580071edd4bfacff92f",
+      "bytes": 13868,
+      "reason": "control regression checks"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>备份与恢复 · Spug</title><link rel="stylesheet" href="style.css">
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header><a href="/">SPUG</a><span>备份与恢复</span><a class="back" href="/schedule">任务与执行历史</a></header>
+  <main>
+    <div class="title"><div><h1>备份与恢复</h1><p>选择已登记应用，使用已核验的备份链和独立恢复目标。</p></div><button id="refresh">刷新可用选项</button></div>
+    <p id="login" class="notice" hidden>请先<a href="/">登录 Spug</a>，再返回此页。</p>
+    <p id="problem" class="notice" role="alert" hidden></p>
+    <section aria-labelledby="selection-title">
+      <h2 id="selection-title">选择应用与来源</h2>
+      <div class="fields"><label>已登记应用<select id="application" aria-label="已登记应用"></select></label><label>备份来源<select id="source" aria-label="备份来源"></select></label></div>
+      <p>登记版本：<output id="selected-version"></output></p>
+      <p id="readiness" class="readiness" role="status"></p>
+      <div class="actions" role="tablist" aria-label="操作类型">
+        <button role="tab" aria-selected="true" data-action="FULL">全量备份</button>
+        <button role="tab" aria-selected="false" data-action="INCREMENTAL">增量备份</button>
+        <button role="tab" aria-selected="false" data-action="RESTORE">恢复</button>
+      </div>
+      <div id="incremental-fields" class="fields" hidden><label>已接受的父备份链<select id="parent" aria-label="已接受的父备份链"></select></label></div>
+      <div id="restore-fields" class="fields" hidden><label>已接受的恢复点<select id="point" aria-label="已接受的恢复点"></select></label><label>全新独立恢复目标<select id="target" aria-label="全新独立恢复目标"></select></label></div>
+      <p id="action-note"></p>
+      <div class="operation"><span>操作编号</span><output id="operation-id"></output></div>
+      <label>找回未受理的原编号 <input id="original-operation-id" autocomplete="off" placeholder="填写原提交编号"></label>
+      <button id="check-unaccepted" type="button">核对原编号是否未受理</button>
+      <p id="blocked-reason" class="reason" role="status"></p>
+      <div class="controls"><button id="submit" class="primary" disabled>开始全量备份</button><button id="retry-original" disabled>原编号重试</button><button id="query" disabled>查询原操作</button><button id="new-operation" disabled>新建操作</button></div>
+    </section>
+    <section aria-labelledby="result-title">
+      <h2 id="result-title">原操作结果</h2><p id="result-state">尚未执行</p>
+      <dl id="result-details" hidden><dt>错误原因</dt><dd id="result-error"></dd><dt>日志引用</dt><dd id="result-logs"></dd><dt>结果引用</dt><dd id="result-ref"></dd><dt>Spug 历史</dt><dd id="result-history"></dd></dl>
+      <p class="muted">受理或执行中不代表完成。执行完成后，仍须核验真实业务页面和数据。</p>
+    </section>
+    <section aria-labelledby="history-title"><h2 id="history-title">操作记录</h2><div class="table-wrap"><table><thead><tr><th>操作编号</th><th>类型</th><th>来源</th><th>创建时间</th><th>结果</th></tr></thead><tbody id="history"></tbody></table></div><p id="empty-history" class="muted">暂无通过本入口提交的操作。</p></section>
+  </main>
+</body>
+</html>

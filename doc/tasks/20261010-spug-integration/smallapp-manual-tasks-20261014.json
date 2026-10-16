@@ -1,0 +1,90 @@
+{
+  "at": "2026-10-14T01:49:39.189Z",
+  "batchId": "SMALL_APP_REAL_FULL_INCREMENTAL_RESTORE",
+  "loginCredentialRef": "build-test-spug-login.private.json",
+  "realUiConfiguration": true,
+  "originalReleaseTasksUnchanged": [
+    {
+      "id": 4,
+      "name": "发布正式服",
+      "command": "python3 /opt/intruoyi-spug/release_adapter.py --target PROD --mode publish",
+      "targets": [
+        "local"
+      ],
+      "is_active": false,
+      "type": "IntRuoyi手动发布",
+      "desc": "当前目标发布关闭；更多→执行测试只显示拒绝原因。正式维护暂停。禁止激活。"
+    },
+    {
+      "id": 3,
+      "name": "发布备份服",
+      "command": "python3 /opt/intruoyi-spug/release_adapter.py --target BACKUP --mode publish",
+      "targets": [
+        "local"
+      ],
+      "is_active": false,
+      "type": "IntRuoyi手动发布",
+      "desc": "当前目标发布关闭；更多→执行测试只显示拒绝原因。正式维护暂停。禁止激活。"
+    },
+    {
+      "id": 2,
+      "name": "发布测试服",
+      "command": "python3 /opt/intruoyi-spug/release_adapter.py --target TEST --mode check",
+      "targets": [
+        "local"
+      ],
+      "is_active": false,
+      "type": "IntRuoyi手动发布",
+      "desc": "手动 TEST 入口：更多→执行测试。默认只读查询明确版本及原操作，区分部署和完整验收；已有包批准只约束接纳动作。不部署、不重建。禁止激活。"
+    },
+    {
+      "id": 1,
+      "name": "发布状态查询",
+      "command": "python3 /opt/intruoyi-spug/release_adapter.py --target ALL --mode status",
+      "targets": [
+        "local"
+      ],
+      "is_active": false,
+      "type": "IntRuoyi手动发布",
+      "desc": "只读查询固定包与原操作；区分部署成功和完整验收失败。更多→执行测试；历史记录查看结果。禁止激活。"
+    }
+  ],
+  "businessActionsTriggered": 0,
+  "parameterReadiness": {
+    "FULL": "Requires actual W01 transport and registered new source",
+    "INCREMENTAL": "Requires authentic FULL parentChainRef, entered by editing this task in UI",
+    "RESTORE": "Requires authentic FULL+I1 recoveryPointRef and registered fresh target"
+  },
+  "results": [
+    {
+      "name": "小程序全量备份 FULL",
+      "action": "FULL",
+      "operationId": "smallapp-20261014-full-r1",
+      "command": "python3 /opt/intruoyi-spug/smallapp_adapter.py --action FULL --operation-id smallapp-20261014-full-r1 --source-config-ref smallapp-20261014-source-r1",
+      "inactiveUiReadback": true,
+      "executed": false,
+      "taskId": 7,
+      "finalReadonlyApiVerified": true
+    },
+    {
+      "name": "小程序增量备份 INCREMENTAL",
+      "action": "INCREMENTAL",
+      "operationId": "smallapp-20261014-incremental-r1",
+      "command": "python3 /opt/intruoyi-spug/smallapp_adapter.py --action INCREMENTAL --operation-id smallapp-20261014-incremental-r1 --source-config-ref smallapp-20261014-source-r1",
+      "inactiveUiReadback": true,
+      "executed": false,
+      "taskId": 8,
+      "finalReadonlyApiVerified": true
+    },
+    {
+      "name": "小程序完整链恢复 RESTORE",
+      "action": "RESTORE",
+      "operationId": "smallapp-20261014-restore-r1",
+      "command": "python3 /opt/intruoyi-spug/smallapp_adapter.py --action RESTORE --operation-id smallapp-20261014-restore-r1 --source-config-ref smallapp-20261014-source-r1 --target-config-ref smallapp-20261014-target-r1",
+      "inactiveUiReadback": true,
+      "executed": false,
+      "taskId": 9,
+      "finalReadonlyApiVerified": true
+    }
+  ]
+}

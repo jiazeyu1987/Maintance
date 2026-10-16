@@ -1,0 +1,45 @@
+{
+  "operationId": "smallapp-ab28277ce77545bc816c75055e1d7d03",
+  "spugHistoryId": 84,
+  "state": "SUCCEEDED",
+  "actualExitCode": 0,
+  "elapsedSeconds": 647.019846,
+  "nativeInvocationCount": 1034,
+  "databasePoints": 2,
+  "objectPhysicalSteps": 2,
+  "applicationStartPin": {
+    "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/minimal-native-20261015-r1/recovery-operations/smallapp-ab28277ce77545bc816c75055e1d7d03/final/application-start.json",
+    "bytes": 2501,
+    "sha256": "6b99111d6c4d74d81c104761fea019e863cc1d0c752a7db48cb12ac3a0eeb5b5"
+  },
+  "resultPin": {
+    "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/minimal-native-20261015-r1/recovery-operations/smallapp-ab28277ce77545bc816c75055e1d7d03/result.json",
+    "bytes": 332821,
+    "sha256": "84cc48ff78e206ba7545880c48b2c79469054bf646ea3bfc89932b8af9c79562"
+  },
+  "quiesced": {
+    "schemaVersion": "SmallAppControlResult/v2",
+    "requestId": "acceptance-r7-finished",
+    "operation": "QUIESCE",
+    "state": "QUIESCED",
+    "pendingObjects": 0,
+    "activeMutations": 0,
+    "version": "smallapp-20261014-r2-redis",
+    "tenantId": 122,
+    "logicalConfigRef": "smallapp-20261014-target-r1",
+    "stopRequested": false,
+    "redis": {
+      "state": "UP",
+      "serverVersion": "7.4.8",
+      "mode": "standalone",
+      "role": "master",
+      "instanceId": "brlab-20261012-smallapp-target-single-20261016-r7",
+      "database": 0,
+      "classification": "REBUILD",
+      "rebuildFrom": "DATABASE"
+    }
+  },
+  "activeTaskContainers": 6,
+  "activeMemoryLimitBytes": 1979711488,
+  "retainedTaskVolumeBytes": 1398980608
+}

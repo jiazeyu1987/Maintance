@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "ApplicationRegistration/v1",
+  "applicationId": "intruoyi",
+  "displayName": "IntRuoyi",
+  "batchId": "SMALL_APP_REAL_FULL_INCREMENTAL_RESTORE",
+  "engineSelectionRef": null,
+  "sourceConfigRef": null,
+  "source": {
+    "hostAddress": null,
+    "root": null,
+    "database": {
+      "name": null,
+      "state": "UNCONFIGURED",
+      "serverUuid": null,
+      "containerId": null,
+      "endpoint": null,
+      "tableNames": [],
+      "coveragePin": null
+    },
+    "objects": {
+      "bucket": null,
+      "state": "UNCONFIGURED",
+      "keyPrefix": null,
+      "containerId": null,
+      "endpoint": null,
+      "coveragePin": null
+    },
+    "assetInventory": {
+      "state": "UNCONFIGURED",
+      "applicationFilePins": [],
+      "applicationDeliveryPin": null,
+      "runtimeClosurePin": null,
+      "writerInventoryPin": null,
+      "capturedInventoryPin": null
+    },
+    "resourceBindingPin": null,
+    "nativeConfigPin": null,
+    "redis": {
+      "state": "UNCONFIGURED",
+      "role": "SOURCE",
+      "configRef": null,
+      "containerId": null,
+      "endpoint": null,
+      "databaseIndex": null,
+      "keyPrefix": null,
+      "serverVersion": null,
+      "runtimeConfigurationPin": null,
+      "secretRole": null,
+      "resourceProofPin": null,
+      "applicationUseProofPin": null,
+      "instanceId": null,
+      "secretReference": null
+    }
+  },
+  "runtime": {
+    "version": null,
+    "pythonPin": null,
+    "dependencyNames": [],
+    "dependencyClosurePin": null,
+    "configurationPin": null,
+    "startupDescriptorPin": null,
+    "quiescenceDescriptorPin": null,
+    "sourceConfigurationFields": null
+  },
+  "secretReferences": [],
+  "archive": {
+    "root": null,
+    "repositoryId": null,
+    "servicePin": null,
+    "policyPin": null,
+    "fullParentChainRef": null,
+    "recoveryPointRef": null,
+    "independentReadbackRequired": true
+  },
+  "allowedRestoreTargets": [],
+  "schedule": {
+    "state": "UNCONFIGURED",
+    "timezone": null,
+    "fullFrequency": null,
+    "incrementalFrequency": null
+  },
+  "retention": {
+    "state": "UNCONFIGURED",
+    "policyPin": null,
+    "configuration": null
+  },
+  "evidencePins": {
+    "historicalResourceObservations": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/input-observations.json",
+      "bytes": 12411,
+      "sha256": "a97bb63dffdbe25ea5c642b8ab59e818d3d989500bdb531984e55ce7815b5015"
+    },
+    "threeComponentAlignment": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/alignment-observation.json",
+      "bytes": 7213,
+      "sha256": "a82728a224a7ea4372029be3631133c909ad8d16ec2d3f3f5bab9f6537eb3150"
+    },
+    "sourceDeliveryObservation": {
+      "path": "D:/ProjectPackage/Int/IntRuoyiMaintance/doc/tasks/20261014-backup-application-registration/source-delivery-observation.json",
+      "bytes": 9879,
+      "sha256": "bba05b276a4448aaa8f86007057b61eba34e5f2a10e0ee21d56bc1d526ff1a43"
+    }
+  },
+  "schemaRevision": "three-component-20261014-r1",
+  "requiredComponents": [
+    "MySQL",
+    "MinIO",
+    "Redis"
+  ],
+  "redisRecovery": {
+    "state": "UNCONFIGURED",
+    "applicationVersion": null,
+    "sourceConfigRef": null,
+    "sourceDeliveryPin": null,
+    "semanticsPin": null,
+    "consumerPin": null,
+    "classifications": [],
+    "freshTarget": {
+      "initialState": null,
+      "startupState": null,
+      "reloginRequired": null,
+      "policyPin": null
+    }
+  }
+}

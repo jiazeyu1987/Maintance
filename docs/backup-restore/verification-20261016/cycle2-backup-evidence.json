@@ -1,0 +1,56 @@
+[
+  {
+    "operationId": "smallapp-8f85bc60559046b2b38ab0e1526d5f5e",
+    "resultPin": {
+      "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/minimal-native-20261015-r1/repository-operations/d8016c4f61c77fb0e885394d3c2015584ad34dc1536cba5f03c5318e2f5ddff2/result.json",
+      "bytes": 5062,
+      "sha256": "aacbd8cfd0c9298252b9f289f5942a2092f20848750bd2757bb2a930242c8c8f"
+    },
+    "state": "SUCCEEDED",
+    "actualExitCode": 0,
+    "databaseMethod": "FORMAL_SQL_FULL",
+    "startPosition": null,
+    "endPosition": {
+      "databaseUuid": "044077a6-c717-11f1-92ed-0242ac150002",
+      "executedGtidSet": "044077a6-c717-11f1-92ed-0242ac150002:1-44",
+      "file": "mysql-bin.000003",
+      "position": 27903,
+      "serverVersion": "8.0.39"
+    },
+    "recoveryMaterialPin": {
+      "bytes": 58488,
+      "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/native-preparation-20261012/identity-smb-r3/archive/brlabminimal-20261015-r1/repository/archives/prod-d8016c4f61c77fb0e885394d3c2015584ad34dc1536cba5f03c5318e2f5ddff2/.repository/recovery-material.json",
+      "sha256": "98db58bd1d4dba48f883ad321263c8cc936f3859c3f4fe56f7975564e63e42df"
+    }
+  },
+  {
+    "operationId": "smallapp-9af480a717634778adea4e9dd8465948",
+    "resultPin": {
+      "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/source/smallapp-20261014-r1/installation-r2-redis/minimal-native-20261015-r1/repository-operations/4ad80e2f71ee7b7485cc72b88f3b37ca052ea9f11adac1d60ffb11fbea0ccd6a/result.json",
+      "bytes": 5069,
+      "sha256": "601addf1ed6567f53bd1e749bbb2d13ee00c492eace66b2f75079ec7d4eb85c7"
+    },
+    "state": "SUCCEEDED",
+    "actualExitCode": 0,
+    "databaseMethod": "BINLOG_SQL",
+    "startPosition": {
+      "databaseUuid": "044077a6-c717-11f1-92ed-0242ac150002",
+      "executedGtidSet": "044077a6-c717-11f1-92ed-0242ac150002:1-44",
+      "file": "mysql-bin.000003",
+      "position": 27903,
+      "serverVersion": "8.0.39"
+    },
+    "endPosition": {
+      "databaseUuid": "044077a6-c717-11f1-92ed-0242ac150002",
+      "executedGtidSet": "044077a6-c717-11f1-92ed-0242ac150002:1-52",
+      "file": "mysql-bin.000003",
+      "position": 35202,
+      "serverVersion": "8.0.39"
+    },
+    "recoveryMaterialPin": {
+      "bytes": 57074,
+      "path": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/native-preparation-20261012/identity-smb-r3/archive/brlabminimal-20261015-r1/repository/archives/prod-4ad80e2f71ee7b7485cc72b88f3b37ca052ea9f11adac1d60ffb11fbea0ccd6a/.repository/recovery-material.json",
+      "sha256": "379c4f674809f96788ab3e357a4dfef07d44e21666093c531bf1b05399c868fd"
+    }
+  }
+]

@@ -1,0 +1,90 @@
+{
+  "records": [
+    {
+      "key": "SA-W06-01",
+      "title": "小程序恢复验收记录 01",
+      "body": "租户122；全量基线；记录1；中文 UTF-8；数值=17",
+      "recordId": "1",
+      "version": "3"
+    },
+    {
+      "key": "SA-W06-02",
+      "title": "增量修改记录 02",
+      "body": "租户122；真实页面修改；数值=3402",
+      "recordId": "2",
+      "version": "2"
+    },
+    {
+      "key": "SA-W06-04",
+      "title": "小程序恢复验收记录 04",
+      "body": "租户122；全量基线；记录4；中文 UTF-8；数值=68",
+      "recordId": "4",
+      "version": "3"
+    },
+    {
+      "key": "SA-W06-05",
+      "title": "小程序恢复验收记录 05",
+      "body": "租户122；全量基线；记录5；中文 UTF-8；数值=85",
+      "recordId": "5",
+      "version": "1"
+    },
+    {
+      "key": "SA-W06-06",
+      "title": "小程序恢复验收记录 06",
+      "body": "租户122；全量基线；记录6；中文 UTF-8；数值=102",
+      "recordId": "6",
+      "version": "1"
+    },
+    {
+      "key": "SA-W06-07",
+      "title": "小程序恢复验收记录 07",
+      "body": "租户122；全量基线；记录7；中文 UTF-8；数值=119",
+      "recordId": "7",
+      "version": "1"
+    },
+    {
+      "key": "SA-W06-08",
+      "title": "小程序恢复验收记录 08",
+      "body": "租户122；全量基线；记录8；中文 UTF-8；数值=136",
+      "recordId": "8",
+      "version": "1"
+    },
+    {
+      "key": "SA-W06-09",
+      "title": "小程序恢复验收记录 09",
+      "body": "租户122；全量基线；记录9；中文 UTF-8；数值=153",
+      "recordId": "9",
+      "version": "1"
+    },
+    {
+      "key": "SA-W06-10",
+      "title": "小程序恢复验收记录 10",
+      "body": "租户122；全量基线；记录10；中文 UTF-8；数值=170",
+      "recordId": "10",
+      "version": "1"
+    },
+    {
+      "key": "SA-W06-11",
+      "title": "增量新增记录 11",
+      "body": "租户122；真实页面新增；数值=187",
+      "recordId": "11",
+      "version": "1"
+    }
+  ],
+  "attachment": {
+    "name": "smallapp-replaced-a.txt",
+    "bytes": 4360,
+    "sha256": "d347f2024837dfc1dc2ebf011d2a67f9b9c818cf3c38e2d4dd2c1e5cf7930dae"
+  },
+  "deletedRecordKeys": [
+    "SA-W06-03"
+  ],
+  "deletedAttachmentKeys": [
+    "SA-W06-04"
+  ],
+  "loginHttpStatus": 200,
+  "tenantId": 122,
+  "username": "aoteman",
+  "operationId": "smallapp-d1f5ffea9e654bf5b4c88202c3be1bc0",
+  "target": "smallapp-20261016-target-r6"
+}

@@ -1,0 +1,28 @@
+{
+  "request": {
+    "action": "RESTORE",
+    "operationId": "smallapp-ab28277ce77545bc816c75055e1d7d03",
+    "parentChainRef": null,
+    "recoveryPointRef": "smallapp-9af480a717634778adea4e9dd8465948",
+    "schemaVersion": "SmallAppBackupUiRequest/v1",
+    "sourceConfigRef": "smallapp-20261014-source-r1",
+    "targetConfigRef": "smallapp-20261016-target-r7"
+  },
+  "applicationId": "smallapp-20261014-r1",
+  "spugTaskId": 9,
+  "createdAt": "2026-10-16T08:47:06.074527+00:00",
+  "spugHistoryId": 84,
+  "dispatchErrorCode": null,
+  "result": {
+    "action": "RESTORE",
+    "errorCode": null,
+    "logRefs": [
+      "smallapp-ab28277ce77545bc816c75055e1d7d03-originals"
+    ],
+    "operationId": "smallapp-ab28277ce77545bc816c75055e1d7d03",
+    "resultRef": "smallapp-ab28277ce77545bc816c75055e1d7d03-result",
+    "schemaVersion": "SmallAppBackupUiResult/v1",
+    "state": "SUCCEEDED"
+  },
+  "repeatSubmissionAllowed": false
+}

@@ -1,0 +1,175 @@
+{
+  "operationId": "smallapp-d1f5ffea9e654bf5b4c88202c3be1bc0",
+  "session": {
+    "tenantId": 122,
+    "username": "aoteman",
+    "sessionCache": "REDIS_READ_BACK_WITH_SQL_AUTHORITY"
+  },
+  "health": {
+    "version": "smallapp-20261014-r2-redis",
+    "state": "OPEN",
+    "components": {
+      "mysql": "UP",
+      "minio": "UP",
+      "redis": {
+        "state": "UP",
+        "serverVersion": "7.4.8",
+        "mode": "standalone",
+        "role": "master",
+        "instanceId": "brlab-20261012-smallapp-target-single-20261016-r6",
+        "database": 0,
+        "classification": "REBUILD",
+        "rebuildFrom": "DATABASE"
+      }
+    }
+  },
+  "recordsShape": [
+    "records",
+    "attachments",
+    "state"
+  ],
+  "records": {
+    "records": [
+      {
+        "id": 1,
+        "tenant_id": 122,
+        "record_key": "SA-W06-01",
+        "title": "小程序恢复验收记录 01",
+        "content": "租户122；全量基线；记录1；中文 UTF-8；数值=17",
+        "version": 3,
+        "filename": "smallapp-replaced-a.txt",
+        "sha256": "d347f2024837dfc1dc2ebf011d2a67f9b9c818cf3c38e2d4dd2c1e5cf7930dae",
+        "size_bytes": 4360,
+        "bucket": "brlab-20261012-smallapp-source-20261014-r1",
+        "object_key": "smallapp/122/dc615085b27875af63c90160ded4bf7c"
+      },
+      {
+        "id": 2,
+        "tenant_id": 122,
+        "record_key": "SA-W06-02",
+        "title": "增量修改记录 02",
+        "content": "租户122；真实页面修改；数值=3402",
+        "version": 2,
+        "filename": null,
+        "sha256": null,
+        "size_bytes": null,
+        "bucket": null,
+        "object_key": null
+      },
+      {
+        "id": 4,
+        "tenant_id": 122,
+        "record_key": "SA-W06-04",
+        "title": "小程序恢复验收记录 04",
+        "content": "租户122；全量基线；记录4；中文 UTF-8；数值=68",
+        "version": 3,
+        "filename": null,
+        "sha256": null,
+        "size_bytes": null,
+        "bucket": null,
+        "object_key": null
+      },
+      {
+        "id": 5,
+        "tenant_id": 122,
+        "record_key": "SA-W06-05",
+        "title": "小程序恢复验收记录 05",
+        "content": "租户122；全量基线；记录5；中文 UTF-8；数值=85",
+        "version": 1,
+        "filename": null,
+        "sha256": null,
+        "size_bytes": null,
+        "bucket": null,
+        "object_key": null
+      },
+      {
+        "id": 6,
+        "tenant_id": 122,
+        "record_key": "SA-W06-06",
+        "title": "小程序恢复验收记录 06",
+        "content": "租户122；全量基线；记录6；中文 UTF-8；数值=102",
+        "version": 1,
+        "filename": null,
+        "sha256": null,
+        "size_bytes": null,
+        "bucket": null,
+        "object_key": null
+      },
+      {
+        "id": 7,
+        "tenant_id": 122,
+        "record_key": "SA-W06-07",
+        "title": "小程序恢复验收记录 07",
+        "content": "租户122；全量基线；记录7；中文 UTF-8；数值=119",
+        "version": 1,
+        "filename": null,
+        "sha256": null,
+        "size_bytes": null,
+        "bucket": null,
+        "object_key": null
+      },
+      {
+        "id": 8,
+        "tenant_id": 122,
+        "record_key": "SA-W06-08",
+        "title": "小程序恢复验收记录 08",
+        "content": "租户122；全量基线；记录8；中文 UTF-8；数值=136",
+        "version": 1,
+        "filename": null,
+        "sha256": null,
+        "size_bytes": null,
+        "bucket": null,
+        "object_key": null
+      },
+      {
+        "id": 9,
+        "tenant_id": 122,
+        "record_key": "SA-W06-09",
+        "title": "小程序恢复验收记录 09",
+        "content": "租户122；全量基线；记录9；中文 UTF-8；数值=153",
+        "version": 1,
+        "filename": null,
+        "sha256": null,
+        "size_bytes": null,
+        "bucket": null,
+        "object_key": null
+      },
+      {
+        "id": 10,
+        "tenant_id": 122,
+        "record_key": "SA-W06-10",
+        "title": "小程序恢复验收记录 10",
+        "content": "租户122；全量基线；记录10；中文 UTF-8；数值=170",
+        "version": 1,
+        "filename": null,
+        "sha256": null,
+        "size_bytes": null,
+        "bucket": null,
+        "object_key": null
+      },
+      {
+        "id": 11,
+        "tenant_id": 122,
+        "record_key": "SA-W06-11",
+        "title": "增量新增记录 11",
+        "content": "租户122；真实页面新增；数值=187",
+        "version": 1,
+        "filename": null,
+        "sha256": null,
+        "size_bytes": null,
+        "bucket": null,
+        "object_key": null
+      }
+    ],
+    "attachments": [
+      {
+        "recordKey": "SA-W06-01",
+        "filename": "smallapp-replaced-a.txt",
+        "reference": "brlab-20261012-smallapp-source-20261014-r1/smallapp/122/dc615085b27875af63c90160ded4bf7c",
+        "bytes": 4360,
+        "sha256": "d347f2024837dfc1dc2ebf011d2a67f9b9c818cf3c38e2d4dd2c1e5cf7930dae"
+      }
+    ],
+    "state": "OPEN"
+  }
+}
