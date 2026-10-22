@@ -1,0 +1,52 @@
+{
+  "recordCounts": {
+    "hosts": 3,
+    "tasks": 14,
+    "users": 1,
+    "taskHistories": 157
+  },
+  "databaseTableChecks": 36,
+  "scheduler": {
+    "autostart": false,
+    "activeProcessCount": 0
+  },
+  "imageIdentity": "PASS",
+  "localPortBinding": "127.0.0.1:18080",
+  "mounts": [
+    {
+      "type": "volume",
+      "source": "/var/lib/docker/volumes/intruoyi-spug-transfer_data/_data",
+      "destination": "/data"
+    },
+    {
+      "type": "bind",
+      "source": "C:/Spug/Spug-complete-20261022-151627",
+      "destination": "/transfer"
+    },
+    {
+      "type": "volume",
+      "source": "/var/lib/docker/volumes/intruoyi-spug-transfer_repositories/_data",
+      "destination": "/data/repos"
+    },
+    {
+      "type": "volume",
+      "source": "/var/lib/docker/volumes/intruoyi-spug-transfer_service/_data",
+      "destination": "/data/spug"
+    },
+    {
+      "type": "bind",
+      "source": "C:/Spug/runtime/ops/spug",
+      "destination": "/opt/intruoyi-spug"
+    },
+    {
+      "type": "bind",
+      "source": "C:/Spug/runtime/private",
+      "destination": "/run/intruoyi-spug"
+    },
+    {
+      "type": "volume",
+      "source": "/var/lib/docker/volumes/intruoyi-spug-transfer_integration_records/_data",
+      "destination": "/var/lib/intruoyi-spug"
+    }
+  ]
+}

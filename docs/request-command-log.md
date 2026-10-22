@@ -3879,3 +3879,17 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - 用户要求继续；维护流程独立验收和融合复验通过，8f0d840实现及031f82b文档已保存。精确提交仅含任务hunks，其他任务脏改动保留。
 - task-closeout preview/apply通过，维护任务worktree和两个隔离引擎/两卷已清理；主程序main未操作，af5acd接口切片保留。
 - 4个已预览pytest目录删除被工具策略拒绝（blocked by policy），未执行或换工具绕过；正式报告全部保留。维护无origin不能推送，任务正式收尾blocked，流程功能独立PASS。
+- 用户需求：启动 Spug；用户说明目录映射到 `C:\Users\D01021\Documents\ChatGPT\IntRuoyi`。
+- 命令意图：只读核对映射目录、仓库脚本和已存在的监听端口/进程，避免重复启动；向 localhost 的前端根页和后端健康端点发送 HTTP GET 验证。未对代码、数据库或远程服务写入。
+- 验证结果：本机现有 IntRuoyi Vite (PID 18172, 8081) 和 Spring Boot (PID 26648, 48081) 均在请求前已运行；前端根页、`/actuator/health`、`/admin-api/infra/health` 均返回 HTTP 200。仓库中未发现独立 Spug 部署目录。
+- 2026-10-22 再次要求启动独立 Spug：只读检查本机容器、镜像、Windows 服务、候选进程以及指定项目脚本配置，未找到独立 Spug 启动入口；已询问新安装或已有实例位置。没有执行安装、远程操作或把 IntRuoyi 当作 Spug。
+
+## 2026-10-22 Spug ZIP 本机恢复
+- 需求：以 Documents/Spug-complete-20261022-151627.zip 恢复 Spug；用户批准正式适配到 C: 并保留原包。
+- 命令意图：校验归档、建立受限 ACL 的 C:/Spug，恢复独立 Compose 项目，关闭 scheduler，不启动执行器和远程操作；验证镜像、数据库、卷和页面。
+- 测试：冲突拒绝覆盖、本机绑定及 C: compose 适配两项通过。
+
+- 运行结果：Spug/MariaDB 已恢复；首页/发布中心/备份恢复 HTTP200；真实登录、主机任务和历史页面通过；记录数3/14/1/157，36表检查OK，C:挂载和镜像ID一致，scheduler未启动。
+- Git 收尾：作者身份缺失，提交被拒绝；等待 user.name/user.email，未触碰其他脏改动，运行服务已完成验证。
+
+- 收尾：用户提供Git身份，仅配置当前仓库；恢复合同2项及运行态复核PASS，实现提交d502af5，提交身份阻塞解除，任务completed。
