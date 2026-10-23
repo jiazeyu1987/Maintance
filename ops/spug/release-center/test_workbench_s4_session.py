@@ -20,7 +20,7 @@ class S4SessionTests(unittest.TestCase):
         return dict(migrationId=mid, sha256=WORKBENCH_S4_MAINTENANCE_MIGRATIONS[mid],
                     type='schema', sessionProfile='workbench-s4-maintenance', file=mid+'.sql')
 
-    def test_three_exact_reviewed_migrations_require_confirmed_maintenance(self):
+    def test_exact_reviewed_migrations_require_confirmed_maintenance(self):
         for mid in WORKBENCH_S4_MAINTENANCE_MIGRATIONS:
             migration = self.migration(mid)
             for unconfirmed in (False, None, 'true', 1):
@@ -30,10 +30,11 @@ class S4SessionTests(unittest.TestCase):
                              'SET @profile_workbench_s4_maintenance=1;\nSELECT 1;')
 
     def test_wrong_identity_bytes_profile_and_arbitrary_hooks_are_rejected(self):
-        for changes in (dict(migrationId='other'), dict(sha256='0'*64), dict(sessionProfile=''),
-                        dict(sessionProfile='workbench-s3-maintenance'), dict(approvedHook='arbitrary')):
-            with self.subTest(changes=changes), self.assertRaises(RuntimeBlocked):
-                validate_migration_handler(dict(self.migration(), **changes))
+        for mid in WORKBENCH_S4_MAINTENANCE_MIGRATIONS:
+            for changes in (dict(migrationId='other'), dict(sha256='0'*64), dict(sessionProfile=''),
+                            dict(sessionProfile='workbench-s3-maintenance'), dict(approvedHook='arbitrary')):
+                with self.subTest(mid=mid, changes=changes), self.assertRaises(RuntimeBlocked):
+                    validate_migration_handler(dict(self.migration(mid), **changes))
         normal = dict(migrationId='normal', sessionProfile='')
         bind_reviewed_session_profile(normal)
         self.assertEqual(normal['sessionProfile'], '')

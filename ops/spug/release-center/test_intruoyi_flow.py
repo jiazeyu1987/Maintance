@@ -192,5 +192,67 @@ class IsolationDiscardTests(unittest.TestCase):
         self.assertNotIn('resolution', self.original)
 
 
+class PreparationPrerequisiteFailureTests(unittest.TestCase):
+    def setUp(self):
+        self.executor = object.__new__(IntRuoyiExecutor)
+        self.executor.c = {}
+        self.original = dict(id='failed-prepare', action='prepare-rehearsal', status='failed',
+                             target='rehearsal', sourceEnv='prod', releaseTag='candidate',
+                             currentStep='inspect-full-data-rehearsal-prerequisites',
+                             error='Original package location missing')
+        self.package = dict(releaseTag='candidate', stage='tested', rehearsals=[])
+        self.executor.state = dict(jobs=[self.original], packages=[self.package], environments={})
+        self.executor.runtime = Mock()
+        self.executor.runtime.targets = {}
+        self.executor.save = Mock()
+        self.executor.log = Mock()
+        self.job = dict(id='resolve', actor='operator', payload=dict(jobId=self.original['id'],
+                        decision='abandon', note='Original package location will be restored'))
+
+    def test_missing_metadata_package_fails_before_effect_marker_and_can_be_abandoned(self):
+        from intruoyi_runtime import Runtime
+        runtime = object.__new__(Runtime)
+        runtime.config = {'metadataRepair': {'directory': 'missing-original-package'}}
+        runtime.targets = {'rehearsal': {}}
+        runtime.observe = Mock(return_value={'images': {}, 'releaseTag': 'old', 'ledgerRecords': []})
+        runtime.profile = Mock(return_value={'sourceEnvironment': 'prod'})
+        runtime.call = Mock()
+        callback = lambda name, effects=False:self.executor.step(self.original, name, effects)
+        with patch('intruoyi_metadata.reference', side_effect=ValueError('Original package location missing')):
+            with self.assertRaisesRegex(ValueError, 'Original package location missing'):
+                runtime.prepare_rehearsal('prod', {'migrations': []}, callback, self.original['id'])
+        self.assertEqual(self.original['currentStep'], 'inspect-full-data-rehearsal-prerequisites')
+        self.assertNotIn('effectsStarted', self.original)
+        self.assertNotIn('remoteStatusRequired', self.original)
+        runtime.call.assert_not_called()
+        before = copy.deepcopy(self.package)
+        self.executor.resolve_task(self.job)
+        self.assertEqual(self.original['resolution']['decision'], 'abandon')
+        self.assertEqual(self.original['status'], 'failed')
+        self.assertEqual(self.original['error'], 'Original package location missing')
+        self.assertEqual(self.package, before)
+        self.assertEqual(self.executor.runtime.mock_calls, [])
+
+    def test_either_effect_or_uncertain_remote_marker_requires_remote_terminal_proof(self):
+        for marker in ('effectsStarted', 'remoteStatusRequired'):
+            with self.subTest(marker=marker):
+                self.setUp()
+                self.original[marker] = True
+                self.executor.runtime.call.side_effect = ValueError('Remote terminal proof missing')
+                with patch('intruoyi_executor.rehearsal_profile', return_value={}):
+                    with self.assertRaisesRegex(ValueError, 'Remote terminal proof missing'):
+                        self.executor.resolve_task(self.job)
+                self.executor.runtime.call.assert_called_once_with('prod', 'rehearsal-verify-stopped', releaseTag='candidate')
+                self.executor.runtime.reset_rehearsal.assert_not_called()
+                self.assertNotIn('resolution', self.original)
+
+    def test_pre_effect_failure_cannot_be_retried_via_deployment_tail(self):
+        self.job['payload']['decision'] = 'retry'
+        with self.assertRaisesRegex(ValueError, 'interrupted restore tail'):
+            self.executor.resolve_task(self.job)
+        self.assertNotIn('resolution', self.original)
+        self.assertEqual(self.executor.runtime.mock_calls, [])
+
+
 if __name__ == '__main__':
     unittest.main()

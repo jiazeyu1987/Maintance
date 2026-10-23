@@ -7,6 +7,7 @@ import copy
 import hashlib
 import http.client
 import json
+import math
 import os
 from pathlib import Path, PurePosixPath
 import re
@@ -21,7 +22,7 @@ from urllib.parse import urlsplit, quote
 from urllib.request import urlopen
 
 import intruoyi_remote as remote
-from intruoyi_runtime import audit_ledger, require, RuntimeBlocked, sha, migration_id, file_sha, package_identity, validate_release_state, validate_expected_schema, runtime_config_snapshot, validate_migration_handler, migration_execution_sql, validate_quiescence_recovery, validate_storage_budget, ROUTE_SNAPSHOT_MIGRATION, ROUTE_SNAPSHOT_HOOK, validate_snapshot_cli_report
+from intruoyi_runtime import audit_ledger, require, RuntimeBlocked, sha, migration_id, file_sha, package_identity, validate_release_state, validate_expected_schema, runtime_config_snapshot, validate_migration_handler, migration_execution_sql, validate_quiescence_recovery, validate_storage_budget, ROUTE_SNAPSHOT_MIGRATION, ROUTE_SNAPSHOT_HOOK, ROUTE_LEGACY_MIGRATION, ROUTE_SNAPSHOT_HOOKS, validate_snapshot_cli_report, LEGACY_FORM_SWITCH_MIGRATION, LEGACY_FORM_SWITCH_SHA256
 
 PROTOCOL = 'intruoyi-quiescent-start-v1'
 
@@ -198,6 +199,37 @@ def unpack_original_package(root, manifest, evidence):
     return {'archiveSha256': evidence['sha256'], 'manifestSha256': evidence['manifestSha256'], 'fileCount': len(members)}
 
 
+def reuse_verified_stage(root, payload):
+    """Read-only reuse of an intact staged package before deployment ever began."""
+    manifest, evidence, files = payload['manifest'], payload['archive'], payload['files']
+    require(not root.is_symlink() and root.is_dir(), 'Existing stage is not a safe directory')
+    require(root.name == manifest['releaseTag'] and files == [
+        {'name': item['name'], 'sha256': item['sha256']} for item in manifest['files']],
+        'Existing stage request differs from manifest')
+    expected = {item['name'] for item in files} | {'release.tar', 'manifest.json', 'stage-verified.json'}
+    expected_dirs = {str(parent) for name in expected for parent in PurePosixPath(name).parents if str(parent) != '.'}
+    for path in root.rglob('*'):
+        name = path.relative_to(root).as_posix()
+        require(not path.is_symlink() and ((path.is_file() and name in expected)
+                or (path.is_dir() and name in expected_dirs)),
+                'Existing stage contains deployment evidence or unrecognized contents; reuse refused')
+    require(all((root / name).is_file() for name in expected), 'Existing stage is incomplete; reuse refused')
+    require(file_sha(root / 'release.tar') == evidence['sha256'], 'Existing stage archive checksum differs')
+    require(file_sha(root / 'manifest.json') == evidence['manifestSha256']
+            and json.loads((root / 'manifest.json').read_text('utf-8')) == manifest, 'Existing stage manifest differs')
+    receipt = json.loads((root / 'stage-verified.json').read_text('utf-8'))
+    require(receipt == {'manifestSha256': package_identity(manifest), 'files': files,
+                       'archive': {'archiveSha256': evidence['sha256'], 'manifestSha256': evidence['manifestSha256'],
+                                   'fileCount': len(files) + 1},
+                       'validatedPreflights': payload['validatedPreflights']}, 'Existing stage verification receipt differs')
+    verify_files(root, files)
+    for role in ('backend', 'frontend'):
+        image = manifest['images'][role]['id']
+        require(remote.run(['docker', 'image', 'inspect', '--format', '{{.Id}}', image]).decode().strip() == image,
+                'Existing stage image identity differs')
+    return {'directory': str(root), 'verified': True, 'reused': True, 'manifestSha256': package_identity(manifest)}
+
+
 def migration_plan(profile, manifest, obs):
     audit = audit_ledger(obs, manifest)
     environment = profile.get('environment')
@@ -250,6 +282,7 @@ def acceptance_spec(profile):
     net = json.loads(remote.run(['docker', 'network', 'inspect', network]))[0]
     require(net.get('Driver') == 'bridge', 'Acceptance network must be a registered bridge network')
     backend = remote.inspect(profile['backend'])
+    frontend = remote.inspect(profile['frontend'])
     addresses = [entry['IPAddress'] for entry in backend['NetworkSettings']['Networks'].values() if entry.get('IPAddress')]
     require(len(addresses) == 1 and network in backend['NetworkSettings']['Networks'], 'Acceptance network must reach the uniquely addressed backend')
     archive = remote.run(['docker', 'cp', profile['frontend'] + ':/etc/nginx/conf.d/default.conf', '-'])
@@ -268,11 +301,25 @@ def acceptance_spec(profile):
             ending += 1
         require(depth == 0, 'Nginx server block is unbalanced')
         blocks.append(nginx[start.start():ending])
-    public_port = 80 if profile.get('environment') == 'rehearsal' else (urlsplit(profile['entryUrl']).port or 80)
+    entry_port = urlsplit(profile['entryUrl']).port or 80
+    if profile.get('environment') == 'rehearsal':
+        public_port = 80
+    elif frontend['HostConfig']['NetworkMode'] == 'host':
+        public_port = entry_port
+    else:
+        mappings = {int(port.split('/')[0]) for port, bindings in (frontend['HostConfig'].get('PortBindings') or {}).items()
+                    if re.fullmatch(r'[0-9]+/tcp',port) and any(
+                        binding.get('HostPort') == str(entry_port)
+                        and binding.get('HostIp') in ('','0.0.0.0',profile['host']) for binding in bindings or [])}
+        require(len(mappings) == 1, 'Registered public entry requires a unique Docker TCP listener mapping')
+        public_port = next(iter(mappings))
     selected = [block for block in blocks if re.search(r'\blisten\s+(?:[0-9.]+:)?' + str(public_port) + r'(?:\s|;)', block)]
     require(len(selected) == 1, 'Cannot identify unique public nginx server for registered entryUrl')
     nginx = selected[0]
     allowed = {addresses[0], '127.0.0.1', 'localhost', profile['host'], profile['backend']}
+    from intruoyi_rehearsal_agent import source_upstream_hosts
+    registered_backend = {'NetworkSettings': {'Networks': {network: backend['NetworkSettings']['Networks'][network]}}}
+    allowed.update(source_upstream_hosts(registered_backend, frontend, profile['backend']))
     replaced = [0]
     def upstream(match):
         host = match.group(1)
@@ -281,7 +328,17 @@ def acceptance_spec(profile):
         return 'http://' + addresses[0] + ':48081'
     nginx = re.sub(r'http://([A-Za-z0-9_.-]+):48081', upstream, nginx)
     require(replaced[0] > 0, 'No explicit registered backend :48081 upstream in nginx configuration')
-    nginx, listens = re.subn(r'(?m)(\blisten\s+)(?:[0-9.]+:)?[0-9]+(\s*(?:default_server)?\s*;)', r'\g<1>80\2', nginx)
+    rehearsal = profile.get('environment') == 'rehearsal'
+    listener = '80'
+    if not rehearsal:
+        url = urlsplit(profile.get('acceptanceUrl', ''))
+        bind = profile.get('acceptanceBindAddress')
+        require(url.scheme == 'http' and url.hostname == bind == profile['host']
+                and isinstance(bind, str) and re.fullmatch(r'[0-9]+(?:\.[0-9]+){3}', bind)
+                and url.port and url.port != entry_port, 'Registered acceptance host address and distinct port required')
+        listener = bind + ':' + str(url.port)
+    nginx, listens = re.subn(r'(?m)(\blisten\s+)(?:[0-9.]+:)?[0-9]+(\s*(?:default_server)?\s*;)',
+                            lambda m: m[1] + listener + m[2], nginx)
     require(listens > 0 and not re.search(r'\blisten\s+\[', nginx), 'Acceptance nginx listen configuration is unsupported')
     seen_listeners = set()
     def unique_listener(match):
@@ -290,8 +347,9 @@ def acceptance_spec(profile):
             return ''
         seen_listeners.add(value)
         return value
-    nginx = re.sub(r'\blisten\s+80\s*(?:default_server)?\s*;', unique_listener, nginx)
-    return {'network': network, 'backendIp': addresses[0], 'nginx': nginx}
+    nginx = re.sub(r'\blisten\s+' + re.escape(listener) + r'\s*(?:default_server)?\s*;', unique_listener, nginx)
+    return {'network': network if rehearsal else 'host', 'backendNetwork': network,
+            'backendIp': addresses[0], 'nginx': nginx}
 
 
 def check_storage(profile):
@@ -299,9 +357,19 @@ def check_storage(profile):
     require(base.is_absolute() and base.is_dir(), 'Registered staging filesystem directory must exist')
     filesystem = os.statvfs(str(base))
     validate_storage_budget(profile, filesystem.f_bavail * filesystem.f_frsize)
+    minimum = profile.get('minimumDockerFreeBytes')
+    require(isinstance(minimum, int) and not isinstance(minimum, bool) and minimum > 0,
+            'Explicit Docker image storage free-space budget required')
+    docker_root = Path(remote.run(['docker', 'info', '--format', '{{.DockerRootDir}}']).decode().strip())
+    require(docker_root.is_absolute() and docker_root.is_dir(), 'DockerRootDir must identify an existing filesystem directory')
+    filesystem = os.statvfs(str(docker_root))
+    free = filesystem.f_bavail * filesystem.f_frsize
+    require(free >= minimum, 'Insufficient Docker image storage before staging: freeBytes='
+            + str(free) + ', requiredBytes=' + str(minimum))
 
 
 def preflight(profile, manifest):
+    startup_timeout(profile)
     check_fence(profile)
     check_storage(profile)
     require(manifest.get('maintenanceProtocol') == PROTOCOL, 'Candidate lacks verified IntRuoyi quiescent startup protocol')
@@ -338,18 +406,39 @@ def preflight(profile, manifest):
             'snapshotChecks': snapshot_checks}
 
 
+def reviewed_snapshot_migrations(manifest):
+    """Select the exact reviewed successor, never an arbitrary supersedes bypass."""
+    migrations = manifest['migrations']
+    identities = {ROUTE_SNAPSHOT_MIGRATION, ROUTE_LEGACY_MIGRATION}
+    matches = [item for item in migrations if item.get('migrationId') in identities]
+    require(len({item['migrationId'] for item in matches}) == len(matches), 'Reviewed snapshot migration duplicated')
+    for item in migrations:
+        if identities.intersection(item.get('supersedes', [])):
+            require(item.get('migrationId') == ROUTE_LEGACY_MIGRATION and
+                    item.get('supersedes') == [ROUTE_SNAPSHOT_MIGRATION], 'Unreviewed route snapshot supersession')
+    for item in matches:
+        validate_migration_handler(item)
+    successor = [item for item in matches if item['migrationId'] == ROUTE_LEGACY_MIGRATION]
+    if successor:
+        require(any(item['migrationId'] == ROUTE_SNAPSHOT_MIGRATION for item in matches),
+                'Original immutable route enforcement must remain in successor package')
+        return successor
+    return matches
+
+
 def snapshot_precheck(profile, manifest, plan):
     """Run the candidate's canonicalizer before stopping any business container."""
-    if not any(entry['migrationId'] == ROUTE_SNAPSHOT_MIGRATION and entry['action'] == 'APPLY' for entry in plan):
-        return []
-    matches = [item for item in manifest['migrations'] if item['migrationId'] == ROUTE_SNAPSHOT_MIGRATION]
-    require(len(matches) == 1, 'Reviewed route snapshot migration missing or duplicated')
-    return [run_snapshot_cli(profile, directory(profile, manifest['releaseTag']), manifest, matches[0], 'PRECHECK')]
+    selected = reviewed_snapshot_migrations(manifest)
+    applied = {entry['migrationId'] for entry in plan if entry['action'] == 'APPLY'}
+    if any(item['migrationId'] == ROUTE_LEGACY_MIGRATION for item in selected):
+        require(ROUTE_SNAPSHOT_MIGRATION not in applied, 'Superseded route enforcement cannot execute')
+    return [run_snapshot_cli(profile, directory(profile, manifest['releaseTag']), manifest, item, 'PRECHECK')
+            for item in selected if item['migrationId'] in applied]
 
 
 def run_snapshot_cli(profile, root, manifest, migration, mode, recovery=None):
     validate_migration_handler(migration)
-    require(migration.get('approvedHook') == ROUTE_SNAPSHOT_HOOK and mode in ('PRECHECK', 'BACKFILL', 'READINESS'),
+    require(migration.get('approvedHook') in ROUTE_SNAPSHOT_HOOKS and mode in ('PRECHECK', 'BACKFILL', 'READINESS'),
             'Reviewed route snapshot hook and explicit mode required')
     if mode != 'PRECHECK':
         require_migration_maintenance(profile, root, recovery)
@@ -483,7 +572,11 @@ def clone_config(original, image, maintenance=None):
             continue
         endpoint = {}
         if name != 'bridge':
-            if entry.get('IPAddress'):
+            # Stopped containers may have no observed IPAddress while their
+            # explicitly assigned addresses remain in IPAMConfig.
+            if entry.get('IPAMConfig') is not None:
+                endpoint['IPAMConfig'] = copy.deepcopy(entry['IPAMConfig'])
+            elif entry.get('IPAddress'):
                 endpoint['IPAMConfig'] = {'IPv4Address': entry['IPAddress']}
             if entry.get('Aliases'):
                 endpoint['Aliases'] = entry['Aliases']
@@ -525,25 +618,32 @@ def acceptance_frontend(profile, root):
     descriptor = os.open(str(path), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     with os.fdopen(descriptor, 'w') as output:
         output.write(spec['nginx'])
-    # Host-network public nginx gets a separate bridge instance and independent listen port.
+    # Formal/test ingress is explicitly host-networked. An internal backend
+    # bridge cannot publish host ports. Isolated rehearsal retains bridge:80.
     config = copy.deepcopy(original['Config'])
     config['Image'] = original['Image']
     config['Labels'] = dict(config.get('Labels') or {}, **{'intruoyi.release.acceptance': 'true'})
     config['ExposedPorts'] = {'80/tcp': {}}
     config['HostConfig'] = {'NetworkMode': spec['network'], 'Binds': [str(path) + ':/etc/nginx/conf.d/default.conf:ro'],
-                          'PortBindings': {'80/tcp': [{'HostIp': profile['acceptanceBindAddress'], 'HostPort': str(urlsplit(profile['acceptanceUrl']).port)}]},
+                          'PortBindings': {},
                           'RestartPolicy': {'Name': 'no'}}
     if profile.get('environment') == 'rehearsal':
-        config['HostConfig']['PortBindings'] = {}
-    config['NetworkingConfig'] = {'EndpointsConfig': {spec['network']: {}}}
+        config['NetworkingConfig'] = {'EndpointsConfig': {spec['network']: {}}}
     created = docker('POST', '/containers/create?name=' + quote(profile['acceptanceFrontend']), config)
     docker('POST', '/containers/' + created['Id'] + '/start')
     return created['Id']
 
 
+def startup_timeout(profile):
+    value = profile.get('startupTimeout', 600)
+    require(type(value) in (int, float) and math.isfinite(value) and value > 0,
+            'startupTimeout must be an explicit positive finite number of seconds')
+    return value
+
+
 def health(profile, tag, maintenance, through_acceptance=False):
     entry = profile['acceptanceUrl'] if maintenance or through_acceptance else profile['entryUrl']
-    deadline = time.monotonic() + 180
+    deadline = time.monotonic() + startup_timeout(profile)
     last_error = 'No observation attempted'
     while time.monotonic() < deadline:
         try:
@@ -585,6 +685,9 @@ def deploy(profile, manifest):
     # Repeat against stopped writers, immediately before any SQL mutation.
     plan = migration_plan(profile, manifest, observe(profile))
     apply_migration_plan(profile, root, manifest, plan, recovery=recovery)
+    # Later data migrations must not invalidate identities verified by an earlier
+    # hook. This is a check only: failure keeps writers stopped, without repair.
+    terminal_snapshot_readiness(profile, root, manifest, recovery)
     actual_schema = observe(profile)['schemaSha256']
     require(not expected_schema or actual_schema == expected_schema, 'Actual upgraded schema differs from accepted rehearsal; applications remain stopped')
     replace(profile, root, 'backend', manifest['images']['backend']['id'], manifest['releaseTag'], True)
@@ -603,6 +706,12 @@ def deploy(profile, manifest):
     return result
 
 
+def terminal_snapshot_readiness(profile, root, manifest, recovery):
+    """Verify frozen identities after all SQL, even when enforcement was applied."""
+    for item in reviewed_snapshot_migrations(manifest):
+        run_snapshot_cli(profile, root, manifest, item, 'READINESS', recovery)
+
+
 def apply_migration_plan(profile, root, manifest, plan, recovery=None):
     """Execute target checks immediately before their migration, after earlier schema steps."""
     sources = {migration_id(m): m for m in manifest['migrations']}
@@ -613,10 +722,12 @@ def apply_migration_plan(profile, root, manifest, plan, recovery=None):
         path = (root / item['file']).resolve()
         require(root.resolve() in path.parents and path.is_file(), 'Migration source not staged')
         require(file_sha(path) == item['sha256'], 'Migration source checksum changed')
-        if item.get('approvedHook') == ROUTE_SNAPSHOT_HOOK:
+        if item.get('approvedHook') in ROUTE_SNAPSHOT_HOOKS:
             validate_migration_handler(item)
             run_snapshot_cli(profile, root, manifest, item, 'BACKFILL', recovery)
             run_snapshot_cli(profile, root, manifest, item, 'READINESS', recovery)
+        if item.get('migrationId') == LEGACY_FORM_SWITCH_MIGRATION:
+            require_legacy_form_switch_zero_scope(profile, root, manifest, item, recovery)
         if item.get('requiresTargetPreflight') or item.get('type') != 'schema':
             run_target_preflight(profile, root, item, entry['targetPreflight'])
         require(re.fullmatch('[A-Za-z0-9_.-]+', item['migrationId']), 'Invalid migration identity')
@@ -635,6 +746,41 @@ def apply_migration_plan(profile, root, manifest, plan, recovery=None):
             remote.sql(profile, "UPDATE infra_release_migration SET status='FAILED',finished_at=NOW(),error_message='Target SQL or postcheck failed; investigate private snapshot' WHERE operation_id='" + op + "' AND migration_id='" + mid + "' AND status='RUNNING';")
             raise RuntimeBlocked('Migration execution failed: '+mid+'; '+str(error)) from error
         remote.sql(profile, "UPDATE infra_release_migration SET status='APPLIED',finished_at=NOW() WHERE operation_id='" + op + "' AND migration_id='" + mid + "' AND status='RUNNING';")
+
+
+def require_legacy_form_switch_zero_scope(profile, root, manifest, migration, recovery):
+    """Only run the immutable, known-defective conversion when its exact scopes are zero."""
+    require(migration['migrationId'] == LEGACY_FORM_SWITCH_MIGRATION and
+            migration['sha256'] == LEGACY_FORM_SWITCH_SHA256, 'Exact reviewed legacy conversion required')
+    require_migration_maintenance(profile, root, recovery)
+    required = {
+        'mes_pro_route_flow_process_batch_record': {'deleted','form_template_id','batch_record_report_id'},
+        'mes_pro_route_version': {'id','deleted','route_snapshot_json'},
+        'bpm_form_template_version': {'deleted','batch_record_report_id'},
+        'mes_pro_batch_record_report': {'report_id','deleted'},
+        'jimu_report': {'id','del_flag'},
+    }
+    tables = set(remote.sql(profile, 'SHOW TABLES;').splitlines())
+    for table, columns in required.items():
+        require(table in tables, 'Legacy conversion scope prerequisite table missing: '+table)
+        description = remote.sql(profile, 'DESCRIBE `'+table+'`;')
+        actual = {row.split('\t')[0] for row in description.splitlines()}
+        require(columns <= actual, 'Legacy conversion scope prerequisite columns missing: '+table+':'+','.join(sorted(columns-actual)))
+    binding = "SELECT 'binding',COUNT(*) FROM mes_pro_route_flow_process_batch_record WHERE deleted=b'0' AND form_template_id IS NOT NULL AND batch_record_report_id IS NULL"
+    snapshot = "SELECT 'snapshot',COUNT(*) FROM mes_pro_route_version rv JOIN JSON_TABLE(CASE WHEN JSON_VALID(rv.route_snapshot_json)=1 THEN rv.route_snapshot_json ELSE JSON_OBJECT() END,'$.configSnapshots.batchUseConfigs[*]' COLUMNS(config_json JSON PATH '$')) cfg JOIN JSON_TABLE(COALESCE(JSON_EXTRACT(cfg.config_json,'$.formBindings'),JSON_ARRAY()),'$[*]' COLUMNS(form_template_id BIGINT PATH '$.formTemplateId' NULL ON EMPTY)) item WHERE rv.deleted=b'0' AND rv.route_snapshot_json IS NOT NULL AND JSON_VALID(rv.route_snapshot_json)=1 AND item.form_template_id IS NOT NULL"
+    jimu = "SELECT 'jimu',COUNT(*) FROM bpm_form_template_version tv JOIN mes_pro_batch_record_report r ON r.report_id=tv.batch_record_report_id AND r.deleted=b'0' LEFT JOIN jimu_report jr ON jr.id=tv.batch_record_report_id AND jr.del_flag=0 WHERE tv.deleted=b'0' AND tv.batch_record_report_id LIKE 'FORMTPL:%' AND jr.id IS NULL"
+    raw = remote.sql(profile, 'SET SESSION TRANSACTION READ ONLY;START TRANSACTION READ ONLY;'+binding+' UNION ALL '+snapshot+' UNION ALL '+jimu+';ROLLBACK;')
+    rows = [row.split('\t') for row in raw.splitlines()]
+    require(len(rows) == 3 and all(len(row) == 2 and re.fullmatch('[0-9]+',row[1]) for row in rows)
+            and [row[0] for row in rows] == ['binding','snapshot','jimu'], 'Exact legacy conversion scope counts missing')
+    counts = {name:int(count) for name,count in rows}
+    private_json(root/'legacy-form-switch-scope.private.json', dict(releaseTag=manifest['releaseTag'],
+                 packageIdentity=package_identity(manifest), migrationId=migration['migrationId'],
+                 sha256=migration['sha256'], environment=profile['environment'], counts=counts,
+                 checkedBeforeSql=True))
+    require(all(count == 0 for count in counts.values()), 'Known legacy conversion requires reviewed successor; scopeCounts='+json.dumps(counts,sort_keys=True))
+    return counts
+
 
 def run_target_preflight(profile, root, migration, check):
     """Use the existing release_target_data_preflight pass-sentinel contract."""
@@ -675,9 +821,15 @@ def reopen(profile):
     replace(profile, root, 'backend', backend['Image'], candidate['releaseTag'] + '-maintenance', False, 'reopen')
     docker('POST', '/containers/' + quote(profile['backend']) + '/start')
     health(profile, candidate['releaseTag'], False, through_acceptance=True)
+    return finish_reopen(profile, candidate)
+
+
+def finish_reopen(profile, candidate):
+    """Open only the entry and remaining writers after normal backend validation."""
     for writer in profile['writers']:
         if writer != profile['backend']:
-            docker('POST', '/containers/' + quote(writer) + '/start')
+            if not remote.inspect(writer)['State']['Running']:
+                docker('POST', '/containers/' + quote(writer) + '/start')
             require(remote.inspect(writer)['State']['Running'], 'Registered writer did not resume: ' + writer)
     # Only normal-mode healthy backend may expose public frontend again.
     docker('POST', '/containers/' + quote(profile['frontend']) + '/start')
@@ -692,6 +844,268 @@ def reopen(profile):
     result = observe(profile)
     result['verifiedHealth'] = verified_health
     return result
+
+
+def validate_opening_tail(profile, root, manifest, opening, observation, recovery, original_plan):
+    """Admit only a completed normal-backend replacement with a still closed entry."""
+    tag = manifest['releaseTag']
+    candidate = {'releaseTag':tag, 'images':manifest['images'], 'maintenanceProtocol':PROTOCOL}
+    require((root / 'deployment-pending.json').is_file() and (root / 'backend-before-reopen.private.json').is_file(),
+            'Opening pending/snapshot evidence missing; explicit technical restoration required')
+    require(json.loads((root / 'deployment-pending.json').read_text()) == candidate,
+            'Opening candidate pending identity differs')
+    require(all(record.get('schemaSha256') == observation['schemaSha256']
+                and record.get('ledgerSha256') == observation['ledgerSha256']
+                and record.get('recoverySha256') == recovery['sha256']
+                and record.get('originalPlanSha256') == sha(original_plan) for _, record in opening),
+            'Opening receipt schema/ledger/recovery/plan evidence differs')
+    before = json.loads((root / 'backend-before-reopen.private.json').read_text())
+    retained = remote.inspect(profile['backend'] + '-before-' + tag + '-maintenance')
+    require(before['Image'] == manifest['images']['backend']['id'] and before.get('Name') == '/' + profile['backend']
+            and retained['Id'] == before['Id'] and retained['Image'] == before['Image']
+            and not before['State']['Running'] and before['State']['ExitCode'] != 137 and not retained['State']['Running']
+            and dict(v.split('=',1) for v in before['Config']['Env']).get('INTRUOYI_RELEASE_MAINTENANCE') == 'true',
+            'Retained maintenance backend does not match the reopening snapshot')
+    backend = remote.inspect(profile['backend'])
+    expected = clone_config(before, manifest['images']['backend']['id'], False)
+    expected_config = {key:value for key,value in expected.items() if key not in ('HostConfig','NetworkingConfig')}
+    require(backend['Id'] != before['Id'] and backend.get('Name') == '/' + profile['backend']
+            and backend['Image'] == manifest['images']['backend']['id'] and backend['State']['Running']
+            and backend['Config'] == expected_config
+            and backend['HostConfig']['NetworkMode'] == before['HostConfig']['NetworkMode']
+            and backend['HostConfig']['PortBindings'] == before['HostConfig']['PortBindings']
+            and sorted(backend['Mounts'],key=lambda m:m['Destination']) == sorted(before['Mounts'],key=lambda m:m['Destination']),
+            'Normal backend identity/configuration differs from the reopening snapshot')
+    networks = backend['NetworkSettings']['Networks']
+    endpoints = expected.get('NetworkingConfig', {}).get('EndpointsConfig', {})
+    require(set(networks) == set(endpoints) and networks, 'Normal backend network identity differs')
+    for name, entry in networks.items():
+        ipam = endpoints[name].get('IPAMConfig')
+        require(ipam and ipam.get('IPv4Address') and entry.get('IPAMConfig') == ipam
+                and entry.get('IPAddress') == ipam['IPv4Address'], 'Normal backend static address differs')
+    acceptance = remote.inspect(profile['acceptanceFrontend'])
+    owned_configs = {str(path.parent / 'acceptance-nginx.conf') for path, _ in opening}
+    mounts = acceptance['Mounts']
+    require(acceptance['Image'] == manifest['images']['frontend']['id'] and acceptance['State']['Running']
+            and acceptance['Config'].get('Labels', {}).get('intruoyi.release.acceptance') == 'true'
+            and acceptance['HostConfig']['NetworkMode'] == 'host' and not acceptance['HostConfig']['PortBindings']
+            and len(mounts) == 1 and mounts[0].get('Source') in owned_configs
+            and mounts[0].get('Destination') == '/etc/nginx/conf.d/default.conf' and mounts[0].get('RW') is False,
+            'Opening acceptance resource is not owned by the recorded attempt')
+    require(Path(mounts[0]['Source']).read_text() == acceptance_spec(profile)['nginx'], 'Opening acceptance configuration differs')
+    writers = {name:remote.inspect(name) for name in profile['writers']}
+    require(all(info['State'].get('Status') in ('running','exited','created')
+                and not info['State'].get('Paused') and not info['State'].get('Restarting') for info in writers.values()),
+            'Registered writer state is not stable for opening finalization')
+    verified = health(profile, tag, False, through_acceptance=True)
+    return dict(backendId=backend['Id'], maintenanceBackendId=before['Id'], acceptanceId=acceptance['Id'],
+                writerStates={name:{'id':info['Id'],'running':info['State']['Running']} for name,info in writers.items()},
+                verifiedHealth=verified)
+
+
+def resume_receipt(path, value):
+    temporary = path.with_name(path.name + '.' + secrets.token_hex(6))
+    private_json(temporary, value)
+    os.replace(str(temporary), str(path))
+
+
+def resume_backend_health(profile, tag):
+    backend = remote.inspect(profile['backend'])
+    require(backend['State']['Running'], 'Maintenance candidate backend is stopped')
+    environment = dict(v.split('=', 1) for v in backend['Config']['Env'])
+    require(environment.get('INTRUOYI_RELEASE_MAINTENANCE') == 'true', 'Maintenance candidate required before tail resume')
+    addresses = [n['IPAddress'] for n in backend['NetworkSettings']['Networks'].values() if n.get('IPAddress')]
+    require(len(addresses) == 1, 'Maintenance candidate address is ambiguous')
+    base = 'http://' + addresses[0] + ':48081'
+    with urlopen(base + '/actuator/release', timeout=5) as response:
+        require(response.status == 200, 'Maintenance release endpoint unavailable')
+        state = json.load(response)
+    validate_release_state(state, tag, True)
+    with urlopen(base + '/actuator/health', timeout=5) as response:
+        require(response.status == 200 and json.load(response).get('status') == 'UP', 'Maintenance backend health not UP')
+    return state
+
+
+def resume_test_deployment_tail(profile, payload):
+    # Linux flock is released by the kernel even on transport/process failure.
+    # It prevents two authorized retries from racing container rename/opening.
+    import fcntl
+    require(profile.get('environment') == 'test', 'Tail resume is restricted to test')
+    root = directory(profile, payload['manifest']['releaseTag'])
+    require(root.is_dir(), 'Original staged deployment missing')
+    descriptor = os.open(str(root / 'deployment-resume.lock'), os.O_WRONLY | os.O_CREAT, 0o600)
+    with os.fdopen(descriptor, 'w') as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as error:
+            raise RuntimeBlocked('Another tail resume is active') from error
+        return resume_test_tail_locked(profile, payload, root)
+
+
+def resume_test_tail_locked(profile, payload, root):
+    from intruoyi_rehearsal_agent import process_start_identity
+    require(profile.get('environment') == 'test', 'Tail resume is restricted to test')
+    manifest = payload['manifest']
+    tag, original_job, retry_job = manifest['releaseTag'], payload['originalJobId'], payload['retryJobId']
+    require(all(isinstance(v, str) and re.fullmatch('JOB-[a-f0-9]{10}', v) for v in (original_job, retry_job))
+            and original_job != retry_job, 'Distinct valid original/retry job IDs required')
+    require(manifest.get('maintenanceProtocol') == PROTOCOL, 'Verified maintenance protocol required')
+    for field in ('packageSha256', 'manifestSha256'):
+        require(isinstance(payload.get(field), str) and re.fullmatch('[a-f0-9]{64}', payload[field]), 'Original archive/manifest checksum required')
+    progress = json.loads((root / 'deployment-progress.private.json').read_text())
+    require(progress.get('jobId') == original_job and progress.get('releaseTag') == tag and progress.get('phase') == 'failed',
+            'Original failed deployment journal required')
+    require(isinstance(progress.get('pid'), int) and progress.get('processStart')
+            and process_start_identity(progress['pid']) != progress['processStart'], 'Original deployment worker remains active')
+    staged = json.loads((root / 'stage-verified.json').read_text())
+    identity = package_identity(manifest)
+    require(staged['manifestSha256'] == identity and staged['archive']['archiveSha256'] == payload['packageSha256']
+            and staged['archive']['manifestSha256'] == payload['manifestSha256'], 'Original staged package identity differs')
+    require(file_sha(root / 'manifest.json') == payload['manifestSha256']
+            and package_identity(json.loads((root / 'manifest.json').read_text())) == identity
+            and file_sha(root / 'release.tar') == payload['packageSha256'], 'Retained original package bytes differ')
+    verify_files(root, staged['files'])
+    recovery = json.loads((root / 'recovery-record.private.json').read_text())
+    require(recovery.get('path') == str(root / 'recovery.sql')
+            and set(recovery.get('includes', [])) == {'data','schema','triggers','events','routines'}
+            and (root / 'recovery.sql').stat().st_size > 0
+            and file_sha(root / 'recovery.sql') == recovery.get('sha256'), 'Complete original recovery snapshot differs')
+    check_fence(profile)
+    observation = observe(profile)
+    plan = migration_plan(profile, manifest, observation)
+    require(not any(item['action'] == 'APPLY' for item in plan), 'Tail resume cannot execute remaining migrations')
+    original_plan = payload['originalPlan']
+    require(isinstance(original_plan, list) and len(original_plan) == len(plan)
+            and {e['migrationId'] for e in original_plan} == {e['migrationId'] for e in plan}, 'Original full migration plan required')
+    sources = {migration_id(m):m for m in manifest['migrations']}
+    applied = [item for item in original_plan if item['action'] == 'APPLY']
+    require(all(item.get('sha256') == sources[item['migrationId']]['sha256'] for item in applied), 'Original APPLY checksum differs')
+    rows = remote.sql(profile, "SELECT migration_id,sha256,status FROM infra_release_migration WHERE release_tag='" + tag + "' AND target_environment='test' AND operation_id='" + tag + "-test' AND deleted=b'0' ORDER BY migration_id;")
+    actual = [tuple(row.split('\t')) for row in rows.splitlines()]
+    expected = [(item['migrationId'], item['sha256'], 'APPLIED') for item in applied]
+    require(sorted(actual) == sorted(expected), 'Original APPLY ledger is not exactly completed by this deployment')
+    for role in ('backend','frontend'):
+        require(remote.inspect(profile[role])['Image'] == manifest['images'][role]['id'], 'Current candidate image differs: ' + role)
+        snapshot = json.loads((root / (role + '-before-initial.private.json')).read_text())
+        retained = remote.inspect(profile[role] + '-before-' + tag)
+        require(snapshot.get('Name') == '/' + profile[role] and retained['Id'] == snapshot['Id']
+                and retained['Image'] == snapshot['Image'] and not retained['State']['Running'],
+                'Original retained container/snapshot differs: ' + role)
+    receipts = []
+    for path in sorted(root.glob('resume-JOB-*/receipt.private.json')):
+        record = json.loads(path.read_text())
+        require(record.get('originalJobId') == original_job and record.get('releaseTag') == tag
+                and record.get('packageIdentity') == identity and record.get('packageSha256') == payload['packageSha256'],
+                'Tail resume receipt belongs to another deployment')
+        require(record.get('phase') in ('acceptance-repair','opening','complete')
+                and record.get('status') in ('running','failed','completed'), 'Unknown tail resume receipt state')
+        require(process_start_identity(record['pid']) != record['processStart'], 'Previous tail resume worker remains active')
+        receipts.append((path, record))
+    completed = [record for _, record in receipts if record.get('status') == 'completed']
+    require(len(completed) <= 1, 'Multiple completed tail resume receipts require reconciliation')
+    if completed:
+        receipt = completed[0]
+        require(receipt['phase'] == 'complete' and receipt['schemaSha256'] == observation['schemaSha256']
+                and receipt['ledgerSha256'] == observation['ledgerSha256'], 'Completed deployment evidence changed')
+        verified = health(profile, tag, False)
+        result = observe(profile)
+        require(result['schemaSha256'] == receipt['schemaSha256'] and result['ledgerSha256'] == receipt['ledgerSha256']
+                and result['maintenance'] is False and result['frontendHttpStatus'] == 200, 'Completed deployment no longer matches fresh observation')
+        result.update(verifiedHealth=verified, recoveryPoint=recovery, resumeReceipt=receipt)
+        return result
+    opening = [(path, record) for path, record in receipts if record.get('phase') == 'opening']
+    require(profile.get('writerInventoryConfirmed') is True and profile['backend'] in profile['writers'], 'Confirmed writer inventory required')
+    require(not remote.inspect(profile['frontend'])['State']['Running'], 'Public frontend must remain stopped')
+    if opening:
+        controls = validate_opening_tail(profile, root, manifest, opening, observation, recovery, original_plan)
+    else:
+        require(not (root / 'deployment-pending.json').exists() and not (root / 'backend-before-reopen.private.json').exists(),
+                'Original deployment entered reopening without a tail receipt; explicit technical restoration required')
+        for writer in profile['writers']:
+            if writer != profile['backend']:
+                require(not remote.inspect(writer)['State']['Running'], 'Other registered writer is running: ' + writer)
+        controls = resume_backend_health(profile, tag)
+    attempt = root / ('resume-' + retry_job)
+    require(not attempt.exists(), 'Retry job already has evidence; use a new explicit retry job')
+    attempt.mkdir(mode=0o700)
+    receipt_path = attempt / 'receipt.private.json'
+    receipt = dict(originalJobId=original_job, retryJobId=retry_job, completedByJobId=retry_job,
+                   releaseTag=tag, packageIdentity=identity, packageSha256=payload['packageSha256'],
+                   manifestSha256=payload['manifestSha256'], originalPlanSha256=sha(original_plan),
+                   recoverySha256=recovery['sha256'], schemaSha256=observation['schemaSha256'], ledgerSha256=observation['ledgerSha256'],
+                   pid=os.getpid(), processStart=process_start_identity(os.getpid()), status='running',
+                   phase='opening' if opening else 'acceptance-repair', resumeMode='opening-finalization' if opening else 'acceptance-repair',
+                   writerControls=controls, observedAt=datetime.now(timezone.utc).isoformat())
+    require(receipt['processStart'], 'Resume worker identity unavailable')
+    resume_receipt(receipt_path, receipt)
+    try:
+        if opening:
+            result = finish_reopen(profile, manifest)
+        else:
+            repair_acceptance_frontend(profile, root, attempt, manifest, receipts)
+            health(profile, tag, True)
+            receipt['phase'] = 'opening'
+            resume_receipt(receipt_path, receipt)
+            private_json(root / 'deployment-pending.json', {'releaseTag':tag, 'images':manifest['images'], 'maintenanceProtocol':PROTOCOL})
+            result = reopen(profile)
+        require(result['schemaSha256'] == observation['schemaSha256'] and result['ledgerSha256'] == observation['ledgerSha256']
+                and result['maintenance'] is False and result['frontendHttpStatus'] == 200, 'Reopened observation differs from completed migration state')
+        receipt.update(status='completed', phase='complete', completedAt=datetime.now(timezone.utc).isoformat())
+        resume_receipt(receipt_path, receipt)
+        result.update(recoveryPoint=recovery, resumeReceipt=receipt)
+        return result
+    except Exception as error:
+        receipt.update(status='failed', errorCategory=type(error).__name__, failedAt=datetime.now(timezone.utc).isoformat())
+        resume_receipt(receipt_path, receipt)
+        raise
+
+
+def repair_acceptance_frontend(profile, root, attempt, manifest, previous):
+    name = profile['acceptanceFrontend']
+    containers = docker('GET', '/containers/json?all=1')
+    matches = [item for item in containers if '/' + name in item.get('Names', [])]
+    require(len(matches) <= 1, 'Acceptance resource name is ambiguous')
+    if matches:
+        original = remote.inspect(matches[0]['Id'])
+        require(original['Image'] == manifest['images']['frontend']['id']
+                and original['Config'].get('Labels', {}).get('intruoyi.release.acceptance') == 'true',
+                'Acceptance resource ownership/image differs')
+        paths = {str(root / 'acceptance-nginx.conf')}
+        paths.update(str(path.parent / 'acceptance-nginx.conf') for path, _ in previous)
+        mounts = original['Mounts']
+        require(len(mounts) == 1 and mounts[0].get('Source') in paths
+                and mounts[0].get('Destination') == '/etc/nginx/conf.d/default.conf' and mounts[0].get('RW') is False,
+                'Acceptance resource configuration is not owned by this original stage')
+        config_path = Path(mounts[0]['Source'])
+        expected = acceptance_spec(profile)['nginx']
+        if config_path == root / 'acceptance-nginx.conf':
+            # Original failed release used bridge:80; only this exact original
+            # configuration is admitted, never arbitrary upstreams/listeners.
+            expected = re.sub(r'(\blisten\s+)' + re.escape(profile['acceptanceBindAddress']) + ':' + str(urlsplit(profile['acceptanceUrl']).port), r'\g<1>80', expected)
+            require(original['HostConfig']['NetworkMode'] == profile['acceptanceNetwork']
+                    and original['HostConfig']['PortBindings'] == {'80/tcp':[{'HostIp':profile['acceptanceBindAddress'], 'HostPort':str(urlsplit(profile['acceptanceUrl']).port)}]},
+                    'Original acceptance network/port configuration differs')
+        else:
+            require(original['HostConfig']['NetworkMode'] == 'host' and not original['HostConfig']['PortBindings'],
+                    'Previous resume acceptance network differs')
+        require(config_path.is_file() and config_path.read_text() == expected, 'Owned acceptance nginx bytes differ')
+        private_json(attempt / 'acceptance-before.private.json', original)
+        retained = name + '-failed-' + attempt.name[len('resume-'):]
+        if original['State']['Running']:
+            remote.run(['docker','stop','--time','30',original['Id']])
+        require(not remote.inspect(original['Id'])['State']['Running'], 'Failed acceptance container did not stop')
+        docker('POST', '/containers/' + original['Id'] + '/rename?name=' + quote(retained))
+    else:
+        snapshots = [path.parent / 'acceptance-before.private.json' for path, _ in previous
+                     if (path.parent / 'acceptance-before.private.json').is_file()]
+        require(snapshots, 'Original acceptance resource missing without retained retry evidence')
+        before = json.loads(snapshots[-1].read_text())
+        retained = remote.inspect(before['Id'])
+        expected_name = '/' + name + '-failed-' + snapshots[-1].parent.name[len('resume-'):]
+        require(retained['Id'] == before['Id'] and retained['Image'] == manifest['images']['frontend']['id']
+                and retained['Name'] == expected_name and not retained['State']['Running'],
+                'Retained failed acceptance resource cannot be verified')
+    acceptance_frontend(profile, attempt)
 
 
 def deployment_progress(profile, payload, phase):
@@ -753,6 +1167,8 @@ def dispatch(payload):
             raise
     if action == 'observe':
         return observe(profile)
+    if action == 'resume-test-deployment-tail':
+        return resume_test_deployment_tail(profile, payload)
     if action == 'verify-deployment-stopped':
         return verify_deployment_stopped(profile, payload)
     if action == 'verify-restoration':
@@ -793,6 +1209,8 @@ def dispatch(payload):
         check_storage(profile)
         root = Path(payload['directory'])
         require(root.parent == Path(profile['stagingRoot']) and re.fullmatch(r'\d{4}(-\d{2}){5}', root.name), 'Unregistered staging path')
+        if root.exists() or root.is_symlink():
+            return reuse_verified_stage(root, payload)
         root.mkdir(mode=0o700, parents=True, exist_ok=False)
         for item in payload['files']:
             path = (root / item['name']).resolve()
@@ -801,6 +1219,7 @@ def dispatch(payload):
         return {'directory': str(root)}
     if action == 'verify-stage':
         check_fence(profile)
+        check_storage(profile)
         root = directory(profile, payload['manifest']['releaseTag'])
         require(str(root) == payload['directory'], 'Staging target mismatch')
         require(payload['files'] == [{'name': item['name'], 'sha256': item['sha256']} for item in payload['manifest']['files']],

@@ -34,10 +34,19 @@ WORKBENCH_S4_MAINTENANCE_MIGRATIONS = {
     '20261010_system_workbench_projection': '5f871809e326411bb81474d595107df0f6c9919452483050d8e82dc191bdc8d7',
     '20261011_system_workbench_projection_retention': 'f746f0bd2cc1c405ac66840d7acab1903cc11d743885e18a46476a8debe61c7a',
     '20261011_system_workbench_projection_history': '21227efe50649c3cc85bb17db34ea4b22917c9c8436ad5381dc7c0c49c9c45dd',
+    '20261023_system_workbench_projection_check_identity': '84b43c989ff779b8304eb27ab63fd0cc5ef3efa455a2a9db3d8d0b043cf7d8cb',
+    '20261023_system_workbench_retention_check_identity': '68c1f172aac414e74d947dfcf46920560e83c38b23e6d46b3642d485f19a4c38',
+    '20261023_system_workbench_history_check_identity': '2a278c5bb250aab2b8661e77a5581fa83004012f7c414d775dd2460afb6873c1',
 }
 ROUTE_SNAPSHOT_MIGRATION = '20260812_mes_route_version_snapshot_identity_enforce'
 ROUTE_SNAPSHOT_SHA256 = '1cd2f6c77346c10c6ebfda2a8b5f5ed5686deac7d7a17212f9560c875e21a236'
 ROUTE_SNAPSHOT_HOOK = 'route-snapshot-identity-v1'
+ROUTE_LEGACY_MIGRATION = '20261023_mes_route_snapshot_legacy_summary_enforce'
+ROUTE_LEGACY_SHA256 = '8668832bc8a52de84b39f451c0324c821e95b073a52c668f3bdbf6491fe30a7a'
+ROUTE_LEGACY_HOOK = 'route-snapshot-identity-v2'
+ROUTE_SNAPSHOT_HOOKS = frozenset({ROUTE_SNAPSHOT_HOOK, ROUTE_LEGACY_HOOK})
+LEGACY_FORM_SWITCH_MIGRATION = '20260829_mes_old_form_template_binding_switch'
+LEGACY_FORM_SWITCH_SHA256 = 'aa6797eddcf1d0331bad1516a0e1b1a85b10ba992d3c757b41e2858fb14917db'
 
 
 def bind_reviewed_session_profile(migration):
@@ -52,10 +61,19 @@ def bind_reviewed_session_profile(migration):
 def validate_migration_handler(migration):
     """Only reviewed S3/S4 identities may set their specific maintenance variable."""
     mid = migration.get('migrationId')
+    if mid == LEGACY_FORM_SWITCH_MIGRATION:
+        require(migration.get('sha256') == LEGACY_FORM_SWITCH_SHA256, 'Reviewed legacy form conversion bytes changed')
     hook = migration.get('approvedHook', '')
     if mid == ROUTE_SNAPSHOT_MIGRATION:
         require(migration.get('sha256') == ROUTE_SNAPSHOT_SHA256 and hook == ROUTE_SNAPSHOT_HOOK,
                 'Reviewed route snapshot migration identity and hook required')
+    elif mid == ROUTE_LEGACY_MIGRATION:
+        require(migration.get('sha256') == ROUTE_LEGACY_SHA256 and hook == ROUTE_LEGACY_HOOK and
+                migration.get('supersedes') == [ROUTE_SNAPSHOT_MIGRATION] and
+                migration.get('type') == 'schema' and migration.get('requiresTargetPreflight') is True and
+                isinstance(migration.get('dependsOn'), list) and
+                {'20260812_mes_route_version_snapshot_identity', '20260718_controlled_content_lifecycle'} <= set(migration['dependsOn']),
+                'Reviewed legacy summary migration identity, hook and exact supersession required')
     else:
         require(not hook, 'Special migration hook requires a reviewed handler: '+str(mid))
     profile = migration.get('sessionProfile', '')
@@ -260,7 +278,7 @@ class Runtime:
                 '-o', 'StrictHostKeyChecking=yes', '-o', 'ConnectTimeout=10']
 
     def call(self, env, action, **arguments):
-        uncertain_on_disconnect = action in ('deploy', 'maintenance', 'rehearsal-capture', 'rehearsal-restore', 'rehearsal-reset')
+        uncertain_on_disconnect = action in ('deploy', 'maintenance', 'resume-test-deployment-tail', 'rehearsal-capture', 'rehearsal-restore', 'rehearsal-resume-tail', 'rehearsal-reset')
         profile = self.profile(env)
         payload = json.dumps({'action': action, 'profile': profile, **arguments}, ensure_ascii=True)
         inspector = (self.sources / 'intruoyi_remote.py').read_text('utf-8')
@@ -284,6 +302,7 @@ class Runtime:
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                               timeout=self.config.get('rehearsalOperationTimeout', 21600)
                               if action in ('rehearsal-capture', 'rehearsal-restore')
+                              else max(1800, self.config.get('operationTimeout', 3600)) if action == 'resume-test-deployment-tail'
                               else self.config.get('operationTimeout', 3600))
         except subprocess.TimeoutExpired:
             if uncertain_on_disconnect:
@@ -366,7 +385,12 @@ class Runtime:
         require(archive.is_file() and manifest_path.is_file(), 'Original release.tar and manifest.json required')
         require(json.loads(manifest_path.read_text('utf-8')) == manifest, 'Original package manifest differs from staging request')
         archive_evidence = dict(sha256=file_sha(archive), manifestSha256=file_sha(manifest_path))
-        self.call(env, 'stage-directory', directory=remote, files=[])
+        prepared = self.call(env, 'stage-directory', directory=remote, files=validated, manifest=manifest,
+                             archive=archive_evidence, validatedPreflights=checked_preflights)
+        if prepared.get('reused') is True:
+            require(prepared.get('verified') is True and prepared.get('manifestSha256') == package_identity(manifest)
+                    and prepared.get('directory') == remote, 'Reused stage verification identity differs')
+            return prepared
         destination = 'root@' + profile['host'] + ':' + shlex.quote(str(PurePosixPath(remote) / 'release.tar'))
         proc = subprocess.run(['scp', *self.ssh_options(), str(archive), destination],
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=3600)
@@ -375,9 +399,23 @@ class Runtime:
                          archive=archive_evidence, validatedPreflights=checked_preflights)
 
     def deploy(self, env, manifest, jobcallback, job_id):
+        jobcallback('check-executor-acceptance-ingress')
+        self.check_acceptance_ingress(env)
         self.preflight(env, manifest)
         jobcallback('remote-deploy-starting-side-effects', effects=True)
         return self.call(env, 'deploy', manifest=manifest, jobId=job_id)
+
+    def check_acceptance_ingress(self, env):
+        from acceptance_probe import check
+        return check(self, env)
+
+    def resume_test_deployment_tail(self, env, manifest, original_plan, original_job_id, retry_job_id,
+                                    package_sha256, manifest_sha256, jobcallback):
+        require(env == 'test', 'Deployment tail continuation is restricted to test')
+        jobcallback('resume-original-test-deployment-tail', effects=True)
+        return self.call(env, 'resume-test-deployment-tail', manifest=manifest, originalPlan=original_plan,
+                         originalJobId=original_job_id, retryJobId=retry_job_id,
+                         packageSha256=package_sha256, manifestSha256=manifest_sha256)
 
     def health(self, env, tag):
         return self.call(env, 'health', releaseTag=tag)
@@ -395,3 +433,9 @@ class Runtime:
     def reset_rehearsal(self, jobcallback):
         from intruoyi_rehearsal import reset
         return reset(self, jobcallback)
+
+    def resume_rehearsal_tail(self, source, manifest, original_job_id, retry_job_id, package_sha256,
+                              manifest_sha256, expected_origin_fingerprint, jobcallback):
+        from intruoyi_rehearsal import resume_tail
+        return resume_tail(self, source, manifest, original_job_id, retry_job_id, package_sha256,
+                           manifest_sha256, expected_origin_fingerprint, jobcallback)

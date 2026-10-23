@@ -59,6 +59,7 @@ def _item(migration: dict[str, object], action: str, reason: str) -> dict[str, o
         "sha256": str(migration["sha256"]) if migration.get("sha256") is not None else None,
         "supersedes": list(migration.get("supersedes", []) or []),
         "allowedPublishScopes": list(migration.get("allowedPublishScopes", []) or []),
+        "scopeReason": migration.get("scopeReason", ""),
         "type": migration.get("type"),
         "requiresTargetPreflight": bool(migration.get("requiresTargetPreflight", False)),
         "applyOrder": migration.get("applyOrder"),
@@ -289,7 +290,10 @@ def build_preflight_plan(
 
         declared_scopes = list(migration.get("allowedPublishScopes", []) or [])
         if declared_scopes and publish_scope not in declared_scopes:
-            items.append(_item(migration, SKIP_SCOPE_EXCLUDED, f"{publish_scope} is not allowed"))
+            reason = f"{publish_scope} is not allowed"
+            if migration.get('scopeReason'):
+                reason += ': ' + str(migration['scopeReason'])
+            items.append(_item(migration, SKIP_SCOPE_EXCLUDED, reason))
             planned_actions[migration_id] = SKIP_SCOPE_EXCLUDED
             scope_dependency_paths[migration_id] = [migration_id]
             continue
