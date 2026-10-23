@@ -1,0 +1,35 @@
+{
+  "applications": [
+    {
+      "applicationId": "smallapp-58-tenants-20261023",
+      "displayName": "Smallapp isolated tenants 122 and 123",
+      "sourceConfigRef": "smallapp-58-tenants-20261023",
+      "targetConfigRefs": [
+        "smallapp-58-business-target-20261023-r13"
+      ],
+      "engineSelectionRef": "common-engine-minimal-unified-20261015-r1",
+      "registrationSha256": "5923c6a0ba8aa6ab43159ed97e724e30e4cca5b7d8c481a93b4405ec22f4d4a1"
+    },
+    {
+      "applicationId": "smallapp-58-normal-fast-20261023",
+      "displayName": "Smallapp 172.30.30.58 FAST",
+      "sourceConfigRef": "smallapp-58-normal-fast-20261023",
+      "targetConfigRefs": [
+        "smallapp-normal-58-to-58-20261023",
+        "smallapp-everyday-overwrite58-20261023"
+      ],
+      "engineSelectionRef": "common-engine-minimal-unified-20261015-r1",
+      "registrationSha256": "2f38c03538e91b5469be7542125c1fb05676b46ac646b2445e5bdb9bdb487d5f"
+    }
+  ],
+  "tasks": {
+    "FULL": 7,
+    "INCREMENTAL": 8,
+    "RESTORE": 9
+  },
+  "initialOperationIds": {},
+  "registrationVersions": {
+    "smallapp-58-tenants-20261023": "standard-tenants-20261023",
+    "smallapp-58-normal-fast-20261023": "lightweight-normal-20261023-r8"
+  }
+}
