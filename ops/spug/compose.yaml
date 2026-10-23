@@ -1,0 +1,52 @@
+name: intruoyi-spug
+services:
+  db:
+    image: mariadb@sha256:456709ab146585d6189da05669b84384518baecd83670c9e5221f8c20a47cf1e
+    restart: unless-stopped
+    mem_limit: 512m
+    cpus: 1
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_DATABASE: spug
+      MYSQL_USER: spug
+      MYSQL_PASSWORD: ${SPUG_DB_PASSWORD:?private environment required}
+      MYSQL_ROOT_PASSWORD: ${SPUG_DB_ROOT_PASSWORD:?private environment required}
+    volumes:
+      - database:/var/lib/mysql
+    healthcheck:
+      test: [CMD-SHELL, 'mysqladmin ping --silent']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  spug:
+    image: openspug/spug-service@sha256:872a01100211e3083c6b2e53f2317a488cf48d5956c7c7470b98822cab2fc392
+    entrypoint: ["/bin/sh", "/opt/intruoyi-spug/smallapp_bootstrap.sh"]
+    restart: unless-stopped
+    mem_limit: 1536m
+    cpus: 2
+    pids_limit: 256
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - '127.0.0.1:18080:80'
+    environment:
+      SPUG_DOCKER_VERSION: v4.0.1
+      MYSQL_DATABASE: spug
+      MYSQL_USER: spug
+      MYSQL_PASSWORD: ${SPUG_DB_PASSWORD:?private environment required}
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+    volumes:
+      - service:/data/spug
+      - repositories:/data/repos
+      - ./:/opt/intruoyi-spug:ro
+      - ${SPUG_PRIVATE_DIR:?private directory required}:/run/intruoyi-spug:ro
+      - integration_records:/var/lib/intruoyi-spug
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  database:
+  service:
+  repositories:
+  integration_records:

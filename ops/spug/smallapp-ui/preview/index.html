@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>备份与恢复 · Spug</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%233474ec'/%3E%3Cpath d='M10 10h12v4H10zm0 8h12v4H10z' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header><span class="brand">SPUG<span class="brand-dot"></span></span><span class="divider"></span><span>运维管理</span><span class="preview">页面预览</span></header>
+  <main>
+    <div class="heading"><div class="eyebrow">数据管理</div><h1>备份与恢复</h1><p>选好服务器，一键备份或恢复。</p></div>
+    <section class="card" aria-label="备份与恢复配置">
+      <div class="tabs" role="tablist" aria-label="操作类型">
+        <button id="backup-tab" role="tab" aria-selected="true" aria-controls="backup-panel" tabindex="0">备份</button>
+        <button id="restore-tab" role="tab" aria-selected="false" aria-controls="restore-panel" tabindex="-1">恢复</button>
+      </div>
+      <form id="backup-panel" role="tabpanel" aria-labelledby="backup-tab">
+        <div class="panel-title"><span class="icon" aria-hidden="true">↑</span><div><h2>创建备份</h2><p>将服务器数据备份到 NAS。</p></div></div>
+        <label for="backup-server">服务器地址</label>
+        <select id="backup-server" name="server"><option value="172.30.30.58">测试服务器　172.30.30.58</option><option value="172.30.30.57">正式服务器　172.30.30.57</option><option value="172.30.30.59">备份服务器　172.30.30.59</option></select>
+        <label for="backup-nas">NAS 地址</label>
+        <input id="backup-nas" name="nas" required value="\\172.30.30.4\IT共享\Backup\BackupPackage" spellcheck="false">
+        <fieldset><legend>备份类型</legend><div class="type-options">
+          <label class="type-option"><input type="radio" name="type" value="FULL" checked><span><strong>全量备份</strong><small>备份全部数据</small></span></label>
+          <label class="type-option"><input type="radio" name="type" value="INCREMENTAL"><span><strong>增量备份</strong><small>仅备份上次之后的变化</small></span></label>
+        </div></fieldset>
+        <p id="backup-note" class="note" role="status">全量备份将保存完整数据。</p>
+        <div class="footer"><span>备份文件保存在 NAS</span><button class="primary" type="submit">开始备份 <span aria-hidden="true">→</span></button></div>
+      </form>
+      <form id="restore-panel" role="tabpanel" aria-labelledby="restore-tab" hidden>
+        <div class="panel-title"><span class="icon" aria-hidden="true">↓</span><div><h2>从备份恢复</h2><p>选择一个备份包，恢复到指定服务器。</p></div></div>
+        <label for="restore-nas">NAS 地址</label>
+        <input id="restore-nas" name="nas" required value="\\172.30.30.4\IT共享\Backup\BackupPackage" spellcheck="false">
+        <label for="restore-package">备份包</label>
+        <select id="restore-package" name="package" required><option value="smallapp-441bd02fe611461aa76e63eeffa83d3f">2026-10-21 21:29 · 正式服 · 全量 · 26.08 GB</option></select>
+        <p class="field-help">已验证备份的记录快照；实际接入后自动读取 NAS 中的可用备份包。</p>
+        <label for="restore-server">恢复服务器地址</label>
+        <select id="restore-server" name="server"><option value="172.30.30.58">测试服务器　172.30.30.58</option><option value="172.30.30.57">正式服务器　172.30.30.57</option><option value="172.30.30.59">备份服务器　172.30.30.59</option></select>
+        <p class="note">选择增量包时，系统会自动关联所需的全量和增量备份。</p>
+        <div class="footer"><span>恢复前请核对目标服务器</span><button class="primary" type="submit">开始恢复 <span aria-hidden="true">→</span></button></div>
+      </form>
+    </section>
+    <p class="preview-note"><span aria-hidden="true">○</span> 当前为交互预览，按钮仅展示配置确认，不会执行备份或恢复。</p>
+  </main>
+  <dialog id="confirmation" aria-labelledby="confirmation-title"><div class="dialog-body"><div class="eyebrow">配置确认 · 预览</div><h2 id="confirmation-title"></h2><dl id="summary"></dl><p class="note">页面尚未接入执行服务，本次不会提交操作。</p></div><div class="dialog-footer"><button id="close-dialog" type="button">返回配置</button></div></dialog>
+</body>
+</html>

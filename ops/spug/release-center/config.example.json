@@ -1,0 +1,14 @@
+{
+  "applicationId": "release-inventory",
+  "displayName": "物品台账演示应用",
+  "repo": "D:/ProjectPackage/Int/IntRuoyiMaintance",
+  "sourceSubdir": "examples/release-inventory",
+  "stateDir": "D:/ProjectPackage/Int/IntRuoyiMaintance/output/private/release-center",
+  "dockerfiles": {"backend":"Dockerfile.backend", "frontend":"Dockerfile.frontend"},
+  "migrations": "migrations",
+  "mysqlImage": "mysql:8.0.39",
+  "ports": {"test":18201,"prod":18202,"backup":18203,"rehearsal":18204},
+  "listenHost": "0.0.0.0",
+  "port":18110,
+  "bridgeKey":"REPLACE_WITH_RANDOM_PRIVATE_KEY"
+}

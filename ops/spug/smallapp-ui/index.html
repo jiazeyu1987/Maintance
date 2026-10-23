@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>备份与恢复 · Spug</title><link rel="stylesheet" href="preview/style.css"><link rel="stylesheet" href="simple.css"><script defer src="app.js"></script><script defer src="simple.js"></script></head>
+<body><header><a class="brand" href="/">SPUG<span class="brand-dot"></span></a><span class="divider"></span><span>备份与恢复</span><a class="records-link" href="/schedule">任务与执行历史</a></header>
+<main><div class="heading"><div class="eyebrow">数据管理</div><h1>备份与恢复</h1><p>选好服务器，一键备份或恢复。</p></div>
+<section class="card"><div class="tabs" role="tablist" aria-label="备份与恢复"><button role="tab" aria-selected="true" id="simple-backup-tab">备份</button><button role="tab" aria-selected="false" id="simple-restore-tab">恢复</button></div>
+<div class="simple-form"><label for="simple-product">应用</label><select id="simple-product"><option value="intruoyi">IntRuoyi</option><option value="smallapp">小程序</option></select>
+<label for="simple-server">服务器地址</label><select id="simple-server"><option value="172.30.30.58">测试服务器　172.30.30.58</option><option value="172.30.30.57">正式服务器　172.30.30.57</option><option value="172.30.30.59">备份服务器　172.30.30.59</option></select>
+<label for="simple-nas">NAS 地址</label><input id="simple-nas" spellcheck="false" value="\\172.30.30.4\IT共享\Backup\BackupPackage">
+<label for="simple-mode">执行模式</label><select id="simple-mode"><option value="safe">安全模式 · 完整核验</option><option value="fast">快速模式 · 跳过核验</option></select><p id="mode-note" class="field-help">执行完整内容和一致性核验；备份期间可能停写。</p>
+<div id="simple-type-field"><label for="simple-type">备份类型</label><select id="simple-type"><option value="FULL">全量备份</option><option value="INCREMENTAL">增量备份</option></select></div>
+<div id="simple-package-field" hidden><label for="simple-restore-mode">恢复方式</label><select id="simple-restore-mode"><option value="fresh">恢复到空目标</option><option value="replace">覆盖现有小程序</option></select><p id="replace-note" class="field-help" hidden>覆盖会替换目标小程序现有的记录、附件及 Redis 数据。</p><label for="simple-package">备份包</label><select id="simple-package"><option value="">读取可用备份包</option></select><label for="simple-target">恢复服务器地址</label><select id="simple-target"><option value="172.30.30.58">测试服务器　172.30.30.58</option><option value="172.30.30.57">正式服务器　172.30.30.57</option><option value="172.30.30.59">备份服务器　172.30.30.59</option></select></div>
+<p class="note" id="simple-status" role="status">正在读取真实执行配置…</p><div class="footer"><button id="simple-refresh">刷新配置</button><button class="primary" id="simple-submit" aria-describedby="simple-status" disabled>开始备份 →</button></div></div></section>
+<section class="card execution"><div class="execution-heading"><h2>执行进度</h2><button id="simple-query">刷新进度</button></div><div id="simple-result">尚未执行</div><dl id="simple-operation-details" hidden></dl><div class="total">总耗时 <strong id="total-time">—</strong><span id="operation-reference"></span></div><div id="steps" aria-live="polite"><p class="field-help">执行后显示每一步的真实状态、开始时间和耗时。</p></div><h3>操作日志</h3><pre id="simple-logs" aria-live="polite">暂无日志。</pre><p class="field-help">无实际百分比回执时显示执行状态，不估算完成百分比。</p></section>
+<section class="card execution"><div class="execution-heading"><h2>操作记录</h2></div><div id="simple-history"></div></section>
+<details id="diagnostics"><summary>执行诊断</summary>
+    <div class="title"><div><h1>备份与恢复</h1><p>选择已登记应用，使用已核验的备份链和独立恢复目标。</p></div><button id="refresh">刷新可用选项</button></div>
+    <p id="login" class="notice" hidden>请先<a href="/">登录 Spug</a>，再返回此页。</p>
+    <p id="problem" class="notice" role="alert" hidden></p>
+    <section aria-labelledby="selection-title">
+      <h2 id="selection-title">当前应用与来源（只读）</h2>
+      <div class="fields"><label>已登记应用<select id="application" aria-label="已登记应用"></select></label><label>备份来源<select id="source" aria-label="备份来源"></select></label></div>
+      <p>登记版本：<output id="selected-version"></output></p>
+      <p id="readiness" class="readiness" role="status"></p>
+      <div class="actions" role="tablist" aria-label="操作类型">
+        <button role="tab" aria-selected="true" data-action="FULL">全量备份</button>
+        <button role="tab" aria-selected="false" data-action="INCREMENTAL">增量备份</button>
+        <button role="tab" aria-selected="false" data-action="RESTORE">恢复</button>
+      </div>
+      <div id="incremental-fields" class="fields" hidden><label>已接受的父备份链<select id="parent" aria-label="已接受的父备份链"></select></label></div>
+      <div id="restore-fields" class="fields" hidden><label>已接受的恢复点<select id="point" aria-label="已接受的恢复点"></select></label><label>全新独立恢复目标<select id="target" aria-label="全新独立恢复目标"></select></label></div>
+      <p id="action-note"></p>
+      <div class="operation"><span>操作编号</span><output id="operation-id"></output></div>
+      <label>找回未受理的原编号 <input id="original-operation-id" autocomplete="off" placeholder="填写原提交编号"></label>
+      <button id="check-unaccepted" type="button">核对原编号是否未受理</button>
+      <button id="cancel-unaccepted" type="button" disabled>取消未受理请求并修改参数</button>
+      <button id="recover-reserved" type="button" disabled>核对并恢复原编号派发</button>
+      <p id="blocked-reason" class="reason" role="status"></p>
+      <div class="controls"><button id="submit" class="primary" disabled hidden>开始全量备份</button><button id="retry-original" disabled>原编号重试</button><button id="query" disabled>查询原操作</button><button id="new-operation" disabled>新建操作</button></div>
+    </section>
+    <section aria-labelledby="result-title">
+      <h2 id="result-title">原操作结果</h2><p id="result-state">尚未执行</p>
+      <dl id="result-details" hidden><dt>错误原因</dt><dd id="result-error"></dd><dt>日志引用</dt><dd id="result-logs"></dd><dt>结果引用</dt><dd id="result-ref"></dd><dt>Spug 历史</dt><dd id="result-history"></dd></dl>
+      <p class="muted">受理或执行中不代表完成。执行完成后，仍须核验真实业务页面和数据。</p>
+    </section>
+    <section aria-labelledby="history-title"><h2 id="history-title">操作记录</h2><div class="table-wrap"><table><thead><tr><th>操作编号</th><th>类型</th><th>来源</th><th>创建时间</th><th>结果</th></tr></thead><tbody id="history"></tbody></table></div><p id="empty-history" class="muted">暂无通过本入口提交的操作。</p></section>
+</details></main>
+<dialog id="simple-confirm"><div class="dialog-body"><div class="eyebrow">执行确认</div><h2>请核对本次操作</h2><p id="confirm-summary"></p><label id="replace-confirm-field" hidden><input id="replace-confirm" type="checkbox">我确认覆盖所选目标小程序的现有数据</label><p class="note">备份可能停写；恢复会写入所选登记目标。快速模式不保证恢复结果准确。</p></div><div class="dialog-footer"><button id="simple-cancel">返回修改</button><button id="simple-confirm-submit" class="primary">确认执行</button></div></dialog></body></html>
