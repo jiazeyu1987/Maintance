@@ -1,3 +1,4 @@
+from state_store import StateStore, migrate
 """Real filesystem/process invariant checks; no deployment or network actions."""
 import json
 import os
@@ -30,6 +31,7 @@ class StateTests(unittest.TestCase):
         payload = dict(requestId='request-12345678', commit='a' * 40)
         original = dict(id='original', requestId=payload['requestId'], action='build-release', payload=payload, status='running')
         (self.root / 'state.json').write_text(json.dumps(dict(packages=[], environments={}, jobs=[original])), 'utf-8')
+        migrate(self.root)
         self.executor = Executor(self.config)
         job = self.executor.submit('build-release', payload, 'different-actor')
         self.assertEqual(job['id'], 'original')
@@ -127,6 +129,7 @@ class StateTests(unittest.TestCase):
         payload = dict(requestId='old-build-request', commit='a' * 40)
         original = dict(id='old-build', requestId=payload['requestId'], action='build-release', payload=payload, status='running', logs=[])
         (self.root / 'state.json').write_text(json.dumps(dict(packages=[], environments={}, jobs=[original])), 'utf-8')
+        migrate(self.root)
         self.executor = Executor(self.config)
         original = self.executor.state['jobs'][0]
         retry = dict(id='resolve-1', payload=dict(jobId='old-build', decision='retry', note='Investigated unfinished build'), logs=[])
@@ -138,7 +141,7 @@ class StateTests(unittest.TestCase):
         self.executor.save()
         self.assertEqual(original['status'], 'interrupted')
         self.assertEqual(original['resolution']['jobId'], 'resolve-2')
-        saved = json.loads((self.root / 'state.json').read_text('utf-8'))
+        saved = StateStore(self.root).load()
         self.assertEqual(saved['jobs'][0]['resolution']['decision'], 'abandon')
 
     def test_real_git_duplicate_migration_numbers_stop_before_build(self):

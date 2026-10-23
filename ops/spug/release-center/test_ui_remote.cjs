@@ -93,6 +93,42 @@ progress.evaluate("state.jobs[0].remoteStatusError='ConnectionError'");
 assert(progress.render(7).includes('查询失败，结果待核实'));
 console.log('Remote task progress is visible without declaring overall preparation success');
 
+// A preparation prerequisite failure owns no remote isolation cleanup.
+const preEffect=harness();preEffect.set(JSON.parse(JSON.stringify(remote)));
+preEffect.evaluate("state.jobs=[{id:'JOB-precheck',action:'prepare-rehearsal',status:'failed',releaseTag:'candidate',payload:{},logs:[]}]");
+assert(preEffect.render(7).includes('核对前置失败并结束本次任务，保留失败记录'));
+assert(!preEffect.render(7).includes('清除本次隔离环境并保留失败记录'));
+for(const flags of [{effectsStarted:true},{remoteStatusRequired:true},{effectsStarted:true,remoteStatusRequired:true}]){
+ preEffect.evaluate(`state.jobs[0].effectsStarted=${!!flags.effectsStarted};state.jobs[0].remoteStatusRequired=${!!flags.remoteStatusRequired}`);
+ assert(preEffect.render(7).includes('核对源服与远端停止证据，清除本次隔离环境并保留失败记录'));
+ assert(!preEffect.render(7).includes('核对前置失败并结束本次任务，保留失败记录'));
+}
+console.log('Pre-effect preparation failure copy excludes cleanup only when both remote effect markers are absent');
+
+// Retained production-origin copies have one explicit startup-tail retry, not a new restore.
+const preparation=harness();preparation.set(JSON.parse(JSON.stringify({...remote,packages:[{...candidate,stage:'tested'}]})));
+preparation.evaluate("state.jobs=[{id:'JOB-prepare',action:'prepare-rehearsal',target:'rehearsal',sourceEnv:'prod',status:'failed',effectsStarted:true,remoteStatusRequired:true,remotePhase:'restore-starting',remoteProgress:{jobId:'JOB-prepare',status:'failed',phase:'failed'},releaseTag:'candidate',payload:{},logs:[]}]");
+assert(preparation.render(7).includes('恢复保留副本的启动尾段'));
+assert(preparation.render(7).includes('不重新捕获、导入或执行迁移'));
+assert(preparation.render(7).includes('成功后仅登记隔离基线，候选升级仍需单独执行'));
+assert(!/data-job-id="JOB-prepare"[^>]*disabled/.test(preparation.render(7)));
+for(const status of ['running','unknown']){
+ preparation.evaluate(`state.jobs[0].remoteProgress.status='${status}'`);
+ assert(!preparation.render(7).includes('<option value="retry"'),'Unconfirmed original remote outcome must not expose startup-tail retry');
+}
+preparation.evaluate("state.jobs[0].remoteProgress.status='failed';state.jobs[0].remotePhase='capture-complete'");
+assert(!preparation.render(7).includes('<option value="retry"'),'Capture/transfer failure is not a retained startup tail');
+preparation.evaluate("state.jobs[0].remotePhase='restore-starting';state.jobs[0].sourceEnv='backup'");
+assert(!preparation.render(7).includes('<option value="retry"'),'Only production-origin isolation is eligible');
+preparation.evaluate("state.jobs[0].sourceEnv='prod';state.jobs.push({id:'JOB-preparation-retry',action:'resolve-task',target:'rehearsal',sourceEnv:'prod',originalPreparationJobId:'JOB-prepare',releaseTag:'candidate',status:'interrupted',effectsStarted:true,payload:{decision:'retry'},logs:[]})");
+assert.equal(preparation.evaluate('preparationTailRoot(state.jobs[1]).id'),'JOB-prepare');
+assert(!/data-job-id="JOB-preparation-retry"[^>]*disabled/.test(preparation.render(7)),'Lost retry response can be explicitly reconciled against remote worker/receipt evidence');
+preparation.evaluate("state.jobs[1].releaseTag='another'");
+assert.equal(preparation.evaluate('preparationTailRoot(state.jobs[1])'),null);
+preparation.evaluate("state.jobs[1].releaseTag='candidate';state.jobs[0].remoteProgress.jobId='another'");
+assert.equal(preparation.evaluate('preparationTailRoot(state.jobs[1])'),null);
+console.log('Preparation tail entry binds failed original job/source/package and keeps interrupted retry children recoverable');
+
 // Persisted scope exclusions must be visible without exposing arbitrary SQL fields.
 const plans=harness();plans.set(JSON.parse(JSON.stringify(remote)));
 plans.evaluate(`state.jobs=[{id:'JOB-plan',action:'publish-test',status:'succeeded',releaseTag:'candidate',payload:{},logs:[],migrationPlan:{targetEnvironment:'test',publishScope:'app-release',items:[
@@ -121,3 +157,109 @@ assert(plans.render(7).includes('data-plan-key="releaseCenter:intruoyi:migration
 plans.dispatch('toggle',{...planToggle,open:false});
 assert(!plans.render(7).includes('data-plan-key="releaseCenter:intruoyi:migrationPlan:JOB-plan" open>'),'Explicit collapse persists too');
 console.log('Migration plan expansion survives refresh and stays isolated by application and job');
+
+// Same-package continuation is an explicit test-only technical action, never acceptance.
+const tail=harness();tail.set(JSON.parse(JSON.stringify({...remote,packages:[{...candidate,stage:'built'}]})));
+tail.evaluate("state.jobs=[{id:'JOB-original',action:'publish-test',target:'test',status:'failed',effectsStarted:true,releaseTag:'candidate',error:'acceptance port unavailable',payload:{},logs:[]}]");
+let tailHtml=tail.render(7);
+assert(tailHtml.includes('继续同包测试部署收尾'));
+assert(tailHtml.includes('不重跑 SQL、不重新备份，发布成功以三项技术检查为准'));
+assert(tailHtml.includes('开放阶段失败须先核对实际启动结果；只有原候选健康且身份一致才可继续，其他情况停止处理。'));
+assert(!tailHtml.includes('已进入开放阶段的失败须先技术恢复'));
+assert(!/data-job-id="JOB-original"[^>]*disabled/.test(tailHtml));
+assert(/data-action="mark-tested" disabled/.test(tail.render(3)),'Tail action must not grant functional acceptance');
+tail.evaluate("state.jobs.push({id:'JOB-retry',action:'resolve-task',target:'test',status:'interrupted',effectsStarted:true,originalDeploymentJobId:'JOB-original',releaseTag:'candidate',payload:{decision:'retry'},logs:[]})");
+tailHtml=tail.render(7);
+assert(!/data-job-id="JOB-retry"[^>]*disabled/.test(tailHtml),'Failed linked continuation remains actionable');
+assert.equal(tail.evaluate("testTailRoot(state.jobs[1]).id"),'JOB-original');
+tail.evaluate("state.jobs[1].releaseTag='different'");
+assert.equal(tail.evaluate('testTailRoot(state.jobs[1])'),null,'Other package cannot inherit continuation');
+tail.evaluate("state.jobs=[{id:'JOB-prod',action:'promote-prod',target:'prod',status:'failed',effectsStarted:true,releaseTag:'candidate',payload:{},logs:[]}]");
+assert(!tail.render(7).includes('<option value="retry"'),'No production continuation option');
+tail.evaluate("state.jobs[0].action='promote-backup';state.jobs[0].target='backup'");
+assert(!tail.render(7).includes('<option value="retry"'),'No backup continuation option');
+console.log('Test-only same-package tail continuation and failed-child recovery remain separate from functional acceptance');
+
+// Remote release success is three independently bound technical checks.
+const technical=harness();technical.set(JSON.parse(JSON.stringify({...remote,jobs:[],packages:[{...candidate,stage:'test-deployed'}]})));
+for(const page of [3,4,5,6]){
+ const html=technical.render(page);
+ assert(html.includes('重新执行三项技术检查'));
+ assert(!html.includes('id="accept-note"'),'Remote technical checks require no manual business note');
+ assert(!html.includes('data-action="reject-acceptance"'),'No new business rejection criterion in remote release flow');
+ assert(html.includes('Playwright 真实认证登录并进入页面'));
+}
+assert.equal(technical.evaluate("technicalEvidence(pkg(),'test').status"),'pending');
+technical.evaluate(`state.jobs=[{id:'JOB-check',target:'test',action:'mark-tested',status:'running',releaseTag:'candidate',payload:{},logs:[]}];state.packages[0].outcomes={test:{deployment:{status:'succeeded'},technical:{env:'test',jobId:'JOB-check',releaseTag:'candidate',packageSha256:'package-hash',status:'running',checks:{version:{status:'passed'},upgrade:{status:'running'},login:{status:'pending'}}}}}`);
+assert.equal(technical.evaluate("technicalEvidence(pkg(),'test').checks.map(x=>x.status).join(',')"),'passed,running,pending');
+assert(technical.render(3).includes('进行中'));
+technical.evaluate("state.packages[0].outcomes.test.technical.status='passed'");
+assert.equal(technical.evaluate("technicalEvidence(pkg(),'test').status"),'pending','Overall success cannot substitute for missing check evidence');
+technical.evaluate("state.jobs[0].status='succeeded';state.packages[0].outcomes.test.technical.checks.upgrade.status='passed';state.packages[0].outcomes.test.technical.checks.login.status='passed'");
+assert.equal(technical.evaluate("technicalEvidence(pkg(),'test').status"),'passed');
+technical.evaluate("state.jobs[0].target='prod'");
+assert.equal(technical.evaluate("technicalEvidence(pkg(),'test').checks.map(x=>x.status).join(',')"),'pending,pending,pending','Evidence owner must belong to this environment');
+technical.evaluate("state.jobs[0].target='test';state.packages[0].stage='tested'");
+assert(!/data-action="mark-tested" disabled/.test(technical.render(3)),'An already promoted technical stage can be rechecked explicitly');
+technical.evaluate("state.packages[0].stage='test-deployed'");
+for(const field of ['releaseTag','packageSha256','env','jobId']){
+ technical.evaluate(`state.packages[0].outcomes.test.technical.${field}=${field==='jobId'?"''":"'wrong'"}`);
+ assert.equal(technical.evaluate("technicalEvidence(pkg(),'test').checks.map(x=>x.status).join(',')"),'pending,pending,pending',field+' must bind evidence');
+ technical.evaluate(`state.packages[0].outcomes.test.technical.${field}=${JSON.stringify({releaseTag:'candidate',packageSha256:'package-hash',env:'test',jobId:'JOB-check'}[field])}`);
+}
+technical.evaluate("state.packages[0].outcomes.test.technical.status='failed';state.packages[0].outcomes.test.technical.phase='opening';state.packages[0].outcomes.test.technical.opening={status:'failed',error:'port <unavailable>'}");
+assert(technical.render(3).includes('入口开放失败：port &lt;unavailable&gt;'));
+assert.equal(technical.evaluate("technicalEvidence(pkg(),'test').status"),'failed','Passed three checks do not hide failed opening');
+
+// Old business failure stays visible and permits only the matching technical recheck.
+technical.evaluate(`state.jobs=[{id:'JOB-reject',action:'reject-acceptance',target:'test',status:'failed',releaseTag:'candidate',error:'old business problem',payload:{note:'preserved business note'},logs:[]}];state.packages[0].acceptances=[{action:'reject-acceptance',jobId:'JOB-reject',env:'test',note:'preserved business note'}]`);
+assert(!/data-action="mark-tested" disabled/.test(technical.render(3)));
+technical.evaluate("state.packages[0].acceptances[0].env='prod'");
+assert(/data-action="mark-tested" disabled/.test(technical.render(3)),'An unbound old rejection is not presumed to be a test business failure');
+technical.evaluate("state.packages[0].acceptances[0].env='test'");
+assert(technical.render(3).includes('历史业务记录（不属于当前发布成功判据）'));
+assert(technical.render(3).includes('old business problem'));
+assert(technical.render(3).includes('preserved business note'));
+assert(technical.evaluate("action('next','promote-prod',true)").includes('disabled'),'Unreconciled failure cannot authorize next environment');
+assert(technical.evaluate("action('wrong environment','accept-prod',true)").includes('disabled'));
+technical.evaluate("state.jobs.push({id:'JOB-sql',action:'publish-test',target:'test',status:'failed',releaseTag:'candidate',effectsStarted:true,payload:{},logs:[]})");
+assert(/data-action="mark-tested" disabled/.test(technical.render(3)),'Unrelated migration/deployment failure remains blocked');
+technical.evaluate("state.jobs.pop();state.jobs.push({id:'JOB-check',action:'mark-tested',target:'test',status:'failed',releaseTag:'candidate',technicalVerification:JSON.parse(JSON.stringify(state.packages[0].outcomes.test.technical)),payload:{},logs:[]})");
+assert(!/data-action="mark-tested" disabled/.test(technical.render(3)),'Bound technical failure permits fresh checks');
+technical.evaluate("state.packages[0].outcomes.test.deployment.status='failed'");
+assert(/data-action="mark-tested" disabled/.test(technical.render(3)),'A failed deployment cannot be bypassed by a technical proof marker');
+technical.evaluate("state.packages[0].outcomes.test.deployment.status='succeeded'");
+technical.evaluate("state.packages[0].technicalHistory=[JSON.parse(JSON.stringify(state.packages[0].outcomes.test.technical))];state.jobs.push({id:'JOB-check-2',action:'mark-tested',target:'test',status:'failed',releaseTag:'candidate',payload:{},logs:[]});state.packages[0].outcomes.test.technical.jobId='JOB-check-2';state.jobs[2].technicalVerification=JSON.parse(JSON.stringify(state.packages[0].outcomes.test.technical))");
+assert(!/data-action="mark-tested" disabled/.test(technical.render(3)),'Earlier failed checks must not permanently block a second retry');
+technical.evaluate("state.jobs[2].status='interrupted'");
+assert(/data-action="mark-tested" disabled/.test(technical.render(3)),'Unknown/interrupted effects require technical handling');
+
+// A bare reconciliation marker is insufficient; preserve the failed history after proof.
+technical.evaluate("state.jobs=[state.jobs[0],{id:'JOB-verified',action:'mark-tested',target:'test',status:'succeeded',releaseTag:'candidate',payload:{},logs:[]}];state.jobs[0].reconciledBy='JOB-verified'");
+assert.equal(technical.evaluate('unresolved(state.jobs[0])'),true);
+technical.evaluate("state.packages[0].outcomes.test.technical.jobId='JOB-verified';state.packages[0].outcomes.test.technical.status='passed';delete state.packages[0].outcomes.test.technical.opening;delete state.packages[0].outcomes.test.technical.phase");
+assert.equal(technical.evaluate('unresolved(state.jobs[0])'),false);
+assert.equal(technical.evaluate('state.jobs[0].status'),'failed');
+assert(technical.render(7).includes('后续真实技术检查已通过：JOB-verified；本条原失败记录保留。'));
+assert(technical.render(7).includes('old business problem'));
+technical.evaluate("state.packages[0].outcomes.test.technical.checks.login.status='pending'");
+assert.equal(technical.evaluate('unresolved(state.jobs[0])'),true,'Missing real login must not clear historical blocking state');
+
+const unchanged=harness();unchanged.set(JSON.parse(JSON.stringify({...demo,packages:[{...candidate,stage:'test-deployed'}]})));
+assert(unchanged.render(3).includes('id="accept-note"'));
+assert(unchanged.render(3).includes('data-action="reject-acceptance"'));
+assert(!unchanged.render(3).includes('重新执行三项技术检查'));
+console.log('Remote three-check evidence, exact failure retry scope, immutable business history and demo isolation passed');
+
+// Exercise the existing click handler without a note textarea or network requests.
+(async()=>{
+ const click=harness();click.set(JSON.parse(JSON.stringify({...remote,jobs:[],packages:[{...candidate,stage:'test-deployed'}]})));
+ click.evaluate("globalThis.sent=[];api=async(path,payload)=>{sent.push({path,payload});return {}};refresh=async()=>{};");
+ const button={disabled:false,dataset:{action:'mark-tested'}};
+ await click.listener('click').callback({target:{closest:()=>button}});
+ assert.equal(click.evaluate('sent.length'),1);
+ assert.equal(click.evaluate('sent[0].path'),'actions/mark-tested');
+ assert.equal(click.evaluate('sent[0].payload.releaseTag'),'candidate');
+ assert.equal(click.evaluate('sent[0].payload.note'),'执行三项技术检查：版本镜像、迁移启动、真实登录进入页面');
+ console.log('Remote technical action submits without reading a manual acceptance note');
+})().catch(error=>{console.error(error);process.exitCode=1;});

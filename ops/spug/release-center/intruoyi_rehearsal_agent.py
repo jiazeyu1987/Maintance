@@ -1,6 +1,8 @@
 """Python 3.6 remote implementation for owned, internal-network full-data copies."""
 import base64
 import hashlib
+import ipaddress
+import io
 import json
 import os
 from pathlib import Path
@@ -17,6 +19,52 @@ from urllib.request import urlopen
 
 LABEL = 'intruoyi.release.rehearsal'
 PREFIX = 'intruoyi-release-rehearsal'
+REHEARSAL_PROGRESS_ROOT = Path('/var/lib/docker/intruoyi-release-workflow/recovery-evidence')
+
+
+def explicit_http_origin(value):
+    """Registered Docker ingress requires an IPv4 host and an explicit port."""
+    if not isinstance(value, str):
+        raise ValueError('Explicit HTTP origin with registered IPv4 host and port required')
+    try:
+        url = urlsplit(value)
+        host = ipaddress.IPv4Address(url.hostname or '')
+        port = url.port
+    except ValueError:
+        raise ValueError('Explicit HTTP origin with registered IPv4 host and port required')
+    if (url.scheme != 'http' or host.is_unspecified or host.is_multicast or not port
+            or url.path or url.query or url.fragment or url.username is not None or url.password is not None
+            or value != 'http://' + str(host) + ':' + str(port)):
+        raise ValueError('Explicit HTTP origin with registered IPv4 host and port required')
+    return {'host':str(host), 'port':port}
+
+
+def rehearsal_endpoints(profile):
+    endpoints = {key:explicit_http_origin(profile.get(key))
+                 for key in ('entryUrl','acceptanceUrl','isolatedMinioPublicUrl')}
+    if any(value['host'] != profile.get('host') for value in endpoints.values()):
+        raise ValueError('Rehearsal URL host must match the registered target host')
+    if len({value['port'] for value in endpoints.values()}) != len(endpoints):
+        raise ValueError('Rehearsal entry, acceptance and MinIO ports must be distinct')
+    return endpoints
+
+
+def rehearsal_gateway_ingress(profile):
+    endpoints = rehearsal_endpoints(profile)
+    upstreams = {'entryUrl':profile['frontend'] + ':80',
+                 'acceptanceUrl':profile['acceptanceFrontend'] + ':80',
+                 'isolatedMinioPublicUrl':profile['minio'] + ':9000'}
+    servers, bindings = [], {}
+    for key, endpoint in endpoints.items():
+        port = str(endpoint['port'])
+        servers.append('server { listen ' + port + '; resolver 127.0.0.11 valid=5s; '
+                       'client_max_body_size 0; location / { set $upstream "' + upstreams[key] + '"; '
+                       'proxy_pass http://$upstream; proxy_set_header Host $http_host; '
+                       'proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; '
+                       'proxy_read_timeout 300s; } }')
+        bindings[port + '/tcp'] = [{'HostIp':endpoint['host'], 'HostPort':port}]
+    return {'nginx':'\n'.join(servers), 'portBindings':bindings,
+            'exposedPorts':{key:{} for key in bindings}}
 
 
 def source_active_profiles(info):
@@ -35,18 +83,86 @@ def source_active_profiles(info):
 def source_backend_startup(info, remote, container):
     source_active_profiles(info)
     env = dict(value.split('=', 1) for value in info['Config']['Env'])
-    args = shlex.split(env.get('ARGS', ''))
+    literal_args = env.get('ARGS', '').split()
+    cli_only = not any(arg.startswith('--spring.config.additional-location=') for arg in literal_args)
+    args = literal_args if cli_only else shlex.split(env.get('ARGS', ''))
     if not args or any(not arg.startswith('--') or '=' not in arg for arg in args):
         raise ValueError('Source backend requires explicit property arguments')
+    if len({arg.split('=', 1)[0] for arg in args}) != len(args):
+        raise ValueError('Duplicate source property arguments are ambiguous')
+    if any(env.get(key) for key in ('SPRING_CONFIG_LOCATION', 'SPRING_CONFIG_ADDITIONAL_LOCATION',
+                                   'SPRING_CONFIG_IMPORT', 'SPRING_APPLICATION_JSON', 'JAVA_TOOL_OPTIONS', 'JDK_JAVA_OPTIONS', '_JAVA_OPTIONS')):
+        raise ValueError('Additional source environment configuration loaders are not supported')
     locations = [arg.split('=', 1)[1] for arg in args if arg.startswith('--spring.config.additional-location=')]
-    if len(locations) != 1 or not locations[0].startswith('file:'):
+    controls = [arg.split('=', 1)[0] for arg in args if arg.startswith('--spring.config.')]
+    if any(key != '--spring.config.additional-location' for key in controls):
+        raise ValueError('Additional source argument configuration loaders are not supported')
+    if not locations:
+        if info['Config'].get('Cmd') != ['sh', '-c', 'exec java ${JAVA_OPTS} -jar app.jar ${ARGS}']:
+            raise ValueError('CLI-only source startup does not match the inspected shell argument contract')
+        properties, source_format = '', 'shell-args-v1'
+    elif len(locations) != 1 or not locations[0].startswith('file:'):
         raise ValueError('One mounted source property file is required')
-    path = locations[0][5:]
-    if not path.endswith('.properties') or not any(m['Destination'] == path and m['Type'] == 'bind' for m in info['Mounts']):
-        raise ValueError('Source property file is not an inspected bind mount')
-    properties = remote.run(['docker', 'exec', container, 'cat', path]).decode('utf-8')
+    else:
+        path = locations[0][5:]
+        if not path.endswith('.properties') or not any(m['Destination'] == path and m['Type'] == 'bind' for m in info['Mounts']):
+            raise ValueError('Source property file is not an inspected bind mount')
+        properties = remote.run(['docker', 'exec', container, 'cat', path]).decode('utf-8')
+        source_format = 'mounted-properties-v1'
+    jvm = shlex.split(env.get('JAVA_OPTS', ''))
+    if env.get('JAVA_OPTS', '').split() != jvm:
+        raise ValueError('Source JVM options require the inspected unquoted shell expansion format')
+    if any(not re.fullmatch(r'-Xm[sx][0-9]+[kKmMgG]?|-Djava\.security\.egd=\S+', arg) for arg in jvm):
+        raise ValueError('Source JVM arguments differ from the inspected memory and entropy contract')
+    if source_format == 'shell-args-v1':
+        actual = remote.run(['docker', 'exec', container, 'cat', '/proc/1/cmdline']).decode('utf-8').rstrip('\0').split('\0')
+        expected = ['java', *jvm, '-jar', 'app.jar', *args]
+        if not actual or [Path(actual[0]).name, *actual[1:]] != expected:
+            raise ValueError('Running Java arguments differ from the inspected source shell expansion')
+        # Read the verified real argv, not a second shell parser that changes literal backslashes/quotes.
+        args = actual[3 + len(jvm):]
+    values = [arg.split('=', 1)[1] for arg in args] + [value for key, value in env.items() if key not in ('ARGS', 'JAVA_OPTS')]
+    mounts = info['Mounts']
     return {'arguments': [arg for arg in args if not arg.startswith(('--spring.config.additional-location=', '--spring.profiles.active='))],
-            'properties': properties}
+            'properties': properties, 'format': source_format, 'jvmArguments': jvm,
+            'environment': {key:value for key,value in env.items() if key not in ('ARGS', 'JAVA_OPTS')},
+            'workingDirectory': info['Config'].get('WorkingDir', ''),
+            'mountDifferences': {'sourceMountCount': len(mounts), 'copiedSourceMountCount': 0,
+                'dockerSocketExcluded': any(m['Destination'].endswith('/docker.sock') for m in mounts),
+                'sourceMountReferenceCount': sum(any(value == m['Destination'] or value.startswith(m['Destination'].rstrip('/') + '/')
+                                                     for m in mounts) for value in values),
+                'unavailableCapabilities': ['source-host-operations', 'source-host-files'],
+                'scope': 'isolated-service-data-and-technical-verification'}}
+
+
+def isolated_backend_startup(profile, startup, props, active_profiles, source, minio_password):
+    """Preserve the captured configuration; explicit isolation CLI properties win last."""
+    command = profile['backendCommand']
+    if command[:3] != ['java', '-jar', 'app.jar']:
+        raise ValueError('Isolated backend requires the inspected direct Java command')
+    command = ['java', *startup['jvmArguments'], *command[1:]]
+    command = [arg for arg in command if not arg.startswith('--spring.profiles.active=')
+               and not (arg.startswith('--') and arg[2:].split('=', 1)[0] in props)]
+    command.extend(arg for arg in startup['arguments'] if arg[2:].split('=', 1)[0] not in props)
+    command.append('--spring.profiles.active=' + active_profiles)
+    command.extend('--' + key + '=' + str(value) for key, value in sorted(props.items()))
+    environment = dict(startup['environment'])
+    environment.update(value.split('=', 1) for value in isolated_backend_environment(profile, source, minio_password))
+    return command, [key + '=' + str(value) for key, value in sorted(environment.items())]
+
+
+def source_upstream_hosts(container, frontend, registered_name):
+    """DNS aliases are evidence only on a network shared by the source frontend."""
+    shared = set(frontend['NetworkSettings']['Networks'])
+    hosts = {registered_name}
+    for name, endpoint in container['NetworkSettings']['Networks'].items():
+        if endpoint.get('IPAddress'):
+            hosts.add(endpoint['IPAddress'])
+        if name in shared:
+            hosts.update(endpoint.get('Aliases') or [])
+    if not all(isinstance(host, str) and re.fullmatch('[A-Za-z0-9_.-]+', host) for host in hosts):
+        raise ValueError('Source upstream identity is invalid')
+    return sorted(hosts)
 
 
 def isolated_nginx_config(content, source_port, backend_upstreams, backend, minio_upstreams, minio):
@@ -59,10 +175,13 @@ def isolated_nginx_config(content, source_port, backend_upstreams, backend, mini
     content, count = re.subn(r'(\blisten\s+)([^\s;]+)', listener, content)
     if not count:
         raise ValueError('Source nginx listeners missing')
-    for upstreams, target in ((backend_upstreams, backend), (minio_upstreams, minio)):
-        for old in sorted(upstreams, key=len, reverse=True):
-            content = content.replace('http://' + old + ':', 'http://' + target + ':')
-    return content
+    if set(backend_upstreams) & set(minio_upstreams):
+        raise ValueError('Source backend and MinIO upstream identities are ambiguous')
+    destinations = {host:target for upstreams,target in ((backend_upstreams,backend),(minio_upstreams,minio)) for host in upstreams}
+    if not all(re.fullmatch('[A-Za-z0-9_.-]+', value) for pair in destinations.items() for value in pair):
+        raise ValueError('Nginx upstream identity is invalid')
+    return re.sub(r'(\bproxy_pass\s+https?://)([A-Za-z0-9_.-]+)(?=[:/;\s])',
+                  lambda match:match[1] + destinations.get(match[2], match[2]), content)
 
 
 def apply_checked_batches(sql, statements, label, batch_size=100):
@@ -256,9 +375,9 @@ def rewrite_media_urls(value, profile, destination):
     """Change only registered local origins, preserving bucket/object bytes exactly."""
     if not isinstance(value, str):
         raise ValueError('Media URL conversion requires text')
-    destination_url = urlsplit(destination)
-    if destination_url.scheme != 'http' or not destination_url.hostname or destination_url.port != 39082 or destination_url.path:
-        raise ValueError('Explicit isolated MinIO origin on port39082 required')
+    destination_origin = explicit_http_origin(destination)
+    if destination_origin['host'] in profile['minioLocalEndpointHosts'] and destination_origin['port'] == 9000:
+        raise ValueError('Isolated MinIO origin must not reuse a source media origin')
     hosts = '|'.join(re.escape(host) for host in profile['minioLocalEndpointHosts'])
     buckets = '|'.join(re.escape(bucket) for bucket in profile['minioBuckets'])
     plain = re.compile(r'http://(?:' + hosts + r'):9000/(?P<bucket>' + buckets + r')(?=/|[?\#]|$)', re.I)
@@ -362,6 +481,167 @@ def isolate_stored_media_urls(profile, source, api):
     return {'columns': evidence, 'sourceInventorySha256': api['sha'](registered), 'remainingRegisteredOrigins': 0}
 
 
+def resume_rehearsal_tail(p, api, folder):
+    """Resume only the fully restored baseline's existing frontend, retaining every earlier receipt."""
+    require, r, profile = api['require'], api['remote'], p['profile']
+    require(profile.get('environment') == 'rehearsal' and profile.get('sourceEnvironment') == 'prod', 'Production-origin isolation required')
+    original_id, retry_id = p.get('originalJobId'), p.get('retryJobId')
+    require(all(isinstance(value,str) and re.fullmatch('JOB-[a-f0-9]{10}',value) for value in (original_id,retry_id))
+            and original_id != retry_id, 'Distinct original and retry job identities required')
+    require(all(re.fullmatch('[a-f0-9]{64}',p.get(key,'')) for key in ('packageSha256','manifestSha256')), 'Immutable package hashes required')
+    original = json.loads((REHEARSAL_PROGRESS_ROOT/original_id/'rehearsal-progress.private.json').read_text())
+    require(original.get('jobId') == original_id and original.get('phase') == 'failed'
+            and process_start_identity(original['pid']) != original['processStart'], 'Original failed restore worker must be stopped')
+    dispatch(dict(p,action='rehearsal-verify-stopped',checkProcessesOnly=True),api)
+    require(folder.is_dir() and not folder.is_symlink()
+            and json.loads((folder/'rehearsal-owned.json').read_text()).get('owner') == PREFIX, 'Existing rehearsal stage ownership required')
+    proof = p['sourceProof']
+    capture = proof['capture']
+    require(proof.get('source') == 'prod' and proof.get('originalJobId') == original_id
+            and proof.get('releaseTag') == p['releaseTag'] and proof.get('captureIdentity') == api['sha'](capture),
+            'Source correction evidence does not bind this failed capture')
+    binding = dict(originalJobId=original_id,releaseTag=p['releaseTag'],source='prod',
+                   packageSha256=p['packageSha256'],manifestSha256=p['manifestSha256'],
+                   originFingerprint=capture['originFingerprint'],captureSha256=proof['captureSha256'])
+    evidence_hashes = {}
+    names = [item['name'] for item in capture['artifacts']]
+    require(len(names) == len(set(names)) and {'recovery.sql','minio.tar','redis.jsonl','backend-startup.private.json','nginx.conf','historical-release-info.json'} <= set(names),
+            'Complete original restore artifacts required')
+    for item in capture['artifacts']:
+        require(Path(item['name']).name == item['name'], 'Invalid restore artifact name')
+        if item['name'] == 'nginx.conf':
+            require(hashlib.sha256(proof['nginx'].encode()).hexdigest() == item['sha256'], 'Original source Nginx content differs')
+            continue
+        path = folder/item['name']
+        require(path.is_file() and not path.is_symlink() and path.stat().st_size == item['bytes']
+                and api['file_sha'](path) == item['sha256'], 'Retained complete restore artifact differs: '+item['name'])
+        evidence_hashes[item['name']] = item['sha256']
+    media = json.loads((folder/'verified-media-origin.json').read_text())
+    urls = json.loads((folder/'isolated-media-url-transformations.json').read_text())
+    config_changes = json.loads((folder/'isolated-config-transformations.json').read_text())
+    require(media == capture['mediaIdentity'], 'Completed media restore verification differs')
+    require(urls.get('remainingRegisteredOrigins') == 0 and isinstance(urls.get('columns'),list)
+            and urls.get('sourceInventorySha256') == api['sha'](p['sourceProfile']['mediaUrlColumns']), 'Completed stored-media conversion proof required')
+    require(isinstance(config_changes,list) and config_changes, 'Completed isolated MinIO configuration conversion required')
+    for name in ('verified-media-origin.json','isolated-media-url-transformations.json','isolated-config-transformations.json','isolated-startup-differences.json'):
+        evidence_hashes[name] = api['file_sha'](folder/name)
+    containers = {role:r.inspect(profile[role]) for role in ('backend','frontend','database','redis','minio')}
+    containers['gateway'] = r.inspect(PREFIX+'-gateway')
+    for role, item in containers.items():
+        require((item['Config'].get('Labels') or {}).get(LABEL) == PREFIX, 'Existing isolated container ownership differs: '+role)
+        require(item['Image'] == capture['images']['frontend' if role == 'gateway' else role], 'Existing isolated image differs: '+role)
+        require(profile['network'] in item['NetworkSettings']['Networks'], 'Existing isolated container network differs: '+role)
+        if role not in ('frontend','gateway'):
+            require(item['State']['Running'], 'Existing restored service must already be running: '+role)
+        if role != 'gateway':
+            require(not item['HostConfig'].get('PortBindings'), 'Business isolation must not publish host ports')
+    network = json.loads(r.run(['docker','network','inspect',profile['network']]))[0]
+    require(network.get('Internal') is True and (network.get('Labels') or {}).get(LABEL) == PREFIX, 'Owned internal isolation network required')
+    identities = {role:item['Id'] for role,item in containers.items()}
+    config = folder/'nginx.conf'
+    front_mounts = containers['frontend']['Mounts']
+    require(any(m['Type'] == 'bind' and m['Destination'] == '/etc/nginx/conf.d/default.conf'
+                and m['Source'] == str(config) and not m['RW'] for m in front_mounts), 'Original frontend Nginx bind differs')
+    ingress = rehearsal_gateway_ingress(profile)
+    gateway = folder/'gateway-nginx.conf'
+    require(gateway.read_text() == ingress['nginx'] and containers['gateway']['HostConfig'].get('PortBindings') == ingress['portBindings']
+            and any(m['Type'] == 'bind' and m['Destination'] == '/etc/nginx/conf.d/default.conf'
+                    and m['Source'] == str(gateway) and not m['RW'] for m in containers['gateway']['Mounts']), 'Existing gateway configuration differs')
+    # Artifact integrity above uses the original bytes. Reproduce the separate
+    # read_text newline semantics used by the original isolated restore renderer.
+    render_source = io.StringIO(proof['nginx'], newline=None).read()
+    old_nginx = isolated_nginx_config(render_source,urlsplit(p['sourceProfile']['entryUrl']).port or 80,
+                                      capture['backendUpstreams'],profile['backend'],capture['minioUpstreams'],profile['minio'])
+    corrected = isolated_nginx_config(render_source,urlsplit(p['sourceProfile']['entryUrl']).port or 80,
+                                      proof['backendUpstreams'],profile['backend'],proof['minioUpstreams'],profile['minio'])
+    require(config.read_text() in (old_nginx,corrected), 'Existing isolated Nginx differs from original or exact correction')
+    observed = api['observe'](profile)
+    for key in ('images','schemaSha256','ledgerSha256'):
+        require(observed[key] == capture['origin'][key], 'Existing restored origin differs: '+key)
+    require(observed.get('readOnly') == dict(read_only=False,super_read_only=False), 'External write fence prevents resumed verification')
+    attempts = folder/'tail-resume'
+    completed = None
+    previous_health = False
+    if attempts.exists():
+        for path in sorted(attempts.glob('*/receipt.private.json')):
+            previous = json.loads(path.read_text())
+            require(all(previous.get(k) == v for k,v in binding.items()) and previous.get('containerIds') == identities,
+                    'Existing tail receipt belongs to different package or containers')
+            require(process_start_identity(previous['pid']) != previous['processStart'], 'Previous tail worker is still active')
+            if previous.get('status') == 'completed':
+                completed = previous
+            if previous.get('phase') == 'health' and previous.get('status') in ('running','failed'):
+                previous_health = True
+    attempt = attempts/retry_id
+    require(not attempt.exists(), 'Retry job already has tail evidence; use a new persisted retry task')
+    attempt.mkdir(mode=0o700,parents=True)
+    receipt = dict(binding,retryJobId=retry_id,status='running',phase='frontend',containerIds=identities,
+                   pid=os.getpid(),processStart=process_start_identity(os.getpid()),evidenceSha256=evidence_hashes,
+                   correctedNginxSha256=hashlib.sha256(corrected.encode()).hexdigest())
+    def save_receipt():
+        path = attempt/'receipt.private.json'
+        if not path.exists():
+            api['private_json'](path,receipt)
+        else:
+            path.write_text(json.dumps(receipt))
+    save_receipt()
+    dispatch(dict(p,action='rehearsal-job-progress',jobId=retry_id,phase='restore-starting'),api)
+    try:
+        if completed is None:
+            if containers['frontend']['State']['Running']:
+                require(previous_health and config.read_text() == corrected,
+                        'Running frontend requires a stopped prior health attempt and exact corrected configuration')
+            else:
+                api['private_json'](attempt/'nginx-before.private.json',{'sha256':api['file_sha'](config),'content':config.read_text()})
+                # Preserve the mounted inode. Replacing this path would leave Docker reading the failed file.
+                config.write_text(corrected)
+            for role in ('frontend','gateway'):
+                if not containers[role]['State']['Running']:
+                    api['docker']('POST','/containers/'+containers[role]['Id']+'/start')
+        else:
+            require(config.read_text() == corrected and all(item['State']['Running'] for item in containers.values()),
+                    'Completed tail cannot be recollected from changed or stopped containers')
+        receipt['phase'] = 'health'
+        save_receipt()
+        deadline = time.monotonic() + 240
+        while True:
+            observed = api['observe'](profile)
+            try:
+                with urlopen(profile['isolatedMinioPublicUrl']+'/minio/health/ready',timeout=5) as response:
+                    media_ready = response.status == 200
+            except Exception:
+                media_ready = False
+            if observed['backendHealth'].get('status') == 'UP' and observed['frontendHttpStatus'] == 200 and media_ready:
+                break
+            require(time.monotonic() < deadline, 'Resumed isolated backend/frontend/media health did not become ready')
+            time.sleep(2)
+        for key in ('images','schemaSha256','ledgerSha256'):
+            require(observed[key] == capture['origin'][key], 'Resumed origin differs: '+key)
+        require(observed.get('releaseTag') == capture['origin']['releaseTag'], 'Resumed baseline version differs')
+        require(all(r.inspect(profile[role] if role != 'gateway' else PREFIX+'-gateway')['Id'] == identity
+                    for role,identity in identities.items()), 'Container identities changed during tail recovery')
+        origin = dict(originFingerprint=capture['originFingerprint'],verifiedOrigin=True,fingerprint=observed['fingerprint'])
+        origin_path = folder/'restored-origin.json'
+        if origin_path.exists():
+            require(json.loads(origin_path.read_text()) == origin, 'Prior completed origin proof differs')
+        else:
+            api['private_json'](origin_path,origin)
+        receipt.update(status='completed',phase='complete')
+        save_receipt()
+        dispatch(dict(p,action='rehearsal-job-progress',jobId=retry_id,phase='completed'),api)
+        progress = dispatch(dict(p,action='rehearsal-job-status',jobId=(completed or receipt)['retryJobId']),api)
+        observed.update(originFingerprint=capture['originFingerprint'],verifiedOrigin=True,
+                        originEvidence={key:observed[key] for key in ('images','schemaSha256','ledgerSha256')},
+                        historicalMetadata=capture['historicalMetadata'],remotePreparationProgress=progress,
+                        resumeReceipt=completed or receipt)
+        return observed
+    except Exception as error:
+        receipt.update(status='failed',errorCategory=type(error).__name__)
+        save_receipt()
+        dispatch(dict(p,action='rehearsal-job-progress',jobId=retry_id,phase='failed'),api)
+        raise
+
+
 def dispatch(p, api):
     r = api['remote']
     require, blocked = api['require'], api['RuntimeBlocked']
@@ -388,7 +668,7 @@ def dispatch(p, api):
         job_id, phase = p.get('jobId'), p.get('phase')
         require(isinstance(job_id,str) and re.fullmatch('JOB-[a-f0-9]{10}',job_id), 'Valid rehearsal job ID required')
         require(phase in ('capture-starting','capture-complete','restore-starting','completed','failed'), 'Known rehearsal phase required')
-        directory = Path('/var/lib/docker/intruoyi-release-workflow/recovery-evidence') / job_id
+        directory = REHEARSAL_PROGRESS_ROOT / job_id
         directory.mkdir(mode=0o700, parents=True, exist_ok=True)
         path = directory / 'rehearsal-progress.private.json'
         if path.exists():
@@ -406,7 +686,7 @@ def dispatch(p, api):
     if action == 'rehearsal-job-status':
         job_id = p.get('jobId')
         require(isinstance(job_id,str) and re.fullmatch('JOB-[a-f0-9]{10}',job_id), 'Valid rehearsal job ID required')
-        path = Path('/var/lib/docker/intruoyi-release-workflow/recovery-evidence') / job_id / 'rehearsal-progress.private.json'
+        path = REHEARSAL_PROGRESS_ROOT / job_id / 'rehearsal-progress.private.json'
         require(path.is_file(), 'No remote rehearsal execution evidence for this job')
         value = json.loads(path.read_text())
         require(value.get('jobId') == job_id, 'Remote rehearsal evidence belongs to another job')
@@ -522,20 +802,19 @@ def dispatch(p, api):
         return names
 
     def target_check():
+        endpoints = rehearsal_endpoints(profile)
         api['check_storage'](profile)
         names = owned_check()
         require(not (set(names) & existing_names()), 'Rehearsal resources already exist; explicit reset required')
         require(profile['network'] not in r.run(['docker', 'network', 'ls', '--format', '{{.Name}}']).decode().splitlines(), 'Rehearsal network already exists; explicit reset required')
         volumes = set(r.run(['docker', 'volume', 'ls', '--format', '{{.Name}}']).decode().splitlines())
         require(not ({profile[k] + '-data' for k in ('database', 'redis', 'minio')} & volumes), 'Rehearsal data volume already exists; explicit reset required')
-        for key, expected in (('entryUrl', 38082), ('acceptanceUrl', 38083), ('isolatedMinioPublicUrl', 39082)):
-            u = urlsplit(profile[key])
-            require(u.hostname == profile['host'] and u.port == expected, 'Unexpected registered rehearsal port')
+        for endpoint in endpoints.values():
             s = socket.socket()
             try:
-                s.bind(('0.0.0.0', expected))
+                s.bind((endpoint['host'], endpoint['port']))
             except OSError:
-                raise blocked('Rehearsal port already bound: ' + str(expected))
+                raise blocked('Registered rehearsal host/port cannot bind: ' + str(endpoint['port']))
             finally:
                 s.close()
         return {'ready': True, 'mutations': False}
@@ -662,6 +941,34 @@ def dispatch(p, api):
         folder = root(p['releaseTag'])
         new_seed(folder)
         return {'directory': str(folder)}
+    if action == 'rehearsal-tail-source-proof':
+        require(profile.get('environment') == 'prod', 'Only the registered production origin may authorize this tail')
+        status = dispatch(dict(p, action='rehearsal-job-status', jobId=p['originalJobId']), api)
+        require(status['phase'] == 'capture-complete' and process_start_identity(status['pid']) != status['processStart'],
+                'Original source capture must be complete with its worker stopped')
+        folder = root(p['releaseTag'])
+        require(json.loads((folder/'rehearsal-owned.json').read_text()).get('owner') == PREFIX, 'Source capture ownership differs')
+        capture_path = folder/'capture-complete.private.json'
+        capture = json.loads(capture_path.read_text())
+        observed = api['observe'](profile)
+        require(observed['fingerprint'] == capture['originFingerprint'] == p['expectedOriginFingerprint'], 'Source origin changed after capture')
+        require(observed['backendHealth'].get('status') == 'UP' and observed['frontendHttpStatus'] == 200
+                and observed.get('maintenance') is False and observed.get('readOnly') == dict(read_only=False,super_read_only=False),
+                'Source must remain healthy and open')
+        frontend = r.inspect(profile['frontend'])
+        backend, minio = r.inspect(profile['backend']), r.inspect(profile['minio'])
+        require(backend['Id'] == capture['origin']['components']['backend']['containerId']
+                and frontend['Id'] == capture['origin']['components']['frontend']['containerId']
+                and minio['Image'] == capture['images']['minio'], 'Source upstream container ownership changed')
+        nginx = folder/'nginx.conf'
+        original_nginx = next(item for item in capture['artifacts'] if item['name'] == 'nginx.conf')
+        require(api['file_sha'](nginx) == original_nginx['sha256'], 'Original source Nginx evidence changed')
+        return dict(source='prod', originalJobId=p['originalJobId'], releaseTag=p['releaseTag'], capture=capture,
+                    captureSha256=api['file_sha'](capture_path), captureIdentity=api['sha'](capture), nginx=nginx.read_bytes().decode('utf-8'),
+                    backendUpstreams=source_upstream_hosts(backend,frontend,profile['backend']),
+                    minioUpstreams=source_upstream_hosts(minio,frontend,profile['minio']))
+    if action == 'rehearsal-resume-tail':
+        return resume_rehearsal_tail(p, api, root(p['releaseTag']))
     if action == 'rehearsal-capture':
         job_id = p.get('jobId')
         require(isinstance(job_id,str) and re.fullmatch('JOB-[a-f0-9]{10}',job_id), 'Valid rehearsal job ID required')
@@ -669,6 +976,9 @@ def dispatch(p, api):
         source_check()
         backend = r.inspect(profile['backend'])
         minio = r.inspect(profile['minio'])
+        frontend = r.inspect(profile['frontend'])
+        upstreams = source_upstream_hosts(backend, frontend, profile['backend'])
+        minio_upstreams = source_upstream_hosts(minio, frontend, profile['minio'])
         before = api['observe'](profile)
         require(before['fingerprint'] == p['originFingerprint'], 'Source fingerprint changed before snapshot')
         historical = p['historicalMetadata']
@@ -765,8 +1075,6 @@ def dispatch(p, api):
         characteristics = r.sql(profile, 'SELECT @@lower_case_table_names,@@character_set_database,@@collation_database;').split('\t')
         require(len(characteristics) == 3 and characteristics[0] in ('0', '1', '2') and all(re.fullmatch('[A-Za-z0-9_]+', value) for value in characteristics[1:]), 'Unsupported source database characteristics')
         artifacts.append(file_record(startup_path))
-        upstreams = [profile['backend']] + [v['IPAddress'] for v in backend['NetworkSettings']['Networks'].values() if v.get('IPAddress')]
-        minio_upstreams = [profile['minio']] + [v['IPAddress'] for v in minio['NetworkSettings']['Networks'].values() if v.get('IPAddress')]
         result = {'originFingerprint': before['fingerprint'], 'origin': before, 'images': images, 'artifacts': artifacts,
                   'backendActiveProfiles': source_active_profiles(backend), 'minioUpstreams': minio_upstreams,
                   'databaseName': database_name, 'redisKeys': count, 'backendUpstreams': upstreams, 'mediaIdentity': media_identity, 'databaseCharacteristics': characteristics,
@@ -816,13 +1124,14 @@ def dispatch(p, api):
         with os.fdopen(fd, 'w') as output:
             output.write(startup['properties'].rstrip() + '\n')
             output.write('\n'.join(str(k) + '=' + str(v) for k, v in sorted(props.items())) + '\n')
-        def create(role, command, env=None, binds=None, ports=None, entrypoint=None, start=True):
+        def create(role, command, env=None, binds=None, entrypoint=None, start=True):
             name = profile[role]
             value = {'Image': capture['images'][role], 'Cmd': command, 'Env': env or [], 'Labels': {LABEL: PREFIX},
-                     'HostConfig': {'NetworkMode': profile['network'], 'Binds': binds or [], 'PortBindings': ports or {}, 'RestartPolicy': {'Name': 'no'}},
+                     'HostConfig': {'NetworkMode': profile['network'], 'Binds': binds or [], 'PortBindings': {}, 'RestartPolicy': {'Name': 'no'}},
                      'NetworkingConfig': {'EndpointsConfig': {profile['network']: {'Aliases': [name]}}}}
             if role == 'backend':
                 value['Entrypoint'] = entrypoint
+                value['WorkingDir'] = startup['workingDirectory']
             result = api['docker']('POST', '/containers/create?name=' + name, value)
             if start:
                 api['docker']('POST', '/containers/' + result['Id'] + '/start')
@@ -859,7 +1168,7 @@ def dispatch(p, api):
                     continue
                 command('RESTORE', base64.b64decode(item['key']), ttl, base64.b64decode(item['value']), 'REPLACE')
         connection.close()
-        create('minio', ['server', '/data'], ['MINIO_ROOT_USER=release-isolation', 'MINIO_ROOT_PASSWORD=' + passwords['minio']], [profile['minio'] + '-data:/data'], ports={'9000/tcp': [{'HostIp': '0.0.0.0', 'HostPort': '39082'}]}, start=False)
+        create('minio', ['server', '/data'], ['MINIO_ROOT_USER=release-isolation', 'MINIO_ROOT_PASSWORD=' + passwords['minio']], [profile['minio'] + '-data:/data'], start=False)
         # Stop MinIO while restoring its actual backend files; it never sees a partial data tree.
         with (folder / 'minio.tar').open('rb') as data:
             result = subprocess.run(['docker', 'cp', '-', profile['minio'] + ':/data'], stdin=data, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=14400)
@@ -907,14 +1216,13 @@ def dispatch(p, api):
         # Internal network prevents restored business config from reaching production services.
         # Historical baseline has no supported quiescent-start protocol. Its normal
         # process can reach only independently restored services on this internal net.
-        command = [arg for arg in profile['backendCommand'] if not arg.startswith('--spring.profiles.active=')]
-        command.extend(arg for arg in startup['arguments'] if arg[2:].split('=', 1)[0] not in props)
-        command.append('--spring.profiles.active=' + capture['backendActiveProfiles'])
-        create('backend', command, isolated_backend_environment(profile, p['sourceProfile'], passwords['minio']), [str(config) + ':/run/release/application.properties:ro'], entrypoint=profile['backendEntrypoint'])
+        command, environment = isolated_backend_startup(profile, startup, props, capture['backendActiveProfiles'], p['sourceProfile'], passwords['minio'])
+        api['private_json'](folder / 'isolated-startup-differences.json', startup['mountDifferences'])
+        create('backend', command, environment, [str(config) + ':/run/release/application.properties:ro'], entrypoint=profile['backendEntrypoint'])
         nginx = isolated_nginx_config((folder / 'nginx.conf').read_text(), urlsplit(p['sourceProfile']['entryUrl']).port or 80,
                                      capture['backendUpstreams'], profile['backend'], capture['minioUpstreams'], profile['minio'])
         (folder / 'nginx.conf').write_text(nginx)
-        create('frontend', None, binds=[str(folder / 'nginx.conf') + ':/etc/nginx/conf.d/default.conf:ro'], ports={'80/tcp': [{'HostIp': '0.0.0.0', 'HostPort': '38082'}]}, start=False)
+        create('frontend', None, binds=[str(folder / 'nginx.conf') + ':/etc/nginx/conf.d/default.conf:ro'], start=False)
         metadata_path = folder / 'historical-release-info.json'
         require(api['file_sha'](metadata_path) == capture['historicalMetadata']['contentSha256'], 'Historical metadata transfer differs')
         metadata_path.chmod(0o644)
@@ -924,25 +1232,16 @@ def dispatch(p, api):
         # Docker does not publish ports on an internal-only network. A dedicated
         # nginx ingress joins both networks; business containers stay internal.
         gateway = folder / 'gateway-nginx.conf'
-        servers = []
-        for port, upstream in ((38082, profile['frontend'] + ':80'),
-                               (38083, profile['acceptanceFrontend'] + ':80'),
-                               (39082, profile['minio'] + ':9000')):
-            servers.append('server { listen ' + str(port) + '; resolver 127.0.0.11 valid=5s; '
-                           'client_max_body_size 0; location / { set $upstream "' + upstream + '"; '
-                           'proxy_pass http://$upstream; proxy_set_header Host $http_host; '
-                           'proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; '
-                           'proxy_read_timeout 300s; } }')
-        gateway.write_text('\n'.join(servers))
+        ingress = rehearsal_gateway_ingress(profile)
+        gateway.write_text(ingress['nginx'])
         gateway.chmod(0o644)
         name = PREFIX + '-gateway'
         value = {'Image': capture['images']['frontend'], 'Entrypoint': ['nginx'], 'Cmd': ['-g', 'daemon off;'],
                  'Labels': {LABEL: PREFIX},
                  'HostConfig': {'NetworkMode': 'bridge', 'Binds': [str(gateway) + ':/etc/nginx/conf.d/default.conf:ro'],
                                 'Sysctls': {'net.ipv4.ip_forward': '0'},
-                                'PortBindings': {str(port) + '/tcp': [{'HostIp': '0.0.0.0', 'HostPort': str(port)}]
-                                                 for port in (38082, 38083, 39082)}},
-                 'ExposedPorts': {str(port) + '/tcp': {} for port in (38082, 38083, 39082)}}
+                                'PortBindings': ingress['portBindings']},
+                 'ExposedPorts': ingress['exposedPorts']}
         api['docker']('POST', '/containers/create?name=' + name, value)
         api['docker']('POST', '/networks/' + profile['network'] + '/connect', {'Container': name})
         api['docker']('POST', '/containers/' + name + '/start')

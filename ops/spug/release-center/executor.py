@@ -14,6 +14,7 @@ import threading
 import time
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from state_store import StateStore, process_lock
 
 
 def require(ok, message):
@@ -41,21 +42,15 @@ class Executor:
         self.local_http = urllib.request.build_opener(urllib.request.ProxyHandler({}))
         self.root = Path(config['stateDir']).resolve()
         self.root.mkdir(parents=True, exist_ok=True)
-        self.process_lock = open(self.root / 'executor.lock', 'a+b')
-        self.process_lock.seek(0)
-        self.process_lock.write(b'0')
-        self.process_lock.flush()
-        self.process_lock.seek(0)
-        if os.name == 'nt':
-            import msvcrt
-            msvcrt.locking(self.process_lock.fileno(), msvcrt.LK_NBLCK, 1)
-        else:
-            import fcntl
-            fcntl.flock(self.process_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        self.path = self.root / 'state.json'
+        self.process_lock = process_lock(self.root)
         self.lock = threading.RLock()
         self.worker = None
-        self.state = json.loads(self.path.read_text('utf-8')) if self.path.exists() else dict(packages=[], jobs=[], environments={})
+        try:
+            self.store = StateStore(self.root)
+            self.state = self.store.load()
+        except BaseException:
+            self.process_lock.close()
+            raise
         for job in self.state['jobs']:
             if job['status'] == 'running':
                 job.update(status='interrupted', finishedAt=stamp(), error='Service restarted; effects require investigation. Automatic retry refused.')
@@ -75,9 +70,16 @@ class Executor:
 
     def save(self):
         with self.lock:
-            temp = self.path.with_suffix('.new')
-            temp.write_text(json.dumps(self.state, ensure_ascii=False, indent=2), 'utf-8')
-            temp.replace(self.path)
+            self.ensure_persistence()
+            try:
+                self.store.save(self.state)
+            except Exception:
+                self.persistence_failed = True
+                raise
+
+    def ensure_persistence(self):
+        require(not getattr(self, 'persistence_failed', False),
+                'State persistence failed; service restart and investigation required, in-memory status is not authoritative')
 
     def run(self, args, data=None, cwd=None, timeout=900, env=None):
         result = subprocess.run(args, input=data, cwd=cwd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=timeout)
@@ -116,8 +118,15 @@ class Executor:
                 record[kind] = value
         self.save()
 
+    def technical_verification_enabled(self):
+        return False
+
+    def failed_task_blocks(self, failed, action, payload, package):
+        return failed['status'] == 'failed' and not failed.get('resolution') and failed.get('releaseTag') == package['releaseTag']
+
     def snapshot(self):
         with self.lock:
+            self.ensure_persistence()
             return json.loads(json.dumps(dict(self.state, application=dict(id=self.c['applicationId'], name=self.c['displayName'], repo=self.c['repo'], ports=self.c['ports']))))
 
     def commits(self):
@@ -142,6 +151,7 @@ class Executor:
         return p, manifest
 
     def submit(self, action, payload, actor):
+        self.ensure_persistence()
         with self.lock:
             remote_runtime = self.c.get('runtimeKind') == 'remote-intruoyi'
             allowed = {'build-release', 'initialize-baseline', 'publish-test', 'function-passed', 'prepare-rehearsal', 'upgrade-rehearsal', 'mark-tested', 'promote-prod', 'accept-prod', 'promote-backup', 'accept-backup', 'reject-acceptance', 'reset-rehearsal', 'audit-baseline', 'resolve-task'}
@@ -162,11 +172,16 @@ class Executor:
                 # Full archive validation runs in execute before any side effect.
                 # Do not hold the HTTP/state lock while hashing gigabyte images.
                 p, _ = self.manifest(tag)
-                require(action in ('reset-rehearsal', 'audit-baseline', 'prepare-rehearsal') or not any(j['status'] == 'failed' and not j.get('resolution') and j.get('releaseTag') == tag for j in self.state['jobs']), 'Failed task requires investigation; blind retry refused')
+                require(action in ('reset-rehearsal', 'audit-baseline', 'prepare-rehearsal') or not any(self.failed_task_blocks(j, action, payload, p) for j in self.state['jobs']), 'Failed task requires investigation; blind retry refused')
                 gates = {'initialize-baseline': None, 'publish-test': 'built', 'function-passed': 'test-deployed', 'prepare-rehearsal': None, 'upgrade-rehearsal': None, 'mark-tested': None, 'promote-prod': 'tested', 'accept-prod': 'prod-deployed', 'promote-backup': 'prod-accepted', 'accept-backup': 'backup-deployed', 'reject-acceptance': None, 'reset-rehearsal': None, 'audit-baseline': None}
                 if remote_runtime:
                     gates.update({'mark-tested': 'test-deployed', 'accept-rehearsal': 'rehearsal-upgraded', 'promote-prod': 'rehearsal-passed'})
-                require(gates[action] is None or p['stage'] == gates[action], 'Workflow prerequisite not met')
+                technical_actions = {'mark-tested':('test-deployed','tested'), 'accept-rehearsal':('rehearsal-upgraded','rehearsal-passed'),
+                                     'accept-prod':('prod-deployed','prod-accepted'), 'accept-backup':('backup-deployed','completed')}
+                if self.technical_verification_enabled() and action in technical_actions:
+                    require(p['stage'] in technical_actions[action], 'Workflow prerequisite not met')
+                else:
+                    require(gates[action] is None or p['stage'] == gates[action], 'Workflow prerequisite not met')
                 require(not p['baseline'] or action in ('initialize-baseline', 'reset-rehearsal', 'audit-baseline'), 'Initial baseline cannot be promoted as a candidate')
                 require(not p.get('abandoned') or action in ('audit-baseline', 'reset-rehearsal'), 'Candidate was explicitly abandoned; build a new package')
                 if action == 'prepare-rehearsal':
@@ -179,14 +194,15 @@ class Executor:
                     require(p['stage'] in stages[source], 'Source rehearsal prerequisite not met')
                     require(not p.get('activeRehearsal') or self.active_rehearsal(p)['status'] == 'passed', 'Finish or explicitly reset the pending rehearsal first')
                 if action in ('upgrade-rehearsal', 'accept-rehearsal') or (action == 'mark-tested' and not remote_runtime):
-                    require(self.active_rehearsal(p)['status'] == ('ready' if action == 'upgrade-rehearsal' else 'upgraded'), 'Rehearsal prerequisite not met')
+                    statuses = ('upgraded','passed') if self.technical_verification_enabled() and action == 'accept-rehearsal' else (('ready',) if action == 'upgrade-rehearsal' else ('upgraded',))
+                    require(self.active_rehearsal(p)['status'] in statuses, 'Rehearsal prerequisite not met')
                 if action == 'reset-rehearsal':
                     require('rehearsal' in self.state['environments'], 'No registered rehearsal exists')
                     require(not any(x.get('activeRehearsal') and self.active_rehearsal(x)['status'] != 'passed' and x['releaseTag'] != tag for x in self.state['packages']), 'Another release owns a pending rehearsal')
                 if action == 'reject-acceptance':
                     require(p['stage'] in ('test-deployed', 'rehearsal-upgraded', 'prod-deployed', 'backup-deployed') or
                             (p.get('activeRehearsal') and self.active_rehearsal(p)['status'] == 'upgraded'), 'No pending acceptance to reject')
-                if action in ('function-passed', 'mark-tested', 'accept-rehearsal', 'accept-prod', 'accept-backup', 'reject-acceptance', 'audit-baseline'):
+                if action in ('function-passed', 'mark-tested', 'accept-rehearsal', 'accept-prod', 'accept-backup', 'reject-acceptance', 'audit-baseline') and not (self.technical_verification_enabled() and action in technical_actions):
                     require(isinstance(payload.get('note'), str) and len(payload['note'].strip()) >= 5, 'Acceptance note must describe real business verification')
             if action == 'resolve-task':
                 require(payload.get('decision') in ('retry', 'abandon'), 'Explicit retry or abandon decision required')
@@ -262,12 +278,18 @@ class Executor:
                         p['stage'] = stage
                     extra = {'rehearsalId': job['rehearsalId']} if remote_runtime and env == 'prod' else {}
                     self.outcome(p, env, 'deployment', 'succeeded', job, **extra)
+                    if self.technical_verification_enabled():
+                        self.verify_technical(env, p, manifest, job)
                 elif action == 'prepare-rehearsal':
                     env = 'rehearsal'
                     self.prepare(p, job)
                     self.outcome(p, env, 'preparation', 'succeeded', job)
                     if self.active_rehearsal(p)['source'] == 'prod':
                         p['stage'] = 'rehearsal-ready'
+                elif self.technical_verification_enabled() and action in ('mark-tested','accept-rehearsal','accept-prod','accept-backup'):
+                    env = {'mark-tested':'test','accept-rehearsal':'rehearsal','accept-prod':'prod','accept-backup':'backup'}[action]
+                    job['target'] = env
+                    self.verify_technical(env, p, manifest, job)
                 else:
                     stage = {'function-passed': 'function-passed', 'mark-tested': 'tested', 'accept-rehearsal': 'rehearsal-passed', 'accept-prod': 'prod-accepted', 'accept-backup': 'completed'}[action]
                     env = {'function-passed': 'test', 'mark-tested': 'test' if remote_runtime else 'rehearsal', 'accept-rehearsal': 'rehearsal', 'accept-prod': 'prod', 'accept-backup': 'backup'}[action]
@@ -299,7 +321,7 @@ class Executor:
             self.log(job, 'Succeeded; all required checks passed')
         except Exception as exc:
             job.update(status='interrupted' if getattr(exc,'remoteStatusUnknown',False) else 'failed', error=str(exc).replace(self.password, '[REDACTED]'))
-            if p and env and job['action'] != 'reject-acceptance':
+            if p and env and job['action'] != 'reject-acceptance' and not job.get('technicalVerification'):
                 kind = 'preparation' if job['action'] == 'prepare-rehearsal' else ('acceptance' if job['action'].startswith('accept-') or job['action'] in ('mark-tested', 'function-passed') else 'deployment')
                 self.outcome(p, env, kind, job['status'], job, error=job['error'])
             self.log(job, 'Stopped: ' + job['error'])

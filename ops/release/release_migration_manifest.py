@@ -186,6 +186,10 @@ def build_migration_manifest(
             }
         )
 
+    from ops.release.release_source_catalog import apply_migration_scopes, apply_migration_dependencies, apply_migration_contracts
+    apply_migration_scopes(root, entries)
+    apply_migration_dependencies(root, entries)
+    apply_migration_contracts(root, entries)
     known_ids = {entry["migrationId"] for entry in entries}
     for entry in entries:
         for dependency in entry["dependsOn"]:

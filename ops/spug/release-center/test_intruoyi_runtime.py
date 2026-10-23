@@ -1,3 +1,4 @@
+from state_store import StateStore, migrate
 """Pure migration identity policy tests; no DB/SSH success is simulated."""
 import copy
 import json
@@ -267,9 +268,10 @@ class InterruptedRuntimeTest(unittest.TestCase):
                 'acceptance': dict(jobId='prior', status='passed')}})], environments={})
             path = Path(folder) / 'state.json'
             path.write_text(json.dumps(state), encoding='utf-8')
+            migrate(folder)
             executor = Executor(dict(stateDir=folder, applicationId='test-app', mysqlImage='mysql:8.0.39'))
             try:
-                saved = json.loads(path.read_text('utf-8'))
+                saved = StateStore(folder).load()
                 self.assertEqual(saved['jobs'][0]['status'], 'interrupted')
                 self.assertTrue(saved['jobs'][0]['effectsStarted'])
                 self.assertEqual(saved['jobs'][1], old)

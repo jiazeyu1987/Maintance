@@ -15,6 +15,14 @@ class SourceCatalogError(ValueError):
     pass
 
 
+ROUTE_IDENTITY_ENFORCE = '20260812_mes_route_version_snapshot_identity_enforce'
+LEGACY_SUMMARY_ENFORCE = '20261023_mes_route_snapshot_legacy_summary_enforce'
+REVIEWED_MIGRATION_HOOKS = {
+    ROUTE_IDENTITY_ENFORCE+'.sql': 'route-snapshot-identity-v1',
+    LEGACY_SUMMARY_ENFORCE+'.sql': 'route-snapshot-identity-v2',
+}
+
+
 def migration_contracts(sql_root: Path, catalog: dict | None = None) -> list[dict]:
     """Bind reviewed runtime handlers to immutable SQL without editing old headers."""
     if catalog is None:
@@ -34,7 +42,9 @@ def migration_contracts(sql_root: Path, catalog: dict | None = None) -> list[dic
         name = entry.get('file')
         if name not in sources or name in seen:
             raise SourceCatalogError('Unknown/duplicate migration contract: '+str(name))
-        if set(entry) != {'file', 'sha256', 'approvedHook', 'reason'} or entry['approvedHook'] != 'route-snapshot-identity-v1' or name != '20260812_mes_route_version_snapshot_identity_enforce.sql':
+        if (set(entry) != {'file', 'sha256', 'approvedHook', 'reason'}
+                or name not in REVIEWED_MIGRATION_HOOKS
+                or entry['approvedHook'] != REVIEWED_MIGRATION_HOOKS[name]):
             raise SourceCatalogError('Unreviewed migration handler contract: '+str(name))
         if not isinstance(entry['reason'], str) or len(entry['reason'].strip()) < 10:
             raise SourceCatalogError('Migration contract reason required: '+name)
@@ -53,6 +63,16 @@ def apply_migration_contracts(sql_root: Path, migrations: list[dict]) -> None:
         existing = by_id[identity].get('approvedHook')
         if existing and existing != contract['approvedHook']:
             raise SourceCatalogError('Catalog cannot replace a declared hook: '+identity)
+        if identity == LEGACY_SUMMARY_ENFORCE:
+            successor = by_id[identity]
+            required = {'20260812_mes_route_version_snapshot_identity',
+                        '20260718_controlled_content_lifecycle'}
+            if (ROUTE_IDENTITY_ENFORCE not in by_id or successor.get('type') != 'schema'
+                    or successor.get('requiresTargetPreflight') is not True
+                    or successor.get('applyOrder') != 10
+                    or successor.get('supersedes') != [ROUTE_IDENTITY_ENFORCE]
+                    or not required.issubset(successor.get('dependsOn', []))):
+                raise SourceCatalogError('Legacy summary hook requires its explicit immutable predecessor and prerequisites')
         by_id[identity]['approvedHook'] = contract['approvedHook']
 
 

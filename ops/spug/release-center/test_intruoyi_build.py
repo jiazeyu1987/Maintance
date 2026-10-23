@@ -83,6 +83,7 @@ class BuildRegistrationTests(unittest.TestCase):
         self.repo = Path(__file__).resolve().parents[3]
         self.commit = subprocess.check_output(['git', '-C', str(self.repo), 'rev-parse', 'HEAD']).decode().strip()
         self.config = {'repo': str(self.repo), 'rehearsalStagingRoots': {'prod':'/rehearsal/prod'},
+                       'buildWorktreeRoot': str(self.repo), 'localBuildSpaceBytes': dict(worktree=1, package=1, state=1),
                        'targets': {'rehearsal': {'host':'isolated', 'stagingRoot':'/rehearsal'},
                                    'test': {'host':'test', 'stagingRoot':'/release'},
                                    'prod': {'host':'prod', 'stagingRoot':'/release'},
@@ -95,7 +96,7 @@ class BuildRegistrationTests(unittest.TestCase):
             steps.append(name)
             if name == 'authenticate-package-storage':
                 raise InterruptedError('registration passed; no build attempted')
-        executor = SimpleNamespace(c=self.config, state={'environments':self.environments},
+        executor = SimpleNamespace(c=self.config, root=self.repo, save=lambda:None, state={'environments':self.environments},
                                    run=subprocess.check_output, step=stop_before_effects)
         build(executor, {'payload':{'commit':self.commit}})
 
@@ -106,6 +107,11 @@ class BuildRegistrationTests(unittest.TestCase):
     def test_missing_production_rehearsal_still_blocks_before_storage(self):
         self.config['rehearsalStagingRoots'] = {'test':'/rehearsal/test', 'backup':'/rehearsal/backup'}
         with self.assertRaises(RuntimeBlocked):
+            self.run_preamble()
+
+    def test_insufficient_local_storage_stops_before_nas_or_build(self):
+        self.config['localBuildSpaceBytes']['worktree'] = 2**63
+        with self.assertRaisesRegex(ValueError, 'Local build storage insufficient'):
             self.run_preamble()
 
     def test_each_real_target_baseline_remains_required(self):

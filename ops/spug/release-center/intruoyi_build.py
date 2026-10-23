@@ -24,6 +24,32 @@ from ops.release.release_target_preflight_contract import validate
 from ops.release.release_preflight_plan import _order_migrations_by_dependencies, build_preflight_plan
 
 
+def check_local_space(executor, phase='build'):
+    """Explicit simultaneous budgets, summed when paths share a filesystem."""
+    budgets = executor.c.get('localBuildSpaceBytes')
+    require(isinstance(budgets, dict) and set(budgets) == {'worktree', 'package', 'state'}
+            and all(type(v) is int and v > 0 for v in budgets.values()),
+            'Explicit positive localBuildSpaceBytes for worktree/package/state required')
+    require(phase in ('build', 'export'), 'Unknown build space phase')
+    paths = dict(worktree=Path(executor.c['buildWorktreeRoot']), package=executor.root/'packages', state=executor.root)
+    groups = {}
+    for key in ('worktree', 'package', 'state') if phase == 'build' else ('package', 'state'):
+        path = paths[key].resolve()
+        while not path.exists():
+            require(path.parent != path, 'Build storage volume is unavailable: '+str(path))
+            path = path.parent
+        device = path.stat().st_dev
+        group = groups.setdefault(device, dict(path=str(path), requiredBytes=0, purposes=[]))
+        group['requiredBytes'] += budgets[key]
+        group['purposes'].append(key)
+    for group in groups.values():
+        group['freeBytes'] = shutil.disk_usage(group['path']).free
+        require(group['freeBytes'] >= group['requiredBytes'],
+                'Local build storage insufficient for '+','.join(group['purposes'])+': '+group['path']+
+                '; required='+str(group['requiredBytes'])+', free='+str(group['freeBytes']))
+    return list(groups.values())
+
+
 def frontend_dependency_store(executor, frontend):
     """Use a local content store; prove hardlinks before pnpm touches dependencies.
 
@@ -245,6 +271,9 @@ def build(executor, job):
             'Register the real three-server baselines before building')
     executor.step(job, 'check-rehearsal-registration')
     rehearsal_profile(c, 'prod')
+    executor.step(job, 'check-local-build-storage')
+    job['localBuildStorage'] = check_local_space(executor)
+    executor.save()
     executor.step(job, 'authenticate-package-storage')
     connect_nas(c.get('nasPath', ''), c.get('nasCredentialsFile'))
     tag = stamp()
@@ -329,6 +358,8 @@ def build(executor, job):
         finally:
             executor.run(['docker', 'rm', container])
     executor.step(job, 'export-original-package')
+    job['localExportStorage'] = check_local_space(executor, 'export')
+    executor.save()
     executor.run(['docker', 'save', '-o', str(folder/'images.tar'), images['backend']['name'], images['frontend']['name']], timeout=1800)
     archive_image_identities(folder/'images.tar', images)
     files = [dict(name=path.relative_to(folder).as_posix(), sha256=digest(path))

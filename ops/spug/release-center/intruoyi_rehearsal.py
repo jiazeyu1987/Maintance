@@ -148,3 +148,22 @@ def reset(runtime, callback):
     runtime.call('rehearsal', 'rehearsal-reset-check')
     callback('remove-only-labelled-rehearsal-resources-before-side-effects', effects=True)
     return runtime.call('rehearsal', 'rehearsal-reset')
+
+
+def resume_tail(runtime, source, manifest, original_job_id, retry_job_id, package_sha256,
+                manifest_sha256, expected_origin_fingerprint, callback):
+    require(source == 'prod', 'Only the production baseline rehearsal tail may resume')
+    require(runtime.profile('rehearsal').get('sourceEnvironment') == source, 'Registered rehearsal source differs')
+    callback('verify-existing-rehearsal-capture-and-source')
+    proof = runtime.call(source, 'rehearsal-tail-source-proof', releaseTag=manifest['releaseTag'],
+                         originalJobId=original_job_id, expectedOriginFingerprint=expected_origin_fingerprint)
+    require(proof['capture']['originFingerprint'] == expected_origin_fingerprint, 'Original rehearsal source fingerprint differs')
+    audit_ledger(proof['capture']['origin'], manifest)
+    callback('resume-existing-rehearsal-frontend-tail', effects=True)
+    result = runtime.call('rehearsal', 'rehearsal-resume-tail', releaseTag=manifest['releaseTag'],
+                          originalJobId=original_job_id, retryJobId=retry_job_id,
+                          packageSha256=package_sha256, manifestSha256=manifest_sha256,
+                          sourceProof=proof, sourceProfile=runtime.profile(source))
+    require(runtime.observe(source)['fingerprint'] == expected_origin_fingerprint, 'Source changed during isolated tail recovery')
+    audit_ledger(result, manifest)
+    return result

@@ -51,6 +51,7 @@ param(
     [string]$WebsiteRepo = $env:INT_RUOYI_WEBSITE_REPO,
     [string]$BackendRepoRoot = $env:INT_RUOYI_BACKEND_REPO,
     [string]$FrontendRepoRoot = $env:INT_RUOYI_FRONTEND_REPO,
+    [string]$ReleaseSqlSourceCatalog = '',
     [string]$ExpectedMaintenanceCommit = $env:INT_RUOYI_EXPECTED_MAINTENANCE_COMMIT,
     [string]$ExpectedApplicationCommit = $env:INT_RUOYI_EXPECTED_APPLICATION_COMMIT,
     [string]$ExpectedFrontendCommit = $env:INT_RUOYI_EXPECTED_FRONTEND_COMMIT,
@@ -3930,6 +3931,9 @@ function Test-ReleaseRollbackMigrationMetadata {
     )
 }
 
+$script:ReleaseSqlMigrationScopes = @()
+$script:ReleaseSqlMigrationDependencies = @()
+$script:ReleaseSqlMigrationContracts = @()
 function Read-ReleaseMigrationMetadata {
     param(
         [Parameter(Mandatory = $true)]
@@ -3957,6 +3961,7 @@ function Read-ReleaseMigrationMetadata {
         requiresTargetPreflight = $false
         supersedes = @()
         allowedPublishScopes = @()
+        scopeReason = ''
         applyOrder = $null
         sessionProfile = ''
         approvedHook = ''
@@ -4052,6 +4057,36 @@ function Read-ReleaseMigrationMetadata {
             }
         }
     }
+    $scopeMatches = @($script:ReleaseSqlMigrationScopes | Where-Object { [string]$_.file -ceq [System.IO.Path]::GetFileName($SqlPath) })
+    if ($scopeMatches.Count -gt 1) { Fail "Duplicate catalog migration scope: $SqlPath" }
+    if ($scopeMatches.Count -eq 1) {
+        $scope = $scopeMatches[0]
+        if ((Get-FileHash -LiteralPath $SqlPath -Algorithm SHA256).Hash.ToLowerInvariant() -cne [string]$scope.sha256) {
+            Fail "Scoped immutable migration changed: $SqlPath"
+        }
+        if (@($metadata.allowedPublishScopes).Count -gt 0 -and 'with-data' -notin @($metadata.allowedPublishScopes)) {
+            Fail "Catalog cannot widen declared migration scope: $SqlPath"
+        }
+        $metadata.allowedPublishScopes = @($scope.allowedPublishScopes)
+        $metadata.scopeReason = [string]$scope.reason
+    }
+    $dependencyMatches = @($script:ReleaseSqlMigrationDependencies | Where-Object { [string]$_.file -ceq [System.IO.Path]::GetFileName($SqlPath) })
+    if ($dependencyMatches.Count -gt 1) { Fail "Duplicate catalog dependency migration: $SqlPath" }
+    if ($dependencyMatches.Count -eq 1) {
+        $dependency = $dependencyMatches[0]
+        if ((Get-FileHash -LiteralPath $SqlPath -Algorithm SHA256).Hash.ToLowerInvariant() -cne [string]$dependency.sha256) {
+            Fail "Dependency migration changed: $SqlPath"
+        }
+        $metadata.dependsOn = @(@($metadata.dependsOn) + @($dependency.dependsOn) | Select-Object -Unique)
+    }
+    $contractMatches = @($script:ReleaseSqlMigrationContracts | Where-Object { [string]$_.file -ceq [System.IO.Path]::GetFileName($SqlPath) })
+    if ($contractMatches.Count -gt 1) { Fail "Duplicate catalog migration contract: $SqlPath" }
+    if ($contractMatches.Count -eq 1) {
+        $contract = $contractMatches[0]
+        if ((Get-FileHash -LiteralPath $SqlPath -Algorithm SHA256).Hash.ToLowerInvariant() -cne [string]$contract.sha256) { Fail "Contract SQL checksum changed: $SqlPath" }
+        if ($metadata.approvedHook -and $metadata.approvedHook -cne [string]$contract.approvedHook) { Fail "Catalog cannot replace a declared hook: $SqlPath" }
+        $metadata.approvedHook = [string]$contract.approvedHook
+    }
     return $metadata
 }
 
@@ -4095,6 +4130,7 @@ function New-ReleaseRequiredSqlManifestEntries {
             targetPreflight = $targetPreflight
             supersedes = @($metadata.supersedes)
             allowedPublishScopes = @($metadata.allowedPublishScopes)
+            scopeReason = [string]$metadata.scopeReason
             applyOrder = $metadata.applyOrder
             sessionProfile = [string]$metadata.sessionProfile
             approvedHook = [string]$metadata.approvedHook
@@ -4182,6 +4218,7 @@ function New-ReleaseMigrationPlanEntries {
             targetPreflight = $requiredSql.targetPreflight
             supersedes = @($requiredSql.supersedes)
             allowedPublishScopes = @($requiredSql.allowedPublishScopes)
+            scopeReason = [string]$requiredSql.scopeReason
             applyOrder = $requiredSql.applyOrder
             sessionProfile = [string]$requiredSql.sessionProfile
             approvedHook = [string]$requiredSql.approvedHook
@@ -4961,6 +4998,10 @@ function Write-AuthoritativeReleaseManifest {
         }
         manifestChecksum = 'sha256:0000000000000000000000000000000000000000000000000000000000000000'
     }
+    if (-not [string]::IsNullOrWhiteSpace($ReleaseSqlSourceCatalog)) {
+        $manifestV1.database['sourceReferences'] = @($script:ReleaseSqlSourceReferences)
+        $manifestV1.database['sourceCatalogSha256'] = ConvertTo-ReleaseFileSha256Digest -Path $ReleaseSqlSourceCatalog
+    }
     $manifestWithoutChecksum = $manifestV1 | ConvertTo-Json -Depth 20 -Compress
     $manifestV1.manifestChecksum = ConvertTo-ReleaseStringSha256Digest -Value $manifestWithoutChecksum
     $manifestJson = (($manifestV1 | ConvertTo-Json -Depth 20) -replace "`r`n", "`n").TrimEnd("`r", "`n") + "`n"
@@ -5107,11 +5148,37 @@ function Get-ReleaseDatabaseSqlSortKey {
 }
 
 function Get-ReleaseDatabaseSqlRoots {
+    $selectedMysqlFiles = @()
+    $expectedCatalog = Join-Path $backendRepo 'sql\mysql\release-sources.json'
+    if ([string]::IsNullOrWhiteSpace($ReleaseSqlSourceCatalog) -and (Test-Path -LiteralPath $expectedCatalog -PathType Leaf)) {
+        $script:ReleaseSqlSourceCatalog = $expectedCatalog
+    }
+    if (-not [string]::IsNullOrWhiteSpace($ReleaseSqlSourceCatalog)) {
+        if ([System.IO.Path]::GetFullPath($ReleaseSqlSourceCatalog) -cne [System.IO.Path]::GetFullPath($expectedCatalog)) {
+            Fail 'Release SQL source catalog must belong to the pinned backend source.'
+        }
+        $catalogRunner = Join-Path $maintenanceReleaseScriptRoot 'release_source_catalog.py'
+        $result = Invoke-ProcessCapture -FilePath 'python' -ArgumentList @('-X', 'utf8', $catalogRunner, '--sql-root', (Join-Path $backendRepo 'sql\mysql')) -WorkingDirectory $backendRepo
+        if ($result.ExitCode -ne 0) { Fail 'Release SQL source catalog validation failed.' }
+        $selection = ([string]$result.StdOut) | ConvertFrom-Json -ErrorAction Stop
+        $selectedMysqlFiles = @($selection.files)
+        if ($selectedMysqlFiles.Count -eq 0) { Fail 'Release SQL source catalog selected no migrations.' }
+        $script:ReleaseSqlSourceReferences = @($selection.sourceReferences)
+        $script:ReleaseSqlMigrationScopes = @($selection.migrationScopes)
+        $script:ReleaseSqlMigrationDependencies = @($selection.migrationDependencies)
+        $script:ReleaseSqlMigrationContracts = @($selection.migrationContracts)
+        return @([ordered]@{
+            RelativePath = 'sql/mysql'
+            Root = Join-Path $backendRepo 'sql\mysql'
+            IncludeFiles = $selectedMysqlFiles
+            Environments = @('test', 'prod', 'backup')
+        })
+    }
     return @(
         [ordered]@{
             RelativePath = 'sql/mysql'
             Root = Join-Path $backendRepo 'sql\mysql'
-            IncludeFiles = @()
+            IncludeFiles = $selectedMysqlFiles
             Environments = @('test', 'prod', 'backup')
         },
         [ordered]@{
@@ -5169,7 +5236,7 @@ function Get-ReleaseDatabaseSqlScripts {
                 continue
             }
             $entries += @{
-                Path = ($relativeRoot + '/' + $file.Name)
+                Path = ($relativeRoot + '/' + $file.FullName.Substring(([System.IO.Path]::GetFullPath($sqlRoot)).TrimEnd([char[]]'\/').Length).TrimStart([char[]]'\/').Replace('\', '/'))
                 Environments = @($metadata.allowedEnvironments)
             }
         }
@@ -6049,6 +6116,13 @@ function Read-ReleasePreflightPlan {
         }
         if ($action -notin @('APPLY', 'SKIP_ALREADY_APPLIED', 'SKIP_ENV_NOT_ALLOWED', 'SKIP_SCOPE_EXCLUDED', 'SKIP_IMMUTABLE')) {
             Fail "preflight-plan.json contains unsupported migration action: $($item.migrationId) -> $action"
+        }
+        if ($action -in @('APPLY', 'SKIP_ALREADY_APPLIED') -and
+            [string]$item.migrationId -in @('20260812_mes_route_version_snapshot_identity_enforce', '20261023_mes_route_snapshot_legacy_summary_enforce')) {
+            Fail 'Offline route snapshot enforcement and terminal readiness require the reviewed Spug candidate-only CLI executor; this PowerShell executor cannot run the package.'
+        }
+        if ($action -eq 'APPLY' -and [string]$item.migrationId -eq '20260829_mes_old_form_template_binding_switch') {
+            Fail 'Known legacy conversion requires the reviewed Spug execution-time zero-scope gate; this PowerShell executor cannot run the package.'
         }
     }
     return $plan
@@ -7526,6 +7600,9 @@ function Invoke-RouteSnapshotIdentityBackfillBeforeEnforcement {
     )
 
     $approvedHook = [string]$Item.approvedHook
+    if ($approvedHook -in @('route-snapshot-identity-v1', 'route-snapshot-identity-v2')) {
+        Fail "Offline route snapshot identity hook $approvedHook requires the reviewed Spug candidate-only CLI executor; the legacy Spring hook is not equivalent."
+    }
     if ($approvedHook -ne 'route-snapshot-identity') {
         return
     }

@@ -7,7 +7,7 @@ import threading
 
 from executor import Executor, main, require, stamp
 from intruoyi_build import build, target_input_plan
-from intruoyi_runtime import Runtime, audit_ledger, rehearsal_profile
+from intruoyi_runtime import Runtime, audit_ledger, package_identity, rehearsal_profile
 from intruoyi_rehearsal import active_remote_progress
 from intruoyi_metadata import restore as restore_metadata, reference as metadata_reference, remote as metadata_remote
 
@@ -72,6 +72,169 @@ def backup_rehearsal_schema(package, observation):
 
 
 class IntRuoyiExecutor(Executor):
+    TECHNICAL_ACTIONS = {'mark-tested':'test','accept-rehearsal':'rehearsal','accept-prod':'prod','accept-backup':'backup'}
+
+    def technical_verification_enabled(self):
+        return True
+
+    def technical_passed(self, package, env, job_id=None):
+        records = [package.get('outcomes', {}).get(env, {}).get('technical', {})]
+        if job_id is not None:
+            records = package.get('technicalHistory', []) + records
+        for record in records:
+            owner = next((j for j in self.state['jobs'] if j['id'] == record.get('jobId')), None)
+            if (record.get('env') == env and record.get('status') == 'passed'
+                    and record.get('releaseTag') == package['releaseTag'] and record.get('packageSha256') == package['packageSha256']
+                    and (job_id is None or record.get('jobId') == job_id)
+                    and all(record.get('checks', {}).get(key, {}).get('status') == 'passed' for key in ('version','upgrade','login'))
+                    and owner and owner['status'] == 'succeeded' and owner.get('releaseTag') == package['releaseTag']
+                    and owner.get('target') == env):
+                return True
+        return False
+
+    def technical_retryable(self, original, package, env):
+        if original.get('status') != 'failed' or original.get('releaseTag') != package['releaseTag'] or original.get('resolution'):
+            return False
+        if original.get('action') == 'reject-acceptance' and not original.get('effectsStarted'):
+            rows = [row for row in package.get('acceptances', []) if row.get('jobId') == original['id']]
+            return len(rows) == 1 and rows[0].get('env') == env and original.get('target') == env
+        proof = original.get('technicalVerification', {})
+        return (proof.get('env') == env and proof.get('jobId') == original['id']
+                and proof.get('releaseTag') == package['releaseTag'] and proof.get('packageSha256') == package['packageSha256']
+                and proof.get('status') == 'failed'
+                and package.get('outcomes', {}).get(env, {}).get('deployment', {}).get('status') == 'succeeded')
+
+    def failed_task_blocks(self, failed, action, payload, package):
+        if not super().failed_task_blocks(failed, action, payload, package):
+            return False
+        reconciled = failed.get('reconciledBy')
+        if reconciled and self.technical_passed(package, failed.get('target'), reconciled):
+            return False
+        env = self.TECHNICAL_ACTIONS.get(action)
+        return not (env and self.technical_retryable(failed, package, env))
+
+    def verified_origin(self, package, fingerprint):
+        return any(record.get('status') == 'passed' and record.get('source') == 'prod'
+                   and record.get('originFingerprint') == fingerprint and record.get('packageSha256') == package['packageSha256']
+                   and self.technical_passed(package, 'rehearsal', record.get('technical', {}).get('jobId'))
+                   and record.get('technical', {}).get('status') == 'passed' for record in package.get('rehearsals', []))
+
+    def verify_technical(self, env, package, manifest, job):
+        binding = dict(jobId=job['id'], env=env, releaseTag=package['releaseTag'], packageSha256=package['packageSha256'])
+        technical = dict(binding, status='running', phase='version', time=stamp(),
+                         checks={name:{'status':'pending'} for name in ('version','upgrade','login')})
+        package.setdefault('technicalHistory', []).append(technical)
+        package.setdefault('outcomes', {}).setdefault(env, {})['technical'] = technical
+        job['technicalVerification'] = technical
+        if env == 'rehearsal':
+            self.active_rehearsal(package)['technical'] = technical
+        self.save()
+        try:
+            self.step(job, 'technical-version')
+            technical['checks']['version']['status'] = 'running'
+            self.save()
+            verified_package, verified_manifest = self.package(package['releaseTag'])
+            require(verified_package['packageSha256'] == binding['packageSha256'] and verified_manifest == manifest,
+                    'Technical verification package binding changed')
+            require(package.get('outcomes', {}).get(env, {}).get('deployment', {}).get('status') == 'succeeded',
+                    'A confirmed deployment is required before technical verification')
+            observation = self.runtime.observe(env)
+            expected_images = {role:manifest['images'][role]['id'] for role in ('backend','frontend')}
+            require(observation.get('releaseTag') == package['releaseTag'] and observation.get('images') == expected_images,
+                    'Actual version or frontend/backend image differs from immutable package')
+            technical['checks']['version'] = dict(status='passed', releaseTag=observation['releaseTag'], images=expected_images)
+            technical['phase'] = 'upgrade'
+            technical['checks']['upgrade']['status'] = 'running'
+            self.step(job, 'technical-upgrade')
+            audit = self.audit_target(env, package, manifest)
+            current = audit['observation']
+            require(current.get('releaseTag') == package['releaseTag'] and current.get('images') == expected_images,
+                    'Candidate changed during technical verification')
+            validate_origin(current)
+            require(current.get('readOnly') == dict(read_only=False, super_read_only=False), 'Target write protection prevents technical acceptance')
+            health = self.health(env, package['releaseTag'])
+            plan_env = self.active_rehearsal(package)['source'] if env == 'rehearsal' else env
+            plan = target_input_plan(manifest['migrations'], current['ledgerRecords'], plan_env)
+            require(plan.get('status') == 'passed' and not any(item['action'] == 'APPLY' for item in plan['items']),
+                    'Candidate still has unapplied required migrations')
+            audit_ledger(current, manifest)
+            if env == 'prod':
+                deployed = package['outcomes']['prod']['deployment']
+                rehearsals = [r for r in package.get('rehearsals', []) if r.get('id') == deployed.get('rehearsalId')
+                              and r.get('source') == 'prod' and r.get('status') == 'passed'
+                              and r.get('packageSha256') == package['packageSha256']
+                              and r.get('technical', {}).get('status') == 'passed'
+                              and self.technical_passed(package,'rehearsal',r.get('technical',{}).get('jobId'))]
+                require(len(rehearsals) == 1 and current['schemaSha256'] == rehearsals[0]['upgradedSchemaSha256'],
+                        'Production technical acceptance requires its bound successful rehearsal')
+            elif env == 'backup':
+                rehearsal = validated_production_rehearsal(package)
+                require(self.technical_passed(package,'prod') and current['schemaSha256'] == rehearsal['upgradedSchemaSha256'],
+                        'Backup technical acceptance requires the same accepted production package/schema')
+            technical['checks']['upgrade'] = dict(status='passed', schemaSha256=current['schemaSha256'],
+                ledgerSha256=current['ledgerSha256'], migrationCount=len(plan['items']), remainingApplyCount=0,
+                backendHealth=current['backendHealth'], frontendHttpStatus=current['frontendHttpStatus'], health=health)
+            technical['phase'] = 'login'
+            technical['checks']['login']['status'] = 'running'
+            self.step(job, 'technical-login')
+            from intruoyi_login import verify_login
+            profile = self.runtime.profile(env)
+            target_url = profile['acceptanceUrl'] if current.get('maintenance') is True else profile['entryUrl']
+            evidence_dir = self.root / 'technical-evidence' / job['id'] / env
+            receipt = verify_login(self.c, target_url, evidence_dir, binding)
+            require(receipt.get('status') == 'passed' and receipt.get('binding') == binding and receipt.get('authenticated') is True,
+                    'Real browser login evidence does not match this technical verification')
+            technical['checks']['login'] = dict(status='passed', evidence=receipt)
+            self.save()
+            if env in ('prod','backup'):
+                technical['phase'] = 'opening'
+                technical['opening'] = {'status':'running'}
+                self.save()
+                if current.get('maintenance') is True:
+                    self.maintenance(env, False)
+                else:
+                    require(current.get('maintenance') is False, 'Formal target maintenance state is unknown')
+                self.health(env, package['releaseTag'])
+                opened = self.runtime.observe(env)
+                validate_origin(opened)
+                require(opened.get('maintenance') is False and opened.get('readOnly') == dict(read_only=False,super_read_only=False)
+                        and opened['releaseTag'] == package['releaseTag'] and opened['images'] == expected_images
+                        and opened['schemaSha256'] == current['schemaSha256'] and opened['ledgerSha256'] == current['ledgerSha256'],
+                        'Formal target opening did not preserve verified package and migration state')
+                self.state['environments'][env] = dict(opened, observedAt=stamp(), baselineStatus='registered', maintenanceUnknown=False)
+                technical['opening'] = {'status':'passed'}
+            stage = {'test':'tested','rehearsal':'rehearsal-passed','prod':'prod-accepted','backup':'completed'}[env]
+            if env == 'rehearsal':
+                record = self.active_rehearsal(package)
+                require(record.get('source') == 'prod' and record.get('packageSha256') == package['packageSha256'],
+                        'Technical rehearsal acceptance must bind the production origin and immutable package')
+                record.update(status='passed', actor=job['actor'], acceptedAt=stamp())
+            elif env == 'prod':
+                package['validatedProductionRehearsal'] = rehearsals[0]['id']
+            package['stage'] = stage
+            technical.update(status='passed', phase='complete', finishedAt=stamp())
+            reconciled = []
+            for prior in self.state['jobs']:
+                if prior['id'] != job['id'] and self.technical_retryable(prior, package, env):
+                    prior.update(reconciledBy=job['id'], superseded=True)
+                    reconciled.append(prior['id'])
+            technical['reconcilesJobIds'] = reconciled
+            self.save()
+            self.log(job, 'Version/images, complete migration/startup and real browser login passed for ' + env)
+        except Exception as error:
+            phase = technical['phase']
+            message = str(error).replace(self.password, '[REDACTED]')
+            if phase in technical['checks']:
+                technical['checks'][phase].update(status='failed', error=message)
+            elif phase == 'opening':
+                technical['opening'] = dict(status='failed', error=message)
+            technical.update(status='failed', error=message, finishedAt=stamp())
+            package['stage'] = {'test':'test-deployed','rehearsal':'rehearsal-upgraded','prod':'prod-deployed','backup':'backup-deployed'}[env]
+            if env == 'rehearsal':
+                self.active_rehearsal(package)['status'] = 'upgraded'
+            self.save()
+            raise
+
     def __init__(self, config):
         require(config.get('applicationId') == 'intruoyi', 'IntRuoyi application identity required')
         require(config.get('runtimeKind') == 'remote-intruoyi', 'Explicit remote IntRuoyi runtime required')
@@ -86,6 +249,7 @@ class IntRuoyiExecutor(Executor):
 
     def snapshot(self):
         with self.lock:
+            self.ensure_persistence()
             if active_remote_progress(self.state, self.c, self.runtime):
                 self.save()
             targets = {env: {key:value for key,value in target.items() if key in ('label','url','acceptanceUrl')}
@@ -104,9 +268,14 @@ class IntRuoyiExecutor(Executor):
             return json.loads(json.dumps(dict(self.state, application=application)))
 
     def submit(self, action, payload, actor):
+        self.ensure_persistence()
         require(payload.get('applicationId') == self.c['applicationId'], 'Request application identity mismatch')
         require(action not in ('initialize-baseline','audit-baseline'), 'Remote databases must never use demo initialization')
         require(action != 'function-passed', 'Use mark-tested to accept the actual deployed test candidate')
+        prerequisite = {'prepare-rehearsal':'test','promote-prod':'rehearsal','promote-backup':'prod'}.get(action)
+        if prerequisite:
+            package, _ = self.manifest(payload.get('releaseTag'))
+            require(self.technical_passed(package, prerequisite), 'Passed technical verification required for ' + prerequisite)
         if action == 'prepare-rehearsal':
             require(not any(job.get('action') == 'prepare-rehearsal' and job.get('remoteStatusRequired')
                             and job.get('status') in ('failed','interrupted') and not job.get('resolution')
@@ -270,6 +439,9 @@ class IntRuoyiExecutor(Executor):
         job['remoteProgress'] = result.pop('remotePreparationProgress')
         job['remotePhase'] = 'completed'
         job.pop('remoteStatusError',None)
+        self.register_prepared_rehearsal(p, job, source, origin, result)
+
+    def register_prepared_rehearsal(self, p, job, source, origin, result):
         require(result.get('originFingerprint') == origin['fingerprint'] and result.get('verifiedOrigin') is True,
                 'Isolated source provenance has not been verified')
         for key in ('images', 'schemaSha256', 'ledgerSha256'):
@@ -285,14 +457,188 @@ class IntRuoyiExecutor(Executor):
         self.state['environments']['rehearsal'] = dict(result, sourceEnvironment=source)
         self.save()
 
+    def resume_rehearsal_preparation(self, job, selected):
+        root_id = selected.get('originalPreparationJobId') if selected['action'] == 'resolve-task' else selected['id']
+        original = next((item for item in self.state['jobs'] if item['id'] == root_id), None)
+        require(original and original['action'] == 'prepare-rehearsal' and original.get('target') == 'rehearsal'
+                and original.get('sourceEnv') == 'prod' and original.get('effectsStarted')
+                and original.get('remoteStatusRequired') and original.get('remotePhase') == 'restore-starting'
+                and original['status'] in ('failed', 'interrupted') and not original.get('resolution'),
+                'Unresolved production-origin preparation with an interrupted restore tail required')
+        require(job['releaseTag'] == selected['releaseTag'] == original['releaseTag'], 'Preparation continuation must use the original immutable package')
+        require(not any(item['status'] == 'running' and item['id'] != job['id'] for item in self.state['jobs']),
+                'Another task is still running')
+        if selected is not original:
+            require(selected.get('target') == 'rehearsal' and selected.get('sourceEnv') == 'prod'
+                    and selected.get('payload', {}).get('decision') == 'retry', 'Only a linked preparation continuation can be retried')
+        job.update(target='rehearsal', sourceEnv='prod', originalPreparationJobId=original['id'], previousResolutionJobId=selected['id'])
+        self.save()
+        self.step(job, 'verify-original-rehearsal-preparation-evidence')
+        package, manifest = self.package(original['releaseTag'])
+        require(package['stage'] in ('tested', 'rehearsal-passed') and not package.get('baseline') and not package.get('abandoned'),
+                'Candidate stage changed after failed preparation')
+        require(self.technical_passed(package, 'test'), 'Original candidate must retain passed test technical evidence')
+        require('rehearsal' not in self.state['environments'] and not package.get('activeRehearsal'),
+                'An isolated environment is already registered; original preparation cannot overwrite it')
+        outcome = package.get('outcomes', {}).get('rehearsal', {}).get('preparation', {})
+        require(outcome.get('jobId') == original['id'] and outcome.get('status') in ('failed', 'interrupted'),
+                'Original failed preparation must own the candidate outcome')
+        self.runtime.targets['rehearsal'] = rehearsal_profile(self.c, 'prod')
+        origin = validate_origin(self.runtime.observe('prod'))
+        require(origin['fingerprint'] == original.get('sourceOriginFingerprint'), 'Original production source changed since capture')
+        require(origin.get('maintenance') is False and origin.get('readOnly') == dict(read_only=False, super_read_only=False),
+                'Original production source must be healthy and open before resuming isolation')
+        audit_ledger(origin, manifest)
+        result = self.runtime.resume_rehearsal_tail('prod', manifest, original['id'], job['id'],
+                    package['packageSha256'], package['manifestSha256'], original['sourceOriginFingerprint'],
+                    lambda name, effects=False:self.step(job, name, effects=effects))
+        attempts = [item for item in self.state['jobs'] if item.get('originalPreparationJobId') == original['id']
+                    and item.get('releaseTag') == original['releaseTag'] and item.get('target') == 'rehearsal'
+                    and item.get('sourceEnv') == 'prod' and item['action'] == 'resolve-task'
+                    and item.get('payload', {}).get('decision') == 'retry']
+        receipt = result.get('resumeReceipt', {})
+        require(receipt.get('status') == 'completed' and receipt.get('phase') == 'complete'
+                and receipt.get('originalJobId') == original['id'] and receipt.get('source') == 'prod'
+                and receipt.get('releaseTag') == package['releaseTag']
+                and receipt.get('packageSha256') == package['packageSha256']
+                and receipt.get('manifestSha256') == package['manifestSha256']
+                and receipt.get('retryJobId') in {item['id'] for item in attempts},
+                'Bound completed rehearsal startup-tail receipt required')
+        validate_origin(result)
+        require(result['releaseTag'] == origin['releaseTag'], 'Recovered isolation must run the original source version')
+        audit_ledger(result, manifest)
+        progress = result.get('remotePreparationProgress', {})
+        require(progress.get('status') == 'succeeded' and progress.get('phase') == 'completed'
+                and progress.get('jobId') == receipt['retryJobId'], 'Completed preparation continuation worker evidence required')
+        job.update(remoteProgress=result.pop('remotePreparationProgress'), remotePhase='completed')
+        self.register_prepared_rehearsal(package, job, 'prod', origin, result)
+        self.active_rehearsal(package)['originalPreparationJobId'] = original['id']
+        package['stage'] = 'rehearsal-ready'
+        for prior in [original, *attempts]:
+            if prior['id'] != job['id'] and prior['status'] in ('failed', 'interrupted') and not prior.get('resolution'):
+                prior['resolution'] = dict(decision='retry', note=job['payload']['note'], actor=job['actor'], time=stamp(),
+                                           jobId=job['id'], originalPreparationJobId=original['id'], resumeReceipt=receipt)
+        job['result'] = dict(originalPreparationJobId=original['id'], stage='rehearsal-ready', resumeReceipt=receipt)
+        self.outcome(package, 'rehearsal', 'preparation', 'succeeded', job, originalPreparationJobId=original['id'])
+        self.log(job, 'Retained original isolation startup tail verified; original failure preserved. No capture, import or migration replayed; candidate upgrade remains a separate action.')
+
     def reset_rehearsal(self, job):
         self.runtime.reset_rehearsal(lambda name, effects=False:self.step(job,name,effects=effects))
         self.state['environments'].pop('rehearsal', None)
         self.save()
 
+    def resume_test_deployment(self, job, selected):
+        """Explicit same-package tail only; never invoke the deployment/SQL path."""
+        root_id = selected.get('originalDeploymentJobId') if selected['action'] == 'resolve-task' else selected['id']
+        original = next((j for j in self.state['jobs'] if j['id'] == root_id), None)
+        require(original and original['action'] == 'publish-test' and original.get('target') == 'test'
+                and original['status'] in ('failed', 'interrupted') and original.get('effectsStarted')
+                and not original.get('resolution'), 'Unresolved original test deployment required for tail continuation')
+        require(selected['releaseTag'] == original['releaseTag'] == job['releaseTag'], 'Continuation must use the original immutable package')
+        require(not any(j['status'] == 'running' and j['id'] != job['id'] for j in self.state['jobs']),
+                'Another task is still running')
+        if selected is not original:
+            require(selected.get('target') == 'test' and selected.get('payload', {}).get('decision') == 'retry',
+                    'Only a linked failed test continuation can be retried')
+        job.update(target='test', originalDeploymentJobId=original['id'], previousResolutionJobId=selected['id'])
+        self.save()
+        self.step(job, 'verify-original-test-package-and-migration-evidence')
+        package, manifest = self.package(original['releaseTag'])
+        require(package['stage'] == 'built' and not package.get('baseline') and not package.get('abandoned'),
+                'Test candidate stage changed after the failed deployment')
+        outcome = package.get('outcomes', {}).get('test', {}).get('deployment', {})
+        require(outcome.get('jobId') == original['id'] and outcome.get('status') in ('failed', 'interrupted'),
+                'Original failed deployment no longer owns this candidate')
+        original_plan = original.get('migrationPlan', {})
+        require(original_plan.get('status') == 'passed' and original_plan.get('targetEnvironment') == 'test'
+                and isinstance(original_plan.get('items'), list), 'Original passed test migration plan required')
+        sources = {m['migrationId']: m for m in manifest['migrations']}
+        planned = original_plan['items']
+        require(len({m.get('migrationId') for m in planned}) == len(planned), 'Original migration plan contains duplicate identities')
+        applied = [m for m in planned if m.get('action') == 'APPLY']
+        require(applied and all(m.get('migrationId') in sources and m.get('sha256') == sources[m['migrationId']]['sha256']
+                                for m in applied), 'Original APPLY identities differ from the immutable package')
+        origin_records = original.get('originState', {}).get('ledgerRecords')
+        require(isinstance(origin_records, list) and
+                original_plan == target_input_plan(manifest['migrations'], origin_records, 'test'),
+                'Original full migration plan differs from its immutable package and origin ledger')
+        observation = self.runtime.observe('test')
+        audit = audit_ledger(observation, manifest)
+        require(all(m['migrationId'] in audit['applied'] for m in applied), 'Original test migrations are not all APPLIED')
+        require(observation.get('images') == {role: manifest['images'][role]['id'] for role in ('backend', 'frontend')},
+                'Both installed test images must be the original candidate')
+        plan = target_input_plan(manifest['migrations'], observation['ledgerRecords'], 'test')
+        require(plan['status'] == 'passed' and not any(m['action'] == 'APPLY' for m in plan['items']),
+                'Continuation requires zero pending migrations')
+        job['migrationPlan'] = plan
+        self.save()
+        require(original.get('originState'), 'Original deployment origin evidence required')
+        runtime_manifest = dict(manifest, baselines={'test': original['originState']}, executionPlans={'test': plan})
+        def callback(name, effects=False):
+            if effects:
+                self.state['environments']['test']['maintenanceUnknown'] = True
+            self.step(job, name, effects=effects)
+        result = self.runtime.resume_test_deployment_tail('test', runtime_manifest, planned, original['id'], job['id'],
+                                                         package['packageSha256'], package['manifestSha256'], callback)
+        receipt = result.get('resumeReceipt', {})
+        attempts = [j for j in self.state['jobs'] if j.get('originalDeploymentJobId') == original['id']
+                    and j.get('releaseTag') == original['releaseTag'] and j.get('target') == 'test'
+                    and j['action'] == 'resolve-task' and j.get('payload', {}).get('decision') == 'retry']
+        require(receipt.get('status') == 'completed' and receipt.get('phase') == 'complete'
+                and receipt.get('originalJobId') == original['id'] and receipt.get('releaseTag') == package['releaseTag']
+                and receipt.get('packageIdentity') == package_identity(manifest)
+                and receipt.get('packageSha256') == package['packageSha256']
+                and receipt.get('manifestSha256') == package['manifestSha256']
+                and receipt.get('completedByJobId') in {j['id'] for j in attempts},
+                'Same-package completed test continuation receipt required')
+        validate_origin(result)
+        require(result['releaseTag'] == package['releaseTag'] and result.get('images') == observation['images']
+                and result.get('maintenance') is False
+                and result.get('readOnly') == dict(read_only=False, super_read_only=False),
+                'Test continuation did not confirm the candidate open for functional verification')
+        require(result['schemaSha256'] == observation['schemaSha256'] and result['ledgerSha256'] == observation['ledgerSha256'],
+                'Schema or migration history changed during deployment tail continuation')
+        audit_ledger(result, manifest)
+        require(not any(item['action'] == 'APPLY' for item in
+                        target_input_plan(manifest['migrations'], result['ledgerRecords'], 'test')['items']),
+                'Completed continuation still has pending migrations')
+        self.state['environments']['test'] = dict(result, observedAt=stamp(), baselineStatus='registered', maintenanceUnknown=False)
+        package['stage'] = 'test-deployed'
+        # Resolve only this explicit continuation family; the original failure is retained.
+        for prior in [original, *attempts]:
+            if prior['id'] != job['id'] and prior['status'] in ('failed', 'interrupted') and not prior.get('resolution'):
+                prior['resolution'] = dict(decision='retry', note=job['payload']['note'], actor=job['actor'],
+                                           time=stamp(), jobId=job['id'], originalDeploymentJobId=original['id'],
+                                           resumeReceipt=receipt)
+        job['result'] = dict(originalDeploymentJobId=original['id'], stage='test-deployed', resumeReceipt=receipt)
+        self.outcome(package, 'test', 'deployment', 'succeeded', job, originalDeploymentJobId=original['id'])
+        self.verify_technical('test', package, manifest, job)
+        job['result']['stage'] = package['stage']
+        self.log(job, 'Same immutable test package deployment tail and technical verification completed; original failure retained, no migrations or backup rerun.')
+
     def resolve_task(self, job):
         original = next((j for j in self.state['jobs'] if j['id'] == job['payload'].get('jobId')), None)
         require(original and original['status'] in ('failed','interrupted') and not original.get('resolution'), 'Original unresolved task required')
+        require(not original.get('technicalVerification') and original.get('action') != 'reject-acceptance',
+                'Installed deployment or historical business rejection requires a new technical verification action, not restoration or a fabricated resolution')
+        if job['payload']['decision'] == 'retry':
+            if original['action'] == 'prepare-rehearsal' or original.get('originalPreparationJobId'):
+                return self.resume_rehearsal_preparation(job, original)
+            return self.resume_test_deployment(job, original)
+        if original['action'] == 'resolve-task' and original.get('originalPreparationJobId'):
+            selected = original
+            original = next((item for item in self.state['jobs'] if item['id'] == selected['originalPreparationJobId']), None)
+            require(original and original['action'] == 'prepare-rehearsal' and original.get('sourceEnv') == 'prod'
+                    and original['status'] in ('failed', 'interrupted') and not original.get('resolution')
+                    and original['releaseTag'] == selected['releaseTag'] == job['releaseTag'],
+                    'Original unresolved preparation required before abandoning its continuation')
+        if original['action'] == 'resolve-task' and original.get('originalDeploymentJobId'):
+            selected = original
+            original = next((j for j in self.state['jobs'] if j['id'] == selected['originalDeploymentJobId']), None)
+            require(original and original['action'] == 'publish-test' and original.get('target') == 'test'
+                    and original['status'] in ('failed', 'interrupted') and not original.get('resolution')
+                    and original['releaseTag'] == selected['releaseTag'] == job['releaseTag'],
+                    'Original unresolved test deployment required before abandoning its continuation')
         if original['action'] in ('mark-tested', 'function-passed', 'accept-rehearsal'):
             require(job['payload']['decision'] == 'abandon', 'Failed read-only acceptance must be explicitly abandoned before a fresh acceptance')
             require(not original.get('effectsStarted'), 'Acceptance has remote effects; explicit operational reconciliation required')
@@ -347,7 +693,9 @@ class IntRuoyiExecutor(Executor):
             self.save()
             self.log(job, 'Confirmed isolated worker stopped and unchanged healthy source; discarded labelled isolation only. Original failed upgrade retained.')
             return
-        if original['action'] == 'prepare-rehearsal':
+        # Prerequisite failures precede stage creation/capture and use the
+        # pre-effect abandon path below; either persisted marker keeps cleanup gated.
+        if original['action'] == 'prepare-rehearsal' and (original.get('effectsStarted') or original.get('remoteStatusRequired')):
             require(job['payload']['decision']=='abandon','Failed preparation can only be explicitly discarded')
             source=original['sourceEnv']
             self.runtime.targets['rehearsal']=rehearsal_profile(self.c,source)
@@ -361,6 +709,11 @@ class IntRuoyiExecutor(Executor):
             self.state['environments'].pop('rehearsal',None)
             original['resolution']=dict(decision='abandon',note=job['payload']['note'],actor=job['actor'],
                 time=stamp(),jobId=job['id'],remoteEvidence=status)
+            for attempt in self.state['jobs']:
+                if (attempt['action'] == 'resolve-task' and attempt.get('originalPreparationJobId') == original['id']
+                        and attempt.get('releaseTag') == original['releaseTag'] and attempt.get('target') == 'rehearsal'
+                        and attempt['status'] in ('failed', 'interrupted') and not attempt.get('resolution')):
+                    attempt['resolution'] = dict(original['resolution'], originalPreparationJobId=original['id'])
             self.log(job,'Remote terminal phase and original source health verified; discarded only labelled isolated resources. Original failure retained.')
             return
         if original['action'] == 'restore-metadata':
@@ -386,6 +739,12 @@ class IntRuoyiExecutor(Executor):
             self.state['environments'][original['target']] = dict(observation, baselineStatus='registered', maintenanceUnknown=False)
             original['resolution'] = dict(decision='abandon', note=job['payload']['note'], actor=job['actor'],
                                           time=stamp(), jobId=job['id'], recoveryEvidence=result['recoveryEvidence'])
+            if original['action'] == 'publish-test' and original['target'] == 'test':
+                for attempt in self.state['jobs']:
+                    if (attempt['action'] == 'resolve-task' and attempt.get('originalDeploymentJobId') == original['id']
+                            and attempt.get('releaseTag') == original['releaseTag'] and attempt.get('target') == 'test'
+                            and attempt['status'] in ('failed', 'interrupted') and not attempt.get('resolution')):
+                        attempt['resolution'] = dict(original['resolution'], originalDeploymentJobId=original['id'])
             self.log(job, 'Explicit recovery evidence and actual original origin verified; failed deployment retained, no SQL replayed or acceptance granted')
             return
         require(job['payload']['decision'] == 'abandon', 'Only a confirmed pre-effect task may be abandoned here')

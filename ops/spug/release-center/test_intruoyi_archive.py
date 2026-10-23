@@ -9,7 +9,8 @@ import unittest
 from unittest.mock import patch
 import subprocess
 
-from intruoyi_runtime import Runtime, RuntimeBlocked, file_sha
+from intruoyi_runtime import Runtime, RuntimeBlocked, file_sha, package_identity
+import intruoyi_runtime_agent as agent
 from intruoyi_runtime_agent import unpack_original_package
 
 
@@ -22,7 +23,7 @@ class OriginalArchiveTests(unittest.TestCase):
 
     def package(self, artifacts=None, extra=None, change=None, omit=None):
         artifacts = artifacts or {'images.tar': b'original image archive', 'sql/a.sql': b'SELECT 1;'}
-        manifest = {'releaseTag': '2026-10-22-21-00-00', 'files': [
+        manifest = {'releaseTag': '2026-10-22-21-00-00', 'images':{'backend':{'id':'backend-image'}, 'frontend':{'id':'frontend-image'}}, 'files': [
             {'name': name, 'sha256': hashlib.sha256(data).hexdigest()} for name, data in artifacts.items()]}
         manifest_bytes = json.dumps(manifest, ensure_ascii=False).encode()
         members = {'manifest.json': manifest_bytes, **artifacts}
@@ -65,9 +66,66 @@ class OriginalArchiveTests(unittest.TestCase):
             self.assertEqual(runtime.stage('test', str(self.root), manifest), {'verified': True})
         transfer.assert_called_once()
         self.assertEqual(transfer.call_args.args[0][-2], str(self.root / 'release.tar'))
-        self.assertEqual(remote_call.call_args_list[0].kwargs['files'], [])
+        self.assertEqual(remote_call.call_args_list[0].kwargs['files'], manifest['files'])
         self.assertEqual(remote_call.call_args_list[-1].args, ('test', 'verify-stage'))
         self.assertEqual(remote_call.call_args_list[-1].kwargs['archive'], evidence)
+
+    def reusable_stage(self):
+        self.root = self.root.rename(self.root.with_name('2026-10-22-21-00-00'))
+        manifest, evidence = self.package()
+        archive = unpack_original_package(self.root, manifest, evidence)
+        payload = dict(manifest=manifest, archive=evidence, files=manifest['files'], validatedPreflights=[])
+        (self.root/'stage-verified.json').write_text(json.dumps(dict(manifestSha256=package_identity(manifest),
+            files=manifest['files'], archive=archive, validatedPreflights=[])))
+        return payload
+
+    def test_existing_verified_stage_is_read_only_and_does_not_upload(self):
+        payload = self.reusable_stage()
+        before = {p: (p.read_bytes(), p.stat().st_mtime_ns) for p in self.root.rglob('*') if p.is_file()}
+        with patch.object(agent.remote, 'run', side_effect=lambda args: args[-1].encode()) as commands:
+            result = agent.reuse_verified_stage(self.root, payload)
+        self.assertTrue(result['verified'] and result['reused'])
+        self.assertTrue(all(call.args[0][1:3] == ['image','inspect'] for call in commands.call_args_list))
+        self.assertEqual(before, {p: (p.read_bytes(), p.stat().st_mtime_ns) for p in self.root.rglob('*') if p.is_file()})
+        runtime = Runtime({'targets':{'test':dict(host='example.invalid', python='/usr/bin/python3',
+            entryUrl='http://example.invalid', frontend='front', backend='back', database='db', stagingRoot='/release')}})
+        result['directory'] = '/release/' + payload['manifest']['releaseTag']
+        with patch.object(runtime, 'call', return_value=result) as calls, patch('intruoyi_runtime.subprocess.run') as transfer:
+            self.assertEqual(runtime.stage('test', self.root, payload['manifest']), result)
+        transfer.assert_not_called()
+        calls.assert_called_once()
+        self.assertEqual(calls.call_args.args, ('test','stage-directory'))
+
+    def test_deployment_or_unknown_artifacts_refuse_reuse(self):
+        payload = self.reusable_stage()
+        for name in ('deployment-progress.private.json','recovery.sql','deployment-pending.json',
+                     'backend-before-initial.private.json','unknown'):
+            with self.subTest(name=name):
+                marker = self.root/name
+                marker.write_text('{}')
+                with patch.object(agent.remote, 'run') as commands, self.assertRaisesRegex(RuntimeBlocked, 'deployment evidence'):
+                    agent.reuse_verified_stage(self.root, payload)
+                commands.assert_not_called()
+                marker.unlink()
+
+    def test_incomplete_changed_package_receipt_and_image_refuse_reuse(self):
+        payload = self.reusable_stage()
+        for name in ('release.tar','manifest.json','sql/a.sql','stage-verified.json'):
+            with self.subTest(name=name):
+                path = self.root/name
+                original = path.read_bytes()
+                path.unlink()
+                with self.assertRaisesRegex(RuntimeBlocked, 'incomplete'):
+                    agent.reuse_verified_stage(self.root, payload)
+                path.write_bytes(original + b' ')
+                with self.assertRaises(RuntimeBlocked):
+                    if name == 'stage-verified.json':
+                        altered = json.loads(original); altered['manifestSha256'] = '0'*64
+                        path.write_text(json.dumps(altered))
+                    agent.reuse_verified_stage(self.root, payload)
+                path.write_bytes(original)
+        with patch.object(agent.remote, 'run', return_value=b'wrong-image'), self.assertRaisesRegex(RuntimeBlocked, 'image identity'):
+            agent.reuse_verified_stage(self.root, payload)
 
     def test_transport_corruption_blocks_before_extraction(self):
         manifest, evidence = self.package()
