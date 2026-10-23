@@ -1,0 +1,927 @@
+{
+  "schemaVersion": "SmallAppEverydayRestoreAcceptance/v1",
+  "auditedAt": "2026-10-23T04:59:49.563106+00:00",
+  "originalScope": "Five rows in user image; rehearsal smallapp only",
+  "businessActionsViaRealUiOnly": true,
+  "directApiDispatches": 0,
+  "requirements": [
+    {
+      "id": 1,
+      "name": "同一服务器再次恢复、覆盖恢复",
+      "passed": true,
+      "operations": [
+        "overwrite58-I2-first-r2",
+        "overwrite58-I2-repeat",
+        "overwrite58-I3",
+        "overwrite58-I4-latest",
+        "overwrite58-I4-logging-fixed",
+        "overwrite58-resumed-I6"
+      ],
+      "comparisons": [
+        "overwrite58-I2-first",
+        "overwrite58-I2-repeat",
+        "overwrite58-I3",
+        "overwrite58-I4-latest",
+        "overwrite58-I4-logging-fixed",
+        "overwrite58-resumed-I6"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "快速模式连续多次增量恢复",
+      "passed": true,
+      "operations": [
+        "fast58-I2",
+        "fast58-I3",
+        "fast58-I4",
+        "overwrite58-I2-first-r2",
+        "overwrite58-I3",
+        "overwrite58-I4-latest"
+      ],
+      "actualChanges": [
+        "add record and attachment",
+        "edit content and add attachment",
+        "delete record and its attachments"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "测试服、备份服作为来源的安全增量",
+      "passed": true,
+      "operations": [
+        "safe59-I1-r2",
+        "safe58-I1-after-fast-r2",
+        "safe59-to58-I1",
+        "safe58-to59-I1"
+      ],
+      "crossHost": [
+        {
+          "source": "59",
+          "target": "58",
+          "operationId": "smallapp-3b93ef9594694c8488a20e01a8566f58",
+          "originalChecksPassed": true,
+          "independentUiBusinessComparison": true
+        },
+        {
+          "source": "58",
+          "target": "59",
+          "operationId": "smallapp-67ed874eec0b456c9b647b92d510e130",
+          "originalChecksPassed": true,
+          "independentUiBusinessComparison": true
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "安全、快速模式交替使用",
+      "passed": true,
+      "lineage": "safe-fast-safe-lineage.json",
+      "samePhysicalDatabase": true,
+      "separateParents": true,
+      "bothChainsActuallyRestored": true
+    },
+    {
+      "id": 5,
+      "name": "恢复后继续增量备份",
+      "passed": true,
+      "operations": [
+        "overwrite58-I4-logging-fixed",
+        "fast58-resumed-I6",
+        "overwrite58-resumed-I6"
+      ],
+      "addedRecord": "everyday-after-restore-I6",
+      "originalChainRetained": true,
+      "comparison": "overwrite58-resumed-I6-comparison.json"
+    }
+  ],
+  "operations": {
+    "fast58-I2": {
+      "operationId": "smallapp-9388b8f0b95e45b6a5eac6f22c7ec7ec",
+      "request": {
+        "action": "INCREMENTAL",
+        "operationId": "smallapp-9388b8f0b95e45b6a5eac6f22c7ec7ec",
+        "parentChainRef": "smallapp-f15cf31a90b047f2a5f5ceb992495a80",
+        "recoveryPointRef": null,
+        "schemaVersion": "SmallAppBackupUiRequest/v1",
+        "sourceConfigRef": "smallapp-58-normal-fast-20261023",
+        "targetConfigRef": null
+      },
+      "mode": "fast",
+      "seconds": 32.611994,
+      "stageCount": 9
+    },
+    "fast58-I3": {
+      "operationId": "smallapp-7cdfc77c1c3946b7bcb5443b930aec41",
+      "request": {
+        "action": "INCREMENTAL",
+        "operationId": "smallapp-7cdfc77c1c3946b7bcb5443b930aec41",
+        "parentChainRef": "smallapp-9388b8f0b95e45b6a5eac6f22c7ec7ec",
+        "recoveryPointRef": null,
+        "schemaVersion": "SmallAppBackupUiRequest/v1",
+        "sourceConfigRef": "smallapp-58-normal-fast-20261023",
+        "targetConfigRef": null
+      },
+      "mode": "fast",
+      "seconds": 36.418237,
+      "stageCount": 9
+    },
+    "fast58-I4": {
+      "operationId": "smallapp-ee367e858e6d486b915c33413beff598",
+      "request": {
+        "action": "INCREMENTAL",
+        "operationId": "smallapp-ee367e858e6d486b915c33413beff598",
+        "parentChainRef": "smallapp-7cdfc77c1c3946b7bcb5443b930aec41",
+        "recoveryPointRef": null,
+        "schemaVersion": "SmallAppBackupUiRequest/v1",
+        "sourceConfigRef": "smallapp-58-normal-fast-20261023",
+        "targetConfigRef": null
+      },
+      "mode": "fast",
+      "seconds": 36.282636,
+      "stageCount": 9
+    },
+    "overwrite58-I2-first-r2": {
+      "operationId": "smallapp-34997037a7174b7e8af159555677e46e",
+      "request": {
+        "action": "RESTORE",
+        "operationId": "smallapp-34997037a7174b7e8af159555677e46e",
+        "parentChainRef": null,
+        "recoveryPointRef": "smallapp-9388b8f0b95e45b6a5eac6f22c7ec7ec",
+        "schemaVersion": "SmallAppBackupUiRequest/v1",
+        "sourceConfigRef": "smallapp-58-normal-fast-20261023",
+        "targetConfigRef": "smallapp-everyday-overwrite58-20261023"
+      },
+      "mode": "fast",
+      "seconds": 17.198209,
+      "stageCount": 19
+    },
+    "overwrite58-I2-repeat": {
+      "operationId": "smallapp-6c617d711f504db181c162aa69fe506e",
+      "request": {
+        "action": "RESTORE",
+        "operationId": "smallapp-6c617d711f504db181c162aa69fe506e",
+        "parentChainRef": null,
+        "recoveryPointRef": "smallapp-9388b8f0b95e45b6a5eac6f22c7ec7ec",
+        "schemaVersion": "SmallAppBackupUiRequest/v1",
+        "sourceConfigRef": "smallapp-58-normal-fast-20261023",
+        "targetConfigRef": "smallapp-everyday-overwrite58-20261023"
+      },
+      "mode": "fast",
+      "seconds": 16.141249,
+      "stageCount": 19
+    },
+    "overwrite58-I3": {
+      "operationId": "smallapp-022b1d86e0aa43a6b464b4bda6f9254f",
+      "request": {
+        "action": "RESTORE",
+        "operationId": "smallapp-022b1d86e0aa43a6b464b4bda6f9254f",
+        "parentChainRef": null,
+        "recoveryPointRef": "smallapp-7cdfc77c1c3946b7bcb5443b930aec41",
+        "schemaVersion": "SmallAppBackupUiRequest/v1",
+        "sourceConfigRef": "smallapp-58-normal-fast-20261023",
+        "targetConfigRef": "smallapp-everyday-overwrite58-20261023"
+      },
+      "mode": "fast",
+      "seconds": 18.418892,
+      "stageCount": 23
+    },
+    "overwrite58-I4-latest": {
+      "operationId": "smallapp-35d88306bc7d4cae823f8f2a9c6e09aa",
+      "request": {
+        "action": "RESTORE",
+        "operationId": "smallapp-35d88306bc7d4cae823f8f2a9c6e09aa",
+        "parentChainRef": null,
+        "recoveryPointRef": "smallapp-ee367e858e6d486b915c33413beff598",
+        "schemaVersion": "SmallAppBackupUiRequest/v1",
+        "sourceConfigRef": "smallapp-58-normal-fast-20261023",
+        "targetConfigRef": "smallapp-everyday-overwrite58-20261023"
+      },
+      "mode": "fast",
+      "seconds": 16.517205,
+      "stageCount": 27
+    },
+    "overwrite58-I4-logging-fixed": {
+      "operationId": "smallapp-db438dc6a3df4dc79c55c272e2388c76",
+      "request": {
+        "action": "RESTORE",
+        "operationId": "smallapp-db438dc6a3df4dc79c55c272e2388c76",
+        "parentChainRef": null,
+        "recoveryPointRef": "smallapp-ee367e858e6d486b915c33413beff598",
+        "schemaVersion": "SmallAppBackupUiRequest/v1",
+        "sourceConfigRef": "smallapp-58-normal-fast-20261023",
+        "targetConfigRef": "smallapp-everyday-overwrite58-20261023"
+      },
+      "mode": "fast",
+      "seconds": 18.931626,
+      "stageCount": 27
+    },
+    "fast58-resumed-I6": {
+      "operationId": "smallapp-f04a93ffe4f242ee854a55889531ed74",
+      "request": {
+        "action": "INCREMENTAL",
+        "operationId": "smallapp-f04a93ffe4f242ee854a55889531ed74",
+        "parentChainRef": "smallapp-ee367e858e6d486b915c33413beff598",
+        "recoveryPointRef": null,
+        "schemaVersion": "SmallAppBackupUiRequest/v1",
+        "sourceConfigRef": "smallapp-58-normal-fast-20261023",
+        "targetConfigRef": null
+      },
+      "mode": "fast",
+      "seconds": 33.939935,
+      "stageCount": 9
+    },
+    "overwrite58-resumed-I6": {
+      "operationId": "smallapp-1762a6d5e0ca4705b1bf8f1a00b8985d",
+      "request": {
+        "action": "RESTORE",
+        "operationId": "smallapp-1762a6d5e0ca4705b1bf8f1a00b8985d",
+        "parentChainRef": null,
+        "recoveryPointRef": "smallapp-f04a93ffe4f242ee854a55889531ed74",
+        "schemaVersion": "SmallAppBackupUiRequest/v1",
+        "sourceConfigRef": "smallapp-58-normal-fast-20261023",
+        "targetConfigRef": "smallapp-everyday-overwrite58-20261023"
+      },
+      "mode": "fast",
+      "seconds": 21.184751,
+      "stageCount": 31
+    },
+    "safe59-I1-r2": {
+      "operationId": "smallapp-fafeff48e68147eeab871de3f97bee7b",
+      "request": {
+        "action": "INCREMENTAL",
+        "operationId": "smallapp-fafeff48e68147eeab871de3f97bee7b",
+        "parentChainRef": "smallapp-9051305191ad4e27965d98abccaac553",
+        "recoveryPointRef": null,
+        "schemaVersion": "SmallAppBackupUiRequest/v1",
+        "sourceConfigRef": "smallapp-59-safe-20261022",
+        "targetConfigRef": null
+      },
+      "mode": "safe",
+      "seconds": 330.101106,
+      "stageCount": 9
+    },
+    "safe58-I1-after-fast-r2": {
+      "operationId": "smallapp-d2b6eb2db12948de83633415b4020941",
+      "request": {
+        "action": "INCREMENTAL",
+        "operationId": "smallapp-d2b6eb2db12948de83633415b4020941",
+        "parentChainRef": "smallapp-e7c46b697d07470e89795f82e20ed964",
+        "recoveryPointRef": null,
+        "schemaVersion": "SmallAppBackupUiRequest/v1",
+        "sourceConfigRef": "smallapp-58-tenants-20261023",
+        "targetConfigRef": null
+      },
+      "mode": "safe",
+      "seconds": 272.26082,
+      "stageCount": 9
+    },
+    "safe59-to58-I1": {
+      "operationId": "smallapp-3b93ef9594694c8488a20e01a8566f58",
+      "request": {
+        "action": "RESTORE",
+        "operationId": "smallapp-3b93ef9594694c8488a20e01a8566f58",
+        "parentChainRef": null,
+        "recoveryPointRef": "smallapp-fafeff48e68147eeab871de3f97bee7b",
+        "schemaVersion": "SmallAppBackupUiRequest/v1",
+        "sourceConfigRef": "smallapp-59-safe-20261022",
+        "targetConfigRef": "smallapp-everyday-safe59-to-58-20261023"
+      },
+      "mode": "safe",
+      "seconds": 200.978609,
+      "stageCount": 18
+    },
+    "safe58-to59-I1": {
+      "operationId": "smallapp-67ed874eec0b456c9b647b92d510e130",
+      "request": {
+        "action": "RESTORE",
+        "operationId": "smallapp-67ed874eec0b456c9b647b92d510e130",
+        "parentChainRef": null,
+        "recoveryPointRef": "smallapp-d2b6eb2db12948de83633415b4020941",
+        "schemaVersion": "SmallAppBackupUiRequest/v1",
+        "sourceConfigRef": "smallapp-58-tenants-20261023",
+        "targetConfigRef": "smallapp-everyday-safe58-to-59-20261023"
+      },
+      "mode": "safe",
+      "seconds": 201.895137,
+      "stageCount": 18
+    }
+  },
+  "comparisons": [
+    {
+      "label": "overwrite58-I2-first",
+      "records": 4,
+      "files": 4
+    },
+    {
+      "label": "overwrite58-I2-repeat",
+      "records": 4,
+      "files": 4
+    },
+    {
+      "label": "overwrite58-I3",
+      "records": 4,
+      "files": 5
+    },
+    {
+      "label": "overwrite58-I4-latest",
+      "records": 3,
+      "files": 3
+    },
+    {
+      "label": "overwrite58-I4-logging-fixed",
+      "records": 3,
+      "files": 3
+    },
+    {
+      "label": "overwrite58-resumed-I6",
+      "records": 4,
+      "files": 4
+    },
+    {
+      "label": "safe59-to58-I1",
+      "records": 4,
+      "files": 3
+    },
+    {
+      "label": "safe58-to59-I1",
+      "records": 4,
+      "files": 4
+    },
+    {
+      "label": "safe58-I1-source-unchanged",
+      "records": 4,
+      "files": 4
+    }
+  ],
+  "originalUiHistoriesRequeried": 14,
+  "auditExecutionPosts": 0,
+  "verifiedSteps": 236,
+  "downloadedFiles": 60,
+  "downloads": {
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\fast58-I2-source\\0-0.bin": {
+      "bytes": 49,
+      "sha256": "f1e4d4a0fb674cc66e3922d6311b4e853adb2a873b899f2d25b7ad7ec046e5f2"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\fast58-I2-source\\1-0.bin": {
+      "bytes": 54,
+      "sha256": "4307ec61d134a2aff06ce4716849b52f77352bc41005cd443a1dd6612f27fb24"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\fast58-I2-source\\2-0.bin": {
+      "bytes": 60,
+      "sha256": "0f282ad31d648098aba5d41e71f57a6024049d9eb0829823b97791a9a166f11e"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\fast58-I2-source\\3-0.bin": {
+      "bytes": 63,
+      "sha256": "c91db2d5820bccd7674fe6e35004c28d6b84256bfbc2b76fabcf978d8b4daad5"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-I2-first-restored\\0-0.bin": {
+      "bytes": 49,
+      "sha256": "f1e4d4a0fb674cc66e3922d6311b4e853adb2a873b899f2d25b7ad7ec046e5f2"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-I2-first-restored\\1-0.bin": {
+      "bytes": 54,
+      "sha256": "4307ec61d134a2aff06ce4716849b52f77352bc41005cd443a1dd6612f27fb24"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-I2-first-restored\\2-0.bin": {
+      "bytes": 60,
+      "sha256": "0f282ad31d648098aba5d41e71f57a6024049d9eb0829823b97791a9a166f11e"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-I2-first-restored\\3-0.bin": {
+      "bytes": 63,
+      "sha256": "c91db2d5820bccd7674fe6e35004c28d6b84256bfbc2b76fabcf978d8b4daad5"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-I2-repeat-restored\\0-0.bin": {
+      "bytes": 49,
+      "sha256": "f1e4d4a0fb674cc66e3922d6311b4e853adb2a873b899f2d25b7ad7ec046e5f2"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-I2-repeat-restored\\1-0.bin": {
+      "bytes": 54,
+      "sha256": "4307ec61d134a2aff06ce4716849b52f77352bc41005cd443a1dd6612f27fb24"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-I2-repeat-restored\\2-0.bin": {
+      "bytes": 60,
+      "sha256": "0f282ad31d648098aba5d41e71f57a6024049d9eb0829823b97791a9a166f11e"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-I2-repeat-restored\\3-0.bin": {
+      "bytes": 63,
+      "sha256": "c91db2d5820bccd7674fe6e35004c28d6b84256bfbc2b76fabcf978d8b4daad5"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\fast58-I3-source\\0-0.bin": {
+      "bytes": 49,
+      "sha256": "f1e4d4a0fb674cc66e3922d6311b4e853adb2a873b899f2d25b7ad7ec046e5f2"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\fast58-I3-source\\0-1.bin": {
+      "bytes": 47,
+      "sha256": "927377ada858aebf82296a54dfc67708758c0f0d00fcc3c85648c0b9e2641e4a"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\fast58-I3-source\\1-0.bin": {
+      "bytes": 54,
+      "sha256": "4307ec61d134a2aff06ce4716849b52f77352bc41005cd443a1dd6612f27fb24"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\fast58-I3-source\\2-0.bin": {
+      "bytes": 60,
+      "sha256": "0f282ad31d648098aba5d41e71f57a6024049d9eb0829823b97791a9a166f11e"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\fast58-I3-source\\3-0.bin": {
+      "bytes": 63,
+      "sha256": "c91db2d5820bccd7674fe6e35004c28d6b84256bfbc2b76fabcf978d8b4daad5"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-I3-restored\\0-0.bin": {
+      "bytes": 49,
+      "sha256": "f1e4d4a0fb674cc66e3922d6311b4e853adb2a873b899f2d25b7ad7ec046e5f2"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-I3-restored\\0-1.bin": {
+      "bytes": 47,
+      "sha256": "927377ada858aebf82296a54dfc67708758c0f0d00fcc3c85648c0b9e2641e4a"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-I3-restored\\1-0.bin": {
+      "bytes": 54,
+      "sha256": "4307ec61d134a2aff06ce4716849b52f77352bc41005cd443a1dd6612f27fb24"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-I3-restored\\2-0.bin": {
+      "bytes": 60,
+      "sha256": "0f282ad31d648098aba5d41e71f57a6024049d9eb0829823b97791a9a166f11e"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-I3-restored\\3-0.bin": {
+      "bytes": 63,
+      "sha256": "c91db2d5820bccd7674fe6e35004c28d6b84256bfbc2b76fabcf978d8b4daad5"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\fast58-I4-source\\0-0.bin": {
+      "bytes": 54,
+      "sha256": "4307ec61d134a2aff06ce4716849b52f77352bc41005cd443a1dd6612f27fb24"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\fast58-I4-source\\1-0.bin": {
+      "bytes": 60,
+      "sha256": "0f282ad31d648098aba5d41e71f57a6024049d9eb0829823b97791a9a166f11e"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\fast58-I4-source\\2-0.bin": {
+      "bytes": 63,
+      "sha256": "c91db2d5820bccd7674fe6e35004c28d6b84256bfbc2b76fabcf978d8b4daad5"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-I4-latest-restored\\0-0.bin": {
+      "bytes": 54,
+      "sha256": "4307ec61d134a2aff06ce4716849b52f77352bc41005cd443a1dd6612f27fb24"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-I4-latest-restored\\1-0.bin": {
+      "bytes": 60,
+      "sha256": "0f282ad31d648098aba5d41e71f57a6024049d9eb0829823b97791a9a166f11e"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-I4-latest-restored\\2-0.bin": {
+      "bytes": 63,
+      "sha256": "c91db2d5820bccd7674fe6e35004c28d6b84256bfbc2b76fabcf978d8b4daad5"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-I4-logging-fixed-restored\\0-0.bin": {
+      "bytes": 54,
+      "sha256": "4307ec61d134a2aff06ce4716849b52f77352bc41005cd443a1dd6612f27fb24"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-I4-logging-fixed-restored\\1-0.bin": {
+      "bytes": 60,
+      "sha256": "0f282ad31d648098aba5d41e71f57a6024049d9eb0829823b97791a9a166f11e"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-I4-logging-fixed-restored\\2-0.bin": {
+      "bytes": 63,
+      "sha256": "c91db2d5820bccd7674fe6e35004c28d6b84256bfbc2b76fabcf978d8b4daad5"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\fast58-resumed-I6-source\\0-0.bin": {
+      "bytes": 58,
+      "sha256": "a406917e3651b9abbe8ad0127f7951e10769f2a50a5b00cbf01b1f2853f00af2"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\fast58-resumed-I6-source\\1-0.bin": {
+      "bytes": 54,
+      "sha256": "4307ec61d134a2aff06ce4716849b52f77352bc41005cd443a1dd6612f27fb24"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\fast58-resumed-I6-source\\2-0.bin": {
+      "bytes": 60,
+      "sha256": "0f282ad31d648098aba5d41e71f57a6024049d9eb0829823b97791a9a166f11e"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\fast58-resumed-I6-source\\3-0.bin": {
+      "bytes": 63,
+      "sha256": "c91db2d5820bccd7674fe6e35004c28d6b84256bfbc2b76fabcf978d8b4daad5"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-resumed-I6-restored\\0-0.bin": {
+      "bytes": 58,
+      "sha256": "a406917e3651b9abbe8ad0127f7951e10769f2a50a5b00cbf01b1f2853f00af2"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-resumed-I6-restored\\1-0.bin": {
+      "bytes": 54,
+      "sha256": "4307ec61d134a2aff06ce4716849b52f77352bc41005cd443a1dd6612f27fb24"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-resumed-I6-restored\\2-0.bin": {
+      "bytes": 60,
+      "sha256": "0f282ad31d648098aba5d41e71f57a6024049d9eb0829823b97791a9a166f11e"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-resumed-I6-restored\\3-0.bin": {
+      "bytes": 63,
+      "sha256": "c91db2d5820bccd7674fe6e35004c28d6b84256bfbc2b76fabcf978d8b4daad5"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\safe59-I1-source\\0-0.bin": {
+      "bytes": 51,
+      "sha256": "8dfd7c53341e1b13502f7874cd071e366ecb0e66954f177b8c40457a0d4277ae"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\safe59-I1-source\\1-0.bin": {
+      "bytes": 54,
+      "sha256": "492316319ef62297de3916eb03ad414e1458957c6924757c89ffc66b4b75a146"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\safe59-I1-source\\3-0.bin": {
+      "bytes": 92,
+      "sha256": "8560827429ac1b5709b58df9120b62870f5f837e051c709e9ed7c902ca1214f8"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\safe59-to58-I1-restored-r2\\0-0.bin": {
+      "bytes": 51,
+      "sha256": "8dfd7c53341e1b13502f7874cd071e366ecb0e66954f177b8c40457a0d4277ae"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\safe59-to58-I1-restored-r2\\1-0.bin": {
+      "bytes": 54,
+      "sha256": "492316319ef62297de3916eb03ad414e1458957c6924757c89ffc66b4b75a146"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\safe59-to58-I1-restored-r2\\3-0.bin": {
+      "bytes": 92,
+      "sha256": "8560827429ac1b5709b58df9120b62870f5f837e051c709e9ed7c902ca1214f8"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\safe58-I1-source\\0-0.bin": {
+      "bytes": 58,
+      "sha256": "a406917e3651b9abbe8ad0127f7951e10769f2a50a5b00cbf01b1f2853f00af2"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\safe58-I1-source\\1-0.bin": {
+      "bytes": 54,
+      "sha256": "4307ec61d134a2aff06ce4716849b52f77352bc41005cd443a1dd6612f27fb24"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\safe58-I1-source\\2-0.bin": {
+      "bytes": 60,
+      "sha256": "0f282ad31d648098aba5d41e71f57a6024049d9eb0829823b97791a9a166f11e"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\safe58-I1-source\\3-0.bin": {
+      "bytes": 63,
+      "sha256": "c91db2d5820bccd7674fe6e35004c28d6b84256bfbc2b76fabcf978d8b4daad5"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\safe58-to59-I1-restored\\0-0.bin": {
+      "bytes": 58,
+      "sha256": "a406917e3651b9abbe8ad0127f7951e10769f2a50a5b00cbf01b1f2853f00af2"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\safe58-to59-I1-restored\\1-0.bin": {
+      "bytes": 54,
+      "sha256": "4307ec61d134a2aff06ce4716849b52f77352bc41005cd443a1dd6612f27fb24"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\safe58-to59-I1-restored\\2-0.bin": {
+      "bytes": 60,
+      "sha256": "0f282ad31d648098aba5d41e71f57a6024049d9eb0829823b97791a9a166f11e"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\safe58-to59-I1-restored\\3-0.bin": {
+      "bytes": 63,
+      "sha256": "c91db2d5820bccd7674fe6e35004c28d6b84256bfbc2b76fabcf978d8b4daad5"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\fast58-resumed-I5-source\\0-0.bin": {
+      "bytes": 58,
+      "sha256": "e67b9a5849591f153ae1871661b5621d6ee99bceea8c70aaae2fdf4adfa4cb30"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\fast58-resumed-I5-source\\1-0.bin": {
+      "bytes": 54,
+      "sha256": "4307ec61d134a2aff06ce4716849b52f77352bc41005cd443a1dd6612f27fb24"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\fast58-resumed-I5-source\\2-0.bin": {
+      "bytes": 60,
+      "sha256": "0f282ad31d648098aba5d41e71f57a6024049d9eb0829823b97791a9a166f11e"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\fast58-resumed-I5-source\\3-0.bin": {
+      "bytes": 63,
+      "sha256": "c91db2d5820bccd7674fe6e35004c28d6b84256bfbc2b76fabcf978d8b4daad5"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-resumed-I5-restored-r2\\0-0.bin": {
+      "bytes": 58,
+      "sha256": "e67b9a5849591f153ae1871661b5621d6ee99bceea8c70aaae2fdf4adfa4cb30"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-resumed-I5-restored-r2\\1-0.bin": {
+      "bytes": 60,
+      "sha256": "0f282ad31d648098aba5d41e71f57a6024049d9eb0829823b97791a9a166f11e"
+    },
+    "D:\\ProjectPackage\\Int\\IntRuoyiMaintance\\output\\playwright\\20261023-spug-normal-path-completion\\overwrite58-resumed-I5-restored-r2\\2-0.bin": {
+      "bytes": 63,
+      "sha256": "c91db2d5820bccd7674fe6e35004c28d6b84256bfbc2b76fabcf978d8b4daad5"
+    }
+  },
+  "codeChecks": {
+    "supportedLinuxFocusedTests": 57
+  },
+  "retainedBusinessFailure": {
+    "point": "smallapp-28cf61e598ae41ed8a3410713ff25a23",
+    "quarantined": true,
+    "countedAsPassed": false
+  },
+  "boundaries": [
+    "Safe overwrite is not a separate requirement in the screenshot and remains unverified.",
+    "Safe source .58 and .59 each used FULL plus one safe incremental and a cross-host restore.",
+    "Fast mode still skips engine content, consistency and environment verification; UI comparison is independent.",
+    "No IntRuoyi business acceptance, arbitrary NAS rebinding or extra tenant writes were performed in this task."
+  ],
+  "evidence": {
+    "overwrite58-I2-first-comparison.json": {
+      "bytes": 193,
+      "sha256": "2e79a665ca4f5736e934d268c3ffca76894e3f11af4435a7c400e1a630f2d50e"
+    },
+    "fast58-I2-source-business.json": {
+      "bytes": 1977,
+      "sha256": "c7ff02af2dc7aaeaddf55f0c571cac78330195a0af95e301bed79096041fe63b"
+    },
+    "overwrite58-I2-first-restored-business.json": {
+      "bytes": 2029,
+      "sha256": "efd687da89b0b9180b94164cc1b2d94477a7e492c09e956b9d18ffb98837734e"
+    },
+    "overwrite58-I2-repeat-comparison.json": {
+      "bytes": 194,
+      "sha256": "70aba96d8167221cc7b749d4d6e99436206ed28e133969ef67af0555777e8f60"
+    },
+    "overwrite58-I2-repeat-restored-business.json": {
+      "bytes": 2033,
+      "sha256": "d7f3c060031cab059f0fcfa4e935d57d363e2260e82eb18418278dbbe343674f"
+    },
+    "overwrite58-I3-comparison.json": {
+      "bytes": 187,
+      "sha256": "ae4315a6dc50fe568a8db902b8679b28ec67f860241d421bf6946c3c5d827ac1"
+    },
+    "fast58-I3-source-business.json": {
+      "bytes": 2295,
+      "sha256": "99133cc373f8e5011e61170051964ddc6e91a51acdab96ca22d0c942efa85fd1"
+    },
+    "overwrite58-I3-restored-business.json": {
+      "bytes": 2330,
+      "sha256": "41e2e1d79c7144aa7bb5ef7cd9aa159d89c5a0639e0fa88431a999d096838e6c"
+    },
+    "overwrite58-I4-latest-comparison.json": {
+      "bytes": 194,
+      "sha256": "dec372f2fb3b107a9947124f01a130e1c629b61049f2897e450d37f0cd1902c1"
+    },
+    "fast58-I4-source-business.json": {
+      "bytes": 1504,
+      "sha256": "53a16ad1dc08cb76eec87f4ad7588fdf7a72f916fb58c4f167f94a000ec31fa3"
+    },
+    "overwrite58-I4-latest-restored-business.json": {
+      "bytes": 1546,
+      "sha256": "dd414c17cd5d204457f5dd3c0c79c0d4fab27169169eae2d51f64c539c12bf04"
+    },
+    "overwrite58-I4-logging-fixed-comparison.json": {
+      "bytes": 201,
+      "sha256": "cbfa4730c5f508d80fc7ea61de8030b2708606ade17b20480269f89770d2317f"
+    },
+    "overwrite58-I4-logging-fixed-restored-business.json": {
+      "bytes": 1567,
+      "sha256": "05b1aa1e575a455060cb1f89510d7eace91f0e0d9d8d53ba3c62e004b8236814"
+    },
+    "overwrite58-resumed-I6-comparison.json": {
+      "bytes": 203,
+      "sha256": "9ce6f5c5be27580a3f397624c9a48be83c7b884f066518e4086f45afbd066ac9"
+    },
+    "fast58-resumed-I6-source-business.json": {
+      "bytes": 2036,
+      "sha256": "ad047213f5b0bdfa36ff2e3d8b513141f33433bfed5219c5ababbc31f2d310a2"
+    },
+    "overwrite58-resumed-I6-restored-business.json": {
+      "bytes": 2064,
+      "sha256": "3d485ecb4f59f23ec377ad76c0c8435bcde20a2e47f0af3d75603305b2342c7a"
+    },
+    "safe59-to58-I1-comparison.json": {
+      "bytes": 190,
+      "sha256": "1bd49065496fe6262deed423dd9474c1a2b120bc702c4002541b22224cb7c8d7"
+    },
+    "safe59-I1-source-business.json": {
+      "bytes": 1695,
+      "sha256": "579d7251205f0dffacbedb2fa7887598e691355a33d3982fb3f9ab37fcb5b7a1"
+    },
+    "safe59-to58-I1-restored-r2-business.json": {
+      "bytes": 1722,
+      "sha256": "03ae1a5d968a26412a8382ce6d65717e805859b5244b1b630455fa88ed166cd6"
+    },
+    "safe58-to59-I1-comparison.json": {
+      "bytes": 187,
+      "sha256": "4ffd6c3a757265f7871a0d3827a8074b665f56223ee269f45e2175c6108618ae"
+    },
+    "safe58-I1-source-business.json": {
+      "bytes": 2004,
+      "sha256": "c9a35207ec3bac8179cf6c5dff37923f1c1cfa5262bbb8abe364233a0266c950"
+    },
+    "safe58-to59-I1-restored-business.json": {
+      "bytes": 2032,
+      "sha256": "965437cc2ebc09250800de7d8dd77ce55d6cd4b405714ef185b2bd0c3be69e2d"
+    },
+    "safe58-I1-source-unchanged-comparison.json": {
+      "bytes": 188,
+      "sha256": "5ca98605893e24c6293fbb973601976fc13a010611feb2f5884b63cb82cb4483"
+    },
+    "completion-live-history.json": {
+      "bytes": 144459,
+      "sha256": "38fc635eed4a27765bcb55984fd18bcff1dab0a2fe6b890267ad3d5c4d5ef824"
+    },
+    "fast58-I2-intent.json": {
+      "bytes": 858,
+      "sha256": "85d57e5468c26ae6114b6da448a96488d7f1a20cf1974719743f093daaa07199"
+    },
+    "fast58-I2-submitted.json": {
+      "bytes": 509,
+      "sha256": "a43f120bdd9455ef9e629b2a07cc76f53d46bfa33582469180e8f48765dba318"
+    },
+    "fast58-I2-result.json": {
+      "bytes": 5033,
+      "sha256": "9b6e7efd88b0d239ed3691aa42e91458283d777eaeeeafc1e7e1dbf72a723515"
+    },
+    "fast58-I3-intent.json": {
+      "bytes": 858,
+      "sha256": "462adbda615bdb7e4afbbd074c860c45724f7ffd6014840d7bbe0d0febbe5a90"
+    },
+    "fast58-I3-submitted.json": {
+      "bytes": 509,
+      "sha256": "13e55780266496f8c22eefb699bd653b4a4129e51d338dfd18893398cb59357d"
+    },
+    "fast58-I3-result.json": {
+      "bytes": 5033,
+      "sha256": "1420cd12ba7e3cf9be89720c79339ac901cc0e7514029cb680ed5ee54c8ea44e"
+    },
+    "fast58-I4-intent.json": {
+      "bytes": 858,
+      "sha256": "d2650d20defb2d0c9d1166917f272c14cc338d95bf9a64c8d8cd564171c9ad9f"
+    },
+    "fast58-I4-submitted.json": {
+      "bytes": 509,
+      "sha256": "f6d8598eb287251b77d1080dbee66a2704ee60cafe8fb493ba4f14c5886fa38f"
+    },
+    "fast58-I4-result.json": {
+      "bytes": 5033,
+      "sha256": "169dd8d42148f1664e1560db1a5007db488b7e9a2185e227ea8a9f3e076fe9f9"
+    },
+    "overwrite58-I2-first-r2-intent.json": {
+      "bytes": 1009,
+      "sha256": "98c9d55baf358de43701af0cd80ec4b8255a11558119b2427b73c8db08f0fb43"
+    },
+    "overwrite58-I2-first-r2-submitted.json": {
+      "bytes": 541,
+      "sha256": "0e9ae9f6d696690b5b5f0023d37d48022edef2fbd3d8a87fda9ae25d40756e10"
+    },
+    "overwrite58-I2-first-r2-result.json": {
+      "bytes": 8263,
+      "sha256": "597c62b1ff70effbcfe0ee18fbfbd2389b18b5a255be6a4c4378db6de079e253"
+    },
+    "overwrite58-I2-repeat-intent.json": {
+      "bytes": 1007,
+      "sha256": "0a651c1669471c13f6e231c71e25a64cce63f95a2ec30e383d296763d0e1fa34"
+    },
+    "overwrite58-I2-repeat-submitted.json": {
+      "bytes": 541,
+      "sha256": "32060ce27980013b86bdd4898ce5f2237378ed1f46a9fd934d2165a3499f8069"
+    },
+    "overwrite58-I2-repeat-result.json": {
+      "bytes": 8264,
+      "sha256": "7391a6cf9183f77136100da868b30c2af538dc820b27c7452dccddb0dcc059af"
+    },
+    "overwrite58-I3-intent.json": {
+      "bytes": 1000,
+      "sha256": "267a5432c92b7a7d0522845afc981c17ba4184560b5b121d725879ed4a5a173f"
+    },
+    "overwrite58-I3-submitted.json": {
+      "bytes": 541,
+      "sha256": "b524f1acc719b2b2f3d528eb861638da0278cac9c6cedd7cd55572c394bceb8a"
+    },
+    "overwrite58-I3-result.json": {
+      "bytes": 9808,
+      "sha256": "a7335ab0fdd1f21c84d2eb33f797da9497b4da015598f8922fd8bacf74b34040"
+    },
+    "overwrite58-I4-latest-intent.json": {
+      "bytes": 1007,
+      "sha256": "ae23b07d61b8a079e007e840d9083d315d56e863902d141310f7b9a95ec371db"
+    },
+    "overwrite58-I4-latest-submitted.json": {
+      "bytes": 541,
+      "sha256": "40350c023e3c6467812153e11c5e83a11cf9267e19daad530972bf5d64dce1e7"
+    },
+    "overwrite58-I4-latest-result.json": {
+      "bytes": 11352,
+      "sha256": "19636d5441c51bfcf877ff75b15a81f253ae1a0bbca592dc2f7603a3092d556b"
+    },
+    "overwrite58-I4-logging-fixed-intent.json": {
+      "bytes": 1014,
+      "sha256": "12c9b7911d09e42e6487f5a2735858fa33d753f9ed4edc27fbb4b81d78660abb"
+    },
+    "overwrite58-I4-logging-fixed-submitted.json": {
+      "bytes": 541,
+      "sha256": "59ca14fdba89e624fa8433235ee5072174129b755056297c32258b5642dc46cb"
+    },
+    "overwrite58-I4-logging-fixed-result.json": {
+      "bytes": 11351,
+      "sha256": "37b24fab48335ceaea27dc2061a7430999698ef79d67c6ec76781fee572bea3e"
+    },
+    "fast58-resumed-I6-intent.json": {
+      "bytes": 866,
+      "sha256": "f9d7742a87c67f38e85f91976f0add726e56f0f464f6fda3c272616a2b8edbb3"
+    },
+    "fast58-resumed-I6-submitted.json": {
+      "bytes": 509,
+      "sha256": "9d0c4b944bd341b23e01a51b1086715027f4d62b6f4c81d0edbd2b3b5e4abced"
+    },
+    "fast58-resumed-I6-result.json": {
+      "bytes": 5032,
+      "sha256": "837e6509f3f650a68c91b9098c3adf235b9f504990af8a3961ac16bf1e3bd0ed"
+    },
+    "overwrite58-resumed-I6-intent.json": {
+      "bytes": 1008,
+      "sha256": "e51826538c33185e1f1dc99957e711b761b7961bb5a4792a7ec6e52d0730f37d"
+    },
+    "overwrite58-resumed-I6-submitted.json": {
+      "bytes": 541,
+      "sha256": "56d77ac12ab63cabcae680ecbaeaa5fdb4ae7049d0bdbacaa0806227eccaf70c"
+    },
+    "overwrite58-resumed-I6-result.json": {
+      "bytes": 12911,
+      "sha256": "63eda417aabea1162db81621e33e2a150508162b4174208ff7f875c5305746e6"
+    },
+    "safe59-I1-r2-intent.json": {
+      "bytes": 847,
+      "sha256": "ab54ade2b037d871f5e7c541e8c7536a1f484a57e57608995bc88f8f32848527"
+    },
+    "safe59-I1-r2-submitted.json": {
+      "bytes": 502,
+      "sha256": "6bbd0a62adf5fde497036162a3fec255558ffb13a6d4339128b71ab2838c83f0"
+    },
+    "safe59-I1-r2-result.json": {
+      "bytes": 5003,
+      "sha256": "ab48bc0aa3f0ffb058864c8e5890c0d23be63e65b2ea3b1b68f6de395376b301"
+    },
+    "safe58-I1-after-fast-r2-intent.json": {
+      "bytes": 864,
+      "sha256": "e11ed7a3e2bbcd81b72d4e1054948a410b470bbf1c809da1c00e4f3d06efe486"
+    },
+    "safe58-I1-after-fast-r2-submitted.json": {
+      "bytes": 505,
+      "sha256": "2f646600ecbaeb17c68cd446fc333236c49ce2fe7cbca51c30badb4b90a8422e"
+    },
+    "safe58-I1-after-fast-r2-result.json": {
+      "bytes": 4966,
+      "sha256": "48a4478c87d950b40f3cab02dfb6f2571dc614f7cb04ee101ad78ceac4dd5cbf"
+    },
+    "safe59-to58-I1-intent.json": {
+      "bytes": 871,
+      "sha256": "ae1472f1b186f97fb961eb8378f60d82792cce78a1a2b1ca39733129f0adf8c3"
+    },
+    "safe59-to58-I1-submitted.json": {
+      "bytes": 535,
+      "sha256": "67bc6e055dce1ed2452a5f79402db4568972ba4adcd0f711d39d89499040fd20"
+    },
+    "safe59-to58-I1-result.json": {
+      "bytes": 7761,
+      "sha256": "3b5dfb57407b21eab229a502465848efbad3821ddae7a94b8e1e5cf824bfb36f"
+    },
+    "safe58-to59-I1-intent.json": {
+      "bytes": 877,
+      "sha256": "aafb49014538b393128dd2399d0ec86b8d34b544de48f93d64f9c87e669111bc"
+    },
+    "safe58-to59-I1-submitted.json": {
+      "bytes": 538,
+      "sha256": "bf76d9e079e5b7925c8f2fbc3910b8e0dbeeb0f4176139a3f26bcd11d208e1c8"
+    },
+    "safe58-to59-I1-result.json": {
+      "bytes": 7759,
+      "sha256": "d2320e72313f62abcfa7ace07b96fb8587ef40fe7c78e7ee287978bf9ce5ce02"
+    },
+    "fast58-I4-delete-result.json": {
+      "bytes": 136,
+      "sha256": "4cc83f8ace2baa467a8c77665dd361f4c54cbd9f72b5f4dc6309be77f86b147f"
+    },
+    "safe59-to58-I1-semantic-readback.json": {
+      "bytes": 6276,
+      "sha256": "6b53ee061b564f925308558f3bc4504ce33e19be24a0cc60c673058013cc70fb"
+    },
+    "safe-restore-59-to-58.json": {
+      "bytes": 1643,
+      "sha256": "469660824762ed7afbc3711f204cff653c09dd8a9e00af84214450212aae1a3c"
+    },
+    "safe58-to59-I1-semantic-readback.json": {
+      "bytes": 7813,
+      "sha256": "6c93ecc39a4f4cd736dab90f32cff7f8041ea4cef333278b8de321f102245150"
+    },
+    "safe-restore-58-to-59.json": {
+      "bytes": 1618,
+      "sha256": "993af253b36056edf5dbde65189721a8b1ad4d3a827e4b164e1bcb19e9d9859c"
+    },
+    "safe-fast-safe-lineage.json": {
+      "bytes": 2797,
+      "sha256": "4d1b417b4cc9343d40c83006be05d5bf7f86949ca60a8773a75edec84cf21804"
+    },
+    "I5-business-mismatch-quarantined.json": {
+      "bytes": 724,
+      "sha256": "a3a983c3c3af31e6bc2663729c95395a0c9de4a1d8b0c80cef69e871350d56f8"
+    },
+    "fast58-resumed-I5-source-business.json": {
+      "bytes": 2036,
+      "sha256": "5b69f2ed715a023abef11e80762e57076680c02013df03cb8226d3f47fc9b3c8"
+    },
+    "overwrite58-resumed-I5-restored-r2-business.json": {
+      "bytes": 1570,
+      "sha256": "a01a9b1713170c461998b5fff8269b8f3487c3536fb78ee1fe95fc1c93e036ef"
+    },
+    "safe58-scope-check-r7b.json": {
+      "bytes": 173,
+      "sha256": "0ae9208d85395a424d9011bec3b22a758ffef069782074b38b1bb3aea901ad07"
+    },
+    "focused-linux-checks-r2.json": {
+      "bytes": 156,
+      "sha256": "3872575a6e8bbe6fd56abb49dd8477c4f17f025ec1040f5d5ff64f0a4e56bae3"
+    }
+  },
+  "passed": true
+}

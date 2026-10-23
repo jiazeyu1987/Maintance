@@ -53,7 +53,7 @@ def _state_for(target_state: dict[str, dict[str, object]], migration_id: str) ->
 
 
 def _item(migration: dict[str, object], action: str, reason: str) -> dict[str, object]:
-    return {
+    item = {
         "migrationId": migration["migrationId"],
         "file": migration.get("file"),
         "sha256": str(migration["sha256"]) if migration.get("sha256") is not None else None,
@@ -68,6 +68,9 @@ def _item(migration: dict[str, object], action: str, reason: str) -> dict[str, o
         "action": action,
         "reason": reason,
     }
+    if "targetPreflight" in migration:
+        item["targetPreflight"] = deepcopy(migration["targetPreflight"])
+    return item
 
 
 def _order_migrations_by_dependencies(

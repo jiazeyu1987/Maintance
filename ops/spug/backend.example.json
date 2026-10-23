@@ -1,0 +1,9 @@
+{
+  "baseUrl": "http://host.docker.internal:48100/admin-api",
+  "tenantId": null,
+  "username": "",
+  "password": "",
+  "publishEnabled": false,
+  "productionPaused": true,
+  "allowedTargets": ["TEST", "BACKUP", "PROD"]
+}

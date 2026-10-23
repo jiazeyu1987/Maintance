@@ -1,0 +1,27 @@
+{
+  "origin": "http://127.0.0.1:18080",
+  "defaultApplication": "release-inventory",
+  "applications": [
+    {
+      "id": "release-inventory",
+      "name": "物品台账小程序",
+      "repo": "D:/ProjectPackage/Int/IntRuoyiMaintance",
+      "scope": "本地隔离演示 · 独立容器与数据",
+      "status": "ready",
+      "executorUrl": "http://host.docker.internal:18110",
+      "bridgeKey": "REPLACE_WITH_RANDOM_PRIVATE_KEY"
+    },
+    {
+      "id": "intruoyi",
+      "name": "IntRuoyi",
+      "repo": "E:/IntRuoyi",
+      "scope": "IntRuoyi · 发布接入待配置",
+      "status": "pending",
+      "blockers": [
+        "尚未配置此发布中心的 IntRuoyi 专用执行器和独立状态目录",
+        "尚未接入并验证 IntRuoyi 构建、迁移、停写及健康检查",
+        "尚未核对并登记本发布中心的 IntRuoyi 三服目标与基线"
+      ]
+    }
+  ]
+}

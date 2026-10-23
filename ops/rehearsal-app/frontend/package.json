@@ -1,0 +1,6 @@
+{
+  "name": "intruoyi-rehearsal", "private": true, "version": "1.0.0", "type": "module",
+  "scripts": {"build": "vue-tsc --noEmit && vite build"},
+  "dependencies": {"vue":"3.5.12","element-plus":"2.11.1"},
+  "devDependencies": {"typescript":"5.3.3","vite":"5.1.4","@vitejs/plugin-vue":"5.0.4","vue-tsc":"2.0.29"}
+}
