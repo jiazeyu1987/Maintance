@@ -8,6 +8,8 @@
 
 IntRuoyi 私密配置必须增加 `localBuildSpaceBytes`，分别明确 `worktree`、`package`、`state` 的正整数字节预算。例如本机采用 6 GiB、3 GiB、1 GiB；同一文件系统的预算相加（合计 10 GiB），不按三个独立路径重复消费同一余量。构建前检查完整预算，导出归档前再次检查包及状态预算。缺配置或不足直接失败，不自动清理其他任务产物。预算是本次构建容量下限，不保证其他进程不会同时占用空间；需随项目体积调整。
 
+各远端目标须明确配置 `minimumDockerFreeBytes`（新镜像导入前预算）和 `minimumDockerRuntimeFreeBytes`（镜像已验证导入后的运行余量）。本次三服分别使用 4 GiB 和 1 GiB；数据库恢复点仍单独检查 `minimumStagingFreeBytes`。复用暂存目录必须先核对原包、收据及实际镜像，才能使用运行余量；缺配置直接失败。不得在导入镜像后再次把已消耗的导入预算当作完整剩余空间要求。
+
 三服升级在停止写入之前，由执行器通过 SSH 启动最多 15 秒的验收端口探针，从实际执行器网络请求唯一标识；监听退出后才允许部署。端口被占用或网络不通时阻断。正式隔离环境已有网关，直接检查该网关的验收端口 HTTP 响应；网关 502 仅证明网络可达，绝不代替后续应用健康或登录验收。
 
 验收端口的防火墙权限属于一次性配置，不由每个发布任务自动打开。对使用 firewalld 的目标，显式运行 `python configure_acceptance_access.py --config <private-config> --environment backup --source-ip <executor-fixed-ip> --zone public --apply`，只添加配置端口、指定来源 /32 的运行时及永久规则；脚本核对 SSH 实际来源。无需 reload 整个防火墙。执行器地址变化须重新审查配置并移除旧规则，不自动扩大为任意来源。

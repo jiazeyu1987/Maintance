@@ -352,19 +352,21 @@ def acceptance_spec(profile):
             'backendIp': addresses[0], 'nginx': nginx}
 
 
-def check_storage(profile):
+def check_storage(profile, images_imported=False):
     base = Path(profile['stagingRoot'])
     require(base.is_absolute() and base.is_dir(), 'Registered staging filesystem directory must exist')
     filesystem = os.statvfs(str(base))
     validate_storage_budget(profile, filesystem.f_bavail * filesystem.f_frsize)
-    minimum = profile.get('minimumDockerFreeBytes')
+    budget_key = 'minimumDockerRuntimeFreeBytes' if images_imported else 'minimumDockerFreeBytes'
+    minimum = profile.get(budget_key)
     require(isinstance(minimum, int) and not isinstance(minimum, bool) and minimum > 0,
-            'Explicit Docker image storage free-space budget required')
+            'Explicit Docker image storage free-space budget required: ' + budget_key)
     docker_root = Path(remote.run(['docker', 'info', '--format', '{{.DockerRootDir}}']).decode().strip())
     require(docker_root.is_absolute() and docker_root.is_dir(), 'DockerRootDir must identify an existing filesystem directory')
     filesystem = os.statvfs(str(docker_root))
     free = filesystem.f_bavail * filesystem.f_frsize
-    require(free >= minimum, 'Insufficient Docker image storage before staging: freeBytes='
+    phase = 'after verified import' if images_imported else 'before staging'
+    require(free >= minimum, 'Insufficient Docker image storage ' + phase + ': freeBytes='
             + str(free) + ', requiredBytes=' + str(minimum))
 
 
@@ -383,7 +385,7 @@ def check_acceptance_port(address, port):
 def preflight(profile, manifest):
     startup_timeout(profile)
     check_fence(profile)
-    check_storage(profile)
+    check_storage(profile, images_imported=True)
     require(manifest.get('maintenanceProtocol') == PROTOCOL, 'Candidate lacks verified IntRuoyi quiescent startup protocol')
     writers = profile.get('writers')
     require(profile.get('writerInventoryConfirmed') is True and isinstance(writers, list) and profile['backend'] in writers,
@@ -1212,11 +1214,13 @@ def dispatch(payload):
         return preflight(profile, payload['manifest'])
     if action == 'stage-directory':
         check_fence(profile)
-        check_storage(profile)
         root = Path(payload['directory'])
         require(root.parent == Path(profile['stagingRoot']) and re.fullmatch(r'\d{4}(-\d{2}){5}', root.name), 'Unregistered staging path')
         if root.exists() or root.is_symlink():
-            return reuse_verified_stage(root, payload)
+            reused = reuse_verified_stage(root, payload)
+            check_storage(profile, images_imported=True)
+            return reused
+        check_storage(profile)
         root.mkdir(mode=0o700, parents=True, exist_ok=False)
         for item in payload['files']:
             path = (root / item['name']).resolve()
