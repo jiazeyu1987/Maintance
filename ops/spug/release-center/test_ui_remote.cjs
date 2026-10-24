@@ -14,7 +14,7 @@ function harness(){
  return {dispatch:(name,target)=>listeners.get(name).callback({target}),listener:name=>listeners.get(name),set:snapshot=>{context.inputSnapshot=snapshot;vm.runInContext("state=inputSnapshot;applicationId=state.application.id;applications=[{id:applicationId,name:state.application.name,status:'ready',scope:'scope fixture'}];selected=state.packages[0]?.releaseTag||'';",context);},render:page=>{vm.runInContext(`page=${page};render();`,context);return element('app').innerHTML;},evaluate:expression=>vm.runInContext(expression,context)};
 }
 const candidate={releaseTag:'candidate',gitCommit:'a'.repeat(40),packageSha256:'package-hash',manifestSha256:'manifest-hash',stage:'function-passed',baseline:false,rehearsals:[]};
-const remote={application:{id:'intruoyi',name:'IntRuoyi',runtimeKind:'remote-intruoyi',repo:'E:/IntRuoyi',targets:{test:{label:'实际测试服 .58',url:'http://test.example.invalid'},prod:{label:'实际正式服 .57',url:'http://prod.example.invalid',acceptanceUrl:'http://accept.example.invalid/private'},backup:{label:'实际备用服 .59',url:'http://backup.example.invalid'},rehearsal:{label:'独立验证机',url:'http://verify.example.invalid'}},capabilities:{initializeBaseline:false,auditBaseline:false,registerTargets:true,buildRelease:true,prepareRehearsal:false},capabilityReasons:{prepareRehearsal:'尚未配置真实隔离目标'},packageStoragePath:'E:/ReleasePackages',nasPath:'//nas/releases'},packages:[candidate],jobs:[],environments:{test:{releaseTag:'baseline-test',baselineStatus:'registered',maintenance:false,observedAt:'2026-10-21T20:00:00+08:00',backendHealth:'UP',frontendHttpStatus:200,migrationCount:3,imageIds:{backend:'sha256:backend',frontend:'sha256:frontend'},schemaSha256:'schema-hash',fingerprint:'fingerprint'},prod:{releaseTag:'baseline-prod',baselineStatus:'registered',maintenance:true},backup:{error:'SSH read refused',maintenanceUnknown:true}}};
+const remote={deploymentBlocks:{candidate:{}},application:{id:'intruoyi',name:'IntRuoyi',runtimeKind:'remote-intruoyi',repo:'E:/IntRuoyi',targets:{test:{label:'实际测试服 .58',url:'http://test.example.invalid'},prod:{label:'实际正式服 .57',url:'http://prod.example.invalid',acceptanceUrl:'http://accept.example.invalid/private'},backup:{label:'实际备用服 .59',url:'http://backup.example.invalid'},rehearsal:{label:'独立验证机',url:'http://verify.example.invalid'}},capabilities:{initializeBaseline:false,auditBaseline:false,registerTargets:true,buildRelease:true,prepareRehearsal:false},capabilityReasons:{prepareRehearsal:'尚未配置真实隔离目标'},packageStoragePath:'E:/ReleasePackages',nasPath:'//nas/releases'},packages:[candidate],jobs:[],environments:{test:{releaseTag:'baseline-test',baselineStatus:'registered',maintenance:false,observedAt:'2026-10-21T20:00:00+08:00',backendHealth:'UP',frontendHttpStatus:200,migrationCount:3,imageIds:{backend:'sha256:backend',frontend:'sha256:frontend'},schemaSha256:'schema-hash',fingerprint:'fingerprint'},prod:{releaseTag:'baseline-prod',baselineStatus:'registered',maintenance:true},backup:{error:'SSH read refused',maintenanceUnknown:true}}};
 const h=harness();h.set(remote);
 for(let page=0;page<9;page++){
  const html=h.render(page);
@@ -50,7 +50,7 @@ h.evaluate("selected='';state.packages=[]");
 assert(!/data-action="register-targets" disabled/.test(h.render(8)),'Registration must not depend on candidate selection');
 h.evaluate("state.jobs=[{id:'running',action:'register-targets',status:'running',logs:[]}]");
 assert(/data-action="register-targets" disabled/.test(h.render(8)),'Running task must block registration');
-const demo={application:{id:'release-inventory',name:'物品台账',repo:'repo',ports:{test:18201,prod:18202,backup:18203,rehearsal:18204}},packages:[candidate],jobs:[],environments:{test:{releaseTag:'baseline',maintenance:false}}};
+const demo={deploymentBlocks:{candidate:{}},application:{id:'release-inventory',name:'物品台账',repo:'repo',ports:{test:18201,prod:18202,backup:18203,rehearsal:18204}},packages:[candidate],jobs:[],environments:{test:{releaseTag:'baseline',maintenance:false}}};
 h.set(demo);
 for(let page=0;page<9;page++)h.render(page);
 assert(h.render(0).includes('127.0.0.1:18201'));
@@ -180,13 +180,13 @@ tail.evaluate("state.jobs[0].action='promote-backup';state.jobs[0].target='backu
 assert(!tail.render(7).includes('<option value="retry"'),'No backup continuation option');
 console.log('Test-only same-package tail continuation and failed-child recovery remain separate from functional acceptance');
 
-// Remote release success is three independently bound technical checks.
+// Formal technical checks remain separate from explicit business acceptance.
 const technical=harness();technical.set(JSON.parse(JSON.stringify({...remote,jobs:[],packages:[{...candidate,stage:'test-deployed'}]})));
 for(const page of [3,4,5,6]){
  const html=technical.render(page);
  assert(html.includes('重新执行三项技术检查'));
- assert(!html.includes('id="accept-note"'),'Remote technical checks require no manual business note');
- assert(!html.includes('data-action="reject-acceptance"'),'No new business rejection criterion in remote release flow');
+ assert.equal(html.includes('id="accept-note"'),[5,6].includes(page),'Formal targets require a business acceptance note');
+ assert.equal(html.includes('data-action="reject-acceptance"'),[5,6].includes(page),'Formal targets support rejecting business acceptance');
  assert(html.includes('Playwright 真实认证登录并进入页面'));
 }
 assert.equal(technical.evaluate("technicalEvidence(pkg(),'test').status"),'pending');
@@ -262,6 +262,25 @@ console.log('Remote three-check evidence, exact failure retry scope, immutable b
  assert.equal(click.evaluate('sent[0].payload.releaseTag'),'candidate');
  assert.equal(click.evaluate('sent[0].payload.note'),'执行三项技术检查：版本镜像、迁移启动、真实登录进入页面');
  console.log('Remote technical action submits without reading a manual acceptance note');
+
+// Failed formal release exposes bound recovery; only a restored old version
+// exposes the explicit reopen action, and only while admission remains closed.
+const recovery=harness();recovery.set(JSON.parse(JSON.stringify({...remote,
+ application:{...remote.application,capabilities:{...remote.application.capabilities,releaseRecovery:true,businessAcceptance:true}},
+ packages:[{...candidate,stage:'prod-deployed',outcomes:{prod:{deployment:{status:'failed',jobId:'JOB-prod-release'},
+ recovery:{status:'pending-acceptance',originalJobId:'JOB-prod-release'}}}}],
+ jobs:[{id:'JOB-prod-release',action:'promote-prod',target:'prod',status:'failed',effectsStarted:true,releaseTag:'candidate',
+ originState:{releaseTag:'baseline-prod'},migrationExecution:{migrations:[{migrationId:'M001',status:'failed-or-unknown'}]},error:'Migration stopped after partial DDL',logs:[]}],
+ environments:{...remote.environments,prod:{...remote.environments.prod,maintenance:true,recoveryPending:true}}})));
+const recoveryHtml=recovery.render(5);
+for(const text of ['迁移失败与验收失败恢复','M001','失败或结果未知，可能部分生效','恢复本次升级前版本及数据','JOB-prod-release'])
+ assert(recoveryHtml.includes(text),`Missing bound recovery entry ${text}`);
+assert(/data-action="recover-release"[^>]*disabled/.test(recoveryHtml),'Do not repeat a completed recovery');
+assert(!/data-action="accept-recovery"[^>]*disabled/.test(recoveryHtml),'Restored old release needs explicit acceptance/open action');
+recovery.evaluate("state.environments.prod.maintenance=false;state.environments.prod.recoveryPending=false");
+assert(recovery.render(5).includes('已开放业务的版本不允许直接恢复升级前数据'));
+assert(!recovery.render(5).includes('data-action="recover-release"'),'Open business must not show a data-destructive restore action');
+console.log('Formal partial-migration recovery actions require pending maintenance and separate old-release acceptance');
 })().catch(error=>{console.error(error);process.exitCode=1;});
 
 const captureResume=harness();captureResume.set(JSON.parse(JSON.stringify({...remote,packages:[candidate],jobs:[{id:'JOB-capture',action:'prepare-rehearsal',target:'rehearsal',sourceEnv:'prod',releaseTag:candidate.releaseTag,status:'failed',effectsStarted:true,remoteStatusRequired:true,remotePhase:'capture-complete',remoteProgress:{jobId:'JOB-capture',status:'succeeded',phase:'capture-complete'},logs:[],payload:{}}]})));
@@ -272,3 +291,88 @@ assert(!captureResume.render(7).includes('<option value="retry"'));
 captureResume.evaluate("state.jobs[0].remoteProgress.status='succeeded';state.jobs[0].remoteProgress.jobId='other'");
 assert(!captureResume.render(7).includes('<option value="retry"'));
 console.log('Captured-transfer continuation requires completed matching source worker');
+
+// The UI consumes the executor's decision; it never derives order from rows or commits.
+const stale=harness();stale.set(JSON.parse(JSON.stringify({...remote,jobs:[],packages:[{...candidate,stage:'rehearsal-passed'}],deploymentBlocks:{candidate:{'promote-prod':'STALE_RELEASE: current production is newer'}}})));
+assert(/data-action="promote-prod" disabled/.test(stale.render(5)));
+assert(stale.render(5).includes('STALE_RELEASE: current production is newer'));
+stale.evaluate("state.deploymentBlocks.candidate={}");
+assert(!/data-action="promote-prod" disabled/.test(stale.render(5)));
+stale.evaluate("delete state.deploymentBlocks");
+assert(/data-action="promote-prod" disabled/.test(stale.render(5)),'Missing ordering decision must block normal publish');
+console.log('Stale candidate buttons disabled with server-provided reasons; unknown ordering blocks');
+
+const prerequisite=harness();prerequisite.set(JSON.parse(JSON.stringify({...remote,
+ application:{...remote.application,capabilities:{...remote.application.capabilities,releasePrecheck:true}},
+ packages:[{...candidate,stage:'built'}],jobs:[{id:'JOB-check',action:'check-prerequisites',releaseTag:'candidate',status:'failed',
+ payload:{operation:'publish-test',releaseTag:'candidate'},logs:[],result:{status:'failed',checks:[{label:'NAS',status:'failed',detail:'<script>unsafe</script>'}],limits:'No deployment'}}]})));
+assert(prerequisite.render(3).includes('data-precheck-result="JOB-check"'));
+assert(prerequisite.render(3).includes('&lt;script&gt;unsafe&lt;/script&gt;'));
+assert(!/data-action="publish-test" disabled/.test(prerequisite.render(3)),'Diagnostic failure must not become an unresolved deployment');
+prerequisite.render(5);
+assert(!prerequisite.evaluate('precheckPanel()').includes('data-precheck-result="JOB-check"'),'Test check is not production evidence');
+assert(!prerequisite.render(7).includes('data-interruption="JOB-check"'));
+prerequisite.evaluate("state.jobs[0].status='running'");
+assert(/data-action="check-prerequisites" disabled/.test(prerequisite.render(3)));
+prerequisite.set(demo);assert(!prerequisite.render(3).includes('data-action="check-prerequisites"'));
+(async()=>{
+ const click=harness();click.set(JSON.parse(JSON.stringify({...remote,packages:[candidate],backupRetries:{candidate:'JOB-original'}})));
+ click.render(6);click.evaluate("globalThis.sent=[];api=async(path,payload)=>{sent.push({path,payload});return {}};refresh=async()=>{};");
+ await click.listener('click').callback({target:{closest:()=>({disabled:false,dataset:{action:'check-prerequisites'}})}});
+ assert.equal(click.evaluate('sent[0].payload.operation'),'promote-backup');
+ assert.equal(click.evaluate('sent[0].payload.retryOf'),'JOB-original');
+ assert.equal(click.evaluate('sent[0].payload.releaseTag'),'candidate');
+ assert.equal(click.evaluate('sent[0].path'),'actions/check-prerequisites');
+ console.log('Prerequisite result scope, escaping, retry binding, task exclusion and demo isolation passed');
+})().catch(error=>{console.error(error);process.exitCode=1;});
+
+// Production acceptance must not hide recovery for a later partial backup failure.
+const backup=harness();backup.set(JSON.parse(JSON.stringify({...remote,
+ application:{...remote.application,capabilities:{...remote.application.capabilities,releaseRecovery:true,independentBackupRetry:true,interruptionReconciliation:true}},
+ packages:[{...candidate,stage:'prod-accepted',outcomes:{prod:{acceptance:{status:'passed'}},backup:{deployment:{status:'failed',jobId:'JOB-backup'}}}}],
+ jobs:[{id:'JOB-backup',action:'promote-backup',target:'backup',releaseTag:'candidate',status:'failed',effectsStarted:true,logs:[],payload:{}}],
+ environments:{prod:{releaseTag:'candidate',maintenance:false},backup:{releaseTag:'old',maintenanceUnknown:true}},
+ backupRetries:{candidate:null}
+})));
+assert(backup.render(6).includes('data-recovery="JOB-backup"'),'Partial backup migration must expose its own recovery despite prod-accepted stage');
+assert(!/data-action="recover-release"[^>]*disabled/.test(backup.render(6)));
+assert(!backup.render(6).includes('data-retry-of='),'Unrestored partial migration cannot offer a retry');
+backup.evaluate("state.packages[0].stage='backup-restored';state.jobs[0].resolution={decision:'restored'};state.environments.backup={releaseTag:'old',maintenance:false};state.backupRetries.candidate='JOB-backup'");
+assert(/data-action="promote-backup" data-retry-of="JOB-backup"/.test(backup.render(6)));
+assert(!/data-action="promote-backup" data-retry-of="JOB-backup" disabled/.test(backup.render(6)));
+backup.evaluate("state.packages[0].stage='completed';state.packages[0].outcomes.backup.acceptance={status:'passed'};state.backupRetries.candidate=null");
+assert(!backup.render(6).includes('data-recovery="JOB-backup"'));
+assert(!backup.render(6).includes('data-retry-of='));
+
+(async()=>{
+ const click=harness();click.set(JSON.parse(JSON.stringify({...remote,packages:[candidate]})));
+ click.evaluate("globalThis.sent=[];api=async(path,payload)=>{sent.push({path,payload});return {}};refresh=async()=>{};");
+ const button={disabled:false,dataset:{action:'promote-backup',retryOf:'JOB-backup-original'}};
+ await click.listener('click').callback({target:{closest:()=>button}});
+ assert.equal(click.evaluate('sent.length'),1);
+ assert.equal(click.evaluate('sent[0].path'),'actions/promote-backup');
+ assert.equal(click.evaluate('sent[0].payload.retryOf'),'JOB-backup-original');
+ assert.equal(click.evaluate('sent[0].payload.releaseTag'),'candidate');
+ assert.equal(click.evaluate('sent[0].payload.applicationId'),'intruoyi');
+ console.log('Partial backup recovery visible; independent retry binds original task, selected package and application');
+})().catch(error=>{console.error(error);process.exitCode=1;});
+
+// Artifact cleanup groups select only unprotected members and bind the original scan.
+const artifacts=harness();artifacts.set(JSON.parse(JSON.stringify({...remote,
+ application:{...remote.application,capabilities:{...remote.application.capabilities,artifactRetention:true}},
+ jobs:[{id:'JOB-scan',action:'scan-artifacts',status:'succeeded',payload:{keepLatest:3},logs:[],result:{complete:true,keepLatest:3,errors:[],items:[
+ {id:'file1',location:'nas',releaseTag:'old',kind:'file',root:'root',file:{relative:'release.tar'},bytes:1073741824,reasons:[]},
+ {id:'file2',location:'nas',releaseTag:'old',kind:'file',root:'root',file:{relative:'release.tar'},bytes:1073741824,reasons:['protected']},
+ {id:'file3',location:'prod',releaseTag:'current',kind:'image',reference:'current:tag',bytes:null,reasons:['current runtime']}]}}]})));
+let artifactHtml=artifacts.render(9);
+assert(artifactHtml.includes('2.00 GiB'));
+assert(artifactHtml.includes('1 可清理 / 1 保护'));
+assert(/data-action="clean-artifacts" disabled/.test(artifactHtml));
+artifacts.dispatch('change',{dataset:{artifactGroup:'nas:old'},checked:true});
+assert.equal(artifacts.evaluate('artifactSelection(artifactScan()).join()'),'file1');
+assert(!/data-action="clean-artifacts" disabled/.test(artifacts.render(9)));
+artifacts.evaluate("state.jobs.unshift({id:'JOB-clean',action:'clean-artifacts',status:'failed',payload:{scanJobId:'JOB-scan'},result:{removed:['file1']},logs:[]})");
+assert(/data-action="clean-artifacts" disabled/.test(artifacts.render(9)),'A consumed scan cannot be replayed');
+assert.equal(artifacts.evaluate('unresolved(state.jobs[0])'),false);
+artifacts.set(demo);assert(!artifacts.render(9).includes('data-action="scan-artifacts"'));
+console.log('Artifact grouping, protected member exclusion, persisted selections and single-use cleanup passed');

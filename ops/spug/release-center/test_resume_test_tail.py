@@ -266,6 +266,7 @@ class ResumeTailTest(unittest.TestCase):
                             originalPlan=[dict(migrationId='one',sha256='a'*64,action='APPLY')],
                             packageSha256=file_sha(self.root/'release.tar'),manifestSha256=file_sha(self.root/'manifest.json'))
         mocks = {
+            'directory':patch.object(agent,'directory',return_value=self.root),
             'check_fence':patch.object(agent,'check_fence'),
             'observe':patch.object(agent,'observe',return_value=self.obs),
             'inspect':patch.object(agent.remote,'inspect',side_effect=lambda name:self.containers[name]),

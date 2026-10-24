@@ -281,6 +281,8 @@ def build(executor, job):
     require(not folder.exists(), 'Release timestamp already reserved')
     folder.mkdir(parents=True)
     worktree = Path(c['buildWorktreeRoot'])/tag
+    job.update(releaseTag=tag, buildDirectory=str(folder), buildWorktree=str(worktree))
+    executor.save()
     worktree.parent.mkdir(parents=True, exist_ok=True)
     executor.step(job, 'freeze-source')
     executor.run(['git', '-c', 'core.autocrlf=false', '-C', c['repo'], 'worktree', 'add', '--detach', str(worktree), commit], timeout=900)

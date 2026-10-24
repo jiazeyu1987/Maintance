@@ -15,6 +15,7 @@ import time
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from state_store import StateStore, process_lock
+from release_order import deployment_block, deployment_blocks
 
 
 def require(ok, message):
@@ -37,6 +38,7 @@ def stamp():
 class Executor:
     def __init__(self, config):
         self.c = config
+        self.draining = False
         # All demo health URLs are fixed host loopback ports. Never send them
         # through an environment/system proxy or the cached global HTTP opener.
         self.local_http = urllib.request.build_opener(urllib.request.ProxyHandler({}))
@@ -127,7 +129,11 @@ class Executor:
     def snapshot(self):
         with self.lock:
             self.ensure_persistence()
-            return json.loads(json.dumps(dict(self.state, application=dict(id=self.c['applicationId'], name=self.c['displayName'], repo=self.c['repo'], ports=self.c['ports']))))
+            return json.loads(json.dumps(dict(self.state, deploymentBlocks=deployment_blocks(self.state), application=dict(id=self.c['applicationId'], name=self.c['displayName'], repo=self.c['repo'], ports=self.c['ports']))))
+
+    def check_deployment_order(self, action, package, environments=None):
+        reason = deployment_block(action, package, self.state['environments'] if environments is None else environments)
+        require(reason is None, reason)
 
     def commits(self):
         raw = self.run(['git', '-C', self.c['repo'], 'log', '-20', '--format=%H%x09%s']).decode('utf-8')
@@ -144,6 +150,7 @@ class Executor:
 
     def package(self, tag):
         p, manifest = self.manifest(tag)
+        require(not p.get('artifactsPruned'), '发布产物已退役清理，禁止重新发布；请构建新包')
         folder = Path(p['directory'])
         require(digest(folder / 'release.tar') == p['packageSha256'], 'Release archive checksum mismatch')
         for item in manifest['files']:
@@ -152,6 +159,7 @@ class Executor:
 
     def submit(self, action, payload, actor):
         self.ensure_persistence()
+        require(not getattr(self, 'draining', False), 'Executor is draining for service stop; no new task accepted')
         with self.lock:
             remote_runtime = self.c.get('runtimeKind') == 'remote-intruoyi'
             allowed = {'build-release', 'initialize-baseline', 'publish-test', 'function-passed', 'prepare-rehearsal', 'upgrade-rehearsal', 'mark-tested', 'promote-prod', 'accept-prod', 'promote-backup', 'accept-backup', 'reject-acceptance', 'reset-rehearsal', 'audit-baseline', 'resolve-task'}
@@ -172,6 +180,7 @@ class Executor:
                 # Full archive validation runs in execute before any side effect.
                 # Do not hold the HTTP/state lock while hashing gigabyte images.
                 p, _ = self.manifest(tag)
+                self.check_deployment_order(action, p)
                 require(action in ('reset-rehearsal', 'audit-baseline', 'prepare-rehearsal') or not any(self.failed_task_blocks(j, action, payload, p) for j in self.state['jobs']), 'Failed task requires investigation; blind retry refused')
                 gates = {'initialize-baseline': None, 'publish-test': 'built', 'function-passed': 'test-deployed', 'prepare-rehearsal': None, 'upgrade-rehearsal': None, 'mark-tested': None, 'promote-prod': 'tested', 'accept-prod': 'prod-deployed', 'promote-backup': 'prod-accepted', 'accept-backup': 'backup-deployed', 'reject-acceptance': None, 'reset-rehearsal': None, 'audit-baseline': None}
                 if remote_runtime:
@@ -181,7 +190,8 @@ class Executor:
                 if self.technical_verification_enabled() and action in technical_actions:
                     require(p['stage'] in technical_actions[action], 'Workflow prerequisite not met')
                 else:
-                    require(gates[action] is None or p['stage'] == gates[action], 'Workflow prerequisite not met')
+                    backup_retry = remote_runtime and action == 'promote-backup' and payload.get('retryOf') and p['stage'] == 'backup-restored'
+                    require(gates[action] is None or p['stage'] == gates[action] or backup_retry, 'Workflow prerequisite not met')
                 require(not p['baseline'] or action in ('initialize-baseline', 'reset-rehearsal', 'audit-baseline'), 'Initial baseline cannot be promoted as a candidate')
                 require(not p.get('abandoned') or action in ('audit-baseline', 'reset-rehearsal'), 'Candidate was explicitly abandoned; build a new package')
                 if action == 'prepare-rehearsal':
@@ -269,6 +279,7 @@ class Executor:
                             require(self.state['environments'].get('prod', {}).get('releaseTag') == p['releaseTag'], 'Production has moved to another package; this older release cannot update backup')
                         if env == 'prod' or not remote_runtime:
                             require(self.verified_origin(p, job['originFingerprint']), 'Target origin has no passed rehearsal for this immutable package; rehearse this origin first')
+                    self.check_deployment_order(action, p)
                     self.deploy(env, p, manifest, job)
                     if env == 'rehearsal':
                         self.active_rehearsal(p)['status'] = 'upgraded'
@@ -941,12 +952,7 @@ class Executor:
         self.log(job, 'Isolated rehearsal restored from ' + source_env + ' DB and its original application images; passed origin evidence retained')
 
 
-def main(executor_type=Executor):
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--config', required=True)
-    args = parser.parse_args()
-    config = json.loads(Path(args.config).read_text('utf-8-sig'))
-    executor = executor_type(config)
+def create_server(executor, config):
     key = config['bridgeKey']
 
     class Handler(BaseHTTPRequestHandler):
@@ -982,7 +988,16 @@ def main(executor_type=Executor):
         do_GET = handle_request
         do_POST = handle_request
 
-    ThreadingHTTPServer((config.get('listenHost', '127.0.0.1'), config.get('port', 18110)), Handler).serve_forever()
+    return ThreadingHTTPServer((config.get('listenHost', '127.0.0.1'), config.get('port', 18110)), Handler)
+
+
+def main(executor_type=Executor):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config', required=True)
+    args = parser.parse_args()
+    config = json.loads(Path(args.config).read_text('utf-8-sig'))
+    executor = executor_type(config)
+    create_server(executor, config).serve_forever()
 
 
 if __name__ == '__main__':

@@ -28,7 +28,7 @@ class TechnicalVerificationTest(unittest.TestCase):
         self.manifest={'releaseTag':self.tag,'images':{role:{'id':value} for role,value in self.images.items()},'migrations':[]}
         self.package={'releaseTag':self.tag,'packageSha256':'c'*64,'stage':'built','baseline':False,'rehearsals':[]}
         self.executor.state={'packages':[self.package],'jobs':[],'environments':{
-            env:dict(self.observation(),releaseTag='old',fingerprint=env+'-origin') for env in ('test','prod','backup')}}
+            env:dict(self.observation(),releaseTag='2026-10-22-00-00-00',fingerprint=env+'-origin') for env in ('test','prod','backup')}}
         self.executor.package=Mock(return_value=(self.package,self.manifest))
         self.executor.manifest=Mock(return_value=(self.package,self.manifest))
         self.executor.runtime=Mock()
@@ -155,26 +155,51 @@ class TechnicalVerificationTest(unittest.TestCase):
         self.assertEqual(self.package['outcomes']['test']['technical']['checks']['login']['status'],'failed')
         self.assertNotEqual(self.package['stage'],'tested')
 
-    def test_prod_opens_only_after_real_three_checks_and_records_rehearsal(self):
+    def test_prod_stays_closed_until_explicit_business_acceptance(self):
         record=self.seed_rehearsal()
         job=self.run_action('promote-prod')
         self.assertEqual(job['status'],'succeeded',job.get('error'))
-        self.assertEqual(self.events,['login','open'])
+        self.assertEqual(self.events,['login'])
+        self.assertEqual(self.package['stage'],'prod-deployed')
+        self.assertTrue(self.executor.state['environments']['prod']['maintenance'])
+        with self.assertRaisesRegex(ValueError,'business acceptance'):
+            self.run_action('promote-backup')
+        with self.assertRaisesRegex(ValueError,'acceptance note'):
+            self.run_action('accept-prod')
+        accepted=self.run_action('accept-prod',note='Actual business acceptance passed')
+        self.assertEqual(accepted['status'],'succeeded',accepted.get('error'))
+        self.assertEqual(self.events,['login','login','open'])
         self.assertEqual(self.login.call_args.args[1],'http://172.30.30.58:38084')
         self.assertEqual(self.package['stage'],'prod-accepted')
         self.assertEqual(self.package['validatedProductionRehearsal'],record['id'])
+        self.assertEqual(self.package['outcomes']['prod']['acceptance']['jobId'],accepted['id'])
+        self.assertEqual(len([row for row in self.package['acceptances'] if row['jobId']==accepted['id']]),1)
+
+    def test_formal_acceptance_and_successful_job_are_saved_together(self):
+        self.seed_rehearsal()
+        self.run_action('promote-prod')
+        snapshots=[]
+        self.executor.save.side_effect=lambda:snapshots.append(copy.deepcopy(self.executor.state))
+        accepted=self.run_action('accept-prod',note='Checked actual business data')
+        committed=any(
+            next((job for job in snapshot['jobs'] if job['id']==accepted['id']),{}).get('status')=='succeeded'
+            and next((package for package in snapshot['packages'] if package['releaseTag']==self.tag),{})
+                .get('outcomes',{}).get('prod',{}).get('acceptance',{}).get('status')=='passed'
+            for snapshot in snapshots)
+        self.assertTrue(committed,'Business acceptance and job success must be durably recorded in one save')
 
     def test_opening_failure_preserves_three_passes_but_never_accepts(self):
         self.seed_rehearsal()
         self.executor.maintenance.side_effect=ValueError('Opening health failed')
-        job=self.run_action('promote-prod')
+        self.run_action('promote-prod')
+        job=self.run_action('accept-prod',note='Actual business acceptance passed')
         self.assertEqual(job['status'],'failed')
         technical=self.package['outcomes']['prod']['technical']
         self.assertEqual((technical['status'],technical['phase'],technical['opening']['status']),('failed','opening','failed'))
         self.assertTrue(all(item['status']=='passed' for item in technical['checks'].values()))
         self.assertEqual(self.package['stage'],'prod-deployed')
         self.assertEqual(self.package['outcomes']['prod']['deployment']['status'],'succeeded')
-        with self.assertRaisesRegex(ValueError,'Passed technical'):
+        with self.assertRaisesRegex(ValueError,'business acceptance'):
             self.run_action('promote-backup')
 
     def test_production_rehearsal_auto_passes_and_records_its_technical_evidence(self):
@@ -183,7 +208,7 @@ class TechnicalVerificationTest(unittest.TestCase):
         record['status']='ready'
         record.pop('technical')
         self.package['stage']='rehearsal-ready'
-        self.executor.state['environments']['rehearsal']=dict(self.observation(),releaseTag='old',fingerprint='prod-origin')
+        self.executor.state['environments']['rehearsal']=dict(self.observation(),releaseTag='2026-10-22-00-00-00',fingerprint='prod-origin')
         job=self.run_action('upgrade-rehearsal')
         self.assertEqual(job['status'],'succeeded',job.get('error'))
         self.assertEqual(self.package['stage'],'rehearsal-passed')
@@ -196,26 +221,46 @@ class TechnicalVerificationTest(unittest.TestCase):
         self.seed_technical('prod')
         self.executor.state['environments']['prod']=self.observation()
         self.package.update(stage='prod-accepted',validatedProductionRehearsal=record['id'])
+        self.package['outcomes']['prod']['acceptance']={'status':'passed'}
         job=self.run_action('promote-backup')
         self.assertEqual(job['status'],'succeeded',job.get('error'))
+        self.assertEqual(self.package['stage'],'backup-deployed')
+        self.executor.maintenance.assert_not_called()
+        accepted=self.run_action('accept-backup',note='Actual backup business acceptance passed')
+        self.assertEqual(accepted['status'],'succeeded',accepted.get('error'))
         self.assertEqual(self.package['stage'],'completed')
-        self.assertEqual(self.events,['login','open'])
+        self.assertEqual(self.events,['login','login','open'])
         self.executor.maintenance.assert_called_once_with('backup',False)
 
     def test_formal_login_failure_never_opens_and_repeated_rechecks_remain_possible(self):
         self.seed_rehearsal()
         self.login.side_effect=LoginVerificationError('Login failed')
         original=self.run_action('promote-prod')
-        retry=self.run_action('accept-prod')
+        retry=self.run_action('verify-prod')
         self.assertEqual((original['status'],retry['status']),('failed','failed'))
         self.executor.maintenance.assert_not_called()
         self.login.side_effect=lambda config,url,directory,binding:dict(status='passed',authenticated=True,binding=binding)
-        success=self.run_action('accept-prod')
+        success=self.run_action('verify-prod')
         self.assertEqual(success['status'],'succeeded',success.get('error'))
         self.executor.deploy.assert_called_once()
         self.assertEqual(original['reconciledBy'],success['id'])
         self.assertEqual(retry['reconciledBy'],success['id'])
         self.assertEqual(len(self.package['technicalHistory']),4)
+        self.executor.maintenance.assert_not_called()
+
+    def test_business_rejection_cannot_be_erased_by_technical_recheck(self):
+        self.seed_rehearsal()
+        self.run_action('promote-prod')
+        rejected=self.run_action('reject-acceptance',note='Actual business function failed')
+        self.assertEqual(rejected['status'],'failed')
+        self.assertTrue(self.executor.state['environments']['prod']['maintenance'])
+        with self.assertRaisesRegex(ValueError,'Unresolved failure'):
+            self.run_action('verify-prod')
+        with self.assertRaisesRegex(ValueError,'Failed task'):
+            self.run_action('accept-prod',note='Trying to override a known rejection')
+        with self.assertRaisesRegex(ValueError,'business acceptance'):
+            self.run_action('promote-backup')
+        self.executor.maintenance.assert_not_called()
 
     def test_wrong_environment_or_forged_reconciliation_is_not_technical_evidence(self):
         self.run_action('publish-test')

@@ -6,6 +6,7 @@ import secrets
 import threading
 
 from executor import Executor, main, require, stamp
+from release_order import deployment_blocks
 from intruoyi_build import build, target_input_plan
 from intruoyi_runtime import Runtime, audit_ledger, package_identity, rehearsal_profile
 from intruoyi_rehearsal import active_remote_progress
@@ -71,8 +72,18 @@ def backup_rehearsal_schema(package, observation):
     return rehearsal['upgradedSchemaSha256']
 
 
-class IntRuoyiExecutor(Executor):
-    TECHNICAL_ACTIONS = {'mark-tested':'test','accept-rehearsal':'rehearsal','accept-prod':'prod','accept-backup':'backup'}
+from rollback_mixin import RollbackMixin
+
+class _IntRuoyiExecutor(Executor):
+    TECHNICAL_ACTIONS = {'mark-tested':'test','accept-rehearsal':'rehearsal','verify-prod':'prod','verify-backup':'backup'}
+
+    def run(self, args, data=None, cwd=None, timeout=900, env=None):
+        if self.c.get('executionMode') == 'windows-service' and Path(args[0]).name.lower() in ('git', 'git.exe'):
+            # The configured source is user-owned; SCM runs as LocalSystem.
+            # Trust only this explicit repository for this command, never all repos.
+            repository = Path(self.c['repo']).resolve(strict=True).as_posix()
+            args = [args[0], '-c', 'safe.directory='+repository, *args[1:]]
+        return super().run(args, data=data, cwd=cwd, timeout=timeout, env=env)
 
     def technical_verification_enabled(self):
         return True
@@ -96,6 +107,8 @@ class IntRuoyiExecutor(Executor):
         if original.get('status') != 'failed' or original.get('releaseTag') != package['releaseTag'] or original.get('resolution'):
             return False
         if original.get('action') == 'reject-acceptance' and not original.get('effectsStarted'):
+            if env in ('prod', 'backup'):
+                return False
             rows = [row for row in package.get('acceptances', []) if row.get('jobId') == original['id']]
             return len(rows) == 1 and rows[0].get('env') == env and original.get('target') == env
         proof = original.get('technicalVerification', {})
@@ -105,6 +118,8 @@ class IntRuoyiExecutor(Executor):
                 and package.get('outcomes', {}).get(env, {}).get('deployment', {}).get('status') == 'succeeded')
 
     def failed_task_blocks(self, failed, action, payload, package):
+        if failed.get('action') in ('check-prerequisites','scan-artifacts','clean-artifacts'):
+            return False
         if not super().failed_task_blocks(failed, action, payload, package):
             return False
         reconciled = failed.get('reconciledBy')
@@ -119,7 +134,8 @@ class IntRuoyiExecutor(Executor):
                    and self.technical_passed(package, 'rehearsal', record.get('technical', {}).get('jobId'))
                    and record.get('technical', {}).get('status') == 'passed' for record in package.get('rehearsals', []))
 
-    def verify_technical(self, env, package, manifest, job):
+    def verify_technical(self, env, package, manifest, job, *, opening=False):
+        require(not opening or job['action'] == 'reconcile-interruption', 'Explicit opening action required')
         binding = dict(jobId=job['id'], env=env, releaseTag=package['releaseTag'], packageSha256=package['packageSha256'])
         technical = dict(binding, status='running', phase='version', time=stamp(),
                          checks={name:{'status':'pending'} for name in ('version','upgrade','login')})
@@ -186,7 +202,10 @@ class IntRuoyiExecutor(Executor):
                     'Real browser login evidence does not match this technical verification')
             technical['checks']['login'] = dict(status='passed', evidence=receipt)
             self.save()
-            if env in ('prod','backup'):
+            # A technical check never substitutes for the operator's business
+            # acceptance. Only the explicit acceptance job may open admission.
+            opening = opening or job['action'] == {'prod':'accept-prod','backup':'accept-backup'}.get(env)
+            if opening:
                 technical['phase'] = 'opening'
                 technical['opening'] = {'status':'running'}
                 self.save()
@@ -203,13 +222,15 @@ class IntRuoyiExecutor(Executor):
                         'Formal target opening did not preserve verified package and migration state')
                 self.state['environments'][env] = dict(opened, observedAt=stamp(), baselineStatus='registered', maintenanceUnknown=False)
                 technical['opening'] = {'status':'passed'}
-            stage = {'test':'tested','rehearsal':'rehearsal-passed','prod':'prod-accepted','backup':'completed'}[env]
+            stage = {'test':'tested','rehearsal':'rehearsal-passed','prod':'prod-deployed','backup':'backup-deployed'}[env]
+            if opening:
+                stage = 'prod-accepted' if env == 'prod' else 'completed'
             if env == 'rehearsal':
                 record = self.active_rehearsal(package)
                 require(record.get('source') == 'prod' and record.get('packageSha256') == package['packageSha256'],
                         'Technical rehearsal acceptance must bind the production origin and immutable package')
                 record.update(status='passed', actor=job['actor'], acceptedAt=stamp())
-            elif env == 'prod':
+            elif env == 'prod' and opening:
                 package['validatedProductionRehearsal'] = rehearsals[0]['id']
             package['stage'] = stage
             technical.update(status='passed', phase='complete', finishedAt=stamp())
@@ -219,6 +240,15 @@ class IntRuoyiExecutor(Executor):
                     prior.update(reconciledBy=job['id'], superseded=True)
                     reconciled.append(prior['id'])
             technical['reconcilesJobIds'] = reconciled
+            if opening:
+                note = job['payload']['note']
+                package.setdefault('outcomes', {}).setdefault(env, {})['acceptance'] = dict(
+                    status='passed', jobId=job['id'], step=job.get('currentStep'), time=stamp(),
+                    actor=job['actor'], note=note)
+                package.setdefault('acceptances', []).append(dict(action=job['action'], env=env,
+                    note=note, actor=job['actor'], time=stamp(), jobId=job['id']))
+                job['status'] = 'succeeded'
+                job['finishedAt'] = stamp()
             self.save()
             self.log(job, 'Version/images, complete migration/startup and real browser login passed for ' + env)
         except Exception as error:
@@ -242,7 +272,18 @@ class IntRuoyiExecutor(Executor):
         require(config.get('stateDir') and config.get('buildWorktreeRoot'), 'Dedicated state and worktree paths required')
         require(config.get('mysqlImage') == 'mysql:8.0.39', 'Pinned MySQL runtime required')
         super().__init__(config)
+        self.track_local_processes = True
         self.runtime = Runtime(config)
+        # An interrupted diagnostic has no deployment effects to reconcile.
+        # Keep its failure visible and permit a fresh diagnostic; never mark it passed.
+        for job in self.state['jobs']:
+            if job['action']=='clean-artifacts' and job['status']=='interrupted':
+                job.update(status='failed',error='清理中断，部分删除结果未确认；保留明细，请重新扫描实际剩余产物。')
+            if job['action'] in ('check-prerequisites','scan-artifacts') and job['status'] == 'interrupted':
+                job.update(status='failed', error='检查或扫描被中断，结果不完整，请重新执行。')
+                if job.get('result'):
+                    job['result']['status'] = 'interrupted'
+        self.save()
         if 'rehearsal' in self.state['environments']:
             source = self.state['environments']['rehearsal'].get('sourceEnvironment')
             self.runtime.targets['rehearsal'] = rehearsal_profile(config, source)
@@ -260,18 +301,60 @@ class IntRuoyiExecutor(Executor):
                                packageStoragePath=str(self.root/'packages'),
                                capabilities=dict(initializeBaseline=False, auditBaseline=False, registerTargets=True,
                                                  restoreMetadata=bool(self.c.get('metadataRepair')),
-                                                 buildRelease=True, prepareRehearsal=configured))
+                                                 buildRelease=True, prepareRehearsal=configured, releaseRecovery=True,
+                                                 businessAcceptance=True, interruptionReconciliation=True,
+                                                 independentBackupRetry=True, releasePrecheck=True, artifactRetention=True))
             if not configured:
                 application['capabilityReasons'] = dict(prepareRehearsal='尚未配置独立数据副本、运行资源与外部接口隔离，不能准备演练。')
             if self.c.get('nasPath'):
                 application['nasPath'] = self.c['nasPath']
-            return json.loads(json.dumps(dict(self.state, application=application)))
+            import os
+            from backup_retry import available
+            return json.loads(json.dumps(dict(self.state, application=application, deploymentBlocks=deployment_blocks(self.state),
+                backupRetries={p['releaseTag']: available(self.state, p) for p in self.state['packages']},
+                executorRuntime=dict(pid=os.getpid(), mode=self.c.get('executionMode', 'console'),
+                                     draining=getattr(self, 'draining', False)))))
 
     def submit(self, action, payload, actor):
         self.ensure_persistence()
+        require(not getattr(self, 'draining', False), 'Executor is draining for service stop; no new task accepted')
         require(payload.get('applicationId') == self.c['applicationId'], 'Request application identity mismatch')
         require(action not in ('initialize-baseline','audit-baseline'), 'Remote databases must never use demo initialization')
         require(action != 'function-passed', 'Use mark-tested to accept the actual deployed test candidate')
+        # A repeated request returns its original task even if a newer release now runs.
+        require(isinstance(payload.get('requestId'), str) and re.fullmatch('[a-zA-Z0-9-]{8,80}', payload['requestId']),
+                'requestId required')
+        with self.lock:
+            existing = next((j for j in self.state['jobs'] if j.get('requestId') == payload['requestId']), None)
+            if existing:
+                require(existing['action'] == action and existing['payload'] == payload, 'Request ID binding mismatch')
+                return existing
+        from intruoyi_recovery import RECOVERY_ACTIONS, submit_recovery
+        if action in ('scan-artifacts','clean-artifacts'):
+            from artifact_retention import submit
+            return submit(self,action,payload,actor)
+        if action == 'check-prerequisites':
+            from release_precheck import submit
+            return submit(self, payload, actor)
+        from interruption import ACTIONS, submit as submit_interruption
+        if action in ACTIONS:
+            return submit_interruption(self, action, payload, actor)
+        if action in RECOVERY_ACTIONS:
+            return submit_recovery(self, action, payload, actor)
+        if action in ('accept-prod', 'accept-backup'):
+            require(isinstance(payload.get('note'), str) and len(payload['note'].strip()) >= 5,
+                    'Explicit business acceptance note required before opening')
+        if action == 'promote-backup':
+            package, _ = self.manifest(payload.get('releaseTag'))
+            if payload.get('retryOf'):
+                from backup_retry import validate_retry
+                validate_retry(self, package, payload['retryOf'])
+            accepted = package.get('outcomes', {}).get('prod', {}).get('acceptance', {})
+            require(accepted.get('status') == 'passed' and self.state['environments'].get('prod', {}).get('maintenance') is False,
+                    'Production business acceptance and open admission required before backup')
+        if action not in ('build-release','resolve-task','register-targets','restore-metadata'):
+            require(not any(e.get('recoveryPending') for e in self.state['environments'].values()),
+                    'Recovery must be accepted before another release operation')
         prerequisite = {'prepare-rehearsal':'test','promote-prod':'rehearsal','promote-backup':'prod'}.get(action)
         if prerequisite:
             package, _ = self.manifest(payload.get('releaseTag'))
@@ -316,6 +399,53 @@ class IntRuoyiExecutor(Executor):
             return job
 
     def execute(self, job):
+        tracker = None
+        context = getattr(self.runtime, 'operation_context', None)
+        try:
+            if getattr(self, 'track_local_processes', False):
+                from backup_retry import bind_attempt_roots
+                from local_processes import Tracker
+                bind_attempt_roots(self, job)
+                tracker = Tracker(self, job)
+            if context is not None:
+                context.binding = (job, self.save)
+            return self.execute_bound(job)
+        except Exception as error:
+            job.update(status='interrupted' if getattr(error, 'remoteStatusUnknown', False) else 'failed',
+                       error=str(error).replace(self.password, '[REDACTED]'), finishedAt=stamp())
+            if job['action'] == 'check-prerequisites' and job.get('result'):
+                job['result'].update(status='failed', finishedAt=stamp())
+            self.log(job, 'Task stopped before dispatch completed: ' + job['error'])
+        finally:
+            if context is not None:
+                context.binding = None
+            if tracker:
+                tracker.close()
+
+    def execute_bound(self, job):
+        if job['action'] in ('scan-artifacts','clean-artifacts'):
+            from artifact_retention import execute
+            return execute(self,job)
+        if job['action'] == 'check-prerequisites':
+            from release_precheck import execute
+            return execute(self, job)
+        if job['action'] == 'promote-backup' and job.get('payload', {}).get('retryOf'):
+            # Preserve each backup attempt without carrying its acceptance or
+            # recovery status into the next attempt. Production is untouched.
+            package, _ = self.manifest(job['releaseTag'])
+            from backup_retry import validate_retry
+            validate_retry(self, package, job['payload']['retryOf'])
+            package.setdefault('backupAttemptHistory', []).append(dict(
+                originalJobId=job['payload']['retryOf'], retryJobId=job['id'],
+                outcomes=json.loads(json.dumps(package.get('outcomes', {}).get('backup', {})))))
+            package.setdefault('outcomes', {})['backup'] = {}
+            self.save()
+        from interruption import ACTIONS, execute as execute_interruption
+        if job['action'] in ACTIONS:
+            return execute_interruption(self, job)
+        from intruoyi_recovery import RECOVERY_ACTIONS, execute_recovery
+        if job['action'] in RECOVERY_ACTIONS:
+            return execute_recovery(self, job)
         if job['action'] not in ('register-targets','restore-metadata'):
             return super().execute(job)
         try:
@@ -372,6 +502,13 @@ class IntRuoyiExecutor(Executor):
     def deploy(self, env, p, manifest, job):
         self.step(job, 'check-migration-plan')
         observation = self.runtime.observe(env)
+        observed_environments = dict(self.state['environments'], **{env: observation})
+        if env == 'backup':
+            observed_environments['prod'] = self.runtime.observe('prod')
+            require(observed_environments['prod'].get('images') == {
+                role: manifest['images'][role]['id'] for role in ('backend', 'frontend')},
+                'Production image identity changed; backup requires the currently accepted original package')
+        self.check_deployment_order(job['action'], p, observed_environments)
         audit_ledger(observation, manifest)
         environment = self.active_rehearsal(p)['source'] if env == 'rehearsal' else env
         plan = target_input_plan(manifest['migrations'], observation['ledgerRecords'], environment)
@@ -765,6 +902,11 @@ class IntRuoyiExecutor(Executor):
             require(self.fingerprint(original['target']) == original['originFingerprint'], 'Original remote origin changed')
         original['resolution'] = dict(decision='abandon', note=job['payload']['note'], actor=job['actor'], time=stamp(), jobId=job['id'])
         self.log(job, 'Original pre-effect task retained and abandoned; no SQL replayed')
+
+
+class IntRuoyiExecutor(RollbackMixin, _IntRuoyiExecutor):
+    """Run rollback hooks before the concrete release adapter."""
+    pass
 
 
 if __name__ == '__main__':

@@ -18,23 +18,23 @@ class WorkflowStateTests(unittest.TestCase):
         self.executor.c = dict(runtimeKind='remote-intruoyi')
         self.executor.lock = threading.RLock()
         self.executor.password = 'unit-secret'
-        self.package = dict(releaseTag='candidate', packageSha256='package', stage='built', baseline=False, rehearsals=[])
+        self.package = dict(releaseTag='2026-10-24-02-00-00', packageSha256='package', stage='built', baseline=False, rehearsals=[])
         self.executor.state = dict(packages=[self.package], jobs=[], environments={
-            env:dict(releaseTag='old', fingerprint=env+'-origin') for env in ('test', 'prod', 'backup')})
+            env:dict(releaseTag='2026-10-24-01-00-00', fingerprint=env+'-origin') for env in ('test', 'prod', 'backup')})
         self.executor.save = Mock()
         self.executor.log = Mock()
         self.executor.manifest = Mock(return_value=(self.package, {}))
         self.executor.package = Mock(return_value=(self.package, {}))
         self.executor.audit_target = Mock()
         self.executor.fingerprint = lambda env:self.executor.state['environments'][env]['fingerprint']
-        self.executor.maintenance = Mock()
+        self.executor.maintenance = Mock(side_effect=lambda env, enabled:self.executor.state['environments'][env].update(maintenance=enabled))
         self.executor.health = lambda env, tag:require(self.executor.state['environments'][env]['releaseTag'] == tag, 'Actual runtime version differs')
         def prepare(package, job):
             record = dict(id=job['id'], jobId=job['id'], source='prod', status='ready',
                           originFingerprint='prod-origin', packageSha256='package')
             package['rehearsals'].append(record)
             package['activeRehearsal'] = record['id']
-            self.executor.state['environments']['rehearsal'] = dict(releaseTag='old', fingerprint='isolated-origin')
+            self.executor.state['environments']['rehearsal'] = dict(releaseTag='2026-10-24-01-00-00', fingerprint='isolated-origin')
         self.executor.prepare = prepare
         def deploy(env, package, manifest, job):
             if env == 'prod': job['rehearsalId'] = package['activeRehearsal']
@@ -44,7 +44,7 @@ class WorkflowStateTests(unittest.TestCase):
     def run_action(self, action, **payload):
         with patch('executor.threading.Thread'):
             job = self.executor.submit(action, dict(requestId='request-'+str(len(self.executor.state['jobs'])),
-                                       releaseTag='candidate', note='unit acceptance evidence', **payload), 'unit operator')
+                                       releaseTag='2026-10-24-02-00-00', note='unit acceptance evidence', **payload), 'unit operator')
         self.executor.execute(job)
         return job
 
@@ -81,7 +81,7 @@ class WorkflowStateTests(unittest.TestCase):
 
 class ProductionEvidenceTests(unittest.TestCase):
     def setUp(self):
-        self.origin = dict(releaseTag='old', images=dict(backend='backend', frontend='frontend'),
+        self.origin = dict(releaseTag='2026-10-24-01-00-00', images=dict(backend='backend', frontend='frontend'),
                            schemaSha256='schema', ledgerSha256='ledger')
         self.record = dict(id='prod-proof', source='prod', status='passed', packageSha256='package',
                            originFingerprint='prod-runtime', originState=copy.deepcopy(self.origin),
@@ -120,17 +120,17 @@ class IsolationDiscardTests(unittest.TestCase):
     def setUp(self):
         self.executor = object.__new__(IntRuoyiExecutor)
         self.original = dict(id='failed', action='upgrade-rehearsal', target='rehearsal', status='failed',
-                             releaseTag='candidate', effectsStarted=True)
+                             releaseTag='2026-10-24-02-00-00', effectsStarted=True)
         self.record = dict(id='capture', source='test', packageSha256='hash', status='ready',
                            deployment=dict(jobId='failed'), originFingerprint='source')
-        self.package = dict(releaseTag='candidate', packageSha256='hash', stage='built',
+        self.package = dict(releaseTag='2026-10-24-02-00-00', packageSha256='hash', stage='built',
                             activeRehearsal='capture', rehearsals=[self.record])
         self.executor.state = dict(jobs=[self.original], packages=[self.package],
                                    environments=dict(rehearsal=dict(sourceEnvironment='test')))
         self.executor.runtime = Mock()
         self.executor.runtime.call.return_value = dict(stopped=True)
         self.origin = dict(fingerprint='source', schemaSha256='schema', ledgerRecords=[],
-                           backendHealth=dict(status='UP'), frontendHttpStatus=200, releaseTag='old',
+                           backendHealth=dict(status='UP'), frontendHttpStatus=200, releaseTag='2026-10-24-01-00-00',
                            images=dict(backend='sha256:'+'a'*64, frontend='sha256:'+'b'*64),
                            maintenance=False, readOnly=dict(read_only=False, super_read_only=False))
         self.executor.runtime.observe.return_value = self.origin
@@ -169,7 +169,7 @@ class IsolationDiscardTests(unittest.TestCase):
         self.executor.health = Mock()
         self.executor.audit_target = Mock()
         self.executor.resolve_task(self.job)
-        self.executor.health.assert_called_once_with('test', 'candidate')
+        self.executor.health.assert_called_once_with('test', '2026-10-24-02-00-00')
         self.executor.audit_target.assert_called_once_with('test', self.package, {})
         self.assertEqual(self.package['stage'], 'test-deployed')
         self.assertEqual(self.original['status'], 'failed')
@@ -197,10 +197,10 @@ class PreparationPrerequisiteFailureTests(unittest.TestCase):
         self.executor = object.__new__(IntRuoyiExecutor)
         self.executor.c = {}
         self.original = dict(id='failed-prepare', action='prepare-rehearsal', status='failed',
-                             target='rehearsal', sourceEnv='prod', releaseTag='candidate',
+                             target='rehearsal', sourceEnv='prod', releaseTag='2026-10-24-02-00-00',
                              currentStep='inspect-full-data-rehearsal-prerequisites',
                              error='Original package location missing')
-        self.package = dict(releaseTag='candidate', stage='tested', rehearsals=[])
+        self.package = dict(releaseTag='2026-10-24-02-00-00', stage='tested', rehearsals=[])
         self.executor.state = dict(jobs=[self.original], packages=[self.package], environments={})
         self.executor.runtime = Mock()
         self.executor.runtime.targets = {}
@@ -214,7 +214,7 @@ class PreparationPrerequisiteFailureTests(unittest.TestCase):
         runtime = object.__new__(Runtime)
         runtime.config = {'metadataRepair': {'directory': 'missing-original-package'}}
         runtime.targets = {'rehearsal': {}}
-        runtime.observe = Mock(return_value={'images': {}, 'releaseTag': 'old', 'ledgerRecords': []})
+        runtime.observe = Mock(return_value={'images': {}, 'releaseTag': '2026-10-24-01-00-00', 'ledgerRecords': []})
         runtime.profile = Mock(return_value={'sourceEnvironment': 'prod'})
         runtime.call = Mock()
         callback = lambda name, effects=False:self.executor.step(self.original, name, effects)
@@ -242,7 +242,7 @@ class PreparationPrerequisiteFailureTests(unittest.TestCase):
                 with patch('intruoyi_executor.rehearsal_profile', return_value={}):
                     with self.assertRaisesRegex(ValueError, 'Remote terminal proof missing'):
                         self.executor.resolve_task(self.job)
-                self.executor.runtime.call.assert_called_once_with('prod', 'rehearsal-verify-stopped', releaseTag='candidate')
+                self.executor.runtime.call.assert_called_once_with('prod', 'rehearsal-verify-stopped', releaseTag='2026-10-24-02-00-00')
                 self.executor.runtime.reset_rehearsal.assert_not_called()
                 self.assertNotIn('resolution', self.original)
 

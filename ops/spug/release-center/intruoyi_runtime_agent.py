@@ -356,7 +356,8 @@ def check_storage(profile, images_imported=False):
     base = Path(profile['stagingRoot'])
     require(base.is_absolute() and base.is_dir(), 'Registered staging filesystem directory must exist')
     filesystem = os.statvfs(str(base))
-    validate_storage_budget(profile, filesystem.f_bavail * filesystem.f_frsize)
+    staging_free = filesystem.f_bavail * filesystem.f_frsize
+    validate_storage_budget(profile, staging_free)
     budget_key = 'minimumDockerRuntimeFreeBytes' if images_imported else 'minimumDockerFreeBytes'
     minimum = profile.get(budget_key)
     require(isinstance(minimum, int) and not isinstance(minimum, bool) and minimum > 0,
@@ -368,6 +369,36 @@ def check_storage(profile, images_imported=False):
     phase = 'after verified import' if images_imported else 'before staging'
     require(free >= minimum, 'Insufficient Docker image storage ' + phase + ': freeBytes='
             + str(free) + ', requiredBytes=' + str(minimum))
+    return dict(staging=dict(path=str(base), freeBytes=staging_free, requiredBytes=profile['minimumStagingFreeBytes']),
+                docker=dict(path=str(docker_root), freeBytes=free, requiredBytes=minimum))
+
+
+def prerequisite_resources(profile):
+    """Independent diagnostics without staging, importing, SQL writes or stop/start."""
+    from intruoyi_recovery_agent import inventory
+    def writers():
+        names = profile.get('writers')
+        require(profile.get('writerInventoryConfirmed') is True and isinstance(names, list)
+                and profile['backend'] in names, '完整写入进程清单尚未确认')
+        for name in names + [profile['frontend']]:
+            require(re.fullmatch('[A-Za-z0-9_.-]+', name), '写入进程名称无效')
+            require(remote.inspect(name)['State']['Running'], '登记容器未运行：'+name)
+        return {'containers': names + [profile['frontend']]}
+    checks = []
+    for identity, label, callback in (
+        ('storage', '发布暂存、恢复及 Docker 空间', lambda: check_storage(profile)),
+        ('writers', '登记应用与写入进程', writers),
+        ('recovery', '恢复资源配置与挂载归属', lambda: inventory(profile, globals())),
+        ('startup', '启动超时配置', lambda: startup_timeout(profile)),
+        ('acceptance', '维护验收网络配置', lambda: {'configured': bool(acceptance_spec(profile))}),
+    ):
+        try:
+            checks.append(dict(id=identity, label=label, status='passed', detail='检查通过', evidence=callback()))
+        except RuntimeBlocked as error:
+            checks.append(dict(id=identity, label=label, status='failed', detail=str(error)))
+        except Exception as error:
+            checks.append(dict(id=identity, label=label, status='failed', detail=type(error).__name__+'：资源检查未完成'))
+    return {'checks': checks, 'businessMutations': False}
 
 
 def check_acceptance_port(address, port):
@@ -383,6 +414,8 @@ def check_acceptance_port(address, port):
 
 
 def preflight(profile, manifest):
+    from intruoyi_recovery_agent import inventory
+    inventory(profile, globals())
     startup_timeout(profile)
     check_fence(profile)
     check_storage(profile, images_imported=True)
@@ -542,7 +575,7 @@ def stop_writers(profile):
 
 
 def backup(profile, root):
-    check_storage(profile)
+    check_storage(profile, images_imported=True)
     database = profile['database']
     # Credentials are expanded only in the existing container shell.
     env = dict(v.split('=', 1) for v in remote.inspect(database)['Config']['Env'])
@@ -619,26 +652,49 @@ def replace(profile, root, role, image, tag, maintenance=None, snapshot_suffix='
     return created['Id']
 
 
-def acceptance_frontend(profile, root):
+def acceptance_frontend(profile, root, resume=False):
     original = remote.inspect(profile['frontend'])
     spec = acceptance_spec(profile)
     path = root / 'acceptance-nginx.conf'
-    descriptor = os.open(str(path), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    with os.fdopen(descriptor, 'w') as output:
-        output.write(spec['nginx'])
+    if resume:
+        receipt=json.loads((root/'receipt.private.json').read_text())
+        require(receipt['phase']=='restoring-program' and root.name=='recovery-'+receipt['jobId'],
+                'Recovery acceptance continuation requires its replacement journal')
+    if resume and path.exists():
+        require(not path.is_symlink() and path.read_text()==spec['nginx'], 'Recovery acceptance configuration changed')
+    else:
+        descriptor = os.open(str(path), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(descriptor, 'w') as output:
+            output.write(spec['nginx'])
     # Formal/test ingress is explicitly host-networked. An internal backend
     # bridge cannot publish host ports. Isolated rehearsal retains bridge:80.
     config = copy.deepcopy(original['Config'])
     config['Image'] = original['Image']
     config['Labels'] = dict(config.get('Labels') or {}, **{'intruoyi.release.acceptance': 'true'})
+    if resume:
+        config['Labels']['intruoyi.release.acceptance.recovery']=receipt['jobId']
     config['ExposedPorts'] = {'80/tcp': {}}
     config['HostConfig'] = {'NetworkMode': spec['network'], 'Binds': [str(path) + ':/etc/nginx/conf.d/default.conf:ro'],
                           'PortBindings': {},
                           'RestartPolicy': {'Name': 'no'}}
     if profile.get('environment') == 'rehearsal':
         config['NetworkingConfig'] = {'EndpointsConfig': {spec['network']: {}}}
-    created = docker('POST', '/containers/create?name=' + quote(profile['acceptanceFrontend']), config)
-    docker('POST', '/containers/' + created['Id'] + '/start')
+    existing=[]
+    if resume:
+        existing=[item for item in docker('GET','/containers/json?all=1')
+                  if '/'+profile['acceptanceFrontend'] in item.get('Names',[])]
+        require(len(existing)<=1, 'Ambiguous recovery acceptance container')
+    if existing:
+        actual=remote.inspect(existing[0]['Id'])
+        require(actual['Image']==config['Image'] and actual['Config'].get('Labels')==config['Labels']
+                and actual['HostConfig']['NetworkMode']==spec['network']
+                and actual['HostConfig'].get('Binds')==config['HostConfig']['Binds'],
+                'Recovery acceptance container belongs to another configuration')
+        created={'Id':actual['Id']}
+    else:
+        created = docker('POST', '/containers/create?name=' + quote(profile['acceptanceFrontend']), config)
+    if not existing or not actual['State']['Running']:
+        docker('POST', '/containers/' + created['Id'] + '/start')
     return created['Id']
 
 
@@ -688,8 +744,8 @@ def deploy(profile, manifest):
     plan = migration_plan(profile, manifest, obs)
     check_fence(profile)
     stop_writers(profile)
-    recovery = backup(profile, root)
-    private_json(root / 'recovery-record.private.json', recovery)
+    from intruoyi_recovery_agent import capture
+    recovery = capture(profile, root, manifest, obs, globals())
     # Repeat against stopped writers, immediately before any SQL mutation.
     plan = migration_plan(profile, manifest, observe(profile))
     apply_migration_plan(profile, root, manifest, plan, recovery=recovery)
@@ -834,6 +890,12 @@ def reopen(profile):
 
 def finish_reopen(profile, candidate):
     """Open only the entry and remaining writers after normal backend validation."""
+    root = directory(profile, candidate['releaseTag'])
+    opened = root / 'business-opened.private.json'
+    if opened.exists():
+        require(json.loads(opened.read_text()).get('releaseTag') == candidate['releaseTag'], 'Business opening marker differs')
+    else:
+        private_json(opened, dict(releaseTag=candidate['releaseTag'],time=datetime.now(timezone.utc).isoformat()))
     for writer in profile['writers']:
         if writer != profile['backend']:
             if not remote.inspect(writer)['State']['Running']:
@@ -1165,6 +1227,22 @@ def verify_deployment_stopped(profile, payload):
 
 def dispatch(payload):
     profile, action = payload['profile'], payload['action']
+    if action in ('artifact-inventory','artifact-remove'):
+        from artifact_files import remote as artifacts
+        try:
+            return artifacts(profile,payload)
+        except ValueError as error:
+            raise RuntimeBlocked(str(error)) from error
+    if action == 'inspect-operation':
+        from operation_journal import inspect
+        return inspect(profile, payload['originalOperationId'], payload['originalJobId'])
+    if action == 'recovery-inventory':
+        from intruoyi_recovery_agent import inventory
+        return dict(resources=inventory(profile,globals()),mutations=False)
+    if action in ('inspect-release-recovery','recover-release','accept-recovery'):
+        import intruoyi_recovery_agent
+        function = {'inspect-release-recovery':'migration_status','recover-release':'recover','accept-recovery':'accept'}[action]
+        return getattr(intruoyi_recovery_agent, function)(profile, payload, globals())
     if action.startswith('rehearsal-'):
         import intruoyi_rehearsal_agent
         try:
@@ -1207,6 +1285,8 @@ def dispatch(payload):
         return dict(observation=result, recoveryEvidence=record)
     if action == 'dependencies':
         return dependencies(profile)
+    if action == 'prerequisite-resources':
+        return prerequisite_resources(profile)
     if action == 'acceptance-check':
         value = acceptance_spec(profile)
         return {'network': value['network'], 'backendIp': value['backendIp'], 'nginxSha256': hashlib.sha256(value['nginx'].encode()).hexdigest(), 'mutations': False}
@@ -1267,7 +1347,12 @@ def dispatch(payload):
 
 if __name__ == '__main__':
     try:
-        result = dispatch(json.loads(PAYLOAD))
+        payload = json.loads(PAYLOAD)
+        if 'operationId' in payload:
+            from operation_journal import execute
+            result = execute(payload, dispatch)
+        else:
+            result = dispatch(payload)
         print(json.dumps({'ok': True, 'result': result}, ensure_ascii=True))
     except RuntimeBlocked as error:
         print(json.dumps({'ok': False, 'error': str(error)}, ensure_ascii=True))

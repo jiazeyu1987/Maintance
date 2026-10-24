@@ -239,7 +239,16 @@ def rehearsal_profile(config, source):
     for env, other in config['targets'].items():
         if env != 'rehearsal' and other['host'] == profile['host']:
             require(other['stagingRoot'] not in roots.values(), 'Rehearsal staging conflicts with a deployed target')
-    return dict(profile, sourceEnvironment=source, stagingRoot=roots[source])
+    # rehearsal-restore creates these two owned volumes at /data. Keep the
+    # recovery inventory beside the generated profile so upgrade preflight
+    # never depends on an operator guessing the generated mount destinations.
+    mounts=[dict(role='redis',destination='/data'),dict(role='minio',destination='/data')]
+    if 'recoveryDataMounts' in profile:
+        require(profile['recoveryDataMounts']==mounts, 'Rehearsal recovery inventory conflicts with generated volumes')
+    if 'recoveryInventoryConfirmed' in profile:
+        require(profile['recoveryInventoryConfirmed'] is True, 'Generated rehearsal recovery inventory must be confirmed')
+    return dict(profile, sourceEnvironment=source, stagingRoot=roots[source],
+                recoveryInventoryConfirmed=True,recoveryDataMounts=mounts)
 
 
 def validate_quiescence_recovery(record, payload, observation):
@@ -256,6 +265,8 @@ def validate_quiescence_recovery(record, payload, observation):
 
 class Runtime:
     def __init__(self, config):
+        import threading
+        self.operation_context = threading.local()
         self.config = config
         require(isinstance(config.get('targets'), dict), 'Explicit registered targets required')
         self.targets = config['targets']
@@ -264,6 +275,15 @@ class Runtime:
     def profile(self, env):
         require(env in self.targets, 'Unregistered IntRuoyi target: ' + env)
         profile = dict(self.targets[env])
+        context = getattr(getattr(self, 'operation_context', None), 'binding', None)
+        if context:
+            selected_root = context[0].get('runtimeStagingRoots', {}).get(env)
+            if selected_root:
+                expected_root = PurePosixPath(profile['stagingRoot']) / 'attempts'
+                require(PurePosixPath(selected_root).parent == expected_root
+                        and re.fullmatch(r'JOB-[a-f0-9]{10}', PurePosixPath(selected_root).name),
+                        'Retry staging root is outside the registered target')
+                profile['stagingRoot'] = selected_root
         for key in ('host', 'python', 'entryUrl', 'frontend', 'backend', 'database'):
             require(isinstance(profile.get(key), str) and profile[key], 'Registered target missing ' + key)
         require(re.fullmatch(r'[A-Za-z0-9.-]+', profile['host']), 'Invalid registered SSH host')
@@ -274,18 +294,41 @@ class Runtime:
 
     def ssh_options(self):
         # System/user SSH configs cannot silently redirect a registered target.
-        return ['-F', 'NUL' if os.name == 'nt' else '/dev/null', '-o', 'BatchMode=yes',
-                '-o', 'StrictHostKeyChecking=yes', '-o', 'ConnectTimeout=10']
+        options = ['-F', 'NUL' if os.name == 'nt' else '/dev/null', '-o', 'BatchMode=yes',
+                   '-o', 'StrictHostKeyChecking=yes', '-o', 'ConnectTimeout=10']
+        if self.config.get('executionMode') == 'windows-service':
+            identity, hosts = self.config.get('sshIdentityFile'), self.config.get('sshKnownHostsFile')
+            require(identity and hosts and Path(identity).is_file() and Path(hosts).is_file(),
+                    'Windows service requires explicit SSH identity and known-hosts files')
+            options += ['-i', identity, '-o', 'IdentitiesOnly=yes', '-o', 'UserKnownHostsFile='+hosts]
+        return options
 
     def call(self, env, action, **arguments):
-        uncertain_on_disconnect = action in ('deploy', 'maintenance', 'resume-test-deployment-tail', 'rehearsal-capture', 'rehearsal-restore', 'rehearsal-resume-tail', 'rehearsal-reset')
+        import secrets
+        context = getattr(getattr(self, 'operation_context', None), 'binding', None)
+        if context and action != 'inspect-operation':
+            job, persist = context
+            operation = dict(operationId='OP-' + secrets.token_hex(10), env=env, action=action)
+            job.setdefault('remoteOperations', []).append(operation)
+            persist()
+            arguments.update(operationId=operation['operationId'], workflowJobId=job['id'])
+        uncertain_on_disconnect = action in ('deploy', 'maintenance', 'recover-release', 'accept-recovery', 'resume-test-deployment-tail', 'rehearsal-capture', 'rehearsal-restore', 'rehearsal-resume-tail', 'rehearsal-reset')
         profile = self.profile(env)
         payload = json.dumps({'action': action, 'profile': profile, **arguments}, ensure_ascii=True)
         inspector = (self.sources / 'intruoyi_remote.py').read_text('utf-8')
         agent = (self.sources / 'intruoyi_runtime_agent.py').read_text('utf-8')
         contract = Path(__file__).read_text('utf-8')
         rehearsal = (self.sources / 'intruoyi_rehearsal_agent.py').read_text('utf-8')
+        recovery = (self.sources / 'intruoyi_recovery_agent.py').read_text('utf-8')
+        journal = (self.sources / 'operation_journal.py').read_text('utf-8')
+        artifacts = (self.sources / 'artifact_files.py').read_text('utf-8')
         source = ('import types,sys\n'
+                  '_artifacts=types.ModuleType("artifact_files")\n'
+                  'sys.modules["artifact_files"]=_artifacts\n'
+                  'exec(compile(' + repr(artifacts) + ',"artifact_files.py","exec"),_artifacts.__dict__)\n'
+                  '_journal=types.ModuleType("operation_journal")\n'
+                  'sys.modules["operation_journal"]=_journal\n'
+                  'exec(compile(' + repr(journal) + ',"operation_journal.py","exec"),_journal.__dict__)\n'
                   '_remote=types.ModuleType("intruoyi_remote")\n'
                   'sys.modules["intruoyi_remote"]=_remote\n'
                   'exec(compile(' + repr(inspector) + ',"intruoyi_remote.py","exec"),_remote.__dict__)\n'
@@ -295,6 +338,9 @@ class Runtime:
                   '_rehearsal=types.ModuleType("intruoyi_rehearsal_agent")\n'
                   'sys.modules["intruoyi_rehearsal_agent"]=_rehearsal\n'
                   'exec(compile(' + repr(rehearsal) + ',"intruoyi_rehearsal_agent.py","exec"),_rehearsal.__dict__)\n'
+                  '_recovery=types.ModuleType("intruoyi_recovery_agent")\n'
+                  'sys.modules["intruoyi_recovery_agent"]=_recovery\n'
+                  'exec(compile(' + repr(recovery) + ',"intruoyi_recovery_agent.py","exec"),_recovery.__dict__)\n'
                   'PAYLOAD=' + repr(payload) + '\n' + agent)
         try:
             proc = subprocess.run(['ssh', *self.ssh_options(), 'root@' + profile['host'],
