@@ -368,6 +368,18 @@ def check_storage(profile):
             + str(free) + ', requiredBytes=' + str(minimum))
 
 
+def check_acceptance_port(address, port):
+    with socket.socket() as sock:
+        # Match Linux listeners: a closed nonce probe may leave TIME_WAIT,
+        # which is not an occupied listener. This does not enable SO_REUSEPORT.
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        try:
+            sock.bind((address, port))
+        except OSError as error:
+            raise RuntimeBlocked('Acceptance port cannot be bound (errno='
+                                 + str(error.errno) + '); no container changed') from None
+
+
 def preflight(profile, manifest):
     startup_timeout(profile)
     check_fence(profile)
@@ -390,13 +402,7 @@ def preflight(profile, manifest):
         require(gateway['State']['Running'] and gateway['Config'].get('Labels', {}).get('intruoyi.release.rehearsal') == 'intruoyi-release-rehearsal',
                 'Owned isolation ingress must be running')
     else:
-        sock = socket.socket()
-        try:
-            sock.bind((profile['acceptanceBindAddress'], url.port))
-        except OSError:
-            raise RuntimeBlocked('Acceptance port is already bound; no container changed')
-        finally:
-            sock.close()
+        check_acceptance_port(profile['acceptanceBindAddress'], url.port)
     require(profile['acceptanceFrontend'] not in remote.run(['docker', 'ps', '-a', '--format', '{{.Names}}']).decode().splitlines(), 'Acceptance container name already exists; reconcile before deployment')
     acceptance_spec(profile)
     obs = observe(profile)
