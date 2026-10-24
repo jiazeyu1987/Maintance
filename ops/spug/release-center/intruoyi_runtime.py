@@ -439,3 +439,9 @@ class Runtime:
         from intruoyi_rehearsal import resume_tail
         return resume_tail(self, source, manifest, original_job_id, retry_job_id, package_sha256,
                            manifest_sha256, expected_origin_fingerprint, jobcallback)
+
+    def resume_rehearsal_transfer(self, source, manifest, original_job_id, retry_job_id, package_sha256,
+                                  manifest_sha256, expected_origin_fingerprint, jobcallback):
+        from intruoyi_rehearsal import resume_transfer
+        return resume_transfer(self, source, manifest, original_job_id, retry_job_id, package_sha256,
+                               manifest_sha256, expected_origin_fingerprint, jobcallback)

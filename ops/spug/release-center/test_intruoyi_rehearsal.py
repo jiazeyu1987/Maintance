@@ -346,7 +346,7 @@ class IncrementalSnapshotTransferTest(unittest.TestCase):
                 sender=call(source,'rehearsal-transfer-sender',sourcePath=str(src),chunks=plan['missing'],jobId=job)
                 exported=subprocess.run([sys.executable,sender['script']],stdout=subprocess.PIPE,check=True).stdout
                 self.assertEqual(len(exported),len(content) if round_number==0 else TRANSFER_BLOCK_BYTES)
-                subprocess.run([sys.executable,plan['receiver']],input=exported,check=True)
+                subprocess.run([sys.executable,plan['batches'][0]['receiver']],input=exported,check=True)
                 call(target,'rehearsal-transfer-assemble',**request)
                 self.assertEqual(dst.read_bytes(),content)
             # Corrupt cache content must be rejected rather than reused or silently replaced.
@@ -354,6 +354,48 @@ class IncrementalSnapshotTransferTest(unittest.TestCase):
             bad.write_bytes(b'corrupted')
             with self.assertRaisesRegex(RuntimeError,'corrupt'):
                 call(target,'rehearsal-transfer-plan',**request)
+
+    def test_interrupted_large_artifacts_keep_verified_blocks_and_resume(self):
+        import tempfile, subprocess, hashlib, struct
+        from unittest.mock import patch
+        from intruoyi_rehearsal_agent import transfer_dispatch, PREFIX
+        from intruoyi_runtime import require, file_sha
+        for name in ('recovery.sql','origin-images.tar','minio.tar'):
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory, patch('intruoyi_rehearsal_agent.TRANSFER_BLOCK_BYTES',8):
+                root=Path(directory).resolve()
+                source=dict(stagingRoot=str(root/'source'),host='source')
+                target=dict(stagingRoot=str(root/'target'),host='target')
+                paths=[]
+                for profile in (source,target):
+                    folder=Path(profile['stagingRoot'])/'rehearsal-seed'/'2026-10-24-03-24-24'
+                    folder.mkdir(parents=True)
+                    (folder/'rehearsal-owned.json').write_text(json.dumps(dict(owner=PREFIX)))
+                    paths.append(folder/name)
+                src,dst=paths
+                content=b''.join(struct.pack('Q',i) for i in range(67))
+                src.write_bytes(content)
+                api=dict(require=require,file_sha=file_sha)
+                def call(profile,action,**kwargs):
+                    return transfer_dispatch(dict(profile=profile,action=action,jobId='JOB-1234567890',**kwargs),api)
+                index=call(source,'rehearsal-transfer-index',sourcePath=str(src),sha256=hashlib.sha256(content).hexdigest())
+                request=dict(index,destinationPath=str(dst))
+                plan=call(target,'rehearsal-transfer-plan',**request)
+                self.assertEqual([len(x['chunks']) for x in plan['batches']],[64,3])
+                first=plan['batches'][0]
+                sender=call(source,'rehearsal-transfer-sender',sourcePath=str(src),chunks=first['chunks'])
+                exported=subprocess.check_output([sys.executable,sender['script']])
+                subprocess.run([sys.executable,first['receiver']],input=exported,check=True)
+                # Simulate a real EOF midway through the second batch.
+                failed=subprocess.run([sys.executable,plan['batches'][1]['receiver']],input=content[512:524],capture_output=True)
+                self.assertNotEqual(failed.returncode,0)
+                resumed=call(target,'rehearsal-transfer-plan',**request)
+                self.assertEqual(len(resumed['missing']),2)
+                for batch in resumed['batches']:
+                    sender=call(source,'rehearsal-transfer-sender',sourcePath=str(src),chunks=batch['chunks'])
+                    data=subprocess.check_output([sys.executable,sender['script']])
+                    subprocess.run([sys.executable,batch['receiver']],input=data,check=True)
+                call(target,'rehearsal-transfer-assemble',**request)
+                self.assertEqual(dst.read_bytes(),content)
 
     def test_transfer_refuses_paths_outside_owned_snapshot(self):
         from intruoyi_rehearsal_agent import transfer_artifact_path

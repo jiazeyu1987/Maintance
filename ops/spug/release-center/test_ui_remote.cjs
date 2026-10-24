@@ -263,3 +263,12 @@ console.log('Remote three-check evidence, exact failure retry scope, immutable b
  assert.equal(click.evaluate('sent[0].payload.note'),'执行三项技术检查：版本镜像、迁移启动、真实登录进入页面');
  console.log('Remote technical action submits without reading a manual acceptance note');
 })().catch(error=>{console.error(error);process.exitCode=1;});
+
+const captureResume=harness();captureResume.set(JSON.parse(JSON.stringify({...remote,packages:[candidate],jobs:[{id:'JOB-capture',action:'prepare-rehearsal',target:'rehearsal',sourceEnv:'prod',releaseTag:candidate.releaseTag,status:'failed',effectsStarted:true,remoteStatusRequired:true,remotePhase:'capture-complete',remoteProgress:{jobId:'JOB-capture',status:'succeeded',phase:'capture-complete'},logs:[],payload:{}}]})));
+assert(captureResume.render(7).includes('继续已捕获副本的传输与恢复'));
+assert(captureResume.render(7).includes('不再次停正式服采集'));
+captureResume.evaluate("state.jobs[0].remoteProgress.status='running'");
+assert(!captureResume.render(7).includes('<option value="retry"'));
+captureResume.evaluate("state.jobs[0].remoteProgress.status='succeeded';state.jobs[0].remoteProgress.jobId='other'");
+assert(!captureResume.render(7).includes('<option value="retry"'));
+console.log('Captured-transfer continuation requires completed matching source worker');
