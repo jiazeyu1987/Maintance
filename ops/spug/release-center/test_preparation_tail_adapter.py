@@ -70,7 +70,7 @@ class PreparationTailAdapterTests(unittest.TestCase):
         self.executor.runtime.reset_rehearsal.assert_not_called()
 
     def test_pre_effect_capture_phase_and_nonproduction_preparations_cannot_resume(self):
-        for changes in (dict(effectsStarted=False),dict(remoteStatusRequired=False),dict(remotePhase='capture-complete'),
+        for changes in (dict(effectsStarted=False),dict(remoteStatusRequired=False),dict(remotePhase='capture-starting'),
                         dict(sourceEnv='backup'),dict(target='test')):
             with self.subTest(changes=changes):
                 self.setUp()
@@ -78,6 +78,19 @@ class PreparationTailAdapterTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError,'interrupted restore tail'):
                     self.run_retry()
                 self.executor.runtime.resume_rehearsal_tail.assert_not_called()
+
+    def test_completed_capture_continues_transfer_without_recapture(self):
+        self.original['remotePhase']='capture-complete'
+        self.original['remoteProgress']=dict(jobId=self.original['id'],status='succeeded',phase='capture-complete')
+        self.receipt.update(kind='captured-transfer',captureSha256='1'*64)
+        self.result['remotePreparationProgress']['jobId']=self.original['id']
+        self.executor.runtime.resume_rehearsal_transfer.return_value=self.result
+        self.run_retry()
+        self.executor.runtime.resume_rehearsal_transfer.assert_called_once()
+        self.executor.runtime.resume_rehearsal_tail.assert_not_called()
+        self.executor.runtime.prepare_rehearsal.assert_not_called()
+        self.assertEqual(self.package['stage'],'rehearsal-ready')
+        self.assertEqual(self.original['status'],'failed')
 
     def test_foreign_package_outcome_registered_copy_and_missing_test_proof_block(self):
         cases=('tag','outcome','registered','active','test-proof','stage')

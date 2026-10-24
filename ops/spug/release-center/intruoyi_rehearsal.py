@@ -20,7 +20,8 @@ def active_remote_progress(state, config, runtime):
     for job in state.get('jobs', []):
         if job.get('action') != 'prepare-rehearsal' or not job.get('remoteStatusRequired'):
             continue
-        source, phase = job.get('sourceEnv'), job.get('remotePhase')
+        source = job.get('sourceEnv')
+        phase = job.get('continuationRemotePhase', job.get('remotePhase'))
         if source not in ('test','prod','backup') or phase not in ('capture-starting','capture-complete','restore-starting'):
             continue
         if job.get('status') not in ('running','failed','interrupted') or job.get('resolution'):
@@ -53,23 +54,26 @@ def transfer(runtime, source, destination, artifact, destination_path, callback,
     if first['host'] == second['host']:
         return runtime.call(destination,'rehearsal-local-copy',sourceProfile=first,sourcePath=source_path,
                             destinationPath=destination_path,sha256=artifact['sha256'],jobId=job_id)
-    if artifact['name']=='minio.tar':
+    if artifact['name'] in ('minio.tar','recovery.sql','origin-images.tar'):
         index=runtime.call(source,'rehearsal-transfer-index',sourcePath=source_path,sha256=artifact['sha256'],jobId=job_id)
         request=dict(index,destinationPath=destination_path,jobId=job_id)
         plan=runtime.call(destination,'rehearsal-transfer-plan',**request)
-        if plan['missing']:
-            sender=runtime.call(source,'rehearsal-transfer-sender',sourcePath=source_path,chunks=plan['missing'],jobId=job_id)
+        for number,batch in enumerate(plan['batches'],1):
+            callback('transfer-verified-blocks:'+artifact['name']+':'+str(number)+'/'+str(len(plan['batches'])),effects=True)
+            sender=runtime.call(source,'rehearsal-transfer-sender',sourcePath=source_path,chunks=batch['chunks'],jobId=job_id)
             first_command=shlex.quote(first['python'])+' '+shlex.quote(sender['script'])
-            second_command=shlex.quote(second['python'])+' '+shlex.quote(plan['receiver'])
+            second_command=shlex.quote(second['python'])+' '+shlex.quote(batch['receiver'])
             stream_commands(runtime,first,second,first_command,second_command)
-        callback('verify-complete-media-snapshot-after-incremental-transfer',effects=True)
+        callback('verify-complete-artifact-after-chunk-transfer',effects=True)
         return runtime.call(destination,'rehearsal-transfer-assemble',**request)
     stream_commands(runtime,first,second,'cat -- '+shlex.quote(source_path),
                     'umask 077; set -C; cat > '+shlex.quote(destination_path))
 
 
 def stream_commands(runtime, first, second, first_command, second_command):
-    with tempfile.TemporaryFile() as errors:
+    logs = Path(runtime.config['stateDir']) / 'transfer-logs'
+    logs.mkdir(exist_ok=True)
+    with tempfile.NamedTemporaryFile(dir=logs, prefix='rehearsal-', suffix='.private.log', delete=False) as errors:
         reader = subprocess.Popen(['ssh', *runtime.ssh_options(), 'root@' + first['host'],
                                    first_command], stdout=subprocess.PIPE, stderr=errors)
         writer = subprocess.Popen(['ssh', *runtime.ssh_options(), 'root@' + second['host'],
@@ -79,7 +83,10 @@ def stream_commands(runtime, first, second, first_command, second_command):
         try:
             writer.communicate(timeout=runtime.config.get('operationTimeout', 14400))
             code = reader.wait(timeout=60)
-            require(code == 0 and writer.returncode == 0, 'Private full-data artifact transfer failed; partial target retained for investigation')
+            require(code == 0 and writer.returncode == 0,
+                    'Private full-data artifact transfer failed: sourceExit=' + str(code)
+                    + ', targetExit=' + str(writer.returncode) + '; private SSH diagnostic: '
+                    + errors.name + '; partial target retained for investigation')
         finally:
             for process in (reader, writer):
                 if process.poll() is None:
@@ -148,6 +155,43 @@ def reset(runtime, callback):
     runtime.call('rehearsal', 'rehearsal-reset-check')
     callback('remove-only-labelled-rehearsal-resources-before-side-effects', effects=True)
     return runtime.call('rehearsal', 'rehearsal-reset')
+
+
+def resume_transfer(runtime, source, manifest, original_job_id, retry_job_id, package_sha256,
+                    manifest_sha256, expected_origin_fingerprint, callback):
+    """Continue a completed capture, without stopping or capturing production again."""
+    require(source == 'prod', 'Only a production-origin capture may be continued')
+    proof = runtime.call(source, 'rehearsal-tail-source-proof', releaseTag=manifest['releaseTag'],
+                         originalJobId=original_job_id, expectedOriginFingerprint=expected_origin_fingerprint)
+    captured = proof['capture']
+    require(captured['originFingerprint'] == expected_origin_fingerprint, 'Captured source identity differs')
+    audit_ledger(captured['origin'], manifest)
+    runtime.call('rehearsal', 'rehearsal-verify-stopped', releaseTag=manifest['releaseTag'], checkProcessesOnly=True)
+    runtime.call('rehearsal', 'rehearsal-target-check', sourceProfile=runtime.profile(source))
+    callback('continue-original-capture-transfer', effects=True)
+    for artifact in captured['artifacts']:
+        destination = runtime.call('rehearsal', 'rehearsal-transfer-resume-file',
+                                   releaseTag=manifest['releaseTag'], artifact=artifact)
+        if not destination['verified']:
+            transfer(runtime, source, 'rehearsal', artifact, destination['path'], callback, original_job_id)
+    callback('continue-original-capture-restore', effects=True)
+    runtime.call('rehearsal', 'rehearsal-restore', capture=captured, sourceProfile=runtime.profile(source),
+                 releaseTag=manifest['releaseTag'], jobId=original_job_id)
+    progress = runtime.call('rehearsal', 'rehearsal-job-status', jobId=original_job_id)
+    require(progress.get('phase') == 'completed' and progress.get('status') == 'succeeded',
+            'Continued restore has not completed')
+    observed = runtime.observe('rehearsal')
+    for key in ('images', 'schemaSha256', 'ledgerSha256'):
+        require(observed[key] == captured['origin'][key], 'Continued copy differs from captured origin: ' + key)
+    require(runtime.observe(source)['fingerprint'] == expected_origin_fingerprint, 'Source changed during continuation')
+    audit_ledger(observed, manifest)
+    observed.update(originFingerprint=expected_origin_fingerprint, verifiedOrigin=True,
+                    historicalMetadata=captured['historicalMetadata'], remotePreparationProgress=progress,
+                    resumeReceipt=dict(kind='captured-transfer', status='completed', phase='complete',
+                                       originalJobId=original_job_id, retryJobId=retry_job_id, source=source,
+                                       releaseTag=manifest['releaseTag'], packageSha256=package_sha256,
+                                       manifestSha256=manifest_sha256, captureSha256=proof['captureSha256']))
+    return observed
 
 
 def resume_tail(runtime, source, manifest, original_job_id, retry_job_id, package_sha256,

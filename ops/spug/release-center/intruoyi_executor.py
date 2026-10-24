@@ -460,11 +460,12 @@ class IntRuoyiExecutor(Executor):
     def resume_rehearsal_preparation(self, job, selected):
         root_id = selected.get('originalPreparationJobId') if selected['action'] == 'resolve-task' else selected['id']
         original = next((item for item in self.state['jobs'] if item['id'] == root_id), None)
+        phase = original.get('continuationRemotePhase', original.get('remotePhase')) if original else None
         require(original and original['action'] == 'prepare-rehearsal' and original.get('target') == 'rehearsal'
                 and original.get('sourceEnv') == 'prod' and original.get('effectsStarted')
-                and original.get('remoteStatusRequired') and original.get('remotePhase') == 'restore-starting'
+                and original.get('remoteStatusRequired') and phase in ('capture-complete', 'restore-starting')
                 and original['status'] in ('failed', 'interrupted') and not original.get('resolution'),
-                'Unresolved production-origin preparation with an interrupted restore tail required')
+                'Unresolved production-origin preparation with a completed capture or interrupted restore tail required')
         require(job['releaseTag'] == selected['releaseTag'] == original['releaseTag'], 'Preparation continuation must use the original immutable package')
         require(not any(item['status'] == 'running' and item['id'] != job['id'] for item in self.state['jobs']),
                 'Another task is still running')
@@ -489,9 +490,14 @@ class IntRuoyiExecutor(Executor):
         require(origin.get('maintenance') is False and origin.get('readOnly') == dict(read_only=False, super_read_only=False),
                 'Original production source must be healthy and open before resuming isolation')
         audit_ledger(origin, manifest)
-        result = self.runtime.resume_rehearsal_tail('prod', manifest, original['id'], job['id'],
+        def continued_step(name, effects=False):
+            if name == 'continue-original-capture-restore':
+                original['continuationRemotePhase'] = 'restore-starting'
+            self.step(job, name, effects=effects)
+        resume = self.runtime.resume_rehearsal_transfer if phase == 'capture-complete' else self.runtime.resume_rehearsal_tail
+        result = resume('prod', manifest, original['id'], job['id'],
                     package['packageSha256'], package['manifestSha256'], original['sourceOriginFingerprint'],
-                    lambda name, effects=False:self.step(job, name, effects=effects))
+                    continued_step)
         attempts = [item for item in self.state['jobs'] if item.get('originalPreparationJobId') == original['id']
                     and item.get('releaseTag') == original['releaseTag'] and item.get('target') == 'rehearsal'
                     and item.get('sourceEnv') == 'prod' and item['action'] == 'resolve-task'
@@ -508,8 +514,12 @@ class IntRuoyiExecutor(Executor):
         require(result['releaseTag'] == origin['releaseTag'], 'Recovered isolation must run the original source version')
         audit_ledger(result, manifest)
         progress = result.get('remotePreparationProgress', {})
+        expected_worker = original['id'] if phase == 'capture-complete' else receipt['retryJobId']
+        if phase == 'capture-complete':
+            require(receipt.get('kind') == 'captured-transfer' and re.fullmatch('[a-f0-9]{64}', receipt.get('captureSha256', '')),
+                    'Completed original capture transfer receipt required')
         require(progress.get('status') == 'succeeded' and progress.get('phase') == 'completed'
-                and progress.get('jobId') == receipt['retryJobId'], 'Completed preparation continuation worker evidence required')
+                and progress.get('jobId') == expected_worker, 'Completed preparation continuation worker evidence required')
         job.update(remoteProgress=result.pop('remotePreparationProgress'), remotePhase='completed')
         self.register_prepared_rehearsal(package, job, 'prod', origin, result)
         self.active_rehearsal(package)['originalPreparationJobId'] = original['id']
@@ -520,7 +530,10 @@ class IntRuoyiExecutor(Executor):
                                            jobId=job['id'], originalPreparationJobId=original['id'], resumeReceipt=receipt)
         job['result'] = dict(originalPreparationJobId=original['id'], stage='rehearsal-ready', resumeReceipt=receipt)
         self.outcome(package, 'rehearsal', 'preparation', 'succeeded', job, originalPreparationJobId=original['id'])
-        self.log(job, 'Retained original isolation startup tail verified; original failure preserved. No capture, import or migration replayed; candidate upgrade remains a separate action.')
+        self.log(job, ('Original captured artifacts transferred and baseline restored; production was not recaptured.'
+                      if phase == 'capture-complete' else
+                      'Retained original isolation startup tail verified; no capture, import or migration replayed.')
+                     + ' Original failure preserved; candidate upgrade remains a separate action.')
 
     def reset_rehearsal(self, job):
         self.runtime.reset_rehearsal(lambda name, effects=False:self.step(job,name,effects=effects))

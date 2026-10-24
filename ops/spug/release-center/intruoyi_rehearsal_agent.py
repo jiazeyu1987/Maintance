@@ -258,18 +258,18 @@ def transfer_dispatch(p, api):
         return {'bytes':target.stat().st_size,'verified':True,'transport':'same-host-copy'}
     if action == 'rehearsal-transfer-index':
         source = transfer_artifact_path(profile,p['sourcePath'])
-        require(source.name=='minio.tar' and api['file_sha'](source)==p['sha256'], 'Snapshot differs before incremental transfer')
+        require(source.name in ('minio.tar','recovery.sql','origin-images.tar') and api['file_sha'](source)==p['sha256'], 'Snapshot differs before incremental transfer')
         return {'chunks':chunk_records(source),'bytes':source.stat().st_size,'sha256':p['sha256']}
     if action == 'rehearsal-transfer-sender':
         source=transfer_artifact_path(profile,p['sourcePath'])
-        require(source.name=='minio.tar','Only snapshot blocks may be streamed')
-        script=source.parent/('send-'+p['jobId']+'.py')
+        require(source.name in ('minio.tar','recovery.sql','origin-images.tar'),'Only snapshot blocks may be streamed')
+        script=source.parent/('send-'+p['jobId']+'-'+secrets.token_hex(8)+'.py')
         code="import sys\nfrom pathlib import Path\nitems="+repr(p['chunks'])+"\nwith Path("+repr(str(source))+").open('rb') as stream:\n for item in items:\n  stream.seek(item['offset'])\n  data=stream.read(item['bytes'])\n  if len(data)!=item['bytes']: raise RuntimeError('Snapshot truncated')\n  sys.stdout.buffer.write(data)\n"
         with script.open('x',encoding='utf-8') as out:out.write(code)
         script.chmod(0o600)
         return {'script':str(script)}
     target = transfer_artifact_path(profile,p['destinationPath'])
-    require(target.name=='minio.tar', 'Incremental transfer is restricted to the complete media snapshot')
+    require(target.name in ('minio.tar','recovery.sql','origin-images.tar'), 'Chunk transfer requires a registered large snapshot artifact')
     cache = Path(profile['stagingRoot']) / 'rehearsal-transfer-cache'
     cache.mkdir(mode=0o700,parents=True,exist_ok=True)
     require(not cache.is_symlink(), 'Transfer cache must be a real directory')
@@ -290,11 +290,17 @@ def transfer_dispatch(p, api):
             elif item['sha256'] not in missing:
                 missing.append(item['sha256'])
         required=[next(item for item in chunks if item['sha256']==digest) for digest in missing]
-        receiver=target.parent/('receive-'+p['jobId']+'.py')
-        code="import sys,os,hashlib\nitems="+repr(required)+"\nroot="+repr(str(cache))+"\njob="+repr(p['jobId'])+"\nfor item in items:\n path=root+'/'+item['sha256']+'.'+job+'.partial'\n fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)\n data=sys.stdin.buffer.read(item['bytes'])\n with os.fdopen(fd,'wb') as out: out.write(data)\n if len(data)!=item['bytes'] or hashlib.sha256(data).hexdigest()!=item['sha256']: raise RuntimeError('Snapshot chunk transfer failed')\nif sys.stdin.buffer.read(1): raise RuntimeError('Unexpected snapshot bytes')\n"
-        with receiver.open('x',encoding='utf-8') as out:out.write(code)
-        receiver.chmod(0o600)
-        return {'missing':required,'receiver':str(receiver)}
+        batches=[]
+        # Bound each SSH stream to 256 MiB; verified blocks survive interruption.
+        for start in range(0,len(required),64):
+            batch=required[start:start+64]
+            token=secrets.token_hex(8)
+            receiver=target.parent/('receive-'+p['jobId']+'-'+token+'.py')
+            code="import sys,os,hashlib\nitems="+repr(batch)+"\nroot="+repr(str(cache))+"\njob="+repr(p['jobId']+'-'+token)+"\nfor item in items:\n path=root+'/'+item['sha256']+'.'+job+'.partial'\n fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)\n data=sys.stdin.buffer.read(item['bytes'])\n with os.fdopen(fd,'wb') as out: out.write(data)\n if len(data)!=item['bytes'] or hashlib.sha256(data).hexdigest()!=item['sha256']: raise RuntimeError('Snapshot chunk transfer failed')\n os.rename(path,root+'/'+item['sha256'])\nif sys.stdin.buffer.read(1): raise RuntimeError('Unexpected snapshot bytes')\n"
+            with receiver.open('x',encoding='utf-8') as out:out.write(code)
+            receiver.chmod(0o600)
+            batches.append({'chunks':batch,'receiver':str(receiver)})
+        return {'missing':required,'batches':batches}
     require(action=='rehearsal-transfer-assemble','Unknown transfer action')
     # Uploaded files are private partials until independently hashed and sealed.
     for item in chunks:
@@ -941,6 +947,23 @@ def dispatch(p, api):
         folder = root(p['releaseTag'])
         new_seed(folder)
         return {'directory': str(folder)}
+    if action == 'rehearsal-transfer-resume-file':
+        folder = root(p['releaseTag'])
+        require(json.loads((folder/'rehearsal-owned.json').read_text()).get('owner') == PREFIX,
+                'Original target capture ownership required')
+        require(not (folder/'application.properties').exists(), 'Restore has already started; transfer cannot replay import')
+        item = p['artifact']
+        require(item['name'] in ('recovery.sql', 'redis.jsonl', 'minio.tar', 'origin-images.tar',
+                                'nginx.conf', 'historical-release-info.json', 'backend-startup.private.json')
+                and re.fullmatch('[a-f0-9]{64}', item['sha256']), 'Invalid captured artifact identity')
+        path = folder/item['name']
+        require(not path.is_symlink(), 'Captured artifact cannot be a symlink')
+        if path.exists():
+            require(path.is_file(), 'Captured artifact must be a file')
+            if path.stat().st_size == item['bytes'] and api['file_sha'](path) == item['sha256']:
+                return dict(path=str(path), verified=True)
+            path.rename(path.with_name(path.name + '.partial-retained-' + secrets.token_hex(8)))
+        return dict(path=str(path), verified=False)
     if action == 'rehearsal-tail-source-proof':
         require(profile.get('environment') == 'prod', 'Only the registered production origin may authorize this tail')
         status = dispatch(dict(p, action='rehearsal-job-status', jobId=p['originalJobId']), api)
