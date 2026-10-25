@@ -513,6 +513,7 @@ def reconcile_cancelled_worker(operation):
             completion['data']['captureRoot'] == str(capture) and
             completion['data']['sourceRestorationPin'] == pins[str(capture / 'source-restoration.json')] and
             restoration['schemaVersion'] == 'minimal-capture-source-restoration/v1' and
+            restoration.get('restored') is True and
             restoration['errors'] == [],
             'REPOSITORY_CANCEL_SOURCE_NOT_RESTORED')
     target = config.archives / ('prod-' + hashlib.sha256(request['operationId'].encode()).hexdigest())

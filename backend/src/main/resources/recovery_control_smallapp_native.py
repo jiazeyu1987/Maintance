@@ -361,6 +361,133 @@ class Native:
                  'ORIGINAL_OWNER_ADMISSION_CHANGED')
         return root
 
+    def stopped_import_processes(self, value, operation_directory, root, output):
+        """Prove local writers stopped; this alone never releases a restore target."""
+        need(os.name == 'posix' and Path('/proc').is_dir(),
+             'ORIGINAL_PROCESS_OBSERVATION_UNAVAILABLE')
+        paths = [operation_directory / 'execute' / name for name in
+                 ('native-intent.json', 'native-process.json', 'native-original-exit.json')]
+        paths.append(root / 'child-exit.json')
+        references = [executor.pin(path) for path in paths]
+        need(references[3] in output['originalResultPins'], 'ORIGINAL_CHILD_EXIT_NOT_PINNED')
+        intent, process, exited, child = [self.document(ref) for ref in references]
+        request_pin = executor.pin(operation_directory / 'request.json')
+        need(all(row.get('operationId') == row.get('requestId') == value['operationId']
+                 for row in (intent, process, exited)) and
+             intent['requestPin'] == exited['requestPin'] == request_pin and
+             process['intentPin'] == exited['intentPin'] == references[0] and
+             type(process['pid']) is int and process['pid'] > 0 and
+             process['pid'] == exited['pid'] and
+             exited['actualExitCode'] == output['actualExitCode'] == child['actualExitCode'] == 2 and
+             child['timedOut'] is False, 'ORIGINAL_IMPORT_PROCESS_BINDING_INVALID')
+        boot = Path('/proc/sys/kernel/random/boot_id').read_text(encoding='ascii').strip()
+        need(process.get('bootId') == boot, 'ORIGINAL_PROCESS_BOOT_NOT_PROVEN')
+        # With no start-time receipt, every occupied PID (including reuse) blocks.
+        need(not (Path('/proc') / str(process['pid'])).exists(),
+             'ORIGINAL_OWNER_PROCESS_STILL_PRESENT')
+        calls = sorted(root.rglob('native-*.json')) + sorted(root.rglob('importer-*.json'))
+        need(calls and any(path.name.startswith('importer-') for path in calls),
+             'ORIGINAL_IMPORT_CALL_EVIDENCE_MISSING')
+        hashes = set()
+        for path in calls:
+            reference = executor.pin(path)
+            need(reference in output['originalResultPins'], 'ORIGINAL_IMPORT_CALL_NOT_PINNED')
+            row = self.document(reference)
+            importer = path.name.startswith('importer-')
+            need(row['schemaVersion'] == ('RecoverySqlImporter/v1' if importer else
+                 'RecoveryDataInvocation/v1') and
+                 (importer or row['operationId'] == value['operationId']) and
+                 type(row['actualExitCode']) is int and row['finishedAt'] and
+                 type(row['argvSha256']) is str and re.fullmatch('[0-9a-f]{64}', row['argvSha256']),
+                 'ORIGINAL_IMPORT_CALL_UNRESOLVED')
+            hashes.add(row['argvSha256'])
+            references.append(reference)
+        for path in Path('/proc').glob('[0-9]*/cmdline'):
+            try:
+                raw = path.read_bytes()
+            except FileNotFoundError:
+                continue
+            need(not raw or fingerprint([os.fsdecode(part) for part in raw.rstrip(b'\0').split(b'\0')])
+                 not in hashes, 'ORIGINAL_NATIVE_CALL_STILL_RUNNING')
+        for reference in references:
+            executor.verify(reference)
+        return references
+
+    def restore_target_observation(self, value, selection):
+        """Capture only identity and state, never container environment secrets."""
+        target = self.document(selection['ownerConfigurationPin'])['targets'][value['targetConfigRef']]
+        executor.verify(target['dockerPin'])
+        services = {row['id']: row for row in target['services']}
+        need(services and len(services) == len(target['services']) and
+             sum(row['role'] == 'mysql' for row in services.values()) == 1,
+             'ORIGINAL_IMPORT_TARGET_NOT_UNIQUE')
+        command = [target['dockerPin']['path'], '--host', 'unix:///var/run/docker.sock']
+        def observe(args):
+            response = subprocess.run(command + args, stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE, timeout=10, check=False)
+            need(response.returncode == 0 and not response.stderr,
+                 'ORIGINAL_TARGET_OBSERVATION_FAILED')
+            return decode(response.stdout)
+        engine = observe(['info', '--format', '{{json .}}'])
+        machine = Path('/etc/machine-id').read_text(encoding='ascii').strip()
+        need(machine == target['machineId'] and engine['ID'] == target['dockerEngineId'],
+             'ORIGINAL_TARGET_HOST_CHANGED')
+        rows = observe(['inspect', *services])
+        need(type(rows) is list and len(rows) == len(services) and
+             {row['Id'] for row in rows} == set(services), 'ORIGINAL_TARGET_OBSERVATION_FAILED')
+        scopes = [Path(path) for path in target['dataPaths']]
+        need(scopes and all(path.is_absolute() and path.resolve() == path for path in scopes),
+             'ORIGINAL_TARGET_PATH_CHANGED')
+        observations = {}
+        for row in rows:
+            expected = services[row['Id']]
+            need(row['Image'] == expected['imageId'] and
+                 row['Config']['Labels'].get('intruoyi.recovery.target') == target['targetId'],
+                 'ORIGINAL_TARGET_IDENTITY_CHANGED')
+            need({network['NetworkID'] for network in row['NetworkSettings']['Networks'].values()} ==
+                 {target['networkId']}, 'ORIGINAL_TARGET_NETWORK_CHANGED')
+            for mount in row['Mounts']:
+                source = Path(mount['Source'])
+                need(source.is_absolute() and source.resolve() == source and
+                     any(source == scope or scope in source.parents for scope in scopes),
+                     'ORIGINAL_TARGET_MOUNT_OUTSIDE_SCOPE')
+            observations[row['Id']] = dict(role=expected['role'], imageId=row['Image'],
+                labels=row['Config']['Labels'], mounts=row['Mounts'],
+                networks={name: network['NetworkID'] for name, network in
+                          row['NetworkSettings']['Networks'].items()},
+                state=row['State'], execIds=row['ExecIDs'])
+        return dict(operationId=value['operationId'], targetConfigRef=value['targetConfigRef'],
+            configurationPin=selection['ownerConfigurationPin'], targetId=target['targetId'],
+            bootId=Path('/proc/sys/kernel/random/boot_id').read_text(encoding='ascii').strip(),
+            machineId=machine,
+            dockerEngineId=engine['ID'], services=observations)
+
+    def stopped_oom_target(self, value, operation_directory, selection):
+        before_pin = executor.pin(operation_directory / 'restore-target-before.json')
+        intent = self.document(executor.pin(operation_directory / 'execute' / 'native-intent.json'))
+        need(intent.get('restoreTargetPin') == before_pin, 'ORIGINAL_TARGET_OBSERVATION_CHANGED')
+        before = self.document(before_pin)
+        current = self.restore_target_observation(value, selection)
+        need(all(current[key] == before[key] for key in current if key != 'services') and
+             set(current['services']) == set(before['services']), 'ORIGINAL_TARGET_HOST_CHANGED')
+        for identity, row in current['services'].items():
+            need(all(row[key] == before['services'][identity][key] for key in row
+                     if key not in ('state', 'execIds')), 'ORIGINAL_TARGET_IDENTITY_CHANGED')
+            state = row['state']
+            need(not row['execIds'] and state['Paused'] is False and state['Restarting'] is False and
+                 (row['role'] in ('minio', 'redis') or state['Running'] is False and state['Pid'] == 0),
+                 'ORIGINAL_TARGET_WRITER_UNRESOLVED')
+            if row['role'] == 'mysql':
+                need(state['OOMKilled'] is True and state['ExitCode'] == 137,
+                     'ORIGINAL_TARGET_OOM_NOT_PROVEN')
+        target = self.document(selection['ownerConfigurationPin'])['targets'][value['targetConfigRef']]
+        claim_pin = executor.pin(Path(target['dataRoot']) / '.recovery-operation.json')
+        need(self.document(claim_pin)['operationId'] == value['operationId'],
+             'ORIGINAL_TARGET_CLAIM_CHANGED')
+        executor.verify(before_pin)
+        return dict(beforePin=before_pin, claimPin=claim_pin, observed=current,
+                    partialTargetRetained=True, retrySameTargetPermitted=False)
+
     def stopped_sql_target(self, value, selection):
         """A disconnected import client alone cannot prove the remote writer stopped."""
         configuration = self.document(selection['ownerConfigurationPin'])
@@ -497,11 +624,28 @@ class Native:
                      importers[-1].get('schemaVersion') == 'RecoverySqlImporter/v1' and
                      type(importers[-1].get('actualExitCode')) is int and
                      importers[-1]['actualExitCode'] > 0 and
-                     importers[-1]['actualExitCode'] not in (124, 137, 143) and importers[-1].get('finishedAt') and
+                     importers[-1]['actualExitCode'] not in (124, 143) and importers[-1].get('finishedAt') and
                      output['data']['actualNativeExitCode'] == importers[-1]['actualExitCode'] and
                      output['data']['partialTargetRetained'] is True and output['data']['retryPermitted'] is False,
                      'ORIGINAL_IMPORT_FAILURE_EXIT_NOT_PROVEN')
-                if output['failureCode'] == 'FORMAL_SQL_IMPORT_STREAM_FAILED':
+                if importers[-1]['actualExitCode'] == 137:
+                    def prove_stopped():
+                        pins = self.stopped_import_processes(value, operation_directory, root, output)
+                        observation = self.stopped_oom_target(value, operation_directory, selection)
+                        observations = operation_directory / 'queries'
+                        observations.mkdir(mode=0o700, exist_ok=True)
+                        path = observations / (uuid.uuid4().hex + '-oom-target.json')
+                        persist(path, observation)
+                        return [*pins, executor.pin(path)]
+                    if (root / 'resource-reservation.json').exists():
+                        from recovery_resource_admission import release_proven_oom
+                        resolution_pins = release_proven_oom(self.document(selection['ownerConfigurationPin']),
+                            value, root, reference, prove_stopped)
+                    else:
+                        # Legacy operations have no host reservation to release;
+                        # their existing strict evidence requirements still apply.
+                        resolution_pins = prove_stopped()
+                elif output['failureCode'] == 'FORMAL_SQL_IMPORT_STREAM_FAILED':
                     self.stopped_sql_target(value, selection)
                 reply = result(value, 'FAILED', output['failureCode'])
             if (value['action'] == 'RESTORE' and output['state'] == 'TERMINAL_UNKNOWN' and
@@ -541,6 +685,9 @@ class Native:
             need(value['operationId'] == operation and self.resolve(value) == selection, 'CURRENT_SELECTION_CHANGED')
             root = operation_directory / 'execute'
             root.mkdir(mode=0o700)
+            if value['action'] == 'RESTORE':
+                persist(operation_directory / 'restore-target-before.json',
+                        self.restore_target_observation(value, selection))
             # Pass the existing seven UI fields unchanged to the owner adapter.
             terminal = executor.run_owner(config['pythonPin'], selection['ownerProgramPin'],
                 selection['ownerConfigurationPin'], executor.pin(operation_directory / 'request.json'),

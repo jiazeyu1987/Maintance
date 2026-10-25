@@ -4,6 +4,7 @@ Patch contexts fail closed. The stored baseline and its original checks remain
 intact; timing transforms additionally compare the original statement AST.
 """
 from pathlib import Path
+import hashlib
 
 from standard_timing import backup_timings, restore_timings
 
@@ -96,7 +97,7 @@ def apply(payload):
     return execute_empty(configuration, request, root, input_pins)
 
 
-def execute_empty(configuration, request, root, input_pins):
+def execute_empty(configuration, request, root, input_pins, *, reservation_configuration=None):
 '''
     text = payload[name].decode()
     if text.count(old) != 1:
@@ -111,4 +112,70 @@ def execute_empty(configuration, request, root, input_pins):
     def secret(self, role, environment):
 ''')
     payload['common/recovery_replace.py'] = (root/'ops/recovery/recovery_replace.py').read_bytes()
+    payload['common/recovery_resource_admission.py'] = (root/'ops/recovery/recovery_resource_admission.py').read_bytes()
+    replace('common/recovery_minimal_worker.py',
+        "                    actualNativeExitCode=None if native is None else native.last_exit)",
+        "                    actualNativeExitCode=None if native is None else native.last_exit,\n"
+        "                    mutationDispatched=bool(native is not None and native.mutation_dispatched) or\n"
+        "                    (absolute(args.output).parent/'replacement-preparation/replacement-intent.json').exists())")
+    payload['common/recovery_firewall.py'] = (root/'ops/recovery/recovery_firewall.py').read_bytes()
+    replace('common/recovery_data.py',
+        "        import shlex\n        for rule in firewall['rules']:",
+        "        from recovery_firewall import isolation_rule_effective\n        for rule in firewall['rules']:")
+    replace('common/recovery_data.py',
+        "            first = next((line for line in raw.decode().splitlines() if line.startswith('-A ')), None)\n"
+        "            require(first and shlex.split(first) == ['-A', *rule], 'TARGET_FIREWALL_CHANGED')",
+        "            require(isolation_rule_effective(raw.decode('utf-8'), rule), 'TARGET_FIREWALL_CHANGED')")
+    replace('common/recovery_minimal.py',
+        "        require(request['action'] == 'RESTORE', 'CAPTURE_ACTION_REQUIRES_W03_ENTRY')\n",
+        "        require(request['action'] == 'RESTORE', 'CAPTURE_ACTION_REQUIRES_W03_ENTRY')\n"
+        "        from recovery_resource_admission import reserve, release_success\n")
+    replace('common/recovery_minimal.py',
+        "        check_pin(configuration['pythonPin'], content=False)\n",
+        "        check_pin(configuration['pythonPin'], content=False)\n"
+        "        reserve(configuration, request, root)\n")
+    replace('common/recovery_minimal.py',
+        "            result['originalResultPins'].extend([pin(worker_output), receipt_pin])\n",
+        "            result['originalResultPins'].extend([pin(worker_output), receipt_pin])\n"
+        "            if result['state'] == 'SUCCEEDED':\n"
+        "                result['originalResultPins'].append(release_success(configuration, request, root,\n"
+        "                    pin(worker_output), receipt_pin))\n"
+        "            elif result['state'] == 'FAILED_RETAINED' and result['data'].get('mutationDispatched') is False:\n"
+        "                from recovery_resource_admission import release_no_mutation\n"
+        "                result['originalResultPins'].append(release_no_mutation(configuration, request, root,\n"
+        "                    pin(worker_output), receipt_pin))\n")
+    replace('common/recovery_minimal.py',
+        "                result['originalResultPins'].extend([pin(root/'worker-result.json'), receipt_pin])\n",
+        "                result['originalResultPins'].extend([pin(root/'worker-result.json'), receipt_pin])\n"
+        "                if result['state'] == 'SUCCEEDED' and (root/'resource-reservation.json').exists():\n"
+        "                    from recovery_resource_admission import release_success\n"
+        "                    result['originalResultPins'].append(release_success(configuration, request, root,\n"
+        "                        pin(root/'worker-result.json'), receipt_pin))\n"
+        "                elif result['state'] == 'FAILED_RETAINED' and result['data'].get('mutationDispatched') is False:\n"
+        "                    from recovery_resource_admission import release_no_mutation\n"
+        "                    result['originalResultPins'].append(release_no_mutation(configuration, request, root,\n"
+        "                        pin(root/'worker-result.json'), receipt_pin))\n")
+    replace('common/recovery_minimal.py',
+        "    write(root/'result.json', result)\n    publish(output, result)\n    return result\n",
+        "    for evidence in root.glob('resource-*.json'):\n"
+        "        reference = pin(evidence)\n"
+        "        if reference not in result['originalResultPins']:\n"
+        "            result['originalResultPins'].append(reference)\n"
+        "    write(root/'result.json', result)\n    publish(output, result)\n    return result\n")
+    replace('common/recovery_minimal_runtime.py',
+        "        reservation = absolute(target['dataRoot'])/'.recovery-operation.json'\n",
+        "        from recovery_resource_admission import admit\n"
+        "        admit(configuration, request, root, 'target', reservation_configuration=reservation_configuration)\n"
+        "        reservation = absolute(target['dataRoot'])/'.recovery-operation.json'\n")
+    # The control plane is shared by both modes. These authenticated baseline
+    # modules differed from the current sources only by the reviewed OOM fix;
+    # do not copy any lightweight archive/data reader into the safe package.
+    for name, expected in {
+        'recovery_control_smallapp_native.py': '1ddb9e448f1a96cc33835429b4e86ddc0c72daee741c516008eeeb206e89f043',
+        'recovery_control_executor.py': '5b69c014cfe2838891a9cc1b22965d5e5288306e4344dd8fd3a25a8499f8c136',
+    }.items():
+        path = 'control/' + name
+        if hashlib.sha256(payload[path].replace(b'\r\n', b'\n')).hexdigest() != expected:
+            raise ValueError('STANDARD_CONTROL_BASELINE_CHANGED ' + name)
+        payload[path] = (root/'backend/src/main/resources'/name).read_bytes()
     return payload

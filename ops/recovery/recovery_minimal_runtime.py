@@ -323,13 +323,15 @@ def execute(configuration, request, root, input_pins):
     return execute_empty(configuration, request, root, input_pins)
 
 
-def execute_empty(configuration, request, root, input_pins):
+def execute_empty(configuration, request, root, input_pins, *, reservation_configuration=None):
     with step_timing(root, 'restore-admission'):
         source, policy, chain = selected_chain(configuration, request)
         target = target_configuration(configuration, request, source)
         require(os.name == 'posix', 'NATIVE_LINUX_REQUIRED')
         # A permanent local reservation prevents a second operation overwriting a
         # target even when the first process has ended or its result is unknown.
+        from recovery_resource_admission import admit
+        admit(configuration, request, root, 'target', reservation_configuration=reservation_configuration)
         reservation = absolute(target['dataRoot'])/'.recovery-operation.json'
         try:
             with reservation.open('xb') as stream:

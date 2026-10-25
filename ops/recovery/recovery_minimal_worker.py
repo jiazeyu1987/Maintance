@@ -38,7 +38,9 @@ def main(argv=None):
             unknown = True
         exit_code = 2 if unknown else 1
         data = dict(partialTargetRetained=True, retryPermitted=False, errorType=type(error).__name__,
-                    actualNativeExitCode=None if native is None else native.last_exit)
+                    actualNativeExitCode=None if native is None else native.last_exit,
+                    mutationDispatched=bool(native is not None and native.mutation_dispatched) or
+                    (absolute(args.output).parent/'replacement-preparation/replacement-intent.json').exists())
         result = operation_result(request, started, 'TERMINAL_UNKNOWN' if unknown else 'FAILED_RETAINED', code,
                                   data, [] if native is None else native.original_pins, exit_code)
     write(absolute(args.output), result)

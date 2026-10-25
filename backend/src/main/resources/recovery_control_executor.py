@@ -618,11 +618,20 @@ def _run_owner(python_pin, program_pin, configuration_pin, request_pin, output, 
          'NATIVE_ENVIRONMENT_REQUIRED')
     argv = [python_pin['path'], program_pin['path'], '--configuration', configuration_pin['path'],
             '--request', request_pin['path'], '--output', str(output)]
+    restore_target_pin = None
+    if request.get('action') == 'RESTORE':
+        restore_target_pin = pin(root.parent / 'restore-target-before.json')
+        target = document(restore_target_pin)
+        need(target['operationId'] == request['operationId'] and
+             target['targetConfigRef'] == request['targetConfigRef'] and
+             target['configurationPin'] == configuration_pin, 'RESTORE_TARGET_OBSERVATION_MISMATCH')
     intent = write(root / 'native-intent.json', dict(operationId=request['operationId'],
         requestId=request['operationId'], requestPin=request_pin, configurationPin=configuration_pin,
-        pythonPin=python_pin, programPin=program_pin, argv=argv))
+        pythonPin=python_pin, programPin=program_pin, argv=argv, restoreTargetPin=restore_target_pin))
     deadline = time.monotonic() + deadline_milliseconds / 1000
     timed_out = False
+    boot_id = (Path('/proc/sys/kernel/random/boot_id').read_text(encoding='ascii').strip()
+               if sys.platform == 'linux' else None)
     with (root / 'native-stdout').open('xb') as stdout, (root / 'native-stderr').open('xb') as stderr:
         if os.name == 'posix':
             os.chmod(stdout.name, 0o600); os.chmod(stderr.name, 0o600)
@@ -630,7 +639,7 @@ def _run_owner(python_pin, program_pin, configuration_pin, request_pin, output, 
             stdin=subprocess.DEVNULL, stdout=stdout, stderr=stderr, start_new_session=os.name == 'posix')
         dispatch['started'] = True
         write(root / 'native-process.json', dict(operationId=request['operationId'],
-            requestId=request['operationId'], intentPin=intent, pid=process.pid))
+            requestId=request['operationId'], intentPin=intent, pid=process.pid, bootId=boot_id))
         while True:
             try:
                 code = process.wait(timeout=.2)
