@@ -57,6 +57,70 @@ def test_before_observation_must_match_registered_host_and_network(target, field
         native.restore_target_observation(value, selection)
 
 
+@pytest.mark.parametrize('change', ['none', 'running', 'previous_start', 'exited',
+    'network_mode', 'ipam', 'extra_network', 'endpoint', 'network_id',
+    'network_name', 'external_network', 'network_label', 'active_exec'])
+def test_created_target_requires_proven_unstarted_network_binding(target, monkeypatch, tmp_path, change):
+    native, value, selection, rows, _ = target
+    row = rows[2]  # MinIO is intentionally never started before fresh recovery.
+    row['State'].update(Status='created', Running=False, Pid=0, OOMKilled=False,
+        ExitCode=0, Dead=False, Error='', StartedAt='0001-01-01T00:00:00Z',
+        FinishedAt='0001-01-01T00:00:00Z')
+    row['HostConfig'] = {'NetworkMode': 'network'}
+    attachment = dict(NetworkID='', EndpointID='', IPAddress='',
+                      IPAMConfig={'IPv4Address': '172.29.240.33'})
+    row['NetworkSettings']['Networks'] = {'isolated': attachment}
+    config = module.executor.document(selection['ownerConfigurationPin'])
+    config['targets']['target']['services'][2]['ip'] = '172.29.240.33'
+    selection['ownerConfigurationPin'] = put(Path(selection['ownerConfigurationPin']['path']), config)
+    network = dict(Id='network', Name='isolated', Internal=True, Driver='bridge',
+                   Labels={'intruoyi.recovery.target': 'isolated'})
+    if change == 'running': row['State'].update(Status='running', Running=True, Pid=123)
+    if change == 'previous_start': row['State']['StartedAt'] = '2026-10-25T00:00:00Z'
+    if change == 'exited': row['State']['Status'] = 'exited'
+    if change == 'network_mode': row['HostConfig']['NetworkMode'] = 'other'
+    if change == 'ipam': attachment['IPAMConfig']['IPv4Address'] = '172.29.240.99'
+    if change == 'extra_network': row['NetworkSettings']['Networks']['other'] = dict(attachment)
+    if change == 'endpoint': attachment['EndpointID'] = 'unexpected-endpoint'
+    if change == 'network_id': network['Id'] = 'other'
+    if change == 'network_name': network['Name'] = 'other'
+    if change == 'external_network': network['Internal'] = False
+    if change == 'network_label': network['Labels']['intruoyi.recovery.target'] = 'other'
+    if change == 'active_exec': row['ExecIDs'] = ['live']
+    original_run = module.subprocess.run
+    def run(argv, **kwargs):
+        if argv[3:5] == ['network', 'inspect']:
+            assert argv[5:] == ['network']
+            return SimpleNamespace(returncode=0, stdout=json.dumps([network]).encode(), stderr=b'')
+        return original_run(argv, **kwargs)
+    monkeypatch.setattr(module.subprocess, 'run', run)
+    if change != 'none':
+        with pytest.raises(RuntimeError):
+            native.restore_target_observation(value, selection)
+    else:
+        observed = native.restore_target_observation(value, selection)
+        assert observed['services']['minio']['networks'] == {'isolated': 'network'}
+        assert observed['services']['minio']['state']['Status'] == 'created'
+        assert row['NetworkSettings']['Networks']['isolated']['NetworkID'] == ''
+        assert observed['services']['minio']['networkAttachments'] == {'isolated': ''}
+        # Attaching the same proven network is a lifecycle transition, not drift.
+        before_pin = put(tmp_path / 'restore-target-before.json', observed)
+        (tmp_path / 'execute').mkdir()
+        put(tmp_path / 'execute/native-intent.json', {'restoreTargetPin': before_pin})
+        put(target[4] / '.recovery-operation.json', {'operationId': value['operationId']})
+        row['State'].update(Status='running', Running=True, Pid=123)
+        attachment.update(NetworkID='network', EndpointID='actual', IPAddress='172.29.240.33')
+        proof = native.stopped_oom_target(value, tmp_path, selection)
+        assert proof['beforePin'] == before_pin
+        attachment['IPAMConfig']['IPv4Address'] = '172.29.240.99'
+        with pytest.raises(RuntimeError):
+            native.stopped_oom_target(value, tmp_path, selection)
+        attachment['IPAMConfig']['IPv4Address'] = '172.29.240.33'
+        row['HostConfig']['NetworkMode'] = 'other'
+        with pytest.raises(RuntimeError):
+            native.stopped_oom_target(value, tmp_path, selection)
+
+
 def test_oom_target_requires_retained_claim_and_original_identity(target, tmp_path):
     native, value, selection, rows, data = target
     before = native.restore_target_observation(value, selection)

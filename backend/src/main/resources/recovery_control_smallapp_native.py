@@ -444,8 +444,31 @@ class Native:
             need(row['Image'] == expected['imageId'] and
                  row['Config']['Labels'].get('intruoyi.recovery.target') == target['targetId'],
                  'ORIGINAL_TARGET_IDENTITY_CHANGED')
-            need({network['NetworkID'] for network in row['NetworkSettings']['Networks'].values()} ==
-                 {target['networkId']}, 'ORIGINAL_TARGET_NETWORK_CHANGED')
+            attachments = row['NetworkSettings']['Networks']
+            need(len(attachments) == 1, 'ORIGINAL_TARGET_NETWORK_CHANGED')
+            name, attachment = next(iter(attachments.items()))
+            if attachment['NetworkID'] != target['networkId']:
+                # Docker has no live endpoint for a never-started container.
+                # Prove its exact configured binding; do not start it to fill one.
+                state = row['State']
+                need(attachment['NetworkID'] == '' and attachment.get('EndpointID') == '' and
+                     attachment.get('IPAddress') == '' and not row['ExecIDs'] and
+                     state.get('Status') == 'created' and state['Running'] is False and
+                     state['Pid'] == 0 and state['Paused'] is False and
+                     state['Restarting'] is False and state['OOMKilled'] is False and
+                     state.get('Dead') is False and state['ExitCode'] == 0 and
+                     state.get('StartedAt') == '0001-01-01T00:00:00Z' and
+                     state.get('FinishedAt') == '0001-01-01T00:00:00Z' and
+                     row.get('HostConfig', {}).get('NetworkMode') == target['networkId'] and
+                     type(expected.get('ip')) is str and expected['ip'] and
+                     attachment.get('IPAMConfig', {}).get('IPv4Address') == expected['ip'],
+                     'ORIGINAL_TARGET_NETWORK_CHANGED')
+                networks = observe(['network', 'inspect', target['networkId']])
+                need(type(networks) is list and len(networks) == 1 and
+                     networks[0]['Id'] == target['networkId'] and networks[0]['Name'] == name and
+                     networks[0]['Internal'] is True and networks[0]['Driver'] == 'bridge' and
+                     networks[0].get('Labels', {}).get('intruoyi.recovery.target') == target['targetId'],
+                     'ORIGINAL_TARGET_NETWORK_CHANGED')
             for mount in row['Mounts']:
                 source = Path(mount['Source'])
                 need(source.is_absolute() and source.resolve() == source and
@@ -453,8 +476,10 @@ class Native:
                      'ORIGINAL_TARGET_MOUNT_OUTSIDE_SCOPE')
             observations[row['Id']] = dict(role=expected['role'], imageId=row['Image'],
                 labels=row['Config']['Labels'], mounts=row['Mounts'],
-                networks={name: network['NetworkID'] for name, network in
-                          row['NetworkSettings']['Networks'].items()},
+                networks={name: target['networkId']},
+                networkAttachments={name: attachment['NetworkID']},
+                configuredNetworkMode=row.get('HostConfig', {}).get('NetworkMode'),
+                configuredNetworkIp=(attachment.get('IPAMConfig') or {}).get('IPv4Address'),
                 state=row['State'], execIds=row['ExecIDs'])
         return dict(operationId=value['operationId'], targetConfigRef=value['targetConfigRef'],
             configurationPin=selection['ownerConfigurationPin'], targetId=target['targetId'],
@@ -471,8 +496,11 @@ class Native:
         need(all(current[key] == before[key] for key in current if key != 'services') and
              set(current['services']) == set(before['services']), 'ORIGINAL_TARGET_HOST_CHANGED')
         for identity, row in current['services'].items():
+            # Endpoint attachment may follow first start; configured binding,
+            # resolved network identity and all other immutable identity must not.
             need(all(row[key] == before['services'][identity][key] for key in row
-                     if key not in ('state', 'execIds')), 'ORIGINAL_TARGET_IDENTITY_CHANGED')
+                     if key not in ('state', 'execIds', 'networkAttachments')),
+                 'ORIGINAL_TARGET_IDENTITY_CHANGED')
             state = row['state']
             need(not row['execIds'] and state['Paused'] is False and state['Restarting'] is False and
                  (row['role'] in ('minio', 'redis') or state['Running'] is False and state['Pid'] == 0),
