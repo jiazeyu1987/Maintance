@@ -32,6 +32,29 @@ def public_configuration():
     } for row in value['bindings']])
 
 
+def display_context(request, application_id):
+    """Freeze public display semantics; never infer them from later settings."""
+    rows = [row for row in configuration()['bindings'] if row['applicationId'] == application_id]
+    # Advanced registrations need not have a simple-page binding. This is explicit
+    # missing display evidence, not an execution-mode default.
+    if not rows:
+        return None
+    if len(rows) != 1:
+        raise adapter.Refused('DISPLAY_BINDING_AMBIGUOUS')
+    binding = rows[0]
+    if binding.get('mode') not in ('safe', 'fast') or not isinstance(binding.get('server'), str):
+        raise adapter.Refused('DISPLAY_BINDING_INVALID')
+    restore_mode = None
+    if request['action'] == 'RESTORE':
+        target = request['targetConfigRef']
+        fresh = target in binding['targetServers'].values()
+        replace = target in binding['overwriteTargetServers'].values()
+        if fresh == replace:
+            raise adapter.Refused('DISPLAY_TARGET_SEMANTICS_AMBIGUOUS')
+        restore_mode = 'replace' if replace else 'fresh'
+    return dict(server=binding['server'], mode=binding['mode'], restoreMode=restore_mode)
+
+
 def progress_binding(record, config):
     rows = [row for row in config['bindings'] if row['applicationId'] == record['applicationId']]
     if len(rows) != 1 or not rows[0].get('progressRoot'):

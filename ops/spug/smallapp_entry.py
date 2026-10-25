@@ -219,14 +219,14 @@ def source_reservation_lock(source_ref, root):
             release()
 
 
-def reserve(request, config, bridge, user_id, root=ENTRIES):
+def reserve(request, config, bridge, user_id, root=ENTRIES, *, display_context_factory=None):
     """Once-only Spug dispatch. Lost reply/server restart never invents a rerun."""
     adapter.validate_request(request)
     with source_reservation_lock(request['sourceConfigRef'], root):
-        return reserve_locked(request, config, bridge, user_id, root)
+        return reserve_locked(request, config, bridge, user_id, root, display_context_factory)
 
 
-def reserve_locked(request, config, bridge, user_id, root):
+def reserve_locked(request, config, bridge, user_id, root, display_context_factory=None):
     path = record_path(request['operationId'], root)
     if path.exists():
         record = adapter.read_json(path)
@@ -256,6 +256,9 @@ def reserve_locked(request, config, bridge, user_id, root):
                   bridgeFingerprint=bridge.fingerprint, dispatchReserved=True, spugHistoryId=None,
                   dispatchErrorCode=None, dispatchState='RESERVED', dispatchToken=uuid.uuid4().hex,
                   dispatchAudit=[dict(state='RESERVED', at=now(), userId=user_id)])
+    # Capture after admission, before publication/dispatch. Never recompute originals.
+    if display_context_factory is not None:
+        record['displayContext'] = display_context_factory(request, app['applicationId'])
     try:
         adapter.write_json(path, record, exclusive=True)
         return record, True
@@ -269,7 +272,10 @@ def public_record(record):
     # Whitelist only public request/result references. Never include credentials/native originals.
     return dict({key: record[key] for key in ('request', 'applicationId', 'spugTaskId', 'createdAt',
             'spugHistoryId', 'dispatchErrorCode')}, dispatchState=record.get('dispatchState'),
-            cancelledUnaccepted=record.get('dispatchState') == 'CANCELLED_UNACCEPTED')
+            cancelledUnaccepted=record.get('dispatchState') == 'CANCELLED_UNACCEPTED',
+            displayContext=({key: record['displayContext'].get(key)
+                            for key in ('server', 'mode', 'restoreMode')}
+                           if isinstance(record.get('displayContext'), dict) else None))
 
 
 def validate_cancellation(record):
@@ -594,7 +600,9 @@ def handler():
                     return
                 config = settings()
                 installed_task(config, value['action'])
-                record, first = reserve(value, config, adapter.request_bridge(value), user_id)
+                from smallapp_simple import display_context
+                record, first = reserve(value, config, adapter.request_bridge(value), user_id,
+                                        display_context_factory=display_context)
                 if not first:
                     self.reply(200, original_result(value['operationId']))
                     return
