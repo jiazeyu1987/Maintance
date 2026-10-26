@@ -174,3 +174,40 @@ def test_refresh_releases_only_proven_retained_failure_and_preserves_later_reser
         prior=(host/'active.json').read_bytes()
         assert native.reconcile(value,operation,selection)==reply
         assert (host/'active.json').read_bytes()==prior
+
+
+@pytest.mark.parametrize('mode',['retained','oom'])
+@pytest.mark.parametrize('change',['order','source','destination','rw','mode','propagation',
+                                  'duplicate','missing','extra_field','type'])
+def test_stopped_target_compares_complete_mount_multiset(target,tmp_path,mode,change):
+    native,value,selection,rows,data=target
+    mounts=[dict(Type='volume',Name='mysql-data',Source=str(data/'mysql-data'),
+                 Destination='/var/lib/mysql',RW=True,Mode='z',Propagation=''),
+            dict(Type='bind',Source=str(data/'mysql-config'),Destination='/etc/mysql/conf.d',
+                 RW=False,Mode='ro',Propagation='rprivate')]
+    rows[0]['Mounts']=mounts
+    before=put(tmp_path/'restore-target-before.json',native.restore_target_observation(value,selection))
+    original=(tmp_path/'restore-target-before.json').read_bytes()
+    (tmp_path/'execute').mkdir()
+    put(tmp_path/'execute/native-intent.json',dict(restoreTargetPin=before))
+    claim=put(data/'.recovery-operation.json',dict(operationId=value['operationId']))
+    rows[0]['Mounts']=list(reversed(mounts))
+    mount=rows[0]['Mounts'][0]
+    if change=='source':mount['Source']=str(data/'other-config')
+    if change=='destination':mount['Destination']='/different'
+    if change=='rw':mount['RW']=True
+    if change=='mode':mount['Mode']='rw'
+    if change=='propagation':mount['Propagation']='rshared'
+    if change=='duplicate':rows[0]['Mounts'].append(dict(mount))
+    if change=='missing':rows[0]['Mounts'].pop()
+    if change=='extra_field':mount['UnexpectedMetadata']='changed'
+    if change=='type':mount['Type']='volume'
+    check=native.stopped_retained_target if mode=='retained' else native.stopped_oom_target
+    if change=='order':
+        proof=check(value,tmp_path,selection)
+        assert proof['beforePin']==before and proof['claimPin']==claim
+    else:
+        with pytest.raises(RuntimeError,match='ORIGINAL_TARGET_IDENTITY_CHANGED'):
+            check(value,tmp_path,selection)
+    assert (tmp_path/'restore-target-before.json').read_bytes()==original
+    assert module.executor.verify(claim).is_file()

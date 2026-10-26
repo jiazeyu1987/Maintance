@@ -507,7 +507,14 @@ class Native:
             # Endpoint attachment may follow first start; configured binding,
             # resolved network identity and all other immutable identity must not.
             need(all(row[key] == before['services'][identity][key] for key in row
-                     if key not in ('state', 'execIds', 'networkAttachments')),
+                     if key not in ('state', 'execIds', 'networkAttachments', 'mounts')),
+                 'ORIGINAL_TARGET_IDENTITY_CHANGED')
+            original_mounts = before['services'][identity]['mounts']
+            # Docker's mount enumeration order is not identity. Compare the full
+            # canonical multiset, retaining duplicate counts and every field.
+            need(type(row['mounts']) is list and type(original_mounts) is list and
+                 sorted(canonical(mount) for mount in row['mounts']) ==
+                 sorted(canonical(mount) for mount in original_mounts),
                  'ORIGINAL_TARGET_IDENTITY_CHANGED')
             state = row['state']
             need(not row['execIds'] and state['Paused'] is False and state['Restarting'] is False and
