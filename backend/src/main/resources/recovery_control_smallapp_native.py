@@ -361,8 +361,9 @@ class Native:
                  'ORIGINAL_OWNER_ADMISSION_CHANGED')
         return root
 
-    def stopped_import_processes(self, value, operation_directory, root, output):
+    def stopped_import_processes(self, value, operation_directory, root, output, expected_exit=2):
         """Prove local writers stopped; this alone never releases a restore target."""
+        need(type(expected_exit) is int and expected_exit in (1, 2), 'ORIGINAL_EXPECTED_EXIT_INVALID')
         need(os.name == 'posix' and Path('/proc').is_dir(),
              'ORIGINAL_PROCESS_OBSERVATION_UNAVAILABLE')
         paths = [operation_directory / 'execute' / name for name in
@@ -378,7 +379,8 @@ class Native:
              process['intentPin'] == exited['intentPin'] == references[0] and
              type(process['pid']) is int and process['pid'] > 0 and
              process['pid'] == exited['pid'] and
-             exited['actualExitCode'] == output['actualExitCode'] == child['actualExitCode'] == 2 and
+             type(exited['actualExitCode']) is int and type(child['actualExitCode']) is int and
+             exited['actualExitCode'] == output['actualExitCode'] == child['actualExitCode'] == expected_exit and
              child['timedOut'] is False, 'ORIGINAL_IMPORT_PROCESS_BINDING_INVALID')
         boot = Path('/proc/sys/kernel/random/boot_id').read_text(encoding='ascii').strip()
         need(process.get('bootId') == boot, 'ORIGINAL_PROCESS_BOOT_NOT_PROVEN')
@@ -488,6 +490,12 @@ class Native:
             dockerEngineId=engine['ID'], services=observations)
 
     def stopped_oom_target(self, value, operation_directory, selection):
+        return self._stopped_failure_target(value, operation_directory, selection, require_oom=True)
+
+    def stopped_retained_target(self, value, operation_directory, selection):
+        return self._stopped_failure_target(value, operation_directory, selection, require_oom=False)
+
+    def _stopped_failure_target(self, value, operation_directory, selection, require_oom):
         before_pin = executor.pin(operation_directory / 'restore-target-before.json')
         intent = self.document(executor.pin(operation_directory / 'execute' / 'native-intent.json'))
         need(intent.get('restoreTargetPin') == before_pin, 'ORIGINAL_TARGET_OBSERVATION_CHANGED')
@@ -503,9 +511,10 @@ class Native:
                  'ORIGINAL_TARGET_IDENTITY_CHANGED')
             state = row['state']
             need(not row['execIds'] and state['Paused'] is False and state['Restarting'] is False and
-                 (row['role'] in ('minio', 'redis') or state['Running'] is False and state['Pid'] == 0),
+                 (require_oom and row['role'] in ('minio', 'redis') or
+                  state['Running'] is False and state['Pid'] == 0),
                  'ORIGINAL_TARGET_WRITER_UNRESOLVED')
-            if row['role'] == 'mysql':
+            if require_oom and row['role'] == 'mysql':
                 need(state['OOMKilled'] is True and state['ExitCode'] == 137,
                      'ORIGINAL_TARGET_OOM_NOT_PROVEN')
         target = self.document(selection['ownerConfigurationPin'])['targets'][value['targetConfigRef']]
@@ -623,6 +632,7 @@ class Native:
     def refresh_original(self, value, operation_directory, selection):
         reference, output = None, None
         resolution_pins = []
+        resource_release_error = None
         try:
             original_intent = self.document(executor.pin(operation_directory / 'execute' / 'native-intent.json'))
             need(original_intent['operationId'] == original_intent['requestId'] == value['operationId'] and
@@ -634,6 +644,26 @@ class Native:
             reference = executor.pin(root / 'result.json')
             output = self.operation_output(value, reference)
             reply = self.operation_result(value, output)
+            if (value['action'] == 'RESTORE' and output['state'] == 'FAILED_RETAINED' and
+                    output['data'].get('mutationDispatched') is True and
+                    (root / 'resource-reservation.json').exists()):
+                # This is already a proven failure. A refusal to release resources
+                # must remain visible without projecting it back to RUNNING.
+                try:
+                    def prove_retained_stopped():
+                        pins = self.stopped_import_processes(value, operation_directory, root, output,
+                                                             expected_exit=1)
+                        observation = self.stopped_retained_target(value, operation_directory, selection)
+                        observations = operation_directory / 'queries'
+                        observations.mkdir(mode=0o700, exist_ok=True)
+                        path = observations / (uuid.uuid4().hex + '-retained-target.json')
+                        persist(path, observation)
+                        return [*pins, executor.pin(path)]
+                    from recovery_resource_admission import release_retained_failure
+                    resolution_pins = release_retained_failure(self.document(selection['ownerConfigurationPin']),
+                        value, root, reference, prove_retained_stopped)
+                except Exception as error:
+                    resource_release_error = public_error(error)
             if (value['action'] != 'RESTORE' and output['state'] == 'TERMINAL_UNKNOWN' and
                     output['failureCode'] == 'REPOSITORY_CHILD_TIMEOUT_QUERY_ORIGINAL_OPERATION'):
                 code, resolution_pins = self.stopped_capture_failure(value, selection, root, output)
@@ -699,6 +729,7 @@ class Native:
         persist(observations / (uuid.uuid4().hex + '.json'), dict(operationId=value['operationId'],
             requestSha256=fingerprint(value), ownerResultPin=reference,
             resolutionPins=resolution_pins,
+            resourceReleaseError=resource_release_error,
             ownerActualExitCode=None if output is None else output['actualExitCode'], result=reply,
             observedAt=datetime.now(timezone.utc).isoformat()))
         return reply
@@ -781,6 +812,16 @@ class Native:
                 need(self.owner_result(value, original) == reply, 'ORIGINAL_RESULT_CHANGED')
         else:
             need(reply['state'] != 'SUCCEEDED', 'ORIGINAL_SUCCESS_EXIT_MISSING')
+        if (reply['state'] == 'FAILED' and value['action'] == 'RESTORE' and owner_terminal is not None and
+                owner_terminal['actualExitCode'] == 1 and owner_terminal.get('timedOut') is False and
+                owner_terminal.get('resultPin') is not None):
+            failed = self.operation_output(value, owner_terminal['resultPin'])
+            if (failed['state'] == 'FAILED_RETAINED' and failed['data'].get('mutationDispatched') is True and
+                    (self.accepted_operation(value, selection) / 'resource-reservation.json').exists()):
+                refreshed = self.refresh_original(value, operation_directory, selection)
+                # Reconciliation diagnostics are retained in queries; a failure
+                # already bound to its original exit is never made RUNNING again.
+                return reply if refreshed['state'] == 'RUNNING' else refreshed
         if reply['state'] == 'RUNNING' and (operation_directory / 'execute' / 'native-intent.json').is_file():
             return self.refresh_original(value, operation_directory, selection)
         return reply

@@ -250,6 +250,83 @@ def release_proven_oom(configuration, request, root, result_pin, verify_stopped)
         return [*proofs, receipt]
 
 
+def release_retained_failure(configuration, request, root, result_pin, verify_stopped):
+    """Release host exclusion after proof of stopped writers; retain the failed target."""
+    from recovery_engine import check_pin, load, pin, pinned_json, utc, write
+    need(result_pin['path'] == str(root / 'result.json'),
+         'RESTORE_RESOURCE_RELEASE_EVIDENCE_INVALID')
+    with _host_lock():
+        binding = _binding(configuration, request, root)
+        reservation = pin(root / 'resource-reservation.json')
+        original = pinned_json(reservation)
+        need(all(original.get(key) == item for key, item in binding.items()),
+             'RESTORE_RESOURCE_RESERVATION_CHANGED')
+        output = pinned_json(result_pin)
+        data = output.get('data', {})
+        need(output.get('operationId') == request['operationId'] and
+             output.get('state') == 'FAILED_RETAINED' and
+             type(output.get('actualExitCode')) is int and output['actualExitCode'] == 1 and
+             data.get('mutationDispatched') is True and data.get('partialTargetRetained') is True and
+             data.get('retryPermitted') is False, 'RESTORE_RESOURCE_RELEASE_NOT_PROVEN')
+        worker_pin, exit_pin = pin(root / 'worker-result.json'), pin(root / 'child-exit.json')
+        references = output.get('originalResultPins', [])
+        need(all(p in references for p in (reservation, worker_pin, exit_pin)),
+             'RESTORE_RESOURCE_RELEASE_EVIDENCE_INVALID')
+        worker, exited = pinned_json(worker_pin), pinned_json(exit_pin)
+        need({k: v for k, v in worker.items() if k != 'originalResultPins'} ==
+             {k: v for k, v in output.items() if k != 'originalResultPins'} and
+             all(p in references for p in worker.get('originalResultPins', [])) and
+             type(exited.get('actualExitCode')) is int and exited['actualExitCode'] == 1 and
+             exited.get('timedOut') is False, 'RESTORE_RESOURCE_RELEASE_NOT_PROVEN')
+        for reference in references:
+            check_pin(reference)
+        # These are control receipts, not archived business payloads. Each
+        # completed invocation must still be the one bound into the result.
+        calls = sorted(root.rglob('native-*.json')) + sorted(root.rglob('importer-*.json'))
+        need(calls, 'RESTORE_RESOURCE_RELEASE_EVIDENCE_INVALID')
+        for path in calls:
+            reference = pin(path)
+            need(reference in references, 'RESTORE_RESOURCE_RELEASE_EVIDENCE_INVALID')
+            call = pinned_json(reference)
+            importer = path.name.startswith('importer-')
+            need(call.get('schemaVersion') == ('RecoverySqlImporter/v1' if importer else
+                 'RecoveryDataInvocation/v1') and
+                 (importer or call.get('operationId') == request['operationId']) and
+                 type(call.get('actualExitCode')) is int and call['actualExitCode'] == 0 and
+                 call.get('finishedAt'), 'RESTORE_RESOURCE_RELEASE_NOT_PROVEN')
+        release_path = root / 'resource-retained-failure-release.json'
+        active_path = HOST_ROOT / 'active.json'
+        expected = dict(binding, reservationPin=reservation)
+        if release_path.exists():
+            receipt = pin(release_path)
+            recorded = pinned_json(receipt)
+            need(recorded.get('reservationPin') == reservation and recorded.get('resultPin') == result_pin and
+                 recorded.get('reason') == 'PROVEN_STOPPED_RETAINED_FAILURE' and
+                 type(recorded.get('proofPins')) is list and recorded['proofPins'],
+                 'RESTORE_RESOURCE_RELEASE_EVIDENCE_INVALID')
+            proofs = recorded['proofPins']
+            for reference in proofs:
+                check_pin(reference)
+            if not active_path.exists() or load(active_path) != expected:
+                return [*proofs, receipt]
+        else:
+            need(load(active_path) == expected, 'RESTORE_RESOURCE_RESERVATION_CHANGED')
+            proofs = verify_stopped()
+            need(type(proofs) is list and proofs, 'RESTORE_RESOURCE_RELEASE_NOT_PROVEN')
+            for reference in [result_pin, reservation, worker_pin, exit_pin, *proofs]:
+                check_pin(reference)
+            receipt = write(release_path, dict(reservationPin=reservation, resultPin=result_pin,
+                proofPins=proofs, reason='PROVEN_STOPPED_RETAINED_FAILURE', releasedAt=utc(),
+                partialTargetRetained=True, retrySameTargetPermitted=False))
+        active_path.unlink()
+        try:
+            _sync_host()
+        except Exception:
+            write(active_path, expected)
+            raise
+        return [*proofs, receipt]
+
+
 def cgroup_memory_limits(record, root=Path('/sys/fs/cgroup')):
     """Read the process's memory hierarchy, including tighter parent limits."""
     entries = [line.split(':', 2) for line in record.splitlines()]
