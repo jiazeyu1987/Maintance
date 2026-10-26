@@ -248,7 +248,8 @@ def reserve_locked(request, config, bridge, user_id, root, display_context_facto
              'ORIGINAL_BRIDGE_BINDING_CHANGED')
         # execute validates the full journal identity and reuses durable terminal
         # evidence. Only unresolved originals need another authenticated GET.
-        current = adapter.execute(original, original_bridge, root=adapter.RECORDS, query_only=True)
+        current = adapter.execute(original, original_bridge, root=adapter.RECORDS, query_only=True,
+                                  refresh_terminal=False)
         need(current['state'] in ('SUCCEEDED', 'FAILED'), 'ORIGINAL_OPERATION_STILL_UNRESOLVED')
     app = admit_selection(request, config, bridge)
     record = dict(request=request, applicationId=app['applicationId'], registrationSha256=app['registrationSha256'],
@@ -411,15 +412,20 @@ def original_result(operation_id, root=ENTRIES, journal=adapter.RECORDS):
         validate_cancellation(record)
         return dict(public_record(record), result=None, repeatSubmissionAllowed=False)
     result = adapter.running(request, 'ORIGINAL_EXECUTION_NOT_YET_OBSERVED')
+    query_error = None
     journal_path = Path(journal) / (hashlib.sha256(operation_id.encode()).hexdigest() + '.json')
     if journal_path.exists():
         try:
             result = adapter.execute(request, adapter.request_bridge(request), root=journal, query_only=True)
+        except adapter.TerminalQueryRefused as error:
+            result = error.terminal_result
+            query_error = str(error)
         except adapter.Refused as error:
             result = adapter.running(request, str(error))
     elif record.get('dispatchErrorCode'):
         result = adapter.running(request, record['dispatchErrorCode'])
-    return dict(public_record(record), result=result, repeatSubmissionAllowed=False)
+    return dict(public_record(record), result=result, repeatSubmissionAllowed=False,
+                **({'queryError': query_error} if query_error is not None else {}))
 
 
 def installed_task(config, action):
