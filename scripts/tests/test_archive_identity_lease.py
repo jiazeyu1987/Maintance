@@ -23,25 +23,26 @@ def fd_count():
     return len(list(Path('/proc/self/fd').iterdir()))
 
 
-def test_capture_uses_one_fd_for_more_paths_than_fd_limit(tmp_path):
+def lease_fd_count(paths):
+    return 1 + len({item for path in paths for item in (path, *path.parents)})
+
+
+def test_capture_keeps_all_path_descriptors_until_close(tmp_path):
     paths = []
     for index in range(1100):
         path = tmp_path/str(index)
         path.write_bytes(b'original')
         paths.append(path)
     before = fd_count()
-    limits = resource.getrlimit(resource.RLIMIT_NOFILE)
-    resource.setrlimit(resource.RLIMIT_NOFILE, (128, limits[1]))
     guard = None
     try:
         guard = ArchivePathGuard.capture(paths)
-        assert fd_count() == before + 1
+        assert fd_count() == before + lease_fd_count(paths)
         assert guard.signatures == {str(p): signature(p.lstat()) for p in paths}
         guard.check()
     finally:
         if guard is not None:
             guard.close()
-        resource.setrlimit(resource.RLIMIT_NOFILE, limits)
     assert fd_count() == before
 
 
@@ -124,13 +125,13 @@ def test_safe_reader_installs_before_first_content_read_and_reuses_watch(tmp_pat
         if selected == path:
             count = fd_count()
             opened.append(count)
-            assert count == before + 1, 'identity must be leased BEFORE full content verification'
+            assert count == before + lease_fd_count([path]), 'identity must be leased BEFORE full content verification'
         return original(selected, *args, **kwargs)
     monkeypatch.setattr(Path, 'open', observe)
     reader = reader_class(str(tmp_path), entries_for(path), 'a'*64, 'b'*64, guard=lambda: None)
     try:
         assert opened
-        assert fd_count() == before + 1
+        assert fd_count() == before + lease_fd_count([path])
         reader._current()
         response = reader.handle(json.dumps(dict(schemaVersion=reader.SCHEMA,
             attemptId=reader.attempt, sourceContextSha256=reader.context, sequence=1, action='close')).encode())
@@ -146,7 +147,7 @@ def test_safe_reader_constructor_failure_deterministically_closes(tmp_path, read
     path.write_bytes(b'original')
     before = fd_count()
     def interrupted():
-        assert fd_count() == before + 1, 'lease must precede native constructor baseline'
+        assert fd_count() == before + lease_fd_count([path]), 'lease must precede native constructor baseline'
         raise RuntimeError('owner check failed')
     with pytest.raises(RuntimeError, match='owner check failed'):
         reader_class(str(tmp_path), entries_for(path), 'a'*64, 'b'*64, guard=interrupted)
@@ -179,7 +180,7 @@ def test_minimal_data_leases_before_hash_and_closes_constructor_failure(tmp_path
     before = fd_count()
     observed = []
     def check_pin(*args, **kwargs):
-        assert fd_count() == before + 1, 'full hash started before identity lease'
+        assert fd_count() == before + lease_fd_count([path]), 'full hash started before identity lease'
         observed.append('hash')
         result = safe_engine['check_pin'](*args, **kwargs)
         if stage == 'first_hash':
@@ -189,7 +190,7 @@ def test_minimal_data_leases_before_hash_and_closes_constructor_failure(tmp_path
     exec(compile(ast.Module(body=[selected], type_ignores=[]), '<safe-minimal-data>', 'exec'), namespace)
     cls = namespace['MinimalData']
     def database_uuid(self):
-        assert fd_count() == before + 1
+        assert fd_count() == before + lease_fd_count([path])
         assert self.archive_guard.fd >= 0
         observed.append('identity')
         raise RuntimeError('identity interrupted')

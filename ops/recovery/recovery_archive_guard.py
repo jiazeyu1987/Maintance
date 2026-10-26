@@ -16,6 +16,9 @@ class ArchivePathGuard:
     _CHANGES = 0x2 | 0x4 | 0x8 | 0x40 | 0x80 | 0x100 | 0x200
     _SELF = 0x400 | 0x800 | 0x2000 | 0x8000
     _OVERFLOW = 0x4000
+    # Pipes, sockets, subprocess setup and evidence writes share this process.
+    # This guard validates the launcher's explicit budget; it never raises it.
+    _FD_WORK_SLOTS = 64
 
     @classmethod
     def capture(cls, paths, *, closed_directories=()):
@@ -25,12 +28,14 @@ class ArchivePathGuard:
 
     def __init__(self, expected, *, closed_directories=(), _capture=False):
         require(os.name == 'posix' and bool(expected), 'ARCHIVE_WATCH_LINUX_REQUIRED')
+        import resource
         self.fd = -1
         self.watches = {}
         self.watch_paths = {}
         self.closed_directory_watches = set()
         self.signatures = {}
         self.identities = {}
+        self.path_fds = {}
         libc = ctypes.CDLL(None, use_errno=True)
         init = libc.inotify_init1
         init.argtypes = [ctypes.c_int]
@@ -56,9 +61,21 @@ class ArchivePathGuard:
                     parents.setdefault(child.parent, set()).add(child.name)
             require(int(Path('/proc/sys/fs/inotify/max_user_watches').read_text()) >= len(parents) + len(expected),
                     'ARCHIVE_WATCH_LIMIT_TOO_LOW')
+            required = len(set(parents) | {Path(value) for value in expected})
+            soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+            current = [int(value) for value in os.listdir('/proc/self/fd')]
+            used = sum(fd < soft for fd in current) if soft != resource.RLIM_INFINITY else len(current)
+            # The inotify fd is already counted. The proc-directory iterator
+            # contributes one conservative slot; no archive identity is taken
+            # until the complete path set and working reserve fit.
+            if soft != resource.RLIM_INFINITY and used + required + self._FD_WORK_SLOTS > soft:
+                error = RecoveryError('ARCHIVE_LEASE_FD_BUDGET_EXCEEDED')
+                error.archive_diagnostic = dict(kind='fd-budget', soft=soft, hard=hard,
+                    used=used, paths=required, workSlots=self._FD_WORK_SLOTS)
+                raise error
             identities = {}
-            # Protect ancestors before descendants. Each watch owns an inode
-            # reference until close; only one short O_PATH fd is needed at once.
+            # Protect ancestors before descendants. inotify holds an inode, but
+            # CIFS path identity also needs its dentry: retain every O_PATH.
             for path in sorted(parents, key=lambda p: len(p.parts)):
                 names = parents[path]
                 wd = self._watch(path, names, directory=True)
@@ -90,7 +107,8 @@ class ArchivePathGuard:
     def _watch(self, path, names, *, directory):
         require(hasattr(os, 'O_PATH'), 'ARCHIVE_WATCH_LINUX_REQUIRED')
         # Bind the watch to the held inode through procfs, not a second path
-        # lookup. O_NOFOLLOW + fstat rejects symlinks before following this fd.
+        # lookup. O_NOFOLLOW + fstat rejects symlinks before following this fd;
+        # retain its dentry and mount references until the guard closes.
         held = os.open(path, os.O_PATH | os.O_NOFOLLOW | os.O_CLOEXEC)
         try:
             info = os.fstat(held)
@@ -103,9 +121,11 @@ class ArchivePathGuard:
             self.identities[path] = (current.st_dev, current.st_ino)
             if not directory:
                 self.signatures[str(path)] = signature(current)
+            self.path_fds[path] = held
             return wd
         finally:
-            os.close(held)
+            if self.path_fds.get(path) != held:
+                os.close(held)
 
     def _install(self, path, names, *, directory, held):
         mask = self._CHANGES | self._SELF
@@ -160,6 +180,19 @@ class ArchivePathGuard:
             raise error
 
     def close(self):
+        # Remove references before closing so repeated cleanup is idempotent;
+        # continue releasing all owned resources even if one close fails.
+        descriptors = list(self.path_fds.values())
+        self.path_fds.clear()
         if self.fd >= 0:
-            os.close(self.fd)
+            descriptors.append(self.fd)
             self.fd = -1
+        failure = None
+        for fd in reversed(descriptors):
+            try:
+                os.close(fd)
+            except OSError as error:
+                if failure is None:
+                    failure = error
+        if failure is not None:
+            raise failure
