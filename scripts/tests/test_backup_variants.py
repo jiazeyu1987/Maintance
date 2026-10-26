@@ -85,6 +85,13 @@ def test_both_packages_preserve_isolation_order_checks(variant, packages):
         for name in ('recovery_data.py',):
             code = archive.extractfile('common/' + name).read().decode()
             assert 'isolation_rule_effective(raw.decode(' in code
+        runtime = archive.extractfile('common/recovery_minimal_runtime.py').read().decode()
+        if variant == 'standard':
+            assert "subnet_isolation_rule_effective(raw.decode('utf-8'), rule)" in runtime
+            assert "require(first and shlex.split(first)" not in runtime
+        else:
+            assert 'subnet_isolation_rule_effective' not in runtime
+            assert "isolation='NOT_CHECKED'" in runtime
 
 
 @pytest.mark.parametrize('variant', builder.VARIANTS)

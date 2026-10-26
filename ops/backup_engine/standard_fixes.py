@@ -222,6 +222,11 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
         "                    mutationDispatched=bool(native is not None and native.mutation_dispatched) or\n"
         "                    (absolute(args.output).parent/'replacement-preparation/replacement-intent.json').exists())")
     payload['common/recovery_firewall.py'] = (root/'ops/recovery/recovery_firewall.py').read_bytes()
+    replace('common/recovery_minimal_runtime.py',
+        "            first = next((line for line in raw.decode().splitlines() if line.startswith('-A ')), None)\n"
+        "            require(first and shlex.split(first) == ['-A', *rule], 'TARGET_FIREWALL_CHANGED')",
+        "            from recovery_firewall import subnet_isolation_rule_effective\n"
+        "            require(subnet_isolation_rule_effective(raw.decode('utf-8'), rule), 'TARGET_FIREWALL_CHANGED')")
     replace('common/recovery_data.py',
         "        import shlex\n        for rule in firewall['rules']:",
         "        from recovery_firewall import isolation_rule_effective\n        for rule in firewall['rules']:")
