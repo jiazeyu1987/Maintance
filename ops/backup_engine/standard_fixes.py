@@ -88,6 +88,103 @@ def apply(payload):
                     references.append(reference)""")
     payload['control/recovery_control_point_quarantine.py'] = (root/'backend/src/main/resources/recovery_control_point_quarantine.py').read_bytes()
     payload = backup_timings(restore_timings(payload))
+    # Install the one continuous inode lease before the frozen strict readers
+    # collect identity baselines. All original hash/metadata checks remain.
+    replace('common/recovery_minimal_runtime.py',
+        '    def __init__(self, configuration, request, source, policy, chain, target, root, input_pins):\n',
+        '''    def __init__(self, configuration, request, source, policy, chain, target, root, input_pins):
+        self.archive_guard = None
+        try:
+            self._initialize(configuration, request, source, policy, chain, target, root, input_pins)
+        except BaseException:
+            if self.archive_guard is not None:
+                self.archive_guard.close()
+            raise
+
+    def _initialize(self, configuration, request, source, policy, chain, target, root, input_pins):
+''')
+    replace('common/recovery_minimal_runtime.py',
+        "        for ref in references.values():\n            path = absolute(ref['path'])\n            before = signature(path.stat())\n",
+        "        from recovery_archive_guard import ArchivePathGuard\n"
+        "        self.archive_guard = ArchivePathGuard.capture(references)\n"
+        "        for ref in references.values():\n            path = absolute(ref['path'])\n"
+        "            before = self.archive_guard.signatures[ref['path']]\n"
+        "            require(signature(path.stat()) == before, 'PIN_CHANGED')\n")
+    replace('common/recovery_minimal_runtime.py',
+        "            self.payload_signatures[ref['path']] = before\n"
+        "        from recovery_archive_guard import ArchivePathGuard\n"
+        "        self.archive_guard = ArchivePathGuard(self.payload_signatures)\n",
+        "            self.payload_signatures[ref['path']] = before\n"
+        "            self.archive_guard.check()\n")
+    replace('common/repository_minimal.py',
+        '        super().__init__(root, entries, *args, **kwargs)\n',
+        '''        self.baseline_ready = False
+        try:
+            if os.name == 'posix':
+                from recovery_archive_guard import ArchivePathGuard
+                require(type(root) is str and Path(root).is_absolute() and
+                        type(entries) is dict and entries, 'ARCHIVE_SESSION_INVALID')
+                for name in entries:
+                    self._relative(name)
+                files = [Path(root) / name for name, marker in entries.items() if marker != 'directory']
+                directories = [Path(root), *(Path(root) / name for name, marker in entries.items()
+                                              if marker == 'directory')]
+                self.path_guard = ArchivePathGuard.capture(files, closed_directories=directories)
+                owner_guard, path_guard = kwargs['guard'], self.path_guard
+                def current():
+                    owner_guard()
+                    path_guard.check()
+                kwargs['guard'] = current
+            super().__init__(root, entries, *args, **kwargs)
+            self.baseline_ready = True
+        except BaseException:
+            self.close()
+            raise
+
+    def close(self):
+        # Resource cleanup is not the protocol's successful close ACK.
+        if not getattr(self, 'closed', False):
+            self.failed = True
+        if self.path_guard is not None:
+            self.path_guard.close()
+
+    def __del__(self):
+        self.close()
+''')
+    replace('common/repository_minimal.py',
+        '''        if self.path_guard is None:
+            from recovery_archive_guard import ArchivePathGuard
+            files = {self.root / name: (saved[0], saved[1], saved[6], saved[7], saved[8])
+                     for name, saved in self.pins.items() if stat.S_ISREG(saved[2])}
+            directories = [self.root / name for name, saved in self.pins.items()
+                           if stat.S_ISDIR(saved[2])]
+            self.path_guard = ArchivePathGuard(files, closed_directories=directories)
+''',
+        '''        if not self.baseline_ready:
+            for name, saved in self.pins.items():
+                path = self.root / name
+                if stat.S_ISREG(saved[2]):
+                    require((saved[0], saved[1], saved[6], saved[7], saved[8]) ==
+                            self.path_guard.signatures[str(path)], 'ARCHIVED_PAYLOAD_CHANGED')
+                else:
+                    require(saved[:2] == self.path_guard.identities[path], 'ARCHIVED_PAYLOAD_CHANGED')
+            for path, saved in self.ancestors.items():
+                require(saved[:2] == self.path_guard.identities[path], 'ARCHIVED_PAYLOAD_CHANGED')
+''')
+    replace('common/repository_minimal.py',
+        '''        target = config.archives / ('prod-' + publisher.binding['attemptId'])
+        published = publisher.stream(target, tree)
+        close = publisher.archive_request('close')
+        require(close['state'] == 'ARCHIVE_READER_CLOSED_NOT_NAS_PROOF', 'REPOSITORY_ARCHIVE_CLOSE_FAILED')
+''',
+        '''        try:
+            target = config.archives / ('prod-' + publisher.binding['attemptId'])
+            published = publisher.stream(target, tree)
+            close = publisher.archive_request('close')
+            require(close['state'] == 'ARCHIVE_READER_CLOSED_NOT_NAS_PROOF', 'REPOSITORY_ARCHIVE_CLOSE_FAILED')
+        finally:
+            publisher.reader.close()
+''')
     name = 'common/recovery_minimal_runtime.py'
     old = 'def execute(configuration, request, root, input_pins):\n'
     new = '''def execute(configuration, request, root, input_pins):
