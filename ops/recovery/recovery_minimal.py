@@ -108,6 +108,14 @@ def run(configuration_path, request_path, output_path):
                 result = load(root/'worker-result.json')
                 validate_result(result, request, receipt['actualExitCode'])
                 result['originalResultPins'].extend([pin(root/'worker-result.json'), receipt_pin])
+                if result['state'] == 'SUCCEEDED' and (root/'resource-reservation.json').exists():
+                    from recovery_resource_admission import release_success
+                    result['originalResultPins'].append(release_success(configuration, request, root,
+                        pin(root/'worker-result.json'), receipt_pin))
+                elif result['state'] == 'FAILED_RETAINED' and result['data'].get('mutationDispatched') is False:
+                    from recovery_resource_admission import release_no_mutation
+                    result['originalResultPins'].append(release_no_mutation(configuration, request, root,
+                        pin(root/'worker-result.json'), receipt_pin))
             except Exception as error:
                 result = operation_result(request, record['startedAt'], 'TERMINAL_UNKNOWN',
                     getattr(error, 'code', 'ORIGINAL_CHILD_OUTPUT_'+type(error).__name__.upper()),
@@ -131,7 +139,9 @@ def run(configuration_path, request_path, output_path):
     worker_output = root/'worker-result.json'
     try:
         require(request['action'] == 'RESTORE', 'CAPTURE_ACTION_REQUIRES_W03_ENTRY')
+        from recovery_resource_admission import reserve, release_success
         check_pin(configuration['pythonPin'], content=False)
+        reserve(configuration, request, root)
         worker = Path(__file__).with_name('recovery_minimal_worker.py')
         argv = [configuration['pythonPin']['path'], str(worker), '--configuration', configuration_ref['path'],
                 '--request', request_ref['path'], '--output', str(worker_output)]
@@ -143,6 +153,13 @@ def run(configuration_path, request_path, output_path):
             result = load(worker_output)
             validate_result(result, request, receipt['actualExitCode'])
             result['originalResultPins'].extend([pin(worker_output), receipt_pin])
+            if result['state'] == 'SUCCEEDED':
+                result['originalResultPins'].append(release_success(configuration, request, root,
+                    pin(worker_output), receipt_pin))
+            elif result['state'] == 'FAILED_RETAINED' and result['data'].get('mutationDispatched') is False:
+                from recovery_resource_admission import release_no_mutation
+                result['originalResultPins'].append(release_no_mutation(configuration, request, root,
+                    pin(worker_output), receipt_pin))
     except Exception as error:
         # A child without complete validated output has no inferred success.
         launched = (root/'child.stdout').exists()
@@ -151,6 +168,10 @@ def run(configuration_path, request_path, output_path):
             dict(originalOperationId=request['operationId'], retryPermitted=False, errorType=type(error).__name__),
             [pin(root/'child-exit.json')] if (root/'child-exit.json').exists() else [],
             load(root/'child-exit.json')['actualExitCode'] if (root/'child-exit.json').exists() else None)
+    for evidence in root.glob('resource-*.json'):
+        reference = pin(evidence)
+        if reference not in result['originalResultPins']:
+            result['originalResultPins'].append(reference)
     write(root/'result.json', result)
     publish(output, result)
     return result

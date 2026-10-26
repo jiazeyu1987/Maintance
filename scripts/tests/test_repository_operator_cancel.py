@@ -92,7 +92,10 @@ def test_unproven_cancellation_retains_original_state(cancelled, change, code):
     elif change == 'capture_alive':
         edit(capture / 'worker-started.json', pid=os.getpid())
     elif change == 'partial_archive':
-        (config.archives / ('prod-' + operation.name)).mkdir()
+        # Source and generated packages deliberately use distinct archive names.
+        prefix = os.environ.get('RECOVERY_TEST_ARCHIVE_PREFIX', 'prod-')
+        assert prefix in ('prod-', 'prod-standard-', 'prod-lightweight-')
+        (config.archives / (prefix + operation.name)).mkdir()
     elif change == 'existing_result':
         put(operation / 'result.json', dict(original=True))
     elif change == 'unapproved':

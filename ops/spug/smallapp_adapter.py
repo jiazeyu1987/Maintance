@@ -30,6 +30,13 @@ class Refused(Exception):
     """A safe symbolic error; never attach raw credentials or upstream text."""
 
 
+class TerminalQueryRefused(Refused):
+    """The original terminal remains proven; only its new query failed."""
+    def __init__(self, code, terminal_result):
+        super().__init__(code)
+        self.terminal_result = terminal_result
+
+
 def reference(value):
     return isinstance(value, str) and re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}', value) is not None
 
@@ -351,7 +358,26 @@ def remember_terminal(request, fingerprint, result, root):
             raise Refused('TERMINAL_EVIDENCE_CONFLICT')
 
 
-def execute(request, bridge, root=RECORDS, query_only=False):
+def query_failed_terminal(request, bridge, previous, root):
+    """Refresh only the original ID; never overwrite or reinterpret its terminal."""
+    observed, error_code = None, None
+    try:
+        observed = validate_result(bridge.query(request['operationId']), request)
+        if observed != previous:
+            raise Refused('TERMINAL_EVIDENCE_CONFLICT')
+    except Refused as error:
+        error_code = str(error) if symbolic_error(str(error)) else 'BRIDGE_QUERY_FAILED'
+    write_json(Path(root) / 'observations' / (uuid.uuid4().hex + '.json'),
+        dict(operationId=request['operationId'], bridgeFingerprint=bridge.fingerprint,
+             originalTerminalResult=previous, result=observed, queryError=error_code,
+             submissionIssuedThisRun=False,
+             observedAt=datetime.datetime.now(datetime.timezone.utc).isoformat()), exclusive=True)
+    if error_code is not None:
+        raise TerminalQueryRefused(error_code, previous)
+    return previous
+
+
+def execute(request, bridge, root=RECORDS, query_only=False, *, refresh_terminal=True):
     validate_request(request)
     path = Path(root) / (hashlib.sha256(request['operationId'].encode()).hexdigest() + '.json')
     reserved = False
@@ -376,12 +402,15 @@ def execute(request, bridge, root=RECORDS, query_only=False):
         raise Refused('ORIGINAL_BRIDGE_BINDING_CHANGED')
     terminal = terminal_path(request, root)
     if terminal.exists():
-        return validated_terminal(read_json(terminal), request, bridge.fingerprint)
-    previous = receipt.get('lastResult')
+        previous = validated_terminal(read_json(terminal), request, bridge.fingerprint)
+    else:
+        previous = receipt.get('lastResult')
     if previous is not None:
         validate_result(previous, request)
         if previous['state'] in ('SUCCEEDED', 'FAILED'):
             remember_terminal(request, bridge.fingerprint, previous, root)
+            if query_only and refresh_terminal and request['action'] == 'RESTORE' and previous['state'] == 'FAILED':
+                return query_failed_terminal(request, bridge, previous, root)
             return previous
     try:
         result = bridge.submit(request) if reserved else bridge.query(request['operationId'])

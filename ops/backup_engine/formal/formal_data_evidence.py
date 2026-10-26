@@ -76,7 +76,7 @@ def _cell(column):
     elif kind=='double':
         # Casting to DOUBLE removes legacy DOUBLE(M,D) display rounding before dtoa.
         value='CAST(CAST('+name+' AS DOUBLE) AS CHAR CHARACTER SET ascii)'
-    elif kind in ('varchar','text','mediumtext','longtext','blob','longblob'):
+    elif kind in ('varchar','varbinary','text','mediumtext','longtext','blob','longblob'):
         value='CAST('+name+' AS BINARY)'
     elif kind=='enum':
         # Hash the label in a fixed charset, never the ENUM internal index.

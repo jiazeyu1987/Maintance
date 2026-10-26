@@ -50,6 +50,43 @@ const record=(id='original-operation-123')=>({applicationId:'app',request:{schem
   action:'FULL',sourceConfigRef:'source-ref',parentChainRef:null,recoveryPointRef:null,targetConfigRef:null},
   result:{state:'RUNNING',errorCode:null,logRefs:[],resultRef:null}});
 
+test('returning to an application retains its explicitly selected server and fast mode',async()=>{
+  const p=page();
+  p.run(`
+    simpleConfig.bindings.push({...simpleConfig.bindings[0],mode:'fast',applicationId:'fast-app'});
+    simpleConfig.bindings.push({...simpleConfig.bindings[0],product:'other',server:'other-server',applicationId:'other-app'});
+    options.push({...options[0],applicationId:'fast-app'},{...options[0],applicationId:'other-app'});
+    refresh=async()=>{};
+    S('simple-mode').value='fast';
+  `);
+  await p.run('chooseSimple()');
+  p.get('simple-product').value='other';
+  await p.get('simple-product').onchange();
+  assert.equal(p.get('simple-server').value,'other-server');
+  p.get('simple-product').value='product';
+  await p.get('simple-product').onchange();
+  assert.equal(p.get('simple-server').value,'server');
+  assert.equal(p.get('simple-mode').value,'fast');
+});
+
+test('a remembered mode becoming unavailable does not silently select another executor',async()=>{
+  const p=page();
+  p.run(`
+    simpleConfig.bindings.push({...simpleConfig.bindings[0],mode:'fast',applicationId:'fast-app'});
+    options.push({...options[0],applicationId:'fast-app'});
+    refresh=async()=>{};S('simple-mode').value='fast';
+  `);
+  await p.run('chooseSimple()');
+  p.get('simple-product').value='unregistered-product';
+  await p.get('simple-product').onchange();
+  p.run("simpleConfig.bindings.find(b=>b.mode==='fast').selectable=false;");
+  p.get('simple-product').value='product';
+  await p.get('simple-product').onchange();
+  assert.equal(p.get('simple-mode').value,'fast');
+  assert.equal(p.get('simple-submit').disabled,true);
+  assert.match(p.get('simple-status').textContent,/尚未登记快速模式/);
+});
+
 test('incremental chooses the newest accepted point on this source regardless of history order',()=>{
   const p=page();
   p.context.history=[['old-full','2026-10-22T00:00:00Z','FULL'],['new-increment','2026-10-23T01:00:00Z','INCREMENTAL'],['new-full','2026-10-23T00:00:00Z','FULL']]
@@ -151,6 +188,7 @@ test('restore stays blocked until a package is explicitly selected and explains 
 
 test('history details show original point and target after the draft target rotates',()=>{
   const p=page();p.context.original=record();
+  p.context.original.displayContext={server:'original-server',mode:'fast',restoreMode:'replace'};
   p.run(`original.request.action='RESTORE';original.request.recoveryPointRef='historical-point';original.request.targetConfigRef='historical-target';
     simpleConfig.bindings[0].mode='fast';simpleConfig.bindings[0].targetServers['target-server']='new-draft-target';selectRecord(original);render();`);
   const details=p.get('simple-operation-details');
@@ -158,7 +196,17 @@ test('history details show original point and target after the draft target rota
   const text=details.children.map(item=>item.textContent).join('\n');
   assert.match(text,/historical-point/);assert.match(text,/historical-target/);
   assert.match(text,/快速模式 · 跳过核验/);assert.doesNotMatch(text,/new-draft-target/);
+  assert.match(text,/覆盖现有小程序/);assert.match(text,/original-server/);
   p.run('selectRecord(null);render();');assert.equal(details.hidden,true);assert.equal(details.children.length,0);
+});
+
+test('legacy history never infers restore semantics from current mappings',()=>{
+  const p=page();p.context.original=record();
+  p.run(`original.request.action='RESTORE';original.request.targetConfigRef='historical-target';
+    simpleConfig.bindings[0].overwriteTargetServers={'target-server':'historical-target'};selectRecord(original);render();`);
+  const text=p.get('simple-operation-details').children.map(item=>item.textContent).join('\n');
+  assert.match(text,/恢复方式未记录/);assert.match(text,/执行模式未记录/);
+  assert.doesNotMatch(text,/覆盖现有小程序|恢复到空目标/);
 });
 
 test('retired source remains in history while new drafts select its explicit successor',()=>{

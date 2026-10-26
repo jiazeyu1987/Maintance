@@ -219,14 +219,14 @@ def source_reservation_lock(source_ref, root):
             release()
 
 
-def reserve(request, config, bridge, user_id, root=ENTRIES):
+def reserve(request, config, bridge, user_id, root=ENTRIES, *, display_context_factory=None):
     """Once-only Spug dispatch. Lost reply/server restart never invents a rerun."""
     adapter.validate_request(request)
     with source_reservation_lock(request['sourceConfigRef'], root):
-        return reserve_locked(request, config, bridge, user_id, root)
+        return reserve_locked(request, config, bridge, user_id, root, display_context_factory)
 
 
-def reserve_locked(request, config, bridge, user_id, root):
+def reserve_locked(request, config, bridge, user_id, root, display_context_factory=None):
     path = record_path(request['operationId'], root)
     if path.exists():
         record = adapter.read_json(path)
@@ -248,7 +248,8 @@ def reserve_locked(request, config, bridge, user_id, root):
              'ORIGINAL_BRIDGE_BINDING_CHANGED')
         # execute validates the full journal identity and reuses durable terminal
         # evidence. Only unresolved originals need another authenticated GET.
-        current = adapter.execute(original, original_bridge, root=adapter.RECORDS, query_only=True)
+        current = adapter.execute(original, original_bridge, root=adapter.RECORDS, query_only=True,
+                                  refresh_terminal=False)
         need(current['state'] in ('SUCCEEDED', 'FAILED'), 'ORIGINAL_OPERATION_STILL_UNRESOLVED')
     app = admit_selection(request, config, bridge)
     record = dict(request=request, applicationId=app['applicationId'], registrationSha256=app['registrationSha256'],
@@ -256,6 +257,9 @@ def reserve_locked(request, config, bridge, user_id, root):
                   bridgeFingerprint=bridge.fingerprint, dispatchReserved=True, spugHistoryId=None,
                   dispatchErrorCode=None, dispatchState='RESERVED', dispatchToken=uuid.uuid4().hex,
                   dispatchAudit=[dict(state='RESERVED', at=now(), userId=user_id)])
+    # Capture after admission, before publication/dispatch. Never recompute originals.
+    if display_context_factory is not None:
+        record['displayContext'] = display_context_factory(request, app['applicationId'])
     try:
         adapter.write_json(path, record, exclusive=True)
         return record, True
@@ -269,7 +273,10 @@ def public_record(record):
     # Whitelist only public request/result references. Never include credentials/native originals.
     return dict({key: record[key] for key in ('request', 'applicationId', 'spugTaskId', 'createdAt',
             'spugHistoryId', 'dispatchErrorCode')}, dispatchState=record.get('dispatchState'),
-            cancelledUnaccepted=record.get('dispatchState') == 'CANCELLED_UNACCEPTED')
+            cancelledUnaccepted=record.get('dispatchState') == 'CANCELLED_UNACCEPTED',
+            displayContext=({key: record['displayContext'].get(key)
+                            for key in ('server', 'mode', 'restoreMode')}
+                           if isinstance(record.get('displayContext'), dict) else None))
 
 
 def validate_cancellation(record):
@@ -405,15 +412,20 @@ def original_result(operation_id, root=ENTRIES, journal=adapter.RECORDS):
         validate_cancellation(record)
         return dict(public_record(record), result=None, repeatSubmissionAllowed=False)
     result = adapter.running(request, 'ORIGINAL_EXECUTION_NOT_YET_OBSERVED')
+    query_error = None
     journal_path = Path(journal) / (hashlib.sha256(operation_id.encode()).hexdigest() + '.json')
     if journal_path.exists():
         try:
             result = adapter.execute(request, adapter.request_bridge(request), root=journal, query_only=True)
+        except adapter.TerminalQueryRefused as error:
+            result = error.terminal_result
+            query_error = str(error)
         except adapter.Refused as error:
             result = adapter.running(request, str(error))
     elif record.get('dispatchErrorCode'):
         result = adapter.running(request, record['dispatchErrorCode'])
-    return dict(public_record(record), result=result, repeatSubmissionAllowed=False)
+    return dict(public_record(record), result=result, repeatSubmissionAllowed=False,
+                **({'queryError': query_error} if query_error is not None else {}))
 
 
 def installed_task(config, action):
@@ -594,7 +606,9 @@ def handler():
                     return
                 config = settings()
                 installed_task(config, value['action'])
-                record, first = reserve(value, config, adapter.request_bridge(value), user_id)
+                from smallapp_simple import display_context
+                record, first = reserve(value, config, adapter.request_bridge(value), user_id,
+                                        display_context_factory=display_context)
                 if not first:
                     self.reply(200, original_result(value['operationId']))
                     return

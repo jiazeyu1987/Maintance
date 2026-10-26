@@ -1,6 +1,7 @@
 'use strict';
 let simpleConfig=null, simpleConfigError='', simpleRestoring=false, switching=false, telemetry=null, telemetryError='', pollBusy=false;
 const pendingProgress=new Set();
+const applicationDraftSelections=new Map();
 const S=id=>document.getElementById(id);
 const stages={'archive-admission':'备份前置检查','source-capture':'采集业务数据并恢复源服务','capture-validation':'核验采集材料','nas-upload':'上传 NAS','archive-metadata':'生成归档索引','nas-readback':'NAS 独立读回','archive-final-verification':'归档最终核验','archive-chain-readback':'核对已发布备份链','capture-cleanup':'清理采集临时文件','restore-admission':'恢复前置检查','target-checks':'恢复目标核验','target-replacement':'清空已确认覆盖的小程序目标','database-restore':'恢复数据库','object-restore':'恢复对象文件','consistency':'一致性核验','redis-rebuild':'恢复 Redis（保留原到期时间）','application-start':'启动应用','archive-verification':'归档最终核验','restore-cleanup':'清理恢复临时文件','sql-readback':'数据库独立回读核验'};
 function stageName(name){const parts=name.split('/');const stage=parts.at(-1);const sql={'sql-stage':'暂存数据库备份','sql-expand':'解压数据库备份','sql-import':'导入数据库','restore-cleanup':'清理恢复临时文件','target-quiesce':'停止目标应用写入','capture-material-binding':'绑定采集材料','recovery-material-binding':'生成恢复材料'};return (parts[0].startsWith('database-')?`第 ${Number(parts[0].split('-')[1])+1} 个备份点 · `:'')+(sql[stage]||stages[stage]||stage);}
@@ -51,13 +52,13 @@ function syncSimpleIdentity(record){
 function drawOperationDetails(){
   const details=S('simple-operation-details');details.replaceChildren();details.hidden=!active;
   if(!active)return;
-  const request=active.request, binding=simpleConfig?.bindings.find(b=>b.applicationId===active.applicationId);
-  const fields=[['操作',labels[request.action]],['来源服务器',binding?.server||'来源服务器未登记'],
-    ['来源',request.sourceConfigRef],['执行模式',binding?.mode==='fast'?'快速模式 · 跳过核验':binding?.mode==='safe'?'安全模式 · 完整核验':'执行模式未登记']];
+  const request=active.request, context=active.displayContext;
+  const fields=[['操作',labels[request.action]],['来源服务器',context?.server||'来源服务器未记录'],
+    ['来源',request.sourceConfigRef],['执行模式',context?.mode==='fast'?'快速模式 · 跳过核验':context?.mode==='safe'?'安全模式 · 完整核验':'执行模式未记录']];
   if(request.parentChainRef)fields.push(['增量父点',request.parentChainRef]);
   if(request.recoveryPointRef)fields.push(['备份包',request.recoveryPointRef]);
   if(request.targetConfigRef)fields.push(['恢复目标',request.targetConfigRef]);
-  if(request.action==='RESTORE')fields.push(['恢复方式',replacementRequest(request,binding)?'覆盖现有小程序':'恢复到空目标']);
+  if(request.action==='RESTORE')fields.push(['恢复方式',context?.restoreMode==='replace'?'覆盖现有小程序':context?.restoreMode==='fresh'?'恢复到空目标':'恢复方式未记录']);
   for(const [label,value] of fields){const term=document.createElement('dt'),description=document.createElement('dd');term.textContent=label;description.textContent=value;details.append(term,description);}
 }
 async function openRecord(record){
@@ -179,6 +180,7 @@ async function chooseSimple(){
   if(interactionLocked() || switching)return;
   const binding=currentBinding();
   if(unresolvedOriginal() || active&&!resolvedRecord(active)){simpleRender();return;}
+  if(binding)applicationDraftSelections.set(binding.product,{server:binding.server,mode:binding.mode});
   selectRecord(null);telemetry=null;telemetryError='';
   S('simple-package').value='';S('point').value='';S('parent').value='';S('target').value='';S('result-state').textContent='尚未执行';
   if(!binding){render();return;}
@@ -203,9 +205,14 @@ S('simple-backup-tab').onclick=()=>{if(S('simple-backup-tab').disabled)return;si
 S('simple-restore-tab').onclick=()=>{if(S('simple-restore-tab').disabled)return;simpleRestoring=true;chooseSimple();};
 for(const id of ['simple-server','simple-mode','simple-type','simple-restore-mode'])S(id).onchange=chooseSimple;
 S('simple-product').onchange=()=>{
-  const binding=simpleConfig?.bindings.find(b=>b.selectable&&b.product===S('simple-product').value);
-  if(binding){S('simple-server').value=binding.server;S('simple-mode').value=binding.mode;}
-  chooseSimple();
+  const product=S('simple-product').value;
+  const previous=applicationDraftSelections.get(product);
+  const binding=simpleConfig?.bindings.find(b=>b.selectable&&b.product===product);
+  // Preserve an explicit draft choice even if its registration is now unavailable.
+  // Rendering will explain the missing registration and keep submission disabled.
+  if(previous){S('simple-server').value=previous.server;S('simple-mode').value=previous.mode;}
+  else if(binding){S('simple-server').value=binding.server;S('simple-mode').value=binding.mode;}
+  return chooseSimple();
 };
 S('simple-nas').oninput=()=>render();
 for(const id of ['simple-package','simple-target'])S(id).onchange=()=>{S('point').value=S('simple-package').value;S('target').value=simpleTargetServers()[S('simple-target').value]||'';render();};

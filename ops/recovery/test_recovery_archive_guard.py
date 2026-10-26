@@ -3,6 +3,7 @@ from pathlib import Path
 import tempfile
 import time
 import struct
+import json
 import unittest
 from unittest.mock import patch
 
@@ -88,6 +89,53 @@ class ArchiveGuardTests(unittest.TestCase):
         with patch('pathlib.Path.resolve', side_effect=AssertionError('repeated resolve')):
             for _ in range(100):
                 self.guard.check()
+
+    def test_write_failure_identifies_watch_without_file_contents(self):
+        self.file.write_bytes(b'secret-content-not-for-diagnostics')
+        with self.assertRaises(RecoveryError) as raised:
+            self.guard.check()
+        self.assertEqual('ARCHIVED_PAYLOAD_CHANGED', raised.exception.code)
+        detail = raised.exception.archive_diagnostic
+        self.assertEqual('inotify', detail['kind'])
+        self.assertEqual(str(self.file), str(Path(detail['watchPath']) / detail['name']) if detail['name'] else detail['watchPath'])
+        self.assertIsInstance(detail['mask'], int)
+        self.assertNotIn('secret-content', str(detail))
+
+    def test_setup_drift_records_expected_and_observed_signature(self):
+        expected = signature(self.file.stat())
+        self.file.write_bytes(b'a-different-length')
+        with self.assertRaises(RecoveryError) as raised:
+            ArchivePathGuard({str(self.file): expected})
+        self.assertEqual('ARCHIVED_PAYLOAD_CHANGED', raised.exception.code)
+        detail = raised.exception.archive_diagnostic
+        self.assertEqual('signature', detail['kind'])
+        self.assertEqual(str(self.file), detail['path'])
+        self.assertEqual(list(expected), detail['expected'])
+        self.assertEqual(list(signature(self.file.stat())), detail['observed'])
+
+    def test_worker_preserves_archive_diagnostic_in_failed_result(self):
+        from recovery_minimal_worker import main
+        self.file.write_bytes(b'changed')
+        with self.assertRaises(RecoveryError) as raised:
+            self.guard.check()
+        request = self.root / 'request.json'
+        configuration = self.root / 'configuration.json'
+        output = self.root / 'result.json'
+        request.write_text(json.dumps(dict(schemaVersion='SmallAppBackupUiRequest/v1',
+            operationId='diagnostic-test', action='RESTORE', sourceConfigRef='source',
+            parentChainRef=None, recoveryPointRef='point', targetConfigRef='target')))
+        configuration.write_text(json.dumps(dict(operationsRoot=str(self.root / 'operations'))))
+        # This unit boundary tests error serialization, not configuration admission.
+        # The triggering archive event and the written result are real local files.
+        with patch('recovery_minimal_worker.configuration_contract'), \
+                patch('recovery_minimal_runtime.execute', side_effect=raised.exception):
+            code = main(['--configuration', str(configuration), '--request', str(request), '--output', str(output)])
+        result = json.loads(output.read_text())
+        self.assertEqual(1, code)
+        self.assertEqual('FAILED_RETAINED', result['state'])
+        self.assertEqual('ARCHIVED_PAYLOAD_CHANGED', result['failureCode'])
+        self.assertFalse(result['data']['mutationDispatched'])
+        self.assertEqual(raised.exception.archive_diagnostic, result['data']['archiveDiagnostic'])
 
 
 if __name__ == '__main__':

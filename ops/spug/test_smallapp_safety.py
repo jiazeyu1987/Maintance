@@ -261,7 +261,7 @@ class DispatchRecovery(unittest.TestCase):
             with patch.dict(sys.modules, modules), \
                  patch.object(entry, 'settings', return_value=config), \
                  patch.object(entry, 'record_path', side_effect=lambda operation, root=ui: original_path(operation, root)), \
-                 patch.object(entry, 'reserve', side_effect=lambda *args: original_reserve(*args, root=ui)), \
+                 patch.object(entry, 'reserve', side_effect=lambda *args, **kwargs: original_reserve(*args, root=ui, **kwargs)), \
                  patch.object(entry, 'original_result', side_effect=lambda operation: original_result(operation, ui, root)), \
                  patch.object(entry, 'installed_task', side_effect=cancel_during_task_check), \
                  patch.object(adapter, 'HttpBridge', return_value=bridge), \
