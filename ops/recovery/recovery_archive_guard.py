@@ -21,6 +21,7 @@ class ArchivePathGuard:
         require(os.name == 'posix' and bool(expected), 'ARCHIVE_WATCH_LINUX_REQUIRED')
         self.fd = -1
         self.watches = {}
+        self.watch_paths = {}
         self.closed_directory_watches = set()
         libc = ctypes.CDLL(None, use_errno=True)
         init = libc.inotify_init1
@@ -59,7 +60,12 @@ class ArchivePathGuard:
                 self._watch(Path(value), None, directory=False)
             # Close setup races after both directory and inode watches exist.
             for value, wanted in expected.items():
-                require(signature(Path(value).lstat()) == wanted, 'ARCHIVED_PAYLOAD_CHANGED')
+                observed = signature(Path(value).lstat())
+                if observed != wanted:
+                    error = RecoveryError('ARCHIVED_PAYLOAD_CHANGED')
+                    error.archive_diagnostic = dict(kind='signature', path=str(value),
+                        expected=list(wanted), observed=list(observed))
+                    raise error
             for path, wanted in identities.items():
                 current = path.lstat()
                 require(stat.S_ISDIR(current.st_mode) and
@@ -82,6 +88,7 @@ class ArchivePathGuard:
             prior.update(names)
         else:
             self.watches[wd] = None if names is None else set(names)
+            self.watch_paths[wd] = str(path)
         return wd
 
     def check(self):
@@ -105,15 +112,20 @@ class ArchivePathGuard:
                 require(not mask & self._OVERFLOW, 'ARCHIVE_WATCH_OVERFLOW')
                 require(wd in self.watches, 'ARCHIVE_WATCH_EVENT_INVALID')
                 names = self.watches[wd]
-                require(not mask & self._SELF, 'ARCHIVED_PAYLOAD_CHANGED')
+                self._unchanged(not mask & self._SELF, wd, mask, name)
                 # Membership includes unexpected children, even in empty dirs.
                 # Writes to excluded live control files remain owner-guarded.
-                require(not (wd in self.closed_directory_watches and
-                             mask & (0x40 | 0x80 | 0x100 | 0x200)),
-                        'ARCHIVED_PAYLOAD_CHANGED')
-                require(not (mask & self._CHANGES and
-                             (names is None or not name or name in names)),
-                        'ARCHIVED_PAYLOAD_CHANGED')
+                self._unchanged(not (wd in self.closed_directory_watches and
+                             mask & (0x40 | 0x80 | 0x100 | 0x200)), wd, mask, name)
+                self._unchanged(not (mask & self._CHANGES and
+                             (names is None or not name or name in names)), wd, mask, name)
+
+    def _unchanged(self, condition, wd, mask, name):
+        if not condition:
+            error = RecoveryError('ARCHIVED_PAYLOAD_CHANGED')
+            error.archive_diagnostic = dict(kind='inotify', watchPath=self.watch_paths[wd],
+                                            mask=mask, name=name)
+            raise error
 
     def close(self):
         if self.fd >= 0:

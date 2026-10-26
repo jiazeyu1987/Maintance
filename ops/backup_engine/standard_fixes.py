@@ -113,6 +113,12 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
 ''')
     payload['common/recovery_replace.py'] = (root/'ops/recovery/recovery_replace.py').read_bytes()
     payload['common/recovery_resource_admission.py'] = (root/'ops/recovery/recovery_resource_admission.py').read_bytes()
+    payload['common/recovery_archive_guard.py'] = (root/'ops/recovery/recovery_archive_guard.py').read_bytes()
+    replace('common/recovery_minimal_worker.py',
+        "        result = operation_result(request, started, 'TERMINAL_UNKNOWN' if unknown else 'FAILED_RETAINED', code,",
+        "        if code == 'ARCHIVED_PAYLOAD_CHANGED' and hasattr(error, 'archive_diagnostic'):\n"
+        "            data['archiveDiagnostic'] = error.archive_diagnostic\n"
+        "        result = operation_result(request, started, 'TERMINAL_UNKNOWN' if unknown else 'FAILED_RETAINED', code,")
     replace('common/recovery_minimal_worker.py',
         "                    actualNativeExitCode=None if native is None else native.last_exit)",
         "                    actualNativeExitCode=None if native is None else native.last_exit,\n"

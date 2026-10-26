@@ -28,7 +28,7 @@ def test_standard_keeps_original_code_except_reviewed_fixes_and_archive_names(pa
     reviewed = builder.safe_fixes(original)
     allowed = {'common/recovery_minimal_runtime.py', 'common/recovery_step_timing.py',
         'common/recovery_minimal.py', 'common/recovery_resource_admission.py',
-        'common/recovery_firewall.py', 'common/recovery_minimal_worker.py',
+        'common/recovery_firewall.py', 'common/recovery_minimal_worker.py', 'common/recovery_archive_guard.py',
         'common/repository_minimal.py', 'control/recovery_control_capture_config.py',
         'control/recovery_control_smallapp_native.py', 'control/recovery_control_executor.py',
         'control/recovery_control_target_availability.py',
