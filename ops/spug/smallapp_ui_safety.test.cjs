@@ -67,6 +67,19 @@ test('initial configuration keeps draft locked until source synchronization comp
   assert.equal(p.run('currentBinding().applicationId'),p.get('application').value);
 });
 
+test('initial render with an empty source catalogue waits for configuration instead of throwing',async()=>{
+  const p=page();
+  p.run(`globalThis.configuration=simpleConfig;globalThis.applications=options;
+    options=[];S('application').replaceChildren();
+    api=async url=>{if(url==='/simple-config')return configuration;if(url==='/history')return [];
+      return {applications,initialOperationIds:{},registrationVersions:{}};};`);
+  await p.start();
+  assert.equal(p.run('simpleInitializing'),false);
+  assert.equal(p.run('simpleConfigError'),'');
+  assert.equal(p.get('simple-product').disabled,false);
+  assert.equal(p.run('selected().applicationId'),'app');
+});
+
 test('initial configuration failure remains visible and explicit refresh can recover',async()=>{
   const p=page();p.run('globalThis.configuration=simpleConfig;');
   await p.start();

@@ -109,7 +109,7 @@ function render(){
   fill('parent',row?.parentChainRefs || [],'请选择已接受的父链');
   fill('point',row?.recoveryPointRefs || [],'请选择已接受的恢复点');
   fill('target',row?.freshTargetConfigRefs || [],'请选择全新独立目标');
-  if(!active && typeof currentBinding==='function' && currentBinding()?.applicationId===app?.applicationId){
+  if(!active && app && typeof currentBinding==='function' && currentBinding()?.applicationId===app.applicationId){
     const draft=simpleRequest(operationId);action=draft.action;
     $('point').value=draft.recoveryPointRef || '';$('target').value=draft.targetConfigRef || '';
   }
