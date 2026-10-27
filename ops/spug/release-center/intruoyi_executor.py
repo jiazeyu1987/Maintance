@@ -309,9 +309,10 @@ class _IntRuoyiExecutor(Executor):
             if self.c.get('nasPath'):
                 application['nasPath'] = self.c['nasPath']
             import os
-            from backup_retry import available
+            from backup_retry import available, test_retry_available
             return json.loads(json.dumps(dict(self.state, application=application, deploymentBlocks=deployment_blocks(self.state),
                 backupRetries={p['releaseTag']: available(self.state, p) for p in self.state['packages']},
+                testRetries={p['releaseTag']: test_retry_available(self.state, p) for p in self.state['packages']},
                 executorRuntime=dict(pid=os.getpid(), mode=self.c.get('executionMode', 'console'),
                                      draining=getattr(self, 'draining', False)))))
 
@@ -330,6 +331,12 @@ class _IntRuoyiExecutor(Executor):
                 require(existing['action'] == action and existing['payload'] == payload, 'Request ID binding mismatch')
                 return existing
         from intruoyi_recovery import RECOVERY_ACTIONS, submit_recovery
+        if action == 'publish-test':
+            from backup_retry import test_retry_available, validate_test_retry
+            package, _ = self.manifest(payload.get('releaseTag'))
+            original_id = test_retry_available(self.state, package)
+            if original_id or payload.get('retryOf'):
+                validate_test_retry(self, package, payload.get('retryOf'))
         if action in ('scan-artifacts','clean-artifacts'):
             from artifact_retention import submit
             return submit(self,action,payload,actor)
@@ -423,6 +430,13 @@ class _IntRuoyiExecutor(Executor):
                 tracker.close()
 
     def execute_bound(self, job):
+        if job['action'] == 'publish-test' and job.get('payload', {}).get('retryOf'):
+            from backup_retry import validate_test_retry
+            package, _ = self.manifest(job['releaseTag'])
+            validate_test_retry(self, package, job['payload']['retryOf'])
+            package.setdefault('testAttemptHistory', []).append(dict(originalJobId=job['payload']['retryOf'],
+                retryJobId=job['id'], outcomes=json.loads(json.dumps(package.get('outcomes', {}).get('test', {})))))
+            package.setdefault('outcomes', {})['test'] = {}
         if job['action'] in ('scan-artifacts','clean-artifacts'):
             from artifact_retention import execute
             return execute(self,job)

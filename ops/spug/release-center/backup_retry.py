@@ -20,6 +20,8 @@ def bind_attempt_roots(executor, job):
             roots.update(owner.get('runtimeStagingRoots', {}))
     if job['action'] == 'promote-backup' and job.get('payload', {}).get('retryOf'):
         roots['backup'] = str(PurePosixPath(executor.c['targets']['backup']['stagingRoot']) / 'attempts' / job['id'])
+    if job['action'] == 'publish-test' and job.get('payload', {}).get('retryOf'):
+        roots['test'] = str(PurePosixPath(executor.c['targets']['test']['stagingRoot']) / 'attempts' / job['id'])
     job['runtimeStagingRoots'] = roots
     executor.save()
 
@@ -49,3 +51,21 @@ def available(state, package):
                 and job.get('resolution') and package['stage'] in ('prod-accepted', 'backup-restored')):
             return job['id']
     return None
+
+
+def test_retry_available(state, package):
+    original = next((j for j in state['jobs'] if j['action'] == 'publish-test' and j.get('target') == 'test'
+                     and j.get('releaseTag') == package['releaseTag']), None)
+    if (original and original['status'] in ('failed','interrupted') and original.get('resolution')
+            and package['stage'] == 'built' and not package.get('abandoned')):
+        return original['id']
+    return None
+
+
+def validate_test_retry(executor, package, original_id):
+    require(test_retry_available(executor.state, package) == original_id, 'Select the latest reconciled test deployment for this original package')
+    original = next(j for j in executor.state['jobs'] if j['id'] == original_id)
+    if original.get('effectsStarted'):
+        evidence = original['resolution'].get('recoveryEvidence', {})
+        require(evidence.get('recoveryKind') == 'capture-not-sealed' and evidence.get('restored') is True
+                and evidence.get('databaseRestored') is False, 'Test retry requires verified capture-only restoration')

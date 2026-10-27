@@ -252,7 +252,7 @@ def rehearsal_profile(config, source):
 
 
 def validate_quiescence_recovery(record, payload, observation):
-    require(record.get('recoveryKind') == 'no-migrations-started' and record.get('restored') is True
+    require(record.get('recoveryKind') in ('no-migrations-started', 'capture-not-sealed') and record.get('restored') is True
             and record.get('snapshotComplete') is False, 'Explicit incomplete-snapshot recovery evidence required')
     require(record.get('jobId') == payload.get('jobId'), 'Recovery belongs to another task')
     require(record.get('restoredFingerprint') == payload.get('originFingerprint') == observation.get('fingerprint'),

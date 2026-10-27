@@ -199,6 +199,14 @@ def restore_data(source, archive_path, attempt_id):
     return str(retained)
 
 
+def validate_database_identity(database):
+    require(len(database) == 3
+            and re.fullmatch(r'[A-Za-z0-9_-]+', database[0])
+            and all(re.fullmatch(r'[A-Za-z0-9_]+', value) for value in database[1:]),
+            'Explicit safe database identity required')
+    return database
+
+
 def capture(profile, root, manifest, origin, api):
     resources = inventory(profile, api)
     remote = api['remote']
@@ -223,7 +231,7 @@ def capture(profile, root, manifest, origin, api):
     for index, resource in enumerate(resources):
         resource['artifact'] = archive_data(Path(resource['mount']['Source']), root/('recovery-volume-'+str(index)+'.tar'))
     db = remote.sql(profile, 'SELECT DATABASE(),DEFAULT_CHARACTER_SET_NAME,DEFAULT_COLLATION_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME=DATABASE();').split('\t')
-    require(len(db) == 3 and all(re.fullmatch('[A-Za-z0-9_]+', value) for value in db), 'Explicit safe database identity required')
+    validate_database_identity(db)
     staged = json.loads((root/'stage-verified.json').read_text())
     recovery.update(version=1, jobId=progress['jobId'], releaseTag=manifest['releaseTag'],
                     packageIdentity=package_identity(manifest), packageSha256=staged['archive']['archiveSha256'],
@@ -293,7 +301,7 @@ def migration_status(profile, payload, api):
 def restore_database(profile, record, api):
     """Replace all database objects, including removal of partially added DDL."""
     database,charset,collation=record['database']
-    require(all(re.fullmatch('[A-Za-z0-9_]+',value) for value in (database,charset,collation)), 'Unsafe recovery database identity')
+    validate_database_identity([database, charset, collation])
     remote=api['remote']
     environment=dict(v.split('=',1) for v in remote.inspect(profile['database'])['Config']['Env'])
     require(environment.get('MYSQL_DATABASE')==database, 'Recovery database differs from registered container')

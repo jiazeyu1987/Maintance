@@ -414,8 +414,9 @@ def check_acceptance_port(address, port):
 
 
 def preflight(profile, manifest):
-    from intruoyi_recovery_agent import inventory
+    from intruoyi_recovery_agent import inventory, validate_database_identity
     inventory(profile, globals())
+    validate_database_identity(remote.sql(profile, 'SELECT DATABASE(),DEFAULT_CHARACTER_SET_NAME,DEFAULT_COLLATION_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME=DATABASE();').split('\t'))
     startup_timeout(profile)
     check_fence(profile)
     check_storage(profile, images_imported=True)
@@ -627,12 +628,29 @@ def clone_config(original, image, maintenance=None):
     return config
 
 
+def configure_fenbeitong(config, profile):
+    """Apply the explicitly registered same-server assistant endpoint at deployment."""
+    if 'fenbeitongAssistantHost' not in profile:
+        return
+    host = profile['fenbeitongAssistantHost']
+    require(isinstance(host, str) and re.fullmatch(r'[A-Za-z0-9.-]+', host), 'Invalid registered assistant host')
+    require(profile.get('environment') != 'rehearsal', 'Isolated rehearsal must not point to a business assistant')
+    env = dict(item.split('=', 1) for item in config['Env'])
+    extra = env.get('INTRUOYI_EXTRA_ARGS', '')
+    property_name = '--yudao.erp.fenbeitong-assistant.assistant-host='
+    extra = re.sub(r'(?<!\S)' + re.escape(property_name) + r'\S+', '', extra).strip()
+    env['INTRUOYI_EXTRA_ARGS'] = (extra + ' ' + property_name + host).strip()
+    config['Env'] = [key + '=' + value for key, value in env.items()]
+
+
 def replace(profile, root, role, image, tag, maintenance=None, snapshot_suffix='initial'):
     name = profile[role]
     original = remote.inspect(name)
     require(not original['State']['Running'], 'Original application must be stopped before replacement')
     private_json(root / (role + '-before-' + snapshot_suffix + '.private.json'), original)
     config = clone_config(original, image, maintenance)
+    if role == 'backend':
+        configure_fenbeitong(config, profile)
     # An unmounted default.conf would otherwise be replaced by the generic image config.
     if role == 'frontend' and not any(m['Destination'] == '/etc/nginx/conf.d/default.conf' for m in original['Mounts']):
         nginx = root / 'nginx.conf'
@@ -1263,7 +1281,26 @@ def dispatch(payload):
         require(record.get('jobId') == payload['jobId'] and record.get('restored') is True,
                 'Explicit recovery evidence for this original job is required')
         result = observe(profile)
-        if record.get('recoveryKind') == 'no-migrations-started':
+        if record.get('recoveryKind') == 'capture-not-sealed':
+            validate_quiescence_recovery(record, payload, result)
+            from operation_journal import inspect as inspect_operation
+            receipt = inspect_operation(profile, record.get('operationId'), payload['jobId'])
+            require(receipt.get('action') == 'deploy' and receipt.get('status') == 'failed' and receipt.get('worker') == 'stopped',
+                    'Capture-only restoration requires the stopped original failed deployment')
+            require(not (root/'recovery-record.private.json').exists() and not (root/'deployment-pending.json').exists(),
+                    'Capture-only recovery cannot close a sealed checkpoint or installed candidate')
+            original = json.loads((root/'recovery-containers.private.json').read_text())
+            require(file_sha(root/'recovery-containers.private.json') == record.get('containerCaptureSha256'), 'Original container capture changed')
+            for role in ('frontend','backend','database','redis','minio'):
+                require(remote.inspect(profile[role])['Id'] == original[profile[role]]['Id'], 'Original container identity changed: '+role)
+            require(record.get('databaseRestored') is False and record.get('retainedCaptureFiles'), 'Explicit no-data-restore evidence required')
+            for item in record['retainedCaptureFiles']:
+                require(item['name'] in ('recovery.sql','recovery-volume-0.tar','recovery-volume-1.tar'), 'Unregistered retained capture file')
+                file = root/item['name']
+                require(file.is_file() and not file.is_symlink() and file.stat().st_size == item['bytes'], 'Retained capture file differs')
+            require(remote.sql(profile, "SELECT COUNT(*) FROM infra_release_migration WHERE release_tag='" + payload['releaseTag'] + "';") == '0',
+                    'Migration records prevent capture-only recovery')
+        elif record.get('recoveryKind') == 'no-migrations-started':
             validate_quiescence_recovery(record, payload, result)
             require(not (root/'recovery-record.private.json').exists() and not (root/'recovery.sql').exists()
                     and not (root/'deployment-pending.json').exists(), 'Effects exceed incomplete-snapshot recovery')
