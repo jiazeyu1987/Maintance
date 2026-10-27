@@ -190,7 +190,12 @@ async function refresh(applicationOverride){
   busy=true;problem('');render();
   try{
     const applicationId=typeof applicationOverride==='string'?applicationOverride:active?.applicationId || $('application').value || pending?.applicationId;
-    const value=await api('/selections'+(applicationId?'?applicationId='+encodeURIComponent(applicationId):''));options=value.applications;initialIds=value.initialOperationIds;versions=value.registrationVersions;
+    const targetRef=active?.request.action==='RESTORE'?active.request.targetConfigRef:
+      typeof simpleTargetServers==='function'&&simpleRestoring&&currentBinding()?.applicationId===applicationId?
+        simpleTargetServers()[S('simple-target').value]:null;
+    const selectionQuery=applicationId?'?applicationId='+encodeURIComponent(applicationId)+
+      (targetRef?'&targetConfigRef='+encodeURIComponent(targetRef):''):'';
+    const value=await api('/selections'+selectionQuery);options=value.applications;initialIds=value.initialOperationIds;versions=value.registrationVersions;
     const prior=$('application').value;$('application').replaceChildren();
     for(const app of options)$('application').add(new Option(app.displayName,app.applicationId));
     if(options.some(a=>a.applicationId===prior))$('application').value=prior;

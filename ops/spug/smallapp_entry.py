@@ -140,10 +140,12 @@ def catalogue(config, bridge):
             for app in config['applications']]
 
 
-def application_catalogue(config, application_id):
+def application_catalogue(config, application_id, target_ref=None):
     matches = [app for app in config['applications'] if app['applicationId'] == application_id]
     need(len(matches) == 1 and matches[0]['sourceConfigRef'] is not None, 'SOURCE_NOT_REGISTERED_BY_W08')
-    return catalogue(config, adapter.HttpBridge(source_ref=matches[0]['sourceConfigRef']))
+    if target_ref is not None:
+        need(target_ref in matches[0]['targetConfigRefs'], 'W01_TARGET_NOT_REGISTERED')
+    return catalogue(config, adapter.HttpBridge(source_ref=matches[0]['sourceConfigRef'], target_ref=target_ref))
 
 
 def admit_selection(request, config, bridge):
@@ -532,8 +534,10 @@ def handler():
                         query = urlsplit(self.path).query
                         parameters = parse_qs(query, strict_parsing=True) if query else {}
                         if parameters:
-                            need(set(parameters) == {'applicationId'} and len(parameters['applicationId']) == 1, 'ENTRY_ROUTE_UNKNOWN')
-                            apps = application_catalogue(config, parameters['applicationId'][0])
+                            need('applicationId' in parameters and set(parameters) <= {'applicationId', 'targetConfigRef'}
+                                 and all(len(values) == 1 for values in parameters.values()), 'ENTRY_ROUTE_UNKNOWN')
+                            apps = application_catalogue(config, parameters['applicationId'][0],
+                                                         parameters.get('targetConfigRef', [None])[0])
                         else:
                             apps = [dict(a, validated=None, readinessError='SOURCE_NOT_VERIFIED_BY_W01') for a in config['applications']]
                         code = None

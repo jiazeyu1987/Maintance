@@ -50,6 +50,29 @@ const record=(id='original-operation-123')=>({applicationId:'app',request:{schem
   action:'FULL',sourceConfigRef:'source-ref',parentChainRef:null,recoveryPointRef:null,targetConfigRef:null},
   result:{state:'RUNNING',errorCode:null,logRefs:[],resultRef:null}});
 
+test('registered restore target can be selected before its readiness probe and cannot submit',()=>{
+  const p=page();
+  p.run("simpleRestoring=true;action='RESTORE';selected().validated.freshTargetConfigRefs=[];S('simple-target').value='';render();");
+  assert.equal(p.get('simple-target').children.find(o=>o.value==='target-server').disabled,false);
+  p.get('simple-target').value='target-server';
+  p.run('render()');
+  assert.equal(p.get('simple-target').value,'target-server');
+  assert.equal(p.get('simple-submit').disabled,true);
+});
+
+test('restore target selection probes only that registered target; backup refresh has no target',async()=>{
+  const p=page();p.context.calls=[];
+  p.run(`api=async url=>{calls.push(url);if(url==='/history')return [];return {applications:options,initialOperationIds:{},registrationVersions:{}};};
+    simpleRestoring=true;action='RESTORE';S('simple-target').value='target-server';`);
+  await p.get('simple-target').onchange();
+  assert.ok(p.context.calls.includes('/selections?applicationId=app&targetConfigRef=target-ref'));
+  p.context.calls.length=0;
+  p.run("simpleRestoring=false;action='FULL';");
+  await p.run("refresh('app')");
+  assert.ok(p.context.calls.includes('/selections?applicationId=app'));
+  assert.equal(p.context.calls.some(url=>url.includes('targetConfigRef')),false);
+});
+
 test('returning to an application retains its explicitly selected server and fast mode',async()=>{
   const p=page();
   p.run(`
@@ -99,13 +122,13 @@ test('incremental chooses the newest accepted point on this source regardless of
   assert.equal(p.run('latestSimpleParent()'),'');
 });
 
-test('target choices exclude unregistered and already used targets before submission',()=>{
+test('unregistered targets are disabled and unverified registered choices cannot submit',()=>{
   const p=page();
   p.run("simpleConfig.servers.push({address:'missing',name:'Missing'});simpleRestoring=true;action='RESTORE';render();");
   assert.equal(p.get('simple-target').children.find(o=>o.value==='missing').disabled,true);
   p.run("S('simple-target').value='target-server';selected().validated.freshTargetConfigRefs=[];render();");
-  assert.equal(p.get('simple-target').value,'');
-  assert.equal(p.get('simple-target').children.find(o=>o.value==='target-server').disabled,true);
+  assert.equal(p.get('simple-target').value,'target-server');
+  assert.equal(p.get('simple-target').children.find(o=>o.value==='target-server').disabled,false);
   assert.equal(p.get('simple-submit').disabled,true);
 });
 
@@ -123,7 +146,8 @@ test('registered replacement stays selectable after a previous successful restor
     S('simple-restore-mode').value='replace';simpleRestoring=true;action='RESTORE';render();`);
   assert.equal(p.get('simple-target').children.find(o=>o.value==='target-server').disabled,false);
   p.run("selected().validated.freshTargetConfigRefs=['target-ref'];render();");
-  assert.equal(p.get('simple-target').children.find(o=>o.value==='target-server').disabled,true);
+  assert.equal(p.get('simple-target').children.find(o=>o.value==='target-server').disabled,false);
+  assert.equal(p.get('simple-submit').disabled,true);
 });
 
 test('replacement requires an explicit checkbox and retains the exact confirmed target',async()=>{

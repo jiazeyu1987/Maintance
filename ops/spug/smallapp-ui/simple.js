@@ -82,14 +82,16 @@ function simpleRender(){
   for(const ref of refs){const record=records.find(r=>r.request.operationId===ref);const label=record?`${date(record.createdAt)} · ${labels[record.request.action]} · ${ref}`:ref;S('simple-package').add(new Option(label,ref));}
   if(refs.includes(previous))S('simple-package').value=previous;
   const fresh=binding&&selected()?.applicationId===binding.applicationId?simpleFreshTargets():[];
+  const usedTargets=new Set(replacing?[]:records.filter(r=>r.request.action==='RESTORE'&&r.spugHistoryId&&!r.cancelledUnaccepted).map(r=>r.request.targetConfigRef));
   const priorTarget=S('simple-target').value;
   S('simple-target').replaceChildren(new Option('请选择可用恢复服务器',''));
   for(const server of simpleConfig?.servers||[]){
     const registered=targetServers[server.address], available=registered&&fresh.includes(registered);
-    const option=new Option(`${server.name}　${server.address}${available?'':registered?'（目标当前不可用）':'（未登记目标）'}`,server.address);
-    option.disabled=!available;S('simple-target').add(option);
+    const used=usedTargets.has(registered);
+    const option=new Option(`${server.name}　${server.address}${used?'（目标已使用）':available?'':registered?'（选择后核验）':'（未登记目标）'}`,server.address);
+    option.disabled=!registered||used;S('simple-target').add(option);
   }
-  if(targetServers[priorTarget]&&fresh.includes(targetServers[priorTarget]))S('simple-target').value=priorTarget;
+  if(targetServers[priorTarget]&&!usedTargets.has(targetServers[priorTarget]))S('simple-target').value=priorTarget;
   let blocked='';
   if(!simpleConfig)blocked=simpleConfigError||'配置未读取，不能执行。';
   else if(!binding){
@@ -182,7 +184,7 @@ async function chooseSimple(){
   if(unresolvedOriginal() || active&&!resolvedRecord(active)){simpleRender();return;}
   if(binding)applicationDraftSelections.set(binding.product,{server:binding.server,mode:binding.mode});
   selectRecord(null);telemetry=null;telemetryError='';
-  S('simple-package').value='';S('point').value='';S('parent').value='';S('target').value='';S('result-state').textContent='尚未执行';
+  S('simple-package').value='';S('simple-target').value='';S('point').value='';S('parent').value='';S('target').value='';S('result-state').textContent='尚未执行';
   if(!binding){render();return;}
   action=simpleRestoring?'RESTORE':S('simple-type').value;S('application').value=binding.applicationId;chooseId();
   // Explicit user change starts a new draft; historical operations remain in the history.
@@ -215,7 +217,12 @@ S('simple-product').onchange=()=>{
   return chooseSimple();
 };
 S('simple-nas').oninput=()=>render();
-for(const id of ['simple-package','simple-target'])S(id).onchange=()=>{S('point').value=S('simple-package').value;S('target').value=simpleTargetServers()[S('simple-target').value]||'';render();};
+S('simple-package').onchange=()=>{S('point').value=S('simple-package').value;render();};
+S('simple-target').onchange=async()=>{
+  if(interactionLocked()||switching)return;
+  S('target').value=simpleTargetServers()[S('simple-target').value]||'';
+  await refresh(currentBinding()?.applicationId);
+};
 S('simple-refresh').onclick=refreshSimpleConfiguration;
 S('simple-query').onclick=async()=>{await query();await progress();render();};
 S('simple-submit').onclick=()=>{

@@ -50,6 +50,45 @@ class CrossRestoreRouting(unittest.TestCase):
             with self.assertRaisesRegex(adapter.Refused,'TARGET_CONNECTION_NOT_REGISTERED'):
                 source.for_request(dict(self.request('RESTORE'),targetConfigRef='unknown-target'))
 
+    def test_backup_catalogue_does_not_contact_offline_historical_target(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source=self.fixture(Path(folder)); observed=[]
+            row=dict(applicationId='prod-source',sourceConfigRef='prod-source',engineSelectionRef='engine',
+                     fullReady=True,fullErrorCode=None,parentChainRefs=[],recoveryPointRefs=[],
+                     freshTargetConfigRefs=[],historyErrorCode=None)
+            def read(bridge):
+                observed.append(bridge.selected_target)
+                if bridge.selected_target:
+                    raise adapter.Refused('BRIDGE_UNAVAILABLE_OR_RESPONSE_INVALID')
+                return dict(observedAt=entry.now(),applications=[row])
+            config=dict(applications=[dict(applicationId='prod-source',sourceConfigRef='prod-source',targetConfigRefs=['test-target'])])
+            with patch.object(adapter.HttpBridge,'_local_selections',read):
+                self.assertEqual(entry.admit_selection(self.request(),config,source)['applicationId'],'prod-source')
+            self.assertEqual(observed,[None])
+
+    def test_selected_restore_target_failure_is_not_ignored(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source=self.fixture(Path(folder)); observed=[]
+            def read(bridge):
+                observed.append(bridge.selected_target)
+                if bridge.selected_target:raise adapter.Refused('BRIDGE_UNAVAILABLE_OR_RESPONSE_INVALID')
+                return dict(observedAt=entry.now(),applications=[])
+            with patch.object(adapter.HttpBridge,'_local_selections',read):
+                with self.assertRaisesRegex(adapter.Refused,'BRIDGE_UNAVAILABLE_OR_RESPONSE_INVALID'):
+                    source.for_request(self.request('RESTORE')).selections()
+            self.assertEqual(observed,[None,'test-target'])
+
+    def test_application_catalogue_uses_only_explicit_registered_target(self):
+        config=dict(applications=[dict(applicationId='prod-source',sourceConfigRef='prod-source',targetConfigRefs=['test-target'])])
+        with patch.object(adapter,'HttpBridge') as bridge, patch.object(entry,'catalogue',return_value=['verified']) as catalogue:
+            self.assertEqual(entry.application_catalogue(config,'prod-source','test-target'),['verified'])
+            bridge.assert_called_once_with(source_ref='prod-source',target_ref='test-target')
+            catalogue.assert_called_once_with(config,bridge.return_value)
+        with patch.object(adapter,'HttpBridge') as bridge:
+            with self.assertRaisesRegex(adapter.Refused,'W01_TARGET_NOT_REGISTERED'):
+                entry.application_catalogue(config,'prod-source','excluded-target')
+            bridge.assert_not_called()
+
     def test_target_catalogue_contributes_only_its_own_fresh_target(self):
         with tempfile.TemporaryDirectory() as folder:
             source=self.fixture(Path(folder))
@@ -63,7 +102,7 @@ class CrossRestoreRouting(unittest.TestCase):
                                  freshTargetConfigRefs=['test-target','unrouted-target'])
                 return dict(observedAt='2026-10-23T00:00:00Z',applications=[local])
             with patch.object(adapter.HttpBridge,'_local_selections',read):
-                actual=source.selections()['applications'][0]
+                actual=source.for_request(self.request('RESTORE')).selections()['applications'][0]
             self.assertEqual(actual['recoveryPointRefs'],['source-point'])
             self.assertEqual(actual['parentChainRefs'],['source-parent'])
             self.assertEqual(actual['freshTargetConfigRefs'],['prod-target','test-target'])

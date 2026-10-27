@@ -305,16 +305,8 @@ class HttpBridge:
             self.merge_target_choices(payload, self._local_selections(), self.selected_target, self.source_refs)
             return payload
         payload = self._local_selections()
-        # A target executor contributes only its explicitly routed fresh target.
-        # Capture readiness and historical package choices remain source-owned.
-        for target_ref, filename in self.target_connections.items():
-            target_config = read_json(self.binding_path.parent / filename)
-            refs = target_config.get('sourceConfigRefs')
-            if not isinstance(refs, list):
-                raise Refused('W01_REGISTERED_CONFIG_BINDING_REQUIRED')
-            for source_ref in set(self.source_refs).intersection(refs):
-                remote = HttpBridge(self.binding_path, source_ref, target_ref)._local_selections()
-                self.merge_target_choices(payload, remote, target_ref, [source_ref])
+        # Backup readiness belongs to the source. Restore catalogues and admission
+        # use selected_target above; unrelated historical targets are not dependencies.
         for source_ref in self.connections:
             additional = HttpBridge(self.binding_path, source_ref).selections()
             if not isinstance(additional, dict) or set(additional) != {'observedAt', 'applications'}:
