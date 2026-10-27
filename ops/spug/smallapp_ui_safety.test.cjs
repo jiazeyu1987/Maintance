@@ -43,12 +43,43 @@ function page() {
     S('simple-nas').value='registered-nas';operationId='test-operation-123';render();
     api=async()=>{throw new Error('UNEXPECTED_TEST_API_CALL');};
   `);
-  return {run,get,context,buttons,store};
+  const start=()=>{run('simpleConfig=null;');return run(simple.slice(simple.indexOf('(async()=>{',simple.indexOf('\nsetInterval('))));};
+  return {run,get,context,buttons,store,start};
 }
 
 const record=(id='original-operation-123')=>({applicationId:'app',request:{schemaVersion:'SmallAppBackupUiRequest/v1',operationId:id,
   action:'FULL',sourceConfigRef:'source-ref',parentChainRef:null,recoveryPointRef:null,targetConfigRef:null},
   result:{state:'RUNNING',errorCode:null,logRefs:[],resultRef:null}});
+
+test('initial configuration keeps draft locked until source synchronization completes',async()=>{
+  const p=page();
+  p.run(`globalThis.configuration=simpleConfig;globalThis.releaseConfiguration=null;
+    api=async url=>{if(url==='/simple-config')return new Promise(resolve=>{releaseConfiguration=resolve;});
+      if(url==='/history')return [];return {applications:options,initialOperationIds:{},registrationVersions:{}};};`);
+  const initializing=p.start();
+  await Promise.resolve();
+  assert.equal(p.get('simple-product').disabled,true);
+  assert.equal(p.get('simple-restore-tab').disabled,true);
+  assert.equal(p.get('simple-submit').disabled,true);
+  p.run('releaseConfiguration(configuration)');await initializing;
+  assert.equal(p.get('simple-product').disabled,false);
+  assert.equal(p.run('busy || switching'),false);
+  assert.equal(p.run('currentBinding().applicationId'),p.get('application').value);
+});
+
+test('initial configuration failure remains visible and explicit refresh can recover',async()=>{
+  const p=page();p.run('globalThis.configuration=simpleConfig;');
+  await p.start();
+  p.run('render()');
+  assert.match(p.get('simple-status').textContent,/UNEXPECTED_TEST_API_CALL/);
+  assert.equal(p.get('simple-submit').disabled,true);
+  assert.equal(p.get('simple-refresh').disabled,false);
+  p.run(`api=async url=>{if(url==='/simple-config')return configuration;if(url==='/history')return [];
+    return {applications:options,initialOperationIds:{},registrationVersions:{}};};`);
+  await p.get('simple-refresh').onclick();
+  assert.equal(p.get('simple-product').disabled,false);
+  assert.equal(p.run('simpleConfigError'),'');
+});
 
 test('registered restore target can be selected before its readiness probe and cannot submit',()=>{
   const p=page();
