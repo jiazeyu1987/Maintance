@@ -242,6 +242,7 @@ class ResumeTailTest(unittest.TestCase):
                             writerInventoryConfirmed=True, writers=['backend'])
         migration = dict(migrationId='one', sha256='a'*64, type='schema', allowedEnvironments=['test'])
         self.manifest = dict(releaseTag=self.tag, maintenanceProtocol=agent.PROTOCOL, files=[], migrations=[migration],
+                             releaseSettings={'gxpAuditMode':'DEVELOPMENT_DISABLED'},
                              images={'backend':{'id':'candidate-backend'},'frontend':{'id':'candidate-frontend'}},
                              executionPlans={'test':dict(status='passed',targetEnvironment='test',items=[dict(migrationId='one',sha256='a'*64,action='SKIP_ALREADY_APPLIED')])})
         self.write('manifest.json', self.manifest)
@@ -450,7 +451,7 @@ class ResumeTailTest(unittest.TestCase):
         result=self.invoke()
         self.assertEqual(result['resumeReceipt']['completedByJobId'],self.retry)
         self.assertEqual(self.mock['reopen'].call_count,1)
-        self.mock['health'].assert_called_with(self.profile,self.tag,False)
+        self.mock['health'].assert_called_with(self.profile,self.tag,False,expected_gxp_mode='DEVELOPMENT_DISABLED')
         self.mock['health'].side_effect=RuntimeBlocked('fresh health failed')
         with self.assertRaisesRegex(RuntimeBlocked,'fresh health failed'): self.invoke()
 

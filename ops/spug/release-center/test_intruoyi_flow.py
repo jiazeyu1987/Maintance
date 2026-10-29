@@ -242,7 +242,8 @@ class PreparationPrerequisiteFailureTests(unittest.TestCase):
                 with patch('intruoyi_executor.rehearsal_profile', return_value={}):
                     with self.assertRaisesRegex(ValueError, 'Remote terminal proof missing'):
                         self.executor.resolve_task(self.job)
-                self.executor.runtime.call.assert_called_once_with('prod', 'rehearsal-verify-stopped', releaseTag='2026-10-24-02-00-00')
+                self.executor.runtime.call.assert_called_once_with('prod', 'rehearsal-verify-stopped',
+                    releaseTag='2026-10-24-02-00-00', expectedOriginFingerprint=self.original.get('sourceOriginFingerprint'))
                 self.executor.runtime.reset_rehearsal.assert_not_called()
                 self.assertNotIn('resolution', self.original)
 

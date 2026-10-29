@@ -26,6 +26,28 @@ def require(condition, message):
         raise RuntimeBlocked(message)
 
 
+def gxp_release_mode(manifest):
+    """The package freezes the source configuration; targets never choose a default."""
+    mode = manifest.get('releaseSettings', {}).get('gxpAuditMode')
+    require(mode in ('FORMAL', 'DEVELOPMENT_DISABLED'),
+            'Release must explicitly capture FORMAL or DEVELOPMENT_DISABLED GxP mode')
+    return mode
+
+
+def gxp_migration_sql(manifest, migration, text):
+    if migration.get('migrationId') == '20261026_gxp_audit_mode_config':
+        return "SET @intruoyi_gxp_audit_initial_mode='" + gxp_release_mode(manifest) + "';\n" + text
+    return text
+
+
+def validate_gxp_runtime(state, expected_mode):
+    require(expected_mode in ('FORMAL', 'DEVELOPMENT_DISABLED'), 'Invalid expected GxP release mode')
+    require(state.get('gxpAuditMode') == expected_mode,
+            'Running GxP mode differs from the release configuration')
+    require(state.get('configuredGxpAuditMode') == expected_mode,
+            'Persisted GxP mode differs from the release configuration')
+
+
 WORKBENCH_MAINTENANCE_MIGRATIONS = frozenset({
     '20261009_system_workbench_visibility_context',
     '20261009_system_workbench_visibility_stable_keys',
@@ -312,7 +334,7 @@ class Runtime:
             job.setdefault('remoteOperations', []).append(operation)
             persist()
             arguments.update(operationId=operation['operationId'], workflowJobId=job['id'])
-        uncertain_on_disconnect = action in ('deploy', 'maintenance', 'recover-release', 'accept-recovery', 'resume-test-deployment-tail', 'rehearsal-capture', 'rehearsal-restore', 'rehearsal-resume-tail', 'rehearsal-reset')
+        uncertain_on_disconnect = action in ('frontend-patch-deploy','frontend-patch-restore','deploy', 'maintenance', 'recover-release', 'accept-recovery', 'resume-test-deployment-tail', 'rehearsal-capture', 'rehearsal-restore', 'rehearsal-resume-tail', 'rehearsal-reset')
         profile = self.profile(env)
         payload = json.dumps({'action': action, 'profile': profile, **arguments}, ensure_ascii=True)
         inspector = (self.sources / 'intruoyi_remote.py').read_text('utf-8')
@@ -322,7 +344,11 @@ class Runtime:
         recovery = (self.sources / 'intruoyi_recovery_agent.py').read_text('utf-8')
         journal = (self.sources / 'operation_journal.py').read_text('utf-8')
         artifacts = (self.sources / 'artifact_files.py').read_text('utf-8')
+        frontend_patch = (self.sources / 'frontend_patch_agent.py').read_text('utf-8')
         source = ('import types,sys\n'
+                  '_patch=types.ModuleType("frontend_patch_agent")\n'
+                  'sys.modules["frontend_patch_agent"]=_patch\n'
+                  'exec(compile(' + repr(frontend_patch) + ',"frontend_patch_agent.py","exec"),_patch.__dict__)\n'
                   '_artifacts=types.ModuleType("artifact_files")\n'
                   'sys.modules["artifact_files"]=_artifacts\n'
                   'exec(compile(' + repr(artifacts) + ',"artifact_files.py","exec"),_artifacts.__dict__)\n'

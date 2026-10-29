@@ -69,6 +69,21 @@ class LoginVerificationTests(unittest.TestCase):
         self.assertNotEqual(first['evidencePath'], second['evidencePath'])
         self.assertNotIn('--persistent', repr(self.calls))
 
+    def test_saved_mode_capture_is_bound_to_source_commit_not_a_nonexistent_package(self):
+        self.report['gxpAuditMode'] = 'DEVELOPMENT_DISABLED'
+        binding = {'jobId': 'build-mode', 'gitCommit': 'a' * 40}
+        with patch.object(login.subprocess, 'run', side_effect=self.fake_cli):
+            result = login.verify_login(self.config, 'http://target:8081', self.root / 'source',
+                                        binding, read_gxp_mode=True)
+        self.assertEqual(result['gxpAuditMode'], 'DEVELOPMENT_DISABLED')
+        self.assertEqual(result['binding'], binding)
+        for mode in (None, 'LOCAL_POLICY', ''):
+            self.report['gxpAuditMode'] = mode
+            with patch.object(login.subprocess, 'run', side_effect=self.fake_cli):
+                with self.assertRaises(login.LoginVerificationError):
+                    login.verify_login(self.config, 'http://target:8081', self.root / 'source',
+                                       binding, read_gxp_mode=True)
+
     def test_missing_configuration_fails_without_browser(self):
         self.config = {}
         with patch.object(login.subprocess, 'run') as run:

@@ -1,0 +1,49 @@
+{
+  "applicationId": "fenbeitong",
+  "repo": "E:/ProjectPackage/fenbeitong/student-collaboration-kit",
+  "stateDir": "E:/Int/CacheData/fenbeitong-release/state",
+  "nodeImage": "node:22.22.2-bookworm-slim",
+  "listenHost": "0.0.0.0",
+  "port": 18118,
+  "bridgeKey": "REPLACE_WITH_RANDOM_PRIVATE_KEY",
+  "sshIdentityFile": "C:/Users/OPERATOR/.ssh/id_rsa",
+  "sshKnownHostsFile": "C:/Users/OPERATOR/.ssh/known_hosts",
+  "targets": {
+    "test": {
+      "label": "测试服",
+      "host": "172.30.30.58",
+      "python": "python3",
+      "root": "/var/lib/docker/fenbeitong-release",
+      "container": "fenbeitong-assistant",
+      "port": 18734,
+      "ticketValidateUrl": "http://brlab-prod57-nas-test58-20261020-r3-backend:48081/admin-api/system/auth/fenbeitong-assistant-ticket/validate",
+      "integrationNetwork": "brlab-prod57-nas-test58-20261020-r1-net",
+      "intRuoyiBackend": "brlab-prod57-nas-test58-20261020-r3-backend",
+      "entryUrl": "http://172.30.30.58:8081"
+    },
+    "prod": {
+      "label": "正式服",
+      "host": "172.30.30.57",
+      "python": "python3",
+      "root": "/var/lib/docker/fenbeitong-release",
+      "container": "fenbeitong-assistant",
+      "port": 18734,
+      "ticketValidateUrl": "http://intruoyi-backend:48081/admin-api/system/auth/fenbeitong-assistant-ticket/validate",
+      "integrationNetwork": "intruoyi-runtime_intruoyi_net",
+      "intRuoyiBackend": "intruoyi-backend",
+      "entryUrl": "http://172.30.30.57:8081"
+    },
+    "backup": {
+      "label": "审查服",
+      "host": "172.30.30.59",
+      "python": "python",
+      "root": "/mnt/intruoyi-data/fenbeitong-release",
+      "container": "fenbeitong-assistant",
+      "port": 18734,
+      "ticketValidateUrl": "http://intruoyi-prod-nas-restore59-20261020-backend:48081/admin-api/system/auth/fenbeitong-assistant-ticket/validate",
+      "integrationNetwork": "intruoyi-prod-nas-restore59-20261020-net",
+      "intRuoyiBackend": "intruoyi-prod-nas-restore59-20261020-backend",
+      "entryUrl": "http://172.30.30.59:38081"
+    }
+  }
+}

@@ -22,7 +22,9 @@ def reference(config):
     images = {role:dict(name='intruoyi-'+role+':'+manifest['releaseTag'], id=manifest[role+'Image'])
               for role in ('frontend','backend')}
     archive_image_identities(folder/'images.tar', images)
-    proc = subprocess.run(['git','-C',config['sourceRepository'],'show','-s','--format=%s',manifest['sourceCommit']],
+    repository = Path(config['sourceRepository']).resolve(strict=True)
+    proc = subprocess.run(['git','-c','safe.directory='+repository.as_posix(),'-C',str(repository),
+                           'show','-s','--format=%s',manifest['sourceCommit']],
                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     require(proc.returncode == 0, 'Historical source commit is unavailable')
     info = {key:manifest[key] for key in ('releaseTag','sourceCommit','builtAt')}

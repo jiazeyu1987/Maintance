@@ -22,6 +22,7 @@ from urllib.parse import urlsplit, quote
 from urllib.request import urlopen
 
 import intruoyi_remote as remote
+from intruoyi_runtime import gxp_release_mode, gxp_migration_sql, validate_gxp_runtime
 from intruoyi_runtime import audit_ledger, require, RuntimeBlocked, sha, migration_id, file_sha, package_identity, validate_release_state, validate_expected_schema, runtime_config_snapshot, validate_migration_handler, migration_execution_sql, validate_quiescence_recovery, validate_storage_budget, ROUTE_SNAPSHOT_MIGRATION, ROUTE_SNAPSHOT_HOOK, ROUTE_LEGACY_MIGRATION, ROUTE_SNAPSHOT_HOOKS, validate_snapshot_cli_report, LEGACY_FORM_SWITCH_MIGRATION, LEGACY_FORM_SWITCH_SHA256
 
 PROTOCOL = 'intruoyi-quiescent-start-v1'
@@ -59,6 +60,7 @@ def observe(profile):
     entry = profile.get('acceptanceUrl') if maintenance else profile['entryUrl']
     require(isinstance(entry, str) and entry, 'Maintenance observation requires registered acceptanceUrl')
     status, metadata_status, release_tag, backend_health = None, None, None, None
+    frontend_patch_tag = None
     metadata_error = None
     try:
         with urlopen(entry + '/', timeout=5) as response:
@@ -68,7 +70,9 @@ def observe(profile):
     try:
         with urlopen(entry + '/release-info.json', timeout=5) as response:
             metadata_status = response.status
-            release_tag = json.load(response).get('releaseTag')
+            version = json.load(response)
+            release_tag = version.get('baseReleaseTag', version.get('releaseTag'))
+            frontend_patch_tag = version.get('frontendPatchTag')
             require(isinstance(release_tag, str) and release_tag, 'Frontend releaseTag missing')
     except Exception as error:
         if metadata_status is None:
@@ -81,14 +85,26 @@ def observe(profile):
             backend_health = {'status': json.load(response).get('status')}
     except Exception as error:
         backend_health = {'observationFailed': True, 'category': type(error).__name__}
+    try:
+        require(len(backend_addresses) == 1, 'GxP observation requires one explicit Docker IP')
+        with urlopen('http://' + backend_addresses[0] + ':48081/actuator/release', timeout=5) as response:
+            runtime_state = json.load(response)
+        require(runtime_state.get('status') == 'available', 'Release runtime state is unavailable')
+        modes = ('FORMAL', 'LOCAL_POLICY', 'DEVELOPMENT_DISABLED')
+        require(runtime_state.get('gxpAuditMode') in modes and runtime_state.get('configuredGxpAuditMode') in modes,
+                'Backend does not provide valid actual and persisted GxP modes')
+        gxp = dict(mode=runtime_state['gxpAuditMode'], configuredMode=runtime_state['configuredGxpAuditMode'],
+                   pendingRestart=runtime_state['gxpAuditMode'] != runtime_state['configuredGxpAuditMode'])
+    except Exception as error:
+        gxp = dict(observationFailed=True, category=type(error).__name__, message=str(error))
     backend_env = dict(v.split('=', 1) for v in remote.inspect(profile['backend'])['Config']['Env'])
     images = {role: raw['components'][role]['imageId'] for role in ('backend', 'frontend')}
     fingerprint = sha({'images': images, 'schemaSha256': raw['schemaSha256'], 'ledgerSha256': sha(ledger), 'runtimeConfigSha256': sha(configs)})
     return dict(host=profile['host'], entryUrl=profile['entryUrl'], observedEntryUrl=entry, components=raw['components'],
                 images={role: raw['components'][role]['imageId'] for role in ('backend', 'frontend')},
                 schemaSha256=raw['schemaSha256'], ledger=ledger, ledgerSha256=sha(ledger),
-                releaseTag=release_tag, ledgerRecords=ledger, imageIds=images, fingerprint=fingerprint,
-                backendHealth=backend_health, frontendHttpStatus=status,
+                releaseTag=release_tag, frontendPatchTag=frontend_patch_tag, ledgerRecords=ledger, imageIds=images, fingerprint=fingerprint,
+                backendHealth=backend_health, frontendHttpStatus=status, gxpAudit=gxp,
                 metadataHTTPstatus=metadata_status, frontendObservationError=metadata_error,
                 maintenance=maintenance,
                 observedAt=datetime.now(timezone.utc).isoformat(),
@@ -417,6 +433,10 @@ def preflight(profile, manifest):
     from intruoyi_recovery_agent import inventory, validate_database_identity
     inventory(profile, globals())
     validate_database_identity(remote.sql(profile, 'SELECT DATABASE(),DEFAULT_CHARACTER_SET_NAME,DEFAULT_COLLATION_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME=DATABASE();').split('\t'))
+    if 'fenbeitongAssistantHost' in profile:
+        backend = remote.inspect(profile['backend'])
+        command = ' '.join((backend['Config'].get('Entrypoint') or []) + (backend['Config'].get('Cmd') or []))
+        require('JAVA_OPTS' in command, 'Registered backend launch command must consume JAVA_OPTS for assistant configuration')
     startup_timeout(profile)
     check_fence(profile)
     check_storage(profile, images_imported=True)
@@ -639,7 +659,10 @@ def configure_fenbeitong(config, profile):
     extra = env.get('INTRUOYI_EXTRA_ARGS', '')
     property_name = '--yudao.erp.fenbeitong-assistant.assistant-host='
     extra = re.sub(r'(?<!\S)' + re.escape(property_name) + r'\S+', '', extra).strip()
-    env['INTRUOYI_EXTRA_ARGS'] = (extra + ' ' + property_name + host).strip()
+    env['INTRUOYI_EXTRA_ARGS'] = extra
+    jvm_property = '-Dyudao.erp.fenbeitong-assistant.assistant-host='
+    java_options = re.sub(r'(?<!\S)' + re.escape(jvm_property) + r'\S+', '', env.get('JAVA_OPTS', '')).strip()
+    env['JAVA_OPTS'] = (java_options + ' ' + jvm_property + host).strip()
     config['Env'] = [key + '=' + value for key, value in env.items()]
 
 
@@ -668,6 +691,39 @@ def replace(profile, root, role, image, tag, maintenance=None, snapshot_suffix='
     require({json.dumps(m, sort_keys=True) for m in original['Mounts']} <=
             {json.dumps(m, sort_keys=True) for m in actual['Mounts']}, 'Replacement lost or changed a runtime mount')
     return created['Id']
+
+
+def repair_assistant_configuration(profile, payload):
+    """Apply the registered endpoint to the installed test candidate, without SQL."""
+    require(profile['environment'] == 'test', 'Configuration repair is restricted to the test candidate')
+    root = directory(profile, payload['releaseTag'])
+    require(re.fullmatch(r'JOB-[a-f0-9]{10}', payload.get('repairJobId', '')), 'Explicit configuration repair identity required')
+    progress = json.loads((root/'deployment-progress.private.json').read_text())
+    require(progress['jobId'] == payload['originalDeploymentJobId'] and progress['phase'] == 'succeeded',
+            'Completed original deployment receipt required')
+    observation = observe(profile)
+    require(observation['releaseTag'] == payload['releaseTag'] and observation['images']['backend'] == payload['imageId']
+            and observation['maintenance'] is False, 'Installed open candidate identity differs')
+    original = remote.inspect(profile['backend'])
+    require('JAVA_OPTS' in ' '.join((original['Config'].get('Entrypoint') or []) + (original['Config'].get('Cmd') or [])),
+            'Backend launch command does not consume JAVA_OPTS')
+    config = clone_config(original, payload['imageId'], False)
+    configure_fenbeitong(config, profile)
+    private_json(root/('assistant-connection-'+payload['repairJobId']+'-before.private.json'), original)
+    remote.run(['docker','stop','--time','90',profile['backend']], timeout=120)
+    require(not remote.inspect(profile['backend'])['State']['Running'], 'Original backend did not stop')
+    retained = profile['backend'] + '-before-assistant-' + payload['repairJobId']
+    docker('POST', '/containers/' + quote(profile['backend']) + '/rename?name=' + quote(retained))
+    for network in original['NetworkSettings']['Networks']:
+        if network not in ('host','none'):
+            docker('POST','/networks/'+quote(network)+'/disconnect',{'Container':original['Id'],'Force':True})
+    created = docker('POST', '/containers/create?name=' + quote(profile['backend']), config)
+    docker('POST','/containers/'+quote(created['Id'])+'/start')
+    result = health(profile, payload['releaseTag'], False)
+    private_json(root/('assistant-connection-'+payload['repairJobId']+'-repaired.private.json'), dict(originalDeploymentJobId=payload['originalDeploymentJobId'],
+        previousContainerId=original['Id'], containerId=created['Id'], imageId=payload['imageId'],
+        assistantHost=profile['fenbeitongAssistantHost'], databaseChanged=False, health=result))
+    return dict(imageId=payload['imageId'], containerId=created['Id'], databaseChanged=False, health=result)
 
 
 def acceptance_frontend(profile, root, resume=False):
@@ -723,20 +779,23 @@ def startup_timeout(profile):
     return value
 
 
-def health(profile, tag, maintenance, through_acceptance=False):
+def health(profile, tag, maintenance, through_acceptance=False, expected_gxp_mode=None):
     entry = profile['acceptanceUrl'] if maintenance or through_acceptance else profile['entryUrl']
     deadline = time.monotonic() + startup_timeout(profile)
     last_error = 'No observation attempted'
     while time.monotonic() < deadline:
         try:
             with urlopen(entry + '/release-info.json', timeout=5) as response:
-                require(response.status == 200 and json.load(response)['releaseTag'] == tag, 'Frontend releaseTag mismatch')
+                metadata = json.load(response)
+                require(response.status == 200 and metadata.get('baseReleaseTag',metadata['releaseTag']) == tag, 'Frontend releaseTag mismatch')
             addresses = [n['IPAddress'] for n in remote.inspect(profile['backend'])['NetworkSettings']['Networks'].values() if n.get('IPAddress')]
             require(len(addresses) == 1, 'Candidate backend address is ambiguous')
             backend_url = 'http://' + addresses[0] + ':48081'
             with urlopen(backend_url + '/actuator/release', timeout=5) as response:
                 state = json.load(response)
             validate_release_state(state, tag, maintenance)
+            if expected_gxp_mode is not None:
+                validate_gxp_runtime(state, expected_gxp_mode)
             with urlopen(backend_url + '/actuator/health', timeout=5) as response:
                 require(json.load(response).get('status') == 'UP', 'Backend database health not UP')
             return {'releaseTag': tag, 'maintenance': maintenance, 'entryUrl': entry, 'writerControls': state}
@@ -747,6 +806,7 @@ def health(profile, tag, maintenance, through_acceptance=False):
 
 
 def deploy(profile, manifest):
+    gxp_release_mode(manifest)
     preflight(profile, manifest)
     root = directory(profile, manifest['releaseTag'])
     require((root / 'stage-verified.json').is_file(), 'Immutable package not staged')
@@ -767,6 +827,7 @@ def deploy(profile, manifest):
     # Repeat against stopped writers, immediately before any SQL mutation.
     plan = migration_plan(profile, manifest, observe(profile))
     apply_migration_plan(profile, root, manifest, plan, recovery=recovery)
+    persist_gxp_release_mode(profile, manifest)
     # Later data migrations must not invalidate identities verified by an earlier
     # hook. This is a check only: failure keeps writers stopped, without repair.
     terminal_snapshot_readiness(profile, root, manifest, recovery)
@@ -777,7 +838,8 @@ def deploy(profile, manifest):
     docker('POST', '/containers/' + quote(profile['backend']) + '/start')
     acceptance_frontend(profile, root)
     verified_health = health(profile, manifest['releaseTag'], True)
-    private_json(root / 'deployment-pending.json', {'releaseTag': manifest['releaseTag'], 'images': manifest['images'], 'maintenanceProtocol': PROTOCOL})
+    validate_gxp_runtime(verified_health['writerControls'], gxp_release_mode(manifest))
+    private_json(root / 'deployment-pending.json', {'releaseTag': manifest['releaseTag'], 'images': manifest['images'], 'maintenanceProtocol': PROTOCOL, 'releaseSettings': manifest['releaseSettings']})
     # Test users need the normal write path before functional acceptance. Formal
     # targets and the isolated rehearsal retain their explicit acceptance gate.
     result = reopen(profile) if profile['environment'] == 'test' else observe(profile)
@@ -823,11 +885,31 @@ def apply_migration_plan(profile, root, manifest, plan, recovery=None):
             if validate_migration_handler(item):
                 require_migration_maintenance(profile, root, recovery)
                 maintenance_ready = True
-            remote.sql(profile, migration_execution_sql(item, path.read_text('utf-8-sig'), maintenance_ready))
+            remote.sql(profile, gxp_migration_sql(manifest, item,
+                       migration_execution_sql(item, path.read_text('utf-8-sig'), maintenance_ready)))
         except Exception as error:
             remote.sql(profile, "UPDATE infra_release_migration SET status='FAILED',finished_at=NOW(),error_message='Target SQL or postcheck failed; investigate private snapshot' WHERE operation_id='" + op + "' AND migration_id='" + mid + "' AND status='RUNNING';")
             raise RuntimeBlocked('Migration execution failed: '+mid+'; '+str(error)) from error
         remote.sql(profile, "UPDATE infra_release_migration SET status='APPLIED',finished_at=NOW() WHERE operation_id='" + op + "' AND migration_id='" + mid + "' AND status='RUNNING';")
+
+
+def persist_gxp_release_mode(profile, manifest):
+    """Called with writers stopped and a database recovery point already captured."""
+    mode = gxp_release_mode(manifest)
+    tables = set(remote.sql(profile, 'SHOW TABLES;').splitlines())
+    require('infra_config' in tables, 'GxP configuration migration has not created infra_config')
+    columns = {line.split('\t')[0] for line in remote.sql(profile, 'DESCRIBE infra_config;').splitlines()}
+    require({'config_key', 'value', 'type', 'visible', 'deleted', 'updater', 'update_time'} <= columns,
+            'GxP configuration columns are missing')
+    selection = "SELECT value,type,visible+0 FROM infra_config WHERE config_key='system.gxp.audit-mode' AND deleted=b'0'"
+    rows = remote.sql(profile, selection + ';').splitlines()
+    require(len(rows) == 1 and rows[0] in (m+'\t1\t1' for m in ('FORMAL', 'LOCAL_POLICY', 'DEVELOPMENT_DISABLED')),
+            'A unique, visible, valid GxP configuration is required before applying release mode')
+    # The immutable package is authoritative for every target and retry.
+    remote.sql(profile, "UPDATE infra_config SET value='" + mode + "',updater='release-center',update_time=NOW() "
+               "WHERE config_key='system.gxp.audit-mode' AND deleted=b'0' AND BINARY value<>'" + mode + "';")
+    require(remote.sql(profile, selection + ';').splitlines() == [mode+'\t1\t1'],
+            'Persisted GxP mode does not match the release package')
 
 
 def require_legacy_form_switch_zero_scope(profile, root, manifest, migration, recovery):
@@ -897,12 +979,12 @@ def reopen(profile):
     require(len(candidates) == 1, 'Pending candidate cannot be identified uniquely')
     root, candidate = candidates[0]
     require(not remote.inspect(profile['frontend'])['State']['Running'], 'Public frontend unexpectedly open during candidate acceptance')
-    health(profile, candidate['releaseTag'], True)
+    health(profile, candidate['releaseTag'], True, expected_gxp_mode=gxp_release_mode(candidate))
     remote.run(['docker', 'stop', '--time', '90', profile['backend']], timeout=120)
     require(not remote.inspect(profile['backend'])['State']['Running'] and remote.inspect(profile['backend'])['State']['ExitCode'] != 137, 'Maintenance backend did not drain')
     replace(profile, root, 'backend', backend['Image'], candidate['releaseTag'] + '-maintenance', False, 'reopen')
     docker('POST', '/containers/' + quote(profile['backend']) + '/start')
-    health(profile, candidate['releaseTag'], False, through_acceptance=True)
+    health(profile, candidate['releaseTag'], False, through_acceptance=True, expected_gxp_mode=gxp_release_mode(candidate))
     return finish_reopen(profile, candidate)
 
 
@@ -923,7 +1005,7 @@ def finish_reopen(profile, candidate):
     docker('POST', '/containers/' + quote(profile['frontend']) + '/start')
     remote.run(['docker', 'stop', '--time', '30', profile['acceptanceFrontend']])
     try:
-        verified_health = health(profile, candidate['releaseTag'], False)
+        verified_health = health(profile, candidate['releaseTag'], False, expected_gxp_mode=gxp_release_mode(candidate))
     except Exception:
         remote.run(['docker', 'stop', '--time', '30', profile['frontend']])
         raise
@@ -937,7 +1019,7 @@ def finish_reopen(profile, candidate):
 def validate_opening_tail(profile, root, manifest, opening, observation, recovery, original_plan):
     """Admit only a completed normal-backend replacement with a still closed entry."""
     tag = manifest['releaseTag']
-    candidate = {'releaseTag':tag, 'images':manifest['images'], 'maintenanceProtocol':PROTOCOL}
+    candidate = {'releaseTag':tag, 'images':manifest['images'], 'maintenanceProtocol':PROTOCOL, 'releaseSettings':manifest['releaseSettings']}
     require((root / 'deployment-pending.json').is_file() and (root / 'backend-before-reopen.private.json').is_file(),
             'Opening pending/snapshot evidence missing; explicit technical restoration required')
     require(json.loads((root / 'deployment-pending.json').read_text()) == candidate,
@@ -985,7 +1067,7 @@ def validate_opening_tail(profile, root, manifest, opening, observation, recover
     require(all(info['State'].get('Status') in ('running','exited','created')
                 and not info['State'].get('Paused') and not info['State'].get('Restarting') for info in writers.values()),
             'Registered writer state is not stable for opening finalization')
-    verified = health(profile, tag, False, through_acceptance=True)
+    verified = health(profile, tag, False, through_acceptance=True, expected_gxp_mode=gxp_release_mode(manifest))
     return dict(backendId=backend['Id'], maintenanceBackendId=before['Id'], acceptanceId=acceptance['Id'],
                 writerStates={name:{'id':info['Id'],'running':info['State']['Running']} for name,info in writers.items()},
                 verifiedHealth=verified)
@@ -1095,7 +1177,7 @@ def resume_test_tail_locked(profile, payload, root):
         receipt = completed[0]
         require(receipt['phase'] == 'complete' and receipt['schemaSha256'] == observation['schemaSha256']
                 and receipt['ledgerSha256'] == observation['ledgerSha256'], 'Completed deployment evidence changed')
-        verified = health(profile, tag, False)
+        verified = health(profile, tag, False, expected_gxp_mode=gxp_release_mode(manifest))
         result = observe(profile)
         require(result['schemaSha256'] == receipt['schemaSha256'] and result['ledgerSha256'] == receipt['ledgerSha256']
                 and result['maintenance'] is False and result['frontendHttpStatus'] == 200, 'Completed deployment no longer matches fresh observation')
@@ -1131,10 +1213,10 @@ def resume_test_tail_locked(profile, payload, root):
             result = finish_reopen(profile, manifest)
         else:
             repair_acceptance_frontend(profile, root, attempt, manifest, receipts)
-            health(profile, tag, True)
+            health(profile, tag, True, expected_gxp_mode=gxp_release_mode(manifest))
             receipt['phase'] = 'opening'
             resume_receipt(receipt_path, receipt)
-            private_json(root / 'deployment-pending.json', {'releaseTag':tag, 'images':manifest['images'], 'maintenanceProtocol':PROTOCOL})
+            private_json(root / 'deployment-pending.json', {'releaseTag':tag, 'images':manifest['images'], 'maintenanceProtocol':PROTOCOL, 'releaseSettings':manifest['releaseSettings']})
             result = reopen(profile)
         require(result['schemaSha256'] == observation['schemaSha256'] and result['ledgerSha256'] == observation['ledgerSha256']
                 and result['maintenance'] is False and result['frontendHttpStatus'] == 200, 'Reopened observation differs from completed migration state')
@@ -1245,6 +1327,9 @@ def verify_deployment_stopped(profile, payload):
 
 def dispatch(payload):
     profile, action = payload['profile'], payload['action']
+    if action.startswith('frontend-patch-'):
+        from frontend_patch_agent import execute
+        return execute(profile,payload,globals())
     if action in ('artifact-inventory','artifact-remove'):
         from artifact_files import remote as artifacts
         try:
@@ -1320,6 +1405,8 @@ def dispatch(payload):
         require(result['fingerprint'] == payload['originFingerprint'] == record.get('restoredFingerprint'),
                 'Actual restored origin differs from original job and recovery evidence')
         return dict(observation=result, recoveryEvidence=record)
+    if action == 'repair-assistant-configuration':
+        return repair_assistant_configuration(profile, payload)
     if action == 'dependencies':
         return dependencies(profile)
     if action == 'prerequisite-resources':

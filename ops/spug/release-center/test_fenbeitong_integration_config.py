@@ -51,15 +51,17 @@ class IntegrationConfigTests(unittest.TestCase):
             build_python({'executionMode': 'windows-service', 'pythonExecutable': str(Path(sys.base_prefix) / 'pythonservice.exe')})
 
     def test_deploy_replaces_only_assistant_host_and_preserves_other_flags(self):
-        config = {'Env': ['UNCHANGED=one', 'INTRUOYI_EXTRA_ARGS=--existing=true --yudao.erp.fenbeitong-assistant.assistant-host=old --other=2']}
+        config = {'Env': ['UNCHANGED=one', 'JAVA_OPTS=-Xmx512m -Dyudao.erp.fenbeitong-assistant.assistant-host=old', 'INTRUOYI_EXTRA_ARGS=--existing=true --yudao.erp.fenbeitong-assistant.assistant-host=old --other=2']}
         configure_fenbeitong(config, {'environment': 'test', 'fenbeitongAssistantHost': '172.30.30.58'})
         env = dict(x.split('=', 1) for x in config['Env'])
         self.assertEqual(env['UNCHANGED'], 'one')
         self.assertIn('--existing=true', env['INTRUOYI_EXTRA_ARGS'])
         self.assertIn('--other=2', env['INTRUOYI_EXTRA_ARGS'])
         self.assertNotIn('=old', env['INTRUOYI_EXTRA_ARGS'])
-        self.assertEqual(env['INTRUOYI_EXTRA_ARGS'].count('assistant-host='), 1)
-        self.assertIn('assistant-host=172.30.30.58', env['INTRUOYI_EXTRA_ARGS'])
+        self.assertNotIn('assistant-host=', env['INTRUOYI_EXTRA_ARGS'])
+        self.assertEqual(env['JAVA_OPTS'].count('assistant-host='), 1)
+        self.assertIn('-Xmx512m', env['JAVA_OPTS'])
+        self.assertIn('-Dyudao.erp.fenbeitong-assistant.assistant-host=172.30.30.58', env['JAVA_OPTS'])
 
     def test_no_integration_registered_leaves_configuration_unchanged(self):
         config = {'Env': ['INTRUOYI_EXTRA_ARGS=--existing=true']}

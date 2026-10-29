@@ -22,6 +22,19 @@ PREFIX = 'intruoyi-release-rehearsal'
 REHEARSAL_PROGRESS_ROOT = Path('/var/lib/docker/intruoyi-release-workflow/recovery-evidence')
 
 
+def validate_source_release_metadata(metadata, observation):
+    """A frontend patch retains its full-release baseline and its own identity."""
+    if 'baseReleaseTag' in metadata or 'frontendPatchTag' in metadata:
+        if (not metadata.get('baseReleaseTag') or not metadata.get('frontendPatchTag')
+                or metadata.get('releaseTag') != metadata['frontendPatchTag']
+                or metadata['baseReleaseTag'] != observation['releaseTag']
+                or metadata['frontendPatchTag'] != observation.get('frontendPatchTag')):
+            raise ValueError('Source frontend patch metadata differs')
+    elif (metadata.get('releaseTag') != observation['releaseTag']
+          or observation.get('frontendPatchTag')):
+        raise ValueError('Source metadata release differs')
+
+
 def explicit_http_origin(value):
     """Registered Docker ingress requires an IPv4 host and an explicit port."""
     if not isinstance(value, str):
@@ -112,8 +125,8 @@ def source_backend_startup(info, remote, container):
     jvm = shlex.split(env.get('JAVA_OPTS', ''))
     if env.get('JAVA_OPTS', '').split() != jvm:
         raise ValueError('Source JVM options require the inspected unquoted shell expansion format')
-    if any(not re.fullmatch(r'-Xm[sx][0-9]+[kKmMgG]?|-Djava\.security\.egd=\S+', arg) for arg in jvm):
-        raise ValueError('Source JVM arguments differ from the inspected memory and entropy contract')
+    if any(not re.fullmatch(r'-Xm[sx][0-9]+[kKmMgG]?|-Djava\.security\.egd=\S+|-Dyudao\.erp\.fenbeitong-assistant\.assistant-host=\S+', arg) for arg in jvm):
+        raise ValueError('Source JVM arguments differ from the inspected memory, entropy and assistant-host contract')
     if source_format == 'shell-args-v1':
         actual = remote.run(['docker', 'exec', container, 'cat', '/proc/1/cmdline']).decode('utf-8').rstrip('\0').split('\0')
         expected = ['java', *jvm, '-jar', 'app.jar', *args]
@@ -240,6 +253,23 @@ def transfer_artifact_path(profile, value):
     if json.loads(marker.read_text()).get('owner') != PREFIX or path.is_symlink():
         raise ValueError('Transfer seed ownership cannot be proved')
     return path
+
+
+def restore_entry_state(profile, folder, remote):
+    """Distinguish a failed preflight from any partial/complete restore, read-only."""
+    if profile.get('environment') != 'rehearsal' or json.loads((folder/'rehearsal-owned.json').read_text()).get('owner') != PREFIX:
+        raise ValueError('Registered owned rehearsal seed required')
+    names = [profile[k] for k in ('frontend','backend','database','redis','minio','acceptanceFrontend','network')] + [PREFIX+'-gateway']
+    if not all(isinstance(n,str) and n.startswith(PREFIX+'-') for n in names):
+        raise ValueError('Restore resources outside registered rehearsal namespace')
+    containers = set(remote.run(['docker','ps','-a','--format','{{.Names}}']).decode().splitlines())
+    networks = set(remote.run(['docker','network','ls','--format','{{.Name}}']).decode().splitlines())
+    volumes = set(remote.run(['docker','volume','ls','--format','{{.Name}}']).decode().splitlines())
+    created = bool(set(names)&containers or profile['network'] in networks or
+                   {profile[k]+'-data' for k in ('database','redis','minio')}&volumes)
+    evidence = any((folder/name).exists() for name in ('application.properties','verified-media-origin.json',
+                    'isolated-config-transformations.json','isolated-startup-differences.json','restored-origin.json'))
+    return {'state':'started' if created or evidence else 'not-started','mutations':False}
 
 
 def transfer_dispatch(p, api):
@@ -917,16 +947,17 @@ def dispatch(p, api):
         require(not blockers, 'Rehearsal worker processes still exist; technical resolution refused')
         if p.get('checkProcessesOnly') is True:
             return {'stopped': True}
-        folder = root(p['releaseTag'])
-        marker = json.loads((folder / 'rehearsal-owned.json').read_text())
-        require(marker.get('owner') == PREFIX, 'Capture ownership missing')
-        capture = json.loads((folder / 'capture-complete.private.json').read_text())
+        expected = p.get('expectedOriginFingerprint')
+        require(isinstance(expected, str) and re.fullmatch('[a-f0-9]{64}', expected),
+                'Original preparation source fingerprint required')
         observation = api['observe'](profile)
-        require(observation['fingerprint'] == capture['originFingerprint'], 'Source differs from completed capture origin')
+        require(observation['fingerprint'] == expected, 'Source differs from original preparation origin')
         require(observation['backendHealth'].get('status') == 'UP' and observation['frontendHttpStatus'] == 200
-                and not observation['maintenance'], 'Source business is not healthy and open')
-        return {'stopped': True, 'originFingerprint': capture['originFingerprint'], 'sourceHealthy': True,
-                'captureSha256': api['file_sha'](folder / 'capture-complete.private.json')}
+                and observation.get('maintenance') is False
+                and observation.get('readOnly') == dict(read_only=False, super_read_only=False),
+                'Source business is not healthy and open')
+        # Abandonment proves the original source is intact; it never declares a snapshot complete.
+        return {'stopped': True, 'originFingerprint': expected, 'sourceHealthy': True}
     if action == 'rehearsal-source-check':
         return source_check()
     if action == 'rehearsal-redis-inventory':
@@ -990,6 +1021,14 @@ def dispatch(p, api):
                     captureSha256=api['file_sha'](capture_path), captureIdentity=api['sha'](capture), nginx=nginx.read_bytes().decode('utf-8'),
                     backendUpstreams=source_upstream_hosts(backend,frontend,profile['backend']),
                     minioUpstreams=source_upstream_hosts(minio,frontend,profile['minio']))
+    if action == 'rehearsal-restore-entry-state':
+        dispatch(dict(p, action='rehearsal-verify-stopped', checkProcessesOnly=True), api)
+        progress = dispatch(dict(p, action='rehearsal-job-status'), api)
+        require(progress['status'] in ('failed','unknown','succeeded'), 'Stopped restore evidence required')
+        entry = restore_entry_state(profile, root(p['releaseTag']), r)
+        require(progress['status'] != 'succeeded' or entry['state'] == 'started',
+                'Completed restore resources are missing; explicit reconciliation required')
+        return entry
     if action == 'rehearsal-resume-tail':
         return resume_rehearsal_tail(p, api, root(p['releaseTag']))
     if action == 'rehearsal-capture':
@@ -1018,7 +1057,7 @@ def dispatch(p, api):
             image_metadata = json.loads(r.run(['docker', 'run', '--rm', '--pull=never', '--network', 'none', '--read-only',
                                                '--entrypoint', 'cat', before['images']['frontend'], '/usr/share/nginx/html/release-info.json']))
             require(metadata == image_metadata, 'Source container metadata differs from immutable image')
-        require(metadata['releaseTag'] == before['releaseTag'], 'Source metadata release differs')
+        validate_source_release_metadata(metadata, before)
         folder = root(p['releaseTag'])
         new_seed(folder)
         api['private_json'](folder / 'capture-before.private.json', before)

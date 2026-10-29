@@ -41,6 +41,7 @@ class PreparationTailAdapterTests(unittest.TestCase):
         self.executor.runtime.targets=copy.deepcopy(self.executor.c['targets'])
         self.executor.runtime.profile=lambda env:self.executor.runtime.targets[env]
         self.executor.runtime.observe.return_value=self.origin
+        self.executor.runtime.call.return_value=dict(state='started',mutations=False)
         self.executor.runtime.resume_rehearsal_tail.return_value=self.result
         self.executor.package=Mock(return_value=(self.package,self.manifest))
         self.executor.save=Mock()
@@ -91,6 +92,24 @@ class PreparationTailAdapterTests(unittest.TestCase):
         self.executor.runtime.prepare_rehearsal.assert_not_called()
         self.assertEqual(self.package['stage'],'rehearsal-ready')
         self.assertEqual(self.original['status'],'failed')
+
+    def test_restore_preflight_failure_continues_verified_capture_without_recapture(self):
+        self.executor.runtime.call.return_value=dict(state='not-started',mutations=False)
+        self.receipt.update(kind='captured-transfer',captureSha256='1'*64)
+        self.result['remotePreparationProgress']['jobId']=self.original['id']
+        self.executor.runtime.resume_rehearsal_transfer.return_value=self.result
+        self.run_retry()
+        self.executor.runtime.resume_rehearsal_transfer.assert_called_once()
+        self.executor.runtime.resume_rehearsal_tail.assert_not_called()
+        self.executor.runtime.prepare_rehearsal.assert_not_called()
+        self.assertEqual(self.job['restoreEntryEvidence']['state'],'not-started')
+        self.assertEqual(self.package['stage'],'rehearsal-ready')
+
+    def test_unavailable_restore_entry_proof_never_selects_reimport(self):
+        self.executor.runtime.call.side_effect=RuntimeBlocked('Cannot inspect restore resources')
+        with self.assertRaises(RuntimeBlocked):self.run_retry()
+        self.executor.runtime.resume_rehearsal_transfer.assert_not_called()
+        self.executor.runtime.resume_rehearsal_tail.assert_not_called()
 
     def test_foreign_package_outcome_registered_copy_and_missing_test_proof_block(self):
         cases=('tag','outcome','registered','active','test-proof','stage')

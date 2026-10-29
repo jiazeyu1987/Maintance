@@ -15,6 +15,7 @@ import time
 from executor import digest, require, stamp
 from intruoyi_runtime import bind_reviewed_session_profile, validate_migration_handler, rehearsal_profile
 from nas_connection import connect_nas
+from intruoyi_login import verify_login
 
 MAINTENANCE_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(MAINTENANCE_ROOT))
@@ -22,6 +23,16 @@ from ops.release.release_source_catalog import release_paths
 from ops.release.release_migration_policy_gate import run_migration_policy_gate
 from ops.release.release_target_preflight_contract import validate
 from ops.release.release_preflight_plan import _order_migrations_by_dependencies, build_preflight_plan
+
+
+def build_python(config):
+    if config.get('executionMode') == 'windows-service':
+        executable = config.get('pythonExecutable')
+        require(isinstance(executable, str) and Path(executable).is_file()
+                and Path(executable).name.lower() == 'python.exe',
+                'Windows service requires an explicit pythonExecutable pointing to python.exe; pythonservice.exe cannot run build scripts')
+        return executable
+    return sys.executable
 
 
 def check_local_space(executor, phase='build'):
@@ -267,6 +278,15 @@ def build(executor, job):
     require(re.fullmatch('[0-9a-f]{40}', commit), 'Exact full Git commit required')
     require(executor.run(['git', '-C', c['repo'], 'rev-parse', commit+'^{commit}']).decode().strip() == commit,
             'Requested source commit does not exist')
+    executor.step(job, 'capture-saved-gxp-mode')
+    require(c.get('gxpConfigurationSourceUrl'), 'Configure the source application URL for the saved GxP setting')
+    gxp_evidence = verify_login(c, c['gxpConfigurationSourceUrl'],
+                               executor.root/'technical-evidence'/job['id']/'source-configuration',
+                               dict(jobId=job['id'], gitCommit=commit), read_gxp_mode=True)
+    release_settings = dict(gxpAuditMode=gxp_evidence['gxpAuditMode'])
+    job['releaseSettings'] = release_settings
+    job['gxpConfigurationEvidence'] = gxp_evidence
+    executor.save()
     require(all(executor.state['environments'].get(env, {}).get('baselineStatus') == 'registered' for env in ('test', 'prod', 'backup')),
             'Register the real three-server baselines before building')
     executor.step(job, 'check-rehearsal-registration')
@@ -304,7 +324,7 @@ def build(executor, job):
     require(menu_gate.is_file(), 'Pinned menu migration gate missing')
     packaged_sql = folder/'packaged-sql-inputs.json'
     packaged_sql.write_text(json.dumps([m['file'] for m in migrations]), 'utf-8')
-    executor.run([sys.executable, str(menu_gate), '--repo', str(worktree), '--packaged-sql', str(packaged_sql)], timeout=120)
+    executor.run([build_python(c), str(menu_gate), '--repo', str(worktree), '--packaged-sql', str(packaged_sql)], timeout=120)
     for relative, source in artifacts.items():
         destination = folder/relative
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -367,6 +387,7 @@ def build(executor, job):
     files = [dict(name=path.relative_to(folder).as_posix(), sha256=digest(path))
              for path in sorted(folder.rglob('*')) if path.is_file() and 'build-context' not in path.relative_to(folder).parts]
     manifest = dict(applicationId=c['applicationId'], releaseTag=tag, IMAGE_TAG=tag, gitCommit=commit,
+                    releaseSettings=release_settings,
                     images=images, migrations=migrations, sourceReferences=references,
                     maintenanceProtocol='intruoyi-quiescent-start-v1', files=files,
                     build=dict(runtimeImages=bases, executorSha256=digest(Path(__file__))))
@@ -377,6 +398,7 @@ def build(executor, job):
     package = dict(releaseTag=tag, gitCommit=commit, directory=str(folder), manifestSha256=digest(folder/'manifest.json'),
                    packageSha256=digest(folder/'release.tar'), stage='built', baseline=False)
     require(c.get('nasPath'), 'Explicit NAS release package destination required')
+    job['sealedPackage'] = dict(package)
     executor.step(job, 'publish-original-package-to-nas')
     package['nasDirectory'] = publish_nas(folder, manifest, c['nasPath'], c.get('nasCredentialsFile'))
     executor.state['packages'].insert(0, package)

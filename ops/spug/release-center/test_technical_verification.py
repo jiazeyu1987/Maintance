@@ -26,6 +26,7 @@ class TechnicalVerificationTest(unittest.TestCase):
         self.tag='2026-10-23-16-51-17'
         self.images={'backend':'sha256:'+'a'*64,'frontend':'sha256:'+'b'*64}
         self.manifest={'releaseTag':self.tag,'images':{role:{'id':value} for role,value in self.images.items()},'migrations':[]}
+        self.manifest['releaseSettings']={'gxpAuditMode':'DEVELOPMENT_DISABLED'}
         self.package={'releaseTag':self.tag,'packageSha256':'c'*64,'stage':'built','baseline':False,'rehearsals':[]}
         self.executor.state={'packages':[self.package],'jobs':[],'environments':{
             env:dict(self.observation(),releaseTag='2026-10-22-00-00-00',fingerprint=env+'-origin') for env in ('test','prod','backup')}}
@@ -35,7 +36,8 @@ class TechnicalVerificationTest(unittest.TestCase):
         self.executor.runtime.observe.side_effect=lambda env:copy.deepcopy(self.executor.state['environments'][env])
         self.executor.runtime.profile.side_effect=lambda env:{'entryUrl':'http://172.30.30.58:8081','acceptanceUrl':'http://172.30.30.58:38084'}
         self.executor.audit_target=Mock(side_effect=lambda env,*args:{'observation':copy.deepcopy(self.executor.state['environments'][env])})
-        self.executor.health=Mock(return_value={'healthy':True})
+        self.executor.health=Mock(return_value={'healthy':True,'writerControls':{
+            'gxpAuditMode':'DEVELOPMENT_DISABLED','configuredGxpAuditMode':'DEVELOPMENT_DISABLED'}})
         def deploy(env,package,manifest,job):
             self.executor.state['environments'][env]=self.observation(maintenance=env!='test')
             if env=='prod':job['rehearsalId']=package['activeRehearsal']
@@ -97,6 +99,23 @@ class TechnicalVerificationTest(unittest.TestCase):
         self.assertTrue(all(check['status']=='passed' for check in technical['checks'].values()))
         self.assertEqual(self.login.call_args.args[3],dict(jobId=job['id'],env='test',releaseTag=self.tag,packageSha256='c'*64))
         self.assertNotIn('acceptances',self.package)
+
+    def test_changed_runtime_mode_cannot_pass_technical_acceptance(self):
+        self.executor.health.return_value['writerControls']['gxpAuditMode']='FORMAL'
+        job=self.run_action('publish-test')
+        self.assertEqual(job['status'],'failed')
+        self.assertEqual(self.package['stage'],'test-deployed')
+        self.login.assert_not_called()
+
+    def test_saved_mode_changed_before_acceptance_keeps_production_closed(self):
+        self.seed_rehearsal()
+        deployed=self.run_action('promote-prod')
+        self.assertEqual(deployed['status'],'succeeded',deployed.get('error'))
+        self.executor.health.return_value['writerControls']['configuredGxpAuditMode']='FORMAL'
+        accepted=self.run_action('accept-prod',note='User checked business functionality')
+        self.assertEqual(accepted['status'],'failed')
+        self.executor.maintenance.assert_not_called()
+        self.assertTrue(self.executor.state['environments']['prod']['maintenance'])
 
     def test_login_failure_keeps_true_deployment_and_retries_only_technical(self):
         self.login.side_effect=LoginVerificationError('Real browser login verification failed')

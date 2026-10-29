@@ -8,7 +8,7 @@ import threading
 from executor import Executor, main, require, stamp
 from release_order import deployment_blocks
 from intruoyi_build import build, target_input_plan
-from intruoyi_runtime import Runtime, audit_ledger, package_identity, rehearsal_profile
+from intruoyi_runtime import Runtime, audit_ledger, package_identity, rehearsal_profile, gxp_release_mode, validate_gxp_runtime
 from intruoyi_rehearsal import active_remote_progress
 from intruoyi_metadata import restore as restore_metadata, reference as metadata_reference, remote as metadata_remote
 
@@ -169,6 +169,7 @@ class _IntRuoyiExecutor(Executor):
             validate_origin(current)
             require(current.get('readOnly') == dict(read_only=False, super_read_only=False), 'Target write protection prevents technical acceptance')
             health = self.health(env, package['releaseTag'])
+            validate_gxp_runtime(health['writerControls'], gxp_release_mode(manifest))
             plan_env = self.active_rehearsal(package)['source'] if env == 'rehearsal' else env
             plan = target_input_plan(manifest['migrations'], current['ledgerRecords'], plan_env)
             require(plan.get('status') == 'passed' and not any(item['action'] == 'APPLY' for item in plan['items']),
@@ -213,7 +214,8 @@ class _IntRuoyiExecutor(Executor):
                     self.maintenance(env, False)
                 else:
                     require(current.get('maintenance') is False, 'Formal target maintenance state is unknown')
-                self.health(env, package['releaseTag'])
+                opened_health = self.health(env, package['releaseTag'])
+                validate_gxp_runtime(opened_health['writerControls'], gxp_release_mode(manifest))
                 opened = self.runtime.observe(env)
                 validate_origin(opened)
                 require(opened.get('maintenance') is False and opened.get('readOnly') == dict(read_only=False,super_read_only=False)
@@ -303,7 +305,7 @@ class _IntRuoyiExecutor(Executor):
                                                  restoreMetadata=bool(self.c.get('metadataRepair')),
                                                  buildRelease=True, prepareRehearsal=configured, releaseRecovery=True,
                                                  businessAcceptance=True, interruptionReconciliation=True,
-                                                 independentBackupRetry=True, releasePrecheck=True, artifactRetention=True))
+                                                 independentBackupRetry=True, releasePrecheck=True, artifactRetention=True, nasPackageRetry=True))
             if not configured:
                 application['capabilityReasons'] = dict(prepareRehearsal='尚未配置独立数据副本、运行资源与外部接口隔离，不能准备演练。')
             if self.c.get('nasPath'):
@@ -641,6 +643,16 @@ class _IntRuoyiExecutor(Executor):
         require(origin.get('maintenance') is False and origin.get('readOnly') == dict(read_only=False, super_read_only=False),
                 'Original production source must be healthy and open before resuming isolation')
         audit_ledger(origin, manifest)
+        if phase == 'restore-starting':
+            entry = self.runtime.call('rehearsal', 'rehearsal-restore-entry-state',
+                                      releaseTag=manifest['releaseTag'], jobId=original['id'])
+            require(entry.get('state') in ('not-started','started') and entry.get('mutations') is False,
+                    'Explicit read-only restore entry evidence required')
+            job['restoreEntryEvidence'] = entry
+            self.save()
+            if entry['state'] == 'not-started':
+                phase = 'capture-complete'
+                self.log(job, 'Original restore failed before creating resources; continue verified capture restoration.')
         def continued_step(name, effects=False):
             if name == 'continue-original-capture-restore':
                 original['continuationRemotePhase'] = 'restore-starting'
@@ -786,6 +798,9 @@ class _IntRuoyiExecutor(Executor):
         require(not original.get('technicalVerification') and original.get('action') != 'reject-acceptance',
                 'Installed deployment or historical business rejection requires a new technical verification action, not restoration or a fabricated resolution')
         if job['payload']['decision'] == 'retry':
+            if original['action'] == 'build-release' or original.get('originalBuildJobId'):
+                from nas_package_retry import resume
+                return resume(self, job, original)
             if original['action'] == 'prepare-rehearsal' or original.get('originalPreparationJobId'):
                 return self.resume_rehearsal_preparation(job, original)
             return self.resume_test_deployment(job, original)
@@ -863,7 +878,8 @@ class _IntRuoyiExecutor(Executor):
             require(job['payload']['decision']=='abandon','Failed preparation can only be explicitly discarded')
             source=original['sourceEnv']
             self.runtime.targets['rehearsal']=rehearsal_profile(self.c,source)
-            status=self.runtime.call(source,'rehearsal-verify-stopped',releaseTag=original['releaseTag'])
+            status=self.runtime.call(source,'rehearsal-verify-stopped',releaseTag=original['releaseTag'],
+                                     expectedOriginFingerprint=original.get('sourceOriginFingerprint'))
             if self.runtime.profile(source)['host'] != self.runtime.profile('rehearsal')['host']:
                 self.runtime.call('rehearsal','rehearsal-verify-stopped',checkProcessesOnly=True)
             observation=validate_origin(self.runtime.observe(source))
@@ -918,7 +934,9 @@ class _IntRuoyiExecutor(Executor):
         self.log(job, 'Original pre-effect task retained and abandoned; no SQL replayed')
 
 
-class IntRuoyiExecutor(RollbackMixin, _IntRuoyiExecutor):
+from frontend_patch import FrontendPatchMixin
+
+class IntRuoyiExecutor(FrontendPatchMixin, RollbackMixin, _IntRuoyiExecutor):
     """Run rollback hooks before the concrete release adapter."""
     pass
 

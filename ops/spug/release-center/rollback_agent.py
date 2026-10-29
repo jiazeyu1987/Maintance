@@ -32,7 +32,6 @@ def snapshot_path(profile, tag):
 
 def capture(agent, profile, tag, origin):
     path = snapshot_path(profile, tag)
-    agent.require(not path.exists(), 'Rollback snapshot already exists; inspect original operation')
     snapshot = {'targetReleaseTag': tag, 'origin': origin, 'containers': {}, 'configFiles': {}}
     for role in ('frontend', 'backend'):
         info = agent.remote.inspect(profile[role])
@@ -40,8 +39,27 @@ def capture(agent, profile, tag, origin):
                       'Stable source container differs before snapshot')
         snapshot['containers'][role] = info
         snapshot['configFiles'].update(config_files(info))
-    path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
-    agent.private_json(path, snapshot)
+    if path.exists():
+        saved = json.loads(path.read_text(encoding='utf-8'))
+        agent.require(saved['targetReleaseTag'] == tag and
+                      saved['origin']['fingerprint'] == origin['fingerprint'] and
+                      saved['origin']['images'] == origin['images'] and
+                      saved['origin']['releaseTag'] == origin['releaseTag'],
+                      'Existing rollback snapshot origin differs; inspect original operation')
+        agent.require(set(saved['containers']) == {'frontend', 'backend'} and
+                      saved['configFiles'] == snapshot['configFiles'],
+                      'Existing rollback snapshot configuration differs')
+        for role, current in snapshot['containers'].items():
+            original = saved['containers'][role]
+            agent.require(all(current[key] == original[key]
+                              for key in ('Id', 'Image', 'Config', 'HostConfig')) and
+                          sorted(current['Mounts'], key=lambda item: item['Destination']) ==
+                          sorted(original['Mounts'], key=lambda item: item['Destination']),
+                          'Existing rollback snapshot container differs')
+        # A pre-effect retry preserves the original recovery evidence byte for byte.
+    else:
+        path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+        agent.private_json(path, snapshot)
     return {'snapshotSha256': agent.file_sha(path), 'originReleaseTag': origin['releaseTag'],
             'configFileCount': len(snapshot['configFiles'])}
 

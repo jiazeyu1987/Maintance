@@ -18,6 +18,44 @@ def require(ok, message):
 
 
 class RollbackSafetyTest(unittest.TestCase):
+    def test_capture_retry_preserves_evidence_and_rejects_drift(self):
+        import hashlib
+        with tempfile.TemporaryDirectory() as tmp:
+            profile = dict(stagingRoot=tmp, frontend='front', backend='back')
+            origin = dict(fingerprint='stable', releaseTag='old', images=dict(frontend='f', backend='b'))
+            config = Path(tmp) / 'config'
+            config.write_text('original', encoding='utf-8')
+            containers = {profile[role]: dict(Id=role, Image=image, Config={}, HostConfig={},
+                State=dict(Running=True), Mounts=[dict(Type='bind', Source=str(config), Destination='/config'),
+                                                dict(Type='volume', Source=tmp, Destination='/data')])
+                for role, image in origin['images'].items()}
+            agent = SimpleNamespace(require=require, remote=SimpleNamespace(inspect=lambda name: containers[name]),
+                private_json=Mock(side_effect=lambda p, v: p.write_text(json.dumps(v), encoding='utf-8')),
+                file_sha=lambda p: hashlib.sha256(p.read_bytes()).hexdigest())
+            tag = '2026-10-28-23-36-26'
+            first = remote.capture(agent, profile, tag, origin)
+            path = remote.snapshot_path(profile, tag)
+            before = path.read_bytes()
+            containers['front']['State']['StartedAt'] = 'later-observation'
+            containers['back']['Mounts'].reverse()
+            self.assertEqual(first, remote.capture(agent, profile, tag, origin))
+            agent.private_json.assert_called_once()
+            for key, value in [('Id', 'replacement'), ('Image', 'changed'), ('Config', {'Env': ['changed']}),
+                               ('HostConfig', {'NetworkMode': 'changed'}), ('State', {'Running': False}),
+                               ('Mounts', [])]:
+                with self.subTest(key=key):
+                    previous = containers['front'][key]
+                    containers['front'][key] = value
+                    with self.assertRaises(RuntimeError): remote.capture(agent, profile, tag, origin)
+                    containers['front'][key] = previous
+                    self.assertEqual(before, path.read_bytes())
+            with self.assertRaises(RuntimeError):
+                remote.capture(agent, profile, tag, dict(origin, fingerprint='different'))
+            config.write_text('modified', encoding='utf-8')
+            with self.assertRaises(RuntimeError): remote.capture(agent, profile, tag, origin)
+            self.assertEqual(before, path.read_bytes())
+            agent.private_json.assert_called_once()
+
     def executor(self):
         obj=RollbackMixin()
         obj.lock=threading.RLock();obj.c={'applicationId':'intruoyi'}

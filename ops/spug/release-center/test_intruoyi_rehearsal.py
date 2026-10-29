@@ -10,8 +10,59 @@ from intruoyi_rehearsal import can_reuse_images
 from intruoyi_rehearsal_agent import source_active_profiles, isolated_nginx_config
 from intruoyi_rehearsal_agent import explicit_http_origin, rehearsal_endpoints, rehearsal_gateway_ingress, dispatch, PREFIX
 from intruoyi_runtime import require, RuntimeBlocked
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, MagicMock, patch
 from intruoyi_rehearsal_agent import source_backend_startup, isolated_backend_startup, source_upstream_hosts
+from intruoyi_rehearsal_agent import validate_source_release_metadata
+
+
+class SourceReleaseMetadataTest(unittest.TestCase):
+    def test_full_release_and_frontend_patch_keep_separate_identities(self):
+        validate_source_release_metadata({'releaseTag': 'base'}, {'releaseTag': 'base'})
+        metadata = dict(releaseTag='patch', baseReleaseTag='base', frontendPatchTag='patch')
+        observed = dict(releaseTag='base', frontendPatchTag='patch')
+        validate_source_release_metadata(metadata, observed)
+        for key in metadata:
+            for value in ('other', '', None):
+                with self.subTest(key=key, value=value), self.assertRaises(ValueError):
+                    validate_source_release_metadata(dict(metadata, **{key: value}), observed)
+            incomplete = dict(metadata)
+            incomplete.pop(key)
+            with self.subTest(missing=key), self.assertRaises(ValueError):
+                validate_source_release_metadata(incomplete, observed)
+        with self.assertRaises(ValueError):
+            validate_source_release_metadata({'releaseTag': 'base'}, observed)
+        with self.assertRaises(ValueError):
+            validate_source_release_metadata(metadata, dict(observed, frontendPatchTag='other'))
+        with self.assertRaises(ValueError):
+            validate_source_release_metadata({'releaseTag': 'other'}, {'releaseTag': 'base'})
+
+
+class FailedCaptureAbandonmentTest(unittest.TestCase):
+    def test_incomplete_capture_requires_stopped_workers_and_unchanged_open_source(self):
+        origin = 'a' * 64
+        observed = dict(fingerprint=origin, backendHealth={'status': 'UP'}, frontendHttpStatus=200,
+                        maintenance=False, readOnly=dict(read_only=False, super_read_only=False))
+        request = dict(action='rehearsal-verify-stopped', profile={}, expectedOriginFingerprint=origin)
+        api = dict(remote=Mock(), require=require, RuntimeBlocked=RuntimeBlocked,
+                   observe=Mock(return_value=observed))
+        with patch('intruoyi_rehearsal_agent.Path.iterdir', return_value=[]):
+            result = dispatch(request, api)
+            self.assertEqual(result, dict(stopped=True, originFingerprint=origin, sourceHealthy=True))
+            for changes in [dict(fingerprint='b'*64), dict(backendHealth={'status':'DOWN'}),
+                            dict(frontendHttpStatus=503), dict(maintenance=True),
+                            dict(readOnly=dict(read_only=True, super_read_only=False))]:
+                api['observe'].return_value = dict(observed, **changes)
+                with self.subTest(changes=changes), self.assertRaises(RuntimeBlocked):
+                    dispatch(request, api)
+            with self.assertRaises(RuntimeBlocked):
+                dispatch(dict(request, expectedOriginFingerprint=None), api)
+        worker = MagicMock()
+        worker.name = '999999'
+        (worker / 'cmdline').read_bytes.return_value = b'python\0-\0'
+        (worker / 'comm').read_text.return_value = 'python'
+        with patch('intruoyi_rehearsal_agent.Path.iterdir', return_value=[worker]):
+            with self.assertRaises(RuntimeBlocked):
+                dispatch(request, api)
 
 
 class SourceStartupContractTest(unittest.TestCase):
@@ -63,6 +114,22 @@ class SourceStartupContractTest(unittest.TestCase):
         self.assertIn('CUSTOM_SETTING=keep-me',environment)
         self.assertFalse(any(v.startswith(('ARGS=','JAVA_OPTS=')) for v in environment))
         self.assertEqual(sum(v.startswith('--spring.config.additional-location=') for v in command),1)
+
+    def test_observed_assistant_host_jvm_property_is_preserved_and_isolation_override_wins(self):
+        host = '-Dyudao.erp.fenbeitong-assistant.assistant-host=172.30.30.57'
+        self.info['Config']['Env'][1] += ' ' + host
+        startup = source_backend_startup(self.info, self.remote, 'source')
+        self.assertIn(host, startup['jvmArguments'])
+        props = {'yudao.erp.fenbeitong-assistant.assistant-host': 'isolated-assistant'}
+        profile = {'backendCommand': ['java', '-jar', 'app.jar']}
+        with patch('intruoyi_rehearsal_agent.isolated_backend_environment', return_value=[]):
+            command, _ = isolated_backend_startup(profile, startup, props, 'dev', {}, '')
+        self.assertIn(host, command)
+        self.assertEqual(command[-1], '--yudao.erp.fenbeitong-assistant.assistant-host=isolated-assistant')
+        self.remote.run.return_value = b'java\0-jar\0app.jar\0'
+        self.remote.run.side_effect = None
+        with self.assertRaisesRegex(ValueError, 'Running Java arguments differ'):
+            source_backend_startup(self.info, self.remote, 'source')
 
     def test_registered_mounted_property_format_still_reads_exact_bind(self):
         self.info['Config']['Env'][0]+=' --spring.config.additional-location=file:/config/source.properties'

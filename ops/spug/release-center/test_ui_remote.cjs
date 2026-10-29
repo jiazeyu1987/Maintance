@@ -108,8 +108,9 @@ console.log('Pre-effect preparation failure copy excludes cleanup only when both
 // Retained production-origin copies have one explicit startup-tail retry, not a new restore.
 const preparation=harness();preparation.set(JSON.parse(JSON.stringify({...remote,packages:[{...candidate,stage:'tested'}]})));
 preparation.evaluate("state.jobs=[{id:'JOB-prepare',action:'prepare-rehearsal',target:'rehearsal',sourceEnv:'prod',status:'failed',effectsStarted:true,remoteStatusRequired:true,remotePhase:'restore-starting',remoteProgress:{jobId:'JOB-prepare',status:'failed',phase:'failed'},releaseTag:'candidate',payload:{},logs:[]}]");
-assert(preparation.render(7).includes('恢复保留副本的启动尾段'));
-assert(preparation.render(7).includes('不重新捕获、导入或执行迁移'));
+assert(preparation.render(7).includes('核对恢复进度并继续原副本'));
+assert(preparation.render(7).includes('禁止重复导入'));
+assert(preparation.render(7).includes('资源尚未创建则继续原副本首次恢复'));
 assert(preparation.render(7).includes('成功后仅登记隔离基线，候选升级仍需单独执行'));
 assert(!/data-job-id="JOB-prepare"[^>]*disabled/.test(preparation.render(7)));
 for(const status of ['running','unknown']){
@@ -376,3 +377,12 @@ assert(/data-action="clean-artifacts" disabled/.test(artifacts.render(9)),'A con
 assert.equal(artifacts.evaluate('unresolved(state.jobs[0])'),false);
 artifacts.set(demo);assert(!artifacts.render(9).includes('data-action="scan-artifacts"'));
 console.log('Artifact grouping, protected member exclusion, persisted selections and single-use cleanup passed');
+
+// A failed sealed build can be republished even before any candidate was registered.
+const nasRetry=harness();nasRetry.set(JSON.parse(JSON.stringify(remote)));
+nasRetry.evaluate("state.application.capabilities.nasPackageRetry=true;state.packages=[];state.jobs=[{id:'build-failed',action:'build-release',status:'failed',releaseTag:'2026-10-29-13-43-28',currentStep:'publish-original-package-to-nas',payload:{},logs:[]}]");
+assert(nasRetry.render(7).includes('校验原包并重新上传 NAS'));
+assert(!/data-job-id="build-failed"[^>]*disabled/.test(nasRetry.render(7)));
+nasRetry.evaluate("state.jobs[0].currentStep='compile-backend'");
+assert(!nasRetry.render(7).includes('校验原包并重新上传 NAS'));
+console.log('Sealed-build NAS retry entry: available without registered package, excluded before sealing');

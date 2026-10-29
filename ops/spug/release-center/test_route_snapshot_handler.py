@@ -19,6 +19,7 @@ class SnapshotHandlerTests(unittest.TestCase):
         self.item = dict(migrationId=ROUTE_SNAPSHOT_MIGRATION, sha256=ROUTE_SNAPSHOT_SHA256,
                          approvedHook=ROUTE_SNAPSHOT_HOOK, type='schema', file='enforce.sql')
         self.manifest = dict(releaseTag='2026-10-23-01-00-00', migrations=[self.item],
+                             releaseSettings={'gxpAuditMode':'FORMAL'},
                              images={'backend':{'id':'sha256:'+'a'*64}})
         self.expected = dict(mode='PRECHECK', releaseTag=self.manifest['releaseTag'],
                             migrationId=ROUTE_SNAPSHOT_MIGRATION, imageId=self.manifest['images']['backend']['id'],
@@ -153,14 +154,15 @@ class SnapshotHandlerTests(unittest.TestCase):
                     patch.object(agent, 'verify_files'), patch.object(agent.remote, 'run', side_effect=lambda cmd:(cmd[-1]+'\n').encode()), \
                     patch.object(agent, 'observe', return_value={}), patch.object(agent, 'migration_plan', return_value=[]), \
                     patch.object(agent, 'check_fence'), patch.object(agent, 'stop_writers', side_effect=lambda *args:events.append('stop')), \
-                    patch.object(agent, 'backup', return_value={}), \
+                    patch('intruoyi_recovery_agent.capture', return_value={}), \
+                    patch.object(agent, 'persist_gxp_release_mode', side_effect=lambda *args:events.append('gxp-setting')), \
                     patch.object(agent, 'apply_migration_plan', side_effect=lambda *args, **kw:events.append('all-sql')), \
                     patch.object(agent, 'run_snapshot_cli', side_effect=readiness), \
                     patch.object(agent, 'replace') as replace, patch.object(agent, 'docker') as docker, \
                     patch.object(agent, 'reopen') as reopen:
                 with self.assertRaisesRegex(RuntimeBlocked, 'CANONICAL_IDENTITY_MISMATCH'):
                     agent.deploy({'environment':'test'}, manifest)
-            self.assertEqual(events, ['stop','all-sql','terminal-readiness'])
+            self.assertEqual(events, ['stop','all-sql','gxp-setting','terminal-readiness'])
             replace.assert_not_called()
             docker.assert_not_called()
             reopen.assert_not_called()

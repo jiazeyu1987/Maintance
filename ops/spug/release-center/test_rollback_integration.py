@@ -6,6 +6,7 @@ from unittest.mock import Mock, patch
 
 from intruoyi_executor import IntRuoyiExecutor
 from rollback_mixin import RollbackMixin
+from frontend_patch import FrontendPatchMixin
 
 
 class RollbackIntegrationTest(unittest.TestCase):
@@ -21,8 +22,8 @@ class RollbackIntegrationTest(unittest.TestCase):
         return obj
 
     def test_all_rollback_hooks_precede_concrete_executor(self):
-        for method in ('snapshot', 'submit', 'deploy'):
-            self.assertIs(getattr(IntRuoyiExecutor, method), getattr(RollbackMixin, method))
+        self.assertLess(IntRuoyiExecutor.__mro__.index(FrontendPatchMixin),IntRuoyiExecutor.__mro__.index(RollbackMixin))
+        self.assertIs(IntRuoyiExecutor.deploy,RollbackMixin.deploy)
 
     def test_real_snapshot_advertises_rollback_and_existing_capabilities(self):
         obj = self.executor()
@@ -30,6 +31,7 @@ class RollbackIntegrationTest(unittest.TestCase):
             result = obj.snapshot()
         self.assertTrue(result['application']['capabilities']['productionRollback'])
         self.assertTrue(result['application']['capabilities']['buildRelease'])
+        self.assertTrue(result['application']['capabilities']['frontendPatch'])
         self.assertEqual(result['jobs'], [])
 
     def test_real_submit_routes_preview_to_rollback_worker(self):

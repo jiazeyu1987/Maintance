@@ -1,0 +1,31 @@
+// Rendering checks only: no real release or business operations.
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
+const source=fs.readFileSync(path.join(__dirname,'ui/frontend-patch.js'),'utf8');
+const elements=new Map(),store=new Map();
+const element=id=>{if(!elements.has(id))elements.set(id,{innerHTML:'',setAttribute(){},querySelector(){return {setAttribute(){}}}});return elements.get(id);};
+const storage={getItem:key=>store.get(key)||null,setItem:(key,value)=>store.set(key,value)};
+const context={document:{getElementById:element,addEventListener(){},querySelector(){return null}},localStorage:storage,sessionStorage:storage,setInterval(){},fetch(){return new Promise(()=>{})},window:{},crypto:{randomUUID:()=>''}};
+vm.createContext(context);vm.runInContext(source,context);
+const p={releaseTag:'patch',baseReleaseTag:'base',gitCommit:'a'.repeat(40),stage:'built',accepted:{},deployments:{}};
+context.input={application:{capabilities:{frontendPatch:true},targets:{test:{url:'http://test'},prod:{url:'http://prod'},backup:{url:'http://review'}}},packages:[{releaseTag:'base'}],frontendPatches:[p],environments:Object.fromEntries(['test','prod','backup'].map(e=>[e,{releaseTag:'base'}])),jobs:[]};
+const render=()=>{vm.runInContext("fpState=input;fpSelected='patch';fpRender()",context);return element('app').innerHTML;};
+let html=render();
+assert.match(html,/前端补丁/);assert.match(html,/主版本/);assert.match(html,/补丁版本/);
+const enabled=(env)=>!new RegExp('data-front-action="frontend-patch-deploy" data-target="'+env+'"[^>]*disabled').test(html);
+assert(enabled('test'));assert(!enabled('prod'));assert(!enabled('backup'));
+p.accepted.test={};html=render();assert(!enabled('prod'));assert(!enabled('backup'));
+context.input.environments.test.frontendPatchTag='patch';html=render();assert(enabled('prod'));assert(!enabled('backup'));
+p.accepted.prod={};html=render();assert(!enabled('backup'));
+context.input.environments.prod.frontendPatchTag='patch';html=render();assert(enabled('backup'));
+context.input.jobs=[{id:'JOB-1234567890',action:'frontend-patch-deploy',releaseTag:'patch',target:'test',effectsStarted:true,status:'failed',logs:[],error:'network failed'}];
+html=render();assert.match(html,/恢复本次升级前的前端/);assert.match(html,/network failed/);
+context.input.jobs[0].frontendRestoredBy='JOB-abcdef1234';html=render();assert.doesNotMatch(html,/data-original=/);
+console.log('PASS frontend patch rendering, same-package promotion gates, failure visibility and explicit recovery entry');
+(async()=>{
+ store.set('token','unit-token');
+ context.fetch=async()=>({ok:true,status:200,json:async()=>({success:true})});
+ const result=await vm.runInContext("fpApi('state')",context);assert.equal(result.success,true);
+ context.fetch=async()=>({ok:false,status:409,json:async()=>({error:'Action blocked'})});
+ await assert.rejects(vm.runInContext("fpApi('state')",context),/Action blocked/);
+ console.log('PASS browser Fetch Response.ok property and visible HTTP failure');
+})().catch(error=>{console.error(error);process.exitCode=1;});
