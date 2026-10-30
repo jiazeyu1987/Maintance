@@ -1,0 +1,88 @@
+{
+  "time": "2026-10-30T23:11:33.395789+08:00",
+  "installationAcceptance": "PASS_WITH_FINDINGS",
+  "originalPackageUnchanged": true,
+  "originalFilesVerified": 656,
+  "updatedFilesVerified": 659,
+  "historicalJobs": 232,
+  "historicalPackages": 25,
+  "realPlaywrightLogin": "PASS",
+  "liveStateIncludingWalMatchesReviewedImport": true,
+  "releaseCenterWriteRequests": 0,
+  "activeJobs": 0,
+  "windowsServiceInstalled": false,
+  "consoleExecutorPort": 18112,
+  "localEntry": "http://127.0.0.1:18081/release-center/?app=intruoyi",
+  "sourceStoppedAndNoLaterReleaseConfirmed": true,
+  "testPorts": [
+    {
+      "port": 22,
+      "connected": true,
+      "sourceAddress": "192.168.109.82",
+      "sourcePort": 65278
+    },
+    {
+      "port": 48081,
+      "connected": true,
+      "sourceAddress": "192.168.109.82",
+      "sourcePort": 65277
+    },
+    {
+      "port": 8081,
+      "connected": true,
+      "sourceAddress": "192.168.109.82",
+      "sourcePort": 65276
+    }
+  ],
+  "environments": {
+    "test": {
+      "host": "172.30.30.58",
+      "releaseTag": "2026-10-30-10-19-11",
+      "directSsh": "PASS",
+      "frontendHttp": 200,
+      "backendHealth": "UP",
+      "frontendAndBackendImageIdsAndTagsMatchManifest": true
+    },
+    "prod": {
+      "host": "172.30.30.57",
+      "releaseTag": "2026-10-30-10-19-11",
+      "directSsh": "PASS",
+      "frontendHttp": 200,
+      "backendHealth": "UP",
+      "frontendAndBackendImageIdsAndTagsMatchManifest": true
+    },
+    "backup": {
+      "host": "172.30.30.59",
+      "releaseTag": "2026-10-30-10-19-11",
+      "directSsh": "PASS",
+      "frontendHttp": 200,
+      "backendHealth": "UP",
+      "frontendAndBackendImageIdsAndTagsMatchManifest": true
+    }
+  },
+  "findings": [
+    {
+      "type": "existing-compose-env",
+      "environment": "prod",
+      "observedImageTag": "current-32ff79d-20261020",
+      "runtimeTag": "2026-10-30-10-19-11",
+      "changed": false
+    },
+    {
+      "type": "no-compose-labels-or-env-path",
+      "environments": [
+        "test",
+        "backup"
+      ],
+      "changed": false
+    },
+    {
+      "type": "network-persistence",
+      "description": "Direct reachability and corrected return route verified; source-PC route fix persistence not tested by reboot",
+      "changed": false
+    }
+  ],
+  "publicationPerformed": false,
+  "businessDataModified": false,
+  "fullPublicationSuccessClaimed": false
+}
