@@ -90,3 +90,6 @@ GREEN: summarize_acceptance.py -> PASS_WITH_FINDINGS，原包656及工作包659�
 状态进入ready_for_closeout；无本任务发布worktree或合并项。保留稳定安装实例，只清理本次Playwright私密会话；最后提交本任务脱敏记录，其他4项tracked改动与原未跟踪现场保持不动。
 
 Closeout -> PASS：本次浏览器会话文件已删除；稳定安装根C:\SpugHandoff\release保持运行，页面127.0.0.1:18081、原普通Python PID47372监听18112；未安装服务、未停止18080实例。没有本任务临时发布worktree或未合并生产提交；无需删除安装输入克隆。task.md状态completed、验收PASS_WITH_FINDINGS。只选择本任务task.md/execution-log.md/acceptance-final.json提交最终记录；不暂存共享request-command-log或其他源码/配置。私密值扫描、cached路径与diff检查后提交，不推送远端。
+
+用户询问“你自己无法启动吗”：接续确认本机现有普通执行器与页面运行态；若本任务进程已退出则按既有SourceStopped确认恢复普通脚本，不重复启动、不安装服务、不修改其他实例、不发布。已有安装任务目标、设计约束及经验门禁继续适用。
+GREEN: runtime confirmation -> PASS，18112监听进程PID47372，进程名称与安装目录执行器/配置路径一致；本机18081首页HTTP200。原执行器持续运行，无需重复启动；未创建新进程或更改服务。任务保持completed。
