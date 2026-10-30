@@ -22,6 +22,7 @@ from urllib.parse import urlsplit, quote
 from urllib.request import urlopen
 
 import intruoyi_remote as remote
+from intruoyi_runtime import capture_sql_snapshot, database_snapshot_path, DATABASE_SNAPSHOT_NAMES
 from intruoyi_runtime import gxp_release_mode, gxp_migration_sql, validate_gxp_runtime
 from intruoyi_runtime import audit_ledger, require, RuntimeBlocked, sha, migration_id, file_sha, package_identity, validate_release_state, validate_expected_schema, runtime_config_snapshot, validate_migration_handler, migration_execution_sql, validate_quiescence_recovery, validate_storage_budget, ROUTE_SNAPSHOT_MIGRATION, ROUTE_SNAPSHOT_HOOK, ROUTE_LEGACY_MIGRATION, ROUTE_SNAPSHOT_HOOKS, validate_snapshot_cli_report, LEGACY_FORM_SWITCH_MIGRATION, LEGACY_FORM_SWITCH_SHA256
 
@@ -573,7 +574,7 @@ def run_snapshot_cli(profile, root, manifest, migration, mode, recovery=None):
 
 
 def require_migration_maintenance(profile, root, recovery):
-    require(recovery and recovery.get('path') == str(root/'recovery.sql')
+    require(recovery and database_snapshot_path(root, recovery).name in DATABASE_SNAPSHOT_NAMES
             and re.fullmatch('[0-9a-f]{64}', recovery.get('sha256',''))
             and (root/'recovery-record.private.json').is_file(), 'Completed recovery record required for reviewed migration')
     check_fence(profile)
@@ -606,16 +607,11 @@ def backup(profile, root):
         auth = 'export MYSQL_PWD="$MYSQL_ROOT_PASSWORD"; '
     else:
         raise RuntimeBlocked('Root credential source not configured')
-    path = root / 'recovery.sql'
-    require(not path.exists(), 'Recovery snapshot already exists; reconcile earlier operation')
-    fd = os.open(str(path), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    with os.fdopen(fd, 'wb') as output:
-        result = subprocess.run(['docker', 'exec', database, 'sh', '-c', auth +
-                                 'exec mysqldump -uroot --single-transaction --routines --events --triggers --hex-blob --set-gtid-purged=OFF "$MYSQL_DATABASE"'],
-                                stdout=output, stderr=subprocess.PIPE, timeout=3600)
-    require(result.returncode == 0 and path.stat().st_size > 0, 'Full data recovery snapshot failed; applications remain stopped')
-    digest = file_sha(path)
-    return {'path': str(path), 'sha256': digest, 'includes': ['data', 'schema', 'triggers', 'events', 'routines']}
+    require(not any((root/name).exists() for name in DATABASE_SNAPSHOT_NAMES),
+            'Recovery snapshot already exists; reconcile earlier operation')
+    return capture_sql_snapshot(['docker', 'exec', database, 'sh', '-c', auth +
+        'exec mysqldump -uroot --single-transaction --routines --events --triggers --hex-blob --set-gtid-purged=OFF "$MYSQL_DATABASE"'],
+        root/'recovery.sql.gz')
 
 
 def clone_config(original, image, maintenance=None):
@@ -1136,10 +1132,10 @@ def resume_test_tail_locked(profile, payload, root):
             and file_sha(root / 'release.tar') == payload['packageSha256'], 'Retained original package bytes differ')
     verify_files(root, staged['files'])
     recovery = json.loads((root / 'recovery-record.private.json').read_text())
-    require(recovery.get('path') == str(root / 'recovery.sql')
-            and set(recovery.get('includes', [])) == {'data','schema','triggers','events','routines'}
-            and (root / 'recovery.sql').stat().st_size > 0
-            and file_sha(root / 'recovery.sql') == recovery.get('sha256'), 'Complete original recovery snapshot differs')
+    snapshot = database_snapshot_path(root, recovery)
+    require(set(recovery.get('includes', [])) == {'data','schema','triggers','events','routines'}
+            and snapshot.stat().st_size > 0
+            and file_sha(snapshot) == recovery.get('sha256'), 'Complete original recovery snapshot differs')
     check_fence(profile)
     observation = observe(profile)
     plan = migration_plan(profile, manifest, observation)
@@ -1380,14 +1376,14 @@ def dispatch(payload):
                 require(remote.inspect(profile[role])['Id'] == original[profile[role]]['Id'], 'Original container identity changed: '+role)
             require(record.get('databaseRestored') is False and record.get('retainedCaptureFiles'), 'Explicit no-data-restore evidence required')
             for item in record['retainedCaptureFiles']:
-                require(item['name'] in ('recovery.sql','recovery-volume-0.tar','recovery-volume-1.tar'), 'Unregistered retained capture file')
+                require(item['name'] in DATABASE_SNAPSHOT_NAMES + ('recovery-volume-0.tar','recovery-volume-1.tar'), 'Unregistered retained capture file')
                 file = root/item['name']
                 require(file.is_file() and not file.is_symlink() and file.stat().st_size == item['bytes'], 'Retained capture file differs')
             require(remote.sql(profile, "SELECT COUNT(*) FROM infra_release_migration WHERE release_tag='" + payload['releaseTag'] + "';") == '0',
                     'Migration records prevent capture-only recovery')
         elif record.get('recoveryKind') == 'no-migrations-started':
             validate_quiescence_recovery(record, payload, result)
-            require(not (root/'recovery-record.private.json').exists() and not (root/'recovery.sql').exists()
+            require(not (root/'recovery-record.private.json').exists() and not any((root/name).exists() for name in DATABASE_SNAPSHOT_NAMES)
                     and not (root/'deployment-pending.json').exists(), 'Effects exceed incomplete-snapshot recovery')
             partial = Path(record['incompleteSnapshotPath'])
             require(partial.parent == Path('/var/lib/docker/intruoyi-release-workflow/recovery-evidence') / payload['jobId']
@@ -1399,8 +1395,7 @@ def dispatch(payload):
         else:
             require(not record.get('recoveryKind'), 'Unrecognized recovery kind')
             recovery = json.loads((root/'recovery-record.private.json').read_text())
-            require(recovery.get('path') == str(root/'recovery.sql')
-                    and file_sha(root/'recovery.sql') == recovery.get('sha256') == record.get('snapshotSha256'),
+            require(file_sha(database_snapshot_path(root, recovery)) == recovery.get('sha256') == record.get('snapshotSha256'),
                     'Recovery snapshot/evidence identity differs')
         require(result['fingerprint'] == payload['originFingerprint'] == record.get('restoredFingerprint'),
                 'Actual restored origin differs from original job and recovery evidence')

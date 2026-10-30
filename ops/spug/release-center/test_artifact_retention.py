@@ -89,6 +89,27 @@ class FileTest(unittest.TestCase):
         self.assertTrue(all(row.get('retainedReason') for row in rows))
         with self.assertRaisesRegex(ValueError,'禁止删除'):files.remove_file(self.root,rows[-1])
 
+    def test_compressed_recovery_obeys_same_ownership_and_hash_rules(self):
+        path=self.root/'recovery.sql.gz'
+        path.write_bytes(b'owned compressed snapshot')
+        record=dict(releaseTag=TAGS[0],jobId='JOB-owner',manifestSha256=self.digest,
+                    packageSha256=self.archive,path=str(path),sha256=files.sha(path),resources=[])
+        (self.root/'recovery-record.private.json').write_text(json.dumps(record),'utf-8')
+        rows=files.inventory(self.root,self.manifest,self.digest,self.archive,recovery=True,recovery_jobs=['JOB-owner'])
+        row=next(r for r in rows if r['relative']=='recovery.sql.gz')
+        self.assertNotIn('retainedReason',row)
+        path.write_bytes(b'changed compressed snapshot')
+        with self.assertRaises(ValueError):files.remove_file(self.root,row)
+        self.assertTrue(path.exists())
+
+    def test_unowned_compressed_recovery_is_retained(self):
+        path=self.root/'recovery.sql.gz'
+        path.write_bytes(b'unknown snapshot')
+        (self.root/'recovery-record.private.json').write_text(json.dumps(dict(path=str(path),sha256=files.sha(path))),'utf-8')
+        rows=files.inventory(self.root,self.manifest,self.digest,self.archive,recovery=True)
+        row=next(r for r in rows if r['relative']=='recovery.sql.gz')
+        with self.assertRaisesRegex(ValueError,'禁止删除'):files.remove_file(self.root,row)
+
     def test_image_remove_uses_named_tag_without_force_or_prune(self):
         with patch.object(files,'docker_inventory',return_value=({'app:old':'sha256:old'},set(),[])),patch.object(files,'docker') as command:
             files.remove_image('app:old','sha256:old')

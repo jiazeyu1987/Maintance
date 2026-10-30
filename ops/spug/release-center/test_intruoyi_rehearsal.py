@@ -427,7 +427,7 @@ class IncrementalSnapshotTransferTest(unittest.TestCase):
         from unittest.mock import patch
         from intruoyi_rehearsal_agent import transfer_dispatch, PREFIX
         from intruoyi_runtime import require, file_sha
-        for name in ('recovery.sql','origin-images.tar','minio.tar'):
+        for name in ('recovery.sql','recovery.sql.gz','origin-images.tar','minio.tar'):
             with self.subTest(name=name), tempfile.TemporaryDirectory() as directory, patch('intruoyi_rehearsal_agent.TRANSFER_BLOCK_BYTES',8):
                 root=Path(directory).resolve()
                 source=dict(stagingRoot=str(root/'source'),host='source')

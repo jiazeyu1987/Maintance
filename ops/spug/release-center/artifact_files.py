@@ -64,13 +64,15 @@ def inventory(root, manifest, manifest_sha, archive_sha, *, archive_only=False, 
             if not {'releaseTag','manifestSha256','packageSha256','resources','jobId'}<=set(value) or value['jobId'] not in recovery_jobs:
                 # Read-only classification, never infer legacy ownership or permit deletion.
                 retained_reason='恢复点缺少版本/任务归属信息，保留该版本产物'
-                path=safe_file(root,'recovery.sql')
-                if path.exists():retained.append(dict(relative='recovery.sql',kind='归属不完整的旧恢复点',retainedReason=retained_reason,**file_identity(path)))
+                for name in ('recovery.sql', 'recovery.sql.gz'):
+                    path=safe_file(root,name)
+                    if path.exists():retained.append(dict(relative=name,kind='归属不完整的旧恢复点',retainedReason=retained_reason,**file_identity(path)))
             else:
                 require(value['releaseTag'] == manifest['releaseTag'] and value['manifestSha256'] == manifest_sha
                         and value['packageSha256'] == archive_sha, '恢复点与登记包身份不一致')
-                require(Path(value['path']) == root/'recovery.sql', '恢复SQL路径不一致')
-                expected.append(('recovery.sql', value['sha256'], '数据库恢复点'))
+                path = Path(value['path'])
+                require(path.parent == root and path.name in ('recovery.sql', 'recovery.sql.gz'), '恢复SQL路径不一致')
+                expected.append((path.name, value['sha256'], '数据库恢复点'))
                 for i, resource in enumerate(value['resources']):
                     artifact = resource['artifact']
                     name = 'recovery-volume-'+str(i)+'.tar'

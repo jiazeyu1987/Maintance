@@ -386,3 +386,20 @@ assert(!/data-job-id="build-failed"[^>]*disabled/.test(nasRetry.render(7)));
 nasRetry.evaluate("state.jobs[0].currentStep='compile-backend'");
 assert(!nasRetry.render(7).includes('校验原包并重新上传 NAS'));
 console.log('Sealed-build NAS retry entry: available without registered package, excluded before sealing');
+
+const drill=harness();drill.set(JSON.parse(JSON.stringify(remote)));
+drill.evaluate("selected='candidate';state.application.capabilities.independentRestoreDrill=true;state.application.capabilities.prepareRehearsal=true;state.packages=[{releaseTag:'candidate',stage:'completed',rehearsals:[],outcomes:{prod:{acceptance:{status:'passed'}}}}];state.environments.prod={releaseTag:'candidate',maintenance:false};delete state.environments.rehearsal;state.jobs=[]");
+assert(drill.render(4).includes('执行独立备份恢复演练'));
+assert(!/data-purpose="restore-drill"[^>]*disabled/.test(drill.render(4)));
+drill.evaluate("state.environments.rehearsal={releaseTag:'old'}");
+assert(/data-purpose="restore-drill"[^>]*disabled/.test(drill.render(4)));
+drill.evaluate("delete state.environments.rehearsal;state.environments.prod.releaseTag='other'");
+assert(/data-purpose="restore-drill"[^>]*disabled/.test(drill.render(4)));
+(async()=>{
+ const click=harness();click.set(JSON.parse(JSON.stringify(remote)));
+ click.evaluate("globalThis.sent=[];api=async(path,payload)=>{sent.push({path,payload});return {}};refresh=async()=>{};");
+ await click.listener('click').callback({target:{closest:()=>({disabled:false,dataset:{action:'prepare-rehearsal',purpose:'restore-drill'}})}});
+ assert.equal(click.evaluate('sent[0].payload.purpose'),'restore-drill');
+ assert.equal(click.evaluate('sent[0].payload.source'),'prod');
+ console.log('Independent restore drill UI: completed production binding, occupied isolation exclusion and explicit purpose passed');
+})().catch(error=>{console.error(error);process.exitCode=1;});

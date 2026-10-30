@@ -54,7 +54,7 @@ def transfer(runtime, source, destination, artifact, destination_path, callback,
     if first['host'] == second['host']:
         return runtime.call(destination,'rehearsal-local-copy',sourceProfile=first,sourcePath=source_path,
                             destinationPath=destination_path,sha256=artifact['sha256'],jobId=job_id)
-    if artifact['name'] in ('minio.tar','recovery.sql','origin-images.tar'):
+    if artifact['name'] in ('minio.tar','recovery.sql','recovery.sql.gz','origin-images.tar'):
         index=runtime.call(source,'rehearsal-transfer-index',sourcePath=source_path,sha256=artifact['sha256'],jobId=job_id)
         request=dict(index,destinationPath=destination_path,jobId=job_id)
         plan=runtime.call(destination,'rehearsal-transfer-plan',**request)
@@ -94,7 +94,7 @@ def stream_commands(runtime, first, second, first_command, second_command):
                     process.wait()
 
 
-def prepare(runtime, source, manifest, callback, job_id):
+def prepare(runtime, source, manifest, callback, job_id, verify_data=False):
     before = runtime.observe(source)
     audit_ledger(before, manifest)
     src = runtime.profile(source)
@@ -121,6 +121,8 @@ def prepare(runtime, source, manifest, callback, job_id):
     target_daemon = runtime.call('rehearsal', 'rehearsal-daemon-identity')
     reuse_images = can_reuse_images(src, target, source_daemon, target_daemon)
     capture_request = dict(releaseTag=manifest['releaseTag'], originFingerprint=before['fingerprint'], historicalMetadata=historical, reuseImages=reuse_images, jobId=job_id)
+    if verify_data:
+        capture_request['verifyDatabaseData'] = True
     if reuse_images:
         source_images = runtime.call(source, 'rehearsal-runtime-images')['images']
         target_images = runtime.call('rehearsal', 'rehearsal-check-images', images=source_images)['images']

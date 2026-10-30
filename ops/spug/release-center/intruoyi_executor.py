@@ -118,6 +118,8 @@ class _IntRuoyiExecutor(Executor):
                 and package.get('outcomes', {}).get(env, {}).get('deployment', {}).get('status') == 'succeeded')
 
     def failed_task_blocks(self, failed, action, payload, package):
+        if action == 'verify-restore-drill' and failed.get('restoreVerification', {}).get('rehearsalId') == package.get('activeRehearsal'):
+            return False
         if failed.get('action') in ('check-prerequisites','scan-artifacts','clean-artifacts'):
             return False
         if not super().failed_task_blocks(failed, action, payload, package):
@@ -130,6 +132,7 @@ class _IntRuoyiExecutor(Executor):
 
     def verified_origin(self, package, fingerprint):
         return any(record.get('status') == 'passed' and record.get('source') == 'prod'
+                   and record.get('purpose') != 'restore-drill'
                    and record.get('originFingerprint') == fingerprint and record.get('packageSha256') == package['packageSha256']
                    and self.technical_passed(package, 'rehearsal', record.get('technical', {}).get('jobId'))
                    and record.get('technical', {}).get('status') == 'passed' for record in package.get('rehearsals', []))
@@ -279,6 +282,10 @@ class _IntRuoyiExecutor(Executor):
         # An interrupted diagnostic has no deployment effects to reconcile.
         # Keep its failure visible and permit a fresh diagnostic; never mark it passed.
         for job in self.state['jobs']:
+            if (job['status'] == 'interrupted' and job.get('restoreVerification')
+                    and (job['action'] == 'verify-restore-drill' or job.get('remotePhase') == 'completed')):
+                job.update(status='failed', error='恢复后的只读验证中断，请重新核对本次恢复结果。')
+                job['restoreVerification']['status'] = 'failed'
             if job['action']=='clean-artifacts' and job['status']=='interrupted':
                 job.update(status='failed',error='清理中断，部分删除结果未确认；保留明细，请重新扫描实际剩余产物。')
             if job['action'] in ('check-prerequisites','scan-artifacts') and job['status'] == 'interrupted':
@@ -303,7 +310,7 @@ class _IntRuoyiExecutor(Executor):
                                packageStoragePath=str(self.root/'packages'),
                                capabilities=dict(initializeBaseline=False, auditBaseline=False, registerTargets=True,
                                                  restoreMetadata=bool(self.c.get('metadataRepair')),
-                                                 buildRelease=True, prepareRehearsal=configured, releaseRecovery=True,
+                                                 buildRelease=True, prepareRehearsal=configured, independentRestoreDrill=configured, releaseRecovery=True,
                                                  businessAcceptance=True, interruptionReconciliation=True,
                                                  independentBackupRetry=True, releasePrecheck=True, artifactRetention=True, nasPackageRetry=True))
             if not configured:
@@ -324,6 +331,8 @@ class _IntRuoyiExecutor(Executor):
         require(payload.get('applicationId') == self.c['applicationId'], 'Request application identity mismatch')
         require(action not in ('initialize-baseline','audit-baseline'), 'Remote databases must never use demo initialization')
         require(action != 'function-passed', 'Use mark-tested to accept the actual deployed test candidate')
+        require('purpose' not in payload or (action == 'prepare-rehearsal' and payload['purpose'] == 'restore-drill'),
+                'Unsupported operation purpose')
         # A repeated request returns its original task even if a newer release now runs.
         require(isinstance(payload.get('requestId'), str) and re.fullmatch('[a-zA-Z0-9-]{8,80}', payload['requestId']),
                 'requestId required')
@@ -365,6 +374,20 @@ class _IntRuoyiExecutor(Executor):
             require(not any(e.get('recoveryPending') for e in self.state['environments'].values()),
                     'Recovery must be accepted before another release operation')
         prerequisite = {'prepare-rehearsal':'test','promote-prod':'rehearsal','promote-backup':'prod'}.get(action)
+        if action == 'prepare-rehearsal' and payload.get('purpose') == 'restore-drill':
+            prerequisite = None
+            package, _ = self.manifest(payload.get('releaseTag'))
+            production = self.state['environments'].get('prod', {})
+            require(package['stage'] == 'completed' and production.get('releaseTag') == package['releaseTag']
+                    and production.get('maintenance') is False
+                    and package.get('outcomes', {}).get('prod', {}).get('acceptance', {}).get('status') == 'passed',
+                    'Restore drill requires the current completed, accepted, open production release')
+        if action == 'verify-restore-drill':
+            package, _ = self.manifest(payload.get('releaseTag'))
+            record = self.active_rehearsal(package)
+            require(record.get('purpose') == 'restore-drill' and record['status'] in ('restore-ready','restore-passed')
+                    and self.state['environments'].get('rehearsal', {}).get('restoreDrillId') == record['id'],
+                    'Registered restored drill required; no recapture or import is performed by verification')
         if prerequisite:
             package, _ = self.manifest(payload.get('releaseTag'))
             require(self.technical_passed(package, prerequisite), 'Passed technical verification required for ' + prerequisite)
@@ -379,6 +402,8 @@ class _IntRuoyiExecutor(Executor):
                 package, _ = self.manifest(payload.get('releaseTag'))
                 require(self.active_rehearsal(package).get('source') == 'prod',
                         'Only production rehearsal may be upgraded or accepted; explicitly clear legacy isolation')
+                require(self.active_rehearsal(package).get('purpose') != 'restore-drill',
+                        'A backup restore drill cannot authorize or execute an upgrade')
             if action == 'prepare-rehearsal':
                 require(payload.get('source') == 'prod', 'Only the production origin is rehearsed')
                 rehearsal_profile(self.c, payload.get('source'))
@@ -574,6 +599,12 @@ class _IntRuoyiExecutor(Executor):
         job.update(target='rehearsal', sourceEnv=source)
         _, manifest = self.manifest(p['releaseTag'])
         origin = self.runtime.observe(source)
+        drill = job['payload'].get('purpose') == 'restore-drill'
+        if drill:
+            require(origin['releaseTag'] == p['releaseTag'] and origin['images'] ==
+                    {role:manifest['images'][role]['id'] for role in ('backend','frontend')}
+                    and origin.get('maintenance') is False,
+                    'Actual production must still run the selected completed package')
         job['sourceOriginFingerprint'] = origin['fingerprint']
         self.save()
         def callback(name, effects=False):
@@ -588,13 +619,14 @@ class _IntRuoyiExecutor(Executor):
             elif name == 'remote-isolated-restore-starting':
                 job['remotePhase'] = 'restore-starting'
             self.save()
-        result = self.runtime.prepare_rehearsal(source, manifest, callback, job['id'])
+        options = {'verify_data': True} if drill else {}
+        result = self.runtime.prepare_rehearsal(source, manifest, callback, job['id'], **options)
         job['remoteProgress'] = result.pop('remotePreparationProgress')
         job['remotePhase'] = 'completed'
         job.pop('remoteStatusError',None)
         self.register_prepared_rehearsal(p, job, source, origin, result)
 
-    def register_prepared_rehearsal(self, p, job, source, origin, result):
+    def register_prepared_rehearsal(self, p, job, source, origin, result, purpose=None):
         require(result.get('originFingerprint') == origin['fingerprint'] and result.get('verifiedOrigin') is True,
                 'Isolated source provenance has not been verified')
         for key in ('images', 'schemaSha256', 'ledgerSha256'):
@@ -604,11 +636,63 @@ class _IntRuoyiExecutor(Executor):
                       originBaselineId=origin.get('baselineId'),
                       originState={key:origin[key] for key in ('releaseTag', 'images', 'schemaSha256', 'ledgerSha256')},
                       packageSha256=p['packageSha256'], status='ready', jobId=job['id'], createdAt=stamp())
+        if (purpose or job['payload'].get('purpose')) == 'restore-drill':
+            record.update(purpose='restore-drill', status='restore-ready',
+                          captureJobId=job.get('originalPreparationJobId', job['id']))
+            result['restoreDrillId'] = record['id']
         p.setdefault('rehearsals', []).append(record)
         p['activeRehearsal'] = record['id']
-        p.setdefault('outcomes', {})['rehearsal'] = {}
+        if record.get('purpose') != 'restore-drill':
+            p.setdefault('outcomes', {})['rehearsal'] = {}
         self.state['environments']['rehearsal'] = dict(result, sourceEnvironment=source)
         self.save()
+
+    def verify_restore_drill(self, package, manifest, job):
+        """Read-only verification of a restored baseline; never a release approval."""
+        from intruoyi_login import verify_login
+        record = self.active_rehearsal(package)
+        require(record.get('purpose') == 'restore-drill' and package['stage'] == 'completed',
+                'Independent restore verification requires a completed release')
+        require(self.state['environments'].get('rehearsal', {}).get('restoreDrillId') == record['id'],
+                'Isolation belongs to another rehearsal')
+        job['target'] = 'rehearsal'
+        proof = dict(rehearsalId=record['id'], jobId=job['id'], status='running', startedAt=stamp())
+        record['restoreVerification'] = job['restoreVerification'] = proof
+        self.save()
+        try:
+            self.step(job, 'verify-restored-database-and-resource-evidence')
+            data = self.runtime.call('rehearsal', 'rehearsal-data-proof', releaseTag=package['releaseTag'],
+                jobId=record['captureJobId'], originFingerprint=record['originFingerprint'])
+            require(data.get('status') == 'passed' and data.get('tableCount', 0) > 0,
+                    'Complete database restore checksum evidence required')
+            isolated = validate_origin(self.runtime.observe('rehearsal'))
+            for key in ('releaseTag','images','schemaSha256','ledgerSha256'):
+                require(isolated[key] == record['originState'][key], 'Restored baseline differs: '+key)
+            production = validate_origin(self.runtime.observe('prod'))
+            require(production['fingerprint'] == record['originFingerprint'] and production.get('maintenance') is False,
+                    'Production changed or has not resumed after capture')
+            proof['data'] = data
+            self.step(job, 'verify-restored-baseline-real-browser-login')
+            binding = dict(jobId=job['id'], env='rehearsal', releaseTag=package['releaseTag'], packageSha256=package['packageSha256'])
+            profile = self.runtime.profile('rehearsal')
+            url = profile['acceptanceUrl'] if isolated.get('maintenance') else profile['entryUrl']
+            login = verify_login(self.c, url, self.root/'restore-drill-evidence'/job['id'], binding)
+            require(login.get('status') == 'passed' and login.get('authenticated') is True and login.get('binding') == binding,
+                    'Restored baseline real browser login failed')
+            proof.update(status='passed', finishedAt=stamp(), login=login,
+                         productionUnchanged=True, frontendHttpStatus=isolated['frontendHttpStatus'], backendHealth=isolated['backendHealth'])
+            record['status'] = 'restore-passed'
+            for prior in self.state['jobs']:
+                if (prior['id'] != job['id'] and prior.get('restoreVerification', {}).get('rehearsalId') == record['id']
+                        and prior['status'] in ('failed','interrupted') and not prior.get('resolution')):
+                    prior['resolution'] = dict(decision='retry', jobId=job['id'], time=stamp(), note='Same restored baseline verified without recapture or import')
+            job['result'] = proof
+            self.log(job, 'Independent backup restoration verified; release stages and production acceptance unchanged')
+        except Exception as error:
+            proof.update(status='failed', error=str(error), finishedAt=stamp())
+            raise
+        finally:
+            self.save()
 
     def resume_rehearsal_preparation(self, job, selected):
         root_id = selected.get('originalPreparationJobId') if selected['action'] == 'resolve-task' else selected['id']
@@ -629,13 +713,15 @@ class _IntRuoyiExecutor(Executor):
         self.save()
         self.step(job, 'verify-original-rehearsal-preparation-evidence')
         package, manifest = self.package(original['releaseTag'])
-        require(package['stage'] in ('tested', 'rehearsal-passed') and not package.get('baseline') and not package.get('abandoned'),
+        drill = original.get('payload', {}).get('purpose') == 'restore-drill'
+        require(package['stage'] in (('completed',) if drill else ('tested', 'rehearsal-passed')) and not package.get('baseline') and not package.get('abandoned'),
                 'Candidate stage changed after failed preparation')
-        require(self.technical_passed(package, 'test'), 'Original candidate must retain passed test technical evidence')
+        if not drill:
+            require(self.technical_passed(package, 'test'), 'Original candidate must retain passed test technical evidence')
         require('rehearsal' not in self.state['environments'] and not package.get('activeRehearsal'),
                 'An isolated environment is already registered; original preparation cannot overwrite it')
         outcome = package.get('outcomes', {}).get('rehearsal', {}).get('preparation', {})
-        require(outcome.get('jobId') == original['id'] and outcome.get('status') in ('failed', 'interrupted'),
+        require(drill or (outcome.get('jobId') == original['id'] and outcome.get('status') in ('failed', 'interrupted')),
                 'Original failed preparation must own the candidate outcome')
         self.runtime.targets['rehearsal'] = rehearsal_profile(self.c, 'prod')
         origin = validate_origin(self.runtime.observe('prod'))
@@ -684,15 +770,20 @@ class _IntRuoyiExecutor(Executor):
         require(progress.get('status') == 'succeeded' and progress.get('phase') == 'completed'
                 and progress.get('jobId') == expected_worker, 'Completed preparation continuation worker evidence required')
         job.update(remoteProgress=result.pop('remotePreparationProgress'), remotePhase='completed')
-        self.register_prepared_rehearsal(package, job, 'prod', origin, result)
+        self.register_prepared_rehearsal(package, job, 'prod', origin, result,
+                                        purpose='restore-drill' if drill else None)
         self.active_rehearsal(package)['originalPreparationJobId'] = original['id']
-        package['stage'] = 'rehearsal-ready'
+        if not drill:
+            package['stage'] = 'rehearsal-ready'
         for prior in [original, *attempts]:
             if prior['id'] != job['id'] and prior['status'] in ('failed', 'interrupted') and not prior.get('resolution'):
                 prior['resolution'] = dict(decision='retry', note=job['payload']['note'], actor=job['actor'], time=stamp(),
                                            jobId=job['id'], originalPreparationJobId=original['id'], resumeReceipt=receipt)
-        job['result'] = dict(originalPreparationJobId=original['id'], stage='rehearsal-ready', resumeReceipt=receipt)
-        self.outcome(package, 'rehearsal', 'preparation', 'succeeded', job, originalPreparationJobId=original['id'])
+        job['result'] = dict(originalPreparationJobId=original['id'], stage=package['stage'], resumeReceipt=receipt)
+        if drill:
+            self.verify_restore_drill(package, manifest, job)
+        else:
+            self.outcome(package, 'rehearsal', 'preparation', 'succeeded', job, originalPreparationJobId=original['id'])
         self.log(job, ('Original captured artifacts transferred and baseline restored; production was not recaptured.'
                       if phase == 'capture-complete' else
                       'Retained original isolation startup tail verified; no capture, import or migration replayed.')

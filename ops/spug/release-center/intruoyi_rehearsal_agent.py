@@ -16,10 +16,31 @@ import tarfile
 import posixpath
 from urllib.parse import urlsplit
 from urllib.request import urlopen
+from intruoyi_runtime import DATABASE_SNAPSHOT_NAMES, restore_sql_snapshot
 
 LABEL = 'intruoyi.release.rehearsal'
 PREFIX = 'intruoyi-release-rehearsal'
 REHEARSAL_PROGRESS_ROOT = Path('/var/lib/docker/intruoyi-release-workflow/recovery-evidence')
+
+
+def drill_database_checksums(profile, remote, require):
+    """Batch read-only checks to avoid a Docker invocation for every table."""
+    remote.sql(profile, 'SHOW TABLES;')
+    tables = remote.sql(profile, "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_TYPE='BASE TABLE' ORDER BY TABLE_NAME;").splitlines()
+    require(tables and all(re.fullmatch('[A-Za-z0-9_]+', table) for table in tables), 'Explicit safe database table inventory required')
+    result = {}
+    for start in range(0, len(tables), 32):
+        batch = tables[start:start+32]
+        rows = remote.sql(profile, 'CHECKSUM TABLE '+','.join('`'+name+'`' for name in batch)+' EXTENDED;').splitlines()
+        require(len(rows) == len(batch), 'Incomplete restored database checksum result')
+        for row in rows:
+            fields = row.split('\t')
+            require(len(fields) == 2 and fields[1].isdigit(), 'Database table checksum is unavailable')
+            name = fields[0].rsplit('.', 1)[-1]
+            require(name in batch and name not in result, 'Unexpected database checksum identity')
+            result[name] = fields[1]
+    require(set(result) == set(tables), 'Incomplete database checksum inventory')
+    return result
 
 
 def validate_source_release_metadata(metadata, observation):
@@ -247,7 +268,7 @@ def transfer_artifact_path(profile, value):
     root = Path(profile['stagingRoot']) / 'rehearsal-seed'
     if (not path.is_absolute() or path.parent.parent != root
             or not re.fullmatch(r'\d{4}(-\d{2}){5}',path.parent.name)
-            or path.name not in ('minio.tar','recovery.sql','redis.jsonl','nginx.conf','historical-release-info.json','origin-images.tar','backend-startup.private.json')):
+            or path.name not in ('minio.tar','recovery.sql','recovery.sql.gz','redis.jsonl','nginx.conf','historical-release-info.json','origin-images.tar','backend-startup.private.json')):
         raise ValueError('Transfer path is outside the registered rehearsal seed')
     marker = path.parent / 'rehearsal-owned.json'
     if json.loads(marker.read_text()).get('owner') != PREFIX or path.is_symlink():
@@ -288,18 +309,18 @@ def transfer_dispatch(p, api):
         return {'bytes':target.stat().st_size,'verified':True,'transport':'same-host-copy'}
     if action == 'rehearsal-transfer-index':
         source = transfer_artifact_path(profile,p['sourcePath'])
-        require(source.name in ('minio.tar','recovery.sql','origin-images.tar') and api['file_sha'](source)==p['sha256'], 'Snapshot differs before incremental transfer')
+        require(source.name in ('minio.tar','recovery.sql','recovery.sql.gz','origin-images.tar') and api['file_sha'](source)==p['sha256'], 'Snapshot differs before incremental transfer')
         return {'chunks':chunk_records(source),'bytes':source.stat().st_size,'sha256':p['sha256']}
     if action == 'rehearsal-transfer-sender':
         source=transfer_artifact_path(profile,p['sourcePath'])
-        require(source.name in ('minio.tar','recovery.sql','origin-images.tar'),'Only snapshot blocks may be streamed')
+        require(source.name in ('minio.tar','recovery.sql','recovery.sql.gz','origin-images.tar'),'Only snapshot blocks may be streamed')
         script=source.parent/('send-'+p['jobId']+'-'+secrets.token_hex(8)+'.py')
         code="import sys\nfrom pathlib import Path\nitems="+repr(p['chunks'])+"\nwith Path("+repr(str(source))+").open('rb') as stream:\n for item in items:\n  stream.seek(item['offset'])\n  data=stream.read(item['bytes'])\n  if len(data)!=item['bytes']: raise RuntimeError('Snapshot truncated')\n  sys.stdout.buffer.write(data)\n"
         with script.open('x',encoding='utf-8') as out:out.write(code)
         script.chmod(0o600)
         return {'script':str(script)}
     target = transfer_artifact_path(profile,p['destinationPath'])
-    require(target.name in ('minio.tar','recovery.sql','origin-images.tar'), 'Chunk transfer requires a registered large snapshot artifact')
+    require(target.name in ('minio.tar','recovery.sql','recovery.sql.gz','origin-images.tar'), 'Chunk transfer requires a registered large snapshot artifact')
     cache = Path(profile['stagingRoot']) / 'rehearsal-transfer-cache'
     cache.mkdir(mode=0o700,parents=True,exist_ok=True)
     require(not cache.is_symlink(), 'Transfer cache must be a real directory')
@@ -541,7 +562,8 @@ def resume_rehearsal_tail(p, api, folder):
                    originFingerprint=capture['originFingerprint'],captureSha256=proof['captureSha256'])
     evidence_hashes = {}
     names = [item['name'] for item in capture['artifacts']]
-    require(len(names) == len(set(names)) and {'recovery.sql','minio.tar','redis.jsonl','backend-startup.private.json','nginx.conf','historical-release-info.json'} <= set(names),
+    require(len(names) == len(set(names)) and len(set(names) & set(DATABASE_SNAPSHOT_NAMES)) == 1
+            and {'minio.tar','redis.jsonl','backend-startup.private.json','nginx.conf','historical-release-info.json'} <= set(names),
             'Complete original restore artifacts required')
     for item in capture['artifacts']:
         require(Path(item['name']).name == item['name'], 'Invalid restore artifact name')
@@ -978,13 +1000,27 @@ def dispatch(p, api):
         folder = root(p['releaseTag'])
         new_seed(folder)
         return {'directory': str(folder)}
+    if action == 'rehearsal-data-proof':
+        folder = root(p['releaseTag'])
+        require(json.loads((folder/'rehearsal-owned.json').read_text()).get('owner') == PREFIX,
+                'Registered isolation ownership required')
+        proof = json.loads((folder/'verified-database-origin.json').read_text())
+        require(proof.get('jobId') == p['jobId'] and proof.get('originFingerprint') == p['originFingerprint']
+                and proof.get('releaseTag') == p['releaseTag'] and proof.get('status') == 'passed',
+                'Database restore proof is not bound to this capture')
+        restored = json.loads((folder/'restored-origin.json').read_text())
+        require(restored.get('verifiedOrigin') is True and restored.get('originFingerprint') == p['originFingerprint'],
+                'Complete restored-origin evidence required')
+        media = json.loads((folder/'verified-media-origin.json').read_text())
+        require(media == proof['mediaIdentity'], 'Restored resource evidence differs')
+        return proof
     if action == 'rehearsal-transfer-resume-file':
         folder = root(p['releaseTag'])
         require(json.loads((folder/'rehearsal-owned.json').read_text()).get('owner') == PREFIX,
                 'Original target capture ownership required')
         require(not (folder/'application.properties').exists(), 'Restore has already started; transfer cannot replay import')
         item = p['artifact']
-        require(item['name'] in ('recovery.sql', 'redis.jsonl', 'minio.tar', 'origin-images.tar',
+        require(item['name'] in ('recovery.sql', 'recovery.sql.gz', 'redis.jsonl', 'minio.tar', 'origin-images.tar',
                                 'nginx.conf', 'historical-release-info.json', 'backend-startup.private.json')
                 and re.fullmatch('[a-f0-9]{64}', item['sha256']), 'Invalid captured artifact identity')
         path = folder/item['name']
@@ -1080,7 +1116,9 @@ def dispatch(p, api):
         frozen = api['observe'](profile)
         for key in ('images', 'schemaSha256', 'ledgerSha256'):
             require(frozen[key] == before[key], 'Source origin changed during quiescence')
-        artifacts = [file_record(Path(api['backup'](profile, folder)['path']))]
+        database_backup = api['backup'](profile, folder)
+        artifacts = [file_record(Path(database_backup['path']))]
+        database_checksums = drill_database_checksums(profile, r, require) if p.get('verifyDatabaseData') is True else None
         connection, command = redis_connection(profile['redis'], **source_redis_auth(profile, r))
         redis_path = folder / 'redis.jsonl'
         fd = os.open(str(redis_path), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
@@ -1141,6 +1179,8 @@ def dispatch(p, api):
                   'backendActiveProfiles': source_active_profiles(backend), 'minioUpstreams': minio_upstreams,
                   'databaseName': database_name, 'redisKeys': count, 'backendUpstreams': upstreams, 'mediaIdentity': media_identity, 'databaseCharacteristics': characteristics,
                   'historicalMetadata': {'persistedInImage': metadata_kind == 'image-embedded', 'restoredFromOriginalPackage': metadata_kind == 'historical-original', 'manifestSha256': historical.get('manifestSha256'), 'releaseTag': metadata['releaseTag'], 'contentSha256': api['file_sha'](metadata_path)}}
+        if database_checksums is not None:
+            result.update(databaseDataChecksums=database_checksums, databaseBackup=database_backup, captureJobId=job_id)
         api['private_json'](folder / 'capture-complete.private.json', result)
         # Source resume occurs only after every required artifact is complete and hashed.
         for name in profile['writers'] + [profile['frontend']]:
@@ -1209,9 +1249,21 @@ def dispatch(p, api):
                 require(time.monotonic() < deadline, 'Isolated MySQL initialization timed out')
                 time.sleep(2)
         auth = 'export MYSQL_PWD="$MYSQL_ROOT_PASSWORD"; exec mysql -uroot "$MYSQL_DATABASE"'
-        with (folder / 'recovery.sql').open('rb') as data:
-            result = subprocess.run(['docker', 'exec', '-i', profile['database'], 'sh', '-c', auth], stdin=data, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=14400)
-        require(result.returncode == 0, 'Full database restore failed')
+        database_artifacts = [item for item in capture['artifacts'] if item['name'] in DATABASE_SNAPSHOT_NAMES]
+        require(len(database_artifacts) == 1, 'Exactly one complete database snapshot required')
+        restore_sql_snapshot(folder/database_artifacts[0]['name'],
+                             ['docker', 'exec', '-i', profile['database'], 'sh', '-c', auth], timeout=14400)
+        if 'databaseDataChecksums' in capture:
+            actual = drill_database_checksums(profile, r, require)
+            require(actual == capture['databaseDataChecksums'], 'Restored database data differs from captured source; baseline startup refused')
+            backup = capture['databaseBackup']
+            require(backup['sha256'] == database_artifacts[0]['sha256'], 'Database backup identity differs')
+            proof = dict(status='passed', jobId=capture['captureJobId'], releaseTag=p['releaseTag'],
+                         originFingerprint=capture['originFingerprint'], tableCount=len(actual),
+                         dataSha256=api['sha'](actual), snapshotSha256=backup['sha256'],
+                         snapshotBytes=backup['bytes'], uncompressedBytes=backup['uncompressedBytes'],
+                         encoding=backup['encoding'], beforeIsolationTransforms=True, mediaIdentity=capture['mediaIdentity'])
+            api['private_json'](folder/'verified-database-origin.json', proof)
         create('redis', ['redis-server', '--requirepass', passwords['redis'], '--appendonly', 'yes'], binds=[profile['redis'] + '-data:/data'])
         deadline = time.monotonic() + 60
         while True:

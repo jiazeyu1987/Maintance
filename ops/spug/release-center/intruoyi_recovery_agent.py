@@ -16,6 +16,7 @@ import tarfile
 from urllib.parse import quote
 
 from intruoyi_runtime import require, file_sha, package_identity, runtime_config_snapshot, sha
+from intruoyi_runtime import restore_sql_snapshot, database_snapshot_path
 
 
 def now():
@@ -253,6 +254,7 @@ def read_bound(profile, payload, api, opening=False):
     require(record.get('version') == 1 and record.get('jobId') == payload.get('originalJobId')
             and record['releaseTag'] == payload['releaseTag'] and record['packageSha256'] == payload.get('packageSha256')
             and record['origin']['fingerprint'] == payload.get('originFingerprint'), 'Complete recovery point does not belong to this deployment')
+    database_snapshot_path(root, record)
     require(file_sha(root/'manifest.json') == record['manifestSha256']
             and file_sha(root/'release.tar') == record['packageSha256'], 'Original immutable release bytes changed')
     require(file_sha(root/'recovery-containers.private.json') == record['containersSha256'], 'Original container configuration changed')
@@ -310,9 +312,8 @@ def restore_database(profile, record, api):
     # a failed earlier restore may have stopped between DROP and CREATE.
     remote.run(['docker','exec','-i',profile['database'],'sh','-c',auth+'exec mysql -uroot --default-character-set=utf8mb4'],
                data=('DROP DATABASE IF EXISTS `'+database+'`; CREATE DATABASE `'+database+'` CHARACTER SET '+charset+' COLLATE '+collation+';').encode(),timeout=120)
-    with Path(record['path']).open('rb') as data:
-        process=subprocess.run(['docker','exec','-i',profile['database'],'sh','-c',auth+'exec mysql -uroot --default-character-set=utf8mb4 "$MYSQL_DATABASE"'],stdin=data,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=3600)
-    require(process.returncode == 0, 'Database restore failed; business remains closed')
+    restore_sql_snapshot(record['path'], ['docker','exec','-i',profile['database'],'sh','-c',
+                         auth+'exec mysql -uroot --default-character-set=utf8mb4 "$MYSQL_DATABASE"'])
     require(checksums(profile,api) == record['tableChecksums'], 'Restored database data checksum differs')
 
 

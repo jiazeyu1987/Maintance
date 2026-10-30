@@ -70,6 +70,20 @@ class PreparationTailAdapterTests(unittest.TestCase):
         self.executor.runtime.deploy.assert_not_called()
         self.executor.runtime.reset_rehearsal.assert_not_called()
 
+    def test_restore_drill_retry_preserves_completed_release_and_original_capture(self):
+        self.original['payload']={'purpose':'restore-drill'}
+        self.package['stage']='completed'
+        before=copy.deepcopy(self.package['outcomes'])
+        self.executor.verify_restore_drill=Mock()
+        self.run_retry()
+        self.assertEqual(self.package['stage'],'completed')
+        self.assertEqual(self.package['outcomes'],before)
+        record=self.executor.active_rehearsal(self.package)
+        self.assertEqual(record['purpose'],'restore-drill')
+        self.assertEqual(record['captureJobId'],self.original['id'])
+        self.executor.verify_restore_drill.assert_called_once()
+        self.executor.runtime.prepare_rehearsal.assert_not_called()
+
     def test_pre_effect_capture_phase_and_nonproduction_preparations_cannot_resume(self):
         for changes in (dict(effectsStarted=False),dict(remoteStatusRequired=False),dict(remotePhase='capture-starting'),
                         dict(sourceEnv='backup'),dict(target='test')):

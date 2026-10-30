@@ -4,6 +4,7 @@ This adapter never reads credentials out of a remote container. JSON responses c
 identities and hashes only. The independent agent performs target-side operations.
 """
 import hashlib
+import gzip
 import importlib.util
 import json
 import os
@@ -11,6 +12,7 @@ from pathlib import Path, PurePosixPath
 import re
 import shlex
 import subprocess
+import threading
 
 
 class RuntimeBlocked(RuntimeError):
@@ -168,6 +170,92 @@ def file_sha(path):
         for chunk in iter(lambda: stream.read(1024 * 1024), b''):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+DATABASE_SNAPSHOT_NAMES = ('recovery.sql', 'recovery.sql.gz')
+
+
+def database_snapshot_path(root, record):
+    path = Path(record.get('path', ''))
+    require(path.parent == Path(root) and path.name in DATABASE_SNAPSHOT_NAMES,
+            'Unregistered database recovery artifact')
+    return path
+
+
+def capture_sql_snapshot(args, path, timeout=3600):
+    """Stream every SQL byte into gzip; no uncompressed temporary copy.
+
+    A failed producer or compressor must not yield a usable recovery record.
+    stderr can contain SQL/credentials and is deliberately not returned.
+    """
+    path = Path(path)
+    require(path.name == 'recovery.sql.gz', 'Compressed snapshot filename required')
+    descriptor = os.open(str(path), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    size = 0
+    with os.fdopen(descriptor, 'wb') as raw:
+        process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        expired = threading.Event()
+        def abort():
+            expired.set()
+            if process.poll() is None:
+                process.kill()
+        timer = threading.Timer(timeout, abort)
+        timer.start()
+        try:
+            # Level 1 prioritizes release latency over maximum compression.
+            with gzip.GzipFile(filename='', mode='wb', compresslevel=1, fileobj=raw, mtime=0) as output:
+                for block in iter(lambda: process.stdout.read(1024 * 1024), b''):
+                    output.write(block)
+                    size += len(block)
+            require(process.wait() == 0 and not expired.is_set() and size > 0,
+                    'Full database capture failed; applications remain stopped')
+        finally:
+            timer.cancel()
+            if process.poll() is None:
+                process.kill()
+            process.wait()
+            process.stdout.close()
+    return dict(path=str(path), sha256=file_sha(path), encoding='gzip',
+                uncompressedBytes=size, bytes=path.stat().st_size,
+                includes=['data', 'schema', 'triggers', 'events', 'routines'])
+
+
+def restore_sql_snapshot(path, args, timeout=3600):
+    """Read the explicitly named historical SQL or new gzip artifact.
+
+    gzip streams must be piped: passing GzipFile as subprocess stdin would
+    pass its underlying *compressed* file descriptor to MySQL.
+    """
+    path = Path(path)
+    require(path.name in DATABASE_SNAPSHOT_NAMES, 'Unregistered database recovery artifact')
+    if path.name == 'recovery.sql':
+        with path.open('rb') as source:
+            result = subprocess.run(args, stdin=source, stdout=subprocess.DEVNULL,
+                                    stderr=subprocess.DEVNULL, timeout=timeout)
+        require(result.returncode == 0, 'Database restore failed; business remains closed')
+        return
+    process = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    expired = threading.Event()
+    def abort():
+        expired.set()
+        if process.poll() is None:
+            process.kill()
+    timer = threading.Timer(timeout, abort)
+    timer.start()
+    try:
+        with gzip.open(str(path), 'rb') as source:
+            for block in iter(lambda: source.read(1024 * 1024), b''):
+                process.stdin.write(block)
+        process.stdin.close()
+        require(process.wait() == 0 and not expired.is_set(),
+                'Database restore failed; business remains closed')
+    finally:
+        timer.cancel()
+        if process.poll() is None:
+            process.kill()
+        process.wait()
+        if not process.stdin.closed:
+            process.stdin.close()
 
 
 def runtime_config_snapshot(info):
@@ -495,12 +583,12 @@ class Runtime:
     def maintenance(self, env, enabled):
         return self.call(env, 'maintenance', enabled=enabled)
 
-    def prepare_rehearsal(self, source, manifest, jobcallback, job_id):
+    def prepare_rehearsal(self, source, manifest, jobcallback, job_id, verify_data=False):
         require(source in ('test', 'prod', 'backup'), 'Rehearsal source must be an explicitly registered target')
         require('rehearsal' in self.targets, 'Full-data rehearsal target/network/dependencies not registered; schema-only rehearsal forbidden')
         jobcallback('inspect-full-data-rehearsal-prerequisites')
         from intruoyi_rehearsal import prepare
-        return prepare(self, source, manifest, jobcallback, job_id)
+        return prepare(self, source, manifest, jobcallback, job_id, verify_data=verify_data)
 
     def reset_rehearsal(self, jobcallback):
         from intruoyi_rehearsal import reset

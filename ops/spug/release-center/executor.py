@@ -165,6 +165,8 @@ class Executor:
             allowed = {'build-release', 'initialize-baseline', 'publish-test', 'function-passed', 'prepare-rehearsal', 'upgrade-rehearsal', 'mark-tested', 'promote-prod', 'accept-prod', 'promote-backup', 'accept-backup', 'reject-acceptance', 'reset-rehearsal', 'audit-baseline', 'resolve-task'}
             if remote_runtime:
                 allowed.add('accept-rehearsal')
+                allowed.add('verify-restore-drill')
+            restore_drill = remote_runtime and payload.get('purpose') == 'restore-drill'
             require(action in allowed, 'Unknown action')
             # Persist operation id to make a repeated browser request return its original job.
             request_id = payload.get('requestId')
@@ -185,6 +187,7 @@ class Executor:
                 gates = {'initialize-baseline': None, 'publish-test': 'built', 'function-passed': 'test-deployed', 'prepare-rehearsal': None, 'upgrade-rehearsal': None, 'mark-tested': None, 'promote-prod': 'tested', 'accept-prod': 'prod-deployed', 'promote-backup': 'prod-accepted', 'accept-backup': 'backup-deployed', 'reject-acceptance': None, 'reset-rehearsal': None, 'audit-baseline': None}
                 if remote_runtime:
                     gates.update({'mark-tested': 'test-deployed', 'accept-rehearsal': 'rehearsal-upgraded', 'promote-prod': 'rehearsal-passed'})
+                    gates['verify-restore-drill'] = 'completed'
                 technical_actions = {'mark-tested':('test-deployed','tested'), 'accept-rehearsal':('rehearsal-upgraded','rehearsal-passed'),
                                      'accept-prod':('prod-deployed','prod-accepted'), 'accept-backup':('backup-deployed','completed')}
                 if self.technical_verification_enabled() and action in technical_actions:
@@ -200,15 +203,15 @@ class Executor:
                     stages = {'test': ('built',), 'prod': ('function-passed', 'tested'), 'backup': ('prod-accepted',)}
                     if remote_runtime:
                         require(source == 'prod', 'Only production baseline rehearsal is part of this workflow')
-                        stages = {'prod': ('tested', 'rehearsal-passed')}
+                        stages = {'prod': ('completed',) if restore_drill else ('tested', 'rehearsal-passed')}
                     require(p['stage'] in stages[source], 'Source rehearsal prerequisite not met')
-                    require(not p.get('activeRehearsal') or self.active_rehearsal(p)['status'] == 'passed', 'Finish or explicitly reset the pending rehearsal first')
+                    require(not p.get('activeRehearsal') or self.active_rehearsal(p)['status'] in ('passed', 'restore-passed'), 'Finish or explicitly reset the pending rehearsal first')
                 if action in ('upgrade-rehearsal', 'accept-rehearsal') or (action == 'mark-tested' and not remote_runtime):
                     statuses = ('upgraded','passed') if self.technical_verification_enabled() and action == 'accept-rehearsal' else (('ready',) if action == 'upgrade-rehearsal' else ('upgraded',))
                     require(self.active_rehearsal(p)['status'] in statuses, 'Rehearsal prerequisite not met')
                 if action == 'reset-rehearsal':
                     require('rehearsal' in self.state['environments'], 'No registered rehearsal exists')
-                    require(not any(x.get('activeRehearsal') and self.active_rehearsal(x)['status'] != 'passed' and x['releaseTag'] != tag for x in self.state['packages']), 'Another release owns a pending rehearsal')
+                    require(not any(x.get('activeRehearsal') and self.active_rehearsal(x)['status'] not in ('passed', 'restore-passed') and x['releaseTag'] != tag for x in self.state['packages']), 'Another release owns a pending rehearsal')
                 if action == 'reject-acceptance':
                     require(p['stage'] in ('test-deployed', 'rehearsal-upgraded', 'prod-deployed', 'backup-deployed') or
                             (p.get('activeRehearsal') and self.active_rehearsal(p)['status'] == 'upgraded'), 'No pending acceptance to reject')
@@ -250,7 +253,7 @@ class Executor:
                     self.reset_rehearsal(job)
                     if p.get('activeRehearsal'):
                         record = self.active_rehearsal(p)
-                        if record['status'] != 'passed':
+                        if record['status'] not in ('passed', 'restore-passed'):
                             record['status'] = 'discarded'
                             if record['source'] == 'prod' and p['stage'] in ('rehearsal-ready', 'rehearsal-upgraded'):
                                 p['stage'] = 'tested' if remote_runtime else 'function-passed'
@@ -294,9 +297,15 @@ class Executor:
                 elif action == 'prepare-rehearsal':
                     env = 'rehearsal'
                     self.prepare(p, job)
-                    self.outcome(p, env, 'preparation', 'succeeded', job)
-                    if self.active_rehearsal(p)['source'] == 'prod':
-                        p['stage'] = 'rehearsal-ready'
+                    if job['payload'].get('purpose') == 'restore-drill':
+                        self.verify_restore_drill(p, manifest, job)
+                    else:
+                        self.outcome(p, env, 'preparation', 'succeeded', job)
+                        if self.active_rehearsal(p)['source'] == 'prod':
+                            p['stage'] = 'rehearsal-ready'
+                elif action == 'verify-restore-drill':
+                    env = 'rehearsal'
+                    self.verify_restore_drill(p, manifest, job)
                 elif self.technical_verification_enabled() and action in ('mark-tested','accept-rehearsal','accept-prod','accept-backup'):
                     env = {'mark-tested':'test','accept-rehearsal':'rehearsal','accept-prod':'prod','accept-backup':'backup'}[action]
                     job['target'] = env
@@ -332,7 +341,8 @@ class Executor:
             self.log(job, 'Succeeded; all required checks passed')
         except Exception as exc:
             job.update(status='interrupted' if getattr(exc,'remoteStatusUnknown',False) else 'failed', error=str(exc).replace(self.password, '[REDACTED]'))
-            if p and env and job['action'] != 'reject-acceptance' and not job.get('technicalVerification'):
+            if (p and env and job['action'] not in ('reject-acceptance', 'verify-restore-drill')
+                    and job['payload'].get('purpose') != 'restore-drill' and not job.get('technicalVerification')):
                 kind = 'preparation' if job['action'] == 'prepare-rehearsal' else ('acceptance' if job['action'].startswith('accept-') or job['action'] in ('mark-tested', 'function-passed') else 'deployment')
                 self.outcome(p, env, kind, job['status'], job, error=job['error'])
             self.log(job, 'Stopped: ' + job['error'])
