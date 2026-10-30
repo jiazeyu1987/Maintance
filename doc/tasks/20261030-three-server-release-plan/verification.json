@@ -1,0 +1,23 @@
+{
+  "time": "2026-10-31T00:02:53.755193+08:00",
+  "scope": "documentation-only",
+  "checks": {
+    "utf8WithoutBom": true,
+    "tenNumberedStages": true,
+    "noTrailingWhitespace": true,
+    "noPrivateKeyOrLiteralCredential": true,
+    "allRequiredActions": true,
+    "requiredCommitAnchors": true,
+    "knownFindingsPreserved": true,
+    "startupCommandMatchesReviewedScript": true,
+    "sourceReferencesExist": true,
+    "historicalEvidenceExists": true,
+    "codeConfirmsStaticPlanAndFreshWorktree": true
+  },
+  "result": "PASS",
+  "planSha256": "3d07c4b79d120093de1300e36bd6cd2eb1d0ec0ea5896b6df2345f7f6a66dd31",
+  "planLines": 163,
+  "runtimeTests": "not applicable; no behavior change",
+  "remoteOperations": 0,
+  "releaseOperations": 0
+}
