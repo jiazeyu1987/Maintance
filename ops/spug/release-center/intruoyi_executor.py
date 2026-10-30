@@ -342,6 +342,12 @@ class _IntRuoyiExecutor(Executor):
                 require(existing['action'] == action and existing['payload'] == payload, 'Request ID binding mismatch')
                 return existing
         from intruoyi_recovery import RECOVERY_ACTIONS, submit_recovery
+        requested_tag = payload.get('releaseTag')
+        if not requested_tag and payload.get('jobId'):
+            requested_tag = next((j.get('releaseTag') for j in self.state['jobs'] if j['id'] == payload['jobId']), None)
+        requested_package = next((p for p in self.state['packages'] if p['releaseTag'] == requested_tag), None)
+        require(not (requested_package and requested_package.get('portableLocalOmission')),
+                '当前电脑未携带此历史包，仅可查看记录；请使用持有原包的发布电脑')
         if action == 'publish-test':
             from backup_retry import test_retry_available, validate_test_retry
             package, _ = self.manifest(payload.get('releaseTag'))

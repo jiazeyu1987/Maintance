@@ -150,6 +150,7 @@ class Executor:
 
     def package(self, tag):
         p, manifest = self.manifest(tag)
+        require(not p.get('portableLocalOmission'), '当前电脑未携带此历史包，仅可查看记录；请使用持有原包的发布电脑')
         require(not p.get('artifactsPruned'), '发布产物已退役清理，禁止重新发布；请构建新包')
         folder = Path(p['directory'])
         require(digest(folder / 'release.tar') == p['packageSha256'], 'Release archive checksum mismatch')

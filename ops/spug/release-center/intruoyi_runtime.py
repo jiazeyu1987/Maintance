@@ -406,10 +406,10 @@ class Runtime:
         # System/user SSH configs cannot silently redirect a registered target.
         options = ['-F', 'NUL' if os.name == 'nt' else '/dev/null', '-o', 'BatchMode=yes',
                    '-o', 'StrictHostKeyChecking=yes', '-o', 'ConnectTimeout=10']
-        if self.config.get('executionMode') == 'windows-service':
+        if self.config.get('executionMode') in ('windows-service', 'portable-console'):
             identity, hosts = self.config.get('sshIdentityFile'), self.config.get('sshKnownHostsFile')
             require(identity and hosts and Path(identity).is_file() and Path(hosts).is_file(),
-                    'Windows service requires explicit SSH identity and known-hosts files')
+                    'Service/portable execution requires explicit SSH identity and known-hosts files')
             options += ['-i', identity, '-o', 'IdentitiesOnly=yes', '-o', 'UserKnownHostsFile='+hosts]
         return options
 
