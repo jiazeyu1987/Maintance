@@ -114,6 +114,10 @@ Windows 远程发布执行器必须配置 `nasPath`（明确 UNC 目录）及 `n
 
 仅正式隔离副本要求 rehearsalStagingRoots.prod 和完整 Redis、MinIO、媒体引用、写入进程及外部接口隔离配置。包内 migration-readiness.json 只是静态计划，不能替代真实正式演练与三项技术检查。
 
+新建演练网络必须在私密 rehearsal profile 中显式登记 `networkSubnet`（RFC1918 IPv4 CIDR，至少16个地址）。目标检查和创建前均核对所有 Docker IPAM 网段及宿主机全部 IPv4 路由，重叠立即失败；忽略默认路由，不自动选择其他网段。使用 `ip -o -4 route show table all`，避免旧版 CentOS iproute 的 JSON 格式问题。已有演练资源保持原样。
+
+并存演练时，为 frontend/backend/database/redis/minio/acceptanceFrontend/network 及 `gateway` 分别登记新的 `intruoyi-release-rehearsal-` 前缀名字、独立入口端口和暂存路径。gateway 不得与应用容器同名；创建、恢复、续做验证和受控清理使用同一登记名字。未设置 gateway 的既有配置继续使用原固定名字；新任务不得通过重置旧环境解决冲突。
+
 SQL 沿用显式 release-sources.json 注册和历史摘要保护；不重写原包、不自动跳过预检、不将业务冲突记为已执行。失败和中断任务继续保留原记录并阻断盲目重试。
 
 ### IntRuoyi：三项技术检查（2026-10-23 调整）

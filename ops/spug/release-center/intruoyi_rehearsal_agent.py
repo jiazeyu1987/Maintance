@@ -83,6 +83,53 @@ def rehearsal_endpoints(profile):
     return endpoints
 
 
+def rehearsal_gateway_name(profile):
+    name = profile.get('gateway', PREFIX + '-gateway')
+    if not isinstance(name, str) or not re.fullmatch(PREFIX + r'-[A-Za-z0-9_.-]+', name):
+        raise ValueError('Gateway is outside authorized rehearsal namespace')
+    if name in [profile.get(key) for key in ('frontend','backend','database','redis','minio','acceptanceFrontend')]:
+        raise ValueError('Gateway must be distinct from application containers')
+    return name
+
+
+def rehearsal_network_create_args(profile, remote):
+    """Check the explicitly registered subnet against Docker and every IPv4 route."""
+    value = profile.get('networkSubnet')
+    if not isinstance(value, str) or '/' not in value:
+        raise ValueError('Explicit rehearsal networkSubnet CIDR required')
+    subnet = ipaddress.IPv4Network(value)
+    private = [ipaddress.IPv4Network(cidr) for cidr in ('10.0.0.0/8','172.16.0.0/12','192.168.0.0/16')]
+    if not any(subnet.network_address in net and subnet.broadcast_address in net for net in private) or subnet.num_addresses < 16:
+        raise ValueError('Rehearsal subnet must be private IPv4 with space for all isolated containers')
+    ids = remote.run(['docker','network','ls','-q']).decode().split()
+    if any(not re.fullmatch('[a-f0-9]+', identity) for identity in ids):
+        raise ValueError('Docker network inventory identity invalid')
+    networks = json.loads(remote.run(['docker','network','inspect'] + ids)) if ids else []
+    for network in networks:
+        for item in network.get('IPAM', {}).get('Config') or []:
+            if not item.get('Subnet'):
+                continue
+            existing = ipaddress.ip_network(item['Subnet'])
+            if existing.version == 4 and subnet.overlaps(existing):
+                raise ValueError('Rehearsal subnet overlaps Docker network: ' + network['Name'])
+    # CentOS iproute may emit malformed JSON for all tables; its one-line format
+    # provides the exact destination without depending on that JSON formatter.
+    routes = remote.run(['ip','-o','-4','route','show','table','all']).decode().splitlines()
+    if not routes:
+        raise ValueError('IPv4 host route inventory is empty')
+    for line in routes:
+        fields = line.split()
+        if fields[0] in ('unicast','local','broadcast','multicast','throw','unreachable','prohibit','blackhole','nat','anycast'):
+            fields = fields[1:]
+        if fields[0] == 'default':
+            continue
+        route = ipaddress.IPv4Network(fields[0], strict=False)
+        if subnet.overlaps(route):
+            raise ValueError('Rehearsal subnet overlaps host route: ' + str(route))
+    return ['docker','network','create','--internal','--subnet',str(subnet),
+            '--label',LABEL + '=' + PREFIX,profile['network']]
+
+
 def rehearsal_gateway_ingress(profile):
     endpoints = rehearsal_endpoints(profile)
     upstreams = {'entryUrl':profile['frontend'] + ':80',
@@ -280,7 +327,7 @@ def restore_entry_state(profile, folder, remote):
     """Distinguish a failed preflight from any partial/complete restore, read-only."""
     if profile.get('environment') != 'rehearsal' or json.loads((folder/'rehearsal-owned.json').read_text()).get('owner') != PREFIX:
         raise ValueError('Registered owned rehearsal seed required')
-    names = [profile[k] for k in ('frontend','backend','database','redis','minio','acceptanceFrontend','network')] + [PREFIX+'-gateway']
+    names = [profile[k] for k in ('frontend','backend','database','redis','minio','acceptanceFrontend','network')] + [rehearsal_gateway_name(profile)]
     if not all(isinstance(n,str) and n.startswith(PREFIX+'-') for n in names):
         raise ValueError('Restore resources outside registered rehearsal namespace')
     containers = set(remote.run(['docker','ps','-a','--format','{{.Names}}']).decode().splitlines())
@@ -584,7 +631,7 @@ def resume_rehearsal_tail(p, api, folder):
     for name in ('verified-media-origin.json','isolated-media-url-transformations.json','isolated-config-transformations.json','isolated-startup-differences.json'):
         evidence_hashes[name] = api['file_sha'](folder/name)
     containers = {role:r.inspect(profile[role]) for role in ('backend','frontend','database','redis','minio')}
-    containers['gateway'] = r.inspect(PREFIX+'-gateway')
+    containers['gateway'] = r.inspect(rehearsal_gateway_name(profile))
     for role, item in containers.items():
         require((item['Config'].get('Labels') or {}).get(LABEL) == PREFIX, 'Existing isolated container ownership differs: '+role)
         require(item['Image'] == capture['images']['frontend' if role == 'gateway' else role], 'Existing isolated image differs: '+role)
@@ -676,7 +723,7 @@ def resume_rehearsal_tail(p, api, folder):
         for key in ('images','schemaSha256','ledgerSha256'):
             require(observed[key] == capture['origin'][key], 'Resumed origin differs: '+key)
         require(observed.get('releaseTag') == capture['origin']['releaseTag'], 'Resumed baseline version differs')
-        require(all(r.inspect(profile[role] if role != 'gateway' else PREFIX+'-gateway')['Id'] == identity
+        require(all(r.inspect(profile[role] if role != 'gateway' else rehearsal_gateway_name(profile))['Id'] == identity
                     for role,identity in identities.items()), 'Container identities changed during tail recovery')
         origin = dict(originFingerprint=capture['originFingerprint'],verifiedOrigin=True,fingerprint=observed['fingerprint'])
         origin_path = folder/'restored-origin.json'
@@ -838,7 +885,7 @@ def dispatch(p, api):
         require('backendEntrypoint' in profile and isinstance(profile.get('backendCommand'), list) and profile['backendCommand'], 'Explicit isolated backend startup contract required')
         require(any('/run/release/application.properties' in value for value in profile['backendCommand']), 'Isolated backend must explicitly load private generated properties')
         require(profile.get('minioDataPath') == '/data', 'Isolated MinIO uses explicitly registered /data')
-        return [profile[k] for k in ('frontend', 'backend', 'database', 'redis', 'minio', 'acceptanceFrontend')] + [PREFIX + '-gateway']
+        return [profile[k] for k in ('frontend', 'backend', 'database', 'redis', 'minio', 'acceptanceFrontend')] + [rehearsal_gateway_name(profile)]
 
     def existing_names():
         return set(r.run(['docker', 'ps', '-a', '--format', '{{.Names}}']).decode().splitlines())
@@ -867,6 +914,7 @@ def dispatch(p, api):
         require(profile['network'] not in r.run(['docker', 'network', 'ls', '--format', '{{.Name}}']).decode().splitlines(), 'Rehearsal network already exists; explicit reset required')
         volumes = set(r.run(['docker', 'volume', 'ls', '--format', '{{.Name}}']).decode().splitlines())
         require(not ({profile[k] + '-data' for k in ('database', 'redis', 'minio')} & volumes), 'Rehearsal data volume already exists; explicit reset required')
+        rehearsal_network_create_args(profile, r)
         for endpoint in endpoints.values():
             s = socket.socket()
             try:
@@ -1203,7 +1251,7 @@ def dispatch(p, api):
             r.run(['docker', 'load', '-i', str(folder / 'origin-images.tar')], timeout=14400)
         for image in capture['images'].values():
             require(r.run(['docker', 'image', 'inspect', '--format', '{{.Id}}', image]).decode().strip() == image, 'Original image ID not preserved')
-        r.run(['docker', 'network', 'create', '--internal', '--label', LABEL + '=' + PREFIX, profile['network']])
+        r.run(rehearsal_network_create_args(profile, r))
         for role in ('database', 'redis', 'minio'):
             r.run(['docker', 'volume', 'create', '--label', LABEL + '=' + PREFIX, profile[role] + '-data'])
         passwords = {key: secrets.token_hex(24) for key in ('mysql', 'redis', 'minio')}
@@ -1349,7 +1397,7 @@ def dispatch(p, api):
         ingress = rehearsal_gateway_ingress(profile)
         gateway.write_text(ingress['nginx'])
         gateway.chmod(0o644)
-        name = PREFIX + '-gateway'
+        name = rehearsal_gateway_name(profile)
         value = {'Image': capture['images']['frontend'], 'Entrypoint': ['nginx'], 'Cmd': ['-g', 'daemon off;'],
                  'Labels': {LABEL: PREFIX},
                  'HostConfig': {'NetworkMode': 'bridge', 'Binds': [str(gateway) + ':/etc/nginx/conf.d/default.conf:ro'],
