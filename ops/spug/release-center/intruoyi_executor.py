@@ -10,6 +10,7 @@ from release_order import deployment_blocks
 from intruoyi_build import build, target_input_plan
 from intruoyi_runtime import Runtime, audit_ledger, package_identity, rehearsal_profile, gxp_release_mode, validate_gxp_runtime
 from intruoyi_rehearsal import active_remote_progress
+from rehearsal_retention import registered_rehearsal_profile, retention_matches, retention_record
 from intruoyi_metadata import restore as restore_metadata, reference as metadata_reference, remote as metadata_remote
 
 
@@ -294,8 +295,7 @@ class _IntRuoyiExecutor(Executor):
                     job['result']['status'] = 'interrupted'
         self.save()
         if 'rehearsal' in self.state['environments']:
-            source = self.state['environments']['rehearsal'].get('sourceEnvironment')
-            self.runtime.targets['rehearsal'] = rehearsal_profile(config, source)
+            self.runtime.targets['rehearsal'] = registered_rehearsal_profile(config, self.state['environments']['rehearsal'])
 
     def snapshot(self):
         with self.lock:
@@ -578,6 +578,7 @@ class _IntRuoyiExecutor(Executor):
         require(result.get('releaseTag') == p['releaseTag'], 'Runtime did not confirm deployed version')
         if env == 'rehearsal':
             result['sourceEnvironment'] = self.active_rehearsal(p)['source']
+            result['resourceProfile'] = dict(self.runtime.targets['rehearsal'])
         self.state['environments'][env] = dict(result, observedAt=stamp(), baselineStatus='registered', maintenanceUnknown=False)
         if env == 'rehearsal':
             self.active_rehearsal(p)['upgradedSchemaSha256'] = result['schemaSha256']
@@ -599,8 +600,11 @@ class _IntRuoyiExecutor(Executor):
     def prepare(self, p, job):
         source = job['payload'].get('source')
         require(source == 'prod', 'Only the production origin is rehearsed')
-        require('rehearsal' not in self.state['environments'], 'Explicitly clear the registered isolated environment before preparing another origin; history is retained')
-        self.runtime.targets['rehearsal'] = rehearsal_profile(self.c, source)
+        candidate = rehearsal_profile(self.c, source)
+        retained = None
+        if 'rehearsal' in self.state['environments']:
+            retained = retention_record(self.state, self.c, candidate,
+                                        self.runtime.observe('rehearsal'), job['id'], stamp())
         require(source in self.state['environments'], 'Rehearsal origin is not registered')
         job.update(target='rehearsal', sourceEnv=source)
         _, manifest = self.manifest(p['releaseTag'])
@@ -612,6 +616,12 @@ class _IntRuoyiExecutor(Executor):
                     and origin.get('maintenance') is False,
                     'Actual production must still run the selected completed package')
         job['sourceOriginFingerprint'] = origin['fingerprint']
+        if retained:
+            self.step(job, 'retain-completed-isolation-registration-without-remote-deletion')
+            self.state.setdefault('retainedRehearsals', []).append(retained)
+            self.state['environments'].pop('rehearsal')
+            job['retainedRehearsalId'] = retained['rehearsalId']
+        self.runtime.targets['rehearsal'] = candidate
         self.save()
         def callback(name, effects=False):
             self.step(job, name, effects=effects)
@@ -650,7 +660,8 @@ class _IntRuoyiExecutor(Executor):
         p['activeRehearsal'] = record['id']
         if record.get('purpose') != 'restore-drill':
             p.setdefault('outcomes', {})['rehearsal'] = {}
-        self.state['environments']['rehearsal'] = dict(result, sourceEnvironment=source)
+        self.state['environments']['rehearsal'] = dict(result, sourceEnvironment=source,
+                                                      resourceProfile=dict(self.runtime.targets['rehearsal']))
         self.save()
 
     def verify_restore_drill(self, package, manifest, job):
@@ -796,6 +807,8 @@ class _IntRuoyiExecutor(Executor):
                      + ' Original failure preserved; candidate upgrade remains a separate action.')
 
     def reset_rehearsal(self, job):
+        require(not retention_matches(self.c, self.state['environments'].get('rehearsal')),
+                'Explicitly retained rehearsal must be preserved, not reset')
         self.runtime.reset_rehearsal(lambda name, effects=False:self.step(job,name,effects=effects))
         self.state['environments'].pop('rehearsal', None)
         self.save()

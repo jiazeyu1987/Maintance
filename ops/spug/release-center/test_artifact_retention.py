@@ -181,7 +181,7 @@ class RetentionTest(unittest.TestCase):
         executor.lock=threading.RLock();executor.worker=None;executor.save=Mock()
         executor.c=dict(applicationId='intruoyi');executor.ensure_persistence=Mock()
         scan=dict(id='JOB-scan',action='scan-artifacts',status='succeeded',result=dict(complete=True,scannedEpoch=time.time(),items=[dict(id='allowed',location='nas',releaseTag='old',reasons=[]),dict(id='protected',location='nas',releaseTag='current',reasons=['current'])]))
-        executor.state=dict(jobs=[scan]);payload=dict(applicationId='intruoyi',requestId='request-1',scanJobId='JOB-scan',confirmation='确认清理',groups=['nas:current'])
+        executor.state=dict(jobs=[scan],packages=[],environments={});payload=dict(applicationId='intruoyi',requestId='request-1',scanJobId='JOB-scan',confirmation='确认清理',groups=['nas:current'])
         with self.assertRaisesRegex(ValueError,'受保护'):retention.submit(executor,'clean-artifacts',payload,'unit')
         payload['groups']=['nas:old'];payload['confirmation']=''
         with self.assertRaisesRegex(ValueError,'确认清理'):retention.submit(executor,'clean-artifacts',payload,'unit')

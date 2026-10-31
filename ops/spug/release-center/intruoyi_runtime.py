@@ -4,6 +4,7 @@ This adapter never reads credentials out of a remote container. JSON responses c
 identities and hashes only. The independent agent performs target-side operations.
 """
 import hashlib
+from copy import deepcopy
 import gzip
 import importlib.util
 import json
@@ -379,7 +380,7 @@ class Runtime:
         self.operation_context = threading.local()
         self.config = config
         require(isinstance(config.get('targets'), dict), 'Explicit registered targets required')
-        self.targets = config['targets']
+        self.targets = deepcopy(config['targets'])
         self.sources = Path(__file__).resolve().parent
 
     def profile(self, env):
