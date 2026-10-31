@@ -843,7 +843,7 @@ def deploy(profile, manifest):
     # Repeat against stopped writers, immediately before any SQL mutation.
     stopped_origin = observe(profile)
     plan = migration_plan(profile, manifest, stopped_origin)
-    validate_direct_target_origin(profile, manifest, stopped_origin, plan)
+    validate_direct_target_origin(profile, manifest, stopped_origin, plan, quiescent=True)
     apply_migration_plan(profile, root, manifest, plan, recovery=recovery)
     persist_gxp_release_mode(profile, manifest)
     # Later data migrations must not invalidate identities verified by an earlier
@@ -868,7 +868,7 @@ def deploy(profile, manifest):
     return result
 
 
-def validate_direct_target_origin(profile, manifest, observation, plan):
+def validate_direct_target_origin(profile, manifest, observation, plan, quiescent=False):
     policy = manifest.get('workflowPolicy')
     if policy is None or profile['environment'] not in ('prod', 'backup'):
         return
@@ -876,7 +876,16 @@ def validate_direct_target_origin(profile, manifest, observation, plan):
     basis = policy.get('validationBasis', {})
     require(basis.get('targetEnvironment') == profile['environment']
             and basis.get('migrationPlanSha256') == sha(plan), 'Direct upgrade target plan binding differs')
+    if quiescent:
+        check_fence(profile)
+        require(all(not remote.inspect(name)['State']['Running'] for name in profile['writers'] + [profile['frontend']]),
+                'Original applications must remain stopped for quiescent origin verification')
     for key in ('releaseTag', 'images', 'fingerprint', 'schemaSha256', 'ledgerSha256'):
+        if quiescent and key == 'releaseTag' and observation.get(key) is None:
+            # The original frontend has deliberately stopped. Its already
+            # verified version remains bound by the original image/config hash.
+            require(basis.get('targetOrigin', {}).get(key), 'Bound original release tag missing')
+            continue
         require(basis.get('targetOrigin', {}).get(key) and basis['targetOrigin'][key] == observation.get(key),
                 'Direct upgrade target origin changed: ' + key)
 
@@ -1416,6 +1425,26 @@ def dispatch(payload):
                 require(file.is_file() and not file.is_symlink() and file.stat().st_size == item['bytes'], 'Retained capture file differs')
             require(remote.sql(profile, "SELECT COUNT(*) FROM infra_release_migration WHERE release_tag='" + payload['releaseTag'] + "';") == '0',
                     'Migration records prevent capture-only recovery')
+        elif record.get('recoveryKind') == 'external-pre-migration':
+            validate_quiescence_recovery(record, payload, result)
+            acknowledgement = json.loads((root/'external-recovery.private.json').read_text())
+            require(profile['environment'] == 'prod' and record.get('databaseRestored') is False
+                    and acknowledgement.get('mode') == 'external' and acknowledgement.get('operatorConfirmed') is True
+                    and acknowledgement.get('releaseTag') == payload['releaseTag']
+                    and acknowledgement.get('originFingerprint') == payload['originFingerprint']
+                    and re.fullmatch('[0-9a-f]{64}', record.get('packageIdentity',''))
+                    and acknowledgement.get('packageIdentity') == record['packageIdentity'],
+                    'Bound external pre-migration recovery acknowledgement required')
+            from operation_journal import inspect as inspect_operation
+            receipt = inspect_operation(profile, record.get('operationId'), payload['jobId'])
+            require(receipt.get('action') == 'deploy' and receipt.get('status') == 'failed' and receipt.get('worker') == 'stopped',
+                    'Original failed deployment must be stopped')
+            require(not (root/'recovery-record.private.json').exists() and not (root/'deployment-pending.json').exists()
+                    and not any(root.glob('*-before-*.private.json'))
+                    and not any((root/name).exists() for name in DATABASE_SNAPSHOT_NAMES),
+                    'Effects exceed external pre-migration origin recovery')
+            require(remote.sql(profile, "SELECT COUNT(*) FROM infra_release_migration WHERE release_tag='" + payload['releaseTag'] + "';") == '0',
+                    'Migration records prevent external pre-migration recovery')
         elif record.get('recoveryKind') == 'no-migrations-started':
             validate_quiescence_recovery(record, payload, result)
             require(not (root/'recovery-record.private.json').exists() and not any((root/name).exists() for name in DATABASE_SNAPSHOT_NAMES)

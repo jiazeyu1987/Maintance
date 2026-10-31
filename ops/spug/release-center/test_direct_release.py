@@ -170,6 +170,46 @@ class DirectReleaseTest(unittest.TestCase):
 
 
 class ExternalRecoveryAgentTest(unittest.TestCase):
+    def test_external_pre_migration_restoration_requires_unchanged_origin_and_no_sql(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)
+            identity='a'*64
+            observation=dict(fingerprint='origin',components={role:{'containerId':role} for role in ('backend','frontend','database')})
+            record=dict(recoveryKind='external-pre-migration',restored=True,snapshotComplete=False,databaseRestored=False,
+                jobId='JOB-'+ 'a'*10,restoredFingerprint='origin',operationId='OP-'+ 'b'*20,packageIdentity=identity,
+                originalContainerIds={role:role for role in observation['components']})
+            (root/'manual-recovery-confirmed.private.json').write_text(json.dumps(record),encoding='utf-8')
+            (root/'external-recovery.private.json').write_text(json.dumps(dict(mode='external',operatorConfirmed=True,
+                releaseTag='2026-10-31-22-23-14',originFingerprint='origin',packageIdentity=identity)),encoding='utf-8')
+            payload=dict(action='verify-restoration',profile={'environment':'prod'},releaseTag='2026-10-31-22-23-14',jobId=record['jobId'],originFingerprint='origin')
+            with patch.object(agent,'directory',return_value=root),patch.object(agent,'observe',return_value=observation), \
+                    patch.object(agent.remote,'sql',return_value='0'), \
+                    patch('operation_journal.inspect',return_value=dict(action='deploy',status='failed',worker='stopped')):
+                self.assertEqual(agent.dispatch(payload)['recoveryEvidence'],record)
+                with patch.object(agent.remote,'sql',return_value='1'),self.assertRaises(RuntimeBlocked):
+                    agent.dispatch(payload)
+                with patch.object(agent,'observe',return_value=dict(observation,fingerprint='drift')),self.assertRaises(RuntimeBlocked):
+                    agent.dispatch(payload)
+                (root/'backend-before-initial.private.json').touch()
+                with self.assertRaises(RuntimeBlocked):
+                    agent.dispatch(payload)
+
+    def test_stopped_origin_uses_bound_identity_when_frontend_version_is_unavailable(self):
+        original=dict(releaseTag='old',images={'backend':'a','frontend':'b'},fingerprint='origin',
+                      schemaSha256='own-schema',ledgerSha256='own-ledger')
+        basis=dict(targetEnvironment='prod',targetOrigin=original,migrationPlanSha256=sha([]))
+        manifest={'workflowPolicy':dict(POLICY,targetEnvironment='prod',recoveryMode='external',validationBasis=basis)}
+        profile=dict(environment='prod',writers=['backend'],frontend='frontend')
+        stopped=dict(original,releaseTag=None)
+        with patch.object(agent,'check_fence'),patch.object(agent.remote,'inspect',return_value={'State':{'Running':False}}):
+            agent.validate_direct_target_origin(profile,manifest,stopped,[],quiescent=True)
+            with self.assertRaisesRegex(RuntimeBlocked,'origin changed'):
+                agent.validate_direct_target_origin(profile,manifest,dict(stopped,schemaSha256='drift'),[],quiescent=True)
+        with patch.object(agent,'check_fence'),patch.object(agent.remote,'inspect',return_value={'State':{'Running':True}}),self.assertRaises(RuntimeBlocked):
+            agent.validate_direct_target_origin(profile,manifest,stopped,[],quiescent=True)
+        with self.assertRaisesRegex(RuntimeBlocked,'origin changed'):
+            agent.validate_direct_target_origin(profile,manifest,stopped,[])
+
     def test_target_origin_or_plan_drift_is_rejected_before_migration(self):
         observed=dict(releaseTag='old',images={'backend':'a','frontend':'b'},fingerprint='origin',
                       schemaSha256='own-schema',ledgerSha256='own-ledger')
@@ -216,7 +256,7 @@ class ExternalRecoveryAgentTest(unittest.TestCase):
                             images={role:{'id':'sha256:'+'a'*64} for role in ('backend','frontend')},
                             expectedSchemaSha256='b'*64, workflowPolicy=policy)
             (root/'stage-verified.json').write_text(json.dumps({'manifestSha256':package_identity(manifest),'files':[]}), encoding='utf-8')
-            profile = dict(environment='prod', backend='backend', frontend='frontend')
+            profile = dict(environment='prod', backend='backend', frontend='frontend',writers=['backend'])
             observation = dict(releaseTag=manifest['releaseTag'], images={'backend':'sha256:'+'a'*64,'frontend':'sha256:'+'a'*64},
                                schemaSha256='b'*64,ledgerSha256='c'*64,fingerprint='origin')
             policy['validationBasis']=dict(targetEnvironment='prod',targetOrigin=observation,migrationPlanSha256=sha([]))
@@ -228,6 +268,7 @@ class ExternalRecoveryAgentTest(unittest.TestCase):
                     patch.object(agent,'migration_plan',return_value=[]), \
                     patch.object(agent,'health',return_value={'writerControls':{'gxpAuditMode':'DEVELOPMENT_DISABLED','configuredGxpAuditMode':'DEVELOPMENT_DISABLED'}}), \
                     patch.object(agent.remote,'run',return_value=('sha256:'+'a'*64).encode()), \
+                    patch.object(agent.remote,'inspect',return_value={'State':{'Running':False}}), \
                     patch('intruoyi_recovery_agent.capture',return_value={'snapshotComplete':True}) as capture:
                 result = agent.deploy(profile, manifest)
             self.assertEqual(capture.call_count, 0, 'Production must not capture a duplicate full recovery point')
