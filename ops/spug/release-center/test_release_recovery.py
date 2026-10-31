@@ -91,6 +91,38 @@ class DataRestoreTest(unittest.TestCase):
                 self.assertEqual({p.name:p.read_bytes() for p in source.iterdir()}, {'a':b'old A','b':b'old B'})
                 self.assertEqual({p.name:p.read_bytes() for p in retained.iterdir()}, {'a':b'failed A','c':b'failed C'})
 
+    def test_pax_unicode_directories_round_trip_without_rewriting_archive(self):
+        folder='目录'*30
+        (self.data/folder).mkdir()
+        (self.data/folder/'original.txt').write_bytes(b'original object')
+        agent.archive_data(self.data,self.archive)
+        original_archive=self.archive.read_bytes()
+        self.assertEqual(agent.validate_archive(self.archive),{folder,folder+'/original.txt'})
+        agent.verify_data(self.data,self.archive)
+        (self.data/folder/'original.txt').write_bytes(b'failed object')
+        retained=Path(agent.restore_data(self.data,self.archive,'JOB-a123456789'))
+        self.assertEqual((self.data/folder/'original.txt').read_bytes(),b'original object')
+        self.assertEqual((retained/folder/'original.txt').read_bytes(),b'failed object')
+        self.assertEqual(self.archive.read_bytes(),original_archive)
+
+    def test_canonical_directory_aliases_and_noncanonical_names_are_rejected(self):
+        directory=tarfile.TarInfo('目录/');directory.type=tarfile.DIRTYPE
+        self.assertEqual(agent.archive_member_name(directory),'目录')
+        for name,kind in [('a//',tarfile.DIRTYPE),('./a/',tarfile.DIRTYPE),('file/',tarfile.REGTYPE),('link',tarfile.LNKTYPE)]:
+            with self.subTest(name=name):
+                member=tarfile.TarInfo(name);member.type=kind
+                with self.assertRaisesRegex(RuntimeBlocked,'Unsafe'):
+                    agent.archive_member_name(member)
+        for names in [('a','a/'),('./a/',),('a/../b/',),('/absolute/',)]:
+            with self.subTest(names=names):
+                with tarfile.open(self.archive,'w:',format=tarfile.PAX_FORMAT) as archive:
+                    for name in names:
+                        member=tarfile.TarInfo(name);member.type=tarfile.DIRTYPE
+                        member.pax_headers={'path':name}
+                        archive.addfile(member)
+                with self.assertRaisesRegex(RuntimeBlocked,'Unsafe'):
+                    agent.validate_archive(self.archive)
+
     def test_recovery_retry_rejects_changed_archive_and_post_restore_writes(self):
         (self.data/'a').write_bytes(b'origin')
         agent.archive_data(self.data,self.archive)

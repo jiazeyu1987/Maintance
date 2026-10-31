@@ -104,22 +104,32 @@ def archive_data(source, destination):
     return dict(path=str(destination), sha256=file_sha(destination), bytes=destination.stat().st_size)
 
 
+def archive_member_name(member):
+    name = PurePosixPath(member.name)
+    normalized = str(name)
+    # PAX readers differ on retaining the standard directory trailing slash.
+    # Admit that spelling only; compare canonical identities to reject aliases.
+    spelling = normalized+'/' if member.isdir() and member.name.endswith('/') else normalized
+    require(member.name and normalized != '.' and not name.is_absolute() and '..' not in name.parts
+            and spelling == member.name and (member.isdir() or member.isfile()) and not member.issparse(),
+            'Unsafe recovery archive member')
+    return normalized
+
+
 def validate_archive(path):
     with tarfile.open(path, 'r:') as archive:
         names = set()
         for member in archive:
-            name = PurePosixPath(member.name)
-            require(member.name and not name.is_absolute() and '..' not in name.parts
-                    and str(name) == member.name and member.name not in names
-                    and (member.isdir() or member.isfile()) and not member.issparse(), 'Unsafe recovery archive member')
-            names.add(member.name)
+            name = archive_member_name(member)
+            require(name not in names, 'Unsafe recovery archive member')
+            names.add(name)
         return names
 
 
 def verify_data(source, archive_path):
     with tarfile.open(archive_path,'r:') as archive:
         members=archive.getmembers()
-        require({p.relative_to(source).as_posix() for p in source.rglob('*')} == {m.name for m in members},
+        require({p.relative_to(source).as_posix() for p in source.rglob('*')} == {archive_member_name(m) for m in members},
                 'Recovered data directory contains missing or extra members')
         for member in members:
             target=source/member.name
