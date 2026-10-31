@@ -16,6 +16,20 @@ function harness(){
 const candidate={releaseTag:'candidate',gitCommit:'a'.repeat(40),packageSha256:'package-hash',manifestSha256:'manifest-hash',stage:'function-passed',baseline:false,rehearsals:[]};
 const remote={deploymentBlocks:{candidate:{}},application:{id:'intruoyi',name:'IntRuoyi',runtimeKind:'remote-intruoyi',repo:'E:/IntRuoyi',targets:{test:{label:'实际测试服 .58',url:'http://test.example.invalid'},prod:{label:'实际正式服 .57',url:'http://prod.example.invalid',acceptanceUrl:'http://accept.example.invalid/private'},backup:{label:'实际备用服 .59',url:'http://backup.example.invalid'},rehearsal:{label:'独立验证机',url:'http://verify.example.invalid'}},capabilities:{initializeBaseline:false,auditBaseline:false,registerTargets:true,buildRelease:true,prepareRehearsal:false},capabilityReasons:{prepareRehearsal:'尚未配置真实隔离目标'},packageStoragePath:'E:/ReleasePackages',nasPath:'//nas/releases'},packages:[candidate],jobs:[],environments:{test:{releaseTag:'baseline-test',baselineStatus:'registered',maintenance:false,observedAt:'2026-10-21T20:00:00+08:00',backendHealth:'UP',frontendHttpStatus:200,migrationCount:3,imageIds:{backend:'sha256:backend',frontend:'sha256:frontend'},schemaSha256:'schema-hash',fingerprint:'fingerprint'},prod:{releaseTag:'baseline-prod',baselineStatus:'registered',maintenance:true},backup:{error:'SSH read refused',maintenanceUnknown:true}}};
 const h=harness();h.set(remote);
+const direct=harness();direct.set(JSON.parse(JSON.stringify({...remote,application:{...remote.application,
+ releaseWorkflow:{version:'direct-three-server-v1',productionRecovery:'external'}},packages:[{...candidate,stage:'tested'}]})));
+assert(!/data-action="promote-prod" disabled/.test(direct.render(5)),'Direct workflow promotes the tested original package without rehearsal');
+assert(!direct.evaluate('flow(3)').includes('隔离升级验证'),'Direct workflow has four main steps');
+assert(direct.render(3).includes('进入正式服发布'),'Test page leads directly to production');
+assert(direct.render(5).includes('独立备份与恢复'),'Production recovery responsibility is explicit');
+assert(!direct.evaluate('technicalResults(pkg())').includes('独立验证机'),'Optional rehearsal is not a mandatory target result');
+assert(direct.render(4).includes('可选'),'Retained rehearsal management is explicitly optional');
+direct.evaluate("state.packages[0].stage='rehearsal-passed'");
+assert(!/data-action="promote-prod" disabled/.test(direct.render(5)),'A retained optional rehearsal does not block the direct policy');
+direct.evaluate("state.application.capabilities.releaseRecovery=true;state.jobs=[{id:'external-prod',action:'promote-prod',target:'prod',releaseTag:'candidate',status:'failed',effectsStarted:true,workflowPolicy:{recoveryMode:'external'},originState:{releaseTag:'old'}}];state.packages[0].outcomes={prod:{deployment:{jobId:'external-prod',status:'failed'}}}");
+const externalRecovery=direct.evaluate('recoveryPanel()');
+assert(externalRecovery.includes('独立备份与恢复'));
+assert(!externalRecovery.includes('data-action="recover-release"'),'External production recovery cannot expose a fabricated Spug restore');
 for(let page=0;page<9;page++){
  const html=h.render(page);
  assert(!html.includes('演示'),`Remote page ${page} contains demo copy`);

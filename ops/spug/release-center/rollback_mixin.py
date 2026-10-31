@@ -8,6 +8,7 @@ import subprocess
 import threading
 import time
 from executor import require, stamp
+from intruoyi_runtime import release_workflow
 
 
 def compatibility(current, origin):
@@ -22,7 +23,8 @@ def compatibility(current, origin):
 class RollbackMixin:
     def snapshot(self):
         value = super().snapshot()
-        value['application']['capabilities']['productionRollback'] = True
+        policy = release_workflow(self.c)
+        value['application']['capabilities']['productionRollback'] = not (policy and policy['productionRecovery'] == 'external')
         return value
 
     def rollback_remote(self, action, **args):
@@ -52,7 +54,8 @@ class RollbackMixin:
         return value['result']
 
     def deploy(self, env, package, manifest, job):
-        if env == 'prod':
+        policy = release_workflow(self.c)
+        if env == 'prod' and not (policy and policy['productionRecovery'] == 'external'):
             origin = self.runtime.observe(env)
             require(origin['backendHealth'].get('status') == 'UP' and origin['frontendHttpStatus'] == 200,
                     'Healthy production origin required for pre-release rollback snapshot')

@@ -29,6 +29,36 @@ def require(condition, message):
         raise RuntimeBlocked(message)
 
 
+def release_workflow(config):
+    """An explicit policy migration; absence retains the historical workflow."""
+    policy = config.get('releaseWorkflow')
+    if policy is None:
+        return None
+    require(isinstance(policy, dict) and policy.get('version') == 'direct-three-server-v1',
+            'Unsupported release workflow policy')
+    require(policy.get('productionRecovery') in ('checkpoint', 'external'), 'Explicit production recovery mode required')
+    if policy['productionRecovery'] == 'external':
+        require(policy.get('externalRecoveryConfirmed') is True and isinstance(policy.get('note'), str)
+                and len(policy['note'].strip()) >= 5, 'Explicit operator confirmation of external recovery required')
+    return dict(version=policy['version'], productionRecovery=policy['productionRecovery'],
+                externalRecoveryConfirmed=policy.get('externalRecoveryConfirmed') is True, note=policy.get('note', ''))
+
+
+def runtime_recovery_policy(environment, manifest):
+    policy = manifest.get('workflowPolicy')
+    if policy is None:
+        return 'checkpoint'
+    require(isinstance(policy, dict) and policy.get('version') == 'direct-three-server-v1'
+            and policy.get('targetEnvironment') == environment, 'Runtime workflow policy target/version differs')
+    mode = policy.get('recoveryMode')
+    require(mode in ('checkpoint', 'external'), 'Explicit runtime recovery mode required')
+    if mode == 'external':
+        require(environment == 'prod' and policy.get('externalRecoveryConfirmed') is True
+                and isinstance(policy.get('note'), str) and len(policy['note'].strip()) >= 5,
+                'Explicit production external recovery confirmation required')
+    return mode
+
+
 def gxp_release_mode(manifest):
     """The package freezes the source configuration; targets never choose a default."""
     mode = manifest.get('releaseSettings', {}).get('gxpAuditMode')
@@ -271,7 +301,7 @@ def runtime_config_snapshot(info):
 def package_identity(manifest):
     """Runtime evidence is job metadata, never part of the immutable release package."""
     return sha({key: value for key, value in manifest.items()
-                if key not in ("baselines", "executionPlans", "expectedSchemaSha256")})
+                if key not in ("baselines", "executionPlans", "expectedSchemaSha256", "workflowPolicy")})
 
 
 def validate_release_state(state, tag, maintenance):
@@ -282,7 +312,13 @@ def validate_release_state(state, tag, maintenance):
                 'Backend scheduling/consumer controls are not disabled')
 
 
-def validate_expected_schema(environment, expected_schema):
+def validate_expected_schema(environment, expected_schema, workflow_policy=None):
+    if workflow_policy is not None:
+        runtime_recovery_policy(environment, {'workflowPolicy':workflow_policy})
+        if expected_schema is None:
+            # Direct releases verify the target's own execution plan and SQL
+            # contracts; another environment's full schema is not an oracle.
+            return
     if environment in ('prod', 'backup') or expected_schema is not None:
         require(isinstance(expected_schema, str) and re.fullmatch('[0-9a-f]{64}', expected_schema),
                 'Accepted production baseline rehearsal schema fingerprint required before formal target upgrade')

@@ -164,11 +164,23 @@ def reconcile(executor, original, evidence, job):
             if env == 'rehearsal':
                 executor.active_rehearsal(package).update(status='upgraded', upgradedSchemaSha256=observation['schemaSha256'])
             job['target'] = env
-            if env == 'prod':
+            direct = original.get('workflowPolicy', {}).get('version') == 'direct-three-server-v1'
+            if direct and env in ('prod', 'backup'):
+                from intruoyi_runtime import sha
+                basis = dict(original.get('validationBasis', {}))
+                require(basis.get('targetEnvironment') == env and basis.get('packageSha256') == package['packageSha256']
+                        and basis.get('targetOrigin', {}).get('fingerprint') == original.get('originFingerprint')
+                        and basis.get('migrationPlanSha256') == sha(original['migrationPlan']['items']),
+                        'Original direct deployment validation binding differs')
+                basis.update(upgradedSchemaSha256=receipt['schemaSha256'], upgradedLedgerSha256=receipt['ledgerSha256'])
+                original['validationBasis'] = basis
+                deployment['validationBasis'] = dict(basis)
+                deployment['workflowPolicy'] = dict(original['workflowPolicy'])
+            elif env == 'prod':
                 job['rehearsalId'] = original['rehearsalId']
             # Recovery points belong to the original deploy, never to a check.
             deployment.update(status='succeeded', jobId=original['id'], reconciledBy=job['id'])
-            if env == 'prod':
+            if env == 'prod' and not direct:
                 deployment['rehearsalId'] = job['rehearsalId']
             executor.save()
             executor.verify_technical(env, package, manifest, job)

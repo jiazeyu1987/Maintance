@@ -8,7 +8,7 @@ import threading
 from executor import Executor, main, require, stamp
 from release_order import deployment_blocks
 from intruoyi_build import build, target_input_plan
-from intruoyi_runtime import Runtime, audit_ledger, package_identity, rehearsal_profile, gxp_release_mode, validate_gxp_runtime
+from intruoyi_runtime import Runtime, audit_ledger, package_identity, rehearsal_profile, gxp_release_mode, validate_gxp_runtime, release_workflow, sha
 from intruoyi_rehearsal import active_remote_progress
 from rehearsal_retention import registered_rehearsal_profile, retention_matches, retention_record
 from intruoyi_metadata import restore as restore_metadata, reference as metadata_reference, remote as metadata_remote
@@ -88,6 +88,51 @@ class _IntRuoyiExecutor(Executor):
 
     def technical_verification_enabled(self):
         return True
+
+    def rehearsal_required(self):
+        return release_workflow(self.c) is None
+
+    def direct_validation_basis(self, package, env, observation=None, binding=None, plan=None):
+        """Bind same-package source proof and each target's own audited upgrade."""
+        source = {'prod':'test', 'backup':'prod'}[env]
+        outcomes = package.get('outcomes', {}).get(source, {})
+        proof = outcomes.get('technical', {})
+        deployment = outcomes.get('deployment', {})
+        if binding is not None:
+            require(binding.get('version') == 'direct-three-server-v1'
+                    and binding.get('sourceEnvironment') == source
+                    and binding.get('packageSha256') == package['packageSha256'], 'Direct upgrade validation binding differs')
+            proof = next((record for record in package.get('technicalHistory', [])
+                          if record.get('jobId') == binding.get('sourceTechnicalJobId')), proof)
+            require(deployment.get('jobId') == binding.get('sourceDeploymentJobId'), 'Source deployment binding changed')
+        require(self.technical_passed(package, source, proof.get('jobId')), 'Passed technical verification required for ' + source)
+        owner = next((job for job in self.state['jobs'] if job['id'] == deployment.get('jobId')), None)
+        resolution = owner.get('resolution', {}) if owner else {}
+        reconciler = next((job for job in self.state['jobs'] if job['id'] == deployment.get('reconciledBy')), None)
+        confirmed = owner and (owner['status'] == 'succeeded' or (
+            self.technical_retryable(owner, package, source) and owner.get('reconciledBy') == proof.get('jobId')) or (
+            resolution.get('decision') == 'reconciled' and resolution.get('disposition') == 'verify-deployment'
+            and reconciler and reconciler['status'] == 'succeeded' and resolution.get('jobId') == reconciler['id']
+            and reconciler.get('target') == source and reconciler.get('releaseTag') == package['releaseTag']))
+        require(deployment.get('status') == 'succeeded' and confirmed
+                and owner.get('target') == source and owner.get('releaseTag') == package['releaseTag'],
+                'Confirmed source deployment required for direct upgrade')
+        expected = proof.get('checks', {}).get('upgrade', {}).get('schemaSha256')
+        require(expected, 'Verified source upgrade schema is missing')
+        result = dict(version='direct-three-server-v1', sourceEnvironment=source,
+                      packageSha256=package['packageSha256'], sourceTechnicalJobId=proof['jobId'],
+                      sourceDeploymentJobId=owner['id'], sourceVerifiedSchemaSha256=expected,
+                      targetEnvironment=env)
+        if binding is not None:
+            require(all(binding.get(key) == value for key,value in result.items())
+                    and binding.get('targetOrigin') and binding.get('migrationPlanSha256')
+                    and binding.get('upgradedSchemaSha256'), 'Direct upgrade validation binding changed')
+            return binding
+        require(observation and plan and plan.get('status') == 'passed', 'Audited target origin and migration plan required')
+        keys = ('releaseTag', 'images', 'fingerprint', 'schemaSha256', 'ledgerSha256')
+        require(all(observation.get(key) for key in keys), 'Incomplete direct upgrade target origin')
+        result.update(targetOrigin={key:observation[key] for key in keys}, migrationPlanSha256=sha(plan['items']))
+        return result
 
     def technical_passed(self, package, env, job_id=None):
         records = [package.get('outcomes', {}).get(env, {}).get('technical', {})]
@@ -179,7 +224,13 @@ class _IntRuoyiExecutor(Executor):
             require(plan.get('status') == 'passed' and not any(item['action'] == 'APPLY' for item in plan['items']),
                     'Candidate still has unapplied required migrations')
             audit_ledger(current, manifest)
-            if env == 'prod':
+            if env in ('prod', 'backup') and not self.rehearsal_required():
+                deployed = package['outcomes'][env]['deployment']
+                basis = self.direct_validation_basis(package, env, binding=deployed.get('validationBasis', {}))
+                require(current['schemaSha256'] == basis['upgradedSchemaSha256']
+                        and current['ledgerSha256'] == basis['upgradedLedgerSha256'],
+                        'Actual upgraded schema/ledger differs from confirmed target deployment')
+            elif env == 'prod':
                 deployed = package['outcomes']['prod']['deployment']
                 rehearsals = [r for r in package.get('rehearsals', []) if r.get('id') == deployed.get('rehearsalId')
                               and r.get('source') == 'prod' and r.get('status') == 'passed'
@@ -236,7 +287,7 @@ class _IntRuoyiExecutor(Executor):
                 require(record.get('source') == 'prod' and record.get('packageSha256') == package['packageSha256'],
                         'Technical rehearsal acceptance must bind the production origin and immutable package')
                 record.update(status='passed', actor=job['actor'], acceptedAt=stamp())
-            elif env == 'prod' and opening:
+            elif env == 'prod' and opening and self.rehearsal_required():
                 package['validatedProductionRehearsal'] = rehearsals[0]['id']
             package['stage'] = stage
             technical.update(status='passed', phase='complete', finishedAt=stamp())
@@ -315,6 +366,9 @@ class _IntRuoyiExecutor(Executor):
                                                  independentBackupRetry=True, releasePrecheck=True, artifactRetention=True, nasPackageRetry=True))
             if not configured:
                 application['capabilityReasons'] = dict(prepareRehearsal='尚未配置独立数据副本、运行资源与外部接口隔离，不能准备演练。')
+            policy = release_workflow(self.c)
+            if policy:
+                application['releaseWorkflow'] = policy
             if self.c.get('nasPath'):
                 application['nasPath'] = self.c['nasPath']
             import os
@@ -379,7 +433,7 @@ class _IntRuoyiExecutor(Executor):
         if action not in ('build-release','resolve-task','register-targets','restore-metadata'):
             require(not any(e.get('recoveryPending') for e in self.state['environments'].values()),
                     'Recovery must be accepted before another release operation')
-        prerequisite = {'prepare-rehearsal':'test','promote-prod':'rehearsal','promote-backup':'prod'}.get(action)
+        prerequisite = {'prepare-rehearsal':'test','promote-prod':'rehearsal' if self.rehearsal_required() else 'test','promote-backup':'prod'}.get(action)
         if action == 'prepare-rehearsal' and payload.get('purpose') == 'restore-drill':
             prerequisite = None
             package, _ = self.manifest(payload.get('releaseTag'))
@@ -538,7 +592,12 @@ class _IntRuoyiExecutor(Executor):
     def runtime_manifest(self, env, manifest):
         # Baselines follow confirmed deployments, not the first registration forever.
         require(env in self.state['environments'], 'Current registered target origin required')
-        return dict(manifest, baselines={env:dict(self.state['environments'][env])})
+        result = dict(manifest, baselines={env:dict(self.state['environments'][env])})
+        policy = release_workflow(self.c)
+        if policy:
+            result['workflowPolicy'] = dict(policy, targetEnvironment=env,
+                recoveryMode=policy['productionRecovery'] if env == 'prod' else 'checkpoint')
+        return result
 
     def fingerprint(self, env, registered=None):
         return self.runtime.observe(env)['fingerprint']
@@ -562,7 +621,13 @@ class _IntRuoyiExecutor(Executor):
         job['migrationPlan'] = plan
         self.save()
         runtime_manifest = dict(self.runtime_manifest(env, manifest), executionPlans={env:plan})
-        if env == 'prod':
+        if not self.rehearsal_required():
+            job['workflowPolicy'] = runtime_manifest['workflowPolicy']
+        if env in ('prod', 'backup') and not self.rehearsal_required():
+            basis = self.direct_validation_basis(p, env, observation, plan=plan)
+            job['validationBasis'] = basis
+            runtime_manifest['workflowPolicy']['validationBasis'] = dict(basis)
+        elif env == 'prod':
             rehearsal = passed_rehearsal(p, 'prod', observation['fingerprint'])
             job['rehearsalId'] = rehearsal['id']
             runtime_manifest['expectedSchemaSha256'] = rehearsal['upgradedSchemaSha256']
@@ -576,6 +641,9 @@ class _IntRuoyiExecutor(Executor):
             self.step(job, name, effects=effects)
         result = self.runtime.deploy(env, runtime_manifest, callback, job['id'])
         require(result.get('releaseTag') == p['releaseTag'], 'Runtime did not confirm deployed version')
+        if job.get('validationBasis'):
+            require(result.get('schemaSha256') and result.get('ledgerSha256'), 'Confirmed target upgrade schema/ledger required')
+            job['validationBasis'].update(upgradedSchemaSha256=result['schemaSha256'], upgradedLedgerSha256=result['ledgerSha256'])
         if env == 'rehearsal':
             result['sourceEnvironment'] = self.active_rehearsal(p)['source']
             result['resourceProfile'] = dict(self.runtime.targets['rehearsal'])

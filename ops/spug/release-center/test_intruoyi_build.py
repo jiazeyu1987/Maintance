@@ -266,6 +266,7 @@ class HistoryContractTests(unittest.TestCase):
 
     def test_runtime_baseline_is_target_specific_and_does_not_mutate_package(self):
         executor = IntRuoyiExecutor.__new__(IntRuoyiExecutor)
+        executor.c = {}
         executor.state = {'environments':{'test':{'releaseTag':'current','schemaSha256':'a'*64}}}
         manifest = {'releaseTag':'candidate'}
         runtime = executor.runtime_manifest('test', manifest)

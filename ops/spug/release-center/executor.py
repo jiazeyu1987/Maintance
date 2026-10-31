@@ -123,6 +123,9 @@ class Executor:
     def technical_verification_enabled(self):
         return False
 
+    def rehearsal_required(self):
+        return True
+
     def failed_task_blocks(self, failed, action, payload, package):
         return failed['status'] == 'failed' and not failed.get('resolution') and failed.get('releaseTag') == package['releaseTag']
 
@@ -187,7 +190,8 @@ class Executor:
                 require(action in ('reset-rehearsal', 'audit-baseline', 'prepare-rehearsal') or not any(self.failed_task_blocks(j, action, payload, p) for j in self.state['jobs']), 'Failed task requires investigation; blind retry refused')
                 gates = {'initialize-baseline': None, 'publish-test': 'built', 'function-passed': 'test-deployed', 'prepare-rehearsal': None, 'upgrade-rehearsal': None, 'mark-tested': None, 'promote-prod': 'tested', 'accept-prod': 'prod-deployed', 'promote-backup': 'prod-accepted', 'accept-backup': 'backup-deployed', 'reject-acceptance': None, 'reset-rehearsal': None, 'audit-baseline': None}
                 if remote_runtime:
-                    gates.update({'mark-tested': 'test-deployed', 'accept-rehearsal': 'rehearsal-upgraded', 'promote-prod': 'rehearsal-passed'})
+                    gates.update({'mark-tested': 'test-deployed', 'accept-rehearsal': 'rehearsal-upgraded',
+                                  'promote-prod': 'rehearsal-passed' if self.rehearsal_required() else 'tested'})
                     gates['verify-restore-drill'] = 'completed'
                 technical_actions = {'mark-tested':('test-deployed','tested'), 'accept-rehearsal':('rehearsal-upgraded','rehearsal-passed'),
                                      'accept-prod':('prod-deployed','prod-accepted'), 'accept-backup':('backup-deployed','completed')}
@@ -195,7 +199,8 @@ class Executor:
                     require(p['stage'] in technical_actions[action], 'Workflow prerequisite not met')
                 else:
                     backup_retry = remote_runtime and action == 'promote-backup' and payload.get('retryOf') and p['stage'] == 'backup-restored'
-                    require(gates[action] is None or p['stage'] == gates[action] or backup_retry, 'Workflow prerequisite not met')
+                    optional_rehearsal = remote_runtime and not self.rehearsal_required() and action == 'promote-prod' and p['stage'] == 'rehearsal-passed'
+                    require(gates[action] is None or p['stage'] == gates[action] or backup_retry or optional_rehearsal, 'Workflow prerequisite not met')
                 require(not p['baseline'] or action in ('initialize-baseline', 'reset-rehearsal', 'audit-baseline'), 'Initial baseline cannot be promoted as a candidate')
                 require(not p.get('abandoned') or action in ('audit-baseline', 'reset-rehearsal'), 'Candidate was explicitly abandoned; build a new package')
                 if action == 'prepare-rehearsal':
@@ -281,7 +286,7 @@ class Executor:
                     if env in ('prod', 'backup'):
                         if env == 'backup':
                             require(self.state['environments'].get('prod', {}).get('releaseTag') == p['releaseTag'], 'Production has moved to another package; this older release cannot update backup')
-                        if env == 'prod' or not remote_runtime:
+                        if (env == 'prod' or not remote_runtime) and self.rehearsal_required():
                             require(self.verified_origin(p, job['originFingerprint']), 'Target origin has no passed rehearsal for this immutable package; rehearse this origin first')
                     self.check_deployment_order(action, p)
                     self.deploy(env, p, manifest, job)
@@ -291,7 +296,11 @@ class Executor:
                             p['stage'] = stage
                     else:
                         p['stage'] = stage
-                    extra = {'rehearsalId': job['rehearsalId']} if remote_runtime and env == 'prod' else {}
+                    extra = {'rehearsalId': job['rehearsalId']} if remote_runtime and env == 'prod' and self.rehearsal_required() else {}
+                    if job.get('validationBasis'):
+                        extra['validationBasis'] = dict(job['validationBasis'])
+                    if job.get('workflowPolicy'):
+                        extra['workflowPolicy'] = dict(job['workflowPolicy'])
                     self.outcome(p, env, 'deployment', 'succeeded', job, **extra)
                     if self.technical_verification_enabled():
                         self.verify_technical(env, p, manifest, job)

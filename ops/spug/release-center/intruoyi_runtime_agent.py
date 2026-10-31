@@ -23,7 +23,7 @@ from urllib.request import urlopen
 
 import intruoyi_remote as remote
 from intruoyi_runtime import capture_sql_snapshot, database_snapshot_path, DATABASE_SNAPSHOT_NAMES
-from intruoyi_runtime import gxp_release_mode, gxp_migration_sql, validate_gxp_runtime
+from intruoyi_runtime import gxp_release_mode, gxp_migration_sql, validate_gxp_runtime, runtime_recovery_policy
 from intruoyi_runtime import audit_ledger, require, RuntimeBlocked, sha, migration_id, file_sha, package_identity, validate_release_state, validate_expected_schema, runtime_config_snapshot, validate_migration_handler, migration_execution_sql, validate_quiescence_recovery, validate_storage_budget, ROUTE_SNAPSHOT_MIGRATION, ROUTE_SNAPSHOT_HOOK, ROUTE_LEGACY_MIGRATION, ROUTE_SNAPSHOT_HOOKS, validate_snapshot_cli_report, LEGACY_FORM_SWITCH_MIGRATION, LEGACY_FORM_SWITCH_SHA256
 
 PROTOCOL = 'intruoyi-quiescent-start-v1'
@@ -431,6 +431,7 @@ def check_acceptance_port(address, port):
 
 
 def preflight(profile, manifest):
+    runtime_recovery_policy(profile['environment'], manifest)
     from intruoyi_recovery_agent import inventory, validate_database_identity
     inventory(profile, globals())
     validate_database_identity(remote.sql(profile, 'SELECT DATABASE(),DEFAULT_CHARACTER_SET_NAME,DEFAULT_COLLATION_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME=DATABASE();').split('\t'))
@@ -574,9 +575,17 @@ def run_snapshot_cli(profile, root, manifest, migration, mode, recovery=None):
 
 
 def require_migration_maintenance(profile, root, recovery):
-    require(recovery and database_snapshot_path(root, recovery).name in DATABASE_SNAPSHOT_NAMES
-            and re.fullmatch('[0-9a-f]{64}', recovery.get('sha256',''))
-            and (root/'recovery-record.private.json').is_file(), 'Completed recovery record required for reviewed migration')
+    if recovery and recovery.get('mode') == 'external':
+        record = root/'external-recovery.private.json'
+        require(profile['environment'] == 'prod' and recovery.get('operatorConfirmed') is True
+                and recovery.get('releaseTag') == root.name and recovery.get('originFingerprint')
+                and re.fullmatch('[0-9a-f]{64}', recovery.get('packageIdentity', ''))
+                and record.is_file() and not record.is_symlink() and json.loads(record.read_text()) == recovery,
+                'Bound external production recovery acknowledgement required for reviewed migration')
+    else:
+        require(recovery and database_snapshot_path(root, recovery).name in DATABASE_SNAPSHOT_NAMES
+                and re.fullmatch('[0-9a-f]{64}', recovery.get('sha256',''))
+                and (root/'recovery-record.private.json').is_file(), 'Completed recovery record required for reviewed migration')
     check_fence(profile)
     require(all(not remote.inspect(name)['State']['Running'] for name in profile['writers']),
             'Writer restarted before reviewed migration')
@@ -802,6 +811,7 @@ def health(profile, tag, maintenance, through_acceptance=False, expected_gxp_mod
 
 
 def deploy(profile, manifest):
+    recovery_mode = runtime_recovery_policy(profile['environment'], manifest)
     gxp_release_mode(manifest)
     preflight(profile, manifest)
     root = directory(profile, manifest['releaseTag'])
@@ -813,22 +823,34 @@ def deploy(profile, manifest):
         image = manifest['images'][role]['id']
         require(remote.run(['docker', 'image', 'inspect', '--format', '{{.Id}}', image]).decode().strip() == image, 'Candidate image not loaded')
     expected_schema = manifest.get('expectedSchemaSha256')
-    validate_expected_schema(profile['environment'], expected_schema)
+    validate_expected_schema(profile['environment'], expected_schema, manifest.get('workflowPolicy'))
     obs = observe(profile)
     plan = migration_plan(profile, manifest, obs)
+    validate_direct_target_origin(profile, manifest, obs, plan)
     check_fence(profile)
     stop_writers(profile)
-    from intruoyi_recovery_agent import capture
-    recovery = capture(profile, root, manifest, obs, globals())
+    if recovery_mode == 'external':
+        recovery = dict(mode='external', policyVersion=manifest['workflowPolicy']['version'],
+                        releaseTag=manifest['releaseTag'], packageIdentity=package_identity(manifest),
+                        originFingerprint=obs['fingerprint'], operatorConfirmed=True,
+                        note=manifest['workflowPolicy']['note'])
+        # This records responsibility, never claims an external backup was
+        # inspected or fabricates a restorable Spug checkpoint.
+        private_json(root/'external-recovery.private.json', recovery)
+    else:
+        from intruoyi_recovery_agent import capture
+        recovery = capture(profile, root, manifest, obs, globals())
     # Repeat against stopped writers, immediately before any SQL mutation.
-    plan = migration_plan(profile, manifest, observe(profile))
+    stopped_origin = observe(profile)
+    plan = migration_plan(profile, manifest, stopped_origin)
+    validate_direct_target_origin(profile, manifest, stopped_origin, plan)
     apply_migration_plan(profile, root, manifest, plan, recovery=recovery)
     persist_gxp_release_mode(profile, manifest)
     # Later data migrations must not invalidate identities verified by an earlier
     # hook. This is a check only: failure keeps writers stopped, without repair.
     terminal_snapshot_readiness(profile, root, manifest, recovery)
     actual_schema = observe(profile)['schemaSha256']
-    require(not expected_schema or actual_schema == expected_schema, 'Actual upgraded schema differs from accepted rehearsal; applications remain stopped')
+    require(not expected_schema or actual_schema == expected_schema, 'Actual upgraded schema differs from verified upgrade basis; applications remain stopped')
     replace(profile, root, 'backend', manifest['images']['backend']['id'], manifest['releaseTag'], True)
     replace(profile, root, 'frontend', manifest['images']['frontend']['id'], manifest['releaseTag'])
     docker('POST', '/containers/' + quote(profile['backend']) + '/start')
@@ -841,9 +863,22 @@ def deploy(profile, manifest):
     result = reopen(profile) if profile['environment'] == 'test' else observe(profile)
     if profile['environment'] != 'test':
         result['verifiedHealth'] = verified_health
-    result['recoveryPoint'] = recovery
+    result['externalRecovery' if recovery_mode == 'external' else 'recoveryPoint'] = recovery
     result['schemaSha256'] = actual_schema
     return result
+
+
+def validate_direct_target_origin(profile, manifest, observation, plan):
+    policy = manifest.get('workflowPolicy')
+    if policy is None or profile['environment'] not in ('prod', 'backup'):
+        return
+    runtime_recovery_policy(profile['environment'], manifest)
+    basis = policy.get('validationBasis', {})
+    require(basis.get('targetEnvironment') == profile['environment']
+            and basis.get('migrationPlanSha256') == sha(plan), 'Direct upgrade target plan binding differs')
+    for key in ('releaseTag', 'images', 'fingerprint', 'schemaSha256', 'ledgerSha256'):
+        require(basis.get('targetOrigin', {}).get(key) and basis['targetOrigin'][key] == observation.get(key),
+                'Direct upgrade target origin changed: ' + key)
 
 
 def terminal_snapshot_readiness(profile, root, manifest, recovery):
@@ -890,7 +925,7 @@ def apply_migration_plan(profile, root, manifest, plan, recovery=None):
 
 
 def persist_gxp_release_mode(profile, manifest):
-    """Called with writers stopped and a database recovery point already captured."""
+    """Called with writers stopped and the explicit recovery policy recorded."""
     mode = gxp_release_mode(manifest)
     tables = set(remote.sql(profile, 'SHOW TABLES;').splitlines())
     require('infra_config' in tables, 'GxP configuration migration has not created infra_config')

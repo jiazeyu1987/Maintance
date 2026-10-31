@@ -13,7 +13,7 @@ import tempfile
 import time
 
 from executor import digest, require, stamp
-from intruoyi_runtime import bind_reviewed_session_profile, validate_migration_handler, rehearsal_profile
+from intruoyi_runtime import bind_reviewed_session_profile, validate_migration_handler, rehearsal_profile, release_workflow
 from nas_connection import connect_nas
 from intruoyi_login import verify_login
 
@@ -289,8 +289,10 @@ def build(executor, job):
     executor.save()
     require(all(executor.state['environments'].get(env, {}).get('baselineStatus') == 'registered' for env in ('test', 'prod', 'backup')),
             'Register the real three-server baselines before building')
-    executor.step(job, 'check-rehearsal-registration')
-    rehearsal_profile(c, 'prod')
+    workflow = release_workflow(c)
+    if workflow is None:
+        executor.step(job, 'check-rehearsal-registration')
+        rehearsal_profile(c, 'prod')
     executor.step(job, 'check-local-build-storage')
     job['localBuildStorage'] = check_local_space(executor)
     executor.save()
@@ -309,8 +311,10 @@ def build(executor, job):
     require(not executor.run(['git', '-C', str(worktree), 'status', '--porcelain']).strip(), 'Dedicated source is not clean')
     executor.step(job, 'migration-policy-and-history')
     migrations, references, artifacts = migration_inputs(worktree)
-    readiness = {'verification': 'static-only', 'fullDataRehearsalRequired': True,
-                 'requiredRehearsalSources': ['prod'], 'targets': {}}
+    readiness = {'verification': 'static-only', 'fullDataRehearsalRequired': workflow is None,
+                 'requiredRehearsalSources': ['prod'] if workflow is None else [], 'targets': {}}
+    if workflow:
+        readiness['workflowVersion'] = workflow['version']
     for env in ('test', 'prod', 'backup'):
         records = executor.state['environments'][env].get('ledgerRecords')
         require(isinstance(records, list), env+': registered migration records are missing')
