@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import tarfile
 import tempfile
+from types import SimpleNamespace
 import unittest
 from urllib.parse import parse_qs, urlsplit
 from unittest.mock import Mock, patch
@@ -41,6 +42,51 @@ class RecoveryConfigurationTest(unittest.TestCase):
         self.assertIsNone(original['frontend']['HostConfig']['OomKillDisable'])
         recreated['frontend']['HostConfig']['OomKillDisable']=True
         self.assertNotEqual(expected,agent.recovery_runtime_config_sha(profile,recreated,True))
+
+
+class RecoveryDatabaseIdentityTest(unittest.TestCase):
+    def run_stopping_phase(self, database):
+        """Stop at failed-state capture, before any destructive restore."""
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)
+            profile={role:role for role in ('frontend','backend','database','redis','minio')}
+            profile.update(writers=[],acceptanceFrontend='acceptance')
+            containers={role:dict(Id=role,Name='/'+role,Config={'Env':[]},
+                                 State={'Running':False,'ExitCode':0}) for role in profile if role not in ('writers','acceptanceFrontend')}
+            (root/'recovery-containers.private.json').write_text(json.dumps(containers),encoding='utf-8')
+            record=dict(database=database,jobId='JOB-aaaaaaaaaa',releaseTag='2026-10-31-19-13-08',
+                        packageSha256='a'*64,origin={'fingerprint':'origin'})
+            remote=Mock();remote.inspect.side_effect=lambda name:containers[name]
+            backup=Mock(side_effect=InterruptedError('failed-state capture boundary'))
+            api=dict(directory=lambda *args:root,remote=remote,backup=backup,
+                     docker=lambda *args:[{'Id':name} for name in containers],
+                     resume_receipt=lambda path,value:path.write_text(json.dumps(value),encoding='utf-8'))
+            admin=Mock(side_effect=['0\t0','0\n0'])
+            lock=SimpleNamespace(flock=Mock(),LOCK_EX=1,LOCK_NB=2)
+            with patch.dict('sys.modules',{'fcntl':lock}),patch.object(agent,'read_bound',return_value=(root,record)),\
+                    patch.object(agent,'administrative_sql',admin):
+                try:
+                    agent.recover(profile,dict(jobId='JOB-bbbbbbbbbb',releaseTag=record['releaseTag']),api)
+                except Exception as error:
+                    return error,admin,backup
+            self.fail('Stopping-phase fixture unexpectedly completed a recovery')
+
+    def test_safe_hyphenated_name_reaches_quiescence_and_failed_state_capture(self):
+        error,admin,backup=self.run_stopping_phase(['ruoyi-vue-pro','utf8mb4','utf8mb4_unicode_ci'])
+        self.assertIsInstance(error,InterruptedError)
+        self.assertEqual(admin.call_count,2)
+        self.assertIn("DB='ruoyi-vue-pro'",admin.call_args.args[1])
+        backup.assert_called_once()
+
+    def test_unsafe_identity_never_reaches_quiescence_query_or_capture(self):
+        identities=[['bad'+value,'utf8mb4','utf8mb4_unicode_ci'] for value in ("'",'`',';', ' ', '\\', '\n')]
+        identities += [['safe','utf8mb4;DROP','utf8mb4_unicode_ci'],['safe','utf8mb4','bad-collation']]
+        for database in identities:
+            with self.subTest(database=database):
+                error,admin,backup=self.run_stopping_phase(database)
+                self.assertIsInstance(error,RuntimeBlocked)
+                self.assertEqual(admin.call_count,1)
+                backup.assert_not_called()
 
 
 class DataRestoreTest(unittest.TestCase):

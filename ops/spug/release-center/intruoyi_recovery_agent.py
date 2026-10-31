@@ -422,8 +422,7 @@ def recover(profile, payload, api):
                     remote.run(['docker','stop','--time','90',profile[role]],timeout=120)
                     state = remote.inspect(profile[role])['State']
                     require(not state['Running'] and state['ExitCode'] != 137, 'Data service did not stop gracefully: '+role)
-            database=record['database'][0]
-            require(re.fullmatch('[A-Za-z0-9_]+',database), 'Unsafe recovery database identity')
+            database,_,_=validate_database_identity(record['database'])
             require(administrative_sql(profile,"SELECT COUNT(*) FROM information_schema.INNODB_TRX; SELECT COUNT(*) FROM information_schema.PROCESSLIST WHERE ID<>CONNECTION_ID() AND DB='"+database+"' AND COMMAND<>'Sleep';",api)=='0\n0',
                     'Active database statements or transactions prevent recovery')
             # Preserve the partial migration data and original FAILED/RUNNING
