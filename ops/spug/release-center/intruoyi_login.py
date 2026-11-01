@@ -49,27 +49,45 @@ _SCRIPT = r'''async (page) => {
     !/\/(login|change-password)(\/|\?|$)/i.test(url.hash), {timeout: 45000});
   await page.locator('.v-layout').waitFor({state: 'visible', timeout: 45000});
   await login.waitFor({state: 'hidden', timeout: 45000});
-  let gxpAuditMode;
+  let gxpAuditMode, runtimeGxpAuditMode, auditEnabled, pendingRestart;
   if (input.readGxpMode) {
-    const [configResponse] = await Promise.all([
+    const [configResponse, runtimeResponse] = await Promise.all([
       page.waitForResponse(response => {
         const url = new URL(response.url());
         return url.origin === origin && url.pathname === '/admin-api/infra/config/page' &&
           url.searchParams.get('key') === 'system.gxp.audit-mode' && response.request().method() === 'GET';
       }, {timeout: 45000}),
+      page.waitForResponse(response => {
+        const url = new URL(response.url());
+        return url.origin === origin && url.pathname === '/admin-api/system/gxp-audit-event/runtime-mode' &&
+          response.request().method() === 'GET';
+      }, {timeout: 45000}),
       page.goto(origin + '/infra/config/basic', {waitUntil: 'domcontentloaded', timeout: 45000})
     ]);
     const config = await configResponse.json();
+    const runtime = await runtimeResponse.json();
     const rows = config.data?.list?.filter(row => row.key === 'system.gxp.audit-mode');
     if (configResponse.status() !== 200 || config.code !== 0 || rows?.length !== 1 ||
         rows[0].visible !== true || rows[0].type !== 1 ||
         !['FORMAL', 'DEVELOPMENT_DISABLED'].includes(rows[0].value))
       throw new Error('A unique saved server GxP mode is required');
+    if (runtimeResponse.status() !== 200 || runtime.code !== 0 || runtime.data?.mode !== rows[0].value ||
+        runtime.data?.auditEnabled !== (rows[0].value === 'FORMAL'))
+      throw new Error('Saved and runtime GxP modes must agree before building');
     const modePanel = page.getByTestId('gxp-mode-setting');
     await modePanel.locator('.el-form-item').filter({hasText: '已保存模式'}).waitFor({state: 'visible', timeout: 45000});
     await modePanel.locator('.el-loading-mask').waitFor({state: 'hidden', timeout: 45000});
     await modePanel.scrollIntoViewIfNeeded();
+    const savedField = modePanel.locator('.el-form-item').filter({hasText: '已保存模式'});
+    const runtimeField = modePanel.locator('.el-form-item').filter({hasText: '当前运行模式'});
+    await runtimeField.waitFor({state: 'visible', timeout: 45000});
+    if (rows[0].value === 'DEVELOPMENT_DISABLED' &&
+        (!(await savedField.innerText()).includes('关闭审计') || !(await runtimeField.innerText()).includes('关闭审计')))
+      throw new Error('Closed GxP mode is not visible in the configuration page');
     gxpAuditMode = rows[0].value;
+    runtimeGxpAuditMode = runtime.data.mode;
+    auditEnabled = runtime.data.auditEnabled;
+    pendingRestart = gxpAuditMode !== runtimeGxpAuditMode;
   }
   const landed = new URL(page.url());
   landed.search = '';
@@ -77,7 +95,8 @@ _SCRIPT = r'''async (page) => {
   await page.screenshot({path: input.screenshot, fullPage: false,
     mask: [page.locator('input[type="password"]')]});
   return {authenticated: true, authenticationResponseObserved: true,
-    authenticatedUserId: userId, authenticatedShellVisible: true, landedUrl: landed.href, gxpAuditMode};
+    authenticatedUserId: userId, authenticatedShellVisible: true, landedUrl: landed.href,
+    gxpAuditMode, runtimeGxpAuditMode, auditEnabled, pendingRestart};
 }'''
 
 
@@ -171,8 +190,11 @@ def verify_login(config, target_url, evidence_dir, binding, *, read_gxp_mode=Fal
                 re.search(r'/(login|change-password)(/|$)', landed.path, re.I) or
                 not screenshot.is_file() or screenshot.stat().st_size == 0):
             raise ValueError('authentication evidence invalid')
-        if read_gxp_mode and verified.get('gxpAuditMode') not in ('FORMAL', 'DEVELOPMENT_DISABLED'):
-            raise ValueError('saved GxP mode evidence invalid')
+        if read_gxp_mode:
+            mode = verified.get('gxpAuditMode')
+            if (mode not in ('FORMAL', 'DEVELOPMENT_DISABLED') or verified.get('runtimeGxpAuditMode') != mode
+                    or verified.get('auditEnabled') is not (mode == 'FORMAL') or verified.get('pendingRestart') is not False):
+                raise ValueError('saved/runtime GxP mode evidence invalid')
     except Exception:
         failure = 'Real frontend login or its authentication evidence could not be verified'
     finally:
@@ -198,6 +220,8 @@ def verify_login(config, target_url, evidence_dir, binding, *, read_gxp_mode=Fal
     }
     if read_gxp_mode:
         result['gxpAuditMode'] = verified['gxpAuditMode']
+        for key in ('runtimeGxpAuditMode', 'auditEnabled', 'pendingRestart'):
+            result[key] = verified[key]
     try:
         evidence_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
     except Exception:

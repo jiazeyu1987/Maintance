@@ -7,8 +7,8 @@ import shutil
 import threading
 
 from executor import require, stamp
-from intruoyi_build import check_local_space, connect_nas, target_input_plan
-from intruoyi_runtime import Runtime, audit_ledger, rehearsal_profile
+from intruoyi_build import check_local_space, connect_nas, target_input_plan, validate_source_contract
+from intruoyi_runtime import Runtime, audit_ledger, rehearsal_profile, release_workflow
 
 ACTION = 'check-prerequisites'
 TARGETS = {'build-release': None, 'publish-test': 'test', 'promote-prod': 'prod', 'promote-backup': 'backup'}
@@ -97,12 +97,7 @@ def tool(executor, name, arguments):
 
 
 def source_commit(executor, commit):
-    repo = executor.c['repo']
-    actual = executor.run(['git', '-C', repo, 'rev-parse', commit+'^{commit}'], timeout=30).decode().strip()
-    require(actual == commit, '指定源码提交不存在或不匹配')
-    for relative in ('IntRuoyiBackend/pom.xml', 'IntRuoyiFronted/package.json', 'IntRuoyiFronted/pnpm-lock.yaml'):
-        executor.run(['git', '-C', repo, 'cat-file', '-e', commit+':'+relative], timeout=30)
-    return {'commit': actual, 'uncommittedChangesIncluded': False}
+    return validate_source_contract(executor, commit)
 
 
 def base_images(executor):
@@ -125,11 +120,13 @@ def workflow(executor, job, package):
     if operation == 'build-release':
         require(all(executor.state['environments'].get(e, {}).get('baselineStatus') == 'registered'
                     for e in ('test', 'prod', 'backup')), '三服基线尚未完整登记')
-        rehearsal_profile(executor.c, 'prod')
+        if release_workflow(executor.c) is None:
+            rehearsal_profile(executor.c, 'prod')
         return {'registeredTargets': ['test', 'prod', 'backup']}
     require(package and not package.get('baseline') and not package.get('abandoned'), '所选包不是可发布候选包')
     retry = job['payload'].get('retryOf')
-    expected = {'publish-test': ('built',), 'promote-prod': ('rehearsal-passed',), 'promote-backup': ('prod-accepted',)}[operation]
+    direct = release_workflow(executor.c) is not None
+    expected = {'publish-test': ('built',), 'promote-prod': ('tested',) if direct else ('rehearsal-passed',), 'promote-backup': ('prod-accepted',)}[operation]
     if retry:
         require(operation == 'promote-backup', '仅备用检查可关联补发任务')
         from backup_retry import validate_retry
@@ -139,7 +136,7 @@ def workflow(executor, job, package):
     require(not any(executor.failed_task_blocks(j, operation, job['payload'], package)
                     for j in executor.state['jobs'] if j['id'] != job['id']), '该包存在未解决的失败任务')
     if operation == 'promote-prod':
-        require(executor.technical_passed(package, 'test') and executor.technical_passed(package, 'rehearsal'),
+        require(executor.technical_passed(package, 'test') and (direct or executor.technical_passed(package, 'rehearsal')),
                 '测试及正式基线演练的技术检查尚未通过')
     if operation == 'promote-backup':
         require(package.get('outcomes', {}).get('prod', {}).get('acceptance', {}).get('status') == 'passed'
@@ -241,14 +238,17 @@ def execute(executor, job):
                 require(obs[key] == executor.state['environments'][target][key], '目标实际起点与登记基线不同：'+key)
             audit_ledger(obs, manifest)
             plan = target_input_plan(manifest['migrations'], obs['ledgerRecords'], target)
-            if target == 'prod':
+            if target in ('prod', 'backup') and release_workflow(executor.c):
+                executor.direct_validation_basis(package, target, observation=obs, plan=plan)
+            if target == 'prod' and release_workflow(executor.c) is None:
                 passed_rehearsal(package, 'prod', obs['fingerprint'])
             elif target == 'backup':
                 prod = observations['prod']
                 require(prod['releaseTag'] == package['releaseTag'] and prod.get('maintenance') is False
                         and prod['images'] == {r:manifest['images'][r]['id'] for r in ('backend','frontend')},
                         '正式实际运行包或开放状态与本次备用发布不一致')
-                backup_rehearsal_schema(package, obs)
+                if release_workflow(executor.c) is None:
+                    backup_rehearsal_schema(package, obs)
             return {'target':target, 'originFingerprint':obs['fingerprint'], 'plan':plan}
         check('target-plan', '目标起点、迁移计划与已验证升级路径', target_plan,
               all(env in observations for env in targets))

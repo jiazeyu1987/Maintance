@@ -16,6 +16,9 @@ from executor import digest, require, stamp
 from intruoyi_runtime import bind_reviewed_session_profile, validate_migration_handler, rehearsal_profile, release_workflow
 from nas_connection import connect_nas
 from intruoyi_login import verify_login
+from build_artifact_guard import (validate_source_contract, validate_required_gxp_mode,
+                                  verify_backend_jar, validate_offline_cli_report, verify_backend_image)
+from build_worktree_cleanup import cleanup_build_worktree
 
 MAINTENANCE_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(MAINTENANCE_ROOT))
@@ -278,12 +281,15 @@ def build(executor, job):
     require(re.fullmatch('[0-9a-f]{40}', commit), 'Exact full Git commit required')
     require(executor.run(['git', '-C', c['repo'], 'rev-parse', commit+'^{commit}']).decode().strip() == commit,
             'Requested source commit does not exist')
+    executor.step(job, 'check-committed-release-contract')
+    job['sourceContract'] = validate_source_contract(executor, commit)
     executor.step(job, 'capture-saved-gxp-mode')
     require(c.get('gxpConfigurationSourceUrl'), 'Configure the source application URL for the saved GxP setting')
     gxp_evidence = verify_login(c, c['gxpConfigurationSourceUrl'],
                                executor.root/'technical-evidence'/job['id']/'source-configuration',
                                dict(jobId=job['id'], gitCommit=commit), read_gxp_mode=True)
     release_settings = dict(gxpAuditMode=gxp_evidence['gxpAuditMode'])
+    validate_required_gxp_mode(c, release_settings['gxpAuditMode'])
     job['releaseSettings'] = release_settings
     job['gxpConfigurationEvidence'] = gxp_evidence
     executor.save()
@@ -383,6 +389,12 @@ def build(executor, job):
             require(json.loads(destination.read_text('utf-8')) == info, role+': image release-info mismatch')
         finally:
             executor.run(['docker', 'rm', container])
+    executor.step(job, 'verify-packaged-backend-contract')
+    artifact_proof = verify_backend_image(executor, job, images['backend'], context/'app.jar',
+                                          executor.root/'technical-evidence'/job['id'])
+    (folder/'backend-artifact-contract.json').write_text(json.dumps(artifact_proof, indent=2), encoding='utf-8')
+    job['backendArtifactContract'] = artifact_proof
+    executor.save()
     executor.step(job, 'export-original-package')
     job['localExportStorage'] = check_local_space(executor, 'export')
     executor.save()
@@ -404,8 +416,37 @@ def build(executor, job):
     require(c.get('nasPath'), 'Explicit NAS release package destination required')
     job['sealedPackage'] = dict(package)
     executor.step(job, 'publish-original-package-to-nas')
+    # The seal makes NAS/cleanup retries possible without another compilation.
+    cleanup_sealed_build(executor, job)
     package['nasDirectory'] = publish_nas(folder, manifest, c['nasPath'], c.get('nasCredentialsFile'))
     executor.state['packages'].insert(0, package)
     job['releaseTag'] = tag
     executor.save()
     executor.log(job, 'Complete immutable images, cumulative SQL and original package sealed; no target deployed')
+
+
+def cleanup_sealed_build(executor, original):
+    """Called by both the normal sealed build and explicit original-package retry."""
+    require(original.get('sealedPackage'), 'Build worktree cleanup requires a sealed package')
+    if not original.get('buildWorktree'):
+        # Historical packages did not record an owned checkout; never infer one.
+        return
+    path = Path(original['buildWorktree'])
+    require(path.absolute() == (Path(executor.c['buildWorktreeRoot'])/original['releaseTag']).absolute(),
+            'Sealed build worktree does not match its recorded release tag; preserved')
+    proof = original.get('buildWorktreeCleanup', {})
+    if proof.get('status') == 'passed':
+        require(not path.exists(), 'Previously cleaned build worktree path reappeared; preserved')
+    def checkpoint(value):
+        original['buildWorktreeCleanup'] = value
+        executor.save()
+    try:
+        original['buildWorktreeCleanup'] = cleanup_build_worktree(
+            executor.c['repo'], path, executor.c['buildWorktreeRoot'], original['payload']['commit'],
+            prior_proof=proof, before_remove=checkpoint)
+    except Exception:
+        original['buildWorktreeCleanup'] = dict(original.get('buildWorktreeCleanup',{}), status='blocked', path=str(path),
+            reason='Owned checkout cleanup failed; sealed original preserved, verify and retry without compilation')
+        executor.save()
+        raise
+    executor.save()

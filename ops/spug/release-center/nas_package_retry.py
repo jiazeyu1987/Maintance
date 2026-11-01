@@ -100,6 +100,9 @@ def resume(executor, job, selected):
     # explicit retry fully verifies archive contents against the fixed build commit.
     original['sealedPackage'] = dict(package)
     executor.save()
+    if executor.c['applicationId'] == 'intruoyi':
+        from intruoyi_build import cleanup_sealed_build
+        cleanup_sealed_build(executor, original)
     executor.step(job, 'republish-original-package-to-nas')
     connect_nas(executor.c['nasPath'], executor.c.get('nasCredentialsFile'))
     try:
