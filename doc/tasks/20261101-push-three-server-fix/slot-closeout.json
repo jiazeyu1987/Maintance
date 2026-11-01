@@ -1,0 +1,10 @@
+{
+    "status":  "PASS",
+    "path":  "C:\\SpugHandoff\\schema-push-src-20261101",
+    "slot":  3,
+    "frontendPort":  8084,
+    "backendPort":  48084,
+    "active":  false,
+    "otherEntriesPreserved":  true,
+    "time":  "2026-11-01T16:54:07.6129443+08:00"
+}

@@ -1,0 +1,78 @@
+{
+  "source": {
+    "status": "PASS",
+    "commit": "fb88105af40e4ee6366a20dae2df721f1de2dcb0",
+    "branch": "codex/three-server-schema-20261101",
+    "remote": "https://github.com/jiazeyu1987/IntRuoyiAll.git",
+    "knownAdvertisedHeads": 77,
+    "outgoingCommitCount": 6,
+    "outgoingBlobCount": 19,
+    "outgoingBytes": 348728,
+    "largestBlobs": [
+      {
+        "oid": "9664b303d04fffb0a642cbebfa8c3cf84baed3df",
+        "path": "IntRuoyiBackend/sql/mysql/release-sources.json",
+        "bytes": 77022
+      },
+      {
+        "oid": "a43c06f345dab5b94ffdbd33dc68782f5831a835",
+        "path": "IntRuoyiBackend/sql/mysql/release-sources.json",
+        "bytes": 76962
+      },
+      {
+        "oid": "a2a186a2155b54eccdf0786cfe6602bcc65bb629",
+        "path": "IntRuoyiBackend/yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/service/pro/processpool/team/MesCompletionAggregationAuditTransactionTest.java",
+        "bytes": 43710
+      },
+      {
+        "oid": "cc74164026dff6844127fdcd353c4e1eec49387a",
+        "path": "IntRuoyiBackend/yudao-module-mes/src/test/java/cn/iocoder/yudao/module/mes/service/pro/batchrecord/MesEdhrSourceCreationVerificationServiceTest.java",
+        "bytes": 36732
+      },
+      {
+        "oid": "0b1033f62019b2a0e2f8e66efa3a655ba3239872",
+        "path": "IntRuoyiFronted/src/views/form-center/parser/components/SimplePqcTrialPreview.vue",
+        "bytes": 21701
+      }
+    ],
+    "violations": []
+  },
+  "maintenance": {
+    "status": "PASS",
+    "commit": "ef647752b14734e4d3849052e5c34d615a73614c",
+    "branch": "codex/three-server-schema-20261101",
+    "remote": "https://github.com/jiazeyu1987/Maintance.git",
+    "knownAdvertisedHeads": 1,
+    "outgoingCommitCount": 12,
+    "outgoingBlobCount": 115,
+    "outgoingBytes": 2838703,
+    "largestBlobs": [
+      {
+        "oid": "ba4612194637ddfc1b94d19c7c74427f1327db4b",
+        "path": "docs/request-command-log.md",
+        "bytes": 851128
+      },
+      {
+        "oid": "d7b1e136983f161a778b48d4e1976012d3db11c0",
+        "path": "ops/spug/release-center/intruoyi_runtime_agent.py",
+        "bytes": 105606
+      },
+      {
+        "oid": "211c0121d4cd7b9dd753502698d2a482ec5ac850",
+        "path": "ops/spug/release-center/intruoyi_runtime_agent.py",
+        "bytes": 103116
+      },
+      {
+        "oid": "fe365692fb8acf1fe31571a9dd3329a98a8041de",
+        "path": "ops/spug/release-center/intruoyi_rehearsal_agent.py",
+        "bytes": 100529
+      },
+      {
+        "oid": "27027fa5116822dc9d5806da4c6a59eb6574ba2e",
+        "path": "ops/spug/release-center/intruoyi_executor.py",
+        "bytes": 82217
+      }
+    ],
+    "violations": []
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "status": "BLOCKER",
+  "repository": "source",
+  "remote": "https://github.com/jiazeyu1987/IntRuoyiAll.git",
+  "branch": "codex/three-server-schema-20261101",
+  "commit": "fb88105af40e4ee6366a20dae2df721f1de2dcb0",
+  "remoteCommit": null,
+  "pushExitCode": 1,
+  "startedAt": "2026-11-01T16:46:27.791280+08:00",
+  "finishedAt": "2026-11-01T16:46:36.035151+08:00",
+  "currentHeadAndIndexPreserved": true,
+  "forceUsed": false,
+  "intMainMerged": false,
+  "errorCategory": "network or Git transport failure",
+  "gitOutput": "error: failed to push some refs to 'https://github.com/jiazeyu1987/IntRuoyiAll.git'\n",
+  "networkRoute": "existing-system-proxy"
+}
