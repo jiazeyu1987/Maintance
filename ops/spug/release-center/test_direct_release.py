@@ -72,21 +72,45 @@ class DirectReleaseTest(unittest.TestCase):
         self.assertEqual(production['status'],'succeeded',production.get('error'))
         self.assertEqual(self.executor.runtime.deploy.call_count,2)
 
-    def test_each_target_uses_its_own_registered_origin_and_upgraded_schema(self):
+    def test_different_origins_must_converge_to_the_same_tested_schema(self):
         self.configure()
         self.assertEqual(self.run_action('publish-test')['status'], 'succeeded')
         self.executor.state['environments']['prod']['schemaSha256'] = 'different-schema'
         self.executor.state['environments']['prod']['ledgerSha256'] = 'different-ledger'
         def deployed(env,manifest,callback,job_id):
             callback('runtime-deployment-effects',effects=True)
-            return dict(self.observation(maintenance=True),schemaSha256='prod-upgraded-schema')
+            return self.observation(maintenance=True)
         self.executor.runtime.deploy.side_effect=deployed
         job = self.run_action('promote-prod')
         self.assertEqual(job['status'], 'succeeded',job.get('error'))
         basis=self.package['outcomes']['prod']['deployment']['validationBasis']
         self.assertEqual(basis['targetOrigin']['schemaSha256'],'different-schema')
-        self.assertEqual(basis['upgradedSchemaSha256'],'prod-upgraded-schema')
-        self.assertNotIn('expectedSchemaSha256',self.executor.runtime.deploy.call_args.args[1])
+        self.assertEqual(basis['upgradedSchemaSha256'],'schema')
+        self.assertEqual(self.executor.runtime.deploy.call_args.args[1]['expectedSchemaSha256'],'schema')
+
+    def test_direct_deployment_rejects_a_success_receipt_with_a_different_schema(self):
+        self.configure()
+        self.assertEqual(self.run_action('publish-test')['status'], 'succeeded')
+        def deployed(env,manifest,callback,job_id):
+            callback('runtime-deployment-effects',effects=True)
+            return dict(self.observation(maintenance=True),schemaSha256='missing-business-tables')
+        self.executor.runtime.deploy.side_effect=deployed
+        job=self.run_action('promote-prod')
+        self.assertEqual(job['status'],'failed')
+        self.assertIn('schema',job.get('error','').lower())
+        self.executor.maintenance.assert_not_called()
+
+    def test_direct_acceptance_rejects_target_own_receipt_when_source_schema_differs(self):
+        self.configure()
+        self.run_action('publish-test')
+        self.assertEqual(self.run_action('promote-prod')['status'],'succeeded')
+        target=self.executor.state['environments']['prod']
+        target['schemaSha256']='target-only-schema'
+        deployed=self.package['outcomes']['prod']['deployment']
+        deployed['validationBasis']['upgradedSchemaSha256']='target-only-schema'
+        accepted=self.run_action('accept-prod',note='Approved read-only release acceptance')
+        self.assertEqual(accepted['status'],'failed')
+        self.executor.maintenance.assert_not_called()
 
     def test_failed_or_unaccepted_production_cannot_advance_backup(self):
         self.configure()

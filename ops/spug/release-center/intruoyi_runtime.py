@@ -315,13 +315,13 @@ def validate_release_state(state, tag, maintenance):
 def validate_expected_schema(environment, expected_schema, workflow_policy=None):
     if workflow_policy is not None:
         runtime_recovery_policy(environment, {'workflowPolicy':workflow_policy})
-        if expected_schema is None:
-            # Direct releases verify the target's own execution plan and SQL
-            # contracts; another environment's full schema is not an oracle.
+        if expected_schema is None and environment not in ('prod', 'backup'):
+            # Test establishes the reference. Formal targets must converge to
+            # the schema actually verified for the same immutable package.
             return
     if environment in ('prod', 'backup') or expected_schema is not None:
         require(isinstance(expected_schema, str) and re.fullmatch('[0-9a-f]{64}', expected_schema),
-                'Accepted production baseline rehearsal schema fingerprint required before formal target upgrade')
+                'Verified same-package schema fingerprint required before formal target upgrade')
 
 
 def migration_id(item):

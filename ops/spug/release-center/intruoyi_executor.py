@@ -227,6 +227,8 @@ class _IntRuoyiExecutor(Executor):
             if env in ('prod', 'backup') and not self.rehearsal_required():
                 deployed = package['outcomes'][env]['deployment']
                 basis = self.direct_validation_basis(package, env, binding=deployed.get('validationBasis', {}))
+                require(current['schemaSha256'] == basis['sourceVerifiedSchemaSha256'],
+                        'Actual upgraded schema differs from the same-package verified source schema')
                 require(current['schemaSha256'] == basis['upgradedSchemaSha256']
                         and current['ledgerSha256'] == basis['upgradedLedgerSha256'],
                         'Actual upgraded schema/ledger differs from confirmed target deployment')
@@ -627,6 +629,7 @@ class _IntRuoyiExecutor(Executor):
             basis = self.direct_validation_basis(p, env, observation, plan=plan)
             job['validationBasis'] = basis
             runtime_manifest['workflowPolicy']['validationBasis'] = dict(basis)
+            runtime_manifest['expectedSchemaSha256'] = basis['sourceVerifiedSchemaSha256']
         elif env == 'prod':
             rehearsal = passed_rehearsal(p, 'prod', observation['fingerprint'])
             job['rehearsalId'] = rehearsal['id']
@@ -641,6 +644,9 @@ class _IntRuoyiExecutor(Executor):
             self.step(job, name, effects=effects)
         result = self.runtime.deploy(env, runtime_manifest, callback, job['id'])
         require(result.get('releaseTag') == p['releaseTag'], 'Runtime did not confirm deployed version')
+        if runtime_manifest.get('expectedSchemaSha256'):
+            require(result.get('schemaSha256') == runtime_manifest['expectedSchemaSha256'],
+                    'Deployed schema differs from the same-package verified source schema')
         if job.get('validationBasis'):
             require(result.get('schemaSha256') and result.get('ledgerSha256'), 'Confirmed target upgrade schema/ledger required')
             job['validationBasis'].update(upgradedSchemaSha256=result['schemaSha256'], upgradedLedgerSha256=result['ledgerSha256'])
