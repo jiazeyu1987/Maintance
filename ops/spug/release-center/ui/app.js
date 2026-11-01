@@ -2,6 +2,8 @@
 const names=['发布总览','构建版本','候选包详情','测试服发布','隔离升级验证','正式服发布','备用服发布','任务记录','环境与基线','产物清理'];
 const icons=['▦','＋','▣','◈','◇','↗','⇄','≡','⚙','▤'];
 let applications=[],applicationId=new URLSearchParams(location.search).get('app')||localStorage.getItem('releaseCenterApplication')||'',selectionEpoch=0,refreshingEpoch=null;
+let liveVersions=null,versionsLoading=false,versionsError='',versionsAttempted=false;
+let databaseVersions=null,databaseLoading=false,databaseError='';
 const storageKey=key=>`releaseCenter:${applicationId}:${key}`;
 const appLocal={getItem:key=>localStorage.getItem(storageKey(key)),setItem:(key,value)=>localStorage.setItem(storageKey(key),value)};
 const appSession={getItem:key=>sessionStorage.getItem(storageKey(key)),setItem:(key,value)=>sessionStorage.setItem(storageKey(key),value)};
@@ -62,10 +64,10 @@ const targetAddress=env=>remoteApplication()?(state.application.targets?.[env]?.
 const maintenanceText=env=>{const entry=state.environments[env];return entry?.maintenanceUnknown||entry?.maintenanceError?'维护状态无法确认 · 需技术核对':entry?.maintenance===true?'维护中 · 写入暂停':entry?.maintenance===false?'业务写入状态：开放':'维护状态尚未读取';};
 const detail=()=>{let p=pkg();return p?`<div class="pad">${kv('固定发布版本',`<span class="mono">${esc(p.releaseTag)}</span>`)}${kv('Git 提交',`<span class="mono">${esc(p.gitCommit.slice(0,12))}</span>`)}${kv('包 SHA256',`<span class="mono" title="${esc(p.packageSha256)}">${esc(p.packageSha256.slice(0,24))}…</span>`)}${kv('当前阶段',badge(p.stage))}${p.portableLocalOmission?kv('本机资料','未携带此历史包，仅可查看记录；不能在本机重新发布或恢复。'):''}${kv('用途',p.baseline?(remoteApplication()?'只读登记基线':'已登记演示基线'):'候选完整发布包')}</div>`:'<div class="pad sub">尚无构建完成的发布包。</div>'};
 const flow=n=>`<section class="card flow">${['构建发布包',remoteApplication()?'测试服技术检查':'测试服验收','隔离升级验证','正式服发布','备用服发布'].map((x,i)=>`<div class="step ${i<n?'done':i===n?'current':''}"><div class="num">${i<n?'✓':i+1}</div><span>${x}</span></div>`).join('')}</section>`;
-function envlink(env){
- if(!state.environments[env])return '';
+function envlink(env,observation=state.environments[env]){
+ if(!observation)return '';
  if(!remoteApplication())return `<a class="button envlink" target="_blank" rel="noopener" href="http://127.0.0.1:${state.application.ports[env]}">打开${{test:'测试',prod:'演示正式',backup:'演示备用',rehearsal:'隔离验证'}[env]}系统 ↗</a>`;
- const target=state.application.targets?.[env],entry=state.environments[env];
+ const target=state.application.targets?.[env],entry=observation;
  if(entry.maintenanceUnknown||entry.maintenanceError)return '<div class="sidenote">维护状态待核对，暂不提供验收入口。</div>';
  const url=entry.maintenance===true?target?.acceptanceUrl:target?.url;
  if(!url)return `<div class="sidenote">${entry.maintenance===true?'维护验收入口尚未配置':'运行入口尚未配置'}</div>`;
@@ -73,6 +75,73 @@ function envlink(env){
  return `<a class="button envlink" target="_blank" rel="noopener" href="${esc(url)}">打开${esc(targetName(env))}${entry.maintenance===true?'维护验收入口':'系统'} ↗</a>`;
 }
 async function api(path,body,identity=applicationId){const token=localStorage.getItem('token');if(!token)throw Error('请先登录 Spug，再进入发布中心。');const route=path==='applications'?path:'applications/'+encodeURIComponent(identity)+'/'+path;const response=await fetch('api/'+route,{method:body?'POST':'GET',headers:{'X-Token':token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined,cache:'no-store'});const data=await response.json();if(!response.ok)throw Error(data.error||'请求失败');return data;}
+function actualVersionCards(){
+ const controls=`<div class="card pad"><button class="primary" data-read-versions ${versionsLoading||databaseLoading?'disabled':''}>${versionsLoading||databaseLoading?'正在读取三服…':capability('databaseVersions')===true?'刷新三服版本与数据库':'读取三服实际版本'}</button><p class="sub">直接读取三服实际版本${capability('databaseVersions')===true?'，同时对比数据库结构和迁移记录':''}。恢复备份后可能与发布记录不同；读取不会更新发布基线。</p>${versionsError?`<div class="errorbox">${esc(versionsError)}</div>`:''}</div>`;
+ const cards=['test','prod','backup'].map(env=>{
+  const value=liveVersions?.targets?.[env],version=value?.version,record=state.environments[env];
+  const comparison=value?.matchesRecorded===true?badge('与登记版本一致','green'):value?.matchesRecorded===false?badge('与登记版本不同','orange'):badge('未完成版本比对','gray');
+  const components=value?.components||{};
+  return `<div class="card pad"><div class="envtop"><span class="envname">${esc(targetName(env))}</span>${badge(versionsLoading?'读取中':value?.status==='ok'?'已读取':value?'读取未完整':'尚未读取',value?.status==='ok'&&!versionsLoading?'green':'orange')}</div><div class="envhost">${esc(targetAddress(env))}</div><div class="sub">实际程序版本</div><div class="version">${versionsLoading?'正在读取…':esc(version?.releaseTag||'无法确认')}${!versionsLoading&&version?.frontendPatchTag?'<small>前端补丁 '+esc(version.frontendPatchTag)+'</small>':''}</div>${!versionsLoading?comparison:''}${kv('最近登记版本',esc(record?.releaseTag||'尚未登记'))}${kv('实际读取时间',esc(value?.observedAt||'尚未读取'))}${!versionsLoading?Object.entries(components).map(([role,c])=>kv(role==='backend'?'后端容器':'前端容器',`${c.running?'运行中':'已停止'}<small class="mono">${esc(c.imageId)}</small>`)).join(''):''}${!versionsLoading&&(value?.error||value?.errors?.length)?`<div class="errorbox">${esc(value.error||(value.errors||[]).join('; '))}</div>`:''}${!versionsLoading&&value?.status==='ok'?envlink(env,{maintenance:value.maintenance}):''}</div>`;
+ }).join('');
+ const comparisons=!versionsLoading&&liveVersions?card('三服程序一致性',table(['对比','版本及前端补丁','前端镜像','后端镜像'],[['test','prod'],['test','backup'],['prod','backup']].map(([left,right])=>{
+  const a=liveVersions.targets[left],b=liveVersions.targets[right],valid=a?.status==='ok'&&b?.status==='ok';
+  const same=role=>valid&&a.components?.[role]?.imageId&&b.components?.[role]?.imageId?a.components[role].imageId===b.components[role].imageId:null;
+  return [esc(targetName(left)+' ↔ '+targetName(right)),databaseMatch(valid?a.version.releaseTag===b.version.releaseTag&&(a.version.frontendPatchTag||null)===(b.version.frontendPatchTag||null):null),databaseMatch(same('frontend')),databaseMatch(same('backend'))];
+ }))):'';
+ return controls+'<div class="grid three">'+cards+'</div>'+comparisons;
+}
+async function readCurrentVersions(){
+ const epoch=selectionEpoch,identity=applicationId;
+ if(versionsLoading)return;
+ versionsLoading=true;versionsAttempted=true;versionsError='';liveVersions=null;render();
+ try{const result=await api('current-versions',undefined,identity);if(epoch!==selectionEpoch)return;if(result.applicationId!==identity)throw Error('实际版本响应的应用身份不符');liveVersions=result;}
+ catch(exc){if(epoch===selectionEpoch){liveVersions=null;versionsError='读取实际版本失败：'+exc.message;}}
+ finally{if(epoch===selectionEpoch){versionsLoading=false;render();}}
+}
+const databaseSections={tables:'表',columns:'字段',indexes:'索引组成列',constraints:'约束',foreignKeys:'外键组成列',foreignKeyRules:'外键规则',checks:'检查约束',views:'视图',triggers:'触发器',routines:'存储程序',parameters:'程序参数',events:'事件',databaseOptions:'数据库选项'};
+const databaseMatch=value=>value===true?badge('一致','green'):value===false?badge('不一致','orange'):badge('无法确认','gray');
+function databasePanel(){
+ if(!remoteApplication()||capability('databaseVersions')!==true)return '';
+ const result=databaseVersions;
+ const button=`<button class="primary" data-read-databases ${databaseLoading?'disabled':''}>${databaseLoading?'正在读取三服数据库…':'读取并对比三服数据库'}</button>`;
+ let body='<p class="sub">只读比较当前数据库结构和有效迁移记录，不比较业务数据，不更新发布基线。发布或恢复过程中结果可能变化，请在操作结束后重新读取。</p>';
+ if(databaseError)body+=`<div class="errorbox">${esc(databaseError)}</div>`;
+ if(databaseLoading)body+=notice('正在读取三服系统元数据及迁移记录，不导出完整数据库。');
+ else if(result){
+  body+=`<p>${badge(result.status==='identical'?'三服结构与迁移一致':result.status==='different'?'三服数据库存在差异':'三服一致性无法确认',result.status==='identical'?'green':result.status==='different'?'orange':'gray')} <span class="sub">结果时间：${esc(result.observedAt)} · ${esc(result.algorithm)}</span></p>`;
+  body+='<div class="database-scroll">'+table(['环境','数据库 / MySQL','表 / 字段','有效迁移','结构摘要','采集时间'],['test','prod','backup'].map(env=>{
+   const v=result.targets[env],valid=v?.status==='ok',m=v?.migrations,s=v?.schema;
+   return [esc(targetName(env)),valid?`${esc(v.database)}<small>MySQL ${esc(v.mysqlVersion)}</small>`:badge('无法确认','gray'),valid?`${s.counts.tables} / ${s.counts.columns}`:'—',valid?`${m.count}${m.healthy?'':'<small class="dangertext">存在未成功记录或摘要冲突</small>'}`:'—',valid?`<span class="mono" title="${esc(s.sha256)}">${esc(s.sha256.slice(0,12))}…</span>`:'—',`${esc(v?.observedAt||'未取得')}<small>${esc(v?.error||'')}</small>`];
+  }))+'</div>';
+  for(const pair of result.comparisons){
+   const title=esc(targetName(pair.left)+' ↔ '+targetName(pair.right));
+   const planKey=`database-diff:${applicationId}:${pair.left}:${pair.right}`;
+   body+=`<details class="migration-plan" data-plan-key="${esc(planKey)}" ${sessionStorage.getItem(planKey)==='open'?'open':''}><summary>${title}　结构 ${databaseMatch(pair.schemaEqual)}　迁移 ${databaseMatch(pair.migrationsEqual)}</summary>`;
+   if(pair.status==='unknown')body+=notice('至少一侧读取未完成、采集期间发生变化，或迁移记录存在异常，无法确认一致。');
+   if(pair.structureDifferenceCount!==undefined){
+    body+=`<p class="sub">结构差异 ${pair.structureDifferenceCount} 项；迁移差异 ${pair.migrationDifferenceCount} 项。每类最多显示 ${pair.detailsLimit} 项。</p>`;
+    const changes=pair.structureDifferences.map(d=>[esc(databaseSections[d.section]||d.section),esc(d.name),esc(d.kind==='onlyLeft'?'仅'+targetName(pair.left)+'存在':d.kind==='onlyRight'?'仅'+targetName(pair.right)+'存在':'定义不同')]);
+    if(changes.length)body+='<div class="database-scroll">'+table(['类型','对象','差异'],changes)+'</div>';
+    const migrationSide=v=>v?`${esc(v.status)}<small class="mono">${esc(v.sha256)}</small>`:'无记录';
+    if(pair.migrationDifferences.length)body+='<div class="database-scroll">'+table(['迁移编号',esc(targetName(pair.left)),esc(targetName(pair.right))],pair.migrationDifferences.map(d=>[esc(d.migrationId),migrationSide(d.left),migrationSide(d.right)]))+'</div>';
+   }
+   body+='</details>';
+  }
+ }else body+=notice('尚未读取，点击右上方按钮获取三服当前数据库状态。');
+ return card('三服数据库一致性',`<div class="pad">${body}</div>`,button);
+}
+async function readDatabaseVersions(){
+ const epoch=selectionEpoch,identity=applicationId;
+ if(databaseLoading)return;
+ databaseLoading=true;databaseError='';databaseVersions=null;render();
+ try{const result=await api('database-versions',undefined,identity);if(epoch!==selectionEpoch)return;if(result.applicationId!==identity)throw Error('数据库响应的应用身份不符');databaseVersions=result;}
+ catch(exc){if(epoch===selectionEpoch){databaseVersions=null;databaseError='数据库对比失败：'+exc.message;}}
+ finally{if(epoch===selectionEpoch){databaseLoading=false;render();}}
+}
+async function refreshActualEnvironments(){
+ if(versionsLoading||databaseLoading)return;
+ await Promise.all([readCurrentVersions(),...(capability('databaseVersions')===true?[readDatabaseVersions()]:[])]);
+}
 function remoteExecution(j){
  if(!j.remoteStatusRequired)return '';
  if(j.remoteStatusError)return kv('远端执行状态','查询失败，结果待核实：'+esc(j.remoteStatusError));
@@ -268,7 +337,7 @@ function render(){
  if(connectionError)html+=`<div role="alert" class="errorbox" data-connection-error>${esc(connectionError)}</div>`;
  html+=precheckPanel();
  if(busy)html+=notice('原任务正在执行或存在未处理的中断。页面刷新不会重新提交。')+link('查看原任务与技术处理',7);
- if(page===0){html+='<div class="grid three">'+['test','prod','backup'].map(env=>{const e=state.environments[env],remote=remoteApplication();const registered=remote?e?.baselineStatus==='registered'&&!e?.error:!!e;return `<div class="card pad"><div class="envtop"><span class="envname">${esc(targetName(env))}</span>${e?.error?badge('登记失败','red'):badge(registered?'已登记':remote?'尚未核对登记':'未初始化',registered?'green':'gray')}</div><div class="envhost">${esc(targetAddress(env))}${remote?'':' · 本地独立演示'}</div><div class="version">${esc(e?.releaseTag||'尚无基线')}${e?.frontendPatchTag?'<small>前端补丁 '+esc(e.frontendPatchTag)+'</small>':''}</div><div class="envmeta">${remote?esc(maintenanceText(env)):e?.maintenanceError?'维护状态无法确认 · 需技术核对':e?.maintenance?'维护中 · 写入暂停':'状态以实际发布检查为准'}</div>${remote?`<div class="sub">核对时间：${esc(e?.observedAt||'尚未读取')}</div>`:''}${envlink(env)}</div>`;}).join('')+'</div>'+card('当前候选发布包',detail(),link('查看发布包',2))+stageResults()+logs();}
+ if(page===0){html+=(remoteApplication()&&(state.application.capabilities?.currentVersions===true)?actualVersionCards():'<div class="grid three">'+['test','prod','backup'].map(env=>{const e=state.environments[env],remote=remoteApplication();const registered=remote?e?.baselineStatus==='registered'&&!e?.error:!!e;return `<div class="card pad"><div class="envtop"><span class="envname">${esc(targetName(env))}</span>${e?.error?badge('登记失败','red'):badge(registered?'已登记':remote?'尚未核对登记':'未初始化',registered?'green':'gray')}</div><div class="envhost">${esc(targetAddress(env))}${remote?'':' · 本地独立演示'}</div><div class="version">${esc(e?.releaseTag||'尚无基线')}${e?.frontendPatchTag?'<small>前端补丁 '+esc(e.frontendPatchTag)+'</small>':''}</div><div class="envmeta">${remote?esc(maintenanceText(env)):e?.maintenanceError?'维护状态无法确认 · 需技术核对':e?.maintenance?'维护中 · 写入暂停':'状态以实际发布检查为准'}</div>${remote?`<div class="sub">核对时间：${esc(e?.observedAt||'尚未读取')}</div>`:''}${envlink(env)}</div>`;}).join('')+'</div>')+card('当前候选发布包',detail(),link('查看发布包',2))+stageResults()+logs();}
  if(page===1){html+=flow(0)+`<div class="grid two">${card('选择构建来源',`<div class="pad"><div class="field"><label>源码仓库</label><div class="input">${esc(state.application.repo)}</div></div><div class="field"><label for="commit">固定 Git 提交</label><select id="commit" class="input">${chosenCommit&&!commits.some(c=>c.commit===chosenCommit)?`<option value="${esc(chosenCommit)}" selected disabled>所选提交不在当前列表：${esc(chosenCommit.slice(0,12))}</option>`:''}${commits.map(c=>`<option value="${c.commit}" ${c.commit===chosenCommit?'selected':''}>${esc(c.commit.slice(0,12)+' · '+c.message)}</option>`).join('')}</select><small>在专用干净 worktree 构建完整后端、前端镜像与迁移文件。</small></div>${action('开始构建','build-release',commits.some(c=>c.commit===chosenCommit))}</div>`)}${card('构建内容',`<div class="pad">${kv('完整程序镜像','后端 + 前端')}${kv('前端版本验收','从镜像读回 release-info.json')}${kv('导出内容','images.tar + migrations + manifest')}${kv('版本规则','北京时间 yyyy-MM-dd-HH-mm-ss')}<div class="reviewbox">只接受已提交 Git 源码。未提交开发修改不进入发布包。</div></div>`)}</div>`+logs();}
  if(page===2){html+=card('本次固定包',detail())+card('发布包目录与身份',p?`<div class="pad">${kv('包位置',esc(p.directory))}${p.nasDirectory?kv('NAS 原包位置',esc(p.nasDirectory)):''}${kv('Manifest SHA256',`<span class="mono">${esc(p.manifestSha256)}</span>`)}${kv('程序包 SHA256',`<span class="mono">${esc(p.packageSha256)}</span>`)}<div class="checks"><span>完整镜像导出</span><span>编号迁移及校验和</span><span>Git 提交独立记录</span></div>${link('发布测试服',3)}</div>`:'<div class="pad">先构建完整程序包。</div>');}
  if(page===3){html+=flow(1)+`<div class="grid two"><div>${card('固定测试发布包',detail())}${logs()}</div><div>${card(remoteApplication()?'测试部署与技术检查':'测试部署与功能验收',`<div class="pad">${testDeploymentAction(stage,p)}${remoteApplication()?'<div class="sidenote">固定原包直接部署到测试服，三项技术检查通过后进入正式基线隔离验证。</div>':''}${envlink('test')}<div class="sidenote">部署读取原包、校验迁移历史，检查镜像、后端 UP、前端200与版本。</div>${accept(remoteApplication()?'当前测试版本验收通过':'功能测试通过',testAcceptance(),remoteApplication()?['test-deployed','tested'].includes(stage):stage==='test-deployed')}${link('进入隔离升级验证',4)}</div>`)}</div></div>`;}
@@ -286,6 +355,7 @@ function render(){
  if(remoteApplication()&&[0,3,4,5,6,7].includes(page))html+=interruptionPanel();
  if(page===6)html+=backupRetryPanel();
  if(page===8)html+=auditBaseline();
+ if([0,8].includes(page))html+=databasePanel();
  html+='<div class="bottomnote"><span>通用发布执行器 · 持久化任务与原包身份</span><span>所有状态来自真实执行记录</span></div>';document.getElementById('app').innerHTML=html;
 }
 document.addEventListener('toggle',event=>{
@@ -305,6 +375,8 @@ document.addEventListener('change',event=>{
 });
  document.addEventListener('input',event=>{if(event.target.dataset.draftKey)appSession.setItem(event.target.dataset.draftKey,event.target.value);});
  document.addEventListener('click',async event=>{
+ const readButton=event.target.closest('[data-read-versions]');if(readButton?.dataset.readVersions!==undefined&&!readButton.disabled&&state){await refreshActualEnvironments();return;}
+ const databaseButton=event.target.closest('[data-read-databases]');if(databaseButton?.dataset.readDatabases!==undefined&&!databaseButton.disabled&&state){await readDatabaseVersions();return;}
  const button=event.target.closest('[data-action]');if(!button||button.disabled||!state)return;button.disabled=true;
  const originApplication=applicationId,originEpoch=selectionEpoch;
  try{
@@ -343,7 +415,7 @@ document.addEventListener('change',event=>{
 });
 function selectApplication(identity){
  if(identity==='fenbeitong'&&applications.some(x=>x.id===identity&&x.status==='ready')){location.href='fenbeitong.html?app=fenbeitong&page=0';return;}
- applicationId=identity;selectionEpoch++;state=null;commits=[];busy=false;error='';connectionError='';
+ applicationId=identity;selectionEpoch++;state=null;commits=[];busy=false;error='';connectionError='';liveVersions=null;versionsLoading=false;versionsError='';versionsAttempted=false;databaseVersions=null;databaseLoading=false;databaseError='';
  selected=appLocal.getItem('releaseCenterPackage')||'';chosenCommit=appLocal.getItem('releaseCenterCommit')||'';packageChoiceMade=appLocal.getItem('releaseCenterPackage')!==null;
  localStorage.setItem('releaseCenterApplication',identity);history.replaceState(null,'',appUrl(page));
  if(!applications.some(x=>x.id===identity)){error='未登记的应用，请明确选择其他应用；未自动切换。';render();return;}
@@ -357,6 +429,7 @@ async function refresh(){
   const next=await api('state',undefined,identity);if(epoch!==selectionEpoch)return;
   if(next.application?.id!==identity)throw Error('返回状态的应用身份不符，已停止显示。');
   state=next;connectionError='';
+  if(page===0&&remoteApplication()&&state.application.capabilities?.currentVersions===true&&!versionsAttempted)readCurrentVersions();
   if(page===1&&!commits.length){const rows=await api('commits',undefined,identity);if(epoch!==selectionEpoch)return;commits=rows;if(!chosenCommit&&commits.length){chosenCommit=commits[0].commit;appLocal.setItem('releaseCenterCommit',chosenCommit);}}
   if(!packageChoiceMade&&!selected&&state.packages.length){selected=state.packages[0].releaseTag;packageChoiceMade=true;appLocal.setItem('releaseCenterPackage',selected);}
   render();

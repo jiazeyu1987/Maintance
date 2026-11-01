@@ -58,6 +58,31 @@ assert(h.render(0).includes('演示正式服'));
 assert(h.render(8).includes('data-action="initialize-baseline"'));
 console.log('PASS: remote 9-page target/capability/baseline/storage/maintenance contracts and local demo regression. No HTTP or release actions executed.');
 
+// A restore changes the actual version without changing deployment history.
+const live=harness();live.set(JSON.parse(JSON.stringify(remote)));
+live.evaluate("state.application.capabilities.currentVersions=true;liveVersions={applicationId:'intruoyi',targets:{test:{status:'ok',version:{releaseTag:'restored-version'},matchesRecorded:false,observedAt:'2026-11-01T00:00:00Z',components:{}},prod:{status:'error',version:null,error:'SSH timed out',observedAt:'2026-11-01T00:00:00Z'}}}");
+const actual=live.render(0);
+for(const text of ['读取三服实际版本','restored-version','baseline-test','与登记版本不同','SSH timed out','无法确认','最近登记版本','当前候选发布包'])assert(actual.includes(text),'Missing live version UI: '+text);
+assert.equal(live.evaluate('state.environments.test.releaseTag'),'baseline-test','Live results must not rewrite recorded baselines');
+live.evaluate("versionsLoading=true;liveVersions=null");
+const loading=live.render(0);
+assert(loading.includes('正在读取三服…'));
+assert(!loading.includes('restored-version'),'Previous observation cannot appear as a fresh live result');
+console.log('Live version cards distinguish restore drift, connection failure, loading and immutable release history');
+const db=harness();db.set(JSON.parse(JSON.stringify(remote)));
+db.evaluate("state.application.capabilities.currentVersions=true;state.application.capabilities.databaseVersions=true;databaseVersions={applicationId:'intruoyi',status:'different',algorithm:'mysql-structure-v1',observedAt:'now',targets:{test:{status:'ok',database:'db',mysqlVersion:'8.0.39',observedAt:'now',schema:{counts:{tables:885,columns:15594},sha256:'abcdef0123456789'},migrations:{count:760,healthy:true}},prod:{status:'error',error:'SSH timed out'}},comparisons:[{left:'test',right:'backup',status:'different',schemaEqual:false,migrationsEqual:false,structureDifferenceCount:1,migrationDifferenceCount:1,detailsLimit:50,structureDifferences:[{section:'tables',name:'<unsafe>',kind:'onlyLeft'}],migrationDifferences:[{migrationId:'M1',left:{status:'SUCCESS',sha256:'abc'},right:null}]}]}");
+for(const p of [0,8]){
+ const html=db.render(p);
+ for(const text of ['三服数据库一致性','三服数据库存在差异','885 / 15594','760','SSH timed out','结构','迁移','无记录','&lt;unsafe&gt;'])assert(html.includes(text),'Missing database UI '+text);
+ assert(!html.includes('<unsafe>'));
+}
+assert(db.render(0).includes('刷新三服版本与数据库'));
+db.evaluate('databaseLoading=true;databaseVersions=null');
+assert(db.render(0).includes('正在读取三服数据库'));
+db.evaluate("databaseLoading=false;databaseError='read failed'");
+assert(db.render(0).includes('read failed'));
+console.log('Database comparison: structure/ledger separation, unknown reads, escaped differences, loading and unified refresh passed');
+
 // Test deploys directly; only production has an isolation entry and separate acceptance.
 const gate=harness();gate.set(JSON.parse(JSON.stringify({...remote,jobs:[],packages:[{...candidate,stage:'built',rehearsals:[]}]})));
 gate.evaluate("state.application.capabilities.prepareRehearsal=true;appSession.setItem(sourceKey(),'test')");

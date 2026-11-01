@@ -40,6 +40,54 @@ def check_fence(profile):
     require(fields == ['0', '0'], 'External read_only/super_read_only fence active; operation refused without changing protection')
 
 
+def read_versions(profile):
+    """Inspect the deployed containers only; never read SQL or register a baseline."""
+    components, errors = {}, []
+    version = None
+    maintenance = None
+    for role in ('backend', 'frontend'):
+        try:
+            info = remote.inspect(profile[role])
+            components[role] = dict(containerId=info['Id'], name=profile[role],
+                                    imageId=info['Image'], image=info['Config']['Image'],
+                                    running=info['State']['Running'], startedAt=info['State']['StartedAt'])
+            if role == 'backend':
+                env = dict(v.split('=', 1) for v in info['Config'].get('Env', []))
+                maintenance = env.get('INTRUOYI_RELEASE_MAINTENANCE') == 'true'
+        except Exception as error:
+            errors.append(role + ': container inspection failed (' + type(error).__name__ + ')')
+    if components.get('frontend', {}).get('running'):
+        try:
+            raw = remote.run(['docker', 'exec', profile['frontend'], 'cat',
+                              '/usr/share/nginx/html/release-info.json'], timeout=8)
+            metadata = json.loads(raw)
+            tag = metadata.get('baseReleaseTag', metadata.get('releaseTag'))
+            require(isinstance(tag, str) and tag, 'Current frontend version is missing')
+            version = dict(releaseTag=tag, frontendPatchTag=metadata.get('frontendPatchTag'),
+                           gitCommit=metadata.get('gitCommit'))
+        except Exception as error:
+            errors.append('frontend: release-info.json unreadable or invalid (' + type(error).__name__ + ')')
+    else:
+        errors.append('frontend: not running; current version cannot be read')
+    if components.get('backend', {}).get('running') is not True:
+        errors.append('backend: not running')
+    # Do not combine metadata from one container with images from another
+    # when a concurrent deployment or restore replaces the named target.
+    for role, component in components.items():
+        try:
+            after = remote.inspect(profile[role])
+            require(after['Id'] == component['containerId'] and after['Image'] == component['imageId']
+                    and after['State']['Running'] == component['running']
+                    and after['State']['StartedAt'] == component['startedAt'],
+                    'Container changed during version inspection')
+        except Exception as error:
+            version = None
+            errors.append(role + ': container changed or could not be rechecked (' + type(error).__name__ + ')')
+    return dict(status='ok' if not errors else 'partial', host=profile['host'],
+                version=version, components=components, maintenance=maintenance, errors=errors,
+                observedAt=datetime.now(timezone.utc).isoformat())
+
+
 def observe(profile):
     # Inspector performs SHOW TABLES/DESCRIBE before metadata/ledger queries.
     raw = remote.observe(profile)
@@ -1323,6 +1371,11 @@ def verify_deployment_stopped(profile, payload):
 
 def dispatch(payload):
     profile, action = payload['profile'], payload['action']
+    if action == 'read-versions':
+        return read_versions(profile)
+    if action == 'read-database':
+        from database_versions import read_database
+        return read_database(remote, profile)
     if action.startswith('frontend-patch-'):
         from frontend_patch_agent import execute
         return execute(profile,payload,globals())

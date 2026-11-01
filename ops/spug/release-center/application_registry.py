@@ -52,14 +52,14 @@ class ApplicationRegistry:
         } for app in self.apps.values()])
 
     def resolve(self, path, method, payload=None):
-        match = re.fullmatch(r'/applications/([a-z][a-z0-9-]{2,35})/(state|commits|actions/[a-z-]+)', path)
+        match = re.fullmatch(r'/applications/([a-z][a-z0-9-]{2,35})/(state|commits|current-versions|database-versions|actions/[a-z-]+)', path)
         if not match:
             raise RegistryError(404, '发布应用路由不存在')
         identity, route = match.groups()
         if identity not in self.apps:
             raise RegistryError(404, '未登记的应用：' + identity)
         app = self.apps[identity]
-        if (method == 'GET' and route not in ('state', 'commits')) or (method == 'POST' and not route.startswith('actions/')) or method not in ('GET', 'POST'):
+        if (method == 'GET' and route not in ('state', 'commits', 'current-versions', 'database-versions')) or (method == 'POST' and not route.startswith('actions/')) or method not in ('GET', 'POST'):
             raise RegistryError(405, '应用操作方法不匹配')
         if app['status'] != 'ready':
             raise RegistryError(409, app['name'] + ' 尚未接入发布执行器：' + '；'.join(app['blockers']))
@@ -71,7 +71,7 @@ class ApplicationRegistry:
         headers = {'Content-Type': 'application/json', 'X-Release-Key': app['bridgeKey'], 'X-Release-Actor': actor}
         def send(path, data=None, verb='GET'):
             request = urllib.request.Request(app['executorUrl'] + path, data=data, method=verb, headers=headers)
-            return self.http.open(request, timeout=20)
+            return self.http.open(request, timeout=60 if path == '/database-versions' else 20)
 
         # Validate the actual executor before forwarding commits or any write.
         # A configuration pointing at another application's process must fail closed.

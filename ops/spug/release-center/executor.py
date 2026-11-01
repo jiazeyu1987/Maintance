@@ -986,6 +986,12 @@ def create_server(executor, config):
                     return self.reply(200, executor.snapshot())
                 if self.command == 'GET' and self.path == '/commits':
                     return self.reply(200, executor.commits())
+                if self.command == 'GET' and self.path == '/current-versions':
+                    require(callable(getattr(executor, 'current_versions', None)), 'Current version inspection is not supported')
+                    return self.reply(200, executor.current_versions())
+                if self.command == 'GET' and self.path == '/database-versions':
+                    require(callable(getattr(executor, 'database_versions', None)), 'Database inspection is not supported')
+                    return self.reply(200, executor.database_versions())
                 require(self.command == 'POST' and self.path.startswith('/actions/'), 'Route not found')
                 size = int(self.headers.get('Content-Length', '0'))
                 require(0 < size < 16384, 'Invalid body length')

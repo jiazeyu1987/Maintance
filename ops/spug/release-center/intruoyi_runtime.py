@@ -433,7 +433,11 @@ class Runtime:
         journal = (self.sources / 'operation_journal.py').read_text('utf-8')
         artifacts = (self.sources / 'artifact_files.py').read_text('utf-8')
         frontend_patch = (self.sources / 'frontend_patch_agent.py').read_text('utf-8')
+        database_versions = (self.sources / 'database_versions.py').read_text('utf-8')
         source = ('import types,sys\n'
+                  '_database=types.ModuleType("database_versions")\n'
+                  'sys.modules["database_versions"]=_database\n'
+                  'exec(compile(' + repr(database_versions) + ',"database_versions.py","exec"),_database.__dict__)\n'
                   '_patch=types.ModuleType("frontend_patch_agent")\n'
                   'sys.modules["frontend_patch_agent"]=_patch\n'
                   'exec(compile(' + repr(frontend_patch) + ',"frontend_patch_agent.py","exec"),_patch.__dict__)\n'
@@ -463,6 +467,8 @@ class Runtime:
                               timeout=self.config.get('rehearsalOperationTimeout', 21600)
                               if action in ('rehearsal-capture', 'rehearsal-restore')
                               else max(1800, self.config.get('operationTimeout', 3600)) if action == 'resume-test-deployment-tail'
+                              else 45 if action == 'read-database'
+                              else 15 if action == 'read-versions'
                               else self.config.get('operationTimeout', 3600))
         except subprocess.TimeoutExpired:
             if uncertain_on_disconnect:

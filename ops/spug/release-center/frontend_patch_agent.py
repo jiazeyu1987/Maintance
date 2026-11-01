@@ -42,6 +42,11 @@ def validate_origin(actual,expected,manifest,a):
     a['require'](actual==expected,'目标前端或后端起点已改变，请重新核对')
     a['require'](actual['releaseTag']==manifest['baseReleaseTag'],'目标主版本不适用本补丁')
     a['require'](actual['components']['backend']['imageId']==manifest['backendImageId'],'后端镜像不在补丁适用范围')
+    baseline=manifest.get('observedBaseline')
+    if baseline:
+        env=a.get('environment')
+        a['require'](env in baseline['origins'],'补丁现场基线缺少本目标身份')
+        a['require'](actual==baseline['origins'][env],'目标实际起点与补丁现场基线不一致')
     a['require'](actual.get('frontendPatchTag')!=manifest['releaseTag'],'目标已安装同一补丁')
     a['require'](not actual.get('frontendPatchTag') or actual['frontendPatchTag']<manifest['releaseTag'],'目标补丁版本更新，禁止覆盖')
 
@@ -134,7 +139,7 @@ def execute(profile,payload,a):
         require(json.loads((root/'manifest.json').read_text('utf-8'))==manifest,'远端补丁清单已改变')
         a['verify_files'](root,manifest['files'])
         before=observation(profile,a)
-        validate_origin(before,payload['origin'],manifest,a)
+        validate_origin(before,payload['origin'],manifest,dict(a,environment=profile['environment']))
         path=root/'deployment.json'
         require(not path.exists(),'原部署已登记，请核对原任务，禁止重复执行')
         a['private_json'](root/'frontend-origin.private.json',remote.inspect(profile['frontend']))

@@ -297,6 +297,52 @@ class _IntRuoyiExecutor(Executor):
             source = self.state['environments']['rehearsal'].get('sourceEnvironment')
             self.runtime.targets['rehearsal'] = rehearsal_profile(config, source)
 
+    def current_versions(self):
+        """Live, read-only observations stay separate from deployment/baseline state."""
+        from concurrent.futures import ThreadPoolExecutor
+        with self.lock:
+            recorded = json.loads(json.dumps(self.state['environments']))
+        def read(env):
+            try:
+                value = self.runtime.call(env, 'read-versions')
+                require(value.get('status') in ('ok', 'partial'), 'Invalid current version response')
+                old = recorded.get(env, {})
+                value['recordedReleaseTag'] = old.get('releaseTag')
+                value['recordedAt'] = old.get('observedAt')
+                expected = old.get('images') or old.get('imageIds')
+                actual = {role: data['imageId'] for role, data in value['components'].items()}
+                value['matchesRecorded'] = (value['version']['releaseTag'] == old.get('releaseTag')
+                    and value['version'].get('frontendPatchTag') == old.get('frontendPatchTag')
+                    and actual == expected) if value['status'] == 'ok' and expected else None
+                return env, value
+            except Exception as error:
+                return env, dict(status='error', version=None, components={},
+                                 error='Actual version read failed: ' + str(error), observedAt=stamp())
+        with ThreadPoolExecutor(max_workers=3) as pool:
+            results = dict(pool.map(read, ('test', 'prod', 'backup')))
+        return dict(applicationId=self.c['applicationId'], targets=results)
+
+    def database_versions(self):
+        """Observe databases without registering or changing release state."""
+        from concurrent.futures import ThreadPoolExecutor
+        from database_versions import compare_targets, public_targets, SCHEMA_VERSION
+        from datetime import datetime, timezone
+        def read(env):
+            try:
+                value = self.runtime.call(env, 'read-database')
+                require(value.get('algorithm') == SCHEMA_VERSION and value.get('status') in ('ok', 'changed'),
+                        'Invalid database observation contract')
+                return env, value
+            except Exception as error:
+                return env, dict(status='error', error='数据库读取失败：' + str(error), observedAt=stamp())
+        with ThreadPoolExecutor(max_workers=3) as pool:
+            targets = dict(pool.map(read, ('test', 'prod', 'backup')))
+        comparisons = compare_targets(targets)
+        return dict(applicationId=self.c['applicationId'], algorithm=SCHEMA_VERSION,
+                    targets=public_targets(targets), comparisons=comparisons, observedAt=datetime.now(timezone.utc).isoformat(),
+                    status='unknown' if any(p['status'] == 'unknown' for p in comparisons) else
+                           'identical' if all(p['status'] == 'identical' for p in comparisons) else 'different')
+
     def snapshot(self):
         with self.lock:
             self.ensure_persistence()
@@ -312,7 +358,8 @@ class _IntRuoyiExecutor(Executor):
                                                  restoreMetadata=bool(self.c.get('metadataRepair')),
                                                  buildRelease=True, prepareRehearsal=configured, independentRestoreDrill=configured, releaseRecovery=True,
                                                  businessAcceptance=True, interruptionReconciliation=True,
-                                                 independentBackupRetry=True, releasePrecheck=True, artifactRetention=True, nasPackageRetry=True))
+                                                 independentBackupRetry=True, releasePrecheck=True, artifactRetention=True, nasPackageRetry=True,
+                                                 currentVersions=True, databaseVersions=True))
             if not configured:
                 application['capabilityReasons'] = dict(prepareRehearsal='尚未配置独立数据副本、运行资源与外部接口隔离，不能准备演练。')
             if self.c.get('nasPath'):

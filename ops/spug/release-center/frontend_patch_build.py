@@ -22,9 +22,15 @@ def validate_source(executor, base, commit):
 
 
 def build(executor, job):
-    base,base_manifest=executor.manifest(job['payload']['baseReleaseTag'])
+    from frontend_patch_baseline import build_base,validate_live_origin
+    base,base_context=build_base(executor,job['payload'])
     commit=job['payload'].get('commit')
     changes=validate_source(executor,base,commit)
+    baseline=base_context.get('observedBaseline')
+    if baseline:
+        executor.step(job,'verify-live-patch-baseline')
+        for env in ('test','prod','backup'):
+            validate_live_origin(executor,baseline,env,executor.frontend_call(job,env,'observe'))
     tag=stamp()
     folder=executor.root/'frontend-patches'/tag
     folder.mkdir(parents=True,exist_ok=False)
@@ -72,14 +78,16 @@ def build(executor, job):
     archive_image_identities(folder/'images.tar',{'frontend':image})
     files=[dict(name=n,sha256=digest(folder/n)) for n in ('images.tar','release-info.json')]
     manifest=dict(applicationId='intruoyi',kind='frontend-patch',releaseTag=tag,baseReleaseTag=base['releaseTag'],
-                  baseGitCommit=base['gitCommit'],gitCommit=commit,backendImageId=base_manifest['images']['backend']['id'],
+                  baseGitCommit=base['gitCommit'],gitCommit=commit,backendImageId=base_context['backendImageId'],
                   images={'frontend':image},metadata=metadata,changedFiles=changes,files=files)
+    if baseline:manifest['observedBaseline']=baseline
     (folder/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2),'utf-8')
     with tarfile.open(folder/'release.tar','w') as archive:
         for n in ['manifest.json']+[f['name'] for f in files]:archive.add(folder/n,arcname=n)
     package=dict(releaseTag=tag,baseReleaseTag=base['releaseTag'],gitCommit=commit,directory=str(folder),
                  manifestSha256=digest(folder/'manifest.json'),packageSha256=digest(folder/'release.tar'),
                  imageId=image['id'],stage='built',deployments={},accepted={})
+    if baseline:package['observedBaseline']=baseline
     require(executor.c.get('nasPath'),'未配置 NAS 包存储')
     executor.step(job,'publish-patch-to-nas')
     package['nasDirectory']=publish_nas(folder,manifest,str(Path(executor.c['nasPath'])/'frontend-patches'),executor.c.get('nasCredentialsFile'))
