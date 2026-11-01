@@ -1,6 +1,7 @@
 """Real disposable Git worktrees and Windows long paths; no user checkout deletion."""
 from pathlib import Path
 import os
+import py_compile
 import shutil
 import subprocess
 import tempfile
@@ -21,7 +22,10 @@ class BuildWorktreeCleanupTest(unittest.TestCase):
         self.git('config', 'user.name', 'Cleanup contract test')
         self.git('config', 'user.email', 'release-test@localhost')
         (self.repo/'source.txt').write_text('committed source\n', encoding='utf-8')
-        (self.repo/'.gitignore').write_text('IntRuoyiFronted/node_modules/\nIntRuoyiFronted/dist-intruoyi-test/\nIntRuoyiBackend/**/target/\n*.secret\n', encoding='utf-8')
+        (self.repo/'.gitignore').write_text('IntRuoyiFronted/node_modules/\nIntRuoyiFronted/dist-intruoyi-test/\nIntRuoyiBackend/**/target/\n__pycache__/\n*.secret\n', encoding='utf-8')
+        module=self.repo/'IntRuoyiBackend/script/release/release_migration_manifest.py'
+        module.parent.mkdir(parents=True)
+        module.write_text('VALUE = 1\n', encoding='utf-8')
         self.git('add', '.'); self.git('commit', '-qm', 'baseline')
         self.commit = self.git('rev-parse', 'HEAD').decode().strip()
         self.build_root = self.root/'build'; self.build_root.mkdir()
@@ -71,6 +75,27 @@ class BuildWorktreeCleanupTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             builder.cleanup_build_worktree(self.repo, self.build_root, self.build_root, self.commit)
         self.assertTrue(self.worktree.exists())
+
+    def test_real_tracked_backend_release_module_bytecode_can_be_cleaned(self):
+        module=self.worktree/'IntRuoyiBackend/script/release/release_migration_manifest.py'
+        cache=Path(py_compile.compile(str(module),doraise=True))
+        self.assertTrue(cache.exists())
+        self.assertEqual(self.clean()['status'],'passed')
+        self.assertFalse(self.worktree.exists())
+
+    def test_invalid_backend_bytecode_or_missing_tracked_module_is_preserved(self):
+        module=self.worktree/'IntRuoyiBackend/script/release/release_migration_manifest.py'
+        cache=Path(py_compile.compile(str(module),doraise=True))
+        valid=cache.read_bytes()
+        cache.write_bytes(b'not-python-cache')
+        with self.assertRaisesRegex(ValueError,'Unknown'):
+            self.clean()
+        cache.write_bytes(valid)
+        unknown=cache.with_name(cache.name.replace('release_migration_manifest','untracked_module'))
+        cache.rename(unknown)
+        with self.assertRaisesRegex(ValueError,'Unknown'):
+            self.clean()
+        self.assertTrue(unknown.exists())
 
     def test_git_failure_with_residual_never_becomes_false_success(self):
         original = subprocess.run

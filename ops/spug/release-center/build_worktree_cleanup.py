@@ -109,7 +109,7 @@ def _inspect(target, tree, allow_metadata):
             elif rel.startswith('IntRuoyiBackend/') and name == '.flattened-pom.xml':
                 continue
             else:
-                bytecode = re.fullmatch(r'(scripts/.+)/__pycache__/([^/]+)\.cpython-\d+\.pyc', rel)
+                bytecode = re.fullmatch(r'((?:scripts|IntRuoyiBackend/script)(?:/[^/]+)*)/__pycache__/([^/]+)\.cpython-\d+\.pyc', rel)
                 allowed = False
                 if bytecode and bytecode[1]+'/'+bytecode[2]+'.py' in tree:
                     data = path.read_bytes()
