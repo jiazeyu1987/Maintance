@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "time": "2026-11-01T16:16:41.792894+08:00",
+  "environment": "backup",
+  "releaseTag": "2026-11-01-13-08-35",
+  "deploymentJobId": "JOB-bcf335a982",
+  "technicalJobId": "JOB-93573fd19a",
+  "packageSha256": "00048a4d6ca73fb03eaec01ada6a159ffaa38af97fc689828190126f8b85706e",
+  "images": {
+    "backend": "sha256:2b2160b4fba263ac7617f404fed767273ae6d21e9dbe59bfc2e2aaeb5d26c1f3",
+    "frontend": "sha256:b7d3959b639f3ab189607c1614b65d60e46d6a2fd442c71f9197736f317595d7"
+  },
+  "schemaSha256": "dc1b23dec9664a58329f5b0ae8bdc5ec09822cfc78b3beee335d45ae248930d1",
+  "ledgerSha256": "cc73e2ee0b2c35c67b3c7d23c1938d9ef475b2f71e284412eaf49091201a79c9",
+  "effectiveImageReferences": {
+    "backend": "sha256:2b2160b4fba263ac7617f404fed767273ae6d21e9dbe59bfc2e2aaeb5d26c1f3",
+    "frontend": "sha256:b7d3959b639f3ab189607c1614b65d60e46d6a2fd442c71f9197736f317595d7"
+  },
+  "manifestImageTag": "2026-11-01-13-08-35",
+  "runtimeConfigSha256": "713e65a12e5c70f4bf2fbae153b89854648a5a044fb09a3a7707edecca231a3d",
+  "backendHealth": "UP",
+  "frontendHttpStatus": 200,
+  "maintenance": false,
+  "entryUrl": "http://172.30.30.59:38081",
+  "realPlaywrightLogin": true,
+  "configuredGxpAuditMode": "DEVELOPMENT_DISABLED",
+  "gxpAuditMode": "DEVELOPMENT_DISABLED",
+  "pendingRestart": false,
+  "recoveryMode": "checkpoint",
+  "businessRegressionPerformed": false
+}

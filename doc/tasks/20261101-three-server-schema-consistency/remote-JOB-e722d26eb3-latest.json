@@ -1,0 +1,41 @@
+{
+  "time": "2026-11-01T15:19:32.719266+08:00",
+  "jobId": "JOB-e722d26eb3",
+  "host": "172.30.30.57",
+  "operationId": "OP-29df6604606c6207a6e7",
+  "receiptExists": true,
+  "status": "succeeded",
+  "action": "deploy",
+  "startedAt": "2026-11-01T07:16:00.736950+00:00",
+  "finishedAt": "2026-11-01T07:19:05.939332+00:00",
+  "errorType": null,
+  "originalWorkerAlive": false,
+  "deploymentProgress": {
+    "phase": "succeeded"
+  },
+  "files": [
+    {
+      "name": "release.tar",
+      "bytes": 726169600
+    },
+    {
+      "name": "images.tar",
+      "bytes": 714597888
+    },
+    {
+      "name": "deployment-pending.json",
+      "bytes": 632
+    }
+  ],
+  "externalRecovery": {
+    "mode": "external",
+    "operatorConfirmed": true,
+    "releaseTag": "2026-11-01-13-08-35",
+    "packageIdentity": "27657f7882aa4b623fdb5f214f7e3fee7ee4311143fc00cf1f6754e1be90a4e9",
+    "originFingerprint": "ff2ec0abb6ab979e08787a5ccf8b17d951c692e7e243db8a3ef998852fd5e050"
+  },
+  "checkpointRecordExists": false,
+  "recoveryAttempts": [],
+  "availableBytes": 1188569399296,
+  "mutations": false
+}

@@ -1,0 +1,52 @@
+{
+  "time": "2026-11-01T14:02:26.166379+08:00",
+  "maintenanceCommit": "43e4d3eb6b85d4f54749d721ad4ec977102a4747",
+  "previousMaintenanceCommit": "15b2f5cc0288e045444fdea66a5083e00db55284",
+  "originalVerification": {
+    "status": "PASS",
+    "files": 656,
+    "integritySha256": "8248a204b7b87846271a0cd85ecfac53ba12e25dd830bd84da7e7afd3d060079"
+  },
+  "previousWorkingVerification": {
+    "status": "PASS",
+    "files": 677,
+    "integritySha256": "80a5cd19577262222e8704eca9bf7cc2f11a57c0351b845a097e1a7b9ab711fa"
+  },
+  "updates": [
+    {
+      "file": "source/ops/spug/release-center/build_worktree_cleanup.py",
+      "beforeSha256": "c24dcc006352eb7e585e1fb1d88ec4839ba6e7cdd6f7b9ff99ae8933e2cdf12d",
+      "afterSha256": "6bbbacb15dbff7be1cf848ad7766975f99395aa7bc320e91a3ae2413829c4696"
+    },
+    {
+      "file": "source/ops/spug/release-center/test_build_worktree_cleanup.py",
+      "beforeSha256": "bbf150f339fbce2fe0f6a238d81c3b2df552ba5eaacdf2e74e78be8afc4ec6e3",
+      "afterSha256": "2b36868ad506484e4b64ab98b0951c41cdbfcc38d8d6eb32bea92ff3ea118cce"
+    }
+  ],
+  "originalBundlePreserved": true,
+  "credentialsHistoryImagesPreserved": true,
+  "runtimePolicy": {
+    "requiredGxpAuditMode": "DEVELOPMENT_DISABLED",
+    "otherConfigFieldsPreserved": true
+  },
+  "ordinaryScript": true,
+  "windowsServiceInstalled": false,
+  "remoteOperations": false,
+  "status": "PASS",
+  "newExecutorPid": 14328,
+  "previousExecutorPid": 12204,
+  "workingVerification": {
+    "status": "PASS",
+    "files": 678,
+    "integritySha256": "be16c4b8367eca9799aa15496803c7465764577dc991970028cc2a661ebb066b"
+  },
+  "statePayloadPreserved": true,
+  "statePayloadSha256": "7e10383e4b00a876cc0f525dbc65b40fd6e77a1f2313f1608109a6e3f0207193",
+  "jobsPreserved": 262,
+  "packagesPreserved": 27,
+  "runtimeConfigurationReadbackPassed": true,
+  "installedCommittedFileBytesPassed": true,
+  "protectedBackupCreated": true,
+  "fullBusinessRegression": false
+}

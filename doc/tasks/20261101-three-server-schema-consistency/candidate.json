@@ -1,0 +1,10 @@
+{
+  "releaseTag": "2026-11-01-13-08-35",
+  "sourceCommit": "fb88105af40e4ee6366a20dae2df721f1de2dcb0",
+  "maintenanceCommit": "43e4d3eb6b85d4f54749d721ad4ec977102a4747",
+  "buildJobId": "JOB-161cebeade",
+  "packagePublicationJobId": "JOB-c5f0567982",
+  "failedPublicationJobIds": [
+    "JOB-7fbe1f7c1a"
+  ]
+}

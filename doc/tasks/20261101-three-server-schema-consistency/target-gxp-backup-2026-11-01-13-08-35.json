@@ -1,0 +1,33 @@
+{
+  "time": "2026-11-01T08:15:36.458Z",
+  "scope": "read-only-gxp-verification",
+  "environment": "backup",
+  "expectedTag": "2026-11-01-13-08-35",
+  "publicationPerformed": false,
+  "remoteAccessPerformed": true,
+  "sourceUrl": "http://172.30.30.59:38081/",
+  "realPlaywrightLogin": true,
+  "savedMode": "DEVELOPMENT_DISABLED",
+  "runtimeMode": "DEVELOPMENT_DISABLED",
+  "auditEnabled": false,
+  "pendingRestart": false,
+  "savedClosedVisible": true,
+  "runtimeClosedVisible": true,
+  "privateScreenshotPath": "C:\\SpugHandoff\\release\\private\\acceptance\\schema-20261101\\backup-gxp\\gxp-mode-1793521010455.png",
+  "unexpectedWriteRequests": [
+    {
+      "method": "POST",
+      "path": "/admin-api/system/captcha/get"
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/system/captcha/get"
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/system/auth/login"
+    }
+  ],
+  "releaseTag": "2026-11-01-13-08-35",
+  "status": "PASS"
+}

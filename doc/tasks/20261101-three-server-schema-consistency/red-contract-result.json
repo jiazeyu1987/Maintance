@@ -1,0 +1,10 @@
+[
+  {
+    "label": "source-red",
+    "exitCode": 1
+  },
+  {
+    "label": "executor-red",
+    "exitCode": 1
+  }
+]

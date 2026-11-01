@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "testsRun": 531,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [
+    {
+      "test": "test_closed_probe_time_wait_allows_next_listener (test_acceptance_port.AcceptancePortTests.test_closed_probe_time_wait_allows_next_listener)",
+      "reason": "Target socket semantics require Linux"
+    },
+    {
+      "test": "test_live_listener_remains_blocked (test_acceptance_port.AcceptancePortTests.test_live_listener_remains_blocked)",
+      "reason": "Target socket semantics require Linux"
+    }
+  ],
+  "outOfScopeModules": {
+    "test_manage_executor_service": "User explicitly excludes Windows service installation; win32api is not installed"
+  },
+  "scope": "Local ordinary-executor unit/boundary suite; no live server operations"
+}
