@@ -28,3 +28,11 @@
 
 - REGRESSION FINAL: 最终提交内容全量Python 569项PASS、2项既有skip；耗时145.633s。
 - CLOSEOUT: archive_worktree -> REFUSED (primary checkout cannot be removed)；attach原主工作区 -> REFUSED (not a managed worktree)。开发worktree干净、HEAD已包含在int_main；不强制删除当前会话主检出，ready_for_closeout保留。没有自动审批拒绝或新的远端执行。
+# 后续核查：四类操作的资料保留范围
+
+- 用户询问当前三服发布、前端补丁、备份、恢复是否仍留下旧包/旧恢复资料。沿用本任务只读核查，不触发发布、备份、恢复或删除，不扩大自动清理范围。
+- 前序收尾限制保持：应用拒绝归档当前主检出，任务仍ready_for_closeout；本轮先核本机实际代码，再按四类流程说明覆盖边界。
+- 验证计划：检查活跃代码的最终验收触发、保护集合、恢复/独立备份入口与保留策略；无需远端连接或真实E2E。
+- 核查结果：自动清理eligible仅accept-backup与frontend-patch-accept(backup)，且当前包stage=completed；备份/恢复不是触发入口。清理只覆盖登记暂存目录的release.tar/images.tar及归属完整的旧recovery.sql[.gz]/recovery-volume-*.tar，保留当前包和本次恢复点、镜像、旧容器、清单、历史、凭据、未知资料和引用中的资料。
+- 独立备份保留：repository_retention按retainNewestPoints/minValidFullPoints/retentionSeconds/legalHold及完整依赖链规划，RETENTION_PLAN与RETENTION_EXECUTE是独立动作，不随本次发布清理自动执行。恢复保留原归档、失败资料、retainedData和容器证据，未纳入本轮自动清理。不能声称四类操作全部无旧资料积累。
+- Evidence：活跃post_release_cleanup.py eligible/perform；活跃artifact_files.py inventory/automatic_cleanup；活跃intruoyi_recovery_agent.py retainedData/retained容器；ops/recovery/repository_retention.py:142与repository_cli.py RETENTION_PLAN/RETENTION_EXECUTE。只读本机代码，无服务器连接、备份、恢复、删除或运行状态修改；结论是机制核查，不是实时三服库存核验。
