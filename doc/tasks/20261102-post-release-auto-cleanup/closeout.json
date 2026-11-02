@@ -1,0 +1,24 @@
+{
+  "implementationCommit": "bd88c22554e54fae44bc6e8982cb2ea97e3eb6c2",
+  "integratedInto": "int_main",
+  "tests": {
+    "pythonFull": 569,
+    "existingSkipped": 2,
+    "mergedFocused": 184,
+    "runtimeCandidate": 184,
+    "linuxFilesystemAndProcessLock": 8,
+    "nodeUi": "passed"
+  },
+  "runtimeUpdated": true,
+  "configAndHistoryUnchanged": true,
+  "remoteReleases": 0,
+  "remoteDeletes": 0,
+  "worktree": {
+    "path": "C:/Users/D01021/.codex/worktrees/spug-post-release-cleanup/Maintance",
+    "clean": true,
+    "merged": true,
+    "deleted": false,
+    "reason": "Codex app refuses archiving the task primary checkout; original checkout is not managed"
+  },
+  "status": "ready_for_closeout"
+}

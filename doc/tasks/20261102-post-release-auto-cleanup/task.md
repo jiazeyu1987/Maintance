@@ -35,3 +35,9 @@ ready_for_closeout
 - 569项Python回归PASS（2项既有skip），Node页面合同PASS；Linux 8项真实文件/进程锁PASS；本次最终定向184项PASS。Windows服务专用测试未执行，普通脚本运行方式未改变。
 - 活跃执行器7个文件按定向补丁更新，候选副本184项PASS；普通脚本重启后18112和Spug18081正常，271任务/28包/1补丁逻辑状态SHA及私密配置不变。远端发布/删除次数0；第一次真实发布后的清理仍须按回执验收。
 - Git基线在独立副本整合8797d66、6e36019与c470b9a；无业务项目代码合并。实现待提交、融合复验和本任务工作副本删除后再completed。
+
+## 收尾状态与剩余阻塞
+- 实现提交bd88c22已合入维护仓int_main；最终完整Python回归569项PASS（2项既有skip），合入结果定向184项及Node合同PASS，匹配运行副本184项PASS。
+- 本机稳定路径C:/SpugHandoff/release未改变，普通脚本更新已生效；没有本任务运行进程引用开发worktree。
+- 工作副本无未提交内容、所有提交已被int_main包含。Codex archive_worktree拒绝：The task's primary checkout cannot be removed。尝试attach原主工作区也被拒绝为not a managed worktree。为保持会话工作目录有效，没有强行在应用外删除当前主检出。工作副本暂保留；Current Status仍为ready_for_closeout，不能标completed。此限制仅影响目录收尾，不影响自动清理功能和运行器更新。
+- 本任务未推送Git、未发起三服发布或远端删除；后续真实发布的清理需检查逐服真实回执。

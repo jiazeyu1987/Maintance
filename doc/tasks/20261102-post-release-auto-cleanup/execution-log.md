@@ -21,3 +21,10 @@
 - GREEN: 最终源码定向184项PASS，匹配现有运行器的候选副本同样184项PASS。已在0运行任务时停止唯一已核身份的18112普通Python、备份代码、精确更新7个文件并由原稳定start-local.ps1隐藏启动；没有服务安装。
 - GREEN: apply-runtime-update.py verify -> PASS，Spug18081 HTTP200，18112认证state正常；私密配置和SQLite逻辑SHA不变，271任务/28完整包/1补丁。未调用三服，不把本地测试称作真实三服清理验收。
 - Current Status: ready_for_closeout；后续只剩实现提交、int_main融合复验、独立worktree收口与最终记录提交。
+
+- GREEN: int_main 已快进融合bd88c22554e54fae44bc6e8982cb2ea97e3eb6c2；在融合结果执行定向184项PASS及Node页面合同PASS。实现提交只含本任务18个文件；已提交的历史配套分支通过独立合并引入，没有提交本机原有脏文件。
+- 保留既有改动：3个共享文档原修改以并集恢复；73个原未跟踪历史资料恢复原字节（CRLF差异继续作为本地状态保留，其中push-maintenance.json与入站内容不同也保留原字节）。既有AGENTS、应用配置、启动脚本和其他任务内容未被重置。私有原件与SHA证据在main-preservation，未上传。
+- GREEN: experience-preflight -> PASS，待最终回归结束后只归档本任务独立worktree；HEAD已被int_main包含，工作副本无改动，无运行控制台引用该路径；其他worktree/进程不清理。构建命令：无（本任务不构建业务发布包）。验证命令见上；产生新提交：是，bd88c22及基线整合；已合回int_main：是。
+
+- REGRESSION FINAL: 最终提交内容全量Python 569项PASS、2项既有skip；耗时145.633s。
+- CLOSEOUT: archive_worktree -> REFUSED (primary checkout cannot be removed)；attach原主工作区 -> REFUSED (not a managed worktree)。开发worktree干净、HEAD已包含在int_main；不强制删除当前会话主检出，ready_for_closeout保留。没有自动审批拒绝或新的远端执行。
