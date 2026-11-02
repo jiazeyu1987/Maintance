@@ -326,6 +326,15 @@ assert(!recovery.render(5).includes('data-action="recover-release"'),'Open busin
 console.log('Formal partial-migration recovery actions require pending maintenance and separate old-release acceptance');
 })().catch(error=>{console.error(error);process.exitCode=1;});
 
+const restoredAttempt=harness();restoredAttempt.set(JSON.parse(JSON.stringify(remote)));
+restoredAttempt.evaluate('state.application.capabilities.interruptionReconciliation=true');
+restoredAttempt.evaluate("state.jobs=[{id:'restored-attempt',action:'backend-patch-restore',status:'interrupted',releaseTag:'candidate',interruptionInspection:{disposition:'verify-backend-restoration',detail:'原程序恢复已核验'}}]");
+const restoredPanel=restoredAttempt.evaluate('interruptionPanel()');
+assert(restoredPanel.includes('data-action="reconcile-interruption" >'),'Verified later backend restoration enables explicit closure');
+restoredAttempt.evaluate("state.jobs[0].interruptionInspection.disposition='unknown'");
+assert(restoredAttempt.evaluate('interruptionPanel()').includes('data-action="reconcile-interruption" disabled'),'Unknown original remains blocked without verified restoration');
+console.log('Interrupted backend restoration requires verified later restoration before explicit closure');
+
 const captureResume=harness();captureResume.set(JSON.parse(JSON.stringify({...remote,packages:[candidate],jobs:[{id:'JOB-capture',action:'prepare-rehearsal',target:'rehearsal',sourceEnv:'prod',releaseTag:candidate.releaseTag,status:'failed',effectsStarted:true,remoteStatusRequired:true,remotePhase:'capture-complete',remoteProgress:{jobId:'JOB-capture',status:'succeeded',phase:'capture-complete'},logs:[],payload:{}}]})));
 assert(captureResume.render(7).includes('继续已捕获副本的传输与恢复'));
 assert(captureResume.render(7).includes('不再次停正式服采集'));

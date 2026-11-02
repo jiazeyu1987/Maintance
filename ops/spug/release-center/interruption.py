@@ -56,6 +56,43 @@ def local_workers(original):
     return result
 
 
+def backend_restoration_proof(executor, original):
+    """Close an older attempt only against a later explicit restoration, never replay it."""
+    if original['action'] != 'backend-patch-restore':
+        return None
+    deployment = next((j for j in executor.state['jobs']
+                       if j['id'] == original.get('payload', {}).get('originalJobId')), None)
+    if not deployment or deployment['action'] != 'backend-patch-deploy':
+        return None
+    completed = next((j for j in executor.state['jobs'] if j['id'] == deployment.get('backendRestoredBy')), None)
+    if not (completed and completed['id'] != original['id'] and completed['action'] == 'backend-patch-restore'
+            and completed['status'] == 'succeeded' and completed.get('target') == original.get('target') == deployment.get('target')
+            and completed.get('releaseTag') == original.get('releaseTag') == deployment.get('releaseTag')
+            and completed.get('payload', {}).get('originalJobId') == deployment['id']):
+        return None
+    require(original.get('localProcessTracking') and original.get('finishedAt')
+            and completed.get('createdAt', '') > original['finishedAt'], 'Original restore process/timing evidence required')
+    result = completed.get('result', {})
+    require(result.get('status') == 'succeeded' and result.get('originalJobId') == deployment['id']
+            and result.get('databaseRestored') is False and isinstance(result.get('observation'), dict),
+            'Later original-program restoration result differs')
+    package, _ = executor.backend_package(original['releaseTag'])
+    require(package.get('deployments', {}).get(original['target']) == dict(status='restored', jobId=deployment['id']),
+            'Another deployment owns the backend')
+    operations = [o for o in completed.get('remoteOperations', []) if o['action'] == 'backend-patch-restore']
+    require(len(operations) == 1 and operations[0]['env'] == original['target'], 'Bound remote restoration receipt required')
+    operation = operations[0]
+    receipt = executor.runtime.call(operation['env'], 'inspect-operation',
+                                   originalOperationId=operation['operationId'], originalJobId=completed['id'])
+    require(receipt.get('operationId') == operation['operationId'] and receipt.get('jobId') == completed['id']
+            and receipt.get('action') == 'backend-patch-restore' and receipt.get('worker') == 'stopped'
+            and receipt.get('status') == 'succeeded' and receipt.get('result') == result,
+            'Later remote restoration is unproven or still running')
+    actual = executor.runtime.call(original['target'], 'backend-patch-observe')
+    require(actual == result['observation'], 'Restored original backend has drifted')
+    return dict(restoredBy=completed['id'], restorationOperationId=operation['operationId'], observation=actual)
+
+
 def inspect(executor, original):
     # A preparation can die before its isolation is registered. Reconstruct its
     # configured receipt location, not a deployed-candidate observation.
@@ -77,6 +114,14 @@ def inspect(executor, original):
                     operations=operations, disposition='manual-review', detail='需根据原任务证据处理，未执行迁移或开放业务。')
     if any(item['running'] for item in local) or any(item['receipt'].get('worker') == 'running' for item in operations):
         evidence.update(disposition='still-running', detail='原任务进程仍在执行；等待后再次核对，不能重发。')
+        return evidence
+    restoration = backend_restoration_proof(executor, original)
+    if restoration:
+        require(operations and all(item['env'] == original['target'] and
+                (item['action'] == 'backend-patch-restore' or item['action'] in READ_ONLY) for item in operations),
+                'Original restoration operations differ')
+        evidence.update(disposition='verify-backend-restoration', backendRestoration=restoration,
+                        detail='更晚显式恢复已完成；核对远端恢复回执与当前原程序后关闭早先尝试，保留原中断与未知回执，不重放恢复。')
         return evidence
     uncertain = [item for item in operations if item['action'] not in READ_ONLY
                  and (item['receipt'].get('worker') != 'stopped' or item['receipt'].get('status') not in ('succeeded', 'failed'))]
@@ -126,10 +171,15 @@ def reconcile(executor, original, evidence, job):
     from intruoyi_build import target_input_plan
     from intruoyi_executor import validate_origin
     decision = evidence['disposition']
-    require(decision in ('close-build', 'close-pre-effect', 'verify-deployment', 'verify-opening', 'verify-checks'),
+    require(decision in ('close-build', 'close-pre-effect', 'verify-deployment', 'verify-opening', 'verify-checks', 'verify-backend-restoration'),
             evidence['detail'])
     env = original.get('target') or DEPLOYMENTS.get(original['action'])
-    if decision == 'close-build':
+    if decision == 'verify-backend-restoration':
+        require(not any(p['running'] for p in local_workers(original)), 'Original restoration worker is still running')
+        require(backend_restoration_proof(executor, original) == evidence.get('backendRestoration'),
+                'Backend restoration proof changed before closure')
+        job['result'] = dict(evidence, restorationOnly=True)
+    elif decision == 'close-build':
         if any(p['releaseTag'] == original.get('releaseTag') for p in executor.state['packages']):
             package, _ = executor.package(original['releaseTag'])
             require(package['gitCommit'] == original['payload']['commit'], 'Completed build source differs')

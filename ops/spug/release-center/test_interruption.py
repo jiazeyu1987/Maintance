@@ -13,6 +13,38 @@ OP = 'OP-' + 'a' * 20
 
 
 class InterruptionTests(unittest.TestCase):
+    def test_prior_backend_restore_closes_only_with_bound_later_remote_restore_and_live_original(self):
+        from interruption import backend_restoration_proof
+        origin={'releaseTag':TAG,'backendJarSha256':'a'*64}
+        deployment=dict(id='JOB-dddddddddd',action='backend-patch-deploy',target='test',releaseTag=TAG,
+                        backendRestoredBy='JOB-eeeeeeeeee')
+        original=dict(id=JOB,action='backend-patch-restore',target='test',releaseTag=TAG,
+                      createdAt='2026-11-02-10-00-00',finishedAt='2026-11-02-10-01-00',
+                      localProcessTracking=True,payload={'originalJobId':deployment['id']})
+        result=dict(status='succeeded',originalJobId=deployment['id'],databaseRestored=False,observation=origin)
+        completed=dict(id='JOB-eeeeeeeeee',action='backend-patch-restore',status='succeeded',target='test',releaseTag=TAG,
+                       createdAt='2026-11-02-10-02-00',payload={'originalJobId':deployment['id']},result=result,
+                       remoteOperations=[dict(operationId=OP,env='test',action='backend-patch-restore')])
+        executor=Mock();executor.state={'jobs':[original,deployment,completed]}
+        executor.backend_package.return_value=({'deployments':{'test':{'status':'restored','jobId':deployment['id']}}},{})
+        receipt=dict(operationId=OP,jobId=completed['id'],action='backend-patch-restore',worker='stopped',status='succeeded',result=result)
+        executor.runtime.call.side_effect=[receipt,origin]
+        proof=backend_restoration_proof(executor,original)
+        self.assertEqual(proof['restoredBy'],completed['id'])
+        original['status']='interrupted'
+        executor.runtime.call.side_effect=[receipt,origin]
+        reconcile(executor,original,dict(disposition='verify-backend-restoration',detail='verified',backendRestoration=proof),
+                  dict(id='JOB-fffffffff0',actor='operator',payload={'note':'原程序恢复回执与现场均核验通过'}))
+        self.assertEqual(original['status'],'interrupted')
+        self.assertEqual(original['resolution']['disposition'],'verify-backend-restoration')
+        for field,value in [('worker','running'),('status','unknown')]:
+            changed=dict(receipt,**{field:value});executor.runtime.call.side_effect=[changed,origin]
+            with self.assertRaises(ValueError):backend_restoration_proof(executor,original)
+        executor.runtime.call.side_effect=[receipt,dict(origin,backendJarSha256='b'*64)]
+        with self.assertRaises(ValueError):backend_restoration_proof(executor,original)
+        completed['target']='prod'
+        self.assertIsNone(backend_restoration_proof(executor,original))
+
     def setUp(self):
         self.job = dict(id=JOB, action='promote-backup', target='backup', releaseTag=TAG,
                         status='interrupted', effectsStarted=True, payload={},
