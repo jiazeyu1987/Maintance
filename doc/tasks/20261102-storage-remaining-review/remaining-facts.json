@@ -1,0 +1,138 @@
+{
+  "verification": "PASS",
+  "actualDeletions": 0,
+  "environments": [
+    {
+      "environment": "test",
+      "collectedAtUtc": "2026-11-02T04:49:44.778691+00:00",
+      "evidenceSha256": "f4ef43f4682dba46f90f3355801deedee57ae68bec164132da13de68e6c4874a",
+      "legacyPrograms": {
+        "files": 183,
+        "allocatedBytes": 147136770048,
+        "observedContainerOrProcessReferences": 0,
+        "classification": "archive-and-verify candidate; not approved for unverified deletion"
+      },
+      "oldRecoveryAllocatedBytesByTag": {
+        "2026-10-28-23-36-26": 22132391936,
+        "2026-10-29-16-28-18": 22132621312
+      },
+      "oldRecoveryClassification": "retention/restore dependencies not retired; preserve unless verified relocation or retirement is approved",
+      "directorySizes": [
+        {
+          "path": "/var/lib/docker/intruoyi-releases",
+          "allocatedBytes": 148387487744,
+          "containerReference": false,
+          "processReference": false
+        },
+        {
+          "path": "/backup/int-ruoyi",
+          "allocatedBytes": 22510985216,
+          "containerReference": false,
+          "processReference": false
+        },
+        {
+          "path": "/var/lib/intruoyi-release-center/packages",
+          "allocatedBytes": 14609649664,
+          "containerReference": false,
+          "processReference": false
+        }
+      ],
+      "filesystems": [
+        {
+          "path": "/",
+          "availableBytes": 7399251968
+        },
+        {
+          "path": "/var/lib/docker",
+          "availableBytes": 94855585792
+        }
+      ],
+      "version": {
+        "releaseTag": "2026-11-02-10-09-19",
+        "baseReleaseTag": "2026-11-01-13-08-35",
+        "frontendPatchTag": "2026-11-02-10-09-19",
+        "sourceCommit": "91683fd0349af7e2feb6a8d86c44ef9449a0bab3"
+      }
+    },
+    {
+      "environment": "prod",
+      "collectedAtUtc": "2026-11-02T04:49:44.428053+00:00",
+      "evidenceSha256": "4708aea332643299b3594eda40115bd0eaff5959898db611ba1ac0a7dca882a4",
+      "legacyPrograms": {
+        "files": 7,
+        "allocatedBytes": 5687889920,
+        "observedContainerOrProcessReferences": 0,
+        "classification": "archive-and-verify candidate; not approved for unverified deletion"
+      },
+      "oldRecoveryAllocatedBytesByTag": {
+        "2026-10-28-23-36-26": 22139076608,
+        "2026-10-29-16-28-18": 22140145664
+      },
+      "oldRecoveryClassification": "retention/restore dependencies not retired; preserve unless verified relocation or retirement is approved",
+      "directorySizes": [
+        {
+          "path": "/var/lib/docker/intruoyi-releases",
+          "allocatedBytes": 5716520960,
+          "containerReference": false,
+          "processReference": false
+        }
+      ],
+      "filesystems": [
+        {
+          "path": "/",
+          "availableBytes": 38706491392
+        },
+        {
+          "path": "/var/lib/docker",
+          "availableBytes": 1193329676288
+        }
+      ],
+      "version": {
+        "releaseTag": "2026-11-02-10-09-19",
+        "baseReleaseTag": "2026-11-01-13-08-35",
+        "frontendPatchTag": "2026-11-02-10-09-19",
+        "sourceCommit": "91683fd0349af7e2feb6a8d86c44ef9449a0bab3"
+      }
+    },
+    {
+      "environment": "backup",
+      "collectedAtUtc": "2026-11-02T04:49:44.567810+00:00",
+      "evidenceSha256": "8cd487a7018004c4de3c928563048fb074f8bb08aa6cf8eb08452593c9587710",
+      "legacyPrograms": {
+        "files": 0,
+        "allocatedBytes": 0,
+        "observedContainerOrProcessReferences": 0,
+        "classification": "archive-and-verify candidate; not approved for unverified deletion"
+      },
+      "oldRecoveryAllocatedBytesByTag": {
+        "2026-10-28-23-36-26": 22141345792,
+        "2026-10-29-16-28-18": 22141587456
+      },
+      "oldRecoveryClassification": "retention/restore dependencies not retired; preserve unless verified relocation or retirement is approved",
+      "directorySizes": [
+        {
+          "path": "/mnt/intruoyi-data/intruoyi-releases",
+          "allocatedBytes": 3463159808,
+          "containerReference": false,
+          "processReference": false
+        }
+      ],
+      "filesystems": [
+        {
+          "path": "/",
+          "availableBytes": 11324624896
+        },
+        {
+          "path": "/mnt/intruoyi-data",
+          "availableBytes": 31385632768
+        }
+      ],
+      "version": {
+        "releaseTag": "2026-11-02-10-09-19",
+        "baseReleaseTag": "2026-11-01-13-08-35",
+        "frontendPatchTag": "2026-11-02-10-09-19",
+        "sourceCommit": "91683fd0349af7e2feb6a8d86c44ef9449a0bab3"
+      }
+    }
+  ]
+}
