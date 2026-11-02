@@ -11,7 +11,7 @@ import tempfile
 from executor import digest,require,stamp
 from backend_patch_contract import validate_changes,validate_manifest
 from build_artifact_guard import validate_source_contract,verify_backend_jar,validate_required_gxp_mode,validate_offline_cli_report,MES_PREFIX
-from intruoyi_build import publish_nas,cleanup_sealed_build
+from intruoyi_build import publish_nas,cleanup_sealed_build,archive_image_identities
 from intruoyi_login import verify_login
 
 
@@ -45,10 +45,26 @@ def publish_original(executor,job,package):
     executor.save()
 
 
-def verify_java(executor,job,jar,image):
+def resolve_runtime(executor,runtime):
+    """Bind Desktop's immutable index to the exact classic-engine config."""
+    reference=runtime['image']
+    local=executor.run(['docker','image','inspect','--format','{{.Id}}',reference]).decode().strip()
+    require(re.fullmatch('sha256:[a-f0-9]{64}',local),'本机运行镜像身份无效')
+    with tempfile.TemporaryDirectory(prefix='backend-patch-runtime-') as temporary:
+        archive=Path(temporary)/'runtime.tar'
+        executor.run(['docker','image','save','--output',str(archive),reference])
+        require(executor.run(['docker','image','inspect','--format','{{.Id}}',reference]).decode().strip()==local,
+                '本机运行镜像在核对期间改变')
+        image=dict(name=reference,id=local)
+        archive_image_identities(archive,{'backend':image})
+        require(image['id']==runtime['imageId'],'本机运行镜像config与现场固定运行镜像不一致')
+    return dict(localImageId=local,runtimeImageId=runtime['imageId'])
+
+
+def verify_java(executor,job,jar,runtime):
     """Exercise the actual old runtime with the candidate JAR, no DB or network."""
-    require(executor.run(['docker','image','inspect','--format','{{.Id}}',image]).decode().strip()==image,
-            '本机缺少现场固定后端镜像，无法离线验证 Java 兼容性')
+    identity=resolve_runtime(executor,runtime)
+    image=identity['localImageId']
     with tempfile.TemporaryDirectory(prefix='backend-patch-java-') as temporary:
         root=Path(temporary)
         binding=dict(releaseTag=job['releaseTag'],migrationId='20261023_mes_route_snapshot_legacy_summary_enforce',
@@ -67,7 +83,7 @@ def verify_java(executor,job,jar,image):
             result=subprocess.run(['docker','start','--attach',probe],capture_output=True,timeout=60)
             report=json.loads((root/'report.json').read_text('utf-8'))
             validate_offline_cli_report(report,binding,result.returncode)
-            return dict(status='passed',runtimeImageId=image,jarSha256=binding['packageIdentity'],network='none',databaseCredentials=False)
+            return dict(status='passed',**identity,jarSha256=binding['packageIdentity'],network='none',databaseCredentials=False)
         finally:
             executor.run(['docker','rm','-f',probe])
 
@@ -100,7 +116,7 @@ def build(executor,job):
     shutil.copyfile(worktree/'IntRuoyiBackend/yudao-server/target/yudao-server-exec.jar',root/'app.jar')
     proof=verify_backend_jar(root/'app.jar');job['backendArtifactContract']=proof
     executor.step(job,'verify-jar-with-pinned-runtime-offline')
-    job['backendJavaCompatibility']=verify_java(executor,job,root/'app.jar',base['origins']['prod']['components']['backend']['imageId'])
+    job['backendJavaCompatibility']=verify_java(executor,job,root/'app.jar',base['origins']['prod']['components']['backend'])
     metadata=dict(releaseTag=base['releaseTag'],baseReleaseTag=base['releaseTag'],backendPatchTag=tag,
                   sourceCommit=commit,backendJarSha256=proof['jarSha256'])
     (root/'release-info.json').write_text(json.dumps(metadata,ensure_ascii=False,indent=2),'utf-8')

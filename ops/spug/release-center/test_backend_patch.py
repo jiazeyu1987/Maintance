@@ -19,6 +19,25 @@ def manifest():
 
 
 class ContractTests(unittest.TestCase):
+    def test_local_index_is_bound_to_exact_remote_runtime_config(self):
+        import hashlib,io,tarfile
+        from backend_patch_build import resolve_runtime
+        config=b'{"rootfs":{"type":"layers","diff_ids":[]}}'
+        expected='sha256:'+hashlib.sha256(config).hexdigest()
+        local='sha256:'+'a'*64
+        class Exporter:
+            def run(self,args):
+                if args[1:3]==['image','inspect']:return (local+'\n').encode()
+                assert args[1:3]==['image','save']
+                with tarfile.open(args[args.index('--output')+1],'w') as archive:
+                    for name,data in [('manifest.json',json.dumps([dict(Config='config.json',RepoTags=['current:tag'])]).encode()),('config.json',config)]:
+                        member=tarfile.TarInfo(name);member.size=len(data);archive.addfile(member,io.BytesIO(data))
+                return b''
+        result=resolve_runtime(Exporter(),dict(image='current:tag',imageId=expected))
+        self.assertEqual(result,dict(localImageId=local,runtimeImageId=expected))
+        with self.assertRaisesRegex(ValueError,'运行镜像'):
+            resolve_runtime(Exporter(),dict(image='current:tag',imageId='sha256:'+'f'*64))
+
     def test_only_jar_and_metadata_no_migrations_or_images(self):
         validate_manifest(manifest())
         for field,value in [('migrations',[{'sql':'UPDATE x'}]),('images',{'backend':{}}),('sql',[])]:
