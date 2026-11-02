@@ -27,8 +27,11 @@ def test_standard_keeps_original_code_except_reviewed_fixes_and_archive_names(pa
     original, _ = builder.standard_sources()
     reviewed = builder.safe_fixes(original)
     allowed = {'common/recovery_minimal_runtime.py', 'common/recovery_step_timing.py',
+        'common/recovery_minimal.py', 'common/recovery_resource_admission.py',
+        'common/recovery_firewall.py', 'common/recovery_minimal_worker.py', 'common/recovery_archive_guard.py',
         'common/repository_minimal.py', 'control/recovery_control_capture_config.py',
-        'control/recovery_control_smallapp_native.py', 'control/recovery_control_target_availability.py',
+        'control/recovery_control_smallapp_native.py', 'control/recovery_control_executor.py',
+        'control/recovery_control_target_availability.py',
         'control/recovery_control_point_quarantine.py', 'formal/formal_binlog_scope.py',
         'common/recovery_replace.py', 'common/recovery_data.py', 'formal/formal_data_evidence.py',
         'formal/minimal_capture_support.py', 'formal/minimal_capture_worker.py',
@@ -51,6 +54,44 @@ def test_changed_safe_baseline_patch_context_is_rejected():
     original['formal/minimal_redis_snapshot.py'] = b'# an incompatible baseline\n'
     with pytest.raises(ValueError, match='STANDARD_FIX_CONTEXT_CHANGED'):
         builder.safe_fixes(original)
+
+
+@pytest.mark.parametrize('variant', builder.VARIANTS)
+def test_both_packages_include_reviewed_failure_convergence(variant, packages):
+    with tarfile.open(packages / ('backup-restore-' + variant + '.tgz')) as archive:
+        for name in ('recovery_control_smallapp_native.py', 'recovery_control_executor.py'):
+            expected = (ROOT / 'backend/src/main/resources' / name).read_bytes().replace(b'\r\n', b'\n')
+            assert archive.extractfile('control/' + name).read().replace(b'\r\n', b'\n') == expected
+
+
+@pytest.mark.parametrize('variant', builder.VARIANTS)
+def test_both_packages_gate_owner_and_target_on_resource_budget(variant, packages):
+    with tarfile.open(packages / ('backup-restore-' + variant + '.tgz')) as archive:
+        name = 'common/recovery_resource_admission.py'
+        assert archive.extractfile(name).read() == (ROOT / 'ops/recovery/recovery_resource_admission.py').read_bytes()
+        owner = archive.extractfile('common/recovery_minimal.py').read().decode()
+        assert 'reserve(configuration, request, root)' in owner
+        assert 'release_success(configuration, request, root,' in owner
+        for name, stage in [('recovery_minimal_runtime.py', 'target'), ('recovery_replace.py', 'replacement')]:
+            code = archive.extractfile('common/' + name).read().decode().replace('\r\n', '\n')
+            assert "admit(configuration, request, root, '" + stage + "'" in code
+
+
+@pytest.mark.parametrize('variant', builder.VARIANTS)
+def test_both_packages_preserve_isolation_order_checks(variant, packages):
+    with tarfile.open(packages / ('backup-restore-' + variant + '.tgz')) as archive:
+        name = 'common/recovery_firewall.py'
+        assert archive.extractfile(name).read() == (ROOT / 'ops/recovery/recovery_firewall.py').read_bytes()
+        for name in ('recovery_data.py',):
+            code = archive.extractfile('common/' + name).read().decode()
+            assert 'isolation_rule_effective(raw.decode(' in code
+        runtime = archive.extractfile('common/recovery_minimal_runtime.py').read().decode()
+        if variant == 'standard':
+            assert "subnet_isolation_rule_effective(raw.decode('utf-8'), rule)" in runtime
+            assert "require(first and shlex.split(first)" not in runtime
+        else:
+            assert 'subnet_isolation_rule_effective' not in runtime
+            assert "isolation='NOT_CHECKED'" in runtime
 
 
 @pytest.mark.parametrize('variant', builder.VARIANTS)

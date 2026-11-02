@@ -1,0 +1,102 @@
+{
+  "timeUtc": "2026-11-02T04:09:45.899949+00:00",
+  "result": "PASS",
+  "localReleaseBindingsUnchanged": true,
+  "activeLocalJobs": 0,
+  "environments": [
+    {
+      "environment": "backup",
+      "planSha256": "fd232f422ac46e7251f3b0c6f61ace71106afd748266dd7301803153650902a8",
+      "files": 809,
+      "deletedAllocatedBytes": 18343636992,
+      "beforeFreeBytes": {
+        "/": 2513997824,
+        "/mnt/intruoyi-data": 21857075200
+      },
+      "immediateAfterFreeBytes": {
+        "/": 11324301312,
+        "/mnt/intruoyi-data": 31389696000
+      },
+      "finalFreeBytes": {
+        "/": 11324612608,
+        "/var/lib/docker": 11324612608,
+        "/mnt/intruoyi-data": 31389638656
+      },
+      "protectedFilesUnchanged": 337,
+      "containersUnchanged": 210,
+      "backendHealth": "UP",
+      "frontendHttp": 200,
+      "version": {
+        "http": 200,
+        "releaseTag": "2026-11-02-10-09-19",
+        "baseReleaseTag": "2026-11-01-13-08-35",
+        "frontendPatchTag": "2026-11-02-10-09-19",
+        "sourceCommit": "91683fd0349af7e2feb6a8d86c44ef9449a0bab3",
+        "gitCommit": null
+      },
+      "receipt": "/root/intruoyi-storage-cleanup-20261102/backup-fd232f422ac4.json"
+    },
+    {
+      "environment": "test",
+      "planSha256": "86c3e12b3b5bcea118c6e51aab993fd4406cfe669526903de10e0e641886db96",
+      "files": 26,
+      "deletedAllocatedBytes": 18817957888,
+      "beforeFreeBytes": {
+        "/": 7400222720,
+        "/var/lib/docker": 76039266304
+      },
+      "immediateAfterFreeBytes": {
+        "/": 7400235008,
+        "/var/lib/docker": 94857224192
+      },
+      "finalFreeBytes": {
+        "/": 7400087552,
+        "/var/lib/docker": 94857060352
+      },
+      "protectedFilesUnchanged": 670,
+      "containersUnchanged": 468,
+      "backendHealth": "UP",
+      "frontendHttp": 200,
+      "version": {
+        "http": 200,
+        "releaseTag": "2026-11-02-10-09-19",
+        "baseReleaseTag": "2026-11-01-13-08-35",
+        "frontendPatchTag": "2026-11-02-10-09-19",
+        "sourceCommit": "91683fd0349af7e2feb6a8d86c44ef9449a0bab3",
+        "gitCommit": null
+      },
+      "receipt": "/root/intruoyi-storage-cleanup-20261102/test-86c3e12b3b5b.json"
+    },
+    {
+      "environment": "prod",
+      "planSha256": "483757d51c0fecf79429dcad1a9b0986677bad5bbc29ddcdb19cbbc8ebcc722a",
+      "files": 13,
+      "deletedAllocatedBytes": 9769496576,
+      "beforeFreeBytes": {
+        "/": 38706577408,
+        "/var/lib/docker": 1183563898880
+      },
+      "immediateAfterFreeBytes": {
+        "/": 38706548736,
+        "/var/lib/docker": 1193333395456
+      },
+      "finalFreeBytes": {
+        "/": 38706450432,
+        "/var/lib/docker": 1193333235712
+      },
+      "protectedFilesUnchanged": 801,
+      "containersUnchanged": 203,
+      "backendHealth": "UP",
+      "frontendHttp": 200,
+      "version": {
+        "http": 200,
+        "releaseTag": "2026-11-02-10-09-19",
+        "baseReleaseTag": "2026-11-01-13-08-35",
+        "frontendPatchTag": "2026-11-02-10-09-19",
+        "sourceCommit": "91683fd0349af7e2feb6a8d86c44ef9449a0bab3",
+        "gitCommit": null
+      },
+      "receipt": "/root/intruoyi-storage-cleanup-20261102/prod-483757d51c0f.json"
+    }
+  ]
+}

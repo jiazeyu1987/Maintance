@@ -347,13 +347,12 @@ class NativeData:
                                               if not (minio_stopped and role == 'minio')},
                 'TARGET_NETWORK_NOT_EXCLUSIVE')
         firewall = pinned_json(self.target['sideEffectIsolationPin'])['firewall']
-        import shlex
+        from recovery_firewall import isolation_rule_effective
         for rule in firewall['rules']:
             check_pin(self.config['iptablesPin'], content=False)
             self.command([self.config['iptablesPin']['path'], '-w', '5', '-C', *rule])
             raw = self.command([self.config['iptablesPin']['path'], '-w', '5', '-S', rule[0]])
-            first = next((line for line in raw.decode().splitlines() if line.startswith('-A ')), None)
-            require(first and shlex.split(first) == ['-A', *rule], 'TARGET_FIREWALL_CHANGED')
+            require(isolation_rule_effective(raw.decode('utf-8'), rule), 'TARGET_FIREWALL_CHANGED')
         sql = self.modules['formal_sql_restore']
         (sql.import_database_state if importing else sql.database_state)(self.mysql, self.db_target)
 

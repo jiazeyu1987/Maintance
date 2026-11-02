@@ -1,0 +1,23 @@
+[
+  {
+    "environment": "backup",
+    "planSha256": "5e2595be6ace20659af6567654fc7d747789e88a0241c1f2e07882f3988a6d37",
+    "files": 1513,
+    "allocatedBytes": 33433083904,
+    "retainedFiles": 1343
+  },
+  {
+    "environment": "prod",
+    "planSha256": "92f3015d3722b9158a7c01a3dc0ae7388c4678428c6c1ab10d4852b9dae3d4d2",
+    "files": 5,
+    "allocatedBytes": 2119475200,
+    "retainedFiles": 718
+  },
+  {
+    "environment": "test",
+    "planSha256": "198df0a1b6bdf766bbc124ddc4aa002f4ec1150fd7a051fcc0bd85073ee3172b",
+    "files": 99,
+    "allocatedBytes": 102024777728,
+    "retainedFiles": 3383
+  }
+]

@@ -109,7 +109,7 @@ function render(){
   fill('parent',row?.parentChainRefs || [],'请选择已接受的父链');
   fill('point',row?.recoveryPointRefs || [],'请选择已接受的恢复点');
   fill('target',row?.freshTargetConfigRefs || [],'请选择全新独立目标');
-  if(!active && typeof currentBinding==='function' && currentBinding()?.applicationId===app?.applicationId){
+  if(!active && app && typeof currentBinding==='function' && currentBinding()?.applicationId===app.applicationId){
     const draft=simpleRequest(operationId);action=draft.action;
     $('point').value=draft.recoveryPointRef || '';$('target').value=draft.targetConfigRef || '';
   }
@@ -190,7 +190,12 @@ async function refresh(applicationOverride){
   busy=true;problem('');render();
   try{
     const applicationId=typeof applicationOverride==='string'?applicationOverride:active?.applicationId || $('application').value || pending?.applicationId;
-    const value=await api('/selections'+(applicationId?'?applicationId='+encodeURIComponent(applicationId):''));options=value.applications;initialIds=value.initialOperationIds;versions=value.registrationVersions;
+    const targetRef=active?.request.action==='RESTORE'?active.request.targetConfigRef:
+      typeof simpleTargetServers==='function'&&simpleRestoring&&currentBinding()?.applicationId===applicationId?
+        simpleTargetServers()[S('simple-target').value]:null;
+    const selectionQuery=applicationId?'?applicationId='+encodeURIComponent(applicationId)+
+      (targetRef?'&targetConfigRef='+encodeURIComponent(targetRef):''):'';
+    const value=await api('/selections'+selectionQuery);options=value.applications;initialIds=value.initialOperationIds;versions=value.registrationVersions;
     const prior=$('application').value;$('application').replaceChildren();
     for(const app of options)$('application').add(new Option(app.displayName,app.applicationId));
     if(options.some(a=>a.applicationId===prior))$('application').value=prior;

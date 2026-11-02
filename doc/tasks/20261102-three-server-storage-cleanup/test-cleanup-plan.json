@@ -1,0 +1,189 @@
+{
+  "environment": "test",
+  "host": "172.30.30.58",
+  "planSha256": "86c3e12b3b5bcea118c6e51aab993fd4406cfe669526903de10e0e641886db96",
+  "files": [
+    {
+      "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-27-13-12-40/images.tar",
+      "allocatedBytes": 713850880,
+      "sha256": "0ff3fd9affd7f47fba8e6b10601bdef9c8a92b8e9f127c9f0d9e8d1cc8580059",
+      "kind": "packed-duplicate",
+      "retainedCopy": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-27-13-12-40/release.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-23-14-09-53/images.tar",
+      "allocatedBytes": 712187904,
+      "sha256": "b410ad31f03e64d0d5e76f2ab496fff3d761f53671b0c8aebab49375241992f2",
+      "kind": "packed-duplicate",
+      "retainedCopy": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-23-14-09-53/release.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-29-16-28-18/images.tar",
+      "allocatedBytes": 714481664,
+      "sha256": "06f4b94ee3b1484cded875739e431eb07179d477820b828b1b5135654871464f",
+      "kind": "packed-duplicate",
+      "retainedCopy": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-29-16-28-18/release.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-31-22-23-14/images.tar",
+      "allocatedBytes": 714600448,
+      "sha256": "6359c6585fded6be5bb7153b69ade0dab9815382e519e20598d9fb368e11c3e8",
+      "kind": "packed-duplicate",
+      "retainedCopy": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-31-22-23-14/release.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-23-16-51-17/images.tar",
+      "allocatedBytes": 712183808,
+      "sha256": "c931d53ec3e552b8f6347c2100a9c768a71c26b767dc1f9c05b0e98bf94b6e6a",
+      "kind": "packed-duplicate",
+      "retainedCopy": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-23-16-51-17/release.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-23-08-53-07/images.tar",
+      "allocatedBytes": 712192000,
+      "sha256": "fa6edc58e122dadca7846e4348ff6e792e4e80cf57826cec4c778a048e6af115",
+      "kind": "packed-duplicate",
+      "retainedCopy": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-23-08-53-07/release.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-23-15-17-12/images.tar",
+      "allocatedBytes": 712187904,
+      "sha256": "de1d991a9494b0b027087f7f49801ea1e14792ae02f0f2e0b44bc62d3bb92dec",
+      "kind": "packed-duplicate",
+      "retainedCopy": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-23-15-17-12/release.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-28-23-36-26/images.tar",
+      "allocatedBytes": 713863168,
+      "sha256": "3139eb459151381cdec3e1c79f6a4be075f858248b1ae11df224f8bfa16f95e1",
+      "kind": "packed-duplicate",
+      "retainedCopy": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-28-23-36-26/release.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-29-13-43-28/images.tar",
+      "allocatedBytes": 714477568,
+      "sha256": "bd5f460200e766385e8a3e5fc1ad2d27484decb04b8ac090291f96f258d8b498",
+      "kind": "packed-duplicate",
+      "retainedCopy": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-29-13-43-28/release.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-24-03-24-24/images.tar",
+      "allocatedBytes": 713846784,
+      "sha256": "25d46f5918a3ce42ac3490af37d8976c44c6ee3244fe5b86a37f8ce0ccec8565",
+      "kind": "packed-duplicate",
+      "retainedCopy": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-24-03-24-24/release.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-23-11-47-19/images.tar",
+      "allocatedBytes": 712183808,
+      "sha256": "d1bc44f276a2af3781a8734d47912c9a835a48cae3c0d226fc8002b972021551",
+      "kind": "packed-duplicate",
+      "retainedCopy": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-23-11-47-19/release.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-23-13-09-00/images.tar",
+      "allocatedBytes": 712192000,
+      "sha256": "140a06d5fedf219209f403de7e8102394382abcba364939a3c655bb42779102d",
+      "kind": "packed-duplicate",
+      "retainedCopy": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-23-13-09-00/release.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-30-10-19-11/images.tar",
+      "allocatedBytes": 714539008,
+      "sha256": "8e4d0262d46fee96642f44d7b68a2ba2500feee69708bc079fdfe75a6580323a",
+      "kind": "packed-duplicate",
+      "retainedCopy": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-30-10-19-11/release.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-23-00-13-20/images.tar",
+      "allocatedBytes": 712167424,
+      "sha256": "cbad84ac7ff8f105af507217f4cf8e7907bbe95dfbc9039c736c4dba86b914d5",
+      "kind": "packed-duplicate",
+      "retainedCopy": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-23-00-13-20/release.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-23-10-52-15/images.tar",
+      "allocatedBytes": 712192000,
+      "sha256": "32772117fa262005861400fc724c200520524bc3cd8b3aadbf48da01ec883b47",
+      "kind": "packed-duplicate",
+      "retainedCopy": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-23-10-52-15/release.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-22-22-48-59/images.tar",
+      "allocatedBytes": 712159232,
+      "sha256": "755964d7b2e4f476151352e128b4205e158c12915dd2119227625ace2d62f3bf",
+      "kind": "packed-duplicate",
+      "retainedCopy": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-22-22-48-59/release.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-31-19-13-08/images.tar",
+      "allocatedBytes": 714579968,
+      "sha256": "de2670cbdaac14a84e313e4073e5b20339f1995249e653313ea2b7b30a6ab6bc",
+      "kind": "packed-duplicate",
+      "retainedCopy": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-31-19-13-08/release.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-22-21-54-25/images.tar",
+      "allocatedBytes": 712159232,
+      "sha256": "71e4b21e18bc4900a35b276a3738502ed2afc9a6cb02dc51b5def3b9fcd09e5e",
+      "kind": "packed-duplicate",
+      "retainedCopy": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-22-21-54-25/release.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-23-09-50-27/images.tar",
+      "allocatedBytes": 712187904,
+      "sha256": "2b75d059adcad56fedab9c858655490e1326050873cc8ccbd69de2ba327cb0ed",
+      "kind": "packed-duplicate",
+      "retainedCopy": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-23-09-50-27/release.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-releases/release-20260914-one-button-app-r34/intruoyi-images_release-20260914-one-button-app-r34.tar",
+      "allocatedBytes": 709816320,
+      "sha256": "75273ade06f51583ad270ad769d6fdc2f060b46a958e38db0cc05f91b9319491",
+      "kind": "locally-archived-code",
+      "retainedCopy": "C:\\SpugHandoff\\release\\private\\storage-archives\\20261102\\test\\var\\lib\\docker\\intruoyi-releases\\release-20260914-one-button-app-r34\\intruoyi-images_release-20260914-one-button-app-r34.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-releases/release-20260707-showroom-legacy-order-36ff30f582/intruoyi-images_release-20260707-showroom-legacy-order-36ff30f582.tar",
+      "allocatedBytes": 814637056,
+      "sha256": "338babce327a30376084af2572bfbe8317e2cb378520f23f634e45c9bfdf3d74",
+      "kind": "locally-archived-code",
+      "retainedCopy": "C:\\SpugHandoff\\release\\private\\storage-archives\\20261102\\test\\var\\lib\\docker\\intruoyi-releases\\release-20260707-showroom-legacy-order-36ff30f582\\intruoyi-images_release-20260707-showroom-legacy-order-36ff30f582.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-releases/release-20260627-2147-head-full-v14/intruoyi-images_release-20260627-2147-head-full-v14.tar",
+      "allocatedBytes": 813539328,
+      "sha256": "b57bd18160fcb4de25e28202058cc60d42a1eddfc360557c9bb632cc9204d021",
+      "kind": "locally-archived-code",
+      "retainedCopy": "C:\\SpugHandoff\\release\\private\\storage-archives\\20261102\\test\\var\\lib\\docker\\intruoyi-releases\\release-20260627-2147-head-full-v14\\intruoyi-images_release-20260627-2147-head-full-v14.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-releases/20260613_full_sql_code_only_183011/intruoyi-images_20260613_full_sql_code_only_183011.tar",
+      "allocatedBytes": 810532864,
+      "sha256": "db64c2d9c82ddc98bfe854a82615a32c17903f7a1015abc6d373af6ea3ddc6b7",
+      "kind": "locally-archived-code",
+      "retainedCopy": "C:\\SpugHandoff\\release\\private\\storage-archives\\20261102\\test\\var\\lib\\docker\\intruoyi-releases\\20260613_full_sql_code_only_183011\\intruoyi-images_20260613_full_sql_code_only_183011.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-releases/release-20260823-intmain-training-r260823f-r3/intruoyi-images_release-20260823-intmain-training-r260823f-r3.tar",
+      "allocatedBytes": 707391488,
+      "sha256": "7c85319409b9b050db867c214a9af5bdbea67093b49a87a5c331be4aed094922",
+      "kind": "locally-archived-code",
+      "retainedCopy": "C:\\SpugHandoff\\release\\private\\storage-archives\\20261102\\test\\var\\lib\\docker\\intruoyi-releases\\release-20260823-intmain-training-r260823f-r3\\intruoyi-images_release-20260823-intmain-training-r260823f-r3.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-releases/release-20260731-intmain-head-test-r260730a-r1/intruoyi-images_release-20260731-intmain-head-test-r260730a-r1.tar",
+      "allocatedBytes": 703987712,
+      "sha256": "cb29312f993389bd0fc05ba3c0bf1ddf88ae4de07f722159bd3663a61b1aa267",
+      "kind": "locally-archived-code",
+      "retainedCopy": "C:\\SpugHandoff\\release\\private\\storage-archives\\20261102\\test\\var\\lib\\docker\\intruoyi-releases\\release-20260731-intmain-head-test-r260730a-r1\\intruoyi-images_release-20260731-intmain-head-test-r260730a-r1.tar"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-releases/release-20260914-one-button-app-r32/intruoyi-images_release-20260914-one-button-app-r32.tar",
+      "allocatedBytes": 709820416,
+      "sha256": "19d129d890b53d3d04199066eb968f64300ab261da7103c21d1624097b1dbdbc",
+      "kind": "locally-archived-code",
+      "retainedCopy": "C:\\SpugHandoff\\release\\private\\storage-archives\\20261102\\test\\var\\lib\\docker\\intruoyi-releases\\release-20260914-one-button-app-r32\\intruoyi-images_release-20260914-one-button-app-r32.tar"
+    }
+  ]
+}

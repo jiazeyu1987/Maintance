@@ -1,0 +1,90 @@
+[
+  {
+    "environment": "backup",
+    "planSha256": "7503c54e3f8f1eb62978123ed98366281d4c20d746f97efd1ceb8e9e7a769640",
+    "files": 9842,
+    "allocatedBytes": 119248252928,
+    "categories": {
+      "old-program": {
+        "files": 12,
+        "allocatedBytes": 4550402048
+      },
+      "old-release-support-payload": {
+        "files": 9000,
+        "allocatedBytes": 2562646016
+      },
+      "old-recovery": {
+        "files": 14,
+        "allocatedBytes": 101412884480
+      },
+      "old-recovery-tree": {
+        "files": 816,
+        "allocatedBytes": 10722320384
+      }
+    },
+    "protectedRoots": [
+      "/mnt/intruoyi-data/intruoyi-release-workflow/backup/packages/2026-11-01-13-08-35",
+      "/mnt/intruoyi-data/intruoyi-release-workflow/backup/packages/frontend-patches/2026-11-02-10-09-19"
+    ],
+    "protectedPayloads": 1311,
+    "unclassified": 0
+  },
+  {
+    "environment": "test",
+    "planSha256": "de8ff59b44fe9c2515be020815b6831d8d22038564771ed55ff763ee8b831e8e",
+    "files": 106414,
+    "allocatedBytes": 831867883520,
+    "categories": {
+      "old-program": {
+        "files": 246,
+        "allocatedBytes": 189402517504
+      },
+      "old-recovery": {
+        "files": 80,
+        "allocatedBytes": 598890106880
+      },
+      "old-release-support-payload": {
+        "files": 100163,
+        "allocatedBytes": 4288983040
+      },
+      "old-recovery-tree": {
+        "files": 5925,
+        "allocatedBytes": 39286276096
+      }
+    },
+    "protectedRoots": [
+      "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-11-01-13-08-35",
+      "/var/lib/docker/intruoyi-release-workflow/test/packages/frontend-patches/2026-11-02-10-09-19",
+      "/var/lib/docker/intruoyi-release-workflow/rehearsal-prod/packages/2026-10-30-10-19-11",
+      "/var/lib/docker/intruoyi-release-workflow/rehearsal-prod/packages/rehearsal-seed/2026-10-30-10-19-11"
+    ],
+    "protectedPayloads": 3347,
+    "unclassified": 0
+  },
+  {
+    "environment": "prod",
+    "planSha256": "cbed35b90fd8bdfb0e6d144ed336826cddcff21d20177c3710d784e3ea00c0ed",
+    "files": 12062,
+    "allocatedBytes": 288419233792,
+    "categories": {
+      "old-recovery": {
+        "files": 35,
+        "allocatedBytes": 250285191168
+      },
+      "old-program": {
+        "files": 31,
+        "allocatedBytes": 28424421376
+      },
+      "old-release-support-payload": {
+        "files": 11996,
+        "allocatedBytes": 9709621248
+      }
+    },
+    "protectedRoots": [
+      "/var/lib/docker/intruoyi-release-workflow/prod/packages/2026-11-01-13-08-35",
+      "/var/lib/docker/intruoyi-release-workflow/prod/packages/frontend-patches/2026-11-02-10-09-19"
+    ],
+    "protectedPayloads": 648,
+    "unclassified": 0
+  }
+]

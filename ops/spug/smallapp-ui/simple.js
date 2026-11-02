@@ -1,6 +1,8 @@
 'use strict';
 let simpleConfig=null, simpleConfigError='', simpleRestoring=false, switching=false, telemetry=null, telemetryError='', pollBusy=false;
+let simpleInitializing=false;
 const pendingProgress=new Set();
+const applicationDraftSelections=new Map();
 const S=id=>document.getElementById(id);
 const stages={'archive-admission':'备份前置检查','source-capture':'采集业务数据并恢复源服务','capture-validation':'核验采集材料','nas-upload':'上传 NAS','archive-metadata':'生成归档索引','nas-readback':'NAS 独立读回','archive-final-verification':'归档最终核验','archive-chain-readback':'核对已发布备份链','capture-cleanup':'清理采集临时文件','restore-admission':'恢复前置检查','target-checks':'恢复目标核验','target-replacement':'清空已确认覆盖的小程序目标','database-restore':'恢复数据库','object-restore':'恢复对象文件','consistency':'一致性核验','redis-rebuild':'恢复 Redis（保留原到期时间）','application-start':'启动应用','archive-verification':'归档最终核验','restore-cleanup':'清理恢复临时文件','sql-readback':'数据库独立回读核验'};
 function stageName(name){const parts=name.split('/');const stage=parts.at(-1);const sql={'sql-stage':'暂存数据库备份','sql-expand':'解压数据库备份','sql-import':'导入数据库','restore-cleanup':'清理恢复临时文件','target-quiesce':'停止目标应用写入','capture-material-binding':'绑定采集材料','recovery-material-binding':'生成恢复材料'};return (parts[0].startsWith('database-')?`第 ${Number(parts[0].split('-')[1])+1} 个备份点 · `:'')+(sql[stage]||stages[stage]||stage);}
@@ -51,13 +53,13 @@ function syncSimpleIdentity(record){
 function drawOperationDetails(){
   const details=S('simple-operation-details');details.replaceChildren();details.hidden=!active;
   if(!active)return;
-  const request=active.request, binding=simpleConfig?.bindings.find(b=>b.applicationId===active.applicationId);
-  const fields=[['操作',labels[request.action]],['来源服务器',binding?.server||'来源服务器未登记'],
-    ['来源',request.sourceConfigRef],['执行模式',binding?.mode==='fast'?'快速模式 · 跳过核验':binding?.mode==='safe'?'安全模式 · 完整核验':'执行模式未登记']];
+  const request=active.request, context=active.displayContext;
+  const fields=[['操作',labels[request.action]],['来源服务器',context?.server||'来源服务器未记录'],
+    ['来源',request.sourceConfigRef],['执行模式',context?.mode==='fast'?'快速模式 · 跳过核验':context?.mode==='safe'?'安全模式 · 完整核验':'执行模式未记录']];
   if(request.parentChainRef)fields.push(['增量父点',request.parentChainRef]);
   if(request.recoveryPointRef)fields.push(['备份包',request.recoveryPointRef]);
   if(request.targetConfigRef)fields.push(['恢复目标',request.targetConfigRef]);
-  if(request.action==='RESTORE')fields.push(['恢复方式',replacementRequest(request,binding)?'覆盖现有小程序':'恢复到空目标']);
+  if(request.action==='RESTORE')fields.push(['恢复方式',context?.restoreMode==='replace'?'覆盖现有小程序':context?.restoreMode==='fresh'?'恢复到空目标':'恢复方式未记录']);
   for(const [label,value] of fields){const term=document.createElement('dt'),description=document.createElement('dd');term.textContent=label;description.textContent=value;details.append(term,description);}
 }
 async function openRecord(record){
@@ -81,16 +83,19 @@ function simpleRender(){
   for(const ref of refs){const record=records.find(r=>r.request.operationId===ref);const label=record?`${date(record.createdAt)} · ${labels[record.request.action]} · ${ref}`:ref;S('simple-package').add(new Option(label,ref));}
   if(refs.includes(previous))S('simple-package').value=previous;
   const fresh=binding&&selected()?.applicationId===binding.applicationId?simpleFreshTargets():[];
+  const usedTargets=new Set(replacing?[]:records.filter(r=>r.request.action==='RESTORE'&&r.spugHistoryId&&!r.cancelledUnaccepted).map(r=>r.request.targetConfigRef));
   const priorTarget=S('simple-target').value;
   S('simple-target').replaceChildren(new Option('请选择可用恢复服务器',''));
   for(const server of simpleConfig?.servers||[]){
     const registered=targetServers[server.address], available=registered&&fresh.includes(registered);
-    const option=new Option(`${server.name}　${server.address}${available?'':registered?'（目标当前不可用）':'（未登记目标）'}`,server.address);
-    option.disabled=!available;S('simple-target').add(option);
+    const used=usedTargets.has(registered);
+    const option=new Option(`${server.name}　${server.address}${used?'（目标已使用）':available?'':registered?'（选择后核验）':'（未登记目标）'}`,server.address);
+    option.disabled=!registered||used;S('simple-target').add(option);
   }
-  if(targetServers[priorTarget]&&fresh.includes(targetServers[priorTarget]))S('simple-target').value=priorTarget;
+  if(targetServers[priorTarget]&&!usedTargets.has(targetServers[priorTarget]))S('simple-target').value=priorTarget;
   let blocked='';
-  if(!simpleConfig)blocked=simpleConfigError||'配置未读取，不能执行。';
+  if(simpleInitializing)blocked='正在读取配置并核对来源，请稍候…';
+  else if(!simpleConfig)blocked=simpleConfigError||'配置未读取，不能执行。';
   else if(!binding){
     const available=simpleConfig.bindings.filter(b=>b.selectable&&b.product===S('simple-product').value&&b.server===S('simple-server').value);
     const modes=available.map(b=>b.mode==='safe'?'安全模式':'快速模式');
@@ -114,7 +119,7 @@ function simpleRender(){
   if(fast&&active?.result?.state==='SUCCEEDED')S('simple-result').textContent=active.request.action==='RESTORE'?'恢复命令已完成；快速模式未执行完整核验，业务验收待确认。':'备份命令已完成；快速模式未执行完整核验。';
   S('operation-reference').textContent=active?.request.operationId||'';
   drawOperationDetails();
-  const draftLocked=interactionLocked()||switching||!!unresolvedOriginal()||!!active&&!resolvedRecord(active);
+  const draftLocked=simpleInitializing||interactionLocked()||switching||!!unresolvedOriginal()||!!active&&!resolvedRecord(active);
   for(const id of ['simple-product','simple-server','simple-mode','simple-type','simple-package','simple-target','simple-restore-mode','simple-nas','simple-backup-tab','simple-restore-tab','simple-refresh'])S(id).disabled=draftLocked;
   S('simple-query').disabled=interactionLocked()||!active;
   S('simple-history').replaceChildren();
@@ -122,7 +127,7 @@ function simpleRender(){
   for(const record of visibleRecords){
     const row=document.createElement('div');row.className='history-row';
     const label=document.createElement('small');label.textContent=`${date(record.createdAt)} · ${labels[record.request.action]} · ${record.request.operationId}`;
-    const button=document.createElement('button');button.textContent='查看进度';button.disabled=interactionLocked()||switching;
+    const button=document.createElement('button');button.textContent='查看进度';button.disabled=simpleInitializing||interactionLocked()||switching;
     button.onclick=()=>openRecord(record);row.append(label,button);S('simple-history').append(row);
   }
   if(!visibleRecords.length)S('simple-history').textContent='暂无操作记录。';
@@ -179,8 +184,9 @@ async function chooseSimple(){
   if(interactionLocked() || switching)return;
   const binding=currentBinding();
   if(unresolvedOriginal() || active&&!resolvedRecord(active)){simpleRender();return;}
+  if(binding)applicationDraftSelections.set(binding.product,{server:binding.server,mode:binding.mode});
   selectRecord(null);telemetry=null;telemetryError='';
-  S('simple-package').value='';S('point').value='';S('parent').value='';S('target').value='';S('result-state').textContent='尚未执行';
+  S('simple-package').value='';S('simple-target').value='';S('point').value='';S('parent').value='';S('target').value='';S('result-state').textContent='尚未执行';
   if(!binding){render();return;}
   action=simpleRestoring?'RESTORE':S('simple-type').value;S('application').value=binding.applicationId;chooseId();
   // Explicit user change starts a new draft; historical operations remain in the history.
@@ -203,12 +209,22 @@ S('simple-backup-tab').onclick=()=>{if(S('simple-backup-tab').disabled)return;si
 S('simple-restore-tab').onclick=()=>{if(S('simple-restore-tab').disabled)return;simpleRestoring=true;chooseSimple();};
 for(const id of ['simple-server','simple-mode','simple-type','simple-restore-mode'])S(id).onchange=chooseSimple;
 S('simple-product').onchange=()=>{
-  const binding=simpleConfig?.bindings.find(b=>b.selectable&&b.product===S('simple-product').value);
-  if(binding){S('simple-server').value=binding.server;S('simple-mode').value=binding.mode;}
-  chooseSimple();
+  const product=S('simple-product').value;
+  const previous=applicationDraftSelections.get(product);
+  const binding=simpleConfig?.bindings.find(b=>b.selectable&&b.product===product);
+  // Preserve an explicit draft choice even if its registration is now unavailable.
+  // Rendering will explain the missing registration and keep submission disabled.
+  if(previous){S('simple-server').value=previous.server;S('simple-mode').value=previous.mode;}
+  else if(binding){S('simple-server').value=binding.server;S('simple-mode').value=binding.mode;}
+  return chooseSimple();
 };
 S('simple-nas').oninput=()=>render();
-for(const id of ['simple-package','simple-target'])S(id).onchange=()=>{S('point').value=S('simple-package').value;S('target').value=simpleTargetServers()[S('simple-target').value]||'';render();};
+S('simple-package').onchange=()=>{S('point').value=S('simple-package').value;render();};
+S('simple-target').onchange=async()=>{
+  if(interactionLocked()||switching)return;
+  S('target').value=simpleTargetServers()[S('simple-target').value]||'';
+  await refresh(currentBinding()?.applicationId);
+};
 S('simple-refresh').onclick=refreshSimpleConfiguration;
 S('simple-query').onclick=async()=>{await query();await progress();render();};
 S('simple-submit').onclick=()=>{
@@ -235,10 +251,12 @@ S('simple-confirm-submit').onclick=async()=>{
 };
 setInterval(()=>{if(!document.hidden&&active?.result?.state==='RUNNING'&&!interactionLocked()&&!pollBusy){query().then(progress);}drawProgress();},5000);
 (async()=>{
+  simpleInitializing=true;render();
   try{await initialRefresh;simpleConfig=await api('/simple-config');S('simple-nas').value=simpleConfig.nas;
     if(active&&!pending){active=null;operationId='';}
     const matched=simpleConfig.bindings.find(b=>b.applicationId===active?.applicationId);
     if(matched){S('simple-product').value=matched.product;S('simple-server').value=matched.server;S('simple-mode').value=matched.mode;simpleRestoring=action==='RESTORE';if(!simpleRestoring)S('simple-type').value=action;render();await progress();}
     else {const first=simpleConfig.bindings.find(b=>b.selectable);if(!currentBinding()&&first){S('simple-server').value=first.server;S('simple-mode').value=first.mode;}await chooseSimple();}
-  }catch(error){S('simple-status').textContent='配置读取失败：'+error.message;}
+  }catch(error){simpleConfig=null;simpleConfigError='配置读取失败：'+error.message;problem(simpleConfigError);}
+  finally{simpleInitializing=false;render();}
 })();

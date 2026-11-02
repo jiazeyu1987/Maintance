@@ -43,12 +43,116 @@ function page() {
     S('simple-nas').value='registered-nas';operationId='test-operation-123';render();
     api=async()=>{throw new Error('UNEXPECTED_TEST_API_CALL');};
   `);
-  return {run,get,context,buttons,store};
+  const start=()=>{run('simpleConfig=null;');return run(simple.slice(simple.indexOf('(async()=>{',simple.indexOf('\nsetInterval('))));};
+  return {run,get,context,buttons,store,start};
 }
 
 const record=(id='original-operation-123')=>({applicationId:'app',request:{schemaVersion:'SmallAppBackupUiRequest/v1',operationId:id,
   action:'FULL',sourceConfigRef:'source-ref',parentChainRef:null,recoveryPointRef:null,targetConfigRef:null},
   result:{state:'RUNNING',errorCode:null,logRefs:[],resultRef:null}});
+
+test('initial configuration keeps draft locked until source synchronization completes',async()=>{
+  const p=page();
+  p.run(`globalThis.configuration=simpleConfig;globalThis.releaseConfiguration=null;
+    api=async url=>{if(url==='/simple-config')return new Promise(resolve=>{releaseConfiguration=resolve;});
+      if(url==='/history')return [];return {applications:options,initialOperationIds:{},registrationVersions:{}};};`);
+  const initializing=p.start();
+  await Promise.resolve();
+  assert.equal(p.get('simple-product').disabled,true);
+  assert.equal(p.get('simple-restore-tab').disabled,true);
+  assert.equal(p.get('simple-submit').disabled,true);
+  p.run('releaseConfiguration(configuration)');await initializing;
+  assert.equal(p.get('simple-product').disabled,false);
+  assert.equal(p.run('busy || switching'),false);
+  assert.equal(p.run('currentBinding().applicationId'),p.get('application').value);
+});
+
+test('initial render with an empty source catalogue waits for configuration instead of throwing',async()=>{
+  const p=page();
+  p.run(`globalThis.configuration=simpleConfig;globalThis.applications=options;
+    options=[];S('application').replaceChildren();
+    api=async url=>{if(url==='/simple-config')return configuration;if(url==='/history')return [];
+      return {applications,initialOperationIds:{},registrationVersions:{}};};`);
+  await p.start();
+  assert.equal(p.run('simpleInitializing'),false);
+  assert.equal(p.run('simpleConfigError'),'');
+  assert.equal(p.get('simple-product').disabled,false);
+  assert.equal(p.run('selected().applicationId'),'app');
+});
+
+test('initial configuration failure remains visible and explicit refresh can recover',async()=>{
+  const p=page();p.run('globalThis.configuration=simpleConfig;');
+  await p.start();
+  p.run('render()');
+  assert.match(p.get('simple-status').textContent,/UNEXPECTED_TEST_API_CALL/);
+  assert.equal(p.get('simple-submit').disabled,true);
+  assert.equal(p.get('simple-refresh').disabled,false);
+  p.run(`api=async url=>{if(url==='/simple-config')return configuration;if(url==='/history')return [];
+    return {applications:options,initialOperationIds:{},registrationVersions:{}};};`);
+  await p.get('simple-refresh').onclick();
+  assert.equal(p.get('simple-product').disabled,false);
+  assert.equal(p.run('simpleConfigError'),'');
+});
+
+test('registered restore target can be selected before its readiness probe and cannot submit',()=>{
+  const p=page();
+  p.run("simpleRestoring=true;action='RESTORE';selected().validated.freshTargetConfigRefs=[];S('simple-target').value='';render();");
+  assert.equal(p.get('simple-target').children.find(o=>o.value==='target-server').disabled,false);
+  p.get('simple-target').value='target-server';
+  p.run('render()');
+  assert.equal(p.get('simple-target').value,'target-server');
+  assert.equal(p.get('simple-submit').disabled,true);
+});
+
+test('restore target selection probes only that registered target; backup refresh has no target',async()=>{
+  const p=page();p.context.calls=[];
+  p.run(`api=async url=>{calls.push(url);if(url==='/history')return [];return {applications:options,initialOperationIds:{},registrationVersions:{}};};
+    simpleRestoring=true;action='RESTORE';S('simple-target').value='target-server';`);
+  await p.get('simple-target').onchange();
+  assert.ok(p.context.calls.includes('/selections?applicationId=app&targetConfigRef=target-ref'));
+  p.context.calls.length=0;
+  p.run("simpleRestoring=false;action='FULL';");
+  await p.run("refresh('app')");
+  assert.ok(p.context.calls.includes('/selections?applicationId=app'));
+  assert.equal(p.context.calls.some(url=>url.includes('targetConfigRef')),false);
+});
+
+test('returning to an application retains its explicitly selected server and fast mode',async()=>{
+  const p=page();
+  p.run(`
+    simpleConfig.bindings.push({...simpleConfig.bindings[0],mode:'fast',applicationId:'fast-app'});
+    simpleConfig.bindings.push({...simpleConfig.bindings[0],product:'other',server:'other-server',applicationId:'other-app'});
+    options.push({...options[0],applicationId:'fast-app'},{...options[0],applicationId:'other-app'});
+    refresh=async()=>{};
+    S('simple-mode').value='fast';
+  `);
+  await p.run('chooseSimple()');
+  p.get('simple-product').value='other';
+  await p.get('simple-product').onchange();
+  assert.equal(p.get('simple-server').value,'other-server');
+  p.get('simple-product').value='product';
+  await p.get('simple-product').onchange();
+  assert.equal(p.get('simple-server').value,'server');
+  assert.equal(p.get('simple-mode').value,'fast');
+});
+
+test('a remembered mode becoming unavailable does not silently select another executor',async()=>{
+  const p=page();
+  p.run(`
+    simpleConfig.bindings.push({...simpleConfig.bindings[0],mode:'fast',applicationId:'fast-app'});
+    options.push({...options[0],applicationId:'fast-app'});
+    refresh=async()=>{};S('simple-mode').value='fast';
+  `);
+  await p.run('chooseSimple()');
+  p.get('simple-product').value='unregistered-product';
+  await p.get('simple-product').onchange();
+  p.run("simpleConfig.bindings.find(b=>b.mode==='fast').selectable=false;");
+  p.get('simple-product').value='product';
+  await p.get('simple-product').onchange();
+  assert.equal(p.get('simple-mode').value,'fast');
+  assert.equal(p.get('simple-submit').disabled,true);
+  assert.match(p.get('simple-status').textContent,/尚未登记快速模式/);
+});
 
 test('incremental chooses the newest accepted point on this source regardless of history order',()=>{
   const p=page();
@@ -62,13 +166,13 @@ test('incremental chooses the newest accepted point on this source regardless of
   assert.equal(p.run('latestSimpleParent()'),'');
 });
 
-test('target choices exclude unregistered and already used targets before submission',()=>{
+test('unregistered targets are disabled and unverified registered choices cannot submit',()=>{
   const p=page();
   p.run("simpleConfig.servers.push({address:'missing',name:'Missing'});simpleRestoring=true;action='RESTORE';render();");
   assert.equal(p.get('simple-target').children.find(o=>o.value==='missing').disabled,true);
   p.run("S('simple-target').value='target-server';selected().validated.freshTargetConfigRefs=[];render();");
-  assert.equal(p.get('simple-target').value,'');
-  assert.equal(p.get('simple-target').children.find(o=>o.value==='target-server').disabled,true);
+  assert.equal(p.get('simple-target').value,'target-server');
+  assert.equal(p.get('simple-target').children.find(o=>o.value==='target-server').disabled,false);
   assert.equal(p.get('simple-submit').disabled,true);
 });
 
@@ -86,7 +190,8 @@ test('registered replacement stays selectable after a previous successful restor
     S('simple-restore-mode').value='replace';simpleRestoring=true;action='RESTORE';render();`);
   assert.equal(p.get('simple-target').children.find(o=>o.value==='target-server').disabled,false);
   p.run("selected().validated.freshTargetConfigRefs=['target-ref'];render();");
-  assert.equal(p.get('simple-target').children.find(o=>o.value==='target-server').disabled,true);
+  assert.equal(p.get('simple-target').children.find(o=>o.value==='target-server').disabled,false);
+  assert.equal(p.get('simple-submit').disabled,true);
 });
 
 test('replacement requires an explicit checkbox and retains the exact confirmed target',async()=>{
@@ -151,6 +256,7 @@ test('restore stays blocked until a package is explicitly selected and explains 
 
 test('history details show original point and target after the draft target rotates',()=>{
   const p=page();p.context.original=record();
+  p.context.original.displayContext={server:'original-server',mode:'fast',restoreMode:'replace'};
   p.run(`original.request.action='RESTORE';original.request.recoveryPointRef='historical-point';original.request.targetConfigRef='historical-target';
     simpleConfig.bindings[0].mode='fast';simpleConfig.bindings[0].targetServers['target-server']='new-draft-target';selectRecord(original);render();`);
   const details=p.get('simple-operation-details');
@@ -158,7 +264,17 @@ test('history details show original point and target after the draft target rota
   const text=details.children.map(item=>item.textContent).join('\n');
   assert.match(text,/historical-point/);assert.match(text,/historical-target/);
   assert.match(text,/快速模式 · 跳过核验/);assert.doesNotMatch(text,/new-draft-target/);
+  assert.match(text,/覆盖现有小程序/);assert.match(text,/original-server/);
   p.run('selectRecord(null);render();');assert.equal(details.hidden,true);assert.equal(details.children.length,0);
+});
+
+test('legacy history never infers restore semantics from current mappings',()=>{
+  const p=page();p.context.original=record();
+  p.run(`original.request.action='RESTORE';original.request.targetConfigRef='historical-target';
+    simpleConfig.bindings[0].overwriteTargetServers={'target-server':'historical-target'};selectRecord(original);render();`);
+  const text=p.get('simple-operation-details').children.map(item=>item.textContent).join('\n');
+  assert.match(text,/恢复方式未记录/);assert.match(text,/执行模式未记录/);
+  assert.doesNotMatch(text,/覆盖现有小程序|恢复到空目标/);
 });
 
 test('retired source remains in history while new drafts select its explicit successor',()=>{

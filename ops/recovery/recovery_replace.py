@@ -163,13 +163,15 @@ def execute(configuration, request, root, input_pins, original_execute, native_t
             require(all(disjoint(value['stateRoot'], path) for path in source['archiveRoots']),
                     'REPLACEMENT_STATE_ARCHIVE_OVERLAP')
             preparation = root/'replacement-preparation'; preparation.mkdir(mode=0o700)
+            from recovery_resource_admission import admit
+            admit(configuration, request, root, 'replacement')
             native = native_type(configuration, request, source, policy, chain, target, preparation, input_pins)
             with native.timed_stage('target-replacement'):
                 prepare(native, value)
             effective = deepcopy(configuration)
             runtime = claim/'runtime'; runtime.mkdir(mode=0o700)
             effective['targets'][request['targetConfigRef']]['dataRoot'] = str(runtime)
-            result = original_execute(effective, request, root, input_pins)
+            result = original_execute(effective, request, root, input_pins, reservation_configuration=configuration)
             receipt = write(claim/'replacement-result.json', dict(state='SUCCEEDED', operationId=request['operationId'],
                            targetConfigRef=request['targetConfigRef'], finishedAt=utc()))
             result[0]['replacementReceiptPin'] = receipt
