@@ -19,6 +19,17 @@ def manifest():
 
 
 class ContractTests(unittest.TestCase):
+    def test_runtime_reference_comes_from_verified_baseline_manifest(self):
+        from backend_patch_build import pinned_runtime
+        executor=Mock()
+        executor.manifest.return_value=({},dict(releaseTag='base',images={'backend':dict(name='runtime:base',id='sha256:'+'a'*64)}))
+        base=dict(releaseTag='base',origins={'prod':{'components':{'backend':dict(image='sha256:'+'a'*64,imageId='sha256:'+'a'*64)}}})
+        self.assertEqual(pinned_runtime(executor,base),dict(image='runtime:base',imageId='sha256:'+'a'*64))
+        executor.manifest.assert_called_once_with('base')
+        executor.manifest.return_value[1]['images']['backend']['id']='sha256:'+'b'*64
+        with self.assertRaisesRegex(ValueError,'运行镜像'):
+            pinned_runtime(executor,base)
+
     def test_local_index_is_bound_to_exact_remote_runtime_config(self):
         import hashlib,io,tarfile
         from backend_patch_build import resolve_runtime

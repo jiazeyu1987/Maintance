@@ -45,6 +45,17 @@ def publish_original(executor,job,package):
     executor.save()
 
 
+def pinned_runtime(executor,base):
+    """A cloned container can use a config ID as its reference; use the manifest name."""
+    runtime=dict(base['origins']['prod']['components']['backend'])
+    _,manifest=executor.manifest(base['releaseTag'])
+    image=manifest['images']['backend']
+    require(manifest['releaseTag']==base['releaseTag'] and image['id']==runtime['imageId'],
+            '基线清单运行镜像与现场不一致')
+    runtime['image']=image['name']
+    return runtime
+
+
 def resolve_runtime(executor,runtime):
     """Bind Desktop's immutable index to the exact classic-engine config."""
     reference=runtime['image']
@@ -116,7 +127,7 @@ def build(executor,job):
     shutil.copyfile(worktree/'IntRuoyiBackend/yudao-server/target/yudao-server-exec.jar',root/'app.jar')
     proof=verify_backend_jar(root/'app.jar');job['backendArtifactContract']=proof
     executor.step(job,'verify-jar-with-pinned-runtime-offline')
-    job['backendJavaCompatibility']=verify_java(executor,job,root/'app.jar',base['origins']['prod']['components']['backend'])
+    job['backendJavaCompatibility']=verify_java(executor,job,root/'app.jar',pinned_runtime(executor,base))
     metadata=dict(releaseTag=base['releaseTag'],baseReleaseTag=base['releaseTag'],backendPatchTag=tag,
                   sourceCommit=commit,backendJarSha256=proof['jarSha256'])
     (root/'release-info.json').write_text(json.dumps(metadata,ensure_ascii=False,indent=2),'utf-8')
