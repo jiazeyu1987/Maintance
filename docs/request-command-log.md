@@ -5665,3 +5665,8 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 
 - 用户询问能否做后端补丁包；本机只读核对后端构建、维护/恢复及前端补丁绑定合同，不执行远端或构建。
 - 结论：可新增后端专用补丁，但当前无此入口；首版限兼容当前前端、数据库和配置的后端代码，整后端镜像一次构建同包逐服验收、显式恢复原程序，保持 GxP 关闭；需同步版本组合/接续和清理保护，程序恢复不撤销业务数据。方案见 doc/tasks/20261102-post-release-auto-cleanup/backend-patch-feasibility.md，尚未实施。
+
+# 20261102 单 JAR 发布可行性说明
+
+- 用户询问能否只替换一个 JAR；本机只读确认镜像内 /yudao-server/app.jar 和 java -jar 启动，无构建或远端动作。
+- 结论：可以建设仅投递完整后端 JAR 与清单的发布通道，固定运行镜像、版本目录只读挂载、实际 JAR SHA/版本验收、保留原容器恢复；不直接覆盖旧进程文件。需实现身份/基线/清理合同，现用执行器尚未支持；详细证据见 doc/tasks/20261102-post-release-auto-cleanup/jar-only-feasibility.md。
