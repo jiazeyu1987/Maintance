@@ -1,0 +1,482 @@
+{
+  "scope": "read-only; no deletion, restart or release",
+  "unit": "GiB = 1024^3 bytes",
+  "servers": {
+    "prod": {
+      "disks": [
+        {
+          "filesystem": "/dev/mapper/cl-root",
+          "mount": "/",
+          "capacityBytes": 53660876800,
+          "usedBytes": 14949023744,
+          "availableBytes": 38711853056,
+          "usedPercent": "28%"
+        },
+        {
+          "filesystem": "/dev/vdb",
+          "mount": "/var/lib/docker",
+          "capacityBytes": 2112703840256,
+          "usedBytes": 817422897152,
+          "availableBytes": 1187889983488,
+          "usedPercent": "41%"
+        }
+      ],
+      "dockerRoot": "/var/lib/docker",
+      "runningContainers": 102,
+      "stoppedContainers": 98,
+      "unreferencedVolumes": 0,
+      "allocatedDirectories": [
+        {
+          "path": "/var/lib/docker/intruoyi-release-workflow",
+          "allocatedBytes": 278181851136,
+          "GiB": 259.077
+        },
+        {
+          "path": "/var/lib/docker/intruoyi-release-workflow/prod/packages/rehearsal-seed",
+          "allocatedBytes": 157428707328,
+          "GiB": 146.6169
+        },
+        {
+          "path": "/var/lib/docker/intruoyi-releases",
+          "allocatedBytes": 10488651776,
+          "GiB": 9.7683
+        }
+      ],
+      "olderCheckpointCandidates": [
+        {
+          "path": "/var/lib/docker/intruoyi-release-workflow/prod/packages/2026-10-29-16-28-18",
+          "checkpointGiB": 20.6193,
+          "programArchivesGiB": 1.3415,
+          "containerMountReferences": [],
+          "receipts": [
+            {
+              "file": "business-opened.private.json",
+              "releaseTag": "2026-10-29-16-28-18"
+            },
+            {
+              "file": "deployment-pending.json",
+              "releaseTag": "2026-10-29-16-28-18"
+            },
+            {
+              "file": "deployment-progress.private.json",
+              "releaseTag": "2026-10-29-16-28-18",
+              "jobId": "JOB-da6f6e64d8",
+              "phase": "succeeded",
+              "pid": 30019,
+              "processStart": "1e63e257-89b8-4cc3-9cdb-e183affe600b:260533526"
+            },
+            {
+              "file": "recovery-record.private.json",
+              "releaseTag": "2026-10-29-16-28-18",
+              "jobId": "JOB-da6f6e64d8",
+              "version": 1
+            }
+          ]
+        },
+        {
+          "path": "/var/lib/docker/intruoyi-release-workflow/prod/packages/2026-10-28-23-36-26",
+          "checkpointGiB": 20.6183,
+          "programArchivesGiB": 1.3398,
+          "containerMountReferences": [],
+          "receipts": [
+            {
+              "file": "business-opened.private.json",
+              "releaseTag": "2026-10-28-23-36-26"
+            },
+            {
+              "file": "deployment-pending.json",
+              "releaseTag": "2026-10-28-23-36-26"
+            },
+            {
+              "file": "deployment-progress.private.json",
+              "releaseTag": "2026-10-28-23-36-26",
+              "jobId": "JOB-69851d0a8e",
+              "phase": "succeeded",
+              "pid": 27624,
+              "processStart": "1e63e257-89b8-4cc3-9cdb-e183affe600b:257478457"
+            },
+            {
+              "file": "recovery-record.private.json",
+              "releaseTag": "2026-10-28-23-36-26",
+              "jobId": "JOB-69851d0a8e",
+              "version": 1
+            }
+          ]
+        }
+      ],
+      "collectedAtUtc": "2026-11-02T01:01:57.939313+00:00"
+    },
+    "test": {
+      "disks": [
+        {
+          "filesystem": "/dev/mapper/cl-root",
+          "mount": "/",
+          "capacityBytes": 53660876800,
+          "usedBytes": 46257868800,
+          "availableBytes": 7403008000,
+          "usedPercent": "87%"
+        },
+        {
+          "filesystem": "/dev/vdb",
+          "mount": "/var/lib/docker",
+          "capacityBytes": 2112703840256,
+          "usedBytes": 2024596930560,
+          "availableBytes": 77352714240,
+          "usedPercent": "97%"
+        }
+      ],
+      "dockerRoot": "/var/lib/docker",
+      "runningContainers": 188,
+      "stoppedContainers": 278,
+      "unreferencedVolumes": 0,
+      "allocatedDirectories": [
+        {
+          "path": "/var/lib/docker/intruoyi-releases",
+          "allocatedBytes": 153657212928,
+          "GiB": 143.1044
+        },
+        {
+          "path": "/backup/int-ruoyi",
+          "allocatedBytes": 22510985216,
+          "GiB": 20.965
+        },
+        {
+          "path": "/var/lib/intruoyi-release-center/packages",
+          "allocatedBytes": 14609649664,
+          "GiB": 13.6063
+        },
+        {
+          "path": "/var/lib/docker/intruoyi-release-workflow",
+          "allocatedBytes": 711966707712,
+          "GiB": 663.0707
+        },
+        {
+          "path": "/var/lib/docker/intruoyi-release-workflow/test/packages",
+          "allocatedBytes": 382470762496,
+          "GiB": 356.2037
+        },
+        {
+          "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/rehearsal-seed",
+          "allocatedBytes": 68448141312,
+          "GiB": 63.7473
+        },
+        {
+          "path": "/var/lib/docker/intruoyi-release-workflow/rehearsal-test/packages",
+          "allocatedBytes": 81616875520,
+          "GiB": 76.0116
+        },
+        {
+          "path": "/var/lib/docker/intruoyi-release-workflow/rehearsal-prod/packages",
+          "allocatedBytes": 240104128512,
+          "GiB": 223.6144
+        },
+        {
+          "path": "/var/lib/docker/intruoyi-release-workflow/rehearsal-prod/packages/rehearsal-transfer-cache",
+          "allocatedBytes": 20277002240,
+          "GiB": 18.8844
+        }
+      ],
+      "olderCheckpointCandidates": [
+        {
+          "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-29-16-28-18",
+          "checkpointGiB": 20.6123,
+          "programArchivesGiB": 1.3415,
+          "containerMountReferences": [],
+          "receipts": [
+            {
+              "file": "business-opened.private.json",
+              "releaseTag": "2026-10-29-16-28-18"
+            },
+            {
+              "file": "deployment-pending.json",
+              "releaseTag": "2026-10-29-16-28-18"
+            },
+            {
+              "file": "deployment-progress.private.json",
+              "releaseTag": "2026-10-29-16-28-18",
+              "jobId": "JOB-8d2b044fea",
+              "phase": "succeeded",
+              "pid": 8388,
+              "processStart": "1f28303b-4fbb-45b6-9b40-d1a607c8a599:259613948"
+            },
+            {
+              "file": "recovery-record.private.json",
+              "releaseTag": "2026-10-29-16-28-18",
+              "jobId": "JOB-8d2b044fea",
+              "version": 1
+            }
+          ]
+        },
+        {
+          "path": "/var/lib/docker/intruoyi-release-workflow/test/packages/2026-10-28-23-36-26",
+          "checkpointGiB": 20.6121,
+          "programArchivesGiB": 1.3398,
+          "containerMountReferences": [],
+          "receipts": [
+            {
+              "file": "business-opened.private.json",
+              "releaseTag": "2026-10-28-23-36-26"
+            },
+            {
+              "file": "deployment-pending.json",
+              "releaseTag": "2026-10-28-23-36-26"
+            },
+            {
+              "file": "deployment-progress.private.json",
+              "releaseTag": "2026-10-28-23-36-26",
+              "jobId": "JOB-86cb4b1f17",
+              "phase": "succeeded",
+              "pid": 23698,
+              "processStart": "1f28303b-4fbb-45b6-9b40-d1a607c8a599:253547822"
+            },
+            {
+              "file": "recovery-record.private.json",
+              "releaseTag": "2026-10-28-23-36-26",
+              "jobId": "JOB-86cb4b1f17",
+              "version": 1
+            }
+          ]
+        }
+      ],
+      "collectedAtUtc": "2026-11-02T01:01:57.935996+00:00"
+    },
+    "backup": {
+      "disks": [
+        {
+          "filesystem": "/dev/mapper/centos-root",
+          "mount": "/",
+          "capacityBytes": 51283869696,
+          "usedBytes": 48769744896,
+          "availableBytes": 2514124800,
+          "usedPercent": "96%"
+        },
+        {
+          "filesystem": "/dev/mapper/cl-home",
+          "mount": "/mnt/intruoyi-data",
+          "capacityBytes": 994505494528,
+          "usedBytes": 917782110208,
+          "availableBytes": 26181603328,
+          "usedPercent": "98%"
+        }
+      ],
+      "dockerRoot": "/mnt/intruoyi-data/docker-engine",
+      "runningContainers": 113,
+      "stoppedContainers": 94,
+      "unreferencedVolumes": 0,
+      "allocatedDirectories": [
+        {
+          "path": "/mnt/intruoyi-data/intruoyi-release-workflow",
+          "allocatedBytes": 133297352704,
+          "GiB": 124.1428
+        },
+        {
+          "path": "/mnt/intruoyi-data/runtime-data/minio",
+          "allocatedBytes": 136743510016,
+          "GiB": 127.3523
+        },
+        {
+          "path": "/mnt/intruoyi-data/backup-ops/rehearsal",
+          "allocatedBytes": 7293448192,
+          "GiB": 6.7926
+        }
+      ],
+      "olderCheckpointCandidates": [
+        {
+          "path": "/mnt/intruoyi-data/intruoyi-release-workflow/backup/packages/2026-10-28-23-36-26",
+          "checkpointGiB": 20.6204,
+          "programArchivesGiB": 1.3398,
+          "containerMountReferences": [],
+          "receipts": [
+            {
+              "file": "business-opened.private.json",
+              "releaseTag": "2026-10-28-23-36-26"
+            },
+            {
+              "file": "deployment-pending.json",
+              "releaseTag": "2026-10-28-23-36-26"
+            },
+            {
+              "file": "deployment-progress.private.json",
+              "releaseTag": "2026-10-28-23-36-26",
+              "jobId": "JOB-db97efba39",
+              "phase": "succeeded",
+              "pid": 4514,
+              "processStart": "380ce519-4e06-48d7-b1ae-aae92998b80f:182263136"
+            },
+            {
+              "file": "recovery-record.private.json",
+              "releaseTag": "2026-10-28-23-36-26",
+              "jobId": "JOB-db97efba39",
+              "version": 1
+            }
+          ]
+        },
+        {
+          "path": "/mnt/intruoyi-data/intruoyi-release-workflow/backup/packages/2026-10-29-16-28-18",
+          "checkpointGiB": 20.6207,
+          "programArchivesGiB": 1.3415,
+          "containerMountReferences": [],
+          "receipts": [
+            {
+              "file": "business-opened.private.json",
+              "releaseTag": "2026-10-29-16-28-18"
+            },
+            {
+              "file": "deployment-pending.json",
+              "releaseTag": "2026-10-29-16-28-18"
+            },
+            {
+              "file": "deployment-progress.private.json",
+              "releaseTag": "2026-10-29-16-28-18",
+              "jobId": "JOB-558bd68468",
+              "phase": "succeeded",
+              "pid": 20884,
+              "processStart": "380ce519-4e06-48d7-b1ae-aae92998b80f:185266780"
+            },
+            {
+              "file": "recovery-record.private.json",
+              "releaseTag": "2026-10-29-16-28-18",
+              "jobId": "JOB-558bd68468",
+              "version": 1
+            }
+          ]
+        }
+      ],
+      "collectedAtUtc": "2026-11-02T01:01:58.247573+00:00"
+    }
+  },
+  "backupOldDocker": {
+    "timeUtc": "2026-11-02T01:14:46.770891+00:00",
+    "metadata": [
+      {
+        "path": "/var/lib/docker",
+        "realpath": "/var/lib/docker",
+        "device": 64768,
+        "inode": 100665830,
+        "symlink": false
+      },
+      {
+        "path": "/mnt/intruoyi-data/docker-engine",
+        "realpath": "/mnt/intruoyi-data/docker-engine",
+        "device": 64771,
+        "inode": 8781825,
+        "symlink": false
+      },
+      {
+        "path": "/var/lib/docker/intruoyi-releases",
+        "realpath": "/var/lib/docker/intruoyi-releases",
+        "device": 64771,
+        "inode": 11927553,
+        "symlink": false
+      },
+      {
+        "path": "/mnt/intruoyi-data/intruoyi-releases",
+        "realpath": "/mnt/intruoyi-data/intruoyi-releases",
+        "device": 64771,
+        "inode": 11927553,
+        "symlink": false
+      }
+    ],
+    "oldRootUsage": {
+      "exitCode": 0,
+      "stdout": "310177792\t/var/lib/docker/containers\n0\t/var/lib/docker/plugins\n11574657024\t/var/lib/docker/overlay2\n17375232\t/var/lib/docker/image\n27274465280\t/var/lib/docker/volumes\n0\t/var/lib/docker/trust\n565248\t/var/lib/docker/network\n0\t/var/lib/docker/swarm\n75448320\t/var/lib/docker/buildkit\n5922816\t/var/lib/docker/intruoyi-data\n0\t/var/lib/docker/tmp\n0\t/var/lib/docker/runtimes\n39258615808\t/var/lib/docker\n",
+      "stderrPresent": false
+    },
+    "processReferences": [],
+    "containerReferences": [],
+    "daemonConfiguredDataRoot": "/mnt/intruoyi-data/docker-engine",
+    "unitReferenceFiles": [],
+    "containerGraphPathsUnderOldRoot": 0,
+    "mountedPathsUnderOldRoot": [
+      "/var/lib/docker/intruoyi-data/runtime-data /dev/mapper/cl-home[/runtime-data] ext4",
+      "/var/lib/docker/intruoyi-releases /dev/mapper/cl-home[/intruoyi-releases] ext4",
+      "/var/lib/docker/volumes/intruoyi-prod-nas-restore59-20261020-native-mysql/_data /dev/mapper/cl-home[/prod-nas-restore-prep-20261020/native-target-data/mysql] ext4",
+      "/var/lib/docker/volumes/intruoyi-prod-nas-restore59-20261020-native-minio/_data /dev/mapper/cl-home[/prod-nas-restore-prep-20261020/native-target-data/minio] ext4",
+      "/var/lib/docker/volumes/intruoyi-prod-nas-restore59-20261020-native-redis/_data /dev/mapper/cl-home[/prod-nas-restore-prep-20261020/native-target-data/redis] ext4",
+      "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas //172.30.30.4/IT\\xe5\\x85\\xb1\\xe4\\xba\\xab cifs"
+    ]
+  },
+  "evidence": [
+    {
+      "file": "audit-summary.json",
+      "sha256": "15bd786f35417b89bb1b47d4e0464ba32cc5f7ca7df9c9f2e748842f0c61c05b"
+    },
+    {
+      "file": "backup-details.json",
+      "sha256": "f7038c630853b8d55dbe3c5243e153c174918533d04b9493fed768c0e84850e2"
+    },
+    {
+      "file": "backup-directory-map.json",
+      "sha256": "a28867819d75d6cf18925c307e6c1f30118ea93de5a304fa1339a5f963b97e8e"
+    },
+    {
+      "file": "backup-extra-candidates.json",
+      "sha256": "fcc6dfe904f206dd8447b8515796c426c10b9d22aaeeabc0857f10f80c56428b"
+    },
+    {
+      "file": "backup-old-docker.json",
+      "sha256": "ee2ba0557a93a1dca818bac2b9212b1e11219c500e275bcca491b7adb981d73e"
+    },
+    {
+      "file": "backup-root-usage.json",
+      "sha256": "4754bba3e0f36d831416450fcfe58812f96f07172295c15df7b857be64779a92"
+    },
+    {
+      "file": "backup-storage-audit.json",
+      "sha256": "bb63b58f159a6b28acd1c98af2a5071f1955aa21df3cd7de2e35ea9fe21e9ace"
+    },
+    {
+      "file": "container-writable-sizes.json",
+      "sha256": "fc182e46add80dcf37406da10a147b7c0fb358a1bf3a070eeededa79f171c444"
+    },
+    {
+      "file": "correlated-findings.json",
+      "sha256": "692b0856adb8ddb59a178779ecde0a4964b67111d89e9777c5014c38c8a1e594"
+    },
+    {
+      "file": "local-history-bindings.json",
+      "sha256": "9e35d15158e4b5bd64c382434b802a11aa166294ef331a6ccc3dfc70808b17ed"
+    },
+    {
+      "file": "prod-details.json",
+      "sha256": "623a8344d922c7a37c6ecaf00188fe8318a6f455cbf5098a8b82c2bd4d7b8309"
+    },
+    {
+      "file": "prod-directory-map.json",
+      "sha256": "10fbb651d88f3201cd1a7c32ba8f1cc9c061c1f0c65bb67ad3e35f4ca6354b2e"
+    },
+    {
+      "file": "prod-extra-candidates.json",
+      "sha256": "00cabe088b6c93354b8f49d54fc135d28297823d07108326c9e92482d6278be1"
+    },
+    {
+      "file": "prod-root-usage.json",
+      "sha256": "2a582336938c2de86b2098f7d202110207ff7aff08e1b3db92cbe350b9c79387"
+    },
+    {
+      "file": "prod-storage-audit.json",
+      "sha256": "080ba3d87667a9f2ac3c6cd7e47915aedb3feb67339c406bbeba5e2ba24c3936"
+    },
+    {
+      "file": "test-details.json",
+      "sha256": "b6a495633fc0ddcfccd523e3718014174c3d9439037c51a3bca92fd0a0ad761c"
+    },
+    {
+      "file": "test-directory-map.json",
+      "sha256": "a495c69c3de0c36d85c0369acaf200d3f4009e2738d70592c5640e3019094cd9"
+    },
+    {
+      "file": "test-extra-candidates.json",
+      "sha256": "1d2c8f141bedfdf63748c5cce30f5ba418f78552ee1d94847fda4ae698d52831"
+    },
+    {
+      "file": "test-root-usage.json",
+      "sha256": "fc98d4cdcd66ed6b09104569ac700efa6e0dab5fc0e8377dad783d7404f527f8"
+    },
+    {
+      "file": "test-storage-audit.json",
+      "sha256": "b9aff99362dfe6614a1753922fabeac089aba35f997db30dff8e0528a5b4d62f"
+    }
+  ],
+  "privateEvidenceDirectory": "C:\\SpugHandoff\\release\\private\\acceptance\\storage-audit-20261102\\evidence"
+}
