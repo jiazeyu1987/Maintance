@@ -17,6 +17,11 @@ function fpButton(label,action,enabled=true,env='',extra=''){
  const busy=fpState?.jobs.some(j=>j.status==='running');
  return `<button class="primary" data-front-action="frontend-patch-${action}" data-target="${env}" ${extra} ${busy||!enabled?'disabled':''}>${fpEsc(label)}</button>`;
 }
+function fpCleanup(j){
+ const report=j.postReleaseCleanup||j.result?.postReleaseCleanup;if(!report)return '';
+ const rows=Object.entries(report.environments||{}).map(([env,r])=>`<p>${fpEsc(fpNames[env]||env)}：${fpEsc(r.status)} · 容器 ${(r.removed||[]).filter(x=>x.kind==='container').length} · 镜像 ${(r.removed||[]).filter(x=>x.kind==='image').length} · 文件字节 ${fpEsc(r.bytes||0)} · 磁盘可用变化 ${fpEsc(r.freeBytesDelta??'未测量')}</p><p>保留：${fpEsc((r.retained||[]).map(x=>x.reason).join('；'))}</p>${r.error?'<div class="errorbox">'+fpEsc(r.error)+'</div>':''}`).join('');
+ return `<details><summary>发布后资源清理：${fpEsc(report.status)}</summary>${rows}${report.error?'<div class="errorbox">'+fpEsc(report.error)+'</div>':''}<button data-front-action="retry-release-cleanup" data-original="${fpEsc(j.cleanupOf||j.id)}" ${fpState?.jobs.some(x=>x.status==='running')?'disabled':''}>重新检查并清理失效资源</button><pre>${fpEsc(JSON.stringify(report,null,2))}</pre></details>`;
+}
 function fpRender(){
  const app=document.getElementById('app');
  if(!fpState){app.innerHTML=fpCard('前端补丁',fpEsc(fpError||'读取中…')+'<p><a href="/home">返回 Spug 登录</a></p>');return;}
@@ -36,7 +41,7 @@ function fpRender(){
   const original=fpState.jobs.find(j=>j.action==='frontend-patch-deploy'&&j.target===env&&j.releaseTag===p?.releaseTag&&j.effectsStarted&&!j.frontendRestoredBy);
   return fpCard(name,fpRow('主版本',e.releaseTag)+fpRow('前端补丁',e.frontendPatchTag||'无补丁')+fpRow('状态',p?fpStatus(p.accepted[env]?'已验收':p.deployments[env]?.status):'—')+`<p><a href="${fpEsc(fpState.application.targets[env].url||fpState.application.targets[env].entryUrl||'')}" target="_blank" rel="noopener">打开${name}</a></p>`+fpField('操作依据 / 实际验收结论',env)+fpButton('发布到'+name,'deploy',eligible,env)+' '+fpButton('验收通过','accept',same&&p?.deployments[env]?.status==='succeeded',env)+(original?'<hr>'+fpButton('恢复本次升级前的前端','restore',true,env,`data-original="${fpEsc(original.id)}"`)+'<p class="sub">仅恢复该任务保留的原前端；不恢复数据库，不改变后端。</p>':''));
  }).join('')+'</div>';
- html+=fpCard('持久任务记录',fpState.jobs.filter(j=>j.action.startsWith('frontend-patch-')).slice(0,40).map(j=>`<details><summary>${fpEsc(j.id)} · ${fpEsc(j.action)} · ${fpEsc(fpStatus(j.status))}</summary>${fpRow('固定补丁',j.releaseTag)}${fpRow('当前步骤',j.currentStep)}${j.error?'<div class="errorbox">'+fpEsc(j.error)+'</div>':''}<pre>${fpEsc(j.logs.map(l=>l.time+' '+l.message).join('\n'))}</pre>${j.result?'<pre>'+fpEsc(JSON.stringify(j.result,null,2))+'</pre>':''}</details>`).join('')||'暂无补丁任务');
+ html+=fpCard('持久任务记录',fpState.jobs.filter(j=>j.action.startsWith('frontend-patch-')||j.cleanupAction==='frontend-patch-accept').slice(0,40).map(j=>`<details><summary>${fpEsc(j.id)} · ${fpEsc(j.action)} · ${fpEsc(fpStatus(j.status))}</summary>${fpRow('固定补丁',j.releaseTag)}${fpRow('当前步骤',j.currentStep)}${j.error?'<div class="errorbox">'+fpEsc(j.error)+'</div>':''}<pre>${fpEsc(j.logs.map(l=>l.time+' '+l.message).join('\n'))}</pre>${fpCleanup(j)}${j.result?'<pre>'+fpEsc(JSON.stringify(j.result,null,2))+'</pre>':''}</details>`).join('')||'暂无补丁任务');
  app.innerHTML=html;
  app.querySelector('[data-draft="commit"]').setAttribute('list','fp-commits');
 }
@@ -48,8 +53,9 @@ document.addEventListener('click',async e=>{
  const action=button.dataset.frontAction,target=button.dataset.target,payload={applicationId:'intruoyi',requestId:crypto.randomUUID()};
  try{
   if(action==='frontend-patch-build'){const baseChoice=document.getElementById('fp-base').value;if(baseChoice.startsWith('live:'))payload.baselineId=baseChoice.slice(5);else if(baseChoice.startsWith('package:'))payload.baseReleaseTag=baseChoice.slice(8);else throw Error('请选择补丁基线');payload.commit=fpDraft('commit').trim();}
-  else if(!['frontend-patch-refresh','frontend-patch-register-baseline'].includes(action)){payload.releaseTag=fpSelected;payload.target=target;payload.note=fpDraft(target).trim();if(payload.note.length<5)throw Error('请填写至少5字的真实操作或验收依据');}
+  else if(!['frontend-patch-refresh','frontend-patch-register-baseline','retry-release-cleanup'].includes(action)){payload.releaseTag=fpSelected;payload.target=target;payload.note=fpDraft(target).trim();if(payload.note.length<5)throw Error('请填写至少5字的真实操作或验收依据');}
   if(action==='frontend-patch-restore'){if(!confirm('确认只恢复'+fpNames[target]+'本次升级前的前端？')){fpRender();return;}payload.originalJobId=button.dataset.original;}
+  if(action==='retry-release-cleanup')payload.jobId=button.dataset.original;
   const result=await fpApi('actions/'+action,payload);window.fpLastJobId=result.id;fpError='';await fpRefresh();
  }catch(error){fpError=error.message;fpRender();}
 });

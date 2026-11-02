@@ -473,6 +473,7 @@ class Runtime:
         recovery = (self.sources / 'intruoyi_recovery_agent.py').read_text('utf-8')
         journal = (self.sources / 'operation_journal.py').read_text('utf-8')
         artifacts = (self.sources / 'artifact_files.py').read_text('utf-8')
+        resource_cleanup = (self.sources / 'runtime_resource_cleanup.py').read_text('utf-8')
         frontend_patch = (self.sources / 'frontend_patch_agent.py').read_text('utf-8')
         database_versions = (self.sources / 'database_versions.py').read_text('utf-8')
         source = ('import types,sys\n'
@@ -485,6 +486,9 @@ class Runtime:
                   '_artifacts=types.ModuleType("artifact_files")\n'
                   'sys.modules["artifact_files"]=_artifacts\n'
                   'exec(compile(' + repr(artifacts) + ',"artifact_files.py","exec"),_artifacts.__dict__)\n'
+                  '_cleanup=types.ModuleType("runtime_resource_cleanup")\n'
+                  'sys.modules["runtime_resource_cleanup"]=_cleanup\n'
+                  'exec(compile(' + repr(resource_cleanup) + ',"runtime_resource_cleanup.py","exec"),_cleanup.__dict__)\n'
                   '_journal=types.ModuleType("operation_journal")\n'
                   'sys.modules["operation_journal"]=_journal\n'
                   'exec(compile(' + repr(journal) + ',"operation_journal.py","exec"),_journal.__dict__)\n'

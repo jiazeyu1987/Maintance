@@ -5,6 +5,7 @@ from pathlib import Path
 import re
 import stat
 import subprocess
+import shutil
 
 
 def require(ok, text):
@@ -215,7 +216,8 @@ def automatic_cleanup(profile, payload):
     """No discovery/recursive removal. Only exact, SHA-bound retired payloads.
 
     The common operation journal lock serializes this with other remote work.
-    Existing metadata, credentials, active containers and all images stay put.
+    Current/recovery resources are protected. Retired exact Docker identities
+    and resolved failed material are planned before any deletion.
     """
     base = Path(profile['stagingRoot'])
     require(not (base == Path('/mnt/nas') or Path('/mnt/nas') in base.parents), '禁止自动清理NAS')
@@ -227,6 +229,7 @@ def automatic_cleanup(profile, payload):
     verify_cleanup_runtime(profile, payload)
     assert_cleanup_idle(base, payload)
     report = dict(status='running', removed=[], retained=[], bytes=0)
+    report['freeBytesBefore']=shutil.disk_usage(base).free
     report_path = safe_file(base, '.cleanup/'+owner+'.json')
     report_path.parent.mkdir(mode=0o700, exist_ok=True)
     # Preserve a previous attempt's per-file evidence when resuming this job.
@@ -238,6 +241,42 @@ def automatic_cleanup(profile, payload):
         write(report_path, report)
     save_report()
     try:
+        if 'resourceEntries' in payload:
+            import runtime_resource_cleanup as resources
+            plan=resources.plan(profile,payload)
+            report['plan']=plan
+            report['retained'].extend(plan['retained'])
+            report['imageSpaceNote']='镜像层可共享；不将镜像逻辑大小计为实际释放空间'
+            save_report()  # The concrete sanitized resource plan precedes effects.
+            def pending(kind,row):
+                verify_cleanup_runtime(profile,payload)
+                assert_cleanup_idle(base,payload)
+                report['pendingDeletion']=dict(kind=kind,resource=row)
+                save_report()
+            def removed(kind,row):
+                report['removed'].append(dict(kind=kind,**row))
+                report.pop('pendingDeletion',None)
+                save_report()
+            for row in plan['containers']:
+                pending('container',row)
+                resources.remove_container(row)
+                removed('container',row)
+            for row in plan['images']:
+                pending('image',row)
+                if resources.remove_image(row,plan['protectedImages']):removed('image',row)
+                else:report.pop('pendingDeletion',None);save_report()
+            for row in plan['files']:
+                pending('file',row)
+                path=Path(row['root'])/row['relative']
+                require(not mounted(path,docker_inventory()[2]),'已核销失败资料出现挂载引用')
+                require(same_device(Path(row['root']),path) and path.stat().st_nlink==1,'失败资料设备/链接身份改变')
+                remove_file(row['root'],row)
+                report['bytes']+=row['bytes']
+                removed('file',row)
+            for row in plan['directories']:
+                pending('directory',row)
+                resources.remove_directory(row)
+                removed('directory',row)
         held = set(payload['protectedTags']) | {payload['currentReleaseTag'], payload.get('currentPatchTag')}
         for entry, root in roots:
             tag = entry['manifest']['releaseTag']
@@ -270,12 +309,14 @@ def automatic_cleanup(profile, payload):
                 report['pendingDeletion'] = dict(releaseTag=tag, relative=str(path.relative_to(base)), sha256=row['sha256'])
                 save_report()
                 remove_file(root, row)
-                report['removed'].append(dict(releaseTag=tag, relative=str(path.relative_to(base)), bytes=row['bytes']))
+                report['removed'].append(dict(kind='file',releaseTag=tag, relative=str(path.relative_to(base)), bytes=row['bytes']))
                 report['bytes'] += row['bytes']
                 report.pop('pendingDeletion')
                 save_report()
         report['status'] = 'succeeded'
     except Exception as error:
         report.update(status='failed', error=str(error))
+    report['freeBytesAfter']=shutil.disk_usage(base).free
+    report['freeBytesDelta']=report['freeBytesAfter']-report['freeBytesBefore']
     save_report()
     return report

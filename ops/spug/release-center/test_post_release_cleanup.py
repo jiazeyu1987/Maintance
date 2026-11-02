@@ -73,7 +73,7 @@ class CleanupTests(unittest.TestCase):
         e.manifest.side_effect=lambda tag:(dict(releaseTag=tag),dict(releaseTag=tag,images={r:dict(id=v) for r,v in self.images.items()}))
         e.c=dict(targets={env:dict(stagingRoot='/data/releases') for env in cleanup.ENVS})
         e.state=dict(packages=[dict(releaseTag=OLD,stage='completed',manifestSha256='a'*64,packageSha256='b'*64),
-                               dict(releaseTag=CURRENT,stage='completed')],frontendPatches=[],
+                               dict(releaseTag=CURRENT,stage='completed',manifestSha256='a'*64,packageSha256='b'*64)],frontendPatches=[],
                      jobs=[],environments={env:copy.deepcopy(observation) for env in cleanup.ENVS})
         return e
 
@@ -90,6 +90,21 @@ class CleanupTests(unittest.TestCase):
         e.runtime.observe.side_effect=[e.state['environments']['test'],e.state['environments']['prod'],{}]
         with self.assertRaises(ValueError):cleanup.perform(e,job)
         e.runtime.call.assert_not_called()
+
+    def test_resource_entries_keep_current_evidence_and_only_resolved_recovery_is_retired(self):
+        e=self.executor()
+        original=dict(id='JOB-1111111111',action='publish-test',target='test',releaseTag=OLD,status='failed',
+                      resolution=dict(decision='restored',jobId='JOB-2222222222'))
+        accepted=dict(id='JOB-2222222222',action='accept-recovery',target='test',releaseTag=OLD,status='succeeded',
+                      originalDeploymentJobId=original['id'],payload=dict(recoveryJobId='JOB-3333333333'),
+                      result=dict(receipt=dict(jobId='JOB-3333333333',openingJobId='JOB-2222222222')))
+        e.state['jobs']=[original,accepted]
+        cleanup.perform(e,dict(id=JOB,action='accept-backup',releaseTag=CURRENT,status='succeeded'))
+        first=e.runtime.call.call_args_list[0].kwargs
+        self.assertEqual(len(first['resourceEntries']),2)
+        self.assertEqual(first['resourceEntries'][0]['resolvedRecoveries'][0]['recoveryJobId'],'JOB-3333333333')
+        original['resolution']={}
+        self.assertFalse(cleanup.resource_entries(e,e.state,'test')[0].get('resolvedRecoveries'))
 
     def test_environment_failure_is_visible_and_other_servers_are_processed(self):
         e=self.executor();job=dict(id=JOB,action='accept-backup',releaseTag=CURRENT,status='succeeded')
@@ -143,6 +158,31 @@ class CleanupTests(unittest.TestCase):
         self.assertEqual(job['status'],'succeeded')
         self.assertEqual(job['postReleaseCleanup']['status'],'failed')
         self.assertTrue(all(r['status']=='failed' for r in job['postReleaseCleanup']['environments'].values()))
+
+    def test_explicit_cleanup_retry_does_not_reopen_or_redeploy(self):
+        from intruoyi_executor import IntRuoyiExecutor
+        e=object.__new__(IntRuoyiExecutor);e.runtime=Mock();e.password='secret';e.save=Mock();e.log=Mock()
+        e.state=dict(packages=[dict(releaseTag=CURRENT,stage='completed')])
+        job=dict(id=JOB,action='retry-release-cleanup',cleanupAction='accept-backup',status='running',releaseTag=CURRENT)
+        with patch.object(cleanup,'perform',return_value=dict(status='succeeded')) as perform:
+            e.execute(job)
+        self.assertEqual(job['status'],'succeeded')
+        e.runtime.deploy.assert_not_called()
+        perform.assert_called_once()
+
+
+class ResumedRecoveryBindingTests(unittest.TestCase):
+    def test_resumed_acceptance_keeps_original_opening_identity(self):
+        executor=Mock()
+        original=dict(id='JOB-0000000001',resolution=dict(decision='restored',jobId='JOB-0000000003'))
+        accepted=dict(id='JOB-0000000003',status='succeeded',action='accept-recovery',target='test',
+            originalDeploymentJobId=original['id'],result=dict(receipt=dict(jobId='JOB-0000000002',
+                openingJobId='JOB-0000000004',confirmedByJobId='JOB-0000000003')))
+        state=dict(packages=[dict(releaseTag=CURRENT,stage='completed')],jobs=[original,accepted])
+        entry=dict(manifest=dict(releaseTag=CURRENT),ownerJobIds=[original['id']])
+        with patch.object(cleanup,'entries',return_value=[entry]):
+            result=cleanup.resource_entries(executor,state,'test')
+        self.assertEqual(result[0]['resolvedRecoveries'][0]['openingJobId'],'JOB-0000000004')
 
 
 class RealFilesTests(unittest.TestCase):

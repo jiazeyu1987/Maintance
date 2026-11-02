@@ -502,6 +502,6 @@ Codex 只有在以下条件同时成立时，才能判定完整发布完成：
 - Trigger: 完整包三服最终验收或前端补丁三服最终验收成功，自动回收旧包和旧恢复资料。
 - Preflight check: 同一版本最终验收成功；三服真实主版本/补丁、镜像和健康/开放状态一致；无本机并发运行任务；远端公共操作锁、活动执行器和每个文件的挂载/链接/设备/归属/SHA复核通过。使用 `post_release_cleanup.py` 与 `artifact-auto-clean`，不按目录年龄盲删。
 - Blocker: 发布未完成/验收失败、版本漂移、维护/恢复未结束、远端进程/锁冲突、摘要/归属不明时不删对应载荷；清理失败需核对原回执，不把发布验收改成失败或伪装清理成功。
-- Verification: 任务结果 `postReleaseCleanup` 及远端 `.cleanup/<验收任务>.json` 核对各服状态、删除文件及字节、保留原因；推荐本地执行 `python -X utf8 -m unittest test_post_release_cleanup`，Linux执行 `test_post_release_cleanup_lock` 验证跨进程与重试目录共锁。必须记录代码版本、触发任务、逐服实际结果。
-- Forbidden action: 不删当前包及本次恢复点、在用演练、未解决任务的恢复起点、清单/凭据/历史、业务数据、NAS、独立备份系统；不删容器/卷、不全局prune、不递归删除、不在有活动发布时热换执行器代码。
+- Verification: 核对 `postReleaseCleanup` 和 `.cleanup/<任务>.json` 的具体计划、逐项删除、保留原因、错误和文件字节/磁盘可用变化。先移除有原始快照及精确身份的已停止旧业务容器，再删无任何容器/恢复点引用的登记镜像标签，最后处理旧载荷。失败现场须原任务 restored 核销、本机成功恢复验收及远端 opened 回执三方一致；接续验收绑定原 openingJobId。推荐运行 `test_post_release_cleanup`、`test_runtime_resource_cleanup`、Linux `test_post_release_cleanup_lock`，本机专用 Docker 资源用 `SPUG_REAL_CLEANUP_TEST=1 ... test_cleanup_resources_integration` 验证。必须记录代码版本、任务号及逐服实际结果，清理失败通过独立重试入口重新采样，不重新发布或开放业务。
+- Forbidden action: 不删当前包及最近有效恢复点、在用演练、未解决任务的恢复起点、清单/凭据/历史、业务在用数据、NAS、独立备份链；不自动停业务容器，不带卷删除容器、不强制删镜像、不全局 prune、不递归删除、不在有活动发布时热换执行器代码。未知归属的历史演练必须另行确认退役后处理。
 - Evidence: `doc/tasks/20261102-post-release-auto-cleanup/`、发布最终验收任务日志和逐服清理回执。

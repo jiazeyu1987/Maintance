@@ -4,7 +4,7 @@ import time
 from executor import require, stamp
 
 ENVS = ('test', 'prod', 'backup')
-DIAGNOSTICS = ('check-prerequisites', 'scan-artifacts', 'clean-artifacts')
+DIAGNOSTICS = ('check-prerequisites', 'scan-artifacts', 'clean-artifacts','retry-release-cleanup')
 
 
 def protected_tags(state):
@@ -33,8 +33,9 @@ def protected_tags(state):
 
 def eligible(executor, job):
     if job.get('status') != 'succeeded': return False
-    if job['action'] == 'accept-backup': group = 'packages'
-    elif job['action'] == 'frontend-patch-accept' and job.get('target') == 'backup': group = 'frontendPatches'
+    action=job.get('cleanupAction',job['action'])
+    if action == 'accept-backup': group = 'packages'
+    elif action == 'frontend-patch-accept' and job.get('target') == 'backup': group = 'frontendPatches'
     else: return False
     return any(p['releaseTag'] == job.get('releaseTag') and p.get('stage') == 'completed'
                for p in executor.state.get(group, []))
@@ -71,6 +72,36 @@ def entries(executor, state, env, held):
     return result
 
 
+def resource_entries(executor,state,env):
+    """Include current evidence to protect the latest real recovery point."""
+    rows=entries(executor,state,env,set())
+    for entry in rows:
+        tag=entry['manifest']['releaseTag']
+        if entry.get('kind')=='frontend-patch':continue
+        entry['ownerJobIds']=[identity for identity in entry['ownerJobIds'] if
+            any(j['id']==identity and bool(j.get('runtimeStagingRoots',{}).get(env))==bool(entry.get('attempt'))
+                and (not entry.get('attempt') or j['runtimeStagingRoots'][env].endswith('/'+entry['attempt']))
+                for j in state['jobs'])]
+        package=next(p for p in state.get('packages',[]) if p['releaseTag']==tag)
+        outcome=package.get('outcomes',{}).get(env,{})
+        entry['acceptedDeployment']=outcome.get('acceptance',{}).get('status')=='passed' or (
+            env=='test' and package.get('stage') in ('tested','prod-deployed','prod-accepted','backup-deployed','completed'))
+        resolved=[]
+        for original in state.get('jobs',[]):
+            resolution=original.get('resolution',{})
+            if original['id'] not in entry['ownerJobIds'] or resolution.get('decision')!='restored':continue
+            accepted=next((j for j in state['jobs'] if j['id']==resolution.get('jobId') and
+                j.get('status')=='succeeded' and j['action']=='accept-recovery' and j.get('target')==env
+                and j.get('originalDeploymentJobId')==original['id']),None)
+            receipt=(accepted or {}).get('result',{}).get('receipt',{})
+            if (accepted and receipt.get('jobId') and receipt.get('openingJobId')
+                    and receipt.get('confirmedByJobId',receipt['openingJobId'])==accepted['id']):
+                resolved.append(dict(originalJobId=original['id'],recoveryJobId=receipt['jobId'],
+                    acceptanceJobId=accepted['id'],openingJobId=receipt['openingJobId']))
+        entry['resolvedRecoveries']=resolved
+    return rows
+
+
 def safe_error(executor, error):
     message = str(error); password = getattr(executor, 'password', None)
     return message.replace(password, '[REDACTED]') if isinstance(password, str) and password else message
@@ -81,7 +112,7 @@ def perform(executor, job):
     state = copy.deepcopy(executor.state)
     require(not any(j['id'] != job['id'] and j.get('status') == 'running' for j in state['jobs']),
             '存在其他运行任务，自动清理停止')
-    patch_release = job['action'].startswith('frontend-patch-')
+    patch_release = job.get('cleanupAction',job['action']).startswith('frontend-patch-')
     held = protected_tags(state); observations = {}
     for env in ENVS:
         recorded = state['environments'].get(env, {})
@@ -110,6 +141,7 @@ def perform(executor, job):
             current = observations[env]
             result = executor.runtime.call(env, 'artifact-auto-clean',
                 entries=entries(executor, state, env, held), protectedTags=sorted(held),
+                resourceEntries=resource_entries(executor,state,env),
                 expectedImages=current['images'], currentReleaseTag=current['releaseTag'],
                 currentPatchTag=current.get('frontendPatchTag'))
             require(isinstance(result, dict) and result.get('status') in ('succeeded','failed'),
@@ -132,11 +164,29 @@ def run(executor, job):
     job['postReleaseCleanup']['finishedAt'] = stamp()
     job.setdefault('result', {})['postReleaseCleanup'] = job['postReleaseCleanup']
     for env, result in job['postReleaseCleanup'].get('environments', {}).items():
-        executor.log(job, env+': 旧载荷清理 '+result['status']+'，删除 '+str(len(result.get('removed', [])))+
-                     ' 个文件；释放 '+str(result.get('bytes', 0))+' 字节'+
+        executor.log(job, env+': 发布资源清理 '+result['status']+'，删除 '+str(len(result.get('removed', [])))+
+                     ' 项；文件字节 '+str(result.get('bytes', 0))+'；保留 '+str(len(result.get('retained',[])))+' 项'+
                      ('；'+result['error'] if result.get('error') else ''))
     if job['postReleaseCleanup'].get('error'):
         executor.log(job, '旧载荷清理未完成：'+job['postReleaseCleanup']['error'])
     executor.log(job, '发布验收后的旧载荷自动清理：'+job['postReleaseCleanup']['status']+
                  '；发布验收结果独立保留，详情见 postReleaseCleanup。')
     executor.save()
+
+
+def submit_retry(executor,payload,actor):
+    import secrets
+    import threading
+    with executor.lock:
+        require(not any(j.get('status')=='running' for j in executor.state['jobs'])
+                and not (executor.worker and executor.worker.is_alive()),'其他任务正在执行')
+        original=next((j for j in executor.state['jobs'] if j['id']==payload.get('jobId')),None)
+        require(original and original['action'] in ('accept-backup','frontend-patch-accept')
+                and eligible(executor,original),'需要三服最终验收成功的原任务')
+        job=dict(id='JOB-'+secrets.token_hex(5),requestId=payload['requestId'],action='retry-release-cleanup',
+            cleanupAction=original['action'],cleanupOf=original['id'],payload=payload,target='backup',
+            releaseTag=original['releaseTag'],actor=actor,status='running',createdAt=stamp(),logs=[])
+        executor.state['jobs'].insert(0,job);executor.save()
+        executor.worker=threading.Thread(target=executor.execute,args=(job,),daemon=True)
+        executor.worker.start()
+        return job

@@ -461,6 +461,9 @@ class _IntRuoyiExecutor(Executor):
         if action in ('scan-artifacts','clean-artifacts'):
             from artifact_retention import submit
             return submit(self,action,payload,actor)
+        if action=='retry-release-cleanup':
+            from post_release_cleanup import submit_retry
+            return submit_retry(self,payload,actor)
         if action == 'check-prerequisites':
             from release_precheck import submit
             return submit(self, payload, actor)
@@ -544,7 +547,7 @@ class _IntRuoyiExecutor(Executor):
 
     def execute(self, job):
         tracker = None
-        self.cleanup_active = job['action'] == 'accept-backup'
+        self.cleanup_active = job['action'] in ('accept-backup','retry-release-cleanup')
         context = getattr(self.runtime, 'operation_context', None)
         try:
             if getattr(self, 'track_local_processes', False):
@@ -572,6 +575,10 @@ class _IntRuoyiExecutor(Executor):
                 tracker.close()
 
     def execute_bound(self, job):
+        if job['action']=='retry-release-cleanup':
+            job.update(status='succeeded',finishedAt=stamp())
+            self.save()
+            return
         if job['action'] == 'publish-test' and job.get('payload', {}).get('retryOf'):
             from backup_retry import validate_test_retry
             package, _ = self.manifest(job['releaseTag'])
