@@ -112,11 +112,30 @@ class FenceTests(unittest.TestCase):
 
     def test_baseline_must_include_actual_jar_not_only_same_image(self):
         base={e:{'releaseTag':'base','backendJarSha256':'a'*64,'backendPatchTag':None,
-                 'backendMetadata':{'sourceCommit':'b'*40},'schemaSha256':'s','ledgerSha256':'l',
+                 'backendMetadata':{'sourceCommit':'b'*40},'schemaSha256':'s','ledgerSha256':'d'*64,
                  'components':{r:{'imageId':r} for r in ('backend','frontend')}} for e in ('test','prod','backup')}
         self.assertEqual(validate_baseline(base),'b'*40)
         base['test']['backendJarSha256']='c'*64
         with self.assertRaises(ValueError):validate_baseline(base)
+
+    def test_equivalent_program_and_schema_keep_each_environment_ledger(self):
+        origins={env:{'releaseTag':'base','backendJarSha256':'a'*64,
+                      'backendMetadata':{'sourceCommit':'b'*40},'schemaSha256':'same-schema',
+                      'ledgerSha256':{'test':'c','prod':'d','backup':'e'}[env]*64,'databaseIdentity':env+'-database',
+                      'components':{r:{'imageId':r,'containerId':env+'-'+r}
+                                    for r in ('backend','frontend','database')}}
+                 for env in ('test','prod','backup')}
+        original=copy.deepcopy(origins)
+        self.assertEqual(validate_baseline(origins),'b'*40)
+        self.assertEqual(origins,original)
+        missing=copy.deepcopy(origins);missing['test'].pop('ledgerSha256')
+        with self.assertRaisesRegex(ValueError,'本环境迁移台账摘要'):validate_baseline(missing)
+        for env,origin in origins.items():
+            verify_unchanged(origin,copy.deepcopy(origin))
+            with self.subTest(env=env),self.assertRaisesRegex(ValueError,'ledgerSha256'):
+                verify_unchanged(origin,dict(origin,ledgerSha256=origins['prod' if env=='test' else 'test']['ledgerSha256']))
+        origins['test']['schemaSha256']='changed-schema'
+        with self.assertRaises(ValueError):validate_baseline(origins)
 
 
 class WorkflowTests(unittest.TestCase):

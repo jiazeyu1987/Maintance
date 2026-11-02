@@ -92,8 +92,12 @@ def validate_baseline(origins):
     first=origins['prod']
     for env,value in origins.items():
         for key in ('releaseTag','frontendPatchTag','frontendMetadata','backendPatchTag','backendJarSha256',
-                    'backendMetadata','schemaSha256','ledgerSha256'):
-            need(value.get(key)==first.get(key),env+': 三服程序/JAR/数据库结构或迁移台账不一致')
+                    'backendMetadata','schemaSha256'):
+            need(value.get(key)==first.get(key),env+': 三服程序/JAR/数据库结构不一致')
+        # Migration receipts are environment history, not program identity.
+        # Keep each origin intact; verify_unchanged guards its own ledger.
+        need(re.fullmatch('[a-f0-9]{64}',value.get('ledgerSha256','')),
+             env+': 缺少本环境迁移台账摘要')
         need(all(value['components'][r]['imageId']==first['components'][r]['imageId'] for r in ('backend','frontend')),
              env+': 三服运行镜像不一致')
     commit=first.get('backendMetadata',{}).get('sourceCommit')
