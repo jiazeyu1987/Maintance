@@ -1,5 +1,23 @@
 # IntRuoyi Codex 发布执行检查清单
 
+## 多机器发布接管与缺失记录分析门禁
+
+- Trigger: 不同机器轮流发布、本机Spug记录缺失或落后、服务器版本新于交接资源包，或前端补丁不在本机历史中。
+- Preflight check: 在已授权目标上只读核实际release-info、主版本/前端补丁绑定、源码提交、前后端镜像ID及真正生效的启动配置；交叉核对服务器或共享存储中现存manifest、包摘要、部署回执、迁移台账及schema、当前任务锁和恢复依据。先检查现存证据，不能仅凭页面tag判断完整发布过程或要求重传整个资源包。
+- Blocker: 本机历史缺失本身不是阻塞，不强制重新导出最新资源包。存在活动发布/恢复或无法排除并发时阻塞远端写入；版本/镜像/清单冲突、缺少待执行动作必需的不可变包或迁移/恢复证据、无法确认真实起点时，只阻塞依赖该缺口的阶段，并记录精确缺项和影响。构建、空间、GxP及恢复门禁继续独立生效。
+- Verification: 生成带采集时间和目标身份的差异报告，列出原本机登记、远端观察、证据路径及摘要、已证实与未知事项。核实后可用实际状态生成当前基线/新一轮逐目标计划；正式登记更新仅走已有受控入口及其校验，不直接改SQLite或冒填旧任务成功。没有可用入口时单列配套能力缺口，不自动恢复“必须重新导出”的要求。
+- Forbidden action: 禁止猜测最新状态、伪造历史发布/验收成功、改旧包或迁移摘要、丢弃旧失败记录、用Git模板覆盖凭据/历史/绑定、覆盖正在发布的目标，或把只读当前状态核验冒充过去完整发布验收。单项证据缺失时优先获取对应原件或分析缺口，不默认要求整包重导出。
+- Evidence: 用户2026-11-02明确修订；`doc/tasks/20261101-full-then-frontend-release/execution-log.md`及该任务当前基线分析报告。此前停止并要求重导出的记录只表示当时规则，后续按本门禁执行。
+
+### 阶段必查项与推荐命令
+
+1. 采集：本机SQLite只读连接`mode=ro`查任务及版本；使用配置绑定的`Runtime.observe(env)`核远端镜像/配置/schema/台账，并GET真实入口`/release-info.json`；以实际主版本和补丁版本分别比较，不把合法前端补丁误判为主程序漂移。
+2. 分析：按差异定位现存远端manifest、包及部署回执，使用`Get-FileHash -Algorithm SHA256`或`sha256sum`核原件；只记录安全字段和证据摘要，凭据留在私有目录。确认旧机器/其他发布者与服务器任务锁均不争用当前目标；无法排除并发只停止写入，不停止独立只读分析。
+3. 续办：将可证实起点绑定新一轮计划，不补造历史成功；重跑原发布前置检查，测试→正式→审查顺序及原包不可变规则继续适用。缺少恢复原包时先列包名、摘要或路径等具体缺口，不直接用新编译包代替。
+
+Fail Fast：证据相互冲突或目标发生变化时保留原观察，重新采集分析；只对依赖该身份的写入/晋级暂停，不无条件要求重新导出资源包。
+
+必须记录：本机/远端主版本与补丁版本、源码、镜像及配置/schema/ledger指纹、证据来源与时间、并发检查、未知事项、恢复条件、被阻塞的具体动作及解除依据；记录缺失不等于发布失败或成功。
 ## 三服同版本同结构发布门禁
 
 - Trigger：同一发布包依次升级测试服、正式服和审查服，或发现程序同版本但数据库缺表、缺字段、缺索引。
@@ -21,6 +39,28 @@ Fail Fast：任何未确认远端效果、原包冲突或真实验证失败必�
 
 必须记录：目标、tag、提交、worktree、构建/验证命令、每阶段任务和操作号、恢复策略、失败及续接关联、实际镜像和 schema 摘要、GxP、验证范围及最终工作副本删除结果。
 
+## Spug 构建产物与安全清理门禁
+
+- Trigger: IntRuoyi构建/构建预检、封包后清理、NAS原包重传或普通执行器更新。
+- Preflight check: 选择包含完整发布配套的Git已提交内容；构建预检与正常构建均先执行`validate_source_contract`，不能用工作区未提交修复替代。配置可登录的`gxpConfigurationSourceUrl`，关闭要求显式设置`requiredGxpAuditMode=DEVELOPMENT_DISABLED`；真实页面保存及运行模式一致、auditEnabled=false、无待重启。
+- 阶段必查项与推荐命令: 在独立维护修复副本运行`python -X utf8 -m unittest test_build_recurrence_guards test_build_worktree_cleanup test_intruoyi_login test_nas_package_retry test_release_precheck`。正常构建在docker save/封包前从实际镜像提取JAR并运行断网、只读、无数据库凭据的Boot CLI，验证退出码3、报告身份和类唯一归属；不能仅检查源码或release-info。完整封包后使用`cleanup_sealed_build`，删除前保存归属检查点；NAS重传沿同入口验证原包并完成清理，不能重新编译。
+- Blocker / Fail Fast: 缺源码契约、镜像JAR与冻结产物不同、类加载失败/超时/报告身份不符、GxP不一致、工作副本提交/登记漂移、未知文件、嵌套Git、未核实链接或进程引用，停止相应阶段并保留证据。Git移除非零不等同于物理删除失败或成功，必须分别核对登记和真实目录。
+- Verification: 真实已有镜像离线验证和真实GxP页面通过；Windows临时真实Git、>260字符目录及junction验证必须保留外部哨兵。仅从已核定生成目录移除链接自身再交给Git，绝不跟随到外部目标；残留删除再次核对源码字节及未知文件。安装前后完整校验工作资源包、唯一普通执行器入口及SQLite payload；凭据仅新增已批准非敏感策略字段，其余字段保持。
+- Forbidden action: 禁止通过改摘要掩盖原校验失败、重新编译解决已封包上传失败、任意递归删除、自动融合int_main、恢复已取消演练、固定64GiB门槛、重复正式全量备份或将单元测试称为真实业务验收。
+- 必须记录 / Evidence: 目标/维护提交、RED/GREEN/REGRESSION、实际JAR及封包摘要、原校验及更新清单、工作副本归属/检查点/Git退出码/物理删除、普通PID/入口/文件摘要、私有历史保持证据；见`doc/tasks/20261101-release-recurrence-guards/execution-log.md`及该任务脱敏JSON。
+
+## Spug 直接三服策略与普通脚本安装门禁
+
+- Trigger: 用户明确取消三服主流程演练，或切换已迁移的普通脚本执行器及发布页面。
+- Preflight check: 记录用户范围；私密配置显式选择`direct-three-server-v1`，正式使用独立恢复必须有明确确认。仅空闲时同步已提交维护代码；先完整校验工作资源包、备份SQLite/私密配置，并确认唯一执行器身份。封存业务包及原资源包不改。每个正式目标使用自身登记起点和只读计划，同包测试成功后升级正式，正式验收开放后再升级审查。升级前结构可以不同；用户要求三服结构一致后，升级后必须对齐同包上游已验收结构，并在新程序启动前、回执、开放验收时强制核对。不能要求业务行或历史台账相同，也不能改旧SQL或补造历史来消除差异。
+- 阶段必查项与推荐命令: 代码层运行直接链路、失败恢复责任、目标漂移及UI门禁回归；普通启动器用真实`powershell.exe -File ... -SourceStopped`验证UTF-8无BOM配置，`Get-Content`必须显式`-Encoding utf8`。安装后分别核对执行器实际入口/PID/配置、SQLite payload保持和工作包全清单；读取Nginx唯一有效include/alias并比较实际HTTP `app.js`摘要，不能只核挂载source文件。逐服部署核`operation=SUCCESS`、manifest、真正生效配置、实际镜像、health、HTTP、真实页面登录及保存/运行GxP关闭。
+- SQL前停服复查: 停服前绑定真实网页版本、原镜像、配置fingerprint、schema/ledger和计划；停服后先核写入进程全停及fence，再核原镜像/完整fingerprint/schema/ledger。原前端已明确停止时允许网页版本不可读，但绑定版本必须存在；运行中缺版本或任何身份漂移仍失败，不为通过检查启动writer。
+- 尝试与失败核销: 每次`promote-prod`独占`attempts/JOB-*`目录，后续检查/验收/核销继承对应部署目录，不覆盖旧责任确认或回执。外部恢复模式仅在原worker终结、无本tag迁移和容器替换、原容器/身份完整一致且旧版健康开放后，才允许`external-pre-migration`原容器恢复核销；明确`snapshotComplete=false/databaseRestored=false`，真实Spug核销保留失败状态。
+- 验收来源必查: 执行器迁移到另一台电脑后，停服前运行现有`check-executor-acceptance-ingress`真实nonce探测，分别核验每台目标到当前来源IP的路由、验收端口监听和firewalld精确允许规则。旧电脑可访问不证明新电脑可访问；仅需来源规则时不得关闭防火墙、扩大到整个网段或重载影响现有连接。先保留失败原任务和零副作用证据，再按既有Spug核销/重试入口续办。
+- Blocker / Fail Fast: 未授权外部恢复、错包、起点或迁移计划漂移、未知策略、运行中热换、工作包原校验失败、秘密字段变化、UI仍旧版、无真实页面证据均必须停止相应阶段并记录原因。测试任务正在运行时页面禁用属于正确互斥，等待原任务终结，不重复提交。
+- Verification: 同一tag闭环；正式external模式不调用全量capture、不伪造recoveryPoint且失败保持关闭，测试/审查检查点能力保留。保存/运行模式均`DEVELOPMENT_DISABLED`、`auditEnabled=false`、无待重启须有实际来源证据，缺字段不能当false。
+- Forbidden action: 禁止篡改旧封包/摘要/历史、伪造演练成功、把独立恢复责任确认称为外部备份验证、绕过真实Spug按钮直接改状态、删除旧演练或资料、自动合并int_main、把只读登录称为完整业务回归、打印凭据或为通过检查伪造无效.env。
+- 必须记录 / Evidence: 目标提交、维护提交、测试命令及RED/GREEN、原包与工作包校验、实际UI摘要、普通执行器身份、策略采用记录、逐目标计划与任务ID；本次见`doc/tasks/20261031-spug-three-server-release/execution-log.md`及`direct-workflow-install.json`、`direct-spug-ui-sync.json`。
 ## 完整包、逐目标计划与持久恢复门禁
 
 - Trigger: 构建或部署 `full-app-release/v1`，或处理部署中断、失败重试。

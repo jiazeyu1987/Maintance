@@ -4,6 +4,11 @@
 
 - 三服表数不同 / 环境限定建表 / 治理表仅test / 同包升级后结构一致 / expectedSchemaSha256：`docs/release-agent-checklist.md#三服同版本同结构发布门禁`；修复用不可变前向迁移，不改已执行SQL，不删表凑数量；升级后核表、列、索引与约束，保留各自业务数据和迁移历史。
 
+- 多机器发布 / 不同电脑发布 / 本机历史缺失 / 发布记录落后 / 不强制重新导出资源包 / 运行版本新于本机：`docs/release-agent-checklist.md#多机器发布接管与缺失记录分析门禁`。先只读重建可验证的当前起点，不伪造历史；缺少本机记录本身不阻塞。
+
+- Spug构建复发 / selected committed source / backend-artifact-contract / Boot迁移CLI / requiredGxpAuditMode / junction外部目标 / cleanup_sealed_build / 删除后未记成功 / 原包重传前清理：`docs/release-agent-checklist.md#spug-构建产物与安全清理门禁`。
+
+- Spug取消演练 / direct-three-server-v1 / 正式独立恢复 / portable UTF-8 / Nginx实际UI alias / check-executor-acceptance-ingress / 验收来源IP / firewalld精确规则：`docs/release-agent-checklist.md#spug-直接三服策略与普通脚本安装门禁`。
 - full-app-release/v1 / 同包逐目标计划 / .release-state / READY gate / attemptId / RECOVERY_REQUIRED / classic overlay2 / 1GiB最低余量：`docs/release-agent-checklist.md#完整包逐目标计划与持久恢复门禁`。
 - C7 / 可重建测试引擎 / RuntimeConfigPath / containerId / mysqlFlockDirectory / 官方归档身份 / 24模块：`docs/test-release-preflight.md#完整包本机回归与可重建资源门禁`。
 

@@ -3,15 +3,17 @@
   "repository": "maintenance",
   "remote": "https://github.com/jiazeyu1987/Maintance.git",
   "branch": "codex/three-server-schema-20261101",
-  "commit": "ef647752b14734e4d3849052e5c34d615a73614c",
-  "remoteCommit": "ef647752b14734e4d3849052e5c34d615a73614c",
+  "commit": "6e3601988241049899600b9f4220a77910c9ff5e",
+  "remoteCommit": "6e3601988241049899600b9f4220a77910c9ff5e",
   "pushExitCode": 0,
-  "startedAt": "2026-11-01T16:46:27.570935+08:00",
-  "finishedAt": "2026-11-01T16:46:42.354055+08:00",
+  "startedAt": "2026-11-01T16:55:40.096343+08:00",
+  "finishedAt": "2026-11-01T16:55:53.306298+08:00",
   "currentHeadAndIndexPreserved": true,
   "forceUsed": false,
   "intMainMerged": false,
   "errorCategory": null,
-  "gitOutput": "remote: \nremote: Create a pull request for 'codex/three-server-schema-20261101' on GitHub by visiting:        \nremote:      https://github.com/jiazeyu1987/Maintance/pull/new/codex/three-server-schema-20261101        \nremote: \nTo https://github.com/jiazeyu1987/Maintance.git\n * [new branch]      ef647752b14734e4d3849052e5c34d615a73614c -> codex/three-server-schema-20261101\n",
-  "networkRoute": "existing-system-proxy"
+  "gitOutput": "To https://github.com/jiazeyu1987/Maintance.git\n   ef64775..6e36019  6e3601988241049899600b9f4220a77910c9ff5e -> codex/three-server-schema-20261101\n",
+  "gitOutputTail": "To https://github.com/jiazeyu1987/Maintance.git\n   ef64775..6e36019  6e3601988241049899600b9f4220a77910c9ff5e -> codex/three-server-schema-20261101\n",
+  "networkRoute": "existing-system-proxy",
+  "hookPython": "bundled-Python-3.12"
 }

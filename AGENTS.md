@@ -11,6 +11,7 @@
 - Thread baseline: 涉及备份、恢复、发布、构建、回滚任务前必须先阅读 `E:\IntRuoyi\docs\release-backup-restore.md`。
 - Thread baseline: 正式服 /mnt/nas 是公司共享盘，禁止删除、清空或移除挂载/fstab。
 - Thread baseline: 发布失败先查 migration/manifest/脚本契约，再查环境；后端产物或环境变量契约变更时，维护仓脚本与测试必须同步修改。
+- Thread baseline: 允许不同机器发布；本机发布记录缺失或落后时，不强制要求重新导出资源包。先按 `docs/release-agent-checklist.md` 的“多机器发布接管与缺失记录分析门禁”只读核对远端实际版本、镜像、清单、迁移台账、任务锁及恢复依据，保留证据并区分已证实事实与未知历史；仅具体无法验证的缺口阻塞对应动作，不伪造成功历史或用Git模板覆盖私密资料。
 - Thread baseline: 完整发布只认单一 releaseTag 的 `build-release -> publish-test -> mark-tested -> promote-prod -> promote-backup` 闭环；不得拼接多轮 releaseTag 结果。
 - Thread baseline: 用户明确要求“仅测试服发布”时，成功范围止于同一 releaseTag 的 `build-release -> publish-test` 及测试服真实运行态、页面、版本号和变更说明验证；禁止执行 `mark-tested`、`promote-prod` 或 `promote-backup`，不得因未走完整发布链而误判测试服发布失败。
 - Thread baseline: 发布成功必须同时核 operation=SUCCESS、manifest、远端 `.env IMAGE_TAG`、backend/frontend 实际镜像 tag、backend health=UP、frontend HTTP 200；缺任一项不得判定完成。

@@ -4,4 +4,4 @@ $ErrorActionPreference = 'Stop'
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
 $Root = Split-Path -Parent $PSScriptRoot
-mvn -f "$Root\backend\pom.xml" spring-boot:run
+mvn -f "$Root\backend\pom.xml" "-Dspring-boot.run.workingDirectory=$Root" spring-boot:run
