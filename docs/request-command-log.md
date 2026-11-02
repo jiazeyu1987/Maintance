@@ -3929,3 +3929,9 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - 验证结果：本轮129935文件、1282.536GiB（约1.252TiB）分配量；备份142.196、测试869.755、正式270.585GiB。数据盘当前可用171.41/922.08/1373.01GiB（以结果JSON字节为准），与前轮不重复计数。三服主/补充清单逐文件收据、独立残留与保护文件、页面200/后端UP、容器身份/配置、实际版本及本地恢复绑定摘要均PASS。
 - 过程记录：备份首批误判自持锁主动停止，原FAILED收据保留，修正检查并绑定剩余清单完成；测试只读扫描两次按身份终止后改为归档扫描，未停止业务或其他任务。
 - 交付：doc/tasks/20261102-all-old-release-payload-cleanup/cleanup-report.md及脱敏结果/保留依据；详细白名单/收据只存Git外私有证据。无worktree和控制台变更，仅提交本任务记录，不推送。
+
+## 20261102-release-retention-explanation：说明三服发布后的程序包与恢复资料
+- 用户需求：发布三服是否会留下数据包、恢复资料。
+- 命令意图：只读实际执行器stage/deploy/capture、前端补丁与artifact_retention调用路径；仅读取当前策略非敏感字段，不访问远端、不发布、不改备份/清理策略。
+- 验证结果：完整包三服保留程序载荷，测试/备份生成本服升级前checkpoint，正式external依赖独立恢复且不重复capture；前端补丁保留包/镜像/原前端证据，不做整库/对象备份。现有清理需独立扫描、选择、确认，发布后不会自动清空旧载荷。
+- 交付：doc/tasks/20261102-release-retention-explanation/findings.md；源码路径与UTF-8检查PASS，无worktree/控制台/实现改动，任务completed。
