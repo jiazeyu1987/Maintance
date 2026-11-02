@@ -410,6 +410,13 @@ def validate_quiescence_recovery(record, payload, observation):
         'Original application/database containers differ')
 
 
+def ssh_source_bytes(source):
+    """Keep Windows OpenSSH stdin ASCII; decode UTF-8 inside remote Python."""
+    import base64
+    encoded=base64.b64encode(source.encode('utf-8'))
+    return b"import base64\nexec(compile(base64.b64decode('"+encoded+b"'),'<release-agent>','exec'))\n"
+
+
 class Runtime:
     def __init__(self, config):
         import threading
@@ -515,7 +522,7 @@ class Runtime:
                   'PAYLOAD=' + repr(payload) + '\n' + agent)
         try:
             proc = subprocess.run(['ssh', *self.ssh_options(), 'root@' + profile['host'],
-                               shlex.quote(profile['python']) + ' -'], input=source.encode('utf-8'),
+                               shlex.quote(profile['python']) + ' -'], input=ssh_source_bytes(source),
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                               timeout=self.config.get('rehearsalOperationTimeout', 21600)
                               if action in ('rehearsal-capture', 'rehearsal-restore')

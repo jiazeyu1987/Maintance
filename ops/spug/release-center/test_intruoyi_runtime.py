@@ -14,6 +14,16 @@ from intruoyi_runtime import audit_ledger, Runtime, RuntimeBlocked, package_iden
 
 
 class LedgerAuditTest(unittest.TestCase):
+    def test_ssh_transport_is_ascii_and_preserves_complete_utf8_source(self):
+        from intruoyi_runtime import ssh_source_bytes
+        code='value='+repr('中文发布校验'*20000)+'\nprint(len(value), value[:6])\n'
+        transport=ssh_source_bytes(code)
+        transport.decode('ascii')
+        result=subprocess.run([sys.executable,'-'],input=transport,capture_output=True,timeout=15,
+                              env={**__import__('os').environ,'PYTHONIOENCODING':'utf-8'})
+        self.assertEqual(result.returncode,0)
+        self.assertEqual(result.stdout.decode('utf-8').strip(),'120000 中文发布校验')
+
     def setUp(self):
         self.a = {'migrationId': '20261001_alpha', 'sha256': 'a' * 64}
         self.b = {'migrationId': '20261002_beta', 'sha256': 'b' * 64}
