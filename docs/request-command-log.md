@@ -5675,3 +5675,10 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 
 - 用户询问后端单 JAR 补丁对后续完整发布的影响。本机只读确认现有完整发布继承旧启动配置与挂载，若挂载补丁 JAR，可能遮盖新镜像程序。
 - 结论：须随 JAR 通道同步适配源码包含、实际制品起点、程序挂载/入口切换、恢复及清理保护；成功后新完整包吸收修复、保留历史，失败可恢复原基础版本加补丁。详见 doc/tasks/20261102-post-release-auto-cleanup/jar-only-feasibility.md；尚未实现或远端验证。
+
+# 20261102 Spug 后端单 JAR 补丁实现
+
+- 用户要求新增后端补丁流程，发布不能修改数据库；本任务只实现/验证/安装本机入口，不执行三服发布。
+- 独立分支 codex/spug-backend-jar-patch-20261102，实现固定已提交源码单 JAR、同包逐服验收、数据库临时只读启动、原程序恢复、后续完整包接续和引用清理保护。
+- 验证命令意图：Python 合同/故障/回归、Node 页面合同、真实隔离 MySQL root 拒写、私密配置/历史 SHA 对照、真实 Playwright 登录；所有凭据只在本机私密文件读取，不打印或提交。
+- 当前结果及安装证据见 doc/tasks/20261102-spug-backend-jar-patch/execution-log.md；未自动合并 int_main 或向三服执行操作。

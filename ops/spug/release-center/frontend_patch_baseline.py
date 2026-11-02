@@ -26,7 +26,7 @@ def validate_observations(origins):
     first = origins['prod']
     for env in ENVS:
         origin = origins[env]
-        require(all(origin.get(key) == first.get(key) for key in ('releaseTag', 'frontendPatchTag', 'metadata'))
+        require(all(origin.get(key) == first.get(key) for key in ('releaseTag', 'frontendPatchTag', 'metadata','backendProgram'))
                 and all(origin['components'][role]['imageId'] == first['components'][role]['imageId']
                         for role in ('frontend', 'backend')),
                 '三服当前程序版本、源码或镜像不一致，请先明确统一补丁起点')

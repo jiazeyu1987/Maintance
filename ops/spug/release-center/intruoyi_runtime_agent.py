@@ -20,6 +20,7 @@ import io
 from datetime import datetime, timezone
 from urllib.parse import urlsplit, quote
 from urllib.request import urlopen
+from backend_patch_contract import full_release_config, PATHS, PREFIX as BACKEND_PATCH_LABEL
 
 import intruoyi_remote as remote
 from intruoyi_runtime import capture_sql_snapshot, database_snapshot_path, DATABASE_SNAPSHOT_NAMES
@@ -65,6 +66,11 @@ def read_versions(profile):
             require(isinstance(tag, str) and tag, 'Current frontend version is missing')
             version = dict(releaseTag=tag, frontendPatchTag=metadata.get('frontendPatchTag'),
                            gitCommit=metadata.get('gitCommit'))
+            labels=remote.inspect(profile['backend'])['Config'].get('Labels') or {}
+            if labels.get(BACKEND_PATCH_LABEL+'tag'):
+                jar=remote.run(['docker','exec',profile['backend'],'sha256sum','/yudao-server/app.jar']).decode().split()[0]
+                require(jar==labels.get(BACKEND_PATCH_LABEL+'sha256'),'Actual backend patch JAR differs')
+                version.update(backendPatchTag=labels[BACKEND_PATCH_LABEL+'tag'],backendJarSha256=jar)
         except Exception as error:
             errors.append('frontend: release-info.json unreadable or invalid (' + type(error).__name__ + ')')
     else:
@@ -149,7 +155,18 @@ def observe(profile):
     backend_env = dict(v.split('=', 1) for v in remote.inspect(profile['backend'])['Config']['Env'])
     images = {role: raw['components'][role]['imageId'] for role in ('backend', 'frontend')}
     fingerprint = sha({'images': images, 'schemaSha256': raw['schemaSha256'], 'ledgerSha256': sha(ledger), 'runtimeConfigSha256': sha(configs)})
+    backend_info=remote.inspect(profile['backend'])
+    patch_labels=backend_info['Config'].get('Labels') or {}
+    backend_patch_tag=patch_labels.get(BACKEND_PATCH_LABEL+'tag')
+    jar_sha=None
+    if backend_info['State']['Running']:
+        jar_sha=remote.run(['docker','exec',profile['backend'],'sha256sum','/yudao-server/app.jar']).decode().split()[0]
+        require(re.fullmatch('[a-f0-9]{64}',jar_sha),'Actual backend JAR SHA required')
+    if backend_patch_tag:
+        require(jar_sha==patch_labels.get(BACKEND_PATCH_LABEL+'sha256'),'Actual patched JAR differs from label')
+        fingerprint=sha({'origin':fingerprint,'backendPatchTag':backend_patch_tag,'backendJarSha256':jar_sha})
     return dict(host=profile['host'], entryUrl=profile['entryUrl'], observedEntryUrl=entry, components=raw['components'],
+                backendPatchTag=backend_patch_tag,backendJarSha256=jar_sha,
                 images={role: raw['components'][role]['imageId'] for role in ('backend', 'frontend')},
                 schemaSha256=raw['schemaSha256'], ledger=ledger, ledgerSha256=sha(ledger),
                 releaseTag=release_tag, frontendPatchTag=frontend_patch_tag, ledgerRecords=ledger, imageIds=images, fingerprint=fingerprint,
@@ -725,7 +742,17 @@ def replace(profile, root, role, image, tag, maintenance=None, snapshot_suffix='
     require(not original['State']['Running'], 'Original application must be stopped before replacement')
     private_json(root / (role + '-before-' + snapshot_suffix + '.private.json'), original)
     config = clone_config(original, image, maintenance)
+    removed_program_mounts = set()
     if role == 'backend':
+        # A new full image must supply its own JAR. Old patch files remain
+        # referenced by the retained original container for explicit recovery.
+        patched = bool((config.get('Labels') or {}).get(BACKEND_PATCH_LABEL+'root'))
+        config = full_release_config(config)
+        if patched:
+            removed_program_mounts = set(PATHS.values())
+            image_config=json.loads(remote.run(['docker','image','inspect',image]))[0]['Config']
+            for field in ('Entrypoint','Cmd','WorkingDir'):
+                config[field]=image_config.get(field)
         configure_fenbeitong(config, profile)
     # An unmounted default.conf would otherwise be replaced by the generic image config.
     if role == 'frontend' and not any(m['Destination'] == '/etc/nginx/conf.d/default.conf' for m in original['Mounts']):
@@ -741,8 +768,9 @@ def replace(profile, root, role, image, tag, maintenance=None, snapshot_suffix='
     created = docker('POST', '/containers/create?name=' + quote(name), config)
     actual = remote.inspect(created['Id'])
     require(actual['Image'] == image and actual['HostConfig']['PortBindings'] == original['HostConfig']['PortBindings'], 'Replacement identity/ports differ')
-    require({json.dumps(m, sort_keys=True) for m in original['Mounts']} <=
+    require({json.dumps(m, sort_keys=True) for m in original['Mounts'] if m['Destination'] not in removed_program_mounts} <=
             {json.dumps(m, sort_keys=True) for m in actual['Mounts']}, 'Replacement lost or changed a runtime mount')
+    require(not any(m['Destination'] in removed_program_mounts for m in actual['Mounts']), 'Full release still masks the new image JAR')
     return created['Id']
 
 
@@ -1422,6 +1450,9 @@ def dispatch(payload):
         return read_database(remote, profile)
     if action.startswith('frontend-patch-'):
         from frontend_patch_agent import execute
+        return execute(profile,payload,globals())
+    if action.startswith('backend-patch-'):
+        from backend_patch_agent import execute
         return execute(profile,payload,globals())
     if action in ('artifact-inventory','artifact-remove','artifact-auto-clean'):
         from artifact_files import remote as artifacts

@@ -366,6 +366,8 @@ class _IntRuoyiExecutor(Executor):
                 actual = {role: data['imageId'] for role, data in value['components'].items()}
                 value['matchesRecorded'] = (value['version']['releaseTag'] == old.get('releaseTag')
                     and value['version'].get('frontendPatchTag') == old.get('frontendPatchTag')
+                    and value['version'].get('backendPatchTag') == old.get('backendPatchTag')
+                    and (not value['version'].get('backendPatchTag') or value['version'].get('backendJarSha256')==old.get('backendJarSha256'))
                     and actual == expected) if value['status'] == 'ok' and expected else None
                 return env, value
             except Exception as error:
@@ -1179,8 +1181,9 @@ class _IntRuoyiExecutor(Executor):
 
 
 from frontend_patch import FrontendPatchMixin
+from backend_patch import BackendPatchMixin
 
-class IntRuoyiExecutor(FrontendPatchMixin, RollbackMixin, _IntRuoyiExecutor):
+class IntRuoyiExecutor(BackendPatchMixin, FrontendPatchMixin, RollbackMixin, _IntRuoyiExecutor):
     """Run rollback hooks before the concrete release adapter."""
     pass
 

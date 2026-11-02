@@ -11,10 +11,11 @@ def protected_tags(state):
     held = set()
     def hold(value):
         if value: held.add(value)
-    for group in ('environments', 'frontendPatchEnvironments'):
+    for group in ('environments', 'frontendPatchEnvironments','backendPatchEnvironments'):
         for current in state.get(group, {}).values():
             hold(current.get('releaseTag')); hold(current.get('frontendPatchTag'))
-    for p in state.get('packages', []) + state.get('frontendPatches', []):
+            hold(current.get('backendPatchTag'))
+    for p in state.get('packages', []) + state.get('frontendPatches', []) + state.get('backendPatches',[]):
         if (p.get('stage') not in ('built', 'completed') and not p.get('artifactsPruned') and not p.get('abandoned')):
             hold(p['releaseTag'])
         if p.get('activeRehearsal'): hold(p['releaseTag'])
@@ -23,8 +24,9 @@ def protected_tags(state):
         if (job.get('status') in ('running', 'failed', 'interrupted')
                 and not job.get('resolution') and not job.get('reconciledBy')):
             hold(job.get('releaseTag'))
-            for key in ('originState', 'frontendOrigin'):
+            for key in ('originState', 'frontendOrigin','backendOrigin'):
                 hold(job.get(key, {}).get('releaseTag')); hold(job.get(key, {}).get('frontendPatchTag'))
+                hold(job.get(key, {}).get('backendPatchTag'))
         plan = job.get('rollbackPlan', {})
         if plan.get('expiresAt', 0) > time.time():
             hold(plan.get('currentReleaseTag')); hold(plan.get('targetReleaseTag'))
@@ -36,6 +38,7 @@ def eligible(executor, job):
     action=job.get('cleanupAction',job['action'])
     if action == 'accept-backup': group = 'packages'
     elif action == 'frontend-patch-accept' and job.get('target') == 'backup': group = 'frontendPatches'
+    elif action == 'backend-patch-accept' and job.get('target') == 'backup': group = 'backendPatches'
     else: return False
     return any(p['releaseTag'] == job.get('releaseTag') and p.get('stage') == 'completed'
                for p in executor.state.get(group, []))
@@ -48,7 +51,7 @@ def entries(executor, state, env, held):
         _, manifest = executor.manifest(p['releaseTag'])
         owners = [j for j in state['jobs'] if j.get('releaseTag') == p['releaseTag']
                   and (j.get('target') or j.get('payload', {}).get('target')) == env
-                  and not j['action'].startswith('frontend-patch-')]
+                  and not j['action'].startswith(('frontend-patch-','backend-patch-'))]
         entry = dict(manifest=manifest, manifestSha256=p['manifestSha256'],
                      packageSha256=p['packageSha256'], ownerJobIds=[j['id'] for j in owners])
         result.append(entry)
@@ -69,6 +72,13 @@ def entries(executor, state, env, held):
                     and (owner.get('target') or owner.get('payload', {}).get('target')) == env):
                 result.append(dict(kind='frontend-patch', manifest=manifest,
                     manifestSha256=p['manifestSha256'], packageSha256=p['packageSha256'], deploymentJobId=owner['id']))
+    for p in state.get('backendPatches',[]):
+        if p['releaseTag'] in held:continue
+        _,manifest=executor.backend_package(p['releaseTag'])
+        for owner in state['jobs']:
+            if owner['action']=='backend-patch-deploy' and owner.get('releaseTag')==p['releaseTag'] and owner.get('target')==env:
+                result.append(dict(kind='backend-patch',manifest=manifest,manifestSha256=p['manifestSha256'],
+                    packageSha256=p['packageSha256'],deploymentJobId=owner['id'],acceptedDeployment=bool(p['accepted'].get(env))))
     return result
 
 
@@ -77,7 +87,7 @@ def resource_entries(executor,state,env):
     rows=entries(executor,state,env,set())
     for entry in rows:
         tag=entry['manifest']['releaseTag']
-        if entry.get('kind')=='frontend-patch':continue
+        if entry.get('kind') in ('frontend-patch','backend-patch'):continue
         entry['ownerJobIds']=[identity for identity in entry['ownerJobIds'] if
             any(j['id']==identity and bool(j.get('runtimeStagingRoots',{}).get(env))==bool(entry.get('attempt'))
                 and (not entry.get('attempt') or j['runtimeStagingRoots'][env].endswith('/'+entry['attempt']))
@@ -112,7 +122,9 @@ def perform(executor, job):
     state = copy.deepcopy(executor.state)
     require(not any(j['id'] != job['id'] and j.get('status') == 'running' for j in state['jobs']),
             '存在其他运行任务，自动清理停止')
-    patch_release = job.get('cleanupAction',job['action']).startswith('frontend-patch-')
+    cleanup_action=job.get('cleanupAction',job['action'])
+    patch_release = cleanup_action.startswith('frontend-patch-')
+    backend_release = cleanup_action.startswith('backend-patch-')
     held = protected_tags(state); observations = {}
     for env in ENVS:
         recorded = state['environments'].get(env, {})
@@ -127,6 +139,11 @@ def perform(executor, job):
                     current['images'] == {r:actual['components'][r]['imageId'] for r in ('backend','frontend')},
                     env+': 完整状态与补丁身份不同')
             current['frontendPatchTag'] = actual['frontendPatchTag']
+        elif backend_release:
+            _,manifest=executor.backend_package(job['releaseTag'])
+            actual=executor.backend_call(job,env,'verify',manifest=manifest)
+            require(current['backendJarSha256']==actual['backendJarSha256'] and current['backendPatchTag']==job['releaseTag'],
+                    env+': 完整状态与后端补丁身份不同')
         else:
             _, manifest = executor.manifest(job['releaseTag'])
             require(current['releaseTag'] == job['releaseTag'] and
@@ -134,6 +151,7 @@ def perform(executor, job):
                     env+': 当前版本已偏离验收包')
         held.add(current['releaseTag'])
         if current.get('frontendPatchTag'): held.add(current['frontendPatchTag'])
+        if current.get('backendPatchTag'):held.add(current['backendPatchTag'])
         observations[env] = current
     report = dict(status='running', environments={}); job['postReleaseCleanup'] = report; executor.save()
     for env in ENVS:
@@ -143,7 +161,10 @@ def perform(executor, job):
                 entries=entries(executor, state, env, held), protectedTags=sorted(held),
                 resourceEntries=resource_entries(executor,state,env),
                 expectedImages=current['images'], currentReleaseTag=current['releaseTag'],
-                currentPatchTag=current.get('frontendPatchTag'))
+                currentPatchTag=current.get('frontendPatchTag'),
+                **(dict(currentBackendPatchTag=current['backendPatchTag'],currentBackendJarSha256=current['backendJarSha256'])
+                   if current.get('backendPatchTag') else {}))
+            # Actual backend identity is also checked remotely before deletion.
             require(isinstance(result, dict) and result.get('status') in ('succeeded','failed'),
                     env+': 自动清理回执无效，需要核对原任务')
             report['environments'][env] = result
@@ -181,7 +202,7 @@ def submit_retry(executor,payload,actor):
         require(not any(j.get('status')=='running' for j in executor.state['jobs'])
                 and not (executor.worker and executor.worker.is_alive()),'其他任务正在执行')
         original=next((j for j in executor.state['jobs'] if j['id']==payload.get('jobId')),None)
-        require(original and original['action'] in ('accept-backup','frontend-patch-accept')
+        require(original and original['action'] in ('accept-backup','frontend-patch-accept','backend-patch-accept')
                 and eligible(executor,original),'需要三服最终验收成功的原任务')
         job=dict(id='JOB-'+secrets.token_hex(5),requestId=payload['requestId'],action='retry-release-cleanup',
             cleanupAction=original['action'],cleanupOf=original['id'],payload=payload,target='backup',

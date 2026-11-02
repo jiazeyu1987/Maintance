@@ -97,7 +97,8 @@ def plan(profile,payload):
         marker=files.safe_file(root,'manifest.json')
         require(marker.is_file() and files.sha(marker)==entry['manifestSha256'], '资源清理清单身份不一致')
         require(json.loads(marker.read_text('utf-8'))==entry['manifest'],'资源清单内容不一致')
-        boundary=(payload.get('currentPatchTag') or payload['currentReleaseTag']) if entry.get('kind')=='frontend-patch' else payload['currentReleaseTag']
+        boundary=(payload.get('currentPatchTag') or payload['currentReleaseTag']) if entry.get('kind')=='frontend-patch' else (
+            payload.get('currentBackendPatchTag') or payload['currentReleaseTag']) if entry.get('kind')=='backend-patch' else payload['currentReleaseTag']
         protected=tag in held or tag>=boundary
         for image in entry['manifest'].get('images',{}).values():
             require(re.fullmatch(r'[A-Za-z0-9._:/-]+',image['name']) and
@@ -111,6 +112,11 @@ def plan(profile,payload):
         if entry.get('kind')=='frontend-patch':
             origin=read(root,'frontend-origin.private.json')
             snapshot(origin,[profile['frontend']+'-before-'+entry['deploymentJobId']],tag,protected)
+        elif entry.get('kind')=='backend-patch':
+            original=read(root,'backend-origin.private.json')
+            snapshot(original,[profile['backend']+'-before-'+entry['deploymentJobId']],tag,protected)
+            if entry.get('acceptedDeployment'):
+                snapshot(read(root,'backend-probe.private.json'),[profile['backend']+'-probe-'+entry['deploymentJobId']],tag,False)
         else:
             for role in ('backend','frontend'):
                 name=profile[role]

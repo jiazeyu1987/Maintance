@@ -459,7 +459,7 @@ class Runtime:
             job.setdefault('remoteOperations', []).append(operation)
             persist()
             arguments.update(operationId=operation['operationId'], workflowJobId=job['id'])
-        uncertain_on_disconnect = action in ('artifact-auto-clean','frontend-patch-deploy','frontend-patch-restore','deploy', 'maintenance', 'recover-release', 'accept-recovery', 'resume-test-deployment-tail', 'rehearsal-capture', 'rehearsal-restore', 'rehearsal-resume-tail', 'rehearsal-reset')
+        uncertain_on_disconnect = action in ('backend-patch-deploy','backend-patch-restore','artifact-auto-clean','frontend-patch-deploy','frontend-patch-restore','deploy', 'maintenance', 'recover-release', 'accept-recovery', 'resume-test-deployment-tail', 'rehearsal-capture', 'rehearsal-restore', 'rehearsal-resume-tail', 'rehearsal-reset')
         profile = self.profile(env)
         if action == 'artifact-auto-clean':
             profile['stagingRoot'] = self.targets[env]['stagingRoot']
@@ -476,7 +476,15 @@ class Runtime:
         resource_cleanup = (self.sources / 'runtime_resource_cleanup.py').read_text('utf-8')
         frontend_patch = (self.sources / 'frontend_patch_agent.py').read_text('utf-8')
         database_versions = (self.sources / 'database_versions.py').read_text('utf-8')
+        backend_contract = (self.sources / 'backend_patch_contract.py').read_text('utf-8')
+        backend_patch = (self.sources / 'backend_patch_agent.py').read_text('utf-8')
         source = ('import types,sys\n'
+                  '_bc=types.ModuleType("backend_patch_contract")\n'
+                  'sys.modules["backend_patch_contract"]=_bc\n'
+                  'exec(compile(' + repr(backend_contract) + ',"backend_patch_contract.py","exec"),_bc.__dict__)\n'
+                  '_bp=types.ModuleType("backend_patch_agent")\n'
+                  'sys.modules["backend_patch_agent"]=_bp\n'
+                  'exec(compile(' + repr(backend_patch) + ',"backend_patch_agent.py","exec"),_bp.__dict__)\n'
                   '_database=types.ModuleType("database_versions")\n'
                   'sys.modules["database_versions"]=_database\n'
                   'exec(compile(' + repr(database_versions) + ',"database_versions.py","exec"),_database.__dict__)\n'

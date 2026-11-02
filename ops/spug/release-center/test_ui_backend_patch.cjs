@@ -1,0 +1,32 @@
+// Rendering checks only: no real release or business operations.
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
+const source=fs.readFileSync(path.join(__dirname,'ui/backend-patch.js'),'utf8');
+const elements=new Map(),store=new Map();
+const element=id=>{if(!elements.has(id))elements.set(id,{innerHTML:'',setAttribute(){},querySelector(){return {setAttribute(){}}}});return elements.get(id);};
+const storage={getItem:key=>store.get(key)||null,setItem:(key,value)=>store.set(key,value)};
+const context={document:{getElementById:element,addEventListener(){},querySelector(){return null}},localStorage:storage,sessionStorage:storage,setInterval(){},fetch(){return new Promise(()=>{})},window:{},crypto:{randomUUID:()=>''}};
+vm.createContext(context);vm.runInContext(source,context);
+const p={releaseTag:'patch',baseReleaseTag:'base',gitCommit:'a'.repeat(40),stage:'built',accepted:{},deployments:{}};
+context.input={application:{capabilities:{backendPatch:true},targets:{test:{url:'http://test'},prod:{url:'http://prod'},backup:{url:'http://review'}}},packages:[{releaseTag:'base'}],backendPatches:[p],backendPatchBaselines:[{id:'b',releaseTag:'base',gitCommit:'b'.repeat(40)}],backendPatchEnvironments:Object.fromEntries(['test','prod','backup'].map(e=>[e,{releaseTag:'base'}])),environments:Object.fromEntries(['test','prod','backup'].map(e=>[e,{releaseTag:'base'}])),jobs:[]};
+const render=()=>{vm.runInContext("bpState=input;bpSelected='patch';bpRender()",context);return element('app').innerHTML;};
+let html=render();
+assert.match(html,/后端补丁/);assert.match(html,/主版本/);assert.match(html,/补丁版本/);
+const enabled=(env)=>!new RegExp('data-back-action="backend-patch-deploy" data-target="'+env+'"[^>]*disabled').test(html);
+assert(enabled('test'));assert(!enabled('prod'));assert(!enabled('backup'));
+p.accepted.test={};html=render();assert(!enabled('prod'));assert(!enabled('backup'));
+context.input.backendPatchEnvironments.test.backendPatchTag='patch';html=render();assert(enabled('prod'));assert(!enabled('backup'));
+p.accepted.prod={};html=render();assert(!enabled('backup'));
+context.input.backendPatchEnvironments.prod.backendPatchTag='patch';html=render();assert(enabled('backup'));
+context.input.jobs=[{id:'JOB-1234567890',action:'backend-patch-deploy',releaseTag:'patch',target:'test',effectsStarted:true,status:'failed',logs:[],error:'network failed'}];
+html=render();assert.match(html,/恢复本次升级前的后端/);assert.match(html,/network failed/);assert.match(html,/不回退业务数据/);
+context.input.jobs[0].backendRestoredBy='JOB-abcdef1234';html=render();assert.doesNotMatch(html,/data-original=/);
+assert.match(html,/不执行数据库结构、数据/);
+console.log('PASS backend patch rendering, same-package promotion gates, failure visibility and explicit recovery entry');
+(async()=>{
+ store.set('token','unit-token');
+ context.fetch=async()=>({ok:true,status:200,json:async()=>({success:true})});
+ const result=await vm.runInContext("bpApi('state')",context);assert.equal(result.success,true);
+ context.fetch=async()=>({ok:false,status:409,json:async()=>({error:'Action blocked'})});
+ await assert.rejects(vm.runInContext("bpApi('state')",context),/Action blocked/);
+ console.log('PASS browser Fetch Response.ok property and visible HTTP failure');
+})().catch(error=>{console.error(error);process.exitCode=1;});

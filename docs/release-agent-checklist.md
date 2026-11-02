@@ -545,3 +545,14 @@ Codex 只有在以下条件同时成立时，才能判定完整发布完成：
 - Verification: 核对 `postReleaseCleanup` 和 `.cleanup/<任务>.json` 的具体计划、逐项删除、保留原因、错误和文件字节/磁盘可用变化。先移除有原始快照及精确身份的已停止旧业务容器，再删无任何容器/恢复点引用的登记镜像标签，最后处理旧载荷。失败现场须原任务 restored 核销、本机成功恢复验收及远端 opened 回执三方一致；接续验收绑定原 openingJobId。推荐运行 `test_post_release_cleanup`、`test_runtime_resource_cleanup`、Linux `test_post_release_cleanup_lock`，本机专用 Docker 资源用 `SPUG_REAL_CLEANUP_TEST=1 ... test_cleanup_resources_integration` 验证。必须记录代码版本、任务号及逐服实际结果，清理失败通过独立重试入口重新采样，不重新发布或开放业务。
 - Forbidden action: 不删当前包及最近有效恢复点、在用演练、未解决任务的恢复起点、清单/凭据/历史、业务在用数据、NAS、独立备份链；不自动停业务容器，不带卷删除容器、不强制删镜像、不全局 prune、不递归删除、不在有活动发布时热换执行器代码。未知归属的历史演练必须另行确认退役后处理。
 - Evidence: `doc/tasks/20261102-post-release-auto-cleanup/`、发布最终验收任务日志和逐服清理回执。
+## 后端单 JAR 补丁门禁
+
+- Trigger: Spug backend-patch 构建、部署、验收、原包重传、程序恢复及后续完整发布。
+- Preflight check: 读取三服真实基线/JAR/前端/schema/ledger/配置及目标身份；确认完整写者、注册 MySQL 与实际数据源、无复制线程/外部只读保护。选择兼容 Java 修复提交，评审前端/数据库/配置/依赖/恢复兼容，真实读取本地 GxP 关闭状态；在原固定运行镜像中断网验证 JAR CLI。
+- Blocker: SQL/数据/配置/依赖/启动合同变更、未知程序挂载、起点漂移、外部保护、复制线程、空间不足、JAR/SHA/运行状态/GxP 不符时停止。启动在保护下尝试写库失败则保留保护和任务，不直接开放或自动回放。
+- Verification: 同包测试→正式→审查逐服实际 JAR SHA/元数据、健康、GxP 保存与运行关闭、真实页面/修复场景验收；结构/迁移台账不变仅是复核，禁止以此替代启动数据库只读保护。恢复只切原程序，不回退业务行。
+- Forbidden action: 禁止迁移/DML/DDL/配置修复、备份恢复数据库、SET PERSIST、解除他人保护、覆盖运行 JAR、重复编译解决已封包上传失败、清理仍被任何容器或有效恢复点引用的 JAR、只换镜像仍运行旧补丁挂载。
+- Evidence: `doc/tasks/20261102-spug-backend-jar-patch/execution-log.md`、任务/远端操作回执、database-fence.json、固定清单与本机隔离 MySQL 检查。
+- 阶段 1 必查 / 推荐命令: 独立维护副本执行 `python -X utf8 -m unittest test_backend_patch test_frontend_patch test_frontend_patch_baseline test_current_versions test_post_release_cleanup test_runtime_resource_cleanup`、`node test_ui_backend_patch.cjs`、显式本机 `python -X utf8 check_backend_patch_mysql.py`。记录 RED/GREEN 和真实检查范围。
+- 阶段 2 必查: 页面登记真实基线、评审、固定提交；本任务首写入由公共操作锁与任务号绑定；准备阶段按实际包大小两倍加1GiB检查暂存文件系统，不引入旧64GiB门槛。失败保留原包，重传前核清单/成员/原包SHA。
+- 阶段 3 必查: 三服同包逐服人工业务验收；正式/审查变更输入 PROD。最终清理逐文件SHA、挂载引用和原容器身份证据。后续完整发布包含补丁提交，仅移除确属程序的两个只读挂载，保留其他配置和原恢复 JAR。必须记录包/任务号、实际运行证据、保护获取/解除与剩余阻塞。

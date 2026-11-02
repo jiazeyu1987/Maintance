@@ -56,6 +56,8 @@ def inventory(root, manifest, manifest_sha, archive_sha, *, archive_only=False, 
     expected = [('release.tar', archive_sha, '发布包')]
     if not archive_only:
         expected += [(r['name'], r['sha256'], '镜像导出') for r in manifest['files'] if r['name']=='images.tar']
+        if manifest.get('kind')=='backend-patch':
+            expected += [(r['name'],r['sha256'],'旧后端JAR') for r in manifest['files'] if r['name']=='app.jar']
     retained_reason = None
     retained = []
     if recovery:
@@ -194,15 +196,23 @@ def verify_cleanup_runtime(profile, payload):
     require(metadata.get('baseReleaseTag', metadata.get('releaseTag')) == payload['currentReleaseTag']
             and metadata.get('frontendPatchTag') == payload.get('currentPatchTag'),
             '当前页面版本已改变，停止自动清理')
+    backend=actual[0]
+    labels=backend['Config'].get('Labels') or {}
+    require(labels.get('intruoyi.backend-patch.tag')==payload.get('currentBackendPatchTag'),
+            '当前后端补丁已改变，停止清理')
+    if payload.get('currentBackendPatchTag'):
+        jar=docker(['exec',profile['backend'],'sha256sum','/yudao-server/app.jar']).decode().split()[0]
+        require(jar==labels.get('intruoyi.backend-patch.sha256')==payload.get('currentBackendJarSha256'),
+                '当前后端 JAR 身份已改变，停止清理')
 
 
 def cleanup_root(base, entry):
     tag = entry['manifest']['releaseTag']
     require(re.fullmatch(r'\d{4}(-\d{2}){5}', tag), '旧包版本号无效')
-    if entry.get('kind') == 'frontend-patch':
+    if entry.get('kind') in ('frontend-patch','backend-patch'):
         owner = entry.get('deploymentJobId', '')
         require(re.fullmatch('JOB-[a-f0-9]{10}', owner), '旧补丁任务号无效')
-        relative = 'frontend-patches/'+tag+'/'+owner
+        relative = entry['kind']+'es/'+tag+'/'+owner
     elif entry.get('attempt'):
         owner = entry['attempt']
         require(re.fullmatch('JOB-[a-f0-9]{10}', owner), '旧重试任务号无效')
@@ -280,14 +290,14 @@ def automatic_cleanup(profile, payload):
         held = set(payload['protectedTags']) | {payload['currentReleaseTag'], payload.get('currentPatchTag')}
         for entry, root in roots:
             tag = entry['manifest']['releaseTag']
-            if tag in held or (entry.get('kind') != 'frontend-patch' and tag >= payload['currentReleaseTag']):
+            if tag in held or (entry.get('kind') not in ('frontend-patch','backend-patch') and tag >= payload['currentReleaseTag']):
                 report['retained'].append(dict(releaseTag=tag, reason='当前版本、恢复点、演练或未结束任务引用'))
                 continue
             # A patch cannot be retired merely because its wall-clock tag is
             # older than a full build; only explicitly retired controller entries.
             rows = inventory(root, entry['manifest'], entry['manifestSha256'], entry['packageSha256'],
-                             recovery=entry.get('kind') != 'frontend-patch', recovery_jobs=entry.get('ownerJobIds', []))
-            if (entry.get('kind') != 'frontend-patch' and root.exists()
+                             recovery=entry.get('kind') not in ('frontend-patch','backend-patch'), recovery_jobs=entry.get('ownerJobIds', []))
+            if (entry.get('kind') not in ('frontend-patch','backend-patch') and root.exists()
                     and not safe_file(root, 'recovery-record.private.json').exists()
                     and any(root.glob('recovery*'))):
                 report['retained'].append(dict(releaseTag=tag, reason='恢复资料缺少归属记录，保留整组载荷'))
