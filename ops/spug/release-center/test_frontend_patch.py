@@ -88,6 +88,30 @@ class PatchTests(unittest.TestCase):
         self.e.technical_passed.return_value=False
         self.assertTrue(self.e.frontend_failure_blocks(job,'test'))
 
+    def test_later_completed_full_release_supersedes_old_deployment_failure_only(self):
+        job=dict(id='old',action='publish-test',status='failed',target='test',effectsStarted=True,
+                 releaseTag='2026-10-26-10-00-00',finishedAt='2026-10-26-12-00-00')
+        owner=dict(id='new',action='publish-test',status='succeeded',target='test',releaseTag=self.base,
+                   createdAt='2026-10-27-18-00-00')
+        current=self.e.state['environments']['test']
+        current.update(maintenance=False,baselineStatus='registered',manifestSha256='verified')
+        full=dict(releaseTag=self.base,stage='completed',manifestSha256='verified',
+                  outcomes={'test':{'deployment':dict(jobId='new',status='succeeded')}})
+        self.e.state.update(packages=[full],jobs=[job,owner])
+        self.e.technical_passed=Mock(return_value=True)
+        self.assertFalse(self.e.frontend_failure_blocks(job,'test'))
+        for change in (dict(releaseTag=self.base),dict(action='frontend-patch-deploy'),dict(action='restore-backup')):
+            self.assertTrue(self.e.frontend_failure_blocks(dict(job,**change),'test'))
+        for key,value in [('maintenance',True),('manifestSha256','other'),('recoveryPending',True)]:
+            with self.subTest(key=key):
+                saved=copy.deepcopy(current);current[key]=value
+                self.assertTrue(self.e.frontend_failure_blocks(job,'test'))
+                current.clear();current.update(saved)
+        self.e.technical_passed.return_value=False
+        self.assertTrue(self.e.frontend_failure_blocks(job,'test'))
+        self.e.technical_passed.return_value=True;owner['status']='failed'
+        self.assertTrue(self.e.frontend_failure_blocks(job,'test'))
+
 
 class RemoteTests(unittest.TestCase):
     def setUp(self):

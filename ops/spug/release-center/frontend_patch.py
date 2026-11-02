@@ -88,6 +88,23 @@ class FrontendPatchMixin:
             prior=next((p for p in self.state['packages'] if p['releaseTag']==job.get('releaseTag')),None)
             if prior and self.technical_passed(prior,env,job['reconciledBy']):
                 return False
+        # A later completed full deployment replaces the old program, without
+        # claiming that its failed historical deployment ever succeeded.
+        current=self.state['environments'].get(env,{})
+        full=next((p for p in self.state['packages'] if p['releaseTag']==current.get('releaseTag')),None)
+        action={'test':'publish-test','prod':'promote-prod','backup':'promote-backup'}.get(env)
+        if (job.get('action')==action and full and full.get('stage')=='completed'
+                and full['releaseTag']>(job.get('releaseTag') or full['releaseTag'])
+                and current.get('baselineStatus')=='registered' and current.get('maintenance') is False
+                and not current.get('maintenanceUnknown') and not current.get('recoveryPending')
+                and current.get('manifestSha256')==full.get('manifestSha256') and full.get('manifestSha256')):
+            deployment=full.get('outcomes',{}).get(env,{}).get('deployment',{})
+            owner=next((j for j in self.state['jobs'] if j['id']==deployment.get('jobId')),None)
+            if (deployment.get('status')=='succeeded' and owner and owner.get('status')=='succeeded'
+                    and owner.get('action')==action and owner.get('target')==env
+                    and owner.get('releaseTag')==full['releaseTag'] and job.get('finishedAt')
+                    and owner.get('createdAt','')>job['finishedAt'] and self.technical_passed(full,env)):
+                return False
         return True
 
     def submit(self,action,payload,actor):
