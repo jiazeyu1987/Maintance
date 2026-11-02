@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "yamlSyntax": "PASS",
+  "utf8": "PASS",
+  "gitDiffCheck": "PASS",
+  "launcherWorkingDirectory": "PASS",
+  "configuredDirectories": {
+    "backend/src/main/resources/application.yaml": {
+      "repo-root": "C:\\Users\\D01021\\Documents\\ChatGPT\\IntRuoyi\\IntRuoyiBackend",
+      "frontend-root": "C:\\Users\\D01021\\Documents\\ChatGPT\\IntRuoyi\\IntRuoyiFronted",
+      "website-root": "C:\\Users\\D01021\\Documents\\ChatGPT\\WebSite",
+      "ops-root": "C:\\Users\\D01021\\Documents\\ChatGPT\\Maintance\\ops"
+    },
+    "config/runtime-control.example.yaml": {
+      "repo-root": "C:\\Users\\D01021\\Documents\\ChatGPT\\IntRuoyi\\IntRuoyiBackend",
+      "frontend-root": "C:\\Users\\D01021\\Documents\\ChatGPT\\IntRuoyi\\IntRuoyiFronted",
+      "website-root": "C:\\Users\\D01021\\Documents\\ChatGPT\\WebSite",
+      "ops-root": "C:\\Users\\D01021\\Documents\\ChatGPT\\Maintance\\ops"
+    }
+  },
+  "functionalRegression": "Not rerun: Git synchronization and existing configuration/documentation changes only"
+}

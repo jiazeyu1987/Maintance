@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "network": "existing-system-proxy",
+  "remoteCommit": "9e4d2956e38f19a3d719a3b7feef4a10bbe99be1",
+  "head": "d7067d1b276a075deccd37dd060e84bec67e3f48",
+  "aheadBehind": "59\t0",
+  "incomingFiles": []
+}

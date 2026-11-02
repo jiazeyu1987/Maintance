@@ -3900,6 +3900,1685 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - 验证：36 表及 3/14/1/157 记录基线通过，镜像/C: 挂载一致，scheduler 关闭，三个入口 HTTP200，主机、任务与历史可见。MariaDB 存在启动警告，查询校验通过。
 - 使用限制：发布执行器不可用、备份来源未验证；本次未接通执行器、SSH 转发或操作服务器。任务 check-spug-local-20261022 completed，无新增运行资源需要清理。
 
+## 2026-10-23 Spug 更新与小程序双模式演练
+- 用户需求：保留本机修改，融合 int_main 指定 ba5fe2f，仅测试服务器小程序真实页面双模式备份恢复。
+- 命令意图与结果：fetch/merge 完成，5a90eaa 包含指定提交；三项 dirty 文件 hash 不变。读取安装/交接与 C: 映射运维规则；只读容器身份、配置存在性、测试服 TCP 连通性和真实 Playwright 登录页面。
+- 阻塞：新版 simple settings 缺失、测试桥端口未监听、历史业务入口不可达；运行仍为迁移镜像旧代码，未安装、备份、恢复或服务器写入。安全/快速均 NOT_RUN，保留交接七项失败。细节见 doc/tasks/20261023-spug-local-drill/。
+
+## 2026-10-23 Spug 配置 c2476d8 续办
+- 需求：更新配置代码，按 README 解密安装、重建测试服 SSH 转发后继续演练；用户另行提供密钥。
+- 结果：fetch/merge 得到 d9c86bc，确认 c2476d8 为祖先，四项既有 tracked 修改 hash 保持；密文及公开配置摘要通过，Python/AESGCM 可用，真实任务7/8/9命令与未激活状态匹配。
+- 等待：密钥文件绝对路径。未安装、启动转发或执行备份恢复。详见原任务 execution-log.md。
+# 2026-10-23 Spug 历史用例逐编号重测续办
+- 用户要求：读取桌面成功用例汇总，更新int_main与运行代码，逐组合重测安全/快速、三服、跨服、多增量、重复覆盖、恢复后增量及保护；小程序与IntRuoyi分列，仅可覆盖已核身份演练实例。先测试记录，不修改产品逻辑。
+- 命令意图与结果：建立144条持续用例表及历史未验证清单；Git fetch两次网络失败，运行12文件摘要与现有checkout一致，最新远端状态待验证。凭据、私钥、认证头和连接串不写本记录。
+
+
+2026-10-23 17:44：GitHub单次fetch按用户要求通过127.0.0.1:7890代理成功；全局代理未变。SUPPORT-04真实管理员登录、两个原生新窗口导航及参数/持久性通过；发布总览真实报Release executor unavailable，SUPPORT-01/02阻塞。持续用例表31通过/5失败/65阻塞/43未执行，首次失败保留；快速覆盖失败后实际下载复核8记录8附件原样。任务仍in_progress，未修改产品逻辑、未清占用、未提交完成。
+# 2026-10-23 Spug 续办：GitHub 7890 代理
+- 需求：GitHub 通过本机 7890 代理访问。
+- 意图：仅单次 Git 配置 HTTP/HTTPS 代理 fetch origin int_main，确认两个指定提交已包含；保留本机未提交内容，不修改全局代理。
+- 结果：fetch exit=0；origin/int_main=c2476d8962420de815f26feac4ad0ef4ee3f4b35，HEAD=d9c86bc7f42e14c8cacea069fc65014a511f2763。真实页面只读检查发现保留操作编号导致开始备份禁用；未触发任何新备份恢复。凭据不记录。
+## 2026-10-23 GitHub 代理复核
+- 需求：GitHub 通过本机 7890 代理端口。
+- 操作：单次 git -c http.proxy=http://127.0.0.1:7890 -c https.proxy=http://127.0.0.1:7890 fetch origin int_main；核对分支与两项提交祖先关系。
+- 结果：fetch 成功，远端 c2476d8，本机 int_main d9c86bc 包含 c2476d8 和 ba5fe2f；未更改全局代理，未覆盖既有修改。本记录不构成演练业务验收结论。
+## 2026-10-23 恢复实例再备份业务验收与增量重试
+- 页面操作：查询原恢复3aaf编号，独立登录r2测试租户逐记录读取并实际下载全部附件，与FULL286f采集前基线比对7/7完全一致；另一测试租户2/2隔离比对一致，保留原基线时间局限。
+- 记录：MATRIX-15本轮通过，首次归档目录缺失失败仍在attempts；当前36通过/5失败/66阻塞/37未执行。
+- 安全增量：实际页面确认TEST58、新来源及FULL286f父链后提交4a5ee6f7d2234c0f8fa4cb57c49a2a92；只查询原编号，未重发。首次a705失败与工具配置修正记录保留，不修改产品逻辑，不操作正式/备份服或IntRuoyi。
+
+### GitHub 代理确认（2026-10-23）
+- 用户指定 GitHub 使用本机 7890 代理；本次通过 git -c http.proxy=http://127.0.0.1:7890 -c https.proxy=http://127.0.0.1:7890 fetch origin int_main 成功。
+- HEAD d9c86bc7f42e14c8cacea069fc65014a511f2763；origin/int_main c2476d8962420de815f26feac4ad0ef4ee3f4b35。两项指定提交 ancestry 均通过，本机未提交修改保留，未修改全局 Git 代理。
+
+### 2026-10-23 安全增量点恢复续测
+- 意图：保留旧失败现场，仅新建TEST58独立空目标r5，修正新配置正式模块引用，继续真实页面I1恢复；不修改产品逻辑、不操作IntRuoyi/正式服/备份服。
+- 结果：r3隔离规则变化失败、r4旧formal模块配置失败均已终态保留；r5实测身份及116文件校验通过，e2c8549e真实页面受理且执行中。CODE08六入口编译通过，其余行为未验收。
+
+- 续测终态：安全I1新r5 e2c8549e恢复199.063秒成功；安全I2新r6 7e67bc54恢复256.405秒成功。终态后各8记录8附件独立业务比对一致，I2增改删正确。NAS独立新会话签名加密及元数据原件读回通过。累计39通过/6失败/64阻塞/35未执行，20问题保留，整体未完成。
+
+## GitHub 7890 代理补充核验
+- 用户指定 GitHub 使用本机 7890 代理。本次按命令设置 http.proxy/https.proxy=http://127.0.0.1:7890，fetch origin int_main 成功，未修改全局代理。
+- 远端 int_main=c2476d8962420de815f26feac4ad0ef4ee3f4b35；当前 int_main ahead 5，HEAD 已包含 c2476d8 与 ba5fe2f0，两个 ancestor 检查退出码均为0。未 reset、覆盖或提交其他任务修改。
+- 当前可见 Spug 页面已处于业务页面；开始备份禁用提示为“本操作已经保留编号，只能查询原结果或核对是否未受理”，当前旧操作 ec35b03b3d3c41539c215d763c892324 显示 SUCCEEDED。未因本次代理核验触发新备份恢复。
+
+## 2026-10-23 20:41 最新续测结果（优先于旧进展）
+- 状态 in_progress；未完成全目标，不宣称全部通过，不提交完成或清理仍需使用的任务worktree。
+- TEST58安全模式 FULL286f→I1 4a5ee6→I2 9e9656→I3 daf504→I4 24ef69 均新备份成功；五点分别真实页面恢复至r2/r5/r6/r7/r8，全部SUCCEEDED，终态后记录/附件及关联精确一致，数量分别7/7、8/8、8/8、7/7、8/8。完整操作号、父链及实际耗时见retest/safe-five-points-independent-restores-summary.json。
+- 本轮新增I3备份360.482秒、r7恢复328.075秒；I4备份413.624秒、r8恢复432.750秒。I3删除ID13及附件，ID12也未复活；I4修改ID14/同名附件替换并新增ID15，原6条逐项不变。
+- MATRIX05/06/07通过本轮TEST58安全分项。MATRIX08 TEST58五点已通过，但原文含BACKUP59独立恢复，整体保留阻塞；快速、其他服务器和IntRuoyi不以安全分项替代。
+- NAS02/03/04/05/06/07/08/11/12/13/14已根据本轮实际凭据重新验收。FULL/I1/I2独立SMB原件覆盖72/72/60文件，自动清理77/77/65文件；原件pin和当前选定暂存不存在已只读核实。全部五点及五恢复最新原始证据已读回。serverDurabilityVerified=false明确未验证NAS断电持久性。NAS16三环境安装身份/路径未齐阻塞。
+- NAS05真实FULL/I1 SQL暂存的0600、O_EXCL、大小/SHA、错误摘要拒绝通过；首次缺依赖路径失败R022保留。NAS06新2310000字节NAS文件首次身份检查拒绝R023保留，稍后同一文件完整SHA通过，持有真实文件期间单次追加1字节被REPOSITORY_INPUT_CHANGED拒绝；初次瞬时拒绝根因待定位，未改产品检查。
+- R021响应监听路径错误保留；真实POST入口/backup-entry-api/operations已捕获，原操作未重发。R024证据文件名093023笔误已按实际093024原件修正，旧attempts保留；对应Linux批次108通过1失败不改写为全通过，代码批次不重复累加。
+- 当前144行：53通过、5失败、65阻塞、21未执行。问题24条，含已修正重测与待定位；见retest/results.md、cases.json、issues.md。所有通过项当前证据文件存在；UI12/UI13原始计时未齐另列inventory-evidence-audit-final.json，未估算或填0。
+- 后续继续快速模式独立新来源/增量链及其恢复、MATRIX11规划拒绝和其他可执行剩余项。原r3/r4/快速覆盖失败的物理现场及占用原样保留。r7/r8为本次新目标，没有清理旧占用，没有改产品逻辑，没有操作IntRuoyi/正式服/备份服业务实例。
+
+## GitHub 代理确认 2026-10-23T13:10:48.129Z
+- 用户指定 GitHub 使用 http://127.0.0.1:7890；仅为本仓库 github.com HTTPS 配置代理，保留现有工作区与分支，不重置、不覆盖。随后 fetch 核对目标提交。
+
+- 验证：GitHub URL 专用本仓库代理为 http://127.0.0.1:7890，git fetch origin int_main 成功。
+- 同步观察原快速FULL操作 smallapp-55aa452fe9a546f1897eaf11b57f2a06：采集/源服务恢复完成，绑定采集材料失败 REPOSITORY_FILENOTFOUNDERROR，FAILED_RETAINED，页面约63秒；不是业务验收通过。保留原操作及现场，不重复提交，待定位缺失文件。证据 retest/recovered-fast-FULL-failed-page.txt。
+
+## 2026-10-23T13:28:53.665Z 快速独立链最新结果
+- 状态in_progress，完整目标未完成。新FAST来源r2/40558与安全来源物理隔离，正式轻量116文件摘要验证，内容/一致性/环境核验NOT_PERFORMED。
+- 首次FULL55aa在材料绑定失败，原因新仓库archives目录遗漏，源8/8真实下载比对不变，R026保留。只补齐本任务目录后新FULL7cd174成功38.163秒，父链[]；独立fast-r1恢复479f已SUCCEEDED且8/8记录/附件及关联精确匹配。
+- 快速I1 34d0父点7cd174成功32.419秒，源修改ID13及同名附件、新增ID14及附件后9/9，原7条保护不变。独立空fast-r2已实测UUID52d64536-cee5-11f1-a0be-0242ac1cfb20并登记，真实页面恢复ecd1已受理，待业务终态比对；I2仍待执行。
+- 当前完整表{"通过":54,"阻塞":64,"未执行":21,"失败":5}；问题26条含已修正配置与未解决项。快速FULL分项及I1备份分项通过不等同完整跨服链通过。见retest/fast-independent-chain-summary.json；不操作其他服务器或IntRuoyi，不修改产品逻辑。
+
+## 2026-10-23T13:53:52.452Z 本轮续测阶段结论
+- 状态in_progress；全量逐编号目标尚未完成，未提交完成、未清理仍需验证worktree或失败现场。
+- 快速独立链FULL7cd174→I1 34d0→I2 231777三点均新备份成功，分别38.163044/32.419044/30.289607秒；分别真实页面恢复479f→fast-r1、ecd1→fast-r2、33d6→fast-r3，耗时3.868011/4.521621/5.333763秒。实际版本c2476d8轻量116文件，非借用安全引擎。
+- 终态后实际登录三目标、实下载8/9/9附件，记录/内容/ID/附件SHA/关联与各点采集前基线逐项一致；最新点ID13删除未复活、ID14修改及同名替换、ID15新增正确，原7条保留。内容/一致性/环境核验NOT_PERFORMED和serverDurabilityVerified=false明确不计核验通过。
+- 六次净操作共114.595090秒；成功链从首次FULL开始到最终业务比对1439.555869秒，含首次失败则2247.755941秒。阶段配置/页面操作间隔计入墙钟，不估算百分比；各阶段原始时间与原件见fast-independent-chain-summary.json、fast-chain-original-evidence.json。
+- R026首次FULL55aa缺archives配置失败，原FAILED_RETAINED/采集现场保留，补齐新目录后新FULL重测成功；未改产品逻辑。R027首次reload异步加载未完成而采到空列表，原错误采样保留，加载完成后实际8/8逐项比对一致，不误报数据丢失。
+- MATRIX11实际standard安全规划：真实FULL/I1/I2基线接受；错来源、缺父、重复目录三项均在恢复派发前明确拒绝。内部元数据一致乱序第四项尚未执行，整例保持未完成，不用轻量selected_chain替代安全检查。
+- 当前完整表{"通过":55,"阻塞":63,"未执行":21,"失败":5}，问题27条含配置/脚本已修正项和产品未解决项；结果表retest/results.md，问题retest/issues.md，未验证清单retest/current-unverified.md。所有通过项证据存在。
+- 原七项测试失败、平台跳过、快速覆盖失败、r3/r4恢复首次失败与其他服务器/IntRuoyi阻塞均保留；不宣称全部通过。Git本机原修改保留，diff --check无错误（仅CRLF提示）。
+
+## GitHub 代理复核 2026-10-23
+- 用户指定本仓库 GitHub HTTPS 经 http://127.0.0.1:7890；已设置仓库本地 URL 专用代理。
+- 验证：git config --get-urlmatch 返回上述代理；git ls-remote origin refs/heads/int_main 成功，远端为 c2476d8962420de815f26feac4ad0ef4ee3f4b35。未切换分支或覆盖工作区。
+
+## MATRIX-11 内部一致乱序链规划复测
+- Given: 已通过的安全 I2 归档；When: 在 TEST58 独立副本内同步修改 point/manifest 父链次序并重建 material/index/binding 引用；Then: 实际部署安全引擎应以 COMPLETE_PARENT_PREFIX_REQUIRED 拒绝且不派发恢复。
+- 经验门禁：仅核实 machine-id 的 TEST58、本任务新目录；先检查磁盘余量，原归档与旧占用不变；不关闭核验、不修改产品代码。独立副本保留用于审计。
+- GREEN: experience-preflight -> PASS；只写本任务新规划夹具，不执行恢复。
+
+## 2026-10-23T14:04:28.295Z 规划保护与页面占用保护续测
+- MATRIX-11 四类保护全部取得本轮实际安全引擎证据：第四项复制真实 I2 1103615228 字节到独立 TEST58 夹具，同步父链及元数据摘要，COMPLETE_PARENT_PREFIX_REQUIRED 按预期拒绝，31.231596秒；未派发恢复、未修改原归档。fixtureRoot 与各 pin 见 retest/safe-semantic-order.json。
+- MATRIX-19 来源编号/路径/容器/网络重叠规划拒绝已执行；安全 r8、快速 fast-r3 的真实页面已用目标及提交按钮均禁用。非空提交与已用目标引擎检查尚缺，整例仍未执行（部分完成）。
+- 当前144行：56通过、5失败、63阻塞、20未执行；完整目标仍 in_progress。首次失败和27条问题保留，不修改产品逻辑。
+
+## 2026-10-23T14:25:26.326Z 模式核验与历史页面逐项验收
+- MATRIX-20通过：安全r6 I2与快速fast-r3 I2独立业务基线/恢复快照重新比较，8/8与9/9一致；17个实际下载文件重新读取并核SHA、大小及关联。安全引擎引用与不变量核验true；快速原件NOT_PERFORMED且verified=false，跳过项不记核验通过。两模式引擎businessAcceptance均NOT_PERFORMED，独立UI验收另列。
+- MATRIX-22通过：6任务70阶段逐项匹配，最终净查询3.530秒、0执行POST；另查缺计时原失败，保留—及STEP_TELEMETRY_READ_FAILED。首次测试映射遗漏和一次未生效重试保留，R028记录；只改本任务测试脚本，未修改产品逻辑。
+- 当前144行：58通过、5失败、63阻塞、18未执行；问题28条（含已纠正的配置/测试脚本问题），完整目标仍in_progress。全部58通过行当前证据路径存在；原计时缺口未补算。
+
+## 2026-10-23T14:29:05.538Z MATRIX-09 无业务变化增量计划
+- Given：TEST58快速来源当前I2的9记录/9附件；When：不作业务写入，从真实页面追加I3；Then：新独立目标恢复后与原I2业务快照完全相同。
+- 里程碑：采集来源真实页面快照→页面INCREMENTAL→真实新空目标fast-r4身份登记→页面恢复→逐记录/实际下载文件/关联比对。
+- 设计约束检查：无fallback/降级/吞异常；按正式登记流程复制新实例配置；不修改产品逻辑或原占用；仅新TEST58演练实例和本任务目录。
+- GREEN: experience-preflight -> PASS；现有快速I2恢复33d6已SUCCEEDED，无恢复执行中；新目标准备不得与恢复并行。新目标预检需机器/UUID/卷/网络/空库及空间真实核对。
+
+- 2026-10-23T15:58:42.363Z Spug持续重测：按用户继续要求，仅TEST58隔离演练；页面查询原恢复7d171终态、登录r9实下载8附件对比通过；只读SSH核实六点父链和原始清理回执。MATRIX09双模式独立通过，当前59通过/5失败/63阻塞/17未执行。未输出凭据，未改产品逻辑。
+
+## 2026-10-24 Spug同任务续办
+- 需求：继续真实页面双模式演练；GitHub单命令7890代理。
+- 执行：普通merge最新origin/int_main f857197至fecc518，四项原dirty逐字节保全；仅TEST58自有r15，原始终态非空拒绝后启动其业务服务并由Playwright核对1记录1附件下载未变。
+- 验证：实际运行备份页面及四入口SHA一致；备份/恢复源目录与最新远端无变更。完整结果66通过、7失败、71阻塞，失败现场和占用保留，未宣称全部测试通过。凭据不记录。
+
+## 2026-10-24 Spug继续：TEST58快速六次覆盖
+- 用户要求继续；保留7890 GitHub代理及全部原修改。仅任务独立r5目标正式配置登记、22658 SSH转发与Spug路由CAS；所有恢复均Playwright页面提交，未用CLI/API执行。
+- 页面确认来源40558、目标41858/物理r5、快速模式及记录/附件/Redis覆盖范围。B/B/B1/B1/B/B1六次成功，逐次业务下载一致，净操作180.277848秒；来源12/15未变，原占用SHA未变。
+- 第4次首次页面HTML非JSON错误保留R037，后续登录比较通过；快速核验仍NOT_PERFORMED；此前两个覆盖失败现场未清理。144行当前67通过6失败71阻塞，37问题，任务in_progress。凭据不入日志。
+
+## 2026-10-24 Spug继续：连续快速增量
+- 仅TEST58独立来源40558/测试租户122，Playwright真实新增、修改、逐附件删除与记录删除，页面连续I2/I3/I4，原链不新建FULL。中间I3→新r7，最新I4→新r8；实际下载13/17与12/15逐项一致，删除未复活。净107.660143秒。
+- 正式新目标真实身份/空库/卷/网络/模块摘要及原件父链均核实；普通地址和端口冲突被预检拒绝并调整，既有资源未清理。含附件记录409保护原件保留R038。快速核验NOT_PERFORMED。
+- 当前68通过6失败68阻塞2未执行；仍在in_progress，未改变产品逻辑或扩大远程操作范围，凭据均不入日志。
+
+## 2026-10-24 04:26 同物理双模式验收
+- Current Status: in_progress；144行69通过、6失败、68阻塞、1未执行，问题39条。原7项代码测试失败及历次失败attempt仍保留，不能宣称全部测试通过。
+- 同40558真实UUID c93e230b-cecc-11f1-9f7b-0242ac1cf320：SAFE FULL cc2e7853b26a4a74aa10d8980454795d（279.568401秒）→FAST I5 faf10a7c23b448f7ba222624aaad5a94（34.282525秒，父原I4 c8f40f）→SAFE I1 ed156add133a4902a2f937dbcfeb5763（301.657360秒，父cc2e），模式父链隔离。三次采集后源12记录15附件真实页面下载比对不变。
+- FAST独立恢复603ac2c2f8064a5fa87262b309856313（8.453874秒）→switch-fast-r1 本机43858，UUID f65e68b5-cf1c-11f1-9f77-0242ac1de620；SAFE独立恢复c69ecc23d39e4409983f391772dbb6f4（215.312857秒）→switch-safe-r1 本机43658，UUID10705634-cf1f-11f1-a110-0242ac1de520。实际登录、逐条记录与附件下载SHA/关联均12/15完全一致。
+- 八点原件父pin前缀及同源UUID已只读验证，两个恢复exit0，选定暂存实际不存在。安全allReferencesVerified/invariantsVerified=true，applicationVerified=false；外部UI业务验收单列。快速consistency NOT_PERFORMED，verified=false，不用安全结果替代。
+- 五操作净839.275017秒，起止墙钟1661.349129秒（含等待/配置/页面刷新，不等同净执行）；每步骤原始时间见各progress。全账本51个完整计时唯一操作净6594.401930秒，仍为部分覆盖范围。
+- 首次模式切换配置刷新ENTRY_SELECTION_REFRESH_FAILED记R039，正常重试响应200 errorCode=null后才操作；第一次错误不抹去。禁用等待、新页面创建/报告字段工具错误保留，无API/CLI执行备份恢复，无关闭核验、无删除占用。
+- 证据：retest/everyday04-mode-switch-summary.json、retest/retest-everyday04-original-evidence.json及逐点confirm/admission/progress/business-compare。EVERYDAY05恢复I4后沿原链I6尚未执行；57/59与IntRuoyi未操作；产品逻辑未改，失败现场与c247冻结worktree保留。
+
+## 2026-10-24 04:42 原链I6验收与当前总表
+- Current Status: in_progress；144行70通过、6失败、68阻塞、0未执行；问题40条。所有首次失败与历史未验证边界保留，不宣称全部通过。
+- EVERYDAY05：原任务演练物理r2（40558）正式replacement b5e8fa9e13c94fc4bab6deee0e1826a6覆盖I4，41.014351秒；真实12记录15附件完全匹配。业务页面新增记录20+附件，沿原I5 faf10生成I6 58ac78c7553f49d982e40021d1d59042，33.428415秒，无新FULL。
+- I6七点链独立恢复f78b30fd7d254bb09d910622a796c911，8.203171秒，目标after-restore-r1 本机44058，UUID839fe8d2-cf21-11f1-a0eb-0242ac1de720；真实登录13记录16附件内容/SHA/关联完全一致，20存在、19未复活、原12/15保护。三操作净82.645937秒。
+- 原r2 UUID c93e230b-cecc-11f1-9f7b-0242ac1cf320、五容器与原fresh占用SHA eea179f897b8e8ddc135498e7451fd2ad34cae3ede29c4dc4d88102efabc416b保持；capture/replacement共用真实source.lock。五段SQL binary-logging回执核实（reenabledSegments=1/1/1/0/1），原七点父pin前缀与材料原件、实际暂存清理核实。快速consistency仍NOT_PERFORMED，外部业务比对独立记录。
+- R040两次新目标预检MEMORY_AVAILABLE_TOO_LOW，首次stderr和无资源创建证据保留；仅暂停本任务已成功r7/r8十个容器，可用内存1515280→2830528KiB，原2GiB门禁重新通过。保留容器/数据卷/占用，43258/43458当前暂停，不是仍运行；其他任务和失败目标未停未删。
+- 证据：retest/everyday05-original-chain-I6-summary.json、retest/retest-everyday05-original-evidence.json、逐操作confirm/admission/progress、I4/I6真实业务对比及容量记录。
+- Git远端最新只读复核仍f857197，主int_main HEAD fecc518已包含ba5fe2f与c2476d8；既有四项脏文件与任务目录保留，未reset/覆盖。04:41运行审计：实际HTTP UI与四执行入口逐字节等于冻结c2476d8，备份/恢复代码与f857相同；镜像intruoyi-spug-transfer:20261022-151627，image sha256:9acb3408229d9de4ac0517d086c6287f876849132242b578b9449000a9273d02。发布中心新变更未安装，不能宣称整个镜像/全产品均f857。
+- 全耗时账本54个完整计时去重操作净6677.047867秒，仅该账本覆盖范围；不拼接重叠测试批次或冒充全任务耗时。六失败行UI-06、CODE-03/04/06/07/11和原7代码失败保留。57/59执行器与隔离目标缺失、IntRuoyi不在当前操作范围等68阻塞未代验。
+- 未改产品逻辑，无API/CLI备份恢复，无新目标假身份、关闭核验或删除占用；失败前置仍在，未提交完成或清理失败现场/c247工作树。
+
+## 2026-10-24 04:51 剩余阻塞核查
+- 核查68阻塞行与真实Spug当前终态，未新增备份恢复操作。FAST-CROSS-04/06及EVERYDAY-03旧说明中的TEST58父链阻塞已被后续成功证据解除，已更新当前说明并保留原attempt；跨服57/59部分仍阻塞，计数不变：70通过、6失败、68阻塞。
+- 全部当前证据路径可定位；首次工具核查误以Node工作目录解析359个相对引用，错误与修正写入remaining-blockers-review-current.json。任务相对引用按任务根解析，MATRIX-18源码引用改为仓库绝对路径，原记录保留；无业务操作重试。
+- 当前剩余前置涉及57/59已核实配置/范围、缺失UI入口、历史清理原件、D/E独立安装环境或产品修复；不擅自修改产品或扩大覆盖。不清理失败现场，不重复已通过测试冒充进展。本轮为后续进展后的首次无新增执行审计，目标尚未完成。
+
+## 2026-10-24 04:51 第二轮无进展复核结果
+- 经7890代理只读复核远端int_main仍f857197；交付README仍明确仅含TEST58，不含IntRuoyi/57/59执行凭据。
+- 真实Playwright切换57/59，两者safe/fast均显示未登记且disabled=true，未提交任何业务操作；页面已切回原测试服。
+- 阻塞条件未变化，70通过/6失败/68阻塞；没有可在现有真实入口、前置和范围下推进的新用例。不用重复通过项替代进展，不改产品逻辑、不操作现有业务。当前为连续第二轮无新增执行审计，目标保持active而非完成。
+- 证据：retest/remaining-blockers-second-audit.json。一次rg Windows字面通配路径无效已保留工具输出，不影响页面复核结论。
+
+## Current Status
+
+blocked（2026-10-24 第三次连续阻塞审计）。144行：70通过、6失败、68阻塞。远端仍f857197，真实页面57/59双模式未登记；D/E不存在，其余真实入口、历史原件和产品测试失败前置未解除。无新增备份恢复提交；不伪造目标、不关闭核验、不清占用、不改产品、不重复已通过项冒充进展。全目标未完成，需外部前置变化才能继续。证据retest/blocked-goal-audit-current.json；最终当前报告retest/current-report.md，逐项表retest/results.md，问题清单retest/issues.md。
+
+## 2026-10-24 11:47 三服交付接入完成（非业务验收完成）
+- Current Status: in_progress。用户交付桌面Spug三服访问配置-20261024.zip，SHA256 feabb5fa72afe5da213d15a264df198d178744a6ee889991053f1822de5eb343，100条目，清单99文件逐项大小/SHA通过。明文仅C:/SpugPrivate/spug-three-server-20261024，ACL当前用户与SYSTEM；未入Git。
+- 三服StrictHostKeyChecking=yes只读SSH成功，六来源目录/端口存在，鉴权GET fullReady=true；首次系统python3在57/58为3.6不支持capture_output、59无python3，改用交付登记的真实Python3.12后成功，原错误保留。
+- R041：57/58重复machine-id和Docker ID，实际IP/MAC不同、运行容器ID无交集；不能靠重复ID作为唯一身份。未修改服务器ID或伪造登记。
+- 本机CAS合并保留17应用/5绑定，新增4小程序应用/4绑定（21/9），仅4项registrationVersions按交付补齐，任务ID与原历史不变，不复制initialOperationIds。新增44份私密连接/认证文件，不覆盖现有文件。
+- 新本机来源/遥测转发PID35444(57)、54624(59)，6端口；补齐目标转发PID50248(57:20627/20647)、53524(58:18758/18858/20628/20648/21958)、52624(59:18759/20629/20649/21629)，11端口。不停止或替换已有进程，不修改远端服务。
+- R042保留首次BRIDGE_UNAVAILABLE_OR_RESPONSE_INVALID与60秒等待；补齐目标转发后运行正式application_catalogue完整校验四来源通过。源直接GET不等于完整目录通过，未删除映射/关闭校验。
+- 新Playwright会话实际登录admin，正常确认原生真实IP安全警告后成功；六小程序服务器/模式逐一页面切换、来源ID及按钮可用性验证通过，UI-02改通过。当前144行71通过、6失败、67阻塞，问题42条。未做新备份恢复或业务写入；快速NOT_PERFORMED边界和原7代码失败保留。
+- 目录返回的历史备份点只作可选目录，不记本轮新执行。57安全完整合并目录当前有2个候选新目标，其余新增来源0；来源容器/挂载/数据库真实身份和目标实际占用仍须逐项复核后才可提交。普通配置无需用户再提供，继续执行原目标；未授权产品逻辑修复。
+- 工具首次SID无星号、候选目录导致根目录选择歧义、旧Node会话变量失效、登录等待错误定位均保留原输出，已修正。未提交完成或清理失败现场。证据：three-server-{delivery-preflight-attempt2,identity-detail,local-installed,target-forwards-installed,ui-connected}.json。
+
+- 三服配置交付续办：桌面ZIP清单99文件通过；仅私密安装。新独立worktree f857197构建双模式116文件包并正式登记57/59四来源，旧历史/占用不变；真实Spug安全FULL57/59成功，源5/5与4/3一致。首次57恢复POINT_OUTSIDE_ARCHIVE保留R045，按新仓库精确修正普通配置并用新空r2目标页面恢复，执行中。无产品修改、无CLI/API备份恢复、无秘密入库；详见任务execution-log。
+
+## 2026-10-24T04:40:40.776Z 三服真实业务与失败续办
+- Current Status: in_progress；144行88通过、7失败、49阻塞。57安全FULL及独立r2恢复f16d17d3bc2a4db78f2fbf2238fb9981成功，122.137699秒；真实业务5记录5附件内容、SHA和关联完全一致。首次POINT_OUTSIDE_ARCHIVE和旧目标仍保留。
+- 59安全恢复2ce1b22a6eda4e648a62bdb0f34c1700在target-checks失败NATIVE_EXECUTOR_STDERR，38.933464秒；R046，未验收业务，不复用目标。原始私密证据已只读保存，native-008返回码0但stderr68字节，待确认具体命令。
+- 57本轮真实页面新增A/B两记录及附件（ID9/10），源7记录7附件；原5/5保留。页面提交安全I1 cf4119d78919416baed5f6965c53a985，父dc47160694ee46678912931651d82e81，当前执行中；不重复提交，不在捕获期间改数据。
+- 57r2公布端口45257首次ERR_CONNECTION_RESET，实际内部网络容器健康、Ports为空；保持隔离网络，通过核实容器ID/IP的SSH45357转发完成真实页面验收。59在恢复前容器未启动时业务转发脚本TARGET_IP_IDENTITY_FAILED，未创建59转发；57已创建转发保留，不盲重跑。原错误与证据保留。
+- 快速模式不能使用本次安全验收代替；所有原测试失败、未验证项和失败现场保留。未改产品逻辑。
+
+## 2026-10-24T05:02:57.128Z 安全全量业务验收及双增量进展
+- Current Status: in_progress；144行95通过、6失败、43阻塞，48项问题。59新r2恢复5a159b51d5a44dafa074ffa25ce4b87e，04:56:19.012090Z→04:58:16.265649Z，117.253559秒，真实4记录3附件全项一致，SAFE03当前通过；原NATIVE_EXECUTOR_STDERR失败目标和占用不删。
+- 57 I1 71901578b5d14b6a9356e983d960c08d，04:50:50.758298Z→04:55:17.154249Z，266.395951秒安全完整成功，FULL父dc471606...，源7/7采集后完全一致。首次cf4119缺exporter仍在R047；配置后只重试新编号。
+- 57 I2仅任务A(ID9)修改、C(ID11)新增附件、B(ID10)含附件删除409保护→删除附件200→删除记录200；原5/5保持。新I2 f6ff86bb3b244edeaffe05764f270496父I1，尚在NAS核验；采集后7/7未漂移。BASE04/07/08/09@57通过。
+- 57独立middle目标UUID e5b8afef-cf67-11f1-a1dd-0242ac1df020真实空资源登记，25057，父pin精确FULL→I1，尚未恢复；latest另一新目标正在创建，待实际I2成功后登记，不伪造点。
+- 59源基线4/3保持后真实页面新增ID6/7及附件，I1基线6记录5附件，尚未提交59增量。BASE03/05@59通过。安全/快速与各服务器组合独立，当前不能宣称全矩阵通过。
+
+- 2026-10-24T05:17Z Spug三服配置续办：桌面ZIP已按清单核对安装。只读114个归档JSON pin定位恢复formal目录仍指旧模块；新独立目标绑定已校验f857197模块，保留旧失败/占用，不关闭核验；真实页面提交57安全I1中间点恢复71a9，执行中。凭据不进入日志。
+
+## 2026-10-24 Spug三服交付续办 06:09Z
+需求：桌面配置包核实安装后继续逐编号真实演练，普通配置自行处理。意图：保留旧目标/占用；新59独立安全latest从页面恢复I2；保留旧7项测试失败，快速独立验收。结果：59中间6/5业务PASS；latest8512c001执行中；配置解除17项改未执行，当前101通过/6失败/20阻塞/17未执行。未改产品逻辑、未触碰IntRuoyi现有业务、未通过API/CLI提交备份恢复。凭据仅私密目录，未入日志。
+
+## 2026-10-24T07:31:41.667Z 跨服配置及归档只读核查
+- 继续既有任务，桌面交付包已核实存在；未要求用户重复提供配置。三服/proc/self/mountinfo确认同一CIFS共享，59 findmnt退出1只是工具查询差异，不判定未挂载。
+- 只读图：57 SAFE 496引用、内容摘要差异0；57 FAST 78、59 FAST 106、58 FAST 209个直接payload sha256字段与内容哈希不同。代码定位ops/backup_engine/formal/formal_capture_incremental.py:_file_pin生成大小/mtime/ctime的变化标识，明确NOT a content digest；它被沿用到快速归档payloadPins。不能将该差异误报为存储损坏，也不能视作内容完整性通过。FAST核验仍NOT_PERFORMED。后续独立多主机内容比对另留证据。
+- 引用图中已清理capture-staging和超界大文件为missing/unexpanded，不把未读取视作验证通过。初次辅助脚本缺暂存引用、GRAPH_LIMIT、ORIGINAL_PIN_CHANGED及Windows rg通配符/不存在文件读错误均保留原回执，属于诊断过程，不计产品备份操作失败。
+- 未执行服务器写入、备份/恢复CLI或API，不修改pin或产品逻辑。当前107PASS/6FAIL/20BLOCKED/11NOT_EXECUTED，54问题。
+
+### 2026-10-24 07:43 UTC 跨服配置前检
+- 独立只读比对三台自身 NAS 挂载中的 1,062 个归档文件：实际字节数和 SHA-256 一致，差异 0；大镜像未纳入此有界检查，不能算快速模式引擎核验通过。证据：retest/cross-nas-real-content-073228394218.json。
+- 更正前一阶段“跨服目录可见”：存在且非符号链接不等于实际挂载。59→57 及 57→59 的来源绝对 NAS 路径目前为空目录且非挂载点，原始 point.json 不可见；独立源挂载中的内容存在。将按已授权普通配置仅对已确认空目录增加来源 NAS 只读 bind 挂载，不删除/卸载现有挂载，不改写 pin 或归档内容。
+- 来源只读导出辅助脚本先因工具字段位于 manifest 而非 material、二进制工具被当 JSON 解码而失败；原始私密错误保留，已修正辅助解析后真实导出成功。未调用备份恢复接口/CLI，未修改产品逻辑；失败不计产品通过。
+- GREEN: experience-preflight -> PASS：仅已授权三服演练范围普通配置；原始不可变文件必须真实摘要一致且无冲突；新目标先核机器/容器/数据库真实身份、空数据及隔离规则；备份恢复仍只走 Playwright 页面；不覆盖现有业务或旧占用目标；FAST 正常跳过标为 NOT_PERFORMED。
+
+## 2026-10-24T07:58:30.146Z 59→57 快速跨服恢复业务验收
+- Current Status: in_progress；108通过、6失败、20阻塞、10未执行。
+- 真实来源59 FAST FULL db2650af→I1 45342a62→I2 b664bd8f；从Spug页面确认后恢复到57新独立目标smallapp-57-retest-20261024-cross59-fast-latest，真实数据库UUID bfb54d05-cf7e-11f1-a01b-0242ac1c6520。操作smallapp-c6001f79cf544d19abcc96127c98d988，07:51:54.246664Z→07:51:59.369409Z，5.122745秒。
+- 实际登录测试租户并逐一下载：8记录7附件与源I2精确相同；A9修改、B10删除、C11新增、原6/5保持。FAST核验仍NOT_PERFORMED，独立业务比对通过。FAST-CROSS-07通过；未覆盖其他组合。83个有完整起止的唯一操作净10522.959936秒，不是所有用例的总时间。
+- 首次进度409 STEP_TELEMETRY_READ_FAILED保留在cross59-target57-fast-latest-observations.json，与R053同类，初步原因仍待定位；随后正常终态与真实业务均成功。
+- 配置过程首/二次登记分别缺来源images.json、原始root-identity pin而失败；未提交恢复，错误留私密原件。第三次登记使用真实来源原字节及来源59认证成功，未伪造pin/UUID/清旧占用。
+- 新增来源NAS路径只读bind两处：59原路径在57、57原路径在59；自身现有挂载不变，不改共享内容或fstab。新实例隔离配置、真实身份/空数据先检通过；备份恢复只由页面提交。
+
+## 2026-10-24T08:04:24.586Z 57→59快速跨服验收
+Current Status: in_progress；109通过/6失败/20阻塞/9未执行。FAST-CROSS-03：新目标smallapp-59-retest-20261024-cross57-fast-latest真实UUID eaa1f2a6-cf80-11f1-a08f-0242ac1c6620；来源57 FAST FULL2e75→I17794→I2416c父链。页面操作smallapp-34bb17d21efb4ff5bf7e9a7e9e80ac0f 2026-10-24T08:02:52.653156Z→2026-10-24T08:02:56.493128Z，3.839972秒。恢复后真实测试租户9记录9附件精确匹配，A12修改/B13删除/C14新增、原7/7保持。FAST核验NOT_PERFORMED；未替代其他模式或组合。84个完整起止唯一操作净10526.799908秒，仅部分账本。源57原始pin/认证按原字节登记，59只写新目标及新控制目录，已有业务和占用未改。证据cross57-target59-fast-latest-business-comparison.json及observations。
+
+### 2026-10-24T09:17:06.499Z Spug三服演练续测
+- 用户已交付桌面三服配置，继续按授权真实独立小程序目标测试；凭据不写入本日志。
+- 命令意图：实际pin/空目标/容量前检，配置专属SSH转发，Playwright页面提交并观察，登录测试租户逐项下载比对。
+- 结果：FAST59→58八记录七附件精确通过；SAFE59→58六记录五附件、58→59十二记录十五附件分别通过。FAST跳过核验仍NOT_PERFORMED，SAFE完整核验正常，业务单列。57→58两模式scope绝对路径原件摘要冲突R056未提交恢复；59首次新目标AIO失败R057保留，增配后新r2目标通过。当前113通过/6失败/22阻塞/3未执行，不宣称全部通过；57→59 SAFE FULL继续。
+
+## 2026-10-24T09:41:12.992Z 三服续测本轮结果收集完毕，完整验收阻塞
+- 115通过/6失败/23阻塞/0未执行，57问题；最新SAFE恢复57FULL→59五记录五附件及58旧FULL→59七记录七附件真实UI下载/关联精确匹配。MATRIX08/13同链证据补齐；原首次失败保留。
+- GitHub7890 fetch并普通合并9e4d295，HEAD1d8eac00；四项既有dirty合并前后SHA完全一致。新变更仅release-center，不在本轮安装；备份恢复代码与新远端无差异。六来源116文件SHA均匹配。
+- 92完整终态操作净11248.538179秒；每步时间保留，缺回执不补0。144行678证据引用缺失0。当前报告及未验证清单已归档前一版后重写，逐项表/问题原件均保留。
+- 配置结束恢复原58 SAFE可选来源，未回滚新增路由/占用。辅助audit初次因新legacy目标不在白名单拒绝，未读取远端；仅扩入本任务精确目录后安全原件审计PASS，不属产品失败。已记录不存在的附加compare文件读取错误，实际正确compare-123原件存在。
+- 当前仍blocked，不宣称全测试通过；本轮只测试记录，无产品修改。两个worktree保留，未提交/推送，不删除失败现场。无需用户重新提供配置参数。
+
+## 2026-10-24 Spug完整目标续办
+按桌面原始编号审计，纠正三项不同来源组合误算通过；保留原结果。只读核验57真实scope/recipe/数据库身份后新增双模式独立配置目录及空仓库，共享原源锁；保留旧链及占用，未改产品逻辑。真实页面采集9记录9附件基线并提交新SAFE FULL bfbc98aedeff4f6d90fde2553bef9a37，恢复及业务验收未完成；凭据不记录。
+
+## 2026-10-24T10:45:28.164Z 桌面配置包与当前授权复核
+桌面 Spug三服访问配置-20261024.zip 已存在，已解包的交付 manifest 99 个文件逐项字节数及SHA256核验通过。包说明明确无需解密，包含三服访问配置；凭据不输出、不纳入仓库。当前可见用户授权仍限定测试服172.30.30.58演练小程序；提供三服凭据不等于扩大远端操作权限。既有任务记录与页面包含57/59跨服历史，保留原件，不将其视为后续授权。后续不继续57/59操作或来源链，仅测试服范围。配置交付成功不等于业务验收通过，历史7项测试失败保留。
+
+## 2026-10-24T11:03:59.787Z 续测里程碑
+Current Status: in_progress；104通过/6失败/34阻塞，66项问题。MATRIX02/13同一57 FULL双目标9/9通过；MATRIX03 I1→58新UUID1e9c782e-cf98-11f1-a0ab-0242ac1c7820，12d10恢复217.436644秒，11记录12附件精确一致。I2 be7f捕获316.204074秒，FULL5439→I1e806→I2be7f，基线12/13且旧9/9不变。100个完整终态唯一操作净12991.459763秒，仅部分账本。
+I2新目标UUID772cfd9e-cf9a-11f1-a17f-0242ac1c7920空库/空卷/未占用，172.28.121/24和50858；正在真实登记，尚未恢复。R066内存预检失败保留，停止旧已完成且非来源cross59-safe-latest五容器后复检通过，卷/claim不变。R065双目标配置差异待核，Redis5键值/绝对到期时间均通过，未覆盖过期键。没有修改产品逻辑或清理旧失败/占用。
+
+## 配置包位置复核
+已确认桌面 Spug三服访问配置-20261024.zip，85524字节，SHA256 feabb5fa72afe5da213d15a264df198d178744a6ee889991053f1822de5eb343，与已有安装记录一致；私密交付目录已存在，不重复覆盖安装。只读确认18080、19158、19458、18558正在监听；端口监听不等于执行桥、身份核验或业务验收通过。本次收到配置位置不新增正式服/备份服操作授权，不触发备份恢复。后续以用户明确测试服小程序边界核定目标。未输出任何凭据。
+
+## 2026-10-24T11:26:12.917Z I3恢复继续中
+I3安全备份3f928eb61627437691de6d7a812b39be成功393.783422秒，父链FULL5439/I1e806/I2be7f。采集前后10记录10附件相同。新58目标namespace3-i3 UUID59864e21-cf9d-11f1-a206-0242ac1c7a20真实空目标已登记，页面恢复497fd91db553404394c2545c4ec56bb7已受理且restore-admission运行中，不重复提交。目标控制端口31058转发PID45244；业务51158辅助脚本已准备，必须待恢复启动后运行严格实际IP身份检查。当前107通过/6失败/31阻塞；MATRIX05等待该恢复后业务比较。只暂停已成功非来源I1目标，容器/卷/claim保留，I1业务50758暂离线。102完整操作净13675.460525秒，未含当前恢复，不是全程墙钟。
+
+## 2026-10-24T11:35:04.358Z I3业务验收及I4续测
+I3恢复497fd91db553404394c2545c4ec56bb7于11:31:17.712504Z成功339.163397秒，1471原件核验通过；真实登录新58 namespace3-i3，10记录10附件实际下载与基线完全一致，B/C及被删附件未复活。恢复后新18记录CRUD和附件实际下载/删除通过，清理后原10/10完全不变。MATRIX05/07/16通过，当前110通过/6失败/28阻塞，67问题首次记录保留。
+I4无业务变化基线与I3相同，真实页面提交2f273e49822a40578f6b0bbe9907c49d，父I3 3f928eb6，当前NAS上传运行中；采集后源仍10/10一致。不重复提交，不提前算MATRIX06/08/09通过。I4配置辅助脚本准备好但未创建目标，预设新子网172.28.123/24、51258、31258和业务51358须正式preflight核对。只停已完成非来源I2目标以释放内存，保留卷/claim，50958暂离线。103个完整操作净14014.623922秒，未计当前I4，部分账本非墙钟。
+
+## 2026-10-24T11:42:35.965Z I4恢复已受理
+备份2f273e49822a40578f6b0bbe9907c49d成功367.107639秒；新58 namespace3-i4真实UUID9f215722-cf9f-11f1-a21d-0242ac1c7b20空目标登记通过。真实页面恢复bc84b8c32165432a8087c3fc81466e2f，五点父链5439/e806/be7f/3f92/2f27，当前restore-admission运行中。只查询原编号，不重复提交。控制31258转发PID37536；业务51358辅助脚本已准备，必须待应用启动后核实实际IP再运行。MATRIX06/08/09等待该恢复业务10/10比较；110通过/6失败/28阻塞保持。下一步终态后运行retest-source57-namespace3-I4-target58-business-forward.py，真实登录aoteman并snap逐附件下载与ns3I4Baseline及ns3I3Baseline比较；不得以执行成功替代业务验收。
+
+## 2026-10-24T11:57:15.563Z I4验收与新B链
+I4恢复bc84b8c于11:48:44.538477Z成功403.180350秒，五点链真实新58目标业务10/10完全一致，1571原件核验，MATRIX06/08/09通过，当前113通过/6失败/25阻塞。
+新FULL B 0ecdb86a0e0d4168b5605dd993908920成功217.018726秒，父null，真实双击1POST，刷新0新增POST，异步加载后原编号保持；首次配置刷新等待超时R068和即时可见性false保留。源10/10采集前后相同。归档90原件；Redis5键其中1个11:55:30.637Z自然到期，未直接写Redis/改TTL，待恢复后实测过期键不复活。
+新58 namespace3-b目标UUIDe5445ff2-cfa1-11f1-a20a-0242ac1c7c20空库/空卷/未占用已创建，真实登记运行中；只停已验收非来源I3释放内存，容器/卷/claim保留，51158暂离线。B/B1及A双击恢复尚未完整验收，不能算MATRIX10/17/21通过。106完整操作净15001.930637秒，仅部分账本非墙钟。
+
+## 2026-10-24T11:58:36.894Z B恢复已受理
+新FULL B0ecdb86a0e0d4168b5605dd993908920父null成功217.018726秒；新58 namespace3-b UUIDe5445ff2-cfa1-11f1-a20a-0242ac1c7c20真实空目标登记通过。页面恢复cd44ec29fa01498280466f0156086b41已受理，restore-admission运行中，不重复提交。控制31458转发PID14464；业务51558辅助脚本retest-source57-namespace3-B-target58-business-forward.py必须在应用实际启动后执行。终态后真实aoteman登录snap比对ns3BBaseline10/10，并运行retest-namespace3-B-semantic.py 58 redis只读DUMP/PEXPIRETIME：B归档5键，至少1个11:55:30.637Z自然到期，必须核对缺失且其他值/原绝对到期匹配。该文件只读，无恢复API/CLI。当前113通过/6失败/25阻塞，68问题；MATRIX10还需B1，MATRIX21指定A恢复双击仍未做；不能提前通过。
+
+## 2026-10-24T12:04:58.587Z B验收与B1新链
+B恢复cd44ec29成功151.134049秒，真实业务10记录10附件匹配；Redis独立DUMP/PEXPIRETIME在登录前核对5键，1自然到期缺失未复活，4键原值与原绝对到期一致，MATRIX17通过，当前114通过/6失败/24阻塞。首次业务端口51558 Windows排除区间拒绝R069保留，按真实IP核验改52558，转发PID38848；B1业务端口预设52559避开实际排除区间。
+B1源真实UI新记录18及附件ebd2e9e0-213b-4118-a772-f540851279fe，基线11/11，原10/10不变。页面增量e5c20b88027b4f999fe3c99868e4e589父B0ecdb86a，当前source-capture运行中；不再写源、不重复提交。B1配置辅助脚本准备125子网/51658/31658/业务52559，尚未创建；已核实停旧已完成非来源I4释放容量，容器/卷/claim保留，51358暂离线。
+107完整操作净15153.064686秒，未计当前B1，非墙钟。69问题保留首次。MATRIX10仍待B1恢复，MATRIX21仍待A恢复双击，不以B全量双击替代。
+
+## 2026-10-24T12:31:23.418Z Spug逐用例持续重测
+- 需求：按桌面原编号继续真实页面安全/快速三服及跨服验收，保留失败，不改产品逻辑。
+- 意图：B1新链恢复、FAST FULL/I1/I2独立恢复、A恢复双击刷新；仅真实登记的演练目标；SSH限配置与只读核验。
+- 结果：MATRIX-10、MATRIX-20、FAST-CROSS-02已补齐，117通过/6失败/21阻塞；A重复恢复98d00bc1尚运行。R070-R073原错误保留。原IntRuoyi业务实例未覆盖，所有旧占用保留。
+
+## 2026-10-24T12:42:51.870Z 完整目标报告审计
+继续按三服逐组合完整目标执行；上一轮仅配置复核，不缩小授权范围。本轮UI-12绑定指定B/A真实双击及终态证据；7行从已有起止计算墙钟跨度并明确不可累加。当前报告移除过时当前结论，旧版本完整保留report-history-through-123351.md。CODE-02定位实际实现但原7项测试未定位，保持阻塞。118通过/6失败/20阻塞；7个已通过行仍缺独立计时，交付未完整。证据引用530个，缺失0个。未执行远端写入、未修改产品逻辑。
+
+## 2026-10-24T12:45:30.820Z UI-13真实页面补测发现R076
+GREEN: UI-13只读补测执行路径 -> 实际Playwright查看安全成功98d00、快速成功2dbd、原失败da13；执行POST=0，56.023秒。
+FAIL: UI-13 -> 同一原失败覆盖目标的恢复方式由覆盖变为空目标；来源/点/编号保持，原失败SMALLAPP_FILENOTFOUNDERROR仍可见，耗时缺失仍为—。新增R076保留前后截图及真实响应，simple.js以当前覆盖映射判定历史方式，映射变化链待定位；本轮未修改产品逻辑。当前117通过/7失败/20阻塞，76问题。已恢复页面查看98d00成功记录；原尝试均保留。
+
+## 2026-10-24T12:48:47.035Z 59基础业务真实重测完成
+GREEN: BASE-04/07/08/09@59 -> PASS；真实UUID/镜像/独占存储核对后，仅测试租户122新建任务记录12和附件7282657b，编辑持久化、含附件删除409、附件删除200及记录删除200通过。全量真实下载前后8记录7附件精确一致，新记录附件均已删除。每项实际起止/耗时及响应已记录，未直接调用写API/SQL。当前117通过/7失败/20阻塞；通过项独立计时缺口剩NAS-16、UI-08。历史失败保留，产品逻辑未改。
+
+## 2026-10-24T12:53:05.167651+00:00 剩余证据审计及工具中断
+NAS-16安装原件及UI-08选择原件只有观测结束时间，缺原始起点，不能补造端到端耗时。CODE-02扩展检索test/md/ps1/mjs/js仍未定位原7项测试。IntRuoyi六组合首轮处于配置加载中，不计登记缺失证据；重登录真实主页成功后观察到未登记，但批量切换两次超时重置，新增R077，未完成六组合复核，不覆盖旧阻塞结论。无备份恢复提交动作，无产品逻辑变更。当前117通过/7失败/20阻塞，77问题；完整目标未完成。
+
+## 2026-10-24T12:55:20.638Z IntRuoyi六组合阻塞真实复核
+已重新登录真实Spug，并逐服务器读取SAFE/FAST选项：三服六项均明确未登记且disabled，执行按钮均禁用，POST=0。R077原因定位到selectOption等待禁用选项，不是服务长时间执行；未force或改DOM。INT-01至09保留阻塞并补当前证据与只读检查计时。当前117通过/7失败/20阻塞；剩余前提整理于retest/remaining-prerequisites.json，产品逻辑未改，完整目标未完成。
+
+## 2026-10-24T12:56:59.848Z 最终阻塞审计
+Current Status: blocked（非completed）。连续三轮复核剩余真实执行器/目标、指定旧现场、前端入口与原测试前提仍缺失：12:49证据检查，12:54真实三服六模式检查，12:56编号/证据/远端复核。可执行独立用例已完成；继续剩余项需外部前提变化，不能伪造目标、清占用、绕过前端或修改产品逻辑。
+桌面原文SHA与记录一致，118原编号全部覆盖144行，无遗漏/额外编号；117通过、7失败、20阻塞，77问题；553证据引用均存在，必需字段齐全。NAS-16/UI-08原计时缺失保持null；原失败及历史未验证独立保留。最新7890代理fetch仍9e4d2956，HEAD1d8eac00，既有改动未reset。失败/阻塞worktree保留，未提交或推送，未宣称发布收尾完成。见retest/final-blocked-audit.json和remaining-prerequisites.json。
+
+## 用户授权修复后续办
+Current Status: in_progress。用户授权修复本轮产品问题并补建IntRuoyi执行器/隔离目标，历史缺失保留未验证。新增修复worktree C:/Users/D01021/.codex/worktrees/spug-authorized-remediation-20261024/Maintance，基线1d8eac00，分支codex/spug-authorized-remediation-20261024；不是发布worktree，尚无构建发布或远端修改。旧worktree保留。
+BDD: UI-06 -> Given明确选择应用的快速模式及服务器，When切换其他应用后返回，Then恢复原选择而非第一条安全绑定。
+RED: node --test ops/spug/smallapp_ui_safety.test.cjs -> 25 PASS / 1 FAIL；新增真实状态机测试safe != fast，符合缺陷，未改产品前记录。
+
+## 授权修复进展（2026-10-24）
+独立修复分支新增3b3daaa：持久化Spug受理时来源/执行模式/恢复方式；历史缺证据明确未记录，保留旧记录。先RED后实现，相关Python40项和Node34项通过。尚未部署、未真实页面复验，原7失败/20阻塞状态不变。UI-06实现提交4bf79bb也尚待运行态复验。未操作远端业务或备份恢复。
+
+## 2026-10-24 运行服务修复复验
+状态：in_progress。专用安装worktree C:/Users/D01021/.codex/worktrees/spug-ui-remediation-install-20261024/Maintance，目标3b3daaaffa4d5662f605cef9c09554700f431c19。无构建步骤（原生Python/JS静态文件）；在该worktree执行Node34项、Python40项回归通过，无新提交。安装12文件，实际容器与HTTP字节全部匹配，entry PID174→30681，仅专用入口重启。配置、历史和业务实例未修改。
+UI-06真实页面复验通过（3.432秒），UI-13旧记录显示修复通过局部核验，新受理恢复快照尚未真实演练。逐项当前118通过/6失败/20阻塞，原失败attempts保留。安装worktree尚未删除，整体不具备closeout条件；实现尚未合回int_main。
+安装证据：retest/ui-remediation-install.json；页面证据：retest/UI-06-remediated.json、retest/UI-13-remediated-legacy.json。备份遍历曾遇到资源目录EISDIR，安装前已改为递归文件枚举并完整备份；当时无运行文件变更。
+
+## 2026-10-24 CODE-11修复
+提交81b6c95（独立开发worktree），源服务restored标志必须严格为true才允许确认操作员取消。原RED 9通过1失败→GREEN10通过→Linux聚焦109通过0跳过；Windows双包/性能51通过2平台跳过。测试均在隔离目录/临时文件与进程中执行，未提交业务备份恢复。运行执行器尚未部署。当前119通过/5失败/20阻塞，原失败attempts及问题R010原文保留并追加定位。
+
+## IntRuoyi授权后配置盘点（2026-10-24）
+找到交付包正式57安全/审查59快速的历史绑定及真实远端控制目录；不能再笼统声称完全缺配置。三服SSH只读成功，59系统无python3，按交付的已安装Python3.12路径执行；初始错误原件保留私密目录int-inventory-172.30.30.59.stderr。Node进程启动ssh -V也退出255且无输出，改用已验证Python subprocess工具，未关闭主机检查。
+SQL/MinIO/Redis容器引用检查57共3项、59共17项均仍存在（存在不等于运行/源身份完整核验）。58可用内存1537388kB、59为2664328kB，必须规划独立目标和容量，不能直接启用旧登记。仅新配置盘点，无服务器写入、无业务覆盖、无备份恢复提交。证据retest/intruoyi-authorized-preparation-status.json。下一步核对writer/当前控制进程/代码pins并准备新目标。INT-01~09仍阻塞，整体in_progress。
+
+## 2026-10-24 新执行包构建与真实身份门禁
+专用发布worktree：C:/Users/D01021/.codex/worktrees/spug-engine-remediation-20261024/Maintance；目标81b6c9577a0584d1696fb2b26ae1c2c18c7b3fb4，干净已提交输入。构建：python ops/backup_engine/build_variants.py --output-directory C:/SpugPrivate/spug-engine-remediation-81b6c95。验证：原variant/performance测试51通过2平台跳过（6.95秒）；verify-remediation-packages.py逐包校验116文件、manifest摘要和取消恢复标志要求。standard保留内容核验，lightweight仍跳过。
+尚未安装执行器；本发布worktree无新提交、尚未合并或删除，待部署及验证，不得标completed。证据retest/remediation-packages-81b6c95.json。
+R078确认：57/59源采集writer绑定旧已退出前后端；当前native进程存在（57 PID16347、59 PID4047），旧program/python pins匹配。这只是旧包身份，不是当前来源就绪。58历史对应控制进程未发现。需要新的冻结源配置与登记，保留旧控制器及全部原操作。
+
+2026-10-24T13:50:54.574Z | Spug授权续办 | 核对交付配置、当前数据库UUID/容器及配置摘要（只读，不输出凭据） | 57/59数据库身份一致；旧writer登记需更新，59增量配置不能直接当新全量；远端写入0，业务验收状态未改变。
+
+2026-10-24T14:04:07.614Z | 授权续办 | 安装59独立双模式执行器、追加Spug连接、真实页面只读基线 | 81b6c95运行SHA通过，旧业务未覆盖，备份恢复提交0；完整验收仍未完成，凭据不入日志。
+
+2026-10-24T14:21:10.141Z | Spug真实快速FULL与失败定位 | Playwright单次提交59全量并只读核对原日志/来源/磁盘 | 原操作0ec6005f失败，Docker临时空间不足；无备份点无恢复；不删除旧目标，不清理无关资源，凭据脱敏。
+
+## 2026-10-24T14:37:18.012Z 当前提交代码复测
+冻结发布worktree 81b6c9577a0584d1696fb2b26ae1c2c18c7b3fb4 原十模块Windows回归：105通过、7失败、27平台跳过、0前置错误，11.743578秒。七项失败逐名与旧批一致；CODE-03/04/06/07已更新本轮起止与JUnit证据，原尝试保留。总状态119通过/6失败/19阻塞，未完成；没有新增业务备份恢复操作。
+命令意图：retest-current-broad.py 从冻结81b6c95专用worktree运行原十模块并保留所有失败；无凭据输出、无产品修改。
+
+## 2026-10-24T14:42:50.286Z 57双模式来源接入完成
+新建/var/lib/docker/intruoyi-data/spug-intruoyi-57-{safe,fast}-20261024-v1；安全PID32446端口32657，快速PID1635端口32857。来源固定81b6c95专用发布worktree，两包各116文件SHA、配置pin与认证GET200通过，真实数据库UUID及既有物理源锁保持。旧文件、claim、控制器、业务容器保留。当前JAR配置快照已纠正R081；恢复目标及父链为空。
+本机新转发PID41004，Spug追加2应用/绑定后33应用21绑定。Playwright双模式sourceRef与可执行按钮通过，POST0；48.670446秒含首次20秒历史选择异步恢复超时，原件保留。报告追加时遇到旧问题行id缺失，按可选字段读取后保存；不改变原行。
+独立目标尚未创建，MinIO共享依赖待核实，没有提交57备份恢复。119通过/6失败/19阻塞，81问题，整体in_progress。专用发布worktree无新提交，未合回或删除，未具备closeout条件。证据retest/intruoyi57-current-*。
+
+## 2026-10-24T14:50:50.584Z INT-06当前安全全量已受理
+当前来源57 safe-v1，操作smallapp-abbd6341ab7a4318973434f48020b287，Spug history300，创建14:48:24.345113Z，无父链/恢复目标。仅真实页面确认并提交一次；目前RUNNING。远端实际job25648/worker25669存活，repository24535存活，已来源及依赖校验；外层native24333/ledger24168退出2与中间TERMINAL_UNKNOWN不代表后台终止，禁止重复提交。
+来源实际页面http://172.30.30.57:8081/已只读登录，9074文件、首20行和一张414381字节图片SHA保存，未写业务数据。MinIO审计仅源backend直接引用，两旧前端引用均为sub_filter，未发现额外运行RAGFlow应用；外部客户端不作完整保证。旧目标模板只读盘点、未更改，资源足够但新目标尚未创建。
+119通过/6失败/18阻塞/1运行中；81问题。总体in_progress，起止耗时以最终原回执为准，当前结束/耗时null，不先标通过。
+
+2026-10-24T15:02:29.758Z Spug授权续办：核对桌面配置包/密钥存在，未输出凭据；真实页面查询原操作，不重复提交；R082独立目标准备回执通过，备份及业务验收仍未完成。
+
+2026-10-24T15:28:55.101Z Spug完整重测续办：真实查询INT-06原操作、只读登记契约及三服资源复核；停止本任务13个已成功且无来源依赖的测试服目标65服务，保留数据/占用，释放内存；第一次挂载顺序核验失败R083保留，复核通过。未提交新备份恢复，未改产品代码。
+
+## 2026-10-24T15:55:29.609Z 全量失败根因与源服务复核
+
+完整目标继续有效，小程序与IntRuoyi、三服组合分别记录；纠正前次缩小范围表述。Git经7890重新fetch，origin/int_main仍9e4d295，本机HEAD1d8eac0 ahead7/behind0，既有四项修改保留。R086实际源库15486列中6个varbinary列超出formal_data_evidence._cell类型支持；不改产品逻辑、不绕过核验。原采集14:48:27.050525Z至15:39:16.267405Z，3049.216880秒；UI受理至采集终态3051.922秒（毫秒精度）。五源容器运行，MySQL/Redis健康，数据库只读标志0/0。真实登录后列表9074条；附件预览响应等待20秒超时导致REPL重置，R087待定位，附件未验证，不等同业务失败。
+
+当前119通过、7失败、18阻塞、87问题；目标未完成。INT-01/03/04/05未重复同一已知失败，不以INT-06替代；登记与真实恢复仍缺本轮成功点。保留所有原现场、claim及首次失败。下一步可恢复Playwright会话完成源附件复核，并继续UI-13独立小程序恢复验证；不能用本次诊断作该用例通过证据。
+
+
+## 2026-10-24T16:09:40.975Z 附件复核与UI-13准备
+
+上一轮及本轮均为进展；完整目标未完成。57源真实登录后9074文件、首页20条和样本附件414381字节SHA一致，1935x1419预览正常。R087首次超时保留并追加复核通过证据，仅有限范围源服务回归，不能改变INT-06备份失败。
+
+UI-13已核实r5目标UUID db25645b-cf01-11f1-a10e-0242ac1ddd20、五容器镜像/挂载/非来源/claim；本轮启动该五个本任务服务5.465秒，未删除原占用。临时切换覆盖映射后，真实确认框为FAST/58/smallapp-3dd8454849ab4d629726c7c54f7f63da/r5-replace，仅覆盖r5记录附件Redis。打开41858业务页及后续浏览器观测超时，未点击最终提交，未产生新恢复操作号；R088待定位。页面覆盖目标映射已CAS恢复原值，证据UI-13-route-restored.json；五个r5服务保持运行供下一步复核，不停止其他服务。两次本地辅助脚本生成错误均未远端执行，已记录。
+
+当前119通过/7失败/18阻塞，88问题；代码7项原失败仍保留。下一步先独立核对41858转发、r5 HTTP和浏览器实际状态，再续UI-13新恢复；不要重复启动已运行目标，不要重跑仅接受stopped的resume脚本。当前目标状态in_progress，未合并/清理/完成。
+
+
+## 2026-10-24T16:28:57.132Z UI-13真实恢复与业务复测通过
+
+上一轮、本轮均为进展。新操作smallapp-b3e49ff23ad64c668721b16561c49277，Spug301；FAST/replace，来源58 smallapp-58-recovered-fast-20261023，全量B点smallapp-3dd8454849ab4d629726c7c54f7f63da，无父链，覆盖仅smallapp-58-retest-20261023-recovered-fast-r5-replace。真实页面最终勾选确认后单次提交；首次未勾选按钮disabled未发POST，旧目标缓存确认被取消，均保留。
+
+受理2026-10-24T16:15:48.808378Z；执行16:15:55.442759Z至16:16:40.418161Z，SUCCEEDED/exit0，44.975402秒；受理到终态51.609783秒。覆盖前12记录15附件，恢复后11记录14附件与精确FULL B基线完全一致，真实逐条下载及关联比较通过。首次误选早期FULL基线导致不匹配R089已更正，原件保留。FAST核验NOT_PERFORMED不可算通过。
+
+UI-13：还原本机目标映射后，新会话真实历史详情仍准确显示58/fast/replace/r5，旧失败da13仍显示原编号/错误/缺失计时/未记录字段，复测通过。新会话首次历史ENTRY_REQUEST_TIMEOUT为R090，刷新后恢复；辅助只带Cookie GET401后按真实页面X-Token认证GET200，仅最终只读校验，不替代页面恢复。
+
+所有本机目标映射已恢复，五个r5服务仍运行，现场/claim/历次失败未删除。当前120通过、6失败、18阻塞、90问题；其他失败和阻塞尚未解决，任务in_progress。七项原代码测试失败仍保留，不宣称全测通过。专用工作树未融合/删除，不能completed。证据见UI-13-final-history-page.txt、UI-13-r5-business-comparison-exact-point.json、UI-13-final-old-failure-page.txt。
+
+
+## 2026-10-24T16:39:01.446147+00:00 当前版本 Linux 原测试补测
+
+冻结提交81b6c9577a0584d1696fb2b26ae1c2c18c7b3fb4，测试服58独立目录；十个原模块未修改。实际113通过、22失败、4环境错误、0跳过，耗时17.673624秒，pytest退出1。原Windows七项失败全部仍存在；Windows跳过项逐项对照见current-linux-platform-comparison.json。不得宣称所有代码测试通过。
+
+新增暴露文件变动检测和目录权限身份检测失败；4项打包测试在setup因找不到git失败，且当前归档不是Git checkout，属于环境前置不足，不作为产品断言失败或通过。保留首次输出，不伪造Git、不修改测试断言。没有执行备份恢复、改变业务服务或覆盖任何业务数据。
+
+扩展业务清单计数仍为120通过/6失败/18阻塞，不与单元测试计数混算。本任务仍未完成，工作树保留，未合并或清理。证据：retest/current-linux-broad-20261024-163717.json、同名log/xml。
+
+## 2026-10-24T16:49:05.112892+00:00 Linux打包补测及运行版本复核
+
+上一轮和本轮均为进展。原十模块113通过/22失败/4环境错误；已用真实Git bundle和独立Linux Python3.12容器补测打包模块，最终5通过、0失败、0跳过（其中1项与前批通过项重叠，不重复加总）。pytest5.39秒，容器含克隆/依赖安装78.812秒。首次缺Git、随后Windows rpds扩展导入失败均保留；同版本Linux wheel SHA及镜像digest见证据。22项产品/合同断言失败仍保留，未修改产品逻辑。两个独立测试容器均已退出，失败现场保留，没有停止共享Spug或远端服务。
+
+已通过7890重新fetch：origin/int_main=9e4d2956e38f19a3d719a3b7feef4a10bbe99be1，主区1d8eac0 ahead7、原四项修改保留。真实Spug运行入口PID30681，安装版本3b3daa，12文件本机/容器/部署记录哈希一致，HTTP200且页面字节与安装文件一致；独立执行器测试版本81b6c95。不能把不同组件版本统称为一个版本。
+
+原清单SHA匹配、118编号/144行、无缺字段、无缺证据文件。当前120通过/6失败/18阻塞；问题93项（含已复测成功的问题），未验证历史内容仍单列。完整目标未完成，未合并或清理专用工作树。Git/依赖错误解除不改变剩余业务阻塞。
+
+证据：retest/linux-package-container-20261024-164332.json（首次失败）、retest/linux-package-container-20261024-164634.json（5通过）、retest/runtime-readback-20261025.json、retest/requirement-audit-20261025.json。全部用例见results.md，问题见issues.md。
+
+## 2026-10-24T16:57:33.088907+00:00 剩余阻塞前置复核
+
+上一轮有实际进展（Linux打包原测试5通过）；本轮只读核查未解除剩余用例阻塞，不能以新的诊断文档当作新的用例通过。SUPPORT原49任务5包历史存在，但实际执行器及原路径不可用；CODE-02原7项测试仍未定位。详细证据：retest/support-prerequisite-audit-20261025.json；共享诊断54.703秒，不按三个编号重复计时。未启动发布执行器、未触发历史running任务、未改产品逻辑或业务数据。
+
+当前120通过/6失败/18阻塞、93问题。剩余已知阻塞包括安全备份varbinary支持、快速备份Docker空间、缺少真实页面入口或原现场、安装原路径和准确原测试。完整目标未完成。阻塞审计计数1：本轮没有可直接完成剩余编号的已验证前置条件；不将历史running状态当作可等待的活进程。
+
+## 2026-10-24T16:59:16.169736+00:00 第二次剩余阻塞复核
+
+远端int_main仍9e4d295，无修复提交；59 Docker文件系统可用2030481408字节（约1.89GiB），原FULL smallapp-0ec6005f21ec48f0a505f723c1c2b003仍FAILED_RETAINED/exit1/FORMAL_CAPTURE_STDERR_LIMIT。未发起新备份。发布执行器18110/18112仍不可连接，D/E盘路径仍不存在。只读复核未解除任何编号阻塞，非有效等待：没有据历史状态假定活任务。
+
+连续阻塞审计2；保持120通过/6失败/18阻塞，目标未完成，暂不标记blocked或completed。证据retest/remaining-blockers-20261024-165850.json。未改产品逻辑、清理现场或操作业务实例。
+
+## Current Status
+
+blocked
+
+2026-10-24T17:00:26.764902+00:00：连续三轮同一前置阻塞复核；远端无新修复提交，59 Docker可用2030604288字节，原备份失败终态不变，发布上游不可用且原D/E路径缺失。完整目标尚未完成；当前授权为测试和记录，不允许通过改产品逻辑、关闭核验、改业务数据、伪造目标或清除claim解除阻塞。没有确认存活的待完成操作需要等待。保留全部工作树、现场及原失败，不提交完成或清理未合并工作树。
+
+当前120通过/6失败/18阻塞；93项问题含已复测成功项，历史未验证单列。失败编号CODE-03/04/06/07、INT-06/07；原22项Linux代码断言失败保留，打包模块后续5通过不抵销原失败。恢复目标、备份点父链、操作号、逐步及总耗时、业务证据详见retest/results.md和原JSON。
+
+2026-10-25 Spug: 用户授权修复、容量方案、保留失败并重测。仅在既有隔离开发worktree修改varbinary证据支持；真实隔离MySQL及打包11项通过。容量只读证据和方案已保存，未执行59服Docker重启。原失败不改写为成功。
+
+2026-10-25 Spug容量追加：用户询问59服Docker整体迁大盘；只读盘点及正式data-root迁移/停机/回滚方案已形成，未中断133个运行容器，未执行迁移。
+
+- 2026-10-25：延续逐项重测；只读跟踪57原SAFE操作，扩展SAFE回归42通过/2失败及其合同差异登记R095，保留原失败；59整体Docker迁移仍未授权维护窗口，零迁移。
+
+- 用户需求：评估59整个Docker移至大盘；本轮仅复核既有迁移方案和容量快照，无远端修改；整体中断维护窗口待明确。
+
+2026-10-25 05:19 Spug retest: readonly Playwright original-history query, Git remote freshness via7890, and actual engine import diagnosis; no redispatch or59 migration.119PASS/6FAIL/19BLOCKED. Evidence doc/tasks/20261023-spug-local-drill/retest/. No credentials recorded.
+
+2026-10-25 06:02: Continued desktop case retest; readonly SSH process/registration preflight and authenticated Playwright original-operation query. Live NAS readback confirmed; no terminal success, no restore, no59migration. Evidence: doc/tasks/20261023-spug-local-drill/retest/watch57-process-20261024-220048.json.
+
+2026-10-25 06:05: Original57 backup readonly live-process checks and actual Playwright page query; NAS independent readback remains running; no resubmit/restore/configuration changes. Evidence retained in spug-local-drill/retest.
+
+2026-10-25 06:06: Read actual package hash-verified readback contract; recorded R100 performance investigation (cause pending). Real Playwright query confirms independent readback completed29m14s and final archive verification running. No product changes, new dispatch or59migration.
+
+2026-10-25 06:08: Readonly process and target registration gate checks; paired actual stage timestamps into evidence and INT06 active retest. Original operation remains live, final archive verification incomplete. No remote mutations or duplicate dispatch.
+
+2026-10-25 06:10: Actual Playwright original backup progress query, readonly live process and target gate checks. Final archive verification active; no authenticpoint yet, no restore or remote mutation.
+
+2026-10-25 06:12: Readonly Git remote freshness through7890, local worktree status and original57 process checks; actual Playwright progress query. Remote unchanged, dirty state preserved; final verification running.
+
+2026-10-25 06:14: Readonly original process and target gate checks plus authenticated Playwright page progress query. Final archive verification active, no terminal success or restored-target acceptance.
+
+2026-10-25 06:16: Readonly live process and authenticated Playwright query confirm final archive verification still executing. Preserved original operation, no retries or mutations.
+
+2026-10-25 06:18: Prepared and ran readonly Playwright restore-selection observer. Correct57SAFE source verified; no available point/registered target; no submit. Original process remains live. Evidence watch57-restore-selection-2026-10-24T22-17-32-036Z.json.
+
+2026-10-25 06:20: Original backup readonly process, target gate and real Playwright progress observation; appended measured ongoing final-verification duration to R100. No terminal success or remote mutation.
+
+2026-10-25 06:23: Readonly process and registration gate checks plus actual Playwright progress query; original operation final verification remains running. Evidence retained; no new dispatch or remote mutation.
+
+2026-10-25 06:25: Readonly original process/registration gate, exact archive FD metadata sample, authenticated Playwright progress query. FD sample inconclusive, process counters advancing; no content read, mutation or duplicate dispatch.
+
+2026-10-25 06:27: Readonly original process and target gate plus authenticated Playwright progress query; final verification remains live. Preserved original operation, no restore/new backup or remote mutation.
+
+2026-10-25 06:30: Repeated original-process liveness check, actual Playwright progress query and readonly point gate. Original final verification still active; preserved operation and safety checks.
+
+2026-10-25 06:32: Readonly original process and point-registration gate, actual Playwright original-operation progress. Final verification still active; preserved original operation and all evidence. No new dispatch or mutations.
+
+2026-10-25 06:36: Continued bounded waits and readonly original process checks, real Playwright progress query and target gate. Original final verification still live; no terminal result, duplicate dispatch or remote mutation.
+
+2026-10-25 06:39: Actual Playwright and paired timing receipts confirm final archive verification completed1873.313642s; original cleanup running. Readonly process/point gate confirms original live, no accepted point yet. No external cleanup, restore or code changes.
+
+2026-10-25 06:42: Readonly process/point gate and real Playwright query confirm original capture cleanup completed260.932212s; chain readback running. Paired timestamps and preserved cleanup receipt recorded. No external cleanup or restore dispatch.
+
+2026-10-25 06:45 goal continuation: read-only original57PID/UI and target gate checks; live archive-chain readback, no terminal success, no remote mutations; evidence in local-drill execution-log.md.59 migration awaits maintenance scope authorization.
+
+2026-10-25 07:21: original SAFE FULL confirmed SUCCEEDED; target preflight observer timeout recorded R101, original remote process retained. Local observation budget/timeout evidence handling updated; syntax passed, runtime repair unverified. No restore submission or59migration.
+
+2026-10-25 07:26 Spug retest continuation: read-only original PID23897 identity/progress verified;58watch8192<24088 prerequisite recorded. No restart, dispatch or59migration; credentials omitted.
+
+2026-10-25 07:27 authorized test58 ordinary configuration: exclusive persistent inotify limit65536, live readbackPASS,0service restarts; SAFE verification remains enabled, no restore dispatched. Evidence watch58-capacity-config-apply-20261024-232652.json.
+
+2026-10-25 07:28 actual Playwright restore selection read-only:57SAFE FULL0eebed visible, target registration absent and controls disabled; no dispatch. Session82128 full identity/archive preflight confirmed live.
+
+2026-10-25 07:30 TEST58 read-only registration-input audit: old archive root identified, actual new point access unproven;33058free; persistent/live watch65536 verified. Evidence watch58-registration-input-audit-20261024-232955.json.
+
+2026-10-25 07:31 TEST58 read-only authentic FULL metadata verification:4files bytes/SHA match57successful terminal pins; FULL empty parents. No payload scan, registration or restore; evidence watch58-authentic-point-metadata-20261024-233049.json.
+
+2026-10-25 07:32 TEST58 read-only original pin namespace audit: existing ro NAS bind,3original metadata pins exactSHA/size matches; no path rewrite or mount changes. Evidence watch58-original-pin-paths-20261024-233207.json.
+
+2026-10-25 07:34 read-only57authentic cross-host export:13originals pin-verified, private bytes retained, no server mutation;58missing10nonNAS references identified. Evidence watch57-authentic-cross-export-20261024-233350.json.
+
+2026-10-25 07:35 TEST58 authentic originals: readonly preflight13missing,exclusive import13files,independent readback0missing allSHA/size match. No overwritten files, restore dispatch or product mutation; evidence watch58-original-import-apply-20261024-233513.json.
+
+2026-10-25 07:37 TEST58 read-only tool pin and independent target identity checks PASS, exact source tool hashes and empty unreserved target confirmed. Actual recovery pending; no server writes this turn.
+
+2026-10-25 07:43 Spug retest: full preflight failed PATH_ALIAS_REJECTED834.8518s; canonical real source-path configuration formal gatePASS3.7483s; start authorized isolated registration session27054 with all full checks before writes. No restore dispatch; R102 retained. Git remote fetch latest unchanged and local modifications preserved.
+
+2026-10-25 07:46 authorized TEST58 independent standard engine staging: committedd05b331artifact exact116files,exclusive newdirectory, independentreadbackPASS; no existing executor replacement or restart. Runtime use and restore pending. Evidence watch58-standard-engine-20261024-234612.json.
+
+2026-10-25 07:50 TEST58 config preflight: dependency-path/readonly-source-Python carrier failures retainedR103; actual58pinned runtime config gatePASS. Full readonly archive preflight session48687 started;57guarded registration27054 live. No restore dispatch or product changes.
+
+2026-10-25 07:52 synchronized per-case ledger with successfulFULL and active registration/preflight; preserved prior attempts and verdicts, regenerated results.md, updated current-report snapshot. No server writes.
+
+## 2026-10-25 07:55 verified preflight wait
+Previous goal turn: NO_PROGRESS for retest execution (59 migration plan clarification only). Revalidated original local sessions27054 and48687: both returned live session handles with no terminal output.57guarded registration and58full readonly chain validation continue; no resubmission, restore, controller replacement or59migration. This is VERIFIED_WAIT, not backup/restore business acceptance.119PASS/6FAIL/19BLOCKED and103issues unchanged. Goal remains in_progress. Initial local helper lookup incorrectly used retest/ subdirectory; corrected via rg to task root, no server effect.
+
+## 2026-10-25 07:58 actual preflight process progress
+VERIFIED_WAIT: independently observed57PID8866/startTicks221701805 and58PID12408/startTicks221788346 twice,23:56:48Z and23:57:49Z.57rchar38945918249->40912693675 andCPU14639/3260->15326/3455;58rchar21975420661->25156646086 andCPU7677/2291->8748/2611. Both original processes progressing; controller roots/registration receipts remain absent and observed write_bytes0. Local sessions27054/48687 also remain live. Evidence retest/registration-processes-20261024-235648.json and235749.json. No restart, duplicate preflight, restore or product change. Current119PASS/6FAIL/19BLOCKED,103issues unchanged; no new business acceptance. Goal in_progress;59maintenance not authorized/executed.
+
+## 2026-10-25 08:00 TEST57 registration passed
+PROGRESS: original session27054 completed exit0 REGISTERED after934.8743072999932s,2026-10-24T23:43:09.051768Z->23:58:43.926199Z. Evidence retest/watch57-register-safe-target-create-20261024-234309.json. Full standard archive and identity guards passed; targetintruoyi-57-retest-safe-20261024-r1 UUID9c6e3993-cfba-11f1-a23c-0242ac1c8d20, pointsmallapp-0eebed7726824ca5b7292ffc9b845735 emptyparents; controllerPID22689/33057,116enginefilesverified. Native selections freshTarget includes exacttarget, no errors. No restore/business acceptance yet; retainR101/R102firstfailures.
+GREEN: experience-preflight -> PASS for already-authorized new target route installation only. Read watch57-install-safe-target-route.py; requires unique successful exactregistration, retains settings/bridge snapshots, does not replace existing target route or deleteclaims; checks live catalogue after new forwarding. Actual configuredSSHport22matches. Command --apply installs only57newtarget connection. Actual restore remains Playwright-only after source/point/target/scopeconfirmation.58session48687 remains running;59migration untouched.
+
+## 2026-10-25 08:05 restore submitted and58preflight passed
+PROGRESS:57new target REGISTERED934.8743073s; route installed with live catalogue verification. Real Playwright exact confirmation passed; one restore click generated originalsmallapp-4024d4d6648e44eeaa980830f16ed6b5. Initial hidden operation-id innerText empty and post-click observation premature, original retained in page body. No retry; independent real history/query observed original execution at00:04:12Z,36s, no stage receipts/terminal yet. R104records loading/hidden-output observation issues; R105records SOURCE_NOT_VERIFIED_BY_W01 on history page, cause pending and not terminal failure. Exclusive local dispatch intent prevents resubmission.
+58original session48687 completed FULL_PREFLIGHT_READY exit0 after853.5975818999868s,23:49:55.836155Z->00:04:09.433571Z; fullArchiveVerificationPerformed=true,remoteMutations0. Evidence retest/watch58-cross-preflight-20261024-234955.json, private candidate hash55989fa811882d4bd1c021ef99a64e4792fe628335ae4d684cccaaa14659d979. Actual58target UUID43942ebd-cfc1-11f1-a1dc-0242ac1c8e20; controller registration and restore pending. Both prior preflight sessions now terminal; do not poll/restart them.
+Cases/results updated INT02/INT06 with original failures retained.119PASS/6FAIL/19BLOCKED,105issues; no new business pass. Actual57restore and58registration/business follow-up remain. Goal in_progress,59migration not executed.
+
+## 2026-10-25 08:08 TEST58 guarded registration started
+PROGRESS: implemented and syntax-checked bounded new58controller configuration harness; no product edits. Existing completecross-preflight code executed unchanged before registration writes, actual58Python/environment/116enginepins and authentic57originalpointer/config preserved. Exclusive local registration intent prevents automatic retry. Session82136 confirmed live after start; no receipt yet. Prior58preflight48687 was terminal PASS before this apply. INT02case/renderer updated, no verdict upgrade.
+Original57restore4024remote workers32263/32349 confirmed live twice00:05:41Z and00:07:42Z, no result.json/terminal receipt and no workerstderr bytes. Evidence retest/watch57-restore-remote-20261025-000541.json and000742.json. UI00:05:25Z still originalexecution1m48s; R105source readiness remains unresolved. No repeat restore.119PASS/6FAIL/19BLOCKED,105issues unchanged; goalin_progress;59migration untouched.
+
+## 2026-10-25 08:11 R105 reproduced and restore admission observed
+PROGRESS: real Playwright explicit57SAFE source selection before opening same original restore history removes SOURCE_NOT_VERIFIED_BY_W01; original restore still running5m45s, fullpoint visible.10.9459394s,evidence retest/watch57-restore-observe-2026-10-25T00-09-10-345Z.json. Code inspection suggests history switches identity without loading selected source validation, and running operation disables draft refresh. Initial direct-history warning retained asR105; no product fix/bypass and no engine failure claimed.
+Corrected readonly observer recovery-operation path to formal operationsRoot/operationId instead of backup-style hash. First observations retained. Exact engine admission now visible: started00:03:40.126499Z,restore-admission00:03:40.541134Z; actual entry32263 and minimalworker32349/startTicks221824908 live, no terminal. Evidence retest/watch57-restore-remote-20261025-000958.json. CPU/start identity now included. INT06 andR105followup rendered;119PASS/6FAIL/19BLOCKED,105issues unchanged.58guarded registration82136 remains active; goal incomplete,59untouched.
+
+## 2026-10-25 08:12 route prepared; original processes advancing
+PROGRESS: newwatch58-install-safe-target-route.py prepared/syntaxPASS, NOTexecuted; authentic58registration remains prerequisite. Keeps57source andexisting57target route, selects58authcredentialRef and58SSH/python for progress, explicitconfiguredSSHport. No product changes or extra restore. Independent58PID24973/startTicks221892926 progressed fromrchar10167586599at00:10:54Z to14619349054at00:12:26Z,CPU3588/1116->5275/1648,rootstillabsent/writebytes0; session82136original.57restore32263/32349live00:12:25Z, same originaloperation4024, no terminal. Evidence retest/registration-processes-20261025-001054.json and001226.json; watch57-restore-remote-20261025-001225.json. Current119PASS/6FAIL/19BLOCKED,105issues unchanged, business acceptance pending,59untouched. Goal in_progress.
+
+## 2026-10-25 08:14 target business access prepared
+PROGRESS: independent57target frontend container identity0e48cadba5ca298abc0ffba0af567b8b5f170540810286dd55113de1094b0e91/UUID9c6e3993-cfba-11f1-a23c-0242ac1c8d20/loopback53057 verified before creating local-only SSHforwardPID47412. Evidence retest/watch57-business-forward.json,00:13:35.271592Z->00:13:36.008345Z,0.7365892s. FrontendRunning=false; tunnel listener is preparation only, no HTTP/business acceptance or remote service startup. Updated watch57-restore-acceptance.md stale not-dispatched status and actual target entry. Keep tunnel until actual acceptance/closeout; otherprocessesuntouched.
+VERIFIED_WAIT:57originalrestore32263/32349live00:13:53Z,no terminal; retest/watch57-restore-remote-20261025-001353.json.58original82136 still live after50sboundedpoll.119PASS/6FAIL/19BLOCKED,105issues; no new pass, no duplicate dispatch, no59migration; goalin_progress.
+
+## 2026-10-25 08:16 verified original-operation wait
+Previous turn PROGRESS:target business loopback access prepared. Current VERIFIED_WAIT:57entry32263/worker32349live00:15:07Z,no terminal; actualauthenticatedPlaywright originalhistory/query00:15:27Z shows11m50s, no steps/terminal and noW01warning after explicitsource selection. Evidence retest/watch57-restore-remote-20261025-001507.json; watch57-restore-observe-2026-10-25T00-15-21-750Z.json,5.4065738s.58registration24973/startTicks221892926 live00:15:08Z,CPU8350/2572,rchar23598024992 (up from14619349054),writebytes0,controllerrootabsent; originalsession82136 confirmed live after50sboundedpoll. Evidence retest/registration-processes-20261025-001508.json. No newdispatch/restart/routeapply/productchange; no59migration.119PASS/6FAIL/19BLOCKED,105issues unchanged; goalin_progress; no business acceptance yet.
+
+## 2026-10-25 08:18 verified wait and acceptance boundary
+Previous turn VERIFIED_WAIT. Original58session82136 remains live after50sboundedpoll;57entry32263/worker32349live00:18:19Z,no terminal, evidence retest/watch57-restore-remote-20261025-001819.json. No restarts/repeateddispatch. Baseline varbinary57-business-before-20261025.json reread:20samples retain source57:9000 URLs, fileTotal9074. Existing acceptance requirement remains mandatory: source-served image success cannot prove restored target attachments; do not rewrite protected config28/showroom or narrow acceptance. Capture011-source-data endpoint remains actualFULLdata comparator; no target business success yet.119PASS/6FAIL/19BLOCKED,105issues unchanged; goalin_progress;59migration notexecuted.
+
+## 2026-10-25 08:21 verified original process wait
+Previous turn VERIFIED_WAIT. Original58session82136 confirmed live by two50sboundedpolls; remote24973/startTicks221892926 at00:18:51Z reads34261777108bytes,CPU13279/4017,controllerrootabsent. Evidence retest/registration-processes-20261025-001851.json.57originalrestore32263/32349 live00:20:31Z,no terminal; retest/watch57-restore-remote-20261025-002031.json. No restarts or repeateddispatch.
+Readonly measured configuration export shows controllerdeadline28800000ms,restoredeadline21600000ms,dataobservation7200s; observation waits are not execution timeouts, no limitschanged. These scalar configuration reads are not fresh runtime or business success.119PASS/6FAIL/19BLOCKED,105issues; goalin_progress.58newroute not yet executed,57business acceptance pending,59migration untouched.
+
+## 2026-10-25 08:23 TEST58 registration success and route gate
+PROGRESS:original82136 ended exit0 REGISTERED905.9939584s,ret​​est/watch58-register-controller-20261025-000721.json. ActualcontrollerPID30916/33058,116standardenginefiles,source57FULL0eebed emptyparents,targetintruoyi-58-retest-safe-from57-20261024-r1 UUID43942ebd-cfc1-11f1-a1dc-0242ac1c8e20; NativefreshTarget/recoverypoint verified,noerrors. No58restore yet.57originalrestore stilllive32263/32349,no terminal at00:22:27Z.
+GREEN: experience-preflight -> PASS for prepared58routeinstaller --apply. Requires exact authenticregisteredreceipt and hostUUID, exclusive localforward33058, preserves existing57route/settings; source57connection with actual58credentialRef and58progressSSH/python, livecatalogue validation. No businessdataoverwrite or restoreCLI/API; actualdispatchonlylaterUIconfirmation. Existingtargetclaims preserved.
+
+## 2026-10-25 08:24 TEST58 exact UI confirmation and dispatch gate
+PROGRESS:58route installed exit0,SSHforwardPID34592/33058,live cataloguevalidated; retest/watch58-safe-target-route-installed.json. AuthenticatedPlaywright confirmation7.7023084s verifiessource57/SAFE/FULL0eebed/target58intruoyi-58-retest-safe-from57-20261024-r1/fresh; evidence retest/watch58-restore-selection-2026-10-25T00-23-17-556Z.json. Canceled withoutdispatch. Target57currentlyunavailable remainsprotected, no claimsremoved.
+BDD: Given independent58UUID43942ebd-cfc1-11f1-a1dc-0242ac1c8e20 and fullguardedregistrationPASS, When actualUI exactconfirmation executes once, Then separateoperation and timing evidence retained; targetbusiness notpasseduntilactualcomparison. GREEN: experience-preflight -> PASS for authorized independent58restore ONLY. Newlocalintent exclusive, no repeat on uncertainoutcome; corrected hidden-ID read uses textContent and waits acknowledgment. No productchange, API/CLIrestore or existingbusinessoverwrite.
+
+## 2026-10-25 08:28 TEST58 original restore receipt unknown
+PROGRESS:58registered905.9939584s/controller30916/33058; routecataloguePASS/forward34592. Real UI firstpreparation33.5804311s failed hiddenrestoremode beforeintent/submit(R106); corrected explicitrestoretabafterrefresh. SecondactualUI exactconfirmation clickedonce retainedsmallapp-feaa9933b67f4d2c8267a63efede4fad;136.7625425s observer ended on120000msreceiptwaittimeout. Page shows preservedoriginal/noexecutionreceipt andLOCAL_INPUT_MISSING_OR_INVALID. Evidence retest/watch58-restore-selection-2026-10-25T00-24-49-961Z.json. Scopedreadonly58observation00:27:30Z finds no worker or terminal (retest/watch58-restore-remote-20261025-002730.json); this is NOT durable nonacceptance proof. R107acceptanceunknown; exclusiveintent retained, no retry/cancel/claimclear. Need next exactoriginalUIquery and configuration/log diagnosis.
+57originalrestore32263/32349stilllive00:25:14Z, no terminal; no duplication. INT02case updated with originalid/registration and uncertainty; prior failures retained.119PASS/6FAIL/19BLOCKED,107issues; no business success,goalin_progress,59untouched. All local sessions82136/53718/84258/43525terminal; new58controller andforwards remain for diagnosis.
+
+## 2026-10-25 08:35 TEST58 original formally proven unaccepted
+PROGRESS:actualUI check-unaccepted exactfeaa/source57/FULL0eebed/target58/fresh returnsHTTP200 retryAllowed=true,6.084704s; evidence retest/watch58-restore-selection-2026-10-25T00-33-47-377Z.json. Formal endpoint checks localentry/journal/Spughistory absent andownerOPERATION_NOT_FOUND, rechecksabsence. Privatebrowserstate saved C:/SpugPrivate/spug-retest-browser/watch58-original-feaa-state.json. No retry/cancel/newID. Same-source57original4024 remainsrunning; formal reservation gate requires prior terminal, likely earlier rejection cause but originalresponse notcaptured, attribution is inference.
+R108first diagnostic waitForResponse usedwrongendpoint/check-unaccepted instead of actual/unaccepted-original;132.146443s timeout retained, correctedfilter realUIcheckpassed. Not product or restorefailure. R107updated acceptanceunknown->provenunaccepted,INT02remainsblocked until originalsourceoperationends andexactoriginalUIretry.57workers32263/32349confirmedlive00:34:11Z,no terminal; retest/watch57-restore-remote-20261025-003411.json.119PASS/6FAIL/19BLOCKED,108issues,goalnotcomplete.59untouched.
+
+## 2026-10-25 59服整体迁移范围确认
+用户询问能否将59服Docker整体迁到大盘。已复核 capacity59-docker-migration-plan.md；当前仍为方案，未执行停止、复制、切换或删除。已有盘点为Docker约39.75GB、大盘可用约230.83GB、133个运行容器，执行前必须重新盘点。正式方案采用data-root迁移，保留原目录和全部失败证据，NAS与现有业务绑定挂载路径不变。需要明确整机Docker停机授权和维护窗口，因为此前范围排除了IntRuoyi及备份服业务操作。
+经验门禁：Trigger=59整机Docker迁移；Preflight check=活动任务、全容器身份/健康基线、挂载/容量、SELinux及一致性同步工具；Blocker=未明确整机中断窗口；Verification=新data-root及全部原运行服务身份、健康、业务比对；Forbidden action=未授权停机、删除旧数据、改NAS、关闭安全核验；Evidence=capacity59-docker-migration-plan.md和retest/capacity59-data-root-20261024-173903.json。
+本轮仅核对既有方案并说明范围，不改变原演练状态或验收结论。
+
+## 2026-10-25 08:41 原恢复阶段回执与观察修正
+上一轮仅方案说明，分类no progress；本轮重新核实原操作。57原4024在00:38:55Z entry32263/worker32349仍存活，startTicks不变，远端证据watch57-restore-remote-20261025-003855.json。实际Playwright08:40:21回执HTTP200与页面一致：准入1523.093秒、目标检查7.767秒、SQL暂存66.196秒、SQL解压158.541秒完成；SQL导入自00:33:08.535307Z执行中，整体尚无终态。原观察脚本过早关闭浏览器导致步骤空白，R109保留初始证据并纠正，不认定产品进度故障。仅修改观察等待，无产品修改、重派、重启或59迁移。INT06保持原失败和未完成验收；119通过/6失败/19阻塞，109问题。58原feaa已证明未受理，仍等待同来源57终态后通过页面原编号重试。完整目标未完成。
+
+
+## 2026-10-25 08:43 当前阻塞校正与原操作核验
+前一轮分类progress：修正观察条件并取得真实阶段回执。本轮actualPlaywright原4024于00:41:19Z仍RUNNING/SQL导入，页面总耗时37分43秒，未重复派发，证据retest/watch57-restore-observe-2026-10-25T00-41-10-348Z.json。原观察session70035已exit0。按当前证据校正INT01/03/04/05/06的过时摘要，历史摘要追加保存到attempts，不改变119通过/6失败/19阻塞。真实成功FULL已存在；剩余独立场景不能用INT06代替，同源串行、可用独立目标及59容量仍是相应前置。
+Git通过7890代理fetch成功；远端int_main仍9e4d2956e38f19a3d719a3b7feef4a10bbe99be1，本机HEAD1d8eac00aa3acef878dd08566155398894445c8b领先7/落后0，包含ba5fe2及c2476d8。四个原跟踪脏文件及任务目录保留，无reset/覆盖。实际运行版本尚未统一最新验收，不将Git检查等同部署通过。59迁移未执行，任务仍in_progress。
+
+
+## 2026-10-25 08:46 SQL导入完成及运行版本审计
+前轮progress；本轮真实页面原4024确认SQL导入578.926秒成功，00:42:47.465388Z起独立回读，整体RUNNING。证据retest/watch57-restore-observe-2026-10-25T00-44-17-451Z.json。52真实配置路由只读审计14.907秒，全部读取成功、manifest及programPins逐项匹配；52实际服务源码与Git/CRLF细分形成R110，不能宣称统一最新运行版本。备份恢复核心文件与d05b331内容一致，15项其他内容差异保留，不改产品、不替换运行代码。证据见runtime-inventory-20261025-004307、serving-content-compare-20261025-d05b331。
+58原feaa重试辅助脚本已增加前序真实UI终态证据60秒新鲜度、原请求逐字段相等、实时未受理证据、独占重试意图及实际页面按钮点击保护，node --check通过；未执行--retry-original，未创建重试意图。必须等57原终态并再次记录经验门禁后使用，不清占用，不新建编号。当前119通过/6失败/19阻塞、110问题；59迁移未执行。
+
+## 2026-10-25 08:49 原恢复核验等待与清单复核
+前一轮progress：运行版本证据及SQL导入完成。本轮VERIFIED_WAIT：原4024的entry32263/worker32349在00:47:41Z及50秒等待后的00:48:47Z均实际存活，原身份startTicks不变，无终态文件。真实Playwright00:48:52Z仍RUNNING/数据库独立回读，证据retest/watch57-restore-observe-2026-10-25T00-48-47-066Z.json，耗时5.5105845秒；远端证据retest/watch57-restore-remote-20261025-004847.json。不因观察等待重启或重派。
+重新读取桌面原文并核对SHA匹配，118编号/144展开项，缺失及多余编号均0，119通过/6失败/19阻塞；17项主计时缺口仍明确保留，未执行不填零、补充核验不替代原安装耗时。证据retest/current-record-completeness.json。目标附件验收门禁保持真实目标存储来源证明，来源URL响应不能算目标恢复通过。58原编号重试未执行；59迁移未执行。任务in_progress，110问题，无新增业务通过。
+## 2026-10-25 08:52 VERIFIED_WAIT 原4024
+前轮VERIFIED_WAIT；本轮实际进程再次确认entry32263/worker32349存活，start identity沿用原操作，50秒等待后00:51:28Z仍无终态。真实Playwright00:51:32Z显示SQL独立回读仍RUNNING，观察3.5167262秒，证据retest/watch57-restore-observe-2026-10-25T00-51-28-777Z.json及watch57-restore-remote-20261025-005128.json。未启动业务验收、未重派58、未动59Docker。观察脚本仅将控制台输出改为阶段摘要，完整页面仍保留原JSON；node --check与真实查询通过。119通过/6失败/19阻塞、110问题不变，目标未完成。
+## 2026-10-25 08:54 VERIFIED_WAIT
+前轮VERIFIED_WAIT；原4024本轮真实进程与UI再次确认，entry32263/worker32349原startTicks存活，00:53:59Z无终态；00:53:57Z页面数据库独立回读仍RUNNING，观察4.2186311秒。worker在00:52:12Z userTicks49194/systemTicks10703、write_bytes18617630720，较00:48:47Z继续增长；stderr两项均0字节，不将空stderr作为成功证据。保留retest/watch57-restore-observe-2026-10-25T00-53-52-999Z.json与watch57-restore-remote-20261025-005359.json。未重复派发、未改产品、未动59迁移；119通过/6失败/19阻塞、110问题不变。原操作仍实际运行，非阻塞终态，目标保持in_progress。
+## 2026-10-25 08:57 VERIFIED_WAIT
+前轮VERIFIED_WAIT。本轮两次50秒有界等待前后以真实页面及原进程核验，00:57:10Z entry32263/worker32349仍存活、无终态文件；00:57:15Z页面原4024仍RUNNING/sql-readback，观察4.1252031秒。证据retest/watch57-restore-observe-2026-10-25T00-57-11-121Z.json和watch57-restore-remote-20261025-005710.json，先前00:54:31/00:55:55观察也保留。没有关闭安全核验、重启、重复派发或59迁移。58同源原编号重试仍须等待前序终态。119通过/6失败/19阻塞、110问题不变；任务in_progress。
+
+## 2026-10-25 09:02 数据库独立回读正式完成
+前轮VERIFIED_WAIT；本轮PROGRESS。只读观察增加恢复目录分阶段文件元数据及子进程信息，不读取业务正文、不改远端文件。00:58:25Z可见database-readback/878产物，但未据此认定成功；01:01:30.059529Z正式sql-readback结束SUCCEEDED1122.594秒，database-restore于01:01:30.072701Z结束1938.665秒。01:01:30.075510Z开始objects/object-restore，整个4024仍RUNNING。真实Playwright证据retest/watch57-restore-observe-2026-10-25T01-01-31-668Z.json，观察11.3443688秒；远端retest/watch57-restore-remote-20261025-010145.json原32263/32349存活，无整体终态。session39841已exit0。
+INT06更新阶段及attempt，原失败状态保留；119通过/6失败/19阻塞、110问题不变。58未重派、59未迁移。目标附件页面与关联比对仍未完成，任务in_progress。
+
+
+## 2026-10-25 09:05 恢复目标数据库比较证据
+前轮PROGRESS：SQL回读完成。本轮只读核实database-comparison.json/observed及阶段结束回执，0.469秒，证据retest/watch57-database-comparison-20261025-010429.json。目标UUID9c6e3993-cfba-11f1-a23c-0242ac1c8d20与登记一致且不同于来源；879表475173行64715JSON节点全量schema/data等价，infra_file9074条，comparisonSHA a67419571143c2e05b0171a50688f5388582720792148e1c83201b6ce0ec8961。正式state=SCHEMA_DATA_EQUAL_PENDING_APPLICATION_PROOF，applicationVerified=false。此为恢复目标新证据，不是来源基线，也不是完整业务验收。原4024对象恢复仍进行中，INT06原失败保留，不升级整体通过。119通过/6失败/19阻塞、110问题；58未重试，59未迁移，任务in_progress。
+
+## 2026-10-25 09:08 VERIFIED_WAIT 对象恢复
+前轮PROGRESS：目标数据库等价证据取得。本轮VERIFIED_WAIT：原4024页面01:07:35Z显示对象恢复RUNNING，观察7.1803806秒；远端01:07:37Z entry32263/worker32349原进程存活，无终态。对象目录已出现physical-step-000-intent.json，不以意图文件认定完成。证据retest/watch57-restore-observe-2026-10-25T01-07-27-959Z.json及watch57-restore-remote-20261025-010737.json。session58915已正常exit0。未重复提交、未修改产品、未关闭核验、未执行59迁移；58原重试等待前序终态。119通过/6失败/19阻塞、110问题保持，整体任务in_progress。
+## 2026-10-25 09:11 VERIFIED_WAIT 对象恢复
+前轮VERIFIED_WAIT。本轮真实Playwright原4024于01:10:15Z仍RUNNING/objects-object-restore，观察5.4160138秒，证据retest/watch57-restore-observe-2026-10-25T01-10-10-540Z.json；01:09:15Z原entry32263/worker32349存活、无终态。初次页面观察34.1239054秒正常完成，非执行失败。已找到本机私密业务登录配置路径，未输出凭据，未将来源session冒作目标登录。未进行目标业务验收、未重试58、未改产品、未动59迁移；119通过/6失败/19阻塞、110问题不变，任务in_progress。
+## 2026-10-25 09:14 VERIFIED_WAIT 对象写入推进
+前轮VERIFIED_WAIT；本轮真实页面01:13:10Z原4024仍RUNNING/object-restore，观察4.2713016秒；远端01:13:07Z entry32263/worker32349存活、无终态。工作进程write_bytes由01:05:50Z的18648932352增至01:11:18Z的21775425536，证明写入活动但不作为附件比对通过。证据retest/watch57-restore-observe-2026-10-25T01-13-06-599Z.json及watch57-restore-remote-20261025-011307.json，原失败及现场保留。未重派58或迁移59，未改产品或核验设置。119通过/6失败/19阻塞、110问题不变，整体目标in_progress。
+## 2026-10-25 09:17 VERIFIED_WAIT 对象恢复
+前轮VERIFIED_WAIT；本轮真实页面01:16:25Z原4024仍RUNNING/object-restore，观察17.8404165秒；远端01:16:08Z entry32263/worker32349原进程存活，无终态。01:14:13Z工作进程write_bytes25975103488，较前次21775425536继续增长，仅证明写入活动，非附件内容及关联验收。证据retest/watch57-restore-observe-2026-10-25T01-16-07-289Z.json和watch57-restore-remote-20261025-011608.json，session55871/18780均exit0。未重派58、未修改产品或核验设置、未执行59迁移。119通过/6失败/19阻塞、110问题不变，任务in_progress。
+## 2026-10-25 09:24 VERIFIED_WAIT 原恢复持续写入
+前轮分类no progress：仅复核59迁移方案，没有执行迁移或新增测试。本轮实际Playwright查询原4024，01:23:29Z开始、耗时20.2375071秒，仍RUNNING/objects-object-restore；远端01:23:30Z entry32263/worker32349原startTicks确认存活，无终态。worker write_bytes38002241536，较01:14:13Z的25975103488增加，证明活动而非附件校验通过。证据retest/watch57-restore-observe-2026-10-25T01-23-29-461Z.json和watch57-restore-remote-20261025-012330.json。观察session58033已exit0；不重复提交，不关闭核验，不重启原进程。58原feaa仍等待同源前序终态；59迁移未获整机维护窗口授权，未执行。119通过/6失败/19阻塞、110问题结论不变；目标业务验收及全范围重测未完成，任务in_progress。
+## 2026-10-25 09:26 VERIFIED_WAIT 原4024
+前轮VERIFIED_WAIT；本轮实际页面01:24:22Z查询原4024，耗时5.0687199秒，仍RUNNING/object-restore。50秒有界等待后01:25:53Z entry32263/worker32349仍存活，无终态。证据retest/watch57-restore-observe-2026-10-25T01-24-22-754Z.json及watch57-restore-remote-20261025-012553.json；session67859已exit0。复核目标业务验收门禁和来源样本观察脚本，确认来源session及来源附件响应不能代替目标验收，未以该脚本执行目标验收。未重复派发、未重启、未改产品、未动59迁移。119通过/6失败/19阻塞、110问题不变；58原编号重试等待同源前序终态，整体in_progress。
+## 2026-10-25 09:28 VERIFIED_WAIT 原4024
+前轮VERIFIED_WAIT；本轮真实页面01:26:17Z查询仍RUNNING/object-restore，4.5696952秒，证据retest/watch57-restore-observe-2026-10-25T01-26-17-735Z.json。50秒有界等待后01:27:44Z entry32263/worker32349原进程确认存活，无终态；证据retest/watch57-restore-remote-20261025-012744.json。01:26:19Z worker rchar218683510025、read_bytes47017095168，比01:23:30Z继续增加；不将读取活动或native文件数量作为附件验收。session39608正常exit0。未重派、重启、改产品或59迁移；58原重试仍等待前序终态。119通过/6失败/19阻塞、110问题，整体目标in_progress。
+
+## 2026-10-25 09:29 对象恢复完成，最终一致性检查中
+前轮VERIFIED_WAIT；本轮PROGRESS。真实Playwright原4024回执显示objects/object-restore于01:27:59.884788Z结束，1589.809秒SUCCEEDED；final/consistency自01:27:59.886992Z运行，整次仍RUNNING。证据retest/watch57-restore-observe-2026-10-25T01-28-13-614Z.json，观察13.0778377秒。INT06更新阶段和attempt，首次失败保留；业务验收未执行，不升级通过。119通过/6失败/19阻塞、110问题不变。58未重派，59未迁移，任务in_progress。
+
+
+## 2026-10-25 09:31 目标附件回读证据
+前轮PROGRESS；本轮只读提取原4024的physical-comparison及object-restore结束回执，0.391秒，无远端修改。证据retest/watch57-object-comparison-20261025-013028.json。3 buckets、5916版本、0删除标记、9653189892字节、4920唯一内容，源/目标清单SHA均11f2bf48f2f8c50eedbee234ebfbbf798267cbe6895b4c7c2ae7abb6e0c02e38，exactVersionIdentityVerified=true。正式state=PHYSICAL_VERSION_READBACK_MATCH_PENDING_FULL_RESTORE_PROOF，applicationVerified=false，physicalCaptureVerified/continuousHostExclusionVerified/productionEvidence均false，保留完整语义，不扩大通过范围。真实UI01:29:16Z仍RUNNING/final-consistency，观察6.6523745秒；原进程01:29:17Z存活，无终态。session23586已exit0。INT06仅补充证据，119通过/6失败/19阻塞、110问题保持。58未重试，59未迁移，任务in_progress。
+
+
+## 2026-10-25 09:32 最终一致性完成，目标应用启动中
+前轮PROGRESS；本轮PROGRESS。实际页面原4024的final/consistency于01:30:18.167108Z成功结束138.280秒，redis-rebuild于01:30:23.124540Z成功结束4.951秒；application-start自01:30:23.126509Z执行，整体RUNNING。证据retest/watch57-restore-observe-2026-10-25T01-31-04-730Z.json，观察5.4444056秒；远端01:31:05Z原entry32263/worker32349存活，无终态。INT06更新阶段及历史attempt；119通过/6失败/19阻塞、110问题不变。目标真实页面业务验收仍未完成，58原重试未执行，59迁移未执行，任务in_progress。
+
+
+## 2026-10-25 09:34 应用启动完成，归档核验中
+前轮PROGRESS；本轮PROGRESS。真实页面原4024 application-start于01:33:20.774828Z成功结束177.648秒；archive-verification自01:33:20.777003Z执行，整体RUNNING。证据retest/watch57-restore-observe-2026-10-25T01-33-30-391Z.json，观察5.9627737秒；远端01:33:31Z entry32263/worker32349仍存活，无终态。INT06更新阶段及attempt；目标页面业务验收未执行。119通过/6失败/19阻塞、110问题不变；58未重试，59未迁移，任务in_progress。
+
+
+## 2026-10-25 09:38 目标页面连接重置 R111
+前轮PROGRESS；本轮PROGRESS。01:35:31Z实际Spug页面原4024仍RUNNING/archive-verification，4.2738338秒；01:35:33Z原32263/32349存活，尚无终态。仅检查独立57目标登录页，未提交登录或写数据。实际Playwright01:36:17Z出现ERR_CONNECTION_RESET，1.6483828秒，失败原件保留。新R111记录复现及影响，不能凭应用启动阶段成功认定页面可用。随后只读核查：本机53057监听PID47412；远端01:37:12Z精确前端容器0e48cadba5ca298abc0ffba0af567b8b5f170540810286dd55113de1094b0e91、目标UUID及端口符合登记，frontendRunning=true，0.3965773秒。未重启、重建转发或修改产品。原因待定位，119通过/6失败/19阻塞不变，问题111项。业务登录配置仅读取结构、不输出凭据、不复制来源session。58未重试，59未迁移，任务in_progress。
+
+
+## 2026-10-25 09:40 R111 专用访问通道验证
+前轮PROGRESS；本轮PROGRESS。原恢复01:38:00Z真实页面仍RUNNING/archive-verification，9.7698429秒，原观察session21968正常exit0。R111直接原因已定位为宿主端口未实际发布，容器内部HTTP200；只读证据retest/watch57-target-network-inspect-20261025-0139.json，0.4239092秒。按门禁新增本机127.0.0.1:53067->57目标容器172.28.141.36:80 SSH通道，PID32476，0.7177111秒，receipt retest/watch57-container-business-forward.json；其中identity.port=53057表示原声明宿主端口，不表示可访问，实际访问localUrl=53067。真实Playwright复测HTTP200进入login页，1.7165414秒，证据retest/watch57-target-login-inspect-2026-10-25T01-39-05-674Z.json。未提交登录、未写业务数据、未关闭安全核验；旧53057/PID47412及失败证据保留。实际端口发布为何缺失尚未解决，未伪称修复产品。119通过/6失败/19阻塞、111问题；58未重试，59未迁移。上一轮问题渲染器首次目录参数错误ENOENT，issues已成功保存，随后修正retest目录并渲染成功，无问题记录丢失。任务in_progress。
+
+## 2026-10-25 09:42 VERIFIED_WAIT 归档核验
+前轮PROGRESS：目标专用通道实际登录页验证完成。本轮VERIFIED_WAIT：01:40:01Z原4024真实页面仍RUNNING/archive-verification，观察6.8085689秒，证据retest/watch57-restore-observe-2026-10-25T01-40-01-487Z.json；50秒有界等待后01:41:40Z entry32263/worker32349原startTicks进程仍存活，无终态，证据retest/watch57-restore-remote-20261025-014140.json。原观察session76118已exit0。未提交目标业务登录、未重派58、未执行59迁移、未修改产品。119通过/6失败/19阻塞、111问题不变，完整目标未完成，任务in_progress。
+
+## 2026-10-25T01:42:44.609Z 恢复阶段进展
+PROGRESS: 原4024阶段 final/archive-verification 已成功，耗时 443.765 秒；当前 restore-cleanup，整体 RUNNING。业务验收未完成，首次失败保留。 证据 retest/watch57-restore-observe-2026-10-25T01-42-15-296Z.json；观察耗时 4.973165 秒。保持119通过/6失败/19阻塞、111问题；未重派58或执行59迁移，任务in_progress。
+
+
+## 2026-10-25 09:46 57引擎成功与58原重试已受理
+PROGRESS：原4024实际UI终态SUCCEEDED，开始00:03:40.396789Z、结束01:42:53.598943Z，UI时间差5953.202秒（毫秒精度）；全部阶段成功。远端进程消失本身不当作成功，以retest/watch57-restore-observe-2026-10-25T01-44-03-563Z.json为准。观察6.0449531秒，session1499已exit0。目标业务验收尚待完成，原失败保留。
+58原feaa真实UI复核未受理HTTP200/retryAllowed=true及精确源57/SAFE/FULL0eebed/独立58目标后重试一次，09:44:36.539056+08:00返回HTTP202 RESERVED/RUNNING，repeatSubmissionAllowed=false。辅助脚本误断言200形成R112，观察7.0279152秒失败，session40756exit1，原件retest/watch58-restore-selection-2026-10-25T01-44-29-738Z.json保留；仅修正测试辅助脚本支持200/202，未重新运行重试。远端01:45:04Z PID12521/12677真实存活，证据retest/watch58-restore-remote-20261025-014504.json。禁止重复提交。
+119通过/6失败/19阻塞不变，112问题；59迁移未执行，业务验收及其余完整范围未完成，任务in_progress。
+
+
+## 2026-10-25 09:52 目标真实登录失败 R113/R114
+前轮PROGRESS；本轮PROGRESS：找到并读取当前本机C:/Users/D01021/Documents/ChatGPT/IntRuoyi/docs/login-access.md，原E盘路径缺失；未输出密码。实际目标登录控件观察33.887584秒成功。首次业务观察32.270469秒在租户option定位超时，未提交登录，R113保留；修正仅观察脚本读取当前可见芋道源码，并核对真实请求tenant-id=1。第二次实际登录一次3.6511239秒返回code1002000000，R114，登录未成功；不连续猜测、重置或复制来源session。证据retest/watch57-target-business-2026-10-25T01-50-04-535Z.json及retest/watch57-target-business-2026-10-25T01-51-14-499Z.json。INT06引擎成功但业务验收受阻，不升级通过。
+58原feaa于01:50:39Z远端12521/12677仍存活，retest/watch58-restore-remote-20261025-015039.json，未重派。119通过/6失败/19阻塞、114问题。session16093/91807/25483均结束；59迁移未执行，任务in_progress。
+
+
+## 2026-10-25 09:55 R114 认证配置排查
+前轮PROGRESS；本轮PROGRESS：核对本机对应源码AUTH_LOGIN_BAD_CREDENTIALS=1002000000（账号密码不正确），并只解析既有来源私密会话用户元数据，admin/id1；不复制或输出token，不以既有会话代替新目标登录。当前文档密码仍未证明适用于恢复点，私密test58配置仅122/123不能冒作tenant1。未再尝试密码或重置账号，R114保持待定位。原58feaa于01:52:52Z进程12521/12677仍存活，证据retest/watch58-restore-remote-20261025-015252.json，未重派。119通过/6失败/19阻塞、114问题不变；目标完整业务比对未完成。59迁移仍未执行，任务in_progress。
+
+
+## 2026-10-25 09:58 目标代理链核验与58原进度
+前轮PROGRESS；本轮PROGRESS：只读诊断核实57独立目标nginx API指向目标backend172.28.141.35:48081，文件代理指向目标minio172.28.141.33:9000；全部五容器完整身份/镜像/标签符合登记。证据retest/watch57-target-proxy-inspect-20261025-0156.json，0.8394875秒。R114补充排除直接代理来源实例的证据，认证仍未通过，未再登录或更改账号。首次诊断因系统Python3.6不支持capture_output失败，R115私密stderr原件保留，观察脚本修正后成功，未改产品。
+58原feaa真实Playwright01:57:34Z显示RUNNING/restore-admission，阶段开始01:44:46.087508Z，观察5.6737534秒，证据retest/watch58-restore-observe-2026-10-25T01-57-34-278Z.json。未重派。119通过/6失败/19阻塞、115问题；59迁移未执行，任务in_progress。
+
+
+## 2026-10-25 10:03 目标数据库及账号只读核查
+前轮PROGRESS；本轮PROGRESS：先真实DESCRIBE system_users，再SELECT仅账号状态列，不读取密码哈希。引擎实际使用/run/recovery/mysql-client.cnf；UUID9c6e3993-cfba-11f1-a23c-0242ac1c8d20符合登记，后端挂载配置实际JDBC172.28.141.32:3306/ruoyi-vue-pro。admin id1/tenant1/status0/deleted0/failure_count1/locked0/credential_status ACTIVE。排除目标连接别库、账号不存在、禁用及锁定的当前证据；文档凭据仍不被接受，未再次登录、修改密码或清失败计数。schema证据retest/watch57-target-auth-schema-20261025-0159.json，1.4430085秒；元数据retest/watch57-target-auth-metadata-20261025-0202.json，1.2656256秒。
+R116保留诊断脚本首次环境凭据错误、连字符库名正则错误、PowerShell生成命令ParserError；前两类私密stderr保存，第三类在本机解析即失败未执行远端。修正仅限诊断载体，不改产品逻辑。119通过/6失败/19阻塞、116问题，目标业务验收未完成；59未迁移，任务in_progress。
+
+## 2026-10-25 10:05 配置范围核查及58 VERIFIED_WAIT
+前轮PROGRESS；本轮核对ops/spug/config-delivery/README.md与已交付三服使用说明、servers字段：交付包含SSH/NAS/执行桥，不包含当前所需57业务admin登录凭据。已通过异步问题请求用户仅提供已有适用业务登录配置文件路径，不要求粘贴密码；不重置账号或用来源session替代验收。普通连接配置已自行核实，R114仅业务认证仍阻塞；此询问不停止独立58恢复。
+真实Playwright原feaa于02:03:16Z仍RUNNING/restore-admission，观察14.9699711秒，证据retest/watch58-restore-observe-2026-10-25T02-03-16-731Z.json，session29579已exit0。50秒有界等待后02:05:10Z远端12521/12677实际存活、无终态，证据retest/watch58-restore-remote-20261025-020510.json。未重派、未改产品、未迁移59。119通过/6失败/19阻塞、116问题保持，任务in_progress。
+
+## 2026-10-25 10:07 58数据库恢复阶段与当前报告
+前轮VERIFIED_WAIT；本轮PROGRESS。真实UI原feaa准入01:44:46.087508Z->02:04:41.413043Z成功1195.326秒；目标检查成功17.194秒；数据库恢复自02:04:58.612644Z、SQL暂存自02:05:00.217338Z执行。证据retest/watch58-restore-observe-2026-10-25T02-05-43-894Z.json，观察14.5427722秒；原session79377已exit0，未重复提交。INT02阶段/attempt更新，INT06/02证据列补充本轮真实证据；新增latest-status.md集中呈现当前引擎成功与业务未验收的区别，不覆盖历史报告。119通过/6失败/19阻塞、116问题，任务in_progress。
+
+
+## 2026-10-25 10:10 原58恢复继续执行
+上一轮迁移方案说明未推进重测（NO_PROGRESS）；本轮实际页面取得SQL暂存成功新回执（PROGRESS）。原feaa恢复继续运行；SQL暂存92.876秒成功，SQL展开中，整体恢复及业务验收未完成。 原远端PID12521/12677确认存活；未重复派发。页面观察3.4172449秒，浏览器进程正常exit0。证据：retest/watch58-restore-observe-2026-10-25T02-10-13-514Z.json；retest/watch58-restore-remote-20261025-021013.json。累计状态未升级为通过，原失败均保留。59迁移未获整机停机授权，不执行。
+
+
+## 2026-10-25 10:11 SQL展开成功及待执行依赖纠正
+前轮PROGRESS；本轮PROGRESS。原feaa恢复继续运行；SQL暂存92.876秒、SQL展开238.331秒成功；02:10:41.839821Z开始SQL导入。整体恢复及业务验收未完成。 页面观察5.2240279秒，正常退出；远端原PID12521/12677仍存活。证据：retest/watch58-restore-observe-2026-10-25T02-11-03-926Z.json；retest/watch58-restore-remote-20261025-021104.json。逐项复核19个阻塞记录，纠正INT-01/03/05中“57原4024仍运行”的陈旧描述，保留原描述到attempts；现依赖58原feaa终态和串行门禁核验，其他独立执行与目标要求不变。未改产品、未重复派发、未把阶段成功计为业务通过。
+
+## 2026-10-25 10:13 清单与证据定位审计
+前轮PROGRESS；本轮PROGRESS及VERIFIED_WAIT。重新读取桌面原清单，SHA256与建档一致，118个编号全部覆盖为144条，无遗漏或额外编号。逐项检查982个证据引用，文件均存在；此检查只证明可定位，不证明业务通过。17项主计时缺口保留，不补零。修正完整性报告中INT-06仍运行的陈旧文字：引擎成功、业务登录失败；INT-02仍运行。证据retest/current-record-completeness.json及.md。58原操作feaa远端PID12521/12677于02:12:08Z仍存活，证据retest/watch58-restore-remote-20261025-021208.json；未重复派发。功能结果119通过/6失败/19阻塞不变。未修改产品代码。
+
+## 2026-10-25 10:14 恢复计时口径核查
+前轮PROGRESS。本轮页面确认58原feaa仍SQL导入；未重新提交。检查主记录计时发现INT-02仍写“仅准备、非执行”，已依据本轮原始回执纠正，并保留旧timingNote至attempts。实际恢复feaa已受理并执行；01:44:46.087508Z为准入阶段起点，不冒充引擎总起点。已完成阶段：准入1195.326秒、目标检查17.194秒、SQL暂存92.876秒、SQL展开238.331秒；SQL导入02:10:41.839821Z开始，未结束。页面本次观察6.3004241秒不计作恢复耗时；总起止及总耗时字段尚无完整回执，保留null。 证据retest/watch58-restore-observe-2026-10-25T02-13-09-755Z.json。17项计时缺口未凭推算填补，状态统计不变；本轮文档修正为PROGRESS。
+
+## 2026-10-25 10:15 原58恢复核实等待
+前轮PROGRESS；本轮VERIFIED_WAIT。原操作smallapp-feaa9933b67f4d2c8267a63efede4fad两次只读远端观察均确认PID12521/12677存活（retest/watch58-restore-remote-20261025-021407.json及021508.json），间隔等待45秒后同编号真实页面仍SQL导入RUNNING，未取得终态。页面证据retest/watch58-restore-observe-2026-10-25T02-15-07-375Z.json，观察8.0242214秒。不以进程存活证明导入完成；不重新提交、不停止进程、不升级通过结论。全目标保持in_progress。
+
+## 2026-10-25 10:21 原恢复存活复核
+上一轮仅说明59迁移方案，未推进重测，归类NO_PROGRESS；本轮VERIFIED_WAIT。原feaa恢复真实页面02:21:16Z仍SQL导入RUNNING，无结束时间；观察6.4443254秒，浏览器session67592已exit0。远端02:21:17Z确认原PID12521/12677仍存活、startTicks222477313/222477350不变；累计CPU计数较02:15:45增长，仅证明进程活动，不代表导入完成。证据retest/watch58-restore-observe-2026-10-25T02-21-16-998Z.json、retest/watch58-restore-remote-20261025-022117.json。02:16:51页面和02:15:45远端原证据保留。未重派、未停止原进程、未修改产品、未升级业务通过。59整体迁移仍等待维护窗口及范围授权；57业务匹配登录配置尚缺。119通过/6失败/19阻塞保持，任务in_progress。
+
+
+## 2026-10-25 10:22 SQL导入完成、SQL回读继续
+前轮VERIFIED_WAIT；本轮PROGRESS。原feaa真实页面回执显示SQL导入成功，02:10:41.839821Z至02:21:32.732832Z，650.893秒；SQL回读02:21:32.743208Z开始，仍运行。观察耗时4.9191924秒不计为恢复时间；未取得整体终态。远端原PID12521/12677仍存活；证据retest/watch58-restore-observe-2026-10-25T02-22-48-761Z.json、retest/watch58-restore-remote-20261025-022249.json，页面浏览器session73253已exit0。INT-02已逐阶段记录更新；引擎、业务验收未完成，不重复派发。119通过/6失败/19阻塞保持。59整机迁移等待维护窗口授权。
+
+
+## 2026-10-25 10:23 原58数据库回读等待
+前轮PROGRESS；本轮VERIFIED_WAIT。真实页面原feaa操作仍在SQL回读RUNNING，开始02:21:32.743208Z，无结束/耗时；SQL导入先前已成功。页面查询观察3.4645824秒，不能替代恢复耗时。远端原PID12521/12677仍在；证据retest/watch58-restore-observe-2026-10-25T02-23-47-137Z.json、retest/watch58-restore-remote-20261025-022347.json。session84280已正常exit0。未重新派发、未宣告整体成功、未开始后续争用同一数据集的恢复。状态119通过/6失败/19阻塞。
+
+
+## 2026-10-25 10:24 原58数据库回读再次等待
+前轮VERIFIED_WAIT；本轮VERIFIED_WAIT。真实页面仍显示原feaa SQL回读RUNNING，自02:21:32.743208Z开始，尚无结束回执；远端原PID12521/12677仍在。页面观察3.9128976秒，session23816已exit0；此数值不作为恢复耗时。证据retest/watch58-restore-observe-2026-10-25T02-24-44-651Z.json、retest/watch58-restore-remote-20261025-022444.json。没有重复提交或修改现场，未将数据库导入成功外推为整体恢复成功。当前119通过/6失败/19阻塞。
+
+
+## 2026-10-25 10:25 原58数据库回读状态及当前摘要校正
+前轮VERIFIED_WAIT；本轮VERIFIED_WAIT。真实页面仍显示原feaa SQL回读RUNNING，远端原PID12521/12677仍存活；整单无finishedAt。页面观察4.5459453秒，session78077正常exit0。证据retest/watch58-restore-observe-2026-10-25T02-25-46-604Z.json、retest/watch58-restore-remote-20261025-022546.json。同步更新INT-02逐次证据与latest-status.md当前摘要，避免摘要停留于10:07；统计119通过/6失败/19阻塞。未重复派发或改产品逻辑。
+
+
+## 2026-10-25 10:26 原58 SQL回读继续等待
+前轮VERIFIED_WAIT；本轮VERIFIED_WAIT。页面原feaa仍SQL回读RUNNING，自02:21:32.743208Z起，整体finishedAt为空；远端原PID12521/12677存活。观察5.8717157秒，session45948正常exit0，不计作恢复耗时。证据retest/watch58-restore-observe-2026-10-25T02-26-46-712Z.json、retest/watch58-restore-remote-20261025-022647.json。只读观察，无重派、无修改。统计119通过/6失败/19阻塞，所有原失败保留。
+
+
+## 2026-10-25 10:27 原58 SQL回读继续等待
+前轮VERIFIED_WAIT；本轮VERIFIED_WAIT。Playwright通过真实Spug页面读取原feaa回执仍显示SQL回读RUNNING，自02:21:32.743208Z起，无整体结束时间；远端原PID12521/12677仍存活。观察7.2861838秒，session64263正常exit0，不计为操作耗时。复核INT-02：SAFE、57→58、FULL点smallapp-0eebed7726824ca5b7292ffc9b845735、父链[]、原恢复smallapp-feaa9933b67f4d2c8267a63efede4fad信息一致；总起止及总耗时仍null。证据retest/watch58-restore-observe-2026-10-25T02-27-56-275Z.json、retest/watch58-restore-remote-20261025-022756.json。未重复派发、未把阶段进展记作业务通过。统计119通过/6失败/19阻塞。
+
+
+## 2026-10-25 10:29 记录一致性修正及原恢复等待
+前轮VERIFIED_WAIT；本轮PROGRESS（记录一致性纠正）及VERIFIED_WAIT。发现INT-02 restoreExecuted仍为false，timingNote仍写SQL导入未完成，与已保存的真实SQL导入成功回执矛盾。已保留旧值至attempts，改为已执行且未完成，计时说明补入导入650.893秒及当前SQL回读，无总计时伪补、无业务状态升级。真实页面仍SQL回读RUNNING，原远端PID12521/12677存活；证据retest/watch58-restore-observe-2026-10-25T02-29-09-056Z.json、retest/watch58-restore-remote-20261025-022909.json。本次页面观察8.9832135秒，session7570已exit0。统计119通过/6失败/19阻塞。只读搜索曾因Windows glob参数得到rg错误123，无远端或产品变更。
+
+
+## 2026-10-25 10:32 原恢复观察及目标摘要校正
+前轮为NO_PROGRESS（方案说明及维护授权等待，无新增执行证据）；本轮为VERIFIED_WAIT及记录纠正。真实页面原feaa操作仍SQL_READBACK RUNNING，原PID12521/12677及startTicks与前次一致；页面观察6.9237943秒，观察session26162退出0。证据：retest/watch58-restore-observe-2026-10-25T02-32-00-764Z.json、retest/watch58-restore-remote-20261025-023200.json。摘要58目标UUID误抄末尾8d20已依据retest/watch58-cross-preflight-20261024-234955.json纠正为8e20；仅更正文字记录，未改变真实目标或登记。统计保持119通过/6失败/19阻塞，业务验收和总计时未升级。59整机迁移未授权停机，未执行。
+
+
+## 2026-10-25 10:34 verified wait and completeness audit
+Previous goal turn: VERIFIED_WAIT with UUID record correction. This turn: VERIFIED_WAIT. Original feaa process 12677/startTicks222477350 remains live; UI SQL_READBACK RUNNING. Observation took8.1466635s, observer session92435 exited0; no new restore dispatched. Evidence: retest/watch58-restore-observe-2026-10-25T02-33-31-209Z.json, retest/watch58-restore-remote-20261025-023332.json. Completeness audit: source fingerprint matches;118 IDs/144 cases;1001 evidence references,0 missing files;17 main timing gaps remain. Existence is not business acceptance. Functional counts unchanged119 PASS/6 FAIL/19 BLOCKED. No59 downtime or migration executed.
+
+2026-10-25：按用户提供的目标业务凭据真实Playwright登录57独立恢复实例；凭据脱敏。只读核查附件URL及目标身份，新增仅本机到目标MinIO的SSH转发；20附件HTTP200及SHA256一致。58原恢复数据库核验完成、对象恢复中；未宣布整体通过。
+
+2026-10-25：收到57业务登录信息后仅使用仓库外凭据及目标专用状态继续真实Playwright只读验收。登录和20附件基线比对成功；个人中心及菜单可见，其他关联未完成。58原恢复对象阶段仍运行，未重派。
+
+2026-10-25 11:01：沿用用户授权核对57独立目标真实页面；凭据仅仓库外使用，未记录明文。Playwright读取工单详情及关联产品；58原恢复只读观察仍RUNNING，未重新提交；详见本任务execution-log。
+
+
+2026-10-25 11:09：继续原58独立SAFE恢复只读观察；对象、一致性、Redis阶段成功，应用启动仍运行。更新阶段证据和汇总生成器；119通过/6失败/19阻塞，未宣称业务验收完成。凭据仅保留私有路径，未写入日志。
+
+2026-10-25 11:18：58原恢复归档核验成功、清理中；只读UI读取文件/工单，发现附件端口与57冲突，R-118/R-119原证据保留；未修改产品或远端配置，未升级业务验收判定。
+
+2026-10-25 11:21：58原恢复终态SUCCEEDED 5587.311956秒，终态后真实UI重新登录读取记录；附件绑定冲突R-119未解决，未宣称业务验收通过，无产品/远端配置修改。
+
+
+- 2026-10-25T03:32:26.428Z：续办 Spug 逐项重测；57 来源配置指纹、身份、锁和容量只读门禁通过后，通过真实 Playwright 页面独立提交 INT-01 SAFE FULL smallapp-3f29a2b1324045309478a3a597654260。最新 RUNNING，终态及总耗时待定；保留首次载体禁用记录，未修改产品逻辑或覆盖目标。依据 retest/int01-independent-* 证据更新用例及依赖状态；凭据未记录。
+
+
+- 2026-10-25T03:42:48.064Z：续办Spug真实演练；接收用户提供的业务账号配置仅保存在私有文件，先前57/58独立恢复目标已真实登录成功。本轮INT-03新目标初始化超时184.453秒，保留现场；只读诊断AIO64536/65536及EAGAIN，新增R-120，无恢复提交、无主机内核修改、无其他实例重启。INT-01原备份仍RUNNING。凭据不入记录。
+
+- 2026-10-25T03:48:52.994Z：续办逐项重测；仅真实页面观察原INT-01，SSH只读核对同一导出进程CPU及暂存增长，Docker/HTTP只读比较四入口脚本和页面已提交版本。运行内容LF匹配d05，三文件与主分支不同；未部署、重启或修改产品。结果仍119/6/19，证据见任务最新版本复核。凭据未输出。
+
+- 2026-10-25T03:54:24.290Z：按普通配置授权，核实58独立目标UUID/容器及配置SHA后，仅其nginx固定附件目的改为同源/yudao/，保存原配置并校验、重载。真实Playwright重新登录读取，9074记录/20字段/20附件SHA通过；保留R119首次失败和登录文件路径载体错误，完整业务验收仍阻塞。未改产品逻辑或业务数据，未输出凭据。
+
+- 2026-10-25T03:58:15.128Z：续办原操作只读观察记录；核对57来源既有基线范围，仍不足完整业务验收。无新增备份/恢复、无远程配置写入，凭据未输出。证据retest/int01-independent-observe-2026-10-25T03-55-10-523Z.json；retest/int01-live-process-20261025-035511.json。
+
+- 2026-10-25T04:02:07.981Z：续办原操作只读观察记录；核对57来源既有基线范围，仍不足完整业务验收。无新增备份/恢复、无远程配置写入，凭据未输出。证据retest/int01-independent-observe-2026-10-25T03-58-49-703Z.json；retest/int01-live-process-20261025-035850.json。
+
+- 2026-10-25T04:03:36.445Z：按原目标补当前提交十模块Linux回归，git archive仅提交对象，测试58新独立目录、原测试未改；112/23/4/0，新增取消来源未恢复保护失败R121，未操作真实取消或业务服务。日志、XML及源码比对均留证，凭据未输出。
+
+- 2026-10-25T04:04:22.334Z：续办原操作只读观察记录；核对57来源既有基线范围，仍不足完整业务验收。无新增备份/恢复、无远程配置写入，凭据未输出。证据retest/int01-independent-observe-2026-10-25T04-03-57-766Z.json；retest/int01-live-process-20261025-040358.json。
+
+- 2026-10-25T04:06:56.519Z：真实Git、同提交、原打包模块5项补测通过；逐项匹配后当前十模块去重116通过/23失败，首轮环境错误留证。未操作业务备份恢复、未改产品逻辑，凭据未输出。
+
+- 2026-10-25T04:08:54.012Z：续办原操作只读观察记录；核对57来源既有基线范围，仍不足完整业务验收。无新增备份/恢复、无远程配置写入，凭据未输出。证据retest/int01-independent-observe-2026-10-25T04-08-00-304Z.json；retest/int01-live-process-20261025-040835.json。
+
+- 2026-10-25T04:10:55.583Z：续轮只读核对原备份进程树、57失败目标AIO及实际服务文件摘要；未派发、未重启、未调整系统参数、未改产品代码。运行版本差异继续明确记录，原失败及占用保留。证据retest/int03-target-diagnose-20261025-040833.json；retest/served-version-audit-20261025-040907.json；retest/int01-descendants-20261025-041021.json。
+
+- 2026-10-25T04:15:24.855Z：续办原操作只读观察记录；核对57来源既有基线范围，仍不足完整业务验收。无新增备份/恢复、无远程配置写入，凭据未输出。证据retest/int01-independent-observe-2026-10-25T04-11-18-783Z.json；retest/int01-descendants-20261025-041119.json。
+
+- 2026-10-25T04:17:18.850Z：续办原操作只读观察记录；核对57来源既有基线范围，仍不足完整业务验收。无新增备份/恢复、无远程配置写入，凭据未输出。证据retest/int01-independent-observe-2026-10-25T04-15-36-109Z.json；retest/int01-descendants-20261025-041639.json。
+
+- 2026-10-25T04:17:19.046Z：使用只读SSH获取57活动执行器manifest及文件摘要，对比Git已提交主线；61映射/26差异/55未映射。保留原备份现场及全部失败，未派发操作、未改服务。证据retest/active57-engine-audit-20261025-041627.json。
+
+- 2026-10-25T04:18:54.544829+00:00：续办逐项重测；只读核对三服10个已登记执行目录清单，1160项文件摘要自洽；不同版本仍未统一。未改远端文件、未派发备份恢复。证据retest/installed-manifests-20261025-041852.json。
+
+- 2026-10-25T04:19:45.513Z：续办原操作只读观察记录；核对57来源既有基线范围，仍不足完整业务验收。无新增备份/恢复、无远程配置写入，凭据未输出。证据retest/int01-independent-observe-2026-10-25T04-19-19-758Z.json；retest/int01-descendants-20261025-041807.json。
+
+- 2026-10-25T04:23:28.969Z：续办原操作只读观察记录；核对57来源既有基线范围，仍不足完整业务验收。无新增备份/恢复、无远程配置写入，凭据未输出。证据retest/int01-independent-observe-2026-10-25T04-22-56-133Z.json；retest/int01-descendants-20261025-042257.json。
+
+- 2026-10-25T04:23:29.081842+00:00：7890代理fetch成功、引用不变；原INT-01真实页面及进程只读观察仍RUNNING，未重派。主计时缺口不伪造补零。
+
+- 2026-10-25T04:28:23.302Z：复核桌面原始INT-06客户端重启要求与既有终态回执；分列三次操作耗时，不将目标重启当作客户端重启验收；无远端写入。证据retest/int06-requirement-review-20261025.json。
+
+- 2026-10-25T04:28:23.436Z：续办原操作只读观察记录；核对57来源既有基线范围，仍不足完整业务验收。无新增备份/恢复、无远程配置写入，凭据未输出。证据retest/int01-independent-observe-2026-10-25T04-27-01-752Z.json；retest/int01-descendants-20261025-042704.json。
+
+- 2026-10-25T04:35:37.225Z：续办原操作只读观察记录；核对57来源既有基线范围，仍不足完整业务验收。无新增备份/恢复、无远程配置写入，凭据未输出。证据retest/int01-independent-observe-2026-10-25T04-33-38-230Z.json；retest/int01-descendants-20261025-043340.json。
+
+- 2026-10-25T04:36:21.443Z：只读核对INT-06成功FULL manifest及database.sql.gz存在；无备份/恢复派发，无远端写入；未将SQL预览计作业务验收。证据retest/watch57-backup-business-catalog-20261025-043316.json。
+
+- 2026-10-25T04:37:24.541Z：续办原操作只读观察记录；核对57来源既有基线范围，仍不足完整业务验收。无新增备份/恢复、无远程配置写入，凭据未输出。证据retest/int01-independent-observe-2026-10-25T04-36-46-049Z.json；retest/int01-descendants-20261025-043648.json。
+
+- 2026-10-25T04:45:52.452Z：续办原操作只读观察记录；核对57来源既有基线范围，仍不足完整业务验收。无新增备份/恢复、无远程配置写入，凭据未输出。证据retest/int01-independent-observe-2026-10-25T04-43-51-019Z.json；retest/int01-descendants-20261025-044357.json。
+
+
+## 成功备份SQL候选基线核验（2026-10-25T04:49Z）
+
+源SQL包6127394945字节完整SHA256与已核manifest一致；两轮只读扫描237.437秒和190.078秒，定位mes_pro_work_order及mes_md_item候选行。下一步须提取准确元组、字段顺序并独立对照真实页面，不以命中关键词作为通过。首次载体换行SyntaxError及三个原JSON尾部字面量换行缺陷均保留，规范摘要见retest/int06-sql-candidate-review-20261025.json。仅修复本地观察器，不改产品。INT-01当前原进程仍活跃，未重复提交。
+
+
+## 原FULL业务记录与恢复页面比对（2026-10-25T04:55:04.674Z）
+
+PROGRESS：成功包SQL完整SHA核验及准确记录提取82.719秒；57/58分别重新操作真实页面，14.9280098/14.9650744秒。两目标各14项检查匹配原SQL工单949661、产品926709，包括关联、数量、日期及BOM版本。此为备份包记录对照，不冒充独立备份前UI基线；BOM组件与全业务、客户端重启仍未验。两边首次字典401后恢复已记录R122-RESTORED-INITIAL-DICT-401，不隐藏错误。证据retest/backup-business-tuple-comparison-20261025.json。计数{"通过":119,"阻塞":19,"失败":6}；122项问题。
+
+- 2026-10-25T04:55:04.800Z：续办原操作只读观察记录；核对57来源既有基线范围，仍不足完整业务验收。无新增备份/恢复、无远程配置写入，凭据未输出。证据retest/int01-independent-observe-2026-10-25T04-52-01-667Z.json；retest/int01-descendants-20261025-045209.json。
+
+
+## BOM空明细原包对照（2026-10-25T05:01:24.012Z）
+
+原SQL完整SHA核验及MES BOM表全量解析186.297秒。mes_pro_work_order_bom共247行，work_order_id=949661为0行；57/58本轮真实页面BOM明细均0行，空明细样本通过。有组件的BOM、其他业务关系仍未验收，不提升整例状态。证据retest/backup-bom-comparison-20261025.json。
+
+
+## 有组件BOM样本准备（2026-10-25T05:07:02.556Z）
+
+已完整核验原SQL并提取247行工单BOM，耗时185.828秒；选择租户1工单903245的27条未删除组件作为后续只读页面样本。仅完成备份时点基线准备，尚未定位该工单页面，不计通过。证据retest/populated-bom-sample-plan-20261025.json及retest/watch57-backup-populated-bom-20261025-050301.json。无远端写入或恢复派发。
+
+
+## 有组件BOM页面验收（2026-10-25T05:17:35.954Z）
+
+PROGRESS：57/58独立恢复目标分别真实页面筛选881MO090863，详情翻页20+7条，27条BOM ID集合/工单关联/物料ID/数量/备注全部匹配已核原SQL。耗时28.0911628/26.0959102秒。范围限该工单样本；不计全业务或FAST通过。首次列筛选定位超时保留为R123；会话初始401继续按R122保留。证据retest/populated-bom-comparison-20261025.json。
+
+
+## INT-02 限定验收审计（2026-10-25T05:27:50.674Z）
+
+INT-02按原用例限定范围及新增业务抽样证据记通过，原失败历史不删除；879表475173行、5916对象版本/权限、应用健康及暂存清理回执已逐项SHA/大小校验。20附件摘要、工单14字段、27条BOM匹配。Redis41键均已到期，不声称有效键恢复；物理捕获/持续宿主排他/生产证明仍false，不写成通过。原引擎未做业务验收与后来页面抽样分别记载。证据retest/int02-requirement-audit-20261025.json。
+
+INT-01原操作仍NAS上传（最新页面观察19.2955643秒，仅观察耗时），无重派发。计数{"通过":120,"阻塞":18,"失败":6}，123项问题；当前服务不是最新主线，整体任务仍未完成。
+
+
+## INT-01上传与UI-10计时补验（2026-10-25T05:31:48.420Z）
+
+VERIFIED_WAIT：原INT-01页面仍RUNNING/NAS上传；已核owner PID31127/startTicks223056130存活。只读NAS归档元数据：13285文件/24762009571字节，尚无登记点。此为当前目录统计，非独立SMB全量读回通过或完成率；不重复派发。 页面观察9.4015131秒、NAS观察30.030999999988126秒，仅观察计时，不充作备份总耗时。证据：retest/int01-independent-observe-2026-10-25T05-28-42-167Z.json、retest/int01-upload-descendants-20261025-052912.json、retest/int01-nas-metadata-20261025-053043.json。
+
+UI-10当前13阶段和真实亚秒0.703秒已验证，原历史特定11阶段仍未重现；详见retest/ui10-current-timing-audit-20261025.json。计数{"通过":120,"阻塞":18,"失败":6}未变。无产品逻辑修改或远端写入。
+
+
+## UI-10 新操作真实计时验收（2026-10-25T05:33:44.497Z）
+
+13条渲染起止时间及耗时逐项匹配页面响应原回执，总耗时显示匹配；另一个真实运行阶段0.703秒显示正确。UI-10改为通过。原清单33分59秒/11阶段是历史实测结果，不作为新操作必须相同的常量；旧阻塞判定保留在attempts，未冒充重放历史操作。证据retest/ui10-rendered-timing-verification-20261025.json。计数{"通过":121,"阻塞":17,"失败":6}。
+
+
+## INT-01 原操作观察（2026-10-25T05:34:48.358Z）
+
+VERIFIED_WAIT：原INT-01页面仍RUNNING/NAS上传；已核owner PID31127/startTicks223056130存活。只读NAS归档元数据：14327文件/26098716218字节，尚无登记点。此为当前目录统计，非独立SMB全量读回通过或完成率；不重复派发。 页面观察5.3561312秒，NAS元数据观察14.219000000011874秒。证据：retest/int01-independent-observe-2026-10-25T05-32-34-101Z.json、retest/int01-upload-descendants-20261025-053240.json、retest/int01-nas-metadata-20261025-053414.json。计数{"通过":121,"阻塞":17,"失败":6}；UI-10已有独立验收记录，保持不变。
+
+
+## INT-01 原操作观察（2026-10-25T05:37:18.633Z）
+
+VERIFIED_WAIT：原INT-01页面仍RUNNING/nas-readback；已核owner PID31127/startTicks223056130存活。最近NAS元数据观察(2026-10-25T05:34:14.393663+00:00)：14327文件/26098716218字节，登记点存在=false。此为目录统计，非独立SMB全量读回通过或完成率；不重复派发。 页面观察4.2502055秒，NAS元数据观察14.219000000011874秒。证据：retest/int01-independent-observe-2026-10-25T05-36-14-184Z.json、retest/int01-upload-descendants-20261025-053617.json、retest/int01-nas-metadata-20261025-053414.json。计数{"通过":121,"阻塞":17,"失败":6}；UI-10已有独立验收记录，保持不变。
+
+
+## NAS读回与目标准备门禁（2026-10-25T05:39:50.671Z）
+
+INT-01上传阶段2122.893秒SUCCEEDED，05:32:41Z进入独立NAS读回，最新05:38页面仍RUNNING且owner PID31127/startTicks223056130已只读确认存活，未重派发。INT-03新目标仍因AIO初始化失败而不可用，当前65048/65536；INT-05独立恢复身份也尚缺，不将等待来源锁写成唯一前提。无宿主参数或共享服务修改。证据retest/int03-target-diagnose-20261025-053650.json。计数{"通过":121,"阻塞":17,"失败":6}，任务继续in_progress。
+
+
+## INT-01 原操作观察（2026-10-25T05:39:50.814Z）
+
+VERIFIED_WAIT：原INT-01页面仍RUNNING/nas-readback；已核owner PID31127/startTicks223056130存活。最近NAS元数据观察(2026-10-25T05:34:14.393663+00:00)：14327文件/26098716218字节，登记点存在=false。此为目录统计，非独立SMB全量读回通过或完成率；不重复派发。 页面观察12.541391099999998秒，NAS元数据观察14.219000000011874秒。证据：retest/int01-independent-observe-2026-10-25T05-38-53-834Z.json、retest/int01-upload-descendants-20261025-053857.json、retest/int01-nas-metadata-20261025-053414.json。计数{"通过":121,"阻塞":17,"失败":6}；UI-10已有独立验收记录，保持不变。
+
+
+## INT-01 原操作观察（2026-10-25T05:42:36.763Z）
+
+VERIFIED_WAIT：原INT-01页面仍RUNNING/nas-readback；已核owner PID31127/startTicks223056130存活。最近NAS元数据观察(2026-10-25T05:34:14.393663+00:00)：14327文件/26098716218字节，登记点存在=false。此为目录统计，非独立SMB全量读回通过或完成率；不重复派发。 页面观察6.520257000000001秒，NAS元数据观察14.219000000011874秒。证据：retest/int01-independent-observe-2026-10-25T05-40-31-525Z.json、retest/int01-upload-descendants-20261025-054034.json、retest/int01-nas-metadata-20261025-053414.json。计数{"通过":121,"阻塞":17,"失败":6}；UI-10已有独立验收记录，保持不变。
+
+
+## INT-01 原操作观察（2026-10-25T05:46:08.839Z）
+
+VERIFIED_WAIT：原INT-01页面仍RUNNING/nas-readback；已核owner PID31127/startTicks223056130存活。最近NAS元数据观察(2026-10-25T05:34:14.393663+00:00)：14327文件/26098716218字节，登记点存在=false。此为目录统计，非独立SMB全量读回通过或完成率；不重复派发。 页面观察3.7172642999999996秒，NAS元数据观察14.219000000011874秒。证据：retest/int01-independent-observe-2026-10-25T05-44-37-857Z.json、retest/int01-upload-descendants-20261025-054556.json、retest/int01-nas-metadata-20261025-053414.json。计数{"通过":121,"阻塞":17,"失败":6}；UI-10已有独立验收记录，保持不变。
+
+
+## INT-01 原操作观察（2026-10-25T05:48:52.750Z）
+
+VERIFIED_WAIT：原INT-01页面仍RUNNING/nas-readback；已核owner PID31127/startTicks223056130存活。最近NAS元数据观察(2026-10-25T05:34:14.393663+00:00)：14327文件/26098716218字节，登记点存在=false。此为目录统计，非独立SMB全量读回通过或完成率；不重复派发。 页面观察4.437504700000001秒，NAS元数据观察14.219000000011874秒。证据：retest/int01-independent-observe-2026-10-25T05-46-37-552Z.json、retest/int01-upload-descendants-20261025-054822.json、retest/int01-nas-metadata-20261025-053414.json。计数{"通过":121,"阻塞":17,"失败":6}；UI-10已有独立验收记录，保持不变。
+
+
+## INT-01 原操作观察（2026-10-25T05:51:07.208Z）
+
+VERIFIED_WAIT：原INT-01页面仍RUNNING/nas-readback；已核owner PID31127/startTicks223056130存活。最近NAS元数据观察(2026-10-25T05:34:14.393663+00:00)：14327文件/26098716218字节，登记点存在=false。此为目录统计，非独立SMB全量读回通过或完成率；不重复派发。 页面观察3.9327788000000004秒，NAS元数据观察14.219000000011874秒。证据：retest/int01-independent-observe-2026-10-25T05-49-14-932Z.json、retest/int01-upload-descendants-20261025-055050.json、retest/int01-nas-metadata-20261025-053414.json。计数{"通过":121,"阻塞":17,"失败":6}；UI-10已有独立验收记录，保持不变。
+
+
+## Git远端复核（2026-10-25 13:52 +08:00）
+通过7890代理fetch成功；origin/int_main仍9e4d2956，主线1d8eac00 ahead7。远端与请求ba5fe2f/c2476d8均为HEAD祖先，3项退出0；既有脏文件保留，未reset/merge/部署。证据retest/git-refresh-20261025-0552.json。没有新代码，既有回归失败不靠重复运行消除；运行版本一致性仍未完成。原INT-01独立读回仍RUNNING，owner存活。
+
+
+## INT-01 原操作观察（2026-10-25T05:54:21.977Z）
+
+VERIFIED_WAIT：原INT-01页面仍RUNNING/nas-readback；已核owner PID31127/startTicks223056130存活。最近NAS元数据观察(2026-10-25T05:34:14.393663+00:00)：14327文件/26098716218字节，登记点存在=false。此为目录统计，非独立SMB全量读回通过或完成率；不重复派发。 页面观察9.516028700000001秒，NAS元数据观察14.219000000011874秒。证据：retest/int01-independent-observe-2026-10-25T05-53-50-272Z.json、retest/int01-upload-descendants-20261025-055354.json、retest/int01-nas-metadata-20261025-053414.json。计数{"通过":121,"阻塞":17,"失败":6}；UI-10已有独立验收记录，保持不变。
+
+
+## 已授权容量处理实施（2026-10-25）
+用户明确批准：59完成预检后进入整机Docker迁移维护（包括其他运行容器中断，保留旧目录/失败证据）；57仅提高fs.aio-max-nr到131072，保存原配置、不重启服务，并创建新的独立目标。此前待授权状态现解除。
+设计约束检查：不引入fallback/降级/吞异常；采用正式data-root及持久sysctl配置，长期维护=是；无绕过。经验门禁：已重读实际server-access/release-backup-restore及任务迁移方案；首写前锁定主机身份和配置指纹，活动任务冲突阻塞59停机；保留原目录、SELinux Enforcing、fstab/NAS；逐阶段记录及身份/摘要/业务复验。
+BDD：Given用户已授权且57真实配额不足，When仅提高上限，Then上限131072且原容器身份/启动时间不变；Given59迁移前置通过，When一致性停机和拷贝完成，Then镜像/容器/卷/数据库身份与健康基线保持、旧目录完整保留。
+里程碑：M1当前预检；M2 57配置与新目标；M3 59预复制/维护/切换；M4重测及恢复控制台。当前in_progress。
+GREEN: experience-preflight -> PASS（仅授权范围内分阶段实施；每阶段实测不满足立即阻塞，不跳过）。
+
+
+## 授权容量实施进展 2026-10-25T06:09:00.635Z
+57 AIO配置已生效131072，1.172秒；独立复核0.578秒证实原136容器生命周期不变。新INT03 r3目标22.703秒初始化成功，UUID df9f13ba-d039-11f1-a2b7-0242ac1c9020，旧r2保留；登记预检旧字段错误已保留，改为真实来源大小写规则比对，正在复验。
+59只读盘点133运行容器、Docker39,822,667,776字节、大盘可用230,833,815,552字节。rsync/attr安装遇原CentOS源HTTP和HTTPS403，另有一次空mirrorlist参数错误，三次失败日志均保留；未停Docker、未迁移数据。正在经本机7890访问官方归档源下载同系统RPM，安装前必须通过服务器已有可信GPG密钥校验。迁移授权有效，工具与活动作业门禁未全部通过前不进入维护。
+原INT01页面：NAS独立读回1726.539秒SUCCEEDED，最终归档核验RUNNING；不能当作整体成功。当前in_progress，未提交代码。
+证据：retest/aio57-authorized.remote-20261025-060316.json；retest/aio57-independent-verify.remote-20261025-060556.json；retest/int03-target-preflight-20261025-060345.json；retest/int03-target-create-20261025-060357.json；retest/int03-register-r3.remote-20261025-060704.json；retest/capacity59-data-root-20261025-060330.json；retest/capacity59-tools-install.remote-20261025-060627.json；retest/capacity59-tools-install-https.remote-20261025-060644.json；retest/capacity59-tools-install-https-r2.remote-20261025-060702.json；retest/int01-independent-observe-2026-10-25T06-04-58-313Z.json。
+
+
+## 容量实施持续执行 2026-10-25T06:24:40.791Z
+状态 in_progress，未进入59停机维护，未完成迁移。57 AIO131072与原136容器生命周期不变已通过独立核验，新INT03 r3目标UUID df9f13ba-d039-11f1-a2b7-0242ac1c9020已生成，失败r2完整保留。登记只读预检的本机SSH观察900秒超时；随后06:23:43Z核实原远端PID15242/startTicks224007851仍D状态，rchar37,625,570,519，登记根未创建、目标未占用。必须继续观察原进程，不重复派发、不把观察超时写成引擎失败或登记成功。
+59官方RPM经7890下载、仓库摘要/GPG f4a80eb5验证通过并已安装rsync/attr。冻结158容器/133运行、镜像网络卷和配置私密基线；数据库数量以database-business-before实际清单为准。3只binlog辅助容器确认为共享主库PID/network namespace的sleep holder，主库SQL基线已取得，启动必须先主库后holder。3个native卷无driver options但已有大盘外部挂载，已生成新路径等价mount unit方案并核对旧/源device+inode相同，尚未安装这些unit。fstab/NAS保持不变。
+首次预复制544.845秒后，为改为持久运行主动SIGINT本任务rsync25284，exit20及日志保留；systemd持久尝试0.101秒exit3、日志为空，原因待定位，不归因SELinux且未改变Enforcing。随后从SSH启动脱离连接的独立会话任务PID27295，脚本SHA c8b7c51c04a25549de51e513160af2430421de2c33d215da9f3ca99bd8289bd7；06:23:43Z rsync27344/27345/27347仍运行，结果文件未生成，133容器仍运行，大盘可用220235055104字节。预复制不是一致性备份；未改daemon.json、未停止容器、未删除旧目录。
+下一步：观察/mnt/intruoyi-data/docker-migration-evidence-20261025/precopy-detached-result.json；无终态不重复制。停机前补HTTP/附件基线，刷新所有controller ledger终态和发布/写入活动检查并冻结新请求；一致性停写后最终同步校验、配置正式data-root与外部卷依赖、按基线依赖恢复133运行容器，逐项复验。57原登记预检必须先确认退出再决定持久登记执行，保留首次超时。INT01原页面最后06:14仍final-verification RUNNING，NAS独立读回已SUCCEEDED1726.539秒，整体尚未成功。
+证据：retest/capacity59-rpm-install.remote-20261025-060945.json；retest/capacity59-baseline.remote-20261025-061011.json；retest/capacity59-db-baseline.remote-20261025-061413.json；retest/capacity59-dependency-baseline.remote-20261025-062005.json；retest/capacity59-mount-unit-preflight.remote-20261025-061549.json；retest/capacity59-precopy.remote-20261025-061154.json；retest/capacity59-precopy-durable.remote-20261025-062132.json；retest/capacity59-durable-diagnose.remote-20261025-062231.json；retest/capacity59-precopy-detached.remote-20261025-062309.json；retest/capacity59-progress.remote-20261025-062343.json；retest/int03-register-process-observe.remote-20261025-062343.json。所有原失败保留，业务用例计数仍121通过/6失败/17阻塞，不能当作全部测试通过。
+
+2026-10-25T06:40Z：用户已授权59整机Docker维护迁移与57 AIO调整；本轮只读复查持久任务及历史准入错误、真实Playwright观察原INT01，不重复派发，不停止运行服务。证据见任务execution-log；57登记/59预复制未终态，未宣称完成。
+
+2026-10-25T06:47Z：延续授权迁移，保留预复制exit23并明确排除外部挂载后重试exit0；验证候选Docker配置及挂载源身份，生成133容器依赖停启清单和27控制器活动指纹。未停机、未切换、未修改产品逻辑。详细证据见execution-log。
+
+2026-10-25T06:58Z：按用户明确整机维护授权实际暂停59控制器、正常停止133容器和Docker、完成离线同步，持续checksum中；未强杀/切换/删除旧目录。57登记成功，零恢复派发。原始日志与失败观察保留于任务证据。
+
+2026-10-25T07:07Z：继续校验原离线任务，准备原运行集恢复和数据库/页面附件前后比对，未启动服务。只读发现25份target配置仍引用旧卷路径，保留原配置及占用，待真实运行身份重核。未把语法检查或运行中checksum算业务通过。
+
+### 2026-10-25 Spug 授权维护执行
+用户授权59整机Docker迁移及57 AIO上限调整。实际59新root=/mnt/intruoyi-data/docker-engine，133运行/25停止及27控制器恢复；27数据库选定比对、Playwright 9074记录/20附件抽样通过。原目录、历史占用及175文件指纹保留。完整结果和每步失败见doc/tasks/20261023-spug-local-drill/capacity59-migration-result.md。57 AIO=131072，新r3目标已登记。整体重测及运行版本一致性尚未完成。未记录明文凭据。
+
+- 2026-10-25T08:03:09.158Z：继续已授权维护后重测，真实页面只读观察原57恢复882c，核对22082工作进程；核对INT-01终态、NAS回读及清理凭据，更新用例表但不冒报完整验收。未重复派发、未输出凭据。
+
+- 2026-10-25T08:15:08.124Z：59迁移后核对原失败终态/源锁/容量/真实身份与只读业务基线，按既有授权通过Playwright提交一次FAST FULL smallapp-b768f73a9cfc4da888ae432ebeb72bc4；保留首次失败与跳过核验，跟踪原捕获进程，不使用API或CLI代替备份操作。
+
+- 2026-10-25T08:22:01.398Z：只读跟踪57恢复与59快速备份，启动INT-01独立SMB全归档审计；首次任务计时参数失败保留后修正，在新目录继续。未修改产品、未写NAS、未重新提交备份恢复。
+
+- 2026-10-25T08:46:56.810Z：续办授权维护和重测；确认INT-01独立归档审计成功、57原恢复SQL读回运行；只读核查59内存及六个已完成目标依赖，因来源配置不可见保留阻塞，未停服务或降低门槛。
+
+- 2026-10-25T08:57:26.774Z：按已授权独立演练配置范围，跨服核对来源后有序停用六个本任务已完成实例，满足原内存门槛；创建59新独立空目标，真实UUID核验通过。未删除数据/占用，其他服务状态未变化，未提交新恢复。
+
+- 2026-10-25T09:05:27.779Z：为59新独立目标核对原FULL和NAS绑定，导入13份按摘要验证的不可变来源回执；安装已核标准执行器116文件，通过目标配置契约后启动持久全归档核验/身份登记。没有备份恢复派发，原失败及占用保留。
+
+- 2026-10-25T09:22:50.013Z：只读定位59 FAST活动Redis认证缺失，按实际挂载配置生成私密版本并验证，切换单个空闲源控制器，旧证据摘要不变。真实Playwright独立派发新FULL9695，17.355263秒，后台运行中；未修改产品逻辑、未计验收通过。
+
+## 最新检查点 2026-10-25T09:40:25.853Z
+
+in_progress；{"通过":121,"阻塞":16,"失败":7}，问题129项。59整机Docker迁移及57 AIO调整已完成，旧目录/失败/占用记录保留。
+
+57 INT-03恢复882c引擎成功，耗时6067.281秒；真实业务登录和9074/20条非URL字段一致，但附件URL指向旧目标18322，目标附件验收不通过，新增R-129，不能计通过。
+
+59 INT-04新目标登记完成，首次观察驱动提前结束R-128保留。已通过真实页面确认原3e4a未受理，再仅用原编号重试获得202，worker29644启动、页面restore-admission运行中。禁止重跑执行驱动或修改原意图。只观察int04-restore-observe.cjs及int04-worker-observe.remote.py。59 FAST9695继续采集，09:32真实worker活跃；跳过核验仍NOT_PERFORMED。
+
+运行版本d05b331与主线1d8eac0仍未统一；当前代码回归116通过/23失败，原7项失败保留。下一步定位新57附件路由（不改业务数据），观察原59恢复及FAST备份后逐项验收。
+
+
+## 最新检查点 2026-10-25T09:46:53.396Z
+
+in_progress；{"通过":122,"阻塞":16,"失败":6}。本轮为PROGRESS：57 INT-03在原恢复引擎成功后，定位R129为新目标nginx的旧端口改写，仅修正独立目标普通配置，保留原文件/摘要；真实页面复验9074总数、20记录非URL字段和20目标附件哈希、14工单/产品关联检查通过。INT-03仅其限定范围计通过；完整业务、Redis活键、历史3408缺失引用均不扩大结论。引擎6067.281秒，复验16.778102秒，关联观察17.453419秒。
+
+59 INT-04原3e4a恢复及FAST9695仍活跃：09:40:58即时检查分别为29644/29782、18593/18594，原PID及startTicks匹配，继续原操作观察，不重新派发。运行版本d05b331与主线1d8eac0尚未统一；本轮7890 fetch再次schannel TLS握手失败，不能宣称已拉到远端最新。产品逻辑未修改、无提交。
+
+
+## 最新检查点 2026-10-25T10:18:34.659Z
+
+in_progress；{"通过":122,"阻塞":15,"失败":7}，问题132项。上一轮PROGRESS，本轮PROGRESS：INT03限定范围业务补验通过并保留R129；同时获得两项59真实终态失败，不能继续写运行中。
+
+INT04原3e4a FAILED_RETAINED/ARCHIVE_WATCH_LIMIT_TOO_LOW，1996.544秒；宿主inotify上限8192，保留目标/占用/日志，不跳过核验。INT07原9695 FAILED_RETAINED/REPOSITORY_CONFIG_SCHEMA_INVALID，3178.772秒；采集和NAS上传成功但读回失败，尚无新可恢复点。已定位readback凭据缺少schemaVersion/server/share，须基于真实UNC和原凭据生成新不可变配置，不覆盖原件。
+
+来源页面登录超时R130保留，随后9074/20附件复验通过。新R131/R132均已入问题清单；FAST所有跳过核验仍NOT_PERFORMED。下一步测量59监控需求/占用及新目标状态，处理普通配置后分别独立页面重测；不重放终态操作、不清失败占用。运行版本和远端最新核验仍未完成，产品逻辑未改。
+
+
+2026-10-25T10:30Z：继续用户授权的59 Docker迁移/57 AIO维护复核；59实际Docker根目录在大盘且旧目录保留，57 AIO=131072。不重复维护。只读确认失败inotify脚本未写入，修正systemd属性读取后监控容量调整成功且Docker身份不变；备份操作811ed仍运行，未宣称业务通过。详见当前任务execution-log及retest证据。
+
+2026-10-25T10:36Z：持续重测目标继续推进。7890 fetch成功，HEAD包含远端最新及指定提交；实际页面仍d05b331，版本一致性未完成。59新独立r2创建及真实配置预检通过，启动完整核验登记；FAST原811ed页面/进程仍活。结果122通过/7失败/15阻塞，134问题；新失败证据保留，未修改产品逻辑。
+
+2026-10-25T10:51Z：INT05新目标初次内存预检失败保留R135；核查三服来源依赖后仅正常停用两个本任务完成小程序目标10容器，其他容器不变，所有卷/占用保留。新独立57目标创建，真实来源登录9074/20记录附件基线通过，经Spug页面仅一次提交新SAFE FULL a54a。FAST811进入NAS上传，INT04r2完整登记仍在核验。未修改产品逻辑，记录135问题、122通过/7失败/15阻塞。
+
+GREEN: experience-preflight -> PASS; continuing authorized INT04 independent r2 route and native Playwright restore. Authentic registration observation 105443 reports REGISTERED, target UUID511f74d8-d05f-11f1-a1f4-0242ac1c9220, source57 SAFE FULL0eebed parents empty; old r1 claims retained. Preserve current active INT05/INT07 jobs; no repeated maintenance or product logic change. Exact page confirmation and exclusive intent mandatory before submission. Business acceptance remains pending.
+
+2026-10-25T11:46Z Spug retest: verified completed Docker59 migration/AIO57 maintenance records; readonly diagnosed INT07 original afdb OOM137 (512MiB target). Preserved failure, created independent r2 with explicit2GiB budget, authentic UUID registration; real Playwright restored selection but HTTP409 original unresolved, new671072 proven unaccepted by UI. No API/CLI backup or restore, no product logic changes, no cleanup. Evidence doc/tasks/20261023-spug-local-drill/latest-status.md and retest/issues.md R141-R143. INT05 original capture still live.
+
+2026-10-25T11:58Z Spug goal continuation: realUI original afdb queried; installed native guard confirmed excludes137 and retains ORIGINAL_IMPORT_FAILURE_EXIT_NOT_PROVEN. Ordinary configuration created/registered authentic smallapp59 UI08 empty target, read-only Playwright selected actual I2+target, no restore dispatch. Existing58 registration retained; full historic option-state scenario still blocked. INT05 original capture still live. Fetch origin/int_main via7890 succeeded, no newer remote commit. Evidence task latest-status/retest results; no credentials recorded.
+
+2026-10-25T12:07Z Spug continuation: read-only INT05 capture phase and exact target resource audit; target remains unused with2GiB MySQL matching prior successful reference. Prepared gated durable registration locally; not executed. Real Playwright queried original backup only, RUNNING/source-capture. No server reconfiguration, code deployment or backup/restore dispatch. Evidence task execution-log/retest/int05-target-resource-audit.remote-20261025-120240.json.
+
+2026-10-25T12:18:40.200Z 延续授权维护后重测：只读核对INT05原操作捕获终态、来源恢复回执，Playwright查询同一操作并重新登录进行来源记录/附件比对。未重新提交备份恢复、未修改产品逻辑或凭据。来源比对通过，整次备份仍NAS上传；证据见20261023-spug-local-drill最新检查点。
+
+2026-10-25T12:22:01.867Z 延续重测：真实页面查询INT05原备份；SSH只读核对精确哈希目录归档进程PID/startTicks与IO增长。准备但未执行INT04 r2原编号页面重试。原备份RUNNING/NAS上传，无新恢复派发。
+
+2026-10-25T12:26:37.841Z 根据既有普通独立目标配置授权，复核并调整INT04空r2资源为MySQL2GiB/backend3GiB/MinIO768MiB。按真实身份只更新三容器资源限制，保存原配置，独立复核生命周期及其他配置不变，无恢复派发。继续只读观察INT05原NAS上传，原进程存活。
+
+2026-10-25T12:50:17.652Z 持续真实页面查询原INT05 a54a及只读进程核验：NAS上传1896.823秒成功、元数据0.744秒成功，进入NAS读回。没有新备份恢复提交，安全核验保持。全流程仍未终态。
+
+2026-10-25T12:53Z VERIFIED_WAIT: INT05 original archive PID6936/start225695574 remains live, rchar107972124191/syscr2758415. Evidence retest/int05-upload-process-observe.remote-20261025-125310.json. Git fetch via7890 succeeded; HEAD1d8eac00,origin/int_main9e4d2956,ahead7/behind0,both required commits contained; dirty files retained. Evidence retest/git-latest-verified-20261025-1253.json. No deployment; runtime-version alignment remains unresolved. No new backup/restore operation.
+
+2026-10-25T13:21:23.649Z 原INT05 a54a真实页面确认NAS读回1741.318秒成功，进入归档最终核验。继续原进程，未提交新备份或恢复；不将阶段成功当整体完成。
+
+## 2026-10-25 两条任务字典授权续接
+用户明确授权 INT08/INT09 两条任务字典通过页面新增与验收后清理；只涉及本任务新建记录，现有字典不修改。授权解除写入范围阻塞，不解除原恢复 afdb 未知终态保护。
+经验门禁：先核实真实页面、来源身份和原操作终态；不得重复提交或清除 claim，不绕过安全核验；I1 完成后才创建 I2 字典，验收保留精确 ID、父链及耗时。
+BDD: Given 已授权两条自建字典且原操作保护已正常解除；When 页面依次新增 I1、备份，再新增 I2、备份并独立恢复；Then 按各备份点比较精确记录并通过页面清理自建记录。
+GREEN: experience-preflight -> PASS，仅授权只读页面及原操作核查；后续写入仍受终态门禁约束。
+
+## 2026-10-25T14:29Z 原FULL成功与恢复门禁
+PROGRESS：真实页面a54a SUCCEEDED，结束14:25:09.326739Z；备份链回读1909.840秒成功。原6936已退出，仅controller10851存活。证据retest/int05-independent-observe-2026-10-25T14-27-21-743Z.json及int05-upload-process-observe.remote-20261025-142721.json。
+GREEN: experience-preflight -> PASS：INT04 r2即时真实UUID511f74d8-d05f-11f1-a1f4-0242ac1c9220/0表/未占用/隔离网络，MySQL2GiB/backend3GiB/MinIO768MiB，MemAvailable6884648kB、大盘132982419456字节；仅通过真实Spug页面核验并重试原00fc请求，备份点0eebed与独立r2不变，不重放首次选择。证据int04-r2-ready-audit.remote-20261025-142829.json。
+GREEN: experience-preflight -> PASS：INT05仅启动新独立目标真实登记，程序强制检查a54a成功/exit0/FULL父链空/116文件SHA/原源容器全部恢复/目标精确UUID2af0、空库空卷未占用及隔离网络。登记不派发备份恢复、不改原controller或旧占用。资源即时复查int05-target-resource-audit.remote-20261025-142829.json，主机MemAvailable7305516kB，恢复执行前仍复查资源。
+BDD: Given 原FULL成功且独立恢复身份空目标已复核；When 真实页面按原编号重试恢复；Then 保留完整回执与耗时，业务未比对前不报验收通过。
+
+## 备份终态与原编号恢复重试 2026-10-25T14:34:01.925Z
+
+PROGRESS：安全模式独立 FULL a54a 已取得真实页面 SUCCEEDED 回执，结束于 2026-10-25T14:25:09.326739Z；备份链回读 1909.840 秒。新目标登记已启动，14:32:44 核验进程 17764/start227017538 存活，rchar12056959937，尚无登记终态。恢复和业务验收仍未完成。
+
+14:32:52.871017Z 真实 Spug 页面按原编号 00fc 重试返回 HTTP202/RESERVED，来源57、安全模式、备份点0eebed、目标59独立r2均不变；页面操作耗时8.6897654秒。仅证明请求已受理，尚不代表恢复或业务验收成功。旧r1失败及占用全部保留。
+
+两条任务字典的页面新增与清理已获授权，但 INT07 原恢复终态未解决，INT08/09 增量链仍阻塞，当前未新增字典。所有阶段成功均不替代业务验收。当前计数 {"通过":122,"阻塞":15,"失败":7}。
+
+2026-10-25T14:37Z VERIFIED_WAIT：前回合为实际派发进展。本轮原INT04 worker9399/start151609998与子9464存活，rchar5211105830增长；真实页面00fc RUNNING/restore-admission，无finishedAt。INT05登记17764/start227017538存活，rchar19432770342继续增长，无stderr或结果。证据retest/int04-r2-worker-observe.remote-20261025-143455.json、retest/int04-r2-restore-observe-2026-10-25T14-34-56-068Z.json、retest/int05-registration-job-observe.remote-20261025-143455.json。FULL准确总耗时12982.45秒另记结构化记录。准备int05-collect-registration.py，只接受真实成功回执且独占写入；尚未执行收集、路由或恢复。未绕过原进程、未重复提交、未新增通过项。
+
+2026-10-25T14:40Z VERIFIED_WAIT: 前回合为已验证等待并补齐FULL耗时。本轮14:37原INT04 worker9399/start151609998及子9464存活，rchar9902520456增长；真实页面00fc仍RUNNING/restore-admission，无finishedAt。INT05登记17764/start227017538存活，rchar25473506421增长，无结果或stderr。证据retest/int04-r2-worker-observe.remote-20261025-143714.json、retest/int04-r2-restore-observe-2026-10-25T14-37-14-976Z.json、retest/int05-registration-job-observe.remote-20261025-143714.json。只读确认当前57恢复路由仍INT03r3、59仍INT04r2；准备int05-install-safe-target-route.py（保留旧连接和进度，继承57来源认证）及int05-restore-selection.cjs（真实页面精确a54a/57r1身份确认、独占意图防重放），仅语法检查通过，未执行路由修改或恢复。后续须先收到真实REGISTERED回执、检查源活动任务及资源再派发；不可绕过INT04同源运行保护。目标仍未完成，无新增通过项。
+## Current Status — 收敛交付方案（2026-10-25）
+
+in_progress；当前执行计划以 convergence-plan.md 为准，后续历史检查点不覆盖本节。固定候选基线1d8eac0 → 最小关键修复 → 冻结交付提交 → 两模式完整验收 → 交付。停止新增旧版演练目标和派发；脚本参数化/通用化/大重构全部后置。INT04原00fc恢复、INT05原登记继续安全运行，登记结束仅收存回执，暂不执行已准备的旧版接入/恢复脚本。保留全部失败现场和占用。
+
+14:44只读版本复核：7890 fetch成功；HEAD1d8eac0、origin9e4d295，实际入口内容仍d05b331，三文件不同（retest/served-version-audit-20261025-144444.json）。当前122通过/7失败/15阻塞为旧版混合证据清单，不是固定新版本验收。HEAD代码回归另为116通过/23失败；23项分为归档监测16、根身份6、源恢复取消保护1，均与本轮数据安全有关，不能未定位就列为无关。现有测试失败原始证据保留。
+
+BLOCKER: development-authorization -> 本轮明确“先测试记录、不擅自修改产品逻辑”仍有效，两次方向通知都明确不覆盖该约束。已形成可审阅最小开发方案：必要资源准入、严格退出证据支持的失败终态、目标保留与受控重试、直接相关安全缺陷及测试；不含通用化或扩大服务器权限。等待明确解除该局部开发约束；在此之前仅继续现有任务观察和证据整理，不热换、不清claim、不伪造终态。
+
+BDD设计、经验门禁、授权边界和完成标准详见convergence-plan.md。未执行产品代码改动、未声称RED/GREEN已完成。新计划不缩减原118编号/144展开用例和SAFE/FAST各自完整链验收。正常活跃读取的观察间隔拉长至约3–5分钟，只在阶段变化/异常/可行动结论时向用户报告。
+
+## 最小开发范围已授权
+用户明确回复“授权上述最小开发范围”，此前development-authorization阻塞解除；以convergence-plan.md的最小修复范围为准，不做通用化或大重构，不新增服务器权限。INT05登记已真实完成969.171648525秒，回执retest/int05-registration-completed.json；只收存，未接入/派发旧版恢复。INT04 14:50原9399及子9464仍活跃。
+GREEN: experience-preflight -> PASS：本机隔离开发工作区选择。已读worktree-memory与安装/集成说明，保留主区dirty和原工作区；现有开发worktree为d05b331且含旧任务文档，d05b331不是固定基线1d8eac0祖先，不能ff复用。不重置/强合并该工作区，创建以精确1d8eac0为输入的新隔离开发worktree；不用于部署、不触碰运行服务。发布时仍须另建专用发布worktree。
+失败分类更正：remote-integration.md明示轻量源码故意省略部分严格检查，SAFE由保留基线+补丁独立生成。16+6项须区分生成包合同与真正安全缺口，不能恢复FAST跳过检查求绿。原测试失败保留；源恢复取消安全保护仍必须修复。
+## Current Status — 最小修复已启动，旧版活动任务已结束
+用户已授权最小产品开发。固定基线1d8eac0的新开发worktree：C:/Users/D01021/.codex/worktrees/spug-delivery-fix-20261025/Maintance，分支codex/spug-delivery-fix-20261025。具体实现与BDD/TDD证据见该目录doc/tasks/20261025-spug-delivery-fix/。原开发d05b331非固定基线祖先，未重置/合并；主区未提交修改保留。
+第一项源恢复取消保护：本机受限Linux容器真实文件/子进程测试RED 1失败9通过（11.332秒）→仅补回restored is True条件→GREEN 10通过（5.818秒），diff --check通过。未提交/部署，OOM/资源准入与候选包验证尚未完成。
+INT05登记成功969.171648525秒，回执retest/int05-registration-completed.json，已更新用例记录；按新计划未接入/派发旧版恢复。INT04原00fc于15:03:30.841404Z自然结束FAILED_RETAINED/TARGET_FIREWALL_CHANGED，15:04原worker已退出；前置检查1825.769秒成功，目标核验0.906秒失败，新增R-144。当前没有这两个活动任务需要等待；保留旧执行器、部分/空目标、claim与全部日志，不创建更多旧版演练目标。防火墙代码要求隔离规则为首条，可能受其他目标插入影响，真实规则尚待核对，不直接放宽保护。
+执行主线继续固定候选→最小关键修复→两模式完整验收→交付；参数化/大重构后置。23项代码失败与7项业务失败分开统计，SAFE生成包与FAST轻量合同分开验证，不能为求绿恢复FAST跳过核验。当前整体目标未完成。
+
+## 2026-10-25 15:21Z 最小开发阶段进展
+用户授权继续有效。本轮仅在隔离worktree spug-delivery-fix-20261025开发：取消源恢复保护、导入进程停止证据、owner启动周期回执。真实本机Linux子进程/文件及包入口定向组合26通过，8.882秒；证据位于C:/Users/D01021/.codex/worktrees/spug-delivery-fix-20261025/Maintance/doc/tasks/20261025-spug-delivery-fix/evidence/import-process-regression-deps.log及XML。缺Git映射、缺jsonschema和原始RED均保留，未冒充产品通过。
+当前仍in_progress：137拒绝未解除，新增进程检查尚未接入完整目标身份/卷/停止证据及查询收敛，SAFE生成同步和资源准入未完成；未提交、未部署、未执行新恢复、未清理旧claim。26项仅为定向开发测试，不替代SAFE/FAST业务验收或历史23项/remote-integration原7项失败说明。下一步完成OOM集成与资源准入的BDD/TDD后冻结提交。
+## 2026-10-25 15:42Z OOM代码收敛里程碑
+固定开发worktree spug-delivery-fix-20261025已将137查询收敛接入原请求/意图/退出pin、同启动周期进程停止、原子退出pin、派发前目标快照及注册machineId/dockerEngineId/networkId、实际容器/挂载/网络、无exec/重启和MySQL OOM137、原claim保护。只追加查询证据，不改原终态和占用；缺证据仍RUNNING。SAFE与FAST的两个共同控制模块已同步，SAFE数据/归档严格读取模块未换成轻量代码。
+定向回归64通过，26.234秒；证据C:/Users/D01021/.codex/worktrees/spug-delivery-fix-20261025/Maintance/doc/tasks/20261025-spug-delivery-fix/evidence/oom-host-binding-regression.log及XML。真实本机进程/文件与Docker单元夹具分开标明，不计真实服务器或业务验收。原始RED、环境失败和历史失败全部保留。
+仍in_progress：资源准入、固定提交发布及两模式完整真实页面验收未完成；未提交/部署，本轮无服务器写入。旧INT07原任务缺boot/派发前快照，不能补造，R-141/R-143仍未解决。原122通过/7失败/15阻塞业务统计未因64项代码测试改变。下一步完成必要资源准入及其回归，再冻结候选并按发布worktree门禁安装验证。
+2026-10-25 16:16Z | 延续用户最小开发授权 | 隔离worktree本机无网络Linux容器：资源预算/cgroup/入口/两模式包/防火墙合同RED→GREEN→回归116通过31.266秒；保留首次包配置错误。未部署/服务器写入；并发准入与实测配置待完成，业务统计不变。详见spug-delivery-fix-20261025/execution-log.md。
+
+2026-10-26 | 延续最小开发授权 | 隔离worktree实现持久宿主预约、正常成功释放、重复查询保护；无网络受限Linux容器定向回归129通过28.404秒；原RED保留。未提交部署/无远端写入，失败预约释放闭环与实测配置待完成。详见spug-delivery-fix-20261025/execution-log.md。
+
+2026-10-26 | 最小开发授权 | 失败资源释放及覆盖配置绑定修复，定向150通过；SAFE生成包35、FAST取消10通过，历史失败保留。仅本任务实现提交01743b3，任务记录分开；新发布worktree创建中。未远端部署/未新增业务PASS。
+
+2026-10-25 17:06Z | 固定候选构建验证 | 新发布worktree精确01743b3，150定向/SAFE35/FAST10通过，总366.579秒，前后clean及宿主包SHA匹配；首次换行配置预检失败保留。未安装远端/未新增业务PASS，待资源预检和实测配置。证据retest/candidate-01743b3/build-verification.json。
+
+## 2026-10-25 17:18Z 候选运行态差异门禁
+只读盘点10个已登记执行目录，全部116文件与各自旧清单一致，无01743b3安装。证据retest/installed-manifests-20261025-171230.json。页面4入口及UI规范化LF匹配d05b331，见retest/served-version-audit-20261025-171257.json。
+发现候选相对已运行d05b331漏掉历史模式/覆盖语义快照和应用选择记忆；暂停部署，在原隔离开发worktree恢复既有最小安全修复，先RED（Python4错误，UI24通过4失败），再GREEN/回归。01743b3包保持原样，不作为最终页面升级输入。未操作业务实例、未派发备份恢复。
+57/59只读进程盘点原秒级同名证据发生碰撞（59覆盖本轮57文件），两次工具结果仍留在对话；已把本机runner证据名加host和微秒，重新获取57证据retest/capacity59-activity-detail.remote-host57-20261025-171531-437927.json。59原retest/capacity59-activity-detail.remote-20261025-171336.json保留。此工具记录问题不影响远端状态；后续使用新唯一命名。
+样式文档规定D路径与对应本机C路径均不存在；本轮仅恢复已上线行为逻辑，不创建/重设计任何样式或控件，不另造样式基线。
+
+## 2026-10-25 17:21Z / 北京时间10月26日 新候选659007a，仍待安装与业务验收
+Current Status: in_progress。01743b3部署前发现遗漏已上线页面安全修复，已通过RED/必要回归后仅提交六文件为659007a0f234c70b42d9f48e7f3012ab07711e62；未修改正在运行服务。Python41项/32.032秒，UI34项/0.438秒，原RED保留。
+专用新发布worktree C:/Users/D01021/.codex/worktrees/spug-delivery-publish-r2-20261026/Maintance，精确659007a、构建前后clean，命令python -X utf8 ops/backup_engine/build_variants.py --output-directory <主任务>/retest/candidate-659007a。耗时2.671秒；逐文件118项校验、payload与已测01743b3两包完全一致，因此引用原引擎150/SAFE35/FAST10合同证据，不重复计数或冒充新业务验收。SAFE清单commit字段是保留严格基线6b39ef6；本次构建输入为659007a，不能将该字段单独当当前源码提交。
+SAFE outer d3156bac06ba86cc7d537a88f27bfde4b30713e7997d6b37dc453d622f80cd23，payload d0440419c975d45af32e279fb95d2a60e15ab255bcd3db1cc67bfc5baae46ad0；FAST outer cf37071b27401e4b7ff91038c5bbd0df38e114296335e20361af52110614bed9，payload e2a5c3d84cfdc8297d75e4739e800d3044eb1bc9abbeda93585fc00f595f6a20，FAST内容核验仍NOT_PERFORMED。证据retest/candidate-659007a/build-verification.json。
+页面5文件及4入口实际字节全部匹配新发布checkout，retest/candidate-659007a/served-byte-verification.json；未为相同代码重启服务。此证据不证明进程内存加载或远端引擎升级。
+只读全三服预检retest/candidate-runtime-preflight-20261025-172038-095157.json：57/58/59分别25/47/23个当前小程序控制器，配置pin均成功读取，观察错误0；MemAvailable分别7322828800/5158965248/7422787584字节；58根分区约7.27GB、59根分区约2.53GB，大盘分别约259.20GB/132.97GB；都未安装新宿主预约目录。只是实测可用量，不是已制定的负载预算。
+57旧smallapp-cf4119d78919416baed5f6965c53a985、59旧smallapp-78b6f426cded418aa90c4b5a824876e0目录无completion及worker回执；不认定死亡/可清理、不删claim，需读取原意图/查询记录确认。新预检不能替代全面活动写入者门禁。
+本轮无远端写入、无备份恢复提交、无新增业务PASS。仍需实际路由/来源/目标和负载预算核验，安装新引擎与宿主目录，再真实页面分别执行两模式全量/两增量/中间最新点及完整用例。历史122PASS/7FAIL/15BLOCKED不是新候选结果；原7项代码测试说明保留。
+两次发布worktree均未产生新提交、未合回int_main、未删除；01743b3旧构建候选已被659007a替代，旧制品/日志保留。整体未完成，不是ready_for_closeout。下一轮优先继续部署前配置/活动门禁和安装，不重复构建或拓展产品改动；这是PROGRESS，不是等待用户配置。
+## 2026-10-26 Spug最小修复授权后的固定候选真实复验
+
+- 用户授权：最小资源准入、严格失败收敛/受控重试、直接相关安全缺陷与测试；普通演练配置自主处理，保留全部失败。
+- 命令意图：原任务专用发布候选659007a的不可变包安装、空闲来源控制器切换、Playwright真实页面备份、独立58目标创建/身份登记/路由、页面确认恢复、原编号查询及业务比对。未用CLI/API代替备份恢复提交。
+- 结果：六小程序来源已实际升级；58SAFE FULL 3244fd成功243.311505秒；13记录/16附件来源前后比对PASS。独立目标safe-full-r1真实登记；恢复8401ed失败ORIGINAL_TARGET_NETWORK_CHANGED，步骤耗时读取失败。实际created容器NetworkID为空而配置网络身份正确，后续先RED最小修复。不清旧claim，不重派原请求，不称业务验收完成。
+- 证据：doc/tasks/20261023-spug-local-drill/candidate-659007a-checkpoint.md及retest/candidate-659007a/。凭据仅从私有配置读取，未写入本记录。
+## 2026-10-26 Spug created目标网络最小修复
+
+- 继续原用例重测目标；依据已获最小开发授权修复实际8401ed失败，不扩大服务器操作范围。
+- RED：合法created网络被误拒绝；补充RED：首次附着后配置IP漂移未拒绝。最终网络/OOM/退出证据/资源准入/预约回归120通过，138.875秒；原失败均保留。
+- 三个直接相关文件提交2968e8427cabe83e924f14b0d4b41ec4af6d2fa7，专用publish-r3工作区精确提交构建5.187秒，SAFE/FAST各118文件验证，只有控制器模块相对659007a变化。
+- 运行环境仍659007a；新候选尚未部署/业务重测。没有新增备份恢复派发，不将代码回归或包摘要检查计作业务通过。详见主任务latest-status.md和retest/candidate-2968e84/build-verification.json。
+
+## 2968e84 三服安装与来源切换结果
+in_progress。三服两模式包各118文件摘要复核通过；六个来源执行器已按空闲/配置pin门禁切换，原账本注册表摘要保持。真实Spug页面六个来源/模式选择全部匹配，开始备份按钮可用，证据 retest/candidate-2968e84/source-page-check-2026-10-25T18-23-15-994Z.json。
+58新独立目标 smallapp-58-candidate-20261026-safe-full-r2 创建成功19.984秒，UUID 3d4a3737-d0a1-11f1-a1cf-0242ac1df120；空库/Redis/附件卷及未占用检查通过。旧r1与8401失败完整保留，新r2尚未登记/恢复。
+正在运行实际Playwright candidate-2968e84-safe01-full.cjs，先采集测试租户122记录/附件完整基线再通过真实页面派发FULL。没有新的业务验收通过项；不得重复派发已有intent。发布worktree均保留，尚未融合/收口。下一步等待本次UI派发结果与原操作终态后，登记r2并按严格安全核验恢复，再I1/I2与中间/最新点；FAST独立重复。
+
+
+## 当前：2968e84 安全全量备份与独立恢复业务通过，正在执行I1
+
+in_progress。本次58 SAFE FULL smallapp-b8fd2f1cc83446019fecb02402bad61e，父链[]，225.402273秒SUCCEEDED；恢复 smallapp-30c6f4b9558d40ccaabcfbf8a72eb757，153.023760秒SUCCEEDED。目标仅 smallapp-58-candidate-20261026-safe-full-r2，UUID 3d4a3737-d0a1-11f1-a1cf-0242ac1df120；controller candidate-executor-20261026-safe-full-r2-registration2，PID31270端口33358，业务转发55458、SSH PID12808。2968e84真实created网络身份核验通过，安全核验未关闭。原r1/8401失败与r2初次登记参数错误日志均保留。
+来源采集后业务比对11.866秒PASS，目标比对9.115秒PASS：13记录16附件，字段/附件内容SHA/关联完全相等。证据 retest/candidate-2968e84/safe01-current.json 与对应observe/业务comparison文件。这不是全部用例通过，历史7项失败和FAST未验证继续保留。
+已通过真实58测试租户122页面创建本任务I1记录21(keep)、22(edit)、23(delete)，各1附件；16记录19附件快照完成13.072秒。candidate-2968e84-safe-i1-backup.cjs 正在实际页面派发INCREMENTAL，父点固定b8fd2f1c，独占intent防重复。后续必须先确认原I1终态，再页面修改22/删除23/新增I2并备份，再独立恢复I1及I2。FAST仍需独立重复。不得重新运行已有FULL/恢复/I1写入脚本。
+六个小程序来源运行2968e84，其他旧执行器不代表已升级；三个发布worktree尚未融合或删除，主工作区未覆盖。当前目标未完成。
+
+
+## 当前：2968e84 安全FULL恢复业务通过、I1成功、I2已受理
+
+in_progress。当前明确进展：三服两模式包118文件核验安装，六个小程序来源实际2968e84；实际Spug页面六来源/模式按钮及路由验证通过。没有再次修改产品逻辑或重新构建。
+
+|模式/操作|原操作/备份点|父点|结果/耗时|
+|---|---|---|---|
+|SAFE FULL|smallapp-b8fd2f1cc83446019fecb02402bad61e|无|SUCCEEDED，225.402273秒|
+|SAFE FULL恢复|smallapp-30c6f4b9558d40ccaabcfbf8a72eb757|恢复b8fd2f1c|SUCCEEDED，153.023760秒；13记录16附件业务PASS|
+|SAFE I1|smallapp-3034a816da314c4daaf2f9855847dd59|b8fd2f1c|SUCCEEDED，290.037355秒；来源16记录19附件比对PASS|
+|SAFE I2|smallapp-0dba08db8e1146a3a15f0b65e17fadf1|3034a816|已受理，终态待查；基线16记录20附件|
+
+FULL独立目标r2 UUID3d4a3737-d0a1-11f1-a1cf-0242ac1df120，业务55458/controller33358 PID31270；旧r1/8401网络失败及所有占用保留。恢复业务比对9.115秒，来源比对11.866秒，字段、内容SHA和关系全部相等。SAFE-I1独立目标r3 UUID767c50f0-d0a3-11f1-a1dd-0242ac1df220，22.328秒创建、3.671秒登记，controller33458 PID24906；尚未转发/路由/恢复，已准备candidate-2968e84-safe-i1-target-connect.py及safe-i1-restore.cjs。SAFE-I2目标r4 UUIDc968aca6-d0a4-11f1-a2ec-0242ac1df320，22.469秒创建，43358/172.29.243.0/24；未登记/恢复。
+
+I1页面创建21/22/23各1附件；I2已修改22并新增修订附件（保留原附件），通过页面先删23的附件再删23，新建24及附件。初次删除409“请先删除附件”为正常保护，原失败/拒绝证据保留；未改产品/绕过。I2原脚本和两次继续载体均不得重放，写入意图文件保留。当前16记录20附件快照safe-i2-source-before-backup.json已核对。
+
+后续：观察原I2终态，不重复派发；随后r3实际页面恢复I1并对比safe-i1-source-before-backup.json（16/19，23及旧22应在，24不存在），r4登记真实完整链并页面恢复I2对比16/20、22修改/23删除/24新增。再FAST独立链及原144展开用例，不能以SAFE代FAST。FAST跳过核验保持NOT_PERFORMED，历史7项失败、旧未知终态均未抹除。发布worktree/实现尚未融合收口，整体未完成。原结构化证据safe01-current.json/safe-i1-current.json/safe-i2-current.json。
+
+
+## 当前：2968e84 三个SAFE备份点成功，中间点恢复5b91194e正在运行
+
+2026-10-25T18:56Z / 北京时间10月26日。Current Status: in_progress。此轮PROGRESS：2968e84三服安装/六个来源切换、真实FULL备份恢复业务通过、连续I1/I2真实备份成功、独立目标r3/r4创建登记、中间点恢复已派发。无需重构/重复构建/重复运行通过的未变测试。
+- FULL b8fd2f1cc83446019fecb02402bad61e，225.402273秒；恢复30c6f4b9558d40ccaabcfbf8a72eb757到r2，153.023760秒，13记录16附件完整业务PASS。
+- I1 3034a816da314c4daaf2f9855847dd59，290.037355秒，父点FULL；源16记录19附件比对PASS23.794秒。
+- I2 0dba08db8e1146a3a15f0b65e17fadf1，332.982553秒，完整父链[FULL,I1]；源16记录20附件比对PASS15.034秒。22已修改+新增修订附件、23及附件已删除、24新增，所有动作真实页面且仅测试租户122本任务数据。
+
+I1恢复操作smallapp-5b91194ef0d644e6967b7b8170f8ac43，18:55:38.909649Z起restore-admission，18:56:01真实页面RUNNING。目标 smallapp-58-candidate-20261026-safe-i1-r3 / UUID767c50f0-d0a3-11f1-a1dd-0242ac1df220，controller33458 PID24906，SSH21852，业务55558；当前路由为r3。只能观察原编号，不重复派发。载体candidate-2968e84-observe.cjs；终态后运行candidate-2968e84-safe-i1-business-check.cjs target，对比I1完整快照16/19，必须有旧22和23、不能有24。
+
+r4已登记：smallapp-58-candidate-20261026-safe-i2-r4 / UUIDc968aca6-d0a4-11f1-a2ec-0242ac1df320，controller33558 PID27354、真实链[FULL,I1]、118文件/资源预算/created身份检查通过；尚未转发路由和恢复。I1原操作终态后，candidate-2968e84-safe-i2-target-connect.py --tunnel/--route（33558/55658），然后candidate-2968e84-safe-i2-restore.cjs --execute，必须先验证页面精确点/目标/SAFE/fresh。目标业务用candidate-2968e84-safe-i2-business-check.cjs target，对比16/20新增/修改/删除与附件SHA/关联。
+
+本轮所有本机exec观察/写入载体均已返回，没有悬挂工具会话待等待；远端I1恢复在运行。一次观察器保存证据后关闭延迟，已核实node25196/browser11024归属，浏览器在停止请求前已消失（Stop-Process显示not found）；随后确认两PID均无，原观察最终exit0。该本机关闭事件不算引擎失败，未重派备份/恢复。原失败登记参数、隐藏父链控件超时、两次删除409保护响应均保留。
+
+后续继续原I1恢复→I2恢复→FAST独立FULL/I1/I2与三个点恢复→原完整144展开用例，不能用SAFE替代FAST，也不能将旧混合版本总数冒充新候选通过。历史7项失败/未知终态仍保留，未清claim；安全核验未关闭；不覆盖业务实例。三个发布worktree尚未融合/删除，未完成收口，目标保持active。
+
+
+## 当前：最新点业务通过，中间点新目标r5恢复运行
+2026-10-25T19:14Z，in_progress。2968e84 SAFE I2恢复3f805fa0成功289.531528秒，16记录20附件字段/字节SHA/关联一致，业务比对68.165秒。r3首规则失败58.632768秒保留为R-145。新r5 UUID dc2aea5c-d0a7-11f1-a285-0242ac1df420创建20.328秒、登记2.485秒，controller33658 PID32696，SSH19420/业务55758；真实页面恢复I1操作30a81a8a86014328906c4eab8b4052d2已提交，未终态不重派。观察后用candidate-2968e84-safe-i1-r5-business-check.cjs target核对16记录19附件/旧22与23存在/24不存在。活动恢复期间不建新目标。SAFE-01新候选PASS已追加cases.json，旧尝试保留；144项总数122通过/7失败/15阻塞为混合版本，不能冒充2968全部通过。FAST仍待独立新链，整体未完成。
+
+## 当前：2968e84 测试服小程序SAFE/FAST两条独立三点链业务验收通过
+
+2026-10-25T19:40Z，in_progress。上一轮PROGRESS：FAST FULL/I1/I2均真实页面备份、分别恢复到r6/r7/r8，三点业务快照16/20、19/23、19/24字段、附件实际下载SHA、关联全部一致；FAST 26修改/27删除/28新增，中间/最新结果各自正确。引擎跳过核验始终NOT_PERFORMED。完整六点/父链/步骤计时见 retest/candidate-2968e84/independent-chains.json 和 independent-chains.md；SAFE成功操作净1509.122022秒，FAST净115.917554秒，分别业务比对94.682/49.935秒，墙钟3138.090161/1043.635251秒；原r3失败58.632768秒单列保留。
+
+FAST FULL daadc12a3fd04c3581ea92d03a1a817e→r6恢复ddb9d16aadc74be68c4fd0ee687964e3(4.620202秒)；I1 e7e9c406ce884dfc915c0aecad507703父FULL→r7恢复e9270499422f4655922211f7b25ce72e(5.367986秒)；I2 a7ab96ccafa44fae903d7beed7169571完整父链[FULL,I1]→r8恢复d10bdfbfd7bb481abca2223d2ae11f87(5.628829秒)。
+
+r8 UUID108f77c8-d0ab-11f1-a290-0242ac1df720，controller33958/PID9748，SSH18228，业务56058；r7 UUID62f4a24c-d0aa-11f1-a20c-0242ac1df620 controller33858/PID18734，SSH46096，业务55958。当前FAST路由r8。r2/r4/r5/r6为释放容量已正常停机，真实身份/SUCCESS/非来源核验及停机后running=false通过，容器/卷/claim/result/日志全保留。失败r3未触碰。SAFE路由仍r5但该验收完目标已停机；切勿误判新故障或清占用。没有本机未返回exec或本轮活动备份恢复。
+
+FAST-BACKUP-01/02及FAST-CROSS-05新候选尝试已追加cases.json，SAFE-01上一轮已追加。整体122通过/7失败/15阻塞仍为混合版本，不能叫2968全部通过；EVERYDAY-02要求I2/I3/I4三次增量，本次两个增量不替代该完整用例。历史7失败/145问题保留。
+
+后续优先从真实剩余项推进：INT05自己的a54a FULL已终态成功但独立目标尚未完成恢复；INT04首规则失败需新独立目标按资源/身份登记重测；INT07原afdb OOM缺先验boot/身份快照，不能用2968新证据倒填旧操作或清未决保护，INT08/09因此仍未写两字典。CODE原失败批次尚非2968完整回归；当前120针对性测试不等于原十模块全部通过。支持安装/发布中心缺D/E及上游、UI无入口等真实限制保留，不能mock或扩大改产品。冻结候选2968e84，三个发布worktree未融合/删除，整体任务未完成。
+
+
+## 2026-10-25T19:53Z 候选原十模块回归及INT05版本门禁
+
+Current Status: in_progress。冻结2968e84的原十模块在真实Git隔离Linux容器执行：119通过、26失败、0错误、0跳过，pytest耗时155.91秒。容器19:47:56.904471272Z启动、19:52:25.392122675Z退出1；本机等待180秒超时后容器仍运行，继续观察原容器收存终态，未重复派发。原超时与全部日志、JUnit、Git bundle均保留。证据retest/candidate-original-observe-20261025-195228-672257.json及同名.log/.xml。
+
+失败中22项涉及archive guard / repository root identity；另3项Redis认证和1项取消CLI出现Cannot allocate memory，不能据此断言Redis产品逻辑有误或将其算通过，环境/进程资源限制原因待定位。容器OOMKilled=false不排除分配失败。本轮未修改原测试或产品代码。原120项针对性通过、历史7项失败和当前原模块回归分别保留，不合并冒充全部通过。
+
+INT05通过真实页面复核原FULL a54a05be9dab45e490a3979551536b0c成功。57独立r1未占用、容器身份及限额匹配，但实际PID19273控制器绑定旧116文件包71e1c10d...、resourceBudget缺失；因此不能作为2968e84恢复执行器。只读证据retest/int05-candidate-readiness.remote-host57-20261025-195154-563492.json。没有重派旧版恢复、没有改占用/活动账本、没有改共享服务。新版本登记/资源规划及后续恢复仍未完成。
+
+此前测试服小程序SAFE/FAST独立三点业务链通过仍有效，见retest/candidate-2968e84/independent-chains.md；这不覆盖剩余三服/IntRuoyi/原回归项。整体仍未完成，开发与发布worktree保留；不得合并或清理为已交付。
+
+## 2026-10-25T20:02Z 原回归失败按真实模式合同核实
+
+上一轮PROGRESS。本轮明确纠正：原十模块直接加载ops/recovery轻量源码；VARIANTS.md明确FAST取消环境身份、文件内容/状态和隔离预检查，因此不能为通过旧严格断言把SAFE核验加回FAST。原119通过/26失败完整保留，不改为全部通过。22项严格目录/归档断言对FAST属于未执行核验，不能计通过。
+
+对已冻结2968e84实际安装同源产物（118文件逐一摘要一致）独立重测：SAFE四原模块38通过/0跳过，净10.936186秒；包括原archive guard、root identity、取消保护与Redis认证。FAST仅取消与Redis两模块13通过/0跳过，净2.237156秒；严格文件/目录核验NOT_PERFORMED。未修改测试断言。输入文件身份来自2968e84已提交内容，SAFE内容包SHA b101e3da2808a309fd97ad606cb06ad41d8f5d8c091cda46d97477dafb03aff7，FAST fd651ff987c2ec775beaee69de86525bbba83a39d25afad3edfeb56417581f54。
+
+首轮SAFE36通过2失败原件保留：测试使用旧prod-前缀且秘密文件默认0644；按测试已有RECOVERY_TEST_ARCHIVE_PREFIX接口设为prod-standard-、采用umask077后38通过。FAST首次收集缺少依赖fixture模块，补齐原文件后13通过；未改业务代码。原本机4项Cannot allocate memory未复现，具体本机资源根因尚未证实，不能宣称已根治或抹除。
+
+本轮尝试恢复轻量目录检查的未提交实现已精确撤回，git diff确认生产文件零差异。试验7PASS1FAIL→8PASS仅为未采用试验证据，不计固定候选验收；未部署、未提交。此次仅更新测试载体/证据/文档。原120定向测试、38 SAFE、13 FAST、业务链及混合版本144用例不能相加成唯一通过总数。
+
+后续仍需推进INT05新候选资源/登记及真实恢复、INT04/07等剩余项目。整体in_progress；CODE完整历史计数和其余用例覆盖尚未全面闭环，当前业务矩阵状态保持，附加模式证据而不直接把四个CODE编号改为全通过。所有失败目标、claim、账本、原日志和worktree保留。
+2026-10-25T20:20Z Spug最小开发授权续接：核对当前候选2968e84、两模式业务链证据及资源释放结果；继续观察原只读INT05登记预检session18709/PID4247，实际读取持续增长，未重启、未登记apply、未派发恢复。仅本机准备持久登记载体及真实页面恢复载体，编译/语法检查通过。既有119通过/26失败和混合业务矩阵原样保留，未声称全部通过；所有凭据不进入本记录。
+## 2026-10-26 继续 Spug 原聊天任务
+- 05:16Z：新专用发布worktree固定8afa3e9，100项Linux回归通过、SAFE/FAST各118文件摘要及审定补丁逐字节通过。首次收集器误读SAFE commit来源失败保留，按正式冻结基线合同纠正收集；无产物篡改。57只读预检确认原失败/claim、无活动预约、拟端口空闲；内存刚超过7GiB需创建后再验。尚未安装、建目标或提交恢复；目标继续active。
+- 05:10Z：精确输入14331项元数据/监听检查通过，原事件未重现。为解决失败缺定位证据，在隔离开发worktree按BDD/TDD补充归档保护诊断，41项相关回归通过，已提交8afa3e9。拒绝谓词/错误码/资源与claim不变；SAFE生成代码测试通过，FAST不新增watch。未发布、未重派恢复、未宣称业务完成。
+- 目标续行04:57Z：核对桌面原始汇总摘要匹配；追加INT04/INT05原失败终态、保留历次尝试；只读归档诊断529.016秒成功，14,329引用/26,138,476,106字节摘要与当前文件监听检查通过。未重现原ARCHIVED_PAYLOAD_CHANGED，继续核对额外配置/请求输入与事件诊断；没有重派恢复、改产品代码或清失败占用。此诊断不算业务恢复成功，完整目标仍未完成。
+- 用户需求：读取并继续“更新 Spug 脚本并演练恢复”（01a1676f-6aa0-73f2-9eaa-b56a8cb7d968）。
+- 命令意图：read_thread恢复前序上下文；显式UTF-8读取任务与索引；只读核对末次JSON、恢复意图存在性、Git改动和规则文件路径。保留全部既有修改。
+- 初步验证：最后页面确认失败且未提交恢复；历史144项为122通过/7失败/15阻塞。初因指定D/E规则路径缺失而暂停远端操作。
+- 用户随后确认项目根目录为C:/Users/D01021/Documents/ChatGPT/IntRuoyi，已读取对应规则并解除路径阻塞。只读确认旧INT05目标因历史已提交恢复被页面排除，按原授权新建独立r2，17.188秒成功；候选2968e84登记第一次在新目录前置观察失败，保留失败后修正检查顺序，第二作业正在完整链核验。无恢复派发。
+- 恢复59既有本机连接32859/33092/18559后，通过真实Playwright查询原INT04/INT07：前者FAILED_RETAINED/TARGET_FIREWALL_CHANGED，后者TERMINAL_UNKNOWN且SQL导入失败。未重放、清占用或改写失败；原运行日志和新增证据位于任务retest目录。
+- 后续登记成功886.886336秒，118文件SAFE包逐一对应候选2968e84；真实页面已于03:29:45Z提交一次INT05恢复smallapp-d37217dd3fa649b89deeb6652fc4bcbb，独立r2目标UUID b3d2df33-d0e9-11f1-a2f1-0242ac1c9420。03:44:30Z原worker32103及读取子进程945仍在前置核验，累计读取44,904,795,921字节。没有重派；恢复终态、目标业务比对和整体收口仍待完成。
+- 03:58Z终态：INT05于03:52:27Z返回FAILED_RETAINED/ARCHIVED_PAYLOAD_CHANGED，前置核验1362.722秒；退出码1非超时，mutationDispatched=false，资源正式以PROVEN_NO_MUTATION释放。只读验证目标身份及14,329项当前元数据监听器，未重现原变更；原日志缺路径和事件证据，根因未证实，整体blocked。未做业务验收、未重派、未清claim或改保护；未修改产品代码、提交或清理worktree。
+
+GREEN: experience-preflight -> PASS; 2026-10-26T07:54Z host57 identity/terminal old operation/retained claim/no active reservation/new immutable engine path verified. Install only SAFE8afa3e9 into /var/lib/docker/intruoyi-data/spug-candidate-8afa3e9-20261026; no controllers or business data changed, no restore dispatched. Existing strict installer validates archive members, bytes, capacity and receipt; rollback leaves unused isolated directory preserved.
+
+## 2026-10-26T07:57Z 诊断候选安装与资源门禁
+PROGRESS：SAFE8afa3e9已安装57独立目录 /var/lib/docker/intruoyi-data/spug-candidate-8afa3e9-20261026/standard；118文件与固定构建逐字节一致，payload e544f74db313a7f3121f52b898144c8d02bab5fa36e28a43684468ffd7005741。证据 retest/candidate-8afa3e9/stage-172.30.30.57-20261026-075539-040395.json。controllersChanged=false、backupRestoreSubmitted=false、serviceUsingCandidate=false；仅安装，不计恢复通过。
+新r3准备载体 int05-r3-prepare.py 默认只读，复用审阅过的严格provisioner；只改目标ID/53093/172.28.149.0/24及前序终态断言。07:56:17只读预检失败 MEMORY_AVAILABLE_TOO_LOW，未创建任何目标，原错误证据 retest/int05-r3-target-preflight-20261026-075617.json 保留。
+07:56:40复验MemAvailable=7,582,580,736，门槛7,516,192,768，余量66,387,968；资源在阈值附近波动，不能把瞬时ready当作创建后预算通过。新目标不存在、端口空闲、旧claim保留、无活动资源预约。后续须定位本任务可收口资源或获得稳定预算后再创建，不能下调门槛或停止其他任务容器。没有活动注册/恢复任务，不因观察超时重派。整体in_progress，INT05恢复及144展开用例全量闭环仍未完成。
+发布worktree HEAD8afa3e9且git status --short为空，未产生新提交、未合回int_main、未删除；演练/融合/收口未完成，保留。历史blocked/运行中章节仅为旧快照，以本节为最新进度。
+
+GREEN: experience-preflight -> PASS; owned terminal INT05 r1/r2 exact ready receipts/container IDs/image IDs/labels verified by int05-owned-memory.remote-host57-20261026-075912-815597.json. Only graceful stop of four audited mysql/redis containers; retain containers/volumes/claims/logs/network, never clear failure. No active resource reservation. No business production container included. First read-only audit failed on absent r1 claim; corrected observation to report absent rather than invent claim; original failure evidence retained.
+
+GREEN: experience-preflight -> PASS; owned old four containers stopped with normalExitVerified, original receipts/claims unchanged (retest/int05-stop-owned-terminal.remote-host57-20261026-080006-548361.json). New r3 prepared in26.062s, UUID57786434-d113-11f1-a2de-0242ac1c9520 (retest/int05-r3-target-create-20261026-080042.json). Register only new controller spug-intruoyi-57-int05-candidate-8afa3e9-r4 port34093 with immutable118-file SHA validation, rebind engine pins in new config only, verify empty target and budget before/after full-chain hashing. Original controller untouched. Durable exact job spug-int05-r3-registration-job-20261026; observe same handle, never repeat dispatch. Restore submissions0.
+
+## 2026-10-26T08:08Z 原登记进程确认等待
+本轮分类VERIFIED_WAIT（另准备了未执行的业务验证载体）。再次核实同一job spug-int05-r3-registration-job-20261026 的worker951/start233342275，命令行身份匹配且存活；读取计数从08:05的8,975,177,826增长至08:08的15,455,468,892字节；stderr0，result=null。证据retest/int05-r3-observe.remote-host57-20261026-080808-570682.json。原进程仍活跃，不能把尚无结果当超时失败或重启理由。登记尚未成功，路由未安装、恢复未派发。
+已准备int05-r3-business.cjs并通过node --check，仅真实页面登录读取，按原9074条/20样本/20附件SHA基线比对；业务验证尚未执行，不计通过。整体in_progress，所有原失败/阻塞继续保留。下一步观察原job终态，成功后提取真实登记回执并执行ready门禁。
+
+## 2026-10-26T08:12Z 登记持续读取证据
+本轮VERIFIED_WAIT：原worker951/start233342275仍真实存活，读取计数由19,667,634,323增至28,181,738,520字节，stderr0，result=null。最新证据retest/int05-r3-observe.remote-host57-20261026-081244-246256.json。未重复启动job、未派发恢复。已准备collect-int05-r3-registration.py，只有worker退出且真实result.exitCode0/REGISTERED及固定候选、UUID、目标身份均匹配才独占写入登记完成回执；尚未执行。当前in_progress，恢复与业务验收未完成。
+
+GREEN: experience-preflight -> PASS; real Playwright page confirmation EXACT_RESTORE_CONFIRMATION_VERIFIED_NO_SUBMIT (int05-r3-restore-selection-2026-10-26T08-20-42-210Z.json): SAFE/source intruoyi-57-safe-20261024-v1/FULL smallapp-a54a05be9dab45e490a3979551536b0c/target intruoyi-57-int05-safe-20261026-r3. Ready gate verified UUID/controller/version/resources; new local route validated, tunnelPID29912. Authorized isolated retry only; exclusive dispatch intent prevents duplicate submission; preserve original d372 failure and old claims. Execute once through real confirmation button, never API/CLI restore.
+
+## 2026-10-26T08:22Z INT05 r3真实恢复已受理
+本轮PROGRESS：登记成功935.396秒，controller34093/PID11090；固定8afa3e9/SAFE118文件及目标UUID57786434-d113-11f1-a2de-0242ac1c9520验证。完成回执retest/int05-r3-registration-completed.json；ready门禁通过，内存7,948,767,232字节，业务验收NOT_PERFORMED。新本地路由验证通过，SSH转发34093/53093 PID29912归本任务，收口需处理。
+真实页面确认（retest/int05-r3-restore-selection-2026-10-26T08-20-42-210Z.json）后仅派发一次；受理操作smallapp-5c3fa29446b44fca874921748610cdef，原FULL a54a05be9dab45e490a3979551536b0c，目标r3。派发证据retest/int05-r3-restore-selection-2026-10-26T08-21-27-425Z.json，独占intent已创建，禁止重跑--execute。
+08:22:03原worker4543/start233452150及子进程5480/5849存活，内容读取进行中，completion=null；证据retest/int05-r3-worker.remote-host57-20261026-082207-041596.json。后续只用int05-r3-worker.remote.py及int05-r3-restore-observe.cjs观察同一编号。原d372失败/claim仍保留；不得并行创建改变57防火墙的新目标。尚无恢复终态或业务验收，INT05仍未通过。整体in_progress，固定候选融合/worktree收口未完成。
+
+## 2026-10-26T08:51Z INT05 r3前置核验通过并进入SQL导入
+本轮PROGRESS：真实页面证据retest/int05-r3-restore-observe-2026-10-26T08-50-36-776Z.json确认同一操作5c3fa29446b44fca874921748610cdef：restore-admission SUCCEEDED1390.810秒（08:44:45.311316Z结束）；target-checks SUCCEEDED8.963秒；sql-stage SUCCEEDED68.199秒；sql-expand SUCCEEDED158.746秒；sql-import于08:48:52.864597Z开始仍RUNNING。此前文件句柄观察仅用于确定暂存阶段，页面终态字段为正式阶段证据。
+SQL展开文件12,454,728,678字节；08:50:19 worker4543/start233452150及5480/5849/docker29032存活，completion=null（retest/int05-r3-worker-paths.remote-host57-20261026-085023-310805.json）。原失败ARCHIVED_PAYLOAD_CHANGED本次前置核验未复现，不等于原根因已证实修复；保留d372失败、claim及完整证据。现在已进入真实数据写入阶段，不能再沿用旧PROVEN_NO_MUTATION结论或停止目标容器。继续仅观察原操作，禁止重复--execute、改归档/目标或创建改变防火墙的新目标。
+整体in_progress；SQL导入、后续对象/服务恢复、真实登录与记录附件比对均未完成；不计INT05通过，不进行融合/清理worktree。
+
+## 2026-10-26T09:00Z SQL导入成功，读回校验运行中
+本轮PROGRESS：真实页面retest/int05-r3-restore-observe-2026-10-26T08-59-33-208Z.json确认原操作5c3fa29446b44fca874921748610cdef的sql-import SUCCEEDED，08:48:52.864597Z至08:58:49.478888Z，596.614秒；sql-readback从08:58:49.483327Z开始仍RUNNING。前置核验/目标检查/暂存/解压已成功，database-restore整体尚未终态。
+原worker4543/start233452150及5480/5849于08:59:18仍存活，旧docker导入子进程已退出，completion=null（retest/int05-r3-worker-paths.remote-host57-20261026-085922-114738.json）。本轮只观察原handle和真实页面，无重派/远端修改。SQL输入位置增长仅过程证据，以页面SUCCEEDED作为阶段结果，不替代数据库读回/整体恢复/业务验证。当前in_progress，继续等待读回与后续对象服务恢复；业务页面样本验证尚未执行。
+
+## 2026-10-26 VARBINARY最小修复提交
+Current Status: in_progress。INT05 r3原失败及已写入目标保留。真实MySQL RED6失败 -> GREEN -> REGRESSION（双模式VARBINARY/BLOB共8正向及未知类型2拒绝），30.936秒；原归档/资源/OOM/打包回归100通过20.07秒。开发证据位于C:/Users/D01021/.codex/worktrees/spug-delivery-fix-20261025/Maintance/doc/tasks/20261025-spug-delivery-fix/evidence。
+实现仅两份类型分支加入varbinary及127行真实MySQL测试，已单独提交2d68f6faafae722a1965d97fe823e3ae840c86d6。GREEN: experience-preflight -> PASS；新专用发布worktree创建中，operationId 5b3ab2d3-0a11-45bf-a8da-1dddc253bb7a。未部署、未新增业务PASS；不重放原r3、不清claim、不热改原执行器。所有旧候选、失败和日志保留。待固定提交构建复验，再独立目标真实页面恢复验收。
+## 2026-10-26 09:24Z 固定候选2d68f6f构建与真实预约阻塞
+Current Status: in_progress。新专用worktree C:/Users/D01021/.codex/worktrees/spug-varbinary-publish-20261026/Maintance 精确检出2d68f6faafae722a1965d97fe823e3ae840c86d6，前后clean、未产生新提交、未合回int_main、未删除。构建/验证命令载体build-candidate-2d68f6f.py；真实MySQL双模式回归及构建总38.781秒。两包各118文件逐字节和摘要通过，仅formal/formal_data_evidence.py相对8afa改变。SAFE payload=76bfd3dc486794faec3876d86d42657ae24a2370c3a45ca5463b22e19e818cfb，FAST payload=96117100916e317dd73b6b460b7787f84bfc06747e052e6bfa5032e444d5d0ad；SAFE清单origin仍冻结基线6b39ef6，不等于本次buildCommit。证据retest/candidate-2d68f6f/build-verification.json。未安装到服务器、未更换控制器、未提交新的备份/恢复。
+BLOCKER: INT05-next-restore -> 57宿主active.json仍精确属于r3操作smallapp-5c3fa29446b44fca874921748610cdef；预约pin内容校验通过。child-exit=1且timedOut=false，worker-result=FAILED_RETAINED/FORMAL_DATA_TYPE_UNSUPPORTED，mutationDispatched=true；importer-280.json=SUCCEEDED/exit0。该失败不能走PROVEN_NO_MUTATION，也不是OOM。现正式代码仅支持成功、明确无变更或严格OOM三条释放路径，不能手删active.json、改为无变更、重放旧任务或创建新目标绕过。原r3 mysql/redis均running、无OOM；内存可用7221108KiB，新端口53094空闲，目标r4不存在；仅只读预检，不保证未来资源充足。
+证据retest/int05-r4-preflight.remote-host57-20261026-092311-595760.json及int05-r3-reservation-inspect.remote-host57-20261026-092418-176913.json。后续在已授权最小数据安全修复范围评估正式“已变更但全部执行已证实结束”资源预约收敛路径，必须先BDD/RED，严查原配置/预约/结果/子进程退出/全部mutation及importer完成证据，保留原FAILED_RETAINED、原目标与claim；缺证据仍拒绝。不得直接调用CLI/API重发恢复。尚无新产品实现，先记录阻塞与设计，整体任务有可推进工作，非完成/非ready_for_closeout。
+## 2026-10-26 09:40Z 已停止失败预约收敛候选a41f301
+Current Status: in_progress。正式实现已提交a41f301a5abf4b98456ddf80a9b859af9cfbf022（仅控制器、预约API及两份测试）。BDD/RED/GREEN证据在DEV任务evidence；开发181通过37.62秒，固定提交发布worktree再验181通过34.260秒。仅原失败exit1、无超时、全部304原调用退出0且结束、原进程无活动、原目标所有容器停止、身份/claim不变才能释放宿主预约；保留FAILED_RETAINED及目标claim，不重放。不确定/OOM/无变更原路径保持。旧完成失败不再被新查询误投影RUNNING；重复查询不动后来预约。
+专用发布worktree C:/Users/D01021/.codex/worktrees/spug-retained-publish-20261026/Maintance；目标a41f301，前后clean，未产生新提交、未合回int_main、未删除。构建命令python -X utf8 ops/backup_engine/build_variants.py --output-directory <主任务>/retest/candidate-a41f301/packages；验证载体build-candidate-a41f301.py与collect-candidate-a41f301.py。首收集器仅预期common变化漏掉control文件，构建/181测试已通过但断言失败；第二收集器首次字符串替换重复导致断言失败，修正后逐字节重验现有制品，无重构建/无覆盖旧日志。
+SAFE payload72d20208d6bb1d8c8557f6e656f34fb2cdffe420a87cabd3b9418a82e7bfdd20；FAST payload6e15cbebc5f2e7cd1ec91adc82bd144dcedc1ce34f8e3fbb389ace4b11e7dd81；各118项，只有common/recovery_resource_admission.py与control/recovery_control_smallapp_native.py相对2d68变更。证据retest/candidate-a41f301/build-verification.json。
+GREEN: experience-preflight -> PASS；下一步仅按原stage载体旁路安装57新目录spug-candidate-a41f301-20261026，校验固定host identity/容量/包全部文件，绝不覆盖旧引擎、配置、日志或启动恢复。原r3预约/目标仍保留，尚未停止容器、替换控制器或真实页面查询验收。整体尚无新增业务PASS，原全部范围不变。
+GREEN: candidate-a41f301-stage57.py -> PASS，1.782秒；57旁路SAFE安装118文件验证完成，证据retest/candidate-a41f301/stage-172.30.30.57-20261026-094129-862404.json。controllersChanged=false、backupRestoreSubmitted=false、serviceUsingCandidate=false。下一步核对原r3控制器精确PID/argv/原配置及所有服务身份，在已授权范围正式部署查询收敛代码并以真实页面查询；不得改原selection/配置pin、手删预约或重发RESTORE。原预约仍未释放，完整目标仍in_progress。
+
+## 2026-10-26 f19e7f1固定候选发布
+Current Status: in_progress。挂载完整多重集比较已提交f19e7f143cc78cfea66adaebd2e2246f6c37bfa2；新专用worktree C:/Users/D01021/.codex/worktrees/spug-mount-publish-20261026/Maintance，前后clean，未产生新提交/未合回int_main/未删除。build-candidate-f19e7f1.py在固定提交Git archive执行回归后构建两包，64.906秒，118文件逐字节校验；证据retest/candidate-f19e7f1/build-verification.json，正式命令与测试清单均记录。
+GREEN: experience-preflight -> PASS；57同机固定身份，先旁路安装f19e7f1新目录。随后仅当前r3控制器PID11090/start233435767精确argv及配置pin匹配、原唯一ledger操作及308执行证明再核后，停止该控制器阻止并发派发，重核ledger，再优雅停止精确r3 mysql/redis；保留容器/卷/目标claim。新候选serve继续使用原controlPin及原ledger，进程入口/PYTHONPATH切换新候选，不改原配置/selection/owner产物pin；在同一34093端口恢复查询服务。每阶段写独立回执，失败保留，不手删active。仅真实页面查询原任务触发正式收敛，无恢复提交。
+# 终态查询收敛
+
+Current Status: in_progress。
+
+f19e7f1固定回归201通过54.415秒，57旁路安装118文件通过。原PID11090经精确身份复验停止，新控制器PID12694/start234003435在同34093端口使用原controlPin。r3 mysql/redis正常exit0停止，五服务全部停止，原selection/config/claim/result pin不变。首次pidfd_open不支持失败在停止前，失败及维护继续记录均保留。
+
+真实Playwright页面查询r3用时21.696秒，仍FAILED_RETAINED。远端验证releasePresent=false、reservationPresent=true、queries=[]。根因是本机smallapp_adapter.execute直接返回缓存terminal，未查询原ID，正式收敛未触发。
+
+## BDD与里程碑
+
+- Given已缓存失败RESTORE，When真实页面查询，Then只GET原operation、绝不POST或修改原终态回执。
+- Given返回冲突或网络错误，When查询，Then保留原FAILED事实并公开查询错误，不退回RUNNING或静默成功。
+- RED → 最小适配器及entry实现 → 原不重派与终态回归 → 提交及独立发布 → 真实页面复验。
+
+## 设计约束检查
+
+- 是否引入fallback/降级/吞异常：否，原终态与新查询错误是独立事实，都必须保留和公开。
+- 是否从根因和长期维护角度解决：是，补齐原ID查询的生命周期。
+- 是否存在临时补丁或绕过：否，不删缓存，不直接调API/CLI进行收敛。
+
+## 经验门禁
+
+Trigger：真实页面终态缓存阻断收敛。Preflight check：原请求与bridge指纹、不可变终态、GET-only；Blocker：缺RED、查询错误被吞、终态冲突；Verification：先RED后GREEN/REGRESSION、真实页面；Forbidden action：重发POST、删缓存、改原终态、伪造成功；Evidence：retest/int05-r3-restore-observe-2026-10-26T09-53-40-504Z.json、int05-r3-convergence-result.remote-host57-20261026-095425-855262.json。
+
+本次为适配器终态分支小范围重构，按Subagent-Driven Development执行。当前无远端释放、无新增恢复PASS。
+
+## 终态查询真实验收与r4计划
+Current Status: in_progress。c58f52f正式入口已发布，PID9 -> 565。真实页面retest/int05-r3-restore-observe-2026-10-26T10-09-47-426Z.json查询原ID，原FAILED_RETAINED不变；远端只读retest/int05-r3-convergence-result.remote-host57-20261026-101014-851282.json确认309证明pin、reason=PROVEN_STOPPED_RETAINED_FAILURE、active预约不存在，原pin/claim不变且五服务停止。未增加恢复PASS。
+BDD: Given原失败已严格释放宿主预约 When新建r4隔离目标 Then使用全新UUID/卷/网络/端口且不复用r3。目标intruoyi-57-int05-safe-20261026-r4，根/var/lib/docker/intruoyi-data/spug-intruoyi-57-int05-restore-20261026-r4，172.28.150.0/24，53094；engine f19e7f1，后续控制器34094。只读预检通过，retest/int05-r4-target-preflight-20261026-101104.json。沿用已审查provisioner，MySQL2GiB/backend3GiB，其余预算同r3。
+设计约束检查：是否引入fallback/降级/吞异常：否；是否从根因和长期维护角度解决：是；是否存在临时补丁或绕过：否。
+GREEN: experience-preflight -> PASS；精确host、全新资源、无active预约、旧原失败校验、容量/镜像/源配置pin通过；允许创建r4隔离资源，失败保留证据，不清理旧目标，不发恢复。后续恢复只能真实Playwright确认。
+
+## 2026-10-26 10:34Z r4注册成功
+GREEN: r4 registration -> PASS，1272.080秒，原worker已退出0，控制器PID11473端口34094；retest/int05-r4-registration-completed.json。立即READY核验通过retest/int05-r4-ready.remote-host57-20261026-103415-631852.json，118文件、原FULL点、新UUID、目标claim不存在、无active预约及资源预算通过。
+GREEN: experience-preflight -> PASS；下一步仅把本机57 SAFE目标由r3指向r4，保留原targetConnections/progress路由，私密备份配置，新增本任务SSH双端口34094/53094隧道，既有控制器和旧隧道不动；随后真实Playwright先核source/FULLpoint/SAFE/new target确认页，不确认则不得派发。Current Status: in_progress。
+
+R4 terminal recorded: smallapp-0a007951ece946b0a10c1cd3794345c3 FAILED_RETAINED / ARCHIVED_PAYLOAD_CHANGED; no mutation, formal reservation release verified. Original failures preserved; INT-05 is not passed. Evidence: retest/int05-r4-restore-observe-2026-10-26T11-08-43-872Z.json; retest/int05-r4-failure-diagnostic.remote-host57-20261026-111006-945793.json
+
+2026-10-26 continuation: user does not know historical CODE evidence location; retained missing-evidence status. Persistent O_PATH full diagnostic PASS14,325files/26,094,694,820bytes; committed414b7a8, clean dedicated worktree frozen231tests PASS,118files/package verified, side-by-side host57 stage only. New isolated r5 target created, no restore dispatched. Actual formal candidate archive readonly validation in progress. All credentials remain private; command/output records sanitized.
+
+Goal continuation classified PROGRESS: retry2 registration completed833.159s and final readinessPASS, localroute/tunnel40892 installed34095/53095, exact Playwright confirmation PASS; single UI restore submitted12:59:41 evidenceint05-r5-restore-selection-2026-10-26T12-59-41-052Z.json. Active operation smallapp-fd72fc0a906e4f55a996f042285826af, worker3241/start235122573, native descendants3421/3644; all actual nofile32768/32768 verified13:00:32. Real UI13:00:53 engineRUNNING/restore-admission RUNNING. Do not rerun --execute or registration. Only int05-r5-restore-observe.cjs --select-source-before-history for acceptance query; int05-r5-worker.remote.py readonly actual process. Business verification not yet run. cases.json preserves old failed attempts and now records pendingOperation. Current Status: in_progress; goal remains active, not completed/blocked.
+
+
+2026-10-26T13:11:10Z continuation: exact r5 operation smallapp-fd72fc0a906e4f55a996f042285826af remains RUNNING/restore-admission in real Playwright UI. Worker3241 and native3644 identities live, all nofile32768/32768; native rchar progressed from30368786176 at13:09:02 to36630399330bytes at13:11:10; no terminal receipt. Evidence: retest/int05-r5-restore-observe-2026-10-26T13-11-10-598Z.json and retest/int05-r5-worker.remote-host57-20261026-131110-454120.json. Do not repeat dispatch. Prepared readonly int05-r5-terminal-audit.remote.py for exact r7 operation, bounded pin paths/hash checks and sanitized counts/status; UTF8 AST parse PASS, not executed remotely because UI success not yet observed. Business UI validation pending. Historical test originals remain unavailable per user; no repeated request and no fabricated pass. Current Status: in_progress; verified wait, goal active.
+
+
+2026-10-26T13:16:48Z continuation: previous turn verified wait; current turn improved readonly observation and verified same live r5 operation. int05-r5-worker.remote.py now reads local proc fdinfo flags before fd.stat, skipping existing O_PATH leases before touching mounted file metadata. Production engine, guard and restore process unchanged. UTF8 AST PASS; real readonly observation exit0 in1.421s versus previous66.266s; evidence int05-r5-worker.remote-host57-20261026-131647-287785.json. Worker3241/start235122573, native3644 cpu24834ticks/rchar52966387201bytes, completion null, all nofile32768/32768. Latest real UI evidence int05-r5-restore-observe-2026-10-26T13-15-17-592Z.json RUNNING/restore-admission. No repeated restore dispatch or case promotion. Terminal artifact audit and business UI validation remain pending. Current Status in_progress; goal active.
+
+
+2026-10-26T13:25:17Z PROGRESS: exact r5 restore smallapp-fd72fc0a906e4f55a996f042285826af passed restore-admission1335.409s at13:22:14Z and target-checks25.328s at13:22:39Z. Database restore RUNNING; SQL stage SUCCEEDED68.244s, SQL expand RUNNING since13:23:50Z. Real UI evidence retest/int05-r5-restore-observe-2026-10-26T13-25-17-017Z.json. Actual worker/native live at13:23:47, nofile32768, staging bytes progressing; evidence retest/int05-r5-worker.remote-host57-20261026-132346-189538.json. Previous CIFS admission blocker is passed in this actual operation, but full restore/content consistency/application and real business page acceptance remain unverified. No rerun, no case promotion. Read existing real int03-r3-terminal-audit-20261025-094356.json only to verify terminal evidence schema (not as r5 acceptance). Current Status in_progress; goal active.
+
+
+2026-10-26T13:28:10Z PROGRESS: real r5 SQL expand SUCCEEDED146.696s at13:26:17Z; SQL import RUNNING since13:26:33Z. Exact operation smallapp-fd72fc0a906e4f55a996f042285826af; UI evidence retest/int05-r5-restore-observe-2026-10-26T13-27-32-919Z.json. Actual worker3241/native3644/docker14598 live at13:28:10; SQL source12454728678bytes, native read position128974848, docker read128077385bytes. Evidence retest/int05-r5-worker.remote-host57-20261026-132808-956486.json; actual nofile32768/32768. No terminal receipt or import success claimed. Prior turn progress (admission and target checks passed); current turn progress (SQL expand passed and real import started). Full database comparison, objects, consistency, Redis, application, final archive guard, cleanup and real page acceptance remain required. No resubmission; Current Status in_progress; goal active.
+
+
+2026-10-26T13:36:31Z PROGRESS: exact r5 operation smallapp-fd72fc0a906e4f55a996f042285826af SQL import SUCCEEDED570.587s at13:36:04.013723Z; database SQL readback RUNNING since13:36:04.017964Z. Real UI evidence retest/int05-r5-restore-observe-2026-10-26T13-36-31-350Z.json. Actual worker3241/start235122573 and native3644 live13:36:13; import docker14598 absent, subsequent readback descendant observed; evidence retest/int05-r5-worker.remote-host57-20261026-133612-302239.json. SQL input12454728678bytes; import terminal now verified separately from input byte progress. Full schema/data equivalence, objects, permissions, Redis, application, archive guard, cleanup and real page acceptance remain unverified. Prior turn verified wait; current turn progress. No retry/resubmission and no case pass promotion. Current Status in_progress; goal active.
+
+
+2026-10-26T13:50:06Z progress evidence: added readonly exact-operation scratch metadata observer int05-r5-readback-progress.remote.py, no business file contents or database calls. Actual SAFE package formal_data_evidence._observe_data creates numeric per-table partitions and tokens.tsv/sort chunks; metadata count is started partitions, NOT passed tables. Real runs exit0:520partitions/22151415token bytes at13:48:49 ->620partitions/23622967token bytes at13:50:06. Evidence retest/int05-r5-readback-progress.remote-host57-20261026-135005-677758.json. Real UI retest/int05-r5-restore-observe-2026-10-26T13-50-05-836Z.json still SQL readback RUNNING for r5 smallapp-fd72fc0a906e4f55a996f042285826af; actual worker/native verified live earlier this turn (int05-r5-worker.remote-host57-20261026-134733-914610.json). Prior turn verified wait; current turn adds concrete phase progress evidence, no acceptance pass. Full objective unchanged; goal active; Current Status in_progress.
+
+
+2026-10-26T14:00:52Z PROGRESS: exact r5 restore smallapp-fd72fc0a906e4f55a996f042285826af database-restore SUCCEEDED2247.973s, SQL readback SUCCEEDED1443.31s at14:00:07Z; objects/object-restore RUNNING. Real UI evidence retest/int05-r5-restore-observe-2026-10-26T14-00-05-288Z.json. Readonly completed database audit int05-r5-database-audit.remote.py exit0: exact UUID515dc735-d136-11f1-a441-0242ac1c9720, observed/comparison byte+SHA pins verified, fullSchemaDataEquivalenceVerified=true, comparison tables exactly match observed tables;879tables/476917rows/64743JSONnodes. StateSCHEMA_DATA_EQUAL_PENDING_APPLICATION_PROOF. Evidence retest/int05-r5-database-audit.remote-host57-20261026-140051-829809.json. Database resultSHA d4b37244bfe8d1db5cf6bdf9a4af8f2a22894737be3cfdae2cc84276707040aa; observedSHA4b1a5eceda56d2d5f6ac5cd8633979a787c0178b06007069ac6e8d72c03b9516; comparisonSHA2d030fff1a6a3ad368d6eefbf57701967dc8e32f4003bea35b2e44c5d393efaa. This verifies database stage only; objects/permissions/consistency/Redis/application/archive guard/cleanup/business UI remain required. Previous turn verified wait; current turn progress. No case pass promotion. Current Status in_progress; goal active.
+
+
+2026-10-26T14:03Z PROGRESS: recorded independently pinned database success in cases.json INT-05 pendingOperation.databaseStage and current r5 attempt, preserving prior case status/failures and every unrelated case. Verified beforeSHA4ddeae74d3125bd9618993945590a769d3ba695af4ee632e1642e45d870f67a2 ->afterSHA2e4723ea6076de13f1bacabbfb9231e070229dc701a0c4fd7b02197f1272d345; UTF8 reread and structural preservation assertions PASS. Carrier record-int05-r5-database-milestone.py. Real UI int05-r5-restore-observe-2026-10-26T14-01-55-580Z.json object restore RUNNING; worker3241/native3644 live int05-r5-worker.remote-host57-20261026-140155-435534.json, native rchar123199738983. Whole restore and business acceptance false/pending. Previous turn progress (database verified), current turn inventory progress plus verified wait. No resubmit. Goal active; Current Status in_progress.
+
+
+2026-10-26T14:28:59Z PROGRESS: exact r5 operation smallapp-fd72fc0a906e4f55a996f042285826af objects/object-restore SUCCEEDED1662.863s at14:27:50.207422Z; final/consistency RUNNING. Real UI evidence retest/int05-r5-restore-observe-2026-10-26T14-28-57-847Z.json. Exact worker3241/start235122573/native3644 live in int05-r5-worker.remote-host57-20261026-142857-720923.json; completion null. Database stage independently verified; object receipt audit, consistency, Redis, application, final guard, cleanup and real business UI remain required. No repeated dispatch or whole-case pass promotion. Current Status in_progress; goal active.
+
+
+2026-10-26T14:31:53Z PROGRESS: exact r5 operation smallapp-fd72fc0a906e4f55a996f042285826af final/consistency SUCCEEDED139.354s at14:30:09Z and final/redis-rebuild SUCCEEDED10.571s at14:30:20Z. final/application-start RUNNING, terminal null. Real UI evidence retest/int05-r5-restore-observe-2026-10-26T14-31-51-525Z.json; exact worker3241/start235122573/native3644 live per int05-r5-worker.remote-host57-20261026-143151-379888.json. Object restore previously succeeded1662.863s. Final receipt/hash audit, application health, guard, cleanup and real page acceptance pending. Business script reviewed but not run before terminal success. No duplicate dispatch; no full acceptance claim. Current Status in_progress; goal active.
+
+
+2026-10-26T14:34:05Z PROGRESS: exact r5 operation smallapp-fd72fc0a906e4f55a996f042285826af final/application-start SUCCEEDED196.507s at14:33:36.650179Z; final/archive-verification RUNNING since14:33:36.654380Z. Real UI evidence retest/int05-r5-restore-observe-2026-10-26T14-33-47-373Z.json (observer17.443s exit0). Previous goal turn progress; current turn progress. Original Desktop source INT05/07/08/09 scope reread: INT05 limited file-list/image and full restore evidence, broad business remains PARTIAL; historical operation identities/counts are not replaced by current rerun identities/counts. Final archive guard, cleanup, exact terminal audit and real page verification pending. No resubmission or whole-goal completion claim. Current Status in_progress; goal active.
+
+
+2026-10-26T14:42:20Z PROGRESS: exact r5 smallapp-fd72fc0a906e4f55a996f042285826af final/archive-verification SUCCEEDED457.838s at14:41:14.492180Z; restore-cleanup RUNNING since14:41:14.495423Z. Real UI evidence retest/int05-r5-restore-observe-2026-10-26T14-42-19-223Z.json. Exact worker3241/start235122573/native3644 live per int05-r5-worker.remote-host57-20261026-144219-082963.json; completion null. Previous turn verified wait; current turn progress. No repeated dispatch, manual cleanup, or whole restore acceptance claim. Await actual cleanup terminal before terminal evidence audit and readonly business UI. Current Status in_progress; goal active.
+
+
+## 2026-10-26T14:52Z R5 attachment route correction / 设计约束检查
+是否引入 fallback/降级/吞异常：否。是否从根因和长期维护角度解决：是，目标同源 /yudao/ 代理替代错误固定本机端口；是否存在临时补丁或绕过：否，不改数据库、归档、业务记录或外部目标。沿用已授权隔离恢复目标配置修正范围。
+BDD: Given r5恢复成功、文件9074条及20条元数据一致但附件指向旧18322 When目标Nginx四处输出改为同源/yudao/ Then真实浏览器附件从r5 MinIO读取且字节/SHA与备份前一致。
+RED: int05-r5-business-2026-10-26T14-50-20-656Z.json -> TARGET_SAMPLE_COMPARISON_FAILED; login200/code0/tenant1,20rows,total9074,nonUrlFieldsEqual=true,attachments missing. Earlier connection-reset evidence retained. Own SSH corrected40892->23996; frontend53095 now direct172.28.151.36:80/HTTP200, controller34095 unchanged and realUI success still queryable. No remote transport mutations. Route generator synchronized.
+GREEN: experience-preflight -> PASS. Readonly identity/config inspection int05-r5-attachment-route-inspect-20261026-145215.json verifies target UUID515dc735-d136-11f1-a441-0242ac1c9720, all service ids/images/target labels, frontendb5ed78cc, MinIOe71b8d22, config within exact r5 root, four obsolete rewrites, exact MinIO route172.28.151.33:9000. Pin ef7ef289fa8c381c7a667f2bdb75653005c25441044d241570707a8b4d415d60. Apply only target config with lock and SHA precondition, preserve original, preserve bind-mount inode, nginx -t before reload, restore original on invalid syntax. Then real Playwright regression; broader business remains unverified. Current Status in_progress.
+
+
+## 2026-10-26T14:56Z INT05 r5 terminal and limited real UI verification
+PROGRESS: Original r5 smallapp-fd72fc0a906e4f55a996f042285826af reached SUCCEEDED at14:43:26.379907Z, actualExitCode0, final cleanup131.817s. UI evidence int05-r5-restore-observe-2026-10-26T14-44-24-393Z.json; terminal audit int05-r5-terminal-audit.remote-host57-20261026-144446-458299.json verifies resultSHAe294b6876418e5457517d763d08b92c9521ad1c8d6c4f892b2755077d48131c4 and required stage pins. Database879tables/476917rows/64743JSONnodes;5916object versions/9653189892bytes/exactVersionIdentityVerified; physical completeTreeReadback; bucketCONFIGURATION_MATCHED; consistency allReferences/invariants true; Redis43expired/0restored,values/absoluteExpiry true; backend/frontendhealthy,isolationENFORCED; four cleanup paths absent,deletedBytes26827854181. Broad business acceptance NOT_PERFORMED by engine.
+GREEN/REGRESSION: After explicit target-only transport and Nginx route corrections, real Playwright int05-r5-business-2026-10-26T14-53-40-091Z.json exit0,74.378s,RECORD_AND_TARGET_ATTACHMENT_SAMPLES_PASSED_FULL_BUSINESS_PENDING: fresh login,9074file records,20nonURL metadata samples equal,20target-origin HTTP200 attachment byte/SHA matches. Two prior failed UI attempts retained. Nginx original backed up,nginx -t/reload exit0; afterSHA0c2ae51d18d240d44bab635cb86d1773dfe8b699153afb80b5b5433a02dd62dc; apply evidenceint05-r5-attachment-route-apply-20261026-145254.json. This was post-restore target config correction, not an untouched restore UI pass. Owned SSH now23996,controller34095 unchanged,frontend53095 localhost->172.28.151.36:80; old command preserved privately. No database/business/archive changes.
+Remaining: reconcile inventory current INT05 fields and source-FULL/restore evidence, document provisioner recurrence fix as appropriate, continue other original scoped incomplete cases and integration/owned worktree/runtime closeout. Existing historical failures and absent historical logs remain. Previous turn progress; current turn progress. Overall Current Status in_progress; full goal not achieved.
+
+
+## 2026-10-26T15:00Z Inventory reconciliation and next dependency audit
+PROGRESS: record-int05-r5-acceptance.py checked actual successful FULL a54a UI telemetry, r5 all-stage success, exact terminal exit0/result pins, database full equivalence879/476917/64743,5916versions/9653189892bytes/exact IDs, physical tree readback, permission/consistency/Redis/application/cleanup and20real browser sample hashes. INT05 now通过 only CURRENT_RERUN_LIMITED_RESTORE_AND_FILE_SAMPLES; broad businessAcceptance=false, historicalOriginalExecutionReproduced=false, postRestoreConfigurationCorrection=true. Full backup12982.45s; restore6207.934909s; finalUI74.3784896s independently recorded. Prior case snapshotint05-before-r5-acceptance.json preserved; all previous attempts and all other144expanded inventory entries unchanged; stale running fields moved to supersededR5Observations. casesSHA2e4723ea6076de13f1bacabbfb9231e070229dc701a0c4fd7b02197f1272d345 ->5cb9f34eb89b085d2a7a13a65e95688b75ec3d5ea5a17b3b3fc0576f19f73e31. Aggregate123通过/14阻塞/7失败 across versions, not current candidate all-pass.
+Fresh realUI int07-restore-observe-2026-10-26T15-00-11-998Z.json still TERMINAL_UNKNOWN for originalafdb, database/importFAILED,finished2026-10-25T11:22:49.543855Z. No original failure/claim mutation or new59 restore/dictionary write. INT08/09 dependency remains unresolved. Next: inspect sustainable provisioner same-origin route handling and implementation integration/closeout prerequisites. Previous/current turns progress. Overall Current Status in_progress; goal active, not complete.
+
+
+2026-10-26T15:06Z PROGRESS: committed31a1b48 任务: 在隔离目标准备前校验同源附件配置. Only two task-owned files staged: intruoyi57-prepare-safe-target.remote.py and test_target_attachment_configuration.py; no unrelated dirty files or final task records included. normalize_attachment_route validates exact four template sub_filter rules and targetMinIOproxy, preserves source URL matching, outputs relative/yudao/, accepts already-normalized input unchanged, rejects mixed/missing rules or wrong proxy. All copied bytes transformed and validated before NEW.mkdir/network/volume/container mutation; preparation plan records configSHA and attachmentRoute. No new remote preparation invoked.
+RED: python -X utf8 test_target_attachment_configuration.py -> exit1,5errors (normalization function absent; failure exposed before implementation). GREEN: same command -> exit0,5testsPASS. REGRESSION: retained source matches, target proxy, idempotency, malformed config rejection; git diff --cached --check PASS. Existing real r5 UI test proves corrected runtime attachments only; new preparation sequence has local contract coverage, not a new server creation claim. Prior/current goal turns progress. INT07 readonly worker check150107 confirms original28282 absent/no descendants; UI stillTERMINAL_UNKNOWN, not live waiting, no failed-state rewrite. Integration into main of414b7a8 implementation chain and post-merge verification remains pending; no worktree deleted. Current Status in_progress; goal active.
+
+
+2026-10-26T15:13Z PROGRESS: merged int_main8fd64256f3ad8c637199ddb2883d9a02f9a3e294 verified in new dedicated spug-integration-verify-20261026/Maintance. Frozen committed git archive regression313tests/0fail/0error/0skip67.066s (retest/candidate-8fd6425/regression.xml/log); buildbothvariants and118files each verified, total82.422s,build-verification.json. SAFE payload62a569ee1094257da768cc09ba697d5b061db9e7bf00de238952d92b006978c4,FASTd7c7c161ab5b502ff011d6dddce1673c7addae3b71ee6a4d20123b723e1f7ffd match414b7a8 content. Node --test ops/spug/smallapp_ui_safety.test.cjs28/28PASS0skip; real isolatedMySQL test_varbinary_readback_mysql.py2testsPASS50.833s, source and generatedSAFE/FAST typedrows/unknownGEOMETRY rejection verified, exact labelled temporary container cleanup completed by test, mysql-regression.log retained. All processes finished; gitstatusclean; no worktree process references. No new commits in temporary checkout; mergedIntoIntMain=true; no remote deployment. Integration milestone ready_for_closeout, whole task in_progress because original scoped cases remain. GREEN: experience-preflight -> PASS for archiving only newly created verification worktree after validation; paths/logs outside checkout retained. Final deletion result pending.
+
+
+2026-10-26T15:15Z GREEN: integration temporary worktree closeout -> PASS. Native archive initially refused because checkout was active primary; reattached existing owned spug-opath-publish-20261026, then native archive queued and completed. Verified spug-integration-verify-20261026/Maintance path absent and gitworktree registry no longer lists it. No new commits/untracked files in deleted checkout, merged8fd6425 validated, evidence outsidecheckout retained; build-verification.publishWorktreeDeleted=true. No runtime console launched by this verification and all test sessions exited; source4dirtyfiles preserved duringmerge. Integration milestone complete, whole task remainsin_progress (123passed/14blocked/7failed acrossversions, original scope unchanged). Other owned historicalworktrees not yet cleaned and runtime closeout stillpending. No final task-record commit or completion claim.
+
+
+2026-10-26T15:20Z PROGRESS: native archive completed for retaineda41f301,mountf19e7f1,archiveidentity467177c; list_artifacts shows recoverable archived_worktree and Git registrations absent. Retained/archiveidentity paths absent. Mount path remains as empty normal directory(no childfiles,nojunction); exact nonrecursive Remove-Item was rejected by automatic policy review with reason 'blocked by policy', command did not run, no alternative deletion attempted. Cleanup not complete for that empty directory. Diagnostic8afa3e9/VARBINARY2d68f6f archive refused 'Another active task still uses this worktree'; retained both, no CLI removal bypass. Lack of OSprocessreferences did not override app task ownership. Currentopath primary preserved. Evidence owned-publish-worktree-cleanup-preflight.json/result.json.
+Remaining21nonpassing cases reread: r5 automatic cleanup has all4pathsabsent and does not create eligible historicalNAS09/10postcleanup input; no fabricatedstaging. MATRIX18/19/UI08/UI14 missing trueUIconditions, SUPPORT01/02 missingexecutors/SUPPORT06/07 missingoriginalinstallationenvironment, CODEhistoricaltestidentity/modecontractgaps, INT01historicoutertar/INT06restartcontinuity, INT04failure/INT07unknownterminal blocking08/09 remain. No scope contraction, no passpromotion. Previous/current turns progress; full goal active. Current Status in_progress; local mount-empty-directory closeout blocked by policy.
+
+
+2026-10-26T15:28Z SUPPORT01/02 prerequisite audit: actual private archive executor.private.json configurations located and SHA256 recorded without disclosing credentials. All original repo/stateDir/buildWorktreeRoot paths absent; loopback18110/18112 not listening. Relocated IntRuoyi root/backend/frontend exist, but are not the historical release executor state/package environment. Executor.__init__ rewrites running jobs/outcomes to interrupted then saves; IntRuoyi.snapshot may reconcile remote progress and save. Therefore startup is not a read-only archive viewer, especially historical JOB-78d4f5f073. No executor instantiated, no state extracted/replaced, no remote calls or business writes. Evidence: retest/support-executor-migration-20261026-152828-605534.json; reproducible metadata-only audit: audit-release-executor-migration.py, exit0. SUPPORT01/02 remain blocked; counts remain123passed/14blocked/7failed across versions. Missing historical test originals remain unavailable; user does not know their location and must not be asked repeatedly. Current Status in_progress; goal active. This turn adds concrete configuration and lifecycle evidence, not a passing execution claim.
+
+
+2026-10-26T15:43Z PROGRESS: INT04 root cause confirmed in actual SAFE package: common/recovery_minimal_runtime.py retained first-rule-only subnet REJECT check, distinct from previously fixed recovery_data bridge DROP check. Readonly exact host59/network1b8ba10bb735/subnet172.28.146.0/24 chains captured in int04-current-isolation-audit.remote-host59-20261026-153826-337813.json. Both exact target rules present behind disjoint canonical subnet REJECT rules. Initial assumed formal target proof absent (two audit failures preserved); no mutation or dispatch. New helper strictly parses canonical IPv4 subnet rules, permits only nonoverlapping canonical REJECT prefixes and actual DOCKER-USER chain declaration; rejects unknown actions/overlap/malformed/missing target. SAFE generator applies exact frozen-context patch. FAST explicitly NOT_CHECKED remains unchanged; package regression checks both contracts.
+BDD: Given disjoint isolated subnets preceding target When SAFE target checking Then prove effective target instead of requiring first position; unknown or overlapping prefixes fail closed.
+RED: new20tests failed ImportError before implementation; added real -N DOCKER-USER case failed before declaration handling. Initial Windows regression had2rpds Linux-extension dependency failures; first Docker mounted worktree failed10git-path fixtures; proper isolated Linux development fixture records these as environment setup issues, not product passes. First fixture41pass/1fail exposed incorrect assumption FAST includes SAFE isolation; inspected FAST bound and NOT_CHECKED contract, kept modes distinct. Final development fixture int04-subnet-development-20261026-154227/regression.xml:43passed/0skip4.01s. Source archives with development overlays are test fixtures only, never deployment artifacts. Real saved chain comparison r2: both oldchecksfalse/newcheckstrue, targetPresenttrue, no remote writes. Original first comparison rejected user-chain declaration and remains preserved. No INT04 acceptance upgrade; new clean committed release worktree and actual isolated restore still required. Current Status in_progress; previous/current goal turns progress.
+
+2026-10-26T15:48Z PROGRESS: implementation committed1c99a1f7f56ca2e05ae37c9f978d8f30d36bbd7c (4files only); new dedicated spug-subnet-publish-20261026/Maintance created at exact commit. build-subnet-candidate.py <worktree> <commit> froze git archive, verified Linux regression {'name': 'pytest', 'errors': '0', 'failures': '0', 'skipped': '0', 'tests': '263', 'time': '64.031', 'timestamp': '2026-10-26T15:45:57.494231+00:00', 'hostname': '3ecc7de4413f'} and both118-file package manifests/bytes in72.125s. SAFE payload0e4922148b276b84edfe5fa0ffd0f8e0c18e92903962f1cc073f7a9898d052d6;FAST97cb478edaa7ed8be8a9ca02eacf40179388aeb4644c9e5b8fad8f95d4ea691c. Evidence candidate-1c99a1f/build-verification.json/regression.xml. Publishworktreeclean/no newcommits, notmerged/notdeleted/notdeployed; retain for actual release validation. Main remains8fd6425.
+Read-only59 admission observation int04-next-resource-audit.remote-host59-20261026-154728-897948.json: hostreservationrootabsent, noactive.json; datafilesystemfree132840214528bytes, MemAvailable6742668KiB, SwapFree5498472KiB. Before next restore, derive complete explicit disk/memory budget from original archive/target and provision owned reservation root; do not infer admission from absentlock or remainingfree alone. No new target, no server writes and no backup/restore submission this turn. OriginalINT04failedrecord preserved; casecountsunchanged123/14/7. Overall Current Status in_progress; fullgoalactive.
+
+2026-10-26T15:58Z PROGRESS: pinned original INT04 materialpayload26088444894bytes14334pins yields unchangedconservative diskbudget212331437808bytes; current datafree132.84GB and hostavailable~6.7GiB below7GiB. No restore dispatched. ReadonlyLVM evidence confirms clVG1000GiBunallocated; exact cl/homeLV1010500108288bytes/fsUUIDcac21d5f-5e22-45a7-be83-02088b415191/ext4clean. Concrete +128GiB fixedtarget1147939061760byte plan written int04-volume-expansion-plan.md; separate user approval requested because sharedstorage expansion has noonline-shrinkrollback. Approval pending, not implied by elapsedtime. Guarded int04-expand-volume.remote.py prepared, syntax/arithmeticchecked, notexecuted; exactIDs, oldsize, backupmetadata, exclusiveexecutiondirectory, stagefailurepreservation and containerlifecycle comparison. No alternative cleanup or budgetreduction.
+Local verifiedimplementation1c99a1f merged normally into int_mainc17f1a967c37a5f769fc1ca0129cb4262228bc92;4dirtyfilehashesunchanged. New dedicated spug-subnet-integration-20261026/Maintance checks exactmergedcommit with verify-subnet-integration.py; verificationstillrunning. Newworktreehasnonewcommits; deletionpending. Existing subnetpublishcheckoutretained fororiginaltargetcandidate. Current Status in_progress, goalactive, no broadcompletionclaim.
+
+2026-10-26T16:01Z GREEN: mergedcandidatec17f1a9 verification -> PASS; {'name': 'pytest', 'errors': '0', 'failures': '0', 'skipped': '0', 'tests': '268', 'time': '84.078', 'timestamp': '2026-10-26T15:59:21.309385+00:00', 'hostname': '900c193720e9'}; SAFE/FAST118files each verified, payloadsidentical1c99a1f; buildtotal100.109s. Newintegrationcheckoutclean/nonewcommits, alltestprocesshandlesfinishedexit0, no runtimeconsole started. GREEN: experience-preflight -> PASS to nativearchive only spug-subnet-integration-20261026 after reattaching ownedsubnetpublishcheckout. Evidence outsidecheckout; implementationmergevalidated; no remote deployment. Integration milestone ready_for_closeout pending actualarchive/pathcheck; whole taskin_progress. Sharedvolumeapprovalpending and no volumeoperations performed.
+
+2026-10-26T16:02Z GREEN: integrationverificationworktreecloseout -> PASS. Nativearchive completed; spug-subnet-integration-20261026/Maintance absent and Gitunregistered. Evidence retainedoutsidecheckout; build-verification.publishWorktreeDeleted=true. No newcommits and no runtimeconsole inthischeckout. Originalspug-subnet-publish-20261026 remainsclean at1c99a1f for pendingINT04deployment; mergedmainc17f1a9 verified268PASS. Sharedvolume+128GiBapprovalstillpending; no LV/filesystemmutations, no restoredispatch. Whole Current Status in_progress.
+
+2026-10-27 用户明确决定：不扩容，保留容量阻塞。撤销待批准状态；不得执行 int04-expand-volume.remote.py 的 --apply-approved-128g 或其他扩容替代路径。INT04 保持容量阻塞，不降低既有预算以通过门禁。此前仅只读容量/卷身份检查；未执行 lvextend/resize2fs。剩余任务范围不变。
+
+
+## 2026-10-27 当前范围优先说明
+用户目标明确排除59备份服务器。当前范围以 scope-without-backup-server.md 和绑定原清单SHA的JSON为准；早期“范围不变”和三服待办属于历史记录。未操作服务器，未改原cases状态。原144项排除27项，保留117项，其中16项原记录未通过；混合项仍需证据复核，整体in_progress。上一目标回合为状态答复/no progress；本回合完成可追溯范围映射，属于progress。
+
+
+2026-10-27 CODE当前候选补验：前回合完成范围映射，属于progress。已核旧45项模式契约评审存在，避免重复评审；本轮对已冻结c17f1a9真实SAFE/FAST包重跑原9模块，验证新提交未引入额外失败，补齐真实redis依赖。不修改原测试断言，不合并两模式通过数，不操作服务器，不以新测试冒充缺失历史套件。BDD: Given同一冻结候选双包 When原9模块分别运行 Then按测试身份比对旧模式预期并暴露新增失败。沿用既有设计约束及经验门禁，只有本地隔离容器和任务证据写入。运行命令：python -X utf8 audit-c17-package-modes.py；验收要求：包SHA/118文件核对、原测试SHA对应、零环境错误/跳过、逐项差异。整体in_progress。
+
+
+2026-10-27 CODE最新候选实际包回归完成：c17f1a9 SAFE111通过/23断言失败，FAST112通过/22断言失败；各134项、零环境错误、零跳过。9模块测试SHA与旧批次完全相同，按(module,name)逐项比对无状态差异；45项仍为已评审的模式合同差异，不改断言、不拼接成一套通过。两包各118文件及外包/内部SHA验证通过；耗时SAFE23.686秒、FAST69.455秒。runner退出0表示审计完成，两个pytest均退出1，不能宣称全绿。证据retest/c17-package-mode-audit/comparison.json及各xml/log/json。缺失历史套件身份仍未解决，CODE编号不晋级。未调用57/58/59或修改运行服务。当前回合progress（最新候选实际包新增证据），整体in_progress。
+
+
+2026-10-27 SUPPORT迁移审计取得新证据：source-ops归档内executor.py/intruoyi_executor.py/intruoyi_runtime.py与C:/Spug/runtime逐字节相同；运输版snapshot不含新版active_remote_progress，原主仓代码审计不得直接用于阻断运输版只读页面路线。两个真实state.json精确SHA已记录：inventory49任务5包且无running；IntRuoyi27任务4包，历史prepare-rehearsal JOB-78d4f5f073为running。未认定历史任务仍活跃，未启动执行器或远端访问。扫描进程exit0。下一步按support-executor-local-restore-plan.md核对完整状态路径与归档包、私有副本空间和迁移映射；启动正常会将历史running转interrupted，必须记录差异，不能宣称只读启动。SUPPORT06/07官方installer仍在D/E盘门禁前阻断，不以此局部恢复替代完整安装验收。本回合progress，整体in_progress。证据retest/support-transport-runtime-identity-20261027.json。
+
+
+2026-10-27 GREEN: experience-preflight -> PASS for local independent archive restoration only. support-state-layout-20261027.json verifies inventory79files/2764193486bytes and IntRuoyi18786files/7960319396bytes;9package manifests,release.tar and all listed artifact hashes match, no unsafe/duplicate/special members. Required10724512882bytes, C:free>1.4TB. Destination C:/SpugPrivate/spug-release-center-acceptance-20261027 must not exist; set user/SYSTEM-only inherited ACL before secret-bearing extraction, exclusive files, path confinement, all input SHA and persisted readback hashes checked. No source modifications, no state/config migration yet, no executor startup or remote calls. Carrier restore-support-state-copies.py; preserve partial output on any error rather than retry/overwrite. Previous turn progress; current turn archive identity/integrity progress; whole in_progress.
+
+
+2026-10-27 本机恢复进度：两个来源bundle SHA与原清单一致；私有repos/maintenance精确2473705d6c2d323faa4c6723ac8f978c84e4178c、repos/intruoyi精确2ff4bbc5345969e41104c16e0ba649ed39ad7531，均clean。原运输release-center全部22个Python文件与运行源码字节一致。现有bridge两应用地址host.docker.internal:18110/18112及认证key与归档一致（仅记录匹配布尔值，无密钥输出）；不需修改桥。15个状态路径映射均在归档成员中，配置carrier已准备未执行。
+状态提取进程session97730仍live：inventory79文件/2764193486字节持久化读回已全部通过，state原SHA未变；IntRuoyi仍写入，观察10687文件/5274338001字节、最近写入0.06秒。此为进度非完成；必须等待原session终态及support-state-copies-20261027.json，不能重跑独占提取carrier。两个源码clone进程session82114已exit0，元数据扫描session79109已exit0。执行器未启动、状态路径未改、未远端调用。当前回合progress及verified wait；整体in_progress。下一步完成原提取，执行configure-support-state-copies.py前再核gate，随后原版真实UI验收。
+
+
+2026-10-27 GREEN: experience-preflight -> PASS for local transport executor startup. 原提取session97730exit0，18865文件10724512882字节全量持久化读回SHA通过，原state SHA未变；两Git源精确提交clean。已应用15个审核路径字段，反向映射后state与原档语义完全相等，非路径字段不变；原state字节另存私有根。源22Python逐文件SHA匹配，桥地址/key匹配；启动carrier复核SHA与18110/18112可绑定，隐藏窗口、私有输出、记录精确PID，仅运行原transport入口。不执行transfer.py executors，不调用59，不提交任何action。预期inventory49/5不变，IntRuoyi27/4仅JOB-78d4f5f073由running转interrupted并补原版error；启动后整份JSON必须与该预期相等。BDD: Given真实归档工作副本与原版执行器 When启动并从真实UI读取 Then包/任务完整且无发布写入。接下来真实Playwright新登录，界面草稿仅浏览器本地写入；用户明确测试范围内，绝不点击执行发布/恢复/解决任务按钮。
+
+
+2026-10-27 SUPPORT01/02真实页面验收通过，原失败和blocked快照保留。8组检查覆盖两应用各9页、历史包刷新、草稿隔离、双标签、未知应用停止及真实延迟请求放行后不覆盖当前应用；零发布POST、零页面异常、状态SHA前后不变。复用此前真实登录会话；本轮新登录timeout和首次重复id定位失败保留，未伪造成功。只证明运输版本机UI，不升级完整运输安装或新版功能。cases与范围映射已同步，排除59后117项：103通过/9阻塞/5失败。子里程碑ready_for_closeout：停止本任务新启PID6468/10940并验证端口恢复未监听后收口；原桥无需改动、原档保留。GREEN: experience-preflight -> PASS for stopping only the two exact owned executors after image/starttime/receipt/state hash checks; no sharedservice restart or remote actions. 整体in_progress。
+
+
+2026-10-27 SUPPORT01/02本机验收子里程碑completed：两精确owned进程PID6468/10940的解释器路径、启动UTC与启动receipt匹配，验收后state SHA保持，已停止；18110/18112均确认未监听，恢复任务前执行器缺席状态。原Spug桥/容器/远端均未修改。状态副本、源码副本及失败/成功证据保留，未删除其他任务资源。原117保留项现103通过/9阻塞/5失败；仅该子里程碑完成，完整目标in_progress。旧代码历史套件、NAS旧现场、UI入口限制、完整安装、INT历史范围与整体closeout仍未完成。
+
+
+2026-10-27 SUPPORT07前置纠正：新恢复的原maintenance bundle仍无CODE终态7项/历史根身份测试，不能计通过。主仓已存在正式C盘恢复器doc/tasks/start-spug-20261022/restore_spug.py，实现提交d502af5697b6e1b183f205771545b4dd96b35631且当前无diff；RESTORE-C.md及原任务明确用户已批准C适配并实际安装，禁止重复原D/E install。本轮不新增参数化、不扩大开发。
+BDD: Given正式C恢复器与现有C:/Spug/runtime When实际CLI安装同一目标 Then已有目录门禁拒绝，保护文件及两个Spug容器身份/启动时间不变。GREEN: experience-preflight -> PASS for expected-refusal invocation only: source equals committed version; root.exists first short-circuit occurs before verify/extract/load/compose/mutations; prior Docker info/ps/volume and port probe read-only. 实际运行拒绝后与已通过的五工具真实换路径证据合并评估SUPPORT07，不替代SUPPORT06新隔离安装。
+
+
+2026-10-27 SUPPORT07已完成：正式C恢复器实际调用exit1，命中既有目录拒绝；源等于d502af5提交，保护文件SHA与两Spug容器ID/StartedAt不变。与此前五工具真实换路径通过证据共同满足原文SUPPORT07两项要求；未修改产品或伪造D/E。原失败和安装器路径误判保留。本轮new historical bundle search无CODE原测试命中；证据不足保持未验收。SUPPORT06独立新安装仍阻塞：正式C入口固定项目/18080且拒绝现有资源，不能用已有实例冒充本轮新安装，也不能修改其他任务运行实例；不执行参数化改造。当前104通过/8阻塞/5失败，剩余13项未通过及版本/收尾门禁仍待完成。此回合progress，整体in_progress。
+
+
+2026-10-27 混合主机范围复核：原文SHA未变，EVERYDAY03明确59→58及58→59，MATRIX13明确测试58与备份59双目标比较；两项此前partial保留不准确，现整体排除这些指定59组合，历史cases状态不改。未新增替代组合来扩大任务。MATRIX01/02独立保留57→58，实际重新读回源与目标共18份下载，9记录9附件字段/关联/长度/SHA全部一致；5Redis值与绝对到期一致；配置按正式迁移契约匹配，不称配置字节相同。NAS16保留57/58的116文件同包安装证明，原代码测试exit1不改为通过。证据scope-mixed-host-evidence-review-20261027.json。当前原144项排除29项、保留115项：102通过/8阻塞/5失败；不是新候选统一版本完成证明。当前回合progress（纠正范围计数并独立核实剩余证据），整体in_progress。
+
+2026-10-27 Spug续做（排除59）：只读入口版本核验、57/58白名单运行盘点均exit0。实际入口规范化匹配c17f1a9；内存4100153344/3710140416字节，Swap近零，未派发恢复或修改远端。证据见20261023-spug-local-drill/retest/served-version-audit-20261026-171804.json及retained-runtime-preflight-20261026-171919-807115.json。
+
+2026-10-27 Spug剩余验收：只读核对57 INT03成功目标的5容器及30控制器来源依赖；约4GiB可评估资源，2份来源采集配置缺失使停服门禁未通过。未停止/删除资源，未调用59。证据int03-retirement-audit.remote-host57-20261026-172314-689643.json。
+
+2026-10-27 Spug验收续做：核明57 INT03自有成功目标无来源依赖，停止5精确容器，保留卷/claim/result。MemAvailable3978224→8106916KiB；其他容器运行/启动身份未变，未调用59。首轮只读门禁短ID误判失败保留，修正后exit0。证据int03-retirement-audit.remote-host57-20261026-172753-336805.json。
+
+2026-10-27 Spug剩余验收：58 INT02已验收实例5容器安全停止，退出0/143/0/0/0，卷/claim/result保留、其他容器生命周期未变。可用内存3578728→7680028KiB。证据int02-retirement-20261026-173029-987840.json；未调用59，未新增恢复派发。
+
+2026-10-27 Spug续做：只读核对57/58活动85控制器、21包路径；20包各自manifest一致但与c17候选有差异，1旧包格式KeyError未验。85程序pin匹配磁盘，未改服务器或连接59。证据retained-active-packages-20261026-173254-532112.json。
+
+2026-10-27 Spug续做：真实路由映射六个可选来源均唯一匹配；固定c17f1a9两包stage到57/58新目录，各118文件读回SHA通过，未切换控制器/路由、未备份恢复、未调用59。证据candidate-c17f1a9/stage-172.30.30.57-20261026-173801-427268.json及58的173804-233926.json。
+
+2026-10-27 Spug续做：六可选来源dry-plan及实际c17f1a9升级均exit0，账本/registry/原配置保留；独立路由和118文件复查通过。目标仍历史版本，未备份恢复、未连接59。证据retained-ui-routing-20261026-174105.json与candidate-c17f1a9/source-*-apply-20261026-17403*.json。
+
+2026-10-27 Spug续做：58创建新c17 SAFE FULL r9隔离目标exit0，UUID d44df7cb-d164-11f1-a35b-0242ac1dfa20，数据库/Redis/MinIO空、未占用。未备份恢复、未连接59。证据candidate-c17f1a9/safe-full-r9-target-create-20261026-174357-403537.json。
+2026-10-27 Spug续做：只读确认本机Spug 18080=200、来源 smallapp-58-switch-safe-20261024 操作历史为空；58 rehearsal-smallapp-20261022-frontend健康且映射38082；本机40558空闲，旧business-tunnel PID已退出。按经验门禁准备为测试租户真实业务页启动仅绑定127.0.0.1的任务专用SSH转发；不连接59，不提交备份恢复。证据待写入candidate-c17f1a9目录。
+2026-10-27 Spug续做：创建任务独立127.0.0.1:40558转发并从测试前端获HTTP200（PID与结果candidate-c17f1a9/candidate-c17f1a9-safe-full-r9-business-tunnel.json）。已新增c17-safe-full-r9-backup.cjs真实Playwright单次SAFE FULL流程；先登录122/aoteman、下载并hash/size核对全部当前附件，再验证无历史操作、写独占意图并一次提交。node --check通过后方可执行；异常受理结果只查原编号，不自动重试。未操作59/正式服。
+2026-10-27 Spug续做失败记录：首次Playwright流程因当前固定租户122登录页已无#tenant控件而在提交前超时；保存retest/candidate-c17f1a9/safe-full-r9/admission-2026-10-26T18-01-53-622Z.json。只读页面检查确认JS/CSS加载200、测试租户122页面真实显示；一次人工登录页探针用私有aoteman凭据返回“账号或密码错误”。未读写业务记录、未创建intent、未提交备份；停止凭旧凭据重试。旧凭据文件仅记录元数据，密码不入日志。当前须更新测试租户私有凭据后再继续。
+2026-10-27 Spug续做只读审计命令意图：`python -X utf8 doc/tasks/20261023-spug-local-drill/c17-safe-full-r9-firewall-audit.py`。范围仅测试服58，按目标创建回执校验5个容器/网络身份、读取精确iptables链并用c17 `subnet_isolation_rule_effective` 检查两条规则；不连接57/59，不写防火墙、不改容器、不发起备份恢复。执行结果与证据路径待补。
+2026-10-27 Spug审计RED：首次只读尝试在验证端口映射时触发过严断言并exit1，远端未写入。审计载体已收敛为仅允许计划中的frontend loopback 43858->80映射，其余4容器不得发布端口；重试同一只读命令，不改变远端状态。
+2026-10-27 Spug审计GREEN：修正后同一只读载体exit0；58测试服候选目标网络/五容器身份匹配，前端仅127.0.0.1:43858发布，另外4个容器无端口映射；c17校验器确认INPUT、DOCKER-USER的精确子网隔离规则均有效。证据candidate-c17f1a9-safe-full-r9-firewall-audit-20261026-182027-419327.json；无远端写入，未派发恢复，未连接57/59。
+
+2026-10-27 用户更新登录身份：后续 IntRuoyi 只读验收使用芋道源码/admin，密码采用用户本轮明确提供且与 login-access.md 一致的凭据，不在任务记录中复制。该指令不授权写入芋道源码租户，也不将管理员登录计作演练小程序122/aoteman验证。当前小程序40558真实Playwright导航返回ERR_CONNECTION_REFUSED；未提交任何账号密码，未执行备份恢复。重新建立入口前须核对任务隧道身份与精确目标，不凭旧PID重启。上轮防火墙审计为progress，本轮新增入口不可达证据。
+状态更正：此前回答“正式服57没有成功验证记录”不准确。现有cases.json的INT-03与INT-05包含57独立隔离目标恢复成功和限定业务抽样记录；INT-02包含57来源到58隔离目标成功。它们不是覆盖正式在线业务实例，也不是当前c17统一全范围验收。保留当前总体in_progress。
+2026-10-27 ROOT_CAUSE: c17 SAFE source UI route mismatch proved by pinned sourceConfigurations -> repository -> capture writerContainerIds. Actual frontend 78f6c0b0289b6f3bb26a27a19cfabb0c5bf2c3c54b1cf172c7e140e5c31dee8c is recovered-r2, running, host loopback40558. Previous new tunnel incorrectly selected original rehearsal host38082. Its fixed122 page/login rejection does not prove credentials invalid for the actual source; no operation was submitted. Evidence retest/c17-source-ui-route-20261027-004758-706534.json. Only58 contacted, remoteMutations=0. Previous turn progress; current turn root-cause evidence progress.
+GREEN: experience-preflight -> PASS for creating a new task-owned loopback40558 tunnel to verified58 remote127.0.0.1:40558. Local40558 has no listener; preserve old receipt and PID file, use new exclusive r2 receipt/files, no process replacement or remote write. Real UI identity must match pinned source before login/baseline/backup. No credentials logged. Design: no fallback, no product modification, correct the target using actual source identity. Full task in_progress.2026-10-27 r2 tunnel readiness FAILED: SSH forwards to remote127.0.0.1:40558 received connect refused; launcher exited1 and stopped its own child. No receipt/PID success file produced; stderr preserved. Actual source route audit004936 confirms backend/frontend healthy; published loopback port unreachable but exact frontend172.28.243.36:80 HTTP200. Correct transport destination to this same pinned frontend address, new exclusive r3 files. This is an explicit source-identity route correction, no automatic fallback or product/server change. GREEN: experience-preflight -> PASS for local-only SSH forwarding to this exact verified frontend; original failed files retained, no remote writes.2026-10-27 GREEN: correct source real Playwright login122/aoteman and read-only baseline captured,19records24attachments, downloaded bytes/size/SHA all checked. Evidence candidate-c17f1a9/source-baseline-2026-10-27T00-50-45-860Z/result.json. Withdraw stale-credential blocker for actual source; wrong-route failure retained. r3 tunnel PID25264/receipt retained; task must close it at final closeout. No backup/restore submitted.
+Current local docker API pipe missing; docker desktop status reports not running,18080 no listener. GREEN: experience-preflight -> PASS for starting existing local Docker Desktop runtime to restore task Spug console only, no install/reconfiguration/container deletion/remote service start. Check existing container identity/configuration before starting any stopped Spug container. Request intent: docker desktop start; original CLI status handle94145 must finish first. Whole goal in_progress.
+2026-10-27T08:58+08:00 PROGRESS: prior handles58052/9272 are missing; live process audit shows no Docker processes, Linux engine pipe absent, WSL docker-desktop Stopped. Last startup log ends00:54:40Z waiting for init API; no proven cause of termination. Host has about23GiB free RAM and1.35TiB free C drive. No backup intent submitted. GREEN: experience-preflight -> PASS for one detached hidden launch of existing Docker Desktop executable; previous attempt is authoritatively absent, no WSL reset/unregister/data deletion or remote change. Recheck actual engine and original Spug identity before any container action. Previous turn progress; this turn runtime diagnosis progress.
+
+2026-10-27T09:09+08:00 PROGRESS: Docker/Spug recovered, source transport restored (ownedPID29844 loopback23258), controller21032 config/program pins and118 c17 files match, all58 controllers unfinished=0. Real UI still refuses because source catalogue enumerates seven historical target connections; six58 forwards absent plus excluded59 target. Deployed adapter SHA equals source. No59 access, no operation submission. Evidence route-dependency-20261027-010823.json and c17-catalogue-dependency-blocker.md. Next: action/selected-target scoped catalogue BDD/RED in isolated development workspace, preserve strict chosen-target admission and historical routes. Whole goal in_progress; prior turn verified wait, current turn progress. No broader refactor or silent fallback.
+
+2026-10-27 GREEN: experience-preflight -> PASS for local Spug four-file selection fix deployment only. Implementation commit1fdb6bd787bbdb95649c9746a13efc7076636f37; fresh publish worktree C:/Users/D01021/.codex/worktrees/spug-selection-publish-20261027/Maintance, clean committed input. No build required for static JS/Python; exact git bytes and Python compile checked. Release-worktree verification43Python/36JS passed; development legacy16 passed. Installer preview verified original four files against c17, exact original containerf615a60c76f4 and idle entryPID9/start18223/thread1. Apply preserves originals in exclusive private backup, atomically copies four committed files and restarts only exact entry process via supervisor. No remote controller install/restart, no backup/restore dispatch, no59 connection. New commit produced in development only; not merged int_main, publish worktree not deleted yet. Final actual UI verification pending.
+
+2026-10-27T09:28+08:00 PROGRESS: localSpug selection fix1fdb6bd installed from dedicated clean publishworktree; real backup page now connected while59 untouched. Real UI FULL smallapp-f554f96fb8c84422986dd0078aa246aa accepted202/reserved01:21:40Z, SpugHistory335, then queried SAME ID; actual owner result SUCCEEDED/exit0 finished01:25:38.284691Z, UI independently SUCCEEDED01:26:51Z. Before/after real122/aoteman19records24attachments exact fields/relations/downloaded size+SHA equal (safe-full-r9-ui1fdb/source-after-comparison.json). No restore yet; r9 remains prepared/unregistered. Query carrier saved under historical candidate-2968e84 directory but evidence belongs current1fdbUI+c17-identicalengine; folder name is not candidate proof. Correction: outer worker3556/native3660 exited2 with TERMINAL_UNKNOWN at01:21:50 while owner continued; completion.json presence and grep-operation-ID process absence do NOT prove owner terminal. Authoritative owner later SUCCEEDED, no resubmission. Future live gates must inspect owner result/process receipts, not unfinished-directory count alone. Progress telemetry still STEP_TELEMETRY_CONNECTION_FAILED because configured local18558 SSH transport absent; restore only task-owned exact58 SSH forwarding before step timings. Four-file original backup C:/SpugPrivate/spug-selection-deploy-20261027 retained. Implementation committed1fdb, not merged int_main; dedicated publishworktree still present, no new commits there. Overall in_progress; next collect owner timings, register r9 against f554 then real restore and business comparison. Do not rerun FULL carrier.
+
+2026-10-27 Spug续接：用户指定芋道源码/admin仅用于IntRuoyi只读验证，密码不记录。检查原登记失败，33858为旧FAST目标占用；改用实测空闲34558后r9登记成功，保留旧控制器。真实Playwright确认精确58/r9/f554后仅提交一次恢复052be5ae829e4c47a475e5971b77a9f2；当前RUNNING。恢复业务仍使用测试租户122/aoteman，不写芋道源码租户、不访问57/59。详情本任务execution-log及retest回执。
+
+2026-10-27 Spug剩余目标续行，排除59：通过真实测试租户页面创建29/30/31后完成I1备份1886及r10恢复d8e5，22记录27附件完全一致；随后仅编辑30、删除31及其附件、新增32，I2基线22/28，真实页面I2备份6b0b已受理。r9/r10各在验收并确认非来源后正常停止自有五容器，数据/claim保留；r11独立目标已创建并通过隔离检查，等待I2终态。零芋道源码租户写入，无57/59连接。命令载体及逐阶段证据见本任务c17-safe-chain-acceptance.md/execution-log.md。未判定整体完成。
+
+2026-10-27 10:22：继续Spug剩余工作，排除59且不扩容；用户指定芋道源码/admin仅限IntRuoyi只读验证，密码不记录。命令意图：真实页面单次提交r11最新点恢复、原编号查询、58 owner只读审计、122测试租户页面只读全量比对。结果：c3d4 SUCCEEDED/退出0，22记录28附件完全匹配；首次只读选择超时保留，不算全部范围完成。
+
+2026-10-27 10:42：继续原Spug剩余清单，59排除且不扩容。58当前FAST来源/118文件/owner只读复核，恢复本机20758通道，真实页面全量备份6977及r12独立恢复87dc、完整22/28业务验收通过；仅测试租户新增任务记录33/34/35，各一附件，真实增量da71成功且来源25/31回读一致。r11已验收容器正常停止保留卷/claim。旧验证载体的r12所有网卡绑定在提交前修正为loopback并保留失败回执；当前PID30652。I1恢复/I2、其他保留项和融合清理未完成；本轮无产品实现改动，不提交其他任务脏文件。
+
+2026-10-27 11:07：继续剩余用例，排除59。FAST I2原编号成功，来源25/32真实比对通过；正常停止已验收r13保留数据后创建独立r14，核空目标/隔离/资源/父链118文件，真实Spug单次恢复2e14 SUCCEEDED/实际退出0，6.130506秒，无worker；真实目标25记录32附件全部比对PASS。详见c17-fast-chain-acceptance.md及fast-i2-r14-accepted.json。整体in_progress，未覆盖其他矩阵编号/页面异常/融合收尾。
+
+2026-10-27 11:15：继续剩余矩阵；真实Spug只读六轮切换取证，发现初始化未就绪已可操作。复核纠正载体6通过为5有效/1不合格，原件保留；无POST，无备份恢复重派。原02:08异常未关闭，下一步初始化生命周期BDD/TDD。详见c17-tab-transition-investigation.md。
+
+2026-10-27 11:27：初始化首版38单测通过但真实页面空来源失败；已精确回滚1fdb并核容器字节。新增空来源RED后修正，39项回归通过，修正版待新隔离发布及真实复核；整体未完成，无备份恢复重派。
+
+
+## 2026-10-27T11:39:15 初始化修复合并后验证
+int_main 已快进到 d8bdbcd40260d6f8f9536c14e150ab15cec8aa82。预检七个变更文件与主工作区既有改动无交集，未包含其他任务改动。专用验证工作区 C:/Users/D01021/.codex/worktrees/spug-init-integration-20261027/Maintance 检出相同提交，未构建或发布，未产生新提交。
+GREEN: merged-python-regression -> PASS，六模块58项通过，15.70秒；Docker python:3.12-bookworm，--network none，只读挂载，禁用pytest缓存及字节码。模块：scripts/tests/test_smallapp_terminal_query.py；ops/spug/test_smallapp_safety.py、test_smallapp_source_rotation.py、test_smallapp_cross_route.py、test_smallapp_display_context.py、test_smallapp_progress.py。
+GREEN: merged-js-regression -> PASS，node --test ops/spug/smallapp_ui_safety.test.cjs ops/spug/smallapp_restore_result.test.cjs，39项通过，0失败/0跳过。
+验证后git status --porcelain为空；验证工作区已归档删除，路径不存在。修正版发布工作区spug-init-r2-publish-20261027此前已删除。旧失败发布工作区及开发任务记录仍保留，整体任务in_progress，不标记completed。实际浏览器六轮验收证据及历史未知时序异常分别保留。未访问59，未扩容，未重复派发备份恢复。
+
+核验完成：13个未完成编号的本地证据逐文件读取并固定SHA，缺失引用0条。INT-06增加原文范围纠正；全业务/BOM扩展检查不再作为该编号的额外完成门禁，重启连续性与原要求逐项证据审核仍未完成。五个CODE编号补入c17原始模式回归：SAFE111通过23失败、FAST112通过22失败，均0环境错误/0跳过，不拼接通过数、不改原状态。原cases完整快照已保留。整体in_progress。
+
+GREEN: INT-06 saved-evidence semantic assertions -> PASS：同点备份恢复、实际退出0、9074条列表、20条非URL字段及20图大小SHA、隔离目标隧道/UUID关联逐项核验。整体仍未完成：缺实际图片预览显示、逐项完整读回审核和电脑重启连续性。报告retest/int06-semantic-evidence-review-20261027.json。此PASS仅指上述证据断言，不是INT-06整例通过。
+
+## 2026-10-27T11:47:52 INT-06完整数据回执补核
+只读取得57原成功恢复result及12个固定SHA子证据，全部字节/SHA一致。879表475173行64715JSON、9074文件记录；5916对象版本9653189892字节、9379文件完整树读回；引用和隔离服务原健康结果已核。NAS manifest与独立连接读回14334个payload逐项pin完全一致。Redis41键恢复前已过期，实际恢复及独立核验0键，绝对到期和值验证为true，不能报成41键恢复。保留physicalCaptureVerified=false、continuousHostExclusionVerified=false、serverDurabilityVerified=false及业务NOT_PERFORMED。数据回执审核完成，不替代图片预览或电脑重启连续性；整体未完成。证据retest/int06-pinned-data-verification-20261027.json。未改远端文件/服务/数据库，未访问59。
+
+## 2026-10-27T11:51:17 INT-06真实图片预览补验通过
+原隔离目标intruoyi-57-retest-safe-20261024-r1容器身份及镜像匹配、五容器运行。第一次主机53057入口Connection refused，未登录，失败原件保留。只读HTTP确认同一frontend容器172.28.141.36:80为200后，使用loopback53067直达该已核容器，18322直达同目标MinIO；未改服务/端口映射/产品配置。
+GREEN: Playwright int06-image-preview-20261027.cjs -> PASS，真实芋道源码/admin登录，9074条文件列表，既有图片控件点击预览，thumbnail和preview均complete且1935x1419，来源为隔离目标转发；Escape关闭。截图已人工视检可见图片预览覆盖层和图片。证据retest/int06-image-preview-20261027.json/png。
+本轮SSH PID6916已终止，53067/18322均可重新bind，恢复任务前无监听状态；无远端业务写入。INT-06现在剩电脑重启连续性未执行；已完成原操作不能事后证明其运行期间重启连续性，不能用本次重建SSH替代。原物理捕获/持续隔离/存储持久性未验证限定仍保留。整体目标仍in_progress。
+
+## 2026-10-27T11:53:58 发布工作区收尾
+GREEN: publish-worktree-closeout -> PASS。opath414b7a8、subnet1c99a1f、init275743e三个临时发布worktree已通过原生归档删除，逐个确认目录不存在且Git登记消失；任务证据保留。无新提交，均已包含在int_main；原始构建与验证命令/结果见历史执行记录及本次preflight。275首次失败与回滚记录保留，不宣称其运行成功。共享diagnostic/varbinary与当前selection仍保留，开发任务记录/控制器收尾及原清单未完成项仍待处理，整体in_progress。证据retest/publish-worktree-closeout-result-20261027.json。
+
+## 2026-10-27T11:57:06 INT-06本机重启验证窗口
+已形成int06-client-reboot-plan.md，包含预检、远端进程独立性、Windows boot time、原编号接续、禁止重复派发及收尾。已通过异步问题请用户确认是否安排正常重启窗口；回答前不派发新的57备份、不重启本机。确认理由是整机重启影响其他应用与未保存工作，超出普通只读/演练操作，不是额外技能审批。当前没有等待中的远端备份，不把等待答复当作进程verified wait。
+原线程近期回读未提供缺失历史CODE测试清单；不再次向用户索要其已明确不知道位置的文件。剩余历史证据/前端入口/安装环境限制继续保留；整体目标active，不标完成。
+
+## 2026-10-27T11:58:04 无进展复核1
+上一轮形成重启方案并请求窗口确认。本轮未收到答复，未派发备份或重启。独立安装所需D/E盘仍不存在；历史原测试清单缺失及c17原模式失败记录保持；前端缺入口和历史暂存缺失不能通过伪造/绕过消除。本轮仅复核阻塞，没有新的验收通过或实现完成，分类no_progress（连续1轮），非verified wait。尚未达到三轮blocked阈值，goal保持active。证据retest/remaining-blocked-audit-20261027.json。
+
+## 2026-10-27T11:59:13 阻塞审计通过
+连续三轮同一前提阻塞未解除，均无可推进的新授权、证据或独立环境。INT-06仍待本机重启窗口；SUPPORT-06缺独立C/D/E环境；CODE历史测试身份缺失且原模式失败保留；NAS旧暂存及INT-01外层tar原件缺失；MATRIX/UI受真实前端入口约束。不能通过重试成功链、模拟旧现场、改判失败、API/DOM绕过或擅自整机重启完成。整体状态blocked，非completed；59排除不扩容。已完成SAFE/FAST三点链、57原恢复及图片预览、主线修复验证与已清理工作区结论保留。
+
+## 2026-10-27 用户决定：暂不重启
+用户明确回复“暂不重启，保留该项阻塞”。INT-06重启连续性保留未验证，不为此启动新备份、不安排本机重启；不将决定解释为豁免或通过。原成功恢复/数据校验/图片预览证据保留，整体goal仍blocked。不重复询问相同窗口，等待用户主动改变决定。
+
+## 2026-10-27T12:38:23+08:00 恢复目标后的首次阻塞复核
+目标运行状态active，按恢复后的新周期重新计数，不复用前轮3次计数。用户不重启的决定持续生效；当前D/E安装环境仍缺失，原13项未完成状态和历史证据/真实页面入口限制未变化。本轮无可独立推进的已授权动作，no_progress第1轮；未访问服务器、未重跑备份恢复、未重启、未重复询问重启窗口。目标不标完成，待真实前提变化。
+
+## 2026-10-27T12:39:18+08:00 恢复后阻塞审计通过
+连续三轮同一前提阻塞保持，未获得新的原始证据、独立环境或可执行入口。用户明确不重启，INT-06保留阻塞，不再询问。其他原始历史证据/安装环境/真实前端门禁限制未变化，不能通过重跑已成功链或绕过门禁补齐。goal重新标记blocked，非completed。原已验收结果、失败现场、清理记录和用户边界保留；不访问59、不执行远端操作。
+
+2026-10-27T05:54:56.563074+00:00 用户要求继续IntRuoyi三项验收；执行只读身份/容量/父链核查，准备恢复57既有SSH桥；无凭据输出。
+
+## 2026-10-27 IntRuoyi57/58验收接续
+用户要求确认并补齐正式服/测试服自身全量与增量备份恢复。真实 Spug 页面一次性提交57增量 smallapp-bc3a610cf70345538e2dcd783893a6ed；只读观察原worker，未重试。按独立网段/卷/容器身份预检创建57空隔离恢复目标，未覆盖业务实例。58入口失效且上游地址缺失，保留来源身份阻塞并询问迁移情况。所有凭据仍仅使用私有文件，日志未记录明文。
+
+## 2026-10-30 Spug handoff installation
+Request: preserve original/private data; verify original package, fetch both requested Git branches/commits, synchronize only code in an independent copy, regenerate integrity, install ordinary console executor, real Playwright login and read-only history/three-server version checks. No release, service installation or business mutation.
+Commands: read-only SHA256/immutable SQLite audit; Git ls-remote/clone/object identity/checkout; explicit UTF-8 package copy; portable unittest and verify-only; local tool/path/port/network checks. User confirmed no releases since export and original executor stopped.
+Results so far: original 656 files PASS; updated 659 files PASS; 219 protected files unchanged; 435 code files compared with zero semantic differences; portable tests 7 PASS. Original package and existing workspace preserved. Existing 18080 instance preserved; new project uses 18081/18112. Test-server SSH preflight timed out; installation/real acceptance outstanding. Credentials omitted.
+Evidence: doc/tasks/20261030-spug-handoff-install/.
+
+Final local result (2026-10-30): reviewed importer installed into C:\SpugHandoff\release; ordinary console executor18112 and dedicated Spug18081 run, no Windows service. Real Chrome/Playwright login PASS;232 visible history rows and25 package/version-stage options match export;release-center write requests0. Live SQLite including WAL exactly matches reviewed import;0 active jobs;legacy scheduler/worker/monitor disabled. Final original656/updated659 checksum audits PASS and original unchanged.
+Remote read-only result:57/59 actual image IDs and RepoTags match manifest2026-10-30-10-19-11, frontend version matches, HTTP200 and backendUP.58 SSH/HTTP still timeout after user's retry request.57 old Compose .env tag differs;59 that .env absent. No remote fixes, deployment, restart or business changes. Overall task blocked pending complete three-server evidence; no commits made. Access/start commands documented in independent START-HERE.md; credentials omitted.
+
+## 2026-10-30 58 direct-network continuation
+User supplied source-PC192.168.112.214 success and requested original-key/-F NUL direct test plus route/source-policy comparison. Verified both original private file hashes/paths and installed copies without content disclosure. Local57/58/59 all select192.168.109.82/WLAN/default192.168.109.1; no destination-specific58 route or WSL overlap.57 TCP22/8081/48081 pass;58 all timeout before SSH authentication;59SSH and registered38081 pass (generic8081/48081 timeout).57/59 direct SSH peer observation confirms192.168.109.82 and return via172.30.30.1. Original key ACL rejected on reachable targets; existing secure identical installation copy authenticates, original ACL unchanged. Windows firewall profiles disabled/default outboundAllow, detailed rule access denied and recorded as unknown. Source restriction remains unproven; requested58 return-route/rule or bounded packet-capture evidence from sourcePC. No proxy/jump host, credentials/network/application changes, remote mutation or release. Evidence:doc/tasks/20261030-spug-handoff-install/network-diagnosis.md.
+
+## 2026-10-30 21:10 test58 capture cooperation
+User supplied test58 return-route conflict:intruoyi-release-rehearsal-net=192.168.96.0/20 routes192.168.109.82 toDocker bridge rather than company gateway. Source192.168.112.214 returns via172.30.30.1. Upon user's capture-start notice, local bounded TCP22/8081/48081 probe ran21:10:23–21:10:34+08:00, all10.02s timeouts; capture output requested. No network changes. Pinned code review found rehearsal network create omits explicit subnet; reset deletes rehearsal containers/data volumes and was not used. Prepared read-only remediation review, requiring live endpoints/company-approved nonoverlapping CIDR and authorization before remote changes. Original package/private state untouched; full acceptance remains blocked pending network repair and original remaining evidence.
+
+## 2026-10-30 23:07 network recovery and final installation acceptance
+User confirmed source-PC route repair and instructed direct retest/continuation.58 TCP22/8081/48081 all connected from192.168.109.82;directSSH verified return via172.30.30.1/ens18.57/58/59 actual frontend/backend imageIDs and RepoTags match original manifest2026-10-30-10-19-11,frontend HTTP200,backendUP. Real Chrome/Playwright login revalidation PASS,232 history rows/25 package options match,release-center writes0. Live state including WAL unchanged,0 activejobs. Existing57Compose.env drift and absent58/59Compose labels are preserved findings; DockerAPI replacement behavior verified in pinned code, no new publication SUCCESS claim or remote changes. Final installationAcceptance=PASS_WITH_FINDINGS. Stable18081/18112 instance kept,temporary browser session deleted,no service or business writes. Only3 task-owned sanitized records selected for local commit;shared request-command-log and other existing modifications remain unstaged. Evidence:acceptance-final.json and task.md.
+
+Runtime clarification: user asked whether agent can start it directly. Checked existing18112listener PID47372 matches installed Python executor/config and local18081 homepage HTTP200. Already running, no duplicate process, service change or release. Completed task status retained; only task execution-log update selected for local record commit, shared log remains unstaged.
+
+## 2026-10-31 三服发布方案（任务起始 2026-10-30）
+
+用户需求：将“最新代码如何发布到三服”的拟执行方案写成文档。仅编写方案，不执行发布、构建、远端检查或业务数据变更。
+命令意图：读取固定导入代码和经验门禁；确认实际 Git 拓扑、Spug 动作和本机启动脚本；编写并核对 doc/tasks/20261030-three-server-release-plan/release-plan.md。历史安装证据仅作为起点，不冒充新发布成功。方案覆盖来源提交冻结、配套脚本同步、现有 .env/网络/预检阻塞、单包三服、正式完整数据演练、真实登录、业务验收、恢复与收口。
+验证：文档静态核对及 UTF-8/敏感内容检查；结果记录于该任务 execution-log.md 和 verification.json。未打印或提交凭据，未运行启动或发布命令。
+## 2026-10-31 三服发布方案代码审阅修订与本地 GxP 只读确认
+
+用户要求：保留一次构建、测试直发、正式完整数据隔离演练、正式原地升级、审查直发；不凭 static-only 新增结构演练/开发门槛；按真实启动方式判断旧 .env；已持久化精确路由与 Docker 重叠分开处理，不重启或删除现用演练；补齐 GxP 来源，确认本地关闭且三服发布后的保存/运行模式关闭；区分只读验收与获准测试租户真实写入回归；取消自动合并及泛化 Git 收尾条件；NAS 已封包上传失败可校验原包后重传。
+命令意图：只读核对固定构建/登录/运行态/NAS 重传代码，修订原方案；安全白名单核对本机配置来源与工具文件；Playwright 通过真实登录进入本地配置页面，只读核已保存和实际运行 GxP。私密文件不打印、不提交；本轮未执行构建、三服发布、远端变更或 Git 推送/合并/清理。
+验证结果与证据：doc/tasks/20261030-three-server-release-plan/ 的 execution-log.md、local-gxp-verification*.json、verification.review.json；第一次脚本因首页自动请求被只读保护阻断，保留失败记录，使用既有登录 redirect 进入配置页后复核。
+本轮最终结果：修订文档静态核对全部通过；本地真实 Playwright 登录后，GxP 已保存与实际运行均为 DEVELOPMENT_DISABLED，auditEnabled=false，无待重启、无配置保存。两次严格脚本因自动 workbench/context POST 被保护拦截而整体 FAIL，原始记录保留；仅确认 GxP 关闭，不称完整页面/功能回归通过。三服发布及发布后 GxP 验收仍未执行。没有自动提交、推送、合并、清理或发送至其他会话。
+## 2026-10-31 Spug 三服发布
+- 用户要求：用 Spug 发布 C:\Users\D01021\Documents\ChatGPT\IntRuoyi 中的代码到三服，沿用已审阅顺序及 GxP 全链关闭要求。
+- 命令意图：核对精确已提交 SHA、保留本地修改和私密历史；通过真实 Spug 页面依次构建、测试验收、正式基线演练、正式发布开放、审查发布开放；不自动合并或推送。
+- 当前证据：源 HEAD=3f8e28a3a16ccf49ab300cab1024429528d0ce71，源 Git 无本地修改/未跟踪文件，Spug18081和普通执行器18112已运行。
+- 验证结果：本地GxP真实登录核验关闭。三服保持2026-10-30-10-19-11。源3f8e不含f3ee且缺必需release-sources.json/运行端点，独立预检真实失败；测试/审查空间不足64GiB，Spug只读扫描候选不足。状态blocked，已请求整合范围与空间处理确认；没有构建或发布。
+- 续做审计2：2026-10-31 01:38只读复核两服空间仍不足，Spug活动任务0；完成不改分支/索引/工作文件的merge-tree预览，整分支合并有42处冲突，未创建提交。保留原失败和预览证据，未整合代码、删资料或执行三服发布；必要确认仍待答复。
+- 续做审计3：2026-10-31 01:48只读确认源HEAD及缺失契约不变；测试可用58,118,148,096字节、审查64,556,224,512字节，仍低于64GiB；Spug25包236任务、活动0，普通执行器18112/PID14528运行。相同阻塞连续3轮，必要确认未收到，目标标记blocked，未构建、发布、删除资料、改远端或合并推送；现场保留。
+- 用户明确答复：允许在独立发布分支整合必要发布配套代码并提交后继续；原int_main不合并、不推送。选择安排扩容或腾出空间后继续，该答复不等于实际空间已足够，也未授权删除未知资料。
+- 命令意图与结果：隔离整合保留3f8e最新业务和f3ee发布契约，提交93f1c32c；真实后端24项、HTTP会话3项、菜单迁移21项及全新精确检出的历史清单验证通过。维护演练显式网段/命名修复7974bbf、保留旧演练登记与资源绑定修复7cf6699已独立提交，相关171项回归通过；原分支未合并、未推送。
+- 资源同步：严格同步已提交代码至工作包/稳定source，完整重新校验663文件/25包；原包、包内private、历史、镜像与其余文件摘要保持。仓库外仅更新独立演练配置和明确旧演练保留绑定；旧资源未删除，发布状态未交接。
+- 本地验收：普通18112执行器恢复稳定source，真实Playwright Spug登录通过；GxP来源localhost8081再次实际登录，保存/运行均DEVELOPMENT_DISABLED、auditEnabled=false、无待重启。发布历史25包236任务不变，活动0。
+- 14:28只读空间：测试58,089,877,504、审查64,492,404,736字节，仍低于68,719,476,736。正在通过Spug针对93f1c32c执行既有前置诊断；没有构建、三服升级、业务/SQL写入、未知资料清理或自动收尾合并。
+- 14:38 Spug JOB-091156d3f8前置诊断结束：32项中30通过，仅测试/审查空间失败；Docker、基础镜像、NAS及三服连接、健康和配置前提均通过。测试54.10GiB、审查60.06GiB，距64GiB各差9.90GiB、3.94GiB，另需新包余量。结果preflight-after-integration.json；原25包、环境和236任务逐字段不变，仅新增本诊断，活动0。等待用户已选择的空间处理实际达标；未构建或发布，未删除旧演练、未知资料或共享NAS。
+- 14:39续做只读复核：测试58,088,275,968字节、审查64,490,602,496字节，空间仍不足；Spug无活动任务，稳定控制台仍运行，冻结源码及维护副本clean。未重复启动已终结诊断、未构建发布或执行清理。阻塞持续第2轮，目标保持active，现场保留。
+- 14:40第二次续做只读复核：测试58,088,112,128字节、审查64,489,246,720字节，均低于64GiB；Spug仍25包237任务、活动0，诊断终结且三服仍旧版本。同一真实空间阻塞在获准续做后连续3轮存在，无可独立推进的必要工作，目标标记blocked，任务未完成。保留现场，未构建部署、清理资料或修改远端；实际空间达标后按原范围继续。
+- 用户追问测试服是否仍有很大空间。16:41通过只读df/findmnt/lsblk/statvfs/tune2fs核实：测试/dev/vdb实际空闲154.12GiB，ext4按5%预留100GiB给root，发布器读取的普通可用为54.11GiB。NAS另有约1.54TiB，是同一公司共享盘；/home仅38.68GiB，LVM无未分配空间。原包与当前staging64GiB预算一致，未新增门槛。更正“必须扩容”的简化表述，应先审阅保留比例及恢复预算；本轮未改磁盘设置、门槛、路径或业务，未构建发布。证据test-storage-layout-20261031-164153.json。
+- 用户追问测试服务器总存储是否不到300G。16:49真实SSH只读复核lsblk：系统识别vda100GiB、vdb2000GiB，共2100GiB约2.05TiB；不含共享NAS，不重复累计分区和bind挂载。54.1GiB是数据盘普通可用空间，非总容量；宿主机物理分配/占用本轮未查。证据test-storage-layout-20261031-164958.json，未改磁盘或执行发布。
+- 用户询问能否放在2T盘；16:52只读确认现有发布暂存目录/var/lib/docker/intruoyi-release-workflow/test/packages已经在2T的/dev/vdb，Docker也用同一盘。已用约1.77TiB，普通可用约54.1GiB；阻塞是同盘可用量低于原64GiB预算，非放错系统盘。同盘改目录不能增加容量，未迁目录、改保留块或执行发布。证据test-storage-layout-20261031-165229.json。
+- 用户追问64GiB来源、旧几十G包及预留10G是否足够。只读验证上一版封包SHA后实测release.tar692.44MiB，包与解包合计约1.35GiB；测试旧完整恢复点约15GiB。64GiB来自原始private固定配置，未找到其与旧40GB数据包直接关联的测算依据。10GiB若指开始前总空闲不足；若指结束后保留量，已测基础峰值约45.35GiB，尚需本次包及数据库恢复额外开销，不直接降低门槛。
+- 更正此前构建阻塞判断：代码和UI未要求远端空间诊断通过后才能独立构建。17:17预检原main及冻结提交干净、已安装代码匹配、三服基线登记、本机约1.29TiB可用、真实GxP关闭，Spug无活动任务。按原授权通过真实按钮发起唯一构建JOB-71860cfffc，输入93f1c32c，HTTP202；当前读取真实GxP，尚无新包大小。远端部署仍受门禁约束；不改磁盘、预算、凭据、历史或业务数据，不合并/推送int_main。
+- 用户澄清10G仅为例子，意图是无需固定64GiB也能发布。容量按实测包和恢复峰值核算，不把低于64本身视为必须扩容；未指定10GiB参数或批准改磁盘保留块。
+- 首个构建JOB-71860cfffc在编译前真实菜单入包检查失败，无新包、无部署。修复历史依赖按实际不可变原件/前向迁移解析，未修改SQL字节或检查基线；25项回归、真实821份入包清单/320项变更通过，已在原授权独立分支提交cd2b82d56。仅三文件变动，业务实现及SQL相对93f1不变；继续从Spug构建，不跳过门禁或混用失败轮次。
+- 17:56第二次构建JOB-36044c33d0在MES测试代码编译失败，缺复制辅助方法且仍有旧构造调用；尚未封包或部署。沿既有整合授权仅修复测试兼容并实际运行对应回归，不改变生产API或跳过编译；容量结论仍以成功新包和恢复预算为准。
+- 18:12真实Maven回归108项全部通过、无跳过；修复仅两份测试装配，独立提交6e6b4fa72，原钩子PASS、必需f3ee祖先保留。继续从Spug原按钮构建精确提交，失败尝试未封包，最终三服不混用版本；无合并/推送int_main或远端业务写入。
+
+## 2026-10-31 18:34 三服发布继续：容量澄清及前端构建配置
+- 用户明确10G仅是例子，目标是评估能否低于64GiB发布。按真实备份和失败恢复峰值继续核算，不改磁盘保留块，不直接指定10GiB。新演练额外空间单列；57承载方案已写文档并待确认。
+- 命令意图：第三次Spug构建的后端完整打包通过，前端pnpm9冻结安装真实失败于workspace缺packages；在已授权临时整合分支补齐根项目声明，用原冻结安装及Vite prod命令验证，并核对依赖清单摘要不变。未生成本次封存包、未修改三服版本或业务数据。
+
+## 2026-10-31 发布空间与恢复点澄清
+- 用户选择新演练继续留58，询问备份原因和能否存大盘，最终明确指58本机/dev/vdb（2000GiB Docker/应用数据）。已说明现有发布器3项迁移前的恢复点契约及演练副本独立占用；备份目录原本就在该盘，无迁移主机或改挂载操作。当前只读复核实际剩余及主要目录占用，不改变64GiB配置或ext4保留块，不清理未知资料。
+- 前端冻结依赖安装已通过；最后依赖官方TLS断开，经提交锁文件SHA512验证镜像同包后导入本地缓存。Vue试填预览缺分号导致原prod构建失败，真实RED后修复单个分隔符，13项回归通过、1610份Vue只读解析无错误，正在完整prod构建验证；尚未提交或再次发起Spug完整构建。
+
+## 2026-10-31 19:13 Spug继续封包
+- 前端修复已通过冻结安装、13项受影响回归及完整prod构建，独立发布分支精确提交d29ac8a5d34ad8fac1961010159095651e11df61，原提交钩子通过；原int_main未合并或推送。
+- 原Spug UI build-release返回HTTP202 / JOB-39bdbbfd40，分配2026-10-31-19-13-08及本轮专用worktree；重新真实读取GxP关闭。当前只构建封存，不执行远端备份或三服升级；空间预算按新演练留58及该盘实际可用核定。
+
+## 2026-10-31 19:58 三服发布原包及数据盘容量核算
+
+- 用户补充：所指大容量盘为测试58的/dev/vdb、2000GiB、Docker及应用数据。确认备份目录已在该盘，不改挂载或跨主机转存。
+- 命令意图：monitor-current-build.py仅观察JOB-39bdbbfd40；forecast-release-capacity.py使用本次实际封存包、最新三服测量及原有恢复契约计算完整流程预算；Spug status仅真实页面读取，不执行发布按钮。
+- 结果：Spug构建及NAS校验上传成功，tag2026-10-31-19-13-08、精确源d29ac8a5、GxP关闭、原包约692.5MiB。测试完整流程预算取整138GiB，普通可用54.10GiB不足；提出/dev/vdb预留100GiB降至10GiB、释放90GiB的明确候选，尚未执行，具体文件系统变更待确认。三服无备份/停服/升级或业务写入；无凭据输出或Git上传。
+
+## 2026-10-31 20:34 获准调整容量并继续同包发布
+
+- 用户明确批准数据盘预留及32GiB阶段预算方案，要求继续三服发布。
+- 命令意图：apply-approved-data-reserve.py先只读核对身份和健康，再仅对58 /dev/vdb执行tune2fs -r 2621440；apply-approved-capacity-config.py备份private配置及一致性SQLite、只改三个阶段预算并重载空闲普通执行器；真实Spug check-prerequisites与publish-test按钮继续唯一成功tag。
+- 结果：普通可用精确增加90GiB至约144.10GiB，UUID/挂载/原容器ID不变，UP/HTTP200；执行器39884、发布历史payload不变，无服务安装。真实本地GxP保存/运行均关闭；Spug JOB-f9b83b2f10全部32项通过。测试发布JOB-9627a0daf8进行中，原远端OP-d6aacaa4ae17a71d4ddc正在生成完整恢复点；正式/审查未升级，旧演练和历史保留，不重复构建或重放远端任务。
+
+
+### 2026-10-31 21:24 三服发布续办：实际失败恢复及配套修复
+
+- 用户授权：按已批准方案调整58数据盘预留并继续Spug三服发布；独立发布分支必要配套提交，不合并/推送int_main，保留原包、历史和旧演练。
+- 已执行：tune2fs精确预留调整释放90GiB，32项Spug预检PASS。测试JOB-9627a0daf8三份迁移applied后因封包缺快照CLI失败；未宣称成功，正式/审查不推进。
+- 来源修复：恢复f3ee配套CLI及必要支持，实际Java启动与20项回归共21PASS，提交56b96ea。旧封包不改，恢复后另建最终tag。
+- 恢复修复：原PAX目录单尾斜线和安全数据库连字符契约不一致；先真实RED再最小修复，共99项回归PASS，维护提交31f517f、6849da8；实际原归档全部成员只读核验、检查点与注册数据库容器ID/名称精确一致。
+- 同步：安装前工作包完整hashPASS，精确同步已提交代码后工作清单665项完整PASS；原包不覆盖，private配置与SQLite完整payload逐字保留，普通脚本执行器27160，未安装服务。
+- 继续命令意图：Spug真实页面recover-release绑定原JOB-9627a0daf8，HTTP202受理JOB-cdf819f164；正在保全失败数据库，还原后先真实登录验收再开放旧版。未改凭据、重放迁移、删除历史或修改业务数据。所有私密日志和浏览器资料存放受限目录，未提交凭据。
+
+## 2026-10-31 22:24 三服发布续办：恢复旧版并构建修复包
+
+- 真实结果：Spug完整恢复JOB-cdf819f164及接受恢复JOB-5f914af55a成功，旧版2026-10-30-10-19-11恢复开放；私密验收入口和公开入口均通过Playwright真实登录，无业务写入。原失败记录/原包及失败数据库/数据卷继续保留，正式与审查未升级。
+- 命令意图：prebuild-final-check.py验证精确已提交源56b96ea及祖先、本地GxP关闭、维护6849da8字节和原int_main不变；start-corrected-build.py只通过真实Spug界面启动一次新包构建，monitor-release-job.py只读观察。
+- 当前新构建JOB-14b80f151a、tag2026-10-31-22-23-14，专用构建worktree，不复用或改写失败封包。
+- 容量变化：失败恢复保留数据后58可用106.25GiB，暂低于完整新轮次138GiB。已提出新增64GiB底层扩容与确认后在线resize2fs候选并说明授权边界；待回复，本地构建继续，无扩容执行、历史删除、自动合并或推送。
+
+## 2026-10-31 23:09 最终包及测试服发布
+
+- 用户明确暂缓扩容、先完成测试服，并询问数据备份及演练必要性。已解释程序启动验证与旧数据升级兼容验证不同；未将问句当作取消演练/备份、删除历史或扩容授权。
+- 最终构建JOB-14b80f151a成功，tag2026-10-31-22-23-14、目标56b96ea；新包约692.52MiB。本地与NAS摘要、1092文件、导出镜像config与本地RootFS、实际镜像JAR三类及Boot CLI无凭据预期ERROR报告均PASS，GxP清单关闭。辅助核验两处选择器/ID假设已按真实包内容与现有契约纠正，不改原包或生产代码。
+- 当前Spug预检JOB-d5f90fa61f32项PASS；普通可用106.27GiB，单测试目标含一次失败恢复预算53.37GiB。真实Spug publish-test于23:06:59受理JOB-6772b89bf6，仅推进58；整体三服尚未完成。
+
+## 2026-11-01 00:04 直接三服策略续办
+
+- 用户明确取消主流程演练，并确认正式服独立备份恢复不在本发布链重复执行。实现acaaa813与UTF-8普通启动修复d282c070已提交；501项发布回归/UI和8项便携回归PASS。仅工作包与稳定代码同步，667项校验PASS，历史payload及凭据其他字段保持；原资源包未覆盖、无服务安装、无int_main合并推送。
+- 测试JOB-6772b89bf6发布及JOB-4dd7de36b4 mark-tested成功，真实配置页明确保存/运行关闭、auditEnabled=false、无待重启，tag2026-10-31-22-23-14。辅助认证载体和启动编码失败均记录并按根因修复，未改封包摘要掩盖失败。
+- 命令意图：pre-promote-direct.py仅检查各目标自身基线/计划/容量；Spug真实页面promote-prod部署同一原包。正式不重复全量capture或演练，旧演练/失败数据保留；测试和审查恢复检查点保留。三服尚未完成。
+
+## 2026-11-01 00:32 正式SQL前失败收束与同包重试
+
+- 正式JOB-296e8f4a0f在SQL前因停服后releaseTag不可读误阻断；严格只读证明原容器/配置/schema/ledger未变后，仅启动原应用，00:16恢复旧版HTTP200。未恢复数据、未伪造Spug备份，原失败保留。
+- 381e9c62修正停服后不可读网页的身份复核，并支持严格external-pre-migration原容器恢复核销；503项回归PASS。真实Spug resolve-task JOB-4447f88534于00:29成功。
+- 5c2bf68按RED→GREEN→REGRESSION补正式每次独立资料目录，506项回归PASS；670项工作包完整校验，稳定普通执行器PID45600，私密配置和历史payload保持。无合并、推送、Windows服务或封包重建。
+- 00:31正式新鲜preflight通过，原fingerprint保持、3项计划迁移、1.08TiB可用。继续真实Spug同包promote-prod；正式沿用户确认的独立恢复，不重复全量备份或演练。
+
+
+## 2026-11-01 Spug直接三服发布及最终验收
+
+- 用户需求：通过Spug将指定IntRuoyi代码发布至测试58、正式57、审查59；允许独立发布分支整合必要配套。取消主流程隔离演练，正式使用已有独立备份恢复机制，本轮不重复全量capture；本机及三服GxP均关闭，不自动合并或推送int_main。
+- 命令意图：真实Spug build-release/publish-test/mark-tested/promote-prod/accept-prod/promote-backup/accept-backup沿同一不可变releaseTag执行；monitor-release-job.py、observe-release-progress.py、verify-deployed-phase.py只读核验实际任务、远端回执/进程、manifest、镜像、真实生效配置、schema/ledger和健康。verify-target-gxp.cjs由Playwright真实登录，打开现有配置页，只读核对保存/运行模式。
+- 真实失败与处理：旧测试失败按绑定检查点实际恢复后重新构建最终包；正式首次SQL前失败仅恢复原容器并核销，未伪造数据恢复；审查首次验收来源规则失败发生在停服前，仅增加当前IP到验收端口的精确持久规则并真实nonce验证，再由Spug核销/重试。原包、失败记录和旧演练全部保留。
+- 代码验证：来源56b96ea及维护5c2bf68已在独立分支提交；506项普通发布回归及8项便携启动回归通过。Git同步只包含已提交代码，不覆盖凭据、历史、绑定或镜像。原资源包656项、工作资源包670项最终完整校验通过。
+- 最终结论与逐目标实际证据以本任务release-result.json、verification-report.md、worktree-closeout.json为准。只读登录和配置验收不称为新增/保存/审批完整功能回归；未执行业务写入测试、Windows服务安装、扩容、共享NAS清理或int_main合并推送。
+- 收尾意图：保全本任务变更、提交对象和源SQL原始换行字节后，仅删除经复核的本任务九个临时worktree；分支保留，普通执行器回到稳定source。本任务最终记录使用独立索引提交到单独记录分支，保持主工作区HEAD、索引及无关变更不动；不上传Git。
+
+- 2026-11-01T02:39:35.968383+08:00最终收尾结果：九个本任务worktree登记及物理目录清理PASS；长路径残留逐文件核验后删除。源/维护分支和归档保留，普通执行器唯一且稳定；同包三服结果PASS，任务completed。最终记录独立提交，不合并或推送int_main。
+
+## 三服版本一致性只读追加核对
+
+- 用户需求：确认三服当前版本是否一致。
+- 命令意图：复用稳定维护代码Runtime.observe，三个目标并行只读读取运行tag、后端/前端实际镜像、健康及开放状态；不发布、不重启、不修改数据，不重复真实登录。
+- 结果：PASS；详情version-consistency-recheck.json，原release-result.json未覆盖。
+
+## 本次发布耗时与问题复核
+
+- 用户需求：询问本次发布历时及存储以外的问题。
+- 命令意图：只读提取现有Spug SQLite任务元数据，核对执行日志与实际恢复/收尾记录，按事件边界计算耗时；未操作远端或重跑发布。
+- 结果：首次预检至三服开放24小时39分22秒；首次构建至开放8小时26分54秒；最终包构建至开放3小时27分8秒；开放后本地收尾52分39秒。更正先前工具计时约2小时1分钟不能代表完整历时。主要问题及真实处理见doc/tasks/20261031-spug-three-server-release/duration-and-issues-review.md；区间相互包含，不相加，不当作停机时长。
+
+## 发布问题修复与复发风险只读核对
+
+- 用户需求：确认遇到的问题是否都解决、再次发布会否重复。
+- 命令意图：本地只读比较实际安装的14个维护运行文件与5c2bf68，核对源码主分支与56b96ea祖先关系，阅读正式构建函数和本次专项产物检查；不重新构建或访问远端，不改凭据，不合并或推送。
+- 结果：14项内容一致PASS；源码int_main仍3f8e28a3且不包含独立分支56b96ea。当前运行修复有效，但使用旧分支/原资源包会重新引入缺陷；容量增长和来源IP变化仍需当次检查。实际JAR/CLI验收和Windows长路径清理由专项脚本完成，不能声称已全部进入常态自动流程；Docker重叠网段仍未根除，可选完整历史归档的联网对象问题未宣称解决。详见recurrence-readiness-review.md及recurrence-runtime-code-check.json。
+
+## 发布复发防护固化
+
+- 用户要求：修复代码防止下次出现相同问题，并继续执行。
+- 命令意图：在独立维护工作副本，以BDD和先失败测试固化源码/真实产物/安全清理门禁，并修正直接发布预检策略不一致；本机验证和脚本同步，不重新发布三服，不合并或推送int_main。结果见doc/tasks/20261101-release-recurrence-guards。
+
+## 2026-11-01 三服数据库表数差异只读核查
+
+- 用户需求：解释测试服数据库表比正式/备份多的原因，并明确要求继续。
+- 命令意图：使用已登记三服容器及容器内凭据做SELECT/SHOW元数据查询；对照56b96ea已提交SQL、不可变manifest及真实迁移台账，仅诊断不执行迁移或业务操作。
+- GREEN: experience-preflight -> PASS（只读范围；读取实际映射的server-access/powershell-memory及经验索引相关迁移门禁）。
+- GREEN: inspect-database-table-differences.py -> PASS，三服SSH exit=0，当前业务库ruoyi-vue-pro基础表885/882/882，视图0；仅测试多3张DCC源文件治理表。
+- GREEN: analyze-database-table-differences.py -> PASS，两份迁移allowedEnvironments=[test]；测试台账绑定10月23/24日历史版本，正式/备份SKIP_ENV_NOT_ALLOWED。
+- 影响：程序tag/镜像相同不等于全库结构相同。治理接口仍引用这些业务表，正式/备份调用存在缺表风险；本次未调用接口或进行功能写入，不宣称相关治理功能通过。
+- 证据：database-table-difference-review.md、database-table-difference-inventory.json、database-table-difference-source-evidence.json。只读解释性跟进completed，未改原发布成功记录或凭据。
+
+## 2026-11-01 发布复发防护修复完成
+
+- 用户要求：修复发布代码并继续，防止同类问题复发。
+- 执行意图：独立维护checkout固化已提交源码、实际镜像CLI、GxP保存/运行模式、安全清理及同原包NAS重传检查；保持取消演练、普通脚本和不自动融合边界。
+- 结果：实现673395d，525项回归0失败/0错误（2项Linux专用skip），真实镜像CLI/本机GxP/安装核验PASS。原包656项与更新工作包675项校验通过；260条任务、27个包、凭据及原封包保持。修复checkout已删除，分支保留；未重新发布三服、未合并或推送。
+- 证据：doc/tasks/20261101-release-recurrence-guards，包含独立request-command-log.md及脱敏验证JSON；全局本文件已有并行改动，不整体混入维护代码提交。
+
+## 2026-11-01 三服数据库结构一致性修复
+- 用户：修复发布，三服程序版本与数据库表一致；继续。
+- 意图：本任务独立worktree新增不可变前向迁移和升级后结构门禁；实际MySQL验证，已提交代码同步普通执行器，Spug同包依次发布测试/正式/审查。
+- 验证：真实MySQL重放与已有行保留通过，执行器531项回归0失败/错误、2项Linux专用skip；源码fb88105a、维护43e4d3e；原包656项和工作包678项全校验通过，私密资料/历史保留。
+- 发布：单包2026-11-01-13-08-35闭环成功，审查开放JOB-93573fd19a于16:16:15成功。封包后清理及首次重传失败均保留，通过Spug原包续接成功，未重新编译。
+- 最终：三服实际镜像及885表完整元数据一致，新增迁移均APPLIED，UP/HTTP200、真实Playwright登录及本机/三服GxP保存与运行关闭均PASS；本地/NAS摘要一致。仅只读验收，不称完整业务写入回归。
+- 收尾：本任务两个临时checkout已删除、slot3已释放，独立分支保留；稳定普通执行器继续运行。仅将本节作为独立记录提交，不混入本文件其他已有修改。
+- 边界：不恢复演练，不重复正式全量备份，不合入/推送int_main，不修改业务行，不打印凭据。详见doc/tasks/20261101-three-server-schema-consistency/acceptance-report.md及release-result.json。
+
+## 2026-11-01 提交推送三服一致性修复
+
+- 用户要求：将三服一致性修复改动提交并推送到Git。
+- 范围：IntRuoyiAll与Maintance的codex/three-server-schema-20261101独立分支；保留主工作区和无关改动，不合并int_main，不重新发布服务器。
+- 已提交代码：源码fb88105af40e4ee6366a20dae2df721f1de2dcb0；维护实现43e4d3e、验收收尾ef647752。既有531项回归及真实MySQL和三服验收证据沿用，未改变产品代码。
+- 推送预检：扫描待上传历史，源码6提交/19 blob、维护12提交/115 blob；最大文件851128字节，无实际私密凭据、私钥或超限对象。配置文件路径的字符串匹配经脱敏核对属于路径，不是密码。
+- 网络与钩子：Git直连443超时；只在本次命令采用Windows已启用的127.0.0.1:7890代理，不改变系统/Git配置。钩子使用已有Python3.12；旧主目录检查器不支持新清单，在精确目标提交的独立worktree执行完整菜单/权限及端口钩子后通过，没有跳过钩子。
+- 结果：维护16:46:42推送ef647752成功，源码16:52:27推送fb88105a成功；ls-remote精确核对一致，普通推送无force。
+- 收尾：推送worktree无新提交、未构建或启动应用；干净状态核实后Git删除，物理路径及登记均不存在，slot3释放，保留其他任务登记。最终Git操作记录另做维护分支提交，并核对远端最终哈希。
+- 证据：doc/tasks/20261101-push-three-server-fix内push-source.json、push-maintenance.json、push-audit.json、worktree-closeout.json、slot-closeout.json及records-commit.json。
+
+
+## 2026-11-01 更新维护仓和IntRuoyi（网络阻塞）
+
+- 用户要求：将代码更新到最新，包括IntRuoyi；网络失败后明确要求再试7890。
+- 命令意图：核对真实Git根、当前分支/跟踪关系及本地改动，通过现有127.0.0.1:7890获取最新引用，再按真实增量安全更新；不自动合并发布分支到int_main，不覆盖已有修改，不重新发布三服。
+- 实际结果：三仓fetch经7890均未成功；代理CONNECT成功后GitHub TLS异常EOF，Schannel/OpenSSL均失败；直连Git也连接重置或443超时。未关闭证书验证、未改系统/仓库代理配置。
+- 状态：blocked。未取得最新引用，未执行merge/checkout/reset/stash/clean，三仓HEAD与原值一致，暂存区为空；当前已跟踪修改摘要另存。只读全量旧资料哈希扫描因网络阻塞已停止，不声称全量摘要审计通过。
+- 后续：恢复7890到GitHub的TLS连接后继续fetch，核真实分叉及incoming与dirty/untracked交集，再安全更新。不能将旧origin缓存称为最新。证据见doc/tasks/20261101-update-local-repositories。
+
+## 2026-11-01 重试7890并完成本地代码更新
+
+- 用户要求：再试一次；继续更新维护仓和IntRuoyi到各自当前跟踪分支最新代码。
+- 结果：三仓通过7890 fetch成功。IntRuoyi部分克隆补取blob时也传入命令级代理，最终快进至c8d1f63c9；资源包工作副本维护发布分支快进至8797d661；均与本次origin跟踪分支一致，工作区干净。
+- 保护：维护主工作区61e78878已包含origin/int_main的9e4d2956并领先28提交，无incoming，不覆盖；原有9项tracked修改摘要一致，未跟踪路径保留，暂存区为空。原生post-merge端口门禁通过。
+- 边界：只更新本地Git代码，未构建或重新发布、未执行迁移、未替换普通执行器；此前发布修复分支不自动合入int_main。不声称新功能完整回归通过。本任务最终记录单独提交，其他共享文件改动保留不混入提交。
+- 证据：doc/tasks/20261101-update-local-repositories/update-result.json，任务completed。
+
+## 2026-11-01 核对当前Spug发布方式
+
+- 用户：当前Spug的发布有几种方式。
+- 意图：只读核当前普通执行器路径、已启用策略、完整包和前端补丁动作及页面，不读取输出凭据、不触发服务器检查或发布。
+- 结果：当前IntRuoyi有完整应用包和前端补丁两种主要交付方式；直接三服策略生效，演练不作为前置。仅测试是发布范围，原包重传/补发是已有包续接，不额外计算为新构建方式。PID14328运行稳定普通入口，未换用刚拉取的Git工作副本。
+- 证据：doc/tasks/20261101-spug-release-methods/execution-log.md，任务completed。
+## 2026-11-01 完整包后顺序前端补丁发布
+
+- 用户需求：顺序执行一次完整包发布和一次前端补丁发布；沿用三服、GxP关闭、无强制演练及正式外部独立恢复授权。
+- 命令意图：在独立源码分支整合最新业务与必需发布配套，使用真实Spug UI前置检查、Playwright真实登录GxP和只读结构/空间核验；无凭据输出或提交。
+- 验证：集成提交9111980292、菜单336项/迁移合同2项/端口门禁通过；三服885表完整元数据一致，真实登录及GxP保存/运行关闭通过。
+- 阻塞：三服实际前端21-48-01（2fd99f51）不在本机导出历史；按用户原始要求停止接管，需核来源并重新导出最新资源包。前置JOB-96e47cdc12仅审查服空间失败（24.43GiB低于32GiB，缺7.57GiB另需包余量）。无新构建或发布；未删历史、未改远端配置/业务数据、未降低门槛。任务保留blocked及独立源码工作副本。
+
+## 2026-11-02 多机器发布接管规则修订
+
+- 用户要求：不同机器可能发布；不再要求重新导出最新资源包，缺失时重新分析。覆盖上一节当时采用的强制重导出规则。
+- 修改：AGENTS、release-agent-checklist及经验索引新增正式多机器接管门禁；缺本机历史不单独阻塞，核远端版本/镜像/manifest/原件/台账/并发/恢复依据，具体缺口阻塞依赖动作；不伪造历史、不覆盖私密数据。
+- 只读分析：三服主版本13-08-35、补丁21-48-01及镜像/schema一致、UP/HTTP200；找到三服补丁原包37,283,840字节和部署回执，实算SHA一致并匹配回执。取消要求重新导出；补丁baseGitCommit来源差异、并发/恢复绑定与审查服空间需继续落实。详情见当前任务multi-machine-analysis.md。
+- 验证：UTF-8、diff检查与分析载体编译检查通过，原件摘要实际计算；没有新发布、远端配置/历史/业务写入或磁盘清理，未提交混有前序改动的规范文件。
+
 ## 20261102-three-server-storage-audit：三服空间清理候选只读分析
 - 用户需求：分析正式57、测试58、备份59哪些内容可以删除释放空间。
 - 命令意图：按既有SSH profile只读查询df/findmnt/du、Docker状态与挂载、文件元数据和恢复回执；核对旧Docker data-root、GraphDriver、进程引用和目录设备/inode；不删除、不停服务、不改配置、不执行发布。
@@ -3960,13 +5639,39 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - 用户：修改为发布完成后删除旧包和旧恢复资料（如果有）。
 - 意图：在独立工作副本对齐已提交发布配套基线；BDD→RED→GREEN→REGRESSION，将自动回收接入完整包/前端补丁三服最终验收；仅精确删除失效且身份可验证的普通载荷文件，保护当前版本/恢复点、演练、业务资料、凭据及历史。无新三服发布或远端删除验收。
 - 验证：本机真实临时文件和控制器边界测试、Linux实际跨进程/重试目录公共锁测试、既有三服直发/补丁/恢复/清理回归；清理独立状态可见，失败不篡改发布成功。完整结果见任务 execution-log.md。
-
 # 20261102 自动清理覆盖范围后续核查
 
 - 用户询问三服发布、前端补丁、备份、恢复是否仍留旧包/旧恢复资料。沿用post-release-auto-cleanup任务只读核本机活跃代码与独立备份保留模块；没有访问三服或触发任何动作。
 - 结果：两类发布只有三服最终验收成功才清理可确认失效的旧包/旧检查点，当前包/恢复点及镜像/旧容器/元数据仍保留；独立备份/恢复未接入此自动清理，备份链保留与显式处置另行执行。不能承诺全部操作零积累，实际清理仍以逐服回执为准。
 
+## 2026-11-02 拉取合并并提交推送当前维护仓
+
+- 用户需求：拉取合并git的最新代码，然后提交推送。
+- 命令意图：确认Maintance/int_main及origin身份，fetch核最新远端，保留历史安全合并；检查待推送对象大小、秘密与实际内容差异，精确暂存11项既有内容变更和本任务记录后普通提交推送。
+- 范围：当前维护仓；不操作其他源码仓库、服务器、运行控制台或历史临时文件。详细验证与最终提交见doc/tasks/20261102-git-sync-01a19b62/。
+- 验证结果：fetch及merge祖先核对PASS，无incoming与冲突；配置YAML/真实目录/启动脚本/UTF-8/diff检查PASS。61个既有及本次提交通过大文件与实际私密值扫描后普通推送成功，远端int_main=049e4ea，本地一致；最终任务记录独立提交推送，其他任务及未跟踪产物原位保留。
+
 # 20261102 四类旧产物产生入口核查
 
 - 用户要求检查旧 Docker 镜像、旧容器、旧包和旧恢复资料由哪些操作产生。只读追踪本机活跃代码及独立备份/恢复入口，不访问三服、不读取私密配置、不删除任何产物。
 - 验证：完整发布、补丁、失败恢复、程序回滚、独立备份/恢复、历史演练及失败重试的创建/保留入口已交叉核对；详细矩阵与行号见 doc/tasks/20261102-post-release-auto-cleanup/artifact-origins.md。仅本机构建、只读查询和普通重启不等于在三服产生全套新产物；自动清理覆盖范围未扩大。
+
+# 20261102 前端补丁发布逻辑说明
+
+- 用户询问当前前端补丁包发布逻辑；只读核对活跃构建、发布、验收、显式恢复与清理入口，未构建、登录或连接三服。
+- 结论：已提交纯前端代码一次构建完整前端镜像，同包测试/正式/备份逐服部署并独立验收；只替换前端，短暂中断页面，保留原容器；绑定基础版本及后端镜像，不做数据库迁移或全量检查点。技术检查不替代真实页面验收，失败需显式恢复。完整证据见 doc/tasks/20261102-post-release-auto-cleanup/frontend-patch-flow.md。
+
+# 20261102 后端补丁可行性说明
+
+- 用户询问能否做后端补丁包；本机只读核对后端构建、维护/恢复及前端补丁绑定合同，不执行远端或构建。
+- 结论：可新增后端专用补丁，但当前无此入口；首版限兼容当前前端、数据库和配置的后端代码，整后端镜像一次构建同包逐服验收、显式恢复原程序，保持 GxP 关闭；需同步版本组合/接续和清理保护，程序恢复不撤销业务数据。方案见 doc/tasks/20261102-post-release-auto-cleanup/backend-patch-feasibility.md，尚未实施。
+
+# 20261102 单 JAR 发布可行性说明
+
+- 用户询问能否只替换一个 JAR；本机只读确认镜像内 /yudao-server/app.jar 和 java -jar 启动，无构建或远端动作。
+- 结论：可以建设仅投递完整后端 JAR 与清单的发布通道，固定运行镜像、版本目录只读挂载、实际 JAR SHA/版本验收、保留原容器恢复；不直接覆盖旧进程文件。需实现身份/基线/清理合同，现用执行器尚未支持；详细证据见 doc/tasks/20261102-post-release-auto-cleanup/jar-only-feasibility.md。
+
+# 20261102 单 JAR 补丁与完整发布衔接
+
+- 用户询问后端单 JAR 补丁对后续完整发布的影响。本机只读确认现有完整发布继承旧启动配置与挂载，若挂载补丁 JAR，可能遮盖新镜像程序。
+- 结论：须随 JAR 通道同步适配源码包含、实际制品起点、程序挂载/入口切换、恢复及清理保护；成功后新完整包吸收修复、保留历史，失败可恢复原基础版本加补丁。详见 doc/tasks/20261102-post-release-auto-cleanup/jar-only-feasibility.md；尚未实现或远端验证。

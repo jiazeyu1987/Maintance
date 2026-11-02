@@ -22,9 +22,10 @@ management:
 maintenance:
   runtime-control:
     operator-id: local-operator
-    repo-root: E:/IntRuoyi/IntRuoyiBackend
-    frontend-root: E:/IntRuoyi/IntRuoyiFronted
-    website-root: D:/ProjectPackage/Website
+    # Relative to the Maintance working directory used by scripts/start.ps1.
+    repo-root: ../IntRuoyi/IntRuoyiBackend
+    frontend-root: ../IntRuoyi/IntRuoyiFronted
+    website-root: ../Website
     ops-root: ${user.dir}/ops
     state-dir: ${user.dir}/runtime/runtime-control
     command-timeout-seconds: 1800

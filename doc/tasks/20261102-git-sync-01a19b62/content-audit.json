@@ -1,0 +1,87 @@
+{
+  "status": "PASS",
+  "auditedHead": "049e4ea38679d167c490cab37d6b2cc3368cf540",
+  "outgoingCommits": 61,
+  "blobCount": 440,
+  "totalBytes": 20806398,
+  "largestBlobs": [
+    {
+      "path": "docs/request-command-log.md",
+      "bytes": 1193105
+    },
+    {
+      "path": "docs/request-command-log.md",
+      "bytes": 863011
+    },
+    {
+      "path": "docs/request-command-log.md",
+      "bytes": 862366
+    },
+    {
+      "path": "docs/request-command-log.md",
+      "bytes": 861754
+    },
+    {
+      "path": "docs/request-command-log.md",
+      "bytes": 861028
+    }
+  ],
+  "violations": [],
+  "credentialCandidatePaths": [
+    "config/runtime-control.example.yaml",
+    "doc/tasks/20261023-spug-local-drill/intruoyi57-prepare-safe-target.remote.py",
+    "doc/tasks/20261101-three-server-schema-consistency/verify-real-mysql-migration.py",
+    "ops/backup_engine/standard_fixes.py",
+    "ops/recovery/recovery_data.py",
+    "ops/spug/release-center/executor.py",
+    "ops/spug/release-center/fenbeitong_executor.py",
+    "ops/spug/release-center/intruoyi_rehearsal_agent.py",
+    "ops/spug/release-center/intruoyi_runtime_agent.py",
+    "ops/spug/release-center/post_release_cleanup.py",
+    "ops/spug/release-center/test_compressed_database_snapshot.py",
+    "ops/spug/release-center/test_current_versions.py",
+    "ops/spug/release-center/test_intruoyi_flow.py",
+    "ops/spug/release-center/test_release_precheck.py",
+    "ops/spug/release-center/test_rollback.py",
+    "ops/spug/release-center/test_route_snapshot_handler.py",
+    "ops/spug/release-center/test_technical_verification.py",
+    "ops/spug/test_smallapp_display_context.py",
+    "scripts/tests/test_archive_path_fd_budget.py"
+  ],
+  "exactPrivateCredentialScanPassed": true,
+  "reviewedSyntheticFixtures": [
+    {
+      "path": "ops/spug/release-center/test_intruoyi_rehearsal.py",
+      "function": "test_origin_requires_explicit_safe_host_port_without_extra_url_parts",
+      "valueSha256": "7f8183fd094a7b10753ce6a5f1a4388aa1afeda990c4134417045c78fcec9a2d",
+      "reason": "synthetic negative URL-validation/redaction fixture"
+    },
+    {
+      "path": "ops/spug/release-center/test_release_precheck.py",
+      "function": "test_credentials_do_not_enter_error_text",
+      "valueSha256": "c604d4eecc9010177eb941b7d66cc680b44732bbfee77bce699072713037e370",
+      "reason": "synthetic negative URL-validation/redaction fixture"
+    },
+    {
+      "path": "ops/spug/release-center/test_intruoyi_rehearsal.py",
+      "function": "test_origin_requires_explicit_safe_host_port_without_extra_url_parts",
+      "valueSha256": "7f8183fd094a7b10753ce6a5f1a4388aa1afeda990c4134417045c78fcec9a2d",
+      "reason": "synthetic negative URL-validation/redaction fixture"
+    },
+    {
+      "path": "ops/spug/release-center/test_release_precheck.py",
+      "function": "test_credentials_do_not_enter_error_text",
+      "valueSha256": "c604d4eecc9010177eb941b7d66cc680b44732bbfee77bce699072713037e370",
+      "reason": "synthetic negative URL-validation/redaction fixture"
+    },
+    {
+      "path": "ops/spug/release-center/test_intruoyi_rehearsal.py",
+      "function": "test_origin_requires_explicit_safe_host_port_without_extra_url_parts",
+      "valueSha256": "7f8183fd094a7b10753ce6a5f1a4388aa1afeda990c4134417045c78fcec9a2d",
+      "reason": "synthetic negative URL-validation/redaction fixture"
+    }
+  ],
+  "changedTrackedFiles": [
+    "doc/tasks/20261102-post-release-auto-cleanup/task.md"
+  ]
+}
