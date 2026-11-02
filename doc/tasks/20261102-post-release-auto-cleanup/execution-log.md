@@ -36,3 +36,11 @@
 - 核查结果：自动清理eligible仅accept-backup与frontend-patch-accept(backup)，且当前包stage=completed；备份/恢复不是触发入口。清理只覆盖登记暂存目录的release.tar/images.tar及归属完整的旧recovery.sql[.gz]/recovery-volume-*.tar，保留当前包和本次恢复点、镜像、旧容器、清单、历史、凭据、未知资料和引用中的资料。
 - 独立备份保留：repository_retention按retainNewestPoints/minValidFullPoints/retentionSeconds/legalHold及完整依赖链规划，RETENTION_PLAN与RETENTION_EXECUTE是独立动作，不随本次发布清理自动执行。恢复保留原归档、失败资料、retainedData和容器证据，未纳入本轮自动清理。不能声称四类操作全部无旧资料积累。
 - Evidence：活跃post_release_cleanup.py eligible/perform；活跃artifact_files.py inventory/automatic_cleanup；活跃intruoyi_recovery_agent.py retainedData/retained容器；ops/recovery/repository_retention.py:142与repository_cli.py RETENTION_PLAN/RETENTION_EXECUTE。只读本机代码，无服务器连接、备份、恢复、删除或运行状态修改；结论是机制核查，不是实时三服库存核验。
+
+# 后续核查：四类产物的产生入口
+
+- 用户要求检查旧镜像、旧容器、旧包及旧恢复资料分别由哪些操作产生；先写 artifact-origins.md，沿用本任务和当前目录收尾限制。
+- 只读核对活跃执行器的 stage/deploy/replace/reopen/capture/recover/rollback/patch/rehearsal，以及维护仓独立备份、恢复、构建与 retention 调用；无私密配置读取、无远端连接或删除。
+- VERIFY: 完整发布保留原前后端与维护后端容器；补丁保留原前端；发布失败恢复保留失败数据库、数据目录及容器；历史隔离演练产生独立容器/数据卷/种子副本。新镜像导入和新版本包跨轮保留后成为旧资料；失败/中断及新部署尝试可能留副本，但 resume 不应概括为必然全量重造。
+- VERIFY: 独立备份入口和恢复入口不同，不能把配置快照称为全量数据备份。旧计划备份另有 retention 调用；本轮自动清理不接管它。完整来源矩阵及行号见 artifact-origins.md。
+- 本轮仅文档核查，无行为改动、不需要 TDD/E2E，也未执行发布、备份、恢复或清理；主任务仍 ready_for_closeout。

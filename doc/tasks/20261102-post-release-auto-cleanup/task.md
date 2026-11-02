@@ -41,3 +41,4 @@ ready_for_closeout
 - 本机稳定路径C:/SpugHandoff/release未改变，普通脚本更新已生效；没有本任务运行进程引用开发worktree。
 - 工作副本无未提交内容、所有提交已被int_main包含。Codex archive_worktree拒绝：The task's primary checkout cannot be removed。尝试attach原主工作区也被拒绝为not a managed worktree。为保持会话工作目录有效，没有强行在应用外删除当前主检出。工作副本暂保留；Current Status仍为ready_for_closeout，不能标completed。此限制仅影响目录收尾，不影响自动清理功能和运行器更新。
 - 本任务未推送Git、未发起三服发布或远端删除；后续真实发布的清理需检查逐服真实回执。
+- 后续只读核查已完成：四类产物的创建入口、条件、保留原因与清理边界见 artifact-origins.md；没有远端动作，不改变上述 ready_for_closeout 目录收尾限制。
