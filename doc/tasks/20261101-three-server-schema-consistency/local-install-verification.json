@@ -1,0 +1,67 @@
+{
+  "time": "2026-11-01T12:57:41.917908+08:00",
+  "maintenanceCommit": "15b2f5cc0288e045444fdea66a5083e00db55284",
+  "previousMaintenanceCommit": "673395d3173d4753ea42a92f707cb91444ae5995",
+  "originalVerification": {
+    "status": "PASS",
+    "files": 656,
+    "integritySha256": "8248a204b7b87846271a0cd85ecfac53ba12e25dd830bd84da7e7afd3d060079"
+  },
+  "previousWorkingVerification": {
+    "status": "PASS",
+    "files": 675,
+    "integritySha256": "ae747f1e4df6a73d030e7254a0f4921c13dc3224f7f61765758c68d2865251ca"
+  },
+  "updates": [
+    {
+      "file": "source/ops/spug/release-center/README.md",
+      "beforeSha256": "ceec64a03f76deb133d7998d756dab15867fdeeccb17826a9978e850fb8c9cc8",
+      "afterSha256": "8ca3be81180a6864b86141ba5e1a047483fde3d4cf258599e9f2672c9714d222"
+    },
+    {
+      "file": "source/ops/spug/release-center/intruoyi_executor.py",
+      "beforeSha256": "9ff2eaa7262a539ad9f4586241b52bf48c29718405c108cd94037b96c6670c74",
+      "afterSha256": "eaeecf3a548650fd36f20d5e6f2f6bd940c237ff88d42b4b428f7bb3568b681e"
+    },
+    {
+      "file": "source/ops/spug/release-center/intruoyi_runtime.py",
+      "beforeSha256": "754b2326533a930d1f876edbd4428d311c2be8349d6ea5f552ce807af7ad258d",
+      "afterSha256": "8fde938e10364334d90112cfa8b0a089ccf48c3c0cc4c8deebe5aa84b76a1c20"
+    },
+    {
+      "file": "source/ops/spug/release-center/test_direct_release.py",
+      "beforeSha256": "9bf5dd0a270bb30b1f9c55f539b94fda1fd5bb71827d618148eb9965c4bb6e5d",
+      "afterSha256": "422b131de6eeb41fd01b940e1f92f19a61d9cdd68c584822387f283c0669c444"
+    },
+    {
+      "file": "source/ops/spug/release-center/test_three_server_schema.py",
+      "beforeSha256": null,
+      "afterSha256": "2fdd36431987cc3b08337ddda852b8d8bdfaf37270ee5ed4a899f394f0fa8c2e"
+    }
+  ],
+  "originalBundlePreserved": true,
+  "credentialsHistoryImagesPreserved": true,
+  "runtimePolicy": {
+    "requiredGxpAuditMode": "DEVELOPMENT_DISABLED",
+    "otherConfigFieldsPreserved": true
+  },
+  "ordinaryScript": true,
+  "windowsServiceInstalled": false,
+  "remoteOperations": false,
+  "status": "PASS",
+  "newExecutorPid": 12204,
+  "previousExecutorPid": 43752,
+  "workingVerification": {
+    "status": "PASS",
+    "files": 677,
+    "integritySha256": "80a5cd19577262222e8704eca9bf7cc2f11a57c0351b845a097e1a7b9ab711fa"
+  },
+  "statePayloadPreserved": true,
+  "statePayloadSha256": "0f04bc09f551773568ce3d4e9e95449cc90644141a738c38d15246bc9ef475b6",
+  "jobsPreserved": 260,
+  "packagesPreserved": 27,
+  "runtimeConfigurationReadbackPassed": true,
+  "installedCommittedFileBytesPassed": true,
+  "protectedBackupCreated": true,
+  "fullBusinessRegression": false
+}

@@ -1,0 +1,50 @@
+{
+  "time": "2026-11-01T14:54:21.176666+08:00",
+  "jobId": "JOB-e2e390d13f",
+  "host": "172.30.30.58",
+  "operationId": "OP-efb027657c93fff2186f",
+  "receiptExists": true,
+  "status": "succeeded",
+  "action": "deploy",
+  "startedAt": "2026-11-01T06:28:04.019054+00:00",
+  "finishedAt": "2026-11-01T06:53:09.322949+00:00",
+  "errorType": null,
+  "originalWorkerAlive": false,
+  "deploymentProgress": {
+    "phase": "succeeded"
+  },
+  "files": [
+    {
+      "name": "release.tar",
+      "bytes": 726169600
+    },
+    {
+      "name": "images.tar",
+      "bytes": 714597888
+    },
+    {
+      "name": "recovery.sql.gz",
+      "bytes": 6428157978
+    },
+    {
+      "name": "recovery-volume-0.tar",
+      "bytes": 2969600
+    },
+    {
+      "name": "recovery-volume-1.tar",
+      "bytes": 9675991040
+    },
+    {
+      "name": "recovery-record.private.json",
+      "bytes": 294025
+    },
+    {
+      "name": "deployment-pending.json",
+      "bytes": 632
+    }
+  ],
+  "checkpointRecordExists": true,
+  "recoveryAttempts": [],
+  "availableBytes": 77804912640,
+  "mutations": false
+}

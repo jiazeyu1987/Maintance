@@ -5,7 +5,7 @@ if (-not $SourceStopped) { throw 'Stop the previous executor and use its latest 
 $config = Join-Path $Root 'executor.private.json'
 $entry = Join-Path $Root 'source/ops/spug/release-center/intruoyi_executor.py'
 if (!(Test-Path -LiteralPath $config) -or !(Test-Path -LiteralPath $entry)) { throw 'Import has not completed.' }
-$settings = Get-Content -LiteralPath $config -Raw | ConvertFrom-Json
+$settings = Get-Content -LiteralPath $config -Raw -Encoding utf8 | ConvertFrom-Json
 if ([System.Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties().GetActiveTcpListeners() | Where-Object Port -EQ $settings.port) { throw 'Executor port is already in use. Do not start a second executor.' }
 & $settings.pythonExecutable $entry --config $config
 if ($LASTEXITCODE -ne 0) { throw "Executor exited with code $LASTEXITCODE" }

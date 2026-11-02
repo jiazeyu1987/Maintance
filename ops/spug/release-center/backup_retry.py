@@ -1,4 +1,4 @@
-"""A new backup attempt remains bound to the accepted production original."""
+"""Bind deployment attempts without overwriting original recovery evidence."""
 from executor import require
 from pathlib import PurePosixPath
 
@@ -18,6 +18,11 @@ def bind_attempt_roots(executor, job):
             deployment = (package or {}).get('outcomes', {}).get(env, {}).get('deployment', {})
             owner = next((j for j in executor.state['jobs'] if j['id'] == deployment.get('jobId')), {})
             roots.update(owner.get('runtimeStagingRoots', {}))
+    if job['action'] == 'promote-prod':
+        # The production workflow can return to its tested package after a
+        # verified restoration. Every new deployment owns its receipts, even
+        # when the UI does not use an explicit retry action.
+        roots['prod'] = str(PurePosixPath(executor.c['targets']['prod']['stagingRoot']) / 'attempts' / job['id'])
     if job['action'] == 'promote-backup' and job.get('payload', {}).get('retryOf'):
         roots['backup'] = str(PurePosixPath(executor.c['targets']['backup']['stagingRoot']) / 'attempts' / job['id'])
     if job['action'] == 'publish-test' and job.get('payload', {}).get('retryOf'):

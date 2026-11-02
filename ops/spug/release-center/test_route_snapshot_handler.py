@@ -84,7 +84,7 @@ class SnapshotHandlerTests(unittest.TestCase):
         with patch.object(agent, 'preflight', side_effect=RuntimeBlocked('PRECHECK blocked: MISSING_NODES')), \
                 patch.object(agent, 'stop_writers') as stop, patch.object(agent, 'apply_migration_plan') as apply:
             with self.assertRaisesRegex(RuntimeBlocked, 'MISSING_NODES'):
-                agent.deploy({}, self.manifest)
+                agent.deploy({'environment':'test'}, self.manifest)
             stop.assert_not_called()
             apply.assert_not_called()
         runtime = object.__new__(Runtime)

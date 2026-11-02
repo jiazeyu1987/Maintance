@@ -98,7 +98,8 @@ class BuildRegistrationTests(unittest.TestCase):
                 raise InterruptedError('registration passed; no build attempted')
         executor = SimpleNamespace(c=self.config, root=self.repo, save=lambda:None, state={'environments':self.environments},
                                    run=subprocess.check_output, step=stop_before_effects)
-        with patch('intruoyi_build.verify_login', return_value={'gxpAuditMode':'DEVELOPMENT_DISABLED'}):
+        with patch('intruoyi_build.verify_login', return_value={'gxpAuditMode':'DEVELOPMENT_DISABLED'}), \
+                patch('intruoyi_build.validate_source_contract', return_value={'commit':self.commit}):
             build(executor, {'id':'unit-build', 'payload':{'commit':self.commit}})
 
     def test_only_production_rehearsal_registration_is_required(self):
@@ -266,6 +267,7 @@ class HistoryContractTests(unittest.TestCase):
 
     def test_runtime_baseline_is_target_specific_and_does_not_mutate_package(self):
         executor = IntRuoyiExecutor.__new__(IntRuoyiExecutor)
+        executor.c = {}
         executor.state = {'environments':{'test':{'releaseTag':'current','schemaSha256':'a'*64}}}
         manifest = {'releaseTag':'candidate'}
         runtime = executor.runtime_manifest('test', manifest)

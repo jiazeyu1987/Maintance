@@ -142,12 +142,14 @@ class PrecheckTest(unittest.TestCase):
         self.assertEqual(job['status'],'failed')
 
     def test_source_commit_is_exact_and_never_checks_out_worktree(self):
-        self.e.run=Mock(return_value=('a'*40+'\n').encode())
+        from build_artifact_guard import SOURCE_FILES
+        tree=b''.join(b'100644 blob '+b'b'*40+b'\t'+name.encode()+b'\0' for name in SOURCE_FILES)
+        self.e.run=Mock(side_effect=[('a'*40+'\n').encode(),tree])
         self.assertEqual(checks.source_commit(self.e,'a'*40)['commit'],'a'*40)
-        self.assertEqual(len(self.e.run.call_args_list),4)
-        self.assertTrue(all(c.args[0][3] in ('rev-parse','cat-file') for c in self.e.run.call_args_list))
-        self.e.run.return_value=('b'*40+'\n').encode()
-        with self.assertRaisesRegex(ValueError,'提交'):
+        self.assertEqual(len(self.e.run.call_args_list),2)
+        self.assertTrue(all(c.args[0][3] in ('rev-parse','ls-tree') for c in self.e.run.call_args_list))
+        self.e.run=Mock(return_value=('b'*40+'\n').encode())
+        with self.assertRaisesRegex(ValueError,'commit'):
             checks.source_commit(self.e,'a'*40)
 
     def test_remote_resource_failure_remains_visible_and_continues_other_checks(self):

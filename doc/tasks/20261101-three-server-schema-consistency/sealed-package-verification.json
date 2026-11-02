@@ -1,0 +1,53 @@
+{
+  "status": "PASS",
+  "releaseTag": "2026-11-01-13-08-35",
+  "sourceCommit": "fb88105af40e4ee6366a20dae2df721f1de2dcb0",
+  "packageBytes": 726169600,
+  "packageSha256": "00048a4d6ca73fb03eaec01ada6a159ffaa38af97fc689828190126f8b85706e",
+  "manifestSha256": "d6cd81fcd33ded158bab45368ccafb8c66ffdd3576bbc6aba352a025cfa0ef8c",
+  "manifestFileCount": 1094,
+  "localAndNasOriginalMatch": true,
+  "allArchiveMembersVerified": true,
+  "pendingMigrations": {
+    "test": [
+      "20261101_dcc_source_governance_all_environments"
+    ],
+    "prod": [
+      "20261101_dcc_source_governance_all_environments"
+    ],
+    "backup": [
+      "20261101_dcc_source_governance_all_environments"
+    ]
+  },
+  "gxpAuditMode": "DEVELOPMENT_DISABLED",
+  "backendArtifactContract": {
+    "status": "passed",
+    "jarSha256": "86be5d491eda8de2e21bbf45d1e57c096b525b07136334161fc95e07a6f65961",
+    "requiredClassCount": 4,
+    "imageId": "sha256:af6b7a2e576c3cb717cc72f6d1e7bb194e614cc57ee74b02982cd7d54ac16819",
+    "offlineCli": "passed",
+    "network": "none",
+    "databaseCredentials": false,
+    "probeBinding": {
+      "releaseTag": "2026-11-01-13-08-35",
+      "migrationId": "20261023_mes_route_snapshot_legacy_summary_enforce",
+      "imageId": "sha256:af6b7a2e576c3cb717cc72f6d1e7bb194e614cc57ee74b02982cd7d54ac16819",
+      "operationId": "JOB-161cebeade",
+      "packageIdentity": "86be5d491eda8de2e21bbf45d1e57c096b525b07136334161fc95e07a6f65961"
+    },
+    "expectedExitCode": 3
+  },
+  "buildWorktreeCleanup": {
+    "status": "passed",
+    "path": "C:\\SpugHandoff\\release\\build\\2026-11-01-13-08-35",
+    "commit": "fb88105af40e4ee6366a20dae2df721f1de2dcb0",
+    "verifiedTrackedFiles": 0,
+    "gitRemovalExitCode": null,
+    "residualRemoved": false,
+    "ownershipVerified": true,
+    "generatedLinksDetached": 0,
+    "registeredAfter": false,
+    "physicalPathExists": false,
+    "producedNewCommits": false
+  }
+}

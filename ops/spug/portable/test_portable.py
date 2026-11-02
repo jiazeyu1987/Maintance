@@ -8,6 +8,8 @@ import tempfile
 import unittest
 import sys
 import threading
+import os
+import subprocess
 from import_local import replace_paths, verify
 from disable_legacy_workers import disable
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'release-center'))
@@ -16,6 +18,20 @@ from intruoyi_executor import IntRuoyiExecutor
 
 
 class PortableTests(unittest.TestCase):
+    @unittest.skipUnless(os.name == 'nt', 'Windows PowerShell startup contract')
+    def test_start_reads_utf8_configuration_without_bom(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)
+            entry=root/'source/ops/spug/release-center/intruoyi_executor.py'
+            entry.parent.mkdir(parents=True)
+            note='用户确认：正式服在发布前已有独立备份和恢复机制，本次三服发布不重复执行。'
+            entry.write_text('import json,sys\nfrom pathlib import Path\nc=json.loads(Path(sys.argv[2]).read_text("utf-8"))\nassert c["note"] == '+repr(note)+'\nPath(sys.argv[2]).with_suffix(".started").touch()\n',encoding='utf-8')
+            config=root/'executor.private.json'
+            config.write_text(json.dumps(dict(pythonExecutable=sys.executable,port=0,note=note),ensure_ascii=False),encoding='utf-8')
+            result=subprocess.run(['powershell.exe','-NoProfile','-ExecutionPolicy','Bypass','-File',str(Path(__file__).with_name('start.ps1')),'-Root',str(root),'-SourceStopped'],capture_output=True)
+            self.assertEqual(result.returncode,0,'UTF-8 configuration must launch the ordinary executor')
+            self.assertTrue(config.with_suffix('.started').is_file())
+
     def test_imported_spug_does_not_replay_original_jobs(self):
         original=''.join('[program:'+name+']\ncommand = test\nautostart = true\n' for name in
                          ('nginx','spug-worker','spug-monitor','spug-scheduler','release-center-bridge'))

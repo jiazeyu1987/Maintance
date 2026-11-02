@@ -1,0 +1,15 @@
+{
+  "status": "BLOCKER",
+  "repository": "maintenance",
+  "remote": "https://github.com/jiazeyu1987/Maintance.git",
+  "branch": "codex/three-server-schema-20261101",
+  "commit": "ef647752b14734e4d3849052e5c34d615a73614c",
+  "remoteCommit": null,
+  "pushExitCode": 128,
+  "startedAt": "2026-11-01T16:42:28.797748+08:00",
+  "finishedAt": "2026-11-01T16:45:06.350681+08:00",
+  "currentHeadAndIndexPreserved": true,
+  "forceUsed": false,
+  "intMainMerged": false,
+  "errorCategory": "network or Git transport failure"
+}

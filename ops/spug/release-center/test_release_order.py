@@ -131,6 +131,7 @@ class SubmissionTests(unittest.TestCase):
 
     def test_remote_observation_overrides_stale_registered_version(self):
         remote = object.__new__(IntRuoyiExecutor)
+        remote.c = {}
         remote.state = self.executor.state
         remote.state['environments']['test']['releaseTag'] = OLD
         remote.step = Mock()

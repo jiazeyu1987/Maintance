@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "time": "2026-11-01T16:20:07.266635+08:00",
+  "worktrees": [
+    {
+      "path": "C:/SpugHandoff/schema-src-20261101",
+      "commit": "fb88105af40e4ee6366a20dae2df721f1de2dcb0",
+      "branch": "codex/three-server-schema-20261101",
+      "producedNewCommits": true,
+      "branchPreserved": true,
+      "mergedIntoIntMain": false,
+      "pushed": false,
+      "registeredAfter": false,
+      "physicalPathExists": false,
+      "validatedIgnoredCaches": 3,
+      "gitRemovalExitCode": 0
+    },
+    {
+      "path": "C:/SpugHandoff/schema-ops-20261101",
+      "commit": "43e4d3eb6b85d4f54749d721ad4ec977102a4747",
+      "branch": "codex/three-server-schema-20261101",
+      "producedNewCommits": true,
+      "branchPreserved": true,
+      "mergedIntoIntMain": false,
+      "pushed": false,
+      "registeredAfter": false,
+      "physicalPathExists": false,
+      "validatedIgnoredCaches": 89,
+      "gitRemovalExitCode": 0
+    }
+  ],
+  "ordinaryExecutorPid": 14328,
+  "stableRuntimePath": "C:\\SpugHandoff\\release\\source",
+  "otherWorktreesChanged": false
+}

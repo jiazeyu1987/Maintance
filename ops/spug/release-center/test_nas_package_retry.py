@@ -100,6 +100,38 @@ class OriginalPackageRetryTest(unittest.TestCase):
         self.assertEqual(self.original['resolution']['jobId'], 'retry2')
         self.assertEqual(job['resolution']['jobId'], 'retry2')
 
+    def test_intruoyi_cleanup_failure_and_retry_preserve_the_original_sealed_bytes(self):
+        self.manifest['applicationId'] = 'intruoyi'
+        (self.folder/'manifest.json').write_text(json.dumps(self.manifest), encoding='utf-8')
+        with tarfile.open(self.folder/'release.tar', 'w') as archive:
+            for name in ('manifest.json', 'images.tar'):
+                archive.add(self.folder/name, arcname=name)
+        sealed_hash = digest(self.folder/'release.tar')
+        job = dict(id='retry1', action='resolve-task', status='running', releaseTag=self.tag,
+                   actor='operator', payload=dict(decision='retry', note='retry original package'))
+        executor = SimpleNamespace(root=self.root,
+            c=dict(applicationId='intruoyi', nasPath=str(self.nas)), state=dict(packages=[],jobs=[job,self.original]),
+            save=lambda:None, step=lambda *args:None, log=lambda *args:None)
+        with patch('intruoyi_build.cleanup_sealed_build', side_effect=ValueError('Unknown worktree files')) as cleanup, \
+                patch.object(retry, 'connect_nas') as connect:
+            with self.assertRaisesRegex(ValueError, 'Unknown worktree files'):
+                retry.resume(executor, job, self.original)
+            cleanup.assert_called_once_with(executor, self.original)
+            connect.assert_not_called()
+        self.assertEqual(executor.state['packages'], [])
+        self.assertEqual(self.original['sealedPackage']['packageSha256'], sealed_hash)
+        self.assertNotIn('resolution', self.original)
+        job['status'] = 'failed'
+        next_job = dict(job, id='retry2', status='running')
+        executor.state['jobs'].insert(0, next_job)
+        with patch('intruoyi_build.cleanup_sealed_build') as cleanup, patch.object(retry, 'connect_nas'):
+            retry.resume(executor, next_job, job)
+            cleanup.assert_called_once_with(executor, self.original)
+        self.assertEqual(executor.state['packages'][0]['packageSha256'], sealed_hash)
+        self.assertEqual(digest(self.nas/self.tag/'release.tar'), sealed_hash)
+        self.assertEqual(self.original['resolution']['jobId'], 'retry2')
+        self.assertEqual(job['resolution']['jobId'], 'retry2')
+
 
 if __name__ == '__main__':
     unittest.main()

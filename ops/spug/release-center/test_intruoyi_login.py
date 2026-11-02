@@ -71,6 +71,7 @@ class LoginVerificationTests(unittest.TestCase):
 
     def test_saved_mode_capture_is_bound_to_source_commit_not_a_nonexistent_package(self):
         self.report['gxpAuditMode'] = 'DEVELOPMENT_DISABLED'
+        self.report.update(runtimeGxpAuditMode='DEVELOPMENT_DISABLED', auditEnabled=False, pendingRestart=False)
         binding = {'jobId': 'build-mode', 'gitCommit': 'a' * 40}
         with patch.object(login.subprocess, 'run', side_effect=self.fake_cli):
             result = login.verify_login(self.config, 'http://target:8081', self.root / 'source',
@@ -83,6 +84,18 @@ class LoginVerificationTests(unittest.TestCase):
                 with self.assertRaises(login.LoginVerificationError):
                     login.verify_login(self.config, 'http://target:8081', self.root / 'source',
                                        binding, read_gxp_mode=True)
+
+    def test_saved_off_without_runtime_off_never_passes_source_capture(self):
+        self.report.update(gxpAuditMode='DEVELOPMENT_DISABLED', runtimeGxpAuditMode='DEVELOPMENT_DISABLED',
+                           auditEnabled=False, pendingRestart=False)
+        baseline = dict(self.report)
+        for changes in (dict(runtimeGxpAuditMode='FORMAL'), dict(auditEnabled=True),
+                        dict(runtimeGxpAuditMode=None), dict(auditEnabled=None), dict(pendingRestart=True)):
+            self.report = dict(baseline, **changes)
+            with self.subTest(changes=changes), patch.object(login.subprocess, 'run', side_effect=self.fake_cli):
+                with self.assertRaises(login.LoginVerificationError):
+                    login.verify_login(self.config, 'http://target:8081', self.root/'source',
+                                       {'jobId':'build-mode','gitCommit':'a'*40}, read_gxp_mode=True)
 
     def test_missing_configuration_fails_without_browser(self):
         self.config = {}

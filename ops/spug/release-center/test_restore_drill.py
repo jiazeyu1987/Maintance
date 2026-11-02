@@ -72,6 +72,7 @@ class RestoreDrillTests(unittest.TestCase):
             self.run_action('publish-test',purpose='restore-drill')
 
     def test_registration_keeps_original_outcomes(self):
+        self.executor.runtime.targets={'rehearsal':{'environment':'rehearsal'}}
         job=dict(id='new-drill',payload={'purpose':'restore-drill'})
         source=self.observation()
         result=dict(source,originFingerprint=source['fingerprint'],verifiedOrigin=True)

@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "time": "2026-11-01T04:51:26.007285+00:00",
+  "mysqlImage": "mysql:8.0.39",
+  "existingTaskOwnedRowPreserved": true,
+  "results": {
+    "schema_test": {
+      "tableCount": 3,
+      "matchesExistingTest": true,
+      "repeatedMigrationStable": true,
+      "structureSha256": "9c1002752663e3f727ad506c1c9a363e19f214be2b46f1515a2fd5bcc6472ba0"
+    },
+    "schema_prod": {
+      "tableCount": 3,
+      "matchesExistingTest": true,
+      "repeatedMigrationStable": true,
+      "structureSha256": "9c1002752663e3f727ad506c1c9a363e19f214be2b46f1515a2fd5bcc6472ba0"
+    },
+    "schema_backup": {
+      "tableCount": 3,
+      "matchesExistingTest": true,
+      "repeatedMigrationStable": true,
+      "structureSha256": "9c1002752663e3f727ad506c1c9a363e19f214be2b46f1515a2fd5bcc6472ba0"
+    }
+  },
+  "taskContainerRemoved": true,
+  "remoteMutations": false
+}

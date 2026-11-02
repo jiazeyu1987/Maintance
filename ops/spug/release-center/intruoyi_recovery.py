@@ -47,6 +47,8 @@ def submit_recovery(executor, action, payload, actor):
         else:
             original = original_deployment(executor,package,payload)
             env = original['target']
+            require(action == 'inspect-release-recovery' or original.get('workflowPolicy', {}).get('recoveryMode') != 'external',
+                    'This production deployment uses external recovery; no Spug checkpoint restore is available')
             require(package.get('outcomes',{}).get(env,{}).get('deployment',{}).get('jobId') == original['id'],
                     'A newer deployment superseded the selected task')
             require(package.get('outcomes',{}).get(env,{}).get('acceptance',{}).get('status') != 'passed',

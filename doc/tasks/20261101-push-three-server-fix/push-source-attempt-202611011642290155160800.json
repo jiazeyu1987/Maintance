@@ -1,0 +1,15 @@
+{
+  "status": "BLOCKER",
+  "repository": "source",
+  "remote": "https://github.com/jiazeyu1987/IntRuoyiAll.git",
+  "branch": "codex/three-server-schema-20261101",
+  "commit": "fb88105af40e4ee6366a20dae2df721f1de2dcb0",
+  "remoteCommit": null,
+  "pushExitCode": 128,
+  "startedAt": "2026-11-01T16:42:29.015516+08:00",
+  "finishedAt": "2026-11-01T16:42:49.033269+08:00",
+  "currentHeadAndIndexPreserved": true,
+  "forceUsed": false,
+  "intMainMerged": false,
+  "errorCategory": "network or Git transport failure"
+}

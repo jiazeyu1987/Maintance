@@ -4,6 +4,7 @@ This adapter never reads credentials out of a remote container. JSON responses c
 identities and hashes only. The independent agent performs target-side operations.
 """
 import hashlib
+from copy import deepcopy
 import gzip
 import importlib.util
 import json
@@ -26,6 +27,36 @@ class RuntimeUncertain(RuntimeBlocked):
 def require(condition, message):
     if not condition:
         raise RuntimeBlocked(message)
+
+
+def release_workflow(config):
+    """An explicit policy migration; absence retains the historical workflow."""
+    policy = config.get('releaseWorkflow')
+    if policy is None:
+        return None
+    require(isinstance(policy, dict) and policy.get('version') == 'direct-three-server-v1',
+            'Unsupported release workflow policy')
+    require(policy.get('productionRecovery') in ('checkpoint', 'external'), 'Explicit production recovery mode required')
+    if policy['productionRecovery'] == 'external':
+        require(policy.get('externalRecoveryConfirmed') is True and isinstance(policy.get('note'), str)
+                and len(policy['note'].strip()) >= 5, 'Explicit operator confirmation of external recovery required')
+    return dict(version=policy['version'], productionRecovery=policy['productionRecovery'],
+                externalRecoveryConfirmed=policy.get('externalRecoveryConfirmed') is True, note=policy.get('note', ''))
+
+
+def runtime_recovery_policy(environment, manifest):
+    policy = manifest.get('workflowPolicy')
+    if policy is None:
+        return 'checkpoint'
+    require(isinstance(policy, dict) and policy.get('version') == 'direct-three-server-v1'
+            and policy.get('targetEnvironment') == environment, 'Runtime workflow policy target/version differs')
+    mode = policy.get('recoveryMode')
+    require(mode in ('checkpoint', 'external'), 'Explicit runtime recovery mode required')
+    if mode == 'external':
+        require(environment == 'prod' and policy.get('externalRecoveryConfirmed') is True
+                and isinstance(policy.get('note'), str) and len(policy['note'].strip()) >= 5,
+                'Explicit production external recovery confirmation required')
+    return mode
 
 
 def gxp_release_mode(manifest):
@@ -270,7 +301,7 @@ def runtime_config_snapshot(info):
 def package_identity(manifest):
     """Runtime evidence is job metadata, never part of the immutable release package."""
     return sha({key: value for key, value in manifest.items()
-                if key not in ("baselines", "executionPlans", "expectedSchemaSha256")})
+                if key not in ("baselines", "executionPlans", "expectedSchemaSha256", "workflowPolicy")})
 
 
 def validate_release_state(state, tag, maintenance):
@@ -281,10 +312,16 @@ def validate_release_state(state, tag, maintenance):
                 'Backend scheduling/consumer controls are not disabled')
 
 
-def validate_expected_schema(environment, expected_schema):
+def validate_expected_schema(environment, expected_schema, workflow_policy=None):
+    if workflow_policy is not None:
+        runtime_recovery_policy(environment, {'workflowPolicy':workflow_policy})
+        if expected_schema is None and environment not in ('prod', 'backup'):
+            # Test establishes the reference. Formal targets must converge to
+            # the schema actually verified for the same immutable package.
+            return
     if environment in ('prod', 'backup') or expected_schema is not None:
         require(isinstance(expected_schema, str) and re.fullmatch('[0-9a-f]{64}', expected_schema),
-                'Accepted production baseline rehearsal schema fingerprint required before formal target upgrade')
+                'Verified same-package schema fingerprint required before formal target upgrade')
 
 
 def migration_id(item):
@@ -362,7 +399,7 @@ def rehearsal_profile(config, source):
 
 
 def validate_quiescence_recovery(record, payload, observation):
-    require(record.get('recoveryKind') in ('no-migrations-started', 'capture-not-sealed') and record.get('restored') is True
+    require(record.get('recoveryKind') in ('no-migrations-started', 'capture-not-sealed', 'external-pre-migration') and record.get('restored') is True
             and record.get('snapshotComplete') is False, 'Explicit incomplete-snapshot recovery evidence required')
     require(record.get('jobId') == payload.get('jobId'), 'Recovery belongs to another task')
     require(record.get('restoredFingerprint') == payload.get('originFingerprint') == observation.get('fingerprint'),
@@ -379,7 +416,7 @@ class Runtime:
         self.operation_context = threading.local()
         self.config = config
         require(isinstance(config.get('targets'), dict), 'Explicit registered targets required')
-        self.targets = config['targets']
+        self.targets = deepcopy(config['targets'])
         self.sources = Path(__file__).resolve().parent
 
     def profile(self, env):

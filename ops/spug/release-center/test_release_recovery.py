@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import tarfile
 import tempfile
+from types import SimpleNamespace
 import unittest
 from urllib.parse import parse_qs, urlsplit
 from unittest.mock import Mock, patch
@@ -41,6 +42,51 @@ class RecoveryConfigurationTest(unittest.TestCase):
         self.assertIsNone(original['frontend']['HostConfig']['OomKillDisable'])
         recreated['frontend']['HostConfig']['OomKillDisable']=True
         self.assertNotEqual(expected,agent.recovery_runtime_config_sha(profile,recreated,True))
+
+
+class RecoveryDatabaseIdentityTest(unittest.TestCase):
+    def run_stopping_phase(self, database):
+        """Stop at failed-state capture, before any destructive restore."""
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)
+            profile={role:role for role in ('frontend','backend','database','redis','minio')}
+            profile.update(writers=[],acceptanceFrontend='acceptance')
+            containers={role:dict(Id=role,Name='/'+role,Config={'Env':[]},
+                                 State={'Running':False,'ExitCode':0}) for role in profile if role not in ('writers','acceptanceFrontend')}
+            (root/'recovery-containers.private.json').write_text(json.dumps(containers),encoding='utf-8')
+            record=dict(database=database,jobId='JOB-aaaaaaaaaa',releaseTag='2026-10-31-19-13-08',
+                        packageSha256='a'*64,origin={'fingerprint':'origin'})
+            remote=Mock();remote.inspect.side_effect=lambda name:containers[name]
+            backup=Mock(side_effect=InterruptedError('failed-state capture boundary'))
+            api=dict(directory=lambda *args:root,remote=remote,backup=backup,
+                     docker=lambda *args:[{'Id':name} for name in containers],
+                     resume_receipt=lambda path,value:path.write_text(json.dumps(value),encoding='utf-8'))
+            admin=Mock(side_effect=['0\t0','0\n0'])
+            lock=SimpleNamespace(flock=Mock(),LOCK_EX=1,LOCK_NB=2)
+            with patch.dict('sys.modules',{'fcntl':lock}),patch.object(agent,'read_bound',return_value=(root,record)),\
+                    patch.object(agent,'administrative_sql',admin):
+                try:
+                    agent.recover(profile,dict(jobId='JOB-bbbbbbbbbb',releaseTag=record['releaseTag']),api)
+                except Exception as error:
+                    return error,admin,backup
+            self.fail('Stopping-phase fixture unexpectedly completed a recovery')
+
+    def test_safe_hyphenated_name_reaches_quiescence_and_failed_state_capture(self):
+        error,admin,backup=self.run_stopping_phase(['ruoyi-vue-pro','utf8mb4','utf8mb4_unicode_ci'])
+        self.assertIsInstance(error,InterruptedError)
+        self.assertEqual(admin.call_count,2)
+        self.assertIn("DB='ruoyi-vue-pro'",admin.call_args.args[1])
+        backup.assert_called_once()
+
+    def test_unsafe_identity_never_reaches_quiescence_query_or_capture(self):
+        identities=[['bad'+value,'utf8mb4','utf8mb4_unicode_ci'] for value in ("'",'`',';', ' ', '\\', '\n')]
+        identities += [['safe','utf8mb4;DROP','utf8mb4_unicode_ci'],['safe','utf8mb4','bad-collation']]
+        for database in identities:
+            with self.subTest(database=database):
+                error,admin,backup=self.run_stopping_phase(database)
+                self.assertIsInstance(error,RuntimeBlocked)
+                self.assertEqual(admin.call_count,1)
+                backup.assert_not_called()
 
 
 class DataRestoreTest(unittest.TestCase):
@@ -90,6 +136,38 @@ class DataRestoreTest(unittest.TestCase):
                 retained=Path(agent.restore_data(source,archive,'JOB-a123456789'))
                 self.assertEqual({p.name:p.read_bytes() for p in source.iterdir()}, {'a':b'old A','b':b'old B'})
                 self.assertEqual({p.name:p.read_bytes() for p in retained.iterdir()}, {'a':b'failed A','c':b'failed C'})
+
+    def test_pax_unicode_directories_round_trip_without_rewriting_archive(self):
+        folder='目录'*30
+        (self.data/folder).mkdir()
+        (self.data/folder/'original.txt').write_bytes(b'original object')
+        agent.archive_data(self.data,self.archive)
+        original_archive=self.archive.read_bytes()
+        self.assertEqual(agent.validate_archive(self.archive),{folder,folder+'/original.txt'})
+        agent.verify_data(self.data,self.archive)
+        (self.data/folder/'original.txt').write_bytes(b'failed object')
+        retained=Path(agent.restore_data(self.data,self.archive,'JOB-a123456789'))
+        self.assertEqual((self.data/folder/'original.txt').read_bytes(),b'original object')
+        self.assertEqual((retained/folder/'original.txt').read_bytes(),b'failed object')
+        self.assertEqual(self.archive.read_bytes(),original_archive)
+
+    def test_canonical_directory_aliases_and_noncanonical_names_are_rejected(self):
+        directory=tarfile.TarInfo('目录/');directory.type=tarfile.DIRTYPE
+        self.assertEqual(agent.archive_member_name(directory),'目录')
+        for name,kind in [('a//',tarfile.DIRTYPE),('./a/',tarfile.DIRTYPE),('file/',tarfile.REGTYPE),('link',tarfile.LNKTYPE)]:
+            with self.subTest(name=name):
+                member=tarfile.TarInfo(name);member.type=kind
+                with self.assertRaisesRegex(RuntimeBlocked,'Unsafe'):
+                    agent.archive_member_name(member)
+        for names in [('a','a/'),('./a/',),('a/../b/',),('/absolute/',)]:
+            with self.subTest(names=names):
+                with tarfile.open(self.archive,'w:',format=tarfile.PAX_FORMAT) as archive:
+                    for name in names:
+                        member=tarfile.TarInfo(name);member.type=tarfile.DIRTYPE
+                        member.pax_headers={'path':name}
+                        archive.addfile(member)
+                with self.assertRaisesRegex(RuntimeBlocked,'Unsafe'):
+                    agent.validate_archive(self.archive)
 
     def test_recovery_retry_rejects_changed_archive_and_post_restore_writes(self):
         (self.data/'a').write_bytes(b'origin')

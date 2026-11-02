@@ -181,7 +181,7 @@ class RehearsalIngressTest(unittest.TestCase):
                           entryUrl='http://172.30.30.58:38092',acceptanceUrl='http://172.30.30.58:38093',
                           isolatedMinioPublicUrl='http://172.30.30.58:39092',backendEntrypoint=None,
                           backendCommand=['--spring.config.additional-location=file:/run/release/application.properties'],
-                          minioDataPath='/data')
+                          minioDataPath='/data', networkSubnet='172.29.235.0/24')
         self.profile.update({key:PREFIX+'-'+key for key in ('frontend','backend','database','redis','minio','network','acceptanceFrontend')})
 
     def test_registered_ports_drive_gateway_listener_bindings_and_exposure(self):
@@ -212,8 +212,7 @@ class RehearsalIngressTest(unittest.TestCase):
         self.assertEqual(explicit_http_origin('http://172.30.30.58:39092'),{'host':'172.30.30.58','port':39092})
 
     def test_target_check_binds_only_registered_addresses(self):
-        remote=Mock()
-        remote.run.return_value=b''
+        remote=self.target_remote()
         api={'remote':remote,'require':require,'RuntimeBlocked':RuntimeBlocked,'check_storage':Mock()}
         with patch('intruoyi_rehearsal_agent.socket.socket') as socket:
             result=dispatch({'profile':self.profile,'action':'rehearsal-target-check'},api)
@@ -223,8 +222,7 @@ class RehearsalIngressTest(unittest.TestCase):
         self.assertEqual(socket.return_value.close.call_count,3)
 
     def test_bound_port_fails_without_trying_another_port(self):
-        remote=Mock()
-        remote.run.return_value=b''
+        remote=self.target_remote()
         api={'remote':remote,'require':require,'RuntimeBlocked':RuntimeBlocked,'check_storage':Mock()}
         with patch('intruoyi_rehearsal_agent.socket.socket') as socket:
             socket.return_value.bind.side_effect=OSError('occupied')
@@ -232,6 +230,58 @@ class RehearsalIngressTest(unittest.TestCase):
                 dispatch({'profile':self.profile,'action':'rehearsal-target-check'},api)
         socket.return_value.bind.assert_called_once_with(('172.30.30.58',38092))
         socket.return_value.close.assert_called_once()
+
+    def target_remote(self, networks=None, routes=b'172.30.30.0/24 dev ens18\ndefault via 172.30.30.1 dev ens18\n'):
+        remote = Mock()
+        def run(command):
+            if command == ['docker', 'network', 'ls', '-q']:
+                return b'0123456789ab\n' if networks else b''
+            if command[:3] == ['docker', 'network', 'inspect']:
+                return json.dumps(networks).encode()
+            if command == ['ip', '-o', '-4', 'route', 'show', 'table', 'all']:
+                return routes
+            return b''
+        remote.run.side_effect = run
+        return remote
+
+    def check_target(self, profile, remote):
+        api = {'remote':remote,'require':require,'RuntimeBlocked':RuntimeBlocked,'check_storage':Mock()}
+        with patch('intruoyi_rehearsal_agent.socket.socket'):
+            return dispatch({'profile':profile,'action':'rehearsal-target-check'},api)
+
+    def test_new_network_requires_an_explicit_private_usable_ipv4_subnet(self):
+        for subnet in (None, '', '172.29.235.1/24', '8.8.8.0/24', '127.0.0.0/24', '172.29.235.0/29', 'fd00::/64'):
+            with self.subTest(subnet=subnet), self.assertRaises((ValueError, RuntimeBlocked)):
+                self.check_target(dict(self.profile, networkSubnet=subnet), self.target_remote())
+
+    def test_existing_docker_subnet_overlap_fails_without_mutation(self):
+        remote = self.target_remote([{'Name':'old-rehearsal', 'IPAM':{'Config':[{'Subnet':'192.168.96.0/20'}]}}])
+        with self.assertRaisesRegex((ValueError, RuntimeBlocked), 'overlaps Docker'):
+            self.check_target(dict(self.profile, networkSubnet='192.168.109.0/24'), remote)
+        self.assertFalse(any('create' in call.args[0] for call in remote.run.call_args_list))
+
+    def test_host_route_overlap_fails_even_without_docker_overlap(self):
+        remote = self.target_remote(routes=b'default via 172.30.30.1 dev ens18\n192.168.109.82 via 172.30.30.1 dev ens18\n')
+        with self.assertRaisesRegex((ValueError, RuntimeBlocked), 'overlaps host route'):
+            self.check_target(dict(self.profile, networkSubnet='192.168.109.0/24'), remote)
+
+    def test_new_gateway_does_not_conflict_with_existing_legacy_rehearsal(self):
+        remote = self.target_remote()
+        remote.inspect.return_value = {'Config':{'Labels':{'intruoyi.release.rehearsal':PREFIX}}}
+        original_run = remote.run.side_effect
+        def run(command):
+            if command[:3] == ['docker', 'ps', '-a']:
+                return (PREFIX+'-gateway\n').encode()
+            return original_run(command)
+        remote.run.side_effect = run
+        profile = dict(self.profile, gateway=PREFIX+'-20261031-gateway', networkSubnet='172.29.235.0/24')
+        self.assertTrue(self.check_target(profile, remote)['ready'])
+        remote.inspect.assert_not_called()
+
+    def test_gateway_must_be_owned_and_distinct_from_application_containers(self):
+        for gateway in ('unowned-gateway', self.profile['backend']):
+            with self.subTest(gateway=gateway), self.assertRaises((ValueError, RuntimeBlocked)):
+                self.check_target(dict(self.profile, gateway=gateway, networkSubnet='172.29.235.0/24'), self.target_remote())
 
 
 class BaselineStartupTest(unittest.TestCase):
