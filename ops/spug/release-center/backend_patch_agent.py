@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import tempfile
 import time
 from urllib.parse import quote
 from urllib.request import urlopen
@@ -254,6 +255,43 @@ def database_program_observation(profile,a,before):
                 ledgerSha256=a['sha'](raw['migrationLedgers']),databaseIdentity=raw['databaseIdentity'],backendJarSha256=jar)
 
 
+def restart_verified_original(profile,a,fence_root,snapshot,before):
+    """Resume only the exact old container's normal startup, never a candidate."""
+    remote=a['remote'];actual=remote.inspect(profile['backend'])
+    need(actual['Id']==snapshot['Id'] and not actual['State']['Running'],'原程序容器身份不一致，禁止开放')
+    need(a['sha'](a['runtime_config_snapshot'](actual))==before['backendConfigSha256'],'原程序配置发生变化')
+    raw=remote.observe(profile)
+    after=dict(before,components=raw['components'],schemaSha256=raw['schemaSha256'],
+               ledgerSha256=a['sha'](raw['migrationLedgers']),databaseIdentity=raw['databaseIdentity'])
+    verify_unchanged(before,after)
+    with tempfile.TemporaryDirectory(prefix='backend-original-') as temporary:
+        for name,destination in PATHS.items():
+            path=Path(temporary)/name
+            remote.run(['docker','cp',profile['backend']+':'+destination,str(path)])
+            if name=='app.jar':
+                need(hashlib.sha256(path.read_bytes()).hexdigest()==before['backendJarSha256'],'原程序 JAR 身份不一致')
+            else:
+                need(json.loads(path.read_text('utf-8'))==before['backendMetadata'],'原程序元数据发生变化')
+    # The unchanged original application may perform its existing startup
+    # recovery. Requiring a read-only restart would make recovery impossible.
+    # This is explicit program restoration, never candidate acceptance.
+    release_fence(profile,fence_root,remote)
+    try:
+        remote.run(['docker','start',profile['backend']])
+        wait_backend(profile,a,before['releaseTag'],False)
+    except Exception:
+        a['stop_writers'](profile)
+        need(remote.sql(profile,'SELECT COUNT(*) FROM information_schema.INNODB_TRX;')=='0','恢复失败仍有事务，禁止重新保护')
+        need(fence_state(profile,remote)=='0\t0','恢复失败后保护状态发生外部变化')
+        path=fence_root/'database-fence.json';value=json.loads(path.read_text('utf-8'))
+        need(value['status']=='released' and value['databaseId']==remote.inspect(profile['database'])['Id'],'恢复保护归属变化')
+        write(path,dict(value,status='acquiring'))
+        remote.sql(profile,'SET GLOBAL super_read_only=ON;')
+        need(fence_state(profile,remote)=='1\t1','恢复失败后只读保护未生效')
+        write(path,dict(value,status='owned'))
+        raise
+
+
 def restore(profile,payload,a,base,root):
     remote=a['remote'];original=payload.get('originalJobId','')
     need(re.fullmatch('JOB-[a-f0-9]{10}',original),'原部署任务无效')
@@ -302,13 +340,10 @@ def restore(profile,payload,a,base,root):
                 a['docker']('POST','/networks/'+quote(network)+'/connect',{'Container':old['Id'],'EndpointConfig':endpoint})
     else:
         need(remote.inspect(profile['backend'])['Id']==snapshot['Id'],'原程序不存在，禁止猜测恢复点')
-    remote.run(['docker','start',profile['backend']])
-    wait_backend(profile,a,before['releaseTag'],False)
-    check_startup_writes(profile,a)
+    restart_verified_original(profile,a,fence_root,snapshot,before)
     after=database_program_observation(profile,a,before)
     verify_unchanged(before,after)
     need(after['backendJarSha256']==before['backendJarSha256'],'原程序 JAR 身份不一致')
-    release_fence(profile,fence_root,remote)
     for name in dict.fromkeys([profile['frontend']]+profile['writers']):
         if name!=profile['backend']:remote.run(['docker','start',name])
     actual=observation(profile,a)

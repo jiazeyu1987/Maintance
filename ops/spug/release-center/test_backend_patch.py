@@ -100,6 +100,42 @@ class ContractTests(unittest.TestCase):
 
 
 class FenceTests(unittest.TestCase):
+    def test_restore_verifies_stopped_original_before_releasing_only_owned_fence(self):
+        import backend_patch_agent as agent
+        import hashlib
+        events=[];jar=b'original-jar';metadata={'releaseTag':'base'}
+        before=dict(releaseTag='base',backendJarSha256=hashlib.sha256(jar).hexdigest(),backendMetadata=metadata,
+                    schemaSha256='schema',ledgerSha256='ledger',databaseIdentity='database',components={})
+        snapshot=dict(Id='original',State={'Running':False})
+        remote=Mock();remote.inspect.return_value=snapshot
+        remote.observe.return_value=dict(schemaSha256='schema',migrationLedgers={},databaseIdentity='database',components={})
+        def run(args,**kwargs):
+            events.append(args[:2])
+            if args[1]=='cp':Path(args[-1]).write_bytes(jar if args[-2].endswith('app.jar') else json.dumps(metadata).encode())
+            return b''
+        remote.run.side_effect=run
+        a=dict(remote=remote,sha=lambda x:'ledger',runtime_config_snapshot=lambda x:{},stop_writers=Mock())
+        before['backendConfigSha256']='ledger'
+        with tempfile.TemporaryDirectory() as temporary,patch.object(agent,'release_fence',side_effect=lambda *args:events.append('release')),patch.object(agent,'wait_backend',side_effect=lambda *args:events.append('health')),patch.object(agent,'verify_unchanged'):
+            agent.restart_verified_original({'backend':'backend'},a,Path(temporary),snapshot,before)
+            self.assertLess(events.index('release'),events.index(['docker','start']))
+            self.assertLess(events.index(['docker','cp']),events.index('release'))
+            events.clear();remote.inspect.return_value=dict(snapshot,Id='candidate')
+            with self.assertRaisesRegex(ValueError,'原程序'):
+                agent.restart_verified_original({'backend':'backend'},a,Path(temporary),snapshot,before)
+            self.assertNotIn('release',events)
+            remote.inspect.side_effect=lambda name:dict(Id='database') if name=='db' else snapshot
+            remote.sql.side_effect=['0','0\t0','','1\t1']
+            fence=Path(temporary)/'database-fence.json'
+            fence.write_text(json.dumps(dict(status='released',databaseId='database')))
+            a['stop_writers'].side_effect=lambda *args:events.append('stop')
+            with patch.object(agent,'wait_backend',side_effect=ValueError('old startup failed')):
+                with self.assertRaisesRegex(ValueError,'old startup failed'):
+                    agent.restart_verified_original({'backend':'backend','database':'db'},a,Path(temporary),snapshot,before)
+            self.assertIn('stop',events)
+            self.assertEqual(json.loads(fence.read_text())['status'],'owned')
+            self.assertIn('SET GLOBAL super_read_only=ON;', [c.args[1] for c in remote.sql.call_args_list])
+
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.root=Path(self.temp.name)
         self.remote=Mock();self.remote.inspect.return_value={'Id':'database-id'};self.profile={'database':'mysql'}
