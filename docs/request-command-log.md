@@ -5670,3 +5670,8 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 
 - 用户询问能否只替换一个 JAR；本机只读确认镜像内 /yudao-server/app.jar 和 java -jar 启动，无构建或远端动作。
 - 结论：可以建设仅投递完整后端 JAR 与清单的发布通道，固定运行镜像、版本目录只读挂载、实际 JAR SHA/版本验收、保留原容器恢复；不直接覆盖旧进程文件。需实现身份/基线/清理合同，现用执行器尚未支持；详细证据见 doc/tasks/20261102-post-release-auto-cleanup/jar-only-feasibility.md。
+
+# 20261102 单 JAR 补丁与完整发布衔接
+
+- 用户询问后端单 JAR 补丁对后续完整发布的影响。本机只读确认现有完整发布继承旧启动配置与挂载，若挂载补丁 JAR，可能遮盖新镜像程序。
+- 结论：须随 JAR 通道同步适配源码包含、实际制品起点、程序挂载/入口切换、恢复及清理保护；成功后新完整包吸收修复、保留历史，失败可恢复原基础版本加补丁。详见 doc/tasks/20261102-post-release-auto-cleanup/jar-only-feasibility.md；尚未实现或远端验证。
