@@ -139,7 +139,7 @@ class Executor:
         require(reason is None, reason)
 
     def commits(self):
-        raw = self.run(['git', '-C', self.c['repo'], 'log', '-20', '--format=%H%x09%s']).decode('utf-8')
+        raw = self.run(['git', '-C', self.c['repo'], 'log', '--all', '--date-order', '-20', '--format=%H%x09%s']).decode('utf-8')
         return [dict(commit=line.split('\t', 1)[0], message=line.split('\t', 1)[1]) for line in raw.splitlines()]
 
     def manifest(self, tag):
