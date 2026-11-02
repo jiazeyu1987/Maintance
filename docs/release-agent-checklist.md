@@ -497,3 +497,11 @@ Codex 只有在以下条件同时成立时，才能判定完整发布完成：
 - 核 lock=APPLIED、FAILED/RUNNING=0、target migration APPLIED/checksum；`.env`、compose/actual image、containers、health、HTTP、release-info、release-status、Playwright 和 final gate 全通过。
 - 运行控制台发布标签输入框可能有历史默认值，preview/submit 必须始终显式传入并结构化核对本轮 tag，不得信任 UI 默认值。
 - 日常 backend `build-release` 在 Maven 前必须完成 schema-only 临时库迁移演练；不得复制完整业务数据或 MinIO。最终计划中的非 schema APPLY 必须存在 `sql/mysql/target-preflight/<migrationId>.preflight.sql`，通过只读合同校验和测试服只读断言；缺失或失败即废弃 releaseTag。
+# 发布验收后旧载荷回收门禁
+
+- Trigger: 完整包三服最终验收或前端补丁三服最终验收成功，自动回收旧包和旧恢复资料。
+- Preflight check: 同一版本最终验收成功；三服真实主版本/补丁、镜像和健康/开放状态一致；无本机并发运行任务；远端公共操作锁、活动执行器和每个文件的挂载/链接/设备/归属/SHA复核通过。使用 `post_release_cleanup.py` 与 `artifact-auto-clean`，不按目录年龄盲删。
+- Blocker: 发布未完成/验收失败、版本漂移、维护/恢复未结束、远端进程/锁冲突、摘要/归属不明时不删对应载荷；清理失败需核对原回执，不把发布验收改成失败或伪装清理成功。
+- Verification: 任务结果 `postReleaseCleanup` 及远端 `.cleanup/<验收任务>.json` 核对各服状态、删除文件及字节、保留原因；推荐本地执行 `python -X utf8 -m unittest test_post_release_cleanup`，Linux执行 `test_post_release_cleanup_lock` 验证跨进程与重试目录共锁。必须记录代码版本、触发任务、逐服实际结果。
+- Forbidden action: 不删当前包及本次恢复点、在用演练、未解决任务的恢复起点、清单/凭据/历史、业务数据、NAS、独立备份系统；不删容器/卷、不全局prune、不递归删除、不在有活动发布时热换执行器代码。
+- Evidence: `doc/tasks/20261102-post-release-auto-cleanup/`、发布最终验收任务日志和逐服清理回执。

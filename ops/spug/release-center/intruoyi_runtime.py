@@ -459,8 +459,12 @@ class Runtime:
             job.setdefault('remoteOperations', []).append(operation)
             persist()
             arguments.update(operationId=operation['operationId'], workflowJobId=job['id'])
-        uncertain_on_disconnect = action in ('frontend-patch-deploy','frontend-patch-restore','deploy', 'maintenance', 'recover-release', 'accept-recovery', 'resume-test-deployment-tail', 'rehearsal-capture', 'rehearsal-restore', 'rehearsal-resume-tail', 'rehearsal-reset')
+        uncertain_on_disconnect = action in ('artifact-auto-clean','frontend-patch-deploy','frontend-patch-restore','deploy', 'maintenance', 'recover-release', 'accept-recovery', 'resume-test-deployment-tail', 'rehearsal-capture', 'rehearsal-restore', 'rehearsal-resume-tail', 'rehearsal-reset')
         profile = self.profile(env)
+        if action == 'artifact-auto-clean':
+            profile['stagingRoot'] = self.targets[env]['stagingRoot']
+        if context:
+            profile['operationLockRoot'] = self.targets[env]['stagingRoot']
         payload = json.dumps({'action': action, 'profile': profile, **arguments}, ensure_ascii=True)
         inspector = (self.sources / 'intruoyi_remote.py').read_text('utf-8')
         agent = (self.sources / 'intruoyi_runtime_agent.py').read_text('utf-8')

@@ -437,6 +437,7 @@ class _IntRuoyiExecutor(Executor):
         require('purpose' not in payload or (action == 'prepare-rehearsal' and payload['purpose'] == 'restore-drill'),
                 'Unsupported operation purpose')
         # A repeated request returns its original task even if a newer release now runs.
+        require(not getattr(self, 'cleanup_active', False), '发布收尾清理仍在执行，请等待其完成')
         require(isinstance(payload.get('requestId'), str) and re.fullmatch('[a-zA-Z0-9-]{8,80}', payload['requestId']),
                 'requestId required')
         with self.lock:
@@ -543,6 +544,7 @@ class _IntRuoyiExecutor(Executor):
 
     def execute(self, job):
         tracker = None
+        self.cleanup_active = job['action'] == 'accept-backup'
         context = getattr(self.runtime, 'operation_context', None)
         try:
             if getattr(self, 'track_local_processes', False):
@@ -552,7 +554,10 @@ class _IntRuoyiExecutor(Executor):
                 tracker = Tracker(self, job)
             if context is not None:
                 context.binding = (job, self.save)
-            return self.execute_bound(job)
+            result = self.execute_bound(job)
+            from post_release_cleanup import run as cleanup_after_acceptance
+            cleanup_after_acceptance(self, job)
+            return result
         except Exception as error:
             job.update(status='interrupted' if getattr(error, 'remoteStatusUnknown', False) else 'failed',
                        error=str(error).replace(self.password, '[REDACTED]'), finishedAt=stamp())
@@ -560,6 +565,7 @@ class _IntRuoyiExecutor(Executor):
                 job['result'].update(status='failed', finishedAt=stamp())
             self.log(job, 'Task stopped before dispatch completed: ' + job['error'])
         finally:
+            self.cleanup_active = False
             if context is not None:
                 context.binding = None
             if tracker:

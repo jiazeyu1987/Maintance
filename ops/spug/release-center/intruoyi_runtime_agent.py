@@ -1423,7 +1423,7 @@ def dispatch(payload):
     if action.startswith('frontend-patch-'):
         from frontend_patch_agent import execute
         return execute(profile,payload,globals())
-    if action in ('artifact-inventory','artifact-remove'):
+    if action in ('artifact-inventory','artifact-remove','artifact-auto-clean'):
         from artifact_files import remote as artifacts
         try:
             return artifacts(profile,payload)

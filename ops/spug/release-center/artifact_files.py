@@ -132,6 +132,8 @@ def remove_image(reference, identity):
 
 
 def remote(profile, payload):
+    if payload['action'] == 'artifact-auto-clean':
+        return automatic_cleanup(profile, payload)
     base = Path(profile['stagingRoot'])
     require(base.is_absolute() and base.is_dir(), '登记发布暂存目录不存在')
     entries = payload['entries']
@@ -162,3 +164,118 @@ def remote(profile, payload):
         require(not mounted(Path(matches[0]['root'])/item['file']['relative'],mounts),'容器已挂载该产物，未删除')
         remove_file(matches[0]['root'],item['file'])
     return {'removed':True}
+
+
+def same_device(base, path):
+    return base.stat().st_dev == path.stat().st_dev
+
+
+def assert_cleanup_idle(base, payload):
+    from operation_journal import process_identity
+    receipts = safe_file(base, '.operations')
+    if not receipts.exists():
+        return
+    for path in receipts.glob('OP-*.json'):
+        path = safe_file(base, str(path.relative_to(base)))
+        receipt = json.loads(path.read_text('utf-8'))
+        if receipt.get('operationId') == payload.get('operationId'):
+            continue
+        require(not (receipt.get('status') == 'running' and receipt.get('processStart') and
+                process_identity(receipt['pid']) == receipt['processStart']),
+                '远端仍有活动执行器，停止自动清理')
+
+
+def verify_cleanup_runtime(profile, payload):
+    actual = json.loads(docker(['inspect', profile['backend'], profile['frontend']]))
+    require([r['Image'] for r in actual] == [payload['expectedImages'][r] for r in ('backend','frontend')]
+            and all(r['State']['Running'] for r in actual), '当前容器已改变或未运行，停止自动清理')
+    metadata = json.loads(docker(['exec', profile['frontend'], 'cat', '/usr/share/nginx/html/release-info.json']))
+    require(metadata.get('baseReleaseTag', metadata.get('releaseTag')) == payload['currentReleaseTag']
+            and metadata.get('frontendPatchTag') == payload.get('currentPatchTag'),
+            '当前页面版本已改变，停止自动清理')
+
+
+def cleanup_root(base, entry):
+    tag = entry['manifest']['releaseTag']
+    require(re.fullmatch(r'\d{4}(-\d{2}){5}', tag), '旧包版本号无效')
+    if entry.get('kind') == 'frontend-patch':
+        owner = entry.get('deploymentJobId', '')
+        require(re.fullmatch('JOB-[a-f0-9]{10}', owner), '旧补丁任务号无效')
+        relative = 'frontend-patches/'+tag+'/'+owner
+    elif entry.get('attempt'):
+        owner = entry['attempt']
+        require(re.fullmatch('JOB-[a-f0-9]{10}', owner), '旧重试任务号无效')
+        relative = 'attempts/'+owner+'/'+tag
+    else:
+        relative = tag
+    return safe_file(base, relative)
+
+
+def automatic_cleanup(profile, payload):
+    """No discovery/recursive removal. Only exact, SHA-bound retired payloads.
+
+    The common operation journal lock serializes this with other remote work.
+    Existing metadata, credentials, active containers and all images stay put.
+    """
+    base = Path(profile['stagingRoot'])
+    require(not (base == Path('/mnt/nas') or Path('/mnt/nas') in base.parents), '禁止自动清理NAS')
+    require(base.is_absolute() and base.is_dir() and base != Path('/') and len(base.parts) >= 3, '发布暂存根无效')
+    safe_file(base, '.cleanup')  # Check all base ancestors before any access.
+    owner = payload.get('workflowJobId', '')
+    require(re.fullmatch('JOB-[a-f0-9]{10}', owner), '清理任务号无效')
+    roots = [(entry, cleanup_root(base, entry)) for entry in payload['entries']]
+    verify_cleanup_runtime(profile, payload)
+    assert_cleanup_idle(base, payload)
+    report = dict(status='running', removed=[], retained=[], bytes=0)
+    report_path = safe_file(base, '.cleanup/'+owner+'.json')
+    report_path.parent.mkdir(mode=0o700, exist_ok=True)
+    # Preserve a previous attempt's per-file evidence when resuming this job.
+    if report_path.exists():
+        previous = json.loads(report_path.read_text('utf-8'))
+        report['previousAttempt'] = previous
+    def save_report():
+        from operation_journal import write
+        write(report_path, report)
+    save_report()
+    try:
+        held = set(payload['protectedTags']) | {payload['currentReleaseTag'], payload.get('currentPatchTag')}
+        for entry, root in roots:
+            tag = entry['manifest']['releaseTag']
+            if tag in held or (entry.get('kind') != 'frontend-patch' and tag >= payload['currentReleaseTag']):
+                report['retained'].append(dict(releaseTag=tag, reason='当前版本、恢复点、演练或未结束任务引用'))
+                continue
+            # A patch cannot be retired merely because its wall-clock tag is
+            # older than a full build; only explicitly retired controller entries.
+            rows = inventory(root, entry['manifest'], entry['manifestSha256'], entry['packageSha256'],
+                             recovery=entry.get('kind') != 'frontend-patch', recovery_jobs=entry.get('ownerJobIds', []))
+            if (entry.get('kind') != 'frontend-patch' and root.exists()
+                    and not safe_file(root, 'recovery-record.private.json').exists()
+                    and any(root.glob('recovery*'))):
+                report['retained'].append(dict(releaseTag=tag, reason='恢复资料缺少归属记录，保留整组载荷'))
+                continue
+            for row in rows:
+                if row.get('retainedReason') or row.get('unmeasured'):
+                    report['retained'].append(dict(releaseTag=tag, file=row['relative'],
+                        reason=row.get('retainedReason', '资料归属无法确认')))
+                    continue
+                path = safe_file(root, row['relative'])
+                _, _, mounts = docker_inventory()
+                if mounted(path, mounts):
+                    report['retained'].append(dict(releaseTag=tag, file=row['relative'], reason='容器挂载引用'))
+                    continue
+                verify_cleanup_runtime(profile, payload)
+                assert_cleanup_idle(base, payload)
+                require(same_device(base, path), '产物跨文件系统，停止自动清理')
+                require(path.stat().st_nlink == 1, '产物存在硬链接，停止自动清理')
+                report['pendingDeletion'] = dict(releaseTag=tag, relative=str(path.relative_to(base)), sha256=row['sha256'])
+                save_report()
+                remove_file(root, row)
+                report['removed'].append(dict(releaseTag=tag, relative=str(path.relative_to(base)), bytes=row['bytes']))
+                report['bytes'] += row['bytes']
+                report.pop('pendingDeletion')
+                save_report()
+        report['status'] = 'succeeded'
+    except Exception as error:
+        report.update(status='failed', error=str(error))
+    save_report()
+    return report

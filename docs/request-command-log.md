@@ -3955,3 +3955,8 @@ elease-20260802-feedback-fix-test-r260802h-r1；已仅将 .env IMAGE_TAG 恢复�
 - 结果：维护16:46:42推送ef647752成功，源码16:52:27推送fb88105a成功；ls-remote精确核对一致，普通推送无force。
 - 收尾：推送worktree无新提交、未构建或启动应用；干净状态核实后Git删除，物理路径及登记均不存在，slot3释放，保留其他任务登记。最终Git操作记录另做维护分支提交，并核对远端最终哈希。
 - 证据：doc/tasks/20261101-push-three-server-fix内push-source.json、push-maintenance.json、push-audit.json、worktree-closeout.json、slot-closeout.json及records-commit.json。
+# 20261102-post-release-auto-cleanup
+
+- 用户：修改为发布完成后删除旧包和旧恢复资料（如果有）。
+- 意图：在独立工作副本对齐已提交发布配套基线；BDD→RED→GREEN→REGRESSION，将自动回收接入完整包/前端补丁三服最终验收；仅精确删除失效且身份可验证的普通载荷文件，保护当前版本/恢复点、演练、业务资料、凭据及历史。无新三服发布或远端删除验收。
+- 验证：本机真实临时文件和控制器边界测试、Linux实际跨进程/重试目录公共锁测试、既有三服直发/补丁/恢复/清理回归；清理独立状态可见，失败不篡改发布成功。完整结果见任务 execution-log.md。

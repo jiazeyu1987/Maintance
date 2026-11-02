@@ -1,5 +1,7 @@
 # 项目经验索引
 
+- 发布完成自动删除旧包 / 旧恢复资料 / postReleaseCleanup / artifact-auto-clean / 重试目录公共锁：`docs/release-agent-checklist.md#发布验收后旧载荷回收门禁`。
+
 - 三服表数不同 / 环境限定建表 / 治理表仅test / 同包升级后结构一致 / expectedSchemaSha256：`docs/release-agent-checklist.md#三服同版本同结构发布门禁`；修复用不可变前向迁移，不改已执行SQL，不删表凑数量；升级后核表、列、索引与约束，保留各自业务数据和迁移历史。
 
 - full-app-release/v1 / 同包逐目标计划 / .release-state / READY gate / attemptId / RECOVERY_REQUIRED / classic overlay2 / 1GiB最低余量：`docs/release-agent-checklist.md#完整包逐目标计划与持久恢复门禁`。

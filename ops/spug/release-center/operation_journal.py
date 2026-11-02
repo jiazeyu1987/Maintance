@@ -58,8 +58,16 @@ def execute(payload, dispatch):
     require(re.fullmatch(r'JOB-[a-f0-9]{10}', payload.get('workflowJobId', '')), 'Workflow task required')
     path.parent.mkdir(parents=True, mode=0o700, exist_ok=True)
     binding = hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
-    with path.with_suffix('.lock').open('a') as lock:
+    # Every journalled operation shares this lock, including automatic cleanup.
+    # A second controller cannot deploy while retired payloads are being removed.
+    from artifact_files import safe_file
+    staging = Path(payload['profile']['stagingRoot'])
+    common = Path(payload['profile'].get('operationLockRoot', staging))
+    require(staging == common or common in staging.parents, 'Operation lock root differs from registered staging')
+    mutation_path = safe_file(common, 'runtime-operation.lock')
+    with path.with_suffix('.lock').open('a') as lock, mutation_path.open('a') as mutation_lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        fcntl.flock(mutation_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         if path.exists():
             previous = json.loads(path.read_text('utf-8'))
             require(previous['binding'] == binding, 'Operation payload identity differs')

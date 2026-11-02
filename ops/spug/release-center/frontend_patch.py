@@ -103,6 +103,7 @@ class FrontendPatchMixin:
         with self.lock:
             self.ensure_persistence()
             require(not getattr(self,'draining',False),'执行器正在停止')
+            require(not getattr(self,'cleanup_active',False),'发布收尾清理仍在执行，请等待其完成')
             require(payload.get('applicationId')==self.c['applicationId'],'应用身份不匹配')
             request_id=payload.get('requestId','')
             require(isinstance(request_id,str) and re.fullmatch('[a-zA-Z0-9-]{8,80}',request_id),'requestId required')
@@ -127,6 +128,7 @@ class FrontendPatchMixin:
         return self.runtime.call(env,PREFIX+action,**kwargs)
 
     def frontend_job(self,job):
+        self.cleanup_active = job['action'] == PREFIX+'accept' and job.get('target') == 'backup'
         try:
             action,payload=job['action'],job['payload']
             self.step(job,action)
@@ -207,10 +209,13 @@ class FrontendPatchMixin:
                     self.record_frontend(env,result['observation'],observed=bool(p.get('observedBaseline')))
             job.update(status='succeeded',finishedAt=stamp())
             self.log(job,'前端补丁操作完成；后端及数据库保持原容器。')
+            from post_release_cleanup import run as cleanup_after_acceptance
+            cleanup_after_acceptance(self,job)
         except Exception as error:
             job.update(status='failed',error=str(error),finishedAt=stamp())
             self.log(job,'前端补丁操作失败：'+str(error))
         finally:
+            self.cleanup_active = False
             self.runtime.operation_context.binding=None
             self.save()
 
