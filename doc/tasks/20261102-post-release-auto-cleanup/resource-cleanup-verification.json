@@ -1,0 +1,43 @@
+{
+  "runtime": {
+    "status": "passed",
+    "codeFiles": 7,
+    "configUnchanged": true,
+    "historyUnchanged": true,
+    "state": {
+      "sha256": "b9384313d0eb580b1a93e1629dd2d0dd34587659d3be6ecfb330a155393ee78e",
+      "jobs": 271,
+      "packages": 28,
+      "patches": 1
+    },
+    "executorPort": 18112,
+    "spugHttpStatus": 200,
+    "servicesInstalled": 0,
+    "remoteMutations": 0
+  },
+  "ui": {
+    "status": "passed",
+    "realLogin": true,
+    "jobHistoryRows": 271,
+    "fullPackageOptions": 29,
+    "patchPackageOptions": 2,
+    "nonLoginWrites": 0,
+    "pageErrors": 0,
+    "servedCode": {
+      "app.js": "1b8e4c36735098c07b4f0d092e0bcce462dcdaf481cbb27fa0953410c4e26461",
+      "frontend-patch.js": "d846967f6b640a540c2a587d6e5a0e26dc60d0069212c97c46fc4be6bf156801"
+    },
+    "cleanupActionsExecuted": 0
+  },
+  "regression": {
+    "total": 587,
+    "skipped": 4,
+    "status": "passed",
+    "linux": 14,
+    "realDocker": 1,
+    "mergedTargeted": 173
+  },
+  "implementationCommit": "a387210",
+  "integrationCommit": "6fac28e",
+  "remoteDeletionExecuted": false
+}

@@ -83,3 +83,9 @@
 - 用户询问后端单 JAR 补丁是否影响后续完整发布；只读核实 clone_config 深拷贝 HostConfig/启动配置，replace 保留旧 Mounts，存在旧 JAR 挂载遮盖新镜像程序的具体风险。
 - 必须同步适配补丁提交包含检查、实际 JAR/组合版本起点、受控程序挂载/入口切换、恢复到原 A+P 的依赖保护、成功后补丁被完整包吸收的状态及清理保护；仅改显示版本或镜像 tag 不足。详细接续方案与验收场景见 jar-only-feasibility.md。
 - 仅核查和文档，无运行代码变更、远端连接、构建或发布，不宣称现用完整发布已经支持单 JAR 补丁衔接。
+- GREEN: 执行器7文件安装后HTTP及认证状态PASS，私密配置/逻辑历史SHA不变。真实Playwright登录响应较慢（原30s载体超时，按既有90s成功）；页面实际发现Spug Nginx静态资源指向 `/var/lib/intruoyi-spug/releases/dbabf7e/ui/`，不是绑定源码UI，HTTP仍为旧SHA。未把源码更新冒称页面已生效。
+- GREEN: experience-preflight -> PASS（本机Spug静态资源定向同步）。已核实际Nginx alias、两份旧JS与同步前SHA一致；备份现用2个JS后，只覆盖这2个任务变更文件，逐HTTP SHA验证。无需改Nginx配置、重启Spug/Docker或触及其他应用，不执行三服业务动作。
+- GREEN: Playwright真实登录、完整发布页、271条任务历史、补丁页及函数加载PASS；完整包选项29（含空选项）、补丁2（含空选项）；页面脚本错误0、非登录写请求0、清理动作0，两个HTTP脚本SHA匹配活跃源码。没有通过mock、API登录或伪造报告验证页面。
+- GREEN: 配置及历史SHA保持，0活动任务，普通执行器PID8872、18112认证state与18081 HTTP正常。匹配候选173项和int_main融合结果173项及Node两组合同均通过。
+- CLOSEOUT: 主线同期文档进展已正常并集合并，execution-log冲突保留两侧完整记录。主目录仅本任务最初的task.md草稿先私有备份、核对为本任务扩展后由实现提交取代；其他任务历史脏文件原样保留。实现 a387210 已合入 int_main（融合6fac28e）。本任务不构建业务包，未对三服执行删除或发布，未推送Git。
+- 工作副本路径及目标：C:/Users/D01021/.codex/worktrees/spug-post-release-cleanup/Maintance，1f1df8a起始、实现a387210，融合6fac28e；构建命令无，验证命令见上；产生新提交是，已合回int_main是。原主检出应用归档限制未解除，开发路径不被运行器引用，保持ready_for_closeout；不能标completed。
