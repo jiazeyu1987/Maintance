@@ -96,13 +96,16 @@ class FrontendPatchMixin:
         if (job.get('action')==action and full and full.get('stage')=='completed'
                 and full['releaseTag']>(job.get('releaseTag') or full['releaseTag'])
                 and current.get('baselineStatus')=='registered' and current.get('maintenance') is False
-                and not current.get('maintenanceUnknown') and not current.get('recoveryPending')
-                and current.get('manifestSha256')==full.get('manifestSha256') and full.get('manifestSha256')):
+                and not current.get('maintenanceUnknown') and not current.get('recoveryPending')):
+            _,manifest=self.manifest(full['releaseTag'])
             deployment=full.get('outcomes',{}).get(env,{}).get('deployment',{})
             owner=next((j for j in self.state['jobs'] if j['id']==deployment.get('jobId')),None)
             if (deployment.get('status')=='succeeded' and owner and owner.get('status')=='succeeded'
                     and owner.get('action')==action and owner.get('target')==env
-                    and owner.get('releaseTag')==full['releaseTag'] and job.get('finishedAt')
+                    and owner.get('releaseTag')==full['releaseTag']
+                    and manifest.get('releaseTag')==full['releaseTag']
+                    and current.get('images',{}).get('backend')==manifest['images']['backend']['id']
+                    and job.get('finishedAt')
                     and owner.get('createdAt','')>job['finishedAt'] and self.technical_passed(full,env)):
                 return False
         return True

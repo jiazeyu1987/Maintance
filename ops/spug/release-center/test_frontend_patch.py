@@ -94,15 +94,16 @@ class PatchTests(unittest.TestCase):
         owner=dict(id='new',action='publish-test',status='succeeded',target='test',releaseTag=self.base,
                    createdAt='2026-10-27-18-00-00')
         current=self.e.state['environments']['test']
-        current.update(maintenance=False,baselineStatus='registered',manifestSha256='verified')
+        current.update(maintenance=False,baselineStatus='registered',images={'backend':'sha256:actual'})
         full=dict(releaseTag=self.base,stage='completed',manifestSha256='verified',
                   outcomes={'test':{'deployment':dict(jobId='new',status='succeeded')}})
         self.e.state.update(packages=[full],jobs=[job,owner])
+        self.e.manifest=Mock(return_value=(full,dict(releaseTag=self.base,images={'backend':{'id':'sha256:actual'}})))
         self.e.technical_passed=Mock(return_value=True)
         self.assertFalse(self.e.frontend_failure_blocks(job,'test'))
         for change in (dict(releaseTag=self.base),dict(action='frontend-patch-deploy'),dict(action='restore-backup')):
             self.assertTrue(self.e.frontend_failure_blocks(dict(job,**change),'test'))
-        for key,value in [('maintenance',True),('manifestSha256','other'),('recoveryPending',True)]:
+        for key,value in [('maintenance',True),('images',{'backend':'sha256:other'}),('recoveryPending',True)]:
             with self.subTest(key=key):
                 saved=copy.deepcopy(current);current[key]=value
                 self.assertTrue(self.e.frontend_failure_blocks(job,'test'))
