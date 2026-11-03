@@ -94,6 +94,39 @@ def read_versions(profile):
                 observedAt=datetime.now(timezone.utc).isoformat())
 
 
+def backend_jar_sha(profile, info):
+    """Read the real program, including an owned bind while its container is stopped."""
+    labels = info['Config'].get('Labels') or {}
+    patched = labels.get(BACKEND_PATCH_LABEL+'tag')
+    if info['State']['Running']:
+        digest = remote.run(['docker','exec',profile['backend'],'sha256sum',PATHS['app.jar']]).decode().split()[0]
+    elif patched:
+        config = copy.deepcopy(info['Config'])
+        config['HostConfig'] = copy.deepcopy(info['HostConfig'])
+        full_release_config(config)  # Reject unknown or parent program overrides.
+        root = Path(labels.get(BACKEND_PATCH_LABEL+'root', ''))
+        require(root.is_absolute() and root.resolve() == root and not root.is_symlink(), 'Stopped patch root is unsafe')
+        for name, destination in PATHS.items():
+            path = root / name
+            mounts = [m for m in info['Mounts'] if m.get('Destination') == destination]
+            require(len(mounts) == 1 and mounts[0].get('Type') == 'bind'
+                    and mounts[0].get('Source') == path.as_posix() and mounts[0].get('RW') is False
+                    and path.is_file() and not path.is_symlink() and path.resolve() == path,
+                    'Stopped patch file/mount ownership differs')
+        digest = file_sha(root / 'app.jar')
+    else:
+        return None
+    require(re.fullmatch('[a-f0-9]{64}', digest), 'Actual backend JAR SHA required')
+    if patched:
+        require(digest == labels.get(BACKEND_PATCH_LABEL+'sha256'), 'Actual patched JAR differs from label')
+    after = remote.inspect(profile['backend'])
+    require(after['Id'] == info['Id'] and after['Image'] == info['Image']
+            and after['State']['Running'] == info['State']['Running']
+            and after['State'].get('StartedAt') == info['State'].get('StartedAt')
+            and runtime_config_snapshot(after) == runtime_config_snapshot(info), 'Backend changed during JAR observation')
+    return digest
+
+
 def observe(profile):
     # Inspector performs SHOW TABLES/DESCRIBE before metadata/ledger queries.
     raw = remote.observe(profile)
@@ -158,10 +191,7 @@ def observe(profile):
     backend_info=remote.inspect(profile['backend'])
     patch_labels=backend_info['Config'].get('Labels') or {}
     backend_patch_tag=patch_labels.get(BACKEND_PATCH_LABEL+'tag')
-    jar_sha=None
-    if backend_info['State']['Running']:
-        jar_sha=remote.run(['docker','exec',profile['backend'],'sha256sum','/yudao-server/app.jar']).decode().split()[0]
-        require(re.fullmatch('[a-f0-9]{64}',jar_sha),'Actual backend JAR SHA required')
+    jar_sha=backend_jar_sha(profile, backend_info)
     if backend_patch_tag:
         require(jar_sha==patch_labels.get(BACKEND_PATCH_LABEL+'sha256'),'Actual patched JAR differs from label')
         fingerprint=sha({'origin':fingerprint,'backendPatchTag':backend_patch_tag,'backendJarSha256':jar_sha})
@@ -1270,6 +1300,9 @@ def resume_test_tail_locked(profile, payload, root):
     actual = [tuple(row.split('\t')) for row in rows.splitlines()]
     expected = [(item['migrationId'], item['sha256'], 'APPLIED') for item in applied]
     require(sorted(actual) == sorted(expected), 'Original APPLY ledger is not exactly completed by this deployment')
+    if (not applied and observation.get('images') == recovery.get('origin', {}).get('images')
+            and not any((root / (role+'-before-initial.private.json')).exists() for role in ('backend','frontend'))):
+        return resume_sealed_origin(profile, payload, root, recovery, observation)
     for role in ('backend','frontend'):
         require(remote.inspect(profile[role])['Image'] == manifest['images'][role]['id'], 'Current candidate image differs: ' + role)
         snapshot = json.loads((root / (role + '-before-initial.private.json')).read_text())
@@ -1283,7 +1316,7 @@ def resume_test_tail_locked(profile, payload, root):
         require(record.get('originalJobId') == original_job and record.get('releaseTag') == tag
                 and record.get('packageIdentity') == identity and record.get('packageSha256') == payload['packageSha256'],
                 'Tail resume receipt belongs to another deployment')
-        require(record.get('phase') in ('acceptance-repair','opening','complete')
+        require(record.get('phase') in ('program-switch','acceptance-repair','opening','complete')
                 and record.get('status') in ('running','failed','completed'), 'Unknown tail resume receipt state')
         require(process_start_identity(record['pid']) != record['processStart'], 'Previous tail resume worker remains active')
         receipts.append((path, record))
@@ -1299,6 +1332,8 @@ def resume_test_tail_locked(profile, payload, root):
                 and result['maintenance'] is False and result['frontendHttpStatus'] == 200, 'Completed deployment no longer matches fresh observation')
         result.update(verifiedHealth=verified, recoveryPoint=recovery, resumeReceipt=receipt)
         return result
+    require(not any(record.get('phase') == 'program-switch' for _, record in receipts),
+            'Interrupted program switch requires explicit technical restoration')
     opening = [(path, record) for path, record in receipts if record.get('phase') == 'opening']
     require(profile.get('writerInventoryConfirmed') is True and profile['backend'] in profile['writers'], 'Confirmed writer inventory required')
     require(not remote.inspect(profile['frontend'])['State']['Running'], 'Public frontend must remain stopped')
@@ -1343,6 +1378,94 @@ def resume_test_tail_locked(profile, payload, root):
     except Exception as error:
         receipt.update(status='failed', errorCategory=type(error).__name__, failedAt=datetime.now(timezone.utc).isoformat())
         resume_receipt(receipt_path, receipt)
+        raise
+
+
+def resume_sealed_origin(profile, payload, root, recovery, observation):
+    """Reuse a complete untouched checkpoint; execute no SQL, backup or data restore."""
+    from intruoyi_recovery_agent import read_bound, checksums
+    from intruoyi_rehearsal_agent import process_start_identity
+    manifest = payload['manifest']
+    tag = manifest['releaseTag']
+    require(not any(item.get('action') == 'APPLY' for item in payload['originalPlan']), 'Sealed origin requires zero original APPLY')
+    bound_root, bound = read_bound(profile, dict(releaseTag=tag, originalJobId=payload['originalJobId'],
+        packageSha256=payload['packageSha256'], originFingerprint=observation['fingerprint']), globals())
+    require(bound_root == root and bound == recovery and recovery.get('packageIdentity') == package_identity(manifest)
+            and recovery.get('manifestSha256') == payload['manifestSha256'], 'Sealed checkpoint binding differs')
+    origin = manifest.get('baselines', {}).get('test', {})
+    for key in ('fingerprint','images','schemaSha256','ledgerSha256'):
+        require(origin.get(key) and origin[key] == recovery['origin'].get(key) == observation.get(key),
+                'Sealed origin evidence differs: '+key)
+    forbidden = ('deployment-pending.json','backend-before-reopen.private.json','business-opened.private.json')
+    require(not any((root/name).exists() for name in forbidden)
+            and not list(root.glob('*-before-*.private.json')) and not list(root.glob('resume-JOB-*')),
+            'Sealed origin already entered a program switch or continuation')
+    require(profile.get('writerInventoryConfirmed') is True and profile['backend'] in profile['writers'],
+            'Confirmed writer inventory required')
+    snapshots = json.loads((root/'recovery-containers.private.json').read_text())
+
+    def verify_containers():
+        for name, saved in snapshots.items():
+            current = remote.inspect(name)
+            require(current['Id'] == saved['Id'] and current['Image'] == saved['Image']
+                    and runtime_config_snapshot(current) == runtime_config_snapshot(saved), 'Sealed original container differs')
+        require(all(not remote.inspect(name)['State']['Running'] for name in profile['writers']+[profile['frontend']]),
+                'Sealed original writers and frontend must remain stopped')
+        check_fence(profile)
+        require(remote.sql(profile, "SELECT COUNT(*) FROM information_schema.PROCESSLIST WHERE ID<>CONNECTION_ID() AND DB=DATABASE() AND COMMAND<>'Sleep';") == '0'
+                and remote.sql(profile, 'SELECT COUNT(*) FROM information_schema.INNODB_TRX;') == '0',
+                'Active statements or transactions prevent sealed continuation')
+
+    verify_containers()
+    require(remote.sql(profile, "SELECT value,type,visible+0 FROM infra_config WHERE config_key='system.gxp.audit-mode' AND deleted=b'0';")
+            == gxp_release_mode(manifest)+'\t1\t1', 'Sealed origin GxP mode differs; continuation cannot change configuration')
+    require(recovery.get('tableChecksums') and checksums(profile, globals()) == recovery['tableChecksums'],
+            'Database contents changed after the sealed checkpoint')
+    verify_containers()
+    fresh = observe(profile)
+    require(all(fresh.get(k) == observation.get(k) for k in ('fingerprint','images','schemaSha256','ledgerSha256')),
+            'Sealed origin changed during checkpoint verification')
+    for role in ('backend','frontend'):
+        image = manifest['images'][role]['id']
+        require(remote.run(['docker','image','inspect','--format','{{.Id}}',image]).decode().strip() == image,
+                'Candidate image not loaded')
+    terminal_snapshot_readiness(profile, root, manifest, recovery)
+    require(not manifest.get('expectedSchemaSha256') or fresh['schemaSha256'] == manifest['expectedSchemaSha256'],
+            'Sealed schema differs from the verified upgrade basis')
+    attempt = root / ('resume-'+payload['retryJobId'])
+    attempt.mkdir(mode=0o700)
+    receipt_path = attempt/'receipt.private.json'
+    receipt = dict(originalJobId=payload['originalJobId'],retryJobId=payload['retryJobId'],completedByJobId=payload['retryJobId'],
+        releaseTag=tag,packageIdentity=package_identity(manifest),packageSha256=payload['packageSha256'],
+        manifestSha256=payload['manifestSha256'],originalPlanSha256=sha(payload['originalPlan']),recoverySha256=recovery['sha256'],
+        schemaSha256=observation['schemaSha256'],ledgerSha256=observation['ledgerSha256'],pid=os.getpid(),
+        processStart=process_start_identity(os.getpid()),status='running',phase='program-switch',
+        resumeMode='sealed-origin-program-switch',observedAt=datetime.now(timezone.utc).isoformat())
+    require(receipt['processStart'], 'Resume worker identity unavailable')
+    resume_receipt(receipt_path,receipt)
+    try:
+        replace(profile,root,'backend',manifest['images']['backend']['id'],tag,True)
+        replace(profile,root,'frontend',manifest['images']['frontend']['id'],tag)
+        docker('POST','/containers/'+quote(profile['backend'])+'/start')
+        acceptance_frontend(profile,root)
+        receipt['phase']='acceptance-repair'
+        resume_receipt(receipt_path,receipt)
+        health(profile,tag,True,expected_gxp_mode=gxp_release_mode(manifest))
+        receipt['phase']='opening'
+        resume_receipt(receipt_path,receipt)
+        private_json(root/'deployment-pending.json',dict(releaseTag=tag,images=manifest['images'],
+            maintenanceProtocol=PROTOCOL,releaseSettings=manifest['releaseSettings']))
+        result=reopen(profile)
+        require(result['schemaSha256'] == observation['schemaSha256'] and result['ledgerSha256'] == observation['ledgerSha256']
+                and result.get('images') == {r:manifest['images'][r]['id'] for r in ('backend','frontend')}
+                and result['maintenance'] is False and result['frontendHttpStatus'] == 200, 'Sealed continuation result differs')
+        receipt.update(status='completed',phase='complete',completedAt=datetime.now(timezone.utc).isoformat())
+        resume_receipt(receipt_path,receipt)
+        result.update(recoveryPoint=recovery,resumeReceipt=receipt)
+        return result
+    except Exception as error:
+        receipt.update(status='failed',errorCategory=type(error).__name__,failedAt=datetime.now(timezone.utc).isoformat())
+        resume_receipt(receipt_path,receipt)
         raise
 
 

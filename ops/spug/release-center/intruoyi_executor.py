@@ -978,7 +978,7 @@ class _IntRuoyiExecutor(Executor):
         planned = original_plan['items']
         require(len({m.get('migrationId') for m in planned}) == len(planned), 'Original migration plan contains duplicate identities')
         applied = [m for m in planned if m.get('action') == 'APPLY']
-        require(applied and all(m.get('migrationId') in sources and m.get('sha256') == sources[m['migrationId']]['sha256']
+        require(all(m.get('migrationId') in sources and m.get('sha256') == sources[m['migrationId']]['sha256']
                                 for m in applied), 'Original APPLY identities differ from the immutable package')
         origin_records = original.get('originState', {}).get('ledgerRecords')
         require(isinstance(origin_records, list) and
@@ -987,8 +987,12 @@ class _IntRuoyiExecutor(Executor):
         observation = self.runtime.observe('test')
         audit = audit_ledger(observation, manifest)
         require(all(m['migrationId'] in audit['applied'] for m in applied), 'Original test migrations are not all APPLIED')
-        require(observation.get('images') == {role: manifest['images'][role]['id'] for role in ('backend', 'frontend')},
-                'Both installed test images must be the original candidate')
+        candidate_images = {role: manifest['images'][role]['id'] for role in ('backend', 'frontend')}
+        origin = original.get('originState', {})
+        sealed_origin = not applied and all(origin.get(key) and origin[key] == observation.get(key)
+            for key in ('fingerprint','images','schemaSha256','ledgerSha256'))
+        require(observation.get('images') == candidate_images or sealed_origin,
+                'Both installed test images must be the original candidate or verified sealed origin')
         plan = target_input_plan(manifest['migrations'], observation['ledgerRecords'], 'test')
         require(plan['status'] == 'passed' and not any(m['action'] == 'APPLY' for m in plan['items']),
                 'Continuation requires zero pending migrations')
@@ -1014,7 +1018,7 @@ class _IntRuoyiExecutor(Executor):
                 and receipt.get('completedByJobId') in {j['id'] for j in attempts},
                 'Same-package completed test continuation receipt required')
         validate_origin(result)
-        require(result['releaseTag'] == package['releaseTag'] and result.get('images') == observation['images']
+        require(result['releaseTag'] == package['releaseTag'] and result.get('images') == candidate_images
                 and result.get('maintenance') is False
                 and result.get('readOnly') == dict(read_only=False, super_read_only=False),
                 'Test continuation did not confirm the candidate open for functional verification')
