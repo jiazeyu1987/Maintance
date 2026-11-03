@@ -1,0 +1,30 @@
+{
+  "id": "JOB-3fac1466b1",
+  "action": "backend-patch-build",
+  "status": "succeeded",
+  "target": null,
+  "releaseTag": "2026-11-02-23-56-34",
+  "currentStep": "publish-original-backend-patch-to-nas",
+  "buildWorktree": "C:\\SpugHandoff\\release\\build\\2026-11-02-23-56-34",
+  "buildWorktreeCleanup": {
+    "status": "passed",
+    "path": "C:\\SpugHandoff\\release\\build\\2026-11-02-23-56-34",
+    "commit": "da3851751451ea75ce82f4ecb9e0364000505909",
+    "verifiedTrackedFiles": 31733,
+    "gitRemovalExitCode": 0,
+    "residualRemoved": false,
+    "ownershipVerified": true,
+    "generatedLinksDetached": 0,
+    "registeredAfter": false,
+    "physicalPathExists": false,
+    "producedNewCommits": false
+  },
+  "backendJavaCompatibility": {
+    "status": "passed",
+    "localImageId": "sha256:af6b7a2e576c3cb717cc72f6d1e7bb194e614cc57ee74b02982cd7d54ac16819",
+    "runtimeImageId": "sha256:2b2160b4fba263ac7617f404fed767273ae6d21e9dbe59bfc2e2aaeb5d26c1f3",
+    "jarSha256": "c28e6fe3c7ec93b43e372add394eeb7efd66784b807d6ad14e2769bf6a172e97",
+    "network": "none",
+    "databaseCredentials": false
+  }
+}

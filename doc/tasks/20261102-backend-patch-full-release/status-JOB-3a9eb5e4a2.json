@@ -1,0 +1,11 @@
+{
+  "id": "JOB-3a9eb5e4a2",
+  "action": "backend-patch-register-baseline",
+  "status": "succeeded",
+  "target": null,
+  "releaseTag": null,
+  "currentStep": "backend-patch-register-baseline",
+  "resultKeys": [
+    "baselineId"
+  ]
+}

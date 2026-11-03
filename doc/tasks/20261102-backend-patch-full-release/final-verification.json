@@ -1,0 +1,576 @@
+{
+  "status": "PASS",
+  "backendPatchTag": "2026-11-03-10-33-18",
+  "fullReleaseTag": "2026-11-03-12-15-42",
+  "sourceCommit": "ee2d7c79356e79e1180ab03e03873cd3f924a6f5",
+  "sameSource": true,
+  "originalPackagePreserved": true,
+  "originalFailuresPreserved": true,
+  "temporaryBuildWorktreeRemoved": true,
+  "businessWriteRegressionPerformed": false,
+  "targets": {
+    "test": {
+      "url": "http://172.30.30.58:8081",
+      "releaseTag": "2026-11-03-12-15-42",
+      "jarSha256": "c2b08ecb22f19c65d36e9ffcf4b3464a3d214e434b467f6f44be9fd5aa1fb696",
+      "images": {
+        "backend": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+        "frontend": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a"
+      },
+      "health": "UP",
+      "frontendHttpStatus": 200,
+      "programMounts": [],
+      "gxp": "DEVELOPMENT_DISABLED",
+      "startupLogCount": 1,
+      "schemaCounts": {
+        "tables": 885,
+        "columns": 15594,
+        "indexes": 5480,
+        "constraints": 1592,
+        "foreignKeys": 66,
+        "foreignKeyRules": 54,
+        "checks": 133,
+        "views": 0,
+        "triggers": 60,
+        "routines": 0,
+        "parameters": 0,
+        "events": 0,
+        "databaseOptions": 1
+      },
+      "ownMigrationHistoryPreserved": true,
+      "persistedOperations": 14,
+      "cleanupStatus": "succeeded"
+    },
+    "prod": {
+      "url": "http://172.30.30.57:8081",
+      "releaseTag": "2026-11-03-12-15-42",
+      "jarSha256": "c2b08ecb22f19c65d36e9ffcf4b3464a3d214e434b467f6f44be9fd5aa1fb696",
+      "images": {
+        "backend": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+        "frontend": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a"
+      },
+      "health": "UP",
+      "frontendHttpStatus": 200,
+      "programMounts": [],
+      "gxp": "DEVELOPMENT_DISABLED",
+      "startupLogCount": 1,
+      "schemaCounts": {
+        "tables": 885,
+        "columns": 15594,
+        "indexes": 5480,
+        "constraints": 1592,
+        "foreignKeys": 66,
+        "foreignKeyRules": 54,
+        "checks": 133,
+        "views": 0,
+        "triggers": 60,
+        "routines": 0,
+        "parameters": 0,
+        "events": 0,
+        "databaseOptions": 1
+      },
+      "ownMigrationHistoryPreserved": true,
+      "persistedOperations": 24,
+      "cleanupStatus": "succeeded"
+    },
+    "backup": {
+      "url": "http://172.30.30.59:38081",
+      "releaseTag": "2026-11-03-12-15-42",
+      "jarSha256": "c2b08ecb22f19c65d36e9ffcf4b3464a3d214e434b467f6f44be9fd5aa1fb696",
+      "images": {
+        "backend": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+        "frontend": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a"
+      },
+      "health": "UP",
+      "frontendHttpStatus": 200,
+      "programMounts": [],
+      "gxp": "DEVELOPMENT_DISABLED",
+      "startupLogCount": 1,
+      "schemaCounts": {
+        "tables": 885,
+        "columns": 15594,
+        "indexes": 5480,
+        "constraints": 1592,
+        "foreignKeys": 66,
+        "foreignKeyRules": 54,
+        "checks": 133,
+        "views": 0,
+        "triggers": 60,
+        "routines": 0,
+        "parameters": 0,
+        "events": 0,
+        "databaseOptions": 1
+      },
+      "ownMigrationHistoryPreserved": true,
+      "persistedOperations": 23,
+      "cleanupStatus": "succeeded"
+    }
+  },
+  "operations": {
+    "test": [
+      {
+        "operationId": "OP-2331647b5d13cfb05b75",
+        "jobId": "JOB-b68b4b0044",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-7a6a9266bdc470622977",
+        "jobId": "JOB-b68b4b0044",
+        "action": "resume-test-deployment-tail",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-0393199cea8b5423ce68",
+        "jobId": "JOB-b68b4b0044",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-02c05a12cdaaebabf751",
+        "jobId": "JOB-b68b4b0044",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-c76077d0d4bb54d648ba",
+        "jobId": "JOB-b68b4b0044",
+        "action": "health",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-f7c0d859e2b2ef58d885",
+        "jobId": "JOB-f4cd60ec96",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-331adc24081ac8c48c40",
+        "jobId": "JOB-f4cd60ec96",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-33de1b49605387c58a8b",
+        "jobId": "JOB-f4cd60ec96",
+        "action": "health",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-bda7e3bc77cdfc88a214",
+        "jobId": "JOB-7f32aa47ab",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-e557ad4e641b567a48fe",
+        "jobId": "JOB-7f32aa47ab",
+        "action": "artifact-auto-clean",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-e65682ba0730e155d2e2",
+        "jobId": "JOB-a7a180c9c4",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-6ac05fd2d9bfcc7cb0c0",
+        "jobId": "JOB-a7a180c9c4",
+        "action": "artifact-auto-clean",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-e9f9e0b9a1890c1c3e0d",
+        "jobId": "JOB-763953cdce",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-2c1e627599212a9ec82e",
+        "jobId": "JOB-763953cdce",
+        "action": "artifact-auto-clean",
+        "status": "succeeded",
+        "workerAlive": false
+      }
+    ],
+    "prod": [
+      {
+        "operationId": "OP-717a32b020dc29620054",
+        "jobId": "JOB-31001c8bcb",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-f041809338e05408d65a",
+        "jobId": "JOB-31001c8bcb",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-80fabae634669210cf0c",
+        "jobId": "JOB-31001c8bcb",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-defbbc845678fefdc064",
+        "jobId": "JOB-31001c8bcb",
+        "action": "stage-directory",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-d11b7411fa2574024127",
+        "jobId": "JOB-31001c8bcb",
+        "action": "verify-stage",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-e9c499bd399f068efd7e",
+        "jobId": "JOB-31001c8bcb",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-a788d0812aeb4d37d0dc",
+        "jobId": "JOB-31001c8bcb",
+        "action": "preflight",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-9e9d9b8460f23320648d",
+        "jobId": "JOB-31001c8bcb",
+        "action": "deploy",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-9a10152ad63b07af0f65",
+        "jobId": "JOB-31001c8bcb",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-fdc59ff4a00aaa11fff3",
+        "jobId": "JOB-31001c8bcb",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-335caed1b1b226c6caf6",
+        "jobId": "JOB-31001c8bcb",
+        "action": "health",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-d8c165c65932e9432b71",
+        "jobId": "JOB-1807d7a63b",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-02316b6857736a7e5f0c",
+        "jobId": "JOB-1807d7a63b",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-1036a65f210be562e2c1",
+        "jobId": "JOB-1807d7a63b",
+        "action": "health",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-c7fe1965eac8db2323c5",
+        "jobId": "JOB-1807d7a63b",
+        "action": "maintenance",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-92b8c582ed658a32dd98",
+        "jobId": "JOB-1807d7a63b",
+        "action": "health",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-7990f12a8b58b4fd1457",
+        "jobId": "JOB-1807d7a63b",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-1c2f5ca56d7842c2b8c6",
+        "jobId": "JOB-2714f1ba96",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-6b5669dd7e979baea357",
+        "jobId": "JOB-7f32aa47ab",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-77effa702c7a2d52d0e1",
+        "jobId": "JOB-7f32aa47ab",
+        "action": "artifact-auto-clean",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-a19cab309940042795b7",
+        "jobId": "JOB-a7a180c9c4",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-ca8c86b84e70f425cbba",
+        "jobId": "JOB-a7a180c9c4",
+        "action": "artifact-auto-clean",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-24bec9d74c5965824216",
+        "jobId": "JOB-763953cdce",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-db56c37d00be7dc0b93c",
+        "jobId": "JOB-763953cdce",
+        "action": "artifact-auto-clean",
+        "status": "succeeded",
+        "workerAlive": false
+      }
+    ],
+    "backup": [
+      {
+        "operationId": "OP-d1bfec116b6d739715fd",
+        "jobId": "JOB-2714f1ba96",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-75ad03e6cbcb29c6884c",
+        "jobId": "JOB-2714f1ba96",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-034a975533ed4bf94973",
+        "jobId": "JOB-2714f1ba96",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-cdce648c6fd3d52aaabf",
+        "jobId": "JOB-2714f1ba96",
+        "action": "stage-directory",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-87289524fe30061c34f5",
+        "jobId": "JOB-2714f1ba96",
+        "action": "verify-stage",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-1fbbbbb254a88842f496",
+        "jobId": "JOB-2714f1ba96",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-85c613fd43f70c164aa1",
+        "jobId": "JOB-2714f1ba96",
+        "action": "preflight",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-e2ef4d9c824276641be0",
+        "jobId": "JOB-2714f1ba96",
+        "action": "deploy",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-2d8d952be89753aeca04",
+        "jobId": "JOB-2714f1ba96",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-605f7867f37e6f9c6abb",
+        "jobId": "JOB-2714f1ba96",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-6e17fd8c7f5335265ba8",
+        "jobId": "JOB-2714f1ba96",
+        "action": "health",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-e3147ad84032ffcbdf5f",
+        "jobId": "JOB-7f32aa47ab",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-b0786eee2fbda2e923c7",
+        "jobId": "JOB-7f32aa47ab",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-b9e2200f0ad70a993f52",
+        "jobId": "JOB-7f32aa47ab",
+        "action": "health",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-9bc364dee5281ebc2d6b",
+        "jobId": "JOB-7f32aa47ab",
+        "action": "maintenance",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-a2513672de8d7cdf63db",
+        "jobId": "JOB-7f32aa47ab",
+        "action": "health",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-3cfe5ea34810d53e53c8",
+        "jobId": "JOB-7f32aa47ab",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-570cbc33f79e421f0d9d",
+        "jobId": "JOB-7f32aa47ab",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-eba33438beaff8140484",
+        "jobId": "JOB-7f32aa47ab",
+        "action": "artifact-auto-clean",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-3cfafac64b800449b1f0",
+        "jobId": "JOB-a7a180c9c4",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-687f51d037bbc51ddceb",
+        "jobId": "JOB-a7a180c9c4",
+        "action": "artifact-auto-clean",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-847c513103389acff944",
+        "jobId": "JOB-763953cdce",
+        "action": "observe",
+        "status": "succeeded",
+        "workerAlive": false
+      },
+      {
+        "operationId": "OP-66ce258283135fcc1805",
+        "jobId": "JOB-763953cdce",
+        "action": "artifact-auto-clean",
+        "status": "succeeded",
+        "workerAlive": false
+      }
+    ]
+  },
+  "cleanupRetryJobId": "JOB-763953cdce",
+  "originalCleanupFailurePreserved": true,
+  "previousCleanupRetryFailurePreserved": true,
+  "totalCleanupFileBytes": 36638007347,
+  "cleanup": {
+    "test": {
+      "status": "succeeded",
+      "removedItems": 42,
+      "fileBytes": 18058657306,
+      "retainedItems": 499,
+      "blockedReleaseTags": [
+        "2026-10-22-01-09-56",
+        "2026-10-22-10-45-28",
+        "2026-10-22-20-45-19",
+        "2026-10-31-19-13-08"
+      ]
+    },
+    "prod": {
+      "status": "succeeded",
+      "removedItems": 0,
+      "fileBytes": 0,
+      "retainedItems": 213,
+      "blockedReleaseTags": []
+    },
+    "backup": {
+      "status": "succeeded",
+      "removedItems": 0,
+      "fileBytes": 0,
+      "retainedItems": 219,
+      "blockedReleaseTags": []
+    }
+  }
+}

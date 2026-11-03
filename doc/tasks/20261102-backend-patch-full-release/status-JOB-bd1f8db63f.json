@@ -1,0 +1,22 @@
+{
+  "id": "JOB-bd1f8db63f",
+  "action": "build-release",
+  "status": "failed",
+  "releaseTag": "2026-11-03-12-15-42",
+  "currentStep": "publish-original-package-to-nas",
+  "error": "Command '['git', '-c', 'core.longpaths=true', '-C', 'C:/Users/D01021/Documents/ChatGPT/IntRuoyi', 'worktree', 'remove', '--force', 'C:\\\\SpugHandoff\\\\release\\\\build\\\\2026-11-03-12-15-42']' timed out after 180 seconds",
+  "buildWorktree": "C:\\SpugHandoff\\release\\build\\2026-11-03-12-15-42",
+  "buildWorktreeCleanup": {
+    "status": "passed",
+    "path": "C:\\SpugHandoff\\release\\build\\2026-11-03-12-15-42",
+    "commit": "ee2d7c79356e79e1180ab03e03873cd3f924a6f5",
+    "verifiedTrackedFiles": 0,
+    "gitRemovalExitCode": null,
+    "residualRemoved": false,
+    "ownershipVerified": true,
+    "generatedLinksDetached": 0,
+    "registeredAfter": false,
+    "physicalPathExists": false,
+    "producedNewCommits": false
+  }
+}

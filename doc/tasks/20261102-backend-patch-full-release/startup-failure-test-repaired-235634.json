@@ -1,0 +1,24 @@
+{
+  "exceptionTypes": [
+    "com.mysql.cj.jdbc.exceptions.SQLError",
+    "java.sql.SQLException",
+    "org.apache.ibatis.exceptions.PersistenceException",
+    "org.springframework.beans.factory.BeanCreationException",
+    "org.springframework.jdbc.UncategorizedSQLException"
+  ],
+  "applicationFrames": [
+    "cn.iocoder.yudao.module.system.service.gxpaudit.GxpAuditDevelopmentSqlGuard.intercept(GxpAuditDevelopmentSqlGuard.java:25)",
+    "cn.iocoder.yudao.module.dcc.dal.mysql.file.DccControlledFileNasTransferTaskMapper.recoverRunningTasksToWaiting(DccControlledFileNasTransferTaskMapper.java:52)",
+    "cn.iocoder.yudao.module.dcc.service.file.DccControlledFileNasTransferServiceImpl.recoverInterruptedTasksOnStartup(DccControlledFileNasTransferServiceImpl.java:426)",
+    "cn.iocoder.yudao.framework.tenant.core.util.TenantUtils.execute(TenantUtils.java:33)",
+    "cn.iocoder.yudao.module.dcc.job.DccControlledFileNasTransferTaskScheduler.recoverInterruptedTasksOnStartup(DccControlledFileNasTransferTaskScheduler.java:27)",
+    "cn.iocoder.yudao.server.YudaoServerApplication.main(YudaoServerApplication.java:24)"
+  ],
+  "signals": {
+    "readOnly": true,
+    "writeAttempt": true,
+    "missingConfig": false,
+    "permission": false,
+    "startupFailed": true
+  }
+}

@@ -1,0 +1,235 @@
+{
+  "algorithm": "mysql-structure-v1",
+  "targets": {
+    "test": {
+      "schema": {
+        "sha256": "4fb92d555439b6e39f34a60109c16fee7bb5630a1689bcb0720fde094921d56f",
+        "counts": {
+          "tables": 885,
+          "columns": 15594,
+          "indexes": 5480,
+          "constraints": 1592,
+          "foreignKeys": 66,
+          "foreignKeyRules": 54,
+          "checks": 133,
+          "views": 0,
+          "triggers": 60,
+          "routines": 0,
+          "parameters": 0,
+          "events": 0,
+          "databaseOptions": 1
+        }
+      },
+      "migrations": {
+        "sha256": "1e08f3d478c9e2fcc4d5af20a71f9cc3af0ba42c59ec8f3df9b1a0119b26f0b1",
+        "count": 761,
+        "historyCount": 761,
+        "statuses": {
+          "SKIPPED_ALREADY_APPLIED": 291,
+          "APPLIED": 470
+        },
+        "checksumConflicts": [],
+        "unsuccessful": [],
+        "healthy": true
+      },
+      "status": "ok",
+      "stable": true,
+      "host": "172.30.30.58",
+      "database": "ruoyi-vue-pro",
+      "mysqlVersion": "8.0.39",
+      "lowerCaseTableNames": "1",
+      "algorithm": "mysql-structure-v1",
+      "startedAt": "2026-11-02T13:47:50.994032+00:00",
+      "observedAt": "2026-11-02T13:47:55.165678+00:00",
+      "error": null
+    },
+    "prod": {
+      "schema": {
+        "sha256": "4fb92d555439b6e39f34a60109c16fee7bb5630a1689bcb0720fde094921d56f",
+        "counts": {
+          "tables": 885,
+          "columns": 15594,
+          "indexes": 5480,
+          "constraints": 1592,
+          "foreignKeys": 66,
+          "foreignKeyRules": 54,
+          "checks": 133,
+          "views": 0,
+          "triggers": 60,
+          "routines": 0,
+          "parameters": 0,
+          "events": 0,
+          "databaseOptions": 1
+        }
+      },
+      "migrations": {
+        "sha256": "1ba0500a5b44fd1ee63c6994f317c8dad016887ea7eba4dd4cf7366d04ae628a",
+        "count": 757,
+        "historyCount": 757,
+        "statuses": {
+          "SKIPPED_ALREADY_APPLIED": 291,
+          "APPLIED": 466
+        },
+        "checksumConflicts": [],
+        "unsuccessful": [],
+        "healthy": true
+      },
+      "status": "ok",
+      "stable": true,
+      "host": "172.30.30.57",
+      "database": "ruoyi-vue-pro",
+      "mysqlVersion": "8.0.39",
+      "lowerCaseTableNames": "1",
+      "algorithm": "mysql-structure-v1",
+      "startedAt": "2026-11-02T13:47:51.019812+00:00",
+      "observedAt": "2026-11-02T13:47:55.142906+00:00",
+      "error": null
+    },
+    "backup": {
+      "schema": {
+        "sha256": "4fb92d555439b6e39f34a60109c16fee7bb5630a1689bcb0720fde094921d56f",
+        "counts": {
+          "tables": 885,
+          "columns": 15594,
+          "indexes": 5480,
+          "constraints": 1592,
+          "foreignKeys": 66,
+          "foreignKeyRules": 54,
+          "checks": 133,
+          "views": 0,
+          "triggers": 60,
+          "routines": 0,
+          "parameters": 0,
+          "events": 0,
+          "databaseOptions": 1
+        }
+      },
+      "migrations": {
+        "sha256": "1ba0500a5b44fd1ee63c6994f317c8dad016887ea7eba4dd4cf7366d04ae628a",
+        "count": 757,
+        "historyCount": 757,
+        "statuses": {
+          "SKIPPED_ALREADY_APPLIED": 291,
+          "APPLIED": 466
+        },
+        "checksumConflicts": [],
+        "unsuccessful": [],
+        "healthy": true
+      },
+      "status": "ok",
+      "stable": true,
+      "host": "172.30.30.59",
+      "database": "ruoyi-vue-pro",
+      "mysqlVersion": "8.0.39",
+      "lowerCaseTableNames": "1",
+      "algorithm": "mysql-structure-v1",
+      "startedAt": "2026-11-02T13:47:51.109946+00:00",
+      "observedAt": "2026-11-02T13:47:54.209475+00:00",
+      "error": null
+    }
+  },
+  "comparisons": [
+    {
+      "left": "test",
+      "right": "prod",
+      "status": "different",
+      "schemaEqual": true,
+      "migrationsEqual": false,
+      "structureDifferenceCount": 0,
+      "structureDifferences": [],
+      "migrationDifferenceCount": 4,
+      "migrationDifferences": [
+        {
+          "migrationId": "20260830_erp_finance_invoice_voucher_print_test_tenant_user_permission",
+          "left": {
+            "sha256": "d1398a270b118b00f26b3b14ea8b696b917baa62879334de787e9cea337ed8a9",
+            "status": "SUCCESS"
+          },
+          "right": null
+        },
+        {
+          "migrationId": "20260903_approval_center_entry_feedback_permission_removal",
+          "left": {
+            "sha256": "93e509850fca52c1ee6edff9eeb1efa52405ae2e0086c825b7e93f6f4b35a25d",
+            "status": "SUCCESS"
+          },
+          "right": null
+        },
+        {
+          "migrationId": "20260905_dcc_source_governance",
+          "left": {
+            "sha256": "3decb9660edf63673c559d3bbe2b2d72adb81d8881743c422378eb2f3d528104",
+            "status": "SUCCESS"
+          },
+          "right": null
+        },
+        {
+          "migrationId": "20260922_dcc_source_governance_batch_tenant_id",
+          "left": {
+            "sha256": "dcfd74e6305794aca4573abee191e3e004624d9e54ed2ae311017429135bf8c2",
+            "status": "SUCCESS"
+          },
+          "right": null
+        }
+      ],
+      "detailsLimit": 50
+    },
+    {
+      "left": "test",
+      "right": "backup",
+      "status": "different",
+      "schemaEqual": true,
+      "migrationsEqual": false,
+      "structureDifferenceCount": 0,
+      "structureDifferences": [],
+      "migrationDifferenceCount": 4,
+      "migrationDifferences": [
+        {
+          "migrationId": "20260830_erp_finance_invoice_voucher_print_test_tenant_user_permission",
+          "left": {
+            "sha256": "d1398a270b118b00f26b3b14ea8b696b917baa62879334de787e9cea337ed8a9",
+            "status": "SUCCESS"
+          },
+          "right": null
+        },
+        {
+          "migrationId": "20260903_approval_center_entry_feedback_permission_removal",
+          "left": {
+            "sha256": "93e509850fca52c1ee6edff9eeb1efa52405ae2e0086c825b7e93f6f4b35a25d",
+            "status": "SUCCESS"
+          },
+          "right": null
+        },
+        {
+          "migrationId": "20260905_dcc_source_governance",
+          "left": {
+            "sha256": "3decb9660edf63673c559d3bbe2b2d72adb81d8881743c422378eb2f3d528104",
+            "status": "SUCCESS"
+          },
+          "right": null
+        },
+        {
+          "migrationId": "20260922_dcc_source_governance_batch_tenant_id",
+          "left": {
+            "sha256": "dcfd74e6305794aca4573abee191e3e004624d9e54ed2ae311017429135bf8c2",
+            "status": "SUCCESS"
+          },
+          "right": null
+        }
+      ],
+      "detailsLimit": 50
+    },
+    {
+      "left": "prod",
+      "right": "backup",
+      "status": "identical",
+      "schemaEqual": true,
+      "migrationsEqual": true,
+      "structureDifferenceCount": 0,
+      "structureDifferences": [],
+      "migrationDifferenceCount": 0,
+      "migrationDifferences": [],
+      "detailsLimit": 50
+    }
+  ]
+}

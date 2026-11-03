@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "mainReleaseTag": "2026-11-01-13-08-35",
+  "packageSha256": "00048a4d6ca73fb03eaec01ada6a159ffaa38af97fc689828190126f8b85706e",
+  "manifestSha256": "d6cd81fcd33ded158bab45368ccafb8c66ffdd3576bbc6aba352a025cfa0ef8c",
+  "imagesArchiveSha256": "2f4055ed9695637d3939e85d0d2078acbef27e14ebdc7e0686c44bd78b46c12f",
+  "runtimeImageId": "sha256:2b2160b4fba263ac7617f404fed767273ae6d21e9dbe59bfc2e2aaeb5d26c1f3",
+  "localImageId": "sha256:af6b7a2e576c3cb717cc72f6d1e7bb194e614cc57ee74b02982cd7d54ac16819",
+  "source": "verified-nas-original",
+  "remoteChanges": false
+}

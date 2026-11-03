@@ -1,0 +1,12 @@
+'use strict';
+const fs=require('node:fs');
+let code=fs.readFileSync(__dirname+'/spug-backend-ui.cjs','utf8');
+code=code.replace("stage='backend-page';",`const requests=[];const responses=[];
+ page.on('request',r=>{if(r.url().includes('/release-center/'))requests.push(new URL(r.url()).pathname);});
+ page.on('response',r=>{if(r.url().includes('/release-center/'))responses.push({path:new URL(r.url()).pathname,status:r.status()});});
+ stage='backend-page';`);
+code=code.replace("await page.getByRole('heading',{name:'构建后端补丁',exact:true}).waitFor();",`await page.waitForTimeout(5000);
+ const diagnostic=await page.evaluate(()=>({url:location.pathname,title:document.title,headings:[...document.querySelectorAll('h1,h2,h3')].map(e=>e.textContent),appText:document.querySelector('#app')?.textContent.slice(0,1800)}));
+ await page.screenshot({path:privateRoot+'/spug-page-diagnostic.png',fullPage:false});
+ console.log(JSON.stringify({...diagnostic,pageErrorTypes:errors,requests,responses}));return;`);
+require('node:vm').runInThisContext('(function(require,__dirname){'+code+'\n})',{filename:__filename})(require,__dirname);

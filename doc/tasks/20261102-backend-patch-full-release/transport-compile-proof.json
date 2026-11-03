@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "sourceBytes": 396603,
+  "deliveryBytes": 528905,
+  "executedAgent": false,
+  "results": [
+    {
+      "exitCode": 0,
+      "compilePass": true,
+      "errorTypes": []
+    },
+    {
+      "exitCode": 0,
+      "compilePass": true,
+      "errorTypes": []
+    },
+    {
+      "exitCode": 0,
+      "compilePass": true,
+      "errorTypes": []
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "time": "2026-11-02T13:08:19.179Z",
+  "scope": "read-only-gxp-verification",
+  "environment": "test",
+  "expectedTag": "2026-11-01-13-08-35",
+  "publicationPerformed": false,
+  "remoteAccessPerformed": true,
+  "sourceUrl": "http://172.30.30.58:8081/",
+  "realPlaywrightLogin": true,
+  "status": "FAIL",
+  "failedPhase": "read-gxp-configuration-from-real-page",
+  "errorCategory": "Error",
+  "failureSignals": {
+    "strictLocator": false,
+    "timeout": false,
+    "navigationAborted": false,
+    "targetClosed": false,
+    "notFound": false,
+    "forbidden": false,
+    "netError": false
+  }
+}

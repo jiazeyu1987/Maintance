@@ -1,0 +1,9 @@
+{
+  "id": "JOB-740d813a0b",
+  "action": "backend-patch-deploy",
+  "status": "failed",
+  "target": "test",
+  "releaseTag": "2026-11-02-23-56-34",
+  "currentStep": "switch-backend-with-readonly-startup",
+  "error": "Remote runtime operation failed: ValueError"
+}

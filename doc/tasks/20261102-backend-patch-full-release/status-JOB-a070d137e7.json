@@ -1,0 +1,8 @@
+{
+  "id": "JOB-a070d137e7",
+  "action": "backend-patch-accept",
+  "status": "succeeded",
+  "target": "prod",
+  "releaseTag": "2026-11-03-10-33-18",
+  "currentStep": "backend-patch-accept"
+}

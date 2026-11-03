@@ -1,0 +1,22 @@
+{
+  "exceptionTypes": [
+    "com.mysql.cj.jdbc.exceptions.SQLError",
+    "java.lang.IllegalStateException",
+    "java.sql.SQLException",
+    "org.apache.ibatis.exceptions.PersistenceException",
+    "org.quartz.impl.jdbcjobstore.LockException"
+  ],
+  "applicationFrames": [
+    "cn.iocoder.yudao.framework.quartz.core.scheduler.SchedulerManager.deleteJob(SchedulerManager.java:88)",
+    "cn.iocoder.yudao.module.infra.service.job.JobServiceImpl.syncJob(JobServiceImpl.java:155)",
+    "cn.iocoder.yudao.module.infra.service.job.JobStartupSyncRunner.run(JobStartupSyncRunner.java:33)",
+    "cn.iocoder.yudao.server.YudaoServerApplication.main(YudaoServerApplication.java:24)"
+  ],
+  "signals": {
+    "readOnly": true,
+    "writeAttempt": true,
+    "missingConfig": false,
+    "permission": false,
+    "startupFailed": true
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "JOB-2da6c749d1",
+  "action": "check-prerequisites",
+  "status": "succeeded",
+  "target": null,
+  "releaseTag": null,
+  "currentStep": "备用服：发布空间与资源前置条件",
+  "resultKeys": [
+    "checks",
+    "commit",
+    "executionMode",
+    "executorPid",
+    "finishedAt",
+    "limits",
+    "operation",
+    "releaseTag",
+    "startedAt",
+    "status"
+  ]
+}

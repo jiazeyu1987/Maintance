@@ -1,0 +1,229 @@
+{
+  "test": {
+    "inputs": [
+      {
+        "source": "ARGS",
+        "key": "spring.profiles.active",
+        "value": "dev"
+      },
+      {
+        "source": "mounted-properties",
+        "key": "spring.quartz.auto-startup",
+        "value": "false"
+      }
+    ],
+    "schedulerSignals": [
+      "NOT STARTED."
+    ],
+    "schema": {
+      "infra_job": [
+        "id\tbigint\tNO\tPRI\tNULL\tauto_increment",
+        "name\tvarchar(32)\tNO\t\tNULL\t",
+        "status\ttinyint\tNO\t\tNULL\t",
+        "handler_name\tvarchar(64)\tNO\t\tNULL\t",
+        "handler_param\tvarchar(255)\tYES\t\tNULL\t",
+        "cron_expression\tvarchar(32)\tNO\t\tNULL\t",
+        "retry_count\tint\tNO\t\t0\t",
+        "retry_interval\tint\tNO\t\t0\t",
+        "monitor_timeout\tint\tNO\t\t0\t",
+        "creator\tvarchar(64)\tYES\t\t\t",
+        "create_time\tdatetime\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED",
+        "updater\tvarchar(64)\tYES\t\t\t",
+        "update_time\tdatetime\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED on update CURRENT_TIMESTAMP",
+        "deleted\tbit(1)\tNO\t\tb'0'\t"
+      ],
+      "qrtz_job_details": [
+        "SCHED_NAME\tvarchar(120)\tNO\tPRI\tNULL\t",
+        "JOB_NAME\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "JOB_GROUP\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "DESCRIPTION\tvarchar(250)\tYES\t\tNULL\t",
+        "JOB_CLASS_NAME\tvarchar(250)\tNO\t\tNULL\t",
+        "IS_DURABLE\tvarchar(1)\tNO\t\tNULL\t",
+        "IS_NONCONCURRENT\tvarchar(1)\tNO\t\tNULL\t",
+        "IS_UPDATE_DATA\tvarchar(1)\tNO\t\tNULL\t",
+        "REQUESTS_RECOVERY\tvarchar(1)\tNO\t\tNULL\t",
+        "JOB_DATA\tblob\tYES\t\tNULL\t"
+      ],
+      "qrtz_triggers": [
+        "SCHED_NAME\tvarchar(120)\tNO\tPRI\tNULL\t",
+        "TRIGGER_NAME\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "TRIGGER_GROUP\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "JOB_NAME\tvarchar(190)\tNO\t\tNULL\t",
+        "JOB_GROUP\tvarchar(190)\tNO\t\tNULL\t",
+        "DESCRIPTION\tvarchar(250)\tYES\t\tNULL\t",
+        "NEXT_FIRE_TIME\tbigint\tYES\t\tNULL\t",
+        "PREV_FIRE_TIME\tbigint\tYES\t\tNULL\t",
+        "PRIORITY\tint\tYES\t\tNULL\t",
+        "TRIGGER_STATE\tvarchar(16)\tNO\t\tNULL\t",
+        "TRIGGER_TYPE\tvarchar(8)\tNO\t\tNULL\t",
+        "START_TIME\tbigint\tNO\t\tNULL\t",
+        "END_TIME\tbigint\tYES\t\tNULL\t",
+        "CALENDAR_NAME\tvarchar(190)\tYES\t\tNULL\t",
+        "MISFIRE_INSTR\tsmallint\tYES\t\tNULL\t",
+        "JOB_DATA\tblob\tYES\t\tNULL\t"
+      ],
+      "qrtz_cron_triggers": [
+        "SCHED_NAME\tvarchar(120)\tNO\tPRI\tNULL\t",
+        "TRIGGER_NAME\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "TRIGGER_GROUP\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "CRON_EXPRESSION\tvarchar(120)\tNO\t\tNULL\t",
+        "TIME_ZONE_ID\tvarchar(80)\tYES\t\tNULL\t"
+      ],
+      "qrtz_scheduler_state": [
+        "SCHED_NAME\tvarchar(120)\tNO\tPRI\tNULL\t",
+        "INSTANCE_NAME\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "LAST_CHECKIN_TIME\tbigint\tNO\t\tNULL\t",
+        "CHECKIN_INTERVAL\tbigint\tNO\t\tNULL\t"
+      ]
+    }
+  },
+  "prod": {
+    "inputs": [
+      {
+        "source": "ARGS",
+        "key": "spring.profiles.active",
+        "value": "dev"
+      }
+    ],
+    "schedulerSignals": [],
+    "schema": {
+      "infra_job": [
+        "id\tbigint\tNO\tPRI\tNULL\tauto_increment",
+        "name\tvarchar(32)\tNO\t\tNULL\t",
+        "status\ttinyint\tNO\t\tNULL\t",
+        "handler_name\tvarchar(64)\tNO\t\tNULL\t",
+        "handler_param\tvarchar(255)\tYES\t\tNULL\t",
+        "cron_expression\tvarchar(32)\tNO\t\tNULL\t",
+        "retry_count\tint\tNO\t\t0\t",
+        "retry_interval\tint\tNO\t\t0\t",
+        "monitor_timeout\tint\tNO\t\t0\t",
+        "creator\tvarchar(64)\tYES\t\t\t",
+        "create_time\tdatetime\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED",
+        "updater\tvarchar(64)\tYES\t\t\t",
+        "update_time\tdatetime\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED on update CURRENT_TIMESTAMP",
+        "deleted\tbit(1)\tNO\t\tb'0'\t"
+      ],
+      "qrtz_job_details": [
+        "SCHED_NAME\tvarchar(120)\tNO\tPRI\tNULL\t",
+        "JOB_NAME\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "JOB_GROUP\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "DESCRIPTION\tvarchar(250)\tYES\t\tNULL\t",
+        "JOB_CLASS_NAME\tvarchar(250)\tNO\t\tNULL\t",
+        "IS_DURABLE\tvarchar(1)\tNO\t\tNULL\t",
+        "IS_NONCONCURRENT\tvarchar(1)\tNO\t\tNULL\t",
+        "IS_UPDATE_DATA\tvarchar(1)\tNO\t\tNULL\t",
+        "REQUESTS_RECOVERY\tvarchar(1)\tNO\t\tNULL\t",
+        "JOB_DATA\tblob\tYES\t\tNULL\t"
+      ],
+      "qrtz_triggers": [
+        "SCHED_NAME\tvarchar(120)\tNO\tPRI\tNULL\t",
+        "TRIGGER_NAME\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "TRIGGER_GROUP\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "JOB_NAME\tvarchar(190)\tNO\t\tNULL\t",
+        "JOB_GROUP\tvarchar(190)\tNO\t\tNULL\t",
+        "DESCRIPTION\tvarchar(250)\tYES\t\tNULL\t",
+        "NEXT_FIRE_TIME\tbigint\tYES\t\tNULL\t",
+        "PREV_FIRE_TIME\tbigint\tYES\t\tNULL\t",
+        "PRIORITY\tint\tYES\t\tNULL\t",
+        "TRIGGER_STATE\tvarchar(16)\tNO\t\tNULL\t",
+        "TRIGGER_TYPE\tvarchar(8)\tNO\t\tNULL\t",
+        "START_TIME\tbigint\tNO\t\tNULL\t",
+        "END_TIME\tbigint\tYES\t\tNULL\t",
+        "CALENDAR_NAME\tvarchar(190)\tYES\t\tNULL\t",
+        "MISFIRE_INSTR\tsmallint\tYES\t\tNULL\t",
+        "JOB_DATA\tblob\tYES\t\tNULL\t"
+      ],
+      "qrtz_cron_triggers": [
+        "SCHED_NAME\tvarchar(120)\tNO\tPRI\tNULL\t",
+        "TRIGGER_NAME\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "TRIGGER_GROUP\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "CRON_EXPRESSION\tvarchar(120)\tNO\t\tNULL\t",
+        "TIME_ZONE_ID\tvarchar(80)\tYES\t\tNULL\t"
+      ],
+      "qrtz_scheduler_state": [
+        "SCHED_NAME\tvarchar(120)\tNO\tPRI\tNULL\t",
+        "INSTANCE_NAME\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "LAST_CHECKIN_TIME\tbigint\tNO\t\tNULL\t",
+        "CHECKIN_INTERVAL\tbigint\tNO\t\tNULL\t"
+      ]
+    }
+  },
+  "backup": {
+    "inputs": [
+      {
+        "source": "ARGS",
+        "key": "spring.profiles.active",
+        "value": "dev"
+      },
+      {
+        "source": "mounted-properties",
+        "key": "spring.quartz.auto-startup",
+        "value": "false"
+      }
+    ],
+    "schedulerSignals": [
+      "NOT STARTED."
+    ],
+    "schema": {
+      "infra_job": [
+        "id\tbigint\tNO\tPRI\tNULL\tauto_increment",
+        "name\tvarchar(32)\tNO\t\tNULL\t",
+        "status\ttinyint\tNO\t\tNULL\t",
+        "handler_name\tvarchar(64)\tNO\t\tNULL\t",
+        "handler_param\tvarchar(255)\tYES\t\tNULL\t",
+        "cron_expression\tvarchar(32)\tNO\t\tNULL\t",
+        "retry_count\tint\tNO\t\t0\t",
+        "retry_interval\tint\tNO\t\t0\t",
+        "monitor_timeout\tint\tNO\t\t0\t",
+        "creator\tvarchar(64)\tYES\t\t\t",
+        "create_time\tdatetime\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED",
+        "updater\tvarchar(64)\tYES\t\t\t",
+        "update_time\tdatetime\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED on update CURRENT_TIMESTAMP",
+        "deleted\tbit(1)\tNO\t\tb'0'\t"
+      ],
+      "qrtz_job_details": [
+        "SCHED_NAME\tvarchar(120)\tNO\tPRI\tNULL\t",
+        "JOB_NAME\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "JOB_GROUP\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "DESCRIPTION\tvarchar(250)\tYES\t\tNULL\t",
+        "JOB_CLASS_NAME\tvarchar(250)\tNO\t\tNULL\t",
+        "IS_DURABLE\tvarchar(1)\tNO\t\tNULL\t",
+        "IS_NONCONCURRENT\tvarchar(1)\tNO\t\tNULL\t",
+        "IS_UPDATE_DATA\tvarchar(1)\tNO\t\tNULL\t",
+        "REQUESTS_RECOVERY\tvarchar(1)\tNO\t\tNULL\t",
+        "JOB_DATA\tblob\tYES\t\tNULL\t"
+      ],
+      "qrtz_triggers": [
+        "SCHED_NAME\tvarchar(120)\tNO\tPRI\tNULL\t",
+        "TRIGGER_NAME\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "TRIGGER_GROUP\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "JOB_NAME\tvarchar(190)\tNO\t\tNULL\t",
+        "JOB_GROUP\tvarchar(190)\tNO\t\tNULL\t",
+        "DESCRIPTION\tvarchar(250)\tYES\t\tNULL\t",
+        "NEXT_FIRE_TIME\tbigint\tYES\t\tNULL\t",
+        "PREV_FIRE_TIME\tbigint\tYES\t\tNULL\t",
+        "PRIORITY\tint\tYES\t\tNULL\t",
+        "TRIGGER_STATE\tvarchar(16)\tNO\t\tNULL\t",
+        "TRIGGER_TYPE\tvarchar(8)\tNO\t\tNULL\t",
+        "START_TIME\tbigint\tNO\t\tNULL\t",
+        "END_TIME\tbigint\tYES\t\tNULL\t",
+        "CALENDAR_NAME\tvarchar(190)\tYES\t\tNULL\t",
+        "MISFIRE_INSTR\tsmallint\tYES\t\tNULL\t",
+        "JOB_DATA\tblob\tYES\t\tNULL\t"
+      ],
+      "qrtz_cron_triggers": [
+        "SCHED_NAME\tvarchar(120)\tNO\tPRI\tNULL\t",
+        "TRIGGER_NAME\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "TRIGGER_GROUP\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "CRON_EXPRESSION\tvarchar(120)\tNO\t\tNULL\t",
+        "TIME_ZONE_ID\tvarchar(80)\tYES\t\tNULL\t"
+      ],
+      "qrtz_scheduler_state": [
+        "SCHED_NAME\tvarchar(120)\tNO\tPRI\tNULL\t",
+        "INSTANCE_NAME\tvarchar(190)\tNO\tPRI\tNULL\t",
+        "LAST_CHECKIN_TIME\tbigint\tNO\t\tNULL\t",
+        "CHECKIN_INTERVAL\tbigint\tNO\t\tNULL\t"
+      ]
+    }
+  }
+}

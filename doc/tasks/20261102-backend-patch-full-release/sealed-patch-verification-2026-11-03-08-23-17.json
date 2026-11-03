@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "tag": "2026-11-03-08-23-17",
+  "gitCommit": "dc557a26db9135469ee9d0300e5d0cf23cface83",
+  "jarSha256": "f8f1423aef5a9112f548e491d498bac8ce57614926c0802e634341c715fd8cb5",
+  "jarBytes": 510747260,
+  "packageBytes": 510771200,
+  "packageSha256": "e8c3297ace2f6e821f26d5d0e6edb0e1772c71557345f7f201292e121d339da8",
+  "manifestSha256": "9e1145d40cfed46160272e02b2942dfb310f980760a835fd5fa1a55e36bd64af"
+}

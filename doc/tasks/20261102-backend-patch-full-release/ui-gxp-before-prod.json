@@ -1,0 +1,21 @@
+{
+  "time": "2026-11-02T13:08:19.177Z",
+  "scope": "read-only-gxp-verification",
+  "environment": "prod",
+  "expectedTag": "2026-11-01-13-08-35",
+  "publicationPerformed": false,
+  "remoteAccessPerformed": true,
+  "sourceUrl": "http://172.30.30.57:8081/",
+  "status": "FAIL",
+  "failedPhase": "open-registered-login",
+  "errorCategory": "TimeoutError",
+  "failureSignals": {
+    "strictLocator": false,
+    "timeout": true,
+    "navigationAborted": false,
+    "targetClosed": false,
+    "notFound": false,
+    "forbidden": false,
+    "netError": false
+  }
+}

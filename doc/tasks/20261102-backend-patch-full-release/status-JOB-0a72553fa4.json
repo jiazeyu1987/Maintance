@@ -1,0 +1,9 @@
+{
+  "id": "JOB-0a72553fa4",
+  "action": "publish-test",
+  "status": "failed",
+  "target": "test",
+  "releaseTag": "2026-11-03-12-15-42",
+  "currentStep": "remote-deploy-starting-side-effects",
+  "error": "Actual patched JAR differs from label"
+}

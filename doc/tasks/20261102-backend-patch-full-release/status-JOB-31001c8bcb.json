@@ -1,0 +1,8 @@
+{
+  "id": "JOB-31001c8bcb",
+  "action": "promote-prod",
+  "status": "succeeded",
+  "target": "prod",
+  "releaseTag": "2026-11-03-12-15-42",
+  "currentStep": "technical-login"
+}

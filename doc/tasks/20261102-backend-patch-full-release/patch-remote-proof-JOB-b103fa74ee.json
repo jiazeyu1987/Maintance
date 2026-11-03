@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "environment": "test",
+  "releaseTag": "2026-11-03-10-33-18",
+  "jobId": "JOB-b103fa74ee",
+  "operationId": "OP-52cb8ab4ef35663c00cd",
+  "operationStatus": "succeeded",
+  "worker": "stopped",
+  "fenceStatus": "released",
+  "readonlyProbeVerified": true,
+  "databaseSchemaChanged": false,
+  "migrationsExecuted": false,
+  "normalRuntimeWritesAllowed": true,
+  "starts": {
+    "probe": {
+      "startupLogCount": 1,
+      "maintenance": true,
+      "running": false
+    },
+    "normal": {
+      "startupLogCount": 1,
+      "maintenance": false,
+      "running": true
+    }
+  }
+}

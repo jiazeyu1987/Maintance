@@ -1,0 +1,96 @@
+{
+  "test": {
+    "status": "PASS",
+    "phase": "full",
+    "tag": "2026-11-03-12-15-42",
+    "observation": {
+      "releaseTag": "2026-11-03-12-15-42",
+      "frontendPatchTag": null,
+      "frontendMetadata": {
+        "releaseTag": "2026-11-03-12-15-42",
+        "sourceCommit": "ee2d7c79356e79e1180ab03e03873cd3f924a6f5",
+        "builtAt": "2026-11-03T04:38:14.182015+00:00",
+        "changeSet": {
+          "gitChanges": [
+            "ee2d7c793 任务: Quartz定义一致时避免启动重复写入",
+            "dc557a26d 任务: 展厅启动无恢复工作时仅查询",
+            "3bf63eee8 修复: DCC NAS启动仅恢复实际运行任务",
+            "da3851751 修复: DCC启动无待恢复任务时避免空写入",
+            "e5934b12e 日志: 记录后端启动完成与发布元数据入口",
+            "91683fd03 fix(invoice): configure same-server print assistant entry",
+            "2fd99f51d fix(navigation): retain authorized invoice voucher print entry",
+            "024027bd2 fix(fenbeitong): restore per-server assistant configuration and authorized navigation",
+            "fb88105af 修复: 补齐三服DCC治理表前向迁移",
+            "56b96ea20 任务: 补齐发布快照CLI配套代码"
+          ]
+        }
+      },
+      "backendPatchTag": null,
+      "backendJarSha256": "c2b08ecb22f19c65d36e9ffcf4b3464a3d214e434b467f6f44be9fd5aa1fb696",
+      "backendMetadata": {
+        "releaseTag": "2026-11-03-12-15-42",
+        "sourceCommit": "ee2d7c79356e79e1180ab03e03873cd3f924a6f5",
+        "builtAt": "2026-11-03T04:38:14.182015+00:00",
+        "changeSet": {
+          "gitChanges": [
+            "ee2d7c793 任务: Quartz定义一致时避免启动重复写入",
+            "dc557a26d 任务: 展厅启动无恢复工作时仅查询",
+            "3bf63eee8 修复: DCC NAS启动仅恢复实际运行任务",
+            "da3851751 修复: DCC启动无待恢复任务时避免空写入",
+            "e5934b12e 日志: 记录后端启动完成与发布元数据入口",
+            "91683fd03 fix(invoice): configure same-server print assistant entry",
+            "2fd99f51d fix(navigation): retain authorized invoice voucher print entry",
+            "024027bd2 fix(fenbeitong): restore per-server assistant configuration and authorized navigation",
+            "fb88105af 修复: 补齐三服DCC治理表前向迁移",
+            "56b96ea20 任务: 补齐发布快照CLI配套代码"
+          ]
+        }
+      },
+      "components": {
+        "frontend": {
+          "name": "/intruoyi-july-unified-58-frontend",
+          "containerId": "4f9775e6f0a1d86b2d06c69e40504a91cf44a613de458b76e69fa04805ca5d73",
+          "image": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a",
+          "imageId": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a",
+          "running": true,
+          "startedAt": "2026-11-03T06:27:41.221159726Z"
+        },
+        "backend": {
+          "name": "/brlab-prod57-nas-test58-20261020-r3-backend",
+          "containerId": "6f70e67078d086d7f08c1ae75a80bb0feab28c5a1f92c91d655ac258f34988eb",
+          "image": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+          "imageId": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+          "running": true,
+          "startedAt": "2026-11-03T06:24:10.650373948Z"
+        },
+        "database": {
+          "name": "/brlab-prod57-nas-test58-20261020-r3-mysql",
+          "containerId": "b4592b704b979f1b94ba03836985491a8f7c699d3094297bfbe3696939eedd79",
+          "image": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+          "imageId": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+          "running": true,
+          "startedAt": "2026-10-20T02:51:19.576144365Z"
+        }
+      },
+      "schemaSha256": "dc1b23dec9664a58329f5b0ae8bdc5ec09822cfc78b3beee335d45ae248930d1",
+      "ledgerSha256": "b0247053497556d57ca0674529fdefef306c660d785960cc90953228f6fa5ca7",
+      "databaseIdentity": "ruoyi-vue-pro\t20ca4c6c-cc31-11f1-9b95-0242ac1deb16\t8.0.39\t1",
+      "backendConfigSha256": "33cff9501cc7cd64949f2e08fcb656d9940c6f31148e0c0834f347bbceac926a",
+      "backendHealth": "UP",
+      "frontendHttpStatus": 200,
+      "gxpAuditMode": "DEVELOPMENT_DISABLED"
+    },
+    "startupLogCount": 1,
+    "programMounts": [],
+    "backendImageReference": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+    "frontendImageReference": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a",
+    "readOnly": "0\t0",
+    "applicationPropertiesSha256": {
+      "/run/recovery/application-target.properties": "35a76d4498f56143bce8823c34583551b7d4d5d57cb308640c20a47d79c55aa1"
+    },
+    "manifestTagImageIds": {
+      "backend": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+      "frontend": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a"
+    }
+  }
+}

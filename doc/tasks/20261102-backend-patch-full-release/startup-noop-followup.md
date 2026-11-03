@@ -1,0 +1,13 @@
+# 同类启动空写入审阅
+
+## 已授权DCC范围
+识别批任务、NAS传输任务、NAS受控审计。三服NAS传输/子项/审计RUNNING计数均0，第二轮实际启动仍因NAS传输空UPDATE失败；维护只读保护与失败历史。
+
+NAS传输方案：先selectUnfinishedTasks，只有列表含RUNNING任务才执行原恢复；逐未完成任务先selectRunningItemsByTaskId，确有RUNNING子项才执行原子项恢复。NAS审计先按相同RUNNING谓词selectCount，只有大于0才执行原UPDATE。保留租户/逻辑删除过滤、原恢复行为及异常传播，无SQL迁移或配置变更。
+
+## 待明确的展厅同类修复
+ShowroomProductCoverBatchTaskService.recoverInterruptedTasksOnStartup同样在无工作时直接UPDATE。对应调度器默认启用；普通prod/test配置无关闭项，实际容器启动参数与挂载properties未发现显式覆盖。不能以关闭调度器绕过只读门禁。
+
+候选正式修复：先查询已有selectUnfinishedTasks，只有含RUNNING任务才调用原recoverRunningTasksToWaiting；无任务直接返回。子项恢复先确认实际RUNNING子项，再沿用原恢复。只修这项同类空写入，不改展厅配置28、媒体URL或业务数据。
+
+BDD：无工作仅SELECT；WAITING且无RUNNING子项不UPDATE；存在待恢复工作时原恢复执行、只读失败继续抛出。先真实失败单测，再最小实现、相关回归和实际只读启动；需用户批准DCC外的这项代码范围后才实现。

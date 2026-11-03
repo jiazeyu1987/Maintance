@@ -1,0 +1,9 @@
+{
+  "id": "JOB-fdd84f0df3",
+  "action": "backend-patch-restore",
+  "status": "interrupted",
+  "target": "test",
+  "releaseTag": "2026-11-02-22-15-59",
+  "currentStep": "restore-original-backend-only",
+  "error": "SSH disconnected; remote backend-patch-restore outcome is unconfirmed. Do not replay the task"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "JOB-1746423a99",
+  "action": "backend-patch-restore",
+  "status": "succeeded",
+  "target": "test",
+  "releaseTag": "2026-11-03-08-23-17",
+  "currentStep": "restore-original-backend-only",
+  "resultKeys": [
+    "databaseRestored",
+    "observation",
+    "originalJobId",
+    "status"
+  ]
+}
