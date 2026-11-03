@@ -1,0 +1,9 @@
+{
+  "repository": "intruoyi",
+  "branch": "codex/backend-patch-full-validation-20261102",
+  "head": "915ffa2df04667d67e814246dd32e6629c0b40e5",
+  "remoteHeadMatches": true,
+  "intMainHead": "2fe66daeb63c974c0e65dd940f5afabb18f52e16",
+  "intMainUnchanged": true,
+  "status": "PASS"
+}

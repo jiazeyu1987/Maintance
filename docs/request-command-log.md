@@ -5,6 +5,7 @@
 - 用户需求：提交推送当前任务代码。
 - 命令意图：核对Maintance及IntRuoyiAll任务分支、已有验证、未提交改动；fetch后检查待推送对象的凭据和大小，仅提交本任务记录并正常推送各自任务分支，不合并int_main、不操作三服。
 - 前置结果：两仓原工作区干净；维护仓25个和源码6个尚未推送提交，出站凭据与大对象检查PASS。最终推送SHA和结果见doc/tasks/20261103-push-backend-patch-release/。
+- 最终结果：维护仓任务分支与IntRuoyi任务分支均正常推送成功，ls-remote核对代码提交66b5af9及915ffa2df一致，int_main不变；本次最终记录另提交推送。源码hook的Python占位环境问题通过仅进程PATH修正解决，未跳过hook，菜单及端口门禁PASS。
 
 ## 2026-11-03 发布耗时解释
 

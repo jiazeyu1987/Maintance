@@ -22,6 +22,7 @@ def sanitize(value):
 def git(repo, *args, check=True):
     env = os.environ.copy()
     env.update(PYTHONUTF8="1", GIT_TERMINAL_PROMPT="0")
+    env["PATH"] = str(Path(sys.executable).parent) + os.pathsep + env.get("PATH", "")
     options = []
     if args and args[0] in {"ls-remote", "fetch", "push"}:
         with socket.socket() as probe:
@@ -31,7 +32,7 @@ def git(repo, *args, check=True):
     result = subprocess.run(["git", *options, *args], cwd=repo, env=env, capture_output=True,
                             text=True, encoding="utf-8", errors="replace", timeout=180)
     if check and result.returncode:
-        raise RuntimeError(sanitize(result.stderr.strip() or result.stdout.strip()))
+        raise RuntimeError(sanitize((result.stdout + result.stderr).strip()))
     return result
 
 
@@ -58,6 +59,19 @@ def main():
     elif mode == "push":
         result = git(repo, "push", "--set-upstream", "origin", "HEAD:refs/heads/" + branch)
         print(sanitize(result.stdout + result.stderr))
+    elif mode == "verify":
+        head = git(repo, "rev-parse", "HEAD").stdout.strip()
+        refs = git(repo, "ls-remote", "--heads", "origin", "refs/heads/" + branch, "refs/heads/int_main").stdout
+        identities = dict((line.split()[1], line.split()[0]) for line in refs.splitlines())
+        assert identities.get("refs/heads/" + branch) == head, "Remote task branch differs from local HEAD"
+        main = git(repo, "rev-parse", "refs/remotes/origin/int_main").stdout.strip()
+        assert identities.get("refs/heads/int_main") == main, "Remote int_main changed; inspect ownership"
+        result = dict(repository=name, branch=branch, head=head, remoteHeadMatches=True,
+                      intMainHead=main, intMainUnchanged=True, status="PASS")
+        if "--check" not in sys.argv:
+            (Path(__file__).resolve().parent / ("push-" + name + ".json")).write_text(
+                json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(json.dumps(result, ensure_ascii=False, indent=2))
     else:
         raise ValueError("Unknown mode")
 
