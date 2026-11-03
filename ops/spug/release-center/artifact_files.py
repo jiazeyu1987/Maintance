@@ -287,7 +287,8 @@ def automatic_cleanup(profile, payload):
                 pending('directory',row)
                 resources.remove_directory(row)
                 removed('directory',row)
-        held = set(payload['protectedTags']) | {payload['currentReleaseTag'], payload.get('currentPatchTag')}
+        held = (set(payload['protectedTags']) | {payload['currentReleaseTag'], payload.get('currentPatchTag')}
+                | set(report.get('plan',{}).get('blockedReleaseTags',[])))
         for entry, root in roots:
             tag = entry['manifest']['releaseTag']
             if tag in held or (entry.get('kind') not in ('frontend-patch','backend-patch') and tag >= payload['currentReleaseTag']):

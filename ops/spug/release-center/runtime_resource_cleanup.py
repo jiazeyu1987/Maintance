@@ -23,6 +23,10 @@ def containers():
 def fingerprint(value):
     # Runtime network endpoints, timestamps and names change on retirement.
     value={key:value.get(key) for key in ('Id','Image','Config','HostConfig','Mounts')}
+    # Docker builds Mounts from a map; array order is not configuration identity.
+    # Preserve all mount fields and the order of genuinely ordered Config lists.
+    if isinstance(value['Mounts'],list):
+        value['Mounts']=sorted(value['Mounts'],key=lambda m:json.dumps(m,sort_keys=True,separators=(',',':')))
     return hashlib.sha256(json.dumps(value,sort_keys=True,separators=(',',':')).encode()).hexdigest()
 
 
@@ -78,7 +82,7 @@ def plan(profile,payload):
     protected_images=set(payload.get('protectedImageIds',[]))|set(payload['expectedImages'].values())
     protected_ids={c['Id'] for c in actual if c['Name'].lstrip('/') in
                    (profile['backend'],profile['frontend'],profile.get('database'),profile.get('redis'),profile.get('minio'))}
-    candidates=[];image_rows=[];seen=set()
+    candidates=[];image_rows=[];seen=set();blocked=set()
     mounts=[m['Source'] for c in actual for m in c.get('Mounts',[]) if m.get('Source')]
 
     def retain(kind,identity,reason):
@@ -152,7 +156,7 @@ def plan(profile,payload):
                 path=Path(failed['path'])
                 require(path.parent.parent==folder and re.fullmatch(r'failed-database-\d+',path.parent.name)
                         and path.name in ('recovery.sql','recovery.sql.gz'),'失败数据库路径越界')
-                if path.exists():result['files'].append(file_row(base,path,failed['sha256']))
+                if path.exists():result['files'].append(dict(releaseTag=tag,**file_row(base,path,failed['sha256'])))
             record=read(root,'recovery-record.private.json') or {}
             resources=record.get('resources',[])
             for retained_path in receipt.get('retainedData',[]):
@@ -167,11 +171,26 @@ def plan(profile,payload):
                     m.get('Source')==str(source) and m.get('Destination')==resource['mount']['Destination']
                     for m in service.get('Mounts',[])), '失败目录不对应当前登记数据服务挂载')
                 journal=read(source.parent,source.name+'.restore-'+binding['recoveryJobId']+'.json')
-                require(journal and journal.get('phase')=='complete' and journal.get('attemptId')==binding['recoveryJobId']
+                if not (journal and journal.get('phase')=='complete' and journal.get('attemptId')==binding['recoveryJobId']
                         and journal.get('source')==str(source.resolve())
-                        and journal.get('archiveSha256')==matched[0]['artifact']['sha256'],'失败目录恢复日志不完整')
+                        and journal.get('archiveSha256')==matched[0]['artifact']['sha256']):
+                    blocked.add(tag)
+                    retain('recovery',binding['recoveryJobId'],'恢复日志/归档绑定不一致，保留整组版本及恢复依赖')
+                    for value in originals.values():
+                        protected_ids.add(value['Id']);protected_images.add(value['Image'])
+                    continue
                 if retained.exists():
-                    rows,dirs=tree_rows(retained,mounts);result['files']+=rows;result['directories']+=dirs
+                    rows,dirs=tree_rows(retained,mounts)
+                    for row in rows+dirs:row['releaseTag']=tag
+                    result['files']+=rows;result['directories']+=dirs
+
+    result['blockedReleaseTags']=sorted(blocked)
+    result['files']=[r for r in result['files'] if r['releaseTag'] not in blocked]
+    result['directories']=[r for r in result['directories'] if r['releaseTag'] not in blocked]
+    for candidate in candidates:
+        if candidate['releaseTag'] in blocked:
+            protected_ids.add(candidate['id']);protected_images.add(candidate['imageId'])
+    protected_images.update(row['imageId'] for row in image_rows if row['releaseTag'] in blocked)
 
     for candidate in candidates:
         identity=candidate['id'];value=by_id.get(identity)

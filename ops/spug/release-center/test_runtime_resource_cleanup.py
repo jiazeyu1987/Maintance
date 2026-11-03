@@ -69,6 +69,59 @@ class ResourceTests(unittest.TestCase):
         self.assertEqual(result['containers'],[])
         self.assertIn(self.old['Image'],result['protectedImages'])
 
+    def test_mount_order_is_not_container_configuration_drift(self):
+        original=copy.deepcopy(self.old)
+        original['Mounts']=[dict(Type='bind',Source='/a',Destination='/a',RW=False),
+                            dict(Type='bind',Source='/b',Destination='/b',RW=True)]
+        reordered=copy.deepcopy(original);reordered['Mounts'].reverse()
+        self.assertEqual(resources.fingerprint(original),resources.fingerprint(reordered))
+        row=dict(id=original['Id'],name=original['Name'].lstrip('/'),imageId=original['Image'],fingerprint=resources.fingerprint(original))
+        with patch.object(resources,'containers',return_value=[reordered]),patch.object(files,'docker',side_effect=[b'',b'[]']) as docker:
+            resources.remove_container(row)
+            self.assertEqual(docker.call_args_list[0].args[0],['rm','--',original['Id']])
+        reordered['Mounts'][0]['RW']=False
+        self.assertNotEqual(resources.fingerprint(original),resources.fingerprint(reordered))
+        first=copy.deepcopy(original);first['Config']['Env']=['VALUE=1','VALUE=2']
+        second=copy.deepcopy(first);second['Config']['Env'].reverse()
+        self.assertNotEqual(resources.fingerprint(first),resources.fingerprint(second))
+
+    def test_uncertain_old_restore_preserves_whole_release_and_reports_retention(self):
+        recovery_id='JOB-9876543210';accepted='JOB-1111111111'
+        source=self.base/'minio-data';source.mkdir()
+        retained=source.with_name(source.name+'.failed-'+recovery_id);retained.mkdir()
+        (retained/'object').write_bytes(b'keep old evidence')
+        archive=self.base/OLD/'recovery-volume-0.tar';archive.write_bytes(b'checkpoint archive')
+        record=dict(resources=[dict(role='minio',mount=dict(Source=str(source),Destination='/data'),
+            artifact=dict(path=str(archive),sha256=files.sha(archive)))])
+        (self.base/OLD/'recovery-record.private.json').write_text(json.dumps(record),'utf-8')
+        folder=self.base/OLD/('recovery-'+recovery_id);folder.mkdir()
+        dump_folder=folder/'failed-database-0';dump_folder.mkdir();dump=dump_folder/'recovery.sql.gz';dump.write_bytes(b'keep failed database')
+        receipt=dict(jobId=recovery_id,originalJobId=JOB,releaseTag=OLD,packageSha256='c'*64,
+            status='succeeded',phase='opened',openingStatus='succeeded',openingJobId=accepted,retainedData=[str(retained)],
+            failedDatabase=dict(path=str(dump),sha256=files.sha(dump)))
+        (folder/'receipt.private.json').write_text(json.dumps(receipt),'utf-8')
+        journal=source.parent/(source.name+'.restore-'+recovery_id+'.json')
+        journal.write_text(json.dumps(dict(phase='complete',attemptId=recovery_id,source=str(source.resolve()),archiveSha256='0'*64)),'utf-8')
+        self.entries[0]['resolvedRecoveries']=[dict(recoveryJobId=recovery_id,acceptanceJobId=accepted,openingJobId=accepted,originalJobId=JOB)]
+        self.profile['minio']='minio'
+        service=self.container('e'*64,'minio','sha256:'+'f'*64,True)
+        service['Mounts']=[dict(Source=str(source),Destination='/data')]
+        payload=dict(self.payload,action='artifact-auto-clean',workflowJobId=JOB,entries=[self.entries[0]])
+        with patch.object(resources,'containers',return_value=[self.old,service]),patch.object(files,'verify_cleanup_runtime'),patch.object(files,'assert_cleanup_idle'):
+            result=files.automatic_cleanup(self.profile,payload)
+        self.assertEqual(result['status'],'succeeded')
+        self.assertEqual(result['plan']['blockedReleaseTags'],[OLD])
+        self.assertEqual(result['plan']['containers'],[])
+        self.assertEqual(result['plan']['files'],[])
+        self.assertEqual(result['plan']['directories'],[])
+        self.assertTrue(any('恢复日志' in row.get('reason','') for row in result['retained']))
+        self.assertTrue(archive.exists());self.assertTrue(dump.exists());self.assertTrue(retained.exists())
+        other_tag='2026-10-29-01-00-00'
+        other=self.container('d'*64,'app-before-'+other_tag,'sha256:'+'e'*64)
+        self.entry(other_tag,other)
+        independent=self.plan([self.old,service,other])
+        self.assertEqual([v['id'] for v in independent['containers']],[other['Id']])
+
     def test_unpublished_newer_release_is_not_retired(self):
         newer='2026-11-03-01-00-00'
         future=self.container('d'*64,'app-before-'+newer,'sha256:'+'e'*64)

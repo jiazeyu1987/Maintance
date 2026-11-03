@@ -546,6 +546,13 @@ Codex 只有在以下条件同时成立时，才能判定完整发布完成：
 - Verification: 核对 `postReleaseCleanup` 和 `.cleanup/<任务>.json` 的具体计划、逐项删除、保留原因、错误和文件字节/磁盘可用变化。先移除有原始快照及精确身份的已停止旧业务容器，再删无任何容器/恢复点引用的登记镜像标签，最后处理旧载荷。失败现场须原任务 restored 核销、本机成功恢复验收及远端 opened 回执三方一致；接续验收绑定原 openingJobId。推荐运行 `test_post_release_cleanup`、`test_runtime_resource_cleanup`、Linux `test_post_release_cleanup_lock`，本机专用 Docker 资源用 `SPUG_REAL_CLEANUP_TEST=1 ... test_cleanup_resources_integration` 验证。必须记录代码版本、任务号及逐服实际结果，清理失败通过独立重试入口重新采样，不重新发布或开放业务。
 - Forbidden action: 不删当前包及最近有效恢复点、在用演练、未解决任务的恢复起点、清单/凭据/历史、业务在用数据、NAS、独立备份链；不自动停业务容器，不带卷删除容器、不强制删镜像、不全局 prune、不递归删除、不在有活动发布时热换执行器代码。未知归属的历史演练必须另行确认退役后处理。
 - Evidence: `doc/tasks/20261102-post-release-auto-cleanup/`、发布最终验收任务日志和逐服清理回执。
+
+- Trigger：Docker inspect重复读取仅Mounts顺序变化，或旧已核销恢复日志与归档绑定不一致。
+- Preflight check：只将Mounts作为完整条目的无序集合规范化；Config.Env及其他有序字段保持原顺序。逐项验证旧恢复journal与归档，异常组写入blockedReleaseTags，并贯穿容器/镜像/失败目录/归档全部保留。
+- Blocker：真实配置、运行态、挂载或身份变化仍拒绝删除；旧恢复绑定不明只阻止其整组删除，不猜历史、不改摘要。
+- Verification：先RED/GREEN的挂载重排、RW/Env漂移、删除前再核、整组恢复保留及其他组可清理测试，再真实Docker和公共锁回归；记录原清理失败及独立重试结果。
+- Forbidden action：按挂载顺序误删/误阻塞、只保留失败目录却删掉其归档和镜像依赖、修改恢复日志、强制prune、将清理失败伪造为成功。
+- Evidence：`doc/tasks/20261102-backend-patch-full-release/cleanup-followup.md`、真实重复inspect摘要、独立清理任务及逐服保留原因。
 ## 后端单 JAR 补丁门禁
 
 - Trigger: Spug backend-patch 构建、部署、验收、原包重传、程序恢复及后续完整发布。
