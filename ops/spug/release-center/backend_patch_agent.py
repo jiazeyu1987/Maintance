@@ -1,8 +1,10 @@
 """Single-JAR switch. No migrations, data repair, configuration DML or backups.
 
-The sole SQL writes are an owned, non-persistent MySQL GLOBAL read-only fence.
-On failure it stays closed; explicit restoration owns its release. No finally
-block unlocks a failed startup. Receipts contain identities, never credentials.
+The agent's sole SQL writes are an owned, non-persistent MySQL GLOBAL fence.
+V2 verifies maintenance startup readonly, then permits the original normal
+runtime. Failure closes writers and reclaims only its own fence. V1 packages
+retain their original strict startup contract. No finally block unlocks a
+failed startup. Receipts contain identities, never credentials.
 """
 import hashlib
 import json
@@ -15,7 +17,7 @@ import time
 from urllib.parse import quote
 from urllib.request import urlopen
 
-from backend_patch_contract import need, validate_manifest, patch_config, PATHS, PREFIX
+from backend_patch_contract import need, validate_manifest, patch_config, PATHS, PREFIX, RUNTIME_POLICY
 
 
 def write(path,value):
@@ -52,6 +54,28 @@ def release_fence(profile,root,remote):
     remote.sql(profile,'SET GLOBAL super_read_only=OFF; SET GLOBAL read_only=OFF;')
     need(fence_state(profile,remote)=='0\t0','未确认本任务保护已解除')
     write(path,dict(value,status='released'))
+
+
+def reclose_owned_fence(profile,root,a):
+    """Stop the failed candidate before reacquiring only this task's released fence."""
+    remote=a['remote'];path=root/'database-fence.json'
+    value=json.loads(path.read_text('utf-8'))
+    need(value['status']=='released' and value['databaseId']==remote.inspect(profile['database'])['Id'],
+         '失败保护归属或数据库已变化，禁止接管')
+    names=remote.run(['docker','ps','-a','--format','{{.Names}}']).decode().splitlines()
+    for name in dict.fromkeys([profile['frontend']]+profile['writers']):
+        if name not in names:
+            need(name==profile['backend'],'登记写者缺失，停止保护恢复')
+            continue
+        if remote.inspect(name)['State']['Running']:
+            remote.run(['docker','stop','--time','90',name],timeout=120)
+        need(not remote.inspect(name)['State']['Running'],'候选写者未停止，禁止恢复保护')
+    need(remote.sql(profile,'SELECT COUNT(*) FROM information_schema.INNODB_TRX;')=='0','仍有事务，禁止恢复保护')
+    need(fence_state(profile,remote)=='0\t0','外部数据库保护变化，禁止接管')
+    write(path,dict(value,status='acquiring'))
+    remote.sql(profile,'SET GLOBAL super_read_only=ON;')
+    need(fence_state(profile,remote)=='1\t1','失败后未确认数据库保护')
+    write(path,dict(value,status='owned'))
 
 
 def observation(profile,a,*,online=True):
@@ -214,6 +238,7 @@ def execute(profile,payload,a):
     a['private_json'](root/'backend-origin.private.json',snapshot)
     receipt=dict(status='running',effectsStarted=True,origin=before,packageSha256=payload['archive']['sha256'],jobId=job)
     write(root/'deployment.json',receipt)
+    normal_writes_released=False
     try:
         a['stop_writers'](profile)
         acquire_fence(profile,root,remote)
@@ -221,10 +246,19 @@ def execute(profile,payload,a):
         replace_backend(profile,snapshot,config,profile['backend']+'-before-'+job,a)
         wait_backend(profile,a,manifest['baseReleaseTag'],True)
         check_startup_writes(profile,a)
+        if manifest['databasePolicy']==RUNTIME_POLICY:
+            readonly=database_program_observation(profile,a,before)
+            verify_unchanged(before,readonly)
+            need(readonly['backendJarSha256']==manifest['files'][0]['sha256'],'只读探针JAR摘要不一致')
+            receipt['readonlyProbeVerified']=True
+            write(root/'deployment.json',receipt)
         remote.run(['docker','stop','--time','90',profile['backend']],timeout=120)
         probe=remote.inspect(profile['backend'])
         need(probe['State']['ExitCode']!=137,'验证后端未正常停止')
         a['private_json'](root/'backend-probe.private.json',probe)
+        if manifest['databasePolicy']==RUNTIME_POLICY:
+            release_fence(profile,root,remote)
+            normal_writes_released=True
         config=patch_config(a['clone_config'](snapshot,snapshot['Image'],False),str(root),tag,manifest['files'][0]['sha256'])
         replace_backend(profile,probe,config,profile['backend']+'-probe-'+job,a)
         wait_backend(profile,a,manifest['baseReleaseTag'],False)
@@ -232,18 +266,30 @@ def execute(profile,payload,a):
         # docker cp works for a stopped frontend; observation must not exec it.
         after=database_program_observation(profile,a,before)
         verify_unchanged(before,after)
-        release_fence(profile,root,remote)
+        if manifest['databasePolicy']!=RUNTIME_POLICY:
+            release_fence(profile,root,remote)
         for name in dict.fromkeys([profile['frontend']]+profile['writers']):
             if name!=profile['backend']:remote.run(['docker','start',name])
         actual=observation(profile,a)
         verify_unchanged(before,actual)
         need(actual['backendJarSha256']==manifest['files'][0]['sha256'],'运行 JAR 摘要不一致')
-        receipt.update(status='succeeded',observation=actual,databaseChanged=False)
+        receipt.update(status='succeeded',observation=actual)
+        if manifest['databasePolicy']==RUNTIME_POLICY:
+            receipt.update(databaseSchemaChanged=False,migrationsExecuted=False,normalRuntimeWritesAllowed=True)
+        else:
+            receipt['databaseChanged']=False
         write(root/'deployment.json',receipt)
         return receipt
     except Exception as error:
         receipt.update(status='failed',errorType=type(error).__name__)
         write(root/'deployment.json',receipt)
+        if normal_writes_released:
+            try:
+                reclose_owned_fence(profile,root,a)
+            except Exception as protection_error:
+                receipt['protectionRecoveryErrorType']=type(protection_error).__name__
+                write(root/'deployment.json',receipt)
+                raise
         raise
 
 

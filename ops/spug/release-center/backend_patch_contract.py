@@ -10,12 +10,13 @@ def need(value, message):
 
 PREFIX = 'intruoyi.backend-patch.'
 PATHS = {'app.jar': '/yudao-server/app.jar', 'release-info.json': '/yudao-server/release-info.json'}
+RUNTIME_POLICY = 'no-migrations-readonly-probe-normal-runtime-v2'
 
 
 def validate_manifest(value):
     need(value.get('applicationId') == 'intruoyi' and value.get('kind') == 'backend-patch', '不是后端 JAR 补丁')
     need(not any(k in value for k in ('migrations','sql','images','data','hooks','executionPlans')), '后端补丁禁止数据库迁移、数据、钩子和镜像')
-    need(value.get('databasePolicy') == 'no-migrations-readonly-startup-v1', '缺少数据库禁止修改合同')
+    need(value.get('databasePolicy') in ('no-migrations-readonly-startup-v1', RUNTIME_POLICY), '缺少明确的数据库发布合同')
     for key in ('releaseTag','baseReleaseTag'):
         need(re.fullmatch(r'\d{4}(-\d{2}){5}',value.get(key,'')), '补丁版本无效')
     for key in ('gitCommit','baseGitCommit'):

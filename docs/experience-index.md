@@ -1,6 +1,6 @@
 # 项目经验索引
 
-- Spug 后端补丁 / backend-patch / 单 JAR / super_read_only / 不修改数据库 / 补丁挂载遮盖完整镜像：`docs/release-agent-checklist.md#后端单-jar-补丁门禁`。
+- Spug 后端补丁 / backend-patch / 单 JAR / super_read_only / 不修改数据库 / Quartz心跳 / 维护只读探针 / 正常运行边界v2 / 补丁挂载遮盖完整镜像：`docs/release-agent-checklist.md#后端单-jar-补丁门禁`。
 
 - 发布完成自动删除旧包 / 旧恢复资料 / postReleaseCleanup / artifact-auto-clean / 重试目录公共锁：`docs/release-agent-checklist.md#发布验收后旧载荷回收门禁`。
 

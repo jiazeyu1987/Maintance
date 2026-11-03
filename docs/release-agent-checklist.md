@@ -555,6 +555,7 @@ Codex 只有在以下条件同时成立时，才能判定完整发布完成：
 - Evidence: `doc/tasks/20261102-spug-backend-jar-patch/execution-log.md`、任务/远端操作回执、database-fence.json、固定清单与本机隔离 MySQL 检查。
 - 阶段 1 必查 / 推荐命令: 独立维护副本执行 `python -X utf8 -m unittest test_backend_patch test_frontend_patch test_frontend_patch_baseline test_current_versions test_post_release_cleanup test_runtime_resource_cleanup`、`node test_ui_backend_patch.cjs`、显式本机 `python -X utf8 check_backend_patch_mysql.py`。记录 RED/GREEN 和真实检查范围。
 - 阶段 2 必查: 页面登记真实基线、评审、固定提交；本任务首写入由公共操作锁与任务号绑定；准备阶段按实际包大小两倍加1GiB检查暂存文件系统，不引入旧64GiB门槛。失败保留原包，重传前核清单/成员/原包SHA。
+- 用户确认后的v2边界：新包清单写入`no-migrations-readonly-probe-normal-runtime-v2`；维护启动仍严格只读，完整启动日志、真实JAR、GxP及结构/台账通过且探针正常停止后，才解除本任务保护并正常启动。原有Quartz心跳和业务运行照常，不能声称正常运行全库零写入；发布脚本仍禁止迁移/配置/业务DML。正常启动失败须停止写者、核数据库身份及零事务，重新获取本任务保护；恢复失败单独暴露，不能开放。旧v1原包维持原严格合同，禁止篡改清单升级策略。推荐`test_backend_patch_runtime_boundary`，必须记录只读探针通过、保护释放、正常运行及结构/台账复核。
 - 阶段 3 必查: 三服同包逐服人工业务验收；正式/审查变更输入 PROD。最终清理逐文件SHA、挂载引用和原容器身份证据。后续完整发布包含补丁提交，仅移除确属程序的两个只读挂载，保留其他配置和原恢复 JAR。必须记录包/任务号、实际运行证据、保护获取/解除与剩余阻塞。
 - 基线核对补充：各服迁移历史必须分别健康且补丁前后不变，不要求不同环境历史SHA相同。固定运行镜像先核已校验主包清单的configID等于现场，再以清单镜像名定位本机不可变镜像；Docker Desktop导出config字节必须匹配，不能把indexID直接当classic configID。
 - 旧主版本部署失败仅在当前更晚完整包已completed、该服成功部署发生在旧失败之后、同包技术验收成功、登记manifest绑定且业务开放/无恢复待办时视为被替代；保留失败原记录，不补resolution或成功历史。当前版本失败、补丁/恢复等其他副作用、证据缺失仍阻塞；部署前必须再次核实际现场与固定补丁基线一致。

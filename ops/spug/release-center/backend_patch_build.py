@@ -9,7 +9,7 @@ import tarfile
 import tempfile
 
 from executor import digest,require,stamp
-from backend_patch_contract import validate_changes,validate_manifest
+from backend_patch_contract import validate_changes,validate_manifest,RUNTIME_POLICY
 from build_artifact_guard import validate_source_contract,verify_backend_jar,validate_required_gxp_mode,validate_offline_cli_report,MES_PREFIX
 from intruoyi_build import publish_nas,cleanup_sealed_build,archive_image_identities
 from intruoyi_login import verify_login
@@ -132,7 +132,7 @@ def build(executor,job):
                   sourceCommit=commit,backendJarSha256=proof['jarSha256'])
     (root/'release-info.json').write_text(json.dumps(metadata,ensure_ascii=False,indent=2),'utf-8')
     manifest=dict(applicationId='intruoyi',kind='backend-patch',releaseTag=tag,baseReleaseTag=base['releaseTag'],
-                  baseGitCommit=base['gitCommit'],gitCommit=commit,databasePolicy='no-migrations-readonly-startup-v1',
+                  baseGitCommit=base['gitCommit'],gitCommit=commit,databasePolicy=RUNTIME_POLICY,
                   releaseSettings={'gxpAuditMode':'DEVELOPMENT_DISABLED'},metadata=metadata,baseline=base,
                   changedFiles=changes,compatibilityReview=job['payload']['note'],
                   files=[dict(name=name,sha256=digest(root/name)) for name in ('app.jar','release-info.json')])

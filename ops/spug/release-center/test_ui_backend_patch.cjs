@@ -21,6 +21,8 @@ context.input.jobs=[{id:'JOB-1234567890',action:'backend-patch-deploy',releaseTa
 html=render();assert.match(html,/恢复本次升级前的后端/);assert.match(html,/network failed/);assert.match(html,/不回退业务数据/);
 context.input.jobs[0].backendRestoredBy='JOB-abcdef1234';html=render();assert.doesNotMatch(html,/data-original=/);
 assert.match(html,/不执行数据库结构、数据/);
+assert.match(html,/维护启动/);assert.match(html,/原有心跳和业务运行照常/);
+assert.match(html,/正常启动失败会关闭候选并重新保护/);
 console.log('PASS backend patch rendering, same-package promotion gates, failure visibility and explicit recovery entry');
 (async()=>{
  store.set('token','unit-token');
