@@ -142,6 +142,7 @@ class ArtifactGuardTest(unittest.TestCase):
             def run(command, **kwargs):
                 commands.append(command)
                 if 'rev-parse' in command: return ('a'*40).encode()
+                if command[0] == 'git' and 'log' in command: return b'aaaaaaa Unit release change\n'
                 if 'worktree' in command and 'add' in command:
                     worktree = Path(job['buildWorktree'])
                     (worktree/'scripts/preflight').mkdir(parents=True)

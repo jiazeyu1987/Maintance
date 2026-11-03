@@ -28,6 +28,13 @@ from ops.release.release_target_preflight_contract import validate
 from ops.release.release_preflight_plan import _order_migrations_by_dependencies, build_preflight_plan
 
 
+def build_release_info(executor, worktree, tag, commit):
+    changes = executor.run(['git', '-C', str(worktree), 'log', '-10', '--format=%h %s', commit]).decode('utf-8').splitlines()
+    require(changes, 'Frozen source commit has no release change notes')
+    return dict(releaseTag=tag, sourceCommit=commit, builtAt=dt.datetime.now(dt.timezone.utc).isoformat(),
+                changeSet=dict(gitChanges=changes))
+
+
 def build_python(config):
     if config.get('executionMode') == 'windows-service':
         executable = config.get('pythonExecutable')
@@ -359,7 +366,7 @@ def build(executor, job):
     executor.step(job, 'compile-frontend')
     build_env = dict(os.environ, NODE_OPTIONS='--max-old-space-size=8192', VITE_BASE_URL='', VITE_BASE_PATH='/', VITE_OUT_DIR='dist-intruoyi-test')
     executor.run(['node', 'node_modules/vite/bin/vite.js', 'build', '--mode', 'prod'], cwd=frontend, env=build_env, timeout=2700)
-    info = dict(releaseTag=tag, sourceCommit=commit, builtAt=dt.datetime.now(dt.timezone.utc).isoformat())
+    info = build_release_info(executor, worktree, tag, commit)
     (frontend/'dist-intruoyi-test/release-info.json').write_text(json.dumps(info, ensure_ascii=False), 'utf-8')
     require(not executor.run(['git', '-C', str(worktree), 'status', '--porcelain']).strip(), 'Build changed frozen source')
     executor.step(job, 'build-complete-images')
