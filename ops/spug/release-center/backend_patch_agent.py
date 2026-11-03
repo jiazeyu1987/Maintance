@@ -292,10 +292,53 @@ def restart_verified_original(profile,a,fence_root,snapshot,before):
         raise
 
 
+def require_no_other_stdin_workers(proc_root=Path('/proc'),*,current_pid=None):
+    """An unjournalled Python stdin delivery must have no surviving worker."""
+    own=os.getpid() if current_pid is None else current_pid
+    need(proc_root.is_dir(),'无法核对远端执行者，禁止确认未开始切换')
+    for process in proc_root.iterdir():
+        if not process.name.isdigit() or int(process.name)==own:continue
+        try:
+            command=(process/'cmdline').read_bytes().split(b'\0')
+        except (FileNotFoundError,ProcessLookupError):
+            continue
+        if command and re.fullmatch(rb'python(?:\d+(?:\.\d+)*)?',command[0].rsplit(b'/',1)[-1]):
+            need(b'-' not in command[1:],'其他Python标准输入执行者仍可能运行，禁止核销未知切换')
+
+
+def restore_untouched_origin(profile,payload,a,original_root,root):
+    # The outer journal holds the shared operation lock. Missing deployment
+    # evidence is insufficient by itself: require the intact staged package,
+    # exact healthy origin, no partial-switch files and no other stdin worker.
+    manifest=payload['manifest']
+    need(original_root.is_dir() and not original_root.is_symlink()
+         and all(not p.is_symlink() for p in original_root.parents),'原任务暂存目录不安全')
+    expected={'manifest.json','release.tar'}|{f['name'] for f in manifest['files']}
+    entries=list(original_root.iterdir())
+    need({p.name for p in entries}==expected and all(p.is_file() and not p.is_symlink() for p in entries),
+         '存在部分切换或未知资料，不能确认原程序未变')
+    need(a['file_sha'](original_root/'release.tar')==payload['archive']['sha256']
+         and a['file_sha'](original_root/'manifest.json')==payload['archive']['manifestSha256']
+         and json.loads((original_root/'manifest.json').read_text('utf-8'))==manifest,'原任务包身份不一致')
+    a['verify_files'](original_root,manifest['files'])
+    require_no_other_stdin_workers()
+    need(fence_state(profile,a['remote'])=='0\t0','存在数据库保护，不能确认切换未开始')
+    actual=observation(profile,a)
+    need(actual==manifest['baseline']['origins'][profile['environment']],'原程序现场偏离封包基线')
+    require_no_other_stdin_workers()
+    result=dict(status='succeeded',mode='verified-untouched-origin',originalJobId=payload['originalJobId'],
+                observation=actual,databaseRestored=False,otherStdinWorkers=False)
+    root.mkdir(parents=True,exist_ok=False,mode=0o700)
+    write(root/'restoration.json',result)
+    return result
+
+
 def restore(profile,payload,a,base,root):
     remote=a['remote'];original=payload.get('originalJobId','')
     need(re.fullmatch('JOB-[a-f0-9]{10}',original),'原部署任务无效')
     original_root=base/payload['manifest']['releaseTag']/original
+    if not (original_root/'deployment.json').exists():
+        return restore_untouched_origin(profile,payload,a,original_root,root)
     receipt=json.loads((original_root/'deployment.json').read_text('utf-8'))
     need(receipt['packageSha256']==payload['archive']['sha256'],'原任务包身份不一致')
     snapshot=json.loads((original_root/'backend-origin.private.json').read_text('utf-8'))
