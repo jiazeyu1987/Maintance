@@ -149,6 +149,15 @@ class ResourceTests(unittest.TestCase):
         self.entries[0]['manifestSha256']='0'*64
         with self.assertRaises(ValueError):self.plan()
 
+    def test_missing_legacy_manifest_retains_group_but_current_missing_manifest_blocks(self):
+        (self.base/OLD/'manifest.json').unlink()
+        result=self.plan()
+        self.assertEqual(result['blockedReleaseTags'],[OLD])
+        self.assertEqual(result['containers'],[])
+        self.assertTrue(any('缺少清单' in row.get('reason','') for row in result['retained']))
+        (self.base/CURRENT/'manifest.json').unlink()
+        with self.assertRaises(ValueError):self.plan()
+
     def test_execution_rechecks_identity_and_never_force_or_remove_volumes(self):
         plan=self.plan()
         changed=copy.deepcopy(self.old);changed['State']['Running']=True

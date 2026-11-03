@@ -99,6 +99,10 @@ def plan(profile,payload):
         root=files.cleanup_root(base,entry);tag=entry['manifest']['releaseTag']
         if not root.exists():continue
         marker=files.safe_file(root,'manifest.json')
+        if not marker.exists() and tag<payload['currentReleaseTag']:
+            blocked.add(tag)
+            retain('release',tag,'旧目录缺少清单，整组保留，不推断历史身份')
+            continue
         require(marker.is_file() and files.sha(marker)==entry['manifestSha256'], '资源清理清单身份不一致')
         require(json.loads(marker.read_text('utf-8'))==entry['manifest'],'资源清单内容不一致')
         boundary=(payload.get('currentPatchTag') or payload['currentReleaseTag']) if entry.get('kind')=='frontend-patch' else (

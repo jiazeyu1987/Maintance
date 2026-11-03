@@ -553,6 +553,7 @@ Codex 只有在以下条件同时成立时，才能判定完整发布完成：
 - Verification：先RED/GREEN的挂载重排、RW/Env漂移、删除前再核、整组恢复保留及其他组可清理测试，再真实Docker和公共锁回归；记录原清理失败及独立重试结果。
 - Forbidden action：按挂载顺序误删/误阻塞、只保留失败目录却删掉其归档和镜像依赖、修改恢复日志、强制prune、将清理失败伪造为成功。
 - Evidence：`doc/tasks/20261102-backend-patch-full-release/cleanup-followup.md`、真实重复inspect摘要、独立清理任务及逐服保留原因。
+- 旧目录缺少manifest且版本严格早于当前版本时整组保留并记录blockedReleaseTags，不补写清单；当前版本缺清单、现有清单摘要不符、路径越界仍阻止清理。以当前真实运行态及最近恢复点为硬门禁，不将无法核验的旧目录推断成可删除。
 ## 后端单 JAR 补丁门禁
 
 - Trigger: Spug backend-patch 构建、部署、验收、原包重传、程序恢复及后续完整发布。
