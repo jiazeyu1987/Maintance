@@ -124,14 +124,14 @@ def _volume_contract(item):
             volume['driver'] == 'local' and volume['mountpoint'] == item['source'] and
             (volume['options'] is None or type(volume['options']) is dict), 'REPLACEMENT_STORAGE_INVALID')
     options, backing = volume['options'], volume['backing']
-    if not options:
-        require(backing is None, 'REPLACEMENT_STORAGE_INVALID')
+    if not options and backing is None:
         return None
-    require(set(options) == {'type', 'o', 'device'} and options['type'] == 'none' and
-            type(options['o']) is str and set(options['o'].split(',')) in ({'bind'}, {'bind', 'rw'}) and
-            len(set(options['o'].split(','))) == len(options['o'].split(',')), 'REPLACEMENT_STORAGE_INVALID')
+    if options:
+        require(set(options) == {'type', 'o', 'device'} and options['type'] == 'none' and
+                type(options['o']) is str and set(options['o'].split(',')) in ({'bind'}, {'bind', 'rw'}) and
+                len(set(options['o'].split(','))) == len(options['o'].split(',')), 'REPLACEMENT_STORAGE_INVALID')
     require(type(backing) is dict and set(backing) == {'source', 'device', 'inode', 'mountIdentity'} and
-            backing['source'] == options['device'], 'REPLACEMENT_STORAGE_INVALID')
+            (not options or backing['source'] == options['device']), 'REPLACEMENT_STORAGE_INVALID')
     _directory_contract(backing)
     require(_path(backing['mountIdentity']['mountPoint'], root=True) in _path(backing['source']).parents and
             not overlaps(item['source'], backing['source']), 'REPLACEMENT_STORAGE_MOUNT_ROOT_REFUSED')
@@ -141,6 +141,10 @@ def _volume_contract(item):
 
 def _bound_directory(item, backing):
     require(item['mountIdentity']['root'] != '/' and
+            item['mountIdentity']['mountPoint'] == item['source'] and
+            item['mountIdentity']['mountId'] != backing['mountIdentity']['mountId'] and
+            item['mountIdentity']['filesystem'] == backing['mountIdentity']['filesystem'] and
+            item['mountIdentity']['source'] == backing['mountIdentity']['source'] and
             item['device'] == backing['device'] and item['inode'] == backing['inode'] and
             item['mountIdentity']['device'] == backing['mountIdentity']['device'] and
             _mounted_path(item['source'], item['mountIdentity']) ==
@@ -235,14 +239,20 @@ def observe_directory(path, mountinfo_text=None, *, backing=None):
         raise ValueError('REPLACEMENT_STORAGE_PATH_INVALID') from error
 
 
-def snapshot_mounts(rows, protected_roots, *, volume_inspector=None):
+def snapshot_mounts(rows, protected_roots, *, volume_inspector=None, volume_backing_paths=None):
     """Observe storage; an explicit single-volume inspector selects storage/v2.
 
     volume_inspector(name) must return one Docker volume-inspect dictionary.
+    Host-managed binds require explicit volume_backing_paths[name]; no path is inferred.
     Installation must still verify every Docker owner with verify_storage.
     """
     require(volume_inspector is None or callable(volume_inspector), 'REPLACEMENT_VOLUME_INSPECTOR_INVALID')
-    mounts = []
+    require(volume_backing_paths is None or type(volume_backing_paths) is dict and volume_inspector is not None,
+            'REPLACEMENT_VOLUME_BACKING_INPUT_INVALID')
+    backing_paths = {} if volume_backing_paths is None else volume_backing_paths
+    require(all(type(name) is str and name for name in backing_paths), 'REPLACEMENT_VOLUME_BACKING_INPUT_INVALID')
+    for path in backing_paths.values(): _path(path)
+    mounts, used_backings = [], set()
     for role, row in rows.items():
         for mount in row['Mounts']:
             if not mount['RW']:
@@ -252,15 +262,23 @@ def snapshot_mounts(rows, protected_roots, *, volume_inspector=None):
             backing = None
             if mount['Type'] == 'volume' and volume_inspector is not None:
                 volume = _volume_definition(volume_inspector(mount['Name']), mount)
+                backing_path = backing_paths.get(mount['Name'])
+                if backing_path is not None:
+                    used_backings.add(mount['Name'])
                 if volume['options']:
                     options = volume['options']
                     require(type(options) is dict and set(options) == {'type', 'o', 'device'} and
                             options['type'] == 'none' and type(options['o']) is str and
                             set(options['o'].split(',')) in ({'bind'}, {'bind', 'rw'}), 'REPLACEMENT_STORAGE_INVALID')
-                    backing = dict(source=options['device'], **observe_directory(options['device']))
+                    require(backing_path is None or backing_path == options['device'],
+                            'REPLACEMENT_VOLUME_BACKING_INPUT_INVALID')
+                    backing_path = options['device']
+                if backing_path is not None:
+                    backing = dict(source=backing_path, **observe_directory(backing_path))
                 item['volume'] = dict(**volume, backing=backing)
             item.update(observe_directory(mount['Source'], backing=backing))
             mounts.append(item)
+    require(used_backings == set(backing_paths), 'REPLACEMENT_VOLUME_BACKING_INPUT_INVALID')
     return validate_storage(dict(schemaVersion='RegisteredReplacementStorage/v2' if volume_inspector is not None
         else 'RegisteredReplacementStorage/v1',
         protectedRoots=list(protected_roots), mounts=mounts))

@@ -109,6 +109,26 @@ def test_explicit_bind_backed_volume_contract_accepts_only_pinned_local_director
         validate_storage(old)
 
 
+@pytest.mark.parametrize('options',[None,{}])
+def test_host_managed_bind_volume_keeps_empty_options_and_explicit_backing(options):
+    data=bind_volume_contract()
+    for item in data['mounts']: item['volume']['options']=options
+    assert validate_storage(data)==data
+
+
+@pytest.mark.parametrize('change',['same-mount','different-filesystem','different-mount-source','ancestor-mount'])
+def test_host_bind_requires_a_distinct_local_subdirectory_mount(change):
+    data=bind_volume_contract();item=data['mounts'][0];volume=item['volume'];volume['options']=None
+    if change=='same-mount': item['mountIdentity']['mountId']=volume['backing']['mountIdentity']['mountId']
+    elif change=='different-filesystem': item['mountIdentity']['filesystem']='xfs'
+    elif change=='different-mount-source': item['mountIdentity']['source']='/dev/sdb1'
+    else:
+        item['mountIdentity']['mountPoint']='/volumes/mysql'
+        volume['backing']['source']='/disk/data/mysql/_data'
+    with pytest.raises(Exception,match='REPLACEMENT_VOLUME_BACKING_CHANGED'):
+        validate_storage(data)
+
+
 @pytest.mark.parametrize('change',['filesystem-root','source-root','inode','device','physical-alias',
     'remote','rbind','read-only','duplicate-options','option-extra','device-root','protected-backing','shared-backing'])
 def test_bind_backed_volume_rejects_unsafe_or_mismatched_contract(change):
@@ -130,12 +150,17 @@ def test_bind_backed_volume_rejects_unsafe_or_mismatched_contract(change):
     with pytest.raises(Exception): validate_storage(data)
 
 
-def test_snapshot_requires_explicit_inspector_for_versioned_volume_definitions(monkeypatch):
+@pytest.mark.parametrize('options',['driver-bind',None,{}])
+def test_snapshot_requires_explicit_inspector_for_versioned_volume_definitions(monkeypatch,options):
     import recovery_replacement_storage as module
     data=bind_volume_contract();observations={}
     rows=service_rows(data);definitions={}
+    backing_paths={}
     for item in data['mounts']:
         volume=item['volume'];backing=volume['backing']
+        if options!='driver-bind':
+            volume['options']=options
+            backing_paths[volume['name']]=backing['source']
         rows[item['role']]['Mounts'][0]['Name']=volume['name']
         observations[item['source']]={k:item[k] for k in ('device','inode','mountIdentity')}
         observations[backing['source']]={k:backing[k] for k in ('device','inode','mountIdentity')}
@@ -146,8 +171,21 @@ def test_snapshot_requires_explicit_inspector_for_versioned_volume_definitions(m
             assert backing is not None
         return observations[path]
     monkeypatch.setattr(module,'observe_directory',observe)
-    assert snapshot_mounts(rows,data['protectedRoots'],volume_inspector=lambda name:definitions[name])==data
+    kwargs=dict(volume_inspector=lambda name:definitions[name])
+    if backing_paths: kwargs['volume_backing_paths']=backing_paths
+    assert snapshot_mounts(rows,data['protectedRoots'],**kwargs)==data
     with pytest.raises(AssertionError): snapshot_mounts(rows,data['protectedRoots'])
+
+
+@pytest.mark.parametrize('backings',[{'unknown':'/disk/data/unknown'},[],{'mysql':'/disk/../mysql'}])
+def test_snapshot_rejects_unused_or_malformed_explicit_backing_inputs(backings):
+    with pytest.raises(Exception):
+        snapshot_mounts({},['/mnt/nas'],volume_inspector=lambda name:{},volume_backing_paths=backings)
+
+
+def test_snapshot_requires_volume_inspector_for_explicit_host_backing():
+    with pytest.raises(Exception,match='REPLACEMENT_VOLUME_BACKING_INPUT_INVALID'):
+        snapshot_mounts({},['/mnt/nas'],volume_backing_paths={'mysql':'/disk/data/mysql'})
 
 
 def test_legacy_contracts_continue_to_reject_local_volume_options():
@@ -372,7 +410,8 @@ def test_snapshot_and_verify_real_directories_without_mutation(tmp_path):
 
 
 @pytest.mark.skipif(os.name!='posix',reason='Actual bind-backed directory custody requires Linux mount capability')
-def test_actual_bind_backed_volume_snapshot_revalidation_and_drift(tmp_path):
+@pytest.mark.parametrize('options',['driver-bind',None,{}])
+def test_actual_bind_backed_volume_snapshot_revalidation_and_drift(tmp_path,options):
     disk=tmp_path/'disk';backing=disk/'data'/'mysql';backing.mkdir(parents=True)
     source=tmp_path/'volumes'/'mysql'/'_data';source.mkdir(parents=True)
     subprocess.run(['mount','--bind',str(backing),str(source)],check=True,capture_output=True)
@@ -381,13 +420,22 @@ def test_actual_bind_backed_volume_snapshot_revalidation_and_drift(tmp_path):
             Destination='/var/lib/mysql',RW=True)])
         rows=dict(mysql=row)
         definition=dict(Name='mysql',Driver='local',Mountpoint=str(source),
-            Options=dict(type='none',o='bind',device=str(backing)))
+            Options=dict(type='none',o='bind',device=str(backing)) if options=='driver-bind' else options)
         protected=['/mnt/nas',str(tmp_path/'archives'),str(tmp_path/'operations'),str(tmp_path/'states'),str(tmp_path/'target')]
-        data=snapshot_mounts(rows,protected,volume_inspector=lambda name:definition)
+        kwargs=dict(volume_inspector=lambda name:definition)
+        if options!='driver-bind': kwargs['volume_backing_paths']=dict(mysql=str(backing))
+        data=snapshot_mounts(rows,protected,**kwargs)
         assert data['schemaVersion']=='RegisteredReplacementStorage/v2'
         assert data['mounts'][0]['volume']['backing']['inode']==backing.stat().st_ino==source.stat().st_ino
         with pytest.raises(Exception,match='REPLACEMENT_STORAGE_MOUNT_ROOT_REFUSED'):
             snapshot_mounts(rows,protected)
+        if options!='driver-bind':
+            assert data['mounts'][0]['volume']['options']==options
+            with pytest.raises(Exception,match='REPLACEMENT_STORAGE_MOUNT_ROOT_REFUSED'):
+                snapshot_mounts(rows,protected,volume_inspector=lambda name:definition)
+            with pytest.raises(Exception,match='REPLACEMENT_VOLUME_BACKING_INPUT_INVALID'):
+                snapshot_mounts(rows,protected,volume_inspector=lambda name:definition,
+                    volume_backing_paths=dict(mysql=str(backing),unknown=str(backing)))
         n=native(rows);n.root=Path(protected[2])/'op';n.source['archiveRoots']=[protected[1]]
         n.config.update(dataRoot=protected[4],replacement=dict(stateRoot=protected[3]))
         original=n.docker
@@ -401,10 +449,10 @@ def test_actual_bind_backed_volume_snapshot_revalidation_and_drift(tmp_path):
         n2.docker=lambda args:json.dumps([definition]).encode() if args[:2]==['volume','inspect'] else original2(args)
         with pytest.raises(Exception,match='REPLACEMENT_VOLUME_SHARED'):
             verify_storage(n2,value,rows)
-        definition['Options']['o']='bind,rw'
+        saved=definition['Options'];definition['Options']={} if saved is None else None
         with pytest.raises(Exception,match='REPLACEMENT_VOLUME_CONFIGURATION_CHANGED'):
             verify_storage(n,value,rows)
-        definition['Options']['o']='bind'
+        definition['Options']=saved
         data['protectedRoots'].append(str(backing))
         with pytest.raises(Exception,match='REPLACEMENT_PROTECTED_STORAGE_OVERLAP'):
             verify_storage(n,value,rows)
