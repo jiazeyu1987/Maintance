@@ -5701,3 +5701,5 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 
 - 用户询问截图中“未登记目标”的含义。本机只读检索 simple.js、smallapp_simple.py 与 Spug README，未连接服务器、未执行恢复或修改产品。
 - 结论：当前来源/模式/恢复方式下，服务器地址没有绑定对应恢复目标引用；覆盖模式使用 overwriteTargetServers。选项禁用，登记后仍需实际核验；标签本身不代表离线或备份损坏。固定 E: 经验文档不存在，已记录缺口，不执行高风险操作。证据见 doc/tasks/20261104-restore-target-label-explanation/。
+
+- 续问：用户询问指定服务器恢复方法。本机只读核对 simple.js、index.html、配置消费者和 README；确认页面只有选择/确认，无目标登记入口。先由管理员准备并登记目标及服务器映射，再刷新、选备份恢复点/安全模式/方式/目标、核验并确认执行；覆盖会替换目标既有数据，执行后仍需业务验收。未执行恢复、未读取私密配置或访问服务器。
