@@ -1,0 +1,21 @@
+# 执行记录
+
+- 用户需求：改名为“来源地址”和“还原到地址”；来源不可更改，只读。
+- 范围：本地恢复表单与必要测试、文档；不操作服务器或执行备份恢复。
+- 前序任务已完成。只读 UTF-8 bootstrap 已完成；E:\IntRuoyi\docs\powershell-memory.md 在本机不存在。
+- BDD: 恢复地址显示 -> Given 从既定服务器打开恢复窗口，When 展示恢复表单，Then 来源显示为“来源地址”且值不可编辑，目标显示为“还原到地址”并保持可选择。
+- BDD: 状态刷新 -> Given 恢复来源已固定，When 刷新配置或渲染操作状态，Then 来源仍不可更改且请求保留原来源。
+- BDD: 备份入口回归 -> Given 用户在备份界面选择服务器，When 进入恢复窗口再退出，Then 恢复窗口锁定来源且备份界面按原用途选择来源。
+- Preflight：发现迁移后的共同文档位于 C:\Users\D01021\Documents\ChatGPT\IntRuoyi\docs，已定向读取 worktree-memory.md、powershell-memory.md 和 release-backup-restore.md 的按钮入口门禁。原 D:\ProjectPackage 前端样式文件不存在；本次沿用既有布局，仅改文案及原控件禁用状态，不创建或重设计表单。
+- 工作区：新建本任务 managed worktree C:\Users\D01021\.codex\worktrees\restore-address-readonly\Maintance；基线 729a232；分支 codex/restore-address-readonly-20261104。只修改维护仓，不涉及前后端配对仓、端口槽位或运行服务。
+- RED: node --test --test-name-pattern='restore form distinguishes|restore keeps its source|refreshing restore configuration' ops/spug/smallapp_ui_safety.test.cjs -> FAIL，3/3 预期失败：来源旧名称、恢复来源 disabled=false、刷新后来源 disabled=false。
+- 测试性质：沿用现有 Node VM 状态渲染单元测试，不是 E2E，不执行网络、备份或恢复；固定输入仅用于单元测试，不冒充真实业务验证。
+- GREEN: 同一新增场景命令 -> PASS，3/3；来源地址在恢复模式禁用，状态刷新不会解锁；还原目标仍可选，sourceConfigRef/targetConfigRef 保持正确。
+- REGRESSION: node --test ops/spug/smallapp_ui_safety.test.cjs ops/spug/smallapp_restore_result.test.cjs -> PASS，42/42，退出码 0，无跳过。
+- Current Status: ready_for_closeout；实现验证完成，待实现提交、融合验证与本任务 worktree 删除。
+- GREEN: experience-preflight -> PASS；融合/清理前已核对归属：仅本任务 managed worktree；实现仅有 index.html、simple.js、smallapp_ui_safety.test.cjs，任务记录单独收尾；主工作区无这些实现文件既有改动，不触碰其它任务 worktree 或现有脏记录。
+- 实现提交：4d10f61（任务: 明确恢复地址并锁定来源），仅三个实现/测试文件；已 fast-forward 合回主工作区 int_main。
+- REGRESSION: 主工作区在融合结果上再次执行两个受影响 Node 测试文件 -> PASS，42/42；merge-base 确认 4d10f61 已包含。
+- 托管归档返回 “The task's primary checkout cannot be removed.”；主工作区是非托管 checkout，attach 返回不可附加。未使用强制删除；改用 Git 自身的 worktree remove，执行前确认该目录是本任务附加工作树而非 Git 主工作树、实现已合入，两个自有未提交记录已逐文件 SHA 校验保存在主工作区。所有后续命令显式使用主工作区路径。
+- Closeout: Git common-dir 为主工作区 .git、任务目录 .git 为附加工作树指针；确认仅有两个自有未提交任务记录，主工作区内容完整保存后，仅移除这两个自有副本，再执行 git worktree remove（无 --force）-> PASS；Git 注册移除且物理目录不存在。
+- Final: completed；本地实现已融合，42/42 回归通过，其他并发任务和工作树未触碰；未启动/重启服务，未更新运行副本，未执行真实恢复或 E2E。
