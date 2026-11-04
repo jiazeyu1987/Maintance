@@ -5696,3 +5696,8 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 
 - 用户询问后端单 JAR 补丁对后续完整发布的影响。本机只读确认现有完整发布继承旧启动配置与挂载，若挂载补丁 JAR，可能遮盖新镜像程序。
 - 结论：须随 JAR 通道同步适配源码包含、实际制品起点、程序挂载/入口切换、恢复及清理保护；成功后新完整包吸收修复、保留历史，失败可恢复原基础版本加补丁。详见 doc/tasks/20261102-post-release-auto-cleanup/jar-only-feasibility.md；尚未实现或远端验证。
+
+# 20261104 恢复服务器“未登记目标”说明
+
+- 用户询问截图中“未登记目标”的含义。本机只读检索 simple.js、smallapp_simple.py 与 Spug README，未连接服务器、未执行恢复或修改产品。
+- 结论：当前来源/模式/恢复方式下，服务器地址没有绑定对应恢复目标引用；覆盖模式使用 overwriteTargetServers。选项禁用，登记后仍需实际核验；标签本身不代表离线或备份损坏。固定 E: 经验文档不存在，已记录缺口，不执行高风险操作。证据见 doc/tasks/20261104-restore-target-label-explanation/。
