@@ -2,6 +2,7 @@
 import copy
 import json
 import os
+import subprocess
 from pathlib import Path
 import sys
 from types import SimpleNamespace
@@ -69,6 +70,97 @@ def test_mountinfo_preserves_unrelated_windows_backslash_source():
     rows=parse_mountinfo('40 1 8:1 / / rw - ext4 /dev/sda1 rw\n'
         '41 40 0:100 / /host rw - 9p C:\\134Users rw\n')
     assert rows[1]['source']=='C:\\Users'
+
+
+def test_nsfs_namespace_root_is_preserved_but_not_valid_data_storage():
+    rows=parse_mountinfo('40 1 8:1 / / rw - ext4 /dev/sda1 rw\n'
+        '41 40 0:4 net:[4026533000] /run/docker/netns/example rw - nsfs nsfs rw\n')
+    assert rows[1]['root']=='net:[4026533000]'
+    assert rows[1]['mountPoint']=='/run/docker/netns/example'
+    data=contract();data['mounts'][0]['mountIdentity']=rows[1]
+    with pytest.raises(Exception,match='REPLACEMENT_FILESYSTEM_UNSUPPORTED'):
+        validate_storage(data)
+
+
+@pytest.mark.parametrize('filesystem,root',[('ext4','net:[4026533000]'),('nsfs','anything'),
+    ('nsfs','net:[not-an-inode]')])
+def test_only_recognized_nsfs_namespace_roots_may_be_nonabsolute(filesystem,root):
+    with pytest.raises(Exception):
+        parse_mountinfo(f'40 1 8:1 {root} /run/example rw - {filesystem} nsfs rw\n')
+
+
+def bind_volume_contract():
+    data=contract();data['schemaVersion']='RegisteredReplacementStorage/v2'
+    for i,item in enumerate(data['mounts']):
+        role=item['role'];source='/volumes/'+role+'/_data';backing='/disk/data/'+role
+        item.update(type='volume',source=source,mountIdentity=identity(
+            mountId=100+i,parentId=40,root='/data/'+role,mountPoint=source))
+        item['volume']=dict(name=role,driver='local',options=dict(type='none',o='bind',device=backing),
+            mountpoint=source,backing=dict(source=backing,device=item['device'],inode=item['inode'],
+                mountIdentity=identity(mountPoint='/disk')))
+    return data
+
+
+def test_explicit_bind_backed_volume_contract_accepts_only_pinned_local_directory():
+    data=bind_volume_contract()
+    assert validate_storage(data)==data
+    old=copy.deepcopy(data);old['schemaVersion']='RegisteredReplacementStorage/v1'
+    with pytest.raises(Exception,match='REPLACEMENT_STORAGE_CONFIGURATION_INVALID'):
+        validate_storage(old)
+
+
+@pytest.mark.parametrize('change',['filesystem-root','source-root','inode','device','physical-alias',
+    'remote','rbind','read-only','duplicate-options','option-extra','device-root','protected-backing','shared-backing'])
+def test_bind_backed_volume_rejects_unsafe_or_mismatched_contract(change):
+    data=bind_volume_contract();item=data['mounts'][0];volume=item['volume'];backing=volume['backing']
+    if change=='filesystem-root':
+        backing['source']=volume['options']['device']='/disk'
+    elif change=='source-root': item['mountIdentity']['root']='/'
+    elif change=='inode': backing['inode']+=1
+    elif change=='device': backing['device']+=1
+    elif change=='physical-alias': backing['source']=volume['options']['device']='/disk/elsewhere'
+    elif change=='remote': volume['options']['type']='nfs'
+    elif change=='rbind': volume['options']['o']='rbind'
+    elif change=='read-only': volume['options']['o']='bind,ro'
+    elif change=='duplicate-options': volume['options']['o']='bind,bind'
+    elif change=='option-extra': volume['options']['addr']='172.30.30.4'
+    elif change=='device-root': backing['source']=volume['options']['device']='/dev'
+    elif change=='protected-backing': data['protectedRoots'].append(backing['source'])
+    elif change=='shared-backing': data['mounts'][1]=copy.deepcopy(item);data['mounts'][1]['role']='minio'
+    with pytest.raises(Exception): validate_storage(data)
+
+
+def test_snapshot_requires_explicit_inspector_for_versioned_volume_definitions(monkeypatch):
+    import recovery_replacement_storage as module
+    data=bind_volume_contract();observations={}
+    rows=service_rows(data);definitions={}
+    for item in data['mounts']:
+        volume=item['volume'];backing=volume['backing']
+        rows[item['role']]['Mounts'][0]['Name']=volume['name']
+        observations[item['source']]={k:item[k] for k in ('device','inode','mountIdentity')}
+        observations[backing['source']]={k:backing[k] for k in ('device','inode','mountIdentity')}
+        definitions[volume['name']]=dict(Name=volume['name'],Driver='local',Options=volume['options'],
+            Mountpoint=volume['mountpoint'])
+    def observe(path,*,backing=None):
+        if path in [item['source'] for item in data['mounts']]:
+            assert backing is not None
+        return observations[path]
+    monkeypatch.setattr(module,'observe_directory',observe)
+    assert snapshot_mounts(rows,data['protectedRoots'],volume_inspector=lambda name:definitions[name])==data
+    with pytest.raises(AssertionError): snapshot_mounts(rows,data['protectedRoots'])
+
+
+def test_legacy_contracts_continue_to_reject_local_volume_options():
+    from recovery_replacement_storage import _volume
+    rows=volume_rows();n=native(rows);original=n.docker
+    def docker(args):
+        if args[:2]==['volume','inspect']:
+            return json.dumps([dict(Name='mysql',Driver='local',Mountpoint='/volumes/mysql',
+                Options=dict(type='none',o='bind',device='/data/mysql'))]).encode()
+        return original(args)
+    n.docker=docker
+    with pytest.raises(Exception,match='REPLACEMENT_STORAGE_INVALID'):
+        _volume(n,rows['mysql']['Mounts'][0])
 
 
 @pytest.mark.parametrize('raw',['','bad row','x 1 8:1 / / rw - ext4 /dev/a rw',
@@ -277,3 +369,60 @@ def test_snapshot_and_verify_real_directories_without_mutation(tmp_path):
     rows['minio']['Mounts'][0]['Source']=str(tmp_path/'other')
     with pytest.raises(Exception,match='REPLACEMENT_STORAGE_BINDING_CHANGED'):
         verify_storage(n,value,rows)
+
+
+@pytest.mark.skipif(os.name!='posix',reason='Actual bind-backed directory custody requires Linux mount capability')
+def test_actual_bind_backed_volume_snapshot_revalidation_and_drift(tmp_path):
+    disk=tmp_path/'disk';backing=disk/'data'/'mysql';backing.mkdir(parents=True)
+    source=tmp_path/'volumes'/'mysql'/'_data';source.mkdir(parents=True)
+    subprocess.run(['mount','--bind',str(backing),str(source)],check=True,capture_output=True)
+    try:
+        row=dict(Id='mysql-id',Mounts=[dict(Type='volume',Name='mysql',Source=str(source),
+            Destination='/var/lib/mysql',RW=True)])
+        rows=dict(mysql=row)
+        definition=dict(Name='mysql',Driver='local',Mountpoint=str(source),
+            Options=dict(type='none',o='bind',device=str(backing)))
+        protected=['/mnt/nas',str(tmp_path/'archives'),str(tmp_path/'operations'),str(tmp_path/'states'),str(tmp_path/'target')]
+        data=snapshot_mounts(rows,protected,volume_inspector=lambda name:definition)
+        assert data['schemaVersion']=='RegisteredReplacementStorage/v2'
+        assert data['mounts'][0]['volume']['backing']['inode']==backing.stat().st_ino==source.stat().st_ino
+        with pytest.raises(Exception,match='REPLACEMENT_STORAGE_MOUNT_ROOT_REFUSED'):
+            snapshot_mounts(rows,protected)
+        n=native(rows);n.root=Path(protected[2])/'op';n.source['archiveRoots']=[protected[1]]
+        n.config.update(dataRoot=protected[4],replacement=dict(stateRoot=protected[3]))
+        original=n.docker
+        n.docker=lambda args:json.dumps([definition]).encode() if args[:2]==['volume','inspect'] else original(args)
+        value=dict(schemaVersion='RegisteredApplicationReplacement/v2',storage=data)
+        assert verify_storage(n,value,rows)=={str(source):'mysql-id'}
+        # The other container's ordinary bind source aliases the same physical data.
+        other=dict(Id='stopped-id',Mounts=[dict(Source=str(backing),RW=True)])
+        n2=native(rows,others={'stopped-id':other});n2.root=n.root;n2.source=n.source;n2.config=n.config
+        original2=n2.docker
+        n2.docker=lambda args:json.dumps([definition]).encode() if args[:2]==['volume','inspect'] else original2(args)
+        with pytest.raises(Exception,match='REPLACEMENT_VOLUME_SHARED'):
+            verify_storage(n2,value,rows)
+        definition['Options']['o']='bind,rw'
+        with pytest.raises(Exception,match='REPLACEMENT_VOLUME_CONFIGURATION_CHANGED'):
+            verify_storage(n,value,rows)
+        definition['Options']['o']='bind'
+        data['protectedRoots'].append(str(backing))
+        with pytest.raises(Exception,match='REPLACEMENT_PROTECTED_STORAGE_OVERLAP'):
+            verify_storage(n,value,rows)
+        data['protectedRoots'].pop()
+        data['mounts'][0]['volume']['backing']['inode']+=1
+        with pytest.raises(Exception,match='REPLACEMENT_VOLUME_BACKING_CHANGED'):
+            verify_storage(n,value,rows)
+    finally:
+        subprocess.run(['umount',str(source)],check=True,capture_output=True)
+
+
+@pytest.mark.skipif(os.name!='posix',reason='Actual directory observation requires Linux')
+def test_nsfs_nested_or_selected_is_rejected_without_dropping_mountinfo(tmp_path):
+    root=tmp_path/'data';root.mkdir();child=root/'namespace';child.mkdir()
+    actual=observe_directory(str(root))['mountIdentity']
+    raw=f"{actual['mountId']} 1 {actual['device']} {actual['root']} {actual['mountPoint']} rw - {actual['filesystem']} {actual['source']} rw\n"
+    raw+=f"999999 {actual['mountId']} 0:4 net:[4026533000] {child} rw - nsfs nsfs rw\n"
+    with pytest.raises(Exception,match='REPLACEMENT_STORAGE_NESTED_MOUNT'):
+        observe_directory(str(root),raw)
+    with pytest.raises(Exception,match='REPLACEMENT_FILESYSTEM_UNSUPPORTED'):
+        observe_directory(str(child),raw)
