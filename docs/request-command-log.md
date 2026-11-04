@@ -5705,3 +5705,20 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 续问：用户询问指定服务器恢复方法。本机只读核对 simple.js、index.html、配置消费者和 README；确认页面只有选择/确认，无目标登记入口。先由管理员准备并登记目标及服务器映射，再刷新、选备份恢复点/安全模式/方式/目标、核验并确认执行；覆盖会替换目标既有数据，执行后仍需业务验收。未执行恢复、未读取私密配置或访问服务器。
 
 - 新截图：用户从 localhost:18080 全部包清单点击正式服全量备份恢复，覆盖模式无可用目标。本机 Docker 只读核对端口、nginx alias、真实 UI 源码与运行配置的公开字段：18080 为 transfer 实例，UI 位于 C:/Spug/runtime；清单固定 packageId 并默认 safe/replace，当前 .57 safe 的 overwriteTargetServers 为空，故阻止恢复。归档 indexed/COMPLETE 不等于恢复目标可用；未改配置、未执行恢复、未访问远端。已询问目标服务器及方式，登记与恢复范围尚待明确。完整证据见本任务 execution-log.md。
+
+
+## 2026-11-04 Spug三服恢复目标本机补齐
+- 用户要求：三服按次可选，正式服后续新备份自动可选恢复；已授权三服只读检查，服务器安装/数据恢复尚未授权。
+- 命令意图：在独立任务worktree以BDD/TDD补主实例v2存储、safe运行合同、动态归档目录、按目标只读检查及登记计划生成器；没有连接其他应用接口或执行服务器写入。
+- 验证：Linux234项通过；最后主实例Windows/Linux各29项通过；Windows safe/lightweight包及相关合同55项通过；Spug44项、JS42项、本地HTTP1项通过；diff --check通过。此前Windows Linux专用测试、Linux依赖/overlay/Git路径失败如实保留后改到正确平台验证，未静默跳过。
+- 状态：本机实现保留未提交；服务器安装授权已询问，未收到答复。正式服load约1376、backend只读inspect超时仍阻断就绪；未修复、重启或恢复，不宣称完成。工作区为C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance，分支codex/spug-selectable-restore-targets-20261104，base=9a62391。
+- 安装范围和待验前提：doc/tasks/20261104-spug-selectable-restore-targets/installation-plan.md。所有凭据保留于私密目录，无凭据内容进入本记录。
+
+
+## 2026-11-04 Spug恢复目标安装与收尾结果
+- 用户需求与授权：三服按次选择；已授权三服只读、控制组件和登记安装及本地Spug更新，不执行恢复；已确认所列EDHR MinIO账号仅供主程序使用。正式服前置失败时保持禁用，不包含业务异常修复或业务/数据容器停启。
+- 命令意图：从已提交快照在本任务临时发布worktree构建安全包，安装只归属本任务的控制服务和严格主实例合同；定向增加.58/.59路由、独立持久SSH通道及登录启动项。保留现有UI和其它任务、业务、NAS及历史记录。
+- 验证：三服各121程序文件SHA读回相同；.58/.59认证所选目标准入通过、服务active、operation/claim均0、业务容器StartedAt不变；Playwright真实登录后两目标选择/覆盖确认/取消PASS，无恢复提交。合并后Python137 PASS，7项Windows POSIX检查已有同实现Linux98 PASS/0skip；Spug45 PASS、JS42 PASS。
+- 融合与清理：实现e1389aa已fast-forward至int_main，未纳入1692项既有脏路径；本任务两个clean临时发布checkout均无新提交，已核祖先关系、无进程引用并删除Git注册和物理checkout。稳定控制通道不依赖临时目录，开发worktree为未完成正式准入保留。实现与最终记录分开提交。
+- 明确阻塞：.57最新load约1553，精确backend inspect 4秒超时；正式目标未登记、禁用，没有执行主程序修复。因此当前仅测试服.58、备份服.59可选，不能称三服全部可恢复。本记录取代此前“尚未授权/账号归属未知/尚未安装”的历史结论；任务blocked仅针对剩余正式目标准入。
+- 证据：doc/tasks/20261104-spug-selectable-restore-targets/；凭据、运行配置与原始私密日志均未进入Git。

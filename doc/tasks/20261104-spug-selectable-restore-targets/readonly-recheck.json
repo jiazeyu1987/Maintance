@@ -1,0 +1,138 @@
+[
+  {
+    "host": "172.30.30.57",
+    "load": "1376.64 1372.47 1361.79 3/5593 28210",
+    "containers": [
+      {
+        "name": "intruoyi-backend",
+        "error": "timeout"
+      },
+      {
+        "name": "intruoyi-mysql",
+        "id": "9a288d20d254366e99b265b1870466e974edf23e7aab60de2391e3a38e62fff6",
+        "imageId": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+        "running": true,
+        "restarting": false,
+        "exitCode": 0,
+        "health": "healthy",
+        "mountTypes": [
+          "bind"
+        ]
+      },
+      {
+        "name": "ragflow_compose-minio-1",
+        "id": "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf",
+        "imageId": "sha256:c4260bcf2c25b683e4f6e6ed6474f12c5c28dc8e375bfe0ecea7a5d3fbecbc04",
+        "running": true,
+        "restarting": false,
+        "exitCode": 0,
+        "health": null,
+        "mountTypes": [
+          "bind"
+        ]
+      }
+    ],
+    "canonicalPaths": {
+      "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging": {
+        "exists": true,
+        "directory": true
+      },
+      "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/source-scope.json": {
+        "exists": true,
+        "directory": false
+      },
+      "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/source-identity.json": {
+        "exists": true,
+        "directory": false
+      }
+    }
+  },
+  {
+    "host": "172.30.30.58",
+    "load": "5.78 6.01 6.12 18/7639 30274",
+    "containers": [
+      {
+        "name": "brlab-prod57-nas-test58-20261020-r3-backend",
+        "id": "6f70e67078d086d7f08c1ae75a80bb0feab28c5a1f92c91d655ac258f34988eb",
+        "imageId": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+        "running": true,
+        "restarting": false,
+        "exitCode": 0,
+        "health": "healthy",
+        "mountTypes": [
+          "bind"
+        ]
+      },
+      {
+        "name": "intruoyi-july-unified-58-frontend",
+        "id": "4f9775e6f0a1d86b2d06c69e40504a91cf44a613de458b76e69fa04805ca5d73",
+        "imageId": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a",
+        "running": true,
+        "restarting": false,
+        "exitCode": 0,
+        "health": "healthy",
+        "mountTypes": [
+          "bind"
+        ]
+      }
+    ],
+    "canonicalPaths": {
+      "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging": {
+        "exists": true,
+        "directory": true
+      },
+      "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/source-scope.json": {
+        "exists": true,
+        "directory": false
+      },
+      "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/source-identity.json": {
+        "exists": true,
+        "directory": false
+      }
+    }
+  },
+  {
+    "host": "172.30.30.59",
+    "load": "0.60 1.22 1.30 2/5134 8674",
+    "containers": [
+      {
+        "name": "intruoyi-prod-nas-restore59-20261020-backend",
+        "id": "285244884c5e056ce1e37d073a9356c9dd34e9d97dc8ea3af07183b9929c79d8",
+        "imageId": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+        "running": true,
+        "restarting": false,
+        "exitCode": 0,
+        "health": "healthy",
+        "mountTypes": [
+          "bind"
+        ]
+      },
+      {
+        "name": "intruoyi-july-unified-59-frontend-r2",
+        "id": "82b9982178e4ea002b25f8cce70b621e29f4af452df7be42d2efc699191ca193",
+        "imageId": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a",
+        "running": true,
+        "restarting": false,
+        "exitCode": 0,
+        "health": "healthy",
+        "mountTypes": [
+          "bind"
+        ]
+      }
+    ],
+    "canonicalPaths": {
+      "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging": {
+        "exists": true,
+        "directory": true
+      },
+      "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/source-scope.json": {
+        "exists": true,
+        "directory": false
+      },
+      "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/source-identity.json": {
+        "exists": true,
+        "directory": false
+      }
+    }
+  }
+]
