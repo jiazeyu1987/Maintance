@@ -6,7 +6,7 @@ $runtimeRoot = 'C:\Spug\runtime\private\restore-targets-20261104'
 $identityFile = 'C:/SpugHandoff/release/private/sshIdentityFile'
 $knownHostsFile = 'C:/SpugHandoff/release/private/sshKnownHostsFile'
 $sshExecutable = 'C:\Windows\System32\OpenSSH\ssh.exe'
-$controlPort = '336' + $Target
+$controlPort = if ($Target -eq '58') { '33758' } else { '33659' }
 $sshPort = '185' + $Target
 $mutex = [System.Threading.Mutex]::new($false, 'Local\SpugMainRestoreTransport20261104_' + $Target)
 if (-not $mutex.WaitOne(0)) { throw 'RESTORE_TRANSPORT_ALREADY_RUNNING' }
