@@ -187,7 +187,15 @@ class Native:
         program = 'repository'
         point_pin = None
         reference = value['parentChainRef'] if value['action'] == 'INCREMENTAL' else value['recoveryPointRef']
-        if reference is not None:
+        # Dynamic archive catalogues are explicit owner inputs. Cross-server
+        # restores must not require copying a point selector after every backup.
+        dynamic_restore = False
+        if value['action'] == 'RESTORE':
+            configured = config['restoreConfigurations'].get(value['sourceConfigRef'], {})
+            if value['targetConfigRef'] in configured:
+                candidate = self.document(configured[value['targetConfigRef']])
+                dynamic_restore = 'archiveCatalogue' in candidate['sources'][value['sourceConfigRef']]
+        if reference is not None and not dynamic_restore:
             point_pin = self.point(config, reference, value['sourceConfigRef'])
         if value['action'] == 'RESTORE':
             matches = [target for target in registered['allowedRestoreTargets']
@@ -204,9 +212,18 @@ class Native:
         # Owner configuration is interpreted by the real owner CLI, not by a
         # parallel W01 capture/restore implementation. FULL resolves no target.
         self.document(owner_configuration)
+        if value['action'] == 'RESTORE':
+            target = self.document(owner_configuration)['targets'][value['targetConfigRef']]
+            if 'mainApplication' in target:
+                from recovery_minimal_runtime import MinimalData
+                need(getattr(MinimalData, 'supports_registered_main_targets', False) is True,
+                     'MAIN_RESTORE_REQUIRES_SAFE_ENGINE')
         if value['action'] in ('FULL', 'INCREMENTAL'):
             from recovery_control_capture_config import for_request
             owner_configuration = for_request(self, config, value, owner_configuration, point_pin)
+        elif dynamic_restore:
+            from recovery_control_restore_catalogue import for_request
+            owner_configuration, point_pin = for_request(self, config, value, owner_configuration)
         return dict(schemaVersion='SmallAppResolvedSelection/v2', configurationPin=self.config_pin,
             registrationPin=registration_pin, ownerConfigurationPin=owner_configuration,
             ownerProgramPin=config['programPins'][program], pointBindingPin=point_pin)
@@ -418,6 +435,9 @@ class Native:
     def restore_target_observation(self, value, selection):
         """Capture only identity and state, never container environment secrets."""
         target = self.document(selection['ownerConfigurationPin'])['targets'][value['targetConfigRef']]
+        if 'mainApplication' in target:
+            from recovery_main_target import observe_main_target
+            return observe_main_target(self, value, selection)
         executor.verify(target['dockerPin'])
         services = {row['id']: row for row in target['services']}
         need(services and len(services) == len(target['services']) and
@@ -850,7 +870,7 @@ class Native:
             os.close(fd)
         return dict(applicationId=value['applicationId'], metadataImported=True)
 
-    def selections(self):
+    def selections(self, selected_target=None):
         from recovery_control_registration import blocked_choice
         config = self.configuration()
         rows = []
@@ -892,6 +912,7 @@ class Native:
             from recovery_control_target_availability import available
             row['freshTargetConfigRefs'] = [target['configRef'] for target in registered['allowedRestoreTargets']
                 if type(targets) is dict and target['configRef'] in targets and
-                available(self, targets[target['configRef']], target['configRef'], source_ref)]
+                available(self, targets[target['configRef']], target['configRef'], source_ref,
+                          observe_main=target['configRef'] == selected_target)]
             rows.append(row)
         return dict(observedAt=datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'), applications=rows)

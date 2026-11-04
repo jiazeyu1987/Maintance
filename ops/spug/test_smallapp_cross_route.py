@@ -10,6 +10,14 @@ import smallapp_entry as entry
 
 
 class CrossRestoreRouting(unittest.TestCase):
+    def test_selected_target_requests_only_its_live_availability(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source=self.fixture(Path(folder));target=source.for_request(self.request('RESTORE'))
+            response=dict(observedAt=entry.now(),applications=[])
+            with patch.object(target,'call',return_value=response) as call:
+                target._local_selections()
+                call.assert_called_once_with('http://127.0.0.1:18558/selections?targetConfigRef=test-target')
+
     def fixture(self, root):
         adapter.write_json(root/'auth.json', {'headers': {}})
         def connection(port, sources, targets):

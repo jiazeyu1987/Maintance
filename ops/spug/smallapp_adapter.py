@@ -264,7 +264,10 @@ class HttpBridge:
         if ((parsed.scheme, parsed.hostname, parsed.port) != self.origin or parsed.username or
                 parsed.password or parsed.query or parsed.fragment or parsed.path != '/selections'):
             raise Refused('W01_SELECTION_ENDPOINT_OUTSIDE_BINDING')
-        payload = self.call(self.selection_url)
+        endpoint = self.selection_url
+        if self.selected_target is not None:
+            endpoint += '?targetConfigRef=' + urllib.parse.quote(self.selected_target, safe='')
+        payload = self.call(endpoint)
         if (not isinstance(payload, dict) or set(payload) != {'observedAt', 'applications'} or
                 not isinstance(payload['applications'], list) or
                 any(not isinstance(row, dict) or not reference(row.get('sourceConfigRef'))

@@ -47,15 +47,20 @@ def preserve_binary_logging(native, path, checksum):
 
 def validate(target):
     value = target['replacement']
-    require(set(value) == {'schemaVersion', 'stateRoot', 'lockPath', 'databaseUuid', 'services'},
+    version = value.get('schemaVersion')
+    require(version in ('RegisteredApplicationReplacement/v1', 'RegisteredApplicationReplacement/v2') and
+            set(value) == {'schemaVersion', 'stateRoot', 'lockPath', 'databaseUuid', 'services'} |
+            ({'storage'} if version == 'RegisteredApplicationReplacement/v2' else set()),
             'REPLACEMENT_CONFIGURATION_INVALID')
-    require(value['schemaVersion'] == 'RegisteredApplicationReplacement/v1' and
-            re.fullmatch('[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', value['databaseUuid']),
+    require(re.fullmatch('[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', value['databaseUuid']),
             'REPLACEMENT_CONFIGURATION_INVALID')
+    if version == 'RegisteredApplicationReplacement/v2':
+        from recovery_replacement_storage import validate_storage
+        validate_storage(value['storage'])
     require(set(value['services']) == {row['role'] for row in target['services']},
             'REPLACEMENT_SERVICES_INVALID')
     require(target['database'] not in {'mysql', 'sys', 'information_schema', 'performance_schema'} and
-            re.fullmatch('[A-Za-z][A-Za-z0-9_]{0,63}', target['database']), 'REPLACEMENT_DATABASE_INVALID')
+            re.fullmatch('[A-Za-z][A-Za-z0-9_-]{0,63}', target['database']), 'REPLACEMENT_DATABASE_INVALID')
     database = target['redisRebuild']['database']
     require(type(database) is int and 0 <= database < 16, 'REPLACEMENT_REDIS_DATABASE_INVALID')
     state, lock = absolute(value['stateRoot']), absolute(value['lockPath'])
@@ -78,7 +83,7 @@ def verify_services(native, value):
             'REPLACEMENT_MACHINE_CHANGED')
     info = json.loads(native.docker(['info', '--format', '{{json .}}']))
     require(info['ID'] == native.config['dockerEngineId'], 'REPLACEMENT_DOCKER_ENGINE_CHANGED')
-    writable = {}
+    rows = {}
     for role, expected in value['services'].items():
         row = native.inspect(expected['id'])
         require(row['Id'] == native.config_services[role]['id'] == expected['id'] and
@@ -87,19 +92,9 @@ def verify_services(native, value):
                 sorted(row['Mounts'], key=lambda m:m['Destination']) == expected['mounts'] and
                 not row['HostConfig']['Privileged'] and not row['State']['Paused'] and
                 not row['State']['Restarting'], 'REPLACEMENT_TARGET_IDENTITY_CHANGED')
-        for mount in row['Mounts']:
-            if not mount['RW']:
-                continue
-            require(role in {'mysql', 'minio', 'redis'} and mount['Type'] == 'volume' and
-                    mount['Source'] not in writable, 'REPLACEMENT_STORAGE_INVALID')
-            volume = json.loads(native.docker(['volume', 'inspect', mount['Name']]))[0]
-            require(volume['Driver'] == 'local' and not volume['Options'] and
-                    volume['Mountpoint'] == mount['Source'], 'REPLACEMENT_STORAGE_INVALID')
-            writable[mount['Source']] = row['Id']
-    for identity in native.docker(['ps', '--all', '--no-trunc', '--format', '{{.ID}}']).decode().splitlines():
-        for mount in native.inspect(identity)['Mounts']:
-            require(mount['Source'] not in writable or writable[mount['Source']] == identity or not mount['RW'],
-                    'REPLACEMENT_VOLUME_SHARED')
+        rows[role] = row
+    from recovery_replacement_storage import verify_storage
+    writable = verify_storage(native, value, rows)
     require(native.database_uuid() == value['databaseUuid'], 'REPLACEMENT_DATABASE_CHANGED')
     mounts = [m for m in value['services']['minio']['mounts']
               if m['Destination'] == native.policy['minioDataMount']]
@@ -109,6 +104,8 @@ def verify_services(native, value):
 
 def prepare(native, value):
     from recovery_data_files import apply_tree, inventory
+    if hasattr(native, 'replacement_preflight'):
+        native.replacement_preflight()
     verify_services(native, value)
     require(native.mysql.query('SELECT @@GLOBAL.log_bin;').strip() == '1',
             'REPLACEMENT_BINARY_LOGGING_REQUIRED')
@@ -122,15 +119,18 @@ def prepare(native, value):
     # Inspect the declared application schema before its explicit replacement.
     database = native.config['database']
     native.mysql.query('SHOW FULL TABLES FROM `'+database+'`;')
+    verify_services(native, value)
     native.mutation_dispatched = True
     native.mysql.query('DROP DATABASE `'+database+'`; CREATE DATABASE `'+database+'`;')
     mount = [m for m in value['services']['minio']['mounts'] if m['Destination'] == native.policy['minioDataMount']]
     require(len(mount) == 1 and mount[0]['RW'], 'REPLACEMENT_STORAGE_INVALID')
     root = absolute(mount[0]['Source'])
     before = inventory(root, native.guard, content=False)
+    verify_services(native, value)
     apply_tree(root, before, {}, {}, full=False, guard=native.guard, verify_content=False)
     # Clear only the registered application Redis database. Password stays on stdin.
     database = native.config['redisRebuild']['database']
+    verify_services(native, value)
     script = 'IFS= read -r REDISCLI_AUTH; export REDISCLI_AUTH; exec "$@"'
     native.docker(['exec', '-i', native.config_services['redis']['id'], 'sh', '-ec', script,
                   'recovery-redis', native.config['redisClientPath'], '-n', str(database), 'FLUSHDB'],

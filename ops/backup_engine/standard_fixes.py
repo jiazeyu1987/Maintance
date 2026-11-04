@@ -66,6 +66,7 @@ def apply(payload):
             owner_configuration = for_request(self, config, value, owner_configuration, point_pin)
         return dict(schemaVersion=""")
     payload['control/recovery_control_capture_config.py'] = (root/'backend/src/main/resources/recovery_control_capture_config.py').read_bytes()
+    payload['control/recovery_control_restore_catalogue.py'] = (root/'backend/src/main/resources/recovery_control_restore_catalogue.py').read_bytes()
     replace('control/recovery_control_smallapp_native.py',
         "            row['freshTargetConfigRefs'] = [target['configRef'] for target in registered['allowedRestoreTargets']\n                if type(targets) is dict and target['configRef'] in targets]",
         """            from recovery_control_target_availability import available
@@ -186,8 +187,58 @@ def apply(payload):
             publisher.reader.close()
 ''')
     name = 'common/recovery_minimal_runtime.py'
+    replace('common/recovery_minimal_plan.py',
+        'def target_configuration(configuration, request, source):\n',
+        '''def target_configuration(configuration, request, source):
+    from recovery_main_target import enabled, target_configuration as registered_main
+    if enabled(configuration['targets'][request['targetConfigRef']]):
+        return registered_main(configuration, request, source)
+''')
+    replace(name,
+        "        require(self.db_uuid != self.material['sourceDatabaseUuid'], 'SOURCE_DATABASE_TARGET_REJECTED')",
+        "        from recovery_main_target import database_identity\n        database_identity(self)")
+    replace('common/recovery_data.py',
+        "        require(endpoint not in pinned_json(self.material['sourceScopePin'])['endpointHosts'], 'SOURCE_ENDPOINT_REJECTED')",
+        "        from recovery_main_target import object_endpoint\n        object_endpoint(self, endpoint)")
+    replace(name,
+        '''        mounts = [item for item in row['Mounts'] if item['Destination'] == self.policy['minioDataMount']]
+        require(len(mounts) == 1 and mounts[0]['Type'] == 'volume' and mounts[0]['RW'],
+                'DEDICATED_MINIO_DATA_VOLUME_REQUIRED')
+        mount = mounts[0]
+        volume = json.loads(self.docker(['volume', 'inspect', mount['Name']]))[0]
+        require(volume['Driver'] == 'local' and not volume['Options'] and volume['Mountpoint'] == mount['Source'],
+                'PHYSICAL_TARGET_VOLUME_INVALID')
+''',
+        '''        from recovery_main_target import enabled, physical_mount
+        if enabled(self.config):
+            mount = physical_mount(self, row)
+        else:
+            mounts = [item for item in row['Mounts'] if item['Destination'] == self.policy['minioDataMount']]
+            require(len(mounts) == 1 and mounts[0]['Type'] == 'volume' and mounts[0]['RW'],
+                    'DEDICATED_MINIO_DATA_VOLUME_REQUIRED')
+            mount = mounts[0]
+            volume = json.loads(self.docker(['volume', 'inspect', mount['Name']]))[0]
+            require(volume['Driver'] == 'local' and not volume['Options'] and volume['Mountpoint'] == mount['Source'],
+                    'PHYSICAL_TARGET_VOLUME_INVALID')
+''')
+    replace(name,
+        '''        for identity in self.docker(['ps', '--all', '--no-trunc', '--format', '{{.ID}}']).decode().splitlines():
+            if identity != row['Id']:
+                require(all(item.get('Name') != mount['Name'] and item['Source'] != mount['Source']
+                    for item in self.inspect(identity)['Mounts']), 'PHYSICAL_VOLUME_SHARED')
+''',
+        '''        if not enabled(self.config):
+            for identity in self.docker(['ps', '--all', '--no-trunc', '--format', '{{.ID}}']).decode().splitlines():
+                if identity != row['Id']:
+                    require(all(item.get('Name') != mount['Name'] and item['Source'] != mount['Source']
+                        for item in self.inspect(identity)['Mounts']), 'PHYSICAL_VOLUME_SHARED')
+''')
     old = 'def execute(configuration, request, root, input_pins):\n'
-    new = '''def execute(configuration, request, root, input_pins):
+    new = '''from recovery_main_target import guarded_type
+MinimalData = guarded_type(MinimalData)
+
+
+def execute(configuration, request, root, input_pins):
     from recovery_replace import enabled, execute as replace
     if enabled(configuration['targets'][request['targetConfigRef']]):
         return replace(configuration, request, root, input_pins, execute_empty, MinimalData, selected_chain)
@@ -209,6 +260,8 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
     def secret(self, role, environment):
 ''')
     payload['common/recovery_replace.py'] = (root/'ops/recovery/recovery_replace.py').read_bytes()
+    payload['common/recovery_main_target.py'] = (root/'ops/recovery/recovery_main_target.py').read_bytes()
+    payload['common/recovery_replacement_storage.py'] = (root/'ops/recovery/recovery_replacement_storage.py').read_bytes()
     payload['common/recovery_resource_admission.py'] = (root/'ops/recovery/recovery_resource_admission.py').read_bytes()
     payload['common/recovery_archive_guard.py'] = (root/'ops/recovery/recovery_archive_guard.py').read_bytes()
     replace('common/recovery_minimal_worker.py',
@@ -281,6 +334,7 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
     for name, expected in {
         'recovery_control_smallapp_native.py': '1ddb9e448f1a96cc33835429b4e86ddc0c72daee741c516008eeeb206e89f043',
         'recovery_control_executor.py': '5b69c014cfe2838891a9cc1b22965d5e5288306e4344dd8fd3a25a8499f8c136',
+        'recovery_control_smallapp_http.py': 'f3046ea7b16dbfb2f39ed25c5ab0fa5647f1056eb21b90127a6d109e38789f6f',
     }.items():
         path = 'control/' + name
         if hashlib.sha256(payload[path].replace(b'\r\n', b'\n')).hexdigest() != expected:

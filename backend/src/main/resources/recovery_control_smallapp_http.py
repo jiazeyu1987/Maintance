@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import re
 import stat
+from urllib.parse import parse_qs, urlsplit
 
 from recovery_control_smallapp import (Failure, MAX_FRAME, canonical, decode, exact,
     local_read, native_required, need, opaque, public_error, request)
@@ -76,8 +77,13 @@ def handler(ledger, config):
         def do_GET(self):
             try:
                 self.admit()
-                if self.path == '/selections':
-                    self.reply(200, ledger.native.selections())
+                selected = urlsplit(self.path)
+                if selected.path == '/selections':
+                    query = parse_qs(selected.query, keep_blank_values=True)
+                    need(set(query) <= {'targetConfigRef'} and all(len(v) == 1 for v in query.values()),
+                         'TARGET_SELECTION_QUERY_INVALID')
+                    target = opaque(query['targetConfigRef'][0]) if query else None
+                    self.reply(200, ledger.native.selections(selected_target=target))
                     return
                 need(self.path.startswith('/operations/') and self.path.count('/') == 2,
                      'TRANSPORT_ROUTE_UNKNOWN')
