@@ -2,12 +2,13 @@
 const {chromium}=require('C:/Users/D01021/Documents/ChatGPT/IntRuoyiE2E/node_modules/playwright');
 const fs=require('node:fs');
 const path=require('node:path');
-const output=path.join(__dirname,'browser-choice.json');
+const catalogMode=process.argv[2]==='catalog';
+const output=path.join(__dirname,catalogMode?'browser-catalog-choice.json':'browser-choice.json');
 const privateRoot='C:/Spug/runtime/private/restore-targets-20261104';
 (async()=>{
  const browser=await chromium.launch({channel:'chrome',headless:true,timeout:20000});
  const context=await browser.newContext({viewport:{width:1440,height:1080}});
- const page=await context.newPage();page.setDefaultTimeout(25000);
+ let page=await context.newPage();const rootPage=page;page.setDefaultTimeout(25000);
  const writes=[],blocked=[],failures=[];
  page.on('response',r=>{if(r.status()>=400)failures.push({status:r.status(),path:new URL(r.url()).pathname});});
  await page.route('**/*',async route=>{
@@ -33,17 +34,33 @@ const privateRoot='C:/Spug/runtime/private/restore-targets-20261104';
   await page.waitForFunction(()=>Boolean(localStorage.getItem('token')));
   result.realLogin=true;
   await context.storageState({path:privateRoot+'/spug-browser-session.private.json'});
-  await page.goto('http://127.0.0.1:18080/backup-restore/',{waitUntil:'domcontentloaded'});
+  await page.goto('http://127.0.0.1:18080/'+(catalogMode?'backup-center':'backup-restore/'),{waitUntil:'domcontentloaded'});
+  if(catalogMode){
+   const iframe=await page.locator('iframe[src="/backup-restore/?embedded=1"]').elementHandle();
+   page=await iframe.contentFrame();
+   if(!page)throw Error('NATIVE_BACKUP_CENTER_FRAME_MISSING');
+  }
   await page.locator('#simple-refresh').waitFor();
   await page.waitForFunction(()=>document.querySelector('#simple-server').options.length>=3);
+  if(catalogMode){
+   await page.locator('#simple-catalog-tab').click();
+   const restoreButton=page.locator('#catalog-body button:enabled').filter({hasText:/^恢复$/}).first();
+   await restoreButton.waitFor({timeout:45000});
+   result.catalogRow=await restoreButton.locator('xpath=../..').innerText();
+   await restoreButton.click();
+   await page.locator('#catalog-restore-dialog').waitFor({state:'visible'});
+   result.catalogPackage=await page.locator('#catalog-restore-package').innerText();
+   await page.waitForFunction(()=>document.querySelector('#simple-target').options.length>=4,{},{timeout:45000});
+  }else{
   await page.locator('#simple-server').selectOption('172.30.30.57');
   await page.locator('#simple-mode').selectOption('safe');
   await page.locator('#simple-restore-tab').click();
   await page.waitForFunction(()=>document.querySelector('#simple-package').options.length>1,{},{timeout:45000});
   result.packages=await page.locator('#simple-package option').evaluateAll(nodes=>nodes.filter(n=>n.value).map(n=>({value:n.value,label:n.textContent})));
   await page.locator('#simple-package').selectOption(result.packages.at(-1).value);
+  }
   result.targets=await page.locator('#simple-target option').evaluateAll(nodes=>nodes.map(n=>({value:n.value,label:n.textContent,disabled:n.disabled})));
-  if(result.mode==='verify'){
+  if(result.mode==='verify'||catalogMode){
    result.choices=[];
    for(const server of ['172.30.30.58','172.30.30.59']){
     await page.locator('#simple-target').selectOption(server);
@@ -54,13 +71,15 @@ const privateRoot='C:/Spug/runtime/private/restore-targets-20261104';
     const summary=await page.locator('#confirm-summary').innerText();
     if(!summary.includes(server)||!summary.includes('intruoyi-main-'+server.split('.').at(-1)+'-safe-restore-20261104-v1')||!summary.includes('覆盖现有程序'))throw Error('CONFIRMATION_TARGET_MISMATCH');
     if(!await page.locator('#simple-confirm-submit').isDisabled())throw Error('OVERWRITE_ACK_NOT_REQUIRED');
-    await page.screenshot({path:path.join(__dirname,'confirm-'+server.split('.').at(-1)+'.png'),fullPage:true});
+    if(catalogMode&&!summary.includes(result.catalogPackage.split('备份包：').at(-1)))throw Error('CATALOG_PACKAGE_NOT_BOUND');
+    await rootPage.screenshot({path:path.join(__dirname,(catalogMode?'catalog-confirm-':'confirm-')+server.split('.').at(-1)+'.png'),fullPage:true});
     await page.locator('#simple-cancel').click();
     await page.locator('#simple-confirm').waitFor({state:'hidden'});
     result.choices.push({server,summary,cancelled:true});
    }
    const prod=result.targets.find(t=>t.value==='172.30.30.57');
    if(!prod?.disabled)throw Error('UNVERIFIED_PRODUCTION_TARGET_ENABLED');
+   if(catalogMode)await page.locator('#catalog-restore-close').click();
   }
   result.status='PASS';
  }catch(error){

@@ -85,3 +85,6 @@
 - FINAL SCOPE: 控制组件及本机接入本轮安装已完成；正式目标未启用，原三服均可恢复需求剩余blocked。没有任何实际数据恢复、业务/数据库/MinIO/Redis停启、NAS/fstab或租户数据修改。开发worktree保留用于同任务后续，干净临时发布worktree清理已完成。
 - 收尾记录工具：首次复杂PowerShell内联凭据扫描因引号载体SyntaxError未执行，改为UTF-8脚本；扫描器首次把自身私钥标记检测代码误判，收紧为独立完整PEM头行后复核。两次均为记录工具失败，不记业务RED/GREEN；未输出凭据值、未暂存或提交。
 - GREEN: experience-preflight -> PASS（单独保存最终任务记录）：本轮实现已分项提交并完成融合验证；正式目标准入阻塞已向用户明确报告。仅暂存本任务目录及request-command-log的两段本任务记录，后者使用HEAD正文加精确自有条目生成索引blob，保留工作文件中其它任务内容；核空索引、HEAD、UTF-8、无凭据、staged scope和diff --check。提交前后比较无关脏文件摘要，不修改/暂存并发任务资产，不执行推送或实际恢复。
+- RECORDS COMMIT: fdcb608b41a0816b3844d028b40276bc1e187c88，40个自有记录文件，提交前后9940个无关脏文件内容摘要相同，工作区请求日志其余内容保留，索引为空。
+- GREEN: experience-preflight -> PASS（截图原入口补充验收）：核运行native BackupRestore实际嵌入同一backup-restore页面；补验真实登录后/backup-center的“全部包清单→恢复”第一条已核对备份，绑定该包并分别选择.58/.59，确认后取消。只允许登录POST，任何恢复/其它写入请求都会阻断并判失败；不使用mock、不执行最终确认，不改产品代码。
+- GREEN: node verify_spug_choice.cjs catalog -> PASS；实际/backup-center原入口、全部包清单第一条可恢复包→弹框→.58/.59真实准入→确认摘要绑定原包编号和各自精确目标→返回修改→关闭弹框。仅/api/account/login/ POST，无blocked请求，无恢复提交。browser-catalog-choice.json与catalog-confirm-58/59.png留证，正式服仍disabled。没有产品代码修改，无需重复已通过的实现回归。
