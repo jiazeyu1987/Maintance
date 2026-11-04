@@ -121,6 +121,7 @@ function simpleRender(){
   drawOperationDetails();
   const draftLocked=simpleInitializing||interactionLocked()||switching||!!unresolvedOriginal()||!!active&&!resolvedRecord(active);
   for(const id of ['simple-product','simple-server','simple-mode','simple-type','simple-package','simple-target','simple-restore-mode','simple-nas','simple-backup-tab','simple-restore-tab','simple-refresh'])S(id).disabled=draftLocked;
+  S('simple-server').disabled=draftLocked||restore;
   S('simple-query').disabled=interactionLocked()||!active;
   S('simple-history').replaceChildren();
   const visibleRecords=records.filter(record=>simpleConfig?.bindings.some(b=>b.product===S('simple-product').value&&b.applicationId===record.applicationId));

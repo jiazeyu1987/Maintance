@@ -51,6 +51,38 @@ const record=(id='original-operation-123')=>({applicationId:'app',request:{schem
   action:'FULL',sourceConfigRef:'source-ref',parentChainRef:null,recoveryPointRef:null,targetConfigRef:null},
   result:{state:'RUNNING',errorCode:null,logRefs:[],resultRef:null}});
 
+test('restore form distinguishes the source address from the destination address',()=>{
+  const html=fs.readFileSync(path.join(__dirname,'smallapp-ui','index.html'),'utf8');
+  assert.match(html,/<label for="simple-server">来源地址<\/label>/);
+  assert.match(html,/<label for="simple-target">还原到地址<\/label>/);
+});
+
+test('restore keeps its source address read-only while the destination remains selectable',()=>{
+  const p=page();
+  p.run("simpleRestoring=true;action='RESTORE';render();");
+  assert.equal(p.get('simple-server').value,'server');
+  assert.equal(p.get('simple-server').disabled,true);
+  assert.equal(p.get('simple-target').disabled,false);
+  p.run("S('simple-package').value='point-ref';S('simple-target').value='target-server';render();");
+  const request=p.run("simpleRequest('restore-address-check')");
+  assert.equal(request.sourceConfigRef,'source-ref');
+  assert.equal(request.targetConfigRef,'target-ref');
+  p.run("simpleRestoring=false;action='FULL';render();");
+  assert.equal(p.get('simple-server').disabled,false);
+});
+
+test('refreshing restore configuration preserves the read-only source and its request identity',async()=>{
+  const p=page();
+  p.run(`simpleRestoring=true;action='RESTORE';render();
+    api=async url=>{if(url==='/simple-config')return simpleConfig;if(url==='/history')return [];
+      return {applications:options,initialOperationIds:{},registrationVersions:{}};};`);
+  await p.get('simple-refresh').onclick();
+  assert.equal(p.get('simple-server').value,'server');
+  assert.equal(p.get('simple-server').disabled,true);
+  assert.equal(p.get('simple-target').disabled,false);
+  assert.equal(p.run("simpleRequest('restore-after-refresh').sourceConfigRef"),'source-ref');
+});
+
 test('initial configuration keeps draft locked until source synchronization completes',async()=>{
   const p=page();
   p.run(`globalThis.configuration=simpleConfig;globalThis.releaseConfiguration=null;
