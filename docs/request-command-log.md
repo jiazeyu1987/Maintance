@@ -5703,3 +5703,5 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 结论：当前来源/模式/恢复方式下，服务器地址没有绑定对应恢复目标引用；覆盖模式使用 overwriteTargetServers。选项禁用，登记后仍需实际核验；标签本身不代表离线或备份损坏。固定 E: 经验文档不存在，已记录缺口，不执行高风险操作。证据见 doc/tasks/20261104-restore-target-label-explanation/。
 
 - 续问：用户询问指定服务器恢复方法。本机只读核对 simple.js、index.html、配置消费者和 README；确认页面只有选择/确认，无目标登记入口。先由管理员准备并登记目标及服务器映射，再刷新、选备份恢复点/安全模式/方式/目标、核验并确认执行；覆盖会替换目标既有数据，执行后仍需业务验收。未执行恢复、未读取私密配置或访问服务器。
+
+- 新截图：用户从 localhost:18080 全部包清单点击正式服全量备份恢复，覆盖模式无可用目标。本机 Docker 只读核对端口、nginx alias、真实 UI 源码与运行配置的公开字段：18080 为 transfer 实例，UI 位于 C:/Spug/runtime；清单固定 packageId 并默认 safe/replace，当前 .57 safe 的 overwriteTargetServers 为空，故阻止恢复。归档 indexed/COMPLETE 不等于恢复目标可用；未改配置、未执行恢复、未访问远端。已询问目标服务器及方式，登记与恢复范围尚待明确。完整证据见本任务 execution-log.md。
