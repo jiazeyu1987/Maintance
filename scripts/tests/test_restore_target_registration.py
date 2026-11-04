@@ -44,6 +44,7 @@ class RegistrationPlan(unittest.TestCase):
                 target['recoveryConfigurationPin'])
             self.assertIn(ref,result['entrySettings']['applications'][0]['targetConfigRefs'])
             self.assertIn(ref,target['bridgeConfiguration']['targetConfigRefs'])
+            self.assertIs(target['bridgeConfiguration']['selectedTargetPreflight'],True)
             self.assertIn(ref,result['simpleSettings']['bindings'][0]['restoreProgressBindings'])
 
     def test_cannot_enable_fast_engine_fresh_target_or_static_point_template(self):

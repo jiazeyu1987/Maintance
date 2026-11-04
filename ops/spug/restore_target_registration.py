@@ -74,6 +74,7 @@ def plan(value):
         control['restoreConfigurations'].setdefault(source,{})[ref]=owner_pin
         selector=str(PurePosixPath(control['registryRoot'])/'applications'/(app_id+'.pin.json'))
         connection=deepcopy(target['bridgeConfiguration'])
+        connection['selectedTargetPreflight']=True
         connection['sourceConfigRefs']=list(dict.fromkeys(connection['sourceConfigRefs']+[source]))
         connection['targetConfigRefs']=list(dict.fromkeys(connection['targetConfigRefs']+[ref]))
         filename=target['bridgeFile']

@@ -172,6 +172,9 @@ class HttpBridge:
             config = read_json(path)
         self.source_refs = config.get('sourceConfigRefs')
         self.target_refs = config.get('targetConfigRefs')
+        self.selected_target_preflight = config.get('selectedTargetPreflight', False)
+        if type(self.selected_target_preflight) is not bool:
+            raise Refused('W01_TARGET_PREFLIGHT_CAPABILITY_INVALID')
         for refs in (self.source_refs, self.target_refs):
             if not isinstance(refs, list) or any(not reference(r) for r in refs) or len(set(refs)) != len(refs):
                 raise Refused('W01_REGISTERED_CONFIG_BINDING_REQUIRED')
@@ -265,7 +268,7 @@ class HttpBridge:
                 parsed.password or parsed.query or parsed.fragment or parsed.path != '/selections'):
             raise Refused('W01_SELECTION_ENDPOINT_OUTSIDE_BINDING')
         endpoint = self.selection_url
-        if self.selected_target is not None:
+        if self.selected_target is not None and self.selected_target_preflight:
             endpoint += '?targetConfigRef=' + urllib.parse.quote(self.selected_target, safe='')
         payload = self.call(endpoint)
         if (not isinstance(payload, dict) or set(payload) != {'observedAt', 'applications'} or
