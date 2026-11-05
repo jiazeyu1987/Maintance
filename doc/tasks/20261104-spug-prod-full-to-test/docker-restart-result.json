@@ -1,0 +1,10 @@
+{
+  "phase": "restart",
+  "status": "PASS",
+  "observedAt": "2026-11-05T02:27:18.236287+00:00",
+  "liveRestore": true,
+  "protectedContainers": 12,
+  "protectedPidAndStartedAtUnchanged": true,
+  "oldDaemonPid": 4374,
+  "newDaemonPid": 10191
+}

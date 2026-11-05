@@ -1,0 +1,14 @@
+{
+  "mode": "inspect",
+  "realBrowser": true,
+  "realLogin": true,
+  "startedAt": "2026-11-05T02:44:21.057Z",
+  "ready": "已连接 Spug 执行器。",
+  "disabled": false,
+  "operationId": "",
+  "visible": "数据管理\n备份与恢复\n\n管理备份与恢复，查看包清单、执行进度和操作记录。\n\n备份\n恢复\n全部包清单\n执行进度\n操作记录\n应用\nIntRuoyi\n小程序\n服务器地址\n测试服务器　172.30.30.58\n正式服务器　172.30.30.57\n备份服务器　172.30.30.59\nNAS 地址\n执行模式\n安全模式 · 完整核验\n快速模式 · 跳过核验\n\n执行完整内容和一致性核验；备份期间可能停写。\n\n备份类型\n全量备份\n增量备份\n\n已连接 Spug 执行器。\n\n刷新配置\n开始备份 →\n执行诊断",
+  "status": "PASS",
+  "writes": 0,
+  "httpFailures": [],
+  "finishedAt": "2026-11-05T02:45:05.947Z"
+}

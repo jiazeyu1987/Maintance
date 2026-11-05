@@ -1,0 +1,10 @@
+{
+  "daemonConfigSha256": "ecb0765019541bf61bf120ce3c022ad38c2bdb578f768f6a3e1c1b50737dde37",
+  "liveRestoreProposalValidation": {
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "configuration OK\n"
+  },
+  "swarmState": "inactive",
+  "runningCount": 13
+}

@@ -5705,3 +5705,58 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 续问：用户询问指定服务器恢复方法。本机只读核对 simple.js、index.html、配置消费者和 README；确认页面只有选择/确认，无目标登记入口。先由管理员准备并登记目标及服务器映射，再刷新、选备份恢复点/安全模式/方式/目标、核验并确认执行；覆盖会替换目标既有数据，执行后仍需业务验收。未执行恢复、未读取私密配置或访问服务器。
 
 - 新截图：用户从 localhost:18080 全部包清单点击正式服全量备份恢复，覆盖模式无可用目标。本机 Docker 只读核对端口、nginx alias、真实 UI 源码与运行配置的公开字段：18080 为 transfer 实例，UI 位于 C:/Spug/runtime；清单固定 packageId 并默认 safe/replace，当前 .57 safe 的 overwriteTargetServers 为空，故阻止恢复。归档 indexed/COMPLETE 不等于恢复目标可用；未改配置、未执行恢复、未访问远端。已询问目标服务器及方式，登记与恢复范围尚待明确。完整证据见本任务 execution-log.md。
+
+
+## 2026-11-04 Spug三服恢复目标本机补齐
+- 用户要求：三服按次可选，正式服后续新备份自动可选恢复；已授权三服只读检查，服务器安装/数据恢复尚未授权。
+- 命令意图：在独立任务worktree以BDD/TDD补主实例v2存储、safe运行合同、动态归档目录、按目标只读检查及登记计划生成器；没有连接其他应用接口或执行服务器写入。
+- 验证：Linux234项通过；最后主实例Windows/Linux各29项通过；Windows safe/lightweight包及相关合同55项通过；Spug44项、JS42项、本地HTTP1项通过；diff --check通过。此前Windows Linux专用测试、Linux依赖/overlay/Git路径失败如实保留后改到正确平台验证，未静默跳过。
+- 状态：本机实现保留未提交；服务器安装授权已询问，未收到答复。正式服load约1376、backend只读inspect超时仍阻断就绪；未修复、重启或恢复，不宣称完成。工作区为C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance，分支codex/spug-selectable-restore-targets-20261104，base=9a62391。
+- 安装范围和待验前提：doc/tasks/20261104-spug-selectable-restore-targets/installation-plan.md。所有凭据保留于私密目录，无凭据内容进入本记录。
+
+
+## 2026-11-04 Spug恢复目标安装与收尾结果
+- 用户需求与授权：三服按次选择；已授权三服只读、控制组件和登记安装及本地Spug更新，不执行恢复；已确认所列EDHR MinIO账号仅供主程序使用。正式服前置失败时保持禁用，不包含业务异常修复或业务/数据容器停启。
+- 命令意图：从已提交快照在本任务临时发布worktree构建安全包，安装只归属本任务的控制服务和严格主实例合同；定向增加.58/.59路由、独立持久SSH通道及登录启动项。保留现有UI和其它任务、业务、NAS及历史记录。
+- 验证：三服各121程序文件SHA读回相同；.58/.59认证所选目标准入通过、服务active、operation/claim均0、业务容器StartedAt不变；Playwright真实登录后两目标选择/覆盖确认/取消PASS，无恢复提交。合并后Python137 PASS，7项Windows POSIX检查已有同实现Linux98 PASS/0skip；Spug45 PASS、JS42 PASS。
+- 融合与清理：实现e1389aa已fast-forward至int_main，未纳入1692项既有脏路径；本任务两个clean临时发布checkout均无新提交，已核祖先关系、无进程引用并删除Git注册和物理checkout。稳定控制通道不依赖临时目录，开发worktree为未完成正式准入保留。实现与最终记录分开提交。
+- 明确阻塞：.57最新load约1553，精确backend inspect 4秒超时；正式目标未登记、禁用，没有执行主程序修复。因此当前仅测试服.58、备份服.59可选，不能称三服全部可恢复。本记录取代此前“尚未授权/账号归属未知/尚未安装”的历史结论；任务blocked仅针对剩余正式目标准入。
+- 证据：doc/tasks/20261104-spug-selectable-restore-targets/；凭据、运行配置与原始私密日志均未进入Git。
+
+
+## 2026-11-04 正式全量备份到测试服目标续行
+- 需求：正式服真实全量备份一次，经Spug恢复到测试服；不能以目标登记或选择取消代替完成。
+- 当前命令意图：先只读核正式来源与测试目标、已有操作句柄、锁及版本/数据范围；原操作未证实终态前不重复提交。上一安装任务正式目的地未启用的阻塞保留，本轮独立核正式来源。
+- 证据：doc/tasks/20261104-spug-prod-full-to-test/；真实执行前必须通过经验门禁和目标完整验收。
+- 2026-11-05 01:11 核验结果：.58真实目标预检通过；.57精确backend inspect与健康HTTP超时，约1576个Python进程卡在CIFS重连。旧原仓储操作已核FAILED_RETAINED，不把控制RUNNING或采集成功当整体成功。来源准入blocked，本轮零备份/恢复提交、零远端修改；等待明确来源异常处理前提，不越权重启、kill或操作NAS。
+- 2026-11-05 01:16 目标续行复验：同一正式backend身份/health仍超时；新增/proc证据显示Docker守护进程也有线程等待SMB重连。只读检查未解除来源阻塞，未扩大为Docker/NAS修复；保留完整真实FULL→Spug→测试恢复目标，未执行备份/恢复。
+- 2026-11-05 01:18 第三轮精确复验仍为同一正式源故障；完成审计确认新FULL、新包、Spug实际恢复和最终验收均缺失。达到连续三轮同类阻塞阈值，更新目标blocked，不标记完成；等待正式运行状态恢复，不继续盲目轮询或越权修复。
+- 2026-11-05 09:10 北京时间：用户确认旧电脑192.168.112.214已停止/关机。只读双采样仍见该来源1973个D状态Python，短窗口无增减；正式后端与Redis inspect超时、health超时，MySQL StartedAt再次更新。首轮SSH握手超时后重试同一观察成功，未重启业务；已询问并行维护情况，保留blocked，零备份/恢复提交或远端更改。
+- 2026-11-05 09:28–09:40 北京时间，用户报告“重启好了”后只读核验：两服均重启、D进程为0且内存恢复。新增启动缺口为.57原NAS挂载缺失、48081残留代理冲突、源控制未启动，以及.58四个原目标容器停止和仅mountId变化。没有进行NAS/服务/数据写入；已形成post-boot-repair-plan.md并请求一次明确PROD恢复范围授权。当前真实FULL及Spug数据恢复尚未提交，不能把重启成功当作目标成功。
+- 2026-11-05 09:50–10:12 北京时间：用户明确批准“授权按此范围恢复（PROD）”。按计划恢复.57原NAS三挂载及持久启动、源控制独立Python和systemd；启动.58原四容器，原后端UP、实际前端首页/healthz HTTP200。对重启mountId及同一internal bridge显式Gateway分别签新不可变配置，旧代次保留，严格校验保留；所选目标认证预检HTTP200。所有凭据只在私密路径，未改NAS内容/业务数据。
+- 正式服原48081代理按精确PID/argv/启动ticks验证后SIGTERM，实际监听已清除，原backend同一网络登记空闲.11/原别名；Docker内部仍拒绝端口。Docker API孤立endpoint删除尝试被明确拒绝且原名已finally恢复，未手改network数据库。12个其它受保护容器PID/StartedAt/镜像保持。
+- 新增daemon保活/管理进程重启方案已通过只读dockerd --validate，写入当前任务docker-port-reservation-repair-plan.md；此前批准范围明确不含整个Docker重启，因此已单独请求PROD授权，尚未写daemon配置或reload/restart。当前仅正式原backend阻塞完整目标，零本轮FULL/restore提交，任务blocked而非completed。
+- 2026-11-05 10:26–10:46：用户明确“授权按新计划处理（PROD）”。live-restore热加载及仅dockerd重启通过，12个受保护容器PID/StartedAt/身份保持；原主程序backend UP/frontend200。来源/目标控制服务按历史24104路径的实际归档规模配置持久65536文件描述符预算，保留路径守护。Spug旧来源32657与稳定42657不一致已对齐，原57监督增加18557进度SSH，来源进度使用已验证Python；仅本任务控制组件/同一来源配置变化，无业务数据恢复。真实Chrome登录/选择safe/FULL显示执行器已连接，开始按钮启用；接续唯一新FULL与新包到.58实际恢复。
+- 2026-11-05 10:48–11:27：首次真实页面FULL因历史32657 bridge指纹拒绝HTTP409，已恢复源route原字节并在同一57持久监督提供32657别名，未改历史记录。真实UI原编号未受理证明通过后，同一smallapp-73cd541a95d84d6a86f9d693e4053c75原请求重试HTTP202，History350；此后只查询同一编号。11:27已完成6127989396字节SQL导出，采集仍RUNNING，尚不计全包成功/未提交恢复。测试服原五服务与严格目标准入通过，真实页面登录/权限/版本只读基线PASS，业务写入0。
+- 2026-11-05 11:52–13:10：同一FULL完成885表数据/结构证据和物理附件采集，原正式服务由备份合同恢复；独立backend UP/frontend200，12:41再查仍正常。NAS上传12:42:33完成，独立读回13:10:41完成，当前归档最终核验；尚无整体成功终态/恢复提交。11个其它受保护容器PID/启动时间保持，原MinIO停启属于已批准备份采集生命周期，配置/镜像/挂载保持。测试真实页面用户管理基线2117条/20行、业务mutation=0，人员数据/截图仅存私密目录；DCC项目代码页无记录的失败基线保留，不冒充通过。
+
+### 2026-11-05 正式新全量备份与测试恢复（续）
+- 用户授权：继续本轮正式服 FULL → 经 Spug 恢复测试服；原 NAS 挂载及控制服务恢复已明确授权。
+- FULL smallapp-73cd541a95d84d6a86f9d693e4053c75 / History350 于14:17:28成功，14378文件/26090562595字节，原进程exit0，NAS完整回读与归档证据通过；不把serverDurabilityVerified=false写成已证明服务端耐久。
+- 首次恢复 smallapp-ba0bca490ac243768c8b759fa14a8bbd / History351 在admission失败 ARCHIVE_ROOT_UNAVAILABLE，无worker或replacement claim，五个原容器未变化。核明重启丢失原只读NAS挂载。
+- 按既有授权恢复 .58 canonical NAS路径只读bind，依赖现有fstab共享并enable持久单元；无NAS数据写入、无业务启停。已安装只读解析器核新FULL pins及实时准入PASS。首次失败原始回执保存在任务 restore-attempt-1。
+- 14:35:48 实际SpugUI提交第二次恢复一次，smallapp-af9fb80256c0417f86f2741686950823，HTTP202；当前等待真实终态和一致性/运行/页面验证，尚未宣称恢复成功。
+
+- 2026-11-05 14:17–15:55 北京时间：正式新FULL smallapp-73cd541a95d84d6a86f9d693e4053c75 / History350真实SUCCEEDED，原exit0，NAS14378文件/26090562595 bytes、COMPLETE及完整独立读回通过。第一次恢复History351在归档路径准入失败、无业务写入；按既有原NAS恢复授权修复.58原canonical只读bind及持久依赖。
+- 第二次恢复History352 / smallapp-af9fb80256c0417f86f2741686950823在清空同一目标应用库后因SAFE注入接口TypeError失败，实际exit1/FAILED_RETAINED；MinIO/Redis尚未清空，三写入服务保持停止。保留原失败/claim/预约/历史，不据native旧mutation=false否认真实清库。
+- 命令意图与验证：实际包组件RED复现SAFE参数不兼容与破坏性SQL审计缺口，再最小修复；Windows145 PASS，Linux实际锁/预约/挂载142 PASS。实现9176b3c单独提交，专属clean发布worktree构建/验证后安装.58新engine-retained-9176b3c及新配置代次，只重载本任务控制服务；旧引擎与原失败6份pins保持，目标字典不变。新发布副本未产生新提交，Git登记与实体目录均已清理。
+- 在用户既有控制组件安装与同一新FULL→测试服恢复授权内，按retained-recovery-plan.md显式追加同来源/同点/同目标一次性准许、真实停写/0表观察与精确原预约释放审计，未由CLI恢复数据。第三次真实Spug页面仅POST一次，smallapp-91cc5c0b4b054cb38075681f1aca7d4a / History353，受理后正在NAS材料校验；未宣称恢复成功，最终原生一致性、运行态和真实页面验收仍待完成。前两次失败的本地UI文件SHA原样保存在restore-attempt-1/2，远端历史不变。
+
+- 2026-11-05 16:44：第三次真实Spug恢复History353已FAILED_RETAINED；SQL导入完成、独立数据回读因dataLimits非法64GiB失败。保留885表和停写现场，不启动业务；在既有授权内按BDD/TDD修复配置和前置校验，再经真实UI同点恢复。凭据不入日志。
+
+- 2026-11-05 17:02：04f5f9c实际SAFE/FAST校验预算前移，Windows118/Linux195通过；精确已提交worktree构建安装到.58，16GiB数据校验与64GiB SQL分离。保留History353追加准许；真实Spug第四次恢复smallapp-2f4e3cd6b481402085838015c44e5cae已202受理，继续等待验收。
+
+- 2026-11-05 17:09–18:59：第四次History354明确SOURCE_CATALOGUE_UNAVAILABLE且零worker/目标变更；原失败准许未消费。实时来源三次鉴权和同点严格准入通过后，真实Spug第五次仅POST一次，History355 / smallapp-6cb9423086fe4b62ad21505e189bc36b，仍为同一新FULL→原.58 MAIN。
+- 验证：18:29数据库独立比较885表/512156行通过；18:50附件5916版本/4920唯一内容/9653189892字节通过；引用一致性、Redis原值与绝对到期恢复阶段、原五服务启动均完成。18:58真实登录和用户管理列表PASS，2117条/20行、版本2026-11-03-12-15-42、业务写入0。正式源仍UP/HTTP200。18:59恢复仍在最终原包完整性核对，未以页面或阶段成功代替整体exit0/终态；继续同一编号等待，不重复派发。
+
+- 2026-11-05 19:14最终收口：History355原生19:04:19 SUCCEEDED/exit0，21个证据pins、原失败6pins保持、宿主预约释放、原五服务/镜像/UUID、backend UP/frontend200、真实用户列表均通过。Redis DB1本次源快照0键，恢复/校验0键，不宣称非空TTL实例已实测。最终原包验证和暂存清理完成，两临时发布worktree/自有本机测试环境已清理，控制器active/enabled与稳定路径通过；本轮任务completed并独立提交最终记录。原三服登记剩余项继续按原授权处理，不把正式→测试路径成功当作三个目的地均已就绪。

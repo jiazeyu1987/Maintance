@@ -1,0 +1,39 @@
+{
+  "observedAt": "2026-11-05T09:28:12.858058+00:00",
+  "operationId": "smallapp-6cb9423086fe4b62ad21505e189bc36b",
+  "dataLimits": {
+    "max_bytes": 17179869184,
+    "max_nodes": 100000000,
+    "max_rows": 10000000,
+    "seconds": 7200
+  },
+  "maxExpandedBytes": 68719476736,
+  "targetPrepared": "PREPARED",
+  "mutations": [
+    {
+      "file": "replacement-preparation/native-035.json",
+      "mutation": true,
+      "actualExitCode": 0
+    },
+    {
+      "file": "replacement-preparation/native-036.json",
+      "mutation": true,
+      "actualExitCode": 0
+    },
+    {
+      "file": "replacement-preparation/native-037.json",
+      "mutation": true,
+      "actualExitCode": 0
+    },
+    {
+      "file": "replacement-preparation/native-063.json",
+      "mutation": true,
+      "actualExitCode": 0
+    },
+    {
+      "file": "replacement-preparation/native-088.json",
+      "mutation": true,
+      "actualExitCode": 0
+    }
+  ]
+}

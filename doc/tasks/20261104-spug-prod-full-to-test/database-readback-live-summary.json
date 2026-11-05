@@ -1,0 +1,16 @@
+{
+  "observedAt": "2026-11-05T10:22:58.857315+00:00",
+  "operationId": "smallapp-6cb9423086fe4b62ad21505e189bc36b",
+  "scratchExists": true,
+  "readbackTableDirectories": 885,
+  "tokenFiles": 885,
+  "lastTokenModifiedAt": "2026-11-05T10:21:51.387447+00:00",
+  "workerChildren": [
+    {
+      "pid": 18109,
+      "program": "docker",
+      "wchan": "0"
+    }
+  ],
+  "businessWritesPerformed": false
+}

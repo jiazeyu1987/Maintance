@@ -1,0 +1,254 @@
+{
+  "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+  "originalDocuments": {
+    "capture-staging/operation.json": {
+      "configurationPin": {
+        "bytes": 4775,
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-3d4c7ab0f65841b8892e4a640a53176d/capture.json",
+        "sha256": "672b0ee9c0ca9602ae7b522b1cccf649ffbeeb532497b7211048cbbd03d1d2c0"
+      },
+      "request": {
+        "action": "FULL",
+        "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+        "parentChainRef": null,
+        "recoveryPointRef": null,
+        "schemaVersion": "SmallAppBackupUiRequest/v1",
+        "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+        "targetConfigRef": null
+      },
+      "requestPin": {
+        "bytes": 238,
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/015324b875ded2becd0e843248a943a94614abaf2ef19ffcdbfe19f4e2a4d5ff/request.json",
+        "sha256": "9f6697739fb2decef01aa31986881af77c406931e00ab13d37bfe2b8d2867a3e"
+      },
+      "startedAt": "2026-11-03T10:45:30.599053+00:00"
+    },
+    "capture-staging/terminal-result.json": {
+      "action": "FULL",
+      "actualExitCode": 0,
+      "data": {
+        "archiveEntriesPin": {
+          "bytes": 4371254,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-3d4c7ab0f65841b8892e4a640a53176d/capture-archive-entries.json",
+          "sha256": "3d7d2b250584cb30cfef373870354af3c68c45f8b5d19e2c4a48102cdac36679"
+        },
+        "captureInputsPin": {
+          "bytes": 11417848,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-3d4c7ab0f65841b8892e4a640a53176d/capture-recovery-inputs.json",
+          "sha256": "38f80189c9e8b09dda668c782be2213b9f74c68e9c6b4256bcb7c41b58ac0c75"
+        },
+        "capturePointPin": {
+          "bytes": 5531659,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-3d4c7ab0f65841b8892e4a640a53176d/payload/capture-content-point.json",
+          "sha256": "644884de09a98d2522373ab08b456f5775a736d9885da505020f5613ae7e4cab"
+        },
+        "captureRoot": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+        "logRefs": [
+          {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-3d4c7ab0f65841b8892e4a640a53176d/worker-stderr.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        ],
+        "objectContentIndexPin": {
+          "bytes": 2270880,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-3d4c7ab0f65841b8892e4a640a53176d/semantic-capture/object-content-index.json",
+          "sha256": "3ee2b4a03c10f3a5e4cca7610c87d006c9657f985f7df15a69f672f0effe89fd"
+        },
+        "recoveryPoint": "sha256:b39f563f44aefdf4a159f535ecb18393dfcaf5287c073e1183c4388593f7a5f1",
+        "sourceIdentity": "a36d337b14a907d64a542ea66a8f46bc07fd75a84d6bea9ca1bfff6f4fe44690",
+        "sourceRestorationPin": {
+          "bytes": 435,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-3d4c7ab0f65841b8892e4a640a53176d/source-restoration.json",
+          "sha256": "c58edf609d41029f3ac25204c6f20c360911abafca0ef7ac76cdb96fbf51283c"
+        }
+      },
+      "failureCode": null,
+      "finishedAt": "2026-11-03T12:13:12.999230+00:00",
+      "message": "Capture completed; source restored; worker exited zero.",
+      "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+      "originalResultPins": [
+        {
+          "bytes": 4775,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-3d4c7ab0f65841b8892e4a640a53176d/capture.json",
+          "sha256": "672b0ee9c0ca9602ae7b522b1cccf649ffbeeb532497b7211048cbbd03d1d2c0"
+        },
+        {
+          "bytes": 238,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/015324b875ded2becd0e843248a943a94614abaf2ef19ffcdbfe19f4e2a4d5ff/request.json",
+          "sha256": "9f6697739fb2decef01aa31986881af77c406931e00ab13d37bfe2b8d2867a3e"
+        },
+        {
+          "bytes": 1870,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-3d4c7ab0f65841b8892e4a640a53176d/worker-completion.json",
+          "sha256": "63b4e84c4c4eff875ec4962921d16ef00f04bd4a81bfdcc68a2a3fd1a16bdac0"
+        }
+      ],
+      "requestId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+      "schemaVersion": "backup-restore-operation-result/v1",
+      "startedAt": "2026-11-03T10:45:30.599053+00:00",
+      "state": "SUCCEEDED"
+    },
+    "capture-staging/source-restoration.json": {
+      "at": "2026-11-03T12:10:37.507828+00:00",
+      "errors": [],
+      "restored": true,
+      "schemaVersion": "minimal-capture-source-restoration/v1",
+      "sourceIdentity": "a36d337b14a907d64a542ea66a8f46bc07fd75a84d6bea9ca1bfff6f4fe44690",
+      "touchedContainerIds": [
+        "c4385604eb83b44f2836755bad709581c7e7edd0078b148f3b0f74e0b567304c",
+        "1210f97cf7653c5f74a7981bf4d4bec8d7462af873d53695d47a59a7ce38a479",
+        "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf"
+      ]
+    },
+    "capture-staging/worker-completion.json": {
+      "data": {
+        "archiveEntriesPin": {
+          "bytes": 4371254,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-3d4c7ab0f65841b8892e4a640a53176d/capture-archive-entries.json",
+          "sha256": "3d7d2b250584cb30cfef373870354af3c68c45f8b5d19e2c4a48102cdac36679"
+        },
+        "captureInputsPin": {
+          "bytes": 11417848,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-3d4c7ab0f65841b8892e4a640a53176d/capture-recovery-inputs.json",
+          "sha256": "38f80189c9e8b09dda668c782be2213b9f74c68e9c6b4256bcb7c41b58ac0c75"
+        },
+        "capturePointPin": {
+          "bytes": 5531659,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-3d4c7ab0f65841b8892e4a640a53176d/payload/capture-content-point.json",
+          "sha256": "644884de09a98d2522373ab08b456f5775a736d9885da505020f5613ae7e4cab"
+        },
+        "captureRoot": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+        "objectContentIndexPin": {
+          "bytes": 2270880,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-3d4c7ab0f65841b8892e4a640a53176d/semantic-capture/object-content-index.json",
+          "sha256": "3ee2b4a03c10f3a5e4cca7610c87d006c9657f985f7df15a69f672f0effe89fd"
+        },
+        "recoveryPoint": "sha256:b39f563f44aefdf4a159f535ecb18393dfcaf5287c073e1183c4388593f7a5f1",
+        "sourceIdentity": "a36d337b14a907d64a542ea66a8f46bc07fd75a84d6bea9ca1bfff6f4fe44690",
+        "sourceRestorationPin": {
+          "bytes": 435,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-3d4c7ab0f65841b8892e4a640a53176d/source-restoration.json",
+          "sha256": "c58edf609d41029f3ac25204c6f20c360911abafca0ef7ac76cdb96fbf51283c"
+        }
+      },
+      "finishedAt": "2026-11-03T12:10:37.549694+00:00",
+      "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+      "schemaVersion": "minimal-capture-worker-completion/v1"
+    }
+  },
+  "originalFiles": {
+    "capture-staging": [
+      "capture-archive-entries.json",
+      "capture-recovery-inputs.json",
+      "event-0001.json",
+      "event-0002.json",
+      "event-0003.json",
+      "event-0004.json",
+      "event-0005.json",
+      "event-0006.json",
+      "event-0007.json",
+      "event-0008.json",
+      "event-0009.json",
+      "event-0010.json",
+      "event-0011.json",
+      "event-0012.json",
+      "event-0013.json",
+      "event-0014.json",
+      "event-0015.json",
+      "event-0016.json",
+      "event-0017.json",
+      "event-0018.json",
+      "event-0019.json",
+      "event-0020.json",
+      "job-configuration.json",
+      "job-request.json",
+      "job-started.json",
+      "job-stderr.log",
+      "operation.json",
+      "source-restoration.json",
+      "staging-cleanup-intent.json",
+      "staging-cleanup.json",
+      "terminal-result.json",
+      "worker-completion.json",
+      "worker-started.json",
+      "worker-stderr.log"
+    ]
+  },
+  "blockedCommandGroups": {
+    "1aa9cf5c0bca8df239eca152d65c19745f1607b3f38766e7b7bef5f353d3c116": {
+      "count": 1576,
+      "samplePid": 321,
+      "program": "python3",
+      "argumentCount": 3,
+      "usesStatvfs": false,
+      "usesDiskUsage": false,
+      "inlineFunctionNames": [],
+      "knownPathMentions": [],
+      "sshConnection": [
+        "SSH_CONNECTION=192.168.112.214 59783 172.30.30.57 22",
+        "SSH_CLIENT=192.168.112.214 59783 22"
+      ]
+    },
+    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855": {
+      "count": 1,
+      "samplePid": 17010,
+      "program": "",
+      "argumentCount": 1,
+      "usesStatvfs": false,
+      "usesDiskUsage": false,
+      "inlineFunctionNames": [],
+      "knownPathMentions": [],
+      "sshConnection": []
+    },
+    "980d1dbd5195f0bed56f5d52b348aa6929736c1f95a55e24dfc4ddfb4241f229": {
+      "count": 1,
+      "samplePid": 18649,
+      "program": "/opt/intruoyi-monitoring/node_exporter",
+      "argumentCount": 13,
+      "usesStatvfs": false,
+      "usesDiskUsage": false,
+      "inlineFunctionNames": [],
+      "knownPathMentions": [],
+      "sshConnection": []
+    },
+    "2d346587335b447e4e103f7a93568b01ddfabbd7489dd62a3d5442c30f178f0e": {
+      "count": 1,
+      "samplePid": 24208,
+      "program": "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/python/bin/python3.12",
+      "argumentCount": 5,
+      "usesStatvfs": false,
+      "usesDiskUsage": false,
+      "inlineFunctionNames": [],
+      "knownPathMentions": [],
+      "sshConnection": [
+        "SSH_CONNECTION=192.168.109.82 60269 172.30.30.57 22",
+        "SSH_CLIENT=192.168.109.82 60269 22"
+      ]
+    },
+    "8d55362524408249b4acf21847320b93e1c3f3da70deac19ea88fb27162f2227": {
+      "count": 1,
+      "samplePid": 27180,
+      "program": "df",
+      "argumentCount": 3,
+      "usesStatvfs": false,
+      "usesDiskUsage": false,
+      "inlineFunctionNames": [],
+      "knownPathMentions": [],
+      "sshConnection": []
+    }
+  },
+  "errors": {},
+  "nasTcp445": "CONNECTED",
+  "cifsDebugSummary": [
+    "1) Name: 172.30.30.4 Uses: 1 Capability: 0x300045\tSession Status: 1 TCP status: 1 Instance: 1",
+    "Local Users To Server: 1 SecMode: 0x1 Req On Wire: 0",
+    "0) IPC: \\\\172.30.30.4\\IPC$ Mounts: 1 DevInfo: 0x0 Attributes: 0x0",
+    "1) \\\\172.30.30.4\\IT共享 Mounts: 1 DevInfo: 0x20 Attributes: 0x5007f",
+    "2) Name: 172.30.30.4 Uses: 1 Capability: 0x300045\tSession Status: 1 TCP status: 4 Instance: 1578",
+    "Local Users To Server: 2 SecMode: 0x1 Req On Wire: 0",
+    "0) IPC: \\\\172.30.30.4\\IPC$ Mounts: 1 DevInfo: 0x0 Attributes: 0x0",
+    "1) \\\\172.30.30.4\\IT共享 Mounts: 2 DevInfo: 0x20 Attributes: 0x5007f"
+  ],
+  "kernelCifsEvents": []
+}

@@ -1,0 +1,18 @@
+{
+  "verifiedAt": "2026-11-05T11:15:26.534431+00:00",
+  "status": "PASS",
+  "backupOperationId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+  "restoreOperationId": "smallapp-6cb9423086fe4b62ad21505e189bc36b",
+  "spugHistoryId": 355,
+  "sameNewFullPointVerified": true,
+  "nativeExitCode": 0,
+  "nativeReadback": "PASS",
+  "originalInstanceRuntime": "PASS",
+  "realBusinessUi": "PASS",
+  "businessMutations": 0,
+  "sourcePreservation": "PASS",
+  "releaseWorktreeCloseout": "PASS",
+  "stableControlPaths": "PASS",
+  "redisSnapshotKeyCount": 0,
+  "scope": "NEW_PROD_FULL_TO_ORIGINAL_TEST_MAIN_ONLY"
+}

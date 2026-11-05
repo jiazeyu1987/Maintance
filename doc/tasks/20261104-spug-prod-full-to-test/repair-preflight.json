@@ -1,0 +1,436 @@
+{
+  "observedAt": "2026-11-05T01:48:29.787162+00:00",
+  "credentialFiles": [
+    {
+      "path": "/root/.smbcredentials",
+      "mode": "0o600",
+      "uid": 0
+    }
+  ],
+  "proxyProcesses": [
+    {
+      "pid": 6860,
+      "cmdline": "/usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 48081 -container-ip 172.21.0.7 -container-port 48081 ",
+      "stat": "6860 (docker-proxy) S 4374 4374 4374 0 -1 1077952768 257 0 1 0 0 2 0 0 20 0 9 0 2699 1869561856 2371 18446744073709551615 93909946208256 93909947032176 140731054971488 0 0 0 0 0 2143420159 0 0 0 17 8 0 0 0 0 0 93909948207104 93909948251952 93909960290304 140731054976552 140731054976666 140731054976666 140731054976994 0\n"
+    },
+    {
+      "pid": 6868,
+      "cmdline": "/usr/bin/docker-proxy -proto tcp -host-ip :: -host-port 48081 -container-ip 172.21.0.7 -container-port 48081 ",
+      "stat": "6868 (docker-proxy) S 4374 4374 4374 0 -1 1077952768 238 0 0 0 0 0 0 0 20 0 8 0 2700 1793798144 1830 18446744073709551615 93943698223104 93943699047024 140723004095904 0 0 0 0 0 2143420159 0 0 0 17 2 0 0 0 0 0 93943700221952 93943700266800 93943726288896 140723004104237 140723004104346 140723004104346 140723004104674 0\n"
+    }
+  ],
+  "containers": [
+    {
+      "id": "c4385604eb83b44f2836755bad709581c7e7edd0078b148f3b0f74e0b567304c",
+      "name": "/intruoyi-backend",
+      "state": {
+        "Status": "exited",
+        "Running": false,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 0,
+        "ExitCode": 255,
+        "Error": "driver failed programming external connectivity on endpoint intruoyi-backend (688fa98575ede61374cb7cf55e9a015fa8a17002827155322178ee0b61fdcfd1): Bind for 0.0.0.0:48081 failed: port is already allocated",
+        "StartedAt": "2026-11-03T12:10:37.449259023Z",
+        "FinishedAt": "2026-11-05T01:27:38.660108163Z"
+      },
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": {
+        "intruoyi-runtime_intruoyi_net": {
+          "IPAMConfig": {
+            "IPv4Address": "172.21.0.7"
+          },
+          "Links": null,
+          "Aliases": [
+            "intruoyi-backend",
+            "backend"
+          ],
+          "MacAddress": "",
+          "NetworkID": "c73d2eea63d1b8110216c39c9d935fd25948a0afb4d22002d32a32b553bee58a",
+          "EndpointID": "",
+          "Gateway": "",
+          "IPAddress": "",
+          "IPPrefixLen": 0,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DriverOpts": null,
+          "DNSNames": [
+            "intruoyi-backend",
+            "backend",
+            "c4385604eb83",
+            "e0fa4fda37df"
+          ]
+        }
+      },
+      "sandboxId": "01263ccd25bbf51229d0edabb2f476b19bb11ca98ddcf4b98d71edd92fb175c2",
+      "ports": {
+        "48081/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "48081"
+          }
+        ]
+      }
+    },
+    {
+      "id": "8cb79cd7512261871492b01823ab401cdcfb26ac618c2355802b8c388d8591e0",
+      "name": "/intruoyi-backend-before-2026-11-03-12-15-42",
+      "state": {
+        "Status": "exited",
+        "Running": false,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 0,
+        "ExitCode": 143,
+        "Error": "",
+        "StartedAt": "2026-11-03T03:15:55.067486951Z",
+        "FinishedAt": "2026-11-03T06:39:46.460100336Z"
+      },
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": {},
+      "sandboxId": "ef6d731653f791058969fe55f0fc96b4ab3244327bd5d83dd20b8af2a38bbe61",
+      "ports": {
+        "48081/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "48081"
+          }
+        ]
+      }
+    },
+    {
+      "id": "c286f5f1e7c6acc8af53f204a5a34b991978de70cb64c9b482bdfdce6be21ecd",
+      "name": "/intruoyi-backend-before-invoice-assistant-20261102",
+      "state": {
+        "Status": "exited",
+        "Running": false,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 0,
+        "ExitCode": 143,
+        "Error": "",
+        "StartedAt": "2026-11-01T07:25:35.705879039Z",
+        "FinishedAt": "2026-11-02T01:45:39.03753689Z"
+      },
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": {},
+      "sandboxId": "13a3bee4dd56f396f406de21057d986ce1a40ee926eb66be5e4cbd12e6100496",
+      "ports": {
+        "48081/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "48081"
+          }
+        ]
+      }
+    },
+    {
+      "id": "d4d57256b401dc144d03e323655f29e12b5cad31aaf8449244cef628d5d34b70",
+      "name": "/intruoyi-backend-before-2026-10-30-10-19-11",
+      "state": {
+        "Status": "exited",
+        "Running": false,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 0,
+        "ExitCode": 143,
+        "Error": "",
+        "StartedAt": "2026-10-30T03:43:09.835578285Z",
+        "FinishedAt": "2026-10-30T05:16:39.322438798Z"
+      },
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": {},
+      "sandboxId": "0956e665664c3c7da8161cb773954552244c22a4608af07adafda1d13f9fbd64",
+      "ports": {
+        "48081/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "48081"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f1168aabcd92844aca0cf9e30200896d7731bd7d5ecdc5ebfe4568cc39a816d6",
+      "name": "/intruoyi-backend-before-2026-10-28-23-36-26",
+      "state": {
+        "Status": "exited",
+        "Running": false,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 0,
+        "ExitCode": 143,
+        "Error": "",
+        "StartedAt": "2026-10-29T01:00:10.646315401Z",
+        "FinishedAt": "2026-10-29T03:06:14.855074381Z"
+      },
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": {},
+      "sandboxId": "fb28b0feecbf3ef22fe0da48f390ba8a87973b1fc925c0d64a08652393226a22",
+      "ports": {
+        "48081/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "48081"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dbf94b095701f30c294fa31f5815a01f5cddf10e0ac664b1b259a4a9d2a1cd07",
+      "name": "/intruoyi-backend-before-2026-10-27-18-40-39",
+      "state": {
+        "Status": "exited",
+        "Running": false,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 0,
+        "ExitCode": 143,
+        "Error": "",
+        "StartedAt": "2026-10-27T12:31:30.705460561Z",
+        "FinishedAt": "2026-10-27T14:00:13.134412329Z"
+      },
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": {},
+      "sandboxId": "00cd36786dc074cbddb7638556af5f3279d23148857caf4ee486dbb59a4bc063",
+      "ports": {
+        "48081/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "48081"
+          }
+        ]
+      }
+    },
+    {
+      "id": "f220839c8f00f4456f91c39e593d9e20769da475f6cbf0f0c058f0760c8d380e",
+      "name": "/intruoyi-backend-before-2026-10-24-03-24-24-maintenance",
+      "state": {
+        "Status": "exited",
+        "Running": false,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 0,
+        "ExitCode": 143,
+        "Error": "",
+        "StartedAt": "2026-10-24T05:25:47.793122721Z",
+        "FinishedAt": "2026-10-24T05:28:55.97505877Z"
+      },
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": {},
+      "sandboxId": "dfd012bbac00bc2c41265d14e59820a652a865f63a5ea25250880ae78aa964ef",
+      "ports": {
+        "48081/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "48081"
+          }
+        ]
+      }
+    },
+    {
+      "id": "03f830dd1cb91f80e06563e3ce2da9dfc889046fccd2d12a85fddca6e2787915",
+      "name": "/intruoyi-backend-before-2026-10-24-03-24-24",
+      "state": {
+        "Status": "exited",
+        "Running": false,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 0,
+        "ExitCode": 143,
+        "Error": "",
+        "StartedAt": "2026-10-24T03:39:23.794311942Z",
+        "FinishedAt": "2026-10-24T05:21:58.742360071Z"
+      },
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": {},
+      "sandboxId": "7ec6fe23dcd2fb07805c00db9e841d3335b9eab34493dc9b944052a3d832e31d",
+      "ports": {
+        "48081/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "48081"
+          }
+        ]
+      }
+    },
+    {
+      "id": "32da39d63351a22d6872e0c04aad93c3152ef45e36f92db5ab67976b6976f93c",
+      "name": "/intruoyi-backend-before-2026-10-23-16-51-17-maintenance",
+      "state": {
+        "Status": "exited",
+        "Running": false,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 0,
+        "ExitCode": 143,
+        "Error": "",
+        "StartedAt": "2026-10-23T13:34:42.242117792Z",
+        "FinishedAt": "2026-10-23T13:37:49.2948679Z"
+      },
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": {},
+      "sandboxId": "6087f103b70150bd91cafc193203959902339399084bfa4084a27e98ffd2e375",
+      "ports": {
+        "48081/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "48081"
+          }
+        ]
+      }
+    },
+    {
+      "id": "e7106c7089c94f5bf3dc52552146488061c1edec45a5074fc2246aac613d9977",
+      "name": "/intruoyi-backend-before-2026-10-23-16-51-17",
+      "state": {
+        "Status": "exited",
+        "Running": false,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 0,
+        "ExitCode": 143,
+        "Error": "",
+        "StartedAt": "2026-10-23T10:29:07.310250112Z",
+        "FinishedAt": "2026-10-23T13:26:01.979077349Z"
+      },
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": {},
+      "sandboxId": "0bb5a58b0f7ce6c1cfbabb6a3c2bb0ac783149a9703fe514bbe4793c523a63d6",
+      "ports": {
+        "48081/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "48081"
+          }
+        ]
+      }
+    },
+    {
+      "id": "e0fa4fda37df537acdf6485a4b7897e68b704ec5d9fab81bbda0c3cd1c73f2ce",
+      "name": "/intruoyi-backend-before-current-32ff79d-20261020",
+      "state": {
+        "Status": "exited",
+        "Running": false,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 0,
+        "ExitCode": 143,
+        "Error": "",
+        "StartedAt": "2026-10-19T07:05:19.099788175Z",
+        "FinishedAt": "2026-10-20T18:37:42.876611399Z"
+      },
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "networks": {},
+      "sandboxId": "ca43b1d026376b0a8fb162d50038847c6cd7c28440bf3d869599f2b19a65577a",
+      "ports": {
+        "48081/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "48081"
+          }
+        ]
+      }
+    }
+  ],
+  "networkEndpoints": {
+    "1ceaee8d844fd913d31ac2e500a5401f3fb0405618cbb038d582071bd5d75719": {
+      "Name": "erp-invoice-voucher-print-assistant",
+      "EndpointID": "e9dd675bae83b78a794a7c0b985d0d46ad416012da30190e964886e3bd21cfc0",
+      "MacAddress": "02:42:ac:15:00:07",
+      "IPv4Address": "172.21.0.7/16",
+      "IPv6Address": ""
+    },
+    "5099e7bd566ec6a683e8842b84d8db9e41245708fce29e89309607d6a7e72653": {
+      "Name": "intruoyi-redis",
+      "EndpointID": "0b156d1d23f00bf4f7128d2c584a00ad54b7a76b3f438b9349411533fbc1c02c",
+      "MacAddress": "02:42:ac:15:00:02",
+      "IPv4Address": "172.21.0.2/16",
+      "IPv6Address": ""
+    },
+    "7dbf8a3197a28a216a0da19f731cf20a40aa35117d73f348e3d5f50fcf027251": {
+      "Name": "fenbeitong-assistant",
+      "EndpointID": "fc304ada50da078ce54bab53fb3c8b49efabb830cc8956e5cb20c8a7fd3ac453",
+      "MacAddress": "02:42:ac:15:00:0a",
+      "IPv4Address": "172.21.0.10/16",
+      "IPv6Address": ""
+    },
+    "9a288d20d254366e99b265b1870466e974edf23e7aab60de2391e3a38e62fff6": {
+      "Name": "intruoyi-mysql",
+      "EndpointID": "7e7ba3a65336c36f407f315210d2d5f5d2cfc087918ad2ab682c88a35813dad9",
+      "MacAddress": "02:42:ac:15:00:06",
+      "IPv4Address": "172.21.0.6/16",
+      "IPv6Address": ""
+    },
+    "9d6b45bad9b18f575b0f8ee7cf729f1167b9fc9a2ebeb8a7a2c74ebbdcd24830": {
+      "Name": "intruoyi-website",
+      "EndpointID": "a9e603cf2cd6f973f07a64e22450a8d61f0fe97f0d6a393a25347b5e433dfae9",
+      "MacAddress": "02:42:ac:15:00:05",
+      "IPv4Address": "172.21.0.5/16",
+      "IPv6Address": ""
+    },
+    "ab9f967c26b4e1672a1229395658dde2706e5d01c3e29086dd9e3ad2b0fac3de": {
+      "Name": "intruoyi-onlyoffice",
+      "EndpointID": "92520160e684c47803a5aaea231abb559c63cf8f2d30e6e9a33b301055854884",
+      "MacAddress": "02:42:ac:15:00:04",
+      "IPv4Address": "172.21.0.4/16",
+      "IPv6Address": ""
+    }
+  }
+}

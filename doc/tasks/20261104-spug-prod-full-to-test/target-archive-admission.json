@@ -1,0 +1,18 @@
+{
+  "observedAt": "2026-11-05T09:08:12.503556+00:00",
+  "status": "PASS",
+  "sourceLiveEligible": true,
+  "request": {
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "recoveryPointRef": "smallapp-73cd541a95d84d6a86f9d693e4053c75"
+  },
+  "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+  "pointPin": {
+    "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/.repository/point.json",
+    "bytes": 6271278,
+    "sha256": "af95ffa94e9478bd32935c6e0c662aa5590854a0cda7597b84a25abd81a8f128"
+  },
+  "evidencePinsChecked": 6,
+  "orderedChainLength": 1,
+  "readOnly": true
+}

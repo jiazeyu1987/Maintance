@@ -1,0 +1,18 @@
+{
+  "applications": [
+    {
+      "applicationId": "intruoyi-57-safe-20261024-v1",
+      "engineSelectionRef": "common-engine-minimal-unified-20261015-r1",
+      "freshTargetConfigRefs": [
+        "intruoyi-main-58-safe-restore-20261104-v1"
+      ],
+      "fullErrorCode": null,
+      "fullReady": true,
+      "historyErrorCode": null,
+      "parentChainRefs": [],
+      "recoveryPointRefs": [],
+      "sourceConfigRef": "intruoyi-57-safe-20261024-v1"
+    }
+  ],
+  "observedAt": "2026-11-05T07:45:56.420090Z"
+}

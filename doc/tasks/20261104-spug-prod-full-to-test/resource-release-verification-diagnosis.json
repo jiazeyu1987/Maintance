@@ -1,0 +1,45 @@
+{
+  "reason": "VALIDATED_CHILD_SUCCESS",
+  "releaseResultPin": {
+    "bytes": 320180,
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-6cb9423086fe4b62ad21505e189bc36b/worker-result.json",
+    "sha256": "2c4a8e76af29dcbc316f4b655e9489ae4958e9f38f0c6d78588cbb76aed7155f"
+  },
+  "completionResultPin": {
+    "bytes": 321913,
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-6cb9423086fe4b62ad21505e189bc36b/execute/result.json",
+    "sha256": "7e9ad1a1cb35dbd96d1a0a595850ae583752297784b6b2e4fb1db4e893564d0e"
+  },
+  "sameDecodedResult": false,
+  "outerKeys": [
+    "action",
+    "actualExitCode",
+    "data",
+    "failureCode",
+    "finishedAt",
+    "message",
+    "operationId",
+    "originalResultPins",
+    "requestId",
+    "schemaVersion",
+    "startedAt",
+    "state"
+  ],
+  "outerDataKeys": [
+    "applicationStartPin",
+    "businessAcceptance",
+    "consistencyPin",
+    "databaseResultPins",
+    "derivedPin",
+    "objectResultPins",
+    "orderedChainPins",
+    "recoveryPoint",
+    "replacementReceiptPin",
+    "stagingCleanupPin",
+    "targetConfigRef"
+  ],
+  "innerState": "SUCCEEDED",
+  "innerOperationId": "smallapp-6cb9423086fe4b62ad21505e189bc36b",
+  "innerActualExitCode": 0,
+  "hostActiveAbsent": true
+}

@@ -1,0 +1,41 @@
+{
+  "observedAt": "2026-11-05T09:10:43.269570+00:00",
+  "operationId": "smallapp-6cb9423086fe4b62ad21505e189bc36b",
+  "clearanceFiles": [
+    "recovery-clearance.json",
+    "recovery-consumption.json",
+    "recovery-observation.json",
+    "recovery-ready.json",
+    "replacement-result.json",
+    "runtime"
+  ],
+  "oldResult": {
+    "finishedAt": "2026-11-05T08:40:37.456145Z",
+    "operationId": "smallapp-91cc5c0b4b054cb38075681f1aca7d4a",
+    "state": "FAILED_RETAINED",
+    "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1"
+  },
+  "newClaimExists": true,
+  "active": {
+    "configurationSha256": "e442481abd64fb9ec862b8f9945d36bf993e8cbca3136f36d8dd1c7026e552b0",
+    "machineId": "f90361360b284aeb8a9ba727db31e434",
+    "operationId": "smallapp-6cb9423086fe4b62ad21505e189bc36b",
+    "operationRoot": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-6cb9423086fe4b62ad21505e189bc36b",
+    "reservationPin": {
+      "bytes": 483,
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-6cb9423086fe4b62ad21505e189bc36b/resource-reservation.json",
+      "sha256": "944c65a62f454d85aef268d8c7ce004b6f8076aa5d899f195f162c7080cc9160"
+    },
+    "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1"
+  },
+  "consumption": {
+    "clearancePin": {
+      "bytes": 2288,
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-91cc5c0b4b054cb38075681f1aca7d4a/recovery-clearance.json",
+      "sha256": "6543b5881f4ad2773d5e9bab59f7583e7fe09a15145f4df9ebb91ec706caca2d"
+    },
+    "consumedAt": "2026-11-05T09:09:38.001448Z",
+    "replacementOperationId": "smallapp-6cb9423086fe4b62ad21505e189bc36b",
+    "schemaVersion": "RetainedReplacementConsumption/v1"
+  }
+}

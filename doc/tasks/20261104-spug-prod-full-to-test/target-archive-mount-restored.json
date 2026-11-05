@@ -1,0 +1,39 @@
+{
+  "observedAt": "2026-11-05T06:31:34.047263+00:00",
+  "unit": "var-lib-docker-intruoyi\\x2ddata-prod57\\x2dspug\\x2drehearsal\\x2d20261021-nas.mount",
+  "active": "active",
+  "enabled": "enabled",
+  "target": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas",
+  "source": "/mnt/intruoyi-backup-nas",
+  "mode": "ro",
+  "pointSha256": "af95ffa94e9478bd32935c6e0c662aa5590854a0cda7597b84a25abd81a8f128",
+  "businessServicesUnchanged": true,
+  "businessServices": {
+    "b4592b704b979f1b94ba03836985491a8f7c699d3094297bfbe3696939eedd79": {
+      "pid": 11377,
+      "startedAt": "2026-11-05T01:51:30.916478688Z",
+      "running": true
+    },
+    "98216faac1ae2fc1508bd4076962bf4cfcb3a47f2f1bd5d5e42c7ba819e83115": {
+      "pid": 27944,
+      "startedAt": "2026-11-05T01:52:48.967611426Z",
+      "running": true
+    },
+    "028bb0541d3216c283c5f1822338462545fa7cd63fad55c462ae20a01526e225": {
+      "pid": 28575,
+      "startedAt": "2026-11-05T01:52:49.476812788Z",
+      "running": true
+    },
+    "6f70e67078d086d7f08c1ae75a80bb0feab28c5a1f92c91d655ac258f34988eb": {
+      "pid": 29092,
+      "startedAt": "2026-11-05T01:52:49.99473683Z",
+      "running": true
+    },
+    "4f9775e6f0a1d86b2d06c69e40504a91cf44a613de458b76e69fa04805ca5d73": {
+      "pid": 16494,
+      "startedAt": "2026-11-05T01:27:57.584155694Z",
+      "running": true
+    }
+  },
+  "controlActive": "active"
+}

@@ -1,0 +1,15 @@
+{
+  "releaseWorktreePath": "C:\\Users\\D01021\\.codex\\worktrees\\spug-readback-limits-release-20261105\\Maintance",
+  "targetCommit": "04f5f9ce958b52479c0c729fe32dbb69669e73fb",
+  "newCommits": false,
+  "mergeRequired": false,
+  "gitRegistrationAbsent": true,
+  "physicalPathAbsent": true,
+  "ownLocalContainersRemoved": [
+    "spug-readback-limits-unit-20261105",
+    "spug-readback-limits-unit-20261105-r2"
+  ],
+  "ownVolumeRemoved": "spug-readback-limits-unit-20261105",
+  "linuxPassed": 195,
+  "linuxSkipped": 0
+}

@@ -1,0 +1,34 @@
+{
+  "operationId": "smallapp-ba0bca490ac243768c8b759fa14a8bbd",
+  "reason": "FAILED_ADMISSION_ARCHIVE_ROOT_UNAVAILABLE",
+  "files": [
+    {
+      "file": "restore-ui-submission.json",
+      "sha256": "8c466660f96bfed5bd3a8a71b9bb7161a337ca6380dd368a440b14b17366237c"
+    },
+    {
+      "file": "restore-ui-result.json",
+      "sha256": "7b13f2faf15c3a9d69ce1ac8206b8f293153e384607ffdfa0ee036ac82777857"
+    },
+    {
+      "file": "restore-ui-confirm.png",
+      "sha256": "1e528a581dde95315a60861680d95b83bf71f412209400fca812f8c4f1824784"
+    },
+    {
+      "file": "restore-ui-state.png",
+      "sha256": "ca72716b2945ea0bb0a23a1530e3217e3642736f8742c8c95e96e19b0a7d5aab"
+    },
+    {
+      "file": "restore-terminal-record.json",
+      "sha256": "9f75f1de6ff688b4228e63ae4ae91af423e5927422453710c9a552fa0242ca9a"
+    },
+    {
+      "file": "restore-ui-terminal.png",
+      "sha256": "7f7747989da6db66a7af3fc3a5ea36986dcc2e3129f3e4ea4f79a1913b324b53"
+    },
+    {
+      "file": "restore-live-progress.json",
+      "sha256": "67086630cd3971b17230ca0ed40ac2f16ee379edc3d648daa60023e1c41e5014"
+    }
+  ]
+}

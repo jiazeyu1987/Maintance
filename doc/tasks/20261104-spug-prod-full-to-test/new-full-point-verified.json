@@ -1,0 +1,45 @@
+{
+  "observedAt": "2026-11-05T06:18:57.474992+00:00",
+  "operationId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+  "state": "SUCCEEDED",
+  "finishedAt": "2026-11-05T06:17:28.597277Z",
+  "pointType": "FULL",
+  "backupId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+  "commonRecoveryPoint": "sha256:e94ad09d511f2b9ebb576e8b8f460a04087ddfbf3d2ed92b6391bb658b59d3c4",
+  "integrityState": "COMPLETE",
+  "rehearsalEligible": true,
+  "controlledRestoreEligible": false,
+  "controlledRestoreBlockedReason": "REPOSITORY_RECOVERY_NOT_RUN",
+  "registeredTargetAdmissionRequired": true,
+  "manifestPin": {
+    "bytes": 6271075,
+    "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/.repository/manifest.json",
+    "sha256": "5f6d2748fd0d22bfb549377923dc63367f20b6b8c5ede20d370d719f64893dc5"
+  },
+  "pointPin": {
+    "bytes": 6271278,
+    "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/.repository/point.json",
+    "sha256": "af95ffa94e9478bd32935c6e0c662aa5590854a0cda7597b84a25abd81a8f128"
+  },
+  "archivePath": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb",
+  "payloadFiles": 14378,
+  "payloadBytes": 26090562595,
+  "verifiedSmallDocumentPins": 13,
+  "sourceStartCommandsCompleted": true,
+  "sourceIndependentHealthCheckRequired": true,
+  "evidence": {
+    "readback": {
+      "schemaVersion": "RepositoryMinimumReadback/v1",
+      "independentConnectionId": "5751e6a8-81c0-464c-9271-fcaff293780d:3729375792",
+      "serverDurabilityVerified": false
+    },
+    "close": {
+      "archiveReaderClosed": true
+    },
+    "terminal": {
+      "actualExitCode": 0,
+      "processTerminated": true
+    }
+  },
+  "serverDurabilityVerified": false
+}

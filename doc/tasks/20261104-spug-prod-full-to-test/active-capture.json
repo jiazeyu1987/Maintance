@@ -1,0 +1,438 @@
+{
+  "observedAt": "2026-11-05T06:13:34.201824+00:00",
+  "operationId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+  "files": [
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/worker-process.json",
+      "bytes": 113,
+      "modifiedAt": 1793847017.9335973
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/capture.stderr.log",
+      "bytes": 0,
+      "modifiedAt": 1793847018.6706111
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/timing-capture-validation-start.json",
+      "bytes": 72,
+      "modifiedAt": 1793851810.8421907
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/capture-output.json",
+      "bytes": 1281,
+      "modifiedAt": 1793847023.8967094
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/timing-archive-admission-end.json",
+      "bytes": 111,
+      "modifiedAt": 1793847018.665611
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/timing-nas-readback-start.json",
+      "bytes": 66,
+      "modifiedAt": 1793853753.816737
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/request.json",
+      "bytes": 238,
+      "modifiedAt": 1793847017.9255972
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/timing-source-capture-start.json",
+      "bytes": 68,
+      "modifiedAt": 1793847018.668611
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/0dc1b8dba810f72c2aeaf3843b4c4bb25d097f997edc77531e0c01cd754dc4dc/854849526a7fada78bba1a067b981baadefd9f9c59e570f839797b6f0c2756c0.raw",
+      "bytes": 559,
+      "modifiedAt": 1793854636.4157853
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/0dc1b8dba810f72c2aeaf3843b4c4bb25d097f997edc77531e0c01cd754dc4dc/5987eb50c0556156ff63bfa237092ffb6312d14bf42448bce73ed75c62655772.raw",
+      "bytes": 431,
+      "modifiedAt": 1793854395.9161513
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/0dc1b8dba810f72c2aeaf3843b4c4bb25d097f997edc77531e0c01cd754dc4dc/40d365059903e0dfc4373ce2c00ba5072691905a94bae498136433116f4fca84.raw",
+      "bytes": 3725890,
+      "modifiedAt": 1793854636.5677881
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/0dc1b8dba810f72c2aeaf3843b4c4bb25d097f997edc77531e0c01cd754dc4dc/f310c1091b45e7140a6b04f566435a2f107f5b937037d982b352467ba57cfe9e.raw",
+      "bytes": 11443727,
+      "modifiedAt": 1793853908.3517246
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/0dc1b8dba810f72c2aeaf3843b4c4bb25d097f997edc77531e0c01cd754dc4dc/5c51f76f99dd0d054b6cf1dc175c7fcbcc7e7d71a9b1b131536e459555d327fb.raw",
+      "bytes": 329,
+      "modifiedAt": 1793854636.4347856
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/0dc1b8dba810f72c2aeaf3843b4c4bb25d097f997edc77531e0c01cd754dc4dc/readback-originals.json",
+      "bytes": 7979866,
+      "modifiedAt": 1793854791.8617644
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/0dc1b8dba810f72c2aeaf3843b4c4bb25d097f997edc77531e0c01cd754dc4dc/6b0764930e9dd109c0d48b0be7628120ab6a4eee2568a06753f5ec221507ebc0.raw",
+      "bytes": 455,
+      "modifiedAt": 1793854636.3707843
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/0dc1b8dba810f72c2aeaf3843b4c4bb25d097f997edc77531e0c01cd754dc4dc/81143493a55fbd0bf2173a40708311020715f0753248d55dfcdded37efb673cd.raw",
+      "bytes": 3178549,
+      "modifiedAt": 1793854636.717791
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/0dc1b8dba810f72c2aeaf3843b4c4bb25d097f997edc77531e0c01cd754dc4dc/bf631e3f453fe46c0ab590b78688a7165bf067a37d035fa6c660069c4a2686a3.raw",
+      "bytes": 2270880,
+      "modifiedAt": 1793854396.1681561
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/0dc1b8dba810f72c2aeaf3843b4c4bb25d097f997edc77531e0c01cd754dc4dc/2df3803cd312d84993b06c9786fabb0951ff2bf1a735a01b894b4f76367f2d20.raw",
+      "bytes": 1097,
+      "modifiedAt": 1793854395.8931508
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/0dc1b8dba810f72c2aeaf3843b4c4bb25d097f997edc77531e0c01cd754dc4dc/464516acb14420a35dd708bfd0e795b8233fd2b470e5098c31bcce7985012df5.raw",
+      "bytes": 600,
+      "modifiedAt": 1793854636.3937848
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/0dc1b8dba810f72c2aeaf3843b4c4bb25d097f997edc77531e0c01cd754dc4dc/0078c6bf3c170455e983ca8e0cb785626e1eb701e731418f5ef8bdf2135609e8.raw",
+      "bytes": 537780,
+      "modifiedAt": 1793854636.6317894
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/0dc1b8dba810f72c2aeaf3843b4c4bb25d097f997edc77531e0c01cd754dc4dc/8479335864579bf214a06a738ac20ddf6cacc1b1b9b7f168defa2aadc695574c.raw",
+      "bytes": 142,
+      "modifiedAt": 1793854633.4507284
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/0dc1b8dba810f72c2aeaf3843b4c4bb25d097f997edc77531e0c01cd754dc4dc/95a8a109fa8e06d42e11f8af1bd39f992096c15b1c65bedb0b6665a589da9902.raw",
+      "bytes": 727,
+      "modifiedAt": 1793854636.2257817
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/0dc1b8dba810f72c2aeaf3843b4c4bb25d097f997edc77531e0c01cd754dc4dc/bf23c16d2ef943b66b67caf00fcb0591bc783d9080235b50e85a90924a50e631.raw",
+      "bytes": 821,
+      "modifiedAt": 1793854636.455786
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/timing-source-capture-end.json",
+      "bytes": 112,
+      "modifiedAt": 1793851810.8401906
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/timing-nas-upload-end.json",
+      "bytes": 108,
+      "modifiedAt": 1793853753.0887227
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/timing-archive-metadata-start.json",
+      "bytes": 70,
+      "modifiedAt": 1793853753.092723
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/timing-nas-upload-start.json",
+      "bytes": 64,
+      "modifiedAt": 1793851923.9503717
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/capture.stdout.log",
+      "bytes": 0,
+      "modifiedAt": 1793847018.6706111
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/timing-capture-validation-end.json",
+      "bytes": 115,
+      "modifiedAt": 1793851923.9473717
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/root-identity-worker-baseline.json",
+      "bytes": 789,
+      "modifiedAt": 1793847018.0475996
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/worker.stderr.log",
+      "bytes": 0,
+      "modifiedAt": 1793847017.9315972
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/capture-process.json",
+      "bytes": 113,
+      "modifiedAt": 1793847018.6716113
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/start.json",
+      "bytes": 446,
+      "modifiedAt": 1793847017.9285972
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/timing-archive-final-verification-start.json",
+      "bytes": 80,
+      "modifiedAt": 1793855443.1432462
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/readback-preflight.json",
+      "bytes": 60,
+      "modifiedAt": 1793847018.658611
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/timing-capture-cleanup-end.json",
+      "bytes": 112,
+      "modifiedAt": 1793857593.9616053
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/worker.stdout.log",
+      "bytes": 0,
+      "modifiedAt": 1793847017.9315972
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/timing-capture-cleanup-start.json",
+      "bytes": 69,
+      "modifiedAt": 1793857345.1948028
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/timing-nas-readback-end.json",
+      "bytes": 110,
+      "modifiedAt": 1793855441.5802164
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/capture-terminal.json",
+      "bytes": 219,
+      "modifiedAt": 1793847023.9557104
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/timing-archive-chain-readback-start.json",
+      "bytes": 76,
+      "modifiedAt": 1793857593.9666054
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/timing-archive-final-verification-end.json",
+      "bytes": 124,
+      "modifiedAt": 1793857344.890797
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/timing-archive-metadata-end.json",
+      "bytes": 110,
+      "modifiedAt": 1793853753.8127367
+    },
+    {
+      "path": "repository-operations/197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/timing-archive-admission-start.json",
+      "bytes": 71,
+      "modifiedAt": 1793847018.0555997
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/worker-stderr.log",
+      "bytes": 0,
+      "modifiedAt": 1793847019.0776188
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/event-0009.json",
+      "bytes": 84,
+      "modifiedAt": 1793847042.453058
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/event-0020.json",
+      "bytes": 94,
+      "modifiedAt": 1793851670.5074847
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/event-0004.json",
+      "bytes": 86,
+      "modifiedAt": 1793847037.8589716
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/terminal-result.json",
+      "bytes": 3135,
+      "modifiedAt": 1793851810.6591873
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/event-0016.json",
+      "bytes": 314,
+      "modifiedAt": 1793851669.8534722
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/event-0011.json",
+      "bytes": 309,
+      "modifiedAt": 1793850748.3671224
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/staging-cleanup.json",
+      "bytes": 3432316,
+      "modifiedAt": 1793857593.937605
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/job-request.json",
+      "bytes": 239,
+      "modifiedAt": 1793847019.0726187
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/event-0018.json",
+      "bytes": 314,
+      "modifiedAt": 1793851670.4714842
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/event-0017.json",
+      "bytes": 68,
+      "modifiedAt": 1793851669.8794727
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/event-0008.json",
+      "bytes": 311,
+      "modifiedAt": 1793847041.8460464
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/event-0002.json",
+      "bytes": 82,
+      "modifiedAt": 1793847024.7357252
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/staging-cleanup-intent.json",
+      "bytes": 3432266,
+      "modifiedAt": 1793857552.9118128
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/capture-archive-entries.json",
+      "bytes": 4379986,
+      "modifiedAt": 1793851668.2234406
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/source-restoration.json",
+      "bytes": 435,
+      "modifiedAt": 1793851670.5024846
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/job-stderr.log",
+      "bytes": 0,
+      "modifiedAt": 1793847018.8906152
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/job-configuration.json",
+      "bytes": 4776,
+      "modifiedAt": 1793847019.0656185
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/event-0010.json",
+      "bytes": 148,
+      "modifiedAt": 1793850748.0721169
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/capture-recovery-inputs.json",
+      "bytes": 11443727,
+      "modifiedAt": 1793851668.1064384
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/event-0006.json",
+      "bytes": 311,
+      "modifiedAt": 1793847041.5820415
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/worker-started.json",
+      "bytes": 54,
+      "modifiedAt": 1793847019.0786188
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/event-0007.json",
+      "bytes": 148,
+      "modifiedAt": 1793847041.6150422
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/event-0014.json",
+      "bytes": 67,
+      "modifiedAt": 1793851668.3624434
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/event-0013.json",
+      "bytes": 128,
+      "modifiedAt": 1793851167.3209436
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/event-0012.json",
+      "bytes": 311,
+      "modifiedAt": 1793851166.9839375
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/job-started.json",
+      "bytes": 54,
+      "modifiedAt": 1793847018.8916154
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/event-0019.json",
+      "bytes": 68,
+      "modifiedAt": 1793851670.4984846
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/event-0003.json",
+      "bytes": 112,
+      "modifiedAt": 1793847037.8429713
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/worker-completion.json",
+      "bytes": 1870,
+      "modifiedAt": 1793851670.5354853
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/event-0015.json",
+      "bytes": 76,
+      "modifiedAt": 1793851669.1634588
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/event-0005.json",
+      "bytes": 148,
+      "modifiedAt": 1793847037.870972
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/event-0001.json",
+      "bytes": 78,
+      "modifiedAt": 1793847023.125695
+    },
+    {
+      "path": "capture-staging/smallapp-73cd541a95d84d6a86f9d693e4053c75/operation.json",
+      "bytes": 835,
+      "modifiedAt": 1793847018.885615
+    }
+  ],
+  "processes": [
+    {
+      "pid": 16086,
+      "ppid": 1,
+      "executable": "python3.12",
+      "state": "R (running)",
+      "wchan": "0",
+      "io": {
+        "rchar": " 296268689102",
+        "wchar": " 26165001523",
+        "syscr": " 4894042",
+        "syscw": " 38915",
+        "read_bytes": " 50084323328",
+        "write_bytes": " 46866432",
+        "cancelled_write_bytes": " 0"
+      },
+      "openFiles": 5
+    }
+  ],
+  "scratchDirectoryEntries": {},
+  "events": [
+    {
+      "at": "2026-11-05T04:07:49.853087+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT"
+    },
+    {
+      "at": "2026-11-05T04:07:49.880094+00:00",
+      "stage": "WRITER_RESTORED"
+    },
+    {
+      "at": "2026-11-05T04:07:50.471615+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT"
+    },
+    {
+      "at": "2026-11-05T04:07:50.498661+00:00",
+      "stage": "WRITER_RESTORED"
+    },
+    {
+      "at": "2026-11-05T04:07:50.507940+00:00",
+      "stage": "CAPTURE_MATERIAL_COMPLETE_SOURCE_RESTORED"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "worktree": "C:\\Users\\D01021\\.codex\\worktrees\\spug-retained-recovery-release-20261105\\Maintance",
+  "branch": "codex/release-spug-retained-recovery-20261105",
+  "targetCommit": "9176b3cea6cf203db7b28d1efdfba209c634bb5d",
+  "newCommitsProduced": false,
+  "mergeRequired": false,
+  "gitRemovalExitCode": 0,
+  "physicalDirectoryAbsent": true,
+  "gitRegistrationAbsent": true,
+  "otherWorktreesUntouched": true
+}

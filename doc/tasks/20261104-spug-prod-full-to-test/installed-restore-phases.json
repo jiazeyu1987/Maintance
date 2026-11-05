@@ -1,0 +1,3 @@
+{
+  "execute": "def execute(configuration, request, root, input_pins):\n    from recovery_replace import enabled, execute as replace\n    if enabled(configuration['targets'][request['targetConfigRef']]):\n        return replace(configuration, request, root, input_pins, execute_empty, MinimalData, selected_chain)\n    return execute_empty(configuration, request, root, input_pins)"
+}

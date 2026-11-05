@@ -1,0 +1,18 @@
+{
+  "label": "before-restore-navigation",
+  "realBrowser": true,
+  "realLogin": true,
+  "businessMutations": 0,
+  "observedAt": "2026-11-05T03:31:41.899Z",
+  "loginHttpStatus": 200,
+  "loginCode": 0,
+  "authenticatedUser": {
+    "id": 1,
+    "username": "admin"
+  },
+  "roleCount": 24,
+  "menuCount": 15,
+  "status": "FAIL",
+  "error": "TimeoutError: page.waitForFunction: Timeout 45000ms exceeded.",
+  "visible": "瑛泰管理系统\n个人中心\n审批中心\n124\n基础数据\nDCC项目代码\n授权公司\nDCC产品目录\nDCC文件分类\n注册证管理\n展厅\n文控中心\n智能排产\neDHR批记录\n系统管理\nSRM\nCRM 系统\nAI 大模型\nERP 系统\n2026-11-03-12-15-42\n基础数据\n/\nDCC项目代码\n请输入菜单内容\n瑛泰管理员\nDCC项目代码\n暂无筛选条件\n显示字段\n文控\n\t\n主编码\n\t\n项目名称\n\t\n项目代码\n\t\n类别\n\t\n关联文件数\n\t\n批记录识别JSON\n\t\n工艺路线\n\t\n主批记录\n\t\nQA规程\n\t\n更新时间\n\t\n关联文档\n暂无数据"
+}

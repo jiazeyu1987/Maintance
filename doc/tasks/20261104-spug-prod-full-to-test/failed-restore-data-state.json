@@ -1,0 +1,8 @@
+{
+  "observedAt": "2026-11-05T07:06:02.548382+00:00",
+  "databaseUuid": "20ca4c6c-cc31-11f1-9b95-0242ac1deb16",
+  "tableCount": 0,
+  "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+  "businessStartPermitted": false,
+  "reason": "FAILED_REPLACEMENT_REQUIRES_FORMAL_RECOVERY"
+}

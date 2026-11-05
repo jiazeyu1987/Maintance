@@ -1,0 +1,12 @@
+{
+  "observedAt": "2026-11-05T09:13:06.600379+00:00",
+  "operationId": "smallapp-6cb9423086fe4b62ad21505e189bc36b",
+  "workers": [
+    {
+      "pid": 29206,
+      "readGiB": 14.54,
+      "wchan": "0"
+    }
+  ],
+  "steps": []
+}

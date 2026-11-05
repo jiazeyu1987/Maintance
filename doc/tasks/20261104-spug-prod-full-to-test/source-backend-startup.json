@@ -1,0 +1,35 @@
+{
+  "observedAt": "2026-11-05T04:11:11.076230+00:00",
+  "state": {
+    "Status": "running",
+    "Running": true,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 5420,
+    "ExitCode": 0,
+    "Error": "",
+    "StartedAt": "2026-11-05T04:07:50.464626789Z",
+    "FinishedAt": "2026-11-05T02:50:41.400874526Z"
+  },
+  "networks": {
+    "intruoyi-runtime_intruoyi_net": {
+      "ip": "172.21.0.11",
+      "networkId": "c73d2eea63d1b8110216c39c9d935fd25948a0afb4d22002d32a32b553bee58a"
+    }
+  },
+  "insideHealthExitCode": 0,
+  "insideHealth": "{\"status\":\"UP\"}",
+  "startupMarkers": {
+    "Started .*Application": true,
+    "Tomcat started": true,
+    "Application run failed": false,
+    "OutOfMemoryError": false,
+    "BindException": false,
+    "Connection refused": false,
+    "CommunicationsException": false
+  },
+  "errorClasses": [],
+  "logLines": 201
+}

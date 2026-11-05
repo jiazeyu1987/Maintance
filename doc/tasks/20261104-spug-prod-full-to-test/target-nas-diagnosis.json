@@ -1,0 +1,248 @@
+{
+  "observedAt": "2026-11-05T06:29:21.493271+00:00",
+  "paths": [
+    {
+      "path": "/mnt/nas",
+      "exists": true,
+      "symlink": false,
+      "resolved": "/mnt/nas",
+      "entries": [
+        "Backup"
+      ]
+    },
+    {
+      "path": "/mnt/intruoyi-backup-nas",
+      "exists": true,
+      "symlink": false,
+      "resolved": "/mnt/intruoyi-backup-nas",
+      "entries": [
+        "#recycle",
+        "办公软件",
+        "打印机驱动",
+        "公司文档类",
+        "固定资产入库和明细",
+        "设计软件",
+        "重要电脑备份",
+        "网络相关",
+        "系统工具",
+        "杂项",
+        "小温",
+        "备份"
+      ]
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas",
+      "exists": true,
+      "symlink": false,
+      "resolved": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas",
+      "entries": []
+    }
+  ],
+  "credentials": [
+    {
+      "path": "/root/.smbcredentials",
+      "uid": 0,
+      "mode": "0o600"
+    }
+  ],
+  "containers": [
+    {
+      "id": "b4592b704b979f1b94ba03836985491a8f7c699d3094297bfbe3696939eedd79",
+      "image": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 11377,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-11-05T01:51:30.916478688Z",
+        "FinishedAt": "2026-11-05T01:27:42.374128394Z"
+      }
+    },
+    {
+      "id": "98216faac1ae2fc1508bd4076962bf4cfcb3a47f2f1bd5d5e42c7ba819e83115",
+      "image": "sha256:c4260bcf2c25b683e4f6e6ed6474f12c5c28dc8e375bfe0ecea7a5d3fbecbc04",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 27944,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-11-05T01:52:48.967611426Z",
+        "FinishedAt": "2026-11-05T01:27:42.460621555Z",
+        "Health": {
+          "Status": "healthy",
+          "FailingStreak": 0,
+          "Log": [
+            {
+              "Start": "2026-11-05T14:29:00.200128543+08:00",
+              "End": "2026-11-05T14:29:00.424001908+08:00",
+              "ExitCode": 0,
+              "Output": ""
+            },
+            {
+              "Start": "2026-11-05T14:29:05.425480847+08:00",
+              "End": "2026-11-05T14:29:05.64926631+08:00",
+              "ExitCode": 0,
+              "Output": ""
+            },
+            {
+              "Start": "2026-11-05T14:29:10.650362524+08:00",
+              "End": "2026-11-05T14:29:10.869338498+08:00",
+              "ExitCode": 0,
+              "Output": ""
+            },
+            {
+              "Start": "2026-11-05T14:29:15.870086951+08:00",
+              "End": "2026-11-05T14:29:16.153059357+08:00",
+              "ExitCode": 0,
+              "Output": ""
+            },
+            {
+              "Start": "2026-11-05T14:29:21.154689481+08:00",
+              "End": "2026-11-05T14:29:21.379925205+08:00",
+              "ExitCode": 0,
+              "Output": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "028bb0541d3216c283c5f1822338462545fa7cd63fad55c462ae20a01526e225",
+      "image": "sha256:487efc0616382465781b8fdc3d6d1db449e6fd80ae23bf48432a2da6b6929908",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 28575,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-11-05T01:52:49.476812788Z",
+        "FinishedAt": "2026-11-05T01:27:42.421594587Z"
+      }
+    },
+    {
+      "id": "6f70e67078d086d7f08c1ae75a80bb0feab28c5a1f92c91d655ac258f34988eb",
+      "image": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 29092,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-11-05T01:52:49.99473683Z",
+        "FinishedAt": "2026-11-05T01:27:42.432102811Z",
+        "Health": {
+          "Status": "healthy",
+          "FailingStreak": 0,
+          "Log": [
+            {
+              "Start": "2026-11-05T14:28:33.050679895+08:00",
+              "End": "2026-11-05T14:28:33.284266998+08:00",
+              "ExitCode": 0,
+              "Output": ""
+            },
+            {
+              "Start": "2026-11-05T14:28:43.284823635+08:00",
+              "End": "2026-11-05T14:28:43.517880833+08:00",
+              "ExitCode": 0,
+              "Output": ""
+            },
+            {
+              "Start": "2026-11-05T14:28:53.51925163+08:00",
+              "End": "2026-11-05T14:28:53.770341905+08:00",
+              "ExitCode": 0,
+              "Output": ""
+            },
+            {
+              "Start": "2026-11-05T14:29:03.771500858+08:00",
+              "End": "2026-11-05T14:29:04.010970997+08:00",
+              "ExitCode": 0,
+              "Output": ""
+            },
+            {
+              "Start": "2026-11-05T14:29:14.012310256+08:00",
+              "End": "2026-11-05T14:29:14.24007231+08:00",
+              "ExitCode": 0,
+              "Output": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "4f9775e6f0a1d86b2d06c69e40504a91cf44a613de458b76e69fa04805ca5d73",
+      "image": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 16494,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-11-05T01:27:57.584155694Z",
+        "FinishedAt": "2026-11-05T01:24:03.965998374Z",
+        "Health": {
+          "Status": "healthy",
+          "FailingStreak": 0,
+          "Log": [
+            {
+              "Start": "2026-11-05T14:28:40.044990291+08:00",
+              "End": "2026-11-05T14:28:40.275123196+08:00",
+              "ExitCode": 0,
+              "Output": ""
+            },
+            {
+              "Start": "2026-11-05T14:28:50.275805947+08:00",
+              "End": "2026-11-05T14:28:50.49376402+08:00",
+              "ExitCode": 0,
+              "Output": ""
+            },
+            {
+              "Start": "2026-11-05T14:29:00.49526565+08:00",
+              "End": "2026-11-05T14:29:00.728926157+08:00",
+              "ExitCode": 0,
+              "Output": ""
+            },
+            {
+              "Start": "2026-11-05T14:29:10.729643428+08:00",
+              "End": "2026-11-05T14:29:10.948763855+08:00",
+              "ExitCode": 0,
+              "Output": ""
+            },
+            {
+              "Start": "2026-11-05T14:29:20.950249452+08:00",
+              "End": "2026-11-05T14:29:21.175134515+08:00",
+              "ExitCode": 0,
+              "Output": ""
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "cifsMountCount": 0,
+  "fstabNasLines": [
+    "//172.30.30.4/IT共享 /mnt/intruoyi-backup-nas cifs credentials=/root/intruoyi-nas-default-20261021/mount.credentials,vers=3.0,iocharset=utf8,_netdev,x-systemd.automount 0 0"
+  ],
+  "units": []
+}

@@ -1,0 +1,36 @@
+{
+  "observedAt": "2026-11-05T02:36:25.231010+00:00",
+  "service": "spug-intruoyi-source-57-20261105.service",
+  "dropIn": "/etc/systemd/system/spug-intruoyi-source-57-20261105.service.d/archive-budget.conf",
+  "priorPid": 20619,
+  "currentPid": 20619,
+  "limits": "Max open files            65536                65536                files     ",
+  "selections": {
+    "applications": [
+      {
+        "applicationId": "intruoyi-57-safe-20261024-v1",
+        "engineSelectionRef": "common-engine-minimal-unified-20261015-r1",
+        "freshTargetConfigRefs": [],
+        "fullErrorCode": null,
+        "fullReady": true,
+        "historyErrorCode": null,
+        "parentChainRefs": [
+          "smallapp-0eebed7726824ca5b7292ffc9b845735",
+          "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+          "smallapp-3f29a2b1324045309478a3a597654260",
+          "smallapp-a54a05be9dab45e490a3979551536b0c"
+        ],
+        "recoveryPointRefs": [
+          "smallapp-0eebed7726824ca5b7292ffc9b845735",
+          "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+          "smallapp-3f29a2b1324045309478a3a597654260",
+          "smallapp-a54a05be9dab45e490a3979551536b0c"
+        ],
+        "sourceConfigRef": "intruoyi-57-safe-20261024-v1"
+      }
+    ],
+    "observedAt": "2026-11-05T02:36:25.206408Z"
+  },
+  "businessRunningSetPreserved": true,
+  "backupOrRestoreSubmitted": false
+}

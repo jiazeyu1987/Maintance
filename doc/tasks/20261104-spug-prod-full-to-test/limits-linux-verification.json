@@ -1,0 +1,19 @@
+{
+  "container": "spug-readback-limits-unit-20261105",
+  "image": "python:3.12-bookworm",
+  "state": {
+    "Status": "exited",
+    "Running": false,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 0,
+    "ExitCode": 1,
+    "Error": "",
+    "StartedAt": "2026-11-05T08:51:08.227467445Z",
+    "FinishedAt": "2026-11-05T08:53:50.106797146Z"
+  },
+  "exitCode": 1,
+  "scope": "LOCAL_COMPONENTS_NOT_SERVER_RESTORE"
+}

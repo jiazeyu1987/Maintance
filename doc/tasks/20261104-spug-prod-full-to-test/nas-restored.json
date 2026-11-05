@@ -1,0 +1,29 @@
+{
+  "observedAt": "2026-11-05T01:50:40.763818+00:00",
+  "mounts": [
+    {
+      "target": "/mnt/intruoyi-backup-nas",
+      "unit": "mnt-intruoyi\\x2dbackup\\x2dnas.mount",
+      "active": "active",
+      "mode": "ro",
+      "mountRoot": "/"
+    },
+    {
+      "target": "/mnt/nas/Backup/BackupPackage",
+      "unit": "mnt-nas-Backup-BackupPackage.mount",
+      "active": "active",
+      "mode": "ro",
+      "mountRoot": "/Backup/BackupPackage"
+    },
+    {
+      "target": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas",
+      "unit": "var-lib-docker-intruoyi\\x2ddata-prod57\\x2dspug\\x2drehearsal\\x2d20261021-nas.mount",
+      "active": "active",
+      "mode": "rw",
+      "mountRoot": "/"
+    }
+  ],
+  "archiveRoot": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives",
+  "archiveRootDevice": 50,
+  "freeBytes": 11784719491072
+}

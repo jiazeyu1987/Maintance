@@ -1,0 +1,41 @@
+{
+  "observedAt": "2026-11-05T02:09:08.308780+00:00",
+  "attestedDifferences": [
+    {
+      "networkId": "72f4b6562e02daa514b3102d4e6ce61b986e3ed60259b4e333ad14bea3d5284b",
+      "internal": true,
+      "before": {
+        "Config": [
+          {
+            "Subnet": "172.29.235.0/24"
+          }
+        ],
+        "Driver": "default",
+        "Options": {}
+      },
+      "after": {
+        "Driver": "default",
+        "Options": {},
+        "Config": [
+          {
+            "Subnet": "172.29.235.0/24",
+            "Gateway": "172.29.235.1"
+          }
+        ]
+      }
+    }
+  ],
+  "ownerConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-boot-bb31c4d0-r2.json",
+    "bytes": 20480,
+    "sha256": "248367775587b1fba9cf89621b7d059fda6ae51d5a7d3a3e54aa7a05e70c7cd8"
+  },
+  "controlConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-43658-boot-bb31c4d0-r2.json",
+    "bytes": 2350,
+    "sha256": "4e8b20f993c551a89cfe348ab0acd0812d6c6bd02b02f5e52af5dd8868f64063"
+  },
+  "strictNetworkChecksPreserved": true,
+  "serviceIdentityAndAttachmentsUnchanged": true,
+  "restorePerformed": false
+}

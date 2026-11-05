@@ -1,0 +1,94 @@
+{
+  "url": "http://172.30.30.58:8081/login?redirect=/index",
+  "inputs": [
+    {
+      "type": "text",
+      "placeholder": null,
+      "role": "combobox"
+    },
+    {
+      "type": "text",
+      "placeholder": "请输入用户名",
+      "role": null
+    },
+    {
+      "type": "password",
+      "placeholder": "请输入密码",
+      "role": null
+    },
+    {
+      "type": "checkbox",
+      "placeholder": null,
+      "role": null
+    },
+    {
+      "type": "text",
+      "placeholder": "请输入租户名称",
+      "role": null
+    },
+    {
+      "type": "text",
+      "placeholder": "请输入手机号码",
+      "role": null
+    },
+    {
+      "type": "text",
+      "placeholder": "请输入验证码",
+      "role": null
+    },
+    {
+      "type": "text",
+      "placeholder": "租户名称",
+      "role": null
+    },
+    {
+      "type": "text",
+      "placeholder": "用户名",
+      "role": null
+    },
+    {
+      "type": "text",
+      "placeholder": "昵称",
+      "role": null
+    },
+    {
+      "type": "password",
+      "placeholder": "密码",
+      "role": null
+    },
+    {
+      "type": "password",
+      "placeholder": "确认密码",
+      "role": null
+    },
+    {
+      "type": "text",
+      "placeholder": "请输入租户名称",
+      "role": null
+    },
+    {
+      "type": "text",
+      "placeholder": "请输入手机号码",
+      "role": null
+    },
+    {
+      "type": "text",
+      "placeholder": "请输入验证码",
+      "role": null
+    },
+    {
+      "type": "password",
+      "placeholder": "请输入密码",
+      "role": null
+    },
+    {
+      "type": "password",
+      "placeholder": "确认密码",
+      "role": null
+    }
+  ],
+  "buttons": [
+    " 登录 "
+  ],
+  "visible": "瑛泰数字化平台\n登录\n芋道源码\n记住我\n忘记密码?\n登录"
+}

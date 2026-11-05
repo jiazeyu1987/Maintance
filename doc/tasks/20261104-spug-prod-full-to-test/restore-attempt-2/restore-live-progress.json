@@ -1,0 +1,13 @@
+{
+  "observedAt": "2026-11-05T06:54:06.038Z",
+  "operationId": "smallapp-af9fb80256c0417f86f2741686950823",
+  "state": "FAILED",
+  "errorCode": "RESTORE_TYPEERROR",
+  "spugHistoryId": 352,
+  "queryError": null,
+  "visible": "原操作失败",
+  "steps": "清空已确认覆盖的程序目标\n失败\n开始 2026/11/5 14:53:26　结束 2026/11/5 14:53:57　耗时 0时 0分 30秒",
+  "logs": "2026/11/5 14:53:26  清空已确认覆盖的程序目标：开始\n2026/11/5 14:53:57  清空已确认覆盖的程序目标：失败，耗时 0时 0分 30秒\n2026/11/5 14:53:57  原始执行结果：FAILED_RETAINED\n错误：尚未满足执行条件（RESTORE_TYPEERROR）",
+  "problem": "",
+  "writes": 0
+}

@@ -1,0 +1,11 @@
+{
+  "observedAt": "2026-11-05T10:56:32.907513+00:00",
+  "backendRunning": true,
+  "backendStartedAt": "2026-11-05T10:52:47.882899354Z",
+  "backendPid": 24553,
+  "dockerHealth": "healthy",
+  "lastHealthExitCode": 0,
+  "healthProbeExitCode": 0,
+  "backendHealth": "UP",
+  "businessWritesPerformed": false
+}

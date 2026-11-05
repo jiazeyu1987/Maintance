@@ -1,0 +1,12 @@
+{
+  "host": "172.30.30.58",
+  "observedAt": "2026-11-05T01:32:51.456221+00:00",
+  "proxies": [],
+  "errors": {},
+  "targetSelections": {
+    "httpStatus": 500,
+    "body": "{\"errorCode\":\"REPLACEMENT_STORAGE_DIRECTORY_CHANGED\"}"
+  },
+  "unitPaths": [],
+  "logSignatures": {}
+}

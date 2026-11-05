@@ -1,0 +1,749 @@
+{
+  "host": "172.30.30.57",
+  "observedAt": "2026-11-05T01:31:51.424522+00:00",
+  "bootId": "da02a370-1ae2-46fc-8d89-a32b77f2f6ac",
+  "uptimeSeconds": "277.81",
+  "memory": {
+    "MemTotal": "32770288 kB",
+    "MemAvailable": "29162652 kB",
+    "SwapTotal": "10485756 kB",
+    "SwapFree": "10485756 kB"
+  },
+  "blockedProcesses": [],
+  "errors": {},
+  "containerCount": 195,
+  "runningContainerSummaries": [
+    {
+      "ID": "1ceaee8d844f",
+      "Names": "erp-invoice-voucher-print-assistant",
+      "Image": "erp-invoice-voucher-print-assistant:2026-11-03-09-27-31",
+      "State": "running",
+      "Status": "Up 4 minutes",
+      "Ports": "0.0.0.0:18733->18733/tcp, :::18733->18733/tcp"
+    },
+    {
+      "ID": "7dbf8a3197a2",
+      "Names": "fenbeitong-assistant",
+      "Image": "c02c393bc038",
+      "State": "running",
+      "Status": "Up 4 minutes",
+      "Ports": "0.0.0.0:18734->18734/tcp, :::18734->18734/tcp"
+    },
+    {
+      "ID": "5f151cbb407e",
+      "Names": "rehearsal-smallapp-20261022-frontend",
+      "Image": "rehearsal-smallapp-frontend:2026-10-22-22-00-44",
+      "State": "running",
+      "Status": "Up 4 minutes (healthy)",
+      "Ports": "172.30.30.57:38082->80/tcp"
+    },
+    {
+      "ID": "2ec14b9e0148",
+      "Names": "rehearsal-smallapp-20261022-backend",
+      "Image": "rehearsal-smallapp-backend:2026-10-22-22-00-44",
+      "State": "running",
+      "Status": "Up 4 minutes (healthy)",
+      "Ports": ""
+    },
+    {
+      "ID": "9af094862946",
+      "Names": "rehearsal-smallapp-20261022-minio",
+      "Image": "quay.io/minio/minio:RELEASE.2025-06-13T11-33-47Z",
+      "State": "running",
+      "Status": "Up 4 minutes (healthy)",
+      "Ports": ""
+    },
+    {
+      "ID": "417ba2924a95",
+      "Names": "rehearsal-smallapp-20261022-redis",
+      "Image": "redis:7-alpine",
+      "State": "running",
+      "Status": "Up 4 minutes (healthy)",
+      "Ports": ""
+    },
+    {
+      "ID": "09a7210373b3",
+      "Names": "rehearsal-smallapp-20261022-mysql",
+      "Image": "mysql:8.0.39",
+      "State": "running",
+      "Status": "Up 4 minutes (healthy)",
+      "Ports": ""
+    },
+    {
+      "ID": "9d6b45bad9b1",
+      "Names": "intruoyi-website",
+      "Image": "nginx:1.27-alpine",
+      "State": "running",
+      "Status": "Up 4 minutes",
+      "Ports": "0.0.0.0:8083->80/tcp, :::8083->80/tcp"
+    },
+    {
+      "ID": "ab9f967c26b4",
+      "Names": "intruoyi-onlyoffice",
+      "Image": "onlyoffice/documentserver:latest",
+      "State": "running",
+      "Status": "Up 4 minutes (healthy)",
+      "Ports": "443/tcp, 0.0.0.0:8080->80/tcp, :::8080->80/tcp"
+    },
+    {
+      "ID": "9a288d20d254",
+      "Names": "intruoyi-mysql",
+      "Image": "mysql:8.0.39",
+      "State": "running",
+      "Status": "Up 4 minutes (healthy)",
+      "Ports": "3306/tcp, 33060/tcp"
+    },
+    {
+      "ID": "5099e7bd566e",
+      "Names": "intruoyi-redis",
+      "Image": "redis:7-alpine",
+      "State": "running",
+      "Status": "Up 4 minutes (healthy)",
+      "Ports": "6379/tcp"
+    },
+    {
+      "ID": "b9f1d48ecf88",
+      "Names": "ragflow_compose-minio-1",
+      "Image": "quay.io/minio/minio:RELEASE.2025-06-13T11-33-47Z",
+      "State": "running",
+      "Status": "Up 4 minutes",
+      "Ports": "0.0.0.0:9000-9001->9000-9001/tcp, :::9000-9001->9000-9001/tcp"
+    }
+  ],
+  "listeners": "State    Recv-Q    Send-Q        Local Address:Port        Peer Address:Port                                                                                    \nLISTEN   0         128                 0.0.0.0:8080             0.0.0.0:*        users:((\"docker-proxy\",pid=7227,fd=4))                                         \nLISTEN   0         128                 0.0.0.0:48081            0.0.0.0:*        users:((\"docker-proxy\",pid=6860,fd=4))                                         \nLISTEN   0         5                 127.0.0.1:18257            0.0.0.0:*        users:((\"python3.12\",pid=3022,fd=6))                                           \nLISTEN   0         128                 0.0.0.0:8083             0.0.0.0:*        users:((\"docker-proxy\",pid=7287,fd=4))                                         \nLISTEN   0         128                 0.0.0.0:22               0.0.0.0:*        users:((\"sshd\",pid=3019,fd=4))                                                 \nLISTEN   0         128            172.30.30.57:38082            0.0.0.0:*        users:((\"docker-proxy\",pid=7172,fd=4))                                         \nLISTEN   0         128                 0.0.0.0:9000             0.0.0.0:*        users:((\"docker-proxy\",pid=7028,fd=4))                                         \nLISTEN   0         128                 0.0.0.0:9001             0.0.0.0:*        users:((\"docker-proxy\",pid=7006,fd=4))                                         \nLISTEN   0         128                 0.0.0.0:18733            0.0.0.0:*        users:((\"docker-proxy\",pid=7092,fd=4))                                         \nLISTEN   0         128                 0.0.0.0:18734            0.0.0.0:*        users:((\"docker-proxy\",pid=6980,fd=4))                                         \nLISTEN   0         128                    [::]:8080                [::]:*        users:((\"docker-proxy\",pid=7241,fd=4))                                         \nLISTEN   0         128                    [::]:48081               [::]:*        users:((\"docker-proxy\",pid=6868,fd=4))                                         \nLISTEN   0         128                    [::]:8083                [::]:*        users:((\"docker-proxy\",pid=7300,fd=4))                                         \nLISTEN   0         128                    [::]:22                  [::]:*        users:((\"sshd\",pid=3019,fd=6))                                                 \nLISTEN   0         128                       *:9090                   *:*        users:((\"systemd\",pid=1,fd=47))                                                \nLISTEN   0         128                    [::]:9000                [::]:*        users:((\"docker-proxy\",pid=7035,fd=4))                                         \nLISTEN   0         128                    [::]:9001                [::]:*        users:((\"docker-proxy\",pid=7013,fd=4))                                         \nLISTEN   0         128                    [::]:18733               [::]:*        users:((\"docker-proxy\",pid=7105,fd=4))                                         \nLISTEN   0         128                    [::]:18734               [::]:*        users:((\"docker-proxy\",pid=6987,fd=4))                                         \n",
+  "controlUnits": "",
+  "containers": [
+    {
+      "id": "c4385604eb83b44f2836755bad709581c7e7edd0078b148f3b0f74e0b567304c",
+      "name": "/intruoyi-backend",
+      "image": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+      "state": {
+        "Status": "exited",
+        "Running": false,
+        "Restarting": false,
+        "Error": "driver failed programming external connectivity on endpoint intruoyi-backend (688fa98575ede61374cb7cf55e9a015fa8a17002827155322178ee0b61fdcfd1): Bind for 0.0.0.0:48081 failed: port is already allocated",
+        "ExitCode": 255,
+        "StartedAt": "2026-11-03T12:10:37.449259023Z",
+        "FinishedAt": "2026-11-05T01:27:38.660108163Z"
+      },
+      "health": null,
+      "ports": {
+        "48081/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "48081"
+          }
+        ]
+      },
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "compose": {
+        "project": "intruoyi-runtime",
+        "service": "backend",
+        "project.working_dir": "/opt/intruoyi/runtime",
+        "project.config_files": "/opt/intruoyi/runtime/docker-compose.yml"
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/var/run/docker.sock",
+          "Destination": "/var/run/docker.sock",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Source": "/mnt/nas/Backup/BackupPackage",
+          "Destination": "/mnt/nas/Backup/BackupPackage",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/ops",
+          "Destination": "/opt/intruoyi/ops",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/smoke/bin/npm",
+          "Destination": "/usr/local/bin/npm",
+          "RW": false
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/tools/codex",
+          "Destination": "/opt/intruoyi/runtime/tools/codex",
+          "RW": false
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/data/backend-logs",
+          "Destination": "/root/logs",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Source": "/backup",
+          "Destination": "/backup",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime",
+          "Destination": "/opt/intruoyi/runtime",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/backend-codex-home",
+          "Destination": "/opt/intruoyi/runtime/backend-codex-home",
+          "RW": true
+        }
+      ]
+    },
+    {
+      "id": "1210f97cf7653c5f74a7981bf4d4bec8d7462af873d53695d47a59a7ce38a479",
+      "name": "/intruoyi-frontend",
+      "image": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a",
+      "state": {
+        "Status": "restarting",
+        "Running": true,
+        "Restarting": true,
+        "Error": "",
+        "ExitCode": 1,
+        "StartedAt": "2026-11-05T01:31:32.323769342Z",
+        "FinishedAt": "2026-11-05T01:31:32.52977817Z"
+      },
+      "health": null,
+      "ports": {
+        "80/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "8081"
+          }
+        ]
+      },
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "compose": {
+        "project": "intruoyi-runtime",
+        "service": "frontend",
+        "project.working_dir": "/opt/intruoyi/runtime",
+        "project.config_files": "/opt/intruoyi/runtime/docker-compose.yml"
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/var/lib/docker/intruoyi-data/current-32ff79d-20261020/nginx.conf",
+          "Destination": "/etc/nginx/conf.d/default.conf",
+          "RW": false
+        }
+      ]
+    },
+    {
+      "id": "1ceaee8d844fd913d31ac2e500a5401f3fb0405618cbb038d582071bd5d75719",
+      "name": "/erp-invoice-voucher-print-assistant",
+      "image": "sha256:aa6f61b9aeaeb1185a5bb4d299a2b409c89fbfaa3dfd988c18a220215625fb25",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Restarting": false,
+        "Error": "",
+        "ExitCode": 0,
+        "StartedAt": "2026-11-05T01:27:42.330730585Z",
+        "FinishedAt": "2026-11-05T01:24:46.764116618Z"
+      },
+      "health": null,
+      "ports": {
+        "18733/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "18733"
+          }
+        ]
+      },
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "compose": {
+        "project": null,
+        "service": null,
+        "project.working_dir": null,
+        "project.config_files": null
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/erp-invoice-voucher-print-assistant/runtime",
+          "Destination": "/opt/invoice-voucher-print-assistant/runtime",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/erp-invoice-voucher-print-assistant/uploads",
+          "Destination": "/opt/invoice-voucher-print-assistant/服务器上传发票",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/erp-invoice-voucher-print-assistant/results",
+          "Destination": "/opt/invoice-voucher-print-assistant/浏览器运行结果",
+          "RW": true
+        }
+      ]
+    },
+    {
+      "id": "7dbf8a3197a28a216a0da19f731cf20a40aa35117d73f348e3d5f50fcf027251",
+      "name": "/fenbeitong-assistant",
+      "image": "sha256:c02c393bc03896f08b975c4fd4853de7916e693b960d2473fb3e1387cf148768",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Restarting": false,
+        "Error": "",
+        "ExitCode": 0,
+        "StartedAt": "2026-11-05T01:27:42.300238592Z",
+        "FinishedAt": "2026-11-05T01:24:46.818165695Z"
+      },
+      "health": null,
+      "ports": {
+        "18734/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "18734"
+          }
+        ]
+      },
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "compose": {
+        "project": null,
+        "service": null,
+        "project.working_dir": null,
+        "project.config_files": null
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/var/lib/docker/fenbeitong-release/data",
+          "Destination": "/data",
+          "RW": true
+        }
+      ]
+    },
+    {
+      "id": "5f151cbb407e09b42c20a7643104d4c658a384acaeee6a4a36e8fcf97e238b15",
+      "name": "/rehearsal-smallapp-20261022-frontend",
+      "image": "sha256:1665abc9a92f5e44516e9c9a5bc01d474ebe667a46344624dcf0c5033415325f",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Restarting": false,
+        "Error": "",
+        "ExitCode": 0,
+        "StartedAt": "2026-11-05T01:27:42.960756065Z",
+        "FinishedAt": "2026-11-05T01:24:40.210561653Z"
+      },
+      "health": "healthy",
+      "ports": {
+        "80/tcp": [
+          {
+            "HostIp": "172.30.30.57",
+            "HostPort": "38082"
+          }
+        ]
+      },
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "compose": {
+        "project": null,
+        "service": null,
+        "project.working_dir": null,
+        "project.config_files": null
+      },
+      "mounts": []
+    },
+    {
+      "id": "2ec14b9e0148d1ca0f67652ae606efc10dff3fee2656af11e819fb316623d4ff",
+      "name": "/rehearsal-smallapp-20261022-backend",
+      "image": "sha256:4b42dc3012c314af7ae49664643b271cabf2ba927d63ff8e25e343ae086fbe4e",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Restarting": false,
+        "Error": "",
+        "ExitCode": 0,
+        "StartedAt": "2026-11-05T01:27:42.055859378Z",
+        "FinishedAt": "2026-11-05T01:24:46.801644992Z"
+      },
+      "health": "healthy",
+      "ports": {},
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "compose": {
+        "project": null,
+        "service": null,
+        "project.working_dir": null,
+        "project.config_files": null
+      },
+      "mounts": []
+    },
+    {
+      "id": "9af094862946e614cffc395531c8a7af65618ac2bc8ed3f92d1c9ded2ec8c62b",
+      "name": "/rehearsal-smallapp-20261022-minio",
+      "image": "sha256:c4260bcf2c25b683e4f6e6ed6474f12c5c28dc8e375bfe0ecea7a5d3fbecbc04",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Restarting": false,
+        "Error": "",
+        "ExitCode": 0,
+        "StartedAt": "2026-11-05T01:27:41.885720078Z",
+        "FinishedAt": "2026-11-05T01:24:36.633640051Z"
+      },
+      "health": "healthy",
+      "ports": {},
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "compose": {
+        "project": null,
+        "service": null,
+        "project.working_dir": null,
+        "project.config_files": null
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/var/lib/docker/intruoyi-data/rehearsal-smallapp-20261022/instance/data/minio",
+          "Destination": "/data",
+          "RW": true
+        }
+      ]
+    },
+    {
+      "id": "417ba2924a955c308d647528c721938c9b7b272887f412847caf6d1f3b7b70d7",
+      "name": "/rehearsal-smallapp-20261022-redis",
+      "image": "sha256:487efc0616382465781b8fdc3d6d1db449e6fd80ae23bf48432a2da6b6929908",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Restarting": false,
+        "Error": "",
+        "ExitCode": 0,
+        "StartedAt": "2026-11-05T01:27:42.543112116Z",
+        "FinishedAt": "2026-11-05T01:24:37.081477447Z"
+      },
+      "health": "healthy",
+      "ports": {},
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "compose": {
+        "project": null,
+        "service": null,
+        "project.working_dir": null,
+        "project.config_files": null
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/var/lib/docker/intruoyi-data/rehearsal-smallapp-20261022/instance/redis.conf",
+          "Destination": "/etc/redis/redis.conf",
+          "RW": false
+        },
+        {
+          "Type": "bind",
+          "Source": "/var/lib/docker/intruoyi-data/rehearsal-smallapp-20261022/instance/data/redis",
+          "Destination": "/data",
+          "RW": true
+        }
+      ]
+    },
+    {
+      "id": "09a7210373b351d2c1e5c044c5f8d73efdca9a20715c6fbc30f409877f7a2456",
+      "name": "/rehearsal-smallapp-20261022-mysql",
+      "image": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Restarting": false,
+        "Error": "",
+        "ExitCode": 0,
+        "StartedAt": "2026-11-05T01:27:41.917885375Z",
+        "FinishedAt": "2026-11-05T01:24:46.791336225Z"
+      },
+      "health": "healthy",
+      "ports": {},
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "compose": {
+        "project": null,
+        "service": null,
+        "project.working_dir": null,
+        "project.config_files": null
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/var/lib/docker/intruoyi-data/rehearsal-smallapp-20261022/instance/data/mysql",
+          "Destination": "/var/lib/mysql",
+          "RW": true
+        }
+      ]
+    },
+    {
+      "id": "9d6b45bad9b18f575b0f8ee7cf729f1167b9fc9a2ebeb8a7a2c74ebbdcd24830",
+      "name": "/intruoyi-website",
+      "image": "sha256:6769dc3a703c719c1d2756bda113659be28ae16cf0da58dd5fd823d6b9a050ea",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Restarting": false,
+        "Error": "",
+        "ExitCode": 0,
+        "StartedAt": "2026-11-05T01:27:42.110725203Z",
+        "FinishedAt": "2026-11-05T01:24:43.15929994Z"
+      },
+      "health": null,
+      "ports": {
+        "80/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "8083"
+          }
+        ]
+      },
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "compose": {
+        "project": "intruoyi-runtime",
+        "service": "website",
+        "project.working_dir": "/opt/intruoyi/runtime",
+        "project.config_files": "/opt/intruoyi/runtime/docker-compose.yml"
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/website/nginx.conf",
+          "Destination": "/etc/nginx/conf.d/default.conf",
+          "RW": false
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/website/dist",
+          "Destination": "/usr/share/nginx/html",
+          "RW": false
+        }
+      ]
+    },
+    {
+      "id": "ab9f967c26b4e1672a1229395658dde2706e5d01c3e29086dd9e3ad2b0fac3de",
+      "name": "/intruoyi-onlyoffice",
+      "image": "sha256:55907920aefe1a1e213c4ce2b85d3aad5ea5e60db9e6a4db98612598623f0ce4",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Restarting": false,
+        "Error": "",
+        "ExitCode": 0,
+        "StartedAt": "2026-11-05T01:27:42.389097838Z",
+        "FinishedAt": "2026-11-05T01:24:47.085066306Z"
+      },
+      "health": "healthy",
+      "ports": {
+        "80/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "8080"
+          }
+        ]
+      },
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "compose": {
+        "project": "intruoyi-runtime",
+        "service": "onlyoffice",
+        "project.working_dir": "/opt/intruoyi/runtime",
+        "project.config_files": "/opt/intruoyi/runtime/docker-compose.yml"
+      },
+      "mounts": [
+        {
+          "Type": "volume",
+          "Source": "/var/lib/docker/volumes/468e75d6cd1bb297daa187222372e94c7cbfe27e5470eaefca99c8b37703e64e/_data",
+          "Destination": "/usr/share/fonts/truetype/custom",
+          "RW": true
+        },
+        {
+          "Type": "volume",
+          "Source": "/var/lib/docker/volumes/37865cbf92fcb721afdcce50f2c83d3f283c50591ecc1555b206aed6aaee8e25/_data",
+          "Destination": "/var/lib/onlyoffice",
+          "RW": true
+        },
+        {
+          "Type": "volume",
+          "Source": "/var/lib/docker/volumes/275ed7ede69b9ec2876af51b92bf1e974a90c0d11d547136ebb00d5d0dae0367/_data",
+          "Destination": "/var/lib/postgresql",
+          "RW": true
+        },
+        {
+          "Type": "volume",
+          "Source": "/var/lib/docker/volumes/471139f2a4012e32f993e8660e0c1ca7df9a3e6196bb41250563e849351f459f/_data",
+          "Destination": "/var/lib/rabbitmq",
+          "RW": true
+        },
+        {
+          "Type": "volume",
+          "Source": "/var/lib/docker/volumes/e8f12461ce576d65afdab49af4c175b244c487c709fb612c48d51d711da24dc5/_data",
+          "Destination": "/var/lib/redis",
+          "RW": true
+        },
+        {
+          "Type": "volume",
+          "Source": "/var/lib/docker/volumes/4ec6c9f14d57056a6b8c8a5fe8947dd47510c8b83521985b9fb5c365e060a0fc/_data",
+          "Destination": "/var/log/onlyoffice",
+          "RW": true
+        },
+        {
+          "Type": "volume",
+          "Source": "/var/lib/docker/volumes/cf29fc399475c24fed6d9e5c7b21299eecf61bc43a87fe2317f50928aec41861/_data",
+          "Destination": "/var/www/onlyoffice/Data",
+          "RW": true
+        }
+      ]
+    },
+    {
+      "id": "9a288d20d254366e99b265b1870466e974edf23e7aab60de2391e3a38e62fff6",
+      "name": "/intruoyi-mysql",
+      "image": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Restarting": false,
+        "Error": "",
+        "ExitCode": 0,
+        "StartedAt": "2026-11-05T01:27:41.904047027Z",
+        "FinishedAt": "2026-11-05T01:24:33.347091222Z"
+      },
+      "health": "healthy",
+      "ports": {},
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "compose": {
+        "project": "intruoyi-runtime",
+        "service": "mysql",
+        "project.working_dir": "/opt/intruoyi/runtime",
+        "project.config_files": "/opt/intruoyi/runtime/docker-compose.yml"
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/data/mysql",
+          "Destination": "/var/lib/mysql",
+          "RW": true
+        }
+      ]
+    },
+    {
+      "id": "5099e7bd566ec6a683e8842b84d8db9e41245708fce29e89309607d6a7e72653",
+      "name": "/intruoyi-redis",
+      "image": "sha256:487efc0616382465781b8fdc3d6d1db449e6fd80ae23bf48432a2da6b6929908",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Restarting": false,
+        "Error": "",
+        "ExitCode": 0,
+        "StartedAt": "2026-11-05T01:27:41.832957773Z",
+        "FinishedAt": "2026-11-05T01:24:35.715196087Z"
+      },
+      "health": "healthy",
+      "ports": {},
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "compose": {
+        "project": "intruoyi-runtime",
+        "service": "redis",
+        "project.working_dir": "/opt/intruoyi/runtime",
+        "project.config_files": "/opt/intruoyi/runtime/docker-compose.yml"
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/data/redis",
+          "Destination": "/data",
+          "RW": true
+        }
+      ]
+    },
+    {
+      "id": "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf",
+      "name": "/ragflow_compose-minio-1",
+      "image": "sha256:c4260bcf2c25b683e4f6e6ed6474f12c5c28dc8e375bfe0ecea7a5d3fbecbc04",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Restarting": false,
+        "Error": "",
+        "ExitCode": 0,
+        "StartedAt": "2026-11-05T01:27:41.826076467Z",
+        "FinishedAt": "2026-11-05T01:24:42.234105715Z"
+      },
+      "health": null,
+      "ports": {
+        "9000/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "9000"
+          }
+        ],
+        "9001/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "9001"
+          }
+        ]
+      },
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "compose": {
+        "project": null,
+        "service": null,
+        "project.working_dir": null,
+        "project.config_files": null
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/data/minio",
+          "Destination": "/data",
+          "RW": true
+        }
+      ]
+    }
+  ]
+}

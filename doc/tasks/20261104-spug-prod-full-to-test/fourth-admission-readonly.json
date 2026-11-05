@@ -1,0 +1,23 @@
+{
+  "observedAt": "2026-11-05T09:08:09.139618+00:00",
+  "operationId": "smallapp-2f4e3cd6b481402085838015c44e5cae",
+  "admissionOnlyFailure": true,
+  "workerOrClaimCreated": false,
+  "hostReservationExists": false,
+  "priorClearanceNotConsumed": true,
+  "sourceChecks": [
+    {
+      "seconds": 0.7517404019999958,
+      "pointAdmitted": true
+    },
+    {
+      "seconds": 0.7637497129981057,
+      "pointAdmitted": true
+    },
+    {
+      "seconds": 0.7669324210000923,
+      "pointAdmitted": true
+    }
+  ],
+  "noAutomaticRetryOrMutation": true
+}

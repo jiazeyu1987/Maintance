@@ -1,0 +1,13 @@
+{
+  "observedAt": "2026-11-05T09:02:57.025Z",
+  "operationId": "smallapp-2f4e3cd6b481402085838015c44e5cae",
+  "state": "FAILED",
+  "errorCode": "SOURCE_CATALOGUE_UNAVAILABLE",
+  "spugHistoryId": 354,
+  "queryError": null,
+  "visible": "原操作失败",
+  "steps": "步骤日志读取失败：STEP_TELEMETRY_READ_FAILED",
+  "logs": "错误：尚未满足执行条件（SOURCE_CATALOGUE_UNAVAILABLE）\n步骤日志读取失败：STEP_TELEMETRY_READ_FAILED；已有数据为上次读取结果。",
+  "problem": "",
+  "writes": 0
+}

@@ -1,0 +1,21 @@
+{
+  "observedAt": "2026-11-05T02:28:00.036056+00:00",
+  "containers": [
+    {
+      "id": "c4385604eb83b44f2836755bad709581c7e7edd0078b148f3b0f74e0b567304c",
+      "name": "/intruoyi-backend",
+      "state": "running",
+      "health": null,
+      "image": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+      "startedAt": "2026-11-05T02:27:18.012792167Z"
+    },
+    {
+      "id": "1210f97cf7653c5f74a7981bf4d4bec8d7462af873d53695d47a59a7ce38a479",
+      "name": "/intruoyi-frontend",
+      "state": "running",
+      "health": null,
+      "image": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a",
+      "startedAt": "2026-11-05T02:27:17.958616907Z"
+    }
+  ]
+}

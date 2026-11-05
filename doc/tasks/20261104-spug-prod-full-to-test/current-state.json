@@ -1,0 +1,226 @@
+{
+  "observedAt": "2026-11-05T02:04:45.113740+00:00",
+  "readOnly": true,
+  "hosts": [
+    {
+      "host": "172.30.30.57",
+      "root": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1",
+      "loadAverage": [
+        "0.63",
+        "0.70",
+        "0.73"
+      ],
+      "errors": {
+        "ledger": "READ_BOUND_EXCEEDED"
+      },
+      "processes": [
+        {
+          "pid": 25665,
+          "state": "S (sleeping)",
+          "commandSha256": "5fb97723b43b9ff2bd2b15be6ab3b544afcb10e42bbb05353d36bf51112802b5"
+        }
+      ],
+      "ledgerEntries": [
+        "service.lock",
+        "smallapp-0eebed7726824ca5b7292ffc9b845735",
+        "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+        "smallapp-3f29a2b1324045309478a3a597654260",
+        "smallapp-76d73ea28c424caa90adc75ab1ac4206",
+        "smallapp-9d0b52af727045efb92e490a68329a22",
+        "smallapp-a54a05be9dab45e490a3979551536b0c",
+        "smallapp-abbd6341ab7a4318973434f48020b287",
+        "smallapp-bc3a610cf70345538e2dcd783893a6ed"
+      ],
+      "controlKeys": [
+        "allowedClientAddresses",
+        "authCredentialRef",
+        "deadlineMilliseconds",
+        "engineSelectionRef",
+        "environment",
+        "ledgerRoot",
+        "listenAddress",
+        "listenPort",
+        "programPins",
+        "pythonPin",
+        "registryRoot",
+        "restoreConfigurations",
+        "schemaVersion",
+        "sourceConfigurations",
+        "taskRoot",
+        "workingDirectory"
+      ],
+      "controlPaths": {
+        "ledgerRoot": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger",
+        "registryRoot": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/registry",
+        "taskRoot": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1",
+        "workingDirectory": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1"
+      },
+      "selections": {
+        "applications": [
+          {
+            "applicationId": "intruoyi-57-safe-20261024-v1",
+            "engineSelectionRef": "common-engine-minimal-unified-20261015-r1",
+            "freshTargetConfigRefs": [],
+            "fullErrorCode": null,
+            "fullReady": true,
+            "historyErrorCode": null,
+            "parentChainRefs": [
+              "smallapp-0eebed7726824ca5b7292ffc9b845735",
+              "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+              "smallapp-3f29a2b1324045309478a3a597654260",
+              "smallapp-a54a05be9dab45e490a3979551536b0c"
+            ],
+            "recoveryPointRefs": [
+              "smallapp-0eebed7726824ca5b7292ffc9b845735",
+              "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+              "smallapp-3f29a2b1324045309478a3a597654260",
+              "smallapp-a54a05be9dab45e490a3979551536b0c"
+            ],
+            "sourceConfigRef": "intruoyi-57-safe-20261024-v1"
+          }
+        ],
+        "observedAt": "2026-11-05T02:04:43.304934Z"
+      },
+      "containerStates": [
+        {
+          "name": "/intruoyi-backend",
+          "id": "c4385604eb83b44f2836755bad709581c7e7edd0078b148f3b0f74e0b567304c",
+          "state": {
+            "Status": "exited",
+            "Running": false,
+            "Restarting": false,
+            "ExitCode": 255,
+            "OOMKilled": false,
+            "StartedAt": "2026-11-03T12:10:37.449259023Z",
+            "FinishedAt": "2026-11-05T01:27:38.660108163Z"
+          },
+          "health": null
+        }
+      ],
+      "operations": []
+    },
+    {
+      "host": "172.30.30.58",
+      "root": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3",
+      "loadAverage": [
+        "1.04",
+        "0.95",
+        "1.20"
+      ],
+      "serviceState": "active",
+      "errors": {
+        "selections": "HTTPError"
+      },
+      "processes": [
+        {
+          "pid": 19532,
+          "state": "S (sleeping)",
+          "commandSha256": "8d251866d303c72ab237d8d77ba8169c30dd8868d7f306f25f9cfee1d7abb08e"
+        }
+      ],
+      "ledgerEntries": [
+        "service.lock"
+      ],
+      "operationsEntries": [],
+      "replacement-stateEntries": [],
+      "controlKeys": [
+        "allowedClientAddresses",
+        "authCredentialRef",
+        "deadlineMilliseconds",
+        "engineSelectionRef",
+        "environment",
+        "ledgerRoot",
+        "listenAddress",
+        "listenPort",
+        "programPins",
+        "pythonPin",
+        "registryRoot",
+        "restoreConfigurations",
+        "schemaVersion",
+        "sourceConfigurations",
+        "taskRoot",
+        "workingDirectory"
+      ],
+      "controlPaths": {
+        "ledgerRoot": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/ledger",
+        "registryRoot": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/registry",
+        "taskRoot": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3",
+        "workingDirectory": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3"
+      },
+      "selections": null,
+      "containerStates": [
+        {
+          "name": "/brlab-prod57-nas-test58-20261020-r3-mysql",
+          "id": "b4592b704b979f1b94ba03836985491a8f7c699d3094297bfbe3696939eedd79",
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Restarting": false,
+            "ExitCode": 0,
+            "OOMKilled": false,
+            "StartedAt": "2026-11-05T01:51:30.916478688Z",
+            "FinishedAt": "2026-11-05T01:27:42.374128394Z"
+          },
+          "health": null
+        },
+        {
+          "name": "/brlab-prod57-nas-test58-20261020-r3-minio",
+          "id": "98216faac1ae2fc1508bd4076962bf4cfcb3a47f2f1bd5d5e42c7ba819e83115",
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Restarting": false,
+            "ExitCode": 0,
+            "OOMKilled": false,
+            "StartedAt": "2026-11-05T01:52:48.967611426Z",
+            "FinishedAt": "2026-11-05T01:27:42.460621555Z"
+          },
+          "health": "healthy"
+        },
+        {
+          "name": "/brlab-prod57-nas-test58-20261020-r3-redis",
+          "id": "028bb0541d3216c283c5f1822338462545fa7cd63fad55c462ae20a01526e225",
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Restarting": false,
+            "ExitCode": 0,
+            "OOMKilled": false,
+            "StartedAt": "2026-11-05T01:52:49.476812788Z",
+            "FinishedAt": "2026-11-05T01:27:42.421594587Z"
+          },
+          "health": null
+        },
+        {
+          "name": "/brlab-prod57-nas-test58-20261020-r3-backend",
+          "id": "6f70e67078d086d7f08c1ae75a80bb0feab28c5a1f92c91d655ac258f34988eb",
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Restarting": false,
+            "ExitCode": 0,
+            "OOMKilled": false,
+            "StartedAt": "2026-11-05T01:52:49.99473683Z",
+            "FinishedAt": "2026-11-05T01:27:42.432102811Z"
+          },
+          "health": "healthy"
+        },
+        {
+          "name": "/intruoyi-july-unified-58-frontend",
+          "id": "4f9775e6f0a1d86b2d06c69e40504a91cf44a613de458b76e69fa04805ca5d73",
+          "state": {
+            "Status": "running",
+            "Running": true,
+            "Restarting": false,
+            "ExitCode": 0,
+            "OOMKilled": false,
+            "StartedAt": "2026-11-05T01:27:57.584155694Z",
+            "FinishedAt": "2026-11-05T01:24:03.965998374Z"
+          },
+          "health": "healthy"
+        }
+      ],
+      "operations": []
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "mode": "full",
+  "realBrowser": true,
+  "realLogin": true,
+  "startedAt": "2026-11-05T02:45:59.508Z",
+  "ready": "已连接 Spug 执行器。",
+  "disabled": false,
+  "operationId": "",
+  "confirmation": "IntRuoyi · 全量备份 · 正式服务器　172.30.30.57 · 安全模式 · 完整核验 NAS：\\\\172.30.30.4\\IT共享\\Backup\\BackupPackage 来源：intruoyi-57-safe-20261024-v1 备份类型：全量备份",
+  "httpStatus": 409,
+  "errorCode": "ORIGINAL_BRIDGE_BINDING_CHANGED",
+  "visible": "数据管理\n备份与恢复\n\n管理备份与恢复，查看包清单、执行进度和操作记录。\n\n备份\n恢复\n全部包清单\n执行进度\n操作记录\n执行进度\n刷新进度\n已保留编号，尚未查询执行回执\n操作\n全量备份\n来源服务器\n来源服务器未记录\n来源\nintruoyi-57-safe-20261024-v1\n执行模式\n执行模式未记录\n总耗时\n0.002秒\nsmallapp-73cd541a95d84d6a86f9d693e4053c75\n尚无步骤时间回执。\n操作日志\n暂无日志。\n\n无实际百分比回执时显示执行状态，不估算完成百分比。\n\n执行诊断",
+  "status": "FAIL",
+  "writes": 1,
+  "httpFailures": [
+    {
+      "status": 409,
+      "path": "/backup-entry-api/operations"
+    }
+  ],
+  "finishedAt": "2026-11-05T02:46:30.180Z",
+  "error": "ORIGINAL_BRIDGE_BINDING_CHANGED"
+}

@@ -1,0 +1,33 @@
+{
+  "observedAt": "2026-11-05T01:52:50.027802+00:00",
+  "containers": [
+    {
+      "id": "b4592b704b979f1b94ba03836985491a8f7c699d3094297bfbe3696939eedd79",
+      "name": "/brlab-prod57-nas-test58-20261020-r3-mysql",
+      "state": "running",
+      "image": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+      "startedAt": "2026-11-05T01:51:30.916478688Z"
+    },
+    {
+      "id": "98216faac1ae2fc1508bd4076962bf4cfcb3a47f2f1bd5d5e42c7ba819e83115",
+      "name": "/brlab-prod57-nas-test58-20261020-r3-minio",
+      "state": "running",
+      "image": "sha256:c4260bcf2c25b683e4f6e6ed6474f12c5c28dc8e375bfe0ecea7a5d3fbecbc04",
+      "startedAt": "2026-11-05T01:52:48.967611426Z"
+    },
+    {
+      "id": "028bb0541d3216c283c5f1822338462545fa7cd63fad55c462ae20a01526e225",
+      "name": "/brlab-prod57-nas-test58-20261020-r3-redis",
+      "state": "running",
+      "image": "sha256:487efc0616382465781b8fdc3d6d1db449e6fd80ae23bf48432a2da6b6929908",
+      "startedAt": "2026-11-05T01:52:49.476812788Z"
+    },
+    {
+      "id": "6f70e67078d086d7f08c1ae75a80bb0feab28c5a1f92c91d655ac258f34988eb",
+      "name": "/brlab-prod57-nas-test58-20261020-r3-backend",
+      "state": "running",
+      "image": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+      "startedAt": "2026-11-05T01:52:49.99473683Z"
+    }
+  ]
+}

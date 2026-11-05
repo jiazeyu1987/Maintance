@@ -1,0 +1,41 @@
+{
+  "originalOperationId": "smallapp-af9fb80256c0417f86f2741686950823",
+  "originalState": "FAILED",
+  "bytePreservedFiles": [
+    {
+      "file": "restore-ui-submission.json",
+      "bytes": 426,
+      "sha256": "4eb09ff72e1a7310d2ca48d8fcc366f57b9f0740a76f511d8a82f51a1219877e"
+    },
+    {
+      "file": "restore-ui-result.json",
+      "bytes": 2267,
+      "sha256": "699aa0ce69bb538d352cce1a2a124d8cfebb426c9f7a9a64f9caa287fa28a92f"
+    },
+    {
+      "file": "restore-ui-confirm.png",
+      "bytes": 88900,
+      "sha256": "92b04e5618d494a8d21e2cf0f71ab79ef56d41bbbbdfab8014a357293e715eb6"
+    },
+    {
+      "file": "restore-ui-state.png",
+      "bytes": 57412,
+      "sha256": "e9343d897aef2ed02e7569490b97bd1348354435f13954adda26271325ed96ff"
+    },
+    {
+      "file": "restore-terminal-record.json",
+      "bytes": 1134,
+      "sha256": "bdf3886fc0ecc407ff26f0dc269a6a96144602b3799c6cd3acfebcf5c7269dd8"
+    },
+    {
+      "file": "restore-ui-terminal.png",
+      "bytes": 72042,
+      "sha256": "2e3c296e000b2e168b22406de2d402ab18887990f0bdec0dd6aed60763aefd58"
+    },
+    {
+      "file": "restore-live-progress.json",
+      "bytes": 701,
+      "sha256": "339f9567d5873fa0cda7862b651bd775da2e30c35396c8f374a0154d60d36f80"
+    }
+  ]
+}

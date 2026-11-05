@@ -1,0 +1,25 @@
+{
+  "host": "172.30.30.57",
+  "observedAt": "2026-11-05T01:37:40.182155+00:00",
+  "configured48081": [
+    "c4385604eb83b44f2836755bad709581c7e7edd0078b148f3b0f74e0b567304c /intruoyi-backend {\"48081/tcp\":[{\"HostIp\":\"\",\"HostPort\":\"48081\"}]}",
+    "8cb79cd7512261871492b01823ab401cdcfb26ac618c2355802b8c388d8591e0 /intruoyi-backend-before-2026-11-03-12-15-42 {\"48081/tcp\":[{\"HostIp\":\"\",\"HostPort\":\"48081\"}]}",
+    "c286f5f1e7c6acc8af53f204a5a34b991978de70cb64c9b482bdfdce6be21ecd /intruoyi-backend-before-invoice-assistant-20261102 {\"48081/tcp\":[{\"HostIp\":\"\",\"HostPort\":\"48081\"}]}",
+    "d4d57256b401dc144d03e323655f29e12b5cad31aaf8449244cef628d5d34b70 /intruoyi-backend-before-2026-10-30-10-19-11 {\"48081/tcp\":[{\"HostIp\":\"\",\"HostPort\":\"48081\"}]}",
+    "f1168aabcd92844aca0cf9e30200896d7731bd7d5ecdc5ebfe4568cc39a816d6 /intruoyi-backend-before-2026-10-28-23-36-26 {\"48081/tcp\":[{\"HostIp\":\"\",\"HostPort\":\"48081\"}]}",
+    "dbf94b095701f30c294fa31f5815a01f5cddf10e0ac664b1b259a4a9d2a1cd07 /intruoyi-backend-before-2026-10-27-18-40-39 {\"48081/tcp\":[{\"HostIp\":\"\",\"HostPort\":\"48081\"}]}",
+    "f220839c8f00f4456f91c39e593d9e20769da475f6cbf0f0c058f0760c8d380e /intruoyi-backend-before-2026-10-24-03-24-24-maintenance {\"48081/tcp\":[{\"HostIp\":\"\",\"HostPort\":\"48081\"}]}",
+    "03f830dd1cb91f80e06563e3ce2da9dfc889046fccd2d12a85fddca6e2787915 /intruoyi-backend-before-2026-10-24-03-24-24 {\"48081/tcp\":[{\"HostIp\":\"\",\"HostPort\":\"48081\"}]}",
+    "32da39d63351a22d6872e0c04aad93c3152ef45e36f92db5ab67976b6976f93c /intruoyi-backend-before-2026-10-23-16-51-17-maintenance {\"48081/tcp\":[{\"HostIp\":\"\",\"HostPort\":\"48081\"}]}",
+    "e7106c7089c94f5bf3dc52552146488061c1edec45a5074fc2246aac613d9977 /intruoyi-backend-before-2026-10-23-16-51-17 {\"48081/tcp\":[{\"HostIp\":\"\",\"HostPort\":\"48081\"}]}",
+    "e0fa4fda37df537acdf6485a4b7897e68b704ec5d9fab81bbda0c3cd1c73f2ce /intruoyi-backend-before-current-32ff79d-20261020 {\"48081/tcp\":[{\"HostIp\":\"\",\"HostPort\":\"48081\"}]}"
+  ],
+  "controlEntry": {
+    "exists": true,
+    "bytes": 2057,
+    "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+  },
+  "pythonExists": true,
+  "installedIndependentPython": false,
+  "cifsMounts": []
+}

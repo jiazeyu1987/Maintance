@@ -1,0 +1,25 @@
+{
+  "controls": [
+    {
+      "host": "172.30.30.57",
+      "observedAt": "2026-11-05T11:14:11.023387+00:00",
+      "unit": "spug-intruoyi-source-57-20261105.service",
+      "active": "active",
+      "enabled": "enabled",
+      "stableRuntimePaths": true,
+      "configurationPinVerified": true
+    },
+    {
+      "host": "172.30.30.58",
+      "observedAt": "2026-11-05T11:14:11.357453+00:00",
+      "unit": "spug-main-restore-58-20261104-v3.service",
+      "active": "active",
+      "enabled": "enabled",
+      "stableRuntimePaths": true,
+      "configurationPinVerified": true
+    }
+  ],
+  "transportScript": "C:\\Spug\\runtime\\private\\restore-targets-20261104\\restore_control_transport.ps1",
+  "transportStablePath": true,
+  "status": "PASS"
+}

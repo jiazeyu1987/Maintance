@@ -1,0 +1,18 @@
+{
+  "label": "before-restore",
+  "realBrowser": true,
+  "realLogin": true,
+  "businessMutations": 0,
+  "observedAt": "2026-11-05T03:06:28.137Z",
+  "loginHttpStatus": 200,
+  "loginCode": 0,
+  "authenticatedUser": {
+    "id": 1,
+    "username": "admin"
+  },
+  "roleCount": 24,
+  "menuCount": 15,
+  "url": "http://172.30.30.58:8081/index",
+  "visible": "瑛泰管理系统\n个人中心\n审批中心\n124\n基础数据\n展厅\n文控中心\n智能排产\neDHR批记录\n系统管理\nSRM\nCRM 系统\nAI 大模型\nERP 系统\n2026-11-03-12-15-42\n请输入菜单内容\n瑛泰管理员\n\n首页\n\n欢迎使用 IntRuoyi 管理后台\n\n开始使用前，请从左侧菜单进入对应业务模块。\n\n当前登录：瑛泰管理员\n\n当前日期\n2026年11月5日星期四\n系统状态\n系统已就绪\n操作方式\n通过左侧菜单进入业务页面\n\n数字展厅\n\n展厅后台入口\n\n从主页直接进入展厅后台管理页，无需手动输入路径。\n\n进入展厅后台\n开始使用\n\n建议先确认当前用户权限、所属部门和业务入口是否正确，再进入具体模块处理数据。\n\n使用提示\nMES、ERP、DCC 等模块请按实际业务流程逐项操作。\n遇到报错时请保留页面提示和操作路径，便于快速排查。\n需要新增权限或菜单时，请联系系统管理员处理。",
+  "status": "PASS"
+}

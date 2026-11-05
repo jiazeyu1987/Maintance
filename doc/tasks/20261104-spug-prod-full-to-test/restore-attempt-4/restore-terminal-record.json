@@ -1,0 +1,35 @@
+{
+  "request": {
+    "action": "RESTORE",
+    "operationId": "smallapp-2f4e3cd6b481402085838015c44e5cae",
+    "parentChainRef": null,
+    "recoveryPointRef": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+    "schemaVersion": "SmallAppBackupUiRequest/v1",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1"
+  },
+  "applicationId": "intruoyi-57-safe-20261024-v1",
+  "spugTaskId": 9,
+  "createdAt": "2026-11-05T09:01:55.785610+00:00",
+  "spugHistoryId": 354,
+  "dispatchErrorCode": null,
+  "dispatchState": "DISPATCHING",
+  "cancelledUnaccepted": false,
+  "displayContext": {
+    "server": "172.30.30.57",
+    "mode": "safe",
+    "restoreMode": "replace"
+  },
+  "result": {
+    "action": "RESTORE",
+    "errorCode": "SOURCE_CATALOGUE_UNAVAILABLE",
+    "logRefs": [
+      "smallapp-2f4e3cd6b481402085838015c44e5cae-originals"
+    ],
+    "operationId": "smallapp-2f4e3cd6b481402085838015c44e5cae",
+    "resultRef": "smallapp-2f4e3cd6b481402085838015c44e5cae-result",
+    "schemaVersion": "SmallAppBackupUiResult/v1",
+    "state": "FAILED"
+  },
+  "repeatSubmissionAllowed": false
+}

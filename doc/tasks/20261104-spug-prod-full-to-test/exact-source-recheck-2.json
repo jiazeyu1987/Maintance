@@ -1,0 +1,174 @@
+{
+  "containers": [
+    {
+      "role": "mysql",
+      "id": "9a288d20d254366e99b265b1870466e974edf23e7aab60de2391e3a38e62fff6",
+      "persistedName": "/intruoyi-mysql",
+      "persistedState": {
+        "Running": true,
+        "Restarting": false,
+        "Pid": 10372,
+        "ExitCode": 0,
+        "StartedAt": "2026-11-04T16:18:31.63777771Z",
+        "FinishedAt": "2026-11-04T16:18:30.760172178Z"
+      },
+      "observation": "LIVE_INSPECT_OK",
+      "name": "/intruoyi-mysql",
+      "image": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+      "state": {
+        "Running": true,
+        "Restarting": false,
+        "Pid": 10372,
+        "ExitCode": 0,
+        "StartedAt": "2026-11-04T16:18:31.63777771Z",
+        "FinishedAt": "2026-11-04T16:18:30.760172178Z"
+      },
+      "health": "healthy",
+      "ports": {
+        "3306/tcp": null,
+        "33060/tcp": null
+      }
+    },
+    {
+      "role": "minio",
+      "id": "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf",
+      "persistedName": "/ragflow_compose-minio-1",
+      "persistedState": {
+        "Running": true,
+        "Restarting": false,
+        "Pid": 31317,
+        "ExitCode": 0,
+        "StartedAt": "2026-11-03T12:02:50.435709865Z",
+        "FinishedAt": "2026-11-03T11:52:16.718854867Z"
+      },
+      "observation": "LIVE_INSPECT_OK",
+      "name": "/ragflow_compose-minio-1",
+      "image": "sha256:c4260bcf2c25b683e4f6e6ed6474f12c5c28dc8e375bfe0ecea7a5d3fbecbc04",
+      "state": {
+        "Running": true,
+        "Restarting": false,
+        "Pid": 31317,
+        "ExitCode": 0,
+        "StartedAt": "2026-11-03T12:02:50.435709865Z",
+        "FinishedAt": "2026-11-03T11:52:16.718854867Z"
+      },
+      "health": null,
+      "ports": {
+        "9000/tcp": [
+          {
+            "HostIp": "0.0.0.0",
+            "HostPort": "9000"
+          },
+          {
+            "HostIp": "::",
+            "HostPort": "9000"
+          }
+        ],
+        "9001/tcp": [
+          {
+            "HostIp": "0.0.0.0",
+            "HostPort": "9001"
+          },
+          {
+            "HostIp": "::",
+            "HostPort": "9001"
+          }
+        ]
+      }
+    },
+    {
+      "role": "redis",
+      "id": "5099e7bd566ec6a683e8842b84d8db9e41245708fce29e89309607d6a7e72653",
+      "persistedName": "/intruoyi-redis",
+      "persistedState": {
+        "Running": true,
+        "Restarting": false,
+        "Pid": 1639,
+        "ExitCode": 0,
+        "StartedAt": "2026-10-30T05:33:27.240031744Z",
+        "FinishedAt": "2026-10-30T05:16:41.024047495Z"
+      },
+      "observation": "LIVE_INSPECT_OK",
+      "name": "/intruoyi-redis",
+      "image": "sha256:487efc0616382465781b8fdc3d6d1db449e6fd80ae23bf48432a2da6b6929908",
+      "state": {
+        "Running": true,
+        "Restarting": false,
+        "Pid": 1639,
+        "ExitCode": 0,
+        "StartedAt": "2026-10-30T05:33:27.240031744Z",
+        "FinishedAt": "2026-10-30T05:16:41.024047495Z"
+      },
+      "health": "healthy",
+      "ports": {
+        "6379/tcp": null
+      }
+    },
+    {
+      "role": "writer0",
+      "id": "c4385604eb83b44f2836755bad709581c7e7edd0078b148f3b0f74e0b567304c",
+      "persistedName": "/intruoyi-backend",
+      "persistedState": {
+        "Running": true,
+        "Restarting": true,
+        "Pid": 0,
+        "ExitCode": 137,
+        "StartedAt": "2026-11-03T12:10:37.449259023Z",
+        "FinishedAt": "2026-11-04T07:26:02.79260487Z"
+      },
+      "observation": "EXACT_ID_INSPECT_TIMEOUT_5S"
+    },
+    {
+      "role": "writer1",
+      "id": "1210f97cf7653c5f74a7981bf4d4bec8d7462af873d53695d47a59a7ce38a479",
+      "persistedName": "/intruoyi-frontend",
+      "persistedState": {
+        "Running": true,
+        "Restarting": false,
+        "Pid": 23996,
+        "ExitCode": 0,
+        "StartedAt": "2026-11-03T12:10:37.583699265Z",
+        "FinishedAt": "2026-11-03T12:10:37.064299879Z"
+      },
+      "observation": "LIVE_INSPECT_OK",
+      "name": "/intruoyi-frontend",
+      "image": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a",
+      "state": {
+        "Running": true,
+        "Restarting": false,
+        "Pid": 23996,
+        "ExitCode": 0,
+        "StartedAt": "2026-11-03T12:10:37.583699265Z",
+        "FinishedAt": "2026-11-03T12:10:37.064299879Z"
+      },
+      "health": null,
+      "ports": {
+        "80/tcp": [
+          {
+            "HostIp": "0.0.0.0",
+            "HostPort": "8081"
+          },
+          {
+            "HostIp": "::",
+            "HostPort": "8081"
+          }
+        ]
+      }
+    }
+  ],
+  "http": {
+    "backend": {
+      "error": "timeout"
+    },
+    "frontend": {
+      "httpStatus": 200
+    }
+  },
+  "sourceLock": {
+    "path": "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/source-locks/source.lock",
+    "inode": 124651006,
+    "device": 64528,
+    "kernelOwners": []
+  },
+  "observedAt": "2026-11-04T17:15:15.372021+00:00"
+}

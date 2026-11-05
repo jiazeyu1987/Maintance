@@ -1,0 +1,1602 @@
+{
+  "ownerConfigurations": {
+    "intruoyi-57-safe-20261024-v1": {
+      "pin": {
+        "bytes": 1916,
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/repository.json",
+        "sha256": "7750689a97f74cf70c990ea448cebf4cb2cbf22095b6e2f015bfe16265e05b3b"
+      },
+      "value": {
+        "captureBinderPath": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/formal/formal_capture_recovery_inputs.py",
+        "maxChainAgeSeconds": 86400,
+        "maxChainPoints": 16,
+        "maximumArchiveBytes": 9223372036854775807,
+        "minimumFreeBytes": 1,
+        "operationRoot": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations",
+        "parentChains": {},
+        "readback": {
+          "authProtocol": "[REDACTED]",
+          "credentialPath": "[REDACTED]",
+          "maximumRecordBytes": 67108864,
+          "maximumTotalRecordBytes": 536870912,
+          "port": 445,
+          "repositoryRelativePath": "Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57",
+          "schemaVersion": "RepositoryMinimumSmb/v1",
+          "uncRoot": "\\\\172.30.30.4\\IT共享"
+        },
+        "recoveryPoints": {},
+        "repositoryId": "intruoyi-57-safe-20261024-v1",
+        "repositoryRoot": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57",
+        "responseTimeoutMilliseconds": 10000,
+        "schemaVersion": "RepositoryMinimumConfiguration/v1",
+        "sources": {
+          "intruoyi-57-safe-20261024-v1": {
+            "captureCommand": [
+              "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/python/bin/python3.12",
+              "-B",
+              "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/formal/minimal_capture_entry.py"
+            ],
+            "configurationPath": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/capture.json",
+            "sourceIdentityPath": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/source-identity.json",
+            "stagingRoot": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging",
+            "toolPaths": [
+              "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/python/bin/python3.12",
+              "/usr/bin/docker",
+              "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/formal/formal_capture_recovery_inputs.py"
+            ]
+          }
+        },
+        "timeoutMilliseconds": 64800000
+      }
+    }
+  },
+  "operations": [
+    {
+      "operationId": "smallapp-abbd6341ab7a4318973434f48020b287",
+      "files": [
+        "completion.json",
+        "execute",
+        "intent.json",
+        "queries",
+        "request.json",
+        "selection.json",
+        "worker-process.json",
+        "worker-stderr",
+        "worker-stdout",
+        "worker-terminal.json"
+      ],
+      "documents": {
+        "worker-process.json": {
+          "argv": "[REDACTED]",
+          "operationId": "smallapp-abbd6341ab7a4318973434f48020b287",
+          "pid": 24168,
+          "uiRequestSha256": "983e8e32fa2238318a0a298d5c078fed876a8208595d9a584a6cf1c771d1946d"
+        },
+        "selection.json": {
+          "configurationPin": {
+            "bytes": 2135,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control.json",
+            "sha256": "5fe24993e09a7ec8a2aaf9b361a076cc87ee377bc829e64c389a8f33ee81de39"
+          },
+          "ownerConfigurationPin": {
+            "bytes": 1961,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-abbd6341ab7a4318973434f48020b287/repository.json",
+            "sha256": "817f2238f3bb3afc29eeae8753ed5dca91b4d63ed2479db4424ccce857abf40b"
+          },
+          "ownerProgramPin": {
+            "bytes": 2057,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/repository_entry.py",
+            "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+          },
+          "pointBindingPin": null,
+          "registrationPin": {
+            "bytes": 228,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+            "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+          },
+          "schemaVersion": "SmallAppResolvedSelection/v2"
+        },
+        "request.json": {
+          "action": "FULL",
+          "operationId": "smallapp-abbd6341ab7a4318973434f48020b287",
+          "parentChainRef": null,
+          "recoveryPointRef": null,
+          "schemaVersion": "SmallAppBackupUiRequest/v1",
+          "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+          "targetConfigRef": null
+        },
+        "worker-terminal.json": {
+          "actualExitCode": 2,
+          "operationId": "smallapp-abbd6341ab7a4318973434f48020b287",
+          "pid": 24168,
+          "stderrPin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-abbd6341ab7a4318973434f48020b287/worker-stderr",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdoutPin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-abbd6341ab7a4318973434f48020b287/worker-stdout",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "uiRequestSha256": "983e8e32fa2238318a0a298d5c078fed876a8208595d9a584a6cf1c771d1946d"
+        },
+        "completion.json": {
+          "actualResultPath": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-abbd6341ab7a4318973434f48020b287/execute/result.json",
+          "operationId": "smallapp-abbd6341ab7a4318973434f48020b287",
+          "originalLogRoot": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-abbd6341ab7a4318973434f48020b287",
+          "result": {
+            "action": "FULL",
+            "errorCode": "REPOSITORY_QUERY_ORIGINAL_OPERATION",
+            "logRefs": [
+              "smallapp-abbd6341ab7a4318973434f48020b287-originals"
+            ],
+            "operationId": "smallapp-abbd6341ab7a4318973434f48020b287",
+            "resultRef": "smallapp-abbd6341ab7a4318973434f48020b287-result",
+            "schemaVersion": "SmallAppBackupUiResult/v1",
+            "state": "RUNNING"
+          },
+          "selection": {
+            "configurationPin": {
+              "bytes": 2135,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control.json",
+              "sha256": "5fe24993e09a7ec8a2aaf9b361a076cc87ee377bc829e64c389a8f33ee81de39"
+            },
+            "ownerConfigurationPin": {
+              "bytes": 1961,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-abbd6341ab7a4318973434f48020b287/repository.json",
+              "sha256": "817f2238f3bb3afc29eeae8753ed5dca91b4d63ed2479db4424ccce857abf40b"
+            },
+            "ownerProgramPin": {
+              "bytes": 2057,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/repository_entry.py",
+              "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+            },
+            "pointBindingPin": null,
+            "registrationPin": {
+              "bytes": 228,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+              "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+            },
+            "schemaVersion": "SmallAppResolvedSelection/v2"
+          },
+          "terminal": {
+            "actualExitCode": 2,
+            "intentPin": {
+              "bytes": 1648,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-abbd6341ab7a4318973434f48020b287/execute/native-intent.json",
+              "sha256": "f2cfeb83c540924a7b3865dda8a1b1ca4654cb33feeee46ea77966178e4390d4"
+            },
+            "operationId": "smallapp-abbd6341ab7a4318973434f48020b287",
+            "pid": 24333,
+            "requestId": "smallapp-abbd6341ab7a4318973434f48020b287",
+            "requestPin": {
+              "bytes": 238,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-abbd6341ab7a4318973434f48020b287/request.json",
+              "sha256": "983e8e32fa2238318a0a298d5c078fed876a8208595d9a584a6cf1c771d1946d"
+            },
+            "resultPin": {
+              "bytes": 848,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-abbd6341ab7a4318973434f48020b287/execute/result.json",
+              "sha256": "319896964e2bd3ab018b6401a94288b94cee80bce821a83d9357c7868f1f8ac8"
+            },
+            "stderrPin": {
+              "bytes": 0,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-abbd6341ab7a4318973434f48020b287/execute/native-stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdoutPin": {
+              "bytes": 754,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-abbd6341ab7a4318973434f48020b287/execute/native-stdout",
+              "sha256": "9367f3d49f5ed2af984cc24f28aff0d0b15b8ba336f5466a630c51d52e9d83df"
+            },
+            "timedOut": false
+          },
+          "uiRequestSha256": "983e8e32fa2238318a0a298d5c078fed876a8208595d9a584a6cf1c771d1946d"
+        },
+        "intent.json": {
+          "operationId": "smallapp-abbd6341ab7a4318973434f48020b287",
+          "requestSha256": "983e8e32fa2238318a0a298d5c078fed876a8208595d9a584a6cf1c771d1946d",
+          "schemaVersion": "SmallAppDispatchIntent/v1",
+          "selection": {
+            "configurationPin": {
+              "bytes": 2135,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control.json",
+              "sha256": "5fe24993e09a7ec8a2aaf9b361a076cc87ee377bc829e64c389a8f33ee81de39"
+            },
+            "ownerConfigurationPin": {
+              "bytes": 1961,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-abbd6341ab7a4318973434f48020b287/repository.json",
+              "sha256": "817f2238f3bb3afc29eeae8753ed5dca91b4d63ed2479db4424ccce857abf40b"
+            },
+            "ownerProgramPin": {
+              "bytes": 2057,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/repository_entry.py",
+              "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+            },
+            "pointBindingPin": null,
+            "registrationPin": {
+              "bytes": 228,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+              "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+            },
+            "schemaVersion": "SmallAppResolvedSelection/v2"
+          }
+        }
+      }
+    },
+    {
+      "operationId": "smallapp-76d73ea28c424caa90adc75ab1ac4206",
+      "files": [
+        "completion.json",
+        "execute",
+        "intent.json",
+        "queries",
+        "request.json",
+        "selection.json",
+        "worker-process.json",
+        "worker-stderr",
+        "worker-stdout",
+        "worker-terminal.json"
+      ],
+      "documents": {
+        "worker-process.json": {
+          "argv": "[REDACTED]",
+          "operationId": "smallapp-76d73ea28c424caa90adc75ab1ac4206",
+          "pid": 21013,
+          "uiRequestSha256": "4c0e7c5a8935b7d83c494f8d7029067f0b00c181569a6fde8cba3f8e19b7d647"
+        },
+        "selection.json": {
+          "configurationPin": {
+            "bytes": 2135,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control.json",
+            "sha256": "5fe24993e09a7ec8a2aaf9b361a076cc87ee377bc829e64c389a8f33ee81de39"
+          },
+          "ownerConfigurationPin": {
+            "bytes": 1961,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-76d73ea28c424caa90adc75ab1ac4206/repository.json",
+            "sha256": "56f5f058ded59df4c2b45f4206129b753a47b80437d4533bc83e73461baab8df"
+          },
+          "ownerProgramPin": {
+            "bytes": 2057,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/repository_entry.py",
+            "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+          },
+          "pointBindingPin": null,
+          "registrationPin": {
+            "bytes": 228,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+            "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+          },
+          "schemaVersion": "SmallAppResolvedSelection/v2"
+        },
+        "request.json": {
+          "action": "FULL",
+          "operationId": "smallapp-76d73ea28c424caa90adc75ab1ac4206",
+          "parentChainRef": null,
+          "recoveryPointRef": null,
+          "schemaVersion": "SmallAppBackupUiRequest/v1",
+          "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+          "targetConfigRef": null
+        },
+        "worker-terminal.json": {
+          "actualExitCode": 2,
+          "operationId": "smallapp-76d73ea28c424caa90adc75ab1ac4206",
+          "pid": 21013,
+          "stderrPin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-76d73ea28c424caa90adc75ab1ac4206/worker-stderr",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdoutPin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-76d73ea28c424caa90adc75ab1ac4206/worker-stdout",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "uiRequestSha256": "4c0e7c5a8935b7d83c494f8d7029067f0b00c181569a6fde8cba3f8e19b7d647"
+        },
+        "completion.json": {
+          "actualResultPath": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-76d73ea28c424caa90adc75ab1ac4206/execute/result.json",
+          "operationId": "smallapp-76d73ea28c424caa90adc75ab1ac4206",
+          "originalLogRoot": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-76d73ea28c424caa90adc75ab1ac4206",
+          "result": {
+            "action": "FULL",
+            "errorCode": "REPOSITORY_QUERY_ORIGINAL_OPERATION",
+            "logRefs": [
+              "smallapp-76d73ea28c424caa90adc75ab1ac4206-originals"
+            ],
+            "operationId": "smallapp-76d73ea28c424caa90adc75ab1ac4206",
+            "resultRef": "smallapp-76d73ea28c424caa90adc75ab1ac4206-result",
+            "schemaVersion": "SmallAppBackupUiResult/v1",
+            "state": "RUNNING"
+          },
+          "selection": {
+            "configurationPin": {
+              "bytes": 2135,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control.json",
+              "sha256": "5fe24993e09a7ec8a2aaf9b361a076cc87ee377bc829e64c389a8f33ee81de39"
+            },
+            "ownerConfigurationPin": {
+              "bytes": 1961,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-76d73ea28c424caa90adc75ab1ac4206/repository.json",
+              "sha256": "56f5f058ded59df4c2b45f4206129b753a47b80437d4533bc83e73461baab8df"
+            },
+            "ownerProgramPin": {
+              "bytes": 2057,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/repository_entry.py",
+              "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+            },
+            "pointBindingPin": null,
+            "registrationPin": {
+              "bytes": 228,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+              "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+            },
+            "schemaVersion": "SmallAppResolvedSelection/v2"
+          },
+          "terminal": {
+            "actualExitCode": 2,
+            "intentPin": {
+              "bytes": 1648,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-76d73ea28c424caa90adc75ab1ac4206/execute/native-intent.json",
+              "sha256": "db1dafc1624e092c9477b411b72be02d82be74495996c4b18dbdf8f035418d59"
+            },
+            "operationId": "smallapp-76d73ea28c424caa90adc75ab1ac4206",
+            "pid": 21118,
+            "requestId": "smallapp-76d73ea28c424caa90adc75ab1ac4206",
+            "requestPin": {
+              "bytes": 238,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-76d73ea28c424caa90adc75ab1ac4206/request.json",
+              "sha256": "4c0e7c5a8935b7d83c494f8d7029067f0b00c181569a6fde8cba3f8e19b7d647"
+            },
+            "resultPin": {
+              "bytes": 848,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-76d73ea28c424caa90adc75ab1ac4206/execute/result.json",
+              "sha256": "b6757de87aa68e46241aa8ab3d2b4d7fe4a657a8ea5c232fc09da27f425f2a39"
+            },
+            "stderrPin": {
+              "bytes": 0,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-76d73ea28c424caa90adc75ab1ac4206/execute/native-stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdoutPin": {
+              "bytes": 754,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-76d73ea28c424caa90adc75ab1ac4206/execute/native-stdout",
+              "sha256": "f4a24cf953c7b2a93dc46fdbda97cea309ef064276cf88085306e22673037573"
+            },
+            "timedOut": false
+          },
+          "uiRequestSha256": "4c0e7c5a8935b7d83c494f8d7029067f0b00c181569a6fde8cba3f8e19b7d647"
+        },
+        "intent.json": {
+          "operationId": "smallapp-76d73ea28c424caa90adc75ab1ac4206",
+          "requestSha256": "4c0e7c5a8935b7d83c494f8d7029067f0b00c181569a6fde8cba3f8e19b7d647",
+          "schemaVersion": "SmallAppDispatchIntent/v1",
+          "selection": {
+            "configurationPin": {
+              "bytes": 2135,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control.json",
+              "sha256": "5fe24993e09a7ec8a2aaf9b361a076cc87ee377bc829e64c389a8f33ee81de39"
+            },
+            "ownerConfigurationPin": {
+              "bytes": 1961,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-76d73ea28c424caa90adc75ab1ac4206/repository.json",
+              "sha256": "56f5f058ded59df4c2b45f4206129b753a47b80437d4533bc83e73461baab8df"
+            },
+            "ownerProgramPin": {
+              "bytes": 2057,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/repository_entry.py",
+              "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+            },
+            "pointBindingPin": null,
+            "registrationPin": {
+              "bytes": 228,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+              "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+            },
+            "schemaVersion": "SmallAppResolvedSelection/v2"
+          }
+        }
+      }
+    },
+    {
+      "operationId": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+      "files": [
+        "completion.json",
+        "execute",
+        "intent.json",
+        "point-binding.json",
+        "queries",
+        "request.json",
+        "selection.json",
+        "worker-process.json",
+        "worker-stderr",
+        "worker-stdout",
+        "worker-terminal.json"
+      ],
+      "documents": {
+        "worker-process.json": {
+          "argv": "[REDACTED]",
+          "operationId": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+          "pid": 12361,
+          "uiRequestSha256": "d4a64e997f4cb072d0aeae275c3fd18be8e73042698d40d22bd0793aa1a1b884"
+        },
+        "selection.json": {
+          "configurationPin": {
+            "bytes": 2135,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control.json",
+            "sha256": "5fe24993e09a7ec8a2aaf9b361a076cc87ee377bc829e64c389a8f33ee81de39"
+          },
+          "ownerConfigurationPin": {
+            "bytes": 1961,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-0eebed7726824ca5b7292ffc9b845735/repository.json",
+            "sha256": "1c5a215d2f76c4e9d274a42dc573465b801a67ce1f3365e365421b1945f6c78f"
+          },
+          "ownerProgramPin": {
+            "bytes": 2057,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/repository_entry.py",
+            "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+          },
+          "pointBindingPin": null,
+          "registrationPin": {
+            "bytes": 228,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+            "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+          },
+          "schemaVersion": "SmallAppResolvedSelection/v2"
+        },
+        "request.json": {
+          "action": "FULL",
+          "operationId": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+          "parentChainRef": null,
+          "recoveryPointRef": null,
+          "schemaVersion": "SmallAppBackupUiRequest/v1",
+          "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+          "targetConfigRef": null
+        },
+        "point-binding.json": {
+          "reference": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+          "resultPin": {
+            "bytes": 5239,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3e28538a2a09b55b9d6cc99953474a3703d80b80d80a7725df97ff919ffcef8c/result.json",
+            "sha256": "aa1326e2aa0cfc71ac048dd7c052283eeda87d5d62b13b5589719023a192c539"
+          },
+          "schemaVersion": "SmallAppPointBinding/v2",
+          "sourceConfigRef": "intruoyi-57-safe-20261024-v1"
+        },
+        "worker-terminal.json": {
+          "actualExitCode": 2,
+          "operationId": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+          "pid": 12361,
+          "stderrPin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-0eebed7726824ca5b7292ffc9b845735/worker-stderr",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdoutPin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-0eebed7726824ca5b7292ffc9b845735/worker-stdout",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "uiRequestSha256": "d4a64e997f4cb072d0aeae275c3fd18be8e73042698d40d22bd0793aa1a1b884"
+        },
+        "completion.json": {
+          "actualResultPath": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-0eebed7726824ca5b7292ffc9b845735/execute/result.json",
+          "operationId": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+          "originalLogRoot": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-0eebed7726824ca5b7292ffc9b845735",
+          "result": {
+            "action": "FULL",
+            "errorCode": "REPOSITORY_QUERY_ORIGINAL_OPERATION",
+            "logRefs": [
+              "smallapp-0eebed7726824ca5b7292ffc9b845735-originals"
+            ],
+            "operationId": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+            "resultRef": "smallapp-0eebed7726824ca5b7292ffc9b845735-result",
+            "schemaVersion": "SmallAppBackupUiResult/v1",
+            "state": "RUNNING"
+          },
+          "selection": {
+            "configurationPin": {
+              "bytes": 2135,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control.json",
+              "sha256": "5fe24993e09a7ec8a2aaf9b361a076cc87ee377bc829e64c389a8f33ee81de39"
+            },
+            "ownerConfigurationPin": {
+              "bytes": 1961,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-0eebed7726824ca5b7292ffc9b845735/repository.json",
+              "sha256": "1c5a215d2f76c4e9d274a42dc573465b801a67ce1f3365e365421b1945f6c78f"
+            },
+            "ownerProgramPin": {
+              "bytes": 2057,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/repository_entry.py",
+              "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+            },
+            "pointBindingPin": null,
+            "registrationPin": {
+              "bytes": 228,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+              "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+            },
+            "schemaVersion": "SmallAppResolvedSelection/v2"
+          },
+          "terminal": {
+            "actualExitCode": 2,
+            "intentPin": {
+              "bytes": 1648,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-0eebed7726824ca5b7292ffc9b845735/execute/native-intent.json",
+              "sha256": "ab813994c9f1e37cbebd3d90a941cb254ddc6ba67a938007fb5aa2de00e26315"
+            },
+            "operationId": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+            "pid": 12421,
+            "requestId": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+            "requestPin": {
+              "bytes": 238,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-0eebed7726824ca5b7292ffc9b845735/request.json",
+              "sha256": "d4a64e997f4cb072d0aeae275c3fd18be8e73042698d40d22bd0793aa1a1b884"
+            },
+            "resultPin": {
+              "bytes": 848,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-0eebed7726824ca5b7292ffc9b845735/execute/result.json",
+              "sha256": "0cce4b0ed8488d1ef0b8493647f5fd0d49b419cadcdc0bafee083baae835a7c9"
+            },
+            "stderrPin": {
+              "bytes": 0,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-0eebed7726824ca5b7292ffc9b845735/execute/native-stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdoutPin": {
+              "bytes": 754,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-0eebed7726824ca5b7292ffc9b845735/execute/native-stdout",
+              "sha256": "f4a24cf953c7b2a93dc46fdbda97cea309ef064276cf88085306e22673037573"
+            },
+            "timedOut": false
+          },
+          "uiRequestSha256": "d4a64e997f4cb072d0aeae275c3fd18be8e73042698d40d22bd0793aa1a1b884"
+        },
+        "intent.json": {
+          "operationId": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+          "requestSha256": "d4a64e997f4cb072d0aeae275c3fd18be8e73042698d40d22bd0793aa1a1b884",
+          "schemaVersion": "SmallAppDispatchIntent/v1",
+          "selection": {
+            "configurationPin": {
+              "bytes": 2135,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control.json",
+              "sha256": "5fe24993e09a7ec8a2aaf9b361a076cc87ee377bc829e64c389a8f33ee81de39"
+            },
+            "ownerConfigurationPin": {
+              "bytes": 1961,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-0eebed7726824ca5b7292ffc9b845735/repository.json",
+              "sha256": "1c5a215d2f76c4e9d274a42dc573465b801a67ce1f3365e365421b1945f6c78f"
+            },
+            "ownerProgramPin": {
+              "bytes": 2057,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/repository_entry.py",
+              "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+            },
+            "pointBindingPin": null,
+            "registrationPin": {
+              "bytes": 228,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+              "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+            },
+            "schemaVersion": "SmallAppResolvedSelection/v2"
+          }
+        }
+      }
+    },
+    {
+      "operationId": "smallapp-3f29a2b1324045309478a3a597654260",
+      "files": [
+        "completion.json",
+        "execute",
+        "intent.json",
+        "point-binding.json",
+        "queries",
+        "request.json",
+        "selection.json",
+        "worker-process.json",
+        "worker-stderr",
+        "worker-stdout",
+        "worker-terminal.json"
+      ],
+      "documents": {
+        "worker-process.json": {
+          "argv": "[REDACTED]",
+          "operationId": "smallapp-3f29a2b1324045309478a3a597654260",
+          "pid": 30354,
+          "uiRequestSha256": "9bfe66194c953daadd6ed343f2a32a3012ca5517bcc963483297ac33c1d90d6b"
+        },
+        "selection.json": {
+          "configurationPin": {
+            "bytes": 2135,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control.json",
+            "sha256": "5fe24993e09a7ec8a2aaf9b361a076cc87ee377bc829e64c389a8f33ee81de39"
+          },
+          "ownerConfigurationPin": {
+            "bytes": 1961,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-3f29a2b1324045309478a3a597654260/repository.json",
+            "sha256": "07bb590cd0bb7d48dc5dc039b80c3a07bc3e2fd1bd0595c26cdebf7349978ce5"
+          },
+          "ownerProgramPin": {
+            "bytes": 2057,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/repository_entry.py",
+            "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+          },
+          "pointBindingPin": null,
+          "registrationPin": {
+            "bytes": 228,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+            "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+          },
+          "schemaVersion": "SmallAppResolvedSelection/v2"
+        },
+        "request.json": {
+          "action": "FULL",
+          "operationId": "smallapp-3f29a2b1324045309478a3a597654260",
+          "parentChainRef": null,
+          "recoveryPointRef": null,
+          "schemaVersion": "SmallAppBackupUiRequest/v1",
+          "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+          "targetConfigRef": null
+        },
+        "point-binding.json": {
+          "reference": "smallapp-3f29a2b1324045309478a3a597654260",
+          "resultPin": {
+            "bytes": 5239,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/021422e67360554d7024bd2e329b4770e034a64d7be15ad96d88d27dec717b16/result.json",
+            "sha256": "df3b01ad785dabe2c17bbf52ce2a295d50f5ed2db6e4af25748d386e61c671b6"
+          },
+          "schemaVersion": "SmallAppPointBinding/v2",
+          "sourceConfigRef": "intruoyi-57-safe-20261024-v1"
+        },
+        "worker-terminal.json": {
+          "actualExitCode": 2,
+          "operationId": "smallapp-3f29a2b1324045309478a3a597654260",
+          "pid": 30354,
+          "stderrPin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-3f29a2b1324045309478a3a597654260/worker-stderr",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdoutPin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-3f29a2b1324045309478a3a597654260/worker-stdout",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "uiRequestSha256": "9bfe66194c953daadd6ed343f2a32a3012ca5517bcc963483297ac33c1d90d6b"
+        },
+        "completion.json": {
+          "actualResultPath": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-3f29a2b1324045309478a3a597654260/execute/result.json",
+          "operationId": "smallapp-3f29a2b1324045309478a3a597654260",
+          "originalLogRoot": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-3f29a2b1324045309478a3a597654260",
+          "result": {
+            "action": "FULL",
+            "errorCode": "REPOSITORY_QUERY_ORIGINAL_OPERATION",
+            "logRefs": [
+              "smallapp-3f29a2b1324045309478a3a597654260-originals"
+            ],
+            "operationId": "smallapp-3f29a2b1324045309478a3a597654260",
+            "resultRef": "smallapp-3f29a2b1324045309478a3a597654260-result",
+            "schemaVersion": "SmallAppBackupUiResult/v1",
+            "state": "RUNNING"
+          },
+          "selection": {
+            "configurationPin": {
+              "bytes": 2135,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control.json",
+              "sha256": "5fe24993e09a7ec8a2aaf9b361a076cc87ee377bc829e64c389a8f33ee81de39"
+            },
+            "ownerConfigurationPin": {
+              "bytes": 1961,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-3f29a2b1324045309478a3a597654260/repository.json",
+              "sha256": "07bb590cd0bb7d48dc5dc039b80c3a07bc3e2fd1bd0595c26cdebf7349978ce5"
+            },
+            "ownerProgramPin": {
+              "bytes": 2057,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/repository_entry.py",
+              "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+            },
+            "pointBindingPin": null,
+            "registrationPin": {
+              "bytes": 228,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+              "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+            },
+            "schemaVersion": "SmallAppResolvedSelection/v2"
+          },
+          "terminal": {
+            "actualExitCode": 2,
+            "intentPin": {
+              "bytes": 1648,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-3f29a2b1324045309478a3a597654260/execute/native-intent.json",
+              "sha256": "42aa93ff330722a7f3533d4b229f0852093b437c3a48f27dc51fa489b60622fd"
+            },
+            "operationId": "smallapp-3f29a2b1324045309478a3a597654260",
+            "pid": 30960,
+            "requestId": "smallapp-3f29a2b1324045309478a3a597654260",
+            "requestPin": {
+              "bytes": 238,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-3f29a2b1324045309478a3a597654260/request.json",
+              "sha256": "9bfe66194c953daadd6ed343f2a32a3012ca5517bcc963483297ac33c1d90d6b"
+            },
+            "resultPin": {
+              "bytes": 848,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-3f29a2b1324045309478a3a597654260/execute/result.json",
+              "sha256": "c7c48c18cd57eba59253801efdd46af0e501840a033b158def2f7aff2bf26faa"
+            },
+            "stderrPin": {
+              "bytes": 0,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-3f29a2b1324045309478a3a597654260/execute/native-stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdoutPin": {
+              "bytes": 754,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-3f29a2b1324045309478a3a597654260/execute/native-stdout",
+              "sha256": "f4a24cf953c7b2a93dc46fdbda97cea309ef064276cf88085306e22673037573"
+            },
+            "timedOut": false
+          },
+          "uiRequestSha256": "9bfe66194c953daadd6ed343f2a32a3012ca5517bcc963483297ac33c1d90d6b"
+        },
+        "intent.json": {
+          "operationId": "smallapp-3f29a2b1324045309478a3a597654260",
+          "requestSha256": "9bfe66194c953daadd6ed343f2a32a3012ca5517bcc963483297ac33c1d90d6b",
+          "schemaVersion": "SmallAppDispatchIntent/v1",
+          "selection": {
+            "configurationPin": {
+              "bytes": 2135,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control.json",
+              "sha256": "5fe24993e09a7ec8a2aaf9b361a076cc87ee377bc829e64c389a8f33ee81de39"
+            },
+            "ownerConfigurationPin": {
+              "bytes": 1961,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-3f29a2b1324045309478a3a597654260/repository.json",
+              "sha256": "07bb590cd0bb7d48dc5dc039b80c3a07bc3e2fd1bd0595c26cdebf7349978ce5"
+            },
+            "ownerProgramPin": {
+              "bytes": 2057,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/repository_entry.py",
+              "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+            },
+            "pointBindingPin": null,
+            "registrationPin": {
+              "bytes": 228,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+              "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+            },
+            "schemaVersion": "SmallAppResolvedSelection/v2"
+          }
+        }
+      }
+    },
+    {
+      "operationId": "smallapp-a54a05be9dab45e490a3979551536b0c",
+      "files": [
+        "completion.json",
+        "execute",
+        "intent.json",
+        "point-binding.json",
+        "queries",
+        "request.json",
+        "selection.json",
+        "worker-process.json",
+        "worker-stderr",
+        "worker-stdout",
+        "worker-terminal.json"
+      ],
+      "documents": {
+        "worker-process.json": {
+          "argv": "[REDACTED]",
+          "operationId": "smallapp-a54a05be9dab45e490a3979551536b0c",
+          "pid": 5863,
+          "uiRequestSha256": "bab0977fa4c53f945e6dfec2c0973d41995890c5b82b35c4272f0eead20438a8"
+        },
+        "selection.json": {
+          "configurationPin": {
+            "bytes": 2135,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control.json",
+            "sha256": "5fe24993e09a7ec8a2aaf9b361a076cc87ee377bc829e64c389a8f33ee81de39"
+          },
+          "ownerConfigurationPin": {
+            "bytes": 1961,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-a54a05be9dab45e490a3979551536b0c/repository.json",
+            "sha256": "bdaa1ec1fafd78bd0ab0c456ff7f40e464b4cfa6ae561d3adc3ffc6b7b8f7c7f"
+          },
+          "ownerProgramPin": {
+            "bytes": 2057,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/repository_entry.py",
+            "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+          },
+          "pointBindingPin": null,
+          "registrationPin": {
+            "bytes": 228,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+            "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+          },
+          "schemaVersion": "SmallAppResolvedSelection/v2"
+        },
+        "request.json": {
+          "action": "FULL",
+          "operationId": "smallapp-a54a05be9dab45e490a3979551536b0c",
+          "parentChainRef": null,
+          "recoveryPointRef": null,
+          "schemaVersion": "SmallAppBackupUiRequest/v1",
+          "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+          "targetConfigRef": null
+        },
+        "point-binding.json": {
+          "reference": "smallapp-a54a05be9dab45e490a3979551536b0c",
+          "resultPin": {
+            "bytes": 5239,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/9e0ac7ff4c62b512d8e23f13a2f76c14ff83c975ad0e642051700d9bdb64688f/result.json",
+            "sha256": "145259b51b406398c61e232b02318080ec1b9ea955b2314a357120e89301030a"
+          },
+          "schemaVersion": "SmallAppPointBinding/v2",
+          "sourceConfigRef": "intruoyi-57-safe-20261024-v1"
+        },
+        "worker-terminal.json": {
+          "actualExitCode": 2,
+          "operationId": "smallapp-a54a05be9dab45e490a3979551536b0c",
+          "pid": 5863,
+          "stderrPin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-a54a05be9dab45e490a3979551536b0c/worker-stderr",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdoutPin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-a54a05be9dab45e490a3979551536b0c/worker-stdout",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "uiRequestSha256": "bab0977fa4c53f945e6dfec2c0973d41995890c5b82b35c4272f0eead20438a8"
+        },
+        "completion.json": {
+          "actualResultPath": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-a54a05be9dab45e490a3979551536b0c/execute/result.json",
+          "operationId": "smallapp-a54a05be9dab45e490a3979551536b0c",
+          "originalLogRoot": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-a54a05be9dab45e490a3979551536b0c",
+          "result": {
+            "action": "FULL",
+            "errorCode": "REPOSITORY_QUERY_ORIGINAL_OPERATION",
+            "logRefs": [
+              "smallapp-a54a05be9dab45e490a3979551536b0c-originals"
+            ],
+            "operationId": "smallapp-a54a05be9dab45e490a3979551536b0c",
+            "resultRef": "smallapp-a54a05be9dab45e490a3979551536b0c-result",
+            "schemaVersion": "SmallAppBackupUiResult/v1",
+            "state": "RUNNING"
+          },
+          "selection": {
+            "configurationPin": {
+              "bytes": 2135,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control.json",
+              "sha256": "5fe24993e09a7ec8a2aaf9b361a076cc87ee377bc829e64c389a8f33ee81de39"
+            },
+            "ownerConfigurationPin": {
+              "bytes": 1961,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-a54a05be9dab45e490a3979551536b0c/repository.json",
+              "sha256": "bdaa1ec1fafd78bd0ab0c456ff7f40e464b4cfa6ae561d3adc3ffc6b7b8f7c7f"
+            },
+            "ownerProgramPin": {
+              "bytes": 2057,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/repository_entry.py",
+              "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+            },
+            "pointBindingPin": null,
+            "registrationPin": {
+              "bytes": 228,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+              "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+            },
+            "schemaVersion": "SmallAppResolvedSelection/v2"
+          },
+          "terminal": {
+            "actualExitCode": 2,
+            "intentPin": {
+              "bytes": 1648,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-a54a05be9dab45e490a3979551536b0c/execute/native-intent.json",
+              "sha256": "1615da9bfa83fec3201e7455454440143bcbf05a44ed8abb1620ae05e1408c36"
+            },
+            "operationId": "smallapp-a54a05be9dab45e490a3979551536b0c",
+            "pid": 6435,
+            "requestId": "smallapp-a54a05be9dab45e490a3979551536b0c",
+            "requestPin": {
+              "bytes": 238,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-a54a05be9dab45e490a3979551536b0c/request.json",
+              "sha256": "bab0977fa4c53f945e6dfec2c0973d41995890c5b82b35c4272f0eead20438a8"
+            },
+            "resultPin": {
+              "bytes": 848,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-a54a05be9dab45e490a3979551536b0c/execute/result.json",
+              "sha256": "21c71b2dec7606cf6263fc855503bfa7a2a72456cd448774653bca59b3fff259"
+            },
+            "stderrPin": {
+              "bytes": 0,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-a54a05be9dab45e490a3979551536b0c/execute/native-stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdoutPin": {
+              "bytes": 754,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-a54a05be9dab45e490a3979551536b0c/execute/native-stdout",
+              "sha256": "f4a24cf953c7b2a93dc46fdbda97cea309ef064276cf88085306e22673037573"
+            },
+            "timedOut": false
+          },
+          "uiRequestSha256": "bab0977fa4c53f945e6dfec2c0973d41995890c5b82b35c4272f0eead20438a8"
+        },
+        "intent.json": {
+          "operationId": "smallapp-a54a05be9dab45e490a3979551536b0c",
+          "requestSha256": "bab0977fa4c53f945e6dfec2c0973d41995890c5b82b35c4272f0eead20438a8",
+          "schemaVersion": "SmallAppDispatchIntent/v1",
+          "selection": {
+            "configurationPin": {
+              "bytes": 2135,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control.json",
+              "sha256": "5fe24993e09a7ec8a2aaf9b361a076cc87ee377bc829e64c389a8f33ee81de39"
+            },
+            "ownerConfigurationPin": {
+              "bytes": 1961,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-a54a05be9dab45e490a3979551536b0c/repository.json",
+              "sha256": "bdaa1ec1fafd78bd0ab0c456ff7f40e464b4cfa6ae561d3adc3ffc6b7b8f7c7f"
+            },
+            "ownerProgramPin": {
+              "bytes": 2057,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/repository_entry.py",
+              "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+            },
+            "pointBindingPin": null,
+            "registrationPin": {
+              "bytes": 228,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+              "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+            },
+            "schemaVersion": "SmallAppResolvedSelection/v2"
+          }
+        }
+      }
+    },
+    {
+      "operationId": "smallapp-bc3a610cf70345538e2dcd783893a6ed",
+      "files": [
+        "completion.json",
+        "execute",
+        "intent.json",
+        "queries",
+        "request.json",
+        "selection.json",
+        "worker-process.json",
+        "worker-stderr",
+        "worker-stdout",
+        "worker-terminal.json"
+      ],
+      "documents": {
+        "worker-process.json": {
+          "argv": "[REDACTED]",
+          "operationId": "smallapp-bc3a610cf70345538e2dcd783893a6ed",
+          "pid": 23860,
+          "uiRequestSha256": "a989d9030d99da96ad9344a0beff574f5cb8a44eb036b3bb9bf305af5171c288"
+        },
+        "selection.json": {
+          "configurationPin": {
+            "bytes": 2153,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/candidate-c17f1a9/control.json",
+            "sha256": "0321f70aefdac30712576305e614e78c788c09a788628ce0e79228181978a975"
+          },
+          "ownerConfigurationPin": {
+            "bytes": 2349,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-bc3a610cf70345538e2dcd783893a6ed/repository.json",
+            "sha256": "6458ffeced35c3682bfafe049bf0cc15cdd4befdff56a68fe5718b46be543f6b"
+          },
+          "ownerProgramPin": {
+            "bytes": 2057,
+            "path": "/var/lib/docker/intruoyi-data/spug-candidate-c17f1a9-20261027/standard/repository_entry.py",
+            "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+          },
+          "pointBindingPin": {
+            "bytes": 423,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-a54a05be9dab45e490a3979551536b0c/point-binding.json",
+            "sha256": "4e6abf6e35b50d062a15fcd50b0af841463212d27930dbfdc2aa11269188e614"
+          },
+          "registrationPin": {
+            "bytes": 228,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+            "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+          },
+          "schemaVersion": "SmallAppResolvedSelection/v2"
+        },
+        "request.json": {
+          "action": "INCREMENTAL",
+          "operationId": "smallapp-bc3a610cf70345538e2dcd783893a6ed",
+          "parentChainRef": "smallapp-a54a05be9dab45e490a3979551536b0c",
+          "recoveryPointRef": null,
+          "schemaVersion": "SmallAppBackupUiRequest/v1",
+          "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+          "targetConfigRef": null
+        },
+        "worker-terminal.json": {
+          "actualExitCode": 2,
+          "operationId": "smallapp-bc3a610cf70345538e2dcd783893a6ed",
+          "pid": 23860,
+          "stderrPin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-bc3a610cf70345538e2dcd783893a6ed/worker-stderr",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdoutPin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-bc3a610cf70345538e2dcd783893a6ed/worker-stdout",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "uiRequestSha256": "a989d9030d99da96ad9344a0beff574f5cb8a44eb036b3bb9bf305af5171c288"
+        },
+        "completion.json": {
+          "actualResultPath": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-bc3a610cf70345538e2dcd783893a6ed/execute/result.json",
+          "operationId": "smallapp-bc3a610cf70345538e2dcd783893a6ed",
+          "originalLogRoot": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-bc3a610cf70345538e2dcd783893a6ed",
+          "result": {
+            "action": "INCREMENTAL",
+            "errorCode": "REPOSITORY_QUERY_ORIGINAL_OPERATION",
+            "logRefs": [
+              "smallapp-bc3a610cf70345538e2dcd783893a6ed-originals"
+            ],
+            "operationId": "smallapp-bc3a610cf70345538e2dcd783893a6ed",
+            "resultRef": "smallapp-bc3a610cf70345538e2dcd783893a6ed-result",
+            "schemaVersion": "SmallAppBackupUiResult/v1",
+            "state": "RUNNING"
+          },
+          "selection": {
+            "configurationPin": {
+              "bytes": 2153,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/candidate-c17f1a9/control.json",
+              "sha256": "0321f70aefdac30712576305e614e78c788c09a788628ce0e79228181978a975"
+            },
+            "ownerConfigurationPin": {
+              "bytes": 2349,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-bc3a610cf70345538e2dcd783893a6ed/repository.json",
+              "sha256": "6458ffeced35c3682bfafe049bf0cc15cdd4befdff56a68fe5718b46be543f6b"
+            },
+            "ownerProgramPin": {
+              "bytes": 2057,
+              "path": "/var/lib/docker/intruoyi-data/spug-candidate-c17f1a9-20261027/standard/repository_entry.py",
+              "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+            },
+            "pointBindingPin": {
+              "bytes": 423,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-a54a05be9dab45e490a3979551536b0c/point-binding.json",
+              "sha256": "4e6abf6e35b50d062a15fcd50b0af841463212d27930dbfdc2aa11269188e614"
+            },
+            "registrationPin": {
+              "bytes": 228,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+              "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+            },
+            "schemaVersion": "SmallAppResolvedSelection/v2"
+          },
+          "terminal": {
+            "actualExitCode": 2,
+            "intentPin": {
+              "bytes": 1672,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-bc3a610cf70345538e2dcd783893a6ed/execute/native-intent.json",
+              "sha256": "2d0441233902a0a055a3f63567e944e7e171aba7a05f60f7be8e14bc7f9749e1"
+            },
+            "operationId": "smallapp-bc3a610cf70345538e2dcd783893a6ed",
+            "pid": 24154,
+            "requestId": "smallapp-bc3a610cf70345538e2dcd783893a6ed",
+            "requestPin": {
+              "bytes": 284,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-bc3a610cf70345538e2dcd783893a6ed/request.json",
+              "sha256": "a989d9030d99da96ad9344a0beff574f5cb8a44eb036b3bb9bf305af5171c288"
+            },
+            "resultPin": {
+              "bytes": 855,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-bc3a610cf70345538e2dcd783893a6ed/execute/result.json",
+              "sha256": "f71348f20d829415df37827df20bf44dd16accca71103d7316ac080f9ff4a714"
+            },
+            "stderrPin": {
+              "bytes": 0,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-bc3a610cf70345538e2dcd783893a6ed/execute/native-stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdoutPin": {
+              "bytes": 754,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-bc3a610cf70345538e2dcd783893a6ed/execute/native-stdout",
+              "sha256": "37c9a670684ac186fbd9200fd5d7eca9ea57be189ee929dff9d6190a5ac0ac05"
+            },
+            "timedOut": false
+          },
+          "uiRequestSha256": "a989d9030d99da96ad9344a0beff574f5cb8a44eb036b3bb9bf305af5171c288"
+        },
+        "intent.json": {
+          "operationId": "smallapp-bc3a610cf70345538e2dcd783893a6ed",
+          "requestSha256": "a989d9030d99da96ad9344a0beff574f5cb8a44eb036b3bb9bf305af5171c288",
+          "schemaVersion": "SmallAppDispatchIntent/v1",
+          "selection": {
+            "configurationPin": {
+              "bytes": 2153,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/candidate-c17f1a9/control.json",
+              "sha256": "0321f70aefdac30712576305e614e78c788c09a788628ce0e79228181978a975"
+            },
+            "ownerConfigurationPin": {
+              "bytes": 2349,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-bc3a610cf70345538e2dcd783893a6ed/repository.json",
+              "sha256": "6458ffeced35c3682bfafe049bf0cc15cdd4befdff56a68fe5718b46be543f6b"
+            },
+            "ownerProgramPin": {
+              "bytes": 2057,
+              "path": "/var/lib/docker/intruoyi-data/spug-candidate-c17f1a9-20261027/standard/repository_entry.py",
+              "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+            },
+            "pointBindingPin": {
+              "bytes": 423,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-a54a05be9dab45e490a3979551536b0c/point-binding.json",
+              "sha256": "4e6abf6e35b50d062a15fcd50b0af841463212d27930dbfdc2aa11269188e614"
+            },
+            "registrationPin": {
+              "bytes": 228,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+              "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+            },
+            "schemaVersion": "SmallAppResolvedSelection/v2"
+          }
+        }
+      }
+    },
+    {
+      "operationId": "smallapp-9d0b52af727045efb92e490a68329a22",
+      "files": [
+        "completion.json",
+        "execute",
+        "intent.json",
+        "queries",
+        "request.json",
+        "selection.json",
+        "worker-process.json",
+        "worker-stderr",
+        "worker-stdout",
+        "worker-terminal.json"
+      ],
+      "documents": {
+        "worker-process.json": {
+          "argv": "[REDACTED]",
+          "operationId": "smallapp-9d0b52af727045efb92e490a68329a22",
+          "pid": 7494,
+          "uiRequestSha256": "7186b713c126ced431611adfc372ca607a7715df1407d53eea55e442fbb5198c"
+        },
+        "selection.json": {
+          "configurationPin": {
+            "bytes": 2153,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/candidate-c17f1a9/control.json",
+            "sha256": "0321f70aefdac30712576305e614e78c788c09a788628ce0e79228181978a975"
+          },
+          "ownerConfigurationPin": {
+            "bytes": 1961,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-9d0b52af727045efb92e490a68329a22/repository.json",
+            "sha256": "397030d87d8453ef2c62eadbe0f0a3488f5411d4932c0ebe005e45e8f32935d5"
+          },
+          "ownerProgramPin": {
+            "bytes": 2057,
+            "path": "/var/lib/docker/intruoyi-data/spug-candidate-c17f1a9-20261027/standard/repository_entry.py",
+            "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+          },
+          "pointBindingPin": null,
+          "registrationPin": {
+            "bytes": 228,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+            "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+          },
+          "schemaVersion": "SmallAppResolvedSelection/v2"
+        },
+        "request.json": {
+          "action": "FULL",
+          "operationId": "smallapp-9d0b52af727045efb92e490a68329a22",
+          "parentChainRef": null,
+          "recoveryPointRef": null,
+          "schemaVersion": "SmallAppBackupUiRequest/v1",
+          "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+          "targetConfigRef": null
+        },
+        "worker-terminal.json": {
+          "actualExitCode": 2,
+          "operationId": "smallapp-9d0b52af727045efb92e490a68329a22",
+          "pid": 7494,
+          "stderrPin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-9d0b52af727045efb92e490a68329a22/worker-stderr",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdoutPin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-9d0b52af727045efb92e490a68329a22/worker-stdout",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "uiRequestSha256": "7186b713c126ced431611adfc372ca607a7715df1407d53eea55e442fbb5198c"
+        },
+        "completion.json": {
+          "actualResultPath": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-9d0b52af727045efb92e490a68329a22/execute/result.json",
+          "operationId": "smallapp-9d0b52af727045efb92e490a68329a22",
+          "originalLogRoot": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-9d0b52af727045efb92e490a68329a22",
+          "result": {
+            "action": "FULL",
+            "errorCode": "REPOSITORY_QUERY_ORIGINAL_OPERATION",
+            "logRefs": [
+              "smallapp-9d0b52af727045efb92e490a68329a22-originals"
+            ],
+            "operationId": "smallapp-9d0b52af727045efb92e490a68329a22",
+            "resultRef": "smallapp-9d0b52af727045efb92e490a68329a22-result",
+            "schemaVersion": "SmallAppBackupUiResult/v1",
+            "state": "RUNNING"
+          },
+          "selection": {
+            "configurationPin": {
+              "bytes": 2153,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/candidate-c17f1a9/control.json",
+              "sha256": "0321f70aefdac30712576305e614e78c788c09a788628ce0e79228181978a975"
+            },
+            "ownerConfigurationPin": {
+              "bytes": 1961,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-9d0b52af727045efb92e490a68329a22/repository.json",
+              "sha256": "397030d87d8453ef2c62eadbe0f0a3488f5411d4932c0ebe005e45e8f32935d5"
+            },
+            "ownerProgramPin": {
+              "bytes": 2057,
+              "path": "/var/lib/docker/intruoyi-data/spug-candidate-c17f1a9-20261027/standard/repository_entry.py",
+              "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+            },
+            "pointBindingPin": null,
+            "registrationPin": {
+              "bytes": 228,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+              "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+            },
+            "schemaVersion": "SmallAppResolvedSelection/v2"
+          },
+          "terminal": {
+            "actualExitCode": 2,
+            "intentPin": {
+              "bytes": 1672,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-9d0b52af727045efb92e490a68329a22/execute/native-intent.json",
+              "sha256": "80ff4c043572cb78bc52b3f27d9954b706c20c1a228ce7b360cc0c1aad14cf2d"
+            },
+            "operationId": "smallapp-9d0b52af727045efb92e490a68329a22",
+            "pid": 7573,
+            "requestId": "smallapp-9d0b52af727045efb92e490a68329a22",
+            "requestPin": {
+              "bytes": 238,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-9d0b52af727045efb92e490a68329a22/request.json",
+              "sha256": "7186b713c126ced431611adfc372ca607a7715df1407d53eea55e442fbb5198c"
+            },
+            "resultPin": {
+              "bytes": 848,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-9d0b52af727045efb92e490a68329a22/execute/result.json",
+              "sha256": "1e0256ca8f9430a3a9b549d2e0a579b42ebbce0650a796a7b164b901baf5aa7a"
+            },
+            "stderrPin": {
+              "bytes": 0,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-9d0b52af727045efb92e490a68329a22/execute/native-stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdoutPin": {
+              "bytes": 754,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-9d0b52af727045efb92e490a68329a22/execute/native-stdout",
+              "sha256": "37c9a670684ac186fbd9200fd5d7eca9ea57be189ee929dff9d6190a5ac0ac05"
+            },
+            "timedOut": false
+          },
+          "uiRequestSha256": "7186b713c126ced431611adfc372ca607a7715df1407d53eea55e442fbb5198c"
+        },
+        "intent.json": {
+          "operationId": "smallapp-9d0b52af727045efb92e490a68329a22",
+          "requestSha256": "7186b713c126ced431611adfc372ca607a7715df1407d53eea55e442fbb5198c",
+          "schemaVersion": "SmallAppDispatchIntent/v1",
+          "selection": {
+            "configurationPin": {
+              "bytes": 2153,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/candidate-c17f1a9/control.json",
+              "sha256": "0321f70aefdac30712576305e614e78c788c09a788628ce0e79228181978a975"
+            },
+            "ownerConfigurationPin": {
+              "bytes": 1961,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-9d0b52af727045efb92e490a68329a22/repository.json",
+              "sha256": "397030d87d8453ef2c62eadbe0f0a3488f5411d4932c0ebe005e45e8f32935d5"
+            },
+            "ownerProgramPin": {
+              "bytes": 2057,
+              "path": "/var/lib/docker/intruoyi-data/spug-candidate-c17f1a9-20261027/standard/repository_entry.py",
+              "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+            },
+            "pointBindingPin": null,
+            "registrationPin": {
+              "bytes": 228,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+              "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+            },
+            "schemaVersion": "SmallAppResolvedSelection/v2"
+          }
+        }
+      }
+    },
+    {
+      "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+      "files": [
+        "completion.json",
+        "execute",
+        "intent.json",
+        "queries",
+        "request.json",
+        "selection.json",
+        "worker-process.json",
+        "worker-stderr",
+        "worker-stdout",
+        "worker-terminal.json"
+      ],
+      "documents": {
+        "worker-process.json": {
+          "argv": "[REDACTED]",
+          "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+          "pid": 29336,
+          "uiRequestSha256": "9f6697739fb2decef01aa31986881af77c406931e00ab13d37bfe2b8d2867a3e"
+        },
+        "selection.json": {
+          "configurationPin": {
+            "bytes": 2153,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/candidate-c17f1a9/control.json",
+            "sha256": "0321f70aefdac30712576305e614e78c788c09a788628ce0e79228181978a975"
+          },
+          "ownerConfigurationPin": {
+            "bytes": 1961,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-3d4c7ab0f65841b8892e4a640a53176d/repository.json",
+            "sha256": "0e237ba63d5bc860789a4b6582917d01e0381e7aea44dbc49c5b58aa2a31fcff"
+          },
+          "ownerProgramPin": {
+            "bytes": 2057,
+            "path": "/var/lib/docker/intruoyi-data/spug-candidate-c17f1a9-20261027/standard/repository_entry.py",
+            "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+          },
+          "pointBindingPin": null,
+          "registrationPin": {
+            "bytes": 228,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+            "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+          },
+          "schemaVersion": "SmallAppResolvedSelection/v2"
+        },
+        "request.json": {
+          "action": "FULL",
+          "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+          "parentChainRef": null,
+          "recoveryPointRef": null,
+          "schemaVersion": "SmallAppBackupUiRequest/v1",
+          "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+          "targetConfigRef": null
+        },
+        "worker-terminal.json": {
+          "actualExitCode": 2,
+          "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+          "pid": 29336,
+          "stderrPin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-3d4c7ab0f65841b8892e4a640a53176d/worker-stderr",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdoutPin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-3d4c7ab0f65841b8892e4a640a53176d/worker-stdout",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "uiRequestSha256": "9f6697739fb2decef01aa31986881af77c406931e00ab13d37bfe2b8d2867a3e"
+        },
+        "completion.json": {
+          "actualResultPath": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-3d4c7ab0f65841b8892e4a640a53176d/execute/result.json",
+          "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+          "originalLogRoot": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+          "result": {
+            "action": "FULL",
+            "errorCode": "REPOSITORY_QUERY_ORIGINAL_OPERATION",
+            "logRefs": [
+              "smallapp-3d4c7ab0f65841b8892e4a640a53176d-originals"
+            ],
+            "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+            "resultRef": "smallapp-3d4c7ab0f65841b8892e4a640a53176d-result",
+            "schemaVersion": "SmallAppBackupUiResult/v1",
+            "state": "RUNNING"
+          },
+          "selection": {
+            "configurationPin": {
+              "bytes": 2153,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/candidate-c17f1a9/control.json",
+              "sha256": "0321f70aefdac30712576305e614e78c788c09a788628ce0e79228181978a975"
+            },
+            "ownerConfigurationPin": {
+              "bytes": 1961,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-3d4c7ab0f65841b8892e4a640a53176d/repository.json",
+              "sha256": "0e237ba63d5bc860789a4b6582917d01e0381e7aea44dbc49c5b58aa2a31fcff"
+            },
+            "ownerProgramPin": {
+              "bytes": 2057,
+              "path": "/var/lib/docker/intruoyi-data/spug-candidate-c17f1a9-20261027/standard/repository_entry.py",
+              "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+            },
+            "pointBindingPin": null,
+            "registrationPin": {
+              "bytes": 228,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+              "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+            },
+            "schemaVersion": "SmallAppResolvedSelection/v2"
+          },
+          "terminal": {
+            "actualExitCode": 2,
+            "intentPin": {
+              "bytes": 1672,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-3d4c7ab0f65841b8892e4a640a53176d/execute/native-intent.json",
+              "sha256": "8b98e71ca9b39ba06a1242b0c722b36f90820449dd8433600e2c640daf81587e"
+            },
+            "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+            "pid": 29433,
+            "requestId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+            "requestPin": {
+              "bytes": 238,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-3d4c7ab0f65841b8892e4a640a53176d/request.json",
+              "sha256": "9f6697739fb2decef01aa31986881af77c406931e00ab13d37bfe2b8d2867a3e"
+            },
+            "resultPin": {
+              "bytes": 848,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-3d4c7ab0f65841b8892e4a640a53176d/execute/result.json",
+              "sha256": "5112d0ec099502a28e66c40bc7a2cee4bec7e1a04c469d23e1f9f2bb0801c1e8"
+            },
+            "stderrPin": {
+              "bytes": 0,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-3d4c7ab0f65841b8892e4a640a53176d/execute/native-stderr",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdoutPin": {
+              "bytes": 754,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-3d4c7ab0f65841b8892e4a640a53176d/execute/native-stdout",
+              "sha256": "37c9a670684ac186fbd9200fd5d7eca9ea57be189ee929dff9d6190a5ac0ac05"
+            },
+            "timedOut": false
+          },
+          "uiRequestSha256": "9f6697739fb2decef01aa31986881af77c406931e00ab13d37bfe2b8d2867a3e"
+        },
+        "intent.json": {
+          "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+          "requestSha256": "9f6697739fb2decef01aa31986881af77c406931e00ab13d37bfe2b8d2867a3e",
+          "schemaVersion": "SmallAppDispatchIntent/v1",
+          "selection": {
+            "configurationPin": {
+              "bytes": 2153,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/candidate-c17f1a9/control.json",
+              "sha256": "0321f70aefdac30712576305e614e78c788c09a788628ce0e79228181978a975"
+            },
+            "ownerConfigurationPin": {
+              "bytes": 1961,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/request-configurations/smallapp-3d4c7ab0f65841b8892e4a640a53176d/repository.json",
+              "sha256": "0e237ba63d5bc860789a4b6582917d01e0381e7aea44dbc49c5b58aa2a31fcff"
+            },
+            "ownerProgramPin": {
+              "bytes": 2057,
+              "path": "/var/lib/docker/intruoyi-data/spug-candidate-c17f1a9-20261027/standard/repository_entry.py",
+              "sha256": "de1a6731b95e4497bab1cc5ff26865a4a22c2fca45e2e59650caeccba2451ec0"
+            },
+            "pointBindingPin": null,
+            "registrationPin": {
+              "bytes": 228,
+              "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/registration.json",
+              "sha256": "0949cbf369a3b1f9899398d1ae2501a1f553981b473020984c5d504893e08f01"
+            },
+            "schemaVersion": "SmallAppResolvedSelection/v2"
+          }
+        }
+      }
+    }
+  ],
+  "relatedProcesses": [
+    {
+      "pid": 12774,
+      "name": "python3.12",
+      "state": "S (sleeping)",
+      "ppid": 1,
+      "threads": 1,
+      "operationIds": [],
+      "commandSha256": "d1b31cde4b8cd442289e982ebdbc99704f40a5d1498221278177850828c29180"
+    },
+    {
+      "pid": 14411,
+      "name": "python3.12",
+      "state": "S (sleeping)",
+      "ppid": 1,
+      "threads": 1,
+      "operationIds": [],
+      "commandSha256": "b7d71557e868b50ed216927580b71bad009c736ce04bc8ca5909274a40ea2acc"
+    },
+    {
+      "pid": 19273,
+      "name": "python3.12",
+      "state": "S (sleeping)",
+      "ppid": 1,
+      "threads": 1,
+      "operationIds": [],
+      "commandSha256": "2ed0ce4a22815698f5181eee123bd77f283b052586c6abbe831c7cdb091521cd"
+    },
+    {
+      "pid": 22689,
+      "name": "python3.12",
+      "state": "S (sleeping)",
+      "ppid": 1,
+      "threads": 1,
+      "operationIds": [],
+      "commandSha256": "f968395269e2cbe00624f39e648938aed640ffaf4279bd0d311ac4b11cbc2298"
+    }
+  ],
+  "processCounts": {
+    "S (sleeping)": 692,
+    "I (idle)": 139,
+    "D (disk sleep)": 1576,
+    "Z (zombie)": 7,
+    "R (running)": 1
+  },
+  "load": "1580.96 1576.41 1567.24 4/5624 25204",
+  "largestThreadCounts": [
+    {
+      "pid": 4794,
+      "name": "dockerd",
+      "state": "S (sleeping)",
+      "ppid": 1,
+      "threads": 113
+    },
+    {
+      "pid": 3243,
+      "name": "mysqld",
+      "state": "S (sleeping)",
+      "ppid": 3223,
+      "threads": 45
+    },
+    {
+      "pid": 9512,
+      "name": "mysqld",
+      "state": "S (sleeping)",
+      "ppid": 9491,
+      "threads": 45
+    },
+    {
+      "pid": 10814,
+      "name": "mysqld",
+      "state": "S (sleeping)",
+      "ppid": 10769,
+      "threads": 44
+    },
+    {
+      "pid": 14815,
+      "name": "mysqld",
+      "state": "S (sleeping)",
+      "ppid": 14794,
+      "threads": 44
+    },
+    {
+      "pid": 3619,
+      "name": "mysqld",
+      "state": "S (sleeping)",
+      "ppid": 3597,
+      "threads": 43
+    },
+    {
+      "pid": 3132,
+      "name": "mysqld",
+      "state": "S (sleeping)",
+      "ppid": 3110,
+      "threads": 41
+    },
+    {
+      "pid": 3574,
+      "name": "mysqld",
+      "state": "S (sleeping)",
+      "ppid": 3523,
+      "threads": 41
+    }
+  ],
+  "memory": {
+    "MemTotal": "32770288 kB",
+    "MemAvailable": "2211360 kB",
+    "SwapTotal": "10485756 kB",
+    "SwapFree": "0 kB"
+  }
+}

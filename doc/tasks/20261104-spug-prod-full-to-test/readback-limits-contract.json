@@ -1,0 +1,70 @@
+{
+  "configLimits": {
+    "max_bytes": 68719476736,
+    "max_nodes": 100000000,
+    "max_rows": 10000000,
+    "seconds": 7200
+  },
+  "sourceLimits": null,
+  "expectedKeys": [
+    "applicationVerified",
+    "encoding",
+    "observationIdentity",
+    "observationSha256",
+    "productionEvidence",
+    "schema",
+    "tables"
+  ],
+  "expectedScalars": {
+    "applicationVerified": false,
+    "encoding": "mysql8-typed-row-multiset-sha256/v1",
+    "observationSha256": "814bbdcc9ae339e8e8ee164cab83886fe55a3b9ce1d9017d4eebfc8299f6e988",
+    "productionEvidence": false
+  },
+  "schemaKeys": [
+    "catalog",
+    "database",
+    "definitions",
+    "excludedHistoricalFields",
+    "fullDataEquivalenceVerified",
+    "objectCounts",
+    "observationIdentity",
+    "observationSha256",
+    "productionEvidence",
+    "schemaSha256"
+  ],
+  "tableSample": [
+    {
+      "name": "act_evt_log",
+      "keys": [
+        "jsonNodes",
+        "multisetSha256",
+        "rows"
+      ],
+      "scalars": {
+        "jsonNodes": 0,
+        "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446",
+        "rows": 0
+      }
+    },
+    {
+      "name": "act_ge_bytearray",
+      "keys": [
+        "jsonNodes",
+        "multisetSha256",
+        "rows"
+      ],
+      "scalars": {
+        "jsonNodes": 0,
+        "multisetSha256": "46f16361c7c20e20e1aec15e6ea8f6b5dcaf44d5d4fdf0d267f8bd81562f08e0",
+        "rows": 1166
+      }
+    }
+  ],
+  "sumBytes": {
+    "bytes": 0,
+    "rawBytes": 0,
+    "rows": 512156,
+    "nodes": 0
+  }
+}

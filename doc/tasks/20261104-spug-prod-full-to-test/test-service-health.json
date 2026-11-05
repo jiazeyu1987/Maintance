@@ -1,0 +1,47 @@
+{
+  "containers": [
+    {
+      "id": "b4592b704b979f1b94ba03836985491a8f7c699d3094297bfbe3696939eedd79",
+      "name": "/brlab-prod57-nas-test58-20261020-r3-mysql",
+      "running": true,
+      "health": null,
+      "restartCount": 0
+    },
+    {
+      "id": "98216faac1ae2fc1508bd4076962bf4cfcb3a47f2f1bd5d5e42c7ba819e83115",
+      "name": "/brlab-prod57-nas-test58-20261020-r3-minio",
+      "running": true,
+      "health": "healthy",
+      "restartCount": 0
+    },
+    {
+      "id": "028bb0541d3216c283c5f1822338462545fa7cd63fad55c462ae20a01526e225",
+      "name": "/brlab-prod57-nas-test58-20261020-r3-redis",
+      "running": true,
+      "health": null,
+      "restartCount": 0
+    },
+    {
+      "id": "6f70e67078d086d7f08c1ae75a80bb0feab28c5a1f92c91d655ac258f34988eb",
+      "name": "/brlab-prod57-nas-test58-20261020-r3-backend",
+      "running": true,
+      "health": "healthy",
+      "restartCount": 0
+    },
+    {
+      "id": "4f9775e6f0a1d86b2d06c69e40504a91cf44a613de458b76e69fa04805ca5d73",
+      "name": "/intruoyi-july-unified-58-frontend",
+      "running": true,
+      "health": "healthy",
+      "restartCount": 0
+    }
+  ],
+  "http": {
+    "8081": {
+      "error": "<urlopen error [Errno 111] Connection refused>"
+    },
+    "48081": {
+      "error": "<urlopen error [Errno 111] Connection refused>"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "observedAt": "2026-11-05T06:22:17.694Z",
+  "operationId": "smallapp-ba0bca490ac243768c8b759fa14a8bbd",
+  "state": "FAILED",
+  "errorCode": "ARCHIVE_ROOT_UNAVAILABLE",
+  "spugHistoryId": 351,
+  "queryError": null,
+  "visible": "原操作失败",
+  "steps": "步骤日志读取失败：STEP_TELEMETRY_READ_FAILED",
+  "logs": "错误：尚未满足执行条件（ARCHIVE_ROOT_UNAVAILABLE）\n步骤日志读取失败：STEP_TELEMETRY_READ_FAILED；已有数据为上次读取结果。",
+  "problem": "",
+  "writes": 0
+}

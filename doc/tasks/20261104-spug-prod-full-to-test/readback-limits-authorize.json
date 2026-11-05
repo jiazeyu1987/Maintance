@@ -1,0 +1,49 @@
+{
+  "clearancePin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-91cc5c0b4b054cb38075681f1aca7d4a/recovery-clearance.json",
+    "bytes": 2288,
+    "sha256": "6543b5881f4ad2773d5e9bab59f7583e7fe09a15145f4df9ebb91ec706caca2d"
+  },
+  "releasePin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-91cc5c0b4b054cb38075681f1aca7d4a/resource-recovery-release.json",
+    "bytes": 1088,
+    "sha256": "00664c19dc55bda2ff714d22d7812e87a1adb908c5a1d548b101774644a4ddc3"
+  },
+  "originalState": "FAILED_RETAINED",
+  "restoreDispatched": false,
+  "nextRequestMustUseSamePoint": true,
+  "originalFailedEvidenceUnchanged": true,
+  "originalFailurePins": [
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-91cc5c0b4b054cb38075681f1aca7d4a/configuration.json",
+      "bytes": 21321,
+      "sha256": "49becc6eb4f1350cf0fe631562844cfe1997838866e82a7347fbf5847224d09a"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-91cc5c0b4b054cb38075681f1aca7d4a/request.json",
+      "bytes": 319,
+      "sha256": "97fe4a33d3741e7e419971bf73ba0d93568e124c150f43cb0dca5850ffac6086"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-91cc5c0b4b054cb38075681f1aca7d4a/worker-result.json",
+      "bytes": 61716,
+      "sha256": "a9f9d0f505d219efb63d433ad12e82bb3951d005f2554f3473c9ae5852b51abc"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-91cc5c0b4b054cb38075681f1aca7d4a/child-exit.json",
+      "bytes": 722,
+      "sha256": "29acdf763d9ea62265e87e0560d2fc7bf7d446b6588bafe07a7043b1c3f54af3"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-91cc5c0b4b054cb38075681f1aca7d4a/resource-reservation.json",
+      "bytes": 483,
+      "sha256": "32c1c9fb86a34f7e00abe22be0a1285efb9c3c5a472440c1c71a460cb9bd04cb"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-91cc5c0b4b054cb38075681f1aca7d4a/replacement-result.json",
+      "bytes": 190,
+      "sha256": "788f7c5cc6c2e0d49d5c13074ea06f0728d737c6e83ba3e814fee572491d559b"
+    }
+  ],
+  "observedAt": "2026-11-05T09:00:54.880791+00:00"
+}

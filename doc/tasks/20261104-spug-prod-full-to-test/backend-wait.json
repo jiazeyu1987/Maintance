@@ -1,0 +1,36 @@
+{
+  "observedAt": "2026-11-04T17:16:02.667073+00:00",
+  "relatedProcesses": [
+    {
+      "pid": 4794,
+      "program": "dockerd",
+      "state": "S (sleeping)",
+      "waitChannel": "0",
+      "threadCount": 113,
+      "waitChannelCounts": {
+        "0": 111,
+        "smb2_reconnect.part.19": 1,
+        "do_epoll_wait": 1
+      }
+    }
+  ],
+  "errors": {},
+  "journalExitCode": 0,
+  "journalMessageCount": 80,
+  "journalTermCounts": {
+    "c4385604eb83": 0,
+    "restart": 0,
+    "mount": 0,
+    "timeout": 0,
+    "memory": 0,
+    "cifs": 0,
+    "shim": 0,
+    "deadlock": 0,
+    "failed": 0,
+    "error": 77
+  },
+  "journalTimeRange": [
+    "1793800227616874",
+    "1793809110145847"
+  ]
+}

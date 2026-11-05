@@ -1,0 +1,120 @@
+{
+  "newBlockedPythonPids": [],
+  "departedBlockedPythonPids": [],
+  "first": {
+    "observedAt": "2026-11-05T01:08:55.412143+00:00",
+    "blockedByProgram": {
+      "python3": 1973,
+      "kworker/10:0+cifsiod": 1,
+      "node_exporter": 1,
+      "python3.12": 1,
+      "df": 1
+    },
+    "blockedPythonBySshSource": {
+      "192.168.112.214": 1973,
+      "192.168.109.82": 1
+    },
+    "latestBlockedPython": [
+      {
+        "pid": 29549,
+        "parentPid": 1,
+        "name": "python3",
+        "sshSource": "192.168.112.214",
+        "startedAt": "2026-11-05T00:28:44.600000+00:00",
+        "waitChannel": "smb2_reconnect.part.19"
+      },
+      {
+        "pid": 2876,
+        "parentPid": 1,
+        "name": "python3",
+        "sshSource": "192.168.112.214",
+        "startedAt": "2026-11-05T00:29:44.600000+00:00",
+        "waitChannel": "smb2_reconnect.part.19"
+      },
+      {
+        "pid": 19615,
+        "parentPid": 1,
+        "name": "python3",
+        "sshSource": "192.168.112.214",
+        "startedAt": "2026-11-05T00:34:52.310000+00:00",
+        "waitChannel": "smb2_reconnect.part.19"
+      },
+      {
+        "pid": 19404,
+        "parentPid": 1,
+        "name": "python3",
+        "sshSource": "192.168.112.214",
+        "startedAt": "2026-11-05T00:55:48.580000+00:00",
+        "waitChannel": "smb2_reconnect.part.19"
+      },
+      {
+        "pid": 4612,
+        "parentPid": 1,
+        "name": "python3",
+        "sshSource": "192.168.112.214",
+        "startedAt": "2026-11-05T01:02:25.550000+00:00",
+        "waitChannel": "smb2_reconnect.part.19"
+      }
+    ],
+    "readRaceCount": 0
+  },
+  "second": {
+    "observedAt": "2026-11-05T01:09:07.045519+00:00",
+    "blockedByProgram": {
+      "python3": 1973,
+      "kworker/10:0+cifsiod": 1,
+      "node_exporter": 1,
+      "runc:[2:INIT]": 1,
+      "setroubleshootd": 1,
+      "python3.12": 1,
+      "df": 1
+    },
+    "blockedPythonBySshSource": {
+      "192.168.112.214": 1973,
+      "192.168.109.82": 1
+    },
+    "latestBlockedPython": [
+      {
+        "pid": 29549,
+        "parentPid": 1,
+        "name": "python3",
+        "sshSource": "192.168.112.214",
+        "startedAt": "2026-11-05T00:28:44.600000+00:00",
+        "waitChannel": "smb2_reconnect.part.19"
+      },
+      {
+        "pid": 2876,
+        "parentPid": 1,
+        "name": "python3",
+        "sshSource": "192.168.112.214",
+        "startedAt": "2026-11-05T00:29:44.600000+00:00",
+        "waitChannel": "smb2_reconnect.part.19"
+      },
+      {
+        "pid": 19615,
+        "parentPid": 1,
+        "name": "python3",
+        "sshSource": "192.168.112.214",
+        "startedAt": "2026-11-05T00:34:52.310000+00:00",
+        "waitChannel": "smb2_reconnect.part.19"
+      },
+      {
+        "pid": 19404,
+        "parentPid": 1,
+        "name": "python3",
+        "sshSource": "192.168.112.214",
+        "startedAt": "2026-11-05T00:55:48.580000+00:00",
+        "waitChannel": "smb2_reconnect.part.19"
+      },
+      {
+        "pid": 4612,
+        "parentPid": 1,
+        "name": "python3",
+        "sshSource": "192.168.112.214",
+        "startedAt": "2026-11-05T01:02:25.550000+00:00",
+        "waitChannel": "smb2_reconnect.part.19"
+      }
+    ],
+    "readRaceCount": 18
+  }
+}

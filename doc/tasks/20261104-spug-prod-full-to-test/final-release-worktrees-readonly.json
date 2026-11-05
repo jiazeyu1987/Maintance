@@ -1,0 +1,16 @@
+{
+  "releaseWorktrees": [
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-retained-recovery-release-20261105\\Maintance",
+      "physicalPathAbsent": true,
+      "gitRegistrationAbsent": true
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-readback-limits-release-20261105\\Maintance",
+      "physicalPathAbsent": true,
+      "gitRegistrationAbsent": true
+    }
+  ],
+  "mutationsPerformed": false,
+  "status": "PASS"
+}

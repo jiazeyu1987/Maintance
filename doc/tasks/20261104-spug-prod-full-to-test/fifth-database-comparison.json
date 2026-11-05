@@ -1,0 +1,20 @@
+{
+  "observedAt": "2026-11-05T10:29:46.282961+00:00",
+  "operationId": "smallapp-6cb9423086fe4b62ad21505e189bc36b",
+  "state": "SCHEMA_DATA_EQUAL_PENDING_APPLICATION_PROOF",
+  "fullSchemaDataEquivalenceVerified": true,
+  "tableCount": 885,
+  "totalRows": 512156,
+  "targetIdentity": {
+    "containerId": "b4592b704b979f1b94ba03836985491a8f7c699d3094297bfbe3696939eedd79",
+    "databaseUuid": "20ca4c6c-cc31-11f1-9b95-0242ac1deb16"
+  },
+  "sourceObservationSha256": "814bbdcc9ae339e8e8ee164cab83886fe55a3b9ce1d9017d4eebfc8299f6e988",
+  "targetObservationSha256": "a023df67bf7f05b521f6d581e30e6b49536e47bdc721e398b401cc105c460960",
+  "comparisonPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-6cb9423086fe4b62ad21505e189bc36b/database-000/database-comparison.json",
+    "bytes": 123480,
+    "sha256": "f10e56ec84a3d00b91cf1e88e9b57a174177c5ea186fe1d43267d0d9c63ba7c2"
+  },
+  "businessWritesPerformed": false
+}

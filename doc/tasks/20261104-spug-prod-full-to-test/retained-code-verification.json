@@ -1,0 +1,29 @@
+{
+  "implementationCommit": "9176b3cea6cf203db7b28d1efdfba209c634bb5d",
+  "verificationScope": "LOCAL_COMPONENT_AND_PACKAGE_NOT_SERVER_RESTORE",
+  "windows": {
+    "passed": 145,
+    "skipped": 10,
+    "posixSkipsVerifiedSeparately": true
+  },
+  "linux": {
+    "passed": 142,
+    "skipped": 0,
+    "actualFlockReservationAndMountTests": true,
+    "image": "python:3.12-bookworm",
+    "ownVolumeCleaned": true
+  },
+  "isolatedReleaseWorktree": {
+    "passed": 25,
+    "skipped": 3,
+    "cleanBeforeAndAfter": true
+  },
+  "actualPackagesTested": [
+    "standard",
+    "lightweight"
+  ],
+  "shippedNestedQueryMutationPropagationVerified": true,
+  "safeFileEngineByteIdenticalToFrozenBaseline": true,
+  "safeFullContentVerification": true,
+  "fileManifestSha256": "1536427e009f00b0ee59cb1da205ef13ee586d0a068382aec1a65cd1bcab6371"
+}

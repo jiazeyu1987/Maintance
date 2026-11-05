@@ -1,0 +1,20 @@
+{
+  "observedAt": "2026-11-05T02:03:20.661471+00:00",
+  "service": "spug-intruoyi-source-57-20261105.service",
+  "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+  "controlConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control-postboot-20261105.json",
+    "bytes": 2127,
+    "sha256": "64971616b6af6fcac3d718a38dcfe9939e8d8c00b1698cb096fac281bac7f34c"
+  },
+  "pythonPin": {
+    "path": "/usr/local/libexec/spug-source-control-20261105/python/bin/python3.12",
+    "bytes": 30975640,
+    "sha256": "0886fb76ceec8ff568d23079b5da6342bb41675e216e11525d4d6a9e65988d10"
+  },
+  "pythonFilesVerified": 3603,
+  "pythonManifestSha256": "dd0acc41527cca1926251be0c67ad784fc95927232d2fc88ffaae3747821265b",
+  "sharedRuntimeChanged": false,
+  "state": "active",
+  "fullSubmitted": false
+}

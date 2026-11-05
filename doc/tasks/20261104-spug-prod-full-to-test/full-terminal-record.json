@@ -1,0 +1,35 @@
+{
+  "request": {
+    "action": "FULL",
+    "operationId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+    "parentChainRef": null,
+    "recoveryPointRef": null,
+    "schemaVersion": "SmallAppBackupUiRequest/v1",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "targetConfigRef": null
+  },
+  "applicationId": "intruoyi-57-safe-20261024-v1",
+  "spugTaskId": 7,
+  "createdAt": "2026-11-05T02:50:11.430871+00:00",
+  "spugHistoryId": 350,
+  "dispatchErrorCode": null,
+  "dispatchState": "DISPATCHING",
+  "cancelledUnaccepted": false,
+  "displayContext": {
+    "server": "172.30.30.57",
+    "mode": "safe",
+    "restoreMode": null
+  },
+  "result": {
+    "action": "FULL",
+    "errorCode": null,
+    "logRefs": [
+      "smallapp-73cd541a95d84d6a86f9d693e4053c75-originals"
+    ],
+    "operationId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+    "resultRef": "smallapp-73cd541a95d84d6a86f9d693e4053c75-result",
+    "schemaVersion": "SmallAppBackupUiResult/v1",
+    "state": "SUCCEEDED"
+  },
+  "repeatSubmissionAllowed": false
+}

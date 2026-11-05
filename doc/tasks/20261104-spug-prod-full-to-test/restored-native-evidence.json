@@ -1,0 +1,66 @@
+{
+  "observedAt": "2026-11-05T11:07:54.616234+00:00",
+  "operationId": "smallapp-6cb9423086fe4b62ad21505e189bc36b",
+  "backupOperationId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+  "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+  "state": "SUCCEEDED",
+  "finishedAt": "2026-11-05T11:04:19.902442Z",
+  "actualExitCode": 0,
+  "sameNewFullPointVerified": true,
+  "database": {
+    "uuid": "20ca4c6c-cc31-11f1-9b95-0242ac1deb16",
+    "fullSchemaDataEquivalenceVerified": true,
+    "tableCount": 885,
+    "totalRows": 512156,
+    "schemaSha256": "de67edc371e2088fa706392f0d7048b599f3942a4d144edc76099ad74093fdfe"
+  },
+  "objects": {
+    "exactVersionIdentityVerified": true,
+    "versionCount": 5916,
+    "deleteMarkerCount": 0,
+    "totalVersionBytes": 9653189892,
+    "uniqueContentCount": 4920,
+    "versionHistorySha256": "9fb2a7ba380c86d0164c9a82ba8ad18320fed5eb1f1f79d8a72e2ae77e7260c8"
+  },
+  "consistency": {
+    "allReferencesVerified": true,
+    "presentReferencesVerified": true,
+    "sourceMissingReferenceCount": 0,
+    "sourceMissingBaselinePreserved": true,
+    "invariantsVerified": true
+  },
+  "redis": {
+    "restoredKeyCount": 0,
+    "expiredBeforeRestoreCount": 0,
+    "independentlyVerifiedKeyCount": 0,
+    "valuesVerified": true,
+    "absoluteExpiryVerified": true
+  },
+  "applicationStart": {
+    "state": "SUCCEEDED",
+    "isolation": "REGISTERED_MAIN_RESOURCE_CUSTODY",
+    "businessAcceptance": "NOT_PERFORMED"
+  },
+  "replacementState": "SUCCEEDED",
+  "cleanupFields": [
+    "deletedBytes",
+    "deletedFiles",
+    "files",
+    "finishedAt",
+    "operationId",
+    "root",
+    "schemaVersion",
+    "selectedPaths",
+    "state"
+  ],
+  "verifiedDocumentPins": 21,
+  "independentBusinessUIRequired": true,
+  "status": "PASS",
+  "protectedOriginalFailurePinsUnchanged": 6,
+  "hostResourceReservationReleased": true,
+  "resourceReleasePin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-6cb9423086fe4b62ad21505e189bc36b/resource-release.json",
+    "bytes": 845,
+    "sha256": "db700c4c80148ad03239f1a7b1759f02c5f660f2b71989c1fcd13c3803279acf"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "phase": "enable",
+  "status": "PASS",
+  "observedAt": "2026-11-05T02:26:55.861531+00:00",
+  "liveRestore": true,
+  "protectedContainers": 12,
+  "protectedPidAndStartedAtUnchanged": true,
+  "daemonPid": 4374,
+  "configurationSha256": "3c399755352f669f2558990675ef625395cab4b3e9e006a65e7e6a0645b8e70c"
+}

@@ -1,0 +1,42 @@
+{
+  "observedAt": "2026-11-05T02:01:44.482446+00:00",
+  "host": "172.30.30.58",
+  "bootId": "bb31c4d0-bbfb-4b97-8c06-4ff11e779015",
+  "attestedDifferences": [
+    {
+      "role": "mysql",
+      "device": 64528,
+      "inode": 116949076,
+      "beforeMountId": 116,
+      "afterMountId": 119
+    },
+    {
+      "role": "minio",
+      "device": 64528,
+      "inode": 116949090,
+      "beforeMountId": 116,
+      "afterMountId": 119
+    },
+    {
+      "role": "redis",
+      "device": 64528,
+      "inode": 116949094,
+      "beforeMountId": 116,
+      "afterMountId": 119
+    }
+  ],
+  "ownerConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-boot-bb31c4d0.json",
+    "bytes": 20455,
+    "sha256": "c3f4e877d4a4a8d1310394879087ff0c821f8f9971078e12c21a27c75f8b5f8c"
+  },
+  "controlConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-43658-boot-bb31c4d0.json",
+    "bytes": 2347,
+    "sha256": "3bee444f49f1b9d1df72746d615480720d16382007d7c8650b84eb90e6d57faa"
+  },
+  "service": "spug-main-restore-58-20261104-v3.service",
+  "state": "active",
+  "strictMountChecksPreserved": true,
+  "restorePerformed": false
+}

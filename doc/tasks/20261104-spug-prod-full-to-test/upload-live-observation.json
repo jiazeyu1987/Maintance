@@ -1,0 +1,13 @@
+{
+  "observedAt": "2026-11-05T04:38:14.516072+00:00",
+  "pid": 16086,
+  "readCharacters": 100099523849,
+  "openPayloadPositions": [
+    {
+      "fd": 6,
+      "scope": "NAS",
+      "position": 115343360,
+      "payloadKind": "other"
+    }
+  ]
+}

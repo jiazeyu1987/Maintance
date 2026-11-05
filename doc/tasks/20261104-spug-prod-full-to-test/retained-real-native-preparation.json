@@ -1,0 +1,110 @@
+{
+  "observedAt": "2026-11-05T08:06:46.054944+00:00",
+  "nativeInvocations": 89,
+  "mutations": [
+    {
+      "file": "native-035.json",
+      "mutation": true,
+      "actualExitCode": 0,
+      "keys": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ]
+    },
+    {
+      "file": "native-036.json",
+      "mutation": true,
+      "actualExitCode": 0,
+      "keys": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ]
+    },
+    {
+      "file": "native-037.json",
+      "mutation": true,
+      "actualExitCode": 0,
+      "keys": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ]
+    },
+    {
+      "file": "native-063.json",
+      "mutation": true,
+      "actualExitCode": 0,
+      "keys": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ]
+    },
+    {
+      "file": "native-088.json",
+      "mutation": true,
+      "actualExitCode": 0,
+      "keys": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ]
+    }
+  ],
+  "prepared": {
+    "finishedAt": "2026-11-05T08:06:16.118601Z",
+    "state": "PREPARED"
+  }
+}

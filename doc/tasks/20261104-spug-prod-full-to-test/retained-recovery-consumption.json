@@ -1,0 +1,26 @@
+{
+  "observedAt": "2026-11-05T08:03:40.059312+00:00",
+  "oldFailure": "FAILED_RETAINED",
+  "newClaimExists": true,
+  "consumption": {
+    "clearancePin": {
+      "bytes": 2288,
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-af9fb80256c0417f86f2741686950823/recovery-clearance.json",
+      "sha256": "1bd8884ef000ce14aa289a4366af428d2dc04c5be37a647ab35019cb95fece60"
+    },
+    "consumedAt": "2026-11-05T07:47:07.508300Z",
+    "replacementOperationId": "smallapp-91cc5c0b4b054cb38075681f1aca7d4a",
+    "schemaVersion": "RetainedReplacementConsumption/v1"
+  },
+  "newReservation": {
+    "configurationSha256": "49becc6eb4f1350cf0fe631562844cfe1997838866e82a7347fbf5847224d09a",
+    "machineId": "f90361360b284aeb8a9ba727db31e434",
+    "operationId": "smallapp-91cc5c0b4b054cb38075681f1aca7d4a",
+    "operationRoot": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-91cc5c0b4b054cb38075681f1aca7d4a",
+    "schemaVersion": "RestoreHostReservation/v1",
+    "startedAt": "2026-11-05T07:47:07.276551Z",
+    "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1"
+  },
+  "newPrepared": null,
+  "newProgress": null
+}

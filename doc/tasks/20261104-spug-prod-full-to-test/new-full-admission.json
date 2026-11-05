@@ -1,0 +1,8 @@
+{
+  "observedAt": "2026-11-05T06:19:33.153559+00:00",
+  "httpStatus": 200,
+  "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+  "newRecoveryPointRef": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+  "newPointAdmitted": true,
+  "historyErrorCode": null
+}

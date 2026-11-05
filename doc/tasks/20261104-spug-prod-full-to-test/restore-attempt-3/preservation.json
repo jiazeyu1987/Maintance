@@ -1,0 +1,56 @@
+{
+  "operationId": "smallapp-91cc5c0b4b054cb38075681f1aca7d4a",
+  "remoteHistoryUnchanged": true,
+  "files": [
+    {
+      "path": "restore-ui-terminal.png",
+      "bytes": 149326,
+      "sha256": "1393a789604dc40a7aed482d07ad26a974bed29e5de0a86b8c0d75a02c973aa8"
+    },
+    {
+      "path": "restore-ui-submission.json",
+      "bytes": 426,
+      "sha256": "d9dff5d5894b80b46f3cb5cbe4e88342fa326f635e5fe3d62e03a702bf3c8c4a"
+    },
+    {
+      "path": "restore-ui-state.png",
+      "bytes": 58447,
+      "sha256": "c0bc6857bf5230652ec193c14c72d8e7e302b89ccc6bd410f7f1af673839fb79"
+    },
+    {
+      "path": "restore-ui-result.json",
+      "bytes": 2314,
+      "sha256": "17090fbfbf076575c3992c23344b8b4fd45f6d1f26b8a5427ad7d49207177a11"
+    },
+    {
+      "path": "restore-ui-confirm.png",
+      "bytes": 88895,
+      "sha256": "1e528a581dde95315a60861680d95b83bf71f412209400fca812f8c4f1824784"
+    },
+    {
+      "path": "restore-terminal-record.json",
+      "bytes": 1144,
+      "sha256": "1989a6a99ba0346c03ae3017c81e49970b0741ccfd2b9f2090cdc31a21874ac1"
+    },
+    {
+      "path": "restore-live-progress.json",
+      "bytes": 1732,
+      "sha256": "e64729dac1e01d0318e52e6e4cc23a201332f6029e6028693adf704d560484f4"
+    },
+    {
+      "path": "restore-native-progress.json",
+      "bytes": 2540,
+      "sha256": "86ce875ecfcfd9b991b018feed87135ca0b90c74bb2ab5b729aca793c05a98ad"
+    },
+    {
+      "path": "restore-database-import-progress.json",
+      "bytes": 237,
+      "sha256": "495a5b1c48d0a7f28a848dc781c0d2dce1ded97e114fa7866349cf3e3490a442"
+    },
+    {
+      "path": "restore-database-staging-progress.json",
+      "bytes": 540,
+      "sha256": "a79449e0ebe0867e7dd5dcaa360bcb3860e4a97f495760ad8c335f89afd236ca"
+    }
+  ]
+}

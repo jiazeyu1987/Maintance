@@ -1,0 +1,551 @@
+{
+  "capture": {
+    "archiveRoot": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging",
+    "limits": {
+      "cleanupSeconds": 600,
+      "clientWaitSeconds": 5,
+      "dataMaxBytes": 17179869184,
+      "dataMaxNodes": 100000000,
+      "dataMaxRows": 10000000,
+      "dataSeconds": 7200,
+      "maxWrittenBytes": 9223372036854775807,
+      "minimumFreeBytes": 1,
+      "querySeconds": 120,
+      "readySeconds": 300,
+      "stopSeconds": 30,
+      "workSeconds": 43200
+    },
+    "parent": null,
+    "schemaVersion": "minimal-source-capture-config/v1",
+    "source": {
+      "applicationImageIds": [
+        "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+        "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a",
+        "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+        "sha256:487efc0616382465781b8fdc3d6d1db449e6fd80ae23bf48432a2da6b6929908",
+        "sha256:c4260bcf2c25b683e4f6e6ed6474f12c5c28dc8e375bfe0ecea7a5d3fbecbc04"
+      ],
+      "configurationPins": [
+        {
+          "reference": {
+            "bytes": 6332,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/private/backup-20261103-current/runtime.env",
+            "sha256": "c97b7f9a413fa77983e3218420f887c19918301a2835762cc80f96a973e6d9a4"
+          },
+          "role": "application-config"
+        },
+        {
+          "reference": {
+            "bytes": 10608,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/private/backup-20261103-current/docker-compose.yml",
+            "sha256": "1d90d5be0307b7222e6cb1a52aa8ef1afefff56bc9cfe93bc6b342df51a5af9f"
+          },
+          "role": "runtime-compose"
+        },
+        {
+          "reference": {
+            "bytes": 2434,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/private/backup-20261103-current/source-nginx.conf",
+            "sha256": "a4c66f514d695700484181e1ec74ed755a6b2055eacab2d0826d79c72df33b78"
+          },
+          "role": "frontend-config"
+        },
+        {
+          "reference": {
+            "bytes": 13872,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/private/backup-20261103-current/application-dev.yaml",
+            "sha256": "9683b6965b5fa7fad130d7c9d87e94c7209308fdd6141178c9b0e8f6b5055c1b"
+          },
+          "role": "application-dev"
+        },
+        {
+          "reference": {
+            "bytes": 17739,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/private/backup-20261103-current/application.yaml",
+            "sha256": "ad77f29d983c26de08899db66faa225405e97a486cf4fb14174932804d4b7110"
+          },
+          "role": "application-main"
+        },
+        {
+          "reference": {
+            "bytes": 12883,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/private/backup-20261103-current/runtime-effective.json",
+            "sha256": "3eacbf0f281929f7052553a2716ab15b6400447667520aec30b6d9fff6139517"
+          },
+          "role": "effective-runtime"
+        }
+      ],
+      "database": "ruoyi-vue-pro",
+      "databaseLogMode": "FILE_POSITION",
+      "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+      "materialPins": [
+        {
+          "purpose": "source-identity",
+          "reference": {
+            "bytes": 142,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/source-identity.json",
+            "sha256": "c5bb2c51f9a8cb49caef56257345e97fb109bf8a9866e41c2ccacb7ad10e3884"
+          }
+        },
+        {
+          "purpose": "mysqlbinlog-exporter",
+          "reference": {
+            "bytes": 330,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/binlog-exporter-acceptance-20261027.json",
+            "sha256": "7459ade4a3bcbd4d27e074efb7b5cfc341a893c3a5b721145c9b1a9c786b8020"
+          }
+        },
+        {
+          "purpose": "container-inspects",
+          "reference": {
+            "bytes": 57745,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/private/backup-20261103-current/container-inspects.json",
+            "sha256": "00bfe44d9d86cd8dc05cceaa284a95bf39781f3021640f3ae51cb7e9429fd1aa"
+          }
+        }
+      ],
+      "minioContainerId": "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf",
+      "minioDataPath": "/opt/intruoyi/runtime/data/minio",
+      "minioMountDestination": "/data",
+      "minioPhysicalScopes": [
+        ".minio.sys",
+        "yudao",
+        "edhr-protected-storage",
+        "edhr-protected-storage-20260601"
+      ],
+      "mysqlContainerId": "9a288d20d254366e99b265b1870466e974edf23e7aab60de2391e3a38e62fff6",
+      "objectSourcePin": {
+        "bytes": 1654,
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/private/backup-20261103-current/version-v2/object-source.json",
+        "sha256": "68fbecf464a886741a42641025d577a3c6ae69473e0ce848a72f617d07b1a873"
+      },
+      "passwordPin": "[REDACTED]",
+      "redisSnapshot": {
+        "containerId": "5099e7bd566ec6a683e8842b84d8db9e41245708fce29e89309607d6a7e72653",
+        "database": 1,
+        "host": "172.21.0.2"
+      },
+      "sourceFingerprint": "a36d337b14a907d64a542ea66a8f46bc07fd75a84d6bea9ca1bfff6f4fe44690",
+      "sourceIdentity": "a36d337b14a907d64a542ea66a8f46bc07fd75a84d6bea9ca1bfff6f4fe44690",
+      "writerContainerIds": [
+        "c4385604eb83b44f2836755bad709581c7e7edd0078b148f3b0f74e0b567304c",
+        "1210f97cf7653c5f74a7981bf4d4bec8d7462af873d53695d47a59a7ce38a479"
+      ]
+    },
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "sourceLockPath": "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/source-locks/source.lock",
+    "tools": {
+      "docker": "/usr/bin/docker",
+      "ip": "/usr/sbin/ip"
+    }
+  },
+  "identity": {
+    "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+    "sourceFingerprint": "a36d337b14a907d64a542ea66a8f46bc07fd75a84d6bea9ca1bfff6f4fe44690"
+  },
+  "blockedNames": {
+    "python3": 1572,
+    "kworker/10:0+cifsiod": 1,
+    "node_exporter": 1,
+    "python3.12": 1,
+    "df": 1
+  },
+  "blockedWaitChannels": {
+    "smb2_reconnect.part.19": 1575,
+    "cifs_mark_open_files_invalid": 1
+  },
+  "blockedExamples": [
+    {
+      "pid": 321,
+      "ppid": 1,
+      "name": "python3",
+      "wchan": "smb2_reconnect.part.19",
+      "operationIds": [],
+      "stack": [
+        "[<0>] smb2_reconnect.part.19+0xdd/0x790 [cifs]",
+        "[<0>] smb2_plain_req_init+0x3b/0x270 [cifs]",
+        "[<0>] SMB2_open_init+0x69/0x760 [cifs]",
+        "[<0>] smb2_query_info_compound+0x17b/0x3c0 [cifs]",
+        "[<0>] smb2_queryfs+0x70/0xf0 [cifs]",
+        "[<0>] cifs_statfs+0xa5/0x2a0 [cifs]",
+        "[<0>] statfs_by_dentry+0x67/0x90",
+        "[<0>] vfs_statfs+0x16/0xc0",
+        "[<0>] user_statfs+0x54/0xa0",
+        "[<0>] __do_sys_statfs+0x20/0x50"
+      ]
+    },
+    {
+      "pid": 326,
+      "ppid": 1,
+      "name": "python3",
+      "wchan": "smb2_reconnect.part.19",
+      "operationIds": [],
+      "stack": [
+        "[<0>] smb2_reconnect.part.19+0xdd/0x790 [cifs]",
+        "[<0>] smb2_plain_req_init+0x3b/0x270 [cifs]",
+        "[<0>] SMB2_open_init+0x69/0x760 [cifs]",
+        "[<0>] smb2_query_info_compound+0x17b/0x3c0 [cifs]",
+        "[<0>] smb2_queryfs+0x70/0xf0 [cifs]",
+        "[<0>] cifs_statfs+0xa5/0x2a0 [cifs]",
+        "[<0>] statfs_by_dentry+0x67/0x90",
+        "[<0>] vfs_statfs+0x16/0xc0",
+        "[<0>] user_statfs+0x54/0xa0",
+        "[<0>] __do_sys_statfs+0x20/0x50"
+      ]
+    },
+    {
+      "pid": 347,
+      "ppid": 1,
+      "name": "python3",
+      "wchan": "smb2_reconnect.part.19",
+      "operationIds": [],
+      "stack": [
+        "[<0>] smb2_reconnect.part.19+0xdd/0x790 [cifs]",
+        "[<0>] smb2_plain_req_init+0x3b/0x270 [cifs]",
+        "[<0>] SMB2_open_init+0x69/0x760 [cifs]",
+        "[<0>] smb2_query_info_compound+0x17b/0x3c0 [cifs]",
+        "[<0>] smb2_queryfs+0x70/0xf0 [cifs]",
+        "[<0>] cifs_statfs+0xa5/0x2a0 [cifs]",
+        "[<0>] statfs_by_dentry+0x67/0x90",
+        "[<0>] vfs_statfs+0x16/0xc0",
+        "[<0>] user_statfs+0x54/0xa0",
+        "[<0>] __do_sys_statfs+0x20/0x50"
+      ]
+    },
+    {
+      "pid": 351,
+      "ppid": 1,
+      "name": "python3",
+      "wchan": "smb2_reconnect.part.19",
+      "operationIds": [],
+      "stack": [
+        "[<0>] smb2_reconnect.part.19+0xdd/0x790 [cifs]",
+        "[<0>] smb2_plain_req_init+0x3b/0x270 [cifs]",
+        "[<0>] SMB2_open_init+0x69/0x760 [cifs]",
+        "[<0>] smb2_query_info_compound+0x17b/0x3c0 [cifs]",
+        "[<0>] smb2_queryfs+0x70/0xf0 [cifs]",
+        "[<0>] cifs_statfs+0xa5/0x2a0 [cifs]",
+        "[<0>] statfs_by_dentry+0x67/0x90",
+        "[<0>] vfs_statfs+0x16/0xc0",
+        "[<0>] user_statfs+0x54/0xa0",
+        "[<0>] __do_sys_statfs+0x20/0x50"
+      ]
+    },
+    {
+      "pid": 358,
+      "ppid": 1,
+      "name": "python3",
+      "wchan": "smb2_reconnect.part.19",
+      "operationIds": [],
+      "stack": [
+        "[<0>] smb2_reconnect.part.19+0xdd/0x790 [cifs]",
+        "[<0>] smb2_plain_req_init+0x3b/0x270 [cifs]",
+        "[<0>] SMB2_open_init+0x69/0x760 [cifs]",
+        "[<0>] smb2_query_info_compound+0x17b/0x3c0 [cifs]",
+        "[<0>] smb2_queryfs+0x70/0xf0 [cifs]",
+        "[<0>] cifs_statfs+0xa5/0x2a0 [cifs]",
+        "[<0>] statfs_by_dentry+0x67/0x90",
+        "[<0>] vfs_statfs+0x16/0xc0",
+        "[<0>] user_statfs+0x54/0xa0",
+        "[<0>] __do_sys_statfs+0x20/0x50"
+      ]
+    },
+    {
+      "pid": 374,
+      "ppid": 1,
+      "name": "python3",
+      "wchan": "smb2_reconnect.part.19",
+      "operationIds": [],
+      "stack": [
+        "[<0>] smb2_reconnect.part.19+0xdd/0x790 [cifs]",
+        "[<0>] smb2_plain_req_init+0x3b/0x270 [cifs]",
+        "[<0>] SMB2_open_init+0x69/0x760 [cifs]",
+        "[<0>] smb2_query_info_compound+0x17b/0x3c0 [cifs]",
+        "[<0>] smb2_queryfs+0x70/0xf0 [cifs]",
+        "[<0>] cifs_statfs+0xa5/0x2a0 [cifs]",
+        "[<0>] statfs_by_dentry+0x67/0x90",
+        "[<0>] vfs_statfs+0x16/0xc0",
+        "[<0>] user_statfs+0x54/0xa0",
+        "[<0>] __do_sys_statfs+0x20/0x50"
+      ]
+    },
+    {
+      "pid": 407,
+      "ppid": 1,
+      "name": "python3",
+      "wchan": "smb2_reconnect.part.19",
+      "operationIds": [],
+      "stack": [
+        "[<0>] smb2_reconnect.part.19+0xdd/0x790 [cifs]",
+        "[<0>] smb2_plain_req_init+0x3b/0x270 [cifs]",
+        "[<0>] SMB2_open_init+0x69/0x760 [cifs]",
+        "[<0>] smb2_query_info_compound+0x17b/0x3c0 [cifs]",
+        "[<0>] smb2_queryfs+0x70/0xf0 [cifs]",
+        "[<0>] cifs_statfs+0xa5/0x2a0 [cifs]",
+        "[<0>] statfs_by_dentry+0x67/0x90",
+        "[<0>] vfs_statfs+0x16/0xc0",
+        "[<0>] user_statfs+0x54/0xa0",
+        "[<0>] __do_sys_statfs+0x20/0x50"
+      ]
+    },
+    {
+      "pid": 425,
+      "ppid": 1,
+      "name": "python3",
+      "wchan": "smb2_reconnect.part.19",
+      "operationIds": [],
+      "stack": [
+        "[<0>] smb2_reconnect.part.19+0xdd/0x790 [cifs]",
+        "[<0>] smb2_plain_req_init+0x3b/0x270 [cifs]",
+        "[<0>] SMB2_open_init+0x69/0x760 [cifs]",
+        "[<0>] smb2_query_info_compound+0x17b/0x3c0 [cifs]",
+        "[<0>] smb2_queryfs+0x70/0xf0 [cifs]",
+        "[<0>] cifs_statfs+0xa5/0x2a0 [cifs]",
+        "[<0>] statfs_by_dentry+0x67/0x90",
+        "[<0>] vfs_statfs+0x16/0xc0",
+        "[<0>] user_statfs+0x54/0xa0",
+        "[<0>] __do_sys_statfs+0x20/0x50"
+      ]
+    },
+    {
+      "pid": 480,
+      "ppid": 1,
+      "name": "python3",
+      "wchan": "smb2_reconnect.part.19",
+      "operationIds": [],
+      "stack": [
+        "[<0>] smb2_reconnect.part.19+0xdd/0x790 [cifs]",
+        "[<0>] smb2_plain_req_init+0x3b/0x270 [cifs]",
+        "[<0>] SMB2_open_init+0x69/0x760 [cifs]",
+        "[<0>] smb2_query_info_compound+0x17b/0x3c0 [cifs]",
+        "[<0>] smb2_queryfs+0x70/0xf0 [cifs]",
+        "[<0>] cifs_statfs+0xa5/0x2a0 [cifs]",
+        "[<0>] statfs_by_dentry+0x67/0x90",
+        "[<0>] vfs_statfs+0x16/0xc0",
+        "[<0>] user_statfs+0x54/0xa0",
+        "[<0>] __do_sys_statfs+0x20/0x50"
+      ]
+    },
+    {
+      "pid": 517,
+      "ppid": 1,
+      "name": "python3",
+      "wchan": "smb2_reconnect.part.19",
+      "operationIds": [],
+      "stack": [
+        "[<0>] smb2_reconnect.part.19+0xdd/0x790 [cifs]",
+        "[<0>] smb2_plain_req_init+0x3b/0x270 [cifs]",
+        "[<0>] SMB2_open_init+0x69/0x760 [cifs]",
+        "[<0>] smb2_query_info_compound+0x17b/0x3c0 [cifs]",
+        "[<0>] smb2_queryfs+0x70/0xf0 [cifs]",
+        "[<0>] cifs_statfs+0xa5/0x2a0 [cifs]",
+        "[<0>] statfs_by_dentry+0x67/0x90",
+        "[<0>] vfs_statfs+0x16/0xc0",
+        "[<0>] user_statfs+0x54/0xa0",
+        "[<0>] __do_sys_statfs+0x20/0x50"
+      ]
+    },
+    {
+      "pid": 529,
+      "ppid": 1,
+      "name": "python3",
+      "wchan": "smb2_reconnect.part.19",
+      "operationIds": [],
+      "stack": [
+        "[<0>] smb2_reconnect.part.19+0xdd/0x790 [cifs]",
+        "[<0>] smb2_plain_req_init+0x3b/0x270 [cifs]",
+        "[<0>] SMB2_open_init+0x69/0x760 [cifs]",
+        "[<0>] smb2_query_info_compound+0x17b/0x3c0 [cifs]",
+        "[<0>] smb2_queryfs+0x70/0xf0 [cifs]",
+        "[<0>] cifs_statfs+0xa5/0x2a0 [cifs]",
+        "[<0>] statfs_by_dentry+0x67/0x90",
+        "[<0>] vfs_statfs+0x16/0xc0",
+        "[<0>] user_statfs+0x54/0xa0",
+        "[<0>] __do_sys_statfs+0x20/0x50"
+      ]
+    },
+    {
+      "pid": 598,
+      "ppid": 1,
+      "name": "python3",
+      "wchan": "smb2_reconnect.part.19",
+      "operationIds": [],
+      "stack": [
+        "[<0>] smb2_reconnect.part.19+0xdd/0x790 [cifs]",
+        "[<0>] smb2_plain_req_init+0x3b/0x270 [cifs]",
+        "[<0>] SMB2_open_init+0x69/0x760 [cifs]",
+        "[<0>] smb2_query_info_compound+0x17b/0x3c0 [cifs]",
+        "[<0>] smb2_queryfs+0x70/0xf0 [cifs]",
+        "[<0>] cifs_statfs+0xa5/0x2a0 [cifs]",
+        "[<0>] statfs_by_dentry+0x67/0x90",
+        "[<0>] vfs_statfs+0x16/0xc0",
+        "[<0>] user_statfs+0x54/0xa0",
+        "[<0>] __do_sys_statfs+0x20/0x50"
+      ]
+    },
+    {
+      "pid": 602,
+      "ppid": 1,
+      "name": "python3",
+      "wchan": "smb2_reconnect.part.19",
+      "operationIds": [],
+      "stack": [
+        "[<0>] smb2_reconnect.part.19+0xdd/0x790 [cifs]",
+        "[<0>] smb2_plain_req_init+0x3b/0x270 [cifs]",
+        "[<0>] SMB2_open_init+0x69/0x760 [cifs]",
+        "[<0>] smb2_query_info_compound+0x17b/0x3c0 [cifs]",
+        "[<0>] smb2_queryfs+0x70/0xf0 [cifs]",
+        "[<0>] cifs_statfs+0xa5/0x2a0 [cifs]",
+        "[<0>] statfs_by_dentry+0x67/0x90",
+        "[<0>] vfs_statfs+0x16/0xc0",
+        "[<0>] user_statfs+0x54/0xa0",
+        "[<0>] __do_sys_statfs+0x20/0x50"
+      ]
+    },
+    {
+      "pid": 611,
+      "ppid": 1,
+      "name": "python3",
+      "wchan": "smb2_reconnect.part.19",
+      "operationIds": [],
+      "stack": [
+        "[<0>] smb2_reconnect.part.19+0xdd/0x790 [cifs]",
+        "[<0>] smb2_plain_req_init+0x3b/0x270 [cifs]",
+        "[<0>] SMB2_open_init+0x69/0x760 [cifs]",
+        "[<0>] smb2_query_info_compound+0x17b/0x3c0 [cifs]",
+        "[<0>] smb2_queryfs+0x70/0xf0 [cifs]",
+        "[<0>] cifs_statfs+0xa5/0x2a0 [cifs]",
+        "[<0>] statfs_by_dentry+0x67/0x90",
+        "[<0>] vfs_statfs+0x16/0xc0",
+        "[<0>] user_statfs+0x54/0xa0",
+        "[<0>] __do_sys_statfs+0x20/0x50"
+      ]
+    },
+    {
+      "pid": 657,
+      "ppid": 1,
+      "name": "python3",
+      "wchan": "smb2_reconnect.part.19",
+      "operationIds": [],
+      "stack": [
+        "[<0>] smb2_reconnect.part.19+0xdd/0x790 [cifs]",
+        "[<0>] smb2_plain_req_init+0x3b/0x270 [cifs]",
+        "[<0>] SMB2_open_init+0x69/0x760 [cifs]",
+        "[<0>] smb2_query_info_compound+0x17b/0x3c0 [cifs]",
+        "[<0>] smb2_queryfs+0x70/0xf0 [cifs]",
+        "[<0>] cifs_statfs+0xa5/0x2a0 [cifs]",
+        "[<0>] statfs_by_dentry+0x67/0x90",
+        "[<0>] vfs_statfs+0x16/0xc0",
+        "[<0>] user_statfs+0x54/0xa0",
+        "[<0>] __do_sys_statfs+0x20/0x50"
+      ]
+    },
+    {
+      "pid": 726,
+      "ppid": 1,
+      "name": "python3",
+      "wchan": "smb2_reconnect.part.19",
+      "operationIds": [],
+      "stack": [
+        "[<0>] smb2_reconnect.part.19+0xdd/0x790 [cifs]",
+        "[<0>] smb2_plain_req_init+0x3b/0x270 [cifs]",
+        "[<0>] SMB2_open_init+0x69/0x760 [cifs]",
+        "[<0>] smb2_query_info_compound+0x17b/0x3c0 [cifs]",
+        "[<0>] smb2_queryfs+0x70/0xf0 [cifs]",
+        "[<0>] cifs_statfs+0xa5/0x2a0 [cifs]",
+        "[<0>] statfs_by_dentry+0x67/0x90",
+        "[<0>] vfs_statfs+0x16/0xc0",
+        "[<0>] user_statfs+0x54/0xa0",
+        "[<0>] __do_sys_statfs+0x20/0x50"
+      ]
+    }
+  ],
+  "mounts": [
+    {
+      "mountId": "116",
+      "parentId": "93",
+      "mountPoint": "/var/lib/docker",
+      "filesystem": "ext4",
+      "source": "/dev/vdb"
+    },
+    {
+      "mountId": "6374",
+      "parentId": "93",
+      "mountPoint": "/mnt/intruoyi-backup-nas",
+      "filesystem": "cifs",
+      "source": "//172.30.30.4/IT共享"
+    },
+    {
+      "mountId": "6728",
+      "parentId": "93",
+      "mountPoint": "/mnt/nas/Backup/BackupPackage",
+      "filesystem": "cifs",
+      "source": "//172.30.30.4/IT共享"
+    },
+    {
+      "mountId": "661",
+      "parentId": "116",
+      "mountPoint": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas",
+      "filesystem": "cifs",
+      "source": "//172.30.30.4/IT共享"
+    }
+  ],
+  "relatedOriginalPids": [
+    {
+      "operationId": "smallapp-76d73ea28c424caa90adc75ab1ac4206",
+      "pid": 21013,
+      "pidExists": false,
+      "originalCommandMatches": false,
+      "workerTerminalExists": true
+    },
+    {
+      "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+      "pid": 29336,
+      "pidExists": false,
+      "originalCommandMatches": false,
+      "workerTerminalExists": true
+    },
+    {
+      "operationId": "smallapp-abbd6341ab7a4318973434f48020b287",
+      "pid": 24168,
+      "pidExists": false,
+      "originalCommandMatches": false,
+      "workerTerminalExists": true
+    },
+    {
+      "operationId": "smallapp-a54a05be9dab45e490a3979551536b0c",
+      "pid": 5863,
+      "pidExists": false,
+      "originalCommandMatches": false,
+      "workerTerminalExists": true
+    },
+    {
+      "operationId": "smallapp-9d0b52af727045efb92e490a68329a22",
+      "pid": 7494,
+      "pidExists": false,
+      "originalCommandMatches": false,
+      "workerTerminalExists": true
+    },
+    {
+      "operationId": "smallapp-3f29a2b1324045309478a3a597654260",
+      "pid": 30354,
+      "pidExists": true,
+      "originalCommandMatches": false,
+      "workerTerminalExists": true
+    },
+    {
+      "operationId": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+      "pid": 12361,
+      "pidExists": false,
+      "originalCommandMatches": false,
+      "workerTerminalExists": true
+    },
+    {
+      "operationId": "smallapp-bc3a610cf70345538e2dcd783893a6ed",
+      "pid": 23860,
+      "pidExists": false,
+      "originalCommandMatches": false,
+      "workerTerminalExists": true
+    }
+  ]
+}

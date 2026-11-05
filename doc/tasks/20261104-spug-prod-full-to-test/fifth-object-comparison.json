@@ -1,0 +1,39 @@
+{
+  "observedAt": "2026-11-05T10:50:46.947179+00:00",
+  "operationId": "smallapp-6cb9423086fe4b62ad21505e189bc36b",
+  "state": "PHYSICAL_VERSION_READBACK_MATCH_PENDING_FULL_RESTORE_PROOF",
+  "comparisonFields": [
+    "applicationVerified",
+    "buckets",
+    "chainObjectContentIndexPins",
+    "continuousHostExclusionVerified",
+    "deleteMarkerCount",
+    "exactVersionIdentityVerified",
+    "physicalCaptureVerified",
+    "productionEvidence",
+    "restoredExportReceiptSha256",
+    "restoredInventorySha256",
+    "sourceExportReceiptSha256",
+    "sourceInventorySha256",
+    "sourceObjectContentIndexPin",
+    "state",
+    "totalVersionBytes",
+    "uniqueContentCount",
+    "versionCount",
+    "versionHistorySha256"
+  ],
+  "comparison": {
+    "exactVersionIdentityVerified": true,
+    "versionCount": 5916,
+    "deleteMarkerCount": 0,
+    "totalVersionBytes": 9653189892,
+    "uniqueContentCount": 4920,
+    "versionHistorySha256": "9fb2a7ba380c86d0164c9a82ba8ad18320fed5eb1f1f79d8a72e2ae77e7260c8"
+  },
+  "comparisonPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-6cb9423086fe4b62ad21505e189bc36b/objects/physical-comparison.json",
+    "bytes": 1659,
+    "sha256": "ad2433a8c208d8959b9c97d2466fa8cd2fb56eb900170241cfcd930c6569e8e8"
+  },
+  "businessWritesPerformed": false
+}

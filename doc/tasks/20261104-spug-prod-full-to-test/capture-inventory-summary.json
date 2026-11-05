@@ -1,0 +1,22 @@
+{
+  "observedAt": "2026-11-05T04:30:39.871245+00:00",
+  "scope": "capture file inventory only; final manifest may include extra semantic and recovery material",
+  "groups": {
+    "directory": {
+      "count": 9515,
+      "bytes": 0,
+      "fields": [
+        "kind"
+      ]
+    },
+    "file": {
+      "count": 9421,
+      "bytes": 9656201379,
+      "fields": [
+        "bytes",
+        "kind",
+        "sha256"
+      ]
+    }
+  }
+}

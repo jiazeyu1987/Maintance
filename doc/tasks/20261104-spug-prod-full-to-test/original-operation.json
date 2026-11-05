@@ -1,0 +1,48 @@
+{
+  "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+  "operationDirectory": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/015324b875ded2becd0e843248a943a94614abaf2ef19ffcdbfe19f4e2a4d5ff",
+  "fileCount": 4787,
+  "captureQueryTerminalCount": 953,
+  "results": {
+    "capture-query-953-terminal.json": {
+      "state": "EXITED",
+      "actualExitCode": 0,
+      "pid": 15197,
+      "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d"
+    },
+    "capture-terminal.json": {
+      "state": "EXITED",
+      "actualExitCode": 3,
+      "pid": 2113,
+      "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d"
+    },
+    "result.json": {
+      "state": "FAILED_RETAINED",
+      "failureCode": "ARCHIVE_LEASE_FD_BUDGET_EXCEEDED",
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-03T12:15:22.762733Z",
+      "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d"
+    },
+    "worker-process.json": {
+      "pid": 29516,
+      "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d"
+    }
+  },
+  "processes": [
+    {
+      "evidence": "capture-query-953-terminal.json",
+      "pid": 15197,
+      "exists": false
+    },
+    {
+      "evidence": "capture-terminal.json",
+      "pid": 2113,
+      "exists": false
+    },
+    {
+      "evidence": "worker-process.json",
+      "pid": 29516,
+      "exists": false
+    }
+  ]
+}

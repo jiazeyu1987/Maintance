@@ -49,6 +49,23 @@ Fail Fast：任何未确认远端效果、原包冲突或真实验证失败必�
 - Forbidden action: 禁止通过改摘要掩盖原校验失败、重新编译解决已封包上传失败、任意递归删除、自动融合int_main、恢复已取消演练、固定64GiB门槛、重复正式全量备份或将单元测试称为真实业务验收。
 - 必须记录 / Evidence: 目标/维护提交、RED/GREEN/REGRESSION、实际JAR及封包摘要、原校验及更新清单、工作副本归属/检查点/Git退出码/物理删除、普通PID/入口/文件摘要、私有历史保持证据；见`doc/tasks/20261101-release-recurrence-guards/execution-log.md`及该任务脱敏JSON。
 
+## Spug 恢复包接口合同与保留失败续恢复门禁
+
+- Trigger: SAFE/FAST 组件注入、覆盖恢复准备、`RESTORE_TYPEERROR`，或已执行清库后的 `FAILED_RETAINED`。
+- Preflight check: 在独立发布 worktree 从精确已提交目标构建，测试实际 tgz 内的调用方、文件引擎和 MySQL 包装；SAFE 保持完整哈希与读回，FAST 专用参数不得进入冻结 SAFE 接口。DROP/CREATE 等破坏性 SQL 必须实际记录 `mutation=true`。恢复前核 NAS 原 canonical 路径、只读挂载/持久依赖与新点 pins，不能只验证来源机可读。
+- Blocker: 包接口不兼容、审计把写入误记为只读、目标身份/挂载/版本漂移、原 worker 活动或未知终态、缺少明确恢复授权、保留预约属于其它操作，均停止相应阶段。清库后失败时保持业务写入服务停止，禁止启动空库主程序。
+- Verification: 实际包组件测试与 POSIX 文件锁/预约用例通过；新安装代次逐文件摘要、新配置 pins、原失败字节不变。真实 Spug 新编号恢复需终态成功，并核数据库全结构/数据、附件版本、Redis、原容器镜像与 UUID、health/HTTP及真实登录后页面；单测和 HTTP202 不代替恢复验收。
+- Forbidden action: 不删除 failed claim/原预约证据，不改 FAILED 为成功，不建新 stateRoot 绕过保留，不自动重试、不用接口或 SQL 绕过正常页面执行恢复，不用旧点代替用户要求的新全量包。
+- Evidence: `doc/tasks/20261104-spug-prod-full-to-test/retained-recovery-plan.md`、`execution-log.md`、`retained-recovery-install.json`、`retained-recovery-authorize.json`、`restore-attempt-1/`、`restore-attempt-2/`；修复提交 `9176b3c`。
+
+阶段 1：封包合同与环境准入。必查实际 SAFE/FAST 包内 `prepare`、`inventory/apply_tree` 和嵌套 `BoundMySql.query`，先 RED 再 GREEN。推荐执行 `python -B -m pytest -q scripts/tests/test_backup_variants.py scripts/tests/test_retained_replacement_retry.py`，POSIX 专属用例必须在 Linux 实际运行。Fail Fast：依赖/挂载缺失是环境失败，不能冒充业务 RED 或静默跳过。必须记录提交、临时工作区、包双摘要、测试环境与通过/跳过数量。
+
+阶段 2：已变更目标的显式续恢复。先保全原请求、配置、worker-result、child-exit、replacement-result 和宿主预约 pins，并只读核真实 DB UUID/表数与停写状态。新组件保留旧代次，使用已校验的 `common/recovery_retained_retry.py --operation-root <原操作目录> --authorization <既有明确授权及方案摘要> --expected-table-count <已核实表数> --authorize-retained-replacement`。该入口仅追加准许/观察/释放回执，不恢复业务数据；持原物理锁与宿主预约锁，精确释放同一预约当前指针。Fail Fast：未知/活动/漂移/其它预约/证据变化不准许。必须记录原失败保持、新回执 pins、准许期限及同来源/同点/同目标约束。
+
+阶段 3：正常页面新恢复与验收。通过真实 Spug 页面重新确认同一点和目标，生成新 operationId；执行器只消费一次准许并追加新旧关联。新失败继续保留，不能再次自动解锁。沿原编号查终态，按完整原生一致性和真实业务页面验收；必须分别记录原失败和新结果、启动边界、清理回执与临时发布工作区删除结果。
+
+- 容量合同前置：`maxExpandedBytes` 计量SQL展开大小，`dataLimits.max_bytes` 计量数据库摘要查询输出，不能复用同一大值。安装配置必须调用实际formal.validate_limits（当前max_bytes硬上限16GiB）；实际SAFE/FAST构造器在目标访问/清理前再次校验。推荐运行 `pytest scripts/tests/test_backup_variants.py -k data_limits`，非法64GiB必须在target.services边界前失败，独立SQL64GiB+摘要16GiB必须通过该门禁。必须记录实际安装限额及原失败证据；禁止扩大正式限额掩盖配置错误。证据：`doc/tasks/20261104-spug-prod-full-to-test/readback-configuration-audit.json`。
+
 ## Spug 直接三服策略与普通脚本安装门禁
 
 - Trigger: 用户明确取消三服主流程演练，或切换已迁移的普通脚本执行器及发布页面。

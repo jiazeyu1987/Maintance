@@ -1,5 +1,7 @@
 # 项目经验索引
 
+- Spug dataLimits / FORMAL_DATA_LIMITS_REQUIRED / maxExpandedBytes / SAFE/FAST 注入接口 / inventory content / apply_tree verify_content / RESTORE_TYPEERROR / FAILED_RETAINED 清库后失败 / recovery-clearance：`docs/release-agent-checklist.md#spug-恢复包接口合同与保留失败续恢复门禁`。必须测试实际封包调用链及破坏性 SQL 审计；已变更目标保持停写，显式审计准许只接续同点同目标，不删锁或改历史。
+
 - 发布完成自动删除旧包 / 旧恢复资料 / postReleaseCleanup / artifact-auto-clean / 重试目录公共锁：`docs/release-agent-checklist.md#发布验收后旧载荷回收门禁`。
 
 - 三服表数不同 / 环境限定建表 / 治理表仅test / 同包升级后结构一致 / expectedSchemaSha256：`docs/release-agent-checklist.md#三服同版本同结构发布门禁`；修复用不可变前向迁移，不改已执行SQL，不删表凑数量；升级后核表、列、索引与约束，保留各自业务数据和迁移历史。

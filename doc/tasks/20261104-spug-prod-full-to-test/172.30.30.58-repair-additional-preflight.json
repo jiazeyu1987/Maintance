@@ -1,0 +1,15 @@
+{
+  "http": {
+    "http://172.30.30.58:8081/healthz": {
+      "status": 200,
+      "length": 2
+    },
+    "http://172.30.30.58:8081/": {
+      "status": 200,
+      "length": 3838
+    }
+  },
+  "backendHealth": {
+    "status": "UP"
+  }
+}

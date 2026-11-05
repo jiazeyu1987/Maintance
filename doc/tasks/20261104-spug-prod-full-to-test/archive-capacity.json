@@ -1,0 +1,115 @@
+{
+  "services": {
+    "spug-intruoyi-source-57-20261105.service": "MainPID=20619\nLimitNOFILE=65536\nLimitNOFILESoft=65536\n"
+  },
+  "points": [
+    {
+      "reference": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+      "state": "SUCCEEDED",
+      "manifestPin": {
+        "bytes": 6252936,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-3e28538a2a09b55b9d6cc99953474a3703d80b80d80a7725df97ff919ffcef8c/.repository/manifest.json",
+        "sha256": "acf219c040a26c48b90627ce68579d7ddf27eabb56b8c40024624a5c4c4dcb54"
+      },
+      "payloadFiles": 14334,
+      "payloadBytes": 26088444894,
+      "fileAndAncestorPaths": 24082,
+      "requiredWithReserve": 24210,
+      "databasePayloads": [
+        {
+          "name": "database.sql.gz",
+          "bytes": 6127394945
+        }
+      ]
+    },
+    {
+      "reference": "smallapp-a54a05be9dab45e490a3979551536b0c",
+      "state": "SUCCEEDED",
+      "manifestPin": {
+        "bytes": 6248813,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-9e0ac7ff4c62b512d8e23f13a2f76c14ff83c975ad0e642051700d9bdb64688f/.repository/manifest.json",
+        "sha256": "1152d5aea8eab1b6b3de8f898a0343bb52a62be66f3474a43524200bdb28f60b"
+      },
+      "payloadFiles": 14324,
+      "payloadBytes": 26088446007,
+      "fileAndAncestorPaths": 24061,
+      "requiredWithReserve": 24189,
+      "databasePayloads": [
+        {
+          "name": "database.sql.gz",
+          "bytes": 6127421788
+        }
+      ]
+    },
+    {
+      "reference": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+      "state": "SUCCEEDED",
+      "manifestPin": {
+        "bytes": 6257809,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-015324b875ded2becd0e843248a943a94614abaf2ef19ffcdbfe19f4e2a4d5ff/.repository/manifest.json",
+        "sha256": "f5aa91490681ff649abdc81957de8f75f0b1c2672fb92e263c18b90a2681a8a1"
+      },
+      "payloadFiles": 14346,
+      "payloadBytes": 26090481928,
+      "fileAndAncestorPaths": 24104,
+      "requiredWithReserve": 24232,
+      "databasePayloads": [
+        {
+          "name": "database.sql.gz",
+          "bytes": 6127974671
+        }
+      ]
+    },
+    {
+      "reference": "smallapp-3f29a2b1324045309478a3a597654260",
+      "state": "SUCCEEDED",
+      "manifestPin": {
+        "bytes": 6248811,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-021422e67360554d7024bd2e329b4770e034a64d7be15ad96d88d27dec717b16/.repository/manifest.json",
+        "sha256": "bba36595ab1d364b5ffe05b63c530abbc0b88d2d29831354073ccaa63c45ca05"
+      },
+      "payloadFiles": 14324,
+      "payloadBytes": 26088427452,
+      "fileAndAncestorPaths": 24061,
+      "requiredWithReserve": 24189,
+      "databasePayloads": [
+        {
+          "name": "database.sql.gz",
+          "bytes": 6127425567
+        }
+      ]
+    }
+  ],
+  "inotifyMaxWatches": 65536,
+  "engineBudgetCode": [
+    {
+      "file": "engine/common/recovery_minimal_runtime.py",
+      "line": 89,
+      "code": "            require(signature(path.stat()) == before, 'PIN_CHANGED')\n            self.payload_signatures[ref['path']] = before\n        from recovery_archive_guard import ArchivePathGuard\n        self.archive_guard = ArchivePathGuard(self.payload_signatures)\n        self.target = {'targetIdentityPin': write(root/'target-configuration.json', target)}"
+    },
+    {
+      "file": "engine/common/recovery_minimal_runtime.py",
+      "line": 90,
+      "code": "            self.payload_signatures[ref['path']] = before\n        from recovery_archive_guard import ArchivePathGuard\n        self.archive_guard = ArchivePathGuard(self.payload_signatures)\n        self.target = {'targetIdentityPin': write(root/'target-configuration.json', target)}\n        self.db_container = self.config_services['mysql']['id']"
+    },
+    {
+      "file": "engine/common/recovery_archive_guard.py",
+      "line": 13,
+      "code": "\n\nclass ArchivePathGuard:\n    # Reads do not produce these events. File watches also catch writes through\n    # an open descriptor and link-count changes outside a watched parent."
+    },
+    {
+      "file": "engine/common/repository_minimal.py",
+      "line": 305,
+      "code": "            return super()._current(allow_closed=allow_closed)\n        if self.path_guard is None:\n            from recovery_archive_guard import ArchivePathGuard\n            files = {self.root / name: (saved[0], saved[1], saved[6], saved[7], saved[8])\n                     for name, saved in self.pins.items() if stat.S_ISREG(saved[2])}"
+    },
+    {
+      "file": "engine/common/repository_minimal.py",
+      "line": 310,
+      "code": "            directories = [self.root / name for name, saved in self.pins.items()\n                           if stat.S_ISDIR(saved[2])]\n            self.path_guard = ArchivePathGuard(files, closed_directories=directories)\n            try:\n                super()._current(allow_closed=allow_closed)"
+    }
+  ],
+  "target": {
+    "budget": "MainPID=4634\nLimitNOFILE=65536\nLimitNOFILESoft=65536\n",
+    "inotifyMaxWatches": 65536
+  }
+}

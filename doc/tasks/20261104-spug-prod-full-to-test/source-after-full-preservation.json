@@ -1,0 +1,91 @@
+{
+  "observedAt": "2026-11-05T10:08:17.368011+00:00",
+  "containers": [
+    {
+      "id": "1ceaee8d844fd913d31ac2e500a5401f3fb0405618cbb038d582071bd5d75719",
+      "name": "/erp-invoice-voucher-print-assistant",
+      "configurationPreserved": true,
+      "pidAndStartedAtUnchanged": true,
+      "sourceMinioCaptureLifecycle": false
+    },
+    {
+      "id": "7dbf8a3197a28a216a0da19f731cf20a40aa35117d73f348e3d5f50fcf027251",
+      "name": "/fenbeitong-assistant",
+      "configurationPreserved": true,
+      "pidAndStartedAtUnchanged": true,
+      "sourceMinioCaptureLifecycle": false
+    },
+    {
+      "id": "5f151cbb407e09b42c20a7643104d4c658a384acaeee6a4a36e8fcf97e238b15",
+      "name": "/rehearsal-smallapp-20261022-frontend",
+      "configurationPreserved": true,
+      "pidAndStartedAtUnchanged": true,
+      "sourceMinioCaptureLifecycle": false
+    },
+    {
+      "id": "2ec14b9e0148d1ca0f67652ae606efc10dff3fee2656af11e819fb316623d4ff",
+      "name": "/rehearsal-smallapp-20261022-backend",
+      "configurationPreserved": true,
+      "pidAndStartedAtUnchanged": true,
+      "sourceMinioCaptureLifecycle": false
+    },
+    {
+      "id": "9af094862946e614cffc395531c8a7af65618ac2bc8ed3f92d1c9ded2ec8c62b",
+      "name": "/rehearsal-smallapp-20261022-minio",
+      "configurationPreserved": true,
+      "pidAndStartedAtUnchanged": true,
+      "sourceMinioCaptureLifecycle": false
+    },
+    {
+      "id": "417ba2924a955c308d647528c721938c9b7b272887f412847caf6d1f3b7b70d7",
+      "name": "/rehearsal-smallapp-20261022-redis",
+      "configurationPreserved": true,
+      "pidAndStartedAtUnchanged": true,
+      "sourceMinioCaptureLifecycle": false
+    },
+    {
+      "id": "09a7210373b351d2c1e5c044c5f8d73efdca9a20715c6fbc30f409877f7a2456",
+      "name": "/rehearsal-smallapp-20261022-mysql",
+      "configurationPreserved": true,
+      "pidAndStartedAtUnchanged": true,
+      "sourceMinioCaptureLifecycle": false
+    },
+    {
+      "id": "9d6b45bad9b18f575b0f8ee7cf729f1167b9fc9a2ebeb8a7a2c74ebbdcd24830",
+      "name": "/intruoyi-website",
+      "configurationPreserved": true,
+      "pidAndStartedAtUnchanged": true,
+      "sourceMinioCaptureLifecycle": false
+    },
+    {
+      "id": "ab9f967c26b4e1672a1229395658dde2706e5d01c3e29086dd9e3ad2b0fac3de",
+      "name": "/intruoyi-onlyoffice",
+      "configurationPreserved": true,
+      "pidAndStartedAtUnchanged": true,
+      "sourceMinioCaptureLifecycle": false
+    },
+    {
+      "id": "9a288d20d254366e99b265b1870466e974edf23e7aab60de2391e3a38e62fff6",
+      "name": "/intruoyi-mysql",
+      "configurationPreserved": true,
+      "pidAndStartedAtUnchanged": true,
+      "sourceMinioCaptureLifecycle": false
+    },
+    {
+      "id": "5099e7bd566ec6a683e8842b84d8db9e41245708fce29e89309607d6a7e72653",
+      "name": "/intruoyi-redis",
+      "configurationPreserved": true,
+      "pidAndStartedAtUnchanged": true,
+      "sourceMinioCaptureLifecycle": false
+    },
+    {
+      "id": "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf",
+      "name": "/ragflow_compose-minio-1",
+      "configurationPreserved": true,
+      "pidAndStartedAtUnchanged": false,
+      "sourceMinioCaptureLifecycle": true
+    }
+  ],
+  "unchangedPidAndStartedAtCount": 11,
+  "status": "PASS"
+}

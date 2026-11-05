@@ -1,0 +1,22 @@
+{
+  "implementationCommit": "04f5f9ce958b52479c0c729fe32dbb69669e73fb",
+  "windows": {
+    "passed": 118,
+    "posixSkipped": 10
+  },
+  "linux": {
+    "passed": 195,
+    "skipped": 0
+  },
+  "dedicatedRelease": {
+    "path": "C:/Users/D01021/.codex/worktrees/spug-readback-limits-release-20261105/Maintance",
+    "targetCommit": "04f5f9ce958b52479c0c729fe32dbb69669e73fb",
+    "cleanBeforeAndAfter": true,
+    "passed": 27,
+    "posixSkippedPreviouslyVerified": 3,
+    "newCommits": false
+  },
+  "safePackageSha256": "c4b8bc1208900562ece2e6396a6cbefb3125893386f10fa508030005dbc36b01",
+  "fileManifestSha256": "7474080922c85c5a03ab514176f9fcd32af6a585a657ae25eb07c20c66839b7b",
+  "scope": "LOCAL_COMPONENT_AND_PACKAGE_NOT_RESTORE_SUCCESS"
+}

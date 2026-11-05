@@ -1,0 +1,851 @@
+{
+  "captureLimits": {
+    "cleanupSeconds": 600,
+    "clientWaitSeconds": 5,
+    "dataMaxBytes": 17179869184,
+    "dataMaxNodes": 100000000,
+    "dataMaxRows": 10000000,
+    "dataSeconds": 7200,
+    "maxWrittenBytes": 9223372036854775807,
+    "minimumFreeBytes": 1,
+    "querySeconds": 120,
+    "readySeconds": 300,
+    "stopSeconds": 30,
+    "workSeconds": 43200
+  },
+  "points": [
+    {
+      "reference": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+      "pointKeys": [
+        "reference",
+        "resultPin",
+        "schemaVersion",
+        "sourceConfigRef"
+      ],
+      "resultKeys": [
+        "action",
+        "actualExitCode",
+        "data",
+        "failureCode",
+        "finishedAt",
+        "message",
+        "operationId",
+        "originalResultPins",
+        "requestId",
+        "schemaVersion",
+        "startedAt",
+        "state"
+      ],
+      "state": "SUCCEEDED",
+      "dataKeys": [
+        "captureResultPin",
+        "logRefs",
+        "manifestPin",
+        "objectContentIndexPin",
+        "pointPin",
+        "readbackPin",
+        "recoveryMaterialPin",
+        "repositoryBindingPin",
+        "sourceScopePin",
+        "stagingCleanupPin"
+      ],
+      "pins": {
+        "captureResultPin": {
+          "schemaVersion": "backup-restore-operation-result/v1",
+          "keys": [
+            "action",
+            "actualExitCode",
+            "data",
+            "failureCode",
+            "finishedAt",
+            "message",
+            "operationId",
+            "originalResultPins",
+            "requestId",
+            "schemaVersion",
+            "startedAt",
+            "state"
+          ],
+          "dataKeys": [
+            "archiveEntriesPin",
+            "captureInputsPin",
+            "capturePointPin",
+            "captureRoot",
+            "logRefs",
+            "objectContentIndexPin",
+            "recoveryPoint",
+            "sourceIdentity",
+            "sourceRestorationPin"
+          ]
+        },
+        "manifestPin": {
+          "schemaVersion": "RepositoryManifest/v1",
+          "keys": [
+            "backupId",
+            "commonRecoveryPoint",
+            "copyProtectionPin",
+            "createdAt",
+            "generationId",
+            "parentPointPins",
+            "payloadRefs",
+            "payloadTreePin",
+            "pointType",
+            "schemaVersion",
+            "sourceIdentityPin",
+            "toolPins",
+            "versionPins"
+          ]
+        },
+        "objectContentIndexPin": {
+          "schemaVersion": "backup-capture-object-index/v1",
+          "keys": [
+            "backupId",
+            "changedContentSha256",
+            "contentPins",
+            "exportReceiptPin",
+            "generationId",
+            "inventoryPin",
+            "manifestPin",
+            "parentExportIndexPin",
+            "pointType",
+            "recoveryPoint",
+            "repositoryBound",
+            "schemaVersion",
+            "sourceIdentity"
+          ]
+        },
+        "pointPin": {
+          "schemaVersion": "RepositoryPoint/v1",
+          "keys": [
+            "backupId",
+            "blockedReason",
+            "commonRecoveryPoint",
+            "controlledRestoreEligible",
+            "generationId",
+            "integrityState",
+            "manifestPin",
+            "originalExitEvidencePin",
+            "ownerCloseEvidencePin",
+            "parentPointPins",
+            "payloadRefs",
+            "pointType",
+            "readbackEvidencePin",
+            "rehearsalEligible",
+            "schemaVersion"
+          ]
+        },
+        "readbackPin": {
+          "schemaVersion": "RepositoryMinimumReadback/v1",
+          "keys": [
+            "independentConnectionId",
+            "manifestPin",
+            "objectContentIndexPin",
+            "operationId",
+            "originalRecordsPin",
+            "payloadRefs",
+            "recoveryMaterialPin",
+            "schemaVersion",
+            "serverDurabilityVerified",
+            "sourceScopePin"
+          ]
+        },
+        "recoveryMaterialPin": {
+          "schemaVersion": "RecoveryMaterial/v1",
+          "keys": [
+            "database",
+            "derivedInventoryPin",
+            "manifestPin",
+            "objects",
+            "payloadPins",
+            "pointType",
+            "recoveryPoint",
+            "referenceInventoryPin",
+            "schemaVersion",
+            "sourceDatabaseUuid",
+            "sourceFingerprint",
+            "sourceScopePin",
+            "versionPins"
+          ]
+        },
+        "repositoryBindingPin": {
+          "schemaVersion": "RecoveryRepositoryBinding/v1",
+          "keys": [
+            "backupId",
+            "generationId",
+            "manifestPin",
+            "objectContentIndexPin",
+            "recoveryMaterialPin",
+            "repositoryPointPin",
+            "schemaVersion",
+            "sourceScopePin"
+          ]
+        },
+        "sourceScopePin": {
+          "schemaVersion": "RecoverySourceScope/v1",
+          "keys": [
+            "endpointHosts",
+            "schemaVersion",
+            "sourceIdentityPin"
+          ]
+        },
+        "stagingCleanupPin": {
+          "schemaVersion": "OperationStagingCleanup/v1",
+          "keys": [
+            "deletedBytes",
+            "deletedFiles",
+            "files",
+            "finishedAt",
+            "operationId",
+            "root",
+            "schemaVersion",
+            "selectedPaths",
+            "state"
+          ]
+        }
+      },
+      "sourceRestoration": {
+        "at": "2026-10-24T20:58:38.788921+00:00",
+        "errors": [],
+        "restored": true,
+        "schemaVersion": "minimal-capture-source-restoration/v1",
+        "sourceIdentity": "a36d337b14a907d64a542ea66a8f46bc07fd75a84d6bea9ca1bfff6f4fe44690",
+        "touchedContainerIds": [
+          "dbf94b095701f30c294fa31f5815a01f5cddf10e0ac664b1b259a4a9d2a1cd07",
+          "5ab07be885e241055b99a79892f3ee663ebde40ec76c660f40a2647caf5f2b7e",
+          "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf"
+        ]
+      }
+    },
+    {
+      "reference": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+      "pointKeys": [
+        "reference",
+        "resultPin",
+        "schemaVersion",
+        "sourceConfigRef"
+      ],
+      "resultKeys": [
+        "action",
+        "actualExitCode",
+        "data",
+        "failureCode",
+        "finishedAt",
+        "message",
+        "operationId",
+        "originalResultPins",
+        "requestId",
+        "schemaVersion",
+        "startedAt",
+        "state"
+      ],
+      "state": "SUCCEEDED",
+      "dataKeys": [
+        "archiveAttempt",
+        "captureResultPin",
+        "checkpointProofPin",
+        "logRefs",
+        "manifestPin",
+        "objectContentIndexPin",
+        "pointPin",
+        "readbackPin",
+        "recoveryMaterialPin",
+        "repositoryBindingPin",
+        "sourceScopePin",
+        "stagingCleanupPin"
+      ],
+      "pins": {
+        "captureResultPin": {
+          "schemaVersion": "backup-restore-operation-result/v1",
+          "keys": [
+            "action",
+            "actualExitCode",
+            "data",
+            "failureCode",
+            "finishedAt",
+            "message",
+            "operationId",
+            "originalResultPins",
+            "requestId",
+            "schemaVersion",
+            "startedAt",
+            "state"
+          ],
+          "dataKeys": [
+            "archiveEntriesPin",
+            "captureInputsPin",
+            "capturePointPin",
+            "captureRoot",
+            "logRefs",
+            "objectContentIndexPin",
+            "recoveryPoint",
+            "sourceIdentity",
+            "sourceRestorationPin"
+          ]
+        },
+        "checkpointProofPin": {
+          "schemaVersion": null,
+          "keys": [
+            "archiveFileCount",
+            "archivePayloadBytes",
+            "captureResultPin",
+            "configurationPin",
+            "fullSmbReadbackObservedSetVerified",
+            "manifestPin",
+            "operationId",
+            "originalFailedResultPin",
+            "originalUiFailedResultPin",
+            "readbackOriginalsPin",
+            "readbackPin",
+            "recaptureRequested",
+            "restoreRequested",
+            "uploadRequested"
+          ]
+        },
+        "manifestPin": {
+          "schemaVersion": "RepositoryManifest/v1",
+          "keys": [
+            "backupId",
+            "commonRecoveryPoint",
+            "copyProtectionPin",
+            "createdAt",
+            "generationId",
+            "parentPointPins",
+            "payloadRefs",
+            "payloadTreePin",
+            "pointType",
+            "schemaVersion",
+            "sourceIdentityPin",
+            "toolPins",
+            "versionPins"
+          ]
+        },
+        "objectContentIndexPin": {
+          "schemaVersion": "backup-capture-object-index/v1",
+          "keys": [
+            "backupId",
+            "changedContentSha256",
+            "contentPins",
+            "exportReceiptPin",
+            "generationId",
+            "inventoryPin",
+            "manifestPin",
+            "parentExportIndexPin",
+            "pointType",
+            "recoveryPoint",
+            "repositoryBound",
+            "schemaVersion",
+            "sourceIdentity"
+          ]
+        },
+        "pointPin": {
+          "schemaVersion": "RepositoryPoint/v1",
+          "keys": [
+            "backupId",
+            "blockedReason",
+            "commonRecoveryPoint",
+            "controlledRestoreEligible",
+            "generationId",
+            "integrityState",
+            "manifestPin",
+            "originalExitEvidencePin",
+            "ownerCloseEvidencePin",
+            "parentPointPins",
+            "payloadRefs",
+            "pointType",
+            "readbackEvidencePin",
+            "rehearsalEligible",
+            "schemaVersion"
+          ]
+        },
+        "readbackPin": {
+          "schemaVersion": "RepositoryMinimumReadback/v1",
+          "keys": [
+            "independentConnectionId",
+            "manifestPin",
+            "objectContentIndexPin",
+            "operationId",
+            "originalRecordsPin",
+            "payloadRefs",
+            "recoveryMaterialPin",
+            "schemaVersion",
+            "serverDurabilityVerified",
+            "sourceScopePin"
+          ]
+        },
+        "recoveryMaterialPin": {
+          "schemaVersion": "RecoveryMaterial/v1",
+          "keys": [
+            "database",
+            "derivedInventoryPin",
+            "manifestPin",
+            "objects",
+            "payloadPins",
+            "pointType",
+            "recoveryPoint",
+            "referenceInventoryPin",
+            "schemaVersion",
+            "sourceDatabaseUuid",
+            "sourceFingerprint",
+            "sourceScopePin",
+            "versionPins"
+          ]
+        },
+        "repositoryBindingPin": {
+          "schemaVersion": "RecoveryRepositoryBinding/v1",
+          "keys": [
+            "backupId",
+            "generationId",
+            "manifestPin",
+            "objectContentIndexPin",
+            "recoveryMaterialPin",
+            "repositoryPointPin",
+            "schemaVersion",
+            "sourceScopePin"
+          ]
+        },
+        "sourceScopePin": {
+          "schemaVersion": "RecoverySourceScope/v1",
+          "keys": [
+            "endpointHosts",
+            "schemaVersion",
+            "sourceIdentityPin"
+          ]
+        },
+        "stagingCleanupPin": {
+          "schemaVersion": "OperationStagingCleanup/v1",
+          "keys": [
+            "deletedBytes",
+            "deletedFiles",
+            "files",
+            "finishedAt",
+            "operationId",
+            "root",
+            "schemaVersion",
+            "selectedPaths",
+            "state"
+          ]
+        }
+      },
+      "sourceRestoration": {
+        "at": "2026-11-03T12:10:37.507828+00:00",
+        "errors": [],
+        "restored": true,
+        "schemaVersion": "minimal-capture-source-restoration/v1",
+        "sourceIdentity": "a36d337b14a907d64a542ea66a8f46bc07fd75a84d6bea9ca1bfff6f4fe44690",
+        "touchedContainerIds": [
+          "c4385604eb83b44f2836755bad709581c7e7edd0078b148f3b0f74e0b567304c",
+          "1210f97cf7653c5f74a7981bf4d4bec8d7462af873d53695d47a59a7ce38a479",
+          "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf"
+        ]
+      }
+    },
+    {
+      "reference": "smallapp-3f29a2b1324045309478a3a597654260",
+      "pointKeys": [
+        "reference",
+        "resultPin",
+        "schemaVersion",
+        "sourceConfigRef"
+      ],
+      "resultKeys": [
+        "action",
+        "actualExitCode",
+        "data",
+        "failureCode",
+        "finishedAt",
+        "message",
+        "operationId",
+        "originalResultPins",
+        "requestId",
+        "schemaVersion",
+        "startedAt",
+        "state"
+      ],
+      "state": "SUCCEEDED",
+      "dataKeys": [
+        "captureResultPin",
+        "logRefs",
+        "manifestPin",
+        "objectContentIndexPin",
+        "pointPin",
+        "readbackPin",
+        "recoveryMaterialPin",
+        "repositoryBindingPin",
+        "sourceScopePin",
+        "stagingCleanupPin"
+      ],
+      "pins": {
+        "captureResultPin": {
+          "schemaVersion": "backup-restore-operation-result/v1",
+          "keys": [
+            "action",
+            "actualExitCode",
+            "data",
+            "failureCode",
+            "finishedAt",
+            "message",
+            "operationId",
+            "originalResultPins",
+            "requestId",
+            "schemaVersion",
+            "startedAt",
+            "state"
+          ],
+          "dataKeys": [
+            "archiveEntriesPin",
+            "captureInputsPin",
+            "capturePointPin",
+            "captureRoot",
+            "logRefs",
+            "objectContentIndexPin",
+            "recoveryPoint",
+            "sourceIdentity",
+            "sourceRestorationPin"
+          ]
+        },
+        "manifestPin": {
+          "schemaVersion": "RepositoryManifest/v1",
+          "keys": [
+            "backupId",
+            "commonRecoveryPoint",
+            "copyProtectionPin",
+            "createdAt",
+            "generationId",
+            "parentPointPins",
+            "payloadRefs",
+            "payloadTreePin",
+            "pointType",
+            "schemaVersion",
+            "sourceIdentityPin",
+            "toolPins",
+            "versionPins"
+          ]
+        },
+        "objectContentIndexPin": {
+          "schemaVersion": "backup-capture-object-index/v1",
+          "keys": [
+            "backupId",
+            "changedContentSha256",
+            "contentPins",
+            "exportReceiptPin",
+            "generationId",
+            "inventoryPin",
+            "manifestPin",
+            "parentExportIndexPin",
+            "pointType",
+            "recoveryPoint",
+            "repositoryBound",
+            "schemaVersion",
+            "sourceIdentity"
+          ]
+        },
+        "pointPin": {
+          "schemaVersion": "RepositoryPoint/v1",
+          "keys": [
+            "backupId",
+            "blockedReason",
+            "commonRecoveryPoint",
+            "controlledRestoreEligible",
+            "generationId",
+            "integrityState",
+            "manifestPin",
+            "originalExitEvidencePin",
+            "ownerCloseEvidencePin",
+            "parentPointPins",
+            "payloadRefs",
+            "pointType",
+            "readbackEvidencePin",
+            "rehearsalEligible",
+            "schemaVersion"
+          ]
+        },
+        "readbackPin": {
+          "schemaVersion": "RepositoryMinimumReadback/v1",
+          "keys": [
+            "independentConnectionId",
+            "manifestPin",
+            "objectContentIndexPin",
+            "operationId",
+            "originalRecordsPin",
+            "payloadRefs",
+            "recoveryMaterialPin",
+            "schemaVersion",
+            "serverDurabilityVerified",
+            "sourceScopePin"
+          ]
+        },
+        "recoveryMaterialPin": {
+          "schemaVersion": "RecoveryMaterial/v1",
+          "keys": [
+            "database",
+            "derivedInventoryPin",
+            "manifestPin",
+            "objects",
+            "payloadPins",
+            "pointType",
+            "recoveryPoint",
+            "referenceInventoryPin",
+            "schemaVersion",
+            "sourceDatabaseUuid",
+            "sourceFingerprint",
+            "sourceScopePin",
+            "versionPins"
+          ]
+        },
+        "repositoryBindingPin": {
+          "schemaVersion": "RecoveryRepositoryBinding/v1",
+          "keys": [
+            "backupId",
+            "generationId",
+            "manifestPin",
+            "objectContentIndexPin",
+            "recoveryMaterialPin",
+            "repositoryPointPin",
+            "schemaVersion",
+            "sourceScopePin"
+          ]
+        },
+        "sourceScopePin": {
+          "schemaVersion": "RecoverySourceScope/v1",
+          "keys": [
+            "endpointHosts",
+            "schemaVersion",
+            "sourceIdentityPin"
+          ]
+        },
+        "stagingCleanupPin": {
+          "schemaVersion": "OperationStagingCleanup/v1",
+          "keys": [
+            "deletedBytes",
+            "deletedFiles",
+            "files",
+            "finishedAt",
+            "operationId",
+            "root",
+            "schemaVersion",
+            "selectedPaths",
+            "state"
+          ]
+        }
+      },
+      "sourceRestoration": {
+        "at": "2026-10-25T04:52:28.392590+00:00",
+        "errors": [],
+        "restored": true,
+        "schemaVersion": "minimal-capture-source-restoration/v1",
+        "sourceIdentity": "a36d337b14a907d64a542ea66a8f46bc07fd75a84d6bea9ca1bfff6f4fe44690",
+        "touchedContainerIds": [
+          "dbf94b095701f30c294fa31f5815a01f5cddf10e0ac664b1b259a4a9d2a1cd07",
+          "5ab07be885e241055b99a79892f3ee663ebde40ec76c660f40a2647caf5f2b7e",
+          "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf"
+        ]
+      }
+    },
+    {
+      "reference": "smallapp-a54a05be9dab45e490a3979551536b0c",
+      "pointKeys": [
+        "reference",
+        "resultPin",
+        "schemaVersion",
+        "sourceConfigRef"
+      ],
+      "resultKeys": [
+        "action",
+        "actualExitCode",
+        "data",
+        "failureCode",
+        "finishedAt",
+        "message",
+        "operationId",
+        "originalResultPins",
+        "requestId",
+        "schemaVersion",
+        "startedAt",
+        "state"
+      ],
+      "state": "SUCCEEDED",
+      "dataKeys": [
+        "captureResultPin",
+        "logRefs",
+        "manifestPin",
+        "objectContentIndexPin",
+        "pointPin",
+        "readbackPin",
+        "recoveryMaterialPin",
+        "repositoryBindingPin",
+        "sourceScopePin",
+        "stagingCleanupPin"
+      ],
+      "pins": {
+        "captureResultPin": {
+          "schemaVersion": "backup-restore-operation-result/v1",
+          "keys": [
+            "action",
+            "actualExitCode",
+            "data",
+            "failureCode",
+            "finishedAt",
+            "message",
+            "operationId",
+            "originalResultPins",
+            "requestId",
+            "schemaVersion",
+            "startedAt",
+            "state"
+          ],
+          "dataKeys": [
+            "archiveEntriesPin",
+            "captureInputsPin",
+            "capturePointPin",
+            "captureRoot",
+            "logRefs",
+            "objectContentIndexPin",
+            "recoveryPoint",
+            "sourceIdentity",
+            "sourceRestorationPin"
+          ]
+        },
+        "manifestPin": {
+          "schemaVersion": "RepositoryManifest/v1",
+          "keys": [
+            "backupId",
+            "commonRecoveryPoint",
+            "copyProtectionPin",
+            "createdAt",
+            "generationId",
+            "parentPointPins",
+            "payloadRefs",
+            "payloadTreePin",
+            "pointType",
+            "schemaVersion",
+            "sourceIdentityPin",
+            "toolPins",
+            "versionPins"
+          ]
+        },
+        "objectContentIndexPin": {
+          "schemaVersion": "backup-capture-object-index/v1",
+          "keys": [
+            "backupId",
+            "changedContentSha256",
+            "contentPins",
+            "exportReceiptPin",
+            "generationId",
+            "inventoryPin",
+            "manifestPin",
+            "parentExportIndexPin",
+            "pointType",
+            "recoveryPoint",
+            "repositoryBound",
+            "schemaVersion",
+            "sourceIdentity"
+          ]
+        },
+        "pointPin": {
+          "schemaVersion": "RepositoryPoint/v1",
+          "keys": [
+            "backupId",
+            "blockedReason",
+            "commonRecoveryPoint",
+            "controlledRestoreEligible",
+            "generationId",
+            "integrityState",
+            "manifestPin",
+            "originalExitEvidencePin",
+            "ownerCloseEvidencePin",
+            "parentPointPins",
+            "payloadRefs",
+            "pointType",
+            "readbackEvidencePin",
+            "rehearsalEligible",
+            "schemaVersion"
+          ]
+        },
+        "readbackPin": {
+          "schemaVersion": "RepositoryMinimumReadback/v1",
+          "keys": [
+            "independentConnectionId",
+            "manifestPin",
+            "objectContentIndexPin",
+            "operationId",
+            "originalRecordsPin",
+            "payloadRefs",
+            "recoveryMaterialPin",
+            "schemaVersion",
+            "serverDurabilityVerified",
+            "sourceScopePin"
+          ]
+        },
+        "recoveryMaterialPin": {
+          "schemaVersion": "RecoveryMaterial/v1",
+          "keys": [
+            "database",
+            "derivedInventoryPin",
+            "manifestPin",
+            "objects",
+            "payloadPins",
+            "pointType",
+            "recoveryPoint",
+            "referenceInventoryPin",
+            "schemaVersion",
+            "sourceDatabaseUuid",
+            "sourceFingerprint",
+            "sourceScopePin",
+            "versionPins"
+          ]
+        },
+        "repositoryBindingPin": {
+          "schemaVersion": "RecoveryRepositoryBinding/v1",
+          "keys": [
+            "backupId",
+            "generationId",
+            "manifestPin",
+            "objectContentIndexPin",
+            "recoveryMaterialPin",
+            "repositoryPointPin",
+            "schemaVersion",
+            "sourceScopePin"
+          ]
+        },
+        "sourceScopePin": {
+          "schemaVersion": "RecoverySourceScope/v1",
+          "keys": [
+            "endpointHosts",
+            "schemaVersion",
+            "sourceIdentityPin"
+          ]
+        },
+        "stagingCleanupPin": {
+          "schemaVersion": "OperationStagingCleanup/v1",
+          "keys": [
+            "deletedBytes",
+            "deletedFiles",
+            "files",
+            "finishedAt",
+            "operationId",
+            "root",
+            "schemaVersion",
+            "selectedPaths",
+            "state"
+          ]
+        }
+      },
+      "sourceRestoration": {
+        "at": "2026-10-25T12:11:58.379319+00:00",
+        "errors": [],
+        "restored": true,
+        "schemaVersion": "minimal-capture-source-restoration/v1",
+        "sourceIdentity": "a36d337b14a907d64a542ea66a8f46bc07fd75a84d6bea9ca1bfff6f4fe44690",
+        "touchedContainerIds": [
+          "dbf94b095701f30c294fa31f5815a01f5cddf10e0ac664b1b259a4a9d2a1cd07",
+          "5ab07be885e241055b99a79892f3ee663ebde40ec76c660f40a2647caf5f2b7e",
+          "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf"
+        ]
+      }
+    }
+  ],
+  "installedPublication": "        require(close['state'] == 'ARCHIVE_READER_CLOSED_NOT_NAS_PROOF', 'REPOSITORY_ARCHIVE_CLOSE_FAILED')\n    with step_timing(operation, 'archive-metadata'):\n        sidecar = target / '.repository'\n        sidecar.mkdir(mode=0o700)\n        atomic_output_bytes(sidecar / 'original-exit.json', read_pin(terminal))\n        archived_terminal = pin_file(sidecar / 'original-exit.json', deadline)\n        tree_pin = write_new(sidecar / 'payload-tree.json', tree)\n        # stream already read back and pinned every written file. Independent SMB\n        # readback below still authenticates these exact pins over another connection.\n        payloads = [published[name] for name in sorted(tree) if tree[name] != 'directory']\n        created = utc()\n        if parents:\n            require(timestamp(created) > timestamp(parents[-1][2]['createdAt']) and\n                (timestamp(created) - timestamp(parents[0][2]['createdAt'])).total_seconds() <=\n                config.value['maxChainAgeSeconds'], 'REPOSITORY_NEW_FULL_REQUIRED')\n        manifest = dict(schemaVersion='RepositoryManifest/v1', backupId=inputs['backupId'], generationId=inputs['generationId'],\n            pointType=inputs['pointType'], parentPointPins=[row[0] for row in parents], commonRecoveryPoint=inputs['recoveryPoint'],\n            sourceIdentityPin=config.identity_pin, createdAt=created,\n            versionPins=[published[Path(p['path']).relative_to(root).as_posix()]\n                if root in Path(p['path']).parents else p for p in inputs['semanticSupplement']['versionPins']],\n            toolPins=[pin_file(p, deadline) for p in config.source['toolPaths']], payloadRefs=payloads,\n            payloadTreePin=tree_pin, copyProtectionPin=None)\n        require(manifest['versionPins'] and manifest['toolPins'], 'REPOSITORY_VERSION_METADATA_REQUIRED')\n        manifest_pin = write_new(sidecar / 'manifest.json', manifest)\n        material = dict(manifestPin=manifest_pin, payloadTreePin=tree_pin, payloadRefs=payloads)\n    with step_timing(operation, 'nas-readback'):\n        with SmbReadback(smb_configuration(config, operation, deadline), deadline) as reader:\n            connection_id, originals = reader.verify(str(target), tree, material)\n        outputs = assemble_readback_bindings(manifest_pin, {'originalRecordsPin': originals}, deadline,\n            load_binder(config.value['captureBinderPath']), parent_binding)\n    config.current()\n    bindings = dict(recoveryMaterialPin=write_new(sidecar / 'recovery-material.json', outputs['recoveryMaterial']),\n        objectContentIndexPin=write_new(sidecar / 'object-content-index.json', outputs['objectContentIndex']),\n        sourceScopePin=outputs['recoveryMaterial']['sourceScopePin'])\n    readback_pin = write_new(sidecar / 'readback-original.json', dict(schemaVersion='RepositoryMinimumReadback/v1',\n        operationId=request['operationId'], manifestPin=manifest_pin, independentConnectionId=connection_id,\n        payloadRefs=payloads, originalRecordsPin=originals, serverDurabilityVerified=False, **bindings))\n    close_pin = write_new(sidecar / 'archive-close.json', dict(schemaVersion='RepositoryMinimumArchiveClose/v1',\n        operationId=request['operationId'], archiveReaderClosed=True, closeResponse=close))\n    point = {k: manifest[k] for k in ('backupId', 'generationId', 'pointType', 'parentPointPins', 'commonRecoveryPoint', 'payloadRefs')}\n    point.update(schemaVersion='RepositoryPoint/v1', manifestPin=manifest_pin, readbackEvidencePin=readback_pin,\n        ownerCloseEvidencePin=close_pin, originalExitEvidencePin=archived_terminal, integrityState='COMPLETE',\n        blockedReason='REPOSITORY_RECOVERY_NOT_RUN', rehearsalEligible=True, controlledRestoreEligible=False)\n    raw = canonical(point)",
+  "installedRestoration": [
+    "                self.event('WRITERS_RETAINED_STOPPED_AFTER_DATA_RESTORE_FAILURE')\n        finally: observation_deadline.reset(token)\n        result = dict(schemaVersion='minimal-capture-source-restoration/v1', at=now(),\n            sourceIdentity=self.source['sourceIdentity'], restored=not errors, errors=errors,\n            touchedContainerIds=self.touched)\n        reference = exclusive_json(self.root/'source-restoration.json', result)\n        require(not errors, 'MINIMAL_SOURCE_RESTORATION_FAILED')\n        return reference\n"
+  ]
+}

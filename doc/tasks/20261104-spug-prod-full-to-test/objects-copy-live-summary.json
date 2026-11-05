@@ -1,0 +1,12 @@
+{
+  "observedAt": "2026-11-05T10:43:28.840672+00:00",
+  "operationId": "smallapp-6cb9423086fe4b62ad21505e189bc36b",
+  "plannedChangedNodeCount": 18936,
+  "presentFinalFileCount": 9369,
+  "presentFinalDirectoryCount": 9463,
+  "presentFinalFileBytes": 9656139401,
+  "metadataOnly": true,
+  "businessWritesPerformed": false,
+  "currentlyAbsentPlannedNodeCount": 104,
+  "observationLimitation": "MinIO was already running at observation time; node absence does not establish unfinished copying. Physical copy readback preceded MinIO startup. This metadata sample is not completion evidence."
+}

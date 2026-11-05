@@ -1,0 +1,20 @@
+{
+  "backupOperationId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+  "sourceMissingReferenceCount": 0,
+  "presentObjectReferenceCount": 8786,
+  "databaseReferenceRowCount": 9074,
+  "preserveSourceBaselinePolicy": "PRESERVE_SOURCE_BASELINE",
+  "derivedClasses": {
+    "queue": {
+      "classification": "NOT_PRESENT",
+      "requiredForBusiness": false,
+      "executorKey": null
+    },
+    "redis": {
+      "classification": "RESTORE",
+      "requiredForBusiness": true,
+      "executorKey": "REDIS_DUMP_ABSOLUTE_EXPIRY"
+    }
+  },
+  "readOnly": true
+}

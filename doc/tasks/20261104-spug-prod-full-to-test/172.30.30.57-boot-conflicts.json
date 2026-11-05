@@ -1,0 +1,86 @@
+{
+  "host": "172.30.30.57",
+  "observedAt": "2026-11-05T01:32:51.492972+00:00",
+  "proxies": [
+    {
+      "pid": 6860,
+      "argv": [
+        "/usr/bin/docker-proxy",
+        "-proto",
+        "tcp",
+        "-host-ip",
+        "0.0.0.0",
+        "-host-port",
+        "48081",
+        "-container-ip",
+        "172.21.0.7",
+        "-container-port",
+        "48081"
+      ],
+      "parentPid": 4374
+    },
+    {
+      "pid": 6868,
+      "argv": [
+        "/usr/bin/docker-proxy",
+        "-proto",
+        "tcp",
+        "-host-ip",
+        "::",
+        "-host-port",
+        "48081",
+        "-container-ip",
+        "172.21.0.7",
+        "-container-port",
+        "48081"
+      ],
+      "parentPid": 4374
+    }
+  ],
+  "errors": {},
+  "unitPaths": [],
+  "networkContainers": {
+    "1ceaee8d844fd913d31ac2e500a5401f3fb0405618cbb038d582071bd5d75719": {
+      "Name": "erp-invoice-voucher-print-assistant",
+      "IPv4Address": "172.21.0.7/16"
+    },
+    "5099e7bd566ec6a683e8842b84d8db9e41245708fce29e89309607d6a7e72653": {
+      "Name": "intruoyi-redis",
+      "IPv4Address": "172.21.0.2/16"
+    },
+    "7dbf8a3197a28a216a0da19f731cf20a40aa35117d73f348e3d5f50fcf027251": {
+      "Name": "fenbeitong-assistant",
+      "IPv4Address": "172.21.0.10/16"
+    },
+    "9a288d20d254366e99b265b1870466e974edf23e7aab60de2391e3a38e62fff6": {
+      "Name": "intruoyi-mysql",
+      "IPv4Address": "172.21.0.6/16"
+    },
+    "9d6b45bad9b18f575b0f8ee7cf729f1167b9fc9a2ebeb8a7a2c74ebbdcd24830": {
+      "Name": "intruoyi-website",
+      "IPv4Address": "172.21.0.5/16"
+    },
+    "ab9f967c26b4e1672a1229395658dde2706e5d01c3e29086dd9e3ad2b0fac3de": {
+      "Name": "intruoyi-onlyoffice",
+      "IPv4Address": "172.21.0.4/16"
+    }
+  },
+  "logSignatures": {
+    "intruoyi-backend": {
+      "host not found in upstream": 0,
+      "bind()": 0,
+      "connection refused": 0,
+      "error": 0,
+      "exception": 0,
+      "started yudao": 0
+    },
+    "intruoyi-frontend": {
+      "host not found in upstream": 10,
+      "bind()": 0,
+      "connection refused": 0,
+      "error": 0,
+      "exception": 0,
+      "started yudao": 0
+    }
+  }
+}

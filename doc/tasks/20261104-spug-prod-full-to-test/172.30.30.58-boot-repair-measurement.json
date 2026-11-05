@@ -1,0 +1,46 @@
+{
+  "host": "172.30.30.58",
+  "observedAt": "2026-11-05T01:37:40.141021+00:00",
+  "storageDifferences": [
+    {
+      "role": "mysql",
+      "source": "/var/lib/docker/volumes/brlab-prod57-nas-test58-20261020-r3-mysql/_data",
+      "differences": {
+        "mountIdentity.mountId": {
+          "before": 116,
+          "now": 119
+        }
+      }
+    },
+    {
+      "role": "minio",
+      "source": "/var/lib/docker/volumes/brlab-prod57-nas-test58-20261020-r3-minio/_data",
+      "differences": {
+        "mountIdentity.mountId": {
+          "before": 116,
+          "now": 119
+        }
+      }
+    },
+    {
+      "role": "redis",
+      "source": "/var/lib/docker/volumes/brlab-prod57-nas-test58-20261020-r3-redis/_data",
+      "differences": {
+        "mountIdentity.mountId": {
+          "before": 116,
+          "now": 119
+        }
+      }
+    }
+  ],
+  "ownerPin": {
+    "bytes": 20455,
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-runtime-r1.json",
+    "sha256": "9765a258d867da8af92f0ae2198aa72d265c7cd2e2ac43aaa4651e8190d708c5"
+  },
+  "controlPin": {
+    "bytes": 2344,
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-43658-runtime-r1.json",
+    "sha256": "18682a069308a242c3e16d6ed79d5b6a94058b850803238d88e4f8408cf926ef"
+  }
+}

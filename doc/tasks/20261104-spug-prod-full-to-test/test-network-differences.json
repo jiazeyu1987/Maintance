@@ -1,0 +1,36 @@
+{
+  "networks": [
+    {
+      "id": "72f4b6562e02daa514b3102d4e6ce61b986e3ed60259b4e333ad14bea3d5284b",
+      "name": "brlab-prod57-nas-test58-20261020-r1-net",
+      "differences": {
+        "ipam": {
+          "expected": {
+            "Config": [
+              {
+                "Subnet": "172.29.235.0/24"
+              }
+            ],
+            "Driver": "default",
+            "Options": {}
+          },
+          "current": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+              {
+                "Subnet": "172.29.235.0/24",
+                "Gateway": "172.29.235.1"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "da23cc2de3181af8e1f0ef791c0c34229311e9c89a0806d5cc289abc13461ffd",
+      "name": "host",
+      "differences": {}
+    }
+  ]
+}

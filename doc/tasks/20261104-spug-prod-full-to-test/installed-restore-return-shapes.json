@@ -1,0 +1,44 @@
+[
+  {
+    "file": "recovery_minimal_runtime.py",
+    "function": "physical_object_chain",
+    "returns": [
+      "dict(recoveryPoint=self.plan['recoveryPoint'], versionMappingPin=pin(mapping), physicalStepEvidencePins=steps, comparisonPin=write(self.root / 'physical-comparison.json', comparison), permissionEvidencePin=self.check_bucket_permissions(), originalVersionIdsPreserved=True)"
+    ]
+  },
+  {
+    "file": "recovery_minimal_runtime.py",
+    "function": "start_application",
+    "returns": [
+      "dict(services=observations, archivedVersionPins=self.material['versionPins'], configurationBindings=self.config['application']['configurationBindings'], state='SUCCEEDED', businessAcceptance='NOT_PERFORMED', isolation='ENFORCED')"
+    ]
+  },
+  {
+    "file": "recovery_data.py",
+    "function": "database_readback",
+    "returns": [
+      "result"
+    ]
+  },
+  {
+    "file": "recovery_data.py",
+    "function": "consistency",
+    "returns": [
+      "dict(schemaVersion='RecoveryConsistencyEvidence/v1', recoveryPoint=self.plan['recoveryPoint'], targetIdentityPin=self.target['targetIdentityPin'], databaseResultPin=self.request['databaseResultPin'], objectResultPin=self.request['objectResultPin'], referenceInventoryPin=self.material['referenceInventoryPin'], allReferencesVerified=not missing, presentReferencesVerified=True, sourceMissingReferenceCount=len(missing), sourceMissingBaselinePreserved=True, invariantsVerified=True, applicationVerified=False, observedAt=utc())"
+    ]
+  },
+  {
+    "file": "recovery_minimal_redis_dump.py",
+    "function": "restore",
+    "returns": [
+      "dict(className='redis', classification='RESTORE', observationPin=write(native.root / 'redis-dump-independent-readback.json', dict(schemaVersion='RedisDumpRestoreReadback/v1', snapshotPin=reference, database=adapter['database'], restoredKeyCount=restored, expiredBeforeRestoreCount=expired, independentlyVerifiedKeyCount=len(expected), valuesVerified=True, absoluteExpiryVerified=True)))"
+    ]
+  },
+  {
+    "file": "recovery_minimal_derived.py",
+    "function": "rebuild",
+    "returns": [
+      "dict(recoveryPoint=native.plan['recoveryPoint'], classes=results)"
+    ]
+  }
+]

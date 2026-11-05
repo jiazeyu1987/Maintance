@@ -1,0 +1,19 @@
+{
+  "observedAt": "2026-11-05T08:37:53.161121+00:00",
+  "staging": [
+    {
+      "name": "archive-sql.private.gz",
+      "bytes": 6127989396
+    },
+    {
+      "name": "expanded.sql",
+      "bytes": 12470442062
+    }
+  ],
+  "expanded.sql-binary-logging.json": {
+    "importSha256": "1dce8c345948fd9065e297d660020c6d48715b49fc18a68f156a9b6d4492d966",
+    "reenabledSegments": 0,
+    "schemaVersion": "ReplacementBinaryLogging/v1",
+    "sourceSha256": "77ed0b8c473ce992aa000e426f5b2e286a5d229c48d02df0f063e68a1926a960"
+  }
+}
