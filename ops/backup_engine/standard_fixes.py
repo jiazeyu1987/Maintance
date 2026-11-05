@@ -105,6 +105,14 @@ def apply(payload):
     def _initialize(self, configuration, request, source, policy, chain, target, root, input_pins):
 ''')
     replace('common/recovery_minimal_runtime.py',
+        "        for ref in (target['dockerPin'], target['iptablesPin'], *self.input_pins):\n",
+        "        # Registered MAIN uses resource custody; rehearsal uses firewall isolation.\n"
+        "        from recovery_main_target import enabled as registered_main\n"
+        "        executables = [target['dockerPin']]\n"
+        "        if not registered_main(target):\n"
+        "            executables.append(target['iptablesPin'])\n"
+        "        for ref in (*executables, *self.input_pins):\n")
+    replace('common/recovery_minimal_runtime.py',
         "        for ref in references.values():\n            path = absolute(ref['path'])\n            before = signature(path.stat())\n",
         "        from recovery_archive_guard import ArchivePathGuard\n"
         "        self.archive_guard = ArchivePathGuard.capture(references)\n"

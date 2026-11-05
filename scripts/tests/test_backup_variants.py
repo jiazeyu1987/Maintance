@@ -177,6 +177,54 @@ print(json.dumps({'prepared':True,'destructiveSqlTracked':True}))
     assert result.returncode==0,result.stderr
 
 
+@pytest.mark.parametrize('registered_main',[True,False])
+def test_safe_registered_main_archive_inputs_do_not_require_rehearsal_firewall(packages,tmp_path,registered_main):
+    """Execute the shipped initializer's actual lease/hash block on real files."""
+    if sys.platform!='linux':pytest.skip('Real Linux O_PATH/inotify lease required')
+    with tarfile.open(packages/'backup-restore-standard.tgz') as archive:
+        archive.extractall(tmp_path/'package',filter='data')
+    program=r'''
+import ast,json,sys
+from pathlib import Path
+from types import SimpleNamespace
+sys.path.insert(0,sys.argv[1]+'/common')
+from recovery_engine import pin,require,absolute,signature,check_pin
+root=Path(sys.argv[2]);root.mkdir()
+files=[]
+for name in ('payload','version','material','docker','input'):
+ p=root/name;p.write_bytes(name.encode());files.append(p)
+payload,version,material,docker,control=[pin(p) for p in files]
+target={'dockerPin':docker,'iptablesPin':{'path':str(root/'missing-rehearsal-iptables'),'bytes':1,'sha256':'0'*64}}
+main=sys.argv[3]=='True'
+if main:target['mainApplication']={'contract':'registered MAIN path selected before initialization'}
+chain=[(material,None,{'payloadPins':[payload],'versionPins':[version]},material)]
+self=SimpleNamespace(input_pins=[control])
+tree=ast.parse((Path(sys.argv[1])/'common/recovery_minimal_runtime.py').read_text())
+klass=next(n for n in tree.body if isinstance(n,ast.ClassDef) and n.name=='MinimalData')
+initialize=next(n for n in klass.body if isinstance(n,ast.FunctionDef) and n.name=='_initialize')
+def assigns(node,attribute):
+ return isinstance(node,ast.Assign) and any(isinstance(t,ast.Attribute) and t.attr==attribute for t in node.targets)
+start=next(i for i,n in enumerate(initialize.body) if assigns(n,'payload_signatures'))
+stop=next(i for i,n in enumerate(initialize.body) if assigns(n,'target'))
+block=compile(ast.Module(body=initialize.body[start:stop],type_ignores=[]),'shipped-safe-archive-input-lease','exec')
+scope=dict(self=self,target=target,chain=chain,require=require,absolute=absolute,signature=signature,check_pin=check_pin)
+try:
+ try:exec(block,scope)
+ except FileNotFoundError:
+  assert not main,'Registered MAIN must not lease an unused rehearsal firewall executable'
+ else:
+  assert main,'Rehearsal must still require its actual firewall executable'
+  assert set(self.payload_signatures)=={str(p) for p in files}
+  assert set(self.archive_guard.path_fds)>={str(p) for p in files} or set(map(str,self.archive_guard.path_fds))>={str(p) for p in files}
+  self.archive_guard.check()
+finally:
+ if getattr(self,'archive_guard',None) is not None:self.archive_guard.close()
+print(json.dumps({'registeredMain':main,'allArchiveVersionDockerAndInputLeasesRequired':True}))
+'''
+    result=subprocess.run([sys.executable,'-B','-c',program,str(tmp_path/'package'),str(tmp_path/'files'),str(registered_main)],capture_output=True,text=True)
+    assert result.returncode==0,result.stderr
+
+
 @pytest.mark.parametrize('variant', builder.VARIANTS)
 def test_packaged_data_limits_reject_invalid_budget_before_target_access(packages, tmp_path, variant):
     """Use shipped constructor and formal validator before any native I/O."""

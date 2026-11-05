@@ -62,6 +62,8 @@ Fail Fast：任何未确认远端效果、原包冲突或真实验证失败必�
 
 阶段 1a：完整归档租约预算。每个实际来源/目标控制服务均核 `systemctl show <本任务unit> -p MainPID -p LimitNOFILE` 和 `/proc/<MainPID>/limits`，不能只核配置文本或别台服务器。按完整FULL/增量链所有文件与祖先路径租约，加当前已用句柄及至少64工作保留计算；`soft`不足即Fail Fast。为自有且无worker的控制服务设置持久 `LimitNOFILE`，仅在明确安装/修复授权下重载该服务，实测继承值并核全业务PID/启动/配置和历史pins不变。禁止提高全局限制、削弱归档保护或以硬限制代替软限制；记录路径数量、软/硬预算、drop-in和重载前后证据。
 
+阶段 1b：MAIN与演练执行依赖。实际SAFE初始化按已选择的登记MAIN合同仅绑定实际使用的Docker执行文件；演练的网络隔离仍必须绑定并验证iptables。所有归档、版本及请求/配置输入pins必须在两种路径完整租约/哈希；测试实际封包O_PATH/inotify初始化块，MAIN缺演练文件可通过、演练缺文件必须失败。Fail Fast：任何实际执行文件/归档/输入缺失或摘要变化，不得制造旧演练路径替身或关闭保护；登记MAIN仍须通过严格容器/镜像/存储/UUID/writer归属合同。必须记录实际缺失pin、运行模式、封包RED/GREEN与保护回归。
+
 阶段 2：已变更目标的显式续恢复。先保全原请求、配置、worker-result、child-exit、replacement-result 和宿主预约 pins，并只读核真实 DB UUID/表数与停写状态。新组件保留旧代次，使用已校验的 `common/recovery_retained_retry.py --operation-root <原操作目录> --authorization <既有明确授权及方案摘要> --expected-table-count <已核实表数> --authorize-retained-replacement`。该入口仅追加准许/观察/释放回执，不恢复业务数据；持原物理锁与宿主预约锁，精确释放同一预约当前指针。Fail Fast：未知/活动/漂移/其它预约/证据变化不准许。必须记录原失败保持、新回执 pins、准许期限及同来源/同点/同目标约束。
 
 阶段 2a：写入前失败的显式续恢复。只有原worker实际exit1、mutationDispatched=false、无replacement-intent/importer且所有native审计均无mutation，原宿主预约已留下精确 `PROVEN_NO_MUTATION` 释放pin、当前无预约时，才可用 `--authorize-no-mutation-replacement` 代替阶段2的选项。严格核原容器/存储/UUID、全部目标服务仍运行、实际表数及全原失败pins，不能停止业务来套用阶段2。持相同两把锁只追加v2准许/观察/ready，不删除或释放任何新预约；新UI编号仅消费同来源/同点/同目标一次。Fail Fast：释放缺失/漂移、存在intent或mutation、原进程仍活跃/未知、其它预约或目标漂移。必须记录两种模式的明确选择、原失败与释放pins、真实观察、授权与方案摘要、新旧编号关联。
