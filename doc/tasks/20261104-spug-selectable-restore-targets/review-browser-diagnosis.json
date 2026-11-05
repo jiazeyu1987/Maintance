@@ -1,0 +1,141 @@
+{
+  "records": [
+    {
+      "file": "review-browser-before-ready-failure.json",
+      "privateArchive": "C:\\Spug\\runtime\\private\\restore-targets-20261104\\review-ui-diagnostics-20261105\\review-browser-before-ready-failure.json",
+      "bytes": 9416,
+      "sha256": "853c1f55d021551d640324812aa3c0c1558370ed1557e16ae1e7ee52d0babe1f",
+      "status": "FAIL",
+      "error": "TimeoutError: locator.waitFor: Timeout 45000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#catalog-restore-dialog') to be visible\u001b[22m\n\u001b[2m    91 × locator resolved to hidden <dialog id=\"catalog-restore-dialog\" aria-labelledby=\"catalog-restore-title\" aria-describedby=\"catalog-restore-package\">…</dialog>\u001b[22m\n",
+      "beforeClick": null,
+      "afterClick": null,
+      "apiErrors": [],
+      "writes": [
+        "/api/account/login/"
+      ],
+      "blocked": []
+    },
+    {
+      "file": "review-browser-ready-click-failure.json",
+      "privateArchive": "C:\\Spug\\runtime\\private\\restore-targets-20261104\\review-ui-diagnostics-20261105\\review-browser-ready-click-failure.json",
+      "bytes": 9553,
+      "sha256": "4eea70f07417f6a7081bbfdcc6474d4015de6210c5e76c17231146a060fbf196",
+      "status": "FAIL",
+      "error": "TimeoutError: locator.waitFor: Timeout 45000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#catalog-restore-dialog') to be visible\u001b[22m\n\u001b[2m    92 × locator resolved to hidden <dialog id=\"catalog-restore-dialog\" aria-labelledby=\"catalog-restore-title\" aria-describedby=\"catalog-restore-package\">…</dialog>\u001b[22m\n",
+      "beforeClick": null,
+      "afterClick": null,
+      "apiErrors": [],
+      "writes": [
+        "/api/account/login/"
+      ],
+      "blocked": []
+    },
+    {
+      "file": "review-browser-bootstrap-failure.json",
+      "privateArchive": "C:\\Spug\\runtime\\private\\restore-targets-20261104\\review-ui-diagnostics-20261105\\review-browser-bootstrap-failure.json",
+      "bytes": 10150,
+      "sha256": "d26500340f6a027f004b141b1badfc1959598b5047fdbe010d6b70c201311193",
+      "status": "FAIL",
+      "error": "TimeoutError: locator.waitFor: Timeout 45000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#catalog-restore-dialog') to be visible\u001b[22m\n\u001b[2m    92 × locator resolved to hidden <dialog id=\"catalog-restore-dialog\" aria-labelledby=\"catalog-restore-title\" aria-describedby=\"catalog-restore-package\">…</dialog>\u001b[22m\n",
+      "beforeClick": {
+        "simpleInitializing": true,
+        "locked": false,
+        "switching": false,
+        "unresolvedOriginal": false,
+        "activeUnresolved": false,
+        "hasConfiguration": false
+      },
+      "afterClick": {
+        "simpleInitializing": true,
+        "locked": false,
+        "switching": false,
+        "unresolvedOriginal": false,
+        "activeUnresolved": false,
+        "hasConfiguration": false,
+        "catalogRestore": null,
+        "clicks": [
+          {
+            "trusted": true,
+            "text": "恢复"
+          }
+        ],
+        "problem": "当前操作尚未结束或配置仍在核对，请完成后再恢复。"
+      },
+      "apiErrors": [],
+      "writes": [
+        "/api/account/login/"
+      ],
+      "blocked": []
+    },
+    {
+      "file": "review-browser-navigation-failure.json",
+      "privateArchive": "C:\\Spug\\runtime\\private\\restore-targets-20261104\\review-ui-diagnostics-20261105\\review-browser-navigation-failure.json",
+      "bytes": 1626,
+      "sha256": "7bbf12fd9d83222477fc9ba33e0e02c602bf3cc6ba8bcf81c8454a57e3a2300d",
+      "status": "FAIL",
+      "error": "TimeoutError: locator.waitFor: Timeout 45000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#catalog-body button:enabled').filter({ hasText: /^恢复$/ }).first() to be visible\u001b[22m\n\u001b[2m    64 × locator resolved to hidden <button type=\"button\" title=\"选择目标服务器并确认恢复此备份包\">恢复</button>\u001b[22m\n",
+      "beforeClick": null,
+      "afterClick": null,
+      "apiErrors": [],
+      "writes": [
+        "/api/account/login/"
+      ],
+      "blocked": []
+    },
+    {
+      "file": "review-browser-bridge-io-failure.json",
+      "privateArchive": "C:\\Spug\\runtime\\private\\restore-targets-20261104\\review-ui-diagnostics-20261105\\review-browser-bridge-io-failure.json",
+      "bytes": 10948,
+      "sha256": "b34a9bf532cc1a44d796af1650c9f8d524de554f0d8ad1bdfe90a7e2671d84cd",
+      "status": "FAIL",
+      "error": "TimeoutError: frame.waitForFunction: Timeout 45000ms exceeded.",
+      "beforeClick": {
+        "simpleInitializing": false,
+        "locked": false,
+        "switching": false,
+        "unresolvedOriginal": false,
+        "activeUnresolved": false,
+        "hasConfiguration": true
+      },
+      "afterClick": {
+        "simpleInitializing": false,
+        "locked": true,
+        "switching": true,
+        "unresolvedOriginal": false,
+        "activeUnresolved": false,
+        "hasConfiguration": true,
+        "catalogRestore": {
+          "packageId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+          "version": "2026-11-03-12-15-42",
+          "application": "intruoyi"
+        },
+        "clicks": [
+          {
+            "trusted": true,
+            "text": "恢复"
+          }
+        ],
+        "problem": ""
+      },
+      "apiErrors": [
+        {
+          "path": "/backup-entry-api/selections",
+          "errorCode": "BRIDGE_IO_FAILED"
+        }
+      ],
+      "writes": [
+        "/api/account/login/"
+      ],
+      "blocked": []
+    },
+    {
+      "file": "review-authorized-browser-failure.png",
+      "privateArchive": "C:\\Spug\\runtime\\private\\restore-targets-20261104\\review-ui-diagnostics-20261105\\review-authorized-browser-failure.png",
+      "bytes": 128758,
+      "sha256": "9174930250971f537dd54a46f37fa67eec223ea6f0d62f7607b657cfc7bd857e"
+    }
+  ],
+  "productCodeChanged": false,
+  "automaticRetryAdded": false,
+  "finalRealBrowserReport": "review-authorized-browser-choice.json"
+}

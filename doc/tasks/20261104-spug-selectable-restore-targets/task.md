@@ -7,7 +7,11 @@ blocked
 
 2026-11-05 19:44 当前结论：测试服.58真实恢复成功且当前目标准入通过。.59已同步04f5f9ce安全组件、合法容量与重启挂载编号登记，控制安装和零业务变更验收通过；原四服务停止且canonical归档bind缺失，需按已写明计划单独授权启动/挂载，不能宣称当前可恢复。.57已健康，旧inspect超时解除；当前可写运行挂载和对外MinIO端口超出现有正式目标合同，尚未登记启用。三目的地整体目标仍未完成。已验证控制同步实现773310d；本次专属发布worktree已删除、稳定路径通过，开发worktree保留续作。
 
+2026-11-05 20:44 最新结论：.59按用户明确PROD授权完成原canonical只读归档bind及原四服务启动。原UUID/885表、Redis/MinIO、backend UP/frontend38081 HTTP200、真实登录用户管理2117条及版本均通过；严格网络与存储校验通过，新登记仅反映重启后默认bridge ID/frontend动态IP。真实Spug从全部包清单选择.58/.59、核同一新FULL与精确目标、覆盖勾选前锁定、返回取消PASS，零恢复POST/operation/claim。原全部镜像/配置和其它业务PID/StartedAt保持。当前.58/.59可选；整体仅剩.57现有可写运行挂载/数据端口与writer合同缺口而blocked，不宣称三服均已完成。
+
 ## 用户需求与授权
+2026-11-05 用户新增明确授权：按review-original-services-plan.md处理审查服172.30.30.59（PROD），恢复原canonical归档只读挂载，启动当前停止的原MySQL/Redis/MinIO/backend并验证Spug可选；保留原容器/数据，不执行数据恢复、不重启整机或Docker、不停止其它业务。此授权仅解除.59启动/归档挂载阻塞，不将.57目的地合同缺口记为已完成。
+
 用户要求在 Spug 按次选择测试服 .58、正式服 .57、备份服 .59，后续正式来源的新备份自动发现。已授权三服只读检查，并明确“允许安装控制组件和登记配置，不执行恢复”；正式服前置不通过时不启用。用户确认所列 EDHR MinIO 账号“仅供 IntRuoyi 主程序使用”。授权不包含业务/数据库/MinIO/Redis停启、实际恢复或正式服业务异常修复。
 
 前一自有任务 20261104-restore-target-label-explanation 已 completed。本任务工作区为 C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance，分支 codex/spug-selectable-restore-targets-20261104，base 9a62391。固定 E: 文档路径不存在，已使用 C:/SpugHandoff/release/repository/docs/ 现存权威规则副本；未伪造固定目录。
@@ -23,7 +27,7 @@ blocked
 8. [x] 接续只读复核.57当前身份，旧负载/inspect阻塞已解除；真实当前合同缺口已定位，未完成的writer独占核验保持未知、不伪造。
 9. [x] .59同步04f5f9ce实际SAFE122文件、dataLimits16GiB/SQL64GiB独立容量，重启mountId独立登记；业务全ID/PID/启动时间/配置不变。
 10. [x] 真实Spug按实际结论选择/确认/返回：.58可用、.59错误显示并禁提交、.57未登记禁用，零恢复POST；本轮专属发布worktree登记/物理路径均已删除，控制服务及稳定路径通过。
-11. [ ] 按review-original-services-plan.md取得.59原服务启动和readonly canonical bind新增授权后执行，再核真实运行/页面/目标准入；本轮未执行。
+11. [x] 已获明确授权，原四服务启动和readonly canonical bind恢复完成；原UUID/885表/健康/真实登录用户列表、HTTP200 selected-target准入、真实Spug选择/确认/返回和最终身份保持验收全部通过，未执行.59数据恢复。
 
 ## 经验门禁
 - Trigger：Spug 备份恢复、主实例覆盖目标登记、真实页面验收和隔离 worktree 收尾。
@@ -71,4 +75,4 @@ blocked
 04f5f9ce958b52479c0c729fe32dbb69669e73fb在本次全新专属C:/Users/D01021/.codex/worktrees/spug-review-control-release-20261105/Maintance构建；命令build_variants.py --output-directory C:/Spug/runtime/private/restore-targets-20261104/review-control-release-04f5f9ce。实际封包合同pytest scripts/tests/test_backup_variants.py为15 PASS；SAFE文件清单摘要7474080922c85c5a03ab514176f9fcd32af6a585a657ae25eb07c20c66839b7b。新发布副本无新提交，未自动融合int_main；clean后git worktree remove成功，注册和物理路径都不存在。新配置及三控制服务稳定路径不引用该目录，详见resumed-closeout.json。本接续验收/安装脚本单独提交773310d。
 
 ## 未解决阻塞及影响
-三目的地仍未全部可用。当前只确认.58可执行且已真实恢复验收；.59需要原四服务启动及readonly canonical归档bind，执行方案和精确容器已写入review-original-services-plan.md，等待超出现有控制安装授权的业务启动/挂载授权；.57仍需支持其现有运行形态的正式合同与完整资源writer前置，不能凭已健康直接解禁。组件同步范围全部验收和清理完成；整体任务保持blocked而非completed，开发worktree保留。旧高负载记录仅作历史，不再作为当前阻塞理由。
+三目的地仍未全部可用。.58已真实恢复验收；.59本轮新授权原服务/归档路径已完成，严格准入与真实Spug选择确认取消PASS，未向该服执行数据恢复。.57仍需支持其现有可写运行挂载/对外数据端口的正式合同与完整资源writer前置，不能凭已健康直接解禁。本轮.59授权范围已完成，未新建发布worktree、未更换主程序或控制程序包；所有新运行路径稳定、不依赖本开发目录。整体任务保持blocked而非completed，开发worktree保留。旧高负载记录仅作历史，不再作为当前阻塞理由。

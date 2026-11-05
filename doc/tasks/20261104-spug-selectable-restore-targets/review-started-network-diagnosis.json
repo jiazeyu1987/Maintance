@@ -1,0 +1,183 @@
+{
+  "observedAt": "2026-11-05T12:14:30.108071+00:00",
+  "diffs": [
+    {
+      "role": "frontend",
+      "expected": {
+        "bridge": {
+          "aliases": [],
+          "driverOpts": {},
+          "globalIPv6Address": "",
+          "ipAddress": "172.17.0.5",
+          "links": [],
+          "networkId": "1354d4b702702a85822041e173e0c3fc621eb83c14eb1d6373d428e21945eecf"
+        },
+        "intruoyi-prod-nas-restore59-20261020-net": {
+          "aliases": [],
+          "driverOpts": {},
+          "globalIPv6Address": "",
+          "ipAddress": "172.29.239.2",
+          "links": [],
+          "networkId": "705a0ec1c077fda09c319beb8e580d2843bf0c99fce4fb291e1b81042ace79a8"
+        }
+      },
+      "actual": {
+        "bridge": {
+          "networkId": "0ec083d1cb2347ff058366e03bcf617f37498906a70c4f5263ebbbcf7e34836b",
+          "ipAddress": "172.17.0.2",
+          "globalIPv6Address": "",
+          "aliases": [],
+          "links": [],
+          "driverOpts": {}
+        },
+        "intruoyi-prod-nas-restore59-20261020-net": {
+          "networkId": "705a0ec1c077fda09c319beb8e580d2843bf0c99fce4fb291e1b81042ace79a8",
+          "ipAddress": "172.29.239.2",
+          "globalIPv6Address": "",
+          "aliases": [],
+          "links": [],
+          "driverOpts": {}
+        }
+      },
+      "ipam": {
+        "bridge": null,
+        "intruoyi-prod-nas-restore59-20261020-net": {
+          "IPv4Address": "172.29.239.2"
+        }
+      }
+    }
+  ],
+  "networks": [
+    {
+      "expected": {
+        "driver": "bridge",
+        "enableIPv6": false,
+        "id": "1354d4b702702a85822041e173e0c3fc621eb83c14eb1d6373d428e21945eecf",
+        "internal": false,
+        "ipam": {
+          "Config": [
+            {
+              "Gateway": "172.17.0.1",
+              "Subnet": "172.17.0.0/16"
+            }
+          ],
+          "Driver": "default",
+          "Options": null
+        },
+        "labels": {},
+        "memberContainerIds": [
+          "544b7dddfd9561fcb91d33b0219e558a890feba57b5bc9bd307c36060d35bcaf",
+          "809068e0b0ce54ce2676be0489b2814e1591ff29c3c04b494a46dc93a5b9c9ff",
+          "82b9982178e4ea002b25f8cce70b621e29f4af452df7be42d2efc699191ca193",
+          "9df3454a21dfc18c30d143b50e83698423f0325f619812aa9062cdd9bf8e212f",
+          "d652e964f3d4f5d4d032fc93c79bc92fbceb42d16a76c2b2f8d0252452d569dc"
+        ],
+        "name": "bridge",
+        "options": {
+          "com.docker.network.bridge.default_bridge": "true",
+          "com.docker.network.bridge.enable_icc": "true",
+          "com.docker.network.bridge.enable_ip_masquerade": "true",
+          "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",
+          "com.docker.network.bridge.name": "docker0",
+          "com.docker.network.driver.mtu": "1500"
+        }
+      },
+      "expectedIdExists": false,
+      "actual": {
+        "id": "0ec083d1cb2347ff058366e03bcf617f37498906a70c4f5263ebbbcf7e34836b",
+        "name": "bridge",
+        "driver": "bridge",
+        "internal": false,
+        "enableIPv6": false,
+        "ipam": {
+          "Driver": "default",
+          "Options": null,
+          "Config": [
+            {
+              "Subnet": "172.17.0.0/16",
+              "Gateway": "172.17.0.1"
+            }
+          ]
+        },
+        "options": {
+          "com.docker.network.bridge.default_bridge": "true",
+          "com.docker.network.bridge.enable_icc": "true",
+          "com.docker.network.bridge.enable_ip_masquerade": "true",
+          "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",
+          "com.docker.network.bridge.name": "docker0",
+          "com.docker.network.driver.mtu": "1500"
+        },
+        "labels": {},
+        "memberContainerIds": [
+          "544b7dddfd9561fcb91d33b0219e558a890feba57b5bc9bd307c36060d35bcaf",
+          "809068e0b0ce54ce2676be0489b2814e1591ff29c3c04b494a46dc93a5b9c9ff",
+          "82b9982178e4ea002b25f8cce70b621e29f4af452df7be42d2efc699191ca193",
+          "9df3454a21dfc18c30d143b50e83698423f0325f619812aa9062cdd9bf8e212f",
+          "d652e964f3d4f5d4d032fc93c79bc92fbceb42d16a76c2b2f8d0252452d569dc"
+        ]
+      }
+    },
+    {
+      "expected": {
+        "driver": "bridge",
+        "enableIPv6": false,
+        "id": "705a0ec1c077fda09c319beb8e580d2843bf0c99fce4fb291e1b81042ace79a8",
+        "internal": true,
+        "ipam": {
+          "Config": [
+            {
+              "Gateway": "172.29.239.1",
+              "Subnet": "172.29.239.0/24"
+            }
+          ],
+          "Driver": "default",
+          "Options": {}
+        },
+        "labels": {},
+        "memberContainerIds": [
+          "285244884c5e056ce1e37d073a9356c9dd34e9d97dc8ea3af07183b9929c79d8",
+          "4376cb8d12c95ec485589b2fc8edabed3d9c631fcd52f715c4b2800f1b4cde8e",
+          "809068e0b0ce54ce2676be0489b2814e1591ff29c3c04b494a46dc93a5b9c9ff",
+          "82b9982178e4ea002b25f8cce70b621e29f4af452df7be42d2efc699191ca193",
+          "99d136c09a948643f5f4bb7ff6fb1f0402cd856dc5aeebe91e5baf289dbd3e48",
+          "9df3454a21dfc18c30d143b50e83698423f0325f619812aa9062cdd9bf8e212f",
+          "d652e964f3d4f5d4d032fc93c79bc92fbceb42d16a76c2b2f8d0252452d569dc",
+          "eb40cfe31e8046cf281c33d1a9b7cc50a2ecd30cb2b5a51d4248dce5f20b38d7"
+        ],
+        "name": "intruoyi-prod-nas-restore59-20261020-net",
+        "options": {}
+      },
+      "expectedIdExists": true,
+      "actual": {
+        "id": "705a0ec1c077fda09c319beb8e580d2843bf0c99fce4fb291e1b81042ace79a8",
+        "name": "intruoyi-prod-nas-restore59-20261020-net",
+        "driver": "bridge",
+        "internal": true,
+        "enableIPv6": false,
+        "ipam": {
+          "Driver": "default",
+          "Options": {},
+          "Config": [
+            {
+              "Subnet": "172.29.239.0/24",
+              "Gateway": "172.29.239.1"
+            }
+          ]
+        },
+        "options": {},
+        "labels": {},
+        "memberContainerIds": [
+          "285244884c5e056ce1e37d073a9356c9dd34e9d97dc8ea3af07183b9929c79d8",
+          "4376cb8d12c95ec485589b2fc8edabed3d9c631fcd52f715c4b2800f1b4cde8e",
+          "809068e0b0ce54ce2676be0489b2814e1591ff29c3c04b494a46dc93a5b9c9ff",
+          "82b9982178e4ea002b25f8cce70b621e29f4af452df7be42d2efc699191ca193",
+          "99d136c09a948643f5f4bb7ff6fb1f0402cd856dc5aeebe91e5baf289dbd3e48",
+          "9df3454a21dfc18c30d143b50e83698423f0325f619812aa9062cdd9bf8e212f",
+          "d652e964f3d4f5d4d032fc93c79bc92fbceb42d16a76c2b2f8d0252452d569dc",
+          "eb40cfe31e8046cf281c33d1a9b7cc50a2ecd30cb2b5a51d4248dce5f20b38d7"
+        ]
+      }
+    }
+  ],
+  "remoteMutation": false
+}

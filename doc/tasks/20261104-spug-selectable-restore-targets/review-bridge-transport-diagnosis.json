@@ -1,0 +1,37 @@
+{
+  "observedAt": "2026-11-05T12:40:33.247766+00:00",
+  "checks": [
+    {
+      "targetConfigRef": null,
+      "host": "host.docker.internal",
+      "port": 32657,
+      "scheme": "http",
+      "status": 200,
+      "applicationCount": 1,
+      "errorCode": null,
+      "seconds": 1.675
+    },
+    {
+      "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+      "host": "host.docker.internal",
+      "port": 43658,
+      "scheme": "http",
+      "status": 200,
+      "applicationCount": 1,
+      "errorCode": null,
+      "seconds": 3.159
+    },
+    {
+      "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+      "host": "host.docker.internal",
+      "port": 33659,
+      "scheme": "http",
+      "status": 200,
+      "applicationCount": 1,
+      "errorCode": null,
+      "seconds": 5.514
+    }
+  ],
+  "proxyVariableNames": [],
+  "remoteMutation": false
+}

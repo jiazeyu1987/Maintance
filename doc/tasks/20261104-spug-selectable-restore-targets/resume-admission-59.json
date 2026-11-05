@@ -1,8 +1,23 @@
 {
-  "status": 500,
+  "status": 200,
   "body": {
-    "errorCode": "MAIN_TARGET_OBSERVATION_FAILED"
+    "applications": [
+      {
+        "applicationId": "intruoyi-57-safe-20261024-v1",
+        "engineSelectionRef": "common-engine-minimal-unified-20261015-r1",
+        "freshTargetConfigRefs": [
+          "intruoyi-main-59-safe-restore-20261104-v1"
+        ],
+        "fullErrorCode": null,
+        "fullReady": true,
+        "historyErrorCode": null,
+        "parentChainRefs": [],
+        "recoveryPointRefs": [],
+        "sourceConfigRef": "intruoyi-57-safe-20261024-v1"
+      }
+    ],
+    "observedAt": "2026-11-05T12:16:21.317537Z"
   },
-  "observedAt": "2026-11-05T11:37:52.906942+00:00",
+  "observedAt": "2026-11-05T12:16:21.318261+00:00",
   "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1"
 }

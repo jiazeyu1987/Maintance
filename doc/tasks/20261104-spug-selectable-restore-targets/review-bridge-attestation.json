@@ -1,0 +1,29 @@
+{
+  "observedAt": "2026-11-05T12:16:04.001485+00:00",
+  "host": "172.30.30.59",
+  "changes": [
+    {
+      "network": "bridge",
+      "beforeId": "1354d4b702702a85822041e173e0c3fc621eb83c14eb1d6373d428e21945eecf",
+      "afterId": "0ec083d1cb2347ff058366e03bcf617f37498906a70c4f5263ebbbcf7e34836b",
+      "frontendBeforeIP": "172.17.0.5",
+      "frontendAfterIP": "172.17.0.2"
+    }
+  ],
+  "ownerConfigurationPin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-readback-bridge-20261105.json",
+    "bytes": 23027,
+    "sha256": "7c0aa8e122a88b87f075666b116b174faeb060c2077727612321da9c19e54ab5"
+  },
+  "controlConfigurationPin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-33659-readback-bridge-20261105.json",
+    "bytes": 2369,
+    "sha256": "4690e934ef233b29417dcf09c499f59456cbc91783a86c4a0bd4afb6ef3d6362"
+  },
+  "mainRuntimeStrictVerification": true,
+  "allNetworkSemanticsAndMembersPreserved": true,
+  "frontendNetworkSameAsBeforeAuthorizedStarts": true,
+  "businessUnchanged": true,
+  "restoreDispatched": false,
+  "controlActive": true
+}
