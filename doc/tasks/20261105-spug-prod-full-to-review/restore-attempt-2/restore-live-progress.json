@@ -1,0 +1,13 @@
+{
+  "observedAt": "2026-11-05T14:21:32.825Z",
+  "operationId": "smallapp-01a41639afc24594ad81d1f644d41354",
+  "state": "FAILED",
+  "errorCode": "RESTORE_FILENOTFOUNDERROR",
+  "spugHistoryId": 357,
+  "queryError": null,
+  "visible": "原操作失败",
+  "steps": "尚无步骤时间回执。",
+  "logs": "2026/11/5 22:21:23  原始执行结果：FAILED_RETAINED\n错误：尚未满足执行条件（RESTORE_FILENOTFOUNDERROR）",
+  "problem": "",
+  "writes": 0
+}

@@ -1,0 +1,66 @@
+{
+  "observedAt": "2026-11-05T18:35:38.851857+00:00",
+  "operationId": "smallapp-a63174ccdf0c42f187f182e172653759",
+  "backupOperationId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+  "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+  "state": "SUCCEEDED",
+  "finishedAt": "2026-11-05T18:34:41.896554Z",
+  "actualExitCode": 0,
+  "sameNewFullPointVerified": true,
+  "database": {
+    "uuid": "a4f03708-cc74-11f1-9cce-0242ac1def16",
+    "fullSchemaDataEquivalenceVerified": true,
+    "tableCount": 885,
+    "totalRows": 512156,
+    "schemaSha256": "de67edc371e2088fa706392f0d7048b599f3942a4d144edc76099ad74093fdfe"
+  },
+  "objects": {
+    "exactVersionIdentityVerified": true,
+    "versionCount": 5916,
+    "deleteMarkerCount": 0,
+    "totalVersionBytes": 9653189892,
+    "uniqueContentCount": 4920,
+    "versionHistorySha256": "9fb2a7ba380c86d0164c9a82ba8ad18320fed5eb1f1f79d8a72e2ae77e7260c8"
+  },
+  "consistency": {
+    "allReferencesVerified": true,
+    "presentReferencesVerified": true,
+    "sourceMissingReferenceCount": 0,
+    "sourceMissingBaselinePreserved": true,
+    "invariantsVerified": true
+  },
+  "redis": {
+    "restoredKeyCount": 0,
+    "expiredBeforeRestoreCount": 0,
+    "independentlyVerifiedKeyCount": 0,
+    "valuesVerified": true,
+    "absoluteExpiryVerified": true
+  },
+  "applicationStart": {
+    "state": "SUCCEEDED",
+    "isolation": "REGISTERED_MAIN_RESOURCE_CUSTODY",
+    "businessAcceptance": "NOT_PERFORMED"
+  },
+  "replacementState": "SUCCEEDED",
+  "cleanupFields": [
+    "deletedBytes",
+    "deletedFiles",
+    "files",
+    "finishedAt",
+    "operationId",
+    "root",
+    "schemaVersion",
+    "selectedPaths",
+    "state"
+  ],
+  "verifiedDocumentPins": 15,
+  "independentBusinessUIRequired": true,
+  "status": "PASS",
+  "protectedOriginalFailurePinsUnchanged": 203,
+  "hostResourceReservationReleased": true,
+  "resourceReleasePin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a63174ccdf0c42f187f182e172653759/resource-release.json",
+    "bytes": 812,
+    "sha256": "511f53d019e62cf88873098dbb97d5c6177ef50f587fd02a90200da55ed6fc2f"
+  }
+}

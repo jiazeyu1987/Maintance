@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "receipt": {
+    "clearancePin": {
+      "bytes": 2820,
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-01a41639afc24594ad81d1f644d41354/recovery-clearance.json",
+      "sha256": "db33001bc90a6ead8adb9a4a1a3555787dab89f45caf51f292ae52766839d573"
+    },
+    "consumedAt": "2026-11-05T14:42:57.435984Z",
+    "replacementOperationId": "smallapp-a732505e94bc4863b568e2b2a8c17d57",
+    "schemaVersion": "RetainedReplacementConsumption/v1"
+  },
+  "sha256": "055c9f4e2121b8ace738c68595c025bd20a7ab054616bf82124c8223aa9b7c7c"
+}

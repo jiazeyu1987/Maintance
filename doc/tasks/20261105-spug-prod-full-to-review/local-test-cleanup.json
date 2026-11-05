@@ -1,0 +1,6 @@
+{
+  "status": "PASS",
+  "containerAbsent": true,
+  "volumeAbsent": true,
+  "onlyOwnedResourcesRemoved": true
+}

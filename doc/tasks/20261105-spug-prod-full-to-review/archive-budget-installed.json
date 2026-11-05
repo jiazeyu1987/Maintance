@@ -1,0 +1,16 @@
+{
+  "observedAt": "2026-11-05T13:45:54.877643+00:00",
+  "status": "PASS",
+  "service": "spug-main-restore-59-20261104-v3.service",
+  "priorPid": 22475,
+  "currentPid": 13904,
+  "liveLimits": "Max open files            65536                65536                files     ",
+  "dropInPin": {
+    "path": "/etc/systemd/system/spug-main-restore-59-20261104-v3.service.d/archive-budget.conf",
+    "bytes": 28,
+    "sha256": "e2631211a3955b0dc03f63d2da38856e2430398ba021abc5eaedd436d7f4984a"
+  },
+  "protectedFailurePinsUnchanged": 28,
+  "allBusinessIdsPidsStartTimesConfigurationUnchanged": true,
+  "backupOrRestoreDispatched": false
+}

@@ -1,0 +1,1220 @@
+{
+  "observedAt": "2026-11-05T15:39:54.324829+00:00",
+  "operationId": "smallapp-a732505e94bc4863b568e2b2a8c17d57",
+  "service": "spug-main-restore-59-20261104-v3.service",
+  "liveLimits": "Max open files            65536                65536                files     ",
+  "idleControl": true,
+  "evidencePins": [
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-a732505e94bc4863b568e2b2a8c17d57/request.json",
+      "bytes": 319,
+      "sha256": "b245683e0c5d22b9b5ebdb7939ba5940816caf649303df0b433348f2ee74834e"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-a732505e94bc4863b568e2b2a8c17d57/worker-stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-a732505e94bc4863b568e2b2a8c17d57/intent.json",
+      "bytes": 1372,
+      "sha256": "a47ea6c7eb590b9d6965154d1f22cd546625f8246fc46faacee06e6af7514192"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-a732505e94bc4863b568e2b2a8c17d57/restore-target-before.json",
+      "bytes": 11593,
+      "sha256": "94eed8bee0aa026ac5ef122ba7b60673b55579147049f41bb9f6893598330447"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-a732505e94bc4863b568e2b2a8c17d57/worker-terminal.json",
+      "bytes": 617,
+      "sha256": "d0393e0a9676abce520c4ffb80e33719d843e91f5c3fc028f8031551d9f567c5"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-a732505e94bc4863b568e2b2a8c17d57/selection.json",
+      "bytes": 1173,
+      "sha256": "a8f53c56657486c323fa50edcd73d31d8413047715b2f8d23d0f150f176e7420"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-a732505e94bc4863b568e2b2a8c17d57/completion.json",
+      "bytes": 3233,
+      "sha256": "9f882341c73daa252a824920527a334a4c5c034fd5b323a6b11e6cc9ffb6a9c8"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-a732505e94bc4863b568e2b2a8c17d57/worker-stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-a732505e94bc4863b568e2b2a8c17d57/worker-process.json",
+      "bytes": 659,
+      "sha256": "d19029841070fa56f2ff947f56dd859d102ba5c40978869379fc0e1fe8a7e4f8"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-a732505e94bc4863b568e2b2a8c17d57/queries/0e5724e4e17a4afba9a3b255ec7b193c.json",
+      "bytes": 862,
+      "sha256": "ca41839475ba44ebf04058909f7faf4f0027d2a9a0cf31c31cd8cf01e74f5111"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-a732505e94bc4863b568e2b2a8c17d57/execute/result.json",
+      "bytes": 6056,
+      "sha256": "86bed502d45ce2c129e3d1025c36281a9ba182f742121cef450f74cd5f2106c6"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-a732505e94bc4863b568e2b2a8c17d57/execute/native-stdout",
+      "bytes": 754,
+      "sha256": "7f6a74d63764b14946b120bc7bcd20f5d8d4d61bb24a297fb7db8cd19f1edeb4"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-a732505e94bc4863b568e2b2a8c17d57/execute/native-stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-a732505e94bc4863b568e2b2a8c17d57/execute/native-original-exit.json",
+      "bytes": 1313,
+      "sha256": "85baf66912a23b4f13252a8356cf90e3ee5ebfc8cd2f906138947b06b5ad134e"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-a732505e94bc4863b568e2b2a8c17d57/execute/native-process.json",
+      "bytes": 412,
+      "sha256": "f9c462449fb91702af877168546219f584b568d51b2fb12bbb6cb3803a11f062"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-a732505e94bc4863b568e2b2a8c17d57/execute/native-intent.json",
+      "bytes": 1820,
+      "sha256": "f4cc6ec7e042a4e2da5dbf0a382aa747213287e15f9ad4e10f4d328dc1f4adf3"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-014.json",
+      "bytes": 543,
+      "sha256": "11b251f1c0f6618f416e6eac8d0de455a8f66bb6ae6f24f5207da7df0b276d4e"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-000.json",
+      "bytes": 540,
+      "sha256": "7fb98e062677e8ee8915d43e912f867853ed5557a5a1eca25b994938d3be198c"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/request.json",
+      "bytes": 319,
+      "sha256": "b245683e0c5d22b9b5ebdb7939ba5940816caf649303df0b433348f2ee74834e"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/result.json",
+      "bytes": 6056,
+      "sha256": "86bed502d45ce2c129e3d1025c36281a9ba182f742121cef450f74cd5f2106c6"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/resource-reservation.json",
+      "bytes": 472,
+      "sha256": "749d23b2c1b3f2c5c061ae3790bf85e47467b61713b7a8c4fb4d6dd1397f6a2d"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-016.json",
+      "bytes": 543,
+      "sha256": "367d772beebf000bc87f6b4ddaa4652bdf3f5e064b639eabd132738647d32003"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-008.json",
+      "bytes": 541,
+      "sha256": "98ce1e7d2928e56a8c0bdd9680eade7fe133230591dc58c95431e999a84c1ce5"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-007.json",
+      "bytes": 541,
+      "sha256": "79de4368fcc4e784edc9757c6f64ab506d2b052b54f0b787906202aae52abd71"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/configuration.json",
+      "bytes": 23859,
+      "sha256": "9806f0ea8467607372a34156e6c2fad8223ea9e3a1fe3d8520cd833216832409"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-004.json",
+      "bytes": 543,
+      "sha256": "0c3e3546c3a46739c7d145937e44f02fca8efa9a7ac31e3b8692a2ebdc4d33b2"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/child.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-013.json",
+      "bytes": 543,
+      "sha256": "9e53bbeaec9456ac5a971c1a3bc80484497df5fa1479b9376338d2769e9a7b4a"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/target-configuration.json",
+      "bytes": 20367,
+      "sha256": "ad9f5dd333b75442f5004c78bdac44656946a780bf654ec6bfb8e7cafb23fe77"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/resource-admission-target.json",
+      "bytes": 2496,
+      "sha256": "40f62d268a4773b14c141370176990799be2833d6373128fbb049fc1563edcb9"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/child.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/operation.json",
+      "bytes": 426,
+      "sha256": "931b3170c3afe68ff0ce79ad135982375162431af186ba1c18b4df75055230df"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-005.json",
+      "bytes": 543,
+      "sha256": "2fd1514eeff5950563f6ef0c83116c351567cd409a963b2c7c9d8416e9ae5c49"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/timing-restore-admission-start.json",
+      "bytes": 71,
+      "sha256": "e7f05a26198d387653556c48e0c2a4e52b8371c835b8c8fbc2f8ab59c0eb5c85"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/timing-target-checks-start.json",
+      "bytes": 67,
+      "sha256": "de7eac219fe8c569e1676f98d2a493d338dc7232a0d47c321542a7af6d70ed8f"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/resource-admission-replacement.json",
+      "bytes": 2496,
+      "sha256": "e600ee20b0351caa3d64bddaaf929bc16fc766d00fb2bad03bc5133891414f34"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-003.json",
+      "bytes": 543,
+      "sha256": "7516a80fe6658f4b6cccaeff75ab914af3d19f4d960969718d38b34ee6a61fd6"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-009.json",
+      "bytes": 541,
+      "sha256": "2707ba254cc114ca4f684b5a5e38eec7e3f10936daf3a74152962067bbfe9b8e"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/worker-result.json",
+      "bytes": 4634,
+      "sha256": "0dabbed8eec8d8b1129e1d6d4520921d44c7ae12ac1f645f19531ee40f66e275"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/timing-target-checks-end.json",
+      "bytes": 109,
+      "sha256": "9e756f90adb5d3fb28a5539535e5f5d1428ea1a988a118fc261df6347102827e"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-006.json",
+      "bytes": 543,
+      "sha256": "23ed5f70fcb6e7bb1d6eb2c7d8823766671a7842c328ce1bed7df67d20c56e4f"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-012.json",
+      "bytes": 540,
+      "sha256": "421b4ecb81b70f648a8454ccf8773034fe82b8cae9856a0ec1b67b5a874649e8"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-001.json",
+      "bytes": 542,
+      "sha256": "5188f0bcfe530ca28e9378b5a7a5f458b4aa92dfacefad912069a354d1e410e7"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-011.json",
+      "bytes": 545,
+      "sha256": "006f00fdb1ac7edddb37e572d493db522716d17d4fd46339aece8aaa9cf008b9"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/resource-admission-owner.json",
+      "bytes": 2242,
+      "sha256": "0084b26998ae801e1c14836b6556aff6d3f5723e61115c7e2d41eaf04b9fe388"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-010.json",
+      "bytes": 543,
+      "sha256": "2c5a7295c67b00f2d887483b85befecdea9975bb72530741d0cff1b2c7662b55"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-015.json",
+      "bytes": 543,
+      "sha256": "1d5773b1a7bdbe9c99768a30530059eed247ecda2adfdc692ba80252a3ed1764"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-002.json",
+      "bytes": 543,
+      "sha256": "cd311e934dc9fb32a7595d05cf3162c2b25a793e754dc492be0d5396af24d3bb"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/timing-restore-admission-end.json",
+      "bytes": 115,
+      "sha256": "44c2c5c65e04312a6f00728490ef2a26c35a1a3793af40bf8c793bf76c15b324"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/child-exit.json",
+      "bytes": 700,
+      "sha256": "143e1f722d620f53350472ca21f28c8fb0336024793e368a55cf5b424cd7e2b8"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-017.json",
+      "bytes": 543,
+      "sha256": "75f80a1c64f6866c44a233bc941d90e8e524689c06bb1c60d3c967d5ebfafcee"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-033.json",
+      "bytes": 540,
+      "sha256": "a75bde950b1ad4465d692e18d1681e4c8282f9dbf9b474c741c91ddc4e02e0db"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-029.json",
+      "bytes": 541,
+      "sha256": "922307b0effbf371027b7e708d5b1630a0fc69a2b2268175565e3030a974e0b7"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-086.json",
+      "bytes": 545,
+      "sha256": "741d3ed3ab2d9383436acc36bd91cb7fd8e8afa6ddf7b32699ff4f0a73b03de9"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-014.json",
+      "bytes": 540,
+      "sha256": "d334fd413b89d8e16d6c04cc98344aed37dec15fdf8cc79da57aa80879cce365"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-078.json",
+      "bytes": 543,
+      "sha256": "45f60a5f492e078a12a5a42ca375b24bf66f17e120dd7c2e42fbe52a2946f26a"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-037.json",
+      "bytes": 539,
+      "sha256": "8b22275baa8b7eaa9fa6d97ea58dd1a5e52bafd3de488d96c60e385b776b96f8"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-000.json",
+      "bytes": 540,
+      "sha256": "c288bb8d78ed6cccc2f4bc2bceffae152f00dd428e05b3db10137538bedbe13e"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-056.json",
+      "bytes": 543,
+      "sha256": "d784f9838a259e97b47185a91439e682e486206c0d6e7412e414e1a79a810865"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-018.json",
+      "bytes": 543,
+      "sha256": "caa223c2ba2c5f558ac14a606714b6cb8bbf19ec8cc354913c23b26cc3d8ea00"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/timing-target-replacement-end.json",
+      "bytes": 115,
+      "sha256": "6203a0c4a8678b3e32f156184b6beea4dc927430da6451cf2aac4b09f882f4bf"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-049.json",
+      "bytes": 540,
+      "sha256": "78c96ea725ad58a146ab08d270963030b66baf915393cd6a0f423229ab674511"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/timing-target-replacement-start.json",
+      "bytes": 72,
+      "sha256": "0ab67b50ed27cb09ffb0acd57c62049c06004c7891ff392dafabfffd70a186a5"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-082.json",
+      "bytes": 541,
+      "sha256": "d0f6bf2e5c99153c658bf1d94dc262794efe6e0f91741af3965a561a5b0d08a1"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-085.json",
+      "bytes": 543,
+      "sha256": "4dae3b00b3d802c59f8c1414d923096ca6123c71628bfdd48c7fac59d4cc4704"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-039.json",
+      "bytes": 543,
+      "sha256": "2f29629c814aff8494a615eafb012d1afff867662aaa013745708d5028ef272e"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-057.json",
+      "bytes": 541,
+      "sha256": "33805bac2d981ec46b8bac7ffc633db13b772889567dbef02f3acde0c789afe8"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-016.json",
+      "bytes": 543,
+      "sha256": "2f487c5b9f3f60f99535007ed07c60b237691f3a6371c16046700192c4ba90d3"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-008.json",
+      "bytes": 543,
+      "sha256": "59f430fb1e999f9a9beab2e3cc44909c2c31d1b486007c708da26fa5f93b97be"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-046.json",
+      "bytes": 541,
+      "sha256": "2b1de3b8d13fb1e22a12cce56a23393ce7db9ab157f45837fc652cd347ab0a36"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-021.json",
+      "bytes": 542,
+      "sha256": "4d14f8587c0479fff08cac0a5d84a940f10947e20d5742a2c98e557c249687a3"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-079.json",
+      "bytes": 543,
+      "sha256": "b501cd61fb7bfcf5355e165dda2ffe907575cc969acc6116343112ed89ed1d74"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-035.json",
+      "bytes": 539,
+      "sha256": "a7f062c8e468fc16ff158d2414bfa5ad5f2f846f756c2a4a371f2ad949590433"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-007.json",
+      "bytes": 543,
+      "sha256": "17f13216dddc918781838fd5be72b336972fc2a300a81754574683cd8fe94c0f"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-026.json",
+      "bytes": 543,
+      "sha256": "d937f0db21afa315b3fc822ad27f5e838de1515cceaf60c9921f526e4f15f5da"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-032.json",
+      "bytes": 545,
+      "sha256": "1233f79a7ff5beb9255c5936be0182abab4008ada569916cea6690c1300addc7"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-004.json",
+      "bytes": 543,
+      "sha256": "d0062124f12ddd32b26e427121e9287e3a443f9456b2ec5c4fe33dcc65c69471"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-013.json",
+      "bytes": 545,
+      "sha256": "f16c7491557413597e05c159405e84bef764b3c0aa0c9cc6afe09b0406d07a4e"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-020.json",
+      "bytes": 542,
+      "sha256": "9319605c524ec6d3c68f7a54dae5baefb6c8a3c61446f26ea2003898103c5a64"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-088.json",
+      "bytes": 538,
+      "sha256": "fca1be21e6818408599e7eabffb9afa51550b9f93b8d10a692470a71631613a2"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/target-configuration.json",
+      "bytes": 20307,
+      "sha256": "2d9b058529d3a6561d68a870fd9e9b2d198d07261c09283ca01d0f207d933ea2"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-053.json",
+      "bytes": 543,
+      "sha256": "4b711009e82279615cc4e596857690115f0ee5f44f0435fe34df264d6807ca7c"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-087.json",
+      "bytes": 540,
+      "sha256": "d85e3328d22a3c1dfc20c1d6073268fe3d76fdf8d727b1bf39f1e2fe79b41350"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-074.json",
+      "bytes": 545,
+      "sha256": "f40b03dafba0de7d2d1e49e95eb66e9cf767692639365ac5cb0f230cc4ccd3d1"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-024.json",
+      "bytes": 543,
+      "sha256": "323d067b6397e31ac2064a865548d93cb2f0960b43e19e1398e8c495224f17ed"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-044.json",
+      "bytes": 541,
+      "sha256": "f05a1589e2cdfb44a1e3ee4241dc012b4fd8ff48d376cf4b367e2fcdf9f75f91"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-036.json",
+      "bytes": 539,
+      "sha256": "68ab6bcfa2f219f446d35314e2418fad581dcbf48e98c46808ac62a788e94cb6"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-005.json",
+      "bytes": 543,
+      "sha256": "b4cbfdd9f955ba54a3761961d068172bedc1d47f96397c1c350222f5e2e8899a"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-054.json",
+      "bytes": 543,
+      "sha256": "3f9110f6e00ea37d56c9043867cfccd1178ce2d8c99234cbaba6145c2ed52cd0"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-083.json",
+      "bytes": 541,
+      "sha256": "e400d839e98665ba499c46a6b7dee2b6c33e43a8dcf1d2e497818b0b364d9521"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-042.json",
+      "bytes": 543,
+      "sha256": "590cbdb050c6e317eecbd98d356693a84b6bc5a5626f6a64f6c1689d53298859"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/replacement-intent.json",
+      "bytes": 581,
+      "sha256": "f7a65d722737bed70a732d4a48df337cd2b036c411463e5e784ae7fd59e98e06"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-022.json",
+      "bytes": 542,
+      "sha256": "3c869ccfedd3f9e1d312a1722b9e3ac30f96402eea5968258c185c457672367d"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-058.json",
+      "bytes": 541,
+      "sha256": "bb62feb898d60e96673a51802cea0185da940cd95bb5fa5e7e9367d4ce390fb8"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-028.json",
+      "bytes": 541,
+      "sha256": "7697267763050ee30dbcadcc95ba5ce9740d0084ad3630b6f97953c6dd211c5c"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-040.json",
+      "bytes": 543,
+      "sha256": "55f6a44f981125546be0650c7fb102c944e75cc7d21f34f53cc3059dc13fe60d"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-064.json",
+      "bytes": 542,
+      "sha256": "4453abfb383e27f813cb0d1c4c367c04e5bc9498f76c993a512fe1ac88047221"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/replacement-prepared.json",
+      "bytes": 63,
+      "sha256": "77681d739f39771c04c5f8d52a12c5dcd65b6ac72f95eb73c23113381d9f1912"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-077.json",
+      "bytes": 543,
+      "sha256": "022ca7e4fe7e685cba162b46954fb6fdfa11c6c23fca255af2a515c8912f41a5"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-019.json",
+      "bytes": 543,
+      "sha256": "cde0c4b92091a7b3607ca8b57c31b298355f40f67968a25e04e462afd1e24c45"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-047.json",
+      "bytes": 543,
+      "sha256": "f86df110b4895a552bcd75210f13c65427a251e66eb231bf4aa5b8b8477dc919"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-072.json",
+      "bytes": 541,
+      "sha256": "22c1b50134bb02e77415af25ed3618b55eec6be3fd9a85f2f3d602694131ca76"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-003.json",
+      "bytes": 542,
+      "sha256": "368721c3dd7fb6bcc15f2b9d5cb868ce901d3648cb60d5ffb5b24f15eff9a37d"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-009.json",
+      "bytes": 541,
+      "sha256": "40ed2281cd66c55afac4192ea2001f438241ae92b1750296934e380f0deca95c"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-084.json",
+      "bytes": 541,
+      "sha256": "21dfb9ae34a345a835eb3b22dfd12bae0e95bdd3edc055f4325dcb8d3845b567"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-031.json",
+      "bytes": 543,
+      "sha256": "e51dcffba2c324d4161b0c87e6c0e978ce6952a41ce76c1f84b89d19a8142696"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-006.json",
+      "bytes": 543,
+      "sha256": "8153e074b4090b2ae393908ba5426c3e9b88b24bfd9c57e838cab193e7364d70"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-034.json",
+      "bytes": 539,
+      "sha256": "c751cca0d54c280b077e8a8094da368e8a1f9d973cdf2c6ff4178dd5619a0b5b"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-076.json",
+      "bytes": 542,
+      "sha256": "92455e559395f4a4d1984f87fe38c2a4f13134e52b6a8859988538a3e8735546"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-012.json",
+      "bytes": 543,
+      "sha256": "c7a775ccb9e15ec18d68eb45fb1718293d6c6a67c2e2b3f75edeb4ff2d995ff8"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-001.json",
+      "bytes": 543,
+      "sha256": "cd79132078c7c6088456433a2c6f3fb690b07c7c175676cf009f9bad0049c6ad"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-050.json",
+      "bytes": 543,
+      "sha256": "1d32eb46746b89f026f358ebcb794854f88c178afedc1ffa8a9f6c8aa3fc2fb4"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-059.json",
+      "bytes": 541,
+      "sha256": "b8d7ad5bac42aad29f5bd8f21055078f1b75681939b8e96a81b573263a1e7528"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-062.json",
+      "bytes": 540,
+      "sha256": "556cb7f8bde2856b1f0d665507cb4a91996eaf97b19d8a53409e40c23a944886"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-070.json",
+      "bytes": 541,
+      "sha256": "df35f9723f52ba00bc4843ccd517cbe76882c14b810dd3ec9c8d5784ebe93013"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-030.json",
+      "bytes": 541,
+      "sha256": "ee3f85800a2cc081f7296f8b43628d22515600cc9c5ddaac0bb5fcb9da9d22c8"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-011.json",
+      "bytes": 541,
+      "sha256": "02fbd8db50fb0b6c5bf508901f071a8faf3b6b3b8278fa40cacc342e606c3407"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-069.json",
+      "bytes": 543,
+      "sha256": "58b8f6c3d66b99311cc616ce650e594a355507dd0aae8215aea17c0424a8ae07"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-010.json",
+      "bytes": 541,
+      "sha256": "9ed09cc457088e64bea3e5e6a201a2a7972f0f958e490149d022de5a034b354d"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-041.json",
+      "bytes": 543,
+      "sha256": "b5f202c45532b494e582b5b3e0b0149ab48d587d549b6f1fe4de0df9849dbf5d"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-043.json",
+      "bytes": 543,
+      "sha256": "55eb59f98a762984b95cf6281f71736d2e8424fa603700c88cb8d6f8f004c2bc"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-060.json",
+      "bytes": 543,
+      "sha256": "0e37564d27944b47ab8d5b5c4e74a01e356ad4bbfd5de543dde3486e42735bfa"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-051.json",
+      "bytes": 542,
+      "sha256": "370076de73c2e4cabd65488f80bf742a24eb49b3ad13763a0c3d495ab44142f4"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-075.json",
+      "bytes": 540,
+      "sha256": "76ad92b09746d4efd6d13b7687a84ab51edff72b360adbe81a029149aefd34bb"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-048.json",
+      "bytes": 545,
+      "sha256": "222aa16aa87799660485ffe8e323c2d2819f0981a6759cbad10d8788d26410e6"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-061.json",
+      "bytes": 545,
+      "sha256": "15214e498c53092a0d363ebc4624a473f2438d0a4779afcb5330c55ca0b63539"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-071.json",
+      "bytes": 541,
+      "sha256": "b5d092fe1e08503af7d0d980a603a7455369cb4aaf4b1f6cc7323ec95c1f9ba8"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-073.json",
+      "bytes": 543,
+      "sha256": "660f612885d3e5edb2ef5e276a7d83f85de0b489d7b341a58d15fab65f9138ef"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-065.json",
+      "bytes": 543,
+      "sha256": "a06348f87c5ef743b3c2801fc07643d10da64cc93eaeefb08043123f767d9f1c"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-052.json",
+      "bytes": 543,
+      "sha256": "a574e105e1e729732e58d887d16c67b7d1ba1ebbe20cddbbc1598469236592ff"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-081.json",
+      "bytes": 543,
+      "sha256": "5e0eb58a9af18c8be9bb6e4549f5937f8da42e56e7b2d50b36550327849488e9"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-015.json",
+      "bytes": 543,
+      "sha256": "cfe4793e4fe4e6864a1ee82bcc482598bb8d4916ead4f1c06c62fd213bd1d398"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-002.json",
+      "bytes": 543,
+      "sha256": "b31ab97d1790872942c26694669fc6d93e0c81a6c66e9ee08f45c9a19597a1fb"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-045.json",
+      "bytes": 541,
+      "sha256": "be350ceacfacdd2e609d98c1d959b9b97f1211e8099354da24c0fcd3ee9c431b"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-066.json",
+      "bytes": 543,
+      "sha256": "7f758e5a1d8847f8a5c4460ece6bd151339775947adf2016bcf94438b49e7244"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-027.json",
+      "bytes": 543,
+      "sha256": "438f77e4fb7f96074bd3f12290267c6d8c0dde16ff8f66c8e89631f6a7133fec"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-038.json",
+      "bytes": 542,
+      "sha256": "8ce7c71fef4694f3ad11bb0c2ab12517555b0020087d77b6eca18d72668b917d"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-080.json",
+      "bytes": 543,
+      "sha256": "a45ccd414289f213222e1573a554fed2af1a40fa9ad5d5b9a6a84d56a8fa3508"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-055.json",
+      "bytes": 543,
+      "sha256": "5f3d74664d8ba7048ae9bff63be9040795a42db0c91d3f34708472bb18bb5db4"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-068.json",
+      "bytes": 543,
+      "sha256": "918329b61f3d3da85434ce4a26399a524bcac34b916951f370a9b65dca8d13b1"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-023.json",
+      "bytes": 543,
+      "sha256": "31072fcd67d1cdba605cc922adeb996918b089a7557d6a5e44f30e4b55a25ee0"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-063.json",
+      "bytes": 538,
+      "sha256": "a00af4501a9c161841c3cfc6acf2948db593c08ab8d97e9986e834298dcc7adb"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-025.json",
+      "bytes": 543,
+      "sha256": "62add3fd7b533d097fb864eee8fd730a8bb8e3783cf63cca9698bc7e2680f865"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-017.json",
+      "bytes": 543,
+      "sha256": "88119cc9d6293f7b10700a4d67c3be5731750617807cdc94ad486013ec529b9f"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/native-067.json",
+      "bytes": 543,
+      "sha256": "5a0f837f46062eba30873d42731f3f90017bf710ee67eec68e5a478dd1e0b6f1"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-result.json",
+      "bytes": 190,
+      "sha256": "4a08592aeaf967c4723a5e9f58fa5f1eb5c1337d088a59bb725b893716d289a1"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-a732505e94bc4863b568e2b2a8c17d57/runtime/.recovery-operation.json",
+      "bytes": 101,
+      "sha256": "be1724366bc77bfa1e9c0af419b92fcbd1928b5e53f4868179a31f9872ae9f15"
+    }
+  ],
+  "database": {
+    "uuid": "a4f03708-cc74-11f1-9cce-0242ac1def16",
+    "tableCount": 0
+  },
+  "activeReservation": true,
+  "activePointerPin": {
+    "path": "/var/lib/spug-restore-resources/active.json",
+    "bytes": 639,
+    "sha256": "37dcef254a2888fe9370a22f33d3435c95bd2dd6967db06e721752eb3967d87a"
+  },
+  "networkDifferences": {
+    "frontend": {
+      "expected": {
+        "bridge": {
+          "aliases": [],
+          "driverOpts": {},
+          "globalIPv6Address": "",
+          "ipAddress": "172.17.0.2",
+          "links": [],
+          "networkId": "0ec083d1cb2347ff058366e03bcf617f37498906a70c4f5263ebbbcf7e34836b"
+        },
+        "intruoyi-prod-nas-restore59-20261020-net": {
+          "aliases": [],
+          "driverOpts": {},
+          "globalIPv6Address": "",
+          "ipAddress": "172.29.239.2",
+          "links": [],
+          "networkId": "705a0ec1c077fda09c319beb8e580d2843bf0c99fce4fb291e1b81042ace79a8"
+        }
+      },
+      "observed": {
+        "bridge": {
+          "networkId": "0ec083d1cb2347ff058366e03bcf617f37498906a70c4f5263ebbbcf7e34836b",
+          "ipAddress": "",
+          "globalIPv6Address": "",
+          "aliases": [],
+          "links": [],
+          "driverOpts": {}
+        },
+        "intruoyi-prod-nas-restore59-20261020-net": {
+          "networkId": "705a0ec1c077fda09c319beb8e580d2843bf0c99fce4fb291e1b81042ace79a8",
+          "ipAddress": "172.29.239.2",
+          "globalIPv6Address": "",
+          "aliases": [],
+          "links": [],
+          "driverOpts": {}
+        }
+      },
+      "running": false
+    }
+  },
+  "otherBusinessRuntimePreserved": true,
+  "allContainerConfigurationsPreserved": true,
+  "originalResults": {
+    "ledger/smallapp-a732505e94bc4863b568e2b2a8c17d57/execute/result.json": {
+      "action": "RESTORE",
+      "actualExitCode": 1,
+      "data": {
+        "actualNativeExitCode": 0,
+        "errorType": "RecoveryError",
+        "mutationDispatched": true,
+        "partialTargetRetained": true,
+        "retryPermitted": false
+      },
+      "failureCode": "MAIN_SERVICE_NETWORK_CHANGED",
+      "finishedAt": "2026-11-05T15:38:08.250670Z",
+      "message": "MAIN_SERVICE_NETWORK_CHANGED",
+      "operationId": "smallapp-a732505e94bc4863b568e2b2a8c17d57",
+      "originalResultPins": [
+        {
+          "bytes": 540,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-000.json",
+          "sha256": "7fb98e062677e8ee8915d43e912f867853ed5557a5a1eca25b994938d3be198c"
+        },
+        {
+          "bytes": 542,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-001.json",
+          "sha256": "5188f0bcfe530ca28e9378b5a7a5f458b4aa92dfacefad912069a354d1e410e7"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-002.json",
+          "sha256": "cd311e934dc9fb32a7595d05cf3162c2b25a793e754dc492be0d5396af24d3bb"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-003.json",
+          "sha256": "7516a80fe6658f4b6cccaeff75ab914af3d19f4d960969718d38b34ee6a61fd6"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-004.json",
+          "sha256": "0c3e3546c3a46739c7d145937e44f02fca8efa9a7ac31e3b8692a2ebdc4d33b2"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-005.json",
+          "sha256": "2fd1514eeff5950563f6ef0c83116c351567cd409a963b2c7c9d8416e9ae5c49"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-006.json",
+          "sha256": "23ed5f70fcb6e7bb1d6eb2c7d8823766671a7842c328ce1bed7df67d20c56e4f"
+        },
+        {
+          "bytes": 541,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-007.json",
+          "sha256": "79de4368fcc4e784edc9757c6f64ab506d2b052b54f0b787906202aae52abd71"
+        },
+        {
+          "bytes": 541,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-008.json",
+          "sha256": "98ce1e7d2928e56a8c0bdd9680eade7fe133230591dc58c95431e999a84c1ce5"
+        },
+        {
+          "bytes": 541,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-009.json",
+          "sha256": "2707ba254cc114ca4f684b5a5e38eec7e3f10936daf3a74152962067bbfe9b8e"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-010.json",
+          "sha256": "2c5a7295c67b00f2d887483b85befecdea9975bb72530741d0cff1b2c7662b55"
+        },
+        {
+          "bytes": 545,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-011.json",
+          "sha256": "006f00fdb1ac7edddb37e572d493db522716d17d4fd46339aece8aaa9cf008b9"
+        },
+        {
+          "bytes": 540,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-012.json",
+          "sha256": "421b4ecb81b70f648a8454ccf8773034fe82b8cae9856a0ec1b67b5a874649e8"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-013.json",
+          "sha256": "9e53bbeaec9456ac5a971c1a3bc80484497df5fa1479b9376338d2769e9a7b4a"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-014.json",
+          "sha256": "11b251f1c0f6618f416e6eac8d0de455a8f66bb6ae6f24f5207da7df0b276d4e"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-015.json",
+          "sha256": "1d5773b1a7bdbe9c99768a30530059eed247ecda2adfdc692ba80252a3ed1764"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-016.json",
+          "sha256": "367d772beebf000bc87f6b4ddaa4652bdf3f5e064b639eabd132738647d32003"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-017.json",
+          "sha256": "75f80a1c64f6866c44a233bc941d90e8e524689c06bb1c60d3c967d5ebfafcee"
+        },
+        {
+          "bytes": 4634,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/worker-result.json",
+          "sha256": "0dabbed8eec8d8b1129e1d6d4520921d44c7ae12ac1f645f19531ee40f66e275"
+        },
+        {
+          "bytes": 700,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/child-exit.json",
+          "sha256": "143e1f722d620f53350472ca21f28c8fb0336024793e368a55cf5b424cd7e2b8"
+        },
+        {
+          "bytes": 472,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/resource-reservation.json",
+          "sha256": "749d23b2c1b3f2c5c061ae3790bf85e47467b61713b7a8c4fb4d6dd1397f6a2d"
+        },
+        {
+          "bytes": 2496,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/resource-admission-target.json",
+          "sha256": "40f62d268a4773b14c141370176990799be2833d6373128fbb049fc1563edcb9"
+        },
+        {
+          "bytes": 2496,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/resource-admission-replacement.json",
+          "sha256": "e600ee20b0351caa3d64bddaaf929bc16fc766d00fb2bad03bc5133891414f34"
+        },
+        {
+          "bytes": 2242,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/resource-admission-owner.json",
+          "sha256": "0084b26998ae801e1c14836b6556aff6d3f5723e61115c7e2d41eaf04b9fe388"
+        }
+      ],
+      "requestId": "smallapp-a732505e94bc4863b568e2b2a8c17d57",
+      "schemaVersion": "backup-restore-operation-result/v1",
+      "startedAt": "2026-11-05T14:42:57.331653Z",
+      "state": "FAILED_RETAINED"
+    },
+    "recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/result.json": {
+      "action": "RESTORE",
+      "actualExitCode": 1,
+      "data": {
+        "actualNativeExitCode": 0,
+        "errorType": "RecoveryError",
+        "mutationDispatched": true,
+        "partialTargetRetained": true,
+        "retryPermitted": false
+      },
+      "failureCode": "MAIN_SERVICE_NETWORK_CHANGED",
+      "finishedAt": "2026-11-05T15:38:08.250670Z",
+      "message": "MAIN_SERVICE_NETWORK_CHANGED",
+      "operationId": "smallapp-a732505e94bc4863b568e2b2a8c17d57",
+      "originalResultPins": [
+        {
+          "bytes": 540,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-000.json",
+          "sha256": "7fb98e062677e8ee8915d43e912f867853ed5557a5a1eca25b994938d3be198c"
+        },
+        {
+          "bytes": 542,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-001.json",
+          "sha256": "5188f0bcfe530ca28e9378b5a7a5f458b4aa92dfacefad912069a354d1e410e7"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-002.json",
+          "sha256": "cd311e934dc9fb32a7595d05cf3162c2b25a793e754dc492be0d5396af24d3bb"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-003.json",
+          "sha256": "7516a80fe6658f4b6cccaeff75ab914af3d19f4d960969718d38b34ee6a61fd6"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-004.json",
+          "sha256": "0c3e3546c3a46739c7d145937e44f02fca8efa9a7ac31e3b8692a2ebdc4d33b2"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-005.json",
+          "sha256": "2fd1514eeff5950563f6ef0c83116c351567cd409a963b2c7c9d8416e9ae5c49"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-006.json",
+          "sha256": "23ed5f70fcb6e7bb1d6eb2c7d8823766671a7842c328ce1bed7df67d20c56e4f"
+        },
+        {
+          "bytes": 541,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-007.json",
+          "sha256": "79de4368fcc4e784edc9757c6f64ab506d2b052b54f0b787906202aae52abd71"
+        },
+        {
+          "bytes": 541,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-008.json",
+          "sha256": "98ce1e7d2928e56a8c0bdd9680eade7fe133230591dc58c95431e999a84c1ce5"
+        },
+        {
+          "bytes": 541,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-009.json",
+          "sha256": "2707ba254cc114ca4f684b5a5e38eec7e3f10936daf3a74152962067bbfe9b8e"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-010.json",
+          "sha256": "2c5a7295c67b00f2d887483b85befecdea9975bb72530741d0cff1b2c7662b55"
+        },
+        {
+          "bytes": 545,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-011.json",
+          "sha256": "006f00fdb1ac7edddb37e572d493db522716d17d4fd46339aece8aaa9cf008b9"
+        },
+        {
+          "bytes": 540,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-012.json",
+          "sha256": "421b4ecb81b70f648a8454ccf8773034fe82b8cae9856a0ec1b67b5a874649e8"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-013.json",
+          "sha256": "9e53bbeaec9456ac5a971c1a3bc80484497df5fa1479b9376338d2769e9a7b4a"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-014.json",
+          "sha256": "11b251f1c0f6618f416e6eac8d0de455a8f66bb6ae6f24f5207da7df0b276d4e"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-015.json",
+          "sha256": "1d5773b1a7bdbe9c99768a30530059eed247ecda2adfdc692ba80252a3ed1764"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-016.json",
+          "sha256": "367d772beebf000bc87f6b4ddaa4652bdf3f5e064b639eabd132738647d32003"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-017.json",
+          "sha256": "75f80a1c64f6866c44a233bc941d90e8e524689c06bb1c60d3c967d5ebfafcee"
+        },
+        {
+          "bytes": 4634,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/worker-result.json",
+          "sha256": "0dabbed8eec8d8b1129e1d6d4520921d44c7ae12ac1f645f19531ee40f66e275"
+        },
+        {
+          "bytes": 700,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/child-exit.json",
+          "sha256": "143e1f722d620f53350472ca21f28c8fb0336024793e368a55cf5b424cd7e2b8"
+        },
+        {
+          "bytes": 472,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/resource-reservation.json",
+          "sha256": "749d23b2c1b3f2c5c061ae3790bf85e47467b61713b7a8c4fb4d6dd1397f6a2d"
+        },
+        {
+          "bytes": 2496,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/resource-admission-target.json",
+          "sha256": "40f62d268a4773b14c141370176990799be2833d6373128fbb049fc1563edcb9"
+        },
+        {
+          "bytes": 2496,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/resource-admission-replacement.json",
+          "sha256": "e600ee20b0351caa3d64bddaaf929bc16fc766d00fb2bad03bc5133891414f34"
+        },
+        {
+          "bytes": 2242,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/resource-admission-owner.json",
+          "sha256": "0084b26998ae801e1c14836b6556aff6d3f5723e61115c7e2d41eaf04b9fe388"
+        }
+      ],
+      "requestId": "smallapp-a732505e94bc4863b568e2b2a8c17d57",
+      "schemaVersion": "backup-restore-operation-result/v1",
+      "startedAt": "2026-11-05T14:42:57.331653Z",
+      "state": "FAILED_RETAINED"
+    },
+    "recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/worker-result.json": {
+      "action": "RESTORE",
+      "actualExitCode": 1,
+      "data": {
+        "actualNativeExitCode": 0,
+        "errorType": "RecoveryError",
+        "mutationDispatched": true,
+        "partialTargetRetained": true,
+        "retryPermitted": false
+      },
+      "failureCode": "MAIN_SERVICE_NETWORK_CHANGED",
+      "finishedAt": "2026-11-05T15:38:08.250670Z",
+      "message": "MAIN_SERVICE_NETWORK_CHANGED",
+      "operationId": "smallapp-a732505e94bc4863b568e2b2a8c17d57",
+      "originalResultPins": [
+        {
+          "bytes": 540,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-000.json",
+          "sha256": "7fb98e062677e8ee8915d43e912f867853ed5557a5a1eca25b994938d3be198c"
+        },
+        {
+          "bytes": 542,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-001.json",
+          "sha256": "5188f0bcfe530ca28e9378b5a7a5f458b4aa92dfacefad912069a354d1e410e7"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-002.json",
+          "sha256": "cd311e934dc9fb32a7595d05cf3162c2b25a793e754dc492be0d5396af24d3bb"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-003.json",
+          "sha256": "7516a80fe6658f4b6cccaeff75ab914af3d19f4d960969718d38b34ee6a61fd6"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-004.json",
+          "sha256": "0c3e3546c3a46739c7d145937e44f02fca8efa9a7ac31e3b8692a2ebdc4d33b2"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-005.json",
+          "sha256": "2fd1514eeff5950563f6ef0c83116c351567cd409a963b2c7c9d8416e9ae5c49"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-006.json",
+          "sha256": "23ed5f70fcb6e7bb1d6eb2c7d8823766671a7842c328ce1bed7df67d20c56e4f"
+        },
+        {
+          "bytes": 541,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-007.json",
+          "sha256": "79de4368fcc4e784edc9757c6f64ab506d2b052b54f0b787906202aae52abd71"
+        },
+        {
+          "bytes": 541,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-008.json",
+          "sha256": "98ce1e7d2928e56a8c0bdd9680eade7fe133230591dc58c95431e999a84c1ce5"
+        },
+        {
+          "bytes": 541,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-009.json",
+          "sha256": "2707ba254cc114ca4f684b5a5e38eec7e3f10936daf3a74152962067bbfe9b8e"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-010.json",
+          "sha256": "2c5a7295c67b00f2d887483b85befecdea9975bb72530741d0cff1b2c7662b55"
+        },
+        {
+          "bytes": 545,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-011.json",
+          "sha256": "006f00fdb1ac7edddb37e572d493db522716d17d4fd46339aece8aaa9cf008b9"
+        },
+        {
+          "bytes": 540,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-012.json",
+          "sha256": "421b4ecb81b70f648a8454ccf8773034fe82b8cae9856a0ec1b67b5a874649e8"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-013.json",
+          "sha256": "9e53bbeaec9456ac5a971c1a3bc80484497df5fa1479b9376338d2769e9a7b4a"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-014.json",
+          "sha256": "11b251f1c0f6618f416e6eac8d0de455a8f66bb6ae6f24f5207da7df0b276d4e"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-015.json",
+          "sha256": "1d5773b1a7bdbe9c99768a30530059eed247ecda2adfdc692ba80252a3ed1764"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-016.json",
+          "sha256": "367d772beebf000bc87f6b4ddaa4652bdf3f5e064b639eabd132738647d32003"
+        },
+        {
+          "bytes": 543,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/native-017.json",
+          "sha256": "75f80a1c64f6866c44a233bc941d90e8e524689c06bb1c60d3c967d5ebfafcee"
+        }
+      ],
+      "requestId": "smallapp-a732505e94bc4863b568e2b2a8c17d57",
+      "schemaVersion": "backup-restore-operation-result/v1",
+      "startedAt": "2026-11-05T14:42:57.331653Z",
+      "state": "FAILED_RETAINED"
+    },
+    "recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/child-exit.json": {
+      "actualExitCode": 1,
+      "argvSha256": "22c0844a70126bae0befceb2dfba9d488abd8c311e29e395227f58ecff1a8352",
+      "finishedAt": "2026-11-05T15:38:08.505487Z",
+      "operation": "W04_RESTORE_CHILD",
+      "startedAt": "2026-11-05T14:42:57.193611Z",
+      "stderrPin": {
+        "bytes": 0,
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/child.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdoutPin": {
+        "bytes": 0,
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/child.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timedOut": false
+    },
+    "recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-preparation/replacement-prepared.json": {
+      "finishedAt": "2026-11-05T15:11:41.207217Z",
+      "state": "PREPARED"
+    },
+    "replacement-state/smallapp-a732505e94bc4863b568e2b2a8c17d57/replacement-result.json": {
+      "finishedAt": "2026-11-05T15:38:08.176531Z",
+      "operationId": "smallapp-a732505e94bc4863b568e2b2a8c17d57",
+      "state": "FAILED_RETAINED",
+      "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1"
+    }
+  }
+}

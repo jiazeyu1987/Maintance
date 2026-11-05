@@ -1,0 +1,17 @@
+{
+  "observedAt": "2026-11-05T17:24:52.305332+00:00",
+  "operationId": "smallapp-a63174ccdf0c42f187f182e172653759",
+  "tableCount": 750,
+  "databaseUuid": "a4f03708-cc74-11f1-9cce-0242ac1def16",
+  "mysqlPid": 8686,
+  "mysqlIO": {
+    "rchar": 3598749907,
+    "wchar": 18309746512,
+    "syscr": 117964,
+    "syscw": 824175,
+    "read_bytes": 580800512,
+    "write_bytes": 22124986368,
+    "cancelled_write_bytes": 3332300800
+  },
+  "businessWritesPerformed": false
+}

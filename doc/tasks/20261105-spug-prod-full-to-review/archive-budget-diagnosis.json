@@ -1,0 +1,202 @@
+{
+  "observedAt": "2026-11-05T13:39:46.875673+00:00",
+  "operationId": "smallapp-356db3eb15e0441587efcf1c67db5652",
+  "service": "spug-main-restore-59-20261104-v3.service",
+  "properties": {
+    "MainPID": "22475",
+    "ControlGroup": "/system.slice/spug-main-restore-59-20261104-v3.service",
+    "LimitNOFILE": "4096"
+  },
+  "liveLimits": "Max open files            1024                 4096                 files     ",
+  "idleControl": true,
+  "evidencePins": [
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-356db3eb15e0441587efcf1c67db5652/request.json",
+      "bytes": 319,
+      "sha256": "bc4c2bab0f56361bff65569645b3294b9d8467e9d498b23937de90a6bc6df46d"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-356db3eb15e0441587efcf1c67db5652/worker-stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-356db3eb15e0441587efcf1c67db5652/intent.json",
+      "bytes": 1385,
+      "sha256": "267524b11c3a87e910fb50232191a4cc2953d01b1b6bb91709572518841aee92"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-356db3eb15e0441587efcf1c67db5652/restore-target-before.json",
+      "bytes": 11595,
+      "sha256": "778a38f1922d5463d3801e00be70a4024ff0d717aa4ae664710731728ad4524b"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-356db3eb15e0441587efcf1c67db5652/worker-terminal.json",
+      "bytes": 616,
+      "sha256": "d024e94e5f9da0fd580c432979f66fa0791f48d4ae6ffcb25a3a44e48bf2b23a"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-356db3eb15e0441587efcf1c67db5652/selection.json",
+      "bytes": 1186,
+      "sha256": "5a158c6dcc496c5571a6ef71788d175244968d296feca0e29e37066eb0c46474"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-356db3eb15e0441587efcf1c67db5652/completion.json",
+      "bytes": 3249,
+      "sha256": "1018fe41eaa1e6cfd29b089be7dc14d33fbea95916f9a6cb59d164c8bcaa334b"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-356db3eb15e0441587efcf1c67db5652/worker-stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-356db3eb15e0441587efcf1c67db5652/worker-process.json",
+      "bytes": 671,
+      "sha256": "5af5903a638d6a3919584b8e153cdd80780bbb7344bee550688070d0cc49c22e"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-356db3eb15e0441587efcf1c67db5652/execute/result.json",
+      "bytes": 2001,
+      "sha256": "f3aa59fe2e029ba7fdf30bb67fae9af886169b6c218b5225f83da542bf7a5166"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-356db3eb15e0441587efcf1c67db5652/execute/native-stdout",
+      "bytes": 757,
+      "sha256": "6261ab9d5d730881ad652ac5659729a6c863c8d99d4ea169100c73275a4ddea0"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-356db3eb15e0441587efcf1c67db5652/execute/native-stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-356db3eb15e0441587efcf1c67db5652/execute/native-original-exit.json",
+      "bytes": 1312,
+      "sha256": "f747ea919dd546f093aff1ac00f515479ffda0d6a7c10834a9e05ac9094e1253"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-356db3eb15e0441587efcf1c67db5652/execute/native-process.json",
+      "bytes": 411,
+      "sha256": "6e99e0e15762a31ac4c0b584993749bd235638ca2dec9638c41cf7d42ec2a3cf"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-356db3eb15e0441587efcf1c67db5652/execute/native-intent.json",
+      "bytes": 1826,
+      "sha256": "09b8caadbe70d37955867905acda55e78f648c042df562794af01148fd3852f7"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-356db3eb15e0441587efcf1c67db5652/request.json",
+      "bytes": 319,
+      "sha256": "bc4c2bab0f56361bff65569645b3294b9d8467e9d498b23937de90a6bc6df46d"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-356db3eb15e0441587efcf1c67db5652/result.json",
+      "bytes": 2001,
+      "sha256": "f3aa59fe2e029ba7fdf30bb67fae9af886169b6c218b5225f83da542bf7a5166"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-356db3eb15e0441587efcf1c67db5652/resource-reservation.json",
+      "bytes": 472,
+      "sha256": "148f638767628af0ad3e7e020c35eb53a28cea9fbe977dba46764acca99c88b4"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-356db3eb15e0441587efcf1c67db5652/configuration.json",
+      "bytes": 23862,
+      "sha256": "b559003928c1a7cb0fcaad727ecbd8971982474a08b32794859bf51e2f6ea5d0"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-356db3eb15e0441587efcf1c67db5652/child.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-356db3eb15e0441587efcf1c67db5652/child.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-356db3eb15e0441587efcf1c67db5652/operation.json",
+      "bytes": 426,
+      "sha256": "dfdfacb72238addd08cc338c012b82ede63f8a85c21397d2102629bf3ffea352"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-356db3eb15e0441587efcf1c67db5652/resource-admission-replacement.json",
+      "bytes": 2496,
+      "sha256": "12584449a8aa3284bb44ee01944471a5c595f9904cfa20d89f44abf5cdb09d6a"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-356db3eb15e0441587efcf1c67db5652/resource-no-mutation-release.json",
+      "bytes": 833,
+      "sha256": "28e20a8ab800f4097a0f75f9d347783742558274bf1c906ded5748aa34cc3944"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-356db3eb15e0441587efcf1c67db5652/worker-result.json",
+      "bytes": 579,
+      "sha256": "8f0efd5e3175a0697da3b77f5ff9d1215bfc817a524aa8f389ffac8bd2ddf3cf"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-356db3eb15e0441587efcf1c67db5652/resource-admission-owner.json",
+      "bytes": 2243,
+      "sha256": "d80fc6a042ba26a7a88ddd2295e6d1e0f77f11c5e5edd9fe3276cba12738c399"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-356db3eb15e0441587efcf1c67db5652/child-exit.json",
+      "bytes": 700,
+      "sha256": "24f9b00cc6f914fac0a7edd98915b949a9127f75f1a1a74603a726704dea8ba5"
+    },
+    {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-356db3eb15e0441587efcf1c67db5652/replacement-result.json",
+      "bytes": 190,
+      "sha256": "903226e6303fd51845dbe2207336a2a6d421e7574905fb2764d76d105f5b8c10"
+    }
+  ],
+  "database": {
+    "uuid": "a4f03708-cc74-11f1-9cce-0242ac1def16",
+    "tableCount": 885
+  },
+  "activeReservation": false,
+  "allBusinessBaselineUnchanged": true,
+  "diagnostics": {
+    "ledger/smallapp-356db3eb15e0441587efcf1c67db5652/completion.json": {},
+    "ledger/smallapp-356db3eb15e0441587efcf1c67db5652/execute/result.json": {
+      "actualExitCode": 1,
+      "data": {
+        "actualNativeExitCode": null,
+        "errorType": "RecoveryError",
+        "mutationDispatched": false,
+        "partialTargetRetained": true,
+        "retryPermitted": false
+      },
+      "state": "FAILED_RETAINED"
+    },
+    "recovery-operations/smallapp-356db3eb15e0441587efcf1c67db5652/result.json": {
+      "actualExitCode": 1,
+      "data": {
+        "actualNativeExitCode": null,
+        "errorType": "RecoveryError",
+        "mutationDispatched": false,
+        "partialTargetRetained": true,
+        "retryPermitted": false
+      },
+      "state": "FAILED_RETAINED"
+    },
+    "recovery-operations/smallapp-356db3eb15e0441587efcf1c67db5652/worker-result.json": {
+      "actualExitCode": 1,
+      "data": {
+        "actualNativeExitCode": null,
+        "errorType": "RecoveryError",
+        "mutationDispatched": false,
+        "partialTargetRetained": true,
+        "retryPermitted": false
+      },
+      "state": "FAILED_RETAINED"
+    },
+    "recovery-operations/smallapp-356db3eb15e0441587efcf1c67db5652/child-exit.json": {
+      "actualExitCode": 1
+    },
+    "replacement-state/smallapp-356db3eb15e0441587efcf1c67db5652/replacement-result.json": {
+      "state": "FAILED_RETAINED"
+    }
+  }
+}

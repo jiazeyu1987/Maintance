@@ -1,0 +1,38 @@
+{
+  "observedAt": "2026-11-05T16:11:45.792292+00:00",
+  "status": "PASS",
+  "failedOperationId": "smallapp-a732505e94bc4863b568e2b2a8c17d57",
+  "report": {
+    "clearancePin": {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-a732505e94bc4863b568e2b2a8c17d57/recovery-clearance.json",
+      "bytes": 2243,
+      "sha256": "115db015844127f13c34413633938815bbb742efb1645d0b1bbe6489813be993"
+    },
+    "releasePin": {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a732505e94bc4863b568e2b2a8c17d57/resource-recovery-release.json",
+      "bytes": 1055,
+      "sha256": "b0a3af47393118c7f76b63a69dad8e49236a32769838f58124a48e17cff8d248"
+    },
+    "originalState": "FAILED_RETAINED",
+    "restoreDispatched": false,
+    "nextRequestMustUseSamePoint": true
+  },
+  "clearanceSchema": "RetainedReplacementRecovery/v1",
+  "failurePhase": "AFTER_MUTATION",
+  "authorizationPlanSha256": "6ecb0c403ba415409c7be732a94672550ee7a3d9cd01db3838a26542fd06d176",
+  "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+  "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+  "recoveryPointRef": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+  "protectedOriginalFailurePinsUnchanged": 203,
+  "allBusinessIdsPidsStartTimesConfigurationUnchanged": true,
+  "freshTargetAdmitted": true,
+  "sourcePointAdmitted": true,
+  "pointPin": {
+    "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/.repository/point.json",
+    "bytes": 6271278,
+    "sha256": "af95ffa94e9478bd32935c6e0c662aa5590854a0cda7597b84a25abd81a8f128"
+  },
+  "archiveEvidencePinsChecked": 6,
+  "activeReservation": false,
+  "restoreDispatched": false
+}

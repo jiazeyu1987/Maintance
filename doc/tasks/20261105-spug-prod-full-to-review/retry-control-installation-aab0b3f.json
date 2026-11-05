@@ -1,0 +1,25 @@
+{
+  "observedAt": "2026-11-05T14:01:45.987754+00:00",
+  "status": "PASS",
+  "sourceCommit": "aab0b3f7bcb93b1cf144793c271df15bbae2c0f9",
+  "packageSha256": "3b034978a7fadbe6ff37ed4e30e072d99e7db38581208e708962cf296c579a8b",
+  "fileManifestSha256": "b6b1a420da5cb594a5a23fbd42818a3aad4b210de2cd639d5aaa9394018f4f6c",
+  "fileCount": 122,
+  "engine": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/engine-retry-aab0b3f7",
+  "ownerConfigurationPin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-retry-aab0b3f7.json",
+    "bytes": 23024,
+    "sha256": "31958b478d8b72f5118782cbcd26ce8a95595b79b53edaff44bcfa69a6269c01"
+  },
+  "controlConfigurationPin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-33659-retry-aab0b3f7.json",
+    "bytes": 2344,
+    "sha256": "8e2bba1bde755cb3027b5509e811bc022885b484338e103b5d36cf35c98ed2c1"
+  },
+  "targetAndSourceUnchanged": true,
+  "actualControlConfigurationValidated": true,
+  "liveLimits": "Max open files            65536                65536                files     ",
+  "allBusinessIdsPidsStartTimesConfigurationUnchanged": true,
+  "protectedOriginalFailurePinsUnchanged": 28,
+  "restoreDispatched": false
+}

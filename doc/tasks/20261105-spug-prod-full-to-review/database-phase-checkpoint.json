@@ -1,0 +1,21 @@
+{
+  "observedAt": "2026-11-05T17:48:40.643291+00:00",
+  "status": "PASS",
+  "operationId": "smallapp-a63174ccdf0c42f187f182e172653759",
+  "databaseUuid": "a4f03708-cc74-11f1-9cce-0242ac1def16",
+  "tableCount": 885,
+  "totalRows": 512156,
+  "fullSchemaDataEquivalenceVerified": true,
+  "schemaSha256": "de67edc371e2088fa706392f0d7048b599f3942a4d144edc76099ad74093fdfe",
+  "resultPin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a63174ccdf0c42f187f182e172653759/database-000/result.json",
+    "bytes": 1170,
+    "sha256": "212e3ac357388dd6671ae5ec50b9169b1941963a0b48754cc15137752d14c5e9"
+  },
+  "comparisonPin": {
+    "bytes": 123480,
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a63174ccdf0c42f187f182e172653759/database-000/database-comparison.json",
+    "sha256": "7de9432b58847cae7324a843bacedc16ebc3047b3392feadfb76336ddb28092e"
+  },
+  "wholeRestoreStillPending": true
+}

@@ -1,0 +1,24 @@
+{
+  "observedAt": "2026-11-05T18:18:17.163187+00:00",
+  "status": "PASS",
+  "operationId": "smallapp-a63174ccdf0c42f187f182e172653759",
+  "resultPin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a63174ccdf0c42f187f182e172653759/objects/result.json",
+    "bytes": 1204,
+    "sha256": "bb539522696bc58b4aa9c832793e49e353590e557c661363b066cc3eefc03745"
+  },
+  "comparisonPin": {
+    "bytes": 1659,
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-a63174ccdf0c42f187f182e172653759/objects/physical-comparison.json",
+    "sha256": "ad2433a8c208d8959b9c97d2466fa8cd2fb56eb900170241cfcd930c6569e8e8"
+  },
+  "wholeRestoreStillPending": true,
+  "objects": {
+    "exactVersionIdentityVerified": true,
+    "versionCount": 5916,
+    "deleteMarkerCount": 0,
+    "totalVersionBytes": 9653189892,
+    "uniqueContentCount": 4920,
+    "versionHistorySha256": "9fb2a7ba380c86d0164c9a82ba8ad18320fed5eb1f1f79d8a72e2ae77e7260c8"
+  }
+}

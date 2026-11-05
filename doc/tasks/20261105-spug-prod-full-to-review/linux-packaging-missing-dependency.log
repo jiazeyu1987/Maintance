@@ -1,0 +1,350 @@
+........FF.FFFF                                                          [100%]
+=================================== FAILURES ===================================
+________ test_variant_package_entries_and_real_file_manifest[standard] _________
+
+packages = PosixPath('/work/pytest-packaging/variants0/packages')
+tmp_path = PosixPath('/work/pytest-packaging/test_variant_package_entries_a0')
+variant = 'standard'
+
+    @pytest.mark.parametrize('variant', builder.VARIANTS)
+    def test_variant_package_entries_and_real_file_manifest(packages, tmp_path, variant):
+        with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
+            archive.extractall(tmp_path, filter='data')
+        manifest = json.loads((tmp_path/'package.json').read_bytes())
+        assert manifest['variant'] == variant
+        for name, expected in manifest['files'].items():
+            assert hashlib.sha256((tmp_path/name).read_bytes()).hexdigest() == expected
+        code = (tmp_path/'common/repository_minimal.py').read_text(encoding='utf-8')
+        assert code.count(repr('prod-'+variant+'-')) == 2
+        if variant == 'lightweight':
+            assert 'payload_content=False' in code and 'verify_content=False' in code
+            assert manifest['fileVerification'] is False
+            # File changes no longer trigger an entry-time checksum scan.
+            with (tmp_path/'common/repository_cli.py').open('a', encoding='utf-8') as output:
+                output.write('\n# changed since packaging: lightweight does not verify source files\n')
+        for role in ('repository', 'recovery', 'control'):
+            result = subprocess.run([sys.executable, str(tmp_path/(role+'_entry.py')), '--check-imports'],
+                                    capture_output=True, text=True)
+>           assert result.returncode == 0, result.stderr
+E           AssertionError: Traceback (most recent call last):
+E               File "/work/pytest-packaging/test_variant_package_entries_a0/recovery_entry.py", line 34, in <module>
+E                 imported=importlib.import_module(module)
+E                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+E                 return _bootstrap._gcd_import(name[level:], package, level)
+E                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+E               File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+E               File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+E               File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+E               File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+E               File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+E               File "/work/pytest-packaging/test_variant_package_entries_a0/common/recovery_minimal.py", line 12, in <module>
+E                 from recovery_engine import absolute, canonical, check_pin, load, pin, require, utc, write
+E               File "/work/pytest-packaging/test_variant_package_entries_a0/common/recovery_engine.py", line 17, in <module>
+E                 import jsonschema
+E             ModuleNotFoundError: No module named 'jsonschema'
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/usr/local/bin/python', '/work/pytest-packaging/test_variant_package_entries_a0/recovery_entry...covery_engine.py", line 17, in <module>\n    import jsonschema\nModuleNotFoundError: No module named \'jsonschema\'\n').returncode
+
+scripts/tests/test_backup_variants.py:119: AssertionError
+_______ test_variant_package_entries_and_real_file_manifest[lightweight] _______
+
+packages = PosixPath('/work/pytest-packaging/variants0/packages')
+tmp_path = PosixPath('/work/pytest-packaging/test_variant_package_entries_a1')
+variant = 'lightweight'
+
+    @pytest.mark.parametrize('variant', builder.VARIANTS)
+    def test_variant_package_entries_and_real_file_manifest(packages, tmp_path, variant):
+        with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
+            archive.extractall(tmp_path, filter='data')
+        manifest = json.loads((tmp_path/'package.json').read_bytes())
+        assert manifest['variant'] == variant
+        for name, expected in manifest['files'].items():
+            assert hashlib.sha256((tmp_path/name).read_bytes()).hexdigest() == expected
+        code = (tmp_path/'common/repository_minimal.py').read_text(encoding='utf-8')
+        assert code.count(repr('prod-'+variant+'-')) == 2
+        if variant == 'lightweight':
+            assert 'payload_content=False' in code and 'verify_content=False' in code
+            assert manifest['fileVerification'] is False
+            # File changes no longer trigger an entry-time checksum scan.
+            with (tmp_path/'common/repository_cli.py').open('a', encoding='utf-8') as output:
+                output.write('\n# changed since packaging: lightweight does not verify source files\n')
+        for role in ('repository', 'recovery', 'control'):
+            result = subprocess.run([sys.executable, str(tmp_path/(role+'_entry.py')), '--check-imports'],
+                                    capture_output=True, text=True)
+>           assert result.returncode == 0, result.stderr
+E           AssertionError: Traceback (most recent call last):
+E               File "/work/pytest-packaging/test_variant_package_entries_a1/recovery_entry.py", line 22, in <module>
+E                 imported = importlib.import_module(module)
+E                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+E                 return _bootstrap._gcd_import(name[level:], package, level)
+E                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+E               File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+E               File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+E               File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+E               File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+E               File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+E               File "/work/pytest-packaging/test_variant_package_entries_a1/common/recovery_minimal.py", line 12, in <module>
+E                 from recovery_engine import absolute, canonical, check_pin, load, pin, require, utc, write
+E               File "/work/pytest-packaging/test_variant_package_entries_a1/common/recovery_engine.py", line 17, in <module>
+E                 import jsonschema
+E             ModuleNotFoundError: No module named 'jsonschema'
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/usr/local/bin/python', '/work/pytest-packaging/test_variant_package_entries_a1/recovery_entry...covery_engine.py", line 17, in <module>\n    import jsonschema\nModuleNotFoundError: No module named \'jsonschema\'\n').returncode
+
+scripts/tests/test_backup_variants.py:119: AssertionError
+_ test_packaged_replacement_preparation_matches_its_actual_file_engine[standard] _
+
+packages = PosixPath('/work/pytest-packaging/variants0/packages')
+tmp_path = PosixPath('/work/pytest-packaging/test_packaged_replacement_prep0')
+variant = 'standard'
+
+    @pytest.mark.parametrize('variant', builder.VARIANTS)
+    def test_packaged_replacement_preparation_matches_its_actual_file_engine(packages, tmp_path, variant):
+        """Exercise the shipped caller and file engine, including real local removal."""
+        with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
+            archive.extractall(tmp_path/'package', filter='data')
+        program = r'''
+    import ast,json,sys
+    from pathlib import Path
+    from types import SimpleNamespace
+    sys.path.insert(0,sys.argv[1])
+    import recovery_replace as replace
+    root=Path(sys.argv[2]);root.mkdir()
+    (root/'old-attachment').write_bytes(b'existing local component fixture')
+    work=root.parent/'work';work.mkdir()
+    calls=[]
+    class Mysql:
+     def query(self,statement,**kwargs):
+      calls.append({'sql':statement,'mutation':kwargs.get('mutation',False)})
+      return '1' if statement=='SELECT @@GLOBAL.log_bin;' else ''
+    native=SimpleNamespace(root=work,original={'targetConfigRef':'component-target'},
+     config={'database':'component_test','application':{'startOrder':['backend','frontend']},
+             'redisRebuild':{'database':0},'redisClientPath':'redis-cli'},
+     config_services={r:{'id':r} for r in ('backend','frontend','minio','redis')},
+     policy={'minioDataMount':'/data'},mysql=Mysql(),guard=lambda:None,
+     docker=lambda *a,**k:b'',secret=lambda *a:'component-secret',mutation_dispatched=False)
+    replace.verify_services=lambda *a:None
+    replace.prepare(native,{'databaseUuid':'component-db',
+     'services':{'minio':{'id':'minio','mounts':[{'Destination':'/data','RW':True,'Source':str(root)}]}}})
+    assert not list(root.iterdir())
+    assert json.loads((work/'replacement-prepared.json').read_text())['state']=='PREPARED'
+    drop=next(c for c in calls if c['sql'].startswith('DROP DATABASE'))
+    assert drop['mutation'] is True,'Destructive SQL must be recorded as a mutation'
+    # Exercise the shipped nested query wrapper itself, rather than only a stub.
+    tree=ast.parse((Path(sys.argv[1])/'recovery_minimal_runtime.py').read_text())
+    bound=next(n for n in ast.walk(tree) if isinstance(n,ast.ClassDef) and n.name=='BoundMySql')
+    query=next(n for n in bound.body if isinstance(n,ast.FunctionDef) and n.name=='query')
+    recorded=[]
+    native=SimpleNamespace(db_container='component-db',policy={'environmentMysqlClientPath':'/usr/bin/mysql'},
+     docker=lambda args,**kwargs:recorded.append(kwargs) or b'query-result')
+    scope={'native':native}
+    exec(compile(ast.Module(body=[query],type_ignores=[]),'shipped-query-wrapper','exec'),scope)
+    assert scope['query'](None,'DROP DATABASE `component_test`;',mutation=True)=='query-result'
+    assert recorded==[{'mutation':True}]
+    print(json.dumps({'prepared':True,'destructiveSqlTracked':True}))
+    '''
+        result=subprocess.run([sys.executable,'-c',program,str(tmp_path/'package/common'),str(tmp_path/'data')],
+                              capture_output=True,text=True)
+>       assert result.returncode==0,result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<string>", line 6, in <module>
+E           File "/work/pytest-packaging/test_packaged_replacement_prep0/package/common/recovery_replace.py", line 8, in <module>
+E             from recovery_engine import absolute, load, require, utc, write
+E           File "/work/pytest-packaging/test_packaged_replacement_prep0/package/common/recovery_engine.py", line 17, in <module>
+E             import jsonschema
+E         ModuleNotFoundError: No module named 'jsonschema'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/usr/local/bin/python', '-c', "\nimport ast,json,sys\nfrom pathlib import Path\nfrom types imp...covery_engine.py", line 17, in <module>\n    import jsonschema\nModuleNotFoundError: No module named \'jsonschema\'\n').returncode
+
+scripts/tests/test_backup_variants.py:177: AssertionError
+_ test_packaged_replacement_preparation_matches_its_actual_file_engine[lightweight] _
+
+packages = PosixPath('/work/pytest-packaging/variants0/packages')
+tmp_path = PosixPath('/work/pytest-packaging/test_packaged_replacement_prep1')
+variant = 'lightweight'
+
+    @pytest.mark.parametrize('variant', builder.VARIANTS)
+    def test_packaged_replacement_preparation_matches_its_actual_file_engine(packages, tmp_path, variant):
+        """Exercise the shipped caller and file engine, including real local removal."""
+        with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
+            archive.extractall(tmp_path/'package', filter='data')
+        program = r'''
+    import ast,json,sys
+    from pathlib import Path
+    from types import SimpleNamespace
+    sys.path.insert(0,sys.argv[1])
+    import recovery_replace as replace
+    root=Path(sys.argv[2]);root.mkdir()
+    (root/'old-attachment').write_bytes(b'existing local component fixture')
+    work=root.parent/'work';work.mkdir()
+    calls=[]
+    class Mysql:
+     def query(self,statement,**kwargs):
+      calls.append({'sql':statement,'mutation':kwargs.get('mutation',False)})
+      return '1' if statement=='SELECT @@GLOBAL.log_bin;' else ''
+    native=SimpleNamespace(root=work,original={'targetConfigRef':'component-target'},
+     config={'database':'component_test','application':{'startOrder':['backend','frontend']},
+             'redisRebuild':{'database':0},'redisClientPath':'redis-cli'},
+     config_services={r:{'id':r} for r in ('backend','frontend','minio','redis')},
+     policy={'minioDataMount':'/data'},mysql=Mysql(),guard=lambda:None,
+     docker=lambda *a,**k:b'',secret=lambda *a:'component-secret',mutation_dispatched=False)
+    replace.verify_services=lambda *a:None
+    replace.prepare(native,{'databaseUuid':'component-db',
+     'services':{'minio':{'id':'minio','mounts':[{'Destination':'/data','RW':True,'Source':str(root)}]}}})
+    assert not list(root.iterdir())
+    assert json.loads((work/'replacement-prepared.json').read_text())['state']=='PREPARED'
+    drop=next(c for c in calls if c['sql'].startswith('DROP DATABASE'))
+    assert drop['mutation'] is True,'Destructive SQL must be recorded as a mutation'
+    # Exercise the shipped nested query wrapper itself, rather than only a stub.
+    tree=ast.parse((Path(sys.argv[1])/'recovery_minimal_runtime.py').read_text())
+    bound=next(n for n in ast.walk(tree) if isinstance(n,ast.ClassDef) and n.name=='BoundMySql')
+    query=next(n for n in bound.body if isinstance(n,ast.FunctionDef) and n.name=='query')
+    recorded=[]
+    native=SimpleNamespace(db_container='component-db',policy={'environmentMysqlClientPath':'/usr/bin/mysql'},
+     docker=lambda args,**kwargs:recorded.append(kwargs) or b'query-result')
+    scope={'native':native}
+    exec(compile(ast.Module(body=[query],type_ignores=[]),'shipped-query-wrapper','exec'),scope)
+    assert scope['query'](None,'DROP DATABASE `component_test`;',mutation=True)=='query-result'
+    assert recorded==[{'mutation':True}]
+    print(json.dumps({'prepared':True,'destructiveSqlTracked':True}))
+    '''
+        result=subprocess.run([sys.executable,'-c',program,str(tmp_path/'package/common'),str(tmp_path/'data')],
+                              capture_output=True,text=True)
+>       assert result.returncode==0,result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<string>", line 6, in <module>
+E           File "/work/pytest-packaging/test_packaged_replacement_prep1/package/common/recovery_replace.py", line 8, in <module>
+E             from recovery_engine import absolute, load, require, utc, write
+E           File "/work/pytest-packaging/test_packaged_replacement_prep1/package/common/recovery_engine.py", line 17, in <module>
+E             import jsonschema
+E         ModuleNotFoundError: No module named 'jsonschema'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/usr/local/bin/python', '-c', "\nimport ast,json,sys\nfrom pathlib import Path\nfrom types imp...covery_engine.py", line 17, in <module>\n    import jsonschema\nModuleNotFoundError: No module named \'jsonschema\'\n').returncode
+
+scripts/tests/test_backup_variants.py:177: AssertionError
+_ test_packaged_data_limits_reject_invalid_budget_before_target_access[standard] _
+
+packages = PosixPath('/work/pytest-packaging/variants0/packages')
+tmp_path = PosixPath('/work/pytest-packaging/test_packaged_data_limits_reje0')
+variant = 'standard'
+
+    @pytest.mark.parametrize('variant', builder.VARIANTS)
+    def test_packaged_data_limits_reject_invalid_budget_before_target_access(packages, tmp_path, variant):
+        """Use shipped constructor and formal validator before any native I/O."""
+        with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
+            archive.extractall(tmp_path/'package', filter='data')
+        program = r'''
+    import sys
+    from pathlib import Path
+    from types import SimpleNamespace
+    sys.path[:0]=[sys.argv[1]+'/common',sys.argv[1]+'/formal']
+    import recovery_minimal_runtime as runtime
+    runtime.os=SimpleNamespace(name='posix')
+    class TargetBoundary(Exception):pass
+    class Target(dict):
+     def __getitem__(self,key):
+      if key=='services':raise TargetBoundary('target access after budget validation')
+      return super().__getitem__(key)
+    target=Target(dataPolicy={'businessInvariants':[]})
+    configuration={'environmentMysqlClientPath':'/usr/bin/mysql','maxExpandedBytes':64*1024**3,
+     'formalModuleDirectory':sys.argv[1]+'/formal','deadlineMilliseconds':7200000}
+    chain=[(None,None,{'recoveryPoint':'component-point','objects':{'method':'PHYSICAL_FILES'}},None)]
+    for size,expected in [(64*1024**3,'FORMAL_DATA_LIMITS_REQUIRED'),(16*1024**3,'VALID')]:
+     configuration['dataLimits']={'max_rows':10000000,'max_nodes':100000000,'max_bytes':size,'seconds':7200}
+     try:
+      runtime.MinimalData(configuration,{'operationId':'component'},None,{},chain,target,Path(sys.argv[2]),[])
+     except TargetBoundary:
+      assert expected=='VALID','Invalid budget reached target access before formal validation'
+     except Exception as error:
+      assert expected!='VALID' and getattr(error,'code',str(error))=='FORMAL_DATA_LIMITS_REQUIRED',repr(error)
+     else:raise AssertionError('Expected constructor boundary')
+    print('invalid budget rejected early; independent 64GiB SQL and 16GiB data limits accepted')
+    '''
+        result=subprocess.run([sys.executable,'-c',program,str(tmp_path/'package'),str(tmp_path/'work')],
+                              capture_output=True,text=True)
+>       assert result.returncode==0,result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<string>", line 6, in <module>
+E           File "/work/pytest-packaging/test_packaged_data_limits_reje0/package/common/recovery_minimal_runtime.py", line 14, in <module>
+E             from recovery_data import NativeData
+E           File "/work/pytest-packaging/test_packaged_data_limits_reje0/package/common/recovery_data.py", line 23, in <module>
+E             from recovery_engine import (Budget, RecoveryError, absolute, authorities, canonical, check_pin,
+E           File "/work/pytest-packaging/test_packaged_data_limits_reje0/package/common/recovery_engine.py", line 17, in <module>
+E             import jsonschema
+E         ModuleNotFoundError: No module named 'jsonschema'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/usr/local/bin/python', '-c', "\nimport sys\nfrom pathlib import Path\nfrom types import Simpl...covery_engine.py", line 17, in <module>\n    import jsonschema\nModuleNotFoundError: No module named \'jsonschema\'\n').returncode
+
+scripts/tests/test_backup_variants.py:214: AssertionError
+_ test_packaged_data_limits_reject_invalid_budget_before_target_access[lightweight] _
+
+packages = PosixPath('/work/pytest-packaging/variants0/packages')
+tmp_path = PosixPath('/work/pytest-packaging/test_packaged_data_limits_reje1')
+variant = 'lightweight'
+
+    @pytest.mark.parametrize('variant', builder.VARIANTS)
+    def test_packaged_data_limits_reject_invalid_budget_before_target_access(packages, tmp_path, variant):
+        """Use shipped constructor and formal validator before any native I/O."""
+        with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
+            archive.extractall(tmp_path/'package', filter='data')
+        program = r'''
+    import sys
+    from pathlib import Path
+    from types import SimpleNamespace
+    sys.path[:0]=[sys.argv[1]+'/common',sys.argv[1]+'/formal']
+    import recovery_minimal_runtime as runtime
+    runtime.os=SimpleNamespace(name='posix')
+    class TargetBoundary(Exception):pass
+    class Target(dict):
+     def __getitem__(self,key):
+      if key=='services':raise TargetBoundary('target access after budget validation')
+      return super().__getitem__(key)
+    target=Target(dataPolicy={'businessInvariants':[]})
+    configuration={'environmentMysqlClientPath':'/usr/bin/mysql','maxExpandedBytes':64*1024**3,
+     'formalModuleDirectory':sys.argv[1]+'/formal','deadlineMilliseconds':7200000}
+    chain=[(None,None,{'recoveryPoint':'component-point','objects':{'method':'PHYSICAL_FILES'}},None)]
+    for size,expected in [(64*1024**3,'FORMAL_DATA_LIMITS_REQUIRED'),(16*1024**3,'VALID')]:
+     configuration['dataLimits']={'max_rows':10000000,'max_nodes':100000000,'max_bytes':size,'seconds':7200}
+     try:
+      runtime.MinimalData(configuration,{'operationId':'component'},None,{},chain,target,Path(sys.argv[2]),[])
+     except TargetBoundary:
+      assert expected=='VALID','Invalid budget reached target access before formal validation'
+     except Exception as error:
+      assert expected!='VALID' and getattr(error,'code',str(error))=='FORMAL_DATA_LIMITS_REQUIRED',repr(error)
+     else:raise AssertionError('Expected constructor boundary')
+    print('invalid budget rejected early; independent 64GiB SQL and 16GiB data limits accepted')
+    '''
+        result=subprocess.run([sys.executable,'-c',program,str(tmp_path/'package'),str(tmp_path/'work')],
+                              capture_output=True,text=True)
+>       assert result.returncode==0,result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<string>", line 6, in <module>
+E           File "/work/pytest-packaging/test_packaged_data_limits_reje1/package/common/recovery_minimal_runtime.py", line 14, in <module>
+E             from recovery_data import NativeData
+E           File "/work/pytest-packaging/test_packaged_data_limits_reje1/package/common/recovery_data.py", line 23, in <module>
+E             from recovery_engine import (Budget, RecoveryError, absolute, authorities, canonical, check_pin,
+E           File "/work/pytest-packaging/test_packaged_data_limits_reje1/package/common/recovery_engine.py", line 17, in <module>
+E             import jsonschema
+E         ModuleNotFoundError: No module named 'jsonschema'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/usr/local/bin/python', '-c', "\nimport sys\nfrom pathlib import Path\nfrom types import Simpl...covery_engine.py", line 17, in <module>\n    import jsonschema\nModuleNotFoundError: No module named \'jsonschema\'\n').returncode
+
+scripts/tests/test_backup_variants.py:214: AssertionError
+=========================== short test summary info ============================
+FAILED scripts/tests/test_backup_variants.py::test_variant_package_entries_and_real_file_manifest[standard]
+FAILED scripts/tests/test_backup_variants.py::test_variant_package_entries_and_real_file_manifest[lightweight]
+FAILED scripts/tests/test_backup_variants.py::test_packaged_replacement_preparation_matches_its_actual_file_engine[standard]
+FAILED scripts/tests/test_backup_variants.py::test_packaged_replacement_preparation_matches_its_actual_file_engine[lightweight]
+FAILED scripts/tests/test_backup_variants.py::test_packaged_data_limits_reject_invalid_budget_before_target_access[standard]
+FAILED scripts/tests/test_backup_variants.py::test_packaged_data_limits_reject_invalid_budget_before_target_access[lightweight]
+6 failed, 9 passed in 3.47s

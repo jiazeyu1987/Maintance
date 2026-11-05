@@ -1,0 +1,33 @@
+.....F......                                                             [100%]
+=================================== FAILURES ===================================
+_ MainContractTests.test_dynamic_attachment_published_host_endpoint_stays_bound _
+
+self = <test_main_restore_target.MainContractTests testMethod=test_dynamic_attachment_published_host_endpoint_stays_bound>
+
+    def test_dynamic_attachment_published_host_endpoint_stays_bound(self):
+        row, dynamic, _ = self.dynamic_attachment()
+        self.native.config_services['frontend']['ip'] = '127.0.0.1'
+        row['HostConfig']['PortBindings'] = {'80/tcp': [{'HostIp': '172.30.30.59', 'HostPort': '38081'}]}
+        self.target['mainApplication']['serviceConfigurationDigests']['frontend'] = main.service_configuration_digest(row)
+        dynamic['IPAddress'] = ''
+>       main.verify_runtime(self.native)
+
+scripts/tests/test_main_restore_target.py:271: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ops/recovery/recovery_main_target.py:297: in verify_runtime
+    verify_network_attachments(native, role, row, value['networkAttachments'][role])
+ops/recovery/recovery_main_target.py:104: in verify_network_attachments
+    require(attachment == expected[name] or _dynamic_application_attachment(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False, code = 'MAIN_SERVICE_NETWORK_CHANGED'
+
+    def require(condition, code):
+        if not condition:
+>           raise RecoveryError(code)
+E           recovery_engine.RecoveryError: MAIN_SERVICE_NETWORK_CHANGED
+
+ops/recovery/recovery_engine.py:64: RecoveryError
+=========================== short test summary info ============================
+FAILED scripts/tests/test_main_restore_target.py::MainContractTests::test_dynamic_attachment_published_host_endpoint_stays_bound
+1 failed, 11 passed, 29 deselected in 0.48s

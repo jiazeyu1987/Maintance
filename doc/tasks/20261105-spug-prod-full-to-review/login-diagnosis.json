@@ -1,0 +1,254 @@
+{
+  "observedAt": "2026-11-05T13:11:41.250Z",
+  "responses": [
+    {
+      "path": "/login",
+      "status": 200
+    },
+    {
+      "path": "/assets/index-DBJDcJcw.css",
+      "status": 200
+    },
+    {
+      "path": "/logo.gif",
+      "status": 200
+    },
+    {
+      "path": "/assets/form-create-DFueAp1s.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/index-DpUr6TwI.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/form-designer-CSM2EVF4.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/zh-CN-CQsbDD8N.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/XButton-CepQobyT.css",
+      "status": 200
+    },
+    {
+      "path": "/assets/LoginForm-C54s86JL.css",
+      "status": 200
+    },
+    {
+      "path": "/assets/MobileForm-D1mbugjk.css",
+      "status": 200
+    },
+    {
+      "path": "/assets/Login-B1OK8vwT.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/LoginForm-uWE8Oin2.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/XButton-2iSlpuKN.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/LoginFormTitle.vue_vue_type_script_setup_true_lang-uxCVX1c6.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/RegisterForm-BOTDA55w.css",
+      "status": 200
+    },
+    {
+      "path": "/assets/InputPassword-CRqODEyh.css",
+      "status": 200
+    },
+    {
+      "path": "/assets/Qrcode-LchQXjd0.css",
+      "status": 200
+    },
+    {
+      "path": "/assets/ForgetPasswordForm-BiNcxcgh.css",
+      "status": 200
+    },
+    {
+      "path": "/assets/Verify-6k5ori_o.css",
+      "status": 200
+    },
+    {
+      "path": "/assets/Login-DN81tVbP.css",
+      "status": 200
+    },
+    {
+      "path": "/assets/useIcon-DieQDGAJ.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/index-DL6I_m4u.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/formRules-iIqI1Ylk.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/systemPasswordPolicy-Dn2XkP5G.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/MobileForm-BYLRFhfB.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/RegisterForm-kyG45OLD.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/QrCodeForm.vue_vue_type_script_setup_true_lang-Bhg3GtL2.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/logo-BQ7vnXGl.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/Verify-DPOOIt4I.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/Qrcode-CCbZ11PD.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/browser-BPaJHl0c.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/ForgetPasswordForm-B3wXj4Eu.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/SSOLogin.vue_vue_type_script_setup_true_lang-v6zY2DEn.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/InputPassword-Be8gdfnL.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/login-interventional-medical-bg-BxFtQMHk.png",
+      "status": 200
+    },
+    {
+      "path": "/hm.js",
+      "status": 200
+    },
+    {
+      "path": "/admin-api/system/tenant/simple-list",
+      "status": 200
+    },
+    {
+      "path": "/admin-api/system/tenant/get-by-website",
+      "status": 200
+    },
+    {
+      "path": "/admin-api/system/tenant/get-by-website",
+      "status": 200
+    },
+    {
+      "path": "/hm.gif",
+      "status": 200
+    },
+    {
+      "path": "/admin-api/system/captcha/get",
+      "status": 200
+    },
+    {
+      "path": "/admin-api/system/captcha/get",
+      "status": 200
+    },
+    {
+      "path": "/hm.gif",
+      "status": 200
+    }
+  ],
+  "requestFailures": [],
+  "pageErrors": [],
+  "events": [],
+  "httpStatus": 200,
+  "url": "http://172.30.30.59:38081/login?redirect=/index",
+  "bodyCount": 1,
+  "formCount": 0,
+  "inputs": [
+    {
+      "type": "text",
+      "placeholder": ""
+    },
+    {
+      "type": "text",
+      "placeholder": "请输入用户名"
+    },
+    {
+      "type": "password",
+      "placeholder": "请输入密码"
+    },
+    {
+      "type": "checkbox",
+      "placeholder": ""
+    },
+    {
+      "type": "text",
+      "placeholder": "请输入租户名称"
+    },
+    {
+      "type": "text",
+      "placeholder": "请输入手机号码"
+    },
+    {
+      "type": "text",
+      "placeholder": "请输入验证码"
+    },
+    {
+      "type": "text",
+      "placeholder": "租户名称"
+    },
+    {
+      "type": "text",
+      "placeholder": "用户名"
+    },
+    {
+      "type": "text",
+      "placeholder": "昵称"
+    },
+    {
+      "type": "password",
+      "placeholder": "密码"
+    },
+    {
+      "type": "password",
+      "placeholder": "确认密码"
+    },
+    {
+      "type": "text",
+      "placeholder": "请输入租户名称"
+    },
+    {
+      "type": "text",
+      "placeholder": "请输入手机号码"
+    },
+    {
+      "type": "text",
+      "placeholder": "请输入验证码"
+    },
+    {
+      "type": "password",
+      "placeholder": "请输入密码"
+    },
+    {
+      "type": "password",
+      "placeholder": "确认密码"
+    }
+  ]
+}

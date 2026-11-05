@@ -1,0 +1,28 @@
+F...........F                                                            [100%]
+=================================== FAILURES ===================================
+_ test_explicit_before_mutation_clearance_preserves_originals_and_binds_one_point _
+
+before_mutation_case = (<module 'recovery_retained_retry' from '/source/ops/recovery/recovery_retained_retry.py'>, <module 'recovery_resource...re_mutation_0/operations/failed-1'), PosixPath('/work/pytest-red/test_explicit_before_mutation_0/state/failed-1'), ...)
+
+    def test_explicit_before_mutation_clearance_preserves_originals_and_binds_one_point(before_mutation_case):
+        retry,resource,config,request,root,claim,host=before_mutation_case
+        originals={p:p.read_bytes() for p in (*root.rglob('*.json'),claim/'replacement-result.json')}
+>       result=retry.authorize(config,request,root,'Explicit same point restore with no target writes',885,no_mutation=True)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: authorize() got an unexpected keyword argument 'no_mutation'
+
+scripts/tests/test_retained_replacement_retry.py:197: TypeError
+__________ test_before_mutation_clearance_stays_bound_to_release_pin ___________
+
+before_mutation_case = (<module 'recovery_retained_retry' from '/source/ops/recovery/recovery_retained_retry.py'>, <module 'recovery_resource..._clearance10/operations/failed-1'), PosixPath('/work/pytest-red/test_before_mutation_clearance10/state/failed-1'), ...)
+
+    def test_before_mutation_clearance_stays_bound_to_release_pin(before_mutation_case):
+        retry,resource,config,request,root,claim,host=before_mutation_case
+>       retry.authorize(config,request,root,'Explicit same point restore with no target writes',885,no_mutation=True)
+E       TypeError: authorize() got an unexpected keyword argument 'no_mutation'
+
+scripts/tests/test_retained_replacement_retry.py:243: TypeError
+=========================== short test summary info ============================
+FAILED scripts/tests/test_retained_replacement_retry.py::test_explicit_before_mutation_clearance_preserves_originals_and_binds_one_point
+FAILED scripts/tests/test_retained_replacement_retry.py::test_before_mutation_clearance_stays_bound_to_release_pin
+2 failed, 11 passed, 15 deselected in 115.38s (0:01:55)

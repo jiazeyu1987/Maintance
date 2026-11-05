@@ -1,0 +1,18 @@
+{
+  "consumed": true,
+  "receipt": {
+    "clearancePin": {
+      "bytes": 2820,
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-356db3eb15e0441587efcf1c67db5652/recovery-clearance.json",
+      "sha256": "5a03fb175d54d479195142e633319e91249fb57a7691de0e32c47df801fbede1"
+    },
+    "consumedAt": "2026-11-05T14:05:12.144519Z",
+    "replacementOperationId": "smallapp-01a41639afc24594ad81d1f644d41354",
+    "schemaVersion": "RetainedReplacementConsumption/v1"
+  },
+  "pin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-356db3eb15e0441587efcf1c67db5652/recovery-consumption.json",
+    "bytes": 413,
+    "sha256": "1dc4aad20e28e5fce10c2eb20b184637a7b6c5f814673b8c74ec0e4d51e2e476"
+  }
+}

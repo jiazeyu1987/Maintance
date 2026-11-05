@@ -1,0 +1,36 @@
+{
+  "observedAt": "2026-11-05T18:45:54.131652+00:00",
+  "status": "PASS",
+  "operationId": "smallapp-a63174ccdf0c42f187f182e172653759",
+  "nativeExitCode": 0,
+  "realSpugSubmissionCount": 1,
+  "realBusinessLoginVerified": true,
+  "sourcePreserved": true,
+  "otherBusinessPreserved": true,
+  "ownedBuilds": [
+    {
+      "worktree": "C:\\Spug\\runtime\\private\\prod-full-to-review-20261105\\release-aab0b3f",
+      "targetCommit": "aab0b3f7bcb93b1cf144793c271df15bbae2c0f9",
+      "physicalAndGitRegistrationAbsent": true
+    },
+    {
+      "worktree": "C:\\Spug\\runtime\\private\\prod-full-to-review-20261105\\release-288d4c3",
+      "targetCommit": "288d4c39f435592cf4bb5bebfa54a8063dbdecf4",
+      "physicalAndGitRegistrationAbsent": true
+    },
+    {
+      "worktree": "C:\\Spug\\runtime\\private\\prod-full-to-review-20261105\\release-76bb60b",
+      "targetCommit": "76bb60bd1fe7bc0c5ee771483b02d6c29e8fcf10",
+      "physicalAndGitRegistrationAbsent": true
+    },
+    {
+      "worktree": "C:\\Spug\\runtime\\private\\prod-full-to-review-20261105\\release-f819fbe",
+      "targetCommit": "f819fbedd4dbd389044560d54b215f99a4d59f81",
+      "physicalAndGitRegistrationAbsent": true
+    }
+  ],
+  "ownedTestContainersAndVolumesAbsent": true,
+  "stableRuntimeVerified": true,
+  "originalLocalFailureFilesUnchanged": 28,
+  "developmentWorktreeRetainedForSeparateBlockedTargetTask": true
+}

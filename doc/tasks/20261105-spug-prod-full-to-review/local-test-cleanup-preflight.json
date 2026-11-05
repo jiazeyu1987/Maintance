@@ -1,0 +1,8 @@
+{
+  "container": "spug-review-retry-unit-20261105",
+  "containerId": "def2013e574e274a7fff61ae184166f32c2045b7e6ba2b74ca3d464b513f1021",
+  "volume": "spug-review-retry-unit-20261105",
+  "taskLabelsMatch": true,
+  "onlySleepKeeper": true,
+  "volumeReferencesOnlyOwnedContainer": true
+}

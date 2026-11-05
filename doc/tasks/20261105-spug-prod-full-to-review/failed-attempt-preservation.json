@@ -1,0 +1,57 @@
+{
+  "operationId": "smallapp-356db3eb15e0441587efcf1c67db5652",
+  "state": "FAILED",
+  "pins": [
+    {
+      "path": "restore-attempt-1/restore-ui-submission.json",
+      "bytes": 426,
+      "sha256": "5a96a34427515f1ffc1ff79eed70a824a3f19ff772efd33a141faf3df1d161c5"
+    },
+    {
+      "path": "restore-attempt-1/restore-ui-result.json",
+      "bytes": 2010,
+      "sha256": "cc490e03bca716f78866c627e53de3b5a755e4843143d64a843b026248376b3c"
+    },
+    {
+      "path": "restore-attempt-1/restore-ui-confirm.png",
+      "bytes": 137882,
+      "sha256": "54e3f32cb2e20a7d79e764b93f0a2261d6abe0ee82cec72d3a7b2f4ffd5cb46f"
+    },
+    {
+      "path": "restore-attempt-1/restore-terminal-record.json",
+      "bytes": 1149,
+      "sha256": "95fd731ad07df2fc2be2220e622ad51627e9b6d7ccc373ab798e76bbc8212265"
+    },
+    {
+      "path": "restore-attempt-1/restore-live-progress.json",
+      "bytes": 475,
+      "sha256": "3dd1ed70100f45215c06fab3322551b81cd3bf8809191df7c6dc42b115ddee21"
+    },
+    {
+      "path": "restore-attempt-1/restore-native-progress.json",
+      "bytes": 2339,
+      "sha256": "f6538411fae57906ac6ee65c596f489667ecec80ba0356ada4f0cf12c191cb8b"
+    },
+    {
+      "path": "restore-attempt-1/restore-ui-terminal.png",
+      "bytes": 61015,
+      "sha256": "d3287c2b26681bf524ebe80f99ce7567f518364cefcfd344b46b00f8b729d1d1"
+    },
+    {
+      "path": "restore-attempt-1/spug-post-timeout-record.json",
+      "bytes": 718,
+      "sha256": "a6c5cd7d9c99e543519511dbc9374315d708b0da784bdb2d6258f3f02a7f38c6"
+    },
+    {
+      "path": "restore-attempt-1/original-query-diagnosis.json",
+      "bytes": 1577,
+      "sha256": "777afb62b21ebbeb93bce2363720b9c0a47a91398d9c5a17f95f0a71f23fbcd0"
+    },
+    {
+      "path": "restore-attempt-1/initial-archive-reader.json",
+      "bytes": 386,
+      "sha256": "fda8262d4ce2134b0558d6ff207e43e62fdad0f135f86bc86771c1e09d1b6912"
+    }
+  ],
+  "remoteHistoryUnchanged": true
+}

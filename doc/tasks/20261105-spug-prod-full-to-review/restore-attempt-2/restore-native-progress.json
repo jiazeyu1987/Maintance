@@ -1,0 +1,76 @@
+{
+  "observedAt": "2026-11-05T14:22:18.237290+00:00",
+  "operationId": "smallapp-01a41639afc24594ad81d1f644d41354",
+  "ledgerFiles": [
+    "request.json",
+    "worker-stdout",
+    "intent.json",
+    "restore-target-before.json",
+    "worker-terminal.json",
+    "selection.json",
+    "completion.json",
+    "worker-stderr",
+    "execute",
+    "worker-process.json"
+  ],
+  "processes": [],
+  "evidenceFiles": [
+    {
+      "path": "result.json",
+      "bytes": 1991
+    },
+    {
+      "path": "worker-result.json",
+      "bytes": 569
+    }
+  ],
+  "worker-terminal.json": {
+    "actualExitCode": 1,
+    "operationId": "smallapp-01a41639afc24594ad81d1f644d41354",
+    "pid": 7406,
+    "stderrPin": {
+      "bytes": 0,
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-01a41639afc24594ad81d1f644d41354/worker-stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdoutPin": {
+      "bytes": 0,
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-01a41639afc24594ad81d1f644d41354/worker-stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "uiRequestSha256": "609030415cf8686d641555131ba580fc5ff1af8081333e4c9c25b530fc7baf2b"
+  },
+  "nativeTimings": [],
+  "services": [
+    {
+      "id": "4376cb8d12c95ec485589b2fc8edabed3d9c631fcd52f715c4b2800f1b4cde8e",
+      "running": true,
+      "pid": 8686,
+      "startedAt": "2026-11-05T12:07:09.074764239Z"
+    },
+    {
+      "id": "eb40cfe31e8046cf281c33d1a9b7cc50a2ecd30cb2b5a51d4248dce5f20b38d7",
+      "running": true,
+      "pid": 9007,
+      "startedAt": "2026-11-05T12:07:11.411483491Z"
+    },
+    {
+      "id": "99d136c09a948643f5f4bb7ff6fb1f0402cd856dc5aeebe91e5baf289dbd3e48",
+      "running": true,
+      "pid": 8875,
+      "startedAt": "2026-11-05T12:07:09.972626249Z"
+    },
+    {
+      "id": "285244884c5e056ce1e37d073a9356c9dd34e9d97dc8ea3af07183b9929c79d8",
+      "running": true,
+      "pid": 12366,
+      "startedAt": "2026-11-05T12:09:06.074785807Z"
+    },
+    {
+      "id": "82b9982178e4ea002b25f8cce70b621e29f4af452df7be42d2efc699191ca193",
+      "running": true,
+      "pid": 10766,
+      "startedAt": "2026-11-05T01:29:03.629512684Z"
+    }
+  ]
+}

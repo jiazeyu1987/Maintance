@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "worktree": "C:\\Spug\\runtime\\private\\prod-full-to-review-20261105\\release-288d4c3",
+  "targetCommit": "288d4c39f435592cf4bb5bebfa54a8063dbdecf4",
+  "packageSha256": "f6262ec24f950702316bea96123738ea46de9a09a685b7c4672e7686aeb27002",
+  "fileManifestSha256": "ad38ff033a0a2b1a85b2897fb8473a423e4153bc9c92d2baf93b9dadfc16b4f7",
+  "fileCount": 122,
+  "allFilesShaAndCompileVerified": true,
+  "newCommits": false,
+  "mergeRequired": false,
+  "deleted": true,
+  "deletionCommand": "git worktree remove -- <exact task-owned path>",
+  "gitRegistrationAbsent": true
+}

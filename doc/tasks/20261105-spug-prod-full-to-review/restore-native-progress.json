@@ -1,0 +1,373 @@
+{
+  "observedAt": "2026-11-05T18:35:14.966701+00:00",
+  "operationId": "smallapp-a63174ccdf0c42f187f182e172653759",
+  "ledgerFiles": [
+    "request.json",
+    "worker-stdout",
+    "intent.json",
+    "restore-target-before.json",
+    "worker-terminal.json",
+    "selection.json",
+    "completion.json",
+    "worker-stderr",
+    "execute",
+    "worker-process.json"
+  ],
+  "processes": [],
+  "evidenceFiles": [
+    {
+      "path": "timing-restore-cleanup-end.json",
+      "bytes": 112
+    },
+    {
+      "path": "timing-restore-cleanup-start.json",
+      "bytes": 69
+    },
+    {
+      "path": "result.json",
+      "bytes": 318454
+    },
+    {
+      "path": "staging-cleanup-intent.json",
+      "bytes": 1213721
+    },
+    {
+      "path": "staging-cleanup.json",
+      "bytes": 1213771
+    },
+    {
+      "path": "worker-result.json",
+      "bytes": 316798
+    },
+    {
+      "path": "final/redis-dump-independent-readback.json",
+      "bytes": 571
+    },
+    {
+      "path": "final/timing-consistency-end.json",
+      "bytes": 107
+    },
+    {
+      "path": "final/consistency.json",
+      "bytes": 1511
+    },
+    {
+      "path": "final/timing-consistency-start.json",
+      "bytes": 65
+    },
+    {
+      "path": "database-000/result.json",
+      "bytes": 1170
+    },
+    {
+      "path": "database-000/timing-sql-readback-end.json",
+      "bytes": 109
+    },
+    {
+      "path": "database-000/database-comparison.json",
+      "bytes": 123480
+    },
+    {
+      "path": "database-000/timing-sql-readback-start.json",
+      "bytes": 66
+    },
+    {
+      "path": "objects/physical-step-000-intent.json",
+      "bytes": 1848635
+    },
+    {
+      "path": "objects/result.json",
+      "bytes": 1204
+    },
+    {
+      "path": "objects/physical-step-000-readback.json",
+      "bytes": 74
+    },
+    {
+      "path": "objects/physical-comparison.json",
+      "bytes": 1659
+    },
+    {
+      "path": "objects/physical-export/export-receipt.json",
+      "bytes": 431
+    }
+  ],
+  "worker-terminal.json": {
+    "actualExitCode": 0,
+    "operationId": "smallapp-a63174ccdf0c42f187f182e172653759",
+    "pid": 2186,
+    "stderrPin": {
+      "bytes": 0,
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-a63174ccdf0c42f187f182e172653759/worker-stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdoutPin": {
+      "bytes": 0,
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-a63174ccdf0c42f187f182e172653759/worker-stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "uiRequestSha256": "2dead6334bde42732251e628a5e76ef53773917118b28f0f99e58a12b43c8736"
+  },
+  "nativeTimings": [
+    {
+      "path": "database-000/timing-database-restore-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 2382.862,
+        "finishedAt": "2026-11-05T17:47:34.251886Z",
+        "stage": "database-restore"
+      }
+    },
+    {
+      "path": "database-000/timing-database-restore-start.json",
+      "value": {
+        "stage": "database-restore",
+        "startedAt": "2026-11-05T17:07:51.389866Z"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-expand-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 236.348,
+        "finishedAt": "2026-11-05T17:13:36.379057Z",
+        "stage": "sql-expand"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-expand-start.json",
+      "value": {
+        "stage": "sql-expand",
+        "startedAt": "2026-11-05T17:09:40.030771Z"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-import-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 994.34,
+        "finishedAt": "2026-11-05T17:30:40.343353Z",
+        "stage": "sql-import"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-import-start.json",
+      "value": {
+        "stage": "sql-import",
+        "startedAt": "2026-11-05T17:14:06.003406Z"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-readback-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 1013.86,
+        "finishedAt": "2026-11-05T17:47:34.242691Z",
+        "stage": "sql-readback"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-readback-start.json",
+      "value": {
+        "stage": "sql-readback",
+        "startedAt": "2026-11-05T17:30:40.383059Z"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-stage-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 103.24,
+        "finishedAt": "2026-11-05T17:09:40.014211Z",
+        "stage": "sql-stage"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-stage-start.json",
+      "value": {
+        "stage": "sql-stage",
+        "startedAt": "2026-11-05T17:07:56.774430Z"
+      }
+    },
+    {
+      "path": "final/timing-application-start-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 248.258,
+        "finishedAt": "2026-11-05T18:22:50.175528Z",
+        "stage": "application-start"
+      }
+    },
+    {
+      "path": "final/timing-application-start-start.json",
+      "value": {
+        "stage": "application-start",
+        "startedAt": "2026-11-05T18:18:41.917323Z"
+      }
+    },
+    {
+      "path": "final/timing-archive-verification-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 545.086,
+        "finishedAt": "2026-11-05T18:31:55.270608Z",
+        "stage": "archive-verification"
+      }
+    },
+    {
+      "path": "final/timing-archive-verification-start.json",
+      "value": {
+        "stage": "archive-verification",
+        "startedAt": "2026-11-05T18:22:50.185142Z"
+      }
+    },
+    {
+      "path": "final/timing-consistency-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 80.525,
+        "finishedAt": "2026-11-05T18:18:19.976635Z",
+        "stage": "consistency"
+      }
+    },
+    {
+      "path": "final/timing-consistency-start.json",
+      "value": {
+        "stage": "consistency",
+        "startedAt": "2026-11-05T18:16:59.452024Z"
+      }
+    },
+    {
+      "path": "final/timing-redis-rebuild-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 21.895,
+        "finishedAt": "2026-11-05T18:18:41.899289Z",
+        "stage": "redis-rebuild"
+      }
+    },
+    {
+      "path": "final/timing-redis-rebuild-start.json",
+      "value": {
+        "stage": "redis-rebuild",
+        "startedAt": "2026-11-05T18:18:20.004403Z"
+      }
+    },
+    {
+      "path": "objects/timing-object-restore-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 1765.19,
+        "finishedAt": "2026-11-05T18:16:59.445284Z",
+        "stage": "object-restore"
+      }
+    },
+    {
+      "path": "objects/timing-object-restore-start.json",
+      "value": {
+        "stage": "object-restore",
+        "startedAt": "2026-11-05T17:47:34.255680Z"
+      }
+    },
+    {
+      "path": "replacement-preparation/timing-target-replacement-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 14.495,
+        "finishedAt": "2026-11-05T16:41:02.298302Z",
+        "stage": "target-replacement"
+      }
+    },
+    {
+      "path": "replacement-preparation/timing-target-replacement-start.json",
+      "value": {
+        "stage": "target-replacement",
+        "startedAt": "2026-11-05T16:40:47.803031Z"
+      }
+    },
+    {
+      "path": "timing-restore-admission-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 1602.927,
+        "finishedAt": "2026-11-05T17:07:45.231474Z",
+        "stage": "restore-admission"
+      }
+    },
+    {
+      "path": "timing-restore-admission-start.json",
+      "value": {
+        "stage": "restore-admission",
+        "startedAt": "2026-11-05T16:41:02.304118Z"
+      }
+    },
+    {
+      "path": "timing-restore-cleanup-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 166.457,
+        "finishedAt": "2026-11-05T18:34:41.762677Z",
+        "stage": "restore-cleanup"
+      }
+    },
+    {
+      "path": "timing-restore-cleanup-start.json",
+      "value": {
+        "stage": "restore-cleanup",
+        "startedAt": "2026-11-05T18:31:55.306127Z"
+      }
+    },
+    {
+      "path": "timing-target-checks-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 6.152,
+        "finishedAt": "2026-11-05T17:07:51.386855Z",
+        "stage": "target-checks"
+      }
+    },
+    {
+      "path": "timing-target-checks-start.json",
+      "value": {
+        "stage": "target-checks",
+        "startedAt": "2026-11-05T17:07:45.234807Z"
+      }
+    }
+  ],
+  "services": [
+    {
+      "id": "4376cb8d12c95ec485589b2fc8edabed3d9c631fcd52f715c4b2800f1b4cde8e",
+      "running": true,
+      "pid": 8686,
+      "startedAt": "2026-11-05T12:07:09.074764239Z"
+    },
+    {
+      "id": "eb40cfe31e8046cf281c33d1a9b7cc50a2ecd30cb2b5a51d4248dce5f20b38d7",
+      "running": true,
+      "pid": 3270,
+      "startedAt": "2026-11-05T18:06:11.880225547Z"
+    },
+    {
+      "id": "99d136c09a948643f5f4bb7ff6fb1f0402cd856dc5aeebe91e5baf289dbd3e48",
+      "running": true,
+      "pid": 8875,
+      "startedAt": "2026-11-05T12:07:09.972626249Z"
+    },
+    {
+      "id": "285244884c5e056ce1e37d073a9356c9dd34e9d97dc8ea3af07183b9929c79d8",
+      "running": true,
+      "pid": 23876,
+      "startedAt": "2026-11-05T18:18:53.914565167Z"
+    },
+    {
+      "id": "82b9982178e4ea002b25f8cce70b621e29f4af452df7be42d2efc699191ca193",
+      "running": true,
+      "pid": 779,
+      "startedAt": "2026-11-05T18:22:28.730735895Z"
+    }
+  ],
+  "readback": {
+    "tableDirectories": 0,
+    "tokenFiles": 0
+  }
+}

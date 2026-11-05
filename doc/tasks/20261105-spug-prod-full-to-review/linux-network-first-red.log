@@ -1,0 +1,83 @@
+..F.FF.....                                                              [100%]
+=================================== FAILURES ===================================
+___ MainContractTests.test_dynamic_attachment_empty_when_application_stopped ___
+
+self = <test_main_restore_target.MainContractTests testMethod=test_dynamic_attachment_empty_when_application_stopped>
+
+    def test_dynamic_attachment_empty_when_application_stopped(self):
+        _, dynamic, _ = self.dynamic_attachment()
+        dynamic['IPAddress'] = ''
+>       main.verify_runtime(self.native)
+
+scripts/tests/test_main_restore_target.py:246: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ops/recovery/recovery_main_target.py:232: in verify_runtime
+    require(network_attachments(row) == value['networkAttachments'][role], 'MAIN_SERVICE_NETWORK_CHANGED')
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False, code = 'MAIN_SERVICE_NETWORK_CHANGED'
+
+    def require(condition, code):
+        if not condition:
+>           raise RecoveryError(code)
+E           recovery_engine.RecoveryError: MAIN_SERVICE_NETWORK_CHANGED
+
+ops/recovery/recovery_engine.py:64: RecoveryError
+_ MainContractTests.test_dynamic_attachment_new_running_allocation_requires_network_proof _
+
+self = <test_main_restore_target.MainContractTests testMethod=test_dynamic_attachment_new_running_allocation_requires_network_proof>
+
+    def test_dynamic_attachment_new_running_allocation_requires_network_proof(self):
+        row, dynamic, network = self.dynamic_attachment()
+        row['State']['Running'] = True
+        self.native.running_applications.add('frontend')
+        self.network['Containers'][row['Id']] = {}
+        dynamic['IPAddress'] = '172.17.0.9'
+        network['Containers'][row['Id']] = {'IPv4Address': '172.17.0.9/16', 'IPv6Address': ''}
+>       main.verify_runtime(self.native)
+
+scripts/tests/test_main_restore_target.py:255: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ops/recovery/recovery_main_target.py:232: in verify_runtime
+    require(network_attachments(row) == value['networkAttachments'][role], 'MAIN_SERVICE_NETWORK_CHANGED')
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False, code = 'MAIN_SERVICE_NETWORK_CHANGED'
+
+    def require(condition, code):
+        if not condition:
+>           raise RecoveryError(code)
+E           recovery_engine.RecoveryError: MAIN_SERVICE_NETWORK_CHANGED
+
+ops/recovery/recovery_engine.py:64: RecoveryError
+_ MainContractTests.test_dynamic_attachment_published_loopback_endpoint_stays_bound _
+
+self = <test_main_restore_target.MainContractTests testMethod=test_dynamic_attachment_published_loopback_endpoint_stays_bound>
+
+    def test_dynamic_attachment_published_loopback_endpoint_stays_bound(self):
+        row, dynamic, _ = self.dynamic_attachment()
+        self.native.config_services['frontend']['ip'] = '127.0.0.1'
+        row['HostConfig']['PortBindings'] = {'80/tcp': [{'HostIp': '', 'HostPort': '38081'}]}
+        self.target['mainApplication']['serviceConfigurationDigests']['frontend'] = main.service_configuration_digest(row)
+        dynamic['IPAddress'] = ''
+>       main.verify_runtime(self.native)
+
+scripts/tests/test_main_restore_target.py:263: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ops/recovery/recovery_main_target.py:232: in verify_runtime
+    require(network_attachments(row) == value['networkAttachments'][role], 'MAIN_SERVICE_NETWORK_CHANGED')
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False, code = 'MAIN_SERVICE_NETWORK_CHANGED'
+
+    def require(condition, code):
+        if not condition:
+>           raise RecoveryError(code)
+E           recovery_engine.RecoveryError: MAIN_SERVICE_NETWORK_CHANGED
+
+ops/recovery/recovery_engine.py:64: RecoveryError
+=========================== short test summary info ============================
+FAILED scripts/tests/test_main_restore_target.py::MainContractTests::test_dynamic_attachment_empty_when_application_stopped
+FAILED scripts/tests/test_main_restore_target.py::MainContractTests::test_dynamic_attachment_new_running_allocation_requires_network_proof
+FAILED scripts/tests/test_main_restore_target.py::MainContractTests::test_dynamic_attachment_published_loopback_endpoint_stays_bound
+3 failed, 8 passed, 29 deselected in 1.07s

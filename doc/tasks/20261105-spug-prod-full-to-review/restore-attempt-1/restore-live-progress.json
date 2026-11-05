@@ -1,0 +1,13 @@
+{
+  "observedAt": "2026-11-05T13:33:01.070Z",
+  "operationId": "smallapp-356db3eb15e0441587efcf1c67db5652",
+  "state": "FAILED",
+  "errorCode": "ARCHIVE_LEASE_FD_BUDGET_EXCEEDED",
+  "spugHistoryId": 356,
+  "queryError": null,
+  "visible": "原操作失败",
+  "steps": "尚无步骤时间回执。",
+  "logs": "2026/11/5 21:32:40  原始执行结果：FAILED_RETAINED\n错误：尚未满足执行条件（ARCHIVE_LEASE_FD_BUDGET_EXCEEDED）",
+  "problem": "",
+  "writes": 0
+}

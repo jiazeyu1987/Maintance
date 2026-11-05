@@ -1,0 +1,17 @@
+{
+  "observedAt": "2026-11-05T18:35:40.447961+00:00",
+  "status": "PASS",
+  "operationId": "smallapp-a63174ccdf0c42f187f182e172653759",
+  "originalFiveContainersAndImagesPreserved": true,
+  "allOriginalConfigurationDigestsPreserved": true,
+  "otherBusinessRuntimePreserved": true,
+  "otherBusinessContainerCount": 196,
+  "controlActiveEnabled": true,
+  "controlPackageFileCount": 122,
+  "controlConfigurationPinsUnchanged": true,
+  "stableRuntimePaths": true,
+  "archiveReadOnly": true,
+  "fullPointPinUnchanged": true,
+  "hostReservationReleased": true,
+  "restoreOperationCount": 4
+}

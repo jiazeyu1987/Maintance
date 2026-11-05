@@ -1,0 +1,50 @@
+{
+  "observedAt": "2026-11-05T18:35:38.375670+00:00",
+  "status": "PASS",
+  "host": "172.30.30.57",
+  "originalFiveContainersImagesPidsAndStartTimesPreserved": true,
+  "backendHealth": "UP",
+  "frontendHTTP": 200,
+  "services": [
+    {
+      "role": "mysql",
+      "id": "9a288d20d254366e99b265b1870466e974edf23e7aab60de2391e3a38e62fff6",
+      "image": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+      "running": true,
+      "pid": 7463,
+      "startedAt": "2026-11-05T01:27:41.904047027Z"
+    },
+    {
+      "role": "minio",
+      "id": "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf",
+      "image": "sha256:c4260bcf2c25b683e4f6e6ed6474f12c5c28dc8e375bfe0ecea7a5d3fbecbc04",
+      "running": true,
+      "pid": 14772,
+      "startedAt": "2026-11-05T03:59:26.976417512Z"
+    },
+    {
+      "role": "redis",
+      "id": "5099e7bd566ec6a683e8842b84d8db9e41245708fce29e89309607d6a7e72653",
+      "image": "sha256:487efc0616382465781b8fdc3d6d1db449e6fd80ae23bf48432a2da6b6929908",
+      "running": true,
+      "pid": 7201,
+      "startedAt": "2026-11-05T01:27:41.832957773Z"
+    },
+    {
+      "role": "writer0",
+      "id": "c4385604eb83b44f2836755bad709581c7e7edd0078b148f3b0f74e0b567304c",
+      "image": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+      "running": true,
+      "pid": 5420,
+      "startedAt": "2026-11-05T04:07:50.464626789Z"
+    },
+    {
+      "role": "writer1",
+      "id": "1210f97cf7653c5f74a7981bf4d4bec8d7462af873d53695d47a59a7ce38a479",
+      "image": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a",
+      "running": true,
+      "pid": 5647,
+      "startedAt": "2026-11-05T04:07:50.584588297Z"
+    }
+  ]
+}

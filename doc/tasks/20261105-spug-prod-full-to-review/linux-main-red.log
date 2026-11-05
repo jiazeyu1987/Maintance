@@ -1,0 +1,111 @@
+F.                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_safe_registered_main_archive_inputs_do_not_require_rehearsal_firewall[True] _
+
+packages = PosixPath('/work/pytest-red/variants0/packages')
+tmp_path = PosixPath('/work/pytest-red/test_safe_registered_main_arch0')
+registered_main = True
+
+    @pytest.mark.parametrize('registered_main',[True,False])
+    def test_safe_registered_main_archive_inputs_do_not_require_rehearsal_firewall(packages,tmp_path,registered_main):
+        """Execute the shipped initializer's actual lease/hash block on real files."""
+        if sys.platform!='linux':pytest.skip('Real Linux O_PATH/inotify lease required')
+        with tarfile.open(packages/'backup-restore-standard.tgz') as archive:
+            archive.extractall(tmp_path/'package',filter='data')
+        program=r'''
+    import ast,json,sys
+    from pathlib import Path
+    from types import SimpleNamespace
+    sys.path.insert(0,sys.argv[1]+'/common')
+    from recovery_engine import pin,require,absolute,signature,check_pin
+    root=Path(sys.argv[2]);root.mkdir()
+    files=[]
+    for name in ('payload','version','material','docker','input'):
+     p=root/name;p.write_bytes(name.encode());files.append(p)
+    payload,version,material,docker,control=[pin(p) for p in files]
+    target={'dockerPin':docker,'iptablesPin':{'path':str(root/'missing-rehearsal-iptables'),'bytes':1,'sha256':'0'*64}}
+    main=sys.argv[3]=='True'
+    if main:target['mainApplication']={'contract':'registered MAIN path selected before initialization'}
+    chain=[(material,None,{'payloadPins':[payload],'versionPins':[version]},material)]
+    self=SimpleNamespace(input_pins=[control])
+    tree=ast.parse((Path(sys.argv[1])/'common/recovery_minimal_runtime.py').read_text())
+    klass=next(n for n in tree.body if isinstance(n,ast.ClassDef) and n.name=='MinimalData')
+    initialize=next(n for n in klass.body if isinstance(n,ast.FunctionDef) and n.name=='_initialize')
+    def assigns(node,attribute):
+     return isinstance(node,ast.Assign) and any(isinstance(t,ast.Attribute) and t.attr==attribute for t in node.targets)
+    start=next(i for i,n in enumerate(initialize.body) if assigns(n,'payload_signatures'))
+    stop=next(i for i,n in enumerate(initialize.body) if assigns(n,'target'))
+    block=compile(ast.Module(body=initialize.body[start:stop],type_ignores=[]),'shipped-safe-archive-input-lease','exec')
+    scope=dict(self=self,target=target,chain=chain,require=require,absolute=absolute,signature=signature,check_pin=check_pin)
+    try:
+     try:exec(block,scope)
+     except FileNotFoundError:
+      assert not main,'Registered MAIN must not lease an unused rehearsal firewall executable'
+     else:
+      assert main,'Rehearsal must still require its actual firewall executable'
+      assert set(self.payload_signatures)=={str(p) for p in files}
+      assert set(self.archive_guard.path_fds)>={str(p) for p in files} or set(map(str,self.archive_guard.path_fds))>={str(p) for p in files}
+      self.archive_guard.check()
+    finally:
+     if getattr(self,'archive_guard',None) is not None:self.archive_guard.close()
+    print(json.dumps({'registeredMain':main,'allArchiveVersionDockerAndInputLeasesRequired':True}))
+    '''
+        result=subprocess.run([sys.executable,'-B','-c',program,str(tmp_path/'package'),str(tmp_path/'files'),str(registered_main)],capture_output=True,text=True)
+>       assert result.returncode==0,result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<string>", line 27, in <module>
+E           File "shipped-safe-archive-input-lease", line 94, in <module>
+E           File "/work/pytest-red/test_safe_registered_main_arch0/package/common/recovery_archive_guard.py", line 26, in capture
+E             return cls({str(path): None for path in paths},
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/work/pytest-red/test_safe_registered_main_arch0/package/common/recovery_archive_guard.py", line 87, in __init__
+E             self._watch(Path(value), None, directory=False)
+E           File "/work/pytest-red/test_safe_registered_main_arch0/package/common/recovery_archive_guard.py", line 112, in _watch
+E             held = os.open(path, os.O_PATH | os.O_NOFOLLOW | os.O_CLOEXEC)
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         FileNotFoundError: [Errno 2] No such file or directory: '/work/pytest-red/test_safe_registered_main_arch0/files/missing-rehearsal-iptables'
+E         
+E         During handling of the above exception, another exception occurred:
+E         
+E         Traceback (most recent call last):
+E           File "<string>", line 29, in <module>
+E         AssertionError: Registered MAIN must not lease an unused rehearsal firewall executable
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/usr/local/bin/python', '-B', '-c', "\nimport ast,json,sys\nfrom pathlib import Path\nfrom typ...ing>", line 29, in <module>\nAssertionError: Registered MAIN must not lease an unused rehearsal firewall executable\n').returncode
+
+scripts/tests/test_backup_variants.py:225: AssertionError
+=========================== short test summary info ============================
+FAILED scripts/tests/test_backup_variants.py::test_safe_registered_main_archive_inputs_do_not_require_rehearsal_firewall[True]
+1 failed, 1 passed, 15 deselected in 7.45s
+WARNING: Target directory /work/deps/packaging already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/packaging-26.3.dist-info already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/rpds already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/typing_extensions-4.16.0.dist-info already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/typing_extensions.py already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/pytest-9.2.0.dist-info already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/referencing-0.37.0.dist-info already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/pytest already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/iniconfig already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/pluggy already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/__pycache__ already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/pygments already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/attr already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/jsonschema already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/_pytest already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/pluggy-1.7.0.dist-info already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/pygments-2.21.0.dist-info already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/referencing already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/py.py already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/attrs-26.1.0.dist-info already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/jsonschema-4.26.0.dist-info already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/iniconfig-2.3.1.dist-info already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/jsonschema_specifications already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/rpds_py-2026.9.1.dist-info already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/jsonschema_specifications-2025.9.1.dist-info already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/attrs already exists. Specify --upgrade to force replacement.
+WARNING: Target directory /work/deps/bin already exists. Specify --upgrade to force replacement.
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.3
+[notice] To update, run: pip install --upgrade pip

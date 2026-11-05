@@ -1,0 +1,18 @@
+{
+  "observedAt": "2026-11-05T13:32:14.753906+00:00",
+  "pid": 5793,
+  "live": true,
+  "files": [
+    {
+      "fd": "5",
+      "kind": "archive-file",
+      "positionBytes": 142606336,
+      "suffix": ".1",
+      "relativePathSha256": "1caa819773365e9f27edb5479c276d8044aad5dbf17aa8b969fee74dbf06f49b"
+    }
+  ],
+  "io": {
+    "rchar": 43223781927,
+    "wchar": 0
+  }
+}

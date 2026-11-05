@@ -1,0 +1,40 @@
+{
+  "observedAt": "2026-11-05T16:20:08.356475+00:00",
+  "status": "PASS",
+  "operationId": "smallapp-a63174ccdf0c42f187f182e172653759",
+  "protectedOriginalFailurePinsUnchanged": 203,
+  "links": [
+    {
+      "failedOperationId": "smallapp-356db3eb15e0441587efcf1c67db5652",
+      "replacementOperationId": "smallapp-01a41639afc24594ad81d1f644d41354",
+      "clearanceSchema": "RetainedReplacementRecovery/v2",
+      "consumptionPin": {
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-356db3eb15e0441587efcf1c67db5652/recovery-consumption.json",
+        "bytes": 413,
+        "sha256": "1dc4aad20e28e5fce10c2eb20b184637a7b6c5f814673b8c74ec0e4d51e2e476"
+      }
+    },
+    {
+      "failedOperationId": "smallapp-01a41639afc24594ad81d1f644d41354",
+      "replacementOperationId": "smallapp-a732505e94bc4863b568e2b2a8c17d57",
+      "clearanceSchema": "RetainedReplacementRecovery/v2",
+      "consumptionPin": {
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-01a41639afc24594ad81d1f644d41354/recovery-consumption.json",
+        "bytes": 413,
+        "sha256": "055c9f4e2121b8ace738c68595c025bd20a7ab054616bf82124c8223aa9b7c7c"
+      }
+    },
+    {
+      "failedOperationId": "smallapp-a732505e94bc4863b568e2b2a8c17d57",
+      "replacementOperationId": "smallapp-a63174ccdf0c42f187f182e172653759",
+      "clearanceSchema": "RetainedReplacementRecovery/v1",
+      "consumptionPin": {
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-a732505e94bc4863b568e2b2a8c17d57/recovery-consumption.json",
+        "bytes": 413,
+        "sha256": "6ad3ece6be098d0e53aea585adb4dc9b04e57f5d2600888e36f8932e41931988"
+      }
+    }
+  ],
+  "currentReservationBound": true,
+  "originalLocalFailureFilesUnchanged": 28
+}

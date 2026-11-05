@@ -1,0 +1,35 @@
+{
+  "request": {
+    "action": "RESTORE",
+    "operationId": "smallapp-a732505e94bc4863b568e2b2a8c17d57",
+    "parentChainRef": null,
+    "recoveryPointRef": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+    "schemaVersion": "SmallAppBackupUiRequest/v1",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1"
+  },
+  "applicationId": "intruoyi-57-safe-20261024-v1",
+  "spugTaskId": 9,
+  "createdAt": "2026-11-05T14:42:28.024747+00:00",
+  "spugHistoryId": 358,
+  "dispatchErrorCode": null,
+  "dispatchState": "DISPATCHING",
+  "cancelledUnaccepted": false,
+  "displayContext": {
+    "server": "172.30.30.57",
+    "mode": "safe",
+    "restoreMode": "replace"
+  },
+  "result": {
+    "action": "RESTORE",
+    "errorCode": "MAIN_SERVICE_NETWORK_CHANGED",
+    "logRefs": [
+      "smallapp-a732505e94bc4863b568e2b2a8c17d57-originals"
+    ],
+    "operationId": "smallapp-a732505e94bc4863b568e2b2a8c17d57",
+    "resultRef": "smallapp-a732505e94bc4863b568e2b2a8c17d57-result",
+    "schemaVersion": "SmallAppBackupUiResult/v1",
+    "state": "FAILED"
+  },
+  "repeatSubmissionAllowed": false
+}

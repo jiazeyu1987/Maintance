@@ -1,0 +1,35 @@
+{
+  "realBrowser": true,
+  "realLogin": true,
+  "startedAt": "2026-11-05T14:41:34.813Z",
+  "writes": 1,
+  "blocked": [],
+  "httpFailures": [],
+  "pageErrors": [],
+  "catalogRow": "2026-11-05 12:42:33\t全量备份\tIntRuoyi\t172.30.30.57\nNAS 目录标记\n\t2026-11-03-12-15-42\t24.30 GiB\t清单已读取\n归档记录 COMPLETE\n\t\n\\\\172.30.30.4\\IT共享\\Backup\\BackupPackage\\spug-intruoyi57-remediation-20261024\\safe\\57\\archives\\prod-standard-197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb\n查看依据\n\t验证恢复",
+  "confirmation": "IntRuoyi · 恢复 · 正式服务器　172.30.30.57 · 安全模式 · 完整核验 NAS：\\\\172.30.30.4\\IT共享\\Backup\\BackupPackage 来源：intruoyi-57-safe-20261024-v1 备份包：smallapp-73cd541a95d84d6a86f9d693e4053c75 恢复到：备份服务器　172.30.30.59 独立目标：intruoyi-main-59-safe-restore-20261104-v1 恢复方式：覆盖现有程序，将替换目标现有记录、附件及 Redis 数据。",
+  "request": {
+    "schemaVersion": "SmallAppBackupUiRequest/v1",
+    "operationId": "smallapp-a732505e94bc4863b568e2b2a8c17d57",
+    "action": "RESTORE",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "parentChainRef": null,
+    "recoveryPointRef": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+    "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1"
+  },
+  "httpStatus": 202,
+  "spugHistoryId": null,
+  "result": {
+    "schemaVersion": "SmallAppBackupUiResult/v1",
+    "operationId": "smallapp-a732505e94bc4863b568e2b2a8c17d57",
+    "action": "RESTORE",
+    "state": "RUNNING",
+    "errorCode": "SPUG_DISPATCH_RESERVED",
+    "logRefs": [],
+    "resultRef": null
+  },
+  "dispatchErrorCode": null,
+  "visible": "备份\n恢复\n全部包清单\n执行进度\n操作记录\n执行进度\n刷新进度\n已保留编号，尚未查询执行回执\n操作\n恢复\n来源服务器\n来源服务器未记录\n来源\nintruoyi-57-safe-20261024-v1\n执行模式\n执行模式未记录\n备份包\nsmallapp-73cd541a95d84d6a86f9d693e4053c75\n恢复目标\nintruoyi-main-59-safe-restore-20261104-v1\n恢复方式\n恢复方式未记录\n总耗时\n0时 0分 9秒\nsmallapp-a732505e94bc4863b568e2b2a8c17d57\n尚无步骤时间回执。\n操作日志\n暂无日志。\n\n无实际百分比回执时显示执行状态，不估算完成百分比。\n\n执行诊断",
+  "status": "PASS",
+  "finishedAt": "2026-11-05T14:42:28.621Z"
+}

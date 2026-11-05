@@ -1,0 +1,6 @@
+{
+  "status": "PASS",
+  "controlActiveEnabled": true,
+  "runtimeUsesStableServerPaths": true,
+  "runtimeDependsOnReleaseWorktree": false
+}

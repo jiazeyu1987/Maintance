@@ -1,0 +1,18 @@
+[
+  {
+    "variant": "standard",
+    "archivePrefix": "prod-standard-",
+    "packageSha256": "7c82da04ade36422fa0101b38a8c93038dac336922f6abadb4dc408a22036d9a",
+    "source": "frozen-20261021-with-reviewed-fixes",
+    "payloadContentVerification": true,
+    "package": "C:\\Spug\\runtime\\private\\prod-full-to-review-20261105\\package-76bb60b\\backup-restore-standard.tgz"
+  },
+  {
+    "variant": "lightweight",
+    "archivePrefix": "prod-lightweight-",
+    "packageSha256": "8ae7c54e1386c3a83775c4e9e608596eff7649ed1a1908162c86cf054d66de89",
+    "source": "explicit-working-tree-snapshot",
+    "payloadContentVerification": false,
+    "package": "C:\\Spug\\runtime\\private\\prod-full-to-review-20261105\\package-76bb60b\\backup-restore-lightweight.tgz"
+  }
+]

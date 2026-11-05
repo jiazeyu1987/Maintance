@@ -1,0 +1,4 @@
+# Keep original pinned evidence bytes unchanged across Git checkouts.
+* -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+# Test output retains its original traceback spacing as evidence.
+*.log -whitespace

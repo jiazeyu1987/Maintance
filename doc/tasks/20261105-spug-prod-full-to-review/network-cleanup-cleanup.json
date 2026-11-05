@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "worktrees": [
+    {
+      "report": "network-release-build-verification.json",
+      "worktree": "C:\\Spug\\runtime\\private\\prod-full-to-review-20261105\\release-f819fbe",
+      "targetCommit": "f819fbedd4dbd389044560d54b215f99a4d59f81",
+      "clean": true,
+      "newCommits": false,
+      "mergeRequired": false,
+      "deleted": true,
+      "physicalPathAbsent": true,
+      "gitRegistrationAbsent": true
+    },
+    {
+      "report": "network-release-build-76bb60b-verification.json",
+      "worktree": "C:\\Spug\\runtime\\private\\prod-full-to-review-20261105\\release-76bb60b",
+      "targetCommit": "76bb60bd1fe7bc0c5ee771483b02d6c29e8fcf10",
+      "clean": true,
+      "newCommits": false,
+      "mergeRequired": false,
+      "deleted": true,
+      "physicalPathAbsent": true,
+      "gitRegistrationAbsent": true
+    }
+  ],
+  "stableRuntime": {
+    "status": "PASS",
+    "controlActive": true,
+    "runtimeDependsOnReleaseWorktree": false,
+    "engine": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/engine-retry-f819fbed",
+    "packageFileCount": 122
+  },
+  "volume": "spug-review-network-unit-20261105",
+  "volumeTaskLabelVerified": true,
+  "volumeReferences": 0,
+  "volumeDeleted": true
+}

@@ -1,0 +1,31 @@
+{
+  "missingPins": [
+    {
+      "field": "owner.targets.intruoyi-main-59-safe-restore-20261104-v1.iptablesPin",
+      "path": "/var/lib/docker/intruoyi-data/backup-restore-lab/test58-20261016/execution/native-entry/iptables"
+    }
+  ],
+  "targetExecutables": {
+    "dockerPin": {
+      "path": "/usr/bin/docker",
+      "exists": true
+    },
+    "iptablesPin": {
+      "path": "/var/lib/docker/intruoyi-data/backup-restore-lab/test58-20261016/execution/native-entry/iptables",
+      "exists": false
+    }
+  },
+  "sourceKeys": [
+    "archiveCatalogue",
+    "archiveRoots",
+    "parentChains",
+    "recoveryPoints",
+    "repositoryBindingPinsByManifestSha256",
+    "repositoryPointPins",
+    "sourceContainerIds",
+    "sourceNetworkIds",
+    "sourcePaths",
+    "sourceScopePin",
+    "sourceVolumeNames"
+  ]
+}
