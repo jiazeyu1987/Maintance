@@ -275,6 +275,10 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
     payload['common/recovery_main_target.py'] = (root/'ops/recovery/recovery_main_target.py').read_bytes()
     payload['common/recovery_replacement_storage.py'] = (root/'ops/recovery/recovery_replacement_storage.py').read_bytes()
     payload['common/recovery_retained_retry.py'] = (root/'ops/recovery/recovery_retained_retry.py').read_bytes()
+    replace(name,
+        "        self.modules = modules_from(configuration['formalModuleDirectory'])\n",
+        "        self.modules = modules_from(configuration['formalModuleDirectory'])\n"
+        "        self.policy['dataLimits'] = self.modules['formal_data_evidence'].validate_limits(configuration['dataLimits'])\n")
     payload['common/recovery_resource_admission.py'] = (root/'ops/recovery/recovery_resource_admission.py').read_bytes()
     payload['common/recovery_archive_guard.py'] = (root/'ops/recovery/recovery_archive_guard.py').read_bytes()
     replace('common/recovery_minimal_worker.py',

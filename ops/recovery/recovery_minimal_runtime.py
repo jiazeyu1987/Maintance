@@ -73,6 +73,8 @@ class MinimalData(NativeData):
         self.last_exit = None
         self.mutation_dispatched = False
         self.modules = modules_from(configuration['formalModuleDirectory'])
+        # Validate the independent readback budget before any target access or mutation.
+        self.policy['dataLimits'] = self.modules['formal_data_evidence'].validate_limits(configuration['dataLimits'])
         self.config_services = {row['role']: row for row in target['services']}
         self.storage_running = chain[0][2]['objects']['method'] != 'PHYSICAL_FILES'
         self.running_applications = set()

@@ -175,3 +175,40 @@ print(json.dumps({'prepared':True,'destructiveSqlTracked':True}))
     result=subprocess.run([sys.executable,'-c',program,str(tmp_path/'package/common'),str(tmp_path/'data')],
                           capture_output=True,text=True)
     assert result.returncode==0,result.stderr
+
+
+@pytest.mark.parametrize('variant', builder.VARIANTS)
+def test_packaged_data_limits_reject_invalid_budget_before_target_access(packages, tmp_path, variant):
+    """Use shipped constructor and formal validator before any native I/O."""
+    with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
+        archive.extractall(tmp_path/'package', filter='data')
+    program = r'''
+import sys
+from pathlib import Path
+from types import SimpleNamespace
+sys.path[:0]=[sys.argv[1]+'/common',sys.argv[1]+'/formal']
+import recovery_minimal_runtime as runtime
+runtime.os=SimpleNamespace(name='posix')
+class TargetBoundary(Exception):pass
+class Target(dict):
+ def __getitem__(self,key):
+  if key=='services':raise TargetBoundary('target access after budget validation')
+  return super().__getitem__(key)
+target=Target(dataPolicy={'businessInvariants':[]})
+configuration={'environmentMysqlClientPath':'/usr/bin/mysql','maxExpandedBytes':64*1024**3,
+ 'formalModuleDirectory':sys.argv[1]+'/formal','deadlineMilliseconds':7200000}
+chain=[(None,None,{'recoveryPoint':'component-point','objects':{'method':'PHYSICAL_FILES'}},None)]
+for size,expected in [(64*1024**3,'FORMAL_DATA_LIMITS_REQUIRED'),(16*1024**3,'VALID')]:
+ configuration['dataLimits']={'max_rows':10000000,'max_nodes':100000000,'max_bytes':size,'seconds':7200}
+ try:
+  runtime.MinimalData(configuration,{'operationId':'component'},None,{},chain,target,Path(sys.argv[2]),[])
+ except TargetBoundary:
+  assert expected=='VALID','Invalid budget reached target access before formal validation'
+ except Exception as error:
+  assert expected!='VALID' and getattr(error,'code',str(error))=='FORMAL_DATA_LIMITS_REQUIRED',repr(error)
+ else:raise AssertionError('Expected constructor boundary')
+print('invalid budget rejected early; independent 64GiB SQL and 16GiB data limits accepted')
+'''
+    result=subprocess.run([sys.executable,'-c',program,str(tmp_path/'package'),str(tmp_path/'work')],
+                          capture_output=True,text=True)
+    assert result.returncode==0,result.stderr
