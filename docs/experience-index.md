@@ -72,6 +72,8 @@
 
 ## 路由
 
+- MAIN_SERVICE_NETWORK_CHANGED / docker stop bridge IP清空 / 动态附加网络 / frontend loopback发布端口 / IPAMConfig：`docs/release-agent-checklist.md` 的“阶段1c：MAIN动态附加网络停启”；区分固定访问端点与真实Docker分配，已清空目标保持停写并走写入后失败准许。
+
 - 反复打包 / 本地打包成功服务器失败 / 错误前移 / target-state 前移 / release-preflight / 同构安装演练 / BuildKit 缓存 / 构建缓存：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-07-服务器错误前移与反复打包收敛门禁`
 - 一键发布 / 按钮化发布 / 发布流程程序化 / without-data / app-release / 三按钮 / ReleaseWorkflow / 环境租约 / packageDigest / manifestDigest / R31-R44 防复发：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-11-按钮化-app-release-工作流设计前置门禁`
 - 已执行迁移不可变 / APPLIED 摘要漂移 / 改旧 SQL 头 / requiresTargetPreflight 外置 / 同名 preflight / 旧 migration 被重新 APPLY：`docs/release-build-preflight-lessons.md#2026-09-21-已执行迁移不可变与外部目标预检门禁`。

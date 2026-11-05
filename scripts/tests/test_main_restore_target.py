@@ -221,6 +221,105 @@ class MainContractTests(unittest.TestCase):
         item['IPAddress'] = ''
         main.verify_runtime(self.native)
 
+    def dynamic_attachment(self, role='frontend'):
+        row = self.rows[role]
+        fixed = row['NetworkSettings']['Networks']['main']
+        fixed['IPAMConfig'] = {'IPv4Address': fixed['IPAddress']}
+        dynamic = {'NetworkID': identifier('7'), 'IPAddress': '172.17.0.2',
+            'GlobalIPv6Address': '', 'IPAMConfig': None, 'Aliases': None,
+            'Links': None, 'DriverOpts': None}
+        row['NetworkSettings']['Networks']['bridge'] = dynamic
+        network = {'Id': identifier('7'), 'Name': 'bridge', 'Driver': 'bridge',
+            'Internal': False, 'EnableIPv6': False,
+            'IPAM': {'Driver': 'default', 'Config': [{'Subnet': '172.17.0.0/16'}]},
+            'Options': {}, 'Labels': {}, 'Containers': {}}
+        value = self.target['mainApplication']
+        value['networkAttachments'][role] = main.network_attachments(row)
+        value['networks'].append(main.network_configuration(network, [row['Id']]))
+        self.native.docker = lambda args, **kwargs: json.dumps([
+            network if args[-1] == identifier('7') else self.network]).encode()
+        return row, dynamic, network
+
+    def test_dynamic_attachment_empty_when_application_stopped(self):
+        _, dynamic, _ = self.dynamic_attachment()
+        dynamic['IPAddress'] = ''
+        main.verify_runtime(self.native)
+
+    def test_dynamic_attachment_new_running_allocation_requires_network_proof(self):
+        row, dynamic, network = self.dynamic_attachment()
+        row['State']['Running'] = True
+        self.native.running_applications.add('frontend')
+        self.network['Containers'][row['Id']] = {}
+        dynamic['IPAddress'] = '172.17.0.9'
+        network['Containers'][row['Id']] = {'IPv4Address': '172.17.0.9/16', 'IPv6Address': ''}
+        main.verify_runtime(self.native)
+
+    def test_dynamic_attachment_published_loopback_endpoint_stays_bound(self):
+        row, dynamic, _ = self.dynamic_attachment()
+        self.native.config_services['frontend']['ip'] = '127.0.0.1'
+        row['HostConfig']['PortBindings'] = {'80/tcp': [{'HostIp': '', 'HostPort': '38081'}]}
+        self.target['mainApplication']['serviceConfigurationDigests']['frontend'] = main.service_configuration_digest(row)
+        dynamic['IPAddress'] = ''
+        main.verify_runtime(self.native)
+
+    def test_dynamic_attachment_unproven_running_allocation_rejected(self):
+        row, dynamic, network = self.dynamic_attachment()
+        row['State']['Running'] = True
+        self.native.running_applications.add('frontend')
+        self.network['Containers'][row['Id']] = {}
+        dynamic['IPAddress'] = '172.17.0.9'
+        network['Containers'][row['Id']] = {'IPv4Address': '172.17.0.8/16', 'IPv6Address': ''}
+        with self.assertRaisesRegex(RecoveryError, 'MAIN_SERVICE_NETWORK_CHANGED'):
+            main.verify_runtime(self.native)
+
+    def test_dynamic_attachment_data_service_is_never_relaxed(self):
+        _, dynamic, _ = self.dynamic_attachment('minio')
+        dynamic['IPAddress'] = ''
+        with self.assertRaisesRegex(RecoveryError, 'MAIN_SERVICE_NETWORK_CHANGED'):
+            main.verify_runtime(self.native)
+
+    def test_dynamic_attachment_registered_endpoint_is_never_relaxed(self):
+        _, dynamic, _ = self.dynamic_attachment()
+        self.native.config_services['frontend']['ip'] = '172.17.0.2'
+        dynamic['IPAddress'] = ''
+        with self.assertRaisesRegex(RecoveryError, 'MAIN_SERVICE_NETWORK_CHANGED'):
+            main.verify_runtime(self.native)
+
+    def test_dynamic_attachment_static_allocation_drift_rejected(self):
+        _, dynamic, _ = self.dynamic_attachment()
+        dynamic['IPAMConfig'] = {'IPv4Address': '172.17.0.9'}
+        dynamic['IPAddress'] = ''
+        with self.assertRaisesRegex(RecoveryError, 'MAIN_SERVICE_NETWORK_CHANGED'):
+            main.verify_runtime(self.native)
+
+    def test_dynamic_attachment_stopped_nonempty_drift_rejected(self):
+        _, dynamic, _ = self.dynamic_attachment()
+        dynamic['IPAddress'] = '172.17.0.9'
+        with self.assertRaisesRegex(RecoveryError, 'MAIN_SERVICE_NETWORK_CHANGED'):
+            main.verify_runtime(self.native)
+
+    def test_dynamic_attachment_alias_drift_rejected(self):
+        _, dynamic, _ = self.dynamic_attachment()
+        dynamic['IPAddress'] = ''
+        dynamic['Aliases'] = ['unregistered']
+        with self.assertRaisesRegex(RecoveryError, 'MAIN_SERVICE_NETWORK_CHANGED'):
+            main.verify_runtime(self.native)
+
+    def test_dynamic_attachment_fixed_business_endpoint_drift_rejected(self):
+        row, dynamic, _ = self.dynamic_attachment()
+        dynamic['IPAddress'] = ''
+        row['NetworkSettings']['Networks']['main']['IPAMConfig']['IPv4Address'] = '172.29.1.250'
+        row['NetworkSettings']['Networks']['main']['IPAddress'] = ''
+        with self.assertRaisesRegex(RecoveryError, 'MAIN_SERVICE_NETWORK_CHANGED'):
+            main.verify_runtime(self.native)
+
+    def test_dynamic_attachment_without_another_static_endpoint_rejected(self):
+        row, dynamic, _ = self.dynamic_attachment()
+        dynamic['IPAddress'] = ''
+        row['NetworkSettings']['Networks']['main'].pop('IPAMConfig')
+        with self.assertRaisesRegex(RecoveryError, 'MAIN_SERVICE_NETWORK_CHANGED'):
+            main.verify_runtime(self.native)
+
     def test_capture_builds_same_explicit_contract(self):
         original = self.target['mainApplication']
         captured = main.capture_main_application(self.target, self.rows, [self.network],

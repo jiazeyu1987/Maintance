@@ -5,6 +5,7 @@ contract. It never provisions a resource or changes images, mounts or settings.
 Only the authenticated safe-engine package installs the runtime mixin.
 """
 from pathlib import Path
+import ipaddress
 import json
 import re
 import stat
@@ -39,6 +40,70 @@ def network_configuration(row, members):
     return dict(id=row['Id'], name=row['Name'], driver=row['Driver'], internal=row['Internal'],
         enableIPv6=row['EnableIPv6'], ipam=row['IPAM'], options=row.get('Options') or {},
         labels=row.get('Labels') or {}, memberContainerIds=sorted(members))
+
+
+def _dynamic_application_attachment(native, role, row, name, observed, expected, attachments):
+    """Bind ancillary Docker allocations to lifecycle and real network membership."""
+    if role in DATA_ROLES or row['NetworkSettings']['Networks'][name].get('IPAMConfig'):
+        return False
+    addresses = ('ipAddress', 'globalIPv6Address')
+    if {k: v for k, v in observed.items() if k not in addresses} != \
+            {k: v for k, v in expected.items() if k not in addresses}:
+        return False
+    service = native.config_services[role]
+    if service['ip'] in {expected[key] for key in addresses}:
+        return False
+    fixed = set()
+    for other, item in row['NetworkSettings']['Networks'].items():
+        configured = item.get('IPAMConfig') or {}
+        saved = native.config['mainApplication']['networkAttachments'][role].get(other)
+        if other != name and saved == attachments[other]:
+            fixed.update(value for field, key in (('IPv4Address', 'ipAddress'),
+                         ('IPv6Address', 'globalIPv6Address'))
+                         if (value := configured.get(field)) and value == saved[key])
+    if not fixed:
+        return False
+    try:
+        loopback = ipaddress.ip_address(service['ip']).is_loopback
+    except ValueError:
+        return False
+    ports = row['HostConfig'].get('PortBindings') or {}
+    published = any(binding.get('HostIp', '') in ('', '0.0.0.0', '127.0.0.1', '::', '::1') and
+                    str(binding.get('HostPort', '')).isdigit() and
+                    0 < int(binding['HostPort']) <= 65535
+                    for bindings in ports.values() for binding in bindings or [])
+    if service['ip'] not in fixed and not (loopback and published):
+        return False
+    registered = next((network for network in native.config['mainApplication']['networks']
+                       if network['name'] == name and network['id'] == observed['networkId']), None)
+    if registered is None or registered['driver'] != 'bridge':
+        return False
+    if not row['State']['Running']:
+        return all(observed[key] == '' for key in addresses)
+    networks = json.loads(native.docker(['network', 'inspect', registered['id']]))
+    if type(networks) is not list or len(networks) != 1 or networks[0]['Id'] != registered['id']:
+        return False
+    member = networks[0]['Containers'].get(row['Id'])
+    if not member:
+        return False
+    for field, key in (('IPv4Address', 'ipAddress'), ('IPv6Address', 'globalIPv6Address')):
+        allocated = member.get(field) or ''
+        try:
+            address = str(ipaddress.ip_interface(allocated).ip) if allocated else ''
+        except ValueError:
+            return False
+        if address != observed[key]:
+            return False
+    return any(observed[key] for key in addresses)
+
+
+def verify_network_attachments(native, role, row, expected):
+    observed = network_attachments(row)
+    require(set(observed) == set(expected), 'MAIN_SERVICE_NETWORK_CHANGED')
+    for name, attachment in observed.items():
+        require(attachment == expected[name] or _dynamic_application_attachment(
+                native, role, row, name, attachment, expected[name], observed),
+                'MAIN_SERVICE_NETWORK_CHANGED')
 
 
 def capture_main_application(target, rows, networks, archive_image_bindings,
@@ -229,7 +294,7 @@ def verify_runtime(native, *, states=True):
         require(row['Id'] == service['id'] and row['Image'] == service['imageId'] and
                 service_configuration_digest(row) == value['serviceConfigurationDigests'][role],
                 'MAIN_SERVICE_CONFIGURATION_CHANGED')
-        require(network_attachments(row) == value['networkAttachments'][role], 'MAIN_SERVICE_NETWORK_CHANGED')
+        verify_network_attachments(native, role, row, value['networkAttachments'][role])
         require(not row['State']['Paused'] and not row['State']['Restarting'], 'MAIN_SERVICE_UNSTABLE')
         if states:
             running = role in ('mysql', 'redis') or role == 'minio' and native.storage_running or role in native.running_applications
