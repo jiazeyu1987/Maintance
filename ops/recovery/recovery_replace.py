@@ -71,9 +71,10 @@ def validate(target):
 
 def available(target):
     value = validate(target)
-    # A failed or interrupted replacement stays unavailable. No claim is
-    # deleted or reinterpreted to make an existing target appear empty.
-    return all(load(p)['state'] == 'SUCCEEDED'
+    # Failure remains immutable. Only an explicitly audited, terminated-failure
+    # recovery clearance may allow a new request; incomplete claims still block.
+    from recovery_retained_retry import validate_clearance
+    return all(load(p)['state'] == 'SUCCEEDED' or validate_clearance(target,p.parent) is not None
                for p in absolute(value['stateRoot']).glob('*/replacement-result.json')) and all(
                (p/'replacement-result.json').is_file() for p in absolute(value['stateRoot']).iterdir() if p.is_dir())
 
@@ -121,7 +122,7 @@ def prepare(native, value):
     native.mysql.query('SHOW FULL TABLES FROM `'+database+'`;')
     verify_services(native, value)
     native.mutation_dispatched = True
-    native.mysql.query('DROP DATABASE `'+database+'`; CREATE DATABASE `'+database+'`;')
+    native.mysql.query('DROP DATABASE `'+database+'`; CREATE DATABASE `'+database+'`;', mutation=True)
     mount = [m for m in value['services']['minio']['mounts'] if m['Destination'] == native.policy['minioDataMount']]
     require(len(mount) == 1 and mount[0]['RW'], 'REPLACEMENT_STORAGE_INVALID')
     root = absolute(mount[0]['Source'])
@@ -153,8 +154,11 @@ def execute(configuration, request, root, input_pins, original_execute, native_t
         except BlockingIOError as error:
             raise ValueError('REPLACEMENT_TARGET_BUSY') from error
         require(available(target), 'PREVIOUS_REPLACEMENT_NOT_SUCCEEDED')
+        from recovery_retained_retry import bind_clearances
+        bind_clearances(target,request,consume=False)
         claim = absolute(value['stateRoot'])/request['operationId']
         claim.mkdir(mode=0o700)
+        bind_clearances(target,request,consume=True)
         native = None
         try:
             source, policy, chain = selected_chain(configuration, request)

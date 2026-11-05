@@ -260,8 +260,21 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
     def secret(self, role, environment):
 ''')
     payload['common/recovery_replace.py'] = (root/'ops/recovery/recovery_replace.py').read_bytes()
+    # The frozen SAFE file engine always hashes and verifies the entire tree.
+    # Keep its original contract; FAST-only options cannot cross this boundary.
+    replace('common/recovery_replace.py',
+        'before = inventory(root, native.guard, content=False)',
+        'before = inventory(root, native.guard)')
+    replace('common/recovery_replace.py',
+        'apply_tree(root, before, {}, {}, full=False, guard=native.guard, verify_content=False)',
+        'apply_tree(root, before, {}, {}, full=False, guard=native.guard)')
+    replace(name, '            def query(self, statement):\n',
+        '            def query(self, statement, *, mutation=False):\n')
+    replace(name, "                    '-e', statement]).decode('utf-8')",
+        "                    '-e', statement], mutation=mutation).decode('utf-8')")
     payload['common/recovery_main_target.py'] = (root/'ops/recovery/recovery_main_target.py').read_bytes()
     payload['common/recovery_replacement_storage.py'] = (root/'ops/recovery/recovery_replacement_storage.py').read_bytes()
+    payload['common/recovery_retained_retry.py'] = (root/'ops/recovery/recovery_retained_retry.py').read_bytes()
     payload['common/recovery_resource_admission.py'] = (root/'ops/recovery/recovery_resource_admission.py').read_bytes()
     payload['common/recovery_archive_guard.py'] = (root/'ops/recovery/recovery_archive_guard.py').read_bytes()
     replace('common/recovery_minimal_worker.py',

@@ -35,6 +35,7 @@ def test_standard_keeps_original_code_except_reviewed_fixes_and_archive_names(pa
         'control/recovery_control_point_quarantine.py', 'formal/formal_binlog_scope.py',
         'common/recovery_replace.py', 'common/recovery_data.py', 'formal/formal_data_evidence.py',
         'common/recovery_main_target.py', 'common/recovery_replacement_storage.py', 'common/recovery_minimal_plan.py',
+        'common/recovery_retained_retry.py',
         'control/recovery_control_restore_catalogue.py', 'control/recovery_control_smallapp_http.py',
         'formal/minimal_capture_support.py', 'formal/minimal_capture_worker.py',
         'formal/minimal_redis_snapshot.py'}
@@ -124,3 +125,53 @@ def test_existing_outputs_cannot_be_overwritten(packages):
     with pytest.raises(FileExistsError, match='VARIANT_OUTPUT_ALREADY_EXISTS'):
         builder.build(packages)
     assert (packages/'backup-restore-standard.tgz').read_bytes() == before
+
+
+@pytest.mark.parametrize('variant', builder.VARIANTS)
+def test_packaged_replacement_preparation_matches_its_actual_file_engine(packages, tmp_path, variant):
+    """Exercise the shipped caller and file engine, including real local removal."""
+    with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
+        archive.extractall(tmp_path/'package', filter='data')
+    program = r'''
+import ast,json,sys
+from pathlib import Path
+from types import SimpleNamespace
+sys.path.insert(0,sys.argv[1])
+import recovery_replace as replace
+root=Path(sys.argv[2]);root.mkdir()
+(root/'old-attachment').write_bytes(b'existing local component fixture')
+work=root.parent/'work';work.mkdir()
+calls=[]
+class Mysql:
+ def query(self,statement,**kwargs):
+  calls.append({'sql':statement,'mutation':kwargs.get('mutation',False)})
+  return '1' if statement=='SELECT @@GLOBAL.log_bin;' else ''
+native=SimpleNamespace(root=work,original={'targetConfigRef':'component-target'},
+ config={'database':'component_test','application':{'startOrder':['backend','frontend']},
+         'redisRebuild':{'database':0},'redisClientPath':'redis-cli'},
+ config_services={r:{'id':r} for r in ('backend','frontend','minio','redis')},
+ policy={'minioDataMount':'/data'},mysql=Mysql(),guard=lambda:None,
+ docker=lambda *a,**k:b'',secret=lambda *a:'component-secret',mutation_dispatched=False)
+replace.verify_services=lambda *a:None
+replace.prepare(native,{'databaseUuid':'component-db',
+ 'services':{'minio':{'id':'minio','mounts':[{'Destination':'/data','RW':True,'Source':str(root)}]}}})
+assert not list(root.iterdir())
+assert json.loads((work/'replacement-prepared.json').read_text())['state']=='PREPARED'
+drop=next(c for c in calls if c['sql'].startswith('DROP DATABASE'))
+assert drop['mutation'] is True,'Destructive SQL must be recorded as a mutation'
+# Exercise the shipped nested query wrapper itself, rather than only a stub.
+tree=ast.parse((Path(sys.argv[1])/'recovery_minimal_runtime.py').read_text())
+bound=next(n for n in ast.walk(tree) if isinstance(n,ast.ClassDef) and n.name=='BoundMySql')
+query=next(n for n in bound.body if isinstance(n,ast.FunctionDef) and n.name=='query')
+recorded=[]
+native=SimpleNamespace(db_container='component-db',policy={'environmentMysqlClientPath':'/usr/bin/mysql'},
+ docker=lambda args,**kwargs:recorded.append(kwargs) or b'query-result')
+scope={'native':native}
+exec(compile(ast.Module(body=[query],type_ignores=[]),'shipped-query-wrapper','exec'),scope)
+assert scope['query'](None,'DROP DATABASE `component_test`;',mutation=True)=='query-result'
+assert recorded==[{'mutation':True}]
+print(json.dumps({'prepared':True,'destructiveSqlTracked':True}))
+'''
+    result=subprocess.run([sys.executable,'-c',program,str(tmp_path/'package/common'),str(tmp_path/'data')],
+                          capture_output=True,text=True)
+    assert result.returncode==0,result.stderr

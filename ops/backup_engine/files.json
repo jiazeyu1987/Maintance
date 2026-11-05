@@ -1,5 +1,6 @@
 {
   "ops/recovery/recovery_replace.py": "common/recovery_replace.py",
+  "ops/recovery/recovery_retained_retry.py": "common/recovery_retained_retry.py",
   "ops/recovery/recovery_replacement_storage.py": "common/recovery_replacement_storage.py",
   "ops/recovery/recovery_main_target.py": "common/recovery_main_target.py",
   "backend/src/main/resources/recovery_control_executor.py": "control/recovery_control_executor.py",

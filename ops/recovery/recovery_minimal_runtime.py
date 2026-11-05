@@ -87,11 +87,11 @@ class MinimalData(NativeData):
                 command = super()._command(program, arguments)
                 return [native.config['dockerPin']['path'], '--host', 'unix:///var/run/docker.sock', *command[1:]]
 
-            def query(self, statement):
+            def query(self, statement, *, mutation=False):
                 return native.docker(['exec', native.db_container, native.policy['environmentMysqlClientPath'],
                     '--defaults-extra-file=/run/recovery/mysql-client.cnf', '--protocol=SOCKET', '--host=localhost',
                     '--batch', '--skip-column-names',
-                    '-e', statement]).decode('utf-8')
+                    '-e', statement], mutation=mutation).decode('utf-8')
 
         self.mysql = BoundMySql(self.db_container, self.secret('mysql', 'MYSQL_ROOT_PASSWORD'), timeout=self.seconds())
         self.db_target = dict(database=target['database'], databaseUuid=self.db_uuid)
