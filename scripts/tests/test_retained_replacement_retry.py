@@ -179,3 +179,90 @@ def test_failed_observation_never_releases_pointer(authorization_case,monkeypatc
     with pytest.raises(RuntimeError,match='TARGET_DRIFT'):
         retry.authorize(config,request,root,'Explicit approved restore of the same point',0)
     assert (host/'active.json').read_bytes()==before and not (claim/'recovery-clearance.json').exists()
+
+
+@pytest.fixture
+def before_mutation_case(authorization_case):
+    retry,resource,config,request,root,claim,host=authorization_case
+    (root/'replacement-preparation/replacement-intent.json').unlink()
+    result=write(root/'worker-result.json',dict(operationId=request['operationId'],state='FAILED_RETAINED',
+        actualExitCode=1,data={'mutationDispatched':False},originalResultPins=[]))
+    resource.release_no_mutation(config,request,root,result,pin(root/'child-exit.json'))
+    return authorization_case
+
+
+def test_explicit_before_mutation_clearance_preserves_originals_and_binds_one_point(before_mutation_case):
+    retry,resource,config,request,root,claim,host=before_mutation_case
+    originals={p:p.read_bytes() for p in (*root.rglob('*.json'),claim/'replacement-result.json')}
+    result=retry.authorize(config,request,root,'Explicit same point restore with no target writes',885,no_mutation=True)
+    assert result['restoreDispatched'] is False and not (host/'active.json').exists()
+    assert all(p.read_bytes()==b for p,b in originals.items())
+    clearance=retry.validate_clearance(config['targets']['target'],claim)
+    assert clearance['schemaVersion']=='RetainedReplacementRecovery/v2'
+    assert clearance['failurePhase']=='BEFORE_MUTATION'
+    assert clearance['noMutationReleasePin']==pin(root/'resource-no-mutation-release.json')
+    with pytest.raises(Exception,match='RECOVERY_CLEARANCE_REQUEST_CHANGED'):
+        retry.bind_clearances(config['targets']['target'],dict(request,operationId='next',recoveryPointRef='other'),consume=False)
+    (claim.parent/'next').mkdir()
+    retry.bind_clearances(config['targets']['target'],dict(request,operationId='next'),consume=True)
+    assert json.loads((claim/'recovery-consumption.json').read_bytes())['replacementOperationId']=='next'
+
+
+@pytest.mark.parametrize('problem',['missing-release','other-reservation','intent','importer','native-mutation','result-mutation','unknown','exit-unknown','reservation-drift','release-drift'])
+def test_before_mutation_clearance_rejects_incomplete_or_unsafe_evidence(before_mutation_case,problem):
+    retry,resource,config,request,root,claim,host=before_mutation_case
+    if problem=='missing-release':(root/'resource-no-mutation-release.json').unlink()
+    elif problem=='other-reservation':write(host/'active.json',{'operationId':'other'})
+    elif problem=='intent':write(root/'replacement-preparation/replacement-intent.json',{'started':True})
+    elif problem=='importer':write(root/'importer-database.json',{'started':True})
+    elif problem=='native-mutation':write(root/'native-sql.json',{'mutation':True,'actualExitCode':0,'finishedAt':'now'})
+    elif problem in ('result-mutation','unknown'):
+        p=root/'worker-result.json';v=json.loads(p.read_bytes())
+        if problem=='result-mutation':v['data']['mutationDispatched']=True
+        else:v['state']='TERMINAL_UNKNOWN'
+        write(p,v)
+    elif problem=='exit-unknown':write(root/'child-exit.json',{'actualExitCode':1,'timedOut':True})
+    elif problem=='reservation-drift':write(root/'resource-reservation.json',{'operationId':'other'})
+    elif problem=='release-drift':write(root/'resource-no-mutation-release.json',{'reason':'PROVEN_NO_MUTATION'})
+    pointer=(host/'active.json').read_bytes() if (host/'active.json').exists() else None
+    with pytest.raises(Exception):
+        retry.authorize(config,request,root,'Explicit same point restore with no target writes',885,no_mutation=True)
+    assert not (claim/'recovery-clearance.json').exists()
+    assert ((host/'active.json').read_bytes() if (host/'active.json').exists() else None)==pointer
+
+
+def test_before_mutation_mode_cannot_clear_written_failure(authorization_case):
+    retry,resource,config,request,root,claim,host=authorization_case
+    pointer=(host/'active.json').read_bytes()
+    with pytest.raises(Exception):retry.authorize(config,request,root,'Explicit before mutation mode',885,no_mutation=True)
+    assert (host/'active.json').read_bytes()==pointer
+
+
+def test_before_mutation_clearance_stays_bound_to_release_pin(before_mutation_case):
+    retry,resource,config,request,root,claim,host=before_mutation_case
+    retry.authorize(config,request,root,'Explicit same point restore with no target writes',885,no_mutation=True)
+    write(root/'resource-no-mutation-release.json',{'reason':'tampered'})
+    with pytest.raises(Exception):retry.validate_clearance(config['targets']['target'],claim)
+
+
+def test_before_mutation_clearance_rejects_actual_live_original_process(before_mutation_case):
+    import subprocess
+    retry,resource,config,request,root,claim,host=before_mutation_case
+    worker=subprocess.Popen([sys.executable,'-c','import time;time.sleep(30)',
+                             'recovery_minimal_worker.py',request['operationId']])
+    try:
+        with pytest.raises(Exception,match='RECOVERY_ORIGINAL_PROCESS_RUNNING'):
+            retry.authorize(config,request,root,'Explicit same point restore with no target writes',885,no_mutation=True)
+        assert not (claim/'recovery-clearance.json').exists()
+    finally:worker.terminate();worker.wait(timeout=5)
+
+
+def test_before_mutation_failed_current_observation_creates_no_clearance(before_mutation_case,monkeypatch):
+    retry,resource,config,request,root,claim,host=before_mutation_case
+    def reject(*args):
+        assert args[-1] is True
+        raise RuntimeError('CURRENT_TARGET_TABLE_OR_IDENTITY_DRIFT')
+    monkeypatch.setattr(retry,'observe',reject)
+    with pytest.raises(RuntimeError,match='CURRENT_TARGET_TABLE_OR_IDENTITY_DRIFT'):
+        retry.authorize(config,request,root,'Explicit same point restore with no target writes',885,no_mutation=True)
+    assert not (claim/'recovery-clearance.json').exists() and not (host/'active.json').exists()

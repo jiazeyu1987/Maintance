@@ -51,7 +51,7 @@ Fail Fast：任何未确认远端效果、原包冲突或真实验证失败必�
 
 ## Spug 恢复包接口合同与保留失败续恢复门禁
 
-- Trigger: SAFE/FAST 组件注入、覆盖恢复准备、`RESTORE_TYPEERROR`，或已执行清库后的 `FAILED_RETAINED`。
+- Trigger: SAFE/FAST 组件注入、覆盖恢复准备、`RESTORE_TYPEERROR`、`ARCHIVE_LEASE_FD_BUDGET_EXCEEDED`，或写入前/清库后 `FAILED_RETAINED`。
 - Preflight check: 在独立发布 worktree 从精确已提交目标构建，测试实际 tgz 内的调用方、文件引擎和 MySQL 包装；SAFE 保持完整哈希与读回，FAST 专用参数不得进入冻结 SAFE 接口。DROP/CREATE 等破坏性 SQL 必须实际记录 `mutation=true`。恢复前核 NAS 原 canonical 路径、只读挂载/持久依赖与新点 pins，不能只验证来源机可读。
 - Blocker: 包接口不兼容、审计把写入误记为只读、目标身份/挂载/版本漂移、原 worker 活动或未知终态、缺少明确恢复授权、保留预约属于其它操作，均停止相应阶段。清库后失败时保持业务写入服务停止，禁止启动空库主程序。
 - Verification: 实际包组件测试与 POSIX 文件锁/预约用例通过；新安装代次逐文件摘要、新配置 pins、原失败字节不变。真实 Spug 新编号恢复需终态成功，并核数据库全结构/数据、附件版本、Redis、原容器镜像与 UUID、health/HTTP及真实登录后页面；单测和 HTTP202 不代替恢复验收。
@@ -60,7 +60,11 @@ Fail Fast：任何未确认远端效果、原包冲突或真实验证失败必�
 
 阶段 1：封包合同与环境准入。必查实际 SAFE/FAST 包内 `prepare`、`inventory/apply_tree` 和嵌套 `BoundMySql.query`，先 RED 再 GREEN。推荐执行 `python -B -m pytest -q scripts/tests/test_backup_variants.py scripts/tests/test_retained_replacement_retry.py`，POSIX 专属用例必须在 Linux 实际运行。Fail Fast：依赖/挂载缺失是环境失败，不能冒充业务 RED 或静默跳过。必须记录提交、临时工作区、包双摘要、测试环境与通过/跳过数量。
 
+阶段 1a：完整归档租约预算。每个实际来源/目标控制服务均核 `systemctl show <本任务unit> -p MainPID -p LimitNOFILE` 和 `/proc/<MainPID>/limits`，不能只核配置文本或别台服务器。按完整FULL/增量链所有文件与祖先路径租约，加当前已用句柄及至少64工作保留计算；`soft`不足即Fail Fast。为自有且无worker的控制服务设置持久 `LimitNOFILE`，仅在明确安装/修复授权下重载该服务，实测继承值并核全业务PID/启动/配置和历史pins不变。禁止提高全局限制、削弱归档保护或以硬限制代替软限制；记录路径数量、软/硬预算、drop-in和重载前后证据。
+
 阶段 2：已变更目标的显式续恢复。先保全原请求、配置、worker-result、child-exit、replacement-result 和宿主预约 pins，并只读核真实 DB UUID/表数与停写状态。新组件保留旧代次，使用已校验的 `common/recovery_retained_retry.py --operation-root <原操作目录> --authorization <既有明确授权及方案摘要> --expected-table-count <已核实表数> --authorize-retained-replacement`。该入口仅追加准许/观察/释放回执，不恢复业务数据；持原物理锁与宿主预约锁，精确释放同一预约当前指针。Fail Fast：未知/活动/漂移/其它预约/证据变化不准许。必须记录原失败保持、新回执 pins、准许期限及同来源/同点/同目标约束。
+
+阶段 2a：写入前失败的显式续恢复。只有原worker实际exit1、mutationDispatched=false、无replacement-intent/importer且所有native审计均无mutation，原宿主预约已留下精确 `PROVEN_NO_MUTATION` 释放pin、当前无预约时，才可用 `--authorize-no-mutation-replacement` 代替阶段2的选项。严格核原容器/存储/UUID、全部目标服务仍运行、实际表数及全原失败pins，不能停止业务来套用阶段2。持相同两把锁只追加v2准许/观察/ready，不删除或释放任何新预约；新UI编号仅消费同来源/同点/同目标一次。Fail Fast：释放缺失/漂移、存在intent或mutation、原进程仍活跃/未知、其它预约或目标漂移。必须记录两种模式的明确选择、原失败与释放pins、真实观察、授权与方案摘要、新旧编号关联。
 
 阶段 3：正常页面新恢复与验收。通过真实 Spug 页面重新确认同一点和目标，生成新 operationId；执行器只消费一次准许并追加新旧关联。新失败继续保留，不能再次自动解锁。沿原编号查终态，按完整原生一致性和真实业务页面验收；必须分别记录原失败和新结果、启动边界、清理回执与临时发布工作区删除结果。
 

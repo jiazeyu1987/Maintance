@@ -29,7 +29,7 @@ def validate_clearance(target,claim):
     path=claim/'recovery-clearance.json'
     if not path.exists():return None
     value=load(path)
-    require(value.get('schemaVersion')=='RetainedReplacementRecovery/v1' and
+    require(value.get('schemaVersion') in ('RetainedReplacementRecovery/v1','RetainedReplacementRecovery/v2') and
             value.get('operationId')==claim.name and bool(value.get('authorization')),
             'RECOVERY_CLEARANCE_INVALID')
     require(value.get('targetConfigurationSha256')==digest(target),'RECOVERY_CLEARANCE_TARGET_CHANGED')
@@ -50,6 +50,13 @@ def validate_clearance(target,claim):
             value['resultPin']['path']==str(original_root/'worker-result.json') and
             value['exitPin']['path']==str(original_root/'child-exit.json'),
             'RECOVERY_CLEARANCE_ORIGINAL_CHANGED')
+    if value['schemaVersion']=='RetainedReplacementRecovery/v2':
+        require(value.get('failurePhase')=='BEFORE_MUTATION' and
+                value['configurationPin']['path']==str(original_root/'configuration.json'),
+                'RECOVERY_CLEARANCE_INVALID')
+        configuration=pinned_json(value['configurationPin'])
+        require(configuration['targets'][value['targetConfigRef']]==target,'RECOVERY_CLEARANCE_TARGET_CHANGED')
+        verify_no_mutation(configuration,request,original_root,value,value['noMutationReleasePin'])
     require(value['replacementResultPin']['path']==str(claim/'replacement-result.json') and
             request['operationId']==result['operationId']==replacement['operationId']==claim.name and
             result['state']==replacement['state']=='FAILED_RETAINED' and result['actualExitCode']==1 and
@@ -132,7 +139,7 @@ class ReadOnlyTarget:
     def database_uuid(self):return self.query('SELECT @@server_uuid;')
 
 
-def observe(configuration,request,root,expected_tables):
+def observe(configuration,request,root,expected_tables,running=False):
     from recovery_replace import verify_services
     from recovery_main_target import verify_runtime
     from recovery_engine import check_pin
@@ -141,8 +148,8 @@ def observe(configuration,request,root,expected_tables):
     native=ReadOnlyTarget(configuration,request,root)
     verify_services(native,target['replacement']);verify_runtime(native,states=False)
     rows={role:native.inspect(s['id']) for role,s in native.config_services.items()}
-    require(all(row['State']['Running'] is (role in ('mysql','redis')) for role,row in rows.items()),
-            'RECOVERY_TARGET_MUST_REMAIN_QUIESCED')
+    require(all(row['State']['Running'] is (running or role in ('mysql','redis')) for role,row in rows.items()),
+            'RECOVERY_TARGET_MUST_REMAIN_RUNNING' if running else 'RECOVERY_TARGET_MUST_REMAIN_QUIESCED')
     count=int(native.query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='"+target['database']+"';"))
     require(count==expected_tables,'RECOVERY_TARGET_TABLE_COUNT_CHANGED')
     return dict(schemaVersion='RetainedReplacementObservation/v1',targetConfigRef=request['targetConfigRef'],
@@ -151,10 +158,42 @@ def observe(configuration,request,root,expected_tables):
             startedAt=row['State']['StartedAt']) for role,row in rows.items()})
 
 
-def authorize(configuration,request,root,authorization,expected_tables):
+def verify_no_mutation(configuration,request,root,refs,release_ref):
+    """Read the exact original no-mutation release; never release a pointer here."""
+    from recovery_resource_admission import _binding
+    from recovery_engine import check_pin
+    require(release_ref['path']==str(root/'resource-no-mutation-release.json'),
+            'RECOVERY_NO_MUTATION_NOT_PROVEN')
+    release=pinned_json(release_ref)
+    result,exited=pinned_json(refs['resultPin']),pinned_json(refs['exitPin'])
+    reservation=pin(root/'resource-reservation.json');original=pinned_json(reservation)
+    require(release.get('reason')=='PROVEN_NO_MUTATION' and
+            release.get('reservationPin')==reservation and release.get('resultPin')==refs['resultPin'] and
+            release.get('exitPin')==refs['exitPin'] and
+            all(original.get(k)==v for k,v in _binding(configuration,request,root).items()) and
+            result.get('operationId')==request['operationId'] and result.get('state')=='FAILED_RETAINED' and
+            type(result.get('actualExitCode')) is int and result['actualExitCode']==1 and
+            result.get('data',{}).get('mutationDispatched') is False and
+            type(exited.get('actualExitCode')) is int and exited['actualExitCode']==1 and
+            exited.get('timedOut') is False and
+            not any(root.rglob('importer-*.json')) and
+            not (root/'replacement-preparation/replacement-intent.json').exists(),
+            'RECOVERY_NO_MUTATION_NOT_PROVEN')
+    require(type(result.get('originalResultPins')) is list,'RECOVERY_NO_MUTATION_NOT_PROVEN')
+    for reference in result['originalResultPins']:check_pin(reference)
+    for path in root.rglob('native-*.json'):
+        reference=pin(path);value=pinned_json(reference)
+        require(reference in result['originalResultPins'] and value.get('mutation') is False and
+                type(value.get('actualExitCode')) is int and value.get('finishedAt'),
+                'RECOVERY_NO_MUTATION_NOT_PROVEN')
+    return reservation
+
+
+def authorize(configuration,request,root,authorization,expected_tables,*,no_mutation=False):
     """Append a narrowly bound clearance and release only its exact host pointer."""
     require(os.name=='posix' and type(authorization) is str and 10<=len(authorization)<=2000 and
-            type(expected_tables) is int and expected_tables>=0,'RECOVERY_AUTHORIZATION_REQUIRED')
+            type(expected_tables) is int and expected_tables>=0 and type(no_mutation) is bool,
+            'RECOVERY_AUTHORIZATION_REQUIRED')
     from recovery_resource_admission import _host_lock,_verify_reservation,_sync_host,HOST_ROOT
     from recovery_replace import validate
     import fcntl
@@ -170,8 +209,8 @@ def authorize(configuration,request,root,authorization,expected_tables):
     require(result['operationId']==replacement['operationId']==request['operationId'] and
             result['state']==replacement['state']=='FAILED_RETAINED' and result['actualExitCode']==1 and
             exited['actualExitCode']==1 and exited['timedOut'] is False and
-            result.get('data',{}).get('mutationDispatched') is True and
-            (root/'replacement-preparation/replacement-intent.json').is_file(),
+            result.get('data',{}).get('mutationDispatched') is (not no_mutation) and
+            (no_mutation or (root/'replacement-preparation/replacement-intent.json').is_file()),
             'RECOVERY_ORIGINAL_NOT_TERMINATED_FAILURE')
     for process in Path('/proc').iterdir():
         if not process.name.isdigit():continue
@@ -185,24 +224,35 @@ def authorize(configuration,request,root,authorization,expected_tables):
     try:
         fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
         with _host_lock():
-            reservation,active=_verify_reservation(configuration,request,root)
-            observation=append(claim/'recovery-observation.json',observe(configuration,request,root,expected_tables))
-            clearance=append(claim/'recovery-clearance.json',dict(schemaVersion='RetainedReplacementRecovery/v1',
+            extra={}
+            if no_mutation:
+                require(not os.path.lexists(HOST_ROOT/'active.json'),'RECOVERY_HOST_RESERVATION_ACTIVE')
+                release_ref=pin(root/'resource-no-mutation-release.json')
+                reservation=verify_no_mutation(configuration,request,root,refs,release_ref);active=None
+                extra=dict(failurePhase='BEFORE_MUTATION',noMutationReleasePin=release_ref,
+                           configurationPin=pin(root/'configuration.json'))
+                observation_value=observe(configuration,request,root,expected_tables,True)
+            else:
+                reservation,active=_verify_reservation(configuration,request,root)
+                observation_value=observe(configuration,request,root,expected_tables)
+            observation=append(claim/'recovery-observation.json',observation_value)
+            clearance=append(claim/'recovery-clearance.json',dict(schemaVersion='RetainedReplacementRecovery/v2' if no_mutation else 'RetainedReplacementRecovery/v1',
                 operationId=request['operationId'],sourceConfigRef=request['sourceConfigRef'],
                 recoveryPointRef=request['recoveryPointRef'],targetConfigRef=request['targetConfigRef'],
                 targetConfigurationSha256=digest(configuration['targets'][request['targetConfigRef']]),
                 authorization=authorization,issuedAt=utc(),
                 expiresAt=(datetime.now(timezone.utc)+timedelta(hours=24)).isoformat(),
-                observationPin=observation,reservationPin=reservation,**refs))
+                observationPin=observation,reservationPin=reservation,**refs,**extra))
             release=append(root/'resource-recovery-release.json',dict(
                 schemaVersion='RetainedReplacementResourceRelease/v1',clearancePin=clearance,
                 originalActive=active,releasedAt=utc(),reason='EXPLICIT_RETAINED_REPLACEMENT_RECOVERY'))
-            require(load(HOST_ROOT/'active.json')==active,'RECOVERY_RESERVATION_CHANGED')
-            (HOST_ROOT/'active.json').unlink()
-            try:_sync_host()
-            except Exception:
-                append(HOST_ROOT/'active.json',active)
-                raise
+            if not no_mutation:
+                require(load(HOST_ROOT/'active.json')==active,'RECOVERY_RESERVATION_CHANGED')
+                (HOST_ROOT/'active.json').unlink()
+                try:_sync_host()
+                except Exception:
+                    append(HOST_ROOT/'active.json',active)
+                    raise
             append(claim/'recovery-ready.json',dict(clearancePin=clearance,releasePin=release,readyAt=utc()))
             return dict(clearancePin=clearance,releasePin=release,originalState='FAILED_RETAINED',
                         restoreDispatched=False,nextRequestMustUseSamePoint=True)
@@ -214,10 +264,13 @@ def main():
     parser.add_argument('--operation-root',required=True)
     parser.add_argument('--authorization',required=True)
     parser.add_argument('--expected-table-count',required=True,type=int)
-    parser.add_argument('--authorize-retained-replacement',required=True,action='store_true')
+    mode=parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument('--authorize-retained-replacement',action='store_true')
+    mode.add_argument('--authorize-no-mutation-replacement',action='store_true')
     args=parser.parse_args();root=absolute(args.operation_root)
     print(json.dumps(authorize(load(root/'configuration.json'),load(root/'request.json'),root,
-                               args.authorization,args.expected_table_count)))
+                               args.authorization,args.expected_table_count,
+                               no_mutation=args.authorize_no_mutation_replacement)))
 
 
 if __name__=='__main__':main()
