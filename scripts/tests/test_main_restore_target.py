@@ -262,6 +262,32 @@ class MainContractTests(unittest.TestCase):
         dynamic['IPAddress'] = ''
         main.verify_runtime(self.native)
 
+    def test_dynamic_attachment_published_host_endpoint_stays_bound(self):
+        row, dynamic, _ = self.dynamic_attachment()
+        self.native.config_services['frontend']['ip'] = '127.0.0.1'
+        row['HostConfig']['PortBindings'] = {'80/tcp': [{'HostIp': '172.30.30.59', 'HostPort': '38081'}]}
+        self.target['mainApplication']['serviceConfigurationDigests']['frontend'] = main.service_configuration_digest(row)
+        dynamic['IPAddress'] = ''
+        main.verify_runtime(self.native)
+
+    def test_dynamic_attachment_malformed_published_host_is_rejected(self):
+        row, dynamic, _ = self.dynamic_attachment()
+        self.native.config_services['frontend']['ip'] = '127.0.0.1'
+        row['HostConfig']['PortBindings'] = {'80/tcp': [{'HostIp': 'unproven-host', 'HostPort': '38081'}]}
+        self.target['mainApplication']['serviceConfigurationDigests']['frontend'] = main.service_configuration_digest(row)
+        dynamic['IPAddress'] = ''
+        with self.assertRaisesRegex(RecoveryError, 'MAIN_SERVICE_NETWORK_CHANGED'):
+            main.verify_runtime(self.native)
+
+    def test_dynamic_attachment_malformed_published_port_is_rejected(self):
+        row, dynamic, _ = self.dynamic_attachment()
+        self.native.config_services['frontend']['ip'] = '127.0.0.1'
+        row['HostConfig']['PortBindings'] = {'80/tcp': [{'HostIp': '172.30.30.59', 'HostPort': '0'}]}
+        self.target['mainApplication']['serviceConfigurationDigests']['frontend'] = main.service_configuration_digest(row)
+        dynamic['IPAddress'] = ''
+        with self.assertRaisesRegex(RecoveryError, 'MAIN_SERVICE_NETWORK_CHANGED'):
+            main.verify_runtime(self.native)
+
     def test_dynamic_attachment_unproven_running_allocation_rejected(self):
         row, dynamic, network = self.dynamic_attachment()
         row['State']['Running'] = True

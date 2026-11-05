@@ -42,6 +42,22 @@ def network_configuration(row, members):
         labels=row.get('Labels') or {}, memberContainerIds=sorted(members))
 
 
+def _published_host_port(row):
+    for bindings in (row['HostConfig'].get('PortBindings') or {}).values():
+        for binding in bindings or []:
+            host = binding.get('HostIp') or '0.0.0.0'
+            port = binding.get('HostPort', '')
+            if type(host) is not str or type(port) is not str or not port.isdigit():
+                continue
+            try:
+                ipaddress.ip_address(host)
+            except ValueError:
+                continue
+            if 0 < int(port) <= 65535:
+                return True
+    return False
+
+
 def _dynamic_application_attachment(native, role, row, name, observed, expected, attachments):
     """Bind ancillary Docker allocations to lifecycle and real network membership."""
     if role in DATA_ROLES or row['NetworkSettings']['Networks'][name].get('IPAMConfig'):
@@ -67,12 +83,7 @@ def _dynamic_application_attachment(native, role, row, name, observed, expected,
         loopback = ipaddress.ip_address(service['ip']).is_loopback
     except ValueError:
         return False
-    ports = row['HostConfig'].get('PortBindings') or {}
-    published = any(binding.get('HostIp', '') in ('', '0.0.0.0', '127.0.0.1', '::', '::1') and
-                    str(binding.get('HostPort', '')).isdigit() and
-                    0 < int(binding['HostPort']) <= 65535
-                    for bindings in ports.values() for binding in bindings or [])
-    if service['ip'] not in fixed and not (loopback and published):
+    if service['ip'] not in fixed and not (loopback and _published_host_port(row)):
         return False
     registered = next((network for network in native.config['mainApplication']['networks']
                        if network['name'] == name and network['id'] == observed['networkId']), None)
