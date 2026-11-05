@@ -1,0 +1,370 @@
+{
+  "observedAt": "2026-11-05T11:36:15.361120+00:00",
+  "mounts": [
+    {
+      "role": "mysql",
+      "source": "/mnt/intruoyi-data/docker-engine/volumes/intruoyi-prod-nas-restore59-20261020-native-mysql/_data",
+      "expectedDevice": 64771,
+      "expectedInode": 48368015,
+      "expectedMount": {
+        "device": "253:3",
+        "filesystem": "ext4",
+        "mountId": 132,
+        "mountPoint": "/mnt/intruoyi-data/docker-engine/volumes/intruoyi-prod-nas-restore59-20261020-native-mysql/_data",
+        "options": [
+          "rw",
+          "relatime"
+        ],
+        "parentId": 48,
+        "root": "/prod-nas-restore-prep-20261020/native-target-data/mysql",
+        "source": "/dev/mapper/cl-home",
+        "superOptions": [
+          "rw",
+          "seclabel",
+          "data=ordered"
+        ]
+      },
+      "current": {
+        "exists": true,
+        "device": 64771,
+        "inode": 48368015,
+        "entryCount": 34,
+        "observed": {
+          "device": 64771,
+          "inode": 48368015,
+          "mountIdentity": {
+            "mountId": 52,
+            "parentId": 48,
+            "device": "253:3",
+            "root": "/prod-nas-restore-prep-20261020/native-target-data/mysql",
+            "mountPoint": "/mnt/intruoyi-data/docker-engine/volumes/intruoyi-prod-nas-restore59-20261020-native-mysql/_data",
+            "filesystem": "ext4",
+            "source": "/dev/mapper/cl-home",
+            "options": [
+              "rw",
+              "relatime"
+            ],
+            "superOptions": [
+              "rw",
+              "seclabel",
+              "data=ordered"
+            ]
+          }
+        }
+      },
+      "volumeDefinition": {
+        "CreatedAt": "2026-10-25T14:38:00+08:00",
+        "Driver": "local",
+        "Labels": {
+          "intruoyi.recovery.target": "intruoyi-PROD57-nas-backup59-target-20261020-r1",
+          "intruoyi.task": "20261020-prod-nas-restore-prep-backup59"
+        },
+        "Mountpoint": "/mnt/intruoyi-data/docker-engine/volumes/intruoyi-prod-nas-restore59-20261020-native-mysql/_data",
+        "Name": "intruoyi-prod-nas-restore59-20261020-native-mysql",
+        "Options": null,
+        "Scope": "local"
+      },
+      "backing": {
+        "expected": {
+          "device": 64771,
+          "inode": 48368015,
+          "mountIdentity": {
+            "device": "253:3",
+            "filesystem": "ext4",
+            "mountId": 48,
+            "mountPoint": "/mnt/intruoyi-data",
+            "options": [
+              "rw",
+              "relatime"
+            ],
+            "parentId": 40,
+            "root": "/",
+            "source": "/dev/mapper/cl-home",
+            "superOptions": [
+              "rw",
+              "seclabel",
+              "data=ordered"
+            ]
+          },
+          "source": "/mnt/intruoyi-data/prod-nas-restore-prep-20261020/native-target-data/mysql"
+        },
+        "current": {
+          "exists": true,
+          "device": 64771,
+          "inode": 48368015,
+          "entryCount": 34,
+          "observed": {
+            "device": 64771,
+            "inode": 48368015,
+            "mountIdentity": {
+              "mountId": 48,
+              "parentId": 40,
+              "device": "253:3",
+              "root": "/",
+              "mountPoint": "/mnt/intruoyi-data",
+              "filesystem": "ext4",
+              "source": "/dev/mapper/cl-home",
+              "options": [
+                "rw",
+                "relatime"
+              ],
+              "superOptions": [
+                "rw",
+                "seclabel",
+                "data=ordered"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "role": "minio",
+      "source": "/mnt/intruoyi-data/docker-engine/volumes/intruoyi-prod-nas-restore59-20261020-native-minio/_data",
+      "expectedDevice": 64771,
+      "expectedInode": 48368016,
+      "expectedMount": {
+        "device": "253:3",
+        "filesystem": "ext4",
+        "mountId": 136,
+        "mountPoint": "/mnt/intruoyi-data/docker-engine/volumes/intruoyi-prod-nas-restore59-20261020-native-minio/_data",
+        "options": [
+          "rw",
+          "relatime"
+        ],
+        "parentId": 48,
+        "root": "/prod-nas-restore-prep-20261020/native-target-data/minio",
+        "source": "/dev/mapper/cl-home",
+        "superOptions": [
+          "rw",
+          "seclabel",
+          "data=ordered"
+        ]
+      },
+      "current": {
+        "exists": true,
+        "device": 64771,
+        "inode": 48368016,
+        "entryCount": 4,
+        "observed": {
+          "device": 64771,
+          "inode": 48368016,
+          "mountIdentity": {
+            "mountId": 50,
+            "parentId": 48,
+            "device": "253:3",
+            "root": "/prod-nas-restore-prep-20261020/native-target-data/minio",
+            "mountPoint": "/mnt/intruoyi-data/docker-engine/volumes/intruoyi-prod-nas-restore59-20261020-native-minio/_data",
+            "filesystem": "ext4",
+            "source": "/dev/mapper/cl-home",
+            "options": [
+              "rw",
+              "relatime"
+            ],
+            "superOptions": [
+              "rw",
+              "seclabel",
+              "data=ordered"
+            ]
+          }
+        }
+      },
+      "volumeDefinition": {
+        "CreatedAt": "2026-10-25T14:38:00+08:00",
+        "Driver": "local",
+        "Labels": {
+          "intruoyi.recovery.target": "intruoyi-PROD57-nas-backup59-target-20261020-r1",
+          "intruoyi.task": "20261020-prod-nas-restore-prep-backup59"
+        },
+        "Mountpoint": "/mnt/intruoyi-data/docker-engine/volumes/intruoyi-prod-nas-restore59-20261020-native-minio/_data",
+        "Name": "intruoyi-prod-nas-restore59-20261020-native-minio",
+        "Options": null,
+        "Scope": "local"
+      },
+      "backing": {
+        "expected": {
+          "device": 64771,
+          "inode": 48368016,
+          "mountIdentity": {
+            "device": "253:3",
+            "filesystem": "ext4",
+            "mountId": 48,
+            "mountPoint": "/mnt/intruoyi-data",
+            "options": [
+              "rw",
+              "relatime"
+            ],
+            "parentId": 40,
+            "root": "/",
+            "source": "/dev/mapper/cl-home",
+            "superOptions": [
+              "rw",
+              "seclabel",
+              "data=ordered"
+            ]
+          },
+          "source": "/mnt/intruoyi-data/prod-nas-restore-prep-20261020/native-target-data/minio"
+        },
+        "current": {
+          "exists": true,
+          "device": 64771,
+          "inode": 48368016,
+          "entryCount": 4,
+          "observed": {
+            "device": 64771,
+            "inode": 48368016,
+            "mountIdentity": {
+              "mountId": 48,
+              "parentId": 40,
+              "device": "253:3",
+              "root": "/",
+              "mountPoint": "/mnt/intruoyi-data",
+              "filesystem": "ext4",
+              "source": "/dev/mapper/cl-home",
+              "options": [
+                "rw",
+                "relatime"
+              ],
+              "superOptions": [
+                "rw",
+                "seclabel",
+                "data=ordered"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "role": "redis",
+      "source": "/mnt/intruoyi-data/docker-engine/volumes/intruoyi-prod-nas-restore59-20261020-native-redis/_data",
+      "expectedDevice": 64771,
+      "expectedInode": 48368022,
+      "expectedMount": {
+        "device": "253:3",
+        "filesystem": "ext4",
+        "mountId": 140,
+        "mountPoint": "/mnt/intruoyi-data/docker-engine/volumes/intruoyi-prod-nas-restore59-20261020-native-redis/_data",
+        "options": [
+          "rw",
+          "relatime"
+        ],
+        "parentId": 48,
+        "root": "/prod-nas-restore-prep-20261020/native-target-data/redis",
+        "source": "/dev/mapper/cl-home",
+        "superOptions": [
+          "rw",
+          "seclabel",
+          "data=ordered"
+        ]
+      },
+      "current": {
+        "exists": true,
+        "device": 64771,
+        "inode": 48368022,
+        "entryCount": 1,
+        "observed": {
+          "device": 64771,
+          "inode": 48368022,
+          "mountIdentity": {
+            "mountId": 51,
+            "parentId": 48,
+            "device": "253:3",
+            "root": "/prod-nas-restore-prep-20261020/native-target-data/redis",
+            "mountPoint": "/mnt/intruoyi-data/docker-engine/volumes/intruoyi-prod-nas-restore59-20261020-native-redis/_data",
+            "filesystem": "ext4",
+            "source": "/dev/mapper/cl-home",
+            "options": [
+              "rw",
+              "relatime"
+            ],
+            "superOptions": [
+              "rw",
+              "seclabel",
+              "data=ordered"
+            ]
+          }
+        }
+      },
+      "volumeDefinition": {
+        "CreatedAt": "2026-10-25T14:38:00+08:00",
+        "Driver": "local",
+        "Labels": {
+          "intruoyi.recovery.target": "intruoyi-PROD57-nas-backup59-target-20261020-r1",
+          "intruoyi.task": "20261020-prod-nas-restore-prep-backup59"
+        },
+        "Mountpoint": "/mnt/intruoyi-data/docker-engine/volumes/intruoyi-prod-nas-restore59-20261020-native-redis/_data",
+        "Name": "intruoyi-prod-nas-restore59-20261020-native-redis",
+        "Options": null,
+        "Scope": "local"
+      },
+      "backing": {
+        "expected": {
+          "device": 64771,
+          "inode": 48368022,
+          "mountIdentity": {
+            "device": "253:3",
+            "filesystem": "ext4",
+            "mountId": 48,
+            "mountPoint": "/mnt/intruoyi-data",
+            "options": [
+              "rw",
+              "relatime"
+            ],
+            "parentId": 40,
+            "root": "/",
+            "source": "/dev/mapper/cl-home",
+            "superOptions": [
+              "rw",
+              "seclabel",
+              "data=ordered"
+            ]
+          },
+          "source": "/mnt/intruoyi-data/prod-nas-restore-prep-20261020/native-target-data/redis"
+        },
+        "current": {
+          "exists": true,
+          "device": 64771,
+          "inode": 48368022,
+          "entryCount": 1,
+          "observed": {
+            "device": 64771,
+            "inode": 48368022,
+            "mountIdentity": {
+              "mountId": 48,
+              "parentId": 40,
+              "device": "253:3",
+              "root": "/",
+              "mountPoint": "/mnt/intruoyi-data",
+              "filesystem": "ext4",
+              "source": "/dev/mapper/cl-home",
+              "options": [
+                "rw",
+                "relatime"
+              ],
+              "superOptions": [
+                "rw",
+                "seclabel",
+                "data=ordered"
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "archives": [
+    {
+      "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives",
+      "current": {
+        "exists": false
+      }
+    }
+  ],
+  "remoteMutation": false,
+  "fstabBindTargets": [
+    "/var/lib/docker/intruoyi-data/runtime-data",
+    "/var/lib/docker/intruoyi-releases",
+    "/opt/intruoyi/runtime/data"
+  ]
+}

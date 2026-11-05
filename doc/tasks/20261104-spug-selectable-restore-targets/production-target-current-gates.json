@@ -1,0 +1,67 @@
+{
+  "host": "172.30.30.57",
+  "observedAt": "2026-11-05T11:24:47.972078+00:00",
+  "historicalInspectTimeoutResolved": true,
+  "currentBackendId": "c4385604eb83b44f2836755bad709581c7e7edd0078b148f3b0f74e0b567304c",
+  "backendRunning": true,
+  "writableApplicationMounts": [
+    {
+      "source": "/opt/intruoyi/runtime/backend-codex-home",
+      "destination": "/opt/intruoyi/runtime/backend-codex-home",
+      "type": "bind"
+    },
+    {
+      "source": "/var/run/docker.sock",
+      "destination": "/var/run/docker.sock",
+      "type": "bind"
+    },
+    {
+      "source": "/mnt/nas/Backup/BackupPackage",
+      "destination": "/mnt/nas/Backup/BackupPackage",
+      "type": "bind"
+    },
+    {
+      "source": "/opt/intruoyi/ops",
+      "destination": "/opt/intruoyi/ops",
+      "type": "bind"
+    },
+    {
+      "source": "/opt/intruoyi/runtime",
+      "destination": "/opt/intruoyi/runtime",
+      "type": "bind"
+    },
+    {
+      "source": "/opt/intruoyi/runtime/data/backend-logs",
+      "destination": "/root/logs",
+      "type": "bind"
+    },
+    {
+      "source": "/backup",
+      "destination": "/backup",
+      "type": "bind"
+    }
+  ],
+  "minioPublishedPorts": {
+    "9000/tcp": [
+      {
+        "HostIp": "",
+        "HostPort": "9000"
+      }
+    ],
+    "9001/tcp": [
+      {
+        "HostIp": "",
+        "HostPort": "9001"
+      }
+    ]
+  },
+  "assessment": "Existing installation and MAIN preserved-storage contracts reject writable application mounts and exposed data services. No production target configuration was issued; resource writer ownership was not asserted.",
+  "applicableCurrentContractCodes": [
+    "INSTALL_APPLICATION_CONFIGURATION_NOT_PINNABLE",
+    "MAIN_APPLICATION_WRITABLE_MOUNT_REJECTED",
+    "REPLACEMENT_STORAGE_INVALID",
+    "INSTALL_PUBLISHED_DATA_SERVICE_REJECTED"
+  ],
+  "liveTargetPreflight": "NOT_REGISTERED",
+  "restorePerformed": false
+}

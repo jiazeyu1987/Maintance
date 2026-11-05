@@ -1,0 +1,56 @@
+{
+  "status": "PASS_FOR_COMPONENT_SCOPE",
+  "review": {
+    "observedAt": "2026-11-05T11:43:59.693872+00:00",
+    "service": "spug-main-restore-59-20261104-v3.service",
+    "active": "active",
+    "enabled": "enabled",
+    "ownerConfigurationPin": {
+      "bytes": 23027,
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-readback-postboot-20261105.json",
+      "sha256": "09f27fdd57ded744a3b3528d83299ff80fd19c000b4dd58197ec8bccabdc2061"
+    },
+    "controlConfigurationPin": {
+      "bytes": 2371,
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-33659-readback-postboot-20261105.json",
+      "sha256": "e71cd7c26d5fa338e4947ebbd59a6ba8833ec46918a45aa45730783209c4ff76"
+    },
+    "packageFiles": 122,
+    "packageFilesMatch": true,
+    "dataLimits": {
+      "max_bytes": 17179869184,
+      "max_nodes": 100000000,
+      "max_rows": 10000000,
+      "seconds": 7200
+    },
+    "maxExpandedBytes": 68719476736,
+    "businessIdsPidsStartTimesAndConfigurationUnchanged": true,
+    "stableRuntimePaths": true,
+    "zeroRestores": true,
+    "activeReservation": false
+  },
+  "sourceAndTestControl": {
+    "57": {
+      "active": "active",
+      "enabled": "enabled"
+    },
+    "58": {
+      "active": "active",
+      "enabled": "enabled"
+    }
+  },
+  "cleanup": {
+    "releaseWorktree": "C:\\Users\\D01021\\.codex\\worktrees\\spug-review-control-release-20261105\\Maintance",
+    "targetCommit": "04f5f9ce958b52479c0c729fe32dbb69669e73fb",
+    "newCommits": false,
+    "mergeRequired": false,
+    "gitRegistrationAbsent": true,
+    "physicalPathAbsent": true,
+    "testPassed": 15
+  },
+  "remainingBlockers": {
+    "57": "Unsupported current writable runtime mounts/data endpoint registration; target remains disabled",
+    "59": "Original four services stopped and canonical readonly archive bind missing; separate original-service start authorization required"
+  },
+  "threeDestinationGoalComplete": false
+}

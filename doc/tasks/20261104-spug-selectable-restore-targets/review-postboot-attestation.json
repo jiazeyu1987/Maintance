@@ -1,0 +1,42 @@
+{
+  "observedAt": "2026-11-05T11:37:35.150361+00:00",
+  "bootId": "0fc8567e-3b8b-4e3f-902b-43e93284738d",
+  "host": "172.30.30.59",
+  "attestedDifferences": [
+    {
+      "role": "mysql",
+      "device": 64771,
+      "inode": 48368015,
+      "beforeMountId": 132,
+      "afterMountId": 52
+    },
+    {
+      "role": "minio",
+      "device": 64771,
+      "inode": 48368016,
+      "beforeMountId": 136,
+      "afterMountId": 50
+    },
+    {
+      "role": "redis",
+      "device": 64771,
+      "inode": 48368022,
+      "beforeMountId": 140,
+      "afterMountId": 51
+    }
+  ],
+  "ownerConfigurationPin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-readback-postboot-20261105.json",
+    "bytes": 23027,
+    "sha256": "09f27fdd57ded744a3b3528d83299ff80fd19c000b4dd58197ec8bccabdc2061"
+  },
+  "controlConfigurationPin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-33659-readback-postboot-20261105.json",
+    "bytes": 2371,
+    "sha256": "e71cd7c26d5fa338e4947ebbd59a6ba8833ec46918a45aa45730783209c4ff76"
+  },
+  "strictStorageChecksPreserved": true,
+  "businessUnchanged": true,
+  "restoreDispatched": false,
+  "serviceActive": true
+}

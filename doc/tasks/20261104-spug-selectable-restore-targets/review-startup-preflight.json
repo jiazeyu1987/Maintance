@@ -1,0 +1,94 @@
+{
+  "observedAt": "2026-11-05T11:40:12.646145+00:00",
+  "cifsMounts": [
+    {
+      "path": "/mnt/intruoyi-backup-nas",
+      "root": "/",
+      "source": "//172.30.30.4/IT共享",
+      "readonly": false,
+      "pointExists": true,
+      "pointSha256": "af95ffa94e9478bd32935c6e0c662aa5590854a0cda7597b84a25abd81a8f128"
+    }
+  ],
+  "fstabCifs": [],
+  "canonicalRoot": {
+    "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas",
+    "exists": true,
+    "isDirectory": true,
+    "isSymlink": false,
+    "entryCount": 0
+  },
+  "remoteMutation": false,
+  "services": [
+    {
+      "id": "4376cb8d12c95ec485589b2fc8edabed3d9c631fcd52f715c4b2800f1b4cde8e",
+      "name": "/intruoyi-prod-nas-restore59-20261020-native-mysql",
+      "running": false,
+      "pid": 0,
+      "startedAt": "2026-10-25T07:24:58.86398075Z",
+      "restartPolicy": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "ports": {}
+    },
+    {
+      "id": "eb40cfe31e8046cf281c33d1a9b7cc50a2ecd30cb2b5a51d4248dce5f20b38d7",
+      "name": "/intruoyi-prod-nas-restore59-20261020-native-minio",
+      "running": false,
+      "pid": 0,
+      "startedAt": "2026-11-03T07:29:34.430969782Z",
+      "restartPolicy": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "ports": {}
+    },
+    {
+      "id": "99d136c09a948643f5f4bb7ff6fb1f0402cd856dc5aeebe91e5baf289dbd3e48",
+      "name": "/intruoyi-prod-nas-restore59-20261020-native-redis",
+      "running": false,
+      "pid": 0,
+      "startedAt": "2026-11-03T07:29:33.501392716Z",
+      "restartPolicy": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "ports": {}
+    },
+    {
+      "id": "285244884c5e056ce1e37d073a9356c9dd34e9d97dc8ea3af07183b9929c79d8",
+      "name": "/intruoyi-prod-nas-restore59-20261020-backend",
+      "running": false,
+      "pid": 0,
+      "startedAt": "2026-11-03T07:40:45.031206277Z",
+      "restartPolicy": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "ports": {}
+    },
+    {
+      "id": "82b9982178e4ea002b25f8cce70b621e29f4af452df7be42d2efc699191ca193",
+      "name": "/intruoyi-july-unified-59-frontend-r2",
+      "running": true,
+      "pid": 10766,
+      "startedAt": "2026-11-05T01:29:03.629512684Z",
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "ports": {
+        "80/tcp": [
+          {
+            "HostIp": "172.30.30.59",
+            "HostPort": "38081"
+          }
+        ]
+      }
+    }
+  ],
+  "listeners": [
+    "LISTEN     0      128    172.30.30.59:38081                    *:*                  "
+  ]
+}
