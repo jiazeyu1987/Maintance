@@ -1,0 +1,183 @@
+{
+  "observedAt": "2026-11-05T12:59:23.008671+00:00",
+  "status": "PASS",
+  "scope": "NEW_PROD_FULL_TO_ORIGINAL_TEST_MAIN_ONLY",
+  "backupOperationId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+  "restoreOperationId": "smallapp-6cb9423086fe4b62ad21505e189bc36b",
+  "spugHistoryId": 355,
+  "freshNativeEvidence": {
+    "observedAt": "2026-11-05T12:59:20.623052+00:00",
+    "operationId": "smallapp-6cb9423086fe4b62ad21505e189bc36b",
+    "backupOperationId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+    "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+    "state": "SUCCEEDED",
+    "finishedAt": "2026-11-05T11:04:19.902442Z",
+    "actualExitCode": 0,
+    "sameNewFullPointVerified": true,
+    "database": {
+      "uuid": "20ca4c6c-cc31-11f1-9b95-0242ac1deb16",
+      "fullSchemaDataEquivalenceVerified": true,
+      "tableCount": 885,
+      "totalRows": 512156,
+      "schemaSha256": "de67edc371e2088fa706392f0d7048b599f3942a4d144edc76099ad74093fdfe"
+    },
+    "objects": {
+      "exactVersionIdentityVerified": true,
+      "versionCount": 5916,
+      "deleteMarkerCount": 0,
+      "totalVersionBytes": 9653189892,
+      "uniqueContentCount": 4920,
+      "versionHistorySha256": "9fb2a7ba380c86d0164c9a82ba8ad18320fed5eb1f1f79d8a72e2ae77e7260c8"
+    },
+    "consistency": {
+      "allReferencesVerified": true,
+      "presentReferencesVerified": true,
+      "sourceMissingReferenceCount": 0,
+      "sourceMissingBaselinePreserved": true,
+      "invariantsVerified": true
+    },
+    "redis": {
+      "restoredKeyCount": 0,
+      "expiredBeforeRestoreCount": 0,
+      "independentlyVerifiedKeyCount": 0,
+      "valuesVerified": true,
+      "absoluteExpiryVerified": true
+    },
+    "applicationStart": {
+      "state": "SUCCEEDED",
+      "isolation": "REGISTERED_MAIN_RESOURCE_CUSTODY",
+      "businessAcceptance": "NOT_PERFORMED"
+    },
+    "replacementState": "SUCCEEDED",
+    "cleanupFields": [
+      "deletedBytes",
+      "deletedFiles",
+      "files",
+      "finishedAt",
+      "operationId",
+      "root",
+      "schemaVersion",
+      "selectedPaths",
+      "state"
+    ],
+    "verifiedDocumentPins": 21,
+    "independentBusinessUIRequired": true,
+    "status": "PASS",
+    "protectedOriginalFailurePinsUnchanged": 6,
+    "hostResourceReservationReleased": true,
+    "resourceReleasePin": {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-6cb9423086fe4b62ad21505e189bc36b/resource-release.json",
+      "bytes": 845,
+      "sha256": "db700c4c80148ad03239f1a7b1759f02c5f660f2b71989c1fcd13c3803279acf"
+    }
+  },
+  "freshRuntime": {
+    "observedAt": "2026-11-05T12:59:20.681892+00:00",
+    "operationId": "smallapp-6cb9423086fe4b62ad21505e189bc36b",
+    "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+    "services": [
+      {
+        "role": "mysql",
+        "id": "b4592b704b979f1b94ba03836985491a8f7c699d3094297bfbe3696939eedd79",
+        "image": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+        "running": true,
+        "pid": 11377,
+        "startedAt": "2026-11-05T01:51:30.916478688Z",
+        "health": null
+      },
+      {
+        "role": "minio",
+        "id": "98216faac1ae2fc1508bd4076962bf4cfcb3a47f2f1bd5d5e42c7ba819e83115",
+        "image": "sha256:c4260bcf2c25b683e4f6e6ed6474f12c5c28dc8e375bfe0ecea7a5d3fbecbc04",
+        "running": true,
+        "pid": 32286,
+        "startedAt": "2026-11-05T10:41:42.537848196Z",
+        "health": "healthy"
+      },
+      {
+        "role": "redis",
+        "id": "028bb0541d3216c283c5f1822338462545fa7cd63fad55c462ae20a01526e225",
+        "image": "sha256:487efc0616382465781b8fdc3d6d1db449e6fd80ae23bf48432a2da6b6929908",
+        "running": true,
+        "pid": 28575,
+        "startedAt": "2026-11-05T01:52:49.476812788Z",
+        "health": null
+      },
+      {
+        "role": "backend",
+        "id": "6f70e67078d086d7f08c1ae75a80bb0feab28c5a1f92c91d655ac258f34988eb",
+        "image": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+        "running": true,
+        "pid": 24553,
+        "startedAt": "2026-11-05T10:52:47.882899354Z",
+        "health": "healthy"
+      },
+      {
+        "role": "frontend",
+        "id": "4f9775e6f0a1d86b2d06c69e40504a91cf44a613de458b76e69fa04805ca5d73",
+        "image": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a",
+        "running": true,
+        "pid": 10307,
+        "startedAt": "2026-11-05T10:56:11.580646446Z",
+        "health": "healthy"
+      }
+    ],
+    "backendHealth": "UP",
+    "frontendHTTP": 200,
+    "databaseUuid": "20ca4c6c-cc31-11f1-9b95-0242ac1deb16",
+    "replacementState": "SUCCEEDED",
+    "status": "PASS"
+  },
+  "savedEvidencePins": {
+    "restore-ui-submission.json": {
+      "bytes": 426,
+      "sha256": "052c1966a287dcb4c09d1171f2873543b11f6f53aac1e281677b51cbaa4ec664"
+    },
+    "restore-ui-result.json": {
+      "bytes": 2267,
+      "sha256": "f9e5227f9679e4848b3dd3b9590dc1aee849cde191078462b5c5617faae4fe4c"
+    },
+    "restore-terminal-record.json": {
+      "bytes": 1122,
+      "sha256": "32de9dff5c59484ccb08fd16af6e35db7cb40c60464f9c18ff4d4caeab9d42c9"
+    },
+    "restore-live-progress.json": {
+      "bytes": 2361,
+      "sha256": "dfa863dea75ad093a836d85608974ebb561a108b4daa7468f28e5f6d6b6a4f63"
+    },
+    "full-terminal-record.json": {
+      "bytes": 1033,
+      "sha256": "115fd9cabd991b28d0dd0f913ecba40477c019f3bebcc2e006a7c407099cd827"
+    },
+    "new-full-point-verified.json": {
+      "bytes": 2211,
+      "sha256": "ec178c8f4940f8437e055a939c3eadabc4eb995a2470fbe06efe13ffdf3df2ed"
+    },
+    "target-after-restore-business.json": {
+      "bytes": 792,
+      "sha256": "5b3eb08acbf435d4d58c1a4f826389dfefb116d753017da54afe4b9afa1523b9"
+    },
+    "final-verification.json": {
+      "bytes": 616,
+      "sha256": "b8f0f1423fd1c6b167b5d2474509dcccde8f947204fcdb6b5b2c05a68524d18a"
+    },
+    "stable-control-paths.json": {
+      "bytes": 773,
+      "sha256": "cde27b18079f028ab2b8feaa287c2dd89255c63e007e3b1b7d667a2b2c509607"
+    },
+    "readback-limits-cleanup.json": {
+      "bytes": 532,
+      "sha256": "4303a62b5ef5808824ebc08edd0e2bbc4b6fce8ead8606531fcf4eb619698a47"
+    },
+    "acceptance-report.md": {
+      "bytes": 3963,
+      "sha256": "9eb16f6c208898297355ad20e141f29942459666da51d13e835c24a6809b57b3"
+    }
+  },
+  "savedRealBusinessUiVerified": true,
+  "releaseWorktreesStillAbsent": true,
+  "newBackupOrRestoreSubmitted": false,
+  "remoteMutationsPerformed": false,
+  "successfulFinalSubmissionCount": 1,
+  "realSpugLoginAndSubmissionVerified": true
+}

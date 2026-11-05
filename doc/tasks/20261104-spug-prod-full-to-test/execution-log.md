@@ -281,3 +281,9 @@ GREEN: 本轮临时release worktree删除 -> PASS；无新提交，无需融合�
 - GREEN: verify_restored_runtime.py -> PASS，五个原容器/镜像、UUID保持，backend UP、frontend200、replacement SUCCEEDED。独立真实页面PASS补充native businessAcceptance=NOT_PERFORMED，不修改原字段、不冒充完整业务回归。完整结论及限制见acceptance-report.md。
 
 - GREEN: task-closeout -> PASS。final-release-worktrees-readonly.json复核两专属发布目录物理路径/注册均不存在，无新提交无需合并发布副本；readback-limits-cleanup.json记录自有Linux两容器和无引用卷已清理。19:14 stable-control-paths.json复核.57/.58自有控制服务均active/enabled、配置pins通过，python/工作目录/PYTHONPATH和C:/Spug通道不依赖已删除worktree。实现提交9176b3c/04f5f9c保留，按清单不自动融合int_main；开发目录仍供原三服登记任务使用，不删其它任务资源。本轮从ready_for_closeout转completed，最终记录单独提交。
+
+## 目标续接完成审计（2026-11-05）
+- 上一轮分类 progress：另行授权的 .59 原服务和 Spug 选择验证已完成；本次只审计既有正式 FULL 到测试服的目标，不重复提交恢复。
+- BDD: 原始成功证据可复验 -> Given History355 已终态成功且既有真实页面/收尾记录通过，When 只读重验同一操作的小型 pins、精确原目标运行状态及本地发布目录缺失，Then 必须仍为同一新 FULL、实际退出0、原目标健康和证据不变，才确认目标完成。
+- GREEN: experience-preflight -> PASS（只读完成审计）：已读经验索引、恢复合同门禁及权威现存服务器/恢复规则副本；授权沿用本任务既有检查与验收范围。仅重读原始 JSON、摘要和健康状态，不执行备份恢复、启停、配置变更、SQL业务写入或共享盘操作。沿用已保存真实页面验收，不把 API 健康查询冒充 E2E。
+- GREEN: 2026-11-05 20:59 completion-audit -> PASS，原同一FULL/History355/SUCCEEDED/实际exit0及21份小型pins重新验真，原失败6pins保持、宿主预约已释放；原五容器/镜像/UUID、backend UP/frontend200通过，专属发布worktree物理与Git登记仍缺失。原真实Spug提交回执 realBrowser/realLogin=true、writes=1，原真实业务页面PASS/2117条/业务写入0，均保存摘要固定。未重复恢复、无远端写入；目标完整达成，goal-completion-audit.json记录本轮新鲜观察和旧证据pins。本任务保持completed，原三服登记中的.57目的地阻塞独立保留。
