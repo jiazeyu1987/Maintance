@@ -11,7 +11,7 @@ import os
 import re
 import stat
 
-from recovery_engine import require
+from recovery_engine import digest, require
 
 LOCAL_FILESYSTEMS = frozenset(('ext2', 'ext3', 'ext4', 'xfs', 'btrfs', 'zfs'))
 DATA_ROLES = frozenset(('mysql', 'minio', 'redis'))
@@ -152,8 +152,11 @@ def _bound_directory(item, backing):
 
 
 def validate_storage(value):
-    require(type(value) is dict and set(value) == {'schemaVersion', 'protectedRoots', 'mounts'} and
-            value['schemaVersion'] in ('RegisteredReplacementStorage/v1', 'RegisteredReplacementStorage/v2') and
+    retained = type(value) is dict and value.get('schemaVersion') == 'RegisteredReplacementStorage/v3'
+    require(type(value) is dict and set(value) == {'schemaVersion', 'protectedRoots', 'mounts'} |
+            ({'preservedApplicationMounts', 'inactiveConsumers'} if retained else set()) and
+            value['schemaVersion'] in ('RegisteredReplacementStorage/v1', 'RegisteredReplacementStorage/v2',
+                                      'RegisteredReplacementStorage/v3') and
             type(value['protectedRoots']) is list and type(value['mounts']) is list and value['mounts'],
             'REPLACEMENT_STORAGE_CONFIGURATION_INVALID')
     protected = value['protectedRoots']
@@ -163,7 +166,7 @@ def validate_storage(value):
         _path(path, root=True)
     sources, physical, bindings = [], [], set()
     for item in value['mounts']:
-        has_volume = value['schemaVersion'] == 'RegisteredReplacementStorage/v2' and type(item) is dict and item.get('type') == 'volume'
+        has_volume = value['schemaVersion'] != 'RegisteredReplacementStorage/v1' and type(item) is dict and item.get('type') == 'volume'
         require(type(item) is dict and set(item) == STORAGE_FIELDS | ({'volume'} if has_volume else set()) and
                 item['role'] in DATA_ROLES and item['type'] in ('bind', 'volume') and
                 type(item['device']) is int and item['device'] >= 0 and
@@ -188,7 +191,165 @@ def validate_storage(value):
         require(all(not _same_storage(location, old) for old in physical), 'REPLACEMENT_STORAGE_OVERLAP')
         sources.extend(paths); bindings.add(binding)
         physical.append(location)
+    if retained:
+        _validate_retained(value)
     return value
+
+
+def _validate_retained(storage):
+    entries, inactive = storage['preservedApplicationMounts'], storage['inactiveConsumers']
+    require(type(entries) is list and entries and type(inactive) is list,
+            'REPLACEMENT_RETAINED_CONFIGURATION_INVALID')
+    bindings = set()
+    identity_fields = {'resolvedPath', 'device', 'inode', 'mode', 'uid', 'gid', 'kind',
+                       'mountIdentity', 'pathLinks', 'contentDigest'}
+    for entry in entries:
+        require(type(entry) is dict and set(entry) == {'role', 'mount', 'identity'} and
+                type(entry['role']) is str and entry['role'] not in DATA_ROLES and entry['role'] and
+                type(entry['mount']) is dict and entry['mount'].get('Type') == 'bind' and
+                type(entry['mount'].get('RW')) is bool, 'REPLACEMENT_RETAINED_CONFIGURATION_INVALID')
+        mount, observed = entry['mount'], entry['identity']
+        _path(mount['Source']); _path(mount['Destination'])
+        binding = (entry['role'], mount['Destination'])
+        require(binding not in bindings, 'REPLACEMENT_RETAINED_BINDING_DUPLICATE')
+        bindings.add(binding)
+        require(type(observed) is dict and set(observed) == identity_fields and
+                observed['kind'] in ('directory', 'file', 'socket') and
+                all(type(observed[k]) is int and observed[k] >= 0 for k in ('device', 'mode', 'uid', 'gid')) and
+                type(observed['inode']) is int and observed['inode'] > 0 and
+                type(observed['mountIdentity']) is dict and set(observed['mountIdentity']) == MOUNT_FIELDS and
+                type(observed['pathLinks']) is list and
+                (observed['contentDigest'] is None if mount['RW'] else
+                 type(observed['contentDigest']) is str and re.fullmatch('[0-9a-f]{64}', observed['contentDigest'])),
+                'REPLACEMENT_RETAINED_CONFIGURATION_INVALID')
+        _path(observed['resolvedPath'])
+        for link in observed['pathLinks']:
+            require(type(link) is dict and set(link) == {'path', 'target', 'device', 'inode'} and
+                    type(link['target']) is str and link['target'] and
+                    all(type(link[k]) is int and link[k] >= 0 for k in ('device', 'inode')),
+                    'REPLACEMENT_RETAINED_CONFIGURATION_INVALID')
+            _path(link['path'])
+    ids = set()
+    for item in inactive:
+        require(type(item) is dict and set(item) == {'id', 'configurationDigest', 'mounts'} and
+                type(item['id']) is str and item['id'] and item['id'] not in ids and
+                type(item['configurationDigest']) is str and re.fullmatch('[0-9a-f]{64}', item['configurationDigest']) and
+                type(item['mounts']) is list, 'REPLACEMENT_INACTIVE_CONFIGURATION_INVALID')
+        ids.add(item['id'])
+
+
+def _configuration_digest(row):
+    return digest({key: row[key] for key in ('Path', 'Args', 'HostConfig', 'Config')})
+
+
+def _inactive(row):
+    state = row['State']
+    require(state.get('Running') is False and state.get('Paused') is False and
+            state.get('Restarting') is False and type(state.get('Pid')) is int and state['Pid'] == 0 and
+            state.get('Status') in ('created', 'exited') and row.get('ExecIDs') in (None, []),
+            'REPLACEMENT_HISTORICAL_CONSUMER_ACTIVE')
+
+
+def observe_preserved_mount(mount):
+    """Pin a retained bind, including explicit path aliases and read-only bytes.
+
+    Read/write directory contents intentionally remain live. The directory itself
+    and its mount stay pinned; it never enters the data replacement list.
+    """
+    import hashlib
+    require(os.name == 'posix' and mount.get('Type') == 'bind', 'REPLACEMENT_RETAINED_PLATFORM_INVALID')
+    _path(mount['Source'])
+    source = Path(mount['Source'])
+    try:
+        links = []
+        for part in reversed((source, *source.parents)):
+            info = part.lstat()
+            if stat.S_ISLNK(info.st_mode):
+                links.append(dict(path=str(part), target=os.readlink(part), device=info.st_dev, inode=info.st_ino))
+        resolved = source.resolve(strict=True)
+        info = resolved.lstat()
+        kind = next((name for name, check in (('directory', stat.S_ISDIR), ('file', stat.S_ISREG),
+                     ('socket', stat.S_ISSOCK)) if check(info.st_mode)), None)
+        require(kind is not None, 'REPLACEMENT_RETAINED_TYPE_INVALID')
+        mounts = parse_mountinfo(Path('/proc/self/mountinfo').read_text(encoding='utf-8'))
+        selected = [m for m in mounts if str(resolved) == m['mountPoint'] or
+                    _path(m['mountPoint'], root=True) in _path(str(resolved)).parents]
+        require(selected, 'REPLACEMENT_STORAGE_MOUNT_MISSING')
+        selected = max(selected, key=lambda m: len(_path(m['mountPoint'], root=True).parts))
+        require(sum(m['mountPoint'] == selected['mountPoint'] for m in mounts) == 1,
+                'REPLACEMENT_STORAGE_MOUNT_AMBIGUOUS')
+        content = None
+        if not mount['RW']:
+            require(kind in ('directory', 'file'), 'REPLACEMENT_RETAINED_TYPE_INVALID')
+            entries, size = [], 0
+            paths = [resolved] if kind == 'file' else sorted(resolved.rglob('*'))
+            require(len(paths) <= 10000, 'REPLACEMENT_RETAINED_TREE_LIMIT')
+            for path in paths:
+                before = path.lstat()
+                require(stat.S_ISREG(before.st_mode) or stat.S_ISDIR(before.st_mode),
+                        'REPLACEMENT_RETAINED_TREE_TYPE_INVALID')
+                checksum = None
+                if stat.S_ISREG(before.st_mode):
+                    size += before.st_size
+                    require(size <= 1024**3, 'REPLACEMENT_RETAINED_TREE_LIMIT')
+                    checksum = hashlib.sha256()
+                    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+                    with os.fdopen(fd, 'rb') as stream:
+                        require(_stat_identity(os.fstat(stream.fileno())) == _stat_identity(before),
+                                'REPLACEMENT_RETAINED_CHANGED')
+                        for block in iter(lambda: stream.read(1024**2), b''): checksum.update(block)
+                    require(_stat_identity(path.lstat()) == _stat_identity(before), 'REPLACEMENT_RETAINED_CHANGED')
+                    checksum = checksum.hexdigest()
+                entries.append(dict(path=str(path.relative_to(resolved)) if kind == 'directory' else '.',
+                    device=before.st_dev, inode=before.st_ino, mode=before.st_mode,
+                    uid=before.st_uid, gid=before.st_gid, sha256=checksum))
+            content = digest(entries)
+        require(_stat_identity(resolved.lstat()) == _stat_identity(info) and source.resolve(strict=True) == resolved and
+                all(Path(link['path']).is_symlink() and os.readlink(link['path']) == link['target'] and
+                    Path(link['path']).lstat().st_ino == link['inode'] for link in links),
+                'REPLACEMENT_RETAINED_CHANGED')
+        return dict(resolvedPath=str(resolved), device=info.st_dev, inode=info.st_ino,
+            mode=info.st_mode, uid=info.st_uid, gid=info.st_gid, kind=kind,
+            mountIdentity=selected, pathLinks=links, contentDigest=content)
+    except OSError as error:
+        raise ValueError('REPLACEMENT_RETAINED_PATH_INVALID') from error
+
+
+def _stat_identity(info):
+    return (info.st_dev, info.st_ino, info.st_mode, info.st_uid, info.st_gid,
+            info.st_size, info.st_mtime_ns, info.st_ctime_ns)
+
+
+def snapshot_retained_storage(rows, protected_roots, inactive_consumers, **kwargs):
+    """Select v3 explicitly. Inactive consumers must be supplied and verified anew."""
+    from copy import deepcopy
+    data = snapshot_mounts({r: row for r, row in rows.items() if r in DATA_ROLES}, protected_roots, **kwargs)
+    data['schemaVersion'] = 'RegisteredReplacementStorage/v3'
+    data['preservedApplicationMounts'] = [dict(role=role, mount=deepcopy(mount),
+        identity=observe_preserved_mount(mount)) for role, row in rows.items() if role not in DATA_ROLES
+        for mount in row['Mounts']]
+    data['inactiveConsumers'] = []
+    for row in inactive_consumers:
+        _inactive(row)
+        data['inactiveConsumers'].append(dict(id=row['Id'], configurationDigest=_configuration_digest(row),
+            mounts=sorted(deepcopy(row['Mounts']), key=lambda m: m['Destination'])))
+    return validate_storage(data)
+
+
+def verify_preserved_mounts(storage, rows):
+    """Return exact approved consumer/mount pairs, never replacement paths."""
+    validate_storage(storage)
+    expected = {(e['role'], e['mount']['Destination']): e for e in storage['preservedApplicationMounts']}
+    observed = {(role, m['Destination']): (row['Id'], m) for role, row in rows.items()
+                if role not in DATA_ROLES for m in row['Mounts']}
+    require(set(expected) == set(observed), 'REPLACEMENT_RETAINED_BINDING_CHANGED')
+    approved = []
+    for key, entry in expected.items():
+        identity, mount = observed[key]
+        require(mount == entry['mount'] and observe_preserved_mount(mount) == entry['identity'],
+                'REPLACEMENT_RETAINED_CHANGED')
+        approved.append((identity, mount))
+    return approved
 
 
 def observe_directory(path, mountinfo_text=None, *, backing=None):
@@ -322,6 +483,7 @@ def verify_storage(native, value, rows):
     """Validate all registered write mounts and every container, including stopped ones."""
     v2 = value['schemaVersion'] == 'RegisteredApplicationReplacement/v2'
     registered, physical, mounts = {}, {}, None
+    preserved, inactive = [], {}
     if v2:
         storage = validate_storage(value['storage'])
         required = [*native.source['archiveRoots'], str(native.root), value.get('stateRoot', native.config['replacement']['stateRoot']),
@@ -332,9 +494,16 @@ def verify_storage(native, value, rows):
                 'REPLACEMENT_PROTECTED_ROOT_REQUIRED')
         registered = {(m['role'], m['destination']): m for m in storage['mounts']}
         mounts = parse_mountinfo(Path('/proc/self/mountinfo').read_text(encoding='utf-8'))
+        if storage['schemaVersion'] == 'RegisteredReplacementStorage/v3':
+            preserved = verify_preserved_mounts(storage, rows)
+            inactive = {item['id']: item for item in storage['inactiveConsumers']}
+            require(not set(inactive) & {row['Id'] for row in rows.values()},
+                    'REPLACEMENT_INACTIVE_CONFIGURATION_INVALID')
     writable, used = {}, set()
     for role, row in rows.items():
         for mount in row['Mounts']:
+            if (row['Id'], mount) in preserved:
+                continue
             if not mount['RW']:
                 continue
             require(role in DATA_ROLES and mount['Type'] in (('bind', 'volume') if v2 else ('volume',)) and
@@ -367,10 +536,20 @@ def verify_storage(native, value, rows):
                 _volume(native, mount)
             writable[mount['Source']] = row['Id']
     require(not v2 or used == set(registered), 'REPLACEMENT_STORAGE_BINDING_CHANGED')
-    for consumer in _consumers(native, [row['Id'] for row in rows.values()]):
+    consumers = _consumers(native, [row['Id'] for row in rows.values()])
+    require(set(inactive) <= {row['Id'] for row in consumers}, 'REPLACEMENT_HISTORICAL_CONSUMER_MISSING')
+    for consumer in consumers:
         identity = consumer['Id']
+        if identity in inactive:
+            expected = inactive[identity]
+            _inactive(consumer)
+            require(_configuration_digest(consumer) == expected['configurationDigest'] and
+                    sorted(consumer['Mounts'], key=lambda m: m['Destination']) == expected['mounts'],
+                    'REPLACEMENT_HISTORICAL_CONSUMER_CHANGED')
         for mount in consumer['Mounts']:
             if not mount.get('RW') or not mount.get('Source'):
+                continue
+            if identity in inactive or (identity, mount) in preserved:
                 continue
             require(all(not overlaps(mount['Source'], path) or
                         identity == owner and mount['Source'] == path for path, owner in writable.items()),

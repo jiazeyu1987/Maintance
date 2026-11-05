@@ -1,5 +1,15 @@
 # W04 单人最小恢复入口
 
+## 原 MAIN 保留挂载与发布数据端点
+
+`RegisteredMainApplication/v2` 必须配合 `RegisteredReplacementStorage/v3` 显式登记。数据替换范围只取 mysql/minio/redis 的数据挂载；`preservedApplicationMounts` 固定原应用完整 bind、物理身份、父路径别名和只读内容。可写运行目录、socket 和共享备份目录仅保留，不能进入 `dataPaths` 或清理范围。重叠的历史容器必须逐一登记 `inactiveConsumers`，每次核配置、挂载、停止状态、PID0 和无 exec；未登记或运行消费者仍拒绝。
+
+Redis 无认证只能明确选择 `redisAuthentication.mode=NONE`，固定真实 `ACL LIST` 摘要，每次访问前核 requirepass 为空、ACL 不变、无宿主发布端口及 host 网络。不能创建虚构密码引用；已有密码模式继续从标准输入传输。
+
+现行发布数据端点仅支持原 MinIO 的 `127.0.0.1:9000`，完整固定原 TCP 发布绑定和批准后端静态 IPv4。`PublishedHostWriteFence/v1` 在 IPv4/IPv6 mangle 的 PREROUTING/OUTPUT 链首保护所有已发布端口，包含控制台；只允许登记后端和 root loopback 恢复客户端。实际 xtables 程序必须固定摘要。围栏安装和 MySQL/Redis 停写复核在 DROP 前通过；危险步骤再次核实际有序规则。失败保留围栏及证据，成功仅删除本操作规则并核原有序规则完全恢复。
+
+发布端口保护不等于整个 Docker 网络隔离，必须同时证明 IAM 账号和资源独占、全部 writer 归属及实际网络成员。仅此显式发布端点可接受真实 Docker 动态数据地址；静态地址、IPAM、配置或网络成员漂移继续拒绝。同机来源和目标必须使用来源实际共同锁，来源目录控制不能依赖将被停写的主程序；覆盖前验证当前数据保留依据和所选归档精确 pins。
+
 主入口为 `recovery_minimal.py --configuration <绝对路径> --request <绝对路径> --output <绝对路径>`。
 本模块执行 `RESTORE`；同一 UI 的 `FULL`、`INCREMENTAL` 由 W01 路由到 W03 捕获/归档模块。
 传错模块会返回 `CAPTURE_ACTION_REQUIRES_W03_ENTRY`，不会调用旧签发入口。

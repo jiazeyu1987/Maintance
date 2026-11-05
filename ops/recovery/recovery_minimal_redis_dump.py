@@ -28,8 +28,9 @@ def restore(native,item):
     require(snapshot['schemaVersion']=='RedisDumpSnapshot/v1' and
         snapshot['database']==adapter['database'] and type(snapshot['entries']) is list,
         'REDIS_SNAPSHOT_INVALID')
+    from recovery_main_target import redis_password
     options=dict(host=native.config_services['redis']['ip'],port=6379,db=adapter['database'],
-        password=native.secret('redis','REDIS_PASSWORD'),socket_timeout=10,socket_connect_timeout=5)
+        password=redis_password(native),socket_timeout=10,socket_connect_timeout=5)
     client=redis.Redis(**options);expired=0;restored=0
     try:
         native.bound()

@@ -117,5 +117,6 @@
   "ops/recovery/repository_retention.py": "common/repository_retention.py",
   "ops/recovery/staging_cleanup.py": "common/staging_cleanup.py",
   "ops/recovery/recovery_resource_admission.py": "common/recovery_resource_admission.py",
-  "ops/recovery/recovery_firewall.py": "common/recovery_firewall.py"
+  "ops/recovery/recovery_firewall.py": "common/recovery_firewall.py",
+  "ops/recovery/recovery_published_fence.py": "common/recovery_published_fence.py"
 }

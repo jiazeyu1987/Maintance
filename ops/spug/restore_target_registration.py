@@ -59,8 +59,8 @@ def plan(value):
         need(owner.get('schemaVersion')=='RecoveryMinimalConfiguration/v1' and
              ref in owner['targets'] and source in owner['sources'], 'RECOVERY_OWNER_CONFIGURATION_REQUIRED')
         instance=owner['targets'][ref]
-        need(instance.get('sourceConfigRef')==source and instance.get('mainApplication',{}).get('schemaVersion')==
-             'RegisteredMainApplication/v1' and instance.get('replacement',{}).get('schemaVersion')==
+        need(instance.get('sourceConfigRef')==source and instance.get('mainApplication',{}).get('schemaVersion') in
+             ('RegisteredMainApplication/v1','RegisteredMainApplication/v2') and instance.get('replacement',{}).get('schemaVersion')==
              'RegisteredApplicationReplacement/v2', 'REGISTERED_MAIN_TARGET_REQUIRED')
         need(owner['sources'][source].get('archiveCatalogue',{}).get('schemaVersion')=='RecoveryArchiveCatalogue/v1',
              'DYNAMIC_ARCHIVE_CATALOGUE_REQUIRED')

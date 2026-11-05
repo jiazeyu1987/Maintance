@@ -73,6 +73,7 @@
 ## 路由
 
 - MAIN_SERVICE_NETWORK_CHANGED / docker stop bridge IP清空 / 动态附加网络 / frontend loopback发布端口 / IPAMConfig：`docs/release-agent-checklist.md` 的“阶段1c：MAIN动态附加网络停启”；区分固定访问端点与真实Docker分配，已清空目标保持停写并走写入后失败准许。
+- MAIN/v2 / storage/v3 / 保留应用可写挂载 / Docker socket / 停止历史消费者 / Redis NONE / MinIO发布9000 / PublishedHostWriteFence / 同机来源目标：`docs/release-agent-checklist.md` 的“阶段1d：保留原 MAIN 的存储与发布端口”；真实 Linux 验证、全部 writer、共同锁和写前围栏必查。
 
 - 反复打包 / 本地打包成功服务器失败 / 错误前移 / target-state 前移 / release-preflight / 同构安装演练 / BuildKit 缓存 / 构建缓存：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-07-服务器错误前移与反复打包收敛门禁`
 - 一键发布 / 按钮化发布 / 发布流程程序化 / without-data / app-release / 三按钮 / ReleaseWorkflow / 环境租约 / packageDigest / manifestDigest / R31-R44 防复发：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-11-按钮化-app-release-工作流设计前置门禁`

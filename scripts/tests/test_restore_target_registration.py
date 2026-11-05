@@ -59,6 +59,14 @@ class RegistrationPlan(unittest.TestCase):
     def test_one_server_duplicate_or_unregistered_server_is_refused(self):
         value=self.fixture();value['targets'].pop()
         with self.assertRaisesRegex(ValueError,'THREE_DISTINCT'):plan(value)
+
+    def test_versioned_retained_main_target_keeps_all_three_routes(self):
+        value=self.fixture();target=value['targets'][0];ref=target['targetConfigRef']
+        target['ownerConfiguration']['targets'][ref]['mainApplication']['schemaVersion']='RegisteredMainApplication/v2'
+        result=plan(value)
+        self.assertEqual(result['targets'][0]['recoveryConfiguration']['targets'][ref]['mainApplication']['schemaVersion'],
+            'RegisteredMainApplication/v2')
+        self.assertEqual(len(result['simpleSettings']['bindings'][0]['overwriteTargetServers']),3)
         value=self.fixture();value['targets'][0]['server']='10.0.0.1'
         with self.assertRaisesRegex(ValueError,'THREE_DISTINCT'):plan(value)
 

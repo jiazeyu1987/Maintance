@@ -35,7 +35,7 @@ def test_standard_keeps_original_code_except_reviewed_fixes_and_archive_names(pa
         'control/recovery_control_point_quarantine.py', 'formal/formal_binlog_scope.py',
         'common/recovery_replace.py', 'common/recovery_data.py', 'formal/formal_data_evidence.py',
         'common/recovery_main_target.py', 'common/recovery_replacement_storage.py', 'common/recovery_minimal_plan.py',
-        'common/recovery_retained_retry.py',
+        'common/recovery_retained_retry.py', 'common/recovery_minimal_redis_dump.py', 'common/recovery_published_fence.py',
         'control/recovery_control_restore_catalogue.py', 'control/recovery_control_smallapp_http.py',
         'formal/minimal_capture_support.py', 'formal/minimal_capture_worker.py',
         'formal/minimal_redis_snapshot.py'}
@@ -57,6 +57,26 @@ def test_changed_safe_baseline_patch_context_is_rejected():
     original['formal/minimal_redis_snapshot.py'] = b'# an incompatible baseline\n'
     with pytest.raises(ValueError, match='STANDARD_FIX_CONTEXT_CHANGED'):
         builder.safe_fixes(original)
+
+
+@pytest.mark.parametrize('variant', builder.VARIANTS)
+def test_packaged_redis_dump_uses_registered_authentication(variant, packages):
+    with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
+        code=archive.extractfile('common/recovery_minimal_redis_dump.py').read().decode()
+        assert 'password=redis_password(native)' in code
+        assert 'from recovery_main_target import redis_password' in code
+        main=archive.extractfile('common/recovery_main_target.py').read().decode()
+        assert 'RegisteredMainApplication/v2' in main and 'MAIN_REDIS_ACL_CHANGED' in main
+
+
+@pytest.mark.parametrize('variant', builder.VARIANTS)
+def test_published_fence_and_preparation_hooks_are_actually_packaged(variant, packages):
+    with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
+        assert archive.extractfile('common/recovery_published_fence.py').read()==(ROOT/'ops/recovery/recovery_published_fence.py').read_bytes()
+        code=archive.extractfile('common/recovery_replace.py').read().decode()
+        assert code.index('native.replacement_write_fence()') < code.index("native.docker(['stop'")
+        assert code.index('native.replacement_quiescence()') < code.index("native.mysql.query('DROP DATABASE")
+        assert 'native.replacement_finish()' in code
 
 
 @pytest.mark.parametrize('variant', builder.VARIANTS)

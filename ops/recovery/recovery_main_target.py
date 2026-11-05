@@ -60,7 +60,8 @@ def _published_host_port(row):
 
 def _dynamic_application_attachment(native, role, row, name, observed, expected, attachments):
     """Bind ancillary Docker allocations to lifecycle and real network membership."""
-    if role in DATA_ROLES or row['NetworkSettings']['Networks'][name].get('IPAMConfig'):
+    published = role in DATA_ROLES and published_endpoint(native.config, role) is not None
+    if role in DATA_ROLES and not published or row['NetworkSettings']['Networks'][name].get('IPAMConfig'):
         return False
     addresses = ('ipAddress', 'globalIPv6Address')
     if {k: v for k, v in observed.items() if k not in addresses} != \
@@ -77,13 +78,13 @@ def _dynamic_application_attachment(native, role, row, name, observed, expected,
             fixed.update(value for field, key in (('IPv4Address', 'ipAddress'),
                          ('IPv6Address', 'globalIPv6Address'))
                          if (value := configured.get(field)) and value == saved[key])
-    if not fixed:
+    if not fixed and not published:
         return False
     try:
         loopback = ipaddress.ip_address(service['ip']).is_loopback
     except ValueError:
         return False
-    if service['ip'] not in fixed and not (loopback and _published_host_port(row)):
+    if not published and service['ip'] not in fixed and not (loopback and _published_host_port(row)):
         return False
     registered = next((network for network in native.config['mainApplication']['networks']
                        if network['name'] == name and network['id'] == observed['networkId']), None)
@@ -118,7 +119,8 @@ def verify_network_attachments(native, role, row, expected):
 
 
 def capture_main_application(target, rows, networks, archive_image_bindings,
-                             configuration_pins, writer_evidence_pin):
+                             configuration_pins, writer_evidence_pin, *, redis_authentication=None,
+                             published_data_endpoints=None):
     """Build the versioned contract from explicit observations, never invent evidence."""
     evidence = _document(writer_evidence_pin)
     candidate = dict(schemaVersion='RegisteredMainApplication/v1',
@@ -131,6 +133,11 @@ def capture_main_application(target, rows, networks, archive_image_bindings,
         writerAdmission=dict(schemaVersion='RegisteredMainWriterCustody/v1',
             approvedWriterContainerIds=evidence['writerContainerIds'],
             exclusiveResources=evidence['exclusiveResources'], evidencePin=writer_evidence_pin))
+    if target.get('replacement', {}).get('storage', {}).get('schemaVersion') == 'RegisteredReplacementStorage/v3':
+        require(redis_authentication is not None, 'MAIN_REDIS_AUTHENTICATION_REQUIRED')
+        candidate.update(schemaVersion='RegisteredMainApplication/v2',
+                         publishedDataEndpoints=[] if published_data_endpoints is None else published_data_endpoints,
+                         redisAuthentication=redis_authentication)
     validate(dict(target, mainApplication=candidate))
     native = SimpleNamespace(config=dict(target, mainApplication=candidate),
         config_services={s['role']: s for s in target['services']},
@@ -155,10 +162,23 @@ def _writer_evidence(native, value):
 
 def validate(target):
     value = target['mainApplication']
+    retained = type(value) is dict and value.get('schemaVersion') == 'RegisteredMainApplication/v2'
     require(target.get('replacement', {}).get('schemaVersion') == 'RegisteredApplicationReplacement/v2',
             'MAIN_TARGET_REPLACEMENT_V2_REQUIRED')
-    require(type(value) is dict and set(value) == MAIN_FIELDS and
-            value['schemaVersion'] == 'RegisteredMainApplication/v1', 'MAIN_TARGET_CONFIGURATION_INVALID')
+    require(type(value) is dict and set(value) == MAIN_FIELDS |
+            ({'publishedDataEndpoints', 'redisAuthentication'} if retained else set()) and
+            value['schemaVersion'] in ('RegisteredMainApplication/v1', 'RegisteredMainApplication/v2'),
+            'MAIN_TARGET_CONFIGURATION_INVALID')
+    if retained:
+        require(target['replacement'].get('storage', {}).get('schemaVersion') == 'RegisteredReplacementStorage/v3',
+                'MAIN_RETAINED_STORAGE_V3_REQUIRED')
+        auth = value['redisAuthentication']
+        require(type(auth) is dict and (auth == dict(mode='PASSWORD') or
+                set(auth) == {'mode', 'aclSha256'} and auth['mode'] == 'NONE' and
+                type(auth['aclSha256']) is str and re.fullmatch('[0-9a-f]{64}', auth['aclSha256'])),
+                'MAIN_REDIS_AUTHENTICATION_INVALID')
+        require(auth['mode'] != 'NONE' or not target.get('secrets', {}).get('redis'),
+                'MAIN_REDIS_UNEXPECTED_SECRET')
     services = {row['role']: row for row in target['services']}
     roles = set(services); applications = roles - DATA_ROLES
     require(len(services) == len(target['services']) and len({s['id'] for s in target['services']}) == len(target['services']) and
@@ -199,7 +219,8 @@ def validate(target):
                 for name, row in attachments.items()) for attachments in value['networkAttachments'].values()),
             'MAIN_NETWORK_BINDINGS_INVALID')
     require(all(type(services[role].get('ip')) is str and services[role]['ip'] and
-                services[role]['ip'] in {a['ipAddress'] for a in value['networkAttachments'][role].values()}
+                (services[role]['ip'] in {a['ipAddress'] for a in value['networkAttachments'][role].values()} or
+                 retained and published_endpoint(target, role) is not None)
                 for role in DATA_ROLES), 'MAIN_DATA_ENDPOINT_UNBOUND')
     require(type(value['configurationPins']) is list, 'MAIN_CONFIGURATION_PINS_INVALID')
     writers = value['writerAdmission']
@@ -210,7 +231,52 @@ def validate(target):
             len(set(writers['approvedWriterContainerIds'])) == len(writers['approvedWriterContainerIds']) and
             set(writers['approvedWriterContainerIds']) <= {services[r]['id'] for r in applications} and
             services['backend']['id'] in writers['approvedWriterContainerIds'], 'MAIN_WRITER_CUSTODY_REQUIRED')
+    if retained:
+        _published_contract(target)
     return value
+
+
+def published_endpoint(target, role):
+    value = target.get('mainApplication', {})
+    if value.get('schemaVersion') != 'RegisteredMainApplication/v2': return None
+    rows = value.get('publishedDataEndpoints', [])
+    return next((row for row in rows if type(row) is dict and row.get('role') == role), None)
+
+
+def _published_contract(target):
+    from recovery_published_fence import validate as fence_contract
+    value = target['mainApplication']; entries = value['publishedDataEndpoints']
+    require(type(entries) is list and len(entries) <= 1, 'MAIN_PUBLISHED_SCOPE_INVALID')
+    services = {row['role']: row for row in target['services']}
+    writers = value['writerAdmission']['approvedWriterContainerIds']
+    approved = sorted(services[role]['ip'] for role in services if services[role]['id'] in writers)
+    for entry in entries:
+        require(type(entry) is dict and set(entry) == {'role', 'ip', 'port', 'containerPort', 'bindings', 'writeFence'} and
+                entry['role'] == 'minio' and entry['ip'] == services['minio']['ip'] == '127.0.0.1' and
+                type(entry['port']) is int and entry['port'] == 9000 and entry['containerPort'] == '9000/tcp',
+                'MAIN_PUBLISHED_SCOPE_INVALID')
+        bindings = entry['bindings']; ports = []
+        require(type(bindings) is dict and entry['containerPort'] in bindings, 'MAIN_PUBLISHED_BINDING_INVALID')
+        for port, rows in bindings.items():
+            require(type(port) is str and re.fullmatch('[0-9]+/tcp', port) and 0 < int(port.split('/')[0]) <= 65535 and
+                    type(rows) is list and len(rows) == 1 and type(rows[0]) is dict and
+                    set(rows[0]) == {'HostIp', 'HostPort'} and rows[0]['HostIp'] in ('', '0.0.0.0') and
+                    type(rows[0]['HostPort']) is str and rows[0]['HostPort'].isdigit() and
+                    0 < int(rows[0]['HostPort']) <= 65535, 'MAIN_PUBLISHED_BINDING_INVALID')
+            ports.append(int(rows[0]['HostPort']))
+        require(len(set(ports)) == len(ports) and bindings['9000/tcp'][0]['HostPort'] == '9000',
+                'MAIN_PUBLISHED_BINDING_INVALID')
+        fence = fence_contract(entry['writeFence'])
+        require(fence['ports'] == sorted(ports) and fence['allowedWriterIPv4'] == approved,
+                'MAIN_PUBLISHED_FENCE_SCOPE_MISMATCH')
+
+
+def published_fence(native):
+    entry = published_endpoint(native.config, 'minio')
+    if entry is None: return None
+    from recovery_published_fence import PublishedFence
+    return PublishedFence(entry['writeFence'], native.original['operationId'],
+        Path(native.config['replacement']['stateRoot'])/native.original['operationId']/'published-fence', native.command)
 
 
 def application_inputs(native):
@@ -233,6 +299,11 @@ def application_inputs(native):
     require(len(pins) == len(value['configurationPins']), 'MAIN_CONFIGURATION_PINS_INVALID')
     for reference in pins.values():
         require(pin(reference['path']) == reference, 'MAIN_PIN_CHANGED')
+    if value['schemaVersion'] == 'RegisteredMainApplication/v2':
+        from recovery_replacement_storage import verify_preserved_mounts
+        rows = {role: native.inspect(service['id']) for role, service in services.items()}
+        verify_preserved_mounts(native.config['replacement']['storage'], rows)
+        return
     for role in set(services) - DATA_ROLES:
         for mount in native.inspect(services[role]['id'])['Mounts']:
             # Main settings stay installed. A mount identity alone does not
@@ -240,6 +311,44 @@ def application_inputs(native):
             require(not mount['RW'], 'MAIN_APPLICATION_WRITABLE_MOUNT_REJECTED')
             require(mount['Type'] == 'bind' and mount['Source'] in pins,
                     'MAIN_CONFIGURATION_MOUNT_UNPINNED')
+
+
+def redis_password(native):
+    """Use explicit existing authentication, never an empty or invented secret."""
+    value = native.config.get('mainApplication', {})
+    if value.get('schemaVersion') != 'RegisteredMainApplication/v2' or \
+            value.get('redisAuthentication', {}).get('mode') != 'NONE':
+        return native.secret('redis', 'REDIS_PASSWORD')
+    import hashlib
+    validate(native.config)
+    row = native.inspect(native.config_services['redis']['id'])
+    require(not row['HostConfig'].get('PortBindings') and not row['HostConfig'].get('PublishAllPorts') and
+            row['HostConfig'].get('NetworkMode') != 'host', 'MAIN_REDIS_NOAUTH_PUBLISHED')
+    prefix = ['exec', row['Id'], native.config['redisClientPath'], '--raw']
+    require(native.docker([*prefix, 'CONFIG', 'GET', 'requirepass']) == b'requirepass\n\n',
+            'MAIN_REDIS_AUTHENTICATION_CHANGED')
+    acl = native.docker([*prefix, 'ACL', 'LIST'])
+    require(hashlib.sha256(acl).hexdigest() == value['redisAuthentication']['aclSha256'],
+            'MAIN_REDIS_ACL_CHANGED')
+    return None
+
+
+def redis_command(native, arguments, *, mutation=False):
+    password = redis_password(native)
+    if password is None:
+        return native.docker(['exec', native.config_services['redis']['id'], native.config['redisClientPath'],
+            *arguments], mutation=mutation)
+    script = 'IFS= read -r REDISCLI_AUTH; export REDISCLI_AUTH; exec "$@"'
+    return native.docker(['exec', '-i', native.config_services['redis']['id'], 'sh', '-ec', script,
+        'recovery-redis', native.config['redisClientPath'], *arguments],
+        input_bytes=(password+'\n').encode(), mutation=mutation)
+
+
+def verify_redis_authentication(native):
+    value = native.config.get('mainApplication', {})
+    if value.get('schemaVersion') == 'RegisteredMainApplication/v2' and \
+            value.get('redisAuthentication', {}).get('mode') == 'NONE':
+        redis_password(native)
 
 
 def database_identity(native):
@@ -305,6 +414,11 @@ def verify_runtime(native, *, states=True):
         require(row['Id'] == service['id'] and row['Image'] == service['imageId'] and
                 service_configuration_digest(row) == value['serviceConfigurationDigests'][role],
                 'MAIN_SERVICE_CONFIGURATION_CHANGED')
+        if value['schemaVersion'] == 'RegisteredMainApplication/v2' and role in DATA_ROLES:
+            endpoint = published_endpoint(native.config, role)
+            require((row['HostConfig'].get('PortBindings') or {}) == (endpoint['bindings'] if endpoint else {}) and
+                    not row['HostConfig'].get('PublishAllPorts') and row['HostConfig'].get('NetworkMode') != 'host',
+                    'MAIN_PUBLISHED_BINDING_CHANGED')
         verify_network_attachments(native, role, row, value['networkAttachments'][role])
         require(not row['State']['Paused'] and not row['State']['Restarting'], 'MAIN_SERVICE_UNSTABLE')
         if states:
@@ -315,6 +429,11 @@ def verify_runtime(native, *, states=True):
         if role in native.snapshots:
             require(current == native.snapshots[role], 'MAIN_SERVICE_CONFIGURATION_CHANGED')
         native.snapshots[role] = current
+    if published_endpoint(native.config, 'minio') is not None:
+        writers = value['writerAdmission']['approvedWriterContainerIds']
+        require(all(any((attachment.get('IPAMConfig') or {}).get('IPv4Address') ==
+                        native.config_services[role]['ip'] for attachment in row['NetworkSettings']['Networks'].values())
+                    for role, row in rows.items() if row['Id'] in writers), 'MAIN_PUBLISHED_WRITER_ADDRESS_NOT_FIXED')
     for expected in value['networks']:
         network = json.loads(native.docker(['network', 'inspect', expected['id']]))
         require(type(network) is list and len(network) == 1 and
@@ -347,7 +466,37 @@ def guarded_type(original):
             if enabled(self.config):
                 from recovery_replace import verify_services
                 self.guard(); application_inputs(self); database_identity(self)
+                verify_redis_authentication(self)
                 verify_services(self, self.config['replacement']); verify_runtime(self, states=False)
+                fence = published_fence(self)
+                if fence is not None: fence.preflight()
+
+        def replacement_write_fence(self):
+            if enabled(self.config):
+                fence = published_fence(self)
+                if fence is not None: fence.install()
+
+        def replacement_quiescence(self):
+            if enabled(self.config) and self.config['mainApplication']['schemaVersion'] == 'RegisteredMainApplication/v2':
+                fence = published_fence(self)
+                if fence is not None: fence.verify()
+                database = self.config['database']
+                queries = ("SELECT COUNT(*) FROM information_schema.PROCESSLIST WHERE ID<>CONNECTION_ID() "
+                           "AND USER NOT IN ('event_scheduler','mysql.infoschema','mysql.session','mysql.sys') "
+                           "AND HOST NOT LIKE 'localhost%';", "SELECT COUNT(*) FROM information_schema.EVENTS WHERE "
+                           "EVENT_SCHEMA='"+database+"' AND STATUS='ENABLED';")
+                require(all(self.mysql.query(query).strip() == '0' for query in queries), 'MAIN_DATABASE_WRITERS_NOT_QUIESCED')
+                clients = redis_command(self, ['--raw', 'CLIENT', 'LIST']).decode('utf-8')
+                clients = [dict(part.split('=', 1) for part in line.split() if '=' in part) for line in clients.splitlines()]
+                require(clients and all(row.get('addr', '').startswith('127.0.0.1:') for row in clients),
+                        'MAIN_REDIS_WRITERS_NOT_QUIESCED')
+
+        def replacement_finish(self):
+            if enabled(self.config):
+                fence = published_fence(self)
+                if fence is not None:
+                    return dict(publishedWriteFenceReleasePin=fence.release())
+            return {}
 
         def bound(self, *, importing=False, minio_stopped=False):
             if not enabled(self.config):
@@ -357,6 +506,9 @@ def guarded_type(original):
             verify_services(self, self.config['replacement'])
             verify_runtime(self)
             self.application_inputs()
+            verify_redis_authentication(self)
+            fence = published_fence(self)
+            if fence is not None: fence.verify()
             sql = self.modules['formal_sql_restore']
             (sql.import_database_state if importing else sql.database_state)(self.mysql, self.db_target)
 
@@ -374,10 +526,7 @@ def guarded_type(original):
             mounts = [m for m in self.snapshots['minio']['Mounts'] if m['Destination'] == self.policy['minioDataMount']]
             require(len(mounts) == 1 and mounts[0]['RW'] and
                     inventory(absolute(mounts[0]['Source']), self.guard) == {}, 'MAIN_PHYSICAL_TARGET_NOT_EMPTY')
-            script = 'IFS= read -r REDISCLI_AUTH; export REDISCLI_AUTH; exec "$@"'
-            raw = self.docker(['exec', '-i', self.config_services['redis']['id'], 'sh', '-ec', script,
-                'recovery-redis', self.config['redisClientPath'], '-n', str(self.config['redisRebuild']['database']),
-                '--raw', 'DBSIZE'], input_bytes=(self.secret('redis', 'REDIS_PASSWORD')+'\n').encode())
+            raw = redis_command(self, ['-n', str(self.config['redisRebuild']['database']), '--raw', 'DBSIZE'])
             require(raw.strip() == b'0', 'REDIS_TARGET_NOT_EMPTY')
 
         def start_application(self):
@@ -421,6 +570,7 @@ def observe_main_target(control, value, selection):
     native.database_uuid = lambda: mysql_query(native, 'SELECT @@server_uuid;').decode('ascii').strip()
     from recovery_replace import verify_services
     verify_services(native, target['replacement']); verify_runtime(native, states=False)
+    verify_redis_authentication(native)
     observations = {}
     for role, service in services.items():
         row = inspect(service['id'])

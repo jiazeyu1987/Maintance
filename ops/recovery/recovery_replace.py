@@ -113,6 +113,8 @@ def prepare(native, value):
     write(native.root/'replacement-intent.json', dict(targetConfigRef=native.original['targetConfigRef'],
           database=native.config['database'], databaseUuid=value['databaseUuid'],
           serviceIds={role:item['id'] for role,item in value['services'].items()}, startedAt=utc()))
+    if hasattr(native, 'replacement_write_fence'):
+        native.replacement_write_fence()
     for role in reversed(native.config['application']['startOrder']):
         native.docker(['stop', native.config_services[role]['id']], mutation=True)
     native.docker(['stop', native.config_services['minio']['id']], mutation=True)
@@ -121,6 +123,8 @@ def prepare(native, value):
     database = native.config['database']
     native.mysql.query('SHOW FULL TABLES FROM `'+database+'`;')
     verify_services(native, value)
+    if hasattr(native, 'replacement_quiescence'):
+        native.replacement_quiescence()
     native.mutation_dispatched = True
     native.mysql.query('DROP DATABASE `'+database+'`; CREATE DATABASE `'+database+'`;', mutation=True)
     mount = [m for m in value['services']['minio']['mounts'] if m['Destination'] == native.policy['minioDataMount']]
@@ -132,10 +136,8 @@ def prepare(native, value):
     # Clear only the registered application Redis database. Password stays on stdin.
     database = native.config['redisRebuild']['database']
     verify_services(native, value)
-    script = 'IFS= read -r REDISCLI_AUTH; export REDISCLI_AUTH; exec "$@"'
-    native.docker(['exec', '-i', native.config_services['redis']['id'], 'sh', '-ec', script,
-                  'recovery-redis', native.config['redisClientPath'], '-n', str(database), 'FLUSHDB'],
-                  input_bytes=(native.secret('redis','REDIS_PASSWORD')+'\n').encode(), mutation=True)
+    from recovery_main_target import redis_command
+    redis_command(native, ['-n', str(database), 'FLUSHDB'], mutation=True)
     write(native.root/'replacement-prepared.json', dict(state='PREPARED', finishedAt=utc()))
 
 
@@ -176,6 +178,8 @@ def execute(configuration, request, root, input_pins, original_execute, native_t
             runtime = claim/'runtime'; runtime.mkdir(mode=0o700)
             effective['targets'][request['targetConfigRef']]['dataRoot'] = str(runtime)
             result = original_execute(effective, request, root, input_pins, reservation_configuration=configuration)
+            if hasattr(native, 'replacement_finish'):
+                result[0].update(native.replacement_finish())
             receipt = write(claim/'replacement-result.json', dict(state='SUCCEEDED', operationId=request['operationId'],
                            targetConfigRef=request['targetConfigRef'], finishedAt=utc()))
             result[0]['replacementReceiptPin'] = receipt

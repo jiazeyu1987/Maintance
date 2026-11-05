@@ -74,6 +74,17 @@ Fail Fast：任何未确认远端效果、原包冲突或真实验证失败必�
 
 - 容量合同前置：`maxExpandedBytes` 计量SQL展开大小，`dataLimits.max_bytes` 计量数据库摘要查询输出，不能复用同一大值。安装配置必须调用实际formal.validate_limits（当前max_bytes硬上限16GiB）；实际SAFE/FAST构造器在目标访问/清理前再次校验。推荐运行 `pytest scripts/tests/test_backup_variants.py -k data_limits`，非法64GiB必须在target.services边界前失败，独立SQL64GiB+摘要16GiB必须通过该门禁。必须记录实际安装限额及原失败证据；禁止扩大正式限额掩盖配置错误。证据：`doc/tasks/20261104-spug-prod-full-to-test/readback-configuration-audit.json`。
 
+### 阶段1d：保留原 MAIN 的存储与发布端口
+
+- Trigger: 原应用含可写 runtime 父目录、Docker socket、共享备份挂载、停止历史消费者，或原 MinIO 发布端口、Redis 无认证、来源与目标同机。
+- Preflight check: 显式 MAIN/v2 + storage/v3，三个数据路径单独登记；全部原应用挂载物理身份/只读内容、全部重叠历史容器配置及停止/PID0/无exec逐项固定。核全部真实 writer、IAM 账号独占、MySQL/Redis 当前连接、原网络成员与完整发布绑定；无认证固定 ACL 摘要且无发布/host 网络。来源目录控制独立于停写主程序，源目标使用实际同一物理锁，覆盖前核当前数据保留依据和所选完整归档 pins。
+- Blocker: 未知 writer、未登记消费者、挂载/配置/ACL/程序摘要/端口/网络漂移、围栏缺失或失效、数据库事件仍启用、外部数据库/Redis 客户端未退，均在 DROP 前失败；失败后保留停止状态、围栏及证据。
+- Verification: 在真实 Linux 运行 `scripts/tests/test_retained_application_storage.py`、`test_main_retained_authentication.py`、`test_main_published_endpoint.py` 和 `test_published_write_fence_linux.py`；实际 IPv4 DNAT、IPv6 代理、root/非root、已有链首 ACCEPT、其它端口、漂移拒绝及释放原表保持均通过。实际 SAFE/FAST 包逐文件核验并确认保护 hook 顺序。
+- Forbidden action: 不把保留挂载列入清理范围，不忽略全部停止容器，不虚构 Redis 密码，不把发布端口保护称为整个网络隔离，不 flush/重写原防火墙表，不自动移除失败围栏或重复派发恢复，不删除/卸载公司 NAS。
+- Evidence: `doc/tasks/20261105-spug-full-to-prod/design.md`、`execution-log.md` 及 Linux 原始日志；实际安装、运行和恢复结果须另行留证，不能以本地测试代替。
+
+阶段必查项：登记前只读核身份、归属及共同锁；安装从精确提交的新专属发布 worktree 构建，仅更新自有控制；执行器安装独立操作 mangle/PREROUTING、OUTPUT 链首规则并复核原表保持，再停止原 writer、核连接和事件、进入清库；危险阶段再次核实际规则；原生成功及读回后只移除本操作规则并核原表恢复。Fail Fast 与必须记录：精确源点/目标/提交/包双摘要、实际 xtables pin、原有序表摘要、所有者证明、停写检查、围栏意图/active/release pins、真实 UI 操作号与退出结果、其它业务保持。恢复中失败沿已有保留失败准许流程，不另建 stateRoot 绕过。
+
 ## Spug 直接三服策略与普通脚本安装门禁
 
 - Trigger: 用户明确取消三服主流程演练，或切换已迁移的普通脚本执行器及发布页面。
