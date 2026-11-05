@@ -35,7 +35,7 @@ def test_standard_keeps_original_code_except_reviewed_fixes_and_archive_names(pa
         'control/recovery_control_point_quarantine.py', 'formal/formal_binlog_scope.py',
         'common/recovery_replace.py', 'common/recovery_data.py', 'formal/formal_data_evidence.py',
         'common/recovery_main_target.py', 'common/recovery_replacement_storage.py', 'common/recovery_minimal_plan.py',
-        'common/recovery_retained_retry.py', 'common/recovery_minimal_redis_dump.py', 'common/recovery_published_fence.py',
+        'common/recovery_retained_retry.py', 'common/recovery_minimal_redis_dump.py', 'common/recovery_published_fence.py', 'common/recovery_archive_view.py',
         'control/recovery_control_restore_catalogue.py', 'control/recovery_control_smallapp_http.py',
         'formal/minimal_capture_support.py', 'formal/minimal_capture_worker.py',
         'formal/minimal_redis_snapshot.py'}
@@ -73,6 +73,7 @@ def test_packaged_redis_dump_uses_registered_authentication(variant, packages):
 def test_published_fence_and_preparation_hooks_are_actually_packaged(variant, packages):
     with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
         assert archive.extractfile('common/recovery_published_fence.py').read()==(ROOT/'ops/recovery/recovery_published_fence.py').read_bytes()
+        assert archive.extractfile('common/recovery_archive_view.py').read()==(ROOT/'ops/recovery/recovery_archive_view.py').read_bytes()
         code=archive.extractfile('common/recovery_replace.py').read().decode()
         assert code.index('native.replacement_write_fence()') < code.index("native.docker(['stop'")
         assert code.index('native.replacement_quiescence()') < code.index("native.mysql.query('DROP DATABASE")

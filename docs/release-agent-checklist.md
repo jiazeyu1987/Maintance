@@ -85,6 +85,15 @@ Fail Fast：任何未确认远端效果、原包冲突或真实验证失败必�
 
 阶段必查项：登记前只读核身份、归属及共同锁；安装从精确提交的新专属发布 worktree 构建，仅更新自有控制；执行器安装独立操作 mangle/PREROUTING、OUTPUT 链首规则并复核原表保持，再停止原 writer、核连接和事件、进入清库；危险阶段再次核实际规则；原生成功及读回后只移除本操作规则并核原表恢复。Fail Fast 与必须记录：精确源点/目标/提交/包双摘要、实际 xtables pin、原有序表摘要、所有者证明、停写检查、围栏意图/active/release pins、真实 UI 操作号与退出结果、其它业务保持。恢复中失败沿已有保留失败准许流程，不另建 stateRoot 绕过。
 
+### 阶段1e：同机可写来源的归档视图保护
+
+- Trigger: 同机来源备份需要可写 CIFS/NFS 归档视图，而覆盖恢复要求所选归档只读。
+- Preflight check: 显式 MAIN/v2 archiveMountProtection，完整实际 mountinfo 和 mount 程序 pin；所有 archiveRoots 严格位于登记视图下，与目标 DATA/保留应用挂载不重叠且不是公司 /mnt/nas。先完成当前数据保留全备；备份和恢复持实际同一物理锁。安装阶段仅只读 preflight，不提前改变备份的写入视图。
+- Blocker: 锁冲突、归档/挂载/程序身份漂移、作用范围不明确、保护后原挂载身份或其它 flags 改变，立即停止相应动作；失败保留只读状态和原操作证据。
+- Verification: 真实 Linux 运行 test_archive_view_protection_linux.py，确认目标视图 EROFS、同存储另一视图仍可写、漂移拒绝、成功恢复完整原 mountinfo；test_main_archive_view.py 核先保护再停写/清库、原生成功后释放；实际 SAFE/FAST 包包含相同模块。
+- Forbidden action: 不卸载、不改 fstab、不重挂底层 superblock、不对 /mnt/nas 执行保护、不用新状态根绕过失败、不在备份执行时抢锁或改变其写入视图、不把单视图只读称为共享存储全局不可变。
+- Evidence: doc/tasks/20261105-spug-full-to-prod 的设计、Linux 原始日志、构建与安装证据；实际执行须记录原 mountinfo、操作号、意图/active/release pins、源备份终态及其它视图保持。推荐命令采用 mount -i -n -o remount,bind,ro/rw -- 精确视图，由正式执行器持锁调用。
+
 ## Spug 直接三服策略与普通脚本安装门禁
 
 - Trigger: 用户明确取消三服主流程演练，或切换已迁移的普通脚本执行器及发布页面。

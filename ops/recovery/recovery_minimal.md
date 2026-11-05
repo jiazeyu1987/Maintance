@@ -10,6 +10,8 @@ Redis 无认证只能明确选择 `redisAuthentication.mode=NONE`，固定真实
 
 发布端口保护不等于整个 Docker 网络隔离，必须同时证明 IAM 账号和资源独占、全部 writer 归属及实际网络成员。仅此显式发布端点可接受真实 Docker 动态数据地址；静态地址、IPAM、配置或网络成员漂移继续拒绝。同机来源和目标必须使用来源实际共同锁，来源目录控制不能依赖将被停写的主程序；覆盖前验证当前数据保留依据和所选归档精确 pins。
 
+同机来源的专用归档视图原为可写时，MAIN/v2 可显式登记 `archiveMountProtection`（`RegisteredArchiveViewProtection/v1`）：固定完整 mountinfo 身份和 mount 可执行文件 pin，全部来源 archiveRoots 必须位于该视图下，不能与目标数据或保留的应用挂载重叠，也不能选择 `/mnt/nas`。执行器持共同源锁，在停写和清库前用 `mount -i -n -o remount,bind,ro -- <视图>` 只保护该 VFS 挂载；其它共享盘视图和底层 superblock 保持原样。危险步骤复核只读身份；失败保持保护及意图/active 证据。原生恢复、读回及原应用启动成功后才以同样的每挂载方式恢复原 rw，并核完整原 mountinfo，输出 archiveViewReleasePin。没有此显式合同的路径不修改挂载权限。
+
 主入口为 `recovery_minimal.py --configuration <绝对路径> --request <绝对路径> --output <绝对路径>`。
 本模块执行 `RESTORE`；同一 UI 的 `FULL`、`INCREMENTAL` 由 W01 路由到 W03 捕获/归档模块。
 传错模块会返回 `CAPTURE_ACTION_REQUIRES_W03_ENTRY`，不会调用旧签发入口。
@@ -183,7 +185,7 @@ core.py/redis_cache.py 必须作为实际归档代码挂载项。`secretsPin` �
 实际退出码、stdout/stderr 的私有文件 Pin 和原始 worker result 留在操作目录。
 
 全量与 BINLOG_SQL 增量的压缩 SQL 均先从 NAS 校验读取到本操作独占的 0600 暂存文件，
-再使用原有严格解压和导入检查；不修改 NAS 挂载权限，错误哈希及已有目的文件均拒绝。
+再使用原有严格解压和导入检查；仅上述显式 MAIN 归档视图合同可调整该视图的每挂载权限，错误哈希及已有目的文件均拒绝。
 
 成功后清理本操作的数据暂存：全量和增量备份在 NAS 独立 SMB 读回及 COMPLETE 发布后，
 删除本地捕获的 payload、配置/代码副本、语义导出和数据库比较 scratch；删除前再次核对归档文件的大小和哈希。

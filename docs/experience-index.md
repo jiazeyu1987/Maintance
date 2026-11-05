@@ -1,5 +1,7 @@
 # 项目经验索引
 
+- 同机来源归档可写 / ARCHIVE_NOT_READ_ONLY / archiveMountProtection / remount,bind,ro / 单视图保护 / CIFS superblock：`docs/release-agent-checklist.md#阶段1e同机可写来源的归档视图保护`。源备份先成功，恢复持共同锁保护明确视图，失败保留，成功精确恢复；不得操作公司 /mnt/nas 或其它视图。
+
 - Spug dataLimits / FORMAL_DATA_LIMITS_REQUIRED / maxExpandedBytes / SAFE/FAST 注入接口 / inventory content / apply_tree verify_content / RESTORE_TYPEERROR / FAILED_RETAINED / recovery-clearance / PROVEN_NO_MUTATION / ARCHIVE_LEASE_FD_BUDGET_EXCEEDED / LimitNOFILE：`docs/release-agent-checklist.md#spug-恢复包接口合同与保留失败续恢复门禁`。实际封包合同及破坏性SQL审计必验；归档句柄预算须按完整路径集实测继承；写入前和写入后失败分别按明确合同准许同点同目标，不删锁或改历史。
 
 - 发布完成自动删除旧包 / 旧恢复资料 / postReleaseCleanup / artifact-auto-clean / 重试目录公共锁：`docs/release-agent-checklist.md#发布验收后旧载荷回收门禁`。

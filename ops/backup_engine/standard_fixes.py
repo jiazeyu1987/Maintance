@@ -282,6 +282,7 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
         "                    '-e', statement], mutation=mutation).decode('utf-8')")
     payload['common/recovery_main_target.py'] = (root/'ops/recovery/recovery_main_target.py').read_bytes()
     payload['common/recovery_published_fence.py'] = (root/'ops/recovery/recovery_published_fence.py').read_bytes()
+    payload['common/recovery_archive_view.py'] = (root/'ops/recovery/recovery_archive_view.py').read_bytes()
     replace('common/recovery_minimal_redis_dump.py',
         "    options=dict(host=native.config_services['redis']['ip'],port=6379,db=adapter['database'],\n"
         "        password=native.secret('redis','REDIS_PASSWORD'),socket_timeout=10,socket_connect_timeout=5)",

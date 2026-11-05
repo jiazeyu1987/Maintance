@@ -166,7 +166,8 @@ def validate(target):
     require(target.get('replacement', {}).get('schemaVersion') == 'RegisteredApplicationReplacement/v2',
             'MAIN_TARGET_REPLACEMENT_V2_REQUIRED')
     require(type(value) is dict and set(value) == MAIN_FIELDS |
-            ({'publishedDataEndpoints', 'redisAuthentication'} if retained else set()) and
+            ({'publishedDataEndpoints', 'redisAuthentication'} if retained else set()) |
+            ({'archiveMountProtection'} if retained and 'archiveMountProtection' in value else set()) and
             value['schemaVersion'] in ('RegisteredMainApplication/v1', 'RegisteredMainApplication/v2'),
             'MAIN_TARGET_CONFIGURATION_INVALID')
     if retained:
@@ -233,6 +234,9 @@ def validate(target):
             services['backend']['id'] in writers['approvedWriterContainerIds'], 'MAIN_WRITER_CUSTODY_REQUIRED')
     if retained:
         _published_contract(target)
+        if 'archiveMountProtection' in value:
+            from recovery_archive_view import validate as archive_contract
+            archive_contract(value['archiveMountProtection'])
     return value
 
 
@@ -277,6 +281,23 @@ def published_fence(native):
     from recovery_published_fence import PublishedFence
     return PublishedFence(entry['writeFence'], native.original['operationId'],
         Path(native.config['replacement']['stateRoot'])/native.original['operationId']/'published-fence', native.command)
+
+
+def archive_view(native):
+    value = native.config.get('mainApplication', {})
+    configuration = value.get('archiveMountProtection')
+    if configuration is None: return None
+    from recovery_archive_view import ArchiveViewProtection, validate as archive_contract
+    from recovery_replacement_storage import overlaps
+    archive_contract(configuration)
+    point = Path(configuration['mountIdentity']['mountPoint'])
+    require(native.source['archiveRoots'] and all(Path(root) != point and Path(root).is_relative_to(point)
+            for root in native.source['archiveRoots']) and
+            all(not overlaps(str(point), path) for path in native.config['dataPaths']) and
+            all(not overlaps(str(point), mount['Source']) for row in native.config['replacement']['storage'].get(
+                'preservedApplicationMounts', []) for mount in [row['mount']]), 'ARCHIVE_VIEW_SCOPE_INVALID')
+    return ArchiveViewProtection(configuration, native.original['operationId'],
+        Path(native.config['replacement']['stateRoot'])/native.original['operationId']/'archive-view', native.command)
 
 
 def application_inputs(native):
@@ -470,9 +491,13 @@ def guarded_type(original):
                 verify_services(self, self.config['replacement']); verify_runtime(self, states=False)
                 fence = published_fence(self)
                 if fence is not None: fence.preflight()
+                archive = archive_view(self)
+                if archive is not None: archive.preflight()
 
         def replacement_write_fence(self):
             if enabled(self.config):
+                archive = archive_view(self)
+                if archive is not None: archive.install()
                 fence = published_fence(self)
                 if fence is not None: fence.install()
 
@@ -480,6 +505,8 @@ def guarded_type(original):
             if enabled(self.config) and self.config['mainApplication']['schemaVersion'] == 'RegisteredMainApplication/v2':
                 fence = published_fence(self)
                 if fence is not None: fence.verify()
+                archive = archive_view(self)
+                if archive is not None: archive.verify()
                 database = self.config['database']
                 queries = ("SELECT COUNT(*) FROM information_schema.PROCESSLIST WHERE ID<>CONNECTION_ID() "
                            "AND USER NOT IN ('event_scheduler','mysql.infoschema','mysql.session','mysql.sys') "
@@ -492,11 +519,14 @@ def guarded_type(original):
                         'MAIN_REDIS_WRITERS_NOT_QUIESCED')
 
         def replacement_finish(self):
+            result = {}
             if enabled(self.config):
+                archive = archive_view(self)
+                if archive is not None: result['archiveViewReleasePin'] = archive.release()
                 fence = published_fence(self)
                 if fence is not None:
-                    return dict(publishedWriteFenceReleasePin=fence.release())
-            return {}
+                    result['publishedWriteFenceReleasePin'] = fence.release()
+            return result
 
         def bound(self, *, importing=False, minio_stopped=False):
             if not enabled(self.config):
@@ -509,6 +539,8 @@ def guarded_type(original):
             verify_redis_authentication(self)
             fence = published_fence(self)
             if fence is not None: fence.verify()
+            archive = archive_view(self)
+            if archive is not None: archive.verify()
             sql = self.modules['formal_sql_restore']
             (sql.import_database_state if importing else sql.database_state)(self.mysql, self.db_target)
 
