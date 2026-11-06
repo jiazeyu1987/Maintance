@@ -1,5 +1,16 @@
 # IntRuoyi Codex 发布执行检查清单
 
+## 恢复后增量日志范围门禁
+
+- Trigger: 原MAIN恢复后继续增量，或范围校验出现FORMAL_CAPTURE_BINLOG_QUERY_SCOPE_UNPROVEN，尤其日志含完整库重建、外键动作、生成列、CHECK及审计触发器。
+- Preflight check: 固定父point/capture pins、当前UUID/版本/日志模式与完整保留位置；在任何停写前通过受限SELECT/SHOW对精确起止范围逐事件严格校验。恢复导入是否写binlog须从实际已安装程序与实际事件证明，不能仅凭UUID相同或日志文件存在推断连续。诊断扫描可单独收集不支持的原始DDL，但必须标DIAGNOSTIC_ONLY，含SQL原件私密保存。
+- Blocker: 缺日志、父链或源身份漂移，任何未知/跨库/未证明范围语法、完整事件未审完、诊断跳过被当作PASS，均阻塞增量最终提交；先形成正式有界解析方案及RED/GREEN，不能在停写窗口临时试错。
+- Verification: 记录连续段及原始事件摘要、事件数、范围proof和实际模块SHA；表达式只接受本列、常量及明确MySQL内建函数，触发器逐FROM/JOIN验证本库，写效果限定NEW行赋值及SIGNAL。跨库、任意UDF/系统变量、CALL/动态SQL/未知表写入/注入必须负向测试；实际封包和真实全段零跳过审计须通过，再真实页面单次增量与整链恢复独立验收。
+- Forbidden action: 不过滤/略过失败事件、不静默全量、不仅扩大正则通配或删安全检查，不从当前表结构推断历史日志范围，不把本地源码当已安装程序。日志正文可能含敏感内容，不输出到公开任务或提交。
+- Evidence: `doc/tasks/20261106-spug-prod-incremental-to-two-targets/`，实际旧解析器在137101事件中拒绝1742处/871唯一DDL，候选全段只读审计零跳过通过；具体最终结果仍以该任务原生操作及验收为准。
+
+阶段必查项与推荐命令：先运行任务内`inspect_incremental_lineage.py`核真实登记和日志，再运行`audit_binlog_scope.py`严格只读审计；修复时`pytest scripts/tests/test_smallapp_binlog_ddl.py scripts/tests/test_backup_variants.py`验证范围和实际SAFE封包，混用不同源码根的测试文件必须独立进程运行避免模块缓存污染。提交、专属干净发布worktree封包、安装文件SHA和新配置pins核验后，再真实页面确认固定父链。Fail Fast：任何拒绝先保留错误与当前服务健康，不启动备份、不停写。必须记录原拒绝、补齐边界、负向测试、候选及实际安装全段审计和最终唯一操作号。
+
 ## 多机器发布接管与缺失记录分析门禁
 
 - Trigger: 不同机器轮流发布、本机Spug记录缺失或落后、服务器版本新于交接资源包，或前端补丁不在本机历史中。

@@ -1,5 +1,7 @@
 # 项目经验索引
 
+- 正式库恢复后增量 / FORMAL_CAPTURE_BINLOG_QUERY_SCOPE_UNPROVEN / 级联外键 / 生成列 / CHECK / 审计触发器：`docs/release-agent-checklist.md#恢复后增量日志范围门禁`。先核真实父链、UUID和完整保留范围，再在停写前只读审计全部事件；同库受控DDL不等于简单表语法。表达式仅本列/常量/明确内建函数，触发器逐FROM/JOIN核库，未知语法保持阻断；诊断遍历不作为准入成功，不跳过事件或静默改全量。
+
 - 公司共享盘 / ORIGINAL_COMPANY_NAS_MOUNT_MISSING / 父目录没有独立挂载 / 子挂载 / mountinfo原始基线：`docs/release-agent-checklist.md#阶段1e同机可写来源的归档视图保护`。按事前实际基线比较保护目录的全部子挂载和覆盖祖先，不假定/mnt/nas独立挂载；身份/参数/增删变化仍失败，不为满足验收假设修改生产挂载。
 
 - 原MAIN无Docker健康声明 / ACTUAL_CONTAINER_HEALTHCHECK_REQUIRED / MinIO health ready / RegisteredMainSemanticReadiness / 恢复启动存储后失败：`docs/release-agent-checklist.md#阶段1h原main语义健康与已启动存储续办`。登记MAIN三角色始终验证固定语义协议及完整身份/端口；已有Docker检查仍须通过。失败续办仅凭原实际成功启动回执与当前启动时间，在原锁和保护下精确停存储、追加证据；不能把running当healthy或覆盖旧失败。
