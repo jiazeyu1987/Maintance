@@ -1,5 +1,27 @@
 # IntRuoyi Codex 发布执行检查清单
 
+## 增量父输入流检查成本与持续保护门禁
+
+- Trigger: 增量语义采集出现FORMAL_CAPTURE_PIPE_DEADLINE，或父点内容验证读取字节远高于实际载荷、每缓冲回调重读大型父元数据/扫描全部父文件。
+- Preflight check: 原失败终态、源writer及数据库全局状态独立恢复通过后，只读分别测量原查询、一次父元数据读取和完整身份扫描；核实际安装SAFE源码与回调次数。父内容必须初始完整SHA核验，使用覆盖全部父文件和祖先的连续Linux路径租约；小型原输入用身份检查，最后仍完整核原字节。阶段边界完整核父元数据原字节和全部文件/祖先身份，不能假定CIFS远端写入会产生本地事件。
+- Blocker: 每缓冲工作随整个父点大小增长、租约未覆盖完整路径/祖先、实际FD或inotify预算不足、任何写入/替换/监控溢出、完整SHA或阶段复核缺失，均阻塞新的最终提交；原失败和原安装保留。
+- Verification: 真实Linux原生管道在原期限内完成；反复检查不重读父元数据或扫描全部父路径；写入/替换/祖先改变/无事件的阶段变动/预算不足均拒绝，初始核验失败和正常关闭无FD泄漏。独立验证实际STANDARD封包字节、严格原内容核验及最终originals.check(full=True)保持，再安装独立已提交代次并核实际文件SHA和原业务保持。
+- Forbidden action: 禁止单纯增大查询超时、按时间跳过检查、忽略事件/身份失败、弱化父内容SHA，禁止热改活动worker或以无guard的诊断查询充当冻结点验收；不得重写原失败为成功。
+- Evidence: `doc/tasks/20261106-spug-prod-incremental-to-two-targets/reference-stream-diagnosis.json`、`parent-guard-red.json`及后续真实测试、安装和原生验收记录。
+
+阶段必查项与推荐命令：先观察原编号终态和源恢复，执行任务内只读引用对照；修复先`run_parent_guard_tests.py --phase red`，再GREEN、原归档租约/FD和SAFE封包回归。提交实现后新建专属干净构建worktree，安装时持原排他锁、无活动worker，仅重载自有控制服务，实测FD继承及原容器/共享盘保持。Fail Fast：任一保护或真实测试未通过不安装、不停写、不重试旧代次。必须记录原查询/扫描成本、RED/GREEN、实际提交/包/文件SHA、预算、两代安装和新旧唯一操作号；真实增量及两服整链恢复单独验收。
+
+## 增量导出工具实际运行门禁
+
+- Trigger: 任何INCREMENTAL最终提交，尤其整机/Docker/MySQL重启后，或出现MINIMAL_BINLOG_TOOL_CHANGED。
+- Preflight check: 从当前capture配置的mysqlbinlog-exporter材料pin读取原登记，核实际containerId/imageId、Running、ReadonlyRootfs、NetworkMode和PidMode均绑定当前源MySQL；docker exec实际可执行文件SHA必须等于登记。再用原私密stdin和socket连接、no-defaults及登录文件隔离条件作只读空范围导出探测，原始输出私密保留或只记录摘要。日志范围SELECT/SHOW审计与工具运行准入必须分别通过。
+- Blocker: 工具停止、身份/绑定/文件SHA漂移、实际认证或导出失败，均在耗时父链读取及停写前阻塞提交。先保留失败终态、无停写/健康及原件证据，再按授权核对和恢复原工具；已受理请求只查原编号。
+- Verification: 当前实际安装的MinimalSeries.binlog_container严格校验及实际导出连接通过；若启动原工具，前后固定全部原容器定义/镜像，逐项比较其它容器PID/启动时间，fstab及原保护挂载保持。Mounts按Destination排序；允许的新增挂载只能精确对应已授权启动容器的原GraphDriver.MergedDir，不能忽略其它差异。
+- Forbidden action: 不重建未知替代、不擅改重启策略、不重启主程序/MySQL/Docker、不删或放松严格工具检查，不把镜像存在、配置pin正确或日志事件可读冒充实际导出工具可用。
+- Evidence: `doc/tasks/20261106-spug-prod-incremental-to-two-targets/incremental-364-failure.json`、`registered-binlog-tool-restored.json`和`incremental-2-preflight.json`。原工具70c048在11月4日停止，History364于STOP_WRITERS之前失败；原工具恢复后原SHA/实际连接通过，195定义及其它194运行态保持。
+
+阶段必查项与推荐命令：先核`docker inspect <登记工具ID>`与`docker exec <登记工具ID> sha256sum /usr/local/bin/mysqlbinlog`，再使用pin指向的私密凭据通过stdin进行只读socket空范围探测，最后重新核连续日志审计、源flags和父链并允许单次真实UI提交。Fail Fast：工具运行或实际连接任一不满足均不提交增量、不停写；必须记录登记pin、原退出状态、实际工具SHA/版本/绑定、探测摘要、恢复授权与前后保持及新旧唯一操作号。
+
 ## 恢复后增量日志范围门禁
 
 - Trigger: 原MAIN恢复后继续增量，或范围校验出现FORMAL_CAPTURE_BINLOG_QUERY_SCOPE_UNPROVEN，尤其日志含完整库重建、外键动作、生成列、CHECK及审计触发器。

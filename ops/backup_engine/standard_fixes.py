@@ -89,6 +89,99 @@ def apply(payload):
                     references.append(reference)""")
     payload['control/recovery_control_point_quarantine.py'] = (root/'backend/src/main/resources/recovery_control_point_quarantine.py').read_bytes()
     payload = backup_timings(restore_timings(payload))
+    payload['formal/formal_capture_parent_guard.py'] = (root/'ops/backup_engine/formal/formal_capture_parent_guard.py').read_bytes()
+    # Only MinimalSemantic adopts continuous parent custody. The normal formal
+    # owner keeps its original full verifier through the base-class hook.
+    replace('formal/formal_capture_semantics.py',
+        '    def _parent(self):\n',
+        '    def _parent(self):\n        self.parent_guard = None\n')
+    replace('formal/formal_capture_semantics.py',
+        "            self.verify_content(content, self.originals.check)\n"
+        "            self.parent_content_identities.append((Path(content['path']), self.file_identity(Path(content['path']).lstat())))\n"
+        "        return index['contentPins']\n",
+        "        self.parent_guard = self._verify_parent_inputs(index['contentPins'])\n"
+        "        return index['contentPins']\n\n"
+        "    def _verify_parent_inputs(self, contents):\n"
+        "        for content in contents.values():\n"
+        "            self.verify_content(content, self.originals.check)\n"
+        "            self.parent_content_identities.append((Path(content['path']), self.file_identity(Path(content['path']).lstat())))\n"
+        "        return None\n")
+    replace('formal/minimal_capture_support.py',
+        '        self.originals.current(); self.series.check()\n',
+        '        if self.parent_guard is not None:\n            self.parent_guard.check()\n'
+        '        self.originals.current(); self.series.check()\n')
+    replace('formal/minimal_capture_support.py',
+        "        for reference, raw, allow_empty in self.parent_originals:\n"
+        "            require(original_bytes(reference, allow_empty=allow_empty) == raw,\n"
+        "                'FORMAL_CAPTURE_SEMANTIC_PARENT_CHANGED')\n"
+        "        for path, identity in self.parent_content_identities:\n"
+        "            require(self.file_identity(path.lstat()) == identity, 'FORMAL_CAPTURE_OBJECT_PARENT_CHANGED')\n",
+        '')
+    replace('formal/minimal_capture_support.py',
+        '    def __init__(self, series, originals, descriptor, source_config):\n',
+        '''    def _verify_parent_inputs(self, contents):
+        from formal_capture_parent_guard import ParentInputGuard
+        return ParentInputGuard(self.parent_originals, contents.values(),
+            self.originals.current, self.verify_content)
+
+    def verify_parent(self):
+        self.check()
+        if self.parent_guard is not None:
+            self.parent_guard.verify()
+
+    def close(self):
+        parent, self.parent_guard = self.parent_guard, None
+        if parent is not None:
+            parent.close()
+
+    def __init__(self, series, originals, descriptor, source_config):
+        self.parent_guard = None
+        try:
+            self._initialize(series, originals, descriptor, source_config)
+        except BaseException:
+            self.close()
+            raise
+
+    def _initialize(self, series, originals, descriptor, source_config):
+''')
+    replace('formal/minimal_capture_support.py',
+        '        super().capture(mysql, database, root, guard)\n',
+        '        self.verify_parent()\n        super().capture(mysql, database, root, guard)\n')
+    replace('formal/minimal_capture_support.py',
+        '            self.check()\n\n    def finalize(self, point, guard):\n',
+        '            self.check()\n        self.verify_parent()\n\n    def finalize(self, point, guard):\n        self.verify_parent()\n')
+    replace('formal/minimal_capture_support.py',
+        '        return super().finalize(point, guard)\n',
+        '        result = super().finalize(point, guard)\n        self.verify_parent()\n        return result\n')
+    replace('formal/minimal_capture_worker.py',
+        "    require(len(runtime.flags) == 2 and all(x in ('0', '1') for x in runtime.flags), 'MINIMAL_DATABASE_FLAGS_INVALID')\n"
+        "    token = observation_deadline.set(budget.deadline)\n",
+        "    require(len(runtime.flags) == 2 and all(x in ('0', '1') for x in runtime.flags), 'MINIMAL_DATABASE_FLAGS_INVALID')\n"
+        "    semantic = None\n    token = observation_deadline.set(budget.deadline)\n")
+    replace('formal/minimal_capture_worker.py',
+        '                originals.check(full=True); runtime.protected(force=True)\n',
+        '                semantic.verify_parent()\n                originals.check(full=True); runtime.protected(force=True)\n')
+    replace('formal/minimal_capture_worker.py',
+        "            runtime.event('CAPTURE_MATERIAL_COMPLETE_SOURCE_RESTORED')\n"
+        "            return result\n    finally: observation_deadline.reset(token)\n",
+        """            semantic.verify_parent()
+            runtime.event('CAPTURE_MATERIAL_COMPLETE_SOURCE_RESTORED')
+            return result
+    finally:
+        import sys
+        primary = sys.exception()
+        try:
+            if semantic is not None:
+                semantic.close()
+        except BaseException as error:
+            if primary is None:
+                raise
+            primary.diagnostic = diagnostic_value(dict(
+                getattr(primary, 'diagnostic', None) or {},
+                parentLeaseCleanupFailureCode=failure_code(error)))
+        finally:
+            observation_deadline.reset(token)
+""")
     # Install the one continuous inode lease before the frozen strict readers
     # collect identity baselines. All original hash/metadata checks remain.
     replace('common/recovery_minimal_runtime.py',

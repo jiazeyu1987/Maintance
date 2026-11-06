@@ -39,6 +39,7 @@ def test_standard_keeps_original_code_except_reviewed_fixes_and_archive_names(pa
         'common/recovery_mysql_scheduler.py', 'common/recovery_main_health.py',
         'control/recovery_control_restore_catalogue.py', 'control/recovery_control_smallapp_http.py',
         'formal/minimal_capture_support.py', 'formal/minimal_capture_worker.py',
+        'formal/formal_capture_semantics.py', 'formal/formal_capture_parent_guard.py',
         'formal/minimal_redis_snapshot.py'}
     assert {name for name, raw in reviewed.items() if original.get(name) != raw} <= allowed
     with tarfile.open(packages/'backup-restore-standard.tgz') as archive:

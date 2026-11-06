@@ -1,5 +1,9 @@
 # 项目经验索引
 
+- 父点guard重复全读 / FORMAL_CAPTURE_PIPE_DEADLINE / 父附件扫描过慢 / O_PATH inotify / 每缓冲父元数据：`docs/release-agent-checklist.md#增量父输入流检查成本与持续保护门禁`。先核原失败与源恢复、只读分测查询和保护成本；连续租约覆盖完整父文件及祖先，阶段全核、初始内容SHA与最终原字节保持。真实Linux管道/变动拒绝/FD/封包通过后才安装新提交代次；不延长超时或跳过guard。
+
+- 增量导出工具 / MINIMAL_BINLOG_TOOL_CHANGED / 重启后binlog容器停止 / mysqlbinlog实际连接：`docs/release-agent-checklist.md#增量导出工具实际运行门禁`。最终提交前核登记容器实际运行、原镜像/只读根/源MySQL网络与PID绑定、可执行文件SHA及真实私密stdin/socket连接；SELECT/SHOW日志审计通过不能替代工具可用性。只能按授权恢复原工具，不跳过安全校验。
+
 - 正式库恢复后增量 / FORMAL_CAPTURE_BINLOG_QUERY_SCOPE_UNPROVEN / 级联外键 / 生成列 / CHECK / 审计触发器：`docs/release-agent-checklist.md#恢复后增量日志范围门禁`。先核真实父链、UUID和完整保留范围，再在停写前只读审计全部事件；同库受控DDL不等于简单表语法。表达式仅本列/常量/明确内建函数，触发器逐FROM/JOIN核库，未知语法保持阻断；诊断遍历不作为准入成功，不跳过事件或静默改全量。
 
 - 公司共享盘 / ORIGINAL_COMPANY_NAS_MOUNT_MISSING / 父目录没有独立挂载 / 子挂载 / mountinfo原始基线：`docs/release-agent-checklist.md#阶段1e同机可写来源的归档视图保护`。按事前实际基线比较保护目录的全部子挂载和覆盖祖先，不假定/mnt/nas独立挂载；身份/参数/增删变化仍失败，不为满足验收假设修改生产挂载。
