@@ -226,3 +226,77 @@ def test_observation_rejects_wrong_identity_or_incomplete_disk_scope(resource_ho
     with pytest.raises(RuntimeError):
         admission.admit(config, request, root, 'owner')
     assert json.loads((root / 'resource-admission-owner.json').read_bytes())['admitted'] is False
+
+
+@pytest.fixture
+def main_resource_host(resource_host, monkeypatch):
+    from copy import deepcopy
+    import test_main_restore_target as fixtures
+    import recovery_main_target as main
+    config, request, budget, _, cgroups, root = resource_host
+    case = fixtures.MainContractTests('test_registered_main_accepts_matching_archived_program')
+    case.setUp()
+    target = case.target
+    row = case.rows['mysql']
+    row['State'].update(Running=True, Pid=123)
+    row['HostConfig']['Memory'] = 2*GIB
+    row['Mounts'] = [dict(Source=str(root), Destination='/var/lib/mysql', RW=True, Type='bind')]
+    target['mainApplication']['serviceConfigurationDigests']['mysql'] = main.service_configuration_digest(row)
+    target['replacement'].update(stateRoot=str(root), services={role:dict(id=r['Id'],imageId=r['Image'],
+        labels=deepcopy(r['Config']['Labels']),mounts=deepcopy(r['Mounts'])) for role,r in case.rows.items()})
+    target.update(dockerPin=config['targets']['target']['dockerPin'],dataRoot=str(root),dataPaths=[str(root)],resourceBudget=budget)
+    config['targets']['target'] = target
+    def observe(argv, **kwargs):
+        assert argv == [target['dockerPin']['path'], '--host', 'unix:///var/run/docker.sock', 'inspect', row['Id']]
+        return SimpleNamespace(returncode=0, stdout=json.dumps([row]).encode(), stderr=b'')
+    monkeypatch.setattr(admission.subprocess, 'run', observe)
+    yield config, request, budget, row, cgroups, root
+    case.doCleanups()
+
+
+@pytest.mark.parametrize('version', [1, 2])
+def test_original_main_without_rehearsal_label_has_measured_resource_admission(main_resource_host, version):
+    config, request, budget, row, _, root = main_resource_host
+    target = config['targets']['target']
+    if version == 2:
+        target['mainApplication'].update(schemaVersion='RegisteredMainApplication/v2',
+            publishedDataEndpoints=[],redisAuthentication=dict(mode='PASSWORD'))
+        target['replacement']['storage'] = dict(schemaVersion='RegisteredReplacementStorage/v3')
+    assert 'intruoyi.recovery.target' not in row['Config']['Labels']
+    assert admission.admit(config, request, root, 'owner')['admitted']
+    proof = json.loads((root/'resource-admission-owner.json').read_bytes())
+    assert proof['observation']['mysqlContainerId'] == row['Id']
+    assert proof['observation']['mysqlMemoryLimitBytes'] == 2*GIB
+    assert proof['businessAcceptance'] == 'NOT_PERFORMED'
+
+
+@pytest.mark.parametrize('change', ['image','labels','mounts','environment','memory','privileged',
+                                    'registered_id','registered_image','main_contract'])
+def test_main_resource_identity_drift_is_rejected(main_resource_host, change):
+    config, request, budget, row, _, root = main_resource_host
+    target = config['targets']['target']
+    if change == 'image': row['Image'] = 'sha256:'+'0'*64
+    if change == 'labels': row['Config']['Labels']['foreign'] = 'changed'
+    if change == 'mounts': row['Mounts'][0]['Source'] = '/other-data'
+    if change == 'environment': row['Config']['Env'].append('FOREIGN_SETTING=1')
+    if change == 'memory': row['HostConfig']['Memory'] = 4*GIB
+    if change == 'privileged': row['HostConfig']['Privileged'] = True
+    if change == 'registered_id': target['replacement']['services']['mysql']['id'] = '0'*64
+    if change == 'registered_image': target['replacement']['services']['mysql']['imageId'] = 'sha256:'+'0'*64
+    if change == 'main_contract': target['mainApplication']['schemaVersion'] = 'unknown'
+    with pytest.raises(RuntimeError): admission.admit(config, request, root, 'owner')
+    assert json.loads((root/'resource-admission-owner.json').read_bytes())['admitted'] is False
+
+
+def test_registered_main_still_rejects_real_small_cgroup_limit(main_resource_host):
+    config, request, budget, _, cgroups, root = main_resource_host
+    (cgroups/'mysql/memory.max').write_text(str(512*1024**2),encoding='ascii')
+    with pytest.raises(RuntimeError,match='RESTORE_MYSQL_MEMORY_INSUFFICIENT'):
+        admission.admit(config, request, root, 'owner')
+
+
+def test_plain_target_without_dedicated_label_remains_rejected(resource_host):
+    config, request, budget, row, _, root = resource_host
+    row['Config']['Labels'] = {}
+    with pytest.raises(RuntimeError,match='RESTORE_RESOURCE_MYSQL_IDENTITY_INVALID'):
+        admission.admit(config, request, root, 'owner')

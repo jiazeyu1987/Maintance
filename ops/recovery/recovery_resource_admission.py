@@ -425,8 +425,21 @@ def observe_resources(configuration, request, policy):
     rows = json.loads(response.stdout)
     need(type(rows) is list and len(rows) == 1, 'RESTORE_RESOURCE_MYSQL_OBSERVATION_FAILED')
     mysql = rows[0]
+    if 'mainApplication' in target:
+        from recovery_main_target import validate, service_configuration_digest
+        validate(target)
+        registered = target['replacement']['services']['mysql']
+        need(registered['id'] == service['id'] == mysql['Id'] and
+             registered['imageId'] == service['imageId'] == mysql['Image'] and
+             mysql['Config']['Labels'] == registered['labels'] and
+             sorted(mysql['Mounts'], key=lambda mount: mount['Destination']) == registered['mounts'] and
+             service_configuration_digest(mysql) == target['mainApplication']['serviceConfigurationDigests']['mysql'] and
+             mysql['HostConfig']['Privileged'] is False,
+             'RESTORE_RESOURCE_MYSQL_IDENTITY_INVALID')
+    else:
+        need(mysql['Config']['Labels'].get('intruoyi.recovery.target') == target['targetId'],
+             'RESTORE_RESOURCE_MYSQL_IDENTITY_INVALID')
     need(mysql['Id'] == service['id'] and mysql['Image'] == service['imageId'] and
-         mysql['Config']['Labels'].get('intruoyi.recovery.target') == target['targetId'] and
          mysql['State']['Running'] is True and mysql['State']['Paused'] is False and
          mysql['State']['Restarting'] is False and integer(mysql['State']['Pid'], 1),
          'RESTORE_RESOURCE_MYSQL_IDENTITY_INVALID')
