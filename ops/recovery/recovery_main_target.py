@@ -552,8 +552,10 @@ def guarded_type(original):
 
         def replacement_preflight(self):
             if enabled(self.config):
+                from recovery_main_health import preflight as readiness_preflight
                 from recovery_replace import verify_services
                 self.guard(); application_inputs(self); database_identity(self)
+                readiness_preflight(self)
                 verify_redis_authentication(self)
                 verify_services(self, self.config['replacement']); verify_runtime(self, states=False)
                 fence = published_fence(self)
@@ -631,6 +633,12 @@ def guarded_type(original):
                     inventory(absolute(mounts[0]['Source']), self.guard) == {}, 'MAIN_PHYSICAL_TARGET_NOT_EMPTY')
             raw = redis_command(self, ['-n', str(self.config['redisRebuild']['database']), '--raw', 'DBSIZE'])
             require(raw.strip() == b'0', 'REDIS_TARGET_NOT_EMPTY')
+
+        def wait_healthy(self, role):
+            from recovery_main_health import ROLES, wait_healthy
+            if enabled(self.config) and role in ROLES:
+                return wait_healthy(self, role)
+            return super().wait_healthy(role)
 
         def start_application(self):
             result = super().start_application()
