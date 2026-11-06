@@ -1,0 +1,135 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+__ test_explicit_main_contract_supports_an_independent_same_host_archive_view __
+
+contract = <test_main_restore_target.MainContractTests testMethod=test_registered_main_accepts_matching_archived_program>
+tmp_path = PosixPath('/work/pytest-red/test_explicit_main_contract_su0')
+
+    def test_explicit_main_contract_supports_an_independent_same_host_archive_view(contract,tmp_path):
+>       protected(contract,tmp_path);main.validate(contract.target)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+scripts/tests/test_main_archive_view.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ops/recovery/recovery_main_target.py:168: in validate
+    require(type(value) is dict and set(value) == MAIN_FIELDS |
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False, code = 'MAIN_TARGET_CONFIGURATION_INVALID'
+
+    def require(condition, code):
+        if not condition:
+>           raise RecoveryError(code)
+E           recovery_engine.RecoveryError: MAIN_TARGET_CONFIGURATION_INVALID
+
+ops/recovery/recovery_engine.py:64: RecoveryError
+___ test_archive_view_cannot_protect_an_unrelated_or_business_mount[source] ____
+
+contract = <test_main_restore_target.MainContractTests testMethod=test_registered_main_accepts_matching_archived_program>
+tmp_path = PosixPath('/work/pytest-red/test_archive_view_cannot_prote0')
+change = 'source'
+
+    @pytest.mark.parametrize('change',['source','data','company-share'])
+    def test_archive_view_cannot_protect_an_unrelated_or_business_mount(contract,tmp_path,change):
+        mount=protected(contract,tmp_path)
+        if change=='source':contract.native.source['archiveRoots']=['/other/archives']
+        elif change=='data':contract.target['dataPaths']=['/archive-view/data']
+        else:mount['mountPoint']='/mnt/nas'
+>       with pytest.raises(Exception,match='ARCHIVE_VIEW_'):main.archive_view(contract.native)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'ARCHIVE_VIEW_'
+E         Actual message: "module 'recovery_main_target' has no attribute 'archive_view'"
+
+scripts/tests/test_main_archive_view.py:34: AssertionError
+____ test_archive_view_cannot_protect_an_unrelated_or_business_mount[data] _____
+
+contract = <test_main_restore_target.MainContractTests testMethod=test_registered_main_accepts_matching_archived_program>
+tmp_path = PosixPath('/work/pytest-red/test_archive_view_cannot_prote1')
+change = 'data'
+
+    @pytest.mark.parametrize('change',['source','data','company-share'])
+    def test_archive_view_cannot_protect_an_unrelated_or_business_mount(contract,tmp_path,change):
+        mount=protected(contract,tmp_path)
+        if change=='source':contract.native.source['archiveRoots']=['/other/archives']
+        elif change=='data':contract.target['dataPaths']=['/archive-view/data']
+        else:mount['mountPoint']='/mnt/nas'
+>       with pytest.raises(Exception,match='ARCHIVE_VIEW_'):main.archive_view(contract.native)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'ARCHIVE_VIEW_'
+E         Actual message: "module 'recovery_main_target' has no attribute 'archive_view'"
+
+scripts/tests/test_main_archive_view.py:34: AssertionError
+_ test_archive_view_cannot_protect_an_unrelated_or_business_mount[company-share] _
+
+contract = <test_main_restore_target.MainContractTests testMethod=test_registered_main_accepts_matching_archived_program>
+tmp_path = PosixPath('/work/pytest-red/test_archive_view_cannot_prote2')
+change = 'company-share'
+
+    @pytest.mark.parametrize('change',['source','data','company-share'])
+    def test_archive_view_cannot_protect_an_unrelated_or_business_mount(contract,tmp_path,change):
+        mount=protected(contract,tmp_path)
+        if change=='source':contract.native.source['archiveRoots']=['/other/archives']
+        elif change=='data':contract.target['dataPaths']=['/archive-view/data']
+        else:mount['mountPoint']='/mnt/nas'
+>       with pytest.raises(Exception,match='ARCHIVE_VIEW_'):main.archive_view(contract.native)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'ARCHIVE_VIEW_'
+E         Actual message: "module 'recovery_main_target' has no attribute 'archive_view'"
+
+scripts/tests/test_main_archive_view.py:34: AssertionError
+_ test_archive_protection_is_installed_before_publication_and_released_after_native_success _
+
+contract = <test_main_restore_target.MainContractTests testMethod=test_registered_main_accepts_matching_archived_program>
+tmp_path = PosixPath('/work/pytest-red/test_archive_protection_is_ins0')
+
+    def test_archive_protection_is_installed_before_publication_and_released_after_native_success(contract,tmp_path):
+        protected(contract,tmp_path);calls=[]
+        archive=SimpleNamespace(install=lambda:calls.append('archive-ro'),release=lambda:calls.append('archive-rw') or {'pin':'archive'})
+        ports=SimpleNamespace(install=lambda:calls.append('ports-on'),release=lambda:calls.append('ports-off') or {'pin':'ports'})
+        cls=main.guarded_type(object)
+>       with patch.object(main,'archive_view',return_value=archive),patch.object(main,'published_fence',return_value=ports):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+scripts/tests/test_main_archive_view.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/unittest/mock.py:1467: in __enter__
+    original, local = self.get_original()
+                      ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <unittest.mock._patch object at 0x733920610500>
+
+    def get_original(self):
+        target = self.getter()
+        name = self.attribute
+    
+        original = DEFAULT
+        local = False
+    
+        try:
+            original = target.__dict__[name]
+        except (AttributeError, KeyError):
+            original = getattr(target, name, DEFAULT)
+        else:
+            local = True
+    
+        if name in _builtins and isinstance(target, ModuleType):
+            self.create = True
+    
+        if not self.create and original is DEFAULT:
+>           raise AttributeError(
+                "%s does not have the attribute %r" % (target, name)
+            )
+E           AttributeError: <module 'recovery_main_target' from '/source/ops/recovery/recovery_main_target.py'> does not have the attribute 'archive_view'
+
+/usr/local/lib/python3.12/unittest/mock.py:1437: AttributeError
+=========================== short test summary info ============================
+FAILED scripts/tests/test_main_archive_view.py::test_explicit_main_contract_supports_an_independent_same_host_archive_view
+FAILED scripts/tests/test_main_archive_view.py::test_archive_view_cannot_protect_an_unrelated_or_business_mount[source]
+FAILED scripts/tests/test_main_archive_view.py::test_archive_view_cannot_protect_an_unrelated_or_business_mount[data]
+FAILED scripts/tests/test_main_archive_view.py::test_archive_view_cannot_protect_an_unrelated_or_business_mount[company-share]
+FAILED scripts/tests/test_main_archive_view.py::test_archive_protection_is_installed_before_publication_and_released_after_native_success
+5 failed in 0.78s

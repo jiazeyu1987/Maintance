@@ -1,0 +1,865 @@
+{
+  "observedAt": "2026-11-06T09:53:00.237338+00:00",
+  "operationId": "smallapp-9c961c848bc84f529d8ff0968b578a20",
+  "documents": [
+    {
+      "path": "ledger/smallapp-9c961c848bc84f529d8ff0968b578a20/completion.json",
+      "bytes": 3351,
+      "modifiedAt": "2026-11-06T09:52:53.618215+00:00",
+      "status": {},
+      "result": {
+        "state": "SUCCEEDED",
+        "errorCode": null
+      },
+      "terminal": {
+        "actualExitCode": 0,
+        "timedOut": false
+      }
+    },
+    {
+      "path": "ledger/smallapp-9c961c848bc84f529d8ff0968b578a20/execute/native-intent.json",
+      "bytes": 1883,
+      "modifiedAt": "2026-11-06T07:30:51.116271+00:00",
+      "status": {}
+    },
+    {
+      "path": "ledger/smallapp-9c961c848bc84f529d8ff0968b578a20/execute/native-original-exit.json",
+      "bytes": 1370,
+      "modifiedAt": "2026-11-06T09:52:53.399211+00:00",
+      "status": {
+        "actualExitCode": 0,
+        "pid": 12397,
+        "timedOut": false
+      }
+    },
+    {
+      "path": "ledger/smallapp-9c961c848bc84f529d8ff0968b578a20/execute/native-process.json",
+      "bytes": 423,
+      "modifiedAt": "2026-11-06T07:30:51.121272+00:00",
+      "status": {
+        "pid": 12397
+      }
+    },
+    {
+      "path": "ledger/smallapp-9c961c848bc84f529d8ff0968b578a20/execute/result.json",
+      "bytes": 318798,
+      "modifiedAt": "2026-11-06T09:52:53.365210+00:00"
+    },
+    {
+      "path": "ledger/smallapp-9c961c848bc84f529d8ff0968b578a20/intent.json",
+      "bytes": 1434,
+      "modifiedAt": "2026-11-06T07:30:38.132020+00:00",
+      "status": {
+        "schemaVersion": "SmallAppDispatchIntent/v1"
+      }
+    },
+    {
+      "path": "ledger/smallapp-9c961c848bc84f529d8ff0968b578a20/request.json",
+      "bytes": 319,
+      "modifiedAt": "2026-11-06T07:30:38.125021+00:00",
+      "status": {
+        "schemaVersion": "SmallAppBackupUiRequest/v1"
+      }
+    },
+    {
+      "path": "ledger/smallapp-9c961c848bc84f529d8ff0968b578a20/restore-target-before.json",
+      "bytes": 12095,
+      "modifiedAt": "2026-11-06T07:30:51.010269+00:00",
+      "status": {}
+    },
+    {
+      "path": "ledger/smallapp-9c961c848bc84f529d8ff0968b578a20/selection.json",
+      "bytes": 1235,
+      "modifiedAt": "2026-11-06T07:30:38.129020+00:00",
+      "status": {
+        "schemaVersion": "SmallAppResolvedSelection/v2"
+      }
+    },
+    {
+      "path": "ledger/smallapp-9c961c848bc84f529d8ff0968b578a20/worker-process.json",
+      "bytes": 668,
+      "modifiedAt": "2026-11-06T07:30:43.762129+00:00",
+      "status": {
+        "pid": 10457
+      }
+    },
+    {
+      "path": "ledger/smallapp-9c961c848bc84f529d8ff0968b578a20/worker-stderr",
+      "bytes": 0,
+      "modifiedAt": "2026-11-06T07:30:43.761129+00:00"
+    },
+    {
+      "path": "ledger/smallapp-9c961c848bc84f529d8ff0968b578a20/worker-stdout",
+      "bytes": 0,
+      "modifiedAt": "2026-11-06T07:30:43.761129+00:00"
+    },
+    {
+      "path": "ledger/smallapp-9c961c848bc84f529d8ff0968b578a20/worker-terminal.json",
+      "bytes": 639,
+      "modifiedAt": "2026-11-06T09:52:53.667216+00:00",
+      "status": {
+        "actualExitCode": 0,
+        "pid": 10457
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/child-exit.json",
+      "bytes": 722,
+      "modifiedAt": "2026-11-06T09:52:52.210188+00:00",
+      "status": {
+        "actualExitCode": 0,
+        "startedAt": "2026-11-06T07:30:51.770565Z",
+        "finishedAt": "2026-11-06T09:52:52.210936Z",
+        "timedOut": false
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/child.stderr",
+      "bytes": 0,
+      "modifiedAt": "2026-11-06T07:30:51.769284+00:00"
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/child.stdout",
+      "bytes": 0,
+      "modifiedAt": "2026-11-06T07:30:51.769284+00:00"
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/configuration.json",
+      "bytes": 44451,
+      "modifiedAt": "2026-11-06T07:30:51.407277+00:00",
+      "status": {
+        "schemaVersion": "RecoveryMinimalConfiguration/v1"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/database-000/database-comparison.json",
+      "bytes": 123480,
+      "modifiedAt": "2026-11-06T09:02:26.493579+00:00",
+      "status": {
+        "state": "SCHEMA_DATA_EQUAL_PENDING_APPLICATION_PROOF",
+        "fullSchemaDataEquivalenceVerified": true,
+        "tableCount": 885,
+        "totalRows": 512156,
+        "schemaSha256": "de67edc371e2088fa706392f0d7048b599f3942a4d144edc76099ad74093fdfe"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/database-000/database-observed.json",
+      "bytes": 3531017,
+      "modifiedAt": "2026-11-06T09:02:26.448578+00:00"
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/database-000/database-settings-intent.json",
+      "bytes": 625,
+      "modifiedAt": "2026-11-06T08:22:57.183727+00:00",
+      "status": {}
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/database-000/database-settings.json",
+      "bytes": 726,
+      "modifiedAt": "2026-11-06T08:23:06.710911+00:00",
+      "status": {}
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/database-000/expanded.sql-binary-logging.json",
+      "bytes": 233,
+      "modifiedAt": "2026-11-06T08:24:58.613074+00:00",
+      "status": {
+        "schemaVersion": "ReplacementBinaryLogging/v1"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/database-000/importer-236.json",
+      "bytes": 510,
+      "modifiedAt": "2026-11-06T08:34:43.771388+00:00",
+      "status": {
+        "schemaVersion": "RecoverySqlImporter/v1",
+        "state": "SUCCEEDED",
+        "actualExitCode": 0,
+        "startedAt": "2026-11-06T08:25:45.032876Z",
+        "finishedAt": "2026-11-06T08:34:43.772559Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/database-000/result.json",
+      "bytes": 1203,
+      "modifiedAt": "2026-11-06T09:02:35.485753+00:00",
+      "status": {
+        "fullSchemaDataEquivalenceVerified": true
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/database-000/sql-archive-stage.json",
+      "bytes": 638,
+      "modifiedAt": "2026-11-06T08:19:59.812297+00:00",
+      "status": {}
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/database-000/sql-import-intent.json",
+      "bytes": 858,
+      "modifiedAt": "2026-11-06T08:23:16.609102+00:00",
+      "status": {}
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/database-000/timing-database-restore-end.json",
+      "bytes": 114,
+      "modifiedAt": "2026-11-06T09:02:35.490753+00:00",
+      "status": {
+        "stage": "database-restore",
+        "finishedAt": "2026-11-06T09:02:35.491523Z",
+        "completed": true,
+        "elapsedSeconds": 2639.843
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/database-000/timing-database-restore-start.json",
+      "bytes": 70,
+      "modifiedAt": "2026-11-06T08:18:35.647670+00:00",
+      "status": {
+        "stage": "database-restore",
+        "startedAt": "2026-11-06T08:18:35.648512Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/database-000/timing-sql-expand-end.json",
+      "bytes": 105,
+      "modifiedAt": "2026-11-06T08:22:35.720311+00:00",
+      "status": {
+        "stage": "sql-expand",
+        "finishedAt": "2026-11-06T08:22:35.720584Z",
+        "completed": true,
+        "elapsedSeconds": 155.9
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/database-000/timing-sql-expand-start.json",
+      "bytes": 64,
+      "modifiedAt": "2026-11-06T08:19:59.819297+00:00",
+      "status": {
+        "stage": "sql-expand",
+        "startedAt": "2026-11-06T08:19:59.820398Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/database-000/timing-sql-import-end.json",
+      "bytes": 107,
+      "modifiedAt": "2026-11-06T08:34:43.775388+00:00",
+      "status": {
+        "stage": "sql-import",
+        "finishedAt": "2026-11-06T08:34:43.776410Z",
+        "completed": true,
+        "elapsedSeconds": 687.163
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/database-000/timing-sql-import-start.json",
+      "bytes": 64,
+      "modifiedAt": "2026-11-06T08:23:16.613102+00:00",
+      "status": {
+        "stage": "sql-import",
+        "startedAt": "2026-11-06T08:23:16.613734Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/database-000/timing-sql-readback-end.json",
+      "bytes": 108,
+      "modifiedAt": "2026-11-06T09:02:35.480753+00:00",
+      "status": {
+        "stage": "sql-readback",
+        "finishedAt": "2026-11-06T09:02:35.481340Z",
+        "completed": true,
+        "elapsedSeconds": 1671.7
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/database-000/timing-sql-readback-start.json",
+      "bytes": 66,
+      "modifiedAt": "2026-11-06T08:34:43.780388+00:00",
+      "status": {
+        "stage": "sql-readback",
+        "startedAt": "2026-11-06T08:34:43.781074Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/database-000/timing-sql-stage-end.json",
+      "bytes": 105,
+      "modifiedAt": "2026-11-06T08:19:59.803297+00:00",
+      "status": {
+        "stage": "sql-stage",
+        "finishedAt": "2026-11-06T08:19:59.804053Z",
+        "completed": true,
+        "elapsedSeconds": 74.052
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/database-000/timing-sql-stage-start.json",
+      "bytes": 63,
+      "modifiedAt": "2026-11-06T08:18:45.751865+00:00",
+      "status": {
+        "stage": "sql-stage",
+        "startedAt": "2026-11-06T08:18:45.752553Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/final/application-start.json",
+      "bytes": 1863,
+      "modifiedAt": "2026-11-06T09:36:47.906516+00:00",
+      "status": {
+        "state": "SUCCEEDED"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/final/consistency.json",
+      "bytes": 1544,
+      "modifiedAt": "2026-11-06T09:32:36.207642+00:00",
+      "status": {
+        "schemaVersion": "RecoveryConsistencyEvidence/v1"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/final/derived.json",
+      "bytes": 486,
+      "modifiedAt": "2026-11-06T09:33:16.049413+00:00",
+      "status": {}
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/final/main-health-backend.json",
+      "bytes": 657,
+      "modifiedAt": "2026-11-06T09:36:08.791758+00:00",
+      "status": {
+        "schemaVersion": "RegisteredMainSemanticReadiness/v1",
+        "role": "backend",
+        "ready": true,
+        "httpStatus": 200,
+        "semanticStatus": "UP",
+        "attempts": 109
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/final/main-health-frontend.json",
+      "bytes": 640,
+      "modifiedAt": "2026-11-06T09:36:37.480314+00:00",
+      "status": {
+        "schemaVersion": "RegisteredMainSemanticReadiness/v1",
+        "role": "frontend",
+        "ready": true,
+        "httpStatus": 200,
+        "semanticStatus": "READY",
+        "attempts": 1
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/final/redis-dump-independent-readback.json",
+      "bytes": 571,
+      "modifiedAt": "2026-11-06T09:33:06.824234+00:00",
+      "status": {
+        "schemaVersion": "RedisDumpRestoreReadback/v1"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/final/timing-application-start-end.json",
+      "bytes": 114,
+      "modifiedAt": "2026-11-06T09:36:47.910516+00:00",
+      "status": {
+        "stage": "application-start",
+        "finishedAt": "2026-11-06T09:36:47.910900Z",
+        "completed": true,
+        "elapsedSeconds": 211.843
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/final/timing-application-start-start.json",
+      "bytes": 71,
+      "modifiedAt": "2026-11-06T09:33:16.067413+00:00",
+      "status": {
+        "stage": "application-start",
+        "startedAt": "2026-11-06T09:33:16.068126Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/final/timing-archive-verification-end.json",
+      "bytes": 117,
+      "modifiedAt": "2026-11-06T09:50:50.369828+00:00",
+      "status": {
+        "stage": "archive-verification",
+        "finishedAt": "2026-11-06T09:50:50.371157Z",
+        "completed": true,
+        "elapsedSeconds": 842.458
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/final/timing-archive-verification-start.json",
+      "bytes": 74,
+      "modifiedAt": "2026-11-06T09:36:47.912516+00:00",
+      "status": {
+        "stage": "archive-verification",
+        "startedAt": "2026-11-06T09:36:47.912845Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/final/timing-consistency-end.json",
+      "bytes": 108,
+      "modifiedAt": "2026-11-06T09:32:36.222642+00:00",
+      "status": {
+        "stage": "consistency",
+        "finishedAt": "2026-11-06T09:32:36.222629Z",
+        "completed": true,
+        "elapsedSeconds": 129.113
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/final/timing-consistency-start.json",
+      "bytes": 65,
+      "modifiedAt": "2026-11-06T09:30:27.108141+00:00",
+      "status": {
+        "stage": "consistency",
+        "startedAt": "2026-11-06T09:30:27.109491Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/final/timing-redis-rebuild-end.json",
+      "bytes": 109,
+      "modifiedAt": "2026-11-06T09:33:16.060413+00:00",
+      "status": {
+        "stage": "redis-rebuild",
+        "finishedAt": "2026-11-06T09:33:16.061443Z",
+        "completed": true,
+        "elapsedSeconds": 39.822
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/final/timing-redis-rebuild-start.json",
+      "bytes": 67,
+      "modifiedAt": "2026-11-06T09:32:36.239642+00:00",
+      "status": {
+        "stage": "redis-rebuild",
+        "startedAt": "2026-11-06T09:32:36.239881Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/objects/bucket-permissions.json",
+      "bytes": 6128,
+      "modifiedAt": "2026-11-06T09:30:27.050140+00:00",
+      "status": {
+        "schemaVersion": "RecoveryBucketProtectionObservation/v1",
+        "state": "CONFIGURATION_MATCHED"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/objects/main-health-minio.json",
+      "bytes": 656,
+      "modifiedAt": "2026-11-06T09:19:17.734177+00:00",
+      "status": {
+        "schemaVersion": "RegisteredMainSemanticReadiness/v1",
+        "role": "minio",
+        "ready": true,
+        "httpStatus": 200,
+        "semanticStatus": "READY",
+        "attempts": 1
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/objects/physical-comparison.json",
+      "bytes": 1659,
+      "modifiedAt": "2026-11-06T09:30:07.776767+00:00",
+      "status": {
+        "state": "PHYSICAL_VERSION_READBACK_MATCH_PENDING_FULL_RESTORE_PROOF"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/objects/physical-step-000-intent.json",
+      "bytes": 1848635,
+      "modifiedAt": "2026-11-06T09:06:21.461133+00:00"
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/objects/physical-step-000-readback.json",
+      "bytes": 74,
+      "modifiedAt": "2026-11-06T09:18:48.302607+00:00",
+      "status": {}
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/objects/result.json",
+      "bytes": 1248,
+      "modifiedAt": "2026-11-06T09:30:27.087141+00:00",
+      "status": {}
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/objects/timing-object-restore-end.json",
+      "bytes": 112,
+      "modifiedAt": "2026-11-06T09:30:27.101141+00:00",
+      "status": {
+        "stage": "object-restore",
+        "finishedAt": "2026-11-06T09:30:27.102395Z",
+        "completed": true,
+        "elapsedSeconds": 1671.609
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/objects/timing-object-restore-start.json",
+      "bytes": 68,
+      "modifiedAt": "2026-11-06T09:02:35.493753+00:00",
+      "status": {
+        "stage": "object-restore",
+        "startedAt": "2026-11-06T09:02:35.493727Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/operation.json",
+      "bytes": 437,
+      "modifiedAt": "2026-11-06T07:30:51.412277+00:00",
+      "status": {
+        "startedAt": "2026-11-06T07:30:51.401332Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/replacement-preparation/native-172.json",
+      "bytes": 538,
+      "modifiedAt": "2026-11-06T09:52:51.193168+00:00",
+      "status": {
+        "schemaVersion": "RecoveryDataInvocation/v1",
+        "state": "SUCCEEDED",
+        "actualExitCode": 0,
+        "startedAt": "2026-11-06T09:52:50.861186Z",
+        "finishedAt": "2026-11-06T09:52:51.193827Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/replacement-preparation/native-173.json",
+      "bytes": 540,
+      "modifiedAt": "2026-11-06T09:52:51.548175+00:00",
+      "status": {
+        "schemaVersion": "RecoveryDataInvocation/v1",
+        "state": "SUCCEEDED",
+        "actualExitCode": 0,
+        "startedAt": "2026-11-06T09:52:51.209720Z",
+        "finishedAt": "2026-11-06T09:52:51.548614Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/replacement-preparation/native-174.json",
+      "bytes": 540,
+      "modifiedAt": "2026-11-06T09:52:51.889181+00:00",
+      "status": {
+        "schemaVersion": "RecoveryDataInvocation/v1",
+        "state": "SUCCEEDED",
+        "actualExitCode": 0,
+        "startedAt": "2026-11-06T09:52:51.553851Z",
+        "finishedAt": "2026-11-06T09:52:51.890002Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/replacement-preparation/replacement-intent.json",
+      "bytes": 581,
+      "modifiedAt": "2026-11-06T07:53:34.476622+00:00",
+      "status": {
+        "startedAt": "2026-11-06T07:53:34.477347Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/replacement-preparation/replacement-prepared.json",
+      "bytes": 63,
+      "modifiedAt": "2026-11-06T07:55:50.587253+00:00",
+      "status": {
+        "state": "PREPARED",
+        "finishedAt": "2026-11-06T07:55:50.588467Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/replacement-preparation/target-configuration.json",
+      "bytes": 40889,
+      "modifiedAt": "2026-11-06T07:53:25.985458+00:00",
+      "status": {}
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/replacement-preparation/timing-target-replacement-end.json",
+      "bytes": 115,
+      "modifiedAt": "2026-11-06T07:55:50.603253+00:00",
+      "status": {
+        "stage": "target-replacement",
+        "finishedAt": "2026-11-06T07:55:50.604085Z",
+        "completed": true,
+        "elapsedSeconds": 144.261
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/replacement-preparation/timing-target-replacement-start.json",
+      "bytes": 72,
+      "modifiedAt": "2026-11-06T07:53:26.342464+00:00",
+      "status": {
+        "stage": "target-replacement",
+        "startedAt": "2026-11-06T07:53:26.343387Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/request.json",
+      "bytes": 319,
+      "modifiedAt": "2026-11-06T07:30:51.401277+00:00",
+      "status": {
+        "schemaVersion": "SmallAppBackupUiRequest/v1"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/resource-admission-owner.json",
+      "bytes": 1885,
+      "modifiedAt": "2026-11-06T07:30:51.758284+00:00",
+      "status": {
+        "startedAt": "2026-11-06T07:30:51.526711Z",
+        "finishedAt": "2026-11-06T07:30:51.758744Z",
+        "elapsedSeconds": 0.232
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/resource-admission-replacement.json",
+      "bytes": 2149,
+      "modifiedAt": "2026-11-06T07:45:12.194914+00:00",
+      "status": {
+        "startedAt": "2026-11-06T07:45:12.043817Z",
+        "finishedAt": "2026-11-06T07:45:12.196272Z",
+        "elapsedSeconds": 0.152
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/resource-admission-target.json",
+      "bytes": 2149,
+      "modifiedAt": "2026-11-06T08:10:06.423820+00:00",
+      "status": {
+        "startedAt": "2026-11-06T08:10:06.193545Z",
+        "finishedAt": "2026-11-06T08:10:06.425356Z",
+        "elapsedSeconds": 0.232
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/resource-release.json",
+      "bytes": 845,
+      "modifiedAt": "2026-11-06T09:52:53.345210+00:00",
+      "status": {}
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/resource-reservation.json",
+      "bytes": 483,
+      "modifiedAt": "2026-11-06T07:30:51.762284+00:00",
+      "status": {
+        "schemaVersion": "RestoreHostReservation/v1",
+        "startedAt": "2026-11-06T07:30:51.762646Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/result.json",
+      "bytes": 318798,
+      "modifiedAt": "2026-11-06T09:52:53.355210+00:00"
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/staging-cleanup-intent.json",
+      "bytes": 1213732,
+      "modifiedAt": "2026-11-06T09:52:33.384823+00:00"
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/staging-cleanup.json",
+      "bytes": 1213782,
+      "modifiedAt": "2026-11-06T09:52:47.091089+00:00"
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/target-configuration.json",
+      "bytes": 40949,
+      "modifiedAt": "2026-11-06T08:18:22.574417+00:00",
+      "status": {}
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/timing-restore-admission-end.json",
+      "bytes": 115,
+      "modifiedAt": "2026-11-06T08:18:23.062426+00:00",
+      "status": {
+        "stage": "restore-admission",
+        "finishedAt": "2026-11-06T08:18:23.063008Z",
+        "completed": true,
+        "elapsedSeconds": 1352.454
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/timing-restore-admission-start.json",
+      "bytes": 71,
+      "modifiedAt": "2026-11-06T07:55:50.608253+00:00",
+      "status": {
+        "stage": "restore-admission",
+        "startedAt": "2026-11-06T07:55:50.609220Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/timing-restore-cleanup-end.json",
+      "bytes": 112,
+      "modifiedAt": "2026-11-06T09:52:47.109089+00:00",
+      "status": {
+        "stage": "restore-cleanup",
+        "finishedAt": "2026-11-06T09:52:47.110090Z",
+        "completed": true,
+        "elapsedSeconds": 116.734
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/timing-restore-cleanup-start.json",
+      "bytes": 69,
+      "modifiedAt": "2026-11-06T09:50:50.374829+00:00",
+      "status": {
+        "stage": "restore-cleanup",
+        "startedAt": "2026-11-06T09:50:50.376054Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/timing-target-checks-end.json",
+      "bytes": 109,
+      "modifiedAt": "2026-11-06T08:18:35.621669+00:00",
+      "status": {
+        "stage": "target-checks",
+        "finishedAt": "2026-11-06T08:18:35.622216Z",
+        "completed": true,
+        "elapsedSeconds": 12.556
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/timing-target-checks-start.json",
+      "bytes": 67,
+      "modifiedAt": "2026-11-06T08:18:23.065426+00:00",
+      "status": {
+        "stage": "target-checks",
+        "startedAt": "2026-11-06T08:18:23.065926Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/worker-result.json",
+      "bytes": 317065,
+      "modifiedAt": "2026-11-06T09:52:51.972183+00:00"
+    },
+    {
+      "path": "replacement-state/smallapp-9c961c848bc84f529d8ff0968b578a20/archive-view/active.json",
+      "bytes": 286,
+      "modifiedAt": "2026-11-06T07:53:34.640625+00:00",
+      "status": {
+        "schemaVersion": "ArchiveViewProtectionActive/v1"
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-9c961c848bc84f529d8ff0968b578a20/archive-view/intent.json",
+      "bytes": 239,
+      "modifiedAt": "2026-11-06T07:53:34.486622+00:00",
+      "status": {
+        "schemaVersion": "ArchiveViewProtectionIntent/v1",
+        "startedAt": "2026-11-06T07:53:34.487085Z"
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-9c961c848bc84f529d8ff0968b578a20/archive-view/released.json",
+      "bytes": 181,
+      "modifiedAt": "2026-11-06T09:52:47.348094+00:00",
+      "status": {
+        "schemaVersion": "ArchiveViewProtectionRelease/v1",
+        "finishedAt": "2026-11-06T09:52:47.348914Z"
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-9c961c848bc84f529d8ff0968b578a20/mysql-scheduler/active.json",
+      "bytes": 473,
+      "modifiedAt": "2026-11-06T07:53:49.339909+00:00",
+      "status": {
+        "schemaVersion": "MainMysqlSchedulerActive/v1",
+        "pausedState": "OFF"
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-9c961c848bc84f529d8ff0968b578a20/mysql-scheduler/intent.json",
+      "bytes": 585,
+      "modifiedAt": "2026-11-06T07:53:46.807860+00:00",
+      "status": {
+        "schemaVersion": "MainMysqlSchedulerIntent/v1",
+        "startedAt": "2026-11-06T07:53:46.809357Z",
+        "originalState": "ON",
+        "pausedState": "OFF"
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-9c961c848bc84f529d8ff0968b578a20/mysql-scheduler/release-intent.json",
+      "bytes": 381,
+      "modifiedAt": "2026-11-06T09:52:50.848161+00:00",
+      "status": {
+        "startedAt": "2026-11-06T09:52:50.849149Z",
+        "originalState": "ON"
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-9c961c848bc84f529d8ff0968b578a20/mysql-scheduler/released.json",
+      "bytes": 806,
+      "modifiedAt": "2026-11-06T09:52:51.898182+00:00",
+      "status": {
+        "schemaVersion": "MainMysqlSchedulerRelease/v1",
+        "finishedAt": "2026-11-06T09:52:51.899477Z",
+        "originalState": "ON",
+        "originalStateRestored": true
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-9c961c848bc84f529d8ff0968b578a20/published-fence/active.json",
+      "bytes": 2418,
+      "modifiedAt": "2026-11-06T07:53:39.541719+00:00",
+      "status": {
+        "schemaVersion": "PublishedHostWriteFenceActive/v1"
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-9c961c848bc84f529d8ff0968b578a20/published-fence/intent.json",
+      "bytes": 924,
+      "modifiedAt": "2026-11-06T07:53:34.844629+00:00",
+      "status": {
+        "schemaVersion": "PublishedHostWriteFenceIntent/v1",
+        "startedAt": "2026-11-06T07:53:34.845017Z"
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-9c961c848bc84f529d8ff0968b578a20/published-fence/ipv4-installed.json",
+      "bytes": 1206,
+      "modifiedAt": "2026-11-06T07:53:36.887668+00:00",
+      "status": {
+        "state": "INSTALLED"
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-9c961c848bc84f529d8ff0968b578a20/published-fence/ipv6-installed.json",
+      "bytes": 1124,
+      "modifiedAt": "2026-11-06T07:53:39.402717+00:00",
+      "status": {
+        "state": "INSTALLED"
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-9c961c848bc84f529d8ff0968b578a20/published-fence/released.json",
+      "bytes": 184,
+      "modifiedAt": "2026-11-06T09:52:49.732140+00:00",
+      "status": {
+        "schemaVersion": "PublishedHostWriteFenceRelease/v1",
+        "finishedAt": "2026-11-06T09:52:49.733051Z"
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-9c961c848bc84f529d8ff0968b578a20/replacement-result.json",
+      "bytes": 184,
+      "modifiedAt": "2026-11-06T09:52:51.905182+00:00",
+      "status": {
+        "state": "SUCCEEDED",
+        "finishedAt": "2026-11-06T09:52:51.906427Z"
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-9c961c848bc84f529d8ff0968b578a20/runtime/.recovery-operation.json",
+      "bytes": 101,
+      "modifiedAt": "2026-11-06T08:10:06.440820+00:00",
+      "status": {
+        "startedAt": "2026-11-06T08:10:06.442147Z"
+      }
+    }
+  ],
+  "nativeInvocationCounts": {
+    "ledger/smallapp-9c961c848bc84f529d8ff0968b578a20": 0,
+    "recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20": 1446,
+    "replacement-state/smallapp-9c961c848bc84f529d8ff0968b578a20": 0
+  },
+  "configuredDeadlineMilliseconds": 21600000,
+  "processes": []
+}

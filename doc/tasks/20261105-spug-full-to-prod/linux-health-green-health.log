@@ -1,0 +1,29 @@
+........F........                                                     [100%]
+=================================== FAILURES ===================================
+______ BoundReadinessTests.test_both_actual_bundles_ship_semantic_health _______
+
+self = <test_main_readiness.BoundReadinessTests testMethod=test_both_actual_bundles_ship_semantic_health>
+
+    def test_both_actual_bundles_ship_semantic_health(self):
+        from importlib.util import spec_from_file_location,module_from_spec
+        spec=spec_from_file_location('backup_engine',ROOT/'ops/backup_engine/build_variants.py')
+        module=module_from_spec(spec);spec.loader.exec_module(module)
+        with tempfile.TemporaryDirectory() as directory:
+            import tarfile
+>           module.build(Path(directory))
+
+scripts/tests/test_main_readiness.py:166: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+output = PosixPath('/tmp/tmp8xarufj7')
+
+    def build(output):
+        output = Path(output)
+        if output.exists():
+>           raise FileExistsError('VARIANT_OUTPUT_ALREADY_EXISTS')
+E           FileExistsError: VARIANT_OUTPUT_ALREADY_EXISTS
+
+ops/backup_engine/build_variants.py:88: FileExistsError
+=========================== short test summary info ============================
+FAILED scripts/tests/test_main_readiness.py::BoundReadinessTests::test_both_actual_bundles_ship_semantic_health
+1 failed, 16 passed, 3 subtests passed in 6.66s

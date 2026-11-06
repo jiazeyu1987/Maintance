@@ -1,0 +1,92 @@
+{
+  "observedAt": "2026-11-06T09:58:18.492710+00:00",
+  "operationId": "smallapp-9c961c848bc84f529d8ff0968b578a20",
+  "backupOperationId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+  "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+  "state": "SUCCEEDED",
+  "finishedAt": "2026-11-06T09:52:51.969210Z",
+  "actualExitCode": 0,
+  "sameNewFullPointVerified": true,
+  "database": {
+    "uuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+    "fullSchemaDataEquivalenceVerified": true,
+    "tableCount": 885,
+    "totalRows": 512156,
+    "schemaSha256": "de67edc371e2088fa706392f0d7048b599f3942a4d144edc76099ad74093fdfe"
+  },
+  "objects": {
+    "exactVersionIdentityVerified": true,
+    "versionCount": 5916,
+    "deleteMarkerCount": 0,
+    "totalVersionBytes": 9653189892,
+    "uniqueContentCount": 4920,
+    "versionHistorySha256": "9fb2a7ba380c86d0164c9a82ba8ad18320fed5eb1f1f79d8a72e2ae77e7260c8"
+  },
+  "consistency": {
+    "allReferencesVerified": true,
+    "presentReferencesVerified": true,
+    "sourceMissingReferenceCount": 0,
+    "sourceMissingBaselinePreserved": true,
+    "invariantsVerified": true
+  },
+  "redis": {
+    "restoredKeyCount": 0,
+    "expiredBeforeRestoreCount": 0,
+    "independentlyVerifiedKeyCount": 0,
+    "valuesVerified": true,
+    "absoluteExpiryVerified": true
+  },
+  "applicationStart": {
+    "state": "SUCCEEDED",
+    "isolation": "REGISTERED_MAIN_RESOURCE_CUSTODY",
+    "businessAcceptance": "NOT_PERFORMED"
+  },
+  "replacementState": "SUCCEEDED",
+  "cleanupFields": [
+    "deletedBytes",
+    "deletedFiles",
+    "files",
+    "finishedAt",
+    "operationId",
+    "root",
+    "schemaVersion",
+    "selectedPaths",
+    "state"
+  ],
+  "verifiedDocumentPins": 24,
+  "independentBusinessUIRequired": true,
+  "status": "PASS",
+  "archiveViewRestored": true,
+  "publishedWriteFenceReleased": true,
+  "hostResourceReservationReleased": true,
+  "mysqlSchedulerOriginalStateRestored": true,
+  "mysqlSchedulerOriginalState": "ON",
+  "mysqlSchedulerReleasePin": {
+    "bytes": 806,
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-9c961c848bc84f529d8ff0968b578a20/mysql-scheduler/released.json",
+    "sha256": "0db026aab9f1d0ec3c564e878fbfabf317294e880141994708b96132e96009f5"
+  },
+  "resourceReleasePin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/resource-release.json",
+    "bytes": 845,
+    "sha256": "1fd51cc4ee40e56b2ada935b920e5ac80e40fb68e1c1826d098b6144266d3303"
+  },
+  "mainSemanticReadinessVerified": true,
+  "mainReadinessPins": [
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/objects/main-health-minio.json",
+      "bytes": 656,
+      "sha256": "da45387b8ca36bce6d29c7962b22411e144658adc412169c94dbae2a09b371e7"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/final/main-health-backend.json",
+      "bytes": 657,
+      "sha256": "38986bb989d135e5369d3610fb2bb41168f8af4a74ccfa5a44300262bc7236cf"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-9c961c848bc84f529d8ff0968b578a20/final/main-health-frontend.json",
+      "bytes": 640,
+      "sha256": "4a4917439544618214856612123ce7604263eb7683890e21f36672ce0220a3d9"
+    }
+  ]
+}

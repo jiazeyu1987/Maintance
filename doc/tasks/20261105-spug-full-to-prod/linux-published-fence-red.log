@@ -1,0 +1,14 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_real_published_write_fence_blocks_dnat_and_proxy_without_changing_other_rules _
+
+tmp_path = PosixPath('/work/fence-red/test_real_published_write_fenc0')
+
+    def test_real_published_write_fence_blocks_dnat_and_proxy_without_changing_other_rules(tmp_path):
+>       from recovery_published_fence import PublishedFence
+E       ModuleNotFoundError: No module named 'recovery_published_fence'
+
+scripts/tests/test_published_write_fence_linux.py:43: ModuleNotFoundError
+=========================== short test summary info ============================
+FAILED scripts/tests/test_published_write_fence_linux.py::test_real_published_write_fence_blocks_dnat_and_proxy_without_changing_other_rules
+1 failed in 0.40s

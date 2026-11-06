@@ -1,0 +1,56 @@
+{
+  "observedAt": "2026-11-06T01:38:21.065170+00:00",
+  "pid": 29314,
+  "state": "D",
+  "io": {
+    "rchar": 108587258284,
+    "wchar": 26131335222,
+    "syscr": 3618520,
+    "syscw": 38794,
+    "read_bytes": 33750372352,
+    "write_bytes": 39591936,
+    "cancelled_write_bytes": 0
+  },
+  "latest": [
+    {
+      "name": "67b9483c7a9b1b4a5ea3b22c6a8887a169c2d9c33918ee9b2c7b454df7ff2bc7",
+      "bytes": 4096,
+      "isDir": true
+    },
+    {
+      "name": "timing-nas-readback-start.json",
+      "bytes": 66,
+      "isDir": false
+    },
+    {
+      "name": "timing-archive-metadata-end.json",
+      "bytes": 111,
+      "isDir": false
+    },
+    {
+      "name": "timing-archive-metadata-start.json",
+      "bytes": 70,
+      "isDir": false
+    },
+    {
+      "name": "timing-nas-upload-end.json",
+      "bytes": 108,
+      "isDir": false
+    },
+    {
+      "name": "timing-nas-upload-start.json",
+      "bytes": 64,
+      "isDir": false
+    },
+    {
+      "name": "timing-capture-validation-end.json",
+      "bytes": 115,
+      "isDir": false
+    },
+    {
+      "name": "timing-capture-validation-start.json",
+      "bytes": 72,
+      "isDir": false
+    }
+  ]
+}

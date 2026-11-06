@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T06:05:02.074828+00:00",
+  "operationId": "smallapp-d7a963eb1e9a4c16826c92d5753b30c3",
+  "originalState": "ON",
+  "currentState": "OFF",
+  "runningSchedulerThreads": 0,
+  "originalDatabaseIdentityVerified": true,
+  "exclusiveDatabaseScopeVerified": true,
+  "intentPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-d7a963eb1e9a4c16826c92d5753b30c3/mysql-scheduler/intent.json",
+    "bytes": 332,
+    "sha256": "7bb8ae7d1a9d5967fb2c3fdf2c0e3738b7befd95a192443977780437b4fd9198"
+  },
+  "activePin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-d7a963eb1e9a4c16826c92d5753b30c3/mysql-scheduler/active.json",
+    "bytes": 473,
+    "sha256": "1a95204d12bb137b351822fa5ab6a21f31e128eb4aa72139925fbe2e92a56eac"
+  },
+  "databaseMutations": 0
+}

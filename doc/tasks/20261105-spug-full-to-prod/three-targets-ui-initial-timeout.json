@@ -1,0 +1,12 @@
+{
+  "observedAt": "2026-11-06T09:58:55.384Z",
+  "operationId": "smallapp-9c961c848bc84f529d8ff0968b578a20",
+  "realBrowser": true,
+  "realLogin": true,
+  "restorePosts": 0,
+  "blocked": [],
+  "choices": [],
+  "status": "FAIL",
+  "error": "TimeoutError: frame.waitForFunction: Timeout 90000ms exceeded.",
+  "finishedAt": "2026-11-06T10:00:32.567Z"
+}

@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T01:27:33.498816+00:00",
+  "operationId": "smallapp-7fec29a3e132463096aec915c08acab3",
+  "workerPid": 29314,
+  "engine": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine",
+  "fileCount": 116,
+  "fileManifestSha256": "71e1c10d86377e4185b8fcd6546f12431cef2ea3f367434ecdc6dbf611db52f2",
+  "allInstalledFilesShaVerified": true,
+  "variant": "standard",
+  "payloadContentVerification": true,
+  "nativeReaderMatchesReviewedFullReader": true,
+  "publishCallsFullReader": true,
+  "repositoryProgramPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/common/repository_minimal.py",
+    "bytes": 55554,
+    "sha256": "9658a44c2133bcfd10a644a3868fdd663ba024bd52c887c187449f6140b863f3"
+  },
+  "fullReaderPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/common/repository_native_readback.py",
+    "bytes": 12158,
+    "sha256": "80abab1d31c9e6b6ef922ea7e93e6aa510037cfe6708ea6228bf5a6a13d5f61c"
+  }
+}

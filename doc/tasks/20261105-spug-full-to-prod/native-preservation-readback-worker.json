@@ -1,0 +1,16 @@
+{
+  "observedAt": "2026-11-06T01:32:41.963268+00:00",
+  "workerPid": 29314,
+  "state": "S",
+  "processStartTicks": "7940506",
+  "ioCounters": {
+    "rchar": 107902827753,
+    "wchar": 26115919668,
+    "syscr": 3325352,
+    "syscw": 38783,
+    "read_bytes": 33750212608,
+    "write_bytes": 24141824,
+    "cancelled_write_bytes": 0
+  },
+  "rcharIncreaseSince0125": 175877838
+}

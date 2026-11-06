@@ -1,0 +1,15 @@
+{
+  "realBrowser": true,
+  "realLogin": true,
+  "startedAt": "2026-11-06T07:25:10.467Z",
+  "writes": 0,
+  "blocked": [],
+  "httpFailures": [],
+  "pageErrors": [],
+  "selectedPackage": "请选择可用备份包",
+  "entry": "existing-restore-tab",
+  "status": "FAIL",
+  "error": "TimeoutError: frame.waitForFunction: Timeout 45000ms exceeded.",
+  "visible": "工作台\nDashboard\n主机管理\n批量执行\n应用发布\n流水线\n任务计划\n备份与恢复\n配置中心\n监控中心\n报警中心\n系统管理\n管理员\n首页/\n备份与恢复",
+  "finishedAt": "2026-11-06T07:26:02.918Z"
+}

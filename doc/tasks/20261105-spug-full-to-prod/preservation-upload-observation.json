@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T01:04:16.053892+00:00",
+  "verifierFilesVerified": 123,
+  "fullReaderImportVerified": true,
+  "nativeConfigurationPinVerified": true,
+  "archiveName": "prod-standard-433710bb8eb93e78351878966cb06caec1c420e87ef3d5c8dff9c493dc085eb9",
+  "uploadedFilesObserved": 2468,
+  "uploadedBytesObserved": 12578416828,
+  "latestFileMtime": 1793927055.676684,
+  "scope": "exact-original-360-archive-only",
+  "nasWrites": 0,
+  "restoreSubmitted": false
+}

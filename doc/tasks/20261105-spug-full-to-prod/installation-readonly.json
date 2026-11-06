@@ -1,0 +1,43 @@
+{
+  "/usr/sbin/iptables": {
+    "real": "/usr/sbin/xtables-nft-multi",
+    "bytes": 295152,
+    "sha256": "153b83c1b5b74f6c82f4473dafa91d9ae8a3f8f4352941bb95bd53f5a336b04b",
+    "returncode": 0,
+    "rules": "-P PREROUTING ACCEPT\n-P INPUT ACCEPT\n-P FORWARD ACCEPT\n-P OUTPUT ACCEPT\n-P POSTROUTING ACCEPT\n",
+    "stderr": ""
+  },
+  "/usr/sbin/ip6tables": {
+    "real": "/usr/sbin/xtables-nft-multi",
+    "bytes": 295152,
+    "sha256": "153b83c1b5b74f6c82f4473dafa91d9ae8a3f8f4352941bb95bd53f5a336b04b",
+    "returncode": 0,
+    "rules": "-P PREROUTING ACCEPT\n-P INPUT ACCEPT\n-P FORWARD ACCEPT\n-P OUTPUT ACCEPT\n-P POSTROUTING ACCEPT\n",
+    "stderr": ""
+  },
+  "/sbin/iptables": {
+    "real": "/usr/sbin/xtables-nft-multi",
+    "bytes": 295152,
+    "sha256": "153b83c1b5b74f6c82f4473dafa91d9ae8a3f8f4352941bb95bd53f5a336b04b",
+    "returncode": 0,
+    "rules": "-P PREROUTING ACCEPT\n-P INPUT ACCEPT\n-P FORWARD ACCEPT\n-P OUTPUT ACCEPT\n-P POSTROUTING ACCEPT\n",
+    "stderr": ""
+  },
+  "/sbin/ip6tables": {
+    "real": "/usr/sbin/xtables-nft-multi",
+    "bytes": 295152,
+    "sha256": "153b83c1b5b74f6c82f4473dafa91d9ae8a3f8f4352941bb95bd53f5a336b04b",
+    "returncode": 0,
+    "rules": "-P PREROUTING ACCEPT\n-P INPUT ACCEPT\n-P FORWARD ACCEPT\n-P OUTPUT ACCEPT\n-P POSTROUTING ACCEPT\n",
+    "stderr": ""
+  },
+  "python": {
+    "bytes": 30975640,
+    "path": "/usr/local/libexec/spug-source-control-20261105/python/bin/python3.12",
+    "sha256": "0886fb76ceec8ff568d23079b5da6342bb41675e216e11525d4d6a9e65988d10"
+  },
+  "dependencies": "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/runtime/lib/python3.12/site-packages",
+  "dependenciesImport": "DEPENDENCIES_OK",
+  "dependenciesImportExit": 0,
+  "listeners": "State    Recv-Q    Send-Q        Local Address:Port        Peer Address:Port                                                                                    \nLISTEN   0         128                 0.0.0.0:8080             0.0.0.0:*        users:((\"docker-proxy\",pid=10966,fd=4))                                        \nLISTEN   0         128                 0.0.0.0:8081             0.0.0.0:*        users:((\"docker-proxy\",pid=5571,fd=4))                                         \nLISTEN   0         128                 0.0.0.0:48081            0.0.0.0:*        users:((\"docker-proxy\",pid=5270,fd=4))                                         \nLISTEN   0         5                 127.0.0.1:32657            0.0.0.0:*        users:((\"python3.12\",pid=20619,fd=4))                                          \nLISTEN   0         5                 127.0.0.1:18257            0.0.0.0:*        users:((\"python3.12\",pid=3022,fd=6))                                           \nLISTEN   0         128                 0.0.0.0:8083             0.0.0.0:*        users:((\"docker-proxy\",pid=11066,fd=4))                                        \nLISTEN   0         128                 0.0.0.0:22               0.0.0.0:*        users:((\"sshd\",pid=3019,fd=4))                                                 \nLISTEN   0         128            172.30.30.57:38082            0.0.0.0:*        users:((\"docker-proxy\",pid=10953,fd=4))                                        \nLISTEN   0         128                 0.0.0.0:9000             0.0.0.0:*        users:((\"docker-proxy\",pid=14726,fd=4))                                        \nLISTEN   0         128                 0.0.0.0:9001             0.0.0.0:*        users:((\"docker-proxy\",pid=14704,fd=4))                                        \nLISTEN   0         128                 0.0.0.0:18733            0.0.0.0:*        users:((\"docker-proxy\",pid=11005,fd=4))                                        \nLISTEN   0         128                 0.0.0.0:18734            0.0.0.0:*        users:((\"docker-proxy\",pid=10986,fd=4))                                        \nLISTEN   0         128                    [::]:8080                [::]:*        users:((\"docker-proxy\",pid=10972,fd=4))                                        \nLISTEN   0         128                    [::]:8081                [::]:*        users:((\"docker-proxy\",pid=5581,fd=4))                                         \nLISTEN   0         128                    [::]:48081               [::]:*        users:((\"docker-proxy\",pid=5280,fd=4))                                         \nLISTEN   0         128                    [::]:8083                [::]:*        users:((\"docker-proxy\",pid=11072,fd=4))                                        \nLISTEN   0         128                    [::]:22                  [::]:*        users:((\"sshd\",pid=3019,fd=6))                                                 \nLISTEN   0         128                       *:9090                   *:*        users:((\"systemd\",pid=1,fd=77))                                                \nLISTEN   0         128                    [::]:9000                [::]:*        users:((\"docker-proxy\",pid=14733,fd=4))                                        \nLISTEN   0         128                    [::]:9001                [::]:*        users:((\"docker-proxy\",pid=14711,fd=4))                                        \nLISTEN   0         128                    [::]:18733               [::]:*        users:((\"docker-proxy\",pid=11011,fd=4))                                        \nLISTEN   0         128                    [::]:18734               [::]:*        users:((\"docker-proxy\",pid=10993,fd=4))                                        \n"
+}

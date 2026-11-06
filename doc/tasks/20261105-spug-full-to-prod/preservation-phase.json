@@ -1,0 +1,24 @@
+{
+  "observedAt": "2026-11-06T00:47:16.015622+00:00",
+  "configurationFields": [
+    "archiveRoot",
+    "limits",
+    "parent",
+    "schemaVersion",
+    "source",
+    "sourceConfigRef",
+    "sourceLockPath",
+    "tools"
+  ],
+  "processes": [
+    {
+      "pid": 29758,
+      "parent": 1,
+      "executable": "python3.12",
+      "programs": [],
+      "state": "R",
+      "cpuTicks": 9551,
+      "wchan": "0"
+    }
+  ]
+}

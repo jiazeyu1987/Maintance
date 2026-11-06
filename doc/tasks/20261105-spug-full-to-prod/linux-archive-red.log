@@ -1,0 +1,41 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________ test_archive_view_is_readonly_and_original_mount_returns ___________
+
+tmp_path = PosixPath('/work/pytest-archive-red/test_archive_view_is_readonly_0')
+
+    def test_archive_view_is_readonly_and_original_mount_returns(tmp_path):
+        first,second=tmp_path/'view',tmp_path/'other'
+        first.mkdir();second.mkdir()
+        def command(args,**kwargs):
+            p=subprocess.run(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=True)
+            return p.stdout
+        command(['mount','-t','tmpfs','-o','size=1m','spug-archive-view-test',str(first)])
+        try:
+            command(['mount','--bind',str(first),str(second)])
+            try:
+                (first/'archives').mkdir();(first/'archives/file').write_bytes(b'original')
+>               module=importlib.import_module('recovery_archive_view')
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+scripts/tests/test_archive_view_protection_linux.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'recovery_archive_view'
+import_ = <function _gcd_import at 0x78f18dfc80e0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'recovery_archive_view'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+=========================== short test summary info ============================
+FAILED scripts/tests/test_archive_view_protection_linux.py::test_archive_view_is_readonly_and_original_mount_returns
+1 failed in 0.31s

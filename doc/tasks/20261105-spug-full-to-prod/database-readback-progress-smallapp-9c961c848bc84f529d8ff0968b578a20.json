@@ -1,0 +1,12 @@
+{
+  "observedAt": "2026-11-06T08:56:41.745977+00:00",
+  "operationId": "smallapp-9c961c848bc84f529d8ff0968b578a20",
+  "startedTableDirectories": 885,
+  "highestStartedTableIndex": 884,
+  "tokenFiles": 885,
+  "tokenBytes": 41849790,
+  "latestTokenWriteAt": "2026-11-06T08:55:35.342609+00:00",
+  "databaseMutations": 0,
+  "businessValuesRead": false,
+  "fullComparisonSuccessNotInferred": true
+}

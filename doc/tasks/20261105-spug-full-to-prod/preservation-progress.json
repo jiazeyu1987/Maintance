@@ -1,0 +1,319 @@
+{
+  "observedAt": "2026-11-06T02:22:19.023461+00:00",
+  "operationId": "smallapp-7fec29a3e132463096aec915c08acab3",
+  "directories": {
+    "ledger/smallapp-7fec29a3e132463096aec915c08acab3": {
+      "count": 10,
+      "latest": [
+        {
+          "name": "queries",
+          "bytes": 147456,
+          "mtime": 1793931737.8537076,
+          "isDirectory": true
+        },
+        {
+          "name": "worker-terminal.json",
+          "bytes": 647,
+          "mtime": 1793921448.7358346,
+          "isDirectory": false
+        },
+        {
+          "name": "completion.json",
+          "bytes": 3159,
+          "mtime": 1793921448.704834,
+          "isDirectory": false
+        },
+        {
+          "name": "execute",
+          "bytes": 4096,
+          "mtime": 1793921448.7038338,
+          "isDirectory": true
+        },
+        {
+          "name": "worker-process.json",
+          "bytes": 658,
+          "mtime": 1793921437.888624,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-stderr",
+          "bytes": 0,
+          "mtime": 1793921437.8836238,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-stdout",
+          "bytes": 0,
+          "mtime": 1793921437.8836238,
+          "isDirectory": false
+        },
+        {
+          "name": "intent.json",
+          "bytes": 1189,
+          "mtime": 1793921437.5906181,
+          "isDirectory": false
+        },
+        {
+          "name": "selection.json",
+          "bytes": 990,
+          "mtime": 1793921437.587618,
+          "isDirectory": false
+        },
+        {
+          "name": "request.json",
+          "bytes": 238,
+          "mtime": 1793921437.584618,
+          "isDirectory": false
+        }
+      ]
+    },
+    "capture-staging/smallapp-7fec29a3e132463096aec915c08acab3": {
+      "count": 37,
+      "latest": [
+        {
+          "name": "terminal-result.json",
+          "bytes": 3135,
+          "mtime": 1793926066.6050458,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-completion.json",
+          "bytes": 1870,
+          "mtime": 1793925939.0155983,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0020.json",
+          "bytes": 94,
+          "mtime": 1793925938.9865978,
+          "isDirectory": false
+        },
+        {
+          "name": "source-restoration.json",
+          "bytes": 435,
+          "mtime": 1793925938.9825978,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0019.json",
+          "bytes": 68,
+          "mtime": 1793925938.9775977,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0018.json",
+          "bytes": 314,
+          "mtime": 1793925938.946597,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0017.json",
+          "bytes": 68,
+          "mtime": 1793925938.2875845,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0016.json",
+          "bytes": 314,
+          "mtime": 1793925938.2585838,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0015.json",
+          "bytes": 76,
+          "mtime": 1793925937.580571,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0014.json",
+          "bytes": 67,
+          "mtime": 1793925936.760555,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-archive-entries.json",
+          "bytes": 4374620,
+          "mtime": 1793925936.6305525,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-recovery-inputs.json",
+          "bytes": 11427737,
+          "mtime": 1793925936.2105446,
+          "isDirectory": false
+        }
+      ]
+    },
+    "repository-operations/433710bb8eb93e78351878966cb06caec1c420e87ef3d5c8dff9c493dc085eb9": {
+      "count": 4245,
+      "latest": [
+        {
+          "name": "timing-capture-cleanup-start.json",
+          "bytes": 69,
+          "mtime": 1793931606.7771883,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-archive-final-verification-end.json",
+          "bytes": 123,
+          "mtime": 1793931606.4631824,
+          "isDirectory": false
+        },
+        {
+          "name": "d55a324b350a216b292215d9e2de5c572038bb8f8755ada1c7fb05fe5ab3d5dd",
+          "bytes": 4096,
+          "mtime": 1793931605.9741728,
+          "isDirectory": true
+        },
+        {
+          "name": "timing-archive-final-verification-start.json",
+          "bytes": 80,
+          "mtime": 1793929737.2733648,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-nas-readback-end.json",
+          "bytes": 110,
+          "mtime": 1793929735.7063348,
+          "isDirectory": false
+        },
+        {
+          "name": "67b9483c7a9b1b4a5ea3b22c6a8887a169c2d9c33918ee9b2c7b454df7ff2bc7",
+          "bytes": 4096,
+          "mtime": 1793929094.3041172,
+          "isDirectory": true
+        },
+        {
+          "name": "timing-nas-readback-start.json",
+          "bytes": 66,
+          "mtime": 1793928045.5150702,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-archive-metadata-end.json",
+          "bytes": 111,
+          "mtime": 1793928045.51107,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-archive-metadata-start.json",
+          "bytes": 70,
+          "mtime": 1793928044.7840562,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-nas-upload-end.json",
+          "bytes": 108,
+          "mtime": 1793928044.7810562,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-nas-upload-start.json",
+          "bytes": 64,
+          "mtime": 1793926178.707196,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-capture-validation-end.json",
+          "bytes": 115,
+          "mtime": 1793926178.701196,
+          "isDirectory": false
+        }
+      ]
+    }
+  },
+  "workers": [
+    {
+      "pid": 29314,
+      "io": "rchar: 230158800349\nwchar: 26157995452\nsyscr: 4467628\nsyscw: 38804\nread_bytes: 46051639296\nwrite_bytes: 39608320\ncancelled_write_bytes: 0\n",
+      "state": "R",
+      "startTicks": "7940506",
+      "role": "repository"
+    }
+  ],
+  "nativeDeadlineSecondsRemaining": 54499.6,
+  "nativeReadbackRecords": [
+    {
+      "fileCount": 14358,
+      "payloadBytes": 26090542269,
+      "recordBytes": 7969700
+    }
+  ],
+  "staging": {
+    "payload": {
+      "files": 9408,
+      "bytes": 17878071522,
+      "latestMtime": 1793925784.9786317
+    },
+    "semantic-capture": {
+      "files": 4937,
+      "bytes": 8200912898,
+      "latestMtime": 1793925785.2156365
+    }
+  },
+  "dataObservationScratch": {
+    "scratch-before": null,
+    "scratch-after": {
+      "tableDirectoriesStarted": 885,
+      "highestTableIndex": 884,
+      "latestDirectoryMtime": 1793924760.916864
+    }
+  },
+  "knownCaptureFiles": {
+    "database.sql.gz": {
+      "bytes": 6128021473,
+      "mtime": 1793923525.899961
+    },
+    "011-source-data.json": {
+      "bytes": 3571773,
+      "mtime": 1793925172.2858105
+    },
+    "012-source-data-after.json": null,
+    "capture-content-point.json": {
+      "bytes": 5536674,
+      "mtime": 1793925784.9006302
+    }
+  },
+  "payloadTopLevel": [
+    {
+      "name": "011-source-data.json",
+      "bytes": 3571773,
+      "isDirectory": false
+    },
+    {
+      "name": "capture-content-point.json",
+      "bytes": 5536674,
+      "isDirectory": false
+    },
+    {
+      "name": "050-original-images.json",
+      "bytes": 666,
+      "isDirectory": false
+    },
+    {
+      "name": "minio-physical",
+      "bytes": 4096,
+      "isDirectory": true
+    },
+    {
+      "name": "capture-file-inventory.json",
+      "bytes": 3364188,
+      "isDirectory": false
+    },
+    {
+      "name": "database-log-mode.json",
+      "bytes": 50,
+      "isDirectory": false
+    },
+    {
+      "name": "original-application-images.tar",
+      "bytes": 2081399296,
+      "isDirectory": false
+    },
+    {
+      "name": "database.sql.gz",
+      "bytes": 6128021473,
+      "isDirectory": false
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "status": "PRESERVED",
+  "observedAt": "2026-11-06T09:58:18.442990+00:00",
+  "operationId": "smallapp-9c961c848bc84f529d8ff0968b578a20",
+  "errorCode": "ORIGINAL_COMPANY_NAS_MOUNT_MISSING",
+  "privateOriginals": [
+    {
+      "name": "restore-acceptance-verify_restore_evidence.py.private.log",
+      "bytes": 3156,
+      "sha256": "52cf15e188a8f3999bbfafc9b8c0009228bcf763a4368e2f52c365cc9aab3ee5"
+    },
+    {
+      "name": "restore-acceptance-verify_restored_runtime.py.private.log",
+      "bytes": 1709,
+      "sha256": "39f75d0c1d5bcb53e4f6aefa32eec107398eb6ce5cd2efb3f2dd8c60daa770fe"
+    },
+    {
+      "name": "restore-acceptance-verify_protection_runtime.py.private.log",
+      "bytes": 569,
+      "sha256": "15db940fc44a8216f8720d7a836c2d3ba0ae3265147dc74d450f914e0ef6f758"
+    },
+    {
+      "name": "control-installation-error.private.log",
+      "bytes": 209,
+      "sha256": "0493019913646b28b48a6f9ea35df964307d24a57b711c718560101fcfa0c02a"
+    }
+  ],
+  "remoteMutation": false
+}

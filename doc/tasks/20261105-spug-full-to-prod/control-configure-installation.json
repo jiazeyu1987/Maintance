@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "SpugMainRestoreTargetInstallation/v1",
+  "host": "172.30.30.57",
+  "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+  "root": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3",
+  "controlConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-43657-mainv2-9b3a298.json",
+    "bytes": 2428,
+    "sha256": "1f840b2337e2e194a43437b585b7441f5d3234d4b0b681e703d55029d7bd8de0"
+  },
+  "ownerConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-mainv2-9b3a298.json",
+    "bytes": 43634,
+    "sha256": "5f1ae20957b4c6bf8d0c7e66048e83824621681eab96e5222c1212e75e3dad05"
+  },
+  "registrationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/mainv2-registration.json",
+    "bytes": 267,
+    "sha256": "9e12b65c393186a586837916be8205bf70437238f60cef27af7851739164a3f1"
+  },
+  "preflightEvidencePin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/mainv2-writer-inspection.json",
+    "bytes": 2603,
+    "sha256": "83af3689fc69d40beea7026b0e6be0b87110df86b9733f0e63b83e1550e409b4"
+  },
+  "service": "spug-main-restore-57-20261105-v2.service",
+  "state": "INSTALLED_PENDING_LOCAL_ROUTE",
+  "sourceCommit": "9b3a298ce378b3ac565792a3bc3b92f1e5208898",
+  "engine": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/engine-mainv2-9b3a298",
+  "resourceAdmission": {
+    "admitted": true,
+    "businessAcceptance": "NOT_PERFORMED",
+    "diskRequirements": [
+      {
+        "device": 64528,
+        "requiredBytes": 120259084288,
+        "availableBytes": 1459612413952
+      }
+    ],
+    "mysqlMemoryLimitBytes": 33556774912,
+    "hostAvailableMemoryBytes": 26772168704
+  },
+  "archivePointRef": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+  "inactiveConsumerCount": 10,
+  "preservedMountCount": 10,
+  "originalBusinessCount": 195,
+  "originalRuntimePreserved": true,
+  "liveFdLimit": "Max open files            65536                65536                files     ",
+  "restorePerformed": false
+}

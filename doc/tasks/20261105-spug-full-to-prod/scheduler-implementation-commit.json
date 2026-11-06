@@ -1,0 +1,64 @@
+{
+  "status": "PASS",
+  "sourceCommit": "1595d0f414756362734b51193233b5606ca544ec",
+  "parentCommit": "9b3a298ce378b3ac565792a3bc3b92f1e5208898",
+  "implementationFiles": [
+    {
+      "path": "ops/backup_engine/files.json",
+      "bytes": 11035,
+      "sha256": "94fc6e6d663aa54b266a0e022d9321fcb89d1a9bcd99935cddde1a261ac4bcbe"
+    },
+    {
+      "path": "ops/backup_engine/standard_fixes.py",
+      "bytes": 26160,
+      "sha256": "d3df98ed3585aa890a8c82f09a6cce1c04b829c8aa892e6c0b3c71c2311f25ce"
+    },
+    {
+      "path": "ops/recovery/recovery_mysql_scheduler.py",
+      "bytes": 7557,
+      "sha256": "35079eda0941f9b01535b4b6f8e9baaf9be00c805f468b229bed43556d9a4f59"
+    },
+    {
+      "path": "ops/recovery/recovery_main_target.py",
+      "bytes": 40754,
+      "sha256": "ec64bcb92336b212d9c8235b0dda5eb24e5d32566321af13b75824dab909d725"
+    },
+    {
+      "path": "ops/recovery/recovery_retained_retry.py",
+      "bytes": 18444,
+      "sha256": "000da24ac3d900abe830fa028ae3dd59a7c2d650a285ee3671e627b7be102b9b"
+    },
+    {
+      "path": "scripts/tests/test_main_mysql_scheduler.py",
+      "bytes": 11009,
+      "sha256": "63bfbd8fafb85027a6c83d7ae25dd4e6cbba8eeec7287bc5dc4f6c1009ef4c18"
+    },
+    {
+      "path": "scripts/tests/test_main_restore_target.py",
+      "bytes": 25668,
+      "sha256": "244c553f629213d3736bab479fcf64ef54118cf3c0ecdbcb97ecefcb72f46922"
+    },
+    {
+      "path": "scripts/tests/test_main_archive_view.py",
+      "bytes": 2776,
+      "sha256": "335c3ecad8a3ebcd6b84bd7eaca0354ce5feb30817c55ee94d74a07bc14d98c8"
+    },
+    {
+      "path": "scripts/tests/test_retained_replacement_retry.py",
+      "bytes": 18080,
+      "sha256": "068c6c742d3eb715398860854b7b73582d65fd7d5477c9ffb101f1d3ad7343ed"
+    },
+    {
+      "path": "scripts/tests/test_backup_variants.py",
+      "bytes": 17735,
+      "sha256": "0e7c6a04ecfc9dc3f064194e39f129c2e0be7d83de343aa332adeb6d5b963453"
+    }
+  ],
+  "regressionPassed": 399,
+  "realMysqlVerified": true,
+  "utf8AndSyntaxVerified": true,
+  "knownPrivateValuesChecked": 26,
+  "privateValuesFound": 0,
+  "excludedFileCount": 158,
+  "excludedFilesUnchanged": true
+}

@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T09:58:55.087098+00:00",
+  "remoteOriginalPinsUnchanged": 703,
+  "operationId": "smallapp-d7a963eb1e9a4c16826c92d5753b30c3",
+  "localOriginalPinsUnchanged": 8,
+  "privateOriginalResponsePreserved": true,
+  "successfulNewOperationId": "smallapp-9c961c848bc84f529d8ff0968b578a20",
+  "originalState": "FAILED",
+  "archiveManifestPin": {
+    "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261105-spug-full-to-prod\\health-failed-attempt-archive.json",
+    "bytes": 4930,
+    "sha256": "79450074ac5c8ffc6c178b3cbae9e5482e5382594d87aee12413ada8fddfeef8"
+  }
+}

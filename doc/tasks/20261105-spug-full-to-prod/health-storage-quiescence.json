@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T07:18:24.177479+00:00",
+  "operationId": "smallapp-d7a963eb1e9a4c16826c92d5753b30c3",
+  "intentPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-d7a963eb1e9a4c16826c92d5753b30c3/health-recovery/stop-intent.json",
+    "bytes": 1391,
+    "sha256": "7b0235f97b7b6d2bb973694496ebc78d55a1b069451896b9b38abfa4c8517356"
+  },
+  "stopExitPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-d7a963eb1e9a4c16826c92d5753b30c3/health-recovery/stop-exit.json",
+    "bytes": 497,
+    "sha256": "3e7d08e996cad9c089dfa9b2fd5e984c6a911f49ee1773c48943d26e7a3f9a3a"
+  },
+  "originalStartPin": {
+    "bytes": 553,
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-d7a963eb1e9a4c16826c92d5753b30c3/objects/native-464.json",
+    "sha256": "32fb91a1056d20f07bacedba35a2a361121bbe9ea0e089d70be02141fb7e6f31"
+  },
+  "originalFailurePinsUnchanged": 908,
+  "originalMinioStopped": true,
+  "otherFourMainRuntimeUnchanged": true,
+  "protectionAndReservationRetained": true,
+  "schedulerRemainsPaused": true,
+  "databaseTableCount": 885,
+  "stopRepeated": false,
+  "restoreDispatched": false,
+  "observationReconciliation": "Docker Mounts order is not canonical; use sorted mounts and independently pinned original runtime.",
+  "repeatedReadUnsortedDefinitionDifferences": 56,
+  "repeatedReadSortedDefinitionsStable": true,
+  "other190RuntimeAndAll195DefinitionsIndependentlyVerified": true
+}

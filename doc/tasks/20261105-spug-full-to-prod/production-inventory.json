@@ -1,0 +1,368 @@
+{
+  "host": "172.30.30.57",
+  "observedAt": "2026-11-05T22:20:40.054031+00:00",
+  "loadAverage": [
+    "0.67",
+    "0.74",
+    "0.70"
+  ],
+  "files": {
+    "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/installation.json": {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/installation.json",
+      "bytes": 406,
+      "sha256": "8c64992e339d88f42f34ff6b13810943e5670c3cac1e34f3221a2dd1f9c38971"
+    },
+    "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control-postboot-20261105.json": {
+      "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control-postboot-20261105.json",
+      "bytes": 2127,
+      "sha256": "64971616b6af6fcac3d718a38dcfe9939e8d8c00b1698cb096fac281bac7f34c"
+    }
+  },
+  "activeReservation": false,
+  "objectRoots": {
+    "9af094862946e614cffc395531c8a7af65618ac2bc8ed3f92d1c9ded2ec8c62b": {
+      "root": "/var/lib/docker/intruoyi-data/rehearsal-smallapp-20261022/instance/data/minio",
+      "buckets": [
+        "rehearsal-122"
+      ],
+      "identityPaths": []
+    },
+    "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf": {
+      "root": "/opt/intruoyi/runtime/data/minio",
+      "buckets": [
+        "edhr-protected-storage",
+        "edhr-protected-storage-20260601",
+        "yudao"
+      ],
+      "identityPaths": [
+        "users/EDHRUCQZT8LNMQMKRFZK/identity.json",
+        "users/EDHRHFRQFGCXYATNNSC6/identity.json",
+        "users/EDHRCJSBJZZDMENUJE6R/identity.json"
+      ]
+    }
+  },
+  "mainContainers": [
+    {
+      "id": "c4385604eb83b44f2836755bad709581c7e7edd0078b148f3b0f74e0b567304c",
+      "name": "/intruoyi-backend",
+      "image": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+      "running": true,
+      "pid": 5420,
+      "startedAt": "2026-11-05T04:07:50.464626789Z",
+      "health": null,
+      "ports": {
+        "48081/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "48081"
+          }
+        ]
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/var/run/docker.sock",
+          "Destination": "/var/run/docker.sock",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/mnt/nas/Backup/BackupPackage",
+          "Destination": "/mnt/nas/Backup/BackupPackage",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/backend-codex-home",
+          "Destination": "/opt/intruoyi/runtime/backend-codex-home",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/tools/codex",
+          "Destination": "/opt/intruoyi/runtime/tools/codex",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/data/backend-logs",
+          "Destination": "/root/logs",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/smoke/bin/npm",
+          "Destination": "/usr/local/bin/npm",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/backup",
+          "Destination": "/backup",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/ops",
+          "Destination": "/opt/intruoyi/ops",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": "rprivate"
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime",
+          "Destination": "/opt/intruoyi/runtime",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": "rprivate"
+        }
+      ],
+      "networkMode": "intruoyi-runtime_intruoyi_net",
+      "networks": {
+        "intruoyi-runtime_intruoyi_net": {
+          "IPAMConfig": {
+            "IPv4Address": "172.21.0.11"
+          },
+          "Links": null,
+          "Aliases": [
+            "backend",
+            "intruoyi-backend"
+          ],
+          "MacAddress": "02:42:ac:15:00:0b",
+          "NetworkID": "c73d2eea63d1b8110216c39c9d935fd25948a0afb4d22002d32a32b553bee58a",
+          "EndpointID": "60274f224ad35df24049c07c1ec7223344d4a2710fdef3c1b6fc78d32bbf807f",
+          "Gateway": "172.21.0.1",
+          "IPAddress": "172.21.0.11",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DriverOpts": {},
+          "DNSNames": [
+            "intruoyi-backend",
+            "backend",
+            "c4385604eb83",
+            "e0fa4fda37df"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1210f97cf7653c5f74a7981bf4d4bec8d7462af873d53695d47a59a7ce38a479",
+      "name": "/intruoyi-frontend",
+      "image": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a",
+      "running": true,
+      "pid": 5647,
+      "startedAt": "2026-11-05T04:07:50.584588297Z",
+      "health": null,
+      "ports": {
+        "80/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "8081"
+          }
+        ]
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/var/lib/docker/intruoyi-data/current-32ff79d-20261020/nginx.conf",
+          "Destination": "/etc/nginx/conf.d/default.conf",
+          "Mode": "ro",
+          "RW": false,
+          "Propagation": "rslave"
+        }
+      ],
+      "networkMode": "intruoyi-runtime_intruoyi_net",
+      "networks": {
+        "intruoyi-runtime_intruoyi_net": {
+          "IPAMConfig": {
+            "IPv4Address": "172.21.0.3"
+          },
+          "Links": null,
+          "Aliases": [
+            "intruoyi-frontend",
+            "frontend"
+          ],
+          "MacAddress": "02:42:ac:15:00:03",
+          "NetworkID": "c73d2eea63d1b8110216c39c9d935fd25948a0afb4d22002d32a32b553bee58a",
+          "EndpointID": "de49938974222d114b6f5871cf31157973cd70fb540324d557d62492fca89590",
+          "Gateway": "172.21.0.1",
+          "IPAddress": "172.21.0.3",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DriverOpts": null,
+          "DNSNames": [
+            "intruoyi-frontend",
+            "frontend",
+            "1210f97cf765",
+            "defac21059a8"
+          ]
+        }
+      }
+    },
+    {
+      "id": "9a288d20d254366e99b265b1870466e974edf23e7aab60de2391e3a38e62fff6",
+      "name": "/intruoyi-mysql",
+      "image": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+      "running": true,
+      "pid": 7463,
+      "startedAt": "2026-11-05T01:27:41.904047027Z",
+      "health": "healthy",
+      "ports": {},
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/data/mysql",
+          "Destination": "/var/lib/mysql",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": "rprivate"
+        }
+      ],
+      "networkMode": "intruoyi-runtime_intruoyi_net",
+      "networks": {
+        "intruoyi-runtime_intruoyi_net": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": [
+            "intruoyi-mysql",
+            "mysql"
+          ],
+          "MacAddress": "02:42:ac:15:00:06",
+          "NetworkID": "c73d2eea63d1b8110216c39c9d935fd25948a0afb4d22002d32a32b553bee58a",
+          "EndpointID": "7e7ba3a65336c36f407f315210d2d5f5d2cfc087918ad2ab682c88a35813dad9",
+          "Gateway": "172.21.0.1",
+          "IPAddress": "172.21.0.6",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DriverOpts": null,
+          "DNSNames": [
+            "intruoyi-mysql",
+            "mysql",
+            "9a288d20d254"
+          ]
+        }
+      }
+    },
+    {
+      "id": "5099e7bd566ec6a683e8842b84d8db9e41245708fce29e89309607d6a7e72653",
+      "name": "/intruoyi-redis",
+      "image": "sha256:487efc0616382465781b8fdc3d6d1db449e6fd80ae23bf48432a2da6b6929908",
+      "running": true,
+      "pid": 7201,
+      "startedAt": "2026-11-05T01:27:41.832957773Z",
+      "health": "healthy",
+      "ports": {},
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/data/redis",
+          "Destination": "/data",
+          "Mode": "rw",
+          "RW": true,
+          "Propagation": "rprivate"
+        }
+      ],
+      "networkMode": "intruoyi-runtime_intruoyi_net",
+      "networks": {
+        "intruoyi-runtime_intruoyi_net": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": [
+            "intruoyi-redis",
+            "redis"
+          ],
+          "MacAddress": "02:42:ac:15:00:02",
+          "NetworkID": "c73d2eea63d1b8110216c39c9d935fd25948a0afb4d22002d32a32b553bee58a",
+          "EndpointID": "0b156d1d23f00bf4f7128d2c584a00ad54b7a76b3f438b9349411533fbc1c02c",
+          "Gateway": "172.21.0.1",
+          "IPAddress": "172.21.0.2",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DriverOpts": null,
+          "DNSNames": [
+            "intruoyi-redis",
+            "redis",
+            "5099e7bd566e"
+          ]
+        }
+      }
+    },
+    {
+      "id": "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf",
+      "name": "/ragflow_compose-minio-1",
+      "image": "sha256:c4260bcf2c25b683e4f6e6ed6474f12c5c28dc8e375bfe0ecea7a5d3fbecbc04",
+      "running": true,
+      "pid": 14772,
+      "startedAt": "2026-11-05T03:59:26.976417512Z",
+      "health": null,
+      "ports": {
+        "9000/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "9000"
+          }
+        ],
+        "9001/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "9001"
+          }
+        ]
+      },
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/data/minio",
+          "Destination": "/data",
+          "Mode": "",
+          "RW": true,
+          "Propagation": "rprivate"
+        }
+      ],
+      "networkMode": "bridge",
+      "networks": {
+        "bridge": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "MacAddress": "02:42:ac:11:00:02",
+          "NetworkID": "69b4358b16e93993d6e155e09a27ba5acba77a68480030655e74058baf3f81b5",
+          "EndpointID": "66dc7707738cfa1cf6f98723b413f5012db9b27a7813a1df7d75245dd9e87ad8",
+          "Gateway": "172.17.0.1",
+          "IPAddress": "172.17.0.2",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DriverOpts": null,
+          "DNSNames": null
+        }
+      }
+    }
+  ],
+  "allContainerCount": 195,
+  "sourceFields": []
+}

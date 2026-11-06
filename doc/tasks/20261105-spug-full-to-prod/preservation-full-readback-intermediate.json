@@ -1,0 +1,28 @@
+{
+  "observedAt": "2026-11-06T01:44:35.987546+00:00",
+  "operationId": "smallapp-7fec29a3e132463096aec915c08acab3",
+  "phase": "FULL_SMB_RECORDS_PRODUCED_NATIVE_PUBLICATION_PENDING",
+  "originalReadbackRecordsPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/433710bb8eb93e78351878966cb06caec1c420e87ef3d5c8dff9c493dc085eb9/67b9483c7a9b1b4a5ea3b22c6a8887a169c2d9c33918ee9b2c7b454df7ff2bc7/readback-originals.json",
+    "bytes": 7969700,
+    "sha256": "0c0ddd4cbd102a4aec1aa9ff8d099ce7aa79221ec8da036a5ef0799406c5a48b"
+  },
+  "payloadFiles": 14358,
+  "payloadBytes": 26090542269,
+  "actualReadbackPinsEqualManifest": true,
+  "nativePublicationVerified": false,
+  "worker": {
+    "pid": 29314,
+    "state": "R",
+    "startTicks": "7940506",
+    "ioCounters": {
+      "rchar": 130045894824,
+      "wchar": 26131335222,
+      "syscr": 3671680,
+      "syscw": 38794,
+      "read_bytes": 33750372352,
+      "write_bytes": 39591936,
+      "cancelled_write_bytes": 0
+    }
+  }
+}

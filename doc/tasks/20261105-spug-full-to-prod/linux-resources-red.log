@@ -1,0 +1,92 @@
+.....................................FF.........F....................... [ 96%]
+...                                                                      [100%]
+=================================== FAILURES ===================================
+_ test_original_main_without_rehearsal_label_has_measured_resource_admission[1] _
+
+main_resource_host = ({'operationsRoot': '/work/pytest-red/test_original_main_without_reh0', 'targets': {'target': {'targetId': 'main57', '...rk/pytest-red/test_original_main_without_reh0/cgroups'), PosixPath('/work/pytest-red/test_original_main_without_reh0'))
+version = 1
+
+    @pytest.mark.parametrize('version', [1, 2])
+    def test_original_main_without_rehearsal_label_has_measured_resource_admission(main_resource_host, version):
+        config, request, budget, row, _, root = main_resource_host
+        target = config['targets']['target']
+        if version == 2:
+            target['mainApplication'].update(schemaVersion='RegisteredMainApplication/v2',
+                publishedDataEndpoints=[],redisAuthentication=dict(mode='PASSWORD'))
+            target['replacement']['storage'] = dict(schemaVersion='RegisteredReplacementStorage/v3')
+        assert 'intruoyi.recovery.target' not in row['Config']['Labels']
+>       assert admission.admit(config, request, root, 'owner')['admitted']
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+scripts/tests/test_recovery_resource_budget.py:266: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ops/recovery/recovery_resource_admission.py:497: in admit
+    observed = observe_resources(configuration, request, policy)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ops/recovery/recovery_resource_admission.py:428: in observe_resources
+    need(mysql['Id'] == service['id'] and mysql['Image'] == service['imageId'] and
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False, code = 'RESTORE_RESOURCE_MYSQL_IDENTITY_INVALID'
+details = None
+
+    def need(condition, code, details=None):
+        if not condition:
+>           raise ResourceAdmissionError(code, details)
+E           recovery_resource_admission.ResourceAdmissionError: RESTORE_RESOURCE_MYSQL_IDENTITY_INVALID
+
+ops/recovery/recovery_resource_admission.py:25: ResourceAdmissionError
+_ test_original_main_without_rehearsal_label_has_measured_resource_admission[2] _
+
+main_resource_host = ({'operationsRoot': '/work/pytest-red/test_original_main_without_reh1', 'targets': {'target': {'targetId': 'main57', '...rk/pytest-red/test_original_main_without_reh1/cgroups'), PosixPath('/work/pytest-red/test_original_main_without_reh1'))
+version = 2
+
+    @pytest.mark.parametrize('version', [1, 2])
+    def test_original_main_without_rehearsal_label_has_measured_resource_admission(main_resource_host, version):
+        config, request, budget, row, _, root = main_resource_host
+        target = config['targets']['target']
+        if version == 2:
+            target['mainApplication'].update(schemaVersion='RegisteredMainApplication/v2',
+                publishedDataEndpoints=[],redisAuthentication=dict(mode='PASSWORD'))
+            target['replacement']['storage'] = dict(schemaVersion='RegisteredReplacementStorage/v3')
+        assert 'intruoyi.recovery.target' not in row['Config']['Labels']
+>       assert admission.admit(config, request, root, 'owner')['admitted']
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+scripts/tests/test_recovery_resource_budget.py:266: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ops/recovery/recovery_resource_admission.py:497: in admit
+    observed = observe_resources(configuration, request, policy)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ops/recovery/recovery_resource_admission.py:428: in observe_resources
+    need(mysql['Id'] == service['id'] and mysql['Image'] == service['imageId'] and
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False, code = 'RESTORE_RESOURCE_MYSQL_IDENTITY_INVALID'
+details = None
+
+    def need(condition, code, details=None):
+        if not condition:
+>           raise ResourceAdmissionError(code, details)
+E           recovery_resource_admission.ResourceAdmissionError: RESTORE_RESOURCE_MYSQL_IDENTITY_INVALID
+
+ops/recovery/recovery_resource_admission.py:25: ResourceAdmissionError
+__________ test_registered_main_still_rejects_real_small_cgroup_limit __________
+
+main_resource_host = ({'operationsRoot': '/work/pytest-red/test_registered_main_still_rej0', 'targets': {'target': {'targetId': 'main57', '...rk/pytest-red/test_registered_main_still_rej0/cgroups'), PosixPath('/work/pytest-red/test_registered_main_still_rej0'))
+
+    def test_registered_main_still_rejects_real_small_cgroup_limit(main_resource_host):
+        config, request, budget, _, cgroups, root = main_resource_host
+        (cgroups/'mysql/memory.max').write_text(str(512*1024**2),encoding='ascii')
+>       with pytest.raises(RuntimeError,match='RESTORE_MYSQL_MEMORY_INSUFFICIENT'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'RESTORE_MYSQL_MEMORY_INSUFFICIENT'
+E         Actual message: 'RESTORE_RESOURCE_MYSQL_IDENTITY_INVALID'
+
+scripts/tests/test_recovery_resource_budget.py:294: AssertionError
+=========================== short test summary info ============================
+FAILED scripts/tests/test_recovery_resource_budget.py::test_original_main_without_rehearsal_label_has_measured_resource_admission[1]
+FAILED scripts/tests/test_recovery_resource_budget.py::test_original_main_without_rehearsal_label_has_measured_resource_admission[2]
+FAILED scripts/tests/test_recovery_resource_budget.py::test_registered_main_still_rejects_real_small_cgroup_limit
+3 failed, 72 passed in 38.38s

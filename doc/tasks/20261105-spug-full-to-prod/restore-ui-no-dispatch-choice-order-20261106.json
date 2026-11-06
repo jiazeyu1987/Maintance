@@ -1,0 +1,17 @@
+{
+  "realBrowser": true,
+  "realLogin": true,
+  "startedAt": "2026-11-06T07:27:28.770Z",
+  "writes": 0,
+  "blocked": [],
+  "httpFailures": [],
+  "pageErrors": [],
+  "stage": "safe-mode",
+  "selectedPackage": "请选择可用备份包",
+  "entry": "existing-restore-tab",
+  "status": "FAIL",
+  "error": "TimeoutError: frame.waitForFunction: Timeout 45000ms exceeded.",
+  "visible": "工作台\nDashboard\n主机管理\n批量执行\n应用发布\n流水线\n任务计划\n备份与恢复\n配置中心\n监控中心\n报警中心\n系统管理\n管理员\n首页/\n备份与恢复",
+  "frameVisible": "备份\n恢复\n全部包清单\n执行进度\n操作记录\n应用\nIntRuoyi\n小程序\n服务器地址\n测试服务器　172.30.30.58\n正式服务器　172.30.30.57\n备份服务器　172.30.30.59\nNAS 地址\n执行模式\n安全模式 · 完整核验\n快速模式 · 跳过核验\n\n执行完整内容和一致性核验；备份期间可能停写。\n\n恢复方式\n恢复到空目标\n覆盖现有程序\n\n覆盖会替换目标程序现有的记录、附件及 Redis 数据。\n\n备份包\n请选择可用备份包\n2026/10/25 03:30:21 · 全量备份 · smallapp-0eebed7726824ca5b7292ffc9b845735\n2026/11/3 18:45:05 · 全量备份 · smallapp-3d4c7ab0f65841b8892e4a640a53176d\n2026/10/25 11:28:47 · 全量备份 · smallapp-3f29a2b1324045309478a3a597654260\n2026/11/5 10:50:11 · 全量备份 · smallapp-73cd541a95d84d6a86f9d693e4053c75\n2026/11/6 07:30:31 · 全量备份 · smallapp-7fec29a3e132463096aec915c08acab3\n2026/10/25 18:48:25 · 全量备份 · smallapp-a54a05be9dab45e490a3979551536b0c\n恢复服务器地址\n请选择可用恢复服务器\n测试服务器　172.30.30.58（选择后核验）\n正式服务器　172.30.30.57\n备份服务器　172.30.30.59（选择后核验）\n\n请选择备份包。\n\n刷新配置\n开始恢复 →\n执行诊断",
+  "finishedAt": "2026-11-06T07:28:21.455Z"
+}

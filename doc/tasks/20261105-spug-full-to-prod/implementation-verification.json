@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "commit": "db64656f0adaee09eb21794b3bc4bd623bc7c23e",
+  "files": [
+    "docs/experience-index.md",
+    "docs/release-agent-checklist.md",
+    "ops/backup_engine/files.json",
+    "ops/backup_engine/standard_fixes.py",
+    "ops/recovery/recovery_main_target.py",
+    "ops/recovery/recovery_minimal.md",
+    "ops/recovery/recovery_minimal_redis_dump.py",
+    "ops/recovery/recovery_replace.py",
+    "ops/recovery/recovery_replacement_storage.py",
+    "ops/recovery/recovery_published_fence.py",
+    "ops/spug/restore_target_registration.py",
+    "scripts/tests/test_backup_variants.py",
+    "scripts/tests/test_restore_target_registration.py",
+    "scripts/tests/test_main_published_endpoint.py",
+    "scripts/tests/test_main_retained_authentication.py",
+    "scripts/tests/test_published_write_fence_linux.py",
+    "scripts/tests/test_retained_application_storage.py"
+  ],
+  "regressionTests": 294,
+  "actualNetworkTests": 1,
+  "utf8AstJsonPrivateScan": true
+}

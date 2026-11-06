@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T09:58:20.405639+00:00",
+  "operationId": "smallapp-9c961c848bc84f529d8ff0968b578a20",
+  "controlActiveEnabled": true,
+  "stableRuntimePaths": true,
+  "installedFileCount": 126,
+  "liveFdLimit": 65536,
+  "archiveOriginalMountRestored": true,
+  "companyNasMountPreserved": true,
+  "publishedOriginalRulesPreserved": true,
+  "mysqlSchedulerOriginalStateRestored": true,
+  "mysqlSchedulerState": "ON",
+  "sourceLockAvailable": true,
+  "reservationReleased": true
+}

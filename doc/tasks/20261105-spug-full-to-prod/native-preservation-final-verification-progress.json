@@ -1,0 +1,23 @@
+{
+  "observedAt": "2026-11-06T02:53:46.508661+00:00",
+  "workerPid": 29314,
+  "workerPresent": true,
+  "processStartTicks": "7940506",
+  "state": "D",
+  "ioCounters": {
+    "rchar": 302618471358,
+    "wchar": 26164852490,
+    "syscr": 4898702,
+    "syscw": 38808,
+    "read_bytes": 47108927488,
+    "write_bytes": 46481408,
+    "cancelled_write_bytes": 0
+  },
+  "openArchiveFiles": [
+    {
+      "category": "ARCHIVED_CONTENT",
+      "position": 2097152
+    }
+  ],
+  "rcharIncreaseSincePrevious": 9014208582
+}

@@ -1,0 +1,18 @@
+{
+  "realBrowser": true,
+  "realLogin": true,
+  "startedAt": "2026-11-06T07:21:11.097Z",
+  "writes": 0,
+  "blocked": [],
+  "httpFailures": [
+    {
+      "status": 504,
+      "path": "/release-center/api/applications/intruoyi/package-catalog"
+    }
+  ],
+  "pageErrors": [],
+  "status": "FAIL",
+  "error": "TimeoutError: locator.waitFor: Timeout 45000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#catalog-body tr').filter({ hasText: 'prod-standard-197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb' }).getByRole('button', { name: '恢复', exact: true }) to be visible\u001b[22m\n",
+  "visible": "工作台\nDashboard\n主机管理\n批量执行\n应用发布\n流水线\n任务计划\n备份与恢复\n配置中心\n监控中心\n报警中心\n系统管理\n管理员\n首页/\n备份与恢复",
+  "finishedAt": "2026-11-06T07:22:09.805Z"
+}

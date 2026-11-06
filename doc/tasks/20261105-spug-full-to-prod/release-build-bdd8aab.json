@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "worktree": "C:\\Spug\\runtime\\private\\full-to-prod-20261105\\release-bdd8aab",
+  "targetCommit": "bdd8aab86203a874e5c763d7c55f897d6a47c9a4",
+  "buildCommand": [
+    "C:\\Users\\D01021\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "-B",
+    "ops/backup_engine/build_variants.py",
+    "--output-directory",
+    "C:\\Spug\\runtime\\private\\full-to-prod-20261105\\package-bdd8aab"
+  ],
+  "validationCommand": "all archive members SHA256 + Python compile; exact HEAD and clean git status before/after",
+  "packageSha256": "988bb1765e85a921d1a198d17ffe83f80f838ca6b66e667179dfad1e10a5fc32",
+  "fileManifestSha256": "2937a241f948869a9d90391b550064f09fe047ddf5c50da5c424e33dd9e2a86c",
+  "fileCount": 124,
+  "allFilesShaAndCompileVerified": true,
+  "newCommits": false,
+  "mergeRequired": false,
+  "deleted": true,
+  "physicalPathAbsent": true,
+  "gitRegistrationAbsent": true,
+  "cleanupCommand": "git worktree remove C:\\Spug\\runtime\\private\\full-to-prod-20261105\\release-bdd8aab"
+}

@@ -1,0 +1,432 @@
+{
+  "observedAt": "2026-11-06T04:09:57.147117+00:00",
+  "operationId": "smallapp-181aec2e16c94e259f875c0e64eb863a",
+  "documents": [
+    {
+      "path": "ledger/smallapp-181aec2e16c94e259f875c0e64eb863a/completion.json",
+      "bytes": 3371,
+      "modifiedAt": "2026-11-06T04:09:26.026006+00:00",
+      "status": {},
+      "result": {
+        "state": "FAILED",
+        "errorCode": "FORMAL_SQL_DATABASE_CHANGED"
+      },
+      "terminal": {
+        "actualExitCode": 1,
+        "timedOut": false
+      }
+    },
+    {
+      "path": "ledger/smallapp-181aec2e16c94e259f875c0e64eb863a/execute/native-intent.json",
+      "bytes": 1883,
+      "modifiedAt": "2026-11-06T03:23:26.971651+00:00",
+      "status": {}
+    },
+    {
+      "path": "ledger/smallapp-181aec2e16c94e259f875c0e64eb863a/execute/native-original-exit.json",
+      "bytes": 1368,
+      "modifiedAt": "2026-11-06T04:09:26.016006+00:00",
+      "status": {
+        "actualExitCode": 1,
+        "pid": 24825,
+        "timedOut": false
+      }
+    },
+    {
+      "path": "ledger/smallapp-181aec2e16c94e259f875c0e64eb863a/execute/native-process.json",
+      "bytes": 423,
+      "modifiedAt": "2026-11-06T03:23:26.974651+00:00",
+      "status": {
+        "pid": 24825
+      }
+    },
+    {
+      "path": "ledger/smallapp-181aec2e16c94e259f875c0e64eb863a/execute/result.json",
+      "bytes": 8694,
+      "modifiedAt": "2026-11-06T04:09:25.957005+00:00",
+      "status": {
+        "schemaVersion": "backup-restore-operation-result/v1",
+        "state": "FAILED_RETAINED",
+        "failureCode": "FORMAL_SQL_DATABASE_CHANGED",
+        "actualExitCode": 1,
+        "startedAt": "2026-11-06T03:23:27.732671Z",
+        "finishedAt": "2026-11-06T04:09:25.658379Z"
+      }
+    },
+    {
+      "path": "ledger/smallapp-181aec2e16c94e259f875c0e64eb863a/intent.json",
+      "bytes": 1434,
+      "modifiedAt": "2026-11-06T03:23:14.832417+00:00",
+      "status": {
+        "schemaVersion": "SmallAppDispatchIntent/v1"
+      }
+    },
+    {
+      "path": "ledger/smallapp-181aec2e16c94e259f875c0e64eb863a/queries/70f56069360b4cba9d25abd17f5b7ef2.json",
+      "bytes": 872,
+      "modifiedAt": "2026-11-06T04:09:29.346071+00:00",
+      "status": {},
+      "result": {
+        "state": "FAILED",
+        "errorCode": "FORMAL_SQL_DATABASE_CHANGED"
+      }
+    },
+    {
+      "path": "ledger/smallapp-181aec2e16c94e259f875c0e64eb863a/request.json",
+      "bytes": 319,
+      "modifiedAt": "2026-11-06T03:23:14.828417+00:00",
+      "status": {
+        "schemaVersion": "SmallAppBackupUiRequest/v1"
+      }
+    },
+    {
+      "path": "ledger/smallapp-181aec2e16c94e259f875c0e64eb863a/restore-target-before.json",
+      "bytes": 12107,
+      "modifiedAt": "2026-11-06T03:23:26.872649+00:00",
+      "status": {}
+    },
+    {
+      "path": "ledger/smallapp-181aec2e16c94e259f875c0e64eb863a/selection.json",
+      "bytes": 1235,
+      "modifiedAt": "2026-11-06T03:23:14.830417+00:00",
+      "status": {
+        "schemaVersion": "SmallAppResolvedSelection/v2"
+      }
+    },
+    {
+      "path": "ledger/smallapp-181aec2e16c94e259f875c0e64eb863a/worker-process.json",
+      "bytes": 668,
+      "modifiedAt": "2026-11-06T03:23:19.685510+00:00",
+      "status": {
+        "pid": 22387
+      }
+    },
+    {
+      "path": "ledger/smallapp-181aec2e16c94e259f875c0e64eb863a/worker-stderr",
+      "bytes": 0,
+      "modifiedAt": "2026-11-06T03:23:19.685510+00:00"
+    },
+    {
+      "path": "ledger/smallapp-181aec2e16c94e259f875c0e64eb863a/worker-stdout",
+      "bytes": 0,
+      "modifiedAt": "2026-11-06T03:23:19.685510+00:00"
+    },
+    {
+      "path": "ledger/smallapp-181aec2e16c94e259f875c0e64eb863a/worker-terminal.json",
+      "bytes": 639,
+      "modifiedAt": "2026-11-06T04:09:26.081008+00:00",
+      "status": {
+        "actualExitCode": 1,
+        "pid": 22387
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/child-exit.json",
+      "bytes": 722,
+      "modifiedAt": "2026-11-06T04:09:25.925004+00:00",
+      "status": {
+        "actualExitCode": 1,
+        "startedAt": "2026-11-06T03:23:27.595907Z",
+        "finishedAt": "2026-11-06T04:09:25.918643Z",
+        "timedOut": false
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/child.stderr",
+      "bytes": 0,
+      "modifiedAt": "2026-11-06T03:23:27.595663+00:00"
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/child.stdout",
+      "bytes": 0,
+      "modifiedAt": "2026-11-06T03:23:27.595663+00:00"
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/configuration.json",
+      "bytes": 44451,
+      "modifiedAt": "2026-11-06T03:23:27.274657+00:00",
+      "status": {
+        "schemaVersion": "RecoveryMinimalConfiguration/v1"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/native-025.json",
+      "bytes": 541,
+      "modifiedAt": "2026-11-06T04:09:24.887985+00:00",
+      "status": {
+        "schemaVersion": "RecoveryDataInvocation/v1",
+        "state": "SUCCEEDED",
+        "actualExitCode": 0,
+        "startedAt": "2026-11-06T04:09:24.724364Z",
+        "finishedAt": "2026-11-06T04:09:24.888476Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/native-026.json",
+      "bytes": 541,
+      "modifiedAt": "2026-11-06T04:09:25.056988+00:00",
+      "status": {
+        "schemaVersion": "RecoveryDataInvocation/v1",
+        "state": "SUCCEEDED",
+        "actualExitCode": 0,
+        "startedAt": "2026-11-06T04:09:24.900105Z",
+        "finishedAt": "2026-11-06T04:09:25.057969Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/native-027.json",
+      "bytes": 540,
+      "modifiedAt": "2026-11-06T04:09:25.499996+00:00",
+      "status": {
+        "schemaVersion": "RecoveryDataInvocation/v1",
+        "state": "SUCCEEDED",
+        "actualExitCode": 0,
+        "startedAt": "2026-11-06T04:09:25.088935Z",
+        "finishedAt": "2026-11-06T04:09:25.500748Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/operation.json",
+      "bytes": 437,
+      "modifiedAt": "2026-11-06T03:23:27.278657+00:00",
+      "status": {
+        "startedAt": "2026-11-06T03:23:27.268899Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/replacement-preparation/replacement-intent.json",
+      "bytes": 581,
+      "modifiedAt": "2026-11-06T03:45:25.498144+00:00",
+      "status": {
+        "startedAt": "2026-11-06T03:45:25.499315Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/replacement-preparation/replacement-prepared.json",
+      "bytes": 63,
+      "modifiedAt": "2026-11-06T03:47:27.671506+00:00",
+      "status": {
+        "state": "PREPARED",
+        "finishedAt": "2026-11-06T03:47:27.671897Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/replacement-preparation/target-configuration.json",
+      "bytes": 40889,
+      "modifiedAt": "2026-11-06T03:45:18.154002+00:00",
+      "status": {}
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/replacement-preparation/timing-target-replacement-end.json",
+      "bytes": 115,
+      "modifiedAt": "2026-11-06T03:47:27.688507+00:00",
+      "status": {
+        "stage": "target-replacement",
+        "finishedAt": "2026-11-06T03:47:27.688630Z",
+        "completed": true,
+        "elapsedSeconds": 129.155
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/replacement-preparation/timing-target-replacement-start.json",
+      "bytes": 72,
+      "modifiedAt": "2026-11-06T03:45:18.533009+00:00",
+      "status": {
+        "stage": "target-replacement",
+        "startedAt": "2026-11-06T03:45:18.534050Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/request.json",
+      "bytes": 319,
+      "modifiedAt": "2026-11-06T03:23:27.268657+00:00",
+      "status": {
+        "schemaVersion": "SmallAppBackupUiRequest/v1"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/resource-admission-owner.json",
+      "bytes": 1885,
+      "modifiedAt": "2026-11-06T03:23:27.581663+00:00",
+      "status": {
+        "startedAt": "2026-11-06T03:23:27.385696Z",
+        "finishedAt": "2026-11-06T03:23:27.582241Z",
+        "elapsedSeconds": 0.197
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/resource-admission-replacement.json",
+      "bytes": 2149,
+      "modifiedAt": "2026-11-06T03:37:12.651614+00:00",
+      "status": {
+        "startedAt": "2026-11-06T03:37:12.494119Z",
+        "finishedAt": "2026-11-06T03:37:12.652197Z",
+        "elapsedSeconds": 0.158
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/resource-admission-target.json",
+      "bytes": 2149,
+      "modifiedAt": "2026-11-06T04:01:06.941352+00:00",
+      "status": {
+        "startedAt": "2026-11-06T04:01:06.713939Z",
+        "finishedAt": "2026-11-06T04:01:06.941640Z",
+        "elapsedSeconds": 0.228
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/resource-reservation.json",
+      "bytes": 483,
+      "modifiedAt": "2026-11-06T03:23:27.586663+00:00",
+      "status": {
+        "schemaVersion": "RestoreHostReservation/v1",
+        "startedAt": "2026-11-06T03:23:27.586925Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/result.json",
+      "bytes": 8694,
+      "modifiedAt": "2026-11-06T04:09:25.952005+00:00",
+      "status": {
+        "schemaVersion": "backup-restore-operation-result/v1",
+        "state": "FAILED_RETAINED",
+        "failureCode": "FORMAL_SQL_DATABASE_CHANGED",
+        "actualExitCode": 1,
+        "startedAt": "2026-11-06T03:23:27.732671Z",
+        "finishedAt": "2026-11-06T04:09:25.658379Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/target-configuration.json",
+      "bytes": 40949,
+      "modifiedAt": "2026-11-06T04:09:16.403820+00:00",
+      "status": {}
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/timing-restore-admission-end.json",
+      "bytes": 115,
+      "modifiedAt": "2026-11-06T04:09:16.847829+00:00",
+      "status": {
+        "stage": "restore-admission",
+        "finishedAt": "2026-11-06T04:09:16.839778Z",
+        "completed": true,
+        "elapsedSeconds": 1309.145
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/timing-restore-admission-start.json",
+      "bytes": 71,
+      "modifiedAt": "2026-11-06T03:47:27.693507+00:00",
+      "status": {
+        "stage": "restore-admission",
+        "startedAt": "2026-11-06T03:47:27.694478Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/timing-target-checks-end.json",
+      "bytes": 109,
+      "modifiedAt": "2026-11-06T04:09:25.523997+00:00",
+      "status": {
+        "stage": "target-checks",
+        "finishedAt": "2026-11-06T04:09:25.524917Z",
+        "completed": false,
+        "elapsedSeconds": 8.674
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/timing-target-checks-start.json",
+      "bytes": 67,
+      "modifiedAt": "2026-11-06T04:09:16.849829+00:00",
+      "status": {
+        "stage": "target-checks",
+        "startedAt": "2026-11-06T04:09:16.851399Z"
+      }
+    },
+    {
+      "path": "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a/worker-result.json",
+      "bytes": 7206,
+      "modifiedAt": "2026-11-06T04:09:25.658000+00:00",
+      "status": {
+        "schemaVersion": "backup-restore-operation-result/v1",
+        "state": "FAILED_RETAINED",
+        "failureCode": "FORMAL_SQL_DATABASE_CHANGED",
+        "actualExitCode": 1,
+        "startedAt": "2026-11-06T03:23:27.732671Z",
+        "finishedAt": "2026-11-06T04:09:25.658379Z"
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-181aec2e16c94e259f875c0e64eb863a/archive-view/active.json",
+      "bytes": 286,
+      "modifiedAt": "2026-11-06T03:45:25.687148+00:00",
+      "status": {
+        "schemaVersion": "ArchiveViewProtectionActive/v1"
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-181aec2e16c94e259f875c0e64eb863a/archive-view/intent.json",
+      "bytes": 239,
+      "modifiedAt": "2026-11-06T03:45:25.509144+00:00",
+      "status": {
+        "schemaVersion": "ArchiveViewProtectionIntent/v1",
+        "startedAt": "2026-11-06T03:45:25.510196Z"
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-181aec2e16c94e259f875c0e64eb863a/published-fence/active.json",
+      "bytes": 2418,
+      "modifiedAt": "2026-11-06T03:45:29.571223+00:00",
+      "status": {
+        "schemaVersion": "PublishedHostWriteFenceActive/v1"
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-181aec2e16c94e259f875c0e64eb863a/published-fence/intent.json",
+      "bytes": 924,
+      "modifiedAt": "2026-11-06T03:45:25.882152+00:00",
+      "status": {
+        "schemaVersion": "PublishedHostWriteFenceIntent/v1",
+        "startedAt": "2026-11-06T03:45:25.883213Z"
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-181aec2e16c94e259f875c0e64eb863a/published-fence/ipv4-installed.json",
+      "bytes": 1206,
+      "modifiedAt": "2026-11-06T03:45:27.873190+00:00",
+      "status": {
+        "state": "INSTALLED"
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-181aec2e16c94e259f875c0e64eb863a/published-fence/ipv6-installed.json",
+      "bytes": 1124,
+      "modifiedAt": "2026-11-06T03:45:29.557223+00:00",
+      "status": {
+        "state": "INSTALLED"
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-181aec2e16c94e259f875c0e64eb863a/replacement-result.json",
+      "bytes": 190,
+      "modifiedAt": "2026-11-06T04:09:25.587998+00:00",
+      "status": {
+        "state": "FAILED_RETAINED",
+        "finishedAt": "2026-11-06T04:09:25.587683Z"
+      }
+    },
+    {
+      "path": "replacement-state/smallapp-181aec2e16c94e259f875c0e64eb863a/runtime/.recovery-operation.json",
+      "bytes": 101,
+      "modifiedAt": "2026-11-06T04:01:06.960352+00:00",
+      "status": {
+        "startedAt": "2026-11-06T04:01:06.961035Z"
+      }
+    }
+  ],
+  "nativeInvocationCounts": {
+    "ledger/smallapp-181aec2e16c94e259f875c0e64eb863a": 0,
+    "recovery-operations/smallapp-181aec2e16c94e259f875c0e64eb863a": 159,
+    "replacement-state/smallapp-181aec2e16c94e259f875c0e64eb863a": 0
+  },
+  "processes": []
+}

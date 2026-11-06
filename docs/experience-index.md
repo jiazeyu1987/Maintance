@@ -1,5 +1,15 @@
 # 项目经验索引
 
+- 公司共享盘 / ORIGINAL_COMPANY_NAS_MOUNT_MISSING / 父目录没有独立挂载 / 子挂载 / mountinfo原始基线：`docs/release-agent-checklist.md#阶段1e同机可写来源的归档视图保护`。按事前实际基线比较保护目录的全部子挂载和覆盖祖先，不假定/mnt/nas独立挂载；身份/参数/增删变化仍失败，不为满足验收假设修改生产挂载。
+
+- 原MAIN无Docker健康声明 / ACTUAL_CONTAINER_HEALTHCHECK_REQUIRED / MinIO health ready / RegisteredMainSemanticReadiness / 恢复启动存储后失败：`docs/release-agent-checklist.md#阶段1h原main语义健康与已启动存储续办`。登记MAIN三角色始终验证固定语义协议及完整身份/端口；已有Docker检查仍须通过。失败续办仅凭原实际成功启动回执与当前启动时间，在原锁和保护下精确停存储、追加证据；不能把running当healthy或覆盖旧失败。
+
+- MAIN全局事件调度器 / FORMAL_SQL_DATABASE_CHANGED / event_scheduler=ON / SET OFF线程尚未退出 / mysql-scheduler / 旧归档和端口保护续恢复：`docs/release-agent-checklist.md#阶段1gmain事件调度器与失败保护交接`。清库前记录原状态、暂停并有界确认线程/事务归零，成功后精确恢复；失败保留暂停及原证据，按同点同目标clearance交接保护，专用演练SQL检查不放宽。
+
+- 原MAIN资源准入 / RESTORE_RESOURCE_MYSQL_IDENTITY_INVALID / 原MySQL无演练标签 / observe_resources：`docs/release-agent-checklist.md#阶段1f原main资源观察身份`。显式MAIN核原id/image/labels/mounts/完整配置，普通空目标仍强制专用标签；不得改原容器标签或跳过实际资源门槛。
+
+- 覆盖前保留全备 / standard冻结包与本地lightweight混淆 / payloadContentVerified=false / 独立SMB完整SHA：`docs/release-agent-checklist.md#覆盖前保留备份完整读回门禁`。先定位实际worker和封包程序pins，再核原始完整读回记录；不能从本地轻量源码或缺少布尔字段推断SAFE未读内容，不重复已证实的完整读回。
+
 - 同机来源归档可写 / ARCHIVE_NOT_READ_ONLY / archiveMountProtection / remount,bind,ro / 单视图保护 / CIFS superblock：`docs/release-agent-checklist.md#阶段1e同机可写来源的归档视图保护`。源备份先成功，恢复持共同锁保护明确视图，失败保留，成功精确恢复；不得操作公司 /mnt/nas 或其它视图。
 
 - Spug dataLimits / FORMAL_DATA_LIMITS_REQUIRED / maxExpandedBytes / SAFE/FAST 注入接口 / inventory content / apply_tree verify_content / RESTORE_TYPEERROR / FAILED_RETAINED / recovery-clearance / PROVEN_NO_MUTATION / ARCHIVE_LEASE_FD_BUDGET_EXCEEDED / LimitNOFILE：`docs/release-agent-checklist.md#spug-恢复包接口合同与保留失败续恢复门禁`。实际封包合同及破坏性SQL审计必验；归档句柄预算须按完整路径集实测继承；写入前和写入后失败分别按明确合同准许同点同目标，不删锁或改历史。

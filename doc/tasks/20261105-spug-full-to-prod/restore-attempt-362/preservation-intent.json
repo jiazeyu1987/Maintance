@@ -1,0 +1,78 @@
+{
+  "operationId": "smallapp-d7a963eb1e9a4c16826c92d5753b30c3",
+  "originalState": "FAILED",
+  "localFiles": [
+    {
+      "original": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261105-spug-full-to-prod\\restore-ui-submission.json",
+        "bytes": 426,
+        "sha256": "e8290bf8479a1ff02fbc383757b1ffdc9e4f057c648ad5c830373e889f4b2cea"
+      },
+      "preservedPath": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261105-spug-full-to-prod\\restore-attempt-362\\restore-ui-submission.json"
+    },
+    {
+      "original": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261105-spug-full-to-prod\\restore-ui-result.json",
+        "bytes": 2438,
+        "sha256": "83d8f7d466c0a47b6fc87ae7f03f5bd7e237a42f570a213c517006906c902261"
+      },
+      "preservedPath": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261105-spug-full-to-prod\\restore-attempt-362\\restore-ui-result.json"
+    },
+    {
+      "original": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261105-spug-full-to-prod\\restore-terminal-record.json",
+        "bytes": 1154,
+        "sha256": "71cf1b00ba0037cb3b4a67309c541440fbfde30b5a81714bfd5b18b2e0292305"
+      },
+      "preservedPath": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261105-spug-full-to-prod\\restore-attempt-362\\restore-terminal-record.json"
+    },
+    {
+      "original": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261105-spug-full-to-prod\\restore-live-progress.json",
+        "bytes": 1814,
+        "sha256": "06a7c9b9dab66c5f725c4504fb7064e4e849c230b2ac00194630b0d2f9687bcb"
+      },
+      "preservedPath": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261105-spug-full-to-prod\\restore-attempt-362\\restore-live-progress.json"
+    },
+    {
+      "original": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261105-spug-full-to-prod\\restore-native-progress.json",
+        "bytes": 23203,
+        "sha256": "37a4b4a841654dec810eb807d0b08b4b6aeec97c26e6b5368af900d2dcaf6241"
+      },
+      "preservedPath": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261105-spug-full-to-prod\\restore-attempt-362\\restore-native-progress.json"
+    },
+    {
+      "original": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261105-spug-full-to-prod\\restore-ui-confirm.png",
+        "bytes": 136178,
+        "sha256": "e916692e8d9f365f1e3fddeb16f9c8d22f73eb604a41d90f2d36d96eb1350b08"
+      },
+      "preservedPath": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261105-spug-full-to-prod\\restore-attempt-362\\restore-ui-confirm.png"
+    },
+    {
+      "original": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261105-spug-full-to-prod\\restore-ui-submitted.png",
+        "bytes": 67432,
+        "sha256": "1e600e141c52222fdbf5b711f74e9529ec3eef509246959b51c425d36bbff5ac"
+      },
+      "preservedPath": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261105-spug-full-to-prod\\restore-attempt-362\\restore-ui-submitted.png"
+    },
+    {
+      "original": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261105-spug-full-to-prod\\restore-ui-terminal.png",
+        "bytes": 155619,
+        "sha256": "c202277815e12eca61523a54a01a88ac5312de3b3aa1297df576042b33103673"
+      },
+      "preservedPath": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261105-spug-full-to-prod\\restore-attempt-362\\restore-ui-terminal.png"
+    }
+  ],
+  "privateFile": {
+    "original": {
+      "path": "C:\\Spug\\runtime\\private\\full-to-prod-20261105\\restore-entry-response.private.json",
+      "bytes": 1027,
+      "sha256": "b9125e41871fb4e9959a4ef7283b091a167046c434e3511823502b309a9a40b7"
+    },
+    "preservedPath": "C:\\Spug\\runtime\\private\\full-to-prod-20261105\\failed-restore-362-local-originals\\restore-entry-response.private.json"
+  }
+}

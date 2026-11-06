@@ -1,0 +1,44 @@
+{
+  "status": "PASS",
+  "sourceCommit": "9dce31858c7bc9196b7a0d7ee34d93fec18c9473",
+  "parentCommit": "1595d0f414756362734b51193233b5606ca544ec",
+  "implementationFiles": [
+    {
+      "path": "ops/backup_engine/files.json",
+      "bytes": 11112,
+      "sha256": "8108b754589bc833e80a54cfb698412740141da72a70e75d0dd41331a13b2702"
+    },
+    {
+      "path": "ops/backup_engine/standard_fixes.py",
+      "bytes": 26268,
+      "sha256": "6b421947b9ad4a71f422130590e58aa8bda725739bc624f51c5e0133b003a9a5"
+    },
+    {
+      "path": "ops/recovery/recovery_main_target.py",
+      "bytes": 41131,
+      "sha256": "169a439ef849168672269b292a6807d2afac31f78313bfec55f042604096ad86"
+    },
+    {
+      "path": "ops/recovery/recovery_main_health.py",
+      "bytes": 5884,
+      "sha256": "6510e9ec22d53d8b76eaad560471e6dbd1f48caa5a3b6721683aceb456545225"
+    },
+    {
+      "path": "scripts/tests/test_main_readiness.py",
+      "bytes": 9420,
+      "sha256": "60782bd7b840f2946150aacbad64743654933ebe908476448579392be7bf0c2a"
+    },
+    {
+      "path": "scripts/tests/test_backup_variants.py",
+      "bytes": 17769,
+      "sha256": "a0fbe9d3279dd68ab1d806e05bd562bbd5086049f36a0ac9af4e78a41a2a2e1c"
+    }
+  ],
+  "regressionPassed": 416,
+  "realOriginalMinioVerified": true,
+  "utf8AndSyntaxVerified": true,
+  "knownPrivateValuesChecked": 26,
+  "privateValuesFound": 0,
+  "excludedFileCount": 189,
+  "excludedFilesUnchanged": true
+}

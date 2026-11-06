@@ -1,0 +1,140 @@
+F.......FFF                                                              [100%]
+=================================== FAILURES ===================================
+___ test_minio_host_endpoint_uses_exact_publication_and_full_port_protection ___
+
+contract = <test_main_restore_target.MainContractTests testMethod=test_registered_main_accepts_matching_archived_program>
+
+    def test_minio_host_endpoint_uses_exact_publication_and_full_port_protection(contract):
+        value=endpoint(contract)
+>       main.validate(contract.target)
+
+scripts/tests/test_main_published_endpoint.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ops/recovery/recovery_main_target.py:174: in validate
+    require(value['publishedDataEndpoints'] == [], 'MAIN_PUBLISHED_DATA_FENCE_REQUIRED')
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False, code = 'MAIN_PUBLISHED_DATA_FENCE_REQUIRED'
+
+    def require(condition, code):
+        if not condition:
+>           raise RecoveryError(code)
+E           recovery_engine.RecoveryError: MAIN_PUBLISHED_DATA_FENCE_REQUIRED
+
+ops/recovery/recovery_engine.py:64: RecoveryError
+_ test_published_container_can_stop_and_must_rejoin_the_actual_registered_bridge _
+
+contract = <test_main_restore_target.MainContractTests testMethod=test_registered_main_accepts_matching_archived_program>
+
+    def test_published_container_can_stop_and_must_rejoin_the_actual_registered_bridge(contract):
+        endpoint(contract);row=contract.rows['minio']
+        saved=contract.target['mainApplication']['networkAttachments']['minio']
+        row['NetworkSettings']['Networks']['main']['IPAddress']=''
+>       main.verify_network_attachments(contract.native,'minio',row,saved)
+
+scripts/tests/test_main_published_endpoint.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ops/recovery/recovery_main_target.py:115: in verify_network_attachments
+    require(attachment == expected[name] or _dynamic_application_attachment(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False, code = 'MAIN_SERVICE_NETWORK_CHANGED'
+
+    def require(condition, code):
+        if not condition:
+>           raise RecoveryError(code)
+E           recovery_engine.RecoveryError: MAIN_SERVICE_NETWORK_CHANGED
+
+ops/recovery/recovery_engine.py:64: RecoveryError
+___ test_fence_or_writer_quiescence_failure_precedes_destructive_sql[fence] ____
+
+tmp_path = PosixPath('/work/pytest-red/test_fence_or_writer_quiescenc0')
+failure = 'fence'
+
+    @pytest.mark.parametrize('failure',['fence','quiescence'])
+    def test_fence_or_writer_quiescence_failure_precedes_destructive_sql(tmp_path,failure):
+        import recovery_replace
+        calls=[]
+        def mysql(statement,**kwargs):
+            calls.append(('sql',statement))
+            if statement.startswith('DROP DATABASE'):raise AssertionError('DESTRUCTIVE_SQL_REACHED')
+            return '1' if statement=='SELECT @@GLOBAL.log_bin;' else ''
+        def fence():
+            calls.append(('fence','install'))
+            if failure=='fence':raise RuntimeError('EXPECTED_FENCE_FAILURE')
+        def quiescence():
+            calls.append(('writers','verify'))
+            if failure=='quiescence':raise RuntimeError('EXPECTED_QUIESCENCE_FAILURE')
+        native=SimpleNamespace(root=tmp_path,original=dict(targetConfigRef='prod'),
+            config=dict(database='ruoyi-vue-pro',application=dict(startOrder=['backend','frontend'])),
+            config_services={role:dict(id=role) for role in ('backend','frontend','minio')},
+            mysql=SimpleNamespace(query=mysql),docker=lambda args,**kwargs:calls.append(('docker',args)),
+            replacement_write_fence=fence,replacement_quiescence=quiescence)
+        with patch('recovery_replace.verify_services'),pytest.raises(RuntimeError,match='EXPECTED_'):
+>           recovery_replace.prepare(native,dict(databaseUuid='registered',services=native.config_services))
+
+scripts/tests/test_main_published_endpoint.py:81: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ops/recovery/recovery_replace.py:125: in prepare
+    native.mysql.query('DROP DATABASE `'+database+'`; CREATE DATABASE `'+database+'`;', mutation=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+statement = 'DROP DATABASE `ruoyi-vue-pro`; CREATE DATABASE `ruoyi-vue-pro`;'
+kwargs = {'mutation': True}
+
+    def mysql(statement,**kwargs):
+        calls.append(('sql',statement))
+>       if statement.startswith('DROP DATABASE'):raise AssertionError('DESTRUCTIVE_SQL_REACHED')
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: DESTRUCTIVE_SQL_REACHED
+
+scripts/tests/test_main_published_endpoint.py:67: AssertionError
+_ test_fence_or_writer_quiescence_failure_precedes_destructive_sql[quiescence] _
+
+tmp_path = PosixPath('/work/pytest-red/test_fence_or_writer_quiescenc1')
+failure = 'quiescence'
+
+    @pytest.mark.parametrize('failure',['fence','quiescence'])
+    def test_fence_or_writer_quiescence_failure_precedes_destructive_sql(tmp_path,failure):
+        import recovery_replace
+        calls=[]
+        def mysql(statement,**kwargs):
+            calls.append(('sql',statement))
+            if statement.startswith('DROP DATABASE'):raise AssertionError('DESTRUCTIVE_SQL_REACHED')
+            return '1' if statement=='SELECT @@GLOBAL.log_bin;' else ''
+        def fence():
+            calls.append(('fence','install'))
+            if failure=='fence':raise RuntimeError('EXPECTED_FENCE_FAILURE')
+        def quiescence():
+            calls.append(('writers','verify'))
+            if failure=='quiescence':raise RuntimeError('EXPECTED_QUIESCENCE_FAILURE')
+        native=SimpleNamespace(root=tmp_path,original=dict(targetConfigRef='prod'),
+            config=dict(database='ruoyi-vue-pro',application=dict(startOrder=['backend','frontend'])),
+            config_services={role:dict(id=role) for role in ('backend','frontend','minio')},
+            mysql=SimpleNamespace(query=mysql),docker=lambda args,**kwargs:calls.append(('docker',args)),
+            replacement_write_fence=fence,replacement_quiescence=quiescence)
+        with patch('recovery_replace.verify_services'),pytest.raises(RuntimeError,match='EXPECTED_'):
+>           recovery_replace.prepare(native,dict(databaseUuid='registered',services=native.config_services))
+
+scripts/tests/test_main_published_endpoint.py:81: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ops/recovery/recovery_replace.py:125: in prepare
+    native.mysql.query('DROP DATABASE `'+database+'`; CREATE DATABASE `'+database+'`;', mutation=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+statement = 'DROP DATABASE `ruoyi-vue-pro`; CREATE DATABASE `ruoyi-vue-pro`;'
+kwargs = {'mutation': True}
+
+    def mysql(statement,**kwargs):
+        calls.append(('sql',statement))
+>       if statement.startswith('DROP DATABASE'):raise AssertionError('DESTRUCTIVE_SQL_REACHED')
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: DESTRUCTIVE_SQL_REACHED
+
+scripts/tests/test_main_published_endpoint.py:67: AssertionError
+=========================== short test summary info ============================
+FAILED scripts/tests/test_main_published_endpoint.py::test_minio_host_endpoint_uses_exact_publication_and_full_port_protection
+FAILED scripts/tests/test_main_published_endpoint.py::test_published_container_can_stop_and_must_rejoin_the_actual_registered_bridge
+FAILED scripts/tests/test_main_published_endpoint.py::test_fence_or_writer_quiescence_failure_precedes_destructive_sql[fence]
+FAILED scripts/tests/test_main_published_endpoint.py::test_fence_or_writer_quiescence_failure_precedes_destructive_sql[quiescence]
+4 failed, 7 passed in 0.82s

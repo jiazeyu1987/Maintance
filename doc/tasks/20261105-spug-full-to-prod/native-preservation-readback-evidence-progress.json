@@ -1,0 +1,157 @@
+{
+  "observedAt": "2026-11-06T01:39:14.349727+00:00",
+  "worker": {
+    "pid": 29314,
+    "state": "R",
+    "wchan": "0",
+    "children": []
+  },
+  "readbackDirectories": [
+    {
+      "name": "67b9483c7a9b1b4a5ea3b22c6a8887a169c2d9c33918ee9b2c7b454df7ff2bc7",
+      "entries": [
+        {
+          "name": "73545a72f0951a45984593b957cec282ab51d4179881cb71c9842b2d4afb501b.raw",
+          "size": 455,
+          "isDir": false
+        },
+        {
+          "name": "eeeccc1abfc7f704b5cf4aead7b3069ee73585a74b6f9fa5f1f062f338b8c4bf.raw",
+          "size": 727,
+          "isDir": false
+        },
+        {
+          "name": "495d8222ae4b6a2e513c18f3271a288fcae1da32351f87b38dbb5b7b35010f3f.raw",
+          "size": 142,
+          "isDir": false
+        },
+        {
+          "name": "readback-originals.json",
+          "size": 7969700,
+          "isDir": false
+        },
+        {
+          "name": "a381cd16273bc145d31e611f8d9b51c0645ac384a94c45b571f98eebffb14510.raw",
+          "size": 821,
+          "isDir": false
+        },
+        {
+          "name": "49bb73ad5f284092c1453403e783fcbca1d0426ed8a3e55621edeed22db2e0f4.raw",
+          "size": 3725890,
+          "isDir": false
+        },
+        {
+          "name": "e840c15d1502ebb782c37b165b1db294d0074241de6dd360bb4de6688a89bde8.raw",
+          "size": 559,
+          "isDir": false
+        },
+        {
+          "name": "ceaf5b9808475595e0f8584393a71d83dd1ed29d2c8bfaaa10b45823b72e6655.raw",
+          "size": 3178549,
+          "isDir": false
+        },
+        {
+          "name": "189771043c183be2c58f7e9c3921fb44f6a3df635015f128b5bfb9aaa7c26fdd.raw",
+          "size": 431,
+          "isDir": false
+        },
+        {
+          "name": "f0f75e14e35aa098f3047d13eeae60b2df69248110c7bae9310934be2dbe144f.raw",
+          "size": 329,
+          "isDir": false
+        },
+        {
+          "name": "45deab878478b7ebcd7d55c304f13a300e4da3de82e87bb857bb4f35efb86a7f.raw",
+          "size": 1097,
+          "isDir": false
+        },
+        {
+          "name": "faa022c7c5e9d8caefab213ba77d4eca74dc01967729121d31e7d0564cb263a1.raw",
+          "size": 600,
+          "isDir": false
+        },
+        {
+          "name": "43ccd3d5c177e7cc5501f394a8b9d8abf082dfd0d2131b132a390e1360fcdb57.raw",
+          "size": 2270880,
+          "isDir": false
+        },
+        {
+          "name": "e1d57158beba066e950acba0a0b5f759f489396a1bad18afc021b64e2f5f4cd7.raw",
+          "size": 537782,
+          "isDir": false
+        },
+        {
+          "name": "fb682237539b1b21d6007e9e097c6d3c5d780992ae07f016bf4bbc0fc3ced1b2.raw",
+          "size": 11427737,
+          "isDir": false
+        }
+      ]
+    },
+    {
+      "name": "57827172ca298ee593501c196c98b0dee383c31c6c815b067495e92f0ac3c667",
+      "entries": []
+    }
+  ],
+  "latest": [
+    {
+      "name": "67b9483c7a9b1b4a5ea3b22c6a8887a169c2d9c33918ee9b2c7b454df7ff2bc7",
+      "size": 4096,
+      "isDir": true
+    },
+    {
+      "name": "timing-nas-readback-start.json",
+      "size": 66,
+      "isDir": false
+    },
+    {
+      "name": "timing-archive-metadata-end.json",
+      "size": 111,
+      "isDir": false
+    },
+    {
+      "name": "timing-archive-metadata-start.json",
+      "size": 70,
+      "isDir": false
+    },
+    {
+      "name": "timing-nas-upload-end.json",
+      "size": 108,
+      "isDir": false
+    },
+    {
+      "name": "timing-nas-upload-start.json",
+      "size": 64,
+      "isDir": false
+    },
+    {
+      "name": "timing-capture-validation-end.json",
+      "size": 115,
+      "isDir": false
+    },
+    {
+      "name": "timing-capture-validation-start.json",
+      "size": 72,
+      "isDir": false
+    },
+    {
+      "name": "timing-source-capture-end.json",
+      "size": 112,
+      "isDir": false
+    },
+    {
+      "name": "capture-query-843-terminal.json",
+      "size": 219,
+      "isDir": false
+    },
+    {
+      "name": "capture-query-843-output.json",
+      "size": 3135,
+      "isDir": false
+    },
+    {
+      "name": "capture-query-843-process.json",
+      "size": 113,
+      "isDir": false
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+..................F..................................................... [ 22%]
+........................................................................ [ 44%]
+........................................................................ [ 67%]
+........................................................................ [ 89%]
+..................................                                       [100%]
+=================================== FAILURES ===================================
+__ test_retained_protection_handoff_verifies_every_protection_before_release ___
+
+tmp_path = PosixPath('/work/pytest-regression/test_retained_protection_hando0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x766c526be720>
+
+    def test_retained_protection_handoff_verifies_every_protection_before_release(tmp_path,monkeypatch):
+        import recovery_main_target as main
+        import recovery_retained_retry as retry
+        from recovery_engine import write
+        calls=[];claim=tmp_path/'failed';claim.mkdir()
+        target=dict(mainApplication={'schemaVersion':'RegisteredMainApplication/v2'},
+            dataPolicy={},secrets={},services=[dict(role=r,id=r) for r in ('mysql','redis','backend','frontend','minio')])
+        class Observation:
+            def __init__(self,*args):self.config_services={r['role']:r for r in target['services']};self.policy={}
+            def inspect(self,role):return {'State':{'Running':role in ('mysql','redis')}}
+        monkeypatch.setattr(retry,'ReadOnlyTarget',Observation)
+        def protection(name):
+            journal=claim/name;journal.mkdir();write(journal/'active.json',{'owner':'failed'})
+            def verify():calls.append('verify-'+name)
+            def release():
+                calls.append('release-'+name)
+                return write(journal/'released.json',dict(operationId='failed',originalMountRestored=True))
+            return SimpleNamespace(journal=journal,verify=verify,release=release)
+        archive,ports=protection('archive'),protection('ports')
+        monkeypatch.setattr(main,'archive_view',lambda _:archive)
+        monkeypatch.setattr(main,'published_fence',lambda _:ports)
+        before=[pin(p.journal/'active.json') for p in (archive,ports)]
+>       result=main.release_retained_protections(dict(targets={'target':target},environmentMysqlClientPath='/usr/bin/mysql'),
+            dict(operationId='failed',targetConfigRef='target'),tmp_path,claim)
+
+scripts/tests/test_main_mysql_scheduler.py:199: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+configuration = {'targets': {'target': {'mainApplication': {'schemaVersion': 'RegisteredMainApplication/v2'}, 'dataPolicy': {}, 'secre...e': 'frontend', 'id': 'frontend'}, {'role': 'minio', 'id': 'minio'}]}}, 'environmentMysqlClientPath': '/usr/bin/mysql'}
+request = {'operationId': 'failed', 'targetConfigRef': 'target'}
+root = PosixPath('/work/pytest-regression/test_retained_protection_hando0')
+claim = PosixPath('/work/pytest-regression/test_retained_protection_hando0/failed')
+
+    def release_retained_protections(configuration, request, root, claim):
+        """Called under both recovery locks after terminated-failure observation.
+    
+        Writers stay stopped. Only their exact original mount/rules are restored;
+        scheduler custody stays paused and is carried into the next operation.
+        """
+        target = configuration['targets'][request['targetConfigRef']]
+        if not enabled(target): return {}
+        from recovery_retained_retry import ReadOnlyTarget, append
+        native = ReadOnlyTarget(configuration, request, root)
+        native.original = request
+        native.policy = dict(native.policy, environmentMysqlClientPath=configuration['environmentMysqlClientPath'])
+        native.secret = lambda role, name: check_pin(target['secrets'][role][name]).decode('utf-8')
+        rows = {role: native.inspect(service['id']) for role, service in native.config_services.items()}
+        require(all(row['State']['Running'] is (role in ('mysql', 'redis')) for role, row in rows.items()),
+                'RECOVERY_TARGET_MUST_REMAIN_QUIESCED')
+        journal = claim/'protection-recovery'; journal.mkdir(mode=0o700)
+        def command(arguments, *, mutation=False):
+            index = len(list(journal.glob('*-intent.json')))+1
+            intent = append(journal/('%04d-intent.json' % index), dict(arguments=arguments,
+                mutation=mutation, startedAt=utc()))
+            response = subprocess.run(arguments, input=None, capture_output=True, timeout=30)
+            append(journal/('%04d-exit.json' % index), dict(intentPin=intent,
+                actualExitCode=response.returncode, stdoutSha256=digest(response.stdout.hex()),
+                stderrSha256=digest(response.stderr.hex()), finishedAt=utc()))
+            require(response.returncode == 0 and not response.stderr, 'RECOVERY_PROTECTION_COMMAND_FAILED')
+            return response.stdout
+        native.command = command
+        protections = [(name, value) for name, value in
+            (('archive', archive_view(native)), ('published', published_fence(native))) if value is not None]
+        for _, value in protections: value.verify()
+        original = [pin(path) for _, value in protections for path in sorted(value.journal.iterdir()) if path.is_file()]
+        extra = {}
+        if (claim/'mysql-scheduler').exists():
+            def scheduler_query(statement, *, mutation=False):
+                require(not mutation, 'RECOVERY_OBSERVATION_WRITE_REJECTED')
+                return (native.query(statement)+'\n').encode('utf-8')
+            extra['schedulerCustodyPin'] = mysql_scheduler(native, query=scheduler_query).recovery_custody()
+        append(journal/'handoff-intent.json', dict(operationId=request['operationId'],
+>           targetConfigurationSha256=digest(target), originalPins=original, **extra, startedAt=utc()))
+                                                                                                ^^^
+E       NameError: name 'utc' is not defined
+
+ops/recovery/recovery_main_target.py:361: NameError
+=========================== short test summary info ============================
+FAILED scripts/tests/test_main_mysql_scheduler.py::test_retained_protection_handoff_verifies_every_protection_before_release
+1 failed, 321 passed in 236.74s (0:03:56)

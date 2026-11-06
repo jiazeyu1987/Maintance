@@ -1,0 +1,43 @@
+........................................................................ [ 34%]
+........................................................................ [ 69%]
+.........F....................................................           [100%]
+=================================== FAILURES ===================================
+__ MainContractTests.test_every_main_bound_rechecks_storage_before_sql_state ___
+
+self = <test_main_restore_target.MainContractTests testMethod=test_every_main_bound_rechecks_storage_before_sql_state>
+
+    def test_every_main_bound_rechecks_storage_before_sql_state(self):
+        calls = []
+        class Original:
+            def guard(self): calls.append('archive')
+        obj = main.guarded_type(Original)()
+        obj.__dict__.update(self.native.__dict__)
+        obj.__dict__.pop('guard')
+        obj.mysql = object(); obj.db_target = {}
+        obj.modules = {'formal_sql_restore': type('SQL', (), {
+            'database_state': staticmethod(lambda *args: calls.append('sql')),
+            'import_database_state': staticmethod(lambda *args: calls.append('import'))})}
+        with patch('recovery_replace.verify_services', side_effect=lambda *a: calls.append('storage')):
+>           obj.bound(importing=True)
+
+scripts/tests/test_main_restore_target.py:403: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ops/recovery/recovery_main_target.py:417: in bound
+    redis_password(self)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+native = <recovery_main_target.guarded_type.<locals>.MainData object at 0x706a89853e60>
+
+    def redis_password(native):
+        """Use explicit existing authentication, never an empty or invented secret."""
+        value = native.config.get('mainApplication', {})
+        if value.get('schemaVersion') != 'RegisteredMainApplication/v2' or \
+                value.get('redisAuthentication', {}).get('mode') != 'NONE':
+>           return native.secret('redis', 'REDIS_PASSWORD')
+                   ^^^^^^^^^^^^^
+E           AttributeError: 'MainData' object has no attribute 'secret'
+
+ops/recovery/recovery_main_target.py:275: AttributeError
+=========================== short test summary info ============================
+FAILED scripts/tests/test_main_restore_target.py::MainContractTests::test_every_main_bound_rechecks_storage_before_sql_state
+1 failed, 205 passed in 69.82s (0:01:09)

@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T07:19:04.984746+00:00",
+  "sourceCommit": "9dce31858c7bc9196b7a0d7ee34d93fec18c9473",
+  "packageSha256": "be01dd593a9fc297ae6298d2e958c79fe2ebb13e3f18f505462c41ef12dfffa6",
+  "fileManifestSha256": "3d0972e65a97d1897bb91168e47480455306fed7c6da05e3fdfc14d3e67adbaa",
+  "fileCount": 126,
+  "engine": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/engine-mainv2-9dce318",
+  "ownerConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-mainv2-9dce318.json",
+    "bytes": 43634,
+    "sha256": "dd1ad8c812bcd62843b691e39fcefcf850ecbeca48d24032718695f211463e98"
+  },
+  "controlConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-43657-mainv2-9dce318.json",
+    "bytes": 2428,
+    "sha256": "123954eca9bf2bf836a7376b215fc803e066724261b1d7edaf2937702a8914cd"
+  },
+  "targetAndSourceUnchanged": true,
+  "protectedOriginalFailurePinsUnchanged": 908,
+  "retainedPointerUnchanged": true,
+  "original195RuntimeUnchanged": true,
+  "fstabAndOldStageUnchanged": true,
+  "oldProtectionsStillActive": true,
+  "liveFdLimit": "Max open files            65536                65536                files     ",
+  "restoreDispatched": false
+}

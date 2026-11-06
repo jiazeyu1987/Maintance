@@ -1,0 +1,74 @@
+........FF...............                                                [100%]
+=================================== FAILURES ===================================
+__ test_published_fence_and_preparation_hooks_are_actually_packaged[standard] __
+
+variant = 'standard'
+packages = PosixPath('/work/pytest-red/variants0/packages')
+
+    @pytest.mark.parametrize('variant', builder.VARIANTS)
+    def test_published_fence_and_preparation_hooks_are_actually_packaged(variant, packages):
+        with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
+            assert archive.extractfile('common/recovery_published_fence.py').read()==(ROOT/'ops/recovery/recovery_published_fence.py').read_bytes()
+>           assert archive.extractfile('common/recovery_archive_view.py').read()==(ROOT/'ops/recovery/recovery_archive_view.py').read_bytes()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+scripts/tests/test_backup_variants.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/tarfile.py:2502: in extractfile
+    tarinfo = self.getmember(member)
+              ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <tarfile.TarFile object at 0x7687a54d9ee0>
+name = 'common/recovery_archive_view.py'
+
+    def getmember(self, name):
+        """Return a TarInfo object for member `name'. If `name' can not be
+           found in the archive, KeyError is raised. If a member occurs more
+           than once in the archive, its last occurrence is assumed to be the
+           most up-to-date version.
+        """
+        tarinfo = self._getmember(name.rstrip('/'))
+        if tarinfo is None:
+>           raise KeyError("filename %r not found" % name)
+E           KeyError: "filename 'common/recovery_archive_view.py' not found"
+
+/usr/local/lib/python3.12/tarfile.py:2074: KeyError
+_ test_published_fence_and_preparation_hooks_are_actually_packaged[lightweight] _
+
+variant = 'lightweight'
+packages = PosixPath('/work/pytest-red/variants0/packages')
+
+    @pytest.mark.parametrize('variant', builder.VARIANTS)
+    def test_published_fence_and_preparation_hooks_are_actually_packaged(variant, packages):
+        with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
+            assert archive.extractfile('common/recovery_published_fence.py').read()==(ROOT/'ops/recovery/recovery_published_fence.py').read_bytes()
+>           assert archive.extractfile('common/recovery_archive_view.py').read()==(ROOT/'ops/recovery/recovery_archive_view.py').read_bytes()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+scripts/tests/test_backup_variants.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/tarfile.py:2502: in extractfile
+    tarinfo = self.getmember(member)
+              ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <tarfile.TarFile object at 0x7687a54e7b90>
+name = 'common/recovery_archive_view.py'
+
+    def getmember(self, name):
+        """Return a TarInfo object for member `name'. If `name' can not be
+           found in the archive, KeyError is raised. If a member occurs more
+           than once in the archive, its last occurrence is assumed to be the
+           most up-to-date version.
+        """
+        tarinfo = self._getmember(name.rstrip('/'))
+        if tarinfo is None:
+>           raise KeyError("filename %r not found" % name)
+E           KeyError: "filename 'common/recovery_archive_view.py' not found"
+
+/usr/local/lib/python3.12/tarfile.py:2074: KeyError
+=========================== short test summary info ============================
+FAILED scripts/tests/test_backup_variants.py::test_published_fence_and_preparation_hooks_are_actually_packaged[standard]
+FAILED scripts/tests/test_backup_variants.py::test_published_fence_and_preparation_hooks_are_actually_packaged[lightweight]
+2 failed, 23 passed in 8.99s

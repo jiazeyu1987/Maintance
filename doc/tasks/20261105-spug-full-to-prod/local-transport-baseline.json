@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T01:14:35.444911+00:00",
+  "transports": [
+    {
+      "port": 42657,
+      "commandSha256": "6005725c6e56a115f183719e2f5da4954ae2f79ad7341d737478fce37c84cd23",
+      "pid": 14296,
+      "address": "127.0.0.1",
+      "parentPid": 33900,
+      "startedAt": "2026-11-05T19:19:39.4797590Z"
+    },
+    {
+      "port": 18557,
+      "commandSha256": "6005725c6e56a115f183719e2f5da4954ae2f79ad7341d737478fce37c84cd23",
+      "pid": 14296,
+      "address": "127.0.0.1",
+      "parentPid": 33900,
+      "startedAt": "2026-11-05T19:19:39.4797590Z"
+    }
+  ]
+}

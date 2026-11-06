@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T10:00:26.830945+00:00",
+  "operationId": "smallapp-9c961c848bc84f529d8ff0968b578a20",
+  "originalTransportsPreserved": true,
+  "stableTaskRunning": true,
+  "stableScriptVerified": true,
+  "liveTargetAdmission": true,
+  "exactSpugSettingsAndRoutesVerified": true,
+  "registeredTargetServers": [
+    "172.30.30.57",
+    "172.30.30.58",
+    "172.30.30.59"
+  ],
+  "transports": [
+    {
+      "port": 42657,
+      "commandSha256": "6005725c6e56a115f183719e2f5da4954ae2f79ad7341d737478fce37c84cd23",
+      "pid": 14296,
+      "address": "127.0.0.1",
+      "parentPid": 33900,
+      "startedAt": "2026-11-05T19:19:39.4797590Z"
+    },
+    {
+      "port": 18557,
+      "commandSha256": "6005725c6e56a115f183719e2f5da4954ae2f79ad7341d737478fce37c84cd23",
+      "pid": 14296,
+      "address": "127.0.0.1",
+      "parentPid": 33900,
+      "startedAt": "2026-11-05T19:19:39.4797590Z"
+    },
+    {
+      "port": 43657,
+      "commandSha256": "111143b4fd02ef59dc6fd6e78f23c4f6e0e9a35d4ea2e32debf6bfac4a016f33",
+      "pid": 12108,
+      "address": "127.0.0.1",
+      "parentPid": 39140,
+      "startedAt": "2026-11-06T03:20:47.6615640Z"
+    }
+  ],
+  "restoreSubmitted": false
+}

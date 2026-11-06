@@ -1,0 +1,31 @@
+{
+  "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas": {
+    "options": "rw,relatime",
+    "filesystem": "cifs",
+    "source": "//172.30.30.4/IT\u5171\u4eab",
+    "superOptions": [
+      "rw",
+      "vers=3.0",
+      "sec=ntlmssp",
+      "cache=strict",
+      "uid=0",
+      "forceuid",
+      "gid=0",
+      "forcegid",
+      "addr=172.30.30.4",
+      "file_mode=0600",
+      "dir_mode=0700",
+      "seal",
+      "soft",
+      "nounix",
+      "serverino",
+      "mapposix",
+      "rsize=4194304",
+      "wsize=4194304",
+      "bsize=1048576",
+      "echo_interval=60",
+      "actimeo=1"
+    ]
+  },
+  "systemdVersion": "systemd 239"
+}

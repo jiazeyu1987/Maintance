@@ -74,6 +74,17 @@ Fail Fast：任何未确认远端效果、原包冲突或真实验证失败必�
 
 - 容量合同前置：`maxExpandedBytes` 计量SQL展开大小，`dataLimits.max_bytes` 计量数据库摘要查询输出，不能复用同一大值。安装配置必须调用实际formal.validate_limits（当前max_bytes硬上限16GiB）；实际SAFE/FAST构造器在目标访问/清理前再次校验。推荐运行 `pytest scripts/tests/test_backup_variants.py -k data_limits`，非法64GiB必须在target.services边界前失败，独立SQL64GiB+摘要16GiB必须通过该门禁。必须记录实际安装限额及原失败证据；禁止扩大正式限额掩盖配置错误。证据：`doc/tasks/20261104-spug-prod-full-to-test/readback-configuration-audit.json`。
 
+### 覆盖前保留备份完整读回门禁
+
+- Trigger: 为覆盖原实例而新建当前数据保留全备，尤其同一工程同时存在冻结standard和本地lightweight源码，或读回声明为payloadContentVerified=false。
+- Preflight check: 从原worker的实际命令定位程序与封包清单，核variant、完整文件SHA、实际publish调用及reader实现；不能仅查本地同名源码。先等同一备份真实原生SUCCEEDED/exit0、来源服务恢复，固定请求、来源配置、manifest/point/tree和原originalRecordsPin。独立验收只追加自有控制证据，绝不修改归档、来源程序或历史声明。
+- Blocker: 原备份仍活动或终态未知、任一pin/文件集/内容漂移、未证明的新连接安全、读回超时或连接断开，阻止原实例覆盖；保留原观察和失败证据，不重派备份掩盖。
+- Verification: 已固定SAFE实现确实逐文件实读并比较SHA/大小、前后树、签名加密与私有缓存时，审核原生成功及originalRecordsPin全部实际生成pins与manifest/tree完全相同、保留原始副本和元数据SHA；无需再起一轮重复全量读回。若实际为轻量路径，则必须补齐明确的独立全内容读回后才能覆盖。记录文件数/总字节、实际封包身份及原操作关联；不声称NAS服务端持久化。
+- Forbidden action: 不把关键记录读回、成功状态、声明中的payload pins或本机源暂存哈希当作NAS完整内容证据；不从无payloadContentVerified字段推断未完整读回，不把本地lightweight函数参数套进冻结SAFE，不改原schema、不用mock或抽样替代，不在保留依据未通过时覆盖。
+- Evidence: `doc/tasks/20261105-spug-full-to-prod/verify_preservation_payload.py`及其实际运行后产生的preservation-full-payload-readback.json；脚本存在或语法通过本身不构成内容验收。
+
+阶段必查项与推荐命令：先定位实际运行包；原生成功后运行verify_preservation_point.py，随后verify_preservation_payload.py审核真实完整读回原始凭据及verify_preservation_admission.py真实准入，再复核来源原服务和真实业务页面。Fail Fast：任何失败立即停止后续覆盖，沿原编号/原读回worker查证，不自动重试。必须记录：精确原备份操作、实际封包/程序、配置和元数据pins、连接安全与独立身份、文件/字节总量、完整比较、原schema保持、原始退出与失败材料位置。
+
 ### 阶段1d：保留原 MAIN 的存储与发布端口
 
 - Trigger: 原应用含可写 runtime 父目录、Docker socket、共享备份挂载、停止历史消费者，或原 MinIO 发布端口、Redis 无认证、来源与目标同机。
@@ -88,11 +99,46 @@ Fail Fast：任何未确认远端效果、原包冲突或真实验证失败必�
 ### 阶段1e：同机可写来源的归档视图保护
 
 - Trigger: 同机来源备份需要可写 CIFS/NFS 归档视图，而覆盖恢复要求所选归档只读。
-- Preflight check: 显式 MAIN/v2 archiveMountProtection，完整实际 mountinfo 和 mount 程序 pin；所有 archiveRoots 严格位于登记视图下，与目标 DATA/保留应用挂载不重叠且不是公司 /mnt/nas。先完成当前数据保留全备；备份和恢复持实际同一物理锁。安装阶段仅只读 preflight，不提前改变备份的写入视图。
+- Preflight check: 显式 MAIN/v2 archiveMountProtection，完整实际 mountinfo 和 mount 程序 pin；所有 archiveRoots 严格位于登记视图下，与目标 DATA/保留应用挂载不重叠且不是公司 /mnt/nas。公司保护目录须按事前 mountinfo 固定全部子挂载及覆盖它的祖先文件系统；实际可能仅有 /mnt/nas/Backup/BackupPackage 子挂载，不得假定 /mnt/nas 本身必有独立挂载。先完成当前数据保留全备；备份和恢复持实际同一物理锁。安装阶段仅只读 preflight，不提前改变备份的写入视图。
 - Blocker: 锁冲突、归档/挂载/程序身份漂移、作用范围不明确、保护后原挂载身份或其它 flags 改变，立即停止相应动作；失败保留只读状态和原操作证据。
-- Verification: 真实 Linux 运行 test_archive_view_protection_linux.py，确认目标视图 EROFS、同存储另一视图仍可写、漂移拒绝、成功恢复完整原 mountinfo；test_main_archive_view.py 核先保护再停写/清库、原生成功后释放；实际 SAFE/FAST 包包含相同模块。
+- Verification: 真实 Linux 运行 test_archive_view_protection_linux.py，确认目标视图 EROFS、同存储另一视图仍可写、漂移拒绝、成功恢复完整原 mountinfo；test_main_archive_view.py 核先保护再停写/清库、原生成功后释放；实际 SAFE/FAST 包包含相同模块。独立验收严格比较公司目录的原子挂载和覆盖祖先完整身份/参数，任何增删或变化失败；同时核 fstab SHA。父目录无独立挂载而原子挂载完全保持时应通过，不得为满足验收假设新增或修改生产挂载。
 - Forbidden action: 不卸载、不改 fstab、不重挂底层 superblock、不对 /mnt/nas 执行保护、不用新状态根绕过失败、不在备份执行时抢锁或改变其写入视图、不把单视图只读称为共享存储全局不可变。
 - Evidence: doc/tasks/20261105-spug-full-to-prod 的设计、Linux 原始日志、构建与安装证据；实际执行须记录原 mountinfo、操作号、意图/active/release pins、源备份终态及其它视图保持。推荐命令采用 mount -i -n -o remount,bind,ro/rw -- 精确视图，由正式执行器持锁调用。
+
+阶段必查：安装前只读固定原 mountinfo，恢复后逐项比较；推荐只读命令读取 /proc/self/mountinfo 和 sha256sum /etc/fstab。Fail Fast：原始基线缺失、保护目录子挂载或祖先变化即停止验收，不修改挂载补证。必须记录原始基线私密 pin、实际挂载路径、比较结果、原失败验收日志及修正后验证。任务 test_protected_mount_verification.py 的5项回归覆盖子挂载保持、参数漂移、新增挂载、祖先变化和无关挂载。
+
+### 阶段1f：原MAIN资源观察身份
+
+- Trigger: 恢复到已登记原MAIN，或资源观察出现RESTORE_RESOURCE_MYSQL_IDENTITY_INVALID而原容器无演练专用标签。
+- Preflight check: 先核实际已提交封包中的observe_resources，显式完整MAIN/v1或v2必须核原MySQL id/image、replacement登记的labels/mounts与完整Path/Args/HostConfig/Config摘要及非privileged状态；普通空目标继续核intruoyi.recovery.target。运行/PID、实际父cgroup、宿主RAM和各设备累计磁盘预算均独立检查。
+- Blocker: 原实例身份/配置/挂载/MAIN合同漂移、未知容器或运行状态、实际内存/磁盘不足均阻止安装或恢复；仅缺演练专用标签不能代替MAIN身份判断。
+- Verification: Linux执行`python -B -m pytest -q scripts/tests/test_recovery_resource_budget.py scripts/tests/test_recovery_resource_reservation.py scripts/tests/test_main_restore_target.py`，覆盖MAIN两个版本无标签实测准入、配置/挂载/镜像/登记漂移拒绝、512MiB cgroup拒绝和普通无标签目标拒绝。安装后读取实际资源准入结果，不把单元fixture当远端测量。
+- Forbidden action: 不重建或改原容器标签凑通过，不删除资源门槛，不仅凭mainApplication存在绕过完整登记，不以新stateRoot或删除原失败配置续办。
+- Evidence: `doc/tasks/20261105-spug-full-to-prod/main-resource-admission-diagnosis.json`、`linux-resources-red.log`和后续GREEN/回归及安装资源回执。
+
+阶段顺序：先只读固定原身份与安装失败现场，再RED/GREEN及受影响回归、限定提交；从新专属精确提交worktree构建安装新代次，旧组件/配置保持。Fail Fast：实际身份不符时不更新登记摘要。必须记录原错误、旧配置/服务/预约/锁状态、目标提交/包双摘要和真实资源观测值。
+
+### 阶段1h：原MAIN语义健康与已启动存储续办
+
+- Trigger: 原MAIN MinIO/backend/frontend没有Docker HEALTHCHECK，或物理复制后报ACTUAL_CONTAINER_HEALTHCHECK_REQUIRED。
+- Preflight check: 先核原容器完整id/image/Path/Args/HostConfig/Config摘要与登记IP、实际ExposedPorts。MAIN固定语义策略分别使用MinIO 9000/minio/health/ready、后端48081/actuator/health的JSON status=UP、前端80/的HTTP200；禁代理和重定向，响应有界、启动等待有界。已有Docker Health声明是额外条件。非MAIN原严格Docker合同保持。失败后若存储仍运行，必须核原worker实际exit1且无活动进程、原失败全部pins与预约保持、原Docker start命令摘要/成功退出/本操作号、当前StartedAt位于原命令起止内、全部业务writer已停止、归档/端口/调度器保护仍有效。
+- Blocker: 未声明端口、未知/漂移IP或原配置、错误协议、超时、Docker unhealthy/声明无状态、未知启动者或重启时间、仍活动worker/writer、保护或历史pins漂移，阻止健康通过或续办停写/clearance。
+- Verification: `pytest -q scripts/tests/test_main_readiness.py scripts/tests/test_main_restore_target.py scripts/tests/test_backup_variants.py`及真实原MinIO只读探测，真实SAFE/FAST封包包含相同组件；恢复成功核三角色RegisteredMainSemanticReadiness/v1的精确身份/配置/端点/返回值pins及真实页面。续办精确stop意图、实际exit、停止观察、其它194运行态保持及原失败pins保持缺一不可。
+- Forbidden action: 不改原容器/镜像制造HEALTHCHECK，不把running当healthy、不跳过后端UP、不跟随重定向/环境代理、不宽放普通演练检查、不自动重复stop未知终态、不覆盖旧失败、不手工删除预约、不操作公司/mnt/nas。
+- Evidence: `doc/tasks/20261105-spug-full-to-prod/main-health-recovery-plan.md`、原失败诊断、真实探测、RED/GREEN、精确停写/安装/clearance和新独立操作完整验收。
+
+阶段必查项：破坏性恢复前先校验正式语义端口合同；启动后验证真实协议并固定成功证据；失败续办先保全原件，持原来源锁和宿主预约锁，只停证明由该失败操作启动且身份/配置未变的原MinIO，追加意图及退出记录，再按阶段1g签发同点同目标clearance。推荐命令为只读`docker inspect`选定id（敏感Env不公开）、无代理/无重定向HTTP探测和新增测试。比较Docker挂载定义前按Destination排序；Docker返回的Mounts列表顺序不稳定，不得把裸列表摘要变化当作运行态变化。定义差异须与PID/StartedAt/实际挂载逐项核对；停止已实际exit0而后置比较失败时仅只读核销，不重复stop。Fail Fast按上述Blocker执行；必须记录实际状态、原声明、完整固定摘要、探测次数/HTTP/语义状态、原生退出、失败/保护pins、续办前后原容器状态和其它业务保持。
+
+### 阶段1g：MAIN事件调度器与失败保护交接
+
+- Trigger: 登记MAIN原MySQL event_scheduler=ON、清库后FORMAL_SQL_DATABASE_CHANGED、SET OFF返回后线程仍在，或保留失败带归档视图/发布端口保护。
+- Preflight check: 先只读核UUID、read_only/super_read_only、仅系统四库与登记应用库、事件调度器原状态；清库前停止全部原writer，独占记录原状态，ON暂停为OFF，最多15秒等待事件线程与活动事务都为0，等待中重核身份/范围/暂停状态。导入和完整读回边界继续核暂停。保留失败准许必须持原来源锁和预约锁，核原真实exit1/无worker、目标writer仍停止、身份及失败pins不变，全部旧保护先验证再精确释放、追加原pins和释放pins；有调度器custody则保持暂停并将首次原状态传至同点同目标新操作。
+- Blocker: 未知原状态、其它应用库、身份/范围/调度器漂移、线程/事务到期不归零、旧保护或失败证据漂移、writer运行或未知终态，立即阻止清理/clearance/新派发，不释放其它预约。
+- Verification: 实际Linux运行`pytest -q scripts/tests/test_main_mysql_scheduler.py scripts/tests/test_retained_replacement_retry.py scripts/tests/test_backup_variants.py`；再用独立断网、无发布端口、临时数据的真实MySQL核启用事件停写、导入新启用事件仍不执行、失败保持暂停、续恢复继承首次ON和原OFF保持。真实恢复成功后核mysqlSchedulerReleasePin及当前全局状态、全部原数据/对象/业务和其它服务，不将fixture或SET成功当最终验收。
+- Forbidden action: 不允许ON通过专用演练SQL检查，不跳过线程归零，不在失败时自动启用调度器，不改旧FAILED/active记录，不新建stateRoot绕过，不删除旧保护规则整体表或操作公司/mnt/nas，不用API代替真实Spug新操作。
+- Evidence: `doc/tasks/20261105-spug-full-to-prod/scheduler-retained-recovery-plan.md`、原History361及205文件pins、Linux RED/GREEN/回归、真实MySQL结果、新提交/精确构建安装、正式保护交接clearance及后续真实UI/原生验收。
+
+阶段必查项与推荐命令：安装前保存`SELECT @@server_uuid,@@GLOBAL.read_only,@@GLOBAL.super_read_only,@@GLOBAL.event_scheduler`、`SHOW DATABASES`及原失败/预约pins；仅正式执行器在停写后调用`SET GLOBAL event_scheduler=OFF`并等待`information_schema.PROCESSLIST`的event_scheduler计数和`innodb_trx`计数为0。成功先完成其它保护释放，再精确恢复原状态；释放异常重新暂停并报错。Fail Fast按上述Blocker执行。必须记录原状态、原身份/库范围、意图/active/custody/release pins、真实线程等待结果、原失败保持、新旧操作关联及最后当前状态。真实MySQL容器测试须等待PID1已为最终mysqld，不能以首次初始化临时mysqld的ping作为就绪；--rm删除也须有界确认完成。
 
 ## Spug 直接三服策略与普通脚本安装门禁
 

@@ -1,0 +1,119 @@
+...............FF.....................FF...............                  [100%]
+=================================== FAILURES ===================================
+_ test_retained_main_protection_handoff_precedes_clearance_and_keeps_originals _
+
+authorization_case = (<module 'recovery_retained_retry' from '/source/ops/recovery/recovery_retained_retry.py'>, <module 'recovery_resource...ion_0/operations/failed-1'), PosixPath('/work/pytest-red-handoff/test_retained_main_protection_0/state/failed-1'), ...)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7234dadfd130>
+
+    def test_retained_main_protection_handoff_precedes_clearance_and_keeps_originals(authorization_case,monkeypatch):
+        retry,resource,config,request,root,claim,host=authorization_case
+        import recovery_main_target as main
+        target=config['targets']['target'];target['mainApplication']={'schemaVersion':'RegisteredMainApplication/v2'}
+        write(root/'configuration.json',config)
+        binding=resource._binding(config,request,root)
+        reservation=write(root/'resource-reservation.json',dict(binding,schemaVersion='RestoreHostReservation/v1'))
+        write(host/'active.json',dict(binding,reservationPin=reservation))
+        original=pin(root/'worker-result.json');called=[]
+        def release(*args):
+            assert (host/'active.json').exists() and not (claim/'recovery-clearance.json').exists()
+            called.append('release')
+            return {'mainProtectionRecoveryPin':write(claim/'main-protection-recovery.json',
+                dict(schemaVersion='RetainedMainProtectionRecovery/v1',operationId=request['operationId'],
+                     targetConfigurationSha256=digest(target),releasePins=[],originalPins=[]))}
+        monkeypatch.setattr(main,'release_retained_protections',release,raising=False)
+        retry.authorize(config,request,root,'Explicit approved same point MAIN continuation',0)
+>       assert called==['release'] and pin(root/'worker-result.json')==original
+E       AssertionError: assert ([] == ['release']
+E         
+E         Right contains one more item: 'release'
+E         Use -v to get more diff)
+
+scripts/tests/test_retained_replacement_retry.py:201: AssertionError
+___ test_failed_protection_handoff_retains_reservation_and_blocks_clearance ____
+
+authorization_case = (<module 'recovery_retained_retry' from '/source/ops/recovery/recovery_retained_retry.py'>, <module 'recovery_resource...doff0/operations/failed-1'), PosixPath('/work/pytest-red-handoff/test_failed_protection_handoff0/state/failed-1'), ...)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7234dadfd3d0>
+
+    def test_failed_protection_handoff_retains_reservation_and_blocks_clearance(authorization_case,monkeypatch):
+        retry,resource,config,request,root,claim,host=authorization_case
+        import recovery_main_target as main
+        def reject(*args):raise ValueError('PROTECTION_DRIFT')
+        monkeypatch.setattr(main,'release_retained_protections',reject,raising=False)
+        before=pin(host/'active.json')
+>       with pytest.raises(ValueError,match='PROTECTION_DRIFT'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+scripts/tests/test_retained_replacement_retry.py:212: Failed
+__ test_main_scheduler_lifecycle_and_retained_handoff_are_packaged[standard] ___
+
+variant = 'standard'
+packages = PosixPath('/work/pytest-red-handoff/variants0/packages')
+
+    @pytest.mark.parametrize('variant', builder.VARIANTS)
+    def test_main_scheduler_lifecycle_and_retained_handoff_are_packaged(variant, packages):
+        with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
+>           assert archive.extractfile('common/recovery_mysql_scheduler.py').read()==(ROOT/'ops/recovery/recovery_mysql_scheduler.py').read_bytes()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+scripts/tests/test_backup_variants.py:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/tarfile.py:2502: in extractfile
+    tarinfo = self.getmember(member)
+              ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <tarfile.TarFile object at 0x7234dadfc800>
+name = 'common/recovery_mysql_scheduler.py'
+
+    def getmember(self, name):
+        """Return a TarInfo object for member `name'. If `name' can not be
+           found in the archive, KeyError is raised. If a member occurs more
+           than once in the archive, its last occurrence is assumed to be the
+           most up-to-date version.
+        """
+        tarinfo = self._getmember(name.rstrip('/'))
+        if tarinfo is None:
+>           raise KeyError("filename %r not found" % name)
+E           KeyError: "filename 'common/recovery_mysql_scheduler.py' not found"
+
+/usr/local/lib/python3.12/tarfile.py:2074: KeyError
+_ test_main_scheduler_lifecycle_and_retained_handoff_are_packaged[lightweight] _
+
+variant = 'lightweight'
+packages = PosixPath('/work/pytest-red-handoff/variants0/packages')
+
+    @pytest.mark.parametrize('variant', builder.VARIANTS)
+    def test_main_scheduler_lifecycle_and_retained_handoff_are_packaged(variant, packages):
+        with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
+>           assert archive.extractfile('common/recovery_mysql_scheduler.py').read()==(ROOT/'ops/recovery/recovery_mysql_scheduler.py').read_bytes()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+scripts/tests/test_backup_variants.py:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.12/tarfile.py:2502: in extractfile
+    tarinfo = self.getmember(member)
+              ^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <tarfile.TarFile object at 0x7234dadfe7b0>
+name = 'common/recovery_mysql_scheduler.py'
+
+    def getmember(self, name):
+        """Return a TarInfo object for member `name'. If `name' can not be
+           found in the archive, KeyError is raised. If a member occurs more
+           than once in the archive, its last occurrence is assumed to be the
+           most up-to-date version.
+        """
+        tarinfo = self._getmember(name.rstrip('/'))
+        if tarinfo is None:
+>           raise KeyError("filename %r not found" % name)
+E           KeyError: "filename 'common/recovery_mysql_scheduler.py' not found"
+
+/usr/local/lib/python3.12/tarfile.py:2074: KeyError
+=========================== short test summary info ============================
+FAILED scripts/tests/test_retained_replacement_retry.py::test_retained_main_protection_handoff_precedes_clearance_and_keeps_originals
+FAILED scripts/tests/test_retained_replacement_retry.py::test_failed_protection_handoff_retains_reservation_and_blocks_clearance
+FAILED scripts/tests/test_backup_variants.py::test_main_scheduler_lifecycle_and_retained_handoff_are_packaged[standard]
+FAILED scripts/tests/test_backup_variants.py::test_main_scheduler_lifecycle_and_retained_handoff_are_packaged[lightweight]
+4 failed, 51 passed in 160.52s (0:02:40)

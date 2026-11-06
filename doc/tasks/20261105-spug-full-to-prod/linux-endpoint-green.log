@@ -1,0 +1,27 @@
+....F......                                                              [100%]
+=================================== FAILURES ===================================
+___ test_published_contract_cannot_widen_the_original_scope[foreign-service] ___
+
+contract = <test_main_restore_target.MainContractTests testMethod=test_registered_main_accepts_matching_archived_program>
+change = 'foreign-service'
+
+    @pytest.mark.parametrize('change',['port','missing-console-fence','foreign-writer','foreign-service','ipv6-binding','wildcard-client','partial-binding'])
+    def test_published_contract_cannot_widen_the_original_scope(contract,change):
+        value=endpoint(contract)
+        if change=='port':value['port']=9002
+        elif change=='missing-console-fence':value['writeFence']['ports']=[9000]
+        elif change=='foreign-writer':value['writeFence']['allowedWriterIPv4'].append('10.0.0.99')
+        elif change=='foreign-service':value['role']='mysql'
+        elif change=='ipv6-binding':value['bindings']['9000/tcp'][0]['HostIp']='::'
+        elif change=='wildcard-client':value['ip']=contract.native.config_services['minio']['ip']='0.0.0.0'
+        elif change=='partial-binding':value['bindings'].pop('9001/tcp')
+>       with pytest.raises(Exception,match='MAIN_PUBLISHED_|PUBLISHED_FENCE_'):main.validate(contract.target)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'MAIN_PUBLISHED_|PUBLISHED_FENCE_'
+E         Actual message: 'MAIN_DATA_ENDPOINT_UNBOUND'
+
+scripts/tests/test_main_published_endpoint.py:46: AssertionError
+=========================== short test summary info ============================
+FAILED scripts/tests/test_main_published_endpoint.py::test_published_contract_cannot_widen_the_original_scope[foreign-service]
+1 failed, 10 passed in 3.78s

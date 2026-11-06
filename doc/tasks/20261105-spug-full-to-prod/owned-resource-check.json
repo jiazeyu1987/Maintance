@@ -1,0 +1,46 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T10:05:07.465707+00:00",
+  "operationId": "smallapp-9c961c848bc84f529d8ff0968b578a20",
+  "worktrees": [
+    {
+      "report": "release-build-db64656.json",
+      "worktree": "C:\\Spug\\runtime\\private\\full-to-prod-20261105\\release-db64656",
+      "targetCommit": "db64656f0adaee09eb21794b3bc4bd623bc7c23e",
+      "newCommits": false,
+      "mergeRequired": false
+    },
+    {
+      "report": "release-build-bdd8aab.json",
+      "worktree": "C:\\Spug\\runtime\\private\\full-to-prod-20261105\\release-bdd8aab",
+      "targetCommit": "bdd8aab86203a874e5c763d7c55f897d6a47c9a4",
+      "newCommits": false,
+      "mergeRequired": false
+    },
+    {
+      "report": "release-build-9b3a298.json",
+      "worktree": "C:\\Spug\\runtime\\private\\full-to-prod-20261105\\release-9b3a298",
+      "targetCommit": "9b3a298ce378b3ac565792a3bc3b92f1e5208898",
+      "newCommits": false,
+      "mergeRequired": false
+    },
+    {
+      "report": "release-build-1595d0f.json",
+      "worktree": "C:\\Spug\\runtime\\private\\full-to-prod-20261105\\release-1595d0f",
+      "targetCommit": "1595d0f414756362734b51193233b5606ca544ec",
+      "newCommits": false,
+      "mergeRequired": false
+    },
+    {
+      "report": "release-build-9dce318.json",
+      "worktree": "C:\\Spug\\runtime\\private\\full-to-prod-20261105\\release-9dce318",
+      "targetCommit": "9dce31858c7bc9196b7a0d7ee34d93fec18c9473",
+      "newCommits": false,
+      "mergeRequired": false
+    }
+  ],
+  "containerId": "4d1f88654cc739f44fbb3058ee6233d6c2468dff45f2f0ba3aac57893c9a3a91",
+  "containerName": "spug-prod-published-network-env-20261105",
+  "volume": "spug-prod-retained-storage-20261105",
+  "ownershipVerified": true
+}

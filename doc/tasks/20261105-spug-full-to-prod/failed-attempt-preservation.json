@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T09:58:54.433367+00:00",
+  "remoteOriginalPinsUnchanged": 205,
+  "operationId": "smallapp-181aec2e16c94e259f875c0e64eb863a",
+  "localOriginalPinsUnchanged": 8,
+  "privateOriginalResponsePreserved": true,
+  "successfulNewOperationId": "smallapp-9c961c848bc84f529d8ff0968b578a20",
+  "originalState": "FAILED",
+  "archiveManifestPin": {
+    "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261105-spug-full-to-prod\\failed-attempt-archive.json",
+    "bytes": 4928,
+    "sha256": "e1f6bc372cbe2efba069f96fab7792a72b4817df16fb74de7472aa9191d47680"
+  }
+}

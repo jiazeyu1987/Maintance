@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "commit": "bdd8aab86203a874e5c763d7c55f897d6a47c9a4",
+  "regressionTests": 299,
+  "realMountIntegrationTests": 1,
+  "regressionSeconds": 110.28,
+  "realMountSeconds": 1.27,
+  "utf8AstJsonAndProductionSecretScan": true,
+  "remoteRestoresPerformed": 0
+}

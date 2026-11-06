@@ -1,0 +1,72 @@
+..........................................FFF....F                       [100%]
+=================================== FAILURES ===================================
+__ test_v2_delegates_every_application_mount_to_the_explicit_storage_contract __
+
+contract = <test_main_restore_target.MainContractTests testMethod=test_registered_main_accepts_matching_archived_program>
+
+    def test_v2_delegates_every_application_mount_to_the_explicit_storage_contract(contract):
+        case=contract
+        case.rows['backend']['Mounts']=[dict(Type='bind',Source='/runtime',Destination='/runtime',RW=True)]
+        with patch('recovery_replacement_storage.verify_preserved_mounts',return_value=[]) as verify:
+>           main.application_inputs(case.native)
+
+scripts/tests/test_main_retained_authentication.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ops/recovery/recovery_main_target.py:217: in application_inputs
+    value = validate(native.config)
+            ^^^^^^^^^^^^^^^^^^^^^^^
+ops/recovery/recovery_main_target.py:160: in validate
+    require(type(value) is dict and set(value) == MAIN_FIELDS and
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False, code = 'MAIN_TARGET_CONFIGURATION_INVALID'
+
+    def require(condition, code):
+        if not condition:
+>           raise RecoveryError(code)
+E           recovery_engine.RecoveryError: MAIN_TARGET_CONFIGURATION_INVALID
+
+ops/recovery/recovery_engine.py:64: RecoveryError
+_____________ test_v2_requires_the_versioned_preservation_contract _____________
+
+contract = <test_main_restore_target.MainContractTests testMethod=test_registered_main_accepts_matching_archived_program>
+
+    def test_v2_requires_the_versioned_preservation_contract(contract):
+        contract.target['replacement']['storage']['schemaVersion']='RegisteredReplacementStorage/v2'
+>       with pytest.raises(Exception,match='MAIN_RETAINED_STORAGE_V3_REQUIRED'):main.validate(contract.target)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'MAIN_RETAINED_STORAGE_V3_REQUIRED'
+E         Actual message: 'MAIN_TARGET_CONFIGURATION_INVALID'
+
+scripts/tests/test_main_retained_authentication.py:33: AssertionError
+____ test_registered_passwordless_redis_uses_no_auth_and_rechecks_live_acl _____
+
+contract = <test_main_restore_target.MainContractTests testMethod=test_registered_main_accepts_matching_archived_program>
+
+    def test_registered_passwordless_redis_uses_no_auth_and_rechecks_live_acl(contract):
+        calls=noauth(contract)
+>       assert main.redis_password(contract.native) is None
+               ^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'recovery_main_target' has no attribute 'redis_password'
+
+scripts/tests/test_main_retained_authentication.py:54: AttributeError
+________________ test_legacy_password_transport_stays_on_stdin _________________
+
+contract = <test_main_restore_target.MainContractTests testMethod=test_registered_main_accepts_matching_archived_program>
+
+    def test_legacy_password_transport_stays_on_stdin(contract):
+        contract.native.secret=lambda *args:'private-password-value'
+        contract.target['redisClientPath']='/usr/local/bin/redis-cli'
+        seen=[];contract.native.docker=lambda args,**kwargs:seen.append((args,kwargs)) or b'0\n'
+>       assert main.redis_command(contract.native,['-n','1','DBSIZE'])==b'0\n'
+               ^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'recovery_main_target' has no attribute 'redis_command'
+
+scripts/tests/test_main_retained_authentication.py:82: AttributeError
+=========================== short test summary info ============================
+FAILED scripts/tests/test_main_retained_authentication.py::test_v2_delegates_every_application_mount_to_the_explicit_storage_contract
+FAILED scripts/tests/test_main_retained_authentication.py::test_v2_requires_the_versioned_preservation_contract
+FAILED scripts/tests/test_main_retained_authentication.py::test_registered_passwordless_redis_uses_no_auth_and_rechecks_live_acl
+FAILED scripts/tests/test_main_retained_authentication.py::test_legacy_password_transport_stays_on_stdin
+4 failed, 46 passed in 0.63s

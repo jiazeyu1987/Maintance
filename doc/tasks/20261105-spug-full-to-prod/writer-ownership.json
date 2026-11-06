@@ -1,0 +1,384 @@
+{
+  "observedAt": "2026-11-05T22:45:23.322150+00:00",
+  "referencedEndpoints": [
+    {
+      "id": "c4385604eb83b44f2836755bad709581c7e7edd0078b148f3b0f74e0b567304c",
+      "name": "/intruoyi-backend",
+      "endpoints": [
+        "172.30.30.57",
+        "172.30.30.57:8080",
+        "172.30.30.57:8081",
+        "172.30.30.57:8083",
+        "172.30.30.57:9000"
+      ]
+    },
+    {
+      "id": "2ec14b9e0148d1ca0f67652ae606efc10dff3fee2656af11e819fb316623d4ff",
+      "name": "/rehearsal-smallapp-20261022-backend",
+      "endpoints": [
+        "172.30.30.57"
+      ]
+    },
+    {
+      "id": "9d6b45bad9b18f575b0f8ee7cf729f1167b9fc9a2ebeb8a7a2c74ebbdcd24830",
+      "name": "/intruoyi-website",
+      "endpoints": [
+        "172.30.30.57:48081"
+      ]
+    }
+  ],
+  "fileConfigurationDescribe": "id\tbigint\tNO\tPRI\tNULL\tauto_increment\nname\tvarchar(63)\tNO\t\tNULL\t\nstorage\ttinyint\tNO\t\tNULL\t\nremark\tvarchar(255)\tYES\t\tNULL\t\nmaster\tbit(1)\tNO\t\tNULL\t\nconfig\tvarchar(4096)\tNO\t\tNULL\t\ncreator\tvarchar(64)\tYES\t\t\t\ncreate_time\tdatetime\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED\nupdater\tvarchar(64)\tYES\t\t\t\nupdate_time\tdatetime\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED on update CURRENT_TIMESTAMP\ndeleted\tbit(1)\tNO\t\tb'0'\t\n",
+  "iamSummary": [],
+  "redisRequirepassEmpty": true,
+  "toolTree": {},
+  "mountPaths": [
+    {
+      "role": "backend",
+      "source": "/mnt/nas/Backup/BackupPackage",
+      "exists": true,
+      "isSymlink": false,
+      "resolved": "/mnt/nas/Backup/BackupPackage",
+      "mode": 16832,
+      "device": 46,
+      "inode": 564166
+    },
+    {
+      "role": "backend",
+      "source": "/opt/intruoyi/runtime/backend-codex-home",
+      "exists": true,
+      "isSymlink": false,
+      "resolved": "/opt/intruoyi/runtime/backend-codex-home",
+      "mode": 16832,
+      "device": 64768,
+      "inode": 34096087
+    },
+    {
+      "role": "backend",
+      "source": "/opt/intruoyi/runtime/tools/codex",
+      "exists": true,
+      "isSymlink": false,
+      "resolved": "/opt/intruoyi/runtime/tools/codex",
+      "mode": 33261,
+      "device": 64768,
+      "inode": 101183898
+    },
+    {
+      "role": "backend",
+      "source": "/var/run/docker.sock",
+      "exists": true,
+      "isSymlink": false,
+      "resolved": "/run/docker.sock",
+      "mode": 49584,
+      "device": 24,
+      "inode": 19245
+    },
+    {
+      "role": "backend",
+      "source": "/opt/intruoyi/runtime/smoke/bin/npm",
+      "exists": true,
+      "isSymlink": false,
+      "resolved": "/opt/intruoyi/runtime/smoke/bin/npm",
+      "mode": 33261,
+      "device": 64768,
+      "inode": 38058670
+    },
+    {
+      "role": "backend",
+      "source": "/backup",
+      "exists": true,
+      "isSymlink": false,
+      "resolved": "/backup",
+      "mode": 16877,
+      "device": 64768,
+      "inode": 33621771
+    },
+    {
+      "role": "backend",
+      "source": "/opt/intruoyi/ops",
+      "exists": true,
+      "isSymlink": false,
+      "resolved": "/opt/intruoyi/ops",
+      "mode": 16877,
+      "device": 64768,
+      "inode": 38050553
+    },
+    {
+      "role": "backend",
+      "source": "/opt/intruoyi/runtime",
+      "exists": true,
+      "isSymlink": false,
+      "resolved": "/opt/intruoyi/runtime",
+      "mode": 16877,
+      "device": 64768,
+      "inode": 112318009
+    },
+    {
+      "role": "backend",
+      "source": "/opt/intruoyi/runtime/data/backend-logs",
+      "exists": true,
+      "isSymlink": false,
+      "resolved": "/opt/intruoyi/runtime/data/backend-logs",
+      "mode": 16877,
+      "device": 64528,
+      "inode": 117178371
+    },
+    {
+      "role": "mysql",
+      "source": "/opt/intruoyi/runtime/data/mysql",
+      "exists": true,
+      "isSymlink": false,
+      "resolved": "/opt/intruoyi/runtime/data/mysql",
+      "mode": 16877,
+      "device": 64528,
+      "inode": 117178373
+    },
+    {
+      "role": "redis",
+      "source": "/opt/intruoyi/runtime/data/redis",
+      "exists": true,
+      "isSymlink": false,
+      "resolved": "/opt/intruoyi/runtime/data/redis",
+      "mode": 16877,
+      "device": 64528,
+      "inode": 117178374
+    },
+    {
+      "role": "minio",
+      "source": "/opt/intruoyi/runtime/data/minio",
+      "exists": true,
+      "isSymlink": false,
+      "resolved": "/opt/intruoyi/runtime/data/minio",
+      "mode": 16877,
+      "device": 64528,
+      "inode": 117178372
+    }
+  ],
+  "sourceLimits": [
+    "Max open files            65536                65536                files     "
+  ],
+  "sourceOpenFiles": 5,
+  "dataSizes": {
+    "mysql": "7847155908",
+    "minio": "9695368812",
+    "redis": "6279752"
+  },
+  "configurationFields": [
+    {
+      "id": "4",
+      "storage": "1",
+      "fields": [
+        "@class",
+        "domain"
+      ],
+      "domain": "http://127.0.0.1:48080"
+    },
+    {
+      "id": "22",
+      "storage": "20",
+      "fields": [
+        "@class",
+        "accessKey",
+        "accessSecret",
+        "bucket",
+        "domain",
+        "enablePathStyleAccess",
+        "enablePublicAccess",
+        "endpoint"
+      ],
+      "endpoint": "s3.cn-south-1.qiniucs.com",
+      "bucket": "ruoyi-vue-pro",
+      "domain": "http://test.yudao.iocoder.cn"
+    },
+    {
+      "id": "24",
+      "storage": "20",
+      "fields": [
+        "@class",
+        "accessKey",
+        "accessSecret",
+        "bucket",
+        "domain",
+        "enablePathStyleAccess",
+        "enablePublicAccess",
+        "endpoint"
+      ],
+      "endpoint": "https://cos.ap-shanghai.myqcloud.com",
+      "bucket": "aoteman-1255880240",
+      "domain": "http://tengxun-oss.iocoder.cn"
+    },
+    {
+      "id": "25",
+      "storage": "20",
+      "fields": [
+        "@class",
+        "accessKey",
+        "accessSecret",
+        "bucket",
+        "domain",
+        "enablePathStyleAccess",
+        "enablePublicAccess",
+        "endpoint"
+      ],
+      "endpoint": "oss-cn-beijing.aliyuncs.com",
+      "bucket": "yunai-aoteman",
+      "domain": "http://ali-oss.iocoder.cn"
+    },
+    {
+      "id": "26",
+      "storage": "20",
+      "fields": [
+        "@class",
+        "accessKey",
+        "accessSecret",
+        "bucket",
+        "domain",
+        "enablePathStyleAccess",
+        "enablePublicAccess",
+        "endpoint"
+      ],
+      "endpoint": "tos-s3-cn-beijing.volces.com",
+      "bucket": "yunai",
+      "domain": null
+    },
+    {
+      "id": "27",
+      "storage": "20",
+      "fields": [
+        "@class",
+        "accessKey",
+        "accessSecret",
+        "bucket",
+        "domain",
+        "enablePathStyleAccess",
+        "enablePublicAccess",
+        "endpoint"
+      ],
+      "endpoint": "obs.cn-east-3.myhuaweicloud.com",
+      "bucket": "yudao",
+      "domain": ""
+    },
+    {
+      "id": "28",
+      "storage": "20",
+      "fields": [
+        "@class",
+        "accessKey",
+        "accessSecret",
+        "bucket",
+        "domain",
+        "enablePathStyleAccess",
+        "enablePublicAccess",
+        "endpoint",
+        "legalHoldRequired",
+        "objectLockRequired",
+        "region",
+        "retentionDays",
+        "retentionMode"
+      ],
+      "endpoint": "http://host.docker.internal:9000",
+      "bucket": "yudao",
+      "domain": "http://172.30.30.57:9000/yudao"
+    },
+    {
+      "id": "29",
+      "storage": "10",
+      "fields": [
+        "@class",
+        "basePath",
+        "domain"
+      ],
+      "domain": "http://127.0.0.1:48080"
+    },
+    {
+      "id": "30",
+      "storage": "12",
+      "fields": [
+        "@class",
+        "basePath",
+        "domain",
+        "host",
+        "password",
+        "port",
+        "username"
+      ],
+      "domain": "http://127.0.0.1:48080"
+    },
+    {
+      "id": "34",
+      "storage": "20",
+      "fields": [
+        "@class",
+        "accessKey",
+        "accessSecret",
+        "bucket",
+        "domain",
+        "enablePathStyleAccess",
+        "enablePublicAccess",
+        "endpoint"
+      ],
+      "endpoint": "s3.cn-south-1.qiniucs.com",
+      "bucket": "ruoyi-vue-pro-private",
+      "domain": "http://t151glocd.hn-bkt.clouddn.com"
+    },
+    {
+      "id": "35",
+      "storage": "20",
+      "fields": [
+        "@class",
+        "accessKey",
+        "accessSecret",
+        "bucket",
+        "domain",
+        "enablePathStyleAccess",
+        "enablePublicAccess",
+        "endpoint",
+        "region"
+      ],
+      "endpoint": "http://www.baidu.com",
+      "bucket": "1",
+      "domain": "http://www.xxx.com"
+    }
+  ],
+  "iamIdentityPins": {
+    "users/EDHRUCQZT8LNMQMKRFZK/identity.json": {
+      "users/EDHRUCQZT8LNMQMKRFZK/identity.json/xl.meta": "11f3133030a7112575d37367c970225fd8275790b1f9fabb8fce3faf30b212fb"
+    },
+    "users/EDHRHFRQFGCXYATNNSC6/identity.json": {
+      "users/EDHRHFRQFGCXYATNNSC6/identity.json/xl.meta": "03ee560616f17f577c3ed76ea729891edfd5e83aa3cfecb3256dd1e448b091c3"
+    },
+    "users/EDHRCJSBJZZDMENUJE6R/identity.json": {
+      "users/EDHRCJSBJZZDMENUJE6R/identity.json/xl.meta": "677fe887bffc28c0506700100595e9204ba3e847de7aa723fa2a20d704c80fe9"
+    }
+  },
+  "iamPolicyPins": {
+    "policies/edhr-protected-storage-20260601-rw/policy.json/xl.meta": "a3a1839a8118ed544e56b8d731574c69f9b5acddd76fea873e763ec24f73e0de",
+    "policies/edhr-protected-storage-rw/policy.json/xl.meta": "a71f2403c63ad42dafe4ce6dd7d448693aa286bfe89db3db5906f57c47c4a1b2",
+    "policydb/users/EDHRHFRQFGCXYATNNSC6.json/xl.meta": "de4dba0257d5615f69d7d3dd327fdd933b7351a0889fd09f73fd263a1325181a",
+    "policydb/users/EDHRCJSBJZZDMENUJE6R.json/xl.meta": "c46a0e164c98f7eddf5a1502c5eaa49a3454688712c8f51223391ff7f8e321f2",
+    "policydb/users/EDHRUCQZT8LNMQMKRFZK.json/xl.meta": "ea7a19d9456af59621a7e4c8c8ed30b9dd3208138a0b875217c04b3d126a4eca"
+  },
+  "runningHostReferences": [
+    {
+      "id": "2ec14b9e0148d1ca0f67652ae606efc10dff3fee2656af11e819fb316623d4ff",
+      "name": "/rehearsal-smallapp-20261022-backend",
+      "environmentKey": "LAB_SERVER",
+      "urls": []
+    }
+  ],
+  "programAvailability": {
+    "mc": "",
+    "iptables": "/usr/sbin/iptables",
+    "ip6tables": "/usr/sbin/ip6tables",
+    "ip": "/usr/sbin/ip"
+  },
+  "installation": {
+    "controlServiceStarted": false,
+    "fileManifestSha256": "11d84d9a272e2048f242cd3f1e768940b25ed813cbfbb857ea2f8a0adbabe1d3",
+    "files": 121,
+    "packageSha256": "c9e7726f3024af04e92d53b53f9a30439d6b9f3ae2393615efed207961e0cdd2",
+    "restorePerformed": false,
+    "root": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3",
+    "schemaVersion": "SpugMainRestoreComponentInstallation/v1",
+    "sourceCommit": "45b4e3e"
+  }
+}

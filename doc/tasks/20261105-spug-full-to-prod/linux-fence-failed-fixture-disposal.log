@@ -1,0 +1,1 @@
+{"scope": "isolated-task-test-container-only", "removed": [{"tool": "iptables", "chain": "SF_3f3ddbee465741de2f85_4O"}, {"tool": "iptables", "chain": "SF_3f3ddbee465741de2f85_4P"}, {"tool": "ip6tables", "chain": "SF_3f3ddbee465741de2f85_6O"}, {"tool": "ip6tables", "chain": "SF_3f3ddbee465741de2f85_6P"}], "evidenceRetained": true}

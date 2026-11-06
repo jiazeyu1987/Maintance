@@ -1,0 +1,73 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T07:05:32.597096+00:00",
+  "services": [
+    {
+      "role": "minio",
+      "id": "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf",
+      "ip": "127.0.0.1",
+      "running": true,
+      "exposedPorts": {
+        "9000/tcp": {},
+        "9001/tcp": {}
+      },
+      "bindings": {
+        "9000/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "9000"
+          }
+        ],
+        "9001/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "9001"
+          }
+        ]
+      },
+      "dockerHealthcheckConfigured": false
+    },
+    {
+      "role": "backend",
+      "id": "c4385604eb83b44f2836755bad709581c7e7edd0078b148f3b0f74e0b567304c",
+      "ip": "172.21.0.11",
+      "running": false,
+      "exposedPorts": {
+        "48081/tcp": {}
+      },
+      "bindings": {
+        "48081/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "48081"
+          }
+        ]
+      },
+      "dockerHealthcheckConfigured": false
+    },
+    {
+      "role": "frontend",
+      "id": "1210f97cf7653c5f74a7981bf4d4bec8d7462af873d53695d47a59a7ce38a479",
+      "ip": "172.21.0.3",
+      "running": false,
+      "exposedPorts": {
+        "80/tcp": {}
+      },
+      "bindings": {
+        "80/tcp": [
+          {
+            "HostIp": "",
+            "HostPort": "8081"
+          }
+        ]
+      },
+      "dockerHealthcheckConfigured": false
+    }
+  ],
+  "minioProbe": {
+    "endpoint": "http://127.0.0.1:9000/minio/health/ready",
+    "status": 200,
+    "bodyBytes": 0
+  },
+  "mutations": 0
+}

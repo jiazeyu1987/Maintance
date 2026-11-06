@@ -1,0 +1,12 @@
+{
+  "observedAt": "2026-11-06T00:40:37.695847+00:00",
+  "role": "original-source-minio",
+  "id": "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf",
+  "running": true,
+  "pid": 26234,
+  "startedAt": "2026-11-06T00:39:55.148146175Z",
+  "restartCount": 0,
+  "health": null,
+  "liveHTTP": 200,
+  "readyHTTP": 200
+}

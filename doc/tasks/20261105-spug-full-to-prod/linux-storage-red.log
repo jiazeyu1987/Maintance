@@ -1,0 +1,251 @@
+EEEEEEEEEEEEEEEEEEEEEE                                                   [100%]
+==================================== ERRORS ====================================
+_ ERROR at setup of test_explicit_retained_binds_allow_only_the_three_data_directories _
+
+tmp_path = PosixPath('/work/pytest-red/test_explicit_retained_binds_a0')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+_ ERROR at setup of test_historical_owner_requires_exact_configuration_and_actual_inactivity[running] _
+
+tmp_path = PosixPath('/work/pytest-red/test_historical_owner_requires0')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+_ ERROR at setup of test_historical_owner_requires_exact_configuration_and_actual_inactivity[pid] _
+
+tmp_path = PosixPath('/work/pytest-red/test_historical_owner_requires1')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+_ ERROR at setup of test_historical_owner_requires_exact_configuration_and_actual_inactivity[paused] _
+
+tmp_path = PosixPath('/work/pytest-red/test_historical_owner_requires2')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+_ ERROR at setup of test_historical_owner_requires_exact_configuration_and_actual_inactivity[restarting] _
+
+tmp_path = PosixPath('/work/pytest-red/test_historical_owner_requires3')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+_ ERROR at setup of test_historical_owner_requires_exact_configuration_and_actual_inactivity[exec] _
+
+tmp_path = PosixPath('/work/pytest-red/test_historical_owner_requires4')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+_ ERROR at setup of test_historical_owner_requires_exact_configuration_and_actual_inactivity[config] _
+
+tmp_path = PosixPath('/work/pytest-red/test_historical_owner_requires5')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+_ ERROR at setup of test_historical_owner_requires_exact_configuration_and_actual_inactivity[mounts] _
+
+tmp_path = PosixPath('/work/pytest-red/test_historical_owner_requires6')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+_ ERROR at setup of test_historical_owner_requires_exact_configuration_and_actual_inactivity[missing] _
+
+tmp_path = PosixPath('/work/pytest-red/test_historical_owner_requires7')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+_ ERROR at setup of test_historical_owner_requires_exact_configuration_and_actual_inactivity[unregistered] _
+
+tmp_path = PosixPath('/work/pytest-red/test_historical_owner_requires8')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+_ ERROR at setup of test_application_mount_bytes_identity_and_complete_bindings_are_enforced[readonly-bytes] _
+
+tmp_path = PosixPath('/work/pytest-red/test_application_mount_bytes_i0')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+_ ERROR at setup of test_application_mount_bytes_identity_and_complete_bindings_are_enforced[type] _
+
+tmp_path = PosixPath('/work/pytest-red/test_application_mount_bytes_i1')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+_ ERROR at setup of test_application_mount_bytes_identity_and_complete_bindings_are_enforced[inode] _
+
+tmp_path = PosixPath('/work/pytest-red/test_application_mount_bytes_i2')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+_ ERROR at setup of test_application_mount_bytes_identity_and_complete_bindings_are_enforced[symlink-parent] _
+
+tmp_path = PosixPath('/work/pytest-red/test_application_mount_bytes_i3')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+_ ERROR at setup of test_application_mount_bytes_identity_and_complete_bindings_are_enforced[extra] _
+
+tmp_path = PosixPath('/work/pytest-red/test_application_mount_bytes_i4')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+_ ERROR at setup of test_application_mount_bytes_identity_and_complete_bindings_are_enforced[rw] _
+
+tmp_path = PosixPath('/work/pytest-red/test_application_mount_bytes_i5')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+_ ERROR at setup of test_application_mount_bytes_identity_and_complete_bindings_are_enforced[role] _
+
+tmp_path = PosixPath('/work/pytest-red/test_application_mount_bytes_i6')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+_ ERROR at setup of test_application_mount_bytes_identity_and_complete_bindings_are_enforced[source] _
+
+tmp_path = PosixPath('/work/pytest-red/test_application_mount_bytes_i7')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+_ ERROR at setup of test_v2_does_not_silently_accept_preserved_application_binds _
+
+tmp_path = PosixPath('/work/pytest-red/test_v2_does_not_silently_acce0')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+_ ERROR at setup of test_v3_contract_rejects_duplicate_ownership_entries[preservedApplicationMounts] _
+
+tmp_path = PosixPath('/work/pytest-red/test_v3_contract_rejects_dupli0')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+_ ERROR at setup of test_v3_contract_rejects_duplicate_ownership_entries[inactiveConsumers] _
+
+tmp_path = PosixPath('/work/pytest-red/test_v3_contract_rejects_dupli1')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+___ ERROR at setup of test_readonly_tree_rejects_unbounded_symlink_traversal ___
+
+tmp_path = PosixPath('/work/pytest-red/test_readonly_tree_rejects_unb0')
+
+    @pytest.fixture
+    def observed(tmp_path):
+>       from recovery_replacement_storage import snapshot_retained_storage
+E       ImportError: cannot import name 'snapshot_retained_storage' from 'recovery_replacement_storage' (/source/ops/recovery/recovery_replacement_storage.py)
+
+scripts/tests/test_retained_application_storage.py:22: ImportError
+=========================== short test summary info ============================
+ERROR scripts/tests/test_retained_application_storage.py::test_explicit_retained_binds_allow_only_the_three_data_directories
+ERROR scripts/tests/test_retained_application_storage.py::test_historical_owner_requires_exact_configuration_and_actual_inactivity[running]
+ERROR scripts/tests/test_retained_application_storage.py::test_historical_owner_requires_exact_configuration_and_actual_inactivity[pid]
+ERROR scripts/tests/test_retained_application_storage.py::test_historical_owner_requires_exact_configuration_and_actual_inactivity[paused]
+ERROR scripts/tests/test_retained_application_storage.py::test_historical_owner_requires_exact_configuration_and_actual_inactivity[restarting]
+ERROR scripts/tests/test_retained_application_storage.py::test_historical_owner_requires_exact_configuration_and_actual_inactivity[exec]
+ERROR scripts/tests/test_retained_application_storage.py::test_historical_owner_requires_exact_configuration_and_actual_inactivity[config]
+ERROR scripts/tests/test_retained_application_storage.py::test_historical_owner_requires_exact_configuration_and_actual_inactivity[mounts]
+ERROR scripts/tests/test_retained_application_storage.py::test_historical_owner_requires_exact_configuration_and_actual_inactivity[missing]
+ERROR scripts/tests/test_retained_application_storage.py::test_historical_owner_requires_exact_configuration_and_actual_inactivity[unregistered]
+ERROR scripts/tests/test_retained_application_storage.py::test_application_mount_bytes_identity_and_complete_bindings_are_enforced[readonly-bytes]
+ERROR scripts/tests/test_retained_application_storage.py::test_application_mount_bytes_identity_and_complete_bindings_are_enforced[type]
+ERROR scripts/tests/test_retained_application_storage.py::test_application_mount_bytes_identity_and_complete_bindings_are_enforced[inode]
+ERROR scripts/tests/test_retained_application_storage.py::test_application_mount_bytes_identity_and_complete_bindings_are_enforced[symlink-parent]
+ERROR scripts/tests/test_retained_application_storage.py::test_application_mount_bytes_identity_and_complete_bindings_are_enforced[extra]
+ERROR scripts/tests/test_retained_application_storage.py::test_application_mount_bytes_identity_and_complete_bindings_are_enforced[rw]
+ERROR scripts/tests/test_retained_application_storage.py::test_application_mount_bytes_identity_and_complete_bindings_are_enforced[role]
+ERROR scripts/tests/test_retained_application_storage.py::test_application_mount_bytes_identity_and_complete_bindings_are_enforced[source]
+ERROR scripts/tests/test_retained_application_storage.py::test_v2_does_not_silently_accept_preserved_application_binds
+ERROR scripts/tests/test_retained_application_storage.py::test_v3_contract_rejects_duplicate_ownership_entries[preservedApplicationMounts]
+ERROR scripts/tests/test_retained_application_storage.py::test_v3_contract_rejects_duplicate_ownership_entries[inactiveConsumers]
+ERROR scripts/tests/test_retained_application_storage.py::test_readonly_tree_rejects_unbounded_symlink_traversal
+22 errors in 0.81s
+WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ReadTimeoutError("HTTPSConnectionPool(host='pypi.org', port=443): Read timed out. (read timeout=15)")': /simple/jsonschema/
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.3
+[notice] To update, run: pip install --upgrade pip

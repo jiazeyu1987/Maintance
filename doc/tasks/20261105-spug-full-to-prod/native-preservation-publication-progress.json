@@ -1,0 +1,24 @@
+{
+  "observedAt": "2026-11-06T01:40:37.438209+00:00",
+  "sourceOperation": "433710bb8eb93e78351878966cb06caec1c420e87ef3d5c8dff9c493dc085eb9",
+  "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+  "archiveExists": true,
+  "sidecar": [
+    {
+      "name": "manifest.json",
+      "size": 6262829,
+      "isDir": false
+    },
+    {
+      "name": "original-exit.json",
+      "size": 219,
+      "isDir": false
+    },
+    {
+      "name": "payload-tree.json",
+      "size": 4048711,
+      "isDir": false
+    }
+  ],
+  "workerState": "R"
+}

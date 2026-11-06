@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "operationId": "smallapp-7fec29a3e132463096aec915c08acab3",
+  "startedAt": "2026-11-06T02:15:37.384360+00:00",
+  "finishedAt": "2026-11-06T02:55:33.980889+00:00",
+  "completedHelpers": [
+    "verify_preservation_point.py",
+    "verify_preservation_payload.py",
+    "verify_preservation_admission.py",
+    "verify_preserved_source_runtime.py"
+  ],
+  "onlyReadOnlyChecks": true,
+  "restoreDispatched": false,
+  "controlInstalled": false,
+  "businessUiAcceptanceStillRequired": true
+}

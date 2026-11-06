@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T04:56:01.055536+00:00",
+  "sourceCommit": "9b3a298ce378b3ac565792a3bc3b92f1e5208898",
+  "sourceKeysEqual": true,
+  "targetKeysEqual": true,
+  "exactSelectedTarget": true,
+  "exactSelectedSource": false,
+  "differences": [
+    "/sources/intruoyi-57-safe-20261024-v1/archiveCatalogue:presence",
+    "/sources/intruoyi-57-safe-20261024-v1/recoveryPoints/smallapp-73cd541a95d84d6a86f9d693e4053c75:presence",
+    "/sources/intruoyi-57-safe-20261024-v1/repositoryBindingPinsByManifestSha256/5f6d2748fd0d22bfb549377923dc63367f20b6b8c5ede20d370d719f64893dc5:presence",
+    "/sources/intruoyi-57-safe-20261024-v1/repositoryPointPins"
+  ]
+}

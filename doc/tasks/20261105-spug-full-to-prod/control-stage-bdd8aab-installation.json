@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "sourceCommit": "bdd8aab86203a874e5c763d7c55f897d6a47c9a4",
+  "packageSha256": "988bb1765e85a921d1a198d17ffe83f80f838ca6b66e667179dfad1e10a5fc32",
+  "fileManifestSha256": "2937a241f948869a9d90391b550064f09fe047ddf5c50da5c424e33dd9e2a86c",
+  "fileCount": 124,
+  "engine": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/engine-mainv2-bdd8aab",
+  "originalBusinessCount": 195,
+  "originalRuntimePreserved": true,
+  "oldStagePreserved": true,
+  "fstabPreserved": true,
+  "restorePerformed": false
+}

@@ -1,0 +1,317 @@
+{
+  "observedAt": "2026-11-06T01:18:37.356196+00:00",
+  "operationId": "smallapp-7fec29a3e132463096aec915c08acab3",
+  "directories": {
+    "ledger/smallapp-7fec29a3e132463096aec915c08acab3": {
+      "count": 10,
+      "latest": [
+        {
+          "name": "queries",
+          "bytes": 86016,
+          "mtime": 1793927912.875527,
+          "isDirectory": true
+        },
+        {
+          "name": "worker-terminal.json",
+          "bytes": 647,
+          "mtime": 1793921448.7358346,
+          "isDirectory": false
+        },
+        {
+          "name": "completion.json",
+          "bytes": 3159,
+          "mtime": 1793921448.704834,
+          "isDirectory": false
+        },
+        {
+          "name": "execute",
+          "bytes": 4096,
+          "mtime": 1793921448.7038338,
+          "isDirectory": true
+        },
+        {
+          "name": "worker-process.json",
+          "bytes": 658,
+          "mtime": 1793921437.888624,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-stderr",
+          "bytes": 0,
+          "mtime": 1793921437.8836238,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-stdout",
+          "bytes": 0,
+          "mtime": 1793921437.8836238,
+          "isDirectory": false
+        },
+        {
+          "name": "intent.json",
+          "bytes": 1189,
+          "mtime": 1793921437.5906181,
+          "isDirectory": false
+        },
+        {
+          "name": "selection.json",
+          "bytes": 990,
+          "mtime": 1793921437.587618,
+          "isDirectory": false
+        },
+        {
+          "name": "request.json",
+          "bytes": 238,
+          "mtime": 1793921437.584618,
+          "isDirectory": false
+        }
+      ]
+    },
+    "capture-staging/smallapp-7fec29a3e132463096aec915c08acab3": {
+      "count": 37,
+      "latest": [
+        {
+          "name": "terminal-result.json",
+          "bytes": 3135,
+          "mtime": 1793926066.6050458,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-completion.json",
+          "bytes": 1870,
+          "mtime": 1793925939.0155983,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0020.json",
+          "bytes": 94,
+          "mtime": 1793925938.9865978,
+          "isDirectory": false
+        },
+        {
+          "name": "source-restoration.json",
+          "bytes": 435,
+          "mtime": 1793925938.9825978,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0019.json",
+          "bytes": 68,
+          "mtime": 1793925938.9775977,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0018.json",
+          "bytes": 314,
+          "mtime": 1793925938.946597,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0017.json",
+          "bytes": 68,
+          "mtime": 1793925938.2875845,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0016.json",
+          "bytes": 314,
+          "mtime": 1793925938.2585838,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0015.json",
+          "bytes": 76,
+          "mtime": 1793925937.580571,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0014.json",
+          "bytes": 67,
+          "mtime": 1793925936.760555,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-archive-entries.json",
+          "bytes": 4374620,
+          "mtime": 1793925936.6305525,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-recovery-inputs.json",
+          "bytes": 11427737,
+          "mtime": 1793925936.2105446,
+          "isDirectory": false
+        }
+      ]
+    },
+    "repository-operations/433710bb8eb93e78351878966cb06caec1c420e87ef3d5c8dff9c493dc085eb9": {
+      "count": 4235,
+      "latest": [
+        {
+          "name": "timing-nas-upload-start.json",
+          "bytes": 64,
+          "mtime": 1793926178.707196,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-capture-validation-end.json",
+          "bytes": 115,
+          "mtime": 1793926178.701196,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-capture-validation-start.json",
+          "bytes": 72,
+          "mtime": 1793926066.7020476,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-source-capture-end.json",
+          "bytes": 112,
+          "mtime": 1793926066.6980476,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-843-terminal.json",
+          "bytes": 219,
+          "mtime": 1793926066.6930475,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-843-output.json",
+          "bytes": 3135,
+          "mtime": 1793926066.6370463,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-843-process.json",
+          "bytes": 113,
+          "mtime": 1793926065.468024,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-843.stdout.log",
+          "bytes": 0,
+          "mtime": 1793926065.4670238,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-843.stderr.log",
+          "bytes": 0,
+          "mtime": 1793926065.4670238,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-842-terminal.json",
+          "bytes": 218,
+          "mtime": 1793926065.212019,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-842-output.json",
+          "bytes": 1281,
+          "mtime": 1793926065.1810184,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-842-process.json",
+          "bytes": 112,
+          "mtime": 1793926060.0139194,
+          "isDirectory": false
+        }
+      ]
+    }
+  },
+  "workers": [
+    {
+      "pid": 29314,
+      "io": "rchar: 104874215954\nwchar: 24761520057\nsyscr: 2455237\nsyscw: 37002\nread_bytes: 33043779584\nwrite_bytes: 10416128\ncancelled_write_bytes: 0\n",
+      "state": "D",
+      "role": "repository"
+    }
+  ],
+  "staging": {
+    "payload": {
+      "files": 9408,
+      "bytes": 17878071522,
+      "latestMtime": 1793925784.9786317
+    },
+    "semantic-capture": {
+      "files": 4937,
+      "bytes": 8200912898,
+      "latestMtime": 1793925785.2156365
+    }
+  },
+  "dataObservationScratch": {
+    "scratch-before": null,
+    "scratch-after": {
+      "tableDirectoriesStarted": 885,
+      "highestTableIndex": 884,
+      "latestDirectoryMtime": 1793924760.916864
+    }
+  },
+  "knownCaptureFiles": {
+    "database.sql.gz": {
+      "bytes": 6128021473,
+      "mtime": 1793923525.899961
+    },
+    "011-source-data.json": {
+      "bytes": 3571773,
+      "mtime": 1793925172.2858105
+    },
+    "012-source-data-after.json": null,
+    "capture-content-point.json": {
+      "bytes": 5536674,
+      "mtime": 1793925784.9006302
+    }
+  },
+  "payloadTopLevel": [
+    {
+      "name": "011-source-data.json",
+      "bytes": 3571773,
+      "isDirectory": false
+    },
+    {
+      "name": "capture-content-point.json",
+      "bytes": 5536674,
+      "isDirectory": false
+    },
+    {
+      "name": "050-original-images.json",
+      "bytes": 666,
+      "isDirectory": false
+    },
+    {
+      "name": "minio-physical",
+      "bytes": 4096,
+      "isDirectory": true
+    },
+    {
+      "name": "capture-file-inventory.json",
+      "bytes": 3364188,
+      "isDirectory": false
+    },
+    {
+      "name": "database-log-mode.json",
+      "bytes": 50,
+      "isDirectory": false
+    },
+    {
+      "name": "original-application-images.tar",
+      "bytes": 2081399296,
+      "isDirectory": false
+    },
+    {
+      "name": "database.sql.gz",
+      "bytes": 6128021473,
+      "isDirectory": false
+    }
+  ],
+  "nas": {
+    "archiveName": "prod-standard-433710bb8eb93e78351878966cb06caec1c420e87ef3d5c8dff9c493dc085eb9",
+    "files": 13664,
+    "bytes": 25207801541,
+    "latestFileMtime": 1793927948.605606,
+    "scope": "exact-original-360-archive-only"
+  }
+}

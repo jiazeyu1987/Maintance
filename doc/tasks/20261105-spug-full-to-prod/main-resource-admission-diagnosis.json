@@ -1,0 +1,18 @@
+{
+  "observedAt": "2026-11-06T03:04:05.830956+00:00",
+  "errorCode": "RESTORE_RESOURCE_MYSQL_IDENTITY_INVALID",
+  "originalMySqlIdentityAndRegisteredLabelsMatch": true,
+  "mysqlRunning": true,
+  "targetId": "intruoyi-main-prod57-20261105",
+  "dedicatedRecoveryLabel": null,
+  "registeredMainSchema": "RegisteredMainApplication/v2",
+  "resourceBudgetPresent": true,
+  "ownerConfigurationPresent": true,
+  "controlConfigurationPresent": true,
+  "installationReceiptPresent": false,
+  "unitFilePresent": false,
+  "unitActive": false,
+  "replacementStateEntryCount": 0,
+  "activeHostReservation": false,
+  "commonSourceLockFree": true
+}

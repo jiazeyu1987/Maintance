@@ -1,0 +1,736 @@
+{
+  "observedAt": "2026-11-05T22:25:21.866615+00:00",
+  "errors": {},
+  "consumerReferences": [
+    {
+      "id": "8cb79cd7512261871492b01823ab401cdcfb26ac618c2355802b8c388d8591e0",
+      "name": "/intruoyi-backend-before-2026-11-03-12-15-42",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-release-workflow/prod/packages/backend-patches/2026-11-03-10-33-18/JOB-ea0c08da2d/release-info.json"
+      ]
+    },
+    {
+      "id": "c286f5f1e7c6acc8af53f204a5a34b991978de70cb64c9b482bdfdce6be21ecd",
+      "name": "/intruoyi-backend-before-invoice-assistant-20261102",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": []
+    },
+    {
+      "id": "d4d57256b401dc144d03e323655f29e12b5cad31aaf8449244cef628d5d34b70",
+      "name": "/intruoyi-backend-before-2026-10-30-10-19-11",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": []
+    },
+    {
+      "id": "f1168aabcd92844aca0cf9e30200896d7731bd7d5ecdc5ebfe4568cc39a816d6",
+      "name": "/intruoyi-backend-before-2026-10-28-23-36-26",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": []
+    },
+    {
+      "id": "9a9f333e3e6d6ce868f714217987c020e17b8e433069b3cdf26a7f96dba593b5",
+      "name": "/intruoyi-frontend-release-acceptance-retired-gxp-20261029",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-release-workflow/prod/packages/2026-10-27-18-40-39/acceptance-nginx.conf"
+      ]
+    },
+    {
+      "id": "975d48d0a43c70d5cf705b256aec39be93166832b27f1e643afcbe9ccf8e59e4",
+      "name": "/intruoyi-57-inc-safe-20261027-r1-frontend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-intruoyi-57-inc-restore-20261027-r1/config/nginx.conf"
+      ]
+    },
+    {
+      "id": "fdea2c75c1ec99eb35ae83c63d18ab386d7d3a887ecc9c205a710c3b77420482",
+      "name": "/intruoyi-57-inc-safe-20261027-r1-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-intruoyi-57-inc-restore-20261027-r1/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "b5ed78cca264676c7a0ae040e47cf4cae328dc657ab5fa4219200371e7cfb587",
+      "name": "/intruoyi-57-int05-safe-20261026-r5-frontend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-intruoyi-57-int05-restore-20261026-r5/config/nginx.conf"
+      ]
+    },
+    {
+      "id": "0cc89add50e4302bbbcac37b47c0e345b730197d30754a1d479bf6fb4b62789e",
+      "name": "/intruoyi-57-int05-safe-20261026-r5-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-intruoyi-57-int05-restore-20261026-r5/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "8400dc6dcfb00eb35ae44fe9c6ef038bd466bdfc09951bfba894c91d05bde94c",
+      "name": "/intruoyi-57-int05-safe-20261026-r4-frontend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-intruoyi-57-int05-restore-20261026-r4/config/nginx.conf"
+      ]
+    },
+    {
+      "id": "e1d7f59eed95590e714ca0b3b00ead91aeb052c14d2d41f5664e51f3efc96857",
+      "name": "/intruoyi-57-int05-safe-20261026-r4-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-intruoyi-57-int05-restore-20261026-r4/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "5bb7e654f26f9ac3972245b8a7792bf9306a06c86b79484434e5aac648669777",
+      "name": "/intruoyi-57-int05-safe-20261026-r3-frontend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-intruoyi-57-int05-restore-20261026-r3/config/nginx.conf"
+      ]
+    },
+    {
+      "id": "33466c0619a14c35d5b710f306609e4fdc3f88e10d044376dff35c02d37e4ff6",
+      "name": "/intruoyi-57-int05-safe-20261026-r3-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-intruoyi-57-int05-restore-20261026-r3/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "c3a22f8c2bc24fe21a785af55b1eda70dbb1d2f21db8fbea93a56ea169190c48",
+      "name": "/intruoyi-57-int05-safe-20261026-r2-frontend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-intruoyi-57-int05-restore-20261026-r2/config/nginx.conf"
+      ]
+    },
+    {
+      "id": "f0d63435fe5dd51ef296147d1f62acd64d7b1c7cfac95b9d14e26beec9d640fa",
+      "name": "/intruoyi-57-int05-safe-20261026-r2-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-intruoyi-57-int05-restore-20261026-r2/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "7d17c4eaa7589b4636b1fb96528cb4381986f7fdae2c6237a100a4b09bcc7926",
+      "name": "/intruoyi-57-int05-safe-20261025-r1-frontend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-intruoyi-57-int05-restore-20261025-r1/config/nginx.conf"
+      ]
+    },
+    {
+      "id": "2016b47611c61255eb7ffe02bc03ccdff84032d9aa192742730a8350295de176",
+      "name": "/intruoyi-57-int05-safe-20261025-r1-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-intruoyi-57-int05-restore-20261025-r1/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "d4648c0f8e776f9ad5cb01edef6d8699723ea4571cb719102b5d414cb6ef0b8b",
+      "name": "/intruoyi-57-int03-safe-20261025-r3-frontend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-intruoyi-57-int03-restore-20261025-r3/config/nginx.conf"
+      ]
+    },
+    {
+      "id": "c5dccab8d537d0a3c92d79e1bea53ad616b09ad8d510bfeab4b757e840341164",
+      "name": "/intruoyi-57-int03-safe-20261025-r3-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-intruoyi-57-int03-restore-20261025-r3/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "4c92188c53e628ee0021e742f408341570af4e0b128437a2e84bf51b41e56074",
+      "name": "/intruoyi-57-int03-safe-20261025-r2-frontend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-intruoyi-57-int03-restore-20261025-r2/config/nginx.conf"
+      ]
+    },
+    {
+      "id": "03cf0dff337f7680f3a8c75d729a6bdcf2ffd7f3e2db61762e5b33135f44abe0",
+      "name": "/intruoyi-57-int03-safe-20261025-r2-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-intruoyi-57-int03-restore-20261025-r2/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "0e48cadba5ca298abc0ffba0af567b8b5f170540810286dd55113de1094b0e91",
+      "name": "/intruoyi-57-retest-safe-20261024-r1-frontend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-intruoyi-57-restore-20261024-r1/config/nginx.conf"
+      ]
+    },
+    {
+      "id": "be94509f66984e745796211b85e61120a3ab1907d68ef25ea490852f56460925",
+      "name": "/intruoyi-57-retest-safe-20261024-r1-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-intruoyi-57-restore-20261024-r1/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "f25fa5e85f3ad5e597d68e65c37f8e54d098813f9a9058fcfbb46392507e78cd",
+      "name": "/smallapp-57-retest-20261024-cross58-source-contract-fast-latest-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-retest-20261024-target-cross58-source-contract-fast-latest/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "f09bface968171b1a79a8d2b511198e6c8562db724e06f1d4ff4447e11d3c789",
+      "name": "/smallapp-57-retest-20261024-cross58-source-images-fast-latest-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-retest-20261024-target-cross58-source-images-fast-latest/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "1b2bb7864f412aa2f9507aaf01c23982b6a0ff47eaf904c1c9240d923ceca650",
+      "name": "/smallapp-57-retest-20261024-cross58-fast-latest-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-retest-20261024-target-cross58-fast-latest/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "258f1e0bc4dbefee31c33166411afe9953748a0460d5e2aa32ef217c65334a0d",
+      "name": "/smallapp-57-retest-20261024-cross59-fast-latest-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-retest-20261024-target-cross59-fast-latest/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "c25c7b8fae832cdf5a2d84a0e476f4b4bbdae47ed095037ffcddef05bb601e93",
+      "name": "/smallapp-57-retest-20261024-fast-latest-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-retest-20261024-target-fast-latest/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "5766b1b9b2e408d4c68c2f1db972ae8ba18387f1d10c9a0f4baa730d44d4b1dc",
+      "name": "/smallapp-57-retest-20261024-fast-middle-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-retest-20261024-target-fast-middle/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "d5b81f5e184f514aaad92bcc93b0eb6fd38c01824aa9f69aea69842143c126de",
+      "name": "/smallapp-57-retest-20261024-fast-full-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-retest-20261024-target-fast-full/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "dbf94b095701f30c294fa31f5815a01f5cddf10e0ac664b1b259a4a9d2a1cd07",
+      "name": "/intruoyi-backend-before-2026-10-27-18-40-39",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": []
+    },
+    {
+      "id": "f220839c8f00f4456f91c39e593d9e20769da475f6cbf0f0c058f0760c8d380e",
+      "name": "/intruoyi-backend-before-2026-10-24-03-24-24-maintenance",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": []
+    },
+    {
+      "id": "2cb60b9c6758cc7b583dfbaeaa69ef1ac5e14567bcce95fd8ef467716795bbf0",
+      "name": "/smallapp-57-retest-20261024-safe-latest-r2-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-retest-20261024-target-safe-latest-r2/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "de61d5602c3124bdeaf06fb9d6006305804b1e11be8e9e74304b774e3aaf70d7",
+      "name": "/smallapp-57-retest-20261024-safe-middle-r3-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-retest-20261024-target-safe-middle-r3/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "5f3bbfc48d6763e3840a76cc694cdda85e36d88b7b1dddfa57676add308b3d03",
+      "name": "/smallapp-57-retest-20261024-safe-middle-r2-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-retest-20261024-target-safe-middle-r2/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "0b8eca243aeb3cedf98095e037d0db33da451e5af8020bf143f9a28ac97491f7",
+      "name": "/smallapp-57-retest-20261024-safe-latest-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-retest-20261024-target-safe-latest/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "5702441b599729c3bf06e69439bf836e35e7dbda2676a687e8a4b9f4b264448d",
+      "name": "/smallapp-57-retest-20261024-safe-middle-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-retest-20261024-target-safe-middle/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "34cb25a155b4349984052eb565e0a57ad123f4b4ae35469f81a06afd5d45841e",
+      "name": "/smallapp-57-retest-20261024-safe-full-r2-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-retest-20261024-target-safe-full-r2/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "9685d961dc7fc03b9e407393e3da42402c89b1593bc7d82c70c07f000c992ffc",
+      "name": "/smallapp-57-retest-20261024-safe-full-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/spug-retest-20261024-target-safe-full/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "03f830dd1cb91f80e06563e3ce2da9dfc889046fccd2d12a85fddca6e2787915",
+      "name": "/intruoyi-backend-before-2026-10-24-03-24-24",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": []
+    },
+    {
+      "id": "32da39d63351a22d6872e0c04aad93c3152ef45e36f92db5ab67976b6976f93c",
+      "name": "/intruoyi-backend-before-2026-10-23-16-51-17-maintenance",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": []
+    },
+    {
+      "id": "165d7f75e30e9121f6d5ce56f31dbcf756365d574fbfea49411c9bc4b13215fe",
+      "name": "/smallapp-normal-57-to-57-20261023-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/smallapp-normal-restore-20261023/target-57-to-57/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "d14f4e327419bd69db70503dfd56e664d70f512df7615f3e4945661ed60f90f5",
+      "name": "/smallapp-57-safe-target-20261022-r1-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/smallapp-safe-20261022/target-r1/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "2ec14b9e0148d1ca0f67652ae606efc10dff3fee2656af11e819fb316623d4ff",
+      "name": "/rehearsal-smallapp-20261022-backend",
+      "running": true,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": []
+    },
+    {
+      "id": "e6c766fc1d373f16264a0186e4930805836d8a58b03b14c51575da9fbf08e8ae",
+      "name": "/brlab-prod57-opt-20261021-r1-frontend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/prod57-optimized-rehearsal-20261021/target-r1/config/nginx.conf"
+      ]
+    },
+    {
+      "id": "86a23b4c6a445b0a2f4ba9887ec4dc912110cb294a377a8106af5469fc5cc5fd",
+      "name": "/brlab-prod57-opt-20261021-r1-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/prod57-optimized-rehearsal-20261021/target-r1/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "4e9f5237eee0a2b28bc20260ae201856da06d3f571cf11662233670e27ad4d3a",
+      "name": "/brlab-prod57-spug-20261021-r1-frontend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/target-r1/config/nginx.conf"
+      ]
+    },
+    {
+      "id": "92ad3187c48172d91f029a223bcecdab7f4da6e03324da5b07af10f922bfe0d9",
+      "name": "/brlab-prod57-spug-20261021-r1-backend",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/target-r1/private/application-target.properties"
+      ]
+    },
+    {
+      "id": "e7106c7089c94f5bf3dc52552146488061c1edec45a5074fc2246aac613d9977",
+      "name": "/intruoyi-backend-before-2026-10-23-16-51-17",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": []
+    },
+    {
+      "id": "e0fa4fda37df537acdf6485a4b7897e68b704ec5d9fab81bbda0c3cd1c73f2ce",
+      "name": "/intruoyi-backend-before-current-32ff79d-20261020",
+      "running": false,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": []
+    },
+    {
+      "id": "9d6b45bad9b18f575b0f8ee7cf729f1167b9fc9a2ebeb8a7a2c74ebbdcd24830",
+      "name": "/intruoyi-website",
+      "running": true,
+      "matches": [
+        "172.30.30.57"
+      ],
+      "files": [
+        "/opt/intruoyi/runtime/website/nginx.conf"
+      ]
+    }
+  ],
+  "configurationScanCount": 102,
+  "sourceService": "MainPID=20619\nLimitNOFILE=65536\nActiveState=active\n",
+  "fstabSha256": "69fb0d75be5ff1c785d0680046757b5c536b9d29d12d1713ca752ee58ebc72b7",
+  "capacity": {
+    "/var/lib/docker": 1459701370880,
+    "/opt/intruoyi/runtime": 43887775744
+  },
+  "health": {
+    "status": 200,
+    "body": "{\"status\":\"UP\"}"
+  },
+  "frontend": {
+    "status": 200,
+    "body": ""
+  },
+  "documentSchemas": {
+    "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control-postboot-20261105.json": {
+      "schema": "SmallAppExecutionServiceConfig/v2",
+      "fields": [
+        "allowedClientAddresses",
+        "authCredentialRef",
+        "deadlineMilliseconds",
+        "engineSelectionRef",
+        "environment",
+        "ledgerRoot",
+        "listenAddress",
+        "listenPort",
+        "programPins",
+        "pythonPin",
+        "registryRoot",
+        "restoreConfigurations",
+        "schemaVersion",
+        "sourceConfigurations",
+        "taskRoot",
+        "workingDirectory"
+      ]
+    },
+    "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/repository.json": {
+      "schema": "RepositoryMinimumConfiguration/v1",
+      "fields": [
+        "captureBinderPath",
+        "maxChainAgeSeconds",
+        "maxChainPoints",
+        "maximumArchiveBytes",
+        "minimumFreeBytes",
+        "operationRoot",
+        "parentChains",
+        "readback",
+        "recoveryPoints",
+        "repositoryId",
+        "repositoryRoot",
+        "responseTimeoutMilliseconds",
+        "schemaVersion",
+        "sources",
+        "timeoutMilliseconds"
+      ]
+    },
+    "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/capture.json": {
+      "schema": "minimal-source-capture-config/v1",
+      "fields": [
+        "archiveRoot",
+        "limits",
+        "parent",
+        "schemaVersion",
+        "source",
+        "sourceConfigRef",
+        "sourceLockPath",
+        "tools"
+      ]
+    },
+    "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/source-identity.json": {
+      "schema": null,
+      "fields": [
+        "databaseUuid",
+        "sourceFingerprint"
+      ]
+    }
+  },
+  "queries": {
+    "mysql": "0fa6c22b-5a90-11f1-ade1-0242ac150002\t1\ninformation_schema\nmysql\nperformance_schema\nruoyi-vue-pro\nsys\nroot\t172.21.0.11:54216\truoyi-vue-pro\tSleep\nroot\t172.21.0.11:34874\truoyi-vue-pro\tSleep\nroot\t172.21.0.11:49432\truoyi-vue-pro\tSleep\nroot\t172.21.0.11:38648\truoyi-vue-pro\tSleep\nevent_scheduler\tlocalhost\tNULL\tDaemon\nroot\t172.21.0.11:45548\truoyi-vue-pro\tSleep\nroot\t172.21.0.11:54226\truoyi-vue-pro\tSleep\nroot\tlocalhost\tNULL\tQuery\nroot\t172.21.0.11:41000\truoyi-vue-pro\tSleep\nroot\t172.21.0.11:38718\truoyi-vue-pro\tSleep\n885\n",
+    "redisClients": "id=979 addr=172.21.0.11:43652 laddr=172.21.0.2:6379 fd=16 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=980 addr=172.21.0.11:43654 laddr=172.21.0.2:6379 fd=17 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=981 addr=172.21.0.11:43656 laddr=172.21.0.2:6379 fd=18 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=982 addr=172.21.0.11:43658 laddr=172.21.0.2:6379 fd=19 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=983 addr=172.21.0.11:43660 laddr=172.21.0.2:6379 fd=20 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=984 addr=172.21.0.11:43662 laddr=172.21.0.2:6379 fd=21 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=985 addr=172.21.0.11:43664 laddr=172.21.0.2:6379 fd=22 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=986 addr=172.21.0.11:43666 laddr=172.21.0.2:6379 fd=23 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=987 addr=172.21.0.11:43668 laddr=172.21.0.2:6379 fd=24 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=974 addr=172.21.0.11:43642 laddr=172.21.0.2:6379 fd=11 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=975 addr=172.21.0.11:43640 laddr=172.21.0.2:6379 fd=12 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=976 addr=172.21.0.11:43646 laddr=172.21.0.2:6379 fd=13 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=977 addr=172.21.0.11:43648 laddr=172.21.0.2:6379 fd=14 name= age=65821 idle=3 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=637 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=info user=default redir=-1 resp=2 lib-name= lib-ver=\nid=978 addr=172.21.0.11:43650 laddr=172.21.0.2:6379 fd=15 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=988 addr=172.21.0.11:43670 laddr=172.21.0.2:6379 fd=25 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=989 addr=172.21.0.11:43672 laddr=172.21.0.2:6379 fd=26 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=990 addr=172.21.0.11:43674 laddr=172.21.0.2:6379 fd=27 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=991 addr=172.21.0.11:43676 laddr=172.21.0.2:6379 fd=28 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=992 addr=172.21.0.11:43678 laddr=172.21.0.2:6379 fd=29 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=993 addr=172.21.0.11:43680 laddr=172.21.0.2:6379 fd=30 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=994 addr=172.21.0.11:43682 laddr=172.21.0.2:6379 fd=31 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=995 addr=172.21.0.11:43684 laddr=172.21.0.2:6379 fd=32 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=996 addr=172.21.0.11:43686 laddr=172.21.0.2:6379 fd=33 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=997 addr=172.21.0.11:43688 laddr=172.21.0.2:6379 fd=34 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=998 addr=172.21.0.11:43690 laddr=172.21.0.2:6379 fd=35 name= age=65821 idle=8 flags=N db=1 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=0 qbuf-free=0 argv-mem=0 multi-mem=0 rbs=1024 rbp=0 obl=0 oll=0 omem=0 tot-mem=1928 events=r cmd=ping user=default redir=-1 resp=2 lib-name= lib-ver=\nid=7435 addr=127.0.0.1:54396 laddr=127.0.0.1:6379 fd=36 name= age=0 idle=0 flags=N db=0 sub=0 psub=0 ssub=0 multi=-1 watch=0 qbuf=26 qbuf-free=20448 argv-mem=10 multi-mem=0 rbs=16384 rbp=16384 obl=0 oll=0 omem=0 tot-mem=37786 events=r cmd=client|list user=default redir=-1 resp=2 lib-name= lib-ver=\n",
+    "redisDatabases": "# Keyspace\r\ndb1:keys=1,expires=1,avg_ttl=1114860,subexpiry=0\r\n"
+  },
+  "roleRuntime": {
+    "backend": {
+      "id": "c4385604eb83b44f2836755bad709581c7e7edd0078b148f3b0f74e0b567304c",
+      "path": "/__cacert_entrypoint.sh",
+      "environmentKeys": [
+        "ARGS",
+        "CODEX_HOME",
+        "DCC_PROJECT_CODE_CODEX_HOME",
+        "EDHR_S3_ACCESS_KEY",
+        "EDHR_S3_BUCKET",
+        "EDHR_S3_ENDPOINT",
+        "EDHR_S3_REGION",
+        "EDHR_S3_REQUIRE_LEGAL_HOLD",
+        "EDHR_S3_RETAIN_UNTIL_DAYS",
+        "EDHR_S3_RETENTION_MODE",
+        "EDHR_S3_SECRET_KEY",
+        "INTRUOYI_EXTRA_ARGS",
+        "INTRUOYI_RELEASE_MAINTENANCE",
+        "JAVA_HOME",
+        "JAVA_OPTS",
+        "JAVA_VERSION",
+        "LANG",
+        "LANGUAGE",
+        "LC_ALL",
+        "MES_SMOKE_ARTIFACT_DIR",
+        "MES_SMOKE_BASE_URL",
+        "MES_SMOKE_BATCH_NUMBER",
+        "MES_SMOKE_CAPACITY_MODE",
+        "MES_SMOKE_DEFAULT_PASSWORD",
+        "MES_SMOKE_ERP_CREATOR_PASSWORD",
+        "MES_SMOKE_ERP_CREATOR_TENANT",
+        "MES_SMOKE_ERP_CREATOR_USERNAME",
+        "MES_SMOKE_ERP_UNIT_NUMBER",
+        "MES_SMOKE_EXCEL_FILE",
+        "MES_SMOKE_FEEDBACK_APPROVER_NAME",
+        "MES_SMOKE_NODE_IMAGE",
+        "MES_SMOKE_NON_APPROVER_PASSWORD",
+        "MES_SMOKE_NON_APPROVER_TENANT",
+        "MES_SMOKE_NON_APPROVER_USERNAME",
+        "MES_SMOKE_PLANNER_PASSWORD",
+        "MES_SMOKE_PLANNER_TENANT",
+        "MES_SMOKE_PLANNER_USERNAME",
+        "MES_SMOKE_PRODUCT_CODE",
+        "MES_SMOKE_SUPERVISOR_PASSWORD",
+        "MES_SMOKE_SUPERVISOR_TENANT",
+        "MES_SMOKE_SUPERVISOR_USERNAME",
+        "PATH",
+        "TZ",
+        "YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_FRONTEND_DIRECTORY",
+        "YUDAO_MES_SCHEDULER_WORKBENCH_SMOKE_TEST_SCRIPT_NAME"
+      ]
+    },
+    "frontend": {
+      "id": "1210f97cf7653c5f74a7981bf4d4bec8d7462af873d53695d47a59a7ce38a479",
+      "path": "/docker-entrypoint.sh",
+      "environmentKeys": [
+        "DYNPKG_RELEASE",
+        "NGINX_VERSION",
+        "NJS_RELEASE",
+        "NJS_VERSION",
+        "PATH",
+        "PKG_RELEASE"
+      ]
+    },
+    "mysql": {
+      "id": "9a288d20d254366e99b265b1870466e974edf23e7aab60de2391e3a38e62fff6",
+      "path": "docker-entrypoint.sh",
+      "environmentKeys": [
+        "GOSU_VERSION",
+        "MYSQL_DATABASE",
+        "MYSQL_MAJOR",
+        "MYSQL_ROOT_PASSWORD",
+        "MYSQL_SHELL_VERSION",
+        "MYSQL_VERSION",
+        "PATH",
+        "TZ"
+      ]
+    },
+    "redis": {
+      "id": "5099e7bd566ec6a683e8842b84d8db9e41245708fce29e89309607d6a7e72653",
+      "path": "docker-entrypoint.sh",
+      "environmentKeys": [
+        "PATH",
+        "REDIS_VERSION"
+      ]
+    },
+    "minio": {
+      "id": "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf",
+      "path": "/usr/bin/docker-entrypoint.sh",
+      "environmentKeys": [
+        "MC_CONFIG_DIR",
+        "MINIO_ACCESS_KEY_FILE",
+        "MINIO_CONFIG_ENV_FILE",
+        "MINIO_KMS_SECRET_KEY_FILE",
+        "MINIO_PASSWORD",
+        "MINIO_ROOT_PASSWORD",
+        "MINIO_ROOT_PASSWORD_FILE",
+        "MINIO_ROOT_USER",
+        "MINIO_ROOT_USER_FILE",
+        "MINIO_SECRET_KEY_FILE",
+        "MINIO_UPDATE_MINISIGN_PUBKEY",
+        "MINIO_USER",
+        "PATH"
+      ]
+    }
+  }
+}

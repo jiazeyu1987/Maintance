@@ -1,0 +1,33 @@
+{
+  "observedAt": "2026-11-06T10:02:23.007Z",
+  "operationId": "smallapp-9c961c848bc84f529d8ff0968b578a20",
+  "realBrowser": true,
+  "realLogin": true,
+  "restorePosts": 0,
+  "blocked": [],
+  "choices": [
+    {
+      "host": "172.30.30.57",
+      "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+      "exactSourceAndPointVerified": true,
+      "overwriteAcknowledgementRequired": true
+    },
+    {
+      "host": "172.30.30.58",
+      "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+      "exactSourceAndPointVerified": true,
+      "overwriteAcknowledgementRequired": true
+    },
+    {
+      "host": "172.30.30.59",
+      "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+      "exactSourceAndPointVerified": true,
+      "overwriteAcknowledgementRequired": true
+    }
+  ],
+  "stage": "target-options",
+  "httpFailures": [],
+  "pageErrors": [],
+  "status": "PASS",
+  "finishedAt": "2026-11-06T10:03:07.112Z"
+}

@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T04:43:06.505080+00:00",
+  "containerId": "9779fd38073c84f057a60d369c5a3e7a42f5b9ba3b35874f39546af902de262a",
+  "imageId": "sha256:ccb8f749bb5e59f9f8f03bf7282c7ef27a93a1814a24f0a8a926fb4e19b7fb97",
+  "realMysql": true,
+  "network": "none",
+  "publishedPorts": 0,
+  "enabledOriginalEventPaused": true,
+  "enabledImportedEventPaused": true,
+  "failedOperationRemainedPaused": true,
+  "retryRestoredFirstOriginalOn": true,
+  "originalOffPreserved": true,
+  "ownedContainerRemoved": true
+}

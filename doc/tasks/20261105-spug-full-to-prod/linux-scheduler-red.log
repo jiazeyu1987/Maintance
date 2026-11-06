@@ -1,0 +1,381 @@
+FFFFFFFFFFFFF.FF.                                                        [100%]
+=================================== FAILURES ===================================
+_______ test_original_state_is_captured_paused_and_exactly_restored[ON] ________
+
+model = namespace(state={'scheduler': 'ON', 'uuid': '11111111-1111-1111-1111-111111111111', 'readonly': '0', 'superreadonly': ...<function model.<locals>.create at 0x737c3e3f5a80>, root=PosixPath('/work/pytest-red/test_original_state_is_capture0'))
+original = 'ON'
+
+    @pytest.mark.parametrize('original', ['ON', 'OFF', 'DISABLED'])
+    def test_original_state_is_captured_paused_and_exactly_restored(model, original):
+        model.state['scheduler'] = original
+>       scheduler = model.create()
+                    ^^^^^^^^^^^^^^
+
+scripts/tests/test_main_mysql_scheduler.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/tests/test_main_mysql_scheduler.py:40: in create
+    module = importlib.import_module('recovery_mysql_scheduler')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'recovery_mysql_scheduler'
+import_ = <function _gcd_import at 0x737c3fc540e0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'recovery_mysql_scheduler'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+_______ test_original_state_is_captured_paused_and_exactly_restored[OFF] _______
+
+model = namespace(state={'scheduler': 'OFF', 'uuid': '11111111-1111-1111-1111-111111111111', 'readonly': '0', 'superreadonly':...<function model.<locals>.create at 0x737c3e3faa20>, root=PosixPath('/work/pytest-red/test_original_state_is_capture1'))
+original = 'OFF'
+
+    @pytest.mark.parametrize('original', ['ON', 'OFF', 'DISABLED'])
+    def test_original_state_is_captured_paused_and_exactly_restored(model, original):
+        model.state['scheduler'] = original
+>       scheduler = model.create()
+                    ^^^^^^^^^^^^^^
+
+scripts/tests/test_main_mysql_scheduler.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/tests/test_main_mysql_scheduler.py:40: in create
+    module = importlib.import_module('recovery_mysql_scheduler')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'recovery_mysql_scheduler'
+import_ = <function _gcd_import at 0x737c3fc540e0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'recovery_mysql_scheduler'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+____ test_original_state_is_captured_paused_and_exactly_restored[DISABLED] _____
+
+model = namespace(state={'scheduler': 'DISABLED', 'uuid': '11111111-1111-1111-1111-111111111111', 'readonly': '0', 'superreado...<function model.<locals>.create at 0x737c3e3f4cc0>, root=PosixPath('/work/pytest-red/test_original_state_is_capture2'))
+original = 'DISABLED'
+
+    @pytest.mark.parametrize('original', ['ON', 'OFF', 'DISABLED'])
+    def test_original_state_is_captured_paused_and_exactly_restored(model, original):
+        model.state['scheduler'] = original
+>       scheduler = model.create()
+                    ^^^^^^^^^^^^^^
+
+scripts/tests/test_main_mysql_scheduler.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/tests/test_main_mysql_scheduler.py:40: in create
+    module = importlib.import_module('recovery_mysql_scheduler')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'recovery_mysql_scheduler'
+import_ = <function _gcd_import at 0x737c3fc540e0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'recovery_mysql_scheduler'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+_____ test_invalid_identity_or_global_state_never_mutates[uuid-different] ______
+
+model = namespace(state={'scheduler': 'ON', 'uuid': 'different', 'readonly': '0', 'superreadonly': '0', 'workers': '0', 'trans...<function model.<locals>.create at 0x737c3e3f5ee0>, root=PosixPath('/work/pytest-red/test_invalid_identity_or_globa0'))
+key = 'uuid', value = 'different'
+
+    @pytest.mark.parametrize('key,value', [('uuid', 'different'), ('readonly', '1'),
+        ('superreadonly', '1'), ('scheduler', 'UNKNOWN')])
+    def test_invalid_identity_or_global_state_never_mutates(model, key, value):
+        model.state[key] = value
+>       with pytest.raises(Exception, match='MAIN_SCHEDULER_'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'MAIN_SCHEDULER_'
+E         Actual message: "No module named 'recovery_mysql_scheduler'"
+
+scripts/tests/test_main_mysql_scheduler.py:68: AssertionError
+_______ test_invalid_identity_or_global_state_never_mutates[readonly-1] ________
+
+model = namespace(state={'scheduler': 'ON', 'uuid': '11111111-1111-1111-1111-111111111111', 'readonly': '1', 'superreadonly': ...<function model.<locals>.create at 0x737c3e407f60>, root=PosixPath('/work/pytest-red/test_invalid_identity_or_globa1'))
+key = 'readonly', value = '1'
+
+    @pytest.mark.parametrize('key,value', [('uuid', 'different'), ('readonly', '1'),
+        ('superreadonly', '1'), ('scheduler', 'UNKNOWN')])
+    def test_invalid_identity_or_global_state_never_mutates(model, key, value):
+        model.state[key] = value
+>       with pytest.raises(Exception, match='MAIN_SCHEDULER_'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'MAIN_SCHEDULER_'
+E         Actual message: "No module named 'recovery_mysql_scheduler'"
+
+scripts/tests/test_main_mysql_scheduler.py:68: AssertionError
+_____ test_invalid_identity_or_global_state_never_mutates[superreadonly-1] _____
+
+model = namespace(state={'scheduler': 'ON', 'uuid': '11111111-1111-1111-1111-111111111111', 'readonly': '0', 'superreadonly': ...<function model.<locals>.create at 0x737c3e3f5f80>, root=PosixPath('/work/pytest-red/test_invalid_identity_or_globa2'))
+key = 'superreadonly', value = '1'
+
+    @pytest.mark.parametrize('key,value', [('uuid', 'different'), ('readonly', '1'),
+        ('superreadonly', '1'), ('scheduler', 'UNKNOWN')])
+    def test_invalid_identity_or_global_state_never_mutates(model, key, value):
+        model.state[key] = value
+>       with pytest.raises(Exception, match='MAIN_SCHEDULER_'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'MAIN_SCHEDULER_'
+E         Actual message: "No module named 'recovery_mysql_scheduler'"
+
+scripts/tests/test_main_mysql_scheduler.py:68: AssertionError
+____ test_invalid_identity_or_global_state_never_mutates[scheduler-UNKNOWN] ____
+
+model = namespace(state={'scheduler': 'UNKNOWN', 'uuid': '11111111-1111-1111-1111-111111111111', 'readonly': '0', 'superreadon...<function model.<locals>.create at 0x737c3e3f60c0>, root=PosixPath('/work/pytest-red/test_invalid_identity_or_globa3'))
+key = 'scheduler', value = 'UNKNOWN'
+
+    @pytest.mark.parametrize('key,value', [('uuid', 'different'), ('readonly', '1'),
+        ('superreadonly', '1'), ('scheduler', 'UNKNOWN')])
+    def test_invalid_identity_or_global_state_never_mutates(model, key, value):
+        model.state[key] = value
+>       with pytest.raises(Exception, match='MAIN_SCHEDULER_'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'MAIN_SCHEDULER_'
+E         Actual message: "No module named 'recovery_mysql_scheduler'"
+
+scripts/tests/test_main_mysql_scheduler.py:68: AssertionError
+________ test_other_application_schema_blocks_global_scheduler_control _________
+
+model = namespace(state={'scheduler': 'ON', 'uuid': '11111111-1111-1111-1111-111111111111', 'readonly': '0', 'superreadonly': ...<function model.<locals>.create at 0x737c3e3f54e0>, root=PosixPath('/work/pytest-red/test_other_application_schema_0'))
+
+    def test_other_application_schema_blocks_global_scheduler_control(model):
+        model.state['databases'].add('another_business')
+>       with pytest.raises(Exception, match='MAIN_SCHEDULER_DATABASE_SCOPE_CHANGED'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'MAIN_SCHEDULER_DATABASE_SCOPE_CHANGED'
+E         Actual message: "No module named 'recovery_mysql_scheduler'"
+
+scripts/tests/test_main_mysql_scheduler.py:75: AssertionError
+_ test_running_work_blocks_destructive_continuation_and_retains_pause[workers] _
+
+model = namespace(state={'scheduler': 'ON', 'uuid': '11111111-1111-1111-1111-111111111111', 'readonly': '0', 'superreadonly': ...<function model.<locals>.create at 0x737c3e3f5800>, root=PosixPath('/work/pytest-red/test_running_work_blocks_destr0'))
+key = 'workers'
+
+    @pytest.mark.parametrize('key', ['workers', 'transactions'])
+    def test_running_work_blocks_destructive_continuation_and_retains_pause(model, key):
+        model.state[key] = '1'
+>       scheduler = model.create()
+                    ^^^^^^^^^^^^^^
+
+scripts/tests/test_main_mysql_scheduler.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/tests/test_main_mysql_scheduler.py:40: in create
+    module = importlib.import_module('recovery_mysql_scheduler')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'recovery_mysql_scheduler'
+import_ = <function _gcd_import at 0x737c3fc540e0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'recovery_mysql_scheduler'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+_ test_running_work_blocks_destructive_continuation_and_retains_pause[transactions] _
+
+model = namespace(state={'scheduler': 'ON', 'uuid': '11111111-1111-1111-1111-111111111111', 'readonly': '0', 'superreadonly': ...<function model.<locals>.create at 0x737c3e3f6340>, root=PosixPath('/work/pytest-red/test_running_work_blocks_destr1'))
+key = 'transactions'
+
+    @pytest.mark.parametrize('key', ['workers', 'transactions'])
+    def test_running_work_blocks_destructive_continuation_and_retains_pause(model, key):
+        model.state[key] = '1'
+>       scheduler = model.create()
+                    ^^^^^^^^^^^^^^
+
+scripts/tests/test_main_mysql_scheduler.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/tests/test_main_mysql_scheduler.py:40: in create
+    module = importlib.import_module('recovery_mysql_scheduler')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'recovery_mysql_scheduler'
+import_ = <function _gcd_import at 0x737c3fc540e0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'recovery_mysql_scheduler'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+____________ test_failed_restore_has_no_implicit_scheduler_release _____________
+
+model = namespace(state={'scheduler': 'ON', 'uuid': '11111111-1111-1111-1111-111111111111', 'readonly': '0', 'superreadonly': ...<function model.<locals>.create at 0x737c3e3f6840>, root=PosixPath('/work/pytest-red/test_failed_restore_has_no_imp0'))
+
+    def test_failed_restore_has_no_implicit_scheduler_release(model):
+>       scheduler = model.create(); scheduler.install()
+                    ^^^^^^^^^^^^^^
+
+scripts/tests/test_main_mysql_scheduler.py:93: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/tests/test_main_mysql_scheduler.py:40: in create
+    module = importlib.import_module('recovery_mysql_scheduler')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'recovery_mysql_scheduler'
+import_ = <function _gcd_import at 0x737c3fc540e0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'recovery_mysql_scheduler'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+____________ test_state_drift_and_journal_replacement_are_rejected _____________
+
+model = namespace(state={'scheduler': 'ON', 'uuid': '11111111-1111-1111-1111-111111111111', 'readonly': '0', 'superreadonly': ...<function model.<locals>.create at 0x737c3e3f6ac0>, root=PosixPath('/work/pytest-red/test_state_drift_and_journal_r0'))
+
+    def test_state_drift_and_journal_replacement_are_rejected(model):
+>       scheduler = model.create(); scheduler.install()
+                    ^^^^^^^^^^^^^^
+
+scripts/tests/test_main_mysql_scheduler.py:100: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/tests/test_main_mysql_scheduler.py:40: in create
+    module = importlib.import_module('recovery_mysql_scheduler')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'recovery_mysql_scheduler'
+import_ = <function _gcd_import at 0x737c3fc540e0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'recovery_mysql_scheduler'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+___ test_paused_retained_failure_preserves_first_original_state_across_retry ___
+
+model = namespace(state={'scheduler': 'ON', 'uuid': '11111111-1111-1111-1111-111111111111', 'readonly': '0', 'superreadonly': ...<function model.<locals>.create at 0x737c3e3f6ca0>, root=PosixPath('/work/pytest-red/test_paused_retained_failure_p0'))
+
+    def test_paused_retained_failure_preserves_first_original_state_across_retry(model):
+>       first = model.create(); first.install()
+                ^^^^^^^^^^^^^^
+
+scripts/tests/test_main_mysql_scheduler.py:110: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/tests/test_main_mysql_scheduler.py:40: in create
+    module = importlib.import_module('recovery_mysql_scheduler')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'recovery_mysql_scheduler'
+import_ = <function _gcd_import at 0x737c3fc540e0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'recovery_mysql_scheduler'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+______ test_main_quiescence_invokes_scheduler_before_sql_and_redis_checks ______
+
+    def test_main_quiescence_invokes_scheduler_before_sql_and_redis_checks():
+        import recovery_main_target as main
+        calls = []
+        native = main.guarded_type(object)()
+        native.config = dict(mainApplication={'schemaVersion': 'RegisteredMainApplication/v2'}, database='app')
+        native.mysql = SimpleNamespace(query=lambda _: calls.append('sql') or '0')
+        scheduler = SimpleNamespace(install=lambda: calls.append('pause'))
+        with patch.object(main, 'mysql_scheduler', return_value=scheduler, create=True), \
+             patch.object(main, 'archive_view', return_value=None), patch.object(main, 'published_fence', return_value=None), \
+             patch.object(main, 'redis_command', return_value=b'addr=127.0.0.1:1234\n'):
+            native.replacement_quiescence()
+>       assert calls == ['pause', 'sql', 'sql']
+E       AssertionError: assert ['sql', 'sql'] == ['pause', 'sql', 'sql']
+E         
+E         At index 0 diff: 'sql' != 'pause'
+E         Right contains one more item: 'sql'
+E         Use -v to get more diff
+
+scripts/tests/test_main_mysql_scheduler.py:140: AssertionError
+_________ test_main_scheduler_is_released_only_after_other_protections _________
+
+    def test_main_scheduler_is_released_only_after_other_protections():
+        import recovery_main_target as main
+        calls=[]; native=main.guarded_type(object)(); native.config={'mainApplication': {}}
+        def protection(name): return SimpleNamespace(release=lambda: calls.append(name) or {'path': name})
+        with patch.object(main, 'mysql_scheduler', return_value=protection('scheduler'), create=True), \
+             patch.object(main, 'archive_view', return_value=protection('archive')), \
+             patch.object(main, 'published_fence', return_value=protection('ports')):
+            result=native.replacement_finish()
+>       assert calls == ['archive', 'ports', 'scheduler']
+E       AssertionError: assert ['archive', 'ports'] == ['archive', '..., 'scheduler']
+E         
+E         Right contains one more item: 'scheduler'
+E         Use -v to get more diff
+
+scripts/tests/test_main_mysql_scheduler.py:151: AssertionError
+=========================== short test summary info ============================
+FAILED scripts/tests/test_main_mysql_scheduler.py::test_original_state_is_captured_paused_and_exactly_restored[ON]
+FAILED scripts/tests/test_main_mysql_scheduler.py::test_original_state_is_captured_paused_and_exactly_restored[OFF]
+FAILED scripts/tests/test_main_mysql_scheduler.py::test_original_state_is_captured_paused_and_exactly_restored[DISABLED]
+FAILED scripts/tests/test_main_mysql_scheduler.py::test_invalid_identity_or_global_state_never_mutates[uuid-different]
+FAILED scripts/tests/test_main_mysql_scheduler.py::test_invalid_identity_or_global_state_never_mutates[readonly-1]
+FAILED scripts/tests/test_main_mysql_scheduler.py::test_invalid_identity_or_global_state_never_mutates[superreadonly-1]
+FAILED scripts/tests/test_main_mysql_scheduler.py::test_invalid_identity_or_global_state_never_mutates[scheduler-UNKNOWN]
+FAILED scripts/tests/test_main_mysql_scheduler.py::test_other_application_schema_blocks_global_scheduler_control
+FAILED scripts/tests/test_main_mysql_scheduler.py::test_running_work_blocks_destructive_continuation_and_retains_pause[workers]
+FAILED scripts/tests/test_main_mysql_scheduler.py::test_running_work_blocks_destructive_continuation_and_retains_pause[transactions]
+FAILED scripts/tests/test_main_mysql_scheduler.py::test_failed_restore_has_no_implicit_scheduler_release
+FAILED scripts/tests/test_main_mysql_scheduler.py::test_state_drift_and_journal_replacement_are_rejected
+FAILED scripts/tests/test_main_mysql_scheduler.py::test_paused_retained_failure_preserves_first_original_state_across_retry
+FAILED scripts/tests/test_main_mysql_scheduler.py::test_main_quiescence_invokes_scheduler_before_sql_and_redis_checks
+FAILED scripts/tests/test_main_mysql_scheduler.py::test_main_scheduler_is_released_only_after_other_protections
+15 failed, 2 passed in 16.17s
