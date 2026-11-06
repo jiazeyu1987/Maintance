@@ -281,6 +281,7 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
     replace(name, "                    '-e', statement]).decode('utf-8')",
         "                    '-e', statement], mutation=mutation).decode('utf-8')")
     payload['common/recovery_main_target.py'] = (root/'ops/recovery/recovery_main_target.py').read_bytes()
+    payload['common/recovery_mysql_scheduler.py'] = (root/'ops/recovery/recovery_mysql_scheduler.py').read_bytes()
     payload['common/recovery_published_fence.py'] = (root/'ops/recovery/recovery_published_fence.py').read_bytes()
     payload['common/recovery_archive_view.py'] = (root/'ops/recovery/recovery_archive_view.py').read_bytes()
     replace('common/recovery_minimal_redis_dump.py',

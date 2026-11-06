@@ -399,10 +399,12 @@ class MainContractTests(unittest.TestCase):
         obj.modules = {'formal_sql_restore': type('SQL', (), {
             'database_state': staticmethod(lambda *args: calls.append('sql')),
             'import_database_state': staticmethod(lambda *args: calls.append('import'))})}
-        with patch('recovery_replace.verify_services', side_effect=lambda *a: calls.append('storage')):
+        scheduler=type('Scheduler', (), {'verify': lambda _: calls.append('scheduler')})()
+        with patch('recovery_replace.verify_services', side_effect=lambda *a: calls.append('storage')), \
+                patch.object(main,'mysql_scheduler',return_value=scheduler):
             obj.bound(importing=True)
             obj.bound()
-        self.assertEqual(['archive', 'storage', 'import', 'archive', 'storage', 'sql'], calls)
+        self.assertEqual(['archive', 'storage', 'scheduler', 'import', 'archive', 'storage', 'scheduler', 'sql'], calls)
 
 
 class SafePackageIntegrationTests(unittest.TestCase):

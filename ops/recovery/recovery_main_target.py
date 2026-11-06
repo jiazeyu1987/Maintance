@@ -6,13 +6,14 @@ Only the authenticated safe-engine package installs the runtime mixin.
 """
 from pathlib import Path
 import ipaddress
+import hashlib
 import json
 import re
 import stat
 import subprocess
 from types import SimpleNamespace
 
-from recovery_engine import absolute, check_pin, digest, pin, pinned_json, require
+from recovery_engine import absolute, check_pin, digest, pin, pinned_json, require, utc
 
 DATA_ROLES = frozenset(('mysql', 'minio', 'redis'))
 MAIN_FIELDS = frozenset(('schemaVersion', 'serviceConfigurationDigests', 'networks',
@@ -300,6 +301,72 @@ def archive_view(native):
         Path(native.config['replacement']['stateRoot'])/native.original['operationId']/'archive-view', native.command)
 
 
+def mysql_scheduler(native, *, query=None):
+    from recovery_mysql_scheduler import MainMysqlScheduler
+    state = absolute(native.config['replacement']['stateRoot'])
+    inherited = []
+    for path in state.glob('*/recovery-consumption.json'):
+        consumption = pinned_json(pin(path))
+        if consumption['replacementOperationId'] != native.original['operationId']: continue
+        clearance = pinned_json(consumption['clearancePin'])
+        require(consumption['clearancePin']['path'] == str(path.parent/'recovery-clearance.json') and
+                all(clearance[k] == native.original[k] for k in
+                    ('sourceConfigRef', 'recoveryPointRef', 'targetConfigRef')), 'MAIN_SCHEDULER_CLEARANCE_CHANGED')
+        if 'schedulerCustodyPin' in clearance: inherited.append(clearance['schedulerCustodyPin'])
+    require(len(inherited) <= 1, 'MAIN_SCHEDULER_CLEARANCE_CHANGED')
+    return MainMysqlScheduler(native.config, native.original['operationId'],
+        state/native.original['operationId']/'mysql-scheduler',
+        query or (lambda statement, mutation=False: mysql_query(native, statement, mutation=mutation)),
+        inherited=inherited[0] if inherited else None)
+
+
+def release_retained_protections(configuration, request, root, claim):
+    """Called under both recovery locks after terminated-failure observation.
+
+    Writers stay stopped. Only their exact original mount/rules are restored;
+    scheduler custody stays paused and is carried into the next operation.
+    """
+    target = configuration['targets'][request['targetConfigRef']]
+    if not enabled(target): return {}
+    from recovery_retained_retry import ReadOnlyTarget, append
+    native = ReadOnlyTarget(configuration, request, root)
+    native.original = request
+    native.policy = dict(native.policy, environmentMysqlClientPath=configuration['environmentMysqlClientPath'])
+    native.secret = lambda role, name: check_pin(target['secrets'][role][name]).decode('utf-8')
+    rows = {role: native.inspect(service['id']) for role, service in native.config_services.items()}
+    require(all(row['State']['Running'] is (role in ('mysql', 'redis')) for role, row in rows.items()),
+            'RECOVERY_TARGET_MUST_REMAIN_QUIESCED')
+    journal = claim/'protection-recovery'; journal.mkdir(mode=0o700)
+    def command(arguments, *, mutation=False):
+        index = len(list(journal.glob('*-intent.json')))+1
+        intent = append(journal/('%04d-intent.json' % index), dict(arguments=arguments,
+            mutation=mutation, startedAt=utc()))
+        response = subprocess.run(arguments, input=None, capture_output=True, timeout=30)
+        append(journal/('%04d-exit.json' % index), dict(intentPin=intent,
+            actualExitCode=response.returncode, stdoutSha256=hashlib.sha256(response.stdout).hexdigest(),
+            stderrSha256=hashlib.sha256(response.stderr).hexdigest(), finishedAt=utc()))
+        require(response.returncode == 0 and not response.stderr, 'RECOVERY_PROTECTION_COMMAND_FAILED')
+        return response.stdout
+    native.command = command
+    protections = [(name, value) for name, value in
+        (('archive', archive_view(native)), ('published', published_fence(native))) if value is not None]
+    for _, value in protections: value.verify()
+    original = [pin(path) for _, value in protections for path in sorted(value.journal.iterdir()) if path.is_file()]
+    extra = {}
+    if (claim/'mysql-scheduler').exists():
+        def scheduler_query(statement, *, mutation=False):
+            require(not mutation, 'RECOVERY_OBSERVATION_WRITE_REJECTED')
+            return (native.query(statement)+'\n').encode('utf-8')
+        extra['schedulerCustodyPin'] = mysql_scheduler(native, query=scheduler_query).recovery_custody()
+    append(journal/'handoff-intent.json', dict(operationId=request['operationId'],
+        targetConfigurationSha256=digest(target), originalPins=original, **extra, startedAt=utc()))
+    released = [dict(kind=name, pin=value.release()) for name, value in protections]
+    receipt = append(claim/'main-protection-recovery.json', dict(schemaVersion='RetainedMainProtectionRecovery/v1',
+        operationId=request['operationId'], targetConfigurationSha256=digest(target),
+        originalPins=original, releasePins=released, **extra, finishedAt=utc()))
+    return dict(mainProtectionRecoveryPin=receipt, **extra)
+
+
 def application_inputs(native):
     value = validate(native.config)
     services = native.config_services
@@ -493,6 +560,7 @@ def guarded_type(original):
                 if fence is not None: fence.preflight()
                 archive = archive_view(self)
                 if archive is not None: archive.preflight()
+                mysql_scheduler(self).preflight()
 
         def replacement_write_fence(self):
             if enabled(self.config):
@@ -502,6 +570,7 @@ def guarded_type(original):
                 if fence is not None: fence.install()
 
         def replacement_quiescence(self):
+            if enabled(self.config): mysql_scheduler(self).install()
             if enabled(self.config) and self.config['mainApplication']['schemaVersion'] == 'RegisteredMainApplication/v2':
                 fence = published_fence(self)
                 if fence is not None: fence.verify()
@@ -526,6 +595,7 @@ def guarded_type(original):
                 fence = published_fence(self)
                 if fence is not None:
                     result['publishedWriteFenceReleasePin'] = fence.release()
+                result['mysqlSchedulerReleasePin'] = mysql_scheduler(self).release()
             return result
 
         def bound(self, *, importing=False, minio_stopped=False):
@@ -541,6 +611,7 @@ def guarded_type(original):
             if fence is not None: fence.verify()
             archive = archive_view(self)
             if archive is not None: archive.verify()
+            mysql_scheduler(self).verify()
             sql = self.modules['formal_sql_restore']
             (sql.import_database_state if importing else sql.database_state)(self.mysql, self.db_target)
 

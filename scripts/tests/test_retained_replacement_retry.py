@@ -181,6 +181,39 @@ def test_failed_observation_never_releases_pointer(authorization_case,monkeypatc
     assert (host/'active.json').read_bytes()==before and not (claim/'recovery-clearance.json').exists()
 
 
+def test_retained_main_protection_handoff_precedes_clearance_and_keeps_originals(authorization_case,monkeypatch):
+    retry,resource,config,request,root,claim,host=authorization_case
+    import recovery_main_target as main
+    target=config['targets']['target'];target['mainApplication']={'schemaVersion':'RegisteredMainApplication/v2'}
+    write(root/'configuration.json',config)
+    binding=resource._binding(config,request,root)
+    reservation=write(root/'resource-reservation.json',dict(binding,schemaVersion='RestoreHostReservation/v1'))
+    write(host/'active.json',dict(binding,reservationPin=reservation))
+    original=pin(root/'worker-result.json');called=[]
+    def release(*args):
+        assert (host/'active.json').exists() and not (claim/'recovery-clearance.json').exists()
+        called.append('release')
+        return {'mainProtectionRecoveryPin':write(claim/'main-protection-recovery.json',
+            dict(schemaVersion='RetainedMainProtectionRecovery/v1',operationId=request['operationId'],
+                 targetConfigurationSha256=digest(target),releasePins=[],originalPins=[]))}
+    monkeypatch.setattr(main,'release_retained_protections',release,raising=False)
+    retry.authorize(config,request,root,'Explicit approved same point MAIN continuation',0)
+    assert called==['release'] and pin(root/'worker-result.json')==original
+    value=retry.validate_clearance(target,claim)
+    assert value['mainProtectionRecoveryPin']==pin(claim/'main-protection-recovery.json')
+
+
+def test_failed_protection_handoff_retains_reservation_and_blocks_clearance(authorization_case,monkeypatch):
+    retry,resource,config,request,root,claim,host=authorization_case
+    import recovery_main_target as main
+    def reject(*args):raise ValueError('PROTECTION_DRIFT')
+    monkeypatch.setattr(main,'release_retained_protections',reject,raising=False)
+    before=pin(host/'active.json')
+    with pytest.raises(ValueError,match='PROTECTION_DRIFT'):
+        retry.authorize(config,request,root,'Explicit approved same point continuation',0)
+    assert pin(host/'active.json')==before and not (claim/'recovery-clearance.json').exists()
+
+
 @pytest.fixture
 def before_mutation_case(authorization_case):
     retry,resource,config,request,root,claim,host=authorization_case

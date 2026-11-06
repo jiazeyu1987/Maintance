@@ -46,6 +46,22 @@ def validate_clearance(target,claim):
     request,result,exited,replacement=[pinned_json(value[k]) for k in
         ('requestPin','resultPin','exitPin','replacementResultPin')]
     original_root=Path(value['requestPin']['path']).parent
+    if 'mainApplication' in target and value['schemaVersion']=='RetainedReplacementRecovery/v1':
+        proof=pinned_json(value['mainProtectionRecoveryPin'])
+        require(value['mainProtectionRecoveryPin']['path']==str(claim/'main-protection-recovery.json') and
+                proof.get('schemaVersion')=='RetainedMainProtectionRecovery/v1' and
+                proof['operationId']==claim.name and proof['targetConfigurationSha256']==digest(target),
+                'RECOVERY_PROTECTION_RELEASE_NOT_PROVEN')
+        for reference in proof['originalPins']:pinned_json(reference)
+        for entry in proof['releasePins']:
+            released=pinned_json(entry['pin'])
+            require(released['operationId']==claim.name and
+                (entry['kind']=='archive' and released.get('originalMountRestored') is True or
+                 entry['kind']=='published' and released.get('originalRulesPreserved') is True),
+                'RECOVERY_PROTECTION_RELEASE_NOT_PROVEN')
+        if 'schedulerCustodyPin' in proof:
+            require(proof['schedulerCustodyPin']==value['schedulerCustodyPin'], 'RECOVERY_SCHEDULER_CUSTODY_CHANGED')
+            pinned_json(value['schedulerCustodyPin'])
     require(original_root.name==claim.name and value['requestPin']['path']==str(original_root/'request.json') and
             value['resultPin']['path']==str(original_root/'worker-result.json') and
             value['exitPin']['path']==str(original_root/'child-exit.json'),
@@ -111,8 +127,10 @@ class ReadOnlyTarget:
                 'RECOVERY_OBSERVATION_WRITE_REJECTED')
         if args[0] in ('volume','network'):require(args[1]=='inspect','RECOVERY_OBSERVATION_WRITE_REJECTED')
         if args[0]=='exec':
+            from recovery_mysql_scheduler import STATE_SQL, WORKERS_SQL, TRANSACTIONS_SQL
             require(args[-2]=='-e' and args[-1] in ('SELECT @@server_uuid;',
-                    "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='"+self.config['database']+"';"),
+                    "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='"+self.config['database']+"';",
+                    STATE_SQL, WORKERS_SQL, TRANSACTIONS_SQL, 'SHOW DATABASES;'),
                     'RECOVERY_OBSERVATION_WRITE_REJECTED')
         command=[self.config['dockerPin']['path'],'--host','unix:///var/run/docker.sock',*args]
         process=subprocess.run(command,input=getattr(self,'query_input',None),capture_output=True,timeout=30)
@@ -235,6 +253,8 @@ def authorize(configuration,request,root,authorization,expected_tables,*,no_muta
             else:
                 reservation,active=_verify_reservation(configuration,request,root)
                 observation_value=observe(configuration,request,root,expected_tables)
+                from recovery_main_target import release_retained_protections
+                extra.update(release_retained_protections(configuration,request,root,claim))
             observation=append(claim/'recovery-observation.json',observation_value)
             clearance=append(claim/'recovery-clearance.json',dict(schemaVersion='RetainedReplacementRecovery/v2' if no_mutation else 'RetainedReplacementRecovery/v1',
                 operationId=request['operationId'],sourceConfigRef=request['sourceConfigRef'],

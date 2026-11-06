@@ -40,9 +40,11 @@ def test_archive_protection_is_installed_before_publication_and_released_after_n
     archive=SimpleNamespace(install=lambda:calls.append('archive-ro'),release=lambda:calls.append('archive-rw') or {'pin':'archive'})
     ports=SimpleNamespace(install=lambda:calls.append('ports-on'),release=lambda:calls.append('ports-off') or {'pin':'ports'})
     cls=main.guarded_type(object)
-    with patch.object(main,'archive_view',return_value=archive),patch.object(main,'published_fence',return_value=ports):
+    scheduler=SimpleNamespace(release=lambda:calls.append('scheduler-original') or {'pin':'scheduler'})
+    with patch.object(main,'archive_view',return_value=archive),patch.object(main,'published_fence',return_value=ports), \
+            patch.object(main,'mysql_scheduler',return_value=scheduler):
         cls.replacement_write_fence(contract.native)
         assert calls==['archive-ro','ports-on']
         receipt=cls.replacement_finish(contract.native)
-        assert calls==['archive-ro','ports-on','archive-rw','ports-off']
+        assert calls==['archive-ro','ports-on','archive-rw','ports-off','scheduler-original']
         assert receipt['archiveViewReleasePin']=={'pin':'archive'}
