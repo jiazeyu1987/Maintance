@@ -1,5 +1,16 @@
 # IntRuoyi Codex 发布执行检查清单
 
+## 增量恢复冻结自增状态门禁
+
+- Trigger: BINLOG_SQL增量恢复，或原生导入exit0但FORMAL_SCHEMA_MISMATCH仅显示AUTO_INCREMENT不同。
+- Preflight check: 从同一不可变expectedDataPin核完整schema证明；目标仍停写且UUID/全部writer/原容器/锁和归档保护有效。先完整观察实际schema，验证全部catalog和除顶层自增计数以外的所有定义一致；表选项必须绑定真实整数自增列，不识别注释、默认字面量或嵌套文本为选项。所有表都检查，不能只看行事件影响表。
+- Blocker: 非计数结构差异、无效/重复/溢出选项、表列/身份/证明漂移、原生SQL失败或回读不符，立即保留失败并阻断启动和下一目标；实际测试载体失败不算业务RED。
+- Verification: 隔离MySQL 8.0.39通过实际ROW日志复现已提交行相同而计数不同，再以冻结值恢复并保持严格compare_schema通过；未变化计数不写。真实运行在增量导入之后、独立数据回读之前，写意图/冻结源摘要/实际原生mutation退出/前后值和结果pins；最终完整结构/数据、对象/引用/Redis/应用验收不变。
+- Forbidden action: 不归一化或移除AUTO_INCREMENT比对，不用MAX(id)+1重算、不手工修改单个业务表后宣称原操作成功；不改冻结归档或历史失败，不删除保留失败、锁或预约。禁止未验收目标启动应用。
+- Evidence: `doc/tasks/20261106-spug-prod-incremental-to-two-targets/allocator-real-red.json`、`allocator-real-green-3.json`、`allocator-real-frozen-plan.json`。真实History368仅一个表30384/30376不符；隔离真实日志复现11/3且两行一致。
+
+阶段必查项与推荐命令：先读取原失败/worker/导入器退出，固定全部原件并只读核真实完整差异；执行`pytest scripts/tests/test_frozen_auto_increment.py scripts/tests/test_backup_variants.py`及原生导入/保留失败回归，Linux测试须使用可解析真实Git提交对象的载体。完整包行为与原生mutation审计验证通过后单独提交，新建干净专属构建worktree，限定安装新控制代次、保留旧代次；按上述保留失败续恢复入口精确交接保护，再真实Spug同点同目标产生新编号。Fail Fast：任一证明、测试、封包、保护交接或实际回读缺失不重试、不启动。必须记录RED/GREEN/回归、精确提交/工作区/包/实际安装pins、原失败和新编号、最终结构数据验证与清理结果。
+
 ## 增量父输入流检查成本与持续保护门禁
 
 - Trigger: 增量语义采集出现FORMAL_CAPTURE_PIPE_DEADLINE，或父点内容验证读取字节远高于实际载荷、每缓冲回调重读大型父元数据/扫描全部父文件。
@@ -13,14 +24,14 @@
 
 ## 增量导出工具实际运行门禁
 
-- Trigger: 任何INCREMENTAL最终提交，尤其整机/Docker/MySQL重启后，或出现MINIMAL_BINLOG_TOOL_CHANGED。
-- Preflight check: 从当前capture配置的mysqlbinlog-exporter材料pin读取原登记，核实际containerId/imageId、Running、ReadonlyRootfs、NetworkMode和PidMode均绑定当前源MySQL；docker exec实际可执行文件SHA必须等于登记。再用原私密stdin和socket连接、no-defaults及登录文件隔离条件作只读空范围导出探测，原始输出私密保留或只记录摘要。日志范围SELECT/SHOW审计与工具运行准入必须分别通过。
-- Blocker: 工具停止、身份/绑定/文件SHA漂移、实际认证或导出失败，均在耗时父链读取及停写前阻塞提交。先保留失败终态、无停写/健康及原件证据，再按授权核对和恢复原工具；已受理请求只查原编号。
+- Trigger: 任何INCREMENTAL最终提交，尤其整机/Docker/MySQL重启后，或出现MINIMAL_BINLOG_TOOL_CHANGED、FORMAL_CAPTURE_STDERR_LIMIT、mysqlbinlog临时文件只读错误及socket errno13。
+- Preflight check: 从当前实际生效capture配置的mysqlbinlog-exporter材料pin读取登记，核containerId/imageId、Running、ReadonlyRootfs、NetworkMode/PidMode绑定当前源MySQL及可执行SHA。必须核User/Group、安全选项与原工具完整合同；使用原私密stdin/socket、no-defaults及登录文件隔离，真实导出父点到明确终点的全部非空区间，记录逐段exit0/stderr0/输出字节和摘要；SELECT/SHOW范围审计另行通过。空范围仅证明连接，不能证明真实日志处理。只读根工具需要真实可写、受容量限制且noexec/nosuid/nodev的隔离tmpfs，禁止接入源数据卷作为工作目录；同时核内存/pids及实际/tmp写入、清理与用户身份。
+- Blocker: 工具停止、身份/绑定/文件SHA漂移、临时目录缺失、User不匹配、实际认证或任一非空区间导出失败，均在耗时父链读取及停写前阻塞提交。先保留失败终态、来源真实恢复/健康和全部原件证据；只在授权范围恢复原工具或安装新不可变工具/capture/owner/control代次，旧工具和旧配置保留；已受理请求只查原编号。
 - Verification: 当前实际安装的MinimalSeries.binlog_container严格校验及实际导出连接通过；若启动原工具，前后固定全部原容器定义/镜像，逐项比较其它容器PID/启动时间，fstab及原保护挂载保持。Mounts按Destination排序；允许的新增挂载只能精确对应已授权启动容器的原GraphDriver.MergedDir，不能忽略其它差异。
-- Forbidden action: 不重建未知替代、不擅改重启策略、不重启主程序/MySQL/Docker、不删或放松严格工具检查，不把镜像存在、配置pin正确或日志事件可读冒充实际导出工具可用。
+- Forbidden action: 不重建未知替代、不擅改原工具重启策略、不重启主程序/MySQL/Docker，不放宽零stderr或严格工具检查；不以额外cap代替核准原User，不用源数据卷或可写根绕过tmpfs合同，不把空范围、镜像存在、配置pin或日志事件可读冒充实际非空导出可用。
 - Evidence: `doc/tasks/20261106-spug-prod-incremental-to-two-targets/incremental-364-failure.json`、`registered-binlog-tool-restored.json`和`incremental-2-preflight.json`。原工具70c048在11月4日停止，History364于STOP_WRITERS之前失败；原工具恢复后原SHA/实际连接通过，195定义及其它194运行态保持。
 
-阶段必查项与推荐命令：先核`docker inspect <登记工具ID>`与`docker exec <登记工具ID> sha256sum /usr/local/bin/mysqlbinlog`，再使用pin指向的私密凭据通过stdin进行只读socket空范围探测，最后重新核连续日志审计、源flags和父链并允许单次真实UI提交。Fail Fast：工具运行或实际连接任一不满足均不提交增量、不停写；必须记录登记pin、原退出状态、实际工具SHA/版本/绑定、探测摘要、恢复授权与前后保持及新旧唯一操作号。
+阶段必查项与推荐命令：先核`docker inspect <登记工具ID>`的User/CapDrop/Tmpfs/Memory/PidsLimit/源绑定及`docker exec <登记工具ID> sha256sum /usr/local/bin/mysqlbinlog`；按当前任务工具核真实/tmp写入，再以私密stdin导出所有已严格审计的非空区间。现有执行参考`provision_binlog_tmpfs_tool.py`、`verify_binlog_tmpfs_full_export.py`与`activate_binlog_tmpfs_control.py`，复制到新任务时重新固定当前真实身份/容量/旧配置，不能重跑旧代次。目标恢复前另核实际安装的增量scope协议和SQL读取方式；现有整文件读取路径须在新点准入时以最终rawSqlBytes核/proc/meminfo实时MemAvailable，保留其它进程余量，并同时满足maxExpandedBytes与磁盘预算，不能只看压缩包大小或旧内存快照。Fail Fast：任一非空导出、临时目录、身份、范围、容量或前后保持不通过，不停写、不提交；必须记录原失败、BDD/真实RED、配置GREEN/全段回归、实际User和tmpfs/资源约束、逐段导出摘要、授权、原件及旧/新配置pins与唯一操作号。History366失败及v3全部12段真实17211499419字节SQL/零stderr证据位于同一任务目录，不能把该只读回归当新增量点成功。
 
 ## 恢复后增量日志范围门禁
 

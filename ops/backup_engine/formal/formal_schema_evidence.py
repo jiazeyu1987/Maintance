@@ -313,3 +313,108 @@ def compare_schema(source,target):
         'sourceIdentity':source['observationIdentity'],'targetIdentity':target['observationIdentity'],
         'sourceObservationSha256':source['observationSha256'],'targetObservationSha256':target['observationSha256'],
         'fullDataEquivalenceVerified':False,'productionEvidence':False}
+
+
+def _table_allocator(sql, columns):
+    """Bind the top-level native table option to its actual integer column."""
+    sql = _catalog_bound_table_ddl(sql, {c[1]: c for c in columns})
+    tokens = _ddl_tokens(sql)
+    require(columns and len({c[0] for c in columns}) == 1 and
+            tokens[2][1][1:-1].replace('``','`') == columns[0][0], 'FORMAL_ALLOCATOR_TABLE_CHANGED')
+    auto = [c for c in columns if type(c[9]) is str and 'auto_increment' in c[9].split()]
+    require(len(auto) <= 1 and all(c[3] in ('tinyint','smallint','mediumint','int','bigint') for c in auto),
+            'FORMAL_ALLOCATOR_COLUMN_INVALID')
+    depth = 0; segment = []; declared = []; closed = None
+    for i in range(3, len(tokens)):
+        kind, text, _, _ = tokens[i]
+        if kind == 'symbol' and text == '(':
+            depth += 1
+        elif kind == 'symbol' and text == ')':
+            depth -= 1
+            if depth == 0:
+                closed = i
+        if (kind == 'symbol' and text == ',' and depth == 1) or closed is not None:
+            if segment and segment[0][0] == 'identifier':
+                attributes = [t for t in segment[1:] if t[0] == 'word' and t[1].upper() == 'AUTO_INCREMENT']
+                require(len(attributes) <= 1, 'FORMAL_ALLOCATOR_COLUMN_INVALID')
+                if attributes:declared.append(segment[0][1][1:-1].replace('``','`'))
+            segment = []
+        elif i > 3:segment.append(tokens[i])
+        if closed is not None:break
+    require(closed is not None and declared == [c[1] for c in auto], 'FORMAL_ALLOCATOR_COLUMN_INVALID')
+    found = []; depth = 0
+    for i in range(closed + 1, len(tokens)):
+        kind, text, left, _ = tokens[i]
+        if kind == 'symbol' and text == '(':depth += 1
+        elif kind == 'symbol' and text == ')':depth -= 1
+        require(depth >= 0, 'FORMAL_SCHEMA_DDL_INVALID')
+        if kind != 'word' or text.upper() != 'AUTO_INCREMENT':continue
+        require(depth == 0 and i + 2 < len(tokens) and tokens[i+1][1] == '=' and
+                tokens[i+2][0] == 'word' and re.fullmatch('[0-9]+', tokens[i+2][1]) and
+                (i+3 == len(tokens) or tokens[i+3][0] in ('word','comment')),
+                'FORMAL_ALLOCATOR_OPTION_INVALID')
+        number = int(tokens[i+2][1])
+        require(0 < number <= 18446744073709551615, 'FORMAL_ALLOCATOR_OPTION_INVALID')
+        right = tokens[i+2][3]
+        while left > 0 and sql[left-1].isspace():left -= 1
+        found.append((number,left,right))
+    require(depth == 0 and len(found) <= 1 and (not found or auto), 'FORMAL_ALLOCATOR_OPTION_INVALID')
+    if not auto:return None, None, sql
+    if not found:return auto[0][1], 1, sql
+    number, left, right = found[0]
+    return auto[0][1], number, sql[:left] + sql[right:]
+
+
+def frozen_auto_increment_plan(source, target):
+    """Permit counter restoration only after proving every other schema detail."""
+    compare_schema(source, source);compare_schema(target, target)
+    require(source['catalog'] == target['catalog'], 'FORMAL_SCHEMA_MISMATCH')
+    bodies = [_canonical_schema_body(value) for value in (source, target)]
+    states = []
+    for body in bodies:
+        counters = {}
+        for name, row in body['definitions']['TABLE'].items():
+            columns = [c for c in body['catalog']['COLUMNS'] if c[0] == name]
+            column, number, ddl = _table_allocator(row[1], columns)
+            row[1] = ddl
+            if column is not None:counters[name] = (column, number)
+        states.append(counters)
+    require(bodies[0] == bodies[1] and set(states[0]) == set(states[1]), 'FORMAL_SCHEMA_MISMATCH')
+    return [dict(table=name, column=column, before=states[1][name][1], after=number,
+                 sql='ALTER TABLE ' + identifier(name) + ' AUTO_INCREMENT = ' + str(number) + ';')
+            for name, (column, number) in sorted(states[0].items()) if number != states[1][name][1]]
+
+
+def restore_frozen_auto_increment(mysql, source, expected_uuid, *, guard, mutate, record):
+    """Restore frozen allocator state under caller exclusion, preserving evidence."""
+    require(callable(guard) and callable(mutate) and callable(record), 'FORMAL_ALLOCATOR_CALLBACKS_REQUIRED')
+    compare_schema(source, source)
+    database = source['database']
+    before = observe_schema(mysql, database, expected_uuid, guard=guard)
+    before_pin = record('allocator-schema-before.json', before)
+    changes = frozen_auto_increment_plan(source, before)
+    intent = dict(schemaVersion='FrozenAutoIncrementRestore/v1', sourceSchemaSha256=source['schemaSha256'],
+                  sourceObservationSha256=source['observationSha256'], targetIdentity=before['observationIdentity'],
+                  targetSchemaBeforePin=before_pin, changes=changes, fullDataEquivalenceVerified=False)
+    intent_pin = record('allocator-intent.json', intent)
+    receipts = []
+    for index, change in enumerate(changes):
+        name = change['table'];columns = [c for c in source['catalog']['COLUMNS'] if c[0] == name]
+        def current():
+            guard()
+            rows = mysql.schema_query('SHOW CREATE TABLE ' + identifier(name) + ';',
+                                      database=database, expected_uuid=expected_uuid)
+            guard()
+            require(len(rows) == 1 and len(rows[0]) == 2 and rows[0][0] == name,
+                    'FORMAL_ALLOCATOR_TABLE_CHANGED')
+            return rows[0]
+        require(current() == before['definitions']['TABLE'][name], 'FORMAL_ALLOCATOR_TABLE_CHANGED')
+        guard();mutate(change['sql']);guard()
+        column, number, ddl = _table_allocator(current()[1], columns)
+        expected_column, expected_number, expected_ddl = _table_allocator(source['definitions']['TABLE'][name][1], columns)
+        require((column,number,ddl) == (expected_column,expected_number,expected_ddl),
+                'FORMAL_ALLOCATOR_READBACK_MISMATCH')
+        receipts.append(record('allocator-change-%04d.json' % index, dict(**change, verified=True)))
+    return record('allocator-result.json', dict(schemaVersion='FrozenAutoIncrementRestoreResult/v1',
+        intentPin=intent_pin, changePins=receipts, changedTableCount=len(changes),
+        frozenAllocatorStateVerified=True, fullDataEquivalenceVerified=False))

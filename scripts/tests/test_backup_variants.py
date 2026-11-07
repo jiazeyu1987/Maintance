@@ -33,7 +33,7 @@ def test_standard_keeps_original_code_except_reviewed_fixes_and_archive_names(pa
         'control/recovery_control_smallapp_native.py', 'control/recovery_control_executor.py',
         'control/recovery_control_target_availability.py',
         'control/recovery_control_point_quarantine.py', 'formal/formal_binlog_scope.py',
-        'common/recovery_replace.py', 'common/recovery_data.py', 'formal/formal_data_evidence.py',
+        'common/recovery_replace.py', 'common/recovery_data.py', 'formal/formal_data_evidence.py', 'formal/formal_schema_evidence.py',
         'common/recovery_main_target.py', 'common/recovery_replacement_storage.py', 'common/recovery_minimal_plan.py',
         'common/recovery_retained_retry.py', 'common/recovery_minimal_redis_dump.py', 'common/recovery_published_fence.py', 'common/recovery_archive_view.py',
         'common/recovery_mysql_scheduler.py', 'common/recovery_main_health.py',
@@ -59,6 +59,48 @@ def test_changed_safe_baseline_patch_context_is_rejected():
     original['formal/minimal_redis_snapshot.py'] = b'# an incompatible baseline\n'
     with pytest.raises(ValueError, match='STANDARD_FIX_CONTEXT_CHANGED'):
         builder.safe_fixes(original)
+
+
+def test_safe_allocator_baseline_drift_is_rejected():
+    original, _ = builder.standard_sources()
+    original['formal/formal_schema_evidence.py'] += b'\n# drift\n'
+    with pytest.raises(ValueError, match='STANDARD_SCHEMA_BASELINE_CHANGED'):
+        builder.safe_fixes(original)
+
+
+@pytest.mark.parametrize('variant', builder.VARIANTS)
+def test_packaged_allocator_behavior_and_native_mutation_audit(variant, packages, tmp_path):
+    import ast
+    import types
+    with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
+        schema_code = archive.extractfile('formal/formal_schema_evidence.py').read()
+        native_code = archive.extractfile('common/recovery_data.py').read()
+    assert schema_code.replace(b'\r\n', b'\n') == (ROOT/'ops/backup_engine/formal/formal_schema_evidence.py').read_bytes().replace(b'\r\n', b'\n')
+    tree = ast.parse(native_code)
+    native = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == 'NativeData')
+    method = next(n for n in native.body if isinstance(n, ast.FunctionDef) and n.name == 'restore_allocator_state')
+    namespace = dict(pinned_json=lambda ref: {'schema': {'database': 'unit_db'}},
+                     require=lambda condition, reason: condition or (_ for _ in ()).throw(ValueError(reason)))
+    exec(compile(ast.Module(body=[method], type_ignores=[]), '<packaged-native-allocator>', 'exec'), namespace)
+    calls = []
+    class NativeFailure(Exception):pass
+    def actual_failure(argv, **kwargs):
+        calls.append((argv, kwargs));raise NativeFailure('confirmed process failure')
+    def restore(mysql, source, uuid, **kwargs):
+        return kwargs['mutate']('ALTER TABLE `unit_table` AUTO_INCREMENT = 11;')
+    subject = types.SimpleNamespace(modules={'formal_schema_evidence': types.SimpleNamespace(
+        identifier=lambda s: '`'+s+'`', restore_frozen_auto_increment=restore)},
+        material={'database': {'expectedDataPin': {}}}, config={'database': 'unit_db'}, db_uuid='target-uuid',
+        root=tmp_path, original_pins=[], bound=lambda **kwargs: None, guard=lambda: None,
+        seconds=lambda: 60, secret=lambda *args: 'private-test-secret', command=actual_failure,
+        mysql=types.SimpleNamespace(_command=lambda program, arguments: ['pinned-docker', program, *arguments]))
+    with pytest.raises(NativeFailure):
+        namespace['restore_allocator_state'](subject)
+    assert len(calls) == 1
+    argv, kwargs = calls[0]
+    assert kwargs['mutation'] is True and b'private-test-secret\nUSE `unit_db`;' in kwargs['input_bytes']
+    assert 'private-test-secret' not in repr(argv) and '--batch' in argv
+    assert not list(tmp_path.iterdir()), 'failed native mutation must not publish success evidence'
 
 
 @pytest.mark.parametrize('variant', builder.VARIANTS)

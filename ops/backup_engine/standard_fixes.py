@@ -52,6 +52,25 @@ def apply(payload):
         originals.read(reference, 16384)""")
     payload['formal/formal_binlog_scope.py'] = (root/'ops/backup_engine/formal/formal_binlog_scope.py').read_bytes()
     payload['formal/formal_data_evidence.py'] = (root/'ops/backup_engine/formal/formal_data_evidence.py').read_bytes()
+    name = 'formal/formal_schema_evidence.py'
+    if hashlib.sha256(payload[name].replace(b'\r\n', b'\n')).hexdigest() != \
+            'c174a1bab42bc7df6c6576fc30948c2e390274e64c9337f2b04b2dc246455211':
+        raise ValueError('STANDARD_SCHEMA_BASELINE_CHANGED')
+    payload[name] = (root/'ops/backup_engine/formal/formal_schema_evidence.py').read_bytes()
+    replace('common/recovery_data.py',
+        "             'formal_physical_restore_readback', 'formal_data_evidence', 'formal_s3_export')",
+        "             'formal_physical_restore_readback', 'formal_data_evidence', 'formal_s3_export', 'formal_schema_evidence')")
+    replace('common/recovery_data.py',
+        "                self.import_sql(expanded, checksum)\n        with self.timed_stage('sql-readback'):",
+        "                self.import_sql(expanded, checksum)\n        with self.timed_stage('sql-allocator-state'):\n"
+        "            self.restore_allocator_state()\n        with self.timed_stage('sql-readback'):")
+    source = (root/'ops/recovery/recovery_data.py').read_text(encoding='utf8')
+    start = '    def restore_allocator_state(self):\n'
+    end = '    def database_readback(self):\n'
+    if source.count(start) != 1 or source.count(end) != 1:
+        raise ValueError('STANDARD_ALLOCATOR_METHOD_BOUNDARY_CHANGED')
+    method = start + source.split(start)[1].split(end)[0]
+    replace('common/recovery_data.py', end, method + end)
     replace('common/recovery_data.py',
         "scope['schemaVersion'] in (('backup-binlog-event-scope/v2',) if scoped else\n                    ('backup-binlog-event-scope/v1', 'backup-binlog-event-scope/v2'))",
         "scope['schemaVersion'] in (('backup-binlog-event-scope/v2', 'backup-binlog-event-scope/v3') if scoped else\n                    ('backup-binlog-event-scope/v1', 'backup-binlog-event-scope/v2', 'backup-binlog-event-scope/v3'))")

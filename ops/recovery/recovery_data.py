@@ -60,7 +60,7 @@ def load_formal(policy):
     for item in pins:
         check_pin(item, content=False)
     names = ('formal_sql_restore', 'formal_restore_producer', 'formal_physical_restore_producer',
-             'formal_physical_restore_readback', 'formal_data_evidence', 'formal_s3_export')
+             'formal_physical_restore_readback', 'formal_data_evidence', 'formal_s3_export', 'formal_schema_evidence')
     require(not any(name in sys.modules for name in names), 'FORMAL_MODULE_ALREADY_IMPORTED')
     sys.path.insert(0, str(root))
     modules = {name: importlib.import_module(name) for name in names}
@@ -537,8 +537,36 @@ class NativeData:
         if delta['segments']:
             with self.timed_stage('sql-import'):
                 self.import_sql(expanded, checksum)
+        with self.timed_stage('sql-allocator-state'):
+            self.restore_allocator_state()
         with self.timed_stage('sql-readback'):
             result = self.database_readback()
+        return result
+
+    def restore_allocator_state(self):
+        schema = self.modules['formal_schema_evidence']
+        expected = pinned_json(self.material['database']['expectedDataPin'])
+        require(expected['schema']['database'] == self.config['database'], 'FROZEN_ALLOCATOR_DATABASE_MISMATCH')
+        self.bound(importing=True)
+        def record(name, value):
+            reference = write(self.root/name, value)
+            self.original_pins.append(reference)
+            return reference
+        def mutate(statement):
+            self.bound(importing=True)
+            wrapped = 'USE ' + schema.identifier(self.config['database']) + '; SELECT @@server_uuid;\n' + \
+                statement + '\nSELECT @@warning_count; SELECT @@server_uuid;\n'
+            seconds = self.seconds()
+            command = self.mysql._command('timeout --signal=TERM --kill-after=5 ' + str(seconds) + 's mysql',
+                ['-uroot', '--batch', '--skip-column-names', '--default-character-set=utf8mb4'])
+            raw = self.command(command, input_bytes=(self.secret('mysql', 'MYSQL_ROOT_PASSWORD') + '\n' + wrapped).encode('utf8'),
+                               mutation=True)
+            require(schema.parse_rows(raw) == [[self.db_uuid], ['0'], [self.db_uuid]],
+                    'FROZEN_ALLOCATOR_IDENTITY_OR_WARNING')
+            self.bound(importing=True)
+        result = schema.restore_frozen_auto_increment(self.mysql, expected['schema'], self.db_uuid,
+            guard=self.guard, mutate=mutate, record=record)
+        self.bound(importing=True)
         return result
 
     def database_readback(self):

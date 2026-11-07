@@ -1,8 +1,10 @@
 # 项目经验索引
 
+- 增量恢复自增计数 / FORMAL_SCHEMA_MISMATCH / INSERT IGNORE / AUTO_INCREMENT：`docs/release-agent-checklist.md#增量恢复冻结自增状态门禁`。ROW日志不保证重放未使用的分配号；以同一不可变expectedDataPin的完整schema恢复，先证明其它结构完全一致，仅审计修改差异计数，最终完整结构/数据校验保持。真实隔离MySQL先复现再验证；失败目标按正式clearance走新UI操作，不改历史或用MAX(id)+1代替。
+
 - 父点guard重复全读 / FORMAL_CAPTURE_PIPE_DEADLINE / 父附件扫描过慢 / O_PATH inotify / 每缓冲父元数据：`docs/release-agent-checklist.md#增量父输入流检查成本与持续保护门禁`。先核原失败与源恢复、只读分测查询和保护成本；连续租约覆盖完整父文件及祖先，阶段全核、初始内容SHA与最终原字节保持。真实Linux管道/变动拒绝/FD/封包通过后才安装新提交代次；不延长超时或跳过guard。
 
-- 增量导出工具 / MINIMAL_BINLOG_TOOL_CHANGED / 重启后binlog容器停止 / mysqlbinlog实际连接：`docs/release-agent-checklist.md#增量导出工具实际运行门禁`。最终提交前核登记容器实际运行、原镜像/只读根/源MySQL网络与PID绑定、可执行文件SHA及真实私密stdin/socket连接；SELECT/SHOW日志审计通过不能替代工具可用性。只能按授权恢复原工具，不跳过安全校验。
+- 增量导出工具 / MINIMAL_BINLOG_TOOL_CHANGED / FORMAL_CAPTURE_STDERR_LIMIT / mysqlbinlog tmp只读 / 空范围探测 / socket errno13 / 999:999 / 增量SQL内存容量：`docs/release-agent-checklist.md#增量导出工具实际运行门禁`。最终提交前核登记工具运行、镜像/二进制SHA、原User/安全配置、只读根/受限隔离tmpfs及源MySQL网络/PID；真实全部非空区间导出exit0/stderr0与完整范围审计分别通过。空范围或SELECT/SHOW不能替代实际处理；授权配置新代次须保留原工具和失败原件，不能忽略stderr或用额外cap替代正确运行身份。恢复前按目标实际SQL读取合同核最终展开大小、实时内存/磁盘和余量。
 
 - 正式库恢复后增量 / FORMAL_CAPTURE_BINLOG_QUERY_SCOPE_UNPROVEN / 级联外键 / 生成列 / CHECK / 审计触发器：`docs/release-agent-checklist.md#恢复后增量日志范围门禁`。先核真实父链、UUID和完整保留范围，再在停写前只读审计全部事件；同库受控DDL不等于简单表语法。表达式仅本列/常量/明确内建函数，触发器逐FROM/JOIN核库，未知语法保持阻断；诊断遍历不作为准入成功，不跳过事件或静默改全量。
 
