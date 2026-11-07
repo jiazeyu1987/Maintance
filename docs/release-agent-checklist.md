@@ -9,6 +9,8 @@
 - Forbidden action: 不归一化或移除AUTO_INCREMENT比对，不用MAX(id)+1重算、不手工修改单个业务表后宣称原操作成功；不改冻结归档或历史失败，不删除保留失败、锁或预约。禁止未验收目标启动应用。
 - Evidence: `doc/tasks/20261106-spug-prod-incremental-to-two-targets/allocator-real-red.json`、`allocator-real-green-3.json`、`allocator-real-frozen-plan.json`。真实History368仅一个表30384/30376不符；隔离真实日志复现11/3且两行一致。
 
+入口依赖必查：通用NativeData与MAIN使用的MinimalData模块加载器分别核对；在两个实际封包的新进程中调用真实modules_from，确认formal_schema_evidence来自封包路径且MySQL客户端继承SchemaMySql，不能只用预填modules的单方法测试或AST字符串判断代表实际入口。安装激活前也运行该加载检查。缺项立即阻断恢复，保留旧安装，修复后新提交/新封包；证据为allocator-entry-red-1.json和allocator-entry-green-1.json。
+
 阶段必查项与推荐命令：先读取原失败/worker/导入器退出，固定全部原件并只读核真实完整差异；执行`pytest scripts/tests/test_frozen_auto_increment.py scripts/tests/test_backup_variants.py`及原生导入/保留失败回归，Linux测试须使用可解析真实Git提交对象的载体。完整包行为与原生mutation审计验证通过后单独提交，新建干净专属构建worktree，限定安装新控制代次、保留旧代次；按上述保留失败续恢复入口精确交接保护，再真实Spug同点同目标产生新编号。Fail Fast：任一证明、测试、封包、保护交接或实际回读缺失不重试、不启动。必须记录RED/GREEN/回归、精确提交/工作区/包/实际安装pins、原失败和新编号、最终结构数据验证与清理结果。
 
 ## 增量父输入流检查成本与持续保护门禁

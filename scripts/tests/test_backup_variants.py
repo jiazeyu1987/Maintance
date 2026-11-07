@@ -104,6 +104,29 @@ def test_packaged_allocator_behavior_and_native_mutation_audit(variant, packages
 
 
 @pytest.mark.parametrize('variant', builder.VARIANTS)
+def test_packaged_minimal_runtime_loads_real_allocator_dependency(variant, packages, tmp_path):
+    """Run the shipped minimal loader in a fresh process, without module stubs."""
+    with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
+        archive.extractall(tmp_path/'package', filter='data')
+    program = r'''
+import sys
+from pathlib import Path
+root=Path(sys.argv[1])
+sys.path.insert(0,str(root/'common'))
+from recovery_minimal_runtime import modules_from
+modules=modules_from(str(root/'formal'))
+schema=modules['formal_schema_evidence']
+assert Path(schema.__file__).resolve()==(root/'formal/formal_schema_evidence.py').resolve()
+assert callable(schema.restore_frozen_auto_increment) and callable(schema.frozen_auto_increment_plan)
+assert issubclass(modules['formal_sql_restore'].IsolatedTargetMySql,schema.SchemaMySql)
+print('actual minimal loader supplies the packaged allocator and schema-capable MySQL')
+'''
+    result = subprocess.run([sys.executable, '-B', '-c', program, str(tmp_path/'package')],
+                            capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+
+
+@pytest.mark.parametrize('variant', builder.VARIANTS)
 def test_packaged_redis_dump_uses_registered_authentication(variant, packages):
     with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
         code=archive.extractfile('common/recovery_minimal_redis_dump.py').read().decode()

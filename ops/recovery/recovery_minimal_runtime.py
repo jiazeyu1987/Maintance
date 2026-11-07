@@ -22,7 +22,7 @@ from recovery_step_timing import step as step_timing
 def modules_from(root):
     sys.path.insert(0, str(absolute(root)))
     names = ('formal_sql_restore', 'formal_data_evidence', 'formal_s3_export',
-             'formal_physical_restore_readback')
+             'formal_physical_restore_readback', 'formal_schema_evidence')
     return {name: importlib.import_module(name) for name in names}
 
 

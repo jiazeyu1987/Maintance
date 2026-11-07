@@ -57,6 +57,9 @@ def apply(payload):
             'c174a1bab42bc7df6c6576fc30948c2e390274e64c9337f2b04b2dc246455211':
         raise ValueError('STANDARD_SCHEMA_BASELINE_CHANGED')
     payload[name] = (root/'ops/backup_engine/formal/formal_schema_evidence.py').read_bytes()
+    replace('common/recovery_minimal_runtime.py',
+        "             'formal_physical_restore_readback')",
+        "             'formal_physical_restore_readback', 'formal_schema_evidence')")
     replace('common/recovery_data.py',
         "             'formal_physical_restore_readback', 'formal_data_evidence', 'formal_s3_export')",
         "             'formal_physical_restore_readback', 'formal_data_evidence', 'formal_s3_export', 'formal_schema_evidence')")
