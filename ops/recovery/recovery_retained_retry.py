@@ -25,7 +25,60 @@ def append(path,value):
     return pin(path)
 
 
-def validate_clearance(target,claim):
+def _closed_main_history(target, claim, value, original_root, ancestors):
+    """Prove a consumed history ends in actual success, without authorizing reuse."""
+    require(str(claim) not in ancestors and len(ancestors) < 64,
+            'RECOVERY_LEGACY_HISTORY_CYCLE_OR_DEPTH')
+    ancestors = ancestors + (str(claim),)
+    used = load(claim/'recovery-consumption.json')
+    require(used.get('schemaVersion') == 'RetainedReplacementConsumption/v1' and
+            used.get('clearancePin') == pin(claim/'recovery-clearance.json'),
+            'RECOVERY_LEGACY_CONSUMPTION_INVALID')
+    next_id = used.get('replacementOperationId')
+    require(type(next_id) is str and re.fullmatch('[A-Za-z0-9][A-Za-z0-9_.-]{0,120}', next_id) and
+            next_id != claim.name, 'RECOVERY_LEGACY_CONSUMER_INVALID')
+    next_claim, next_root = claim.parent/next_id, original_root.parent/next_id
+    require(absolute(str(next_claim)) == next_claim and absolute(str(next_root)) == next_root and
+            next_claim.is_dir() and next_root.is_dir(), 'RECOVERY_LEGACY_CONSUMER_MISSING')
+    request, result, exited, configuration = [load(next_root/name) for name in
+        ('request.json', 'worker-result.json', 'child-exit.json', 'configuration.json')]
+    # The replacement result belongs to the separate, registered claim directory.
+    replacement = load(next_claim/'replacement-result.json')
+    require(configuration['targets'][value['targetConfigRef']] == target and
+            all(request.get(k) == value[k] for k in ('sourceConfigRef','recoveryPointRef','targetConfigRef')) and
+            request.get('action') == 'RESTORE' and
+            request.get('operationId') == result.get('operationId') == replacement.get('operationId') == next_id and
+            replacement.get('targetConfigRef') == value['targetConfigRef'],
+            'RECOVERY_LEGACY_CONSUMER_SCOPE_CHANGED')
+    state = result.get('state')
+    require(state in ('SUCCEEDED', 'FAILED_RETAINED') and replacement.get('state') == state and
+            type(result.get('actualExitCode')) is int and type(exited.get('actualExitCode')) is int and
+            result['actualExitCode'] == exited['actualExitCode'] == (0 if state == 'SUCCEEDED' else 1) and
+            exited.get('timedOut') is False, 'RECOVERY_LEGACY_HISTORY_NOT_CLOSED')
+    if state == 'FAILED_RETAINED':
+        successor = validate_clearance(target, next_claim, _legacy_ancestors=ancestors)
+        require(successor is not None, 'RECOVERY_LEGACY_HISTORY_NOT_CLOSED')
+        # Legacy validation already proves its remaining chain. A newer receipt
+        # still needs a completed consumer, even though its own proof is valid.
+        if 'mainProtectionRecoveryPin' in successor or successor['schemaVersion'] != 'RetainedReplacementRecovery/v1':
+            _closed_main_history(target, next_claim, successor, next_root, ancestors)
+
+
+def _legacy_main_history(target, claim, value, original_root, ancestors):
+    main = target['mainApplication']
+    require(main.get('schemaVersion') == 'RegisteredMainApplication/v1' and
+            'archiveMountProtection' not in main and 'publishedDataEndpoints' not in main and
+            'schedulerCustodyPin' not in value and
+            not any(os.path.lexists(claim/name) for name in
+                ('archive-view','published-fence','mysql-scheduler','protection-recovery','main-protection-recovery.json')),
+            'RECOVERY_LEGACY_PROTECTION_NOT_PROVEN')
+    configuration = load(original_root/'configuration.json')
+    require(configuration['targets'][value['targetConfigRef']] == target,
+            'RECOVERY_LEGACY_CONFIGURATION_CHANGED')
+    _closed_main_history(target, claim, value, original_root, ancestors)
+
+
+def validate_clearance(target,claim,*,_legacy_ancestors=()):
     path=claim/'recovery-clearance.json'
     if not path.exists():return None
     value=load(path)
@@ -46,7 +99,9 @@ def validate_clearance(target,claim):
     request,result,exited,replacement=[pinned_json(value[k]) for k in
         ('requestPin','resultPin','exitPin','replacementResultPin')]
     original_root=Path(value['requestPin']['path']).parent
-    if 'mainApplication' in target and value['schemaVersion']=='RetainedReplacementRecovery/v1':
+    if 'mainApplication' in target and value['schemaVersion']=='RetainedReplacementRecovery/v1' and 'mainProtectionRecoveryPin' not in value:
+        _legacy_main_history(target,claim,value,original_root,_legacy_ancestors)
+    elif 'mainApplication' in target and value['schemaVersion']=='RetainedReplacementRecovery/v1':
         proof=pinned_json(value['mainProtectionRecoveryPin'])
         require(value['mainProtectionRecoveryPin']['path']==str(claim/'main-protection-recovery.json') and
                 proof.get('schemaVersion')=='RetainedMainProtectionRecovery/v1' and

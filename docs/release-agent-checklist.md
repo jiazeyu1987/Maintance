@@ -1,5 +1,16 @@
 # IntRuoyi Codex 发布执行检查清单
 
+## 旧MAIN续办历史兼容门禁
+
+- Trigger：控制升级后旧MAIN/v1已消费clearance缺mainProtectionRecoveryPin，目标selections返回500。
+- Preflight check：先只读固定真实调用堆栈、旧clearance/ready/release/consumption、原配置与当前相等、后继请求同来源/点/目标及真实worker/child/replacement终态；检查全部旧保护目录，缺字段不能直接当可用。新封包激活前必须以实际历史执行Native.selections，不只验证配置和imports。
+- Blocker：旧记录未消费、后续未闭合、消费循环/深度超限、原配置或pins变更、MAIN/v2、任何新保护配置/记录、未知或不一致的退出和终态，均明确拒绝。当前新流程完整保护凭证不得省略。
+- Verification：真实Linux运行test_legacy_main_clearance.py，包含两个实际封包新进程、旧单链/多链成功及配置/跨点/退出/缺件/保护/循环/深度反向测试；相关retained/scheduler/封包回归通过后独立提交、干净新构建。再以真实只读selections验证目标可选及旧原件字节不变。
+- Forbidden action：改写旧FAILED/clearance、删除消费或stateRoot、笼统捕获KeyError放行、未验收启动应用、使用API代替真实UI恢复、把测试或目标可选当恢复完成。
+- Evidence：doc/tasks/20261106-spug-prod-incremental-to-two-targets/legacy-clearance-plan.md、真实错误/配置/历史链摘要、RED/GREEN/回归、精确提交封包、实装selections及最终恢复验收。
+
+阶段必查：安装前查真实全部旧历史与原件；激活前用新封包在新进程执行实际目标selections；提交前查未消费新clearance和当前准入；完成后查新旧关联和原件。推荐命令为上述Linux pytest与只读Native.selections/HTTP GET /selections?targetConfigRef=已登记目标。Fail Fast采用上述Blocker；必须记录真实历史版本、配置摘要、链终态、文件pins、实际入口结果与唯一新操作编号。
+
 ## 增量恢复冻结自增状态门禁
 
 - Trigger: BINLOG_SQL增量恢复，或原生导入exit0但FORMAL_SCHEMA_MISMATCH仅显示AUTO_INCREMENT不同。

@@ -1,5 +1,6 @@
 # 项目经验索引
 
+- MAIN旧clearance / mainProtectionRecoveryPin KeyError / 已消费失败历史 / selections 500：`docs/release-agent-checklist.md#旧main续办历史兼容门禁`。升级前以真实全部历史核目标选择；仅显式兼容无新保护的旧MAIN/v1且消费链最终实际成功的合同，核原配置、同点同目标及终态，不删除或改写旧记录。
 - 增量恢复自增计数 / FORMAL_SCHEMA_MISMATCH / INSERT IGNORE / AUTO_INCREMENT / MinimalData / modules_from / formal_schema_evidence KeyError：`docs/release-agent-checklist.md#增量恢复冻结自增状态门禁`。ROW日志不保证重放未使用的分配号；以同一不可变expectedDataPin的完整schema恢复，先证明其它结构完全一致，仅审计修改差异计数，最终完整结构/数据校验保持。真实隔离MySQL及两个实际封包的入口加载分别先复现再验证；失败目标按正式clearance走新UI操作，不改历史或用MAX(id)+1代替。
 
 - 父点guard重复全读 / FORMAL_CAPTURE_PIPE_DEADLINE / 父附件扫描过慢 / O_PATH inotify / 每缓冲父元数据：`docs/release-agent-checklist.md#增量父输入流检查成本与持续保护门禁`。先核原失败与源恢复、只读分测查询和保护成本；连续租约覆盖完整父文件及祖先，阶段全核、初始内容SHA与最终原字节保持。真实Linux管道/变动拒绝/FD/封包通过后才安装新提交代次；不延长超时或跳过guard。
