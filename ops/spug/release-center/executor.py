@@ -139,7 +139,7 @@ class Executor:
         require(reason is None, reason)
 
     def commits(self):
-        raw = self.run(['git', '-C', self.c['repo'], 'log', '-20', '--format=%H%x09%s']).decode('utf-8')
+        raw = self.run(['git', '-C', self.c['repo'], 'log', '--all', '--date-order', '-20', '--format=%H%x09%s']).decode('utf-8')
         return [dict(commit=line.split('\t', 1)[0], message=line.split('\t', 1)[1]) for line in raw.splitlines()]
 
     def manifest(self, tag):
@@ -973,7 +973,11 @@ class Executor:
 
 
 def create_server(executor, config):
+    from package_catalog import CatalogCache
     key = config['bridgeKey']
+    catalog = CatalogCache(executor)
+    identity = dict(schemaVersion='ReleaseExecutorIdentity/v1',
+                    application=dict(id=executor.c['applicationId'], repo=executor.c['repo']))
 
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *_):
@@ -991,8 +995,15 @@ def create_server(executor, config):
         def handle_request(self):
             try:
                 require(secrets.compare_digest(self.headers.get('X-Release-Key', ''), key), 'Authenticated Spug bridge required')
+                if self.command == 'GET' and self.path == '/identity':
+                    return self.reply(200, identity)
                 if self.command == 'GET' and self.path == '/state':
                     return self.reply(200, executor.snapshot())
+                if self.command == 'GET' and self.path in ('/package-catalog', '/package-catalog?refresh=1'):
+                    return self.reply(200, catalog.get(force=self.path.endswith('?refresh=1')))
+                presence = re.fullmatch(r'/package-catalog/verify/([a-f0-9]{64})(\?refresh=1)?', self.path)
+                if self.command == 'GET' and presence:
+                    return self.reply(*catalog.verify(presence[1], force=bool(presence[2])))
                 if self.command == 'GET' and self.path == '/commits':
                     return self.reply(200, executor.commits())
                 if self.command == 'GET' and self.path == '/current-versions':

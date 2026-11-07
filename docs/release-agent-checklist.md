@@ -1,5 +1,16 @@
 # IntRuoyi Codex 发布执行检查清单
 
+## 包清单身份与桥接期限门禁
+
+- Trigger：Spug 包清单、发布桥接 504、身份探测随历史体积增长、迁移执行器更新或新增 `/identity`。
+- Preflight check：先固定真实 nginx→bridge→executor 链和精确 PID/进程创建时间/配置摘要，分测身份、正文、目录；从 Git 已提交内容核对运行目录模块原 SHA，保留已运行路由、文件存在性检查、全分支提交选择和 `/state`。不得将展示 repo 当隐式运行根；仅既有 app id/固定 origin 合同强制校验。
+- Blocker：原进程不唯一、配置/文件漂移、活动发布或重载会改写未决历史、目录功能不能从干净提交重建、身份缺失/不符、重定向、正文超限或预算耗尽，停止对应安装/请求。源码回归 PASS 不代表真实页面已通过。
+- Verification：真实本地 Executor/SQLite/HTTP 证明目录只读 identity+catalog；错误密钥/身份/重定向不转发，旧状态历史保持；慢 header/持续小字节 body 不能重置共享期限，超限和原 HTTP 错误可见。Windows 与独立 network-none Linux 回归均核源 SHA、零 skip、临时容器移除；安装后真实 Spug 登录页面目录 200、原操作终态和历史摘要保持。
+- Forbidden action：禁止仅增大 nginx 超时、清历史、回退 `/state` 校验、默默截断响应、跟随重定向携密钥、复制整份私密快照覆盖或按端口盲杀；不得重载无关 18081/数据库/业务服务，操作系统 DNS 等未覆盖阶段不得伪称已强制总期限。
+- Evidence：`doc/tasks/20261106-spug-prod-incremental-to-two-targets/catalogue-identity-plan.md`、`catalogue-504-*-timings.json`、`catalogue-identity-regression.json`、`catalogue-identity-linux.json`及安装/实际页面原件；保留原 504。
+
+阶段必查与推荐命令：诊断先读精确容器 `nginx -T`/error log（完整原件仅 PRIVATE），用实际 registry 分解 `/state` 与清单时间。代码阶段运行 `python -X utf8 -B -m unittest test_release_identity test_applications test_package_catalog test_package_presence test_state test_commit_catalog test_current_versions test_database_versions`；测试缺依赖单列环境失败，不当 RED。安装前读取 `state.sqlite3` 的业务 payload/jobs 摘要、活动/启动会改写 job 集合、原 exe/argv/cwd/env 与 supervisor 归属，先从本任务新建的干净已提交 worktree 安装 executor，认证 identity 200 后才安装 bridge；禁止先桥后端或运行时拼接函数。重载只用精确身份的本组件，配置与数据原件不替换。Fail Fast 按上述 Blocker；必须记录源提交/文件 SHA、安装前后 PID/配置 pins、保护进程保持、SQLite 原备份及 payload/jobs 前后相等、实际目录/页面状态和旧错误证据。正文预算分别为身份 4 KiB、普通元数据 16 MiB、状态兼容 128 MiB；常规共享 20 秒，既有数据库检查 60 秒；DNS 使用系统 resolver，必须区分已连接 socket 期限。
+
 ## 自动增量链与恢复周期门禁
 
 - Trigger：增量按钮自动选父链、控制重启、全库恢复、日志清理或新增备份周期策略。

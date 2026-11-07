@@ -1,5 +1,13 @@
 # 通用发布中心
 
+## 包清单的轻量身份校验
+
+桥接器先认证读取执行器 `/identity`，核对 `ReleaseExecutorIdentity/v1` 和实际应用 ID，再转发目标请求。该端点只返回启动时固定的应用 ID、仓库路径，不读取历史、等待状态锁或轮询远端；展示仓库路径与执行器实际路径不作为隐式相等条件。旧 `/state` API 保持，包清单仍使用原 NAS 元数据缓存及文件存在性验证。
+
+没有身份端点、应用不符、超限、超时或重定向均明确失败，不回退全量 `/state`。固定 origin 的连接不使用环境代理、不跟随重定向。身份和后续请求共享 20 秒期限，已存在的数据库版本检查仍保留 60 秒；正文上限分别为身份 4 KiB、普通元数据 16 MiB、兼容状态 128 MiB。响应头或正文持续少量到达不能重置期限，超限不会返回截断成功。配置 origin 的 DNS 解析仍由操作系统 resolver 完成；已连接 socket 使用绝对期限中断。
+
+安装必须先升级对应执行器，再核认证身份端点，最后升级使用它的桥接器；不可仅更新桥接器后再通过旧 `/state` 降级兼容。只重载目标实例自身进程，保留 SQLite、原历史、私密配置及 NAS 根。回归命令：`python -X utf8 -B -m unittest test_release_identity test_applications test_package_catalog test_package_presence test_state test_commit_catalog`；版本能力另核 `test_current_versions test_database_versions`。真实页面包清单 200 和原操作终态仍由安装任务独立验收。
+
 ## 构建与清理的复发防护
 
 IntRuoyi 构建和“构建前检查”都读取所选完整提交的 Git 对象，先核对发布来源清单、运行端点、菜单检查器和迁移 CLI 配套；缺失时在登录来源、编译及上传之前明确失败。主工作区未提交补丁不能修复所选提交，也不能仅凭分支名判断兼容。修复分支尚未融合时，必须选择含配套的已提交代码，不能重新使用旧 `int_main` 或旧安装包。
