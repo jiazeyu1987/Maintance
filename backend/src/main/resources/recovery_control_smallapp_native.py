@@ -400,7 +400,8 @@ class Native:
             return result(value, 'FAILED', output['failureCode'] or 'ORIGINAL_EXECUTOR_FAILED')
         return self.operation_result(value, output)
 
-    def operation_output(self, value, reference):
+    def operation_metadata(self, value, reference):
+        """Validate the owner result contract without reading its nested materials."""
         output = self.document(reference)
         exact(output, 'schemaVersion operationId requestId action state failureCode message data originalResultPins '
               'startedAt finishedAt actualExitCode', 'ORIGINAL_RESULT_FIELDS_INVALID')
@@ -416,8 +417,144 @@ class Native:
         need(output['actualExitCode'] is None or type(output['actualExitCode']) is int,
              'ORIGINAL_ACTUAL_EXIT_INVALID')
         for pin in output['originalResultPins']:
+            executor.pin_reference(pin)
+        return output
+
+    def operation_output(self, value, reference):
+        output = self.operation_metadata(value, reference)
+        for pin in output['originalResultPins']:
             executor.verify(pin)
         return output
+
+    def asynchronously_closed(self, operation_directory, value):
+        """Prove asynchronous backup termination for scheduling, never source health.
+
+        The launcher legitimately exits 2 while the separate repository worker
+        is active. Its immutable RUNNING reply is not replaced after completion.
+        Detailed GET still reads all original logs/materials; chain planning
+        separately verifies the selected generation before any new backup.
+        """
+        if value['action'] not in ('FULL', 'INCREMENTAL'):
+            return False
+        directory = Path(operation_directory)
+        names = ('request.json', 'intent.json', 'selection.json', 'completion.json',
+                 'execute/native-intent.json', 'execute/native-process.json', 'execute/native-original-exit.json')
+        if not all((directory / name).is_file() for name in names):
+            return False
+        originals = {name: local_read(directory / name) for name in names}
+        selected, intent, completion = (originals[name] for name in ('selection.json', 'intent.json', 'completion.json'))
+        launched, process, exited = (originals['execute/' + name] for name in
+            ('native-intent.json', 'native-process.json', 'native-original-exit.json'))
+        operation = value['operationId']
+        if completion.get('result') != result(value, 'RUNNING', 'REPOSITORY_QUERY_ORIGINAL_OPERATION'):
+            return False
+        need(directory.name == operation and originals['request.json'] == value and
+             intent.get('schemaVersion') == 'SmallAppDispatchIntent/v1' and
+             intent.get('operationId') == completion.get('operationId') == operation and
+             intent.get('requestSha256') == completion.get('uiRequestSha256') == fingerprint(value) and
+             intent.get('selection') == completion.get('selection') == selected and
+             completion.get('terminal') == exited, 'SOURCE_ASYNC_DISPATCH_BINDING_INVALID')
+        request_pin = executor.pin(directory / 'request.json')
+        launch_pin = executor.pin(directory / 'execute/native-intent.json')
+        need(all(row.get('operationId') == row.get('requestId') == operation for row in (launched, process, exited)) and
+             launched.get('requestPin') == exited.get('requestPin') == request_pin and
+             process.get('intentPin') == exited.get('intentPin') == launch_pin and
+             type(process.get('pid')) is int and process['pid'] > 0 and process['pid'] == exited.get('pid') and
+             type(exited.get('actualExitCode')) is int and exited['actualExitCode'] == 2 and
+             exited.get('timedOut') is False and
+             launched.get('configurationPin') == selected.get('ownerConfigurationPin') and
+             launched.get('programPin') == selected.get('ownerProgramPin'), 'SOURCE_ASYNC_LAUNCHER_BINDING_INVALID')
+        for key in ('requestPin', 'intentPin', 'resultPin', 'stdoutPin', 'stderrPin'):
+            executor.pin_reference(exited[key])
+        executor.pin_reference(launched['pythonPin'])
+        expected_argv = [launched['pythonPin']['path'], launched['programPin']['path'],
+            '--configuration', launched['configurationPin']['path'], '--request', request_pin['path'],
+            '--output', str(directory / 'execute' / 'result.json')]
+        need(launched.get('argv') == expected_argv and launched.get('restoreTargetPin') is None and
+             Path(exited['resultPin']['path']) == directory / 'execute' / 'result.json',
+             'SOURCE_ASYNC_LAUNCHER_BINDING_INVALID')
+        waiting = self.operation_metadata(value, exited['resultPin'])
+        root = self.accepted_operation(value, selected)
+        need(waiting['state'] == 'TERMINAL_UNKNOWN' and
+             waiting['failureCode'] == 'REPOSITORY_QUERY_ORIGINAL_OPERATION' and
+             waiting['actualExitCode'] is None and waiting['originalResultPins'] == [] and
+             waiting['data'] == dict(operationDirectory=str(root), resultRef=str(root / 'result.json')),
+             'SOURCE_ASYNC_WAITING_RESULT_INVALID')
+        if not (root / 'result.json').is_file() or not (root / 'worker-process.json').is_file():
+            return False
+        output_pin = executor.pin(root / 'result.json')
+        output = self.operation_metadata(value, output_pin)
+        if output['state'] not in ('SUCCEEDED', 'FAILED_RETAINED'):
+            return False
+        # FAILED proves termination only. Source health, epoch and capture lock
+        # remain independent execution gates; failure never means restoration.
+        self.operation_result(value, output)
+        worker_pin = executor.pin(root / 'worker-process.json')
+        worker = self.document(worker_pin)
+        need(worker.get('operationId') == operation and type(worker.get('pid')) is int and worker['pid'] > 0,
+             'SOURCE_ASYNC_WORKER_BINDING_INVALID')
+        failure_pins = self.async_failure_evidence(root, output, worker) if output['state'] == 'FAILED_RETAINED' else []
+        need(os.name == 'posix' and Path('/proc').is_dir(), 'ORIGINAL_PROCESS_OBSERVATION_UNAVAILABLE')
+        command = Path('/proc') / str(worker['pid']) / 'cmdline'
+        try:
+            arguments = command.read_bytes().split(b'\0')
+        except (FileNotFoundError, ProcessLookupError):
+            arguments = []
+        # PID reuse is permitted only when the current argv does not reference
+        # this exact admitted operation directory in any argument.
+        need(not any(str(root).encode() in argument for argument in arguments),
+             'SOURCE_ASYNC_WORKER_STILL_RUNNING')
+        need(all(local_read(directory / name) == original for name, original in originals.items()) and
+             self.accepted_operation(value, selected) == root and
+             executor.pin(root / 'result.json') == output_pin and
+             executor.pin(root / 'worker-process.json') == worker_pin and
+             all(executor.pin(pin['path']) == pin for pin in failure_pins),
+             'SOURCE_ASYNC_ORIGINAL_CHANGED')
+        return True
+
+    def async_failure_evidence(self, root, output, worker):
+        """Keep the producer's child-exit semantics separate from owner failure."""
+        need(output['failureCode'] is not None, 'SOURCE_ASYNC_FAILURE_CODE_REQUIRED')
+        operation = output['operationId']
+        cancelled = output['failureCode'] == 'REPOSITORY_ARCHIVE_CANCELLED_BY_OPERATOR'
+        evidence = []
+        # repository_minimal.worker records the last child's code, which can
+        # legitimately be zero when archive publication subsequently fails.
+        children = sorted(root.glob('*-terminal.json'), key=lambda path: path.stat().st_mtime_ns)
+        if children:
+            terminal_pin = executor.pin(children[-1])
+            terminal = self.document(terminal_pin)
+            process_pin = executor.pin(children[-1].with_name(children[-1].name.removesuffix('-terminal.json') + '-process.json'))
+            process = self.document(process_pin)
+            need(terminal.get('schemaVersion') == 'RepositoryMinimumChildTerminal/v1' and
+                 terminal.get('operationId') == process.get('operationId') == operation and
+                 type(terminal.get('pid')) is int and terminal['pid'] > 0 and terminal['pid'] == process.get('pid') and
+                 terminal.get('processTerminated') is True and terminal.get('state') == 'EXITED' and
+                 type(terminal.get('actualExitCode')) is int, 'SOURCE_ASYNC_CHILD_TERMINAL_INVALID')
+            if not cancelled:
+                need(terminal_pin in output['originalResultPins'] and
+                     output['actualExitCode'] == terminal['actualExitCode'], 'SOURCE_ASYNC_CHILD_EXIT_BINDING_INVALID')
+            evidence.extend((terminal_pin, process_pin))
+        if cancelled:
+            # Explicit cancellation intentionally does not invent the owner's
+            # OS exit status. Its separate stop intent/observation is mandatory.
+            need(output['actualExitCode'] is None and output['data'] == dict(operatorCancellation=True,
+                 originalWorkerResultProduced=False, workerExitCodeObserved=False, archiveCreated=False,
+                 restoreExecuted=False), 'SOURCE_ASYNC_CANCELLATION_INVALID')
+            records = []
+            for name in ('external-stop-intent.json', 'external-stop-observation.json'):
+                reference = executor.pin(root / name)
+                need(reference in output['originalResultPins'], 'SOURCE_ASYNC_CANCELLATION_BINDING_INVALID')
+                evidence.append(reference)
+                records.append(self.document(reference))
+            stop, observed = records
+            need(all(row.get('operationId') == operation and row.get('pid') == worker['pid'] and
+                     row.get('signal') == 'SIGTERM' and row.get('authorizedByUser') is True for row in records) and
+                 type(stop.get('processStartTicks')) is int and stop['processStartTicks'] > 0 and
+                 observed.get('processStartTicks') == stop['processStartTicks'] and
+                 observed.get('processObservedExited') is True and observed.get('originalTerminalResultPresent') is False and
+                 observed.get('actualProcessExitCode') is None, 'SOURCE_ASYNC_CANCELLATION_BINDING_INVALID')
+        return evidence
 
     def operation_result(self, value, output):
         error = output['failureCode']

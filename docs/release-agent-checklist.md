@@ -13,14 +13,14 @@
 
 ## 自动增量链与恢复周期门禁
 
-- Trigger：增量按钮自动选父链、控制重启、全库恢复、日志清理或新增备份周期策略。
-- Preflight check：同来源不可变原生成功结果/退出/point/manifest/capture父链、最新唯一全量根及唯一完整链尾；冻结内容中的sourceRestored=false须核同操作成功捕获结果、原内容摘要与固定source-restoration成功回执及时间顺序，不把冻结时状态当最终恢复结果。实际容器身份/UUID、日志保留及位置连续性；持久未决任务与同一物理源锁。计划摘要绑定稳定配置/点/周期，不绑定不断前进的实时日志末尾。
-- Blocker：缺或失效基线明确要求新FULL；分叉、损坏、配置/身份/权限/连接错误、未决任务与未知提交阻断。不能将未知结果标成未受理；只有持锁确认未发布该ID预约的错误才返回精确accepted=false证明。
-- Verification：BDD/RED/GREEN分别覆盖连续两次增量、过期计划、同编号/同源并发、重启原件、恢复epoch、日志purge/缺段、成功收据后崩溃收口；真实Linux锁/进程/存储失败、真实HTTP、UI、实际双包构造与完整代理预算。启用epoch须覆盖已登记socket链接、未登记/漂移/数据卷别名与bind/nested mount物理重叠。最终真实Spug登录执行并核原生终态与父子点。
-- Forbidden action：不按浏览器历史时间猜父点，不自动补发未知POST，不把全量记成增量，不追认旧点epoch，不修改旧target或放宽旧失败clearance比较，不忽略丢失日志或删除raw/gzip载荷绕过旧合同。
-- Evidence：`doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-incremental-plan.md`、`backup-epoch-plan.md`、`incremental-resilience-review.md`、实际Linux/HTTP/封包及安装验收回执。
+- Trigger：增量按钮自动选父链、控制重启、全库恢复、日志清理或新增备份周期策略；异步launcher退出2、immutable RUNNING completion与独立owner终态并存，或历史计划扫描导致超时。
+- Preflight check：先区分同步终态与异步等待回执；异步FULL/INCREMENTAL必须核同一request/intent/selection/completion、launcher实际exit2且timedOut=false、固定operationDirectory/resultRef、owner request/start/config、最终SUCCEEDED或FAILED_RETAINED以及对应worker已停止。FAILED必须核非空失败码、最后child原pin/operation/pid/终态与实际退出；其actualExitCode可为0，表示捕获child成功但归档后续失败，不能要求exit1或解释为owner成功。明确取消的None退出须绑定原SIGTERM intent/observation；捕获前失败无child也不伪造退出码。FAILED仅证明终止，后续来源实际健康、epoch及物理锁准入仍必需。再核同来源不可变原生成功结果/退出/point/manifest/capture父链、最新唯一全量根及唯一完整链尾；冻结内容中的sourceRestored=false须核同操作成功捕获结果、原内容摘要与固定source-restoration成功回执及时间顺序，不把冻结时状态当最终恢复结果。实际容器身份/UUID、日志保留及位置连续性；持久未决任务与同一物理源锁。计划摘要绑定稳定配置/点/周期，不绑定不断前进的实时日志末尾。
+- Blocker：缺或失效基线明确要求新FULL；异步等待回执/owner身份或路径错配、原worker仍在同operation-root运行、缺终态或TERMINAL_UNKNOWN，均不能快判空闲。分叉、损坏、配置/身份/权限/连接错误、未决任务与未知提交阻断。不能将未知结果标成未受理；只有持锁确认未发布该ID预约的错误才返回精确accepted=false证明。
+- Verification：BDD/RED/GREEN分别覆盖真实异步launcher/worker及15项成功/失败历史闭合、错误PID/等待回执/owner绑定、存活worker和详细原编号仍核大原件；连续两次增量、过期计划、同编号/同源并发、重启原件、恢复epoch、日志purge/缺段、成功收据后崩溃收口；真实Linux锁/进程/存储失败、真实HTTP、UI、实际双包构造与完整代理预算。启用epoch须覆盖已登记socket链接、未登记/漂移/数据卷别名与bind/nested mount物理重叠。最终真实Spug登录执行并核原生终态与父子点。
+- Forbidden action：不把异步exit2当最终失败或将RUNNING completion重写成功，不只信UI/query状态放行，不重hash全部退休历史或只增加预算掩盖真实异步合同缺口，不跳过当前代完整性/来源健康；不按浏览器历史时间猜父点，不自动补发未知POST，不把全量记成增量，不追认旧点epoch，不修改旧target或放宽旧失败clearance比较，不忽略丢失日志或删除raw/gzip载荷绕过旧合同。
+- Evidence：`doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-incremental-plan.md`、`backup-epoch-plan.md`、`incremental-resilience-review.md`、automatic-plan-timeout-closure.json、automatic-async-originals.json、automatic-async-plan-fourth.json及实际Linux/HTTP/封包及安装验收回执。
 
-阶段必查与推荐命令：先运行test_automatic_incremental_plan、test_backup_epoch、test_automatic_incremental_resilience和test_backup_variants；Spug的test_automatic_incremental_entry/http/proxy及UI真实状态测试一起运行。单次计划避免重复哈希已闭合历史的大回读文件；只读缓存结束复核身份。安装只用新专属干净提交worktree，读取实际新进程配置/文件摘要及认证计划。启用周期时无活动操作、持来源锁显式初始化，原target通过owner顶层targetBackupEpochPolicies保持原字节，旧点先建立新FULL。Fail Fast按上述Blocker；必须记录实际命令/退出/零skip/包pins/唯一操作号/实际类型/父链及原服务、挂载、失败原件保持。
+阶段必查与推荐命令：先运行test_automatic_incremental_async_closure、test_automatic_incremental_plan、test_backup_epoch、test_automatic_incremental_resilience和test_backup_variants；Spug的test_automatic_incremental_entry/http/proxy及UI真实状态测试一起运行。单次计划避免重复哈希已闭合历史的大回读文件；异步调度闭合只读小型原件且结束复核身份，原编号详细GET及当前链完整验证保持。诊断先固定原超时，逐阶段统计实际原件读取/在线查询耗时；真实15项历史必须在原30秒预算内完成，并从同一FULL父点继续，不重做全量或改历史。只读缓存结束复核身份。安装只用新专属干净提交worktree，读取实际新进程配置/文件摘要及认证计划。启用周期时无活动操作、持来源锁显式初始化，原target通过owner顶层targetBackupEpochPolicies保持原字节，旧点先建立新FULL。Fail Fast按上述Blocker；必须记录实际命令/退出/零skip/包pins/唯一操作号/实际类型/父链及原服务、挂载、失败原件保持。
 
 挂载必查：v3已登记非数据保留挂载必须完整匹配mount及实时observe_preserved_mount身份，之后才对canonical路径执行epoch/lock隔离；数据卷、旧合同与未登记别名仍严格拒绝。所有可写挂载及嵌套挂载按实时mountinfo设备和物理路径检查重叠，不跳过docker.sock或只检查词法前缀。缺失/漂移恢复回执、身份漂移或物理重叠立即停止激活；记录原始候选失败、新包只读构造与实际服务健康证明。
 

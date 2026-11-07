@@ -208,6 +208,14 @@ class Ledger:
                     continue
                 if self.successfully_closed(directory, saved):
                     continue
+                completion_path = directory / 'completion.json'
+                if completion_path.is_file():
+                    completion = local_read(completion_path)
+                    if (saved['action'] in ('FULL', 'INCREMENTAL') and
+                            completion.get('result', {}).get('state') == 'RUNNING' and
+                            completion['result'].get('errorCode') == 'REPOSITORY_QUERY_ORIGINAL_OPERATION' and
+                            self.native.asynchronously_closed(directory, saved)):
+                        continue
                 current = self.status(saved['operationId'])
                 need(current['state'] in ('SUCCEEDED', 'FAILED'), 'SOURCE_OPERATION_IN_PROGRESS')
                 if guard is not None:
