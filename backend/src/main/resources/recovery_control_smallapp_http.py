@@ -78,6 +78,13 @@ def handler(ledger, config):
             try:
                 self.admit()
                 selected = urlsplit(self.path)
+                if selected.path == '/incremental-plan':
+                    query = parse_qs(selected.query, keep_blank_values=True)
+                    need(set(query) == {'sourceConfigRef'} and len(query['sourceConfigRef']) == 1 and
+                         query['sourceConfigRef'][0] != '', 'INCREMENTAL_PLAN_QUERY_INVALID')
+                    source_ref = opaque(query['sourceConfigRef'][0])
+                    self.reply(200, ledger.native.incremental_plan(source_ref))
+                    return
                 if selected.path == '/selections':
                     query = parse_qs(selected.query, keep_blank_values=True)
                     need(set(query) <= {'targetConfigRef'} and all(len(v) == 1 for v in query.values()),

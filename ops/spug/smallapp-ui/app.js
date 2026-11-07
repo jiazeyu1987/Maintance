@@ -20,7 +20,28 @@ const reasons = {
   ORIGINAL_RETRY_REQUEST_MISMATCH:'未受理核对结果与原请求不一致，禁止重试。',
   SPUG_DISPATCH_RESERVED:'已保留原操作编号，正在等待执行回执。',
   ORIGINAL_OWNER_RESULT_NOT_READY:'原任务正在执行，尚未生成最终结果；请查询原编号。',
-  BRIDGE_UNAVAILABLE_OR_RESPONSE_INVALID:'执行桥不可达或返回无效，只能继续查询原操作。',
+  BRIDGE_UNAVAILABLE_OR_RESPONSE_INVALID:'旧记录未保存具体原因，请刷新配置或查询原编号，获取当前错误。',
+  BRIDGE_TIMEOUT:'请求执行桥超时，尚未收到完整响应。请检查执行桥运行状态及网络后重新查询。',
+  BRIDGE_CONNECTION_REFUSED:'执行桥连接被拒绝。请检查监听端口及访问限制。',
+  BRIDGE_DNS_FAILED:'执行桥域名解析失败。请检查本机或容器的域名解析配置。',
+  BRIDGE_CONNECTION_RESET:'执行桥连接被重置或中断，尚未取得完整结果。',
+  BRIDGE_NETWORK_UNREACHABLE:'到执行桥的网络或主机不可达。请检查路由及网络连接。',
+  BRIDGE_TLS_CERTIFICATE_INVALID:'执行桥 TLS 证书校验失败。请检查证书有效期、域名及信任链。',
+  BRIDGE_TLS_FAILED:'执行桥 TLS 握手失败，无法建立安全连接。',
+  BRIDGE_CONNECTION_FAILED:'执行桥连接失败，系统未提供可识别的具体原因。请检查执行桥及网络日志。',
+  BRIDGE_IO_FAILED:'与执行桥通信时读写失败，系统未提供更具体的原因。',
+  BRIDGE_RESPONSE_ENCODING_INVALID:'执行桥响应不是有效的 UTF-8 文本，无法读取。',
+  BRIDGE_RESPONSE_JSON_INVALID:'执行桥响应不是有效的 JSON 数据。请检查接口是否返回了错误页或登录页。',
+  BRIDGE_RESPONSE_TOO_LARGE:'执行桥响应超过 64 KiB 安全上限，已拒绝读取。',
+  BRIDGE_RESPONSE_INCOMPLETE:'执行桥响应未完整返回，连接已提前结束。',
+  BRIDGE_RESPONSE_HTTP_INVALID:'执行桥返回的 HTTP 响应格式无效。请检查接口及代理配置。',
+  BRIDGE_REQUEST_INVALID:'执行桥请求配置无效，无法发送。请检查已登记的接口配置。',
+  BRIDGE_REDIRECT_REFUSED:'执行桥接口返回重定向，已拒绝跳转。请检查接口地址及代理配置。',
+  BRIDGE_RESULT_FIELDS_INVALID:'执行桥结果字段不符合约定，无法确认执行结果。',
+  BRIDGE_RESULT_SCHEMA_INVALID:'执行桥结果协议版本不匹配，无法确认执行结果。',
+  BRIDGE_ORIGINAL_OPERATION_MISMATCH:'执行桥回执编号或操作类型与原请求不一致，已拒绝采用。',
+  BRIDGE_STATE_INVALID:'执行桥返回了无效的执行状态，无法确认结果。',
+  W01_SELECTION_FIELDS_INVALID:'执行桥可用配置响应字段不符合约定，当前不能执行。',
   SPUG_LOGIN_REQUIRED:'登录已失效，请重新登录 Spug。',
   SPUG_MANUAL_TEMPLATE_CHANGED:'原任务配置与仅手动入口不一致，当前不能执行。',
   W08_DISPLAY_SETTINGS_REQUIRED:'应用来源配置尚未安装，当前不能执行。',
@@ -30,6 +51,34 @@ const reasons = {
   ENTRY_SELECTION_REFRESH_FAILED:'可用配置刷新失败，旧准入已失效；请成功刷新后再提交。',
   ENTRY_ORIGINAL_RESPONSE_MISMATCH:'原操作回执与请求不一致，已拒绝替换当前记录。',
   ORIGINAL_OPERATION_DEADLINE_EXCEEDED:'原操作已超过执行时限，正在核对实际结果，请继续查询原编号。',
+  INCREMENTAL_PLAN_INVALID:'返回的增量计划不完整或与当前来源不一致，不能执行。',
+  INCREMENTAL_PLAN_TIMEOUT:'增量基线核对超时，当前不能确认可用计划，请稍后刷新配置。',
+  INCREMENTAL_PLAN_CHANGED:'备份基线已变化，本次请求未受理。请重新核对并确认当前计划。',
+  INCREMENTAL_BASELINE_CHANGED:'执行前备份基线已变化，请查看原操作结果并重新核对备份计划。',
+  SOURCE_OPERATION_IN_PROGRESS:'同一来源已有操作正在执行，完成后再刷新备份计划。',
+  ORIGINAL_OPERATION_STILL_UNRESOLVED:'同一来源的原操作尚未确认结束，请在操作记录中查看原编号。',
+  NO_SUCCESSFUL_FULL_BASELINE:'该来源尚无成功的全量备份，需要先建立全量基线。',
+  SOURCE_BACKUP_IDENTITY_CHANGED:'来源数据库身份已变化，旧链不能接续，需要建立新的全量基线。',
+  BACKUP_POINT_EPOCH_REQUIRED:'历史备份缺少当前恢复周期凭证，需要建立新的全量基线。',
+  BACKUP_POINT_EPOCH_CHANGED:'来源已执行覆盖恢复，旧备份链已过期，需要建立新的全量基线。',
+  INCREMENTAL_PARENT_BINLOG_PURGED:'父备份所需数据库日志已清理，需要建立新的全量基线。',
+  INCREMENTAL_BINLOG_CHAIN_GAP:'父备份至当前的数据库日志存在缺段，需要建立新的全量基线。',
+  INCREMENTAL_SOURCE_POSITION_REGRESSED:'当前数据库日志位置或事务集合已倒退，需要建立新的全量基线。',
+  INCREMENTAL_SOURCE_LINEAGE_CHANGED:'数据库日志来源或版本谱系已变化，需要建立新的全量基线。',
+  INCREMENTAL_LIVE_SOURCE_IDENTITY_CHANGED:'实际数据库身份与来源登记不符，请核对来源配置后再备份。',
+  BACKUP_EPOCH_CHANGED_DURING_PLAN:'核对基线期间恢复周期发生变化，请等待原操作结束后刷新计划。',
+  SOURCE_EPOCH_STORAGE_OVERLAP:'恢复周期登记或锁与可清理的数据路径重叠，请先修正来源登记。',
+  DURABLE_INTENT_INCOMPLETE:'原操作的持久记录不完整，需先核对原操作，当前不能开始备份。',
+  BACKUP_EPOCH_UNINITIALIZED:'来源恢复周期登记尚未初始化，当前不能开始备份。',
+  BACKUP_EPOCH_NOT_READY:'来源恢复尚未结束或保留了失败状态，请先处理原恢复任务。',
+  AMBIGUOUS_LATEST_FULL:'存在完成时间相同的全量基线，无法确认最新完整链，请核对备份记录。',
+  INCREMENTAL_CHAIN_BRANCHED:'最新全量基线下存在多条增量分支，无法安全接续，请核对备份链。',
+  INCREMENTAL_PARENT_PREFIX_INVALID:'增量父链缺失或顺序不完整，当前不能接续备份。',
+  NATIVE_PIN_CHANGED:'备份原件摘要发生变化，完整性核验未通过，当前不能接续备份。',
+  INCREMENTAL_ORIGINAL_EXIT_INVALID:'父备份原始执行未成功，当前不能接续该备份链。',
+  SOURCE_EPOCH_POLICY_BINDING_INVALID:'当前来源身份与恢复周期登记不符，请核对来源配置。',
+  BACKUP_POINT_EPOCH_BINDING_INVALID:'备份点与恢复周期登记不符，当前不能接续备份。',
+  BACKUP_POINT_EPOCH_EVENT_INVALID:'备份点的恢复周期凭证无效，当前不能接续备份。',
 };
 let action = 'FULL', options = [], records = [], active = null, operationId = '', busy = false;
 let initialIds = {};
@@ -67,18 +116,35 @@ async function checkUnaccepted(request, applicationId){
   if(!retryReady({request,applicationId},evidence))throw new Error('ORIGINAL_RETRY_REQUEST_MISMATCH');
   return evidence;
 }
-function message(code){return (reasons[code] || '尚未满足执行条件') + (code ? '（' + code + '）' : '');}
+function message(code){
+  const http=/^BRIDGE_HTTP_([1-5][0-9]{2})$/.exec(code||'');
+  const httpReasons={401:'执行桥认证失败，请检查执行桥凭据配置。',403:'执行桥拒绝访问，请检查执行桥权限或访问限制。',
+    404:'执行桥接口不存在，请检查接口路径及版本。',405:'执行桥接口不接受此请求方法，请检查接口版本。',
+    429:'执行桥请求过于频繁，请稍后查询。',500:'执行桥服务发生内部错误，请检查服务日志。',
+    502:'执行桥网关无法取得有效的上游响应，请检查网关及上游服务。',
+    503:'执行桥服务当前不可用，请检查服务运行状态。',504:'执行桥网关等待上游响应超时，请检查上游服务及网络。'};
+  const text=reasons[code]||(http?(httpReasons[http[1]]||('执行桥返回 HTTP '+http[1]+'，请求未能正常完成。')):'尚未满足执行条件');
+  return text+(code?'（'+code+'）':'');
+}
 function problem(text){$('problem').textContent=text; $('problem').hidden=!text;}
 async function api(path, body){
   const token=localStorage.getItem('token');
   if(!token){$('login').hidden=false; throw new Error('SPUG_LOGIN_REQUIRED');}
-  const controller=new AbortController(), timer=setTimeout(()=>controller.abort(),20000);
+  const method=body===undefined?'GET':'POST';
+  // The source plan has a 30 s budget and its bridge has 40 s. Keep one
+  // bounded browser deadline through response-body reading for these routes.
+  const planning=method==='GET'&&path.split('?')[0]==='/incremental-plan'||method==='POST'&&path==='/automatic-incremental';
+  const controller=new AbortController(), timer=setTimeout(()=>controller.abort(),planning?60000:20000);
   try{
-    const response=await fetch('/backup-entry-api'+path,{method:body===undefined?'GET':'POST',
+    const response=await fetch('/backup-entry-api'+path,{method,
       headers:{'X-Token':token,'Content-Type':'application/json'},cache:'no-store',signal:controller.signal,
       body:body===undefined?undefined:JSON.stringify(body)});
     const value=await response.json();
-    if(!response.ok){if(response.status===401)$('login').hidden=false; throw new Error(value.errorCode || 'ENTRY_REQUEST_FAILED');}
+    if(!response.ok){
+      if(response.status===401)$('login').hidden=false;
+      const error=new Error(value.errorCode || value.error || 'ENTRY_REQUEST_FAILED');
+      error.status=response.status;error.rejection=value;throw error;
+    }
     return value;
   }catch(error){if(error.name==='AbortError')throw new Error('ENTRY_REQUEST_TIMEOUT');throw error;}
   finally{clearTimeout(timer);}
@@ -102,7 +168,7 @@ function chooseId(){
   else{$('result-state').textContent='尚未执行';$('result-details').hidden=true;}
 }
 function render(){
-  const app=selected(), row=app?.validated;
+  const app=selected(), row=app?.validated,automatic=typeof automaticIncrementalSelected==='function'&&automaticIncrementalSelected();
   fill('source',app?.sourceConfigRef?[app.sourceConfigRef]:[],'来源尚未登记');
   // One explicit registered source for each current application; never choose a chain or latest point.
   if(app?.sourceConfigRef)$('source').value=app.sourceConfigRef;
@@ -111,6 +177,7 @@ function render(){
   fill('target',row?.freshTargetConfigRefs || [],'请选择全新独立目标');
   if(!active && app && typeof currentBinding==='function' && currentBinding()?.applicationId===app.applicationId){
     const draft=simpleRequest(operationId);action=draft.action;
+    if(automatic&&draft.parentChainRef){$('parent').replaceChildren(new Option(draft.parentChainRef,draft.parentChainRef));$('parent').value=draft.parentChainRef;}
     $('point').value=draft.recoveryPointRef || '';$('target').value=draft.targetConfigRef || '';
   }
   if(active && active.request.action===action){
@@ -130,14 +197,15 @@ function render(){
     (row.historyErrorCode?' 备份链历史暂不可读：'+message(row.historyErrorCode):'') :
     message(app?.readinessError || row?.fullErrorCode || 'SOURCE_NOT_VERIFIED_BY_W01');
   $('action-note').textContent={FULL:'保存当前来源的完整备份。首次全量备份无需等待增量链或恢复目标。',
-    INCREMENTAL:'只使用你选择的真实已接受父链，不自动选择最新备份。',
+    INCREMENTAL:'自动核对同一来源的全量基线及最新有效增量，提交前再次验证计划。',
     RESTORE:'按所选完整恢复点恢复到全新独立目标，保留原来源。'}[action];
   let blocked='';
   if(active)blocked=retryReady(active,retryEvidence)?'已核对原编号未受理，可按原编号重试。':'本操作已经保留编号，只能查询原结果或核对是否未受理。';
   else if(unresolvedOriginal())blocked='原操作尚未确认结束，请先查询原编号。';
   else if(!row?.fullReady)blocked=message(app?.readinessError || row?.fullErrorCode || 'SOURCE_NOT_VERIFIED_BY_W01');
+  else if(automatic)blocked=incrementalBlockReason();
   else if(action!=='FULL' && row.historyErrorCode)blocked=message(row.historyErrorCode);
-  else if(action==='INCREMENTAL' && !$('parent').value)blocked=row.parentChainRefs.length?'请选择父备份链。':'尚无已接受的父备份链；先完成真实全量备份。';
+  else if(action==='INCREMENTAL' && !$('parent').value)blocked='尚未核对增量基线，请刷新配置。';
   else if(action==='RESTORE' && !$('point').value)blocked=row.recoveryPointRefs.length?'请选择恢复点。':'尚无已接受的完整恢复点。';
   else if(action==='RESTORE' && !$('target').value)blocked=row.freshTargetConfigRefs.length?'请选择全新恢复目标。':'尚无已核验的全新独立恢复目标。';
   $('blocked-reason').textContent=blocked;
@@ -224,7 +292,19 @@ async function query(){
   }catch(error){if(generation===viewGeneration)problem(message(error.message));}
   finally{busy=false;render();}
 }
-async function submitOriginal(request, applicationId, retry=false){
+async function queryPendingOriginal(){
+  if(!unresolvedOriginal()||interactionLocked())return;
+  const original=pending;
+  busy=true;problem('');render();
+  try{
+    const value=originalResponse(await api('/operations/'+encodeURIComponent(original.request.operationId)),original.request,original.applicationId);
+    if(!sameRequest(pending?.request,original.request))return;
+    pending=value;localStorage.setItem('spug-backup-original',JSON.stringify(value));
+    records=records.map(record=>record.request.operationId===original.request.operationId?value:record);history();
+  }catch(error){problem(message(error.message)+' 正在继续核对原编号：'+original.request.operationId);}
+  finally{busy=false;render();}
+}
+async function submitOriginal(request, applicationId, retry=false, automaticPlan=null){
   if(interactionLocked() || (unresolvedOriginal() && !sameRequest(pending.request,request)))return;
   busy=true;problem('');render();
   if(retry){
@@ -234,13 +314,24 @@ async function submitOriginal(request, applicationId, retry=false){
   }
   // Persist the original before POST; a lost reply only enables original-ID queries.
   retryEvidence=null;
-  selectRecord({request,applicationId,spugTaskId:null,createdAt:new Date().toISOString(),spugHistoryId:null,dispatchErrorCode:null});
+  selectRecord({request,applicationId,spugTaskId:null,createdAt:new Date().toISOString(),spugHistoryId:null,dispatchErrorCode:null,
+    ...(automaticPlan?{automaticIncrementalPlan:automaticPlan}:{})});
   localStorage.setItem('spug-backup-original',JSON.stringify(active));
   pending=active;
   busy=true;problem('');render();
-  try{active=originalResponse(await api('/operations',request),request,applicationId);pending=active;localStorage.setItem('spug-backup-original',JSON.stringify(active));
+  try{
+    const body=automaticPlan?{schemaVersion:'AutomaticIncrementalRequest/v1',operationId:request.operationId,applicationId,planDigest:automaticPlan.planDigest}:request;
+    active=originalResponse(await api(automaticPlan?'/automatic-incremental':'/operations',body),request,applicationId);pending=active;localStorage.setItem('spug-backup-original',JSON.stringify(active));
     showResult(active);records=await api('/history');history();}
   catch(error){
+    // Only an explicit, exact pre-admission rejection proves this POST made no reservation.
+    if(automaticPlan&&error.status===409&&error.rejection?.accepted===false&&
+      error.rejection.operationId===request.operationId&&error.rejection.applicationId===applicationId){
+      pending=null;localStorage.removeItem('spug-backup-original');selectRecord(null);
+      operationId='smallapp-'+crypto.randomUUID().replace(/-/g,'');
+      await loadIncrementalPlan();showSimplePage('backup');
+      problem(message(error.message)+' 已重新读取备份计划，请重新确认。');return;
+    }
     // A lost HTTP reply queries the saved ID once; it never repeats the POST.
     try{active=originalResponse(await api('/operations/'+encodeURIComponent(request.operationId)),request,applicationId);pending=active;
       localStorage.setItem('spug-backup-original',JSON.stringify(active));showResult(active);}

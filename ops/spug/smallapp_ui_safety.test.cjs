@@ -12,6 +12,9 @@ function page() {
     add(option) { this.children.push(option); if(this.children.length===1)this.value=option.value; }
     replaceChildren(...values) { this.children=[...values]; this.value=values[0]?.value||''; }
     append(...values) { this.children.push(...values); }
+    appendChild(value) { this.append(value); }
+    insertBefore(value,before) { this.children.splice(Math.max(0,this.children.indexOf(before)),0,value); }
+    focus() { this.focused=true; }
     setAttribute(name, value) { this[name]=value; }
     addEventListener(name, callback) { this.listeners[name]=callback; }
     get selectedOptions() { return this.children.filter(child=>child.value===this.value); }
@@ -25,12 +28,13 @@ function page() {
     document:{hidden:false,getElementById:get,createElement:()=>new Element(),querySelectorAll:selector=>selector==='[data-action]'?buttons:[]},
     Option:class {constructor(text,value){this.textContent=text;this.value=value;}},
     localStorage:{getItem:key=>store.get(key)||null,setItem:(key,value)=>store.set(key,value),removeItem:key=>store.delete(key)},
-    crypto:{randomUUID:()=> '01234567-1234-1234-1234-012345678901'},
+    crypto:{randomUUID:()=> 'afdecba7-abcd-abcd-abcd-afdecba789ab'},
     setTimeout,clearTimeout,AbortController,Date,
   });
   const run=code=>vm.runInContext(code,context);
   const source=fs.readFileSync(path.join(__dirname,'smallapp-ui','app.js'),'utf8').replace('const initialRefresh = refresh();','const initialRefresh = Promise.resolve();');
   run(source);
+  const requestApi=run('api');
   const simple=fs.readFileSync(path.join(__dirname,'smallapp-ui','simple.js'),'utf8');
   run(simple.slice(0,simple.indexOf('\nsetInterval(')));
   for(const [id,values] of Object.entries({
@@ -44,43 +48,246 @@ function page() {
     api=async()=>{throw new Error('UNEXPECTED_TEST_API_CALL');};
   `);
   const start=()=>{run('simpleConfig=null;');return run(simple.slice(simple.indexOf('(async()=>{',simple.indexOf('\nsetInterval('))));};
-  return {run,get,context,buttons,store,start};
+  return {run,get,context,buttons,store,start,requestApi};
 }
 
 const record=(id='original-operation-123')=>({applicationId:'app',request:{schemaVersion:'SmallAppBackupUiRequest/v1',operationId:id,
   action:'FULL',sourceConfigRef:'source-ref',parentChainRef:null,recoveryPointRef:null,targetConfigRef:null},
   result:{state:'RUNNING',errorCode:null,logRefs:[],resultRef:null}});
 
-test('restore form distinguishes the source address from the destination address',()=>{
+function requestTimers(p){
+  const timers=[],cleared=[];
+  p.store.set('token','local-request-contract-only');
+  p.context.setTimeout=(callback,milliseconds)=>{const timer={callback,milliseconds};timers.push(timer);return timer;};
+  p.context.clearTimeout=timer=>cleared.push(timer);
+  return {timers,cleared};
+}
+
+test('only automatic plan GET and automatic submission POST have a 60 second request deadline',async()=>{
+  const p=page(),{timers,cleared}=requestTimers(p);
+  p.context.fetch=async()=>({ok:true,json:async()=>({})});
+  for(const [url,body,milliseconds] of [
+    ['/incremental-plan?applicationId=app',undefined,60000],['/incremental-plan',undefined,60000],
+    ['/automatic-incremental',{operationId:'deadline-test'},60000],
+    ['/automatic-incremental',undefined,20000],['/incremental-plan?applicationId=app',{},20000],
+    ['/incremental-plan-other?applicationId=app',undefined,20000],
+    ['/operations',{},20000],['/operations/original-operation-123',undefined,20000],
+    ['/progress/original-operation-123',undefined,20000],['/history',undefined,20000],
+  ]){
+    await p.requestApi(url,body);
+    assert.equal(timers.at(-1).milliseconds,milliseconds,url);
+    assert.equal(cleared.at(-1),timers.at(-1),url);
+  }
+});
+
+test('automatic request deadline covers response body consumption and always clears its timer',async()=>{
+  const p=page(),{timers,cleared}=requestTimers(p);
+  let bodyReading;
+  const started=new Promise(resolve=>{bodyReading=resolve;});
+  p.context.fetch=async(_url,options)=>({ok:true,json:()=>new Promise((_resolve,reject)=>{
+    options.signal.addEventListener('abort',()=>reject(Object.assign(new Error('aborted body'),{name:'AbortError'})));
+    bodyReading();
+  })});
+  const request=p.requestApi('/incremental-plan?applicationId=app');
+  const rejected=assert.rejects(request,/ENTRY_REQUEST_TIMEOUT/);
+  await started;
+  assert.equal(timers[0].milliseconds,60000);
+  assert.equal(cleared.length,0);
+  timers[0].callback();await rejected;
+  assert.deepEqual(cleared,[timers[0]]);
+});
+
+test('automatic POST deadline and failed follow-up query retain the exact original without another POST',async()=>{
+  const p=page();planApi(p);p.get('simple-type').value='INCREMENTAL';await p.get('simple-type').onchange();
+  p.get('simple-submit').onclick();const original=JSON.parse(p.run('JSON.stringify(confirmation.request)'));
+  const {timers,cleared}=requestTimers(p),calls=[];
+  p.context.api=p.requestApi;
+  p.context.fetch=async(url,options)=>{
+    calls.push({url,method:options.method});
+    if(options.method==='POST')return new Promise((_resolve,reject)=>options.signal.addEventListener('abort',()=>
+      reject(Object.assign(new Error('aborted submission'),{name:'AbortError'}))));
+    throw new Error('BRIDGE_TIMEOUT');
+  };
+  const submission=p.get('simple-confirm-submit').onclick();
+  assert.equal(timers[0].milliseconds,60000);
+  assert.equal(p.run('pending.request.operationId'),original.operationId);
+  timers[0].callback();await submission;
+  assert.deepEqual(JSON.parse(p.store.get('spug-backup-original')).request,original);
+  assert.equal(calls.filter(call=>call.method==='POST').length,1);
+  assert.ok(calls.some(call=>call.url==='/backup-entry-api/operations/'+original.operationId));
+  assert.ok(timers.slice(1).every(timer=>timer.milliseconds===20000));
+  assert.equal(cleared.length,timers.length);
+  assert.match(p.get('problem').textContent,/ENTRY_REQUEST_TIMEOUT/);
+  assert.equal(p.get('simple-submit').disabled,true);
+});
+
+test('backend plan timeout is visible in Chinese and keeps automatic submission blocked',async()=>{
+  const p=page();p.get('simple-type').value='INCREMENTAL';
+  p.run("api=async()=>{throw new Error('INCREMENTAL_PLAN_TIMEOUT');};");
+  await p.run('loadIncrementalPlan()');
+  assert.match(p.get('simple-status').textContent,/核对.*超时/);
+  assert.match(p.get('simple-status').textContent,/INCREMENTAL_PLAN_TIMEOUT/);
+  assert.equal(p.get('simple-submit').disabled,true);
+});
+
+test('bridge readiness explains the proven cause and keeps execution blocked',()=>{
+  const p=page();
+  for(const [code,description] of Object.entries({
+    BRIDGE_TIMEOUT:/超时/, BRIDGE_CONNECTION_REFUSED:/连接被拒绝/, BRIDGE_DNS_FAILED:/域名解析失败/,
+    BRIDGE_CONNECTION_RESET:/连接.*中断/, BRIDGE_NETWORK_UNREACHABLE:/网络.*不可达/,
+    BRIDGE_TLS_CERTIFICATE_INVALID:/证书.*校验失败/, BRIDGE_TLS_FAILED:/TLS.*失败/,
+    BRIDGE_CONNECTION_FAILED:/连接失败.*未.*具体原因/, BRIDGE_IO_FAILED:/读写失败/,
+    BRIDGE_RESPONSE_ENCODING_INVALID:/UTF-8/, BRIDGE_RESPONSE_JSON_INVALID:/JSON/,
+    BRIDGE_RESPONSE_TOO_LARGE:/64 KiB/, BRIDGE_RESPONSE_INCOMPLETE:/响应.*完整/,
+    BRIDGE_RESPONSE_HTTP_INVALID:/HTTP.*格式/, BRIDGE_REQUEST_INVALID:/请求.*无效/,
+    BRIDGE_HTTP_401:/认证失败/, BRIDGE_HTTP_403:/拒绝.*权限/, BRIDGE_HTTP_404:/接口.*不存在/,
+    BRIDGE_HTTP_502:/网关/, BRIDGE_HTTP_503:/服务.*不可用/, BRIDGE_HTTP_504:/网关.*超时/,
+  })) {
+    p.context.code=code;
+    p.run('options[0].validated=null;options[0].readinessError=code;render();');
+    assert.match(p.get('simple-status').textContent,description,code);
+    assert.ok(p.get('simple-status').textContent.includes(code));
+    assert.equal(p.get('simple-submit').disabled,true);
+    assert.doesNotMatch(p.get('simple-status').textContent,/只能继续查询原操作/);
+  }
+  assert.match(p.run("message('BRIDGE_HTTP_418')"),/HTTP 418/);
+  assert.match(p.run("message('BRIDGE_UNAVAILABLE_OR_RESPONSE_INVALID')"),/旧记录.*具体原因/);
+});
+
+test('restore form names the shared program and initially selects replacement',()=>{
   const html=fs.readFileSync(path.join(__dirname,'smallapp-ui','index.html'),'utf8');
-  assert.match(html,/<label for="simple-server">来源地址<\/label>/);
-  assert.match(html,/<label for="simple-target">还原到地址<\/label>/);
+  assert.match(html,/<option value="replace" selected>覆盖现有程序<\/option>/);
+  assert.doesNotMatch(html,/覆盖[^<。]*小程序/);
 });
 
-test('restore keeps its source address read-only while the destination remains selectable',()=>{
-  const p=page();
-  p.run("simpleRestoring=true;action='RESTORE';render();");
-  assert.equal(p.get('simple-server').value,'server');
-  assert.equal(p.get('simple-server').disabled,true);
-  assert.equal(p.get('simple-target').disabled,false);
-  p.run("S('simple-package').value='point-ref';S('simple-target').value='target-server';render();");
-  const request=p.run("simpleRequest('restore-address-check')");
-  assert.equal(request.sourceConfigRef,'source-ref');
-  assert.equal(request.targetConfigRef,'target-ref');
-  p.run("simpleRestoring=false;action='FULL';render();");
-  assert.equal(p.get('simple-server').disabled,false);
+test('a new restore draft defaults to replacement without selecting a target or admitting unregistered overwrite',async()=>{
+  const p=page();p.run("refresh=async()=>{};S('simple-restore-mode').value='fresh';");
+  p.get('simple-restore-tab').onclick();
+  assert.equal(p.get('simple-restore-mode').value,'replace');
+  assert.equal(p.get('simple-target').value,'');
+  assert.equal(p.get('simple-target').children.find(o=>o.value==='target-server').disabled,true);
+  assert.equal(p.get('simple-submit').disabled,true);
+  await p.get('simple-restore-mode').onchange();
+  p.get('simple-restore-mode').value='fresh';await p.get('simple-restore-mode').onchange();
+  assert.equal(p.get('simple-target').children.find(o=>o.value==='target-server').disabled,false);
 });
 
-test('refreshing restore configuration preserves the read-only source and its request identity',async()=>{
+test('catalogue restore defaults to replacement and preserves old fresh-operation semantics',async()=>{
+  const p=page();p.context.packageRow={packageId:'point-ref',kind:'backup-full',application:'product',servers:['server'],version:'version-1'};
+  p.run('refresh=async()=>{};');await p.run('openCatalogRestore(packageRow)');
+  assert.equal(p.get('simple-restore-mode').value,'replace');
+  assert.equal(p.get('simple-target').value,'');assert.equal(p.get('simple-submit').disabled,true);
+  p.get('catalog-restore-close').onclick();
+  p.context.original=record();p.run("original.request.action='RESTORE';original.request.targetConfigRef='target-ref';syncSimpleIdentity(original);");
+  assert.equal(p.get('simple-restore-mode').value,'fresh');
+});
+
+test('catalogue restore reuses the form, pins the selected point and requires an explicit target and confirmation',async()=>{
+  const p=page();p.context.packageRow={packageId:'point-ref',kind:'backup-full',category:'backup',application:'product',servers:['server'],version:'version-1'};
+  p.run("refresh=async()=>{};globalThis.submissions=[];submitOriginal=async request=>submissions.push(request);progress=async()=>{};showSimplePage('catalog');");
+  await p.run('openCatalogRestore(packageRow)');
+  p.get('simple-restore-mode').value='fresh';await p.get('simple-restore-mode').onchange();
+  assert.equal(p.get('catalog-restore-dialog').open,true);
+  assert.equal(p.get('simple-form-panel').hidden,false);
+  assert.equal(p.get('simple-catalog-tab')['aria-selected'],'true');
+  assert.equal(p.get('simple-package').value,'point-ref');
+  assert.equal(p.get('simple-package').disabled,true);
+  assert.equal(p.get('simple-target').value,'');
+  assert.equal(p.get('simple-submit').disabled,true);
+  assert.equal(p.run('submissions.length'),0);
+  p.get('simple-target').value='target-server';await p.get('simple-target').onchange();p.run('render()');
+  assert.equal(p.get('simple-submit').disabled,false);
+  p.get('simple-submit').onclick();
+  assert.equal(p.get('simple-confirm').open,true);
+  assert.match(p.get('confirm-summary').textContent,/point-ref/);
+  assert.match(p.get('confirm-summary').textContent,/target-server/);
+  assert.equal(p.run('submissions.length'),0);
+  p.get('simple-cancel').onclick();assert.equal(p.get('catalog-restore-dialog').open,true);
+  p.get('simple-submit').onclick();await p.get('simple-confirm-submit').onclick();
+  assert.equal(p.run('submissions.length'),1);
+  assert.equal(p.run('submissions[0].recoveryPointRef'),'point-ref');
+  assert.equal(p.run('submissions[0].targetConfigRef'),'target-ref');
+  assert.equal(p.get('catalog-restore-dialog').open,false);
+  assert.equal(p.get('simple-progress-tab')['aria-selected'],'true');
+});
+
+test('catalogue point absent from server accepted refs stays visible but cannot submit or substitute another package',async()=>{
+  const p=page();p.context.packageRow={packageId:'unaccepted-point',kind:'backup-incremental',category:'backup',application:'product',servers:['server']};
+  p.run('refresh=async()=>{};');await p.run('openCatalogRestore(packageRow)');
+  p.get('simple-target').value='target-server';p.run('render()');
+  assert.equal(p.get('simple-package').value,'unaccepted-point');
+  assert.equal(p.get('simple-submit').disabled,true);
+  assert.match(p.get('simple-status').textContent,/未.*恢复点/);
+  p.get('simple-submit').onclick();assert.equal(p.run('confirmation'),null);
+  p.get('catalog-restore-close').onclick();
+  assert.equal(p.get('catalog-restore-dialog').open,false);
+  assert.equal(p.run('catalogRestore'),null);
+  p.get('simple-restore-tab').onclick();assert.equal(p.get('simple-form-panel').hidden,false);
+});
+
+test('catalogue restore refuses a running draft and never treats release artifacts as backup points',async()=>{
+  const p=page();p.context.packageRow={packageId:'point-ref',kind:'release-full',category:'release',application:'product',servers:['server']};
+  await p.run('openCatalogRestore(packageRow)');assert.equal(p.get('catalog-restore-dialog').open,undefined);
+  p.context.original=record();p.run("active=original;packageRow.kind='backup-full';packageRow.category='backup';render();");
+  await p.run('openCatalogRestore(packageRow)');assert.equal(p.run('active.request.operationId'),'original-operation-123');
+  assert.equal(p.get('catalog-restore-dialog').open,undefined);
+});
+
+test('five peer tabs show one panel and read-only navigation preserves the draft',()=>{
+  const p=page();p.get('simple-type').value='INCREMENTAL';
+  p.run("showSimplePage('catalog');render();");
+  assert.equal(p.get('simple-catalog-tab')['aria-selected'],'true');
+  assert.equal(p.get('simple-backup-tab')['aria-selected'],'false');
+  assert.equal(p.get('package-catalog').hidden,false);
+  assert.equal(p.get('simple-form-panel').hidden,true);
+  for(const name of ['progress','history']){
+    p.get('simple-'+name+'-tab').onclick();p.run('render();');
+    assert.equal(p.get('simple-'+name+'-tab')['aria-selected'],'true');
+    assert.equal(p.get('simple-'+name+'-panel').hidden,false);
+    assert.equal(p.get('package-catalog').hidden,true);
+  }
+  p.run("showSimplePage('backup');");
+  assert.equal(p.get('simple-form-panel').hidden,false);
+  assert.equal(p.get('simple-type').value,'INCREMENTAL');
+});
+
+test('tab anchors work when the existing history renderer occupies window.history',()=>{
   const p=page();
-  p.run(`simpleRestoring=true;action='RESTORE';render();
-    api=async url=>{if(url==='/simple-config')return simpleConfig;if(url==='/history')return [];
-      return {applications:options,initialOperationIds:{},registrationVersions:{}};};`);
-  await p.get('simple-refresh').onclick();
-  assert.equal(p.get('simple-server').value,'server');
-  assert.equal(p.get('simple-server').disabled,true);
-  assert.equal(p.get('simple-target').disabled,false);
-  assert.equal(p.run("simpleRequest('restore-after-refresh').sourceConfigRef"),'source-ref');
+  p.context.window={location:{hash:''},history:()=>{}};
+  p.run("showSimplePage('catalog');");
+  assert.equal(p.context.window.location.hash,'package-catalog');
+});
+
+test('returning from a read-only panel retains the chosen restore package and original draft id',()=>{
+  const p=page();
+  p.run("simpleRestoring=true;action='RESTORE';showSimplePage('restore');render();S('simple-package').value='point-ref';S('point').value='point-ref';showSimplePage('catalog');");
+  p.get('simple-restore-tab').onclick();
+  assert.equal(p.get('simple-package').value,'point-ref');
+  assert.equal(p.run('operationId'),'test-operation-123');
+  assert.equal(p.get('simple-restore-tab')['aria-selected'],'true');
+});
+
+test('read-only tabs remain usable during a running draft and keyboard skips disabled form tabs',()=>{
+  const p=page();p.context.original=record();
+  p.run('active=original;render();');
+  assert.equal(p.get('simple-backup-tab').disabled,true);
+  p.get('simple-history-tab').onclick();
+  assert.equal(p.get('simple-history-tab')['aria-selected'],'true');
+  assert.equal(p.get('simple-history-tab').disabled,false);
+  p.get('simple-history-tab').onkeydown({key:'ArrowRight',preventDefault(){}});
+  assert.equal(p.get('simple-catalog-tab')['aria-selected'],'true');
+  p.get('simple-catalog-tab').onkeydown({key:'End',preventDefault(){}});
+  assert.equal(p.get('simple-history-tab')['aria-selected'],'true');
+});
+
+test('viewing an existing operation opens progress without starting a new request',async()=>{
+  const p=page();p.context.original=record();
+  p.run("query=async()=>{};progress=async()=>{};showSimplePage('history');");
+  await p.run('openRecord(original)');
+  assert.equal(p.get('simple-progress-tab')['aria-selected'],'true');
+  assert.equal(p.get('simple-progress-panel').hidden,false);
+  assert.equal(p.run('active.request.operationId'),'original-operation-123');
+  assert.equal(p.run('pending'),null);
 });
 
 test('initial configuration keeps draft locked until source synchronization completes',async()=>{
@@ -186,16 +393,187 @@ test('a remembered mode becoming unavailable does not silently select another ex
   assert.match(p.get('simple-status').textContent,/尚未登记快速模式/);
 });
 
-test('incremental chooses the newest accepted point on this source regardless of history order',()=>{
+const automaticPlan=(changes={})=>({schemaVersion:'AutomaticIncrementalPlan/v1',sourceConfigRef:'source-ref',
+  state:'READY',reasonCode:null,parentChainRef:'verified-increment',baseFullRef:'verified-full',generationId:'generation-1',
+  chainDepth:2,pointType:'INCREMENTAL',parentPointType:'INCREMENTAL',basePointType:'FULL',
+  finishedAt:'2026-11-06T01:00:00Z',baseFinishedAt:'2026-11-05T01:00:00Z',evidenceDigest:'d'.repeat(64),planDigest:'a'.repeat(64),...changes});
+
+function planApi(p,plan=automaticPlan()){
+  p.context.planResponse={applicationId:'app',plan};p.context.apiCalls=[];
+  p.run(`api=async(url,body)=>{apiCalls.push({url,body});
+    if(url.startsWith('/incremental-plan?'))return planResponse;
+    if(url.startsWith('/selections'))return {applications:options,initialOperationIds:{},registrationVersions:{}};
+    if(url==='/history')return [];throw new Error('UNEXPECTED_TEST_API_CALL');};`);
+}
+
+test('automatic incremental uses the authoritative plan despite absent local history and selection refs',async()=>{
+  const p=page();planApi(p);
+  p.run("records=[];selected().validated.parentChainRefs=[];selected().validated.historyErrorCode='LOCAL_HISTORY_UNAVAILABLE';S('simple-type').value='INCREMENTAL';");
+  await p.get('simple-type').onchange();
+  assert.equal(p.context.apiCalls.filter(call=>call.url==='/incremental-plan?applicationId=app').length,1);
+  assert.equal(p.get('simple-submit').disabled,false);
+  assert.equal(p.run("simpleRequest('plan-test').parentChainRef"),'verified-increment');
+  assert.match(p.get('simple-status').textContent,/全量基线.*2026/);
+  assert.match(p.get('simple-status').textContent,/最新.*增量/);
+  p.get('simple-submit').onclick();
+  assert.match(p.get('confirm-summary').textContent,/verified-full/);
+  assert.match(p.get('confirm-summary').textContent,/verified-increment/);
+  assert.equal(p.context.apiCalls.filter(call=>call.body).length,0);
+});
+
+test('a required baseline is explicitly confirmed as FULL and submitted through the automatic endpoint',async()=>{
+  const p=page();planApi(p,automaticPlan({state:'BASELINE_REQUIRED',reasonCode:'BACKUP_POINT_EPOCH_CHANGED',parentChainRef:null,
+    baseFullRef:null,chainDepth:0,pointType:null,parentPointType:null,basePointType:null,finishedAt:null,baseFinishedAt:null}));
+  p.get('simple-type').value='INCREMENTAL';await p.get('simple-type').onchange();
+  assert.equal(p.get('simple-submit').disabled,false);
+  assert.match(p.get('simple-status').textContent,/全量.*基线/);
+  assert.match(p.get('simple-submit').textContent,/全量基线/);
+  p.get('simple-submit').onclick();
+  assert.match(p.get('confirm-summary').textContent,/全量备份/);
+  assert.match(p.get('confirm-summary').textContent,/BACKUP_POINT_EPOCH_CHANGED/);
+  assert.equal(p.run('confirmation.request.action'),'FULL');
+  assert.equal(p.run('confirmation.request.parentChainRef'),null);
+  p.context.expected=p.run('JSON.parse(JSON.stringify(confirmation.request))');
+  p.run(`api=async(url,body)=>{apiCalls.push({url,body});if(url==='/automatic-incremental')return {applicationId:'app',request:expected,automaticIncrementalPlan:planResponse.plan,result:{state:'RUNNING',logRefs:[]}};
+    if(url==='/history')return [];if(url.startsWith('/progress/'))return {operationId:expected.operationId,steps:[]};throw new Error('UNEXPECTED_TEST_API_CALL');};`);
+  await p.get('simple-confirm-submit').onclick();
+  const posts=p.context.apiCalls.filter(call=>call.body);
+  assert.equal(posts.length,1);assert.equal(posts[0].url,'/automatic-incremental');
+  assert.deepEqual(JSON.parse(JSON.stringify(posts[0].body)),{schemaVersion:'AutomaticIncrementalRequest/v1',
+    operationId:p.context.expected.operationId,applicationId:'app',planDigest:'a'.repeat(64)});
+  assert.equal(p.run('pending.request.action'),'FULL');
+  assert.match(p.get('simple-operation-details').children.map(node=>node.textContent).join('\n'),/全量基线/);
+});
+
+test('live source preflight reasons explain the need for a new baseline or a blocked source',()=>{
   const p=page();
-  p.context.history=[['old-full','2026-10-22T00:00:00Z','FULL'],['new-increment','2026-10-23T01:00:00Z','INCREMENTAL'],['new-full','2026-10-23T00:00:00Z','FULL']]
-    .map(([id,createdAt,action])=>({...record(id),createdAt,request:{...record(id).request,action}}));
-  p.run("records=history;selected().validated.parentChainRefs=['old-full','new-full','new-increment'];");
-  assert.equal(p.run('latestSimpleParent()'),'new-increment');
-  p.run("selected().validated.parentChainRefs=['old-full','new-full'];");
-  assert.equal(p.run('latestSimpleParent()'),'new-full');
-  p.run("selected().validated.parentChainRefs.push('missing-history');");
-  assert.equal(p.run('latestSimpleParent()'),'');
+  for(const [code,detail] of Object.entries({
+    INCREMENTAL_PARENT_BINLOG_PURGED:/日志.*清理.*全量基线/,
+    INCREMENTAL_BINLOG_CHAIN_GAP:/日志.*缺段.*全量基线/,
+    INCREMENTAL_SOURCE_POSITION_REGRESSED:/位置.*倒退.*全量基线/,
+    INCREMENTAL_SOURCE_LINEAGE_CHANGED:/来源.*版本.*变化.*全量基线/,
+    INCREMENTAL_LIVE_SOURCE_IDENTITY_CHANGED:/实际数据库身份.*登记.*不符/,
+    BACKUP_EPOCH_CHANGED_DURING_PLAN:/核对.*期间.*恢复周期.*变化/,
+    SOURCE_EPOCH_STORAGE_OVERLAP:/恢复周期.*数据.*路径.*重叠/,
+  })){
+    p.context.code=code;const text=p.run('message(code)');
+    assert.match(text,detail);assert.ok(text.includes(code));
+  }
+});
+
+test('blocked, failed and mismatched plans invalidate earlier readiness and explain the exact reason',async()=>{
+  for(const mode of ['blocked','network','source','application','evidence']){
+    const p=page();planApi(p);p.get('simple-type').value='INCREMENTAL';await p.get('simple-type').onchange();
+    if(mode==='blocked')p.context.planResponse.plan=automaticPlan({state:'BLOCKED',reasonCode:'INCREMENTAL_PARENT_PREFIX_INVALID'});
+    if(mode==='network')p.run("api=async()=>{throw new Error('BRIDGE_TIMEOUT');};");
+    if(mode==='source')p.context.planResponse.plan=automaticPlan({sourceConfigRef:'other-source'});
+    if(mode==='application')p.context.planResponse.applicationId='other-app';
+    if(mode==='evidence')delete p.context.planResponse.plan.evidenceDigest;
+    await p.run('loadIncrementalPlan()');
+    assert.equal(p.get('simple-submit').disabled,true,mode);
+    assert.match(p.get('simple-status').textContent,mode==='blocked'?/INCREMENTAL_PARENT_PREFIX_INVALID/:mode==='network'?/BRIDGE_TIMEOUT/:/INCREMENTAL_PLAN_INVALID/);
+    p.get('simple-submit').onclick();assert.equal(p.run('confirmation'),null);
+  }
+});
+
+test('a late plan from an earlier source cannot replace the current source plan',async()=>{
+  const p=page();planApi(p);p.get('simple-type').value='INCREMENTAL';
+  p.run(`globalThis.waiters=[];api=async()=>new Promise(resolve=>waiters.push(resolve));`);
+  const first=p.run('loadIncrementalPlan()');
+  p.run("options[0].sourceConfigRef='new-source';");
+  const second=p.run('loadIncrementalPlan()');
+  p.context.nextPlan=automaticPlan({sourceConfigRef:'new-source',parentChainRef:'new-parent',planDigest:'b'.repeat(64)});
+  p.run("waiters[1]({applicationId:'app',plan:nextPlan});");await second;
+  p.run('waiters[0](planResponse);');await first;
+  assert.equal(p.run("simpleRequest('plan-test').parentChainRef"),'new-parent');
+  assert.equal(p.get('simple-submit').disabled,false);
+});
+
+test('confirming an incremental freezes the plan digest and double clicks dispatch only once',async()=>{
+  const p=page();planApi(p);p.get('simple-type').value='INCREMENTAL';await p.get('simple-type').onchange();
+  p.get('simple-submit').onclick();p.context.expected=p.run('JSON.parse(JSON.stringify(confirmation.request))');
+  p.run(`globalThis.releasePost=null;api=async(url,body)=>{apiCalls.push({url,body});if(body)return new Promise(resolve=>{releasePost=resolve;});if(url==='/history')return [];return {operationId:expected.operationId,steps:[]};};`);
+  const first=p.get('simple-confirm-submit').onclick();await p.get('simple-confirm-submit').onclick();
+  assert.equal(p.context.apiCalls.filter(call=>call.body).length,1);
+  assert.equal(JSON.parse(p.store.get('spug-backup-original')).request.parentChainRef,'verified-increment');
+  p.run("releasePost({applicationId:'app',request:expected,automaticIncrementalPlan:planResponse.plan,result:{state:'RUNNING',logRefs:[]}});");await first;
+  assert.equal(p.run('pending.request.operationId'),p.context.expected.operationId);
+});
+
+test('a changed plan digest after confirmation requires a fresh confirmation',async()=>{
+  const p=page();planApi(p);p.get('simple-type').value='INCREMENTAL';await p.get('simple-type').onchange();
+  p.get('simple-submit').onclick();p.run("incrementalPlan={...incrementalPlan,plan:{...incrementalPlan.plan,planDigest:'b'.repeat(64)}};");
+  await p.get('simple-confirm-submit').onclick();
+  assert.equal(p.context.apiCalls.filter(call=>call.body).length,0);
+  assert.match(p.get('problem').textContent,/重新确认/);
+});
+
+test('only an exact pre-admission rejection unlocks the draft and refreshes the plan without resubmitting',async()=>{
+  for(const matches of [true,false]){
+    const p=page();planApi(p);p.get('simple-type').value='INCREMENTAL';await p.get('simple-type').onchange();
+    p.get('simple-submit').onclick();p.context.expected=p.run('JSON.parse(JSON.stringify(confirmation.request))');p.context.matches=matches;
+    p.run(`api=async(url,body)=>{apiCalls.push({url,body});if(body)throw Object.assign(new Error('INCREMENTAL_PLAN_CHANGED'),
+      {status:409,rejection:{accepted:false,operationId:matches?expected.operationId:'other-id',applicationId:'app'}});
+      if(url.startsWith('/incremental-plan?'))return planResponse;if(url==='/history')return [];
+      throw new Error('ORIGINAL_OPERATION_NOT_LOCALLY_RECORDED');};`);
+    await p.get('simple-confirm-submit').onclick();
+    assert.equal(p.context.apiCalls.filter(call=>call.body).length,1);
+    if(matches){
+      assert.equal(p.run('pending'),null);assert.equal(p.store.has('spug-backup-original'),false);
+      assert.equal(p.get('simple-submit').disabled,false);assert.match(p.get('problem').textContent,/重新确认/);
+      assert.equal(p.context.apiCalls.filter(call=>call.url.startsWith('/incremental-plan?')).length,2);
+    }else{
+      assert.equal(p.run('pending.request.operationId'),p.context.expected.operationId);
+      assert.equal(p.get('simple-submit').disabled,true);
+    }
+  }
+});
+
+test('unknown dispatch results keep polling the saved operation without another POST and stop at terminal state',async()=>{
+  const p=page();p.context.original=record();p.context.apiCalls=[];
+  p.run(`api=async(url,body)=>{apiCalls.push({url,body});throw new Error('ENTRY_REQUEST_TIMEOUT');};`);
+  await p.run('submitOriginal(original.request,original.applicationId)');
+  assert.equal(p.run('active.result'),undefined);
+  await p.run('pollOriginal()');
+  await p.run('pollOriginal()');
+  assert.equal(p.context.apiCalls.filter(call=>call.body).length,1);
+  assert.equal(p.context.apiCalls.filter(call=>call.url==='/operations/original-operation-123').length,3);
+  assert.match(p.get('problem').textContent,/ENTRY_REQUEST_TIMEOUT/);
+  p.run(`api=async(url,body)=>{apiCalls.push({url,body});if(url==='/history')return [];if(url.startsWith('/progress/'))return {operationId:original.request.operationId,steps:[]};return {...original,result:{state:'SUCCEEDED',logRefs:[]}};};`);
+  await p.run('pollOriginal()');const length=p.context.apiCalls.length;await p.run('pollOriginal()');
+  assert.equal(p.context.apiCalls.length,length);
+  assert.equal(p.run('pending.result.state'),'SUCCEEDED');
+});
+
+test('reopening an unresolved original immediately queries that original ID',async()=>{
+  const p=page();p.context.original=record();p.context.apiCalls=[];
+  p.run(`globalThis.configuration=simpleConfig;active={...original,result:undefined};pending=active;
+    api=async(url,body)=>{apiCalls.push({url,body});if(url==='/simple-config')return configuration;
+    if(url==='/history')return [];if(url.startsWith('/progress/'))return {operationId:original.request.operationId,steps:[]};
+    if(url.startsWith('/operations/'))return original;throw new Error('UNEXPECTED_TEST_API_CALL');};`);
+  await p.start();
+  assert.equal(p.context.apiCalls.filter(call=>call.url==='/operations/original-operation-123').length,1);
+  assert.equal(p.context.apiCalls.filter(call=>call.body).length,0);
+});
+
+test('viewing a completed history row continues tracking the unresolved original without replacing the viewed row',async()=>{
+  const p=page();p.context.original=record();p.context.historical=record('historical-operation');p.context.apiCalls=[];
+  p.run(`pending=original;historical.result.state='SUCCEEDED';selectRecord(historical);
+    api=async(url,body)=>{apiCalls.push({url,body});return {...original,result:{state:'SUCCEEDED',logRefs:[]}};};`);
+  await p.run('pollOriginal()');
+  assert.equal(p.context.apiCalls.filter(call=>call.url==='/operations/original-operation-123').length,1);
+  assert.equal(p.run('active.request.operationId'),'historical-operation');
+  assert.equal(p.run('pending.result.state'),'SUCCEEDED');
+  assert.equal(p.context.apiCalls.filter(call=>call.body).length,0);
+});
+
+test('returning to backup after a terminal operation requests a new authoritative plan',async()=>{
+  const p=page();planApi(p);p.get('simple-type').value='INCREMENTAL';await p.get('simple-type').onchange();
+  p.context.original=record();p.run("original.result.state='SUCCEEDED';active=original;pending=original;showSimplePage('progress');render();");
+  p.context.planResponse.plan=automaticPlan({parentChainRef:'next-increment',planDigest:'c'.repeat(64)});
+  await p.get('simple-backup-tab').onclick();
+  assert.equal(p.run("simpleRequest('next-operation').parentChainRef"),'next-increment');
+  assert.equal(p.get('simple-submit').disabled,false);
 });
 
 test('unregistered targets are disabled and unverified registered choices cannot submit',()=>{
@@ -235,7 +613,7 @@ test('replacement requires an explicit checkbox and retains the exact confirmed 
   p.get('simple-submit').onclick();
   assert.equal(p.get('replace-confirm-field').hidden,false);
   assert.equal(p.get('simple-confirm-submit').disabled,true);
-  assert.match(p.get('confirm-summary').textContent,/覆盖现有小程序/);
+  assert.match(p.get('confirm-summary').textContent,/覆盖现有程序/);
   await p.get('simple-confirm-submit').onclick();
   assert.equal(p.run('submissions.length'),0);
   p.get('replace-confirm').checked=true;p.get('replace-confirm').onchange();
@@ -296,7 +674,7 @@ test('history details show original point and target after the draft target rota
   const text=details.children.map(item=>item.textContent).join('\n');
   assert.match(text,/historical-point/);assert.match(text,/historical-target/);
   assert.match(text,/快速模式 · 跳过核验/);assert.doesNotMatch(text,/new-draft-target/);
-  assert.match(text,/覆盖现有小程序/);assert.match(text,/original-server/);
+  assert.match(text,/覆盖现有程序/);assert.match(text,/original-server/);
   p.run('selectRecord(null);render();');assert.equal(details.hidden,true);assert.equal(details.children.length,0);
 });
 
@@ -306,7 +684,7 @@ test('legacy history never infers restore semantics from current mappings',()=>{
     simpleConfig.bindings[0].overwriteTargetServers={'target-server':'historical-target'};selectRecord(original);render();`);
   const text=p.get('simple-operation-details').children.map(item=>item.textContent).join('\n');
   assert.match(text,/恢复方式未记录/);assert.match(text,/执行模式未记录/);
-  assert.doesNotMatch(text,/覆盖现有小程序|恢复到空目标/);
+  assert.doesNotMatch(text,/覆盖现有程序|恢复到空目标/);
 });
 
 test('retired source remains in history while new drafts select its explicit successor',()=>{

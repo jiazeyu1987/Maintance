@@ -163,6 +163,7 @@ class Ledger:
                 return self.status(value['operationId'])
             # Resolve actual source/archive configuration before reserving one dispatch.
             try:
+                self.require_source_idle(value['sourceConfigRef'])
                 selection = self.native.resolve(value)
             except Exception as error:
                 # Admission failed before any worker could be launched. Retain
@@ -181,6 +182,81 @@ class Ledger:
                 self.active.remove(value['operationId'])
                 raise
             return result(value, 'RUNNING')
+
+    def require_source_idle(self, source_ref, *, exclude_operation=None, guard=None):
+        """Read durable original states; an absent worker is not proof of completion.
+
+        The service owns its process-wide OS service.lock. The RLock serializes
+        this scan with reservations made by all request threads in that service.
+        """
+        opaque(source_ref)
+        with self.lock:
+            for directory in sorted(self.root.iterdir()):
+                if guard is not None:
+                    guard()
+                if not directory.is_dir():
+                    continue
+                need(directory.resolve() == directory, 'LEDGER_PATH_INVALID')
+                if directory.name == exclude_operation:
+                    continue
+                # A crash between mkdir and request publication has no provable
+                # source. Fail closed until its original reservation is resolved.
+                need((directory / 'request.json').is_file(), 'DURABLE_INTENT_INCOMPLETE')
+                saved = request(local_read(directory / 'request.json'))
+                need(saved['operationId'] == directory.name, 'LEDGER_OPERATION_MISMATCH')
+                if saved['sourceConfigRef'] != source_ref:
+                    continue
+                if self.successfully_closed(directory, saved):
+                    continue
+                current = self.status(saved['operationId'])
+                need(current['state'] in ('SUCCEEDED', 'FAILED'), 'SOURCE_OPERATION_IN_PROGRESS')
+                if guard is not None:
+                    guard()
+
+    def successfully_closed(self, directory, value):
+        """Use the worker's complete process closure for scheduling only.
+
+        Detailed original-ID queries still revalidate archived results and logs.
+        Missing closure documents use that full reconciliation path; a single UI
+        success record is never sufficient to release another source operation.
+        """
+        names = ('request.json', 'selection.json', 'intent.json', 'completion.json',
+                 'execute/native-intent.json', 'execute/native-process.json', 'execute/native-original-exit.json')
+        if not all((directory / name).is_file() for name in names):
+            return False
+        completion = local_read(directory / 'completion.json')
+        if completion.get('result', {}).get('state') != 'SUCCEEDED':
+            return False
+        import recovery_control_executor as executor
+        selected = local_read(directory / 'selection.json')
+        intent = local_read(directory / 'intent.json')
+        original = local_read(directory / 'execute/native-original-exit.json')
+        process = local_read(directory / 'execute/native-process.json')
+        launched = local_read(directory / 'execute/native-intent.json')
+        operation = value['operationId']
+        # An old incomplete version of the closure contract remains queryable
+        # through the original, more expensive reconciliation procedure.
+        if not all(key in original for key in ('intentPin', 'pid', 'timedOut')):
+            return False
+        need(intent.get('schemaVersion') == 'SmallAppDispatchIntent/v1' and
+             intent.get('operationId') == operation and intent.get('requestSha256') == fingerprint(value) and
+             intent.get('selection') == selected == completion.get('selection') and
+             completion.get('operationId') == operation and completion.get('uiRequestSha256') == fingerprint(value) and
+             completion.get('result') == result(value, 'SUCCEEDED') and completion.get('terminal') == original,
+             'SOURCE_CLOSURE_BINDING_INVALID')
+        request_pin = executor.pin(directory / 'request.json')
+        intent_pin = executor.pin(directory / 'execute/native-intent.json')
+        need(all(row.get('operationId') == row.get('requestId') == operation for row in (original, process, launched)) and
+             original.get('requestPin') == launched.get('requestPin') == request_pin and
+             original.get('intentPin') == process.get('intentPin') == intent_pin and
+             type(original.get('pid')) is int and original['pid'] > 0 and original['pid'] == process.get('pid') and
+             type(original.get('actualExitCode')) is int and original['actualExitCode'] == 0 and
+             original.get('timedOut') is False and original.get('resultPin') is not None and
+             launched.get('configurationPin') == selected.get('ownerConfigurationPin') and
+             launched.get('programPin') == selected.get('ownerProgramPin'), 'SOURCE_CLOSURE_EXIT_INVALID')
+        for key in ('requestPin', 'intentPin', 'resultPin', 'stdoutPin', 'stderrPin'):
+            executor.pin_reference(original[key])
+        return True
 
     def reserve(self, value, selection):
         """Storage primitive; submit calls only after authentic native resolution."""

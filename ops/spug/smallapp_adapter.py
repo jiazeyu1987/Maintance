@@ -6,6 +6,10 @@ Private transport bindings must be supplied from W01's actual delivery.
 """
 import argparse
 import datetime
+import errno
+import http.client
+import socket
+import ssl
 import hashlib
 import json
 import os
@@ -144,6 +148,36 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         raise Refused('BRIDGE_REDIRECT_REFUSED')
 
 
+def bridge_failure_code(error):
+    """Classify native facts only; exception text can contain private URLs/auth."""
+    wrapped = isinstance(error, urllib.error.URLError)
+    cause = error.reason if wrapped else error
+    if isinstance(cause, (http.client.IncompleteRead, http.client.RemoteDisconnected)):
+        return 'BRIDGE_RESPONSE_INCOMPLETE'
+    if isinstance(cause, ssl.SSLCertVerificationError):
+        return 'BRIDGE_TLS_CERTIFICATE_INVALID'
+    if isinstance(cause, ssl.SSLError):
+        return 'BRIDGE_TLS_FAILED'
+    if isinstance(cause, socket.gaierror):
+        return 'BRIDGE_DNS_FAILED'
+    numbers = {getattr(cause, 'errno', None), getattr(cause, 'winerror', None)}
+    if isinstance(cause, TimeoutError) or numbers & {errno.ETIMEDOUT, 10060}:
+        return 'BRIDGE_TIMEOUT'
+    if isinstance(cause, ConnectionRefusedError) or numbers & {errno.ECONNREFUSED, 10061}:
+        return 'BRIDGE_CONNECTION_REFUSED'
+    if isinstance(cause, (ConnectionResetError, ConnectionAbortedError, BrokenPipeError)) or numbers & {
+            errno.ECONNRESET, errno.ECONNABORTED, errno.EPIPE, 10053, 10054}:
+        return 'BRIDGE_CONNECTION_RESET'
+    if numbers & {errno.ENETUNREACH, errno.EHOSTUNREACH, errno.ENETDOWN, 10050, 10051, 10065}:
+        return 'BRIDGE_NETWORK_UNREACHABLE'
+    if isinstance(cause, http.client.HTTPException):
+        return 'BRIDGE_RESPONSE_HTTP_INVALID'
+    if isinstance(cause, ValueError):
+        return 'BRIDGE_REQUEST_INVALID'
+    return 'BRIDGE_IO_FAILED' if isinstance(cause, OSError) else 'BRIDGE_CONNECTION_FAILED'
+
+
+
 class HttpBridge:
     """Explicit private endpoints, never an IntRuoyi release admin-api route."""
     def __init__(self, path=PRIVATE / 'smallapp-bridge.private.json', source_ref=None, target_ref=None):
@@ -236,29 +270,56 @@ class HttpBridge:
         self.requests.append('GET' if request is None else 'POST')
         data = None if request is None else json.dumps(request, separators=(',', ':')).encode('utf-8')
         headers = {**self.headers, 'Content-Type': 'application/json'}
+        # The native plan has a 30-second total deadline, including its live
+        # database metadata probe. Leave bounded transport time around it.
+        path = urllib.parse.urlsplit(url).path
+        planning = (request is None and path == '/incremental-plan') or (
+            isinstance(request, dict) and path == '/operations' and request.get('action') == 'INCREMENTAL')
+        timeout = 40 if planning else 10
         try:
-            with self.opener.open(urllib.request.Request(url, data=data, headers=headers), timeout=10) as response:
+            with self.opener.open(urllib.request.Request(url, data=data, headers=headers), timeout=timeout) as response:
                 body = response.read(65537)
-                if len(body) > 65536:
-                    raise Refused('BRIDGE_RESPONSE_TOO_LARGE')
-                return json.loads(body.decode('utf-8'))
         except urllib.error.HTTPError as error:
-            body = error.read(65537)
             try:
+                body = error.read(65537)
                 value = json.loads(body.decode('utf-8')) if len(body) <= 65536 else None
-            except (UnicodeError, ValueError):
+            except (OSError, UnicodeError, ValueError, http.client.HTTPException, RecursionError):
+                # The HTTP status is already proven even if its optional body is unreadable.
                 raise Refused('BRIDGE_HTTP_' + str(error.code)) from None
+            finally:
+                error.close()
             if isinstance(value, dict) and set(value) == {'errorCode'} and symbolic_error(value['errorCode']):
                 raise Refused(value['errorCode']) from None
             raise Refused('BRIDGE_HTTP_' + str(error.code)) from None
-        except (urllib.error.URLError, TimeoutError, OSError, ValueError):
-            raise Refused('BRIDGE_UNAVAILABLE_OR_RESPONSE_INVALID') from None
+        except (urllib.error.URLError, OSError, ValueError, http.client.HTTPException) as error:
+            raise Refused(bridge_failure_code(error)) from None
+        if len(body) > 65536:
+            raise Refused('BRIDGE_RESPONSE_TOO_LARGE')
+        try:
+            text = body.decode('utf-8')
+        except UnicodeError:
+            raise Refused('BRIDGE_RESPONSE_ENCODING_INVALID') from None
+        try:
+            return json.loads(text)
+        except (ValueError, RecursionError):
+            raise Refused('BRIDGE_RESPONSE_JSON_INVALID') from None
 
     def submit(self, request):
         return self.call(self.submit_url, request)
 
     def query(self, operation_id):
         return self.call(self.query_template.replace('{operationId}', urllib.parse.quote(operation_id, safe='')))
+
+    def incremental_plan(self, source_ref):
+        if source_ref not in self.source_refs or self.selected_target is not None:
+            raise Refused('SOURCE_NOT_IN_CURRENT_BINDING')
+        parsed = urllib.parse.urlsplit(self.selection_url or '')
+        if ((parsed.scheme, parsed.hostname, parsed.port) != self.origin or parsed.username or
+                parsed.password or parsed.query or parsed.fragment or parsed.path != '/selections'):
+            raise Refused('W01_SELECTION_ENDPOINT_OUTSIDE_BINDING')
+        endpoint = urllib.parse.urlunsplit((parsed.scheme, parsed.netloc, '/incremental-plan',
+            urllib.parse.urlencode({'sourceConfigRef': source_ref}), ''))
+        return self.call(endpoint)
 
     def _local_selections(self):
         if not isinstance(self.selection_url, str):

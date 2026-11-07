@@ -169,6 +169,107 @@ def admit_selection(request, config, bridge):
     return app
 
 
+def validated_incremental_plan(value, source_ref):
+    fields = {'schemaVersion', 'sourceConfigRef', 'state', 'reasonCode', 'parentChainRef',
+        'baseFullRef', 'generationId', 'chainDepth', 'pointType', 'parentPointType',
+        'basePointType', 'finishedAt', 'baseFinishedAt', 'evidenceDigest', 'planDigest'}
+    need(isinstance(value, dict) and set(value) == fields and
+         value['schemaVersion'] == 'AutomaticIncrementalPlan/v1', 'INCREMENTAL_PLAN_INVALID')
+    need(value['sourceConfigRef'] == source_ref, 'INCREMENTAL_PLAN_SOURCE_MISMATCH')
+    need(isinstance(value['evidenceDigest'], str) and re.fullmatch('[0-9a-f]{64}', value['evidenceDigest']),
+         'INCREMENTAL_PLAN_INVALID')
+    need(value['state'] in ('READY', 'BASELINE_REQUIRED', 'BLOCKED') and
+         type(value['chainDepth']) is int and 0 <= value['chainDepth'] <= 100000,
+         'INCREMENTAL_PLAN_INVALID')
+    need((value['state'] == 'READY' and value['reasonCode'] is None) or
+         (value['state'] != 'READY' and adapter.symbolic_error(value['reasonCode'])),
+         'INCREMENTAL_PLAN_INVALID')
+    for key in ('parentChainRef', 'baseFullRef', 'generationId'):
+        need(value[key] is None or adapter.reference(value[key]), 'INCREMENTAL_PLAN_INVALID')
+    need(value['basePointType'] in (None, 'FULL') and
+         value['pointType'] in (None, 'FULL', 'INCREMENTAL') and
+         value['pointType'] == value['parentPointType'], 'INCREMENTAL_PLAN_INVALID')
+    for key in ('finishedAt', 'baseFinishedAt'):
+        if value[key] is not None:
+            try:
+                stamp = datetime.datetime.fromisoformat(value[key].replace('Z', '+00:00'))
+                need(stamp.utcoffset() == datetime.timedelta(0), 'INCREMENTAL_PLAN_INVALID')
+            except (AttributeError, TypeError, ValueError):
+                raise adapter.Refused('INCREMENTAL_PLAN_INVALID') from None
+    if value['state'] == 'READY':
+        need(all(value[k] is not None for k in ('parentChainRef', 'baseFullRef', 'generationId',
+             'pointType', 'finishedAt', 'baseFinishedAt')) and value['basePointType'] == 'FULL'
+             and value['chainDepth'] > 0, 'INCREMENTAL_PLAN_INVALID')
+    body = {key: item for key, item in value.items() if key != 'planDigest'}
+    digest = hashlib.sha256(json.dumps(body, sort_keys=True, separators=(',', ':'),
+        ensure_ascii=False).encode('utf-8')).hexdigest()
+    need(value['planDigest'] == digest, 'INCREMENTAL_PLAN_DIGEST_INVALID')
+    return value
+
+
+def incremental_application(config, application_id):
+    need(adapter.reference(application_id), 'AUTOMATIC_INCREMENTAL_REQUEST_INVALID')
+    matches = [app for app in config['applications'] if app['applicationId'] == application_id]
+    need(len(matches) == 1 and adapter.reference(matches[0]['sourceConfigRef']),
+         'SOURCE_NOT_REGISTERED_BY_W08')
+    return matches[0]
+
+
+def automatic_incremental_plan(config, application_id, bridge=None):
+    app = incremental_application(config, application_id)
+    bridge = bridge or adapter.HttpBridge(source_ref=app['sourceConfigRef'])
+    plan = validated_incremental_plan(bridge.incremental_plan(app['sourceConfigRef']), app['sourceConfigRef'])
+    return dict(applicationId=application_id, plan=plan)
+
+
+class AutomaticIncrementalNotAccepted(adapter.Refused):
+    """Only issued under the source lock when this ID has no published record."""
+
+    def __init__(self, code, intent):
+        super().__init__(code)
+        self.not_accepted = dict(accepted=False, operationId=intent['operationId'],
+                                applicationId=intent['applicationId'])
+
+
+def validate_automatic_incremental_intent(intent):
+    need(isinstance(intent, dict) and set(intent) ==
+         {'schemaVersion', 'operationId', 'applicationId', 'planDigest'} and
+         intent['schemaVersion'] == 'AutomaticIncrementalRequest/v1' and
+         adapter.reference(intent['operationId']) and len(intent['operationId']) >= 8 and
+         adapter.reference(intent['applicationId']) and
+         isinstance(intent['planDigest'], str) and re.fullmatch('[0-9a-f]{64}', intent['planDigest']),
+         'AUTOMATIC_INCREMENTAL_REQUEST_INVALID')
+
+
+def reserve_automatic_incremental(intent, config, bridge, user_id, root=ENTRIES, *,
+                                  display_context_factory=None):
+    validate_automatic_incremental_intent(intent)
+    app = incremental_application(config, intent['applicationId'])
+    with source_reservation_lock(app['sourceConfigRef'], root):
+        path = record_path(intent['operationId'], root)
+        if path.exists():
+            original = adapter.read_json(path)
+            need(original.get('automaticIncrementalIntent') == intent and
+                 original['request']['sourceConfigRef'] == app['sourceConfigRef'],
+                 'OPERATION_ID_REQUEST_REUSE_REJECTED')
+            return original, False
+        try:
+            plan = automatic_incremental_plan(config, app['applicationId'], bridge)['plan']
+            need(plan['state'] != 'BLOCKED', plan['reasonCode'])
+            need(plan['planDigest'] == intent['planDigest'], 'INCREMENTAL_PLAN_CHANGED')
+            request = dict(schemaVersion='SmallAppBackupUiRequest/v1', operationId=intent['operationId'],
+                action='INCREMENTAL' if plan['state'] == 'READY' else 'FULL',
+                sourceConfigRef=app['sourceConfigRef'],
+                parentChainRef=plan['parentChainRef'] if plan['state'] == 'READY' else None,
+                recoveryPointRef=None, targetConfigRef=None)
+            return reserve_locked(request, config, bridge, user_id, root, display_context_factory,
+                automatic_context=dict(automaticIncrementalIntent=intent, automaticIncrementalPlan=plan))
+        except adapter.Refused as error:
+            if not path.exists():
+                raise AutomaticIncrementalNotAccepted(str(error), intent) from None
+            raise
+
+
 def validate_prepared_binding(operation_id, bridge, config=None, root=ENTRIES):
     record = adapter.read_json(record_path(operation_id, root))
     config = settings() if config is None else config
@@ -228,7 +329,7 @@ def reserve(request, config, bridge, user_id, root=ENTRIES, *, display_context_f
         return reserve_locked(request, config, bridge, user_id, root, display_context_factory)
 
 
-def reserve_locked(request, config, bridge, user_id, root, display_context_factory=None):
+def reserve_locked(request, config, bridge, user_id, root, display_context_factory=None, *, automatic_context=None):
     path = record_path(request['operationId'], root)
     if path.exists():
         record = adapter.read_json(path)
@@ -262,6 +363,8 @@ def reserve_locked(request, config, bridge, user_id, root, display_context_facto
     # Capture after admission, before publication/dispatch. Never recompute originals.
     if display_context_factory is not None:
         record['displayContext'] = display_context_factory(request, app['applicationId'])
+    if automatic_context is not None:
+        record.update(automatic_context)
     try:
         adapter.write_json(path, record, exclusive=True)
         return record, True
@@ -273,12 +376,16 @@ def reserve_locked(request, config, bridge, user_id, root, display_context_facto
 
 def public_record(record):
     # Whitelist only public request/result references. Never include credentials/native originals.
-    return dict({key: record[key] for key in ('request', 'applicationId', 'spugTaskId', 'createdAt',
+    value = dict({key: record[key] for key in ('request', 'applicationId', 'spugTaskId', 'createdAt',
             'spugHistoryId', 'dispatchErrorCode')}, dispatchState=record.get('dispatchState'),
             cancelledUnaccepted=record.get('dispatchState') == 'CANCELLED_UNACCEPTED',
             displayContext=({key: record['displayContext'].get(key)
                             for key in ('server', 'mode', 'restoreMode')}
                            if isinstance(record.get('displayContext'), dict) else None))
+    if 'automaticIncrementalPlan' in record:
+        value['automaticIncrementalPlan'] = validated_incremental_plan(
+            record['automaticIncrementalPlan'], record['request']['sourceConfigRef'])
+    return value
 
 
 def validate_cancellation(record):
@@ -523,6 +630,11 @@ def handler():
                 if self.path == '/simple-config':
                     import smallapp_simple
                     self.reply(200, smallapp_simple.public_configuration())
+                elif urlsplit(self.path).path == '/incremental-plan':
+                    parameters = parse_qs(urlsplit(self.path).query, strict_parsing=True)
+                    need(set(parameters) == {'applicationId'} and len(parameters['applicationId']) == 1,
+                         'ENTRY_ROUTE_UNKNOWN')
+                    self.reply(200, automatic_incremental_plan(settings(), parameters['applicationId'][0]))
                 elif self.path.startswith('/progress/') and self.path.count('/') == 2:
                     import smallapp_simple
                     operation = self.path[len('/progress/'):]
@@ -575,7 +687,7 @@ def handler():
         def do_POST(self):
             try:
                 user_id = self.authorize(edit=True)
-                need(self.path in ('/operations', '/cancel-unaccepted', '/recover-reserved'), 'ENTRY_ROUTE_UNKNOWN')
+                need(self.path in ('/operations', '/automatic-incremental', '/cancel-unaccepted', '/recover-reserved'), 'ENTRY_ROUTE_UNKNOWN')
                 need(not self.headers.get_all('Transfer-Encoding', []), 'ENTRY_BODY_INVALID')
                 sizes = self.headers.get_all('Content-Length', [])
                 need(len(sizes) == 1 and re.fullmatch('[0-9]+', sizes[0]), 'ENTRY_BODY_INVALID')
@@ -587,6 +699,31 @@ def handler():
                     value = json.loads(raw.decode('utf-8'))
                 except (UnicodeError, ValueError):
                     raise adapter.Refused('ENTRY_BODY_INVALID') from None
+                if self.path == '/automatic-incremental':
+                    validate_automatic_incremental_intent(value)
+                    path = record_path(value['operationId'])
+                    if path.exists():
+                        original = adapter.read_json(path)
+                        need(original.get('automaticIncrementalIntent') == value,
+                             'OPERATION_ID_REQUEST_REUSE_REJECTED')
+                        self.reply(200, original_result(value['operationId']))
+                        return
+                    config = settings()
+                    need(isinstance(value, dict), 'AUTOMATIC_INCREMENTAL_REQUEST_INVALID')
+                    app = incremental_application(config, value.get('applicationId'))
+                    installed_task(config, 'FULL')
+                    installed_task(config, 'INCREMENTAL')
+                    from smallapp_simple import display_context
+                    record, first = reserve_automatic_incremental(value, config,
+                        adapter.HttpBridge(source_ref=app['sourceConfigRef']), user_id,
+                        display_context_factory=display_context)
+                    if not first:
+                        self.reply(200, original_result(record['request']['operationId']))
+                        return
+                    threading.Thread(target=dispatch, args=(record, config), daemon=False).start()
+                    self.reply(202, dict(public_record(record), result=adapter.running(
+                        record['request'], 'SPUG_DISPATCH_RESERVED'), repeatSubmissionAllowed=False))
+                    return
                 adapter.validate_request(value)
                 if self.path == '/cancel-unaccepted':
                     record = cancel_unaccepted(value, settings(),
@@ -619,6 +756,8 @@ def handler():
                 threading.Thread(target=dispatch, args=(record, config), daemon=False).start()
                 self.reply(202, dict(public_record(record),
                     result=adapter.running(value, 'SPUG_DISPATCH_RESERVED'), repeatSubmissionAllowed=False))
+            except AutomaticIncrementalNotAccepted as error:
+                self.reply(409, dict(error.not_accepted, errorCode=str(error)))
             except adapter.Refused as error:
                 self.reply(401 if str(error) == 'SPUG_LOGIN_REQUIRED' else 409, {'errorCode': str(error)})
             except Exception:

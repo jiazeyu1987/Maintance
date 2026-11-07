@@ -9,9 +9,36 @@ import hashlib
 from standard_timing import backup_timings, restore_timings
 
 
+def incremental_sql_stream(payload, root):
+    """Replace only the frozen SQL marker read, retaining safe digest gates."""
+    name = 'common/recovery_data.py'
+    source = payload[name].decode('utf-8').replace('\r\n', '\n')
+    changes = (
+        ('        raw = expanded.read_bytes()\n', ''),
+        ("        require(raw.startswith(b'-- IntRuoyi binlog incremental;'), 'CAPTURED_BINLOG_SQL_REQUIRED')\n", ''),
+        ("""        require(mode in ('GTID', 'FILE_POSITION'), 'CAPTURED_BINLOG_LOG_MODE_INVALID')
+        if mode == 'GTID':
+            require(not delta['segments'] or b'BINLOG ' in raw or
+                    re.search(rb"SET @@SESSION\\.GTID_NEXT\\s*=\\s*'[0-9a-fA-F-]+:[0-9]+'", raw),
+                    'CAPTURED_BINLOG_SQL_REQUIRED')
+""", """        from recovery_sql_stream import inspect_incremental_sql
+        with self.timed_stage('sql-inspect'):
+            inspect_incremental_sql(expanded, mode=mode, has_segments=bool(delta['segments']),
+                guard=self.guard, seconds=self.seconds())
+"""),
+    )
+    for before, after in changes:
+        if source.count(before) != 1:
+            raise ValueError('STANDARD_SQL_STREAM_CONTEXT_CHANGED ' + name)
+        source = source.replace(before, after)
+    payload[name] = source.encode('utf-8')
+    payload['common/recovery_sql_stream.py'] = (root/'ops/recovery/recovery_sql_stream.py').read_bytes()
+
+
 def apply(payload):
     payload = dict(payload)
     root = Path(__file__).resolve().parents[2]
+    incremental_sql_stream(payload, root)
 
     def replace(name, before, after):
         source = payload[name].decode().replace('\r\n', '\n')
@@ -482,10 +509,11 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
         "        from recovery_resource_admission import admit\n"
         "        admit(configuration, request, root, 'target', reservation_configuration=reservation_configuration)\n"
         "        reservation = absolute(target['dataRoot'])/'.recovery-operation.json'\n")
-    # The control plane is shared by both modes. These authenticated baseline
-    # modules differed from the current sources only by the reviewed OOM fix;
-    # do not copy any lightweight archive/data reader into the safe package.
+    # The control plane is shared by both modes. Authenticate the frozen
+    # modules before applying the reviewed execution and automatic-chain fixes;
+    # never copy lightweight archive/data readers into the safe package.
     for name, expected in {
+        'recovery_control_smallapp.py': 'a5dfbb9173a77eae43227869f92e834abccb195d2bcd4020322501386690d508',
         'recovery_control_smallapp_native.py': '1ddb9e448f1a96cc33835429b4e86ddc0c72daee741c516008eeeb206e89f043',
         'recovery_control_executor.py': '5b69c014cfe2838891a9cc1b22965d5e5288306e4344dd8fd3a25a8499f8c136',
         'recovery_control_smallapp_http.py': 'f3046ea7b16dbfb2f39ed25c5ab0fa5647f1056eb21b90127a6d109e38789f6f',
@@ -494,4 +522,7 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
         if hashlib.sha256(payload[path].replace(b'\r\n', b'\n')).hexdigest() != expected:
             raise ValueError('STANDARD_CONTROL_BASELINE_CHANGED ' + name)
         payload[path] = (root/'backend/src/main/resources'/name).read_bytes()
+    payload['control/recovery_control_incremental_plan.py'] = (
+        root/'backend/src/main/resources/recovery_control_incremental_plan.py').read_bytes()
+    payload['common/recovery_backup_epoch.py'] = (root/'ops/recovery/recovery_backup_epoch.py').read_bytes()
     return payload

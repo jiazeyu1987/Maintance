@@ -1,5 +1,16 @@
 # IntRuoyi Codex 发布执行检查清单
 
+## 自动增量链与恢复周期门禁
+
+- Trigger：增量按钮自动选父链、控制重启、全库恢复、日志清理或新增备份周期策略。
+- Preflight check：同来源不可变原生成功结果/退出/point/manifest/capture父链、最新唯一全量根及唯一完整链尾；实际容器身份/UUID、日志保留及位置连续性；持久未决任务与同一物理源锁。计划摘要绑定稳定配置/点/周期，不绑定不断前进的实时日志末尾。
+- Blocker：缺或失效基线明确要求新FULL；分叉、损坏、配置/身份/权限/连接错误、未决任务与未知提交阻断。不能将未知结果标成未受理；只有持锁确认未发布该ID预约的错误才返回精确accepted=false证明。
+- Verification：BDD/RED/GREEN分别覆盖连续两次增量、过期计划、同编号/同源并发、重启原件、恢复epoch、日志purge/缺段、成功收据后崩溃收口；真实Linux锁/进程/存储失败、真实HTTP、UI、实际双包构造与完整代理预算。最终真实Spug登录执行并核原生终态与父子点。
+- Forbidden action：不按浏览器历史时间猜父点，不自动补发未知POST，不把全量记成增量，不追认旧点epoch，不修改旧target或放宽旧失败clearance比较，不忽略丢失日志或删除raw/gzip载荷绕过旧合同。
+- Evidence：`doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-incremental-plan.md`、`backup-epoch-plan.md`、`incremental-resilience-review.md`、实际Linux/HTTP/封包及安装验收回执。
+
+阶段必查与推荐命令：先运行test_automatic_incremental_plan、test_backup_epoch、test_automatic_incremental_resilience和test_backup_variants；Spug的test_automatic_incremental_entry/http/proxy及UI真实状态测试一起运行。单次计划避免重复哈希已闭合历史的大回读文件；只读缓存结束复核身份。安装只用新专属干净提交worktree，读取实际新进程配置/文件摘要及认证计划。启用周期时无活动操作、持来源锁显式初始化，原target通过owner顶层targetBackupEpochPolicies保持原字节，旧点先建立新FULL。Fail Fast按上述Blocker；必须记录实际命令/退出/零skip/包pins/唯一操作号/实际类型/父链及原服务、挂载、失败原件保持。
+
 ## 实际封包构造配置传递门禁
 
 - Trigger：owner 新增运行配置、冻结标准包的 reviewed transforms 变更，或配置存在但实际 runtime 缺失字段。
@@ -714,3 +725,14 @@ Codex 只有在以下条件同时成立时，才能判定完整发布完成：
 - Evidence：doc/tasks/20261106-spug-prod-incremental-to-two-targets/main-frontend-readiness-plan.md、main-health-endpoint-58.json、frontend-readiness-candidate-58.json、inherited-quiescence-candidate-58.json及RED/GREEN/REGRESSION原始日志。
 
 阶段必查项：只读原配置与失败原件 -> BDD/RED -> 实现及完整回归 -> 限定提交/新专属精确构建 -> 原件完整SHA及仅控制安装 -> 正式续办 -> 新鲜准入/真实Spug单次提交。推荐命令：docker inspect精确原id、读取已pin nginx配置、候选只读endpoint解析、verify_no_mutation/inherited_quiescence/observe、实际语义HTTP探测。Fail Fast按上述Blocker；必须记录真实网络模式、endpoint、文件与配置SHA、各失败操作及消费关系、原服务状态、实际退出/写标记、测试原始失败与新安装代次。
+
+## 授权控制升级的活动回执历史保全
+
+- Trigger: 控制升级轮转target-installation.json，且原历史不变清单包含该活动回执。
+- Preflight check: 固定原清单、唯一活动回执pin和明确授权的全部安装报告；逐代核previousReceiptPin/currentReceiptPin字节身份，首个归档必须等于原清单pin，最后活动回执必须等于当前选择的实装。全量读取历史owner/control及dropin pins，核来源、目标定义不变。
+- Blocker: 缺失/乱序安装、任何pin不符、归档到活动链断裂、未知激活、来源/目标漂移，或其它原历史路径变化。
+- Verification: 对除唯一活动回执以外的全部原路径逐SHA核对；对活动回执验证原字节归档及每代完整链。分别记录原文件数、原字节总数、不变路径数、授权活动回执数、代数；原生验收和收尾都必须实际通过。真实只读输入上验证缺失、篡改、乱序均拒绝。
+- Forbidden action: 不重写原清单、不泛化排除活动文件、不丢弃失败原件、不把授权变化路径宣称原路径不变、不用安装报告代替真实归档字节读取。
+- Evidence: doc/tasks/20261106-spug-prod-incremental-to-two-targets/installation-history-custody-plan.md、history-receipt-custody-red.json、history-receipt-custody-green-58/59.json及protected-history-custody-preflight-58/59.json。
+
+阶段1安装前：必查原清单和完整授权代次；推荐读取每个回执的size/SHA及owner/control绑定；原始基线只读保存。阶段2安装后：只读逐代读取归档和当前原件，精确核首尾及相邻字节、定义和配置pins，任何Blocker立即停止验收。阶段3最终收尾：在全部业务操作结束后重跑完整历史和回执链验证。必须记录各阶段时间、真实命令、原始失败、原清单身份、具体变化路径及两类保全结论；此审计问题可前置并由严格pin链自动核验。

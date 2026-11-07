@@ -1,5 +1,7 @@
 # 项目经验索引
 
+- 自动增量 / automatic-incremental / 自动全量基线 / planDigest / 恢复epoch / 日志过期 / 未知提交 / 计划超时：`docs/release-agent-checklist.md#自动增量链与恢复周期门禁`。权威成功链、来源实际日志、稳定摘要、持久互斥、原件跟踪及整个HTTP预算一起验证；旧目标历史严格比较保持，不追认旧点epoch。
+
 - STANDARD 配置传递 / PACKAGED_FRONTEND_PROFILE_NOT_PROPAGATED / 已登记但实际构造丢失：`docs/release-agent-checklist.md#实际封包构造配置传递门禁`。冻结基线加 transforms 必须覆盖新 owner 字段；实际封包新进程运行构造函数到首次数据库访问边界，禁止手动填充测试对象代替交付路径。
 
 - MAIN旧clearance / mainProtectionRecoveryPin KeyError / 已消费失败历史 / selections 500：`docs/release-agent-checklist.md#旧main续办历史兼容门禁`。升级前以真实全部历史核目标选择；仅显式兼容无新保护的旧MAIN/v1且消费链最终实际成功的合同，核原配置、同点同目标及终态，不删除或改写旧记录。
@@ -329,3 +331,4 @@
 - Keywords: Playwright 登录稳定窗口, postLoginConsoleErrorCount, postLoginFailedRequestCount, net::ERR_ABORTED, 测试租户 aoteman 发布后页面验收, r44 页面验收 -> `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md#2026-09-11-发布后-playwright-登录稳定窗口门禁`
 - Keywords: 发布后自动清理, 旧容器旧镜像, 最近恢复点保护, 已核销失败现场, openingJobId, retry-release-cleanup, 镜像共享层空间 -> `docs/release-agent-checklist.md#发布验收后旧载荷回收门禁`（阶段顺序、归属与锁复核、独立重试及真实 Docker 验证）。
 - MAIN_HEALTH_ENDPOINT_INVALID / frontend 127.0.0.1 / host nginx listen / 无写失败继承停写：`docs/release-agent-checklist.md#原main前端网络与继承停写门禁`。健康入口必须绑定真实原网络/监听，不猜80；写前失败若消费了停写clearance，精确继承原observation和scheduler custody，不启动writer凑准入。
+- target-installation.json / previousReceiptPin / 活动回执轮转 / 原历史清单 / 安装代次保全：`docs/release-agent-checklist.md#授权控制升级的活动回执历史保全`。原清单不改；唯一授权活动回执须逐字节证明原归档到当前完整链，其余原路径逐SHA保持，业务操作后重新验证。

@@ -50,7 +50,8 @@ def validate(target):
     version = value.get('schemaVersion')
     require(version in ('RegisteredApplicationReplacement/v1', 'RegisteredApplicationReplacement/v2') and
             set(value) == {'schemaVersion', 'stateRoot', 'lockPath', 'databaseUuid', 'services'} |
-            ({'storage'} if version == 'RegisteredApplicationReplacement/v2' else set()),
+            ({'storage'} if version == 'RegisteredApplicationReplacement/v2' else set()) |
+            ({'backupEpoch'} if 'backupEpoch' in value else set()),
             'REPLACEMENT_CONFIGURATION_INVALID')
     require(re.fullmatch('[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', value['databaseUuid']),
             'REPLACEMENT_CONFIGURATION_INVALID')
@@ -66,7 +67,48 @@ def validate(target):
     state, lock = absolute(value['stateRoot']), absolute(value['lockPath'])
     require(state.is_dir() and lock.parent.is_dir() and lock != state and not lock.is_relative_to(state),
             'REPLACEMENT_STATE_INVALID')
+    if 'backupEpoch' in value:
+        _validate_epoch(value, value['backupEpoch'])
     return value
+
+
+def _validate_epoch(value, policy):
+    from recovery_backup_epoch import validate_policy
+    epoch = validate_policy(policy)
+    if epoch['sourceLockPath'] != value['lockPath']:
+        raise ValueError('BACKUP_EPOCH_SOURCE_LOCK_MISMATCH')
+    if epoch['databaseUuid'] != value['databaseUuid']:
+        raise ValueError('BACKUP_EPOCH_DATABASE_MISMATCH')
+    epoch_root = absolute(epoch['root'])
+    state, lock = absolute(value['stateRoot']), absolute(value['lockPath'])
+    if epoch_root.is_relative_to(state) or state.is_relative_to(epoch_root):
+        raise ValueError('BACKUP_EPOCH_REPLACEMENT_STATE_OVERLAP')
+    for service in value['services'].values():
+        for mount in service.get('mounts', []):
+            if mount.get('RW'):
+                storage = absolute(mount['Source'])
+                if (epoch_root.is_relative_to(storage) or storage.is_relative_to(epoch_root) or
+                        lock.is_relative_to(storage)):
+                    raise ValueError('BACKUP_EPOCH_REPLACEMENT_STORAGE_OVERLAP')
+
+
+def replacement_value(configuration, target_ref):
+    """Bind owner metadata without changing the target pinned by old history."""
+    target = configuration['targets'][target_ref]
+    value = validate(target)
+    policies = configuration.get('targetBackupEpochPolicies', {})
+    if not (type(policies) is dict and all(type(key) is str for key in policies) and
+            set(policies).issubset(configuration['targets'])):
+        raise ValueError('BACKUP_EPOCH_TARGET_POLICIES_INVALID')
+    if target_ref not in policies:
+        return value
+    policy = policies[target_ref]
+    if 'backupEpoch' in value and value['backupEpoch'] != policy:
+        raise ValueError('BACKUP_EPOCH_TARGET_POLICY_CONFLICT')
+    _validate_epoch(value, policy)
+    effective = deepcopy(value)
+    effective['backupEpoch'] = deepcopy(policy)
+    return effective
 
 
 def available(target):
@@ -103,16 +145,20 @@ def verify_services(native, value):
     return writable
 
 
-def prepare(native, value):
+def prepare(native, value, *, source_lock_fd=None):
     from recovery_data_files import apply_tree, inventory
     if hasattr(native, 'replacement_preflight'):
         native.replacement_preflight()
     verify_services(native, value)
     require(native.mysql.query('SELECT @@GLOBAL.log_bin;').strip() == '1',
             'REPLACEMENT_BINARY_LOGGING_REQUIRED')
-    write(native.root/'replacement-intent.json', dict(targetConfigRef=native.original['targetConfigRef'],
+    intent = dict(targetConfigRef=native.original['targetConfigRef'],
           database=native.config['database'], databaseUuid=value['databaseUuid'],
-          serviceIds={role:item['id'] for role,item in value['services'].items()}, startedAt=utc()))
+          serviceIds={role:item['id'] for role,item in value['services'].items()}, startedAt=utc())
+    if 'backupEpoch' in value:
+        intent.update(schemaVersion='ReplacementBackupEpochIntent/v1', operationId=native.original['operationId'],
+            replacementReceiptPath=(absolute(value['stateRoot'])/native.original['operationId']/'replacement-result.json').as_posix())
+    intent_pin = write(native.root/'replacement-intent.json', intent)
     if hasattr(native, 'replacement_write_fence'):
         native.replacement_write_fence()
     for role in reversed(native.config['application']['startOrder']):
@@ -125,6 +171,10 @@ def prepare(native, value):
     verify_services(native, value)
     if hasattr(native, 'replacement_quiescence'):
         native.replacement_quiescence()
+    if 'backupEpoch' in value:
+        from recovery_backup_epoch import begin_restore
+        native.backup_epoch = begin_restore(value['backupEpoch'], native.original['operationId'], source_lock_fd,
+                                          intent_pin=intent_pin)
     native.mutation_dispatched = True
     native.mysql.query('DROP DATABASE `'+database+'`; CREATE DATABASE `'+database+'`;', mutation=True)
     mount = [m for m in value['services']['minio']['mounts'] if m['Destination'] == native.policy['minioDataMount']]
@@ -148,13 +198,20 @@ def execute(configuration, request, root, input_pins, original_execute, native_t
     request_contract(request)
     require(request['action'] == 'RESTORE', 'REPLACEMENT_RESTORE_REQUIRED')
     target = configuration['targets'][request['targetConfigRef']]
-    value = validate(target)
+    value = replacement_value(configuration, request['targetConfigRef'])
     lock = os.open(value['lockPath'], os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
     try:
         try:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as error:
             raise ValueError('REPLACEMENT_TARGET_BUSY') from error
+        if 'backupEpoch' in value:
+            from recovery_backup_epoch import read_current, reconcile_completed_restore
+            epoch = read_current(value['backupEpoch'])
+            if epoch['state'] == 'REPLACING':
+                epoch = reconcile_completed_restore(value['backupEpoch'], lock)
+            require(epoch['state'] in ('READY', 'FAILED_RETAINED'),
+                    'BACKUP_EPOCH_RESTORE_IN_PROGRESS')
         require(available(target), 'PREVIOUS_REPLACEMENT_NOT_SUCCEEDED')
         from recovery_retained_retry import bind_clearances
         bind_clearances(target,request,consume=False)
@@ -162,6 +219,7 @@ def execute(configuration, request, root, input_pins, original_execute, native_t
         claim.mkdir(mode=0o700)
         bind_clearances(target,request,consume=True)
         native = None
+        receipt = None
         try:
             source, policy, chain = selected_chain(configuration, request)
             require(all(step[2]['objects']['method'] == 'PHYSICAL_FILES' for step in chain),
@@ -173,7 +231,7 @@ def execute(configuration, request, root, input_pins, original_execute, native_t
             admit(configuration, request, root, 'replacement')
             native = native_type(configuration, request, source, policy, chain, target, preparation, input_pins)
             with native.timed_stage('target-replacement'):
-                prepare(native, value)
+                prepare(native, value, source_lock_fd=lock)
             effective = deepcopy(configuration)
             runtime = claim/'runtime'; runtime.mkdir(mode=0o700)
             effective['targets'][request['targetConfigRef']]['dataRoot'] = str(runtime)
@@ -181,14 +239,33 @@ def execute(configuration, request, root, input_pins, original_execute, native_t
             if hasattr(native, 'replacement_finish'):
                 result[0].update(native.replacement_finish())
             receipt = write(claim/'replacement-result.json', dict(state='SUCCEEDED', operationId=request['operationId'],
-                           targetConfigRef=request['targetConfigRef'], finishedAt=utc()))
+                           targetConfigRef=request['targetConfigRef'], databaseUuid=value['databaseUuid'], finishedAt=utc()))
             result[0]['replacementReceiptPin'] = receipt
+            if 'backupEpoch' in value:
+                from recovery_backup_epoch import complete_restore
+                result[0]['sourceBackupEpoch'] = complete_restore(value['backupEpoch'], request['operationId'],
+                    native.backup_epoch['epochId'], 'READY', receipt, lock)
             return result
         except BaseException as error:
-            write(claim/'replacement-result.json', dict(state='FAILED_RETAINED', operationId=request['operationId'],
-                  targetConfigRef=request['targetConfigRef'], finishedAt=utc()))
-            if native is not None and getattr(error, 'native', None) is None:
-                error.native = native
+            failure_native = getattr(error, 'native', None)
+            if failure_native is None:
+                failure_native = native
+            if failure_native is not None:
+                error.native = failure_native
+            # Once the completed restore receipt exists, an epoch publication
+            # failure must not rewrite evidence already pinned by its journal.
+            try:
+                if receipt is None:
+                    failed = write(claim/'replacement-result.json', dict(state='FAILED_RETAINED', operationId=request['operationId'],
+                          targetConfigRef=request['targetConfigRef'], databaseUuid=value['databaseUuid'], finishedAt=utc()))
+                    if native is not None and hasattr(native, 'backup_epoch'):
+                        from recovery_backup_epoch import complete_restore
+                        complete_restore(value['backupEpoch'], request['operationId'], native.backup_epoch['epochId'],
+                                         'FAILED_RETAINED', failed, lock)
+            except BaseException as evidence_error:
+                if failure_native is not None and getattr(evidence_error, 'native', None) is None:
+                    evidence_error.native = failure_native
+                raise
             raise
         finally:
             if native is not None and hasattr(native, 'archive_guard'):

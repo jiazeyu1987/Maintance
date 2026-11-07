@@ -91,9 +91,9 @@ class Native:
         executor.pin_reference(config_pin)
 
     def raw(self, pin):
-        executor.verify(pin)
+        executor.pin_reference(pin)
         actual, raw = executor.pinned_read(pin['path'], True)
-        need(actual == pin, 'CONFIGURATION_CHANGED')
+        need(actual == pin, 'NATIVE_PIN_CHANGED')
         return raw
 
     def document(self, pin):
@@ -102,7 +102,8 @@ class Native:
     def configuration(self):
         native_required()
         config = self.document(self.config_pin)
-        exact(config, SINGLE_CONFIG_FIELDS, 'SERVER_CONFIGURATION_FIELDS_INVALID')
+        exact({key: value for key, value in config.items() if key != 'sourceEpochPolicies'},
+              SINGLE_CONFIG_FIELDS, 'SERVER_CONFIGURATION_FIELDS_INVALID')
         need(config['schemaVersion'] == 'SmallAppExecutionServiceConfig/v2',
              'SINGLE_OPERATOR_CONFIGURATION_REQUIRED')
         ledger, registry = (directory(config[key], config['taskRoot']) for key in ('ledgerRoot', 'registryRoot'))
@@ -117,6 +118,18 @@ class Native:
              'repository' in config['programPins'], 'COMMON_OWNER_PROGRAMS_REQUIRED')
         need(type(config['sourceConfigurations']) is dict and config['sourceConfigurations'] and
              type(config['restoreConfigurations']) is dict, 'OWNER_CONFIGURATIONS_REQUIRED')
+        if 'sourceEpochPolicies' in config:
+            policies = config['sourceEpochPolicies']
+            need(type(policies) is dict and set(policies) <= set(config['sourceConfigurations']),
+                 'SOURCE_EPOCH_POLICIES_INVALID')
+            from recovery_backup_epoch import validate_policy
+            for policy in policies.values():
+                try:
+                    validate_policy(policy)
+                except ValueError as error:
+                    code = str(error)
+                    raise Failure(code if re.fullmatch('[A-Z][A-Z0-9_]{0,95}', code)
+                                  else 'BACKUP_EPOCH_POLICY_INVALID') from None
         need(type(config['environment']) is dict and config['environment'] and
              all(type(k) is str and type(v) is str and k and '=' not in k and '\x00' not in k + v
                  for k, v in config['environment'].items()), 'NATIVE_ENVIRONMENT_REQUIRED')
@@ -178,11 +191,121 @@ class Native:
             executor.verify(pin)
         return binding_pin
 
+    def source_epoch(self, config, source_ref):
+        policy = config.get('sourceEpochPolicies', {}).get(source_ref)
+        if policy is None:
+            return None
+        owner = self.document(config['sourceConfigurations'][source_ref])
+        capture = self.document(executor.pin(owner['sources'][source_ref]['configurationPath']))
+        need(policy.get('sourceIdentity') == capture['source']['sourceIdentity'] and
+             policy.get('databaseUuid') == capture['source']['databaseUuid'] and
+             policy.get('sourceLockPath') == capture.get('sourceLockPath') and
+             type(policy.get('sourceLockPath')) is str, 'SOURCE_EPOCH_POLICY_BINDING_INVALID')
+        selected_source = owner['sources'][source_ref]
+        storage = [capture.get('archiveRoot'), capture['source'].get('minioDataPath'),
+                   selected_source.get('stagingRoot'), owner.get('repositoryRoot'), owner.get('operationRoot')]
+        for value in (value for value in storage if value is not None):
+            need(type(value) is str and Path(value).is_absolute(), 'SOURCE_EPOCH_STORAGE_INVALID')
+            scope = Path(value)
+            for protected in (Path(policy['root']), Path(policy['sourceLockPath'])):
+                need(protected != scope and protected not in scope.parents and scope not in protected.parents,
+                     'SOURCE_EPOCH_STORAGE_OVERLAP')
+        from recovery_backup_epoch import read_current, try_reconcile_current
+        try:
+            current = read_current(policy)
+            if current['state'] == 'REPLACING':
+                current = try_reconcile_current(policy)
+        except ValueError as error:
+            code = str(error)
+            raise Failure(code if re.fullmatch('[A-Z][A-Z0-9_]{0,95}', code)
+                          else 'BACKUP_EPOCH_INVALID') from None
+        need(current['state'] == 'READY', 'BACKUP_EPOCH_NOT_READY')
+        return current
+
+    def incremental_plan(self, source_ref, *, exclude_operation=None):
+        from recovery_control_incremental_plan import build_plan
+        return build_plan(self, source_ref, exclude_operation=exclude_operation)
+
+    def incremental_source_observation(self, capture, *, deadline=None):
+        """Bounded metadata SELECTs against the same local Docker source as capture.
+
+        Runtime.preflight in minimal_capture_worker defines the native source
+        contract as unix:///var/run/docker.sock. Use that explicit endpoint and
+        the configured executable without modifying process-global PATH/env.
+        """
+        native_required()
+        from formal_snapshot_linux import PrivateDockerMySql, observation_deadline, observation_timeout
+        from formal_capture_semantics import observe_position
+        source = capture['source']
+        container = source['mysqlContainerId']
+        need(type(container) is str and re.fullmatch('[0-9a-f]{64}', container),
+             'INCREMENTAL_SOURCE_CONTAINER_ID_REQUIRED')
+        docker_pin = executor.pin(capture['tools']['docker'])
+        docker = docker_pin['path']
+        need(Path(docker).name == 'docker' and os.access(docker, os.X_OK),
+             'INCREMENTAL_SOURCE_DOCKER_INVALID')
+        seconds = capture['limits']['querySeconds']
+        need(type(seconds) is int and seconds > 0, 'INCREMENTAL_SOURCE_TIMEOUT_INVALID')
+        seconds = min(seconds, 10)
+        end = time.monotonic() + seconds
+        if deadline is not None:
+            need(time.monotonic() < deadline, 'INCREMENTAL_PLAN_TIMEOUT')
+            end = min(end, deadline)
+        token = observation_deadline.set(end)
+        try:
+            def guard():
+                observation_timeout(seconds)
+                executor.verify(docker_pin)
+
+            template = '{"id":{{json .Id}},"running":{{json .State.Running}},"paused":{{json .State.Paused}},"restarting":{{json .State.Restarting}}}'
+            try:
+                inspected = subprocess.run([docker, '--host', 'unix:///var/run/docker.sock',
+                    'inspect', '--format', template, '--', container], stdin=subprocess.DEVNULL,
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                    timeout=observation_timeout(seconds), check=False)
+            except subprocess.TimeoutExpired:
+                raise Failure('INCREMENTAL_SOURCE_INSPECT_TIMEOUT') from None
+            need(inspected.returncode == 0 and not inspected.stderr and len(inspected.stdout) <= 65536,
+                 'INCREMENTAL_SOURCE_INSPECT_FAILED')
+            identity = decode(inspected.stdout)
+            need(identity == dict(id=container, running=True, paused=False, restarting=False),
+                 'INCREMENTAL_SOURCE_CONTAINER_CHANGED')
+            password_pin = source['passwordPin']
+            credential = executor.verify(password_pin)
+            need(stat.S_IMODE(credential.stat().st_mode) == 0o600, 'MINIMAL_SECRET_MODE_REQUIRED')
+            password = self.raw(password_pin).decode('utf-8').removesuffix('\n')
+
+            class SelectedDockerMySql(PrivateDockerMySql):
+                def _command(self, program, arguments):
+                    argv = super()._command(program, arguments)
+                    return [docker, '--host', 'unix:///var/run/docker.sock', *argv[1:]]
+
+            mysql = SelectedDockerMySql(container, password, timeout=seconds)
+            mysql.database_log_mode = source.get('databaseLogMode', 'GTID')
+            position = observe_position(mysql, guard)
+            rows = mysql.query('SHOW BINARY LOGS;').splitlines()
+            need(0 < len(rows) <= 100000, 'INCREMENTAL_SOURCE_LOGS_INVALID')
+            logs = []
+            for row in rows:
+                columns = row.split('\t')
+                need(len(columns) in (2, 3) and columns[1].isdigit() and
+                     (len(columns) == 2 or columns[2] in ('No', 'Yes')), 'INCREMENTAL_SOURCE_LOGS_INVALID')
+                logs.append(dict(file=columns[0], bytes=int(columns[1])))
+            guard()
+            executor.verify(password_pin)
+            return dict(position=position, logs=logs)
+        finally:
+            observation_deadline.reset(token)
+
     def resolve(self, value):
         request(value)
         config = self.configuration()
         registered, registration_pin = self.registration(value['sourceConfigRef'])
         need(value['sourceConfigRef'] in config['sourceConfigurations'], 'SOURCE_CONFIGURATION_REQUIRED')
+        if value['action'] == 'INCREMENTAL':
+            plan = self.incremental_plan(value['sourceConfigRef'], exclude_operation=value['operationId'])
+            need(plan['state'] == 'READY', plan['reasonCode'] or 'INCREMENTAL_BASELINE_UNAVAILABLE')
+            need(plan['parentChainRef'] == value['parentChainRef'], 'INCREMENTAL_BASELINE_CHANGED')
         owner_configuration = config['sourceConfigurations'][value['sourceConfigRef']]
         program = 'repository'
         point_pin = None
@@ -224,9 +347,14 @@ class Native:
         elif dynamic_restore:
             from recovery_control_restore_catalogue import for_request
             owner_configuration, point_pin = for_request(self, config, value, owner_configuration)
-        return dict(schemaVersion='SmallAppResolvedSelection/v2', configurationPin=self.config_pin,
+        selection = dict(schemaVersion='SmallAppResolvedSelection/v2', configurationPin=self.config_pin,
             registrationPin=registration_pin, ownerConfigurationPin=owner_configuration,
             ownerProgramPin=config['programPins'][program], pointBindingPin=point_pin)
+        if value['action'] in ('FULL', 'INCREMENTAL'):
+            epoch = self.source_epoch(config, value['sourceConfigRef'])
+            if epoch is not None:
+                selection['sourceEpoch'] = epoch
+        return selection
 
     def execute(self, value, operation_directory, selection):
         dispatch = {'started': False}
@@ -305,6 +433,7 @@ class Native:
     def publish_point(self, value, operation_directory, result_pin, config):
         if value['action'] == 'RESTORE':
             return
+        self.publish_point_epoch(value, operation_directory, result_pin, config)
         binding_path = operation_directory / 'point-binding.json'
         binding = dict(schemaVersion='SmallAppPointBinding/v2', reference=value['operationId'],
             sourceConfigRef=value['sourceConfigRef'], resultPin=result_pin)
@@ -316,6 +445,33 @@ class Native:
                 persist(path, document)
             except FileExistsError:
                 need(local_read(path) == document, 'POINT_PUBLICATION_CHANGED')
+
+    def publish_point_epoch(self, value, operation_directory, result_pin, config):
+        if value['sourceConfigRef'] not in config.get('sourceEpochPolicies', {}):
+            return
+        selection = local_read(operation_directory / 'selection.json')
+        original = selection.get('sourceEpoch')
+        need(type(original) is dict and original.get('state') == 'READY', 'BACKUP_EPOCH_CAPTURE_UNBOUND')
+        output = self.operation_output(value, result_pin)
+        need(self.operation_result(value, output)['state'] == 'SUCCEEDED', 'BACKUP_EPOCH_POINT_NOT_SUCCESSFUL')
+        bound = dict(schemaVersion='SmallAppPointEpochBinding/v1', reference=value['operationId'],
+            sourceConfigRef=value['sourceConfigRef'], pointPin=output['data']['pointPin'], resultPin=result_pin,
+            policySha256=original['policySha256'], epochId=original['epochId'], epochEventPin=original['eventPin'])
+        root = Path(config['registryRoot']) / 'point-epochs'
+        root.mkdir(mode=0o700, exist_ok=True)
+        need(root.resolve() == root and root.is_dir(), 'BACKUP_EPOCH_REGISTRY_PATH_INVALID')
+        path = root / (opaque(value['operationId']) + '.json')
+        if path.exists() or path.is_symlink():
+            # A historical successful operation stays queryable after a later
+            # restore. Its immutable epoch binding must never be rewritten.
+            need(local_read(path) == bound, 'BACKUP_EPOCH_POINT_PUBLICATION_CHANGED')
+            return
+        current = self.source_epoch(config, value['sourceConfigRef'])
+        need(current == original, 'BACKUP_EPOCH_CHANGED_DURING_CAPTURE')
+        try:
+            persist(path, bound)
+        except FileExistsError:
+            need(local_read(path) == bound, 'BACKUP_EPOCH_POINT_PUBLICATION_CHANGED')
 
     @staticmethod
     def repository_journal(root, name):

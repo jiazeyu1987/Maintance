@@ -1,4 +1,7 @@
 {
+  "backend/src/main/resources/recovery_control_incremental_plan.py": "control/recovery_control_incremental_plan.py",
+  "ops/recovery/recovery_backup_epoch.py": "common/recovery_backup_epoch.py",
+  "ops/recovery/recovery_sql_stream.py": "common/recovery_sql_stream.py",
   "ops/recovery/recovery_replace.py": "common/recovery_replace.py",
   "ops/recovery/recovery_retained_retry.py": "common/recovery_retained_retry.py",
   "ops/recovery/recovery_replacement_storage.py": "common/recovery_replacement_storage.py",

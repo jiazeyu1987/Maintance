@@ -4,21 +4,101 @@ let simpleInitializing=false;
 const pendingProgress=new Set();
 const applicationDraftSelections=new Map();
 const S=id=>document.getElementById(id);
-const stages={'archive-admission':'备份前置检查','source-capture':'采集业务数据并恢复源服务','capture-validation':'核验采集材料','nas-upload':'上传 NAS','archive-metadata':'生成归档索引','nas-readback':'NAS 独立读回','archive-final-verification':'归档最终核验','archive-chain-readback':'核对已发布备份链','capture-cleanup':'清理采集临时文件','restore-admission':'恢复前置检查','target-checks':'恢复目标核验','target-replacement':'清空已确认覆盖的小程序目标','database-restore':'恢复数据库','object-restore':'恢复对象文件','consistency':'一致性核验','redis-rebuild':'恢复 Redis（保留原到期时间）','application-start':'启动应用','archive-verification':'归档最终核验','restore-cleanup':'清理恢复临时文件','sql-readback':'数据库独立回读核验'};
+const simplePages={backup:'simple-form-panel',restore:'simple-form-panel',catalog:'package-catalog',progress:'simple-progress-panel',history:'simple-history-panel'};
+const simpleAnchors={backup:'backup',restore:'restore',catalog:'package-catalog',progress:'execution-progress',history:'operation-history'};
+let simplePage='backup';
+let catalogRestore=null;
+function renderSimpleNavigation(){
+  for(const name of Object.keys(simplePages)){
+    const tab=S('simple-'+name+'-tab'),on=name===simplePage;
+    tab.setAttribute('aria-selected',String(on));tab.setAttribute('tabindex',on?'0':'-1');
+  }
+  for(const panel of new Set(Object.values(simplePages)))S(panel).hidden=panel==='simple-form-panel'&&catalogRestore?false:panel!==simplePages[simplePage];
+  S('simple-form-panel').setAttribute('role',catalogRestore?'group':'tabpanel');
+  S('simple-form-panel').setAttribute('aria-labelledby',catalogRestore?'catalog-restore-title':simpleRestoring?'simple-restore-tab':'simple-backup-tab');
+}
+async function openCatalogRestore(row){
+  const refuse=text=>{S('catalog-problem').textContent=text;S('catalog-problem').hidden=false;};
+  if(!['backup-full','backup-incremental'].includes(row.kind)){refuse('发布包不能用于数据备份恢复，请使用对应发布流程。');return;}
+  if(row.status && row.status!=='indexed'){refuse('包清单尚未通过读取核对，不能发起恢复。');return;}
+  if(simpleInitializing||interactionLocked()||switching||unresolvedOriginal()||active&&!resolvedRecord(active)){
+    refuse('当前操作尚未结束或配置仍在核对，请完成后再恢复。');return;
+  }
+  if(!simpleConfig){refuse('恢复配置尚未读取，请在恢复页刷新配置后重试。');return;}
+  const pin=Object.freeze({packageId:row.packageId,version:row.version||'未记录',application:row.application});
+  catalogRestore=pin;simpleRestoring=true;action='RESTORE';
+  S('catalog-restore-package').textContent=`程序版本：${pin.version} · 备份包：${pin.packageId}`;
+  S('simple-product').value=pin.application;
+  const matches=simpleConfig.bindings.filter(b=>b.selectable&&b.product===pin.application&&b.mode==='safe'&&(row.servers||[]).includes(b.server));
+  S('simple-server').value=matches.length===1?matches[0].server:'';
+  S('simple-mode').value='safe';S('simple-restore-mode').value='replace';
+  S('simple-nas').value=simpleConfig.nas;
+  S('catalog-restore-form-host').appendChild(S('simple-form-panel'));
+  S('catalog-restore-dialog').showModal();render();
+  await chooseSimple();
+  if(catalogRestore!==pin)return;
+  render();S('simple-server').focus?.();
+}
+function closeCatalogRestore(focus=true){
+  if(!catalogRestore)return;
+  catalogRestore=null;
+  S('simple-workspace').insertBefore(S('simple-form-panel'),S('package-catalog'));
+  S('catalog-restore-dialog').close();render();
+  if(focus)S('simple-catalog-tab').focus?.();
+}
+S('catalog-restore-close').onclick=()=>closeCatalogRestore();
+S('catalog-restore-dialog').oncancel=event=>{event.preventDefault();closeCatalogRestore();};
+function showSimplePage(name,focus=false){
+  if(!Object.hasOwn(simplePages,name))throw new Error('Unknown page tab');
+  simplePage=name;renderSimpleNavigation();
+  if(typeof window!=='undefined'&&window.location.hash!=='#'+simpleAnchors[name])window.location.hash=simpleAnchors[name];
+  if(focus)S('simple-'+name+'-tab').focus?.();
+}
+const stages={'archive-admission':'备份前置检查','source-capture':'采集业务数据并恢复源服务','capture-validation':'核验采集材料','nas-upload':'上传 NAS','archive-metadata':'生成归档索引','nas-readback':'NAS 独立读回','archive-final-verification':'归档最终核验','archive-chain-readback':'核对已发布备份链','capture-cleanup':'清理采集临时文件','restore-admission':'恢复前置检查','target-checks':'恢复目标核验','target-replacement':'清空已确认覆盖的程序目标','database-restore':'恢复数据库','object-restore':'恢复对象文件','consistency':'一致性核验','redis-rebuild':'恢复 Redis（保留原到期时间）','application-start':'启动应用','archive-verification':'归档最终核验','restore-cleanup':'清理恢复临时文件','sql-readback':'数据库独立回读核验'};
 function stageName(name){const parts=name.split('/');const stage=parts.at(-1);const sql={'sql-stage':'暂存数据库备份','sql-expand':'解压数据库备份','sql-import':'导入数据库','restore-cleanup':'清理恢复临时文件','target-quiesce':'停止目标应用写入','capture-material-binding':'绑定采集材料','recovery-material-binding':'生成恢复材料'};return (parts[0].startsWith('database-')?`第 ${Number(parts[0].split('-')[1])+1} 个备份点 · `:'')+(sql[stage]||stages[stage]||stage);}
 const duration=seconds=>{if(!Number.isFinite(seconds))return '—';if(seconds>=0&&seconds<1)return `${seconds.toFixed(3)}秒`;seconds=Math.max(0,Math.floor(seconds));return `${Math.floor(seconds/3600)}时 ${Math.floor(seconds%3600/60)}分 ${seconds%60}秒`;};
 const date=value=>value?new Date(value).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false}):'—';
 const currentBinding=()=>simpleConfig?.bindings.find(b=>b.selectable&&b.product===S('simple-product').value&&b.server===S('simple-server').value&&b.mode===S('simple-mode').value);
-function latestSimpleParent(){
-  const app=selected(), refs=app?.validated?.parentChainRefs||[];
-  if(refs.length===1)return refs[0];
-  const candidates=records.filter(r=>r.applicationId===app?.applicationId&&r.request.sourceConfigRef===app.sourceConfigRef&&
-    ['FULL','INCREMENTAL'].includes(r.request.action)&&refs.includes(r.request.operationId));
-  if(new Set(candidates.map(r=>r.request.operationId)).size!==refs.length)return '';
-  candidates.sort((a,b)=>Date.parse(b.createdAt)-Date.parse(a.createdAt));
-  if(!candidates.length||candidates.some(r=>!Number.isFinite(Date.parse(r.createdAt)))||
-    candidates.length>1&&Date.parse(candidates[0].createdAt)===Date.parse(candidates[1].createdAt))return '';
-  return candidates[0].request.operationId;
+let incrementalPlan=null, incrementalPlanError='', incrementalPlanLoading=false, incrementalPlanGeneration=0;
+const automaticIncrementalSelected=()=>!simpleRestoring&&S('simple-type').value==='INCREMENTAL';
+function currentIncrementalPlan(){
+  const app=selected();
+  return automaticIncrementalSelected()&&incrementalPlan?.applicationId===app?.applicationId&&
+    currentBinding()?.applicationId===app?.applicationId&&incrementalPlan?.plan?.sourceConfigRef===app?.sourceConfigRef?incrementalPlan.plan:null;
+}
+function invalidateIncrementalPlan(){
+  incrementalPlanGeneration++;incrementalPlan=null;incrementalPlanError='';incrementalPlanLoading=false;
+}
+function incrementalBlockReason(){
+  if(incrementalPlanLoading)return '正在自动核对全量基线和最新增量…';
+  if(incrementalPlanError)return incrementalPlanError;
+  const plan=currentIncrementalPlan();
+  if(!plan)return '尚未核对增量基线，请刷新配置。';
+  return plan.state==='BLOCKED'?message(plan.reasonCode):'';
+}
+function incrementalSummary(plan=currentIncrementalPlan()){
+  if(!plan)return '';
+  if(plan.state==='BASELINE_REQUIRED')return '本次将先建立新的全量基线，实际执行全量备份；完成后再次选择增量即可接续。'+message(plan.reasonCode);
+  return `全量基线：${date(plan.baseFinishedAt)}；最新${labels[plan.parentPointType||plan.pointType]}：${date(plan.finishedAt)}。已核对完整备份链。`;
+}
+async function loadIncrementalPlan(){
+  invalidateIncrementalPlan();
+  if(!automaticIncrementalSelected())return;
+  const app=selected(), generation=incrementalPlanGeneration;
+  if(!app||currentBinding()?.applicationId!==app.applicationId)return;
+  const applicationId=app.applicationId,sourceConfigRef=app.sourceConfigRef;
+  incrementalPlanLoading=true;render();
+  try{
+    const value=await api('/incremental-plan?applicationId='+encodeURIComponent(applicationId));
+    if(generation!==incrementalPlanGeneration||!automaticIncrementalSelected()||selected()?.applicationId!==applicationId||selected()?.sourceConfigRef!==sourceConfigRef)return;
+    const plan=value?.plan;
+    if(value?.applicationId!==applicationId||plan?.schemaVersion!=='AutomaticIncrementalPlan/v1'||plan.sourceConfigRef!==sourceConfigRef||
+      !['READY','BASELINE_REQUIRED','BLOCKED'].includes(plan.state)||!/^([a-f0-9]{64})$/.test(plan.planDigest||'')||!/^([a-f0-9]{64})$/.test(plan.evidenceDigest||'')||
+      (plan.state==='READY'&&(!plan.parentChainRef||!plan.baseFullRef||!Number.isFinite(Date.parse(plan.finishedAt))||!Number.isFinite(Date.parse(plan.baseFinishedAt))))||
+      (plan.state!=='READY'&&typeof plan.reasonCode!=='string'))throw new Error('INCREMENTAL_PLAN_INVALID');
+    incrementalPlan=Object.freeze({applicationId,plan:Object.freeze({...plan})});
+  }catch(error){if(generation===incrementalPlanGeneration)incrementalPlanError='增量基线核对失败：'+message(error.message);}
+  finally{if(generation===incrementalPlanGeneration){incrementalPlanLoading=false;render();}}
 }
 function simpleFreshTargets(){
   const binding=currentBinding();
@@ -36,10 +116,11 @@ function replacementRequest(request,binding){
   return request.action==='RESTORE'&&!!binding&&Object.values(binding.overwriteTargetServers).includes(request.targetConfigRef);
 }
 function simpleRequest(id){
-  const binding=currentBinding(), app=selected(), chosenAction=simpleRestoring?'RESTORE':S('simple-type').value;
+  const binding=currentBinding(), app=selected(),plan=currentIncrementalPlan();
+  const chosenAction=simpleRestoring?'RESTORE':automaticIncrementalSelected()&&plan?.state==='BASELINE_REQUIRED'?'FULL':S('simple-type').value;
   if(!binding || app?.applicationId!==binding.applicationId)throw new Error('SOURCE_NOT_REGISTERED_BY_W08');
   return {schemaVersion:'SmallAppBackupUiRequest/v1',operationId:id,action:chosenAction,sourceConfigRef:app.sourceConfigRef,
-    parentChainRef:chosenAction==='INCREMENTAL'?S('parent').value:null,
+    parentChainRef:chosenAction==='INCREMENTAL'?plan?.parentChainRef||null:null,
     recoveryPointRef:chosenAction==='RESTORE'?S('simple-package').value:null,
     targetConfigRef:chosenAction==='RESTORE'?simpleTargetServers(binding)[S('simple-target').value]:null};
 }
@@ -57,14 +138,20 @@ function drawOperationDetails(){
   const fields=[['操作',labels[request.action]],['来源服务器',context?.server||'来源服务器未记录'],
     ['来源',request.sourceConfigRef],['执行模式',context?.mode==='fast'?'快速模式 · 跳过核验':context?.mode==='safe'?'安全模式 · 完整核验':'执行模式未记录']];
   if(request.parentChainRef)fields.push(['增量父点',request.parentChainRef]);
+  if(active.automaticIncrementalPlan){
+    const plan=active.automaticIncrementalPlan;
+    fields.push(['自动备份计划',plan.state==='BASELINE_REQUIRED'?'建立全量基线：'+message(plan.reasonCode):'接续已核对的最新备份点']);
+    if(plan.baseFullRef)fields.push(['全量基线',plan.baseFullRef]);
+  }
   if(request.recoveryPointRef)fields.push(['备份包',request.recoveryPointRef]);
   if(request.targetConfigRef)fields.push(['恢复目标',request.targetConfigRef]);
-  if(request.action==='RESTORE')fields.push(['恢复方式',context?.restoreMode==='replace'?'覆盖现有小程序':context?.restoreMode==='fresh'?'恢复到空目标':'恢复方式未记录']);
+  if(request.action==='RESTORE')fields.push(['恢复方式',context?.restoreMode==='replace'?'覆盖现有程序':context?.restoreMode==='fresh'?'恢复到空目标':'恢复方式未记录']);
   for(const [label,value] of fields){const term=document.createElement('dt'),description=document.createElement('dd');term.textContent=label;description.textContent=value;details.append(term,description);}
 }
 async function openRecord(record){
   if(interactionLocked() || switching)return;
   syncSimpleIdentity(record);selectRecord(record);
+  showSimplePage('progress',true);
   S('application').value=record.applicationId;telemetry=null;telemetryError='';render();await query();await progress();
 }
 function simpleRender(){
@@ -77,11 +164,16 @@ function simpleRender(){
   }
   S('mode-note').textContent=fast?'快速模式跳过内容、一致性及环境核验，不保证恢复准确，也不保证不停服务。':'执行完整内容和一致性核验；备份期间可能停写。';
   S('simple-type-field').hidden=restore;S('simple-package-field').hidden=!restore;
-  for(const [id,on] of [['simple-backup-tab',!restore],['simple-restore-tab',restore]])S(id).setAttribute('aria-selected',String(on));
+  renderSimpleNavigation();
   const refs=binding&&selected()?.applicationId===binding.applicationId?selected()?.validated?.recoveryPointRefs||[]:[];
   const previous=S('simple-package').value;S('simple-package').replaceChildren(new Option('请选择可用备份包',''));
-  for(const ref of refs){const record=records.find(r=>r.request.operationId===ref);const label=record?`${date(record.createdAt)} · ${labels[record.request.action]} · ${ref}`:ref;S('simple-package').add(new Option(label,ref));}
-  if(refs.includes(previous))S('simple-package').value=previous;
+  if(catalogRestore){
+    S('simple-package').replaceChildren(new Option(`${catalogRestore.version} · ${catalogRestore.packageId}`,catalogRestore.packageId));
+    S('simple-package').value=catalogRestore.packageId;
+  }else{
+    for(const ref of refs){const record=records.find(r=>r.request.operationId===ref);const label=record?`${date(record.createdAt)} · ${labels[record.request.action]} · ${ref}`:ref;S('simple-package').add(new Option(label,ref));}
+    if(refs.includes(previous))S('simple-package').value=previous;
+  }
   const fresh=binding&&selected()?.applicationId===binding.applicationId?simpleFreshTargets():[];
   const usedTargets=new Set(replacing?[]:records.filter(r=>r.request.action==='RESTORE'&&r.spugHistoryId&&!r.cancelledUnaccepted).map(r=>r.request.targetConfigRef));
   const priorTarget=S('simple-target').value;
@@ -104,15 +196,16 @@ function simpleRender(){
   else if(S('simple-nas').value.trim()!==simpleConfig.nas)blocked='该 NAS 路径尚未绑定执行器，不能提交到其他目录。';
   else if(switching||selected()?.applicationId!==binding.applicationId)blocked='正在核对服务器配置…';
   else if(!selected()?.validated)blocked=message(selected()?.readinessError||'SOURCE_NOT_VERIFIED_BY_W01');
+  else if(catalogRestore&&!refs.includes(catalogRestore.packageId))blocked='该包未登记为所选来源的可用恢复点，不能执行。请选择正确来源或核对恢复点登记。';
   else if(restore&&!S('simple-package').value)blocked='请选择备份包。';
   else if(restore&&!S('simple-target').value)blocked=Object.values(targetServers).some(ref=>fresh.includes(ref))?'请选择可用恢复服务器。':replacing?'所选来源尚无可用的覆盖恢复目标。':'所选来源当前没有可用的空恢复目标。';
   else if(restore&&!targetServers[S('simple-target').value])blocked='该恢复服务器尚无已登记的恢复目标。';
   else if(restore&&!fresh.includes(targetServers[S('simple-target').value]))blocked='该恢复目标当前不可用，请刷新配置后重新选择。';
-  else if(!restore&&action==='INCREMENTAL'&&!S('parent').value&&(selected()?.validated?.parentChainRefs||[]).length)blocked='无法确定最近的有效备份链，请刷新配置核对操作记录。';
+  else if(automaticIncrementalSelected()&&incrementalBlockReason())blocked=incrementalBlockReason();
   else if(S('submit').disabled)blocked=S('blocked-reason').textContent||'当前不可提交。';
-  S('simple-status').textContent=blocked||(restore?replacing?'将覆盖所选目标现有小程序的记录、附件及 Redis 数据。':'将按所选备份链恢复到登记的独立目标。':action==='INCREMENTAL'?'已自动关联该来源最近一条可用备份链。':'已连接 Spug 执行器。');
+  S('simple-status').textContent=blocked||(restore?replacing?'将覆盖所选目标现有程序的记录、附件及 Redis 数据。':'将按所选备份链恢复到登记的独立目标。':automaticIncrementalSelected()?incrementalSummary():'已连接 Spug 执行器。');
   S('simple-status').dataset.state=blocked?'blocked':'ready';
-  S('simple-submit').disabled=!!blocked||interactionLocked();S('simple-submit').textContent=restore?'开始恢复 →':'开始备份 →';
+  S('simple-submit').disabled=!!blocked||interactionLocked();S('simple-submit').textContent=restore?'开始恢复 →':currentIncrementalPlan()?.state==='BASELINE_REQUIRED'?'建立全量基线 →':'开始备份 →';
   S('simple-submit').title=blocked;
   if(blocked)S('submit').disabled=true;
   S('simple-result').textContent=S('result-state').textContent;
@@ -121,7 +214,7 @@ function simpleRender(){
   drawOperationDetails();
   const draftLocked=simpleInitializing||interactionLocked()||switching||!!unresolvedOriginal()||!!active&&!resolvedRecord(active);
   for(const id of ['simple-product','simple-server','simple-mode','simple-type','simple-package','simple-target','simple-restore-mode','simple-nas','simple-backup-tab','simple-restore-tab','simple-refresh'])S(id).disabled=draftLocked;
-  S('simple-server').disabled=draftLocked||restore;
+  if(catalogRestore){S('simple-product').disabled=true;S('simple-package').disabled=true;S('simple-nas').disabled=true;}
   S('simple-query').disabled=interactionLocked()||!active;
   S('simple-history').replaceChildren();
   const visibleRecords=records.filter(record=>simpleConfig?.bindings.some(b=>b.product===S('simple-product').value&&b.applicationId===record.applicationId));
@@ -185,6 +278,7 @@ async function chooseSimple(){
   if(interactionLocked() || switching)return;
   const binding=currentBinding();
   if(unresolvedOriginal() || active&&!resolvedRecord(active)){simpleRender();return;}
+  invalidateIncrementalPlan();
   if(binding)applicationDraftSelections.set(binding.product,{server:binding.server,mode:binding.mode});
   selectRecord(null);telemetry=null;telemetryError='';
   S('simple-package').value='';S('simple-target').value='';S('point').value='';S('parent').value='';S('target').value='';S('result-state').textContent='尚未执行';
@@ -193,7 +287,7 @@ async function chooseSimple(){
   // Explicit user change starts a new draft; historical operations remain in the history.
   selectRecord(null);operationId='smallapp-'+crypto.randomUUID().replace(/-/g,'');switching=true;render();
   try{await refresh(binding.applicationId);
-    if(action==='INCREMENTAL')S('parent').value=latestSimpleParent();
+    if(automaticIncrementalSelected())await loadIncrementalPlan();
     if(action==='RESTORE'){S('point').value=S('simple-package').value;S('target').value=simpleTargetServers(binding)[S('simple-target').value]||'';}
   }finally{switching=false;render();}
 }
@@ -206,8 +300,27 @@ async function refreshSimpleConfiguration(){
   if(simpleConfig)await chooseSimple();
 }
 const originalRender=render;render=function(){originalRender();simpleRender();};
-S('simple-backup-tab').onclick=()=>{if(S('simple-backup-tab').disabled)return;simpleRestoring=false;chooseSimple();};
-S('simple-restore-tab').onclick=()=>{if(S('simple-restore-tab').disabled)return;simpleRestoring=true;chooseSimple();};
+S('simple-backup-tab').onclick=()=>{if(S('simple-backup-tab').disabled)return;const changed=simpleRestoring;simpleRestoring=false;showSimplePage('backup');if(changed||active&&resolvedRecord(active))return chooseSimple();else render();};
+S('simple-restore-tab').onclick=()=>{if(S('simple-restore-tab').disabled)return;const changed=!simpleRestoring;if(changed)S('simple-restore-mode').value='replace';simpleRestoring=true;showSimplePage('restore');if(changed)chooseSimple();else render();};
+for(const name of ['catalog','progress','history'])S('simple-'+name+'-tab').onclick=()=>showSimplePage(name);
+for(const name of Object.keys(simplePages))S('simple-'+name+'-tab').onkeydown=event=>{
+  if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+  event.preventDefault();
+  const enabled=Object.keys(simplePages).filter(page=>!S('simple-'+page+'-tab').disabled);
+  const index=enabled.indexOf(name);
+  const next=event.key==='Home'?enabled[0]:event.key==='End'?enabled.at(-1):enabled[(index+(event.key==='ArrowLeft'?-1:1)+enabled.length)%enabled.length];
+  S('simple-'+next+'-tab').focus?.();S('simple-'+next+'-tab').onclick();
+};
+if(typeof window!=='undefined'){
+  const requested=Object.keys(simpleAnchors).find(name=>window.location.hash==='#'+simpleAnchors[name]);
+  if(requested){simplePage=requested;if(requested==='restore'){simpleRestoring=true;action='RESTORE';}renderSimpleNavigation();}
+  window.addEventListener('hashchange',()=>{
+    const name=Object.keys(simpleAnchors).find(page=>window.location.hash==='#'+simpleAnchors[page]);
+    if(!name || name===simplePage)return;
+    if(S('simple-'+name+'-tab').disabled){showSimplePage(simplePage);return;}
+    S('simple-'+name+'-tab').onclick();
+  });
+}
 for(const id of ['simple-server','simple-mode','simple-type','simple-restore-mode'])S(id).onchange=chooseSimple;
 S('simple-product').onchange=()=>{
   const product=S('simple-product').value;
@@ -231,11 +344,13 @@ S('simple-query').onclick=async()=>{await query();await progress();render();};
 S('simple-submit').onclick=()=>{
   if(S('simple-submit').disabled)return;
   const request=Object.freeze(simpleRequest(operationId));
-  confirmation=Object.freeze({request,applicationId:selected().applicationId});
+  const plan=currentIncrementalPlan();
+  confirmation=Object.freeze({request,applicationId:selected().applicationId,automaticIncrementalPlan:plan});
   const replacing=replacementRequest(request,currentBinding());
   S('replace-confirm-field').hidden=!replacing;S('replace-confirm').checked=false;S('simple-confirm-submit').disabled=replacing;
   S('confirm-summary').textContent=`${S('simple-product').selectedOptions[0].textContent} · ${labels[request.action]} · ${S('simple-server').selectedOptions[0].textContent} · ${S('simple-mode').selectedOptions[0].textContent}\nNAS：${S('simple-nas').value}\n来源：${request.sourceConfigRef}\n`+(request.action==='RESTORE'?`备份包：${request.recoveryPointRef}\n恢复到：${S('simple-target').selectedOptions[0].textContent}\n独立目标：${request.targetConfigRef}`:`备份类型：${labels[request.action]}${request.action==='INCREMENTAL'?'\n父链：'+request.parentChainRef:''}`);
-  if(replacing)S('confirm-summary').textContent+='\n恢复方式：覆盖现有小程序，将替换目标现有记录、附件及 Redis 数据。';
+  if(replacing)S('confirm-summary').textContent+='\n恢复方式：覆盖现有程序，将替换目标现有记录、附件及 Redis 数据。';
+  if(plan)S('confirm-summary').textContent+='\n'+incrementalSummary(plan)+(plan.baseFullRef?'\n全量基线：'+plan.baseFullRef:'');
   render();
   S('simple-confirm').showModal();
 };
@@ -247,16 +362,26 @@ S('simple-confirm-submit').onclick=async()=>{
   const snapshot=confirmation;if(!snapshot)return;
   if(replacementRequest(snapshot.request,currentBinding())&&!S('replace-confirm').checked)return;
   confirmation=null;S('simple-confirm').close();render();
-  if(S('simple-submit').disabled || snapshot.applicationId!==selected()?.applicationId || !sameRequest(snapshot.request,simpleRequest(operationId))){problem('操作参数已变化，请重新确认。');return;}
-  await submitOriginal(snapshot.request,snapshot.applicationId);await progress();render();
+  if(S('simple-submit').disabled || snapshot.applicationId!==selected()?.applicationId || !sameRequest(snapshot.request,simpleRequest(operationId))||
+    snapshot.automaticIncrementalPlan?.planDigest!==currentIncrementalPlan()?.planDigest){problem('操作参数或备份计划已变化，请重新确认。');return;}
+  closeCatalogRestore(false);
+  showSimplePage('progress',true);
+  await submitOriginal(snapshot.request,snapshot.applicationId,false,snapshot.automaticIncrementalPlan);await progress();render();
 };
-setInterval(()=>{if(!document.hidden&&active?.result?.state==='RUNNING'&&!interactionLocked()&&!pollBusy){query().then(progress);}drawProgress();},5000);
+async function pollOriginal(){
+  if(!document.hidden&&!interactionLocked()&&!pollBusy){
+    if(unresolvedOriginal()&&pending.request.operationId!==active?.request.operationId)await queryPendingOriginal();
+    else if(active&&!resolvedRecord(active)){await query();await progress();}
+  }
+  drawProgress();
+}
+setInterval(pollOriginal,5000);
 (async()=>{
   simpleInitializing=true;render();
   try{await initialRefresh;simpleConfig=await api('/simple-config');S('simple-nas').value=simpleConfig.nas;
     if(active&&!pending){active=null;operationId='';}
     const matched=simpleConfig.bindings.find(b=>b.applicationId===active?.applicationId);
-    if(matched){S('simple-product').value=matched.product;S('simple-server').value=matched.server;S('simple-mode').value=matched.mode;simpleRestoring=action==='RESTORE';if(!simpleRestoring)S('simple-type').value=action;render();await progress();}
+    if(matched){S('simple-product').value=matched.product;S('simple-server').value=matched.server;S('simple-mode').value=matched.mode;simpleRestoring=action==='RESTORE';if(!simpleRestoring)S('simple-type').value=action;render();if(!resolvedRecord(active))await query();await progress();}
     else {const first=simpleConfig.bindings.find(b=>b.selectable);if(!currentBinding()&&first){S('simple-server').value=first.server;S('simple-mode').value=first.mode;}await chooseSimple();}
   }catch(error){simpleConfig=null;simpleConfigError='配置读取失败：'+error.message;problem(simpleConfigError);}
   finally{simpleInitializing=false;render();}

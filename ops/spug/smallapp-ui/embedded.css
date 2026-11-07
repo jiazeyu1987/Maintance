@@ -1,0 +1,5 @@
+.spug-embedded body>header,.spug-embedded .heading{display:none}
+.spug-embedded main{max-width:none;margin:0;padding:0 0 16px}
+.spug-embedded .card{border-radius:4px}
+.spug-embedded .catalog-table-wrap{max-height:max(320px,calc(100dvh - 235px))}
+.spug-embedded #diagnostics{margin:16px 0}

@@ -32,6 +32,8 @@ def test_standard_keeps_original_code_except_reviewed_fixes_and_archive_names(pa
         'common/repository_minimal.py', 'control/recovery_control_capture_config.py',
         'control/recovery_control_smallapp_native.py', 'control/recovery_control_executor.py',
         'control/recovery_control_target_availability.py',
+        'control/recovery_control_incremental_plan.py', 'control/recovery_control_smallapp.py',
+        'common/recovery_backup_epoch.py', 'common/recovery_sql_stream.py',
         'control/recovery_control_point_quarantine.py', 'formal/formal_binlog_scope.py',
         'common/recovery_replace.py', 'common/recovery_data.py', 'formal/formal_data_evidence.py', 'formal/formal_schema_evidence.py',
         'common/recovery_main_target.py', 'common/recovery_replacement_storage.py', 'common/recovery_minimal_plan.py',
@@ -59,6 +61,38 @@ def test_changed_safe_baseline_patch_context_is_rejected():
     original['formal/minimal_redis_snapshot.py'] = b'# an incompatible baseline\n'
     with pytest.raises(ValueError, match='STANDARD_FIX_CONTEXT_CHANGED'):
         builder.safe_fixes(original)
+
+
+@pytest.mark.parametrize('variant', builder.VARIANTS)
+def test_automatic_incremental_components_execute_from_real_package(variant, packages, tmp_path):
+    root = tmp_path / 'engine'
+    root.mkdir()
+    with tarfile.open(packages / ('backup-restore-' + variant + '.tgz')) as archive:
+        archive.extractall(root, filter='data')
+    code = r'''
+import hashlib,json,pathlib,sys,tempfile
+root=pathlib.Path(sys.argv[1])
+sys.path[:0]=[str(root/p) for p in ('common','control','formal')]
+from recovery_control_incremental_plan import response
+from recovery_control_smallapp import Ledger
+from recovery_control_smallapp_native import Native
+from recovery_backup_epoch import validate_policy
+from recovery_sql_stream import inspect_incremental_sql
+assert callable(Ledger.require_source_idle)
+assert callable(Native.incremental_plan)
+plan=response('packaged-source','BASELINE_REQUIRED','NO_SUCCESSFUL_FULL_BASELINE')
+digest=plan.pop('planDigest')
+assert digest==hashlib.sha256(json.dumps(plan,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
+with tempfile.TemporaryDirectory() as folder:
+ path=pathlib.Path(folder)/'captured.sql'
+ path.write_bytes(b'-- IntRuoyi binlog incremental;\nBINLOG payload')
+ inspect_incremental_sql(path,mode='GTID',has_segments=True,guard=lambda:None,seconds=60)
+print('PACKAGED_AUTOMATIC_INCREMENTAL_COMPONENTS_PASS')
+'''
+    result = subprocess.run([sys.executable, '-B', '-c', code, str(root)],
+                            capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == 'PACKAGED_AUTOMATIC_INCREMENTAL_COMPONENTS_PASS'
 
 
 def test_safe_allocator_baseline_drift_is_rejected():

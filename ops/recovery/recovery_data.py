@@ -495,18 +495,15 @@ class NativeData:
         with self.timed_stage('sql-expand'):
             checksum, _ = self.modules['formal_sql_restore'].expand_checked(staged['path'], expanded,
                 database['sqlPin']['sha256'], self.policy['maxExpandedBytes'], self.seconds())
-        raw = expanded.read_bytes()
         # DDL Query events are executable text in mysqlbinlog output; a DDL-only
         # range need not contain a row-event BINLOG block. Exact archived bytes,
         # capture binding and contiguous positions were verified above. Scope
         # is checked against the original events before/after capture export.
-        require(raw.startswith(b'-- IntRuoyi binlog incremental;'), 'CAPTURED_BINLOG_SQL_REQUIRED')
         mode = delta.get('logMode', 'GTID')
-        require(mode in ('GTID', 'FILE_POSITION'), 'CAPTURED_BINLOG_LOG_MODE_INVALID')
-        if mode == 'GTID':
-            require(not delta['segments'] or b'BINLOG ' in raw or
-                    re.search(rb"SET @@SESSION\.GTID_NEXT\s*=\s*'[0-9a-fA-F-]+:[0-9]+'", raw),
-                    'CAPTURED_BINLOG_SQL_REQUIRED')
+        from recovery_sql_stream import inspect_incremental_sql
+        with self.timed_stage('sql-inspect'):
+            inspect_incremental_sql(expanded, mode=mode, has_segments=bool(delta['segments']),
+                guard=self.guard, seconds=self.seconds())
         scoped = delta.get('dataObservation') == 'AFFECTED_TABLES_V1'
         require(delta.get('dataObservation') in (None, 'AFFECTED_TABLES_V1'), 'CAPTURED_DATA_OBSERVATION_INVALID')
         if mode == 'FILE_POSITION':
