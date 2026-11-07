@@ -76,6 +76,7 @@ class MinimalData(NativeData):
         # Validate the independent readback budget before any target access or mutation.
         self.policy['dataLimits'] = self.modules['formal_data_evidence'].validate_limits(configuration['dataLimits'])
         self.config_services = {row['role']: row for row in target['services']}
+        self.frontend_readiness = configuration.get('frontendReadiness', {}).get(request['targetConfigRef'])
         self.storage_running = chain[0][2]['objects']['method'] != 'PHYSICAL_FILES'
         self.running_applications = set()
         self.snapshots = {}

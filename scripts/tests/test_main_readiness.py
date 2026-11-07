@@ -12,7 +12,7 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'ops/recovery'))
-from recovery_engine import RecoveryError, load
+from recovery_engine import RecoveryError, load, pin
 import recovery_main_target as main
 import recovery_main_health as health
 
@@ -131,6 +131,72 @@ class BoundReadinessTests(unittest.TestCase):
                 with self.assertRaisesRegex(RecoveryError,'MAIN_DOCKER_HEALTH_INVALID'):
                     health.wait_healthy(self.native,'backend')
         self.assertEqual([],self.native.original_pins)
+
+    def frontend(self, mode):
+        self.row['Config']['ExposedPorts']={'80/tcp':{}}
+        self.row['HostConfig']['NetworkMode']=mode
+        self.row['Mounts']=[]
+        self.row['NetworkSettings']={'Networks':{}}
+        self.native.config_services={'frontend':dict(id=self.row['Id'],imageId=self.row['Image'],ip='127.0.0.1')}
+        self.native.config={'mainApplication':{'serviceConfigurationDigests':{'frontend':main.service_configuration_digest(self.row)}}}
+
+    def host_profile(self):
+        self.frontend('host')
+        path=Path(self.temp.name)/'nginx.conf'
+        path.write_text('server {\n listen 192.168.20.58:8081;\n listen 192.168.20.58:28081;\n root /usr/share/nginx/html;\n}\n',encoding='utf8')
+        self.row['Mounts']=[dict(Type='bind',Source=str(path),Destination='/etc/nginx/conf.d/default.conf',RW=False)]
+        self.native.config['mainApplication']['configurationPins']=[pin(path)]
+        self.native.config['replacement']={'services':{'frontend':{'mounts':deepcopy(self.row['Mounts'])}}}
+        self.native.frontend_readiness=dict(schemaVersion='RegisteredMainFrontendReadiness/v1',mode='HOST_NGINX',
+            containerId=self.row['Id'],serviceConfigurationDigest=main.service_configuration_digest(self.row),
+            address='192.168.20.58',port=8081,configurationPin=pin(path))
+        return path
+
+    def test_host_frontend_uses_explicit_bound_original_listen(self):
+        self.host_profile()
+        self.assertEqual('http://192.168.20.58:8081/',health.endpoint(self.native,'frontend'))
+        self.native.config['dataRoot']='/operation/runtime'
+        self.assertEqual('http://192.168.20.58:8081/',health.endpoint(self.native,'frontend'))
+
+    def test_host_frontend_profile_pin_target_mount_and_listen_must_all_match(self):
+        for change in ('port','address','target','pin','mount','mode','missing'):
+            with self.subTest(change=change):
+                path=self.host_profile()
+                if change=='port':self.native.frontend_readiness['port']=8082
+                elif change=='address':self.native.frontend_readiness['address']='192.168.20.59'
+                elif change=='target':self.native.frontend_readiness['containerId']='0'*64
+                elif change=='pin':path.write_text('server { listen 192.168.20.58:8081; }',encoding='utf8')
+                elif change=='mount':self.row['Mounts'][0]['RW']=True
+                elif change=='mode':self.native.frontend_readiness['mode']='ANY'
+                else:del self.native.frontend_readiness
+                with self.assertRaises(RecoveryError):health.endpoint(self.native,'frontend')
+
+    def test_bridge_frontend_uses_unique_registered_static_network(self):
+        self.frontend('bridge')
+        self.row['NetworkSettings']['Networks']={'main':dict(NetworkID='network-1',IPAddress='',IPAMConfig={'IPv4Address':'172.29.239.2'},Aliases=[],Links=[],DriverOpts={})}
+        self.native.config['mainApplication'].update(networkAttachments={'frontend':main.network_attachments(self.row)},
+            networks=[dict(name='main',id='network-1',driver='bridge')])
+        self.assertEqual('http://172.29.239.2:80/',health.endpoint(self.native,'frontend'))
+
+    def test_bridge_frontend_missing_ambiguous_or_changed_static_binding_is_rejected(self):
+        self.frontend('bridge')
+        self.row['NetworkSettings']['Networks']={'main':dict(NetworkID='network-1',IPAddress='',IPAMConfig={'IPv4Address':'172.29.239.2'},Aliases=[],Links=[],DriverOpts={})}
+        self.native.config['mainApplication'].update(networkAttachments={'frontend':main.network_attachments(self.row)},
+            networks=[dict(name='main',id='network-1',driver='bridge')])
+        self.row['NetworkSettings']['Networks']['main']['IPAMConfig']['IPv4Address']='172.29.239.3'
+        with self.assertRaises(RecoveryError):health.endpoint(self.native,'frontend')
+        self.row['NetworkSettings']['Networks']={}
+        with self.assertRaises(RecoveryError):health.endpoint(self.native,'frontend')
+
+    def test_bridge_frontend_ambiguous_fixed_networks_are_rejected(self):
+        self.frontend('bridge')
+        networks={name:dict(NetworkID=name,IPAddress='',IPAMConfig={'IPv4Address':address},Aliases=[],Links=[],DriverOpts={})
+                  for name,address in [('one','172.29.239.2'),('two','172.29.240.2')]}
+        self.row['NetworkSettings']['Networks']=networks
+        self.native.config['mainApplication'].update(networkAttachments={'frontend':main.network_attachments(self.row)},
+            networks=[dict(name=name,id=name,driver='bridge') for name in networks])
+        with self.assertRaisesRegex(RecoveryError,'MAIN_FRONTEND_ADDRESS_AMBIGUOUS'):
+            health.endpoint(self.native,'frontend')
 
     def test_starting_and_down_have_bounded_timeout_and_no_success_receipt(self):
         with patch.object(health,'probe',return_value=dict(ready=False,httpStatus=503,bodySha256='0'*64)), \

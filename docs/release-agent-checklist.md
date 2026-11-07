@@ -693,3 +693,13 @@ Codex 只有在以下条件同时成立时，才能判定完整发布完成：
 - Verification: 核对 `postReleaseCleanup` 和 `.cleanup/<任务>.json` 的具体计划、逐项删除、保留原因、错误和文件字节/磁盘可用变化。先移除有原始快照及精确身份的已停止旧业务容器，再删无任何容器/恢复点引用的登记镜像标签，最后处理旧载荷。失败现场须原任务 restored 核销、本机成功恢复验收及远端 opened 回执三方一致；接续验收绑定原 openingJobId。推荐运行 `test_post_release_cleanup`、`test_runtime_resource_cleanup`、Linux `test_post_release_cleanup_lock`，本机专用 Docker 资源用 `SPUG_REAL_CLEANUP_TEST=1 ... test_cleanup_resources_integration` 验证。必须记录代码版本、任务号及逐服实际结果，清理失败通过独立重试入口重新采样，不重新发布或开放业务。
 - Forbidden action: 不删当前包及最近有效恢复点、在用演练、未解决任务的恢复起点、清单/凭据/历史、业务在用数据、NAS、独立备份链；不自动停业务容器，不带卷删除容器、不强制删镜像、不全局 prune、不递归删除、不在有活动发布时热换执行器代码。未知归属的历史演练必须另行确认退役后处理。
 - Evidence: `doc/tasks/20261102-post-release-auto-cleanup/`、发布最终验收任务日志和逐服清理回执。
+## 原MAIN前端网络与继承停写门禁
+
+- Trigger：原前端回环登记配合宿主网络/动态bridge，或已消费续办在写前失败。
+- Preflight check：恢复前先解析所有语义健康端点。host前端通过owner层frontendReadiness/v1绑定原容器、完整配置摘要、只读nginx配置pin和明确IPv4/端口，核原配置的精确listen；bridge前端只取登记且唯一的固定IPv4附加网络，核原网络身份与80/tcp声明。所有历史targets保持。写前续办先证实原native全部mutation=false、无replacement-intent/importer、实际exit1及正式no-mutation释放，再核精确消费和前次clearance、同点同目标、全服务id/image/running/StartedAt与表数/UUID一致；若继承scheduler custody，验证原暂停状态并继续传递。
+- Blocker：原身份/配置/挂载/端口/网络漂移、地址歧义、未知模式、原文件未固定、消费关系或前次观察变化、调度器保护无法验证、活动worker/预约，均停止对应操作。
+- Verification：真实Linux运行test_main_readiness.py、test_retained_replacement_retry.py及封包/MAIN/调度器回归；安装前实际新进程解析两服全部端点，运行服务实测协议，停写服务不为预检而启动。完成恢复后核原生语义健康证明、实际HTTP及业务页面。
+- Forbidden action：不默认所有前端用127.0.0.1:80、不猜nginx第一个监听、不把running当healthy、不改历史targets摘要、不为无写续办启动尚未验收writer、不重复提交原失败或删除预约/失败记录。
+- Evidence：doc/tasks/20261106-spug-prod-incremental-to-two-targets/main-frontend-readiness-plan.md、main-health-endpoint-58.json、frontend-readiness-candidate-58.json、inherited-quiescence-candidate-58.json及RED/GREEN/REGRESSION原始日志。
+
+阶段必查项：只读原配置与失败原件 -> BDD/RED -> 实现及完整回归 -> 限定提交/新专属精确构建 -> 原件完整SHA及仅控制安装 -> 正式续办 -> 新鲜准入/真实Spug单次提交。推荐命令：docker inspect精确原id、读取已pin nginx配置、候选只读endpoint解析、verify_no_mutation/inherited_quiescence/observe、实际语义HTTP探测。Fail Fast按上述Blocker；必须记录真实网络模式、endpoint、文件与配置SHA、各失败操作及消费关系、原服务状态、实际退出/写标记、测试原始失败与新安装代次。

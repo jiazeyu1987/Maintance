@@ -326,3 +326,4 @@
 - Keywords: system_users duplicate tenant canonical username, ACTIVE_DUP_GROUPS, active_canonical_username, generated column unique active user, r43 ERROR 1644, r44 电子签名用户名唯一约束, deploy-release cache .env 污染 -> `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md#2026-09-11-迁移唯一约束业务范围与发布包缓存清洁门禁`
 - Keywords: Playwright 登录稳定窗口, postLoginConsoleErrorCount, postLoginFailedRequestCount, net::ERR_ABORTED, 测试租户 aoteman 发布后页面验收, r44 页面验收 -> `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md#2026-09-11-发布后-playwright-登录稳定窗口门禁`
 - Keywords: 发布后自动清理, 旧容器旧镜像, 最近恢复点保护, 已核销失败现场, openingJobId, retry-release-cleanup, 镜像共享层空间 -> `docs/release-agent-checklist.md#发布验收后旧载荷回收门禁`（阶段顺序、归属与锁复核、独立重试及真实 Docker 验证）。
+- MAIN_HEALTH_ENDPOINT_INVALID / frontend 127.0.0.1 / host nginx listen / 无写失败继承停写：`docs/release-agent-checklist.md#原main前端网络与继承停写门禁`。健康入口必须绑定真实原网络/监听，不猜80；写前失败若消费了停写clearance，精确继承原observation和scheduler custody，不启动writer凑准入。

@@ -128,6 +128,16 @@ def validate_clearance(target,claim,*,_legacy_ancestors=()):
         configuration=pinned_json(value['configurationPin'])
         require(configuration['targets'][value['targetConfigRef']]==target,'RECOVERY_CLEARANCE_TARGET_CHANGED')
         verify_no_mutation(configuration,request,original_root,value,value['noMutationReleasePin'])
+        if 'inheritedQuiescencePin' in value:
+            require(str(claim) not in _legacy_ancestors and len(_legacy_ancestors)<64,
+                    'RECOVERY_INHERITED_QUIESCENCE_CYCLE')
+            inherited=inherited_quiescence(target,request,ancestors=_legacy_ancestors+(str(claim),))
+            require(inherited is not None and inherited[0]==value['inheritedQuiescencePin'],
+                    'RECOVERY_INHERITED_QUIESCENCE_CHANGED')
+            previous=inherited[1]
+            compare_quiescence(pinned_json(value['observationPin']),pinned_json(previous['observationPin']))
+            require(value.get('schedulerCustodyPin')==previous.get('schedulerCustodyPin'),
+                    'RECOVERY_SCHEDULER_CUSTODY_CHANGED')
     require(value['replacementResultPin']['path']==str(claim/'replacement-result.json') and
             request['operationId']==result['operationId']==replacement['operationId']==claim.name and
             result['state']==replacement['state']=='FAILED_RETAINED' and result['actualExitCode']==1 and
@@ -262,6 +272,37 @@ def verify_no_mutation(configuration,request,root,refs,release_ref):
     return reservation
 
 
+def inherited_quiescence(target,request,*,ancestors=()):
+    """Find the exact consumed clearance; absence retains the original running rule."""
+    found=[]
+    for path in absolute(target['replacement']['stateRoot']).glob('*/recovery-consumption.json'):
+        used=load(path)
+        if used.get('replacementOperationId')!=request['operationId']:continue
+        require(used.get('schemaVersion')=='RetainedReplacementConsumption/v1' and
+                used.get('clearancePin')==pin(path.parent/'recovery-clearance.json'),
+                'RECOVERY_INHERITED_QUIESCENCE_CHANGED')
+        previous=validate_clearance(target,path.parent,_legacy_ancestors=ancestors)
+        require(previous is not None and all(previous[k]==request[k] for k in
+                ('sourceConfigRef','targetConfigRef','recoveryPointRef')),
+                'RECOVERY_INHERITED_QUIESCENCE_CHANGED')
+        observed=pinned_json(previous['observationPin'])
+        require(observed.get('schemaVersion')=='RetainedReplacementObservation/v1' and
+                observed['targetConfigRef']==request['targetConfigRef'] and
+                observed['databaseUuid']==target['replacement']['databaseUuid'] and
+                set(observed['services'])=={s['role'] for s in target['services']} and
+                all(v['running'] is (role in ('mysql','redis')) for role,v in observed['services'].items()),
+                'RECOVERY_INHERITED_QUIESCENCE_CHANGED')
+        found.append((used['clearancePin'],previous))
+    require(len(found)<=1,'RECOVERY_INHERITED_QUIESCENCE_AMBIGUOUS')
+    return found[0] if found else None
+
+
+def compare_quiescence(current,previous):
+    require(all(current.get(k)==previous.get(k) for k in
+                ('schemaVersion','targetConfigRef','databaseUuid','tableCount','services')),
+            'RECOVERY_INHERITED_QUIESCENCE_CHANGED')
+
+
 def authorize(configuration,request,root,authorization,expected_tables,*,no_mutation=False):
     """Append a narrowly bound clearance and release only its exact host pointer."""
     require(os.name=='posix' and type(authorization) is str and 10<=len(authorization)<=2000 and
@@ -304,7 +345,18 @@ def authorize(configuration,request,root,authorization,expected_tables,*,no_muta
                 reservation=verify_no_mutation(configuration,request,root,refs,release_ref);active=None
                 extra=dict(failurePhase='BEFORE_MUTATION',noMutationReleasePin=release_ref,
                            configurationPin=pin(root/'configuration.json'))
-                observation_value=observe(configuration,request,root,expected_tables,True)
+                inherited=inherited_quiescence(configuration['targets'][request['targetConfigRef']],request)
+                observation_value=observe(configuration,request,root,expected_tables,inherited is None)
+                if inherited is not None:
+                    reference,previous=inherited
+                    compare_quiescence(observation_value,pinned_json(previous['observationPin']))
+                    extra['inheritedQuiescencePin']=reference
+                    if 'schedulerCustodyPin' in previous:
+                        from recovery_main_target import mysql_scheduler
+                        native=ReadOnlyTarget(configuration,request,root);native.original=request
+                        mysql_scheduler(native,query=lambda statement,mutation=False:
+                            (native.query(statement)+'\n').encode('utf-8')).preflight()
+                        extra['schedulerCustodyPin']=previous['schedulerCustodyPin']
             else:
                 reservation,active=_verify_reservation(configuration,request,root)
                 observation_value=observe(configuration,request,root,expected_tables)

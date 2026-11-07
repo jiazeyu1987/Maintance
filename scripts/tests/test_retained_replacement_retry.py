@@ -299,3 +299,68 @@ def test_before_mutation_failed_current_observation_creates_no_clearance(before_
     with pytest.raises(RuntimeError,match='CURRENT_TARGET_TABLE_OR_IDENTITY_DRIFT'):
         retry.authorize(config,request,root,'Explicit same point restore with no target writes',885,no_mutation=True)
     assert not (claim/'recovery-clearance.json').exists() and not (host/'active.json').exists()
+
+
+@pytest.fixture
+def inherited_quiescence(before_mutation_case, monkeypatch):
+    retry,resource,config,request,root,claim,host=before_mutation_case
+    target=config['targets']['target']
+    prior=claim.parent/'prior';prior.mkdir();oldroot=root.parent/'prior';oldroot.mkdir()
+    observed=dict(schemaVersion='RetainedReplacementObservation/v1',targetConfigRef='target',
+        databaseUuid=target['replacement']['databaseUuid'],tableCount=885,observedAt='old',
+        services={'mysql':dict(id='mysql',image='image-mysql',running=True,startedAt='stable'),
+                  'minio':dict(id='minio',image='image-minio',running=False,startedAt='stable')})
+    refs=dict(requestPin=write(oldroot/'request.json',dict(request,operationId='prior')),
+        resultPin=write(oldroot/'worker-result.json',dict(operationId='prior',state='FAILED_RETAINED',actualExitCode=1)),
+        exitPin=write(oldroot/'child-exit.json',dict(actualExitCode=1,timedOut=False)),
+        replacementResultPin=write(prior/'replacement-result.json',dict(operationId='prior',targetConfigRef='target',state='FAILED_RETAINED')))
+    value=dict(schemaVersion='RetainedReplacementRecovery/v1',operationId='prior',sourceConfigRef='source',
+        targetConfigRef='target',recoveryPointRef='point',targetConfigurationSha256=digest(target),
+        authorization='Explicit same point continuation',expiresAt='2099-01-01T00:00:00Z',
+        observationPin=write(prior/'recovery-observation.json',observed),**refs)
+    ref=write(prior/'recovery-clearance.json',value)
+    release=write(oldroot/'resource-recovery-release.json',dict(clearancePin=ref,reason='EXPLICIT_RETAINED_REPLACEMENT_RECOVERY'))
+    write(prior/'recovery-ready.json',dict(clearancePin=ref,releasePin=release))
+    write(prior/'recovery-consumption.json',dict(schemaVersion='RetainedReplacementConsumption/v1',
+        clearancePin=ref,replacementOperationId=request['operationId']))
+    calls=[]
+    def current(*args):
+        calls.append(args[-1])
+        assert args[-1] is False, 'INHERITED_TARGET_MUST_STAY_QUIESCED'
+        return dict(observed,observedAt='current')
+    monkeypatch.setattr(retry,'observe',current)
+    return before_mutation_case,prior,observed,calls
+
+
+def test_no_mutation_after_consumed_clearance_keeps_original_quiescence(inherited_quiescence):
+    case,prior,observed,calls=inherited_quiescence
+    retry,resource,config,request,root,claim,host=case
+    original={p:p.read_bytes() for p in prior.iterdir()}
+    retry.authorize(config,request,root,'Explicit same point continuation from retained quiescence',885,no_mutation=True)
+    value=retry.validate_clearance(config['targets']['target'],claim)
+    assert calls==[False] and value['inheritedQuiescencePin']==pin(prior/'recovery-clearance.json')
+    assert all(p.read_bytes()==raw for p,raw in original.items()) and not (host/'active.json').exists()
+
+
+@pytest.mark.parametrize('field', ['services','databaseUuid','tableCount'])
+def test_inherited_quiescence_drift_never_creates_clearance(inherited_quiescence,monkeypatch,field):
+    case,prior,observed,calls=inherited_quiescence
+    retry,resource,config,request,root,claim,host=case
+    value=copy.deepcopy(observed)
+    if field=='services':value['services']['minio']['startedAt']='changed'
+    elif field=='databaseUuid':value[field]='different'
+    else:value[field]=884
+    monkeypatch.setattr(retry,'observe',lambda *a:value)
+    with pytest.raises(Exception,match='RECOVERY_INHERITED_QUIESCENCE_CHANGED'):
+        retry.authorize(config,request,root,'Explicit same point continuation from retained quiescence',885,no_mutation=True)
+    assert not (claim/'recovery-clearance.json').exists()
+
+
+def test_inherited_quiescence_clearance_remains_bound_to_consumption(inherited_quiescence):
+    case,prior,observed,calls=inherited_quiescence
+    retry,resource,config,request,root,claim,host=case
+    retry.authorize(config,request,root,'Explicit same point continuation from retained quiescence',885,no_mutation=True)
+    used=json.loads((prior/'recovery-consumption.json').read_bytes());used['replacementOperationId']='unrelated'
+    write(prior/'recovery-consumption.json',used)
+    with pytest.raises(Exception,match='RECOVERY_INHERITED_QUIESCENCE_CHANGED'):
+        retry.validate_clearance(config['targets']['target'],claim)
