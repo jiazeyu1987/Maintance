@@ -76,6 +76,7 @@ const reasons = {
   INCREMENTAL_PARENT_PREFIX_INVALID:'增量父链缺失或顺序不完整，当前不能接续备份。',
   NATIVE_PIN_CHANGED:'备份原件摘要发生变化，完整性核验未通过，当前不能接续备份。',
   INCREMENTAL_ORIGINAL_EXIT_INVALID:'父备份原始执行未成功，当前不能接续该备份链。',
+  INCREMENTAL_SOURCE_RESTORATION_INVALID:'备份源服务的恢复回执缺失或不匹配，请检查原备份的源服务恢复记录；当前不能接续备份。',
   SOURCE_EPOCH_POLICY_BINDING_INVALID:'当前来源身份与恢复周期登记不符，请核对来源配置。',
   BACKUP_POINT_EPOCH_BINDING_INVALID:'备份点与恢复周期登记不符，当前不能接续备份。',
   BACKUP_POINT_EPOCH_EVENT_INVALID:'备份点的恢复周期凭证无效，当前不能接续备份。',

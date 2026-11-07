@@ -67,7 +67,8 @@ class MetadataFixture:
         return executor.pin(path)
 
     def point(self, ref, parents=(), finished='2026-11-07T01:00:00Z', source='source-A',
-              uuid=DATABASE_UUID, prefix=None, exit_code=0):
+              uuid=DATABASE_UUID, prefix=None, exit_code=0, source_restored=True,
+              capture_result_change=None, restoration_change=None):
         kind = 'INCREMENTAL' if parents else 'FULL'
         ancestors = [self.points[p]['pointPin'] for p in parents]
         generation = parents[0] if parents else ref
@@ -76,13 +77,13 @@ class MetadataFixture:
         common = 'sha256:' + ('1' if not parents else str(len(parents) + 1)) * 64
         end = dict(databaseUuid=uuid, serverVersion='8.0.36', file='binlog.000010',
             position=100 + len(parents) * 100, executedGtidSet='')
-        captured = self.write(ref + '/capture-point.json', dict(schemaVersion='backup-capture-point/v1',
+        captured = self.write(ref + '/payload/capture-content-point.json', dict(schemaVersion='backup-capture-point/v1',
             backupId=ref, generationId=generation, pointType=kind, sourceIdentity='identity-A',
             parentPointPin=None if previous is None else previous['capturePin'],
             parentRepositoryPointPin=None if previous is None else previous['pointPin'],
             databaseEnd=end, databaseDelta=dict(kind='SQL_FULL' if not parents else 'BINLOG_SQL',
                 parentPosition=None if previous is None else previous['end']),
-            sourceRestored=True, commonRecoveryPoint=common))
+            sourceRestored=source_restored, commonRecoveryPoint=common))
         terminal = self.write(ref + '/exit.json', dict(state='EXITED', processTerminated=True,
             actualExitCode=exit_code))
         manifest = self.write(ref + '/manifest.json', dict(schemaVersion='RepositoryManifest/v1',
@@ -98,10 +99,26 @@ class MetadataFixture:
         binding = self.write(ref + '/repository-binding.json', dict(schemaVersion='RecoveryRepositoryBinding/v1',
             backupId=ref, generationId=generation, repositoryPointPin=point, manifestPin=manifest,
             recoveryMaterialPin=material))
+        data = dict(pointPin=point, repositoryBindingPin=binding)
+        if source_restored is False:
+            restoration = dict(schemaVersion='minimal-capture-source-restoration/v1',
+                sourceIdentity='identity-A', restored=True, errors=[], touchedContainerIds=[],
+                at='2026-11-07T00:30:00Z')
+            if restoration_change is not None:
+                restoration_change(restoration)
+            restoration_pin = self.write(ref + '/source-restoration.json', restoration)
+            capture_output = dict(schemaVersion='backup-restore-operation-result/v1',
+                operationId=ref, requestId=ref, action=kind, state='SUCCEEDED', actualExitCode=0,
+                failureCode=None, startedAt='2026-11-07T00:00:00Z', finishedAt=finished,
+                data=dict(captureRoot=str(self.root / ref), capturePointPin=captured,
+                    sourceRestorationPin=restoration_pin, sourceIdentity='identity-A', recoveryPoint=common))
+            if capture_result_change is not None:
+                capture_result_change(capture_output)
+            data['captureResultPin'] = self.write(ref + '/capture-output.json', capture_output)
         output = self.write(ref + '/operation.json', dict(schemaVersion='backup-restore-operation-result/v1',
             operationId=ref, requestId=ref, action=kind, state='SUCCEEDED', actualExitCode=0,
             failureCode=None, originalResultPins=[terminal], startedAt='2026-11-07T00:00:00Z',
-            finishedAt=finished, message='Native fixture result', data=dict(pointPin=point, repositoryBindingPin=binding)))
+            finishedAt=finished, message='Native fixture result', data=data))
         control = self.write(ref + '/control-binding.json', dict(schemaVersion='SmallAppPointBinding/v2',
             reference=ref, sourceConfigRef=source, resultPin=output))
         self.write('registry/points/' + ref + '.pin.json', control)
@@ -186,6 +203,62 @@ class AutomaticPlan(unittest.TestCase):
         self.assertRegex(plan['evidenceDigest'], r'^[0-9a-f]{64}$')
         public_body = {key: value for key, value in plan.items() if key != 'planDigest'}
         self.assertEqual(plan['planDigest'], hashlib.sha256(canonical(public_body)).hexdigest())
+
+    def test_frozen_content_point_uses_separate_source_restoration_receipt(self):
+        self.point('full-root', source_restored=False)
+        self.point('increment-one', ['full-root'], source_restored=False,
+            finished='2026-11-07T01:01:00Z')
+        plan = self.plan()
+        self.assertEqual((plan['state'], plan['parentChainRef']), ('READY', 'increment-one'))
+
+    def test_frozen_content_without_epoch_requires_new_full(self):
+        self.point('full-root', source_restored=False)
+        self.fixture.enable_epoch()
+        self.fixture.epoch_event()
+        plan = self.plan()
+        self.assertEqual((plan['state'], plan['reasonCode']),
+            ('BASELINE_REQUIRED', 'BACKUP_POINT_EPOCH_REQUIRED'))
+
+    def test_frozen_content_rejects_unbound_or_failed_capture_receipt(self):
+        changes = [
+            ('other-request', lambda v: v.update(requestId='another-operation'), None),
+            ('failed-result', lambda v: v.update(state='FAILED_RETAINED'), None),
+            ('nonzero-exit', lambda v: v.update(actualExitCode=1), None),
+            ('missing-restoration', lambda v: v['data'].pop('sourceRestorationPin'), None),
+            ('wrong-content', lambda v: v['data']['capturePointPin'].update(sha256='0' * 64), None),
+            ('wrong-source', lambda v: v['data'].update(sourceIdentity='another-source'), None),
+            ('wrong-root', lambda v: v['data'].update(captureRoot=str(self.root / 'other')), None),
+            ('not-restored', None, lambda v: v.update(restored=False)),
+            ('restoration-errors', None, lambda v: v.update(errors=['writer-not-restored'])),
+            ('restoration-source', None, lambda v: v.update(sourceIdentity='another-source')),
+            ('restoration-after-success', None, lambda v: v.update(at='2026-11-07T01:00:01Z')),
+        ]
+        for name, capture_change, restoration_change in changes:
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
+                fixture = MetadataFixture(Path(directory).resolve())
+                fixture.point('full-root', source_restored=False,
+                    capture_result_change=capture_change, restoration_change=restoration_change)
+                plan = fixture.native.incremental_plan('source-A')
+                self.assertEqual((plan['state'], plan['reasonCode']),
+                    ('BLOCKED', 'INCREMENTAL_SOURCE_RESTORATION_INVALID'))
+
+    def test_frozen_content_requires_linked_capture_result(self):
+        self.point('full-root', source_restored=False)
+        binding = self.native.document(self.fixture.points['full-root']['controlPin'])
+        output = self.native.document(binding['resultPin'])
+        del output['data']['captureResultPin']
+        binding['resultPin'] = self.fixture.write('full-root/result-without-capture.json', output)
+        selector = self.fixture.write('full-root/binding-without-capture.json', binding)
+        (self.root / 'registry/points/full-root.pin.json').write_bytes(canonical(selector))
+        plan = self.plan()
+        self.assertEqual((plan['state'], plan['reasonCode']),
+            ('BLOCKED', 'INCREMENTAL_SOURCE_RESTORATION_INVALID'))
+
+    def test_frozen_content_restoration_original_cannot_be_changed(self):
+        self.point('full-root', source_restored=False)
+        (self.root / 'full-root/source-restoration.json').write_bytes(b'{}')
+        self.assertEqual((self.plan()['state'], self.plan()['reasonCode']),
+            ('BLOCKED', 'NATIVE_PIN_CHANGED'))
 
     def test_newest_native_full_starts_a_new_generation(self):
         self.point('zzz-old-full')

@@ -476,6 +476,18 @@ test('blocked, failed and mismatched plans invalidate earlier readiness and expl
   }
 });
 
+test('missing source restoration proof blocks backup and explains the receipt without suggesting FULL',async()=>{
+  const p=page();planApi(p,automaticPlan({state:'BLOCKED',reasonCode:'INCREMENTAL_SOURCE_RESTORATION_INVALID'}));
+  p.get('simple-type').value='INCREMENTAL';await p.get('simple-type').onchange();
+  assert.match(p.get('simple-status').textContent,/备份源服务.*恢复回执.*缺失或不匹配.*检查/);
+  assert.match(p.get('simple-status').textContent,/INCREMENTAL_SOURCE_RESTORATION_INVALID/);
+  assert.doesNotMatch(p.get('simple-status').textContent,/全量|FULL/);
+  assert.equal(p.get('simple-submit').disabled,true);
+  p.get('simple-submit').onclick();
+  assert.equal(p.run('confirmation'),null);
+  assert.equal(p.context.apiCalls.filter(call=>call.body).length,0);
+});
+
 test('a late plan from an earlier source cannot replace the current source plan',async()=>{
   const p=page();planApi(p);p.get('simple-type').value='INCREMENTAL';
   p.run(`globalThis.waiters=[];api=async()=>new Promise(resolve=>waiters.push(resolve));`);

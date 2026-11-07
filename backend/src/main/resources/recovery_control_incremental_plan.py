@@ -143,6 +143,43 @@ def read_declared(reader, reference, binding_pin, binding):
         pointPin=point_pin, point=point, output=output, finished=finished)
 
 
+def validate_source_restoration(reader, row, captured, capture_pin):
+    """Frozen capture content precedes restoration; its success receipt follows it."""
+    need(type(captured.get('sourceRestored')) is bool, 'INCREMENTAL_CAPTURE_BINDING_INVALID')
+    if captured['sourceRestored']:
+        return
+    code = 'INCREMENTAL_SOURCE_RESTORATION_INVALID'
+    result_pin = row['output']['data'].get('captureResultPin')
+    need(type(result_pin) is dict, code)
+    result = reader.document(result_pin)
+    need(result.get('schemaVersion') == 'backup-restore-operation-result/v1' and
+         result.get('operationId') == result.get('requestId') == row['reference'] and
+         result.get('action') == captured['pointType'] and result.get('state') == 'SUCCEEDED' and
+         type(result.get('actualExitCode')) is int and result['actualExitCode'] == 0 and
+         result.get('failureCode') is None and type(result.get('data')) is dict, code)
+    data = result['data']
+    original = data.get('capturePointPin')
+    restoration_pin = data.get('sourceRestorationPin')
+    need(type(original) is dict and type(restoration_pin) is dict and
+         type(data.get('captureRoot')) is str and
+         data.get('sourceIdentity') == captured['sourceIdentity'] and
+         data.get('recoveryPoint') == captured['commonRecoveryPoint'], code)
+    executor.pin_reference(original)
+    executor.pin_reference(restoration_pin)
+    root = Path(data['captureRoot'])
+    # Repository publication changes the path, preserving the captured bytes.
+    need(root.is_absolute() and root.resolve() == root and
+         Path(original['path']) == root / 'payload' / 'capture-content-point.json' and
+         Path(restoration_pin['path']) == root / 'source-restoration.json' and
+         all(original[key] == capture_pin[key] for key in ('bytes', 'sha256')), code)
+    restoration = reader.document(restoration_pin)
+    need(restoration.get('schemaVersion') == 'minimal-capture-source-restoration/v1' and
+         restoration.get('sourceIdentity') == captured['sourceIdentity'] and
+         restoration.get('restored') is True and restoration.get('errors') == [], code)
+    need(timestamp(result['startedAt']) <= timestamp(restoration['at']) <=
+         timestamp(result['finishedAt']) <= row['finished'], code)
+
+
 def read_point(reader, row, *, complete=True):
     point, output, reference = row['point'], row['output'], row['reference']
     point_pin = row['pointPin']
@@ -169,9 +206,10 @@ def read_point(reader, row, *, complete=True):
          material['manifestPin'] == point['manifestPin'] and material['pointType'] == point['pointType'] and
          captured.get('schemaVersion') == 'backup-capture-point/v1' and captured['backupId'] == reference and
          captured['generationId'] == point['generationId'] and captured['pointType'] == point['pointType'] and
-         captured['sourceRestored'] is True and material['sourceDatabaseUuid'] == captured['databaseEnd']['databaseUuid'] and
+         material['sourceDatabaseUuid'] == captured['databaseEnd']['databaseUuid'] and
          material['recoveryPoint'] == captured['commonRecoveryPoint'] == point['commonRecoveryPoint'],
          'INCREMENTAL_CAPTURE_BINDING_INVALID')
+    validate_source_restoration(reader, row, captured, capture_pin)
     end = captured['databaseEnd']
     need(type(end) is dict and type(end.get('position')) is int and end['position'] >= 4 and
          type(end.get('file')) is str and re.fullmatch(r'.+\.\d+', end['file']) and

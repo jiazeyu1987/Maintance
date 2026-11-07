@@ -1,5 +1,6 @@
 """Explicit replacement of a registered existing application, never an empty-target retry."""
 from copy import deepcopy
+from pathlib import Path, PurePosixPath
 import hashlib
 import json
 import os
@@ -72,6 +73,31 @@ def validate(target):
     return value
 
 
+def _epoch_physical_overlap(protected, writable, mounts):
+    """Include nested bind mounts, whose backing may be outside the lexical tree."""
+    from recovery_replacement_storage import physical_location, overlaps
+    device, location = physical_location(protected, mounts)
+    paths = [writable] + [row['mountPoint'] for row in mounts
+        if PurePosixPath(writable) in PurePosixPath(row['mountPoint']).parents]
+    return any(device == other_device and overlaps(location, other_location)
+        for other_device, other_location in (physical_location(path, mounts) for path in paths))
+
+
+def _epoch_mount_path(value, role, mount):
+    from recovery_replacement_storage import DATA_ROLES, observe_preserved_mount
+    contract = value.get('storage', {})
+    if contract.get('schemaVersion') == 'RegisteredReplacementStorage/v3' and role not in DATA_ROLES:
+        entries = [entry for entry in contract['preservedApplicationMounts']
+                   if entry['role'] == role and entry['mount'] == mount]
+        if entries:
+            require(len(entries) == 1, 'BACKUP_EPOCH_RETAINED_MOUNT_CHANGED')
+            observed = observe_preserved_mount(mount)
+            require(observed == entries[0]['identity'], 'BACKUP_EPOCH_RETAINED_MOUNT_CHANGED')
+            return absolute(observed['resolvedPath'])
+    # Data, legacy and unregistered mounts never inherit the retained alias contract.
+    return absolute(mount['Source'])
+
+
 def _validate_epoch(value, policy):
     from recovery_backup_epoch import validate_policy
     epoch = validate_policy(policy)
@@ -83,12 +109,20 @@ def _validate_epoch(value, policy):
     state, lock = absolute(value['stateRoot']), absolute(value['lockPath'])
     if epoch_root.is_relative_to(state) or state.is_relative_to(epoch_root):
         raise ValueError('BACKUP_EPOCH_REPLACEMENT_STATE_OVERLAP')
-    for service in value['services'].values():
+    mounts = None
+    if os.name == 'posix':
+        from recovery_replacement_storage import parse_mountinfo
+        mounts = parse_mountinfo(Path('/proc/self/mountinfo').read_text(encoding='utf-8'))
+        if _epoch_physical_overlap(str(epoch_root), str(state), mounts):
+            raise ValueError('BACKUP_EPOCH_REPLACEMENT_STATE_OVERLAP')
+    for role, service in value['services'].items():
         for mount in service.get('mounts', []):
             if mount.get('RW'):
-                storage = absolute(mount['Source'])
+                storage = _epoch_mount_path(value, role, mount)
                 if (epoch_root.is_relative_to(storage) or storage.is_relative_to(epoch_root) or
-                        lock.is_relative_to(storage)):
+                        lock.is_relative_to(storage) or mounts is not None and
+                        any(_epoch_physical_overlap(str(path), str(storage), mounts)
+                            for path in (epoch_root, lock))):
                     raise ValueError('BACKUP_EPOCH_REPLACEMENT_STORAGE_OVERLAP')
 
 

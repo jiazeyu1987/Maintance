@@ -157,6 +157,93 @@ def test_epoch_storage_cannot_be_erased_by_registered_volume_replacement(tmp_pat
         validate(value)
 
 
+@pytest.fixture
+def retained_epoch_mount(tmp_path):
+    """Real Linux socket/link custody; data contract shape is a unit-test fixture."""
+    import socket
+    from copy import deepcopy
+    from recovery_replacement_storage import observe_preserved_mount
+    from test_replacement_storage import contract
+    from test_smallapp_replacement import target
+    registered = target(tmp_path); epoch = policy(tmp_path)
+    real = tmp_path / 'run'; real.mkdir()
+    alias = tmp_path / 'var-run'; alias.symlink_to(real, target_is_directory=True)
+    sock = socket.socket(socket.AF_UNIX); sock.bind(str(real / 'docker.sock'))
+    mount = dict(Type='bind', Source=str(alias / 'docker.sock'),
+                 Destination='/var/run/docker.sock', RW=True)
+    storage = contract()
+    storage.update(schemaVersion='RegisteredReplacementStorage/v3', inactiveConsumers=[],
+        preservedApplicationMounts=[dict(role='backend', mount=deepcopy(mount),
+                                        identity=observe_preserved_mount(mount))])
+    registered['replacement'].update(schemaVersion='RegisteredApplicationReplacement/v2', storage=storage)
+    registered['replacement']['services']['backend'] = dict(mounts=[mount])
+    registered['services'].append(dict(role='backend'))
+    owner = dict(targets=dict(target=registered), targetBackupEpochPolicies=dict(target=epoch))
+    yield owner, mount, real
+    sock.close()
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='Actual Linux socket and symlink custody')
+def test_epoch_accepts_exact_registered_preserved_socket_alias_without_changing_target(retained_epoch_mount):
+    from recovery_replace import replacement_value
+    owner, _, _ = retained_epoch_mount; original = canonical(owner)
+    result = replacement_value(owner, 'target')
+    assert result['backupEpoch'] == owner['targetBackupEpochPolicies']['target']
+    assert canonical(owner) == original
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='Actual Linux socket and symlink custody')
+@pytest.mark.parametrize('change', ['unregistered', 'mount-drift', 'identity-drift', 'link-drift', 'data-alias'])
+def test_epoch_rejects_unregistered_or_changed_preserved_alias(retained_epoch_mount, change):
+    import socket
+    from recovery_replace import replacement_value
+    owner, mount, real = retained_epoch_mount
+    replacement = owner['targets']['target']['replacement']
+    entry = replacement['storage']['preservedApplicationMounts'][0]
+    if change == 'unregistered': entry['mount']['Destination'] = '/other'
+    elif change == 'mount-drift': mount['Destination'] = '/other'
+    elif change == 'identity-drift': entry['identity']['inode'] += 1
+    elif change == 'link-drift':
+        other = real.parent / 'other'; other.mkdir()
+        replacement_socket = socket.socket(socket.AF_UNIX); replacement_socket.bind(str(other / 'docker.sock'))
+        alias = real.parent / 'var-run'; alias.unlink(); alias.symlink_to(other, target_is_directory=True)
+    else:
+        replacement['services']['mysql']['mounts'] = [dict(Source=str(real.parent / 'var-run'), RW=True)]
+    try:
+        with pytest.raises(Exception, match='PATH_ALIAS_REJECTED|BACKUP_EPOCH_RETAINED_MOUNT_CHANGED'):
+            replacement_value(owner, 'target')
+    finally:
+        if change == 'link-drift': replacement_socket.close()
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='Actual Linux socket and symlink custody')
+@pytest.mark.parametrize('protected', ['epoch', 'lock'])
+def test_epoch_rejects_even_registered_preserved_alias_to_protected_storage(retained_epoch_mount, protected):
+    from copy import deepcopy
+    from recovery_replace import replacement_value
+    from recovery_replacement_storage import observe_preserved_mount
+    owner, mount, real = retained_epoch_mount
+    epoch = owner['targetBackupEpochPolicies']['target']
+    alias = real.parent / 'protected-alias'
+    destination = Path(epoch['root']) if protected == 'epoch' else Path(epoch['sourceLockPath']).parent
+    alias.symlink_to(destination, target_is_directory=True)
+    mount['Source'] = str(alias)
+    entry = owner['targets']['target']['replacement']['storage']['preservedApplicationMounts'][0]
+    entry.update(mount=deepcopy(mount), identity=observe_preserved_mount(mount))
+    with pytest.raises(ValueError, match='BACKUP_EPOCH_REPLACEMENT_STORAGE_OVERLAP'):
+        replacement_value(owner, 'target')
+
+
+def test_epoch_overlap_uses_mount_physical_identity_including_nested_bind():
+    from recovery_replace import _epoch_physical_overlap
+    from recovery_replacement_storage import parse_mountinfo
+    mounts = parse_mountinfo('1 0 8:1 / / rw - ext4 /dev/root rw\n'
+        '2 1 8:1 /control /app/sub rw - ext4 /dev/root rw\n')
+    assert _epoch_physical_overlap('/control/epochs', '/app', mounts)
+    assert _epoch_physical_overlap('/control/source.lock', '/app/sub', mounts)
+    assert not _epoch_physical_overlap('/different/epochs', '/app/sub', mounts)
+
+
 def test_uninitialized_policy_never_invents_ready_epoch(tmp_path):
     value = policy(tmp_path)
     with pytest.raises(ValueError, match='BACKUP_EPOCH_UNINITIALIZED'):

@@ -1,6 +1,6 @@
 # 项目经验索引
 
-- 自动增量 / automatic-incremental / 自动全量基线 / planDigest / 恢复epoch / 日志过期 / 未知提交 / 计划超时：`docs/release-agent-checklist.md#自动增量链与恢复周期门禁`。权威成功链、来源实际日志、稳定摘要、持久互斥、原件跟踪及整个HTTP预算一起验证；旧目标历史严格比较保持，不追认旧点epoch。
+- 自动增量 / automatic-incremental / 自动全量基线 / planDigest / 恢复epoch / 日志过期 / 未知提交 / 计划超时 / sourceRestored=false / source-restoration / docker.sock / epoch挂载别名：`docs/release-agent-checklist.md#自动增量链与恢复周期门禁`。权威成功链、冻结内容与最终恢复回执、来源实际日志、稳定摘要、持久互斥、原件跟踪及整个HTTP预算一起验证；旧目标历史严格比较保持，不追认旧点epoch。已登记保留挂载按原精确身份核验，再核实时物理重叠，不能一律拒绝合法链接或跳过挂载。
 
 - STANDARD 配置传递 / PACKAGED_FRONTEND_PROFILE_NOT_PROPAGATED / 已登记但实际构造丢失：`docs/release-agent-checklist.md#实际封包构造配置传递门禁`。冻结基线加 transforms 必须覆盖新 owner 字段；实际封包新进程运行构造函数到首次数据库访问边界，禁止手动填充测试对象代替交付路径。
 
