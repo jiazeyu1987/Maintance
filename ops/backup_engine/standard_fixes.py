@@ -60,6 +60,10 @@ def apply(payload):
     replace('common/recovery_minimal_runtime.py',
         "             'formal_physical_restore_readback')",
         "             'formal_physical_restore_readback', 'formal_schema_evidence')")
+    replace('common/recovery_minimal_runtime.py',
+        "        self.config_services = {row['role']: row for row in target['services']}\n",
+        "        self.config_services = {row['role']: row for row in target['services']}\n"
+        "        self.frontend_readiness = configuration.get('frontendReadiness', {}).get(request['targetConfigRef'])\n")
     replace('common/recovery_data.py',
         "             'formal_physical_restore_readback', 'formal_data_evidence', 'formal_s3_export')",
         "             'formal_physical_restore_readback', 'formal_data_evidence', 'formal_s3_export', 'formal_schema_evidence')")

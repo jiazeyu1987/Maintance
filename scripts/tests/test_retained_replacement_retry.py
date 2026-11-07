@@ -281,13 +281,19 @@ def test_before_mutation_clearance_stays_bound_to_release_pin(before_mutation_ca
 def test_before_mutation_clearance_rejects_actual_live_original_process(before_mutation_case):
     import subprocess
     retry,resource,config,request,root,claim,host=before_mutation_case
-    worker=subprocess.Popen([sys.executable,'-c','import time;time.sleep(30)',
-                             'recovery_minimal_worker.py',request['operationId']])
+    worker=subprocess.Popen([sys.executable,'-c',
+        "import sys;print('READY',flush=True);sys.stdin.buffer.read()",
+        'recovery_minimal_worker.py',request['operationId']],
+        stdin=subprocess.PIPE,stdout=subprocess.PIPE)
     try:
+        assert worker.stdout.readline()==b'READY\n' and worker.poll() is None
         with pytest.raises(Exception,match='RECOVERY_ORIGINAL_PROCESS_RUNNING'):
             retry.authorize(config,request,root,'Explicit same point restore with no target writes',885,no_mutation=True)
+        assert worker.poll() is None, 'the original process must stay alive for the entire rejection check'
         assert not (claim/'recovery-clearance.json').exists()
-    finally:worker.terminate();worker.wait(timeout=5)
+    finally:
+        worker.terminate();worker.wait(timeout=5)
+        worker.stdin.close();worker.stdout.close()
 
 
 def test_before_mutation_failed_current_observation_creates_no_clearance(before_mutation_case,monkeypatch):

@@ -1,5 +1,16 @@
 # IntRuoyi Codex 发布执行检查清单
 
+## 实际封包构造配置传递门禁
+
+- Trigger：owner 新增运行配置、冻结标准包的 reviewed transforms 变更，或配置存在但实际 runtime 缺失字段。
+- Preflight check：分别确定当前源码与冻结基线加 transforms 的交付路径；两个实际封包均在独立进程加载真实模块并运行完整构造函数到首次数据库访问边界，确认按 request.targetConfigRef 绑定所选配置、缺失时保持 None。
+- Blocker：真实构造路径未到达边界、字段未传递、读取其它目标配置、交付文件摘要变化，立即阻断安装及恢复。
+- Verification：先以实际标准包缺失配置复现 RED，再最小补齐正式 transform，GREEN 与受影响完整回归通过；安装激活前用新封包真实构造函数读取实际 owner，并对该构造对象执行原生只读 inspect 解析全部健康端点。数据库访问边界停止，不能启动停写服务来做预检。
+- Forbidden action：不得用手动赋值 SimpleNamespace、字符串存在检查或仅源码单元测试替代交付构造路径；不得修改旧目标摘要、失败记录或跳过健康检查。
+- Evidence：doc/tasks/20261106-spug-prod-incremental-to-two-targets/packaged-frontend-readiness-plan.md、实际 RED/GREEN/REGRESSION、精确提交/新专属 worktree/包摘要及实装构造边界证据。
+
+阶段必查与推荐命令：实现前运行 `pytest scripts/tests/test_backup_variants.py::test_packaged_constructor_binds_only_requested_frontend_readiness`；完整回归后独立提交，新建干净专属 worktree 构建。激活前执行上述实际 owner 构造检查并保持原容器、数据与挂载；Fail Fast 按 Blocker 保留旧安装、原错误和停写状态。必须记录各阶段真实命令、退出码、构造边界、实际端点和所有交付 pins。
+
 ## 旧MAIN续办历史兼容门禁
 
 - Trigger：控制升级后旧MAIN/v1已消费clearance缺mainProtectionRecoveryPin，目标selections返回500。

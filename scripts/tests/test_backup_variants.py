@@ -137,6 +137,46 @@ def test_packaged_redis_dump_uses_registered_authentication(variant, packages):
 
 
 @pytest.mark.parametrize('variant', builder.VARIANTS)
+def test_packaged_constructor_binds_only_requested_frontend_readiness(variant, packages, tmp_path):
+    """Execute the actual delivered constructor up to its first database read."""
+    with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
+        archive.extractall(tmp_path/'package', filter='data')
+    program = r'''
+import sys
+from pathlib import Path
+sys.path[:0]=[sys.argv[1]+'/common',sys.argv[1]+'/formal']
+import recovery_minimal_runtime as runtime
+from recovery_engine import pin
+class BeforeDatabaseIO(Exception):pass
+class Boundary(runtime.MinimalData):
+ def database_uuid(self):raise BeforeDatabaseIO()
+configuration={'environmentMysqlClientPath':'/usr/bin/mysql','maxExpandedBytes':64*1024**3,
+ 'formalModuleDirectory':sys.argv[1]+'/formal','deadlineMilliseconds':7200000,
+ 'dataLimits':{'max_rows':10000000,'max_nodes':100000000,'max_bytes':16*1024**3,'seconds':7200},
+ 'frontendReadiness':{'target-a':{'address':'192.168.20.58','port':8081},
+                     'target-b':{'address':'192.168.20.59','port':38081}}}
+root=Path(sys.argv[2]);root.mkdir()
+inputs=root.parent/'inputs';inputs.mkdir();archive=inputs/'archive';archive.write_bytes(b'actual component archive bytes')
+reference=pin(archive)
+chain=[(reference,None,{'recoveryPoint':'component-point','objects':{'method':'PHYSICAL_FILES'},
+ 'payloadPins':[],'versionPins':[]},reference)]
+target={'dataPolicy':{'businessInvariants':[]},'services':[{'role':'mysql','id':'component-db'}],
+ 'dockerPin':reference,'iptablesPin':reference}
+for name in ('target-a','target-b','target-without-profile'):
+ subject=Boundary.__new__(Boundary)
+ try:
+  subject.__init__(configuration,{'operationId':'component','targetConfigRef':name},None,{},chain,target,root,[])
+ except BeforeDatabaseIO:pass
+ else:raise AssertionError('Actual constructor did not reach native database boundary')
+ assert getattr(subject,'frontend_readiness',None)==configuration['frontendReadiness'].get(name),'PACKAGED_FRONTEND_PROFILE_NOT_PROPAGATED'
+print('delivered constructor binds exact requested frontend profile before native I/O')
+'''
+    result=subprocess.run([sys.executable,'-B','-c',program,str(tmp_path/'package'),str(tmp_path/'work')],
+                          capture_output=True,text=True)
+    assert result.returncode==0,result.stderr
+
+
+@pytest.mark.parametrize('variant', builder.VARIANTS)
 def test_published_fence_and_preparation_hooks_are_actually_packaged(variant, packages):
     with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
         assert archive.extractfile('common/recovery_published_fence.py').read()==(ROOT/'ops/recovery/recovery_published_fence.py').read_bytes()

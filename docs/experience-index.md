@@ -1,5 +1,7 @@
 # 项目经验索引
 
+- STANDARD 配置传递 / PACKAGED_FRONTEND_PROFILE_NOT_PROPAGATED / 已登记但实际构造丢失：`docs/release-agent-checklist.md#实际封包构造配置传递门禁`。冻结基线加 transforms 必须覆盖新 owner 字段；实际封包新进程运行构造函数到首次数据库访问边界，禁止手动填充测试对象代替交付路径。
+
 - MAIN旧clearance / mainProtectionRecoveryPin KeyError / 已消费失败历史 / selections 500：`docs/release-agent-checklist.md#旧main续办历史兼容门禁`。升级前以真实全部历史核目标选择；仅显式兼容无新保护的旧MAIN/v1且消费链最终实际成功的合同，核原配置、同点同目标及终态，不删除或改写旧记录。
 - 增量恢复自增计数 / FORMAL_SCHEMA_MISMATCH / INSERT IGNORE / AUTO_INCREMENT / MinimalData / modules_from / formal_schema_evidence KeyError：`docs/release-agent-checklist.md#增量恢复冻结自增状态门禁`。ROW日志不保证重放未使用的分配号；以同一不可变expectedDataPin的完整schema恢复，先证明其它结构完全一致，仅审计修改差异计数，最终完整结构/数据校验保持。真实隔离MySQL及两个实际封包的入口加载分别先复现再验证；失败目标按正式clearance走新UI操作，不改历史或用MAX(id)+1代替。
 
