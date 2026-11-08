@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "IntegrationFinalApprovalPreparation/v1",
+  "status": "PREPARED_NOT_EXECUTED",
+  "observedAt": "2026-11-08T03:28:52.419488+00:00",
+  "mainHead": "e2e89420851a57885f9c1ddf22ff1862916add83",
+  "taskHead": "aca7b346a06e6fb7191d5c24ce853d415405366a",
+  "mergeBase": "e1389aa621bc92bc2f2e02ebdbc249d3c3086808",
+  "mainIndexPin": {
+    "file": "index",
+    "bytes": 358652,
+    "sha256": "9a91d1bb5c528da42951804fe5e300e250ae7296a0454fcb814026abe7325946"
+  },
+  "mainStatusPin": {
+    "bytes": 1031716,
+    "sha256": "e43c9a95b7eefde68265117a32439a618f51ba40e1b8fa20369235fcf7106381"
+  },
+  "mainDirtyPaths": 9949,
+  "committedIncomingPaths": 1610,
+  "dirtyIncomingIntersection": [
+    "docs/request-command-log.md"
+  ],
+  "mainWorkingLogPin": {
+    "bytes": 1210931,
+    "sha256": "835553401940f3967c40b3ad8598c4fc5f11e2452be4c7264f338b3f6840a40d"
+  },
+  "privateCandidateDirectory": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\integration-review-20261108-r2",
+  "logVersions": {
+    "mainCommittedOriginal": {
+      "file": "main-committed.original",
+      "bytes": 1203126,
+      "sha256": "c482e696232bcc6c9baf08c15aee41ac70b3cb2a576623be4a1f72787ca9b0fd"
+    },
+    "mainWorkingOriginal": {
+      "file": "main-working.original",
+      "bytes": 1210931,
+      "sha256": "835553401940f3967c40b3ad8598c4fc5f11e2452be4c7264f338b3f6840a40d"
+    },
+    "mainCommittedRedacted": {
+      "file": "main-committed-redacted.md",
+      "bytes": 1203130,
+      "sha256": "2ba88a69570f819e4fba96cff43b4bbfb1f8baea828d23dc88755095ad2ac610"
+    },
+    "mainWorkingRedacted": {
+      "file": "main-working-redacted.md",
+      "bytes": 1210935,
+      "sha256": "9a6e9a1aec4903670c75e8a25d35806c61aa85a1c8fdba269a10b40acaae6a1f"
+    },
+    "taskCommittedLog": {
+      "file": "task-log.md",
+      "bytes": 1248956,
+      "sha256": "d3afd0011c8b9634b588ddc23f0ba530419acdf496f6bfdaad2942a7ce2cdcba"
+    },
+    "parallelNineLines": {
+      "file": "parallel-nine-lines.md",
+      "bytes": 2072,
+      "sha256": "efce7aaf864d75ec3e0e3274a0071ea3875b8ae5d95c46741517e616aaac4840"
+    },
+    "restoredMainCandidate": {
+      "file": "restored-main-working-candidate.md",
+      "bytes": 1251028,
+      "sha256": "30d9dd19c14be92462950172186da3990f96285864d57ede4bee32a944c874cb"
+    }
+  },
+  "parallelLineCount": 9,
+  "parallelReplayExitCode": 0,
+  "parallelNotInTaskCommit": true,
+  "removingOnlyParallelLinesRestoresTask": true,
+  "onlyPreviouslyIdentifiedSingleHistoricalRedaction": true,
+  "oldNov4Candidates": [
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/execution-log.md",
+      "candidatePin": {
+        "file": "nov4-1-resolved.md",
+        "bytes": 42714,
+        "sha256": "7d95765866d0232b6799f8e82556cd49dee5e15512e8fc9063c6a4f68d35c1b8"
+      },
+      "originalInputsUnchanged": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/task.md",
+      "candidatePin": {
+        "file": "nov4-2-resolved.md",
+        "bytes": 21329,
+        "sha256": "ed9849957809345bb2174dd9823ac1dd8cb778f3a33cddcb4bcf46e45c897797"
+      },
+      "originalInputsUnchanged": true
+    }
+  ],
+  "mainHeadIndexStatusLogUnchanged": true,
+  "newGitObjectsWritten": false,
+  "mainOrServerWrites": false,
+  "scopeLimitations": [
+    "Candidate preparation only; human authorization required",
+    "Historical Git objects are not rewritten",
+    "Private original log must never be committed or stashed before redaction"
+  ]
+}

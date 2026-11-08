@@ -876,3 +876,19 @@ BDD: 原件字节与空白检查 -> Given CRLF 原件和两份带结尾空行的
 RED: pytest test_record_line_endings.py -> exit1，3 failed/2 passed，实际复现原属性缺 CRLF/原日志格式声明。
 GREEN: 同命令 -> exit0，5 passed；真实 886 个已暂存路径 diff --cached --check -> exit0。仅改本任务 .gitattributes，未重编码验收文件，未改全局 Git 设置。
 原 records-execute-acceptance-1 提交尝试实际失败 STAGED_DIFF_CHECK_FAILED_REVIEW_INDEX，未提交；原回执保留。父任务人工核对所有暂存路径在已审查 selection 内，再精确 git restore --staged --source=0dc7429 -- <886 paths>，逐文件 SHA 保持、index 空、HEAD 未变，见 record-line-ending-recovery.json。无服务器写入、主线修改或工作区内容回滚。
+### 2026-11-08 验收提交与精确构建收尾
+
+GREEN: records-execute-acceptance-2 -> PASS，实际提交 aca7b346a06e6fb7191d5c24ce853d415405366a，892 个限定变更路径，971 个 selection 文件审核，37 张图片原审查保留，74 个已知私密值零命中，index 空；原失败第一次回执保留。工作区测试缓存不进入清单。
+GREEN: experience-preflight -> PASS。已再次读取迁移后现行 worktree-memory.md；本次仅按 task-owned-builds.json 的 11 个明确构建目录逐项 check/cleanup，校验绝对路径处于本任务 PRIVATE、目标提交精确一致、clean 包含 ignored、无新提交、无进程引用、无任务测试容器/卷、保留发布包 SHA 不变。真实 FULL/I1/I2、58/59恢复、三服稳定控制和保全均 PASS。实现及验收记录已经提交；只用 git worktree remove 精确路径，不 force，不删除长期开发 checkout、42 项既有资产或其它任务资源；主线融合未授权，仍不触碰主线。
+命令意图：cleanup_owned_build.py check --generation <登记代次>，通过后同代 cleanup；11 项全部通过后运行 verify_closeout.py。每项实际结果由独立 owned-build-check/cleanup 文件记录，失败立即停止，不覆盖失败、不推断清理成功。
+### 构建清理首项超时与独立终态核验
+
+cleanup 6319024 的实际 git worktree remove 在 40 秒等待阈值处 TimeoutExpired/exit 未知；未写成功回执。随后只读确认该精确目录与 Git 登记均已消失；不得重提删除或伪造命令 exit0。原始异常保存 PRIVATE/owned-build-cleanup-6319024-failure.private.txt。仅在重新核发布包 SHA、明确清理前 check 与清理后不存在事实后，记录 commandTimedOut=true、commandExitCode=null 的独立收尾证明。
+其余 10 项仍先执行原 cleanup_owned_build.py check 的全部门禁；通过后直接执行相同的 git worktree remove <精确路径>，命令等待上限 300 秒，工具会异步让出，未修改产品或检查 helper，不 force。每项必须取得真实 exit0、目录不存在、Git 登记消失、保留包 SHA 不变；失败立即停止。该调整只针对本地 Git 大目录删除等待，非备份逻辑降级。
+GREEN: experience-preflight -> PASS；前述权限、11 项路径/归属/干净提交/无进程/无测试资源/已提交实现及稳定控制门禁继续适用。
+### 2026-11-08 03:40Z 构建与最终收尾验收
+
+GREEN: 11 项明确构建实际清理 -> PASS，目录与 Git 登记均不存在，所有发布包 SHA 不变；首项超时后仅独立核终态，报告保留 commandTimedOut=true/commandExitCode=null，未重提或伪造 exit0。另10项均真实 exit0。主开发 checkout、42项既有资产、其它任务目录保持。
+首轮 verify_closeout 实际失败 FileNotFoundError/protected-history-verified-57.json；旧审计还绑定58五代/59两代回执，当前已为6/3代。原错误仅PRIVATE保留；未制造旧证明或回退服务器。BDD: 原历史基线与当前完整代次证据必须吻合，所有计数/bytes/原始归档与选中回执篡改均拒绝。RED: test_final_history_evidence.py -> 8 failed 缺函数。GREEN/REGRESSION: 新8项与相邻组合76项 -> 76 passed in 47.17s/exit0。
+GREEN: verify_closeout.py -> exit0，2026-11-08 03:39:37Z closeout-verification.json PASS，真实FULL373/I1-374/I2-375、原367两服完整恢复、源恢复/原资源/其它业务/共享挂载/稳定控制和11构建收尾均通过。未作额外全payload读回，serverDurabilityVerified=false 不扩张结论。
+主线最新只读与候选：integration-final-approval-preparation.json 绑定 main e2e8942/task aca7b34；1610已提交incoming与9949dirty精确交集仅共享日志。原9行并行记录在PRIVATE真实git merge-file回放exit0，移除仅该9行精确还原任务已提交日志；三处历史候选保全、已识别历史凭据仅私密原文保留。没有修改主线/index/refs，无新服务器写入。具体 final-integration-approval-plan.md 已可审阅，按现行worktree-memory手工三方门禁等待用户最终明确许可；总任务ready_for_closeout，不提前completed。

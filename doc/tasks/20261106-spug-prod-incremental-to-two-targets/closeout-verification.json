@@ -1,0 +1,166 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-08T03:39:37.883202+00:00",
+  "automaticBackupChain": {
+    "status": "PASS",
+    "operationIds": {
+      "FULL": "smallapp-fbaf12b584214695b6b687e010f4773b",
+      "I1": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+      "I2": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291"
+    },
+    "sourceCommit": "0dc7429d4758a208a5b0c098111fe9702ab63235",
+    "operationSourceCommits": {
+      "FULL": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+      "I1": "0dc7429d4758a208a5b0c098111fe9702ab63235",
+      "I2": "0dc7429d4758a208a5b0c098111fe9702ab63235"
+    },
+    "finalFinishedAt": "2026-11-08T02:15:08.107836Z",
+    "finalPlanDigest": "6f949af7e24eca6c24d50c3945c16964c0f0b804d77c32765d3c71abe9732037",
+    "evidencePins": [
+      {
+        "file": "automatic-full-ui-submission.json",
+        "bytes": 1579,
+        "sha256": "fed00eed27b4a4738037ec7a7a5524ad17caee977b658269d1d9c4b875aec14e"
+      },
+      {
+        "file": "automatic-full-ui-terminal.json",
+        "bytes": 1254,
+        "sha256": "cc352bd6648bbdeb570fc17af5f29528e0e049984d183ea9a3394b3f9afd73c3"
+      },
+      {
+        "file": "automatic-full-audit.json",
+        "bytes": 7047,
+        "sha256": "dab1c5de0979f0bd0ef503eb51005c0724b192f444b9f5ff33290474a821a12e"
+      },
+      {
+        "file": "automatic-full-source-restoration.json",
+        "bytes": 19719,
+        "sha256": "ec9fe5799ed8c0d6226bb968518a233145682c0c22271596e4e0a3ba0a1eeb30"
+      },
+      {
+        "file": "automatic-full-deployment-selection.json",
+        "bytes": 993,
+        "sha256": "0b60e1e2a855d196f22fb3413fc3406d87363eed8c2d9791fe34cfd4388daf94"
+      },
+      {
+        "file": "automatic-i1-ui-submission.json",
+        "bytes": 2008,
+        "sha256": "a80aa821869cbf774eef9fc5073ff3a74f487246e9551cf64cd3b8f5a8b26346"
+      },
+      {
+        "file": "automatic-i1-ui-terminal.json",
+        "bytes": 1434,
+        "sha256": "29159ddedcf5eec21d9d425feae64159a8256b7fcfbe68643b7366e078f2e50b"
+      },
+      {
+        "file": "automatic-i1-audit.json",
+        "bytes": 12086,
+        "sha256": "dc20110a4f53820d8478fb83a1deb8c02aacbbee6093331528c4515b818446c0"
+      },
+      {
+        "file": "automatic-i1-source-restoration.json",
+        "bytes": 34576,
+        "sha256": "f4b7f276d0f767f4b7e0fa7e072d9bc429b1f9dd6f188c839c99a79ec4e1c2a1"
+      },
+      {
+        "file": "automatic-i1-deployment-selection.json",
+        "bytes": 1015,
+        "sha256": "5dda6419591f83ae700067117d530ec81c316755cbcf04795962b2e009755ca0"
+      },
+      {
+        "file": "automatic-i2-ui-submission.json",
+        "bytes": 2022,
+        "sha256": "b3744928c62b5d7b5bab20567340f326390ce7265f4d651736472085b1fe5e0a"
+      },
+      {
+        "file": "automatic-i2-ui-terminal.json",
+        "bytes": 1448,
+        "sha256": "288636499bbd34f6395990907df56b16082f279437f6b54cb071291b1ddff76b"
+      },
+      {
+        "file": "automatic-i2-audit.json",
+        "bytes": 13206,
+        "sha256": "90d30902fbf3b873e2df278f4f313503f038e2e1e72d0308bd9de1dabd78680d"
+      },
+      {
+        "file": "automatic-i2-source-restoration.json",
+        "bytes": 34564,
+        "sha256": "925ae4c5393d85481cfa697ac69159802b3b4db916718a53dd7842eadd2475e0"
+      },
+      {
+        "file": "automatic-i2-deployment-selection.json",
+        "bytes": 1015,
+        "sha256": "4a680483ad926151724520bcc9b9692c8ea4d8a25f8bafcf36810e9b7ac67bbc"
+      }
+    ],
+    "originalBackupEvidenceUnmodified": true,
+    "serverDurabilityVerified": false
+  },
+  "ownedBuildCount": 11,
+  "currentControlGenerationsIndependentlyVerified": true,
+  "backupOperationId": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+  "parentBackupId": "smallapp-7fec29a3e132463096aec915c08acab3",
+  "newIncrementalNativeExitCode": 0,
+  "completeParentChainRestoredToBothTargets": true,
+  "fullSafePayloadReadbackVerified": true,
+  "sourceOriginalStateRestored": true,
+  "targets": {
+    "58": {
+      "operationId": "smallapp-4cd6779eaf7d405889a07feb47d0a66b",
+      "database": {
+        "uuid": "20ca4c6c-cc31-11f1-9b95-0242ac1deb16",
+        "baseFullSchemaDataEquivalenceVerified": true,
+        "incrementalReplayAndAffectedDataVerified": true,
+        "nativeIncrementalFullSchemaDataEquivalenceFlag": false,
+        "allCurrentTableDataVerified": true,
+        "tableCount": 885,
+        "totalRows": 513606,
+        "schemaSha256": "0202be5379ab182dc38d815fc292cc29b1ac6e00c87efc11f83c120d8ba3d0bc"
+      },
+      "objects": {
+        "exactVersionIdentityVerified": true,
+        "versionCount": 5916,
+        "deleteMarkerCount": 0,
+        "totalVersionBytes": 9653189892,
+        "uniqueContentCount": 4920,
+        "versionHistorySha256": "9fb2a7ba380c86d0164c9a82ba8ad18320fed5eb1f1f79d8a72e2ae77e7260c8"
+      },
+      "businessVersion": "2026-11-03-12-15-42",
+      "businessUserTotal": 2117
+    },
+    "59": {
+      "operationId": "smallapp-e0946cfc3fd842b1a85a021e236c6317",
+      "database": {
+        "uuid": "a4f03708-cc74-11f1-9cce-0242ac1def16",
+        "baseFullSchemaDataEquivalenceVerified": true,
+        "incrementalReplayAndAffectedDataVerified": true,
+        "nativeIncrementalFullSchemaDataEquivalenceFlag": false,
+        "allCurrentTableDataVerified": true,
+        "tableCount": 885,
+        "totalRows": 513606,
+        "schemaSha256": "0202be5379ab182dc38d815fc292cc29b1ac6e00c87efc11f83c120d8ba3d0bc"
+      },
+      "objects": {
+        "exactVersionIdentityVerified": true,
+        "versionCount": 5916,
+        "deleteMarkerCount": 0,
+        "totalVersionBytes": 9653189892,
+        "uniqueContentCount": 4920,
+        "versionHistorySha256": "9fb2a7ba380c86d0164c9a82ba8ad18320fed5eb1f1f79d8a72e2ae77e7260c8"
+      },
+      "businessVersion": "2026-11-03-12-15-42",
+      "businessUserTotal": 2117
+    }
+  },
+  "allOriginalDefinitionsAndOtherBusinessPreserved": true,
+  "companyShareAndFstabPreserved": true,
+  "previousFailedOriginalsRetained": true,
+  "failedOriginalFilesPreserved": 10044,
+  "registeredExporterTemporaryContractVerified": true,
+  "unusedFailedExporterContainersStoppedAndRetained": true,
+  "stableControlsVerified": true,
+  "ownedBuildPhysicalAndGitRegistrationAbsent": true,
+  "successfulBackupUiHttpFailures": 0,
+  "historicalReleaseCatalogueErrorRetainedAndIndependent200Verified": true,
+  "serverDurabilityVerified": false
+}

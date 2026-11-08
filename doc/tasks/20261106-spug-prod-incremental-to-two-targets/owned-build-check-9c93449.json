@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-08T03:30:03.882883+00:00",
+  "backupOperationId": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+  "automaticOperationIds": {
+    "FULL": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "I1": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+    "I2": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291"
+  },
+  "generation": "9c93449",
+  "buildReportPin": {
+    "file": "release-build-9c93449.json",
+    "bytes": 933,
+    "sha256": "7e459fe743af650dd7f70b49ba604d267b8d57dd34a59b140ed1531db0a3338e"
+  },
+  "ownedBuildManifestPin": {
+    "file": "task-owned-builds.json",
+    "bytes": 8317,
+    "sha256": "0b28b51ec06313f7df58cc69e4397737f12b297e1bef3e41c5c88ec40b030bc9"
+  },
+  "worktree": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-9c93449",
+  "targetCommit": "9c93449e99ae0790c8678a570d78a98b61d96d87",
+  "cleanIncludingIgnored": true,
+  "noActiveProcessReferences": true,
+  "newCommits": false,
+  "mergeRequired": false,
+  "retainedPackageSha256": "7a7894c659457a9826976aae3ed23d89c73cbb4d30051900bbec18a1b420fa6f",
+  "ownedTestContainersAndVolumesAbsent": true,
+  "deleted": false
+}

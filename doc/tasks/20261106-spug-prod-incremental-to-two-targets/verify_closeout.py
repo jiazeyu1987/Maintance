@@ -9,6 +9,25 @@ from verify_stable_controls import verify_control_query_effects
 def read(name):return json.loads((TASK/name).read_text(encoding='utf-8'))
 def moment(value):return datetime.datetime.fromisoformat(value.replace('Z','+00:00'))
 
+def verify_final_history_evidence(suffix,baseline,current,selected_receipt):
+ assert suffix in ('57','58','59') and baseline['status']==current['status']=='PASS'
+ pins=baseline['evidencePins'];assert len({p['path'] for p in pins})==len(pins)==baseline['protectedFiles'],'FINAL_HISTORY_BASELINE_COUNT_CHANGED'
+ assert sum(p['bytes'] for p in pins)==baseline['protectedBytes'],'FINAL_HISTORY_BASELINE_BYTES_CHANGED'
+ history=current['currentProtectedHistory'];custody=current['currentCustody']
+ assert history['originalProtectedFiles']==len(pins) and history['allImmutableOriginalPathsUnchanged'],'FINAL_HISTORY_CURRENT_COUNT_CHANGED'
+ assert history['immutableOriginalPathsVerified']==len(pins)-(0 if suffix=='57' else 1),'FINAL_HISTORY_IMMUTABLE_COUNT_CHANGED'
+ if suffix=='57':
+  assert selected_receipt is None and custody is None and history['originalActiveReceiptArchived'] is None
+ else:
+  assert history['originalActiveReceiptArchived'] and custody['status']=='PASS' and custody['authorizedActiveReceiptCount']==1
+  assert custody['originalReceiptArchived'] and custody['allReceiptAndConfigurationPinsVerified'] and custody['allHistoricalSourceAndTargetDefinitionsUnchanged']
+  originals=[p for p in pins if p['path']==custody['originalActiveReceiptPin']['path']]
+  assert len(originals)==1 and originals[0]==custody['originalActiveReceiptPin'],'FINAL_HISTORY_ORIGINAL_RECEIPT_CHANGED'
+  archived=custody['originalArchivedReceiptPin']
+  assert all(archived[k]==originals[0][k] for k in ('bytes','sha256')) and archived in custody['verifiedPins'],'FINAL_HISTORY_ARCHIVED_RECEIPT_CHANGED'
+  assert custody['selectedCurrentReceiptPin']==selected_receipt and selected_receipt in custody['verifiedPins'],'FINAL_HISTORY_SELECTED_RECEIPT_CHANGED'
+  assert custody['activationCount']==len(custody['activatedGenerationCommits']) and custody['activationCount']>0
+
 def verify_automatic_source_preservation(task,preserved,operation_id):
  binding=i2_binding(task,preserved['observedAt'])
  assert preserved['status']=='PASS' and preserved['backupOperationId']==operation_id==binding['backupOperationId'],'FINAL_SOURCE_PRESERVATION_OPERATION_CHANGED'
@@ -140,19 +159,12 @@ if __name__=='__main__':
   'smallapp-e61ca1c4b93f4aa3ab5a70eca399c36d',restored['58']['operationId']]
  assert failed['originalFailureUnchanged'] and failed['exactSamePointClearanceConsumedOnce'] and failed['allOriginalBytesRead']
  assert failed['newOperationId']==restored['58']['operationId'] and moment(failed['observedAt'])>=final_restore_finished
+ stable=read('stable-controls-closeout.json');current_installations=contracts.current_installations(TASK)
  for suffix in ('57','58','59'):
-  history=read('protected-history-verified-'+suffix+'.json');assert history['status']=='PASS'
-  original_history=read('protected-history-'+suffix+'.json')
-  assert history['allImmutableOriginalPathsUnchanged'] and history['allOriginalBytesPreserved']
-  assert history['originalProtectedFileCount']==history['protectedFiles']==original_history['protectedFiles']
-  assert history['protectedBytes']==original_history['protectedBytes']
-  if suffix in ('58','59'):
-   custody=history['installationReceiptCustody'];assert custody['status']=='PASS' and custody['authorizedActiveReceiptCount']==1
-   assert custody['originalReceiptArchived'] and custody['allReceiptAndConfigurationPinsVerified'] and custody['allHistoricalSourceAndTargetDefinitionsUnchanged']
-   assert custody['activationCount']==(5 if suffix=='58' else 2) and history['immutableOriginalPathsVerified']+1==history['protectedFiles']
-   assert custody['selectedCurrentReceiptPin']==allocator_installation(suffix)['currentReceiptPin']
-  else:assert history['installationReceiptCustody'] is None and history['immutableOriginalPathsVerified']==history['protectedFiles']
-  assert moment(history['observedAt'])>=final_restore_finished
+  current=stable['currentControls'][suffix]
+  selected=None if suffix=='57' else current_installations['targets'][suffix]['currentReceiptPin']
+  verify_final_history_evidence(suffix,read('protected-history-'+suffix+'.json'),current,selected)
+  assert moment(current['observedAt'])>=final_restore_finished
   preserved=read(('source' if suffix=='57' else 'target-'+suffix)+'-closeout-preservation.json')
   assert preserved['status']=='PASS' and moment(preserved['observedAt'])>=final_restore_finished
   assert preserved['allOriginalDefinitionsAndImagesPreserved'] and preserved['otherBusinessRuntimePreserved'] and preserved['fstabPreserved'] and preserved['protectedMountsPreserved']

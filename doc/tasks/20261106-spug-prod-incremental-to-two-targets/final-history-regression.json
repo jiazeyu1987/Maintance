@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-08T03:40:54.233725+00:00",
+  "command": "python -X utf8 -B -m pytest -q -p no:cacheprovider test_final_history_evidence.py test_automatic_closeout_contracts.py test_closeout_host_snapshot.py test_commit_records_contract.py test_record_line_endings.py",
+  "actualExitCode": 0,
+  "passed": 76,
+  "elapsedSeconds": 47.17,
+  "red": {
+    "command": "test_final_history_evidence.py",
+    "failed": 8,
+    "actualExitCode": 1,
+    "reason": "Missing generation-bound verifier"
+  },
+  "closeoutPin": {
+    "file": "closeout-verification.json",
+    "bytes": 6328,
+    "sha256": "81f0cc0e0aa5478b3602cfc4823c94c4fd9cf7a7af528fa12bc48131838feaaf"
+  }
+}
