@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "IntegrationFinalApprovalRefresh/v1",
+  "status": "PREPARED_NOT_EXECUTED",
+  "observedAt": "2026-11-08T03:44:32.603937+00:00",
+  "mainHead": "e2e89420851a57885f9c1ddf22ff1862916add83",
+  "taskHead": "71beeec60dbe828b56d47338b11f3c9a2492de61",
+  "priorCandidatePin": {
+    "file": "integration-final-approval-preparation.json",
+    "bytes": 3494,
+    "sha256": "dcb5dfa21b20f3500423840c0d42fabea88036c6be62fc7b676cef4364e6b55b"
+  },
+  "mainDirtyPaths": 9949,
+  "committedIncomingPaths": 1643,
+  "dirtyIncomingIntersection": [
+    "docs/request-command-log.md"
+  ],
+  "mainStatusAndLogOriginalUnchanged": true,
+  "indicesEmpty": true,
+  "parallelLines": 9,
+  "parallelReplayExitCode": 0,
+  "parallelRemovingExactlyRestoresCommittedTask": true,
+  "taskLogCandidatePin": {
+    "file": "task-log-71beeec-lf.md",
+    "bytes": 1249320,
+    "sha256": "85cde149aa4c42eca33c38ef83cf07e18fb13403a50af08705c4101f0684da78"
+  },
+  "restoredCandidatePin": {
+    "file": "restored-main-working-71beeec-candidate.md",
+    "bytes": 1251392,
+    "sha256": "fe1823902c4b2759fd130c4a031b8c6caac0365d094507b7331503e505cae193"
+  },
+  "ownedBuildsDeleted": 11,
+  "cleanupPin": {
+    "file": "owned-build-cleanup.json",
+    "bytes": 18368,
+    "sha256": "ddefa0ae54285bb85eeba6e81f2b2c6f04be470508cabe7548e6eda6dee9663d"
+  },
+  "closeoutPin": {
+    "file": "closeout-verification.json",
+    "bytes": 6328,
+    "sha256": "81f0cc0e0aa5478b3602cfc4823c94c4fd9cf7a7af528fa12bc48131838feaaf"
+  },
+  "requiredRegressionPassed": 76,
+  "mainOrServerWrites": false
+}

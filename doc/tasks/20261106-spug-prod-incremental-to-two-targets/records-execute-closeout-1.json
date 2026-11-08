@@ -1,0 +1,266 @@
+{
+  "schemaVersion": "TaskRecordPreparation/v1",
+  "status": "PREPARED",
+  "mode": "acceptance",
+  "expectedHead": "aca7b346a06e6fb7191d5c24ce853d415405366a",
+  "taskStatus": "ready_for_closeout",
+  "selectedFiles": [
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/closeout-verification.json",
+      "bytes": 6328,
+      "sha256": "81f0cc0e0aa5478b3602cfc4823c94c4fd9cf7a7af528fa12bc48131838feaaf"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/execution-log.md",
+      "bytes": 223335,
+      "sha256": "8f2b7055c55309a28fa5a4131992999c7740a872dc6499c48c4077e97e80aace"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/final-history-evidence-plan.md",
+      "bytes": 2370,
+      "sha256": "d1ad034550eb96b683b5cda99f2769eb85fbe29c5ccc9f70f610fbb8313b686d"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/final-history-regression.json",
+      "bytes": 689,
+      "sha256": "a93d674f9cb19d03bed26c4acaaa88422ef3ddc5fd560a8ad05c9f14ba0dfe06"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/final-integration-approval-plan.md",
+      "bytes": 5232,
+      "sha256": "db81646e117aed1a3c0895abec2a3c5a5e70f1ff21341f3f14c73a95371a7ffc"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/integration-final-approval-preparation.json",
+      "bytes": 3494,
+      "sha256": "dcb5dfa21b20f3500423840c0d42fabea88036c6be62fc7b676cef4364e6b55b"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-0c5828a.json",
+      "bytes": 1155,
+      "sha256": "30e9ccea5e6bbbae10cf184f929b4f3484e0910226f5c4e4a94b760afc3507ca"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-0d44578.json",
+      "bytes": 1155,
+      "sha256": "4b27cfc8fbfc78e8e2c641499eafc531aeb7fde8936d611a73aa29c2bd24e46d"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-0dc7429.json",
+      "bytes": 1155,
+      "sha256": "eab72b180112bb49a3bd2ce23d42259d905d480449b3fb03fca982e0bc01da2b"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-3019c2e.json",
+      "bytes": 1155,
+      "sha256": "75ddec6025c33e7e2a3253f79e627f356eb43a7b083922c92bdb737b5a412f4a"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-6319024.json",
+      "bytes": 1155,
+      "sha256": "469c6e98f59186d7c792638d39a97e911c1fc62439efa586a01425e00307089e"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-701b442.json",
+      "bytes": 1155,
+      "sha256": "e308233972590185baf9c1c9e5530850c69e6904ec7cddd595f6914eb14f3cf5"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-7c5f057.json",
+      "bytes": 1155,
+      "sha256": "acce6963b37c45745cd040a7c411b99de132c302bfd809d5a7ff0e396a62bd9d"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-9a65b5a.json",
+      "bytes": 1155,
+      "sha256": "a0aa7b89ff4718dcce9d46a7ae648849fd706376dc78b993dc3288fc8c60d408"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-9c93449.json",
+      "bytes": 1155,
+      "sha256": "1673d9dffb24ac98f227210eae4650d862c9952e68644ffcbbe2018550171998"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-b5c8817.json",
+      "bytes": 1155,
+      "sha256": "b146bc61a8293399b4a1788fc9ed2494dddd46b3036243a04cabb33ac4922ab5"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-d487abf.json",
+      "bytes": 1155,
+      "sha256": "019c6cfbf1725e0ef4a29542f374edf7737ea12f8f82157e102e6fdfe5664756"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-0c5828a.json",
+      "bytes": 1454,
+      "sha256": "c7570bdf7c61344a36411b5433ad8f4987941e72bed370ad441dd554b51583d4"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-0d44578.json",
+      "bytes": 1454,
+      "sha256": "2a3099260dd3982f791fd31a5d925f165ce63efb0ea2d1d6a95af7bb15d47f8c"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-0dc7429.json",
+      "bytes": 1454,
+      "sha256": "a13d3715b912b630b8ebb2de10b79e4fa265c944b368b2c211def54d17de8ad5"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-3019c2e.json",
+      "bytes": 1454,
+      "sha256": "d62dcf4634f7f047bd79236f287b73a7f330cad1f4659f837c136a8696974878"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-6319024.json",
+      "bytes": 1695,
+      "sha256": "2264e725bcfd4894d5f60327e78311f6a9fdc2d717be37d644848a101ee42343"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-701b442.json",
+      "bytes": 1454,
+      "sha256": "60f294320ab1c61620834a0797bb9009db13149156391a4d47e47b6d7dd9b5b7"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-7c5f057.json",
+      "bytes": 1454,
+      "sha256": "aa6a06ed20071b5c5155bce9e3c68660a39a26b527d716668e14803c3b95af73"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-9a65b5a.json",
+      "bytes": 1454,
+      "sha256": "aa28e0b344f013fd1a167c13267f818b6cff9df01704b5c99bb1bbbf0802e52d"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-9c93449.json",
+      "bytes": 1454,
+      "sha256": "32a0492e9fd046c99f266b61bc6c263948b63c563cf03f84d67ffb9e3770fa70"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-b5c8817.json",
+      "bytes": 1454,
+      "sha256": "74dfc5497f8f214bcf5b0dd67b45149ae68538fcbaf5175e4ff68606364e9e88"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-d487abf.json",
+      "bytes": 1454,
+      "sha256": "13799ec80c54a2c3f565ef4cdcf2ffe9cccd2b234dae4ff6009fb32c41be25a7"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup.json",
+      "bytes": 18368,
+      "sha256": "ddefa0ae54285bb85eeba6e81f2b2c6f04be470508cabe7548e6eda6dee9663d"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/records-execute-acceptance-2-commit.json",
+      "bytes": 88488,
+      "sha256": "fe35d395def5fbb408e536f6c05bc06d9287ad8f26f1d0dd7fd8104efa70aaf5"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/records-execute-acceptance-2.json",
+      "bytes": 309931,
+      "sha256": "2398f858f94fc18b7e68ec1dcd5c76991ddfad7e738df6ce1952d381acfab25c"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/records-prepare-acceptance-2.json",
+      "bytes": 309932,
+      "sha256": "0cd046d272f2b709cba98a1417f0fcb2e37791c4cb30837da6a1fc96574cae00"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/records-selection-acceptance-2.json",
+      "bytes": 220541,
+      "sha256": "2d22b7a99acf497eee060cae99e991aa6631a0e8c9886cee0cabca05eb871325"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/task.md",
+      "bytes": 28926,
+      "sha256": "d15d24ed15eaffc53da2f42ed1f2cd035c6e729d0b222581812dcb14128e000b"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_final_history_evidence.py",
+      "bytes": 2062,
+      "sha256": "5f9eaf1c0821291d00916781edd9507d65449e14572e50d38699456192619594"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/verify_closeout.py",
+      "bytes": 22280,
+      "sha256": "7096f3897772743e5061e8f3b098644a2ca717e6d75fcfb86fc8f700b7360d56"
+    },
+    {
+      "path": "docs/request-command-log.md",
+      "bytes": 1255226,
+      "sha256": "96f5324ffcd862d1411119fc04ab0709376bf4749559dc1cff8d5f85b5cdfb2d"
+    }
+  ],
+  "changedFiles": [
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/closeout-verification.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/execution-log.md",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/final-history-evidence-plan.md",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/final-history-regression.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/final-integration-approval-plan.md",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/integration-final-approval-preparation.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-0c5828a.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-0d44578.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-0dc7429.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-3019c2e.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-6319024.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-701b442.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-7c5f057.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-9a65b5a.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-9c93449.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-b5c8817.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-check-d487abf.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-0c5828a.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-0d44578.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-0dc7429.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-3019c2e.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-6319024.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-701b442.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-7c5f057.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-9a65b5a.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-9c93449.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-b5c8817.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup-d487abf.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/owned-build-cleanup.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/records-execute-acceptance-2-commit.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/records-execute-acceptance-2.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/records-prepare-acceptance-2.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/records-selection-acceptance-2.json",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/task.md",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_final_history_evidence.py",
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/verify_closeout.py",
+    "docs/request-command-log.md"
+  ],
+  "observedAt": "2026-11-08T03:43:17.457023+00:00",
+  "selectionPin": {
+    "bytes": 8282,
+    "sha256": "7f58e33dde61ab10b6cffcd09f7906cb1aef52645e042c11ae1f95f11a61b9c9"
+  },
+  "privateValuesFound": 0,
+  "knownPrivateValuesChecked": 74,
+  "actualAcceptance": {
+    "automaticOperationIds": {
+      "FULL": "smallapp-fbaf12b584214695b6b687e010f4773b",
+      "I1": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+      "I2": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291"
+    },
+    "automaticSelectionPin": {
+      "file": "automatic-acceptance-selection.json",
+      "bytes": 2933,
+      "sha256": "3564e55ee1935a3fe32463c75f16eb1cc4e70df101f2f2bdcc9fd313617c5031"
+    },
+    "currentInstallationPin": {
+      "file": "automatic-current-installations.json",
+      "bytes": 1180,
+      "sha256": "bb2eb68b4b30f3d43385370364ea32cc378bc7f93b395d6d93fd5915c7bc8955"
+    },
+    "stableControlsPin": {
+      "file": "stable-controls-closeout.json",
+      "bytes": 31328,
+      "sha256": "51f0cf5ce304507124f3124389ff6e237591c2588b27626226b52400aa3b8ccc"
+    }
+  },
+  "finalizationPin": null,
+  "unselectedProtection": "Git changed-path set and filesystem identity; no unrelated content scan",
+  "gitWritesAuthorized": true,
+  "gitWritesPerformed": false
+}

@@ -892,3 +892,8 @@ GREEN: 11 项明确构建实际清理 -> PASS，目录与 Git 登记均不存在
 首轮 verify_closeout 实际失败 FileNotFoundError/protected-history-verified-57.json；旧审计还绑定58五代/59两代回执，当前已为6/3代。原错误仅PRIVATE保留；未制造旧证明或回退服务器。BDD: 原历史基线与当前完整代次证据必须吻合，所有计数/bytes/原始归档与选中回执篡改均拒绝。RED: test_final_history_evidence.py -> 8 failed 缺函数。GREEN/REGRESSION: 新8项与相邻组合76项 -> 76 passed in 47.17s/exit0。
 GREEN: verify_closeout.py -> exit0，2026-11-08 03:39:37Z closeout-verification.json PASS，真实FULL373/I1-374/I2-375、原367两服完整恢复、源恢复/原资源/其它业务/共享挂载/稳定控制和11构建收尾均通过。未作额外全payload读回，serverDurabilityVerified=false 不扩张结论。
 主线最新只读与候选：integration-final-approval-preparation.json 绑定 main e2e8942/task aca7b34；1610已提交incoming与9949dirty精确交集仅共享日志。原9行并行记录在PRIVATE真实git merge-file回放exit0，移除仅该9行精确还原任务已提交日志；三处历史候选保全、已识别历史凭据仅私密原文保留。没有修改主线/index/refs，无新服务器写入。具体 final-integration-approval-plan.md 已可审阅，按现行worktree-memory手工三方门禁等待用户最终明确许可；总任务ready_for_closeout，不提前completed。
+### 本轮目标继续：明确授权与执行前门禁
+
+前一目标turn分类：progress。实际形成验收记录aca7b34、收尾修复71beeec、11构建目录移除及最终closeout PASS，主线待授权未写入，不是仅状态重复。
+用户继续的完整目标：“你来决定，我不懂代码，你按照最合适的方式进行，我给你授权目标就是可以增量备份，通过spug代码，并且可以在spug里看到所有的全量备份和增量备份，可以选择任意一个进行恢复到三个服务器的任意一个”。该授权承接上轮已具体准备的本地主线融合方案；按最合适方案保留并行改动、处理单处历史凭据、完成融合和最终目标审计，不再为同一步重复询问。
+GREEN: experience-preflight -> PASS。已读取适用AGENTS、经验索引、迁移后现行powershell-memory及worktree-memory手工三方门禁，旧首任务未completed，继续同一TASK。当前task HEAD71beeec/main e2e8942，两边index空；任务42项既有资产保持，主线9949dirty仅共享日志与incoming交集。执行前再次逐pin核原私密候选、原9行、主线status/index/HEAD及字节；仅明确一处历史凭据脱敏生成新Git对象，不stash带秘密原文。只保存重叠日志，非交集dirty不暂存/不提交。独立融合环境语义保留三处历史，回归通过后正常ff-only合并并恢复9行未暂存内容；验证前不删除stash和融合worktree。不重启服务器、不追加恢复，最终完整目标验证若发现产品缺陷，另按BDD/TDD推进，不缩小目标宣告完成。

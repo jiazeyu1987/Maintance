@@ -3,6 +3,8 @@
 ## Current Status
 prepared_pending_authorization
 
+最终刷新：收尾修复与 37 项限定记录已提交 `71beeec60dbe828b56d47338b11f3c9a2492de61`。新鲜只读核对为 1643 个 incoming 路径，仍仅共享日志与主线 dirty 重叠；主线 HEAD、原 status、原日志不变且两边 index 空。更新后的任务日志候选和 9 行回放实际退出 0，见 `integration-final-approval-refresh.json`，原 `aca7b34` 候选作为历史观察保留。后续执行以最新实际提交和新鲜 pins 为准。
+
 ## 已交付与剩余范围
 
 Spug 自动全量 373、连续增量 374/375 已真实成功并通过独立链、页面、源恢复与健康核验；375 为 2,106,237,601 字节（约 1.96 GiB），增量 SQL 压缩 418,747 字节。旧增量 367 已分别完整恢复到 .58/.59 并验证数据、附件、原服务和真实页面。三服稳定控制、原容器及其它业务、共享盘和 fstab 保全均 PASS。实现与真实验收记录已提交到 `aca7b346a06e6fb7191d5c24ce853d415405366a`。
