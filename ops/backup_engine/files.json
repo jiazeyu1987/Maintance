@@ -133,5 +133,7 @@
   "ops/recovery/recovery_published_fence.py": "common/recovery_published_fence.py",
   "ops/recovery/recovery_archive_view.py": "common/recovery_archive_view.py",
   "ops/recovery/recovery_mysql_scheduler.py": "common/recovery_mysql_scheduler.py",
-  "ops/recovery/recovery_main_health.py": "common/recovery_main_health.py"
+  "ops/recovery/recovery_main_health.py": "common/recovery_main_health.py",
+  "ops/recovery/recovery_program_import.py": "common/recovery_program_import.py",
+  "ops/recovery/recovery_program_native.py": "common/recovery_program_native.py"
 }

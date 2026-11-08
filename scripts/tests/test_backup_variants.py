@@ -41,6 +41,7 @@ def test_standard_keeps_original_code_except_reviewed_fixes_and_archive_names(pa
         'common/recovery_program_generation.py',
         'common/recovery_program_activation.py', 'common/recovery_program_targets.py',
         'common/recovery_program_execution.py', 'common/recovery_program_derivation.py',
+        'common/recovery_program_import.py', 'common/recovery_program_native.py',
         'common/recovery_replacement_storage.py', 'common/recovery_minimal_plan.py',
         'common/recovery_retained_retry.py', 'common/recovery_minimal_redis_dump.py', 'common/recovery_published_fence.py', 'common/recovery_archive_view.py',
         'common/recovery_mysql_scheduler.py', 'common/recovery_main_health.py',

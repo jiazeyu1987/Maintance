@@ -256,3 +256,74 @@ print('PACKAGED_PROGRAM_EXECUTION_PASS')
         capture_output=True, timeout=120, env={**os.environ, 'PYTHONPATH':os.pathsep.join(sys.path)})
     assert result.returncode == 0, result.stderr.decode('utf-8', errors='replace')
     assert result.stdout.strip() == b'PACKAGED_PROGRAM_EXECUTION_PASS'
+
+
+@pytest.mark.skipif(not sys.platform.startswith('linux'), reason='actual packaged Linux flock required')
+@pytest.mark.parametrize('variant', ['standard', 'lightweight'])
+@pytest.mark.parametrize('component', ['image_import', 'native_context'])
+def test_import_and_native_components_execute_from_delivered_package(component, variant, program_packages, tmp_path):
+    names = {'image_import':'recovery_program_import', 'native_context':'recovery_program_native'}
+    name = names[component]
+    engine = tmp_path/'engine'
+    with tarfile.open(program_packages/('backup-restore-'+variant+'.tgz')) as archive:
+        assert archive.extractfile('common/'+name+'.py').read() == (ROOT/'ops/recovery'/(name+'.py')).read_bytes()
+        archive.extractall(engine, filter='data')
+    script = r'''
+from pathlib import Path
+import importlib,sys
+engine,tests,work=map(Path,sys.argv[1:4]);component=sys.argv[4]
+sys.path[:0]=[str(engine/'common'),str(tests)]
+import pytest
+module=importlib.import_module('recovery_program_import' if component=='image_import' else 'recovery_program_native')
+assert Path(module.__file__).resolve().parent==(engine/'common').resolve()
+from test_recovery_program_generation import case
+if component=='image_import':
+ from test_recovery_program_import import test_tagless_projection_preserves_content_identities_and_original_bytes
+ from test_recovery_program_import import test_loading_requires_same_real_epoch_and_records_verified_image_observation
+ first=work/'projection';first.mkdir(mode=0o700)
+ test_tagless_projection_preserves_content_identities_and_original_bytes(first)
+ second=work/'loading';second.mkdir(mode=0o700)
+ # The load and inspect callbacks here are explicit unit protocol seams.
+ # A separate classic-native run proves real Docker load and execution.
+ test_loading_requires_same_real_epoch_and_records_verified_image_observation(case.__wrapped__(second))
+else:
+ from test_recovery_program_execution import execution
+ from test_recovery_program_native import test_native_evidence_combines_phases_and_pending_unknown_without_losing_last_exit
+ with pytest.MonkeyPatch.context() as patch:
+  fixture=execution.__wrapped__(case.__wrapped__(work),patch)
+  test_native_evidence_combines_phases_and_pending_unknown_without_losing_last_exit(fixture)
+assert Path(module.__file__).resolve().parent==(engine/'common').resolve()
+print('PACKAGED_IMPORT_NATIVE_PASS')
+'''
+    result = subprocess.run([sys.executable, '-B', '-c', script, str(engine), str(ROOT/'scripts/tests'),
+        str(tmp_path), component], capture_output=True, timeout=120,
+        env={**os.environ, 'PYTHONPATH':os.pathsep.join(sys.path)})
+    assert result.returncode == 0, result.stderr.decode('utf-8', errors='replace')
+    assert result.stdout.strip() == b'PACKAGED_IMPORT_NATIVE_PASS'
+
+
+@pytest.mark.skipif(not sys.platform.startswith('linux'), reason='actual packaged Linux archive watches required')
+def test_safe_capture_archive_guard_uses_actual_standard_reader(program_packages, tmp_path):
+    """The full reader's integrity contract belongs to the STANDARD package."""
+    engine = tmp_path/'engine'
+    with tarfile.open(program_packages/'backup-restore-standard.tgz') as archive:
+        archive.extractall(engine, filter='data')
+    script = r'''
+from pathlib import Path
+import sys
+engine,tests=map(Path,sys.argv[1:])
+sys.path.insert(0,str(engine/'common'))
+import repository_minimal
+import repository_native_archive_reader
+import recovery_archive_guard
+modules=(repository_minimal,repository_native_archive_reader,recovery_archive_guard)
+assert all(Path(m.__file__).resolve().parent==(engine/'common').resolve() for m in modules)
+import pytest
+code=pytest.main(['-q','-p','no:cacheprovider','--tb=short',str(tests/'test_capture_archive_guard.py')])
+assert all(Path(m.__file__).resolve().parent==(engine/'common').resolve() for m in modules)
+raise SystemExit(code)
+'''
+    result = subprocess.run([sys.executable, '-B', '-c', script, str(engine), str(ROOT/'scripts/tests')],
+        capture_output=True, timeout=120, env={**os.environ, 'PYTHONPATH':os.pathsep.join(sys.path)})
+    assert result.returncode == 0, (result.stdout+result.stderr).decode('utf-8', errors='replace')
+    assert b'17 passed' in result.stdout and b' skipped' not in result.stdout

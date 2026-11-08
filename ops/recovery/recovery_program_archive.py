@@ -41,7 +41,8 @@ def _hash_stream(stream, guard, limit):
     return count, checksum.hexdigest()
 
 
-def _inspect_contents(stream, roles, architecture, guard):
+def bounded_tarinfo(guard):
+    """Bound extension processing before tarfile allocates metadata bodies."""
     headers = 0
     depth = 0
 
@@ -62,7 +63,11 @@ def _inspect_contents(stream, roles, architecture, guard):
             finally:
                 depth -= 1
 
-    with tarfile.open(fileobj=stream, mode='r:', tarinfo=BoundedTarInfo) as archive:
+    return BoundedTarInfo
+
+
+def _inspect_contents(stream, roles, architecture, guard):
+    with tarfile.open(fileobj=stream, mode='r:', tarinfo=bounded_tarinfo(guard)) as archive:
         members = {}
         for item in archive:
             guard()
