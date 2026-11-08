@@ -484,7 +484,8 @@ def target_configuration(configuration, request, source):
     from recovery_replace import validate as replacement
     target = configuration['targets'][request['targetConfigRef']]
     validate(target); replacement(target)
-    require(target['sourceConfigRef'] == request['sourceConfigRef'], 'TARGET_SOURCE_MISMATCH')
+    from recovery_target_sources import admit_target_source
+    admit_target_source(configuration, request)
     root = absolute(target['dataRoot'])
     state = absolute(target['replacement']['stateRoot'])
     require(root.is_dir() and root != state and root.is_relative_to(state), 'MAIN_RUNTIME_ROOT_INVALID')

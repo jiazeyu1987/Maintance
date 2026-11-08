@@ -107,5 +107,22 @@ class RegistrationPlan(unittest.TestCase):
             value['simpleSettings']['catalogueRestoreBindings']=routes
             with self.subTest(routes=routes), self.assertRaises(ValueError):plan(value)
 
+    def test_explicit_cross_source_admission_keeps_original_target_claim_identity(self):
+        value=self.fixture()
+        originals=[]
+        for target in value['targets']:
+            owner=target['ownerConfiguration'];ref=target['targetConfigRef']
+            owner['sources']['original-source']={}
+            owner['targets'][ref]['sourceConfigRef']='original-source'
+            owner['targetSourceAdmissions']=dict(schemaVersion='RegisteredTargetSourceAdmissions/v1',
+                targets={ref:['original-source','source-A']})
+            originals.append(deepcopy(owner['targets'][ref]))
+        result=plan(value)
+        self.assertEqual([t['recoveryConfiguration']['targets'][t['targetConfigRef']]
+            for t in result['targets']],originals)
+        value['targets'][0]['ownerConfiguration'].pop('targetSourceAdmissions')
+        with self.assertRaisesRegex(Exception,'TARGET_SOURCE_MISMATCH'):
+            plan(value)
+
 
 if __name__=='__main__':unittest.main()

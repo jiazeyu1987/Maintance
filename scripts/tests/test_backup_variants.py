@@ -33,7 +33,7 @@ def test_standard_keeps_original_code_except_reviewed_fixes_and_archive_names(pa
         'control/recovery_control_smallapp_native.py', 'control/recovery_control_executor.py',
         'control/recovery_control_target_availability.py',
         'control/recovery_control_incremental_plan.py', 'control/recovery_control_smallapp.py',
-        'common/recovery_backup_epoch.py', 'common/recovery_sql_stream.py',
+        'common/recovery_backup_epoch.py', 'common/recovery_sql_stream.py', 'common/recovery_target_sources.py',
         'control/recovery_control_point_quarantine.py', 'formal/formal_binlog_scope.py',
         'common/recovery_replace.py', 'common/recovery_data.py', 'formal/formal_data_evidence.py', 'formal/formal_schema_evidence.py',
         'common/recovery_main_target.py', 'common/recovery_replacement_storage.py', 'common/recovery_minimal_plan.py',
@@ -61,6 +61,32 @@ def test_changed_safe_baseline_patch_context_is_rejected():
     original['formal/minimal_redis_snapshot.py'] = b'# an incompatible baseline\n'
     with pytest.raises(ValueError, match='STANDARD_FIX_CONTEXT_CHANGED'):
         builder.safe_fixes(original)
+
+
+@pytest.mark.parametrize('variant', builder.VARIANTS)
+def test_original_target_source_admission_executes_from_each_real_package(variant, packages, tmp_path):
+    root = tmp_path/'engine'
+    with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
+        member='common/recovery_target_sources.py'
+        assert archive.extractfile(member).read() == (ROOT/'ops/recovery/recovery_target_sources.py').read_bytes()
+        archive.extractall(root,filter='data')
+    code = r'''
+import copy,pathlib,sys
+sys.path.insert(0,str(pathlib.Path(sys.argv[1])/'common'))
+from recovery_target_sources import admit_target_source
+target=dict(sourceConfigRef='current',mainApplication={'schemaVersion':'RegisteredMainApplication/v2'},
+ replacement={'schemaVersion':'RegisteredApplicationReplacement/v2','stateRoot':'original-claims'})
+owner=dict(targets={'main':target},sources={'current':{},'archive':{}},
+ targetSourceAdmissions=dict(schemaVersion='RegisteredTargetSourceAdmissions/v1',targets={'main':['current','archive']}))
+original=copy.deepcopy(owner)
+assert admit_target_source(owner,dict(targetConfigRef='main',sourceConfigRef='archive')) is target
+assert owner==original
+owner.pop('targetSourceAdmissions')
+try:admit_target_source(owner,dict(targetConfigRef='main',sourceConfigRef='archive'))
+except ValueError as error:assert str(error)=='TARGET_SOURCE_MISMATCH'
+else:raise AssertionError('unregistered source admitted')
+'''
+    subprocess.run([sys.executable,'-B','-c',code,str(root)],check=True)
 
 
 @pytest.mark.parametrize('variant', builder.VARIANTS)

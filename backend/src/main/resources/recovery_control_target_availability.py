@@ -4,10 +4,15 @@ from pathlib import Path
 from recovery_control_smallapp import need
 
 
-def unclaimed_target(target, source_ref, target_ref):
+def unclaimed_target(target, source_ref, target_ref, *, configuration=None):
     need(target_ref != source_ref and target['targetId'] != source_ref,
          'SOURCE_TARGET_OVERLAP')
-    need(target['sourceConfigRef'] == source_ref, 'TARGET_SOURCE_MISMATCH')
+    if configuration is None:
+        need(target['sourceConfigRef'] == source_ref, 'TARGET_SOURCE_MISMATCH')
+    else:
+        from recovery_target_sources import admit_target_source
+        need(admit_target_source(configuration, dict(targetConfigRef=target_ref,
+            sourceConfigRef=source_ref)) == target, 'TARGET_SOURCE_MISMATCH')
     if 'replacement' in target:
         from recovery_replace import available
         return available(target)
@@ -27,7 +32,7 @@ def available(native, configuration_pin, target_ref, source_ref, *, observe_main
     configuration = native.document(configuration_pin)
     need(target_ref in configuration['targets'], 'NEW_TARGET_CONFIGURATION_REQUIRED')
     target = configuration['targets'][target_ref]
-    if not unclaimed_target(target, source_ref, target_ref):
+    if not unclaimed_target(target, source_ref, target_ref, configuration=configuration):
         return False
     if 'mainApplication' in target and observe_main:
         from recovery_minimal_runtime import MinimalData

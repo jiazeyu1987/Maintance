@@ -11,6 +11,10 @@ import json
 import os
 from pathlib import Path, PurePosixPath
 import re
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'recovery'))
+from recovery_target_sources import admit_target_source
 
 
 def need(condition, message):
@@ -68,7 +72,8 @@ def plan(value):
         need(owner.get('schemaVersion')=='RecoveryMinimalConfiguration/v1' and
              ref in owner['targets'] and source in owner['sources'], 'RECOVERY_OWNER_CONFIGURATION_REQUIRED')
         instance=owner['targets'][ref]
-        need(instance.get('sourceConfigRef')==source and instance.get('mainApplication',{}).get('schemaVersion') in
+        admit_target_source(owner, dict(targetConfigRef=ref,sourceConfigRef=source))
+        need(instance.get('mainApplication',{}).get('schemaVersion') in
              ('RegisteredMainApplication/v1','RegisteredMainApplication/v2') and instance.get('replacement',{}).get('schemaVersion')==
              'RegisteredApplicationReplacement/v2', 'REGISTERED_MAIN_TARGET_REQUIRED')
         need(owner['sources'][source].get('archiveCatalogue',{}).get('schemaVersion') in
