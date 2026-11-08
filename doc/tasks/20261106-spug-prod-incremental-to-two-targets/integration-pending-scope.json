@@ -1,0 +1,434 @@
+{
+  "schemaVersion": "IntegrationPendingScope/v1",
+  "otherTaskPending": [
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/assessment.md",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 5122,
+      "taskSha256": "5835136220811cae4b935d5fa78793e51e26ed11a1e05dd3c471e88a2088fa01",
+      "equalsMainCommittedBytes": false,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/browser-catalog-choice.json",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 2288,
+      "taskSha256": "44238ac0911652eae1c1194225ee5d9393c843ad88f2614e7c1467212a969edb",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/browser-choice.json",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 2484,
+      "taskSha256": "913c93536d2306204ad3ee0ccd59004d318187cf7a48eb6f77c29813bf4aa4fc",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/catalog-confirm-58.png",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 138070,
+      "taskSha256": "5d163e22e5c8c7f791c2184752e546c28ef90927d5bf3036795a6e4b08a1c820",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/catalog-confirm-59.png",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 137978,
+      "taskSha256": "a47b45af9493ad0d33177dbbf0007e7c588a9c4eab470bc718aaa2281aef8082",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/cleanup_release_worktrees.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 4865,
+      "taskSha256": "ed8122757ba96a9e1b3e97cb86473e5027461dd16fc6ca76fe92e83d7f41902e",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/collect_install_preflight.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 5493,
+      "taskSha256": "8a2c1ed2af568d46bc9c32d5e313ec14298dc7383a0c77c21803d0788b47e600",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/commit_final_records.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 6034,
+      "taskSha256": "9052d5191340784f1902dbde7f62e53827fc69f88671a1eed05c963c1f5c7292",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/configure_main_controls.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 23818,
+      "taskSha256": "0f688f34f4a67d69669031cef1884ace8d1208a5273d82659b086a0394bfddd8",
+      "equalsMainCommittedBytes": false,
+      "equalsMainCommittedNormalized": false
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/confirm-58.png",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 88042,
+      "taskSha256": "667426b4a28b9f1d147d173769ad2d61583433c691d312c9944a7d550f31a7af",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/confirm-59.png",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 87857,
+      "taskSha256": "7bfe7812d3ab1e1e1d3e9d99d3cd91a675eefd809ea6f49f1c7e4626c69d472d",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/design.md",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 6679,
+      "taskSha256": "f9f77c9d2fbe97d98a4e5b037e12011f603b2a0aa4db8d5a0b7831adc887e535",
+      "equalsMainCommittedBytes": false,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/finalize_records.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 16154,
+      "taskSha256": "183ee2b5716767f12c7f2cad4f6bf11c43f0e51d488f0ff122bbcfe9f5d885c2",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/implementation-integration.json",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 1582,
+      "taskSha256": "4d90b736ebe2c50b6a665023ac563b8163fef7c66acb3c1c73ce3001af9b387c",
+      "equalsMainCommittedBytes": false,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/inspect_config_contracts.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 2704,
+      "taskSha256": "88da1e2a73dae6a4b6639634dace55c8f2596be7b23038723d76a0c14144ed93",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/install_controls.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 5123,
+      "taskSha256": "5120871293cfe7f8b919a03730227d41b5b03f4ab8b2fc96d06ff3e3c0bbd550",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/install_owned_python.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 2685,
+      "taskSha256": "8b6ddf88bef6e3c5bc1775c72812e91f5e0bb92eff0beae577aad2398e78037a",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/install_spug_routes.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 8093,
+      "taskSha256": "ae34f9792f3efe49813642c9c5f0d3d69176d831a0ca92b31a2a24e329fb937f",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/install_transport_startup.ps1",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 3036,
+      "taskSha256": "1ad3a4fcbf4716f88f65c3f042520c4f92420478dbdd2d73da280526f1dda814",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/installation-plan.md",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 7677,
+      "taskSha256": "ef893871c1d84468d89a7a232b57149639482c6bc975c26e2c7e75af63dafc90",
+      "equalsMainCommittedBytes": false,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/installation-status.json",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 4197,
+      "taskSha256": "293c731caa2fbabfa9f364fd37e4ee4ad8e3c537b0fb941df38224f1b3cf5c62",
+      "equalsMainCommittedBytes": false,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/integrate_implementation.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 1566,
+      "taskSha256": "f99a9924cc7ae08b5c90596bf1678f4ccdb15718c313db4c29b88e9e7f5945e1",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/main-runtime-execution-log.md",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 5165,
+      "taskSha256": "9e964fd53f0a56f6526a76a9e26ca8cbcec1888bf2ecfdd43a75dde3c0b8c639",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/read_control_ports.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 940,
+      "taskSha256": "d8c128ba2dc3d0feebea517e59ea4bc94e4a7ca728c784e8e67bb12a51b2a36e",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/read_install_dependencies.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 6480,
+      "taskSha256": "64988fe80926fbf591e7a76cf91e1e0a9c22d570359ed77a2092e1aa7f30accc",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/read_local_entry.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 1335,
+      "taskSha256": "55d6e72c8f2c49677029ceb9279d73db17820d9809388eeffc4c8d8901d1ab07",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/read_own_control_status.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 840,
+      "taskSha256": "a1ce4c7de6c63fb733b6c1f13ec76d65dcb1f8f08827c7dc792d2a1ed1f50065",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/read_python_execution.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 1139,
+      "taskSha256": "536c3c3abe99c8359a56ffc48073b308c372ffe3e4e972362636cb16e9a95ef6",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/read_storage_mounts.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 1334,
+      "taskSha256": "d0cd29b7439114bb949c9c5b3f9f9d073b22832688648b7d882cd53619ea8b61",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/read_writer_locks.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 2597,
+      "taskSha256": "dc98fd36496017150cc5df2abfc336790dbaadf04a121b349b350327b3e0d3e6",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/readonly-recheck.json",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 4504,
+      "taskSha256": "59702e73c596eefb525547d35b895cde5a16ecb3f3c626537c8bda25e82cf24b",
+      "equalsMainCommittedBytes": false,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/recheck_readonly.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 3482,
+      "taskSha256": "78b4a0e7ace057b9e65836b4a558c86fc1f24bace2ccc87259156e899ad19a8f",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/record_local_result.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 2510,
+      "taskSha256": "8d9716bf65f661aa0c245f3150bdebf587ded97bbaebbb71e915dfcbe0851611",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/release-worktree-cleanup.json",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 728,
+      "taskSha256": "364ad9ab63e9599f68afaa00e2f864e1b346652a0b92dad2b392691525aac513",
+      "equalsMainCommittedBytes": false,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/resume-57-readonly.json",
+      "taskStatus": "??",
+      "mainHeadContainsPath": false,
+      "taskBytes": 219550,
+      "taskSha256": "c5581fb4e9201c69a9a0953f692d7794d4a9c93da6ead36b713f1b7331efee69",
+      "equalsMainCommittedBytes": false,
+      "equalsMainCommittedNormalized": false
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/resume-59-readonly.json",
+      "taskStatus": "??",
+      "mainHeadContainsPath": false,
+      "taskBytes": 215709,
+      "taskSha256": "94f76f91235a77a7e2515a604d5d1a4042d65d402ea02d099affcfe6f2ff2820",
+      "equalsMainCommittedBytes": false,
+      "equalsMainCommittedNormalized": false
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/snapshot_spug_configuration.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 1678,
+      "taskSha256": "fbb214ad2d2ca83efe6ddbc2e60930c71c00a40ec007353f0aa12446ee2377f2",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/storage-execution-log.md",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 16754,
+      "taskSha256": "54a28e721e392a6fdcd78b3449e9796e621c08cd57c40ad36cb715c0b3a7d89d",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/verify_component_installation.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 2405,
+      "taskSha256": "7dabb200220060371415315a5a3ee65095cd39232e09a8de3661ebcbf49d1d25",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/verify_control_admission.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 2670,
+      "taskSha256": "d5c182c0d0031e308dd6734a322d52c3b4d35198636294bb346814fa33e96f2e",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/verify_final_installation.py",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 3620,
+      "taskSha256": "e65a0fb62b5f5b11296f5fb0c757b7dc4c26f4d6f2e753f8fb4e98ef05328b94",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/verify_spug_choice.cjs",
+      "taskStatus": "??",
+      "mainHeadContainsPath": true,
+      "taskBytes": 6621,
+      "taskSha256": "e0566f4f63d3188f4f00f943532b973c5fd758ccfd16093ca440b3c46294745b",
+      "equalsMainCommittedBytes": true,
+      "equalsMainCommittedNormalized": true
+    }
+  ],
+  "nov6Pending": {
+    "count": 650,
+    "totalBytes": 10424290,
+    "extensionCounts": {
+      "": 1,
+      ".cjs": 13,
+      ".json": 421,
+      ".md": 32,
+      ".png": 34,
+      ".ps1": 1,
+      ".py": 144,
+      ".tap": 1,
+      ".txt": 3
+    },
+    "largestFiles": [
+      {
+        "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/protected-history-57.json",
+        "bytes": 731667,
+        "suffix": ".json"
+      },
+      {
+        "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/protected-history-custody-preflight-58.json",
+        "bytes": 568995,
+        "suffix": ".json"
+      },
+      {
+        "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/protected-history-58.json",
+        "bytes": 559529,
+        "suffix": ".json"
+      },
+      {
+        "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/protected-history-custody-preflight-59.json",
+        "bytes": 477580,
+        "suffix": ".json"
+      },
+      {
+        "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/protected-history-verified-59.json",
+        "bytes": 477580,
+        "suffix": ".json"
+      },
+      {
+        "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/protected-history-59.json",
+        "bytes": 473020,
+        "suffix": ".json"
+      }
+    ],
+    "sensitiveNameCandidates": [
+      "doc/tasks/20261106-spug-prod-incremental-to-two-targets/historical-credential-redaction.json"
+    ]
+  },
+  "classification": "Scope only; no secret scan or commit authorization is implied"
+}

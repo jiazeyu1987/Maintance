@@ -1,0 +1,13 @@
+{
+  "observedAt": "2026-11-06T14:04:28.805Z",
+  "operationId": "smallapp-a690233d967d4965bf5f861dc1126961",
+  "state": "FAILED",
+  "errorCode": "MINIMAL_BINLOG_TOOL_CHANGED",
+  "spugHistoryId": 364,
+  "queryError": null,
+  "visible": "原操作失败",
+  "steps": "备份前置检查\n已完成\n开始 2026/11/6 21:35:31　结束 2026/11/6 22:04:07　耗时 0时 28分 36秒\n采集业务数据并恢复源服务\n失败\n开始 2026/11/6 22:04:07　结束 2026/11/6 22:04:14　耗时 0时 0分 6秒",
+  "logs": "2026/11/6 22:04:07  采集业务数据并恢复源服务：开始\n2026/11/6 22:04:12  SOURCE_PREFLIGHT_VERIFIED\n2026/11/6 22:04:14  采集业务数据并恢复源服务：失败，耗时 0时 0分 6秒\n2026/11/6 22:04:14  原始执行结果：FAILED_RETAINED\n错误：尚未满足执行条件（MINIMAL_BINLOG_TOOL_CHANGED）",
+  "problem": "",
+  "writes": 0
+}

@@ -1,0 +1,52 @@
+{
+  "host": "172.30.30.58",
+  "observedAt": "2026-11-08T03:04:33.556552+00:00",
+  "finishedAt": "2026-11-08T03:04:34.253764+00:00",
+  "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+  "packageFilesMatch": true,
+  "packageFileCount": 130,
+  "fstabSha256": "5c03cd5d634876c4637a5abdb629a7fff5edd7935b45a559904611e2d7d7c134",
+  "http": {
+    "backend": {
+      "httpStatus": 200,
+      "status": "UP"
+    },
+    "frontend": {
+      "httpStatus": 200
+    },
+    "minio": {
+      "ready": true,
+      "httpStatus": 200,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "installationCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+  "currentSourceCommit": "0dc7429d4758a208a5b0c098111fe9702ab63235",
+  "controllerGenerations": [
+    {
+      "service": "spug-main-restore-58-20261104-v3.service",
+      "pid": 23603,
+      "sourceCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+      "fileManifestSha256": "7f4dcc1dd4c292871b77e5c168e1d948d9c1f8925abc0902f9b54d17fae25b3b",
+      "fileCount": 130
+    }
+  ],
+  "currentInstallationSelectionPin": {
+    "file": "automatic-current-installations.json",
+    "bytes": 1180,
+    "sha256": "bb2eb68b4b30f3d43385370364ea32cc378bc7f93b395d6d93fd5915c7bc8955"
+  },
+  "backupOperationId": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291",
+  "strictReadOnlyCollection": true,
+  "controlApiCalled": false,
+  "status": "OBSERVED",
+  "containerCount": 459,
+  "activeReservation": false,
+  "privateBaselineSha256": "04564553bada942f4b560de9a8b7b0635ec4ba050d3e9989d81d28232a6ad504",
+  "processes": [
+    {
+      "pid": 23603,
+      "commandSha256": "30616f3e8ecb5642b2e02347ef356c282ede20c9693eb2782878a5ade2e4afe1"
+    }
+  ]
+}

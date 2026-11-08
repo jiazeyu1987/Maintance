@@ -1,0 +1,16 @@
+{
+  "status": "OBSERVED",
+  "observedAt": "2026-11-07T22:31:32.688997+00:00",
+  "operationId": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+  "pid": 20213,
+  "io": {
+    "rchar": 45940218112,
+    "wchar": 860,
+    "syscr": 117291,
+    "syscw": 2,
+    "read_bytes": 0,
+    "write_bytes": 8192,
+    "cancelled_write_bytes": 0
+  },
+  "mutationDispatched": false
+}

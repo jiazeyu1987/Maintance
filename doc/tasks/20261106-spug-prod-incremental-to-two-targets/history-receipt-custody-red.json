@@ -1,0 +1,25 @@
+{
+  "status": "EXPECTED_FAIL",
+  "observedAt": "2026-11-07T10:09:37.024791+00:00",
+  "actualExitCode": 1,
+  "command": [
+    "C:\\Users\\D01021\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "-X",
+    "utf8",
+    "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\verify_protected_history_before_custody.py",
+    "58",
+    "--verify"
+  ],
+  "rawOutputBytes": 560,
+  "rawOutputSha256": "a2ccc32eefa1acfaa798e5d1c77caa4acfc85de22dedba437fec3b24298f6853",
+  "reason": "AUTHORIZED_ACTIVE_INSTALLATION_RECEIPT_REPLACED",
+  "actualOriginalHistoryAudit": {
+    "observedAt": "2026-11-07T10:09:36.141341+00:00",
+    "originalFilesRead": 1991,
+    "changedPaths": [
+      "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/target-installation.json"
+    ],
+    "allOtherOriginalPathsMatch": true,
+    "serverWrites": false
+  }
+}

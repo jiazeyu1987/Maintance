@@ -1,0 +1,498 @@
+{
+  "observedAt": "2026-11-07T17:18:30.331389+00:00",
+  "operationId": "smallapp-e0946cfc3fd842b1a85a021e236c6317",
+  "ledgerFiles": [
+    "request.json",
+    "worker-stdout",
+    "intent.json",
+    "restore-target-before.json",
+    "worker-terminal.json",
+    "selection.json",
+    "completion.json",
+    "worker-stderr",
+    "execute",
+    "worker-process.json"
+  ],
+  "processes": [],
+  "evidenceFiles": [
+    {
+      "path": "timing-restore-cleanup-end.json",
+      "bytes": 112
+    },
+    {
+      "path": "timing-restore-cleanup-start.json",
+      "bytes": 69
+    },
+    {
+      "path": "result.json",
+      "bytes": 347252
+    },
+    {
+      "path": "staging-cleanup-intent.json",
+      "bytes": 1382316
+    },
+    {
+      "path": "staging-cleanup.json",
+      "bytes": 1382366
+    },
+    {
+      "path": "worker-result.json",
+      "bytes": 345596
+    },
+    {
+      "path": "final/redis-dump-independent-readback.json",
+      "bytes": 571
+    },
+    {
+      "path": "final/timing-consistency-end.json",
+      "bytes": 107
+    },
+    {
+      "path": "final/consistency.json",
+      "bytes": 1511
+    },
+    {
+      "path": "final/timing-consistency-start.json",
+      "bytes": 65
+    },
+    {
+      "path": "database-000/result.json",
+      "bytes": 1172
+    },
+    {
+      "path": "database-000/timing-sql-readback-end.json",
+      "bytes": 109
+    },
+    {
+      "path": "database-000/database-comparison.json",
+      "bytes": 123480
+    },
+    {
+      "path": "database-000/timing-sql-readback-start.json",
+      "bytes": 66
+    },
+    {
+      "path": "database-001/result.json",
+      "bytes": 1218
+    },
+    {
+      "path": "database-001/timing-sql-readback-end.json",
+      "bytes": 110
+    },
+    {
+      "path": "database-001/database-comparison.json",
+      "bytes": 123499
+    },
+    {
+      "path": "database-001/allocator-result.json",
+      "bytes": 671
+    },
+    {
+      "path": "database-001/timing-sql-readback-start.json",
+      "bytes": 66
+    },
+    {
+      "path": "objects/physical-step-000-intent.json",
+      "bytes": 1845955
+    },
+    {
+      "path": "objects/result.json",
+      "bytes": 1453
+    },
+    {
+      "path": "objects/physical-step-001-readback.json",
+      "bytes": 73
+    },
+    {
+      "path": "objects/physical-step-001-intent.json",
+      "bytes": 6672
+    },
+    {
+      "path": "objects/physical-step-000-readback.json",
+      "bytes": 74
+    },
+    {
+      "path": "objects/physical-comparison.json",
+      "bytes": 2019
+    },
+    {
+      "path": "objects/physical-export/export-receipt.json",
+      "bytes": 431
+    }
+  ],
+  "worker-terminal.json": {
+    "actualExitCode": 0,
+    "operationId": "smallapp-e0946cfc3fd842b1a85a021e236c6317",
+    "pid": 13535,
+    "stderrPin": {
+      "bytes": 0,
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-e0946cfc3fd842b1a85a021e236c6317/worker-stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdoutPin": {
+      "bytes": 0,
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-e0946cfc3fd842b1a85a021e236c6317/worker-stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "uiRequestSha256": "b9f9e70b644446d19aa3c2ad9cf7383e154ae1644a2158a3414a6f9cab54cdb1"
+  },
+  "nativeTimings": [
+    {
+      "path": "database-000/timing-database-restore-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 2362.403,
+        "finishedAt": "2026-11-07T14:42:08.271259Z",
+        "stage": "database-restore"
+      }
+    },
+    {
+      "path": "database-000/timing-database-restore-start.json",
+      "value": {
+        "stage": "database-restore",
+        "startedAt": "2026-11-07T14:02:45.868585Z"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-expand-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 233.043,
+        "finishedAt": "2026-11-07T14:08:31.193520Z",
+        "stage": "sql-expand"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-expand-start.json",
+      "value": {
+        "stage": "sql-expand",
+        "startedAt": "2026-11-07T14:04:38.150622Z"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-import-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 985.202,
+        "finishedAt": "2026-11-07T14:25:31.135942Z",
+        "stage": "sql-import"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-import-start.json",
+      "value": {
+        "stage": "sql-import",
+        "startedAt": "2026-11-07T14:09:05.934371Z"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-readback-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 997.113,
+        "finishedAt": "2026-11-07T14:42:08.259415Z",
+        "stage": "sql-readback"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-readback-start.json",
+      "value": {
+        "stage": "sql-readback",
+        "startedAt": "2026-11-07T14:25:31.146183Z"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-stage-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 105.73,
+        "finishedAt": "2026-11-07T14:04:38.140718Z",
+        "stage": "sql-stage"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-stage-start.json",
+      "value": {
+        "stage": "sql-stage",
+        "startedAt": "2026-11-07T14:02:52.410406Z"
+      }
+    },
+    {
+      "path": "database-001/timing-database-restore-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 4829.813,
+        "finishedAt": "2026-11-07T16:02:38.087019Z",
+        "stage": "database-restore"
+      }
+    },
+    {
+      "path": "database-001/timing-database-restore-start.json",
+      "value": {
+        "stage": "database-restore",
+        "startedAt": "2026-11-07T14:42:08.273896Z"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-allocator-state-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 267.045,
+        "finishedAt": "2026-11-07T15:45:41.985915Z",
+        "stage": "sql-allocator-state"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-allocator-state-start.json",
+      "value": {
+        "stage": "sql-allocator-state",
+        "startedAt": "2026-11-07T15:41:14.941221Z"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-expand-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 337.515,
+        "finishedAt": "2026-11-07T14:51:01.475333Z",
+        "stage": "sql-expand"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-expand-start.json",
+      "value": {
+        "stage": "sql-expand",
+        "startedAt": "2026-11-07T14:45:23.959986Z"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-import-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 2936.915,
+        "finishedAt": "2026-11-07T15:41:14.902728Z",
+        "stage": "sql-import"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-import-start.json",
+      "value": {
+        "stage": "sql-import",
+        "startedAt": "2026-11-07T14:52:17.987469Z"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-readback-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 1013.516,
+        "finishedAt": "2026-11-07T16:02:35.507760Z",
+        "stage": "sql-readback"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-readback-start.json",
+      "value": {
+        "stage": "sql-readback",
+        "startedAt": "2026-11-07T15:45:41.991821Z"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-stage-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 189.457,
+        "finishedAt": "2026-11-07T14:45:23.949309Z",
+        "stage": "sql-stage"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-stage-start.json",
+      "value": {
+        "stage": "sql-stage",
+        "startedAt": "2026-11-07T14:42:14.492739Z"
+      }
+    },
+    {
+      "path": "final/timing-application-start-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 244.215,
+        "finishedAt": "2026-11-07T16:47:41.743129Z",
+        "stage": "application-start"
+      }
+    },
+    {
+      "path": "final/timing-application-start-start.json",
+      "value": {
+        "stage": "application-start",
+        "startedAt": "2026-11-07T16:43:37.528216Z"
+      }
+    },
+    {
+      "path": "final/timing-archive-verification-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 1015.274,
+        "finishedAt": "2026-11-07T17:04:37.019729Z",
+        "stage": "archive-verification"
+      }
+    },
+    {
+      "path": "final/timing-archive-verification-start.json",
+      "value": {
+        "stage": "archive-verification",
+        "startedAt": "2026-11-07T16:47:41.745702Z"
+      }
+    },
+    {
+      "path": "final/timing-consistency-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 99.662,
+        "finishedAt": "2026-11-07T16:43:12.825655Z",
+        "stage": "consistency"
+      }
+    },
+    {
+      "path": "final/timing-consistency-start.json",
+      "value": {
+        "stage": "consistency",
+        "startedAt": "2026-11-07T16:41:33.163925Z"
+      }
+    },
+    {
+      "path": "final/timing-redis-rebuild-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 24.694,
+        "finishedAt": "2026-11-07T16:43:37.525922Z",
+        "stage": "redis-rebuild"
+      }
+    },
+    {
+      "path": "final/timing-redis-rebuild-start.json",
+      "value": {
+        "stage": "redis-rebuild",
+        "startedAt": "2026-11-07T16:43:12.831943Z"
+      }
+    },
+    {
+      "path": "objects/timing-object-restore-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 2335.065,
+        "finishedAt": "2026-11-07T16:41:33.156679Z",
+        "stage": "object-restore"
+      }
+    },
+    {
+      "path": "objects/timing-object-restore-start.json",
+      "value": {
+        "stage": "object-restore",
+        "startedAt": "2026-11-07T16:02:38.092210Z"
+      }
+    },
+    {
+      "path": "replacement-preparation/timing-target-replacement-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 138.742,
+        "finishedAt": "2026-11-07T13:17:37.249274Z",
+        "stage": "target-replacement"
+      }
+    },
+    {
+      "path": "replacement-preparation/timing-target-replacement-start.json",
+      "value": {
+        "stage": "target-replacement",
+        "startedAt": "2026-11-07T13:15:18.507682Z"
+      }
+    },
+    {
+      "path": "timing-restore-admission-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 2701.204,
+        "finishedAt": "2026-11-07T14:02:38.458486Z",
+        "stage": "restore-admission"
+      }
+    },
+    {
+      "path": "timing-restore-admission-start.json",
+      "value": {
+        "stage": "restore-admission",
+        "startedAt": "2026-11-07T13:17:37.254951Z"
+      }
+    },
+    {
+      "path": "timing-restore-cleanup-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 384.006,
+        "finishedAt": "2026-11-07T17:11:01.037557Z",
+        "stage": "restore-cleanup"
+      }
+    },
+    {
+      "path": "timing-restore-cleanup-start.json",
+      "value": {
+        "stage": "restore-cleanup",
+        "startedAt": "2026-11-07T17:04:37.031332Z"
+      }
+    },
+    {
+      "path": "timing-target-checks-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 7.404,
+        "finishedAt": "2026-11-07T14:02:45.866137Z",
+        "stage": "target-checks"
+      }
+    },
+    {
+      "path": "timing-target-checks-start.json",
+      "value": {
+        "stage": "target-checks",
+        "startedAt": "2026-11-07T14:02:38.462216Z"
+      }
+    }
+  ],
+  "services": [
+    {
+      "id": "4376cb8d12c95ec485589b2fc8edabed3d9c631fcd52f715c4b2800f1b4cde8e",
+      "running": true,
+      "pid": 8686,
+      "startedAt": "2026-11-05T12:07:09.074764239Z"
+    },
+    {
+      "id": "eb40cfe31e8046cf281c33d1a9b7cc50a2ecd30cb2b5a51d4248dce5f20b38d7",
+      "running": true,
+      "pid": 13112,
+      "startedAt": "2026-11-07T16:24:12.008939432Z"
+    },
+    {
+      "id": "99d136c09a948643f5f4bb7ff6fb1f0402cd856dc5aeebe91e5baf289dbd3e48",
+      "running": true,
+      "pid": 8875,
+      "startedAt": "2026-11-05T12:07:09.972626249Z"
+    },
+    {
+      "id": "285244884c5e056ce1e37d073a9356c9dd34e9d97dc8ea3af07183b9929c79d8",
+      "running": true,
+      "pid": 7978,
+      "startedAt": "2026-11-07T16:43:51.030723768Z"
+    },
+    {
+      "id": "82b9982178e4ea002b25f8cce70b621e29f4af452df7be42d2efc699191ca193",
+      "running": true,
+      "pid": 15045,
+      "startedAt": "2026-11-07T16:47:18.265924032Z"
+    }
+  ],
+  "readback": {
+    "tableDirectories": 0,
+    "tokenFiles": 0
+  },
+  "databaseReadbackSteps": {}
+}

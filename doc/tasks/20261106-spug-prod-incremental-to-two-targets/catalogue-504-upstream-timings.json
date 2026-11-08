@@ -1,0 +1,57 @@
+{
+  "observedAt": "2026-11-07T17:38:24.888411+00:00",
+  "databaseBytes": 162693120,
+  "payloadBytes": 81264980,
+  "readAndSizeSeconds": 25.735,
+  "sectionBytes": {
+    "packages": 271283,
+    "jobs": 79330982,
+    "environments": 1617322,
+    "frontendPatches": 4997,
+    "backendPatchEnvironments": 2,
+    "backendPatchBaselines": 29948,
+    "backendPatches": 10306
+  },
+  "jobCount": 309,
+  "jobStatusCounts": {
+    "succeeded": 216,
+    "failed": 87,
+    "interrupted": 6
+  },
+  "activeRemotePollingJobs": [],
+  "catalogueRootCount": 2,
+  "configurationHasBackupSourceConnections": false,
+  "configurationHasSelectableBindings": false,
+  "measurements": [
+    {
+      "route": "/package-catalog",
+      "headerSeconds": 0.015,
+      "httpStatus": 200,
+      "bytes": 138118,
+      "elapsedSeconds": 0.015,
+      "itemCount": 142,
+      "refreshing": true,
+      "complete": true,
+      "errorCount": 0
+    },
+    {
+      "route": "/state",
+      "headerSeconds": 1.282,
+      "httpStatus": 200,
+      "bytes": 81281836,
+      "elapsedSeconds": 1.625
+    },
+    {
+      "route": "/package-catalog",
+      "headerSeconds": 0.0,
+      "httpStatus": 200,
+      "bytes": 138118,
+      "elapsedSeconds": 0.016,
+      "itemCount": 142,
+      "refreshing": true,
+      "complete": true,
+      "errorCount": 0
+    }
+  ],
+  "businessWrites": 0
+}

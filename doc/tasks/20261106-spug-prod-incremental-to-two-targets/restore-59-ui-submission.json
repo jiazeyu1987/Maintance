@@ -1,0 +1,12 @@
+{
+  "submittedAt": "2026-11-07T12:29:29.324Z",
+  "request": {
+    "schemaVersion": "SmallAppBackupUiRequest/v1",
+    "operationId": "smallapp-e0946cfc3fd842b1a85a021e236c6317",
+    "action": "RESTORE",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "parentChainRef": null,
+    "recoveryPointRef": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+    "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1"
+  }
+}

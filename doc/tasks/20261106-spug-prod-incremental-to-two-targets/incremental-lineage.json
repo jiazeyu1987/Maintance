@@ -1,0 +1,298 @@
+{
+  "observedAt": "2026-11-06T10:29:49.721132+00:00",
+  "mysqlRows": [
+    "0fa6c22b-5a90-11f1-ade1-0242ac150002\t8.0.39\t1\tROW\tOFF\tON\t0\t0",
+    "binlog.000032\t908575405\t\t\t",
+    "binlog.000010\t466929111\tNo",
+    "binlog.000011\t157\tNo",
+    "binlog.000012\t157\tNo",
+    "binlog.000013\t157\tNo",
+    "binlog.000014\t157\tNo",
+    "binlog.000015\t157\tNo",
+    "binlog.000016\t157\tNo",
+    "binlog.000017\t157\tNo",
+    "binlog.000018\t157\tNo",
+    "binlog.000019\t157\tNo",
+    "binlog.000020\t180\tNo",
+    "binlog.000021\t1074602282\tNo",
+    "binlog.000022\t1075372452\tNo",
+    "binlog.000023\t1073744324\tNo",
+    "binlog.000024\t1074982131\tNo",
+    "binlog.000025\t1074199078\tNo",
+    "binlog.000026\t1074146320\tNo",
+    "binlog.000027\t1074351169\tNo",
+    "binlog.000028\t1074361549\tNo",
+    "binlog.000029\t1074054088\tNo",
+    "binlog.000030\t1075056211\tNo",
+    "binlog.000031\t1074528282\tNo",
+    "binlog.000032\t908575405\tNo"
+  ],
+  "points": [
+    {
+      "reference": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+      "pointType": "FULL",
+      "backupId": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+      "generationId": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+      "finishedAt": "2026-10-24T23:11:41.175754Z",
+      "state": "SUCCEEDED",
+      "actualExitCode": 0,
+      "pointPin": {
+        "bytes": 6253168,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-3e28538a2a09b55b9d6cc99953474a3703d80b80d80a7725df97ff919ffcef8c/.repository/point.json",
+        "sha256": "d8570e0a033a0931edc9aa231d87b94b649c0e2868ecc599b42cae9b5eba5e79"
+      },
+      "manifestPin": {
+        "bytes": 6252936,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-3e28538a2a09b55b9d6cc99953474a3703d80b80d80a7725df97ff919ffcef8c/.repository/manifest.json",
+        "sha256": "acf219c040a26c48b90627ce68579d7ddf27eabb56b8c40024624a5c4c4dcb54"
+      },
+      "capturePointPin": {
+        "bytes": 5527726,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-3e28538a2a09b55b9d6cc99953474a3703d80b80d80a7725df97ff919ffcef8c/payload/capture-content-point.json",
+        "sha256": "66655c458b3c4f03271a0a4aa1e620f0d1588293b69c0320ff1783f095dedc62"
+      },
+      "databaseEnd": {
+        "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+        "executedGtidSet": "",
+        "file": "binlog.000010",
+        "position": 171367516,
+        "serverVersion": "8.0.39"
+      },
+      "databaseDelta": {
+        "kind": "SQL_FULL",
+        "segments": []
+      },
+      "parentPointPins": [],
+      "commonRecoveryPoint": "sha256:6fdc4899ca47e6dfac138714d9b0c352d0758e7dbf669d469a80e9d292218bdc",
+      "payloadFiles": 14334,
+      "payloadBytes": 26088444894
+    },
+    {
+      "reference": "smallapp-a54a05be9dab45e490a3979551536b0c",
+      "pointType": "FULL",
+      "backupId": "smallapp-a54a05be9dab45e490a3979551536b0c",
+      "generationId": "smallapp-a54a05be9dab45e490a3979551536b0c",
+      "finishedAt": "2026-10-25T14:25:09.326739Z",
+      "state": "SUCCEEDED",
+      "actualExitCode": 0,
+      "pointPin": {
+        "bytes": 6249045,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-9e0ac7ff4c62b512d8e23f13a2f76c14ff83c975ad0e642051700d9bdb64688f/.repository/point.json",
+        "sha256": "f53ba68041209608854cb352bb2ade4f8aece46635f3556e9b8519d2e422b6c5"
+      },
+      "manifestPin": {
+        "bytes": 6248813,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-9e0ac7ff4c62b512d8e23f13a2f76c14ff83c975ad0e642051700d9bdb64688f/.repository/manifest.json",
+        "sha256": "1152d5aea8eab1b6b3de8f898a0343bb52a62be66f3474a43524200bdb28f60b"
+      },
+      "capturePointPin": {
+        "bytes": 5523793,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-9e0ac7ff4c62b512d8e23f13a2f76c14ff83c975ad0e642051700d9bdb64688f/payload/capture-content-point.json",
+        "sha256": "74f272e1bc48d381ed3be3e519825987da58fc38f67bb4ddd3ae397b60c0e54b"
+      },
+      "databaseEnd": {
+        "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+        "executedGtidSet": "",
+        "file": "binlog.000010",
+        "position": 186459005,
+        "serverVersion": "8.0.39"
+      },
+      "databaseDelta": {
+        "kind": "SQL_FULL",
+        "segments": []
+      },
+      "parentPointPins": [],
+      "commonRecoveryPoint": "sha256:f972b07d851810dfd05591444d0f1167f94a1f9959dc391cf5421ae42cd1646f",
+      "payloadFiles": 14324,
+      "payloadBytes": 26088446007
+    },
+    {
+      "reference": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+      "pointType": "FULL",
+      "backupId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+      "generationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+      "finishedAt": "2026-11-03T16:43:59.761529Z",
+      "state": "SUCCEEDED",
+      "actualExitCode": 0,
+      "pointPin": {
+        "bytes": 6258012,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-015324b875ded2becd0e843248a943a94614abaf2ef19ffcdbfe19f4e2a4d5ff/.repository/point.json",
+        "sha256": "261763e42dd0df5cc1e23039e1fd6deb13035e54196008a0389cc4ac52dc1844"
+      },
+      "manifestPin": {
+        "bytes": 6257809,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-015324b875ded2becd0e843248a943a94614abaf2ef19ffcdbfe19f4e2a4d5ff/.repository/manifest.json",
+        "sha256": "f5aa91490681ff649abdc81957de8f75f0b1c2672fb92e263c18b90a2681a8a1"
+      },
+      "capturePointPin": {
+        "bytes": 5531659,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-015324b875ded2becd0e843248a943a94614abaf2ef19ffcdbfe19f4e2a4d5ff/payload/capture-content-point.json",
+        "sha256": "644884de09a98d2522373ab08b456f5775a736d9885da505020f5613ae7e4cab"
+      },
+      "databaseEnd": {
+        "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+        "executedGtidSet": "",
+        "file": "binlog.000010",
+        "position": 444055095,
+        "serverVersion": "8.0.39"
+      },
+      "databaseDelta": {
+        "kind": "SQL_FULL",
+        "segments": []
+      },
+      "parentPointPins": [],
+      "commonRecoveryPoint": "sha256:b39f563f44aefdf4a159f535ecb18393dfcaf5287c073e1183c4388593f7a5f1",
+      "payloadFiles": 14346,
+      "payloadBytes": 26090481928
+    },
+    {
+      "reference": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+      "pointType": "FULL",
+      "backupId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+      "generationId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+      "finishedAt": "2026-11-05T06:17:28.597277Z",
+      "state": "SUCCEEDED",
+      "actualExitCode": 0,
+      "pointPin": {
+        "bytes": 6271278,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/.repository/point.json",
+        "sha256": "af95ffa94e9478bd32935c6e0c662aa5590854a0cda7597b84a25abd81a8f128"
+      },
+      "manifestPin": {
+        "bytes": 6271075,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/.repository/manifest.json",
+        "sha256": "5f6d2748fd0d22bfb549377923dc63367f20b6b8c5ede20d370d719f64893dc5"
+      },
+      "capturePointPin": {
+        "bytes": 5544538,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-197d8fd4ced92df64f0c152e9c6d470596ec343532e3b2dd82ebbef680114bcb/payload/capture-content-point.json",
+        "sha256": "efaaae78a9bbbe5287754d63b51d0c350977b117bfc84e39782b1918ccfbac17"
+      },
+      "databaseEnd": {
+        "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+        "executedGtidSet": "",
+        "file": "binlog.000021",
+        "position": 516582,
+        "serverVersion": "8.0.39"
+      },
+      "databaseDelta": {
+        "kind": "SQL_FULL",
+        "segments": []
+      },
+      "parentPointPins": [],
+      "commonRecoveryPoint": "sha256:e94ad09d511f2b9ebb576e8b8f460a04087ddfbf3d2ed92b6391bb658b59d3c4",
+      "payloadFiles": 14378,
+      "payloadBytes": 26090562595
+    },
+    {
+      "reference": "smallapp-7fec29a3e132463096aec915c08acab3",
+      "pointType": "FULL",
+      "backupId": "smallapp-7fec29a3e132463096aec915c08acab3",
+      "generationId": "smallapp-7fec29a3e132463096aec915c08acab3",
+      "finishedAt": "2026-11-06T02:55:11.150006Z",
+      "state": "SUCCEEDED",
+      "actualExitCode": 0,
+      "pointPin": {
+        "bytes": 6263032,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-433710bb8eb93e78351878966cb06caec1c420e87ef3d5c8dff9c493dc085eb9/.repository/point.json",
+        "sha256": "28e5f6023ad2e5aa5d3a340b4ede1dc249d98deb8fb9704db68b968cb4b8b4f7"
+      },
+      "manifestPin": {
+        "bytes": 6262829,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-433710bb8eb93e78351878966cb06caec1c420e87ef3d5c8dff9c493dc085eb9/.repository/manifest.json",
+        "sha256": "2c79336d8eeec04db997a86d25a0f5b2af1b11069f60e932621c848df29c64e7"
+      },
+      "capturePointPin": {
+        "bytes": 5536674,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-433710bb8eb93e78351878966cb06caec1c420e87ef3d5c8dff9c493dc085eb9/payload/capture-content-point.json",
+        "sha256": "3cfe6459eb28ee2abd0cf643495fb634971a2b3d81aab50b7ac484fffd06c888"
+      },
+      "databaseEnd": {
+        "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+        "executedGtidSet": "",
+        "file": "binlog.000021",
+        "position": 23582326,
+        "serverVersion": "8.0.39"
+      },
+      "databaseDelta": {
+        "kind": "SQL_FULL",
+        "segments": []
+      },
+      "parentPointPins": [],
+      "commonRecoveryPoint": "sha256:41521f4f5432aebca161abf241e77f218cb41382657acac9b7f2f4691e15e991",
+      "payloadFiles": 14358,
+      "payloadBytes": 26090542269
+    },
+    {
+      "reference": "smallapp-3f29a2b1324045309478a3a597654260",
+      "pointType": "FULL",
+      "backupId": "smallapp-3f29a2b1324045309478a3a597654260",
+      "generationId": "smallapp-3f29a2b1324045309478a3a597654260",
+      "finishedAt": "2026-10-25T07:26:20.944769Z",
+      "state": "SUCCEEDED",
+      "actualExitCode": 0,
+      "pointPin": {
+        "bytes": 6249043,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-021422e67360554d7024bd2e329b4770e034a64d7be15ad96d88d27dec717b16/.repository/point.json",
+        "sha256": "ddf6172a7c858c204fb96de73f48a5d779da6b42bc934731263026df5766b818"
+      },
+      "manifestPin": {
+        "bytes": 6248811,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-021422e67360554d7024bd2e329b4770e034a64d7be15ad96d88d27dec717b16/.repository/manifest.json",
+        "sha256": "bba36595ab1d364b5ffe05b63c530abbc0b88d2d29831354073ccaa63c45ca05"
+      },
+      "capturePointPin": {
+        "bytes": 5523793,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-021422e67360554d7024bd2e329b4770e034a64d7be15ad96d88d27dec717b16/payload/capture-content-point.json",
+        "sha256": "b6230b0b4ad468918974b60f6747d0e25e1920df7c5019364edb0d936b00a5b5"
+      },
+      "databaseEnd": {
+        "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+        "executedGtidSet": "",
+        "file": "binlog.000010",
+        "position": 179280747,
+        "serverVersion": "8.0.39"
+      },
+      "databaseDelta": {
+        "kind": "SQL_FULL",
+        "segments": []
+      },
+      "parentPointPins": [],
+      "commonRecoveryPoint": "sha256:8055dbe0fa09204f258cddbc006b9168ca825d09bfc9d85da778e7ed9fc049dd",
+      "payloadFiles": 14324,
+      "payloadBytes": 26088427452
+    }
+  ],
+  "sourceLockPath": "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/source-locks/source.lock",
+  "sourceProcessLimits": "MainPID=20619\nLimitNOFILE=65536\nActiveState=active\n",
+  "sourceEngineBinlogSource": [
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/formal/formal_capture_incremental.py",
+      "sha256": "7d2560cc27647e8192ee3ec63a89a073e10440d2ea4a90a0bf2874a51444cd9a",
+      "matches": [
+        {
+          "line": 117,
+          "text": "    mode = getattr(mysql, 'database_log_mode', 'GTID')"
+        },
+        {
+          "line": 309,
+          "text": "            mode = getattr(mysql, 'database_log_mode', 'GTID')"
+        },
+        {
+          "line": 333,
+          "text": "                              'IFS= read -r MYSQL_PWD; export MYSQL_PWD; exec mysqlbinlog \"$@\"')"
+        },
+        {
+          "line": 336,
+          "text": "                            '--user=root', '--verify-binlog-checksum', '--disable-log-bin',"
+        }
+      ]
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/engine-mainv2-9dce318/common/recovery_mysql_scheduler.py",
+      "sha256": "e820769adcf0a21ee3150224b8ccc867e36bbaf10291f9f56eb9cceba226f220",
+      "matches": []
+    }
+  ],
+  "sourceControlDeadlineMilliseconds": 28800000
+}

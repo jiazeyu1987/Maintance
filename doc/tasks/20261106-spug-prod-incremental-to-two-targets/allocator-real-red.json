@@ -1,0 +1,20 @@
+{
+  "status": "EXPECTED_RED",
+  "observedAt": "2026-11-07T03:24:45.210453+00:00",
+  "mysqlVersion": "8.0.39",
+  "image": "sha256:ccb8f749bb5e59f9f8f03bf7282c7ef27a93a1814a24f0a8a926fb4e19b7fb97",
+  "database": "allocator_proof",
+  "counters": {
+    "source": 11,
+    "target": 3
+  },
+  "committedRowsEqual": true,
+  "strictSchemaFailure": "FORMAL_SCHEMA_MISMATCH",
+  "binlogBytes": 2144,
+  "binlogSha256": "4e0e97e402c1b0fae26a39bc1a8a4aad444388cf72e756cc97adab0c4620efe8",
+  "businessServersAccessed": false,
+  "resourceIds": [
+    "281056a49182bfa712abee68f2fa1e2f171caa550ae12f20acdc626556a8049f",
+    "0f7abda6a336c60ff75496affe0de89c705e35300b4667d7f29f7e3b213ce87d"
+  ]
+}

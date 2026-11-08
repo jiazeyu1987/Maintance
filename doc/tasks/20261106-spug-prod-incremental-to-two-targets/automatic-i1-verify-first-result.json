@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "AutomaticIncrementalUiObservation/v1",
+  "kind": "I1",
+  "phase": "verify",
+  "observation": "first",
+  "startedAt": "2026-11-08T00:13:31.170Z",
+  "implementationCommit": "0dc7429d4758a208a5b0c098111fe9702ab63235",
+  "spugCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+  "deploymentSelectionPin": {
+    "file": "automatic-i1-deployment-selection.json",
+    "bytes": 1015,
+    "sha256": "5dda6419591f83ae700067117d530ec81c316755cbcf04795962b2e009755ca0"
+  },
+  "preflightSha256": "113b3d88d30599335f3c5eac61cb1914ba3e24251fe5c7eb733f85e19677a5db",
+  "realBrowser": true,
+  "identityVerified": true,
+  "permissionVerified": true,
+  "loginPosts": 1,
+  "businessPosts": 0,
+  "blockedRequests": [],
+  "pageErrorCount": 0,
+  "request": {
+    "schemaVersion": "SmallAppBackupUiRequest/v1",
+    "operationId": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+    "action": "INCREMENTAL",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "parentChainRef": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "recoveryPointRef": null,
+    "targetConfigRef": null
+  },
+  "operationState": "SUCCEEDED",
+  "status": "SUCCEEDED_VERIFIED",
+  "stage": "original-only-verification",
+  "loginResponseRecorded": true,
+  "loginShape": {
+    "httpStatus": 200,
+    "errorPresent": false,
+    "dataPresent": true,
+    "dataObject": true,
+    "requiredMfa": false,
+    "hasRealIp": false,
+    "tokenReturned": true
+  },
+  "loginNoticeConfirmed": true,
+  "errorCode": null,
+  "spugHistoryId": 374,
+  "finishedAt": "2026-11-08T00:13:39.034Z"
+}

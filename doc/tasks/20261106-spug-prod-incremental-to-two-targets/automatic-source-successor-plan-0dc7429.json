@@ -1,0 +1,18 @@
+{
+  "status": "PREPARED",
+  "preparedOnly": true,
+  "sourceCommit": "0dc7429d4758a208a5b0c098111fe9702ab63235",
+  "sourceService": "spug-intruoyi-source-57-20261105.service",
+  "predecessorInstallationPin": {
+    "file": "automatic-control-installation-57.json",
+    "bytes": 5565,
+    "sha256": "8ecd7667b2dcfa491818656a296ee3bc92203ea6dd968d77e6e9ccf3daf52351"
+  },
+  "changedPackageFiles": [
+    "control/recovery_control_smallapp.py",
+    "control/recovery_control_smallapp_native.py"
+  ],
+  "originalFullOperationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+  "scriptSha256": "19a91e9898e807a658d829aac7e14b62e3e7505a89ca8511b606a4ab3ff47b52",
+  "remoteWrites": false
+}

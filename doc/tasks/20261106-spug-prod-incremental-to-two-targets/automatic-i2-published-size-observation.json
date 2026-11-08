@@ -1,0 +1,19 @@
+{
+  "status": "OBSERVED_NOT_FINAL_AUDIT",
+  "observedAt": "2026-11-08T02:02:58.384030+00:00",
+  "operationId": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291",
+  "pointPin": {
+    "bytes": 38210,
+    "sha256": "997c303ce2be95c1d1317a3c02d68f06094c2ea62b6537aff67cb65571e8e723"
+  },
+  "manifestPin": {
+    "bytes": 38029,
+    "sha256": "c1bfdb62083f626a52046a47bc78da3719c01b2c9714440c9b93bbb3f8d6a027"
+  },
+  "payloadFiles": 91,
+  "payloadBytes": 2106237601,
+  "source": "Published manifest declarations only",
+  "nativeTerminalVerified": false,
+  "payloadFullShaRechecked": false,
+  "mutationDispatched": false
+}

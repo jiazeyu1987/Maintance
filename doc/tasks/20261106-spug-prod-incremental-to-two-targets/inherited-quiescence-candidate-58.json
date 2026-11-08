@@ -1,0 +1,53 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T05:36:06.615863+00:00",
+  "sourceSha256": "80cd42b2638113c8b57a23173e77a98a3605df0683fe4100e677f16b3e923720",
+  "operationId": "smallapp-b4f35606e4854516960050a76473038b",
+  "previousOperationId": "smallapp-c21bb7ce9f5b4668b850c37a80964786",
+  "inheritedQuiescencePin": {
+    "bytes": 2667,
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-c21bb7ce9f5b4668b850c37a80964786/recovery-clearance.json",
+    "sha256": "c013e52bb3d91c9b7c75a63e0e6998dc1fa31f493e0da9640c7ab2a353c94250"
+  },
+  "previousObservationPin": {
+    "bytes": 1370,
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-c21bb7ce9f5b4668b850c37a80964786/recovery-observation.json",
+    "sha256": "fa2941fcba15d6e89413a58c01b508013951909a8ef8a3e0491727a1be457e02"
+  },
+  "schedulerCustodyPin": null,
+  "tableCount": 885,
+  "services": {
+    "mysql": {
+      "id": "b4592b704b979f1b94ba03836985491a8f7c699d3094297bfbe3696939eedd79",
+      "image": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+      "running": true,
+      "startedAt": "2026-11-05T01:51:30.916478688Z"
+    },
+    "minio": {
+      "id": "98216faac1ae2fc1508bd4076962bf4cfcb3a47f2f1bd5d5e42c7ba819e83115",
+      "image": "sha256:c4260bcf2c25b683e4f6e6ed6474f12c5c28dc8e375bfe0ecea7a5d3fbecbc04",
+      "running": false,
+      "startedAt": "2026-11-05T10:41:42.537848196Z"
+    },
+    "redis": {
+      "id": "028bb0541d3216c283c5f1822338462545fa7cd63fad55c462ae20a01526e225",
+      "image": "sha256:487efc0616382465781b8fdc3d6d1db449e6fd80ae23bf48432a2da6b6929908",
+      "running": true,
+      "startedAt": "2026-11-05T01:52:49.476812788Z"
+    },
+    "backend": {
+      "id": "6f70e67078d086d7f08c1ae75a80bb0feab28c5a1f92c91d655ac258f34988eb",
+      "image": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+      "running": false,
+      "startedAt": "2026-11-05T10:52:47.882899354Z"
+    },
+    "frontend": {
+      "id": "4f9775e6f0a1d86b2d06c69e40504a91cf44a613de458b76e69fa04805ca5d73",
+      "image": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a",
+      "running": false,
+      "startedAt": "2026-11-05T10:56:11.580646446Z"
+    }
+  },
+  "serverWrites": false,
+  "clearanceIssued": false
+}

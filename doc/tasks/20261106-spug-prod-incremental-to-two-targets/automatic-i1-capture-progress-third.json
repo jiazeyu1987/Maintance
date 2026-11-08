@@ -1,0 +1,80 @@
+{
+  "status": "OBSERVED",
+  "observedAt": "2026-11-07T23:04:31.278310+00:00",
+  "operationId": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+  "workerPid": 17042,
+  "workerPresent": true,
+  "io": {
+    "rchar": 11855060989,
+    "wchar": 2146644336,
+    "syscr": 774547,
+    "syscw": 61922,
+    "read_bytes": 2085036032,
+    "write_bytes": 2104418304,
+    "cancelled_write_bytes": 0
+  },
+  "fileCount": 54,
+  "totalObservedBytes": 2104282418,
+  "largestFiles": [
+    {
+      "file": "payload/original-application-images.tar",
+      "bytes": 2081399296,
+      "mtime": "2026-11-07T22:44:27.833941+00:00"
+    },
+    {
+      "file": "payload/database.sql.incremental.raw",
+      "bytes": 10398799,
+      "mtime": "2026-11-07T22:51:25.597087+00:00"
+    },
+    {
+      "file": "scratch-affected/338/tokens.tsv",
+      "bytes": 5587267,
+      "mtime": "2026-11-07T22:59:51.291949+00:00"
+    },
+    {
+      "file": "semantic-capture/versions.jsonl",
+      "bytes": 3178549,
+      "mtime": "2026-11-07T22:50:39.394186+00:00"
+    },
+    {
+      "file": "scratch-affected/338/rows-0.bin",
+      "bytes": 2097152,
+      "mtime": "2026-11-07T22:59:52.537973+00:00"
+    }
+  ],
+  "lastStages": [
+    {
+      "at": "2026-11-07T22:44:30.923237+00:00",
+      "stage": "CONFIGURATION_AND_IMAGES_CAPTURED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-07T22:44:30.927284+00:00",
+      "stage": "STOP_REQUESTED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-07T22:44:34.806464+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT",
+      "captureStage": "STOP_WRITERS"
+    },
+    {
+      "at": "2026-11-07T22:44:34.851196+00:00",
+      "stage": "STOP_REQUESTED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-07T22:44:35.234097+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT",
+      "captureStage": "STOP_WRITERS"
+    },
+    {
+      "at": "2026-11-07T22:44:35.951492+00:00",
+      "stage": "WRITERS_STOPPED_DATABASE_FENCED",
+      "captureStage": null
+    }
+  ],
+  "sourceRestoration": null,
+  "mutationDispatched": false,
+  "liveObservationNotFinalPayload": true
+}

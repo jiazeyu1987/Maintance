@@ -1,0 +1,21 @@
+{
+  "observedAt": "2026-11-06T17:44:12.034883+00:00",
+  "operationId": "smallapp-e7cee19e7f4b464eacdfe11b712aec17",
+  "diagnosticOnly": true,
+  "frozenPointAcceptance": false,
+  "querySecondsLimit": 120,
+  "queries": [
+    {
+      "table": "infra_file",
+      "rows": 9074,
+      "outputBytes": 1518704,
+      "seconds": 0.28148897498613223,
+      "diagnosticOnly": true
+    }
+  ],
+  "parentMetadataBytes": 12190464,
+  "parentMetadataReadSeconds": 0.24469244800275192,
+  "parentContentFiles": 4920,
+  "parentContentStatSeconds": 2.445501932001207,
+  "noServicesChanged": true
+}

@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "preparedOnly": true,
+  "sourceCommit": "d487abf28ae38c2e6db445d8b888bf06b32df4e5",
+  "previousPid": 28125,
+  "retainedFiles": 9128,
+  "packageSha256": "0d2a24740f35b5035f2fd2a3a16b87374e577de1cfca84229c5bb7041c9bd321",
+  "remoteScriptSha256": "a179b695c31d62c09823bf12c021bc2e58cd3fab0ee39341c8492e7f4c006dc0",
+  "remoteWrites": false
+}

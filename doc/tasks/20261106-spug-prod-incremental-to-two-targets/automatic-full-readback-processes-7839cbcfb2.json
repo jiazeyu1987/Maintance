@@ -1,0 +1,18 @@
+{
+  "observedAt": "2026-11-07T19:56:00.004320+00:00",
+  "operationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+  "repositoryPid": 18771,
+  "processes": [
+    {
+      "pid": 18771,
+      "parentPid": 1,
+      "state": "D",
+      "startTicks": 23135431,
+      "comm": "python3.12",
+      "waitChannel": "0",
+      "readGiB": 119.379,
+      "writeGiB": 24.337
+    }
+  ],
+  "serverWrites": false
+}

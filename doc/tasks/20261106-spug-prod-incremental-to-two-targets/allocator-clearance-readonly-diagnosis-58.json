@@ -1,0 +1,22 @@
+{
+  "observedAt": "2026-11-07T04:17:15.918299+00:00",
+  "clearanceValid": true,
+  "expectedProtectionKinds": [],
+  "actualReleaseKinds": [],
+  "ready": {
+    "clearancePin": {
+      "bytes": 2667,
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-c21bb7ce9f5b4668b850c37a80964786/recovery-clearance.json",
+      "sha256": "c013e52bb3d91c9b7c75a63e0e6998dc1fa31f493e0da9640c7ab2a353c94250"
+    },
+    "readyAt": "2026-11-07T04:15:33.536416Z",
+    "releasePin": {
+      "bytes": 1088,
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/resource-recovery-release.json",
+      "sha256": "6af319a69f67c52aa8344ab4d9cc68d41499d1e6210e76d747cc3d36498f3622"
+    }
+  },
+  "activeReservation": false,
+  "consumed": false,
+  "serverWrites": false
+}

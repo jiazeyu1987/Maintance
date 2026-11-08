@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T18:09:06.309911+00:00",
+  "command": [
+    "C:/Users/D01021/AppData/Local/Programs/DockerDesktop/resources/bin/docker.exe",
+    "run",
+    "-i",
+    "--rm",
+    "--name",
+    "spug-incremental-ddl-tests-20261106",
+    "--label",
+    "codex.task=20261106-spug-prod-incremental-to-two-targets",
+    "--mount",
+    "type=bind,source=C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance,target=/src,readonly",
+    "--mount",
+    "type=bind,source=C:/Users/D01021/Documents/ChatGPT/Maintance/.git,target=/git-common,readonly",
+    "--env",
+    "EXPECTED_HEAD=6319024c003ead602d59e7697673fa3c39807863",
+    "--workdir",
+    "/src",
+    "sha256:14a4933e6cef421424f7a66d89a3f4eafcbd0d90e0a822251f298e05132dc735",
+    "sh",
+    "-ec",
+    "pip install --quiet --root-user-action=ignore pytest==8.3.5 jsonschema==4.23.0 redis==5.2.1; exec python -B -"
+  ],
+  "exitCode": 0,
+  "containerRemoved": true,
+  "outputSha256": "e73ebcd005253b886a99521417baeba5c362b944a84f0a6ac20ada4ef2ac89e0",
+  "isolatedProcesses": true,
+  "allFiveTestsActuallyExecuted": true
+}

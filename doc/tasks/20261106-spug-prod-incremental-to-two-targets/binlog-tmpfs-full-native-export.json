@@ -1,0 +1,190 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T19:48:16.019753+00:00",
+  "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+  "containerId": "69e7bec0183a7d510942c06a4c85fd2f1663815b982f26226779b03ef776246c",
+  "descriptorPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/mysqlbinlog-tmpfs-20261107-v3.json",
+    "bytes": 330,
+    "sha256": "06396422c198638463fb2a75aec02232061043277e2ecb41b576a925eec1fc13"
+  },
+  "parentChainRef": "smallapp-7fec29a3e132463096aec915c08acab3",
+  "parentPointPin": {
+    "bytes": 6263032,
+    "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-433710bb8eb93e78351878966cb06caec1c420e87ef3d5c8dff9c493dc085eb9/.repository/point.json",
+    "sha256": "28e5f6023ad2e5aa5d3a340b4ede1dc249d98deb8fb9704db68b968cb4b8b4f7"
+  },
+  "start": {
+    "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+    "executedGtidSet": "",
+    "file": "binlog.000021",
+    "position": 23582326,
+    "serverVersion": "8.0.39"
+  },
+  "end": {
+    "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+    "serverVersion": "8.0.39",
+    "file": "binlog.000032",
+    "position": 919188121,
+    "executedGtidSet": ""
+  },
+  "binlogBytes": 12715003637,
+  "segments": [
+    {
+      "segment": {
+        "file": "binlog.000021",
+        "startPosition": 23582326,
+        "stopPosition": 1074602282
+      },
+      "stdoutBytes": 1427429005,
+      "stderrBytes": 0,
+      "returncode": 0,
+      "stdoutSha256": "33549654f50ef718ce26f2e27c15d0f360fdf16618c89adb44355e8887ff1a10",
+      "elapsedSeconds": 7.02
+    },
+    {
+      "segment": {
+        "file": "binlog.000022",
+        "startPosition": 4,
+        "stopPosition": 1075372452
+      },
+      "stdoutBytes": 1453554658,
+      "stderrBytes": 0,
+      "returncode": 0,
+      "stdoutSha256": "a6d735782acdfa2acd8432158778bd3892facbc9a603eb02a0833e21a21baffb",
+      "elapsedSeconds": 7.403
+    },
+    {
+      "segment": {
+        "file": "binlog.000023",
+        "startPosition": 4,
+        "stopPosition": 1073744324
+      },
+      "stdoutBytes": 1451392554,
+      "stderrBytes": 0,
+      "returncode": 0,
+      "stdoutSha256": "3b2f02184879a254c46716614754f1e693a5b98b067ee77d5d1a58b5f2815ec0",
+      "elapsedSeconds": 7.113
+    },
+    {
+      "segment": {
+        "file": "binlog.000024",
+        "startPosition": 4,
+        "stopPosition": 1074982131
+      },
+      "stdoutBytes": 1453064761,
+      "stderrBytes": 0,
+      "returncode": 0,
+      "stdoutSha256": "eea154288ac85e1e933f67a5915a08031fd2610fbeec394b2f0996696dd71046",
+      "elapsedSeconds": 7.179
+    },
+    {
+      "segment": {
+        "file": "binlog.000025",
+        "startPosition": 4,
+        "stopPosition": 1074199078
+      },
+      "stdoutBytes": 1452044547,
+      "stderrBytes": 0,
+      "returncode": 0,
+      "stdoutSha256": "7f7af627809ba47716cda529477cc846e377e6a0725db9e1ca488a484b5af9ba",
+      "elapsedSeconds": 7.256
+    },
+    {
+      "segment": {
+        "file": "binlog.000026",
+        "startPosition": 4,
+        "stopPosition": 1074146320
+      },
+      "stdoutBytes": 1455186944,
+      "stderrBytes": 0,
+      "returncode": 0,
+      "stdoutSha256": "523790d1a9929160d524110f688ab7c0542f70809c4f06e78c9f172f6cb8aa07",
+      "elapsedSeconds": 7.235
+    },
+    {
+      "segment": {
+        "file": "binlog.000027",
+        "startPosition": 4,
+        "stopPosition": 1074351169
+      },
+      "stdoutBytes": 1453711222,
+      "stderrBytes": 0,
+      "returncode": 0,
+      "stdoutSha256": "21130504adaa7eca5e1e9526edee6f72c3629c2547f6694faff07d81706144e7",
+      "elapsedSeconds": 7.148
+    },
+    {
+      "segment": {
+        "file": "binlog.000028",
+        "startPosition": 4,
+        "stopPosition": 1074361549
+      },
+      "stdoutBytes": 1452196559,
+      "stderrBytes": 0,
+      "returncode": 0,
+      "stdoutSha256": "c4ce585fea3eec58a5335b2c7c2b2fa7e20f8f091c04bf880603f68dda4199e3",
+      "elapsedSeconds": 6.978
+    },
+    {
+      "segment": {
+        "file": "binlog.000029",
+        "startPosition": 4,
+        "stopPosition": 1074054088
+      },
+      "stdoutBytes": 1451794829,
+      "stderrBytes": 0,
+      "returncode": 0,
+      "stdoutSha256": "6d348bbeafea90b79808c906676ae46505ddca41502633a3c6113902f238ed86",
+      "elapsedSeconds": 7.046
+    },
+    {
+      "segment": {
+        "file": "binlog.000030",
+        "startPosition": 4,
+        "stopPosition": 1075056211
+      },
+      "stdoutBytes": 1453194187,
+      "stderrBytes": 0,
+      "returncode": 0,
+      "stdoutSha256": "25dbd55299eacd7f5ede34bb10c2da69230bfe433b8e040b283773988f974b90",
+      "elapsedSeconds": 7.343
+    },
+    {
+      "segment": {
+        "file": "binlog.000031",
+        "startPosition": 4,
+        "stopPosition": 1074528282
+      },
+      "stdoutBytes": 1452458369,
+      "stderrBytes": 0,
+      "returncode": 0,
+      "stdoutSha256": "9d7f9a77b4121c521de9df0e12d70baaffeca5a88c5ce67ca7aaeba81d81fae9",
+      "elapsedSeconds": 7.165
+    },
+    {
+      "segment": {
+        "file": "binlog.000032",
+        "startPosition": 4,
+        "stopPosition": 919188121
+      },
+      "stdoutBytes": 1255471784,
+      "stderrBytes": 0,
+      "returncode": 0,
+      "stdoutSha256": "2d895471745b96ec1b64739a154ef03c3de6056db14c8568feb2ab58db2768e9",
+      "elapsedSeconds": 6.168
+    }
+  ],
+  "totalSqlBytes": 17211499419,
+  "totalStderrBytes": 0,
+  "actualNativeAllSegmentsExported": true,
+  "allActualExitCodesZero": true,
+  "firstSegmentReproductionExact": true,
+  "originalContainersPreserved": true,
+  "originalContainerCount": 198,
+  "sourceGlobalStatePreserved": true,
+  "readOnlyBusinessData": true,
+  "backupPerformed": false,
+  "restorePerformed": false,
+  "elapsedSeconds": 85.872
+}

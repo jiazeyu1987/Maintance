@@ -1,0 +1,11 @@
+{
+  "observedAt": "2026-11-07T12:21:56.607877+00:00",
+  "httpStatus": 200,
+  "elapsedSeconds": 12.844000000040978,
+  "bytes": 138118,
+  "sha256": "9085bf78ad1ae89043785176feba910f0251d88951e8d2da3ec7bd7c517a1fbd",
+  "itemCount": 142,
+  "refreshing": true,
+  "actualPageRequest": false,
+  "writes": 0
+}

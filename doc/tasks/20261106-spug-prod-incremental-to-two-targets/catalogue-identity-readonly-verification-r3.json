@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "CatalogueIdentityReadonlyUi/v1",
+  "startedAt": "2026-11-07T18:46:32.605Z",
+  "observation": "r3",
+  "authentication": "fresh-real-ui-login",
+  "sourceCommit": "b5c8817de2b4cc5efdad566f0fb65fdabefcb8d8",
+  "realBrowser": true,
+  "actualPageRequest": false,
+  "businessWrites": 0,
+  "authPosts": 1,
+  "blockedRequests": [],
+  "identityVerified": true,
+  "pageErrors": [],
+  "httpObservations": [],
+  "stage": "authenticated-backup-menu",
+  "loginResponseRecorded": true,
+  "loginShape": {
+    "httpStatus": 200,
+    "errorPresent": false,
+    "dataPresent": true,
+    "dataObject": true,
+    "requiredMfa": false,
+    "hasRealIp": false,
+    "tokenReturned": true
+  },
+  "loginNoticeConfirmed": true,
+  "status": "FAIL",
+  "error": "TypeError: Invalid URL",
+  "responseErrors": [],
+  "observedAt": "2026-11-07T18:46:47.557Z"
+}

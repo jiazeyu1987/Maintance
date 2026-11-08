@@ -1,0 +1,8 @@
+{
+  "originalRejectedEventCount": 1742,
+  "uniqueStatements": 871,
+  "candidatePassCount": 871,
+  "candidateFailCount": 0,
+  "originalEventCount": 137101,
+  "originalReadOnlyScanFinishedAt": "2026-11-06T10:49:38.600399+00:00"
+}

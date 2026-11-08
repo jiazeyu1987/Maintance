@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T05:41:44.002521+00:00",
+  "host": "172.30.30.58",
+  "sourceSha256": "b95f6529ac1dc5fc8d285424ae299ae2134c7497c9b042a4c176441a397d605e",
+  "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+  "ownerConfigurationPin": {
+    "bytes": 20498,
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-allocator-7c5f057.json",
+    "sha256": "201215693f935655cf358417bba6914b678a5908fd0a33b0ea0252fa72d85fdc"
+  },
+  "endpoints": {
+    "minio": "http://172.29.235.23:9000/minio/health/ready",
+    "backend": "http://172.29.235.25:48081/actuator/health",
+    "frontend": "http://172.30.30.58:8081/"
+  },
+  "actualProtocolProbes": {},
+  "stoppedServicesProbed": false,
+  "profile": {
+    "schemaVersion": "RegisteredMainFrontendReadiness/v1",
+    "mode": "HOST_NGINX",
+    "containerId": "4f9775e6f0a1d86b2d06c69e40504a91cf44a613de458b76e69fa04805ca5d73",
+    "serviceConfigurationDigest": "00163755ddea19a7b72b4dd3fb13feeaf317e90df25e7b85bfd3a15478f84bc3",
+    "address": "172.30.30.58",
+    "port": 8081,
+    "configurationPin": {
+      "bytes": 3359,
+      "path": "/var/lib/docker/intruoyi-data/20261020-three-server-july-unification/nginx.conf",
+      "sha256": "b3ac648ab447b67320dd883fdef76142df29e4f0a89327a5f4b09c0896754028"
+    }
+  },
+  "actualRuntimeContractVerified": true,
+  "serverWrites": false
+}

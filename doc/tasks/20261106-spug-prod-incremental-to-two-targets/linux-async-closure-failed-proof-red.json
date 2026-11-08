@@ -1,0 +1,18 @@
+{
+  "status": "FAIL",
+  "observedAt": "2026-11-07T21:45:38.882887+00:00",
+  "exitCode": 1,
+  "containerRemoved": true,
+  "inputFilesUnchanged": true,
+  "inputFiles": {
+    "backend/src/main/resources/recovery_control_smallapp.py": "9b17b2c97ce63e96bdf2da6125f4c3c182316c7bf3e76b9ec5ed63ecf4cadf88",
+    "backend/src/main/resources/recovery_control_smallapp_native.py": "084989b616638b2e6b537402e43d3b09a62e944058c6cf21a2bec6eb5d4e0ecb",
+    "backend/src/main/resources/recovery_control_incremental_plan.py": "f25ba6f0ae97ff34580013a688e784500bf398522d512ed65f3d56bb0a0944db",
+    "scripts/tests/test_automatic_incremental_async_closure.py": "f3b2785162abd917127ab883a5e6a05b272b17f01692ae4643d98404e6f6d952"
+  },
+  "outputSha256": "fd9239b9c73ed300075e2c104001b86ff09b521617fb7f3bea751ab4509e7ac2",
+  "tests": [
+    "test_automatic_incremental_async_closure.py::test_failed_async_terminal_proof_cannot_be_replaced_by_state_string"
+  ],
+  "workspaceReadOnly": true
+}

@@ -1,0 +1,81 @@
+{
+  "status": "PASS",
+  "recordedAt": "2026-11-08T03:08:02.314754+00:00",
+  "evidenceBasis": "Actual completed exec session3810 exit0",
+  "testRunner": "pytest",
+  "passed": 74,
+  "failed": 0,
+  "skipped": 0,
+  "durationSeconds": 13.19,
+  "tests": [
+    "test_commit_records_contract.py",
+    "test_catalogue_successor_protection.py",
+    "test_stable_control_query_semantics.py",
+    "test_automatic_closeout_contracts.py",
+    "test_closeout_host_snapshot.py"
+  ],
+  "files": [
+    {
+      "file": "test_commit_records_contract.py",
+      "bytes": 19670,
+      "sha256": "31de655f053e1cf56b537b6abc28c9b8bc320030f4f262984dc359791aac3c35"
+    },
+    {
+      "file": "test_catalogue_successor_protection.py",
+      "bytes": 2279,
+      "sha256": "dc18a8092b1bcd80adbf009271474902d898efc142545429e203758ced80594c"
+    },
+    {
+      "file": "test_stable_control_query_semantics.py",
+      "bytes": 1863,
+      "sha256": "0ec3df3614b71a50e7c4310c1d9d5609a6c14335bacb7f5935648a01ff08d0fd"
+    },
+    {
+      "file": "test_automatic_closeout_contracts.py",
+      "bytes": 8476,
+      "sha256": "36d43df2b6524aba808fed03c51de60bcd9178bb166db91770559bda75f80534"
+    },
+    {
+      "file": "test_closeout_host_snapshot.py",
+      "bytes": 11035,
+      "sha256": "3507f5b0d94d17a8503e7151ba615aadd97b4cfa7a8c2c647083d0393ec4cad7"
+    },
+    {
+      "file": "verify_stable_controls.py",
+      "bytes": 18173,
+      "sha256": "07afed044ba1b515c159b73d99875514f358770fdbd63409ca54a3aff462f466"
+    },
+    {
+      "file": "catalogue_current_verification.py",
+      "bytes": 6808,
+      "sha256": "e4201d8274e602ed1d6e353ec62355629211f08c0c54e99e0dce03fbd9eef7eb"
+    },
+    {
+      "file": "observe_closeout_hosts.py",
+      "bytes": 15341,
+      "sha256": "f2794ecfad316403a28ffc69258e19b9b0765182eb283b38f5ce1e525fc6ffa3"
+    },
+    {
+      "file": "stop_unused_exporters.py",
+      "bytes": 5248,
+      "sha256": "24a52e1c6972746341c55b91d372f4040b8ef1c2847689e27526318a3ec8f713"
+    },
+    {
+      "file": "verify_task_records.py",
+      "bytes": 4840,
+      "sha256": "0de3d5c0e4d0f68d30481beb9f96a87c51cedc18f38bfccad09cd703ad7e22df"
+    },
+    {
+      "file": "automatic_incremental_ui_acceptance.cjs",
+      "bytes": 28342,
+      "sha256": "4e68d7a1cf93561c6ffe3e5ccb1bf44ccaf3db172631b34e1e1b227c20d8419e"
+    }
+  ],
+  "realRemoteAcceptanceSeparate": true,
+  "stableControlReport": "stable-controls-closeout.json",
+  "hostPreservationReports": [
+    "source-closeout-preservation.json",
+    "target-58-closeout-preservation.json",
+    "target-59-closeout-preservation.json"
+  ]
+}

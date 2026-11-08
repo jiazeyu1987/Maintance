@@ -1,0 +1,38 @@
+{
+  "label": "59-before",
+  "realBrowser": true,
+  "realLogin": true,
+  "businessMutations": 0,
+  "observedAt": "2026-11-06T13:51:18.546Z",
+  "loginHttpStatus": 200,
+  "loginCode": 0,
+  "authenticatedUser": {
+    "id": 1,
+    "username": "admin"
+  },
+  "roleCount": 24,
+  "menuCount": 15,
+  "businessPage": {
+    "name": "用户管理",
+    "url": "http://172.30.30.59:38081/system/user",
+    "visibleRows": 20,
+    "headers": [
+      "",
+      "用户编号",
+      "用户名称",
+      "用户昵称",
+      "部门",
+      "角色",
+      "岗位",
+      "手机号码",
+      "状态",
+      "锁定状态",
+      "创建时间",
+      "操作"
+    ],
+    "totalRows": 2117
+  },
+  "url": "http://172.30.30.59:38081/system/user",
+  "version": "2026-11-03-12-15-42",
+  "status": "PASS"
+}

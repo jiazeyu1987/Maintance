@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T03:23:48.441894+00:00",
+  "sourceReadOnly": true,
+  "bytes": 7516496,
+  "sha256": "8b1ed50f07233f89a3acbf3f0772267ac05c3a7b7e1d34c508fb8cb99ed6e0f5",
+  "sourceContainerId": "69e7bec0183a7d510942c06a4c85fd2f1663815b982f26226779b03ef776246c",
+  "sourceExecutable": "/usr/local/bin/mysqlbinlog"
+}

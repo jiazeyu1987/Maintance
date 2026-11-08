@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T07:08:05.147734+00:00",
+  "operationId": "smallapp-e61ca1c4b93f4aa3ab5a70eca399c36d",
+  "state": "FAILED_RETAINED",
+  "actualExitCode": 1,
+  "failureCode": "MAIN_FRONTEND_READINESS_INVALID",
+  "mutationDispatched": false,
+  "replacementIntentExists": false,
+  "activeReservation": false,
+  "noMutationRelease": {
+    "exitPin": {
+      "bytes": 722,
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-e61ca1c4b93f4aa3ab5a70eca399c36d/child-exit.json",
+      "sha256": "9baec4bd248a904c5325a79f59f57fc28b1f779f01234a0e492db98c7687ce7f"
+    },
+    "partialTargetRetained": true,
+    "reason": "PROVEN_NO_MUTATION",
+    "releasedAt": "2026-11-07T07:05:21.653919Z",
+    "reservationPin": {
+      "bytes": 483,
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-e61ca1c4b93f4aa3ab5a70eca399c36d/resource-reservation.json",
+      "sha256": "f3ad0eacc9c41e8b6f0646786bdec1952c416db4d7cc449558bec7c76ffe6a78"
+    },
+    "resultPin": {
+      "bytes": 2139,
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-e61ca1c4b93f4aa3ab5a70eca399c36d/worker-result.json",
+      "sha256": "0284b12143159aaeb25a296869c5b7bc38040a10ebfff9b573d9fe2852d6e6ec"
+    }
+  },
+  "nativeCommands": 6,
+  "allNativeCommandsReadOnly": true,
+  "fileCount": 37,
+  "bytes": 84450
+}

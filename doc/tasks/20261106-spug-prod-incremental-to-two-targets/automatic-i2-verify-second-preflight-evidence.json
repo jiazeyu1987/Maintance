@@ -1,0 +1,69 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-08T02:22:36.908484+00:00",
+  "sourceIdentity": "a36d337b14a907d64a542ea66a8f46bc07fd75a84d6bea9ca1bfff6f4fe44690",
+  "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+  "epochId": "0eab10fa13853ed9b1c526a5608849c3f9f7904a0f03d75d0fd076babf5c63e9",
+  "sourceIdle": true,
+  "workerCount": 0,
+  "health": {
+    "minio": {
+      "url": "http://127.0.0.1:9000/minio/health/ready",
+      "result": {
+        "ready": true,
+        "httpStatus": 200,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "backend": {
+      "url": "http://172.21.0.11:48081/actuator/health",
+      "result": {
+        "ready": true,
+        "httpStatus": 200,
+        "bodySha256": "647a83cca85203d6d4eb07eea84ef6eb91d5c6482eaff2ac8bb65a342b9f2946"
+      }
+    },
+    "frontend": {
+      "url": "http://172.21.0.3:80/",
+      "result": {
+        "ready": true,
+        "httpStatus": 200,
+        "bodySha256": "cdef13d91ba30ec8cae5662ed11e23cc3e98e0686607a962dd2169f153deebec"
+      }
+    }
+  },
+  "capacity": {
+    "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57": 11063336161280,
+    "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations": 1423756668928,
+    "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging": 1423756668928
+  },
+  "plan": {
+    "baseFinishedAt": "2026-11-07T21:05:37.900272Z",
+    "baseFullRef": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "basePointType": "FULL",
+    "chainDepth": 3,
+    "evidenceDigest": "826aff9f0bf18069a286eca9264607b285a88aabe8267c3c6d29ea90c86f16d7",
+    "finishedAt": "2026-11-08T02:15:08.107836Z",
+    "generationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "parentChainRef": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291",
+    "parentPointType": "INCREMENTAL",
+    "planDigest": "6f949af7e24eca6c24d50c3945c16964c0f0b804d77c32765d3c71abe9732037",
+    "pointType": "INCREMENTAL",
+    "reasonCode": null,
+    "schemaVersion": "AutomaticIncrementalPlan/v1",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "state": "READY"
+  },
+  "businessMutationDispatched": false,
+  "controlApiQueriesPerformed": true,
+  "queryAuditWritesMayOccur": true,
+  "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+  "deploymentSelectionPin": {
+    "file": "automatic-i2-deployment-selection.json",
+    "bytes": 1015,
+    "sha256": "4a680483ad926151724520bcc9b9692c8ea4d8a25f8bafcf36810e9b7ac67bbc"
+  },
+  "sourceCommit": "0dc7429d4758a208a5b0c098111fe9702ab63235",
+  "spugCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+  "operationId": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291"
+}

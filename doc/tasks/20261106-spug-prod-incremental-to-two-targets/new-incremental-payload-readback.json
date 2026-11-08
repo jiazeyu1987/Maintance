@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "IncrementalSafeFullReadbackAudit/v1",
+  "status": "PASS",
+  "observedAt": "2026-11-07T00:04:42.067701+00:00",
+  "finishedAt": "2026-11-07T00:04:42.067722+00:00",
+  "operationId": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+  "verificationMode": "NATIVE_FULL_READBACK_EVIDENCE_AUDIT",
+  "payloadContentVerified": true,
+  "payloadFiles": 61,
+  "payloadBytes": 30877952537,
+  "manifestPin": {
+    "bytes": 25363,
+    "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-bd88deb7f4cdde27db6e9e3439e4fef04ce932bf3b84380f12c04f9e7c751d25/.repository/manifest.json",
+    "sha256": "203b0a1998e53f380e4ad0930f71d88f34131a9f15e75c1c3ec6dd1b021abb72"
+  },
+  "pointPin": {
+    "bytes": 25535,
+    "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-bd88deb7f4cdde27db6e9e3439e4fef04ce932bf3b84380f12c04f9e7c751d25/.repository/point.json",
+    "sha256": "ab92f1148146eae84e6828c87245b8dd330b6d534cdeff2a81eeddf26cb96b1f"
+  },
+  "exactTreeVerifiedBeforeAndAfter": true,
+  "metadataPinsVerifiedBeforeAndAfter": true,
+  "independentConnectionId": "8fed25c1-2633-4bd4-92d5-9a4564109257:597224839",
+  "encrypted": true,
+  "signingRequired": true,
+  "privateConnectionCache": true,
+  "connectionClosed": true,
+  "nativeLegacySchemaPreserved": true,
+  "originalRecordsPin": {
+    "bytes": 40704,
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/bd88deb7f4cdde27db6e9e3439e4fef04ce932bf3b84380f12c04f9e7c751d25/8a44717fb7645f330e4297b9bb2ce836f42ec7a55cfa9f84b5d9f20d1a3c5726/readback-originals.json",
+    "sha256": "4186d636a211ea275b58e6e831b53bd7306fb675ad3828f8cc08a367c72dca16"
+  },
+  "retainedOriginalCopiesVerified": 24,
+  "pinnedSafeSourceFileCount": 127,
+  "sourceFileManifestSha256": "7d9f5d1659bca8142cc8f73c697897626ce3d132938dc0130d56ad8b4b11f046",
+  "fullReaderPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-incremental-parent-d487abf/common/repository_native_readback.py",
+    "bytes": 12158,
+    "sha256": "80abab1d31c9e6b6ef922ea7e93e6aa510037cfe6708ea6228bf5a6a13d5f61c"
+  },
+  "verifiedMetadataPins": 10,
+  "extraFullPayloadReadDispatched": false,
+  "serverDurabilityVerified": false
+}

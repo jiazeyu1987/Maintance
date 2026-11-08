@@ -1,0 +1,13 @@
+{
+  "observedAt": "2026-11-07T05:16:44.378Z",
+  "operationId": "smallapp-b4f35606e4854516960050a76473038b",
+  "state": "FAILED",
+  "errorCode": "MAIN_HEALTH_ENDPOINT_INVALID",
+  "spugHistoryId": 369,
+  "queryError": null,
+  "visible": "原操作失败",
+  "steps": "清空已确认覆盖的程序目标\n失败\n开始 2026/11/7 13:16:21　结束 2026/11/7 13:16:22　耗时 0.614秒",
+  "logs": "2026/11/7 13:16:21  清空已确认覆盖的程序目标：开始\n2026/11/7 13:16:22  清空已确认覆盖的程序目标：失败，耗时 0.614秒\n2026/11/7 13:16:22  原始执行结果：FAILED_RETAINED\n错误：尚未满足执行条件（MAIN_HEALTH_ENDPOINT_INVALID）",
+  "problem": "",
+  "writes": 0
+}

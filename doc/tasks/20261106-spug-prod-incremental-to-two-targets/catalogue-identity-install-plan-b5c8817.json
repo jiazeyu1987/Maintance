@@ -1,0 +1,135 @@
+{
+  "schemaVersion": "CatalogueIdentityInstallPlan/v1",
+  "status": "PREPARED",
+  "observedAt": "2026-11-07T18:23:08.528907+00:00",
+  "sourceCommit": "b5c8817de2b4cc5efdad566f0fb65fdabefcb8d8",
+  "buildWorktree": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-b5c8817",
+  "sourcePins": {
+    "executor.py": {
+      "bytes": 77046,
+      "sha256": "d1381bcb535d5ebc6104142aa323371ebe1bd40bb2f8b22f1b18ffcd69df315f"
+    },
+    "package_catalog.py": {
+      "bytes": 23582,
+      "sha256": "fce36688740cd256b68e8f49a1c6c613ac821695c933e4d301227b8fa4b4aacd"
+    },
+    "package_presence.py": {
+      "bytes": 7173,
+      "sha256": "aac0affc43e06d8565f0ca51241b0fe1f03044f89d7e1cd3d1b069bf128d4733"
+    },
+    "application_registry.py": {
+      "bytes": 6490,
+      "sha256": "321aac4287bb520b20ae0afdb20e36e70065121f8b2caea74275e91093a51045"
+    },
+    "release_http.py": {
+      "bytes": 3870,
+      "sha256": "ff387f4779fd57aa4509d4334608d9394504288c7cc92556d1cf6f154e09e213"
+    }
+  },
+  "originalFiles": {
+    "executor/executor.py": {
+      "path": "C:\\SpugHandoff\\release\\source\\ops\\spug\\release-center\\executor.py",
+      "bytes": 75160,
+      "sha256": "2b99199da570335f18a94ad0fffe9b44f046bf920d160b134410a4472bf47946"
+    },
+    "executor/package_catalog.py": {
+      "path": "C:\\SpugHandoff\\release\\source\\ops\\spug\\release-center\\package_catalog.py",
+      "bytes": 23205,
+      "sha256": "335b06af178da3e64456ed1c96843387b42ed7031dc56f0c02864aeb515fc7a7"
+    },
+    "executor/package_presence.py": {
+      "path": "C:\\SpugHandoff\\release\\source\\ops\\spug\\release-center\\package_presence.py",
+      "bytes": 7050,
+      "sha256": "a4cc271309ece2b681f9a239cc8a43e0df658c09a17d862a50b02fba792da7ec"
+    },
+    "bridge/application_registry.py": {
+      "path": "C:\\Spug\\runtime\\ops\\spug\\release-center\\application_registry.py",
+      "bytes": 5343,
+      "sha256": "4af6e91bbc33bcae10d48959a061ab04c5174294e8247e5de8220ec81ca13532"
+    },
+    "bridge/release_http.py": null,
+    "bridge/spug_bridge.py": {
+      "path": "C:\\Spug\\runtime\\ops\\spug\\release-center\\spug_bridge.py",
+      "bytes": 3559,
+      "sha256": "965107e79bd538d6092a032bcce5d8fdcdcf3d1b9491bdaea79252cd8b9d0a2b"
+    }
+  },
+  "backupRoot": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\catalogue-before-b5c8817",
+  "history": {
+    "path": "C:\\SpugHandoff\\release\\state\\state.sqlite3",
+    "payloadSha256": "bd65b05d8c1cd26f8c3c33de7b45708f5cf074cd4006c9ad4b915cd1d2c42284",
+    "jobsSha256": "02663df21cf0943090df2788bf5a8771238a2041cce69192d37a5130d878cf12",
+    "jobCount": 309,
+    "startupChangedJobIds": [],
+    "activeJobIds": []
+  },
+  "historyBackupPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\catalogue-before-b5c8817\\state.sqlite3",
+    "bytes": 162693120,
+    "sha256": "ba6b9a454083a902329f9ab7544d9f7a1e17790996fd178b0ff13ba7d30b0e83"
+  },
+  "executorConfigPin": {
+    "path": "C:\\SpugHandoff\\release\\executor.private.json",
+    "bytes": 14846,
+    "sha256": "e03e70f9e386efa4f4a35f38cb3747f577e37152169e38a4d5562149e6ee623e"
+  },
+  "launchRecordPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\catalogue-executor-process-launch.private.json",
+    "bytes": 6123,
+    "sha256": "1362ca015810ba3f6d37af71f5a635ceaeeb850533b50cc8fc6928a452e4000c"
+  },
+  "previousExecutorPid": 35788,
+  "container": {
+    "bridge": {
+      "pid": 2124,
+      "argv": [
+        "python3",
+        "-B",
+        "/opt/intruoyi-spug/release-center/spug_bridge.py"
+      ],
+      "parentPid": 1,
+      "startTime": "71260662",
+      "configPath": "/var/lib/intruoyi-spug/release-center-bridge.private.json"
+    },
+    "smallappEntryPid": 124978,
+    "configPin": {
+      "path": "/var/lib/intruoyi-spug/release-center-bridge.private.json",
+      "bytes": 792,
+      "sha256": "2e7ead665bfdeafb439c5b5b1bbead070451e759db3f2bfb6a4732c7f9116f41"
+    },
+    "supervisorPin": {
+      "path": "/etc/supervisord.conf",
+      "bytes": 1685,
+      "sha256": "5a39c7e4f6556614bc0d370ddc56cee3cc78287731337b751e04762712bf63ad"
+    },
+    "nginxPin": {
+      "path": "/etc/nginx/nginx.conf",
+      "bytes": 2482,
+      "sha256": "5a00ef4da4f9620ce97f8a396fb0aae7e22dd5e973aafd9cca6dc989502e93cb"
+    },
+    "locationsPin": {
+      "path": "/opt/intruoyi-spug/release-center/locations.conf",
+      "bytes": 690,
+      "sha256": "0fef93a3855b5b2c09277be42118fe859934888a677b216fc8c6da7a5a247e97"
+    },
+    "unrelated18081": [
+      {
+        "id": "e602ecd89345c67eccfe45e04a509b1c3e80bffa0eabcb3862648f70d71eaa26",
+        "state": "running",
+        "startedAt": "2026-10-30T10:31:57.574912709Z"
+      }
+    ]
+  },
+  "protected": {
+    "smallappEntryPid": 124978,
+    "source57ServicePid": 25086,
+    "unrelated18081": [
+      {
+        "id": "e602ecd89345c67eccfe45e04a509b1c3e80bffa0eabcb3862648f70d71eaa26",
+        "state": "running",
+        "startedAt": "2026-10-30T10:31:57.574912709Z"
+      }
+    ]
+  },
+  "runtimeWrites": 0
+}

@@ -1,0 +1,23 @@
+{
+  "observedAt": "2026-11-06T12:56:31.270299+00:00",
+  "command": [
+    "C:\\Users\\D01021\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "-X",
+    "utf8",
+    "-B",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--tb=short",
+    "scripts/tests/test_smallapp_binlog_ddl.py",
+    "scripts/tests/test_backup_variants.py",
+    "scripts/tests/test_capture_request_binding.py",
+    "scripts/tests/test_capture_archive_guard.py",
+    "scripts/tests/test_capture_redis_auth.py"
+  ],
+  "exitCode": 1,
+  "outputSha256": "03794d994a68cba93a6aa46ff7eedac631565557774b2ef14c00ed67fcae5f7d",
+  "status": "FAIL"
+}

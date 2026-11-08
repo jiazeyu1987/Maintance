@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "CatalogueReadonlyAttempt/v1",
+  "startedAt": "2026-11-07T18:35:40.501Z",
+  "sourceCommit": "b5c8817de2b4cc5efdad566f0fb65fdabefcb8d8",
+  "installationPin": {
+    "file": "catalogue-identity-installation.json",
+    "bytes": 4364,
+    "sha256": "b23e3237ac448a9f669e79e8c4c63f94a6d40bf2f8e6cafd0db80f4d19adbc1d"
+  }
+}

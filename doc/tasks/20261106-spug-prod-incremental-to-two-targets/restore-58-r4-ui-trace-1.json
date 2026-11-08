@@ -1,0 +1,28 @@
+[
+  {
+    "observedAt": "2026-11-07T08:06:30.482Z",
+    "stage": "browser-launch"
+  },
+  {
+    "observedAt": "2026-11-07T08:06:33.238Z",
+    "stage": "browser-context"
+  },
+  {
+    "observedAt": "2026-11-07T08:06:33.250Z",
+    "stage": "browser-page"
+  },
+  {
+    "observedAt": "2026-11-07T08:06:39.589Z",
+    "stage": "page-created"
+  },
+  {
+    "observedAt": "2026-11-07T08:06:39.600Z",
+    "stage": "login-navigation"
+  },
+  {
+    "observedAt": "2026-11-07T08:06:40.684Z",
+    "stage": "response",
+    "path": "/",
+    "httpStatus": 200
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "observedAt": "2026-11-07T00:43:32.751368+00:00",
+  "host": "172.30.30.57",
+  "http": {
+    "backend": {
+      "httpStatus": 200,
+      "status": "UP"
+    },
+    "frontend": {
+      "httpStatus": 200
+    }
+  },
+  "fstabSha256": "69fb0d75be5ff1c785d0680046757b5c536b9d29d12d1713ca752ee58ebc72b7",
+  "containerCount": 198,
+  "activeReservation": false
+}

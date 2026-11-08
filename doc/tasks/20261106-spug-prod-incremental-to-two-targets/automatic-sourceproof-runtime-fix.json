@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "AutomaticSourceProofRuntimeFix/v1",
+  "status": "LOCAL_AND_READONLY_IMPORT_PASS",
+  "observedAt": "2026-11-07T21:38:44.449717+00:00",
+  "operationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+  "scope": "FULL_OLD_0D_INSTALLED_RUNTIME",
+  "sourceProofExecuted": false,
+  "serverMutationPerformed": false,
+  "sourcePins": {
+    "verify_automatic_source_restoration.py": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/verify_automatic_source_restoration.py",
+      "bytes": 18327,
+      "sha256": "1fe47d37c315045d454c861e4b84d6e99de16c53db65abfad8797c51e1fce78a"
+    },
+    "test_automatic_source_restoration.py": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_source_restoration.py",
+      "bytes": 4343,
+      "sha256": "d4849cc77c1ebec6bcca3dc7f5f693c649c51c1017be8e67e6a1d0c70f90d421"
+    },
+    "test_sourceproof_runtime.py": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_sourceproof_runtime.py",
+      "bytes": 3693,
+      "sha256": "65a32ea8789edcb3476bee192bea1258152a1694c23a96042cf14de856ee0bd1"
+    },
+    "verify_sourceproof_runtime_imports.py": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/verify_sourceproof_runtime_imports.py",
+      "bytes": 2311,
+      "sha256": "44747ce4bc200340ffa57685745e503373b29885ae6ff1e793a432c0da697a39"
+    }
+  },
+  "originalFailurePin": {
+    "path": "C:/Spug/runtime/private/prod-incremental-to-two-targets-20261106/172.30.30.57-error-39fb0bc4f054.private.log",
+    "bytes": 620,
+    "sha256": "39fb0bc4f05487414c88b710e6cd44c2f4ea680feda9d191d0d36e2eb55e4acf"
+  },
+  "originalFullAuditPin": {
+    "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-full-audit.json",
+    "bytes": 7047,
+    "sha256": "dab1c5de0979f0bd0ef503eb51005c0724b192f444b9f5ff33290474a821a12e"
+  },
+  "readonlyImportsPin": {
+    "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-sourceproof-runtime-imports-complete.json",
+    "bytes": 13375,
+    "sha256": "e2a72553f68e3ac6d1b41d7202520cee3523958ccaa27e7387356398e3cf6ebc"
+  },
+  "testPins": {
+    "sourceproof-runtime-red.txt": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/sourceproof-runtime-red.txt",
+      "bytes": 6271,
+      "sha256": "a1b78fb77e538173cae55c24188898efc8f0b315a2f538b9def153d96eb94b94"
+    },
+    "sourceproof-runtime-green.txt": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/sourceproof-runtime-green.txt",
+      "bytes": 1638,
+      "sha256": "c7ec6f9a7ae0ffda3d5d9cd6af7a6add118711423d31b3487f7ced9af6bd988f"
+    },
+    "sourceproof-runtime-regression.txt": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/sourceproof-runtime-regression.txt",
+      "bytes": 99,
+      "sha256": "0212113f265e9e7d6b424f37d496976bc640bfa8ca5b2f3968b40e4000df3d03"
+    }
+  },
+  "tests": {
+    "redFailed": 11,
+    "intermediateFailed": 2,
+    "intermediatePassed": 25,
+    "regressionPassed": 60,
+    "skipped": 0
+  },
+  "intermediateFailure": "Concurrent explicit stage contract now rejects relabelled legacy v1 FULL as I1/I2; new rejection tests reflect real contract. Mixed-generation support is a separate pending task.",
+  "transportCompileVerified": true
+}

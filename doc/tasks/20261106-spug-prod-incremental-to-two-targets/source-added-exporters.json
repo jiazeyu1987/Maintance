@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T20:00:05.784639+00:00",
+  "snapshotObservedAt": "2026-11-06T19:51:55.589647+00:00",
+  "originalContainerCount": 195,
+  "addedContainerCount": 3,
+  "registeredContainerId": "69e7bec0183a7d510942c06a4c85fd2f1663815b982f26226779b03ef776246c",
+  "containers": [
+    {
+      "containerId": "a7aa973f623ad07adb82c25f9b5f352db74a00ea2abf22a8fbd0b4db4cdfeb2f",
+      "name": "spug-intruoyi57-binlog-tmpfs-20261107-v1",
+      "generation": 1,
+      "registered": false,
+      "definitionSha256": "5df052edc9fd04f9e18fdb77d923278ef537f7b77bd37f7373f33cb745b8c6d0",
+      "runtimeSha256": "fe3a12384b972785bd7ef32c942efe16680c87871de633e8e41cf8d99f26eb85",
+      "retainedForFailureEvidence": true
+    },
+    {
+      "containerId": "43ee735bfd1f0d864819a2cd03e8f8ce54bd2b9a8430cc42671a4981f3d6a41a",
+      "name": "spug-intruoyi57-binlog-tmpfs-20261107-v2",
+      "generation": 2,
+      "registered": false,
+      "definitionSha256": "429d80fd2aeb345442f7d4cb8169e75625e34c0504e39de68e9489d4f694a47c",
+      "runtimeSha256": "51972a93a65baf4a4a9dbf88a57d06ab6a63e48d77558746c3b0b582b539458e",
+      "retainedForFailureEvidence": true
+    },
+    {
+      "containerId": "69e7bec0183a7d510942c06a4c85fd2f1663815b982f26226779b03ef776246c",
+      "name": "spug-intruoyi57-binlog-tmpfs-20261107-v3",
+      "generation": 3,
+      "registered": true,
+      "definitionSha256": "3704cc6c11a97d7c342486743f84e1a23600780dbb1daf54ab3db6e218b9dcf1",
+      "runtimeSha256": "2c2b3029ce442e8f34924bb737478b16492cf1ba5f9bb9af85a7d946b6de985f",
+      "retainedForFailureEvidence": false
+    }
+  ],
+  "noServerActionPerformed": true
+}

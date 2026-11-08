@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T12:15:25.264453+00:00",
+  "host": "172.30.30.58",
+  "phase": "after-restore",
+  "originalContainerCount": 459,
+  "allOriginalDefinitionsAndImagesPreserved": true,
+  "otherBusinessRuntimePreserved": true,
+  "otherBusinessContainerCount": 454,
+  "allowedRuntimeChangeContainerIds": [
+    "028bb0541d3216c283c5f1822338462545fa7cd63fad55c462ae20a01526e225",
+    "4f9775e6f0a1d86b2d06c69e40504a91cf44a613de458b76e69fa04805ca5d73",
+    "6f70e67078d086d7f08c1ae75a80bb0feab28c5a1f92c91d655ac258f34988eb",
+    "98216faac1ae2fc1508bd4076962bf4cfcb3a47f2f1bd5d5e42c7ba819e83115",
+    "b4592b704b979f1b94ba03836985491a8f7c699d3094297bfbe3696939eedd79"
+  ],
+  "fstabPreserved": true,
+  "protectedMountsPreserved": true,
+  "backendHealth": "UP",
+  "frontendHttp": 200,
+  "activeReservation": false
+}

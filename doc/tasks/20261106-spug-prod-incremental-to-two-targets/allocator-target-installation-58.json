@@ -1,0 +1,53 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T03:58:11.902311+00:00",
+  "sourceCommit": "9a65b5a6767cbb64d3f9668aa47bcc57229f0818",
+  "host": "172.30.30.58",
+  "service": "spug-main-restore-58-20261104-v3.service",
+  "engine": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/engine-allocator-9a65b5a",
+  "fileCount": 127,
+  "packageSha256": "3a16ce1991684a0334c30de390e2314226e56ddb90c2eeb1f6faeb4b89de9485",
+  "fileManifestSha256": "1be85b2b10602568d322ab8ef54c7a9488cdcecd4c0f041e25d9cb19e6c7b9b6",
+  "ownerConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-allocator-9a65b5a.json",
+    "bytes": 20498,
+    "sha256": "5470480a1292ba197b2ab30e35842a2194fa70b0047983f2c6b421ea661967df"
+  },
+  "controlConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-58-allocator-9a65b5a.json",
+    "bytes": 2441,
+    "sha256": "63f706dd8841f110512889f8700fe743dad078bc4829c916c81015cf31669fae"
+  },
+  "previousReceiptPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/allocator-9a65b5a-previous-target-installation.json",
+    "bytes": 1576,
+    "sha256": "6f8811cab61624a6dc0a156b420c913be5dac6e3bbfba0888465e844943ccd9a"
+  },
+  "currentReceiptPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/target-installation.json",
+    "bytes": 1727,
+    "sha256": "f759c8bd387aa84a8084741c854e2e368f9872abf59d444e8625b7afdeb8593d"
+  },
+  "dropinPin": {
+    "path": "/etc/systemd/system/spug-main-restore-58-20261104-v3.service.d/zz-allocator-9a65b5a.conf",
+    "bytes": 845,
+    "sha256": "32f1f2ea6a44292fafc3d206be4179b7e704b1e4ef986bd577fb32377595c41a"
+  },
+  "oldControlPid": 4203,
+  "controlPid": 13934,
+  "liveMaxOpenFiles": 65536,
+  "originalContainerCount": 459,
+  "allBusinessDefinitionsAndRuntimeUnchanged": true,
+  "fstabAndProtectedMountsUnchanged": true,
+  "targetAndSourceConfigurationUnchanged": true,
+  "failedOriginalFilesPreserved": 2842,
+  "failedOriginalBytesRead": 47497389272,
+  "retainedReservationUnchanged": true,
+  "failureCustodyPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/failure-custody-allocator-9a65b5a.json",
+    "bytes": 1423760,
+    "sha256": "e0d337c35979e46724a2eb9bfef4cec597a40b876753986cafeee48e86234d98"
+  },
+  "previousGenerationsRetained": true,
+  "restoreDispatched": false
+}

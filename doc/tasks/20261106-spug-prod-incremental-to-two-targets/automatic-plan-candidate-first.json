@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "AutomaticIncrementalPlan/v1",
+  "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+  "state": "BLOCKED",
+  "reasonCode": "INCREMENTAL_CAPTURE_BINDING_INVALID",
+  "parentChainRef": null,
+  "baseFullRef": null,
+  "generationId": null,
+  "chainDepth": 0,
+  "pointType": null,
+  "finishedAt": null,
+  "baseFinishedAt": null,
+  "basePointType": null,
+  "parentPointType": null,
+  "evidenceDigest": "56a13fbc68c59985baa6606c5a321df2a43f6b5d108f40894fe67d708a583676",
+  "planDigest": "3f1826f715d29e8850d4f313815c73a06168606f1ad69c7d9f95dd9d39845ead"
+}

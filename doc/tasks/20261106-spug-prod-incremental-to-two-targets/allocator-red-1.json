@@ -1,0 +1,11 @@
+{
+  "observedAt": "2026-11-07T03:22:25.985817+00:00",
+  "phase": "red",
+  "actualExitCode": 2,
+  "expectedResultObserved": true,
+  "containerRemoved": true,
+  "tests": [
+    "scripts/tests/test_frozen_auto_increment.py"
+  ],
+  "outputSha256": "cc4f8fcff9fdaea2e8d30efffa41e24d2fd14a77c086cbe2f226000da941b8d4"
+}

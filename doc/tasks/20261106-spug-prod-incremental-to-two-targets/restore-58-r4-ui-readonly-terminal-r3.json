@@ -1,0 +1,19 @@
+{
+  "startedAt": "2026-11-07T12:21:57.765Z",
+  "operationId": "smallapp-4cd6779eaf7d405889a07feb47d0a66b",
+  "realBrowser": true,
+  "businessWrites": 0,
+  "phase": "terminal",
+  "observation": "r3",
+  "httpObservations": [
+    {
+      "endpoint": "/release-center/api/applications/intruoyi/package-catalog",
+      "httpStatus": 200,
+      "observedAt": "2026-11-07T12:22:22.682Z"
+    }
+  ],
+  "pageErrors": [],
+  "status": "FAIL",
+  "error": "TimeoutError: page.waitForFunction: Timeout 120000ms exceeded.",
+  "observedAt": "2026-11-07T12:24:08.568Z"
+}

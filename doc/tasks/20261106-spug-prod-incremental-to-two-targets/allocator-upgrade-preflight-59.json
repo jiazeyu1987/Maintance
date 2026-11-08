@@ -1,0 +1,55 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T03:51:21.815986+00:00",
+  "host": "172.30.30.59",
+  "oldEngine": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/engine-retry-f819fbed",
+  "oldFileCount": 122,
+  "oldManifestSha256": "77ffc95eac32ec0f3216b7044f987cf4a6ca6b19fa8e0d1f888131664b01350a",
+  "receiptPin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/target-installation.json",
+    "bytes": 1482,
+    "sha256": "856556644073e5c6f325dd8a62b66bc6965d47ce51388d89cdd8ddc7c0c6264b"
+  },
+  "ownerConfigurationPin": {
+    "bytes": 23024,
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-retry-f819fbed.json",
+    "sha256": "867679481e689a9a2161a1b19543e45e4868a046480e9cd155c3b5e5af48d192"
+  },
+  "controlConfigurationPin": {
+    "bytes": 2344,
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-33659-retry-f819fbed.json",
+    "sha256": "f2aa15354d2057e4a36d043c6cc9c02ac9da50a0ef07dd1a3e5d696cd8e6f2c9"
+  },
+  "activePointerPin": null,
+  "failurePins": [],
+  "serviceStates": {
+    "mysql": {
+      "id": "4376cb8d12c95ec485589b2fc8edabed3d9c631fcd52f715c4b2800f1b4cde8e",
+      "running": true,
+      "pid": 8686
+    },
+    "minio": {
+      "id": "eb40cfe31e8046cf281c33d1a9b7cc50a2ecd30cb2b5a51d4248dce5f20b38d7",
+      "running": true,
+      "pid": 3270
+    },
+    "redis": {
+      "id": "99d136c09a948643f5f4bb7ff6fb1f0402cd856dc5aeebe91e5baf289dbd3e48",
+      "running": true,
+      "pid": 8875
+    },
+    "backend": {
+      "id": "285244884c5e056ce1e37d073a9356c9dd34e9d97dc8ea3af07183b9929c79d8",
+      "running": true,
+      "pid": 23876
+    },
+    "frontend": {
+      "id": "82b9982178e4ea002b25f8cce70b621e29f4af452df7be42d2efc699191ca193",
+      "running": true,
+      "pid": 779
+    }
+  },
+  "liveMaxOpenFiles": 65536,
+  "retainedFailureObserved": false,
+  "serverWrites": false
+}

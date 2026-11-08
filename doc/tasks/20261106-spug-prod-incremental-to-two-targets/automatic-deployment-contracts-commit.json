@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T17:17:53.908369+00:00",
+  "previousCommit": "3019c2ebe3e7db0cd607f1a170e5cfbe0879580d",
+  "implementationCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+  "files": [
+    "backend/src/main/resources/recovery_control_incremental_plan.py",
+    "ops/recovery/recovery_replace.py",
+    "scripts/tests/test_automatic_incremental_plan.py",
+    "scripts/tests/test_backup_epoch.py",
+    "ops/spug/smallapp-ui/app.js",
+    "ops/spug/smallapp_ui_safety.test.cjs",
+    "docs/experience-index.md",
+    "docs/release-agent-checklist.md"
+  ],
+  "testedInputSha256": {
+    "backend/src/main/resources/recovery_control_incremental_plan.py": "f25ba6f0ae97ff34580013a688e784500bf398522d512ed65f3d56bb0a0944db",
+    "ops/recovery/recovery_replace.py": "e0955cbcbe8035404af712e45b3b38005bdc2b963c437817eb0731118b258e96",
+    "scripts/tests/test_automatic_incremental_plan.py": "6b36b2597794577d50f466078a6287bd0839e2fdcbcb302eb0f457cf17ef4361",
+    "scripts/tests/test_backup_epoch.py": "4ddccb4d6430b1eb7bd831220b28f7ab98cc2f1563f450d4d238c82be3bb20d3",
+    "ops/spug/smallapp-ui/app.js": "c09a03ca716c596a9ba4d27dd4f1f51d531803ab205d6ba8e4e1c5a63f06ff0f",
+    "ops/spug/smallapp_ui_safety.test.cjs": "96c53e17f74a02979a448848e8c86b81f2315de159f4376f30a4f0ba2bfc0451",
+    "docs/experience-index.md": "1fa5bfc02354149510543d9508e653e892bd949863068e000d77bd3db52c39c6",
+    "docs/release-agent-checklist.md": "f7d1194c08425b5b5f3f2f20de7250acbed47636a5b068de7fe6f103331345f5"
+  },
+  "privateValuesChecked": 74,
+  "taskAcceptanceComplete": false
+}

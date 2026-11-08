@@ -1,0 +1,63 @@
+{
+  "host": "172.30.30.57",
+  "observedAt": "2026-11-08T03:04:33.578238+00:00",
+  "finishedAt": "2026-11-08T03:04:34.064550+00:00",
+  "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+  "packageFilesMatch": true,
+  "packageFileCount": 130,
+  "fstabSha256": "69fb0d75be5ff1c785d0680046757b5c536b9d29d12d1713ca752ee58ebc72b7",
+  "http": {
+    "backend": {
+      "httpStatus": 200,
+      "status": "UP"
+    },
+    "frontend": {
+      "httpStatus": 200
+    },
+    "minio": {
+      "ready": true,
+      "httpStatus": 200,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "installationCommit": "0dc7429d4758a208a5b0c098111fe9702ab63235",
+  "currentSourceCommit": "0dc7429d4758a208a5b0c098111fe9702ab63235",
+  "controllerGenerations": [
+    {
+      "service": "spug-intruoyi-source-57-20261105.service",
+      "pid": 20229,
+      "sourceCommit": "0dc7429d4758a208a5b0c098111fe9702ab63235",
+      "fileManifestSha256": "b0c66653510b5c50599c4ab411289a19c27bd32d6892c7047fc3004ce5f8108f",
+      "fileCount": 130
+    },
+    {
+      "service": "spug-main-restore-57-20261105-v2.service",
+      "pid": 20273,
+      "sourceCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+      "fileManifestSha256": "7f4dcc1dd4c292871b77e5c168e1d948d9c1f8925abc0902f9b54d17fae25b3b",
+      "fileCount": 130
+    }
+  ],
+  "currentInstallationSelectionPin": {
+    "file": "automatic-current-installations.json",
+    "bytes": 1180,
+    "sha256": "bb2eb68b4b30f3d43385370364ea32cc378bc7f93b395d6d93fd5915c7bc8955"
+  },
+  "backupOperationId": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291",
+  "strictReadOnlyCollection": true,
+  "controlApiCalled": false,
+  "status": "OBSERVED",
+  "containerCount": 198,
+  "activeReservation": false,
+  "privateBaselineSha256": "5d4a4e2e980dc2ab2207a8d572c23fc684ce77c0e252fa0b194beb2e80a6fb92",
+  "processes": [
+    {
+      "pid": 20229,
+      "commandSha256": "2e787262113bd4af04024598f2b117d1bd0bd4720186a40ecc34dea12abf9de9"
+    },
+    {
+      "pid": 20273,
+      "commandSha256": "659b8dcfc54bf37ef183f127d2efac85ffb583124da367c57ac57245cb70dae1"
+    }
+  ]
+}

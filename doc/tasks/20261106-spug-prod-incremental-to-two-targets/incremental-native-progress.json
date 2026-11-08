@@ -1,0 +1,257 @@
+{
+  "observedAt": "2026-11-06T14:04:23.182405+00:00",
+  "operationId": "smallapp-a690233d967d4965bf5f861dc1126961",
+  "directories": {
+    "ledger/smallapp-a690233d967d4965bf5f861dc1126961": {
+      "count": 10,
+      "latest": [
+        {
+          "name": "queries",
+          "bytes": 28672,
+          "mtime": 1793973856.3913264,
+          "isDirectory": true
+        },
+        {
+          "name": "worker-terminal.json",
+          "bytes": 647,
+          "mtime": 1793972141.026151,
+          "isDirectory": false
+        },
+        {
+          "name": "completion.json",
+          "bytes": 3414,
+          "mtime": 1793972140.9971504,
+          "isDirectory": false
+        },
+        {
+          "name": "execute",
+          "bytes": 4096,
+          "mtime": 1793972140.9961505,
+          "isDirectory": true
+        },
+        {
+          "name": "worker-process.json",
+          "bytes": 680,
+          "mtime": 1793972129.2089224,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-stderr",
+          "bytes": 0,
+          "mtime": 1793972129.2079225,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-stdout",
+          "bytes": 0,
+          "mtime": 1793972129.2079225,
+          "isDirectory": false
+        },
+        {
+          "name": "intent.json",
+          "bytes": 1437,
+          "mtime": 1793972127.8038952,
+          "isDirectory": false
+        },
+        {
+          "name": "selection.json",
+          "bytes": 1238,
+          "mtime": 1793972127.8018951,
+          "isDirectory": false
+        },
+        {
+          "name": "request.json",
+          "bytes": 284,
+          "mtime": 1793972127.7998953,
+          "isDirectory": false
+        }
+      ]
+    },
+    "capture-staging/smallapp-a690233d967d4965bf5f861dc1126961": {
+      "count": 13,
+      "latest": [
+        {
+          "name": "terminal-result.json",
+          "bytes": 1621,
+          "mtime": 1793973854.1312828,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-stderr.log",
+          "bytes": 28,
+          "mtime": 1793973854.093282,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-failure.json",
+          "bytes": 104,
+          "mtime": 1793973854.0882819,
+          "isDirectory": false
+        },
+        {
+          "name": "recovery-materials",
+          "bytes": 4096,
+          "mtime": 1793973853.2322655,
+          "isDirectory": true
+        },
+        {
+          "name": "payload",
+          "bytes": 4096,
+          "mtime": 1793973853.2282653,
+          "isDirectory": true
+        },
+        {
+          "name": "original-configs",
+          "bytes": 4096,
+          "mtime": 1793973853.2272654,
+          "isDirectory": true
+        },
+        {
+          "name": "event-0001.json",
+          "bytes": 78,
+          "mtime": 1793973852.4132495,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-started.json",
+          "bytes": 53,
+          "mtime": 1793973848.2901697,
+          "isDirectory": false
+        },
+        {
+          "name": "job-request.json",
+          "bytes": 285,
+          "mtime": 1793973848.2851696,
+          "isDirectory": false
+        },
+        {
+          "name": "job-configuration.json",
+          "bytes": 5959,
+          "mtime": 1793973848.2801695,
+          "isDirectory": false
+        },
+        {
+          "name": "job-started.json",
+          "bytes": 53,
+          "mtime": 1793973848.094166,
+          "isDirectory": false
+        },
+        {
+          "name": "job-stderr.log",
+          "bytes": 0,
+          "mtime": 1793973848.0931659,
+          "isDirectory": false
+        }
+      ]
+    },
+    "repository-operations/b6a643280d94ea4e82a7491bc4a7b3830204b12b9b2a1f1117e4d53e48e7c890": {
+      "count": 23,
+      "latest": [
+        {
+          "name": "result.json",
+          "bytes": 1870,
+          "mtime": 1793973854.2362847,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-source-capture-end.json",
+          "bytes": 110,
+          "mtime": 1793973854.2202845,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-1-terminal.json",
+          "bytes": 218,
+          "mtime": 1793973854.2162845,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-1-output.json",
+          "bytes": 1621,
+          "mtime": 1793973854.1872838,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-1.stderr.log",
+          "bytes": 0,
+          "mtime": 1793973853.3962686,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-1.stdout.log",
+          "bytes": 0,
+          "mtime": 1793973853.3962686,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-1-process.json",
+          "bytes": 112,
+          "mtime": 1793973853.3962686,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-terminal.json",
+          "bytes": 218,
+          "mtime": 1793973853.1412637,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-output.json",
+          "bytes": 1288,
+          "mtime": 1793973853.0992627,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-process.json",
+          "bytes": 112,
+          "mtime": 1793973847.8021603,
+          "isDirectory": false
+        },
+        {
+          "name": "capture.stderr.log",
+          "bytes": 0,
+          "mtime": 1793973847.7971601,
+          "isDirectory": false
+        },
+        {
+          "name": "capture.stdout.log",
+          "bytes": 0,
+          "mtime": 1793973847.7971601,
+          "isDirectory": false
+        }
+      ]
+    }
+  },
+  "workers": [],
+  "nativeDeadlineSecondsRemaining": 63067.8,
+  "nativeReadbackRecords": [],
+  "staging": {
+    "payload": {
+      "files": 1,
+      "bytes": 50,
+      "latestMtime": 1793973853.2282653
+    },
+    "semantic-capture": {
+      "files": 0,
+      "bytes": 0,
+      "latestMtime": 0
+    }
+  },
+  "dataObservationScratch": {
+    "scratch-before": null,
+    "scratch-after": null
+  },
+  "knownCaptureFiles": {
+    "database.sql.gz": null,
+    "011-source-data.json": null,
+    "012-source-data-after.json": null,
+    "capture-content-point.json": null
+  },
+  "payloadTopLevel": [
+    {
+      "name": "database-log-mode.json",
+      "bytes": 50,
+      "isDirectory": false
+    }
+  ]
+}

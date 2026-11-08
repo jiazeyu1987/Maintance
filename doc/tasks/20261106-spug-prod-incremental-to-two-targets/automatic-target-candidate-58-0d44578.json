@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "TaskAutomaticTargetCandidate/v1",
+  "status": "PLAN_ONLY_NOT_DEPLOYED",
+  "host": "172.30.30.58",
+  "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+  "service": "spug-main-restore-58-20261104-v3.service",
+  "sourceCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+  "engine": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/engine-automatic-0d44578",
+  "oldControlPid": 2043,
+  "packageSha256": "3d3d8a608e5a809b34cc6b5f48f5091b066bdcc5007d084459f3e333cad7010b",
+  "fileManifestSha256": "7f4dcc1dd4c292871b77e5c168e1d948d9c1f8925abc0902f9b54d17fae25b3b",
+  "fileCount": 130,
+  "oldOwnerPin": {
+    "bytes": 21060,
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-packaged-frontend-0c5828a.json",
+    "sha256": "4b5a5c6f10e32a71da68190906774387e438e78104f543440b413bbc2fab2363"
+  },
+  "oldControlPin": {
+    "bytes": 2489,
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-58-packaged-frontend-0c5828a.json",
+    "sha256": "501986f203c9855ccc62b3d4563e57e0e365182486c864ebefa38c01f936a242"
+  },
+  "oldActiveReceiptPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/target-installation.json",
+    "bytes": 1751,
+    "sha256": "2b3e275d1179d1c137bfbea1f46230ca91aeb68bfa37d794b2f5f9f8292d8772"
+  },
+  "previousReceiptPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/automatic-0d44578-previous-target-installation.json",
+    "bytes": 1751,
+    "sha256": "2b3e275d1179d1c137bfbea1f46230ca91aeb68bfa37d794b2f5f9f8292d8772"
+  },
+  "proposedCurrentReceiptPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/target-installation.json",
+    "bytes": 1727,
+    "sha256": "c428163e1fa705cee0f01d3994d4339b857860760d8afe2edf822b181eb80465"
+  },
+  "ownerConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-automatic-0d44578.json",
+    "bytes": 21052,
+    "sha256": "04fbe57970bd45eeab0a3c6b44b8f25048620f4efd446d9b02cb3e914d42f384"
+  },
+  "controlConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-58-automatic-0d44578.json",
+    "bytes": 2441,
+    "sha256": "debb1fc3452ab205fae5eca226f2a04389dadd542c7298b4a5ffea95dd72a99b"
+  },
+  "epochStatus": "NOT_ENABLED_NO_REGISTERED_MAIN_SOURCE_IDENTITY",
+  "historicalSourcesAndTargetsUnchanged": true,
+  "source57MetadataUnchanged": true,
+  "noRemoteActions": true,
+  "restoreDispatched": false,
+  "backupDispatched": false,
+  "privateCandidatePin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\automatic-target-candidate-58-0d44578.private.json",
+    "bytes": 608556,
+    "sha256": "c9e85f67466d5bad2d607731d2e7d113e4c623e5ae1544953e8ec532d116ccf3"
+  }
+}

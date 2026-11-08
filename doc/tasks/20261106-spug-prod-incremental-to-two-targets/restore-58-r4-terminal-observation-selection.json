@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "TaskReadonlyObservationSelection/v1",
+  "operationId": "smallapp-4cd6779eaf7d405889a07feb47d0a66b",
+  "selectedPin": {
+    "file": "restore-58-r4-ui-readonly-terminal-r4.json",
+    "bytes": 7784,
+    "sha256": "8e9d22d6550b7ab969a2b3d8038a4525abde88315dd374b8e0de46b92cea1eab"
+  }
+}

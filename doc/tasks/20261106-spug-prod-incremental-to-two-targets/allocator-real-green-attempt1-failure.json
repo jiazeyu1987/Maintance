@@ -1,0 +1,8 @@
+{
+  "status": "TEST_CARRIER_FAILED",
+  "actualAlterCompleted": true,
+  "assertion": "client header options missing",
+  "originalEvidencePreserved": true,
+  "isolatedTargetResetForNewGreen": true,
+  "observedAt": "2026-11-07T03:28:30.986229+00:00"
+}

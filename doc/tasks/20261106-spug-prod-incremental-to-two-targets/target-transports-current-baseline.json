@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T01:59:54.027733+00:00",
+  "verificationMode": "CAPTURED_ACTUAL_EXISTING_INSTALLATION",
+  "stableTransportPin": {
+    "path": "C:/Spug/runtime/private/restore-targets-20261104/restore_control_transport.ps1",
+    "bytes": 2336,
+    "sha256": "3cec0194d3cfa23d537fb77191f7bc6de452e739050926883c0cfe8474475668"
+  },
+  "target58And59ForwardingSemanticsReviewed": true,
+  "existingProduction57AdditionsPreserved": true,
+  "powershellParseErrors": 0,
+  "workspaceTransportSha256": "4b99adbeba4a2064b0f004e1f9389fc7091d2fd0603bde6a4e8bd36c4ba75b3f"
+}

@@ -1,0 +1,8 @@
+{
+  "status": "RED_EXPECTED_FAILURE",
+  "observedAt": "2026-11-07T02:06:22.923134+00:00",
+  "actualExitCode": 1,
+  "errorCode": "STABLE_TRANSPORT_SCRIPT_CHANGED",
+  "actualInstalledBaselineVerified": true,
+  "anyWrites": false
+}

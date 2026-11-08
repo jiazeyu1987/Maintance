@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T19:00:26.595267+00:00",
+  "exitCode": 0,
+  "containerRemoved": true,
+  "inputFilesUnchanged": true,
+  "inputFiles": {
+    "automatic_target_history_guard.py": "fd7893e5b8dc901bc88e2bc24e0aee211db03e8684cdd92f44b6ce9f0c20a948",
+    "test_automatic_target_history_guard.py": "04c561935153db1f9c67ec1c7b09ff3324df070ab96300f93e871334ac67d09b",
+    "automatic_targets_install_script.py": "df5d5d94e5ec3043d11c9c9a0ff35414e2c010a195213791224dca199049980b",
+    "install_automatic_targets.py": "bdf9205e5a23be8552e02b900ebbf9a2ba2f1547040f83396ba7b19aae9cee6a",
+    "automatic_target_http_ready.py": "7a7bd0421b9a9ccf8bc06e450117c1c8dc385baa1a1aea87829d2fdb1838e06d",
+    "test_automatic_target_http_ready.py": "ccf98182ea57766d5e7946988d2c5204016f697fe03743d14c6a6a88e18f1def",
+    "automatic_target_finalize_script.py": "b68a1d1049cc10ccad49b1e5f40ebae884922047842c909c4b15bb3f1f15f4ea"
+  },
+  "outputSha256": "b6b8a6af5b41bb00c46afb47e1ad33b7d6e4723af169b16957b2276737a4ce8d",
+  "network": "none",
+  "workspaceReadOnly": true
+}

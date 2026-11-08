@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "host": "172.30.30.58",
+  "controlPid": 23603,
+  "sourceCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+  "oldReceiptStillActive": true,
+  "originalBusinessAndMountsMatch": true,
+  "priorSourceIdleProofValidated": true,
+  "strictHistory": {
+    "originalEntries": 8408,
+    "contentPinsReusedFromStableIdentity": true,
+    "payloadContentReopened": false
+  },
+  "oldMetadataPinsVerified": 1990,
+  "newPackageMembersVerified": 130,
+  "noControlApiCalled": true,
+  "serverWrites": false,
+  "observedAt": "2026-11-07T18:57:44.455923+00:00",
+  "finalizerSourceSha256": "b68a1d1049cc10ccad49b1e5f40ebae884922047842c909c4b15bb3f1f15f4ea"
+}

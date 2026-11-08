@@ -1,0 +1,12 @@
+✔ only the first exact local Spug authentication POST is allowed (163.1774ms)
+✔ actual nested login contract requires token and explicit security notice or blocks MFA (0.9454ms)
+✔ frame address is inspected only after exact navigation and document readiness (0.7377ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 248.425
+

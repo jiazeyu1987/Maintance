@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T19:15:17.479321+00:00",
+  "exitCode": 0,
+  "containerRemoved": true,
+  "inputFilesUnchanged": true,
+  "inputFiles": {
+    "automatic_target_history_guard.py": "fd7893e5b8dc901bc88e2bc24e0aee211db03e8684cdd92f44b6ce9f0c20a948",
+    "test_automatic_target_history_guard.py": "04c561935153db1f9c67ec1c7b09ff3324df070ab96300f93e871334ac67d09b",
+    "automatic_targets_install_script.py": "c110c377c27dfc3f4240cb69fc286c623bcc27f06066dd940b648aceedefd160",
+    "install_automatic_targets.py": "ff1fbf2355930c9784fcf00ea8f1c8196650f85d7a46e74f1c15d6bbb7cc885d",
+    "automatic_target_http_ready.py": "7a7bd0421b9a9ccf8bc06e450117c1c8dc385baa1a1aea87829d2fdb1838e06d",
+    "test_automatic_target_http_ready.py": "ccf98182ea57766d5e7946988d2c5204016f697fe03743d14c6a6a88e18f1def",
+    "automatic_target_finalize_script.py": "c12543462e86039ededf8b7b03f4b46d4b7abe175cf18e45a433b27d603116c5",
+    "automatic_target_runtime_contract.py": "0702f44678c3427d95cf377948042688bd98a844021b8b61424fd0fa95e03e7f",
+    "test_automatic_target_runtime_contract.py": "0bf1f1c49509ca76a2b1cd0f1c6ca8f33b2199b42e969beffed23dd800e592b6"
+  },
+  "outputSha256": "b7c598df1f65461c33b836c55aefad3508ac1c06e5f3395ebfb54cc0ada83227",
+  "network": "none",
+  "workspaceReadOnly": true
+}

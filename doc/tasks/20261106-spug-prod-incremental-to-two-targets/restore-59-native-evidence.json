@@ -1,0 +1,223 @@
+{
+  "observedAt": "2026-11-07T17:19:10.115035+00:00",
+  "operationId": "smallapp-e0946cfc3fd842b1a85a021e236c6317",
+  "backupOperationId": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+  "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+  "state": "SUCCEEDED",
+  "finishedAt": "2026-11-07T17:11:02.667804Z",
+  "actualExitCode": 0,
+  "sameNewIncrementalAndFullParentChainVerified": true,
+  "database": {
+    "uuid": "a4f03708-cc74-11f1-9cce-0242ac1def16",
+    "baseFullSchemaDataEquivalenceVerified": true,
+    "incrementalReplayAndAffectedDataVerified": true,
+    "nativeIncrementalFullSchemaDataEquivalenceFlag": false,
+    "allCurrentTableDataVerified": true,
+    "tableCount": 885,
+    "totalRows": 513606,
+    "schemaSha256": "0202be5379ab182dc38d815fc292cc29b1ac6e00c87efc11f83c120d8ba3d0bc"
+  },
+  "objects": {
+    "exactVersionIdentityVerified": true,
+    "versionCount": 5916,
+    "deleteMarkerCount": 0,
+    "totalVersionBytes": 9653189892,
+    "uniqueContentCount": 4920,
+    "versionHistorySha256": "9fb2a7ba380c86d0164c9a82ba8ad18320fed5eb1f1f79d8a72e2ae77e7260c8"
+  },
+  "consistency": {
+    "allReferencesVerified": true,
+    "presentReferencesVerified": true,
+    "sourceMissingReferenceCount": 0,
+    "sourceMissingBaselinePreserved": true,
+    "invariantsVerified": true
+  },
+  "redis": {
+    "restoredKeyCount": 0,
+    "expiredBeforeRestoreCount": 0,
+    "independentlyVerifiedKeyCount": 0,
+    "valuesVerified": true,
+    "absoluteExpiryVerified": true
+  },
+  "applicationStart": {
+    "state": "SUCCEEDED",
+    "isolation": "REGISTERED_MAIN_RESOURCE_CUSTODY",
+    "businessAcceptance": "NOT_PERFORMED"
+  },
+  "replacementState": "SUCCEEDED",
+  "cleanupFields": [
+    "deletedBytes",
+    "deletedFiles",
+    "files",
+    "finishedAt",
+    "operationId",
+    "root",
+    "schemaVersion",
+    "selectedPaths",
+    "state"
+  ],
+  "verifiedDocumentPins": 260,
+  "independentBusinessUIRequired": true,
+  "status": "PASS",
+  "protectedOriginalHistoryPinsUnchanged": 1759,
+  "hostResourceReservationReleased": true,
+  "resourceReleasePin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-e0946cfc3fd842b1a85a021e236c6317/resource-release.json",
+    "bytes": 812,
+    "sha256": "e8b14975c52525e4de059cce0b9dead9c90559aad52000a54dad04c64b11d92b"
+  },
+  "configuredProtectionsVerified": true,
+  "archiveViewRestored": null,
+  "publishedWriteFenceReleased": null,
+  "protectionConfiguration": {
+    "archive": false,
+    "published": false
+  },
+  "mysqlScheduler": {
+    "originalState": "OFF",
+    "originalStateRestored": true
+  },
+  "databaseStepCount": 2,
+  "mergedPhysicalObjectStepCount": 1,
+  "frozenAllocator": {
+    "stateVerified": true,
+    "changedTableCount": 1,
+    "actualNativeMutationCount": 1,
+    "frozenSourceSchemaSha256": "0202be5379ab182dc38d815fc292cc29b1ac6e00c87efc11f83c120d8ba3d0bc",
+    "fullSchemaAndDataComparisonUnchanged": true
+  },
+  "nativeSemanticReadiness": {
+    "minio": {
+      "endpoint": "http://172.29.239.23:9000/minio/health/ready",
+      "httpStatus": 200,
+      "semanticStatus": "READY",
+      "readinessPin": {
+        "bytes": 664,
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-e0946cfc3fd842b1a85a021e236c6317/objects/main-health-minio.json",
+        "sha256": "90e43f4dc50d350271530c0b01f574bde1d9a41366c906a10885296ebb38174d"
+      }
+    },
+    "backend": {
+      "endpoint": "http://172.29.239.25:48081/actuator/health",
+      "httpStatus": 200,
+      "semanticStatus": "UP",
+      "readinessPin": {
+        "bytes": 663,
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-e0946cfc3fd842b1a85a021e236c6317/final/main-health-backend.json",
+        "sha256": "d4f948c99ff05dccb3f5d60ebeaaaa132eb8aa0f19a34a38540280d921f5b12a"
+      }
+    },
+    "frontend": {
+      "endpoint": "http://172.29.239.2:80/",
+      "httpStatus": 200,
+      "semanticStatus": "READY",
+      "readinessPin": {
+        "bytes": 646,
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-e0946cfc3fd842b1a85a021e236c6317/final/main-health-frontend.json",
+        "sha256": "2c3b54e543a91012c0974d40a0521829f3481c76fde7289f948a9707c9c6ea78"
+      }
+    }
+  },
+  "authorizedInstallationReceiptCustodyVerified": true,
+  "installationReceiptCustody": {
+    "status": "PASS",
+    "authorizedActiveReceiptCount": 1,
+    "originalReceiptArchived": true,
+    "originalActiveReceiptPin": {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/target-installation.json",
+      "bytes": 1482,
+      "sha256": "856556644073e5c6f325dd8a62b66bc6965d47ce51388d89cdd8ddc7c0c6264b"
+    },
+    "originalArchivedReceiptPin": {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/allocator-7c5f057-previous-target-installation.json",
+      "bytes": 1482,
+      "sha256": "856556644073e5c6f325dd8a62b66bc6965d47ce51388d89cdd8ddc7c0c6264b"
+    },
+    "activatedGenerationCommits": [
+      "7c5f0573e7e1ed7a54e42dbb614cb6e1f0a0534b",
+      "9c93449e99ae0790c8678a570d78a98b61d96d87"
+    ],
+    "activationCount": 2,
+    "selectedCurrentReceiptPin": {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/target-installation.json",
+      "bytes": 1625,
+      "sha256": "73d7eed2d0366aa70efc96ca19f579ddc7f4d36412f7d56d0fe718c9e8010959"
+    },
+    "allReceiptAndConfigurationPinsVerified": true,
+    "allHistoricalSourceAndTargetDefinitionsUnchanged": true,
+    "verifiedPins": [
+      {
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/allocator-7c5f057-previous-target-installation.json",
+        "bytes": 1482,
+        "sha256": "856556644073e5c6f325dd8a62b66bc6965d47ce51388d89cdd8ddc7c0c6264b"
+      },
+      {
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/frontend-9c93449-previous-target-installation.json",
+        "bytes": 1628,
+        "sha256": "48e65fb8baf687e362727a29d5a480ce86def2599a97820fe94a1dd161114dac"
+      },
+      {
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/target-installation.json",
+        "bytes": 1625,
+        "sha256": "73d7eed2d0366aa70efc96ca19f579ddc7f4d36412f7d56d0fe718c9e8010959"
+      },
+      {
+        "bytes": 23024,
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-retry-f819fbed.json",
+        "sha256": "867679481e689a9a2161a1b19543e45e4868a046480e9cd155c3b5e5af48d192"
+      },
+      {
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-allocator-7c5f057.json",
+        "bytes": 23027,
+        "sha256": "2e08aa70560eea3b202599d3f2a70ca4398515a50d633f9a1d818dcbe134d65c"
+      },
+      {
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-59-allocator-7c5f057.json",
+        "bytes": 2362,
+        "sha256": "a77bc1a3e56a0e6da3210c984f6b341bd7ea4bda61636620172b646c98a8b86c"
+      },
+      {
+        "bytes": 23024,
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-retry-f819fbed.json",
+        "sha256": "867679481e689a9a2161a1b19543e45e4868a046480e9cd155c3b5e5af48d192"
+      },
+      {
+        "bytes": 2344,
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-33659-retry-f819fbed.json",
+        "sha256": "f2aa15354d2057e4a36d043c6cc9c02ac9da50a0ef07dd1a3e5d696cd8e6f2c9"
+      },
+      {
+        "path": "/etc/systemd/system/spug-main-restore-59-20261104-v3.service.d/zz-allocator-7c5f057.conf",
+        "bytes": 843,
+        "sha256": "d2a980a0ba196c2cb990cdfc20da7152ffd1085c859b7a4270ff153ca3d6a057"
+      },
+      {
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-frontend-9c93449.json",
+        "bytes": 23026,
+        "sha256": "12853a1def82fe0143f8916329638cb7b219fa17856a55b40c367ac988612ce5"
+      },
+      {
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-59-frontend-9c93449.json",
+        "bytes": 2356,
+        "sha256": "db53eb56a638cb591298f1bb38ef8bc303b64ee679ab9639b9329dc923f6e6e1"
+      },
+      {
+        "bytes": 23027,
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-allocator-7c5f057.json",
+        "sha256": "2e08aa70560eea3b202599d3f2a70ca4398515a50d633f9a1d818dcbe134d65c"
+      },
+      {
+        "bytes": 2362,
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-59-allocator-7c5f057.json",
+        "sha256": "a77bc1a3e56a0e6da3210c984f6b341bd7ea4bda61636620172b646c98a8b86c"
+      },
+      {
+        "path": "/etc/systemd/system/spug-main-restore-59-20261104-v3.service.d/zzz-frontend-9c93449.conf",
+        "bytes": 838,
+        "sha256": "4d0867db9483f910acb8d2c0648185164b81f6cfd635d15c7855bdf1b2c5d984"
+      }
+    ],
+    "serverWrites": false
+  },
+  "originalProtectedHistoryFileCount": 1760
+}

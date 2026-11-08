@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "TaskRestoreAttempts/v1",
+  "targets": {
+    "58": {
+      "kind": "restore-58-r2",
+      "predecessorKind": "restore-58",
+      "predecessorOperationId": "smallapp-c21bb7ce9f5b4668b850c37a80964786",
+      "predecessorState": "FAILED_RETAINED",
+      "reason": "Frozen allocator restoration; retain original History368 and require formal clearance before a new UI request"
+    },
+    "59": {
+      "kind": "restore-59"
+    }
+  }
+}

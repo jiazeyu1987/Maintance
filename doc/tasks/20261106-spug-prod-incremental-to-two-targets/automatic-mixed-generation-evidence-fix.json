@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "AutomaticMixedGenerationEvidenceFix/v1",
+  "status": "LOCAL_REGRESSION_PASS",
+  "observedAt": "2026-11-07T21:54:13.244666+00:00",
+  "tests": {
+    "redFailed": 11,
+    "redPassed": 1,
+    "initialGreenPassed": 12,
+    "intermediateRegressionPassed": 103,
+    "intermediateRegressionFailed": 2,
+    "regressionPassed": 106,
+    "skipped": 0
+  },
+  "sourcePins": {
+    "automatic_chain_audit.py": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic_chain_audit.py",
+      "bytes": 26476,
+      "sha256": "3e959571a1200c581b223cbeff5a6ceea23d1223748f7f89f16e90252d6b27d5"
+    },
+    "verify_automatic_backup_chain.py": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/verify_automatic_backup_chain.py",
+      "bytes": 7455,
+      "sha256": "aa401b7324a4b7a9ebb6f7e749fcdc928f84e677891df22bb95f9b4a9ced314f"
+    },
+    "verify_automatic_source_restoration.py": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/verify_automatic_source_restoration.py",
+      "bytes": 21031,
+      "sha256": "10be863150446c1f21d2fefdd31f1eadff96bd4b80fce5b03a9b7f25d9b74906"
+    },
+    "test_mixed_generation_evidence.py": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_mixed_generation_evidence.py",
+      "bytes": 12485,
+      "sha256": "f4f7c540f4c8d2cdd3991d6c2c423dd7ee473787b4547fa1402c8bf17dde197e"
+    },
+    "test_automatic_source_restoration.py": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_source_restoration.py",
+      "bytes": 4344,
+      "sha256": "4f9764cc8de90816ee094a2334fa7dd335b7702e3cc836045d033a834d40acfa"
+    }
+  },
+  "sharedContracts": {
+    "automatic_stage_deployment.py": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic_stage_deployment.py",
+      "bytes": 6620,
+      "sha256": "948ba3da949068dfa1a3da53a9d0172e55db491b50506e70f59e846fe2298ae8"
+    },
+    "prepare_automatic_ui_preflight.py": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/prepare_automatic_ui_preflight.py",
+      "bytes": 13716,
+      "sha256": "237e617f266579dd0190b51109f5427391d4cce5b38d4d7a8850bae2789c5abb"
+    },
+    "closeout_contracts.py": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/closeout_contracts.py",
+      "bytes": 27355,
+      "sha256": "c84774900d35b10ee064b7e319ba6bcdbfaaa64e7c97b30d8938e464f650b54a"
+    }
+  },
+  "testPins": {
+    "mixed-generation-evidence-red.txt": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/mixed-generation-evidence-red.txt",
+      "bytes": 7084,
+      "sha256": "569f62fba10b28dfe7db7041052ea5183f4c336deab9aa249c0384eb202179e9"
+    },
+    "mixed-generation-evidence-green-r2.txt": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/mixed-generation-evidence-green-r2.txt",
+      "bytes": 99,
+      "sha256": "d8fd7059c0979f74ad0bfde1c8cdad438d3e7865b46775bc92b20a62877ae31a"
+    },
+    "mixed-generation-evidence-regression.txt": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/mixed-generation-evidence-regression.txt",
+      "bytes": 3039,
+      "sha256": "091d1a880660b7cb5af8ed9d8821abe8cc66e1cb174f13d31cac2389df33a042"
+    },
+    "mixed-generation-evidence-regression-r2.txt": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/mixed-generation-evidence-regression-r2.txt",
+      "bytes": 181,
+      "sha256": "fbc6f819d74d37689a854c126f532d690009a09d169f5d2ad4ab334a5362b9b0"
+    }
+  },
+  "fullOriginalsPin": {
+    "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-mixed-generation-full-originals.json",
+    "bytes": 2412,
+    "sha256": "be1ac1fe459070e6da0cca8658bd2841ad1b0c7ed769a277c4cb3e07bdcf75bf"
+  },
+  "fullOriginalCount": 7,
+  "fullOriginalBytesUnchanged": true,
+  "actualFullPrepareStillUsesOriginalGeneration": true,
+  "transportCompileVerified": true,
+  "serverAccessPerformed": false,
+  "sourceProofExecuted": false,
+  "backupDispatched": false,
+  "runtimeValidation": "Source and retained MAIN use separately pinned Python/environment/module manifests; retained MAIN computes its service digests in its own child interpreter.",
+  "limitations": [
+    "No actual upgraded source or I1/I2 operation has been claimed by these local tests.",
+    "Initial green command had a misspelled local Python path and did not start pytest; empty green.txt is not a success record.",
+    "Intermediate 2 failures were old test error-code expectations; explicit missing-stage SOURCE_DEPLOYMENT_REQUIRED remained a rejection."
+  ]
+}

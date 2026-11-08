@@ -1,0 +1,64 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T21:59:11.485854+00:00",
+  "sourceCommit": "0dc7429d4758a208a5b0c098111fe9702ab63235",
+  "physicalCaptureConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/capture-binlog-tmpfs-20261107-v3.json",
+    "bytes": 4753,
+    "sha256": "0c00504b14ca5715ab205d2c43ad7c958f6014ab205f80e4e511df0a241f1c6f"
+  },
+  "ownerConfigurationPin": {
+    "bytes": 1989,
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/repository-automatic-0d44578.json",
+    "sha256": "1a61e28437e21d2f324f84b7062a3106db2b33599740f9fcea24fcde10e7c0b3"
+  },
+  "sourceFields": [
+    "captureCommand",
+    "configurationPath",
+    "sourceIdentityPath",
+    "stagingRoot",
+    "toolPaths"
+  ],
+  "sourceFieldChanges": [
+    {
+      "field": "sources.intruoyi-57-safe-20261024-v1.captureCommand.2",
+      "before": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-automatic-0d44578/formal/minimal_capture_entry.py",
+      "after": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-automatic-0dc7429/formal/minimal_capture_entry.py"
+    },
+    {
+      "field": "sources.intruoyi-57-safe-20261024-v1.toolPaths.2",
+      "before": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-automatic-0d44578/formal/formal_capture_recovery_inputs.py",
+      "after": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-automatic-0dc7429/formal/formal_capture_recovery_inputs.py"
+    }
+  ],
+  "sourceAndTargetPids": {
+    "spug-intruoyi-source-57-20261105.service": 25086,
+    "spug-main-restore-57-20261105-v2.service": 20273
+  },
+  "epoch": {
+    "schemaVersion": "SourceBackupEpoch/v1",
+    "policySha256": "286c351b19714180357adf7442404847bf88625ef178be5787738c340e84abfd",
+    "epochId": "0eab10fa13853ed9b1c526a5608849c3f9f7904a0f03d75d0fd076babf5c63e9",
+    "state": "READY",
+    "operationId": null,
+    "eventPin": {
+      "path": "/var/lib/spug-backup-epochs/intruoyi-main-57/00000000000000000000.json",
+      "bytes": 595,
+      "sha256": "b25926653d7f933f0fa6f50a0ec17f029a0a1f0912017331cdc39f730b53dd56"
+    }
+  },
+  "stagedEngine": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-automatic-0dc7429",
+  "stagedFileCount": 130,
+  "stagedPackageJsonPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-automatic-0dc7429/package.json",
+    "bytes": 14048,
+    "sha256": "837968b6196ffc7ceeedf332b56cb6657a3fc5dbed272421fb2ffa63eb90c093"
+  },
+  "allStagedFilesVerified": true,
+  "newConfigurationAbsent": true,
+  "newDropinAbsent": true,
+  "newStageReceiptAbsent": true,
+  "controlApiCalled": false,
+  "remoteMutationDispatched": false,
+  "originalFailedApplyWroteEngine": true
+}

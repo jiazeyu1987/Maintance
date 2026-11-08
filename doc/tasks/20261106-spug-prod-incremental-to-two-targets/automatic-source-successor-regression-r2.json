@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "AutomaticSourceSuccessorRegression/v1",
+  "status": "PASS",
+  "observedAt": "2026-11-07T21:50:23.298338+00:00",
+  "tests": 50,
+  "redEvidence": [
+    "5 absent-contract failures",
+    "3 absent-installer failures"
+  ],
+  "sourcePins": {
+    "install_automatic_source_successor.py": {
+      "bytes": 22877,
+      "sha256": "db37eab584a19a3b01b42b7b4d69a59d4f5d37dd9145c07003ebfd6aec9d044b"
+    },
+    "closeout_contracts.py": {
+      "bytes": 27355,
+      "sha256": "c84774900d35b10ee064b7e319ba6bcdbfaaa64e7c97b30d8938e464f650b54a"
+    },
+    "verify_stable_controls.py": {
+      "bytes": 17050,
+      "sha256": "330397ef0390f80073072072af036b36a262672d40d0bcd17fdc8d1ab026f37e"
+    },
+    "test_automatic_mixed_generation.py": {
+      "bytes": 8975,
+      "sha256": "47d830cdf57d74d783aa3fc00114fa67be1be7d24dec3726196adaf64db1de0e"
+    },
+    "automatic-source-successor-plan.md": {
+      "bytes": 7512,
+      "sha256": "a9845555f3233350bed16057682dca94ebf4a572df5fd41f5fc26dcbb9c04a74"
+    },
+    "automatic-closeout-helper-usage.md": {
+      "bytes": 7617,
+      "sha256": "349d0fa5fd709457069188dbb56714a018b2ff734d807ec91cf6dfacf77e6837"
+    },
+    "observe_closeout_hosts.py": {
+      "bytes": 14765,
+      "sha256": "b7fc4e7112a34a190b9ccfd73b3a3b72a0cb926b9e99b6c061ef4ec40b4164cf"
+    },
+    "test_closeout_host_snapshot.py": {
+      "bytes": 11035,
+      "sha256": "3507f5b0d94d17a8503e7151ba615aadd97b4cfa7a8c2c647083d0393ec4cad7"
+    }
+  },
+  "embeddedRemoteScriptsCompiled": true,
+  "remoteDispatched": false,
+  "buildDispatched": false,
+  "backupDispatched": false,
+  "restoreDispatched": false,
+  "limitations": [
+    "No actual new committed package yet; prepare not run.",
+    "Local evidence contracts and compilation do not prove server installation."
+  ],
+  "collectorTests": 14,
+  "collectorRedFailures": 8,
+  "previousReport": "automatic-source-successor-regression.json"
+}

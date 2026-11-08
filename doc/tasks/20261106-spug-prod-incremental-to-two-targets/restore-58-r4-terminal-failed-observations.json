@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "TaskReadonlyObservations/v1",
+  "operationId": "smallapp-4cd6779eaf7d405889a07feb47d0a66b",
+  "failed": [
+    {
+      "file": "restore-58-r4-ui-readonly-terminal.json",
+      "bytes": 4347,
+      "sha256": "e26cc4981da7ae81f9b2d65c262811742578a43cfd8d119a904d6e2a65a7b94b"
+    },
+    {
+      "file": "restore-58-r4-ui-readonly-terminal-r2.json",
+      "bytes": 7553,
+      "sha256": "3a917dde6fbd71e29c8171ae46581474f01dca32aabb2047bb58f97799827cae"
+    },
+    {
+      "file": "restore-58-r4-ui-readonly-terminal-r3.json",
+      "bytes": 552,
+      "sha256": "498bd7cda4df42274446dc4a6df37f6501e2a2b4319cadf5ad29652f8908a860"
+    }
+  ]
+}

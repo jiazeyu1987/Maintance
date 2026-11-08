@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T20:04:43.555079+00:00",
+  "host": "172.30.30.58",
+  "engine": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/engine-readback-04f5f9ce",
+  "fileCount": 122,
+  "packageFilesMatch": true,
+  "incrementalDatabaseDdlScopeV3Supported": true,
+  "moduleContracts": {
+    "common/recovery_data.py": {
+      "bytes": 62614,
+      "sha256": "11a32cabfb7960e9661bd29c04efb1fbc59499c8cb2ab915f3fb2cfe09482eac",
+      "databaseDdlScopeV3Recognized": true,
+      "scopedDatabaseDdlPolicyRecognized": true
+    },
+    "formal/formal_data_evidence.py": {
+      "bytes": 25181,
+      "sha256": "e2cb2c993dacf3b70bfff5610f081ff860c017cc6fa8ebda1850d912f1675e65",
+      "databaseDdlScopeV3Recognized": true,
+      "scopedDatabaseDdlPolicyRecognized": true
+    },
+    "common/recovery_plan.py": {
+      "bytes": 30116,
+      "sha256": "63b738664c2ce8215a6fc5390f75ab663097f751d9695bacd616fad150847037",
+      "databaseDdlScopeV3Recognized": false,
+      "scopedDatabaseDdlPolicyRecognized": false
+    }
+  },
+  "serverWrites": false
+}

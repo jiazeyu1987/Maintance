@@ -1,0 +1,37 @@
+.................FF..................................................... [ 68%]
+.................................                                        [100%]
+================================== FAILURES ===================================
+___ test_legacy_full_submission_cannot_be_relabelled_as_new_incremental[I1] ___
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_source_restoration.py:48: in test_legacy_full_submission_cannot_be_relabelled_as_new_incremental
+    validate_evidence(kind, installation, submission, audit, terminal)
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\verify_automatic_source_restoration.py:32: in validate_evidence
+    need(kind == 'FULL' and installation['status'] == 'PASS' and installation['sourceCommit'] == INSTALLED_COMMIT,
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\verify_automatic_source_restoration.py:26: in need
+    raise ValueError(code)
+E   ValueError: SOURCE_INSTALLATION_CHANGED
+
+During handling of the above exception, another exception occurred:
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_source_restoration.py:47: in test_legacy_full_submission_cannot_be_relabelled_as_new_incremental
+    with pytest.raises(ValueError, match='SOURCE_SUBMISSION_CHANGED'):
+E   AssertionError: Regex pattern did not match.
+E    Regex: 'SOURCE_SUBMISSION_CHANGED'
+E    Input: 'SOURCE_INSTALLATION_CHANGED'
+___ test_legacy_full_submission_cannot_be_relabelled_as_new_incremental[I2] ___
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_source_restoration.py:48: in test_legacy_full_submission_cannot_be_relabelled_as_new_incremental
+    validate_evidence(kind, installation, submission, audit, terminal)
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\verify_automatic_source_restoration.py:32: in validate_evidence
+    need(kind == 'FULL' and installation['status'] == 'PASS' and installation['sourceCommit'] == INSTALLED_COMMIT,
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\verify_automatic_source_restoration.py:26: in need
+    raise ValueError(code)
+E   ValueError: SOURCE_INSTALLATION_CHANGED
+
+During handling of the above exception, another exception occurred:
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_source_restoration.py:47: in test_legacy_full_submission_cannot_be_relabelled_as_new_incremental
+    with pytest.raises(ValueError, match='SOURCE_SUBMISSION_CHANGED'):
+E   AssertionError: Regex pattern did not match.
+E    Regex: 'SOURCE_SUBMISSION_CHANGED'
+E    Input: 'SOURCE_INSTALLATION_CHANGED'
+=========================== short test summary info ===========================
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_source_restoration.py::test_legacy_full_submission_cannot_be_relabelled_as_new_incremental[I1]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_source_restoration.py::test_legacy_full_submission_cannot_be_relabelled_as_new_incremental[I2]
+2 failed, 103 passed in 43.86s

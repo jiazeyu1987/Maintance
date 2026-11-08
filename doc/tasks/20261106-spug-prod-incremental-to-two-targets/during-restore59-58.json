@@ -1,0 +1,101 @@
+{
+  "observedAt": "2026-11-07T12:53:25.127292+00:00",
+  "host": "172.30.30.58",
+  "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+  "serviceProperties": "MainPID=2043\nLimitNOFILE=65536\nActiveState=active\nSubState=running\n",
+  "packageFilesMatch": true,
+  "packageFileCount": 127,
+  "capacity": {
+    "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3": 872522452992,
+    "/opt/intruoyi/runtime": 44449402880
+  },
+  "fstabSha256": "5c03cd5d634876c4637a5abdb629a7fff5edd7935b45a559904611e2d7d7c134",
+  "http": {
+    "backend": {
+      "httpStatus": 200,
+      "status": "UP"
+    },
+    "frontend": {
+      "httpStatus": 200
+    }
+  },
+  "admissions": {
+    "target": {
+      "httpStatus": 200,
+      "body": {
+        "applications": [
+          {
+            "applicationId": "intruoyi-57-safe-20261024-v1",
+            "engineSelectionRef": "common-engine-minimal-unified-20261015-r1",
+            "freshTargetConfigRefs": [
+              "intruoyi-main-58-safe-restore-20261104-v1"
+            ],
+            "fullErrorCode": null,
+            "fullReady": true,
+            "historyErrorCode": null,
+            "parentChainRefs": [],
+            "recoveryPointRefs": [],
+            "sourceConfigRef": "intruoyi-57-safe-20261024-v1"
+          }
+        ],
+        "observedAt": "2026-11-07T12:53:28.161853Z"
+      }
+    }
+  },
+  "containerCount": 459,
+  "roles": [
+    {
+      "role": "backend",
+      "id": "6f70e67078d086d7f08c1ae75a80bb0feab28c5a1f92c91d655ac258f34988eb",
+      "image": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+      "running": true,
+      "pid": 495,
+      "startedAt": "2026-11-07T11:52:37.619769097Z",
+      "health": "healthy"
+    },
+    {
+      "role": "frontend",
+      "id": "4f9775e6f0a1d86b2d06c69e40504a91cf44a613de458b76e69fa04805ca5d73",
+      "image": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a",
+      "running": true,
+      "pid": 17558,
+      "startedAt": "2026-11-07T11:56:02.907211298Z",
+      "health": "healthy"
+    },
+    {
+      "role": "redis",
+      "id": "028bb0541d3216c283c5f1822338462545fa7cd63fad55c462ae20a01526e225",
+      "image": "sha256:487efc0616382465781b8fdc3d6d1db449e6fd80ae23bf48432a2da6b6929908",
+      "running": true,
+      "pid": 28575,
+      "startedAt": "2026-11-05T01:52:49.476812788Z",
+      "health": null
+    },
+    {
+      "role": "minio",
+      "id": "98216faac1ae2fc1508bd4076962bf4cfcb3a47f2f1bd5d5e42c7ba819e83115",
+      "image": "sha256:c4260bcf2c25b683e4f6e6ed6474f12c5c28dc8e375bfe0ecea7a5d3fbecbc04",
+      "running": true,
+      "pid": 9425,
+      "startedAt": "2026-11-07T11:39:14.449860514Z",
+      "health": "healthy"
+    },
+    {
+      "role": "mysql",
+      "id": "b4592b704b979f1b94ba03836985491a8f7c699d3094297bfbe3696939eedd79",
+      "image": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+      "running": true,
+      "pid": 11377,
+      "startedAt": "2026-11-05T01:51:30.916478688Z",
+      "health": null
+    }
+  ],
+  "activeReservation": false,
+  "processes": [
+    {
+      "pid": 2043,
+      "commandSha256": "999c4bbf6a56f498754c6147a1700cd9cba7e3dddee455c1a42d3bc8d020429b"
+    }
+  ],
+  "privateBaselineSha256": "3dd260769a199161f070d3f64722818e757d439c87e2ef76e8116c4d410804ab"
+}

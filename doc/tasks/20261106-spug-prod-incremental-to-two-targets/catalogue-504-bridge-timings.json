@@ -1,0 +1,33 @@
+{
+  "status": 200,
+  "bodyBytes": 138119,
+  "elapsedSeconds": 9.991,
+  "events": [
+    {
+      "route": "/state",
+      "startedSeconds": 0.0,
+      "timeout": 20,
+      "headerSeconds": 0.812,
+      "httpStatus": 200,
+      "readSeconds": 8.5,
+      "bytes": 81281836,
+      "finishedSeconds": 9.312,
+      "sha256": "ca23e79ffd92349598b6bb28a9a5092ee5f36f66f78e5d95c8f9cd5bdfebd4c0"
+    },
+    {
+      "route": "/package-catalog",
+      "startedSeconds": 9.95,
+      "timeout": 20,
+      "headerSeconds": 0.005,
+      "httpStatus": 200,
+      "readSeconds": 0.004,
+      "bytes": 138119,
+      "finishedSeconds": 9.96,
+      "sha256": "5279bb1cc24f2dbcc1a71b00a3840c660290fffac98c05effc75226b6642287d"
+    }
+  ],
+  "observedAt": "2026-11-07T17:39:30.347078+00:00",
+  "businessWrites": 0,
+  "productChanges": 0,
+  "actualRegistryCode": true
+}

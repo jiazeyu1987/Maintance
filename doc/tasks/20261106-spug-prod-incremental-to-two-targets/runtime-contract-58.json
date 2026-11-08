@@ -1,0 +1,76 @@
+{
+  "host": "172.30.30.58",
+  "observedAt": "2026-11-06T10:37:11.060464+00:00",
+  "engines": {
+    "target": {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/engine-readback-04f5f9ce",
+      "packageKeys": [
+        "archivePrefix",
+        "authenticationFix",
+        "backupStepTimings",
+        "businessLogicFix",
+        "commit",
+        "fileVerification",
+        "files",
+        "originalPackageSha256",
+        "packageSha256",
+        "payloadContentVerification",
+        "requestParentBinding",
+        "source",
+        "stepTiming",
+        "variant"
+      ],
+      "fileCount": 122,
+      "filesMatch": true,
+      "files": {
+        "common/recovery_replace.py": {
+          "sha256": "c35622b4d89b2b18848ddd8c28f037f544f51a7ff5cb982b2521ac3a82037cc4",
+          "bytes": 10772,
+          "matches": [
+            {
+              "line": 30,
+              "text": "        prefix = b'SET SESSION sql_log_bin=1;\\n'"
+            }
+          ]
+        },
+        "formal/formal_binlog_scope.py": {
+          "sha256": "6b20836d278a7be6efd12aa101dac2500f79474c1f96ce4ae5d939941ae698c1",
+          "bytes": 15290,
+          "matches": [
+            {
+              "line": 20,
+              "text": "def scoped_database_ddl(sql, database):"
+            },
+            {
+              "line": 172,
+              "text": "                if scoped_database_ddl(statement, self.database):"
+            },
+            {
+              "line": 285,
+              "text": "    return dict(schemaVersion='backup-binlog-event-scope/v3', databaseScope=[database],"
+            },
+            {
+              "line": 286,
+              "text": "                policy='MYSQL80_ROW_AND_SCOPED_DATABASE_DDL', logMode=mode, segments=proof)"
+            }
+          ]
+        },
+        "formal/formal_capture_incremental.py": {
+          "sha256": "7d2560cc27647e8192ee3ec63a89a073e10440d2ea4a90a0bf2874a51444cd9a",
+          "bytes": 35360,
+          "matches": [
+            {
+              "line": 336,
+              "text": "                            '--user=root', '--verify-binlog-checksum', '--disable-log-bin',"
+            }
+          ]
+        },
+        "formal/formal_snapshot_linux.py": {
+          "sha256": "e6916e17d336aad43089a93df8cd61a7b2953203831ffeb65f06063313927700",
+          "bytes": 76779,
+          "matches": []
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "status": "OBSERVED",
+  "observedAt": "2026-11-08T00:58:52.571246+00:00",
+  "operationId": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291",
+  "workerPid": 18931,
+  "workerPresent": true,
+  "io": {
+    "rchar": 11736675257,
+    "wchar": 2127995308,
+    "syscr": 680068,
+    "syscw": 44872,
+    "read_bytes": 929759232,
+    "write_bytes": 2097418240,
+    "cancelled_write_bytes": 0
+  },
+  "lastStages": [
+    {
+      "at": "2026-11-08T00:44:00.450457+00:00",
+      "stage": "CONFIGURATION_AND_IMAGES_CAPTURED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-08T00:44:00.455800+00:00",
+      "stage": "STOP_REQUESTED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-08T00:44:04.016003+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT",
+      "captureStage": "STOP_WRITERS"
+    },
+    {
+      "at": "2026-11-08T00:44:04.064215+00:00",
+      "stage": "STOP_REQUESTED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-08T00:44:04.363172+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT",
+      "captureStage": "STOP_WRITERS"
+    },
+    {
+      "at": "2026-11-08T00:44:05.134957+00:00",
+      "stage": "WRITERS_STOPPED_DATABASE_FENCED",
+      "captureStage": null
+    }
+  ],
+  "scratchParts": [
+    338,
+    705,
+    707,
+    708,
+    712,
+    713,
+    714,
+    715
+  ],
+  "affectedDataReceiptPresent": false,
+  "sourceRestoration": null,
+  "mutationDispatched": false,
+  "notTerminalEvidence": true
+}

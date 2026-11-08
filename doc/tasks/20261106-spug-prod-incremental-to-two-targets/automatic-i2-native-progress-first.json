@@ -1,0 +1,20 @@
+{
+  "status": "OBSERVED",
+  "observedAt": "2026-11-08T00:29:28.593021+00:00",
+  "operationId": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291",
+  "processes": [
+    {
+      "pid": 20344,
+      "state": "D",
+      "rchar": 25924997938,
+      "wchar": 860
+    }
+  ],
+  "timings": {
+    "timing-archive-admission-start.json": {
+      "stage": "archive-admission",
+      "startedAt": "2026-11-08T00:18:36.884930Z"
+    }
+  },
+  "mutationDispatched": false
+}

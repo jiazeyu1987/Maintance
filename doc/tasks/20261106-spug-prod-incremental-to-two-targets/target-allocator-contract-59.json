@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T04:52:00.190797+00:00",
+  "host": "172.30.30.59",
+  "engine": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/engine-allocator-7c5f057",
+  "fileCount": 127,
+  "packageFilesMatch": true,
+  "incrementalDatabaseDdlScopeV3Supported": true,
+  "frozenAllocatorRestoreSupported": true,
+  "moduleContracts": {
+    "common/recovery_data.py": {
+      "bytes": 64304,
+      "sha256": "067642b6a906253d701219bfe5e4bdf52caceda354f8ef056fcdc51372f53221",
+      "databaseDdlScopeV3Recognized": true,
+      "scopedDatabaseDdlPolicyRecognized": true
+    },
+    "formal/formal_data_evidence.py": {
+      "bytes": 25181,
+      "sha256": "e2cb2c993dacf3b70bfff5610f081ff860c017cc6fa8ebda1850d912f1675e65",
+      "databaseDdlScopeV3Recognized": true,
+      "scopedDatabaseDdlPolicyRecognized": true
+    },
+    "common/recovery_plan.py": {
+      "bytes": 30116,
+      "sha256": "63b738664c2ce8215a6fc5390f75ab663097f751d9695bacd616fad150847037",
+      "databaseDdlScopeV3Recognized": false,
+      "scopedDatabaseDdlPolicyRecognized": false
+    }
+  },
+  "serverWrites": false
+}

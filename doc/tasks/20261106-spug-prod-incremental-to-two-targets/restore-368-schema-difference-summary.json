@@ -1,0 +1,21 @@
+{
+  "observedAt": "2026-11-07T03:04:00.608827+00:00",
+  "expectedPin": {
+    "bytes": 3666655,
+    "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-bd88deb7f4cdde27db6e9e3439e4fef04ce932bf3b84380f12c04f9e7c751d25/payload/source-affected-data.json",
+    "sha256": "0448848a8db68729ee7b11100b9adf410b79580b8fd80fe029d97ef5a85752b4"
+  },
+  "comparison": {
+    "errorCode": "FORMAL_SCHEMA_MISMATCH"
+  },
+  "actualTargetQueries": true,
+  "actualTargetMutation": false,
+  "catalogEqual": true,
+  "differences": [
+    {
+      "type": "definition",
+      "kind": "TABLE",
+      "name": "mes_kingdee_production_order_sync_record"
+    }
+  ]
+}

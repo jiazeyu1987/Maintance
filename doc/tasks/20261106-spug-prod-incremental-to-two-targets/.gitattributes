@@ -1,0 +1,3 @@
+* -text whitespace=cr-at-eol
+automatic-closeout-helper-regression-r2.txt whitespace=cr-at-eol,-blank-at-eof
+catalogue-login-helper-r4-regression.txt whitespace=cr-at-eol,-blank-at-eof

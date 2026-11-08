@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "AutomaticIncrementalUiObservation/v1",
+  "kind": "I1",
+  "phase": "preview",
+  "observation": "first",
+  "startedAt": "2026-11-07T22:08:29.401Z",
+  "implementationCommit": "0dc7429d4758a208a5b0c098111fe9702ab63235",
+  "spugCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+  "deploymentSelectionPin": {
+    "file": "automatic-i1-deployment-selection.json",
+    "bytes": 1015,
+    "sha256": "5dda6419591f83ae700067117d530ec81c316755cbcf04795962b2e009755ca0"
+  },
+  "preflightSha256": "390908bb8e5eb7f9442f326da89af83a7bfc5fe41dcca243e3b339653c37ca6c",
+  "realBrowser": true,
+  "identityVerified": true,
+  "permissionVerified": true,
+  "loginPosts": 1,
+  "businessPosts": 0,
+  "blockedRequests": [],
+  "pageErrorCount": 0,
+  "request": {
+    "schemaVersion": "SmallAppBackupUiRequest/v1",
+    "operationId": "smallapp-22868393bdaa4324866329ea68f03063",
+    "action": "INCREMENTAL",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "parentChainRef": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "recoveryPointRef": null,
+    "targetConfigRef": null
+  },
+  "operationState": null,
+  "status": "PREVIEW_VERIFIED_NO_SUBMISSION",
+  "stage": "backup-form",
+  "loginResponseRecorded": true,
+  "loginShape": {
+    "httpStatus": 200,
+    "errorPresent": false,
+    "dataPresent": true,
+    "dataObject": true,
+    "requiredMfa": false,
+    "hasRealIp": false,
+    "tokenReturned": true
+  },
+  "loginNoticeConfirmed": true,
+  "plan": {
+    "schemaVersion": "AutomaticIncrementalPlan/v1",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "state": "READY",
+    "reasonCode": null,
+    "parentChainRef": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "baseFullRef": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "generationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "chainDepth": 1,
+    "pointType": "FULL",
+    "parentPointType": "FULL",
+    "basePointType": "FULL",
+    "finishedAt": "2026-11-07T21:05:37.900272Z",
+    "baseFinishedAt": "2026-11-07T21:05:37.900272Z",
+    "evidenceDigest": "a2ec884d324e20aa88422fc5cb581e12856cc171eb7d69cc685a8de53369578d",
+    "planDigest": "deaffd6038bef255fd11ed1cebd14ba084df40d9af87546a249c9315ef682f1c"
+  },
+  "finishedAt": "2026-11-07T22:09:20.032Z"
+}

@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T13:33:36.195725+00:00",
+  "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+  "parentChainRef": "smallapp-7fec29a3e132463096aec915c08acab3",
+  "parentPointPin": {
+    "bytes": 6263032,
+    "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-433710bb8eb93e78351878966cb06caec1c420e87ef3d5c8dff9c493dc085eb9/.repository/point.json",
+    "sha256": "28e5f6023ad2e5aa5d3a340b4ede1dc249d98deb8fb9704db68b968cb4b8b4f7"
+  },
+  "installedModulePin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-incremental-6319024/formal/formal_binlog_scope.py",
+    "bytes": 24046,
+    "sha256": "585e84d8acfa1587babb2c0486bec5198376d3973b22a076ef97a04db7fd23cd"
+  },
+  "auditedStart": {
+    "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+    "executedGtidSet": "",
+    "file": "binlog.000021",
+    "position": 23582326,
+    "serverVersion": "8.0.39"
+  },
+  "auditedEnd": {
+    "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+    "serverVersion": "8.0.39",
+    "file": "binlog.000032",
+    "position": 912129206,
+    "executedGtidSet": ""
+  },
+  "binlogBytes": 12707944722,
+  "scopeProofSha256": "b8cfe183775de10fbb3168618a26202cd14bbfeb613cd54d187ff401bcb8d9d7",
+  "sourceCommit": "6319024c003ead602d59e7697673fa3c39807863",
+  "finalSubmitCount": 0
+}

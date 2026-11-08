@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "IntegrationReadOnlyVerification/v1",
+  "observedAt": "2026-11-07T19:07:52.759155+00:00",
+  "onlyReadOnlyGitCommands": true,
+  "serversAccessed": false,
+  "actualIntegrationPerformed": false,
+  "actualCleanupPerformed": false,
+  "repositories": {
+    "main": {
+      "head": "e2e89420851a57885f9c1ddf22ff1862916add83",
+      "branch": "int_main",
+      "indexPin": {
+        "bytes": 358652,
+        "sha256": "9a91d1bb5c528da42951804fe5e300e250ae7296a0454fcb814026abe7325946"
+      },
+      "headUnchanged": true,
+      "branchUnchanged": true,
+      "indexUnchanged": true,
+      "cachedUnchanged": true,
+      "indexLockPresent": false,
+      "statusEntryCount": 9949,
+      "statusUnchanged": true,
+      "overlappingMainLogPin": {
+        "bytes": 1210931,
+        "sha256": "835553401940f3967c40b3ad8598c4fc5f11e2452be4c7264f338b3f6840a40d"
+      },
+      "overlappingMainLogByteUnchanged": true
+    },
+    "task": {
+      "head": "b5c8817de2b4cc5efdad566f0fb65fdabefcb8d8",
+      "branch": "codex/spug-selectable-restore-targets-20261104",
+      "indexPin": {
+        "bytes": 446505,
+        "sha256": "98adfaaee4568ef6703537cd0033657f853e4a57504b0918f7b20dbd8293ed24"
+      },
+      "headUnchanged": true,
+      "branchUnchanged": true,
+      "indexUnchanged": true,
+      "cachedUnchanged": true,
+      "indexLockPresent": false,
+      "statusEntryCount": 699,
+      "statusUnchanged": false,
+      "statusChangedPaths": [
+        "doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-target58-finalization-readonly-preflight.json",
+        "doc/tasks/20261106-spug-prod-incremental-to-two-targets/integration-candidates.json",
+        "doc/tasks/20261106-spug-prod-incremental-to-two-targets/integration-pending-scope.json",
+        "doc/tasks/20261106-spug-prod-incremental-to-two-targets/integration-readonly-scope.json",
+        "doc/tasks/20261106-spug-prod-incremental-to-two-targets/integration-three-way-review.json",
+        "doc/tasks/20261106-spug-prod-incremental-to-two-targets/linux-automatic-target-finalize.json"
+      ],
+      "allStatusChangesInsideOwnedTaskDirectory": true
+    }
+  },
+  "utf8NoBomVerified": true,
+  "status": "PASS",
+  "limitation": "Main HEAD, branch, index, status path list and exact overlapping log bytes verified unchanged; no claim of a complete byte scan of unrelated dirty files. Task records may be added concurrently; no task HEAD/index change."
+}

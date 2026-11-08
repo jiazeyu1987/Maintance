@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "TaskAutomaticAcceptanceSelection/v2",
+  "kinds": {
+    "FULL": {
+      "deploymentSelectionPin": {
+        "file": "automatic-full-deployment-selection.json",
+        "bytes": 993,
+        "sha256": "0b60e1e2a855d196f22fb3413fc3406d87363eed8c2d9791fe34cfd4388daf94"
+      },
+      "submissionObservationPin": {
+        "file": "automatic-full-submit-first-result.json",
+        "bytes": 1867,
+        "sha256": "6297d2baad3919e749a5de1502bbc5788a791bb03dbedf695eaf67365b56f1c4"
+      },
+      "terminalObservationPin": {
+        "file": "automatic-full-verify-first-result.json",
+        "bytes": 1256,
+        "sha256": "3857ba87384feb1ec611b61c1d4120a7f88f417974a7bb7d73745f1a8418bf77"
+      },
+      "sourceRestorationReportPin": {
+        "file": "automatic-full-source-restoration.json",
+        "bytes": 19719,
+        "sha256": "ec9fe5799ed8c0d6226bb968518a233145682c0c22271596e4e0a3ba0a1eeb30"
+      }
+    },
+    "I1": {
+      "deploymentSelectionPin": {
+        "file": "automatic-i1-deployment-selection.json",
+        "bytes": 1015,
+        "sha256": "5dda6419591f83ae700067117d530ec81c316755cbcf04795962b2e009755ca0"
+      },
+      "submissionObservationPin": {
+        "file": "automatic-i1-submit-first-result.json",
+        "bytes": 2296,
+        "sha256": "eb4ee480bef0875d63cccc1335b2d82704c87928ee2beeb52d330678494f8117"
+      },
+      "terminalObservationPin": {
+        "file": "automatic-i1-verify-first-result.json",
+        "bytes": 1549,
+        "sha256": "fa4c27f1b666291604c4db3ecd4563cfc406bee4f07d2df6f95ebfb8ab2a1249"
+      },
+      "sourceRestorationReportPin": {
+        "file": "automatic-i1-source-restoration.json",
+        "bytes": 34576,
+        "sha256": "f4b7f276d0f767f4b7e0fa7e072d9bc429b1f9dd6f188c839c99a79ec4e1c2a1"
+      }
+    },
+    "I2": {
+      "deploymentSelectionPin": {
+        "file": "automatic-i2-deployment-selection.json",
+        "bytes": 1015,
+        "sha256": "4a680483ad926151724520bcc9b9692c8ea4d8a25f8bafcf36810e9b7ac67bbc"
+      },
+      "submissionObservationPin": {
+        "file": "automatic-i2-submit-first-result.json",
+        "bytes": 2310,
+        "sha256": "35494be5e0e330a0a74a78c7a689d3b1c5db7d6b758e4b9ba5f42f52b8e85f57"
+      },
+      "terminalObservationPin": {
+        "file": "automatic-i2-verify-third-result.json",
+        "bytes": 1549,
+        "sha256": "68df1738b548c53a32099fcb6201902133cf3c67c416a4ed05c3c3eb53821e31"
+      },
+      "sourceRestorationReportPin": {
+        "file": "automatic-i2-source-restoration.json",
+        "bytes": 34564,
+        "sha256": "925ae4c5393d85481cfa697ac69159802b3b4db916718a53dd7842eadd2475e0"
+      }
+    }
+  },
+  "finalSourcePreflightPin": {
+    "file": "automatic-i2-verify-third-preflight-evidence.json",
+    "bytes": 2765,
+    "sha256": "b5bf037d52912adc1f9be539bbcb34e6eebe916c01d38afffbe512e8a84fcaa4"
+  }
+}

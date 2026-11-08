@@ -1,0 +1,61 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T18:17:09.725982+00:00",
+  "previousCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+  "implementationCommit": "b5c8817de2b4cc5efdad566f0fb65fdabefcb8d8",
+  "files": {
+    "ops/spug/release-center/application_registry.py": {
+      "bytes": 6490,
+      "sha256": "321aac4287bb520b20ae0afdb20e36e70065121f8b2caea74275e91093a51045"
+    },
+    "ops/spug/release-center/executor.py": {
+      "bytes": 77046,
+      "sha256": "d1381bcb535d5ebc6104142aa323371ebe1bd40bb2f8b22f1b18ffcd69df315f"
+    },
+    "ops/spug/release-center/release_http.py": {
+      "bytes": 3783,
+      "sha256": "b0c90284c6b5320ba1fc40f2932363f8080845d3d98291fe4a280d4f8dc38f1e"
+    },
+    "ops/spug/release-center/package_catalog.py": {
+      "bytes": 23205,
+      "sha256": "335b06af178da3e64456ed1c96843387b42ed7031dc56f0c02864aeb515fc7a7"
+    },
+    "ops/spug/release-center/package_presence.py": {
+      "bytes": 7050,
+      "sha256": "a4cc271309ece2b681f9a239cc8a43e0df658c09a17d862a50b02fba792da7ec"
+    },
+    "ops/spug/release-center/test_release_identity.py": {
+      "bytes": 11381,
+      "sha256": "d76256d97a9a90c2d33de9d3a0708a6204b5e9f6004840ded8356203fa4a351d"
+    },
+    "ops/spug/release-center/test_package_catalog.py": {
+      "bytes": 15130,
+      "sha256": "ba9a456ace25da1be7a7ba1d2f3f6123beea2a0aebef451b72f545da242af937"
+    },
+    "ops/spug/release-center/test_package_presence.py": {
+      "bytes": 6225,
+      "sha256": "4afca545314f7fd36b9870be56b0b5b7b8899e1bd723e2d9c52c60b45b76f0a0"
+    },
+    "ops/spug/release-center/test_commit_catalog.py": {
+      "bytes": 1575,
+      "sha256": "4deb5cbbc948e0848812c12bb3960de4d2cebf0c1931e2da70615585079370cf"
+    },
+    "ops/spug/release-center/README.md": {
+      "bytes": 47970,
+      "sha256": "2cf09f89d52fd263beef71738815756eab98258b01687154db54284a169c01b0"
+    },
+    "docs/experience-index.md": {
+      "bytes": 72030,
+      "sha256": "23500c9f3c6245499da41c11c52b3303bd681d926d7daf150dce6d0a0bfe5a64"
+    },
+    "docs/release-agent-checklist.md": {
+      "bytes": 96685,
+      "sha256": "115c8d88f91fa89c7b7f103b925ba8131203ba4efd3d9b9f77f1677811b5d773"
+    }
+  },
+  "privateValuesChecked": 74,
+  "windowsRegressionTests": 66,
+  "linuxRegressionTests": 15,
+  "actualInstallationComplete": false,
+  "taskAcceptanceComplete": false
+}

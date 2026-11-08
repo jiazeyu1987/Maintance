@@ -1,0 +1,129 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T10:15:34.906564+00:00",
+  "host": "172.30.30.59",
+  "actualRetainedReceiptFiles": true,
+  "positive": {
+    "status": "PASS",
+    "authorizedActiveReceiptCount": 1,
+    "originalReceiptArchived": true,
+    "originalActiveReceiptPin": {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/target-installation.json",
+      "bytes": 1482,
+      "sha256": "856556644073e5c6f325dd8a62b66bc6965d47ce51388d89cdd8ddc7c0c6264b"
+    },
+    "originalArchivedReceiptPin": {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/allocator-7c5f057-previous-target-installation.json",
+      "bytes": 1482,
+      "sha256": "856556644073e5c6f325dd8a62b66bc6965d47ce51388d89cdd8ddc7c0c6264b"
+    },
+    "activatedGenerationCommits": [
+      "7c5f0573e7e1ed7a54e42dbb614cb6e1f0a0534b",
+      "9c93449e99ae0790c8678a570d78a98b61d96d87"
+    ],
+    "activationCount": 2,
+    "selectedCurrentReceiptPin": {
+      "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/target-installation.json",
+      "bytes": 1625,
+      "sha256": "73d7eed2d0366aa70efc96ca19f579ddc7f4d36412f7d56d0fe718c9e8010959"
+    },
+    "allReceiptAndConfigurationPinsVerified": true,
+    "allHistoricalSourceAndTargetDefinitionsUnchanged": true,
+    "verifiedPins": [
+      {
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/allocator-7c5f057-previous-target-installation.json",
+        "bytes": 1482,
+        "sha256": "856556644073e5c6f325dd8a62b66bc6965d47ce51388d89cdd8ddc7c0c6264b"
+      },
+      {
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/frontend-9c93449-previous-target-installation.json",
+        "bytes": 1628,
+        "sha256": "48e65fb8baf687e362727a29d5a480ce86def2599a97820fe94a1dd161114dac"
+      },
+      {
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/target-installation.json",
+        "bytes": 1625,
+        "sha256": "73d7eed2d0366aa70efc96ca19f579ddc7f4d36412f7d56d0fe718c9e8010959"
+      },
+      {
+        "bytes": 23024,
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-retry-f819fbed.json",
+        "sha256": "867679481e689a9a2161a1b19543e45e4868a046480e9cd155c3b5e5af48d192"
+      },
+      {
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-allocator-7c5f057.json",
+        "bytes": 23027,
+        "sha256": "2e08aa70560eea3b202599d3f2a70ca4398515a50d633f9a1d818dcbe134d65c"
+      },
+      {
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-59-allocator-7c5f057.json",
+        "bytes": 2362,
+        "sha256": "a77bc1a3e56a0e6da3210c984f6b341bd7ea4bda61636620172b646c98a8b86c"
+      },
+      {
+        "bytes": 23024,
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-retry-f819fbed.json",
+        "sha256": "867679481e689a9a2161a1b19543e45e4868a046480e9cd155c3b5e5af48d192"
+      },
+      {
+        "bytes": 2344,
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-33659-retry-f819fbed.json",
+        "sha256": "f2aa15354d2057e4a36d043c6cc9c02ac9da50a0ef07dd1a3e5d696cd8e6f2c9"
+      },
+      {
+        "path": "/etc/systemd/system/spug-main-restore-59-20261104-v3.service.d/zz-allocator-7c5f057.conf",
+        "bytes": 843,
+        "sha256": "d2a980a0ba196c2cb990cdfc20da7152ffd1085c859b7a4270ff153ca3d6a057"
+      },
+      {
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-frontend-9c93449.json",
+        "bytes": 23026,
+        "sha256": "12853a1def82fe0143f8916329638cb7b219fa17856a55b40c367ac988612ce5"
+      },
+      {
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-59-frontend-9c93449.json",
+        "bytes": 2356,
+        "sha256": "db53eb56a638cb591298f1bb38ef8bc303b64ee679ab9639b9329dc923f6e6e1"
+      },
+      {
+        "bytes": 23027,
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-allocator-7c5f057.json",
+        "sha256": "2e08aa70560eea3b202599d3f2a70ca4398515a50d633f9a1d818dcbe134d65c"
+      },
+      {
+        "bytes": 2362,
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-59-allocator-7c5f057.json",
+        "sha256": "a77bc1a3e56a0e6da3210c984f6b341bd7ea4bda61636620172b646c98a8b86c"
+      },
+      {
+        "path": "/etc/systemd/system/spug-main-restore-59-20261104-v3.service.d/zzz-frontend-9c93449.conf",
+        "bytes": 838,
+        "sha256": "4d0867db9483f910acb8d2c0648185164b81f6cfd635d15c7855bdf1b2c5d984"
+      }
+    ],
+    "serverWrites": false
+  },
+  "negativeRejections": [
+    {
+      "name": "missing generation",
+      "errorCode": "RECEIPT_CHAIN_LENGTH_INVALID"
+    },
+    {
+      "name": "reordered generations",
+      "errorCode": "RECEIPT_GENERATION_ORDER_CHANGED"
+    },
+    {
+      "name": "tampered activation bytes",
+      "errorCode": "RECEIPT_ACTIVATION_CHAIN_GAP"
+    },
+    {
+      "name": "missing archived receipt",
+      "errorCode": "RECEIPT_PIN_UNAVAILABLE"
+    },
+    {
+      "name": "changed owner binding",
+      "errorCode": "RECEIPT_ACTIVATION_CONTRACT_CHANGED"
+    }
+  ],
+  "serverWrites": false
+}

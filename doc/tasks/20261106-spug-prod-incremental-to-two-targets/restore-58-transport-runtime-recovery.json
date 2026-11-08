@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T02:22:42.566500+00:00",
+  "installedPin": {
+    "path": "C:/Spug/runtime/private/restore-targets-20261104/restore_control_transport.ps1",
+    "bytes": 2336,
+    "sha256": "3cec0194d3cfa23d537fb77191f7bc6de452e739050926883c0cfe8474475668"
+  },
+  "route": {
+    "controlPort": 43658,
+    "exactForwardingVerified": true,
+    "supervisorPid": 4248,
+    "stableTaskRunning": true,
+    "host": "172.30.30.58",
+    "sshPid": 46292
+  },
+  "sameSpugOperationId": "smallapp-c21bb7ce9f5b4668b850c37a80964786",
+  "spugObservationTime": "2026-11-07T02:22:30.473Z",
+  "sameOperationReadOnlyQueryRecovered": true,
+  "allThreeControlPortsReachable": true,
+  "productionCodeOrConfigurationChanged": false,
+  "newRestoreDispatched": false,
+  "completeRestoreAcceptance": false
+}

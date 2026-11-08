@@ -1,0 +1,99 @@
+{
+  "observedAt": "2026-11-06T14:11:07.581854+00:00",
+  "tools": [
+    {
+      "document": {
+        "containerId": "70c0487396f6954ec794230644cc5d01669c7c0ed217df7b6c4a35a722a5832a",
+        "executable": "/usr/local/bin/mysqlbinlog",
+        "imageId": "sha256:628989b79c6cd389187eea347b19a344bc154937117818645989f5f272564cf6",
+        "schemaVersion": "MysqlBinlogContainerTool/v1",
+        "sha256": "8b1ed50f07233f89a3acbf3f0772267ac05c3a7b7e1d34c508fb8cb99ed6e0f5"
+      },
+      "pin": {
+        "bytes": 330,
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/binlog-exporter-acceptance-20261027.json",
+        "sha256": "7459ade4a3bcbd4d27e074efb7b5cfc341a893c3a5b721145c9b1a9c786b8020"
+      },
+      "pinMatches": true,
+      "actualContainer": {
+        "id": "70c0487396f6954ec794230644cc5d01669c7c0ed217df7b6c4a35a722a5832a",
+        "image": "sha256:628989b79c6cd389187eea347b19a344bc154937117818645989f5f272564cf6",
+        "configImage": "sha256:628989b79c6cd389187eea347b19a344bc154937117818645989f5f272564cf6",
+        "state": {
+          "Status": "running",
+          "Running": true,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 26191,
+          "ExitCode": 0,
+          "Error": "",
+          "StartedAt": "2026-11-06T14:10:47.201267443Z",
+          "FinishedAt": "2026-11-04T16:18:25.619947638Z"
+        },
+        "readonlyRootfs": true,
+        "networkMode": "container:9a288d20d254366e99b265b1870466e974edf23e7aab60de2391e3a38e62fff6",
+        "pidMode": "container:9a288d20d254366e99b265b1870466e974edf23e7aab60de2391e3a38e62fff6",
+        "path": "sleep",
+        "args": [
+          "infinity"
+        ],
+        "restartPolicy": {
+          "Name": "no",
+          "MaximumRetryCount": 0
+        },
+        "mounts": [
+          {
+            "destination": "/var/lib/mysql",
+            "writable": true
+          }
+        ]
+      },
+      "checksum": {
+        "exitCode": 0,
+        "stdout": "8b1ed50f07233f89a3acbf3f0772267ac05c3a7b7e1d34c508fb8cb99ed6e0f5  /usr/local/bin/mysqlbinlog\n",
+        "stderr": ""
+      },
+      "version": {
+        "exitCode": 0,
+        "stdout": "/usr/local/bin/mysqlbinlog  Ver 8.0.39 for Linux on x86_64 (MySQL Community Server - GPL)\n",
+        "stderr": ""
+      }
+    }
+  ],
+  "stderr": "MINIMAL_BINLOG_TOOL_CHANGED\n",
+  "terminalDocuments": [
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/b6a643280d94ea4e82a7491bc4a7b3830204b12b9b2a1f1117e4d53e48e7c890/result.json",
+      "state": "FAILED_RETAINED",
+      "failureCode": "MINIMAL_BINLOG_TOOL_CHANGED",
+      "actualExitCode": 1,
+      "dataKeys": []
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-a690233d967d4965bf5f861dc1126961/terminal-result.json",
+      "state": "FAILED_RETAINED",
+      "failureCode": "MINIMAL_BINLOG_TOOL_CHANGED",
+      "actualExitCode": 1,
+      "dataKeys": [
+        "captureRoot",
+        "logRefs"
+      ]
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-a690233d967d4965bf5f861dc1126961/worker-failure.json",
+      "state": null,
+      "failureCode": "MINIMAL_BINLOG_TOOL_CHANGED",
+      "actualExitCode": null,
+      "dataKeys": []
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-a690233d967d4965bf5f861dc1126961/job-configuration.json",
+      "state": null,
+      "failureCode": null,
+      "actualExitCode": null,
+      "dataKeys": []
+    }
+  ]
+}

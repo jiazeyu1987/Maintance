@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "CatalogueReadonlyAttempt/v1",
+  "startedAt": "2026-11-07T18:50:42.817Z",
+  "observation": "r4",
+  "authentication": "fresh-real-ui-login",
+  "sourceCommit": "b5c8817de2b4cc5efdad566f0fb65fdabefcb8d8",
+  "retainedFailedObservationPins": [
+    {
+      "file": "catalogue-identity-readonly-verification.json",
+      "bytes": 618,
+      "sha256": "ed293a1bdea09db3096a36af29d776efa15a9afc262e0a8ce186714d7257be61"
+    },
+    {
+      "file": "catalogue-identity-readonly-verification-r2.json",
+      "bytes": 731,
+      "sha256": "baff7a9e00fa736728143323c39959da3b2ff2192728879fa9f436c5dc5374e4"
+    },
+    {
+      "file": "catalogue-identity-readonly-verification-r3.json",
+      "bytes": 847,
+      "sha256": "e86b5132c292fb8639ef787a31a8d5ab8ea2aea9f21943d872e9bf1efe0200e0"
+    }
+  ],
+  "installationPin": {
+    "file": "catalogue-identity-installation.json",
+    "bytes": 4364,
+    "sha256": "b23e3237ac448a9f669e79e8c4c63f94a6d40bf2f8e6cafd0db80f4d19adbc1d"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "startedAt": "2026-11-07T06:22:38.680Z",
+  "businessWrites": 0,
+  "blocked": [],
+  "responses": [
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/static/css/2.88ef4cd8.chunk.css",
+      "status": 200
+    },
+    {
+      "path": "/static/js/2.aea9107a.chunk.js",
+      "status": 200
+    },
+    {
+      "path": "/static/css/main.b06198ba.chunk.css",
+      "status": 200
+    },
+    {
+      "path": "/static/js/main.c2153b97.chunk.js",
+      "status": 200
+    },
+    {
+      "path": "/static/media/bg.5825f033.svg",
+      "status": 200
+    },
+    {
+      "path": "/static/media/logo-spug-txt.a4258c04.png",
+      "status": 200
+    }
+  ],
+  "failedRequests": [],
+  "httpStatus": 200,
+  "loginControlsVisible": true,
+  "status": "PASS",
+  "observedAt": "2026-11-07T06:26:06.723Z"
+}

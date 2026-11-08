@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T07:54:59.764517+00:00",
+  "previousCommit": "9c93449e99ae0790c8678a570d78a98b61d96d87",
+  "implementationCommit": "0c5828a63e387fe55594450bf2121cd4b31a7d8a",
+  "files": [
+    "ops/backup_engine/standard_fixes.py",
+    "scripts/tests/test_backup_variants.py",
+    "scripts/tests/test_retained_replacement_retry.py",
+    "docs/experience-index.md",
+    "docs/release-agent-checklist.md"
+  ],
+  "testedInputSha256": {
+    "ops/backup_engine/standard_fixes.py": "6c1e307b35d16e236f3c48dd4673f04d1716fbb0ee097c4443dfc5f4e5ddb61e",
+    "scripts/tests/test_backup_variants.py": "16de845a300dff157f4a84c8294dd7b94a7b8bd1ea00f862cb898c463deb9fff",
+    "scripts/tests/test_retained_replacement_retry.py": "0e7c8351839bfe673d121c9d410c21ac584c7d2f2fb8a95f786f250e8ca67f91",
+    "docs/experience-index.md": "1797a32bbd6918aebe9d2b52fde41b414b4ddef42e3151ba5744778f60df4a54",
+    "docs/release-agent-checklist.md": "8c6363206f20b5eadd666dcd43fffa4d1963b3af0d05de974879e6c628f29500"
+  },
+  "taskAcceptanceComplete": false
+}

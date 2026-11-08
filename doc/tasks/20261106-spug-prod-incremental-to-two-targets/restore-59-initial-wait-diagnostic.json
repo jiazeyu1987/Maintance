@@ -1,0 +1,13 @@
+{
+  "observedAt": "2026-11-07T12:59:09.386894+00:00",
+  "operationId": "smallapp-e0946cfc3fd842b1a85a021e236c6317",
+  "pid": 14006,
+  "wchan": "__lock_page_killable",
+  "readGiB": 79.54,
+  "openFDs": 24251,
+  "configuredOpenFileLimit": 65536,
+  "currentArchivePayloadBasename": "database.sql.gz",
+  "privateDiagnosticBytes": 9328218,
+  "privateDiagnosticSha256": "83b93b52c693d2ab112f027326bd104af21b317e9e882e5bfbf0664c47936c5f",
+  "serverWrites": 0
+}

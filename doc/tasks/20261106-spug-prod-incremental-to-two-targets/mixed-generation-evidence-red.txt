@@ -1,0 +1,60 @@
+FFFFFFFFFFF.                                                             [100%]
+================================== FAILURES ===================================
+_______ test_incremental_audit_uses_selected_new_source_and_old_parent ________
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_mixed_generation_evidence.py:86: in test_incremental_audit_uses_selected_new_source_and_old_parent
+    spec=chain.prepare(task/'automatic-i1-ui-submission.json',parent_path=task/'automatic-full-audit.json',task=task,private=private)
+E   TypeError: prepare() got an unexpected keyword argument 'task'
+__________ test_explicit_old_installation_is_rejected_for_new_stage ___________
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_mixed_generation_evidence.py:97: in test_explicit_old_installation_is_rejected_for_new_stage
+    chain.prepare(task/'automatic-i1-ui-submission.json',task/'automatic-control-installation-57.json',
+E   TypeError: prepare() got an unexpected keyword argument 'task'
+______________ test_missing_stage_does_not_reuse_original_source ______________
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_mixed_generation_evidence.py:104: in test_missing_stage_does_not_reuse_original_source
+    chain.prepare(task/'automatic-i1-ui-submission.json',task=task,private=private)
+E   TypeError: prepare() got an unexpected keyword argument 'task'
+______________ test_stage_request_selection_mismatch_is_rejected ______________
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_mixed_generation_evidence.py:111: in test_stage_request_selection_mismatch_is_rejected
+    chain.prepare(task/'automatic-i1-ui-submission.json',task=task,private=private)
+E   TypeError: prepare() got an unexpected keyword argument 'task'
+________ test_source_proof_accepts_bound_v2_stage_and_retained_target _________
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_mixed_generation_evidence.py:129: in test_source_proof_accepts_bound_v2_stage_and_retained_target
+    value=source.validate_evidence('I1',new,submission,audit,terminal,deployment=deployment)
+E   TypeError: validate_evidence() got an unexpected keyword argument 'deployment'
+______ test_source_proof_rejects_cross_generation_evidence[audit-stage] _______
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_mixed_generation_evidence.py:142: in test_source_proof_rejects_cross_generation_evidence
+    with pytest.raises(ValueError):source.validate_evidence('I1',new,submission,audit,terminal,deployment=deployment)
+E   TypeError: validate_evidence() got an unexpected keyword argument 'deployment'
+______ test_source_proof_rejects_cross_generation_evidence[audit-commit] ______
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_mixed_generation_evidence.py:142: in test_source_proof_rejects_cross_generation_evidence
+    with pytest.raises(ValueError):source.validate_evidence('I1',new,submission,audit,terminal,deployment=deployment)
+E   TypeError: validate_evidence() got an unexpected keyword argument 'deployment'
+______ test_source_proof_rejects_cross_generation_evidence[old-package] _______
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_mixed_generation_evidence.py:142: in test_source_proof_rejects_cross_generation_evidence
+    with pytest.raises(ValueError):source.validate_evidence('I1',new,submission,audit,terminal,deployment=deployment)
+E   TypeError: validate_evidence() got an unexpected keyword argument 'deployment'
+___ test_source_proof_rejects_cross_generation_evidence[wrong-installation] ___
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_mixed_generation_evidence.py:142: in test_source_proof_rejects_cross_generation_evidence
+    with pytest.raises(ValueError):source.validate_evidence('I1',new,submission,audit,terminal,deployment=deployment)
+E   TypeError: validate_evidence() got an unexpected keyword argument 'deployment'
+____ test_source_proof_rejects_cross_generation_evidence[terminal-request] ____
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_mixed_generation_evidence.py:142: in test_source_proof_rejects_cross_generation_evidence
+    with pytest.raises(ValueError):source.validate_evidence('I1',new,submission,audit,terminal,deployment=deployment)
+E   TypeError: validate_evidence() got an unexpected keyword argument 'deployment'
+_______ test_remote_source_proof_uses_each_manifest_and_target_runtime ________
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_mixed_generation_evidence.py:146: in test_remote_source_proof_uses_each_manifest_and_target_runtime
+    assert "zip(controllers,SPEC['controllerFiles'])" in source.SCRIPT
+E   assert "zip(controllers,SPEC['controllerFiles'])" in "def source_runtime_paths(control, engine):\n    paths = control['environment']['PYTHONPATH'].split(':')\n    expected...nputPins'],sourceRuntime=source_runtime,noRemoteMutation=True)\nfinally:\n os.close(lock)\nprint(json.dumps(report))\n"
+E    +  where "def source_runtime_paths(control, engine):\n    paths = control['environment']['PYTHONPATH'].split(':')\n    expected...nputPins'],sourceRuntime=source_runtime,noRemoteMutation=True)\nfinally:\n os.close(lock)\nprint(json.dumps(report))\n" = source.SCRIPT
+=========================== short test summary info ===========================
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_mixed_generation_evidence.py::test_incremental_audit_uses_selected_new_source_and_old_parent
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_mixed_generation_evidence.py::test_explicit_old_installation_is_rejected_for_new_stage
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_mixed_generation_evidence.py::test_missing_stage_does_not_reuse_original_source
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_mixed_generation_evidence.py::test_stage_request_selection_mismatch_is_rejected
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_mixed_generation_evidence.py::test_source_proof_accepts_bound_v2_stage_and_retained_target
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_mixed_generation_evidence.py::test_source_proof_rejects_cross_generation_evidence[audit-stage]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_mixed_generation_evidence.py::test_source_proof_rejects_cross_generation_evidence[audit-commit]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_mixed_generation_evidence.py::test_source_proof_rejects_cross_generation_evidence[old-package]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_mixed_generation_evidence.py::test_source_proof_rejects_cross_generation_evidence[wrong-installation]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_mixed_generation_evidence.py::test_source_proof_rejects_cross_generation_evidence[terminal-request]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_mixed_generation_evidence.py::test_remote_source_proof_uses_each_manifest_and_target_runtime
+11 failed, 1 passed in 1.06s

@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T13:28:45.274115+00:00",
+  "sourceCommit": "6319024c003ead602d59e7697673fa3c39807863",
+  "service": "spug-intruoyi-source-57-20261105.service",
+  "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+  "oldControlPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control-postboot-20261105.json",
+    "bytes": 2127,
+    "sha256": "64971616b6af6fcac3d718a38dcfe9939e8d8c00b1698cb096fac281bac7f34c"
+  },
+  "controlConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control-incremental-6319024.json",
+    "bytes": 2247,
+    "sha256": "881d60587f8ff718b332131831067dd3f7535966646503700787bde67c28c86d"
+  },
+  "ownerConfigurationPin": {
+    "bytes": 1970,
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/repository-incremental-6319024.json",
+    "sha256": "6735e1c68798408478e79309f227bbe58bad596adaf0e89cdc8b5e429e557e47"
+  },
+  "engine": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-incremental-6319024",
+  "fileCount": 126,
+  "fileManifestSha256": "1e01d20fc96f3f86eff6c1ead874a48e5a9ae27568b6d036cba2dc2142aeeabe",
+  "packageSha256": "2ca6238382a4a8847ed39d5de741500271a3a27beda37e4c2e4632f07f56285e",
+  "dropinPin": {
+    "path": "/etc/systemd/system/spug-intruoyi-source-57-20261105.service.d/incremental-6319024.conf",
+    "bytes": 855,
+    "sha256": "a57df0f35d66608bdf6e2360ccd82168849c1b2090d030ae13c8def8c31393e7"
+  },
+  "previousPid": 20619,
+  "pid": 28125,
+  "liveMaxOpenFiles": 65536,
+  "originalContainerCount": 195,
+  "allOriginalContainersUnchanged": true,
+  "fstabAndProtectedMountsUnchanged": true,
+  "sourceSelectionsHttp": 200,
+  "backupPerformed": false,
+  "restorePerformed": false,
+  "initialReadinessCheck": "CONNECTION_REFUSED_BEFORE_BIND",
+  "readOnlyCompletionCheck": true
+}

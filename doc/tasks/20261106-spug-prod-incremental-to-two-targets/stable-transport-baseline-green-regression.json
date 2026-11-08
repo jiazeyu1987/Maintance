@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T02:10:01.473261+00:00",
+  "realInstalledFileVerified": true,
+  "installedPin": {
+    "path": "C:/Spug/runtime/private/restore-targets-20261104/restore_control_transport.ps1",
+    "bytes": 2336,
+    "sha256": "3cec0194d3cfa23d537fb77191f7bc6de452e739050926883c0cfe8474475668"
+  },
+  "negativeContentAndLengthPinsRejected": true,
+  "cases": [
+    {
+      "scenario": "exact-existing-installation",
+      "actualExitCode": 0,
+      "expectedExitCode": 0
+    },
+    {
+      "scenario": "wrong-content-pin",
+      "actualExitCode": 1,
+      "expectedExitCode": 1
+    },
+    {
+      "scenario": "wrong-length-pin",
+      "actualExitCode": 1,
+      "expectedExitCode": 1
+    }
+  ],
+  "anyRuntimeChanged": false,
+  "completeControlRouteAcceptance": false
+}

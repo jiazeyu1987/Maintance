@@ -1,0 +1,10 @@
+{
+  "observedAt": "2026-11-06T18:32:53.737Z",
+  "actualPageRequest": true,
+  "businessWrites": 0,
+  "endpoint": "/release-center/api/applications/intruoyi/package-catalog",
+  "httpStatus": 200,
+  "backupPageInitialized": true,
+  "finishedAt": "2026-11-06T18:33:05.233Z",
+  "status": "PASS"
+}

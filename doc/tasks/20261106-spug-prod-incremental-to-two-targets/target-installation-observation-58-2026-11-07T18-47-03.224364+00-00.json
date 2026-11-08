@@ -1,0 +1,54 @@
+{
+  "observedAt": "2026-11-07T18:47:02.263484+00:00",
+  "servicePid": "MainPID=2043",
+  "audits": [
+    {
+      "directory": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/installation-audit-automatic-0d44578-resume-1",
+      "files": [
+        {
+          "name": "business-before.json",
+          "bytes": 182519
+        },
+        {
+          "name": "history-after-source-idle.json",
+          "bytes": 3917605,
+          "entryCount": 8408,
+          "pinnedBytes": 66132913456
+        },
+        {
+          "name": "source-idle-query-audit.json",
+          "bytes": 1578
+        },
+        {
+          "name": "strict-history-before-activation.json",
+          "bytes": 3917605
+        },
+        {
+          "name": "failed-attempt-observation.json",
+          "bytes": 9506
+        },
+        {
+          "name": "history-before-source-idle.json",
+          "bytes": 3916051,
+          "entryCount": 8405,
+          "pinnedBytes": 66132910867
+        }
+      ]
+    }
+  ],
+  "processes": [
+    {
+      "pid": 2043,
+      "comm": "python3.12",
+      "wchan": "__x64_sys_poll",
+      "io": "rchar: 704639293215\nwchar: 156454134975\nsyscr: 234892001\nsyscw: 5482205\nread_bytes: 137378029568\nwrite_bytes: 96570298368\ncancelled_write_bytes: 0\n",
+      "fds": [
+        {
+          "fd": "4",
+          "name": "service.lock"
+        }
+      ]
+    }
+  ],
+  "serverWrites": false
+}

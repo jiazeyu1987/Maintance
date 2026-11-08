@@ -1,0 +1,15 @@
+{
+  "observedAt": "2026-11-07T05:02:47.986003+00:00",
+  "operationId": "smallapp-b4f35606e4854516960050a76473038b",
+  "fdEntriesExamined": 8,
+  "archiveReaders": [
+    {
+      "pid": 5537,
+      "file": "a8a95fa93811f86dac0e7f03bd70830d2d30529ca6237a9f3e4893c49997b41c.bin",
+      "position": 121634816,
+      "bytes": 253853484
+    }
+  ],
+  "serverWrites": false,
+  "wholeOperationPercentageClaimed": false
+}

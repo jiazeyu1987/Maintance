@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "AutomaticIncrementalUiTerminal/v1",
+  "kind": "FULL",
+  "applicationId": "intruoyi-57-safe-20261024-v1",
+  "observedAt": "2026-11-07T21:08:00.573Z",
+  "request": {
+    "schemaVersion": "SmallAppBackupUiRequest/v1",
+    "operationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "action": "FULL",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "parentChainRef": null,
+    "recoveryPointRef": null,
+    "targetConfigRef": null
+  },
+  "plan": {
+    "schemaVersion": "AutomaticIncrementalPlan/v1",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "state": "BASELINE_REQUIRED",
+    "reasonCode": "BACKUP_POINT_EPOCH_REQUIRED",
+    "parentChainRef": null,
+    "baseFullRef": null,
+    "generationId": null,
+    "chainDepth": 0,
+    "pointType": null,
+    "parentPointType": null,
+    "basePointType": null,
+    "finishedAt": null,
+    "baseFinishedAt": null,
+    "evidenceDigest": "2b5596ab3fd9c89a80ab833a62a4649baa6e14e039a5f0889b144b44a22c09e0",
+    "planDigest": "d451ec544f50d50bcb4ec564543c6f8322ebf88d15230da7fa26ed175603d333"
+  },
+  "operationState": "SUCCEEDED",
+  "spugHistoryId": 373,
+  "observation": "first",
+  "preflightSha256": "e4b4ba7b972e4002ce32faeab8c0e932c2abf4b857cc65612782aa7da969f4fa"
+}

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "TaskLocalHelperRegression/v1",
+  "status": "PASS",
+  "observedAt": "2026-11-07T18:51:01.944782+00:00",
+  "testCount": 3,
+  "exitCodes": [
+    0,
+    0
+  ],
+  "realBrowserExecuted": false,
+  "remoteReadDispatched": false,
+  "remoteWriteDispatched": false,
+  "files": {
+    "verify_catalogue_identity_readonly.cjs": {
+      "bytes": 12851,
+      "sha256": "0b7ba9130068772318eacdaf1e314e5d77c6c2addfa88a3906aababd0e809191"
+    },
+    "catalogue_login_contract.test.cjs": {
+      "bytes": 2978,
+      "sha256": "7f2f40d85d07f6362360f1942e8fe94a1bf3791d390e514eab1ee15d107bd406"
+    }
+  }
+}

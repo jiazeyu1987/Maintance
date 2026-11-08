@@ -1,0 +1,52 @@
+{
+  "request": {
+    "action": "INCREMENTAL",
+    "operationId": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291",
+    "parentChainRef": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+    "recoveryPointRef": null,
+    "schemaVersion": "SmallAppBackupUiRequest/v1",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "targetConfigRef": null
+  },
+  "applicationId": "intruoyi-57-safe-20261024-v1",
+  "spugTaskId": 8,
+  "createdAt": "2026-11-08T00:18:12.039508+00:00",
+  "spugHistoryId": 375,
+  "dispatchErrorCode": null,
+  "dispatchState": "DISPATCHING",
+  "cancelledUnaccepted": false,
+  "displayContext": {
+    "server": "172.30.30.57",
+    "mode": "safe",
+    "restoreMode": null
+  },
+  "automaticIncrementalPlan": {
+    "baseFinishedAt": "2026-11-07T21:05:37.900272Z",
+    "baseFullRef": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "basePointType": "FULL",
+    "chainDepth": 2,
+    "evidenceDigest": "10db76f624ab8702f043d8d8763142e1de0e10838f86dd058760706f4ee7a2d9",
+    "finishedAt": "2026-11-08T00:10:12.807423Z",
+    "generationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "parentChainRef": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+    "parentPointType": "INCREMENTAL",
+    "planDigest": "3bb7efc2733fc14b49832c397090474288ae7bba91c3a45d8db2053379e477fa",
+    "pointType": "INCREMENTAL",
+    "reasonCode": null,
+    "schemaVersion": "AutomaticIncrementalPlan/v1",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "state": "READY"
+  },
+  "result": {
+    "action": "INCREMENTAL",
+    "errorCode": null,
+    "logRefs": [
+      "smallapp-9d5ed2108497411a81bcd5ba7d1a6291-originals"
+    ],
+    "operationId": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291",
+    "resultRef": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291-result",
+    "schemaVersion": "SmallAppBackupUiResult/v1",
+    "state": "SUCCEEDED"
+  },
+  "repeatSubmissionAllowed": false
+}

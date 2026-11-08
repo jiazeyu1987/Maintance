@@ -1,0 +1,299 @@
+{
+  "observedAt": "2026-11-07T21:02:32.671208+00:00",
+  "operationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+  "directories": {
+    "ledger/smallapp-fbaf12b584214695b6b687e010f4773b": {
+      "count": 10,
+      "latest": [
+        {
+          "name": "queries",
+          "bytes": 163840,
+          "mtime": 1794085352.5599952,
+          "isDirectory": true
+        },
+        {
+          "name": "worker-terminal.json",
+          "bytes": 647,
+          "mtime": 1794073397.9964714,
+          "isDirectory": false
+        },
+        {
+          "name": "completion.json",
+          "bytes": 3607,
+          "mtime": 1794073397.975471,
+          "isDirectory": false
+        },
+        {
+          "name": "execute",
+          "bytes": 4096,
+          "mtime": 1794073397.9744709,
+          "isDirectory": true
+        },
+        {
+          "name": "worker-process.json",
+          "bytes": 676,
+          "mtime": 1794073387.267265,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-stderr",
+          "bytes": 0,
+          "mtime": 1794073387.267265,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-stdout",
+          "bytes": 0,
+          "mtime": 1794073387.267265,
+          "isDirectory": false
+        },
+        {
+          "name": "intent.json",
+          "bytes": 1637,
+          "mtime": 1794073386.9762595,
+          "isDirectory": false
+        },
+        {
+          "name": "selection.json",
+          "bytes": 1438,
+          "mtime": 1794073386.9742594,
+          "isDirectory": false
+        },
+        {
+          "name": "request.json",
+          "bytes": 238,
+          "mtime": 1794073386.9722593,
+          "isDirectory": false
+        }
+      ]
+    },
+    "capture-staging/smallapp-fbaf12b584214695b6b687e010f4773b": {
+      "count": 34,
+      "latest": [
+        {
+          "name": "staging-cleanup.json",
+          "bytes": 3426747,
+          "mtime": 1794083723.7755704,
+          "isDirectory": false
+        },
+        {
+          "name": "staging-cleanup-intent.json",
+          "bytes": 3426697,
+          "mtime": 1794083680.2377276,
+          "isDirectory": false
+        },
+        {
+          "name": "terminal-result.json",
+          "bytes": 3135,
+          "mtime": 1794078063.1215932,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-completion.json",
+          "bytes": 1870,
+          "mtime": 1794077912.5736187,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0020.json",
+          "bytes": 94,
+          "mtime": 1794077912.5446181,
+          "isDirectory": false
+        },
+        {
+          "name": "source-restoration.json",
+          "bytes": 435,
+          "mtime": 1794077912.533618,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0019.json",
+          "bytes": 68,
+          "mtime": 1794077912.5266178,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0018.json",
+          "bytes": 314,
+          "mtime": 1794077912.4996173,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0017.json",
+          "bytes": 68,
+          "mtime": 1794077911.9276059,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0016.json",
+          "bytes": 314,
+          "mtime": 1794077911.8996055,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0015.json",
+          "bytes": 76,
+          "mtime": 1794077911.2595928,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0014.json",
+          "bytes": 67,
+          "mtime": 1794077910.4525769,
+          "isDirectory": false
+        }
+      ]
+    },
+    "repository-operations/bcd34c72651c4865b37073062242969de3f7c857c65ec70a718be375d6ec933c": {
+      "count": 4257,
+      "latest": [
+        {
+          "name": "timing-archive-chain-readback-start.json",
+          "bytes": 76,
+          "mtime": 1794083723.804571,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-capture-cleanup-end.json",
+          "bytes": 112,
+          "mtime": 1794083723.801571,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-capture-cleanup-start.json",
+          "bytes": 69,
+          "mtime": 1794083489.8060412,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-archive-final-verification-end.json",
+          "bytes": 124,
+          "mtime": 1794083489.5200357,
+          "isDirectory": false
+        },
+        {
+          "name": "399ce54b40677b8485377a6e47c91374937cec08be28fd51902907ddcf026f06",
+          "bytes": 4096,
+          "mtime": 1794083488.9940255,
+          "isDirectory": true
+        },
+        {
+          "name": "timing-archive-final-verification-start.json",
+          "bytes": 80,
+          "mtime": 1794081634.7661235,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-nas-readback-end.json",
+          "bytes": 110,
+          "mtime": 1794081633.2280936,
+          "isDirectory": false
+        },
+        {
+          "name": "0c8380972960174c432960890b165392fc5c0b083486bfef9052325feae1661f",
+          "bytes": 4096,
+          "mtime": 1794081025.403316,
+          "isDirectory": true
+        },
+        {
+          "name": "timing-nas-readback-start.json",
+          "bytes": 66,
+          "mtime": 1794079992.1723232,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-archive-metadata-end.json",
+          "bytes": 111,
+          "mtime": 1794079992.1693232,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-archive-metadata-start.json",
+          "bytes": 70,
+          "mtime": 1794079991.4063084,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-nas-upload-end.json",
+          "bytes": 108,
+          "mtime": 1794079991.4023082,
+          "isDirectory": false
+        }
+      ]
+    }
+  },
+  "workers": [
+    {
+      "pid": 18771,
+      "io": "rchar: 297838886898\nwchar: 26164897769\nsyscr: 5101970\nsyscw: 38805\nread_bytes: 63346798592\nwrite_bytes: 46489600\ncancelled_write_bytes: 0\n",
+      "state": "D",
+      "startTicks": "23135431",
+      "role": "repository",
+      "activeArchiveReads": [],
+      "program": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-automatic-0d44578/common/repository_minimal.py"
+    }
+  ],
+  "nativeDeadlineSecondsRemaining": 52835.2,
+  "nativeReadbackRecords": [
+    {
+      "fileCount": 14349,
+      "payloadBytes": 26090620599,
+      "recordBytes": 7965199
+    }
+  ],
+  "staging": {
+    "payload": {
+      "files": 0,
+      "bytes": 0,
+      "latestMtime": 0
+    },
+    "semantic-capture": {
+      "files": 0,
+      "bytes": 0,
+      "latestMtime": 0
+    }
+  },
+  "dataObservationScratch": {
+    "scratch-before": null,
+    "scratch-after": null,
+    "scratch-affected": null
+  },
+  "knownCaptureFiles": {
+    "database.sql.gz": null,
+    "database.sql.incremental.raw": null,
+    "database.sql.incremental-scope.json": null,
+    "source-affected-data.json": null,
+    "011-source-data.json": null,
+    "012-source-data-after.json": null,
+    "capture-content-point.json": null
+  },
+  "payloadTopLevel": [],
+  "operationQuerySnapshots": {
+    "files": 2318,
+    "latestMtime": 1794085352.5599952,
+    "databaseProgressEvidence": false
+  },
+  "semanticTopLevel": [],
+  "nativeCaptureEvents": [
+    {
+      "at": "2026-11-07T18:58:31.899665+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT"
+    },
+    {
+      "at": "2026-11-07T18:58:31.928160+00:00",
+      "stage": "WRITER_RESTORED"
+    },
+    {
+      "at": "2026-11-07T18:58:32.499798+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT"
+    },
+    {
+      "at": "2026-11-07T18:58:32.527039+00:00",
+      "stage": "WRITER_RESTORED"
+    },
+    {
+      "at": "2026-11-07T18:58:32.544836+00:00",
+      "stage": "CAPTURE_MATERIAL_COMPLETE_SOURCE_RESTORED"
+    }
+  ]
+}

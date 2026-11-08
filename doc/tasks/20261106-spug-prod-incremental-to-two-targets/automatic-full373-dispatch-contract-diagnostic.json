@@ -1,0 +1,55 @@
+{
+  "status": "OBSERVED",
+  "observedAt": "2026-11-07T21:09:06.035975+00:00",
+  "operationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+  "checks": {
+    "identities": true,
+    "requestPins": true,
+    "intentPins": true,
+    "pid": true,
+    "allowedLauncherExit": false,
+    "notTimedOut": true,
+    "programPin": true,
+    "configurationPin": true,
+    "actualArgvMatchesExecutor": true
+  },
+  "originalOwnerResultPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/bcd34c72651c4865b37073062242969de3f7c857c65ec70a718be375d6ec933c/result.json",
+    "bytes": 5239,
+    "sha256": "acac53b27b72bd009fedf653008ae42c10fe33eb33d1a7748bad2c9b118e03e5"
+  },
+  "originalOwnerResult": {
+    "operationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "requestId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "state": "SUCCEEDED",
+    "actualExitCode": 0,
+    "failureCode": null,
+    "finishedAt": "2026-11-07T21:05:37.900272Z"
+  },
+  "noServerMutation": true,
+  "actualAuditRerun": false,
+  "inputPins": {
+    "installation": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-control-installation-57.json",
+      "bytes": 5565,
+      "sha256": "8ecd7667b2dcfa491818656a296ee3bc92203ea6dd968d77e6e9ccf3daf52351"
+    },
+    "submission": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-full-ui-submission.json",
+      "bytes": 1579,
+      "sha256": "fed00eed27b4a4738037ec7a7a5524ad17caee977b658269d1d9c4b875aec14e"
+    },
+    "originalFailure": {
+      "path": "C:/Spug/runtime/private/prod-incremental-to-two-targets-20261106/172.30.30.57-error-cb981ded009d.private.log",
+      "bytes": 275,
+      "sha256": "cb981ded009da56d9d3415786a9017e1d7a10c43d502cc6ddaea24e3ef40ce92"
+    }
+  },
+  "diagnosticPin": {
+    "path": "C:/Spug/runtime/private/prod-incremental-to-two-targets-20261106/automatic-full373-dispatch-contract-diagnostic.private.json",
+    "bytes": 11588,
+    "sha256": "98f7f9fc579e3cb8fe59aed420b98674e2c83e77caba15d2d79d34b15234820a"
+  },
+  "launcherActualExitCode": 2,
+  "launcherTimedOut": false
+}

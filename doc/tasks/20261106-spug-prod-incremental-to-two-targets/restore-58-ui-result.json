@@ -1,0 +1,37 @@
+{
+  "realBrowser": true,
+  "realLogin": true,
+  "startedAt": "2026-11-07T00:06:39.544Z",
+  "writes": 1,
+  "blocked": [],
+  "httpFailures": [],
+  "pageErrors": [],
+  "stage": "confirmation",
+  "selectedPackage": "2026/11/7 03:57:34 · 增量备份 · smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+  "entry": "existing-restore-tab",
+  "confirmation": "IntRuoyi · 恢复 · 正式服务器　172.30.30.57 · 安全模式 · 完整核验 NAS：\\\\172.30.30.4\\IT共享\\Backup\\BackupPackage 来源：intruoyi-57-safe-20261024-v1 备份包：smallapp-ae9f83a19bb84ec28f27b5ca666bf62c 恢复到：测试服务器　172.30.30.58 独立目标：intruoyi-main-58-safe-restore-20261104-v1 恢复方式：覆盖现有程序，将替换目标现有记录、附件及 Redis 数据。",
+  "request": {
+    "schemaVersion": "SmallAppBackupUiRequest/v1",
+    "operationId": "smallapp-c21bb7ce9f5b4668b850c37a80964786",
+    "action": "RESTORE",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "parentChainRef": null,
+    "recoveryPointRef": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+    "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1"
+  },
+  "httpStatus": 202,
+  "spugHistoryId": null,
+  "result": {
+    "schemaVersion": "SmallAppBackupUiResult/v1",
+    "operationId": "smallapp-c21bb7ce9f5b4668b850c37a80964786",
+    "action": "RESTORE",
+    "state": "RUNNING",
+    "errorCode": "SPUG_DISPATCH_RESERVED",
+    "logRefs": [],
+    "resultRef": null
+  },
+  "dispatchErrorCode": null,
+  "visible": "备份\n恢复\n全部包清单\n执行进度\n操作记录\n执行进度\n刷新进度\n已保留编号，尚未查询执行回执\n操作\n恢复\n来源服务器\n来源服务器未记录\n来源\nintruoyi-57-safe-20261024-v1\n执行模式\n执行模式未记录\n备份包\nsmallapp-ae9f83a19bb84ec28f27b5ca666bf62c\n恢复目标\nintruoyi-main-58-safe-restore-20261104-v1\n恢复方式\n恢复方式未记录\n总耗时\n0时 0分 4秒\nsmallapp-c21bb7ce9f5b4668b850c37a80964786\n尚无步骤时间回执。\n操作日志\n暂无日志。\n\n无实际百分比回执时显示执行状态，不估算完成百分比。\n\n执行诊断",
+  "status": "PASS",
+  "finishedAt": "2026-11-07T00:07:07.507Z"
+}

@@ -1,0 +1,145 @@
+{
+  "status": "OBSERVED",
+  "observedAt": "2026-11-07T21:30:22.846495+00:00",
+  "plan": {
+    "schemaVersion": "AutomaticIncrementalPlan/v1",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "state": "BLOCKED",
+    "reasonCode": "DIAGNOSTIC_SERVER_WRITE_FORBIDDEN",
+    "parentChainRef": null,
+    "baseFullRef": null,
+    "generationId": null,
+    "chainDepth": 0,
+    "pointType": null,
+    "finishedAt": null,
+    "baseFinishedAt": null,
+    "basePointType": null,
+    "parentPointType": null,
+    "evidenceDigest": "1f83f32e4b517515bb9b2bfaf9c982622493bf9406edd5eee2452ec6828c5b19",
+    "planDigest": "743675eecd14531e780403ca3fd78a6dd4ca167ecd1dbdd9d16306adb817609a"
+  },
+  "elapsedSeconds": 6.7412576409988105,
+  "phases": [
+    {
+      "phase": "configuration",
+      "seconds": 0.10532653800328262
+    },
+    {
+      "phase": "configuration",
+      "seconds": 0.10067721601808444
+    },
+    {
+      "phase": "registration",
+      "seconds": 0.10220834601204842
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+      "closed": true,
+      "seconds": 0.0062647099839523435
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+      "closed": true,
+      "seconds": 0.01896326898713596
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-3f29a2b1324045309478a3a597654260",
+      "closed": true,
+      "seconds": 0.005630578001728281
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+      "closed": true,
+      "seconds": 0.005618092982331291
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-76d73ea28c424caa90adc75ab1ac4206",
+      "closed": true,
+      "seconds": 0.020531469985144213
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-7fec29a3e132463096aec915c08acab3",
+      "closed": true,
+      "seconds": 0.005717706982977688
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-9d0b52af727045efb92e490a68329a22",
+      "closed": true,
+      "seconds": 0.00848352100001648
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-a54a05be9dab45e490a3979551536b0c",
+      "closed": true,
+      "seconds": 0.0056592850014567375
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-a690233d967d4965bf5f861dc1126961",
+      "closed": true,
+      "seconds": 0.005586801009485498
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-abbd6341ab7a4318973434f48020b287",
+      "closed": true,
+      "seconds": 0.013464794988976792
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+      "closed": true,
+      "seconds": 0.005825275991810486
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-bc3a610cf70345538e2dcd783893a6ed",
+      "closed": true,
+      "seconds": 0.034629536006832495
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-e7cee19e7f4b464eacdfe11b712aec17",
+      "closed": true,
+      "seconds": 0.03411207301542163
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-eb990891100642db8859439d741c0fc9",
+      "closed": true,
+      "seconds": 0.008387150010094047
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+      "closed": true,
+      "seconds": 0.006825015007052571
+    },
+    {
+      "phase": "source_epoch",
+      "seconds": 0.0024738300126045942
+    },
+    {
+      "phase": "incremental_source_observation",
+      "seconds": 0.32634636500733905
+    }
+  ],
+  "codeSha256": {
+    "ledger": "1b0456126289ef2e501f612b40a009fa65e82e9441cb29d754863065a9d8366c",
+    "native": "41363a3dfd9e86621dddc84096208748ca9288dcf74a33423b3fc9da5a96f3e8"
+  },
+  "serverWrites": false,
+  "reconcileCalls": 0,
+  "candidateLoadedInMemoryOnly": true,
+  "pinReadCalls": 256,
+  "pinReadBytes": 344020641,
+  "pinReadSeconds": 4.086093429941684,
+  "readbackReads": 0
+}

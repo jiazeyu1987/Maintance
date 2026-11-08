@@ -1,0 +1,25 @@
+{
+  "status": "READ_ONLY_ENVIRONMENT_DIAGNOSIS",
+  "priorFailureMarkers": {
+    "Get-FileHash": true,
+    "CommandNotFoundException": true,
+    "INSTALLED_TRANSPORT_PIN_CHANGED": false,
+    "TARGET_TRANSPORT_PROCESS_CHANGED": false,
+    "TARGET_TRANSPORT_TASK_CHANGED": false,
+    "TARGET_TRANSPORT_LISTENER_CHANGED": false
+  },
+  "pythonChild": {
+    "version": "5.1.19041.6456",
+    "psHome": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0",
+    "modulePath": "C:\\Users\\D01021\\Documents\\PowerShell\\Modules;C:\\Program Files\\PowerShell\\Modules;c:\\users\\d01021\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\Modules;C:\\Users\\D01021\\Documents\\WindowsPowerShell\\Modules;C:\\Program Files\\WindowsPowerShell\\Modules;C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\Modules",
+    "commands": {
+      "Get-CimInstance": true,
+      "Get-Content": true,
+      "Get-NetTCPConnection": true,
+      "Get-ScheduledTask": true,
+      "Get-FileHash": false,
+      "ConvertFrom-Json": true
+    },
+    "autoLoading": ""
+  }
+}

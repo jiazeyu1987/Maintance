@@ -1,0 +1,98 @@
+{
+  "observedAt": "2026-11-07T05:18:03.641529+00:00",
+  "operationId": "smallapp-b4f35606e4854516960050a76473038b",
+  "ledgerFiles": [
+    "worker-process.json",
+    "worker-stderr",
+    "selection.json",
+    "request.json",
+    "worker-terminal.json",
+    "execute",
+    "completion.json",
+    "restore-target-before.json",
+    "worker-stdout",
+    "intent.json"
+  ],
+  "processes": [],
+  "evidenceFiles": [
+    {
+      "path": "worker-result.json",
+      "bytes": 2133
+    },
+    {
+      "path": "result.json",
+      "bytes": 3623
+    }
+  ],
+  "worker-terminal.json": {
+    "actualExitCode": 1,
+    "operationId": "smallapp-b4f35606e4854516960050a76473038b",
+    "pid": 4042,
+    "stderrPin": {
+      "bytes": 0,
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-b4f35606e4854516960050a76473038b/worker-stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdoutPin": {
+      "bytes": 0,
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-b4f35606e4854516960050a76473038b/worker-stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "uiRequestSha256": "d0bec68b08392f4309556a735b538dcf0ea084a74ed9e587ab74d26c874536ab"
+  },
+  "nativeTimings": [
+    {
+      "path": "replacement-preparation/timing-target-replacement-end.json",
+      "value": {
+        "completed": false,
+        "elapsedSeconds": 0.614,
+        "finishedAt": "2026-11-07T05:16:22.404387Z",
+        "stage": "target-replacement"
+      }
+    },
+    {
+      "path": "replacement-preparation/timing-target-replacement-start.json",
+      "value": {
+        "stage": "target-replacement",
+        "startedAt": "2026-11-07T05:16:21.790661Z"
+      }
+    }
+  ],
+  "services": [
+    {
+      "id": "b4592b704b979f1b94ba03836985491a8f7c699d3094297bfbe3696939eedd79",
+      "running": true,
+      "pid": 11377,
+      "startedAt": "2026-11-05T01:51:30.916478688Z"
+    },
+    {
+      "id": "98216faac1ae2fc1508bd4076962bf4cfcb3a47f2f1bd5d5e42c7ba819e83115",
+      "running": false,
+      "pid": 0,
+      "startedAt": "2026-11-05T10:41:42.537848196Z"
+    },
+    {
+      "id": "028bb0541d3216c283c5f1822338462545fa7cd63fad55c462ae20a01526e225",
+      "running": true,
+      "pid": 28575,
+      "startedAt": "2026-11-05T01:52:49.476812788Z"
+    },
+    {
+      "id": "6f70e67078d086d7f08c1ae75a80bb0feab28c5a1f92c91d655ac258f34988eb",
+      "running": false,
+      "pid": 0,
+      "startedAt": "2026-11-05T10:52:47.882899354Z"
+    },
+    {
+      "id": "4f9775e6f0a1d86b2d06c69e40504a91cf44a613de458b76e69fa04805ca5d73",
+      "running": false,
+      "pid": 0,
+      "startedAt": "2026-11-05T10:56:11.580646446Z"
+    }
+  ],
+  "readback": {
+    "tableDirectories": 0,
+    "tokenFiles": 0
+  },
+  "databaseReadbackSteps": {}
+}

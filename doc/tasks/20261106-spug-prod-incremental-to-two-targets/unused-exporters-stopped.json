@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-08T03:02:17.323418+00:00",
+  "backupOperationId": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+  "containers": [
+    {
+      "containerId": "a7aa973f623ad07adb82c25f9b5f352db74a00ea2abf22a8fbd0b4db4cdfeb2f",
+      "name": "spug-intruoyi57-binlog-tmpfs-20261107-v1",
+      "stopped": true,
+      "retained": true,
+      "afterRuntimeSha256": "422b8c3cf0c3ef09958211bd2995ba6512876ad0de3777d607d4999c0c1d6623"
+    },
+    {
+      "containerId": "43ee735bfd1f0d864819a2cd03e8f8ce54bd2b9a8430cc42671a4981f3d6a41a",
+      "name": "spug-intruoyi57-binlog-tmpfs-20261107-v2",
+      "stopped": true,
+      "retained": true,
+      "afterRuntimeSha256": "2f2730c2d81abf37b828aa21252c21daa348c4e8fd5ea490326bba73869b47fd"
+    }
+  ],
+  "registeredExporterRunning": true,
+  "allOriginalAndRegisteredContainersPreserved": true,
+  "noContainersDeleted": true,
+  "noImagesOrDataChanged": true
+}

@@ -1,0 +1,55 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T19:40:07.750860+00:00",
+  "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+  "containerId": "69e7bec0183a7d510942c06a4c85fd2f1663815b982f26226779b03ef776246c",
+  "containerName": "spug-intruoyi57-binlog-tmpfs-20261107-v3",
+  "imageId": "sha256:628989b79c6cd389187eea347b19a344bc154937117818645989f5f272564cf6",
+  "executable": "/usr/local/bin/mysqlbinlog",
+  "executableSha256": "8b1ed50f07233f89a3acbf3f0772267ac05c3a7b7e1d34c508fb8cb99ed6e0f5",
+  "descriptorPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/mysqlbinlog-tmpfs-20261107-v3.json",
+    "bytes": 330,
+    "sha256": "06396422c198638463fb2a75aec02232061043277e2ecb41b576a925eec1fc13"
+  },
+  "oldDescriptorPin": {
+    "bytes": 330,
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/binlog-exporter-acceptance-20261027.json",
+    "sha256": "7459ade4a3bcbd4d27e074efb7b5cfc341a893c3a5b721145c9b1a9c786b8020"
+  },
+  "oldContainerId": "70c0487396f6954ec794230644cc5d01669c7c0ed217df7b6c4a35a722a5832a",
+  "sourceMysqlContainerId": "9a288d20d254366e99b265b1870466e974edf23e7aab60de2391e3a38e62fff6",
+  "readOnlyRootfs": true,
+  "user": "999:999",
+  "tmpfs": {
+    "/tmp": "rw,noexec,nosuid,nodev,size=1073741824,mode=1777",
+    "/var/lib/mysql": "rw,noexec,nosuid,nodev,size=1048576,mode=0700"
+  },
+  "capabilities": [],
+  "memoryBytes": 2147483648,
+  "pidsLimit": 64,
+  "sourceNetworkAndPidNamespaceVerified": true,
+  "noSourceDataVolumes": true,
+  "temporaryWriteProbeBytes": 1048576,
+  "temporaryFilesystem": "tmpfs",
+  "temporaryMode": "1777",
+  "actualFirstSegment": {
+    "file": "binlog.000021",
+    "startPosition": 23582326,
+    "stopPosition": 1074602282
+  },
+  "nativeExport": {
+    "stdoutBytes": 1427429005,
+    "stderrBytes": 0,
+    "returncode": 0,
+    "sha256": "33549654f50ef718ce26f2e27c15d0f360fdf16618c89adb44355e8887ff1a10",
+    "elapsedSeconds": 8.5
+  },
+  "originalContainerCount": 197,
+  "allOriginalDefinitionsAndRuntimePreserved": true,
+  "fstabAndProtectedMountsPreserved": true,
+  "sourceOriginalGlobalFlagsPreserved": true,
+  "registered": false,
+  "backupPerformed": false,
+  "restorePerformed": false
+}

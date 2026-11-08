@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "AutomaticIncrementalUiObservation/v1",
+  "kind": "FULL",
+  "phase": "verify",
+  "observation": "first",
+  "startedAt": "2026-11-07T21:07:52.630Z",
+  "implementationCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+  "preflightSha256": "e4b4ba7b972e4002ce32faeab8c0e932c2abf4b857cc65612782aa7da969f4fa",
+  "realBrowser": true,
+  "identityVerified": true,
+  "permissionVerified": true,
+  "loginPosts": 1,
+  "businessPosts": 0,
+  "blockedRequests": [],
+  "pageErrorCount": 0,
+  "request": {
+    "schemaVersion": "SmallAppBackupUiRequest/v1",
+    "operationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "action": "FULL",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "parentChainRef": null,
+    "recoveryPointRef": null,
+    "targetConfigRef": null
+  },
+  "operationState": "SUCCEEDED",
+  "status": "SUCCEEDED_VERIFIED",
+  "stage": "original-only-verification",
+  "loginResponseRecorded": true,
+  "loginShape": {
+    "httpStatus": 200,
+    "errorPresent": false,
+    "dataPresent": true,
+    "dataObject": true,
+    "requiredMfa": false,
+    "hasRealIp": false,
+    "tokenReturned": true
+  },
+  "loginNoticeConfirmed": true,
+  "errorCode": null,
+  "spugHistoryId": 373,
+  "finishedAt": "2026-11-07T21:08:00.651Z"
+}

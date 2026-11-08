@@ -1,0 +1,508 @@
+TAP version 13
+# Subtest: explicit embedded mode reuses the page and sends login navigation to Spug shell
+ok 1 - explicit embedded mode reuses the page and sends login navigation to Spug shell
+  ---
+  duration_ms: 1.7804
+  type: 'test'
+  ...
+# Subtest: standalone page keeps original layout and navigation
+ok 2 - standalone page keeps original layout and navigation
+  ---
+  duration_ms: 1.9173
+  type: 'test'
+  ...
+# Subtest: filter fields belong to a modal while the catalogue panel starts with toolbar and table
+ok 3 - filter fields belong to a modal while the catalogue panel starts with toolbar and table
+  ---
+  duration_ms: 1.3463
+  type: 'test'
+  ...
+# Subtest: program version is the column value and immutable package ID remains in details
+ok 4 - program version is the column value and immutable package ID remains in details
+  ---
+  duration_ms: 19.5997
+  type: 'test'
+  ...
+# Subtest: operations column verifies the chosen row and exposes missing files without changing other rows
+ok 5 - operations column verifies the chosen row and exposes missing files without changing other rows
+  ---
+  duration_ms: 3.4732
+  type: 'test'
+  ...
+# Subtest: restore row action passes only the chosen backup row to the shared restore dialog
+ok 6 - restore row action passes only the chosen backup row to the shared restore dialog
+  ---
+  duration_ms: 2.4354
+  type: 'test'
+  ...
+# Subtest: invalid or conflicting catalogue metadata cannot initiate a restore even for a backup kind
+ok 7 - invalid or conflicting catalogue metadata cannot initiate a restore even for a backup kind
+  ---
+  duration_ms: 2.6048
+  type: 'test'
+  ...
+# Subtest: restore dialog hides already bound fields without removing the shared tab fields
+ok 8 - restore dialog hides already bound fields without removing the shared tab fields
+  ---
+  duration_ms: 1.0098
+  type: 'test'
+  ...
+# Subtest: editing modal fields does not change rows until apply, then closes and returns focus
+ok 9 - editing modal fields does not change rows until apply, then closes and returns focus
+  ---
+  duration_ms: 2.9908
+  type: 'test'
+  ...
+# Subtest: cancel, Escape, reset draft and invalid dates preserve the applied list
+ok 10 - cancel, Escape, reset draft and invalid dates preserve the applied list
+  ---
+  duration_ms: 2.6078
+  type: 'test'
+  ...
+# Subtest: date descending, unknown dates last and ascending supported
+ok 11 - date descending, unknown dates last and ascending supported
+  ---
+  duration_ms: 15.408
+  type: 'test'
+  ...
+# Subtest: combined type, server, date, search and status filters
+ok 12 - combined type, server, date, search and status filters
+  ---
+  duration_ms: 1.3728
+  type: 'test'
+  ...
+# Subtest: input rows are immutable and XSS-like search is treated as text
+ok 13 - input rows are immutable and XSS-like search is treated as text
+  ---
+  duration_ms: 0.5091
+  type: 'test'
+  ...
+# Subtest: expired sessions require login while missing permission does not
+ok 14 - expired sessions require login while missing permission does not
+  ---
+  duration_ms: 1.0357
+  type: 'test'
+  ...
+# Subtest: other denied requests and executor failures are not mislabeled as expired login
+ok 15 - other denied requests and executor failures are not mislabeled as expired login
+  ---
+  duration_ms: 0.2654
+  type: 'test'
+  ...
+# Subtest: login failures show a safe login entry and permission failures do not
+ok 16 - login failures show a safe login entry and permission failures do not
+  ---
+  duration_ms: 10.9097
+  type: 'test'
+  ...
+# Subtest: RESTORE success reports recovery and protected startup while business acceptance remains pending
+ok 17 - RESTORE success reports recovery and protected startup while business acceptance remains pending
+  ---
+  duration_ms: 1.2354
+  type: 'test'
+  ...
+# Subtest: FULL success retains the backup result wording
+ok 18 - FULL success retains the backup result wording
+  ---
+  duration_ms: 0.4934
+  type: 'test'
+  ...
+# Subtest: INCREMENTAL success retains the backup result wording
+ok 19 - INCREMENTAL success retains the backup result wording
+  ---
+  duration_ms: 1.1624
+  type: 'test'
+  ...
+# Subtest: RESTORE RUNNING does not claim completed recovery
+ok 20 - RESTORE RUNNING does not claim completed recovery
+  ---
+  duration_ms: 0.5567
+  type: 'test'
+  ...
+# Subtest: RESTORE FAILED does not claim completed recovery
+ok 21 - RESTORE FAILED does not claim completed recovery
+  ---
+  duration_ms: 0.418
+  type: 'test'
+  ...
+# Subtest: RESTORE null does not claim completed recovery
+ok 22 - RESTORE null does not claim completed recovery
+  ---
+  duration_ms: 0.3537
+  type: 'test'
+  ...
+# Subtest: only automatic plan GET and automatic submission POST have a 60 second request deadline
+ok 23 - only automatic plan GET and automatic submission POST have a 60 second request deadline
+  ---
+  duration_ms: 5.7748
+  type: 'test'
+  ...
+# Subtest: automatic request deadline covers response body consumption and always clears its timer
+ok 24 - automatic request deadline covers response body consumption and always clears its timer
+  ---
+  duration_ms: 2.493
+  type: 'test'
+  ...
+# Subtest: automatic POST deadline and failed follow-up query retain the exact original without another POST
+ok 25 - automatic POST deadline and failed follow-up query retain the exact original without another POST
+  ---
+  duration_ms: 15.5231
+  type: 'test'
+  ...
+# Subtest: backend plan timeout is visible in Chinese and keeps automatic submission blocked
+ok 26 - backend plan timeout is visible in Chinese and keeps automatic submission blocked
+  ---
+  duration_ms: 1.743
+  type: 'test'
+  ...
+# Subtest: bridge readiness explains the proven cause and keeps execution blocked
+ok 27 - bridge readiness explains the proven cause and keeps execution blocked
+  ---
+  duration_ms: 2.6735
+  type: 'test'
+  ...
+# Subtest: restore form names the shared program and initially selects replacement
+ok 28 - restore form names the shared program and initially selects replacement
+  ---
+  duration_ms: 0.3261
+  type: 'test'
+  ...
+# Subtest: a new restore draft defaults to replacement without selecting a target or admitting unregistered overwrite
+ok 29 - a new restore draft defaults to replacement without selecting a target or admitting unregistered overwrite
+  ---
+  duration_ms: 1.393
+  type: 'test'
+  ...
+# Subtest: catalogue restore defaults to replacement and preserves old fresh-operation semantics
+ok 30 - catalogue restore defaults to replacement and preserves old fresh-operation semantics
+  ---
+  duration_ms: 1.6808
+  type: 'test'
+  ...
+# Subtest: catalogue restore reuses the form, pins the selected point and requires an explicit target and confirmation
+ok 31 - catalogue restore reuses the form, pins the selected point and requires an explicit target and confirmation
+  ---
+  duration_ms: 3.0478
+  type: 'test'
+  ...
+# Subtest: catalogue point absent from server accepted refs stays visible but cannot submit or substitute another package
+ok 32 - catalogue point absent from server accepted refs stays visible but cannot submit or substitute another package
+  ---
+  duration_ms: 1.7064
+  type: 'test'
+  ...
+# Subtest: catalogue restore refuses a running draft and never treats release artifacts as backup points
+ok 33 - catalogue restore refuses a running draft and never treats release artifacts as backup points
+  ---
+  duration_ms: 1.3269
+  type: 'test'
+  ...
+# Subtest: five peer tabs show one panel and read-only navigation preserves the draft
+ok 34 - five peer tabs show one panel and read-only navigation preserves the draft
+  ---
+  duration_ms: 1.2355
+  type: 'test'
+  ...
+# Subtest: tab anchors work when the existing history renderer occupies window.history
+ok 35 - tab anchors work when the existing history renderer occupies window.history
+  ---
+  duration_ms: 1.1417
+  type: 'test'
+  ...
+# Subtest: returning from a read-only panel retains the chosen restore package and original draft id
+ok 36 - returning from a read-only panel retains the chosen restore package and original draft id
+  ---
+  duration_ms: 2.3645
+  type: 'test'
+  ...
+# Subtest: read-only tabs remain usable during a running draft and keyboard skips disabled form tabs
+ok 37 - read-only tabs remain usable during a running draft and keyboard skips disabled form tabs
+  ---
+  duration_ms: 1.391
+  type: 'test'
+  ...
+# Subtest: viewing an existing operation opens progress without starting a new request
+ok 38 - viewing an existing operation opens progress without starting a new request
+  ---
+  duration_ms: 1.3579
+  type: 'test'
+  ...
+# Subtest: initial configuration keeps draft locked until source synchronization completes
+ok 39 - initial configuration keeps draft locked until source synchronization completes
+  ---
+  duration_ms: 1.6268
+  type: 'test'
+  ...
+# Subtest: initial render with an empty source catalogue waits for configuration instead of throwing
+ok 40 - initial render with an empty source catalogue waits for configuration instead of throwing
+  ---
+  duration_ms: 2.0181
+  type: 'test'
+  ...
+# Subtest: initial configuration failure remains visible and explicit refresh can recover
+ok 41 - initial configuration failure remains visible and explicit refresh can recover
+  ---
+  duration_ms: 2.0392
+  type: 'test'
+  ...
+# Subtest: registered restore target can be selected before its readiness probe and cannot submit
+ok 42 - registered restore target can be selected before its readiness probe and cannot submit
+  ---
+  duration_ms: 1.9334
+  type: 'test'
+  ...
+# Subtest: restore target selection probes only that registered target; backup refresh has no target
+ok 43 - restore target selection probes only that registered target; backup refresh has no target
+  ---
+  duration_ms: 1.7257
+  type: 'test'
+  ...
+# Subtest: returning to an application retains its explicitly selected server and fast mode
+ok 44 - returning to an application retains its explicitly selected server and fast mode
+  ---
+  duration_ms: 1.6864
+  type: 'test'
+  ...
+# Subtest: a remembered mode becoming unavailable does not silently select another executor
+ok 45 - a remembered mode becoming unavailable does not silently select another executor
+  ---
+  duration_ms: 1.604
+  type: 'test'
+  ...
+# Subtest: automatic incremental uses the authoritative plan despite absent local history and selection refs
+ok 46 - automatic incremental uses the authoritative plan despite absent local history and selection refs
+  ---
+  duration_ms: 2.9187
+  type: 'test'
+  ...
+# Subtest: a required baseline is explicitly confirmed as FULL and submitted through the automatic endpoint
+ok 47 - a required baseline is explicitly confirmed as FULL and submitted through the automatic endpoint
+  ---
+  duration_ms: 2.3986
+  type: 'test'
+  ...
+# Subtest: live source preflight reasons explain the need for a new baseline or a blocked source
+ok 48 - live source preflight reasons explain the need for a new baseline or a blocked source
+  ---
+  duration_ms: 1.6043
+  type: 'test'
+  ...
+# Subtest: blocked, failed and mismatched plans invalidate earlier readiness and explain the exact reason
+ok 49 - blocked, failed and mismatched plans invalidate earlier readiness and explain the exact reason
+  ---
+  duration_ms: 9.3471
+  type: 'test'
+  ...
+# Subtest: missing source restoration proof blocks backup and explains the receipt without suggesting FULL
+ok 50 - missing source restoration proof blocks backup and explains the receipt without suggesting FULL
+  ---
+  duration_ms: 1.6554
+  type: 'test'
+  ...
+# Subtest: a late plan from an earlier source cannot replace the current source plan
+ok 51 - a late plan from an earlier source cannot replace the current source plan
+  ---
+  duration_ms: 1.7447
+  type: 'test'
+  ...
+# Subtest: confirming an incremental freezes the plan digest and double clicks dispatch only once
+ok 52 - confirming an incremental freezes the plan digest and double clicks dispatch only once
+  ---
+  duration_ms: 4.5833
+  type: 'test'
+  ...
+# Subtest: a changed plan digest after confirmation requires a fresh confirmation
+ok 53 - a changed plan digest after confirmation requires a fresh confirmation
+  ---
+  duration_ms: 2.8435
+  type: 'test'
+  ...
+# Subtest: only an exact pre-admission rejection unlocks the draft and refreshes the plan without resubmitting
+ok 54 - only an exact pre-admission rejection unlocks the draft and refreshes the plan without resubmitting
+  ---
+  duration_ms: 5.2222
+  type: 'test'
+  ...
+# Subtest: unknown dispatch results keep polling the saved operation without another POST and stop at terminal state
+ok 55 - unknown dispatch results keep polling the saved operation without another POST and stop at terminal state
+  ---
+  duration_ms: 2.6708
+  type: 'test'
+  ...
+# Subtest: reopening an unresolved original immediately queries that original ID
+ok 56 - reopening an unresolved original immediately queries that original ID
+  ---
+  duration_ms: 6.0191
+  type: 'test'
+  ...
+# Subtest: viewing a completed history row continues tracking the unresolved original without replacing the viewed row
+ok 57 - viewing a completed history row continues tracking the unresolved original without replacing the viewed row
+  ---
+  duration_ms: 1.6123
+  type: 'test'
+  ...
+# Subtest: returning to backup after a terminal operation requests a new authoritative plan
+ok 58 - returning to backup after a terminal operation requests a new authoritative plan
+  ---
+  duration_ms: 2.1228
+  type: 'test'
+  ...
+# Subtest: unregistered targets are disabled and unverified registered choices cannot submit
+ok 59 - unregistered targets are disabled and unverified registered choices cannot submit
+  ---
+  duration_ms: 1.2131
+  type: 'test'
+  ...
+# Subtest: dispatch history prevents offering an already consumed target from a stale controller catalogue
+ok 60 - dispatch history prevents offering an already consumed target from a stale controller catalogue
+  ---
+  duration_ms: 1.1343
+  type: 'test'
+  ...
+# Subtest: registered replacement stays selectable after a previous successful restore
+ok 61 - registered replacement stays selectable after a previous successful restore
+  ---
+  duration_ms: 1.1344
+  type: 'test'
+  ...
+# Subtest: replacement requires an explicit checkbox and retains the exact confirmed target
+ok 62 - replacement requires an explicit checkbox and retains the exact confirmed target
+  ---
+  duration_ms: 1.2727
+  type: 'test'
+  ...
+# Subtest: refresh configuration reloads registrations before refreshing the selected application
+ok 63 - refresh configuration reloads registrations before refreshing the selected application
+  ---
+  duration_ms: 1.3494
+  type: 'test'
+  ...
+# Subtest: unregistered modes are explicitly unavailable without switching the chosen mode
+ok 64 - unregistered modes are explicitly unavailable without switching the chosen mode
+  ---
+  duration_ms: 1.1327
+  type: 'test'
+  ...
+# Subtest: restore stays blocked until a package is explicitly selected and explains why
+ok 65 - restore stays blocked until a package is explicitly selected and explains why
+  ---
+  duration_ms: 1.1588
+  type: 'test'
+  ...
+# Subtest: history details show original point and target after the draft target rotates
+ok 66 - history details show original point and target after the draft target rotates
+  ---
+  duration_ms: 1.2305
+  type: 'test'
+  ...
+# Subtest: legacy history never infers restore semantics from current mappings
+ok 67 - legacy history never infers restore semantics from current mappings
+  ---
+  duration_ms: 1.1914
+  type: 'test'
+  ...
+# Subtest: retired source remains in history while new drafts select its explicit successor
+ok 68 - retired source remains in history while new drafts select its explicit successor
+  ---
+  duration_ms: 1.5295
+  type: 'test'
+  ...
+# Subtest: a new reservation clears the previous completed result before its POST returns
+ok 69 - a new reservation clears the previous completed result before its POST returns
+  ---
+  duration_ms: 1.7857
+  type: 'test'
+  ...
+# Subtest: a pending dispatch reservation is a status while actual failures remain errors
+ok 70 - a pending dispatch reservation is a status while actual failures remain errors
+  ---
+  duration_ms: 2.4058
+  type: 'test'
+  ...
+# Subtest: diagnostic request controls are read-only and confirmation submits the exact displayed immutable request
+ok 71 - diagnostic request controls are read-only and confirmation submits the exact displayed immutable request
+  ---
+  duration_ms: 4.5088
+  type: 'test'
+  ...
+# Subtest: confirmation refuses a draft altered after the dialog opened
+ok 72 - confirmation refuses a draft altered after the dialog opened
+  ---
+  duration_ms: 1.1378
+  type: 'test'
+  ...
+# Subtest: late original query cannot replace another operation or its pending original
+ok 73 - late original query cannot replace another operation or its pending original
+  ---
+  duration_ms: 1.1722
+  type: 'test'
+  ...
+# Subtest: late telemetry is dropped even after switching away and back to the same ID
+ok 74 - late telemetry is dropped even after switching away and back to the same ID
+  ---
+  duration_ms: 1.0701
+  type: 'test'
+  ...
+# Subtest: switching to a completed historical operation loads its logs while older progress is pending
+ok 75 - switching to a completed historical operation loads its logs while older progress is pending
+  ---
+  duration_ms: 1.2249
+  type: 'test'
+  ...
+# Subtest: history clicks are mutually exclusive with queries and unresolved pending IDs survive drafts
+ok 76 - history clicks are mutually exclusive with queries and unresolved pending IDs survive drafts
+  ---
+  duration_ms: 1.1703
+  type: 'test'
+  ...
+# Subtest: refresh failure invalidates prior admission until a later successful refresh
+ok 77 - refresh failure invalidates prior admission until a later successful refresh
+  ---
+  duration_ms: 1.267
+  type: 'test'
+  ...
+# Subtest: unconfirmed terminal step is explicit and never shows a fabricated duration
+ok 78 - unconfirmed terminal step is explicit and never shows a fabricated duration
+  ---
+  duration_ms: 1.5913
+  type: 'test'
+  ...
+# Subtest: unaccepted check uses pending A identity after opening unrelated historical B
+ok 79 - unaccepted check uses pending A identity after opening unrelated historical B
+  ---
+  duration_ms: 1.8949
+  type: 'test'
+  ...
+# Subtest: cancellation unlocks draft only after durable exact original cancellation receipt
+ok 80 - cancellation unlocks draft only after durable exact original cancellation receipt
+  ---
+  duration_ms: 1.9305
+  type: 'test'
+  ...
+# Subtest: cancellation rejection or ambiguous response retains the unresolved original
+ok 81 - cancellation rejection or ambiguous response retains the unresolved original
+  ---
+  duration_ms: 3.1126
+  type: 'test'
+  ...
+# Subtest: explicit reserved recovery uses full original request and never retries a timeout
+ok 82 - explicit reserved recovery uses full original request and never retries a timeout
+  ---
+  duration_ms: 2.5403
+  type: 'test'
+  ...
+# Subtest: cancelled history displays not executed and never queries progress or accumulates time
+ok 83 - cancelled history displays not executed and never queries progress or accumulates time
+  ---
+  duration_ms: 1.6418
+  type: 'test'
+  ...
+1..83
+# tests 83
+# suites 0
+# pass 83
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 311.008

@@ -1,0 +1,15 @@
+{
+  "realBrowser": true,
+  "realLogin": false,
+  "startedAt": "2026-11-07T06:28:51.441Z",
+  "writes": 0,
+  "blocked": [],
+  "httpFailures": [],
+  "pageErrors": [],
+  "stage": "login",
+  "status": "FAIL",
+  "error": "TimeoutError: page.waitForResponse: Timeout 45000ms exceeded while waiting for event \"response\"",
+  "visible": "(unavailable)",
+  "frameVisible": null,
+  "finishedAt": "2026-11-07T06:30:51.181Z"
+}

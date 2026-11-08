@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "AutomaticIncrementalUiObservation/v1",
+  "kind": "I2",
+  "phase": "verify",
+  "observation": "first",
+  "startedAt": "2026-11-08T02:17:38.388Z",
+  "implementationCommit": "0dc7429d4758a208a5b0c098111fe9702ab63235",
+  "spugCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+  "deploymentSelectionPin": {
+    "file": "automatic-i2-deployment-selection.json",
+    "bytes": 1015,
+    "sha256": "4a680483ad926151724520bcc9b9692c8ea4d8a25f8bafcf36810e9b7ac67bbc"
+  },
+  "preflightSha256": "6334bca2e93d6d684ab51da96e9598dc226e958a3dc27166a5c746de04c157b1",
+  "realBrowser": true,
+  "identityVerified": false,
+  "permissionVerified": false,
+  "loginPosts": 1,
+  "businessPosts": 0,
+  "blockedRequests": [],
+  "pageErrorCount": 0,
+  "request": null,
+  "operationState": null,
+  "status": "FAILED_KEEP_ORIGINAL",
+  "stage": "login-response-contract",
+  "errorCode": "UI_TIMEOUT",
+  "finishedAt": "2026-11-08T02:18:41.713Z",
+  "loginStateRecorded": true
+}

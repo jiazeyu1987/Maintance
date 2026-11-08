@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "TaskCurrentInstallations/v2",
+  "source57": {
+    "file": "automatic-source-control-installation-0dc7429.json",
+    "bytes": 9263,
+    "sha256": "d61e003f7e0fd22e9acf7010de92737110a52c831a78697d39cd8d237c72229f"
+  },
+  "spug": {
+    "file": "automatic-spug-installation-0d44578.json",
+    "bytes": 3174,
+    "sha256": "48adbd12ce2b6c434ba81629e38bfbfcdeac11d419f63c520c45f75791b70855"
+  },
+  "targets": {
+    "58": {
+      "file": "automatic-target-installation-58.json",
+      "bytes": 38668,
+      "sha256": "19a52a206bdc1b9272037db6a2e2f27e3d664366d5bcf6760cb3373947651dd7"
+    },
+    "59": {
+      "file": "automatic-target-installation-59.json",
+      "bytes": 24026,
+      "sha256": "f99aba1431c6d7e2bbcae0d4a214dec6ac673a379c107f8150ec222f0314dcce"
+    }
+  },
+  "catalogueInstallation": {
+    "file": "catalogue-identity-installation.json",
+    "bytes": 4364,
+    "sha256": "b23e3237ac448a9f669e79e8c4c63f94a6d40bf2f8e6cafd0db80f4d19adbc1d"
+  },
+  "catalogueReadonlyObservation": {
+    "file": "catalogue-identity-readonly-verification-r4.json",
+    "bytes": 5166,
+    "sha256": "4d3e405da123736c30639902af3daeaa775d605ffe1c46bb2f13e390766edca3"
+  }
+}

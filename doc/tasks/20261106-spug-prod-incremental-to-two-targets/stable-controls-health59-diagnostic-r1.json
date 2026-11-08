@@ -1,0 +1,21 @@
+{
+  "status": "READ_ONLY_DIAGNOSIS",
+  "observedAt": "2026-11-08T02:44:02.259797+00:00",
+  "host": "172.30.30.59",
+  "exitCode": 1,
+  "exceptions": [
+    {
+      "type": "KeyError",
+      "code": null,
+      "messageSha256": "ee4dbe7f9cffd6d4eb88f960deada805773b0db589c45b982f8c7fe931abb2a9"
+    }
+  ],
+  "frames": [
+    [
+      "<string>",
+      "11",
+      "<module>"
+    ]
+  ],
+  "epochPolicyKeys": []
+}

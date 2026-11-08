@@ -1,0 +1,20 @@
+{
+  "observedAt": "2026-11-06T19:35:11.310603+00:00",
+  "readOnly": true,
+  "segment": {
+    "file": "binlog.000021",
+    "startPosition": 23582326,
+    "stopPosition": 1074602282
+  },
+  "containerId": "a7aa973f623ad07adb82c25f9b5f352db74a00ea2abf22a8fbd0b4db4cdfeb2f",
+  "actualExitCode": 1,
+  "elapsedSeconds": 0.246,
+  "stdoutBytes": 589,
+  "stderrBytes": 124,
+  "diagnosticLimitReached": false,
+  "strictToolVerified": true,
+  "readOnlyTemporaryFilesystemError": false,
+  "permissionDenied": false,
+  "stderrFirstLine": "ERROR: Failed on connect: Can[LITERAL]/proc/1/root/var/run/mysqld/mysqld.sock' (13)",
+  "diagnosticPhase": "tmpfs-diagnostic"
+}

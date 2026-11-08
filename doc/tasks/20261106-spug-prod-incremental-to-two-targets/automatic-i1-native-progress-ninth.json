@@ -1,0 +1,58 @@
+{
+  "status": "OBSERVED",
+  "observedAt": "2026-11-07T22:50:10.213541+00:00",
+  "operationId": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+  "processes": [
+    {
+      "pid": 20213,
+      "ppid": 1,
+      "state": "S",
+      "rchar": 69175381828,
+      "wchar": 156099
+    },
+    {
+      "pid": 23016,
+      "ppid": 20213,
+      "state": "S",
+      "rchar": 2714259,
+      "wchar": 0
+    }
+  ],
+  "captureReplyKeys": [
+    "action",
+    "actualExitCode",
+    "data",
+    "failureCode",
+    "finishedAt",
+    "message",
+    "operationId",
+    "originalResultPins",
+    "requestId",
+    "schemaVersion",
+    "startedAt",
+    "state"
+  ],
+  "captureReply": {
+    "schemaVersion": "backup-restore-operation-result/v1",
+    "state": "TERMINAL_UNKNOWN",
+    "failureCode": "MINIMAL_OPERATION_IN_PROGRESS",
+    "operationId": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5"
+  },
+  "timings": {
+    "timing-archive-admission-end.json": {
+      "completed": true,
+      "elapsedSeconds": 1775.657,
+      "finishedAt": "2026-11-07T22:41:20.816866Z",
+      "stage": "archive-admission"
+    },
+    "timing-archive-admission-start.json": {
+      "stage": "archive-admission",
+      "startedAt": "2026-11-07T22:11:45.160304Z"
+    },
+    "timing-source-capture-start.json": {
+      "stage": "source-capture",
+      "startedAt": "2026-11-07T22:41:20.819202Z"
+    }
+  },
+  "mutationDispatched": false
+}

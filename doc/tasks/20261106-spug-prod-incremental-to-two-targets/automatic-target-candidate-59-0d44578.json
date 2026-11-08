@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "TaskAutomaticTargetCandidate/v1",
+  "status": "PLAN_ONLY_NOT_DEPLOYED",
+  "host": "172.30.30.59",
+  "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+  "service": "spug-main-restore-59-20261104-v3.service",
+  "sourceCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+  "engine": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/engine-automatic-0d44578",
+  "oldControlPid": 5885,
+  "packageSha256": "3d3d8a608e5a809b34cc6b5f48f5091b066bdcc5007d084459f3e333cad7010b",
+  "fileManifestSha256": "7f4dcc1dd4c292871b77e5c168e1d948d9c1f8925abc0902f9b54d17fae25b3b",
+  "fileCount": 130,
+  "oldOwnerPin": {
+    "bytes": 23026,
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-frontend-9c93449.json",
+    "sha256": "12853a1def82fe0143f8916329638cb7b219fa17856a55b40c367ac988612ce5"
+  },
+  "oldControlPin": {
+    "bytes": 2356,
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-59-frontend-9c93449.json",
+    "sha256": "db53eb56a638cb591298f1bb38ef8bc303b64ee679ab9639b9329dc923f6e6e1"
+  },
+  "oldActiveReceiptPin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/target-installation.json",
+    "bytes": 1625,
+    "sha256": "73d7eed2d0366aa70efc96ca19f579ddc7f4d36412f7d56d0fe718c9e8010959"
+  },
+  "previousReceiptPin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/automatic-0d44578-previous-target-installation.json",
+    "bytes": 1625,
+    "sha256": "73d7eed2d0366aa70efc96ca19f579ddc7f4d36412f7d56d0fe718c9e8010959"
+  },
+  "proposedCurrentReceiptPin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/target-installation.json",
+    "bytes": 1628,
+    "sha256": "bdbc1716d9a6a46ea0339e771282665c885947def2ad50495535f9b7d8087f04"
+  },
+  "ownerConfigurationPin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-automatic-0d44578.json",
+    "bytes": 23443,
+    "sha256": "64529f696ef67a96816d1b64cc8d8192491bf1732cd0b4489b796f4256c78a4a"
+  },
+  "controlConfigurationPin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-59-automatic-0d44578.json",
+    "bytes": 2362,
+    "sha256": "473cd94547e150eabe5aff9911d9f6a0a252e778bd6ef86925978e5191f85ebb"
+  },
+  "epochStatus": "REGISTER_WITH_TARGET_ONLY",
+  "historicalSourcesAndTargetsUnchanged": true,
+  "source57MetadataUnchanged": true,
+  "noRemoteActions": true,
+  "restoreDispatched": false,
+  "backupDispatched": false,
+  "privateCandidatePin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\automatic-target-candidate-59-0d44578.private.json",
+    "bytes": 521266,
+    "sha256": "0b024728d37602c89cc2a0c36d4e2559c6ca87ee92a823316738adf5f29b0f96"
+  }
+}

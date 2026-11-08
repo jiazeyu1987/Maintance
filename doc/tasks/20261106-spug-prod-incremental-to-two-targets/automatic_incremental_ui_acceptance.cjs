@@ -1,0 +1,347 @@
+'use strict';
+// Real UI acceptance only. Preparation/checking this file never launches a browser.
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const TASK=__dirname,PRIVATE='C:/Spug/runtime/private/prod-incremental-to-two-targets-20261106';
+const ORIGIN='http://127.0.0.1:18080',SOURCE='intruoyi-57-safe-20261024-v1',SERVER='172.30.30.57';
+const HISTORICAL_COMMIT='0d445782dc06995b3c84b1b45146ea4b75483f92';
+const PLAYWRIGHT='C:/Users/D01021/Documents/ChatGPT/IntRuoyiE2E/node_modules/playwright';
+const CREDENTIALS='C:/SpugHandoff/release/private/spug-login.private.json';
+const PLAN_KEYS=['schemaVersion','sourceConfigRef','state','reasonCode','parentChainRef','baseFullRef','generationId','chainDepth','pointType','parentPointType','basePointType','finishedAt','baseFinishedAt','evidenceDigest','planDigest'];
+const REQUEST_KEYS=['schemaVersion','operationId','action','sourceConfigRef','parentChainRef','recoveryPointRef','targetConfigRef'];
+const check=(value,code)=>{if(!value){const error=new Error(code);error.publicCode=code;throw error;}};
+const read=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
+const sha=value=>crypto.createHash('sha256').update(value).digest('hex');
+const exact=(left,right)=>JSON.stringify(Object.keys(left).sort().map(k=>[k,left[k]]))===JSON.stringify(Object.keys(right).sort().map(k=>[k,right[k]]));
+const pick=(value,keys)=>Object.fromEntries(keys.map(key=>[key,value?.[key]??null]));
+const pin=plan=>pick(plan,['state','parentChainRef','baseFullRef','planDigest']);
+function classifyLoginContract(status,body){
+  check(status===200&&body&&typeof body==='object'&&!body.error,'REAL_LOGIN_REJECTED');
+  const data=body.data;
+  check(data&&typeof data==='object'&&!Array.isArray(data),'REAL_LOGIN_SUCCESS_DATA_INVALID');
+  check(!data.required_mfa,'REAL_LOGIN_MFA_REQUIRED');
+  check(typeof data.access_token==='string'&&data.access_token.length>0&&typeof data.has_real_ip==='boolean','REAL_LOGIN_SUCCESS_DATA_INVALID');
+  return {needsNotice:!data.has_real_ip};
+}
+function exclusive(file,value){
+  const descriptor=fs.openSync(file,'wx');
+  try{fs.writeFileSync(descriptor,JSON.stringify(value,null,2),'utf8');fs.fsyncSync(descriptor);}finally{fs.closeSync(descriptor);}
+}
+function args(){
+  const value={},flags=new Set(['execute','expect-terminal']);
+  const fields=new Set(['kind','phase','observation','preflight','expected-application','expected-source','expected-state','expected-parent','expected-base','expected-plan']);
+  for(let i=2;i<process.argv.length;i++){
+    const key=process.argv[i].replace(/^--/,'');
+    check(process.argv[i].startsWith('--')&&!Object.hasOwn(value,key),'INVALID_OR_DUPLICATE_ARGUMENT');
+    if(flags.has(key))value[key]=true;
+    else{check(fields.has(key)&&process.argv[i+1]&&!process.argv[i+1].startsWith('--'),'UNKNOWN_OR_MISSING_ARGUMENT');value[key]=process.argv[++i];}
+  }
+  check(['FULL','I1','I2'].includes(value.kind)&&['preview','submit','verify'].includes(value.phase),'EXPLICIT_KIND_AND_PHASE_REQUIRED');
+  check(/^[a-z0-9][a-z0-9-]{0,47}$/.test(value.observation||''),'UNIQUE_OBSERVATION_REQUIRED');
+  check((value.phase==='submit')===!!value.execute,'SUBMIT_REQUIRES_EXPLICIT_EXECUTE');
+  check(!value['expect-terminal']||value.phase==='verify','TERMINAL_ASSERTION_REQUIRES_VERIFY');
+  const relative=path.relative(TASK,path.resolve(value.preflight||''));
+  check(relative&&!relative.startsWith('..')&&!path.isAbsolute(relative)&&relative.endsWith('.json'),'TASK_PREFLIGHT_FILE_REQUIRED');
+  value.preflight=path.resolve(value.preflight);
+  return value;
+}
+function expectedFromArgs(options){
+  check(options['expected-source']===SOURCE&&/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}$/.test(options['expected-application']||''),'EXACT_REGISTERED_SOURCE_REQUIRED');
+  const expected={applicationId:options['expected-application'],sourceConfigRef:SOURCE,plan:{
+    state:options['expected-state'],parentChainRef:options['expected-parent']==='NONE'?null:options['expected-parent'],
+    baseFullRef:options['expected-base']==='NONE'?null:options['expected-base'],planDigest:options['expected-plan']}};
+  check(expected.plan.state===(options.kind==='FULL'?'BASELINE_REQUIRED':'READY')&&/^[a-f0-9]{64}$/.test(expected.plan.planDigest||''),'EXPLICIT_EXPECTED_PLAN_REQUIRED');
+  for(const key of ['expected-parent','expected-base'])check(Object.hasOwn(options,key)&&/^(NONE|[A-Za-z0-9][A-Za-z0-9_.:-]{0,159})$/.test(options[key]),'EXPLICIT_PARENT_AND_BASE_REQUIRED');
+  return expected;
+}
+function validateDeploymentContract(gate,kind,deployment,selectionPin){
+  check(gate.schemaVersion==='AutomaticIncrementalUiPreflight/v2','EXPLICIT_STAGE_PREFLIGHT_REQUIRED');
+  check(deployment.schemaVersion==='AutomaticStageDeployment/v1'&&deployment.kind===kind&&deployment.sourceConfigRef===SOURCE,'STAGE_SELECTION_SCOPE_MISMATCH');
+  check(/^[a-f0-9]{40}$/.test(deployment.sourceCommit||'')&&deployment.spugCommit===HISTORICAL_COMMIT,'STAGE_COMMIT_INVALID');
+  check(gate.implementationCommit===deployment.sourceCommit&&gate.installationCommit===deployment.sourceCommit&&gate.buildCommit===deployment.sourceCommit&&gate.spugCommit===deployment.spugCommit,'INSTALLED_COMMIT_MISMATCH');
+  check(exact(gate.deploymentSelectionPin||{},selectionPin),'STAGE_SELECTION_PIN_CHANGED');
+  const inputs=gate.gitDeploymentInputs;
+  for(const [component,commit] of [['source',deployment.sourceCommit],['spug',deployment.spugCommit]]){
+    check(inputs?.[component]?.installedCommit===commit&&inputs[component].deploymentInputsUnchanged===true&&inputs[component].installedCommitIsAncestor===true,'STAGE_GIT_INPUTS_NOT_VERIFIED');
+  }
+  check(/^[a-f0-9]{40}$/.test(inputs.source.headCommit||'')&&inputs.source.headCommit===inputs.spug.headCommit,'STAGE_GIT_HEAD_CHANGED');
+}
+function validateReceiptDeployment(receipt,gate,kind){
+  check(receipt.kind===kind&&receipt.implementationCommit===gate.implementationCommit,'ORIGINAL_RECEIPT_DEPLOYMENT_CHANGED');
+  if(receipt.schemaVersion==='AutomaticIncrementalUiSubmission/v1'){
+    check(kind==='FULL'&&receipt.implementationCommit===HISTORICAL_COMMIT&&gate.spugCommit===HISTORICAL_COMMIT,'UNKNOWN_LEGACY_SUBMISSION_GENERATION');
+  }else{
+    check(receipt.schemaVersion==='AutomaticIncrementalUiSubmission/v2'&&receipt.spugCommit===gate.spugCommit&&exact(receipt.deploymentSelectionPin||{},gate.deploymentSelectionPin),'ORIGINAL_RECEIPT_DEPLOYMENT_CHANGED');
+  }
+}
+function validateGate(options,expected,originalHash){
+  const raw=fs.readFileSync(options.preflight),gate=JSON.parse(raw.toString('utf8').replace(/^\uFEFF/,''));
+  check(!originalHash||sha(raw)===originalHash,'PREFLIGHT_CHANGED_AFTER_REVIEW');
+  check(gate.status==='PASS'&&gate.experiencePreflight==='PASS','EXPERIENCE_PREFLIGHT_REQUIRED');
+  check(gate.kind===options.kind&&gate.phase===options.phase&&gate.origin===ORIGIN&&gate.server===SERVER&&gate.mode==='safe','PREFLIGHT_SCOPE_MISMATCH');
+  check(gate.applicationId===expected.applicationId&&gate.sourceConfigRef===SOURCE&&exact(gate.expectedPlan||{},expected.plan),'PREFLIGHT_PLAN_MISMATCH');
+  const selectionFile=`automatic-${options.kind.toLowerCase()}-deployment-selection.json`;
+  const selectionRaw=fs.readFileSync(path.join(TASK,selectionFile));
+  validateDeploymentContract(gate,options.kind,JSON.parse(selectionRaw.toString('utf8')),{file:selectionFile,bytes:selectionRaw.length,sha256:sha(selectionRaw)});
+  const age=Date.now()-Date.parse(gate.observedAt);
+  check(Number.isFinite(age)&&age>=-30000&&age<=900000,'PREFLIGHT_STALE');
+  for(const name of ['sourceIdentityVerified','installationVerified','sourceServicesHealthy','archiveReady','capacityReady','noConcurrentMaintenance'])check(gate[name]===true,'PREFLIGHT_'+name.toUpperCase()+'_REQUIRED');
+  if(options.execute)check(gate.sourceIdleVerified===true,'SOURCE_IDLE_PREFLIGHT_REQUIRED');
+  check(typeof gate.expectedUserLabel==='string'&&gate.expectedUserLabel.length>0&&gate.expectedUserLabel.length<=80,'EXPECTED_LOGGED_IN_IDENTITY_REQUIRED');
+  return {gate,hash:sha(raw)};
+}
+function checkEarlierChain(kind,expected){
+  if(kind==='FULL')return;
+  const full=read(path.join(TASK,'automatic-full-ui-terminal.json'));
+  check(full.schemaVersion==='AutomaticIncrementalUiTerminal/v1'&&full.operationState==='SUCCEEDED'&&full.request.action==='FULL'&&full.request.sourceConfigRef===SOURCE,'SUCCESSFUL_FULL_UI_RECEIPT_REQUIRED');
+  check(expected.plan.baseFullRef===full.request.operationId,'EXPECTED_FULL_ROOT_CHANGED');
+  const parent=kind==='I1'?full:read(path.join(TASK,'automatic-i1-ui-terminal.json'));
+  check(parent.operationState==='SUCCEEDED'&&parent.request.sourceConfigRef===SOURCE&&parent.applicationId===expected.applicationId,'SUCCESSFUL_PARENT_UI_RECEIPT_REQUIRED');
+  if(kind==='I2')check(parent.request.action==='INCREMENTAL'&&parent.request.parentChainRef===full.request.operationId,'FIRST_INCREMENT_CHAIN_MISMATCH');
+  check(expected.plan.parentChainRef===parent.request.operationId,'EXPECTED_PARENT_CHANGED');
+}
+async function main(){
+  const options=args(),kind=options.kind.toLowerCase();
+  const receiptPath=path.join(TASK,`automatic-${kind}-ui-submission.json`);
+  const resultPath=path.join(TASK,`automatic-${kind}-${options.phase}-${options.observation}-result.json`);
+  check(!fs.existsSync(resultPath),'OBSERVATION_ALREADY_RECORDED');
+  let receipt=null,expected;
+  if(options.phase==='verify'){
+    check(!Object.keys(options).some(key=>key.startsWith('expected-')),'VERIFY_USES_IMMUTABLE_ORIGINAL_RECEIPT');
+    receipt=read(receiptPath);
+    check(['AutomaticIncrementalUiSubmission/v1','AutomaticIncrementalUiSubmission/v2'].includes(receipt.schemaVersion)&&receipt.kind===options.kind&&receipt.request.sourceConfigRef===SOURCE,'ORIGINAL_RECEIPT_MISMATCH');
+    expected={applicationId:receipt.applicationId,sourceConfigRef:SOURCE,plan:pin(receipt.plan)};
+  }else{
+    check(!fs.existsSync(receiptPath),'ALREADY_ATTEMPTED_USE_VERIFY_ONLY');
+    expected=expectedFromArgs(options);checkEarlierChain(options.kind,expected);
+  }
+  const reviewed=validateGate(options,expected);
+  if(receipt)validateReceiptDeployment(receipt,reviewed.gate,options.kind);
+  const privateDir=path.join(PRIVATE,'automatic-incremental-ui');
+  fs.mkdirSync(privateDir,{recursive:true});
+  const privateLabel=`${kind}-${options.phase}-${options.observation}`;
+  const screenshot=path.join(privateDir,privateLabel+'.png');
+  check(!fs.existsSync(screenshot),'PRIVATE_OBSERVATION_ALREADY_EXISTS');
+  const kindSession=path.join(privateDir,kind+'-session.private.json');
+  const commonSession=path.join(PRIVATE,'spug-active-session.private.json');
+  const storageState=options.phase==='verify'?(fs.existsSync(kindSession)?kindSession:fs.existsSync(commonSession)?commonSession:undefined):undefined;
+  const {chromium}=require(PLAYWRIGHT);
+  const browser=await chromium.launch({channel:'chrome',headless:true,timeout:20000});
+  const context=await browser.newContext({viewport:{width:1440,height:1080},...(storageState?{storageState}:{})});
+  const page=await context.newPage();page.setDefaultTimeout(45000);
+  const report={schemaVersion:'AutomaticIncrementalUiObservation/v1',kind:options.kind,phase:options.phase,
+    observation:options.observation,startedAt:new Date().toISOString(),implementationCommit:reviewed.gate.implementationCommit,
+    spugCommit:reviewed.gate.spugCommit,deploymentSelectionPin:reviewed.gate.deploymentSelectionPin,
+    preflightSha256:reviewed.hash,realBrowser:true,identityVerified:false,permissionVerified:false,loginPosts:0,businessPosts:0,
+    blockedRequests:[],pageErrorCount:0,request:null,operationState:null,status:'NOT_COMPLETED'};
+  let frame,armed=null,latest=null,followupAttempted=false;
+  const pageErrors=[];
+  page.on('pageerror',error=>{report.pageErrorCount++;pageErrors.push({name:error.name,message:error.message,stack:error.stack});});
+  await context.route('**/*',async route=>{
+    const request=route.request(),url=new URL(request.url()),method=request.method();
+    try{
+      check(url.origin===ORIGIN,'UNEXPECTED_NETWORK_ORIGIN');
+      if(['GET','HEAD','OPTIONS'].includes(method)){
+        if(options.phase==='verify'&&/^\/backup-entry-api\/(operations|progress)\//.test(url.pathname)){
+          check(url.pathname.endsWith('/'+receipt.request.operationId),'VERIFY_OTHER_OPERATION_READ_REFUSED');
+        }
+        return await route.continue();
+      }
+      if(method==='POST'&&url.pathname==='/api/account/login/'&&report.loginPosts===0){report.loginPosts++;return await route.continue();}
+      check(options.execute&&method==='POST'&&url.pathname==='/backup-entry-api/automatic-incremental'&&armed&&report.businessPosts===0,'UNEXPECTED_BUSINESS_WRITE_REFUSED');
+      const intent=request.postDataJSON();
+      check(exact(intent,armed.intent),'FINAL_POST_DOES_NOT_MATCH_CONFIRMED_INTENT');
+      validateGate(options,expected,reviewed.hash);
+      receipt={schemaVersion:'AutomaticIncrementalUiSubmission/v2',kind:options.kind,attemptReservedAt:new Date().toISOString(),
+        applicationId:expected.applicationId,implementationCommit:reviewed.gate.implementationCommit,preflightSha256:reviewed.hash,
+        spugCommit:reviewed.gate.spugCommit,deploymentSelectionPin:reviewed.gate.deploymentSelectionPin,
+        request:armed.request,intent:armed.intent,plan:armed.plan,status:'POST_ATTEMPT_RESERVED_OUTCOME_UNKNOWN'};
+      exclusive(receiptPath,receipt); // durable wx fence before any final bytes leave the browser
+      report.businessPosts++;report.request=receipt.request;armed=null;
+      return await route.continue();
+    }catch(error){
+      report.blockedRequests.push({method,path:url.pathname,code:error.publicCode||'REQUEST_GUARD_FAILED'});
+      await route.abort('blockedbyclient');
+    }
+  });
+  const readOriginal=async response=>{
+    check(response.status()===200,'ORIGINAL_QUERY_NOT_SUCCESSFUL');
+    const value=await response.json();
+    check(value.applicationId===receipt.applicationId&&exact(pick(value.request,REQUEST_KEYS),receipt.request),'ORIGINAL_REQUEST_CHANGED');
+    check(exact(pin(value.automaticIncrementalPlan),pin(receipt.plan)),'ORIGINAL_PLAN_CHANGED');
+    latest=value;report.request=pick(value.request,REQUEST_KEYS);report.operationState=value.result?.state||null;
+    report.errorCode=value.result?.errorCode||value.queryError||value.dispatchErrorCode||null;
+    report.spugHistoryId=value.spugHistoryId||null;
+    return value;
+  };
+  const queryOriginalThroughUi=async()=>{
+    const id=receipt.request.operationId;
+    await frame.locator('#simple-progress-tab').click();
+    await frame.waitForFunction(expectedId=>document.querySelector('#operation-reference')?.textContent===expectedId&&!document.querySelector('#simple-query').disabled, id,{timeout:90000});
+    const response=page.waitForResponse(r=>r.request().method()==='GET'&&new URL(r.url()).origin===ORIGIN&&new URL(r.url()).pathname==='/backup-entry-api/operations/'+id,{timeout:35000});
+    const observed=response.then(value=>({value}),()=>({error:true}));
+    await frame.locator('#simple-query').click();
+    const outcome=await observed;check(!outcome.error,'ORIGINAL_QUERY_TIMEOUT_KEEP_ORIGINAL');
+    return readOriginal(outcome.value);
+  };
+  const followUnknownOriginal=async()=>{
+    if(!receipt||!frame||followupAttempted)return;
+    followupAttempted=true;armed=null;
+    try{
+      await queryOriginalThroughUi();
+      check(['RUNNING','SUCCEEDED'].includes(report.operationState)&&!latest.queryError,'ORIGINAL_STATE_UNCONFIRMED');
+      report.status='ORIGINAL_OBSERVED_AFTER_UNKNOWN';
+    }catch(error){report.followupError=error.publicCode||'ORIGINAL_QUERY_UNCONFIRMED';}
+  };
+  try{
+    report.stage='authenticated-page';
+    await page.goto(ORIGIN+'/',{waitUntil:'domcontentloaded',timeout:60000});
+    await page.waitForFunction(()=>document.querySelector('input[placeholder="请输入账户"]')||[...document.querySelectorAll('span,a')].some(element=>element.textContent.trim()==='备份与恢复'),null,{timeout:45000});
+    if(await page.getByPlaceholder('请输入账户').isVisible()){
+      const credential=read(CREDENTIALS);
+      check(typeof credential.username==='string'&&typeof credential.password==='string','PRIVATE_LOGIN_CREDENTIALS_INVALID');
+      await page.getByPlaceholder('请输入账户').fill(credential.username);
+      await page.getByPlaceholder('请输入密码').fill(credential.password);
+      const login=page.waitForResponse(r=>new URL(r.url()).origin===ORIGIN&&new URL(r.url()).pathname==='/api/account/login/'&&r.request().method()==='POST',{timeout:45000});
+      await page.getByRole('button',{name:'登 录',exact:true}).click();
+      report.stage='login-response-contract';
+      const response=await login,raw=await response.text();
+      exclusive(path.join(privateDir,privateLabel+'-login-response.private.json'),{observedAt:new Date().toISOString(),httpStatus:response.status(),body:raw});
+      report.loginResponseRecorded=true;
+      let body;try{body=JSON.parse(raw);}catch{check(false,'REAL_LOGIN_RESPONSE_JSON_INVALID');}
+      const data=body?.data;
+      report.loginShape={httpStatus:response.status(),errorPresent:Boolean(body?.error),dataPresent:Object.hasOwn(body||{},'data'),
+        dataObject:Boolean(data&&typeof data==='object'&&!Array.isArray(data)),requiredMfa:Boolean(data?.required_mfa),
+        hasRealIp:typeof data?.has_real_ip==='boolean'?data.has_real_ip:null,tokenReturned:typeof data?.access_token==='string'&&data.access_token.length>0};
+      const contract=classifyLoginContract(response.status(),body);
+      if(contract.needsNotice){
+        report.stage='login-security-notice';
+        const notice=page.getByRole('button',{name:'知道了',exact:true});
+        await notice.waitFor({state:'visible'});await notice.click();await notice.waitFor({state:'hidden'});
+        report.loginNoticeConfirmed=true;
+      }
+      report.stage='login-session-and-identity';
+      await page.waitForFunction(()=>Boolean(localStorage.getItem('token')));
+    }
+    report.stage='authenticated-nickname';
+    await page.getByText(reviewed.gate.expectedUserLabel,{exact:true}).first().waitFor({state:'visible'});
+    report.stage='authenticated-backup-menu';
+    const menu=page.getByText('备份与恢复',{exact:true}).first();await menu.waitFor({state:'visible'});
+    report.identityVerified=true;
+    await menu.click();await page.waitForURL(ORIGIN+'/backup-center',{timeout:45000});
+    const iframe=await page.locator('iframe[src="/backup-restore/?embedded=1"]').elementHandle();
+    check(iframe,'REAL_BACKUP_IFRAME_REQUIRED');frame=await iframe.contentFrame();check(frame,'BACKUP_FRAME_UNAVAILABLE');
+    await frame.waitForFunction(()=>typeof simpleConfig!=='undefined'&&simpleConfig&&!simpleInitializing&&!switching,null,{timeout:120000});
+    if(options.phase==='verify'){
+      report.stage='original-only-verification';
+      const shown=await frame.locator('#operation-reference').textContent();
+      if(shown!==receipt.request.operationId){
+        await frame.locator('#simple-history-tab').click();
+        const row=frame.locator('#simple-history .history-row').filter({hasText:receipt.request.operationId});
+        await row.waitFor({state:'visible'});check(await row.count()===1,'EXACT_ORIGINAL_HISTORY_ROW_REQUIRED');
+        await row.getByRole('button',{name:'查看进度',exact:true}).click();
+      }
+      await queryOriginalThroughUi();report.permissionVerified=true;
+      check(report.operationState!=='FAILED','ORIGINAL_BACKUP_FAILED');
+      check(['RUNNING','SUCCEEDED'].includes(report.operationState)&&!latest.queryError,'ORIGINAL_STATE_UNCONFIRMED');
+      if(options['expect-terminal'])check(report.operationState==='SUCCEEDED'&&!latest.queryError,'ACTUAL_SUCCESS_REQUIRED');
+      report.status=report.operationState==='SUCCEEDED'?'SUCCEEDED_VERIFIED':'ORIGINAL_OBSERVED';
+    }else{
+      report.stage='backup-form';
+      await frame.locator('#simple-backup-tab').click();
+      for(const [id,value] of [['simple-product','intruoyi'],['simple-server',SERVER],['simple-mode','safe']]){
+        await frame.waitForFunction(element=>!switching&&!document.getElementById(element).disabled,id,{timeout:120000});
+        await frame.locator('#'+id).selectOption(value);
+      }
+      await frame.waitForFunction(app=>!switching&&selected()?.applicationId===app&&!document.querySelector('#simple-type').disabled,expected.applicationId,{timeout:120000});
+      const planResponse=page.waitForResponse(r=>{
+        const url=new URL(r.url());return r.request().method()==='GET'&&url.origin===ORIGIN&&url.pathname==='/backup-entry-api/incremental-plan'&&url.searchParams.get('applicationId')===expected.applicationId;
+      },{timeout:70000});
+      const observedPlan=planResponse.then(value=>({value}),()=>({error:true}));
+      await frame.locator('#simple-type').selectOption('INCREMENTAL');
+      const response=await observedPlan;check(!response.error&&response.value.ok(),'LIVE_PLAN_HTTP_NOT_READY');
+      const payload=await response.value.json();
+      check(payload.applicationId===expected.applicationId&&payload.plan?.sourceConfigRef===SOURCE&&exact(pin(payload.plan),expected.plan),'LIVE_PLAN_CHANGED');
+      await frame.waitForFunction(()=>!switching&&!incrementalPlanLoading&&!document.querySelector('#simple-submit').disabled,null,{timeout:90000});
+      const rendered=await frame.evaluate(()=>({applicationId:selected()?.applicationId,sourceConfigRef:selected()?.sourceConfigRef,plan:currentIncrementalPlan(),server:S('simple-server').value,mode:S('simple-mode').value}));
+      check(rendered.applicationId===expected.applicationId&&rendered.sourceConfigRef===SOURCE&&rendered.server===SERVER&&rendered.mode==='safe'&&exact(pin(rendered.plan),expected.plan),'RENDERED_PLAN_MISMATCH');
+      report.permissionVerified=true;report.plan=pick(payload.plan,PLAN_KEYS);
+      await frame.locator('#simple-submit').click();await frame.locator('#simple-confirm').waitFor({state:'visible'});
+      const confirmed=await frame.evaluate(()=>({request:confirmation?.request,applicationId:confirmation?.applicationId,plan:confirmation?.automaticIncrementalPlan}));
+      const request=pick(confirmed.request,REQUEST_KEYS),action=options.kind==='FULL'?'FULL':'INCREMENTAL';
+      check(confirmed.applicationId===expected.applicationId&&exact(pin(confirmed.plan),expected.plan),'CONFIRMED_PLAN_CHANGED');
+      check(Object.keys(confirmed.request||{}).length===REQUEST_KEYS.length&&request.schemaVersion==='SmallAppBackupUiRequest/v1'&&request.action===action&&request.sourceConfigRef===SOURCE&&request.parentChainRef===(action==='FULL'?null:expected.plan.parentChainRef)&&request.recoveryPointRef===null&&request.targetConfigRef===null,'CONFIRMED_REQUEST_MISMATCH');
+      check(/^[A-Za-z0-9][A-Za-z0-9_.:-]{7,159}$/.test(request.operationId||''),'ORIGINAL_OPERATION_ID_REQUIRED');
+      const text=await frame.locator('#confirm-summary').innerText();
+      for(const term of [SOURCE,SERVER,'安全模式',action==='FULL'?'全量备份':'增量备份'])check(text.includes(term),'VISIBLE_CONFIRMATION_MISMATCH');
+      if(action==='FULL')check(text.includes('全量基线')&&text.includes(payload.plan.reasonCode),'FULL_BASELINE_REASON_NOT_VISIBLE');
+      else for(const ref of [expected.plan.parentChainRef,expected.plan.baseFullRef])check(text.includes(ref),'VISIBLE_CHAIN_CONFIRMATION_MISMATCH');
+      report.request=request;
+      await page.screenshot({path:screenshot,fullPage:true});
+      await context.storageState({path:kindSession});
+      if(options.phase==='preview'){
+        await frame.locator('#simple-cancel').click();report.status='PREVIEW_VERIFIED_NO_SUBMISSION';
+      }else{
+        validateGate(options,expected,reviewed.hash);
+        armed={request,plan:pick(payload.plan,PLAN_KEYS),intent:{schemaVersion:'AutomaticIncrementalRequest/v1',operationId:request.operationId,applicationId:expected.applicationId,planDigest:expected.plan.planDigest}};
+        report.stage='one-final-ui-submit';
+        const responsePromise=page.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).origin===ORIGIN&&new URL(r.url()).pathname==='/backup-entry-api/automatic-incremental',{timeout:70000});
+        const observed=responsePromise.then(value=>({value}),()=>({error:true}));
+        await frame.locator('#simple-confirm-submit').click();
+        const outcome=await observed;
+        check(report.businessPosts===1&&receipt,'FINAL_POST_NOT_DISPATCHED');
+        if(outcome.error){
+          report.status='UNKNOWN_KEEP_ORIGINAL';report.errorCode='SUBMISSION_RESPONSE_TIMEOUT';
+          await followUnknownOriginal();
+        }else{
+          const value=await outcome.value.json();report.httpStatus=outcome.value.status();
+          if(outcome.value.status()===409&&value.accepted===false&&value.operationId===request.operationId&&value.applicationId===expected.applicationId){
+            report.status='REJECTED_UNACCEPTED_RECEIPT_RETAINED';report.errorCode=value.errorCode||'AUTOMATIC_REQUEST_REJECTED';
+          }else if(outcome.value.ok()){
+            check(value.applicationId===expected.applicationId&&exact(pick(value.request,REQUEST_KEYS),request)&&exact(pin(value.automaticIncrementalPlan),expected.plan),'SUBMISSION_RECEIPT_MISMATCH');
+            latest=value;report.operationState=value.result?.state||null;report.spugHistoryId=value.spugHistoryId||null;
+            report.status='ACCEPTED_FOLLOW_ORIGINAL';
+          }else{
+            report.status='UNKNOWN_KEEP_ORIGINAL';report.errorCode=value.errorCode||'SUBMISSION_OUTCOME_UNKNOWN';
+            await followUnknownOriginal();
+          }
+        }
+      }
+    }
+    check(report.blockedRequests.length===0&&report.pageErrorCount===0,'UNEXPECTED_PAGE_OR_REQUEST_ERROR');
+    if(report.status==='SUCCEEDED_VERIFIED'){
+      const terminalPath=path.join(TASK,`automatic-${kind}-ui-terminal.json`);
+      const terminal={schemaVersion:'AutomaticIncrementalUiTerminal/v1',kind:options.kind,applicationId:receipt.applicationId,
+        observedAt:new Date().toISOString(),request:receipt.request,plan:receipt.plan,operationState:'SUCCEEDED',spugHistoryId:report.spugHistoryId,
+        observation:options.observation,preflightSha256:reviewed.hash};
+      if(fs.existsSync(terminalPath))check(exact(read(terminalPath).request,terminal.request),'TERMINAL_ORIGINAL_CHANGED');
+      else exclusive(terminalPath,terminal);
+    }
+    if(['UNKNOWN_KEEP_ORIGINAL','REJECTED_UNACCEPTED_RECEIPT_RETAINED'].includes(report.status))process.exitCode=2;
+  }catch(error){
+    report.status=receipt?'FAILED_KEEP_ORIGINAL':'FAILED_BEFORE_SUBMISSION';
+    report.errorCode=error.publicCode||(error.name==='TimeoutError'?'UI_TIMEOUT':'UI_HELPER_FAILED');
+    if(options.phase==='submit')await followUnknownOriginal();
+    process.exitCode=1;
+  }finally{
+    report.finishedAt=new Date().toISOString();
+    if(pageErrors.length){
+      exclusive(path.join(privateDir,privateLabel+'-page-errors.private.json'),{observedAt:report.finishedAt,count:report.pageErrorCount,errors:pageErrors});
+      report.pageErrorEvidenceRecorded=true;
+    }
+    if(report.loginPosts&&!report.identityVerified){
+      try{
+        const state=await page.evaluate(()=>({tokenStored:Boolean(localStorage.getItem('token')),
+          accountInputPresent:Boolean(document.querySelector('input[placeholder="请输入账户"]')),
+          captchaInputPresent:Boolean(document.querySelector('input[placeholder="请输入验证码"]')),
+          buttons:[...document.querySelectorAll('button')].map(button=>button.textContent.trim()),
+          notices:[...document.querySelectorAll('.ant-message,.ant-modal')].map(element=>element.textContent)}));
+        exclusive(path.join(privateDir,privateLabel+'-login-state.private.json'),state);report.loginStateRecorded=true;
+      }catch{report.loginStateRecorded=false;}
+    }
+    try{if(!fs.existsSync(screenshot))await page.screenshot({path:screenshot,fullPage:true});}catch{report.screenshotUnavailable=true;}
+    try{await context.storageState({path:kindSession});}catch{report.sessionSaveFailed=true;}
+    try{exclusive(resultPath,report);console.log(JSON.stringify(report));}
+    finally{await browser.close();}
+  }
+}
+main().catch(error=>{console.error(JSON.stringify({status:'NOT_STARTED',errorCode:error.publicCode||'HELPER_PREFLIGHT_OR_RESOURCE_FAILED'}));process.exitCode=1;});

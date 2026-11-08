@@ -1,0 +1,93 @@
+{
+  "status": "OBSERVED",
+  "observedAt": "2026-11-08T00:52:24.957100+00:00",
+  "operationId": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291",
+  "workerPid": 18931,
+  "workerPresent": true,
+  "io": {
+    "rchar": 11651089111,
+    "wchar": 2104251140,
+    "syscr": 552474,
+    "syscw": 23216,
+    "read_bytes": 929759232,
+    "write_bytes": 2089312256,
+    "cancelled_write_bytes": 0
+  },
+  "files": [
+    {
+      "file": "payload/original-application-images.tar",
+      "bytes": 2081399296
+    },
+    {
+      "file": "payload/database.sql.incremental.raw",
+      "bytes": 4076831
+    },
+    {
+      "file": "payload/database.sql.gz",
+      "bytes": 418747
+    },
+    {
+      "file": "semantic-capture/versions.jsonl",
+      "bytes": 3178549
+    }
+  ],
+  "scope": {
+    "pin": {
+      "bytes": 1092,
+      "sha256": "d69fb57b8fb6fcff6859254fe249ec6716479447d5ef33f8123164ef2b7350bb"
+    },
+    "parentPosition": {
+      "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+      "executedGtidSet": "",
+      "file": "binlog.000032",
+      "position": 947865179,
+      "serverVersion": "8.0.39"
+    },
+    "endPosition": {
+      "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+      "executedGtidSet": "",
+      "file": "binlog.000032",
+      "position": 949614370,
+      "serverVersion": "8.0.39"
+    },
+    "eventCount": 8221,
+    "rowEventCount": 2117,
+    "ddlEventCount": 0,
+    "affectedTableCount": 4
+  },
+  "lastStages": [
+    {
+      "at": "2026-11-08T00:44:00.450457+00:00",
+      "stage": "CONFIGURATION_AND_IMAGES_CAPTURED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-08T00:44:00.455800+00:00",
+      "stage": "STOP_REQUESTED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-08T00:44:04.016003+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT",
+      "captureStage": "STOP_WRITERS"
+    },
+    {
+      "at": "2026-11-08T00:44:04.064215+00:00",
+      "stage": "STOP_REQUESTED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-08T00:44:04.363172+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT",
+      "captureStage": "STOP_WRITERS"
+    },
+    {
+      "at": "2026-11-08T00:44:05.134957+00:00",
+      "stage": "WRITERS_STOPPED_DATABASE_FENCED",
+      "captureStage": null
+    }
+  ],
+  "sourceRestorationRecorded": false,
+  "mutationDispatched": false,
+  "notFinalPayload": true
+}

@@ -1,0 +1,256 @@
+{
+  "schemaVersion": "AutomaticBackupChainAudit/v1",
+  "status": "PASS",
+  "observedAt": "2026-11-08T00:12:14.736037+00:00",
+  "operationId": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+  "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+  "pointType": "INCREMENTAL",
+  "state": "SUCCEEDED",
+  "actualExitCode": 0,
+  "finishedAt": "2026-11-08T00:10:12.807423Z",
+  "resultPin": {
+    "bytes": 5233,
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/2fa6ce71558b70634cd5ee011db0111d91bb2b967e4817db6295667b94bdc382/result.json",
+    "sha256": "f64f61fcacdb99475506bde4bc8eb28397e6da89f56c27a6baf5ec3878dea844"
+  },
+  "pointPin": {
+    "bytes": 25078,
+    "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-2fa6ce71558b70634cd5ee011db0111d91bb2b967e4817db6295667b94bdc382/.repository/point.json",
+    "sha256": "f2d50bb9a11a2acb4b4d9fe8215a63a7884501430f4abc6e927440595442de2c"
+  },
+  "manifestPin": {
+    "bytes": 24897,
+    "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-2fa6ce71558b70634cd5ee011db0111d91bb2b967e4817db6295667b94bdc382/.repository/manifest.json",
+    "sha256": "ed0bd244b7fdcf12678d445c17bf3612df13b5c2cfe95f240bcfd01417ac08e3"
+  },
+  "generationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+  "parentPointPins": [
+    {
+      "bytes": 6259358,
+      "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-bcd34c72651c4865b37073062242969de3f7c857c65ec70a718be375d6ec933c/.repository/point.json",
+      "sha256": "d79515dd3d8532de3472125ee478684a1e2a40cc3c64f28df98c651ba3884bbb"
+    }
+  ],
+  "sourceEpoch": {
+    "schemaVersion": "SourceBackupEpoch/v1",
+    "policySha256": "286c351b19714180357adf7442404847bf88625ef178be5787738c340e84abfd",
+    "epochId": "0eab10fa13853ed9b1c526a5608849c3f9f7904a0f03d75d0fd076babf5c63e9",
+    "state": "READY",
+    "operationId": null,
+    "eventPin": {
+      "path": "/var/lib/spug-backup-epochs/intruoyi-main-57/00000000000000000000.json",
+      "bytes": 595,
+      "sha256": "b25926653d7f933f0fa6f50a0ec17f029a0a1f0912017331cdc39f730b53dd56"
+    }
+  },
+  "epochBindingPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/registry/point-epochs/smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5.json",
+    "bytes": 1127,
+    "sha256": "8d2e1e863b59eb797d6aa995d9dd8d66a770d91118b0dce7d9667484b37be6d4"
+  },
+  "nativeLauncherExitCode": 2,
+  "nativeDispatch": {
+    "launcherActualExitCode": 2,
+    "launcherState": "TERMINAL_UNKNOWN",
+    "ownerActualExitCode": 0,
+    "ownerState": "SUCCEEDED",
+    "originalReplyPin": {
+      "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5/execute/result.json",
+      "bytes": 855,
+      "sha256": "7e1f7a245893eb5b16e0c168acb1ed532449d32b274321f7c7d8795a5ac12738"
+    },
+    "resolution": "ORIGINAL_OWNER_TERMINAL_AFTER_ASYNC_REPLY"
+  },
+  "uniqueOwnerOperationVerified": true,
+  "sourceRestorationPin": {
+    "bytes": 435,
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5/source-restoration.json",
+    "sha256": "7dc6c5556f31c7969f349311ad3dee58460c93d5e43c439de5edbc3b77d3936f"
+  },
+  "sourceRestored": true,
+  "sourceIndependentHealthCheckRequired": true,
+  "restoreExecuted": false,
+  "registeredTargetAdmissionRequired": true,
+  "chain": [
+    {
+      "operationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+      "pointPin": {
+        "bytes": 6259358,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-bcd34c72651c4865b37073062242969de3f7c857c65ec70a718be375d6ec933c/.repository/point.json",
+        "sha256": "d79515dd3d8532de3472125ee478684a1e2a40cc3c64f28df98c651ba3884bbb"
+      },
+      "pointType": "FULL",
+      "epochBindingPin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/registry/point-epochs/smallapp-fbaf12b584214695b6b687e010f4773b.json",
+        "bytes": 1129,
+        "sha256": "ccc1b5f8c634a6ae896f33e2d3cac18f95a3ae33dcc0bfa6169e4d00fad79f7e"
+      }
+    },
+    {
+      "operationId": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+      "pointPin": {
+        "bytes": 25078,
+        "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-2fa6ce71558b70634cd5ee011db0111d91bb2b967e4817db6295667b94bdc382/.repository/point.json",
+        "sha256": "f2d50bb9a11a2acb4b4d9fe8215a63a7884501430f4abc6e927440595442de2c"
+      },
+      "pointType": "INCREMENTAL",
+      "epochBindingPin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/registry/point-epochs/smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5.json",
+        "bytes": 1127,
+        "sha256": "8d2e1e863b59eb797d6aa995d9dd8d66a770d91118b0dce7d9667484b37be6d4"
+      }
+    }
+  ],
+  "package": {
+    "engine": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-automatic-0dc7429",
+    "variant": "standard",
+    "fileCount": 130,
+    "fileManifestSha256": "b0c66653510b5c50599c4ab411289a19c27bd32d6892c7047fc3004ce5f8108f",
+    "allInstalledFilesShaVerified": true,
+    "repositoryProgramPin": {
+      "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-automatic-0dc7429/common/repository_minimal.py",
+      "bytes": 57161,
+      "sha256": "68d2b10cc4b4e1afdd483501e682da67a9a840a5b5f4d0b9176a305746e1985a"
+    },
+    "fullReaderPin": {
+      "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-automatic-0dc7429/common/repository_native_readback.py",
+      "bytes": 12158,
+      "sha256": "80abab1d31c9e6b6ef922ea7e93e6aa510037cfe6708ea6228bf5a6a13d5f61c"
+    }
+  },
+  "readback": {
+    "verificationMode": "NATIVE_FULL_READBACK_EVIDENCE_AUDIT",
+    "payloadContentVerified": true,
+    "payloadFiles": 60,
+    "payloadBytes": 2112641697,
+    "independentConnectionId": "b785b2c3-910c-4f0a-8e85-8f5f61a78800:3320391756",
+    "originalRecordsPin": {
+      "bytes": 40113,
+      "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/2fa6ce71558b70634cd5ee011db0111d91bb2b967e4817db6295667b94bdc382/f0462a55a0f895f362151adc946b46598daadef5e6fa74dd6b91f793ae95c6e6/readback-originals.json",
+      "sha256": "b1029284d5cdd7e2f12ef7bcebf27bf188b26853c2291ff344b6ece0e2af90f9"
+    },
+    "retainedOriginalCopiesVerified": 24,
+    "extraFullPayloadReadDispatched": false,
+    "serverDurabilityVerified": false
+  },
+  "database": {
+    "method": "BINLOG_SQL",
+    "startPosition": {
+      "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+      "executedGtidSet": "",
+      "file": "binlog.000032",
+      "position": 943406249,
+      "serverVersion": "8.0.39"
+    },
+    "endPosition": {
+      "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+      "executedGtidSet": "",
+      "file": "binlog.000032",
+      "position": 947865179,
+      "serverVersion": "8.0.39"
+    },
+    "sqlPin": {
+      "bytes": 1063270,
+      "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-2fa6ce71558b70634cd5ee011db0111d91bb2b967e4817db6295667b94bdc382/payload/database.sql.gz",
+      "sha256": "a254e8265458686f85c1f53d74a7f13d5642512437780034a6f9fe91072d8fc6"
+    },
+    "rawSqlPin": {
+      "bytes": 10398799,
+      "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-2fa6ce71558b70634cd5ee011db0111d91bb2b967e4817db6295667b94bdc382/payload/database.sql.incremental.raw",
+      "sha256": "9abc4e8f003ca6d4ac8c4addf6fcc7bb7ee271f59e8ffca5c1d84604b2a74e68"
+    },
+    "expectedDataPin": {
+      "bytes": 3520099,
+      "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-2fa6ce71558b70634cd5ee011db0111d91bb2b967e4817db6295667b94bdc382/payload/source-affected-data.json",
+      "sha256": "031d768fffa1a0f117cd9bb6518c8792061d5e1c392a385ca192fc46e8fc91d3"
+    },
+    "scopePin": {
+      "bytes": 1117,
+      "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-2fa6ce71558b70634cd5ee011db0111d91bb2b967e4817db6295667b94bdc382/payload/database.sql.incremental-scope.json",
+      "sha256": "907b99f6b422eb88010b4acc5ef1d819cf906484cfc286a5c670cc940de22152"
+    },
+    "scopePolicy": "MYSQL80_ROW_AND_SCOPED_DATABASE_DDL",
+    "affectedTables": [
+      "erp_kingdee_sync_run",
+      "infra_job_log",
+      "qrtz_blob_triggers",
+      "qrtz_cron_triggers",
+      "qrtz_fired_triggers",
+      "qrtz_scheduler_state",
+      "qrtz_simple_triggers",
+      "qrtz_simprop_triggers",
+      "qrtz_triggers"
+    ],
+    "affectedScope": [
+      "erp_kingdee_sync_run",
+      "infra_job_log",
+      "qrtz_fired_triggers",
+      "qrtz_scheduler_state",
+      "qrtz_triggers"
+    ],
+    "logMode": "FILE_POSITION",
+    "segments": [
+      {
+        "file": "binlog.000032",
+        "startPosition": 943406249,
+        "stopPosition": 947865179
+      }
+    ],
+    "eventCount": 20994,
+    "rowEventCount": 5400,
+    "ddlEventCount": 0
+  },
+  "objectDelta": {
+    "changedContentCount": 0,
+    "parentExportIndexPin": {
+      "bytes": 2748655,
+      "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-bcd34c72651c4865b37073062242969de3f7c857c65ec70a718be375d6ec933c/.repository/object-content-index.json",
+      "sha256": "d9885983f24cca209f9759862c31a47f809c5bc6d1f6bf7dbce89fcff96c0677"
+    }
+  },
+  "verifiedMetadataPins": 199,
+  "metadataBytesRead": 59819191,
+  "sourceCommit": "0dc7429d4758a208a5b0c098111fe9702ab63235",
+  "spugCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+  "deploymentSelectionPin": {
+    "file": "automatic-i1-deployment-selection.json",
+    "bytes": 1015,
+    "sha256": "5dda6419591f83ae700067117d530ec81c316755cbcf04795962b2e009755ca0"
+  },
+  "sourceInstallationPin": {
+    "file": "automatic-source-control-installation-0dc7429.json",
+    "bytes": 9263,
+    "sha256": "d61e003f7e0fd22e9acf7010de92737110a52c831a78697d39cd8d237c72229f"
+  },
+  "controllerGenerations": [
+    {
+      "role": "SOURCE",
+      "sourceCommit": "0dc7429d4758a208a5b0c098111fe9702ab63235",
+      "packageSha256": "f0184381f42f21a118463637a20d7066bdf2df04ead267d8dd20670f21b28869",
+      "fileManifestSha256": "b0c66653510b5c50599c4ab411289a19c27bd32d6892c7047fc3004ce5f8108f",
+      "fileCount": 130,
+      "buildPin": {
+        "file": "release-build-0dc7429.json",
+        "bytes": 933,
+        "sha256": "9b9acdf602425e6c507f8143b9e95e35320fae1e140a975382ffe25016c4eb4e"
+      }
+    },
+    {
+      "role": "MAIN_TARGET",
+      "sourceCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+      "packageSha256": "3d3d8a608e5a809b34cc6b5f48f5091b066bdcc5007d084459f3e333cad7010b",
+      "fileManifestSha256": "7f4dcc1dd4c292871b77e5c168e1d948d9c1f8925abc0902f9b54d17fae25b3b",
+      "fileCount": 130,
+      "buildPin": {
+        "file": "release-build-0d44578.json",
+        "bytes": 933,
+        "sha256": "0272040d323356d179245605d6d4021f05f6afb839e4cd97bfcdb94ecbefde69"
+      },
+      "installationPin": {
+        "file": "automatic-control-installation-57.json",
+        "bytes": 5565,
+        "sha256": "8ecd7667b2dcfa491818656a296ee3bc92203ea6dd968d77e6e9ccf3daf52351"
+      }
+    }
+  ]
+}

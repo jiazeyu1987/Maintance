@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "preparedOnly": true,
+  "remoteWrites": false,
+  "containerCount": 198,
+  "unusedCount": 2,
+  "registeredRunning": true,
+  "observedAt": "2026-11-08T03:01:47.292056+00:00",
+  "scriptSha256": "c0a52ee2051efbf5eb3f2d96b7914a572eee6d8a747e44cf04ab334b54ecfb75"
+}

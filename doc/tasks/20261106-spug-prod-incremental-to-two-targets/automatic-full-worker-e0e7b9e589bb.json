@@ -1,0 +1,35 @@
+{
+  "observedAt": "2026-11-07T18:41:47.409369+00:00",
+  "operationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+  "processes": [
+    {
+      "pid": 18863,
+      "ppid": 18846,
+      "comm": "python3.12",
+      "state": "R (running)",
+      "wchan": "0",
+      "io": "rchar: 28884706961\nwchar: 30481489671\nsyscr: 1869235\nsyscw: 742198\nread_bytes: 2099347456\nwrite_bytes: 17942827008\ncancelled_write_bytes: 1464012800\n",
+      "commandSha256": "9deea6d93d76bb944f5827c5af3d831add2e0783a52e9d0d1304c52d8128e5ca",
+      "fds": [
+        {
+          "fd": "2",
+          "name": "worker-stderr.log",
+          "position": 0
+        },
+        {
+          "fd": "4",
+          "kind": "socket"
+        },
+        {
+          "fd": "8",
+          "kind": "pipe"
+        },
+        {
+          "fd": "10",
+          "kind": "pipe"
+        }
+      ]
+    }
+  ],
+  "serverWrites": false
+}

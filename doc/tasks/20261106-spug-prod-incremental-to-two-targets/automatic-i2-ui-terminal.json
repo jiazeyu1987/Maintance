@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "AutomaticIncrementalUiTerminal/v1",
+  "kind": "I2",
+  "applicationId": "intruoyi-57-safe-20261024-v1",
+  "observedAt": "2026-11-08T02:27:29.248Z",
+  "request": {
+    "schemaVersion": "SmallAppBackupUiRequest/v1",
+    "operationId": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291",
+    "action": "INCREMENTAL",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "parentChainRef": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+    "recoveryPointRef": null,
+    "targetConfigRef": null
+  },
+  "plan": {
+    "schemaVersion": "AutomaticIncrementalPlan/v1",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "state": "READY",
+    "reasonCode": null,
+    "parentChainRef": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+    "baseFullRef": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "generationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "chainDepth": 2,
+    "pointType": "INCREMENTAL",
+    "parentPointType": "INCREMENTAL",
+    "basePointType": "FULL",
+    "finishedAt": "2026-11-08T00:10:12.807423Z",
+    "baseFinishedAt": "2026-11-07T21:05:37.900272Z",
+    "evidenceDigest": "10db76f624ab8702f043d8d8763142e1de0e10838f86dd058760706f4ee7a2d9",
+    "planDigest": "3bb7efc2733fc14b49832c397090474288ae7bba91c3a45d8db2053379e477fa"
+  },
+  "operationState": "SUCCEEDED",
+  "spugHistoryId": 375,
+  "observation": "third",
+  "preflightSha256": "cf402067096cf1b30fc6f171a231869e2606920e8cf1fac6ff41a037130c0908"
+}

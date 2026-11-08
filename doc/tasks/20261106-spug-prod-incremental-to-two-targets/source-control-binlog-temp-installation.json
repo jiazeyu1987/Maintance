@@ -1,0 +1,73 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T19:50:34.133627+00:00",
+  "sourceCommit": "d487abf28ae38c2e6db445d8b888bf06b32df4e5",
+  "service": "spug-intruoyi-source-57-20261105.service",
+  "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+  "oldControlPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control-incremental-parent-d487abf.json",
+    "bytes": 2289,
+    "sha256": "dea8af9a3e7befdeaf812e1a72df6b710ca3509a043d5f7311dca208782bbca6"
+  },
+  "controlConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control-binlog-tmpfs-20261107-v3.json",
+    "bytes": 2287,
+    "sha256": "6dd07a8755a8c4c43616d30f6cd1f86b2e4150f6135ac5093035afee96843f86"
+  },
+  "ownerConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/repository-binlog-tmpfs-20261107-v3.json",
+    "bytes": 2016,
+    "sha256": "3af68640c2184a10b0c6bbeea7b46a969b23e7445e72a2b49175d57c395c35e4"
+  },
+  "engine": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-incremental-parent-d487abf",
+  "fileCount": 127,
+  "fileManifestSha256": "7d9f5d1659bca8142cc8f73c697897626ce3d132938dc0130d56ad8b4b11f046",
+  "packageSha256": "0d2a24740f35b5035f2fd2a3a16b87374e577de1cfca84229c5bb7041c9bd321",
+  "dropinPin": {
+    "path": "/etc/systemd/system/spug-intruoyi-source-57-20261105.service.d/zzzz-binlog-tmpfs-20261107-v3.conf",
+    "bytes": 888,
+    "sha256": "229792160249536868b52e8e81a60e31b8d11f709543cc9c7b787e0b57a8001b"
+  },
+  "previousPid": 25090,
+  "pid": 13785,
+  "liveMaxOpenFiles": 65536,
+  "originalContainerCount": 198,
+  "allOriginalContainersUnchanged": true,
+  "fstabAndProtectedMountsUnchanged": true,
+  "sourceSelectionsHttp": 200,
+  "backupPerformed": false,
+  "restorePerformed": false,
+  "previousGeneration": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-incremental-parent-d487abf",
+  "failedOriginalFilesPreserved": 10044,
+  "readinessAttempts": 2,
+  "captureConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/capture-binlog-tmpfs-20261107-v3.json",
+    "bytes": 4753,
+    "sha256": "0c00504b14ca5715ab205d2c43ad7c958f6014ab205f80e4e511df0a241f1c6f"
+  },
+  "sourceOriginalGlobalFlagsPreserved": true,
+  "engineProgramFilesChanged": false,
+  "exporterDescriptorPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/mysqlbinlog-tmpfs-20261107-v3.json",
+    "bytes": 330,
+    "sha256": "06396422c198638463fb2a75aec02232061043277e2ecb41b576a925eec1fc13"
+  },
+  "exporterContainerId": "69e7bec0183a7d510942c06a4c85fd2f1663815b982f26226779b03ef776246c",
+  "actualNativeAllSegmentsExported": true,
+  "fullNativeExportProofSha256": "2bad7eb8403d9dc5394f06516546f0c6feb4befc748e0308192099a51cc4f225",
+  "fullNativeExportStart": {
+    "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+    "executedGtidSet": "",
+    "file": "binlog.000021",
+    "position": 23582326,
+    "serverVersion": "8.0.39"
+  },
+  "fullNativeExportEnd": {
+    "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+    "serverVersion": "8.0.39",
+    "file": "binlog.000032",
+    "position": 919188121,
+    "executedGtidSet": ""
+  },
+  "fullNativeExportSqlBytes": 17211499419
+}

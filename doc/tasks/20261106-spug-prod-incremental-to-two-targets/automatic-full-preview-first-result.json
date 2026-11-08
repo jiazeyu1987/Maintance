@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "AutomaticIncrementalUiObservation/v1",
+  "kind": "FULL",
+  "phase": "preview",
+  "observation": "first",
+  "startedAt": "2026-11-07T17:26:59.258Z",
+  "implementationCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+  "preflightSha256": "3876b6333d9ec13cd6da7444308f5db0a5875ca5d175c1a66d4654daf68ebe23",
+  "realBrowser": true,
+  "identityVerified": false,
+  "permissionVerified": false,
+  "loginPosts": 1,
+  "businessPosts": 0,
+  "blockedRequests": [],
+  "pageErrorCount": 0,
+  "request": null,
+  "operationState": null,
+  "status": "FAILED_BEFORE_SUBMISSION",
+  "stage": "authenticated-page",
+  "errorCode": "UI_TIMEOUT",
+  "finishedAt": "2026-11-07T17:27:56.093Z"
+}

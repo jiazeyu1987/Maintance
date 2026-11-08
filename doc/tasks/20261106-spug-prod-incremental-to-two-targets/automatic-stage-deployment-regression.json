@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "AutomaticStageDeploymentRegression/v1",
+  "status": "PASS",
+  "observedAt": "2026-11-07T21:34:20.690229+00:00",
+  "totalTests": 47,
+  "suites": [
+    {
+      "tests": 41,
+      "exitCode": 0
+    },
+    {
+      "tests": 6,
+      "exitCode": 0
+    }
+  ],
+  "sourcePins": {
+    "automatic_stage_deployment.py": {
+      "bytes": 6620,
+      "sha256": "948ba3da949068dfa1a3da53a9d0172e55db491b50506e70f59e846fe2298ae8"
+    },
+    "prepare_automatic_ui_preflight.py": {
+      "bytes": 13716,
+      "sha256": "237e617f266579dd0190b51109f5427391d4cce5b38d4d7a8850bae2789c5abb"
+    },
+    "automatic_incremental_ui_acceptance.cjs": {
+      "bytes": 28002,
+      "sha256": "14be18df2d1930ecbd293d4774027e3267f0ef5d385874ef9140260a39573643"
+    },
+    "test_automatic_stage_deployment.py": {
+      "bytes": 7001,
+      "sha256": "019eba60a9cca684914e5320f3820d11e25cc242b9a1d89df81c0cc637e6614f"
+    },
+    "test_automatic_ui_preflight_git.py": {
+      "bytes": 6839,
+      "sha256": "74400836680fb7d6b4938f9d33023a0b15b0110d1a2aace095056ec2abb19fcd"
+    },
+    "automatic_stage_ui_contract.test.cjs": {
+      "bytes": 3178,
+      "sha256": "7bd6f7f7eb9e704f2b90ac94dc5d334a762fa54d73061acc0cca904335f529f0"
+    }
+  },
+  "historicalOriginalPins": {
+    "automatic-control-installation-57.json": {
+      "bytes": 5565,
+      "sha256": "8ecd7667b2dcfa491818656a296ee3bc92203ea6dd968d77e6e9ccf3daf52351"
+    },
+    "automatic-spug-installation-0d44578.json": {
+      "bytes": 3174,
+      "sha256": "48adbd12ce2b6c434ba81629e38bfbfcdeac11d419f63c520c45f75791b70855"
+    },
+    "automatic-full-ui-submission.json": {
+      "bytes": 1579,
+      "sha256": "fed00eed27b4a4738037ec7a7a5524ad17caee977b658269d1d9c4b875aec14e"
+    },
+    "automatic-full-ui-terminal.json": {
+      "bytes": 1254,
+      "sha256": "cc352bd6648bbdeb570fc17af5f29528e0e049984d183ea9a3394b3f9afd73c3"
+    },
+    "automatic-full-audit.json": {
+      "bytes": 7047,
+      "sha256": "dab1c5de0979f0bd0ef503eb51005c0724b192f444b9f5ff33290474a821a12e"
+    }
+  },
+  "originalsUnchanged": true,
+  "sourceUnchanged": true,
+  "actualStageSelectionCreated": false,
+  "uiOrServerOrInstallationExecuted": false,
+  "scope": "local real-file and temporary Git repository contracts; Node VM pure functions; no actual deployment or business acceptance"
+}

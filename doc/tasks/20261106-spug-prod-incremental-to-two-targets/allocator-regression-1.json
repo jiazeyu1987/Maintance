@@ -1,0 +1,16 @@
+{
+  "observedAt": "2026-11-07T03:31:57.877307+00:00",
+  "phase": "regression",
+  "actualExitCode": 1,
+  "expectedResultObserved": false,
+  "containerRemoved": true,
+  "tests": [
+    "scripts/tests/test_frozen_auto_increment.py",
+    "scripts/tests/test_backup_variants.py",
+    "scripts/tests/test_native_import_process_evidence.py",
+    "scripts/tests/test_native_retained_failure.py",
+    "scripts/tests/test_retained_replacement_retry.py",
+    "scripts/tests/test_smallapp_binlog_ddl.py"
+  ],
+  "outputSha256": "e809d14c3e375bc894da398c0989a78fdaf234efa7b5f490c4f51a3e8cfa6c5a"
+}

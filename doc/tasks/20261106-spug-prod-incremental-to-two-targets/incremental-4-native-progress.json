@@ -1,0 +1,295 @@
+{
+  "observedAt": "2026-11-07T00:04:08.412315+00:00",
+  "operationId": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+  "directories": {
+    "ledger/smallapp-ae9f83a19bb84ec28f27b5ca666bf62c": {
+      "count": 11,
+      "latest": [
+        {
+          "name": "queries",
+          "bytes": 217088,
+          "mtime": 1794009834.4089627,
+          "isDirectory": true
+        },
+        {
+          "name": "point-binding.json",
+          "bytes": 423,
+          "mtime": 1794009834.3979623,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-terminal.json",
+          "bytes": 647,
+          "mtime": 1793995070.6107953,
+          "isDirectory": false
+        },
+        {
+          "name": "completion.json",
+          "bytes": 3426,
+          "mtime": 1793995070.5697944,
+          "isDirectory": false
+        },
+        {
+          "name": "execute",
+          "bytes": 4096,
+          "mtime": 1793995070.5687945,
+          "isDirectory": true
+        },
+        {
+          "name": "worker-process.json",
+          "bytes": 692,
+          "mtime": 1793995058.6245618,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-stderr",
+          "bytes": 0,
+          "mtime": 1793995058.6235619,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-stdout",
+          "bytes": 0,
+          "mtime": 1793995058.6235619,
+          "isDirectory": false
+        },
+        {
+          "name": "intent.json",
+          "bytes": 1449,
+          "mtime": 1793995057.1775336,
+          "isDirectory": false
+        },
+        {
+          "name": "selection.json",
+          "bytes": 1250,
+          "mtime": 1793995057.1735337,
+          "isDirectory": false
+        },
+        {
+          "name": "request.json",
+          "bytes": 284,
+          "mtime": 1793995057.1715336,
+          "isDirectory": false
+        }
+      ]
+    },
+    "capture-staging/smallapp-ae9f83a19bb84ec28f27b5ca666bf62c": {
+      "count": 34,
+      "latest": [
+        {
+          "name": "staging-cleanup.json",
+          "bytes": 162186,
+          "mtime": 1794007885.575296,
+          "isDirectory": false
+        },
+        {
+          "name": "staging-cleanup-intent.json",
+          "bytes": 162136,
+          "mtime": 1794007866.9249356,
+          "isDirectory": false
+        },
+        {
+          "name": "terminal-result.json",
+          "bytes": 3139,
+          "mtime": 1794002740.7365334,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-completion.json",
+          "bytes": 1867,
+          "mtime": 1794002634.6394763,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0020.json",
+          "bytes": 94,
+          "mtime": 1794002634.575475,
+          "isDirectory": false
+        },
+        {
+          "name": "source-restoration.json",
+          "bytes": 435,
+          "mtime": 1794002631.7314198,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0019.json",
+          "bytes": 68,
+          "mtime": 1794002631.7264197,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0018.json",
+          "bytes": 314,
+          "mtime": 1794002631.685419,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0017.json",
+          "bytes": 68,
+          "mtime": 1794002631.0314064,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0016.json",
+          "bytes": 314,
+          "mtime": 1794002630.9894054,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0015.json",
+          "bytes": 76,
+          "mtime": 1794002630.2883918,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0014.json",
+          "bytes": 67,
+          "mtime": 1794002629.4373753,
+          "isDirectory": false
+        }
+      ]
+    },
+    "repository-operations/bd88deb7f4cdde27db6e9e3439e4fef04ce932bf3b84380f12c04f9e7c751d25": {
+      "count": 5374,
+      "latest": [
+        {
+          "name": "result.json",
+          "bytes": 5237,
+          "mtime": 1794009831.5579073,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-archive-chain-readback-end.json",
+          "bytes": 120,
+          "mtime": 1794009831.5269067,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-archive-chain-readback-start.json",
+          "bytes": 76,
+          "mtime": 1794007885.583296,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-capture-cleanup-end.json",
+          "bytes": 111,
+          "mtime": 1794007885.580296,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-capture-cleanup-start.json",
+          "bytes": 69,
+          "mtime": 1794007717.650053,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-archive-final-verification-end.json",
+          "bytes": 124,
+          "mtime": 1794007717.6400528,
+          "isDirectory": false
+        },
+        {
+          "name": "168f11d8249dc5d9f31c57bf2164eaa28f96f6d13c8fb58bbff5ebcfe1bb9ded",
+          "bytes": 4096,
+          "mtime": 1794007717.4990501,
+          "isDirectory": true
+        },
+        {
+          "name": "timing-archive-final-verification-start.json",
+          "bytes": 80,
+          "mtime": 1794005774.9674268,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-nas-readback-end.json",
+          "bytes": 110,
+          "mtime": 1794005774.6974216,
+          "isDirectory": false
+        },
+        {
+          "name": "8a44717fb7645f330e4297b9bb2ce836f42ec7a55cfa9f84b5d9f20d1a3c5726",
+          "bytes": 4096,
+          "mtime": 1794005313.0504684,
+          "isDirectory": true
+        },
+        {
+          "name": "timing-nas-readback-start.json",
+          "bytes": 66,
+          "mtime": 1794004615.8579347,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-archive-metadata-end.json",
+          "bytes": 110,
+          "mtime": 1794004615.8549347,
+          "isDirectory": false
+        }
+      ]
+    }
+  },
+  "workers": [],
+  "nativeDeadlineSecondsRemaining": 50012.1,
+  "nativeReadbackRecords": [
+    {
+      "fileCount": 61,
+      "payloadBytes": 30877952537,
+      "recordBytes": 40704
+    }
+  ],
+  "staging": {
+    "payload": {
+      "files": 0,
+      "bytes": 0,
+      "latestMtime": 0
+    },
+    "semantic-capture": {
+      "files": 0,
+      "bytes": 0,
+      "latestMtime": 0
+    }
+  },
+  "dataObservationScratch": {
+    "scratch-before": null,
+    "scratch-after": null,
+    "scratch-affected": null
+  },
+  "knownCaptureFiles": {
+    "database.sql.gz": null,
+    "database.sql.incremental.raw": null,
+    "database.sql.incremental-scope.json": null,
+    "source-affected-data.json": null,
+    "011-source-data.json": null,
+    "012-source-data-after.json": null,
+    "capture-content-point.json": null
+  },
+  "payloadTopLevel": [],
+  "operationQuerySnapshots": {
+    "files": 2943,
+    "latestMtime": 1794009834.4089627,
+    "databaseProgressEvidence": false
+  },
+  "semanticTopLevel": [],
+  "nativeCaptureEvents": [
+    {
+      "at": "2026-11-06T22:03:50.989264+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT"
+    },
+    {
+      "at": "2026-11-06T22:03:51.031713+00:00",
+      "stage": "WRITER_RESTORED"
+    },
+    {
+      "at": "2026-11-06T22:03:51.685781+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT"
+    },
+    {
+      "at": "2026-11-06T22:03:51.727125+00:00",
+      "stage": "WRITER_RESTORED"
+    },
+    {
+      "at": "2026-11-06T22:03:54.575752+00:00",
+      "stage": "CAPTURE_MATERIAL_COMPLETE_SOURCE_RESTORED"
+    }
+  ]
+}

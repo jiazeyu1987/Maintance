@@ -1,0 +1,8 @@
+{
+  "status": "READ_ONLY_DIAGNOSIS",
+  "observedAt": "2026-11-08T02:46:17.489171+00:00",
+  "host": "172.30.30.59",
+  "exitCode": 0,
+  "exceptions": [],
+  "frames": []
+}

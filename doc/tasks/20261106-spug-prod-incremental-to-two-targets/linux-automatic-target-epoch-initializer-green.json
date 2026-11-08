@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T19:34:45.098343+00:00",
+  "exitCode": 0,
+  "containerRemoved": true,
+  "inputFilesUnchanged": true,
+  "inputFiles": {
+    "automatic_target_epoch_initializer.py": "25f36def36090c4f021fb154cf88a54b7c6c60b9e569a629ee6448937ebc7782",
+    "test_automatic_target_epoch_initializer.py": "5862f7f3208c6ed2f543e2459ec9c412430a5a3828b425c057085244d234215f",
+    "automatic_target_epoch_resume.py": "4f9b80b099cea5b7756ea1cffb54de0d2324d2fe622961e7edc6a60ec2648a06",
+    "test_automatic_target_epoch_resume.py": "bb656ba85e0f3df597540d0655ace0a6a9a132b553f939d91da22173d06e2dea"
+  },
+  "network": "none",
+  "workspaceReadOnly": true,
+  "outputSha256": "f6d2afd6b54bb07cfee665b8f78925f5e9f35dfc06103aecdfa14078706af8c6"
+}

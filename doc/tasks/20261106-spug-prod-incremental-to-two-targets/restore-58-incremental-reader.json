@@ -1,0 +1,15 @@
+{
+  "observedAt": "2026-11-07T02:29:57.230285+00:00",
+  "operationId": "smallapp-c21bb7ce9f5b4668b850c37a80964786",
+  "fdEntriesExamined": 48506,
+  "allMatchingWorkerFdsExamined": true,
+  "incrementalSqlReaders": [
+    {
+      "pid": 21337,
+      "fd": 48503,
+      "position": 17179869184,
+      "bytes": 17213672529
+    }
+  ],
+  "wholeOperationProgressPercentageClaimed": false
+}

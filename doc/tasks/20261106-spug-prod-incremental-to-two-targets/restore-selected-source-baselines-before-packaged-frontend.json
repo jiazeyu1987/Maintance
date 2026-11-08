@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "TaskRestoreSourceBaselines/v1",
+  "targets": {
+    "58": "before-restore-58-r3-after-navigation-57.json",
+    "59": "before-restore-59-57.json"
+  }
+}

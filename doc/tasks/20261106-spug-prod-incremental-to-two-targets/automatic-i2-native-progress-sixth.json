@@ -1,0 +1,18 @@
+{
+  "status": "OBSERVED",
+  "observedAt": "2026-11-08T02:08:44.928365+00:00",
+  "operationId": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291",
+  "workerPid": 20344,
+  "workerPresent": true,
+  "state": "D",
+  "io": {
+    "rchar": 188704182251,
+    "wchar": 2127024524,
+    "syscr": 1285188,
+    "syscw": 3181,
+    "read_bytes": 2330624,
+    "write_bytes": 20766720,
+    "cancelled_write_bytes": 0
+  },
+  "mutationDispatched": false
+}

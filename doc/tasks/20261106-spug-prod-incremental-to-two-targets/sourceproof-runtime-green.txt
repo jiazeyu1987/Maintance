@@ -1,0 +1,18 @@
+............FF.............                                              [100%]
+================================== FAILURES ===================================
+___________ test_kind_reports_exact_failed_original_scope[I1-False] ___________
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_source_restoration.py:37: in test_kind_reports_exact_failed_original_scope
+    result = validate_evidence(kind, installation, submission, audit, terminal)
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\verify_automatic_source_restoration.py:35: in validate_evidence
+    raise ValueError('SOURCE_SUBMISSION_CHANGED') from None
+E   ValueError: SOURCE_SUBMISSION_CHANGED
+___________ test_kind_reports_exact_failed_original_scope[I2-True] ____________
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_source_restoration.py:37: in test_kind_reports_exact_failed_original_scope
+    result = validate_evidence(kind, installation, submission, audit, terminal)
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\verify_automatic_source_restoration.py:35: in validate_evidence
+    raise ValueError('SOURCE_SUBMISSION_CHANGED') from None
+E   ValueError: SOURCE_SUBMISSION_CHANGED
+=========================== short test summary info ===========================
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_source_restoration.py::test_kind_reports_exact_failed_original_scope[I1-False]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_source_restoration.py::test_kind_reports_exact_failed_original_scope[I2-True]
+2 failed, 25 passed in 0.37s

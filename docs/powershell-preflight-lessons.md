@@ -11,6 +11,17 @@
 
 ## 适用范围
 
+### Python子进程与混合PowerShell模块搜索路径
+
+- Trigger: Python或其它运行时启动固定Windows PowerShell 5.1时，Get-FileHash等cmdlet缺失，但从交互shell直接启动同一个powershell.exe可以解析。
+- Preflight check: 在实际父进程启动方式下读取PSVersionTable、PSHOME、PSModulePath及所需Get-Command结果；检查是否先搜索了PowerShell 7或捆绑运行时Modules。检查脚本依赖Utility时显式Import-Module当前PSHOME内的Microsoft.PowerShell.Utility.psd1并使用ErrorAction Stop。
+- Blocker: 固定版本的模块缺失、显式导入失败或实际命令仍不可用时停止对应核验；不能把模块加载失败当作远端配置漂移。
+- Verification: 从实际Python子进程执行原SHA、计划任务、进程及监听完整断言，保留失败后新报告；再运行整体核验，不能只以Get-Command成功放行。
+- Forbidden action: 不修改全局PSModulePath，不换用未经验证的PowerShell版本，不跳过SHA/进程检查或吞掉模块错误。
+- Evidence: doc/tasks/20261106-spug-prod-incremental-to-two-targets/stable-controls-powershell-child-diagnosis.json、stable-controls-transport-probe-r2.json和stable-controls-transport-probe-r3.json。
+
+阶段必查项：父进程环境、固定powershell.exe版本、模块实际路径、业务断言。推荐命令为在Python subprocess中启动固定WindowsPowerShell并执行`Import-Module ($PSHOME+'/Modules/Microsoft.PowerShell.Utility/Microsoft.PowerShell.Utility.psd1') -ErrorAction Stop`，随后使用原Get-FileHash断言。Fail Fast：导入或任一原断言失败，不继续宣称稳定控制通过。必须记录版本、模块路径、命令可用性、原失败、新校验和是否改动系统环境。
+
 ### Python JUnit 收尾与 Windows WMI
 
 - Trigger: pytest 显示 100% 但进程不退出、JUnit 文件为 0 字节，或 PowerShell/CIM 同时无响应。

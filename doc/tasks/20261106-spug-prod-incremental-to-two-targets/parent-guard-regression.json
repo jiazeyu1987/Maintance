@@ -1,0 +1,13 @@
+{
+  "observedAt": "2026-11-06T18:02:54.459837+00:00",
+  "phase": "regression",
+  "actualPytestExitCode": 0,
+  "expectedResultObserved": true,
+  "containerRemoved": true,
+  "tests": [
+    "scripts/tests/test_archive_path_fd_budget.py"
+  ],
+  "outputSha256": "6b05568a11e18b99227fc969a619b79fe994640d1cfd3de89b4b6c8edafe0bb3",
+  "diagnosticOnly": true,
+  "productionRecoveryAcceptance": false
+}

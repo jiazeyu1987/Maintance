@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T12:53:59.877573+00:00",
+  "activeRestoreOperationId": "smallapp-e0946cfc3fd842b1a85a021e236c6317",
+  "hosts": [
+    {
+      "host": "172.30.30.57",
+      "containerCount": 198,
+      "allContainerDefinitionsImagesAndRuntimeUnchanged": true,
+      "backendHealth": "UP",
+      "frontendHTTP": 200,
+      "fstabAndProtectedMountsUnchanged": true
+    },
+    {
+      "host": "172.30.30.58",
+      "containerCount": 459,
+      "allContainerDefinitionsImagesAndRuntimeUnchanged": true,
+      "backendHealth": "UP",
+      "frontendHTTP": 200,
+      "fstabAndProtectedMountsUnchanged": true
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T05:33:10.435982+00:00",
+  "operationId": "smallapp-b4f35606e4854516960050a76473038b",
+  "fileCount": 37,
+  "bytes": 83884,
+  "mutationDispatched": false,
+  "nativeCommands": 6,
+  "allNativeCommandsReadOnly": true,
+  "noMutationReservationReleaseVerified": true,
+  "previousClearanceConsumedByThisOperation": true
+}

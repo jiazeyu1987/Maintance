@@ -1,0 +1,40 @@
+{
+  "realBrowser": true,
+  "realLogin": true,
+  "startedAt": "2026-11-07T06:35:35.851Z",
+  "writes": 1,
+  "blocked": [],
+  "httpFailures": [
+    {
+      "status": 504,
+      "path": "/release-center/api/applications/intruoyi/package-catalog"
+    },
+    {
+      "status": 409,
+      "path": "/backup-entry-api/operations/smallapp-e61ca1c4b93f4aa3ab5a70eca399c36d"
+    },
+    {
+      "status": 409,
+      "path": "/backup-entry-api/progress/smallapp-e61ca1c4b93f4aa3ab5a70eca399c36d"
+    }
+  ],
+  "pageErrors": [],
+  "stage": "confirmation",
+  "selectedPackage": "2026/11/7 03:57:34 · 增量备份 · smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+  "entry": "existing-restore-tab",
+  "confirmation": "IntRuoyi · 恢复 · 正式服务器　172.30.30.57 · 安全模式 · 完整核验 NAS：\\\\172.30.30.4\\IT共享\\Backup\\BackupPackage 来源：intruoyi-57-safe-20261024-v1 备份包：smallapp-ae9f83a19bb84ec28f27b5ca666bf62c 恢复到：测试服务器　172.30.30.58 独立目标：intruoyi-main-58-safe-restore-20261104-v1 恢复方式：覆盖现有程序，将替换目标现有记录、附件及 Redis 数据。",
+  "request": {
+    "schemaVersion": "SmallAppBackupUiRequest/v1",
+    "operationId": "smallapp-e61ca1c4b93f4aa3ab5a70eca399c36d",
+    "action": "RESTORE",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "parentChainRef": null,
+    "recoveryPointRef": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+    "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1"
+  },
+  "status": "FAIL",
+  "error": "TimeoutError: page.waitForResponse: Timeout 45000ms exceeded while waiting for event \"response\"",
+  "visible": "工作台\nDashboard\n主机管理\n批量执行\n应用发布\n流水线\n任务计划\n备份与恢复\n配置中心\n监控中心\n报警中心\n系统管理\n管理员\n首页/\n备份与恢复",
+  "frameVisible": "备份\n恢复\n全部包清单\n执行进度\n操作记录\n执行进度\n刷新进度\n已保留编号，尚未查询执行回执\n操作\n恢复\n来源服务器\n来源服务器未记录\n来源\nintruoyi-57-safe-20261024-v1\n执行模式\n执行模式未记录\n备份包\nsmallapp-ae9f83a19bb84ec28f27b5ca666bf62c\n恢复目标\nintruoyi-main-58-safe-restore-20261104-v1\n恢复方式\n恢复方式未记录\n总耗时\n0时 0分 42秒\nsmallapp-e61ca1c4b93f4aa3ab5a70eca399c36d\n步骤日志读取失败：LOCAL_INPUT_MISSING_OR_INVALID\n操作日志\n步骤日志读取失败：LOCAL_INPUT_MISSING_OR_INVALID；已有数据为上次读取结果。\n\n无实际百分比回执时显示执行状态，不估算完成百分比。\n\n执行诊断",
+  "finishedAt": "2026-11-07T06:37:39.827Z"
+}

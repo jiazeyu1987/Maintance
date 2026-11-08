@@ -1,0 +1,53 @@
+[
+  {
+    "observedAt": "2026-11-07T08:23:28.811Z",
+    "stage": "browser-launch"
+  },
+  {
+    "observedAt": "2026-11-07T08:23:29.094Z",
+    "stage": "browser-context"
+  },
+  {
+    "observedAt": "2026-11-07T08:23:29.181Z",
+    "stage": "browser-page"
+  },
+  {
+    "observedAt": "2026-11-07T08:23:29.382Z",
+    "stage": "page-created"
+  },
+  {
+    "observedAt": "2026-11-07T08:23:34.289Z",
+    "stage": "login-navigation"
+  },
+  {
+    "observedAt": "2026-11-07T08:23:34.306Z",
+    "stage": "response",
+    "path": "/",
+    "httpStatus": 200
+  },
+  {
+    "observedAt": "2026-11-07T08:23:34.601Z",
+    "stage": "login-controls"
+  },
+  {
+    "observedAt": "2026-11-07T08:23:34.623Z",
+    "stage": "login-click"
+  },
+  {
+    "observedAt": "2026-11-07T08:23:34.740Z",
+    "stage": "request",
+    "method": "POST",
+    "path": "/api/account/login/"
+  },
+  {
+    "observedAt": "2026-11-07T08:23:37.576Z",
+    "stage": "response",
+    "path": "/api/account/login/",
+    "httpStatus": 200
+  },
+  {
+    "observedAt": "2026-11-07T08:23:37.585Z",
+    "stage": "login-response-parsed",
+    "rejected": false
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "CatalogueReadonlyAttempt/v1",
+  "startedAt": "2026-11-07T18:40:47.367Z",
+  "observation": "r2",
+  "sessionKind": "FULL",
+  "sourceCommit": "b5c8817de2b4cc5efdad566f0fb65fdabefcb8d8",
+  "retainedFailedObservationPins": [
+    {
+      "file": "catalogue-identity-readonly-verification.json",
+      "bytes": 618,
+      "sha256": "ed293a1bdea09db3096a36af29d776efa15a9afc262e0a8ce186714d7257be61"
+    }
+  ],
+  "sessionSha256": "705932744d5a26d1bb49a216fb9a8d9f4d7ad19e3ceadaf12deace547dd181ee",
+  "installationPin": {
+    "file": "catalogue-identity-installation.json",
+    "bytes": 4364,
+    "sha256": "b23e3237ac448a9f669e79e8c4c63f94a6d40bf2f8e6cafd0db80f4d19adbc1d"
+  }
+}

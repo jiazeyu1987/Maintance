@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "TaskRecordsHelperRegression/v1",
+  "status": "PASS",
+  "observedAt": "2026-11-07T19:25:03.236051+00:00",
+  "testCount": 28,
+  "exitCode": 0,
+  "syntaxChecked": true,
+  "sourcePins": {
+    "commit_records.py": {
+      "bytes": 19780,
+      "sha256": "d2ebc3ac2b87d3f207b561673238f208219de49a5ab3856c6c6fb6111a2f246d"
+    },
+    "test_commit_records_contract.py": {
+      "bytes": 13225,
+      "sha256": "518a9868e4599ead3bf1eb3595b72bd3e001e3f82cc3a1539e14d8dc74594d16"
+    },
+    "records-commit-helper-plan.md": {
+      "bytes": 5314,
+      "sha256": "a343cb4c280ad5be57430e7080eeb5de809a5a2520842a73968b16bdcf5ddedf"
+    },
+    "records-commit-helper-usage.md": {
+      "bytes": 5499,
+      "sha256": "03eb418454aae2f5a325936dd73d909b36ec7980b90691c9d3a61f3d379e1d31"
+    }
+  },
+  "sourceUnchanged": true,
+  "head": "b5c8817de2b4cc5efdad566f0fb65fdabefcb8d8",
+  "headUnchanged": true,
+  "scope": "local file and CLI contracts; real wrong-HEAD rejection; no real acceptance or final commit",
+  "gitWritesPerformed": false,
+  "serverOrBrowserAccess": false
+}

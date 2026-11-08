@@ -1,0 +1,180 @@
+{
+  "operationId": "smallapp-c21bb7ce9f5b4668b850c37a80964786",
+  "observedAt": "2026-11-07T02:22:21.495074+00:00",
+  "nativeTimings": [
+    {
+      "path": "database-000/timing-database-restore-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 2703.244,
+        "finishedAt": "2026-11-07T01:49:27.478205Z",
+        "stage": "database-restore"
+      }
+    },
+    {
+      "path": "database-000/timing-database-restore-start.json",
+      "value": {
+        "stage": "database-restore",
+        "startedAt": "2026-11-07T01:04:24.234469Z"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-expand-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 221.651,
+        "finishedAt": "2026-11-07T01:09:09.590353Z",
+        "stage": "sql-expand"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-expand-start.json",
+      "value": {
+        "stage": "sql-expand",
+        "startedAt": "2026-11-07T01:05:27.939279Z"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-import-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 700.564,
+        "finishedAt": "2026-11-07T01:21:30.480230Z",
+        "stage": "sql-import"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-import-start.json",
+      "value": {
+        "stage": "sql-import",
+        "startedAt": "2026-11-07T01:09:49.916282Z"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-readback-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 1676.985,
+        "finishedAt": "2026-11-07T01:49:27.468970Z",
+        "stage": "sql-readback"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-readback-start.json",
+      "value": {
+        "stage": "sql-readback",
+        "startedAt": "2026-11-07T01:21:30.483680Z"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-stage-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 56.001,
+        "finishedAt": "2026-11-07T01:05:27.929080Z",
+        "stage": "sql-stage"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-stage-start.json",
+      "value": {
+        "stage": "sql-stage",
+        "startedAt": "2026-11-07T01:04:31.928503Z"
+      }
+    },
+    {
+      "path": "database-001/timing-database-restore-start.json",
+      "value": {
+        "stage": "database-restore",
+        "startedAt": "2026-11-07T01:49:27.480242Z"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-expand-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 324.176,
+        "finishedAt": "2026-11-07T01:56:41.385427Z",
+        "stage": "sql-expand"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-expand-start.json",
+      "value": {
+        "stage": "sql-expand",
+        "startedAt": "2026-11-07T01:51:17.209402Z"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-import-start.json",
+      "value": {
+        "stage": "sql-import",
+        "startedAt": "2026-11-07T01:57:03.860957Z"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-stage-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 102.796,
+        "finishedAt": "2026-11-07T01:51:17.202399Z",
+        "stage": "sql-stage"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-stage-start.json",
+      "value": {
+        "stage": "sql-stage",
+        "startedAt": "2026-11-07T01:49:34.406862Z"
+      }
+    },
+    {
+      "path": "replacement-preparation/timing-target-replacement-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 132.653,
+        "finishedAt": "2026-11-07T00:37:06.333855Z",
+        "stage": "target-replacement"
+      }
+    },
+    {
+      "path": "replacement-preparation/timing-target-replacement-start.json",
+      "value": {
+        "stage": "target-replacement",
+        "startedAt": "2026-11-07T00:34:53.680726Z"
+      }
+    },
+    {
+      "path": "timing-restore-admission-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 1629.207,
+        "finishedAt": "2026-11-07T01:04:15.546209Z",
+        "stage": "restore-admission"
+      }
+    },
+    {
+      "path": "timing-restore-admission-start.json",
+      "value": {
+        "stage": "restore-admission",
+        "startedAt": "2026-11-07T00:37:06.339641Z"
+      }
+    },
+    {
+      "path": "timing-target-checks-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 8.682,
+        "finishedAt": "2026-11-07T01:04:24.230877Z",
+        "stage": "target-checks"
+      }
+    },
+    {
+      "path": "timing-target-checks-start.json",
+      "value": {
+        "stage": "target-checks",
+        "startedAt": "2026-11-07T01:04:15.548767Z"
+      }
+    }
+  ]
+}

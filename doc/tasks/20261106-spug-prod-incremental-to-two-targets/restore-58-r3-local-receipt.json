@@ -1,0 +1,54 @@
+{
+  "observedAt": "2026-11-07T06:57:06.819108+00:00",
+  "operationId": "smallapp-e61ca1c4b93f4aa3ab5a70eca399c36d",
+  "records": [
+    {
+      "relativePath": "be43cd6c6bf7858d996aab80a81b5f415bb6c3eb6f120346c563d035d4b38ee4.json",
+      "exists": true,
+      "bytes": 887,
+      "sha256": "a07f03ce2afa555808a73e0477be00e61064bf0630b4bbbff43ef00417d0846f",
+      "request": {
+        "action": "RESTORE",
+        "operationId": "smallapp-e61ca1c4b93f4aa3ab5a70eca399c36d",
+        "parentChainRef": null,
+        "recoveryPointRef": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+        "schemaVersion": "SmallAppBackupUiRequest/v1",
+        "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+        "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1"
+      },
+      "spugHistoryId": null,
+      "dispatchState": null,
+      "dispatchErrorCode": null,
+      "disposition": "ORIGINAL_QUERY_ONLY",
+      "reservedAt": "2026-11-07T06:38:01.935202+00:00",
+      "observedAt": "2026-11-07T06:38:07.806178+00:00",
+      "lastState": "RUNNING"
+    },
+    {
+      "relativePath": "ui/be43cd6c6bf7858d996aab80a81b5f415bb6c3eb6f120346c563d035d4b38ee4.json",
+      "exists": true,
+      "bytes": 1115,
+      "sha256": "23d8233c018c4d71c8a6cd147d5f0bbc6f7eaf0548844e4a948807f98c5ec3a8",
+      "request": {
+        "action": "RESTORE",
+        "operationId": "smallapp-e61ca1c4b93f4aa3ab5a70eca399c36d",
+        "parentChainRef": null,
+        "recoveryPointRef": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+        "schemaVersion": "SmallAppBackupUiRequest/v1",
+        "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+        "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1"
+      },
+      "spugHistoryId": 370,
+      "dispatchState": "DISPATCHING",
+      "dispatchErrorCode": null,
+      "disposition": null,
+      "reservedAt": null,
+      "observedAt": null,
+      "lastState": null
+    },
+    {
+      "relativePath": "terminal/be43cd6c6bf7858d996aab80a81b5f415bb6c3eb6f120346c563d035d4b38ee4.json",
+      "exists": false
+    }
+  ]
+}

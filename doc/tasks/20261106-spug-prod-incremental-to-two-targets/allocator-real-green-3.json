@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T03:34:21.450379+00:00",
+  "actualMysqlVersion": "8.0.39",
+  "sourceCounter": 11,
+  "targetCounter": 11,
+  "actualAlterCount": 1,
+  "strictSchemaEqual": true,
+  "realRowsEqual": true,
+  "unchangedAllocatorSecondPassWrites": 0,
+  "outcomePin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\allocator-green-evidence-3\\allocator-result.json",
+    "bytes": 702,
+    "sha256": "bd51099bc7f0e31e73490d86de1b88c632618651eadac841a8c80e5e6b902595"
+  },
+  "sourceBusinessServersWritten": false
+}

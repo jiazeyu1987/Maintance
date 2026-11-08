@@ -1,0 +1,65 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-08T03:04:55.422955+00:00",
+  "host": "172.30.30.57",
+  "phase": "closeout",
+  "originalContainerCount": 195,
+  "allOriginalDefinitionsAndImagesPreserved": true,
+  "otherBusinessRuntimePreserved": true,
+  "otherBusinessContainerCount": 191,
+  "allowedRuntimeChangeContainerIds": [
+    "1210f97cf7653c5f74a7981bf4d4bec8d7462af873d53695d47a59a7ce38a479",
+    "70c0487396f6954ec794230644cc5d01669c7c0ed217df7b6c4a35a722a5832a",
+    "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf",
+    "c4385604eb83b44f2836755bad709581c7e7edd0078b148f3b0f74e0b567304c"
+  ],
+  "fstabPreserved": true,
+  "protectedMountsPreserved": true,
+  "backendHealth": "UP",
+  "frontendHttp": 200,
+  "activeReservation": false,
+  "ownedAddedExportersVerified": true,
+  "ownedAddedExporterCount": 3,
+  "registeredExporterContainerId": "69e7bec0183a7d510942c06a4c85fd2f1663815b982f26226779b03ef776246c",
+  "backupOperationId": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291",
+  "automaticI2EvidencePins": {
+    "installation": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-source-control-installation-0dc7429.json",
+      "bytes": 9263,
+      "sha256": "d61e003f7e0fd22e9acf7010de92737110a52c831a78697d39cd8d237c72229f"
+    },
+    "submission": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-i2-ui-submission.json",
+      "bytes": 2022,
+      "sha256": "b3744928c62b5d7b5bab20567340f326390ce7265f4d651736472085b1fe5e0a"
+    },
+    "audit": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-i2-audit.json",
+      "bytes": 13206,
+      "sha256": "90d30902fbf3b873e2df278f4f313503f038e2e1e72d0308bd9de1dabd78680d"
+    },
+    "terminal": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-i2-ui-terminal.json",
+      "bytes": 1448,
+      "sha256": "288636499bbd34f6395990907df56b16082f279437f6b54cb071291b1ddff76b"
+    },
+    "restoration": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-i2-source-restoration.json",
+      "bytes": 34564,
+      "sha256": "925ae4c5393d85481cfa697ac69159802b3b4db916718a53dd7842eadd2475e0"
+    },
+    "deploymentSelection": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-i2-deployment-selection.json",
+      "bytes": 1015,
+      "sha256": "4a680483ad926151724520bcc9b9692c8ea4d8a25f8bafcf36810e9b7ac67bbc"
+    }
+  },
+  "sourceCommit": "0dc7429d4758a208a5b0c098111fe9702ab63235",
+  "deploymentSelectionPin": {
+    "file": "automatic-i2-deployment-selection.json",
+    "bytes": 1015,
+    "sha256": "4a680483ad926151724520bcc9b9692c8ea4d8a25f8bafcf36810e9b7ac67bbc"
+  },
+  "automaticI2FinishedAt": "2026-11-08T02:15:08.107836Z",
+  "sourceRestorationObservedAt": "2026-11-08T02:29:27.512873+00:00"
+}

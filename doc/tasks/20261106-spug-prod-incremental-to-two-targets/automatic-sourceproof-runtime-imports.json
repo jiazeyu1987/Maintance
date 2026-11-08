@@ -1,0 +1,75 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T21:35:55.621299+00:00",
+  "schemaVersion": "AutomaticSourceProofRuntimeImports/v1",
+  "runtime": {
+    "pythonPin": {
+      "path": "/usr/local/libexec/spug-source-control-20261105/python/bin/python3.12",
+      "bytes": 30975640,
+      "sha256": "0886fb76ceec8ff568d23079b5da6342bb41675e216e11525d4d6a9e65988d10"
+    },
+    "modulePaths": [
+      "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-automatic-0d44578/control",
+      "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-automatic-0d44578/common",
+      "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-automatic-0d44578/formal",
+      "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/runtime/lib/python3.12/site-packages"
+    ],
+    "modulePins": {
+      "recovery_backup_epoch": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-automatic-0d44578/common/recovery_backup_epoch.py",
+        "bytes": 18027,
+        "sha256": "816a5f7d093fc03011d1f9ad2d5512c42551b565a5cdf0fa7a73e1d4fce641b8"
+      },
+      "recovery_main_target": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-automatic-0d44578/common/recovery_main_target.py",
+        "bytes": 41827,
+        "sha256": "5f49f5636db2d95536beeea8a414420ed13eb20591211b8a94e11676cd087f4d"
+      },
+      "recovery_engine": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-automatic-0d44578/common/recovery_engine.py",
+        "bytes": 18639,
+        "sha256": "7c91a17cde3b03af79a1a1608c83b83e1987f95e21f28a1269fa7508e74d5499"
+      }
+    },
+    "dependencyPins": {
+      "jsonschema": {
+        "path": "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/runtime/lib/python3.12/site-packages/jsonschema/__init__.py",
+        "bytes": 3941,
+        "sha256": "a7e470e134bfd0e3c76482722260d6b1d5a099de823d61cc5cbabb06e4314c67"
+      },
+      "attrs": {
+        "path": "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/runtime/lib/python3.12/site-packages/attrs/__init__.py",
+        "bytes": 1183,
+        "sha256": "47168064dc1888487e7dcbc72d936943f0d62a78bbdccfe3c443c47ed8aad597"
+      },
+      "referencing": {
+        "path": "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/runtime/lib/python3.12/site-packages/referencing/__init__.py",
+        "bytes": 207,
+        "sha256": "e4864a5da007fc55b20894646939f55dca6d2df83d72f78b6fdbb99d853124ab"
+      },
+      "jsonschema_specifications": {
+        "path": "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/runtime/lib/python3.12/site-packages/jsonschema_specifications/__init__.py",
+        "bytes": 386,
+        "sha256": "aa84c1d83298eeabcdac684c3c7ea0b6600944b8a599543e7c56704faaf2ab0d"
+      },
+      "rpds": {
+        "path": "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/runtime/lib/python3.12/site-packages/rpds/__init__.py",
+        "bytes": 99,
+        "sha256": "c373205d6ee5a530880b0d0a5dbc36d105f9ef7fe46ec12758878cb0202e82f3"
+      }
+    },
+    "bytecodeDisabled": true,
+    "configurationModulePathVerified": true
+  },
+  "controlConfigurationPin": {
+    "bytes": 2629,
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control-automatic-0d44578.json",
+    "sha256": "46db9bc60296881abc4a112f93aa468132282e2402c06e6ff695432259eece42"
+  },
+  "controllerPid": 25086,
+  "installedServiceModulePathVerified": true,
+  "serverWrites": false,
+  "controlApiCalled": false,
+  "sqlCalled": false,
+  "sourceProofExecuted": false
+}

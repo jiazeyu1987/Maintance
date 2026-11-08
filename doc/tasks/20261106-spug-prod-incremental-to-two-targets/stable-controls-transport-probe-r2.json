@@ -1,0 +1,8 @@
+{
+  "status": "FAILED",
+  "observedAt": "2026-11-08T02:34:57.060519+00:00",
+  "commandExitCode": 1,
+  "exactOriginalScriptSha256": "fe62e1ac6ae87e45ccf3bd0806856e5fce82f0ec3dff8a579207e981c7f5bbb7",
+  "helperUnmodified": true,
+  "anyServiceRestarted": false
+}

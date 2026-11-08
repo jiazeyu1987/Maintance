@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T03:29:55.095983+00:00",
+  "sourceSchemaSha256": "0202be5379ab182dc38d815fc292cc29b1ac6e00c87efc11f83c120d8ba3d0bc",
+  "targetSchemaSha256": "fc708ef7e9eb10a4da6ba61c7623983d152f6a8b39c8866ccbf1cb76273c9311",
+  "actualFrozenTableCount": 885,
+  "exactPlan": [
+    {
+      "table": "mes_kingdee_production_order_sync_record",
+      "column": "id",
+      "before": 30376,
+      "after": 30384,
+      "sql": "ALTER TABLE `mes_kingdee_production_order_sync_record` AUTO_INCREMENT = 30384;"
+    }
+  ],
+  "actualMutations": 0,
+  "strictComparisonStillRejectsOriginalMismatch": true
+}

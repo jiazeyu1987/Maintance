@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T05:41:44.748067+00:00",
+  "host": "172.30.30.59",
+  "sourceSha256": "b95f6529ac1dc5fc8d285424ae299ae2134c7497c9b042a4c176441a397d605e",
+  "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+  "ownerConfigurationPin": {
+    "bytes": 23027,
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-allocator-7c5f057.json",
+    "sha256": "2e08aa70560eea3b202599d3f2a70ca4398515a50d633f9a1d818dcbe134d65c"
+  },
+  "endpoints": {
+    "minio": "http://172.29.239.23:9000/minio/health/ready",
+    "backend": "http://172.29.239.25:48081/actuator/health",
+    "frontend": "http://172.29.239.2:80/"
+  },
+  "actualProtocolProbes": {
+    "minio": {
+      "ready": true,
+      "httpStatus": 200,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "backend": {
+      "ready": true,
+      "httpStatus": 200,
+      "bodySha256": "647a83cca85203d6d4eb07eea84ef6eb91d5c6482eaff2ac8bb65a342b9f2946"
+    },
+    "frontend": {
+      "ready": true,
+      "httpStatus": 200,
+      "bodySha256": "cdef13d91ba30ec8cae5662ed11e23cc3e98e0686607a962dd2169f153deebec"
+    }
+  },
+  "stoppedServicesProbed": false,
+  "profile": null,
+  "actualRuntimeContractVerified": true,
+  "serverWrites": false
+}

@@ -1,0 +1,75 @@
+{
+  "status": "OBSERVED",
+  "observedAt": "2026-11-07T22:56:35.600303+00:00",
+  "operationId": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+  "workerPid": 17042,
+  "workerPresent": true,
+  "io": {
+    "rchar": 11757910536,
+    "wchar": 2121837088,
+    "syscr": 620598,
+    "syscw": 35149,
+    "read_bytes": 2085036032,
+    "write_bytes": 2096275456,
+    "cancelled_write_bytes": 0
+  },
+  "fileCount": 39,
+  "totalObservedBytes": 2096184972,
+  "largestFiles": [
+    {
+      "file": "payload/original-application-images.tar",
+      "bytes": 2081399296
+    },
+    {
+      "file": "payload/database.sql.incremental.raw",
+      "bytes": 10398799
+    },
+    {
+      "file": "semantic-capture/versions.jsonl",
+      "bytes": 3178549
+    },
+    {
+      "file": "payload/database.sql.gz",
+      "bytes": 1063270
+    },
+    {
+      "file": "recovery-materials/container-inspects.bin",
+      "bytes": 57745
+    }
+  ],
+  "lastStages": [
+    {
+      "at": "2026-11-07T22:44:30.923237+00:00",
+      "stage": "CONFIGURATION_AND_IMAGES_CAPTURED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-07T22:44:30.927284+00:00",
+      "stage": "STOP_REQUESTED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-07T22:44:34.806464+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT",
+      "captureStage": "STOP_WRITERS"
+    },
+    {
+      "at": "2026-11-07T22:44:34.851196+00:00",
+      "stage": "STOP_REQUESTED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-07T22:44:35.234097+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT",
+      "captureStage": "STOP_WRITERS"
+    },
+    {
+      "at": "2026-11-07T22:44:35.951492+00:00",
+      "stage": "WRITERS_STOPPED_DATABASE_FENCED",
+      "captureStage": null
+    }
+  ],
+  "sourceRestorationRecorded": false,
+  "mutationDispatched": false,
+  "liveObservationNotFinalPayload": true
+}

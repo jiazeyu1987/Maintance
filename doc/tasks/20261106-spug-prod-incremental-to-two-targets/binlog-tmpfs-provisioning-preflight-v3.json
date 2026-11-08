@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "preparedOnly": true,
+  "remoteWrites": false,
+  "scriptSha256": "097a931588ac35587c01e02915454dfc5377f51d0738297e12b40ecc41bd4dba",
+  "sourceEngine": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-incremental-parent-d487abf",
+  "realRedConfirmed": true
+}

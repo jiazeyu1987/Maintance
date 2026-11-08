@@ -1,0 +1,13 @@
+{
+  "observedAt": "2026-11-06T18:11:11.708462+00:00",
+  "phase": "red-init",
+  "actualPytestExitCode": 1,
+  "expectedResultObserved": true,
+  "containerRemoved": true,
+  "tests": [
+    "scripts/tests/test_capture_parent_guard.py::test_semantic_constructor_failure_after_parent_acquisition_closes_leases"
+  ],
+  "outputSha256": "65ba5d5fa4a9d56d60541aad9f4cdf4f793f7c64998e8f9d18163e97add4c303",
+  "diagnosticOnly": true,
+  "productionRecoveryAcceptance": false
+}

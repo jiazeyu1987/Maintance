@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "operationId": "smallapp-e7cee19e7f4b464eacdfe11b712aec17",
+  "protectedFiles": 9090,
+  "protectedBytes": 2085501726,
+  "observedAt": "2026-11-06T18:19:12.633236+00:00",
+  "priorMetadataPinsVerified": 19,
+  "payloadBytesReadOnly": true
+}

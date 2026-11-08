@@ -1,0 +1,8 @@
+{
+  "file": "restore-58-r4-ui-readonly-terminal.json",
+  "bytes": 4347,
+  "sha256": "e26cc4981da7ae81f9b2d65c262811742578a43cfd8d119a904d6e2a65a7b94b",
+  "status": "FAIL",
+  "catalogueHttp": 502,
+  "operationId": "smallapp-4cd6779eaf7d405889a07feb47d0a66b"
+}

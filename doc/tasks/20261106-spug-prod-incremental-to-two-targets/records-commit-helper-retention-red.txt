@@ -1,0 +1,130 @@
+.usage: test_commit_records_contract.py [-h] --mode {acceptance,final}
+                                       --expected-head EXPECTED_HEAD
+                                       --selection SELECTION --receipt RECEIPT
+                                       [--finalization FINALIZATION]
+                                       [--execute]
+test_commit_records_contract.py: error: the following arguments are required: --expected-head
+.........EEEEEEEEEEE..............
+======================================================================
+ERROR: test_final_file_contract_accepts_complete_local_fixture (__main__.RecordCommitContract.test_final_file_contract_accepts_complete_local_fixture)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 201, in test_final_file_contract_accepts_complete_local_fixture
+    result = self.validate_final(proof)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 195, in validate_final
+    return MODULE.validate_finalization(self.root, self.task, proof, HEAD,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: validate_finalization() got an unexpected keyword argument 'state_reader'
+
+======================================================================
+ERROR: test_final_rejects_changed_preexisting_asset (__main__.RecordCommitContract.test_final_rejects_changed_preexisting_asset)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 228, in test_final_rejects_changed_preexisting_asset
+    self.validate_final(proof)
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 195, in validate_final
+    return MODULE.validate_finalization(self.root, self.task, proof, HEAD,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: validate_finalization() got an unexpected keyword argument 'state_reader'
+
+======================================================================
+ERROR: test_final_rejects_drifted_merge_proof (__main__.RecordCommitContract.test_final_rejects_drifted_merge_proof)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 210, in test_final_rejects_drifted_merge_proof
+    self.validate_final(proof)
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 195, in validate_final
+    return MODULE.validate_finalization(self.root, self.task, proof, HEAD,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: validate_finalization() got an unexpected keyword argument 'state_reader'
+
+======================================================================
+ERROR: test_final_rejects_existing_build_despite_deleted_flag (__main__.RecordCommitContract.test_final_rejects_existing_build_despite_deleted_flag)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 216, in test_final_rejects_existing_build_despite_deleted_flag
+    self.validate_final(proof)
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 195, in validate_final
+    return MODULE.validate_finalization(self.root, self.task, proof, HEAD,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: validate_finalization() got an unexpected keyword argument 'state_reader'
+
+======================================================================
+ERROR: test_final_rejects_implicit_checkout_deletion (__main__.RecordCommitContract.test_final_rejects_implicit_checkout_deletion)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 245, in test_final_rejects_implicit_checkout_deletion
+    self.validate_final(proof)
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 195, in validate_final
+    return MODULE.validate_finalization(self.root, self.task, proof, HEAD,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: validate_finalization() got an unexpected keyword argument 'state_reader'
+
+======================================================================
+ERROR: test_final_rejects_missing_retained_asset (__main__.RecordCommitContract.test_final_rejects_missing_retained_asset)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 240, in test_final_rejects_missing_retained_asset
+    self.validate_final(proof)
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 195, in validate_final
+    return MODULE.validate_finalization(self.root, self.task, proof, HEAD,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: validate_finalization() got an unexpected keyword argument 'state_reader'
+
+======================================================================
+ERROR: test_final_rejects_registered_build_despite_absent_path (__main__.RecordCommitContract.test_final_rejects_registered_build_despite_absent_path)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 221, in test_final_rejects_registered_build_despite_absent_path
+    self.validate_final(proof, 'worktree '+build.as_posix()+'\n')
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 195, in validate_final
+    return MODULE.validate_finalization(self.root, self.task, proof, HEAD,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: validate_finalization() got an unexpected keyword argument 'state_reader'
+
+======================================================================
+ERROR: test_final_rejects_unaccounted_owned_changes (__main__.RecordCommitContract.test_final_rejects_unaccounted_owned_changes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 255, in test_final_rejects_unaccounted_owned_changes
+    self.validate_final(proof, state=dict(head='a'*40, mergedIntoMain=True, pendingOwnedPaths=[PREFIX+'new.json']))
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 195, in validate_final
+    return MODULE.validate_finalization(self.root, self.task, proof, HEAD,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: validate_finalization() got an unexpected keyword argument 'state_reader'
+
+======================================================================
+ERROR: test_final_rejects_unmerged_retained_head (__main__.RecordCommitContract.test_final_rejects_unmerged_retained_head)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 250, in test_final_rejects_unmerged_retained_head
+    self.validate_final(proof, state=dict(head='a'*40, mergedIntoMain=False, pendingOwnedPaths=[]))
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 195, in validate_final
+    return MODULE.validate_finalization(self.root, self.task, proof, HEAD,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: validate_finalization() got an unexpected keyword argument 'state_reader'
+
+======================================================================
+ERROR: test_final_rejects_unregistered_retained_checkout (__main__.RecordCommitContract.test_final_rejects_unregistered_retained_checkout)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 260, in test_final_rejects_unregistered_retained_checkout
+    MODULE.validate_finalization(self.root, self.task, proof, HEAD, '',
+TypeError: validate_finalization() got an unexpected keyword argument 'state_reader'
+
+======================================================================
+ERROR: test_final_rejects_wrong_head (__main__.RecordCommitContract.test_final_rejects_wrong_head)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 234, in test_final_rejects_wrong_head
+    self.validate_final(proof)
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 195, in validate_final
+    return MODULE.validate_finalization(self.root, self.task, proof, HEAD,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: validate_finalization() got an unexpected keyword argument 'state_reader'
+
+----------------------------------------------------------------------
+Ran 35 tests in 1.868s
+
+FAILED (errors=11)

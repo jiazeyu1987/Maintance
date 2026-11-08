@@ -1,0 +1,120 @@
+FFFFFFFFFFFFFFFFFFFFFFF                                                  [100%]
+================================== FAILURES ===================================
+______ test_actual_full373_async_reply_is_bound_to_same_successful_owner ______
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:30: in test_actual_full373_async_reply_is_bound_to_same_successful_owner
+    result=audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+___ test_original_dispatch_rejects_unrelated_or_unsupported_evidence[exit3] ___
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:62: in test_original_dispatch_rejects_unrelated_or_unsupported_evidence
+    with pytest.raises(ValueError):audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+___ test_original_dispatch_rejects_unrelated_or_unsupported_evidence[exit1] ___
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:62: in test_original_dispatch_rejects_unrelated_or_unsupported_evidence
+    with pytest.raises(ValueError):audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+_ test_original_dispatch_rejects_unrelated_or_unsupported_evidence[timedout] __
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:62: in test_original_dispatch_rejects_unrelated_or_unsupported_evidence
+    with pytest.raises(ValueError):audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+___ test_original_dispatch_rejects_unrelated_or_unsupported_evidence[argv] ____
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:62: in test_original_dispatch_rejects_unrelated_or_unsupported_evidence
+    with pytest.raises(ValueError):audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+__ test_original_dispatch_rejects_unrelated_or_unsupported_evidence[request] __
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:62: in test_original_dispatch_rejects_unrelated_or_unsupported_evidence
+    with pytest.raises(ValueError):audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+__ test_original_dispatch_rejects_unrelated_or_unsupported_evidence[intent] ___
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:62: in test_original_dispatch_rejects_unrelated_or_unsupported_evidence
+    with pytest.raises(ValueError):audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+____ test_original_dispatch_rejects_unrelated_or_unsupported_evidence[pid] ____
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:62: in test_original_dispatch_rejects_unrelated_or_unsupported_evidence
+    with pytest.raises(ValueError):audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+__ test_original_dispatch_rejects_unrelated_or_unsupported_evidence[python] ___
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:62: in test_original_dispatch_rejects_unrelated_or_unsupported_evidence
+    with pytest.raises(ValueError):audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+__ test_original_dispatch_rejects_unrelated_or_unsupported_evidence[program] __
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:62: in test_original_dispatch_rejects_unrelated_or_unsupported_evidence
+    with pytest.raises(ValueError):audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+_ test_original_dispatch_rejects_unrelated_or_unsupported_evidence[configuration] _
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:62: in test_original_dispatch_rejects_unrelated_or_unsupported_evidence
+    with pytest.raises(ValueError):audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+_ test_original_dispatch_rejects_unrelated_or_unsupported_evidence[reply-operation] _
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:62: in test_original_dispatch_rejects_unrelated_or_unsupported_evidence
+    with pytest.raises(ValueError):audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+_ test_original_dispatch_rejects_unrelated_or_unsupported_evidence[reply-state] _
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:62: in test_original_dispatch_rejects_unrelated_or_unsupported_evidence
+    with pytest.raises(ValueError):audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+_ test_original_dispatch_rejects_unrelated_or_unsupported_evidence[reply-code] _
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:62: in test_original_dispatch_rejects_unrelated_or_unsupported_evidence
+    with pytest.raises(ValueError):audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+_ test_original_dispatch_rejects_unrelated_or_unsupported_evidence[reply-exit] _
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:62: in test_original_dispatch_rejects_unrelated_or_unsupported_evidence
+    with pytest.raises(ValueError):audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+_ test_original_dispatch_rejects_unrelated_or_unsupported_evidence[reply-root] _
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:62: in test_original_dispatch_rejects_unrelated_or_unsupported_evidence
+    with pytest.raises(ValueError):audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+_ test_original_dispatch_rejects_unrelated_or_unsupported_evidence[reply-result] _
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:62: in test_original_dispatch_rejects_unrelated_or_unsupported_evidence
+    with pytest.raises(ValueError):audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+_ test_original_dispatch_rejects_unrelated_or_unsupported_evidence[owner-operation] _
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:62: in test_original_dispatch_rejects_unrelated_or_unsupported_evidence
+    with pytest.raises(ValueError):audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+_ test_original_dispatch_rejects_unrelated_or_unsupported_evidence[owner-state] _
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:62: in test_original_dispatch_rejects_unrelated_or_unsupported_evidence
+    with pytest.raises(ValueError):audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+_ test_original_dispatch_rejects_unrelated_or_unsupported_evidence[owner-exit] _
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:62: in test_original_dispatch_rejects_unrelated_or_unsupported_evidence
+    with pytest.raises(ValueError):audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+_ test_original_dispatch_rejects_unrelated_or_unsupported_evidence[owner-failure] _
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:62: in test_original_dispatch_rejects_unrelated_or_unsupported_evidence
+    with pytest.raises(ValueError):audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+____________ test_synchronous_success_requires_exact_owner_result _____________
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:70: in test_synchronous_success_requires_exact_owner_result
+    result=audit.verify_dispatch_contract(**original)
+E   AttributeError: module 'automatic_chain_audit' has no attribute 'verify_dispatch_contract'
+______ test_final_audit_calls_contract_and_does_not_keep_exit_allowlist _______
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_automatic_dispatch_audit.py:80: in test_final_audit_calls_contract_and_does_not_keep_exit_allowlist
+    assert any(isinstance(n,ast.Call) and isinstance(n.func,ast.Name) and n.func.id=='verify_dispatch_contract' for n in ast.walk(entry))
+E   assert False
+E    +  where False = any(<generator object test_final_audit_calls_contract_and_does_not_keep_exit_allowlist.<locals>.<genexpr> at 0x000002100E1ED0E0>)
+=========================== short test summary info ===========================
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_actual_full373_async_reply_is_bound_to_same_successful_owner
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_original_dispatch_rejects_unrelated_or_unsupported_evidence[exit3]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_original_dispatch_rejects_unrelated_or_unsupported_evidence[exit1]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_original_dispatch_rejects_unrelated_or_unsupported_evidence[timedout]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_original_dispatch_rejects_unrelated_or_unsupported_evidence[argv]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_original_dispatch_rejects_unrelated_or_unsupported_evidence[request]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_original_dispatch_rejects_unrelated_or_unsupported_evidence[intent]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_original_dispatch_rejects_unrelated_or_unsupported_evidence[pid]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_original_dispatch_rejects_unrelated_or_unsupported_evidence[python]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_original_dispatch_rejects_unrelated_or_unsupported_evidence[program]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_original_dispatch_rejects_unrelated_or_unsupported_evidence[configuration]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_original_dispatch_rejects_unrelated_or_unsupported_evidence[reply-operation]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_original_dispatch_rejects_unrelated_or_unsupported_evidence[reply-state]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_original_dispatch_rejects_unrelated_or_unsupported_evidence[reply-code]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_original_dispatch_rejects_unrelated_or_unsupported_evidence[reply-exit]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_original_dispatch_rejects_unrelated_or_unsupported_evidence[reply-root]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_original_dispatch_rejects_unrelated_or_unsupported_evidence[reply-result]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_original_dispatch_rejects_unrelated_or_unsupported_evidence[owner-operation]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_original_dispatch_rejects_unrelated_or_unsupported_evidence[owner-state]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_original_dispatch_rejects_unrelated_or_unsupported_evidence[owner-exit]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_original_dispatch_rejects_unrelated_or_unsupported_evidence[owner-failure]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_synchronous_success_requires_exact_owner_result
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py::test_final_audit_calls_contract_and_does_not_keep_exit_allowlist
+23 failed in 0.23s

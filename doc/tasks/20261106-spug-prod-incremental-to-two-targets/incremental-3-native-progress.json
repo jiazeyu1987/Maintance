@@ -1,0 +1,326 @@
+{
+  "observedAt": "2026-11-06T19:17:55.433053+00:00",
+  "operationId": "smallapp-eb990891100642db8859439d741c0fc9",
+  "directories": {
+    "ledger/smallapp-eb990891100642db8859439d741c0fc9": {
+      "count": 10,
+      "latest": [
+        {
+          "name": "queries",
+          "bytes": 45056,
+          "mtime": 1793992557.2868443,
+          "isDirectory": true
+        },
+        {
+          "name": "worker-terminal.json",
+          "bytes": 646,
+          "mtime": 1793989863.578211,
+          "isDirectory": false
+        },
+        {
+          "name": "completion.json",
+          "bytes": 3427,
+          "mtime": 1793989863.5442104,
+          "isDirectory": false
+        },
+        {
+          "name": "execute",
+          "bytes": 4096,
+          "mtime": 1793989863.5432103,
+          "isDirectory": true
+        },
+        {
+          "name": "worker-process.json",
+          "bytes": 693,
+          "mtime": 1793989851.530977,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-stderr",
+          "bytes": 0,
+          "mtime": 1793989851.5299768,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-stdout",
+          "bytes": 0,
+          "mtime": 1793989851.5299768,
+          "isDirectory": false
+        },
+        {
+          "name": "intent.json",
+          "bytes": 1451,
+          "mtime": 1793989850.0219476,
+          "isDirectory": false
+        },
+        {
+          "name": "selection.json",
+          "bytes": 1252,
+          "mtime": 1793989850.0179474,
+          "isDirectory": false
+        },
+        {
+          "name": "request.json",
+          "bytes": 284,
+          "mtime": 1793989850.0159473,
+          "isDirectory": false
+        }
+      ]
+    },
+    "capture-staging/smallapp-eb990891100642db8859439d741c0fc9": {
+      "count": 28,
+      "latest": [
+        {
+          "name": "terminal-result.json",
+          "bytes": 1889,
+          "mtime": 1793992553.4317694,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-stderr.log",
+          "bytes": 28,
+          "mtime": 1793992553.259766,
+          "isDirectory": false
+        },
+        {
+          "name": "worker-failure.json",
+          "bytes": 135,
+          "mtime": 1793992553.2537658,
+          "isDirectory": false
+        },
+        {
+          "name": "source-restoration.json",
+          "bytes": 368,
+          "mtime": 1793992553.2267654,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0014.json",
+          "bytes": 68,
+          "mtime": 1793992553.2127652,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0013.json",
+          "bytes": 314,
+          "mtime": 1793992553.1697643,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0012.json",
+          "bytes": 68,
+          "mtime": 1793992552.5127516,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0011.json",
+          "bytes": 314,
+          "mtime": 1793992552.4607506,
+          "isDirectory": false
+        },
+        {
+          "name": "event-0010.json",
+          "bytes": 76,
+          "mtime": 1793992551.8437386,
+          "isDirectory": false
+        },
+        {
+          "name": "payload",
+          "bytes": 4096,
+          "mtime": 1793992550.130705,
+          "isDirectory": true
+        },
+        {
+          "name": "semantic-capture",
+          "bytes": 4096,
+          "mtime": 1793992180.0955143,
+          "isDirectory": true
+        },
+        {
+          "name": "event-0009.json",
+          "bytes": 84,
+          "mtime": 1793991815.3954217,
+          "isDirectory": false
+        }
+      ]
+    },
+    "repository-operations/978306044ee5542099541b388426fc1ab6c1da08395e4c5f4014e6334fb8cf84": {
+      "count": 868,
+      "latest": [
+        {
+          "name": "result.json",
+          "bytes": 96805,
+          "mtime": 1793992554.0267808,
+          "isDirectory": false
+        },
+        {
+          "name": "timing-source-capture-end.json",
+          "bytes": 112,
+          "mtime": 1793992553.8967783,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-170-terminal.json",
+          "bytes": 218,
+          "mtime": 1793992553.8917782,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-170-output.json",
+          "bytes": 1889,
+          "mtime": 1793992553.834777,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-170-process.json",
+          "bytes": 112,
+          "mtime": 1793992553.624773,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-170.stderr.log",
+          "bytes": 0,
+          "mtime": 1793992553.623773,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-170.stdout.log",
+          "bytes": 0,
+          "mtime": 1793992553.623773,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-169-terminal.json",
+          "bytes": 218,
+          "mtime": 1793992553.3697681,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-169-output.json",
+          "bytes": 1288,
+          "mtime": 1793992553.303767,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-169-process.json",
+          "bytes": 112,
+          "mtime": 1793992548.0836654,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-169.stdout.log",
+          "bytes": 0,
+          "mtime": 1793992548.0826654,
+          "isDirectory": false
+        },
+        {
+          "name": "capture-query-169.stderr.log",
+          "bytes": 0,
+          "mtime": 1793992548.0826654,
+          "isDirectory": false
+        }
+      ]
+    }
+  },
+  "workers": [],
+  "nativeDeadlineSecondsRemaining": 61978.0,
+  "nativeReadbackRecords": [],
+  "staging": {
+    "payload": {
+      "files": 4,
+      "bytes": 2089773898,
+      "latestMtime": 1793992550.9827218
+    },
+    "semantic-capture": {
+      "files": 5,
+      "bytes": 3183088,
+      "latestMtime": 1793992180.0955143
+    }
+  },
+  "dataObservationScratch": {
+    "scratch-before": null,
+    "scratch-after": null
+  },
+  "knownCaptureFiles": {
+    "database.sql.gz": null,
+    "011-source-data.json": null,
+    "012-source-data-after.json": null,
+    "capture-content-point.json": null
+  },
+  "payloadTopLevel": [
+    {
+      "name": "050-original-images.json",
+      "bytes": 666,
+      "isDirectory": false
+    },
+    {
+      "name": "database-log-mode.json",
+      "bytes": 50,
+      "isDirectory": false
+    },
+    {
+      "name": "original-application-images.tar",
+      "bytes": 2081399296,
+      "isDirectory": false
+    },
+    {
+      "name": "database.sql.incremental.raw",
+      "bytes": 8373886,
+      "isDirectory": false
+    }
+  ],
+  "semanticTopLevel": [
+    {
+      "name": "bucket-dependencies.json",
+      "bytes": 2219,
+      "isDirectory": false
+    },
+    {
+      "name": "export-receipt.json",
+      "bytes": 431,
+      "isDirectory": false
+    },
+    {
+      "name": "multipart-observations.json",
+      "bytes": 1678,
+      "isDirectory": false
+    },
+    {
+      "name": "objects",
+      "bytes": 4096,
+      "isDirectory": true
+    },
+    {
+      "name": "redis-dump-snapshot.json",
+      "bytes": 211,
+      "isDirectory": false
+    },
+    {
+      "name": "versions.jsonl",
+      "bytes": 3178549,
+      "isDirectory": false
+    }
+  ],
+  "nativeCaptureEvents": [
+    {
+      "at": "2026-11-06T19:15:51.843204+00:00",
+      "stage": "DATABASE_FLAGS_RESTORED"
+    },
+    {
+      "at": "2026-11-06T19:15:52.460685+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT"
+    },
+    {
+      "at": "2026-11-06T19:15:52.513160+00:00",
+      "stage": "WRITER_RESTORED"
+    },
+    {
+      "at": "2026-11-06T19:15:53.169655+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT"
+    },
+    {
+      "at": "2026-11-06T19:15:53.212450+00:00",
+      "stage": "WRITER_RESTORED"
+    }
+  ]
+}

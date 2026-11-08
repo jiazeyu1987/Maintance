@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "AutomaticSourceSuccessorResumeRegression/v1",
+  "status": "PASS",
+  "observedAt": "2026-11-07T22:07:10.538403+00:00",
+  "commit": "0dc7429d4758a208a5b0c098111fe9702ab63235",
+  "windowsTests": 14,
+  "linuxTests": 1,
+  "linuxScenarios": 7,
+  "linuxTestSeconds": 0.018,
+  "linuxImage": "sha256:14a4933e6cef421424f7a66d89a3f4eafcbd0d90e0a822251f298e05132dc735",
+  "linuxContainer": "spug-source-staged-alias-0dc7429",
+  "linuxContainerRemoved": true,
+  "linuxNetwork": "none",
+  "workspaceBindReadOnly": true,
+  "stagedReadOnlyEvidence": "automatic-source-successor-staged-engine-readonly.json",
+  "sourcePins": {
+    "install_automatic_source_successor.py": {
+      "bytes": 30878,
+      "sha256": "054bb560f8589b4db20c785f6f99ecbbc5ee8bc9a7365eba770d6a0e24537e43"
+    },
+    "test_automatic_mixed_generation.py": {
+      "bytes": 14273,
+      "sha256": "03fc57acc8744af1b0b8f04c605b6e46b55ea3b9091db8f11f84c6270df23fe2"
+    },
+    "test_source_successor_linux_alias.py": {
+      "bytes": 2355,
+      "sha256": "5c02d967ef9030720f71313dafc91ea73ec4d00c0287db9b80d7a4ef1971cb00"
+    },
+    "diagnose_source_successor_stage.py": {
+      "bytes": 5109,
+      "sha256": "facc363091de962eb086eb5979110d5102d8084af28264ecd93df75f91c3f433"
+    },
+    "automatic-source-successor-plan.md": {
+      "bytes": 11219,
+      "sha256": "e0202d0d9448ce9917fedf0239141f1697f9fe55f1e20fdd8750b09b387f2f7f"
+    }
+  },
+  "actualPrepareInMemory": "PASS",
+  "preparedPayloadSha256": "28a2f6fde680dfde309080db0ec85b589e4acbb2944f23c5d4ed8eadfb4629f3",
+  "remoteReadOnlyInspection": true,
+  "remoteMutationDispatchedByThisSubtask": false,
+  "originalRootApplyWroteStagedEngine": true,
+  "actualResumeDispatched": false,
+  "originalPreparedPlanRetained": true,
+  "windowsFileSymlinkPrerequisiteFailure": "WinError1314; real Linux coverage completed"
+}

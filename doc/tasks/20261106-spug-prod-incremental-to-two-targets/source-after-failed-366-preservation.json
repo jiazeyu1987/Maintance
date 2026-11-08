@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T19:19:20.342946+00:00",
+  "host": "172.30.30.57",
+  "phase": "after-failed-366",
+  "originalContainerCount": 195,
+  "allOriginalDefinitionsAndImagesPreserved": true,
+  "otherBusinessRuntimePreserved": true,
+  "otherBusinessContainerCount": 191,
+  "allowedRuntimeChangeContainerIds": [
+    "1210f97cf7653c5f74a7981bf4d4bec8d7462af873d53695d47a59a7ce38a479",
+    "70c0487396f6954ec794230644cc5d01669c7c0ed217df7b6c4a35a722a5832a",
+    "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf",
+    "c4385604eb83b44f2836755bad709581c7e7edd0078b148f3b0f74e0b567304c"
+  ],
+  "fstabPreserved": true,
+  "protectedMountsPreserved": true,
+  "backendHealth": "UP",
+  "frontendHttp": 200,
+  "activeReservation": false,
+  "failedOperationId": "smallapp-eb990891100642db8859439d741c0fc9"
+}

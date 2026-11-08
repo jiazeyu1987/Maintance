@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T04:18:11.366967+00:00",
+  "operationId": "smallapp-c21bb7ce9f5b4668b850c37a80964786",
+  "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+  "recoveryPointRef": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+  "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+  "originalState": "FAILED_RETAINED",
+  "originalFailureFilesUnchanged": 2842,
+  "originalFullShaCustodyPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/failure-custody-allocator-701b442.json",
+    "bytes": 1423760,
+    "sha256": "e0d337c35979e46724a2eb9bfef4cec597a40b876753986cafeee48e86234d98"
+  },
+  "originalProtectionsPreciselyReleased": true,
+  "configuredProtectionKinds": [],
+  "clearancePin": {
+    "bytes": 2667,
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-c21bb7ce9f5b4668b850c37a80964786/recovery-clearance.json",
+    "sha256": "c013e52bb3d91c9b7c75a63e0e6998dc1fa31f493e0da9640c7ab2a353c94250"
+  },
+  "resourceReleasePin": {
+    "bytes": 1088,
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/resource-recovery-release.json",
+    "sha256": "6af319a69f67c52aa8344ab4d9cc68d41499d1e6210e76d747cc3d36498f3622"
+  },
+  "mainProtectionRecoveryPin": {
+    "bytes": 284,
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-c21bb7ce9f5b4668b850c37a80964786/main-protection-recovery.json",
+    "sha256": "040c39d8533f43c028e5b1a7c790c9fff56abdab9444b07ba5fca8d01d6224ec"
+  },
+  "newRequestSamePointAndTarget": true,
+  "tableCount": 885,
+  "writersRemainStopped": true,
+  "restoreDispatched": false,
+  "verificationOnly": true,
+  "serverWrites": false
+}

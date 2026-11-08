@@ -1,0 +1,15 @@
+{
+  "realBrowser": true,
+  "realLogin": true,
+  "startedAt": "2026-11-07T08:09:02.214Z",
+  "writes": 0,
+  "blocked": [],
+  "httpFailures": [],
+  "pageErrors": [],
+  "stage": "login",
+  "status": "FAIL",
+  "error": "TimeoutError: locator.click: Timeout 45000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('备份与恢复', { exact: true }).first()\u001b[22m\n\u001b[2m    - locator resolved to <span class=\"ant-menu-title-content\">备份与恢复</span>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n",
+  "visible": "工作台\nDashboard\n主机管理\n批量执行\n应用发布\n流水线\n任务计划\n备份与恢复\n配置中心\n监控中心\n报警中心\n系统管理\n管理员\n首页/\n工作台\n待办事项\n暂无数据\n系统公告\n编辑\n暂无公告信息\n便捷导航\n编辑\n发布中心\n构建发布包、查看三服版本与升级验证\n小程序\nIntRuoyi\n安全警告\n未能获取到访问者的真实IP，无法提供基于请求来源IP的合法性验证，详细信息请参考官方文档。\n知道了",
+  "frameVisible": null,
+  "finishedAt": "2026-11-07T08:10:20.060Z"
+}

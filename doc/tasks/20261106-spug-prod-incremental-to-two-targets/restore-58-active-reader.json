@@ -1,0 +1,15 @@
+{
+  "observedAt": "2026-11-07T00:34:15.812350+00:00",
+  "operationId": "smallapp-c21bb7ce9f5b4668b850c37a80964786",
+  "pid": 21337,
+  "highDescriptorSample": 256,
+  "archiveReads": [
+    {
+      "archive": "prod-standard-bd88deb7f4cdde27db6e9e3439e4fef04ce932bf3b84380f12c04f9e7c751d25",
+      "fileName": "database.sql.incremental.raw",
+      "bytes": 17213672502,
+      "position": 15185477632
+    }
+  ],
+  "readOnly": true
+}

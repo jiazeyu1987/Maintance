@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T22:17:28.527754+00:00",
+  "exitCode": 0,
+  "passed": 31,
+  "skipped": 0,
+  "seconds": 8.51,
+  "command": "python -X utf8 -B -m pytest test_automatic_stage_deployment.py test_mixed_generation_evidence.py -q -p no:cacheprovider --tb=short",
+  "files": {
+    "test_automatic_stage_deployment.py": "5bf7f403971d396c2f729171f44f5d43331e657e5bc66b40820da941a348c6c9",
+    "test_mixed_generation_evidence.py": "a3906beee0c437aee11c9f171fedea2a9b49abfbee94289cf35c820513b64413"
+  },
+  "onlySyntheticFixtureNamesChanged": true,
+  "productionInputsChanged": false
+}

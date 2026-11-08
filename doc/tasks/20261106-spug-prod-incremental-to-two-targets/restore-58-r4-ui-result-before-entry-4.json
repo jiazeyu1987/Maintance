@@ -1,0 +1,15 @@
+{
+  "realBrowser": true,
+  "realLogin": false,
+  "startedAt": "2026-11-07T08:23:29.387Z",
+  "writes": 0,
+  "blocked": [],
+  "httpFailures": [],
+  "pageErrors": [],
+  "stage": "login",
+  "status": "FAIL",
+  "error": "TimeoutError: page.waitForFunction: Timeout 45000ms exceeded.",
+  "visible": "简体中文\n灵活、强大、易用的开源运维平台\n普通登录\nLDAP登录\n登 录\n官网\n文档\nCopyright \n 2026 By OpenSpug\n安全警告\n未能获取到访问者的真实IP，无法提供基于请求来源IP的合法性验证，详细信息请参考官方文档。\n知道了",
+  "frameVisible": null,
+  "finishedAt": "2026-11-07T08:24:22.712Z"
+}

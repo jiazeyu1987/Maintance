@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+  "version": "8.0.39",
+  "eventScheduler": "ON",
+  "readOnly": "0",
+  "superReadOnly": "0",
+  "originalGlobalStateRestored": true,
+  "strictBinlogToolStillVerified": true,
+  "registeredExporterTemporaryContractVerified": true,
+  "activeCaptureConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/capture-binlog-tmpfs-20261107-v3.json",
+    "bytes": 4753,
+    "sha256": "0c00504b14ca5715ab205d2c43ad7c958f6014ab205f80e4e511df0a241f1c6f"
+  },
+  "exporterDescriptorPin": {
+    "bytes": 330,
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/mysqlbinlog-tmpfs-20261107-v3.json",
+    "sha256": "06396422c198638463fb2a75aec02232061043277e2ecb41b576a925eec1fc13"
+  },
+  "failedOriginalFilesPreserved": 10044,
+  "observedAt": "2026-11-07T00:05:02.197759+00:00",
+  "backupOperationId": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c"
+}

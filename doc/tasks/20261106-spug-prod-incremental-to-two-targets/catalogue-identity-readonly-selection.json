@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "TaskCatalogueReadonlySelection/v1",
+  "failed": [
+    {
+      "file": "catalogue-identity-readonly-verification.json",
+      "bytes": 618,
+      "sha256": "ed293a1bdea09db3096a36af29d776efa15a9afc262e0a8ce186714d7257be61"
+    },
+    {
+      "file": "catalogue-identity-readonly-verification-r2.json",
+      "bytes": 731,
+      "sha256": "baff7a9e00fa736728143323c39959da3b2ff2192728879fa9f436c5dc5374e4"
+    },
+    {
+      "file": "catalogue-identity-readonly-verification-r3.json",
+      "bytes": 847,
+      "sha256": "e86b5132c292fb8639ef787a31a8d5ab8ea2aea9f21943d872e9bf1efe0200e0"
+    }
+  ],
+  "selectedPin": {
+    "file": "catalogue-identity-readonly-verification-r4.json",
+    "bytes": 5166,
+    "sha256": "4d3e405da123736c30639902af3daeaa775d605ffe1c46bb2f13e390766edca3"
+  }
+}

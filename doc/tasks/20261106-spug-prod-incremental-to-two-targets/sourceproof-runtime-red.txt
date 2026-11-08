@@ -1,0 +1,59 @@
+FFFFFFFFFFF                                                              [100%]
+================================== FAILURES ===================================
+____________ test_runtime_uses_complete_pinned_configuration_path _____________
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_sourceproof_runtime.py:22: in test_runtime_uses_complete_pinned_configuration_path
+    paths=proof.source_runtime_paths(control,engine)
+E   AttributeError: module 'verify_automatic_source_restoration' has no attribute 'source_runtime_paths'
+__________ test_runtime_rejects_unbound_paths_before_import[missing] __________
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_sourceproof_runtime.py:41: in test_runtime_rejects_unbound_paths_before_import
+    with pytest.raises(ValueError):proof.source_runtime_paths(control,engine)
+E   AttributeError: module 'verify_automatic_source_restoration' has no attribute 'source_runtime_paths'
+_________ test_runtime_rejects_unbound_paths_before_import[relative] __________
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_sourceproof_runtime.py:41: in test_runtime_rejects_unbound_paths_before_import
+    with pytest.raises(ValueError):proof.source_runtime_paths(control,engine)
+E   AttributeError: module 'verify_automatic_source_restoration' has no attribute 'source_runtime_paths'
+___________ test_runtime_rejects_unbound_paths_before_import[empty] ___________
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_sourceproof_runtime.py:41: in test_runtime_rejects_unbound_paths_before_import
+    with pytest.raises(ValueError):proof.source_runtime_paths(control,engine)
+E   AttributeError: module 'verify_automatic_source_restoration' has no attribute 'source_runtime_paths'
+_________ test_runtime_rejects_unbound_paths_before_import[duplicate] _________
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_sourceproof_runtime.py:41: in test_runtime_rejects_unbound_paths_before_import
+    with pytest.raises(ValueError):proof.source_runtime_paths(control,engine)
+E   AttributeError: module 'verify_automatic_source_restoration' has no attribute 'source_runtime_paths'
+______ test_runtime_rejects_unbound_paths_before_import[foreign-engine] _______
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_sourceproof_runtime.py:41: in test_runtime_rejects_unbound_paths_before_import
+    with pytest.raises(ValueError):proof.source_runtime_paths(control,engine)
+E   AttributeError: module 'verify_automatic_source_restoration' has no attribute 'source_runtime_paths'
+__________ test_runtime_rejects_unbound_paths_before_import[parent] ___________
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_sourceproof_runtime.py:41: in test_runtime_rejects_unbound_paths_before_import
+    with pytest.raises(ValueError):proof.source_runtime_paths(control,engine)
+E   AttributeError: module 'verify_automatic_source_restoration' has no attribute 'source_runtime_paths'
+__________ test_runtime_rejects_unbound_paths_before_import[reorder] __________
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_sourceproof_runtime.py:41: in test_runtime_rejects_unbound_paths_before_import
+    with pytest.raises(ValueError):proof.source_runtime_paths(control,engine)
+E   AttributeError: module 'verify_automatic_source_restoration' has no attribute 'source_runtime_paths'
+_________ test_runtime_rejects_unbound_paths_before_import[bytecode] __________
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_sourceproof_runtime.py:41: in test_runtime_rejects_unbound_paths_before_import
+    with pytest.raises(ValueError):proof.source_runtime_paths(control,engine)
+E   AttributeError: module 'verify_automatic_source_restoration' has no attribute 'source_runtime_paths'
+__________ test_transport_script_binds_runtime_before_product_import __________
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_sourceproof_runtime.py:47: in test_transport_script_binds_runtime_before_product_import
+    bound=next(i for i,n in enumerate(tree.body) if isinstance(n,ast.Assign) and isinstance(n.value,ast.Call) and
+E   StopIteration
+__ test_runtime_probe_uses_real_installed_dependencies_and_no_business_calls __
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_sourceproof_runtime.py:54: in test_runtime_probe_uses_real_installed_dependencies_and_no_business_calls
+    source=proof.SOURCE_RUNTIME
+E   AttributeError: module 'verify_automatic_source_restoration' has no attribute 'SOURCE_RUNTIME'
+=========================== short test summary info ===========================
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_sourceproof_runtime.py::test_runtime_uses_complete_pinned_configuration_path
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_sourceproof_runtime.py::test_runtime_rejects_unbound_paths_before_import[missing]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_sourceproof_runtime.py::test_runtime_rejects_unbound_paths_before_import[relative]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_sourceproof_runtime.py::test_runtime_rejects_unbound_paths_before_import[empty]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_sourceproof_runtime.py::test_runtime_rejects_unbound_paths_before_import[duplicate]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_sourceproof_runtime.py::test_runtime_rejects_unbound_paths_before_import[foreign-engine]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_sourceproof_runtime.py::test_runtime_rejects_unbound_paths_before_import[parent]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_sourceproof_runtime.py::test_runtime_rejects_unbound_paths_before_import[reorder]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_sourceproof_runtime.py::test_runtime_rejects_unbound_paths_before_import[bytecode]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_sourceproof_runtime.py::test_transport_script_binds_runtime_before_product_import
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_sourceproof_runtime.py::test_runtime_probe_uses_real_installed_dependencies_and_no_business_calls
+11 failed in 0.21s

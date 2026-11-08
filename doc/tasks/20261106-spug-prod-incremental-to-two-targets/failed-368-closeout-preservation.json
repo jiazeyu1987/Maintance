@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T18:12:54.787783+00:00",
+  "originalOperationId": "smallapp-c21bb7ce9f5b4668b850c37a80964786",
+  "secondFailedOperationId": "smallapp-b4f35606e4854516960050a76473038b",
+  "thirdFailedOperationId": "smallapp-e61ca1c4b93f4aa3ab5a70eca399c36d",
+  "newOperationId": "smallapp-4cd6779eaf7d405889a07feb47d0a66b",
+  "protectedFiles": 2916,
+  "protectedBytes": 47497557606,
+  "exactFailureConsumerChain": [
+    "smallapp-c21bb7ce9f5b4668b850c37a80964786",
+    "smallapp-b4f35606e4854516960050a76473038b",
+    "smallapp-e61ca1c4b93f4aa3ab5a70eca399c36d",
+    "smallapp-4cd6779eaf7d405889a07feb47d0a66b"
+  ],
+  "allThreeOriginalFailuresUnchanged": true,
+  "allOriginalBytesRead": true,
+  "originalFailureUnchanged": true,
+  "exactSamePointClearanceConsumedOnce": true,
+  "serverWrites": false
+}

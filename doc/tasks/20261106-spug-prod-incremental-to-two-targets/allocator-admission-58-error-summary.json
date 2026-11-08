@@ -1,0 +1,10 @@
+{
+  "observedAt": "2026-11-07T04:19:40.018002+00:00",
+  "httpStatus": 500,
+  "keys": [
+    "errorCode"
+  ],
+  "codes": [
+    "SMALLAPP_KEYERROR"
+  ]
+}

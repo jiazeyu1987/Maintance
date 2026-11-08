@@ -1,0 +1,30 @@
+{
+  "observedAt": "2026-11-07T04:06:56.708233+00:00",
+  "phase": "regression",
+  "actualExitCode": 0,
+  "expectedResultObserved": true,
+  "containerRemoved": true,
+  "tests": [
+    "scripts/tests/test_frozen_auto_increment.py",
+    "scripts/tests/test_backup_variants.py",
+    "scripts/tests/test_native_import_process_evidence.py",
+    "scripts/tests/test_native_retained_failure.py",
+    "scripts/tests/test_retained_replacement_retry.py",
+    "scripts/tests/test_smallapp_binlog_ddl.py"
+  ],
+  "outputSha256": "5524cfcfa02a0b43742258d9761ef6a1b1856c99642eadc4026bf987bba39953",
+  "testedInputSha256": {
+    "ops/backup_engine/formal/formal_schema_evidence.py": "573b37a21d373e5b14ae18bc6eaa910fb7227d3ddb797846399465ec50ab9ac7",
+    "ops/recovery/recovery_data.py": "c463ae3054858731bbbda9c3bebbbf9236e9a0243674bae5574d7e8d5350da67",
+    "ops/recovery/recovery_minimal_runtime.py": "1c831b9af52c4f05ca4131bcf7fe8e7a79f44a1c58284444159d63b060d04309",
+    "ops/backup_engine/standard_fixes.py": "e294084345dcd582459941747c78620a3a6aab459cfc49f8690a5cbeec1ce6a2",
+    "scripts/tests/test_frozen_auto_increment.py": "1764c32e6648a0dbf13872b9766995f8734f03dec597c26f627ff7b25eb437ad",
+    "scripts/tests/test_backup_variants.py": "625023e6d78314005a052d10b3748d8e981a4259b11c65cd7fafe44feeabe71c",
+    "scripts/tests/test_native_import_process_evidence.py": "cd21aa8700084dcaf19a3bf992d75ecba7a54ac6f072e4d9d415136441ef7263",
+    "scripts/tests/test_native_retained_failure.py": "47579635af456387faf58675304e9c5f4e3ddd6949e040b3142ec39a8e463deb",
+    "scripts/tests/test_retained_replacement_retry.py": "068c6c742d3eb715398860854b7b73582d65fd7d5477c9ffb101f1d3ad7343ed",
+    "scripts/tests/test_smallapp_binlog_ddl.py": "7df21f48e06ffc6279c12bb6b79fe14a708b322ac18ebe3bfdf2df8704e0d619"
+  },
+  "isolatedProcesses": true,
+  "inputFilesUnchanged": true
+}

@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T22:01:10.3778463Z",
+  "host": "172.30.30.57",
+  "service": "source-minio",
+  "method": "DIRECT_READONLY_HTTP_GET",
+  "path": "/minio/health/ready",
+  "httpStatus": 200,
+  "readOnly": true,
+  "sourceMainHealthNotYetVerified": true,
+  "backupSuccessNotYetVerified": true
+}

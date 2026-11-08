@@ -1,0 +1,324 @@
+{
+  "observedAt": "2026-11-07T03:00:22.088743+00:00",
+  "operationId": "smallapp-c21bb7ce9f5b4668b850c37a80964786",
+  "ledgerFiles": [
+    "worker-process.json",
+    "worker-stderr",
+    "selection.json",
+    "request.json",
+    "worker-terminal.json",
+    "execute",
+    "queries",
+    "completion.json",
+    "restore-target-before.json",
+    "worker-stdout",
+    "intent.json"
+  ],
+  "processes": [],
+  "evidenceFiles": [
+    {
+      "path": "worker-result.json",
+      "bytes": 90208
+    },
+    {
+      "path": "result.json",
+      "bytes": 91697
+    },
+    {
+      "path": "database-001/timing-sql-readback-end.json",
+      "bytes": 111
+    },
+    {
+      "path": "database-001/timing-sql-readback-start.json",
+      "bytes": 66
+    },
+    {
+      "path": "database-000/timing-sql-readback-end.json",
+      "bytes": 110
+    },
+    {
+      "path": "database-000/database-comparison.json",
+      "bytes": 123480
+    },
+    {
+      "path": "database-000/timing-sql-readback-start.json",
+      "bytes": 66
+    },
+    {
+      "path": "database-000/result.json",
+      "bytes": 1205
+    }
+  ],
+  "worker-terminal.json": {
+    "actualExitCode": 1,
+    "operationId": "smallapp-c21bb7ce9f5b4668b850c37a80964786",
+    "pid": 19812,
+    "stderrPin": {
+      "bytes": 0,
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-c21bb7ce9f5b4668b850c37a80964786/worker-stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdoutPin": {
+      "bytes": 0,
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-c21bb7ce9f5b4668b850c37a80964786/worker-stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "uiRequestSha256": "1a70c80113a130628cedd567d6f173032ebfa9e7cb48526c9bb3a3fe1d1cedb4"
+  },
+  "nativeTimings": [
+    {
+      "path": "database-000/timing-database-restore-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 2703.244,
+        "finishedAt": "2026-11-07T01:49:27.478205Z",
+        "stage": "database-restore"
+      }
+    },
+    {
+      "path": "database-000/timing-database-restore-start.json",
+      "value": {
+        "stage": "database-restore",
+        "startedAt": "2026-11-07T01:04:24.234469Z"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-expand-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 221.651,
+        "finishedAt": "2026-11-07T01:09:09.590353Z",
+        "stage": "sql-expand"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-expand-start.json",
+      "value": {
+        "stage": "sql-expand",
+        "startedAt": "2026-11-07T01:05:27.939279Z"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-import-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 700.564,
+        "finishedAt": "2026-11-07T01:21:30.480230Z",
+        "stage": "sql-import"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-import-start.json",
+      "value": {
+        "stage": "sql-import",
+        "startedAt": "2026-11-07T01:09:49.916282Z"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-readback-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 1676.985,
+        "finishedAt": "2026-11-07T01:49:27.468970Z",
+        "stage": "sql-readback"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-readback-start.json",
+      "value": {
+        "stage": "sql-readback",
+        "startedAt": "2026-11-07T01:21:30.483680Z"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-stage-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 56.001,
+        "finishedAt": "2026-11-07T01:05:27.929080Z",
+        "stage": "sql-stage"
+      }
+    },
+    {
+      "path": "database-000/timing-sql-stage-start.json",
+      "value": {
+        "stage": "sql-stage",
+        "startedAt": "2026-11-07T01:04:31.928503Z"
+      }
+    },
+    {
+      "path": "database-001/timing-database-restore-end.json",
+      "value": {
+        "completed": false,
+        "elapsedSeconds": 4172.21,
+        "finishedAt": "2026-11-07T02:58:59.690523Z",
+        "stage": "database-restore"
+      }
+    },
+    {
+      "path": "database-001/timing-database-restore-start.json",
+      "value": {
+        "stage": "database-restore",
+        "startedAt": "2026-11-07T01:49:27.480242Z"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-expand-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 324.176,
+        "finishedAt": "2026-11-07T01:56:41.385427Z",
+        "stage": "sql-expand"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-expand-start.json",
+      "value": {
+        "stage": "sql-expand",
+        "startedAt": "2026-11-07T01:51:17.209402Z"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-import-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 2038.451,
+        "finishedAt": "2026-11-07T02:31:02.312335Z",
+        "stage": "sql-import"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-import-start.json",
+      "value": {
+        "stage": "sql-import",
+        "startedAt": "2026-11-07T01:57:03.860957Z"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-readback-end.json",
+      "value": {
+        "completed": false,
+        "elapsedSeconds": 1677.368,
+        "finishedAt": "2026-11-07T02:58:59.683415Z",
+        "stage": "sql-readback"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-readback-start.json",
+      "value": {
+        "stage": "sql-readback",
+        "startedAt": "2026-11-07T02:31:02.315656Z"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-stage-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 102.796,
+        "finishedAt": "2026-11-07T01:51:17.202399Z",
+        "stage": "sql-stage"
+      }
+    },
+    {
+      "path": "database-001/timing-sql-stage-start.json",
+      "value": {
+        "stage": "sql-stage",
+        "startedAt": "2026-11-07T01:49:34.406862Z"
+      }
+    },
+    {
+      "path": "replacement-preparation/timing-target-replacement-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 132.653,
+        "finishedAt": "2026-11-07T00:37:06.333855Z",
+        "stage": "target-replacement"
+      }
+    },
+    {
+      "path": "replacement-preparation/timing-target-replacement-start.json",
+      "value": {
+        "stage": "target-replacement",
+        "startedAt": "2026-11-07T00:34:53.680726Z"
+      }
+    },
+    {
+      "path": "timing-restore-admission-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 1629.207,
+        "finishedAt": "2026-11-07T01:04:15.546209Z",
+        "stage": "restore-admission"
+      }
+    },
+    {
+      "path": "timing-restore-admission-start.json",
+      "value": {
+        "stage": "restore-admission",
+        "startedAt": "2026-11-07T00:37:06.339641Z"
+      }
+    },
+    {
+      "path": "timing-target-checks-end.json",
+      "value": {
+        "completed": true,
+        "elapsedSeconds": 8.682,
+        "finishedAt": "2026-11-07T01:04:24.230877Z",
+        "stage": "target-checks"
+      }
+    },
+    {
+      "path": "timing-target-checks-start.json",
+      "value": {
+        "stage": "target-checks",
+        "startedAt": "2026-11-07T01:04:15.548767Z"
+      }
+    }
+  ],
+  "services": [
+    {
+      "id": "b4592b704b979f1b94ba03836985491a8f7c699d3094297bfbe3696939eedd79",
+      "running": true,
+      "pid": 11377,
+      "startedAt": "2026-11-05T01:51:30.916478688Z"
+    },
+    {
+      "id": "98216faac1ae2fc1508bd4076962bf4cfcb3a47f2f1bd5d5e42c7ba819e83115",
+      "running": false,
+      "pid": 0,
+      "startedAt": "2026-11-05T10:41:42.537848196Z"
+    },
+    {
+      "id": "028bb0541d3216c283c5f1822338462545fa7cd63fad55c462ae20a01526e225",
+      "running": true,
+      "pid": 28575,
+      "startedAt": "2026-11-05T01:52:49.476812788Z"
+    },
+    {
+      "id": "6f70e67078d086d7f08c1ae75a80bb0feab28c5a1f92c91d655ac258f34988eb",
+      "running": false,
+      "pid": 0,
+      "startedAt": "2026-11-05T10:52:47.882899354Z"
+    },
+    {
+      "id": "4f9775e6f0a1d86b2d06c69e40504a91cf44a613de458b76e69fa04805ca5d73",
+      "running": false,
+      "pid": 0,
+      "startedAt": "2026-11-05T10:56:11.580646446Z"
+    }
+  ],
+  "readback": {
+    "tableDirectories": 885,
+    "tokenFiles": 885
+  },
+  "databaseReadbackSteps": {
+    "database-001": {
+      "tableDirectories": 885,
+      "tokenFiles": 885
+    },
+    "database-000": {
+      "tableDirectories": 885,
+      "tokenFiles": 885
+    }
+  }
+}

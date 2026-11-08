@@ -1,0 +1,149 @@
+{
+  "status": "OBSERVED",
+  "observedAt": "2026-11-07T21:32:17.992216+00:00",
+  "plan": {
+    "schemaVersion": "AutomaticIncrementalPlan/v1",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "state": "READY",
+    "reasonCode": null,
+    "parentChainRef": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "baseFullRef": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "generationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "chainDepth": 1,
+    "pointType": "FULL",
+    "finishedAt": "2026-11-07T21:05:37.900272Z",
+    "baseFinishedAt": "2026-11-07T21:05:37.900272Z",
+    "basePointType": "FULL",
+    "parentPointType": "FULL",
+    "evidenceDigest": "1f83f32e4b517515bb9b2bfaf9c982622493bf9406edd5eee2452ec6828c5b19",
+    "planDigest": "2077b0149d904421439530d2cb5d33f9e2245809d66f1df1955d26226c216303"
+  },
+  "elapsedSeconds": 8.00048706200323,
+  "phases": [
+    {
+      "phase": "configuration",
+      "seconds": 0.1005802710133139
+    },
+    {
+      "phase": "configuration",
+      "seconds": 0.09562889000517316
+    },
+    {
+      "phase": "registration",
+      "seconds": 0.09688497401657514
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+      "closed": true,
+      "seconds": 0.005712691025109962
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+      "closed": true,
+      "seconds": 0.018463551998138428
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-3f29a2b1324045309478a3a597654260",
+      "closed": true,
+      "seconds": 0.005202692002058029
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+      "closed": true,
+      "seconds": 0.005210297007579356
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-76d73ea28c424caa90adc75ab1ac4206",
+      "closed": true,
+      "seconds": 0.019693659007316455
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-7fec29a3e132463096aec915c08acab3",
+      "closed": true,
+      "seconds": 0.0053194799984339625
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-9d0b52af727045efb92e490a68329a22",
+      "closed": true,
+      "seconds": 0.007372905005468056
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-a54a05be9dab45e490a3979551536b0c",
+      "closed": true,
+      "seconds": 0.005401486996561289
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-a690233d967d4965bf5f861dc1126961",
+      "closed": true,
+      "seconds": 0.0052372800128068775
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-abbd6341ab7a4318973434f48020b287",
+      "closed": true,
+      "seconds": 0.012549826002214104
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+      "closed": true,
+      "seconds": 0.00536531800753437
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-bc3a610cf70345538e2dcd783893a6ed",
+      "closed": true,
+      "seconds": 0.03319397699669935
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-e7cee19e7f4b464eacdfe11b712aec17",
+      "closed": true,
+      "seconds": 0.031064371985848993
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-eb990891100642db8859439d741c0fc9",
+      "closed": true,
+      "seconds": 0.007520434999605641
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+      "closed": true,
+      "seconds": 0.0053612540068570524
+    },
+    {
+      "phase": "source_epoch",
+      "seconds": 0.0023368209949694574
+    },
+    {
+      "phase": "incremental_source_observation",
+      "seconds": 1.4524230640090536
+    },
+    {
+      "phase": "source_epoch",
+      "seconds": 0.0021184419747442007
+    }
+  ],
+  "codeSha256": {
+    "ledger": "1b0456126289ef2e501f612b40a009fa65e82e9441cb29d754863065a9d8366c",
+    "native": "41363a3dfd9e86621dddc84096208748ca9288dcf74a33423b3fc9da5a96f3e8"
+  },
+  "serverWrites": false,
+  "reconcileCalls": 0,
+  "candidateLoadedInMemoryOnly": true,
+  "pinReadCalls": 264,
+  "pinReadBytes": 415147176,
+  "pinReadSeconds": 4.400380324135767,
+  "readbackReads": 1
+}

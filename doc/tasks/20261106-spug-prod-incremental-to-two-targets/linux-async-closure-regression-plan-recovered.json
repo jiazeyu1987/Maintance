@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "testCounts": [
+    39,
+    9,
+    5,
+    13,
+    1
+  ],
+  "totalTests": 67,
+  "containerState": {
+    "Status": "exited",
+    "Running": false,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 0,
+    "ExitCode": 0,
+    "Error": "",
+    "StartedAt": "2026-11-07T21:34:29.920392485Z",
+    "FinishedAt": "2026-11-07T21:40:41.220842569Z"
+  },
+  "driverTimeoutSeconds": 240,
+  "driverTimedOutBeforeContainerCompleted": true,
+  "inputFilesUnchanged": null,
+  "inputEvidenceLimit": "Driver did not persist its pre-run pins before timing out; no source edits made by this agent during test interval",
+  "logSha256": "2e7dfa0beaaf32db7f76a1e9d585afb080768dc2eefb2dab2da7d01b7f7bf9cb",
+  "containerRemoved": true
+}

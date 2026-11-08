@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "host": "172.30.30.58",
+  "controlPid": 23603,
+  "parent": {
+    "schemaVersion": "TaskControlRuntimeEnvironment/v1",
+    "parentModulePathMatches": true,
+    "parentBytecodeDisabledByArgv": true,
+    "workerEnvironmentSha256": "73b7bfb432aa3e18b3ad825c14bfad036843e265397c15806f0d5f86ee9f66de",
+    "inheritedParentDifferences": [
+      "LANG",
+      "PATH"
+    ]
+  },
+  "worker": {
+    "environmentSha256": "73b7bfb432aa3e18b3ad825c14bfad036843e265397c15806f0d5f86ee9f66de",
+    "bytecodeDisabled": true,
+    "modulePin": {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/engine-automatic-0d44578/control/recovery_control_smallapp_native.py",
+      "bytes": 69523,
+      "sha256": "36bfe9bebf17d5c858e2b90dd77e8afe0a9d15639218e3f46b56616e9b30bafb"
+    }
+  },
+  "serverWrites": false,
+  "noControlApiCalled": true,
+  "noLedgerCalled": true,
+  "observedAt": "2026-11-07T19:16:04.130374+00:00"
+}

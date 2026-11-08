@@ -1,0 +1,82 @@
+{
+  "status": "OBSERVED",
+  "observedAt": "2026-11-07T23:12:31.887147+00:00",
+  "operationId": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+  "workerPid": 17042,
+  "workerPresent": true,
+  "io": {
+    "rchar": 31814634752,
+    "wchar": 2156599237,
+    "syscr": 1112192,
+    "syscw": 79889,
+    "read_bytes": 2104889344,
+    "write_bytes": 2108043264,
+    "cancelled_write_bytes": 0
+  },
+  "lastStages": [
+    {
+      "at": "2026-11-07T22:44:18.644966+00:00",
+      "stage": "CAPTURE_DEPENDENCIES_VERIFIED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-07T22:44:30.914328+00:00",
+      "stage": "IMAGE_EXPORT_COMPLETE",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-07T22:44:30.923237+00:00",
+      "stage": "CONFIGURATION_AND_IMAGES_CAPTURED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-07T22:44:30.927284+00:00",
+      "stage": "STOP_REQUESTED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-07T22:44:34.806464+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT",
+      "captureStage": "STOP_WRITERS"
+    },
+    {
+      "at": "2026-11-07T22:44:34.851196+00:00",
+      "stage": "STOP_REQUESTED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-07T22:44:35.234097+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT",
+      "captureStage": "STOP_WRITERS"
+    },
+    {
+      "at": "2026-11-07T22:44:35.951492+00:00",
+      "stage": "WRITERS_STOPPED_DATABASE_FENCED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-07T23:07:49.665865+00:00",
+      "stage": "STOP_REQUESTED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-07T23:07:50.172741+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT",
+      "captureStage": "MINIO_STOP"
+    },
+    {
+      "at": "2026-11-07T23:10:56.305431+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT",
+      "captureStage": "MINIO_START"
+    },
+    {
+      "at": "2026-11-07T23:10:56.776527+00:00",
+      "stage": "MINIO_NOT_READY",
+      "captureStage": null
+    }
+  ],
+  "affectedDataReceiptPresent": true,
+  "sourceRestoration": null,
+  "mutationDispatched": false,
+  "notTerminalEvidence": true
+}

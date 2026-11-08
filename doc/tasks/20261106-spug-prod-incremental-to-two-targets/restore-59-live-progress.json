@@ -1,0 +1,13 @@
+{
+  "observedAt": "2026-11-07T17:47:43.344Z",
+  "operationId": "smallapp-e0946cfc3fd842b1a85a021e236c6317",
+  "state": "SUCCEEDED",
+  "errorCode": null,
+  "spugHistoryId": 372,
+  "queryError": null,
+  "visible": "数据恢复及保护启动完成，业务验收尚未完成。",
+  "steps": "尚无步骤时间回执。",
+  "logs": "暂无日志。",
+  "problem": "",
+  "writes": 0
+}

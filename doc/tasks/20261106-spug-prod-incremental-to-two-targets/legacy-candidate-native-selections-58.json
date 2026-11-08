@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T04:31:30.003050+00:00",
+  "candidateSha256": "8a6907e208efce6094bd6fcd616be1b23e7cd77b9c4321cbee5fb75d6bdd7b8b",
+  "targetRef": "intruoyi-main-58-safe-restore-20261104-v1",
+  "targetAvailable": true,
+  "actualHistoricalClaimsValidated": true,
+  "processMemoryCandidateOnly": true,
+  "installedGenerationUnchanged": true,
+  "serverWrites": false
+}

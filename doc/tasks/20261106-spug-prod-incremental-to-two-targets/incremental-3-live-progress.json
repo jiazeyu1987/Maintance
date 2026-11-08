@@ -1,0 +1,13 @@
+{
+  "observedAt": "2026-11-06T19:16:01.601Z",
+  "operationId": "smallapp-eb990891100642db8859439d741c0fc9",
+  "state": "FAILED",
+  "errorCode": "FORMAL_CAPTURE_STDERR_LIMIT",
+  "spugHistoryId": 366,
+  "queryError": null,
+  "visible": "原操作失败",
+  "steps": "备份前置检查\n已完成\n开始 2026/11/7 02:30:53　结束 2026/11/7 03:00:08　耗时 0时 29分 14秒\n采集业务数据并恢复源服务\n失败\n开始 2026/11/7 03:00:08　结束 2026/11/7 03:15:53　耗时 0时 15分 45秒",
+  "logs": "2026/11/7 03:15:53  CONTAINER_COMMAND_EXIT\n2026/11/7 03:15:53  WRITER_RESTORED\n2026/11/7 03:15:53  采集业务数据并恢复源服务：失败，耗时 0时 15分 45秒\n2026/11/7 03:15:54  原始执行结果：FAILED_RETAINED\n错误：尚未满足执行条件（FORMAL_CAPTURE_STDERR_LIMIT）",
+  "problem": "",
+  "writes": 0
+}

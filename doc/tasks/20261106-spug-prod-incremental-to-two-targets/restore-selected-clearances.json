@@ -1,0 +1,6 @@
+{
+  "schemaVersion": "TaskRestoreClearances/v1",
+  "targets": {
+    "58": "packaged-frontend-retained-recovery-clearance-58.json"
+  }
+}

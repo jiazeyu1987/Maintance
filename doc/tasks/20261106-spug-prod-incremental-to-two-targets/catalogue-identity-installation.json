@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "CatalogueIdentityInstallation/v1",
+  "status": "PASS",
+  "observedAt": "2026-11-07T18:26:05.035856+00:00",
+  "sourceCommit": "b5c8817de2b4cc5efdad566f0fb65fdabefcb8d8",
+  "buildWorktree": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-b5c8817",
+  "protectedBefore": {
+    "smallappEntryPid": 124978,
+    "source57ServicePid": 25086,
+    "unrelated18081": [
+      {
+        "id": "e602ecd89345c67eccfe45e04a509b1c3e80bffa0eabcb3862648f70d71eaa26",
+        "state": "running",
+        "startedAt": "2026-10-30T10:31:57.574912709Z"
+      }
+    ]
+  },
+  "executor": {
+    "runtime": "C:\\SpugHandoff\\release\\source\\ops\\spug\\release-center",
+    "actualPid": 57396,
+    "previousPid": 35788,
+    "createTime": 1794075948.7419596,
+    "exe": "C:\\Users\\D01021\\Documents\\spug-handoff-work-20261030\\runtime\\Python312-3.12.14\\python.exe",
+    "cwd": "C:\\SpugHandoff\\release\\source\\ops\\spug\\release-center",
+    "argvSha256": "c0f9907c73bb571df6e2eacac3e3b12a0ec1187e4f7225c5778657334f9a6f74",
+    "configPin": {
+      "path": "C:\\SpugHandoff\\release\\executor.private.json",
+      "bytes": 14846,
+      "sha256": "e03e70f9e386efa4f4a35f38cb3747f577e37152169e38a4d5562149e6ee623e"
+    },
+    "filePins": {
+      "executor.py": {
+        "bytes": 77046,
+        "sha256": "d1381bcb535d5ebc6104142aa323371ebe1bd40bb2f8b22f1b18ffcd69df315f"
+      },
+      "package_catalog.py": {
+        "bytes": 23582,
+        "sha256": "fce36688740cd256b68e8f49a1c6c613ac821695c933e4d301227b8fa4b4aacd"
+      },
+      "package_presence.py": {
+        "bytes": 7173,
+        "sha256": "aac0affc43e06d8565f0ca51241b0fe1f03044f89d7e1cd3d1b069bf128d4733"
+      }
+    }
+  },
+  "bridge": {
+    "runtime": "C:\\Spug\\runtime\\ops\\spug\\release-center",
+    "containerId": "f615a60c76f46e4f6ae20ea6298f737fb9786684ce941fcc15763654461265bf",
+    "actualPid": 127541,
+    "previousPid": 2124,
+    "startTime": "101334087",
+    "configPin": {
+      "path": "/var/lib/intruoyi-spug/release-center-bridge.private.json",
+      "bytes": 792,
+      "sha256": "2e7ead665bfdeafb439c5b5b1bbead070451e759db3f2bfb6a4732c7f9116f41"
+    },
+    "supervisorProgram": "release-center-bridge",
+    "filePins": {
+      "application_registry.py": {
+        "bytes": 6490,
+        "sha256": "321aac4287bb520b20ae0afdb20e36e70065121f8b2caea74275e91093a51045"
+      },
+      "release_http.py": {
+        "bytes": 3870,
+        "sha256": "ff387f4779fd57aa4509d4334608d9394504288c7cc92556d1cf6f154e09e213"
+      },
+      "spug_bridge.py": {
+        "bytes": 3559,
+        "sha256": "965107e79bd538d6092a032bcce5d8fdcdcf3d1b9491bdaea79252cd8b9d0a2b"
+      }
+    }
+  },
+  "protectedAfter": {
+    "smallappEntryPid": 124978,
+    "source57ServicePid": 25086,
+    "unrelated18081": [
+      {
+        "id": "e602ecd89345c67eccfe45e04a509b1c3e80bffa0eabcb3862648f70d71eaa26",
+        "state": "running",
+        "startedAt": "2026-10-30T10:31:57.574912709Z"
+      }
+    ]
+  },
+  "history": {
+    "before": {
+      "path": "C:\\SpugHandoff\\release\\state\\state.sqlite3",
+      "payloadSha256": "bd65b05d8c1cd26f8c3c33de7b45708f5cf074cd4006c9ad4b915cd1d2c42284",
+      "jobsSha256": "02663df21cf0943090df2788bf5a8771238a2041cce69192d37a5130d878cf12",
+      "jobCount": 309,
+      "startupChangedJobIds": [],
+      "activeJobIds": []
+    },
+    "after": {
+      "path": "C:\\SpugHandoff\\release\\state\\state.sqlite3",
+      "payloadSha256": "bd65b05d8c1cd26f8c3c33de7b45708f5cf074cd4006c9ad4b915cd1d2c42284",
+      "jobsSha256": "02663df21cf0943090df2788bf5a8771238a2041cce69192d37a5130d878cf12",
+      "jobCount": 309,
+      "startupChangedJobIds": [],
+      "activeJobIds": []
+    },
+    "backupPin": {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\catalogue-before-b5c8817\\state.sqlite3",
+      "bytes": 162693120,
+      "sha256": "ba6b9a454083a902329f9ab7544d9f7a1e17790996fd178b0ff13ba7d30b0e83"
+    }
+  },
+  "allOriginalJobsPreserved": true,
+  "existingConfigurationPreserved": true,
+  "unrelated18081Preserved": true,
+  "originalSourceControlPidPreserved": true,
+  "smallappEntryPidPreserved": true,
+  "validation": {
+    "status": 200,
+    "schemaVersion": "PackageCatalog/v1",
+    "items": 0,
+    "refreshing": true,
+    "elapsedSeconds": 0.779,
+    "responseBytes": 205
+  },
+  "realBrowserVerified": false
+}

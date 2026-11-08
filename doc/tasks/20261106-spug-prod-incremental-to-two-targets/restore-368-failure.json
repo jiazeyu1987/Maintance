@@ -1,0 +1,4068 @@
+{
+  "observedAt": "2026-11-07T03:01:48.563825+00:00",
+  "operationId": "smallapp-c21bb7ce9f5b4668b850c37a80964786",
+  "documents": [
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/result.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "data",
+        "failureCode",
+        "finishedAt",
+        "message",
+        "operationId",
+        "originalResultPins",
+        "requestId",
+        "schemaVersion",
+        "startedAt",
+        "state"
+      ],
+      "dataKeys": [
+        "actualNativeExitCode",
+        "errorType",
+        "mutationDispatched",
+        "partialTargetRetained",
+        "retryPermitted"
+      ],
+      "actualExitCode": 1,
+      "failureCode": "FORMAL_SCHEMA_MISMATCH",
+      "finishedAt": "2026-11-07T02:58:59.817309Z",
+      "state": "FAILED_RETAINED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/worker-result.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "data",
+        "failureCode",
+        "finishedAt",
+        "message",
+        "operationId",
+        "originalResultPins",
+        "requestId",
+        "schemaVersion",
+        "startedAt",
+        "state"
+      ],
+      "dataKeys": [
+        "actualNativeExitCode",
+        "errorType",
+        "mutationDispatched",
+        "partialTargetRetained",
+        "retryPermitted"
+      ],
+      "actualExitCode": 1,
+      "failureCode": "FORMAL_SCHEMA_MISMATCH",
+      "finishedAt": "2026-11-07T02:58:59.817309Z",
+      "state": "FAILED_RETAINED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-c21bb7ce9f5b4668b850c37a80964786/worker-process.json",
+      "fields": [
+        "argv",
+        "operationId",
+        "pid",
+        "uiRequestSha256"
+      ],
+      "dataKeys": []
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-c21bb7ce9f5b4668b850c37a80964786/selection.json",
+      "fields": [
+        "configurationPin",
+        "ownerConfigurationPin",
+        "ownerProgramPin",
+        "pointBindingPin",
+        "registrationPin",
+        "schemaVersion"
+      ],
+      "dataKeys": []
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-c21bb7ce9f5b4668b850c37a80964786/request.json",
+      "fields": [
+        "action",
+        "operationId",
+        "parentChainRef",
+        "recoveryPointRef",
+        "schemaVersion",
+        "sourceConfigRef",
+        "targetConfigRef"
+      ],
+      "dataKeys": []
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-c21bb7ce9f5b4668b850c37a80964786/worker-terminal.json",
+      "fields": [
+        "actualExitCode",
+        "operationId",
+        "pid",
+        "stderrPin",
+        "stdoutPin",
+        "uiRequestSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 1
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-c21bb7ce9f5b4668b850c37a80964786/completion.json",
+      "fields": [
+        "actualResultPath",
+        "operationId",
+        "originalLogRoot",
+        "result",
+        "selection",
+        "terminal",
+        "uiRequestSha256"
+      ],
+      "dataKeys": []
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-c21bb7ce9f5b4668b850c37a80964786/restore-target-before.json",
+      "fields": [
+        "bootId",
+        "configurationPin",
+        "dockerEngineId",
+        "machineId",
+        "operationId",
+        "services",
+        "targetConfigRef",
+        "targetId"
+      ],
+      "dataKeys": []
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-c21bb7ce9f5b4668b850c37a80964786/intent.json",
+      "fields": [
+        "operationId",
+        "requestSha256",
+        "schemaVersion",
+        "selection"
+      ],
+      "dataKeys": []
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-272.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:28.421874Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-332.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:01.420107Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-347.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:05.221477Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-327.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:00.391217Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-350.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:06.984855Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-300.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:25.735411Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/timing-sql-import-start.json",
+      "fields": [
+        "stage",
+        "startedAt"
+      ],
+      "dataKeys": []
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/timing-sql-expand-start.json",
+      "fields": [
+        "stage",
+        "startedAt"
+      ],
+      "dataKeys": []
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/timing-sql-expand-end.json",
+      "fields": [
+        "completed",
+        "elapsedSeconds",
+        "finishedAt",
+        "stage"
+      ],
+      "dataKeys": [],
+      "finishedAt": "2026-11-07T01:56:41.385427Z"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-283.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:32.310586Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-280.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:31.689808Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-289.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:33.551044Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-358.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:08.953158Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/incremental.sql-binary-logging.json",
+      "fields": [
+        "importSha256",
+        "reenabledSegments",
+        "schemaVersion",
+        "sourceSha256"
+      ],
+      "dataKeys": []
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-343.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:03.931397Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-333.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:01.629175Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-351.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:07.193348Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-318.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:30:55.662060Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-359.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:09.396623Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/timing-database-restore-end.json",
+      "fields": [
+        "completed",
+        "elapsedSeconds",
+        "finishedAt",
+        "stage"
+      ],
+      "dataKeys": [],
+      "finishedAt": "2026-11-07T02:58:59.690523Z"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-282.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:32.110044Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/timing-sql-stage-end.json",
+      "fields": [
+        "completed",
+        "elapsedSeconds",
+        "finishedAt",
+        "stage"
+      ],
+      "dataKeys": [],
+      "finishedAt": "2026-11-07T01:51:17.202399Z"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-299.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:25.479739Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-321.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:30:56.287078Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-335.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:02.300465Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-276.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:29.289566Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-296.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:24.785775Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-304.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:29.642323Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-330.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:01.013214Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-301.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:26.259814Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-286.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:32.938570Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-305.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:29.856467Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-288.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:33.338395Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-290.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:33.960536Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-346.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:04.628723Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/timing-sql-import-end.json",
+      "fields": [
+        "completed",
+        "elapsedSeconds",
+        "finishedAt",
+        "stage"
+      ],
+      "dataKeys": [],
+      "finishedAt": "2026-11-07T02:31:02.312335Z"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-319.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:30:55.866826Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-285.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:32.735164Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-314.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:30:54.847943Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-325.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:30:59.974950Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-341.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:03.548522Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-337.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:02.540021Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/timing-sql-stage-start.json",
+      "fields": [
+        "stage",
+        "startedAt"
+      ],
+      "dataKeys": []
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-348.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:06.567243Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-312.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:31.357605Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-323.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:30:56.932198Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-278.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:29.794689Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-317.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:30:55.467264Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/timing-sql-readback-end.json",
+      "fields": [
+        "completed",
+        "elapsedSeconds",
+        "finishedAt",
+        "stage"
+      ],
+      "dataKeys": [],
+      "finishedAt": "2026-11-07T02:58:59.683415Z"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-279.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:30.342282Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-270.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:28.009671Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-349.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:06.773829Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-338.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:02.767798Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-326.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:00.183370Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-334.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:01.839754Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-311.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:31.125564Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-308.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:30.488655Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-340.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:03.345369Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-309.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:30.692671Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-356.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:08.267207Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-297.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:24.973784Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-313.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:31.786739Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-287.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:33.139498Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-274.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:28.831332Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-320.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:30:56.057002Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-352.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:07.410779Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-271.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:28.200255Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-307.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:30.281959Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-354.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:07.860960Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-322.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:30:56.503354Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-291.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:34.402160Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-298.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:25.258648Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-273.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:28.631282Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-342.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:03.740292Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-269.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:27.795010Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-345.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:04.354010Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/timing-database-restore-start.json",
+      "fields": [
+        "stage",
+        "startedAt"
+      ],
+      "dataKeys": []
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-310.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:30.900233Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-353.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:07.653142Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-328.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:00.595275Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-355.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:08.062794Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-294.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:24.340604Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-295.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:24.583494Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-316.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:30:55.252449Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-306.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:30.075733Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-303.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:29.406381Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-275.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:29.040297Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-293.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:24.138956Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-331.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:01.217939Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-281.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:31.898194Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/timing-sql-readback-start.json",
+      "fields": [
+        "stage",
+        "startedAt"
+      ],
+      "dataKeys": []
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-324.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:30:58.643416Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-302.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:28.061196Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-357.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:08.467175Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-344.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:04.130557Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/importer-314.json",
+      "fields": [
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "schemaVersion",
+        "sqlPin",
+        "startedAt",
+        "state"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:02.306012Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-315.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:30:55.051656Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-339.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:02.976764Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-284.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:32.513217Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-329.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:31:00.796179Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-277.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T01:49:29.541828Z",
+      "state": "SUCCEEDED"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-292.json",
+      "fields": [
+        "action",
+        "actualExitCode",
+        "argvSha256",
+        "finishedAt",
+        "mutation",
+        "operationId",
+        "schemaVersion",
+        "startedAt",
+        "state",
+        "stderrBytes",
+        "stderrSha256",
+        "stdoutBytes",
+        "stdoutSha256"
+      ],
+      "dataKeys": [],
+      "actualExitCode": 0,
+      "finishedAt": "2026-11-07T02:14:23.923591Z",
+      "state": "SUCCEEDED"
+    }
+  ],
+  "pins": [
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/result.json",
+      "bytes": 91697,
+      "sha256": "9b8c68cfe71494762a5c0434eed811665db5108f28eee0c94033d373464c2266"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/worker-result.json",
+      "bytes": 90208,
+      "sha256": "f01050e181e0477aa65bbccd51bded128739e667d999d0d5e27f0b1e9d3acf44"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-c21bb7ce9f5b4668b850c37a80964786/worker-process.json",
+      "bytes": 672,
+      "sha256": "b50744d4eedf80f66634db292e3232630bb6f11fc0f41c232f7053c61eae5d73"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-c21bb7ce9f5b4668b850c37a80964786/selection.json",
+      "bytes": 1234,
+      "sha256": "0c7d1a48388bb627eebad6696e8c5976bd9bafe3a4c3101c4e2f9c592625c9d5"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-c21bb7ce9f5b4668b850c37a80964786/request.json",
+      "bytes": 319,
+      "sha256": "1a70c80113a130628cedd567d6f173032ebfa9e7cb48526c9bb3a3fe1d1cedb4"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-c21bb7ce9f5b4668b850c37a80964786/worker-terminal.json",
+      "bytes": 639,
+      "sha256": "c20e1ebc24f6095118449489fd6047348f35897a18dddcaca557c181066164cb"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-c21bb7ce9f5b4668b850c37a80964786/completion.json",
+      "bytes": 3366,
+      "sha256": "6c7b48e3841d3b584fcb4bc238622cdf636df90385e5b923c59723972a5978bc"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-c21bb7ce9f5b4668b850c37a80964786/restore-target-before.json",
+      "bytes": 11522,
+      "sha256": "e3cd1b7a84099307fff601849fee519b491d256aec76e49a200dd710c5d497f0"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/ledger/smallapp-c21bb7ce9f5b4668b850c37a80964786/intent.json",
+      "bytes": 1433,
+      "sha256": "9992bf4d5e295fe871c3a5244da5bb58111e619e28adac058b3b11b72bafb489"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-272.json",
+      "bytes": 556,
+      "sha256": "1216cc900d1a1c7804b2cbccad22af03aa82d16ac84e3e0ce35fc3c45dadf6a5"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-332.json",
+      "bytes": 554,
+      "sha256": "20e783cbcf99b074c15d1b8a8fe84d060bf63c599442b064f0f81b5b0fab2a80"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-347.json",
+      "bytes": 558,
+      "sha256": "752799779362af8385ea53fa7439bc320b53f39c045f877f0175561446f66db4"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-327.json",
+      "bytes": 556,
+      "sha256": "3c7ca1f925c6a0494139d71caa2a4ca63ebf77d4fbc1f65f0a483fd1d8ccb5cb"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-350.json",
+      "bytes": 556,
+      "sha256": "76903aa4903b3af96a3ee4255042624a610eba8e1164028a5d0d41bfa773a7b2"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-300.json",
+      "bytes": 554,
+      "sha256": "0b6190a0642fa8e09fab425c9ec7599cc1dcd8f9cf3de50ac2d24ff7d3e69ae2"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/timing-sql-import-start.json",
+      "bytes": 64,
+      "sha256": "b14af704745e5c8b325bd452b173027e049b758ee62cb0a5adad5bdcdfb61881"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/timing-sql-expand-start.json",
+      "bytes": 64,
+      "sha256": "7ea722fbad071dc58c15b98455fe5b8b46364e37805f399056b87ce68313cc9b"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/timing-sql-expand-end.json",
+      "bytes": 107,
+      "sha256": "b58c6510414b80c1a6fdb0535b262bb20bd9a08456dbf47123a908ce699f44d2"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-283.json",
+      "bytes": 556,
+      "sha256": "aa936c804d78737e9f86f79d6bc16b368bac50616d13e946f5b9e0ed6a6a753b"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-280.json",
+      "bytes": 553,
+      "sha256": "02aacd6f5e1044ab5e11671482ce5235e6ba1cb962055edc0e6059df67ea13a9"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-289.json",
+      "bytes": 556,
+      "sha256": "b402fdc5842aa5abfc753e4baa558240fcf96c2caab36abebc837f356756d0dc"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-358.json",
+      "bytes": 553,
+      "sha256": "10e243b1136550b7c558d8892f36106da865202481aeb4bd281aa50e1d040741"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/incremental.sql-binary-logging.json",
+      "bytes": 234,
+      "sha256": "f71609bd2e34f0eb55a12a532f2bc19f9891d0665bf2860914a2af9434ebede1"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-343.json",
+      "bytes": 554,
+      "sha256": "2b04b8fde0651b3f322665ac817cfcd4ddd72cd26080a359ed196ffacecf606e"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-333.json",
+      "bytes": 556,
+      "sha256": "edee740705c5cde0a5dd03b99a8b24ed393525d824c07d4171838ac1ccc45f2b"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-351.json",
+      "bytes": 556,
+      "sha256": "733d21f9b8171aa9b98ee83b9f0ff453b4531c600bcd5de6b16c7ee8ed8d1ce0"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-318.json",
+      "bytes": 556,
+      "sha256": "246a8b4036447a0121fb385b7a168123f684a77b9b0dab347f42f5ef41ab9956"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-359.json",
+      "bytes": 553,
+      "sha256": "9d60810e403dfee5902539202be7b562652c2b3464c13fe513d9892289a22f39"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/timing-database-restore-end.json",
+      "bytes": 114,
+      "sha256": "b203896c734d4ca204eb2b96a24b20b17f38595b702f1077b94e160844f85fdc"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-282.json",
+      "bytes": 556,
+      "sha256": "42e454ade27bb9e3ef3288bd4c0de9a1df25a37fde8375bb280e722556f87440"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/timing-sql-stage-end.json",
+      "bytes": 106,
+      "sha256": "18f10cb9a5c7ef2fb7cd8358ed2376dfd2639b2fc8883d4f200675c65a6b51fa"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-299.json",
+      "bytes": 554,
+      "sha256": "1fc45fb965ed6e33e6eebdcd35231df76f31254f48194f3d4620aaa47148f610"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-321.json",
+      "bytes": 554,
+      "sha256": "2dbf90583de058d758470d3141b2a6069f8783d3f34d385ed92a9966f6ed46f5"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-335.json",
+      "bytes": 553,
+      "sha256": "871dd2abfff71ca92a31c468336fb28be2c758cab0301cc7ce8030fc67b658f8"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-276.json",
+      "bytes": 554,
+      "sha256": "6e47ee3c058ff889f30a54cc9ee67885194e4a57a3e6e4182772218cbed37add"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-296.json",
+      "bytes": 556,
+      "sha256": "cebd46751be7a179c8d9b71ae0a84fb48c9301643daddb6de80230e2b87d06ea"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-304.json",
+      "bytes": 556,
+      "sha256": "f1917e89c17ba660a2769c3c75417eb8c189ec8738b0ea7d8ddaf101535d9b00"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-330.json",
+      "bytes": 556,
+      "sha256": "b32d33b4126d40664fc3b9e65e97a251ca6204cd7270155c1ead7bafa851bf8d"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-301.json",
+      "bytes": 556,
+      "sha256": "685268f1dc2167b09a35ce7475741ca7e7b764ea8288d082e78b2ab9c1c8a617"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-286.json",
+      "bytes": 555,
+      "sha256": "3b7242a5417a01ed52d29412db7244c2f9f1c361c48e5c1649f9e95430d5d79e"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-305.json",
+      "bytes": 556,
+      "sha256": "60018637fe69607215c97568c8494124481b903e7e040c8580de73c963a3ef01"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-288.json",
+      "bytes": 556,
+      "sha256": "9e9ef793cc0ed5665cfae74a5e68f5e547fbd741435d16fe0f2e37309eddeda0"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-290.json",
+      "bytes": 553,
+      "sha256": "745cf1d6189cb576c8ef926c48a85ec0620988131fbf555e282e87c8d391dde5"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-346.json",
+      "bytes": 556,
+      "sha256": "f5c40dcb9ecb362cfbebf52c1a32367f4210b8c73a3c46beaf919c2f27f97eea"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/timing-sql-import-end.json",
+      "bytes": 108,
+      "sha256": "c09bcd35029118216a205b6fc41eaf021dde35615567325ad17df6d8b7ec0af9"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-319.json",
+      "bytes": 556,
+      "sha256": "d053bc492c9a3e58d0b49c1a8a746bca05a1e4da2d8ec08d149ad65a178dd88d"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-285.json",
+      "bytes": 556,
+      "sha256": "7bf1b78f3768db55c84f3fb431e1ee1368db32c1e86689a3c91a7f8691c332ad"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-314.json",
+      "bytes": 555,
+      "sha256": "22537553632db5721b2ab4d008e509d59ec386db235d008cc978dfad1b50f3f1"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-325.json",
+      "bytes": 553,
+      "sha256": "3ad18f1dc67e9febb192e6f16761637f081f572a2933c456b6b763a0f6435aad"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-341.json",
+      "bytes": 556,
+      "sha256": "13644655321ea9859faeec621e329b9177fb52aebbfe3c7bad1ce436bdd0a87a"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-337.json",
+      "bytes": 555,
+      "sha256": "73f98ab2f157f7361b4d4cd9b5026ecb999269f255edb8a5b0398393e019e47c"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/timing-sql-stage-start.json",
+      "bytes": 63,
+      "sha256": "03c833e8804f43c2b39fa6885d037f60594094ab58c684034e127313469268ae"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-348.json",
+      "bytes": 553,
+      "sha256": "8f932dc2d3d9eef72b82b2d74e3a86ba36806949e5418a28f7dba30b7f327cfd"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-312.json",
+      "bytes": 556,
+      "sha256": "009bebbee0b6f05f22311a7c0665acc89a7903807e52b3ab528881ce0ea60348"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-323.json",
+      "bytes": 556,
+      "sha256": "f11e8d9d9f2ecf37af41e125415b125e6fc3e081e2e93c8db580f7fa8a54087e"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-278.json",
+      "bytes": 556,
+      "sha256": "2a3a73a1af3fef9383344bfe2ce34281a510d51ff3a320c101bac7eb0d37414f"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-317.json",
+      "bytes": 556,
+      "sha256": "efa861e33b981e0fd39ddf21ab7bfbe43e638919381426bd7a5c41b055e43ddc"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/timing-sql-readback-end.json",
+      "bytes": 111,
+      "sha256": "de771cef376d493db45068a11c99b044c823151bf633d2aa6b0789c8008796fb"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-279.json",
+      "bytes": 558,
+      "sha256": "56fbb09e40a0d07e8bc8ad005f4695c6cd925cb23df39ee24e1204987dc7f44a"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-270.json",
+      "bytes": 556,
+      "sha256": "060773271e1abca91241e7df437644eb87ddd38e1899fa29ced59095a0f23e6b"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-349.json",
+      "bytes": 556,
+      "sha256": "f9937213b5d86f3fce1ee00402d4ae48212e8af731028413d0b3b130406afe2f"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-338.json",
+      "bytes": 556,
+      "sha256": "db3e5f23bc91c8eee32b9aaa14468f208a7a6c5d4cec74b9da2c0fcdaa67a833"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-326.json",
+      "bytes": 556,
+      "sha256": "e9861b4e642edbf378e0828c849048980f3ea32625de9981f12e1bc70a010356"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-334.json",
+      "bytes": 556,
+      "sha256": "d7b9100bb6c2b081aee608b2cc4cf2a95c5a5dec71b6a283b438ca8f509cf93f"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-311.json",
+      "bytes": 556,
+      "sha256": "c3214168884a9e0944847a4a0fee1eb37be2e58e6685a3fa5d33b3fc409acdc3"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-308.json",
+      "bytes": 556,
+      "sha256": "b521d3869a033697969da0978ba54c7cd346139d11c309c8af4fa78750537925"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-340.json",
+      "bytes": 556,
+      "sha256": "eaa828f9c1ae845eaf0e8771a7b1944b1b76e91136df69b31a9bb52eb5e9d450"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-309.json",
+      "bytes": 555,
+      "sha256": "9574621c6259fd7352722c1d7c497976d0cf1ba5fac8d4c7accba4b0439f6b2f"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-356.json",
+      "bytes": 556,
+      "sha256": "8b04b9002a6167116d48593d6e4a2443018b20c9e78eb498c4115e6b8845dbbf"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-297.json",
+      "bytes": 556,
+      "sha256": "57729e881493c1f1d372275450b38b9feafa351abd67dc3461b8312239e462dd"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-313.json",
+      "bytes": 553,
+      "sha256": "9e993ad24fd7faf2050d50d5e11d408730979ddbd9c97610acc42ecadb8de5b0"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-287.json",
+      "bytes": 554,
+      "sha256": "962dd626024684e6971820eadf20dc4591bb494297d63d641959038235d806ca"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-274.json",
+      "bytes": 556,
+      "sha256": "8457a43995bda85e62c6c7073659fb4d32acbfa9034c56c57109edd54e1c0fcb"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-320.json",
+      "bytes": 554,
+      "sha256": "9aa29fe58dd9c783d142e0b8695fe88a36a54d443cf94cf19ae69045e6c7dbf2"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-352.json",
+      "bytes": 556,
+      "sha256": "6aa14d96bf5b4303ffd8149053a5074a97b8ae47762244d86e01e04b8e35951e"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-271.json",
+      "bytes": 556,
+      "sha256": "d4e32d096df48307287fc9c69961e1d15146501aa2782adf27e052603d4b6ee3"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-307.json",
+      "bytes": 556,
+      "sha256": "343f37d8abc8f377dc2be43a0bdd8b6343e65a893eff0325a02f6e415256521e"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-354.json",
+      "bytes": 555,
+      "sha256": "43139d53c74bdcc796db6f53650a34b00cbca3c35df6968727361fc533ccc6c3"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-322.json",
+      "bytes": 554,
+      "sha256": "82fc953d6c7327410d49b86be1e9695153678b2540768b65ec0d4098d9c8db29"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-291.json",
+      "bytes": 553,
+      "sha256": "00f9aedb2190b8ff79d83d8a7fa3f3b64f4af0b276b94e24ca1fa0ea4b64ceb8"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-298.json",
+      "bytes": 554,
+      "sha256": "45d5c8b38f6df698e7ccdc3464b52b025a29d30d00644ad32451c7cf90563cc8"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-273.json",
+      "bytes": 556,
+      "sha256": "474d1d2971b8853248eb0733b9d2b0d7d7ca8f374e1a307b315560b4e933be49"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-342.json",
+      "bytes": 556,
+      "sha256": "0ba7195a7e9b6b64178f4415737a48ae8fea7bf4ae5ef2c163575957e5920c5f"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-269.json",
+      "bytes": 555,
+      "sha256": "0c0915849f4307a110117c8eddc075f1de61fdda6af7df6b37713ef8edd56cf7"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-345.json",
+      "bytes": 554,
+      "sha256": "a967b0e25dbeb292925f1cab02047f5a55cb5e3ed2cf0020ffc0999242905984"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/timing-database-restore-start.json",
+      "bytes": 70,
+      "sha256": "739d340c542ccc375fa3406c81fefa5b26a3b4a8dd8b474030335c61443b26c6"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-310.json",
+      "bytes": 554,
+      "sha256": "5519b942ef6333740c2bad8e4e71dfbbdb3dc061bf0cf0787f25fb063ace984a"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-353.json",
+      "bytes": 556,
+      "sha256": "3b2db31852f2ec5fb1fbe1c9b785ab7da538d05ae9f2978a4bc2a428eb22b6b4"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-328.json",
+      "bytes": 556,
+      "sha256": "aeef8cca1e3285a2c433769360db7cd0e07224a42ebb732eacb2e08c2cbcbd17"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-355.json",
+      "bytes": 554,
+      "sha256": "372f76dd215e605706f5979be5c3449b5c2597fa09c3172973a0dc01e0d28636"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-294.json",
+      "bytes": 556,
+      "sha256": "40046156364bf4c6886564bdba598c9fff255e9fbf5c4d5f5eb30d7839208cf9"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-295.json",
+      "bytes": 556,
+      "sha256": "c953793c3a3b92b3e7d75da49eeb1e35be87b0d9e8390f7473604c186369051f"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-316.json",
+      "bytes": 556,
+      "sha256": "d353a7ab5251d5be66c34a04035db540822b788c69d398eda2de7b080e6eae69"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-306.json",
+      "bytes": 556,
+      "sha256": "c0a7ce6ddd842fd68b133266f6bc6c316ad878932ed4e297117c8cd9574a4e34"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-303.json",
+      "bytes": 553,
+      "sha256": "65f5016f6b0c024d4381a134ac9fb90e850a0aeab1568980e4b8af0351323265"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-275.json",
+      "bytes": 554,
+      "sha256": "06d2a871fe3517df751b7c62835e13144ced29beaba6a52ccb5e0251cb47f072"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-293.json",
+      "bytes": 556,
+      "sha256": "71f0acec92aed069983869b5f8a445b536d315a59bc3bfe77c265ca60f17ce66"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-331.json",
+      "bytes": 555,
+      "sha256": "2046d9d5112abde0d196c24602bff8b9eb7a9435b40a4cd2fa8dee56d08bf415"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-281.json",
+      "bytes": 556,
+      "sha256": "e12097a911831b5aa2149f6575900c76019fc0c6cbc67c1e5ecd91cb65e1f883"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/timing-sql-readback-start.json",
+      "bytes": 66,
+      "sha256": "93ba7c2289c29efa4c93e81f798ee96f4bacbf035ac398fcdd27d3d86340dea2"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-324.json",
+      "bytes": 558,
+      "sha256": "9fe642b34d39a1ebdd93a191a8ee61330e1f3bfe1169f47ff7a6b7ee6f96e40d"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-302.json",
+      "bytes": 558,
+      "sha256": "51da4c1d05fb5afc5952b3904b486202100686b940b618d4526e473dbd01fefc"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-357.json",
+      "bytes": 556,
+      "sha256": "96313fb2917ef78371f0b5b7826704c24711ae1b9f7abb30b1ea834231ad9574"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-344.json",
+      "bytes": 554,
+      "sha256": "cce1e664647cd50fdb545cf9d8fde8ca1398344adb7def661c4b5bc5c73e5808"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/importer-314.json",
+      "bytes": 513,
+      "sha256": "b52e4e5a6dbad974b9ebf57fa038993066fdc3b6e0896bd16798847d3adff09c"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-315.json",
+      "bytes": 556,
+      "sha256": "42a34e763abe97d480ba5d3d53f883b784cf06398acf656e314f306320c20a9e"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-339.json",
+      "bytes": 556,
+      "sha256": "d08a914634a90acceb380bc833b0a660e6dce7b84759096b83e6a1c54eda686d"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-284.json",
+      "bytes": 556,
+      "sha256": "ad1ad30faf7c7ad2453cf5646f73ed2f039cdfd7ab59f4366cd52af54475c3cd"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-329.json",
+      "bytes": 556,
+      "sha256": "fe7f49d9bf93fd5af0ffa5a2703c9468def2ec809ad9e9019aa9ab6a77043c15"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-277.json",
+      "bytes": 554,
+      "sha256": "005047a2f7edefea8f4c2200f7d54fccb49edb6380c96430c14848ed3dd9cf3e"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/native-292.json",
+      "bytes": 555,
+      "sha256": "ae45e9a00da24b513bbfecbaad84aa0b90f4ca635762bc3c24d2889de7c3474b"
+    }
+  ],
+  "directories": [
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786",
+      "entries": [
+        {
+          "name": "child-exit.json",
+          "directory": false,
+          "bytes": 722
+        },
+        {
+          "name": "child.stderr",
+          "directory": false,
+          "bytes": 0
+        },
+        {
+          "name": "child.stdout",
+          "directory": false,
+          "bytes": 0
+        },
+        {
+          "name": "configuration.json",
+          "directory": false,
+          "bytes": 22094
+        },
+        {
+          "name": "database-000",
+          "directory": true,
+          "bytes": 12288
+        },
+        {
+          "name": "database-001",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "native-000.json",
+          "directory": false,
+          "bytes": 540
+        },
+        {
+          "name": "native-001.json",
+          "directory": false,
+          "bytes": 542
+        },
+        {
+          "name": "native-002.json",
+          "directory": false,
+          "bytes": 543
+        },
+        {
+          "name": "native-003.json",
+          "directory": false,
+          "bytes": 543
+        },
+        {
+          "name": "native-004.json",
+          "directory": false,
+          "bytes": 543
+        },
+        {
+          "name": "native-005.json",
+          "directory": false,
+          "bytes": 543
+        },
+        {
+          "name": "native-006.json",
+          "directory": false,
+          "bytes": 543
+        },
+        {
+          "name": "native-007.json",
+          "directory": false,
+          "bytes": 541
+        },
+        {
+          "name": "native-008.json",
+          "directory": false,
+          "bytes": 541
+        },
+        {
+          "name": "native-009.json",
+          "directory": false,
+          "bytes": 541
+        },
+        {
+          "name": "native-010.json",
+          "directory": false,
+          "bytes": 543
+        },
+        {
+          "name": "native-011.json",
+          "directory": false,
+          "bytes": 545
+        },
+        {
+          "name": "native-012.json",
+          "directory": false,
+          "bytes": 540
+        },
+        {
+          "name": "native-013.json",
+          "directory": false,
+          "bytes": 543
+        },
+        {
+          "name": "native-014.json",
+          "directory": false,
+          "bytes": 543
+        },
+        {
+          "name": "native-015.json",
+          "directory": false,
+          "bytes": 543
+        },
+        {
+          "name": "native-016.json",
+          "directory": false,
+          "bytes": 543
+        },
+        {
+          "name": "native-017.json",
+          "directory": false,
+          "bytes": 543
+        },
+        {
+          "name": "native-018.json",
+          "directory": false,
+          "bytes": 542
+        },
+        {
+          "name": "native-019.json",
+          "directory": false,
+          "bytes": 541
+        },
+        {
+          "name": "native-020.json",
+          "directory": false,
+          "bytes": 543
+        },
+        {
+          "name": "native-021.json",
+          "directory": false,
+          "bytes": 543
+        },
+        {
+          "name": "native-022.json",
+          "directory": false,
+          "bytes": 540
+        },
+        {
+          "name": "native-023.json",
+          "directory": false,
+          "bytes": 540
+        },
+        {
+          "name": "native-024.json",
+          "directory": false,
+          "bytes": 543
+        },
+        {
+          "name": "native-025.json",
+          "directory": false,
+          "bytes": 543
+        },
+        {
+          "name": "native-026.json",
+          "directory": false,
+          "bytes": 539
+        },
+        {
+          "name": "native-027.json",
+          "directory": false,
+          "bytes": 539
+        },
+        {
+          "name": "native-028.json",
+          "directory": false,
+          "bytes": 539
+        },
+        {
+          "name": "operation.json",
+          "directory": false,
+          "bytes": 437
+        },
+        {
+          "name": "replacement-preparation",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "request.json",
+          "directory": false,
+          "bytes": 319
+        },
+        {
+          "name": "resource-admission-owner.json",
+          "directory": false,
+          "bytes": 2114
+        },
+        {
+          "name": "resource-admission-replacement.json",
+          "directory": false,
+          "bytes": 2378
+        },
+        {
+          "name": "resource-admission-target.json",
+          "directory": false,
+          "bytes": 2378
+        },
+        {
+          "name": "resource-reservation.json",
+          "directory": false,
+          "bytes": 483
+        },
+        {
+          "name": "result.json",
+          "directory": false,
+          "bytes": 91697
+        },
+        {
+          "name": "target-configuration.json",
+          "directory": false,
+          "bytes": 17820
+        },
+        {
+          "name": "timing-restore-admission-end.json",
+          "directory": false,
+          "bytes": 115
+        },
+        {
+          "name": "timing-restore-admission-start.json",
+          "directory": false,
+          "bytes": 71
+        },
+        {
+          "name": "timing-target-checks-end.json",
+          "directory": false,
+          "bytes": 108
+        },
+        {
+          "name": "timing-target-checks-start.json",
+          "directory": false,
+          "bytes": 67
+        },
+        {
+          "name": "worker-result.json",
+          "directory": false,
+          "bytes": 90208
+        }
+      ]
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001",
+      "entries": [
+        {
+          "name": "archive-sql.private.gz",
+          "directory": false,
+          "bytes": 11562895766
+        },
+        {
+          "name": "database-readback",
+          "directory": true,
+          "bytes": 20480
+        },
+        {
+          "name": "importer-314.json",
+          "directory": false,
+          "bytes": 513
+        },
+        {
+          "name": "incremental.sql",
+          "directory": false,
+          "bytes": 17213672529
+        },
+        {
+          "name": "incremental.sql-binary-logging.json",
+          "directory": false,
+          "bytes": 234
+        },
+        {
+          "name": "native-269.json",
+          "directory": false,
+          "bytes": 555
+        },
+        {
+          "name": "native-270.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-271.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-272.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-273.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-274.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-275.json",
+          "directory": false,
+          "bytes": 554
+        },
+        {
+          "name": "native-276.json",
+          "directory": false,
+          "bytes": 554
+        },
+        {
+          "name": "native-277.json",
+          "directory": false,
+          "bytes": 554
+        },
+        {
+          "name": "native-278.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-279.json",
+          "directory": false,
+          "bytes": 558
+        },
+        {
+          "name": "native-280.json",
+          "directory": false,
+          "bytes": 553
+        },
+        {
+          "name": "native-281.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-282.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-283.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-284.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-285.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-286.json",
+          "directory": false,
+          "bytes": 555
+        },
+        {
+          "name": "native-287.json",
+          "directory": false,
+          "bytes": 554
+        },
+        {
+          "name": "native-288.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-289.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-290.json",
+          "directory": false,
+          "bytes": 553
+        },
+        {
+          "name": "native-291.json",
+          "directory": false,
+          "bytes": 553
+        },
+        {
+          "name": "native-292.json",
+          "directory": false,
+          "bytes": 555
+        },
+        {
+          "name": "native-293.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-294.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-295.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-296.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-297.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-298.json",
+          "directory": false,
+          "bytes": 554
+        },
+        {
+          "name": "native-299.json",
+          "directory": false,
+          "bytes": 554
+        },
+        {
+          "name": "native-300.json",
+          "directory": false,
+          "bytes": 554
+        },
+        {
+          "name": "native-301.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-302.json",
+          "directory": false,
+          "bytes": 558
+        },
+        {
+          "name": "native-303.json",
+          "directory": false,
+          "bytes": 553
+        },
+        {
+          "name": "native-304.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-305.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-306.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-307.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-308.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-309.json",
+          "directory": false,
+          "bytes": 555
+        },
+        {
+          "name": "native-310.json",
+          "directory": false,
+          "bytes": 554
+        },
+        {
+          "name": "native-311.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-312.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-313.json",
+          "directory": false,
+          "bytes": 553
+        },
+        {
+          "name": "native-314.json",
+          "directory": false,
+          "bytes": 555
+        },
+        {
+          "name": "native-315.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-316.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-317.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-318.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-319.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-320.json",
+          "directory": false,
+          "bytes": 554
+        },
+        {
+          "name": "native-321.json",
+          "directory": false,
+          "bytes": 554
+        },
+        {
+          "name": "native-322.json",
+          "directory": false,
+          "bytes": 554
+        },
+        {
+          "name": "native-323.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-324.json",
+          "directory": false,
+          "bytes": 558
+        },
+        {
+          "name": "native-325.json",
+          "directory": false,
+          "bytes": 553
+        },
+        {
+          "name": "native-326.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-327.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-328.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-329.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-330.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-331.json",
+          "directory": false,
+          "bytes": 555
+        },
+        {
+          "name": "native-332.json",
+          "directory": false,
+          "bytes": 554
+        },
+        {
+          "name": "native-333.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-334.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-335.json",
+          "directory": false,
+          "bytes": 553
+        },
+        {
+          "name": "native-337.json",
+          "directory": false,
+          "bytes": 555
+        },
+        {
+          "name": "native-338.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-339.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-340.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-341.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-342.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-343.json",
+          "directory": false,
+          "bytes": 554
+        },
+        {
+          "name": "native-344.json",
+          "directory": false,
+          "bytes": 554
+        },
+        {
+          "name": "native-345.json",
+          "directory": false,
+          "bytes": 554
+        },
+        {
+          "name": "native-346.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-347.json",
+          "directory": false,
+          "bytes": 558
+        },
+        {
+          "name": "native-348.json",
+          "directory": false,
+          "bytes": 553
+        },
+        {
+          "name": "native-349.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-350.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-351.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-352.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-353.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-354.json",
+          "directory": false,
+          "bytes": 555
+        },
+        {
+          "name": "native-355.json",
+          "directory": false,
+          "bytes": 554
+        },
+        {
+          "name": "native-356.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-357.json",
+          "directory": false,
+          "bytes": 556
+        },
+        {
+          "name": "native-358.json",
+          "directory": false,
+          "bytes": 553
+        },
+        {
+          "name": "native-359.json",
+          "directory": false,
+          "bytes": 553
+        },
+        {
+          "name": "timing-database-restore-end.json",
+          "directory": false,
+          "bytes": 114
+        },
+        {
+          "name": "timing-database-restore-start.json",
+          "directory": false,
+          "bytes": 70
+        },
+        {
+          "name": "timing-sql-expand-end.json",
+          "directory": false,
+          "bytes": 107
+        },
+        {
+          "name": "timing-sql-expand-start.json",
+          "directory": false,
+          "bytes": 64
+        },
+        {
+          "name": "timing-sql-import-end.json",
+          "directory": false,
+          "bytes": 108
+        }
+      ]
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/recovery-operations/smallapp-c21bb7ce9f5b4668b850c37a80964786/database-001/database-readback",
+      "entries": [
+        {
+          "name": "0",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "1",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "10",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "100",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "101",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "102",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "103",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "104",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "105",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "106",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "107",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "108",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "109",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "11",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "110",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "111",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "112",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "113",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "114",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "115",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "116",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "117",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "118",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "119",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "12",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "120",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "121",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "122",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "123",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "124",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "125",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "126",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "127",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "128",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "129",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "13",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "130",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "131",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "132",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "133",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "134",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "135",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "136",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "137",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "138",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "139",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "14",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "140",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "141",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "142",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "143",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "144",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "145",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "146",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "147",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "148",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "149",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "15",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "150",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "151",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "152",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "153",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "154",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "155",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "156",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "157",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "158",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "159",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "16",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "160",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "161",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "162",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "163",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "164",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "165",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "166",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "167",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "168",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "169",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "17",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "170",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "171",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "172",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "173",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "174",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "175",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "176",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "177",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "178",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "179",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "18",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "180",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "181",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "182",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "183",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "184",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "185",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "186",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "187",
+          "directory": true,
+          "bytes": 4096
+        },
+        {
+          "name": "188",
+          "directory": true,
+          "bytes": 4096
+        }
+      ]
+    }
+  ],
+  "anyTargetMutation": false
+}

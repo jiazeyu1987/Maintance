@@ -1,0 +1,151 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T22:19:49.285274+00:00",
+  "files": [
+    {
+      "file": "automatic-closeout-helper-regression-r2.txt",
+      "status": "PASS",
+      "bytes": 2772,
+      "sha256": "23c39d38c3b37de4ec9a612582f98e309612e0732e1e206d974e6bd5075c5db4"
+    },
+    {
+      "file": "automatic-closeout-helper-regression.txt",
+      "status": "PASS",
+      "bytes": 2464,
+      "sha256": "e7d34da9c6daa39f077ed750a0eea8702e573c58118397f676e696e6d44ae072"
+    },
+    {
+      "file": "automatic-dispatch-audit-green.txt",
+      "status": "PASS",
+      "bytes": 99,
+      "sha256": "7a0a45177ee5390597831aff588f41e6992754df77fa7aaccedfb4b6bc13d64f"
+    },
+    {
+      "file": "automatic-dispatch-audit-red.txt",
+      "status": "PASS",
+      "bytes": 13823,
+      "sha256": "dd9a52f8e0a5db09cba22406b5df56b7a9f367a451f7512525898b53d86f3185"
+    },
+    {
+      "file": "automatic-dispatch-audit-regression.txt",
+      "status": "PASS",
+      "bytes": 100,
+      "sha256": "53a0ff884413f8a4ed7fbf561bd63c053ebc368e3707928e3fc383b2d91db9ab"
+    },
+    {
+      "file": "automatic-incremental-ui-regression.tap",
+      "status": "PASS",
+      "bytes": 19238,
+      "sha256": "5d7f4f10f3812652a362bfa6f7233979f51dc14a81af469f71c6ed58db8d5f7f"
+    },
+    {
+      "file": "automatic-stage-deployment-regression.txt",
+      "status": "PASS",
+      "bytes": 706,
+      "sha256": "a3622c91437532e79c903413de7653d5d8bb7e1a248f49dd4f28c8fcd3a49d53"
+    },
+    {
+      "file": "catalogue-login-helper-r4-regression.txt",
+      "status": "PASS",
+      "bytes": 400,
+      "sha256": "abfcc04b35a35677635fbf0ea054c69ccf137679a74c623e31ec9b372ce1e216"
+    },
+    {
+      "file": "mixed-generation-evidence-green-r2.txt",
+      "status": "PASS",
+      "bytes": 99,
+      "sha256": "d8fd7059c0979f74ad0bfde1c8cdad438d3e7865b46775bc92b20a62877ae31a"
+    },
+    {
+      "file": "mixed-generation-evidence-green.txt",
+      "status": "PASS",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "file": "mixed-generation-evidence-red.txt",
+      "status": "PASS",
+      "bytes": 7084,
+      "sha256": "569f62fba10b28dfe7db7041052ea5183f4c336deab9aa249c0384eb202179e9"
+    },
+    {
+      "file": "mixed-generation-evidence-regression-r2.txt",
+      "status": "PASS",
+      "bytes": 181,
+      "sha256": "fbc6f819d74d37689a854c126f532d690009a09d169f5d2ad4ab334a5362b9b0"
+    },
+    {
+      "file": "mixed-generation-evidence-regression.txt",
+      "status": "PASS",
+      "bytes": 3039,
+      "sha256": "091d1a880660b7cb5af8ed9d8821abe8cc66e1cb174f13d31cac2389df33a042"
+    },
+    {
+      "file": "records-commit-helper-closeout-regression.txt",
+      "status": "PASS",
+      "bytes": 116,
+      "sha256": "2336260901c22056126da51d573535eed501e30729700d6ac6d633a79e8e1b8f"
+    },
+    {
+      "file": "records-commit-helper-green-r2.txt",
+      "status": "PASS",
+      "bytes": 758,
+      "sha256": "3fdcc19244411a6cb924d0123ac9b79ab3cc90600d31b27fdf7de82c5e2ad65a"
+    },
+    {
+      "file": "records-commit-helper-green.txt",
+      "status": "PASS",
+      "bytes": 570,
+      "sha256": "525dff11dc9e3e769b4c3f3106bce8e17de6e17c2be802548899c1f824663b38"
+    },
+    {
+      "file": "records-commit-helper-red-r2.txt",
+      "status": "PASS",
+      "bytes": 2061,
+      "sha256": "c183b144ad40144ea32748fd3d081e8c0bfdc050d49e79a5c3a575f202f30c1b"
+    },
+    {
+      "file": "records-commit-helper-red-r3.txt",
+      "status": "PASS",
+      "bytes": 2472,
+      "sha256": "f7cba2fdddfdb8e68a53caa00b03114e4b4c5373d9a1d982132e3983ae24a433"
+    },
+    {
+      "file": "records-commit-helper-red.txt",
+      "status": "PASS",
+      "bytes": 16128,
+      "sha256": "cc51dc198e8a91159fce0051f11bf0f0c3f188f647872e7c90f73f3cf4a10104"
+    },
+    {
+      "file": "records-commit-helper-retention-green.txt",
+      "status": "PASS",
+      "bytes": 765,
+      "sha256": "5f704a1383c708718cc390d948f0358877623082a12ac9fa22c050f39e3d41c9"
+    },
+    {
+      "file": "records-commit-helper-retention-red.txt",
+      "status": "PASS",
+      "bytes": 11497,
+      "sha256": "0ee0841db6a6e95ae5e1aab14b6cb94f8096cc52e372848c254189c851215979"
+    },
+    {
+      "file": "sourceproof-runtime-green.txt",
+      "status": "PASS",
+      "bytes": 1638,
+      "sha256": "c7ec6f9a7ae0ffda3d5d9cd6af7a6add118711423d31b3487f7ced9af6bd988f"
+    },
+    {
+      "file": "sourceproof-runtime-red.txt",
+      "status": "PASS",
+      "bytes": 6271,
+      "sha256": "a1b78fb77e538173cae55c24188898efc8f0b315a2f538b9def153d96eb94b94"
+    },
+    {
+      "file": "sourceproof-runtime-regression.txt",
+      "status": "PASS",
+      "bytes": 99,
+      "sha256": "0212113f265e9e7d6b424f37d496976bc640bfa8ca5b2f3968b40e4000df3d03"
+    }
+  ],
+  "knownPrivateValuesChecked": 74
+}

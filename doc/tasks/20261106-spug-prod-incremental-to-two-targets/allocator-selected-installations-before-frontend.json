@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "TaskAllocatorInstallations/v1",
+  "targets": {
+    "58": "allocator-target-installation-58-r3.json",
+    "59": "allocator-target-installation-59.json"
+  },
+  "contracts": {
+    "58": "target-allocator-contract-58-r3.json",
+    "59": "target-allocator-contract-59.json"
+  }
+}

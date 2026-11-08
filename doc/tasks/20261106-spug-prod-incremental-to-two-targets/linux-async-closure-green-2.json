@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T21:33:22.306529+00:00",
+  "exitCode": 0,
+  "containerRemoved": true,
+  "inputFilesUnchanged": true,
+  "inputFiles": {
+    "backend/src/main/resources/recovery_control_smallapp.py": "9b17b2c97ce63e96bdf2da6125f4c3c182316c7bf3e76b9ec5ed63ecf4cadf88",
+    "backend/src/main/resources/recovery_control_smallapp_native.py": "084989b616638b2e6b537402e43d3b09a62e944058c6cf21a2bec6eb5d4e0ecb",
+    "backend/src/main/resources/recovery_control_incremental_plan.py": "f25ba6f0ae97ff34580013a688e784500bf398522d512ed65f3d56bb0a0944db",
+    "scripts/tests/test_automatic_incremental_async_closure.py": "7e537ec07779499c89cddb6de3ffff324f6679dfc090cf102be37bbc1e375911"
+  },
+  "outputSha256": "6cae872a5a73cd19be7ae7129a2dc8e883e94b7ff7eb3f59b7e1d9c3b2052230",
+  "tests": [
+    "test_automatic_incremental_async_closure.py"
+  ],
+  "workspaceReadOnly": true
+}

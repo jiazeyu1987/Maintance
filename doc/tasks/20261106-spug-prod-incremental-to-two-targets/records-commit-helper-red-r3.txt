@@ -1,0 +1,34 @@
+.usage: test_commit_records_contract.py [-h] --mode {acceptance,final}
+                                       --expected-head EXPECTED_HEAD
+                                       --selection SELECTION --receipt RECEIPT
+                                       [--finalization FINALIZATION]
+                                       [--execute]
+test_commit_records_contract.py: error: the following arguments are required: --expected-head
+............................E
+======================================================================
+ERROR: test_unselected_scope_does_not_read_file_contents (__main__.RecordCommitContract.test_unselected_scope_does_not_read_file_contents)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 252, in test_unselected_scope_does_not_read_file_contents
+    observed = MODULE.unrelated_files(self.root, set(), set())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\commit_records.py", line 218, in unrelated_files
+    return {name: pin(root/name) if (root/name).is_file() else {'absentOrNotRegular': True}
+                  ^^^^^^^^^^^^^^
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\commit_records.py", line 27, in pin
+    raw = Path(path).read_bytes()
+          ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\D01021\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\D01021\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\D01021\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py", line 1198, in _execute_mock_call
+    raise effect
+RuntimeError: UNRELATED_CONTENT_READ
+
+----------------------------------------------------------------------
+Ran 30 tests in 0.571s
+
+FAILED (errors=1)

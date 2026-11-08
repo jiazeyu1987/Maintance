@@ -1,0 +1,63 @@
+{
+  "status": "READ_ONLY",
+  "observedAt": "2026-11-08T03:00:41.985494+00:00",
+  "processes": [
+    {
+      "pid": 3707,
+      "comm": "sleep",
+      "exe": "/usr/bin/coreutils",
+      "argvBytes": 74,
+      "argvCount": 4,
+      "tokens": [
+        {
+          "bytes": 18,
+          "sha256": "5cbfe7cce1ddeb222a99f2806766d40791ee04f2031258c6a050688883152fe0"
+        },
+        {
+          "bytes": 30,
+          "sha256": "562898b47a55cde535e10bb866fea67db92a36966ea540467a8fd13664ed8efa"
+        },
+        "/usr/bin/sleep",
+        "infinity"
+      ]
+    },
+    {
+      "pid": 20891,
+      "comm": "sleep",
+      "exe": "/usr/bin/coreutils",
+      "argvBytes": 74,
+      "argvCount": 4,
+      "tokens": [
+        {
+          "bytes": 18,
+          "sha256": "5cbfe7cce1ddeb222a99f2806766d40791ee04f2031258c6a050688883152fe0"
+        },
+        {
+          "bytes": 30,
+          "sha256": "562898b47a55cde535e10bb866fea67db92a36966ea540467a8fd13664ed8efa"
+        },
+        "/usr/bin/sleep",
+        "infinity"
+      ]
+    },
+    {
+      "pid": 23542,
+      "comm": "sleep",
+      "exe": "/usr/bin/coreutils",
+      "argvBytes": 74,
+      "argvCount": 4,
+      "tokens": [
+        {
+          "bytes": 18,
+          "sha256": "5cbfe7cce1ddeb222a99f2806766d40791ee04f2031258c6a050688883152fe0"
+        },
+        {
+          "bytes": 30,
+          "sha256": "562898b47a55cde535e10bb866fea67db92a36966ea540467a8fd13664ed8efa"
+        },
+        "/usr/bin/sleep",
+        "infinity"
+      ]
+    }
+  ]
+}

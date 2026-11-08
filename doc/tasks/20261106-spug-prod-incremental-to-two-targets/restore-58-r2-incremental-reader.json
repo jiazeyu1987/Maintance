@@ -1,0 +1,8 @@
+{
+  "observedAt": "2026-11-07T04:57:30.736027+00:00",
+  "operationId": "smallapp-b4f35606e4854516960050a76473038b",
+  "fdEntriesExamined": 8,
+  "allMatchingWorkerFdsExamined": true,
+  "incrementalSqlReaders": [],
+  "wholeOperationProgressPercentageClaimed": false
+}

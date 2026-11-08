@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "TaskRestoreAttempts/v1",
+  "targets": {
+    "58": {
+      "kind": "restore-58-r4",
+      "predecessorKind": "restore-58-r3",
+      "predecessorOperationId": "smallapp-e61ca1c4b93f4aa3ab5a70eca399c36d",
+      "predecessorState": "FAILED_RETAINED",
+      "reason": "Actual packaged constructor binds the exact owner frontend profile; retain all three failures and consume the formal same-point clearance once"
+    },
+    "59": {
+      "kind": "restore-59"
+    }
+  }
+}

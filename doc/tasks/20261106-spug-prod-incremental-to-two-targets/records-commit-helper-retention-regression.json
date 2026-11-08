@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "TaskRecordsHelperRegression/v1",
+  "status": "PASS",
+  "observedAt": "2026-11-07T19:40:10.500478+00:00",
+  "totalTests": 49,
+  "suites": [
+    {
+      "test": "test_commit_records_contract.py",
+      "tests": 37,
+      "exitCode": 0
+    },
+    {
+      "test": "test_automatic_closeout_contracts.py",
+      "tests": 12,
+      "exitCode": 0
+    }
+  ],
+  "syntaxChecked": true,
+  "sourcePins": {
+    "commit_records.py": {
+      "bytes": 24461,
+      "sha256": "35ba6acc55468e389ec6bf57fb3d3a6287ac0828db223dbbffa78810dd618c28"
+    },
+    "test_commit_records_contract.py": {
+      "bytes": 19670,
+      "sha256": "31de655f053e1cf56b537b6abc28c9b8bc320030f4f262984dc359791aac3c35"
+    },
+    "records-commit-helper-plan.md": {
+      "bytes": 7903,
+      "sha256": "7cff051aa02832a4a4b7da1021e806a85203467ca87eebb6c0c06508d7711d7f"
+    },
+    "records-commit-helper-usage.md": {
+      "bytes": 6407,
+      "sha256": "b4c1926ec6dbf71063db8c5b8aef928bcc351cf03b51aa0b916dde37f9dd27b9"
+    }
+  },
+  "sourceUnchanged": true,
+  "gitState": {
+    "main": {
+      "head": "e2e89420851a57885f9c1ddf22ff1862916add83",
+      "indexPin": {
+        "bytes": 358652,
+        "sha256": "9a91d1bb5c528da42951804fe5e300e250ae7296a0454fcb814026abe7325946"
+      },
+      "headAndIndexUnchanged": true
+    },
+    "task": {
+      "head": "b5c8817de2b4cc5efdad566f0fb65fdabefcb8d8",
+      "indexPin": {
+        "bytes": 446505,
+        "sha256": "98adfaaee4568ef6703537cd0033657f853e4a57504b0918f7b20dbd8293ed24"
+      },
+      "headAndIndexUnchanged": true
+    }
+  },
+  "scope": "local file/CLI and read-only observation contracts; explicit unit fixtures; no actual merge/finalization",
+  "disposition": "retained_with_preexisting_assets",
+  "realAssetObservation": "records-retained-assets-readonly-verification.json",
+  "gitWritesPerformed": false,
+  "serverOrBrowserAccess": false
+}

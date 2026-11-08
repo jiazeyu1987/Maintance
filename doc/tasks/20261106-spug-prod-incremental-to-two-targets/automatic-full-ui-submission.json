@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "AutomaticIncrementalUiSubmission/v1",
+  "kind": "FULL",
+  "attemptReservedAt": "2026-11-07T17:42:38.005Z",
+  "applicationId": "intruoyi-57-safe-20261024-v1",
+  "implementationCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+  "preflightSha256": "5904df4947b2b1ae0c4295c1c33a831e1e4030ceb103ae6fcd468a9f3424d47e",
+  "request": {
+    "schemaVersion": "SmallAppBackupUiRequest/v1",
+    "operationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "action": "FULL",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "parentChainRef": null,
+    "recoveryPointRef": null,
+    "targetConfigRef": null
+  },
+  "intent": {
+    "schemaVersion": "AutomaticIncrementalRequest/v1",
+    "operationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "applicationId": "intruoyi-57-safe-20261024-v1",
+    "planDigest": "d451ec544f50d50bcb4ec564543c6f8322ebf88d15230da7fa26ed175603d333"
+  },
+  "plan": {
+    "schemaVersion": "AutomaticIncrementalPlan/v1",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "state": "BASELINE_REQUIRED",
+    "reasonCode": "BACKUP_POINT_EPOCH_REQUIRED",
+    "parentChainRef": null,
+    "baseFullRef": null,
+    "generationId": null,
+    "chainDepth": 0,
+    "pointType": null,
+    "parentPointType": null,
+    "basePointType": null,
+    "finishedAt": null,
+    "baseFinishedAt": null,
+    "evidenceDigest": "2b5596ab3fd9c89a80ab833a62a4649baa6e14e039a5f0889b144b44a22c09e0",
+    "planDigest": "d451ec544f50d50bcb4ec564543c6f8322ebf88d15230da7fa26ed175603d333"
+  },
+  "status": "POST_ATTEMPT_RESERVED_OUTCOME_UNKNOWN"
+}

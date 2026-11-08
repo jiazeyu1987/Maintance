@@ -1,0 +1,116 @@
+{
+  "observedAt": "2026-11-07T19:22:33.033357+00:00",
+  "host": "172.30.30.59",
+  "pid": 5885,
+  "controlPin": {
+    "bytes": 2356,
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-59-frontend-9c93449.json",
+    "sha256": "db53eb56a638cb591298f1bb38ef8bc303b64ee679ab9639b9329dc923f6e6e1"
+  },
+  "ownerPin": {
+    "bytes": 23026,
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-frontend-9c93449.json",
+    "sha256": "12853a1def82fe0143f8916329638cb7b219fa17856a55b40c367ac988612ce5"
+  },
+  "actualReceiptPin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/target-installation.json",
+    "bytes": 1625,
+    "sha256": "73d7eed2d0366aa70efc96ca19f579ddc7f4d36412f7d56d0fe718c9e8010959"
+  },
+  "packages": [
+    {
+      "engine": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/engine-frontend-9c93449",
+      "packagePin": {
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/engine-frontend-9c93449/package.json",
+        "bytes": 13734,
+        "sha256": "9a476778f598078a768780609c1124cabd2e16698215f80fbd2d71e380d2eb8c"
+      },
+      "fileCount": 127,
+      "allMembersMatch": true
+    },
+    {
+      "engine": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/engine-automatic-0d44578",
+      "packagePin": {
+        "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/engine-automatic-0d44578/package.json",
+        "bytes": 14048,
+        "sha256": "59fa91c63f835757cec3047ab36d50854da66b6a6533408d4daa9c79f01b32a2"
+      },
+      "fileCount": 130,
+      "allMembersMatch": true
+    }
+  ],
+  "epochRoot": "/mnt/intruoyi-data/spug-backup-epochs/intruoyi-main-59",
+  "epochRootExists": true,
+  "epochRootMode": 448,
+  "epochEntries": [],
+  "stage": {
+    "candidateOwner": {
+      "exists": false,
+      "actualPin": null
+    },
+    "candidateControl": {
+      "exists": false,
+      "actualPin": null
+    },
+    "previousReceiptArchive": {
+      "exists": false,
+      "actualPin": null
+    }
+  },
+  "newDropins": [],
+  "allRetainedPinsMatch": true,
+  "retainedCount": 1759,
+  "serverWrites": false,
+  "noControlApiCalled": true,
+  "noLedgerCalled": true,
+  "rolesComparedWithPriorObservation": {
+    "mysql": {
+      "sameId": true,
+      "sameImage": true,
+      "sameMounts": true,
+      "sameState": true,
+      "status": "running"
+    },
+    "minio": {
+      "sameId": true,
+      "sameImage": true,
+      "sameMounts": true,
+      "sameState": true,
+      "status": "running"
+    },
+    "redis": {
+      "sameId": true,
+      "sameImage": true,
+      "sameMounts": true,
+      "sameState": true,
+      "status": "running"
+    },
+    "backend": {
+      "sameId": true,
+      "sameImage": true,
+      "sameMounts": true,
+      "sameState": true,
+      "status": "running"
+    },
+    "frontend": {
+      "sameId": true,
+      "sameImage": true,
+      "sameMounts": true,
+      "sameState": true,
+      "status": "running"
+    }
+  },
+  "readonlyPhases": {
+    "replacement_value": {
+      "status": "PASS"
+    },
+    "validate_policy": {
+      "status": "PASS"
+    },
+    "read_current": {
+      "status": "FAIL",
+      "exceptionType": "ValueError",
+      "message": "BACKUP_EPOCH_UNINITIALIZED"
+    }
+  }
+}

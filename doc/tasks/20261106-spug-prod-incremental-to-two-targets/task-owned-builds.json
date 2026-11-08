@@ -1,0 +1,160 @@
+{
+  "schemaVersion": "TaskOwnedBuilds/v1",
+  "taskId": "20261106-spug-prod-incremental-to-two-targets",
+  "builds": [
+    {
+      "generation": "6319024",
+      "reportPin": {
+        "file": "release-build-6319024.json",
+        "bytes": 933,
+        "sha256": "5290f92de039b3af14c1236069ba2d484eae8078c00138fb74636f675628d237"
+      },
+      "targetCommit": "6319024c003ead602d59e7697673fa3c39807863",
+      "worktree": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-6319024",
+      "package": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\package-6319024\\backup-restore-standard.tgz",
+      "packageSha256": "2ca6238382a4a8847ed39d5de741500271a3a27beda37e4c2e4632f07f56285e",
+      "fileManifestSha256": "1e01d20fc96f3f86eff6c1ead874a48e5a9ae27568b6d036cba2dc2142aeeabe",
+      "fileCount": 126
+    },
+    {
+      "generation": "d487abf",
+      "reportPin": {
+        "file": "release-build-d487abf.json",
+        "bytes": 933,
+        "sha256": "84c22b0b2d8b066a9e100d7260a55bb6817fa3be2bc0734169c9022058bf77c0"
+      },
+      "targetCommit": "d487abf28ae38c2e6db445d8b888bf06b32df4e5",
+      "worktree": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-d487abf",
+      "package": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\package-d487abf\\backup-restore-standard.tgz",
+      "packageSha256": "0d2a24740f35b5035f2fd2a3a16b87374e577de1cfca84229c5bb7041c9bd321",
+      "fileManifestSha256": "7d9f5d1659bca8142cc8f73c697897626ce3d132938dc0130d56ad8b4b11f046",
+      "fileCount": 127
+    },
+    {
+      "generation": "9a65b5a",
+      "reportPin": {
+        "file": "release-build-9a65b5a.json",
+        "bytes": 933,
+        "sha256": "7d6cd99dc3de113be60eddebcb7f730c742381ae6f075f884346457ae6fa96c3"
+      },
+      "targetCommit": "9a65b5a6767cbb64d3f9668aa47bcc57229f0818",
+      "worktree": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-9a65b5a",
+      "package": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\package-9a65b5a\\backup-restore-standard.tgz",
+      "packageSha256": "3a16ce1991684a0334c30de390e2314226e56ddb90c2eeb1f6faeb4b89de9485",
+      "fileManifestSha256": "1be85b2b10602568d322ab8ef54c7a9488cdcecd4c0f041e25d9cb19e6c7b9b6",
+      "fileCount": 127
+    },
+    {
+      "generation": "701b442",
+      "reportPin": {
+        "file": "release-build-701b442.json",
+        "bytes": 933,
+        "sha256": "576ec1e505c1f0ef38a81350cb4e4f1851b3aa8f49d337c648feaa5b4c542365"
+      },
+      "targetCommit": "701b4422426d517f00aad23e71732b54c8b19724",
+      "worktree": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-701b442",
+      "package": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\package-701b442\\backup-restore-standard.tgz",
+      "packageSha256": "57803036bbe7c2f8bb26e39a7e03401ff7cba53ea88852f182d0a509dfdf58c0",
+      "fileManifestSha256": "e966eaaa9e685af23e74d113c0a1a848a7d911dfa149cf15d07327b1e6ec6cc1",
+      "fileCount": 127
+    },
+    {
+      "generation": "7c5f057",
+      "reportPin": {
+        "file": "release-build-7c5f057.json",
+        "bytes": 933,
+        "sha256": "d4f6c0513d4523502fe949ce23086dbdaba93ac4032689347c0687dd5b9b0b77"
+      },
+      "targetCommit": "7c5f0573e7e1ed7a54e42dbb614cb6e1f0a0534b",
+      "worktree": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-7c5f057",
+      "package": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\package-7c5f057\\backup-restore-standard.tgz",
+      "packageSha256": "1c165e23e8cbf5f726ee111e731a565e275ac15ee5cabb761c88b7b6ad5febf5",
+      "fileManifestSha256": "1c4d247c1bcedae848a0175aa29fd5091e5163a59a535368347b0522d38b8615",
+      "fileCount": 127
+    },
+    {
+      "generation": "9c93449",
+      "reportPin": {
+        "file": "release-build-9c93449.json",
+        "bytes": 933,
+        "sha256": "7e459fe743af650dd7f70b49ba604d267b8d57dd34a59b140ed1531db0a3338e"
+      },
+      "targetCommit": "9c93449e99ae0790c8678a570d78a98b61d96d87",
+      "worktree": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-9c93449",
+      "package": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\package-9c93449\\backup-restore-standard.tgz",
+      "packageSha256": "7a7894c659457a9826976aae3ed23d89c73cbb4d30051900bbec18a1b420fa6f",
+      "fileManifestSha256": "d2d3baf54ced075874c8048528964c4fa4bd3a12d7beaff0f3dd2d84676178df",
+      "fileCount": 127
+    },
+    {
+      "generation": "0c5828a",
+      "reportPin": {
+        "file": "release-build-0c5828a.json",
+        "bytes": 933,
+        "sha256": "92ed136423e04110e76964d982ba342e18b988c5881ef22a61e0502cd1e48772"
+      },
+      "targetCommit": "0c5828a63e387fe55594450bf2121cd4b31a7d8a",
+      "worktree": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-0c5828a",
+      "package": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\package-0c5828a\\backup-restore-standard.tgz",
+      "packageSha256": "d8549f202aa5b9642d9cf7e1dafcd46501054a6d04800badc31ffeab6a29eeb3",
+      "fileManifestSha256": "32a526664fdeedc421581474c97e1fc9d3bf937a49f9bc9c23a25f48aadf9d64",
+      "fileCount": 127
+    },
+    {
+      "generation": "3019c2e",
+      "reportPin": {
+        "file": "release-build-3019c2e.json",
+        "bytes": 933,
+        "sha256": "2730836fc6ac0496db51088cef79700ea82a769926d7e01cee9eb9b1b7e768ff"
+      },
+      "targetCommit": "3019c2ebe3e7db0cd607f1a170e5cfbe0879580d",
+      "worktree": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-3019c2e",
+      "package": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\package-3019c2e\\backup-restore-standard.tgz",
+      "packageSha256": "ec63c16372dd6e7be94bfa0c2df20775cfa4997502ad4218da3dbfb076cc11ee",
+      "fileManifestSha256": "f2ebdb6976d4f1ad2727be6321b19988cc53ba55d13b127a037f2e24348a4974",
+      "fileCount": 130
+    },
+    {
+      "generation": "0d44578",
+      "reportPin": {
+        "file": "release-build-0d44578.json",
+        "bytes": 933,
+        "sha256": "0272040d323356d179245605d6d4021f05f6afb839e4cd97bfcdb94ecbefde69"
+      },
+      "targetCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+      "worktree": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-0d44578",
+      "package": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\package-0d44578\\backup-restore-standard.tgz",
+      "packageSha256": "3d3d8a608e5a809b34cc6b5f48f5091b066bdcc5007d084459f3e333cad7010b",
+      "fileManifestSha256": "7f4dcc1dd4c292871b77e5c168e1d948d9c1f8925abc0902f9b54d17fae25b3b",
+      "fileCount": 130
+    },
+    {
+      "generation": "b5c8817",
+      "reportPin": {
+        "file": "release-build-b5c8817.json",
+        "bytes": 933,
+        "sha256": "5f8182be862cddeb83deaa4dd7cc025e2635b24af95be60a9256afd0c08ee273"
+      },
+      "targetCommit": "b5c8817de2b4cc5efdad566f0fb65fdabefcb8d8",
+      "worktree": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-b5c8817",
+      "package": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\package-b5c8817\\backup-restore-standard.tgz",
+      "packageSha256": "8a979934180d9aa500a9eddedd616949e08aaddba0c069f826fb6c3150ee95da",
+      "fileManifestSha256": "7f4dcc1dd4c292871b77e5c168e1d948d9c1f8925abc0902f9b54d17fae25b3b",
+      "fileCount": 130
+    },
+    {
+      "generation": "0dc7429",
+      "reportPin": {
+        "file": "release-build-0dc7429.json",
+        "bytes": 933,
+        "sha256": "9b9acdf602425e6c507f8143b9e95e35320fae1e140a975382ffe25016c4eb4e"
+      },
+      "targetCommit": "0dc7429d4758a208a5b0c098111fe9702ab63235",
+      "worktree": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-0dc7429",
+      "package": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\package-0dc7429\\backup-restore-standard.tgz",
+      "packageSha256": "f0184381f42f21a118463637a20d7066bdf2df04ead267d8dd20670f21b28869",
+      "fileManifestSha256": "b0c66653510b5c50599c4ab411289a19c27bd32d6892c7047fc3004ce5f8108f",
+      "fileCount": 130
+    }
+  ]
+}

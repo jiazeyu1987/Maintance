@@ -1,0 +1,67 @@
+{
+  "status": "READ_ONLY",
+  "observedAt": "2026-11-08T02:58:05.199209+00:00",
+  "originalErrorMarkers": {
+    "unsupported": false,
+    "invalid": false,
+    "option": false,
+    "-eo": false,
+    "comm": false,
+    "ps": true,
+    "exit status": false
+  },
+  "defaultTop": [
+    {
+      "id": "a7aa973f623ad07adb82c25f9b5f352db74a00ea2abf22a8fbd0b4db4cdfeb2f",
+      "exitCode": 0,
+      "stderrBytes": 0,
+      "columns": [
+        "UID",
+        "PID",
+        "PPID",
+        "C",
+        "STIME",
+        "TTY",
+        "TIME",
+        "CMD"
+      ],
+      "rows": 1,
+      "sleepOnly": false
+    },
+    {
+      "id": "43ee735bfd1f0d864819a2cd03e8f8ce54bd2b9a8430cc42671a4981f3d6a41a",
+      "exitCode": 0,
+      "stderrBytes": 0,
+      "columns": [
+        "UID",
+        "PID",
+        "PPID",
+        "C",
+        "STIME",
+        "TTY",
+        "TIME",
+        "CMD"
+      ],
+      "rows": 1,
+      "sleepOnly": false
+    },
+    {
+      "id": "69e7bec0183a7d510942c06a4c85fd2f1663815b982f26226779b03ef776246c",
+      "exitCode": 0,
+      "stderrBytes": 0,
+      "columns": [
+        "UID",
+        "PID",
+        "PPID",
+        "C",
+        "STIME",
+        "TTY",
+        "TIME",
+        "CMD"
+      ],
+      "rows": 1,
+      "sleepOnly": false
+    }
+  ],
+  "mutationDispatched": false
+}

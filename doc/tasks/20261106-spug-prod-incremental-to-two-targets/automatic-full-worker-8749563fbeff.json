@@ -1,0 +1,83 @@
+{
+  "observedAt": "2026-11-07T18:27:15.124107+00:00",
+  "operationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+  "processes": [
+    {
+      "pid": 16595,
+      "ppid": 18863,
+      "comm": "docker",
+      "state": "S (sleeping)",
+      "wchan": "0",
+      "io": "rchar: 22679\nwchar: 3274\nsyscr: 48\nsyscw: 7\nread_bytes: 0\nwrite_bytes: 0\ncancelled_write_bytes: 0\n",
+      "commandSha256": "89f4a4678547c6bd2b08ddd203d71ffe46a4d1c8165f117dc2d89a9c655f7325",
+      "fds": [
+        {
+          "fd": "0",
+          "kind": "pipe"
+        },
+        {
+          "fd": "1",
+          "kind": "pipe"
+        },
+        {
+          "fd": "2",
+          "kind": "pipe"
+        },
+        {
+          "fd": "5",
+          "kind": "pipe"
+        },
+        {
+          "fd": "6",
+          "kind": "pipe"
+        },
+        {
+          "fd": "7",
+          "kind": "socket"
+        },
+        {
+          "fd": "8",
+          "kind": "socket"
+        },
+        {
+          "fd": "9",
+          "kind": "socket"
+        }
+      ]
+    },
+    {
+      "pid": 18863,
+      "ppid": 18846,
+      "comm": "python3.12",
+      "state": "S (sleeping)",
+      "wchan": "do_epoll_wait",
+      "io": "rchar: 28622496265\nwchar: 30375866574\nsyscr: 1554200\nsyscw: 682432\nread_bytes: 2098552832\nwrite_bytes: 17886580736\ncancelled_write_bytes: 1464012800\n",
+      "commandSha256": "9deea6d93d76bb944f5827c5af3d831add2e0783a52e9d0d1304c52d8128e5ca",
+      "fds": [
+        {
+          "fd": "2",
+          "name": "worker-stderr.log",
+          "position": 0
+        },
+        {
+          "fd": "4",
+          "kind": "socket"
+        },
+        {
+          "fd": "6",
+          "name": "tokens.tsv",
+          "position": 0
+        },
+        {
+          "fd": "9",
+          "kind": "pipe"
+        },
+        {
+          "fd": "11",
+          "kind": "pipe"
+        }
+      ]
+    }
+  ],
+  "serverWrites": false
+}

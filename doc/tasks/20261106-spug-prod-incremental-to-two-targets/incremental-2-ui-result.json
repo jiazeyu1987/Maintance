@@ -1,0 +1,36 @@
+{
+  "startedAt": "2026-11-06T14:19:14.152Z",
+  "realBrowser": true,
+  "realLogin": true,
+  "writes": 1,
+  "blocked": [],
+  "httpFailures": [],
+  "pageErrors": [],
+  "stage": "final-submit",
+  "parent": "smallapp-7fec29a3e132463096aec915c08acab3",
+  "ready": "已自动关联该来源最近一条可用备份链。",
+  "confirmation": "IntRuoyi · 增量备份 · 正式服务器　172.30.30.57 · 安全模式 · 完整核验 NAS：\\\\172.30.30.4\\IT共享\\Backup\\BackupPackage 来源：intruoyi-57-safe-20261024-v1 备份类型：增量备份 父链：smallapp-7fec29a3e132463096aec915c08acab3",
+  "request": {
+    "schemaVersion": "SmallAppBackupUiRequest/v1",
+    "operationId": "smallapp-e7cee19e7f4b464eacdfe11b712aec17",
+    "action": "INCREMENTAL",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "parentChainRef": "smallapp-7fec29a3e132463096aec915c08acab3",
+    "recoveryPointRef": null,
+    "targetConfigRef": null
+  },
+  "httpStatus": 202,
+  "spugHistoryId": null,
+  "result": {
+    "schemaVersion": "SmallAppBackupUiResult/v1",
+    "operationId": "smallapp-e7cee19e7f4b464eacdfe11b712aec17",
+    "action": "INCREMENTAL",
+    "state": "RUNNING",
+    "errorCode": "SPUG_DISPATCH_RESERVED",
+    "logRefs": [],
+    "resultRef": null
+  },
+  "dispatchErrorCode": null,
+  "status": "PASS",
+  "finishedAt": "2026-11-06T14:19:52.509Z"
+}

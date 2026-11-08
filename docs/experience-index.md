@@ -206,6 +206,7 @@
 - Keywords: Get-FileHash uppercase, sha256 lowercase, artifact hash false mismatch, r260731c hash assertion -> `docs/release-build-preflight-lessons.md#2026-07-10-manifest-artifact-sha256-前缀门禁`
 - Keywords: runtime-control Linux powershell.exe, 运维矩阵 ERROR unknown, release-status current tag null, release-info 版本变更说明 -> `docs/release-build-preflight-lessons.md`
 - Keywords: PowerShell pipe Python Node 中文问号, subprocess text CRLF ssh bash, $LASTEXITCODE stderr, $Args automatic variable -> `docs/powershell-preflight-lessons.md`
+- Keywords: Python subprocess Get-FileHash CommandNotFoundException, PSModulePath, PSHOME, PowerShell 5.1混入7模块, Utility显式导入 -> `docs/powershell-preflight-lessons.md#Python子进程与混合PowerShell模块搜索路径`
 - Keywords: PowerShell heredoc, Missing file specification after redirection operator, Bash heredoc <<, python -c newline, U+FEFF BOM stdin, Playwright 中文正则, rg -- lookahead, preview 参数 flag 错位, -RequireTested, 脱敏误伤 ruoyi-vue-pro, -ProdServerHost -> `docs/powershell-preflight-lessons.md`，标题“2026-07-13 PowerShell 发布脚本承载、参数解析与证据脱敏门禁”
 - Keywords: ssh -n bash -s, Windows text mode CRLF, binary stdin, remote MySQL heredoc, release lock empty query, migration failed count -> `docs/powershell-preflight-lessons.md#2026-07-13-ssh-stdinwindows-二进制-lf-与远端-sql-验收门禁`
 - Keywords: post_failure_probe.py, set pipefail CRLF, Windows text mode stdin, release post-failure probe r260806b, UTF-8 bytes LF stdin -> `docs/powershell-preflight-lessons.md#2026-07-10-windows-subprocess-向-ssh-bash-标准输入必须禁用-crlf-转换`

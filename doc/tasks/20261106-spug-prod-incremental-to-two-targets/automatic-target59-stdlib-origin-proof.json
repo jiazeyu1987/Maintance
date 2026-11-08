@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "python": "3.12.7",
+  "stdlib": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/tools/python/lib/python3.12",
+  "dependencyOrigins": {
+    "datetime": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/tools/python/lib/python3.12/datetime.py",
+    "hashlib": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/tools/python/lib/python3.12/hashlib.py",
+    "json": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/tools/python/lib/python3.12/json/__init__.py",
+    "os": "frozen",
+    "pathlib": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/tools/python/lib/python3.12/pathlib.py",
+    "re": "/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/tools/python/lib/python3.12/re/__init__.py",
+    "stat": "frozen",
+    "sys": "built-in",
+    "fcntl": "built-in"
+  },
+  "serverWrites": false,
+  "noLedgerCalled": true,
+  "noControlApiCalled": true
+}

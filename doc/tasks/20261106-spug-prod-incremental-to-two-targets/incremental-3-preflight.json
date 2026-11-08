@@ -1,0 +1,47 @@
+{
+  "status": "PASS",
+  "failedPointNotPublished": true,
+  "failedOriginalPinsVerified": 9128,
+  "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+  "eventScheduler": "ON",
+  "readOnly": "0",
+  "superReadOnly": "0",
+  "actualNativeBinlogTransportVerified": true,
+  "probeOutputBytes": 589,
+  "probeOutputSha256": "46d5cf6528b80403491e2d7560111971b0efac7de573ff6538d918bb67ac5cef",
+  "businessDataChanged": false,
+  "observedAt": "2026-11-06T18:28:29.506210+00:00",
+  "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+  "parentChainRef": "smallapp-7fec29a3e132463096aec915c08acab3",
+  "parentPointPin": {
+    "bytes": 6263032,
+    "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-433710bb8eb93e78351878966cb06caec1c420e87ef3d5c8dff9c493dc085eb9/.repository/point.json",
+    "sha256": "28e5f6023ad2e5aa5d3a340b4ede1dc249d98deb8fb9704db68b968cb4b8b4f7"
+  },
+  "installedModulePin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-incremental-parent-d487abf/formal/formal_binlog_scope.py",
+    "bytes": 24046,
+    "sha256": "585e84d8acfa1587babb2c0486bec5198376d3973b22a076ef97a04db7fd23cd"
+  },
+  "auditedStart": {
+    "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+    "executedGtidSet": "",
+    "file": "binlog.000021",
+    "position": 23582326,
+    "serverVersion": "8.0.39"
+  },
+  "auditedEnd": {
+    "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+    "serverVersion": "8.0.39",
+    "file": "binlog.000032",
+    "position": 917903585,
+    "executedGtidSet": ""
+  },
+  "binlogBytes": 12713719101,
+  "sourceCommit": "d487abf28ae38c2e6db445d8b888bf06b32df4e5",
+  "originalFailedOperations": [
+    "smallapp-a690233d967d4965bf5f861dc1126961",
+    "smallapp-e7cee19e7f4b464eacdfe11b712aec17"
+  ],
+  "strictInstalledBinlogToolVerified": true
+}

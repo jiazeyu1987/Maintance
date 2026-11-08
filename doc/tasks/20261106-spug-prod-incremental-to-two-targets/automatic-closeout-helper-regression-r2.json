@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "TaskLocalHelperRegression/v1",
+  "status": "PASS",
+  "observedAt": "2026-11-07T18:46:55.922825+00:00",
+  "pythonTests": 12,
+  "nodeTests": 2,
+  "testCount": 14,
+  "exitCodes": [
+    0,
+    0,
+    0
+  ],
+  "pythonSyntaxVerified": true,
+  "embeddedLinuxSyntaxVerified": true,
+  "realBrowserExecuted": false,
+  "remoteReadDispatched": false,
+  "remoteWriteDispatched": false,
+  "cleanupExecuted": false,
+  "files": {
+    "closeout_contracts.py": {
+      "bytes": 20628,
+      "sha256": "f7550b145d4df0509e820a349c6c8395475230970061e04a48de33a7a5bf5933"
+    },
+    "cleanup_owned_build.py": {
+      "bytes": 6611,
+      "sha256": "0f275e55e4d75b8d3747f13ddad816ebda753ebd811424946d337912f5476359"
+    },
+    "verify_closeout.py": {
+      "bytes": 20572,
+      "sha256": "a39dfadd4edba7df4b546b36a11a9cc0db32ff03b83348d405197903b278efd6"
+    },
+    "verify_stable_controls.py": {
+      "bytes": 16199,
+      "sha256": "921c784ab14b56d87174f12f928a553d7e07324afe418816303785cd0f4d5b93"
+    },
+    "catalogue_current_verification.py": {
+      "bytes": 5793,
+      "sha256": "39c72e45823eb114977ebd899f11859898e08590ce0a37e4e4cf8db9b38c5734"
+    },
+    "test_automatic_closeout_contracts.py": {
+      "bytes": 8476,
+      "sha256": "36d43df2b6524aba808fed03c51de60bcd9178bb166db91770559bda75f80534"
+    },
+    "verify_catalogue_identity_readonly.cjs": {
+      "bytes": 12574,
+      "sha256": "e1fb8cec420be2406a4841b1cc52600aaec70238e32641adb5ead676bea876a8"
+    },
+    "catalogue_login_contract.test.cjs": {
+      "bytes": 2038,
+      "sha256": "49913fd759f34db0aadc69698bb26d7747452b30ca2a559fd204b46a5145b32e"
+    }
+  }
+}

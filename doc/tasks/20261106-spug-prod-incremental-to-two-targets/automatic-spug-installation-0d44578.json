@@ -1,0 +1,71 @@
+{
+  "status": "PASS",
+  "sourceCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+  "containerId": "f615a60c76f46e4f6ae20ea6298f737fb9786684ce941fcc15763654461265bf",
+  "runtime": "C:\\Spug\\runtime\\ops\\spug",
+  "previousEntryPid": 51336,
+  "files": {
+    "smallapp_entry.py": {
+      "beforeSha256": "8a8cb8df587b7b54b0919d20cc3ca61468ab357b2aa2f7e42953e3fed504cfb1",
+      "installedSha256": "58f5b25118e102c24d30daedfbb71ca7f7570d8b6bbe1be317f638a16becbff2",
+      "bytes": 43914
+    },
+    "smallapp_adapter.py": {
+      "beforeSha256": "d73bfbdc52d639112a978ea201be817992ed289ac1c770d6e4a0e9d5e922ac9f",
+      "installedSha256": "a8548b06814254ba7038dad61e744e94882722e690e5c5ecc056e37ae89c8f25",
+      "bytes": 29652
+    },
+    "smallapp-entry.locations.conf": {
+      "beforeSha256": "d29f53fbacdaee90c9c7beae060cd083e7fdad9c445806a321bfff6e29de189a",
+      "installedSha256": "c8c2ce3a39483007b4041c09c1c460d21a3fd7e0e0d1da6c0f2be5664e3b9ae7",
+      "bytes": 1619
+    },
+    "smallapp-ui/app.js": {
+      "beforeSha256": "d9b1b3b20c47606a1c356debc089e099df18e288d078a64062351d19ca61f5ae",
+      "installedSha256": "13ed77c29af01f7885583994c11ba4d0119d359561ebd80228fee95ab7bc0044",
+      "bytes": 31166
+    },
+    "smallapp-ui/simple.js": {
+      "beforeSha256": "11d4009207eb32311768105d0619ca50feba02e820d49a9eecc47c7cad90069b",
+      "installedSha256": "8979c67f854a187c69504ebab39aad81bd85e85f196053ccbdda3c0985b8a21f",
+      "bytes": 32633
+    },
+    "smallapp-ui/index.html": {
+      "beforeSha256": "4f8c72147366e9aeb293443124191d9b253345ed22af5916ff76170032e1acaf",
+      "installedSha256": "2f70a7e09c631d9cf16a94368cdfc4dec9f4fe4acc4b5e9ac26461adb0c73a07",
+      "bytes": 13662
+    },
+    "smallapp-ui/simple.css": {
+      "beforeSha256": "41330aef7aa3ff7ad0ac6da9866577d745482caa1566fdd84df937629daaaec1",
+      "installedSha256": "41330aef7aa3ff7ad0ac6da9866577d745482caa1566fdd84df937629daaaec1",
+      "bytes": 3002
+    },
+    "smallapp-ui/embedded.js": {
+      "beforeSha256": "ee3b61a49dab913fa81917d628df9efa73140c6ad11ac8b1faceaa3445133292",
+      "installedSha256": "74d68630f1d3dca5d5b9d955c4546848166889ccfdf0506b4145cfcb900ee075",
+      "bytes": 526
+    },
+    "smallapp-ui/embedded.css": {
+      "beforeSha256": "22cebbc16317b4439f77effbd9f776dda9e20ccd3a5136f278ee3e89306a0faa",
+      "installedSha256": "2444c102474801e9b1326424d392d2258a791bdb7404d001038a17f18972be2a",
+      "bytes": 294
+    },
+    "smallapp-ui/package-catalog.js": {
+      "beforeSha256": "85b515816f44da2bc14c6f028a39120251ac454c785d0e7cda4a524ae6b493c1",
+      "installedSha256": "a1a0b8db2ff04a669c7d1910f330e5ddc1a6838d7681cca04fb975d26d9dd81a",
+      "bytes": 14878
+    },
+    "smallapp-ui/package-catalog.css": {
+      "beforeSha256": "72e60108cd071166405b3febd5d72d296bf357f96ed3e433f89823f23afb715c",
+      "installedSha256": "6c5a692d91887ecacda2733be1008fb66fdd3d80674429c51ae8f6842b2fcc98",
+      "bytes": 5542
+    }
+  },
+  "observedAt": "2026-11-07T17:25:28.317330+00:00",
+  "newEntryPid": 124978,
+  "oldFilesPreserved": true,
+  "nginxConfigurationTested": true,
+  "sharedServiceRestarted": false,
+  "backupPerformed": false,
+  "restorePerformed": false
+}

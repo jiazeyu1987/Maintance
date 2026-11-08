@@ -1,0 +1,103 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T06:27:54.475036+00:00",
+  "host": "172.30.30.58",
+  "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+  "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+  "recoveryPointRef": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+  "pointPin": {
+    "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-bd88deb7f4cdde27db6e9e3439e4fef04ce932bf3b84380f12c04f9e7c751d25/.repository/point.json",
+    "bytes": 25535,
+    "sha256": "ab92f1148146eae84e6828c87245b8dd330b6d534cdeff2a81eeddf26cb96b1f"
+  },
+  "orderedChainPins": [
+    {
+      "bytes": 6263032,
+      "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-433710bb8eb93e78351878966cb06caec1c420e87ef3d5c8dff9c493dc085eb9/.repository/point.json",
+      "sha256": "28e5f6023ad2e5aa5d3a340b4ede1dc249d98deb8fb9704db68b968cb4b8b4f7"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-bd88deb7f4cdde27db6e9e3439e4fef04ce932bf3b84380f12c04f9e7c751d25/.repository/point.json",
+      "bytes": 25535,
+      "sha256": "ab92f1148146eae84e6828c87245b8dd330b6d534cdeff2a81eeddf26cb96b1f"
+    }
+  ],
+  "archiveEvidencePinsChecked": 12,
+  "ownerConfigurationPin": {
+    "bytes": 21051,
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-frontend-9c93449.json",
+    "sha256": "516b1d9ec704df7ed2fd87d03ba315280c29715ff62632182ca366dfd60663b3"
+  },
+  "controlConfigurationPin": {
+    "bytes": 2435,
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-58-frontend-9c93449.json",
+    "sha256": "c39ca6cc9559b02b491bb4795640843fdc01e33a7f99470a646f4335235d11ae"
+  },
+  "dataLimits": {
+    "max_bytes": 17179869184,
+    "max_nodes": 100000000,
+    "max_rows": 10000000,
+    "seconds": 7200
+  },
+  "maxExpandedBytes": 68719476736,
+  "packageFileCount": 127,
+  "packageFilesMatch": true,
+  "runtimeAndStorageVerified": true,
+  "canonicalArchiveReadOnly": true,
+  "backendHealth": null,
+  "frontendHttp": null,
+  "targetFreeBytes": 901417037824,
+  "activeReservation": false,
+  "liveMaxOpenFiles": 65536,
+  "database": {
+    "uuid": "20ca4c6c-cc31-11f1-9b95-0242ac1deb16",
+    "version": "8.0.39",
+    "eventScheduler": "OFF",
+    "readOnly": "0",
+    "superReadOnly": "0"
+  },
+  "services": [
+    {
+      "role": "mysql",
+      "id": "b4592b704b979f1b94ba03836985491a8f7c699d3094297bfbe3696939eedd79",
+      "image": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+      "startedAt": "2026-11-05T01:51:30.916478688Z"
+    },
+    {
+      "role": "minio",
+      "id": "98216faac1ae2fc1508bd4076962bf4cfcb3a47f2f1bd5d5e42c7ba819e83115",
+      "image": "sha256:c4260bcf2c25b683e4f6e6ed6474f12c5c28dc8e375bfe0ecea7a5d3fbecbc04",
+      "startedAt": "2026-11-05T10:41:42.537848196Z"
+    },
+    {
+      "role": "redis",
+      "id": "028bb0541d3216c283c5f1822338462545fa7cd63fad55c462ae20a01526e225",
+      "image": "sha256:487efc0616382465781b8fdc3d6d1db449e6fd80ae23bf48432a2da6b6929908",
+      "startedAt": "2026-11-05T01:52:49.476812788Z"
+    },
+    {
+      "role": "backend",
+      "id": "6f70e67078d086d7f08c1ae75a80bb0feab28c5a1f92c91d655ac258f34988eb",
+      "image": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+      "startedAt": "2026-11-05T10:52:47.882899354Z"
+    },
+    {
+      "role": "frontend",
+      "id": "4f9775e6f0a1d86b2d06c69e40504a91cf44a613de458b76e69fa04805ca5d73",
+      "image": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a",
+      "startedAt": "2026-11-05T10:56:11.580646446Z"
+    }
+  ],
+  "nativeSqlMemoryHeadroom": {
+    "availableBytes": 29120974848,
+    "rawIncrementalSqlBytes": 17213672502,
+    "reservedOtherBytes": 4294967296,
+    "verified": true
+  },
+  "retainedQuiescedAdmission": true,
+  "retainedClearancePin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/replacement-state/smallapp-b4f35606e4854516960050a76473038b/recovery-clearance.json",
+    "bytes": 3263,
+    "sha256": "025c123be6082f16fd1e02229fc2394112328f04593b171cefb276c93adf1935"
+  }
+}

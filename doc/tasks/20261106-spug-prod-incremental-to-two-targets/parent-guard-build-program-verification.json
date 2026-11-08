@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T18:17:42.826798+00:00",
+  "sourceCommit": "d487abf28ae38c2e6db445d8b888bf06b32df4e5",
+  "packageSha256": "0d2a24740f35b5035f2fd2a3a16b87374e577de1cfca84229c5bb7041c9bd321",
+  "fileManifestSha256": "7d9f5d1659bca8142cc8f73c697897626ce3d132938dc0130d56ad8b4b11f046",
+  "pythonProgramsVerified": 127,
+  "allTestedInputsUnchanged": true,
+  "allProgramASTsEqual": true,
+  "onlyGitCheckoutLineEndingDifferences": [
+    "control/recovery_control_restore_catalogue.py",
+    "formal/formal_capture_parent_guard.py",
+    "common/recovery_main_target.py",
+    "common/recovery_mysql_scheduler.py",
+    "common/recovery_main_health.py",
+    "common/recovery_published_fence.py",
+    "common/recovery_archive_view.py",
+    "common/recovery_replacement_storage.py",
+    "common/recovery_retained_retry.py"
+  ],
+  "rawBytesAllEqual": false
+}

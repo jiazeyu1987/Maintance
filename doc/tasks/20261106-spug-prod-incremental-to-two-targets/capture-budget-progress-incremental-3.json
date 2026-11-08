@@ -1,0 +1,17 @@
+{
+  "observedAt": "2026-11-06T19:01:21.775292+00:00",
+  "operationId": "smallapp-eb990891100642db8859439d741c0fc9",
+  "captureWorkSeconds": 43200,
+  "totalParentContents": 4920,
+  "totalParentContentBytes": 8191188264,
+  "activeParentContentReads": [
+    {
+      "pid": 29515,
+      "ordinal": 1452,
+      "contentSha256": "4cce89513c6f80518da5ca44286c1edd3f791bb8708c304ff2e7dfa300a7690e",
+      "bytes": 3479618,
+      "position": 1048576,
+      "precedingContentBytes": 2957224916
+    }
+  ]
+}

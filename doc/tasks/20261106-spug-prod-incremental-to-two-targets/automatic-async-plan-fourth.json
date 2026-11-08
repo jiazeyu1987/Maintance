@@ -1,0 +1,149 @@
+{
+  "status": "OBSERVED",
+  "observedAt": "2026-11-07T21:48:17.448127+00:00",
+  "plan": {
+    "schemaVersion": "AutomaticIncrementalPlan/v1",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "state": "READY",
+    "reasonCode": null,
+    "parentChainRef": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "baseFullRef": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "generationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "chainDepth": 1,
+    "pointType": "FULL",
+    "finishedAt": "2026-11-07T21:05:37.900272Z",
+    "baseFinishedAt": "2026-11-07T21:05:37.900272Z",
+    "basePointType": "FULL",
+    "parentPointType": "FULL",
+    "evidenceDigest": "1f83f32e4b517515bb9b2bfaf9c982622493bf9406edd5eee2452ec6828c5b19",
+    "planDigest": "2077b0149d904421439530d2cb5d33f9e2245809d66f1df1955d26226c216303"
+  },
+  "elapsedSeconds": 7.923554770997725,
+  "phases": [
+    {
+      "phase": "configuration",
+      "seconds": 0.10175034499843605
+    },
+    {
+      "phase": "configuration",
+      "seconds": 0.09563807200174779
+    },
+    {
+      "phase": "registration",
+      "seconds": 0.09688770401407965
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+      "closed": true,
+      "seconds": 0.010829848994035274
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+      "closed": true,
+      "seconds": 0.04303958799573593
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-3f29a2b1324045309478a3a597654260",
+      "closed": true,
+      "seconds": 0.009814120014198124
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+      "closed": true,
+      "seconds": 0.010197897994657978
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-76d73ea28c424caa90adc75ab1ac4206",
+      "closed": true,
+      "seconds": 0.049482464004540816
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-7fec29a3e132463096aec915c08acab3",
+      "closed": true,
+      "seconds": 0.006959808000829071
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-9d0b52af727045efb92e490a68329a22",
+      "closed": true,
+      "seconds": 0.022658022004179657
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-a54a05be9dab45e490a3979551536b0c",
+      "closed": true,
+      "seconds": 0.03546747801010497
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-a690233d967d4965bf5f861dc1126961",
+      "closed": true,
+      "seconds": 0.007804975990438834
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-abbd6341ab7a4318973434f48020b287",
+      "closed": true,
+      "seconds": 0.032248960982542485
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+      "closed": true,
+      "seconds": 0.006848977005574852
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-bc3a610cf70345538e2dcd783893a6ed",
+      "closed": true,
+      "seconds": 0.06447967200074345
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-e7cee19e7f4b464eacdfe11b712aec17",
+      "closed": true,
+      "seconds": 0.06324412999674678
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-eb990891100642db8859439d741c0fc9",
+      "closed": true,
+      "seconds": 0.01511496098828502
+    },
+    {
+      "phase": "async-closure",
+      "operationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+      "closed": true,
+      "seconds": 0.006351988995447755
+    },
+    {
+      "phase": "source_epoch",
+      "seconds": 0.0027648420073091984
+    },
+    {
+      "phase": "incremental_source_observation",
+      "seconds": 1.3332390080031473
+    },
+    {
+      "phase": "source_epoch",
+      "seconds": 0.002154660993255675
+    }
+  ],
+  "codeSha256": {
+    "ledger": "1b0456126289ef2e501f612b40a009fa65e82e9441cb29d754863065a9d8366c",
+    "native": "34b905e69b8bb14b8aa9c695dc4dc5919ad7649c50f3329b027c21b6b1ab1c3a"
+  },
+  "serverWrites": false,
+  "reconcileCalls": 0,
+  "candidateLoadedInMemoryOnly": true,
+  "pinReadCalls": 312,
+  "pinReadBytes": 415155120,
+  "pinReadSeconds": 4.338777273282176,
+  "readbackReads": 1
+}

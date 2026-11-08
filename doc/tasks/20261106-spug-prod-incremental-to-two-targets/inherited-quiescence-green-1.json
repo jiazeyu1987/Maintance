@@ -1,0 +1,22 @@
+{
+  "observedAt": "2026-11-07T05:36:49.370073+00:00",
+  "phase": "green",
+  "actualExitCode": 0,
+  "expectedResultObserved": true,
+  "containerRemoved": true,
+  "tests": [
+    "scripts/tests/test_retained_replacement_retry.py"
+  ],
+  "outputSha256": "6eabcca4592a05c8add86cad8d54cac52b3c3e54fd3b6a962b28a2ae92d7b0fc",
+  "testedInputSha256": {
+    "ops/backup_engine/formal/formal_schema_evidence.py": "573b37a21d373e5b14ae18bc6eaa910fb7227d3ddb797846399465ec50ab9ac7",
+    "ops/recovery/recovery_data.py": "c463ae3054858731bbbda9c3bebbbf9236e9a0243674bae5574d7e8d5350da67",
+    "ops/recovery/recovery_minimal_runtime.py": "6e01a9600703a22b27a6928b4533f68dfdf8fb8665cbdf0180ee7c5dcc7775ea",
+    "ops/recovery/recovery_main_health.py": "f90c3bf39cbb9d49f28681d471e7d8468483a323ac47cfb40611fd62f06e7b5d",
+    "ops/recovery/recovery_retained_retry.py": "80cd42b2638113c8b57a23173e77a98a3605df0683fe4100e677f16b3e923720",
+    "ops/backup_engine/standard_fixes.py": "e294084345dcd582459941747c78620a3a6aab459cfc49f8690a5cbeec1ce6a2",
+    "scripts/tests/test_retained_replacement_retry.py": "58e94390715035a8e6262e16476f206f380e3bdf0979aeff692656803dd2ab48"
+  },
+  "isolatedProcesses": true,
+  "inputFilesUnchanged": true
+}

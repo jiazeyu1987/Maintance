@@ -1,0 +1,173 @@
+{
+  "schemaVersion": "IntegrationThreeWayReview/v1",
+  "normalization": "UTF-8 decode, remove optional leading BOM and normalize CRLF to LF only; originals retained byte-for-byte; missing base is explicit absent add/add, not a reconstructed history",
+  "rows": [
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/execution-log.md",
+      "versions": {
+        "base": {
+          "exists": false,
+          "file": "overlap-1-base.original",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "main-head": {
+          "exists": true,
+          "file": "overlap-1-main-head.original",
+          "bytes": 25939,
+          "sha256": "d41c1a7877d07a853a0ab6e32868610838b41077aef007fe5706d810aa672540"
+        },
+        "task-head": {
+          "exists": true,
+          "file": "overlap-1-task-head.original",
+          "bytes": 42714,
+          "sha256": "7d95765866d0232b6799f8e82556cd49dee5e15512e8fc9063c6a4f68d35c1b8"
+        },
+        "main-worktree": {
+          "exists": true,
+          "file": "overlap-1-main-worktree.original",
+          "bytes": 26016,
+          "sha256": "a5e6f87f1245809f35d84a5d805a0d35ead371f1115b83325ac358789aceedff"
+        },
+        "task-worktree": {
+          "exists": true,
+          "file": "overlap-1-task-worktree.original",
+          "bytes": 42836,
+          "sha256": "0d2499c87e2322780676d64a3f3712236b08328e9a1735fa71f9a48fab3fb039"
+        }
+      },
+      "mainWorktreeEqualsHead": false,
+      "taskWorktreeEqualsHead": false,
+      "committedMerge": {
+        "exitCode": 1,
+        "conflictCount": 1,
+        "candidatePin": {
+          "file": "overlap-1-committed-merge.txt",
+          "bytes": 68700,
+          "sha256": "fa079af783f5c387e9685c933a9cb7be217549ac62c8910ec726cdc14c02b121"
+        }
+      },
+      "futureTaskMerge": {
+        "exitCode": 1,
+        "conflictCount": 1,
+        "candidatePin": {
+          "file": "overlap-1-future-task-merge.txt",
+          "bytes": 68700,
+          "sha256": "fa079af783f5c387e9685c933a9cb7be217549ac62c8910ec726cdc14c02b121"
+        }
+      }
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/task.md",
+      "versions": {
+        "base": {
+          "exists": false,
+          "file": "overlap-2-base.original",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "main-head": {
+          "exists": true,
+          "file": "overlap-2-main-head.original",
+          "bytes": 7794,
+          "sha256": "4e062f74bf7aa3c6fde748e699e6c849d64e7bb67ca3d8a153dfbf1a6dc75454"
+        },
+        "task-head": {
+          "exists": true,
+          "file": "overlap-2-task-head.original",
+          "bytes": 13072,
+          "sha256": "eb8b058eee6cce39cb8b7b9d593028605bd7d75ed808ebba571ed561ac276e00"
+        },
+        "main-worktree": {
+          "exists": true,
+          "file": "overlap-2-main-worktree.original",
+          "bytes": 7851,
+          "sha256": "5739a05b4f71f3e31483e6ada0247df7b908eb654e987e769b6ea14c364774ba"
+        },
+        "task-worktree": {
+          "exists": true,
+          "file": "overlap-2-task-worktree.original",
+          "bytes": 13150,
+          "sha256": "00f7f6a6bbc6b638a103aa8a98723ec151ea667fb4570af7c69a0ee5fa412a80"
+        }
+      },
+      "mainWorktreeEqualsHead": false,
+      "taskWorktreeEqualsHead": false,
+      "committedMerge": {
+        "exitCode": 1,
+        "conflictCount": 1,
+        "candidatePin": {
+          "file": "overlap-2-committed-merge.txt",
+          "bytes": 20913,
+          "sha256": "2cf39a081e727e0a6bd4a0bbcc22858bf4640aaeeb824fe73d59c9f1cf1b9d0b"
+        }
+      },
+      "futureTaskMerge": {
+        "exitCode": 1,
+        "conflictCount": 1,
+        "candidatePin": {
+          "file": "overlap-2-future-task-merge.txt",
+          "bytes": 20913,
+          "sha256": "2cf39a081e727e0a6bd4a0bbcc22858bf4640aaeeb824fe73d59c9f1cf1b9d0b"
+        }
+      }
+    },
+    {
+      "path": "docs/request-command-log.md",
+      "versions": {
+        "base": {
+          "exists": true,
+          "file": "overlap-3-base.original",
+          "bytes": 1200012,
+          "sha256": "88b5e5b4b774bdb28b69dac631de395cc7aeb06be8426d6f02a20249212edf96"
+        },
+        "main-head": {
+          "exists": true,
+          "file": "overlap-3-main-head.original",
+          "bytes": 1203126,
+          "sha256": "c482e696232bcc6c9baf08c15aee41ac70b3cb2a576623be4a1f72787ca9b0fd"
+        },
+        "task-head": {
+          "exists": true,
+          "file": "overlap-3-task-head.original",
+          "bytes": 1231438,
+          "sha256": "0b3ff50c4c6501ec8aee671c1c129a457ca448ba5438b0399fb8baafd7dcd592"
+        },
+        "main-worktree": {
+          "exists": true,
+          "file": "overlap-3-main-worktree.original",
+          "bytes": 1210931,
+          "sha256": "835553401940f3967c40b3ad8598c4fc5f11e2452be4c7264f338b3f6840a40d"
+        },
+        "task-worktree": {
+          "exists": true,
+          "file": "overlap-3-task-worktree.original",
+          "bytes": 1251078,
+          "sha256": "32ebadbfc81fc3d6f77ae6db32533ba4c6bde55800caa72e8212e83cb9c0262d"
+        }
+      },
+      "mainWorktreeEqualsHead": false,
+      "taskWorktreeEqualsHead": false,
+      "committedMerge": {
+        "exitCode": 1,
+        "conflictCount": 1,
+        "candidatePin": {
+          "file": "overlap-3-committed-merge.txt",
+          "bytes": 1234599,
+          "sha256": "96d37d84aa71d599eb1d62b722d98914c44cdefc7005b7821ec480f24b11b9ca"
+        }
+      },
+      "futureTaskMerge": {
+        "exitCode": 1,
+        "conflictCount": 1,
+        "candidatePin": {
+          "file": "overlap-3-future-task-merge.txt",
+          "bytes": 1248356,
+          "sha256": "93453efb0798182746a2893c1d41f93298ee96b66f73c2979c073f70573cbee4"
+        }
+      }
+    }
+  ],
+  "actualMainOrIndexModified": false,
+  "actualTaskHeadOrIndexModified": false
+}

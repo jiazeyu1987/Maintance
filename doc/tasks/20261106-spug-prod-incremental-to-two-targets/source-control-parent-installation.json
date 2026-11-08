@@ -1,0 +1,43 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T18:23:56.579003+00:00",
+  "sourceCommit": "d487abf28ae38c2e6db445d8b888bf06b32df4e5",
+  "service": "spug-intruoyi-source-57-20261105.service",
+  "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+  "oldControlPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control-incremental-6319024.json",
+    "bytes": 2247,
+    "sha256": "881d60587f8ff718b332131831067dd3f7535966646503700787bde67c28c86d"
+  },
+  "controlConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/control-incremental-parent-d487abf.json",
+    "bytes": 2289,
+    "sha256": "dea8af9a3e7befdeaf812e1a72df6b710ca3509a043d5f7311dca208782bbca6"
+  },
+  "ownerConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/repository-incremental-parent-d487abf.json",
+    "bytes": 1991,
+    "sha256": "5560af8b37f7dda429c6c4b5381fee53a490914b3d63e97141d5844eab174e31"
+  },
+  "engine": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-incremental-parent-d487abf",
+  "fileCount": 127,
+  "fileManifestSha256": "7d9f5d1659bca8142cc8f73c697897626ce3d132938dc0130d56ad8b4b11f046",
+  "packageSha256": "0d2a24740f35b5035f2fd2a3a16b87374e577de1cfca84229c5bb7041c9bd321",
+  "dropinPin": {
+    "path": "/etc/systemd/system/spug-intruoyi-source-57-20261105.service.d/zz-incremental-parent-d487abf.conf",
+    "bytes": 890,
+    "sha256": "47d73028b6285e495010d801acf3abdddf3a7fc5f4d85cb382e38018a238c953"
+  },
+  "previousPid": 28125,
+  "pid": 25090,
+  "liveMaxOpenFiles": 65536,
+  "originalContainerCount": 195,
+  "allOriginalContainersUnchanged": true,
+  "fstabAndProtectedMountsUnchanged": true,
+  "sourceSelectionsHttp": 200,
+  "backupPerformed": false,
+  "restorePerformed": false,
+  "previousGeneration": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-incremental-6319024",
+  "failedOriginalFilesPreserved": 9128,
+  "readinessAttempts": 2
+}

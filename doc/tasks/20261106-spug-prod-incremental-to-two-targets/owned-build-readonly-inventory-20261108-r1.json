@@ -1,0 +1,98 @@
+{
+  "status": "READ_ONLY_INVENTORY",
+  "observedAt": "2026-11-08T02:07:54.971688+00:00",
+  "buildCount": 11,
+  "builds": [
+    {
+      "generation": "6319024",
+      "headMatches": true,
+      "allFilesClean": true,
+      "packageShaMatches": true,
+      "worktreePresent": true,
+      "cleanupPerformed": false
+    },
+    {
+      "generation": "d487abf",
+      "headMatches": true,
+      "allFilesClean": true,
+      "packageShaMatches": true,
+      "worktreePresent": true,
+      "cleanupPerformed": false
+    },
+    {
+      "generation": "9a65b5a",
+      "headMatches": true,
+      "allFilesClean": true,
+      "packageShaMatches": true,
+      "worktreePresent": true,
+      "cleanupPerformed": false
+    },
+    {
+      "generation": "701b442",
+      "headMatches": true,
+      "allFilesClean": true,
+      "packageShaMatches": true,
+      "worktreePresent": true,
+      "cleanupPerformed": false
+    },
+    {
+      "generation": "7c5f057",
+      "headMatches": true,
+      "allFilesClean": true,
+      "packageShaMatches": true,
+      "worktreePresent": true,
+      "cleanupPerformed": false
+    },
+    {
+      "generation": "9c93449",
+      "headMatches": true,
+      "allFilesClean": true,
+      "packageShaMatches": true,
+      "worktreePresent": true,
+      "cleanupPerformed": false
+    },
+    {
+      "generation": "0c5828a",
+      "headMatches": true,
+      "allFilesClean": true,
+      "packageShaMatches": true,
+      "worktreePresent": true,
+      "cleanupPerformed": false
+    },
+    {
+      "generation": "3019c2e",
+      "headMatches": true,
+      "allFilesClean": true,
+      "packageShaMatches": true,
+      "worktreePresent": true,
+      "cleanupPerformed": false
+    },
+    {
+      "generation": "0d44578",
+      "headMatches": true,
+      "allFilesClean": true,
+      "packageShaMatches": true,
+      "worktreePresent": true,
+      "cleanupPerformed": false
+    },
+    {
+      "generation": "b5c8817",
+      "headMatches": true,
+      "allFilesClean": true,
+      "packageShaMatches": true,
+      "worktreePresent": true,
+      "cleanupPerformed": false
+    },
+    {
+      "generation": "0dc7429",
+      "headMatches": true,
+      "allFilesClean": true,
+      "packageShaMatches": true,
+      "worktreePresent": true,
+      "cleanupPerformed": false
+    }
+  ],
+  "allPinnedHeadCleanPackages": true,
+  "finalAcceptanceAndProcessChecksStillRequired": true,
+  "gitWritesPerformed": false
+}

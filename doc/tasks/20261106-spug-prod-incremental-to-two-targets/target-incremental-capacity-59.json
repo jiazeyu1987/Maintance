@@ -1,0 +1,11 @@
+{
+  "observedAt": "2026-11-06T20:09:07.358591+00:00",
+  "host": "172.30.30.59",
+  "memoryBytes": {
+    "MemTotal": 33565089792,
+    "MemAvailable": 25784123392,
+    "SwapTotal": 8455712768,
+    "SwapFree": 8153985024
+  },
+  "serverWrites": false
+}

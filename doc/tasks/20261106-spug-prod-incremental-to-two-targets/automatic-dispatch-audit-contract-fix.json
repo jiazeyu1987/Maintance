@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "AutomaticDispatchAuditContractFix/v1",
+  "status": "LOCAL_REGRESSION_PASS",
+  "observedAt": "2026-11-07T21:24:21.356113+00:00",
+  "operationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+  "rootCause": "HELPER_INCORRECT_LAUNCHER_EXIT_CONTRACT",
+  "nativeDispatch": {
+    "launcherActualExitCode": 2,
+    "launcherState": "TERMINAL_UNKNOWN",
+    "ownerActualExitCode": 0,
+    "ownerState": "SUCCEEDED",
+    "originalReplyPin": {
+      "bytes": 848,
+      "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-fbaf12b584214695b6b687e010f4773b/execute/result.json",
+      "sha256": "e42012abc7152b15ae0b8f86ba20883c536abe6a2edacccd8423fbcfba08cb82"
+    },
+    "resolution": "ORIGINAL_OWNER_TERMINAL_AFTER_ASYNC_REPLY"
+  },
+  "originalFailurePin": {
+    "path": "C:/Spug/runtime/private/prod-incremental-to-two-targets-20261106/172.30.30.57-error-cb981ded009d.private.log",
+    "bytes": 275,
+    "sha256": "cb981ded009da56d9d3415786a9017e1d7a10c43d502cc6ddaea24e3ef40ce92"
+  },
+  "diagnosticPin": {
+    "path": "C:/Spug/runtime/private/prod-incremental-to-two-targets-20261106/automatic-full373-dispatch-contract-diagnostic.private.json",
+    "bytes": 11588,
+    "sha256": "98f7f9fc579e3cb8fe59aed420b98674e2c83e77caba15d2d79d34b15234820a"
+  },
+  "sourcePins": {
+    "automatic_chain_audit.py": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic_chain_audit.py",
+      "bytes": 26446,
+      "sha256": "8c314deedebfc5ff9712899657dde8aaffdd6c73f5381383c2f68e18128b34e1"
+    },
+    "test_automatic_dispatch_audit.py": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_automatic_dispatch_audit.py",
+      "bytes": 7057,
+      "sha256": "152c48984e258066bc3018870e876691068704118b8ec0dcfb56797910b6eba9"
+    },
+    "verify_automatic_backup_chain.py": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/verify_automatic_backup_chain.py",
+      "bytes": 4470,
+      "sha256": "9d45a20e98d69ff81d17ce7afb0e1f32ef566f1afd84c81eb189418f33ed8936"
+    },
+    "verify_automatic_source_restoration.py": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/verify_automatic_source_restoration.py",
+      "bytes": 15006,
+      "sha256": "5d8bd2e77faed6c2ccd4d6f021901beb59adf01462fcb2fe23a1ed2ead8935c3"
+    }
+  },
+  "testPins": {
+    "automatic-dispatch-audit-red.txt": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-dispatch-audit-red.txt",
+      "bytes": 13823,
+      "sha256": "dd9a52f8e0a5db09cba22406b5df56b7a9f367a451f7512525898b53d86f3185"
+    },
+    "automatic-dispatch-audit-green.txt": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-dispatch-audit-green.txt",
+      "bytes": 99,
+      "sha256": "7a0a45177ee5390597831aff588f41e6992754df77fa7aaccedfb4b6bc13d64f"
+    },
+    "automatic-dispatch-audit-regression.txt": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-dispatch-audit-regression.txt",
+      "bytes": 100,
+      "sha256": "53a0ff884413f8a4ed7fbf561bd63c053ebc368e3707928e3fc383b2d91db9ab"
+    }
+  },
+  "tests": {
+    "redFailed": 23,
+    "greenPassed": 23,
+    "regressionPassed": 63,
+    "skipped": 0
+  },
+  "utf8SyntaxVerified": true,
+  "actualAuditRerun": false,
+  "backupDispatched": false,
+  "serverMutationPerformed": false,
+  "reviewRequiredBeforeActualAudit": true
+}

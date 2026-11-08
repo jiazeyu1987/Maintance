@@ -1,0 +1,27 @@
+{
+  "status": "FAIL",
+  "observedAt": "2026-11-06T13:01:29.785130+00:00",
+  "command": [
+    "C:/Users/D01021/AppData/Local/Programs/DockerDesktop/resources/bin/docker.exe",
+    "run",
+    "-i",
+    "--rm",
+    "--name",
+    "spug-incremental-ddl-tests-20261106",
+    "--label",
+    "codex.task=20261106-spug-prod-incremental-to-two-targets",
+    "--mount",
+    "type=bind,source=C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance,target=/src,readonly",
+    "--workdir",
+    "/src",
+    "sha256:14a4933e6cef421424f7a66d89a3f4eafcbd0d90e0a822251f298e05132dc735",
+    "sh",
+    "-ec",
+    "pip install --quiet --root-user-action=ignore pytest==8.3.5 jsonschema==4.23.0 redis==5.2.1; exec python -B -"
+  ],
+  "exitCode": 1,
+  "containerRemoved": true,
+  "outputSha256": "3336bd356e9f66cb36a11515da16d7cac0f6a6239a8101280413811c207e8d77",
+  "isolatedProcesses": true,
+  "allFiveTestsActuallyExecuted": false
+}

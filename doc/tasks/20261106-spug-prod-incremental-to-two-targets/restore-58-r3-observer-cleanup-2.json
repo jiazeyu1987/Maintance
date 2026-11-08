@@ -1,0 +1,64 @@
+{
+  "observedAt": "2026-11-07T07:03:36.4743215Z",
+  "reason": "Readonly observer stalled at importing saved browser storage; exact owned tree only",
+  "processes": [
+    {
+      "ProcessId": 52116,
+      "ParentProcessId": 56844,
+      "Name": "node.exe",
+      "CreationDate": "2026-11-07T15:00:51.320696+08:00"
+    },
+    {
+      "ProcessId": 29756,
+      "ParentProcessId": 52116,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T15:00:51.56055+08:00"
+    },
+    {
+      "ProcessId": 29548,
+      "ParentProcessId": 29756,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T15:00:51.597444+08:00"
+    },
+    {
+      "ProcessId": 48804,
+      "ParentProcessId": 29756,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T15:00:52.160482+08:00"
+    },
+    {
+      "ProcessId": 41084,
+      "ParentProcessId": 29756,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T15:00:52.165883+08:00"
+    },
+    {
+      "ProcessId": 29536,
+      "ParentProcessId": 29756,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T15:00:52.807482+08:00"
+    },
+    {
+      "ProcessId": 31580,
+      "ParentProcessId": 29756,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T15:00:53.113629+08:00"
+    },
+    {
+      "ProcessId": 24508,
+      "ParentProcessId": 29756,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T15:00:53.144008+08:00"
+    },
+    {
+      "ProcessId": 48052,
+      "ParentProcessId": 29756,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T15:00:53.31952+08:00"
+    }
+  ],
+  "stopped": true,
+  "remoteChanges": 0,
+  "verifiedAt": "2026-11-07T07:04:39.2750020Z",
+  "originalImmediateCheckError": "OWNED_OBSERVER_REMAINS, final independent read all absent"
+}

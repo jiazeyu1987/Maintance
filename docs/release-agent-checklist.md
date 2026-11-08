@@ -696,6 +696,7 @@ Codex 只有在以下条件同时成立时，才能判定完整发布完成：
 
 ### 独立探针与稳定控制台收尾
 
+- Windows PowerShell检查由Python启动时，先在同一启动方式核所需cmdlet和PSHOME/PSModulePath；混入其它PowerShell版本路径时，按`powershell-preflight-lessons.md#Python子进程与混合PowerShell模块搜索路径`显式加载当前版本模块，再完整核SHA/计划任务/进程/端口，不以交互shell可用替代实际子进程验证。
 - 远端数据库探针必须先从冻结 migration 和真实库 `DESCRIBE` 确认表/字段；容器未定义 Docker healthcheck 时只核 `state=running`，应用健康必须独立核 Actuator HTTP 200/UP。
 - 删除 release worktree 前，48181 PID/命令行/JAR 必须指向主维护路径，完整 `/admin-api/infra/runtime-control/release-status` 必须显示目标 tag、notes 和 changes；只看 health=UP 不足以收尾。
 - 同 HEAD 重新构建的 Spring Boot JAR 可能因归档元数据产生不同 hash；必须记录并验证本次实际产物 hash，不得用历史重建 hash 作为当前复制/恢复门禁。

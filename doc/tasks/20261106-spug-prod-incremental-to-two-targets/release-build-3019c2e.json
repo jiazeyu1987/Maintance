@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "worktree": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-3019c2e",
+  "targetCommit": "3019c2ebe3e7db0cd607f1a170e5cfbe0879580d",
+  "buildCommand": [
+    "C:\\Users\\D01021\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "-B",
+    "ops/backup_engine/build_variants.py",
+    "--output-directory",
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\package-3019c2e"
+  ],
+  "validationCommand": "all archive members SHA256 + Python compile; exact HEAD and clean git status before/after",
+  "packageSha256": "ec63c16372dd6e7be94bfa0c2df20775cfa4997502ad4218da3dbfb076cc11ee",
+  "fileManifestSha256": "f2ebdb6976d4f1ad2727be6321b19988cc53ba55d13b127a037f2e24348a4974",
+  "fileCount": 130,
+  "allFilesShaAndCompileVerified": true,
+  "newCommits": false,
+  "mergeRequired": false,
+  "deleted": false
+}

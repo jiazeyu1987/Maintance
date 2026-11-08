@@ -1,0 +1,60 @@
+{
+  "status": "OBSERVED",
+  "observedAt": "2026-11-07T22:51:21.675736+00:00",
+  "operationId": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+  "captureRoot": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+  "processes": [
+    {
+      "pid": 17042,
+      "ppid": 17025,
+      "state": "S",
+      "rchar": 11661461070,
+      "wchar": 2091787120,
+      "userTicks": 19913,
+      "systemTicks": 4414
+    },
+    {
+      "pid": 12710,
+      "ppid": 17042,
+      "state": "R",
+      "rchar": 10837,
+      "wchar": 0,
+      "userTicks": 1,
+      "systemTicks": 1
+    }
+  ],
+  "lastStages": [
+    {
+      "at": "2026-11-07T22:44:30.923237+00:00",
+      "stage": "CONFIGURATION_AND_IMAGES_CAPTURED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-07T22:44:30.927284+00:00",
+      "stage": "STOP_REQUESTED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-07T22:44:34.806464+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT",
+      "captureStage": "STOP_WRITERS"
+    },
+    {
+      "at": "2026-11-07T22:44:34.851196+00:00",
+      "stage": "STOP_REQUESTED",
+      "captureStage": null
+    },
+    {
+      "at": "2026-11-07T22:44:35.234097+00:00",
+      "stage": "CONTAINER_COMMAND_EXIT",
+      "captureStage": "STOP_WRITERS"
+    },
+    {
+      "at": "2026-11-07T22:44:35.951492+00:00",
+      "stage": "WRITERS_STOPPED_DATABASE_FENCED",
+      "captureStage": null
+    }
+  ],
+  "sourceRestorationRecorded": false,
+  "mutationDispatched": false
+}

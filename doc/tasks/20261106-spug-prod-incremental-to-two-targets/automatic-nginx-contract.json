@@ -1,0 +1,8 @@
+{
+  "exitCode": 1,
+  "image": "sha256:9acb3408229d9de4ac0517d086c6287f876849132242b578b9449000a9273d02",
+  "containerRemoved": true,
+  "inputUnchanged": true,
+  "fragmentSha256": "c8c2ce3a39483007b4041c09c1c460d21a3fd7e0e0d1da6c0f2be5664e3b9ae7",
+  "output": "nginx: [alert] could not open error log file: open() \"/var/log/nginx/error.log\" failed (30: Read-only file system)\nnginx: the configuration file /candidate/nginx.conf syntax is ok\n2026/11/07 23:54:28 [emerg] 1#1: chown(\"/var/lib/nginx/body\", 65534) failed (30: Read-only file system)\nnginx: configuration file /candidate/nginx.conf test failed\n"
+}

@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T19:48:58.224017+00:00",
+  "host": "172.30.30.57",
+  "controlPid": 20273,
+  "health": {
+    "minio": {
+      "url": "http://127.0.0.1:9000/minio/health/ready",
+      "result": {
+        "ready": true,
+        "httpStatus": 200,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "backend": {
+      "url": "http://172.21.0.11:48081/actuator/health",
+      "result": {
+        "ready": true,
+        "httpStatus": 200,
+        "bodySha256": "647a83cca85203d6d4eb07eea84ef6eb91d5c6482eaff2ac8bb65a342b9f2946"
+      }
+    },
+    "frontend": {
+      "url": "http://172.21.0.3:80/",
+      "result": {
+        "ready": true,
+        "httpStatus": 200,
+        "bodySha256": "cdef13d91ba30ec8cae5662ed11e23cc3e98e0686607a962dd2169f153deebec"
+      }
+    }
+  },
+  "serverWrites": false,
+  "controlApiCalled": false,
+  "backupTerminalVerified": false
+}

@@ -1,0 +1,140 @@
+{
+  "observedAt": "2026-11-07T03:57:02.600773+00:00",
+  "host": "172.30.30.57",
+  "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+  "serviceProperties": "MainPID=23124\nLimitNOFILE=65536\nActiveState=active\nSubState=running\n",
+  "packageFilesMatch": true,
+  "packageFileCount": 126,
+  "capacity": {
+    "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3": 1423931723776,
+    "/opt/intruoyi/runtime": 43870949376
+  },
+  "fstabSha256": "69fb0d75be5ff1c785d0680046757b5c536b9d29d12d1713ca752ee58ebc72b7",
+  "http": {
+    "backend": {
+      "httpStatus": 200,
+      "status": "UP"
+    },
+    "frontend": {
+      "httpStatus": 200
+    }
+  },
+  "admissions": {
+    "target": {
+      "httpStatus": 200,
+      "body": {
+        "applications": [
+          {
+            "applicationId": "intruoyi-57-safe-20261024-v1",
+            "engineSelectionRef": "common-engine-minimal-unified-20261015-r1",
+            "freshTargetConfigRefs": [
+              "intruoyi-main-57-safe-restore-20261105-v2"
+            ],
+            "fullErrorCode": null,
+            "fullReady": true,
+            "historyErrorCode": null,
+            "parentChainRefs": [],
+            "recoveryPointRefs": [],
+            "sourceConfigRef": "intruoyi-57-safe-20261024-v1"
+          }
+        ],
+        "observedAt": "2026-11-07T03:57:05.212791Z"
+      }
+    },
+    "source": {
+      "httpStatus": 200,
+      "body": {
+        "applications": [
+          {
+            "applicationId": "intruoyi-57-safe-20261024-v1",
+            "engineSelectionRef": "common-engine-minimal-unified-20261015-r1",
+            "freshTargetConfigRefs": [],
+            "fullErrorCode": null,
+            "fullReady": true,
+            "historyErrorCode": null,
+            "parentChainRefs": [
+              "smallapp-0eebed7726824ca5b7292ffc9b845735",
+              "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+              "smallapp-3f29a2b1324045309478a3a597654260",
+              "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+              "smallapp-7fec29a3e132463096aec915c08acab3",
+              "smallapp-a54a05be9dab45e490a3979551536b0c",
+              "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c"
+            ],
+            "recoveryPointRefs": [
+              "smallapp-0eebed7726824ca5b7292ffc9b845735",
+              "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+              "smallapp-3f29a2b1324045309478a3a597654260",
+              "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+              "smallapp-7fec29a3e132463096aec915c08acab3",
+              "smallapp-a54a05be9dab45e490a3979551536b0c",
+              "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c"
+            ],
+            "sourceConfigRef": "intruoyi-57-safe-20261024-v1"
+          }
+        ],
+        "observedAt": "2026-11-07T03:57:06.052709Z"
+      }
+    }
+  },
+  "containerCount": 198,
+  "roles": [
+    {
+      "role": "backend",
+      "id": "c4385604eb83b44f2836755bad709581c7e7edd0078b148f3b0f74e0b567304c",
+      "image": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+      "running": true,
+      "pid": 29673,
+      "startedAt": "2026-11-06T22:03:51.670100525Z",
+      "health": null
+    },
+    {
+      "role": "frontend",
+      "id": "1210f97cf7653c5f74a7981bf4d4bec8d7462af873d53695d47a59a7ce38a479",
+      "image": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a",
+      "running": true,
+      "pid": 29755,
+      "startedAt": "2026-11-06T22:03:51.881796972Z",
+      "health": null
+    },
+    {
+      "role": "mysql",
+      "id": "9a288d20d254366e99b265b1870466e974edf23e7aab60de2391e3a38e62fff6",
+      "image": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+      "running": true,
+      "pid": 7463,
+      "startedAt": "2026-11-05T01:27:41.904047027Z",
+      "health": "healthy"
+    },
+    {
+      "role": "redis",
+      "id": "5099e7bd566ec6a683e8842b84d8db9e41245708fce29e89309607d6a7e72653",
+      "image": "sha256:487efc0616382465781b8fdc3d6d1db449e6fd80ae23bf48432a2da6b6929908",
+      "running": true,
+      "pid": 7201,
+      "startedAt": "2026-11-05T01:27:41.832957773Z",
+      "health": "healthy"
+    },
+    {
+      "role": "minio",
+      "id": "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf",
+      "image": "sha256:c4260bcf2c25b683e4f6e6ed6474f12c5c28dc8e375bfe0ecea7a5d3fbecbc04",
+      "running": true,
+      "pid": 13691,
+      "startedAt": "2026-11-06T21:58:33.730401306Z",
+      "health": null
+    }
+  ],
+  "activeReservation": false,
+  "processes": [
+    {
+      "pid": 13785,
+      "commandSha256": "7608d292163fe07aadce16d30c68747b1445967640d7bce95f442e8df96ed8d1"
+    },
+    {
+      "pid": 23124,
+      "commandSha256": "daa20d95596f3e3c119ba832e166e1ab3926890ac00ee77ca406008d9188b017"
+    }
+  ],
+  "privateBaselineSha256": "20d94827ad10046e5897f051b1fa9e83ecf70e04b75ed912c8622f9172574327"
+}

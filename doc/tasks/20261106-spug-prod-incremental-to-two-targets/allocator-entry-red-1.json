@@ -1,0 +1,20 @@
+{
+  "observedAt": "2026-11-07T04:02:24.921586+00:00",
+  "phase": "red",
+  "actualExitCode": 1,
+  "expectedResultObserved": true,
+  "containerRemoved": true,
+  "tests": [
+    "scripts/tests/test_backup_variants.py::test_packaged_minimal_runtime_loads_real_allocator_dependency"
+  ],
+  "outputSha256": "45d26537a5641e71363ca12476507d47aa0228135d03c733ae34bd644e4f17db",
+  "testedInputSha256": {
+    "ops/backup_engine/formal/formal_schema_evidence.py": "573b37a21d373e5b14ae18bc6eaa910fb7227d3ddb797846399465ec50ab9ac7",
+    "ops/recovery/recovery_data.py": "c463ae3054858731bbbda9c3bebbbf9236e9a0243674bae5574d7e8d5350da67",
+    "ops/recovery/recovery_minimal_runtime.py": "60a0874dee71cc208369920efbba43d3e16e90d3cdd4747624ce8d86d3c9cb55",
+    "ops/backup_engine/standard_fixes.py": "d61dd2d126c337e7b74d68e1d761a3d70bc71d476e064343b6ed9f387907b12c",
+    "scripts/tests/test_backup_variants.py": "625023e6d78314005a052d10b3748d8e981a4259b11c65cd7fafe44feeabe71c"
+  },
+  "isolatedProcesses": true,
+  "inputFilesUnchanged": true
+}

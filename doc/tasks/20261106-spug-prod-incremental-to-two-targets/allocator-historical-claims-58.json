@@ -1,0 +1,148 @@
+{
+  "observedAt": "2026-11-07T04:21:54.067763+00:00",
+  "claims": [
+    {
+      "operationId": "smallapp-6cb9423086fe4b62ad21505e189bc36b",
+      "replacement-result.json": {
+        "keys": [
+          "finishedAt",
+          "operationId",
+          "state",
+          "targetConfigRef"
+        ],
+        "state": "SUCCEEDED",
+        "operationId": "smallapp-6cb9423086fe4b62ad21505e189bc36b"
+      }
+    },
+    {
+      "operationId": "smallapp-91cc5c0b4b054cb38075681f1aca7d4a",
+      "replacement-result.json": {
+        "keys": [
+          "finishedAt",
+          "operationId",
+          "state",
+          "targetConfigRef"
+        ],
+        "state": "FAILED_RETAINED",
+        "operationId": "smallapp-91cc5c0b4b054cb38075681f1aca7d4a"
+      },
+      "recovery-clearance.json": {
+        "keys": [
+          "authorization",
+          "exitPin",
+          "expiresAt",
+          "issuedAt",
+          "observationPin",
+          "operationId",
+          "recoveryPointRef",
+          "replacementResultPin",
+          "requestPin",
+          "reservationPin",
+          "resultPin",
+          "schemaVersion",
+          "sourceConfigRef",
+          "targetConfigRef",
+          "targetConfigurationSha256"
+        ],
+        "schemaVersion": "RetainedReplacementRecovery/v1",
+        "operationId": "smallapp-91cc5c0b4b054cb38075681f1aca7d4a",
+        "issuedAt": "2026-11-05T09:00:54.847188Z",
+        "expiresAt": "2026-11-06T09:00:54.847211+00:00"
+      },
+      "recovery-consumption.json": {
+        "keys": [
+          "clearancePin",
+          "consumedAt",
+          "replacementOperationId",
+          "schemaVersion"
+        ],
+        "schemaVersion": "RetainedReplacementConsumption/v1",
+        "replacementOperationId": "smallapp-6cb9423086fe4b62ad21505e189bc36b"
+      }
+    },
+    {
+      "operationId": "smallapp-af9fb80256c0417f86f2741686950823",
+      "replacement-result.json": {
+        "keys": [
+          "finishedAt",
+          "operationId",
+          "state",
+          "targetConfigRef"
+        ],
+        "state": "FAILED_RETAINED",
+        "operationId": "smallapp-af9fb80256c0417f86f2741686950823"
+      },
+      "recovery-clearance.json": {
+        "keys": [
+          "authorization",
+          "exitPin",
+          "expiresAt",
+          "issuedAt",
+          "observationPin",
+          "operationId",
+          "recoveryPointRef",
+          "replacementResultPin",
+          "requestPin",
+          "reservationPin",
+          "resultPin",
+          "schemaVersion",
+          "sourceConfigRef",
+          "targetConfigRef",
+          "targetConfigurationSha256"
+        ],
+        "schemaVersion": "RetainedReplacementRecovery/v1",
+        "operationId": "smallapp-af9fb80256c0417f86f2741686950823",
+        "issuedAt": "2026-11-05T07:44:51.812767Z",
+        "expiresAt": "2026-11-06T07:44:51.812787+00:00"
+      },
+      "recovery-consumption.json": {
+        "keys": [
+          "clearancePin",
+          "consumedAt",
+          "replacementOperationId",
+          "schemaVersion"
+        ],
+        "schemaVersion": "RetainedReplacementConsumption/v1",
+        "replacementOperationId": "smallapp-91cc5c0b4b054cb38075681f1aca7d4a"
+      }
+    },
+    {
+      "operationId": "smallapp-c21bb7ce9f5b4668b850c37a80964786",
+      "replacement-result.json": {
+        "keys": [
+          "finishedAt",
+          "operationId",
+          "state",
+          "targetConfigRef"
+        ],
+        "state": "FAILED_RETAINED",
+        "operationId": "smallapp-c21bb7ce9f5b4668b850c37a80964786"
+      },
+      "recovery-clearance.json": {
+        "keys": [
+          "authorization",
+          "exitPin",
+          "expiresAt",
+          "issuedAt",
+          "mainProtectionRecoveryPin",
+          "observationPin",
+          "operationId",
+          "recoveryPointRef",
+          "replacementResultPin",
+          "requestPin",
+          "reservationPin",
+          "resultPin",
+          "schemaVersion",
+          "sourceConfigRef",
+          "targetConfigRef",
+          "targetConfigurationSha256"
+        ],
+        "schemaVersion": "RetainedReplacementRecovery/v1",
+        "operationId": "smallapp-c21bb7ce9f5b4668b850c37a80964786",
+        "issuedAt": "2026-11-07T04:15:33.522763Z",
+        "expiresAt": "2026-11-08T04:15:33.522778+00:00"
+      }
+    }
+  ],
+  "serverWrites": false
+}

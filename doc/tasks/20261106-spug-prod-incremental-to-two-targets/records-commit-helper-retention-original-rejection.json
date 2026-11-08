@@ -1,0 +1,12 @@
+{
+  "status": "EXPECTED_OLD_REJECTION",
+  "reason": "DEVELOPMENT_WORKTREE_STILL_PRESENT",
+  "temporaryBuildsAbsent": true,
+  "developmentRetained": true,
+  "localFixtureAssets": 42,
+  "actualProjectRequirement": false,
+  "sourcePin": {
+    "bytes": 20440,
+    "sha256": "61bd3df46115a63233395168958834598521b9bbeaf83396dd0c400202b2b44f"
+  }
+}

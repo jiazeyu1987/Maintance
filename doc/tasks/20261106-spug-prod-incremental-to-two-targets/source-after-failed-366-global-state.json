@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+  "version": "8.0.39",
+  "eventScheduler": "ON",
+  "readOnly": "0",
+  "superReadOnly": "0",
+  "originalGlobalStateRestored": true,
+  "strictBinlogToolStillVerified": true,
+  "failedOriginalFilesPreserved": 10044,
+  "observedAt": "2026-11-06T19:22:21.392095+00:00",
+  "failedOperationId": "smallapp-eb990891100642db8859439d741c0fc9",
+  "newRecoveryPointPublished": false,
+  "destinationRestoreDispatched": false
+}

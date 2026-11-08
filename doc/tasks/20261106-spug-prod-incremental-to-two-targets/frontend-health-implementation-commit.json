@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T06:08:19.094591+00:00",
+  "previousCommit": "7c5f0573e7e1ed7a54e42dbb614cb6e1f0a0534b",
+  "implementationCommit": "9c93449e99ae0790c8678a570d78a98b61d96d87",
+  "files": [
+    "ops/recovery/recovery_main_health.py",
+    "ops/recovery/recovery_minimal_runtime.py",
+    "ops/recovery/recovery_retained_retry.py",
+    "scripts/tests/test_main_readiness.py",
+    "scripts/tests/test_retained_replacement_retry.py",
+    "docs/release-agent-checklist.md",
+    "docs/experience-index.md"
+  ],
+  "testedInputSha256": {
+    "ops/recovery/recovery_main_health.py": "b95f6529ac1dc5fc8d285424ae299ae2134c7497c9b042a4c176441a397d605e",
+    "ops/recovery/recovery_minimal_runtime.py": "0053320a2ef4590eb77118cedf6b992ea4b804b806357b54eb01fce364cfafcc",
+    "ops/recovery/recovery_retained_retry.py": "80cd42b2638113c8b57a23173e77a98a3605df0683fe4100e677f16b3e923720",
+    "scripts/tests/test_main_readiness.py": "694e9927eeaf495f931b93724e94936e295f891fa555624b8bd8bb5e6a298ba0",
+    "scripts/tests/test_retained_replacement_retry.py": "e87c009028369957be7716d1fabcb4c6803ba85df17ed5311e0146269400f130",
+    "docs/release-agent-checklist.md": "58546a7f33edc757438b895b14864ff62d226be27086f1b9c0ebf4e7c55ca258",
+    "docs/experience-index.md": "504386a5335f17fbb874c77bc3378ca856dba468f35afc31bb3c3c60758a8ceb"
+  },
+  "taskAcceptanceComplete": false
+}

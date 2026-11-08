@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T07:52:43.085537+00:00",
+  "originalName": "restore-58-r3-accepted-catalogue.private.json",
+  "preservedName": "restore-58-r3-accepted-catalogue.original-http-body",
+  "bytes": 562,
+  "sha256": "64e0d721da1996b3da241306e370b2353fbf861904911668820051d3ad12794b",
+  "originalHttpError": 504,
+  "bodyUnchanged": true,
+  "reason": "Original HTTP failure body was stored with a JSON extension; preserve it as its actual format."
+}

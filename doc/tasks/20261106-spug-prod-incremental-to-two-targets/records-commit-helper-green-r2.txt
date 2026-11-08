@@ -1,0 +1,19 @@
+test_commit_records_contract.py
+.usage: test_commit_records_contract.py [-h] --mode {acceptance,final}
+                                       --expected-head EXPECTED_HEAD
+                                       --selection SELECTION --receipt RECEIPT
+                                       [--finalization FINALIZATION]
+                                       [--execute]
+test_commit_records_contract.py: error: the following arguments are required: --expected-head
+.............................
+----------------------------------------------------------------------
+Ran 30 tests in 1.343s
+
+OK
+
+test_automatic_closeout_contracts.py
+............
+----------------------------------------------------------------------
+Ran 12 tests in 0.155s
+
+OK

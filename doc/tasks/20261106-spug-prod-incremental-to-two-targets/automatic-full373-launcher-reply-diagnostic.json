@@ -1,0 +1,32 @@
+{
+  "status": "OBSERVED",
+  "originalReplyPin": {
+    "bytes": 848,
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/ledger/smallapp-fbaf12b584214695b6b687e010f4773b/execute/result.json",
+    "sha256": "e42012abc7152b15ae0b8f86ba20883c536abe6a2edacccd8423fbcfba08cb82"
+  },
+  "diagnosticPin": {
+    "path": "C:/Spug/runtime/private/prod-incremental-to-two-targets-20261106/automatic-full373-dispatch-contract-diagnostic.private.json",
+    "bytes": 11588,
+    "sha256": "98f7f9fc579e3cb8fe59aed420b98674e2c83e77caba15d2d79d34b15234820a"
+  },
+  "originalReply": {
+    "action": "FULL",
+    "actualExitCode": null,
+    "data": {
+      "operationDirectory": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/bcd34c72651c4865b37073062242969de3f7c857c65ec70a718be375d6ec933c",
+      "resultRef": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/bcd34c72651c4865b37073062242969de3f7c857c65ec70a718be375d6ec933c/result.json"
+    },
+    "failureCode": "REPOSITORY_QUERY_ORIGINAL_OPERATION",
+    "finishedAt": "2026-11-07T17:43:17.935681Z",
+    "message": "Original operation still has no terminal result; query using the same operationId",
+    "operationId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "originalResultPins": [],
+    "requestId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+    "schemaVersion": "backup-restore-operation-result/v1",
+    "startedAt": "2026-11-07T17:43:07.917084Z",
+    "state": "TERMINAL_UNKNOWN"
+  },
+  "noServerMutation": true,
+  "actualAuditRerun": false
+}

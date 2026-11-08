@@ -1,0 +1,198 @@
+EEEEEEEEEEEEEEEEEEE
+======================================================================
+ERROR: test_acceptance_cannot_accept_completed (__main__.RecordCommitContract.test_acceptance_cannot_accept_completed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 58, in test_acceptance_cannot_accept_completed
+    MODULE.validate_phase('acceptance', '## Current Status\ncompleted\n')
+    ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'record_commit_under_test' has no attribute 'validate_phase'
+
+======================================================================
+ERROR: test_cli_missing_explicit_head_is_rejected (__main__.RecordCommitContract.test_cli_missing_explicit_head_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 145, in test_cli_missing_explicit_head_is_rejected
+    MODULE.argument_parser().parse_args(['--mode', 'acceptance', '--selection', 'x', '--receipt', 'y'])
+    ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'record_commit_under_test' has no attribute 'argument_parser'
+
+======================================================================
+ERROR: test_completed_without_final_proof_fails (__main__.RecordCommitContract.test_completed_without_final_proof_fails)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 141, in test_completed_without_final_proof_fails
+    MODULE.validate_finalization(self.root, self.task, None, HEAD, '')
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'record_commit_under_test' has no attribute 'validate_finalization'
+
+======================================================================
+ERROR: test_duplicate_paths_rejected (__main__.RecordCommitContract.test_duplicate_paths_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 101, in test_duplicate_paths_rejected
+    self.load(self.selection([row, row]))
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 40, in load
+    return MODULE.load_selection(self.root, self.task, path, 'acceptance', HEAD)
+           ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'record_commit_under_test' has no attribute 'load_selection'
+
+======================================================================
+ERROR: test_exact_pinned_selection (__main__.RecordCommitContract.test_exact_pinned_selection)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 66, in test_exact_pinned_selection
+    entries = self.load(selection)
+              ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 40, in load
+    return MODULE.load_selection(self.root, self.task, path, 'acceptance', HEAD)
+           ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'record_commit_under_test' has no attribute 'load_selection'
+
+======================================================================
+ERROR: test_explicit_full_head_and_default_prepare (__main__.RecordCommitContract.test_explicit_full_head_and_default_prepare)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 43, in test_explicit_full_head_and_default_prepare
+    args = MODULE.argument_parser().parse_args(['--mode', 'acceptance', '--expected-head', HEAD,
+           ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'record_commit_under_test' has no attribute 'argument_parser'
+
+======================================================================
+ERROR: test_file_drift_fails (__main__.RecordCommitContract.test_file_drift_fails)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 73, in test_file_drift_fails
+    self.load(selection)
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 40, in load
+    return MODULE.load_selection(self.root, self.task, path, 'acceptance', HEAD)
+           ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'record_commit_under_test' has no attribute 'load_selection'
+
+======================================================================
+ERROR: test_final_cannot_accept_ready (__main__.RecordCommitContract.test_final_cannot_accept_ready)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 62, in test_final_cannot_accept_ready
+    MODULE.validate_phase('final', self.document.read_text(encoding='utf-8'))
+    ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'record_commit_under_test' has no attribute 'validate_phase'
+
+======================================================================
+ERROR: test_first_status_is_authoritative (__main__.RecordCommitContract.test_first_status_is_authoritative)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 54, in test_first_status_is_authoritative
+    MODULE.validate_phase('acceptance', '## Current Status\nin_progress\n\n## Current Status\nready_for_closeout\n')
+    ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'record_commit_under_test' has no attribute 'validate_phase'
+
+======================================================================
+ERROR: test_old_nov4_asset_cannot_enter (__main__.RecordCommitContract.test_old_nov4_asset_cannot_enter)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 84, in test_old_nov4_asset_cannot_enter
+    self.load(self.selection([self.pin(self.document), self.pin(other)]))
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 40, in load
+    return MODULE.load_selection(self.root, self.task, path, 'acceptance', HEAD)
+           ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'record_commit_under_test' has no attribute 'load_selection'
+
+======================================================================
+ERROR: test_only_explicit_shared_doc_is_selected (__main__.RecordCommitContract.test_only_explicit_shared_doc_is_selected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 113, in test_only_explicit_shared_doc_is_selected
+    rows = self.load(self.selection([self.pin(self.document), self.pin(document)]))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 40, in load
+    return MODULE.load_selection(self.root, self.task, path, 'acceptance', HEAD)
+           ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'record_commit_under_test' has no attribute 'load_selection'
+
+======================================================================
+ERROR: test_prepare_receipt_is_exclusive (__main__.RecordCommitContract.test_prepare_receipt_is_exclusive)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 133, in test_prepare_receipt_is_exclusive
+    MODULE.write_exclusive(path, dict(status='PREPARED'))
+    ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'record_commit_under_test' has no attribute 'write_exclusive'
+
+======================================================================
+ERROR: test_private_original_cannot_enter (__main__.RecordCommitContract.test_private_original_cannot_enter)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 96, in test_private_original_cannot_enter
+    self.load(self.selection([self.pin(self.document), self.pin(original)]))
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 40, in load
+    return MODULE.load_selection(self.root, self.task, path, 'acceptance', HEAD)
+           ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'record_commit_under_test' has no attribute 'load_selection'
+
+======================================================================
+ERROR: test_ready_records_do_not_require_completed (__main__.RecordCommitContract.test_ready_records_do_not_require_completed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 50, in test_ready_records_do_not_require_completed
+    self.assertEqual('ready_for_closeout', MODULE.validate_phase('acceptance', self.document.read_text(encoding='utf-8')))
+                                           ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'record_commit_under_test' has no attribute 'validate_phase'
+
+======================================================================
+ERROR: test_selection_head_mismatch_fails (__main__.RecordCommitContract.test_selection_head_mismatch_fails)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 77, in test_selection_head_mismatch_fails
+    self.load(self.selection(expectedHead='0'*40))
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 40, in load
+    return MODULE.load_selection(self.root, self.task, path, 'acceptance', HEAD)
+           ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'record_commit_under_test' has no attribute 'load_selection'
+
+======================================================================
+ERROR: test_syntax_and_known_private_value_fail_without_value_output (__main__.RecordCommitContract.test_syntax_and_known_private_value_fail_without_value_output)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 128, in test_syntax_and_known_private_value_fail_without_value_output
+    MODULE.scan_selected_text(self.document, {secret})
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'record_commit_under_test' has no attribute 'scan_selected_text'
+
+======================================================================
+ERROR: test_task_status_document_must_be_pinned (__main__.RecordCommitContract.test_task_status_document_must_be_pinned)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 105, in test_task_status_document_must_be_pinned
+    self.load(self.selection([]))
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 40, in load
+    return MODULE.load_selection(self.root, self.task, path, 'acceptance', HEAD)
+           ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'record_commit_under_test' has no attribute 'load_selection'
+
+======================================================================
+ERROR: test_traversal_cannot_enter (__main__.RecordCommitContract.test_traversal_cannot_enter)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 89, in test_traversal_cannot_enter
+    self.load(self.selection([row]))
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 40, in load
+    return MODULE.load_selection(self.root, self.task, path, 'acceptance', HEAD)
+           ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'record_commit_under_test' has no attribute 'load_selection'
+
+======================================================================
+ERROR: test_unreviewed_binary_fails (__main__.RecordCommitContract.test_unreviewed_binary_fails)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 121, in test_unreviewed_binary_fails
+    self.load(self.selection([self.pin(self.document), self.pin(screenshot)]))
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 40, in load
+    return MODULE.load_selection(self.root, self.task, path, 'acceptance', HEAD)
+           ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'record_commit_under_test' has no attribute 'load_selection'
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.047s
+
+FAILED (errors=19)

@@ -1,0 +1,70 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T06:14:32.297765+00:00",
+  "sourceCommit": "9c93449e99ae0790c8678a570d78a98b61d96d87",
+  "host": "172.30.30.58",
+  "service": "spug-main-restore-58-20261104-v3.service",
+  "engine": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/engine-frontend-9c93449",
+  "fileCount": 127,
+  "packageSha256": "7a7894c659457a9826976aae3ed23d89c73cbb4d30051900bbec18a1b420fa6f",
+  "fileManifestSha256": "d2d3baf54ced075874c8048528964c4fa4bd3a12d7beaff0f3dd2d84676178df",
+  "ownerConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-frontend-9c93449.json",
+    "bytes": 21051,
+    "sha256": "516b1d9ec704df7ed2fd87d03ba315280c29715ff62632182ca366dfd60663b3"
+  },
+  "controlConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-58-frontend-9c93449.json",
+    "bytes": 2435,
+    "sha256": "c39ca6cc9559b02b491bb4795640843fdc01e33a7f99470a646f4335235d11ae"
+  },
+  "previousReceiptPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/frontend-9c93449-previous-target-installation.json",
+    "bytes": 1727,
+    "sha256": "9f5a97ed755df087b349613ceb4ce71f89b43cfcb643b61bd55cdb5e652cd060"
+  },
+  "currentReceiptPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/target-installation.json",
+    "bytes": 1724,
+    "sha256": "524defa22a7699ef278ca50f560175a8946621b1b99ec083fafa7086a26856ee"
+  },
+  "dropinPin": {
+    "path": "/etc/systemd/system/spug-main-restore-58-20261104-v3.service.d/zzzzz-frontend-9c93449.conf",
+    "bytes": 840,
+    "sha256": "2282a256582b0656db6bd2c7b7682f4b70bb8e00e109e7f37515e8b30c619fd7"
+  },
+  "oldControlPid": 6742,
+  "controlPid": 20575,
+  "liveMaxOpenFiles": 65536,
+  "originalContainerCount": 459,
+  "allBusinessDefinitionsAndRuntimeUnchanged": true,
+  "fstabAndProtectedMountsUnchanged": true,
+  "targetAndSourceConfigurationUnchanged": true,
+  "failedOriginalFilesPreserved": 2879,
+  "failedOriginalBytesRead": 47497473156,
+  "retainedReservationUnchanged": false,
+  "noMutationReservationAbsent": true,
+  "retainedClearanceUnchanged": false,
+  "actualSelectionVerifiedBeforeActivation": false,
+  "actualHealthContractVerified": true,
+  "frontendReadiness": {
+    "schemaVersion": "RegisteredMainFrontendReadiness/v1",
+    "mode": "HOST_NGINX",
+    "containerId": "4f9775e6f0a1d86b2d06c69e40504a91cf44a613de458b76e69fa04805ca5d73",
+    "serviceConfigurationDigest": "00163755ddea19a7b72b4dd3fb13feeaf317e90df25e7b85bfd3a15478f84bc3",
+    "address": "172.30.30.58",
+    "port": 8081,
+    "configurationPin": {
+      "bytes": 3359,
+      "path": "/var/lib/docker/intruoyi-data/20261020-three-server-july-unification/nginx.conf",
+      "sha256": "b3ac648ab447b67320dd883fdef76142df29e4f0a89327a5f4b09c0896754028"
+    }
+  },
+  "failureCustodyPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/failure-custody-frontend-9c93449.json",
+    "bytes": 1440701,
+    "sha256": "5c449bc1a082a34843ae6d67878d3be5e4dce7ec8fc55e20af1438550fca665a"
+  },
+  "previousGenerationsRetained": true,
+  "restoreDispatched": false
+}

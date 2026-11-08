@@ -1,0 +1,48 @@
+{
+  "observedAt": "2026-11-07T19:09:07.559434+00:00",
+  "pid": 23603,
+  "controlPin": {
+    "bytes": 2441,
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-58-automatic-0d44578.json",
+    "sha256": "debb1fc3452ab205fae5eca226f2a04389dadd542c7298b4a5ffea95dd72a99b"
+  },
+  "environmentComparison": {
+    "LANG": {
+      "equal": false,
+      "present": true,
+      "expectedSha256": "99fed2d548c2eb1022f4067f97fe838a2c3ea60ee0e0f53086788505c3ababad",
+      "actualSha256": "75bcd42d00141c571d1fe73eff1cd3e4f3056f661a6327409533bb05025e6d56"
+    },
+    "PATH": {
+      "equal": false,
+      "present": true,
+      "expectedSha256": "ce908b8efad4aed2432c6201f968c8a5033499e2d0276764ec023b8249a90429",
+      "actualSha256": "2a6de8f382d7619b758b6fc98dd39e62151ac741746cebd76546c1bed361f9a3"
+    },
+    "PYTHONDONTWRITEBYTECODE": {
+      "equal": true,
+      "present": true,
+      "expectedSha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+      "actualSha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    "PYTHONPATH": {
+      "equal": true,
+      "present": true,
+      "expectedSha256": "d4aabb55185b608a897bb63fa9d6ae07b8226e9c9aaf53f4974726060889e8b0",
+      "actualSha256": "d4aabb55185b608a897bb63fa9d6ae07b8226e9c9aaf53f4974726060889e8b0"
+    }
+  },
+  "actualReceiptPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/target-installation.json",
+    "bytes": 1751,
+    "sha256": "2b3e275d1179d1c137bfbea1f46230ca91aeb68bfa37d794b2f5f9f8292d8772"
+  },
+  "stage": {
+    "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/installation-audit-automatic-0d44578-finalize-1": false,
+    "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/constructor-postactivation-automatic-0d44578-finalize-1": false,
+    "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/installation-automatic-0d44578.json": false,
+    "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/target-installation.automatic-0d44578.finalize-1.tmp": false
+  },
+  "serverWrites": false,
+  "noControlApiCalled": true
+}

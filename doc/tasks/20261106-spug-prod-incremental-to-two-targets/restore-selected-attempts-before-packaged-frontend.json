@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "TaskRestoreAttempts/v1",
+  "targets": {
+    "58": {
+      "kind": "restore-58-r3",
+      "predecessorKind": "restore-58-r2",
+      "predecessorOperationId": "smallapp-b4f35606e4854516960050a76473038b",
+      "predecessorState": "FAILED_RETAINED",
+      "reason": "Bound original frontend readiness and inherited quiescence; retain both failed operations and consume formal same-point clearance once"
+    },
+    "59": {
+      "kind": "restore-59"
+    }
+  }
+}

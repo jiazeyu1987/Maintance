@@ -1,0 +1,40 @@
+{
+  "status": "PINNED",
+  "files": {
+    "automatic-full-ui-submission.json": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-full-ui-submission.json",
+      "bytes": 1579,
+      "sha256": "fed00eed27b4a4738037ec7a7a5524ad17caee977b658269d1d9c4b875aec14e"
+    },
+    "automatic-full-ui-terminal.json": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-full-ui-terminal.json",
+      "bytes": 1254,
+      "sha256": "cc352bd6648bbdeb570fc17af5f29528e0e049984d183ea9a3394b3f9afd73c3"
+    },
+    "automatic-full-audit.json": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-full-audit.json",
+      "bytes": 7047,
+      "sha256": "dab1c5de0979f0bd0ef503eb51005c0724b192f444b9f5ff33290474a821a12e"
+    },
+    "automatic-full-source-restoration.json": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-full-source-restoration.json",
+      "bytes": 19719,
+      "sha256": "ec9fe5799ed8c0d6226bb968518a233145682c0c22271596e4e0a3ba0a1eeb30"
+    },
+    "automatic-full-verify-first-result.json": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-full-verify-first-result.json",
+      "bytes": 1256,
+      "sha256": "3857ba87384feb1ec611b61c1d4120a7f88f417974a7bb7d73745f1a8418bf77"
+    },
+    "automatic-full-verify-first-preflight.json": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-full-verify-first-preflight.json",
+      "bytes": 8888,
+      "sha256": "e4b4ba7b972e4002ce32faeab8c0e932c2abf4b857cc65612782aa7da969f4fa"
+    },
+    "automatic-full-verify-first-preflight-evidence.json": {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-full-verify-first-preflight-evidence.json",
+      "bytes": 2178,
+      "sha256": "fe362606c73b116d31e3cfffc77efc6fc9df14e1dcf78ea96bf4de9f9ade9578"
+    }
+  }
+}

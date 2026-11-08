@@ -1,0 +1,14 @@
+{
+  "observedAt": "2026-11-06T17:57:09.880787+00:00",
+  "phase": "red",
+  "actualPytestExitCode": 1,
+  "expectedResultObserved": true,
+  "containerRemoved": true,
+  "tests": [
+    "scripts/tests/test_capture_parent_guard.py::test_per_buffer_checks_do_not_reopen_parent_bytes_or_scan_all_parent_paths",
+    "scripts/tests/test_capture_parent_guard.py::test_parent_files_and_all_ancestors_are_leased_until_explicit_close"
+  ],
+  "outputSha256": "40e9d1dafb204c6da6191515974f3c713aa0e49428eb87f28191cbdfc1589287",
+  "diagnosticOnly": true,
+  "productionRecoveryAcceptance": false
+}

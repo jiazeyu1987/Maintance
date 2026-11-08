@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-08T02:37:17.183681+00:00",
+  "commandExitCode": 0,
+  "scriptSha256": "2b2dab02a2a59b1ad6c2c14ddd378c80087287050a36e7596dfef4184ba4b331",
+  "currentPsHomeUtilityExplicitlyLoaded": true,
+  "anyServiceRestarted": false,
+  "transports": [
+    {
+      "supervisorPid": 4248,
+      "host": "172.30.30.58",
+      "exactForwardingVerified": true,
+      "sshPid": 46292,
+      "stableTaskRunning": true,
+      "controlPort": 43658
+    },
+    {
+      "supervisorPid": 29644,
+      "host": "172.30.30.59",
+      "exactForwardingVerified": true,
+      "sshPid": 48884,
+      "stableTaskRunning": true,
+      "controlPort": 33659
+    }
+  ]
+}

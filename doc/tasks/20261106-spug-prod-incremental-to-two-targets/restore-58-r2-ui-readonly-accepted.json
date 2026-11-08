@@ -1,0 +1,74 @@
+{
+  "startedAt": "2026-11-07T04:53:07.945Z",
+  "operationId": "smallapp-b4f35606e4854516960050a76473038b",
+  "realBrowser": true,
+  "businessWrites": 0,
+  "phase": "accepted",
+  "httpObservations": [
+    {
+      "endpoint": "/backup-entry-api/operations/smallapp-b4f35606e4854516960050a76473038b",
+      "httpStatus": 200,
+      "observedAt": "2026-11-07T04:53:08.675Z"
+    },
+    {
+      "endpoint": "/backup-entry-api/progress/smallapp-b4f35606e4854516960050a76473038b",
+      "httpStatus": 200,
+      "observedAt": "2026-11-07T04:53:09.178Z"
+    },
+    {
+      "endpoint": "/backup-entry-api/operations/smallapp-b4f35606e4854516960050a76473038b",
+      "httpStatus": 200,
+      "observedAt": "2026-11-07T04:53:09.595Z"
+    },
+    {
+      "endpoint": "/backup-entry-api/progress/smallapp-b4f35606e4854516960050a76473038b",
+      "httpStatus": 200,
+      "observedAt": "2026-11-07T04:53:10.097Z"
+    },
+    {
+      "endpoint": "/backup-entry-api/operations/smallapp-b4f35606e4854516960050a76473038b",
+      "httpStatus": 200,
+      "observedAt": "2026-11-07T04:53:14.132Z"
+    },
+    {
+      "endpoint": "/backup-entry-api/progress/smallapp-b4f35606e4854516960050a76473038b",
+      "httpStatus": 200,
+      "observedAt": "2026-11-07T04:53:15.144Z"
+    },
+    {
+      "endpoint": "/backup-entry-api/operations/smallapp-b4f35606e4854516960050a76473038b",
+      "httpStatus": 200,
+      "observedAt": "2026-11-07T04:53:18.365Z"
+    },
+    {
+      "endpoint": "/backup-entry-api/progress/smallapp-b4f35606e4854516960050a76473038b",
+      "httpStatus": 200,
+      "observedAt": "2026-11-07T04:53:18.941Z"
+    },
+    {
+      "endpoint": "/release-center/api/applications/intruoyi/package-catalog",
+      "httpStatus": 200,
+      "observedAt": "2026-11-07T04:53:19.034Z"
+    }
+  ],
+  "pageErrors": [],
+  "backupPageInitialized": true,
+  "exactHistoryRowCount": 1,
+  "catalogueHttp": 200,
+  "request": {
+    "action": "RESTORE",
+    "operationId": "smallapp-b4f35606e4854516960050a76473038b",
+    "parentChainRef": null,
+    "recoveryPointRef": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+    "schemaVersion": "SmallAppBackupUiRequest/v1",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1"
+  },
+  "spugHistoryId": 369,
+  "state": "RUNNING",
+  "problem": "",
+  "steps": "尚无步骤时间回执。",
+  "visible": "原操作执行或核对中",
+  "status": "PASS",
+  "observedAt": "2026-11-07T04:53:22.043Z"
+}

@@ -1,0 +1,70 @@
+{
+  "status": "OBSERVED",
+  "observedAt": "2026-11-07T23:23:44.608530+00:00",
+  "operationId": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+  "processes": [
+    {
+      "pid": 20213,
+      "state": "R",
+      "rchar": 83991639628,
+      "wchar": 2130791996
+    }
+  ],
+  "timings": {
+    "timing-archive-admission-end.json": {
+      "stage": "archive-admission",
+      "finishedAt": "2026-11-07T22:41:20.816866Z",
+      "completed": true,
+      "elapsedSeconds": 1775.657
+    },
+    "timing-archive-admission-start.json": {
+      "stage": "archive-admission",
+      "startedAt": "2026-11-07T22:11:45.160304Z"
+    },
+    "timing-archive-metadata-end.json": {
+      "stage": "archive-metadata",
+      "finishedAt": "2026-11-07T23:18:37.680165Z",
+      "completed": true,
+      "elapsedSeconds": 0.294
+    },
+    "timing-archive-metadata-start.json": {
+      "stage": "archive-metadata",
+      "startedAt": "2026-11-07T23:18:37.386270Z"
+    },
+    "timing-capture-validation-end.json": {
+      "stage": "capture-validation",
+      "finishedAt": "2026-11-07T23:15:11.018820Z",
+      "completed": true,
+      "elapsedSeconds": 8.798
+    },
+    "timing-capture-validation-start.json": {
+      "stage": "capture-validation",
+      "startedAt": "2026-11-07T23:15:02.220385Z"
+    },
+    "timing-nas-readback-start.json": {
+      "stage": "nas-readback",
+      "startedAt": "2026-11-07T23:18:37.683184Z"
+    },
+    "timing-nas-upload-end.json": {
+      "stage": "nas-upload",
+      "finishedAt": "2026-11-07T23:18:37.381490Z",
+      "completed": true,
+      "elapsedSeconds": 206.358
+    },
+    "timing-nas-upload-start.json": {
+      "stage": "nas-upload",
+      "startedAt": "2026-11-07T23:15:11.023534Z"
+    },
+    "timing-source-capture-end.json": {
+      "stage": "source-capture",
+      "finishedAt": "2026-11-07T23:15:02.218144Z",
+      "completed": true,
+      "elapsedSeconds": 2021.399
+    },
+    "timing-source-capture-start.json": {
+      "stage": "source-capture",
+      "startedAt": "2026-11-07T22:41:20.819202Z"
+    }
+  },
+  "mutationDispatched": false
+}

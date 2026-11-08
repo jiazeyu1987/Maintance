@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "CatalogueIdentityReadonlyUi/v1",
+  "startedAt": "2026-11-07T18:40:47.367Z",
+  "observation": "r2",
+  "sessionKind": "FULL",
+  "sourceCommit": "b5c8817de2b4cc5efdad566f0fb65fdabefcb8d8",
+  "realBrowser": true,
+  "actualPageRequest": false,
+  "businessWrites": 0,
+  "identityVerified": false,
+  "pageErrors": [],
+  "httpObservations": [],
+  "stage": "authenticated-platform",
+  "status": "FAIL",
+  "error": "TimeoutError: locator.waitFor: Timeout 45000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('管理员', { exact: true }).first().or(getByRole('button', { name: '登录', exact: true })).first() to be visible\u001b[22m\n",
+  "responseErrors": [],
+  "observedAt": "2026-11-07T18:41:39.023Z"
+}

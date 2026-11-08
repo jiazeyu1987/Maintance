@@ -1,0 +1,129 @@
+{
+  "observedAt": "2026-11-07T06:59:14.2649993Z",
+  "reason": "Task readonly observers unresponsive, no remote process stopped",
+  "processes": [
+    {
+      "ProcessId": 23924,
+      "ParentProcessId": 42564,
+      "Name": "node.exe",
+      "CreationDate": "2026-11-07T14:45:04.595305+08:00"
+    },
+    {
+      "ProcessId": 49260,
+      "ParentProcessId": 23924,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T14:45:07.829182+08:00"
+    },
+    {
+      "ProcessId": 21072,
+      "ParentProcessId": 49260,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T14:45:11.523692+08:00"
+    },
+    {
+      "ProcessId": 1916,
+      "ParentProcessId": 49260,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T14:45:14.016633+08:00"
+    },
+    {
+      "ProcessId": 53800,
+      "ParentProcessId": 49260,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T14:45:14.021809+08:00"
+    },
+    {
+      "ProcessId": 35096,
+      "ParentProcessId": 49260,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T14:45:22.234456+08:00"
+    },
+    {
+      "ProcessId": 27168,
+      "ParentProcessId": 49260,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T14:45:22.692463+08:00"
+    },
+    {
+      "ProcessId": 53664,
+      "ParentProcessId": 49260,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T14:45:22.711439+08:00"
+    },
+    {
+      "ProcessId": 52584,
+      "ParentProcessId": 49260,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T14:45:22.715632+08:00"
+    },
+    {
+      "ProcessId": 39612,
+      "ParentProcessId": 49260,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T14:48:14.037581+08:00"
+    },
+    {
+      "ProcessId": 34496,
+      "ParentProcessId": 26628,
+      "Name": "node.exe",
+      "CreationDate": "2026-11-07T14:48:52.942673+08:00"
+    },
+    {
+      "ProcessId": 57144,
+      "ParentProcessId": 34496,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T14:48:53.151912+08:00"
+    },
+    {
+      "ProcessId": 25232,
+      "ParentProcessId": 57144,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T14:48:53.189642+08:00"
+    },
+    {
+      "ProcessId": 41084,
+      "ParentProcessId": 57144,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T14:48:53.404138+08:00"
+    },
+    {
+      "ProcessId": 2732,
+      "ParentProcessId": 57144,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T14:48:53.409838+08:00"
+    },
+    {
+      "ProcessId": 57172,
+      "ParentProcessId": 57144,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T14:48:54.060627+08:00"
+    },
+    {
+      "ProcessId": 13632,
+      "ParentProcessId": 57144,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T14:48:54.130804+08:00"
+    },
+    {
+      "ProcessId": 21120,
+      "ParentProcessId": 57144,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T14:48:54.148736+08:00"
+    },
+    {
+      "ProcessId": 37260,
+      "ParentProcessId": 57144,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T14:48:54.152493+08:00"
+    },
+    {
+      "ProcessId": 54104,
+      "ParentProcessId": 57144,
+      "Name": "chrome.exe",
+      "CreationDate": "2026-11-07T14:51:53.413632+08:00"
+    }
+  ],
+  "stopped": true,
+  "cleanupCommandError": "Stop-Process root 23924 already exited after child closure; original command exit1 retained",
+  "verifiedAt": "2026-11-07T07:00:50.1875385Z"
+}

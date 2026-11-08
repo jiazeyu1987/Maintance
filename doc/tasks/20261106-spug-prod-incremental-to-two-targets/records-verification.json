@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "fileCounts": {
+    ".gitattributes": 1,
+    ".md": 48,
+    ".py": 173,
+    ".json": 588,
+    ".log": 79,
+    ".png": 37,
+    ".cjs": 14,
+    ".ps1": 1
+  },
+  "totalBytes": 18072044,
+  "knownPrivateValuesChecked": 74,
+  "utf8AndSyntaxVerified": true,
+  "embeddedPythonScriptsCompiled": 63,
+  "privateValuesFound": 0,
+  "diffCheck": true
+}

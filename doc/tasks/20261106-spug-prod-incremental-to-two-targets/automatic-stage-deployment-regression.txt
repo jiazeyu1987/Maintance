@@ -1,0 +1,17 @@
+.........................................                                [100%]
+41 passed in 83.57s (0:01:23)
+
+✔ actual nested Spug login data distinguishes MFA from authenticated access token (5.3437ms)
+✔ failed HTTP, root error and malformed responses cannot imply login success (1.6647ms)
+✔ new source and retained Spug gate binds explicit selection (3.4773ms)
+✔ stage/Spug/source mismatch cannot pass as legacy (2.0961ms)
+✔ legacy receipt is limited to historical FULL and never rewritten (1.1446ms)
+✔ new submission and verify bind exact selection and Spug commit (0.7404ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 85.2359

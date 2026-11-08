@@ -1,0 +1,45 @@
+{
+  "status": "OBSERVED",
+  "observedAt": "2026-11-07T22:14:40.561389+00:00",
+  "operationId": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+  "files": [
+    {
+      "name": "request.json",
+      "bytes": 284
+    },
+    {
+      "name": "root-identity-worker-baseline.json",
+      "bytes": 789
+    },
+    {
+      "name": "start.json",
+      "bytes": 448
+    },
+    {
+      "name": "timing-archive-admission-start.json",
+      "bytes": 71
+    },
+    {
+      "name": "worker-process.json",
+      "bytes": 113
+    },
+    {
+      "name": "worker.stderr.log",
+      "bytes": 0
+    },
+    {
+      "name": "worker.stdout.log",
+      "bytes": 0
+    }
+  ],
+  "workers": [
+    {
+      "pid": 20213,
+      "state": "D",
+      "wait": "0",
+      "readBytes": 0,
+      "writeBytes": 8192
+    }
+  ],
+  "mutationDispatched": false
+}

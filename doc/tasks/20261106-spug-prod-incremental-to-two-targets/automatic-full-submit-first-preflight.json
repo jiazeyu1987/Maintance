@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "AutomaticIncrementalUiPreflight/v1",
+  "status": "PASS",
+  "experiencePreflight": "PASS",
+  "kind": "FULL",
+  "phase": "submit",
+  "origin": "http://127.0.0.1:18080",
+  "server": "172.30.30.57",
+  "mode": "safe",
+  "applicationId": "intruoyi-57-safe-20261024-v1",
+  "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+  "implementationCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+  "installationCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+  "buildCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+  "observedAt": "2026-11-07T17:28:06.091617+00:00",
+  "expectedUserLabel": "Administrator",
+  "sourceIdentityVerified": true,
+  "installationVerified": true,
+  "sourceServicesHealthy": true,
+  "archiveReady": true,
+  "capacityReady": true,
+  "noConcurrentMaintenance": true,
+  "sourceIdleVerified": true,
+  "expectedPlan": {
+    "state": "BASELINE_REQUIRED",
+    "parentChainRef": null,
+    "baseFullRef": null,
+    "planDigest": "d451ec544f50d50bcb4ec564543c6f8322ebf88d15230da7fa26ed175603d333"
+  }
+}

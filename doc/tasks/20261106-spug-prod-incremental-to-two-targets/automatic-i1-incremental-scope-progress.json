@@ -1,0 +1,33 @@
+{
+  "status": "OBSERVED",
+  "observedAt": "2026-11-07T23:06:48.707431+00:00",
+  "operationId": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+  "scopePin": {
+    "bytes": 1117,
+    "sha256": "907b99f6b422eb88010b4acc5ef1d819cf906484cfc286a5c670cc940de22152"
+  },
+  "segments": [
+    {
+      "eventCount": 20994,
+      "rowEventCount": 5400,
+      "ddlEventCount": 0,
+      "affectedTableCount": 5,
+      "wholeDatabaseAffected": false
+    }
+  ],
+  "affectedTableCount": 5,
+  "scratchParts": [
+    268,
+    338,
+    705,
+    707,
+    708,
+    712,
+    713,
+    714,
+    715
+  ],
+  "affectedDataReceiptPresent": false,
+  "mutationDispatched": false,
+  "notTerminalEvidence": true
+}

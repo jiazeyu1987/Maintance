@@ -1,0 +1,13 @@
+{
+  "observedAt": "2026-11-06T18:09:04.242569+00:00",
+  "phase": "green",
+  "actualPytestExitCode": 0,
+  "expectedResultObserved": true,
+  "containerRemoved": true,
+  "tests": [
+    "scripts/tests/test_capture_parent_guard.py"
+  ],
+  "outputSha256": "1dbec1e54797f87d7334eedfb0067c4915ed691ab7e625099bffeab5739f150d",
+  "diagnosticOnly": true,
+  "productionRecoveryAcceptance": false
+}

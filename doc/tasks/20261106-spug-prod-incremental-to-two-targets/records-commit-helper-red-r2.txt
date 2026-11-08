@@ -1,0 +1,28 @@
+.usage: test_commit_records_contract.py [-h] --mode {acceptance,final}
+                                       --expected-head EXPECTED_HEAD
+                                       --selection SELECTION --receipt RECEIPT
+                                       [--finalization FINALIZATION]
+                                       [--execute]
+test_commit_records_contract.py: error: the following arguments are required: --expected-head
+..FE.......................
+======================================================================
+ERROR: test_diff_check_batches_windows_argument_budget (__main__.RecordCommitContract.test_diff_check_batches_windows_argument_budget)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 227, in test_diff_check_batches_windows_argument_budget
+    MODULE.check_selected_diff(self.root, names, runner=runner)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'record_commit_under_test' has no attribute 'check_selected_diff'
+
+======================================================================
+FAIL: test_copy_resolves_its_own_checkout (__main__.RecordCommitContract.test_copy_resolves_its_own_checkout)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_commit_records_contract.py", line 218, in test_copy_resolves_its_own_checkout
+    self.assertEqual(self.task.resolve(), module.TASK)
+AssertionError: Windo[19 chars]1021/AppData/Local/Temp/tmpdr61zcuu/doc/tasks/[42 chars]ets') != Windo[19 chars]1021/.codex/worktrees/spug-restore-targets/Mai[59 chars]ets')
+
+----------------------------------------------------------------------
+Ran 28 tests in 0.713s
+
+FAILED (failures=1, errors=1)

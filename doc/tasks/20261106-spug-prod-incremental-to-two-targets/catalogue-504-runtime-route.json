@@ -1,0 +1,135 @@
+{
+  "observedAt": "2026-11-07T17:34:19.324572+00:00",
+  "container": "f615a60c76f46e4f6ae20ea6298f737fb9786684ce941fcc15763654461265bf",
+  "ports": {
+    "80/tcp": [
+      {
+        "HostIp": "127.0.0.1",
+        "HostPort": "18080"
+      }
+    ]
+  },
+  "nginxRoutes": [
+    "error_log /var/log/nginx/error.log;",
+    "    access_log  /var/log/nginx/access.log  main;",
+    "        listen       80 default_server;",
+    "        listen       [::]:80 default_server;",
+    "        include /opt/intruoyi-spug/smallapp-entry.locations.conf;",
+    "        include /opt/intruoyi-spug/release-center/locations.conf;",
+    "        location ^~ /api/ {",
+    "                proxy_pass http://127.0.0.1:9001;",
+    "\t\tproxy_read_timeout 180s;",
+    "        location ^~ /api/ws/ {",
+    "                proxy_pass http://127.0.0.1:9002;",
+    "        location / {",
+    "# configuration file /opt/intruoyi-spug/smallapp-entry.locations.conf:",
+    "location ^~ /backup-restore/ {",
+    "location = /backup-entry-api/incremental-plan {",
+    "    proxy_pass http://127.0.0.1:18081;",
+    "    proxy_read_timeout 55s;",
+    "    access_log off;",
+    "location = /backup-entry-api/automatic-incremental {",
+    "    proxy_pass http://127.0.0.1:18081;",
+    "    proxy_read_timeout 55s;",
+    "    access_log off;",
+    "location ^~ /backup-entry-api/ {",
+    "    proxy_pass http://127.0.0.1:18081;",
+    "    proxy_read_timeout 30s;",
+    "    access_log off;",
+    "# configuration file /opt/intruoyi-spug/release-center/locations.conf:",
+    "location ^~ /release-center/api/ {",
+    "    proxy_pass http://127.0.0.1:18111;",
+    "    proxy_read_timeout 30s;",
+    "    access_log off;",
+    "location ^~ /release-center/ {"
+  ],
+  "bridgeProcesses": [
+    {
+      "pid": 2124,
+      "configPath": "/var/lib/intruoyi-spug/release-center-bridge.private.json",
+      "applications": [
+        {
+          "id": "release-inventory",
+          "status": "ready",
+          "executorUrl": "http://host.docker.internal:18110"
+        },
+        {
+          "id": "intruoyi",
+          "status": "ready",
+          "executorUrl": "http://host.docker.internal:18112"
+        }
+      ]
+    }
+  ],
+  "hostExecutors": [
+    {
+      "pid": 35788,
+      "scripts": [
+        "C:/SpugHandoff/release/source/ops/spug/release-center/intruoyi_executor.py"
+      ],
+      "configPaths": [
+        "C:/SpugHandoff/release/executor.private.json"
+      ]
+    }
+  ],
+  "catalogueTimeoutCountInLast4MB": 11,
+  "catalogueErrors": [
+    {
+      "at": "2026/11/06 07:30:10",
+      "reason": "upstream timed out",
+      "upstream": "http://127.0.0.1:18111/applications/intruoyi/package-catalog"
+    },
+    {
+      "at": "2026/11/06 15:21:54",
+      "reason": "upstream timed out",
+      "upstream": "http://127.0.0.1:18111/applications/intruoyi/package-catalog"
+    },
+    {
+      "at": "2026/11/07 02:31:32",
+      "reason": "upstream timed out",
+      "upstream": "http://127.0.0.1:18111/applications/intruoyi/package-catalog"
+    },
+    {
+      "at": "2026/11/07 12:48:32",
+      "reason": "upstream timed out",
+      "upstream": "http://127.0.0.1:18111/applications/intruoyi/package-catalog"
+    },
+    {
+      "at": "2026/11/07 12:50:17",
+      "reason": "upstream timed out",
+      "upstream": "http://127.0.0.1:18111/applications/intruoyi/package-catalog"
+    },
+    {
+      "at": "2026/11/07 14:36:32",
+      "reason": "upstream timed out",
+      "upstream": "http://127.0.0.1:18111/applications/intruoyi/package-catalog"
+    },
+    {
+      "at": "2026/11/07 14:40:57",
+      "reason": "upstream timed out",
+      "upstream": "http://127.0.0.1:18111/applications/intruoyi/package-catalog"
+    },
+    {
+      "at": "2026/11/07 16:27:18",
+      "reason": "upstream timed out",
+      "upstream": "http://127.0.0.1:18111/applications/intruoyi/package-catalog"
+    },
+    {
+      "at": "2026/11/07 20:17:37",
+      "reason": "upstream timed out",
+      "upstream": "http://127.0.0.1:18111/applications/intruoyi/package-catalog"
+    },
+    {
+      "at": "2026/11/08 01:20:11",
+      "reason": "upstream timed out",
+      "upstream": "http://127.0.0.1:18111/applications/intruoyi/package-catalog"
+    },
+    {
+      "at": "2026/11/08 01:26:40",
+      "reason": "upstream timed out",
+      "upstream": "http://127.0.0.1:18111/applications/intruoyi/package-catalog"
+    }
+  ],
+  "writes": 0,
+  "productOrConfigurationChanges": 0
+}

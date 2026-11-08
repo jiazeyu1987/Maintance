@@ -1,0 +1,38 @@
+{
+  "observedAt": "2026-11-07T05:42:05.182935+00:00",
+  "phase": "regression",
+  "actualExitCode": 1,
+  "expectedResultObserved": false,
+  "containerRemoved": true,
+  "tests": [
+    "scripts/tests/test_main_readiness.py",
+    "scripts/tests/test_backup_variants.py",
+    "scripts/tests/test_native_import_process_evidence.py",
+    "scripts/tests/test_native_retained_failure.py",
+    "scripts/tests/test_retained_replacement_retry.py",
+    "scripts/tests/test_smallapp_binlog_ddl.py",
+    "scripts/tests/test_main_restore_target.py",
+    "scripts/tests/test_main_mysql_scheduler.py",
+    "scripts/tests/test_legacy_main_clearance.py"
+  ],
+  "outputSha256": "a63d205279b26a756686efac41bfafa4bedd4af09ad1753a1497636217a742c6",
+  "testedInputSha256": {
+    "ops/backup_engine/formal/formal_schema_evidence.py": "573b37a21d373e5b14ae18bc6eaa910fb7227d3ddb797846399465ec50ab9ac7",
+    "ops/recovery/recovery_data.py": "c463ae3054858731bbbda9c3bebbbf9236e9a0243674bae5574d7e8d5350da67",
+    "ops/recovery/recovery_minimal_runtime.py": "6e01a9600703a22b27a6928b4533f68dfdf8fb8665cbdf0180ee7c5dcc7775ea",
+    "ops/recovery/recovery_main_health.py": "b95f6529ac1dc5fc8d285424ae299ae2134c7497c9b042a4c176441a397d605e",
+    "ops/recovery/recovery_retained_retry.py": "80cd42b2638113c8b57a23173e77a98a3605df0683fe4100e677f16b3e923720",
+    "ops/backup_engine/standard_fixes.py": "e294084345dcd582459941747c78620a3a6aab459cfc49f8690a5cbeec1ce6a2",
+    "scripts/tests/test_main_readiness.py": "694e9927eeaf495f931b93724e94936e295f891fa555624b8bd8bb5e6a298ba0",
+    "scripts/tests/test_backup_variants.py": "625023e6d78314005a052d10b3748d8e981a4259b11c65cd7fafe44feeabe71c",
+    "scripts/tests/test_native_import_process_evidence.py": "cd21aa8700084dcaf19a3bf992d75ecba7a54ac6f072e4d9d415136441ef7263",
+    "scripts/tests/test_native_retained_failure.py": "47579635af456387faf58675304e9c5f4e3ddd6949e040b3142ec39a8e463deb",
+    "scripts/tests/test_retained_replacement_retry.py": "e87c009028369957be7716d1fabcb4c6803ba85df17ed5311e0146269400f130",
+    "scripts/tests/test_smallapp_binlog_ddl.py": "7df21f48e06ffc6279c12bb6b79fe14a708b322ac18ebe3bfdf2df8704e0d619",
+    "scripts/tests/test_main_restore_target.py": "244c553f629213d3736bab479fcf64ef54118cf3c0ecdbcb97ecefcb72f46922",
+    "scripts/tests/test_main_mysql_scheduler.py": "63bfbd8fafb85027a6c83d7ae25dd4e6cbba8eeec7287bc5dc4f6c1009ef4c18",
+    "scripts/tests/test_legacy_main_clearance.py": "f89bd6a4df21ef0ca8cb3454c3235530e832fd0b796eca399fe815122b1be471"
+  },
+  "isolatedProcesses": true,
+  "inputFilesUnchanged": true
+}

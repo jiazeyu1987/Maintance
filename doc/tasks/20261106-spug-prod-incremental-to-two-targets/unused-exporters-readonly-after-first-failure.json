@@ -1,0 +1,88 @@
+{
+  "status": "READ_ONLY",
+  "observedAt": "2026-11-08T02:57:22.237187+00:00",
+  "containers": [
+    {
+      "id": "a7aa973f623ad07adb82c25f9b5f352db74a00ea2abf22a8fbd0b4db4cdfeb2f",
+      "running": true,
+      "pid": 3707,
+      "startedAt": "2026-11-06T19:33:26.866151135Z",
+      "finishedAt": "0001-01-01T00:00:00Z",
+      "path": "sleep",
+      "args": [
+        "infinity"
+      ],
+      "topReturnCode": 1,
+      "topStderrBytes": 65,
+      "topStdoutLines": [],
+      "diagnosticMarkers": {
+        "warning": false,
+        "connection": false,
+        "No such": false,
+        "not running": false,
+        "error": true,
+        "cgroup": false,
+        "deprecated": false,
+        "not supported": false,
+        "permission": false,
+        "unable": false,
+        "ps": true
+      }
+    },
+    {
+      "id": "43ee735bfd1f0d864819a2cd03e8f8ce54bd2b9a8430cc42671a4981f3d6a41a",
+      "running": true,
+      "pid": 20891,
+      "startedAt": "2026-11-06T19:37:13.088349561Z",
+      "finishedAt": "0001-01-01T00:00:00Z",
+      "path": "sleep",
+      "args": [
+        "infinity"
+      ],
+      "topReturnCode": 1,
+      "topStderrBytes": 65,
+      "topStdoutLines": [],
+      "diagnosticMarkers": {
+        "warning": false,
+        "connection": false,
+        "No such": false,
+        "not running": false,
+        "error": true,
+        "cgroup": false,
+        "deprecated": false,
+        "not supported": false,
+        "permission": false,
+        "unable": false,
+        "ps": true
+      }
+    },
+    {
+      "id": "69e7bec0183a7d510942c06a4c85fd2f1663815b982f26226779b03ef776246c",
+      "running": true,
+      "pid": 23542,
+      "startedAt": "2026-11-06T19:39:58.674041512Z",
+      "finishedAt": "0001-01-01T00:00:00Z",
+      "path": "sleep",
+      "args": [
+        "infinity"
+      ],
+      "topReturnCode": 1,
+      "topStderrBytes": 65,
+      "topStdoutLines": [],
+      "diagnosticMarkers": {
+        "warning": false,
+        "connection": false,
+        "No such": false,
+        "not running": false,
+        "error": true,
+        "cgroup": false,
+        "deprecated": false,
+        "not supported": false,
+        "permission": false,
+        "unable": false,
+        "ps": true
+      }
+    }
+  ],
+  "mutationDispatched": false
+}

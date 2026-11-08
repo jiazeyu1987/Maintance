@@ -1,0 +1,18 @@
+{
+  "status": "OBSERVED",
+  "observedAt": "2026-11-07T22:18:22.384182+00:00",
+  "operationId": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+  "pid": 20213,
+  "state": "R",
+  "io": {
+    "rchar": 15304157122,
+    "wchar": 860,
+    "syscr": 38534,
+    "syscw": 2,
+    "read_bytes": 0,
+    "write_bytes": 8192,
+    "cancelled_write_bytes": 0
+  },
+  "nasFiles": [],
+  "mutationDispatched": false
+}

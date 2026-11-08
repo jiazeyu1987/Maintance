@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "AutomaticIncrementalUiRegression/v1",
+  "status": "PASS",
+  "startedAt": "2026-11-07T17:10:31.216Z",
+  "finishedAt": "2026-11-07T17:10:31.610Z",
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=tap",
+    "ops/spug/smallapp_ui_safety.test.cjs",
+    "ops/spug/smallapp_restore_result.test.cjs",
+    "ops/spug/smallapp-ui/package-catalog.test.cjs",
+    "ops/spug/smallapp-ui/package-catalog-dialog.test.cjs",
+    "ops/spug/smallapp-ui/embedded.test.cjs"
+  ],
+  "exitCode": 0,
+  "counts": {
+    "tests": 83,
+    "pass": 83,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "sourceHashBasis": "working-tree raw bytes; explicit SHA256",
+  "files": {
+    "ops/spug/smallapp-ui/app.js": {
+      "sha256": "c09a03ca716c596a9ba4d27dd4f1f51d531803ab205d6ba8e4e1c5a63f06ff0f"
+    },
+    "ops/spug/smallapp-ui/simple.js": {
+      "sha256": "fce48aea970ee59f4368bd7ee3035efcf3e1024aa8b00b8196f2dfadfb88d9c1"
+    },
+    "ops/spug/smallapp-ui/package-catalog.js": {
+      "sha256": "85b515816f44da2bc14c6f028a39120251ac454c785d0e7cda4a524ae6b493c1"
+    },
+    "ops/spug/smallapp-ui/embedded.js": {
+      "sha256": "ee3b61a49dab913fa81917d628df9efa73140c6ad11ac8b1faceaa3445133292"
+    },
+    "ops/spug/smallapp-ui/index.html": {
+      "sha256": "2f70a7e09c631d9cf16a94368cdfc4dec9f4fe4acc4b5e9ac26461adb0c73a07"
+    },
+    "ops/spug/smallapp-ui/simple.css": {
+      "sha256": "5159db0ff16154d8ddd77b4bd433867b7f3cd3446808219d245951bf969e5a3d"
+    },
+    "ops/spug/smallapp-ui/package-catalog.css": {
+      "sha256": "72e60108cd071166405b3febd5d72d296bf357f96ed3e433f89823f23afb715c"
+    },
+    "ops/spug/smallapp-ui/embedded.css": {
+      "sha256": "22cebbc16317b4439f77effbd9f776dda9e20ccd3a5136f278ee3e89306a0faa"
+    },
+    "ops/spug/smallapp_ui_safety.test.cjs": {
+      "sha256": "96c53e17f74a02979a448848e8c86b81f2315de159f4376f30a4f0ba2bfc0451"
+    },
+    "ops/spug/smallapp_restore_result.test.cjs": {
+      "sha256": "4ec74fb41abe254c5de799c21776e464a6c74b5a0fbb99299f165f919504671a"
+    },
+    "ops/spug/smallapp-ui/package-catalog.test.cjs": {
+      "sha256": "97c176dd3d823ef101de158c13bc8e9322c7a05f1012174629c153a970047da2"
+    },
+    "ops/spug/smallapp-ui/package-catalog-dialog.test.cjs": {
+      "sha256": "c977cb101366d2a01ceeec807cd08a69c9f8c30eb44a5a92aeda3a57853d7d1f"
+    },
+    "ops/spug/smallapp-ui/embedded.test.cjs": {
+      "sha256": "0fd0cd49c7a36b7096769796cfd785c73bd00c05d7f3930e5b81d151df0d94c8"
+    }
+  },
+  "logPath": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-incremental-ui-regression.tap",
+  "scope": "Local UI state unit regression only; no browser, server access, or backup execution"
+}

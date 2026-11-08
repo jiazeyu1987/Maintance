@@ -1,0 +1,95 @@
+{
+  "startedAt": "2026-11-06T10:44:00.703166+00:00",
+  "parentChainRef": "smallapp-7fec29a3e132463096aec915c08acab3",
+  "parentPointPin": {
+    "bytes": 6263032,
+    "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-433710bb8eb93e78351878966cb06caec1c420e87ef3d5c8dff9c493dc085eb9/.repository/point.json",
+    "sha256": "28e5f6023ad2e5aa5d3a340b4ede1dc249d98deb8fb9704db68b968cb4b8b4f7"
+  },
+  "start": {
+    "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+    "executedGtidSet": "",
+    "file": "binlog.000021",
+    "position": 23582326,
+    "serverVersion": "8.0.39"
+  },
+  "end": {
+    "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+    "serverVersion": "8.0.39",
+    "file": "binlog.000032",
+    "position": 908868289,
+    "executedGtidSet": ""
+  },
+  "segments": [
+    {
+      "file": "binlog.000021",
+      "startPosition": 23582326,
+      "stopPosition": 1074602282
+    },
+    {
+      "file": "binlog.000022",
+      "startPosition": 4,
+      "stopPosition": 1075372452
+    },
+    {
+      "file": "binlog.000023",
+      "startPosition": 4,
+      "stopPosition": 1073744324
+    },
+    {
+      "file": "binlog.000024",
+      "startPosition": 4,
+      "stopPosition": 1074982131
+    },
+    {
+      "file": "binlog.000025",
+      "startPosition": 4,
+      "stopPosition": 1074199078
+    },
+    {
+      "file": "binlog.000026",
+      "startPosition": 4,
+      "stopPosition": 1074146320
+    },
+    {
+      "file": "binlog.000027",
+      "startPosition": 4,
+      "stopPosition": 1074351169
+    },
+    {
+      "file": "binlog.000028",
+      "startPosition": 4,
+      "stopPosition": 1074361549
+    },
+    {
+      "file": "binlog.000029",
+      "startPosition": 4,
+      "stopPosition": 1074054088
+    },
+    {
+      "file": "binlog.000030",
+      "startPosition": 4,
+      "stopPosition": 1075056211
+    },
+    {
+      "file": "binlog.000031",
+      "startPosition": 4,
+      "stopPosition": 1074528282
+    },
+    {
+      "file": "binlog.000032",
+      "startPosition": 4,
+      "stopPosition": 908868289
+    }
+  ],
+  "binlogBytes": 12704683805,
+  "status": "FAIL",
+  "errorType": "FormalSnapshotError",
+  "errorCode": "FORMAL_CAPTURE_BINLOG_QUERY_SCOPE_UNPROVEN",
+  "diagnostic": {
+    "eventType": "Query",
+    "infoSha256": "141ee907036905eafce3fba28b8d31eb45eb75d5679b6cd35c73dab6f8486e51",
+    "eventCount": 17656
+  },
+  "finishedAt": "2026-11-06T10:44:19.421310+00:00"
+}

@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "IntegrationReviewCandidates/v1",
+  "candidateOnly": true,
+  "privateDirectory": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\integration-review-20261108-r1",
+  "mainOrIndexModified": false,
+  "normalization": "UTF-8 strict, optional BOM removed, CRLF normalized to LF; raw originals retained",
+  "rows": [
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/execution-log.md",
+      "mainWorktreeEqualsHeadAfterLineEndingNormalization": true,
+      "taskWorktreeEqualsHeadAfterLineEndingNormalization": true,
+      "strategy": "Keep the task execution log because the complete committed main log is its exact prefix, preserving both histories",
+      "entireMainCommittedTextIsPrefix": true,
+      "candidatePin": {
+        "file": "overlap-1-resolved-candidate.md",
+        "bytes": 42714,
+        "sha256": "7d95765866d0232b6799f8e82556cd49dee5e15512e8fc9063c6a4f68d35c1b8"
+      }
+    },
+    {
+      "path": "doc/tasks/20261104-spug-selectable-restore-targets/task.md",
+      "mainWorktreeEqualsHeadAfterLineEndingNormalization": true,
+      "taskWorktreeEqualsHeadAfterLineEndingNormalization": true,
+      "strategy": "Keep all task history and append a clearly dated, blockquoted complete main historical snapshot with provenance; no replacement of current state by an old state",
+      "entireTaskCommittedTextRetained": true,
+      "entireMainSnapshotRoundTripVerified": true,
+      "candidatePin": {
+        "file": "overlap-2-resolved-candidate.md",
+        "bytes": 21329,
+        "sha256": "ed9849957809345bb2174dd9823ac1dd8cb778f3a33cddcb4bcf46e45c897797"
+      }
+    },
+    {
+      "path": "docs/request-command-log.md",
+      "mainWorktreeEqualsHeadAfterLineEndingNormalization": false,
+      "taskWorktreeEqualsHeadAfterLineEndingNormalization": false,
+      "strategy": "Committed main append is already included by task. Keep task pending updates including historical redaction in the future task commit. Preserve the main-only nine-line parallel insertion separately and restore it as an unstaged change after authorized integration; do not commit it as this task.",
+      "mainCommittedAdditionAlreadyRetained": true,
+      "mainParallelInsertionLines": 9,
+      "mainParallelInsertionSeparateFromTaskCommit": true,
+      "knownHistoricalCredentialPresentInMain": true,
+      "taskPendingRedactionPreserved": true,
+      "committedCandidateMayContainHistoricalSensitiveText": true,
+      "committedCandidatePin": {
+        "file": "overlap-3-committed-resolution-candidate.md",
+        "bytes": 1231438,
+        "sha256": "0b3ff50c4c6501ec8aee671c1c129a457ca448ba5438b0399fb8baafd7dcd592"
+      },
+      "futureTaskCandidatePin": {
+        "file": "overlap-3-future-task-resolution-candidate.md",
+        "bytes": 1245195,
+        "sha256": "9acc959d401ac998bef0b393737062855a3ef8cb177bd7b3a941b767596a7f21"
+      },
+      "parallelReplayExitCode": 0,
+      "parallelRestoredCandidatePin": {
+        "file": "overlap-3-future-main-worktree-candidate.md",
+        "bytes": 1247267,
+        "sha256": "78c5112e51955ec7db2cd3a9b3db64250a20dd8faa715e38e5af5969db4a71a1"
+      },
+      "removingOnlyParallelInsertionExactlyRestoresTaskCandidate": true
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "observedAt": "2026-11-07T04:29:18.409611+00:00",
+  "phase": "red",
+  "actualExitCode": 1,
+  "expectedResultObserved": true,
+  "containerRemoved": true,
+  "tests": [
+    "scripts/tests/test_legacy_main_clearance.py"
+  ],
+  "outputSha256": "e2adce96b21a333e9823a61e01dd596d458e506157bc94bb679ab5c1bcdfba1f",
+  "testedInputSha256": {
+    "ops/backup_engine/formal/formal_schema_evidence.py": "573b37a21d373e5b14ae18bc6eaa910fb7227d3ddb797846399465ec50ab9ac7",
+    "ops/recovery/recovery_data.py": "c463ae3054858731bbbda9c3bebbbf9236e9a0243674bae5574d7e8d5350da67",
+    "ops/recovery/recovery_minimal_runtime.py": "1c831b9af52c4f05ca4131bcf7fe8e7a79f44a1c58284444159d63b060d04309",
+    "ops/recovery/recovery_retained_retry.py": "000da24ac3d900abe830fa028ae3dd59a7c2d650a285ee3671e627b7be102b9b",
+    "ops/backup_engine/standard_fixes.py": "e294084345dcd582459941747c78620a3a6aab459cfc49f8690a5cbeec1ce6a2",
+    "scripts/tests/test_legacy_main_clearance.py": "d9787b8f91022dd71f8d460efb8bf7b65925aed1f3abd343a5de4d629dcbbfb7"
+  },
+  "isolatedProcesses": true,
+  "inputFilesUnchanged": true
+}

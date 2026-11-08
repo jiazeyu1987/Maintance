@@ -1,0 +1,78 @@
+{
+  "observedAt": "2026-11-07T18:13:08.715471+00:00",
+  "executor": {
+    "pid": 35788,
+    "createTime": 1793775245.2357974,
+    "exe": "C:\\Users\\D01021\\Documents\\spug-handoff-work-20261030\\runtime\\Python312-3.12.14\\python.exe",
+    "script": "C:\\SpugHandoff\\release\\source\\ops\\spug\\release-center\\intruoyi_executor.py",
+    "configPin": {
+      "path": "C:\\SpugHandoff\\release\\executor.private.json",
+      "bytes": 14846,
+      "sha256": "e03e70f9e386efa4f4a35f38cb3747f577e37152169e38a4d5562149e6ee623e"
+    },
+    "launchRecordPin": {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\catalogue-executor-process-launch.private.json",
+      "bytes": 6123,
+      "sha256": "1362ca015810ba3f6d37af71f5a635ceaeeb850533b50cc8fc6928a452e4000c"
+    },
+    "services": [],
+    "childPids": [
+      24824
+    ],
+    "cwd": "C:\\SpugHandoff\\release\\source\\ops\\spug\\release-center"
+  },
+  "bridge": {
+    "pid": 2124,
+    "argv": [
+      "python3",
+      "-B",
+      "/opt/intruoyi-spug/release-center/spug_bridge.py",
+      ""
+    ],
+    "cwd": "/data/spug/spug_api",
+    "exe": "/usr/local/bin/python3.9",
+    "configPin": {
+      "path": "/var/lib/intruoyi-spug/release-center-bridge.private.json",
+      "bytes": 792,
+      "sha256": "2e7ead665bfdeafb439c5b5b1bbead070451e759db3f2bfb6a4732c7f9116f41"
+    },
+    "containerId": "f615a60c76f46e4f6ae20ea6298f737fb9786684ce941fcc15763654461265bf",
+    "supervisor": {
+      "parentPid": 1,
+      "parentArgv": [
+        "/usr/bin/python3",
+        "/usr/bin/supervisord",
+        "-c",
+        "/etc/supervisord.conf",
+        ""
+      ],
+      "programs": [
+        {
+          "name": "program:release-center-bridge",
+          "command": "python3 -B /opt/intruoyi-spug/release-center/spug_bridge.py",
+          "autorestart": "unexpected",
+          "exitcodes": "0"
+        }
+      ],
+      "configPin": {
+        "path": "/etc/supervisord.conf",
+        "bytes": 1685,
+        "sha256": "5a39c7e4f6556614bc0d370ddc56cee3cc78287731337b751e04762712bf63ad"
+      },
+      "supervisorctlConfigured": false
+    }
+  },
+  "protected": {
+    "smallappEntryPid": 124978,
+    "source57ServicePid": 25086
+  },
+  "history": {
+    "path": "C:\\SpugHandoff\\release\\state\\state.sqlite3",
+    "payloadSha256": "bd65b05d8c1cd26f8c3c33de7b45708f5cf074cd4006c9ad4b915cd1d2c42284",
+    "jobsSha256": "02663df21cf0943090df2788bf5a8771238a2041cce69192d37a5130d878cf12",
+    "jobCount": 309,
+    "startupChangedJobIds": [],
+    "activeJobIds": []
+  },
+  "runtimeWrites": 0
+}

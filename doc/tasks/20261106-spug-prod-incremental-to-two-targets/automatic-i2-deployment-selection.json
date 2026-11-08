@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "AutomaticStageDeployment/v1",
+  "kind": "I2",
+  "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+  "sourceCommit": "0dc7429d4758a208a5b0c098111fe9702ab63235",
+  "spugCommit": "0d445782dc06995b3c84b1b45146ea4b75483f92",
+  "sourceInstallationPin": {
+    "file": "automatic-source-control-installation-0dc7429.json",
+    "bytes": 9263,
+    "sha256": "d61e003f7e0fd22e9acf7010de92737110a52c831a78697d39cd8d237c72229f"
+  },
+  "sourcePrivateInstallationPin": {
+    "file": "automatic-source-control-installation-0dc7429.private.json",
+    "bytes": 16268,
+    "sha256": "a1867b6b8b2c4e3bb6fd391b6c4ff719d9611b4cc05f6436796b2365fa71a5f1"
+  },
+  "sourceBuildPin": {
+    "file": "release-build-0dc7429.json",
+    "bytes": 933,
+    "sha256": "9b9acdf602425e6c507f8143b9e95e35320fae1e140a975382ffe25016c4eb4e"
+  },
+  "spugInstallationPin": {
+    "file": "automatic-spug-installation-0d44578.json",
+    "bytes": 3174,
+    "sha256": "48adbd12ce2b6c434ba81629e38bfbfcdeac11d419f63c520c45f75791b70855"
+  }
+}

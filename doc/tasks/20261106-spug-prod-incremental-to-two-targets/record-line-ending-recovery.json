@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-08T03:17:34.083006+00:00",
+  "failedAttempt": "records-execute-acceptance-1.json",
+  "previousHead": "0dc7429d4758a208a5b0c098111fe9702ab63235",
+  "stagedPathsReviewed": 886,
+  "allStagedPathsOwnedBySelection": true,
+  "originalCRLFFindings": 7629,
+  "affectedFiles": 117,
+  "originalLogBlankEOFPaths": [
+    "automatic-closeout-helper-regression-r2.txt",
+    "catalogue-login-helper-r4-regression.txt"
+  ],
+  "red": {
+    "failed": 3,
+    "passed": 2,
+    "exitCode": 1
+  },
+  "green": {
+    "passed": 5,
+    "exitCode": 0
+  },
+  "realStagedDiffCheckExitCode": 0,
+  "explicitOwnedUnstagePerformed": true,
+  "workingTreeBytesPreserved": true,
+  "indexEmpty": true,
+  "recordFilesNotReencoded": true,
+  "sourceAndServerChanges": false
+}

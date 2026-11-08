@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T18:29:21.404275+00:00",
+  "exitCode": 0,
+  "containerRemoved": true,
+  "inputFilesUnchanged": true,
+  "inputFiles": {
+    "automatic_target_history_guard.py": "ebbdd7275cf8aabbfc3abea28483529275f89a94496a4cae12881b1bbe7dd6c1",
+    "test_automatic_target_history_guard.py": "2050b6a413cca89b068cd0975a7d7f0cf88bdd63e27899dca6a43ac183340120",
+    "automatic_targets_install_script.py": "8b4f67bfd0844b60a5a9a153ae841ad355bfb5a2c06ab3497f5e6623074a266b"
+  },
+  "outputSha256": "ede8b62d04ca7f0e12af5e740c13d683f6f48bdb7da080d77837473c379d634f",
+  "network": "none",
+  "workspaceReadOnly": true
+}

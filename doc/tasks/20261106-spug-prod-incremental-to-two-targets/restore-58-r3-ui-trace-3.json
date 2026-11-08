@@ -1,0 +1,63 @@
+[
+  {
+    "observedAt": "2026-11-07T06:35:34.350Z",
+    "stage": "browser-launch"
+  },
+  {
+    "observedAt": "2026-11-07T06:35:34.911Z",
+    "stage": "browser-context"
+  },
+  {
+    "observedAt": "2026-11-07T06:35:35.705Z",
+    "stage": "browser-page"
+  },
+  {
+    "observedAt": "2026-11-07T06:35:35.846Z",
+    "stage": "page-created"
+  },
+  {
+    "observedAt": "2026-11-07T06:35:38.526Z",
+    "stage": "login-navigation"
+  },
+  {
+    "observedAt": "2026-11-07T06:35:39.275Z",
+    "stage": "response",
+    "path": "/",
+    "httpStatus": 200
+  },
+  {
+    "observedAt": "2026-11-07T06:35:40.206Z",
+    "stage": "login-controls"
+  },
+  {
+    "observedAt": "2026-11-07T06:35:40.251Z",
+    "stage": "login-click"
+  },
+  {
+    "observedAt": "2026-11-07T06:35:40.317Z",
+    "stage": "request",
+    "method": "POST",
+    "path": "/api/account/login/"
+  },
+  {
+    "observedAt": "2026-11-07T06:35:43.351Z",
+    "stage": "response",
+    "path": "/api/account/login/",
+    "httpStatus": 200
+  },
+  {
+    "observedAt": "2026-11-07T06:35:43.362Z",
+    "stage": "login-response-parsed",
+    "rejected": false
+  },
+  {
+    "observedAt": "2026-11-07T06:35:43.827Z",
+    "stage": "login-complete"
+  },
+  {
+    "observedAt": "2026-11-07T06:36:54.852Z",
+    "stage": "request",
+    "method": "POST",
+    "path": "/backup-entry-api/operations"
+  }
+]

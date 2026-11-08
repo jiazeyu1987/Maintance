@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "scope": "readonly retained development checkout and 42 preexisting asset byte pins only; not finalization",
+  "observedAt": "2026-11-07T19:39:31.166936+00:00",
+  "developmentCheckoutRetained": true,
+  "gitRegistrationRetained": true,
+  "assetCount": 42,
+  "assetBytes": 1061608,
+  "allOriginalAssetPinsMatch": true,
+  "temporaryBuildManifestCount": 10,
+  "gitWritesPerformed": false
+}

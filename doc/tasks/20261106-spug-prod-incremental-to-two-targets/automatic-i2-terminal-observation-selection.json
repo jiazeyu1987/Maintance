@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "AutomaticTerminalObservationSelection/v1",
+  "status": "PASS_SELECTED_OBSERVATION",
+  "observedAt": "2026-11-08T02:30:32.128265+00:00",
+  "kind": "I2",
+  "operationId": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291",
+  "failedObservationPins": [
+    {
+      "file": "automatic-i2-verify-first-result.json",
+      "bytes": 969,
+      "sha256": "16e6c03bd2d230c61a4e14e358ded3ea9f05827a4e2f1e972eaba3d997133ebd"
+    },
+    {
+      "file": "automatic-i2-verify-second-result.json",
+      "bytes": 1582,
+      "sha256": "cd23092058c088ac856ee6eeebbf6d920cdbb9e4f4659110df779ed83b0a231f"
+    }
+  ],
+  "selectedObservationPin": {
+    "file": "automatic-i2-verify-third-result.json",
+    "bytes": 1549,
+    "sha256": "68df1738b548c53a32099fcb6201902133cf3c67c416a4ed05c3c3eb53821e31"
+  },
+  "firstFailure": "LOGIN_RESPONSE_TIMEOUT_CAUSE_UNCONFIRMED",
+  "secondFailure": "ONE_PAGE_ERROR_DETAIL_NOT_CAPTURED_BY_OLD_HELPER",
+  "thirdObservation": "ACTUAL_ZERO_PAGE_ERRORS_AND_AUTHENTICATED_ORIGINAL_SUCCESS",
+  "priorPageErrorReproduced": false,
+  "priorFailuresPreserved": true,
+  "diagnosticHelperPin": {
+    "file": "automatic_incremental_ui_acceptance.cjs",
+    "bytes": 28342,
+    "sha256": "4e68d7a1cf93561c6ffe3e5ccb1bf44ccaf3db172631b34e1e1b227c20d8419e"
+  },
+  "noProductionRuntimeOrBackupInputsChanged": true
+}

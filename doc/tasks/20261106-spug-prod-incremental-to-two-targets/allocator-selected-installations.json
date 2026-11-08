@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "TaskAllocatorInstallations/v1",
+  "targets": {
+    "58": "packaged-frontend-target-installation-58.json",
+    "59": "frontend-target-installation-59.json"
+  },
+  "contracts": {
+    "58": "target-packaged-frontend-contract-58.json",
+    "59": "target-frontend-contract-59.json"
+  }
+}

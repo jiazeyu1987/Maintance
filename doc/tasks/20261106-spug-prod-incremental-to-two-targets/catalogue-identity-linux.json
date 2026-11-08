@@ -1,0 +1,31 @@
+{
+  "observedAt": "2026-11-07T18:07:50.774999+00:00",
+  "image": "sha256:14a4933e6cef421424f7a66d89a3f4eafcbd0d90e0a822251f298e05132dc735",
+  "containerName": "spug-catalogue-identity-tests-20261108-v1",
+  "exitCode": 0,
+  "containerRemoved": true,
+  "network": "none",
+  "readOnlyBind": true,
+  "sourcePins": {
+    "executor.py": "d1381bcb535d5ebc6104142aa323371ebe1bd40bb2f8b22f1b18ffcd69df315f",
+    "state_store.py": "70c40a1237d26a7dca288b8d3bb56bebe0be20cc39f94cdef874a4b7780e626a",
+    "release_order.py": "0b7c7bd1c31f1f68c319a6ac1319988b98b2a811ac3daf9619d69a3e7137f10f",
+    "application_registry.py": "321aac4287bb520b20ae0afdb20e36e70065121f8b2caea74275e91093a51045",
+    "release_http.py": "b0c90284c6b5320ba1fc40f2932363f8080845d3d98291fe4a280d4f8dc38f1e",
+    "package_catalog.py": "335b06af178da3e64456ed1c96843387b42ed7031dc56f0c02864aeb515fc7a7",
+    "package_presence.py": "a4cc271309ece2b681f9a239cc8a43e0df658c09a17d862a50b02fba792da7ec",
+    "nas_connection.py": "088c6d191e5623f1cdd3cdd1cd606f4e5577a87e1385985cc816a941708aa6dd",
+    "test_release_identity.py": "d76256d97a9a90c2d33de9d3a0708a6204b5e9f6004840ded8356203fa4a351d",
+    "test_applications.py": "0f06048d1eaa3bd4144204f82424712fb23e0bd54ba372130c988abc1dcde60d",
+    "test_commit_catalog.py": "4deb5cbbc948e0848812c12bb3960de4d2cebf0c1931e2da70615585079370cf"
+  },
+  "sourceUnchanged": true,
+  "testSummary": [
+    "PREFLIGHT_PYTHON 3.12.15",
+    "PREFLIGHT_GIT git version 2.39.5",
+    "Ran 15 tests in 7.408s",
+    "OK"
+  ],
+  "outputSha256": "64c5b35c4015a5648263b20aa6ce4738d4065c499d2a30e54cab3b7fd571775b",
+  "productionOperations": 0
+}

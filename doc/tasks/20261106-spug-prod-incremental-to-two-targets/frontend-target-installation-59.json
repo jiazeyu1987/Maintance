@@ -1,0 +1,54 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-07T06:15:04.004097+00:00",
+  "sourceCommit": "9c93449e99ae0790c8678a570d78a98b61d96d87",
+  "host": "172.30.30.59",
+  "service": "spug-main-restore-59-20261104-v3.service",
+  "engine": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/engine-frontend-9c93449",
+  "fileCount": 127,
+  "packageSha256": "7a7894c659457a9826976aae3ed23d89c73cbb4d30051900bbec18a1b420fa6f",
+  "fileManifestSha256": "d2d3baf54ced075874c8048528964c4fa4bd3a12d7beaff0f3dd2d84676178df",
+  "ownerConfigurationPin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-recovery-frontend-9c93449.json",
+    "bytes": 23026,
+    "sha256": "12853a1def82fe0143f8916329638cb7b219fa17856a55b40c367ac988612ce5"
+  },
+  "controlConfigurationPin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/control-59-frontend-9c93449.json",
+    "bytes": 2356,
+    "sha256": "db53eb56a638cb591298f1bb38ef8bc303b64ee679ab9639b9329dc923f6e6e1"
+  },
+  "previousReceiptPin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/frontend-9c93449-previous-target-installation.json",
+    "bytes": 1628,
+    "sha256": "48e65fb8baf687e362727a29d5a480ce86def2599a97820fe94a1dd161114dac"
+  },
+  "currentReceiptPin": {
+    "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/target-installation.json",
+    "bytes": 1625,
+    "sha256": "73d7eed2d0366aa70efc96ca19f579ddc7f4d36412f7d56d0fe718c9e8010959"
+  },
+  "dropinPin": {
+    "path": "/etc/systemd/system/spug-main-restore-59-20261104-v3.service.d/zzz-frontend-9c93449.conf",
+    "bytes": 838,
+    "sha256": "4d0867db9483f910acb8d2c0648185164b81f6cfd635d15c7855bdf1b2c5d984"
+  },
+  "oldControlPid": 25589,
+  "controlPid": 5885,
+  "liveMaxOpenFiles": 65536,
+  "originalContainerCount": 201,
+  "allBusinessDefinitionsAndRuntimeUnchanged": true,
+  "fstabAndProtectedMountsUnchanged": true,
+  "targetAndSourceConfigurationUnchanged": true,
+  "failedOriginalFilesPreserved": 0,
+  "failedOriginalBytesRead": 0,
+  "retainedReservationUnchanged": false,
+  "noMutationReservationAbsent": true,
+  "retainedClearanceUnchanged": false,
+  "actualSelectionVerifiedBeforeActivation": true,
+  "actualHealthContractVerified": true,
+  "frontendReadiness": null,
+  "failureCustodyPin": null,
+  "previousGenerationsRetained": true,
+  "restoreDispatched": false
+}

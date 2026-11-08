@@ -1,0 +1,20 @@
+{
+  "observedAt": "2026-11-07T23:02:05.012481+00:00",
+  "operationId": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+  "processes": [
+    {
+      "pid": 17042,
+      "kind": "CAPTURE_WORKER",
+      "state": "S",
+      "waitChannel": "hrtimer_nanosleep"
+    },
+    {
+      "pid": 31020,
+      "kind": "MYSQL_QUERY",
+      "state": "R",
+      "waitChannel": "0"
+    }
+  ],
+  "readOnly": true,
+  "mutationDispatched": false
+}

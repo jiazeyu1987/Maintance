@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "observedAt": "2026-11-06T18:14:04.517407+00:00",
+  "previousCommit": "6319024c003ead602d59e7697673fa3c39807863",
+  "implementationCommit": "d487abf28ae38c2e6db445d8b888bf06b32df4e5",
+  "files": [
+    "ops/backup_engine/standard_fixes.py",
+    "ops/backup_engine/formal/formal_capture_parent_guard.py",
+    "scripts/tests/test_capture_parent_guard.py",
+    "scripts/tests/test_backup_variants.py",
+    "docs/experience-index.md",
+    "docs/release-agent-checklist.md"
+  ],
+  "testedInputSha256": {
+    "ops/backup_engine/standard_fixes.py": "d286bd7f67858108eb9c9c837ad535fda96ae6efee97231cb9869e152c107254",
+    "ops/backup_engine/formal/formal_capture_parent_guard.py": "4a4a08ff3dc5e2da9636b4518dbf010a52d3450da23796642a488e761be46ef9",
+    "scripts/tests/test_capture_parent_guard.py": "e956074c4679c7211feda0d751b27cd046705bc3ced27308cbb154aee1b87bfe",
+    "scripts/tests/test_backup_variants.py": "3becb8003884ab8539fd76ba71fc1ad068d7eb666ebe5bbc15275f2a25a38875",
+    "docs/experience-index.md": "f3f8ef36811bfa1396a97c9a3a726db1bfbf8216241c8fcade8b2a6a3b3bbec2",
+    "docs/release-agent-checklist.md": "e24210c6b079c3d13a049710166076ce80631e63137e0c7ac4bac78b87da9749"
+  },
+  "standardFileCount": 127,
+  "expectedStandardFileManifestSha256": "8198ce09a68f347e9328292570217ca2842e2e321ecdbabfbc7c9c6385391aa3",
+  "taskAcceptanceComplete": false
+}

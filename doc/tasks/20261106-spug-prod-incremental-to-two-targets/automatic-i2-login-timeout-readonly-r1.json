@@ -1,0 +1,20 @@
+{
+  "observedAt": "2026-11-08T02:20:53.216431+00:00",
+  "status": "READ_ONLY_DIAGNOSIS",
+  "tokenStored": true,
+  "accountInputPresent": true,
+  "captchaInputPresent": true,
+  "noticeCount": 0,
+  "businessWrites": 0,
+  "rootHttpStatus": 200,
+  "rootHttpSeconds": 2.266,
+  "dockerLogsExitCode": 0,
+  "loginHttpStatuses": [],
+  "knownErrorMarkers": {
+    "database is locked": false,
+    "OperationalError": false,
+    "worker timeout": false,
+    "Traceback": false,
+    "upstream timed out": false
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "status": "READ_ONLY",
+  "observedAt": "2026-11-08T01:55:35.472740+00:00",
+  "mainCommit": "e2e89420851a57885f9c1ddf22ff1862916add83",
+  "taskCommit": "0dc7429d4758a208a5b0c098111fe9702ab63235",
+  "mergeBase": "e1389aa621bc92bc2f2e02ebdbc249d3c3086808",
+  "mainIndexEmpty": true,
+  "dirtyFileCount": 9949,
+  "incomingFileCount": 721,
+  "dirtyIncomingOverlap": {
+    "docs/request-command-log.md": {
+      "bytes": 1210931,
+      "sha256": "835553401940f3967c40b3ad8598c4fc5f11e2452be4c7264f338b3f6840a40d",
+      "gitStatus": " M"
+    }
+  },
+  "noMainChanges": true
+}

@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "operationId": "smallapp-4cd6779eaf7d405889a07feb47d0a66b",
+  "duplicateObservationExitCode": 1,
+  "duplicateObservationRefusedBeforeBrowserLaunch": true,
+  "allFourObservationFilesUnchanged": true,
+  "actualSuccessfulTerminalSelectionVerified": true,
+  "businessWrites": 0
+}

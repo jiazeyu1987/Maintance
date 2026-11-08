@@ -1,0 +1,35 @@
+{
+  "request": {
+    "action": "RESTORE",
+    "operationId": "smallapp-b4f35606e4854516960050a76473038b",
+    "parentChainRef": null,
+    "recoveryPointRef": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+    "schemaVersion": "SmallAppBackupUiRequest/v1",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1"
+  },
+  "applicationId": "intruoyi-57-safe-20261024-v1",
+  "spugTaskId": 9,
+  "createdAt": "2026-11-07T04:48:48.252220+00:00",
+  "spugHistoryId": 369,
+  "dispatchErrorCode": null,
+  "dispatchState": "DISPATCHING",
+  "cancelledUnaccepted": false,
+  "displayContext": {
+    "server": "172.30.30.57",
+    "mode": "safe",
+    "restoreMode": "replace"
+  },
+  "result": {
+    "action": "RESTORE",
+    "errorCode": "MAIN_HEALTH_ENDPOINT_INVALID",
+    "logRefs": [
+      "smallapp-b4f35606e4854516960050a76473038b-originals"
+    ],
+    "operationId": "smallapp-b4f35606e4854516960050a76473038b",
+    "resultRef": "smallapp-b4f35606e4854516960050a76473038b-result",
+    "schemaVersion": "SmallAppBackupUiResult/v1",
+    "state": "FAILED"
+  },
+  "repeatSubmissionAllowed": false
+}
