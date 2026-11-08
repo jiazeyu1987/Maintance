@@ -427,6 +427,8 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
     replace(name, "                    '-e', statement]).decode('utf-8')",
         "                    '-e', statement], mutation=mutation).decode('utf-8')")
     payload['common/recovery_main_target.py'] = (root/'ops/recovery/recovery_main_target.py').read_bytes()
+    payload['common/recovery_archive_versions.py'] = (root/'ops/recovery/recovery_archive_versions.py').read_bytes()
+    payload['common/recovery_program_archive.py'] = (root/'ops/recovery/recovery_program_archive.py').read_bytes()
     payload['common/recovery_target_sources.py'] = (root/'ops/recovery/recovery_target_sources.py').read_bytes()
     payload['common/recovery_mysql_scheduler.py'] = (root/'ops/recovery/recovery_mysql_scheduler.py').read_bytes()
     payload['common/recovery_main_health.py'] = (root/'ops/recovery/recovery_main_health.py').read_bytes()

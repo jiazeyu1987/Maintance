@@ -368,19 +368,15 @@ def release_retained_protections(configuration, request, root, claim):
 
 
 def application_inputs(native):
+    from recovery_archive_versions import resolve_archive_images
     value = validate(native.config)
     services = native.config_services
+    images = resolve_archive_images(native.material['versionPins'],
+        [{key: binding[key] for key in ('role', 'versionPath')}
+         for binding in value['archiveImageBindings']], reader=_document,
+        mismatch_code='MAIN_ARCHIVED_IMAGE_MISMATCH')
     for binding in value['archiveImageBindings']:
-        matches = []
-        for reference in native.material['versionPins']:
-            item = _document(reference)
-            try:
-                for key in binding['versionPath']:
-                    item = item[key]
-            except (KeyError, IndexError, TypeError):
-                continue
-            matches.append(item)
-        require(matches == [binding['imageId']] and
+        require(images[binding['role']]['imageId'] == binding['imageId'] and
                 services[binding['role']]['imageId'] == binding['imageId'], 'MAIN_ARCHIVED_IMAGE_MISMATCH')
     _writer_evidence(native, value)
     pins = {p['path']: p for p in value['configurationPins']}
