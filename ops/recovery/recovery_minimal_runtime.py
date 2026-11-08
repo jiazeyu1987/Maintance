@@ -55,8 +55,15 @@ class MinimalData(NativeData):
             checksum = preserve_binary_logging(self, path, checksum)
         return super().import_sql(path, checksum)
 
-    def __init__(self, configuration, request, source, policy, chain, target, root, input_pins):
+    def __init__(self, configuration, request, source, policy, chain, target, root, input_pins, *, native_context=None):
         require(os.name == 'posix', 'NATIVE_LINUX_REQUIRED')
+        from recovery_program_native import _NativeView
+        require(native_context is not None or request['targetConfigRef'] not in
+                configuration.get('targetProgramPolicies', {}), 'PROGRAM_NATIVE_CONTEXT_REQUIRED')
+        if native_context is not None:
+            require(type(native_context) is _NativeView, 'PROGRAM_NATIVE_CONTEXT_INVALID')
+            native_context.validate_inputs(configuration, request, target)
+        self.native_context = native_context
         self.original = request
         self.request = dict(request, requestId=request['operationId'])
         self.source, self.chain, self.config = source, chain, target
@@ -66,7 +73,7 @@ class MinimalData(NativeData):
         # Read-only query recipes are local configuration, not approval records.
         self.plan = {'recoveryPoint': chain[-1][2]['recoveryPoint']}
         self.material = chain[-1][2]
-        self.budget = Budget(configuration['deadlineMilliseconds'])
+        self.budget = native_context.budget if native_context is not None else Budget(configuration['deadlineMilliseconds'])
         self.root = root
         self.input_pins = input_pins
         self.original_pins = []
@@ -82,6 +89,7 @@ class MinimalData(NativeData):
         self.snapshots = {}
         self.target = {'targetIdentityPin': write(root/'target-configuration.json', target)}
         self.db_container = self.config_services['mysql']['id']
+        self.guard()
         self.db_uuid = self.database_uuid()
         sql = self.modules['formal_sql_restore']; native = self
 
@@ -111,6 +119,8 @@ class MinimalData(NativeData):
         return dict(id=item['id'], imageId=item['imageId'], mounts=self.snapshots[role]['Mounts'])
 
     def guard(self):
+        if self.native_context is not None:
+            self.native_context.guard_native(self)
         self.budget.remaining()
 
     def inspect(self, identity):
@@ -317,6 +327,10 @@ class MinimalData(NativeData):
             observations[role] = dict(containerId=self.config_services[role]['id'], state='START_COMMAND_COMPLETED')
         return dict(services=observations, state='START_COMMANDS_COMPLETED',
             healthVerification='NOT_PERFORMED', businessAcceptance='NOT_PERFORMED', isolation='NOT_CHECKED')
+
+
+from recovery_main_target import guarded_type
+MinimalData = guarded_type(MinimalData)
 
 
 def execute(configuration, request, root, input_pins):

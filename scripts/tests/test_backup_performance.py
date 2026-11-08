@@ -168,6 +168,7 @@ def test_sql_expand_hashes_consumed_stream_without_separate_hash_pass(tmp_path, 
 
 def test_restore_hot_guard_does_not_rehash_inputs():
     native = MinimalData.__new__(MinimalData)
+    native.native_context = None
     native.budget = RecoveryBudget(10000)
     native.input_pins = [{'path': '/not-read-in-hot-loop', 'bytes': 1000000000, 'sha256': '0'*64}]
     native.archive_guard = SimpleNamespace(check=Mock())

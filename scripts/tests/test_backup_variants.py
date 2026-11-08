@@ -455,7 +455,7 @@ chain=[(None,None,{'recoveryPoint':'component-point','objects':{'method':'PHYSIC
 for size,expected in [(64*1024**3,'FORMAL_DATA_LIMITS_REQUIRED'),(16*1024**3,'VALID')]:
  configuration['dataLimits']={'max_rows':10000000,'max_nodes':100000000,'max_bytes':size,'seconds':7200}
  try:
-  runtime.MinimalData(configuration,{'operationId':'component'},None,{},chain,target,Path(sys.argv[2]),[])
+  runtime.MinimalData(configuration,{'operationId':'component','targetConfigRef':'component-target'},None,{},chain,target,Path(sys.argv[2]),[])
  except TargetBoundary:
   assert expected=='VALID','Invalid budget reached target access before formal validation'
  except Exception as error:

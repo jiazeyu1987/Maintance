@@ -44,6 +44,22 @@ class _NativeView:
     def guard(self):
         self._context._view_guard(self)
 
+    def validate_inputs(self, configuration, request, target):
+        """Bind the complete constructor inputs before any target access."""
+        self.guard()
+        require(configuration == self._configuration, 'PROGRAM_NATIVE_CONFIGURATION_CHANGED')
+        require(request == self._context._request, 'PROGRAM_NATIVE_REQUEST_CHANGED')
+        require(target == self._configuration['targets'][self._context._request['targetConfigRef']],
+                'PROGRAM_NATIVE_TARGET_CHANGED')
+
+    def guard_native(self, native):
+        """Check the executing object's fields, not only this view's snapshot."""
+        self.guard()
+        require(native.original == self._context._request, 'PROGRAM_NATIVE_REQUEST_CHANGED')
+        require(native.config == self._configuration['targets'][self._context._request['targetConfigRef']],
+                'PROGRAM_NATIVE_TARGET_CHANGED')
+        require(native.budget is self.budget, 'PROGRAM_NATIVE_BUDGET_CHANGED')
+
 
 class MainNativeExecutionContext:
     def __init__(self, owner, request, operation_root, *, binding_pin, lock_fd,

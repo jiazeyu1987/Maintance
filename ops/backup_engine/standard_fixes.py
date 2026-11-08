@@ -239,17 +239,39 @@ def apply(payload):
     # collect identity baselines. All original hash/metadata checks remain.
     replace('common/recovery_minimal_runtime.py',
         '    def __init__(self, configuration, request, source, policy, chain, target, root, input_pins):\n',
-        '''    def __init__(self, configuration, request, source, policy, chain, target, root, input_pins):
+        '''    def __init__(self, configuration, request, source, policy, chain, target, root, input_pins, *, native_context=None):
         self.archive_guard = None
         try:
-            self._initialize(configuration, request, source, policy, chain, target, root, input_pins)
+            self._initialize(configuration, request, source, policy, chain, target, root, input_pins,
+                native_context=native_context)
         except BaseException:
             if self.archive_guard is not None:
                 self.archive_guard.close()
             raise
 
-    def _initialize(self, configuration, request, source, policy, chain, target, root, input_pins):
+    def _initialize(self, configuration, request, source, policy, chain, target, root, input_pins, *, native_context=None):
 ''')
+    replace('common/recovery_minimal_runtime.py',
+        "        self.original = request\n",
+        """        from recovery_program_native import _NativeView
+        require(native_context is not None or request['targetConfigRef'] not in
+                configuration.get('targetProgramPolicies', {}), 'PROGRAM_NATIVE_CONTEXT_REQUIRED')
+        if native_context is not None:
+            require(type(native_context) is _NativeView, 'PROGRAM_NATIVE_CONTEXT_INVALID')
+            native_context.validate_inputs(configuration, request, target)
+        self.native_context = native_context
+        self.original = request
+""")
+    replace('common/recovery_minimal_runtime.py',
+        "        self.budget = Budget(configuration['deadlineMilliseconds'])\n",
+        "        self.budget = native_context.budget if native_context is not None else Budget(configuration['deadlineMilliseconds'])\n")
+    replace('common/recovery_minimal_runtime.py',
+        '        self.db_uuid = self.database_uuid()\n',
+        '        self.guard()\n        self.db_uuid = self.database_uuid()\n')
+    replace('common/recovery_minimal_runtime.py',
+        '    def guard(self):\n        self.budget.remaining()\n',
+        '    def guard(self):\n        if self.native_context is not None:\n'
+        '            self.native_context.guard_native(self)\n        self.budget.remaining()\n')
     replace('common/recovery_minimal_runtime.py',
         "        for ref in (target['dockerPin'], target['iptablesPin'], *self.input_pins):\n",
         "        # Registered MAIN uses resource custody; rehearsal uses firewall isolation.\n"
