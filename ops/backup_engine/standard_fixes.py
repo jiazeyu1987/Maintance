@@ -4,6 +4,7 @@ Patch contexts fail closed. The stored baseline and its original checks remain
 intact; timing transforms additionally compare the original statement AST.
 """
 from pathlib import Path
+import ast
 import hashlib
 
 from standard_timing import backup_timings, restore_timings
@@ -35,10 +36,40 @@ def incremental_sql_stream(payload, root):
     payload['common/recovery_sql_stream.py'] = (root/'ops/recovery/recovery_sql_stream.py').read_bytes()
 
 
+def native_invocation_transports(payload, root):
+    """Share only authenticated native transports, preserving SAFE readers."""
+    name = 'common/recovery_data.py'
+    frozen = payload[name].decode('utf-8').replace('\r\n', '\n')
+    current = (root/'ops/recovery/recovery_data.py').read_text(encoding='utf-8').replace('\r\n', '\n')
+
+    def method(source, method_name):
+        owners = [item for item in ast.parse(source).body
+                  if isinstance(item, ast.ClassDef) and item.name == 'NativeData']
+        if len(owners) != 1:
+            raise ValueError('STANDARD_NATIVE_TRANSPORT_OWNER_CHANGED')
+        methods = [item for item in owners[0].body
+                   if isinstance(item, ast.FunctionDef) and item.name == method_name]
+        if len(methods) != 1 or methods[0].decorator_list:
+            raise ValueError('STANDARD_NATIVE_TRANSPORT_BOUNDARY_CHANGED ' + method_name)
+        item = methods[0]
+        return ''.join(source.splitlines(keepends=True)[item.lineno-1:item.end_lineno])
+
+    for method_name, expected in {
+        'command': 'e92e7e09641a2c2b4684d92fcbf827d7a706ed76ff1d031d6cf4b68736643937',
+        'import_sql': '2e2a2be52c4c43b22deae57b3040e597e0dcc5597e6a51f99e4f6573fe7f9636',
+    }.items():
+        before = method(frozen, method_name)
+        if hashlib.sha256(before.encode('utf-8')).hexdigest() != expected or frozen.count(before) != 1:
+            raise ValueError('STANDARD_NATIVE_TRANSPORT_BASELINE_CHANGED ' + method_name)
+        frozen = frozen.replace(before, method(current, method_name))
+    payload[name] = frozen.encode('utf-8')
+
+
 def apply(payload):
     payload = dict(payload)
     root = Path(__file__).resolve().parents[2]
     incremental_sql_stream(payload, root)
+    native_invocation_transports(payload, root)
 
     def replace(name, before, after):
         source = payload[name].decode().replace('\r\n', '\n')
@@ -459,6 +490,8 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
     payload['common/recovery_program_derivation.py'] = (root/'ops/recovery/recovery_program_derivation.py').read_bytes()
     payload['common/recovery_program_import.py'] = (root/'ops/recovery/recovery_program_import.py').read_bytes()
     payload['common/recovery_program_native.py'] = (root/'ops/recovery/recovery_program_native.py').read_bytes()
+    payload['common/recovery_program_source.py'] = (root/'ops/recovery/recovery_program_source.py').read_bytes()
+    payload['common/recovery_program_protection.py'] = (root/'ops/recovery/recovery_program_protection.py').read_bytes()
     payload['common/recovery_target_sources.py'] = (root/'ops/recovery/recovery_target_sources.py').read_bytes()
     payload['common/recovery_mysql_scheduler.py'] = (root/'ops/recovery/recovery_mysql_scheduler.py').read_bytes()
     payload['common/recovery_main_health.py'] = (root/'ops/recovery/recovery_main_health.py').read_bytes()

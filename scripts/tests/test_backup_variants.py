@@ -42,6 +42,7 @@ def test_standard_keeps_original_code_except_reviewed_fixes_and_archive_names(pa
         'common/recovery_program_activation.py', 'common/recovery_program_targets.py',
         'common/recovery_program_execution.py', 'common/recovery_program_derivation.py',
         'common/recovery_program_import.py', 'common/recovery_program_native.py',
+        'common/recovery_program_source.py', 'common/recovery_program_protection.py',
         'common/recovery_replacement_storage.py', 'common/recovery_minimal_plan.py',
         'common/recovery_retained_retry.py', 'common/recovery_minimal_redis_dump.py', 'common/recovery_published_fence.py', 'common/recovery_archive_view.py',
         'common/recovery_mysql_scheduler.py', 'common/recovery_main_health.py',
@@ -255,12 +256,36 @@ def test_published_fence_and_preparation_hooks_are_actually_packaged(variant, pa
 
 @pytest.mark.parametrize('variant', builder.VARIANTS)
 def test_main_scheduler_lifecycle_and_retained_handoff_are_packaged(variant, packages):
+    import ast
     with tarfile.open(packages/('backup-restore-'+variant+'.tgz')) as archive:
         assert archive.extractfile('common/recovery_mysql_scheduler.py').read()==(ROOT/'ops/recovery/recovery_mysql_scheduler.py').read_bytes()
         main=archive.extractfile('common/recovery_main_target.py').read().decode()
+        for name in ('recovery_main_target.py','recovery_program_protection.py'):
+            delivered=archive.extractfile('common/'+name).read().replace(b'\r\n',b'\n')
+            assert delivered==(ROOT/'ops/recovery'/name).read_bytes().replace(b'\r\n',b'\n')
         retry=archive.extractfile('common/recovery_retained_retry.py').read().decode()
-        assert 'mysql_scheduler(self).install()' in main
-        assert "result['mysqlSchedulerReleasePin'] = mysql_scheduler(self).release()" in main
+        tree=ast.parse(main)
+        definitions={node.name:node for node in tree.body if isinstance(node,(ast.FunctionDef,ast.ClassDef))}
+        guarded=next(node for node in definitions['guarded_type'].body if isinstance(node,ast.ClassDef))
+        methods={node.name:node for node in guarded.body if isinstance(node,ast.FunctionDef)}
+        def calls(node):
+            return [ast.unparse(item) for item in ast.walk(node) if isinstance(item,ast.Call)]
+        for name in ('replacement_preflight','replacement_write_fence','replacement_quiescence',
+                     'replacement_finish','bound'):
+            assert 'protections(self)' in calls(methods[name])
+        assert 'protected.scheduler.install()' in calls(methods['replacement_quiescence'])
+        assert 'protected.scheduler.verify()' in calls(methods['bound'])
+        finish=ast.unparse(methods['replacement_finish'])
+        assert finish.index('protections(self)') < finish.index('custody.release(self)')
+        assert "result['mysqlSchedulerReleasePin'] = protected.scheduler.release()" in finish
+        assert finish.index('archive.release()') < finish.index('fence.release()') < finish.index('protected.scheduler.release()')
+        selector=ast.unparse(definitions['protections'])
+        assert 'type(custody) is ProtectionCustody' in selector
+        assert 'return custody.view_for(native)' in selector
+        assert 'return _LegacyProtections(native)' in selector
+        legacy={node.name:node for node in definitions['_LegacyProtections'].body if isinstance(node,ast.FunctionDef)}
+        for field,factory in (('archive','archive_view'),('fence','published_fence'),('scheduler','mysql_scheduler')):
+            assert factory+'(self._native)' in calls(legacy[field])
         assert 'release_retained_protections(configuration,request,root,claim)' in retry
 
 

@@ -320,6 +320,44 @@ def mysql_scheduler(native, *, query=None):
         inherited=inherited[0] if inherited else None)
 
 
+class _LegacyProtections:
+    """Retain original factory timing for MAIN targets without program custody."""
+    def __init__(self, native):
+        self._native = native
+
+    @property
+    def archive(self):
+        return archive_view(self._native)
+
+    @property
+    def fence(self):
+        return published_fence(self._native)
+
+    @property
+    def scheduler(self):
+        return mysql_scheduler(self._native)
+
+
+def protections(native):
+    """Select the original protections before any current-native side effect."""
+    view = getattr(native, 'native_context', None)
+    custody = getattr(native, 'protection_custody', None)
+    if view is None:
+        require(custody is None, 'PROGRAM_PROTECTION_CONTEXT_REQUIRED')
+        return _LegacyProtections(native)
+    from recovery_program_native import _NativeView
+    from recovery_program_protection import ProtectionCustody
+    require(type(view) is _NativeView, 'PROGRAM_PROTECTION_VIEW_INVALID')
+    view.guard_native(native)
+    policies = view.configuration.get('targetProgramPolicies', {})
+    reference = native.original['targetConfigRef']
+    policy = policies.get(reference) if type(policies) is dict else None
+    require(type(policy) is dict and policy == view._context._policy and
+            policy.get('targetConfigRef') == reference, 'PROGRAM_PROTECTION_POLICY_REQUIRED')
+    require(type(custody) is ProtectionCustody, 'PROGRAM_PROTECTION_CUSTODY_REQUIRED')
+    return custody.view_for(native)
+
+
 def release_retained_protections(configuration, request, root, claim):
     """Called under both recovery locks after terminated-failure observation.
 
@@ -378,6 +416,16 @@ def application_inputs(native):
     for binding in value['archiveImageBindings']:
         require(images[binding['role']]['imageId'] == binding['imageId'] and
                 services[binding['role']]['imageId'] == binding['imageId'], 'MAIN_ARCHIVED_IMAGE_MISMATCH')
+    _application_runtime_inputs(native, value)
+
+
+def application_runtime_inputs(native):
+    """Check current program inputs independently of a candidate's archive images."""
+    _application_runtime_inputs(native, validate(native.config))
+
+
+def _application_runtime_inputs(native, value):
+    services = native.config_services
     _writer_evidence(native, value)
     pins = {p['path']: p for p in value['configurationPins']}
     require(len(pins) == len(value['configurationPins']), 'MAIN_CONFIGURATION_PINS_INVALID')
@@ -549,31 +597,42 @@ def guarded_type(original):
 
         def replacement_preflight(self):
             if enabled(self.config):
+                protected = protections(self)
                 from recovery_main_health import preflight as readiness_preflight
                 from recovery_replace import verify_services
-                self.guard(); application_inputs(self); database_identity(self)
+                self.guard()
+                context = getattr(self, 'native_context', None)
+                if context is not None and context.phase == 'PREPARATION':
+                    context.guard_native(self)
+                    application_runtime_inputs(self)
+                else:
+                    application_inputs(self)
+                database_identity(self)
                 readiness_preflight(self)
                 verify_redis_authentication(self)
                 verify_services(self, self.config['replacement']); verify_runtime(self, states=False)
-                fence = published_fence(self)
+                fence = protected.fence
                 if fence is not None: fence.preflight()
-                archive = archive_view(self)
+                archive = protected.archive
                 if archive is not None: archive.preflight()
-                mysql_scheduler(self).preflight()
+                protected.scheduler.preflight()
 
         def replacement_write_fence(self):
             if enabled(self.config):
-                archive = archive_view(self)
+                protected = protections(self)
+                archive = protected.archive
                 if archive is not None: archive.install()
-                fence = published_fence(self)
+                fence = protected.fence
                 if fence is not None: fence.install()
 
         def replacement_quiescence(self):
-            if enabled(self.config): mysql_scheduler(self).install()
+            if enabled(self.config):
+                protected = protections(self)
+                protected.scheduler.install()
             if enabled(self.config) and self.config['mainApplication']['schemaVersion'] == 'RegisteredMainApplication/v2':
-                fence = published_fence(self)
+                fence = protected.fence
                 if fence is not None: fence.verify()
-                archive = archive_view(self)
+                archive = protected.archive
                 if archive is not None: archive.verify()
                 database = self.config['database']
                 queries = ("SELECT COUNT(*) FROM information_schema.PROCESSLIST WHERE ID<>CONNECTION_ID() "
@@ -589,28 +648,33 @@ def guarded_type(original):
         def replacement_finish(self):
             result = {}
             if enabled(self.config):
-                archive = archive_view(self)
+                protected = protections(self)
+                custody = getattr(self, 'protection_custody', None)
+                if custody is not None:
+                    return custody.release(self)
+                archive = protected.archive
                 if archive is not None: result['archiveViewReleasePin'] = archive.release()
-                fence = published_fence(self)
+                fence = protected.fence
                 if fence is not None:
                     result['publishedWriteFenceReleasePin'] = fence.release()
-                result['mysqlSchedulerReleasePin'] = mysql_scheduler(self).release()
+                result['mysqlSchedulerReleasePin'] = protected.scheduler.release()
             return result
 
         def bound(self, *, importing=False, minio_stopped=False):
             if not enabled(self.config):
                 return super().bound(importing=importing, minio_stopped=minio_stopped)
+            protected = protections(self)
             from recovery_replace import verify_services
             self.guard()
             verify_services(self, self.config['replacement'])
             verify_runtime(self)
             self.application_inputs()
             verify_redis_authentication(self)
-            fence = published_fence(self)
+            fence = protected.fence
             if fence is not None: fence.verify()
-            archive = archive_view(self)
+            archive = protected.archive
             if archive is not None: archive.verify()
-            mysql_scheduler(self).verify()
+            protected.scheduler.verify()
             sql = self.modules['formal_sql_restore']
             (sql.import_database_state if importing else sql.database_state)(self.mysql, self.db_target)
 

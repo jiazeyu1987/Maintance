@@ -18,6 +18,10 @@ from recovery_program_execution import _directory, resolve_execution_configurati
 from recovery_program_generation import document
 
 
+RESTORE_ACTIONS = frozenset(('RESTORE', 'DATABASE_FULL', 'DATABASE_INCREMENTAL',
+    'OBJECT_CHAIN_PHYSICAL', 'OBJECT_FULL', 'OBJECT_INCREMENTAL', 'CONSISTENCY', 'START_APPLICATION'))
+
+
 class _NativeView:
     def __init__(self, context, phase, configuration, evidence):
         self._context = context
@@ -59,6 +63,14 @@ class _NativeView:
         require(native.config == self._configuration['targets'][self._context._request['targetConfigRef']],
                 'PROGRAM_NATIVE_TARGET_CHANGED')
         require(native.budget is self.budget, 'PROGRAM_NATIVE_BUDGET_CHANGED')
+
+    def begin_invocation(self, native, intent_pin):
+        self.guard_native(native)
+        return self._context.begin_invocation(self, intent_pin)
+
+    def finish_invocation(self, token, terminal_pin):
+        # Recording the original exit must survive a lost execution guard.
+        self._context.finish_invocation(token, terminal_pin)
 
 
 class MainNativeExecutionContext:
@@ -238,13 +250,23 @@ class MainNativeExecutionContext:
         path = self._evidence_path(intent_pin)
         require(path not in self._invocation_paths, 'PROGRAM_NATIVE_EVIDENCE_DUPLICATE')
         value = document(intent_pin)
-        require(type(value) is dict and value.get('schemaVersion') == 'RecoveryDataInvocation/v1' and
+        actions = ('RESTORE',) if view.phase == 'PREPARATION' else RESTORE_ACTIONS
+        require(type(value) is dict and value.get('schemaVersion') in
+                ('RecoveryDataInvocation/v1', 'RecoverySqlImporter/v2') and
                 value.get('operationId') == self._request['operationId'] and
-                value.get('action') == self._request['action'] and
+                type(value.get('action')) is str and value['action'] in actions and
                 type(value.get('argvSha256')) is str and re.fullmatch('[0-9a-f]{64}', value['argvSha256']) and
                 type(value.get('mutation')) is bool and type(value.get('startedAt')) is str and value['startedAt'] and
                 value.get('finishedAt') is None and value.get('actualExitCode') is None and
                 value.get('state') == 'TERMINAL_UNKNOWN', 'PROGRAM_NATIVE_EVIDENCE_INTENT_INVALID')
+        if value['schemaVersion'] == 'RecoverySqlImporter/v2':
+            reference = value.get('sqlPin')
+            require(value['mutation'] is True and type(reference) is dict and
+                    set(reference) == {'path', 'bytes', 'sha256'} and
+                    type(reference['path']) is str and type(reference['bytes']) is int and reference['bytes'] >= 0 and
+                    type(reference['sha256']) is str and re.fullmatch('[0-9a-f]{64}', reference['sha256']),
+                    'PROGRAM_NATIVE_EVIDENCE_INTENT_INVALID')
+            absolute(reference['path'])
         self._view_guard(view)
         token = len(self._invocations)
         self._invocations.append(dict(sequence=token, phase=view.phase,
@@ -263,6 +285,8 @@ class MainNativeExecutionContext:
                 'PROGRAM_NATIVE_EVIDENCE_PATH_INVALID')
         value = document(terminal_pin)
         identity = ('schemaVersion', 'operationId', 'action', 'argvSha256', 'mutation', 'startedAt')
+        if row['intentObservation']['schemaVersion'] == 'RecoverySqlImporter/v2':
+            identity += ('sqlPin',)
         require(type(value) is dict and all(type(value.get(key)) is type(row['intentObservation'][key]) and
                 value.get(key) == row['intentObservation'][key] for key in identity),
                 'PROGRAM_NATIVE_EVIDENCE_IDENTITY_INVALID')

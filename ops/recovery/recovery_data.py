@@ -176,18 +176,46 @@ class NativeData:
         sql = self.modules['formal_sql_restore']
         import types
         children = []
+        context = getattr(self, 'native_context', None)
         real_subprocess = sql.subprocess
         def tracked_popen(argv, **kwargs):
             intent_path = self.root/('importer-%03d.json' % len(self.original_pins))
             value = dict(schemaVersion='RecoverySqlImporter/v1', argvSha256=digest(argv),
                          sqlPin=pin(path), startedAt=utc(), actualExitCode=None, state='TERMINAL_UNKNOWN')
-            write(intent_path, value)
+            if context is not None:
+                value.update(schemaVersion='RecoverySqlImporter/v2', operationId=self.original['operationId'],
+                             action=self.request['action'], mutation=True, finishedAt=None)
+            reference = write(intent_path, value)
+            token = context.begin_invocation(self, reference) if context is not None else None
+            child = dict(process=None, path=intent_path, value=value, token=token, recordingAttempted=False)
+            if context is not None:
+                # Retain the admitted intent even when Popen itself raises.
+                children.append(child)
             active = repository_guard()
             if active is not None:
                 kwargs.update(active.child_options(kwargs.get('env', dict(os.environ)), kwargs.get('pass_fds', ())))
+            if context is not None: context.guard_native(self)
             process = subprocess.Popen(argv, **kwargs)
-            children.append((process, intent_path, value))
+            child['process'] = process
+            if context is None: children.append(child)
             return process
+
+        def finish_children():
+            for child in children:
+                if child['recordingAttempted']: continue
+                # Recording failures propagate; finally must not retry and
+                # silently replace a failed evidence publication.
+                child['recordingAttempted'] = True
+                process, value = child['process'], child['value']
+                self.last_exit = None if process is None else process.poll()
+                value.update(actualExitCode=self.last_exit, finishedAt=utc(),
+                             state='SUCCEEDED' if self.last_exit == 0 else
+                                   'FAILED_RETAINED' if confirmed_failure else 'TERMINAL_UNKNOWN')
+                reference = persist_evidence(child['path'], value, self.original_pins,
+                    unknown=self.last_exit != 0, exit_code=self.last_exit)
+                if context is not None:
+                    context.finish_invocation(child['token'], reference)
+
         sql.subprocess = types.SimpleNamespace(Popen=tracked_popen, TimeoutExpired=subprocess.TimeoutExpired,
                                                PIPE=real_subprocess.PIPE, DEVNULL=real_subprocess.DEVNULL)
         self.mutation_dispatched = True
@@ -196,23 +224,21 @@ class NativeData:
             self.bound(importing=True)
             sql.stream_import(self.mysql, path, checksum, self.seconds(), database=self.config['database'],
                               guard=self.guard)
+            if context is not None:
+                # MAIN's post-bound checks dispatch their own native commands.
+                # The confirmed importer must be settled before those begin.
+                finish_children()
             self.bound(importing=True)
         except Exception as error:
             confirmed_failure = (getattr(error, 'code', None) == 'FORMAL_SQL_IMPORT_FAILED' and
                 getattr(error, 'unknown', None) is False and children and
-                all(process.poll() is not None for process, _, _ in children))
+                all(child['process'] is not None and child['process'].poll() is not None for child in children))
             if children:
                 error.unknown = not confirmed_failure
             raise
         finally:
             sql.subprocess = real_subprocess
-            for process, intent_path, value in children:
-                self.last_exit = process.poll()
-                value.update(actualExitCode=self.last_exit, finishedAt=utc(),
-                             state='SUCCEEDED' if self.last_exit == 0 else
-                                   'FAILED_RETAINED' if confirmed_failure else 'TERMINAL_UNKNOWN')
-                persist_evidence(intent_path, value, self.original_pins, unknown=self.last_exit != 0,
-                                 exit_code=self.last_exit)
+            finish_children()
 
     def seconds(self):
         return max(1, min(7200, math.floor(self.budget.remaining())))
@@ -263,12 +289,15 @@ class NativeData:
                       action=self.request['action'], argvSha256=digest(argv), mutation=mutation,
                       startedAt=utc(), finishedAt=None, actualExitCode=None, state='TERMINAL_UNKNOWN')
         path = self.root / ('native-%03d.json' % sequence)
-        write(path, intent)
+        reference = write(path, intent)
+        context = getattr(self, 'native_context', None)
+        token = context.begin_invocation(self, reference) if context is not None else None
         process = None; raw = errors = b''
         try:
             options = dict(env={'PATH': '/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8'})
             active = repository_guard()
             if active is not None: options.update(active.child_options(options['env']))
+            if context is not None: context.guard_native(self)
             process = subprocess.Popen(argv, stdin=subprocess.PIPE if input_bytes is not None else subprocess.DEVNULL,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True,
                 **options)
@@ -298,8 +327,10 @@ class NativeData:
             intent.update(finishedAt=utc(), actualExitCode=None if process is None else process.poll(),
                           stdoutBytes=len(raw), stdoutSha256=hashlib.sha256(raw).hexdigest(),
                           stderrBytes=len(errors), stderrSha256=hashlib.sha256(errors).hexdigest())
-            persist_evidence(path, intent, self.original_pins,
+            reference = persist_evidence(path, intent, self.original_pins,
                 unknown=process is not None and (mutation or process.poll() is None), exit_code=intent['actualExitCode'])
+            if context is not None:
+                context.finish_invocation(token, reference)
 
     def docker(self, args, **kwargs):
         check_pin(self.config['dockerPin'], content=False)
