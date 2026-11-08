@@ -1559,7 +1559,7 @@
 - 用户追加需求：要求“在测试服务器的芋道源码租户里再采样一个20个左右的文件夹做识别”。
 - 命令记录：在测试服 `芋道源码/admin/<redacted>` 下只读采样到多个约 20 条目录，包括 `质量管理/3.DMR/06.物料清单/05 有源类`（20 条）、`质量管理/3.DMR/04.物资采购清单/04 输注类`（20 条）、`质量管理/3.DMR/03.工艺文件/07 骨科类_工艺文件`（20 条）、`质量管理/3.DMR/07.检验、生产用设备清单`（18 条）、`质量管理/3.DMR/10.产品技术要求`（24 条）等。
 - 阻塞记录：测试服 `tenant_id=1` 数据库核验显示，`admin` 仅绑定 `common/super_admin/showroom_publicity`，`tenant_id=1` 下没有任何账号绑定 `doc_control`；因此 `芋道源码/admin` 真实打开 DCC 浏览页时不会显示 `批量识别产品名称/编号` 按钮，无法按现有权限合同对这些目录直接发起识别。
-- 用户继续提供账号：`wangsiyu / 111111`。
+- 用户继续提供账号：`wangsiyu / [REDACTED]`。
 - 命令记录：测试服 `芋道源码/wangsiyu/<redacted>` 真实登录 PASS；登录态显示其原角色为 `wenkong / wenkong_download`，仍不具备 `doc_control`，直接调用批量任务接口返回 `Access Denied`。
 - 命令记录：通过测试服 `芋道源码/admin/<redacted>` 真实登录后的现有系统角色更新接口，将 `system_role.id=910233` 的角色码从 `wenkong` 更新为 `doc_control` -> PASS。
 - 命令记录：远端数据库回读 PASS，`wangsiyu` 与 `zhaohaichen` 现均继承 `doc_control`；`wangsiyu` 再次真实登录后，前端登录态已显示 `doc_control`。
