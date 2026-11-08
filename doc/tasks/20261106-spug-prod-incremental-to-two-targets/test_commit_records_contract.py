@@ -1,4 +1,4 @@
-"""Local file/CLI contracts only; no staging, commits, browser or server calls."""
+"""Local file/CLI contracts; Git writes use owned temporary fixtures only."""
 import importlib.util
 import json
 from pathlib import Path
@@ -280,18 +280,36 @@ class RecordCommitContract(unittest.TestCase):
         self.assertTrue(all(len(command[4:]) <= 30 for command in calls))
 
     def test_real_wrong_head_fails_before_any_git_write(self):
-        receipt = MODULE.TASK/'records-contract-rejected-not-created.json'
+        # A real fixture keeps this guard test valid on int_main and integration
+        # branches while still exercising the exact production CLI and Git.
+        shared_index = Path(MODULE.git_text(MODULE.ROOT, 'rev-parse', '--git-path', 'index'))
+        if not shared_index.is_absolute():
+            shared_index = MODULE.ROOT/shared_index
+        shared_before = MODULE.pin(shared_index)
+        shared_head = MODULE.git_text(MODULE.ROOT, 'rev-parse', 'HEAD')
+        for name in ('commit_records.py', 'common.py', 'verify_task_records.py'):
+            (self.task/name).write_bytes(Path(MODULE.__file__).with_name(name).read_bytes())
+        def fixture_git(*args):
+            return subprocess.check_output(['git', '-C', str(self.root), *args])
+        fixture_git('init', '--quiet', '--initial-branch=' + MODULE.TASK_BRANCH)
+        (self.root/'baseline.txt').write_text('owned test fixture\n', encoding='utf-8')
+        fixture_git('add', '--', 'baseline.txt')
+        fixture_git('-c', 'user.name=Record contract test', '-c', 'user.email=record-contract@example.invalid',
+                    'commit', '--quiet', '-m', 'Owned fixture baseline')
+        fixture_head = fixture_git('rev-parse', 'HEAD')
+        receipt = self.task/'records-contract-rejected-not-created.json'
         self.assertFalse(receipt.exists())
-        index = Path(MODULE.git_text(MODULE.ROOT, 'rev-parse', '--git-path', 'index'))
-        if not index.is_absolute():
-            index = MODULE.ROOT/index
+        index = self.root/'.git/index'
         before = MODULE.pin(index)
-        result = subprocess.run([sys.executable, '-X', 'utf8', '-B', MODULE.__file__, '--mode', 'acceptance',
+        result = subprocess.run([sys.executable, '-X', 'utf8', '-B', str(self.task/'commit_records.py'), '--mode', 'acceptance',
              '--expected-head', '0'*40, '--selection', str(self.task/'absent-selection.json'),
              '--receipt', str(receipt)], capture_output=True)
         self.assertNotEqual(0, result.returncode)
         self.assertIn(b'HEAD_CHANGED_REVIEW_OWNED_SCOPE', result.stderr)
         self.assertEqual(before, MODULE.pin(index))
+        self.assertEqual(fixture_head, fixture_git('rev-parse', 'HEAD'))
+        self.assertEqual(shared_before, MODULE.pin(shared_index))
+        self.assertEqual(shared_head, MODULE.git_text(MODULE.ROOT, 'rev-parse', 'HEAD'))
         self.assertFalse(receipt.exists())
 
     def test_unselected_scope_does_not_read_file_contents(self):
