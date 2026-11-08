@@ -65,6 +65,97 @@ def native_invocation_transports(payload, root):
     payload[name] = frozen.encode('utf-8')
 
 
+def program_restore_handoff(payload, root):
+    """Add typed execution custody to SAFE without replacing its data checks."""
+    name = 'common/recovery_minimal_runtime.py'
+    frozen = payload[name].decode('utf-8').replace('\r\n', '\n')
+    current = (root/'ops/recovery/recovery_minimal_runtime.py').read_text(encoding='utf-8')
+
+    def function(source):
+        matches = [node for node in ast.parse(source).body
+                   if isinstance(node, ast.FunctionDef) and node.name == 'execute_empty']
+        if len(matches) != 1 or matches[0].decorator_list:
+            raise ValueError('STANDARD_PROGRAM_EXECUTE_BOUNDARY_CHANGED')
+        node = matches[0]
+        return ''.join(source.splitlines(keepends=True)[node.lineno-1:node.end_lineno])
+
+    before = function(frozen)
+    if hashlib.sha256(before.encode('utf-8')).hexdigest() != \
+            '3ac5948b84441c74619509a7699e830b7acb89bcef99a4f39b963120c501c51a':
+        raise ValueError('STANDARD_PROGRAM_EXECUTE_BASELINE_CHANGED')
+    source = function(current)
+
+    def fragment(start, end):
+        if source.count(start) != 1 or source.count(end) != 1:
+            raise ValueError('STANDARD_PROGRAM_HANDOFF_SOURCE_CHANGED')
+        first, last = source.index(start), source.index(end)
+        if first >= last:
+            raise ValueError('STANDARD_PROGRAM_HANDOFF_ORDER_CHANGED')
+        return source[first:last]
+
+    target_checks = "    try:\n        with step_timing(root, 'target-checks'):\n"
+    changes = (
+        ('def execute_empty(configuration, request, root, input_pins, *, reservation_configuration=None):\n',
+         fragment('def execute_empty(', "    with step_timing(root, 'restore-admission'):\n")),
+        ("        admit(configuration, request, root, 'target', reservation_configuration=reservation_configuration)\n",
+         fragment('        execution = {}\n', "        reservation = absolute(target['dataRoot'])/")),
+        ('        native = MinimalData(configuration, request, source, policy, chain, target, root, input_pins)\n',
+         fragment('        constructor = {}', '    try:\n        if native_context is not None:')),
+        (target_checks, '    try:\n' + fragment('        if native_context is not None:\n            # Construction',
+             "        with native.timed_stage('target-quiesce'):\n") +
+             "        with step_timing(root, 'target-checks'):\n"),
+        ("            cleanup_pin = pin(cleanup(root, restore_paths(root), request['operationId'], guard=native.guard))\n",
+         fragment('            if native_context is not None:\n                from recovery_program_sql_staging',
+                  '            cleanup_pin = pin(cleanup(root') +
+         "            cleanup_pin = pin(cleanup(root, restore_paths(root), request['operationId'], guard=native.guard))\n"),
+        ('    finally:\n        native.archive_guard.close()\n',
+         '    finally:\n        # MAIN retains this lease through protection release in its caller.\n'
+         '        if native_context is None:\n            native.archive_guard.close()\n'),
+    )
+    after = before
+    for old, new in changes:
+        if after.count(old) != 1:
+            raise ValueError('STANDARD_PROGRAM_HANDOFF_SITE_CHANGED')
+        after = after.replace(old, new)
+    if frozen.count(before) != 1:
+        raise ValueError('STANDARD_PROGRAM_EXECUTE_BOUNDARY_CHANGED')
+    # The original SAFE fresh-target checks, archive verification, strict
+    # cleanup and exception handling remain byte-for-byte outside these sites.
+    updated = frozen.replace(before, after)
+    compile(updated, name, 'exec')
+    payload[name] = updated.encode('utf-8')
+
+
+def program_worker_handoff(payload, root):
+    """Share the result handoff while retaining the SAFE success contract."""
+    name = 'common/recovery_minimal_worker.py'
+    frozen = payload[name].decode('utf-8').replace('\r\n', '\n')
+    if hashlib.sha256(frozen.encode('utf-8')).hexdigest() != \
+            'e4461e9b9abcb88566d1b9bfae2564c96d4b1397b7368a7a89870d24dc74e14b':
+        raise ValueError('STANDARD_PROGRAM_WORKER_BASELINE_CHANGED')
+    current = (root/'ops/recovery/recovery_minimal_worker.py').read_text(encoding='utf-8')
+
+    def declaration(source, name):
+        matches = [node for node in ast.parse(source).body if
+            isinstance(node, ast.FunctionDef) and node.name == name or
+            isinstance(node, ast.Assign) and any(isinstance(target, ast.Name) and
+                target.id == name for target in node.targets)]
+        if len(matches) != 1:
+            raise ValueError('STANDARD_PROGRAM_WORKER_DECLARATION_CHANGED ' + name)
+        node = matches[0]
+        return ''.join(source.splitlines(keepends=True)[node.lineno-1:node.end_lineno])
+
+    original_result = declaration(frozen, 'operation_result')
+    original_main = declaration(frozen, 'main')
+    frozen = frozen.replace(original_main, declaration(current, 'main'))
+    frozen = frozen.replace('import argparse\n', 'import argparse\nfrom copy import deepcopy\n')
+    frozen = frozen.replace(original_result, declaration(current, 'PROGRAM_FAILURE_FIELDS') + '\n\n' + original_result)
+    if declaration(frozen, 'operation_result') != original_result:
+        raise ValueError('STANDARD_PROGRAM_WORKER_SUCCESS_CONTRACT_CHANGED')
+    compile(frozen, name, 'exec')
+    payload[name] = frozen.encode('utf-8')
+
+
 def apply(payload):
     payload = dict(payload)
     root = Path(__file__).resolve().parents[2]
@@ -492,6 +583,10 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
     payload['common/recovery_program_native.py'] = (root/'ops/recovery/recovery_program_native.py').read_bytes()
     payload['common/recovery_program_source.py'] = (root/'ops/recovery/recovery_program_source.py').read_bytes()
     payload['common/recovery_program_protection.py'] = (root/'ops/recovery/recovery_program_protection.py').read_bytes()
+    payload['common/recovery_program_resources.py'] = (root/'ops/recovery/recovery_program_resources.py').read_bytes()
+    payload['common/recovery_program_restore.py'] = (root/'ops/recovery/recovery_program_restore.py').read_bytes()
+    payload['common/recovery_program_evidence.py'] = (root/'ops/recovery/recovery_program_evidence.py').read_bytes()
+    payload['common/recovery_program_sql_staging.py'] = (root/'ops/recovery/recovery_program_sql_staging.py').read_bytes()
     payload['common/recovery_target_sources.py'] = (root/'ops/recovery/recovery_target_sources.py').read_bytes()
     payload['common/recovery_mysql_scheduler.py'] = (root/'ops/recovery/recovery_mysql_scheduler.py').read_bytes()
     payload['common/recovery_main_health.py'] = (root/'ops/recovery/recovery_main_health.py').read_bytes()
@@ -591,4 +686,6 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
     payload['control/recovery_control_incremental_plan.py'] = (
         root/'backend/src/main/resources/recovery_control_incremental_plan.py').read_bytes()
     payload['common/recovery_backup_epoch.py'] = (root/'ops/recovery/recovery_backup_epoch.py').read_bytes()
+    program_restore_handoff(payload, root)
+    program_worker_handoff(payload, root)
     return payload

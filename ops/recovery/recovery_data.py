@@ -177,11 +177,18 @@ class NativeData:
         import types
         children = []
         context = getattr(self, 'native_context', None)
+        staging = None
+        sql_reference = None
+        if context is not None:
+            from recovery_program_sql_staging import sql_staging
+            staging = sql_staging(self)
+            sql_reference = staging.capture(path)
         real_subprocess = sql.subprocess
         def tracked_popen(argv, **kwargs):
             intent_path = self.root/('importer-%03d.json' % len(self.original_pins))
             value = dict(schemaVersion='RecoverySqlImporter/v1', argvSha256=digest(argv),
-                         sqlPin=pin(path), startedAt=utc(), actualExitCode=None, state='TERMINAL_UNKNOWN')
+                         sqlPin=sql_reference if context is not None else pin(path),
+                         startedAt=utc(), actualExitCode=None, state='TERMINAL_UNKNOWN')
             if context is not None:
                 value.update(schemaVersion='RecoverySqlImporter/v2', operationId=self.original['operationId'],
                              action=self.request['action'], mutation=True, finishedAt=None)
@@ -215,6 +222,7 @@ class NativeData:
                     unknown=self.last_exit != 0, exit_code=self.last_exit)
                 if context is not None:
                     context.finish_invocation(child['token'], reference)
+                    staging.terminal(reference)
 
         sql.subprocess = types.SimpleNamespace(Popen=tracked_popen, TimeoutExpired=subprocess.TimeoutExpired,
                                                PIPE=real_subprocess.PIPE, DEVNULL=real_subprocess.DEVNULL)

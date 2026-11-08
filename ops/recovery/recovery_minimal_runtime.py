@@ -340,7 +340,9 @@ def execute(configuration, request, root, input_pins):
     return execute_empty(configuration, request, root, input_pins)
 
 
-def execute_empty(configuration, request, root, input_pins, *, reservation_configuration=None):
+def execute_empty(configuration, request, root, input_pins, *, reservation_configuration=None,
+                  native_context=None, protection_custody=None, execution_binding_pin=None,
+                  execution_generation_pin=None, execution_lock_fd=None):
     with step_timing(root, 'restore-admission'):
         source, policy, chain = selected_chain(configuration, request)
         target = target_configuration(configuration, request, source)
@@ -348,7 +350,26 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
         # A permanent local reservation prevents a second operation overwriting a
         # target even when the first process has ended or its result is unknown.
         from recovery_resource_admission import admit
-        admit(configuration, request, root, 'target', reservation_configuration=reservation_configuration)
+        execution = {}
+        if native_context is not None:
+            from recovery_program_native import _NativeView
+            from recovery_program_protection import ProtectionCustody
+            require(type(native_context) is _NativeView and native_context.phase == 'RESTORE' and
+                    type(protection_custody) is ProtectionCustody and
+                    reservation_configuration is not None and
+                    execution_binding_pin == native_context._context._binding and
+                    execution_generation_pin == native_context._context.generation_pin and
+                    execution_lock_fd == native_context._context._lock_fd,
+                    'PROGRAM_EXECUTION_RUNTIME_CONTEXT_INVALID')
+            native_context.validate_inputs(configuration, request, target)
+            execution = dict(execution_binding_pin=execution_binding_pin,
+                execution_generation_pin=execution_generation_pin, execution_lock_fd=execution_lock_fd,
+                execution_guard=native_context.guard)
+        else:
+            require(protection_custody is None and execution_binding_pin is None and
+                    execution_generation_pin is None and execution_lock_fd is None,
+                    'PROGRAM_EXECUTION_RUNTIME_CONTEXT_REQUIRED')
+        admit(configuration, request, root, 'target', reservation_configuration=reservation_configuration, **execution)
         reservation = absolute(target['dataRoot'])/'.recovery-operation.json'
         try:
             with reservation.open('xb') as stream:
@@ -357,8 +378,18 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
                 stream.flush(); os.fsync(stream.fileno())
         except FileExistsError as error:
             raise RecoveryError('TARGET_ALREADY_RESERVED') from error
-        native = MinimalData(configuration, request, source, policy, chain, target, root, input_pins)
+        constructor = {} if native_context is None else dict(native_context=native_context)
+        native = MinimalData(configuration, request, source, policy, chain, target, root, input_pins, **constructor)
+        if native_context is not None:
+            native.protection_custody = protection_custody
     try:
+        if native_context is not None:
+            # Construction's identity query is read-only. The same original
+            # custody is attached before the first bound or data mutation.
+            native.bound()
+            from recovery_replace import clear, replacement_value
+            with native.timed_stage('target-replacement-clear'):
+                clear(native, replacement_value(configuration, request['targetConfigRef']))
         with native.timed_stage('target-quiesce'):
             native.stop_application()
         db_pins, object_pins = [], []
@@ -397,6 +428,9 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
         with native.timed_stage('application-start'):
             application = write(native.root/'application-start.json', native.start_application())
         with native.timed_stage('restore-cleanup'):
+            if native_context is not None:
+                from recovery_program_sql_staging import cleanup_sql_staging
+                cleanup_sql_staging(native, root)
             cleanup_pin = pin(cleanup(root, restore_paths(root), request['operationId'],
                                       guard=native.guard, verify_files=False))
         return dict(recoveryPoint=chain[-1][2]['recoveryPoint'], targetConfigRef=request['targetConfigRef'],

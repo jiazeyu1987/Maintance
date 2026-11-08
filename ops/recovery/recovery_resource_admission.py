@@ -111,6 +111,24 @@ def verify_reservation(configuration, request, root):
         return _verify_reservation(configuration, request, root)[0]
 
 
+def _program_release_evidence(configuration, request, root, result_pin):
+    """Select the new contract from the original owner, never result fields."""
+    policies = configuration.get('targetProgramPolicies', {})
+    need(type(policies) is dict, 'RESTORE_RESOURCE_PROGRAM_POLICY_INVALID')
+    if request['targetConfigRef'] not in policies:
+        return None
+    from recovery_program_evidence import validate_program_evidence
+    return validate_program_evidence(configuration, request, root, result_pin=result_pin)
+
+
+def _successful_program_calls(proof):
+    calls = proof['invocations']
+    return bool(calls) and all(row['terminalPin'] is not None and
+        type(row['terminalObservation']['actualExitCode']) is int and
+        row['terminalObservation']['actualExitCode'] == 0 and
+        row['terminalObservation']['state'] == 'SUCCEEDED' for row in calls)
+
+
 def release_success(configuration, request, root, result_pin, exit_pin):
     """Only a validated successful child permits normal release; failures retain it."""
     from recovery_engine import load, pin, pinned_json, utc, write
@@ -122,6 +140,14 @@ def release_success(configuration, request, root, result_pin, exit_pin):
          type(exited.get('actualExitCode')) is int and exited['actualExitCode'] == 0 and
          exited.get('timedOut') is False, 'RESTORE_RESOURCE_RELEASE_NOT_PROVEN')
     with _host_lock():
+        program = _program_release_evidence(configuration, request, root, result_pin)
+        if program is not None:
+            from recovery_minimal import validate_result
+            validate_result(result, request, 0)
+            need(program['resultState'] == program['replacementState'] == 'SUCCEEDED' and
+                 program['phase'] == 'RESTORE' and program['generationPin'] is not None and
+                 program['epoch']['state'] == 'READY' and not program['terminalUnknown'] and
+                 _successful_program_calls(program), 'RESTORE_RESOURCE_RELEASE_NOT_PROVEN')
         release_path = root / 'resource-release.json'
         if release_path.exists():
             binding = _binding(configuration, request, root)
@@ -177,6 +203,13 @@ def release_no_mutation(configuration, request, root, result_pin, exit_pin):
              type(value.get('actualExitCode')) is int and value.get('finishedAt'),
              'RESTORE_RESOURCE_NO_MUTATION_NOT_PROVEN')
     with _host_lock():
+        program = _program_release_evidence(configuration, request, root, result_pin)
+        if program is not None:
+            need(program['resultState'] == program['replacementState'] == 'FAILED_RETAINED' and
+                 program['phase'] == 'NOT_STARTED' and program['bindingPin'] is None and
+                 program['contextPin'] is None and program['generationPin'] is None and
+                 not program['invocations'] and not program['mutationDispatched'] and
+                 not program['terminalUnknown'], 'RESTORE_RESOURCE_NO_MUTATION_NOT_PROVEN')
         binding = _binding(configuration, request, root)
         reservation = pin(root / 'resource-reservation.json')
         original = pinned_json(reservation)
@@ -221,6 +254,25 @@ def release_proven_oom(configuration, request, root, result_pin, verify_stopped)
              output.get('state') == 'TERMINAL_UNKNOWN' and output.get('failureCode') in
              ('FORMAL_SQL_IMPORT_FAILED', 'FORMAL_SQL_IMPORT_STREAM_FAILED') and
              reservation in output.get('originalResultPins', []), 'RESTORE_RESOURCE_RELEASE_NOT_PROVEN')
+        program = _program_release_evidence(configuration, request, root, result_pin)
+        if program is not None:
+            calls = program['invocations']
+            need(program['resultState'] == 'TERMINAL_UNKNOWN' and
+                 program['replacementState'] == 'FAILED_RETAINED' and
+                 program['phase'] == 'RESTORE' and program['generationPin'] is not None and calls and
+                 all(row['terminalPin'] is not None for row in calls), 'RESTORE_RESOURCE_RELEASE_NOT_PROVEN')
+            last = calls[-1]['terminalObservation']
+            need(last['schemaVersion'] == 'RecoverySqlImporter/v2' and
+                 type(last['actualExitCode']) is int and last['actualExitCode'] == 137 and
+                 last['state'] == 'TERMINAL_UNKNOWN' and _successful_program_calls(dict(invocations=calls[:-1])),
+                 'RESTORE_RESOURCE_RELEASE_NOT_PROVEN')
+            causes, protections = program['unknownCauses'], program['protectionStates']
+            need(causes['native'] is True and causes['programSwitch'] is False and
+                 causes['programImport'] is False and program['programProtectionCustodyPin'] is not None and
+                 program['protectionState'] == 'ACTIVE' and type(protections) is dict and
+                 set(protections) == {'archive', 'fence', 'scheduler'} and
+                 all(step['state'] in ('ABSENT', 'INSTALLED') for step in protections.values()),
+                 'RESTORE_RESOURCE_RELEASE_NOT_PROVEN')
         proofs = verify_stopped()
         need(type(proofs) is list and proofs, 'RESTORE_RESOURCE_RELEASE_NOT_PROVEN')
         for reference in [reservation, result_pin, *proofs]:
@@ -280,20 +332,25 @@ def release_retained_failure(configuration, request, root, result_pin, verify_st
              exited.get('timedOut') is False, 'RESTORE_RESOURCE_RELEASE_NOT_PROVEN')
         for reference in references:
             check_pin(reference)
-        # These are control receipts, not archived business payloads. Each
-        # completed invocation must still be the one bound into the result.
-        calls = sorted(root.rglob('native-*.json')) + sorted(root.rglob('importer-*.json'))
-        need(calls, 'RESTORE_RESOURCE_RELEASE_EVIDENCE_INVALID')
-        for path in calls:
-            reference = pin(path)
-            need(reference in references, 'RESTORE_RESOURCE_RELEASE_EVIDENCE_INVALID')
-            call = pinned_json(reference)
-            importer = path.name.startswith('importer-')
-            need(call.get('schemaVersion') == ('RecoverySqlImporter/v1' if importer else
-                 'RecoveryDataInvocation/v1') and
-                 (importer or call.get('operationId') == request['operationId']) and
-                 type(call.get('actualExitCode')) is int and call['actualExitCode'] == 0 and
-                 call.get('finishedAt'), 'RESTORE_RESOURCE_RELEASE_NOT_PROVEN')
+        program = _program_release_evidence(configuration, request, root, result_pin)
+        if program is not None:
+            need(program['resultState'] == program['replacementState'] == 'FAILED_RETAINED' and
+                 not program['terminalUnknown'] and _successful_program_calls(program),
+                 'RESTORE_RESOURCE_RELEASE_NOT_PROVEN')
+        else:
+            # Legacy calls stay bound to their original operation-root contract.
+            calls = sorted(root.rglob('native-*.json')) + sorted(root.rglob('importer-*.json'))
+            need(calls, 'RESTORE_RESOURCE_RELEASE_EVIDENCE_INVALID')
+            for path in calls:
+                reference = pin(path)
+                need(reference in references, 'RESTORE_RESOURCE_RELEASE_EVIDENCE_INVALID')
+                call = pinned_json(reference)
+                importer = path.name.startswith('importer-')
+                need(call.get('schemaVersion') == ('RecoverySqlImporter/v1' if importer else
+                     'RecoveryDataInvocation/v1') and
+                     (importer or call.get('operationId') == request['operationId']) and
+                     type(call.get('actualExitCode')) is int and call['actualExitCode'] == 0 and
+                     call.get('finishedAt'), 'RESTORE_RESOURCE_RELEASE_NOT_PROVEN')
         release_path = root / 'resource-retained-failure-release.json'
         active_path = HOST_ROOT / 'active.json'
         expected = dict(binding, reservationPin=reservation)

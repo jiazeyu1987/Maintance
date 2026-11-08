@@ -23,6 +23,7 @@ def retained_exit(evidence):
 @pytest.mark.parametrize('change', ['none', 'boot', 'pid', 'timeout', 'unlisted', 'pending', 'boolean_owner_exit'])
 def test_failed_retained_process_proof_requires_complete_exits(evidence, change):
     native, value, operation, root, output = retained_exit(evidence)
+    selection = module.executor.document(module.executor.pin(operation/'selection.json'))
     process_path = operation/'execute/native-process.json'
     process = module.executor.document(module.executor.pin(process_path))
     if change == 'boot': process['bootId'] = 'other'
@@ -45,10 +46,14 @@ def test_failed_retained_process_proof_requires_complete_exits(evidence, change)
         ref = put(root/('native-003.json' if change == 'unlisted' else 'native-001.json'), row)
         if change == 'pending': output['originalResultPins'][0] = ref
     if change == 'none':
-        assert native.stopped_import_processes(value,operation,root,output,expected_exit=1)
+        assert native.stopped_import_processes(value,operation,root,output,expected_exit=1,selection=selection)
     else:
-        with pytest.raises(RuntimeError):
-            native.stopped_import_processes(value,operation,root,output,expected_exit=1)
+        with pytest.raises(RuntimeError) as failure:
+            native.stopped_import_processes(value,operation,root,output,expected_exit=1,selection=selection)
+        expected = dict(boot='ORIGINAL_PROCESS_BOOT_NOT_PROVEN', pid='ORIGINAL_OWNER_PROCESS_STILL_PRESENT',
+            timeout='ORIGINAL_IMPORT_PROCESS_BINDING_INVALID', unlisted='ORIGINAL_IMPORT_CALL_NOT_PINNED',
+            pending='ORIGINAL_IMPORT_CALL_UNRESOLVED', boolean_owner_exit='ORIGINAL_IMPORT_PROCESS_BINDING_INVALID')
+        assert str(failure.value) == expected[change]
 
 
 @pytest.mark.parametrize('change', ['none','mysql','redis','minio','backend','frontend','exec','paused',
@@ -102,14 +107,19 @@ def test_known_failure_refresh_exposes_release_blocker_without_running_projectio
 
 def test_completed_failure_without_owner_result_is_not_refreshed(tmp_path,monkeypatch):
     native=module.Native.__new__(module.Native)
-    value=dict(operationId='original',action='RESTORE')
-    selection={}
+    value=dict(operationId='original',action='RESTORE',targetConfigRef='target')
+    owner=put(tmp_path/'configuration.json', dict(schemaVersion='RecoveryMinimalConfiguration/v1',
+        operationsRoot=str(tmp_path/'operations'), targets={'target': {'targetId': 'legacy-process-fixture'}}))
+    selection=dict(ownerConfigurationPin=owner)
+    put(tmp_path/'selection.json',selection)
+    request_pin=put(tmp_path/'request.json',value)
     reply=module.result(value,'FAILED','ORIGINAL_FAILURE')
     completion=dict(operationId='original',uiRequestSha256=module.fingerprint(value),selection=selection,
                     result=reply,terminal=None)
     reference=put(tmp_path/'completion.json',completion)
     (tmp_path/'execute').mkdir()
-    put(tmp_path/'execute/native-intent.json',{})
+    put(tmp_path/'execute/native-intent.json',dict(operationId=value['operationId'],
+        requestId=value['operationId'],requestPin=request_pin,configurationPin=owner))
     calls=[]
     monkeypatch.setattr(native,'refresh_original',lambda *args:(calls.append(args) or reply))
     assert native.reconcile(value,tmp_path,selection)==reply

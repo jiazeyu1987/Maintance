@@ -25,12 +25,24 @@ def evidence(tmp_path):
     operation = tmp_path / 'control'
     execute = operation / 'execute'
     execute.mkdir(parents=True, mode=0o700)
-    root = tmp_path / 'owner'
+    value = {'operationId': 'test-import', 'action': 'RESTORE', 'targetConfigRef': 'target'}
+    root = tmp_path / value['operationId']
     root.mkdir(mode=0o700)
-    value = {'operationId': 'test-import', 'action': 'RESTORE'}
+    # This legacy process fixture predates program policies. Pin that original
+    # owner explicitly; absence of caller context must not imply legacy mode.
+    configuration = dict(schemaVersion='RecoveryMinimalConfiguration/v1',
+        operationsRoot=str(tmp_path), targets={'target': {'targetId': 'legacy-process-fixture'}})
+    owner_pin = put(root / 'configuration.json', configuration)
+    selection = dict(ownerConfigurationPin=owner_pin,
+        ownerProgramPin=executor.pin(Path(__file__).resolve()))
+    put(operation / 'selection.json', selection)
+    original_request = put(root / 'request.json', value)
+    put(root / 'operation.json', dict(operationId=value['operationId'],
+        requestPin=original_request, configurationSha256=fingerprint(configuration)))
     request = put(operation / 'request.json', value)
     intent = put(execute / 'native-intent.json', dict(operationId=value['operationId'],
-        requestId=value['operationId'], requestPin=request))
+        requestId=value['operationId'], requestPin=request, configurationPin=owner_pin,
+        programPin=selection['ownerProgramPin']))
     child = subprocess.Popen([sys.executable, '-c', 'pass'])
     child.wait(timeout=10)
     pid = child.pid
@@ -54,7 +66,8 @@ def evidence(tmp_path):
 
 def check(evidence):
     native, value, operation, root, output = evidence
-    return native.stopped_import_processes(value, operation, root, output)
+    selection = executor.document(executor.pin(operation / 'selection.json'))
+    return native.stopped_import_processes(value, operation, root, output, selection=selection)
 
 
 def test_complete_exit_evidence_preserves_files(evidence):
@@ -93,8 +106,14 @@ def test_incomplete_or_changed_evidence_cannot_release_operation(evidence, chang
         if change == 'unlisted':
             put(root / 'native-003.json', call)
     put(path, row)
-    with pytest.raises(RuntimeError):
+    with pytest.raises(RuntimeError) as failure:
         check(evidence)
+    expected = dict(boot='ORIGINAL_PROCESS_BOOT_NOT_PROVEN', pid='ORIGINAL_OWNER_PROCESS_STILL_PRESENT',
+        request='ORIGINAL_IMPORT_PROCESS_BINDING_INVALID', intent='ORIGINAL_IMPORT_PROCESS_BINDING_INVALID',
+        child='ORIGINAL_CHILD_EXIT_NOT_PINNED', child_unpinned='ORIGINAL_CHILD_EXIT_NOT_PINNED',
+        pending='ORIGINAL_IMPORT_CALL_UNRESOLVED', pin='ORIGINAL_IMPORT_CALL_NOT_PINNED',
+        unlisted='ORIGINAL_IMPORT_CALL_NOT_PINNED')
+    assert str(failure.value) == expected[change]
 
 
 def test_live_detached_writer_blocks_even_with_completed_receipt(evidence):

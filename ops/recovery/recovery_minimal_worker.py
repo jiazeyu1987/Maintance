@@ -1,10 +1,16 @@
 """Private child of recovery_minimal.py; no signing or lease configuration."""
 import argparse
+from copy import deepcopy
 import re
 import sys
 
 from recovery_engine import absolute, load, pin, utc, write
 from recovery_minimal_plan import configuration_contract, request_contract
+
+
+PROGRAM_FAILURE_FIELDS = ('programExecutionPhase', 'programNativeEvidencePin',
+    'programProtectionCustodyPin', 'programGenerationPin', 'replacementReceiptPin',
+    'programSqlCleanupPin', 'actualNativeExitCode')
 
 
 def operation_result(request, started, state, code, data, pins, exit_code):
@@ -36,15 +42,40 @@ def main(argv=None):
         unknown = bool(getattr(error, 'unknown', False))
         if native is not None and native.mutation_dispatched and native.last_exit is None:
             unknown = True
-        exit_code = 2 if unknown else 1
+        evidence = getattr(error, 'evidence', None)
+        program = (type(evidence) is dict and
+                   evidence.get('programExecutionPhase') in ('NOT_STARTED', 'PREPARATION', 'RESTORE'))
+        if program:
+            unknown = unknown or evidence.get('terminalUnknown') is True
         data = dict(partialTargetRetained=True, retryPermitted=False, errorType=type(error).__name__,
                     actualNativeExitCode=None if native is None else native.last_exit,
                     mutationDispatched=bool(native is not None and native.mutation_dispatched) or
-                    (absolute(args.output).parent/'replacement-preparation/replacement-intent.json').exists())
+                    (not program and
+                     (absolute(args.output).parent/'replacement-preparation/replacement-intent.json').exists()))
+        pins = [] if native is None else native.original_pins
+        if program:
+            # Only the producer's finite program handoff belongs in data. The
+            # request, failure code, worker terminal state/exit and retention
+            # policy remain authoritative here, including READY failures that
+            # reference an already successful replacement receipt.
+            data.update({key: deepcopy(evidence[key]) for key in PROGRAM_FAILURE_FIELDS if key in evidence})
+            # Program intent precedes read-only construction. Only actual
+            # native/producer dispatch facts establish a program mutation.
+            data['mutationDispatched'] = data['mutationDispatched'] or evidence.get('mutationDispatched') is True
+            data['terminalUnknown'] = unknown
+            aggregate = deepcopy(evidence.get('originalResultPins', []))
+            # Preserve actual last-native originals even if an incomplete
+            # producer handoff omitted them; never reduce the legacy facts.
+            for reference in pins:
+                if reference not in aggregate:
+                    aggregate.append(deepcopy(reference))
+            pins = aggregate
+            data['originalResultPins'] = deepcopy(pins)
         if code == 'ARCHIVED_PAYLOAD_CHANGED' and hasattr(error, 'archive_diagnostic'):
             data['archiveDiagnostic'] = error.archive_diagnostic
+        exit_code = 2 if unknown else 1
         result = operation_result(request, started, 'TERMINAL_UNKNOWN' if unknown else 'FAILED_RETAINED', code,
-                                  data, [] if native is None else native.original_pins, exit_code)
+                                  data, pins, exit_code)
     write(absolute(args.output), result)
     return exit_code
 

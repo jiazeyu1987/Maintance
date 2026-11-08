@@ -137,5 +137,9 @@
   "ops/recovery/recovery_program_import.py": "common/recovery_program_import.py",
   "ops/recovery/recovery_program_native.py": "common/recovery_program_native.py",
   "ops/recovery/recovery_program_source.py": "common/recovery_program_source.py",
-  "ops/recovery/recovery_program_protection.py": "common/recovery_program_protection.py"
+  "ops/recovery/recovery_program_protection.py": "common/recovery_program_protection.py",
+  "ops/recovery/recovery_program_resources.py": "common/recovery_program_resources.py",
+  "ops/recovery/recovery_program_restore.py": "common/recovery_program_restore.py",
+  "ops/recovery/recovery_program_evidence.py": "common/recovery_program_evidence.py",
+  "ops/recovery/recovery_program_sql_staging.py": "common/recovery_program_sql_staging.py"
 }

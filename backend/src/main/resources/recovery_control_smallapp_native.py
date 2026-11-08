@@ -6,6 +6,7 @@ signatures, participants, approvals and proof closures are not execution inputs.
 from __future__ import annotations
 
 import argparse
+from copy import deepcopy
 from datetime import datetime, timezone
 import hashlib
 import os
@@ -15,6 +16,7 @@ import stat
 import subprocess
 import sys
 import time
+from types import SimpleNamespace
 import uuid
 
 import recovery_control_executor as executor
@@ -414,10 +416,25 @@ class Native:
             stdoutPin=executor.pin(operation_directory / 'worker-stdout'),
             stderrPin=executor.pin(operation_directory / 'worker-stderr')))
 
-    def owner_result(self, value, terminal):
-        if terminal['resultPin'] is None:
+    def owner_output_reference(self, value, terminal, selection):
+        reference = terminal['resultPin']
+        program = value['action'] == 'RESTORE' and self.restore_owner(value, selection)[1]
+        if program and reference is not None:
+            # The CLI publishes a copy to the launcher's output path. Its bytes
+            # must equal the fixed owner result; only that original grants proof.
+            root = self.accepted_operation(value, selection)
+            original = executor.pin(root / 'result.json')
+            need(self.document(reference) == self.document(original) and
+                 (reference['bytes'], reference['sha256']) == (original['bytes'], original['sha256']),
+                 'ORIGINAL_OWNER_RESULT_CHANGED')
+            reference = original
+        return reference
+
+    def owner_result(self, value, terminal, *, selection=None):
+        reference = self.owner_output_reference(value, terminal, selection)
+        if reference is None:
             return result(value, 'RUNNING' if terminal['actualExitCode'] == 0 else 'FAILED', 'OWNER_RESULT_MISSING')
-        output = self.operation_output(value, terminal['resultPin'])
+        output = self.operation_output(value, reference, selection=selection)
         if output['state'] == 'SUCCEEDED' and terminal['actualExitCode'] != 0:
             return result(value, 'FAILED', output['failureCode'] or 'ORIGINAL_EXECUTOR_FAILED')
         return self.operation_result(value, output)
@@ -442,11 +459,48 @@ class Native:
             executor.pin_reference(pin)
         return output
 
-    def operation_output(self, value, reference):
+    def restore_owner(self, value, selection):
+        """Select history from its original owner, never optional result fields."""
+        need(type(selection) is dict and 'ownerConfigurationPin' in selection,
+             'ORIGINAL_OWNER_SELECTION_REQUIRED')
+        owner = self.document(selection['ownerConfigurationPin'])
+        policies = owner.get('targetProgramPolicies', {})
+        need(type(policies) is dict, 'ORIGINAL_PROGRAM_POLICY_INVALID')
+        reference = value.get('targetConfigRef')
+        need(type(reference) is str and reference in owner.get('targets', {}),
+             'ORIGINAL_OWNER_TARGET_REQUIRED')
+        selected = reference in policies
+        need(not selected or type(policies[reference]) is dict, 'ORIGINAL_PROGRAM_POLICY_INVALID')
+        return owner, selected
+
+    def restore_program_evidence(self, value, selection, reference, *, root=None):
+        owner, program = self.restore_owner(value, selection)
+        if not program:
+            return None
+        need(reference is not None, 'ORIGINAL_PROGRAM_RESULT_REQUIRED')
+        accepted = self.accepted_operation(value, selection)
+        need(root is None or root == accepted, 'ORIGINAL_OWNER_ADMISSION_CHANGED')
+        from recovery_program_evidence import validate_program_evidence
+        return validate_program_evidence(owner, value, accepted, result_pin=reference,
+                                         guard=getattr(self, 'guard', None))
+
+    def operation_evidence(self, value, reference, *, selection=None):
+        proof = (self.restore_program_evidence(value, selection, reference)
+                 if value['action'] == 'RESTORE' else None)
+        if value['action'] == 'RESTORE' and proof is None:
+            # Absence of a policy is meaningful only for the admitted owner.
+            self.accepted_operation(value, selection)
         output = self.operation_metadata(value, reference)
-        for pin in output['originalResultPins']:
+        references = list(output['originalResultPins'])
+        if proof is not None:
+            references.extend(pin for pin in [*proof['originalResultPins'], *proof['deferredPayloadPins']]
+                              if pin not in references)
+        for pin in references:
             executor.verify(pin)
-        return output
+        return output, proof
+
+    def operation_output(self, value, reference, *, selection=None):
+        return self.operation_evidence(value, reference, selection=selection)[0]
 
     def asynchronously_closed(self, operation_directory, value):
         """Prove asynchronous backup termination for scheduling, never source health.
@@ -693,8 +747,13 @@ class Native:
                  'ORIGINAL_OWNER_ADMISSION_CHANGED')
         return root
 
-    def stopped_import_processes(self, value, operation_directory, root, output, expected_exit=2):
+    def stopped_import_processes(self, value, operation_directory, root, output, expected_exit=2,
+                                 *, selection=None, result_pin=None):
         """Prove local writers stopped; this alone never releases a restore target."""
+        proof = self.restore_program_evidence(value, selection, result_pin, root=root)
+        if proof is not None:
+            need(self.operation_metadata(value, result_pin) == output and not proof['terminalUnknown'],
+                 'ORIGINAL_IMPORT_CALL_UNRESOLVED')
         need(type(expected_exit) is int and expected_exit in (1, 2), 'ORIGINAL_EXPECTED_EXIT_INVALID')
         need(os.name == 'posix' and Path('/proc').is_dir(),
              'ORIGINAL_PROCESS_OBSERVATION_UNAVAILABLE')
@@ -719,23 +778,33 @@ class Native:
         # With no start-time receipt, every occupied PID (including reuse) blocks.
         need(not (Path('/proc') / str(process['pid'])).exists(),
              'ORIGINAL_OWNER_PROCESS_STILL_PRESENT')
-        calls = sorted(root.rglob('native-*.json')) + sorted(root.rglob('importer-*.json'))
-        need(calls and any(path.name.startswith('importer-') for path in calls),
-             'ORIGINAL_IMPORT_CALL_EVIDENCE_MISSING')
         hashes = set()
-        for path in calls:
-            reference = executor.pin(path)
-            need(reference in output['originalResultPins'], 'ORIGINAL_IMPORT_CALL_NOT_PINNED')
-            row = self.document(reference)
-            importer = path.name.startswith('importer-')
-            need(row['schemaVersion'] == ('RecoverySqlImporter/v1' if importer else
-                 'RecoveryDataInvocation/v1') and
-                 (importer or row['operationId'] == value['operationId']) and
-                 type(row['actualExitCode']) is int and row['finishedAt'] and
-                 type(row['argvSha256']) is str and re.fullmatch('[0-9a-f]{64}', row['argvSha256']),
-                 'ORIGINAL_IMPORT_CALL_UNRESOLVED')
-            hashes.add(row['argvSha256'])
-            references.append(reference)
+        if proof is not None:
+            for invocation in proof['invocations']:
+                terminal = invocation.get('terminalObservation')
+                need(invocation['terminalPin'] is not None and type(terminal) is dict and
+                     type(terminal['actualExitCode']) is int and terminal['finishedAt'],
+                     'ORIGINAL_IMPORT_CALL_UNRESOLVED')
+                hashes.add(invocation['intentObservation']['argvSha256'])
+            references.extend(pin for pin in [result_pin, *proof['originalResultPins'],
+                                              *proof['deferredPayloadPins']] if pin not in references)
+        else:
+            calls = sorted(root.rglob('native-*.json')) + sorted(root.rglob('importer-*.json'))
+            need(calls and any(path.name.startswith('importer-') for path in calls),
+                 'ORIGINAL_IMPORT_CALL_EVIDENCE_MISSING')
+            for path in calls:
+                reference = executor.pin(path)
+                need(reference in output['originalResultPins'], 'ORIGINAL_IMPORT_CALL_NOT_PINNED')
+                row = self.document(reference)
+                importer = path.name.startswith('importer-')
+                need(row['schemaVersion'] == ('RecoverySqlImporter/v1' if importer else
+                     'RecoveryDataInvocation/v1') and
+                     (importer or row['operationId'] == value['operationId']) and
+                     type(row['actualExitCode']) is int and row['finishedAt'] and
+                     type(row['argvSha256']) is str and re.fullmatch('[0-9a-f]{64}', row['argvSha256']),
+                     'ORIGINAL_IMPORT_CALL_UNRESOLVED')
+                hashes.add(row['argvSha256'])
+                references.append(reference)
         for path in Path('/proc').glob('[0-9]*/cmdline'):
             try:
                 raw = path.read_bytes()
@@ -745,10 +814,123 @@ class Native:
                  not in hashes, 'ORIGINAL_NATIVE_CALL_STILL_RUNNING')
         for reference in references:
             executor.verify(reference)
+        if proof is not None:
+            need(self.restore_program_evidence(value, selection, result_pin, root=root) == proof,
+                 'ORIGINAL_PROGRAM_EVIDENCE_CHANGED')
         return references
 
-    def restore_target_observation(self, value, selection):
+    def program_target_observation(self, value, selection, result_pin):
+        """Observe this operation's retained/new containers, without live resolve."""
+        proof = self.restore_program_evidence(value, selection, result_pin)
+        need(proof is not None, 'ORIGINAL_PROGRAM_POLICY_REQUIRED')
+        from recovery_main_target import (validate, service_configuration_digest,
+                                          network_attachments, verify_runtime)
+        from recovery_program_containers import snapshot, verify_created
+
+        def document(reference):
+            need(reference in proof['originalResultPins'], 'ORIGINAL_PROGRAM_PIN_NOT_PROVEN')
+            return self.document(reference)
+
+        target = proof['target']
+        previous = (document(document(proof['contextPin'])['targetPin'])
+                    if proof['contextPin'] is not None else target)
+        validate(target); validate(previous)
+        generation = document(proof['generationPin']) if proof['generationPin'] is not None else None
+        switch_root = Path(previous['replacement']['stateRoot']) / value['operationId'] / 'program-switch'
+        # Partial switch receipts alone do not provide a complete physical target.
+        need(generation is not None or not switch_root.exists(), 'ORIGINAL_PROGRAM_SWITCH_TARGET_UNPROVEN')
+        retained, created = {}, {}
+        switch_intent = None
+        if generation is not None and generation['switchResultPin'] is not None:
+            switched = document(generation['switchResultPin'])
+            switch_intent = document(switched['intentPin'])
+            for role, reference in switched['applicationPins'].items():
+                entry = document(reference)
+                retained[entry['retained']['Id']] = (role, entry['retained'])
+                created[entry['created']['Id']] = (role, entry)
+        services = {row['id']: row for row in target['services']}
+        need(len(services) == len(target['services']) and not set(services) & set(retained),
+             'ORIGINAL_TARGET_IDENTITY_CHANGED')
+        executor.verify(target['dockerPin'])
+        command = [target['dockerPin']['path'], '--host', 'unix:///var/run/docker.sock']
+
+        def observe(args):
+            guard = getattr(self, 'guard', None)
+            if guard is not None: guard()
+            response = subprocess.run(command + args, stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE, timeout=10, check=False)
+            need(response.returncode == 0 and not response.stderr, 'ORIGINAL_TARGET_OBSERVATION_FAILED')
+            if guard is not None: guard()
+            return decode(response.stdout)
+
+        engine = observe(['info', '--format', '{{json .}}'])
+        machine = Path('/etc/machine-id').read_text(encoding='ascii').strip()
+        need(machine == target['machineId'] == previous['machineId'] and
+             engine['ID'] == target['dockerEngineId'] == previous['dockerEngineId'],
+             'ORIGINAL_TARGET_HOST_CHANGED')
+        identities = [*services, *retained]
+        inspected = observe(['inspect', *identities])
+        need(type(inspected) is list and len(inspected) == len(identities) and
+             {row['Id'] for row in inspected} == set(identities), 'ORIGINAL_TARGET_OBSERVATION_FAILED')
+        rows = {row['Id']: row for row in inspected}
+        normalized = deepcopy(rows)
+        networks = {}
+        for network in target['mainApplication']['networks']:
+            observed = observe(['network', 'inspect', network['id']])
+            need(type(observed) is list and len(observed) == 1 and
+                 observed[0]['Id'] == network['id'] and observed[0]['Name'] == network['name'],
+                 'ORIGINAL_TARGET_NETWORK_CHANGED')
+            networks[network['name']] = observed[0]
+        for identity, service in services.items():
+            row = rows[identity]; registered = target['replacement']['services'][service['role']]
+            need(row['Id'] == registered['id'] and row['Image'] == service['imageId'] == registered['imageId'] and
+                 row['Config']['Labels'] == registered['labels'] and row['HostConfig']['Privileged'] is False and
+                 sorted(canonical(mount) for mount in row['Mounts']) ==
+                 sorted(canonical(mount) for mount in registered['mounts']), 'ORIGINAL_TARGET_IDENTITY_CHANGED')
+            if identity in created:
+                role, entry = created[identity]
+                state = row['State']
+                need(state['Running'] is False and type(state['Pid']) is int and state['Pid'] == 0 and
+                     not row.get('ExecIDs') and
+                     state['Paused'] is False and state['Restarting'] is False,
+                     'ORIGINAL_TARGET_WRITER_UNRESOLVED')
+                verify_created(entry['original'], switch_intent['requests'][role], row,
+                               networks=networks, engine_metadata=switch_intent['engineMetadata'])
+                # verify_created proved the unstarted endpoint's actual network.
+                for name, attachment in normalized[identity]['NetworkSettings']['Networks'].items():
+                    if attachment['NetworkID'] == '': attachment['NetworkID'] = networks[name]['Id']
+        native = SimpleNamespace(config=target,
+            config_services={entry['role']: entry for entry in services.values()}, snapshots={},
+            inspect=lambda identity: normalized[identity],
+            docker=lambda args, **kwargs: canonical(observe(args)))
+        verify_runtime(native, states=False)
+        for identity, (role, expected) in retained.items():
+            row = rows[identity]
+            need(snapshot(row) == snapshot(expected) and
+                 service_configuration_digest(row) == previous['mainApplication']['serviceConfigurationDigests'][role],
+                 'ORIGINAL_TARGET_IDENTITY_CHANGED')
+        observations = {}
+        for identity, row in rows.items():
+            role = services[identity]['role'] if identity in services else 'retained-' + retained[identity][0]
+            attachments = {name: item['networkId'] for name, item in network_attachments(row).items()}
+            observations[identity] = dict(role=role, imageId=row['Image'], labels=row['Config']['Labels'],
+                mounts=row['Mounts'], networks=attachments, networkAttachments=attachments,
+                configuredNetworkMode=row['HostConfig'].get('NetworkMode'),
+                configurationDigest=service_configuration_digest(row), state=row['State'], execIds=row.get('ExecIDs'))
+        need(self.restore_program_evidence(value, selection, result_pin) == proof,
+             'ORIGINAL_PROGRAM_EVIDENCE_CHANGED')
+        return dict(operationId=value['operationId'], targetConfigRef=value['targetConfigRef'],
+            configurationPin=selection['ownerConfigurationPin'], targetId=target['targetId'],
+            bootId=Path('/proc/sys/kernel/random/boot_id').read_text(encoding='ascii').strip(),
+            machineId=machine, dockerEngineId=engine['ID'], services=observations,
+            targetPin=proof['targetPin'], generationPin=proof['generationPin'], phase=proof['phase'])
+
+    def restore_target_observation(self, value, selection, *, result_pin=None):
         """Capture only identity and state, never container environment secrets."""
+        if result_pin is not None:
+            proof = self.restore_program_evidence(value, selection, result_pin)
+            if proof is not None:
+                return self.program_target_observation(value, selection, result_pin)
         target = self.document(selection['ownerConfigurationPin'])['targets'][value['targetConfigRef']]
         if 'mainApplication' in target:
             from recovery_main_target import observe_main_target
@@ -824,34 +1006,69 @@ class Native:
             machineId=machine,
             dockerEngineId=engine['ID'], services=observations)
 
-    def stopped_oom_target(self, value, operation_directory, selection):
-        return self._stopped_failure_target(value, operation_directory, selection, require_oom=True)
+    def stopped_oom_target(self, value, operation_directory, selection, *, result_pin=None):
+        return self._stopped_failure_target(value, operation_directory, selection,
+                                            require_oom=True, result_pin=result_pin)
 
-    def stopped_retained_target(self, value, operation_directory, selection):
-        return self._stopped_failure_target(value, operation_directory, selection, require_oom=False)
+    def stopped_retained_target(self, value, operation_directory, selection, *, result_pin=None):
+        return self._stopped_failure_target(value, operation_directory, selection,
+                                            require_oom=False, result_pin=result_pin)
 
-    def _stopped_failure_target(self, value, operation_directory, selection, require_oom):
+    def _stopped_failure_target(self, value, operation_directory, selection, require_oom, *, result_pin=None):
+        proof = self.restore_program_evidence(value, selection, result_pin)
+        if proof is not None:
+            need(not proof['terminalUnknown'] and proof['bindingPin'] is not None and
+                 proof['contextPin'] is not None, 'ORIGINAL_TARGET_WRITER_UNRESOLVED')
         before_pin = executor.pin(operation_directory / 'restore-target-before.json')
         intent = self.document(executor.pin(operation_directory / 'execute' / 'native-intent.json'))
         need(intent.get('restoreTargetPin') == before_pin, 'ORIGINAL_TARGET_OBSERVATION_CHANGED')
+        if proof is not None:
+            need(intent['operationId'] == intent['requestId'] == value['operationId'] and
+                 intent['requestPin'] == executor.pin(operation_directory / 'request.json') and
+                 intent['configurationPin'] == selection['ownerConfigurationPin'] and
+                 intent['programPin'] == selection['ownerProgramPin'], 'ORIGINAL_OWNER_INTENT_CHANGED')
         before = self.document(before_pin)
-        current = self.restore_target_observation(value, selection)
-        need(all(current[key] == before[key] for key in current if key != 'services') and
-             set(current['services']) == set(before['services']), 'ORIGINAL_TARGET_HOST_CHANGED')
+        current = self.restore_target_observation(value, selection, result_pin=result_pin)
+        if proof is None:
+            need(all(current[key] == before[key] for key in current if key != 'services') and
+                 set(current['services']) == set(before['services']), 'ORIGINAL_TARGET_HOST_CHANGED')
+        else:
+            need(all(current[key] == before[key] for key in ('operationId', 'targetConfigRef',
+                'configurationPin', 'targetId', 'bootId', 'machineId', 'dockerEngineId')),
+                'ORIGINAL_TARGET_HOST_CHANGED')
+            context = self.document(proof['contextPin'])
+            need(context['targetPin'] in proof['originalResultPins'], 'ORIGINAL_PROGRAM_PIN_NOT_PROVEN')
+            previous = self.document(context['targetPin'])
+            need(set(before['services']) == {entry['id'] for entry in previous['services']},
+                 'ORIGINAL_TARGET_IDENTITY_CHANGED')
+            for service in previous['services']:
+                row = before['services'][service['id']]
+                registered = previous['replacement']['services'][service['role']]
+                need(row['role'] == service['role'] and row['imageId'] == service['imageId'] and
+                     row['labels'] == registered['labels'] and
+                     row['configurationDigest'] == previous['mainApplication']['serviceConfigurationDigests'][service['role']] and
+                     row['networks'] == {name: item['networkId'] for name, item in
+                         previous['mainApplication']['networkAttachments'][service['role']].items()} and
+                     sorted(canonical(mount) for mount in row['mounts']) ==
+                     sorted(canonical(mount) for mount in registered['mounts']),
+                     'ORIGINAL_TARGET_IDENTITY_CHANGED')
         for identity, row in current['services'].items():
             # Endpoint attachment may follow first start; configured binding,
             # resolved network identity and all other immutable identity must not.
-            need(all(row[key] == before['services'][identity][key] for key in row
-                     if key not in ('state', 'execIds', 'networkAttachments', 'mounts')),
-                 'ORIGINAL_TARGET_IDENTITY_CHANGED')
-            original_mounts = before['services'][identity]['mounts']
-            # Docker's mount enumeration order is not identity. Compare the full
-            # canonical multiset, retaining duplicate counts and every field.
-            need(type(row['mounts']) is list and type(original_mounts) is list and
-                 sorted(canonical(mount) for mount in row['mounts']) ==
-                 sorted(canonical(mount) for mount in original_mounts),
-                 'ORIGINAL_TARGET_IDENTITY_CHANGED')
+            if proof is None:
+                need(all(row[key] == before['services'][identity][key] for key in row
+                         if key not in ('state', 'execIds', 'networkAttachments', 'mounts')),
+                     'ORIGINAL_TARGET_IDENTITY_CHANGED')
+                original_mounts = before['services'][identity]['mounts']
+                # Docker's mount enumeration order is not identity. Compare the
+                # full multiset, retaining duplicate counts and every field.
+                need(type(row['mounts']) is list and type(original_mounts) is list and
+                     sorted(canonical(mount) for mount in row['mounts']) ==
+                     sorted(canonical(mount) for mount in original_mounts),
+                     'ORIGINAL_TARGET_IDENTITY_CHANGED')
             state = row['state']
+            if proof is not None:
+                need(type(state['Pid']) is int, 'ORIGINAL_TARGET_WRITER_UNRESOLVED')
             need(not row['execIds'] and state['Paused'] is False and state['Restarting'] is False and
                  (require_oom and row['role'] in ('minio', 'redis') or
                   state['Running'] is False and state['Pid'] == 0),
@@ -859,16 +1076,32 @@ class Native:
             if require_oom and row['role'] == 'mysql':
                 need(state['OOMKilled'] is True and state['ExitCode'] == 137,
                      'ORIGINAL_TARGET_OOM_NOT_PROVEN')
-        target = self.document(selection['ownerConfigurationPin'])['targets'][value['targetConfigRef']]
-        claim_pin = executor.pin(Path(target['dataRoot']) / '.recovery-operation.json')
-        need(self.document(claim_pin)['operationId'] == value['operationId'],
-             'ORIGINAL_TARGET_CLAIM_CHANGED')
+        if proof is None:
+            target = self.document(selection['ownerConfigurationPin'])['targets'][value['targetConfigRef']]
+            claim_pin = executor.pin(Path(target['dataRoot']) / '.recovery-operation.json')
+            need(self.document(claim_pin)['operationId'] == value['operationId'],
+                 'ORIGINAL_TARGET_CLAIM_CHANGED')
+        else:
+            claim_pin = proof['bindingPin']
+            need(self.restore_program_evidence(value, selection, result_pin) == proof,
+                 'ORIGINAL_PROGRAM_EVIDENCE_CHANGED')
         executor.verify(before_pin)
         return dict(beforePin=before_pin, claimPin=claim_pin, observed=current,
                     partialTargetRetained=True, retrySameTargetPermitted=False)
 
-    def stopped_sql_target(self, value, selection):
+    def stopped_sql_target(self, value, selection, *, result_pin=None):
         """A disconnected import client alone cannot prove the remote writer stopped."""
+        proof = self.restore_program_evidence(value, selection, result_pin)
+        if proof is not None:
+            need(not proof['terminalUnknown'], 'ORIGINAL_IMPORT_REMOTE_WRITER_UNRESOLVED')
+            current = self.restore_target_observation(value, selection, result_pin=result_pin)
+            services = [row for row in current['services'].values() if row['role'] == 'mysql']
+            need(len(services) == 1, 'ORIGINAL_IMPORT_TARGET_NOT_UNIQUE')
+            row = services[0]; state = row['state']
+            need(not row['execIds'] and state['Running'] is False and state['Pid'] == 0 and
+                 state['Paused'] is False and state['Restarting'] is False,
+                 'ORIGINAL_IMPORT_REMOTE_WRITER_UNRESOLVED')
+            return
         configuration = self.document(selection['ownerConfigurationPin'])
         target = configuration['targets'][value['targetConfigRef']]
         executor.verify(target['dockerPin'])
@@ -887,8 +1120,10 @@ class Native:
              row['State']['Paused'] is False and row['State']['Restarting'] is False,
              'ORIGINAL_IMPORT_REMOTE_WRITER_UNRESOLVED')
 
-    def restore_timeout_stopped(self, value, operation_directory, selection, root, output):
+    def restore_timeout_stopped(self, value, operation_directory, selection, root, output, *, result_pin=None):
         """Resolve only a killed owner with completed writes and no live native call."""
+        need(self.restore_program_evidence(value, selection, result_pin, root=root) is None,
+             'ORIGINAL_TIMEOUT_WRITER_UNRESOLVED')
         exited = self.document(executor.pin(operation_directory / 'execute' / 'native-original-exit.json'))
         child = self.document(executor.pin(root / 'child-exit.json'))
         need(exited['operationId'] == exited['requestId'] == value['operationId'] and
@@ -984,18 +1219,20 @@ class Native:
             root = self.accepted_operation(value, selection)
             need((root / 'result.json').is_file(), 'ORIGINAL_OWNER_RESULT_NOT_READY')
             reference = executor.pin(root / 'result.json')
-            output = self.operation_output(value, reference)
+            output, program = self.operation_evidence(value, reference, selection=selection)
             reply = self.operation_result(value, output)
             if (value['action'] == 'RESTORE' and output['state'] == 'FAILED_RETAINED' and
-                    output['data'].get('mutationDispatched') is True and
+                    (program['mutationDispatched'] if program is not None else
+                     output['data'].get('mutationDispatched')) is True and
                     (root / 'resource-reservation.json').exists()):
                 # This is already a proven failure. A refusal to release resources
                 # must remain visible without projecting it back to RUNNING.
                 try:
                     def prove_retained_stopped():
                         pins = self.stopped_import_processes(value, operation_directory, root, output,
-                                                             expected_exit=1)
-                        observation = self.stopped_retained_target(value, operation_directory, selection)
+                            expected_exit=1, selection=selection, result_pin=reference)
+                        observation = self.stopped_retained_target(value, operation_directory, selection,
+                                                                  result_pin=reference)
                         observations = operation_directory / 'queries'
                         observations.mkdir(mode=0o700, exist_ok=True)
                         path = observations / (uuid.uuid4().hex + '-retained-target.json')
@@ -1010,7 +1247,7 @@ class Native:
                     output['failureCode'] == 'REPOSITORY_CHILD_TIMEOUT_QUERY_ORIGINAL_OPERATION'):
                 code, resolution_pins = self.stopped_capture_failure(value, selection, root, output)
                 reply = result(value, 'FAILED', code)
-            if (value['action'] == 'RESTORE' and output['state'] == 'TERMINAL_UNKNOWN' and
+            if (value['action'] == 'RESTORE' and program is None and output['state'] == 'TERMINAL_UNKNOWN' and
                     output['failureCode'] in ('FORMAL_SQL_IMPORT_FAILED', 'FORMAL_SQL_IMPORT_STREAM_FAILED')):
                 # Partial SQL effects remain unknown and the target stays reserved.
                 # A recorded importer exit plus the owner OS exit does, however,
@@ -1030,8 +1267,10 @@ class Native:
                      'ORIGINAL_IMPORT_FAILURE_EXIT_NOT_PROVEN')
                 if importers[-1]['actualExitCode'] == 137:
                     def prove_stopped():
-                        pins = self.stopped_import_processes(value, operation_directory, root, output)
-                        observation = self.stopped_oom_target(value, operation_directory, selection)
+                        pins = self.stopped_import_processes(value, operation_directory, root, output,
+                            selection=selection, result_pin=reference)
+                        observation = self.stopped_oom_target(value, operation_directory, selection,
+                                                              result_pin=reference)
                         observations = operation_directory / 'queries'
                         observations.mkdir(mode=0o700, exist_ok=True)
                         path = observations / (uuid.uuid4().hex + '-oom-target.json')
@@ -1046,11 +1285,12 @@ class Native:
                         # their existing strict evidence requirements still apply.
                         resolution_pins = prove_stopped()
                 elif output['failureCode'] == 'FORMAL_SQL_IMPORT_STREAM_FAILED':
-                    self.stopped_sql_target(value, selection)
+                    self.stopped_sql_target(value, selection, result_pin=reference)
                 reply = result(value, 'FAILED', output['failureCode'])
-            if (value['action'] == 'RESTORE' and output['state'] == 'TERMINAL_UNKNOWN' and
+            if (value['action'] == 'RESTORE' and program is None and output['state'] == 'TERMINAL_UNKNOWN' and
                     output['failureCode'] == 'ORIGINAL_CHILD_TIMEOUT'):
-                self.restore_timeout_stopped(value, operation_directory, selection, root, output)
+                self.restore_timeout_stopped(value, operation_directory, selection, root, output,
+                                             result_pin=reference)
                 reply = result(value, 'FAILED', output['failureCode'])
             if reply['state'] == 'SUCCEEDED':
                 def inspect(item):
@@ -1094,7 +1334,7 @@ class Native:
                 selection['ownerConfigurationPin'], executor.pin(operation_directory / 'request.json'),
                 root / 'result.json', environment=config['environment'],
                 working_directory=config['workingDirectory'], deadline_milliseconds=config['deadlineMilliseconds'])
-            reply = self.owner_result(value, terminal)
+            reply = self.owner_result(value, terminal, selection=selection)
             if reply['state'] == 'SUCCEEDED':
                 # The archive adapter returns success only after independent
                 # material/hash readback. Logical point references are original
@@ -1114,6 +1354,7 @@ class Native:
         return {'SUCCEEDED': 0, 'FAILED': 1, 'RUNNING': 2}[reply['state']]
 
     def reconcile(self, value, operation_directory, selection):
+        program_owner = value['action'] == 'RESTORE' and self.restore_owner(value, selection)[1]
         terminal_path = operation_directory / 'worker-terminal.json'
         terminal = local_read(terminal_path) if terminal_path.is_file() else None
         if terminal is not None:
@@ -1150,15 +1391,22 @@ class Native:
                 executor.verify(original[key])
             if original['resultPin'] is not None:
                 executor.verify(original['resultPin'])
+                if program_owner and reply['state'] == 'FAILED':
+                    # A cached control failure is not a bypass around its
+                    # program owner's fixed result and complete history.
+                    self.owner_result(value, original, selection=selection)
             if reply['state'] == 'SUCCEEDED':
-                need(self.owner_result(value, original) == reply, 'ORIGINAL_RESULT_CHANGED')
+                need(self.owner_result(value, original, selection=selection) == reply, 'ORIGINAL_RESULT_CHANGED')
         else:
             need(reply['state'] != 'SUCCEEDED', 'ORIGINAL_SUCCESS_EXIT_MISSING')
         if (reply['state'] == 'FAILED' and value['action'] == 'RESTORE' and owner_terminal is not None and
                 owner_terminal['actualExitCode'] == 1 and owner_terminal.get('timedOut') is False and
                 owner_terminal.get('resultPin') is not None):
-            failed = self.operation_output(value, owner_terminal['resultPin'])
-            if (failed['state'] == 'FAILED_RETAINED' and failed['data'].get('mutationDispatched') is True and
+            reference = self.owner_output_reference(value, owner_terminal, selection)
+            failed, program = self.operation_evidence(value, reference, selection=selection)
+            if (failed['state'] == 'FAILED_RETAINED' and
+                    (program['mutationDispatched'] if program is not None else
+                     failed['data'].get('mutationDispatched')) is True and
                     (self.accepted_operation(value, selection) / 'resource-reservation.json').exists()):
                 refreshed = self.refresh_original(value, operation_directory, selection)
                 # Reconciliation diagnostics are retained in queries; a failure

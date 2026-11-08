@@ -63,6 +63,13 @@ class _NativeView:
         require(native.config == self._configuration['targets'][self._context._request['targetConfigRef']],
                 'PROGRAM_NATIVE_TARGET_CHANGED')
         require(native.budget is self.budget, 'PROGRAM_NATIVE_BUDGET_CHANGED')
+        staging = getattr(native, 'program_sql_staging', None)
+        if staging is not None:
+            # Local lease observation only; staging.check never reenters a
+            # context/native guard or dispatches another command.
+            require(staging.context is self._context and staging.native is native,
+                    'PROGRAM_SQL_STAGING_OWNER_CHANGED')
+            staging.check()
 
     def begin_invocation(self, native, intent_pin):
         self.guard_native(native)
@@ -83,6 +90,7 @@ class MainNativeExecutionContext:
         self._binding = deepcopy(binding_pin)
         self._lock_fd, self._budget, self._outer_guard = lock_fd, budget, guard
         self._leases, self._references, self._directories = [], {}, {}
+        self._sql_staging_managers = []
         self._closed = False
         self._phase, self._generation = 'PREPARATION', None
         self._views, self._invocations, self._invocation_paths = [], [], set()
@@ -318,7 +326,8 @@ class MainNativeExecutionContext:
 
     def close(self):
         self._closed = True
-        leases, self._leases = self._leases, []
+        leases = [*self._leases, *self._sql_staging_managers]
+        self._leases, self._sql_staging_managers = [], []
         failure = None
         for lease in reversed(leases):
             try:

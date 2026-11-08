@@ -179,20 +179,28 @@ def verify_services(native, value):
     return writable
 
 
-def prepare(native, value, *, source_lock_fd=None):
-    from recovery_data_files import apply_tree, inventory
+def preparation_preflight(native, value):
+    """Check the current registered target without installing any protection."""
     if hasattr(native, 'replacement_preflight'):
         native.replacement_preflight()
     verify_services(native, value)
     require(native.mysql.query('SELECT @@GLOBAL.log_bin;').strip() == '1',
             'REPLACEMENT_BINARY_LOGGING_REQUIRED')
-    intent = dict(targetConfigRef=native.original['targetConfigRef'],
-          database=native.config['database'], databaseUuid=value['databaseUuid'],
+
+
+def preparation_intent(request, target, value, root):
+    """Allow the program branch to enter its epoch before the first native DB."""
+    intent = dict(targetConfigRef=request['targetConfigRef'],
+          database=target['database'], databaseUuid=value['databaseUuid'],
           serviceIds={role:item['id'] for role,item in value['services'].items()}, startedAt=utc())
     if 'backupEpoch' in value:
-        intent.update(schemaVersion='ReplacementBackupEpochIntent/v1', operationId=native.original['operationId'],
-            replacementReceiptPath=(absolute(value['stateRoot'])/native.original['operationId']/'replacement-result.json').as_posix())
-    intent_pin = write(native.root/'replacement-intent.json', intent)
+        intent.update(schemaVersion='ReplacementBackupEpochIntent/v1', operationId=request['operationId'],
+            replacementReceiptPath=(absolute(value['stateRoot'])/request['operationId']/'replacement-result.json').as_posix())
+    return write(root/'replacement-intent.json', intent)
+
+
+def quiesce(native, value):
+    """Protect and stop original writers; never reset data or enter an epoch."""
     if hasattr(native, 'replacement_write_fence'):
         native.replacement_write_fence()
     for role in reversed(native.config['application']['startOrder']):
@@ -205,10 +213,18 @@ def prepare(native, value, *, source_lock_fd=None):
     verify_services(native, value)
     if hasattr(native, 'replacement_quiescence'):
         native.replacement_quiescence()
-    if 'backupEpoch' in value:
-        from recovery_backup_epoch import begin_restore
-        native.backup_epoch = begin_restore(value['backupEpoch'], native.original['operationId'], source_lock_fd,
-                                          intent_pin=intent_pin)
+
+
+def clear(native, value):
+    """Reset only registered data, using the current RESTORE transport."""
+    from recovery_data_files import apply_tree, inventory
+    view = getattr(native, 'native_context', None)
+    if view is not None:
+        view.guard_native(native)
+        require(view.phase == 'RESTORE', 'PROGRAM_REPLACEMENT_CLEAR_PHASE_INVALID')
+        native.bound()
+        verify_services(native, value)
+    database = native.config['database']
     native.mutation_dispatched = True
     native.mysql.query('DROP DATABASE `'+database+'`; CREATE DATABASE `'+database+'`;', mutation=True)
     mount = [m for m in value['services']['minio']['mounts'] if m['Destination'] == native.policy['minioDataMount']]
@@ -223,6 +239,18 @@ def prepare(native, value, *, source_lock_fd=None):
     from recovery_main_target import redis_command
     redis_command(native, ['-n', str(database), 'FLUSHDB'], mutation=True)
     write(native.root/'replacement-prepared.json', dict(state='PREPARED', finishedAt=utc()))
+
+
+def prepare(native, value, *, source_lock_fd=None):
+    """Preserve the legacy lifecycle; the program path calls explicit stages."""
+    preparation_preflight(native, value)
+    intent_pin = preparation_intent(native.original, native.config, value, native.root)
+    quiesce(native, value)
+    if 'backupEpoch' in value:
+        from recovery_backup_epoch import begin_restore
+        native.backup_epoch = begin_restore(value['backupEpoch'], native.original['operationId'], source_lock_fd,
+                                          intent_pin=intent_pin)
+    clear(native, value)
 
 
 def execute(configuration, request, root, input_pins, original_execute, native_type, selected_chain):
@@ -252,6 +280,13 @@ def execute(configuration, request, root, input_pins, original_execute, native_t
         claim = absolute(value['stateRoot'])/request['operationId']
         claim.mkdir(mode=0o700)
         bind_clearances(target,request,consume=True)
+        programs = configuration.get('targetProgramPolicies', {})
+        require(type(programs) is dict and set(programs) <= set(configuration['targets']),
+                'PROGRAM_TARGET_POLICIES_INVALID')
+        if request['targetConfigRef'] in programs:
+            from recovery_program_restore import execute as restore_program
+            return restore_program(configuration, request, root, input_pins, original_execute,
+                native_type, selected_chain, claim=claim, replacement=value, source_lock_fd=lock)
         native = None
         receipt = None
         try:
