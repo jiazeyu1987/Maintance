@@ -433,6 +433,8 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
     payload['common/recovery_program_generation.py'] = (root/'ops/recovery/recovery_program_generation.py').read_bytes()
     payload['common/recovery_program_activation.py'] = (root/'ops/recovery/recovery_program_activation.py').read_bytes()
     payload['common/recovery_program_targets.py'] = (root/'ops/recovery/recovery_program_targets.py').read_bytes()
+    payload['common/recovery_program_execution.py'] = (root/'ops/recovery/recovery_program_execution.py').read_bytes()
+    payload['common/recovery_program_derivation.py'] = (root/'ops/recovery/recovery_program_derivation.py').read_bytes()
     payload['common/recovery_target_sources.py'] = (root/'ops/recovery/recovery_target_sources.py').read_bytes()
     payload['common/recovery_mysql_scheduler.py'] = (root/'ops/recovery/recovery_mysql_scheduler.py').read_bytes()
     payload['common/recovery_main_health.py'] = (root/'ops/recovery/recovery_main_health.py').read_bytes()

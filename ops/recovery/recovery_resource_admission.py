@@ -484,7 +484,9 @@ def observe_resources(configuration, request, policy):
                 cgroup=hierarchy, disks=disks)
 
 
-def admit(configuration, request, root, stage, *, reservation_configuration=None):
+def admit(configuration, request, root, stage, *, reservation_configuration=None,
+          execution_binding_pin=None, execution_generation_pin=None, execution_lock_fd=None,
+          execution_guard=None):
     """Persist both rejection and admission before a restore mutation starts."""
     from recovery_engine import digest, utc, write
     need(stage in ('owner', 'target', 'replacement'), 'RESTORE_RESOURCE_STAGE_INVALID')
@@ -493,7 +495,19 @@ def admit(configuration, request, root, stage, *, reservation_configuration=None
                   configurationSha256=digest(configuration), startedAt=started,
                   businessAcceptance='NOT_PERFORMED', admitted=False)
     try:
-        if reservation_configuration is not None:
+        execution = any(value is not None for value in (execution_binding_pin,
+            execution_generation_pin, execution_lock_fd, execution_guard))
+        if execution:
+            need(stage in ('replacement', 'target') and reservation_configuration is not None and
+                 execution_binding_pin is not None and execution_lock_fd is not None,
+                 'RESTORE_PROGRAM_EXECUTION_BINDING_REQUIRED')
+            from recovery_program_execution import resolve_execution_configuration
+            expected, proof = resolve_execution_configuration(reservation_configuration, request, root,
+                binding_pin=execution_binding_pin, generation_pin=execution_generation_pin,
+                lock_fd=execution_lock_fd, guard=execution_guard, runtime=stage == 'target')
+            need(configuration == expected, 'RESTORE_REPLACEMENT_CONFIGURATION_CHANGED')
+            record.update(reservationConfigurationSha256=digest(reservation_configuration), programExecution=proof)
+        elif reservation_configuration is not None:
             from copy import deepcopy
             expected = deepcopy(reservation_configuration)
             target = expected['targets'][request['targetConfigRef']]
@@ -508,6 +522,11 @@ def admit(configuration, request, root, stage, *, reservation_configuration=None
         need(type(policy) is dict and type(policy.get('diskBytesByPath')) is dict,
              'RESTORE_RESOURCE_BUDGET_INVALID')
         observed = observe_resources(configuration, request, policy)
+        if execution:
+            expected, after = resolve_execution_configuration(reservation_configuration, request, root,
+                binding_pin=execution_binding_pin, generation_pin=execution_generation_pin,
+                lock_fd=execution_lock_fd, guard=execution_guard, runtime=stage == 'target')
+            need(configuration == expected and after == proof, 'RESTORE_REPLACEMENT_CONFIGURATION_CHANGED')
         record.update(observation=observed)
         decision = check_budget(policy, observed)
         record.update(budget=policy, **decision)

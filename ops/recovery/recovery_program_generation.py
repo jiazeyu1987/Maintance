@@ -9,7 +9,7 @@ from pathlib import Path
 import re
 
 from recovery_engine import RecoveryError, digest, require
-from recovery_backup_epoch import _read_file, _parse, read_current, validate_policy as validate_epoch
+from recovery_backup_epoch import _read_file, _parse, _snapshot, read_current, validate_policy as validate_epoch
 
 
 POLICY_FIELDS = {'schemaVersion', 'targetConfigRef', 'baselineTargetPin', 'initialEpochPin',
@@ -54,7 +54,9 @@ def _mapped(value, replacements):
     if type(value) is list:
         return [_mapped(item, replacements) for item in value]
     if type(value) is dict:
-        return {_mapped(key, replacements): _mapped(item, replacements) for key, item in value.items()}
+        result = {_mapped(key, replacements): _mapped(item, replacements) for key, item in value.items()}
+        require(len(result) == len(value), 'PROGRAM_MAPPING_CONFLICT')
+        return result
     return value
 
 
@@ -64,10 +66,21 @@ def _services(target):
     return {row['role']: row for row in rows}
 
 
-def _target_transition(previous, target, switch_pin, operation, read):
+def _program_replacements(before, after):
+    """An identity has one exact successor, including its Docker short alias."""
+    result = {}
+    for role in sorted(APPLICATIONS):
+        for old, new in ((before[role]['id'], after[role]['id']),
+                         (before[role]['id'][:12], after[role]['id'][:12]),
+                         (before[role]['imageId'], after[role]['imageId'])):
+            require(old not in result or result[old] == new, 'PROGRAM_MAPPING_CONFLICT')
+            result[old] = new
+    return result
+
+
+def _target_value(previous, switch_pin, operation, read, writer_pin):
     if switch_pin is None:
-        require(target == previous, 'PROGRAM_TARGET_SCOPE_CHANGED')
-        return
+        return deepcopy(previous)
     from recovery_program_containers import snapshot, verify_created
     from recovery_main_target import service_configuration_digest, network_attachments
     switch = read(switch_pin)
@@ -78,7 +91,6 @@ def _target_transition(previous, target, switch_pin, operation, read):
     require(intent.get('schemaVersion') == 'MainProgramSwitchIntent/v1' and intent.get('operationId') == operation,
             'PROGRAM_SWITCH_PROOF_INVALID')
     services = _services(previous); expected = deepcopy(previous); changed = _services(expected)
-    replacements = {}
     for role in sorted(APPLICATIONS):
         item = read(switch['applicationPins'][role])
         original, created = item['original'], item['created']
@@ -91,9 +103,6 @@ def _target_transition(previous, target, switch_pin, operation, read):
                        engine_metadata=intent['engineMetadata'])
         retained = snapshot(original); retained['Name'] = item['retained']['Name']; retained['networks'] = {}
         require(snapshot(item['retained']) == retained, 'PROGRAM_SWITCH_PROOF_INVALID')
-        replacements[original['Id']] = created['Id']
-        replacements[original['Id'][:12]] = created['Id'][:12]
-        replacements[original['Image']] = created['Image']
         changed[role].update(id=created['Id'], imageId=created['Image'])
         expected['replacement']['services'][role].update(id=created['Id'], imageId=created['Image'],
             labels=created['Config']['Labels'], mounts=sorted(created['Mounts'],key=lambda m:m['Destination']))
@@ -103,6 +112,7 @@ def _target_transition(previous, target, switch_pin, operation, read):
             if not endpoint['NetworkID']:
                 endpoint['NetworkID'] = original['NetworkSettings']['Networks'][name]['NetworkID']
         expected['mainApplication']['networkAttachments'][role] = network_attachments(normalized)
+    replacements = _program_replacements(services, changed)
     main = expected['mainApplication']
     main['networks'] = _mapped(main['networks'], replacements)
     for network in main['networks']:
@@ -112,9 +122,14 @@ def _target_transition(previous, target, switch_pin, operation, read):
             binding['imageId'] = changed[binding['role']]['imageId']
     writers = main['writerAdmission']
     writers['approvedWriterContainerIds'] = _mapped(writers['approvedWriterContainerIds'], replacements)
-    new_proof = target['mainApplication']['writerAdmission']['evidencePin']
-    require(read(new_proof) == _mapped(read(writers['evidencePin']), replacements), 'PROGRAM_TARGET_SCOPE_CHANGED')
-    writers['evidencePin'] = new_proof
+    require(read(writer_pin) == _mapped(read(writers['evidencePin']), replacements), 'PROGRAM_TARGET_SCOPE_CHANGED')
+    writers['evidencePin'] = writer_pin
+    return expected
+
+
+def _target_transition(previous, target, switch_pin, operation, read):
+    writer_pin = None if switch_pin is None else target['mainApplication']['writerAdmission']['evidencePin']
+    expected = _target_value(previous, switch_pin, operation, read, writer_pin)
     require(target == expected, 'PROGRAM_TARGET_SCOPE_CHANGED')
 
 
@@ -128,7 +143,7 @@ def _capture_transition(base, active, baseline, target, source_ref, epoch_policy
             base['source']['database'] == baseline['database'] and
             base['source']['mysqlContainerId'] == old_services['mysql']['id'] and
             base['source']['minioContainerId'] == old_services['minio']['id'], code)
-    replacements = {old_services[r][field]: services[r][field] for r in APPLICATIONS for field in ('id','imageId')}
+    replacements = _program_replacements(old_services, services)
     expected = deepcopy(base)
     expected['source']['writerContainerIds'] = _mapped(base['source']['writerContainerIds'], replacements)
     expected['source']['applicationImageIds'] = _mapped(base['source']['applicationImageIds'], replacements)
@@ -155,7 +170,7 @@ def _capture_transition(base, active, baseline, target, source_ref, epoch_policy
     require(active == expected, code)
 
 
-def _resolve(policy, reader, guard=None):
+def _resolve_state(policy, reader, guard=None, *, ready_pin=None):
     guard = (lambda: None) if guard is None else guard
     guard()
     validate_policy(policy)
@@ -171,14 +186,31 @@ def _resolve(policy, reader, guard=None):
         guard()
         return result
     epoch_policy = policy['backupEpochPolicy']; current = read_current(epoch_policy, guard=guard)
-    require(current['state'] == 'READY', 'PROGRAM_EPOCH_NOT_READY')
+    if ready_pin is None:
+        require(current['state'] == 'READY', 'PROGRAM_EPOCH_NOT_READY')
+        selected = current
+    else:
+        # A private execution proof may inspect its fixed successful prefix.
+        # The complete current journal was verified above, including its tail.
+        # This never changes what the public active-program readers accept.
+        _pin(ready_pin)
+        tail = read(current['eventPin'])
+        ready = read(ready_pin)
+        require(ready.get('state') == 'READY' and type(ready.get('sequence')) is int and
+                0 <= ready['sequence'] <= tail['sequence'] and
+                Path(ready_pin['path']) == Path(epoch_policy['root'])/('%020d.json' % ready['sequence']),
+                'PROGRAM_HISTORY_READY_INVALID')
+        guard()
+        _, actual = _read_file(ready_pin['path'])
+        require(actual == ready_pin, 'PROGRAM_HISTORY_READY_INVALID')
+        selected = _snapshot(ready, ready_pin)
     initial = read(policy['initialEpochPin'])
     require(initial['state'] == 'READY' and initial['policySha256'] == digest(epoch_policy) and
             Path(policy['initialEpochPin']['path']).parent == Path(epoch_policy['root']), 'PROGRAM_INITIAL_EPOCH_INVALID')
     baseline = read(policy['baselineTargetPin'])
     require(baseline['replacement']['databaseUuid'] == epoch_policy['databaseUuid'] and
             baseline['replacement']['lockPath'] == epoch_policy['sourceLockPath'], 'PROGRAM_BASELINE_SCOPE_CHANGED')
-    event = read(current['eventPin'])
+    event = read(selected['eventPin'])
     require(event['sequence'] >= initial['sequence'], 'PROGRAM_INITIAL_EPOCH_INVALID')
     # Validate the installed cutover really is in this journal, not a copied
     # READY event from another location or a future sequence.
@@ -229,7 +261,16 @@ def _resolve(policy, reader, guard=None):
             _capture_transition(base,base,baseline,baseline,source_ref,epoch_policy,read)
     require(read_current(epoch_policy, guard=guard) == current, 'PROGRAM_EPOCH_CHANGED')
     return dict(target=previous_target,targetPin=target_pin,captures=captures,
-                generationPin=previous_pin,epoch=current,evidence=evidence)
+                generationPin=previous_pin,epoch=selected,evidence=evidence)
+
+
+def _resolve(policy, reader, guard=None):
+    return _resolve_state(policy, reader, guard)
+
+
+def _resolve_at_ready(policy, ready_pin, reader, guard=None):
+    """Revalidate a fixed READY prefix; this grants no current-state authority."""
+    return _resolve_state(policy, reader, guard, ready_pin=ready_pin)
 
 
 def resolve_capture(policy, source_ref, base_pin, *, reader=document, guard=None):

@@ -179,3 +179,80 @@ print('PACKAGED_PROGRAM_ACTIVATION_PASS')
         capture_output=True, timeout=120, env={**os.environ,'PYTHONPATH':os.pathsep.join(sys.path)})
     assert result.returncode == 0, result.stderr.decode('utf-8', errors='replace')
     assert result.stdout.strip() == b'PACKAGED_PROGRAM_ACTIVATION_PASS'
+
+
+@pytest.mark.skipif(not sys.platform.startswith('linux'), reason='actual packaged Linux flock required')
+@pytest.mark.parametrize('variant', ['standard', 'lightweight'])
+def test_program_execution_and_derivation_run_together_in_actual_package(variant, program_packages, tmp_path):
+    engine = tmp_path/'engine'
+    with tarfile.open(program_packages/('backup-restore-'+variant+'.tgz')) as archive:
+        for name in ('recovery_program_execution', 'recovery_program_derivation'):
+            assert archive.extractfile('common/'+name+'.py').read() == (ROOT/'ops/recovery'/(name+'.py')).read_bytes()
+        archive.extractall(engine, filter='data')
+    script = r'''
+from copy import deepcopy
+from pathlib import Path
+import sys
+engine,tests,work=map(Path,sys.argv[1:])
+sys.path[:0]=[str(engine/'common'),str(tests)]
+import pytest
+import recovery_program_execution as execution
+import recovery_program_derivation as derivation
+import recovery_program_generation as generation
+import recovery_program_activation as activation
+import recovery_program_targets as targets
+import recovery_resource_admission as admission
+modules=(execution,derivation,generation,activation,targets,admission)
+assert all(Path(m.__file__).resolve().parent == (engine/'common').resolve() for m in modules)
+from recovery_engine import pinned_json
+from test_recovery_program_generation import case
+from test_recovery_program_execution import execution as fixture,bind,resolve
+from test_recovery_program_activation import locked,start,stage,finish
+with pytest.MonkeyPatch.context() as seam:
+ # Only resource observation is a unit seam. Files, reservations, journal,
+ # exclusive locks, metadata production and all package modules are real.
+ e=fixture.__wrapped__(case.__wrapped__(work),seam)
+ owner=deepcopy(e.owner)
+ original={Path(p['path']):Path(p['path']).read_bytes()
+           for p in (e.owner_pin,e.request_pin,e.reservation)}
+ with locked(e.case) as fd:
+  context,binding=bind(e,fd)
+  before,proof=resolve(e,binding,fd)
+  assert before == owner and proof['generationPin'] is None
+  epoch=start(e.case,e.claim,fd)
+  proposed=derivation.derive(e.case['policy'],before['targets']['target57'],e.switch,
+      e.request['operationId'],e.claim,fd)
+  captures={source:entry['capturePin'] for source,entry in proposed['captureBindings'].items()}
+  candidate=stage(e.case,context,fd,target_pin=proposed['targetPin'],
+      capture_pins=captures,switch_result_pin=e.switch)
+  effective,proof=resolve(e,binding,fd,generation_pin=candidate)
+  assert effective['targets']['target57']['services'] == e.candidate['services']
+  assert effective['targets']['target57']['secrets'] == owner['targets']['target57']['secrets']
+  admitted=admission.admit(effective,e.request,e.root,'replacement',reservation_configuration=owner,
+      execution_binding_pin=binding,execution_generation_pin=candidate,execution_lock_fd=fd)
+  assert admitted['admitted'] is True and e.observations[-1] == effective
+  (e.claim/'runtime').mkdir(mode=0o700)
+  runtime,runtime_proof=resolve(e,binding,fd,generation_pin=candidate,runtime=True)
+  assert runtime['targets']['target57']['dataRoot'] == str(e.claim/'runtime')
+  assert runtime_proof['generationPin'] == proof['generationPin'] == candidate
+  admitted=admission.admit(runtime,e.request,e.root,'target',reservation_configuration=owner,
+      execution_binding_pin=binding,execution_generation_pin=candidate,execution_lock_fd=fd)
+  assert admitted['admitted'] is True and e.observations[-1] == runtime
+  try:generation.resolve_target(e.case['policy'])
+  except Exception as error:assert error.code == 'PROGRAM_EPOCH_NOT_READY'
+  else:raise AssertionError('unfinished generation globally activated')
+  finish(e.case,e.claim,epoch,candidate,fd)
+  active,active_binding=targets.resolve_configuration(owner,'target57')
+  assert active == effective and active_binding['targetPin'] == proposed['targetPin']
+  capture,evidence=generation.resolve_capture(e.case['policy'],'source57',e.case['base_pin'])
+  assert capture == captures['source57'] and candidate in evidence
+  assert pinned_json(capture)['source']['writerContainerIds'] == [
+      s['id'] for s in e.candidate['services'] if s['role'] in ('backend','frontend')]
+ assert e.owner == owner and all(path.read_bytes() == data for path,data in original.items())
+assert all(Path(m.__file__).resolve().parent == (engine/'common').resolve() for m in modules)
+print('PACKAGED_PROGRAM_EXECUTION_PASS')
+'''
+    result = subprocess.run([sys.executable, '-B', '-c', script, str(engine), str(ROOT/'scripts/tests'), str(tmp_path)],
+        capture_output=True, timeout=120, env={**os.environ, 'PYTHONPATH':os.pathsep.join(sys.path)})
+    assert result.returncode == 0, result.stderr.decode('utf-8', errors='replace')
+    assert result.stdout.strip() == b'PACKAGED_PROGRAM_EXECUTION_PASS'
