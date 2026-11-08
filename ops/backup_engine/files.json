@@ -1,6 +1,7 @@
 {
   "ops/recovery/recovery_archive_versions.py": "common/recovery_archive_versions.py",
   "ops/recovery/recovery_program_archive.py": "common/recovery_program_archive.py",
+  "ops/recovery/recovery_program_containers.py": "common/recovery_program_containers.py",
   "ops/recovery/recovery_target_sources.py": "common/recovery_target_sources.py",
   "backend/src/main/resources/recovery_control_incremental_plan.py": "control/recovery_control_incremental_plan.py",
   "ops/recovery/recovery_backup_epoch.py": "common/recovery_backup_epoch.py",

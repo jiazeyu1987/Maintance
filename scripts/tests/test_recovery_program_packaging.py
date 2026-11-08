@@ -63,3 +63,39 @@ print('PACKAGED_PROGRAM_INPUTS_PASS')
                             env={**os.environ, 'PYTHONPATH': os.pathsep.join(sys.path)})
     assert result.returncode == 0, result.stderr.decode('utf-8', errors='replace')
     assert result.stdout.strip() == b'PACKAGED_PROGRAM_INPUTS_PASS'
+
+
+@pytest.mark.parametrize('variant', ['standard', 'lightweight'])
+def test_program_container_contract_executes_in_packaged_engine(variant, program_packages, tmp_path):
+    from test_recovery_program_containers import original, image
+    engine = tmp_path/'engine'
+    with tarfile.open(program_packages/('backup-restore-'+variant+'.tgz')) as archive:
+        assert archive.extractfile('common/recovery_program_containers.py').read() == (
+            ROOT/'ops/recovery/recovery_program_containers.py').read_bytes()
+        archive.extractall(engine, filter='data')
+    inputs = tmp_path/'input.json'
+    inputs.write_text(json.dumps(dict(original=original(), image=image())), encoding='utf-8')
+    script = r'''
+from copy import deepcopy
+from pathlib import Path
+import json,sys
+engine,inputs=map(Path,sys.argv[1:])
+sys.path.insert(0,str(engine/'common'))
+import recovery_program_containers as program
+assert Path(program.__file__).resolve().parent == (engine/'common').resolve()
+values=json.loads(inputs.read_text(encoding='utf-8'));original=values['original']
+request=program.create_request(original,values['image'])
+created=deepcopy(original)
+created.update(Id='b'*64,Image=values['image']['Id'],Config=request['Config'],HostConfig=request['HostConfig'])
+created['NetworkSettings']['Networks']['task-network']['Aliases']=['program-backend','b'*12]
+program.verify_created(original,request,created)
+created['Image']='sha256:'+'3'*64
+try:program.verify_created(original,request,created)
+except Exception as error:assert error.code=='PROGRAM_CREATED_IDENTITY_CHANGED'
+else:raise AssertionError('image drift accepted')
+print('PACKAGED_PROGRAM_CONTAINER_PASS')
+'''
+    result = subprocess.run([sys.executable, '-B', '-c', script, str(engine), str(inputs)],
+        capture_output=True, timeout=60, env={**os.environ, 'PYTHONPATH': os.pathsep.join(sys.path)})
+    assert result.returncode == 0, result.stderr.decode('utf-8', errors='replace')
+    assert result.stdout.strip() == b'PACKAGED_PROGRAM_CONTAINER_PASS'

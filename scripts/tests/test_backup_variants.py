@@ -37,6 +37,7 @@ def test_standard_keeps_original_code_except_reviewed_fixes_and_archive_names(pa
         'control/recovery_control_point_quarantine.py', 'formal/formal_binlog_scope.py',
         'common/recovery_replace.py', 'common/recovery_data.py', 'formal/formal_data_evidence.py', 'formal/formal_schema_evidence.py',
         'common/recovery_main_target.py', 'common/recovery_archive_versions.py', 'common/recovery_program_archive.py',
+        'common/recovery_program_containers.py',
         'common/recovery_replacement_storage.py', 'common/recovery_minimal_plan.py',
         'common/recovery_retained_retry.py', 'common/recovery_minimal_redis_dump.py', 'common/recovery_published_fence.py', 'common/recovery_archive_view.py',
         'common/recovery_mysql_scheduler.py', 'common/recovery_main_health.py',
