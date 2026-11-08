@@ -1,0 +1,41 @@
+{
+  "before": "9a62391efbd7f92b8f9077b42870e27796511847",
+  "after": "e1389aa621bc92bc2f2e02ebdbc249d3c3086808",
+  "mergedFiles": [
+    "backend/src/main/resources/recovery_control_restore_catalogue.py",
+    "backend/src/main/resources/recovery_control_smallapp_http.py",
+    "backend/src/main/resources/recovery_control_smallapp_native.py",
+    "backend/src/main/resources/recovery_control_target_availability.py",
+    "ops/backup_engine/files.json",
+    "ops/backup_engine/standard_fixes.py",
+    "ops/recovery/recovery_main_target.py",
+    "ops/recovery/recovery_replace.py",
+    "ops/recovery/recovery_replacement_storage.py",
+    "ops/spug/restore_control_transport.ps1",
+    "ops/spug/restore_target_registration.py",
+    "ops/spug/smallapp_adapter.py",
+    "ops/spug/test_smallapp_cross_route.py",
+    "scripts/tests/test_backup_variants.py",
+    "scripts/tests/test_main_restore_target.py",
+    "scripts/tests/test_replacement_storage.py",
+    "scripts/tests/test_restore_archive_catalogue.py",
+    "scripts/tests/test_restore_target_http.py",
+    "scripts/tests/test_restore_target_registration.py"
+  ],
+  "unrelatedDirtyPathsPreserved": 1692,
+  "newMergeCommit": false,
+  "verification": "PASS",
+  "mergedResultTests": {
+    "pythonContracts": {
+      "passed": 137,
+      "windowsPosixSkips": 7
+    },
+    "posixEvidence": "storage-execution-log.md: same committed storage implementation, Linux 98 passed, zero skipped",
+    "spugContracts": {
+      "passed": 45
+    },
+    "javascriptContracts": {
+      "passed": 42
+    }
+  }
+}

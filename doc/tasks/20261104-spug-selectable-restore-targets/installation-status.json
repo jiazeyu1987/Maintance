@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "SpugMainRestoreInstallationVerification/v1",
+  "servers": [
+    {
+      "host": "172.30.30.57",
+      "root": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3",
+      "filesVerified": 121,
+      "sourceCommit": "45b4e3e",
+      "restorePerformed": false,
+      "targetEnabled": false,
+      "loadAverage": [
+        "1553.51",
+        "1545.24",
+        "1532.68"
+      ],
+      "mainObservation": "EXACT_BACKEND_INSPECT_TIMEOUT_4S",
+      "controllerInstalled": false
+    },
+    {
+      "host": "172.30.30.58",
+      "root": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3",
+      "filesVerified": 121,
+      "sourceCommit": "45b4e3e",
+      "restorePerformed": false,
+      "service": "spug-main-restore-58-20261104-v3.service",
+      "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+      "serviceState": "active",
+      "pinsVerified": true,
+      "operationCount": 0,
+      "claimCount": 0,
+      "mainServices": [
+        {
+          "id": "b4592b704b979f1b94ba03836985491a8f7c699d3094297bfbe3696939eedd79",
+          "running": true,
+          "restarting": false,
+          "startedAt": "2026-10-20T02:51:19.576144365Z",
+          "health": null
+        },
+        {
+          "id": "98216faac1ae2fc1508bd4076962bf4cfcb3a47f2f1bd5d5e42c7ba819e83115",
+          "running": true,
+          "restarting": false,
+          "startedAt": "2026-11-03T05:35:07.870093695Z",
+          "health": "healthy"
+        },
+        {
+          "id": "028bb0541d3216c283c5f1822338462545fa7cd63fad55c462ae20a01526e225",
+          "running": true,
+          "restarting": false,
+          "startedAt": "2026-11-03T05:35:07.250762964Z",
+          "health": null
+        },
+        {
+          "id": "6f70e67078d086d7f08c1ae75a80bb0feab28c5a1f92c91d655ac258f34988eb",
+          "running": true,
+          "restarting": false,
+          "startedAt": "2026-11-03T06:24:10.650373948Z",
+          "health": "healthy"
+        },
+        {
+          "id": "4f9775e6f0a1d86b2d06c69e40504a91cf44a613de458b76e69fa04805ca5d73",
+          "running": true,
+          "restarting": false,
+          "startedAt": "2026-11-03T06:27:41.221159726Z",
+          "health": "healthy"
+        }
+      ],
+      "businessStartTimesUnchanged": true
+    },
+    {
+      "host": "172.30.30.59",
+      "root": "/mnt/intruoyi-data/spug-main-restore-20261104-v3",
+      "filesVerified": 121,
+      "sourceCommit": "45b4e3e",
+      "restorePerformed": false,
+      "service": "spug-main-restore-59-20261104-v3.service",
+      "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+      "serviceState": "active",
+      "pinsVerified": true,
+      "operationCount": 0,
+      "claimCount": 0,
+      "mainServices": [
+        {
+          "id": "4376cb8d12c95ec485589b2fc8edabed3d9c631fcd52f715c4b2800f1b4cde8e",
+          "running": true,
+          "restarting": false,
+          "startedAt": "2026-10-25T07:24:58.86398075Z",
+          "health": null
+        },
+        {
+          "id": "eb40cfe31e8046cf281c33d1a9b7cc50a2ecd30cb2b5a51d4248dce5f20b38d7",
+          "running": true,
+          "restarting": false,
+          "startedAt": "2026-11-03T07:29:34.430969782Z",
+          "health": "healthy"
+        },
+        {
+          "id": "99d136c09a948643f5f4bb7ff6fb1f0402cd856dc5aeebe91e5baf289dbd3e48",
+          "running": true,
+          "restarting": false,
+          "startedAt": "2026-11-03T07:29:33.501392716Z",
+          "health": null
+        },
+        {
+          "id": "285244884c5e056ce1e37d073a9356c9dd34e9d97dc8ea3af07183b9929c79d8",
+          "running": true,
+          "restarting": false,
+          "startedAt": "2026-11-03T07:40:45.031206277Z",
+          "health": "healthy"
+        },
+        {
+          "id": "82b9982178e4ea002b25f8cce70b621e29f4af452df7be42d2efc699191ca193",
+          "running": true,
+          "restarting": false,
+          "startedAt": "2026-11-03T07:44:02.862931319Z",
+          "health": "healthy"
+        }
+      ],
+      "businessStartTimesUnchanged": true
+    }
+  ],
+  "actualRestorePerformed": false
+}

@@ -1,0 +1,64 @@
+{
+  "mode": "verify",
+  "realBrowser": true,
+  "realLogin": true,
+  "restoreSubmitted": false,
+  "packages": [
+    {
+      "value": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+      "label": "2026/10/25 03:30:21 · 全量备份 · smallapp-0eebed7726824ca5b7292ffc9b845735"
+    },
+    {
+      "value": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+      "label": "2026/11/3 18:45:05 · 全量备份 · smallapp-3d4c7ab0f65841b8892e4a640a53176d"
+    },
+    {
+      "value": "smallapp-3f29a2b1324045309478a3a597654260",
+      "label": "2026/10/25 11:28:47 · 全量备份 · smallapp-3f29a2b1324045309478a3a597654260"
+    },
+    {
+      "value": "smallapp-a54a05be9dab45e490a3979551536b0c",
+      "label": "2026/10/25 18:48:25 · 全量备份 · smallapp-a54a05be9dab45e490a3979551536b0c"
+    }
+  ],
+  "targets": [
+    {
+      "value": "",
+      "label": "请选择可用恢复服务器",
+      "disabled": false
+    },
+    {
+      "value": "172.30.30.58",
+      "label": "测试服务器　172.30.30.58（选择后核验）",
+      "disabled": false
+    },
+    {
+      "value": "172.30.30.57",
+      "label": "正式服务器　172.30.30.57（未登记目标）",
+      "disabled": true
+    },
+    {
+      "value": "172.30.30.59",
+      "label": "备份服务器　172.30.30.59（选择后核验）",
+      "disabled": false
+    }
+  ],
+  "choices": [
+    {
+      "server": "172.30.30.58",
+      "summary": "IntRuoyi · 恢复 · 正式服务器　172.30.30.57 · 安全模式 · 完整核验 NAS：\\\\172.30.30.4\\IT共享\\Backup\\BackupPackage 来源：intruoyi-57-safe-20261024-v1 备份包：smallapp-a54a05be9dab45e490a3979551536b0c 恢复到：测试服务器　172.30.30.58 独立目标：intruoyi-main-58-safe-restore-20261104-v1 恢复方式：覆盖现有程序，将替换目标现有记录、附件及 Redis 数据。",
+      "cancelled": true
+    },
+    {
+      "server": "172.30.30.59",
+      "summary": "IntRuoyi · 恢复 · 正式服务器　172.30.30.57 · 安全模式 · 完整核验 NAS：\\\\172.30.30.4\\IT共享\\Backup\\BackupPackage 来源：intruoyi-57-safe-20261024-v1 备份包：smallapp-a54a05be9dab45e490a3979551536b0c 恢复到：备份服务器　172.30.30.59 独立目标：intruoyi-main-59-safe-restore-20261104-v1 恢复方式：覆盖现有程序，将替换目标现有记录、附件及 Redis 数据。",
+      "cancelled": true
+    }
+  ],
+  "status": "PASS",
+  "writes": [
+    "/api/account/login/"
+  ],
+  "blocked": [],
+  "httpFailures": []
+}
