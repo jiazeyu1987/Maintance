@@ -152,7 +152,9 @@ def _evidence(pin, operation, state, intent=None):
                  receipt.get('databaseUuid') == intent['databaseUuid'], 'BACKUP_EPOCH_RECEIPT_BINDING_INVALID')
 
 
-def _journal(policy):
+def _journal(policy, *, guard=None):
+    guard = (lambda: None) if guard is None else guard
+    guard()
     validate_policy(policy)
     root = Path(policy['root']); before = root.stat(); names = sorted(p.name for p in root.iterdir())
     _require(len(names) <= 50000 and all(re.fullmatch('[0-9]{20}\\.json', n) for n in names),
@@ -160,7 +162,9 @@ def _journal(policy):
     _require(names == ['%020d.json' % i for i in range(len(names))], 'BACKUP_EPOCH_CHAIN_INVALID')
     previous = None; previous_pin = None; operations = set()
     for sequence, name in enumerate(names):
+        guard()
         raw, pin = _read_file(root / name); event = _parse(raw)
+        guard()
         _require(type(event) is dict and set(event) == EVENT_FIELDS and
                  event['schemaVersion'] == 'SourceBackupEpochEvent/v1' and
                  type(event['sequence']) is int and event['sequence'] == sequence,
@@ -195,6 +199,7 @@ def _journal(policy):
             _require(event['epochId'] == _digest({k:v for k,v in event.items() if k != 'epochId'}),
                      'BACKUP_EPOCH_EPOCH_INVALID')
         previous, previous_pin = event, pin
+    guard()
     validate_policy(policy)
     _require(_signature(root.stat()) == _signature(before) and
              sorted(p.name for p in root.iterdir()) == names, 'BACKUP_EPOCH_CHANGED')
@@ -206,9 +211,9 @@ def _snapshot(event, pin):
                 epochId=event['epochId'], state=event['state'], operationId=event['operationId'], eventPin=pin)
 
 
-def read_current(policy):
+def read_current(policy, *, guard=None):
     try:
-        event, pin = _journal(policy)
+        event, pin = _journal(policy, guard=guard)
     except OSError as error:
         raise ValueError('BACKUP_EPOCH_JOURNAL_UNAVAILABLE') from error
     _require(event is not None, 'BACKUP_EPOCH_UNINITIALIZED')
@@ -232,9 +237,10 @@ def _assert_lock(policy, lock_fd):
                  for parts in locks), 'BACKUP_EPOCH_EXCLUSIVE_LOCK_REQUIRED')
 
 
-def _append(policy, previous, previous_pin, kind, state, operation, evidence, lock_fd):
+def _append(policy, previous, previous_pin, kind, state, operation, evidence, lock_fd, *, guard=None):
+    if guard is not None: guard()
     _assert_lock(policy, lock_fd)
-    current, current_pin = _journal(policy)
+    current, current_pin = _journal(policy, guard=guard)
     _require(current == previous and current_pin == previous_pin, 'BACKUP_EPOCH_CHANGED')
     event = dict(schemaVersion='SourceBackupEpochEvent/v1', sequence=0 if previous is None else previous['sequence']+1,
                  kind=kind, policySha256=_digest(policy), sourceIdentity=policy['sourceIdentity'],
@@ -258,7 +264,7 @@ def _append(policy, previous, previous_pin, kind, state, operation, evidence, lo
         os.fsync(directory)
     finally:
         os.close(directory)
-    return read_current(policy)
+    return read_current(policy, guard=guard)
 
 
 def initialize(policy, lock_fd):
@@ -286,25 +292,27 @@ def begin_restore(policy, operation_id, lock_fd, *, intent_pin=None):
     return _append(policy, previous, pin, 'RESTORE_STARTED', 'REPLACING', operation_id, intent_pin, lock_fd)
 
 
-def complete_restore(policy, operation_id, epoch_id, state, evidence_pin, lock_fd):
+def complete_restore(policy, operation_id, epoch_id, state, evidence_pin, lock_fd, *, guard=None):
+    if guard is not None: guard()
     _assert_lock(policy, lock_fd)
-    previous, pin = _journal(policy)
+    previous, pin = _journal(policy, guard=guard)
     _require(previous is not None and previous['state'] == 'REPLACING' and
              previous['operationId'] == operation_id and previous['epochId'] == epoch_id and
              state in ('READY', 'FAILED_RETAINED'), 'BACKUP_EPOCH_TRANSITION_INVALID')
     intent = None if previous['evidencePin'] is None else _intent(previous['evidencePin'], policy, operation_id)
     _evidence(evidence_pin, operation_id, state, intent)
-    return _append(policy, previous, pin, 'RESTORE_FINISHED', state, operation_id, evidence_pin, lock_fd)
+    return _append(policy, previous, pin, 'RESTORE_FINISHED', state, operation_id, evidence_pin, lock_fd, guard=guard)
 
 
-def reconcile_completed_restore(policy, lock_fd):
+def reconcile_completed_restore(policy, lock_fd, *, guard=None):
     """Finalize only the original pinned intent's proven terminal receipt.
 
     This performs no restore, service restart, failure clearance, or inference
     from process liveness. FAILED_RETAINED remains ineligible for source backup.
     """
+    if guard is not None: guard()
     _assert_lock(policy, lock_fd)
-    previous, pin = _journal(policy)
+    previous, pin = _journal(policy, guard=guard)
     _require(previous is not None, 'BACKUP_EPOCH_UNINITIALIZED')
     if previous['state'] != 'REPLACING':
         return _snapshot(previous, pin)
@@ -319,16 +327,16 @@ def reconcile_completed_restore(policy, lock_fd):
              'BACKUP_EPOCH_TERMINAL_RECEIPT_INVALID')
     state = 'READY' if receipt['state'] == 'SUCCEEDED' else 'FAILED_RETAINED'
     _evidence(evidence, previous['operationId'], state, intent)
-    return complete_restore(policy, previous['operationId'], previous['epochId'], state, evidence, lock_fd)
+    return complete_restore(policy, previous['operationId'], previous['epochId'], state, evidence, lock_fd, guard=guard)
 
 
-def try_reconcile_current(policy):
+def try_reconcile_current(policy, *, guard=None):
     """Nonblocking metadata maintenance on a normal source-planning request.
 
     A busy physical source lock means the restore is still active; all other
     errors remain explicit. No new lock or epoch is implicitly initialized.
     """
-    current = read_current(policy)
+    current = read_current(policy, guard=guard)
     if current['state'] != 'REPLACING':
         return current
     _require(sys.platform.startswith('linux'), 'BACKUP_EPOCH_LINUX_LOCK_REQUIRED')
@@ -342,6 +350,6 @@ def try_reconcile_current(policy):
             fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
             return current
-        return reconcile_completed_restore(policy, fd)
+        return reconcile_completed_restore(policy, fd, guard=guard)
     finally:
         os.close(fd)

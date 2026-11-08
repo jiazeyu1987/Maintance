@@ -296,11 +296,11 @@ def build_plan(native, source_ref, *, exclude_operation=None):
             exclude_operation=exclude_operation, guard=reader.guard)
         owner_pin = config['sourceConfigurations'][source_ref]
         owner = reader.document(owner_pin)
-        capture_pin = executor.pin(owner['sources'][source_ref]['configurationPath'])
-        capture = reader.document(capture_pin)
-        need(capture['sourceConfigRef'] == source_ref, 'CAPTURE_REQUEST_SOURCE_MISMATCH')
-        evidence.extend([owner_pin, capture_pin])
-        epoch = native.source_epoch(config, source_ref)
+        from recovery_control_capture_config import read_capture_configuration
+        capture_configuration = read_capture_configuration(reader, config, owner, source_ref)
+        capture_pin, capture, generation_evidence = capture_configuration
+        evidence.extend([owner_pin, capture_pin, *generation_evidence])
+        epoch = native.source_epoch(config, source_ref, reader=reader, capture_configuration=capture_configuration)
         evidence.append(epoch)
         points = {}
         from recovery_control_point_quarantine import quarantined
@@ -359,7 +359,7 @@ def build_plan(native, source_ref, *, exclude_operation=None):
         need(observed['position']['databaseUuid'] == capture['source']['databaseUuid'],
              'INCREMENTAL_LIVE_SOURCE_IDENTITY_CHANGED')
         reason = continuity_reason(selected['captured']['databaseEnd'], observed)
-        need(native.source_epoch(config, source_ref) == epoch, 'BACKUP_EPOCH_CHANGED_DURING_PLAN')
+        need(native.source_epoch(config, source_ref, reader=reader) == epoch, 'BACKUP_EPOCH_CHANGED_DURING_PLAN')
         if reason is not None:
             return finish(source_ref, 'BASELINE_REQUIRED', reason, evidence=evidence)
         # A live master normally advances between preview and submit. Only the

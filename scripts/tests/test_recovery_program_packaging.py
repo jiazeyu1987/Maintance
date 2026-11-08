@@ -99,3 +99,39 @@ print('PACKAGED_PROGRAM_CONTAINER_PASS')
         capture_output=True, timeout=60, env={**os.environ, 'PYTHONPATH': os.pathsep.join(sys.path)})
     assert result.returncode == 0, result.stderr.decode('utf-8', errors='replace')
     assert result.stdout.strip() == b'PACKAGED_PROGRAM_CONTAINER_PASS'
+
+
+@pytest.mark.parametrize('variant', ['standard', 'lightweight'])
+def test_program_generation_resolves_in_actual_package(variant, program_packages, tmp_path):
+    engine = tmp_path/'engine'
+    with tarfile.open(program_packages/('backup-restore-'+variant+'.tgz')) as archive:
+        assert archive.extractfile('common/recovery_program_generation.py').read() == (
+            ROOT/'ops/recovery/recovery_program_generation.py').read_bytes()
+        archive.extractall(engine, filter='data')
+    script = r'''
+from pathlib import Path
+import sys
+engine,test_root,work=map(Path,sys.argv[1:])
+sys.path[:0]=[str(engine/'common'),str(test_root)]
+import recovery_program_generation as generation
+assert Path(generation.__file__).resolve().parent == (engine/'common').resolve()
+from test_recovery_program_generation import case,test_initial_epoch_uses_exact_registered_configuration
+from test_recovery_program_generation import test_completed_epoch_resolves_immutable_capture_and_target
+from test_recovery_program_generation import test_successful_switch_advances_program_ids_and_capture_images
+from test_recovery_program_generation import test_changed_generation_bytes_fail_pin_verification
+checks=[test_initial_epoch_uses_exact_registered_configuration,
+test_completed_epoch_resolves_immutable_capture_and_target,
+test_successful_switch_advances_program_ids_and_capture_images,
+test_changed_generation_bytes_fail_pin_verification]
+for i,check in enumerate(checks):
+ root=work/str(i);root.mkdir(mode=0o700)
+ fixture=case.__wrapped__(root)
+ if i==2:check(fixture,root)
+ else:check(fixture)
+assert Path(generation.__file__).resolve().parent == (engine/'common').resolve()
+print('PACKAGED_PROGRAM_GENERATION_PASS')
+'''
+    result = subprocess.run([sys.executable, '-B', '-c', script, str(engine), str(ROOT/'scripts/tests'), str(tmp_path)],
+        capture_output=True, timeout=120, env={**os.environ,'PYTHONPATH':os.pathsep.join(sys.path)})
+    assert result.returncode == 0, result.stderr.decode('utf-8',errors='replace')
+    assert result.stdout.strip() == b'PACKAGED_PROGRAM_GENERATION_PASS'

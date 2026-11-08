@@ -103,7 +103,7 @@ class Native:
         native_required()
         config = self.document(self.config_pin)
         exact({key: value for key, value in config.items()
-               if key not in ('sourceEpochPolicies', 'archiveRestoreCatalogues')},
+               if key not in ('sourceEpochPolicies', 'sourceProgramPolicies', 'archiveRestoreCatalogues')},
               SINGLE_CONFIG_FIELDS, 'SERVER_CONFIGURATION_FIELDS_INVALID')
         need(config['schemaVersion'] == 'SmallAppExecutionServiceConfig/v2',
              'SINGLE_OPERATOR_CONFIGURATION_REQUIRED')
@@ -137,6 +137,13 @@ class Native:
                     code = str(error)
                     raise Failure(code if re.fullmatch('[A-Z][A-Z0-9_]{0,95}', code)
                                   else 'BACKUP_EPOCH_POLICY_INVALID') from None
+        if 'sourceProgramPolicies' in config:
+            policies = config['sourceProgramPolicies']
+            need(type(policies) is dict and set(policies) <= set(config['sourceConfigurations']),
+                 'SOURCE_PROGRAM_POLICIES_INVALID')
+            from recovery_control_capture_config import program_policy
+            for source_ref in policies:
+                program_policy(config, source_ref)
         need(type(config['environment']) is dict and config['environment'] and
              all(type(k) is str and type(v) is str and k and '=' not in k and '\x00' not in k + v
                  for k, v in config['environment'].items()), 'NATIVE_ENVIRONMENT_REQUIRED')
@@ -198,35 +205,34 @@ class Native:
             executor.verify(pin)
         return binding_pin
 
-    def source_epoch(self, config, source_ref):
+    def source_epoch(self, config, source_ref, *, reader=None, capture_configuration=None):
+        from recovery_control_capture_config import (program_policy, read_capture_configuration,
+                                                     validate_source_epoch_scope)
+        program = program_policy(config, source_ref)
         policy = config.get('sourceEpochPolicies', {}).get(source_ref)
         if policy is None:
             return None
-        owner = self.document(config['sourceConfigurations'][source_ref])
-        capture = self.document(executor.pin(owner['sources'][source_ref]['configurationPath']))
-        need(policy.get('sourceIdentity') == capture['source']['sourceIdentity'] and
-             policy.get('databaseUuid') == capture['source']['databaseUuid'] and
-             policy.get('sourceLockPath') == capture.get('sourceLockPath') and
-             type(policy.get('sourceLockPath')) is str, 'SOURCE_EPOCH_POLICY_BINDING_INVALID')
-        selected_source = owner['sources'][source_ref]
-        storage = [capture.get('archiveRoot'), capture['source'].get('minioDataPath'),
-                   selected_source.get('stagingRoot'), owner.get('repositoryRoot'), owner.get('operationRoot')]
-        for value in (value for value in storage if value is not None):
-            need(type(value) is str and Path(value).is_absolute(), 'SOURCE_EPOCH_STORAGE_INVALID')
-            scope = Path(value)
-            for protected in (Path(policy['root']), Path(policy['sourceLockPath'])):
-                need(protected != scope and protected not in scope.parents and scope not in protected.parents,
-                     'SOURCE_EPOCH_STORAGE_OVERLAP')
+        reader = self if reader is None else reader
+        owner = reader.document(config['sourceConfigurations'][source_ref])
+        if capture_configuration is None:
+            capture_configuration = read_capture_configuration(reader, config, owner, source_ref)
+        _, capture, generation_evidence = capture_configuration
+        validate_source_epoch_scope(owner, capture, policy, source_ref)
         from recovery_backup_epoch import read_current, try_reconcile_current
+        guard = getattr(reader, 'guard', None)
+        kwargs = {'guard': guard} if guard is not None else {}
         try:
-            current = read_current(policy)
+            current = read_current(policy, **kwargs)
             if current['state'] == 'REPLACING':
-                current = try_reconcile_current(policy)
+                current = try_reconcile_current(policy, **kwargs)
         except ValueError as error:
             code = str(error)
             raise Failure(code if re.fullmatch('[A-Z][A-Z0-9_]{0,95}', code)
                           else 'BACKUP_EPOCH_INVALID') from None
         need(current['state'] == 'READY', 'BACKUP_EPOCH_NOT_READY')
+        if program is not None:
+            need(current['eventPin'] in generation_evidence, 'SOURCE_PROGRAM_EPOCH_CHANGED')
+            reader.document(current['eventPin'])
         return current
 
     def incremental_plan(self, source_ref, *, exclude_operation=None):
@@ -366,6 +372,8 @@ class Native:
             ownerProgramPin=config['programPins'][program], pointBindingPin=point_pin)
         if value['action'] in ('FULL', 'INCREMENTAL'):
             epoch = self.source_epoch(config, value['sourceConfigRef'])
+            from recovery_control_capture_config import verify_request_epoch
+            verify_request_epoch(self, config, value, epoch)
             if epoch is not None:
                 selection['sourceEpoch'] = epoch
         return selection

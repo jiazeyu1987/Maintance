@@ -512,7 +512,13 @@ class EpochAdmission(unittest.TestCase):
         self.fixture.epoch_event(first, kind='RESTORE_STARTED', state='REPLACING', operation='restore-001')
         with patch.object(epoch, 'try_reconcile_current', wraps=epoch.try_reconcile_current) as reconciled:
             plan = self.plan()
-        reconciled.assert_called_once_with(self.fixture.epoch_policy)
+        reconciled.assert_called_once()
+        self.assertEqual(reconciled.call_args.args, (self.fixture.epoch_policy,))
+        self.assertEqual(set(reconciled.call_args.kwargs), {'guard'})
+        from recovery_control_incremental_plan import PlanReader
+        guard = reconciled.call_args.kwargs['guard']
+        self.assertIs(guard.__func__, PlanReader.guard)
+        self.assertIs(guard.__self__.native, self.native)
         self.assertEqual(plan['state'], 'BLOCKED')
         self.assertIn(plan['reasonCode'], ('BACKUP_EPOCH_LINUX_LOCK_REQUIRED', 'BACKUP_EPOCH_SOURCE_LOCK_UNAVAILABLE'))
 
