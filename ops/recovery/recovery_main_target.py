@@ -651,6 +651,9 @@ def guarded_type(original):
 def observe_main_target(control, value, selection):
     """Read-only control-plane identity observation; never return environment values."""
     configuration = control.document(selection['ownerConfigurationPin'])
+    from recovery_program_targets import resolve_configuration
+    configuration, _binding = resolve_configuration(configuration, value['targetConfigRef'],
+        reader=control.document, guard=getattr(control, 'guard', None))
     target = configuration['targets'][value['targetConfigRef']]
     validate(target); check_pin(target['dockerPin'], content=False)
     def docker(args, **kwargs):

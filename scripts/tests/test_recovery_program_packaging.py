@@ -135,3 +135,47 @@ print('PACKAGED_PROGRAM_GENERATION_PASS')
         capture_output=True, timeout=120, env={**os.environ,'PYTHONPATH':os.pathsep.join(sys.path)})
     assert result.returncode == 0, result.stderr.decode('utf-8',errors='replace')
     assert result.stdout.strip() == b'PACKAGED_PROGRAM_GENERATION_PASS'
+
+
+@pytest.mark.skipif(not sys.platform.startswith('linux'), reason='actual packaged Linux flock required')
+@pytest.mark.parametrize('variant', ['standard', 'lightweight'])
+def test_program_activation_and_target_binding_execute_in_actual_package(variant, program_packages, tmp_path):
+    engine = tmp_path/'engine'
+    with tarfile.open(program_packages/('backup-restore-'+variant+'.tgz')) as archive:
+        for name in ('recovery_program_activation', 'recovery_program_targets'):
+            assert archive.extractfile('common/'+name+'.py').read() == (ROOT/'ops/recovery'/(name+'.py')).read_bytes()
+        archive.extractall(engine, filter='data')
+    script = r'''
+from pathlib import Path
+import sys
+engine,tests,work=map(Path,sys.argv[1:])
+sys.path[:0]=[str(engine/'common'),str(tests)]
+import recovery_program_activation as activation
+import recovery_program_targets as targets
+assert Path(activation.__file__).resolve().parent == (engine/'common').resolve()
+assert Path(targets.__file__).resolve().parent == (engine/'common').resolve()
+from test_recovery_program_generation import case
+from test_recovery_program_activation import test_locked_snapshot_and_stage_activate_only_after_real_success
+from test_recovery_program_activation import test_switched_generation_produced_from_real_replacement_epoch
+from test_recovery_program_activation import test_second_restore_continues_exact_parent_generation
+checks=[test_locked_snapshot_and_stage_activate_only_after_real_success,
+test_switched_generation_produced_from_real_replacement_epoch,test_second_restore_continues_exact_parent_generation]
+for i,check in enumerate(checks):
+ root=work/str(i);root.mkdir(mode=0o700)
+ fixture=case.__wrapped__(root)
+ if i==1:check(fixture,root)
+ else:check(fixture)
+ if i!=2:
+  owner=dict(targets={'target57':fixture['target']},targetProgramPolicies={'target57':fixture['policy']},
+      targetBackupEpochPolicies={'target57':fixture['epoch']})
+  effective,binding=targets.resolve_configuration(owner,'target57')
+  assert binding['targetPin'] in binding['evidencePins']
+  assert effective['targets']['target57']['database']==owner['targets']['target57']['database']
+assert Path(activation.__file__).resolve().parent == (engine/'common').resolve()
+assert Path(targets.__file__).resolve().parent == (engine/'common').resolve()
+print('PACKAGED_PROGRAM_ACTIVATION_PASS')
+'''
+    result = subprocess.run([sys.executable, '-B', '-c', script, str(engine), str(ROOT/'scripts/tests'), str(tmp_path)],
+        capture_output=True, timeout=120, env={**os.environ,'PYTHONPATH':os.pathsep.join(sys.path)})
+    assert result.returncode == 0, result.stderr.decode('utf-8', errors='replace')
+    assert result.stdout.strip() == b'PACKAGED_PROGRAM_ACTIVATION_PASS'
