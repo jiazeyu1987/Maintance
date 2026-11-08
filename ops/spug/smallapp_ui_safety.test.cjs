@@ -225,6 +225,83 @@ test('catalogue point absent from server accepted refs stays visible but cannot 
   p.get('simple-restore-tab').onclick();assert.equal(p.get('simple-form-panel').hidden,false);
 });
 
+test('explicit archive-only source restores an admitted point and still requires confirmation',()=>{
+  const p=page();
+  p.run(`options[0].validated.fullReady=false;options[0].validated.fullErrorCode='SOURCE_RESTORE_ONLY';
+    simpleRestoring=true;action='RESTORE';S('simple-package').value='point-ref';
+    S('simple-target').value='target-server';render();`);
+  assert.equal(p.get('submit').disabled,false);
+  assert.equal(p.get('simple-submit').disabled,false);
+  p.get('simple-submit').onclick();
+  assert.equal(p.get('simple-confirm').open,true);
+  assert.equal(p.run('confirmation.request.recoveryPointRef'),'point-ref');
+  assert.equal(p.run('confirmation.request.targetConfigRef'),'target-ref');
+});
+
+function historicalRoutePage(){
+  const p=page();
+  p.run(`simpleConfig.bindings.push({...simpleConfig.bindings[0],applicationId:'historical-app',selectable:false});
+    simpleConfig.catalogueRestoreBindings={'historical-point':'historical-app'};
+    options.push({...options[0],applicationId:'historical-app',sourceConfigRef:'historical-source',validated:{
+      fullReady:false,fullErrorCode:'SOURCE_RESTORE_ONLY',parentChainRefs:[],
+      recoveryPointRefs:['historical-point'],freshTargetConfigRefs:['target-ref']}});
+    refresh=async()=>{};`);
+  p.context.packageRow={packageId:'historical-point',kind:'backup-full',application:'unknown',servers:['wrong-nas-label']};
+  return p;
+}
+
+test('catalogue explicit historical route selects its retired source without trusting NAS labels',async()=>{
+  const p=historicalRoutePage();await p.run('openCatalogRestore(packageRow)');
+  assert.equal(p.run('currentBinding().applicationId'),'historical-app');
+  assert.equal(p.get('simple-product').value,'product');assert.equal(p.get('simple-server').value,'server');
+  p.get('simple-restore-mode').value='fresh';await p.get('simple-restore-mode').onchange();
+  p.get('simple-target').value='target-server';p.run('render()');
+  assert.equal(p.get('simple-submit').disabled,false);p.get('simple-submit').onclick();
+  assert.equal(p.run('confirmation.request.sourceConfigRef'),'historical-source');
+  assert.equal(p.run('confirmation.request.recoveryPointRef'),'historical-point');
+  assert.equal(p.run('confirmation.applicationId'),'historical-app');
+  p.get('simple-cancel').onclick();p.get('catalog-restore-close').onclick();
+  assert.equal(p.run('currentBinding().applicationId'),'app','normal choices retain current capture source');
+});
+
+test('historical catalogue route cannot override source acceptance or survive an explicit source change',async()=>{
+  const p=historicalRoutePage();p.run("options[1].validated.recoveryPointRefs=[];");
+  await p.run('openCatalogRestore(packageRow)');p.get('simple-target').value='target-server';p.run('render()');
+  assert.equal(p.get('simple-submit').disabled,true);assert.match(p.get('simple-status').textContent,/未.*恢复点/);
+  p.get('simple-mode').value='fast';await p.get('simple-mode').onchange();
+  assert.equal(p.run('currentBinding()'),undefined);assert.equal(p.get('simple-submit').disabled,true);
+  assert.equal(p.run('confirmation'),null);
+});
+
+test('unknown or unsafe explicit historical route is rejected before opening a restore draft',async()=>{
+  for(const invalid of ['missing','fast']){
+    const p=historicalRoutePage();
+    p.run(invalid==='missing'?"simpleConfig.catalogueRestoreBindings['historical-point']='missing-app';":"simpleConfig.bindings[1].mode='fast';");
+    await p.run('openCatalogRestore(packageRow)');
+    assert.equal(p.run('catalogRestore'),null);assert.equal(p.get('catalog-restore-dialog').open,undefined);
+    assert.match(p.get('catalog-problem').textContent,/历史.*来源.*登记/);
+  }
+});
+
+test('archive-only admission keeps new backups blocked with a readable reason',()=>{
+  const p=page();
+  p.run("options[0].validated.fullReady=false;options[0].validated.fullErrorCode='SOURCE_RESTORE_ONLY';render();");
+  assert.equal(p.get('simple-submit').disabled,true);
+  assert.match(p.get('simple-status').textContent,/历史备份.*恢复/);
+  assert.match(p.get('simple-status').textContent,/SOURCE_RESTORE_ONLY/);
+});
+
+test('archive restore never ignores another readiness failure or a quarantine error',()=>{
+  const p=page();
+  p.run(`simpleRestoring=true;action='RESTORE';S('simple-package').value='point-ref';
+    S('simple-target').value='target-server';options[0].validated.fullReady=false;
+    options[0].validated.fullErrorCode='SOURCE_CONFIGURATION_REQUIRED';render();`);
+  assert.equal(p.get('simple-submit').disabled,true);
+  p.run("options[0].validated.fullErrorCode='SOURCE_RESTORE_ONLY';options[0].validated.historyErrorCode='POINT_QUARANTINED';render();");
+  assert.equal(p.get('simple-submit').disabled,true);
+  assert.match(p.get('simple-status').textContent,/POINT_QUARANTINED/);
+});
+
 test('catalogue restore refuses a running draft and never treats release artifacts as backup points',async()=>{
   const p=page();p.context.packageRow={packageId:'point-ref',kind:'release-full',category:'release',application:'product',servers:['server']};
   await p.run('openCatalogRestore(packageRow)');assert.equal(p.get('catalog-restore-dialog').open,undefined);

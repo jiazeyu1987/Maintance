@@ -70,5 +70,42 @@ class RegistrationPlan(unittest.TestCase):
         value=self.fixture();value['targets'][0]['server']='10.0.0.1'
         with self.assertRaisesRegex(ValueError,'THREE_DISTINCT'):plan(value)
 
+    def test_historical_scope_catalogue_and_explicit_archive_only_source_keep_three_targets(self):
+        value=self.fixture()
+        for target in value['targets']:
+            target['ownerConfiguration']['sources']['source-A']['archiveCatalogue']['schemaVersion']='RecoveryArchiveCatalogue/v2'
+            target['controlConfiguration']['sourceConfigurations']={}
+            target['controlConfiguration']['archiveRestoreCatalogues']={'source-A':dict(
+                path='/private/archive-admission.json',bytes=100,sha256='a'*64)}
+        result=plan(value)
+        self.assertEqual(len(result['simpleSettings']['bindings'][0]['overwriteTargetServers']),3)
+        for target in result['targets']:
+            self.assertEqual(target['controlConfiguration']['sourceConfigurations'],{})
+            self.assertIn('source-A',target['controlConfiguration']['archiveRestoreCatalogues'])
+
+    def test_archive_only_registration_requires_an_explicit_pinned_admission(self):
+        for invalid in (None, {}, {'path':'relative','bytes':100,'sha256':'a'*64},
+                        {'path':'/private/archive.json','bytes':100,'sha256':'invalid'}):
+            value=self.fixture()
+            target=value['targets'][0]
+            target['controlConfiguration']['sourceConfigurations']={}
+            target['controlConfiguration']['archiveRestoreCatalogues']={'source-A':invalid}
+            with self.subTest(pin=invalid), self.assertRaisesRegex(ValueError,'SOURCE_CONFIGURATION_REQUIRED_ON_DESTINATION'):
+                plan(value)
+
+    def test_explicit_catalogue_route_can_register_retired_safe_source_without_enabling_capture_choice(self):
+        value=self.fixture();value['simpleSettings']['bindings'][0]['selectable']=False
+        value['simpleSettings']['catalogueRestoreBindings']={'historical-point':'app-A'}
+        result=plan(value)
+        self.assertFalse(result['simpleSettings']['bindings'][0]['selectable'])
+        self.assertEqual(result['simpleSettings']['catalogueRestoreBindings'],{'historical-point':'app-A'})
+        self.assertEqual(len(result['simpleSettings']['bindings'][0]['overwriteTargetServers']),3)
+
+    def test_retired_source_without_valid_explicit_catalogue_route_remains_unselectable(self):
+        for routes in ({},{'point':'another-app'},{'../point':'app-A'},['app-A']):
+            value=self.fixture();value['simpleSettings']['bindings'][0]['selectable']=False
+            value['simpleSettings']['catalogueRestoreBindings']=routes
+            with self.subTest(routes=routes), self.assertRaises(ValueError):plan(value)
+
 
 if __name__=='__main__':unittest.main()

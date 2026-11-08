@@ -235,7 +235,8 @@ def test_main_scheduler_lifecycle_and_retained_handoff_are_packaged(variant, pac
 @pytest.mark.parametrize('variant', builder.VARIANTS)
 def test_both_packages_include_reviewed_failure_convergence(variant, packages):
     with tarfile.open(packages / ('backup-restore-' + variant + '.tgz')) as archive:
-        for name in ('recovery_control_smallapp_native.py', 'recovery_control_executor.py'):
+        for name in ('recovery_control_smallapp_native.py', 'recovery_control_executor.py',
+                     'recovery_control_restore_catalogue.py'):
             expected = (ROOT / 'backend/src/main/resources' / name).read_bytes().replace(b'\r\n', b'\n')
             assert archive.extractfile('control/' + name).read().replace(b'\r\n', b'\n') == expected
 

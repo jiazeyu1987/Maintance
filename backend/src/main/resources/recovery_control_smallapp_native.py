@@ -102,7 +102,8 @@ class Native:
     def configuration(self):
         native_required()
         config = self.document(self.config_pin)
-        exact({key: value for key, value in config.items() if key != 'sourceEpochPolicies'},
+        exact({key: value for key, value in config.items()
+               if key not in ('sourceEpochPolicies', 'archiveRestoreCatalogues')},
               SINGLE_CONFIG_FIELDS, 'SERVER_CONFIGURATION_FIELDS_INVALID')
         need(config['schemaVersion'] == 'SmallAppExecutionServiceConfig/v2',
              'SINGLE_OPERATOR_CONFIGURATION_REQUIRED')
@@ -118,6 +119,12 @@ class Native:
              'repository' in config['programPins'], 'COMMON_OWNER_PROGRAMS_REQUIRED')
         need(type(config['sourceConfigurations']) is dict and config['sourceConfigurations'] and
              type(config['restoreConfigurations']) is dict, 'OWNER_CONFIGURATIONS_REQUIRED')
+        if 'archiveRestoreCatalogues' in config:
+            catalogues = config['archiveRestoreCatalogues']
+            need(type(catalogues) is dict, 'ARCHIVE_RESTORE_CATALOGUES_INVALID')
+            for source_ref, pin in catalogues.items():
+                opaque(source_ref)
+                executor.pin_reference(pin)
         if 'sourceEpochPolicies' in config:
             policies = config['sourceEpochPolicies']
             need(type(policies) is dict and set(policies) <= set(config['sourceConfigurations']),
@@ -223,7 +230,11 @@ class Native:
         return current
 
     def incremental_plan(self, source_ref, *, exclude_operation=None):
-        from recovery_control_incremental_plan import build_plan
+        from recovery_control_incremental_plan import build_plan, response
+        config = self.configuration()
+        if (source_ref in config.get('archiveRestoreCatalogues', {}) and
+                source_ref not in config['sourceConfigurations']):
+            return response(source_ref, 'BLOCKED', 'SOURCE_RESTORE_ONLY')
         return build_plan(self, source_ref, exclude_operation=exclude_operation)
 
     def incremental_source_observation(self, capture, *, deadline=None):
@@ -301,12 +312,15 @@ class Native:
         request(value)
         config = self.configuration()
         registered, registration_pin = self.registration(value['sourceConfigRef'])
-        need(value['sourceConfigRef'] in config['sourceConfigurations'], 'SOURCE_CONFIGURATION_REQUIRED')
+        source_owner = config['sourceConfigurations'].get(value['sourceConfigRef'])
+        archive_source = value['sourceConfigRef'] in config.get('archiveRestoreCatalogues', {})
+        need(source_owner is not None or (value['action'] == 'RESTORE' and archive_source),
+             'SOURCE_RESTORE_ONLY' if archive_source else 'SOURCE_CONFIGURATION_REQUIRED')
         if value['action'] == 'INCREMENTAL':
             plan = self.incremental_plan(value['sourceConfigRef'], exclude_operation=value['operationId'])
             need(plan['state'] == 'READY', plan['reasonCode'] or 'INCREMENTAL_BASELINE_UNAVAILABLE')
             need(plan['parentChainRef'] == value['parentChainRef'], 'INCREMENTAL_BASELINE_CHANGED')
-        owner_configuration = config['sourceConfigurations'][value['sourceConfigRef']]
+        owner_configuration = source_owner
         program = 'repository'
         point_pin = None
         reference = value['parentChainRef'] if value['action'] == 'INCREMENTAL' else value['recoveryPointRef']
@@ -327,7 +341,7 @@ class Native:
             targets = config['restoreConfigurations'].get(value['sourceConfigRef'])
             need(type(targets) is dict and value['targetConfigRef'] in targets, 'NEW_TARGET_CONFIGURATION_REQUIRED')
             owner_configuration = targets[value['targetConfigRef']]
-            need(owner_configuration != config['sourceConfigurations'][value['sourceConfigRef']],
+            need(owner_configuration != source_owner,
                  'RESTORE_REUSES_SOURCE_CONFIGURATION')
             program = 'recovery'
         need(program in config['programPins'], 'ORIGINAL_OWNER_PROGRAM_REQUIRED')
@@ -1173,15 +1187,19 @@ class Native:
                 continue
             row = blocked_choice(registered, 'SOURCE_CONFIGURATION_REQUIRED')
             row['historyErrorCode'] = None
-            try:
-                need(source_ref in config['sourceConfigurations'], 'SOURCE_CONFIGURATION_REQUIRED')
-                self.document(config['sourceConfigurations'][source_ref])
-                executor.verify(config['programPins']['repository'])
-                row.update(fullReady=True, fullErrorCode=None, engineSelectionRef=config['engineSelectionRef'])
-            except Exception as error:
-                row['fullErrorCode'] = public_error(error)
-                rows.append(row)
-                continue
+            if (source_ref in config.get('archiveRestoreCatalogues', {}) and
+                    source_ref not in config['sourceConfigurations']):
+                row.update(fullErrorCode='SOURCE_RESTORE_ONLY', engineSelectionRef=config['engineSelectionRef'])
+            else:
+                try:
+                    need(source_ref in config['sourceConfigurations'], 'SOURCE_CONFIGURATION_REQUIRED')
+                    self.document(config['sourceConfigurations'][source_ref])
+                    executor.verify(config['programPins']['repository'])
+                    row.update(fullReady=True, fullErrorCode=None, engineSelectionRef=config['engineSelectionRef'])
+                except Exception as error:
+                    row['fullErrorCode'] = public_error(error)
+                    rows.append(row)
+                    continue
             try:
                 references = []
                 for path in sorted((Path(config['registryRoot']) / 'points').glob('*.pin.json')):
@@ -1195,8 +1213,16 @@ class Native:
                     self.point(config, reference, source_ref)
                     references.append(reference)
                 need(len(references) <= 1000, 'HISTORY_REFERENCE_LIMIT_EXCEEDED')
+                from recovery_control_restore_catalogue import archive_references
+                archives = archive_references(self, config, source_ref)
+                for reference in set(references) & set(archives):
+                    binding = self.document(self.point(config, reference, source_ref))
+                    output = self.document(binding['resultPin'])
+                    need(output['data']['pointPin'] == archives[reference], 'ARCHIVE_NATIVE_POINT_CONFLICT')
+                recovery_refs = sorted(set(references) | set(archives))
+                need(len(recovery_refs) <= 1000, 'HISTORY_REFERENCE_LIMIT_EXCEEDED')
                 row['parentChainRefs'] = list(references)
-                row['recoveryPointRefs'] = references
+                row['recoveryPointRefs'] = recovery_refs
             except Exception as error:
                 # A failed historical read blocks chain selection, not a new
                 # FULL. Surface the real failure instead of implying no history.

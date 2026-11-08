@@ -25,11 +25,15 @@ async function openCatalogRestore(row){
     refuse('当前操作尚未结束或配置仍在核对，请完成后再恢复。');return;
   }
   if(!simpleConfig){refuse('恢复配置尚未读取，请在恢复页刷新配置后重试。');return;}
-  const pin=Object.freeze({packageId:row.packageId,version:row.version||'未记录',application:row.application});
+  const route=simpleConfig.catalogueRestoreBindings?.[row.packageId];
+  const historical=route===undefined?null:simpleConfig.bindings.find(b=>b.applicationId===route&&b.mode==='safe');
+  if(route!==undefined&&!historical){refuse('历史备份的恢复来源登记无效，请核对配置后重试。');return;}
+  const pin=Object.freeze({packageId:row.packageId,version:row.version||'未记录',application:historical?.product||row.application,
+    routeApplicationId:historical?.applicationId||null});
   catalogRestore=pin;simpleRestoring=true;action='RESTORE';
   S('catalog-restore-package').textContent=`程序版本：${pin.version} · 备份包：${pin.packageId}`;
   S('simple-product').value=pin.application;
-  const matches=simpleConfig.bindings.filter(b=>b.selectable&&b.product===pin.application&&b.mode==='safe'&&(row.servers||[]).includes(b.server));
+  const matches=historical?[historical]:simpleConfig.bindings.filter(b=>b.selectable&&b.product===pin.application&&b.mode==='safe'&&(row.servers||[]).includes(b.server));
   S('simple-server').value=matches.length===1?matches[0].server:'';
   S('simple-mode').value='safe';S('simple-restore-mode').value='replace';
   S('simple-nas').value=simpleConfig.nas;
@@ -58,7 +62,9 @@ const stages={'archive-admission':'备份前置检查','source-capture':'采集�
 function stageName(name){const parts=name.split('/');const stage=parts.at(-1);const sql={'sql-stage':'暂存数据库备份','sql-expand':'解压数据库备份','sql-import':'导入数据库','restore-cleanup':'清理恢复临时文件','target-quiesce':'停止目标应用写入','capture-material-binding':'绑定采集材料','recovery-material-binding':'生成恢复材料'};return (parts[0].startsWith('database-')?`第 ${Number(parts[0].split('-')[1])+1} 个备份点 · `:'')+(sql[stage]||stages[stage]||stage);}
 const duration=seconds=>{if(!Number.isFinite(seconds))return '—';if(seconds>=0&&seconds<1)return `${seconds.toFixed(3)}秒`;seconds=Math.max(0,Math.floor(seconds));return `${Math.floor(seconds/3600)}时 ${Math.floor(seconds%3600/60)}分 ${seconds%60}秒`;};
 const date=value=>value?new Date(value).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false}):'—';
-const currentBinding=()=>simpleConfig?.bindings.find(b=>b.selectable&&b.product===S('simple-product').value&&b.server===S('simple-server').value&&b.mode===S('simple-mode').value);
+const currentBinding=()=>simpleConfig?.bindings.find(b=>(catalogRestore?.routeApplicationId?
+  b.applicationId===catalogRestore.routeApplicationId:b.selectable)&&b.product===S('simple-product').value&&
+  b.server===S('simple-server').value&&b.mode===S('simple-mode').value);
 let incrementalPlan=null, incrementalPlanError='', incrementalPlanLoading=false, incrementalPlanGeneration=0;
 const automaticIncrementalSelected=()=>!simpleRestoring&&S('simple-type').value==='INCREMENTAL';
 function currentIncrementalPlan(){

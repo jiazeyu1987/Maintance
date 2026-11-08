@@ -37,7 +37,16 @@ def plan(value):
     simple, entry, bridge = (deepcopy(value[key]) for key in ('simpleSettings','entrySettings','bridgeSettings'))
     bindings=[b for b in simple['bindings'] if b['applicationId']==app_id]
     apps=[a for a in entry['applications'] if a['applicationId']==app_id]
-    need(len(bindings)==len(apps)==1 and bindings[0]['selectable'] is True and bindings[0]['mode']=='safe'
+    routes=simple.get('catalogueRestoreBindings',{})
+    safe_apps={b['applicationId'] for b in simple['bindings'] if b['mode']=='safe'} & {
+        a['applicationId'] for a in entry['applications']}
+    need(type(routes) is dict and len(routes)<=1000 and all(
+        type(point) is str and re.fullmatch('[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}',point) and
+        type(app) is str and app in safe_apps for point,app in routes.items()),
+        'SIMPLE_CATALOGUE_RESTORE_BINDING_INVALID')
+    historical=app_id in routes.values()
+    need(len(bindings)==len(apps)==1 and (bindings[0]['selectable'] is True or
+         bindings[0]['selectable'] is False and historical) and bindings[0]['mode']=='safe'
          and apps[0]['sourceConfigRef']==source, 'SAFE_SOURCE_BINDING_REQUIRED')
     targets=value['targets']
     servers={row['value'] if 'value' in row else row['address'] for row in simple['servers']}
@@ -62,12 +71,19 @@ def plan(value):
         need(instance.get('sourceConfigRef')==source and instance.get('mainApplication',{}).get('schemaVersion') in
              ('RegisteredMainApplication/v1','RegisteredMainApplication/v2') and instance.get('replacement',{}).get('schemaVersion')==
              'RegisteredApplicationReplacement/v2', 'REGISTERED_MAIN_TARGET_REQUIRED')
-        need(owner['sources'][source].get('archiveCatalogue',{}).get('schemaVersion')=='RecoveryArchiveCatalogue/v1',
+        need(owner['sources'][source].get('archiveCatalogue',{}).get('schemaVersion') in
+             ('RecoveryArchiveCatalogue/v1','RecoveryArchiveCatalogue/v2'),
              'DYNAMIC_ARCHIVE_CATALOGUE_REQUIRED')
         need(type(instance.get('resourceBudget')) is dict, 'RESTORE_RESOURCE_BUDGET_REQUIRED')
         control=deepcopy(target['controlConfiguration'])
         need(target['engineVariant']=='standard' and 'recovery' in control['programPins'], 'SAFE_RECOVERY_ENGINE_REQUIRED')
-        need(source in control['sourceConfigurations'], 'SOURCE_CONFIGURATION_REQUIRED_ON_DESTINATION')
+        archive_admission=control.get('archiveRestoreCatalogues',{}).get(source)
+        archive_only=(type(archive_admission) is dict and set(archive_admission)=={'path','bytes','sha256'} and
+            type(archive_admission['path']) is str and PurePosixPath(archive_admission['path']).is_absolute() and
+            '..' not in PurePosixPath(archive_admission['path']).parts and
+            type(archive_admission['bytes']) is int and archive_admission['bytes']>=0 and
+            type(archive_admission['sha256']) is str and re.fullmatch('[a-f0-9]{64}',archive_admission['sha256']))
+        need(source in control['sourceConfigurations'] or archive_only, 'SOURCE_CONFIGURATION_REQUIRED_ON_DESTINATION')
         root=target['configurationRoot'].rstrip('/')
         owner_pin=remote_pin(root+'/main-restore-'+ref+'.json',owner)
         registration_pin=remote_pin(root+'/main-restore-registration.json',registration)

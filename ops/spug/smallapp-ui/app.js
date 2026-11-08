@@ -7,6 +7,13 @@ const reasons = {
   W01_SELECTION_ENDPOINT_REQUIRED:'执行桥尚未提供可用来源和备份链选择。',
   SOURCE_NOT_VERIFIED_BY_W01:'该来源尚未完成实际安装和执行器核验。',
   SOURCE_NOT_REGISTERED_BY_W08:'该来源尚未登记。',
+  SOURCE_RESTORE_ONLY:'该来源用于历史备份恢复；创建新备份请选择当前服务器来源。',
+  ARCHIVE_CATALOGUE_SOURCE_MISMATCH:'历史归档登记与所选来源不一致，不能恢复。',
+  ARCHIVE_SCOPE_IDENTITY_MISMATCH:'历史备份范围与登记的来源身份不一致，不能恢复。',
+  ARCHIVE_CHAIN_SCOPE_MISMATCH:'备份链包含不同的来源范围，不能恢复。',
+  ARCHIVE_PARENT_NOT_ADMITTED:'历史备份链缺少已登记的父备份，不能恢复。',
+  ARCHIVE_NATIVE_POINT_CONFLICT:'历史归档与原备份记录的恢复点不一致，不能恢复。',
+  POINT_QUARANTINED:'该恢复点已隔离，不能用于恢复。请查看原验证失败记录。',
   PARENT_CHAIN_NOT_ACCEPTED:'所选父链尚未通过实际备份验收。',
   RECOVERY_POINT_NOT_ACCEPTED:'所选恢复点尚未通过完整链验收。',
   TARGET_NOT_CURRENTLY_FRESH:'恢复目标尚未证明为空且独立。',
@@ -203,7 +210,7 @@ function render(){
   let blocked='';
   if(active)blocked=retryReady(active,retryEvidence)?'已核对原编号未受理，可按原编号重试。':'本操作已经保留编号，只能查询原结果或核对是否未受理。';
   else if(unresolvedOriginal())blocked='原操作尚未确认结束，请先查询原编号。';
-  else if(!row?.fullReady)blocked=message(app?.readinessError || row?.fullErrorCode || 'SOURCE_NOT_VERIFIED_BY_W01');
+  else if(!row?.fullReady && !(action==='RESTORE' && row?.fullErrorCode==='SOURCE_RESTORE_ONLY'))blocked=message(app?.readinessError || row?.fullErrorCode || 'SOURCE_NOT_VERIFIED_BY_W01');
   else if(automatic)blocked=incrementalBlockReason();
   else if(action!=='FULL' && row.historyErrorCode)blocked=message(row.historyErrorCode);
   else if(action==='INCREMENTAL' && !$('parent').value)blocked='尚未核对增量基线，请刷新配置。';

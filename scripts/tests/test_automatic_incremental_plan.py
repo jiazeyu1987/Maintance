@@ -186,6 +186,20 @@ class AutomaticPlan(unittest.TestCase):
         self.assertEqual((plan['state'], plan['reasonCode']), ('BASELINE_REQUIRED', 'NO_SUCCESSFUL_FULL_BASELINE'))
         self.assertIsNone(plan['parentChainRef'])
 
+    def test_restore_archive_catalogue_cannot_change_current_incremental_baseline(self):
+        self.point('full-root')
+        self.point('increment-one', ['full-root'], finished='2026-11-07T01:01:00Z')
+        original = self.plan()
+        config = self.native.configuration()
+        config['archiveRestoreCatalogues'] = {'source-A': self.fixture.write('archive-admission.json',
+            {'restoreOnly':'this invalid restore catalogue must not enter native capture planning'})}
+        self.native.config_pin = self.fixture.write('configuration-with-archives.json',config)
+        plan = self.plan()
+        self.assertEqual(plan['state'],'READY')
+        self.assertEqual(plan['parentChainRef'],'increment-one')
+        self.assertEqual(plan['baseFullRef'],'full-root')
+        self.assertEqual(plan['evidenceDigest'],original['evidenceDigest'])
+
     def test_complete_chain_is_selected_without_spug_history(self):
         self.point('full-root')
         self.point('increment-one', ['full-root'], finished='2026-11-07T01:01:00Z')

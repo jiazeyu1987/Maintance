@@ -19,7 +19,7 @@ class ArchiveCatalogue(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name).resolve()
-        self.scope = self.write(self.root/'scope.json', {'sourceIdentityPin': self.write(
+        self.scope = self.write(self.root/'scope.json', {'schemaVersion':'RecoverySourceScope/v1', 'sourceIdentityPin': self.write(
             self.root/'identity.json', {'sourceFingerprint':'source-A','databaseUuid':'uuid-A'})})
         self.source = dict(sourceScopePin=self.scope, archiveRoots=[str(self.root/'archives')],
             archiveCatalogue=dict(schemaVersion='RecoveryArchiveCatalogue/v1', maximumPointFiles=100,
@@ -29,6 +29,7 @@ class ArchiveCatalogue(unittest.TestCase):
     def write(self, path, value):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(value, sort_keys=True, separators=(',',':')), encoding='utf-8')
+        path.chmod(0o600)
         return executor.pin(path)
 
     def point(self, reference, parents=(), generation='full-first'):
@@ -104,6 +105,201 @@ class ArchiveCatalogue(unittest.TestCase):
         self.source['sourceScopePin']=self.write(self.root/'other-scope.json',{'sourceIdentityPin':self.source_identity})
         with self.assertRaisesRegex(Exception,'ARCHIVE_SOURCE_BINDING_INVALID'):
             bind_archive_chain(self.source,self.request)
+
+    def historical_scope(self, *, foreign=False):
+        identity = (self.write(self.root/'foreign-identity.json', {'sourceFingerprint':'foreign'})
+                    if foreign else self.source_identity)
+        return self.write(self.root/'historical-scope.json', dict(schemaVersion='RecoverySourceScope/v1',
+            sourceIdentityPin=identity, endpointHosts=['original-source']))
+
+    def allow_historical_scopes(self, *scopes):
+        self.source['archiveCatalogue'].update(schemaVersion='RecoveryArchiveCatalogue/v2',
+            sourceScopePins=[self.source['sourceScopePin'], *scopes])
+
+    def test_explicit_historical_scope_keeps_original_complete_chain_and_pins(self):
+        current = self.scope
+        historical = self.historical_scope()
+        self.scope = historical
+        first = self.point('full-first')
+        second = self.point('backup-new', [first])
+        self.scope = current
+        self.allow_historical_scopes(historical)
+        before = deepcopy(self.source)
+        originals = {str(p):p.read_bytes() for p in self.root.rglob('*.json')}
+        resolved, binding = bind_archive_chain(self.source,self.request)
+        self.assertEqual(resolved['sourceScopePin'], historical)
+        self.assertEqual(resolved['repositoryPointPins'], [first,second])
+        self.assertNotIn('archiveCatalogue', resolved)
+        self.assertEqual(binding['pointPin'], second)
+        self.assertEqual(self.source,before)
+        self.assertEqual({str(p):p.read_bytes() for p in self.root.rglob('*.json')}, originals)
+
+    def test_historical_scope_is_not_inferred_from_same_identity(self):
+        current = self.scope
+        historical = self.historical_scope()
+        self.scope = historical
+        self.point('backup-new')
+        self.scope = current
+        self.allow_historical_scopes()
+        with self.assertRaisesRegex(Exception,'ARCHIVE_SOURCE_BINDING_INVALID'):
+            bind_archive_chain(self.source,self.request)
+
+    def test_explicit_scopes_do_not_allow_mixed_scope_parent_chain(self):
+        first = self.point('full-first')
+        current = self.scope
+        historical = self.historical_scope()
+        self.scope = historical
+        self.point('backup-new', [first])
+        self.scope = current
+        self.allow_historical_scopes(historical)
+        with self.assertRaisesRegex(Exception,'ARCHIVE_CHAIN_SCOPE_MISMATCH'):
+            bind_archive_chain(self.source,self.request)
+
+    def test_explicit_scope_cannot_admit_foreign_source_identity(self):
+        historical = self.historical_scope(foreign=True)
+        self.point('backup-new')
+        self.allow_historical_scopes(historical)
+        with self.assertRaisesRegex(Exception,'ARCHIVE_SCOPE_IDENTITY_MISMATCH'):
+            bind_archive_chain(self.source,self.request)
+
+    def test_explicit_historical_scope_preserves_identity_pin_at_its_original_path(self):
+        current = self.scope
+        identity = self.write(self.root/'old-source/identity.json',
+            json.loads(Path(self.source_identity['path']).read_text(encoding='utf-8')))
+        self.assertEqual(identity['sha256'],self.source_identity['sha256'])
+        self.assertNotEqual(identity['path'],self.source_identity['path'])
+        historical = self.write(self.root/'old-scope.json',dict(schemaVersion='RecoverySourceScope/v1',
+            sourceIdentityPin=identity,endpointHosts=['original-source']))
+        self.scope = historical
+        self.point('backup-new')
+        self.scope = current
+        self.allow_historical_scopes(historical)
+        resolved, _ = bind_archive_chain(self.source,self.request)
+        self.assertEqual(resolved['sourceScopePin'],historical)
+        point = json.loads(Path(resolved['recoveryPoints']['backup-new']['path']).read_text(encoding='utf-8'))
+        manifest = json.loads(Path(point['manifestPin']['path']).read_text(encoding='utf-8'))
+        self.assertEqual(manifest['sourceIdentityPin'],identity)
+
+    def test_historical_scope_pin_is_verified_without_repinning(self):
+        historical = self.historical_scope()
+        self.point('backup-new')
+        self.allow_historical_scopes(historical)
+        Path(historical['path']).write_text('{}',encoding='utf-8')
+        with self.assertRaises(Exception):
+            bind_archive_chain(self.source,self.request)
+
+    def test_scope_policy_requires_unique_bounded_list_including_primary_scope(self):
+        historical = self.historical_scope()
+        self.point('backup-new')
+        self.allow_historical_scopes(historical)
+        for scopes in ([], [historical], [self.scope,self.scope], [self.scope]*33):
+            with self.subTest(scopes=len(scopes)):
+                self.source['archiveCatalogue']['sourceScopePins'] = scopes
+                with self.assertRaisesRegex(Exception,'ARCHIVE_SOURCE_SCOPES_INVALID'):
+                    bind_archive_chain(self.source,self.request)
+
+    def test_v1_catalogue_keeps_exact_fields_and_single_scope_contract(self):
+        self.point('backup-new')
+        self.source['archiveCatalogue']['sourceScopePins'] = [self.scope]
+        with self.assertRaisesRegex(Exception,'ARCHIVE_CATALOGUE_FIELDS_INVALID'):
+            bind_archive_chain(self.source,self.request)
+
+    def native_with_archive_catalogue(self, *, restore_only=False):
+        root = self.root/'native'
+        registration = self.write(root/'registration.json', dict(schemaVersion='ApplicationRegistration/v1',
+            applicationId='app-A',sourceConfigRef='source-A',allowedRestoreTargets=[{'configRef':'target-B'}]))
+        self.write(root/'registry/applications/app-A.pin.json',registration)
+        (root/'registry/points').mkdir()
+        archive = self.write(root/'archive-catalogue.json', dict(schemaVersion='SmallAppArchiveRestoreCatalogue/v1',
+            sourceConfigRef='source-A',source=self.source,pointPins=[executor.pin(
+                self.root/'archives/backup-new/.repository/point.json')]))
+        source_owner = self.write(root/'repository.json',{'sources':{'source-A':{}}})
+        restore_owner = self.write(root/'recovery.json',dict(sources={'source-A':self.source},targets={'target-B':{}}))
+        program = self.write(root/'program.json',{})
+        config = dict(taskRoot=str(root), registryRoot=str(root/'registry'),ledgerRoot=str(root/'ledger'),
+            engineSelectionRef='safe-engine',programPins={'repository':program,'recovery':program},
+            sourceConfigurations={} if restore_only else {'source-A':source_owner},
+            restoreConfigurations={'source-A':{'target-B':restore_owner}},
+            archiveRestoreCatalogues={'source-A':archive})
+        class LocalNative(Native):
+            def configuration(inner):return inner.document(inner.config_pin)
+        native = LocalNative(self.write(root/'control.json', config))
+        return native
+
+    def test_archive_admission_adds_only_recovery_refs_not_incremental_parent_refs(self):
+        self.point('backup-new')
+        native = self.native_with_archive_catalogue()
+        with patch('recovery_control_target_availability.available',return_value=True):
+            row = native.selections()['applications'][0]
+        self.assertTrue(row['fullReady'])
+        self.assertIsNone(row['historyErrorCode'])
+        self.assertEqual(row['parentChainRefs'], [])
+        self.assertEqual(row['recoveryPointRefs'], ['backup-new'])
+
+    def test_archive_only_source_can_select_restore_without_capture_configuration(self):
+        self.point('backup-new')
+        native = self.native_with_archive_catalogue(restore_only=True)
+        with patch('recovery_control_target_availability.available',return_value=True):
+            row = native.selections()['applications'][0]
+        self.assertFalse(row['fullReady'])
+        self.assertEqual(row['fullErrorCode'], 'SOURCE_RESTORE_ONLY')
+        self.assertEqual(row['engineSelectionRef'], 'safe-engine')
+        self.assertIsNone(row['historyErrorCode'])
+        self.assertEqual(row['parentChainRefs'], [])
+        self.assertEqual(row['recoveryPointRefs'], ['backup-new'])
+        request = dict(schemaVersion='SmallAppBackupUiRequest/v1',operationId='restore-archive-001',
+            action='RESTORE',sourceConfigRef='source-A',parentChainRef=None,
+            recoveryPointRef='backup-new',targetConfigRef='target-B')
+        with patch('recovery_control_restore_catalogue.for_request',return_value=('resolved-owner','binding')):
+            selected = native.resolve(request)
+        self.assertEqual(selected['ownerConfigurationPin'], 'resolved-owner')
+        for action in ('FULL','INCREMENTAL'):
+            request.update(action=action,recoveryPointRef=None,targetConfigRef=None,
+                parentChainRef='backup-new' if action=='INCREMENTAL' else None)
+            with self.subTest(action=action), self.assertRaisesRegex(Exception,'SOURCE_RESTORE_ONLY'):
+                native.resolve(request)
+
+    def test_archive_only_source_reports_blocked_automatic_incremental_plan(self):
+        self.point('backup-new')
+        native = self.native_with_archive_catalogue(restore_only=True)
+        result = native.incremental_plan('source-A')
+        self.assertEqual(result['state'],'BLOCKED')
+        self.assertEqual(result['reasonCode'],'SOURCE_RESTORE_ONLY')
+        self.assertIsNone(result['parentChainRef'])
+
+    def test_explicit_archive_catalogue_cannot_reenable_quarantined_point(self):
+        self.point('backup-new')
+        native = self.native_with_archive_catalogue()
+        self.write(self.root/'native/registry/quarantined-points/backup-new.json',{'preserved':'original marker'})
+        with patch('recovery_control_target_availability.available',return_value=True):
+            row = native.selections()['applications'][0]
+        self.assertEqual(row['historyErrorCode'],'POINT_QUARANTINED')
+        self.assertEqual(row['recoveryPointRefs'], [])
+
+    def test_archive_admission_verifies_original_index_point_pin(self):
+        self.point('backup-new')
+        native = self.native_with_archive_catalogue()
+        point = self.root/'archives/backup-new/.repository/point.json'
+        value = json.loads(point.read_text(encoding='utf-8'))
+        value['unexpected']='tampered after admission'
+        self.write(point,value)
+        with patch('recovery_control_target_availability.available',return_value=True):
+            row = native.selections()['applications'][0]
+        self.assertIsNotNone(row['historyErrorCode'])
+        self.assertEqual(row['recoveryPointRefs'], [])
+
+    def test_archive_admission_rejects_configuration_for_different_source(self):
+        self.point('backup-new')
+        native = self.native_with_archive_catalogue()
+        config = native.configuration()
+        archive = native.document(config['archiveRestoreCatalogues']['source-A'])
+        archive['sourceConfigRef']='different-source'
+        config['archiveRestoreCatalogues']['source-A']=self.write(self.root/'wrong-source.json',archive)
+        native.config_pin = self.write(self.root/'wrong-control.json',config)
+        with patch('recovery_control_target_availability.available',return_value=True):
+            row = native.selections()['applications'][0]
+        self.assertEqual(row['historyErrorCode'],'ARCHIVE_CATALOGUE_SOURCE_MISMATCH')
+        self.assertEqual(row['recoveryPointRefs'], [])
 
     def test_cross_server_native_uses_explicit_catalogue_instead_of_missing_local_point(self):
         owner=dict(sources={'source-A': self.source},targets={'target-B':{}})

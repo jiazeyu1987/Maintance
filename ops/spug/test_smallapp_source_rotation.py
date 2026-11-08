@@ -32,4 +32,23 @@ class SourceRotation(unittest.TestCase):
         with patch.object(adapter,'read_json',return_value=config):
             with self.assertRaisesRegex(adapter.Refused,'SIMPLE_REPLACEMENT_MAPPING_REQUIRED'):simple.configuration()
 
+    def test_explicit_catalogue_route_preserves_retired_source_and_public_whitelist(self):
+        config=self.fixture();config['catalogueRestoreBindings']={'historical-point':'old'}
+        config['bindings'][0]['password']='private-contract-only'
+        with patch.object(adapter,'read_json',return_value=config):
+            public=simple.public_configuration()
+        self.assertEqual(public['catalogueRestoreBindings'],{'historical-point':'old'})
+        self.assertFalse(public['bindings'][0]['selectable'])
+        self.assertNotIn('password',public['bindings'][0])
+        self.assertEqual(simple.progress_binding(dict(applicationId='old',request=dict(action='FULL')),config)['progressRoot'],'/old')
+
+    def test_catalogue_route_requires_known_safe_application_and_opaque_point(self):
+        for route in ({'historical-point':'unknown'},{'../point':'old'},[],{'historical-point':'old'}):
+            with self.subTest(route=route):
+                config=self.fixture();config['catalogueRestoreBindings']=route
+                if route=={'historical-point':'old'}:config['bindings'][0]['mode']='fast'
+                with patch.object(adapter,'read_json',return_value=config):
+                    with self.assertRaisesRegex(adapter.Refused,'SIMPLE_CATALOGUE_RESTORE_BINDING_INVALID'):
+                        simple.configuration()
+
 if __name__=='__main__':unittest.main()

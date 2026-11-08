@@ -11,7 +11,7 @@ CONFIG = Path('/var/lib/intruoyi-spug/smallapp-simple-settings.json')
 
 def configuration():
     value = adapter.read_json(CONFIG)
-    if set(value) != {'nas', 'servers', 'bindings'} or len(value['servers']) != 3:
+    if set(value) - {'catalogueRestoreBindings'} != {'nas', 'servers', 'bindings'} or len(value['servers']) != 3:
         raise adapter.Refused('SIMPLE_CONFIGURATION_INVALID')
     if any(type(row.get('selectable')) is not bool for row in value['bindings']):
         raise adapter.Refused('SIMPLE_BINDING_SELECTION_STATE_REQUIRED')
@@ -22,14 +22,25 @@ def configuration():
     identities = [row['applicationId'] for row in value['bindings']]
     if len(current) != len(set(current)) or len(identities) != len(set(identities)):
         raise adapter.Refused('SIMPLE_BINDING_AMBIGUOUS')
+    if 'catalogueRestoreBindings' in value:
+        routes = value['catalogueRestoreBindings']
+        by_id = {row['applicationId']: row for row in value['bindings']}
+        if (type(routes) is not dict or len(routes) > 1000 or
+                any(not adapter.reference(point) or not adapter.reference(app) or
+                    app not in by_id or by_id[app]['mode'] != 'safe'
+                    for point, app in routes.items())):
+            raise adapter.Refused('SIMPLE_CATALOGUE_RESTORE_BINDING_INVALID')
     return value
 
 
 def public_configuration():
     value = configuration()
-    return dict(nas=value['nas'], servers=value['servers'], bindings=[{
+    public = dict(nas=value['nas'], servers=value['servers'], bindings=[{
         k: row[k] for k in ('product', 'server', 'mode', 'applicationId', 'targetServers', 'overwriteTargetServers', 'selectable')
     } for row in value['bindings']])
+    if 'catalogueRestoreBindings' in value:
+        public['catalogueRestoreBindings'] = dict(value['catalogueRestoreBindings'])
+    return public
 
 
 def display_context(request, application_id):
