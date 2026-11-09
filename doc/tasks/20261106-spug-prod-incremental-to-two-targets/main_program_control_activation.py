@@ -132,9 +132,15 @@ def file_pin(path):
     return dict(path=str(path), bytes=len(raw), sha256=hashlib.sha256(raw).hexdigest())
 
 
-def checked_local(path, expected):
+def verify_local_pin(path, expected):
+    """Verify original evidence bytes without assuming a document format."""
     actual = file_pin(path)
     need(actual['bytes'] == expected['bytes'] and actual['sha256'] == expected['sha256'], 'PIN_CHANGED')
+    return actual
+
+
+def checked_local(path, expected):
+    verify_local_pin(path, expected)
     return read_document(path)
 
 
@@ -760,7 +766,7 @@ def prepare(task, private, inputs_file):
             path = Path(item['path'])
             need(path.resolve().parent in ({Path(task).resolve(), Path(private).resolve()} if generation else {Path(task).resolve()}),
                  'ORIGINAL_EVIDENCE_SCOPE')
-            checked_local(path, item)
+            verify_local_pin(path, item)
     def fixed(name, reference):
         need(reference['file'] == name, 'INPUT_REVISION_REQUIRED')
         return records.pinned(reference)
@@ -976,7 +982,7 @@ def dispatch_prepared(task, private, spec, payload, *, activate=False, transport
     observed = transport(spec['current']['host'], payload, timeout=600)
     exclusive_bytes(private_output, canonical(observed))
     need(observed.get('status') == 'PASS', 'REMOTE_ACTIVATION_FAILED_CHECK_PRIVATE_REPORT')
-    for ref in spec['inputPins']: checked_local(Path(ref['path']), ref)
+    for ref in spec['inputPins']: verify_local_pin(Path(ref['path']), ref)
     for ref in spec['helperPins']: need(file_pin(Path(ref['path'])) == ref, 'HELPER_CHANGED_DURING_ACTIVATION')
     checked_local(Path(spec['privatePlanPin']['path']), spec['privatePlanPin'])
     checked_local(Path(spec['privateUnitPin']['path']), spec['privateUnitPin'])
