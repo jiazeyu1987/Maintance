@@ -1,0 +1,47 @@
+{
+  "status": "PASS",
+  "actualExitCode": 0,
+  "expectedTests": 31,
+  "inputPins": [
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_resource_activation.py",
+      "bytes": 35407,
+      "sha256": "979c3d6055b97e3552bce1cc5381f0f20a2bcd2cfedb027c4c634775b0672b20"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_spug_resource_activation.py",
+      "bytes": 27555,
+      "sha256": "4338df67a8021b0952408bd7772d4864490ef4fa369c2c0241c2792f2041a3c3"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_spug_resource_deployment_delta.py",
+      "bytes": 15022,
+      "sha256": "827845c343f8dde15a8b9370eef3f8c8f604ea42298c592995efdaf1a3da739e"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_publication.py",
+      "bytes": 82950,
+      "sha256": "ec4ca9f834332ef3b235c731f401b1c6435a49f08d2117be1acce1c35616aaae"
+    }
+  ],
+  "inputsUnchanged": true,
+  "argv": [
+    "C:\\Users\\D01021\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "-X",
+    "utf8",
+    "-B",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_spug_resource_deployment_delta.py"
+  ],
+  "logPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-resource-delta-parent-green-r1.log",
+    "bytes": 113,
+    "sha256": "ac9ac995a86bb9a708abaedf73f3a901d851eebdf4e8fb71a8eb9fc361e8e415"
+  },
+  "elapsedSeconds": 121.109,
+  "runtimeWrites": false
+}
