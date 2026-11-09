@@ -7,6 +7,7 @@ this resolver does not translate pins or copy source application data.
 """
 from copy import deepcopy
 from datetime import datetime, timezone
+import os
 from pathlib import Path
 import urllib.error
 import urllib.parse
@@ -25,7 +26,140 @@ def read_document(reference, limit):
     return decode(raw)
 
 
+class _ArchiveReads:
+    """Reuse immutable originals only until this request's freshness barrier.
+
+    Each path is hashed and decoded once, then hashed again before returning.
+    File identities guard reuse and replacement with identical bytes. Directory
+    observations guard membership without repeating discovery for every chain.
+    Instances must never outlive their public catalogue call.
+    """
+    def __init__(self):
+        self.documents = {}
+        self.directories = {}
+        self.indexes = {}
+        self.quarantines = set()
+        self.quarantine_directories = {}
+
+    @staticmethod
+    def _stamp(info):
+        return (info.st_dev, info.st_ino, info.st_mode, info.st_size,
+                info.st_mtime_ns, info.st_ctime_ns)
+
+    def _file_stamp(self, path):
+        need(path.resolve() == path and not path.is_symlink(), 'ARCHIVE_METADATA_CHANGED')
+        return self._stamp(path.stat())
+
+    def _directory_stamp(self, path):
+        # Keep both identities for an unselected symlink directory. Discovery
+        # still rejects any point reached through a translated original path.
+        return (path.resolve(), self._stamp(path.lstat()), self._stamp(path.stat()))
+
+    def _watch_directory(self, path):
+        actual = self._directory_stamp(path)
+        if path in self.directories:
+            need(actual == self.directories[path], 'ARCHIVE_DIRECTORY_CHANGED')
+        else:
+            self.directories[path] = actual
+
+    def _read_path(self, path, limit):
+        if path in self.documents:
+            pin, value, observed = self.documents[path]
+            need(self._file_stamp(path) == observed, 'ARCHIVE_METADATA_CHANGED')
+            need(pin['bytes'] <= limit, 'ARCHIVE_METADATA_LIMIT_EXCEEDED')
+            return pin, value
+        observed = self._file_stamp(path)
+        need(0 <= observed[3] <= limit, 'ARCHIVE_METADATA_LIMIT_EXCEEDED')
+        pin, raw = executor.pinned_read(path, True)
+        need(self._file_stamp(path) == observed, 'ARCHIVE_METADATA_CHANGED')
+        value = decode(raw)
+        self.documents[path] = (pin, value, observed)
+        return pin, value
+
+    def document(self, reference, limit):
+        need(type(reference) is dict and type(reference.get('bytes')) is int and
+             0 <= reference['bytes'] <= limit, 'ARCHIVE_METADATA_LIMIT_EXCEEDED')
+        executor.pin_reference(reference)
+        actual, value = self._read_path(Path(reference['path']), limit)
+        need(actual == reference, 'NATIVE_PIN_CHANGED')
+        return value
+
+    def pin(self, path, limit):
+        return self._read_path(Path(path), limit)[0]
+
+    def discover(self, roots, maximum_files, maximum_bytes):
+        key = (tuple(roots), maximum_files, maximum_bytes)
+        if key in self.indexes:
+            return self.indexes[key]
+        index, count = {}, 0
+        for root in roots:
+            self._watch_directory(root)
+            with os.scandir(root) as children:
+                for child in children:
+                    directory = root/child.name
+                    if not directory.is_dir():
+                        continue
+                    # Empty candidate directories are observed too: adding a
+                    # .repository later need not change the archive root itself.
+                    self._watch_directory(directory)
+                    sidecar = directory/'.repository'
+                    if not sidecar.is_dir():
+                        continue
+                    self._watch_directory(sidecar)
+                    path = sidecar/'point.json'
+                    if not path.exists() and not path.is_symlink():
+                        continue
+                    count += 1
+                    need(count <= maximum_files, 'ARCHIVE_POINT_LIMIT_EXCEEDED')
+                    need(path.resolve() == path, 'ARCHIVE_POINT_PATH_CHANGED')
+                    pin, value = self._read_path(path, maximum_bytes)
+                    reference = value.get('backupId')
+                    if type(reference) is str:
+                        index.setdefault(reference, []).append(pin)
+        self.indexes[key] = index
+        return index
+
+    def unquarantined(self, path):
+        # Observe the existing ancestor as well: a marker created and removed
+        # during this request still invalidates its quarantine observation.
+        directory = path.parent
+        while not directory.exists():
+            need(directory.parent != directory, 'ARCHIVE_REGISTRY_UNAVAILABLE')
+            directory = directory.parent
+        observed = self._directory_stamp(directory)
+        if directory in self.quarantine_directories:
+            need(observed == self.quarantine_directories[directory], 'POINT_QUARANTINED')
+        else:
+            self.quarantine_directories[directory] = observed
+        need(not path.exists() and not path.is_symlink(), 'POINT_QUARANTINED')
+        self.quarantines.add(path)
+
+    def finish(self):
+        for path, (reference, _, observed) in self.documents.items():
+            need(self._file_stamp(path) == observed, 'ARCHIVE_METADATA_CHANGED')
+            actual, _ = executor.pinned_read(path)
+            need(actual == reference and self._file_stamp(path) == observed,
+                 'ARCHIVE_METADATA_CHANGED')
+        # A later hash must not hide changes to an earlier verified original.
+        for path, (_, _, observed) in self.documents.items():
+            need(self._file_stamp(path) == observed, 'ARCHIVE_METADATA_CHANGED')
+        for path, observed in self.directories.items():
+            need(self._directory_stamp(path) == observed, 'ARCHIVE_DIRECTORY_CHANGED')
+        for path in self.quarantines:
+            need(not path.exists() and not path.is_symlink(), 'POINT_QUARANTINED')
+        for path, observed in self.quarantine_directories.items():
+            need(self._directory_stamp(path) == observed, 'POINT_QUARANTINED')
+
+
 def bind_archive_chain(source, request):
+    reads = _ArchiveReads()
+    resolved, binding = _bind_archive_chain(source, request, reads)
+    reads.finish()
+    return resolved, binding
+
+
+def _bind_archive_chain(source, request, reads):
+    read_document = reads.document
     catalogue = source['archiveCatalogue']
     fields = 'schemaVersion maximumPointFiles maximumMetadataBytes sourceAdmissionPin'
     multiple_scopes = type(catalogue) is dict and catalogue.get('schemaVersion') == 'RecoveryArchiveCatalogue/v2'
@@ -59,17 +193,7 @@ def bind_archive_chain(source, request):
             read_document(selected_identity, maximum)
             identities[canonical(pin)] = selected_identity
     reference = opaque(request['recoveryPointRef'])
-    matches = []
-    count = 0
-    for root in roots:
-        for path in root.glob('*/.repository/point.json'):
-            count += 1
-            need(count <= catalogue['maximumPointFiles'], 'ARCHIVE_POINT_LIMIT_EXCEEDED')
-            need(path.resolve() == path, 'ARCHIVE_POINT_PATH_CHANGED')
-            candidate = executor.pin(path)
-            value = read_document(candidate, maximum)
-            if value.get('backupId') == reference:
-                matches.append(candidate)
+    matches = reads.discover(roots, catalogue['maximumPointFiles'], maximum).get(reference, [])
     need(len(matches) == 1, 'ARCHIVE_POINT_REFERENCE_AMBIGUOUS' if matches else 'ARCHIVE_POINT_NOT_FOUND')
     points, bindings, evidence, visiting = [], {}, [], set()
     selected_scope = None
@@ -91,7 +215,7 @@ def bind_archive_chain(source, request):
              manifest.get('schemaVersion') == 'RepositoryManifest/v1' and all(
                  point[key] == manifest[key] for key in ('backupId','generationId','pointType','parentPointPins')) and
              manifest['sourceIdentityPin'] in identities.values(), 'ARCHIVE_SOURCE_BINDING_INVALID')
-        binding_pin = executor.pin(path.parent/'recovery-repository-binding.json')
+        binding_pin = reads.pin(path.parent/'recovery-repository-binding.json', maximum)
         binding = read_document(binding_pin, maximum)
         exact(binding, 'schemaVersion backupId generationId repositoryPointPin manifestPin sourceScopePin '
               'recoveryMaterialPin objectContentIndexPin', 'ARCHIVE_REPOSITORY_BINDING_INVALID')
@@ -184,12 +308,14 @@ def source_admits(native, source, request):
 
 
 def for_request(native, configuration, request, owner_pin):
-    owner = native.document(owner_pin)
+    reads = _ArchiveReads()
+    owner = reads.document(owner_pin, 16 * 1024 * 1024)
     source = owner['sources'][request['sourceConfigRef']]
     admitted = source_admits(native, source, request)
-    resolved, binding = bind_archive_chain(source, request)
-    need(all(read_document(pin, source['archiveCatalogue']['maximumMetadataBytes'])['backupId'] in admitted
+    resolved, binding = _bind_archive_chain(source, request, reads)
+    need(all(reads.document(pin, source['archiveCatalogue']['maximumMetadataBytes'])['backupId'] in admitted
          for pin in resolved['repositoryPointPins']), 'SOURCE_PARENT_NOT_CURRENTLY_ELIGIBLE')
+    reads.finish()
     owner = deepcopy(owner)
     owner['sources'][request['sourceConfigRef']] = resolved
     from recovery_control_smallapp_native import directory
@@ -223,7 +349,8 @@ def archive_references(native, configuration, source_ref):
     reference = configuration.get('archiveRestoreCatalogues', {}).get(source_ref)
     if reference is None:
         return {}
-    value = native.document(reference)
+    reads = _ArchiveReads()
+    value = reads.document(reference, 16 * 1024 * 1024)
     exact(value, 'schemaVersion sourceConfigRef source pointPins', 'ARCHIVE_ADMISSION_FIELDS_INVALID')
     need(value['schemaVersion'] == 'SmallAppArchiveRestoreCatalogue/v1' and
          value['sourceConfigRef'] == source_ref, 'ARCHIVE_CATALOGUE_SOURCE_MISMATCH')
@@ -234,20 +361,22 @@ def archive_references(native, configuration, source_ref):
     maximum = source['archiveCatalogue']['maximumMetadataBytes']
     admitted = {}
     for pin in pins:
-        point = read_document(pin, maximum)
+        point = reads.document(pin, maximum)
         point_ref = opaque(point['backupId'])
         need(point_ref not in admitted, 'ARCHIVE_POINT_REFERENCE_AMBIGUOUS')
         admitted[point_ref] = pin
     for point_ref, pin in admitted.items():
-        resolved, binding = bind_archive_chain(source, dict(sourceConfigRef=source_ref,recoveryPointRef=point_ref))
+        resolved, binding = _bind_archive_chain(source,
+            dict(sourceConfigRef=source_ref,recoveryPointRef=point_ref), reads)
         need(binding['pointPin'] == pin, 'ARCHIVE_ADMISSION_POINT_CHANGED')
         for parent in resolved['repositoryPointPins']:
-            parent_ref = read_document(parent, maximum)['backupId']
+            parent_ref = reads.document(parent, maximum)['backupId']
             need(admitted.get(parent_ref) == parent, 'ARCHIVE_PARENT_NOT_ADMITTED')
             quarantine = (Path(configuration['registryRoot'])/'quarantined-points'/
                           (opaque(parent_ref) + '.json'))
             # A preserved marker blocks archive admission even if its former
             # native selector is no longer installed. Never bypass it by using
             # a different restore catalogue or by repinning its archive.
-            need(not quarantine.exists() and not quarantine.is_symlink(), 'POINT_QUARANTINED')
+            reads.unquarantined(quarantine)
+    reads.finish()
     return admitted

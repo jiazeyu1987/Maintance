@@ -1,0 +1,16 @@
+COMMAND: python -X utf8 C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\scripts\tests\test_restore_target_registration.py -v
+EXIT: 0
+test_all_three_routes_and_display_bindings_share_registered_identity (__main__.RegistrationPlan.test_all_three_routes_and_display_bindings_share_registered_identity) ... ok
+test_archive_only_registration_requires_an_explicit_pinned_admission (__main__.RegistrationPlan.test_archive_only_registration_requires_an_explicit_pinned_admission) ... ok
+test_cannot_enable_fast_engine_fresh_target_or_static_point_template (__main__.RegistrationPlan.test_cannot_enable_fast_engine_fresh_target_or_static_point_template) ... ok
+test_explicit_catalogue_route_can_register_retired_safe_source_without_enabling_capture_choice (__main__.RegistrationPlan.test_explicit_catalogue_route_can_register_retired_safe_source_without_enabling_capture_choice) ... ok
+test_explicit_cross_source_admission_keeps_original_target_claim_identity (__main__.RegistrationPlan.test_explicit_cross_source_admission_keeps_original_target_claim_identity) ... ok
+test_historical_scope_catalogue_and_explicit_archive_only_source_keep_three_targets (__main__.RegistrationPlan.test_historical_scope_catalogue_and_explicit_archive_only_source_keep_three_targets) ... ok
+test_one_server_duplicate_or_unregistered_server_is_refused (__main__.RegistrationPlan.test_one_server_duplicate_or_unregistered_server_is_refused) ... ok
+test_retired_source_without_valid_explicit_catalogue_route_remains_unselectable (__main__.RegistrationPlan.test_retired_source_without_valid_explicit_catalogue_route_remains_unselectable) ... ok
+test_versioned_retained_main_target_keeps_all_three_routes (__main__.RegistrationPlan.test_versioned_retained_main_target_keeps_all_three_routes) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.002s
+
+OK

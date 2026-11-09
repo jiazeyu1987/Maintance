@@ -1,0 +1,19 @@
+COMMAND: python -X utf8 C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_archive_catalogue_request_reads.py RequestReads.test_transient_quarantine_change_during_request_is_rejected -v
+EXIT: 1
+test_transient_quarantine_change_during_request_is_rejected (__main__.RequestReads.test_transient_quarantine_change_during_request_is_rejected) ... FAIL
+
+======================================================================
+FAIL: test_transient_quarantine_change_during_request_is_rejected (__main__.RequestReads.test_transient_quarantine_change_during_request_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_archive_catalogue_request_reads.py", line 164, in test_transient_quarantine_change_during_request_is_rejected
+    self.refuse_mutation(quarantine, 'POINT_QUARANTINED')
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_archive_catalogue_request_reads.py", line 57, in refuse_mutation
+    with hook, self.assertRaisesRegex(Exception, error):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Exception not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 1.248s
+
+FAILED (failures=1)

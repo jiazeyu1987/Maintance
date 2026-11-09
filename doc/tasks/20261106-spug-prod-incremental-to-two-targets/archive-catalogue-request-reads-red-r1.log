@@ -1,0 +1,121 @@
+COMMAND: python -X utf8 C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_archive_catalogue_request_reads.py -v
+EXIT: 1
+test_changed_point_limit_still_rejected (__main__.RequestReads.test_changed_point_limit_still_rejected) ... ok
+test_changes_after_first_request_are_not_cached (__main__.RequestReads.test_changes_after_first_request_are_not_cached) ... ok
+test_duplicate_added_between_requests_is_not_cached (__main__.RequestReads.test_duplicate_added_between_requests_is_not_cached) ... ok
+test_for_request_checks_parent_eligibility_and_rejects_late_mutation (__main__.RequestReads.test_for_request_checks_parent_eligibility_and_rejects_late_mutation) ... FAIL
+test_index_pin_changed_between_requests_is_rejected (__main__.RequestReads.test_index_pin_changed_between_requests_is_rejected) ... ok
+test_late_addition_in_existing_empty_archive_directory_is_rejected (__main__.RequestReads.test_late_addition_in_existing_empty_archive_directory_is_rejected) ... FAIL
+test_late_addition_in_existing_empty_repository_is_rejected (__main__.RequestReads.test_late_addition_in_existing_empty_repository_is_rejected) ... FAIL
+test_late_directory_replacement_with_same_point_bytes_is_rejected (__main__.RequestReads.test_late_directory_replacement_with_same_point_bytes_is_rejected) ... FAIL
+test_late_duplicate_id_addition_is_rejected (__main__.RequestReads.test_late_duplicate_id_addition_is_rejected) ... FAIL
+test_late_immutable_index_mutation_is_rejected (__main__.RequestReads.test_late_immutable_index_mutation_is_rejected) ... FAIL
+test_late_manifest_content_mutation_is_rejected (__main__.RequestReads.test_late_manifest_content_mutation_is_rejected) ... FAIL
+test_late_quarantine_of_already_checked_parent_is_rejected (__main__.RequestReads.test_late_quarantine_of_already_checked_parent_is_rejected) ... ok
+test_late_same_bytes_file_replacement_is_rejected (__main__.RequestReads.test_late_same_bytes_file_replacement_is_rejected) ... FAIL
+test_parent_not_in_index_still_rejected (__main__.RequestReads.test_parent_not_in_index_still_rejected) ... ok
+test_quarantine_added_between_requests_is_not_cached (__main__.RequestReads.test_quarantine_added_between_requests_is_not_cached) ... ok
+test_shared_metadata_is_decoded_once_and_content_read_at_most_twice (__main__.RequestReads.test_shared_metadata_is_decoded_once_and_content_read_at_most_twice) ... FAIL
+
+======================================================================
+FAIL: test_for_request_checks_parent_eligibility_and_rejects_late_mutation (__main__.RequestReads.test_for_request_checks_parent_eligibility_and_rejects_late_mutation)
+----------------------------------------------------------------------
+recovery_control_smallapp.Failure: SMALLAPP_NATIVE_ROOT_REQUIRED
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_archive_catalogue_request_reads.py", line 182, in test_for_request_checks_parent_eligibility_and_rejects_late_mutation
+    self.assertRaisesRegex(Exception, 'ARCHIVE_.*CHANGED|NATIVE_PIN_CHANGED'):
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "ARCHIVE_.*CHANGED|NATIVE_PIN_CHANGED" does not match "SMALLAPP_NATIVE_ROOT_REQUIRED"
+
+======================================================================
+FAIL: test_late_addition_in_existing_empty_archive_directory_is_rejected (__main__.RequestReads.test_late_addition_in_existing_empty_archive_directory_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_archive_catalogue_request_reads.py", line 106, in test_late_addition_in_existing_empty_archive_directory_is_rejected
+    self.refuse_mutation(add)
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_archive_catalogue_request_reads.py", line 57, in refuse_mutation
+    with hook, self.assertRaisesRegex(Exception, error):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Exception not raised
+
+======================================================================
+FAIL: test_late_addition_in_existing_empty_repository_is_rejected (__main__.RequestReads.test_late_addition_in_existing_empty_repository_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_archive_catalogue_request_reads.py", line 111, in test_late_addition_in_existing_empty_repository_is_rejected
+    self.refuse_mutation(lambda: (empty/'point.json').write_bytes(Path(self.first['path']).read_bytes()))
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_archive_catalogue_request_reads.py", line 57, in refuse_mutation
+    with hook, self.assertRaisesRegex(Exception, error):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Exception not raised
+
+======================================================================
+FAIL: test_late_directory_replacement_with_same_point_bytes_is_rejected (__main__.RequestReads.test_late_directory_replacement_with_same_point_bytes_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_archive_catalogue_request_reads.py", line 121, in test_late_directory_replacement_with_same_point_bytes_is_rejected
+    self.refuse_mutation(replace)
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_archive_catalogue_request_reads.py", line 57, in refuse_mutation
+    with hook, self.assertRaisesRegex(Exception, error):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Exception not raised
+
+======================================================================
+FAIL: test_late_duplicate_id_addition_is_rejected (__main__.RequestReads.test_late_duplicate_id_addition_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_archive_catalogue_request_reads.py", line 97, in test_late_duplicate_id_addition_is_rejected
+    self.refuse_mutation(duplicate)
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_archive_catalogue_request_reads.py", line 57, in refuse_mutation
+    with hook, self.assertRaisesRegex(Exception, error):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Exception not raised
+
+======================================================================
+FAIL: test_late_immutable_index_mutation_is_rejected (__main__.RequestReads.test_late_immutable_index_mutation_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_archive_catalogue_request_reads.py", line 131, in test_late_immutable_index_mutation_is_rejected
+    self.refuse_mutation(lambda: index_path.write_bytes(b'{}'))
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_archive_catalogue_request_reads.py", line 57, in refuse_mutation
+    with hook, self.assertRaisesRegex(Exception, error):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Exception not raised
+
+======================================================================
+FAIL: test_late_manifest_content_mutation_is_rejected (__main__.RequestReads.test_late_manifest_content_mutation_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_archive_catalogue_request_reads.py", line 79, in test_late_manifest_content_mutation_is_rejected
+    self.refuse_mutation(lambda: self.manifest.write_bytes(b'{}'))
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_archive_catalogue_request_reads.py", line 57, in refuse_mutation
+    with hook, self.assertRaisesRegex(Exception, error):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Exception not raised
+
+======================================================================
+FAIL: test_late_same_bytes_file_replacement_is_rejected (__main__.RequestReads.test_late_same_bytes_file_replacement_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_archive_catalogue_request_reads.py", line 89, in test_late_same_bytes_file_replacement_is_rejected
+    self.refuse_mutation(replace)
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_archive_catalogue_request_reads.py", line 57, in refuse_mutation
+    with hook, self.assertRaisesRegex(Exception, error):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Exception not raised
+
+======================================================================
+FAIL: test_shared_metadata_is_decoded_once_and_content_read_at_most_twice (__main__.RequestReads.test_shared_metadata_is_decoded_once_and_content_read_at_most_twice)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_archive_catalogue_request_reads.py", line 75, in test_shared_metadata_is_decoded_once_and_content_read_at_most_twice
+    self.assertEqual(max(decoded.values()), 1, 'same metadata decoded repeatedly')
+AssertionError: 8 != 1 : same metadata decoded repeatedly
+
+----------------------------------------------------------------------
+Ran 16 tests in 5.997s
+
+FAILED (failures=9)

@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "ArchiveRequestReadsLocalVerification/v1",
+  "source": "native temporary files, not production latency",
+  "admittedPoints": 2,
+  "uniqueOriginalFiles": 14,
+  "completeReads": 28,
+  "jsonDecodes": 14,
+  "readsPerOriginal": [
+    2
+  ],
+  "decodesPerOriginal": [
+    1
+  ],
+  "archiveRootEnumerations": 1,
+  "tests": {
+    "new": 23,
+    "catalogueRegression": 27,
+    "registrationRegression": 9
+  },
+  "files": {
+    "backend/src/main/resources/recovery_control_restore_catalogue.py": {
+      "bytes": 20770,
+      "sha256": "d6dfd4701a5a6343af71329167b1167952b3328b4a52568e9ff21ae060c84ab9"
+    },
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_archive_catalogue_request_reads.py": {
+      "bytes": 13166,
+      "sha256": "e4b8acd02e8bfb52f48ef4f5eccce8dbb09ec73a4d505b5042b704df8a4057f1"
+    },
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/archive-catalogue-request-reads-green-r1.log": {
+      "bytes": 2829,
+      "sha256": "cca1c49143515fb754e34842c6ea3cd43492252ffe693d5160e2ef89bd992219"
+    },
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/archive-catalogue-request-reads-green-r2.log": {
+      "bytes": 3415,
+      "sha256": "ba51f1e29d79e38149217373d35c532e1d2128e37946e12fd9ad6b27aad67baa"
+    },
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/archive-catalogue-request-reads-green-r3.log": {
+      "bytes": 3567,
+      "sha256": "0092602213aa6dd0e15f09739cf9bb6044dd63433bc9c1cd0f72ce6aab62a169"
+    },
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/archive-catalogue-request-reads-red-quarantine-r3.log": {
+      "bytes": 1531,
+      "sha256": "a7304fcd2a5939f06ead110588492a71660e3bb0e5350dd6b5396ff3748988f3"
+    },
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/archive-catalogue-request-reads-red-r1.log": {
+      "bytes": 11086,
+      "sha256": "27bf5d851c695463e722ebbe681b983a04700debaf291f145b348fa2fb9f5ec2"
+    },
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/archive-catalogue-request-reads-red-r2.log": {
+      "bytes": 12924,
+      "sha256": "f1c05f8983829bab1a49adcae3da44ffef0b6d14a891562c4b01be5945d6bfb1"
+    },
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/archive-catalogue-request-reads-regression-catalogue-r1.log": {
+      "bytes": 4731,
+      "sha256": "444141ed4b45d8674281685bc3d3f0113e600bed42daf5bcf3243929dc08f061"
+    },
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/archive-catalogue-request-reads-regression-catalogue-r2.log": {
+      "bytes": 4731,
+      "sha256": "2f29a14f8dbd7cfc0e6720b85cdbb0b7714eddc0b2796ce0dd522b280ea7415c"
+    },
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/archive-catalogue-request-reads-regression-registration-r1.log": {
+      "bytes": 1896,
+      "sha256": "2c0bf417b9895183eecf9699aee2fddc696694e77b4cd9a391cd85b60e7f500e"
+    },
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/archive-catalogue-request-reads-regression-registration-r2.log": {
+      "bytes": 1896,
+      "sha256": "2c0bf417b9895183eecf9699aee2fddc696694e77b4cd9a391cd85b60e7f500e"
+    }
+  }
+}
