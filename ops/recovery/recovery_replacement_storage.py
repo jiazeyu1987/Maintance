@@ -94,8 +94,8 @@ def _mounted_path(path, mount):
     return str(_path(mount['root'], root=True) / relative)
 
 
-def physical_location(path, mounts):
-    """Resolve bind aliases through mountinfo to a device plus filesystem path."""
+def visible_mount(path, mounts):
+    """Select the visible mount row, proving stacked identity with the kernel."""
     value = _path(path, root=True)
     matching = [m for m in mounts if value == _path(m['mountPoint'], root=True) or
                 _path(m['mountPoint'], root=True) in value.parents]
@@ -125,6 +125,12 @@ def physical_location(path, mounts):
             selected = visible[0]
         finally:
             os.close(fd)
+    return selected
+
+
+def physical_location(path, mounts):
+    """Resolve bind aliases through mountinfo to a device plus filesystem path."""
+    selected = visible_mount(path, mounts)
     return selected['device'], _mounted_path(path, selected)
 
 

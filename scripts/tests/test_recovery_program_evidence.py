@@ -101,10 +101,12 @@ class EvidenceCase(InvocationCase):
                 raise DatabaseBoundary('historical evidence test stops before DB identity')
 
         configuration = deepcopy(self.configuration)
+        source = deepcopy(configuration['sources'][self.e.request['sourceConfigRef']])
         with pytest.raises(DatabaseBoundary, match='historical evidence test stops before DB identity'):
-            Boundary(configuration, deepcopy(self.e.request), None, {}, self.e.chain,
+            Boundary(configuration, deepcopy(self.e.request), source, {}, self.e.chain,
                 deepcopy(configuration['targets']['target57']), log, [], native_context=self.view)
         assert len(seen) == 1
+        assert seen[0].source == source
         return seen[0]
 
 

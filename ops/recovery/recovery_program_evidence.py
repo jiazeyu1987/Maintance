@@ -14,6 +14,7 @@ import stat
 from urllib.parse import parse_qs, urlsplit
 
 from recovery_engine import RecoveryError, canonical, digest, parse, require
+from recovery_archive_view import select_configuration
 from recovery_backup_epoch import _path, _signature, _snapshot, read_current
 from recovery_minimal_plan import request_contract
 from recovery_program_generation import (GENERATION_FIELDS, validate_policy,
@@ -231,6 +232,7 @@ def _originals(owner, request, root, reader):
         all(type(reservation.get(k)) is type(v) and reservation[k] == v for k, v in expected.items()),
         'RESERVATION_INVALID')
     return dict(root=root, claim=claim, policy=policy, baseline=baseline,
+        source=configuration['sources'][request['sourceConfigRef']],
         configurationPin=configuration_pin, requestPin=request_pin, reservationPin=reservation_pin)
 
 
@@ -501,9 +503,10 @@ def _protection(request, inputs, reference, target, success, outer, reader):
     main = target['mainApplication']
     endpoints = [item for item in main.get('publishedDataEndpoints', []) if item.get('role') == 'minio']
     _need(len(endpoints) <= 1, 'PROTECTION_SCOPE_INVALID')
-    configurations = dict(archive=main.get('archiveMountProtection'),
+    archive_configuration = select_configuration(target, inputs['source'])
+    configurations = dict(archive=archive_configuration,
         fence=endpoints[0].get('writeFence') if endpoints else None, scheduler=target)
-    expected_inputs = _index(list(_references([target['secrets'], main.get('archiveMountProtection'),
+    expected_inputs = _index(list(_references([target['secrets'], archive_configuration,
         main.get('publishedDataEndpoints', [])])))
     for path, item in expected_inputs.items():
         _need(custody_pins.get(path) == item, 'CUSTODY_INPUT_REQUIRED'); reader.blob(item)

@@ -285,18 +285,9 @@ def published_fence(native):
 
 
 def archive_view(native):
-    value = native.config.get('mainApplication', {})
-    configuration = value.get('archiveMountProtection')
+    from recovery_archive_view import ArchiveViewProtection, select_configuration
+    configuration = select_configuration(native.config, native.source)
     if configuration is None: return None
-    from recovery_archive_view import ArchiveViewProtection, validate as archive_contract
-    from recovery_replacement_storage import overlaps
-    archive_contract(configuration)
-    point = Path(configuration['mountIdentity']['mountPoint'])
-    require(native.source['archiveRoots'] and all(Path(root) != point and Path(root).is_relative_to(point)
-            for root in native.source['archiveRoots']) and
-            all(not overlaps(str(point), path) for path in native.config['dataPaths']) and
-            all(not overlaps(str(point), mount['Source']) for row in native.config['replacement']['storage'].get(
-                'preservedApplicationMounts', []) for mount in [row['mount']]), 'ARCHIVE_VIEW_SCOPE_INVALID')
     return ArchiveViewProtection(configuration, native.original['operationId'],
         Path(native.config['replacement']['stateRoot'])/native.original['operationId']/'archive-view', native.command)
 

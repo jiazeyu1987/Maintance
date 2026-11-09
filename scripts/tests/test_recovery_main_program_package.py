@@ -14,6 +14,10 @@ import pytest
 from test_recovery_program_packaging import program_packages
 
 ROOT = Path(__file__).resolve().parents[2]
+# A child suite performs multiple real file/lock/fsync lifecycles. The 88-case
+# custody suite includes 53 MAIN fixtures; measured setup alone performs 45
+# real fsync calls and takes 7-9 seconds per fixture on the Windows Linux VM.
+PACKAGE_SUITE_TIMEOUT_SECONDS = 1800
 
 
 @pytest.mark.skipif(not sys.platform.startswith('linux'), reason='actual Linux custody and flock')
@@ -49,7 +53,7 @@ assert all(Path(m.__file__).resolve().parent==(engine/'common').resolve() for m 
 raise SystemExit(code)
 '''
     result = subprocess.run([sys.executable, '-B', '-c', script, str(engine), str(ROOT/'scripts/tests')],
-        capture_output=True, timeout=120, env={**os.environ, 'PYTHONPATH':os.pathsep.join(sys.path)})
+        capture_output=True, timeout=PACKAGE_SUITE_TIMEOUT_SECONDS, env={**os.environ, 'PYTHONPATH':os.pathsep.join(sys.path)})
     assert result.returncode == 0, (result.stdout+result.stderr).decode('utf-8', errors='replace')
     assert b'88 passed' in result.stdout and b' skipped' not in result.stdout
 
@@ -86,7 +90,7 @@ print('PACKAGED_NATIVE_INVOCATION_PASS')
 '''
     work=tmp_path/'cases';work.mkdir(mode=0o700)
     result=subprocess.run([sys.executable,'-B','-c',script,str(engine),str(ROOT/'scripts/tests'),str(work)],
-        capture_output=True,timeout=120,env={**os.environ,'PYTHONPATH':os.pathsep.join(sys.path)})
+        capture_output=True,timeout=PACKAGE_SUITE_TIMEOUT_SECONDS,env={**os.environ,'PYTHONPATH':os.pathsep.join(sys.path)})
     assert result.returncode==0,(result.stdout+result.stderr).decode('utf-8',errors='replace')
     assert result.stdout.count(b'PACKAGED_NATIVE_INVOCATION_CASE_PASS')==2
     assert result.stdout.rstrip().endswith(b'PACKAGED_NATIVE_INVOCATION_PASS')
@@ -119,7 +123,7 @@ assert all(Path(m.__file__).resolve().parent==(engine/'common').resolve() for m 
 raise SystemExit(code)
 '''
     result = subprocess.run([sys.executable,'-B','-c',script,str(engine),str(ROOT/'scripts/tests')],
-        capture_output=True,timeout=120,env={**os.environ,'PYTHONPATH':os.pathsep.join(sys.path)})
+        capture_output=True,timeout=PACKAGE_SUITE_TIMEOUT_SECONDS,env={**os.environ,'PYTHONPATH':os.pathsep.join(sys.path)})
     assert result.returncode == 0, (result.stdout+result.stderr).decode('utf-8',errors='replace')
     assert b'37 passed' in result.stdout and b' skipped' not in result.stdout
 
@@ -156,18 +160,27 @@ assert all(Path(m.__file__).resolve().parent==(engine/'common').resolve() for m 
 raise SystemExit(code)
 '''
     result=subprocess.run([sys.executable,'-B','-c',script,str(engine),str(ROOT/'scripts/tests'),variant],
-        capture_output=True,timeout=180,env={**os.environ,'PYTHONPATH':os.pathsep.join(sys.path)})
+        capture_output=True,timeout=PACKAGE_SUITE_TIMEOUT_SECONDS,env={**os.environ,'PYTHONPATH':os.pathsep.join(sys.path)})
     assert result.returncode==0,(result.stdout+result.stderr).decode('utf-8',errors='replace')
     assert b'21 passed' in result.stdout and b' skipped' not in result.stdout
 
 
 @pytest.mark.skipif(not sys.platform.startswith('linux'), reason='actual packaged SQL lifecycle and original worker')
 @pytest.mark.parametrize('variant', ['standard', 'lightweight'])
-def test_producer_history_and_sql_lifecycle_run_from_actual_package(variant, program_packages, tmp_path):
+@pytest.mark.parametrize('suite_file,expected_passed', [
+    pytest.param('test_recovery_program_producer_contract.py', 6, id='producer'),
+    pytest.param('test_recovery_program_producer_sql_lifecycle.py', 6, id='sql-lifecycle'),
+    pytest.param('test_recovery_source_archive_protection.py', 19, id='source-protection'),
+])
+def test_producer_history_and_sql_lifecycle_run_from_actual_package(
+        variant, suite_file, expected_passed, program_packages, tmp_path):
     engine = tmp_path/'engine'
     with tarfile.open(program_packages/('backup-restore-'+variant+'.tgz')) as archive:
-        assert archive.extractfile('common/recovery_program_sql_staging.py').read() == (
-            ROOT/'ops/recovery/recovery_program_sql_staging.py').read_bytes()
+        for name in ('recovery_program_sql_staging', 'recovery_archive_view',
+                     'recovery_main_target', 'recovery_program_evidence',
+                     'recovery_program_protection', 'recovery_replacement_storage'):
+            assert archive.extractfile('common/'+name+'.py').read() == (
+                ROOT/'ops/recovery'/(name+'.py')).read_bytes()
         archive.extractall(engine, filter='data')
     script = r'''
 from pathlib import Path
@@ -175,6 +188,9 @@ import importlib,os,sys
 engine,tests=map(Path,sys.argv[1:3])
 variant=sys.argv[3]
 assert variant in ('standard','lightweight')
+suite_file=sys.argv[4]
+assert suite_file in ('test_recovery_program_producer_contract.py',
+    'test_recovery_program_producer_sql_lifecycle.py','test_recovery_source_archive_protection.py')
 os.environ['RECOVERY_TEST_ENGINE_VARIANT']=variant
 os.environ['RECOVERY_TEST_FORMAL_DIRECTORY']=str((engine/'formal').resolve())
 sys.path[:0]=[str(engine/'common'),str(tests)]
@@ -185,17 +201,16 @@ names=('recovery_engine','recovery_minimal_plan','recovery_archive_guard','recov
     'recovery_program_containers','recovery_program_derivation','recovery_program_resources',
     'recovery_resource_admission','recovery_main_target','recovery_replacement_storage',
     'recovery_replace','recovery_minimal_runtime','recovery_minimal_worker','recovery_program_restore',
-    'recovery_data','recovery_program_evidence','recovery_program_sql_staging','staging_cleanup')
+    'recovery_data','recovery_program_evidence','recovery_program_sql_staging','staging_cleanup',
+    'recovery_archive_view')
 modules=tuple(importlib.import_module(name) for name in names)
 assert all(Path(m.__file__).resolve().parent==(engine/'common').resolve() for m in modules)
 import pytest
-code=pytest.main(['-q','-p','no:cacheprovider','--tb=short',
-    str(tests/'test_recovery_program_producer_contract.py'),
-    str(tests/'test_recovery_program_producer_sql_lifecycle.py')])
+code=pytest.main(['-q','-p','no:cacheprovider','--tb=short',str(tests/suite_file)])
 assert all(Path(m.__file__).resolve().parent==(engine/'common').resolve() for m in modules)
 raise SystemExit(code)
 '''
-    result = subprocess.run([sys.executable,'-B','-c',script,str(engine),str(ROOT/'scripts/tests'),variant],
-        capture_output=True,timeout=180,env={**os.environ,'PYTHONPATH':os.pathsep.join(sys.path)})
+    result = subprocess.run([sys.executable,'-B','-c',script,str(engine),str(ROOT/'scripts/tests'),variant,suite_file],
+        capture_output=True,timeout=PACKAGE_SUITE_TIMEOUT_SECONDS,env={**os.environ,'PYTHONPATH':os.pathsep.join(sys.path)})
     assert result.returncode == 0, (result.stdout+result.stderr).decode('utf-8',errors='replace')
-    assert b'12 passed' in result.stdout and b' skipped' not in result.stdout
+    assert f'{expected_passed} passed'.encode('ascii') in result.stdout and b' skipped' not in result.stdout

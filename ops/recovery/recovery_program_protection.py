@@ -13,6 +13,7 @@ import re
 from types import SimpleNamespace
 
 from recovery_backup_epoch import _path, _read_file, _regular, _signature
+from recovery_archive_view import select_configuration
 from recovery_engine import RecoveryError, require
 from recovery_program_execution import _directory
 from recovery_program_generation import APPLICATIONS, _services
@@ -107,7 +108,7 @@ class ProtectionCustody:
         self._journals={kind:dict(identity=None,pins={}) for kind in KINDS}
         self._steps={kind:dict(state='NOT_INSTALLED') for kind in KINDS}
         for reference in _references([self._target['secrets'],
-                self._target['mainApplication'].get('archiveMountProtection'),
+                select_configuration(self._target,self._source),
                 self._target['mainApplication'].get('publishedDataEndpoints',[])]):
             require(reference['path'] not in self._inputs or self._inputs[reference['path']]==reference,
                     'PROGRAM_PROTECTION_INPUT_CHANGED')
