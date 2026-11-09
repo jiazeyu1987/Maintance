@@ -58,9 +58,17 @@ def i2_binding(task=TASK, observed_at=None, *, private=PRIVATE):
                 automaticI2FinishedAt=audit['finishedAt'], sourceRestorationObservedAt=restoration['observedAt'])
 
 
-def controller_selection(suffix, task=TASK):
+def controller_selection(suffix, task=TASK, *, selection_file='automatic-current-installations.json', private=PRIVATE):
     need(suffix in ('57', '58', '59'), 'CLOSEOUT_HOST_REQUIRED')
-    selected,selected_pin=read_pinned(task/'automatic-current-installations.json')
+    from main_program_installation_selection import local_name, select_main_program_installation
+    local_name(selection_file)
+    selected,selected_pin=read_pinned(task/selection_file)
+    if selected.get('schemaVersion') == 'TaskMainProgramInstallations/v1':
+        return select_main_program_installation(suffix, task, selection_file=selection_file)
+    if selected.get('schemaVersion') == 'TaskMainProgramInstallations/v2':
+        return select_main_program_installation(suffix, task, selection_file=selection_file,private=private)
+    if selection_file != 'automatic-current-installations.json':
+        raise ValueError('MAIN_INSTALLATION_SELECTION_INVALID')
     need(selected['schemaVersion']=='TaskCurrentInstallations/v2','CLOSEOUT_EXPLICIT_CURRENT_SELECTION_REQUIRED')
     source=pinned(task,selected['source57']);spug=pinned(task,selected['spug'])
     validate_source_spug(task,source,spug)
@@ -183,14 +191,17 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('suffix', choices=['57', '58', '59'])
     parser.add_argument('--prepare-only', action='store_true')
+    parser.add_argument('--selection-file', default='automatic-current-installations.json',
+                        help='Explicit task-local installation selection JSON file')
     args = parser.parse_args()
     destination = PRIVATE / ('closeout-' + args.suffix + '.private.json')
     public = TASK / ('closeout-' + args.suffix + '.json')
     if destination.exists() or public.exists():
         raise FileExistsError('CLOSEOUT_SNAPSHOT_ALREADY_EXISTS')
-    spec = controller_selection(args.suffix)
+    spec = controller_selection(args.suffix, selection_file=args.selection_file)
     spec['i2'] = i2_binding()
-    need(spec['currentSourceCommit']==spec['i2']['sourceCommit'],'CLOSEOUT_CURRENT_SOURCE_NOT_I2_GENERATION')
+    if args.selection_file == 'automatic-current-installations.json':
+        need(spec['currentSourceCommit']==spec['i2']['sourceCommit'],'CLOSEOUT_CURRENT_SOURCE_NOT_I2_GENERATION')
     if args.prepare_only:
         print(json.dumps(dict(status='PREPARED', host=spec['host'], backupOperationId=spec['i2']['backupOperationId'],
                               sourceCommit=spec['sourceCommit'], remoteReadDispatched=False)))
