@@ -101,8 +101,30 @@ def physical_location(path, mounts):
                 _path(m['mountPoint'], root=True) in value.parents]
     require(matching, 'REPLACEMENT_STORAGE_MOUNT_MISSING')
     selected = max(matching, key=lambda m: len(_path(m['mountPoint'], root=True).parts))
-    require(sum(m['mountPoint'] == selected['mountPoint'] for m in matching) == 1,
-            'REPLACEMENT_STORAGE_MOUNT_AMBIGUOUS')
+    if len({m['mountPoint'] for m in matching}) != len(matching):
+        # Stacked mounts may also hide a deeper mount below the covered layer.
+        # Ask the kernel which mount is visible; list order/IDs cannot prove it.
+        probe = absolute(path)
+        while True:
+            try:
+                fd = os.open(probe, os.O_PATH | os.O_CLOEXEC | os.O_NOFOLLOW)
+                break
+            except FileNotFoundError:
+                require(probe != probe.parent, 'REPLACEMENT_STORAGE_MOUNT_MISSING')
+                probe = probe.parent
+        try:
+            info = os.fstat(fd)
+            require(not stat.S_ISLNK(info.st_mode), 'PATH_ALIAS_REJECTED')
+            ids = re.findall(r'^mnt_id:\s*([0-9]+)\s*$',
+                Path('/proc/self/fdinfo/' + str(fd)).read_text(encoding='ascii'), re.MULTILINE)
+            require(len(ids) == 1, 'REPLACEMENT_STORAGE_MOUNT_AMBIGUOUS')
+            visible = [m for m in matching if m['mountId'] == int(ids[0])]
+            require(len(visible) == 1 and visible[0]['device'] ==
+                    str(os.major(info.st_dev)) + ':' + str(os.minor(info.st_dev)),
+                    'REPLACEMENT_STORAGE_MOUNT_AMBIGUOUS')
+            selected = visible[0]
+        finally:
+            os.close(fd)
     return selected['device'], _mounted_path(path, selected)
 
 

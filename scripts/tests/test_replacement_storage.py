@@ -424,6 +424,73 @@ def test_new_archive_keeps_stopped_consumer_exclusion(tmp_path):
         verify_storage(n, value, rows)
 
 
+@pytest.fixture
+def actual_stacked_mounts(tmp_path):
+    lower, upper, hidden, view = [tmp_path / p for p in ('lower', 'upper', 'hidden', 'view')]
+    for path in (lower, upper, hidden, view):
+        path.mkdir()
+    (lower / 'inner').mkdir()
+    (upper / 'inner').mkdir()
+    mounted = []
+    try:
+        for source, target in ((lower, view), (hidden, view / 'inner'), (upper, view)):
+            subprocess.run(['mount', '--bind', str(source), str(target)], check=True, capture_output=True)
+            mounted.append(target)
+        mounts = parse_mountinfo(Path('/proc/self/mountinfo').read_text(encoding='utf-8'))
+        yield view, upper, mounts
+    finally:
+        for target in reversed(mounted):
+            subprocess.run(['umount', str(target)], check=True, capture_output=True)
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='Actual Linux stacked mounts')
+@pytest.mark.parametrize('child', ['', 'inner', 'inner/future/not-created'])
+def test_stacked_mount_location_is_kernel_visible_not_hidden_child(actual_stacked_mounts, child):
+    view, upper, mounts = actual_stacked_mounts
+    expected = physical_location(str(upper / child), mounts)
+    before = set(Path('/proc/self/fd').iterdir())
+    for snapshot in (mounts, list(reversed(mounts))):
+        assert physical_location(str(view / child), snapshot) == expected
+    assert set(Path('/proc/self/fd').iterdir()) == before
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='Actual Linux stacked mounts')
+def test_stacked_mount_with_unmatched_visible_identity_remains_rejected(actual_stacked_mounts):
+    view, upper, mounts = actual_stacked_mounts
+    visible = physical_location(str(upper), mounts)
+    changed = copy.deepcopy(mounts)
+    top = next(m for m in changed if m['mountPoint'] == str(view) and
+               (m['device'], m['root']) == visible)
+    top['mountId'] += 10000000
+    with pytest.raises(Exception, match='REPLACEMENT_STORAGE_MOUNT_AMBIGUOUS'):
+        physical_location(str(view / 'inner'), changed)
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='Actual Linux stacked mounts')
+def test_stacked_mount_still_rejects_symlink_paths(actual_stacked_mounts):
+    view, upper, mounts = actual_stacked_mounts
+    (upper / 'alias').symlink_to(upper / 'inner', target_is_directory=True)
+    with pytest.raises(Exception, match='PATH_ALIAS_REJECTED'):
+        physical_location(str(view / 'alias' / 'future'), mounts)
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='Actual Linux stacked archive mounts')
+def test_stacked_new_archive_keeps_physical_data_overlap_rejection(tmp_path):
+    n, value, rows = historical_archive_target(tmp_path)
+    archive = Path(n.source['archiveRoots'][-1]);archive.mkdir()
+    lower = tmp_path / 'unrelated';lower.mkdir()
+    mounted = 0
+    try:
+        for source in (lower, tmp_path / 'mysql'):
+            subprocess.run(['mount', '--bind', str(source), str(archive)], check=True, capture_output=True)
+            mounted += 1
+        with pytest.raises(Exception, match='REPLACEMENT_PROTECTED_STORAGE_OVERLAP'):
+            verify_storage(n, value, rows)
+    finally:
+        for _ in range(mounted):
+            subprocess.run(['umount', str(archive)], check=True, capture_output=True)
+
+
 def test_native_preflight_runs_before_any_replacement_prepare(monkeypatch):
     import recovery_replace
     calls=[]
