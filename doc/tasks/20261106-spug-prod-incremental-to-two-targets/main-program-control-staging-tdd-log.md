@@ -177,3 +177,31 @@ REGRESSION：`python -X utf8 -B -m pytest -q --tb=short test_main_program_contro
 冻结源码main_program_control_staging.py 52383B，SHA256 `b2bfa508b5e962007def4f7fbadb8e873cdbd3767415174e5282ed6ce5f7a99f`；test_main_program_control_staging.py 36514B，SHA256 `b8f84c43e3049b67efc8a01c9bacdee59c44ae15d9c716a13b466befaddea606`。最终回归运行期间只更正了程序开头过时docstring，没有修改任何行为或测试；独立父任务仍应以这两个最终SHA做一次完整Windows/Linux验证。日志自身SHA单独发送父任务，不在文档内自引用。
 
 当前结论：完整可审查实现与本机合同完成，等待父独立Linux8项、真实观察材料默认prepare及审查。没有宣称真实暂存、激活或整体用户任务完成；后续真实stage必须由父任务显式审查执行，失败原件/旧路径/所有历史继续保留。
+
+
+## r5 真实失败后的 bootstrap 回调修复（事前）
+
+Current Status: implementation / bootstrap_environment_dependency_fix。父任务已独立Linux8项PASS、三服真实只读观察与默认prepare PASS，随后唯一59/r5实际stage在runtime-before以NameError失败，filesMayHaveBeenCreated=false、createdPaths=[]。旧attempt/result/stdout/stderr及r5计划/观察均保持，不重试。问题来自ENVIRONMENT_PROGRAM只定义函数，依赖外层hashlib/re/shlex；新的隔离environment namespace仅注入need，真实回调执行到hashlib时报NameError。原局部与Linux接线测试用activation模块回调，未覆盖bootstrap实际返回回调，是本次验收缺口。
+
+设计约束检查：不引入fallback/降级/吞异常；根因修复为固定bootstrap显式提供实际固定程序所需stdlib命名空间，并让真实测试执行load_execution返回的函数；不修改冻结activation或ENVIRONMENT_PROGRAM、不复制另一份环境校验，不临时绕过环境门禁。完整异常只保存在PRIVATE原生result/transport及原stdout，公共CLI只输出稳定错误码。其他固定程序只读核依赖闭包，避免扩大产品范围。
+
+BDD: Given 实际两模块与四段固定程序经同一bootstrap加载，When CONFIG_EXACT及ORIGINAL_BASELINE回调被调用，Then执行真实hash/声明解析且结果与正式环境合同一致；环境漂移仍明确拒绝，不能用activation原模块替代回调证明。
+
+BDD: Given 原生bootstrap内实际程序抛出异常，When远端阶段捕获失败，ThenPRIVATE result保存异常类型、消息和完整traceback（含chain，无locals），保留原errorCode/stage/写入状态；本地公共REFUSED不含异常内容。transport异常亦保留私密完整chain，不重试。
+
+BDD: Given 真实临时Linux进程/原锁/受保护文件，When共享门禁接线测试，Then环境验证必须采用同一个load_execution返回的回调；不再通过activation模块globals隐式填补bootstrap依赖。
+
+后续attempt策略：原r5已永久占用；不改旧attempt、plan、观察或输入、不改名复制冒充新观察。父任务通过正式planner生成新revision r6的public/private计划，重新采逐host绑定r6的新unit/environment观察，写新inputs并默认prepare；只有真实确认候选engine不存在/原状态保持、全部门禁通过后才可新唯一stage。包commit仍45dd7dc、前代仍真实899；revision仅区分新的配置计划/观察/attempt，不能声明r5成功。此策略本轮只记录，不生成或执行r6。
+
+
+### r5 根因修复实际 RED / GREEN / REGRESSION
+
+- 只读保全核验：PRIVATE/main-program-control-staging-59-45dd7dc-r5-result.private.json，1095B，SHA256 `29b0f2421272961f79fd92bc506ceae8fbc1180b21cf6ae634558206a0d92957`，status=FAILED/stage=runtime-before/errorCode=NameError/filesMayHaveBeenCreated=false/createdPaths=[]。本轮结束同pin保持；未编辑旧计划/观察/attempt/result。
+- RED：`pytest -q --tb=short test_main_program_control_staging.py -k "actual_bootstrap_environment or actual_bootstrap_failure or transport_exception_keeps"`，4 FAIL / 55 deselected / exit1。前两实际调用load_execution返回环境回调，CONFIG_EXACT和ORIGINAL_BASELINE均真正NameError/hashlib；后两真实生成bootstrap及transport捕获缺完整exception字段。PRIVATE/control-staging-bootstrap-callback-red-r1.log，2522B，SHA256 `d91fcc87680d5f39a03f55005a7669d4aa738f2c63a812c24656c758cb5e30de`。
+- 最小实现：固定BOOTSTRAP imports与environment namespace显式提供hashlib/re/shlex；ENVIRONMENT_PROGRAM原字节不改。exception_details仅在私密remote result/transport错误路径记录异常type/module/message/完整traceback和cause chain，不捕获locals、不投影公共CLI、不改变旧拒绝码/写入状态/重试策略。
+- GREEN：同一4项实际PASS / 55 deselected / exit0，5.94s。PRIVATE/control-staging-bootstrap-callback-green-r1.log，115B，SHA256 `010f935fc259544e7122514933d1337a8cd7de17f89de6d7a878bd88ec5e268b`。两环境模式真实成功与环境漂移拒绝都通过；声明含空格的PYTHONPATH实际经过shlex及re，未只核源码字符串。
+- REGRESSION：`pytest -q --tb=short test_main_program_control_staging.py test_main_program_control_generation_activation.py -k "not linux and (not v4 or staging)"`，63 PASS / 55 deselected / 0skip / exit0，50.57s；own51+既有v4 staging12。PRIVATE/control-staging-bootstrap-regression-r1.log，117B，SHA256 `6b06de6f1cdbd003d0354142627355022704ce356202ab7e5e8e9e5b9a748977`。
+- 固定程序依赖只读审计：实际环境源码外部global仅need/hashlib/re/shlex；custody.SCRIPT内部显式imports，CANDIDATE_GATE及SOURCE_IDLE自己imports，静态符号闭包未发现其他未提供global。没有修改另三段程序或扩大产品范围。
+- Linux门禁仍8项，相同12源码输入闭包；原共享门禁接线项已替换为实际bootstrap环境回调。父独立最终建议选择`linux or actual_bootstrap_environment or actual_bootstrap_failure`共11项，使同一Linux字节快照同时覆盖固定程序加载及私密诊断；此轮不自行调用Docker。
+
+新冻结：main_program_control_staging.py 52832B SHA256 `ef5461391a132001586c4c559f1278aa9de8d624c556672b8b31ca7b7f95568c`；test_main_program_control_staging.py 41435B SHA256 `0ad15bf560936bb94c89cb217056821927bfb81adcfe012d5b61843624950e90`。两文件compile PASS；整个最终回归期间源码/测试未改。当前为本机修复完成、等待父独立Linux11与审查，之后由父按正式r6新计划/新观察/新inputs策略执行唯一新attempt；不是重试r5，不新增continuation或revision白名单。

@@ -326,6 +326,58 @@ def test_execution_bundle_rejects_modified_module_before_module_execution(tmp_pa
     assert not marker.exists()
 
 
+@pytest.fixture
+def actual_bootstrap():
+    import installation_history_custody as custody
+    names=('main_program_control_runtime','main_program_control_staging');modules=[]
+    previous={name:sys.modules.get(name) for name in names}
+    for name in names:
+        raw=(Path(subject.__file__).parent/(name+'.py')).read_bytes()
+        modules.append(dict(name=name,source=raw.decode('utf-8'),
+            pin=dict(file=name+'.py',bytes=len(raw),sha256=digest(raw))))
+    sources=dict(environment=activation.ENVIRONMENT_PROGRAM,custody=custody.SCRIPT,
+        candidate=activation.CANDIDATE_GATE,sourceIdle=activation.SOURCE_IDLE)
+    programs={name:dict(source=source,bytes=len(source.encode('utf-8')),sha256=digest(source.encode('utf-8')))
+        for name,source in sources.items()}
+    envelope=dict(schemaVersion='MainProgramControlStagingExecution/v1',modules=modules,programs=programs,
+        prepared={'filesystemSpec':{}},packageBase64='')
+    try:yield envelope,subject.load_execution(envelope)
+    finally:
+        for name,value in previous.items():
+            if value is None:sys.modules.pop(name,None)
+            else:sys.modules[name]=value
+
+
+@pytest.mark.parametrize('baseline_mode',[False,True])
+def test_actual_bootstrap_environment_callback_has_complete_dependencies(actual_bootstrap,baseline_mode):
+    _,(_,_,verify_environment,_)=actual_bootstrap
+    configuration=dict(PYTHONDONTWRITEBYTECODE='1',PYTHONPATH='/fixed/program with space')
+    raw=b'PYTHONDONTWRITEBYTECODE=1\0PYTHONPATH=/fixed/program with space\0LANG=C.UTF-8\0'
+    declared='Environment=PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="/fixed/program with space"\n'
+    baseline=dict(environmentSha256=digest(raw),systemdEnvironmentRaw=declared,
+        systemdEnvironmentSha256=digest(declared.encode()),declaredEnvironment=configuration)
+    kwargs=dict(baseline=baseline,systemd_raw=declared) if baseline_mode else {}
+    result=verify_environment(configuration,raw,**kwargs)
+    assert result['mode']==('ORIGINAL_BASELINE' if baseline_mode else 'CONFIG_EXACT')
+    assert result['environmentSha256']==digest(raw)
+    with pytest.raises(ValueError,match='ORIGINAL_ENVIRONMENT_CHANGED' if baseline_mode else 'CONTROL_ENVIRONMENT_CHANGED'):
+        verify_environment(configuration,raw.replace(b'BYTECODE=1',b'BYTECODE=0'),**kwargs)
+
+
+def test_actual_bootstrap_failure_preserves_complete_private_exception(actual_bootstrap,tmp_path):
+    envelope,_=actual_bootstrap
+    result=subprocess.run([sys.executable,'-I','-B','-'],input=subject.render_bootstrap(envelope).encode('utf-8'),
+        cwd=tmp_path,capture_output=True,timeout=15)
+    assert result.returncode==0 and result.stderr==b''
+    value=json.loads(result.stdout)
+    assert value['status']=='FAILED' and value['stage']=='preflight' and value['filesMayHaveBeenCreated'] is False
+    assert value['createdPaths']==[]
+    diagnostic=value['exception']
+    assert diagnostic['type'] in ('ValueError','KeyError') and diagnostic['module']=='builtins'
+    assert diagnostic['message'] and 'Traceback (most recent call last)' in diagnostic['traceback']
+    assert 'remote_stage' in diagnostic['traceback'] and diagnostic['message'] in diagnostic['traceback']
+
+
 def test_execution_bundle_is_fixed_and_generated_bootstrap_fails_without_mutation(prepared_records,tmp_path):
     task,private,_,_,save=prepared_records
     original=json.loads((task/'fixture-input-58.json').read_bytes())
@@ -368,6 +420,27 @@ def test_failed_transport_keeps_attempt_and_raw_original_without_success_reports
     with pytest.raises(ValueError,match='ATTEMPT_OR_REPORT_EXISTS'):
         subject.dispatch_prepared(task,private,prepared,transport=transport)
     assert calls==['172.30.30.58'] and (private/(stem+'-attempt.private.json')).read_bytes()==attempt
+
+
+def test_transport_exception_keeps_private_chain_and_public_code_only(prepared_records):
+    task,private,_,_,save=prepared_records
+    original=json.loads((task/'fixture-input-58.json').read_bytes())
+    keys=('sourceCommit','revisionId','suffix','previousControlGenerationPin','buildPin','planPin',
+        'coveragePin','unitObservationPin','originalEnvironmentObservationPin')
+    inputs=dict(schemaVersion='MainProgramControlStagingInputs/v1',**{key:original[key] for key in keys})
+    save(task,'staging-input.json',inputs);prepared=subject.run_request(task,private,'staging-input.json')
+    for name in (prepared['engineReportFile'],prepared['configurationReportFile']):(task/name).unlink()
+    def transport(host,script):
+        try:raise OSError('fixture-private-root-cause')
+        except OSError as error:raise RuntimeError('fixture-private-transport-detail') from error
+    with pytest.raises(ValueError) as failure:subject.dispatch_prepared(task,private,prepared,transport=transport)
+    assert str(failure.value)=='MAIN_STAGING_REMOTE_TRANSPORT_UNKNOWN'
+    report=json.loads((private/'main-program-control-staging-58-45dd7dc-r5-transport.private.json').read_bytes())
+    diagnostic=report['exception']
+    assert report['status']=='UNKNOWN' and report['automaticRetryAllowed'] is False
+    assert diagnostic['type']=='RuntimeError' and diagnostic['message']=='fixture-private-transport-detail'
+    assert 'fixture-private-root-cause' in diagnostic['traceback'] and 'direct cause' in diagnostic['traceback']
+    assert not (task/prepared['engineReportFile']).exists() and not (task/prepared['configurationReportFile']).exists()
 
 
 def test_staging_capacity_refuses_without_creating_paths(filesystem,monkeypatch):
@@ -429,7 +502,7 @@ def test_linux_physical_lock_replacement_is_rejected_and_preserved(tmp_path):
     assert old.exists() and path.read_bytes()==b'other'
 
 
-def test_linux_stage_steps_use_shared_runtime_gate_real_lock_and_real_files(filesystem,tmp_path):
+def test_linux_stage_steps_use_shared_runtime_gate_real_lock_and_real_files(filesystem,tmp_path,actual_bootstrap):
     assert os.name=='posix','Requires native Linux.'
     from test_main_program_control_runtime import runtime,gates
     stream=runtime.__wrapped__(tmp_path);case=next(stream)
@@ -440,6 +513,7 @@ def test_linux_stage_steps_use_shared_runtime_gate_real_lock_and_real_files(file
         lock_path=tmp_path/'actual-physical.lock';lock_path.write_bytes(b'')
         with subject.PhysicalLock(lock_path) as lock:
             api=gates(case);api.lock_guard=lock.guard
+            api.verify_environment=actual_bootstrap[1][2]
             result=subject.run_stage_steps(runtime_gates=api,write_files=lambda:subject.stage_filesystem(spec,raw),
                 candidate_gate=lambda phase:{'explicitExternalAdmissionProtocol':'unchanged'},lock_guard=lock.guard)
             assert result['files']['status']=='FILES_STAGED_RUNTIME_UNVERIFIED'

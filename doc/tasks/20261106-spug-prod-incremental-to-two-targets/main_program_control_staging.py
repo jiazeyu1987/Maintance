@@ -33,6 +33,13 @@ def need(condition,reason):
     if not condition:raise ValueError('MAIN_STAGING_'+reason)
 
 
+def exception_details(error):
+    """Private diagnostics only; never project these into public CLI output."""
+    import traceback
+    return dict(type=type(error).__name__,module=type(error).__module__,message=str(error),
+        traceback=''.join(traceback.format_exception(type(error),error,error.__traceback__,chain=True)))
+
+
 def digest(raw):return hashlib.sha256(raw).hexdigest()
 
 
@@ -424,7 +431,7 @@ def project_stage_reports(prepared,result):
 
 
 BOOTSTRAP = r'''
-import base64,hashlib,json,sys,types
+import base64,hashlib,json,re,shlex,sys,types
 def checked(value,expected_name=None):
  raw=value['source'].encode('utf-8');reference=value['pin'] if expected_name else value
  if not raw or len(raw)>1024*1024 or len(raw)!=reference['bytes'] or hashlib.sha256(raw).hexdigest()!=reference['sha256']:
@@ -443,7 +450,8 @@ modules=[]
 for row,raw in zip(PAYLOAD['modules'],codes):
  module=types.ModuleType(row['name']);module.__file__='/__in_memory_staging__/'+row['name']+'.py'
  sys.modules[row['name']]=module;exec(compile(raw,module.__file__,'exec'),module.__dict__);modules.append(module)
-environment={'need':modules[-1].need};exec(compile(programs['environment'],'<fixed-environment-program>','exec'),environment)
+environment={'need':modules[-1].need,'hashlib':hashlib,'re':re,'shlex':shlex}
+exec(compile(programs['environment'],'<fixed-environment-program>','exec'),environment)
 custody={};exec(compile(programs['custody'],'<fixed-custody-program>','exec'),custody)
 EXPORTED=(modules[-1],programs,environment['verify_environment_values'],custody['verify_layered_receipt_custody'])
 '''
@@ -540,7 +548,7 @@ def remote_stage(prepared,package_raw,programs,*,verify_environment,verify_custo
     except Exception as error:
         if isinstance(error,StagingFailure):created=list(error.created_paths)
         code=str(error) if re.fullmatch('[A-Z][A-Z0-9_]{0,160}',str(error)) else type(error).__name__
-        return dict(status='FAILED',stage=stage,errorCode=code,createdPaths=created,filesMayHaveBeenCreated=writes,
+        return dict(status='FAILED',stage=stage,errorCode=code,exception=exception_details(error),createdPaths=created,filesMayHaveBeenCreated=writes,
             lastCommand=runner.last,backupDispatched=False,restoreDispatched=False,controlServicesReloaded=False)
 
 
@@ -753,7 +761,7 @@ def dispatch_prepared(task,private,prepared,*,transport=None):
     execute=(lambda host,body:native_transport(host,body,prepared['transportPythonPin'])) if transport is None else transport
     try:result=execute(spec['host'],script)
     except Exception as error:
-        _exclusive_local(private/names[3],canonical(dict(status='UNKNOWN',errorType=type(error).__name__,
+        _exclusive_local(private/names[3],canonical(dict(status='UNKNOWN',errorType=type(error).__name__,exception=exception_details(error),
             filesMayHaveBeenCreated=True,automaticRetryAllowed=False)))
         raise ValueError('MAIN_STAGING_REMOTE_TRANSPORT_UNKNOWN') from error
     need(type(result) is dict and set(result)=={'stdout','stderr','returncode','timedOut'} and
