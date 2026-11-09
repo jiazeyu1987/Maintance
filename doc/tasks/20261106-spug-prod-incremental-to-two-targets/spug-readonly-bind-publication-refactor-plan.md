@@ -21,6 +21,8 @@ in_progress。三资源真实安装已 PASS；v2 配置发布实际 exit1，停�
 
 所有七项保全后才按原顺序逐项安装；宿主五项、容器 volume 两项，最后 bridge。实际 mount 与原运行器终态机器证据由父补齐，缺证据必须拒绝 prepare/apply，不能先写占位 PASS。宿主原子写用真实文件测试，不把单元传输 fixture 称为现场通过；Windows 无目录 fsync 的事实如实记录。实际发布仍由父在实现提交及必要独立验证后执行，本批准不允许子代理操作 Docker/服务器或提交。
 
+原源码历史闭包补充：原attempt固定286个inputPins，其中本次改变的历史源只有publication.py和installation_selection.py；运行根下七个待改配置及产品资源不在该不变闭包。批准v3唯一originalSourceCustodyPin，严格映射这两份旧原pin到独占保留的同字节副本；其余284项仍逐原路径完整核验，旧v2 publisher不得映射。父在任何实际续办前独立读回两份保全并形成正式custody，新的执行源码另行固定，不修改原attempt或原pin。
+
 ### 设计约束检查（沿用）
 
 - 是否引入 fallback/降级/吞异常：否。显式宿主部署路径和版本化失败续办；任一未知/漂移拒绝，不自动回退。

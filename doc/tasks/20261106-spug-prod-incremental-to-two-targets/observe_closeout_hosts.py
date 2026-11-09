@@ -67,6 +67,8 @@ def controller_selection(suffix, task=TASK, *, selection_file='automatic-current
         return select_main_program_installation(suffix, task, selection_file=selection_file)
     if selected.get('schemaVersion') == 'TaskMainProgramInstallations/v2':
         return select_main_program_installation(suffix, task, selection_file=selection_file,private=private)
+    if selected.get('schemaVersion') == 'TaskMainProgramInstallations/v3':
+        return select_main_program_installation(suffix, task, selection_file=selection_file,private=private)
     if selection_file != 'automatic-current-installations.json':
         raise ValueError('MAIN_INSTALLATION_SELECTION_INVALID')
     need(selected['schemaVersion']=='TaskCurrentInstallations/v2','CLOSEOUT_EXPLICIT_CURRENT_SELECTION_REQUIRED')

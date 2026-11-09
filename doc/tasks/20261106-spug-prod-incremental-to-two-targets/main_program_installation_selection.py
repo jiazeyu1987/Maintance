@@ -189,6 +189,15 @@ def select_main_program_installation(suffix, task, *, selection_file, private=No
     selected = records.read(selection_file)
     if selected.get('schemaVersion') == 'TaskMainProgramInstallations/v2':
         return _select_v2(suffix,records,selected,selection_file,private)
+    if selected.get('schemaVersion') == 'TaskMainProgramInstallations/v3':
+        from main_program_spug_publication_continuation import PRIVATE, validate_publication_v3
+        verified=validate_publication_v3(records,Path(PRIVATE if private is None else private),selected)
+        bundle=verified['generation'];rows=bundle['controllersByHost'][suffix]
+        return dict(host='172.30.30.'+suffix,suffix=suffix,sourceCommit=selected['sourceCommit'],
+            currentSourceCommit=selected['sourceCommit'],currentInstallationSelectionPin=records.references[selection_file],
+            controllers=[{key:row[key] for key in CONTROLLER_KEYS} for row in rows],
+            targetConfigRef=bundle['targets'][suffix],activeReceiptPin=None if suffix=='57' else rows[0]['currentReceiptPin'],
+            localInstallationPins=verified['inputPins'])
     fields = {'schemaVersion', 'sourceCommit', 'previousAutomaticSelectionPin', 'buildPin',
               'planPin', 'spugInstallationPin', 'controllersByHost'}
     need(set(selected) == fields and selected['schemaVersion'] == SCHEMA and

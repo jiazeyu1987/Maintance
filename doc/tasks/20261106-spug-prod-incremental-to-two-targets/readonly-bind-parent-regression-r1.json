@@ -1,0 +1,69 @@
+{
+  "actualExitCode": 0,
+  "carrierPin": {
+    "bytes": 3239,
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\verify-continuation-parent-r1.py",
+    "sha256": "0c2aa284df40a8fd229fd246caaf91f50ff0748400a74bbd2dee41aede01eb70"
+  },
+  "elapsedSeconds": 287.485,
+  "junitPin": {
+    "bytes": 82628,
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\readonly-bind-parent-regression-r1.junit.private.xml",
+    "sha256": "5b94b5fe1d8e0c23ec6c469912b28783a8d8a471a3f0600035e736c671d91996"
+  },
+  "remoteServerCalls": 0,
+  "runtimeWrites": false,
+  "schemaVersion": "SpugReadonlyBindParentRegression/v1",
+  "sourceManifestPin": {
+    "bytes": 1846,
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\readonly-bind-parent-source-manifest-r1.private.json",
+    "sha256": "3f774c6986a4132d8cdecf8e717d439fbf57ccf7e337387ebefdf21bcd7c8d07"
+  },
+  "sourcePins": [
+    {
+      "bytes": 61369,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_publication_continuation.py",
+      "sha256": "2a4be50c1592edc561673f5771a16def5bc38044e2a1c17c3ef232e08a969dc1"
+    },
+    {
+      "bytes": 25677,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_spug_publication_continuation.py",
+      "sha256": "70cb36c12db98297962493be5ea6f3bace8f7845740903e8615ab600a6300b37"
+    },
+    {
+      "bytes": 83007,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_publication.py",
+      "sha256": "01077433077cda8a44619215fc234a40240b7a013ab880e4c334622b88dde740"
+    },
+    {
+      "bytes": 14854,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_installation_selection.py",
+      "sha256": "d1191685c5792f3caf438d0b093285ded09800140677db4b71b7e089332cbe0b"
+    },
+    {
+      "bytes": 16472,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\observe_closeout_hosts.py",
+      "sha256": "d62693e5c241e56602f9106896bea7f49da717e10dfc50631211b1348bb34c85"
+    },
+    {
+      "bytes": 12313,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_publication_v2.py",
+      "sha256": "0915b324db982f1213289a35a8148833f69c141fa080d91671fee00696eb37fa"
+    }
+  ],
+  "sourcesUnchanged": true,
+  "status": "PASS",
+  "stderrPin": {
+    "bytes": 0,
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\readonly-bind-parent-regression-r1.stderr.private.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdoutPin": {
+    "bytes": 662,
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\readonly-bind-parent-regression-r1.stdout.private.log",
+    "sha256": "4db78d53c7d66249ae43bd9c1f17718bbc971c24e37884f5e2468bd5fa193eb7"
+  },
+  "terminal": true,
+  "testsPassed": 391,
+  "testsSkipped": 0
+}

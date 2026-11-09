@@ -752,6 +752,47 @@ def prepare_v2(records, private, inputs, inputs_pin):
     return spec
 
 
+def validate_verify_stage(context, bundle, host, result):
+    """Shared exact content checks for a completed native verification."""
+    if host is not None:
+        need(result.get('host')=='172.30.30.'+host and
+             result.get('controllers')==bundle['controllersByHost'][host] and
+             type(result.get('selectorCount')) is int and result['selectorCount']==(6 if host=='57' else 3) and
+             all(result.get(k) is True for k in ('selectorsReadBack','actualNativeSelectionsVerified',
+                 'oldFilesPreserved','businessContainersUnchanged','fstabAndMountsUnchanged','controlIdentityVerified')),
+             'V2_HOST_PUBLICATION_NOT_PROVEN')
+        native=result.get('nativeSelections');controllers=bundle['controllersByHost'][host]
+        need(type(native) is list and len(native)==len(controllers) and
+             all(type(row) is dict and set(row)=={'service','selections'} for row in native) and
+             [row['service'] for row in native]==[c['service'] for c in controllers],
+             'V2_NATIVE_CONTROL_SET_CHANGED')
+        for row in native:
+            applications=row['selections'].get('applications') if type(row['selections']) is dict else None
+            need(type(applications) is list and all(type(app) is dict for app in applications),
+                 'V2_NATIVE_APPLICATIONS_REQUIRED')
+            for source in SOURCES:
+                matches=[app for app in applications if app.get('sourceConfigRef')==source]
+                need(len(matches)==1 and matches[0].get('historyErrorCode') is None and
+                     type(matches[0].get('recoveryPointRefs')) is list and matches[0]['recoveryPointRefs'] and
+                     all(type(point) is str and point for point in matches[0]['recoveryPointRefs']) and
+                     type(matches[0].get('freshTargetConfigRefs')) is list and
+                     bundle['targets'][host] in matches[0]['freshTargetConfigRefs'],
+                     'V2_NATIVE_SOURCE_ADMISSION_NOT_PROVEN')
+    else:
+        expected_pins=[dict(path='/opt/intruoyi-spug/'+name,**context['resource']['files']['ops/spug/'+name])
+                       for name in PRODUCT_FILES]
+        need(all(type(result.get(k)) is int and result[k]==n for k,n in
+                 (('applicationCount',33),('taskCount',3))) and
+             result.get('productPins')==expected_pins and
+             context['observation']['spug'].get('productPins')==expected_pins and
+             all(result.get(k) is True for k in ('productSettingsReadBack','historicalFingerprintsUnchanged',
+                 'oldFilesPreserved','protectedSpugUnchanged','oldTasksUnchanged','productFilesUnchanged')),
+             'V2_SPUG_PUBLICATION_NOT_PROVEN')
+        expected=[dict(sourceConfigRef=source,targetConfigRef=bundle['targets'][host])
+                  for host in HOSTS for source in SOURCES]
+        need(result.get('bridgeSelections')==expected,'V2_BRIDGE_MATRIX_NOT_PROVEN')
+
+
 def validate_publication_v2(records, private, selected):
     """Read an explicit full publication; control-only records never imply it.
 
@@ -797,44 +838,7 @@ def validate_publication_v2(records, private, selected):
              result.get('sourceCommit')==inputs['sourceCommit'] and result.get('backupDispatched') is False and
              result.get('restoreDispatched') is False,'V2_STAGE_NOT_PROVEN')
         if phase!='verify':continue
-        if lane=='host':
-            host=hosts[0]
-            need(result.get('host')=='172.30.30.'+host and
-                 result.get('controllers')==bundle['controllersByHost'][host] and
-                 type(result.get('selectorCount')) is int and result['selectorCount']==(6 if host=='57' else 3) and
-                 all(result.get(k) is True for k in ('selectorsReadBack','actualNativeSelectionsVerified',
-                     'oldFilesPreserved','businessContainersUnchanged','fstabAndMountsUnchanged','controlIdentityVerified')),
-                 'V2_HOST_PUBLICATION_NOT_PROVEN')
-            native=result.get('nativeSelections');controllers=bundle['controllersByHost'][host]
-            need(type(native) is list and len(native)==len(controllers) and
-                 all(type(row) is dict and set(row)=={'service','selections'} for row in native) and
-                 [row['service'] for row in native]==[c['service'] for c in controllers],
-                 'V2_NATIVE_CONTROL_SET_CHANGED')
-            for row in native:
-                applications=row['selections'].get('applications') if type(row['selections']) is dict else None
-                need(type(applications) is list and all(type(app) is dict for app in applications),
-                     'V2_NATIVE_APPLICATIONS_REQUIRED')
-                for source in SOURCES:
-                    matches=[app for app in applications if app.get('sourceConfigRef')==source]
-                    need(len(matches)==1 and matches[0].get('historyErrorCode') is None and
-                         type(matches[0].get('recoveryPointRefs')) is list and matches[0]['recoveryPointRefs'] and
-                         all(type(point) is str and point for point in matches[0]['recoveryPointRefs']) and
-                         type(matches[0].get('freshTargetConfigRefs')) is list and
-                         bundle['targets'][host] in matches[0]['freshTargetConfigRefs'],
-                         'V2_NATIVE_SOURCE_ADMISSION_NOT_PROVEN')
-        else:
-            expected_pins=[dict(path='/opt/intruoyi-spug/'+name,**context['resource']['files']['ops/spug/'+name])
-                           for name in PRODUCT_FILES]
-            need(all(type(result.get(k)) is int and result[k]==n for k,n in
-                     (('applicationCount',33),('taskCount',3))) and
-                 result.get('productPins')==expected_pins and
-                 context['observation']['spug'].get('productPins')==expected_pins and
-                 all(result.get(k) is True for k in ('productSettingsReadBack','historicalFingerprintsUnchanged',
-                     'oldFilesPreserved','protectedSpugUnchanged','oldTasksUnchanged','productFilesUnchanged')),
-                 'V2_SPUG_PUBLICATION_NOT_PROVEN')
-            expected=[dict(sourceConfigRef=source,targetConfigRef=bundle['targets'][host])
-                      for host in HOSTS for source in SOURCES]
-            need(result.get('bridgeSelections')==expected,'V2_BRIDGE_MATRIX_NOT_PROVEN')
+        validate_verify_stage(context,bundle,hosts[0] if lane=='host' else None,result)
     pins=records.path_pins()+bundle['inputPins']+context['resourcePins']+private_pins
     unique={}
     for pin in pins:
