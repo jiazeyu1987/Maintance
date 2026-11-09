@@ -248,3 +248,104 @@ def test_progress_does_not_reset_absolute_budget_after_worker(subject,local,tmp_
     terminal=records(tmp_path)[0]
     assert terminal['remoteExitVerified'] is True and terminal['status']=='FAILED'
     assert len(local)==1 and not list(tmp_path.glob('*.gate.private.json'))
+
+
+def warning_records(terminal):
+    summary=terminal['warningDiagnostics']
+    reference=summary['diagnosticsPin']
+    assert publication.file_pin(reference['path'])==reference
+    value=json.loads(Path(reference['path']).read_bytes())
+    for record in value['records']:
+        assert publication.file_pin(record['path'])==record
+    return summary,value,[json.loads(Path(p['path']).read_bytes()) for p in value['records']]
+
+
+def test_real_warning_keeps_exact_formatted_text_and_original_result(subject,local,tmp_path):
+    program="import warnings,json\nwarnings.simplefilter('always',DeprecationWarning)\nwarnings.warn('private-warning-text',DeprecationWarning)\nprint(json.dumps({'original':'result'}))"
+    assert json.loads(execute(subject,tmp_path,program,idle=3,hard=5))=={'original':'result'}
+    terminal=records(tmp_path)[0];summary,diagnostics,rows=warning_records(terminal)
+    import warnings
+    assert summary['count']==1 and summary['categories']=={'builtins.DeprecationWarning':1}
+    assert rows[0]['warningCategory']==dict(module='builtins',name='DeprecationWarning')
+    assert rows[0]['formattedWarning']==warnings.formatwarning('private-warning-text',DeprecationWarning,'<complete-spug-observation>',3)
+    assert 'private-warning-text' not in json.dumps(summary)
+    assert terminal['status']=='SUCCEEDED' and terminal['remoteExitVerified'] is True and len(local)==1
+
+
+def test_real_warning_storm_never_renews_idle_or_progress(subject,local,tmp_path):
+    program="import warnings,time\nwarnings.simplefilter('always',UserWarning)\nfor i in range(100):\n warnings.warn('warning-'+str(i),UserWarning)\n time.sleep(.03)"
+    with pytest.raises(ValueError,match='STALLED'):execute(subject,tmp_path,program,idle=1,hard=3)
+    terminal=records(tmp_path)[0];summary,_,rows=warning_records(terminal)
+    assert summary['count']>0 and len(rows)==summary['count']
+    assert terminal['lastProgress'] is None and terminal['elapsedSeconds']<3
+    assert list(tmp_path.glob('*.gate.private.json')) and len(local)==1
+
+
+@pytest.mark.parametrize('tail,code',[
+    ("import sys;sys.stderr.write('ordinary stderr\\n');sys.stderr.flush()",'STDERR'),
+    ("raise SystemExit(9)",'EXIT'),
+    ("raise RuntimeError('private exception')",'STDERR'),
+    ("print('{broken')",'RESULT'),
+])
+def test_real_warning_does_not_hide_original_failure(subject,local,tmp_path,tail,code):
+    program="import warnings\nwarnings.simplefilter('always')\nwarnings.warn('first diagnostic',UserWarning)\n"+tail
+    with pytest.raises(ValueError,match=code):execute(subject,tmp_path,program,idle=3,hard=5)
+    terminal=records(tmp_path)[0];summary,_,_=warning_records(terminal)
+    assert terminal['status']=='FAILED' and summary['count']==1 and len(local)==1
+
+
+def test_warning_as_error_remains_native_exception(subject,local,tmp_path):
+    program="import warnings\nwarnings.simplefilter('error',UserWarning)\nwarnings.warn('must raise',UserWarning)\nprint('{}')"
+    with pytest.raises(ValueError,match='STDERR'):execute(subject,tmp_path,program,idle=3,hard=5)
+    terminal=records(tmp_path)[0]
+    assert terminal['warningDiagnostics']==dict(count=0,categories={},diagnosticsPin=None)
+    assert b'UserWarning: must raise' in Path(terminal['stderrPin']['path']).read_bytes()
+
+
+@pytest.mark.parametrize('change',[
+    "warningCategory={'module':'bad/module','name':'UserWarning'}",
+    "warningCategory={'module':'builtins','name':'a'*257}",
+    "warningCategory={'module':'builtins','name':'UserWarning','extra':True}",
+    "formattedWarning=42",
+    "formattedWarning='x'*8193",
+    "formattedWarning='x'*70000",
+    "phase='complete'",
+    "identity={'pid':123,'startTicks':'1','argv':['python3','-B','-',NONCE]}",
+])
+def test_malformed_warning_protocol_is_rejected(subject,local,tmp_path,change):
+    program="values=dict(warningCategory={'module':'builtins','name':'UserWarning'},formattedWarning='private')\n"
+    if change.startswith('identity='):program+='_observation_'+change+'\n'
+    else:program+='values.update('+change+')\n'
+    program+="_observation_emit('WARNING',**values)\nprint('{}')"
+    with pytest.raises(ValueError,match='WORKER_IDENTITY_CHANGED' if change.startswith('identity=') else ''):
+        execute(subject,tmp_path,program,idle=3,hard=5)
+    terminal=records(tmp_path)[0]
+    assert terminal['status']=='FAILED' and len(local)==1
+    assert terminal['warningDiagnostics']['count']==0
+
+
+def test_warnings_of_distinct_real_categories_are_counted_without_filter_changes(subject,local,tmp_path):
+    program="import warnings\nbefore=list(warnings.filters)\nwarnings.warn('one',UserWarning)\nwarnings.warn('two',RuntimeWarning)\nassert warnings.filters==before\nprint('{}')"
+    assert json.loads(execute(subject,tmp_path,program,idle=3,hard=5))=={}
+    summary,_,rows=warning_records(records(tmp_path)[0])
+    assert summary['count']==2 and summary['categories']=={'builtins.UserWarning':1,'builtins.RuntimeWarning':1}
+    assert len(rows)==2
+
+
+def test_real_atexit_warning_after_done_is_diagnostic_only(subject,local,tmp_path):
+    program="import atexit,warnings\natexit.register(lambda:warnings.warn('shutdown diagnostic',UserWarning))\nprint('{}')"
+    assert json.loads(execute(subject,tmp_path,program,idle=3,hard=5))=={}
+    terminal=records(tmp_path)[0];summary,_,rows=warning_records(terminal)
+    assert summary['count']==1 and terminal['status']=='SUCCEEDED' and terminal['remoteExitVerified'] is True
+    assert terminal['lastProgress']['event']=='DONE' and terminal['lastProgress']['phase']=='complete'
+    assert rows[0]['sequence']>terminal['lastProgress']['sequence'] and terminal['lastProgress']['completedFiles']==0
+    assert 'shutdown diagnostic' in rows[0]['formattedWarning'] and len(local)==1
+
+
+@pytest.mark.parametrize('callback',["lambda:_observation_progress('complete')","lambda:_observation_emit('DONE',**_observation_last)"])
+def test_real_atexit_progress_or_second_done_is_still_rejected(subject,local,tmp_path,callback):
+    program="import atexit\natexit.register("+callback+")\nprint('{}')"
+    with pytest.raises(ValueError,match='WORKER_IDENTITY_CHANGED'):
+        execute(subject,tmp_path,program,idle=3,hard=5)
+    terminal=records(tmp_path)[0]
+    assert terminal['status']=='FAILED' and terminal['warningDiagnostics']['count']==0 and len(local)==1

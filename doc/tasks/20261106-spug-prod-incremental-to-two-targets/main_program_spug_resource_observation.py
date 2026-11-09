@@ -47,7 +47,7 @@ def gate_guard(private):
 def worker_program(program,nonce,hard_seconds):
     # The nonce is an argv argument, independently visible through /proc/cmdline.
     prelude=r'''
-import json,os,sys,time,signal
+import json,os,sys,time,signal,warnings
 from pathlib import Path
 _observation_seq=0
 if os.name=='nt':
@@ -81,6 +81,10 @@ def _observation_progress(phase,files=None,bytes_count=None):
  _observation_last=dict(phase=phase,completedFiles=files,completedBytes=bytes_count)
  _observation_emit('PROGRESS',**_observation_last)
 _observation_emit('START')
+def _observation_showwarning(message,category,filename,lineno,file=None,line=None):
+ _observation_emit('WARNING',warningCategory=dict(module=category.__module__,name=category.__name__),
+     formattedWarning=warnings.formatwarning(message,category,filename,lineno,line))
+warnings.showwarning=_observation_showwarning
 '''
     return ('NONCE='+repr(nonce)+'\nHARD_SECONDS='+str(max(1,math.ceil(hard_seconds)))+'\n'+prelude+
             '\nexec(compile('+repr(program)+",'<complete-spug-observation>','exec'),globals())\n"+
@@ -102,6 +106,7 @@ class Observation:
         self.idle_seconds=idle_seconds;self.hard_seconds=hard_seconds
         self.started=None;self.last_work=None;self.worker_identity=None;self.last_progress=None
         self.sequence=0;self.phase_index=-1;self.files=0;self.bytes=0;self.done=False
+        self.warning_records=[];self.warning_categories={}
         self.dispatched=False;self.remote_exit=False;self.exit_code=None;self.process=None
         self.stdout_path=self.directory/'stdout.private.log';self.stderr_path=self.directory/'stderr.private.log'
 
@@ -151,6 +156,20 @@ class Observation:
             need(set(row)==basic and self.worker_identity is None and self.sequence==0,'PROTOCOL_INVALID')
             self.worker_identity=ident
             save(self.directory/'worker.private.json',ident)
+        elif row['event']=='WARNING':
+            need(ident==self.worker_identity,'WORKER_IDENTITY_CHANGED')
+            need(set(row)==basic|{'warningCategory','formattedWarning'},'WARNING_PROTOCOL_INVALID')
+            category=row['warningCategory'];formatted=row['formattedWarning']
+            need(type(category) is dict and set(category)=={'module','name'} and
+                 all(type(category[key]) is str and 0<len(category[key])<=256 for key in ('module','name')) and
+                 all(part.isidentifier() for part in category['module'].split('.')) and category['name'].isidentifier(),
+                 'WARNING_CATEGORY_INVALID')
+            need(type(formatted) is str and 0<len(formatted.encode('utf-8'))<=8192,'WARNING_TEXT_INVALID')
+            reference=save(self.directory/('warning-'+str(row['sequence'])+'.private.json'),row)
+            self.warning_records.append(reference)
+            key=category['module']+'.'+category['name']
+            self.warning_categories[key]=self.warning_categories.get(key,0)+1
+            # Diagnostics never count as completed work or modify last progress.
         else:
             need(ident==self.worker_identity and not self.done,'WORKER_IDENTITY_CHANGED')
             need(set(row)==basic|{'phase','completedFiles','completedBytes'} and row['phase'] in PHASES and
@@ -189,6 +208,7 @@ class Observation:
                             pending+=chunk
                             while b'\n' in pending:
                                 line,pending=pending.split(b'\n',1)
+                                self.remaining()
                                 need(len(line)<65536,'PROTOCOL_INVALID');self.progress(line+b'\n')
                             need(len(pending)<=65536,'PROTOCOL_INVALID')
                             continue
@@ -218,9 +238,15 @@ class Observation:
 
     def __exit__(self,kind,error,traceback):
         successful=kind is None and self.dispatched and self.remote_exit and self.exit_code==0 and self.done
+        diagnostics=None
+        if self.warning_records:
+            diagnostics=save(self.directory/'warning-diagnostics.private.json',dict(schemaVersion='SpugObservationWarnings/v1',
+                operationId=self.operation_id,count=len(self.warning_records),categories=self.warning_categories,
+                records=self.warning_records))
         terminal=dict(schemaVersion='SpugObservationTerminal/v1',operationId=self.operation_id,
             status='SUCCEEDED' if successful else 'FAILED',actualExitCode=self.exit_code,
             remoteExitVerified=self.remote_exit,dispatched=self.dispatched,workerIdentity=self.worker_identity,
+            warningDiagnostics=dict(count=len(self.warning_records),categories=self.warning_categories,diagnosticsPin=diagnostics),
             lastProgress=self.last_progress,elapsedSeconds=time.monotonic()-self.started,
             errorCode=None if error is None else str(error) if type(error) is ValueError and
                 re.fullmatch('[A-Z0-9_]+',str(error)) else 'LOCAL_OR_CHANNEL_FAILURE',
