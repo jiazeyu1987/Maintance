@@ -277,9 +277,11 @@ def test_source_http_uses_fixed_loopback_and_one_ten_second_budget():
     calls=[];times=iter([0,1,2,3,4]);payload=b'{"state":"READY"}'
     class Response:
         status=200
+        length=None
         fp=SimpleNamespace(raw=SimpleNamespace(_sock=SimpleNamespace(settimeout=lambda v:calls.append(('socket',v)))))
         def __enter__(self):return self
         def __exit__(self,*args):pass
+        def isclosed(self):return False
         def read1(self,size):
             nonlocal payload
             result=payload;payload=b'';return result
@@ -298,9 +300,11 @@ def test_source_http_refuses_deadline_and_changed_controller_without_retry():
     calls=[];times=iter([0,1,11])
     class Response:
         status=200
+        length=None
         fp=SimpleNamespace(raw=SimpleNamespace(_sock=SimpleNamespace(settimeout=lambda v:calls.append(v))))
         def __enter__(self):return self
         def __exit__(self,*args):pass
+        def isclosed(self):return False
         def read1(self,size):raise AssertionError('expired response must not be read')
     class Opener:
         def open(self,request,timeout):calls.append('open');return Response()

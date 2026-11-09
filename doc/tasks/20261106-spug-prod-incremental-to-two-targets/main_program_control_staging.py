@@ -33,6 +33,11 @@ def need(condition,reason):
     if not condition:raise ValueError('MAIN_STAGING_'+reason)
 
 
+def transport_stderr_accepted(raw):
+    return raw==b'' or re.fullmatch(
+        rb'close - IO is still pending on closed socket\. read:1, write:0, io:[0-9A-Fa-f]{16}\r\n',raw) is not None
+
+
 def exception_details(error):
     """Private diagnostics only; never project these into public CLI output."""
     import traceback
@@ -386,11 +391,12 @@ def fetch_source_plan(control,process,verify_process,headers,*,opener=None,clock
     with opener.open(request,timeout=remaining) as response:
         need(response.status==200,'SOURCE_HTTP_STATUS')
         socket=response.fp.raw._sock
-        while True:
+        while not response.isclosed():
             remaining=deadline-clock();need(remaining>0,'SOURCE_HTTP_DEADLINE');socket.settimeout(remaining)
             chunk=response.read1(min(65536,16*1024*1024+1-len(output)))
             if not chunk:break
             output.extend(chunk);need(len(output)<=16*1024*1024,'SOURCE_HTTP_LIMIT')
+        need(response.length in (None,0),'SOURCE_HTTP_INCOMPLETE')
     need(clock()<deadline,'SOURCE_HTTP_DEADLINE');verify_process(process)
     return json.loads(output,object_pairs_hook=document)
 
@@ -768,13 +774,13 @@ def dispatch_prepared(task,private,prepared,*,transport=None):
         type(result['stdout']) is bytes and type(result['stderr']) is bytes and type(result['timedOut']) is bool,
         'TRANSPORT_RESULT_INVALID')
     stdout_pin=_exclusive_local(private/names[1],result['stdout']);stderr_pin=_exclusive_local(private/names[2],result['stderr'])
-    _exclusive_local(private/names[3],canonical(dict(schemaVersion='MainProgramControlStagingTransport/v1',
+    transport_pin=_exclusive_local(private/names[3],canonical(dict(schemaVersion='MainProgramControlStagingTransport/v1',
         stdoutPin=stdout_pin,stderrPin=stderr_pin,actualExitCode=result['returncode'],timedOut=result['timedOut'],
         filesMayHaveBeenCreated=True,automaticRetryAllowed=False)))
     need(result['timedOut'] is False and result['returncode']==0,'REMOTE_STAGE_UNKNOWN')
     value=json.loads(result['stdout'],object_pairs_hook=document)
     private_pin=_exclusive_local(private/names[4],canonical(value))
-    need(value.get('status')=='STAGED_NOT_ACTIVATED' and value.get('stage')=='complete' and result['stderr']==b'' and
+    need(value.get('status')=='STAGED_NOT_ACTIVATED' and value.get('stage')=='complete' and transport_stderr_accepted(result['stderr']) and
         all(value.get(key) is False for key in ('backupDispatched','restoreDispatched','controlServicesReloaded')),'REMOTE_STAGE_FAILED')
     reports=value['reports'];public=prepared['inputs'];plan=activation.read_document(task/public['planPin']['file'])
     activation.validate_generation_staging(public,plan,spec['build'],reports['engine'],reports['configuration'])
@@ -782,7 +788,7 @@ def dispatch_prepared(task,private,prepared,*,transport=None):
         need(activation.file_pin(reference['path'])==reference,'PREPARATION_INPUT_CHANGED')
     outputs={}
     for key,name in (('engine','engineReportFile'),('configuration','configurationReportFile')):
-        reference=_exclusive_local(task/prepared[name],canonical(dict(reports[key],privateSnapshotPin=private_pin)))
+        reference=_exclusive_local(task/prepared[name],canonical(dict(reports[key],privateSnapshotPin=private_pin,transportEvidencePin=transport_pin)))
         outputs[key+'StagedPin']=dict(file=prepared[name],bytes=reference['bytes'],sha256=reference['sha256'])
     return dict(status='STAGED_NOT_ACTIVATED',**outputs,privateSnapshotPin=private_pin,activationPerformed=False)
 
