@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "SpugObservationParentVerification/v1",
+  "exitCode": 0,
+  "elapsedSeconds": 29.61,
+  "sourcePins": [
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_resource_observation.py",
+      "bytes": 16511,
+      "sha256": "1fa0b84025e236b5ab94f88f6eb0ecc5e73857dd24819a1be90f3e96bdb00a94"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_resource_activation.py",
+      "bytes": 36700,
+      "sha256": "df2157c40cd10a86219a183ac64cc5f7c7919646bec671c57e937c90ce6d93ee"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_spug_resource_observation.py",
+      "bytes": 14090,
+      "sha256": "447e5dab1df7ffc805233b2e74045f118590a27378bdd0bfc54d85ee7c2c0734"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_spug_resource_activation.py",
+      "bytes": 28690,
+      "sha256": "10d8d841fa6a3367fb70ced69b0f764662e4033853f5b624446badeeecc4f911"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_publication.py",
+      "bytes": 82950,
+      "sha256": "ec4ca9f834332ef3b235c731f401b1c6435a49f08d2117be1acce1c35616aaae"
+    }
+  ],
+  "ownerRegressionLogPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\ledger-lifecycle-final-regression-r1.log",
+    "bytes": 357,
+    "sha256": "d369a49fe869a3716f7568afd55ed53f44f36d8764fcbaba82702dedcb6c131b"
+  },
+  "changedExistingDefinitions": [
+    "prepare",
+    "ActualTransport"
+  ],
+  "command": [
+    "C:\\Users\\D01021\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "-X",
+    "utf8",
+    "-B",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--tb=short",
+    "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_spug_resource_observation.py"
+  ],
+  "testLogPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\parent-lifecycle-tests-r1.private.log",
+    "bytes": 102,
+    "sha256": "0b6bf098319c2f69d98aa6d2f045ca229650930a21841c8b89e441a793665903"
+  },
+  "actualDockerExecution": false,
+  "actualInstallation": false
+}

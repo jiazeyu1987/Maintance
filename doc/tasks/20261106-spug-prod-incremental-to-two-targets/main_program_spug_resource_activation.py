@@ -15,6 +15,7 @@ import subprocess
 import uuid
 
 import main_program_spug_publication as publication
+import main_program_spug_resource_observation as observation_lifecycle
 
 TASK=Path(__file__).resolve().parent
 PRIVATE=publication.PRIVATE
@@ -97,7 +98,7 @@ def prepare(task,private,inputs_file,*,allow_unobserved=False):
     adapter=Path(resource['worktree'])/'ops/spug'/ADAPTER
     compile(adapter.read_bytes(),str(adapter),'exec')
     pins+=records.path_pins()+[file_pin(Path(__file__).resolve()),file_pin(Path(publication.__file__).resolve()),
-        file_pin(Path(publication.contract.__file__).resolve())]
+        file_pin(Path(publication.contract.__file__).resolve()),file_pin(Path(observation_lifecycle.__file__).resolve())]
     result=dict(inputs=inputs,resource=resource,observation=observation,runtime=publication.RUNTIME,
         inputPins=list({p['path']:p for p in pins}.values()))
     if is_v2:result['deploymentDelta']=delta
@@ -404,7 +405,7 @@ HELPERS='import os,json,hashlib,re\nfrom pathlib import Path\n'+''.join(inspect.
     (need,publication.canonical,publication.file_pin,process_identity))
 
 OBSERVE_PROGRAM=HELPERS+r'''
-import sys,configparser
+import sys,configparser,time
 sys.path.insert(0,'/opt/intruoyi-spug')
 import smallapp_entry as entry,smallapp_simple as simple,smallapp_adapter as adapter
 identity=process_identity()
@@ -416,6 +417,7 @@ need(manager.get(section,'command')=='python3 -B /opt/intruoyi-spug/smallapp_ent
 entry.initialize_spug()
 config=entry.settings();simple.configuration()
 for action in ('FULL','INCREMENTAL','RESTORE'):entry.installed_task(config,action)
+if '_observation_progress' in globals():_observation_progress('configuration')
 binding=adapter.read_json('/run/intruoyi-spug/smallapp-bridge.private.json')
 need('selectionConnections' not in binding,'EXPECTED_ORIGINAL_ROUTING_REQUIRED')
 source=ORIGINAL_SOURCE
@@ -425,11 +427,13 @@ for lane in ('sourceConnections','targetConnections'):
  for reference,name in sorted(binding.get(lane,{}).items()):
   bridge=adapter.HttpBridge(source_ref=reference) if lane=='sourceConnections' else adapter.HttpBridge(target_ref=reference)
   routes[lane+':'+reference]=bridge.fingerprint;connections[name]=file_pin('/run/intruoyi-spug/'+name)
+if '_observation_progress' in globals():_observation_progress('routes')
 matches=[a for a in config['applications'] if a['sourceConfigRef']==source]
 need(len(matches)==1,'ORIGINAL_CATALOGUE_SOURCE_INVALID')
 catalogue=entry.application_catalogue(config,matches[0]['applicationId'])
 selected=[r for r in catalogue if r['applicationId']==matches[0]['applicationId']]
 need(len(selected)==1 and selected[0]['validated'] is not None and selected[0]['readinessError'] is None,'ORIGINAL_CATALOGUE_QUERY_FAILED')
+if '_observation_progress' in globals():_observation_progress('catalogue')
 from apps.schedule.models import Task,History
 tasks=list(Task.objects.order_by('pk').values())
 # Stable database business rows; generated observation/HTTP timestamps are absent.
@@ -437,24 +441,33 @@ names={f.attname for f in History._meta.concrete_fields}
 fields=sorted(names & {'id','task_id','status','command','executor','result','create_time','start_time','end_time','created_at','updated_at'})
 need({'id','task_id','status'}<=set(fields),'HISTORY_FIELDS_UNPROVEN')
 history=list(History.objects.order_by('pk').values(*fields))
+if '_observation_progress' in globals():_observation_progress('history')
 encode=lambda value:json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,default=str).encode('utf-8')
 ledger=[]
+ledger_bytes=0;ledger_report=time.monotonic()
 need(adapter.RECORDS.is_dir() and not adapter.RECORDS.is_symlink(),'LEDGER_REQUIRED')
 for path in sorted(adapter.RECORDS.rglob('*')):
  need(not path.is_symlink(),'LEDGER_ALIAS')
- if path.is_file() and path.suffix=='.json':ledger.append(file_pin(path))
+ if path.is_file() and path.suffix=='.json':
+  ledger.append(file_pin(path));ledger_bytes+=ledger[-1]['bytes']
+  if '_observation_progress' in globals() and (len(ledger)%32==0 or time.monotonic()-ledger_report>=2):
+   _observation_progress('ledger',len(ledger),ledger_bytes);ledger_report=time.monotonic()
+if '_observation_progress' in globals():_observation_progress('ledger',len(ledger),ledger_bytes)
 aux=[]
 for path in sorted(Path('/run/intruoyi-spug').glob('*.json')):
  if path.name!='smallapp-bridge.private.json' and path.name not in connections:aux.append(file_pin(path))
+if '_observation_progress' in globals():_observation_progress('auxiliary')
 modules=[]
 for module,name in ((entry,'smallapp_entry.py'),(adapter,'smallapp_adapter.py'),(simple,'smallapp_simple.py')):
  need(str(Path(module.__file__).resolve())=='/opt/intruoyi-spug/'+name,'MODULE_ORIGIN_CHANGED');modules.append(file_pin(module.__file__))
+if '_observation_progress' in globals():_observation_progress('modules')
 out=dict(entryIdentity=identity,supervisorPin=file_pin('/etc/supervisord.conf'),nginxPin=file_pin('/etc/nginx/nginx.conf'),
  modulePins=modules,credentialPins=aux,routeFingerprints=routes,catalogueSourceRef=source,
  catalogueSha256=hashlib.sha256(encode(catalogue)).hexdigest(),historySha256=hashlib.sha256(encode(history)).hexdigest(),ledgerPins=ledger,
  entryPid=identity['pid'],settings={k:file_pin(p) for k,p in SETTINGS.items()},connections=connections,
  productPins=[file_pin('/opt/intruoyi-spug/'+name) for name in PRODUCT_FILES],taskSnapshotSha256=hashlib.sha256(encode(tasks)).hexdigest())
 need(process_identity()==identity,'ENTRY_CHANGED_DURING_OBSERVATION')
+if '_observation_progress' in globals():_observation_progress('complete')
 print(json.dumps(out))
 '''
 
@@ -481,9 +494,10 @@ else:raise ValueError('MAIN_RESOURCE_ENTRY_RELOAD_UNKNOWN')
 
 class ActualTransport(publication.ActualTransport):
     """Reuse the existing Docker CLI wrapper; never invoke a host/server lane."""
-    def instances(self):
-        ids=self.command('ps','-aq','--no-trunc').decode().split();need(ids,'SPUG_INSTANCES_MISSING')
-        rows=json.loads(self.command('inspect',*ids))
+    def instances(self,operation=None):
+        command=self.command if operation is None else lambda *args:operation.short_command(self.command,*args)
+        ids=command('ps','-aq','--no-trunc').decode().split();need(ids,'SPUG_INSTANCES_MISSING')
+        rows=json.loads(command('inspect',*ids))
         selected=[r for r in rows if r['Id']==publication.CONTAINER]
         protected=[r for r in rows if any(p.get('HostPort')=='18081' for ports in
             (r['HostConfig'].get('PortBindings') or {}).values() for p in ports or [])]
@@ -499,12 +513,14 @@ class ActualTransport(publication.ActualTransport):
             protectedContainerId=protected['Id'],protectedContainerSnapshot=publication.container_snapshot(protected))
 
     def observe(self):
-        instances=self.instances()
-        program='SETTINGS='+repr(publication.SETTINGS)+'\nPRODUCT_FILES='+repr(publication.PRODUCT_FILES)+'\nORIGINAL_SOURCE='+repr(publication.SOURCES[0])+'\n'+OBSERVE_PROGRAM
-        result=json.loads(self.command('exec','-i',publication.CONTAINER,'python3','-B','-',input=program.encode('utf-8'),timeout=900))
-        need(self.instances()==instances,'INSTANCE_CHANGED_DURING_OBSERVATION')
-        spug=dict(instances,**{key:result.pop(key) for key in ('entryPid','settings','connections','productPins','taskSnapshotSha256')})
-        return dict(schemaVersion='MainProgramSpugResourceActivationObservation/v1',sourceCommit=self.spec['resource']['sourceCommit'],spug=spug,**result)
+        identity=dict(sourceCommit=self.spec['resource']['sourceCommit'],inputPins=self.spec['inputPins'])
+        with observation_lifecycle.Observation(self.private,identity) as operation:
+            instances=self.instances(operation)
+            program='SETTINGS='+repr(publication.SETTINGS)+'\nPRODUCT_FILES='+repr(publication.PRODUCT_FILES)+'\nORIGINAL_SOURCE='+repr(publication.SOURCES[0])+'\n'+OBSERVE_PROGRAM
+            result=json.loads(operation.run(program))
+            need(self.instances(operation)==instances,'INSTANCE_CHANGED_DURING_OBSERVATION')
+            spug=dict(instances,**{key:result.pop(key) for key in ('entryPid','settings','connections','productPins','taskSnapshotSha256')})
+            return dict(schemaVersion='MainProgramSpugResourceActivationObservation/v1',sourceCommit=self.spec['resource']['sourceCommit'],spug=spug,**result)
 
     def reload(self,expected):
         before=self.instances()

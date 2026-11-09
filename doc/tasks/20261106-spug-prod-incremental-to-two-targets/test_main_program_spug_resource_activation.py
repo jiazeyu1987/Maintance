@@ -259,16 +259,20 @@ def test_output_scripts_compile_without_executing():
 
 
 def generated_observer():
-    """Capture the actual transport input without invoking Docker or simulating success."""
+    """Capture the actual program at its dedicated observation transport seam."""
+    from unittest.mock import patch
     captured=[]
     class Captured(Exception):pass
+    class CaptureOperation:
+        def __init__(self,*args):pass
+        def __enter__(self):return self
+        def __exit__(self,*args):return False
+        def run(self,program):captured.append(program);raise Captured()
     class CaptureTransport(subject.ActualTransport):
-        def instances(self):return {}
-        def command(self,*args,input=None,timeout=240):
-            assert args==('exec','-i',publication.CONTAINER,'python3','-B','-')
-            captured.append(input.decode('utf-8'))
-            raise Captured()
-    with pytest.raises(Captured):CaptureTransport(Path(__file__).parent,{}).observe()
+        def instances(self,operation=None):return {}
+    with patch.object(subject.observation_lifecycle,'Observation',CaptureOperation):
+        with pytest.raises(Captured):
+            CaptureTransport(Path(__file__).parent,dict(resource=dict(sourceCommit='a'*40),inputPins=[])).observe()
     assert len(captured)==1
     return captured[0]
 
@@ -387,7 +391,7 @@ def test_generated_directory_uses_only_registered_current_source(monkeypatch,reg
         assert calls==[]
 
 
-def observation_budget_transport(tmp_path,*,drift=False,error=None):
+def observation_budget_transport(tmp_path,monkeypatch=None,*,drift=False,error=None):
     """Explicit Docker protocol boundary; actual instance/observe/reload methods run."""
     files={'ops/spug/'+name:digest(b'fixture') for name in publication.PRODUCT_FILES}
     observed=observation(files)
@@ -405,7 +409,7 @@ def observation_budget_transport(tmp_path,*,drift=False,error=None):
         ('entryPid','settings','connections','productPins','taskSnapshotSha256')})
     class BudgetTransport(subject.ActualTransport):
         def __init__(self):
-            super().__init__(tmp_path,dict(resource=dict(sourceCommit=observed['sourceCommit'],files=files),observation=observed))
+            super().__init__(tmp_path,dict(resource=dict(sourceCommit=observed['sourceCommit'],files=files),observation=observed,inputPins=[]))
             self.calls=[];self.inspect_count=0;self.reply=result
         def command(self,*args,input=None,timeout=240):
             self.calls.append((args,timeout))
@@ -421,14 +425,28 @@ def observation_budget_transport(tmp_path,*,drift=False,error=None):
             compile(input.decode('utf-8'),'actual-transport-program','exec')
             if error is not None:raise ValueError(error)
             return publication.canonical(self.reply)
-    return BudgetTransport(),observed
+    transport=BudgetTransport()
+    if monkeypatch is not None:
+        class Operation:
+            def __init__(self,private,identity):
+                assert identity==dict(sourceCommit=observed['sourceCommit'],inputPins=[])
+            def __enter__(self):return self
+            def __exit__(self,*args):return False
+            def short_command(self,command,*args):return command(*args,timeout=240)
+            def run(self,program):
+                compile(program,'actual-observation-program','exec')
+                transport.calls.append((('complete-observer',),(900,1800)))
+                if error is not None:raise ValueError(error)
+                return publication.canonical(transport.reply)
+        monkeypatch.setattr(subject.observation_lifecycle,'Observation',Operation)
+    return transport,observed
 
 
-def test_observation_transport_uses_900_only_for_complete_observer(tmp_path):
-    transport,expected=observation_budget_transport(tmp_path)
+def test_observation_transport_uses_dedicated_idle_and_hard_budget(tmp_path,monkeypatch):
+    transport,expected=observation_budget_transport(tmp_path,monkeypatch)
     assert transport.observe()==expected
-    assert [args[0] for args,_ in transport.calls]==['ps','inspect','exec','ps','inspect']
-    assert [timeout for _,timeout in transport.calls]==[240,240,900,240,240]
+    assert [args[0] for args,_ in transport.calls]==['ps','inspect','complete-observer','ps','inspect']
+    assert [timeout for _,timeout in transport.calls]==[240,240,(900,1800),240,240]
     assert list(tmp_path.iterdir())==[]
 
 
@@ -442,18 +460,18 @@ def test_reload_transport_keeps_default_240_budget(tmp_path):
     assert list(tmp_path.iterdir())==[]
 
 
-def test_observation_transport_preserves_post_observation_instance_guard(tmp_path):
-    transport,_=observation_budget_transport(tmp_path,drift=True)
+def test_observation_transport_preserves_post_observation_instance_guard(tmp_path,monkeypatch):
+    transport,_=observation_budget_transport(tmp_path,monkeypatch,drift=True)
     with pytest.raises(ValueError,match='INSTANCE_CHANGED_DURING_OBSERVATION'):
         transport.observe()
-    assert [timeout for _,timeout in transport.calls]==[240,240,900,240,240]
+    assert [timeout for _,timeout in transport.calls]==[240,240,(900,1800),240,240]
     assert list(tmp_path.iterdir())==[]
 
 
-def test_observation_transport_keeps_timeout_error_without_retry(tmp_path):
-    transport,_=observation_budget_transport(tmp_path,error='MAIN_SPUG_DOCKER_COMMAND_TIMEOUT')
+def test_observation_transport_keeps_timeout_error_without_retry(tmp_path,monkeypatch):
+    transport,_=observation_budget_transport(tmp_path,monkeypatch,error='MAIN_SPUG_DOCKER_COMMAND_TIMEOUT')
     with pytest.raises(ValueError,match='^MAIN_SPUG_DOCKER_COMMAND_TIMEOUT$'):
         transport.observe()
-    assert [args[0] for args,_ in transport.calls]==['ps','inspect','exec']
-    assert [timeout for _,timeout in transport.calls]==[240,240,900]
+    assert [args[0] for args,_ in transport.calls]==['ps','inspect','complete-observer']
+    assert [timeout for _,timeout in transport.calls]==[240,240,(900,1800)]
     assert list(tmp_path.iterdir())==[]
