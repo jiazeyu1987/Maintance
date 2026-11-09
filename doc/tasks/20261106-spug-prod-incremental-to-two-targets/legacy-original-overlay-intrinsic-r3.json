@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "LegacyOriginalOverlayIntrinsicReadback/v1",
+  "status": "PARTIAL",
+  "inputPins": [
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\legacy-database-original-readback-r5.json",
+      "bytes": 5287,
+      "sha256": "5432b790f248928b4c7a05f1b4da33aaa29febefdffc1353419f19d70cfeb1ec"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\be26-original-server-view-readback-r2.json",
+      "bytes": 1785,
+      "sha256": "cdad403e3aff52aabf04813495bd82d7ad623a9c197e300c0f3d051641bce2b1"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\legacy-schema-restoration-point-map.json",
+      "bytes": 921197,
+      "sha256": "96a43267c5409cf2f277f4f5e21570f5c83442aa8b5a2201f243f5aabc9a86e4"
+    }
+  ],
+  "validatorSourcePins": [
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\backup_engine\\formal\\formal_schema_evidence.py",
+      "bytes": 24135,
+      "sha256": "573b37a21d373e5b14ae18bc6eaa910fb7227d3ddb797846399465ec50ab9ac7"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\backup_engine\\formal\\formal_data_evidence.py",
+      "bytes": 25181,
+      "sha256": "e2cb2c993dacf3b70bfff5610f081ff860c017cc6fa8ebda1850d912f1675e65"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\backup_engine\\formal\\formal_snapshot_linux.py",
+      "bytes": 76795,
+      "sha256": "a2116953ecb7304da15ad1c8a4fe8e9573ca1737624c0c8b5f12d43226e93515"
+    }
+  ],
+  "counts": {
+    "pointCount": 108,
+    "materialOriginalsVerified": 106,
+    "declaredEvidenceBodiesVerified": 103,
+    "originalMaterialExpectedBodiesVerified": 102,
+    "typedIntrinsicPass": 59,
+    "typedIntrinsicFailures": 0,
+    "legacySettingsOnly": 44,
+    "unverifiedDatabaseBodies": 5
+  },
+  "be26OriginalObjectsReadbackVerified": 5,
+  "be26BindingRelationsVerified": true,
+  "intrinsicFailures": [],
+  "unverifiedDatabaseBodyPointIds": [
+    "smallapp-84563aceae404c18a96a47ae336c4e5a",
+    "smallapp-9d1df93e86b549c08b0c6286f7a35b7d",
+    "smallapp-d314a62839b84934934ce80bca8c66ce",
+    "smallapp-d62276cdb402499d9586871439765989",
+    "smallapp-e98f0f55896c445dac1d4eefe31713c5"
+  ],
+  "independentSourceTargetComparisonPerformed": false,
+  "sqlPayloadsVerified": false,
+  "businessRestorePerformed": false,
+  "networkReads": 0,
+  "serverWrites": false,
+  "elapsedSeconds": 9.782,
+  "privateEvidencePin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-original-overlay-intrinsic-r3.private.json",
+    "bytes": 366719,
+    "sha256": "1f8c6c033a3768374808507ab8b9f4063c9b6595d6007cc78976f9d584229a14"
+  }
+}

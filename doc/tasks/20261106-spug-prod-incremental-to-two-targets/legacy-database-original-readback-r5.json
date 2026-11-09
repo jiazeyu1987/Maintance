@@ -1,0 +1,135 @@
+{
+  "schemaVersion": "LegacyDatabaseOriginalReadback/v1",
+  "status": "PARTIAL",
+  "privateEvidencePin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-database-originals-r4\\complete-finalized-r2.private.json",
+    "bytes": 540756,
+    "sha256": "8c23254a221fddd0370eea3eb3492636a052f36646eff9e8e9dc92aa0288e95c"
+  },
+  "requestedObjectCount": 163,
+  "newReadAttemptCount": 159,
+  "verifiedObjectCount": 155,
+  "totalDeclaredBytes": 181383217,
+  "materialReadVerifiedCount": 105,
+  "materialExpectedPayloadRelationVerifiedCount": 105,
+  "declaredDataBodyVerifiedCount": 102,
+  "bodyMatchesOriginalMaterialExpectedPinCount": 101,
+  "databaseFormatCounts": {
+    "TYPED_OBSERVATION": 58,
+    "LEGACY_DATABASE_SETTINGS": 44,
+    "UNVERIFIED": 6
+  },
+  "failures": [
+    {
+      "packageId": "smallapp-d62276cdb402499d9586871439765989",
+      "kind": "expected-data",
+      "errorCode": "ORIGINAL_CONTENT_PIN_MISMATCH",
+      "actualContentPin": {
+        "bytes": 283,
+        "sha256": "43ce7273f75043e2540e2f56d2f238405f95a34df56337420ef7e785c778e7ea"
+      },
+      "receiptPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-database-originals-r4\\read-55.private.json",
+        "bytes": 336,
+        "sha256": "49c04c1a02df318b42d6f238b7999a32a205727fb15a1cf97e55881353cc0aad"
+      },
+      "readReattempted": true
+    },
+    {
+      "packageId": "smallapp-d314a62839b84934934ce80bca8c66ce",
+      "kind": "expected-data",
+      "errorCode": "ORIGINAL_CONTENT_PIN_MISMATCH",
+      "actualContentPin": {
+        "bytes": 271,
+        "sha256": "8300791c523497930a3df5b7d3f60abe63fe2253a31e91cf9f372a90b683e6d0"
+      },
+      "receiptPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-database-originals-r4\\read-87.private.json",
+        "bytes": 336,
+        "sha256": "04977f219b9e6ce92680aad9f9ae7e6985d40c2697c22752513e0c29863d8930"
+      },
+      "readReattempted": true
+    },
+    {
+      "packageId": "smallapp-e98f0f55896c445dac1d4eefe31713c5",
+      "kind": "expected-data",
+      "errorCode": "ORIGINAL_CONTENT_PIN_MISMATCH",
+      "actualContentPin": {
+        "bytes": 283,
+        "sha256": "43ce7273f75043e2540e2f56d2f238405f95a34df56337420ef7e785c778e7ea"
+      },
+      "receiptPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-database-originals-r4\\read-153.private.json",
+        "bytes": 337,
+        "sha256": "71174d2b6a989207de6bb285071f012ecb6d9b62cd036e74159cd97ea18cc5d2"
+      },
+      "readReattempted": true
+    },
+    {
+      "packageId": "smallapp-9d1df93e86b549c08b0c6286f7a35b7d",
+      "kind": "expected-data",
+      "errorCode": "ORIGINAL_CONTENT_PIN_MISMATCH",
+      "actualContentPin": {
+        "bytes": 283,
+        "sha256": "43ce7273f75043e2540e2f56d2f238405f95a34df56337420ef7e785c778e7ea"
+      },
+      "receiptPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-database-originals-r4\\read-155.private.json",
+        "bytes": 337,
+        "sha256": "5dc8b1809eda331c516a166c036405e4fce394162addd6ec5d99c92ef9629ffc"
+      },
+      "readReattempted": true
+    },
+    {
+      "packageId": "smallapp-be26b59281a4464dac816d61f76f0443",
+      "kind": "point",
+      "errorCode": "FileNotFoundError",
+      "actualContentPin": null,
+      "receiptPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-database-originals-r3\\read-159.private.json",
+        "bytes": 192,
+        "sha256": "384c6571aee5fb8233ad92a0e61e89403ad344dbf6b06eabcbb5e4399fd231a7"
+      },
+      "readReattempted": false
+    },
+    {
+      "packageId": "smallapp-be26b59281a4464dac816d61f76f0443",
+      "kind": "manifest",
+      "errorCode": "FileNotFoundError",
+      "actualContentPin": null,
+      "receiptPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-database-originals-r3\\read-160.private.json",
+        "bytes": 195,
+        "sha256": "1eeb1859e104297521a3f9438d2a83e7f9c9b5fe9c616c9ac757b842fe72a34e"
+      },
+      "readReattempted": false
+    },
+    {
+      "packageId": "smallapp-be26b59281a4464dac816d61f76f0443",
+      "kind": "binding",
+      "errorCode": "FileNotFoundError",
+      "actualContentPin": null,
+      "receiptPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-database-originals-r3\\read-161.private.json",
+        "bytes": 194,
+        "sha256": "ec64e5228e4e54c0225b49885bb7d243fb4de6832782770d0c8c3eaca108e3c7"
+      },
+      "readReattempted": false
+    },
+    {
+      "packageId": "smallapp-be26b59281a4464dac816d61f76f0443",
+      "kind": "material",
+      "errorCode": "FileNotFoundError",
+      "actualContentPin": null,
+      "receiptPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-database-originals-r3\\read-162.private.json",
+        "bytes": 195,
+        "sha256": "ed9e2474858209aa0089d3249abe01bbe5f29cda79c784309859b4e13eb54fc5"
+      },
+      "readReattempted": false
+    }
+  ],
+  "serverWrites": false,
+  "sqlExecuted": false,
+  "allBackupsRestoreVerified": false
+}

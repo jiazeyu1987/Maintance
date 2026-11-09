@@ -1,0 +1,19 @@
+{
+  "allBackupsRestoreVerified": false,
+  "businessOperationsPerformed": 0,
+  "bytesVerified": 198816263,
+  "elapsedSeconds": 0.468,
+  "mapPin": {
+    "bytes": 921197,
+    "file": "legacy-schema-restoration-point-map.json",
+    "sha256": "96a43267c5409cf2f277f4f5e21570f5c83442aa8b5a2201f243f5aabc9a86e4"
+  },
+  "originalInputPinsVerified": 411,
+  "payloadReadbackPerformed": false,
+  "r3OmittedPointCount": 22,
+  "schemaVersion": "LegacyPointMappingParentVerification/v1",
+  "sourceCodePinsVerified": 12,
+  "sqlExecuted": false,
+  "status": "PASS",
+  "uniquePointCount": 108
+}

@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "Be26OriginalServerViewReadback/v1",
+  "status": "OBSERVED",
+  "host": "172.30.30.57",
+  "actualReadExitCode": 0,
+  "collectorExitCode": 1,
+  "collectorFailure": "STRICT_SSH_DIAGNOSTIC_REJECTION_AFTER_SUCCESSFUL_READ",
+  "remoteExitVerified": true,
+  "totalDeclaredBytes": 22612280,
+  "databaseShape": {
+    "schemaVersion": null,
+    "encoding": "mysql8-typed-row-multiset-sha256/v1",
+    "verificationState": null,
+    "topLevelFields": [
+      "applicationVerified",
+      "encoding",
+      "observationIdentity",
+      "observationSha256",
+      "productionEvidence",
+      "schema",
+      "tables"
+    ],
+    "fieldShapes": {
+      "applicationVerified": {
+        "type": "bool",
+        "count": null
+      },
+      "encoding": {
+        "type": "str",
+        "count": null
+      },
+      "observationIdentity": {
+        "type": "dict",
+        "count": 2
+      },
+      "observationSha256": {
+        "type": "str",
+        "count": null
+      },
+      "productionEvidence": {
+        "type": "bool",
+        "count": null
+      },
+      "schema": {
+        "type": "dict",
+        "count": 10
+      },
+      "tables": {
+        "type": "dict",
+        "count": 645
+      }
+    }
+  },
+  "originalMaterialExpectedBodyVerified": true,
+  "pointManifestBindingMaterialRelationsVerified": true,
+  "finalizationNetworkReads": 0,
+  "serverWrites": false,
+  "sqlExecuted": false,
+  "businessRestorePerformed": false,
+  "privateEvidencePin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\be26-original-server-view-r1\\complete-finalized-r2.private.json",
+    "bytes": 5883,
+    "sha256": "4f8b1cf16639963dc7e14af931d2c00da955e1ca4c4cfe99ef46870d8e3a0a13"
+  },
+  "verifiedObjectCount": 5,
+  "stderrDiagnosticPresent": true
+}

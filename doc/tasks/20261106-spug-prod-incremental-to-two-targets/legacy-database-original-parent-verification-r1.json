@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "LegacyOriginalParentReadback/v1",
+  "status": "PASS",
+  "scope": "INDEPENDENT_LOCAL_READBACK_OF_OBSERVATIONS",
+  "observationReportPin": {
+    "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\legacy-database-original-readback-r5.json",
+    "bytes": 5287,
+    "sha256": "5432b790f248928b4c7a05f1b4da33aaa29febefdffc1353419f19d70cfeb1ec"
+  },
+  "privateEvidencePin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-database-originals-r4\\complete-finalized-r2.private.json",
+    "bytes": 540756,
+    "sha256": "8c23254a221fddd0370eea3eb3492636a052f36646eff9e8e9dc92aa0288e95c"
+  },
+  "verifiedLocalObjectCount": 155,
+  "pointCount": 108,
+  "materialRelationsVerified": 105,
+  "declaredEvidenceBodiesVerified": 102,
+  "originalMaterialExpectedBodyMatches": 101,
+  "originalContentMismatches": 4,
+  "unavailableOriginalNasPaths": 4,
+  "sourceSnapshotOrRestoreVerified": false,
+  "networkReads": 0,
+  "serverWrites": false
+}

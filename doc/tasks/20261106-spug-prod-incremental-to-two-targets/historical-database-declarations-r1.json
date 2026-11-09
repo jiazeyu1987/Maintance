@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "HistoricalDatabaseDeclarationInventory/v1",
+  "status": "OBSERVED",
+  "inputPin": {
+    "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\legacy-original-overlay-intrinsic-r3.json",
+    "bytes": 3003,
+    "sha256": "e3390e9212516988f7a6e64e09fb693a7d0e0c7e5a71ea2aee7c0198d3f51d19"
+  },
+  "totalPointCount": 108,
+  "reviewedBodyCount": 103,
+  "rehearsalDatabasePointCount": 88,
+  "applicationDatabasePointCount": 15,
+  "unverifiedBodyCount": 5,
+  "formatCounts": [
+    {
+      "database": "rehearsal",
+      "evidenceClass": "LEGACY_SETTINGS_ONLY",
+      "pointCount": 42
+    },
+    {
+      "database": "rehearsal",
+      "evidenceClass": "TYPED_INTRINSICALLY_VALID",
+      "pointCount": 46
+    },
+    {
+      "database": "ruoyi-vue-pro",
+      "evidenceClass": "LEGACY_SETTINGS_ONLY",
+      "pointCount": 2
+    },
+    {
+      "database": "ruoyi-vue-pro",
+      "evidenceClass": "TYPED_INTRINSICALLY_VALID",
+      "pointCount": 13
+    }
+  ],
+  "typedTableCounts": [
+    {
+      "database": "rehearsal",
+      "baseTables": 3,
+      "pointCount": 46
+    },
+    {
+      "database": "ruoyi-vue-pro",
+      "baseTables": 645,
+      "pointCount": 1
+    },
+    {
+      "database": "ruoyi-vue-pro",
+      "baseTables": 661,
+      "pointCount": 2
+    },
+    {
+      "database": "ruoyi-vue-pro",
+      "baseTables": 879,
+      "pointCount": 3
+    },
+    {
+      "database": "ruoyi-vue-pro",
+      "baseTables": 885,
+      "pointCount": 7
+    }
+  ],
+  "sqlPayloadsVerified": false,
+  "mainProgramCompatibilityVerified": false,
+  "businessRestorePerformed": false,
+  "networkReads": 0,
+  "serverWrites": false,
+  "limitations": [
+    "Database name and metadata structure do not establish SQL payload completeness or application compatibility.",
+    "The unpublished 9695 point is included among the 15 application-database declarations; it has no original material or publication binding.",
+    "The five unread bodies are not assigned a database using another point or the current target."
+  ],
+  "privateEvidencePin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\historical-database-declarations-r1.private.json",
+    "bytes": 77062,
+    "sha256": "35e02809ad551dc1fb7e9e3a68bf6326230ea49f87599820e43c854fcdd24826"
+  }
+}
