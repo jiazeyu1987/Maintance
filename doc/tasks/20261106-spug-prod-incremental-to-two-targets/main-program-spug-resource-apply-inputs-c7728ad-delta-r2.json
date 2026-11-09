@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "MainProgramSpugResourceActivationInputs/v2",
+  "resourceBuildPin": {
+    "file": "spug-resource-build-c7728ad.json",
+    "bytes": 2351,
+    "sha256": "659ae1f24bbb7f110a58c67b11618dfcda18e7104b65517b692f536388a47368"
+  },
+  "deploymentDeltaPin": {
+    "file": "main-program-spug-resource-deployment-delta-c7728ad-r1.json",
+    "bytes": 1678,
+    "sha256": "838ac378a3e9571a37ad1c82be7ac9a44f73b4f2e4fc53a6d8c13a10170019e5"
+  },
+  "observationPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-program-spug-resource-observation-c7728ad-delta-838ac378a3e9.private.json",
+    "bytes": 6954489,
+    "sha256": "c6ea714689bb29bcb69e25fcf2bd787fd836fefc3f73a92fb2322bcc21537d52"
+  }
+}

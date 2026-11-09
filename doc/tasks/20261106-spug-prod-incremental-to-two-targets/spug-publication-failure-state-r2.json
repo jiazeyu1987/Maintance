@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "SpugPublicationFailureState/v1",
+  "status": "OBSERVED",
+  "failurePin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-program-spug-installation-45dd7dc-r6.private.json",
+    "bytes": 3308,
+    "sha256": "cca54c2dec46b26c187df5e7c463d75f7b3cc08e1a9f24ba14fda4929a7c7b77"
+  },
+  "privateEvidencePin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-publication-failure-inspection-r2.private.json",
+    "bytes": 8908,
+    "sha256": "0bbc22b46574b1d818bb983f1c964dba630023b747285da8e302178f45ee5d16"
+  },
+  "actualQueryExitCode": 0,
+  "stages": [
+    {
+      "stage": "host-preflight-57",
+      "status": "PASS",
+      "completedWriteCount": 0,
+      "resultPin": {
+        "bytes": 1112,
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-program-spug-installation-45dd7dc-r6.host-preflight-57.private.json",
+        "sha256": "cce85ecd452359c88a2972d53ab2dba0a990d3640d92f5a2114d5102d426c596"
+      }
+    },
+    {
+      "stage": "host-preflight-58",
+      "status": "PASS",
+      "completedWriteCount": 0,
+      "resultPin": {
+        "bytes": 1112,
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-program-spug-installation-45dd7dc-r6.host-preflight-58.private.json",
+        "sha256": "f21dd4c1ccf7d9c6e53417a46484aebf46445a8cd758c54e539d155f0fdde054"
+      }
+    },
+    {
+      "stage": "host-preflight-59",
+      "status": "PASS",
+      "completedWriteCount": 0,
+      "resultPin": {
+        "bytes": 1112,
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-program-spug-installation-45dd7dc-r6.host-preflight-59.private.json",
+        "sha256": "6ffd39c4cbee4d0665962e4bca5a63ff2ba401a8afa2711eeec26e04e30dcc26"
+      }
+    },
+    {
+      "stage": "spug-preflight",
+      "status": "PASS",
+      "completedWriteCount": 0,
+      "resultPin": {
+        "bytes": 1139,
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-program-spug-installation-45dd7dc-r6.spug-preflight.private.json",
+        "sha256": "a279115493733ecdcaf1f0ef4049f694c2de6e1df68efa8348690a46672bf54b"
+      }
+    },
+    {
+      "stage": "host-publish-57",
+      "status": "PASS",
+      "completedWriteCount": 6,
+      "resultPin": {
+        "bytes": 1843,
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-program-spug-installation-45dd7dc-r6.host-publish-57.private.json",
+        "sha256": "e7293fe9404fd227c6b929899e4040ece64b25c66da8cc3acd4b3d5dffd5f90d"
+      }
+    },
+    {
+      "stage": "host-publish-58",
+      "status": "PASS",
+      "completedWriteCount": 3,
+      "resultPin": {
+        "bytes": 1469,
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-program-spug-installation-45dd7dc-r6.host-publish-58.private.json",
+        "sha256": "9cc2a7deb56e63ae3e3a59610de8a83c184134f5896beb10bfff4a8cfca301e7"
+      }
+    },
+    {
+      "stage": "host-publish-59",
+      "status": "PASS",
+      "completedWriteCount": 3,
+      "resultPin": {
+        "bytes": 1436,
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-program-spug-installation-45dd7dc-r6.host-publish-59.private.json",
+        "sha256": "3e83cf96af78d8f75b1e4c63a397361885e8cb8b626b79c0d5ccaa1afcc93adc"
+      }
+    },
+    {
+      "stage": "spug-publish",
+      "status": "FAILED",
+      "completedWriteCount": 0,
+      "resultPin": {
+        "bytes": 1280,
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-program-spug-installation-45dd7dc-r6.spug-publish.private.json",
+        "sha256": "1d5dfacfd4e0f18b6ea46212d6db3a7bb488efb057b0a783d3bf655567c71e94"
+      }
+    }
+  ],
+  "hostSelectorWritesCompleted": 12,
+  "spugConfigWritesReported": 0,
+  "spugConfigsActuallyUnchanged": true,
+  "configurationFileCount": 7,
+  "auditDirectoryExists": true,
+  "auditDirectoryEntryCount": 0,
+  "protectedSpugUnchanged": true,
+  "remoteServerCalls": 0,
+  "runtimeWrites": false
+}

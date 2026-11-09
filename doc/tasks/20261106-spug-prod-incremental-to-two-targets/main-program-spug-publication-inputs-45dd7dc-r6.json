@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "MainProgramSpugPublicationInputs/v2",
+  "sourceCommit": "45dd7dc65409c87fe856584b85873ea96c0b830e",
+  "revisionId": "r6",
+  "controlGenerationPin": {
+    "file": "main-program-control-generation-45dd7dc-r6.json",
+    "bytes": 2561,
+    "sha256": "2e29dd21044f2d7c44ba3a6800140ed225dec822b3e80944e4a84103b13b2b29"
+  },
+  "spugResourceBuildPin": {
+    "file": "spug-resource-build-c7728ad.json",
+    "bytes": 2351,
+    "sha256": "659ae1f24bbb7f110a58c67b11618dfcda18e7104b65517b692f536388a47368"
+  },
+  "publicationObservationPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-program-spug-publication-observation-45-r6-c772-delta838.private.json",
+    "bytes": 543321,
+    "sha256": "53d954e6e79b21ea0fd84a226e9c3e1e8008a3eeb7370f719e697abf29984392"
+  },
+  "outputFile": "main-program-spug-installation-45dd7dc-r6.json"
+}
