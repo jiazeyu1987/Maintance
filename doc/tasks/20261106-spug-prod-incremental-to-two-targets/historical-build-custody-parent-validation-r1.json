@@ -1,0 +1,39 @@
+{
+  "status": "PASS",
+  "actualExitCode": 0,
+  "expectedTests": 37,
+  "inputPins": [
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\historical_build_custody.py",
+      "bytes": 21646,
+      "sha256": "ae9454ee702d9c232179f8a442e890146aa2cd5f3dde3a54c2f5fcd526925369"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_historical_build_custody.py",
+      "bytes": 16653,
+      "sha256": "6778998af4b970300d9ad96209821af5c24e1d257749b441fc9cb2c86816e9d0"
+    }
+  ],
+  "inputsUnchanged": true,
+  "argv": [
+    "C:\\Users\\D01021\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "-X",
+    "utf8",
+    "-B",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--tb=short",
+    "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_historical_build_custody.py"
+  ],
+  "logPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\historical-build-custody-parent-green-r1.log",
+    "bytes": 102,
+    "sha256": "a6846d47a82c5369c6525621e0be609ccb8f481351ad236bba3bf558cb634b0e"
+  },
+  "elapsedSeconds": 51.313,
+  "actualBuildWorktreesTouched": false,
+  "serverWrites": false
+}
