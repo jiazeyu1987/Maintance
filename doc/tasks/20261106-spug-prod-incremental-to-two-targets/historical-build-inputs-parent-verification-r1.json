@@ -1,0 +1,76 @@
+{
+  "actualWorktreesDeleted": false,
+  "custodyArchivePin": {
+    "bytes": 9349120,
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\historical-build-custody-899-45-c772-r1\\inputs.tar",
+    "sha256": "92388d1857b790f8ba9f8d3a53976b5af9434f9a23e9be6bc4e14246ee588ac1"
+  },
+  "custodyManifestPin": {
+    "bytes": 776407,
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\historical-build-custody-899-45-c772-r1\\manifest.json",
+    "sha256": "ff7350e0a11669b69ea288bd9d1ad3f9bb3e976006bc0809cca8bbd43801cb8b"
+  },
+  "elapsedSeconds": 0.969,
+  "installationPerformed": false,
+  "logicalBytesVerified": 11244744,
+  "logicalInputsVerified": 650,
+  "modulePin": {
+    "bytes": 21646,
+    "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\historical_build_custody.py",
+    "sha256": "ae9454ee702d9c232179f8a442e890146aa2cd5f3dde3a54c2f5fcd526925369"
+  },
+  "originalInputPathReads": 0,
+  "originalInputReadGuardEnforced": true,
+  "physicalVerificationPins": [
+    {
+      "bytes": 776407,
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\historical-build-custody-899-45-c772-r1\\manifest.json",
+      "sha256": "ff7350e0a11669b69ea288bd9d1ad3f9bb3e976006bc0809cca8bbd43801cb8b"
+    },
+    {
+      "bytes": 9349120,
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\historical-build-custody-899-45-c772-r1\\inputs.tar",
+      "sha256": "92388d1857b790f8ba9f8d3a53976b5af9434f9a23e9be6bc4e14246ee588ac1"
+    },
+    {
+      "bytes": 32255,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\release-build-899730d.json",
+      "sha256": "a6576dcf3ec5c7024abbc9d7827495d34030109bfbf0362ddfba11a3e91019da"
+    },
+    {
+      "bytes": 933,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\release-build-45dd7dc.json",
+      "sha256": "112b7631c8f94540220ba9991eeb4c898108578f0e5fcca1b79f51a512d111f1"
+    },
+    {
+      "bytes": 2351,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\spug-resource-build-c7728ad.json",
+      "sha256": "659ae1f24bbb7f110a58c67b11618dfcda18e7104b65517b692f536388a47368"
+    },
+    {
+      "bytes": 60372,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\source-archive-protection-composite-validation-r1.json",
+      "sha256": "cdff6752d502b528706c38c5dd7c9f33e70ba09ae5e58157a18e0383851713df"
+    },
+    {
+      "bytes": 5540,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\archive-catalogue-linux-packages-r2.json",
+      "sha256": "bf6bc1f9c66c460fa0626c4ae45aaf24718d0147c133fc1fb0e7e99681a51173"
+    },
+    {
+      "bytes": 3196,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\archive-catalogue-request-reads-result.json",
+      "sha256": "5e9d4b974a13c4b96dc4db64f6c3fc018495e39fb852966307a07c7846e4c558"
+    },
+    {
+      "bytes": 19002,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\spug-resource-validation-c7728ad.json",
+      "sha256": "21ea75038aee1bc22390ebdbf79c65df6f49c3ff6cfb8b4dd2a06197b767b298"
+    }
+  ],
+  "readerInputsUnchanged": true,
+  "schemaVersion": "HistoricalBuildCustodyParentVerification/v1",
+  "serverWrites": false,
+  "status": "PASS",
+  "uniqueOriginalPaths": 649
+}

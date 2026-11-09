@@ -2,7 +2,7 @@
 
 ## Current Status
 
-in_progress。只读设计已完成，父审阅后批准的独立 A 模块已实现，owner 与父独立各37项真实测试通过。B/C 既有读取器和清理入口尚未接入；实际461/154输入尚未封存。当前闭包还隐含899的461输入及维护仓12输入，实际待清理范围为8个engine加1个资源工作区。完整Spug发布及恢复验收尚未完成，不在本阶段删除任何实际worktree。
+in_progress。独立 A 模块 owner 与父各37项真实测试通过；实际 899/45/c772 的650个逻辑输入、649条原路径已封存，owner完整读回及父独立650项字节/SHA读回均通过。父验证显式禁止读取原输入路径，实际读取次数为0；未删除真实工作区。B/C既有读取器与清理入口尚未接入。实际待清理范围仍为8个engine加1个资源工作区；完整Spug发布及恢复验收尚未完成。
 
 ## 目标、里程碑和预期验证
 
@@ -26,3 +26,15 @@ in_progress。只读设计已完成，父审阅后批准的独立 A 模块已实
 - Verification：实际Git与文件载体；历史原件缺失必须FAIL，新安装缺checkout必须FAIL；完成后还需本任务实际持久证据与合并验证。
 - Forbidden action：不删除/移动工作区，不改旧报告、失败/成功原件、服务器或运行配置，不在本阶段把设计或fixture当正式清理成功。
 - Evidence：main-program-control-generation-45dd7dc-r6.json、main-program-four-controls-activation-milestone-45-r6.json、task-owned-builds.json、已有owned-build-cleanup报告和本次独立设计记录。
+
+## 2026-11-10 A阶段真实输入封存范围
+允许已提交且父37项验证通过的 HistoricalBuildCustody A 模块，在原临时构建工作区仍保持当前状态时，正式准备并封存已枚举的899/45/c772原构建与测试输入。先生成独占显式inputs并逐项核原报告和原路径字节；任一不符即保留失败并报告，不改原报告、pin、worktree或源码。仅可在本任务PRIVATE下创建独占 historical-build-custody-* 目录及载体/原件，公开报告只能无秘密的计数/SHA/范围。不得将缺失文件由Git内容替代为历史原始字节；Git仅验证原字节与目标提交关系。B/C依然冻结；不删除/移动/改worktree，不安装或发布。
+前置核验：现有A实现与37项父验证固定、mapped worktree-memory已核保全与任务归属门禁，精确三工作区与原报告，不递归扫描PRIVATE或无关主工作区。运行使用显式UTF8，真实封存只证明原字节托管，不冒充测试、安装或清理通过。
+GREEN: experience-preflight -> PASS。此范围仅本机已授权任务输入保全；缺件或漂移必须停在明确原因，禁止默默弱化完整集合。
+
+## A阶段实际结果
+
+- 真实封存退出0、21.0秒，四组输入分别461/23/12/154项，650逻辑引用共11,244,744字节；原路径649，按内容去重498项。
+- `historical-build-inputs-899-45-c772-r1.json` 固定全部原件；PRIVATE归档9,349,120字节，SHA256 `92388d1857b790f8ba9f8d3a53976b5af9434f9a23e9be6bc4e14246ee588ac1`。
+- 父独立验证实际退出0、0.969秒，重读650引用共11,244,744字节，原输入路径读取门禁触发0次；结果 `historical-build-inputs-parent-verification-r1.json` 3924字节，SHA256 `7a83c7b1c2d57f73ad043ed77b05a6903ee1addadd8af65015a502b7e166f113`。
+- 以上只证明持久原始字节与Git/原报告关系，不证明安装、恢复或实际工作区删除；原报告、原pin、工作区和B/C保持。
