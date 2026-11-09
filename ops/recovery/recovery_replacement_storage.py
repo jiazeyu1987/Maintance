@@ -11,7 +11,7 @@ import os
 import re
 import stat
 
-from recovery_engine import digest, require
+from recovery_engine import absolute, digest, require
 
 LOCAL_FILESYSTEMS = frozenset(('ext2', 'ext3', 'ext4', 'xfs', 'btrfs', 'zfs'))
 DATA_ROLES = frozenset(('mysql', 'minio', 'redis'))
@@ -486,6 +486,15 @@ def verify_storage(native, value, rows):
     preserved, inactive = [], {}
     if v2:
         storage = validate_storage(value['storage'])
+        # Historical source registration must not rewrite immutable targets.
+        # Extend protection for this bound source, retaining every original root.
+        archives = native.source['archiveRoots']
+        require(type(archives) is list and archives, 'REPLACEMENT_ARCHIVE_ROOTS_INVALID')
+        for path in archives:
+            _path(path)
+            absolute(path)
+        storage = validate_storage(dict(storage, protectedRoots=list(dict.fromkeys(
+            [*storage['protectedRoots'], *archives]))))
         required = [*native.source['archiveRoots'], str(native.root), value.get('stateRoot', native.config['replacement']['stateRoot']),
                     native.config['dataRoot']]
         require(all(any(_path(path, root=True) == _path(root, root=True) or

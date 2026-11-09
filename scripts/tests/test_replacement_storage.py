@@ -334,6 +334,96 @@ def test_v2_requires_actual_operation_archive_and_state_protection():
         verify_storage(native(rows),dict(schemaVersion='RegisteredApplicationReplacement/v2',storage=data),rows)
 
 
+def historical_archive_target(tmp_path):
+    rows = {}
+    for role, destination in [('mysql', '/var/lib/mysql'), ('minio', '/data'), ('redis', '/data')]:
+        path = tmp_path / role
+        path.mkdir()
+        rows[role] = dict(Id='id-' + role, Mounts=[dict(
+            Type='bind', Source=str(path), Destination=destination, RW=True)])
+    protected = ['/mnt/nas', *[str(tmp_path / name) for name in
+                              ('archives', 'operations', 'states', 'target')]]
+    value = dict(schemaVersion='RegisteredApplicationReplacement/v2',
+                 storage=snapshot_mounts(rows, protected))
+    n = native(rows)
+    n.source['archiveRoots'] = [protected[1], str(tmp_path / 'historical-archives')]
+    n.root = Path(protected[2]) / 'op'
+    n.config = dict(dataRoot=protected[4], replacement=dict(stateRoot=protected[3]))
+    return n, value, rows
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='Actual Linux archive storage custody')
+def test_historical_archive_roots_extend_protection_without_changing_original_target(tmp_path):
+    n, value, rows = historical_archive_target(tmp_path)
+    before = copy.deepcopy((value, n.source))
+    assert verify_storage(n, value, rows) == {str(tmp_path / r): 'id-' + r for r in rows}
+    assert (value, n.source) == before
+    assert n.calls == [['ps', '--all', '--no-trunc', '--format', '{{.ID}}'],
+                       ['inspect', *[row['Id'] for row in rows.values()]]]
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='Actual Linux archive storage custody')
+@pytest.mark.parametrize('relative', ['mysql', '.', 'mysql/nested'])
+def test_new_archive_cannot_overlap_writable_data(tmp_path, relative):
+    n, value, rows = historical_archive_target(tmp_path)
+    n.source['archiveRoots'][-1] = str(tmp_path / relative)
+    with pytest.raises(Exception, match='REPLACEMENT_PROTECTED_STORAGE_OVERLAP'):
+        verify_storage(n, value, rows)
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='Actual Linux archive storage custody')
+@pytest.mark.parametrize('roots', [[], '/archives', [None], ['relative'],
+                                  ['/archives/../data'], ['/archives//data'], ['/']])
+def test_new_archive_roots_require_explicit_canonical_paths(tmp_path, roots):
+    n, value, rows = historical_archive_target(tmp_path)
+    n.source['archiveRoots'] = roots
+    with pytest.raises(Exception, match='REPLACEMENT_(ARCHIVE_ROOTS_INVALID|STORAGE_PATH_INVALID)'):
+        verify_storage(n, value, rows)
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='Actual Linux symlink ancestry')
+def test_new_archive_symlink_ancestor_cannot_hide_data_overlap(tmp_path):
+    n, value, rows = historical_archive_target(tmp_path)
+    link = tmp_path / 'archive-link'
+    link.symlink_to(tmp_path / 'mysql', target_is_directory=True)
+    n.source['archiveRoots'][-1] = str(link / 'nested')
+    with pytest.raises(Exception, match='PATH_ALIAS_REJECTED'):
+        verify_storage(n, value, rows)
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='Actual Linux bind mount aliases')
+def test_new_archive_bind_alias_cannot_hide_data_overlap(tmp_path):
+    n, value, rows = historical_archive_target(tmp_path)
+    archive = Path(n.source['archiveRoots'][-1])
+    archive.mkdir()
+    subprocess.run(['mount', '--bind', str(tmp_path / 'mysql'), str(archive)], check=True, capture_output=True)
+    try:
+        with pytest.raises(Exception, match='REPLACEMENT_PROTECTED_STORAGE_OVERLAP'):
+            verify_storage(n, value, rows)
+    finally:
+        subprocess.run(['umount', str(archive)], check=True, capture_output=True)
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='Actual Linux archive storage custody')
+@pytest.mark.parametrize('root_index', [0, 2, 3, 4])
+def test_new_archives_do_not_supply_missing_original_protection(tmp_path, root_index):
+    n, value, rows = historical_archive_target(tmp_path)
+    del value['storage']['protectedRoots'][root_index]
+    with pytest.raises(Exception, match='REPLACEMENT_PROTECTED_ROOT_REQUIRED'):
+        verify_storage(n, value, rows)
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='Actual Linux archive storage custody')
+def test_new_archive_keeps_stopped_consumer_exclusion(tmp_path):
+    original, value, rows = historical_archive_target(tmp_path)
+    other = dict(Id='stopped-id', State=dict(Running=False), Mounts=[dict(
+        Source=str(tmp_path / 'mysql' / 'child'), RW=True)])
+    n = native(rows, others={'stopped-id': other})
+    n.source, n.root, n.config = original.source, original.root, original.config
+    with pytest.raises(Exception, match='REPLACEMENT_VOLUME_SHARED'):
+        verify_storage(n, value, rows)
+
+
 def test_native_preflight_runs_before_any_replacement_prepare(monkeypatch):
     import recovery_replace
     calls=[]
