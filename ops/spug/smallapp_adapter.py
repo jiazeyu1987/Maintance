@@ -192,6 +192,20 @@ class HttpBridge:
         if (not isinstance(targets, dict) or any(not reference(k) or not isinstance(v, str)
                 or re.fullmatch(r'[A-Za-z0-9_.-]+\.json', v) is None for k, v in targets.items())):
             raise Refused('W01_TARGET_CONNECTIONS_INVALID')
+        selections = config.get('selectionConnections', {})
+        if (not isinstance(selections, dict) or any(not reference(k) or not isinstance(v, str)
+                or re.fullmatch(r'[A-Za-z0-9_.-]+\.json', v) is None for k, v in selections.items())):
+            raise Refused('W01_SELECTION_CONNECTIONS_INVALID')
+        if selections:
+            root_sources = config.get('sourceConfigRefs')
+            if (not isinstance(root_sources, list) or any(not reference(r) for r in root_sources)
+                    or len(set(root_sources)) != len(root_sources)):
+                raise Refused('W01_REGISTERED_CONFIG_BINDING_REQUIRED')
+            if set(selections) - (set(root_sources) | set(connections)):
+                raise Refused('W01_SELECTION_CONNECTIONS_INVALID')
+        # Directory routing never changes the operation transport or its identity.
+        self.selection_connections = selections
+        self.selected_source = source_ref
         self.connections = connections if source_ref is None else {}
         self.target_connections = targets if target_ref is None else {}
         self.selected_target = target_ref
@@ -343,6 +357,27 @@ class HttpBridge:
             if row['sourceConfigRef'] in self.source_refs])
         return payload
 
+    def _source_selections(self):
+        if not self.selection_connections:
+            return self._local_selections()
+        source_ref = self.selected_source
+        if source_ref not in self.source_refs:
+            raise Refused('SOURCE_NOT_IN_CURRENT_BINDING')
+        connection = self.selection_connections.get(source_ref)
+        if connection is None:
+            payload = self._local_selections()
+        else:
+            path = self.binding_path.parent / connection
+            if not path.is_file():
+                raise Refused('LOCAL_INPUT_MISSING_OR_INVALID')
+            # Reuse the normal private binding, origin, authentication and response
+            # checks, but only call its local read endpoint, never its dispatch.
+            payload = HttpBridge(path, source_ref)._local_selections()
+        rows = [row for row in payload['applications'] if row['sourceConfigRef'] == source_ref]
+        if len(rows) != 1:
+            raise Refused('W01_SELECTION_SOURCE_AMBIGUOUS')
+        return dict(payload, applications=rows)
+
     def merge_target_choices(self, payload, remote, target_ref, source_refs):
         for source_ref in source_refs:
             local_rows = [row for row in payload['applications'] if row['sourceConfigRef'] == source_ref]
@@ -365,12 +400,19 @@ class HttpBridge:
         if self.selected_target is not None:
             # Admission uses this target connection too. Its copied catalogue
             # cannot override the source's current point eligibility.
-            source_payloads = [HttpBridge(self.binding_path, source)._local_selections()
+            source_payloads = [HttpBridge(self.binding_path, source)._source_selections()
                                for source in self.source_refs]
             payload = dict(observedAt=min(p['observedAt'] for p in source_payloads),
                            applications=[row for p in source_payloads for row in p['applications']])
             self.merge_target_choices(payload, self._local_selections(), self.selected_target, self.source_refs)
             return payload
+        if self.selection_connections:
+            sources = [self.selected_source] if self.selected_source is not None else list(
+                dict.fromkeys([*self.source_refs, *self.connections]))
+            source_payloads = [HttpBridge(self.binding_path, source)._source_selections()
+                               for source in sources]
+            return dict(observedAt=min(p['observedAt'] for p in source_payloads),
+                        applications=[row for p in source_payloads for row in p['applications']])
         payload = self._local_selections()
         # Backup readiness belongs to the source. Restore catalogues and admission
         # use selected_target above; unrelated historical targets are not dependencies.
