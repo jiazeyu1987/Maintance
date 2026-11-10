@@ -5,6 +5,7 @@ failed-original checks are reused with the actual new owner/capture/engine pins.
 """
 import argparse
 import ast
+from copy import deepcopy
 from datetime import datetime
 import hashlib
 import inspect
@@ -19,6 +20,10 @@ from automatic_stage_deployment import load_stage_deployment
 
 INSTALLED_COMMIT = '0d445782dc06995b3c84b1b45146ea4b75483f92'
 TARGET = 'intruoyi-main-57-safe-restore-20261105-v2'
+MAIN_SPEC = 'MainProgramAutomaticSourceRestorationSpec/v1'
+MAIN_INSTALLATION = 'MainProgramAutomaticSourceInstallation/v1'
+MAIN_BINDINGS = ('deploymentSelectionPin','controlGenerationPin','spugInstallationPin',
+                 'sourceCaptureConfigurationPin','sourceOwnerConfigurationPin')
 
 
 def need(condition, code):
@@ -64,6 +69,141 @@ def validate_evidence(kind, installation, submission, audit, terminal, deploymen
             spugCommit=deployment['spugCommit'], sourceInstallationPin=deployment['selection']['sourceInstallationPin'],
             controllerGenerations=deployment['controllerGenerations'])
     return result
+
+
+def _bound_document(package, reference):
+    """Read only a uniquely referenced original in the already verified closure."""
+    if set(reference) == {'file','bytes','sha256'}:
+        name = reference['file']
+        need(type(name) is str and Path(name).name == name and not any(c in name for c in '/\\:'),
+             'SOURCE_MAIN_DOCUMENT_REFERENCE_INVALID')
+        matches = [p for p in package['localInputPins'] if Path(p['path']).name == name and
+                   all(p[k] == reference[k] for k in ('bytes','sha256'))]
+    else:
+        need(set(reference) == {'path','bytes','sha256'}, 'SOURCE_MAIN_DOCUMENT_REFERENCE_INVALID')
+        matches = [p for p in package['localInputPins'] if Path(p['path']) == Path(reference['path']) and
+                   all(p[k] == reference[k] for k in ('bytes','sha256'))]
+    need(len(matches) == 1, 'SOURCE_MAIN_DOCUMENT_NOT_BOUND')
+    value, actual = read_pinned(Path(matches[0]['path']))
+    need(actual == matches[0], 'SOURCE_MAIN_DOCUMENT_CHANGED')
+    return value
+
+
+def main_installation(package):
+    from automatic_chain_audit import MAIN_SPEC_SCHEMA, canonical
+    need(package.get('schemaVersion') == MAIN_SPEC_SCHEMA and package['fileCount'] == 147,
+         'SOURCE_MAIN_PACKAGE_REQUIRED')
+    deployment = package['deployment']; source = package['request']['sourceConfigRef']
+    generation = _bound_document(package, deployment['controlGenerationPin'])
+    plan = _bound_document(package, generation['planPin'])
+    private_plan = _bound_document(package, plan['privatePlanPin'])
+    controllers = deployment['controllerGenerations']
+    need(type(controllers) is list and len(controllers) == 2 and controllers[0]['role'] == 'source' and
+         controllers[1]['role'] == 'target' and all(c['fileCount'] == 147 and c['sourceCommit'] == deployment['sourceCommit']
+         for c in controllers), 'SOURCE_MAIN_CONTROLLERS_CHANGED')
+    def original(reference):
+        rows = [r for r in private_plan['documentsByHost']['57'] if r['pin'] == reference]
+        need(len(rows) == 1, 'SOURCE_MAIN_CONFIGURATION_NOT_BOUND')
+        raw = canonical(rows[0]['value'])
+        need(len(raw) == reference['bytes'] and hashlib.sha256(raw).hexdigest() == reference['sha256'],
+             'SOURCE_MAIN_CONFIGURATION_CHANGED')
+        return rows[0]['value']
+    control = original(controllers[0]['controlConfigurationPin'])
+    owner = original(controllers[0]['ownerConfigurationPin'])
+    target_owner = original(controllers[1]['ownerConfigurationPin'])
+    target_ref = controllers[1]['targetConfigRef']; policy = control['sourceEpochPolicies'][source]
+    need(control['sourceConfigurations'][source] == controllers[0]['ownerConfigurationPin'] ==
+         deployment['sourceOwnerConfigurationPin'] and owner['sources'][source]['configurationPath'] ==
+         deployment['sourceCaptureConfigurationPin']['path'] and
+         policy == target_owner['targetBackupEpochPolicies'][target_ref] and target_ref == TARGET,
+         'SOURCE_MAIN_POLICY_CHANGED')
+    return dict(schemaVersion=MAIN_INSTALLATION, status='PASS', sourceCommit=deployment['sourceCommit'],
+        fileCount=147, fileManifestSha256=package['fileManifestSha256'], controllers=deepcopy(controllers), policy=deepcopy(policy))
+
+
+def validate_main_evidence(kind, installation, submission, audit, terminal, package, cycle):
+    operation = submission['request']['operationId']; deployment = package['deployment']; request = submission['request']
+    need(kind in ('FULL','I1','I2') and submission['schemaVersion'] == 'AutomaticIncrementalUiSubmission/v3' and
+         submission['kind'] == kind and submission['cycle'] == deployment['cycle'] == cycle and
+         submission['applicationId'] == request['sourceConfigRef'] == SOURCE and package['request'] == request and
+         submission['implementationCommit'] == installation['sourceCommit'] == deployment['sourceCommit'] and
+         submission['spugCommit'] == deployment['spugCommit'] and
+         all(submission[k] == deployment[k] for k in MAIN_BINDINGS), 'SOURCE_MAIN_SUBMISSION_CHANGED')
+    need(installation['schemaVersion'] == MAIN_INSTALLATION and installation['status'] == 'PASS' and
+         installation['fileCount'] == len(package['files']) == 147 and
+         installation['controllers'] == deployment['controllerGenerations'], 'SOURCE_MAIN_INSTALLATION_CHANGED')
+    need(audit['schemaVersion'] == 'AutomaticBackupChainAudit/v1' and audit['status'] == 'PASS' and
+         audit['state'] == 'SUCCEEDED' and type(audit['actualExitCode']) is int and audit['actualExitCode'] == 0 and
+         audit['sourceRestored'] is True and audit['uniqueOwnerOperationVerified'] is True and
+         audit['operationId'] == operation and audit['sourceConfigRef'] == SOURCE and audit['pointType'] == request['action'] and
+         audit['sourceEpoch']['state'] == 'READY' and all(audit[k] == v for k,v in deployment.items()),
+         'SOURCE_MAIN_SUCCESSFUL_AUDIT_REQUIRED')
+    version = audit['package']
+    need(version['engine'] == package['engine'] and version['variant'] == 'standard' and version['fileCount'] == 147 and
+         version['fileManifestSha256'] == installation['fileManifestSha256'] == package['fileManifestSha256'] and
+         version['allInstalledFilesShaVerified'] is True and audit['readback']['payloadContentVerified'] is True and
+         audit['readback']['verificationMode'] == 'NATIVE_FULL_READBACK_EVIDENCE_AUDIT', 'SOURCE_MAIN_AUDITED_PACKAGE_CHANGED')
+    for name, field in (('common/repository_minimal.py','repositoryProgramPin'),
+                        ('common/repository_native_readback.py','fullReaderPin')):
+        need(version[field]['path'] == str(PurePosixPath(package['engine'])/name) and
+             version[field]['sha256'] == package['files'][name], 'SOURCE_MAIN_AUDITED_PROGRAM_CHANGED')
+    parent = package['parent']; chain = audit['chain']
+    need(chain and chain[-1]['operationId'] == operation and chain[-1]['pointPin'] == audit['pointPin'] and
+         ((kind == 'FULL' and parent is None and len(chain) == 1 and request['parentChainRef'] is None) or
+          (kind != 'FULL' and parent is not None and chain[:-1] == parent['chain'] and
+           request['parentChainRef'] == parent['operationId'])), 'SOURCE_MAIN_PARENT_CHANGED')
+    from automatic_chain_audit import canonical
+    need(audit['sourceEpoch']['policySha256'] == hashlib.sha256(canonical(installation['policy'])).hexdigest() and
+         audit['database']['endPosition']['databaseUuid'] == installation['policy']['databaseUuid'],
+         'SOURCE_MAIN_EPOCH_CHANGED')
+    need(terminal['schemaVersion'] == 'AutomaticIncrementalUiTerminal/v3' and terminal['kind'] == kind and
+         terminal['applicationId'] == SOURCE and terminal['cycle'] == cycle and terminal['operationState'] == 'SUCCEEDED' and
+         terminal['request'] == request and terminal['plan'] == submission['plan'] and
+         terminal['implementationCommit'] == submission['implementationCommit'] and
+         terminal['spugCommit'] == submission['spugCommit'] and all(terminal[k] == submission[k] for k in MAIN_BINDINGS),
+         'SOURCE_MAIN_SUCCESSFUL_TERMINAL_REQUIRED')
+    need(datetime.fromisoformat(terminal['observedAt'].replace('Z','+00:00')) >=
+         datetime.fromisoformat(audit['finishedAt'].replace('Z','+00:00')), 'SOURCE_MAIN_TERMINAL_BEFORE_NATIVE_RESULT')
+    return dict(schemaVersion=MAIN_SPEC, kind=kind, operationId=operation, sourceConfigRef=SOURCE,
+                failedOriginalFullShaRequired=kind in ('FULL','I2'), deployment=deepcopy(deployment))
+
+
+def _task_path(value, task):
+    path = Path(value)
+    if not path.is_absolute(): path = task/path
+    path = path.resolve()
+    need(path.is_relative_to(task.resolve()) and path.suffix == '.json', 'SOURCE_MAIN_TASK_PATH_REQUIRED')
+    return path
+
+
+def verify_main_terminal_files(kind, cycle, submission, terminal, task):
+    reference = terminal['baselineEvidencePin']
+    need(type(reference) is dict and set(reference) == {'file','bytes','sha256'} and
+         type(reference['file']) is str and Path(reference['file']).name == reference['file'] and
+         not any(c in reference['file'] for c in '/\\:'), 'SOURCE_MAIN_VERIFY_BASELINE_PIN_INVALID')
+    baseline, baseline_pin = read_pinned(_task_path(reference['file'],task))
+    need(all(baseline_pin[k] == reference[k] for k in ('bytes','sha256')), 'SOURCE_MAIN_VERIFY_BASELINE_CHANGED')
+    expected = {k:submission['plan'][k] for k in ('state','parentChainRef','baseFullRef','planDigest')}
+    need(set(baseline) == {'schemaVersion','status','cycle','observedAt','applicationId','sourceConfigRef',
+                          'deploymentSelectionPin','expectedPlan','operationId'} and
+         baseline['schemaVersion'] == 'MainProgramAutomaticIncrementalUiBaseline/v1' and baseline['status'] == 'PASS' and
+         baseline['cycle'] == cycle and baseline['applicationId'] == baseline['sourceConfigRef'] == SOURCE and
+         baseline['deploymentSelectionPin'] == submission['deploymentSelectionPin'] and baseline['expectedPlan'] == expected and
+         baseline['operationId'] == submission['request']['operationId'], 'SOURCE_MAIN_VERIFY_BASELINE_CHANGED')
+    observation = terminal['observation']
+    need(type(observation) is str and re.fullmatch('[a-z0-9][a-z0-9-]{0,47}',observation), 'SOURCE_MAIN_UI_OBSERVATION_INVALID')
+    result, result_pin = read_pinned(task/('automatic-'+cycle+'-'+kind.lower()+'-verify-'+observation+'-result.json'))
+    need(result['schemaVersion'] == 'AutomaticIncrementalUiObservation/v1' and result['kind'] == kind and
+         result['phase'] == 'verify' and result['observation'] == observation and result['cycle'] == cycle and
+         result['status'] == 'SUCCEEDED_VERIFIED' and result['operationState'] == 'SUCCEEDED' and
+         all(result[k] is True for k in ('realBrowser','identityVerified','permissionVerified')) and
+         type(result['businessPosts']) is int and result['businessPosts'] == 0 and
+         result['blockedRequests'] == [] and type(result['pageErrorCount']) is int and result['pageErrorCount'] == 0 and
+         result['request'] == submission['request'] and result['baselineEvidencePin'] == reference and
+         result['preflightSha256'] == terminal['preflightSha256'] and
+         result['implementationCommit'] == submission['implementationCommit'] and result['spugCommit'] == submission['spugCommit'] and
+         all(result[k] == submission[k] for k in MAIN_BINDINGS), 'SOURCE_MAIN_UI_SUCCESS_OBSERVATION_REQUIRED')
+    return dict(mainVerifyBaseline=baseline_pin,mainUiObservation=result_pin)
 
 
 def validate_failed_pins(pins):
@@ -159,6 +299,9 @@ reader=AuditReader(seconds=180)
 install=SPEC['installation'];source=SPEC['sourceConfigRef'];operation=SPEC['operationId']
 controllers=install['controllers']
 need(len(controllers)==len(SPEC['controllerFiles'])==2,'SOURCE_CONTROLLER_GENERATIONS_REQUIRED')
+if SPEC.get('schemaVersion')=='MainProgramAutomaticSourceRestorationSpec/v1':
+ need(install.get('schemaVersion')=='MainProgramAutomaticSourceInstallation/v1' and install['fileCount']==147 and
+  all(len(files)==row['fileCount']==147 for row,files in zip(controllers,SPEC['controllerFiles'])),'SOURCE_MAIN_INSTALLATION_CHANGED')
 for item,manifest in zip(controllers,SPEC['controllerFiles']):
  for name,sha in manifest.items():
   reference=reader.local_pin(pathlib.Path(item['engine'])/name)
@@ -171,6 +314,9 @@ owner=reader.document(owner_pin)
 inputs=reader.local(pathlib.Path(control['taskRoot'])/'request-configurations'/operation/'request-inputs.json')
 need(inputs['request']==SPEC['request'] and inputs['ownerConfigurationPin']==owner_pin,'SOURCE_REQUEST_INPUTS_CHANGED')
 capture_pin=inputs['captureConfigurationPin']
+if SPEC.get('schemaVersion')=='MainProgramAutomaticSourceRestorationSpec/v1':
+ need(owner_pin==SPEC['deployment']['sourceOwnerConfigurationPin'] and
+  capture_pin==SPEC['deployment']['sourceCaptureConfigurationPin'],'SOURCE_MAIN_CAPTURE_CHANGED')
 need(capture_pin['path']==owner['sources'][source]['configurationPath'],'SOURCE_CAPTURE_PATH_CHANGED')
 capture=reader.document(capture_pin)
 need(capture['sourceConfigRef']==source,'SOURCE_CAPTURE_IDENTITY_CHANGED')
@@ -273,7 +419,39 @@ print(json.dumps(report))
 '''
 
 
-def prepare(kind, *, task=TASK, private=PRIVATE):
+def prepare_main(kind, cycle, selection_path, audit_path, parent_path, task, private):
+    need(kind in ('FULL','I1','I2') and type(cycle) is str and
+         re.fullmatch('[a-z0-9][a-z0-9-]{0,47}',cycle), 'SOURCE_MAIN_CYCLE_INVALID')
+    prefix = 'automatic-'+cycle+'-'+kind.lower()
+    destination = task/(prefix+'-source-restoration.json')
+    if destination.exists(): raise FileExistsError('SOURCE_REPORT_ALREADY_EXISTS')
+    selection_path = _task_path(selection_path,task)
+    audit_path = _task_path(prefix+'-audit.json' if audit_path is None else audit_path,task)
+    parent_path = None if parent_path is None else _task_path(parent_path,task)
+    need(kind == 'FULL' or parent_path is not None, 'SOURCE_MAIN_PARENT_REQUIRED')
+    values, pins = {}, {}
+    for key, path in dict(submission=task/(prefix+'-ui-submission.json'),audit=audit_path,
+                          terminal=task/(prefix+'-ui-terminal.json')).items():
+        values[key], pins[key] = read_pinned(path)
+    package = prepare_package(task/(prefix+'-ui-submission.json'),parent_path=parent_path,
+        selection_path=selection_path,task=task,private=private)
+    values['installation'] = main_installation(package)
+    spec = validate_main_evidence(kind,values['installation'],values['submission'],values['audit'],
+                                  values['terminal'],package,cycle)
+    pins.update(verify_main_terminal_files(kind,cycle,values['submission'],values['terminal'],task))
+    by_path = {p['path']:p for p in pins.values()}
+    for index, reference in enumerate(package['localInputPins']):
+        need(reference['path'] not in by_path or by_path[reference['path']] == reference, 'SOURCE_MAIN_INPUT_CONFLICT')
+        by_path[reference['path']] = reference
+        pins['deployment-'+str(index)] = reference
+    return destination, complete_spec(values,pins,package,spec,task,private)
+
+
+def prepare(kind, *, task=TASK, private=PRIVATE, cycle=None, selection_path=None, audit_path=None, parent_path=None):
+    need((cycle is None) == (selection_path is None), 'SOURCE_MAIN_CYCLE_AND_SELECTION_REQUIRED')
+    if cycle is not None:
+        return prepare_main(kind,cycle,selection_path,audit_path,parent_path,task,private)
+    need(audit_path is None and parent_path is None, 'SOURCE_MAIN_CYCLE_REQUIRED')
     destination = task / ('automatic-' + kind.lower() + '-source-restoration.json')
     if destination.exists():
         raise FileExistsError('SOURCE_REPORT_ALREADY_EXISTS')
@@ -291,6 +469,12 @@ def prepare(kind, *, task=TASK, private=PRIVATE):
     package = prepare_package(task / names['submission'], task / names['installation'], task=task, private=private)
     if deployment is not None:
         _,pins['deploymentSelection'] = read_pinned(task / deployment['selectionPin']['file'])
+    if deployment is not None:
+        spec['deployment'] = package['deployment']
+    return destination, complete_spec(values,pins,package,spec,task,private)
+
+
+def complete_spec(values, pins, package, spec, task, private):
     exporter, pins['exporter'] = read_pinned(task / 'binlog-tmpfs-tool-provisioned.json')
     failed, pins['failedOriginalBaseline'] = read_pinned(task / 'registered-binlog-tool-restored.json')
     failed_pins = list(failed['failedOriginalPins'])
@@ -318,17 +502,20 @@ print(json.dumps(dict(runtime=runtime,serviceConfigurationDigests=digests)))
         inputPins=pins, exporter=exporter, failedPins=failed_pins if spec['failedOriginalFullShaRequired'] else [],
         originalSourceScript=ORIGINAL_SCRIPT, healthProbe=probe, targetConfigRef=TARGET, files=package['files'],
         controllerFiles=package['controllerFiles'],targetRuntimeProbe=target_probe)
-    if deployment is not None:
-        spec['deployment'] = package['deployment']
-    return destination, spec
+    return spec
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--kind', required=True, choices=['FULL', 'I1', 'I2'])
+    parser.add_argument('--cycle')
+    parser.add_argument('--selection')
+    parser.add_argument('--audit', help='Explicit MAIN audit under TASK')
+    parser.add_argument('--parent', help='Explicit preceding verified chain audit under TASK')
     parser.add_argument('--prepare-only', action='store_true')
     args = parser.parse_args()
-    destination, spec = prepare(args.kind)
+    destination, spec = prepare(args.kind,cycle=args.cycle,selection_path=args.selection,
+        audit_path=args.audit,parent_path=args.parent)
     if args.prepare_only:
         print(json.dumps(dict(status='PREPARED', kind=args.kind, operationId=spec['operationId'],
                               failedOriginalFullShaRequired=spec['failedOriginalFullShaRequired'], remoteReadDispatched=False)))
