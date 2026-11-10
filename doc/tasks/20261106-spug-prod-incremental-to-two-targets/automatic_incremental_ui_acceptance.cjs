@@ -59,6 +59,9 @@ function browserPolicy(options){
   check(['headed','headless'].includes(mode),'EXPLICIT_BROWSER_MODE_INVALID');
   return {mode,headless:mode==='headless'};
 }
+function observeUiResponse(promise){
+  return promise.then(value=>({value}),error=>({error}));
+}
 function artifactPaths(options){
   check(!options.cycle||CYCLE.test(options.cycle),'EXPLICIT_CYCLE_INVALID');
   const kind=options.kind.toLowerCase(),stem=options.cycle?`automatic-${options.cycle}-${kind}`:`automatic-${kind}`;
@@ -412,9 +415,12 @@ async function main(){
       await page.getByPlaceholder('请输入账户').fill(credential.username);
       await page.getByPlaceholder('请输入密码').fill(credential.password);
       const login=page.waitForResponse(r=>new URL(r.url()).origin===ORIGIN&&new URL(r.url()).pathname==='/api/account/login/'&&r.request().method()==='POST',{timeout:45000});
+      const observedLogin=observeUiResponse(login);
       await page.getByRole('button',{name:'登 录',exact:true}).click();
       report.stage='login-response-contract';
-      const response=await login,raw=await response.text();
+      const loginOutcome=await observedLogin;
+      if(loginOutcome.error)throw loginOutcome.error;
+      const response=loginOutcome.value,raw=await response.text();
       exclusive(path.join(privateDir,privateLabel+'-login-response.private.json'),{observedAt:new Date().toISOString(),httpStatus:response.status(),body:raw});
       report.loginResponseRecorded=true;
       let body;try{body=JSON.parse(raw);}catch{check(false,'REAL_LOGIN_RESPONSE_JSON_INVALID');}
