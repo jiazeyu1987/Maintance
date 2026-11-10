@@ -87,6 +87,16 @@ def planned(value):
     return subject.plan_control_upgrade(**value.kwargs)
 
 
+def output_identity(path):
+    """Observe immutability without putting private contents in assertion output."""
+    if not path.exists():
+        return None
+    info = path.stat()
+    return ((info.st_dev, info.st_ino, info.st_mode, info.st_size,
+             info.st_mtime_ns, info.st_ctime_ns),
+            hashlib.sha256(path.read_bytes()).hexdigest())
+
+
 def test_actual_plan_is_pure_v2_and_groups_are_exact_8_new_27_retained(inputs):
     before = copy.deepcopy(inputs.kwargs)
     result = planned(inputs);private,public = result['privatePlan'],result['plan']
@@ -142,6 +152,8 @@ def test_actual_only_approved_configuration_fields_change(inputs):
 
 
 def test_actual_routes_settings_and_four_connection_values_stay_compatible(inputs):
+    output = Path(inputs.kwargs['private_plan_path'])
+    before = output_identity(output)
     old=inputs.kwargs['predecessor']['privatePlan'];new=planned(inputs)['privatePlan']
     assert new['simpleSettings'] == old['simpleSettings'] and new['entrySettings'] == old['entrySettings']
     assert new['bridgeSettings']['sourceConnections'] == old['bridgeSettings']['sourceConnections']
@@ -152,7 +164,18 @@ def test_actual_routes_settings_and_four_connection_values_stay_compatible(input
     routes=new['bridgeSettings']['selectionConnections'];assert len(routes)==3 and len(set(routes.values()))==1
     for key,value in old['bridgeSettings'].items():
         if key not in ('selectionConnections','targetConnections'):assert new['bridgeSettings'][key] == value
-    assert not Path(inputs.kwargs['private_plan_path']).exists()
+    assert output_identity(output) == before
+
+
+@pytest.mark.parametrize('existing', [False, True])
+def test_planning_does_not_create_or_replace_output(inputs, tmp_path, existing):
+    output = tmp_path/'main-program-configuration-plan-45dd7dc-r5.private.json'
+    if existing:
+        output.write_bytes(b'original planning output must remain unchanged\n')
+    inputs.kwargs['private_plan_path'] = str(output)
+    before = output_identity(output)
+    planned(inputs)
+    assert output_identity(output) == before
 
 
 @pytest.mark.parametrize('change',['same-commit','invalid-commit','invalid-revision','build-pin','build-commit',

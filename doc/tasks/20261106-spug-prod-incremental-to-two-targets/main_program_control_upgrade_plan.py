@@ -88,6 +88,10 @@ def manifest(files,build,commit):
 
 
 def validate_delta(delta,build,build_pin,old_build,old_build_pin,files,previous_files,commit,previous_commit):
+    if delta.get('schemaVersion') == 'MainProgramChainPolicyPackageDelta/v1':
+        from main_program_chain_policy_evidence import validate_chain_policy_delta
+        return validate_chain_policy_delta(delta,build,build_pin,old_build,old_build_pin,
+                                            files,previous_files,commit,previous_commit)
     need(delta.get('schemaVersion') == 'ArchiveCataloguePackageDelta/v2' and delta.get('status') == 'PASS' and
          delta.get('sourceCommit') == commit and delta.get('predecessorCommit') == previous_commit and
          delta.get('buildPin') == build_pin and delta.get('predecessorBuildPin') == old_build_pin and

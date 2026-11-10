@@ -323,6 +323,10 @@ def validate_generation_coverage(records, inputs, predecessor):
     """Read the original full proof and exact candidate delta, including both tars."""
     from main_program_control_upgrade_plan import validate_delta
     report = records.pinned(inputs['coveragePin'])
+    if report.get('schemaVersion') == 'MainProgramControlCoverage/v2':
+        from main_program_chain_policy_evidence import validate_chain_policy_coverage
+        return validate_chain_policy_coverage(records,inputs,predecessor,file_pin=file_pin,
+                                              validate_initial_coverage=validate_coverage)
     fields = {'schemaVersion', 'status', 'baselineCoveragePin', 'baselineBuildPin', 'candidateBuildPin',
               'changedFiles', 'unchangedPackageFiles', 'deltaTestEvidencePins', 'actualPackageEvidencePins', 'failedEvidencePins'}
     need(set(report) == fields and report['schemaVersion'] == 'MainProgramControlCoverage/v1' and
