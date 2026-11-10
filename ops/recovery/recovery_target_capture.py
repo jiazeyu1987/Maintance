@@ -34,7 +34,8 @@ class _CaptureProcessObserver:
         value=dict(schemaVersion='RecoveryDataInvocation/v1',operationId=s._context._request['operationId'],
             action='RESTORE',argvSha256=digest(argv),mutation=False,startedAt=utc(),finishedAt=None,
             actualExitCode=None,state='TERMINAL_UNKNOWN')
-        reference=exclusive_json(path,value)
+        from recovery_program_activation import _exclusive
+        reference=_exclusive(path,value,s._context._check)
         self.active=dict(path=path,value=value,intent_pin=reference,token=None,process=None,pid=os.getpid(),
             dump=dumping)
         self.active['token']=s._view.begin_invocation(s._native,reference)
@@ -224,7 +225,7 @@ class MainTargetCapture:
             require(authentication['mode']=='NONE' and 'passwordPin' not in redis,'PROGRAM_CAPTURE_REDIS_CREDENTIAL_CHANGED')
 
     @property
-    def handed_off(self):return False
+    def handed_off(self):return self._state=='HANDED_OFF'
 
     def _admit_resources(self):
         from recovery_resource_admission import observe_resources,check_budget,verify_reservation
@@ -400,7 +401,43 @@ class MainTargetCapture:
             materials=None if self._material is None else self._material.result)
 
     def handoff(self,verified_preservation):
-        raise RecoveryError('PROGRAM_CAPTURE_PRESERVATION_REQUIRED')
+        from recovery_target_preservation import _HandoffArchive
+        require(type(verified_preservation) is _HandoffArchive and
+            verified_preservation._publication is getattr(self._context,'_target_preservation',None) and
+            verified_preservation._publication.session is self and
+            verified_preservation._publication._handoff_archive is verified_preservation,
+            'PROGRAM_CAPTURE_PRESERVATION_REQUIRED')
+        require(self._state=='MATERIAL_COMPLETE' and self._observer.active is None,
+            'PROGRAM_CAPTURE_HANDOFF_STATE_INVALID')
+        self.guard(force=True)
+        evidence=self._context.snapshot()
+        require(not evidence['terminalUnknown'] and all(row['terminalPin'] is not None and
+            row['terminalObservation']['state']=='SUCCEEDED' for row in evidence['invocations']),
+            'PROGRAM_CAPTURE_HANDOFF_UNSETTLED')
+        require(not self._native.storage_running and not self._native.running_applications,
+            'PROGRAM_CAPTURE_WRITERS_NOT_STOPPED')
+        intent=self._record('handoff-intent.json',dict(schemaVersion='MainTargetPreservationHandoffIntent/v1',
+            operationId=self._context._request['operationId'],targetConfigRef=self._context._request['targetConfigRef'],
+            bindingPin=self._context._binding,archiveProofPin=verified_preservation.archive_pin,
+            captureSessionPin=self._pins[str(self._journal/'intent.json')],
+            originalFlags=[1,1],restoreFlags=[0,0],createdAt=utc()))
+        self._state='HANDOFF_IN_PROGRESS'
+        try:
+            self._lease.handoff(verified_preservation)
+            from recovery_main_target import verify_writer_quiescence,verify_runtime
+            from recovery_replace import verify_services
+            verify_services(self._native,self._native.config['replacement'])
+            verify_runtime(self._native,states=True);verify_writer_quiescence(self._native)
+            self._lease._external_protections()
+            reference=self._record('handoff.json',dict(schemaVersion='MainTargetPreservationHandoff/v1',
+                state='SUCCEEDED',operationId=self._context._request['operationId'],
+                targetConfigRef=self._context._request['targetConfigRef'],intentPin=intent,
+                archiveProofPin=verified_preservation.archive_pin,
+                originalResultPins=deepcopy(self._context.snapshot()['originalResultPins']),finishedAt=utc()))
+            self._state='HANDED_OFF'
+            return reference
+        except BaseException as error:
+            self._fail(error);raise
 
     def close(self):
         self._closed=True

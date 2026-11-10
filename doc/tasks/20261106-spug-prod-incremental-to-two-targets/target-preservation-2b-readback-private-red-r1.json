@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "TaskTargetPreservationProtocolVerification/v1",
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--name",
+    "spug-target-preservation-2b-readback-private-red-r1",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--memory",
+    "512m",
+    "--cpus",
+    "1",
+    "--pids-limit",
+    "128",
+    "--tmpfs",
+    "/work:rw,exec,nosuid,nodev,size=256m",
+    "--tmpfs",
+    "/tmp:rw,nosuid,nodev,size=128m",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-readback-private-red-r1.tar,target=/inputs/source.tar,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-readback-private-red-r1-runner.py,target=/inputs/runner.py,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\linux-test-wheels,target=/inputs/wheels,readonly",
+    "sha256:14a4933e6cef421424f7a66d89a3f4eafcbd0d90e0a822251f298e05132dc735",
+    "python",
+    "-B",
+    "/inputs/runner.py"
+  ],
+  "exitCode": 1,
+  "timeout": false,
+  "counts": {
+    "tests": 3,
+    "failures": 2,
+    "errors": 0,
+    "skipped": 0
+  },
+  "elapsedSeconds": 28.969,
+  "sourceSnapshotPin": {
+    "file": "target-preservation-2b-readback-private-red-r1.tar",
+    "bytes": 7383040,
+    "sha256": "c236495642b7e66e62379622e4de2e6b541341b789fa387a970091a1dc10b889"
+  },
+  "sourceInventoryPin": {
+    "file": "target-preservation-2b-readback-private-red-r1-inputs.json",
+    "bytes": 40392,
+    "sha256": "1a9c75e0466c2fe0963f61ef5ea07b5c60094d21b69319d875f7815053f926ef"
+  },
+  "runnerPin": {
+    "file": "target-preservation-2b-readback-private-red-r1-runner.py",
+    "bytes": 1239,
+    "sha256": "8a19a31df93eb9155ea6ca88dfccf481f2a512df7a587f1fef59a67f09621dbf"
+  },
+  "rawLogPin": {
+    "file": "target-preservation-2b-readback-private-red-r1.log",
+    "bytes": 6789,
+    "sha256": "ebab4d9bd1011d3d8f99a6fbdd6159c58f7a8f2f14545cb68a4d4f6c0cde5221"
+  },
+  "diagnosticPins": [],
+  "junitPin": {
+    "file": "target-preservation-2b-readback-private-red-r1.xml",
+    "bytes": 2609,
+    "sha256": "4da1c935b0993c1d382c9ae0cdbfb1ac7eff2029aff0676d5ce969221a82f0e9"
+  },
+  "inputsUnchanged": true,
+  "runtimeInputsUnchanged": true,
+  "containerRemoved": true,
+  "remoteActions": 0,
+  "businessWrites": 0,
+  "actualBusinessRestore": false
+}

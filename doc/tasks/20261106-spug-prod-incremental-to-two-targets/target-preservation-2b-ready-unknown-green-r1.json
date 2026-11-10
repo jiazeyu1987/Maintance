@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "TaskTargetPreservationProtocolVerification/v1",
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--name",
+    "spug-target-preservation-2b-ready-unknown-green-r1",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--memory",
+    "512m",
+    "--cpus",
+    "1",
+    "--pids-limit",
+    "128",
+    "--tmpfs",
+    "/work:rw,exec,nosuid,nodev,size=256m",
+    "--tmpfs",
+    "/tmp:rw,nosuid,nodev,size=128m",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-ready-unknown-green-r1.tar,target=/inputs/source.tar,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-ready-unknown-green-r1-runner.py,target=/inputs/runner.py,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\linux-test-wheels,target=/inputs/wheels,readonly",
+    "sha256:14a4933e6cef421424f7a66d89a3f4eafcbd0d90e0a822251f298e05132dc735",
+    "python",
+    "-B",
+    "/inputs/runner.py"
+  ],
+  "exitCode": 0,
+  "timeout": false,
+  "counts": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "elapsedSeconds": 553.093,
+  "sourceSnapshotPin": {
+    "file": "target-preservation-2b-ready-unknown-green-r1.tar",
+    "bytes": 7383040,
+    "sha256": "c4652084e5a89b68fe41cc651d142a16bce9b8fe9e3940474dad10884630e61b"
+  },
+  "sourceInventoryPin": {
+    "file": "target-preservation-2b-ready-unknown-green-r1-inputs.json",
+    "bytes": 40261,
+    "sha256": "047a3697eb2bcf7da81c2ebd3643b5e36b062c5c6c07690ffc796f1fb24d9fc0"
+  },
+  "runnerPin": {
+    "file": "target-preservation-2b-ready-unknown-green-r1-runner.py",
+    "bytes": 4175,
+    "sha256": "05ed2bced418136e5b96a7c68026c5c6d45a0777335b11137578182651b4aecf"
+  },
+  "rawLogPin": {
+    "file": "target-preservation-2b-ready-unknown-green-r1.log",
+    "bytes": 1675057,
+    "sha256": "c2fb36a5aa29589bbbbed4403240c199f31c99ab899cab30d785c18c7146f42a"
+  },
+  "diagnosticPins": [
+    {
+      "pin": {
+        "file": "target-preservation-2b-ready-unknown-green-r1-diagnostics-0.json",
+        "bytes": 1251723,
+        "sha256": "ee0b12dada5a4016bba704f8fc8bb03215bafc0e4c7ff0fc79d832858b9dd51f"
+      },
+      "originalFilePins": [
+        {
+          "originalPath": "/work/pytest/test_main_ready_unknown_preser0/producer-preservation-operations/restore-1/worker-result.json",
+          "pin": {
+            "file": "target-preservation-2b-ready-unknown-green-r1-diagnostics-0-file-0.bin",
+            "bytes": 849838,
+            "sha256": "d11cfc4b281aef4f72d11cd31dba4646334e461aac1cfa14a2a9d967cc84154e"
+          }
+        },
+        {
+          "originalPath": "/work/pytest/test_main_ready_unknown_preser0/capture-protocol-state.json",
+          "pin": {
+            "file": "target-preservation-2b-ready-unknown-green-r1-diagnostics-0-file-1.bin",
+            "bytes": 5520,
+            "sha256": "480c9db771f631b10b7c529cc92a632b81243a43ed1213c1e893bbc4f009dc07"
+          }
+        },
+        {
+          "originalPath": "/work/pytest/test_main_ready_unknown_preser0/replacements/restore-1/replacement-result.json",
+          "pin": {
+            "file": "target-preservation-2b-ready-unknown-green-r1-diagnostics-0-file-2.bin",
+            "bytes": 5174,
+            "sha256": "88a2fd4bb91f97826d4cb060674fa92ee0201ef64163672b16c5a06420a96a14"
+          }
+        },
+        {
+          "originalPath": "/work/pytest/test_main_ready_unknown_preser0/producer-preservation-operations/restore-1/target-preservation/publication/preservation.json",
+          "pin": {
+            "file": "target-preservation-2b-ready-unknown-green-r1-diagnostics-0-file-3.bin",
+            "bytes": 11887,
+            "sha256": "b8283303fa7409e9668a898eb6cca83243de942b8aa035478a660fd68abdf06e"
+          }
+        },
+        {
+          "originalPath": "/work/pytest/test_main_ready_unknown_preser0/producer-preservation-operations/restore-1/final/native-125.json",
+          "pin": {
+            "file": "target-preservation-2b-ready-unknown-green-r1-diagnostics-0-file-4.bin",
+            "bytes": 518,
+            "sha256": "998b5712c8dad9e6c2740380c3c8196e621a130bd785ff98d072d52c2dad804b"
+          }
+        }
+      ]
+    }
+  ],
+  "junitPin": {
+    "file": "target-preservation-2b-ready-unknown-green-r1.xml",
+    "bytes": 399,
+    "sha256": "4ccda2b389ae84b3a0db9f3530f5d0640263773a7727b3f32efa4770aa4330ca"
+  },
+  "inputsUnchanged": true,
+  "runtimeInputsUnchanged": true,
+  "containerRemoved": true,
+  "remoteActions": 0,
+  "businessWrites": 0,
+  "actualBusinessRestore": false
+}

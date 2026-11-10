@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "TaskTargetPreservationProtocolVerification/v1",
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--name",
+    "spug-target-preservation-2b-handoff-runtime-green-r4",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--memory",
+    "512m",
+    "--cpus",
+    "1",
+    "--pids-limit",
+    "128",
+    "--tmpfs",
+    "/work:rw,exec,nosuid,nodev,size=256m",
+    "--tmpfs",
+    "/tmp:rw,nosuid,nodev,size=128m",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-handoff-runtime-green-r4.tar,target=/inputs/source.tar,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-handoff-runtime-green-r4-runner.py,target=/inputs/runner.py,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\linux-test-wheels,target=/inputs/wheels,readonly",
+    "sha256:14a4933e6cef421424f7a66d89a3f4eafcbd0d90e0a822251f298e05132dc735",
+    "python",
+    "-B",
+    "/inputs/runner.py"
+  ],
+  "exitCode": 0,
+  "timeout": false,
+  "counts": {
+    "tests": 10,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "elapsedSeconds": 191.687,
+  "sourceSnapshotPin": {
+    "file": "target-preservation-2b-handoff-runtime-green-r4.tar",
+    "bytes": 7372800,
+    "sha256": "5ae97b19a2d06a0aa77d0c8989d375e5ddda27af6746cb8aaadbcc7b3fd2d28a"
+  },
+  "sourceInventoryPin": {
+    "file": "target-preservation-2b-handoff-runtime-green-r4-inputs.json",
+    "bytes": 40261,
+    "sha256": "d5d569785b2ebf5b75219c2831a853816c5aba5907445d91999c9e4b07e4d73b"
+  },
+  "runnerPin": {
+    "file": "target-preservation-2b-handoff-runtime-green-r4-runner.py",
+    "bytes": 4311,
+    "sha256": "47bb46137578c95ff4f0f5e5ccadcdf367b6bd15fbe12f9f06c4bebdfa0fc77a"
+  },
+  "rawLogPin": {
+    "file": "target-preservation-2b-handoff-runtime-green-r4.log",
+    "bytes": 7666,
+    "sha256": "0ffcb0b95212ec92ba6f640b856e63267a648c6d0f23054b7c36a2bec438c31a"
+  },
+  "junitPin": {
+    "file": "target-preservation-2b-handoff-runtime-green-r4.xml",
+    "bytes": 1939,
+    "sha256": "0044b6f78c19ddbef84d514950911e04b3f78a9304ba7f99c616694ecceed546"
+  },
+  "inputsUnchanged": true,
+  "runtimeInputsUnchanged": true,
+  "containerRemoved": true,
+  "remoteActions": 0,
+  "businessWrites": 0,
+  "actualBusinessRestore": false
+}

@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "TaskTargetPreservationFormatVerification/v1",
+  "state": "PASS",
+  "changes": "CRLF_TO_HEAD_LF_ONLY",
+  "behaviorTestsRerun": false,
+  "originalSourceInventoryPin": {
+    "file": "target-preservation-2b-producer-green-r7-inputs.json",
+    "bytes": 40261,
+    "sha256": "d5d569785b2ebf5b75219c2831a853816c5aba5907445d91999c9e4b07e4d73b"
+  },
+  "files": [
+    {
+      "file": "ops/recovery/recovery_minimal_runtime.py",
+      "before": {
+        "bytes": 25497,
+        "sha256": "0e7bbe5c991552956a578cea09d67ac4f18feaa06975f067120608e5b487a2de",
+        "crlf": 447
+      },
+      "after": {
+        "bytes": 25050,
+        "sha256": "da77e45882b776ab3fc3375f6149fc3709b30a66c818ac798c456f8b5351a614",
+        "lf": 447
+      },
+      "preservedBeforePin": {
+        "file": "recovery_minimal_runtime.py",
+        "bytes": 25497,
+        "sha256": "0e7bbe5c991552956a578cea09d67ac4f18feaa06975f067120608e5b487a2de"
+      },
+      "astIncludingLocationsEqual": true,
+      "astSha256": "6420a3b13f919db9e71de2f23e5b28828fb7639ed247e3788021e367a262dbcc"
+    },
+    {
+      "file": "ops/recovery/recovery_replace.py",
+      "before": {
+        "bytes": 19378,
+        "sha256": "0a6db40d345516a20f3a17f6fe65fc5b6f010a2103278cee29b7abe160ff0e07",
+        "crlf": 346
+      },
+      "after": {
+        "bytes": 19032,
+        "sha256": "85b888ccd916442bc220736511359ddbf204b02bb1a7eb4a3581d9cf9237e534",
+        "lf": 346
+      },
+      "preservedBeforePin": {
+        "file": "recovery_replace.py",
+        "bytes": 19378,
+        "sha256": "0a6db40d345516a20f3a17f6fe65fc5b6f010a2103278cee29b7abe160ff0e07"
+      },
+      "astIncludingLocationsEqual": true,
+      "astSha256": "af771bb3553dbefaab34fd20a78011c8d73af3915f2249c2b7015ece2eb0b92c"
+    },
+    {
+      "file": "ops/recovery/repository_retention.py",
+      "before": {
+        "bytes": 13785,
+        "sha256": "c86385be870da4834863b421c7c240616843d99468c32ac81925e8f5ac536bc8",
+        "crlf": 245
+      },
+      "after": {
+        "bytes": 13540,
+        "sha256": "7554491688fc526d6e6c12609b80b745e957377368266db842ff85e4f8d777b5",
+        "lf": 245
+      },
+      "preservedBeforePin": {
+        "file": "repository_retention.py",
+        "bytes": 13785,
+        "sha256": "c86385be870da4834863b421c7c240616843d99468c32ac81925e8f5ac536bc8"
+      },
+      "astIncludingLocationsEqual": true,
+      "astSha256": "610efac652341e6c4092bd5c1b322f50b885eb8828fa92ab882d39b55ac2edbd"
+    },
+    {
+      "file": "ops/recovery/recovery_minimal_worker.py",
+      "before": {
+        "bytes": 4737,
+        "sha256": "165c1101037386353bda33e4c561905715836170bdea2738e917667928072ae2",
+        "crlf": 84
+      },
+      "after": {
+        "bytes": 4653,
+        "sha256": "c9ebe58de6f38fe2b32e183d6f71402f73030da6c95cc788eb5235b3540e3b0d",
+        "lf": 84
+      },
+      "preservedBeforePin": {
+        "file": "recovery_minimal_worker.py",
+        "bytes": 4737,
+        "sha256": "165c1101037386353bda33e4c561905715836170bdea2738e917667928072ae2"
+      },
+      "astIncludingLocationsEqual": true,
+      "astSha256": "4d42dc651cc5e375b313c301d861c3748834334e7c0c68339cbc23bdf82e9456"
+    }
+  ]
+}

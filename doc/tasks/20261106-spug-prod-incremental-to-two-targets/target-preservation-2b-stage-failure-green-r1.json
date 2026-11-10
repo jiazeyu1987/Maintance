@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "TaskTargetPreservationProtocolVerification/v1",
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--name",
+    "spug-target-preservation-2b-stage-failure-green-r1",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--memory",
+    "512m",
+    "--cpus",
+    "1",
+    "--pids-limit",
+    "128",
+    "--tmpfs",
+    "/work:rw,exec,nosuid,nodev,size=256m",
+    "--tmpfs",
+    "/tmp:rw,nosuid,nodev,size=128m",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-stage-failure-green-r1.tar,target=/inputs/source.tar,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-stage-failure-green-r1-runner.py,target=/inputs/runner.py,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\linux-test-wheels,target=/inputs/wheels,readonly",
+    "sha256:14a4933e6cef421424f7a66d89a3f4eafcbd0d90e0a822251f298e05132dc735",
+    "python",
+    "-B",
+    "/inputs/runner.py"
+  ],
+  "exitCode": 0,
+  "timeout": false,
+  "counts": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "elapsedSeconds": 355.313,
+  "sourceSnapshotPin": {
+    "file": "target-preservation-2b-stage-failure-green-r1.tar",
+    "bytes": 7383040,
+    "sha256": "c4652084e5a89b68fe41cc651d142a16bce9b8fe9e3940474dad10884630e61b"
+  },
+  "sourceInventoryPin": {
+    "file": "target-preservation-2b-stage-failure-green-r1-inputs.json",
+    "bytes": 40261,
+    "sha256": "047a3697eb2bcf7da81c2ebd3643b5e36b062c5c6c07690ffc796f1fb24d9fc0"
+  },
+  "runnerPin": {
+    "file": "target-preservation-2b-stage-failure-green-r1-runner.py",
+    "bytes": 4169,
+    "sha256": "a985fd5f1b699625aaa406ae06c5b8063562f6c698c00eb5c12fa114daf8da7a"
+  },
+  "rawLogPin": {
+    "file": "target-preservation-2b-stage-failure-green-r1.log",
+    "bytes": 1556095,
+    "sha256": "e7b75cc731692c0de03101744e551ce1509d7a28d188956736ab4bbebdebbfa5"
+  },
+  "diagnosticPins": [
+    {
+      "pin": {
+        "file": "target-preservation-2b-stage-failure-green-r1-diagnostics-0.json",
+        "bytes": 1162786,
+        "sha256": "462ca946b3b7cb55400aecee413b5e3d285a6d52d2797c077126fdeb7cc63b8a"
+      },
+      "originalFilePins": [
+        {
+          "originalPath": "/work/pytest/test_main_stage_failure_keeps_0/producer-preservation-operations/restore-1/worker-result.json",
+          "pin": {
+            "file": "target-preservation-2b-stage-failure-green-r1-diagnostics-0-file-0.bin",
+            "bytes": 790625,
+            "sha256": "5ffec2d9d73decdd028df94dc5bd4ce4fb41cce16705b5fca95481903821d6f7"
+          }
+        },
+        {
+          "originalPath": "/work/pytest/test_main_stage_failure_keeps_0/capture-protocol-state.json",
+          "pin": {
+            "file": "target-preservation-2b-stage-failure-green-r1-diagnostics-0-file-1.bin",
+            "bytes": 4043,
+            "sha256": "03e89ee1f3a983c9bbb105ca0b1da620cb2bb237ecd632caed28a84b3a37f9bc"
+          }
+        },
+        {
+          "originalPath": "/work/pytest/test_main_stage_failure_keeps_0/replacements/restore-1/replacement-result.json",
+          "pin": {
+            "file": "target-preservation-2b-stage-failure-green-r1-diagnostics-0-file-2.bin",
+            "bytes": 4578,
+            "sha256": "3863b8177a9741e9aaf5125f518dd39e1787045bb3f845e19d0deeb853e75a9d"
+          }
+        },
+        {
+          "originalPath": "/work/pytest/test_main_stage_failure_keeps_0/producer-preservation-operations/restore-1/target-preservation/publication/preservation.json",
+          "pin": {
+            "file": "target-preservation-2b-stage-failure-green-r1-diagnostics-0-file-3.bin",
+            "bytes": 11887,
+            "sha256": "e428463e2cd277451245b2bd03349e601c0eee0a6844c3a049ec917829e8de20"
+          }
+        },
+        {
+          "originalPath": "/work/pytest/test_main_stage_failure_keeps_0/producer-preservation-operations/restore-1/replacement-preparation/native-1675.json",
+          "pin": {
+            "file": "target-preservation-2b-stage-failure-green-r1-diagnostics-0-file-4.bin",
+            "bytes": 509,
+            "sha256": "1583400828cc70f911be53266bb1d8a2d1bed72bc3458a785c2bed584a491531"
+          }
+        }
+      ]
+    }
+  ],
+  "junitPin": {
+    "file": "target-preservation-2b-stage-failure-green-r1.xml",
+    "bytes": 396,
+    "sha256": "671e17e462c50da12a46cdf0c60b200ad07800a69432e0bd53d86696162b63d8"
+  },
+  "inputsUnchanged": true,
+  "runtimeInputsUnchanged": true,
+  "containerRemoved": true,
+  "remoteActions": 0,
+  "businessWrites": 0,
+  "actualBusinessRestore": false
+}

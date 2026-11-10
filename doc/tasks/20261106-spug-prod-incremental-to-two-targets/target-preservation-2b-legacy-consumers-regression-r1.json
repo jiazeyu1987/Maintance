@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "TaskTargetPreservationProtocolVerification/v1",
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--name",
+    "spug-target-preservation-2b-legacy-consumers-regression-r1",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--memory",
+    "512m",
+    "--cpus",
+    "1",
+    "--pids-limit",
+    "128",
+    "--tmpfs",
+    "/work:rw,exec,nosuid,nodev,size=256m",
+    "--tmpfs",
+    "/tmp:rw,nosuid,nodev,size=128m",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-legacy-consumers-regression-r1.tar,target=/inputs/source.tar,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-legacy-consumers-regression-r1-runner.py,target=/inputs/runner.py,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\linux-test-wheels,target=/inputs/wheels,readonly",
+    "sha256:14a4933e6cef421424f7a66d89a3f4eafcbd0d90e0a822251f298e05132dc735",
+    "python",
+    "-B",
+    "/inputs/runner.py"
+  ],
+  "exitCode": 0,
+  "timeout": false,
+  "counts": {
+    "tests": 173,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "elapsedSeconds": 271.562,
+  "sourceSnapshotPin": {
+    "file": "target-preservation-2b-legacy-consumers-regression-r1.tar",
+    "bytes": 7383040,
+    "sha256": "c4652084e5a89b68fe41cc651d142a16bce9b8fe9e3940474dad10884630e61b"
+  },
+  "sourceInventoryPin": {
+    "file": "target-preservation-2b-legacy-consumers-regression-r1-inputs.json",
+    "bytes": 40261,
+    "sha256": "047a3697eb2bcf7da81c2ebd3643b5e36b062c5c6c07690ffc796f1fb24d9fc0"
+  },
+  "runnerPin": {
+    "file": "target-preservation-2b-legacy-consumers-regression-r1-runner.py",
+    "bytes": 1425,
+    "sha256": "43b16f78f86f365459426114747eecbd1b8443af650af1a8745b334b6d6240a6"
+  },
+  "rawLogPin": {
+    "file": "target-preservation-2b-legacy-consumers-regression-r1.log",
+    "bytes": 62054,
+    "sha256": "1739a058e75549f5d0e83de5afa572f179378393403bf78333d8af254e5464b6"
+  },
+  "diagnosticPins": [],
+  "junitPin": {
+    "file": "target-preservation-2b-legacy-consumers-regression-r1.xml",
+    "bytes": 28946,
+    "sha256": "b6985052fb68a7dca3eff95202589116ac6484c963da90b2d876af29cc8fb262"
+  },
+  "inputsUnchanged": true,
+  "runtimeInputsUnchanged": true,
+  "containerRemoved": true,
+  "remoteActions": 0,
+  "businessWrites": 0,
+  "actualBusinessRestore": false
+}

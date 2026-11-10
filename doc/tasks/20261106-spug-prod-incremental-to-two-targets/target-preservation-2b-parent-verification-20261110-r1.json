@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "ParentTargetPreservation2bVerification/v1",
+  "status": "PASS_LOCAL_COMPONENT_ONLY",
+  "freezePin": {
+    "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\target-preservation-2b-freeze-r1.json",
+    "bytes": 71408,
+    "sha256": "e696f05e446cc7c8be6876fd31d66e57c0e6255200f94c3e46e5c5a3a3917af4"
+  },
+  "verifiedPhysicalPinCount": 81,
+  "verifiedPhysicalBytes": 15436861,
+  "compiledFiles": 15,
+  "productFiles": 11,
+  "newTestFiles": 4,
+  "uniquePassedNodeCount": 197,
+  "allCurrentInputsPresentInPassingSnapshots": true,
+  "ordinarySmbReadMethodUnchanged": true,
+  "rounds": [
+    {
+      "label": "handoff-runtime-green-r4",
+      "tests": 10,
+      "exitCode": 0,
+      "containerRemoved": true
+    },
+    {
+      "label": "fixture-created-id-green-r3",
+      "tests": 1,
+      "exitCode": 0,
+      "containerRemoved": true
+    },
+    {
+      "label": "readback-private-green-r2",
+      "tests": 9,
+      "exitCode": 0,
+      "containerRemoved": true
+    },
+    {
+      "label": "producer-green-r9",
+      "tests": 1,
+      "exitCode": 0,
+      "containerRemoved": true
+    },
+    {
+      "label": "handoff-unknown-green-r1",
+      "tests": 1,
+      "exitCode": 0,
+      "containerRemoved": true
+    },
+    {
+      "label": "stage-failure-green-r1",
+      "tests": 1,
+      "exitCode": 0,
+      "containerRemoved": true
+    },
+    {
+      "label": "ready-unknown-green-r1",
+      "tests": 1,
+      "exitCode": 0,
+      "containerRemoved": true
+    },
+    {
+      "label": "legacy-consumers-regression-r1",
+      "tests": 173,
+      "exitCode": 0,
+      "containerRemoved": true
+    }
+  ],
+  "newTestsExecuted": false,
+  "dockerInvoked": false,
+  "remoteWrites": false,
+  "actualBusinessRestore": false,
+  "remainingHolds": [
+    "Actual SAFE transforms and both packages not built",
+    "No new control-generation protocol or remote installation",
+    "Per-operation readback configuration derivation not implemented",
+    "Source/preservation repository layout and 58/59 capture registration not installed",
+    "Dedicated preservation role has no Spug catalog/restore selection yet"
+  ]
+}

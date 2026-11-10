@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "TaskTargetPreservationProtocolVerification/v1",
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--name",
+    "spug-target-preservation-2b-handoff-unknown-green-r1",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--memory",
+    "512m",
+    "--cpus",
+    "1",
+    "--pids-limit",
+    "128",
+    "--tmpfs",
+    "/work:rw,exec,nosuid,nodev,size=256m",
+    "--tmpfs",
+    "/tmp:rw,nosuid,nodev,size=128m",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-handoff-unknown-green-r1.tar,target=/inputs/source.tar,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-handoff-unknown-green-r1-runner.py,target=/inputs/runner.py,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\linux-test-wheels,target=/inputs/wheels,readonly",
+    "sha256:14a4933e6cef421424f7a66d89a3f4eafcbd0d90e0a822251f298e05132dc735",
+    "python",
+    "-B",
+    "/inputs/runner.py"
+  ],
+  "exitCode": 0,
+  "timeout": false,
+  "counts": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "elapsedSeconds": 539.765,
+  "sourceSnapshotPin": {
+    "file": "target-preservation-2b-handoff-unknown-green-r1.tar",
+    "bytes": 7383040,
+    "sha256": "c4652084e5a89b68fe41cc651d142a16bce9b8fe9e3940474dad10884630e61b"
+  },
+  "sourceInventoryPin": {
+    "file": "target-preservation-2b-handoff-unknown-green-r1-inputs.json",
+    "bytes": 40261,
+    "sha256": "047a3697eb2bcf7da81c2ebd3643b5e36b062c5c6c07690ffc796f1fb24d9fc0"
+  },
+  "runnerPin": {
+    "file": "target-preservation-2b-handoff-unknown-green-r1-runner.py",
+    "bytes": 4183,
+    "sha256": "f0d75c91db24708583c973706b688fc788fc5716a7bb979f27dc9958b88effc0"
+  },
+  "rawLogPin": {
+    "file": "target-preservation-2b-handoff-unknown-green-r1.log",
+    "bytes": 1542353,
+    "sha256": "068fb2f29647a5d0fa7e0177ae4c63259d4ca06dbc67b317114db00b26b1d883"
+  },
+  "diagnosticPins": [
+    {
+      "pin": {
+        "file": "target-preservation-2b-handoff-unknown-green-r1-diagnostics-0.json",
+        "bytes": 1151634,
+        "sha256": "b00aad05374d0ee5feb4ad2d1364be00c8327d8e50bb5261f6885f33f75074c4"
+      },
+      "originalFilePins": [
+        {
+          "originalPath": "/work/pytest/test_main_handoff_unknown_reta0/producer-preservation-operations/restore-1/worker-result.json",
+          "pin": {
+            "file": "target-preservation-2b-handoff-unknown-green-r1-diagnostics-0-file-0.bin",
+            "bytes": 794072,
+            "sha256": "a2447e1b13950eec9080326c332f2ea1f2537f71d6df8f928b7eba804e2bd1f6"
+          }
+        },
+        {
+          "originalPath": "/work/pytest/test_main_handoff_unknown_reta0/capture-protocol-state.json",
+          "pin": {
+            "file": "target-preservation-2b-handoff-unknown-green-r1-diagnostics-0-file-1.bin",
+            "bytes": 4043,
+            "sha256": "4e07b64ebe831a5f76511cc646d30c2de67fc7ccfbbfde7e05ccd10ba4ee84a6"
+          }
+        },
+        {
+          "originalPath": "/work/pytest/test_main_handoff_unknown_reta0/replacements/restore-1/replacement-result.json",
+          "pin": {
+            "file": "target-preservation-2b-handoff-unknown-green-r1-diagnostics-0-file-2.bin",
+            "bytes": 2942,
+            "sha256": "5ced03c7dbe00744800d7ae75030f914c00331fdf51cc55767bc9eba8a6c8765"
+          }
+        },
+        {
+          "originalPath": "/work/pytest/test_main_handoff_unknown_reta0/producer-preservation-operations/restore-1/replacement-preparation/native-1701.json",
+          "pin": {
+            "file": "target-preservation-2b-handoff-unknown-green-r1-diagnostics-0-file-3.bin",
+            "bytes": 507,
+            "sha256": "da3ce18832f7478ec1ed8cd8322a8f5cd4fb62b6f23117ada4147e1a58ed6290"
+          }
+        }
+      ]
+    }
+  ],
+  "junitPin": {
+    "file": "target-preservation-2b-handoff-unknown-green-r1.xml",
+    "bytes": 403,
+    "sha256": "f3d0caacfe3e1f0bf8d98768130c3ddb33e2fb3341a16b7ce3938e6fb74640fa"
+  },
+  "inputsUnchanged": true,
+  "runtimeInputsUnchanged": true,
+  "containerRemoved": true,
+  "remoteActions": 0,
+  "businessWrites": 0,
+  "actualBusinessRestore": false
+}

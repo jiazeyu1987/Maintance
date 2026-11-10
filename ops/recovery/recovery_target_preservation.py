@@ -164,6 +164,16 @@ class VerifiedPreservationArchive:
         self.archive_pin = deepcopy(reference)
 
 
+class _HandoffArchive(VerifiedPreservationArchive):
+    """Single publication-owned capability, never a caller supplied pin."""
+
+
+class VerifiedTargetPreservation:
+    def __init__(self, publication, reference):
+        self._publication=publication
+        self.reference=deepcopy(reference)
+
+
 class TargetPreservation:
     @classmethod
     def prepare(cls, native, *, policy_pin, reservation_pin):
@@ -320,15 +330,33 @@ class TargetPreservation:
         self.native.original_pins.append(deepcopy(reference))
         return reference
 
+    def _check_resources(self):
+        """Nonrecursive local custody check used by every context guard."""
+        require(not self._closed,'PRESERVATION_CLOSED')
+        require(self.context._target_preservation is self and self.session._context is self.context,
+            'PRESERVATION_OWNER_CHANGED')
+        require(time.monotonic()<self.deadline.end,'PRESERVATION_DEADLINE')
+        for path,expected in self._directories.items():
+            require(_directory(path)==expected,'PRESERVATION_DIRECTORY_CHANGED')
+        for lease in self._leases:lease.check()
+        # These existing ownership/read-guard checks do not call config.current.
+        # Calling RepositoryLock.check here would recurse through ctx._check.
+        self._repository_lock._check_owned()
+        self._repository_lock._refuse_recovery_read_guard()
+        require(not os.path.lexists(self._repository_lock.unknown_path),
+            'REPOSITORY_PREVIOUS_WRITE_TERMINAL_UNKNOWN')
+
     def _check_base(self):
         require(not self._closed, 'PRESERVATION_CLOSED')
         require(self.context._target_preservation is self and self.session._context is self.context,
             'PRESERVATION_OWNER_CHANGED')
-        self.session.guard()
-        require(time.monotonic() < self.deadline.end, 'PRESERVATION_DEADLINE')
-        for path, expected in self._directories.items():
-            require(_directory(path) == expected, 'PRESERVATION_DIRECTORY_CHANGED')
-        for lease in self._leases: lease.check()
+        if self.session._state in ('HANDOFF_IN_PROGRESS','HANDED_OFF'):
+            # Only local checks after handoff: the original PREPARATION native
+            # must not dispatch after generation publication or RESTORE stage.
+            self.context._check();self.session.check()
+            self.session._lease.check()
+        else:self.session.guard()
+        self._check_resources()
 
     def check(self):
         # RepositoryLock.check calls configuration.current (_check_base) once.
@@ -478,6 +506,29 @@ class TargetPreservation:
         validate_archive(self.native,proof)
         return proof
 
+    def handoff(self):
+        require(getattr(self,'_handoff_archive',None) is None,'PRESERVATION_HANDOFF_ALREADY_USED')
+        require(self._proof is not None,'PRESERVATION_ARCHIVE_REQUIRED')
+        self.check()
+        # Initial publication already performed full strict readback and
+        # validate_archive. Continuous leases have remained held since then.
+        proof=_json(self._proof)
+        exact(proof,PROOF,'MainTargetPreservationArchive/v1')
+        require(proof['intentPin']==self.intent_pin and proof['state']=='ARCHIVED_VERIFIED',
+            'PRESERVATION_PROOF_INVALID')
+        self._handoff_archive=_HandoffArchive(self,self._proof)
+        handoff=self.session.handoff(self._handoff_archive)
+        hold=self._pins[str(self.configuration.root/'.repository-control'/'preservation-holds'/
+            (self.context._request['operationId']+'.json'))]
+        reference=self._write(self.root/'preservation.json',dict(schemaVersion='MainTargetPreservation/v1',
+            state='SUCCEEDED',operationId=self.context._request['operationId'],
+            targetConfigRef=self.context._request['targetConfigRef'],policyPin=self.policy_pin,
+            intentPin=self.intent_pin,archiveProofPin=self._proof,handoffPin=handoff,holdPin=hold,
+            originalResultPins=deepcopy(list(self._pins.values())),finishedAt=utc()))
+        self._final=VerifiedTargetPreservation(self,reference)
+        require_preservation(self.context,native=self.native)
+        return self._final
+
     def close(self):
         if self._closed:return
         self._closed=True
@@ -514,3 +565,263 @@ def validate_archive(native, archive_proof_pin):
         'PRESERVATION_HOLD_REQUIRED')
     publication.check()
     return VerifiedPreservationArchive(publication,archive_proof_pin)
+
+
+def require_preservation(context, *, native=None):
+    """Live authorization requires the exact operation-owned final object.
+
+    This performs bounded metadata and continuous identity checks, never a
+    second full read of payloads already held since strict publication.
+    """
+    from recovery_program_native import MainNativeExecutionContext
+    from recovery_engine import require as execution_require
+    execution_require(type(context) is MainNativeExecutionContext,'PRESERVATION_CONTEXT_REQUIRED')
+    context._check()
+    policies=context._owner.get('targetPreservationPolicies',{})
+    target=context._request['targetConfigRef']
+    if target not in policies:return None
+    publication=getattr(context,'_target_preservation',None)
+    execution_require(type(publication) is TargetPreservation and
+        publication.context is context and publication.policy_pin==policies[target],
+        'PROGRAM_TARGET_PRESERVATION_REQUIRED')
+    final=getattr(publication,'_final',None)
+    execution_require(type(final) is VerifiedTargetPreservation and final._publication is publication and
+        publication.session.handed_off and publication.session._lease.handed_off,
+        'PROGRAM_TARGET_PRESERVATION_REQUIRED')
+    publication.check()
+    execution_require(final.reference is not None and
+        final.reference==publication._pins.get(str(publication.root/'preservation.json')),
+        'PRESERVATION_FINAL_CHANGED')
+    value=_json(final.reference)
+    exact(value,'schemaVersion state operationId targetConfigRef policyPin intentPin archiveProofPin '
+        'handoffPin holdPin originalResultPins finishedAt','MainTargetPreservation/v1')
+    execution_require(value['state']=='SUCCEEDED' and value['operationId']==context._request['operationId'] and
+        value['targetConfigRef']==target and value['policyPin']==policies[target] and
+        value['intentPin']==publication.intent_pin and value['archiveProofPin']==publication._proof,
+        'PRESERVATION_FINAL_CHANGED')
+    intent=_json(value['intentPin']);handoff=_json(value['handoffPin'])
+    execution_require(intent['configurationPin']==_json(context._binding)['configurationPin'] and
+        intent['executionBindingPin']==context._binding and
+        handoff['schemaVersion']=='MainTargetPreservationHandoff/v1' and handoff['state']=='SUCCEEDED' and
+        handoff['operationId']==value['operationId'] and handoff['targetConfigRef']==target and
+        handoff['archiveProofPin']==publication._proof and
+        _json(handoff['intentPin'])['bindingPin']==context._binding,
+        'PRESERVATION_FINAL_CHANGED')
+    hold=_json(value['holdPin'])
+    execution_require(hold['pointPin']==_json(publication._proof)['pointPin'] and
+        hold['archiveProofPin']==publication._proof,'PRESERVATION_HOLD_REQUIRED')
+    if native is not None:
+        view=getattr(native,'native_context',None)
+        execution_require(type(view) is _NativeView and view._context is context and
+            native.protection_custody is publication.session._custody,'PRESERVATION_OWNER_CHANGED')
+        view.guard_native(native)
+        publication.session._custody._validate(native)
+    publication.check()
+    return final
+
+
+def validate_preservation_evidence(owner,request,reference,*,binding_pin,guard=None,_reader=None):
+    """Verify retained archive facts offline; never construct a live clear grant.
+
+    The existing strict readback binder verifies the actual archived payloads.
+    Operation-local metadata shares the historical reader's bounded reads and
+    final identity checks. A caller cannot substitute this report for the live
+    same-context object and continuously held leases required above.
+    """
+    from recovery_engine import canonical as native_canonical,digest
+    from recovery_program_evidence import _Reader
+    from recovery_program_execution import BINDING_FIELDS
+    from recovery_program_activation import CONTEXT_FIELDS
+    from repository_binding import assemble_readback_bindings,repository_binding
+    import formal_capture_recovery_inputs as binder
+    guard=(lambda:None) if guard is None else guard
+    try:
+        require(callable(guard),'PRESERVATION_EVIDENCE_INVALID')
+        operation=request['operationId'];target=request['targetConfigRef']
+        root=_path(owner['operationsRoot'])/_operation(operation)
+        claim=_path(owner['targets'][target]['replacement']['stateRoot'])/operation
+        publication=root/'target-preservation'/'publication'
+        reader=_Reader(guard,(root,claim)) if _reader is None else _reader
+        require(type(reader) is _Reader and reader.roots==(root,claim),'PRESERVATION_EVIDENCE_INVALID')
+        def read(pin,maximum=4*1024*1024):return reader.read(pin,maximum)
+        def fixed(pin,path,maximum=4*1024*1024):
+            require(_path(pin['path'])==path,'PRESERVATION_EVIDENCE_PATH_CHANGED')
+            return read(pin,maximum)
+        value=fixed(reference,publication/'preservation.json')
+        exact(value,'schemaVersion state operationId targetConfigRef policyPin intentPin archiveProofPin '
+            'handoffPin holdPin originalResultPins finishedAt','MainTargetPreservation/v1')
+        require(value['state']=='SUCCEEDED' and value['operationId']==operation and
+            value['targetConfigRef']==target and owner['targetPreservationPolicies'][target]==value['policyPin'],
+            'PRESERVATION_EVIDENCE_SCOPE_CHANGED')
+        policy=read(value['policyPin']);exact(policy,POLICY,'MainTargetPreservationPolicy/v1')
+        program=owner['targetProgramPolicies'][target]
+        require(policy['targetConfigRef']==target and policy['backupEpochPolicy']==program['backupEpochPolicy'] and
+            program['captureConfigurationPins'][policy['captureRef']]==policy['captureConfigurationPin'],
+            'PRESERVATION_EVIDENCE_POLICY_CHANGED')
+        repository=read(policy['repositoryConfigurationPin'])
+        exact(repository,REPOSITORY,'MainTargetPreservationRepository/v1')
+        archive=_location(_path(repository['repositoryRoot']),operation);sidecar=archive/'.repository'
+        binding=fixed(binding_pin,claim/'program-execution-binding.json')
+        require(type(binding) is dict and set(binding)==BINDING_FIELDS and
+            binding['schemaVersion']=='MainProgramExecutionBinding/v1' and binding['operationId']==operation and
+            binding['targetConfigRef']==target and binding['policySha256']==digest(program) and
+            fixed(binding['configurationPin'],root/'configuration.json')==owner and
+            fixed(binding['requestPin'],root/'request.json')==request,
+            'PRESERVATION_EVIDENCE_BINDING_CHANGED')
+        context=fixed(binding['contextPin'],claim/'program-context.json')
+        require(type(context) is dict and set(context)==CONTEXT_FIELDS and
+            context['schemaVersion']=='MainProgramRestoreContext/v1' and context['operationId']==operation and
+            context['policySha256']==digest(program),'PRESERVATION_EVIDENCE_CONTEXT_CHANGED')
+        intent=fixed(value['intentPin'],publication/'intent.json')
+        require(intent.get('schemaVersion')=='MainTargetPreservationIntent/v1' and
+            intent['operationId']==operation and intent['targetConfigRef']==target and intent['role']==ROLE and
+            intent['policyPin']==value['policyPin'] and intent['repositoryConfigurationPin']==policy['repositoryConfigurationPin'] and
+            intent['configurationPin']==binding['configurationPin'] and intent['requestPin']==binding['requestPin'] and
+            intent['executionBindingPin']==binding_pin and intent['contextPin']==binding['contextPin'] and
+            intent['originalTargetPin']==context['targetPin'] and
+            intent['captureConfigurationPin']==context['capturePins'][policy['captureRef']] and
+            intent['reservationPin']==binding['reservationPin'] and intent['archivePath']==str(archive) and
+            intent['readyEventPin']==context['readyEpoch']['eventPin'],
+            'PRESERVATION_EVIDENCE_INTENT_CHANGED')
+        proof=fixed(value['archiveProofPin'],publication/'archive-proof.json')
+        exact(proof,PROOF,'MainTargetPreservationArchive/v1')
+        require(proof['state']=='ARCHIVED_VERIFIED' and proof['role']==ROLE and proof['operationId']==operation and
+            proof['targetConfigRef']==target and proof['intentPin']==value['intentPin'] and
+            proof['payloadContentVerified'] is True and proof['serverDurabilityVerified'] is False and
+            proof['independentFailureDomain'] is False,'PRESERVATION_EVIDENCE_ARCHIVE_CHANGED')
+        names=dict(pointPin='preservation-point.json',manifestPin='manifest.json',payloadTreePin='payload-tree.json',
+            repositoryBindingPin='recovery-repository-binding.json',recoveryMaterialPin='recovery-material.json',
+            objectContentIndexPin='object-content-index.json',readbackPin='readback-original.json',
+            archiveClosePin='archive-close.json',captureTerminalPin='capture-terminal.json')
+        docs={key:fixed(proof[key],sidecar/name,64*1024*1024 if key in
+            ('recoveryMaterialPin','objectContentIndexPin') else 4*1024*1024) for key,name in names.items()}
+        require(set(reader.listing(sidecar))==set(names.values()),'PRESERVATION_EVIDENCE_SIDECAR_CHANGED')
+        point=docs['pointPin'];exact(point,POINT,'MainTargetPreservationPoint/v1')
+        manifest=docs['manifestPin'];tree=docs['payloadTreePin'];readback=docs['readbackPin']
+        require(point['role']==ROLE and point['pointType']=='FULL' and point['parentPointPins']==[] and
+            point['integrityState']=='COMPLETE' and point['controlledRestoreEligible'] is False and
+            all(point[k]==manifest[k] for k in ('backupId','generationId','pointType','parentPointPins',
+                'commonRecoveryPoint','payloadRefs')) and point['manifestPin']==proof['manifestPin'] and
+            point['readbackEvidencePin']==proof['readbackPin'] and
+            point['archiveCloseEvidencePin']==proof['archiveClosePin'] and
+            point['captureTerminalEvidencePin']==proof['captureTerminalPin'] and
+            manifest['payloadTreePin']==proof['payloadTreePin'] and
+            manifest['sourceIdentityPin']==repository['sourceIdentityPin'],
+            'PRESERVATION_EVIDENCE_POINT_CHANGED')
+        require(type(tree) is dict and tree and type(point['payloadRefs']) is list,
+            'PRESERVATION_EVIDENCE_TREE_INVALID')
+        expected_files={};directories={archive}
+        for name,spec in tree.items():
+            guard();path=_path(str(archive/name))
+            require(type(name) is str and path!=archive and archive in path.parents and
+                '.repository' not in Path(name).parts,'PRESERVATION_EVIDENCE_TREE_INVALID')
+            if spec=='directory':directories.add(path)
+            else:
+                fields=spec.split('|')
+                require(len(fields)==3 and fields[0]=='file' and fields[1].isdigit(),
+                    'PRESERVATION_EVIDENCE_TREE_INVALID')
+                expected_files[str(path)]=dict(path=str(path),bytes=int(fields[1]),sha256=fields[2])
+        require(sorted(point['payloadRefs'],key=lambda p:p['path'])==
+            sorted(expected_files.values(),key=lambda p:p['path']),'PRESERVATION_EVIDENCE_PAYLOAD_SET_CHANGED')
+        for directory in directories:
+            children={Path(p).name for p in [*expected_files,*map(str,directories)] if Path(p).parent==directory}
+            if directory==archive:children.add('.repository')
+            require(set(reader.listing(directory))==children,'PRESERVATION_EVIDENCE_TREE_CHANGED')
+        for payload in point['payloadRefs']:reader.payload(payload)
+        require(readback.get('schemaVersion')=='RepositoryMinimumReadback/v1' and
+            readback['operationId']==operation and readback['manifestPin']==proof['manifestPin'] and
+            readback['payloadRefs']==point['payloadRefs'] and readback['payloadContentVerified'] is True and
+            readback['serverDurabilityVerified'] is False and
+            readback['recoveryMaterialPin']==proof['recoveryMaterialPin'] and
+            readback['objectContentIndexPin']==proof['objectContentIndexPin'],
+            'PRESERVATION_EVIDENCE_READBACK_CHANGED')
+        originals=read(readback['originalRecordsPin'],96*1024*1024)
+        exact(originals,'schemaVersion manifestPin archivedFilePins readbackOriginalPins','RepositoryReadbackOriginals/v1')
+        require(originals['manifestPin']==proof['manifestPin'] and
+            sum(p['bytes'] for p in originals['readbackOriginalPins'].values())<=policy['maxReadbackRecordBytes'],
+            'PRESERVATION_EVIDENCE_READBACK_CHANGED')
+        for pin in originals['readbackOriginalPins'].values():reader.blob(pin)
+        reader.blob(repository['captureBinderPin'])
+        require(repository['captureBinderPin']['path']==str(Path(binder.__file__).resolve()),
+            'PRESERVATION_EVIDENCE_BINDER_CHANGED')
+        outputs=assemble_readback_bindings(proof['manifestPin'],{'originalRecordsPin':readback['originalRecordsPin']},
+            SimpleNamespace(check=guard),binder.assemble_repository_capture_records,verify_content=True)
+        require(outputs==dict(recoveryMaterial=docs['recoveryMaterialPin'],objectContentIndex=docs['objectContentIndexPin']),
+            'PRESERVATION_EVIDENCE_MATERIAL_CHANGED')
+        expected_binding=repository_binding(SimpleNamespace(policy={'sourceIdentityPin':repository['sourceIdentityPin']}),
+            proof['pointPin'],point,proof['recoveryMaterialPin'],proof['objectContentIndexPin'],verify_metadata=True)
+        require(docs['repositoryBindingPin']==expected_binding,'PRESERVATION_EVIDENCE_REPOSITORY_BINDING_CHANGED')
+        close=docs['archiveClosePin'];terminal=docs['captureTerminalPin']
+        require(close.get('schemaVersion')=='RepositoryMinimumArchiveClose/v1' and close['operationId']==operation and
+            close['archiveReaderClosed'] is True and close['closeResponse']['state']=='ARCHIVE_READER_CLOSED_NOT_NAS_PROOF' and
+            terminal.get('schemaVersion')=='MainTargetCaptureTerminal/v1' and terminal['operationId']==operation and
+            terminal['targetConfigRef']==target and terminal['materialsPin']==proof['materialsPin'] and
+            terminal['sourceRestored'] is False and terminal['writersRemainQuiesced'] is True,
+            'PRESERVATION_EVIDENCE_CAPTURE_TERMINAL_CHANGED')
+        materials=fixed(proof['materialsPin'],root/'target-preservation'/'session'/'materials.json')
+        require(materials.get('schemaVersion')=='MainTargetCaptureMaterials/v1' and materials['operationId']==operation and
+            materials['writersRemainQuiesced'] is True and materials['sourceRestored'] is False,
+            'PRESERVATION_EVIDENCE_MATERIALS_CHANGED')
+        native=fixed(terminal['nativeEvidencePin'],publication/'capture-native-evidence.json',64*1024*1024)
+        require(native.get('schemaVersion')=='MainNativeExecutionEvidence/v1' and native['operationId']==operation and
+            native['bindingPin']==binding_pin and native['generationPin'] is None and native['phase']=='PREPARATION' and
+            native['terminalUnknown'] is False,'PRESERVATION_EVIDENCE_NATIVE_CHANGED')
+        pins=[]
+        for sequence,row in enumerate(native['invocations']):
+            intent_row=row['intentObservation'];dispatch=row['intentPinAtDispatch'];terminal_row=read(row['terminalPin'])
+            require(row['sequence']==sequence and row['phase']=='PREPARATION' and
+                len(native_canonical(intent_row))==dispatch['bytes'] and digest(intent_row)==dispatch['sha256'] and
+                intent_row['schemaVersion']=='RecoveryDataInvocation/v1' and intent_row['operationId']==operation and
+                intent_row['action']=='RESTORE' and type(intent_row['mutation']) is bool and
+                intent_row['actualExitCode'] is None and intent_row['finishedAt'] is None and
+                intent_row['state']=='TERMINAL_UNKNOWN' and row['terminalPin']['path']==dispatch['path'] and
+                terminal_row==row['terminalObservation'] and terminal_row['state']=='SUCCEEDED' and
+                type(terminal_row['actualExitCode']) is int and terminal_row['actualExitCode']==0 and
+                all(terminal_row[k]==intent_row[k] for k in
+                    ('schemaVersion','operationId','action','argvSha256','mutation','startedAt')),
+                'PRESERVATION_EVIDENCE_NATIVE_CHANGED')
+            pins.append(row['terminalPin'])
+        require(pins==native['originalResultPins'] and native['mutationDispatched'] is
+            any(r['intentObservation']['mutation'] for r in native['invocations']) and
+            native['lastExitCode']==(0 if pins else None),'PRESERVATION_EVIDENCE_NATIVE_CHANGED')
+        side=fixed(proof['sidecarReadbackPin'],publication/'sidecar-readback.json')
+        require(side.get('schemaVersion')=='MainTargetPreservationSidecarReadback/v1' and side['operationId']==operation and
+            side['pointPin']==proof['pointPin'] and side['independentConnectionId']==readback['independentConnectionId'] and
+            side['verifiedPins']==[proof[k] for k in ('payloadTreePin','manifestPin','recoveryMaterialPin',
+                'objectContentIndexPin','readbackPin','archiveClosePin','captureTerminalPin','pointPin','repositoryBindingPin')] and
+            side['payloadContentVerified'] is True and side['serverDurabilityVerified'] is False,
+            'PRESERVATION_EVIDENCE_SIDECAR_CHANGED')
+        handoff=fixed(value['handoffPin'],root/'target-preservation'/'session'/'handoff.json')
+        handoff_intent=fixed(handoff['intentPin'],root/'target-preservation'/'session'/'handoff-intent.json')
+        require(handoff.get('schemaVersion')=='MainTargetPreservationHandoff/v1' and handoff['state']=='SUCCEEDED' and
+            handoff['operationId']==operation and handoff['targetConfigRef']==target and
+            handoff['archiveProofPin']==value['archiveProofPin'] and
+            handoff_intent.get('schemaVersion')=='MainTargetPreservationHandoffIntent/v1' and
+            handoff_intent['operationId']==operation and handoff_intent['targetConfigRef']==target and
+            handoff_intent['bindingPin']==binding_pin and handoff_intent['archiveProofPin']==value['archiveProofPin'] and
+            handoff_intent['originalFlags']==[1,1] and handoff_intent['restoreFlags']==[0,0],
+            'PRESERVATION_EVIDENCE_HANDOFF_CHANGED')
+        hold_root=_path(repository['repositoryRoot'])/'.repository-control'/'preservation-holds'
+        hold=fixed(value['holdPin'],hold_root/(operation+'.json'))
+        hold_intent=fixed(hold['intentPin'],hold_root/(operation+'-intent.json'))
+        exact(hold,HOLD,'MainTargetPreservationHold/v1')
+        exact(hold_intent,HOLD_INTENT,'MainTargetPreservationHoldIntent/v1')
+        require(hold['role']==hold_intent['role']==ROLE and
+            hold['repositoryId']==hold_intent['repositoryId']==repository['repositoryId'] and
+            hold['operationId']==hold_intent['operationId']==operation and
+            hold['targetConfigRef']==hold_intent['targetConfigRef']==target and
+            hold['pointPin']==proof['pointPin'] and hold['archiveProofPin']==value['archiveProofPin'] and
+            hold['intentPin']==proof['holdIntentPin'] and hold_intent['preservationIntentPin']==value['intentPin'] and
+            hold_intent['archivePath']==str(archive) and hold_intent['pointPath']==proof['pointPin']['path'],
+            'PRESERVATION_EVIDENCE_HOLD_CHANGED')
+        for aggregate in (proof,value,handoff):
+            for pin in aggregate['originalResultPins']:
+                if _path(pin['path']) not in reader.records:reader.blob(pin)
+        reader.unchanged()
+        return dict(schemaVersion='MainTargetPreservationEvidenceValidation/v1',operationId=operation,
+            targetPreservationPin=deepcopy(reference),payloadContentVerified=True,
+            captureNativeEvidencePin=deepcopy(terminal['nativeEvidencePin']),captureInvocations=deepcopy(native['invocations']),
+            originalResultPins=[deepcopy(row[0]) for row in reader.records.values()],clearAuthorized=False)
+    except RepositoryError:raise
+    except (RecoveryError,KeyError,TypeError,ValueError,IndexError,AttributeError,OSError) as error:
+        raise RepositoryError('PRESERVATION_EVIDENCE_INVALID') from error

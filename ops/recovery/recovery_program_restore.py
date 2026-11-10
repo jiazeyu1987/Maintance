@@ -98,6 +98,7 @@ def execute(configuration, request, root, input_pins, original_execute, native_t
     from recovery_program_containers import UnixDocker, switch_stopped_programs
     from recovery_program_derivation import derive
     from recovery_program_sql_staging import close_sql_staging
+    from recovery_target_preservation import TargetPreservation
     from recovery_resource_admission import admit
     from recovery_replace import preparation_intent, preparation_preflight, quiesce
 
@@ -108,6 +109,7 @@ def execute(configuration, request, root, input_pins, original_execute, native_t
     context = custody = generation_pin = started = receipt_pin = None
     native_snapshot = custody_snapshot = frozen = None
     phase, active = 'NOT_STARTED', None
+    preservation = target_preservation = None
     outer_unknown = False
 
     def original_guard():
@@ -146,10 +148,21 @@ def execute(configuration, request, root, input_pins, original_execute, native_t
                 reference = pin(root/name)
                 program.append(reference)
                 if name == 'sql-staging-cleanup.json': sql_cleanup_pin = reference
+        preservation_pins=[]
+        preservation_pin=None
+        if preservation is not None:
+            preservation_pins=list(preservation._pins.values())
+            final=getattr(preservation,'_final',None)
+            if final is not None:preservation_pin=deepcopy(final.reference)
+            # Failure records are immutable originals even if publication did
+            # not complete. Their presence never grants clear authority.
+            for folder in (preservation.root,preservation.session._journal):
+                failure=folder/'failure.json'
+                if os.path.lexists(failure):preservation_pins.append(pin(failure))
         mutation, unknown = _program_status(claim)
         mutation = mutation or bool(native_value and native_value['mutationDispatched'])
         unknown = unknown or bool(native_value and native_value['terminalUnknown']) or outer_unknown
-        detailed = _unique([*records,*program,generation_pin,native_snapshot,custody_snapshot,
+        detailed = _unique([*records,*program,*preservation_pins,generation_pin,native_snapshot,custody_snapshot,
             *(reference for native in natives for reference in native.original_pins),
             *(native_value['originalResultPins'] if native_value is not None else []),
             *(custody_value['originalResultPins'] if custody_value is not None else [])])
@@ -159,10 +172,10 @@ def execute(configuration, request, root, input_pins, original_execute, native_t
             'preparation.json','load-intent.json','load-result.json','load-failure.json',
             'intent.json','result.json','failure.json','resource-admission-program.json',
             'sql-staging-cleanup-intent.json','sql-staging-cleanup.json'}]
-        compact = _unique([*records,*compact_program,generation_pin,native_snapshot,custody_snapshot])
+        compact = _unique([*records,*compact_program,preservation_pin,generation_pin,native_snapshot,custody_snapshot])
         frozen = dict(programExecutionPhase=phase,programNativeEvidencePin=native_snapshot,
             programProtectionCustodyPin=custody_snapshot,programGenerationPin=deepcopy(generation_pin),
-            programSqlCleanupPin=deepcopy(sql_cleanup_pin),
+            programSqlCleanupPin=deepcopy(sql_cleanup_pin),targetPreservationPin=preservation_pin,
             mutationDispatched=mutation,terminalUnknown=unknown,
             actualNativeExitCode=None if native_value is None else native_value['lastExitCode'],
             originalResultPins=detailed, receiptOriginalResultPins=compact)
@@ -254,9 +267,17 @@ def execute(configuration, request, root, input_pins, original_execute, native_t
         import_plan = prepare_image_import(source_program['archivePin'],source_program['roleImages'],import_root,
             guard=context._check,architecture=source_program['architecture'],
             max_archive_bytes=source_program['maxArchiveBytes'],max_import_bytes=source_program['maxImportBytes'])
+        preservation_policies=configuration.get('targetPreservationPolicies',{})
+        if request['targetConfigRef'] in preservation_policies:
+            preservation=TargetPreservation.prepare(native,
+                policy_pin=preservation_policies[request['targetConfigRef']],
+                reservation_pin=pin(root/'resource-reservation.json'))
         with native.timed_stage('target-replacement-quiesce'):
             preparation_preflight(native,replacement)
             quiesce(native,replacement)
+        if preservation is not None:
+            preservation.capture_and_publish()
+            target_preservation=preservation.handoff()
         load_image_import(import_plan,operation_id=request['operationId'],epoch_policy=policy['backupEpochPolicy'],
             lock_fd=source_lock_fd,load=lambda path:native.docker(['image','load','--input',str(path)],mutation=True),
             inspect_image=lambda identity:json.loads(native.docker(['image','inspect',identity]))[0],guard=context._check)
@@ -281,7 +302,8 @@ def execute(configuration, request, root, input_pins, original_execute, native_t
         restore_view = context.restore(restored)
         data, native = original_execute(restored,request,root,input_pins,reservation_configuration=configuration,
             native_context=restore_view,protection_custody=custody,execution_binding_pin=binding_pin,
-            execution_generation_pin=generation_pin,execution_lock_fd=source_lock_fd)
+            execution_generation_pin=generation_pin,execution_lock_fd=source_lock_fd,
+            target_preservation=target_preservation)
         add_native(native)
         data.update(native.replacement_finish())
         data.update(result_data())

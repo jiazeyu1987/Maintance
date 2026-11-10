@@ -5,7 +5,7 @@ from pathlib import Path, PureWindowsPath
 import re
 import stat
 
-from repository_records import (absolute, document, exact, pin_file, read_pin,
+from repository_records import (absolute, canonical, document, exact, pin_file, read_pin,
                                 require, safe_path, validate_pin, write_new)
 from repository_host_view import logical
 
@@ -195,10 +195,13 @@ class SmbReadback:
             for item in provisioned['provisionedInputCopies']:
                 copy_pin = retained[item['archivePath']]
                 records[item['sourcePin']['path']] = copy_pin
-            original_records_pin = write_new(self.records / 'readback-originals.json',
+            original_records_pin = self._write_original_records(
                 dict(schemaVersion='RepositoryReadbackOriginals/v1', manifestPin=material['manifestPin'],
                      archivedFilePins=generated, readbackOriginalPins=records))
         return self.connection_id, original_records_pin
+
+    def _write_original_records(self, value):
+        return write_new(self.records / 'readback-originals.json', value)
 
     def close(self):
         # This cache was created for this read only. No writer mapping or other
@@ -210,6 +213,23 @@ class SmbReadback:
 
     def __exit__(self, kind, value, trace):
         self.close()
+
+
+def _private_record(path, raw, deadline):
+    """MAIN originals are private independently of the caller's umask."""
+    deadline.check()
+    safe_path(path.parent)
+    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+    with os.fdopen(descriptor, 'wb') as output:
+        output.write(raw)
+        output.flush()
+        os.fsync(output.fileno())
+    directory = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        os.fsync(directory)
+    finally:
+        os.close(directory)
+    return pin_file(path, deadline)
 
 
 def read_verified(self, repository_path, expected=None, retain=False):
@@ -244,17 +264,16 @@ def read_verified(self, repository_path, expected=None, retain=False):
     retained = None
     if retain:
         path = self.records / (hashlib.sha256(repository_path.encode()).hexdigest() + '.raw')
-        with path.open('xb') as output:
-            output.write(raw)
-            output.flush()
-            os.fsync(output.fileno())
-        retained = pin_file(path, self.deadline)
+        retained = _private_record(path, raw, self.deadline)
         self.record_bytes += length
     return reference, retained
 
 class PreservationReadback(SmbReadback):
     """Explicit strict MAIN entry; the default LIGHT reader remains unchanged."""
     read = read_verified
+
+    def _write_original_records(self, value):
+        return _private_record(self.records / 'readback-originals.json', canonical(value), self.deadline)
 
     def __init__(self, configuration, deadline):
         # The LIGHT read_pin intentionally does not compare hashes. Prove the

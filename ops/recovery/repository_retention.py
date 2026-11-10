@@ -141,11 +141,13 @@ def inventory(catalog):
 
 def plan_retention(catalog, request):
     config = catalog.config
+    from recovery_target_preservation import preservation_holds
+    held = preservation_holds(config, guard=catalog.deadline.check)
     points = inventory(catalog)
     require(points, 'REPOSITORY_RETENTION_EMPTY')
     policy = config.policy
     now = datetime.now(timezone.utc)
-    protected = set()
+    protected = set(held)
     by_path = {row['pointPin']['path']: row for row in points}
     def protect(row):
         for pin in row['chainPins']:
@@ -205,6 +207,9 @@ def execute_retention(catalog, request, plan_pin, evidence_dir):
             journal = {'schemaVersion': 'RepositoryRetentionStep/v1', 'operationId': request['operationId'], 'planPin': plan_pin, 'pointPin': pin, 'archivePath': archive.as_posix(), 'state': 'DELETE_INTENT', 'at': utc()}
             write_new(evidence_dir / ('delete-' + pin['sha256'] + '-intent.json'), journal)
             owner.check()
+            from recovery_target_preservation import preservation_holds
+            held = preservation_holds(config, guard=owner.check)
+            require(pin['path'] not in held, 'REPOSITORY_DELETE_RETAINED_POINT')
             # shutil uses the current platform end to end. No command-built shell deletion.
             shutil.rmtree(archive)
             require(not archive.exists(), 'REPOSITORY_DELETE_INCOMPLETE')

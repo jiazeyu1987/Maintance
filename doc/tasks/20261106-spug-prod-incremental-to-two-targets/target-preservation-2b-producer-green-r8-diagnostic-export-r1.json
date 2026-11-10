@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "TargetPreservationProtocolDiagnosticExport/v1",
+  "sourceLogPin": {
+    "file": "target-preservation-2b-producer-green-r8.log",
+    "bytes": 1638061,
+    "sha256": "932b8a813af86073be706f91865e7e67507b95674d33c2e1561ab62639299543"
+  },
+  "diagnosticPin": {
+    "file": "target-preservation-2b-producer-green-r8-diagnostic-export-r1.json",
+    "bytes": 1221622,
+    "sha256": "6ec5d7a725d97ab297e1147ac83a220dd8bc6bcf1ebf80a71acf80631aebda32"
+  },
+  "originalFilePins": [
+    {
+      "originalPath": "/work/pytest/test_main_producer_preserves_b0/producer-preservation-operations/restore-1/worker-result.json",
+      "pin": {
+        "file": "target-preservation-2b-producer-green-r8-diagnostic-original-r1-0.bin",
+        "bytes": 829751,
+        "sha256": "657d4476cc53157e28d280fa242af6a2793ff662e1242d8ae501d8dadd0f31fb"
+      }
+    },
+    {
+      "originalPath": "/work/pytest/test_main_producer_preserves_b0/capture-protocol-state.json",
+      "pin": {
+        "file": "target-preservation-2b-producer-green-r8-diagnostic-original-r1-1.bin",
+        "bytes": 5520,
+        "sha256": "279738ecf54019eedfc7fd4c4396073bb85d7badfa6e6e80af4e7abc32b68b47"
+      }
+    },
+    {
+      "originalPath": "/work/pytest/test_main_producer_preserves_b0/replacements/restore-1/replacement-result.json",
+      "pin": {
+        "file": "target-preservation-2b-producer-green-r8-diagnostic-original-r1-2.bin",
+        "bytes": 5174,
+        "sha256": "eb60048620558ee923b33d1f5123771de2409e259714f50a374e780c23c41197"
+      }
+    },
+    {
+      "originalPath": "/work/pytest/test_main_producer_preserves_b0/producer-preservation-operations/restore-1/target-preservation/publication/preservation.json",
+      "pin": {
+        "file": "target-preservation-2b-producer-green-r8-diagnostic-original-r1-3.bin",
+        "bytes": 11887,
+        "sha256": "ef9e4918efe356a5834c4e5455e99bdbe986f58a6f89b9a82d80b5b113ae3596"
+      }
+    },
+    {
+      "originalPath": "/work/pytest/test_main_producer_preserves_b0/producer-preservation-operations/restore-1/final/native-125.json",
+      "pin": {
+        "file": "target-preservation-2b-producer-green-r8-diagnostic-original-r1-4.bin",
+        "bytes": 518,
+        "sha256": "72cc2c83ecdc5f9a4a3a84b179275a54fc97760fab6e5cd9b9cf8ebcb265acac"
+      }
+    }
+  ],
+  "reason": "pytest status FAILED immediately precedes diagnostic marker; raw bytes preserved, no original report modified"
+}

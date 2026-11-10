@@ -72,12 +72,14 @@ class _NativeView:
             staging.check()
         capture = getattr(self._context, '_target_capture_lease', None)
         if capture is not None:
-            require(capture._native is native and capture._context is self._context,
+            require(capture._context is self._context and
+                    (capture._native is native or (capture.handed_off and self.phase == 'RESTORE')),
                     'PROGRAM_CAPTURE_OWNER_CHANGED')
             capture.check()
         session = getattr(self._context, '_target_capture_session', None)
         if session is not None:
-            require(session._native is native and session._context is self._context,
+            require(session._context is self._context and
+                    (session._native is native or (session.handed_off and self.phase == 'RESTORE')),
                     'PROGRAM_CAPTURE_OWNER_CHANGED')
             session.check()
 
@@ -149,6 +151,8 @@ class MainNativeExecutionContext:
                     'PROGRAM_NATIVE_DIRECTORY_CHANGED')
         for lease in self._leases:
             lease.check()
+        publication=getattr(self,'_target_preservation',None)
+        if publication is not None:publication._check_resources()
         self._budget.remaining()
 
     def _resolve(self, generation=None, runtime=False):
@@ -226,6 +230,8 @@ class MainNativeExecutionContext:
         capture = getattr(self, '_target_capture_lease', None)
         require(capture is None or capture.handed_off, 'PROGRAM_TARGET_CAPTURE_PENDING')
         require(self._phase == 'PREPARATION', 'PROGRAM_NATIVE_STAGE_ALREADY_BOUND')
+        from recovery_target_preservation import require_preservation
+        require_preservation(self)
         require(all(row['terminalPin'] is not None for row in self._invocations),
                 'PROGRAM_NATIVE_INVOCATION_PENDING')
         require(all(row['terminalObservation']['state'] == 'SUCCEEDED' for row in self._invocations),
@@ -346,14 +352,18 @@ class MainNativeExecutionContext:
         self._closed = True
         capture = getattr(self, '_target_capture_lease', None)
         session = getattr(self, '_target_capture_session', None)
+        preservation = getattr(self, '_target_preservation', None)
         leases = [*self._leases, *self._sql_staging_managers, *(() if capture is None else (capture,)),
-                  *(() if session is None else (session,))]
+                  *(() if session is None else (session,)),
+                  *(() if preservation is None else (preservation,))]
         self._leases, self._sql_staging_managers = [], []
         failure = None
         for lease in reversed(leases):
             try:
                 lease.close()
-            except OSError as error:
+            except BaseException as error:
+                # Close every owned local resource, then retain the first real
+                # failure. This never releases business protections or holds.
                 if failure is None:
                     failure = error
         if failure is not None:

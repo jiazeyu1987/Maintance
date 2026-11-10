@@ -119,7 +119,7 @@ class _TargetCaptureProtectionLease:
         self._scheduler_intent=deepcopy(custody._journals['scheduler']['pins']['intent.json'])
 
     @property
-    def handed_off(self):return False
+    def handed_off(self):return self._state=='HANDED_OFF'
 
     def check(self):
         """Local immutable-file check only: no SQL, Docker or guard recursion."""
@@ -196,7 +196,14 @@ class _TargetCaptureProtectionLease:
         try:
             scheduler=custody._construct(self._native,'scheduler')
             if action=='before':return scheduler.verify()
-            require(action in ('begin','verify'),'PROGRAM_CAPTURE_ACTION_INVALID')
+            require(action in ('begin','verify','handoff'),'PROGRAM_CAPTURE_ACTION_INVALID')
+            if action=='handoff':
+                scheduler._verify_capture(self)
+                scheduler.query('SET GLOBAL super_read_only=OFF; SET GLOBAL read_only=OFF;',mutation=True)
+                result=scheduler.verify()
+                from recovery_mysql_scheduler import TRANSACTIONS_SQL
+                require(scheduler.query(TRANSACTIONS_SQL).strip()==b'0','MAIN_SCHEDULER_NOT_QUIESCED')
+                return result
             if action=='begin':
                 scheduler.query('SET GLOBAL read_only=ON; SET GLOBAL super_read_only=ON;',mutation=True)
             return scheduler._verify_capture(self)
@@ -235,7 +242,20 @@ class _TargetCaptureProtectionLease:
             raise
 
     def handoff(self,verified_preservation):
-        raise RecoveryError('PROGRAM_CAPTURE_PRESERVATION_REQUIRED')
+        from recovery_target_preservation import _HandoffArchive
+        publication=getattr(self._context,'_target_preservation',None)
+        require(type(verified_preservation) is _HandoffArchive and publication is not None and
+            publication._handoff_archive is verified_preservation and
+            publication.session._lease is self and publication.session._state=='HANDOFF_IN_PROGRESS',
+            'PROGRAM_CAPTURE_PRESERVATION_REQUIRED')
+        self.verify()
+        require(self._process is None,'PROGRAM_CAPTURE_EXPORT_TERMINAL_REQUIRED')
+        self._state='HANDOFF_IN_PROGRESS'
+        try:
+            self._scheduler('handoff');self._external_protections();self._guard()
+            self._state='HANDED_OFF'
+        except BaseException:
+            self._state='FAILED_RETAINED';raise
 
     def snapshot(self):
         return dict(schemaVersion='MainTargetCaptureProtection/v1',operationId=self._context._request['operationId'],

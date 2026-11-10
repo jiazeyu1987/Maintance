@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "TaskTargetPreservationProtocolVerification/v1",
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--name",
+    "spug-target-preservation-2b-producer-red-r6",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--memory",
+    "512m",
+    "--cpus",
+    "1",
+    "--pids-limit",
+    "128",
+    "--tmpfs",
+    "/work:rw,exec,nosuid,nodev,size=256m",
+    "--tmpfs",
+    "/tmp:rw,nosuid,nodev,size=128m",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-producer-red-r6.tar,target=/inputs/source.tar,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-producer-red-r6-runner.py,target=/inputs/runner.py,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\linux-test-wheels,target=/inputs/wheels,readonly",
+    "sha256:14a4933e6cef421424f7a66d89a3f4eafcbd0d90e0a822251f298e05132dc735",
+    "python",
+    "-B",
+    "/inputs/runner.py"
+  ],
+  "exitCode": 1,
+  "timeout": false,
+  "counts": {
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0
+  },
+  "elapsedSeconds": 194.578,
+  "sourceSnapshotPin": {
+    "file": "target-preservation-2b-producer-red-r6.tar",
+    "bytes": 7342080,
+    "sha256": "a79483cba0011340cd219e4d8678f0022faf86403e06bbe57c8589cac1360dd1"
+  },
+  "sourceInventoryPin": {
+    "file": "target-preservation-2b-producer-red-r6-inputs.json",
+    "bytes": 40261,
+    "sha256": "f588c07b4e432e8a3c2ed3e51d7cd3969f6006d83b9e73e6f8ebb6c6aa52ec7e"
+  },
+  "runnerPin": {
+    "file": "target-preservation-2b-producer-red-r6-runner.py",
+    "bytes": 4019,
+    "sha256": "c946653cac03eeb604a437a55bef3c8dd75aa7418a59d23c41376923bb9a2da2"
+  },
+  "rawLogPin": {
+    "file": "target-preservation-2b-producer-red-r6.log",
+    "bytes": 12153,
+    "sha256": "ba2ac9d45049d07b1734ec4cc78bbb3a6882ff791b08fb340ad96c59166256bd"
+  },
+  "junitPin": {
+    "file": "target-preservation-2b-producer-red-r6.xml",
+    "bytes": 3540,
+    "sha256": "431dad89bdb7ff19901b284a8758d57fd9b193d5e4bf603286bcaf9c001b77d7"
+  },
+  "inputsUnchanged": true,
+  "runtimeInputsUnchanged": true,
+  "containerRemoved": true,
+  "remoteActions": 0,
+  "businessWrites": 0,
+  "actualBusinessRestore": false
+}

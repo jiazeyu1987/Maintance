@@ -342,7 +342,7 @@ def execute(configuration, request, root, input_pins):
 
 def execute_empty(configuration, request, root, input_pins, *, reservation_configuration=None,
                   native_context=None, protection_custody=None, execution_binding_pin=None,
-                  execution_generation_pin=None, execution_lock_fd=None):
+                  execution_generation_pin=None, execution_lock_fd=None, target_preservation=None):
     with step_timing(root, 'restore-admission'):
         source, policy, chain = selected_chain(configuration, request)
         target = target_configuration(configuration, request, source)
@@ -362,12 +362,15 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
                     execution_lock_fd == native_context._context._lock_fd,
                     'PROGRAM_EXECUTION_RUNTIME_CONTEXT_INVALID')
             native_context.validate_inputs(configuration, request, target)
+            from recovery_target_preservation import require_preservation
+            require(require_preservation(native_context._context) is target_preservation,
+                'PROGRAM_TARGET_PRESERVATION_CHANGED')
             execution = dict(execution_binding_pin=execution_binding_pin,
                 execution_generation_pin=execution_generation_pin, execution_lock_fd=execution_lock_fd,
                 execution_guard=native_context.guard)
         else:
             require(protection_custody is None and execution_binding_pin is None and
-                    execution_generation_pin is None and execution_lock_fd is None,
+                    execution_generation_pin is None and execution_lock_fd is None and target_preservation is None,
                     'PROGRAM_EXECUTION_RUNTIME_CONTEXT_REQUIRED')
         admit(configuration, request, root, 'target', reservation_configuration=reservation_configuration, **execution)
         reservation = absolute(target['dataRoot'])/'.recovery-operation.json'
@@ -382,6 +385,8 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
         native = MinimalData(configuration, request, source, policy, chain, target, root, input_pins, **constructor)
         if native_context is not None:
             native.protection_custody = protection_custody
+            require(require_preservation(native_context._context,native=native) is target_preservation,
+                'PROGRAM_TARGET_PRESERVATION_CHANGED')
     try:
         if native_context is not None:
             # Construction's identity query is read-only. The same original

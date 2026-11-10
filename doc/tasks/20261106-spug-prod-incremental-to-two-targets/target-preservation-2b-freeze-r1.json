@@ -1,0 +1,1789 @@
+{
+  "schemaVersion": "TaskTargetPreservation2bFreeze/v1",
+  "status": "LOCAL_VERIFIED_PENDING_PARENT_COMMIT",
+  "productCount": 11,
+  "testFileCount": 4,
+  "inputs": [
+    {
+      "relativePath": "ops/recovery/recovery_program_native.py",
+      "pin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\recovery_program_native.py",
+        "bytes": 19395,
+        "sha256": "fecf7d23dbff8750980c97713e10b0fdb294b571295f883eb59fa6e744199192"
+      },
+      "crlf": 0,
+      "lf": 381
+    },
+    {
+      "relativePath": "ops/recovery/recovery_program_protection.py",
+      "pin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\recovery_program_protection.py",
+        "bytes": 25448,
+        "sha256": "a9a9daa209c6783283bcaf9da1ee14f19d4ac240f34ea2911ea2ea1abb42c322"
+      },
+      "crlf": 0,
+      "lf": 486
+    },
+    {
+      "relativePath": "ops/recovery/recovery_target_capture.py",
+      "pin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\recovery_target_capture.py",
+        "bytes": 27891,
+        "sha256": "1c1a4fcb9443316b9ceab663092be9ad549a9b06681caba1b54bb959835740c8"
+      },
+      "crlf": 0,
+      "lf": 443
+    },
+    {
+      "relativePath": "ops/recovery/recovery_target_preservation.py",
+      "pin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\recovery_target_preservation.py",
+        "bytes": 54578,
+        "sha256": "e0a6d0c5d2c4c93cbd5a37bbef247eda3a8efc459734d184550fc717d476d6fc"
+      },
+      "crlf": 0,
+      "lf": 827
+    },
+    {
+      "relativePath": "ops/recovery/recovery_program_restore.py",
+      "pin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\recovery_program_restore.py",
+        "bytes": 21114,
+        "sha256": "e07d462f4dd07001dd0a4b2358f6c57df1dfa87ea2407ab2812d478a6b46f429"
+      },
+      "crlf": 0,
+      "lf": 356
+    },
+    {
+      "relativePath": "ops/recovery/recovery_minimal_runtime.py",
+      "pin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\recovery_minimal_runtime.py",
+        "bytes": 25050,
+        "sha256": "da77e45882b776ab3fc3375f6149fc3709b30a66c818ac798c456f8b5351a614"
+      },
+      "crlf": 0,
+      "lf": 447
+    },
+    {
+      "relativePath": "ops/recovery/recovery_replace.py",
+      "pin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\recovery_replace.py",
+        "bytes": 19032,
+        "sha256": "85b888ccd916442bc220736511359ddbf204b02bb1a7eb4a3581d9cf9237e534"
+      },
+      "crlf": 0,
+      "lf": 346
+    },
+    {
+      "relativePath": "ops/recovery/recovery_minimal_worker.py",
+      "pin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\recovery_minimal_worker.py",
+        "bytes": 4653,
+        "sha256": "c9ebe58de6f38fe2b32e183d6f71402f73030da6c95cc788eb5235b3540e3b0d"
+      },
+      "crlf": 0,
+      "lf": 84
+    },
+    {
+      "relativePath": "ops/recovery/recovery_program_evidence.py",
+      "pin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\recovery_program_evidence.py",
+        "bytes": 54795,
+        "sha256": "488a60d7e8b84c90d1f95f920a35fc1af514c2ccc7063ffc9a54e40013d889bc"
+      },
+      "crlf": 0,
+      "lf": 852
+    },
+    {
+      "relativePath": "ops/recovery/repository_retention.py",
+      "pin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\repository_retention.py",
+        "bytes": 13540,
+        "sha256": "7554491688fc526d6e6c12609b80b745e957377368266db842ff85e4f8d777b5"
+      },
+      "crlf": 0,
+      "lf": 245
+    },
+    {
+      "relativePath": "ops/recovery/repository_native_readback.py",
+      "pin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\repository_native_readback.py",
+        "bytes": 16082,
+        "sha256": "bef64b31133dd179fbf5dc9c809f1259776d3be1ca923f44b2459b91416594c0"
+      },
+      "crlf": 0,
+      "lf": 298
+    },
+    {
+      "relativePath": "scripts/tests/test_recovery_target_preservation_handoff.py",
+      "pin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\scripts\\tests\\test_recovery_target_preservation_handoff.py",
+        "bytes": 11187,
+        "sha256": "1f0ffd9bd77d016faef76ec19ccf77fdcd45cd2aa38a677eb82743fbebf0e55a"
+      },
+      "crlf": 0,
+      "lf": 208
+    },
+    {
+      "relativePath": "scripts/tests/test_recovery_target_preservation_runtime.py",
+      "pin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\scripts\\tests\\test_recovery_target_preservation_runtime.py",
+        "bytes": 2401,
+        "sha256": "0eaf9a704c742e8c1a5b6c8903a28f8ea6729f63081d37a2cdc6ecc33820fa17"
+      },
+      "crlf": 0,
+      "lf": 50
+    },
+    {
+      "relativePath": "scripts/tests/test_recovery_target_preservation_producer.py",
+      "pin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\scripts\\tests\\test_recovery_target_preservation_producer.py",
+        "bytes": 20853,
+        "sha256": "95e3b6bd5e7174d85e18e6faaa35ff40de7047d26681d6e00722ad3058d4a3c8"
+      },
+      "crlf": 0,
+      "lf": 338
+    },
+    {
+      "relativePath": "scripts/tests/test_recovery_target_preservation_readback.py",
+      "pin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\scripts\\tests\\test_recovery_target_preservation_readback.py",
+        "bytes": 4436,
+        "sha256": "a8b084eae0bd0ab15f048a9246b1c4c8e433c9817b1aa58d82347feb70e69877"
+      },
+      "crlf": 0,
+      "lf": 87
+    }
+  ],
+  "driverPins": [
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\run-target-preservation-2b-local.py",
+      "bytes": 13144,
+      "sha256": "8085ecf1051aebdafbeaaa7150d6158354a9e21f5286b6ee62437e5c92b69d8f"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\freeze-target-preservation-2b-r1.py",
+      "bytes": 5673,
+      "sha256": "2251978cadd53225e69ccfb1af7021f30ba32630b8a597844223be9ed8d1257d"
+    }
+  ],
+  "tddPin": {
+    "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\target-preservation-2b-tdd-log.md",
+    "bytes": 31742,
+    "sha256": "58edfefba2399d928d5d9bea555e39c39e1e2566ac0d8a4be41ae9ad3553c416"
+  },
+  "rounds": [
+    {
+      "label": "handoff-runtime-green-r4",
+      "reportPin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\target-preservation-2b-handoff-runtime-green-r4.json",
+        "bytes": 2504,
+        "sha256": "a8aaeef65dac45361877b89baa7daaae3b5a979e59bc2aa376c1d15a20e41c41"
+      },
+      "counts": {
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "physicalEvidencePins": [
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-handoff-runtime-green-r4-inputs.json",
+          "bytes": 40261,
+          "sha256": "d5d569785b2ebf5b75219c2831a853816c5aba5907445d91999c9e4b07e4d73b"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-handoff-runtime-green-r4-runner.py",
+          "bytes": 4311,
+          "sha256": "47bb46137578c95ff4f0f5e5ccadcdf367b6bd15fbe12f9f06c4bebdfa0fc77a"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-handoff-runtime-green-r4.log",
+          "bytes": 7666,
+          "sha256": "0ffcb0b95212ec92ba6f640b856e63267a648c6d0f23054b7c36a2bec438c31a"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-handoff-runtime-green-r4.xml",
+          "bytes": 1939,
+          "sha256": "0044b6f78c19ddbef84d514950911e04b3f78a9304ba7f99c616694ecceed546"
+        }
+      ],
+      "diagnosticPins": []
+    },
+    {
+      "label": "fixture-created-id-green-r3",
+      "reportPin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\target-preservation-2b-fixture-created-id-green-r3.json",
+        "bytes": 2549,
+        "sha256": "a128d4ce2a414951064c3cac3156f2c1ce65ab37a8d993155a2e3a46c8fe6657"
+      },
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "physicalEvidencePins": [
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-fixture-created-id-green-r3-inputs.json",
+          "bytes": 40261,
+          "sha256": "c7c2fc2ad96f08501e2f00866491542fe9efbc1690e87c3d2e2779136649dab2"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-fixture-created-id-green-r3-runner.py",
+          "bytes": 1325,
+          "sha256": "550eacbce91bd60f4710ae517a32cb1e269ba1a2281409934f4cbcff5366ccb6"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-fixture-created-id-green-r3.log",
+          "bytes": 1170,
+          "sha256": "eadc165f3f3ebca702a5db81b172acf85ec2e046a9708d0825adbbf29adfbf76"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-fixture-created-id-green-r3.xml",
+          "bytes": 408,
+          "sha256": "0a745e4adf5fd87241ae4e13c8da6866fa1ced48f227e01ff16ee2eef852a830"
+        }
+      ],
+      "diagnosticPins": []
+    },
+    {
+      "label": "readback-private-green-r2",
+      "reportPin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\target-preservation-2b-readback-private-green-r2.json",
+        "bytes": 2534,
+        "sha256": "15dff890d89396a9d9a3bddf450cc4b3627a9c6547e76fb8fcf14b23c63e3095"
+      },
+      "counts": {
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "physicalEvidencePins": [
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-readback-private-green-r2-inputs.json",
+          "bytes": 40392,
+          "sha256": "d51edce9dd29d6e4069b6cba71e5fa2f3f213c703d46c824c8250f6af96b0e93"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-readback-private-green-r2-runner.py",
+          "bytes": 1349,
+          "sha256": "3c0ef73004b76ad9afea77f2c0427aafbcd4fad60154d130ce918606fac5114b"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-readback-private-green-r2.log",
+          "bytes": 3953,
+          "sha256": "b4f569344fba50f5f718c46944e0f4da5aa5f77fe34252adf1e5152291eef0ea"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-readback-private-green-r2.xml",
+          "bytes": 1713,
+          "sha256": "bbbad4912beff72ba2331341426e27df501afeaa5715e1e24c2316a88d8763a2"
+        }
+      ],
+      "diagnosticPins": []
+    },
+    {
+      "label": "producer-green-r9",
+      "reportPin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\target-preservation-2b-producer-green-r9.json",
+        "bytes": 4688,
+        "sha256": "6f54723b94e6c4c7c83d297459af5a3bb277a160ace568d4f5dc067f7963bff6"
+      },
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "physicalEvidencePins": [
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-producer-green-r9-inputs.json",
+          "bytes": 40261,
+          "sha256": "047a3697eb2bcf7da81c2ebd3643b5e36b062c5c6c07690ffc796f1fb24d9fc0"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-producer-green-r9-runner.py",
+          "bytes": 4201,
+          "sha256": "05820195fb64acd74e644398e0727947455586573aeef4d7a58307ddce7ff929"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-producer-green-r9.log",
+          "bytes": 1654381,
+          "sha256": "aa0bbf27e807fc7350e3b1111c2342cd210a975311f6392b4a65cb843c50b802"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-producer-green-r9.xml",
+          "bytes": 412,
+          "sha256": "1e5e6c575cfc5d6c8cad4a39c411d9a77544ae2e958e1e2abe1735118fb18c8d"
+        }
+      ],
+      "diagnosticPins": [
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-producer-green-r9-diagnostics-0.json",
+          "bytes": 1236756,
+          "sha256": "ea96b52bd17f3571001a5199cbd4db2e881efe5587361aea7532732f6ad370eb"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-producer-green-r9-diagnostics-0-file-0.bin",
+          "bytes": 840239,
+          "sha256": "9f89c3002d972d167cd8c5843e10bbccbf6d2e857295292719b2b9ca637ab1c7"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-producer-green-r9-diagnostics-0-file-1.bin",
+          "bytes": 5520,
+          "sha256": "279738ecf54019eedfc7fd4c4396073bb85d7badfa6e6e80af4e7abc32b68b47"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-producer-green-r9-diagnostics-0-file-2.bin",
+          "bytes": 5174,
+          "sha256": "60eb934c473a4ba25532506ffda0b03c3eed3d8ba8926b2a8846aee715e9059e"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-producer-green-r9-diagnostics-0-file-3.bin",
+          "bytes": 11887,
+          "sha256": "9bcb0edab264b9cf29f467add51d70718574c75333efa9041ec12007f13768bc"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-producer-green-r9-diagnostics-0-file-4.bin",
+          "bytes": 518,
+          "sha256": "cfd5184b4258761b421fadcc7801eaefec5a5e67077a20fc7a24929878c37af9"
+        }
+      ]
+    },
+    {
+      "label": "handoff-unknown-green-r1",
+      "reportPin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\target-preservation-2b-handoff-unknown-green-r1.json",
+        "bytes": 4374,
+        "sha256": "c88badbbc7f51bb8fba9ed1b36255ac768b45dba357f23887e6f7d15add9e354"
+      },
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "physicalEvidencePins": [
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-handoff-unknown-green-r1-inputs.json",
+          "bytes": 40261,
+          "sha256": "047a3697eb2bcf7da81c2ebd3643b5e36b062c5c6c07690ffc796f1fb24d9fc0"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-handoff-unknown-green-r1-runner.py",
+          "bytes": 4183,
+          "sha256": "f0d75c91db24708583c973706b688fc788fc5716a7bb979f27dc9958b88effc0"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-handoff-unknown-green-r1.log",
+          "bytes": 1542353,
+          "sha256": "068fb2f29647a5d0fa7e0177ae4c63259d4ca06dbc67b317114db00b26b1d883"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-handoff-unknown-green-r1.xml",
+          "bytes": 403,
+          "sha256": "f3d0caacfe3e1f0bf8d98768130c3ddb33e2fb3341a16b7ce3938e6fb74640fa"
+        }
+      ],
+      "diagnosticPins": [
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-handoff-unknown-green-r1-diagnostics-0.json",
+          "bytes": 1151634,
+          "sha256": "b00aad05374d0ee5feb4ad2d1364be00c8327d8e50bb5261f6885f33f75074c4"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-handoff-unknown-green-r1-diagnostics-0-file-0.bin",
+          "bytes": 794072,
+          "sha256": "a2447e1b13950eec9080326c332f2ea1f2537f71d6df8f928b7eba804e2bd1f6"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-handoff-unknown-green-r1-diagnostics-0-file-1.bin",
+          "bytes": 4043,
+          "sha256": "4e07b64ebe831a5f76511cc646d30c2de67fc7ccfbbfde7e05ccd10ba4ee84a6"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-handoff-unknown-green-r1-diagnostics-0-file-2.bin",
+          "bytes": 2942,
+          "sha256": "5ced03c7dbe00744800d7ae75030f914c00331fdf51cc55767bc9eba8a6c8765"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-handoff-unknown-green-r1-diagnostics-0-file-3.bin",
+          "bytes": 507,
+          "sha256": "da3ce18832f7478ec1ed8cd8322a8f5cd4fb62b6f23117ada4147e1a58ed6290"
+        }
+      ]
+    },
+    {
+      "label": "stage-failure-green-r1",
+      "reportPin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\target-preservation-2b-stage-failure-green-r1.json",
+        "bytes": 4778,
+        "sha256": "0f73e1d9c95bb6e337c95de30d737851715e1f76df4274f83b10b0fc52904bee"
+      },
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "physicalEvidencePins": [
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-stage-failure-green-r1-inputs.json",
+          "bytes": 40261,
+          "sha256": "047a3697eb2bcf7da81c2ebd3643b5e36b062c5c6c07690ffc796f1fb24d9fc0"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-stage-failure-green-r1-runner.py",
+          "bytes": 4169,
+          "sha256": "a985fd5f1b699625aaa406ae06c5b8063562f6c698c00eb5c12fa114daf8da7a"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-stage-failure-green-r1.log",
+          "bytes": 1556095,
+          "sha256": "e7b75cc731692c0de03101744e551ce1509d7a28d188956736ab4bbebdebbfa5"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-stage-failure-green-r1.xml",
+          "bytes": 396,
+          "sha256": "671e17e462c50da12a46cdf0c60b200ad07800a69432e0bd53d86696162b63d8"
+        }
+      ],
+      "diagnosticPins": [
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-stage-failure-green-r1-diagnostics-0.json",
+          "bytes": 1162786,
+          "sha256": "462ca946b3b7cb55400aecee413b5e3d285a6d52d2797c077126fdeb7cc63b8a"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-stage-failure-green-r1-diagnostics-0-file-0.bin",
+          "bytes": 790625,
+          "sha256": "5ffec2d9d73decdd028df94dc5bd4ce4fb41cce16705b5fca95481903821d6f7"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-stage-failure-green-r1-diagnostics-0-file-1.bin",
+          "bytes": 4043,
+          "sha256": "03e89ee1f3a983c9bbb105ca0b1da620cb2bb237ecd632caed28a84b3a37f9bc"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-stage-failure-green-r1-diagnostics-0-file-2.bin",
+          "bytes": 4578,
+          "sha256": "3863b8177a9741e9aaf5125f518dd39e1787045bb3f845e19d0deeb853e75a9d"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-stage-failure-green-r1-diagnostics-0-file-3.bin",
+          "bytes": 11887,
+          "sha256": "e428463e2cd277451245b2bd03349e601c0eee0a6844c3a049ec917829e8de20"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-stage-failure-green-r1-diagnostics-0-file-4.bin",
+          "bytes": 509,
+          "sha256": "1583400828cc70f911be53266bb1d8a2d1bed72bc3458a785c2bed584a491531"
+        }
+      ]
+    },
+    {
+      "label": "ready-unknown-green-r1",
+      "reportPin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\target-preservation-2b-ready-unknown-green-r1.json",
+        "bytes": 4759,
+        "sha256": "8903cf9224efe11dd52721cfd76789a219b0109065f96df86a65a26a92ce5c02"
+      },
+      "counts": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "physicalEvidencePins": [
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-ready-unknown-green-r1-inputs.json",
+          "bytes": 40261,
+          "sha256": "047a3697eb2bcf7da81c2ebd3643b5e36b062c5c6c07690ffc796f1fb24d9fc0"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-ready-unknown-green-r1-runner.py",
+          "bytes": 4175,
+          "sha256": "05ed2bced418136e5b96a7c68026c5c6d45a0777335b11137578182651b4aecf"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-ready-unknown-green-r1.log",
+          "bytes": 1675057,
+          "sha256": "c2fb36a5aa29589bbbbed4403240c199f31c99ab899cab30d785c18c7146f42a"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-ready-unknown-green-r1.xml",
+          "bytes": 399,
+          "sha256": "4ccda2b389ae84b3a0db9f3530f5d0640263773a7727b3f32efa4770aa4330ca"
+        }
+      ],
+      "diagnosticPins": [
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-ready-unknown-green-r1-diagnostics-0.json",
+          "bytes": 1251723,
+          "sha256": "ee0b12dada5a4016bba704f8fc8bb03215bafc0e4c7ff0fc79d832858b9dd51f"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-ready-unknown-green-r1-diagnostics-0-file-0.bin",
+          "bytes": 849838,
+          "sha256": "d11cfc4b281aef4f72d11cd31dba4646334e461aac1cfa14a2a9d967cc84154e"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-ready-unknown-green-r1-diagnostics-0-file-1.bin",
+          "bytes": 5520,
+          "sha256": "480c9db771f631b10b7c529cc92a632b81243a43ed1213c1e893bbc4f009dc07"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-ready-unknown-green-r1-diagnostics-0-file-2.bin",
+          "bytes": 5174,
+          "sha256": "88a2fd4bb91f97826d4cb060674fa92ee0201ef64163672b16c5a06420a96a14"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-ready-unknown-green-r1-diagnostics-0-file-3.bin",
+          "bytes": 11887,
+          "sha256": "b8283303fa7409e9668a898eb6cca83243de942b8aa035478a660fd68abdf06e"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-ready-unknown-green-r1-diagnostics-0-file-4.bin",
+          "bytes": 518,
+          "sha256": "998b5712c8dad9e6c2740380c3c8196e621a130bd785ff98d072d52c2dad804b"
+        }
+      ]
+    },
+    {
+      "label": "legacy-consumers-regression-r1",
+      "reportPin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\target-preservation-2b-legacy-consumers-regression-r1.json",
+        "bytes": 2579,
+        "sha256": "f936d2577c1e599ed19cef2a85a493a9ec9a962272c39ed115eab6923b9faef7"
+      },
+      "counts": {
+        "tests": 173,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "physicalEvidencePins": [
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-legacy-consumers-regression-r1-inputs.json",
+          "bytes": 40261,
+          "sha256": "047a3697eb2bcf7da81c2ebd3643b5e36b062c5c6c07690ffc796f1fb24d9fc0"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-legacy-consumers-regression-r1-runner.py",
+          "bytes": 1425,
+          "sha256": "43b16f78f86f365459426114747eecbd1b8443af650af1a8745b334b6d6240a6"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-legacy-consumers-regression-r1.log",
+          "bytes": 62054,
+          "sha256": "1739a058e75549f5d0e83de5afa572f179378393403bf78333d8af254e5464b6"
+        },
+        {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-legacy-consumers-regression-r1.xml",
+          "bytes": 28946,
+          "sha256": "b6985052fb68a7dca3eff95202589116ac6484c963da90b2d876af29cc8fb262"
+        }
+      ],
+      "diagnosticPins": []
+    }
+  ],
+  "uniquePassedNodes": [
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_constructor_boundary_failure_keeps_real_empty_context_without_inventing_custody",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_custody_journal_original_bytes_are_required",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_data_and_replacement_receipt_must_name_identical_phase_and_pins[programExecutionPhase]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_data_and_replacement_receipt_must_name_identical_phase_and_pins[programGenerationPin]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_data_and_replacement_receipt_must_name_identical_phase_and_pins[programNativeEvidencePin]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_data_and_replacement_receipt_must_name_identical_phase_and_pins[programProtectionCustodyPin]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_equivalent_result_copy_outside_fixed_owner_paths_is_rejected",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_failure_proof_preserves_actual_exits_and_unknown_without_granting_success[retained-both]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_failure_proof_preserves_actual_exits_and_unknown_without_granting_success[retained-preparation]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_failure_proof_preserves_actual_exits_and_unknown_without_granting_success[sql-failure-both]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_failure_proof_preserves_actual_exits_and_unknown_without_granting_success[unknown-both]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_historical_proof_does_not_require_an_active_host_reservation",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_missing_custody_is_not_success_even_when_native_commands_all_exited_zero",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_native_reader_preserves_size_privacy_identity_and_content_limits[hardlink]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_native_reader_preserves_size_privacy_identity_and_content_limits[oversize]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_native_reader_preserves_size_privacy_identity_and_content_limits[public-mode]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_native_reader_preserves_size_privacy_identity_and_content_limits[sha]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_native_reader_preserves_size_privacy_identity_and_content_limits[symlink]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_not_started_refuses_existing_context_or_dispatch_in_its_exact_claim[archive-view/intent.json]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_not_started_refuses_existing_context_or_dispatch_in_its_exact_claim[generation.json]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_not_started_refuses_existing_context_or_dispatch_in_its_exact_claim[mysql-scheduler/intent.json]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_not_started_refuses_existing_context_or_dispatch_in_its_exact_claim[program-context.json]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_not_started_refuses_existing_context_or_dispatch_in_its_exact_claim[program-execution-binding.json]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_not_started_refuses_existing_context_or_dispatch_in_its_exact_claim[program-import/load-intent.json]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_not_started_refuses_existing_context_or_dispatch_in_its_exact_claim[program-switch/0001-intent.json]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_not_started_refuses_existing_context_or_dispatch_in_its_exact_claim[published-fence/intent.json]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_not_started_refuses_existing_context_or_dispatch_in_its_exact_claim[runtime/importer-000.json]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_not_started_refuses_existing_context_or_dispatch_in_its_exact_claim[runtime/native-000.json]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_not_started_requires_actual_empty_dispatch_scope_not_none_fields_alone",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_only_exact_operation_generation_and_custody_can_admit_program_receipts[generation]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_only_exact_operation_generation_and_custody_can_admit_program_receipts[hidden-invocation]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_only_exact_operation_generation_and_custody_can_admit_program_receipts[legacy-owner]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_only_exact_operation_generation_and_custody_can_admit_program_receipts[protection-pin]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_only_exact_operation_generation_and_custody_can_admit_program_receipts[scope]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_original_intent_pin_is_verified_from_embedded_bytes_not_reopened_after_replacement",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_original_operation_admission_digest_is_not_reconstructed_from_current_owner",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_other_operations_private_claim_does_not_pollute_not_started_proof",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_outer_success_cannot_rebind_the_original_request_or_terminal[action-FULL]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_outer_success_cannot_rebind_the_original_request_or_terminal[actualExitCode-1]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_outer_success_cannot_rebind_the_original_request_or_terminal[failureCode-UNEXPECTED_FAILURE]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_outer_success_cannot_rebind_the_original_request_or_terminal[operationId-other]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_outer_success_cannot_rebind_the_original_request_or_terminal[requestId-other]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_published_generation_is_retained_when_real_context_stage_budget_fails",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_real_native_snapshot_larger_than_four_mib_uses_dedicated_bounded_reader",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_rebound_execution_metadata_cannot_substitute_equivalent_copies[configurationPin]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_rebound_execution_metadata_cannot_substitute_equivalent_copies[contextPin]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_rebound_execution_metadata_cannot_substitute_equivalent_copies[requestPin]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_rebound_execution_metadata_cannot_substitute_equivalent_copies[reservationPin]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_repinning_aggregate_cannot_hide_invocation_identity_order_or_coverage_faults[arbitrary-action]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_repinning_aggregate_cannot_hide_invocation_identity_order_or_coverage_faults[duplicate]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_repinning_aggregate_cannot_hide_invocation_identity_order_or_coverage_faults[intent-digest]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_repinning_aggregate_cannot_hide_invocation_identity_order_or_coverage_faults[last-exit-summary]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_repinning_aggregate_cannot_hide_invocation_identity_order_or_coverage_faults[mutation-summary]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_repinning_aggregate_cannot_hide_invocation_identity_order_or_coverage_faults[omit-preparation]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_repinning_aggregate_cannot_hide_invocation_identity_order_or_coverage_faults[phase]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_repinning_aggregate_cannot_hide_invocation_identity_order_or_coverage_faults[reordered]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_repinning_aggregate_cannot_hide_invocation_identity_order_or_coverage_faults[schema-v1]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_repinning_aggregate_cannot_hide_invocation_identity_order_or_coverage_faults[sequence]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_repinning_aggregate_cannot_hide_invocation_identity_order_or_coverage_faults[terminal-observation]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_repinning_aggregate_cannot_hide_invocation_identity_order_or_coverage_faults[unknown-summary]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_shared_validation_budget_cannot_be_ignored",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_sql_v2_identity_must_match_the_original_intent_even_after_repinning[action]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_sql_v2_identity_must_match_the_original_intent_even_after_repinning[argvSha256]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_sql_v2_identity_must_match_the_original_intent_even_after_repinning[mutation]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_sql_v2_identity_must_match_the_original_intent_even_after_repinning[operationId]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_sql_v2_identity_must_match_the_original_intent_even_after_repinning[sqlPin]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_subsequent_real_generation_does_not_replace_the_original_target_pin",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_success_historical_validator_accepts_real_two_phase_native_sql_and_custody_after_close",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_successful_replacement_receipt_is_not_rewritten_when_real_epoch_publication_fails",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_switch_http_originals_cannot_be_omitted_or_cross_associated[foreign-result]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_switch_http_originals_cannot_be_omitted_or_cross_associated[missing-pin]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_switch_http_originals_cannot_be_omitted_or_cross_associated[missing-result]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_switch_http_originals_cannot_be_omitted_or_cross_associated[wrong-intent]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_evidence::test_unreleased_custody_cannot_be_relabelled_success",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_begin_rejects_unbound_or_duplicated_evidence[duplicate]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_begin_rejects_unbound_or_duplicated_evidence[foreign-operation]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_begin_rejects_unbound_or_duplicated_evidence[foreign-path]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_begin_rejects_unbound_or_duplicated_evidence[foreign-view]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_caller_cannot_mutate_fixed_input_or_returned_configuration",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_close_is_idempotent_releases_resources_and_disables_execution",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_constructor_requires_this_operation_replacing[FAILED_RETAINED]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_constructor_requires_this_operation_replacing[READY]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_constructor_requires_this_operation_replacing[SUCCEEDED]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_constructor_requires_this_operation_replacing[foreign]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_context_entry_failure_releases_all_leases_without_waiting_for_exit",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_each_view_guard_requires_original_physical_exclusive_lock[closed]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_each_view_guard_requires_original_physical_exclusive_lock[released]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_each_view_guard_requires_original_physical_exclusive_lock[replaced]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_each_view_guard_requires_original_physical_exclusive_lock[wrong-file]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_epoch_completion_or_new_event_blocks_all_old_commands",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_external_guard_failure_propagates_and_partial_construction_closes_leases",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_finished_evidence_cannot_be_overwritten_or_closed_twice",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[active.json]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[configuration.json]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[program-context.json]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[program-execution-binding.json]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[request.json]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[resource-reservation.json]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[target.json]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_native_evidence_combines_phases_and_pending_unknown_without_losing_last_exit",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_preparation_binds_full_owner_before_use_and_preserves_originals",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_preparation_rejects_any_full_configuration_change[credential]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_preparation_rejects_any_full_configuration_change[database]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_preparation_rejects_any_full_configuration_change[other-target]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_preparation_rejects_any_full_configuration_change[runtime]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_preparation_rejects_any_full_configuration_change[unrelated]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_published_generation_without_stage_invalidates_old_view",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_same_budget_is_never_reset_or_swallowed[begin]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_same_budget_is_never_reset_or_swallowed[constructor]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_same_budget_is_never_reset_or_swallowed[guard]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_same_budget_is_never_reset_or_swallowed[stage]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_same_budget_is_never_reset_or_swallowed[view]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_stage_is_monotonic_and_restore_requires_exact_runtime_configuration",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_stage_requires_every_invocation_succeeded_without_discarding_failures[FAILED_RETAINED]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_stage_requires_every_invocation_succeeded_without_discarding_failures[TERMINAL_UNKNOWN]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_stage_requires_every_invocation_succeeded_without_discarding_failures[pending]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_terminal_cannot_replace_unrelated_invocation[action]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_terminal_cannot_replace_unrelated_invocation[argvSha256]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_terminal_cannot_replace_unrelated_invocation[exit]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_terminal_cannot_replace_unrelated_invocation[mutation]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_terminal_cannot_replace_unrelated_invocation[operationId]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_terminal_cannot_replace_unrelated_invocation[path]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_terminal_cannot_replace_unrelated_invocation[startedAt]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_timeout_or_lost_execution_lock_does_not_discard_terminal_evidence",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_unsettled_invocation_blocks_next_dispatch_but_not_its_own_guard_or_evidence[TERMINAL_UNKNOWN]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_native::test_unsettled_invocation_blocks_next_dispatch_but_not_its_own_guard_or_evidence[pending]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_actual_credential_and_protection_program_pin_drift_blocks_transport[credential]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_actual_credential_and_protection_program_pin_drift_blocks_transport[fence-program]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_actual_credential_and_protection_program_pin_drift_blocks_transport[mount-program]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_another_real_context_cannot_borrow_the_original_custody",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_captured_protection_object_is_bound_to_same_native_and_phase_on_every_call",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_changed_native_cannot_borrow_protection_transport[budget]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_changed_native_cannot_borrow_protection_transport[mysql-id]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_changed_native_cannot_borrow_protection_transport[native-config]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_changed_native_cannot_borrow_protection_transport[policy]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_changed_native_cannot_borrow_protection_transport[request]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_changed_native_cannot_borrow_protection_transport[service-cache]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_changed_native_cannot_borrow_protection_transport[source]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_custody_cannot_be_created_from_restore_view",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_duck_typed_native_view_has_no_protection_authority",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_lock_loss_and_closed_context_cannot_release_protection",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_old_preparation_retains_no_command_or_protection_exception_after_stage",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_original_journal_drift_is_rejected_before_transport[active]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_original_journal_drift_is_rejected_before_transport[intent]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_original_journal_drift_is_rejected_before_transport[journal]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_protection_views_expose_no_general_command_query_or_mutable_scope",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_real_context_original_protections_survive_stage_and_release_in_original_order",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_release_failure_preserves_prior_steps_and_does_not_release_later_protections[archive]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_release_failure_preserves_prior_steps_and_does_not_release_later_protections[fence]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_release_failure_preserves_prior_steps_and_does_not_release_later_protections[scheduler]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_protection::test_release_never_installs_again_or_runs_out_of_order",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_restore::test_collector_retains_http_originals_after_sixth_step_for_multiple_networks",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_restore::test_constructor_failure_has_no_fabricated_custody_or_missing_context_evidence",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_restore::test_context_construction_failure_records_not_started_without_fabricated_snapshots",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_restore::test_invalid_selected_history_is_refused_before_any_protection_or_stop",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_restore::test_preparation_never_clears_data_and_loads_five_images_but_only_switches_two_apps",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_restore::test_real_entry_full_path_begins_before_first_db_and_shares_one_budget",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_restore::test_restore_failure_aggregates_both_natives_and_never_releases_or_restarts",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_restore::test_success_fixed_evidence_is_pinned_in_result_receipt_before_ready",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_restore::test_success_receipt_survives_ready_publication_failure_without_rewriting_pinned_snapshots",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_restore::test_unknown_http_outcome_retains_one_attempt_and_original_protections",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_program_restore::test_unregistered_program_keeps_legacy_replacement_branch_without_new_orchestrator",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation::test_verified_smb_reader_rejects_actual_protocol_drift[authentication]",
+      "rounds": [
+        "readback-private-green-r2"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation::test_verified_smb_reader_rejects_actual_protocol_drift[expected]",
+      "rounds": [
+        "readback-private-green-r2"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation::test_verified_smb_reader_rejects_actual_protocol_drift[inode]",
+      "rounds": [
+        "readback-private-green-r2"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation::test_verified_smb_reader_rejects_actual_protocol_drift[link]",
+      "rounds": [
+        "readback-private-green-r2"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation::test_verified_smb_reader_rejects_actual_protocol_drift[size]",
+      "rounds": [
+        "readback-private-green-r2"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation::test_verified_smb_reader_retains_actual_original_and_default_light_contract",
+      "rounds": [
+        "readback-private-green-r2"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation_handoff::test_actual_prepare_exporter_intent_keeps_native_canonical_contract",
+      "rounds": [
+        "handoff-runtime-green-r4"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation_handoff::test_archive_then_unique_typed_handoff_holds_barriers_without_payload_reread",
+      "rounds": [
+        "handoff-runtime-green-r4"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation_handoff::test_context_owns_publication_lock_and_leases_even_before_capture",
+      "rounds": [
+        "handoff-runtime-green-r4"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation_handoff::test_real_retention_delete_rechecks_late_malformed_hold_before_removal",
+      "rounds": [
+        "handoff-runtime-green-r4"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation_handoff::test_real_retention_planner_checks_dynamic_holds_before_inventory[link]",
+      "rounds": [
+        "handoff-runtime-green-r4"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation_handoff::test_real_retention_planner_checks_dynamic_holds_before_inventory[malformed]",
+      "rounds": [
+        "handoff-runtime-green-r4"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation_handoff::test_registered_preservation_requires_session_before_stage",
+      "rounds": [
+        "handoff-runtime-green-r4"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation_producer::test_created_app_external_protocol_keeps_real_engine_and_capture_state_aligned",
+      "rounds": [
+        "fixture-created-id-green-r3"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation_producer::test_main_handoff_unknown_retains_archive_and_never_imports_or_clears",
+      "rounds": [
+        "handoff-unknown-green-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation_producer::test_main_producer_preserves_before_import_then_restores_and_validates_history",
+      "rounds": [
+        "producer-green-r9"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation_producer::test_main_ready_unknown_preserves_success_receipt_and_final_proof",
+      "rounds": [
+        "ready-unknown-green-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation_producer::test_main_stage_failure_keeps_final_preservation_without_clear",
+      "rounds": [
+        "stage-failure-green-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation_producer::test_offline_preservation_rejects_unbound_scope_before_reading_payload",
+      "rounds": [
+        "handoff-runtime-green-r4"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation_readback::test_main_readback_originals_are_private_without_repository_cli_umask[original-index]",
+      "rounds": [
+        "readback-private-green-r2"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation_readback::test_main_readback_originals_are_private_without_repository_cli_umask[retained-raw]",
+      "rounds": [
+        "readback-private-green-r2"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation_readback::test_ordinary_smb_readback_keeps_its_existing_creation_contract",
+      "rounds": [
+        "readback-private-green-r2"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation_runtime::test_first_clear_requires_final_proof_before_any_bound_or_write",
+      "rounds": [
+        "handoff-runtime-green-r4"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_recovery_target_preservation_runtime::test_registered_policy_is_admitted_before_first_protection_stop_import_or_clear",
+      "rounds": [
+        "handoff-runtime-green-r4"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_smallapp_replacement::test_bad_redis_scope_is_rejected_before_any_mutation[-1]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_smallapp_replacement::test_bad_redis_scope_is_rejected_before_any_mutation[0]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_smallapp_replacement::test_bad_redis_scope_is_rejected_before_any_mutation[16]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_smallapp_replacement::test_bad_redis_scope_is_rejected_before_any_mutation[True]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_smallapp_replacement::test_changed_expanded_sql_is_rejected_without_replacing_original",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_smallapp_replacement::test_replacement_lock_cannot_live_inside_per_operation_state",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_smallapp_replacement::test_replayed_rows_remain_visible_to_later_source_increments",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_smallapp_replacement::test_successful_claim_permits_repeat_but_failed_or_incomplete_claim_does_not",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_smallapp_replacement::test_system_or_injected_database_is_rejected[a`; DROP DATABASE mysql; --]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_smallapp_replacement::test_system_or_injected_database_is_rejected[mysql]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    },
+    {
+      "nodeId": "scripts.tests.test_smallapp_replacement::test_system_or_injected_database_is_rejected[sys]",
+      "rounds": [
+        "legacy-consumers-regression-r1"
+      ]
+    }
+  ],
+  "uniquePassedNodeCount": 197,
+  "ordinarySmbReadMethodUnchanged": true,
+  "sourceFilesMatchedPassingSnapshots": true,
+  "remoteActions": 0,
+  "businessWrites": 0,
+  "actualBusinessRestore": false,
+  "remainingHolds": [
+    "Actual SAFE transforms and both packages not built",
+    "No new control-generation protocol or remote installation",
+    "Per-operation readback configuration derivation not implemented",
+    "Source/preservation repository layout and 58/59 capture registration not installed",
+    "Dedicated preservation role has no Spug catalog/restore selection yet"
+  ]
+}

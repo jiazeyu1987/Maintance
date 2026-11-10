@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "TaskTargetPreservationProtocolVerification/v1",
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--name",
+    "spug-target-preservation-2b-stream-intent-red-r1",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--memory",
+    "512m",
+    "--cpus",
+    "1",
+    "--pids-limit",
+    "128",
+    "--tmpfs",
+    "/work:rw,exec,nosuid,nodev,size=256m",
+    "--tmpfs",
+    "/tmp:rw,nosuid,nodev,size=128m",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-stream-intent-red-r1.tar,target=/inputs/source.tar,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-stream-intent-red-r1-runner.py,target=/inputs/runner.py,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\linux-test-wheels,target=/inputs/wheels,readonly",
+    "sha256:14a4933e6cef421424f7a66d89a3f4eafcbd0d90e0a822251f298e05132dc735",
+    "python",
+    "-B",
+    "/inputs/runner.py"
+  ],
+  "exitCode": 1,
+  "timeout": false,
+  "counts": {
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0
+  },
+  "elapsedSeconds": 84.157,
+  "sourceSnapshotPin": {
+    "file": "target-preservation-2b-stream-intent-red-r1.tar",
+    "bytes": 7342080,
+    "sha256": "46b68cc150349d96381ad811351e013879850bf65875396417fc0e8326c13c4f"
+  },
+  "sourceInventoryPin": {
+    "file": "target-preservation-2b-stream-intent-red-r1-inputs.json",
+    "bytes": 40261,
+    "sha256": "b8ad1d4c7c06c209d3b82ae30d93a87e6d670400c7629e26d9a25dceb19cff1e"
+  },
+  "runnerPin": {
+    "file": "target-preservation-2b-stream-intent-red-r1-runner.py",
+    "bytes": 4093,
+    "sha256": "7d72a9b0c675688d43030b974ea85189c6ceaed2c837802a9b646e41b689c3b8"
+  },
+  "rawLogPin": {
+    "file": "target-preservation-2b-stream-intent-red-r1.log",
+    "bytes": 9613,
+    "sha256": "9087dd45ba67614588598e26088f29de3846afc2e77cc6e48c63baa189858205"
+  },
+  "junitPin": {
+    "file": "target-preservation-2b-stream-intent-red-r1.xml",
+    "bytes": 2966,
+    "sha256": "5c44e3f055acf359c553679fc5a8a79a3546475d170486e50287c2b9037e9c23"
+  },
+  "inputsUnchanged": true,
+  "runtimeInputsUnchanged": true,
+  "containerRemoved": true,
+  "remoteActions": 0,
+  "businessWrites": 0,
+  "actualBusinessRestore": false
+}

@@ -10,7 +10,7 @@ from recovery_minimal_plan import configuration_contract, request_contract
 
 PROGRAM_FAILURE_FIELDS = ('programExecutionPhase', 'programNativeEvidencePin',
     'programProtectionCustodyPin', 'programGenerationPin', 'replacementReceiptPin',
-    'programSqlCleanupPin', 'actualNativeExitCode')
+    'programSqlCleanupPin', 'actualNativeExitCode', 'targetPreservationPin')
 
 
 def operation_result(request, started, state, code, data, pins, exit_code):

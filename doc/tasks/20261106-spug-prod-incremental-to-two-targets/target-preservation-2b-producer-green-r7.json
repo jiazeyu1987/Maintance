@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "TaskTargetPreservationProtocolVerification/v1",
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--name",
+    "spug-target-preservation-2b-producer-green-r7",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--memory",
+    "512m",
+    "--cpus",
+    "1",
+    "--pids-limit",
+    "128",
+    "--tmpfs",
+    "/work:rw,exec,nosuid,nodev,size=256m",
+    "--tmpfs",
+    "/tmp:rw,nosuid,nodev,size=128m",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-producer-green-r7.tar,target=/inputs/source.tar,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-producer-green-r7-runner.py,target=/inputs/runner.py,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\linux-test-wheels,target=/inputs/wheels,readonly",
+    "sha256:14a4933e6cef421424f7a66d89a3f4eafcbd0d90e0a822251f298e05132dc735",
+    "python",
+    "-B",
+    "/inputs/runner.py"
+  ],
+  "exitCode": 1,
+  "timeout": false,
+  "counts": {
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0
+  },
+  "elapsedSeconds": 309.125,
+  "sourceSnapshotPin": {
+    "file": "target-preservation-2b-producer-green-r7.tar",
+    "bytes": 7372800,
+    "sha256": "5ae97b19a2d06a0aa77d0c8989d375e5ddda27af6746cb8aaadbcc7b3fd2d28a"
+  },
+  "sourceInventoryPin": {
+    "file": "target-preservation-2b-producer-green-r7-inputs.json",
+    "bytes": 40261,
+    "sha256": "d5d569785b2ebf5b75219c2831a853816c5aba5907445d91999c9e4b07e4d73b"
+  },
+  "runnerPin": {
+    "file": "target-preservation-2b-producer-green-r7-runner.py",
+    "bytes": 4191,
+    "sha256": "e3af70a1c8b23e9af46ab3bd4fbdcf8ca116e21f157a53aefc02b89ae12c63a6"
+  },
+  "rawLogPin": {
+    "file": "target-preservation-2b-producer-green-r7.log",
+    "bytes": 13005,
+    "sha256": "2c999375080e354bb63a40868d40e4ce5323f9df2d12fdb2a7cea5467476f60c"
+  },
+  "junitPin": {
+    "file": "target-preservation-2b-producer-green-r7.xml",
+    "bytes": 3510,
+    "sha256": "ca734e52412b7776bc4686ad7384eb06c01e6d413750edf5516632b353c39f6f"
+  },
+  "inputsUnchanged": true,
+  "runtimeInputsUnchanged": true,
+  "containerRemoved": true,
+  "remoteActions": 0,
+  "businessWrites": 0,
+  "actualBusinessRestore": false
+}

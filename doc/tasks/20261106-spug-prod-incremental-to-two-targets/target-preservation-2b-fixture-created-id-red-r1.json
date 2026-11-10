@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "TaskTargetPreservationProtocolVerification/v1",
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--name",
+    "spug-target-preservation-2b-fixture-created-id-red-r1",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--memory",
+    "512m",
+    "--cpus",
+    "1",
+    "--pids-limit",
+    "128",
+    "--tmpfs",
+    "/work:rw,exec,nosuid,nodev,size=256m",
+    "--tmpfs",
+    "/tmp:rw,nosuid,nodev,size=128m",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-fixture-created-id-red-r1.tar,target=/inputs/source.tar,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2b-fixture-created-id-red-r1-runner.py,target=/inputs/runner.py,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\linux-test-wheels,target=/inputs/wheels,readonly",
+    "sha256:14a4933e6cef421424f7a66d89a3f4eafcbd0d90e0a822251f298e05132dc735",
+    "python",
+    "-B",
+    "/inputs/runner.py"
+  ],
+  "exitCode": 1,
+  "timeout": false,
+  "counts": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 1,
+    "skipped": 0
+  },
+  "elapsedSeconds": 85.39,
+  "sourceSnapshotPin": {
+    "file": "target-preservation-2b-fixture-created-id-red-r1.tar",
+    "bytes": 7372800,
+    "sha256": "fb2b9a7ea523cd257946610f7e188d617a7a0ac898832eab05942c9a046bc4a7"
+  },
+  "sourceInventoryPin": {
+    "file": "target-preservation-2b-fixture-created-id-red-r1-inputs.json",
+    "bytes": 40261,
+    "sha256": "50fa3787ac6ff5faa19c540fe3d0e04aab946c43ac7951ddb5ca92328387056a"
+  },
+  "runnerPin": {
+    "file": "target-preservation-2b-fixture-created-id-red-r1-runner.py",
+    "bytes": 1325,
+    "sha256": "550eacbce91bd60f4710ae517a32cb1e269ba1a2281409934f4cbcff5366ccb6"
+  },
+  "rawLogPin": {
+    "file": "target-preservation-2b-fixture-created-id-red-r1.log",
+    "bytes": 3841,
+    "sha256": "0d014b531742d0e69bc84c2dada74018b19d5d35b3c96d3ab5051c1923db1e9c"
+  },
+  "diagnosticPins": [],
+  "junitPin": {
+    "file": "target-preservation-2b-fixture-created-id-red-r1.xml",
+    "bytes": 1408,
+    "sha256": "26ac91451956d1ba3500f53c89a0d67c0dca5575c70bbd895d7879e1941726e4"
+  },
+  "inputsUnchanged": true,
+  "runtimeInputsUnchanged": true,
+  "containerRemoved": true,
+  "remoteActions": 0,
+  "businessWrites": 0,
+  "actualBusinessRestore": false
+}

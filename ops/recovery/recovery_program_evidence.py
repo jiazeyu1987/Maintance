@@ -196,7 +196,9 @@ def _scan_invocations(reader, roots):
             path = _path(str(root/name)); info = path.lstat()
             if stat.S_ISDIR(info.st_mode): pending.append(path)
             elif name.endswith('.json') and name != 'native-execution-evidence.json' and (
-                    name.startswith('native-') or name.startswith('importer-')):
+                    name.startswith('native-') or name.startswith('importer-') or
+                    (path.parent==roots[0]/'target-preservation'/'session' and
+                     re.fullmatch('stream-[0-9]{5}\\.json',name))):
                 value, reference = reader.fixed(path)
                 found[str(path)] = (value, reference)
     return found
@@ -760,6 +762,8 @@ def validate_program_evidence(owner, request, operation_root, *, result_pin, gua
         inputs = _originals(owner, request, root, reader)
         result, receipt, result_pins, receipt_pins = _outer(request, inputs, result_pin, reader)
         data = result['data']; phase = data['programExecutionPhase']
+        preservation_pin=data.get('targetPreservationPin')
+        _need(preservation_pin==receipt.get('targetPreservationPin'),'PRESERVATION_BINDING_CHANGED')
         outer = _index([*result_pins.values(), *receipt_pins.values()])
         found = _scan_invocations(reader, (root, claim))
         cleaned = _sql_cleanup(request, inputs, data, receipt, outer, reader)
@@ -786,6 +790,19 @@ def validate_program_evidence(owner, request, operation_root, *, result_pin, gua
             unknown = native['terminalUnknown'] or switch_unknown or import_unknown
             invocations, last = native['invocations'], native['lastExitCode']
             if phase == 'PREPARATION': _need(result['state'] != 'SUCCEEDED', 'PREPARATION_SUCCESS_INVALID')
+        preservation=None
+        if request['targetConfigRef'] in owner.get('targetPreservationPolicies',{}):
+            _need((phase!='RESTORE' and result['state']!='SUCCEEDED') or preservation_pin is not None,
+                'PRESERVATION_REQUIRED')
+            if preservation_pin is not None:
+                _need(outer.get(preservation_pin['path'])==preservation_pin and execution['bindingPin'] is not None,
+                    'PRESERVATION_PIN_REQUIRED')
+                from recovery_target_preservation import validate_preservation_evidence
+                preservation=validate_preservation_evidence(owner,request,preservation_pin,
+                    binding_pin=execution['bindingPin'],guard=guard,_reader=reader)
+                prefix=preservation['captureInvocations']
+                _need(native['invocations'][:len(prefix)]==prefix,'PRESERVATION_NATIVE_CHANGED')
+        else:_need(preservation_pin is None,'PRESERVATION_UNREGISTERED')
         completed_receipt_unknown = (receipt['state'] == 'SUCCEEDED' and receipt['terminalUnknown'] is False and
             data['terminalUnknown'] is True and result['state'] == 'TERMINAL_UNKNOWN' and
             _text(result.get('failureCode')) and not unknown and phase == 'RESTORE' and
@@ -825,6 +842,7 @@ def validate_program_evidence(owner, request, operation_root, *, result_pin, gua
             protectionState=None if custody is None else custody['state'],
             protectionStates=None if custody is None else deepcopy(custody['protections']),
             cleanedSqlPins=deepcopy(list(cleaned.values())),
+            targetPreservationPin=deepcopy(preservation_pin),
             deferredPayloadPins=deepcopy([entry[0] for entry in reader.deferred.values()]))
         guard()
         return proof

@@ -222,9 +222,12 @@ def clear(native, value):
     if view is not None:
         view.guard_native(native)
         require(view.phase == 'RESTORE', 'PROGRAM_REPLACEMENT_CLEAR_PHASE_INVALID')
+        from recovery_target_preservation import require_preservation
+        require_preservation(view._context,native=native)
         native.bound()
         verify_services(native, value)
     database = native.config['database']
+    if view is not None:require_preservation(view._context,native=native)
     native.mutation_dispatched = True
     native.mysql.query('DROP DATABASE `'+database+'`; CREATE DATABASE `'+database+'`;', mutation=True)
     mount = [m for m in value['services']['minio']['mounts'] if m['Destination'] == native.policy['minioDataMount']]
