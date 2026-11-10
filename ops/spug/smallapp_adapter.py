@@ -8,6 +8,7 @@ import argparse
 import datetime
 import errno
 import http.client
+import io
 import socket
 import ssl
 import hashlib
@@ -15,6 +16,8 @@ import json
 import os
 import re
 import sys
+import threading
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -28,6 +31,9 @@ RESULT_FIELDS = frozenset(('schemaVersion', 'operationId', 'action', 'state',
 STATES = frozenset(('RUNNING', 'SUCCEEDED', 'FAILED'))
 PRIVATE = Path('/run/intruoyi-spug')
 RECORDS = Path('/var/lib/intruoyi-spug/smallapp')
+SELECTION_SOURCE_SECONDS = 20
+SELECTION_TARGET_SECONDS = 25
+SELECTION_TOTAL_SECONDS = 50
 
 
 class Refused(Exception):
@@ -161,7 +167,7 @@ def bridge_failure_code(error):
     if isinstance(cause, socket.gaierror):
         return 'BRIDGE_DNS_FAILED'
     numbers = {getattr(cause, 'errno', None), getattr(cause, 'winerror', None)}
-    if isinstance(cause, TimeoutError) or numbers & {errno.ETIMEDOUT, 10060}:
+    if isinstance(cause, (socket.timeout, TimeoutError)) or numbers & {errno.ETIMEDOUT, 10060}:
         return 'BRIDGE_TIMEOUT'
     if isinstance(cause, ConnectionRefusedError) or numbers & {errno.ECONNREFUSED, 10061}:
         return 'BRIDGE_CONNECTION_REFUSED'
@@ -280,7 +286,78 @@ class HttpBridge:
         if request['action'] == 'RESTORE' and request['targetConfigRef'] not in self.target_refs:
             raise Refused('TARGET_NOT_IN_CURRENT_BINDING')
 
-    def call(self, url, request=None):
+    def read_selection(self, url, headers, deadline):
+        """One connected-socket deadline, including slow headers and body.
+
+        OS DNS resolution is not interruptible here. No redirect, proxy or
+        retry is permitted; every subsequent source shares the original budget.
+        """
+        parsed = urllib.parse.urlsplit(url)
+        if ((parsed.scheme, parsed.hostname, parsed.port) != self.origin or
+                parsed.username or parsed.password or parsed.fragment or parsed.path != '/selections'):
+            raise Refused('W01_SELECTION_ENDPOINT_OUTSIDE_BINDING')
+
+        def remaining():
+            value = deadline - time.monotonic()
+            if value <= 0:
+                raise Refused('BRIDGE_TIMEOUT')
+            return value
+
+        connection_type = http.client.HTTPSConnection if parsed.scheme == 'https' else http.client.HTTPConnection
+        connection = connection_type(parsed.hostname, parsed.port, timeout=remaining())
+        watchdog = None
+        expired = threading.Event()
+        try:
+            connection.connect()
+            transport = connection.sock
+
+            def expire():
+                expired.set()
+                try:
+                    transport.shutdown(socket.SHUT_RDWR)
+                except OSError:
+                    # The same connection may have completed and closed meanwhile.
+                    pass
+
+            watchdog = threading.Timer(remaining(), expire)
+            watchdog.daemon = True
+            watchdog.start()
+            transport.settimeout(remaining())
+            route = urllib.parse.urlunsplit(('', '', parsed.path, parsed.query, ''))
+            connection.request('GET', route, headers=headers)
+            transport.settimeout(remaining())
+            with connection.getresponse() as response:
+                remaining()
+                if 300 <= response.status < 400:
+                    raise Refused('BRIDGE_REDIRECT_REFUSED')
+                expected = response.length
+                try:
+                    body = response.read(65537)
+                except (OSError, http.client.HTTPException):
+                    remaining()
+                    if response.status >= 400:
+                        raise urllib.error.HTTPError(url, response.status, '', response.headers, io.BytesIO()) from None
+                    raise
+                remaining()
+                if expected is not None and len(body) < min(expected, 65537):
+                    if response.status >= 400:
+                        raise urllib.error.HTTPError(url, response.status, '', response.headers, io.BytesIO())
+                    raise Refused('BRIDGE_RESPONSE_INCOMPLETE')
+                if response.status >= 400:
+                    # Preserve the existing safe symbolic HTTP error contract.
+                    raise urllib.error.HTTPError(url, response.status, '', response.headers, io.BytesIO(body))
+                return body
+        except (OSError, http.client.HTTPException):
+            if expired.is_set() or time.monotonic() >= deadline:
+                raise Refused('BRIDGE_TIMEOUT') from None
+            raise
+        finally:
+            if watchdog is not None:
+                watchdog.cancel()
+                watchdog.join()
+            connection.close()
+
+    def call(self, url, request=None, *, selection_deadline=None):
         self.requests.append('GET' if request is None else 'POST')
         data = None if request is None else json.dumps(request, separators=(',', ':')).encode('utf-8')
         headers = {**self.headers, 'Content-Type': 'application/json'}
@@ -291,8 +368,13 @@ class HttpBridge:
             isinstance(request, dict) and path == '/operations' and request.get('action') == 'INCREMENTAL')
         timeout = 40 if planning else 10
         try:
-            with self.opener.open(urllib.request.Request(url, data=data, headers=headers), timeout=timeout) as response:
-                body = response.read(65537)
+            if selection_deadline is not None:
+                if request is not None:
+                    raise Refused('W01_SELECTION_ENDPOINT_OUTSIDE_BINDING')
+                body = self.read_selection(url, headers, selection_deadline)
+            else:
+                with self.opener.open(urllib.request.Request(url, data=data, headers=headers), timeout=timeout) as response:
+                    body = response.read(65537)
         except urllib.error.HTTPError as error:
             try:
                 body = error.read(65537)
@@ -345,7 +427,9 @@ class HttpBridge:
         endpoint = self.selection_url
         if self.selected_target is not None and self.selected_target_preflight:
             endpoint += '?targetConfigRef=' + urllib.parse.quote(self.selected_target, safe='')
-        payload = self.call(endpoint)
+        seconds = SELECTION_TARGET_SECONDS if self.selected_target is not None else SELECTION_SOURCE_SECONDS
+        deadline = min(getattr(self, '_selection_deadline', float('inf')), time.monotonic() + seconds)
+        payload = self.call(endpoint, selection_deadline=deadline)
         if (not isinstance(payload, dict) or set(payload) != {'observedAt', 'applications'} or
                 not isinstance(payload['applications'], list) or
                 any(not isinstance(row, dict) or not reference(row.get('sourceConfigRef'))
@@ -359,7 +443,9 @@ class HttpBridge:
 
     def _source_selections(self):
         if not self.selection_connections:
-            return self._local_selections()
+            payload = self._local_selections()
+            return dict(payload, applications=[row for row in payload['applications']
+                if row['sourceConfigRef'] == self.selected_source])
         source_ref = self.selected_source
         if source_ref not in self.source_refs:
             raise Refused('SOURCE_NOT_IN_CURRENT_BINDING')
@@ -372,7 +458,9 @@ class HttpBridge:
                 raise Refused('LOCAL_INPUT_MISSING_OR_INVALID')
             # Reuse the normal private binding, origin, authentication and response
             # checks, but only call its local read endpoint, never its dispatch.
-            payload = HttpBridge(path, source_ref)._local_selections()
+            directory = HttpBridge(path, source_ref)
+            directory._selection_deadline = getattr(self, '_selection_deadline', float('inf'))
+            payload = directory._local_selections()
         rows = [row for row in payload['applications'] if row['sourceConfigRef'] == source_ref]
         if len(rows) != 1:
             raise Refused('W01_SELECTION_SOURCE_AMBIGUOUS')
@@ -397,27 +485,49 @@ class HttpBridge:
             payload['observedAt'] = min(payload['observedAt'], remote['observedAt'])
 
     def selections(self):
+        previous = getattr(self, '_selection_deadline', None)
+        self._selection_deadline = min(previous if previous is not None else float('inf'),
+                                       time.monotonic() + SELECTION_TOTAL_SECONDS)
+        try:
+            return self._selections()
+        finally:
+            if previous is None:
+                del self._selection_deadline
+            else:
+                self._selection_deadline = previous
+
+    def _selections(self):
+        def source_directory(source):
+            directory = HttpBridge(self.binding_path, source)
+            directory._selection_deadline = self._selection_deadline
+            return directory._source_selections()
+
         if self.selected_target is not None:
             # Admission uses this target connection too. Its copied catalogue
             # cannot override the source's current point eligibility.
-            source_payloads = [HttpBridge(self.binding_path, source)._source_selections()
-                               for source in self.source_refs]
+            registered = read_json(self.binding_path)
+            if any(source not in registered.get('sourceConfigRefs', []) and
+                   source not in registered.get('sourceConnections', {}) for source in self.source_refs):
+                raise Refused('SOURCE_NOT_IN_CURRENT_BINDING')
+            sources = [self.selected_source] if self.selected_source is not None else self.source_refs
+            source_payloads = [source_directory(source) for source in sources]
             payload = dict(observedAt=min(p['observedAt'] for p in source_payloads),
                            applications=[row for p in source_payloads for row in p['applications']])
-            self.merge_target_choices(payload, self._local_selections(), self.selected_target, self.source_refs)
+            self.merge_target_choices(payload, self._local_selections(), self.selected_target, sources)
             return payload
         if self.selection_connections:
             sources = [self.selected_source] if self.selected_source is not None else list(
                 dict.fromkeys([*self.source_refs, *self.connections]))
-            source_payloads = [HttpBridge(self.binding_path, source)._source_selections()
-                               for source in sources]
+            source_payloads = [source_directory(source) for source in sources]
             return dict(observedAt=min(p['observedAt'] for p in source_payloads),
                         applications=[row for p in source_payloads for row in p['applications']])
         payload = self._local_selections()
         # Backup readiness belongs to the source. Restore catalogues and admission
         # use selected_target above; unrelated historical targets are not dependencies.
         for source_ref in self.connections:
-            additional = HttpBridge(self.binding_path, source_ref).selections()
+            directory = HttpBridge(self.binding_path, source_ref)
+            directory._selection_deadline = self._selection_deadline
+            additional = directory.selections()
             if not isinstance(additional, dict) or set(additional) != {'observedAt', 'applications'}:
                 raise Refused('W01_SELECTION_FIELDS_INVALID')
             payload['applications'].extend(additional['applications'])

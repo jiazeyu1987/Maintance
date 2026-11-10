@@ -1,0 +1,32 @@
+{
+  "status": "FAIL",
+  "errorType": "Refused",
+  "errorCode": "BRIDGE_IO_FAILED",
+  "elapsedSeconds": 12.059,
+  "calls": [
+    {
+      "sourceRefs": [
+        "intruoyi-57-safe-20261024-v1",
+        "intruoyi-59-safe-20261024-v1",
+        "intruoyi-PROD57-20261019"
+      ],
+      "selectedSource": "intruoyi-57-safe-20261024-v1",
+      "selectedTarget": null,
+      "path": "/selections",
+      "status": "FAIL",
+      "errorType": "Refused",
+      "errorCode": "BRIDGE_IO_FAILED",
+      "elapsedSeconds": 11.695
+    }
+  ],
+  "configurationWrites": false,
+  "backupDispatched": false,
+  "restoreDispatched": false,
+  "schemaVersion": "SpugSelectionTimingDiagnostic/v1",
+  "actualExitCode": 0,
+  "requestPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-selection-timing-r1.request.private.json",
+    "bytes": 455,
+    "sha256": "d2f094e8f1ace54a4dd85a6a69ae6de15caf770a9713cfb26dc5604b223e0025"
+  }
+}

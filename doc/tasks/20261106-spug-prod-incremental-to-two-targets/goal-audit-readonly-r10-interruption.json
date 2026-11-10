@@ -1,0 +1,343 @@
+{
+  "schemaVersion": "SpugReadonlyAuditInterruption/v1",
+  "status": "INTERRUPTED_AFTER_REPEATED_FAILURE",
+  "originalObservation": "r10",
+  "originalSessionId": 42144,
+  "observedTerminalExitCode": 1,
+  "interruption": "Parent sent Ctrl-C after the same refresh failure recurred; original session returned exit1 and exact helper process is absent.",
+  "completeMatrixVerified": false,
+  "backupDispatched": false,
+  "restoreDispatched": false,
+  "preservedCompletedPoints": [
+    {
+      "packageId": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291",
+      "kind": "backup-incremental",
+      "source": "172.30.30.57",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": false,
+          "blockedReason": "\u53ef\u7528\u914d\u7f6e\u5237\u65b0\u5931\u8d25\uff0c\u65e7\u51c6\u5165\u5df2\u5931\u6548\uff1b\u8bf7\u6210\u529f\u5237\u65b0\u540e\u518d\u63d0\u4ea4\u3002\uff08ENTRY_SELECTION_REFRESH_FAILED\uff09"
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": false,
+          "blockedReason": "\u53ef\u7528\u914d\u7f6e\u5237\u65b0\u5931\u8d25\uff0c\u65e7\u51c6\u5165\u5df2\u5931\u6548\uff1b\u8bf7\u6210\u529f\u5237\u65b0\u540e\u518d\u63d0\u4ea4\u3002\uff08ENTRY_SELECTION_REFRESH_FAILED\uff09"
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": false,
+          "blockedReason": "\u53ef\u7528\u914d\u7f6e\u5237\u65b0\u5931\u8d25\uff0c\u65e7\u51c6\u5165\u5df2\u5931\u6548\uff1b\u8bf7\u6210\u529f\u5237\u65b0\u540e\u518d\u63d0\u4ea4\u3002\uff08ENTRY_SELECTION_REFRESH_FAILED\uff09"
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+      "kind": "backup-incremental",
+      "source": "172.30.30.57",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": false,
+          "blockedReason": "\u53ef\u7528\u914d\u7f6e\u5237\u65b0\u5931\u8d25\uff0c\u65e7\u51c6\u5165\u5df2\u5931\u6548\uff1b\u8bf7\u6210\u529f\u5237\u65b0\u540e\u518d\u63d0\u4ea4\u3002\uff08ENTRY_SELECTION_REFRESH_FAILED\uff09"
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": false,
+          "blockedReason": "\u53ef\u7528\u914d\u7f6e\u5237\u65b0\u5931\u8d25\uff0c\u65e7\u51c6\u5165\u5df2\u5931\u6548\uff1b\u8bf7\u6210\u529f\u5237\u65b0\u540e\u518d\u63d0\u4ea4\u3002\uff08ENTRY_SELECTION_REFRESH_FAILED\uff09"
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": false,
+          "blockedReason": "\u53ef\u7528\u914d\u7f6e\u5237\u65b0\u5931\u8d25\uff0c\u65e7\u51c6\u5165\u5df2\u5931\u6548\uff1b\u8bf7\u6210\u529f\u5237\u65b0\u540e\u518d\u63d0\u4ea4\u3002\uff08ENTRY_SELECTION_REFRESH_FAILED\uff09"
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+      "kind": "backup-full",
+      "source": "172.30.30.57",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": false,
+          "blockedReason": "\u53ef\u7528\u914d\u7f6e\u5237\u65b0\u5931\u8d25\uff0c\u65e7\u51c6\u5165\u5df2\u5931\u6548\uff1b\u8bf7\u6210\u529f\u5237\u65b0\u540e\u518d\u63d0\u4ea4\u3002\uff08ENTRY_SELECTION_REFRESH_FAILED\uff09"
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": false,
+          "blockedReason": "\u53ef\u7528\u914d\u7f6e\u5237\u65b0\u5931\u8d25\uff0c\u65e7\u51c6\u5165\u5df2\u5931\u6548\uff1b\u8bf7\u6210\u529f\u5237\u65b0\u540e\u518d\u63d0\u4ea4\u3002\uff08ENTRY_SELECTION_REFRESH_FAILED\uff09"
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": false,
+          "blockedReason": "\u53ef\u7528\u914d\u7f6e\u5237\u65b0\u5931\u8d25\uff0c\u65e7\u51c6\u5165\u5df2\u5931\u6548\uff1b\u8bf7\u6210\u529f\u5237\u65b0\u540e\u518d\u63d0\u4ea4\u3002\uff08ENTRY_SELECTION_REFRESH_FAILED\uff09"
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+      "kind": "backup-incremental",
+      "source": "172.30.30.57",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": false,
+          "blockedReason": "\u53ef\u7528\u914d\u7f6e\u5237\u65b0\u5931\u8d25\uff0c\u65e7\u51c6\u5165\u5df2\u5931\u6548\uff1b\u8bf7\u6210\u529f\u5237\u65b0\u540e\u518d\u63d0\u4ea4\u3002\uff08ENTRY_SELECTION_REFRESH_FAILED\uff09"
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": false,
+          "blockedReason": "\u53ef\u7528\u914d\u7f6e\u5237\u65b0\u5931\u8d25\uff0c\u65e7\u51c6\u5165\u5df2\u5931\u6548\uff1b\u8bf7\u6210\u529f\u5237\u65b0\u540e\u518d\u63d0\u4ea4\u3002\uff08ENTRY_SELECTION_REFRESH_FAILED\uff09"
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": false,
+          "blockedReason": "\u53ef\u7528\u914d\u7f6e\u5237\u65b0\u5931\u8d25\uff0c\u65e7\u51c6\u5165\u5df2\u5931\u6548\uff1b\u8bf7\u6210\u529f\u5237\u65b0\u540e\u518d\u63d0\u4ea4\u3002\uff08ENTRY_SELECTION_REFRESH_FAILED\uff09"
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-7fec29a3e132463096aec915c08acab3",
+      "kind": "backup-full",
+      "source": "172.30.30.57",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": false,
+          "blockedReason": "\u53ef\u7528\u914d\u7f6e\u5237\u65b0\u5931\u8d25\uff0c\u65e7\u51c6\u5165\u5df2\u5931\u6548\uff1b\u8bf7\u6210\u529f\u5237\u65b0\u540e\u518d\u63d0\u4ea4\u3002\uff08ENTRY_SELECTION_REFRESH_FAILED\uff09"
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": false,
+          "blockedReason": "\u53ef\u7528\u914d\u7f6e\u5237\u65b0\u5931\u8d25\uff0c\u65e7\u51c6\u5165\u5df2\u5931\u6548\uff1b\u8bf7\u6210\u529f\u5237\u65b0\u540e\u518d\u63d0\u4ea4\u3002\uff08ENTRY_SELECTION_REFRESH_FAILED\uff09"
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": false,
+          "blockedReason": "\u53ef\u7528\u914d\u7f6e\u5237\u65b0\u5931\u8d25\uff0c\u65e7\u51c6\u5165\u5df2\u5931\u6548\uff1b\u8bf7\u6210\u529f\u5237\u65b0\u540e\u518d\u63d0\u4ea4\u3002\uff08ENTRY_SELECTION_REFRESH_FAILED\uff09"
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+      "kind": "backup-full",
+      "source": "172.30.30.57",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "\u4e0e\u6267\u884c\u6865\u901a\u4fe1\u65f6\u8bfb\u5199\u5931\u8d25\uff0c\u7cfb\u7edf\u672a\u63d0\u4f9b\u66f4\u5177\u4f53\u7684\u539f\u56e0\u3002\uff08BRIDGE_IO_FAILED\uff09"
+    }
+  ],
+  "cataloguePin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\catalogue-11.private.json",
+    "bytes": 141287,
+    "sha256": "1b0501bbd9676fd56b599b9d7e1cbed2424cbf568d8aa27946728b4d507429ea"
+  },
+  "catalogueItemCount": 145,
+  "backupCounts": {
+    "backup-full": 48,
+    "backup-incremental": 60
+  },
+  "preservedEvidencePins": [
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\authentication-post.private.json",
+      "bytes": 90,
+      "sha256": "f6dd164a0ac1e4becdc77029a4115ede1191a252816aa1d15ba95950777badf1"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\catalogue-1.private.json",
+      "bytes": 141286,
+      "sha256": "12f96e3a671d9a44eb7855e1326cf539e7b903cc126664d86196e4978a0bb088"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\catalogue-10.private.json",
+      "bytes": 141286,
+      "sha256": "12f96e3a671d9a44eb7855e1326cf539e7b903cc126664d86196e4978a0bb088"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\catalogue-11.private.json",
+      "bytes": 141287,
+      "sha256": "1b0501bbd9676fd56b599b9d7e1cbed2424cbf568d8aa27946728b4d507429ea"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\catalogue-2.private.json",
+      "bytes": 141286,
+      "sha256": "12f96e3a671d9a44eb7855e1326cf539e7b903cc126664d86196e4978a0bb088"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\catalogue-3.private.json",
+      "bytes": 141286,
+      "sha256": "12f96e3a671d9a44eb7855e1326cf539e7b903cc126664d86196e4978a0bb088"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\catalogue-4.private.json",
+      "bytes": 141286,
+      "sha256": "12f96e3a671d9a44eb7855e1326cf539e7b903cc126664d86196e4978a0bb088"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\catalogue-5.private.json",
+      "bytes": 141286,
+      "sha256": "12f96e3a671d9a44eb7855e1326cf539e7b903cc126664d86196e4978a0bb088"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\catalogue-6.private.json",
+      "bytes": 141286,
+      "sha256": "12f96e3a671d9a44eb7855e1326cf539e7b903cc126664d86196e4978a0bb088"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\catalogue-7.private.json",
+      "bytes": 141286,
+      "sha256": "12f96e3a671d9a44eb7855e1326cf539e7b903cc126664d86196e4978a0bb088"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\catalogue-8.private.json",
+      "bytes": 141286,
+      "sha256": "12f96e3a671d9a44eb7855e1326cf539e7b903cc126664d86196e4978a0bb088"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\catalogue-9.private.json",
+      "bytes": 141286,
+      "sha256": "12f96e3a671d9a44eb7855e1326cf539e7b903cc126664d86196e4978a0bb088"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\executed-helper.cjs",
+      "bytes": 16738,
+      "sha256": "37c9c305d033e18adc92f8a5c11f1285e69149d52fa78d574df06cbb5e092196"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\login-actionability.private.json",
+      "bytes": 276,
+      "sha256": "4d4156c6f3bb96e4d36045bde962bc777d540e3b47ac7bc9427ac8161255f62f"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\point-1.private.json",
+      "bytes": 842,
+      "sha256": "d67393cdb47661bee868ab679fd256bec085ef35026177ee23cfec16476171a9"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\point-2.private.json",
+      "bytes": 842,
+      "sha256": "1d1a3c4312175a14f17ff43c138ce5284314edc50f29effda05e243702b6182a"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\point-3.private.json",
+      "bytes": 835,
+      "sha256": "186cbf2d8e5befa67c358d2c980cd9e863bf302233c1a0d30351df28e5527eb6"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\point-4.private.json",
+      "bytes": 842,
+      "sha256": "845ef0575b1e5f0af2a5cc1a147c0e59da71cd0ecd8edaa0a5e1ee06444ec2fe"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\point-5.private.json",
+      "bytes": 835,
+      "sha256": "9a9ca6f6ecb927290761669d5c9fb7356a0c21d32a3e0f7d30b502ad393a8763"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\point-6.private.json",
+      "bytes": 245,
+      "sha256": "deefe16ad4edcd8943afa8dd0cb3e78da26b8c30006fb34cda43bf2cdd27ecc6"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\stage-all-pages-and-filters.private.json",
+      "bytes": 73,
+      "sha256": "0475d63f981bb926a08277278d084739476ce671c5de16e50ccd5b3c7fc59c3f"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\stage-backup-page.private.json",
+      "bytes": 63,
+      "sha256": "358b0de3a985c3128d7b49d883e2a5439b9fca33fd6b1a6296a44e9e05546a04"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\stage-create-browser-context.private.json",
+      "bytes": 74,
+      "sha256": "fbd9eb5345f27149637c4e3397528d507df2a797e6ca31d01448546792104fa1"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\stage-launch-real-browser.private.json",
+      "bytes": 71,
+      "sha256": "38bed9e220687a0949f5f486f33cd22c1cfaeae77fec006fbfc72cbf140b4c21"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\stage-point-smallapp-3d4c7ab0f65841b8892e4a640a53176d.private.json",
+      "bytes": 99,
+      "sha256": "9d2d9fea2dcf5b8b5826076545a3045c89d6876ff0e69a9e3d43c4abf0ca7eb7"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\stage-point-smallapp-73cd541a95d84d6a86f9d693e4053c75.private.json",
+      "bytes": 99,
+      "sha256": "63e3857dd17c9186325158a47dc672f07b8dee42a3b6c207cadcf1c4d0a565fc"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\stage-point-smallapp-7fec29a3e132463096aec915c08acab3.private.json",
+      "bytes": 99,
+      "sha256": "7622278368a29890d62a458596bbbd01bd9f8345db9e5a11ee111a22ec6234c1"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\stage-point-smallapp-9d5ed2108497411a81bcd5ba7d1a6291.private.json",
+      "bytes": 99,
+      "sha256": "54f0e4ef724388ab611bb7bc54726bccfce15ddc82b20f4dc881ebf4dddadc68"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\stage-point-smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5.private.json",
+      "bytes": 99,
+      "sha256": "13a917984f767640b46245c93e96271ef5ef65b92340e167b1869828ff500039"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\stage-point-smallapp-ae9f83a19bb84ec28f27b5ca666bf62c.private.json",
+      "bytes": 99,
+      "sha256": "2ec88985cc1a705bcc41fa4ed60ef9d26362d438b3218b68ba0b1db67a8fd990"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\stage-point-smallapp-fbaf12b584214695b6b687e010f4773b.private.json",
+      "bytes": 99,
+      "sha256": "871474496fb7acd9d798fa535a7e121986dd4ce79812c1eeb27cb538014eeb26"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\stage-real-login-response.private.json",
+      "bytes": 71,
+      "sha256": "84c4c70f27a373b74bc9bb7a95a95e9f60cabfa33b15348e6394c0a4367890bc"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\stage-real-login.private.json",
+      "bytes": 62,
+      "sha256": "e636b3142c73b1af78d97ee88efdc4b84ca6de6ee5aeb62c47dd2f4b63e62105"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\stage-refresh-complete-catalogue.private.json",
+      "bytes": 78,
+      "sha256": "1e0476a65cf1fe0d25c77b7afdd2162d0443d7903bf62b9e36dd83287e7d772d"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\goal-audit-readonly-r10\\stage-submit-real-login.private.json",
+      "bytes": 69,
+      "sha256": "1bae1185df413cc1b1448cba5e81515e27f97af94d930dcbd3fef6408e4d235c"
+    }
+  ],
+  "relatedDiagnostics": [
+    "spug-selection-timing-r1.json",
+    "spug-selection-timing-r2.json",
+    "spug-target-timing-r1.json"
+  ]
+}

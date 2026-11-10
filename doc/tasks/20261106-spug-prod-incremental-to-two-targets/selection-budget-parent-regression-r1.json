@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "SpugSelectionBudgetParentRegression/v1",
+  "status": "PASS",
+  "sourcesUnchanged": true,
+  "inputPins": [
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\spug\\smallapp_adapter.py",
+      "bytes": 37636,
+      "sha256": "3240e06390ba005ebf4319bdc97c1e82e3dcd4a7efa3fb58f97c689c09d6874c"
+    },
+    {
+      "bytes": 32015,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\spug\\smallapp-ui\\app.js",
+      "sha256": "c24ef715767f96dfe52f6135d72564f5ec448531e8f4c89222ad30d57da9ae7f"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\spug\\test_smallapp_selection_budget.py",
+      "bytes": 11343,
+      "sha256": "173eb8dffbf6d8a5db432474d8c0ab6c3932bd946e813b22154607d3753710c8"
+    },
+    {
+      "bytes": 66012,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\spug\\smallapp_ui_safety.test.cjs",
+      "sha256": "1f49458408c81b18299f4624bdab9cca9b277496a33fddb7d2e68a1ccf2e532f"
+    },
+    {
+      "bytes": 13641,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\spug\\test_smallapp_cross_route.py",
+      "sha256": "22d23baf7340ceed1771e5ad9bcce4c00bbbacc1ee469fb1b3261035576355a2"
+    },
+    {
+      "bytes": 19711,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_archived_source_catalogue_routing.py",
+      "sha256": "1e9b80ca7a4a92df3d5ed59d8e051cccd10575272e78e031f0c61d370d5ba5c6"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\spug\\test_smallapp_bridge_errors.py",
+      "bytes": 5440,
+      "sha256": "80bcca73a6901ba178d08f6c29113aa5177f7ef962a3abb4db86e19ee24324ad"
+    }
+  ],
+  "results": [
+    {
+      "actualExitCode": 0,
+      "elapsedSeconds": 41.593,
+      "argv": [
+        "C:/Users/D01021/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "--tb=short",
+        "-p",
+        "no:cacheprovider",
+        "--rootdir",
+        "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance",
+        "--confcutdir",
+        "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance",
+        "ops/spug/test_smallapp_selection_budget.py",
+        "ops/spug/test_smallapp_cross_route.py",
+        "ops/spug/test_smallapp_bridge_errors.py",
+        "ops/spug/test_smallapp_safety.py",
+        "ops/spug/test_smallapp_source_rotation.py",
+        "ops/spug/test_smallapp_display_context.py",
+        "ops/spug/test_automatic_incremental_entry.py",
+        "ops/spug/test_automatic_incremental_proxy.py",
+        "ops/spug/test_automatic_incremental_http.py",
+        "doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_archived_source_catalogue_routing.py"
+      ],
+      "logPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\selection-budget-parent-r1-0.log",
+        "bytes": 184,
+        "sha256": "33cce2941639f138eb46aa899b8d791b7b93534995f9981b2311b04f599f94ce"
+      }
+    },
+    {
+      "actualExitCode": 0,
+      "elapsedSeconds": 0.828,
+      "argv": [
+        "node",
+        "--test",
+        "--test-timeout=15000",
+        "ops/spug/smallapp_ui_safety.test.cjs",
+        "ops/spug/smallapp_restore_result.test.cjs",
+        "ops/spug/smallapp-ui/package-catalog.test.cjs",
+        "ops/spug/smallapp-ui/package-catalog-dialog.test.cjs",
+        "ops/spug/smallapp-ui/embedded.test.cjs"
+      ],
+      "logPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\selection-budget-parent-r1-1.log",
+        "bytes": 9014,
+        "sha256": "46e7a01eff4fb5f16d0216ed0f6e6fe4c7b22820f142f54b5a63490b0d24144a"
+      }
+    }
+  ]
+}

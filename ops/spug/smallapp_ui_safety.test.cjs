@@ -63,10 +63,12 @@ function requestTimers(p){
   return {timers,cleared};
 }
 
-test('only automatic plan GET and automatic submission POST have a 60 second request deadline',async()=>{
+test('selection and automatic routes have bounded 60 second deadlines without changing ordinary operations',async()=>{
   const p=page(),{timers,cleared}=requestTimers(p);
   p.context.fetch=async()=>({ok:true,json:async()=>({})});
   for(const [url,body,milliseconds] of [
+    ['/selections',undefined,60000],['/selections?applicationId=app&targetConfigRef=target-ref',undefined,60000],
+    ['/selections-other',undefined,20000],['/selections',{},20000],
     ['/incremental-plan?applicationId=app',undefined,60000],['/incremental-plan',undefined,60000],
     ['/automatic-incremental',{operationId:'deadline-test'},60000],
     ['/automatic-incremental',undefined,20000],['/incremental-plan?applicationId=app',{},20000],
@@ -78,6 +80,54 @@ test('only automatic plan GET and automatic submission POST have a 60 second req
     assert.equal(timers.at(-1).milliseconds,milliseconds,url);
     assert.equal(cleared.at(-1),timers.at(-1),url);
   }
+});
+
+test('selection deadline covers the real response body and clears stale admission after abort',async()=>{
+  const p=page(),{timers,cleared}=requestTimers(p);
+  let bodyReady;
+  const entered=new Promise(resolve=>{bodyReady=resolve;});
+  p.context.fetch=async(_url,request)=>({ok:true,json:()=>new Promise((_resolve,reject)=>{
+    request.signal.addEventListener('abort',()=>reject(Object.assign(new Error('aborted'),{name:'AbortError'})));
+    bodyReady();
+  })});
+  p.context.realApi=p.requestApi;
+  p.run('api=realApi;');
+  const refresh=p.run('refresh()');
+  await entered;
+  assert.equal(timers[0].milliseconds,60000);
+  timers[0].callback();
+  await refresh;
+  assert.equal(cleared[0],timers[0]);
+  assert.equal(p.run('options[0].validated'),null);
+  assert.equal(p.run('options[0].readinessError'),'ENTRY_SELECTION_TIMEOUT');
+  assert.equal(p.get('submit').disabled,true);
+  assert.match(p.get('problem').textContent,/ENTRY_SELECTION_REFRESH_FAILED/);
+  assert.match(p.get('problem').textContent,/ENTRY_SELECTION_TIMEOUT/);
+});
+
+test('selection server timeout remains visible and cannot reuse prior target admission',async()=>{
+  const p=page(),{timers}=requestTimers(p);
+  const requests=[];
+  p.context.fetch=async(url,request)=>{requests.push([url,request.method]);return {
+    ok:false,status:502,json:async()=>({errorCode:'BRIDGE_TIMEOUT'})};};
+  p.context.realApi=p.requestApi;p.run('api=realApi;');
+  await p.run('refresh()');
+  assert.equal(timers[0].milliseconds,60000);
+  assert.equal(requests.length,1);assert.equal(requests[0][1],'GET');
+  assert.equal(p.run('options[0].validated'),null);
+  assert.equal(p.run('options[0].readinessError'),'BRIDGE_TIMEOUT');
+  assert.equal(p.get('submit').disabled,true);
+  assert.match(p.get('problem').textContent,/BRIDGE_TIMEOUT/);
+});
+
+test('unknown selection exception does not expose credentials in either existing error view',async()=>{
+  const p=page();
+  p.run("api=async()=>{throw new Error('https://user:password@private.invalid/path');};");
+  await p.run('refresh()');
+  assert.equal(p.run('options[0].readinessError'),'ENTRY_SELECTION_REFRESH_FAILED');
+  assert.equal(p.run('options[0].validated'),null);
+  assert.equal(p.get('submit').disabled,true);
+  assert.doesNotMatch(p.get('problem').textContent,/password|private.invalid/);
 });
 
 test('automatic request deadline covers response body consumption and always clears its timer',async()=>{

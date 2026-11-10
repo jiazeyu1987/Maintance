@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "applicationCount": 3,
+  "validatedCount": 3,
+  "elapsedSeconds": 11.257,
+  "calls": [
+    {
+      "sourceRefs": [
+        "intruoyi-57-safe-20261024-v1",
+        "intruoyi-59-safe-20261024-v1",
+        "intruoyi-PROD57-20261019"
+      ],
+      "selectedSource": "intruoyi-57-safe-20261024-v1",
+      "selectedTarget": "intruoyi-main-58-safe-restore-20261104-v1",
+      "path": "/selections",
+      "status": "PASS",
+      "applicationCount": 3,
+      "elapsedSeconds": 11.251
+    }
+  ],
+  "configurationWrites": false,
+  "backupDispatched": false,
+  "restoreDispatched": false,
+  "schemaVersion": "SpugSelectionTimingDiagnostic/v1",
+  "actualExitCode": 0,
+  "requestPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-target-timing-r1.request.private.json",
+    "bytes": 449,
+    "sha256": "03b2b865827178d5f30e392fae1b4411880df54a301cf007f2e75b310bf5e7c9"
+  }
+}

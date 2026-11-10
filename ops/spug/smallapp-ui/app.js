@@ -53,6 +53,7 @@ const reasons = {
   SPUG_MANUAL_TEMPLATE_CHANGED:'原任务配置与仅手动入口不一致，当前不能执行。',
   W08_DISPLAY_SETTINGS_REQUIRED:'应用来源配置尚未安装，当前不能执行。',
   ENTRY_REQUEST_TIMEOUT:'页面请求超时，请查询原操作编号。',
+  ENTRY_SELECTION_TIMEOUT:'恢复来源与目标准入核对超时，当前不能执行；请重新刷新配置。',
   SOURCE_SUBMISSION_LEGACY_LOCK_PRESENT:'检测到旧版提交锁目录，需要管理员核对原操作与旧进程后处理；当前禁止新提交。',
   SOURCE_SUBMISSION_RESERVATION_BUSY:'同一来源正在受理操作，请保留原编号并查询。',
   ENTRY_SELECTION_REFRESH_FAILED:'可用配置刷新失败，旧准入已失效；请成功刷新后再提交。',
@@ -142,7 +143,9 @@ async function api(path, body){
   // The source plan has a 30 s budget and its bridge has 40 s. Keep one
   // bounded browser deadline through response-body reading for these routes.
   const planning=method==='GET'&&path.split('?')[0]==='/incremental-plan'||method==='POST'&&path==='/automatic-incremental';
-  const controller=new AbortController(), timer=setTimeout(()=>controller.abort(),planning?60000:20000);
+  // Selection reads share a 50 s bridge budget; ordinary operations keep 20 s.
+  const selections=method==='GET'&&path.split('?')[0]==='/selections';
+  const controller=new AbortController(), timer=setTimeout(()=>controller.abort(),planning||selections?60000:20000);
   try{
     const response=await fetch('/backup-entry-api'+path,{method,
       headers:{'X-Token':token,'Content-Type':'application/json'},cache:'no-store',signal:controller.signal,
@@ -154,7 +157,7 @@ async function api(path, body){
       error.status=response.status;error.rejection=value;throw error;
     }
     return value;
-  }catch(error){if(error.name==='AbortError')throw new Error('ENTRY_REQUEST_TIMEOUT');throw error;}
+  }catch(error){if(error.name==='AbortError')throw new Error(selections?'ENTRY_SELECTION_TIMEOUT':'ENTRY_REQUEST_TIMEOUT');throw error;}
   finally{clearTimeout(timer);}
 }
 function selected(){return options.find(a=>a.applicationId===$('application').value);}
@@ -280,8 +283,10 @@ async function refresh(applicationOverride){
     catch(historyError){problem(message(historyError.message)+' 操作历史暂不可读。');}
     if(!operationId && !active)chooseId();
   }catch(error){
-    options=options.map(app=>({...app,validated:null,readinessError:'ENTRY_SELECTION_REFRESH_FAILED'}));
-    problem(message('ENTRY_SELECTION_REFRESH_FAILED')+' '+message(error.message));
+    const code=Object.hasOwn(reasons,error.message)||/^BRIDGE_HTTP_[1-5][0-9]{2}$/.test(error.message)?
+      error.message:'ENTRY_SELECTION_REFRESH_FAILED';
+    options=options.map(app=>({...app,validated:null,readinessError:code}));
+    problem(message('ENTRY_SELECTION_REFRESH_FAILED')+(code==='ENTRY_SELECTION_REFRESH_FAILED'?'':' '+message(code)));
   }
   finally{busy=false;render();}
 }

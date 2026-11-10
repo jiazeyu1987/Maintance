@@ -1,0 +1,71 @@
+{
+  "status": "FAIL",
+  "errorType": "Refused",
+  "errorCode": "BRIDGE_IO_FAILED",
+  "elapsedSeconds": 30.355,
+  "calls": [
+    {
+      "sourceRefs": [
+        "intruoyi-57-safe-20261024-v1",
+        "intruoyi-59-safe-20261024-v1",
+        "intruoyi-PROD57-20261019"
+      ],
+      "selectedSource": "intruoyi-57-safe-20261024-v1",
+      "selectedTarget": null,
+      "path": "/selections",
+      "status": "PASS",
+      "applicationCount": 3,
+      "elapsedSeconds": 6.704
+    },
+    {
+      "sourceRefs": [
+        "intruoyi-57-safe-20261024-v1",
+        "intruoyi-59-safe-20261024-v1",
+        "intruoyi-PROD57-20261019"
+      ],
+      "selectedSource": "intruoyi-59-safe-20261024-v1",
+      "selectedTarget": null,
+      "path": "/selections",
+      "status": "PASS",
+      "applicationCount": 3,
+      "elapsedSeconds": 6.835
+    },
+    {
+      "sourceRefs": [
+        "intruoyi-57-safe-20261024-v1",
+        "intruoyi-59-safe-20261024-v1",
+        "intruoyi-PROD57-20261019"
+      ],
+      "selectedSource": "intruoyi-PROD57-20261019",
+      "selectedTarget": null,
+      "path": "/selections",
+      "status": "PASS",
+      "applicationCount": 3,
+      "elapsedSeconds": 6.769
+    },
+    {
+      "sourceRefs": [
+        "intruoyi-57-safe-20261024-v1",
+        "intruoyi-59-safe-20261024-v1",
+        "intruoyi-PROD57-20261019"
+      ],
+      "selectedSource": "intruoyi-57-safe-20261024-v1",
+      "selectedTarget": "intruoyi-main-58-safe-restore-20261104-v1",
+      "path": "/selections",
+      "status": "FAIL",
+      "errorType": "Refused",
+      "errorCode": "BRIDGE_IO_FAILED",
+      "elapsedSeconds": 10.012
+    }
+  ],
+  "configurationWrites": false,
+  "backupDispatched": false,
+  "restoreDispatched": false,
+  "schemaVersion": "SpugSelectionTimingDiagnostic/v1",
+  "actualExitCode": 0,
+  "requestPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-selection-timing-r2.request.private.json",
+    "bytes": 455,
+    "sha256": "787574ea55237dec86de4ac163e870a40c497cb8a6e9330fa5d08898e788ee76"
+  }
+}

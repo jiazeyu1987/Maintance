@@ -3,7 +3,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import ANY, patch
 import smallapp_adapter as adapter
 import smallapp_simple as simple
 import smallapp_entry as entry
@@ -19,7 +19,7 @@ class CrossRestoreRouting(unittest.TestCase):
             target=source.for_request(self.request('RESTORE'))
             with patch.object(target,'call',return_value=dict(observedAt=entry.now(),applications=[])) as call:
                 target._local_selections()
-                call.assert_called_once_with('http://127.0.0.1:18558/selections')
+                call.assert_called_once_with('http://127.0.0.1:18558/selections',selection_deadline=ANY)
 
     def test_selected_target_requests_only_its_live_availability(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -27,7 +27,7 @@ class CrossRestoreRouting(unittest.TestCase):
             response=dict(observedAt=entry.now(),applications=[])
             with patch.object(target,'call',return_value=response) as call:
                 target._local_selections()
-                call.assert_called_once_with('http://127.0.0.1:18558/selections?targetConfigRef=test-target')
+                call.assert_called_once_with('http://127.0.0.1:18558/selections?targetConfigRef=test-target',selection_deadline=ANY)
 
     def fixture(self, root):
         adapter.write_json(root/'auth.json', {'headers': {}})

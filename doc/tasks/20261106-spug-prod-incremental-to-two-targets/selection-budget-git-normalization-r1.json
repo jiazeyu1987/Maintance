@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "SpugSelectionBudgetGitNormalization/v1",
+  "status": "PASS",
+  "stagedCountBeforeReceipt": 15,
+  "originalExactByteCheck": "REFUSED_CRLF_NORMALIZATION",
+  "rawEvidencePreserved": true,
+  "files": [
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_archived_source_catalogue_routing.py",
+      "testedWorkingPin": {
+        "bytes": 19711,
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_archived_source_catalogue_routing.py",
+        "sha256": "1e9b80ca7a4a92df3d5ed59d8e051cccd10575272e78e031f0c61d370d5ba5c6"
+      },
+      "gitIndexPin": {
+        "bytes": 19711,
+        "sha256": "1e9b80ca7a4a92df3d5ed59d8e051cccd10575272e78e031f0c61d370d5ba5c6"
+      },
+      "onlyCrlfToLfNormalization": true
+    },
+    {
+      "path": "ops/spug/smallapp-ui/app.js",
+      "testedWorkingPin": {
+        "bytes": 32015,
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\spug\\smallapp-ui\\app.js",
+        "sha256": "c24ef715767f96dfe52f6135d72564f5ec448531e8f4c89222ad30d57da9ae7f"
+      },
+      "gitIndexPin": {
+        "bytes": 32015,
+        "sha256": "c24ef715767f96dfe52f6135d72564f5ec448531e8f4c89222ad30d57da9ae7f"
+      },
+      "onlyCrlfToLfNormalization": true
+    },
+    {
+      "path": "ops/spug/smallapp_adapter.py",
+      "testedWorkingPin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\spug\\smallapp_adapter.py",
+        "bytes": 37636,
+        "sha256": "3240e06390ba005ebf4319bdc97c1e82e3dcd4a7efa3fb58f97c689c09d6874c"
+      },
+      "gitIndexPin": {
+        "bytes": 36925,
+        "sha256": "7570bf1143a4278f35f0209a8d72c5865486e0c2688bebef6ec1db70ac951586"
+      },
+      "onlyCrlfToLfNormalization": true
+    },
+    {
+      "path": "ops/spug/smallapp_ui_safety.test.cjs",
+      "testedWorkingPin": {
+        "bytes": 66012,
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\spug\\smallapp_ui_safety.test.cjs",
+        "sha256": "1f49458408c81b18299f4624bdab9cca9b277496a33fddb7d2e68a1ccf2e532f"
+      },
+      "gitIndexPin": {
+        "bytes": 64982,
+        "sha256": "6182622f6e02ec3b8a3bbb31bca845048746578a6377e6f6b3a8b5206955591b"
+      },
+      "onlyCrlfToLfNormalization": true
+    },
+    {
+      "path": "ops/spug/test_smallapp_cross_route.py",
+      "testedWorkingPin": {
+        "bytes": 13641,
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\spug\\test_smallapp_cross_route.py",
+        "sha256": "22d23baf7340ceed1771e5ad9bcce4c00bbbacc1ee469fb1b3261035576355a2"
+      },
+      "gitIndexPin": {
+        "bytes": 13445,
+        "sha256": "511936c772464d2e32803bd50f16878802c9b98c2d3e3ead914cff84485b68bc"
+      },
+      "onlyCrlfToLfNormalization": true
+    },
+    {
+      "path": "ops/spug/test_smallapp_selection_budget.py",
+      "testedWorkingPin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\spug\\test_smallapp_selection_budget.py",
+        "bytes": 11343,
+        "sha256": "173eb8dffbf6d8a5db432474d8c0ab6c3932bd946e813b22154607d3753710c8"
+      },
+      "gitIndexPin": {
+        "bytes": 11343,
+        "sha256": "173eb8dffbf6d8a5db432474d8c0ab6c3932bd946e813b22154607d3753710c8"
+      },
+      "onlyCrlfToLfNormalization": true
+    }
+  ]
+}

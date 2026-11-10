@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "SpugSelectionBudgetNativePython39/v1",
+  "actualExitCode": 0,
+  "elapsedSeconds": 45.438,
+  "requestPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\selection-budget-py39-parent-r2.request.private.json",
+    "bytes": 4156,
+    "sha256": "9a6e7bb7c013e2bf73e3f22888ffe394973aceabd9c8bc3600c7b8fdc4aee99c"
+  },
+  "candidateFiles": [
+    {
+      "name": "smallapp_adapter.py",
+      "sourcePin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\spug\\smallapp_adapter.py",
+        "bytes": 37636,
+        "sha256": "3240e06390ba005ebf4319bdc97c1e82e3dcd4a7efa3fb58f97c689c09d6874c"
+      },
+      "copiedPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\selection-budget-py39-parent-r2-candidate\\smallapp_adapter.py",
+        "bytes": 37636,
+        "sha256": "3240e06390ba005ebf4319bdc97c1e82e3dcd4a7efa3fb58f97c689c09d6874c"
+      }
+    },
+    {
+      "name": "smallapp_entry.py",
+      "sourcePin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\spug\\smallapp_entry.py",
+        "bytes": 43914,
+        "sha256": "58f5b25118e102c24d30daedfbb71ca7f7570d8b6bbe1be317f638a16becbff2"
+      },
+      "copiedPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\selection-budget-py39-parent-r2-candidate\\smallapp_entry.py",
+        "bytes": 43914,
+        "sha256": "58f5b25118e102c24d30daedfbb71ca7f7570d8b6bbe1be317f638a16becbff2"
+      }
+    },
+    {
+      "name": "smallapp_simple.py",
+      "sourcePin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\spug\\smallapp_simple.py",
+        "bytes": 7137,
+        "sha256": "c89fe4f805af53f784188ba98f061f34cad68d9f100d6cfef573d06bc3970bc0"
+      },
+      "copiedPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\selection-budget-py39-parent-r2-candidate\\smallapp_simple.py",
+        "bytes": 7137,
+        "sha256": "c89fe4f805af53f784188ba98f061f34cad68d9f100d6cfef573d06bc3970bc0"
+      }
+    },
+    {
+      "name": "smallapp_progress_remote.py",
+      "sourcePin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\spug\\smallapp_progress_remote.py",
+        "bytes": 2945,
+        "sha256": "82873a4d3816d0d3713e4e0b38e86144e427472fa0868e807d40bc1d2e2e86fb"
+      },
+      "copiedPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\selection-budget-py39-parent-r2-candidate\\smallapp_progress_remote.py",
+        "bytes": 2945,
+        "sha256": "82873a4d3816d0d3713e4e0b38e86144e427472fa0868e807d40bc1d2e2e86fb"
+      }
+    },
+    {
+      "name": "test_smallapp_selection_budget.py",
+      "sourcePin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\spug\\test_smallapp_selection_budget.py",
+        "bytes": 11343,
+        "sha256": "173eb8dffbf6d8a5db432474d8c0ab6c3932bd946e813b22154607d3753710c8"
+      },
+      "copiedPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\selection-budget-py39-parent-r2-candidate\\test_smallapp_selection_budget.py",
+        "bytes": 11343,
+        "sha256": "173eb8dffbf6d8a5db432474d8c0ab6c3932bd946e813b22154607d3753710c8"
+      }
+    },
+    {
+      "name": "test_smallapp_bridge_errors.py",
+      "sourcePin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\spug\\test_smallapp_bridge_errors.py",
+        "bytes": 5440,
+        "sha256": "80bcca73a6901ba178d08f6c29113aa5177f7ef962a3abb4db86e19ee24324ad"
+      },
+      "copiedPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\selection-budget-py39-parent-r2-candidate\\test_smallapp_bridge_errors.py",
+        "bytes": 5440,
+        "sha256": "80bcca73a6901ba178d08f6c29113aa5177f7ef962a3abb4db86e19ee24324ad"
+      }
+    },
+    {
+      "name": "test_smallapp_cross_route.py",
+      "sourcePin": {
+        "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\spug\\test_smallapp_cross_route.py",
+        "bytes": 13641,
+        "sha256": "22d23baf7340ceed1771e5ad9bcce4c00bbbacc1ee469fb1b3261035576355a2"
+      },
+      "copiedPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\selection-budget-py39-parent-r2-candidate\\test_smallapp_cross_route.py",
+        "bytes": 13641,
+        "sha256": "22d23baf7340ceed1771e5ad9bcce4c00bbbacc1ee469fb1b3261035576355a2"
+      }
+    }
+  ],
+  "stdoutPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\selection-budget-py39-parent-r2.stdout.private.log",
+    "bytes": 274,
+    "sha256": "7a8ef218400c61d825b18c4f5ce9ff490eb606597c68f7dacaff310b7ac118b5"
+  },
+  "stderrPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\selection-budget-py39-parent-r2.stderr.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "candidateInstalled": false,
+  "backupDispatched": false,
+  "restoreDispatched": false
+}

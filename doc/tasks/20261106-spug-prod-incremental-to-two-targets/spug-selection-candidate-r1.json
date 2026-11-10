@@ -1,0 +1,44 @@
+{
+  "status": "PASS",
+  "applicationCount": 33,
+  "validatedCount": 1,
+  "elapsedSeconds": 19.143,
+  "calls": [
+    {
+      "sourceRefs": [
+        "intruoyi-57-safe-20261024-v1",
+        "intruoyi-59-safe-20261024-v1",
+        "intruoyi-PROD57-20261019"
+      ],
+      "selectedSource": "intruoyi-57-safe-20261024-v1",
+      "selectedTarget": null,
+      "path": "/selections",
+      "status": "PASS",
+      "applicationCount": 3,
+      "elapsedSeconds": 7.295
+    },
+    {
+      "sourceRefs": [
+        "intruoyi-57-safe-20261024-v1",
+        "intruoyi-59-safe-20261024-v1",
+        "intruoyi-PROD57-20261019"
+      ],
+      "selectedSource": "intruoyi-57-safe-20261024-v1",
+      "selectedTarget": "intruoyi-main-58-safe-restore-20261104-v1",
+      "path": "/selections",
+      "status": "PASS",
+      "applicationCount": 3,
+      "elapsedSeconds": 11.606
+    }
+  ],
+  "configurationWrites": false,
+  "backupDispatched": false,
+  "restoreDispatched": false,
+  "schemaVersion": "SpugSelectionTimingDiagnostic/v1",
+  "actualExitCode": 0,
+  "requestPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-selection-candidate-r1.request.private.json",
+    "bytes": 461,
+    "sha256": "8c30d2e7d1208e3bcc5ce8904ebca058dcac43d89f1a3cd674cefd728fb7aa78"
+  }
+}

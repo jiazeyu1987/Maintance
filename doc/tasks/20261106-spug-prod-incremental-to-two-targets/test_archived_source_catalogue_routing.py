@@ -236,15 +236,16 @@ class ArchivedSourceCatalogueRoutingTests(unittest.TestCase):
         self.assertEqual(len([e for e in self.endpoints['legacy'].events if e['method'] == 'POST']), 1)
         self.assertEqual(self.endpoints['catalogue'].events, [])
 
-    def test_selected_target_reads_each_explicit_source_then_target_admission(self):
+    def test_selected_target_reads_only_selected_source_then_target_admission(self):
         self.enable()
         self.endpoints['target'].rows[1]['freshTargetConfigRefs'] = []
         selected = self.bridge(HISTORICAL, TARGET)
         payload = selected.selections()
-        self.assertEqual([r['sourceConfigRef'] for r in payload['applications']], list(SOURCES))
+        self.assertEqual([r['sourceConfigRef'] for r in payload['applications']], [HISTORICAL])
         self.assertEqual([r['recoveryPointRefs'] for r in payload['applications']],
-                         [['new-point-' + source] for source in SOURCES])
-        self.assertEqual(payload['applications'][1]['freshTargetConfigRefs'], [])
+                         [['new-point-' + HISTORICAL]])
+        self.assertEqual(payload['applications'][0]['freshTargetConfigRefs'], [])
+        self.assertEqual(len(self.catalogue_hits('catalogue')), 1)
         self.assert_no_original_catalogue_reads()
         self.assertEqual([r['path'] for r in self.catalogue_hits('target')], ['/selections?targetConfigRef=' + TARGET])
 
