@@ -1,0 +1,226 @@
+"""Fresh MAIN/v4 gates for a named real UI acceptance cycle; no dispatch."""
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+
+from common import TASK, PRIVATE, SOURCE, now, remote
+from main_program_installation_selection import Records, local_name
+from main_program_spug_publication_verify_only import validate_publication_v4
+from prepare_automatic_ui_preflight import verify_stage_deployment_inputs
+
+
+def need(value, code):
+    if not value:
+        raise ValueError(code)
+
+
+def validate_runtime(value, phase):
+    need(value['servicesRunning'] is True and value['serviceCount'] == 5 and
+         value['mainSourceMatchesTarget'] is True, 'MAIN_SOURCE_NOT_PROVEN')
+    need(all(value[key] for key in ('sourceIdentity','databaseUuid','epochId')), 'SOURCE_IDENTITY_REQUIRED')
+    need(set(value['health']) == {'minio','backend','frontend'} and
+         all(row['ready'] is True and row['httpStatus'] == 200 for row in value['health'].values()),
+         'MAIN_SERVICES_NOT_HEALTHY')
+    need(value['activeReservation'] is False, 'ACTIVE_RESTORE_RESERVATION')
+    if phase != 'verify':
+        need(value['sourceIdle'] is True and value['workerPids'] == [], 'SOURCE_NOT_IDLE')
+    need(set(value['backupCapacity']) == {'repository','operations','staging','archive'} and
+         all(type(n) is int and n >= 200*1024**3 for n in value['backupCapacity'].values()),
+         'BACKUP_CAPACITY_BELOW_200_GIB')
+
+
+def plan_for_gate(value, kind, phase, original=None):
+    plan = original if phase == 'verify' else value['plan']
+    need(type(plan) is dict, 'ORIGINAL_PLAN_REQUIRED')
+    result = {key:plan[key] for key in ('state','parentChainRef','baseFullRef','planDigest')}
+    need(result['state'] == ('BASELINE_REQUIRED' if kind == 'FULL' else 'READY'), 'PLAN_KIND_MISMATCH')
+    need(re.fullmatch('[a-f0-9]{64}', result['planDigest'] or '') is not None, 'PLAN_DIGEST_INVALID')
+    need(all(type(result[key]) is str and result[key] for key in ('parentChainRef','baseFullRef'))
+         if kind != 'FULL' else result['parentChainRef'] is result['baseFullRef'] is None,
+         'PLAN_CHAIN_INVALID')
+    return result
+
+
+def write_new(path, value):
+    raw=json.dumps(value,ensure_ascii=False,indent=2).encode('utf-8')
+    with path.open('xb') as handle:
+        handle.write(raw); handle.flush(); os.fsync(handle.fileno())
+    need(path.read_bytes() == raw, 'EVIDENCE_WRITE_CHANGED')
+    return dict(file=path.name,bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest())
+
+
+def checked(reference):
+    path=Path(reference.get('path',TASK/reference.get('file','')))
+    raw=path.read_bytes()
+    need(len(raw)==reference['bytes'] and hashlib.sha256(raw).hexdigest()==reference['sha256'],'PIN_CHANGED')
+    return json.loads(raw)
+
+
+def pinned_context(verified, path):
+    matches=[p for p in verified['inputPins'] if Path(p['path']) == Path(path)]
+    need(len(matches)==1,'FORMAL_INPUT_NOT_BOUND')
+    return checked(matches[0])
+
+
+def spug_observation(verified, selection):
+    private_core=PRIVATE/(Path(selection['spugInstallationPin']['file']).stem+'.private.json')
+    core=pinned_context(verified,private_core)
+    stage=next(s for s in core['stages'] if s['stage']=='spug-guard-after')
+    guard=pinned_context(verified,stage['resultPin']['path'])['result']
+    wrapper=pinned_context(verified,TASK/core['resourceTransitionPin']['file'])
+    transition=pinned_context(verified,TASK/wrapper['transitionCorePin']['file'])
+    build=pinned_context(verified,TASK/transition['resourceBuildPin']['file'])
+    script='EXPECTED='+repr(guard)+'\n'+SPUG_SCRIPT
+    result=subprocess.run([str(Path(os.environ['LOCALAPPDATA'])/'Programs/DockerDesktop/resources/bin/docker.exe'),
+        'exec','-i','f615a60c76f46e4f6ae20ea6298f737fb9786684ce941fcc15763654461265bf',
+        'python3','-B','-'],input=script.encode('utf-8'),capture_output=True,timeout=50)
+    if result.returncode:
+        path=PRIVATE/('main-ui-spug-preflight-error-'+hashlib.sha256(result.stderr).hexdigest()[:16]+'.private.log')
+        if not path.exists():path.write_bytes(result.stdout+result.stderr)
+        raise RuntimeError('SPUG_CURRENT_RUNTIME_CHECK_FAILED')
+    return json.loads(result.stdout),build
+
+
+SPUG_SCRIPT = r'''
+import hashlib,json,pathlib
+def need(ok,code):
+ if not ok:raise RuntimeError(code)
+for pin in EXPECTED['filePins']+EXPECTED['configurationPins']:
+ raw=pathlib.Path(pin['path']).read_bytes();need(len(raw)==pin['bytes'] and hashlib.sha256(raw).hexdigest()==pin['sha256'],'SPUG_FILE_CHANGED')
+identity=EXPECTED['entryIdentity'];p=pathlib.Path('/proc')/str(identity['pid']);stat=(p/'stat').read_text();tail=stat[stat.rfind(')')+2:].split()
+need(tail[19]==identity['startTicks'] and int(tail[1])==identity['parentPid'],'SPUG_PROCESS_CHANGED')
+need((p/'cmdline').read_bytes().decode().rstrip('\0').split('\0')==identity['argv'],'SPUG_ARGV_CHANGED')
+need(str((p/'exe').resolve())==identity['executable'] and str((p/'cwd').resolve())==identity['cwd'],'SPUG_EXECUTION_CHANGED')
+need(hashlib.sha256((p/'environ').read_bytes()).hexdigest()==EXPECTED['entryEnvironmentSha256'],'SPUG_ENVIRONMENT_CHANGED')
+print(json.dumps(dict(status='PASS',entryPid=identity['pid'],fileCount=len(EXPECTED['filePins']),configurationCount=len(EXPECTED['configurationPins']))))
+'''
+
+
+def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--cycle',required=True)
+    parser.add_argument('--kind',required=True,choices=['FULL','I1','I2'])
+    parser.add_argument('--phase',required=True,choices=['preview','submit','verify'])
+    parser.add_argument('--observation',required=True)
+    parser.add_argument('--selection',required=True)
+    args=parser.parse_args()
+    need(re.fullmatch('[a-z0-9][a-z0-9-]{0,47}',args.cycle or '') and
+         re.fullmatch('[a-z0-9][a-z0-9-]{0,47}',args.observation or ''),'CYCLE_OR_OBSERVATION_INVALID')
+    local_name(args.selection)
+    prefix='automatic-'+args.cycle+'-'+args.kind.lower()
+    stem=prefix+'-'+args.phase+'-'+args.observation
+    gate_path=TASK/(stem+'-preflight.json')
+    need(not gate_path.exists(),'OBSERVATION_ALREADY_EXISTS')
+    records=Records(TASK);selection=records.read(args.selection)
+    need(selection['schemaVersion']=='TaskMainProgramInstallations/v4','FORMAL_MAIN_V4_REQUIRED')
+    verified=validate_publication_v4(records,PRIVATE,selection);bundle=verified['generation']
+    spug,build=spug_observation(verified,selection)
+    git=verify_stage_deployment_inputs(TASK.parents[2],selection['sourceCommit'],build['sourceCommit'],
+         [name.removeprefix('ops/spug/') for name in build['files']])
+    rows=bundle['controllersByHost']['57']
+    values=dict(SUFFIX='57',SOURCE=SOURCE,TARGET=bundle['targets']['57'],ROWS=rows)
+    actual=remote('172.30.30.57','\n'.join(k+'='+repr(v) for k,v in values.items())+'\n'+SCRIPT,180)
+    write_new(PRIVATE/(stem+'-native.private.json'),actual)
+    validate_runtime(actual,args.phase)
+    original=None;operation=None
+    if args.phase=='verify':
+        receipt=json.loads((TASK/(prefix+'-ui-submission.json')).read_text(encoding='utf-8'))
+        need(receipt['schemaVersion']=='AutomaticIncrementalUiSubmission/v3' and receipt['cycle']==args.cycle and
+             receipt['kind']==args.kind and receipt['deploymentSelectionPin']==records.references[args.selection],
+             'ORIGINAL_RECEIPT_DEPLOYMENT_CHANGED')
+        original=receipt['plan'];operation=receipt['request']['operationId']
+    expected=plan_for_gate(actual,args.kind,args.phase,original)
+    evidence=dict(schemaVersion='MainProgramAutomaticIncrementalUiRuntime/v1',status='PASS',
+         observedAt=now(),source=actual,spug=spug,gitDeploymentInputs=git,
+         deploymentSelectionPin=records.references[args.selection],backupDispatched=False,restoreDispatched=False)
+    runtime_pin=write_new(TASK/(stem+'-runtime.json'),evidence)
+    baseline=dict(schemaVersion='MainProgramAutomaticIncrementalUiBaseline/v1',status='PASS',cycle=args.cycle,
+         observedAt=now(),applicationId=SOURCE,sourceConfigRef=SOURCE,deploymentSelectionPin=records.references[args.selection],
+         expectedPlan=expected,operationId=operation)
+    baseline_pin=write_new(TASK/(stem+'-baseline.json'),baseline)
+    gate=dict(schemaVersion='MainProgramAutomaticIncrementalUiPreflight/v1',status='PASS',experiencePreflight='PASS',
+         cycle=args.cycle,kind=args.kind,phase=args.phase,origin='http://127.0.0.1:18080',server='172.30.30.57',mode='safe',
+         applicationId=SOURCE,sourceConfigRef=SOURCE,implementationCommit=selection['sourceCommit'],
+         installationCommit=selection['sourceCommit'],buildCommit=selection['sourceCommit'],spugCommit=build['sourceCommit'],
+         deploymentSelectionPin=records.references[args.selection],controlGenerationPin=selection['controlGenerationPin'],
+         spugInstallationPin=selection['spugInstallationPin'],sourceCaptureConfigurationPin=actual['captureConfigurationPin'],
+         sourceOwnerConfigurationPin=rows[0]['ownerConfigurationPin'],mainDeploymentVerified=True,
+         observedAt=now(),expectedUserLabel='管理员',sourceIdentityVerified=True,installationVerified=True,
+         sourceServicesHealthy=True,archiveReady=True,capacityReady=True,noConcurrentMaintenance=True,
+         sourceIdleVerified=actual['sourceIdle'],expectedPlan=expected,baselineEvidencePin=baseline_pin,
+         runtimeEvidencePin=runtime_pin,gitDeploymentInputs=git)
+    if operation:gate['operationId']=operation
+    write_new(gate_path,gate)
+    print(json.dumps(dict(status='PASS',preflight=str(gate_path),expectedPlan=expected,observedAt=gate['observedAt'])))
+
+
+SCRIPT = r'''
+import datetime,fcntl,hashlib,json,os,pathlib,subprocess,sys,urllib.request
+from types import SimpleNamespace
+def need(ok,code):
+ if not ok:raise RuntimeError(code)
+def pincheck(pin):
+ raw=pathlib.Path(pin['path']).read_bytes();need(len(raw)==pin['bytes'] and hashlib.sha256(raw).hexdigest()==pin['sha256'],'PIN_CHANGED');return json.loads(raw)
+def run(argv):
+ p=subprocess.run(argv,capture_output=True,timeout=40);need(p.returncode==0,'READ_FAILED');return p.stdout
+out=dict(host='172.30.30.'+SUFFIX,observedAt=datetime.datetime.now(datetime.timezone.utc).isoformat(),controllers=[],businessMutationDispatched=False,sourceConfigRef=SOURCE)
+controls=[];owners=[]
+for row in ROWS:
+ c=pincheck(row['controlConfigurationPin']);o=pincheck(row['ownerConfigurationPin']);controls.append(c);owners.append(o)
+ pid=int(run(['systemctl','show',row['service'],'-p','MainPID']).decode().strip().split('=',1)[1]);need(pid==row['pid'],'CONTROL_PID_CHANGED')
+ argv=(pathlib.Path('/proc')/str(pid)/'cmdline').read_bytes().decode().rstrip('\0').split('\0')
+ need(argv[:5]==[c['pythonPin']['path'],'-B',str(pathlib.Path(row['engine'])/'control_entry.py'),'serve','--config-pin'] and len(argv)==6 and json.loads(argv[5])==row['controlConfigurationPin'],'CONTROL_ARGV_CHANGED')
+ v=json.loads((pathlib.Path(row['engine'])/'package.json').read_bytes());need(v['packageSha256']==row['fileManifestSha256'] and len(v['files'])==row['fileCount'],'PACKAGE_CHANGED')
+ need(all(hashlib.sha256((pathlib.Path(row['engine'])/n).read_bytes()).hexdigest()==sha for n,sha in v['files'].items()),'ENGINE_FILE_CHANGED')
+ out['controllers'].append(dict(service=row['service'],pid=pid,fileCount=len(v['files']),filesVerified=True))
+c=controls[-1];o=owners[-1];need(c['restoreConfigurations'][SOURCE][TARGET]==ROWS[-1]['ownerConfigurationPin'],'TARGET_BINDING_CHANGED');t=o['targets'][TARGET]
+rows=json.loads(run(['/usr/bin/docker','--host','unix:///var/run/docker.sock','inspect',*[s['id'] for s in t['services']]]));byid={r['Id']:r for r in rows}
+need(len(rows)==5 and all(r['State']['Running'] and not r['State']['Paused'] and not r['State']['Restarting'] for r in rows),'MAIN_SERVICES_NOT_RUNNING')
+need(all(byid[s['id']]['Image']==s['imageId'] for s in t['services']),'MAIN_IMAGE_CHANGED')
+for r in rows:
+ if 'Health' in r['State']:need(r['State']['Health']['Status']=='healthy','DOCKER_HEALTH_FAILED')
+sys.path[:0]=c['environment']['PYTHONPATH'].split(os.pathsep)
+from recovery_main_health import preflight,endpoint,probe
+n=SimpleNamespace(config=t,config_services={s['role']:s for s in t['services']},inspect=lambda i:byid[i],frontend_readiness=o.get('frontendReadiness',{}).get(TARGET))
+preflight(n);health={role:probe(endpoint(n,role),role,12) for role in ('minio','backend','frontend')};need(all(h['ready'] and h['httpStatus']==200 for h in health.values()),'MAIN_SEMANTIC_HEALTH_FAILED')
+out.update(health=health,targetConfigRef=TARGET,servicesRunning=True,serviceCount=len(rows),activeReservation=pathlib.Path('/var/lib/spug-restore-resources/active.json').exists(),fstabSha256=hashlib.sha256(pathlib.Path('/etc/fstab').read_bytes()).hexdigest())
+paths=[c['workingDirectory'],'/opt/intruoyi/runtime'];out['capacity']={p:os.statvfs(p).f_bavail*os.statvfs(p).f_frsize for p in paths}
+if SUFFIX=='57':
+ c=controls[0];o=owners[0];need(c['sourceConfigurations'][SOURCE]==ROWS[0]['ownerConfigurationPin'],'SOURCE_BINDING_CHANGED')
+ policy=c['sourceEpochPolicies'][SOURCE]
+ from recovery_backup_epoch import read_current
+ epoch=read_current(policy);need(epoch['state']=='READY','EPOCH_NOT_READY')
+ cap=json.loads(pathlib.Path(o['sources'][SOURCE]['configurationPath']).read_bytes());need(cap['source']['sourceIdentity']==policy['sourceIdentity'] and cap['source']['databaseUuid']==policy['databaseUuid'],'SOURCE_IDENTITY_CHANGED')
+ need(o['schemaVersion']=='RepositoryMinimumConfiguration/v1','SOURCE_OWNER_CHANGED')
+ main_services={r['role']:r for r in t['services']}
+ out['mainSourceMatchesTarget']=(cap['source']['mysqlContainerId']==main_services['mysql']['id'] and cap['source']['minioContainerId']==main_services['minio']['id'] and set(cap['source']['writerContainerIds'])=={main_services[role]['id'] for role in ('backend','frontend')})
+ need(out['mainSourceMatchesTarget'],'CAPTURE_NOT_MAIN_PROGRAM')
+ capture_path=pathlib.Path(o['sources'][SOURCE]['configurationPath']);capture_raw=capture_path.read_bytes()
+ out['captureConfigurationPin']=dict(path=str(capture_path),bytes=len(capture_raw),sha256=hashlib.sha256(capture_raw).hexdigest())
+ paths=[o['repositoryRoot'],o['operationRoot'],o['sources'][SOURCE]['stagingRoot'],cap['archiveRoot']]
+ out['backupCapacity']={role:os.statvfs(p).f_bavail*os.statvfs(p).f_frsize for role,p in zip(('repository','operations','staging','archive'),paths)};out['backupCapacityPaths']=dict(zip(('repository','operations','staging','archive'),paths));out['capacity'].update({p:os.statvfs(p).f_bavail*os.statvfs(p).f_frsize for p in paths})
+ fd=os.open(policy['sourceLockPath'],os.O_RDWR|os.O_NOFOLLOW)
+ try:fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB);idle=True;fcntl.flock(fd,fcntl.LOCK_UN)
+ except BlockingIOError:idle=False
+ finally:os.close(fd)
+ active=[]
+ for p in pathlib.Path('/proc').iterdir():
+  if not p.name.isdecimal():continue
+  try:cmd=(p/'cmdline').read_bytes()
+  except (FileNotFoundError,ProcessLookupError):continue
+  if any(x['workingDirectory'].encode() in cmd for x in controls) and b'control_entry.py' not in cmd:active.append(int(p.name))
+ headers=json.loads(pathlib.Path(c['authCredentialRef']['path']).read_bytes())['headers']
+ req=urllib.request.Request('http://127.0.0.1:'+str(c['listenPort'])+'/incremental-plan?sourceConfigRef='+SOURCE,headers=headers)
+ with urllib.request.build_opener(urllib.request.ProxyHandler({})).open(req,timeout=40) as response:
+  need(response.status==200,'PLAN_HTTP_FAILED');plan=json.load(response)
+ out.update(sourceIdentity=policy['sourceIdentity'],databaseUuid=policy['databaseUuid'],epochId=epoch['epochId'],sourceIdle=idle,workerPids=active,plan=plan,controlApiQueriesPerformed=True,queryAuditWritesMayOccur=True,captureConfigurationSha256=hashlib.sha256(pathlib.Path(o['sources'][SOURCE]['configurationPath']).read_bytes()).hexdigest())
+else:out.update(controlApiQueriesPerformed=False,queryAuditWritesMayOccur=False)
+out['finishedAt']=datetime.datetime.now(datetime.timezone.utc).isoformat();print(json.dumps(out))
+'''
+
+
+if __name__=='__main__':main()

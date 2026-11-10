@@ -8,6 +8,8 @@ const PLAYWRIGHT='C:/Users/D01021/Documents/ChatGPT/IntRuoyiE2E/node_modules/pla
 const CREDENTIALS='C:/SpugHandoff/release/private/spug-login.private.json';
 const PLAN_KEYS=['schemaVersion','sourceConfigRef','state','reasonCode','parentChainRef','baseFullRef','generationId','chainDepth','pointType','parentPointType','basePointType','finishedAt','baseFinishedAt','evidenceDigest','planDigest'];
 const REQUEST_KEYS=['schemaVersion','operationId','action','sourceConfigRef','parentChainRef','recoveryPointRef','targetConfigRef'];
+const MAIN_BINDING_KEYS=['deploymentSelectionPin','controlGenerationPin','spugInstallationPin','sourceCaptureConfigurationPin','sourceOwnerConfigurationPin'];
+const CYCLE=/^[a-z][a-z0-9-]{0,47}$/;
 const check=(value,code)=>{if(!value){const error=new Error(code);error.publicCode=code;throw error;}};
 const read=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
 const sha=value=>crypto.createHash('sha256').update(value).digest('hex');
@@ -28,7 +30,7 @@ function exclusive(file,value){
 }
 function args(){
   const value={},flags=new Set(['execute','expect-terminal']);
-  const fields=new Set(['kind','phase','observation','preflight','expected-application','expected-source','expected-state','expected-parent','expected-base','expected-plan']);
+  const fields=new Set(['kind','phase','observation','preflight','cycle','selection','expected-application','expected-source','expected-state','expected-parent','expected-base','expected-plan']);
   for(let i=2;i<process.argv.length;i++){
     const key=process.argv[i].replace(/^--/,'');
     check(process.argv[i].startsWith('--')&&!Object.hasOwn(value,key),'INVALID_OR_DUPLICATE_ARGUMENT');
@@ -42,7 +44,23 @@ function args(){
   const relative=path.relative(TASK,path.resolve(value.preflight||''));
   check(relative&&!relative.startsWith('..')&&!path.isAbsolute(relative)&&relative.endsWith('.json'),'TASK_PREFLIGHT_FILE_REQUIRED');
   value.preflight=path.resolve(value.preflight);
+  check(Object.hasOwn(value,'cycle')===Object.hasOwn(value,'selection'),'CYCLE_AND_SELECTION_REQUIRED_TOGETHER');
+  if(value.cycle){
+    check(CYCLE.test(value.cycle),'EXPLICIT_CYCLE_INVALID');
+    const selected=path.relative(TASK,path.resolve(value.selection));
+    check(selected&&!selected.startsWith('..')&&!path.isAbsolute(selected)&&selected.endsWith('.json'),'TASK_MAIN_SELECTION_REQUIRED');
+    value.selection=path.resolve(value.selection);
+  }
   return value;
+}
+function artifactPaths(options){
+  check(!options.cycle||CYCLE.test(options.cycle),'EXPLICIT_CYCLE_INVALID');
+  const kind=options.kind.toLowerCase(),stem=options.cycle?`automatic-${options.cycle}-${kind}`:`automatic-${kind}`;
+  const privateDir=options.cycle?path.join(PRIVATE,'automatic-incremental-ui',options.cycle):path.join(PRIVATE,'automatic-incremental-ui');
+  const privateLabel=`${kind}-${options.phase}-${options.observation}`;
+  return {receiptPath:path.join(TASK,stem+'-ui-submission.json'),terminalPath:path.join(TASK,stem+'-ui-terminal.json'),
+    resultPath:path.join(TASK,`${stem}-${options.phase}-${options.observation}-result.json`),privateDir,privateLabel,
+    screenshot:path.join(privateDir,privateLabel+'.png'),kindSession:path.join(privateDir,kind+'-session.private.json')};
 }
 function expectedFromArgs(options){
   check(options['expected-source']===SOURCE&&/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}$/.test(options['expected-application']||''),'EXACT_REGISTERED_SOURCE_REQUIRED');
@@ -65,8 +83,61 @@ function validateDeploymentContract(gate,kind,deployment,selectionPin){
   }
   check(/^[a-f0-9]{40}$/.test(inputs.source.headCommit||'')&&inputs.source.headCommit===inputs.spug.headCommit,'STAGE_GIT_HEAD_CHANGED');
 }
-function validateReceiptDeployment(receipt,gate,kind){
+function localPin(value){
+  return value&&exact(Object.fromEntries(Object.keys(value).map(k=>[k,true])),{file:true,bytes:true,sha256:true})&&
+    typeof value.file==='string'&&/^[A-Za-z0-9][A-Za-z0-9_.-]{0,199}\.json$/.test(value.file)&&
+    Number.isSafeInteger(value.bytes)&&value.bytes>0&&/^[a-f0-9]{64}$/.test(value.sha256||'');
+}
+function remotePin(value){
+  return value&&exact(Object.fromEntries(Object.keys(value).map(k=>[k,true])),{path:true,bytes:true,sha256:true})&&
+    typeof value.path==='string'&&value.path.startsWith('/')&&!value.path.includes('\\')&&
+    value.path.split('/').every(p=>p!=='.'&&p!=='..')&&Number.isSafeInteger(value.bytes)&&value.bytes>0&&/^[a-f0-9]{64}$/.test(value.sha256||'');
+}
+function readTaskPin(reference){
+  check(localPin(reference),'MAIN_LOCAL_PIN_INVALID');
+  const file=path.join(TASK,reference.file),info=fs.lstatSync(file);
+  check(info.isFile()&&!info.isSymbolicLink()&&fs.realpathSync(file)===file&&info.size<=16*1024*1024,'MAIN_LOCAL_FILE_INVALID');
+  const raw=fs.readFileSync(file);check(raw.length===reference.bytes&&sha(raw)===reference.sha256,'MAIN_PIN_BYTES_CHANGED');
+  return JSON.parse(raw.toString('utf8'));
+}
+function validateMainDeploymentContract(gate,options,deployment,selectionPin){
+  check(gate.schemaVersion==='MainProgramAutomaticIncrementalUiPreflight/v1'&&CYCLE.test(options.cycle||'')&&gate.cycle===options.cycle,'MAIN_PREFLIGHT_CYCLE_MISMATCH');
+  check(deployment.schemaVersion==='TaskMainProgramInstallations/v4'&&
+    Object.keys(deployment).sort().join(',')===['schemaVersion','sourceCommit','controlGenerationPin','spugInstallationPin','verificationInputsPin'].sort().join(','),'MAIN_V4_SELECTION_REQUIRED');
+  check(/^[a-f0-9]{40}$/.test(deployment.sourceCommit||'')&&gate.implementationCommit===deployment.sourceCommit&&
+    gate.installationCommit===deployment.sourceCommit&&gate.buildCommit===deployment.sourceCommit&&/^[a-f0-9]{40}$/.test(gate.spugCommit||''),'MAIN_DEPLOYMENT_COMMIT_CHANGED');
+  check(localPin(selectionPin)&&localPin(gate.deploymentSelectionPin)&&exact(gate.deploymentSelectionPin,selectionPin),'MAIN_SELECTION_PIN_CHANGED');
+  for(const name of ['controlGenerationPin','spugInstallationPin'])check(localPin(deployment[name])&&localPin(gate[name])&&exact(deployment[name],gate[name]),'MAIN_DEPLOYMENT_PIN_CHANGED');
+  check(localPin(deployment.verificationInputsPin)&&remotePin(gate.sourceCaptureConfigurationPin)&&remotePin(gate.sourceOwnerConfigurationPin)&&gate.mainDeploymentVerified===true,'MAIN_DEPLOYMENT_NOT_VERIFIED');
+}
+function validateMainBaseline(gate,options,expected,baseline){
+  const fields=['schemaVersion','status','cycle','observedAt','applicationId','sourceConfigRef','deploymentSelectionPin','expectedPlan','operationId'];
+  check(baseline&&Object.keys(baseline).sort().join(',')===fields.sort().join(',')&&baseline.schemaVersion==='MainProgramAutomaticIncrementalUiBaseline/v1'&&
+    baseline.status==='PASS'&&baseline.cycle===options.cycle&&baseline.cycle===gate.cycle,'MAIN_BASELINE_SCOPE_CHANGED');
+  check(baseline.applicationId===expected.applicationId&&baseline.sourceConfigRef===SOURCE&&
+    localPin(baseline.deploymentSelectionPin)&&exact(baseline.deploymentSelectionPin,gate.deploymentSelectionPin)&&
+    exact(baseline.expectedPlan||{},expected.plan)&&exact(baseline.expectedPlan||{},gate.expectedPlan),'MAIN_BASELINE_PLAN_CHANGED');
+  check(baseline.operationId===(options.phase==='verify'?expected.operationId:null),'MAIN_BASELINE_OPERATION_CHANGED');
+  check(expected.plan.state===(options.kind==='FULL'?'BASELINE_REQUIRED':'READY')&&/^[a-f0-9]{64}$/.test(expected.plan.planDigest||''),'MAIN_BASELINE_STATE_INVALID');
+  if(options.kind!=='FULL')for(const key of ['parentChainRef','baseFullRef'])check(typeof expected.plan[key]==='string'&&expected.plan[key].length>0,'MAIN_BASELINE_CHAIN_REQUIRED');
+  const age=Date.now()-Date.parse(baseline.observedAt);
+  check(Number.isFinite(age)&&age>=-30000&&age<=900000,'MAIN_BASELINE_STALE');
+}
+function cycleFields(gate,cycle){
+  return cycle?{cycle,...Object.fromEntries(MAIN_BINDING_KEYS.map(name=>[name,gate[name]])),baselineEvidencePin:gate.baselineEvidencePin}:{};
+}
+function validateCycleBinding(record,gate,cycle){
+  check(record.cycle===cycle&&gate.cycle===cycle&&record.spugCommit===gate.spugCommit&&
+    record.implementationCommit===gate.implementationCommit,'ORIGINAL_CYCLE_DEPLOYMENT_CHANGED');
+  for(const name of MAIN_BINDING_KEYS)check(exact(record[name]||{},gate[name]||{}),'ORIGINAL_CYCLE_DEPLOYMENT_CHANGED');
+  check(localPin(record.baselineEvidencePin),'ORIGINAL_BASELINE_PIN_REQUIRED');
+}
+function validateReceiptDeployment(receipt,gate,kind,cycle){
   check(receipt.kind===kind&&receipt.implementationCommit===gate.implementationCommit,'ORIGINAL_RECEIPT_DEPLOYMENT_CHANGED');
+  if(cycle){
+    check(receipt.schemaVersion==='AutomaticIncrementalUiSubmission/v3','MAIN_ORIGINAL_SUBMISSION_REQUIRED');
+    validateCycleBinding(receipt,gate,cycle);return;
+  }
   if(receipt.schemaVersion==='AutomaticIncrementalUiSubmission/v1'){
     check(kind==='FULL'&&receipt.implementationCommit===HISTORICAL_COMMIT&&gate.spugCommit===HISTORICAL_COMMIT,'UNKNOWN_LEGACY_SUBMISSION_GENERATION');
   }else{
@@ -79,9 +150,15 @@ function validateGate(options,expected,originalHash){
   check(gate.status==='PASS'&&gate.experiencePreflight==='PASS','EXPERIENCE_PREFLIGHT_REQUIRED');
   check(gate.kind===options.kind&&gate.phase===options.phase&&gate.origin===ORIGIN&&gate.server===SERVER&&gate.mode==='safe','PREFLIGHT_SCOPE_MISMATCH');
   check(gate.applicationId===expected.applicationId&&gate.sourceConfigRef===SOURCE&&exact(gate.expectedPlan||{},expected.plan),'PREFLIGHT_PLAN_MISMATCH');
-  const selectionFile=`automatic-${options.kind.toLowerCase()}-deployment-selection.json`;
+  const selectionFile=options.cycle?path.basename(options.selection):`automatic-${options.kind.toLowerCase()}-deployment-selection.json`;
   const selectionRaw=fs.readFileSync(path.join(TASK,selectionFile));
-  validateDeploymentContract(gate,options.kind,JSON.parse(selectionRaw.toString('utf8')),{file:selectionFile,bytes:selectionRaw.length,sha256:sha(selectionRaw)});
+  const selectionPin={file:selectionFile,bytes:selectionRaw.length,sha256:sha(selectionRaw)};
+  if(options.cycle){
+    check(path.join(TASK,selectionFile)===options.selection,'TASK_MAIN_SELECTION_REQUIRED');
+    const selected=readTaskPin(selectionPin);
+    validateMainDeploymentContract(gate,options,selected,selectionPin);
+    validateMainBaseline(gate,options,expected,readTaskPin(gate.baselineEvidencePin));
+  }else validateDeploymentContract(gate,options.kind,JSON.parse(selectionRaw.toString('utf8')),selectionPin);
   const age=Date.now()-Date.parse(gate.observedAt);
   check(Number.isFinite(age)&&age>=-30000&&age<=900000,'PREFLIGHT_STALE');
   for(const name of ['sourceIdentityVerified','installationVerified','sourceServicesHealthy','archiveReady','capacityReady','noConcurrentMaintenance'])check(gate[name]===true,'PREFLIGHT_'+name.toUpperCase()+'_REQUIRED');
@@ -101,36 +178,34 @@ function checkEarlierChain(kind,expected){
 }
 async function main(){
   const options=args(),kind=options.kind.toLowerCase();
-  const receiptPath=path.join(TASK,`automatic-${kind}-ui-submission.json`);
-  const resultPath=path.join(TASK,`automatic-${kind}-${options.phase}-${options.observation}-result.json`);
+  const {receiptPath,resultPath,terminalPath,privateDir,privateLabel,screenshot,kindSession}=artifactPaths(options);
   check(!fs.existsSync(resultPath),'OBSERVATION_ALREADY_RECORDED');
   let receipt=null,expected;
   if(options.phase==='verify'){
     check(!Object.keys(options).some(key=>key.startsWith('expected-')),'VERIFY_USES_IMMUTABLE_ORIGINAL_RECEIPT');
     receipt=read(receiptPath);
-    check(['AutomaticIncrementalUiSubmission/v1','AutomaticIncrementalUiSubmission/v2'].includes(receipt.schemaVersion)&&receipt.kind===options.kind&&receipt.request.sourceConfigRef===SOURCE,'ORIGINAL_RECEIPT_MISMATCH');
+    check((options.cycle?receipt.schemaVersion==='AutomaticIncrementalUiSubmission/v3':['AutomaticIncrementalUiSubmission/v1','AutomaticIncrementalUiSubmission/v2'].includes(receipt.schemaVersion))&&receipt.kind===options.kind&&receipt.request.sourceConfigRef===SOURCE,'ORIGINAL_RECEIPT_MISMATCH');
     expected={applicationId:receipt.applicationId,sourceConfigRef:SOURCE,plan:pin(receipt.plan)};
+    if(options.cycle)expected.operationId=receipt.request.operationId;
   }else{
     check(!fs.existsSync(receiptPath),'ALREADY_ATTEMPTED_USE_VERIFY_ONLY');
-    expected=expectedFromArgs(options);checkEarlierChain(options.kind,expected);
+    expected=expectedFromArgs(options);if(!options.cycle)checkEarlierChain(options.kind,expected);
   }
   const reviewed=validateGate(options,expected);
-  if(receipt)validateReceiptDeployment(receipt,reviewed.gate,options.kind);
-  const privateDir=path.join(PRIVATE,'automatic-incremental-ui');
+  if(receipt)validateReceiptDeployment(receipt,reviewed.gate,options.kind,options.cycle);
   fs.mkdirSync(privateDir,{recursive:true});
-  const privateLabel=`${kind}-${options.phase}-${options.observation}`;
-  const screenshot=path.join(privateDir,privateLabel+'.png');
   check(!fs.existsSync(screenshot),'PRIVATE_OBSERVATION_ALREADY_EXISTS');
-  const kindSession=path.join(privateDir,kind+'-session.private.json');
   const commonSession=path.join(PRIVATE,'spug-active-session.private.json');
   const storageState=options.phase==='verify'?(fs.existsSync(kindSession)?kindSession:fs.existsSync(commonSession)?commonSession:undefined):undefined;
   const {chromium}=require(PLAYWRIGHT);
-  const browser=await chromium.launch({channel:'chrome',headless:true,timeout:20000});
+  const browser=await chromium.launch({channel:'chrome',headless:!options.cycle,timeout:20000});
   const context=await browser.newContext({viewport:{width:1440,height:1080},...(storageState?{storageState}:{})});
   const page=await context.newPage();page.setDefaultTimeout(45000);
+  if(options.cycle)await page.bringToFront();
   const report={schemaVersion:'AutomaticIncrementalUiObservation/v1',kind:options.kind,phase:options.phase,
     observation:options.observation,startedAt:new Date().toISOString(),implementationCommit:reviewed.gate.implementationCommit,
     spugCommit:reviewed.gate.spugCommit,deploymentSelectionPin:reviewed.gate.deploymentSelectionPin,
+    ...cycleFields(reviewed.gate,options.cycle),
     preflightSha256:reviewed.hash,realBrowser:true,identityVerified:false,permissionVerified:false,loginPosts:0,businessPosts:0,
     blockedRequests:[],pageErrorCount:0,request:null,operationState:null,status:'NOT_COMPLETED'};
   let frame,armed=null,latest=null,followupAttempted=false;
@@ -151,9 +226,10 @@ async function main(){
       const intent=request.postDataJSON();
       check(exact(intent,armed.intent),'FINAL_POST_DOES_NOT_MATCH_CONFIRMED_INTENT');
       validateGate(options,expected,reviewed.hash);
-      receipt={schemaVersion:'AutomaticIncrementalUiSubmission/v2',kind:options.kind,attemptReservedAt:new Date().toISOString(),
+      receipt={schemaVersion:options.cycle?'AutomaticIncrementalUiSubmission/v3':'AutomaticIncrementalUiSubmission/v2',kind:options.kind,attemptReservedAt:new Date().toISOString(),
         applicationId:expected.applicationId,implementationCommit:reviewed.gate.implementationCommit,preflightSha256:reviewed.hash,
         spugCommit:reviewed.gate.spugCommit,deploymentSelectionPin:reviewed.gate.deploymentSelectionPin,
+        ...cycleFields(reviewed.gate,options.cycle),
         request:armed.request,intent:armed.intent,plan:armed.plan,status:'POST_ATTEMPT_RESERVED_OUTCOME_UNKNOWN'};
       exclusive(receiptPath,receipt); // durable wx fence before any final bytes leave the browser
       report.businessPosts++;report.request=receipt.request;armed=null;
@@ -309,11 +385,18 @@ async function main(){
     }
     check(report.blockedRequests.length===0&&report.pageErrorCount===0,'UNEXPECTED_PAGE_OR_REQUEST_ERROR');
     if(report.status==='SUCCEEDED_VERIFIED'){
-      const terminalPath=path.join(TASK,`automatic-${kind}-ui-terminal.json`);
-      const terminal={schemaVersion:'AutomaticIncrementalUiTerminal/v1',kind:options.kind,applicationId:receipt.applicationId,
+      const terminal={schemaVersion:options.cycle?'AutomaticIncrementalUiTerminal/v3':'AutomaticIncrementalUiTerminal/v1',kind:options.kind,applicationId:receipt.applicationId,
         observedAt:new Date().toISOString(),request:receipt.request,plan:receipt.plan,operationState:'SUCCEEDED',spugHistoryId:report.spugHistoryId,
         observation:options.observation,preflightSha256:reviewed.hash};
-      if(fs.existsSync(terminalPath))check(exact(read(terminalPath).request,terminal.request),'TERMINAL_ORIGINAL_CHANGED');
+      if(options.cycle)Object.assign(terminal,{implementationCommit:receipt.implementationCommit,spugCommit:receipt.spugCommit,...cycleFields(reviewed.gate,options.cycle)});
+      if(fs.existsSync(terminalPath)){
+        const original=read(terminalPath);check(exact(original.request,terminal.request),'TERMINAL_ORIGINAL_CHANGED');
+        if(options.cycle){
+          check(original.schemaVersion==='AutomaticIncrementalUiTerminal/v3'&&original.kind===options.kind&&
+            original.applicationId===terminal.applicationId&&original.operationState==='SUCCEEDED'&&exact(pin(original.plan),pin(terminal.plan)),'MAIN_ORIGINAL_TERMINAL_REQUIRED');
+          validateCycleBinding(original,reviewed.gate,options.cycle);
+        }
+      }
       else exclusive(terminalPath,terminal);
     }
     if(['UNKNOWN_KEEP_ORIGINAL','REJECTED_UNACCEPTED_RECEIPT_RETAINED'].includes(report.status))process.exitCode=2;

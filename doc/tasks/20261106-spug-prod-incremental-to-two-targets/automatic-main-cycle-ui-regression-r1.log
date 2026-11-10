@@ -1,0 +1,23 @@
+✔ actual nested Spug login data distinguishes MFA from authenticated access token (5.3495ms)
+✔ failed HTTP, root error and malformed responses cannot imply login success (1.7746ms)
+✔ explicit cycle and selection are paired; old arguments remain available (3.8904ms)
+✔ cycles isolate all public/private artifacts and preserve old names (87.684ms)
+✔ MAIN gate binds actual v4 and accepts I1 with an existing READY root (14.3817ms)
+✔ MAIN deployment mismatch cannot be read through the old contract (166.8489ms)
+✔ baseline checks every immutable plan field and source/cycle/selection/age (107.8016ms)
+✔ gate reads exact selection/baseline bytes and keeps reviewed preflight immutable (104.7303ms)
+✔ MAIN receipt v3 verifies only same cycle/deployment and the original operation plan (61.7576ms)
+✔ headed MAIN path uses ordinary UI actions and retains the durable one-POST guard (0.4402ms)
+✔ MAIN terminal binding also rejects a changed source implementation commit (21.7787ms)
+✔ new source and retained Spug gate binds explicit selection (3.7578ms)
+✔ stage/Spug/source mismatch cannot pass as legacy (2.2571ms)
+✔ legacy receipt is limited to historical FULL and never rewritten (1.1988ms)
+✔ new submission and verify bind exact selection and Spug commit (0.8247ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 655.6717

@@ -1,6 +1,8 @@
 # 自动增量真实页面验收 helper
 
 ## Current Status
+2026-11-10 MAIN cycle 扩展 ready_for_closeout：新增9项+旧6项实际15 PASS/零skip，语法通过；本组件未运行真实E2E。父正式v4已安装验收，新验收承接当前已验证MAIN READY链，不能因新cycle而重做FULL。完整接口见本文末尾“MAIN cycle 显式模式”。
+
 ready_for_closeout — M1/M2 已完成，脚本已准备并通过语法检查；M3 由根 Agent 在安装与现场预检后执行。当前未登录、未读取秘密、未派发备份、未更新运行环境，不代表真实验收通过。
 
 ## 目标与里程碑
@@ -86,3 +88,31 @@ submit 必须 sourceIdleVerified=true；verify 允许原任务仍运行，仅检
 - GREEN：响应检查提取为 classifyLoginContract；2 项通过，覆盖 MFA、缺失 data/token、根 error、HTTP 401/500，以及直接成功和安全提示两条正常路径。该测试只在 VM 中加载纯函数，不调用 main、不启动浏览器、不访问凭据或网络，不属于真实登录验收。
 - 语法验证：`node --check .../automatic_incremental_ui_acceptance.cjs` → PASS；产品文件保持冻结。本轮仅只读获取 18080 的 HTML 和静态 JS 合同，未执行登录或业务请求。
 - 下一次真实 preview 的响应保存于 PRIVATE/automatic-incremental-ui/<kind>-<phase>-<observation>-login-response.private.json；失败页面诊断保存为同前缀 -login-state.private.json。公开 loginShape 仅含固定 HTTP/布尔字段。第一次超时的真实原因仍待新响应证实，不将可能的 MFA 或安全提示当作已证实原因。
+
+## MAIN cycle 显式模式
+
+`--cycle` 和 `--selection` 必须成对。当前父选择为 `main-program-current-installations-45dd7dc-r6-v4.json`；脚本读取实际TASK文件字节生成pin，须与新鲜gate.deploymentSelectionPin完全相同。无这两个参数时继续原 stage/receipt/链合同；MAIN不得退回旧 automatic-full/i1/i2 选择或终态。
+
+新gate schema为 `MainProgramAutomaticIncrementalUiPreflight/v1`。保留原 kind、phase、origin、server、safe、applicationId、sourceConfigRef、expectedPlan、15分钟新鲜度及身份/服务/归档/容量/无并发/submit空闲布尔门禁；再要求：
+
+- cycle等于命令行；mainDeploymentVerified严格true。
+- deploymentSelectionPin、controlGenerationPin、spugInstallationPin为TASK `{file,bytes,sha256}`，与严格五字段 `TaskMainProgramInstallations/v4` 选择逐项绑定。
+- implementationCommit / installationCommit / buildCommit均为正式选择sourceCommit（当前45）；spugCommit为父已核实际Spug资源提交（当前565），不沿用旧演练Spug提交。
+- sourceCaptureConfigurationPin、sourceOwnerConfigurationPin为已核绝对Linux路径 `{path,bytes,sha256}`。父Python验证实际MAIN范围/UUID及部署闭包，UI驱动不得替代该证明。
+- baselineEvidencePin为TASK精确字节pin，文档schema `MainProgramAutomaticIncrementalUiBaseline/v1`，精确九字段：schemaVersion、status=PASS、cycle、observedAt、applicationId、sourceConfigRef、deploymentSelectionPin、expectedPlan、operationId。其cycle/app/source/selection及state/parentChainRef/baseFullRef/planDigest全等本次gate/CLI，文档自身也须15分钟内。
+
+preview/submit baseline.operationId必须null；verify必须是原receipt.request.operationId，expectedPlan必须为原提交计划，不能用已经推进后的当前计划冒充。新cycle的I1表示本cycle首增量，可直接承接正式原生计划已证明的既有parent/base；不要求在本cycle先做FULL。FULL仍仅对应BASELINE_REQUIRED，I1/I2仍仅对应READY，类型不得改称。父负责原生完整链、实际来源恢复和独立终态验证。
+
+以下仅调用说明，未在本阶段执行。TASK须展开为实际任务目录，gate与APP/计划取父新鲜预检：
+
+```powershell
+node TASK/automatic_incremental_ui_acceptance.cjs --cycle main-20261110-r6 --selection TASK/main-program-current-installations-45dd7dc-r6-v4.json --kind I1 --phase preview --observation plan-1 --preflight TASK/main-i1-preview-preflight.json --expected-application APP --expected-source intruoyi-57-safe-20261024-v1 --expected-state READY --expected-parent PARENT --expected-base BASE --expected-plan PLAN_SHA256
+node TASK/automatic_incremental_ui_acceptance.cjs --cycle main-20261110-r6 --selection TASK/main-program-current-installations-45dd7dc-r6-v4.json --kind I1 --phase submit --execute --observation submit-1 --preflight TASK/main-i1-submit-preflight.json --expected-application APP --expected-source intruoyi-57-safe-20261024-v1 --expected-state READY --expected-parent PARENT --expected-base BASE --expected-plan PLAN_SHA256
+node TASK/automatic_incremental_ui_acceptance.cjs --cycle main-20261110-r6 --selection TASK/main-program-current-installations-45dd7dc-r6-v4.json --kind I1 --phase verify --expect-terminal --observation terminal-1 --preflight TASK/main-i1-verify-preflight.json
+```
+
+MAIN使用headed Chrome并bringToFront，仍通过普通Playwright点击登录、选择与最终确认，不force click、不API提交或注入页面状态。最终POST放行前wx写入并fsync原请求回执，未知结果只从页面查询同一编号。
+
+新产物为 `automatic-<cycle>-<kind>-ui-submission.json`、`automatic-<cycle>-<kind>-ui-terminal.json`（schema均v3）及同cycle观察结果。私密截图/响应/session位于 `PRIVATE/automatic-incremental-ui/<cycle>/`；旧路径原件不会覆盖。v3记录明确cycle及source/Spug/selection/control/capture/owner绑定；旧分支拒绝v3，新分支拒绝旧schema和错cycle。
+
+本机验证：新增 `automatic_main_cycle_ui_contract.test.cjs` 9项+原stage4/login2共15 PASS、零skip；`node --check`通过。纯VM/临时文件测试没有启动浏览器、读取真实凭据或访问网络，不能冒称真实UI验收。完整RED/GREEN及范围见 `automatic-main-cycle-ui-tdd.md`。
