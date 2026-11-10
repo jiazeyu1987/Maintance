@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "MainTargetGenerationReadOnlyObservations/v1",
+  "remoteWrites": false,
+  "results": [
+    {
+      "host": "172.30.30.57",
+      "status": "FAILED",
+      "nativePin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-target-generation-readonly-20261110-r2-host-57.native.private.json",
+        "bytes": 1398,
+        "sha256": "81ffb0b5102131bda5f9d9c7ded2839bd816972739d3cfa86c98e0a872018e99"
+      },
+      "exitCode": 1,
+      "timedOut": false
+    },
+    {
+      "host": "172.30.30.58",
+      "status": "FAILED",
+      "nativePin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-target-generation-readonly-20261110-r2-host-58.native.private.json",
+        "bytes": 1398,
+        "sha256": "bf56235b8badafbeefb264f7137d0e81ef17f4b3996bba03fd279b8765ffc83a"
+      },
+      "exitCode": 1,
+      "timedOut": false
+    },
+    {
+      "host": "172.30.30.59",
+      "status": "FAILED",
+      "nativePin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-target-generation-readonly-20261110-r2-host-59.native.private.json",
+        "bytes": 1396,
+        "sha256": "9fb45bfd8546febbf15e25b0c7daaa4dea699d49c7e24818c8092c644952b7d7"
+      },
+      "exitCode": 1,
+      "timedOut": false
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "businessPosts": 0,
+  "gunicornOptions": {
+    "--threads": "8",
+    "-b": "127.0.0.1:9001",
+    "-w": "2"
+  },
+  "ioPressure": "some avg10=23.52 avg60=6.73 avg300=1.74 total=15239353252\nfull avg10=23.52 avg60=6.73 avg300=1.74 total=15231738156\n",
+  "memoryPressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=11735401\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=11735351\n",
+  "readOnly": true,
+  "redis": {
+    "pong": true,
+    "seconds": 0.009
+  },
+  "requests": [
+    {
+      "bytes": 2271,
+      "label": "nginx-root",
+      "seconds": 0.904,
+      "status": 200
+    },
+    {
+      "bytes": 43,
+      "label": "nginx-login-get",
+      "seconds": 0.829,
+      "status": 200
+    },
+    {
+      "bytes": 43,
+      "label": "gunicorn-login-get",
+      "seconds": 0.767,
+      "status": 200
+    }
+  ],
+  "schemaVersion": "SpugReadOnlyResponseLayers/v1"
+}

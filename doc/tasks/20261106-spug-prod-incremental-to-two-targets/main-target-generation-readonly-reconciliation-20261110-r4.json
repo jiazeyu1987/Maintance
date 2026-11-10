@@ -1,0 +1,223 @@
+{
+  "schemaVersion": "MainTargetGenerationReadOnlyReconciliation/v1",
+  "status": "OBSERVED",
+  "remoteWrites": false,
+  "networkCalls": 0,
+  "originalCarrierResultsRewritten": false,
+  "limitation": "Read-only state observation; SSH client close diagnostic retained. Not installation acceptance or restore authorization.",
+  "results": [
+    {
+      "host": "172.30.30.57",
+      "status": "OBSERVED_WITH_SSH_CLIENT_DIAGNOSTIC",
+      "nativePin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-target-generation-readonly-20261110-r3-host-57.native.private.json",
+        "bytes": 1398,
+        "sha256": "65eb4a96edfc60125380142f19a04e85ad2315cd7964e89ef0eece39bfee6aa4"
+      },
+      "transportStderrPin": {
+        "bytes": 84,
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-target-generation-readonly-20261110-r3-host-57.stderr.private.bin",
+        "sha256": "f4e6e2ea4a07d6a044e79dfb05d2d41c2e7ecc29df9e8517dcfd4ff2bfbefbc5"
+      },
+      "transportDiagnostic": "WINDOWS_SSH_PENDING_SOCKET_CLOSE",
+      "observation": {
+        "captureConfigurationPins": {
+          "intruoyi-57-safe-20261024-v1": {
+            "bytes": 4753,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/capture-binlog-tmpfs-20261107-v3.json",
+            "sha256": "0c00504b14ca5715ab205d2c43ad7c958f6014ab205f80e4e511df0a241f1c6f"
+          }
+        },
+        "controlConfigurationPin": {
+          "bytes": 5548,
+          "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-program-b5fa4c5-r7/control-target.json",
+          "sha256": "b5a684734d2e6cc3fa61ee0d461041edbf97ac2d2efcea95f491c1f9992dbc59"
+        },
+        "currentEpoch": {
+          "epochId": "0eab10fa13853ed9b1c526a5608849c3f9f7904a0f03d75d0fd076babf5c63e9",
+          "eventPin": {
+            "bytes": 595,
+            "path": "/var/lib/spug-backup-epochs/intruoyi-main-57/00000000000000000000.json",
+            "sha256": "b25926653d7f933f0fa6f50a0ec17f029a0a1f0912017331cdc39f730b53dd56"
+          },
+          "operationId": null,
+          "policySha256": "286c351b19714180357adf7442404847bf88625ef178be5787738c340e84abfd",
+          "schemaVersion": "SourceBackupEpoch/v1",
+          "state": "READY"
+        },
+        "currentGenerationPin": null,
+        "currentTargetPin": {
+          "bytes": 40889,
+          "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-program-d8e44bb/baseline-target.json",
+          "sha256": "b7ae47b32bc5e0ba25c1dd051d525400338d73108d75a9f75a9afcf1243e519b"
+        },
+        "engine": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/engine-main-program-b5fa4c5",
+        "engineFileCount": 147,
+        "evidencePinCount": 5,
+        "generationPins": [],
+        "host": "172.30.30.57",
+        "initialEpochPin": {
+          "bytes": 595,
+          "path": "/var/lib/spug-backup-epochs/intruoyi-main-57/00000000000000000000.json",
+          "sha256": "b25926653d7f933f0fa6f50a0ec17f029a0a1f0912017331cdc39f730b53dd56"
+        },
+        "initialSequence": 0,
+        "observedAt": "2026-11-10T15:47:33.379759+00:00",
+        "originalInitialReadyUnchanged": true,
+        "ownerConfigurationPin": {
+          "bytes": 52924,
+          "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-program-b5fa4c5-r7/main-recovery.json",
+          "sha256": "090f960a6cbfed4f418e17e888286b3b58b77d8197709682e9762b5ebd4ce2ef"
+        },
+        "pid": 30534,
+        "policySha256": "44ab2f188913a8b908f4ee4e7f29e15753d4c0979ec6c98bed19bf428ce3a36a",
+        "remoteWrites": false,
+        "resolvedCapturePins": {
+          "intruoyi-57-safe-20261024-v1": {
+            "bytes": 4753,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/capture-binlog-tmpfs-20261107-v3.json",
+            "sha256": "0c00504b14ca5715ab205d2c43ad7c958f6014ab205f80e4e511df0a241f1c6f"
+          }
+        },
+        "schemaVersion": "MainTargetGenerationReadOnlyObservation/v1",
+        "service": "spug-main-restore-57-20261105-v2.service",
+        "status": "OBSERVED",
+        "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2"
+      }
+    },
+    {
+      "host": "172.30.30.58",
+      "status": "OBSERVED_WITH_SSH_CLIENT_DIAGNOSTIC",
+      "nativePin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-target-generation-readonly-20261110-r3-host-58.native.private.json",
+        "bytes": 1400,
+        "sha256": "4e01f703b6c0d5f5f1fc8d05358e0ec947eedbd48069d3481f54ad7215ac74a4"
+      },
+      "transportStderrPin": {
+        "bytes": 84,
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-target-generation-readonly-20261110-r3-host-58.stderr.private.bin",
+        "sha256": "493097c221a736f5217db786783af38115dcdb4b1ea344e4f080c3a51b847082"
+      },
+      "transportDiagnostic": "WINDOWS_SSH_PENDING_SOCKET_CLOSE",
+      "observation": {
+        "captureConfigurationPins": {},
+        "controlConfigurationPin": {
+          "bytes": 3888,
+          "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-program-b5fa4c5-r7/control-target.json",
+          "sha256": "d82a4cf189e192dc2e496cbfc17f91193ce4bddcf1ebb064fa5d5c72c0278a78"
+        },
+        "currentEpoch": {
+          "epochId": "6e2acb3a5a3271816aaa4a35ea10c259bee8c621dca70be17e727330b8d93d22",
+          "eventPin": {
+            "bytes": 589,
+            "path": "/var/lib/spug-backup-epochs/intruoyi-main-58/00000000000000000000.json",
+            "sha256": "406eb5368b55dbc177027b34dce02b04ad247e55a0d9c92b9bcda0444ff9cb26"
+          },
+          "operationId": null,
+          "policySha256": "84978e0e8ea081ff3a02364ee0fe83a9108f551077f38f14d4ece893a7e8caed",
+          "schemaVersion": "SourceBackupEpoch/v1",
+          "state": "READY"
+        },
+        "currentGenerationPin": null,
+        "currentTargetPin": {
+          "bytes": 17760,
+          "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-program-d8e44bb/baseline-target.json",
+          "sha256": "c30ea4a9635713a52e85e0d324a79a28fd49ce23abee34ab0007cf0114a50e3a"
+        },
+        "engine": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/engine-main-program-b5fa4c5",
+        "engineFileCount": 147,
+        "evidencePinCount": 2,
+        "generationPins": [],
+        "host": "172.30.30.58",
+        "initialEpochPin": {
+          "bytes": 589,
+          "path": "/var/lib/spug-backup-epochs/intruoyi-main-58/00000000000000000000.json",
+          "sha256": "406eb5368b55dbc177027b34dce02b04ad247e55a0d9c92b9bcda0444ff9cb26"
+        },
+        "initialSequence": 0,
+        "observedAt": "2026-11-10T15:47:33.977703+00:00",
+        "originalInitialReadyUnchanged": true,
+        "ownerConfigurationPin": {
+          "bytes": 30048,
+          "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-program-b5fa4c5-r7/main-recovery.json",
+          "sha256": "e2444f7cbc449512d6e83bfaa6e8c7fddf578f9988d21592d7b4c02583bacaff"
+        },
+        "pid": 30094,
+        "policySha256": "cd0770196ac56cf1bc80943d7ba46935beb879852ef7abc0734cad9f2ff2fc8a",
+        "remoteWrites": false,
+        "resolvedCapturePins": {},
+        "schemaVersion": "MainTargetGenerationReadOnlyObservation/v1",
+        "service": "spug-main-restore-58-20261104-v3.service",
+        "status": "OBSERVED",
+        "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1"
+      }
+    },
+    {
+      "host": "172.30.30.59",
+      "status": "OBSERVED_WITH_SSH_CLIENT_DIAGNOSTIC",
+      "nativePin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-target-generation-readonly-20261110-r3-host-59.native.private.json",
+        "bytes": 1400,
+        "sha256": "b814cdc246ef96884ca03a2a2f401febc06033501fb260f5bae6cc5556e1e327"
+      },
+      "transportStderrPin": {
+        "bytes": 84,
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-target-generation-readonly-20261110-r3-host-59.stderr.private.bin",
+        "sha256": "a4215acb288116e7251e3648352dd0af9d15a1d590c70509bca7bc01f4277eb1"
+      },
+      "transportDiagnostic": "WINDOWS_SSH_PENDING_SOCKET_CLOSE",
+      "observation": {
+        "captureConfigurationPins": {},
+        "controlConfigurationPin": {
+          "bytes": 3754,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-program-b5fa4c5-r7/control-target.json",
+          "sha256": "43a8e9dd9509e988cd973d2e23246cdd4bc7d3eb5712306d48345e84d8680c1b"
+        },
+        "currentEpoch": {
+          "epochId": "d95efc06dd497ae65f17f5f6dc5a82b47f5d6a012d40e24dc915cceca625c25c",
+          "eventPin": {
+            "bytes": 588,
+            "path": "/mnt/intruoyi-data/spug-backup-epochs/intruoyi-main-59/00000000000000000000.json",
+            "sha256": "6f36141bd16ea35e3eaef6b09d12660309fb5805f4f1686fb1a7419c46ab21a8"
+          },
+          "operationId": null,
+          "policySha256": "00bdff0787b94c01ccf6c3ac5fcc035dbaa17eaa74f07614a48def378817bccb",
+          "schemaVersion": "SourceBackupEpoch/v1",
+          "state": "READY"
+        },
+        "currentGenerationPin": null,
+        "currentTargetPin": {
+          "bytes": 20307,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-program-d8e44bb/baseline-target.json",
+          "sha256": "2d9b058529d3a6561d68a870fd9e9b2d198d07261c09283ca01d0f207d933ea2"
+        },
+        "engine": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/engine-main-program-b5fa4c5",
+        "engineFileCount": 147,
+        "evidencePinCount": 2,
+        "generationPins": [],
+        "host": "172.30.30.59",
+        "initialEpochPin": {
+          "bytes": 588,
+          "path": "/mnt/intruoyi-data/spug-backup-epochs/intruoyi-main-59/00000000000000000000.json",
+          "sha256": "6f36141bd16ea35e3eaef6b09d12660309fb5805f4f1686fb1a7419c46ab21a8"
+        },
+        "initialSequence": 0,
+        "observedAt": "2026-11-10T15:47:34.634299+00:00",
+        "originalInitialReadyUnchanged": true,
+        "ownerConfigurationPin": {
+          "bytes": 32086,
+          "path": "/mnt/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-program-b5fa4c5-r7/main-recovery.json",
+          "sha256": "f6c88d55deea8c51367c64beb6e4016f7d8fcdf8b7a5f3ccd6ba101efbb04f32"
+        },
+        "pid": 14132,
+        "policySha256": "dafe91fe119996d95f56282ec79500c6eef43d98e4bd6de9d521ad805becd774",
+        "remoteWrites": false,
+        "resolvedCapturePins": {},
+        "schemaVersion": "MainTargetGenerationReadOnlyObservation/v1",
+        "service": "spug-main-restore-59-20261104-v3.service",
+        "status": "OBSERVED",
+        "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1"
+      }
+    }
+  ]
+}
