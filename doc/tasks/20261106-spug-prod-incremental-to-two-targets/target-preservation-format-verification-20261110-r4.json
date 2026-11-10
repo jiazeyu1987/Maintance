@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "TargetPreservationFormattingVerification/v1",
+  "status": "PASS",
+  "previousParentVerificationPin": {
+    "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/target-preservation-parent-freeze-verification-20261110-r3.json",
+    "bytes": 21558,
+    "sha256": "858280687f00b18f2e95be32291bd13021cb3ec4c988cf1dee33699e0424ff88"
+  },
+  "freezePin": {
+    "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/target-preservation-2a-freeze-r2.json",
+    "bytes": 23660,
+    "sha256": "d9c40bbdabcd576efbe0dafb44631b94d3d9bd20c7c2cc2432c66afb1a95ce5b"
+  },
+  "formattingOnlyChange": {
+    "path": "scripts/tests/test_recovery_target_capture_session.py",
+    "beforePin": {
+      "path": "scripts/tests/test_recovery_target_capture_session.py",
+      "bytes": 26271,
+      "sha256": "cda4ff5aa30d83aa6de5c2aa952bcee47ca8a86153bb78f52ca5ff94e67fc2c0"
+    },
+    "afterPin": {
+      "path": "scripts/tests/test_recovery_target_capture_session.py",
+      "bytes": 26270,
+      "sha256": "b46b9c080eb8d956875834dc6e4a3ec3e5061a32153e4ead5889ee7d6d3c4f92"
+    },
+    "removedBytes": 1,
+    "astIncludingLocationsEqual": true,
+    "reason": "remove the single new blank line at EOF; retain all CRLF and original evidence"
+  },
+  "behaviorTestsRerun": false,
+  "allOtherInputsUnchanged": true,
+  "remoteDispatched": false
+}

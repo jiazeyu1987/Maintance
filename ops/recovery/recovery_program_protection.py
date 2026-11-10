@@ -14,7 +14,8 @@ from types import SimpleNamespace
 
 from recovery_backup_epoch import _path, _read_file, _regular, _signature
 from recovery_archive_view import select_configuration
-from recovery_engine import RecoveryError, require
+from recovery_engine import RecoveryError, require, utc
+from recovery_retained_retry import append
 from recovery_program_execution import _directory
 from recovery_program_generation import APPLICATIONS, _services
 from recovery_program_native import _NativeView
@@ -84,6 +85,167 @@ class _Protection:
     def install(self):return self._custody._invoke(self._native,self._kind,'install')
     def verify(self):return self._custody._invoke(self._native,self._kind,'verify')
     def release(self):return self._custody._invoke(self._native,self._kind,'release')
+
+
+def _preservation_root(context):
+    path=context._root/'target-preservation'
+    identity=getattr(context,'_target_preservation_directory',None)
+    if identity is None:
+        require(not os.path.lexists(path),'PROGRAM_CAPTURE_ALREADY_CLAIMED')
+        path.mkdir(mode=0o700)
+        context._target_preservation_directory=_directory(path,'PROGRAM_CAPTURE_DIRECTORY_CHANGED')
+    else:
+        require(_directory(path,'PROGRAM_CAPTURE_DIRECTORY_CHANGED')==identity,
+                'PROGRAM_CAPTURE_DIRECTORY_CHANGED')
+    return path
+
+
+class _TargetCaptureProtectionLease:
+    """Narrow 1/1 capability; it never releases any original protection.
+
+    Closing this object only ends local admission. Even a closed or failed lease
+    remains attached to its context and prevents stage/release without a formal
+    preservation handoff. Phase one deliberately has no successful handoff API.
+    """
+    def __init__(self,custody,native):
+        self._custody,self._native,self._context=custody,native,custody._context
+        self._state,self._closed='CLAIMED',False
+        self._pins={};self._process=None;self._export_pid=None
+        self._root=_preservation_root(self._context)/'protection'
+        require(not os.path.lexists(self._root),'PROGRAM_CAPTURE_ALREADY_CLAIMED')
+        self._root.mkdir(mode=0o700)
+        self._identity=_directory(self._root,'PROGRAM_CAPTURE_DIRECTORY_CHANGED')
+        self._scheduler_active=deepcopy(custody._journals['scheduler']['pins']['active.json'])
+        self._scheduler_intent=deepcopy(custody._journals['scheduler']['pins']['intent.json'])
+
+    @property
+    def handed_off(self):return False
+
+    def check(self):
+        """Local immutable-file check only: no SQL, Docker or guard recursion."""
+        require(not self._closed,'PROGRAM_CAPTURE_CLOSED')
+        require(self._state!='FAILED_RETAINED','PROGRAM_CAPTURE_FAILED_RETAINED')
+        require(_directory(self._root,'PROGRAM_CAPTURE_DIRECTORY_CHANGED')==self._identity,
+                'PROGRAM_CAPTURE_DIRECTORY_CHANGED')
+        require(_directory(self._root.parent,'PROGRAM_CAPTURE_DIRECTORY_CHANGED')==
+                self._context._target_preservation_directory,'PROGRAM_CAPTURE_DIRECTORY_CHANGED')
+        require({p.name for p in self._root.iterdir()}=={Path(p).name for p in self._pins},
+                'PROGRAM_CAPTURE_JOURNAL_CHANGED')
+        for reference in self._pins.values():
+            _,actual=_read_file(reference['path'],4*1024*1024)
+            require(actual==reference,'PROGRAM_CAPTURE_JOURNAL_CHANGED')
+
+    def _guard(self):
+        self.check()
+        view=self._custody._validate(self._native)
+        require(view.phase=='PREPARATION' and view._context is self._context,
+                'PROGRAM_CAPTURE_PREPARATION_REQUIRED')
+        require(self._custody._state=='ACTIVE','PROGRAM_CAPTURE_PROTECTION_CHANGED')
+        require(all(self._custody._steps[k]['state']=='INSTALLED' for k in KINDS),
+                'PROGRAM_CAPTURE_PROTECTION_NOT_INSTALLED')
+        require(self._custody._journals['scheduler']['pins']['active.json']==self._scheduler_active and
+                self._custody._journals['scheduler']['pins']['intent.json']==self._scheduler_intent,
+                'PROGRAM_CAPTURE_SCHEDULER_CHANGED')
+
+    def _record(self,name,value):
+        reference=append(self._root/name,value)
+        self._pins[reference['path']]=deepcopy(reference)
+        if reference not in self._native.original_pins:self._native.original_pins.append(deepcopy(reference))
+        return reference
+
+    def _scheduler_matches(self,scheduler):
+        return scheduler.target==self._custody._target and scheduler.operation_id==self._context._request['operationId'] and \
+            scheduler.journal==self._custody._claim/JOURNALS['scheduler'] and \
+            self._custody._active==(self._native,'scheduler','capture')
+
+    def _export_state(self):
+        """Observe the owned child without stealing the original drain's reap."""
+        if self._process is None:return None
+        require(self._export_pid==os.getpid() and self._process.pid==self._process_identity,
+                'PROGRAM_CAPTURE_EXPORT_OWNER_CHANGED')
+        if self._process.returncode is not None:return 'REAPED'
+        try:
+            observed=os.waitid(os.P_PID,self._process.pid,os.WEXITED|os.WNOHANG|os.WNOWAIT)
+        except ChildProcessError as error:
+            raise RecoveryError('PROGRAM_CAPTURE_EXPORT_OWNER_CHANGED') from error
+        if observed is None:return 'RUNNING'
+        require(observed.si_pid==self._process.pid,'PROGRAM_CAPTURE_EXPORT_OWNER_CHANGED')
+        return 'EXITED_UNREAPED'
+
+    def _export_in_progress(self):
+        return self._export_state()=='RUNNING'
+
+    def _register_export(self,process):
+        import subprocess
+        self._guard()
+        require(type(process) is subprocess.Popen and self._process is None and process.poll() is None,
+                'PROGRAM_CAPTURE_EXPORT_OWNER_CHANGED')
+        self._process,self._process_identity,self._export_pid=process,process.pid,os.getpid()
+
+    def _finish_export(self,process):
+        require(process is self._process and self._export_pid==os.getpid() and process.poll() is not None,
+                'PROGRAM_CAPTURE_EXPORT_TERMINAL_REQUIRED')
+        self._process=None;self._export_pid=None
+        self.verify()
+
+    def _scheduler(self,action):
+        self._guard()
+        custody=self._custody
+        require(custody._active is None,'PROGRAM_PROTECTION_INVOCATION_PENDING')
+        custody._active=(self._native,'scheduler','capture')
+        try:
+            scheduler=custody._construct(self._native,'scheduler')
+            if action=='before':return scheduler.verify()
+            require(action in ('begin','verify'),'PROGRAM_CAPTURE_ACTION_INVALID')
+            if action=='begin':
+                scheduler.query('SET GLOBAL read_only=ON; SET GLOBAL super_read_only=ON;',mutation=True)
+            return scheduler._verify_capture(self)
+        finally:custody._active=None
+
+    def _external_protections(self):
+        self._custody._invoke(self._native,'archive','verify')
+        self._custody._invoke(self._native,'fence','verify')
+
+    def begin(self):
+        self._guard()
+        require(self._state=='CLAIMED','PROGRAM_CAPTURE_ALREADY_CLAIMED')
+        try:
+            self._external_protections();self._scheduler('before')
+            intent=self._record('capture-fence-intent.json',dict(schemaVersion='MainTargetCaptureFenceIntent/v1',
+                operationId=self._context._request['operationId'],bindingPin=deepcopy(self._context._binding),
+                databaseUuid=self._custody._target['replacement']['databaseUuid'],originalFlags=[0,0],
+                schedulerIntentPin=self._scheduler_intent,schedulerActivePin=self._scheduler_active,startedAt=utc()))
+            self._state='STARTING'
+            _,observation=self._scheduler('begin')
+            self._record('capture-fence-active.json',dict(schemaVersion='MainTargetCaptureFenceActive/v1',
+                operationId=self._context._request['operationId'],intentPin=intent,
+                databaseBarrier=observation,sourceRestored=False,activatedAt=utc()))
+            self._state='ACTIVE';self.verify()
+        except BaseException:
+            self._state='FAILED_RETAINED'
+            raise
+
+    def verify(self):
+        self._guard()
+        require(self._state=='ACTIVE','PROGRAM_CAPTURE_NOT_ACTIVE')
+        try:
+            self._external_protections();self._scheduler('verify');self._guard()
+        except BaseException:
+            self._state='FAILED_RETAINED'
+            raise
+
+    def handoff(self,verified_preservation):
+        raise RecoveryError('PROGRAM_CAPTURE_PRESERVATION_REQUIRED')
+
+    def snapshot(self):
+        return dict(schemaVersion='MainTargetCaptureProtection/v1',operationId=self._context._request['operationId'],
+            state=self._state,sourceRestored=False,schedulerIntentPin=deepcopy(self._scheduler_intent),
+            schedulerActivePin=deepcopy(self._scheduler_active),
+            captureFenceActivePin=deepcopy(self._pins.get(str(self._root/'capture-fence-active.json'))),
+            originalResultPins=deepcopy(list(self._pins.values())))
+
+    def close(self):
+        self._closed=True
 
 
 class ProtectionCustody:
@@ -234,6 +396,17 @@ class ProtectionCustody:
         self._validate(native);self._publish(native)
         return SimpleNamespace(**{kind:_Protection(self,native,kind) if self._present[kind] else None for kind in KINDS})
 
+    def capture_view_for(self,native):
+        view=self._validate(native)
+        require(view.phase=='PREPARATION','PROGRAM_CAPTURE_PREPARATION_REQUIRED')
+        require(self._state=='ACTIVE','PROGRAM_CAPTURE_PROTECTION_CHANGED')
+        require(all(self._steps[k]['state']=='INSTALLED' for k in KINDS),
+                'PROGRAM_CAPTURE_PROTECTION_NOT_INSTALLED')
+        require(getattr(self._context,'_target_capture_lease',None) is None,'PROGRAM_CAPTURE_ALREADY_CLAIMED')
+        lease=_TargetCaptureProtectionLease(self,native)
+        self._context._target_capture_lease=lease
+        return lease
+
     def _invoke(self,native,kind,method):
         view=self._validate(native)
         require(self._state!='RELEASED','PROGRAM_PROTECTION_ALREADY_RELEASED')
@@ -249,6 +422,8 @@ class ProtectionCustody:
         else:
             require(state=='INSTALLED','PROGRAM_PROTECTION_NOT_INSTALLED')
             if method=='release':
+                lease=getattr(self._context,'_target_capture_lease',None)
+                require(lease is None or lease.handed_off,'PROGRAM_TARGET_CAPTURE_PENDING')
                 require(view.phase=='RESTORE','PROGRAM_PROTECTION_RELEASE_PHASE')
                 require(all(self._steps[before]['state'] in ('RELEASED','ABSENT') for before in KINDS[:KINDS.index(kind)]),
                         'PROGRAM_PROTECTION_RELEASE_ORDER')
@@ -274,6 +449,8 @@ class ProtectionCustody:
 
     def release(self,native):
         self._validate(native)
+        lease=getattr(self._context,'_target_capture_lease',None)
+        require(lease is None or lease.handed_off,'PROGRAM_TARGET_CAPTURE_PENDING')
         require(self._state!='RELEASED','PROGRAM_PROTECTION_ALREADY_RELEASED')
         result={}
         for kind in KINDS:

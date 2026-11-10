@@ -1,0 +1,429 @@
+{
+  "schemaVersion": "TargetPreservationParentFreezeVerification/v1",
+  "status": "PASS",
+  "freezePin": {
+    "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\target-preservation-2a-freeze-r1.json",
+    "bytes": 22758,
+    "sha256": "53b1641002ce1bc51bd2338be48c222f22657bb3dae710c64c4138477298feb9"
+  },
+  "physicalInputs": 58,
+  "sourceAndTestFiles": 29,
+  "compiledFiles": 29,
+  "uniqueRegressionNodes": 211,
+  "allArchiveNodesUseActualSafe": true,
+  "finalSnapshotInputsMatch": true,
+  "actualMatchingTestSnapshots": {
+    "ops/backup_engine/formal/formal_capture_semantics.py": [
+      "capture-materials-seams-linux-green-20261110-r3.tar",
+      "capture-session-linux-guard-verify-20261110-r6.tar",
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "ops/backup_engine/formal/formal_data_evidence.py": [
+      "capture-materials-seams-linux-green-20261110-r3.tar",
+      "capture-session-linux-guard-verify-20261110-r6.tar",
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "ops/backup_engine/formal/formal_schema_evidence.py": [
+      "capture-materials-seams-linux-green-20261110-r3.tar",
+      "capture-session-linux-guard-verify-20261110-r6.tar",
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "ops/backup_engine/formal/formal_snapshot_linux.py": [
+      "capture-materials-seams-linux-green-20261110-r3.tar",
+      "capture-session-linux-guard-verify-20261110-r6.tar",
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "ops/backup_engine/formal/minimal_redis_snapshot.py": [
+      "capture-materials-seams-linux-green-20261110-r3.tar",
+      "capture-session-linux-guard-verify-20261110-r6.tar",
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "ops/recovery/formal_data_evidence.py": [
+      "capture-materials-seams-linux-green-20261110-r3.tar",
+      "capture-session-linux-guard-verify-20261110-r6.tar",
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "ops/recovery/minimal_capture_support.py": [
+      "capture-session-linux-guard-verify-20261110-r6.tar",
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "ops/recovery/minimal_capture_worker.py": [
+      "capture-session-linux-guard-verify-20261110-r6.tar",
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "ops/recovery/recovery_capture_materials.py": [
+      "capture-session-linux-guard-verify-20261110-r6.tar",
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "ops/recovery/recovery_main_target.py": [
+      "capture-session-linux-guard-verify-20261110-r6.tar",
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "ops/recovery/recovery_mysql_scheduler.py": [
+      "capture-session-linux-guard-verify-20261110-r6.tar",
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "ops/recovery/recovery_program_native.py": [
+      "capture-session-linux-guard-verify-20261110-r6.tar",
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "ops/recovery/recovery_program_protection.py": [
+      "capture-session-linux-guard-verify-20261110-r6.tar",
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "ops/recovery/recovery_target_capture.py": [
+      "capture-session-linux-guard-verify-20261110-r6.tar",
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "scripts/tests/test_capture_query_stream.py": [
+      "capture-materials-seams-linux-green-20261110-r3.tar"
+    ],
+    "scripts/tests/test_capture_observation_stream.py": [
+      "capture-materials-seams-linux-green-20261110-r3.tar"
+    ],
+    "scripts/tests/test_capture_metadata_stream.py": [
+      "capture-materials-seams-linux-green-20261110-r3.tar"
+    ],
+    "scripts/tests/test_capture_materials_lifecycle.py": [
+      "capture-materials-seams-linux-green-20261110-r3.tar",
+      "capture-session-linux-guard-verify-20261110-r6.tar",
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "scripts/tests/test_capture_image_stream.py": [
+      "capture-materials-seams-linux-green-20261110-r3.tar"
+    ],
+    "scripts/tests/test_capture_config_admission.py": [
+      "capture-materials-seams-linux-green-20261110-r3.tar"
+    ],
+    "scripts/tests/test_capture_stream_admission.py": [
+      "capture-materials-seams-linux-green-20261110-r3.tar"
+    ],
+    "scripts/tests/test_capture_stream_observer.py": [
+      "capture-materials-seams-linux-green-20261110-r3.tar"
+    ],
+    "scripts/tests/test_recovery_target_capture.py": [
+      "capture-materials-seams-linux-green-20261110-r3.tar",
+      "capture-session-linux-guard-verify-20261110-r6.tar",
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "scripts/tests/test_recovery_target_capture_session.py": [
+      "capture-session-linux-guard-verify-20261110-r6.tar",
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "scripts/tests/test_capture_strict_redis_config.py": [
+      "capture-session-linux-guard-verify-20261110-r6.tar",
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "ops/recovery/recovery_target_preservation.py": [
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "ops/recovery/repository_minimal.py": [
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "ops/recovery/repository_native_readback.py": [
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ],
+    "scripts/tests/test_recovery_target_preservation.py": [
+      "target-preservation-2a-closure-green-20261110-r1.tar"
+    ]
+  },
+  "priorCarrierFailures": [
+    "r1 expected inline XML instead of original base64 envelope",
+    "r2 assumed all test modules occur in one snapshot; actual test rounds retain separate snapshots"
+  ],
+  "inputPins": [
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\backup_engine\\formal\\formal_capture_semantics.py",
+      "bytes": 44136,
+      "sha256": "18fb909ccc316906a4c8e9c91b5fa8cdb2db564fac3677a2bf32f678428c008c"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\backup_engine\\formal\\formal_data_evidence.py",
+      "bytes": 25483,
+      "sha256": "d954bffadf0baf929814bec0977101dffb30069b17aef58d1ac04fa2bc0bdcca"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\backup_engine\\formal\\formal_schema_evidence.py",
+      "bytes": 25242,
+      "sha256": "e7649b2f52a8ef12238ca3a1c22f706bb5587a885ac4b6665e0b5963d764c7f8"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\backup_engine\\formal\\formal_snapshot_linux.py",
+      "bytes": 80121,
+      "sha256": "8e2801fd7618ffebae181144547e3d90e4303089b1e24fd6fa8f98b34b089d9f"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\backup_engine\\formal\\minimal_redis_snapshot.py",
+      "bytes": 3550,
+      "sha256": "81feb5e13678d700bbb7a1b7f4c47bc1edd416f2604f3a3ad465366a22c5d379"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\formal_data_evidence.py",
+      "bytes": 25483,
+      "sha256": "d954bffadf0baf929814bec0977101dffb30069b17aef58d1ac04fa2bc0bdcca"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\minimal_capture_support.py",
+      "bytes": 26335,
+      "sha256": "5b081fd2a7a475f7c2047e11dedf36f4719eee08ee8ad6bcc6af0c72a8b03348"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\minimal_capture_worker.py",
+      "bytes": 26171,
+      "sha256": "51b4db40cc54714c8c52e204b07570b2b7df98058109505cb943c4d13317a756"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\recovery_capture_materials.py",
+      "bytes": 13349,
+      "sha256": "765dc9879bf6e83708e8fc043b8b64e0c2209c48c2eaa782a20e54b79c49e8ac"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\recovery_main_target.py",
+      "bytes": 43363,
+      "sha256": "ffb60985e147de685926f84e04b476a4a76738182038955e398a7b7e7a3609a9"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\recovery_mysql_scheduler.py",
+      "bytes": 8965,
+      "sha256": "4674d788393ed83ae0d8406717eafb0d9f8f2ad32fc077b1e8de1031b89d1c9a"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\recovery_program_native.py",
+      "bytes": 18714,
+      "sha256": "a4e76f8c492cf6838b85a3f005fe10de1e14b54a69c575549af27817f1be4a27"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\recovery_program_protection.py",
+      "bytes": 24241,
+      "sha256": "bba9c672d402d9af81934a36f6ca98b69e145ca331d16fdcccf595ae899381fb"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\recovery_target_capture.py",
+      "bytes": 25285,
+      "sha256": "1ecfcafcf8388aa9604b5ddc326b00a8ca2f3711844299fe2288a6ae1386fc9b"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\scripts\\tests\\test_capture_query_stream.py",
+      "bytes": 1968,
+      "sha256": "5219040327bdf1e818161bbd59e51c735ba073f9276dabb67489a7d0e3b4dc6a"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\scripts\\tests\\test_capture_observation_stream.py",
+      "bytes": 3546,
+      "sha256": "fa7d17b59aad5ee3397a21867ae067819b6a50dc1dc824c86739a03208b690e1"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\scripts\\tests\\test_capture_metadata_stream.py",
+      "bytes": 2567,
+      "sha256": "1d708d27d0a02280400e42b5a42de3c2bb5eb9e0fb682881dc53b3daf8bd768d"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\scripts\\tests\\test_capture_materials_lifecycle.py",
+      "bytes": 3851,
+      "sha256": "59805b8d557e9502efd503b8e3314d8a7504a2a118ea0875345a3dc1dfc969ec"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\scripts\\tests\\test_capture_image_stream.py",
+      "bytes": 2568,
+      "sha256": "f4b46aec96a6dd9b6e786dbf16b26b067b632a09032bb972b830f17343bfb428"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\scripts\\tests\\test_capture_config_admission.py",
+      "bytes": 4969,
+      "sha256": "7d8b7c5d0b460fe3e244d2d3fbc6ca0ea6581cee1ec957c9874d9183e583247e"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\scripts\\tests\\test_capture_stream_admission.py",
+      "bytes": 1933,
+      "sha256": "8fabd99e6b40da89eac543cfb2e77094849bd2d0bb3b0671d42920f386989624"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\scripts\\tests\\test_capture_stream_observer.py",
+      "bytes": 5960,
+      "sha256": "1decb5f981b729e3d73ecc0cc021bebe88b23b9f732c38ea3a6a758338ef43ac"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\scripts\\tests\\test_recovery_target_capture.py",
+      "bytes": 6768,
+      "sha256": "8f9f3d21ffdcc7245d70ebfb3736d483270afd54a856d3eabbd994d819bab3d1"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\scripts\\tests\\test_recovery_target_capture_session.py",
+      "bytes": 26271,
+      "sha256": "cda4ff5aa30d83aa6de5c2aa952bcee47ca8a86153bb78f52ca5ff94e67fc2c0"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\scripts\\tests\\test_capture_strict_redis_config.py",
+      "bytes": 1095,
+      "sha256": "31442b424cbed2a152b3074f13d5175119ad02189b5447d8d2f139dcf92c900c"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main-target-preservation-capture-plan.md",
+      "bytes": 37086,
+      "sha256": "33b28d848150df1c4b542553abc4511168ea80c073ad8d2318ad9713fea9686a"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main-target-preservation-capture-tdd-log.md",
+      "bytes": 23966,
+      "sha256": "8e5c30ae796886affcccfeea8c6a7e7d74cc2ac8d153136fc9237d25b9030f8b"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\recovery_target_preservation.py",
+      "bytes": 31417,
+      "sha256": "a1a8e36b016b5239ef30150ae1d0a64d7558662036a30eca399f7d07c14ba268"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\repository_minimal.py",
+      "bytes": 42846,
+      "sha256": "bcb3385dac487e10a2664f6e4a640e225804612627d49bba00cc4ede03370349"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\ops\\recovery\\repository_native_readback.py",
+      "bytes": 15356,
+      "sha256": "e2d080e83ff77bf1588dc680809acbaecfb9c9e8e03b89522eccb505ba986111"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\scripts\\tests\\test_recovery_target_preservation.py",
+      "bytes": 23045,
+      "sha256": "03d85df6d9f6a830755ee0c5005d085158a871d8009bf24415a95eeed816c809"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main-target-preservation-publication-plan.md",
+      "bytes": 30098,
+      "sha256": "10d242d28b983fa75617142ae6223e8476fc542adb73003828eeb2c59758e20e"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main-target-preservation-publication-tdd-log.md",
+      "bytes": 24709,
+      "sha256": "6f37d189d3d7d25b9570f301f8cc9cbaa7fe36cc4626dd2cefdcdd6bc0b4e25c"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\capture-materials-seams-linux-green-20261110-r3.json",
+      "bytes": 1919,
+      "sha256": "9432abdbf7c93d0c378680924a4c7eaf53417137f1212aad96fdc55551db0e43"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\capture-materials-seams-linux-green-20261110-r3.log",
+      "bytes": 11765,
+      "sha256": "8ca263f90306d75c1d920c4194d15459fdc9aa8f1d4dad2cff199422ec013f1b"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\capture-materials-seams-linux-green-20261110-r3.tar",
+      "bytes": 7219200,
+      "sha256": "b26f971e5fb8a478dc01e8a784b2a64bc72873015d6515558bfb273530491fe4"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\capture-session-linux-guard-verify-20261110-r6.json",
+      "bytes": 1842,
+      "sha256": "b6f156d6dbc8f1bf744d121dda0edf6a999a556cdef82c89ba9bdb6bb231bf9c"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\capture-session-linux-guard-verify-20261110-r6.log",
+      "bytes": 5140,
+      "sha256": "36930e02b5615296bb6b5aa4475bd623347370e0680dba7593b3b2664a7ee5af"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\capture-session-linux-guard-verify-20261110-r6.tar",
+      "bytes": 7249920,
+      "sha256": "93435483bf70c9affb4f07590cb12bf713d18d1aef0e24237b8f9ecab7824cdd"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\capture-components-linux-regression-20261110-r8.json",
+      "bytes": 1849,
+      "sha256": "c3176d3493380f0f516de4c7c1a2d6bd97dd77a55fbdc6ef87537819fa4c9956"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\capture-components-linux-regression-20261110-r8.log",
+      "bytes": 68943,
+      "sha256": "63e0b8989e350db24398de33fbbf90e3691d260ed64035010440c61ad7a704ef"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\capture-components-linux-regression-20261110-r8.tar",
+      "bytes": 7249920,
+      "sha256": "93435483bf70c9affb4f07590cb12bf713d18d1aef0e24237b8f9ecab7824cdd"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\capture-archive-scope-linux-20261110-r9.json",
+      "bytes": 1805,
+      "sha256": "2bc56c1f1d97e58f899b6cf0db1b90c98e080bb28f043f5ea7cc2df0e46f377f"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\capture-archive-scope-linux-20261110-r9.log",
+      "bytes": 4939,
+      "sha256": "704b3e008ff6658e7ab2d6976d5dec03613e07847dd6b5597828f85843287fc7"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\capture-archive-scope-linux-20261110-r9.tar",
+      "bytes": 7843840,
+      "sha256": "49702a14ee6487854809e8c3e4d0e7a5ad537d1034be5513dd28d3951a8ab9c1"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\target-preservation-2a-closure-red-20261110-r1.json",
+      "bytes": 2497,
+      "sha256": "ad257166a947e204f8c3bdc9237f0536be7edccacff90d6cda40cf750aa1d573"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2a-closure-red-20261110-r1.log",
+      "bytes": 24354,
+      "sha256": "80752ae8cffe067247499f75baeda39ece444450babb376dcec62f6764dbe333"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2a-closure-red-20261110-r1.tar",
+      "bytes": 7311360,
+      "sha256": "c04d98de89f987210e77c83d33d770825d57a819087748481a79f5d1c1a4a3e3"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\target-preservation-2a-closure-green-20261110-r1.json",
+      "bytes": 2513,
+      "sha256": "2961e788ef935c949314732286aef8f0185215e905cc418b414acdd589e9ee11"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2a-closure-green-20261110-r1.log",
+      "bytes": 13092,
+      "sha256": "f8234a3093a746ffef7b82851a1db7bbc7b7742a223734bcd72e6a4ae8d7ef16"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2a-closure-green-20261110-r1.tar",
+      "bytes": 7311360,
+      "sha256": "0aaf5a9de185f5b5abd47b00e47ad367b466e40c1dc62594d95b88b77dae3b31"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\target-preservation-2a-regression-20261110-r1.json",
+      "bytes": 2488,
+      "sha256": "21b70cc04c3d9368b5b47febbc96a0ffe08a87dfc9ab5f009b81d068cf45cab5"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2a-regression-20261110-r1.log",
+      "bytes": 10831,
+      "sha256": "b034162b83b222cbf1026e55503990edf127d0164e31baf3cd9dfd9c55e13e29"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2a-regression-20261110-r1.tar",
+      "bytes": 7311360,
+      "sha256": "0aaf5a9de185f5b5abd47b00e47ad367b466e40c1dc62594d95b88b77dae3b31"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\target-preservation-2a-safe-regression-20261110-r2.json",
+      "bytes": 2526,
+      "sha256": "d34064a02d12bf6491131f45e1b681e37f2c5c0d4b82e0c02eda7ef78b572eaa"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2a-safe-regression-20261110-r2.log",
+      "bytes": 3649,
+      "sha256": "1decd142f077d2d3353d486ee194295bd345eefd8b459ed52b8f6adf0bd95493"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2a-safe-regression-20261110-r2.tar",
+      "bytes": 7311360,
+      "sha256": "0aaf5a9de185f5b5abd47b00e47ad367b466e40c1dc62594d95b88b77dae3b31"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\target-preservation-stage1-node-coverage-r1.json",
+      "bytes": 91170,
+      "sha256": "0e3b7fe89ca2b39477e2b8d56f4f804e9543b2680111a35e942f50e489226c3a"
+    }
+  ],
+  "remoteDispatched": false,
+  "businessWrites": false,
+  "actualBusinessRestore": false
+}

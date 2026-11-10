@@ -321,6 +321,19 @@ def run_child(argv, output, operation, request, deadline, role, *, capture_query
     return document(read_pin(pin_file(output), 64 * 1024 * 1024, deadline)), terminal
 
 
+def publish_materials(configuration, materials, *, publication, deadline):
+    """Internal typed MAIN entry; ordinary source publication is unchanged."""
+    from recovery_target_preservation import TargetPreservation
+    from recovery_capture_materials import CapturedMaterials
+    require(type(publication) is TargetPreservation and
+        type(materials) is CapturedMaterials and publication.configuration is configuration and
+        publication.deadline is deadline and publication.session._material is materials and
+        materials._prepared is publication.session._prepared and
+        publication.session._state == 'MATERIAL_COMPLETE', 'PRESERVATION_MATERIAL_OWNER_REQUIRED')
+    publication.check()
+    return publication._publish(materials)
+
+
 def publish(config, request, operation, deadline):
     require(request['action'] in ('FULL', 'INCREMENTAL'), 'REPOSITORY_ARCHIVE_ACTION_UNSUPPORTED')
     catalog = MinimumCatalog(config, deadline)

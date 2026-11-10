@@ -1104,13 +1104,48 @@ def verify_object_inventory(inventory_path,repository_root,bucket):
     except OSError:raise FormalSnapshotError('FORMAL_INVENTORY_IO_FAILED') from None
 
 
+def _drain_observed_process(process,input_bytes,writer,*,guard,deadline,observer,argv):
+    """Observe the real client; the existing drain still owns all cleanup.
+
+    Recording is not a successful terminal when reap is uncertain. A failed
+    started callback must pass the same actual child through the owned drain's
+    failure cleanup before the original exception can leave this function.
+    """
+    from formal_capture_budget import drain_owned_process
+    if observer is None:
+        return drain_owned_process(process,input_bytes,writer,guard=guard,deadline=deadline)
+    primary=None
+    try:
+        try:observer.started(process,argv)
+        except BaseException as error:
+            def refused():raise error
+            # No output is accepted. The established drain kills/reaps/closes
+            # the exact Popen even when no pipe has yet been consumed.
+            return drain_owned_process(process,b'',writer,guard=refused,deadline=deadline)
+        return drain_owned_process(process,input_bytes,writer,guard=guard,deadline=deadline)
+    except BaseException as error:
+        primary=error
+        raise
+    finally:
+        if process.poll() is not None and not getattr(primary,'clientCleanupUncertain',False):
+            try:observer.finished(process)
+            except BaseException as recording:
+                if primary is not None:
+                    recording.original_code=getattr(primary,'code',type(primary).__name__)
+                    recording.clientCleanupUncertain=bool(getattr(primary,'clientCleanupUncertain',False))
+                raise
+
+
 class PrivateDockerMySql:
     """Password enters the container over stdin, never argv or returned errors."""
-    def __init__(self,container,password,*,timeout=1800):
+    def __init__(self,container,password,*,timeout=1800,process_observer=None):
         require(type(container) is str and re.fullmatch(r'[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}',container),'FORMAL_MYSQL_CONTAINER_INVALID')
         require(type(password) is str and password and not any(c in password for c in '\r\n\0'),'FORMAL_MYSQL_CREDENTIAL_INVALID')
         require(type(timeout) is int and 0<timeout<=7200,'FORMAL_MYSQL_TIMEOUT_INVALID')
+        require(process_observer is None or all(callable(getattr(process_observer,name,None))
+            for name in ('before','started','finished')),'FORMAL_MYSQL_PROCESS_OBSERVER_INVALID')
         self.container=container;self._password=password;self.timeout=timeout
+        self._process_observer=process_observer
 
     def _command(self,program,arguments):
         # Fixed shell entry, credential read with backslash interpretation disabled.
@@ -1144,6 +1179,13 @@ class PrivateDockerMySql:
         seconds=observation_timeout(self.timeout)
         program=('timeout --signal=TERM --kill-after=5 '+str(math.ceil(seconds))+'s mysql'
                  if observation_deadline.get() is not None else 'mysql')
+        if self._process_observer is not None:
+            from formal_schema_evidence import _bounded_process
+            raw=_bounded_process(self._command(program,['-uroot','--batch','--raw','--skip-column-names',
+                '--default-character-set=utf8mb4']),(self._password+'\n'+sql).encode('utf-8'),
+                8*1024*1024,seconds,process_observer=self._process_observer)
+            try:return raw.decode('utf-8',errors='strict')
+            except UnicodeError:raise FormalSnapshotError('FORMAL_MYSQL_QUERY_ENCODING_INVALID') from None
         try:
             result=subprocess.run(self._command(program,['-uroot','--batch','--raw','--skip-column-names',
                 '--default-character-set=utf8mb4']),
@@ -1224,7 +1266,7 @@ class PrivateDockerMySql:
         remaining()
         destination=safe_file(destination)
         pending=safe_file(destination.with_name(destination.name+'.pending'))
-        checksum=hashlib.sha256();compressed_bytes=raw_bytes=0
+        checksum=hashlib.sha256();compressed_bytes=raw_bytes=0;observed_primary=None
         try:
             with (pending.open('xb') if output_budget is None else output_budget.open(pending,'sql-gzip')) as output:
                 os.chmod(pending,0o600)
@@ -1244,13 +1286,19 @@ class PrivateDockerMySql:
                     seconds=remaining()
                     end=time.monotonic()+seconds
                     program='timeout --signal=TERM --kill-after=5 '+str(math.ceil(seconds))+'s mysqldump'
-                    process=subprocess.Popen(self._command(program,['-uroot','--single-transaction',
+                    command=self._command(program,['-uroot','--single-transaction',
                         '--routines','--triggers','--events','--hex-blob','--set-gtid-purged=OFF',
-                        '--default-character-set=utf8mb4',database]),
+                        '--default-character-set=utf8mb4',database])
+                    if self._process_observer is not None:self._process_observer.before(command)
+                    process=subprocess.Popen(command,
                         stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
                     # The drain owns and reaps this exact client on every failure.
-                    drain_owned_process(process,(self._password+'\n').encode('utf-8'),DumpOutput(),
-                        guard=remaining,deadline=end)
+                    try:
+                        _drain_observed_process(process,(self._password+'\n').encode('utf-8'),DumpOutput(),
+                            guard=remaining,deadline=end,observer=self._process_observer,argv=command)
+                    except BaseException as error:
+                        observed_primary=error
+                        raise
                     require(process.returncode==0,'FORMAL_MYSQL_DUMP_FAILED')
                 require(raw_bytes>0,'FORMAL_MYSQL_DUMP_EMPTY')
                 output.flush();os.fsync(output.fileno());remaining()
@@ -1263,5 +1311,14 @@ class PrivateDockerMySql:
             else:output_budget.unlink_complete(pending)
             remaining()
             return {'sha256':checksum.hexdigest(),'bytes':compressed_bytes}
-        except subprocess.TimeoutExpired:raise FormalSnapshotError('FORMAL_MYSQL_DUMP_TIMEOUT') from None
-        except OSError:raise FormalSnapshotError('FORMAL_MYSQL_DUMP_IO_FAILED') from None
+        except BaseException as error:
+            # gzip.close may itself hit the elapsed deadline while unwinding.
+            # Keep the actual observed client's original uncertain-reap fact.
+            if self._process_observer is not None and observed_primary is not None and \
+                    getattr(observed_primary,'clientCleanupUncertain',False):
+                raise observed_primary from None
+            if isinstance(error,subprocess.TimeoutExpired):
+                raise FormalSnapshotError('FORMAL_MYSQL_DUMP_TIMEOUT') from None
+            if isinstance(error,OSError):
+                raise FormalSnapshotError('FORMAL_MYSQL_DUMP_IO_FAILED') from None
+            raise

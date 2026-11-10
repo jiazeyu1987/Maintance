@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "TaskTargetPreservationProtocolVerification/v1",
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--name",
+    "spug-target-preservation-2a-closure-red-20261110-r1",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--memory",
+    "512m",
+    "--cpus",
+    "1",
+    "--pids-limit",
+    "128",
+    "--tmpfs",
+    "/work:rw,exec,nosuid,nodev,size=256m",
+    "--tmpfs",
+    "/tmp:rw,nosuid,nodev,size=128m",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2a-closure-red-20261110-r1.tar,target=/inputs/source.tar,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2a-closure-red-20261110-r1-runner.py,target=/inputs/runner.py,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\linux-test-wheels,target=/inputs/wheels,readonly",
+    "sha256:14a4933e6cef421424f7a66d89a3f4eafcbd0d90e0a822251f298e05132dc735",
+    "python",
+    "-B",
+    "/inputs/runner.py"
+  ],
+  "exitCode": 1,
+  "timeout": false,
+  "counts": {
+    "tests": 22,
+    "failures": 4,
+    "errors": 0,
+    "skipped": 0
+  },
+  "elapsedSeconds": 287.547,
+  "sourceSnapshotPin": {
+    "file": "target-preservation-2a-closure-red-20261110-r1.tar",
+    "bytes": 7311360,
+    "sha256": "c04d98de89f987210e77c83d33d770825d57a819087748481a79f5d1c1a4a3e3"
+  },
+  "sourceInventoryPin": {
+    "file": "target-preservation-2a-closure-red-20261110-r1-inputs.json",
+    "bytes": 39870,
+    "sha256": "120574923edc0f508ce33c79220a9b007c06ad4e09a73710e2132449c6732b98"
+  },
+  "runnerPin": {
+    "file": "target-preservation-2a-closure-red-20261110-r1-runner.py",
+    "bytes": 3993,
+    "sha256": "2c4d6896dcb8170b2cbe006e42c11de7f19fb54d5560e1f6d4288390ecdb6ce0"
+  },
+  "rawLogPin": {
+    "file": "target-preservation-2a-closure-red-20261110-r1.log",
+    "bytes": 24354,
+    "sha256": "80752ae8cffe067247499f75baeda39ece444450babb376dcec62f6764dbe333"
+  },
+  "junitPin": {
+    "file": "target-preservation-2a-closure-red-20261110-r1.xml",
+    "bytes": 8262,
+    "sha256": "4446352fb0470c61875f81c12983da350053cd9402800dcd46dfad1a7ab40a61"
+  },
+  "inputsUnchanged": true,
+  "runtimeInputsUnchanged": true,
+  "containerRemoved": true,
+  "remoteActions": 0,
+  "businessWrites": 0,
+  "actualBusinessRestore": false
+}

@@ -73,19 +73,14 @@ def exclusive_json(path, value):
     return actual_pin(path)
 
 
-def validate_job(config, request):
-    require(type(request) is dict and set(request) == {'schemaVersion', 'operationId', 'action',
-        'sourceConfigRef', 'parentChainRef', 'recoveryPointRef', 'targetConfigRef'} and
-        request['schemaVersion'] == 'SmallAppBackupUiRequest/v1' and
-        type(request['operationId']) is str and
-        re.fullmatch('[A-Za-z0-9][A-Za-z0-9_.-]{0,120}', request['operationId']) and
-        request['action'] in ('FULL', 'INCREMENTAL') and request['recoveryPointRef'] is None and
-        request['targetConfigRef'] is None, 'MINIMAL_CAPTURE_REQUEST_INVALID')
+def _configuration_header(config):
     require(type(config) is dict and set(config) == {'schemaVersion', 'sourceConfigRef', 'archiveRoot',
         'sourceLockPath', 'tools', 'limits', 'source', 'parent'} and
         config['schemaVersion'] == 'minimal-source-capture-config/v1' and
-        type(config['sourceConfigRef']) is str and config['sourceConfigRef'] and
-        request['sourceConfigRef'] == config['sourceConfigRef'], 'MINIMAL_CAPTURE_CONFIG_INVALID')
+        type(config['sourceConfigRef']) is str and config['sourceConfigRef'], 'MINIMAL_CAPTURE_CONFIG_INVALID')
+
+
+def _configuration_values(config):
     source = config['source']
     require(type(source) is dict and set(source) - {'databaseLogMode', 'minioPhysicalScopes', 'redisSnapshot'} == {'sourceIdentity', 'sourceFingerprint', 'databaseUuid',
         'database', 'mysqlContainerId', 'minioContainerId', 'minioDataPath', 'minioMountDestination',
@@ -127,6 +122,36 @@ def validate_job(config, request):
     limits = config['limits']
     require(type(limits) is dict and set(limits) == set(bounds) and all(type(limits[k]) is int and
         low <= limits[k] <= high for k, (low, high) in bounds.items()), 'MINIMAL_LIMITS_INVALID')
+
+
+def _configuration_paths(config):
+    root = path_checked(config['archiveRoot'], directory=True)
+    path_checked(config['sourceLockPath'])
+    return root
+
+
+def validate_config(config):
+    """Validate capture configuration without inventing a backup UI request.
+
+    The selected lifecycle owns the FULL/INCREMENTAL parent association. This
+    entry grants neither an action nor permission to use the configured paths.
+    """
+    _configuration_header(config)
+    _configuration_values(config)
+    return _configuration_paths(config)
+
+
+def validate_job(config, request):
+    require(type(request) is dict and set(request) == {'schemaVersion', 'operationId', 'action',
+        'sourceConfigRef', 'parentChainRef', 'recoveryPointRef', 'targetConfigRef'} and
+        request['schemaVersion'] == 'SmallAppBackupUiRequest/v1' and
+        type(request['operationId']) is str and
+        re.fullmatch('[A-Za-z0-9][A-Za-z0-9_.-]{0,120}', request['operationId']) and
+        request['action'] in ('FULL', 'INCREMENTAL') and request['recoveryPointRef'] is None and
+        request['targetConfigRef'] is None, 'MINIMAL_CAPTURE_REQUEST_INVALID')
+    _configuration_header(config)
+    require(request['sourceConfigRef'] == config['sourceConfigRef'], 'MINIMAL_CAPTURE_CONFIG_INVALID')
+    _configuration_values(config)
     parent = config['parent']
     if request['action'] == 'FULL':
         require(parent is None and request['parentChainRef'] is None, 'MINIMAL_FULL_PARENT_REFUSED')
@@ -136,9 +161,7 @@ def validate_job(config, request):
             parent['parentChainRef'] and parent['parentChainRef'] == request['parentChainRef'],
             'MINIMAL_INCREMENTAL_PARENT_REQUIRED')
         for key in ('capturePointPin', 'repositoryPointPin', 'objectContentIndexPin'): pin(parent[key])
-    root = path_checked(config['archiveRoot'], directory=True)
-    path_checked(config['sourceLockPath'])
-    return root/request['operationId']
+    return _configuration_paths(config)/request['operationId']
 
 
 class Originals:
@@ -321,10 +344,11 @@ class MinimalSeries(CaptureSeries):
 
 def source_config_redis(config):
     value = config.get('redisSnapshot')
-    require(type(value) is dict and set(value) == {'containerId', 'host', 'database'} and
+    require(type(value) is dict and set(value) - {'passwordPin'} == {'containerId', 'host', 'database'} and
         type(value['containerId']) is str and re.fullmatch('[0-9a-f]{64}', value['containerId']) and
         type(value['host']) is str and type(value['database']) is int and
         0 <= value['database'] < 16, 'MINIMAL_REDIS_SNAPSHOT_CONFIG_INVALID')
+    if 'passwordPin' in value: pin(value['passwordPin'])
     return value
 
 
@@ -344,9 +368,10 @@ class MinimalSemantic(SemanticCapture):
             require(self.file_identity(path.lstat()) == identity, 'FORMAL_CAPTURE_OBJECT_PARENT_CHANGED')
 
 
-    def __init__(self, series, originals, descriptor, source_config):
+    def __init__(self, series, originals, descriptor, source_config, *, process_observer=None):
         self.series = series; self.originals = originals
         self.source_config = source_config
+        self.process_observer = process_observer
         self.source = validate_source(descriptor, series.spec['pointType'])
         self.raw = canonical(self.source)
         self.scope = originals.document(self.source['sourceScopePin'])
@@ -384,7 +409,9 @@ class MinimalSemantic(SemanticCapture):
         super().capture(mysql, database, root, guard)
         if 'redisSnapshot' in self.source_config:
             from minimal_redis_snapshot import observe
-            self.redis_snapshot = observe(source_config_redis(self.source_config), guard)
+            self.redis_snapshot = (observe(source_config_redis(self.source_config), guard)
+                if self.process_observer is None else observe(source_config_redis(self.source_config), guard,
+                    process_observer=self.process_observer))
             reference = self._record('redis-dump-snapshot.json', self.redis_snapshot)
             item = self.derived['redis']
             require(item['classification'] == 'RESTORE' and item['executorKey'] == 'REDIS_DUMP_ABSOLUTE_EXPIRY',
@@ -397,7 +424,11 @@ class MinimalSemantic(SemanticCapture):
     def finalize(self, point, guard):
         if 'redisSnapshot' in self.source_config:
             from minimal_redis_snapshot import verify_current
-            verify_current(self.redis_snapshot, source_config_redis(self.source_config), guard)
+            if self.process_observer is None:
+                verify_current(self.redis_snapshot, source_config_redis(self.source_config), guard)
+            else:
+                verify_current(self.redis_snapshot, source_config_redis(self.source_config), guard,
+                    process_observer=self.process_observer)
         return super().finalize(point, guard)
 
     def _derived(self):

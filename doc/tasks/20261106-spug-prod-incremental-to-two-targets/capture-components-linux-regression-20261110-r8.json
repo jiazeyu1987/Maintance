@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "TaskCaptureSessionVerification/v1",
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--name",
+    "spug-capture-components-linux-regression-20261110-r8",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--memory",
+    "512m",
+    "--cpus",
+    "1",
+    "--pids-limit",
+    "128",
+    "--tmpfs",
+    "/work:rw,exec,nosuid,nodev,size=256m",
+    "--tmpfs",
+    "/tmp:rw,nosuid,nodev,size=128m",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\capture-components-linux-regression-20261110-r8.tar,target=/inputs/source.tar,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\capture-components-linux-regression-20261110-r8-runner.py,target=/inputs/runner.py,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\linux-test-wheels,target=/inputs/wheels,readonly",
+    "sha256:14a4933e6cef421424f7a66d89a3f4eafcbd0d90e0a822251f298e05132dc735",
+    "python",
+    "-B",
+    "/inputs/runner.py"
+  ],
+  "exitCode": 1,
+  "counts": {
+    "tests": 211,
+    "failures": 16,
+    "errors": 0,
+    "skipped": 0
+  },
+  "elapsedSeconds": 40.422,
+  "sourceSnapshotPin": {
+    "file": "capture-components-linux-regression-20261110-r8.tar",
+    "bytes": 7249920,
+    "sha256": "93435483bf70c9affb4f07590cb12bf713d18d1aef0e24237b8f9ecab7824cdd"
+  },
+  "rawLogPin": {
+    "file": "capture-components-linux-regression-20261110-r8.log",
+    "bytes": 68943,
+    "sha256": "63e0b8989e350db24398de33fbbf90e3691d260ed64035010440c61ad7a704ef"
+  },
+  "inputsUnchanged": true,
+  "runtimeInputsUnchanged": true,
+  "containerRemoved": true,
+  "remoteActions": 0,
+  "businessWrites": 0
+}

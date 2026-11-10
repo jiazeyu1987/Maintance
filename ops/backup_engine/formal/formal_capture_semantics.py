@@ -330,12 +330,13 @@ def bounded_reference_query(mysql, sql, guard):
     program = 'timeout --signal=TERM --kill-after=5 '+str(math.ceil(seconds))+'s mysql'
     command = mysql._command(program, ['-uroot', '--batch', '--raw', '--skip-column-names',
         '--default-character-set=utf8mb4'])
+    if mysql._process_observer is not None:mysql._process_observer.before(command)
     try: process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except OSError:
         raise snapshot.FormalSnapshotError('FORMAL_CAPTURE_REFERENCE_QUERY_START_FAILED') from None
     import time
-    drain_owned_process(process, (mysql._password+'\n'+sql).encode('utf-8'), rows,
-        guard=guard, deadline=time.monotonic()+seconds, stderr_limit=0)
+    snapshot._drain_observed_process(process, (mysql._password+'\n'+sql).encode('utf-8'), rows,
+        guard=guard, deadline=time.monotonic()+seconds, observer=mysql._process_observer, argv=command)
     try: return bytes(rows.raw).decode('utf-8')
     except UnicodeError:
         raise snapshot.FormalSnapshotError('FORMAL_CAPTURE_REFERENCE_ROW_INVALID') from None
@@ -383,7 +384,7 @@ class SemanticCapture:
         self.parent = self._parent(); self.entries = {}; self.records = []; self.contents = {}
         self.position = None; self.rows = None; self.captured = False; self.finished = False
 
-    def verify_endpoint(self, guard):
+    def verify_endpoint(self, guard, *, process_observer=None):
         """Bind this read connection to the actual original container mapping."""
         from formal_filesystem_watchdog import require_native_runtime
         require_native_runtime(); guard()
@@ -391,6 +392,13 @@ class SemanticCapture:
         template = '{"id":{{json .Id}},"running":{{json .State.Running}},"ports":{{json .NetworkSettings.Ports}},"networks":{{json .NetworkSettings.Networks}}}'
         def command(argv):
             guard()
+            if process_observer is not None:
+                from formal_schema_evidence import _bounded_process
+                raw=_bounded_process(argv,b'',1048576,snapshot.observation_timeout(5),
+                    process_observer=process_observer)
+                guard()
+                require(raw,'FORMAL_CAPTURE_SEMANTIC_ENDPOINT_OBSERVATION_FAILED')
+                return raw
             try: result = subprocess.run(argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 timeout=snapshot.observation_timeout(5), check=False)
             except (OSError, subprocess.TimeoutExpired):

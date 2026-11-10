@@ -309,70 +309,17 @@ def capture(config, request, root):
 
 
 def capture_locked(config, request, root, budget, runtime):
-    source = config['source']; limits = config['limits']; runtime.preflight()
+    from recovery_capture_materials import (SourceCaptureLifecycle, prepare_materials,
+        capture_protected_materials)
+    source = config['source']; runtime.preflight()
     originals = Originals(budget.check)
-    descriptor = originals.document(source['objectSourcePin'])
-    expected_parent = None if config['parent'] is None else config['parent']['objectContentIndexPin']
-    require(descriptor['parentExportIndexPin'] == expected_parent, 'MINIMAL_OBJECT_PARENT_CHANGED')
-    secrets = {source['passwordPin']['path'], descriptor['credentialReference']['path']}
-    for reference in (source['passwordPin'], descriptor['credentialReference']):
-        require(stat.S_IMODE(path_checked(reference['path']).stat().st_mode) == 0o600,
-            'MINIMAL_SECRET_MODE_REQUIRED')
-    password = originals.read(source['passwordPin'], 16384).decode('utf-8').removesuffix('\n')
-    mysql = PrivateDockerMySql(source['mysqlContainerId'], password, timeout=limits['querySeconds'])
-    data_mysql = DataMySql(source['mysqlContainerId'], password, timeout=limits['querySeconds'])
-    mysql.database_log_mode = source.get('databaseLogMode', 'GTID')
-    mode = mysql.query('SELECT @@global.gtid_mode;').strip()
-    require(mode == ('ON' if mysql.database_log_mode == 'GTID' else 'OFF'),
-        'MINIMAL_DATABASE_LOG_MODE_CHANGED')
-    runtime.mysql = mysql
-    require(mysql.query('SELECT @@server_uuid;').strip() == source['databaseUuid'], 'MINIMAL_DATABASE_UUID_CHANGED')
-    runtime.flags = mysql.query('SELECT @@global.read_only,@@global.super_read_only;').strip().split('\t')
-    require(len(runtime.flags) == 2 and all(x in ('0', '1') for x in runtime.flags), 'MINIMAL_DATABASE_FLAGS_INVALID')
     token = observation_deadline.set(budget.deadline)
     try:
         with budget.activate():
-            budget.mkdir(root/'payload'); budget.mkdir(root/'recovery-materials'); budget.mkdir(root/'original-configs')
-            write_record(root/'payload'/'database-log-mode.json',
-                dict(mode=mysql.database_log_mode, observedGtidMode=mode))
-            catalog_pin = write_record(root/'recovery-materials'/'catalog.json', dict(
-                schemaVersion='minimal-capture-catalog/v1', sourceIdentity=source['sourceIdentity'],
-                configurationPins=source['configurationPins'], materialPins=source['materialPins']))
-            series = MinimalSeries(config, request, catalog_pin, originals, budget.check)
-            semantic = MinimalSemantic(series, originals, descriptor, source)
-            # All public material inputs are retained and checked before any service stop.
-            material_rows = []
-            config_rows = {}
-            for key, label, prefix in (('configurationPins', 'role', 'original-configs'),
-                    ('materialPins', 'purpose', 'recovery-materials')):
-                for item in source[key]:
-                    reference = item['reference']
-                    require(reference['path'] not in secrets, 'MINIMAL_SECRET_AS_MATERIAL_REFUSED')
-                    raw = originals.read(reference)
-                    relative = prefix+'/'+item[label]+'.bin'
-                    with budget.open(root/relative, 'config') as out:
-                        out.write(raw); out.flush(); os.fsync(out.fileno())
-                    material_rows.append(dict(archivePath=relative, sourcePin=reference, purpose=item[label]))
-                    if key == 'configurationPins':
-                        config_rows[item[label]] = dict(source=reference, copyPath=item[label]+'.bin',
-                            copySha256=reference['sha256'], copyBytes=reference['bytes'])
-            write_record(root/'original-configs'/'config-capture-stage.json', dict(
-                schemaVersion='minimal-capture-configuration-stage/v1', originals=config_rows))
-            material_rows.append(dict(archivePath='recovery-materials/catalog.json', sourcePin=catalog_pin,
-                purpose='capture-catalog'))
-            write_record(root/'recovery-materials'/'index.json', dict(
-                schemaVersion='backup-capture-material-index/v1', files=material_rows))
-            runtime.phase = 'CONFIGURATION_AND_IMAGE_CAPTURE'
-            image_path = root/'payload'/'original-application-images.tar'
-            with budget.open(image_path, 'images') as sink:
-                process = subprocess.Popen(['docker', 'image', 'save', *source['applicationImageIds']],
-                    stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                drain_owned_process(process, b'', sink, guard=budget.check, deadline=budget.deadline)
-                sink.flush(); os.fsync(sink.fileno())
-            validate_image_export(image_path, source['applicationImageIds'], budget.check)
-            write_record(root/'payload'/'050-original-images.json', dict(imageIds=source['applicationImageIds'],
-                archivePin=actual_pin(image_path, budget.check)))
-            runtime.event('CONFIGURATION_AND_IMAGES_CAPTURED')
+            lifecycle = SourceCaptureLifecycle(runtime)
+            prepared = prepare_materials(config, request, root, output_budget=budget,
+                originals=originals, transport=lifecycle)
+            mysql = prepared.mysql
             primary = None; result = None
             try:
                 runtime.phase = 'STOP_WRITERS'
@@ -382,68 +329,7 @@ def capture_locked(config, request, root, budget, runtime):
                 mysql.query('SET GLOBAL read_only=ON; SET GLOBAL super_read_only=ON;')
                 runtime.phase = 'WRITERS_STOPPED_DATABASE_FENCE_CHECK'
                 runtime.protected(force=True); runtime.event('WRITERS_STOPPED_DATABASE_FENCED')
-                runtime.phase = 'SEMANTIC_CAPTURE'
-                semantic.capture(mysql, source['database'], root/'semantic-capture', runtime.protected)
-                def data(name):
-                    return observe_data(data_mysql, source['database'], source['databaseUuid'],
-                        guard=runtime.protected, scratch=root/name, max_rows=limits['dataMaxRows'],
-                        max_nodes=limits['dataMaxNodes'], max_bytes=limits['dataMaxBytes'], seconds=limits['dataSeconds'])
-                if request['action'] == 'FULL':
-                    runtime.phase = 'SOURCE_DATA_BEFORE'
-                    before = data('scratch-before')
-                    write_record(root/'payload'/'011-source-data.json', before)
-                runtime.phase = 'DATABASE_CAPTURE'
-                series.database(mysql, source['database'], root/'payload'/'database.sql.gz', guard=runtime.protected)
-                if request['action'] == 'FULL':
-                    runtime.phase = 'SOURCE_DATA_AFTER'
-                    after = data('scratch-after'); compare_data(before, after)
-                    write_record(root/'payload'/'012-source-data-after.json', after)
-                else:
-                    runtime.phase = 'SOURCE_AFFECTED_DATA'
-                    changed = sorted({table for segment in series.database_scope['segments']
-                        for table in segment['affectedTables']})
-                    # MySQL case handling must be applied to DDL identifiers too.
-                    case = mysql.query('SELECT @@lower_case_table_names;').strip()
-                    require(case in ('0', '1', '2'), 'MINIMAL_DATABASE_CASE_INVALID')
-                    observed = observe_affected_data(data_mysql, source['database'], source['databaseUuid'],
-                        affected_tables=changed, lower_case_table_names=int(case), guard=runtime.protected, scratch=root/'scratch-affected',
-                        max_rows=limits['dataMaxRows'], max_nodes=limits['dataMaxNodes'],
-                        max_bytes=limits['dataMaxBytes'], seconds=limits['dataSeconds'])
-                    write_record(root/'payload'/'source-affected-data.json', observed)
-                    series.database_delta.update(dataObservation='AFFECTED_TABLES_V1', lowerCaseTableNames=int(case))
-                runtime.phase = 'MINIO_OFFLINE_PRECHECK'
-                runtime.protected(force=True)
-                runtime.phase = 'MINIO_STOP'
-                runtime.stop(source['minioContainerId']); runtime.minio_stopped = True
-                runtime.phase = 'MINIO_PHYSICAL_CAPTURE'
-                series.files(source['minioDataPath'], root/'payload'/'minio-physical', guard=runtime.protected,
-                    scopes=source.get('minioPhysicalScopes'))
-                runtime.protected(force=True)
-                runtime.phase = 'MINIO_START'
-                runtime.command(['start', '--', source['minioContainerId']]); runtime.minio_stopped = False
-                runtime.phase = 'MINIO_READINESS'
-                wait_ready(semantic, runtime)
-                runtime.phase = 'OBJECT_RECHECK'
-                verify_objects_after_offline(semantic, runtime)
-                runtime.phase = 'DATABASE_POINT_RECHECK'
-                require(observe_position(mysql, runtime.protected) == series.end,
-                    'MINIMAL_DATABASE_POINT_CHANGED')
-                point = series.point(source_restored=False)
-                write_record(root/'payload'/'capture-content-point.json', point)
-                write_record(root/'payload'/'capture-file-inventory.json', series.file_inventory)
-                runtime.phase = 'SEMANTIC_FINALIZE'
-                supplement, _ = semantic.finalize(point, runtime.protected)
-                runtime.phase = 'CAPTURE_FINAL_CHECK'
-                originals.check(full=True); runtime.protected(force=True)
-                entries = archive_entries(root, budget.check)
-                inputs = capture_recovery_inputs(point, source_root=str(root), entries=entries, supplemental=supplement)
-                inputs_pin = write_record(root/'capture-recovery-inputs.json', inputs)
-                entries['capture-recovery-inputs.json'] = marker(inputs_pin)
-                entries_pin = write_record(root/'capture-archive-entries.json', entries)
-                result = dict(captureRoot=str(root), captureInputsPin=inputs_pin, archiveEntriesPin=entries_pin,
-                    capturePointPin=actual_pin(root/'payload'/'capture-content-point.json'),
-                    objectContentIndexPin=actual_pin(root/'semantic-capture'/'object-content-index.json'),
-                    recoveryPoint=point['commonRecoveryPoint'], sourceIdentity=source['sourceIdentity'])
+                result = capture_protected_materials(prepared, lifecycle).result
             except BaseException as error:
                 error.diagnostic = diagnostic_value(dict(
                     getattr(error, 'diagnostic', None) or {}, captureStage=runtime.phase))
@@ -515,9 +401,10 @@ def wait_ready(semantic, runtime):
         time.sleep(min(.5, max(.001, end-time.monotonic())))
 
 
-def verify_objects_after_offline(semantic, runtime):
+def verify_objects_after_offline(semantic, runtime, *, process_observer=None):
     guard = runtime.protected
-    semantic.verify_endpoint(guard)
+    if process_observer is None: semantic.verify_endpoint(guard)
+    else: semantic.verify_endpoint(guard,process_observer=process_observer)
     for bucket in semantic.source['buckets']:
         expected = [r for r in semantic.records if r['bucket'] == bucket]
         plain = [{k: v for k, v in r.items() if k not in ('bucket', 'sha256', 'repositoryPath', 'headers')}

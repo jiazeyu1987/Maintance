@@ -70,6 +70,16 @@ class _NativeView:
             require(staging.context is self._context and staging.native is native,
                     'PROGRAM_SQL_STAGING_OWNER_CHANGED')
             staging.check()
+        capture = getattr(self._context, '_target_capture_lease', None)
+        if capture is not None:
+            require(capture._native is native and capture._context is self._context,
+                    'PROGRAM_CAPTURE_OWNER_CHANGED')
+            capture.check()
+        session = getattr(self._context, '_target_capture_session', None)
+        if session is not None:
+            require(session._native is native and session._context is self._context,
+                    'PROGRAM_CAPTURE_OWNER_CHANGED')
+            session.check()
 
     def begin_invocation(self, native, intent_pin):
         self.guard_native(native)
@@ -211,6 +221,10 @@ class MainNativeExecutionContext:
 
     def stage(self, generation_pin):
         self._check()
+        session = getattr(self, '_target_capture_session', None)
+        require(session is None or session.handed_off, 'PROGRAM_TARGET_CAPTURE_PENDING')
+        capture = getattr(self, '_target_capture_lease', None)
+        require(capture is None or capture.handed_off, 'PROGRAM_TARGET_CAPTURE_PENDING')
         require(self._phase == 'PREPARATION', 'PROGRAM_NATIVE_STAGE_ALREADY_BOUND')
         require(all(row['terminalPin'] is not None for row in self._invocations),
                 'PROGRAM_NATIVE_INVOCATION_PENDING')
@@ -252,12 +266,16 @@ class MainNativeExecutionContext:
 
     def begin_invocation(self, view, intent_pin):
         self._view_guard(view)
-        require(all(row['terminalPin'] is not None and
-                    row['terminalObservation']['state'] != 'TERMINAL_UNKNOWN' for row in self._invocations),
-                'PROGRAM_NATIVE_INVOCATION_UNSETTLED')
         path = self._evidence_path(intent_pin)
         require(path not in self._invocation_paths, 'PROGRAM_NATIVE_EVIDENCE_DUPLICATE')
         value = document(intent_pin)
+        pending = [row['sequence'] for row in self._invocations if row['terminalPin'] is None or
+                   row['terminalObservation']['state'] == 'TERMINAL_UNKNOWN']
+        if pending:
+            from recovery_target_capture import MainTargetCapture
+            session = getattr(self, '_target_capture_session', None)
+            require(type(session) is MainTargetCapture and session._allows_guard_invocation(view,value,pending),
+                    'PROGRAM_NATIVE_INVOCATION_UNSETTLED')
         actions = ('RESTORE',) if view.phase == 'PREPARATION' else RESTORE_ACTIONS
         require(type(value) is dict and value.get('schemaVersion') in
                 ('RecoveryDataInvocation/v1', 'RecoverySqlImporter/v2') and
@@ -326,7 +344,10 @@ class MainNativeExecutionContext:
 
     def close(self):
         self._closed = True
-        leases = [*self._leases, *self._sql_staging_managers]
+        capture = getattr(self, '_target_capture_lease', None)
+        session = getattr(self, '_target_capture_session', None)
+        leases = [*self._leases, *self._sql_staging_managers, *(() if capture is None else (capture,)),
+                  *(() if session is None else (session,))]
         self._leases, self._sql_staging_managers = [], []
         failure = None
         for lease in reversed(leases):

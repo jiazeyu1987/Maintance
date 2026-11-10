@@ -571,6 +571,21 @@ def verify_runtime(native, *, states=True):
             require(set(network[0]['Containers']) == running | ambient, 'MAIN_NETWORK_MEMBERS_CHANGED')
 
 
+def verify_writer_quiescence(native):
+    """Retain the existing exclusive MAIN writer checks during capture."""
+    if enabled(native.config) and native.config['mainApplication']['schemaVersion'] == 'RegisteredMainApplication/v2':
+        database = native.config['database']
+        queries = ("SELECT COUNT(*) FROM information_schema.PROCESSLIST WHERE ID<>CONNECTION_ID() "
+                   "AND USER NOT IN ('event_scheduler','mysql.infoschema','mysql.session','mysql.sys') "
+                   "AND HOST NOT LIKE 'localhost%';", "SELECT COUNT(*) FROM information_schema.EVENTS WHERE "
+                   "EVENT_SCHEMA='"+database+"' AND STATUS='ENABLED';")
+        require(all(native.mysql.query(query).strip() == '0' for query in queries), 'MAIN_DATABASE_WRITERS_NOT_QUIESCED')
+        clients = redis_command(native, ['--raw', 'CLIENT', 'LIST']).decode('utf-8')
+        clients = [dict(part.split('=', 1) for part in line.split() if '=' in part) for line in clients.splitlines()]
+        require(clients and all(row.get('addr', '').startswith('127.0.0.1:') for row in clients),
+                'MAIN_REDIS_WRITERS_NOT_QUIESCED')
+
+
 def guarded_type(original):
     """Compose the explicit main contract without modifying the rehearsal path."""
     class MainData(original):
@@ -625,16 +640,7 @@ def guarded_type(original):
                 if fence is not None: fence.verify()
                 archive = protected.archive
                 if archive is not None: archive.verify()
-                database = self.config['database']
-                queries = ("SELECT COUNT(*) FROM information_schema.PROCESSLIST WHERE ID<>CONNECTION_ID() "
-                           "AND USER NOT IN ('event_scheduler','mysql.infoschema','mysql.session','mysql.sys') "
-                           "AND HOST NOT LIKE 'localhost%';", "SELECT COUNT(*) FROM information_schema.EVENTS WHERE "
-                           "EVENT_SCHEMA='"+database+"' AND STATUS='ENABLED';")
-                require(all(self.mysql.query(query).strip() == '0' for query in queries), 'MAIN_DATABASE_WRITERS_NOT_QUIESCED')
-                clients = redis_command(self, ['--raw', 'CLIENT', 'LIST']).decode('utf-8')
-                clients = [dict(part.split('=', 1) for part in line.split() if '=' in part) for line in clients.splitlines()]
-                require(clients and all(row.get('addr', '').startswith('127.0.0.1:') for row in clients),
-                        'MAIN_REDIS_WRITERS_NOT_QUIESCED')
+                verify_writer_quiescence(self)
 
         def replacement_finish(self):
             result = {}

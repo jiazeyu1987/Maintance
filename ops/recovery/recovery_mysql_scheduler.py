@@ -2,7 +2,7 @@
 from pathlib import Path
 import time
 
-from recovery_engine import absolute, digest, load, pin, pinned_json, require, utc
+from recovery_engine import RecoveryError, absolute, digest, load, pin, pinned_json, require, utc
 from recovery_retained_retry import append
 
 SYSTEM_DATABASES = {'mysql', 'sys', 'information_schema', 'performance_schema'}
@@ -22,10 +22,14 @@ class MainMysqlScheduler:
             mysql=[s for s in target['services'] if s['role'] == 'mysql'], mainApplication=target['mainApplication']))
 
     def _state(self):
+        return self._state_flags(('0', '0'))
+
+    def _state_flags(self, flags):
+        """Internal parser; ordinary scheduler admission always uses 0/0."""
         raw = self.query(STATE_SQL).decode('ascii')
         values = raw.rstrip('\n').split('\t')
         require(len(values) == 4 and raw == '\t'.join(values)+'\n' and
-                values[:3] == [self.target['replacement']['databaseUuid'], '0', '0'] and
+                values[:3] == [self.target['replacement']['databaseUuid'], *flags] and
                 values[3] in ('ON', 'OFF', 'DISABLED'), 'MAIN_SCHEDULER_DATABASE_CHANGED')
         names = self.query('SHOW DATABASES;').decode('utf-8').splitlines()
         require(len(names) == len(set(names)) and set(names) == SYSTEM_DATABASES | {self.target['database']},
@@ -74,7 +78,7 @@ class MainMysqlScheduler:
             operationId=self.operation_id, configurationDigest=self.binding, intentPin=intent, pausedState=paused))
         self.verify()
 
-    def verify(self):
+    def _verified_intent(self):
         active = load(self.journal/'active.json'); intent = pinned_json(active['intentPin'])
         require(active.get('schemaVersion') == 'MainMysqlSchedulerActive/v1' and
                 intent.get('schemaVersion') == 'MainMysqlSchedulerIntent/v1' and
@@ -85,9 +89,31 @@ class MainMysqlScheduler:
                 active['pausedState'] == intent['pausedState'] ==
                     ('DISABLED' if intent['originalState'] == 'DISABLED' else 'OFF') and
                 not (self.journal/'released.json').exists(), 'MAIN_SCHEDULER_IDENTITY_CHANGED')
+        return intent, active
+
+    def verify(self):
+        intent, active = self._verified_intent()
         require(self._state() == active['pausedState'], 'MAIN_SCHEDULER_STATE_CHANGED')
         require(self.query(WORKERS_SQL).strip() == b'0', 'MAIN_SCHEDULER_NOT_QUIESCED')
         return intent
+
+    def _verify_capture(self, lease):
+        from recovery_program_protection import _TargetCaptureProtectionLease
+        from formal_snapshot_linux import FormalSnapshotError, observe_database_barrier
+        from types import SimpleNamespace
+        require(type(lease) is _TargetCaptureProtectionLease and lease._scheduler_matches(self),
+                'PROGRAM_CAPTURE_SCHEDULER_LEASE_INVALID')
+        intent, active = self._verified_intent()
+        require(self._state_flags(('1', '1')) == active['pausedState'], 'MAIN_SCHEDULER_STATE_CHANGED')
+        require(self.query(WORKERS_SQL).strip() == b'0', 'MAIN_SCHEDULER_NOT_QUIESCED')
+        # Only the lease's registered, still-owned exporter may own the read
+        # transaction. A phase label or a caller-provided boolean grants nothing.
+        try:
+            observed = observe_database_barrier(SimpleNamespace(query=lambda sql:self.query(sql).decode('ascii')),
+                dump_in_progress=lease._export_in_progress())
+        except FormalSnapshotError as error:
+            raise RecoveryError(error.code) from error
+        return intent, observed
 
     def recovery_custody(self):
         intent = self.verify()

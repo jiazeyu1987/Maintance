@@ -24,10 +24,16 @@ return result
 '''
 
 @contextmanager
-def source_client(config, guard):
+def source_client(config, guard, *, process_observer=None):
     import redis
     guard()
-    row=json.loads(subprocess.check_output(['docker','inspect',config['containerId']],timeout=10))[0]
+    if process_observer is None:
+        raw=subprocess.check_output(['docker','inspect',config['containerId']],timeout=10)
+    else:
+        from formal_schema_evidence import _bounded_process
+        raw=_bounded_process(['docker','inspect',config['containerId']],b'',8*1024*1024,10,
+            process_observer=process_observer)
+    row=json.loads(raw)[0]
     require(row['Id']==config['containerId'] and row['State']['Running'] and
         any(n['IPAddress']==config['host'] for n in row['NetworkSettings']['Networks'].values()),
         'MINIMAL_REDIS_SOURCE_CHANGED')
@@ -51,8 +57,8 @@ def preflight(config, guard):
         pass
 
 
-def observe(config, guard):
-    with source_client(config, guard) as (client, row, version):
+def observe(config, guard, *, process_observer=None):
+    with source_client(config, guard,process_observer=process_observer) as (client, row, version):
         raw=client.eval(LUA,0)
         require(len(raw)>=2 and (len(raw)-2)%3==0,'REDIS_SNAPSHOT_INVALID')
         values=[]
@@ -67,8 +73,8 @@ def observe(config, guard):
             sourceContainerId=row['Id'],serverVersion=version,
             observedAtUnixMs=int(raw[0])*1000+int(raw[1])//1000,entries=values)
 
-def verify_current(snapshot, config, guard):
-    current=observe(config,guard);now=current['observedAtUnixMs']
+def verify_current(snapshot, config, guard, *, process_observer=None):
+    current=observe(config,guard,process_observer=process_observer);now=current['observedAtUnixMs']
     expected=[r for r in snapshot['entries'] if r['expiresAtUnixMs']==-1 or r['expiresAtUnixMs']>now]
     require(expected==current['entries'],'REDIS_SOURCE_CHANGED_DURING_CAPTURE')
     return current

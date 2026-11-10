@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "TaskTargetPreservationProtocolVerification/v1",
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--name",
+    "spug-target-preservation-2a-regression-20261110-r1",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--memory",
+    "512m",
+    "--cpus",
+    "1",
+    "--pids-limit",
+    "128",
+    "--tmpfs",
+    "/work:rw,exec,nosuid,nodev,size=256m",
+    "--tmpfs",
+    "/tmp:rw,nosuid,nodev,size=128m",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2a-regression-20261110-r1.tar,target=/inputs/source.tar,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-2a-regression-20261110-r1-runner.py,target=/inputs/runner.py,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\linux-test-wheels,target=/inputs/wheels,readonly",
+    "sha256:14a4933e6cef421424f7a66d89a3f4eafcbd0d90e0a822251f298e05132dc735",
+    "python",
+    "-B",
+    "/inputs/runner.py"
+  ],
+  "exitCode": 1,
+  "timeout": false,
+  "counts": {
+    "tests": 11,
+    "failures": 6,
+    "errors": 0,
+    "skipped": 0
+  },
+  "elapsedSeconds": 50.328,
+  "sourceSnapshotPin": {
+    "file": "target-preservation-2a-regression-20261110-r1.tar",
+    "bytes": 7311360,
+    "sha256": "0aaf5a9de185f5b5abd47b00e47ad367b466e40c1dc62594d95b88b77dae3b31"
+  },
+  "sourceInventoryPin": {
+    "file": "target-preservation-2a-regression-20261110-r1-inputs.json",
+    "bytes": 39870,
+    "sha256": "c0c78db5c7b439fb8d87c87f2c188044da09122ba306cf6edbd3144f6a07bb29"
+  },
+  "runnerPin": {
+    "file": "target-preservation-2a-regression-20261110-r1-runner.py",
+    "bytes": 1327,
+    "sha256": "e2f2a0d8c9cca56368edafe8d7131c8834a81c6721da67f1e8bb01619403f0eb"
+  },
+  "rawLogPin": {
+    "file": "target-preservation-2a-regression-20261110-r1.log",
+    "bytes": 10831,
+    "sha256": "b034162b83b222cbf1026e55503990edf127d0164e31baf3cd9dfd9c55e13e29"
+  },
+  "junitPin": {
+    "file": "target-preservation-2a-regression-20261110-r1.xml",
+    "bytes": 4196,
+    "sha256": "2d9bae027945acb66f3c241f2f1f023cd0de4750c2294aabf3c93438d9d91543"
+  },
+  "inputsUnchanged": true,
+  "runtimeInputsUnchanged": true,
+  "containerRemoved": true,
+  "remoteActions": 0,
+  "businessWrites": 0,
+  "actualBusinessRestore": false
+}

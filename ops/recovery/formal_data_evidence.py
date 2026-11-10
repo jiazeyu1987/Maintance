@@ -216,16 +216,20 @@ class DataMySql(SchemaMySql):
         with (Path(path).open('xb') if output_budget is None else output_budget.open(path,'scratch')) as sink:
             os.chmod(path,0o600)
             if output_budget is None:
-                _bounded_process(command,(self._password+'\n'+wrapped).encode(),max_bytes,seconds,sink=sink)
+                _bounded_process(command,(self._password+'\n'+wrapped).encode(),max_bytes,seconds,sink=sink,
+                    process_observer=self._process_observer)
             else:
                 class QueryLimit:
                     total=0
                     def write(self,chunk):
                         require(self.total+len(chunk)<=max_bytes,'FORMAL_DATA_STREAM_LIMIT')
                         sink.write(chunk);self.total+=len(chunk)
+                if self._process_observer is not None:self._process_observer.before(command)
                 process=subprocess.Popen(command,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-                drain_owned_process(process,(self._password+'\n'+wrapped).encode(),QueryLimit(),
-                    guard=output_budget.check,deadline=min(output_budget.deadline,time.monotonic()+seconds))
+                from formal_snapshot_linux import _drain_observed_process
+                _drain_observed_process(process,(self._password+'\n'+wrapped).encode(),QueryLimit(),
+                    guard=output_budget.check,deadline=min(output_budget.deadline,time.monotonic()+seconds),
+                    observer=self._process_observer,argv=command)
             sink.flush();os.fsync(sink.fileno())
 
 

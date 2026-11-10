@@ -1,0 +1,1318 @@
+{
+  "schemaVersion": "TaskCaptureRegressionNodeCoverage/v1",
+  "targetReportPin": {
+    "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/capture-components-linux-regression-20261110-r8.json",
+    "bytes": 1849,
+    "sha256": "c3176d3493380f0f516de4c7c1a2d6bd97dd77a55fbdc6ef87537819fa4c9956"
+  },
+  "replacementReportPin": {
+    "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/capture-archive-scope-linux-20261110-r9.json",
+    "bytes": 1805,
+    "sha256": "2bc56c1f1d97e58f899b6cf0db1b90c98e080bb28f043f5ea7cc2df0e46f377f"
+  },
+  "targetNodeCount": 211,
+  "coveredUniqueNodeCount": 211,
+  "archiveNodesSelectedOnlyFromActualSafe": [
+    "scripts/tests/test_capture_archive_guard.py::test_excluded_control_membership_is_still_fixed",
+    "scripts/tests/test_capture_archive_guard.py::test_excluded_live_control_content_remains_owner_guarded",
+    "scripts/tests/test_capture_archive_guard.py::test_final_snapshot_rejects_observable_mmap_metadata_change",
+    "scripts/tests/test_capture_archive_guard.py::test_reads_and_close_keep_actual_bytes_and_tree",
+    "scripts/tests/test_capture_archive_guard.py::test_real_event_queue_overflow_fails_closed",
+    "scripts/tests/test_capture_archive_guard.py::test_unrelated_selected_path_changes_fail_before_next_chunk[add_empty_child]",
+    "scripts/tests/test_capture_archive_guard.py::test_unrelated_selected_path_changes_fail_before_next_chunk[change_ancestor_mode]",
+    "scripts/tests/test_capture_archive_guard.py::test_unrelated_selected_path_changes_fail_before_next_chunk[chmod_directory]",
+    "scripts/tests/test_capture_archive_guard.py::test_unrelated_selected_path_changes_fail_before_next_chunk[chmod_file]",
+    "scripts/tests/test_capture_archive_guard.py::test_unrelated_selected_path_changes_fail_before_next_chunk[delete_file]",
+    "scripts/tests/test_capture_archive_guard.py::test_unrelated_selected_path_changes_fail_before_next_chunk[rename_directory]",
+    "scripts/tests/test_capture_archive_guard.py::test_unrelated_selected_path_changes_fail_before_next_chunk[replace_file]",
+    "scripts/tests/test_capture_archive_guard.py::test_unrelated_selected_path_changes_fail_before_next_chunk[replace_root]",
+    "scripts/tests/test_capture_archive_guard.py::test_unrelated_selected_path_changes_fail_before_next_chunk[same_bytes_write]",
+    "scripts/tests/test_capture_archive_guard.py::test_unrelated_selected_path_changes_fail_before_next_chunk[transient_child]",
+    "scripts/tests/test_capture_archive_guard.py::test_watch_descriptor_failure_is_not_downgraded",
+    "scripts/tests/test_capture_archive_guard.py::test_write_through_already_open_descriptor_is_detected"
+  ],
+  "excludedAdditionalR9Nodes": [
+    "doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_program_control_generation_scope.py::test_generation_rejects_leaf_symlink_even_if_member"
+  ],
+  "coveredNodes": [
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_archive_list_reuses_capture_fingerprints_without_rereading_files",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_archive_list_reuses_capture_fingerprints_without_rereading_files"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_binding_without_content_verification_never_rehashes_payload",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_binding_without_content_verification_never_rehashes_payload"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_dump_streams_directly_to_gzip_and_never_publishes_failure[child]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_dump_streams_directly_to_gzip_and_never_publishes_failure[child]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_dump_streams_directly_to_gzip_and_never_publishes_failure[empty]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_dump_streams_directly_to_gzip_and_never_publishes_failure[empty]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_dump_streams_directly_to_gzip_and_never_publishes_failure[guard]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_dump_streams_directly_to_gzip_and_never_publishes_failure[guard]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_dump_streams_directly_to_gzip_and_never_publishes_failure[none]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_dump_streams_directly_to_gzip_and_never_publishes_failure[none]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_image_cache_publishes_complete_pair_or_nothing[metadata]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_image_cache_publishes_complete_pair_or_nothing[metadata]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_image_cache_publishes_complete_pair_or_nothing[none]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_image_cache_publishes_complete_pair_or_nothing[none]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_image_cache_publishes_complete_pair_or_nothing[publish]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_image_cache_publishes_complete_pair_or_nothing[publish]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_incremental_object_get_once_and_preserves_parent_and_metadata[changed-null]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_incremental_object_get_once_and_preserves_parent_and_metadata[changed-null]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_incremental_object_get_once_and_preserves_parent_and_metadata[duplicate]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_incremental_object_get_once_and_preserves_parent_and_metadata[duplicate]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_incremental_object_get_once_and_preserves_parent_and_metadata[immutable-parent]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_incremental_object_get_once_and_preserves_parent_and_metadata[immutable-parent]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_incremental_object_get_once_and_preserves_parent_and_metadata[new]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_incremental_object_get_once_and_preserves_parent_and_metadata[new]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_incremental_object_get_once_and_preserves_parent_and_metadata[parent]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_incremental_object_get_once_and_preserves_parent_and_metadata[parent]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_lightweight_archives_actual_eof_without_hash_or_size_checks[0]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_lightweight_archives_actual_eof_without_hash_or_size_checks[0]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_lightweight_archives_actual_eof_without_hash_or_size_checks[2000000]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_lightweight_archives_actual_eof_without_hash_or_size_checks[2000000]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_lightweight_archives_actual_eof_without_hash_or_size_checks[5]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_lightweight_archives_actual_eof_without_hash_or_size_checks[5]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_lightweight_capture_only_reads_database_attributes[FULL]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_lightweight_capture_only_reads_database_attributes[FULL]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_lightweight_capture_only_reads_database_attributes[INCREMENTAL]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_lightweight_capture_only_reads_database_attributes[INCREMENTAL]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_lightweight_does_not_probe_smb_before_capture",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_lightweight_does_not_probe_smb_before_capture"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_lightweight_dump_failure_is_not_hidden",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_lightweight_dump_failure_is_not_hidden"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_lightweight_image_cache_reuses_export_without_integrity_check",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_lightweight_image_cache_reuses_export_without_integrity_check"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_lightweight_incremental_detection_does_not_read_file_contents",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_lightweight_incremental_detection_does_not_read_file_contents"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_lightweight_readback_reads_bytes_without_comparing_expected_digest[False]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_lightweight_readback_reads_bytes_without_comparing_expected_digest[False]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_lightweight_readback_reads_bytes_without_comparing_expected_digest[True]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_lightweight_readback_reads_bytes_without_comparing_expected_digest[True]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_linear_path_validation_still_rejects_symlinks",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_linear_path_validation_still_rejects_symlinks"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_operator_archive_reads_only_metadata_not_payload_bytes",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_operator_archive_reads_only_metadata_not_payload_bytes"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_operator_physical_restore_copies_without_content_verification",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_operator_physical_restore_copies_without_content_verification"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_package_includes_new_image_helper",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_package_includes_new_image_helper"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_physical_copy_has_one_final_destination_readback[False]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_physical_copy_has_one_final_destination_readback[False]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_physical_copy_has_one_final_destination_readback[True]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_physical_copy_has_one_final_destination_readback[True]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_publisher_returns_already_verified_pins[False]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_publisher_returns_already_verified_pins[False]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_publisher_returns_already_verified_pins[True]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_publisher_returns_already_verified_pins[True]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_redis_preflight_checks_dependency_without_key_scan[6.2.0]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_redis_preflight_checks_dependency_without_key_scan[6.2.0]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_redis_preflight_checks_dependency_without_key_scan[7.0.0]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_redis_preflight_checks_dependency_without_key_scan[7.0.0]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_repository_timing_keeps_success_and_failure",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_repository_timing_keeps_success_and_failure"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_restore_hot_guard_does_not_rehash_inputs",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_restore_hot_guard_does_not_rehash_inputs"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_sql_expand_hashes_consumed_stream_without_separate_hash_pass[concatenated]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_sql_expand_hashes_consumed_stream_without_separate_hash_pass[concatenated]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_sql_expand_hashes_consumed_stream_without_separate_hash_pass[digest]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_sql_expand_hashes_consumed_stream_without_separate_hash_pass[digest]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_sql_expand_hashes_consumed_stream_without_separate_hash_pass[empty]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_sql_expand_hashes_consumed_stream_without_separate_hash_pass[empty]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_sql_expand_hashes_consumed_stream_without_separate_hash_pass[limit]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_sql_expand_hashes_consumed_stream_without_separate_hash_pass[limit]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_sql_expand_hashes_consumed_stream_without_separate_hash_pass[truncated]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_sql_expand_hashes_consumed_stream_without_separate_hash_pass[truncated]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_sql_expand_hashes_consumed_stream_without_separate_hash_pass[valid]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_sql_expand_hashes_consumed_stream_without_separate_hash_pass[valid]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_sql_import_wakes_on_next_block_with_real_child[failed]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_sql_import_wakes_on_next_block_with_real_child[failed]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_sql_import_wakes_on_next_block_with_real_child[hash]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_sql_import_wakes_on_next_block_with_real_child[hash]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_sql_import_wakes_on_next_block_with_real_child[success]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_sql_import_wakes_on_next_block_with_real_child[success]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_sql_import_wakes_on_next_block_with_real_child[unknown]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_sql_import_wakes_on_next_block_with_real_child[unknown]"
+    },
+    {
+      "nodeId": "scripts/tests/test_backup_performance.py::test_stage_timing_keeps_success_and_failure",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_backup_performance::test_stage_timing_keeps_success_and_failure"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_archive_guard.py::test_excluded_control_membership_is_still_fixed",
+      "evidenceReport": "capture-archive-scope-linux-20261110-r9.json",
+      "entry": "actual-authenticated-SAFE",
+      "junitIdentity": "scripts.tests.test_capture_archive_guard::test_excluded_control_membership_is_still_fixed"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_archive_guard.py::test_excluded_live_control_content_remains_owner_guarded",
+      "evidenceReport": "capture-archive-scope-linux-20261110-r9.json",
+      "entry": "actual-authenticated-SAFE",
+      "junitIdentity": "scripts.tests.test_capture_archive_guard::test_excluded_live_control_content_remains_owner_guarded"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_archive_guard.py::test_final_snapshot_rejects_observable_mmap_metadata_change",
+      "evidenceReport": "capture-archive-scope-linux-20261110-r9.json",
+      "entry": "actual-authenticated-SAFE",
+      "junitIdentity": "scripts.tests.test_capture_archive_guard::test_final_snapshot_rejects_observable_mmap_metadata_change"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_archive_guard.py::test_reads_and_close_keep_actual_bytes_and_tree",
+      "evidenceReport": "capture-archive-scope-linux-20261110-r9.json",
+      "entry": "actual-authenticated-SAFE",
+      "junitIdentity": "scripts.tests.test_capture_archive_guard::test_reads_and_close_keep_actual_bytes_and_tree"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_archive_guard.py::test_real_event_queue_overflow_fails_closed",
+      "evidenceReport": "capture-archive-scope-linux-20261110-r9.json",
+      "entry": "actual-authenticated-SAFE",
+      "junitIdentity": "scripts.tests.test_capture_archive_guard::test_real_event_queue_overflow_fails_closed"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_archive_guard.py::test_unrelated_selected_path_changes_fail_before_next_chunk[add_empty_child]",
+      "evidenceReport": "capture-archive-scope-linux-20261110-r9.json",
+      "entry": "actual-authenticated-SAFE",
+      "junitIdentity": "scripts.tests.test_capture_archive_guard::test_unrelated_selected_path_changes_fail_before_next_chunk[add_empty_child]"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_archive_guard.py::test_unrelated_selected_path_changes_fail_before_next_chunk[change_ancestor_mode]",
+      "evidenceReport": "capture-archive-scope-linux-20261110-r9.json",
+      "entry": "actual-authenticated-SAFE",
+      "junitIdentity": "scripts.tests.test_capture_archive_guard::test_unrelated_selected_path_changes_fail_before_next_chunk[change_ancestor_mode]"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_archive_guard.py::test_unrelated_selected_path_changes_fail_before_next_chunk[chmod_directory]",
+      "evidenceReport": "capture-archive-scope-linux-20261110-r9.json",
+      "entry": "actual-authenticated-SAFE",
+      "junitIdentity": "scripts.tests.test_capture_archive_guard::test_unrelated_selected_path_changes_fail_before_next_chunk[chmod_directory]"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_archive_guard.py::test_unrelated_selected_path_changes_fail_before_next_chunk[chmod_file]",
+      "evidenceReport": "capture-archive-scope-linux-20261110-r9.json",
+      "entry": "actual-authenticated-SAFE",
+      "junitIdentity": "scripts.tests.test_capture_archive_guard::test_unrelated_selected_path_changes_fail_before_next_chunk[chmod_file]"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_archive_guard.py::test_unrelated_selected_path_changes_fail_before_next_chunk[delete_file]",
+      "evidenceReport": "capture-archive-scope-linux-20261110-r9.json",
+      "entry": "actual-authenticated-SAFE",
+      "junitIdentity": "scripts.tests.test_capture_archive_guard::test_unrelated_selected_path_changes_fail_before_next_chunk[delete_file]"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_archive_guard.py::test_unrelated_selected_path_changes_fail_before_next_chunk[rename_directory]",
+      "evidenceReport": "capture-archive-scope-linux-20261110-r9.json",
+      "entry": "actual-authenticated-SAFE",
+      "junitIdentity": "scripts.tests.test_capture_archive_guard::test_unrelated_selected_path_changes_fail_before_next_chunk[rename_directory]"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_archive_guard.py::test_unrelated_selected_path_changes_fail_before_next_chunk[replace_file]",
+      "evidenceReport": "capture-archive-scope-linux-20261110-r9.json",
+      "entry": "actual-authenticated-SAFE",
+      "junitIdentity": "scripts.tests.test_capture_archive_guard::test_unrelated_selected_path_changes_fail_before_next_chunk[replace_file]"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_archive_guard.py::test_unrelated_selected_path_changes_fail_before_next_chunk[replace_root]",
+      "evidenceReport": "capture-archive-scope-linux-20261110-r9.json",
+      "entry": "actual-authenticated-SAFE",
+      "junitIdentity": "scripts.tests.test_capture_archive_guard::test_unrelated_selected_path_changes_fail_before_next_chunk[replace_root]"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_archive_guard.py::test_unrelated_selected_path_changes_fail_before_next_chunk[same_bytes_write]",
+      "evidenceReport": "capture-archive-scope-linux-20261110-r9.json",
+      "entry": "actual-authenticated-SAFE",
+      "junitIdentity": "scripts.tests.test_capture_archive_guard::test_unrelated_selected_path_changes_fail_before_next_chunk[same_bytes_write]"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_archive_guard.py::test_unrelated_selected_path_changes_fail_before_next_chunk[transient_child]",
+      "evidenceReport": "capture-archive-scope-linux-20261110-r9.json",
+      "entry": "actual-authenticated-SAFE",
+      "junitIdentity": "scripts.tests.test_capture_archive_guard::test_unrelated_selected_path_changes_fail_before_next_chunk[transient_child]"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_archive_guard.py::test_watch_descriptor_failure_is_not_downgraded",
+      "evidenceReport": "capture-archive-scope-linux-20261110-r9.json",
+      "entry": "actual-authenticated-SAFE",
+      "junitIdentity": "scripts.tests.test_capture_archive_guard::test_watch_descriptor_failure_is_not_downgraded"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_archive_guard.py::test_write_through_already_open_descriptor_is_detected",
+      "evidenceReport": "capture-archive-scope-linux-20261110-r9.json",
+      "entry": "actual-authenticated-SAFE",
+      "junitIdentity": "scripts.tests.test_capture_archive_guard::test_write_through_already_open_descriptor_is_detected"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_materials_lifecycle.py::test_strict_source_really_delegates_materials_without_optional_source_restore",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_materials_lifecycle::test_strict_source_really_delegates_materials_without_optional_source_restore"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_parent_guard.py::test_callback_failure_during_initial_full_hash_closes_all_leases",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_parent_guard::test_callback_failure_during_initial_full_hash_closes_all_leases"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_parent_guard.py::test_full_boundary_check_rejects_changes_without_a_delivered_watch_event",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_parent_guard::test_full_boundary_check_rejects_changes_without_a_delivered_watch_event"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_parent_guard.py::test_full_boundary_check_rejects_content_identity_changes_without_events",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_parent_guard::test_full_boundary_check_rejects_content_identity_changes_without_events"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_parent_guard.py::test_full_capture_does_not_require_parent_leases",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_parent_guard::test_full_capture_does_not_require_parent_leases"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_parent_guard.py::test_initial_content_hash_failure_closes_every_acquired_lease",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_parent_guard::test_initial_content_hash_failure_closes_every_acquired_lease"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_parent_guard.py::test_initial_content_verification_keeps_owner_identities_without_rehashing_all_originals",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_parent_guard::test_initial_content_verification_keeps_owner_identities_without_rehashing_all_originals"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_parent_guard.py::test_normal_formal_owner_keeps_its_original_full_parent_verifier",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_parent_guard::test_normal_formal_owner_keeps_its_original_full_parent_verifier"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_parent_guard.py::test_parent_files_and_all_ancestors_are_leased_until_explicit_close",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_parent_guard::test_parent_files_and_all_ancestors_are_leased_until_explicit_close"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_parent_guard.py::test_parent_guard_refuses_insufficient_fd_budget_and_leaks_nothing",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_parent_guard::test_parent_guard_refuses_insufficient_fd_budget_and_leaks_nothing"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_parent_guard.py::test_parent_mutation_is_rejected_by_continuous_checks[ancestor-rename]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_parent_guard::test_parent_mutation_is_rejected_by_continuous_checks[ancestor-rename]"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_parent_guard.py::test_parent_mutation_is_rejected_by_continuous_checks[content-replace]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_parent_guard::test_parent_mutation_is_rejected_by_continuous_checks[content-replace]"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_parent_guard.py::test_parent_mutation_is_rejected_by_continuous_checks[content-write]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_parent_guard::test_parent_mutation_is_rejected_by_continuous_checks[content-write]"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_parent_guard.py::test_parent_mutation_is_rejected_by_continuous_checks[metadata-write]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_parent_guard::test_parent_mutation_is_rejected_by_continuous_checks[metadata-write]"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_parent_guard.py::test_per_buffer_checks_do_not_reopen_parent_bytes_or_scan_all_parent_paths",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_parent_guard::test_per_buffer_checks_do_not_reopen_parent_bytes_or_scan_all_parent_paths"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_parent_guard.py::test_real_native_pipe_finishes_with_original_deadline_and_continuous_guard",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_parent_guard::test_real_native_pipe_finishes_with_original_deadline_and_continuous_guard"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_parent_guard.py::test_semantic_constructor_failure_after_parent_acquisition_closes_leases",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_parent_guard::test_semantic_constructor_failure_after_parent_acquisition_closes_leases"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_parent_guard.py::test_worker_retains_full_original_bytes_check_and_closes_parent_lease",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_parent_guard::test_worker_retains_full_original_bytes_check_and_closes_parent_lease"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_redis_auth.py::test_source_redis_authentication_failure_is_not_swallowed",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_redis_auth::test_source_redis_authentication_failure_is_not_swallowed"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_redis_auth.py::test_source_redis_uses_explicit_password_only[False]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_redis_auth::test_source_redis_uses_explicit_password_only[False]"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_redis_auth.py::test_source_redis_uses_explicit_password_only[True]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_redis_auth::test_source_redis_uses_explicit_password_only[True]"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_request_binding.py::CaptureRequestBinding::test_missing_exporter_is_an_explicit_prerequisite_failure",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_request_binding.CaptureRequestBinding::test_missing_exporter_is_an_explicit_prerequisite_failure"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_request_binding.py::CaptureRequestBinding::test_new_full_removes_previous_incremental_parent_from_both_data_stores",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_request_binding.CaptureRequestBinding::test_new_full_removes_previous_incremental_parent_from_both_data_stores"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_request_binding.py::CaptureRequestBinding::test_parent_identity_generation_and_database_mismatches_are_rejected",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_request_binding.CaptureRequestBinding::test_parent_identity_generation_and_database_mismatches_are_rejected"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_request_binding.py::CaptureRequestBinding::test_selected_new_full_replaces_all_stale_parent_inputs_without_mutating_source",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_request_binding.CaptureRequestBinding::test_selected_new_full_replaces_all_stale_parent_inputs_without_mutating_source"
+    },
+    {
+      "nodeId": "scripts/tests/test_capture_request_binding.py::CaptureRequestBinding::test_wrong_source_or_selected_parent_is_rejected",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_capture_request_binding.CaptureRequestBinding::test_wrong_source_or_selected_parent_is_rejected"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_mysql_scheduler.py::test_disabled_dedicated_sql_validator_is_not_relaxed_for_on_scheduler",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_mysql_scheduler::test_disabled_dedicated_sql_validator_is_not_relaxed_for_on_scheduler"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_mysql_scheduler.py::test_failed_restore_has_no_implicit_scheduler_release",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_mysql_scheduler::test_failed_restore_has_no_implicit_scheduler_release"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_mysql_scheduler.py::test_invalid_identity_or_global_state_never_mutates[readonly-1]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_mysql_scheduler::test_invalid_identity_or_global_state_never_mutates[readonly-1]"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_mysql_scheduler.py::test_invalid_identity_or_global_state_never_mutates[scheduler-UNKNOWN]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_mysql_scheduler::test_invalid_identity_or_global_state_never_mutates[scheduler-UNKNOWN]"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_mysql_scheduler.py::test_invalid_identity_or_global_state_never_mutates[superreadonly-1]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_mysql_scheduler::test_invalid_identity_or_global_state_never_mutates[superreadonly-1]"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_mysql_scheduler.py::test_invalid_identity_or_global_state_never_mutates[uuid-different]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_mysql_scheduler::test_invalid_identity_or_global_state_never_mutates[uuid-different]"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_mysql_scheduler.py::test_main_quiescence_invokes_scheduler_before_sql_and_redis_checks",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_mysql_scheduler::test_main_quiescence_invokes_scheduler_before_sql_and_redis_checks"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_mysql_scheduler.py::test_main_scheduler_is_released_only_after_other_protections",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_mysql_scheduler::test_main_scheduler_is_released_only_after_other_protections"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_mysql_scheduler.py::test_original_state_is_captured_paused_and_exactly_restored[DISABLED]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_mysql_scheduler::test_original_state_is_captured_paused_and_exactly_restored[DISABLED]"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_mysql_scheduler.py::test_original_state_is_captured_paused_and_exactly_restored[OFF]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_mysql_scheduler::test_original_state_is_captured_paused_and_exactly_restored[OFF]"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_mysql_scheduler.py::test_original_state_is_captured_paused_and_exactly_restored[ON]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_mysql_scheduler::test_original_state_is_captured_paused_and_exactly_restored[ON]"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_mysql_scheduler.py::test_other_application_schema_blocks_global_scheduler_control",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_mysql_scheduler::test_other_application_schema_blocks_global_scheduler_control"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_mysql_scheduler.py::test_pause_waits_for_actual_mysql_event_thread_exit",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_mysql_scheduler::test_pause_waits_for_actual_mysql_event_thread_exit"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_mysql_scheduler.py::test_paused_retained_failure_preserves_first_original_state_across_retry",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_mysql_scheduler::test_paused_retained_failure_preserves_first_original_state_across_retry"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_mysql_scheduler.py::test_protection_release_error_never_enables_scheduler",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_mysql_scheduler::test_protection_release_error_never_enables_scheduler"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_mysql_scheduler.py::test_release_transport_error_repauses_before_propagating",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_mysql_scheduler::test_release_transport_error_repauses_before_propagating"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_mysql_scheduler.py::test_retained_protection_handoff_verifies_every_protection_before_release",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_mysql_scheduler::test_retained_protection_handoff_verifies_every_protection_before_release"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_mysql_scheduler.py::test_running_work_blocks_destructive_continuation_and_retains_pause[transactions]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_mysql_scheduler::test_running_work_blocks_destructive_continuation_and_retains_pause[transactions]"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_mysql_scheduler.py::test_running_work_blocks_destructive_continuation_and_retains_pause[workers]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_mysql_scheduler::test_running_work_blocks_destructive_continuation_and_retains_pause[workers]"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_mysql_scheduler.py::test_state_drift_and_journal_replacement_are_rejected",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_mysql_scheduler::test_state_drift_and_journal_replacement_are_rejected"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_published_endpoint.py::test_fence_or_writer_quiescence_failure_precedes_destructive_sql[fence]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_published_endpoint::test_fence_or_writer_quiescence_failure_precedes_destructive_sql[fence]"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_published_endpoint.py::test_fence_or_writer_quiescence_failure_precedes_destructive_sql[quiescence]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_published_endpoint::test_fence_or_writer_quiescence_failure_precedes_destructive_sql[quiescence]"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_published_endpoint.py::test_minio_host_endpoint_uses_exact_publication_and_full_port_protection",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_published_endpoint::test_minio_host_endpoint_uses_exact_publication_and_full_port_protection"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_published_endpoint.py::test_published_container_can_stop_and_must_rejoin_the_actual_registered_bridge",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_published_endpoint::test_published_container_can_stop_and_must_rejoin_the_actual_registered_bridge"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_published_endpoint.py::test_published_contract_cannot_widen_the_original_scope[foreign-service]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_published_endpoint::test_published_contract_cannot_widen_the_original_scope[foreign-service]"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_published_endpoint.py::test_published_contract_cannot_widen_the_original_scope[foreign-writer]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_published_endpoint::test_published_contract_cannot_widen_the_original_scope[foreign-writer]"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_published_endpoint.py::test_published_contract_cannot_widen_the_original_scope[ipv6-binding]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_published_endpoint::test_published_contract_cannot_widen_the_original_scope[ipv6-binding]"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_published_endpoint.py::test_published_contract_cannot_widen_the_original_scope[missing-console-fence]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_published_endpoint::test_published_contract_cannot_widen_the_original_scope[missing-console-fence]"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_published_endpoint.py::test_published_contract_cannot_widen_the_original_scope[partial-binding]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_published_endpoint::test_published_contract_cannot_widen_the_original_scope[partial-binding]"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_published_endpoint.py::test_published_contract_cannot_widen_the_original_scope[port]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_published_endpoint::test_published_contract_cannot_widen_the_original_scope[port]"
+    },
+    {
+      "nodeId": "scripts/tests/test_main_published_endpoint.py::test_published_contract_cannot_widen_the_original_scope[wildcard-client]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_main_published_endpoint::test_published_contract_cannot_widen_the_original_scope[wildcard-client]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_begin_rejects_unbound_or_duplicated_evidence[duplicate]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_begin_rejects_unbound_or_duplicated_evidence[duplicate]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_begin_rejects_unbound_or_duplicated_evidence[foreign-operation]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_begin_rejects_unbound_or_duplicated_evidence[foreign-operation]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_begin_rejects_unbound_or_duplicated_evidence[foreign-path]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_begin_rejects_unbound_or_duplicated_evidence[foreign-path]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_begin_rejects_unbound_or_duplicated_evidence[foreign-view]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_begin_rejects_unbound_or_duplicated_evidence[foreign-view]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_caller_cannot_mutate_fixed_input_or_returned_configuration",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_caller_cannot_mutate_fixed_input_or_returned_configuration"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_close_is_idempotent_releases_resources_and_disables_execution",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_close_is_idempotent_releases_resources_and_disables_execution"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_constructor_requires_this_operation_replacing[FAILED_RETAINED]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_constructor_requires_this_operation_replacing[FAILED_RETAINED]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_constructor_requires_this_operation_replacing[READY]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_constructor_requires_this_operation_replacing[READY]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_constructor_requires_this_operation_replacing[SUCCEEDED]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_constructor_requires_this_operation_replacing[SUCCEEDED]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_constructor_requires_this_operation_replacing[foreign]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_constructor_requires_this_operation_replacing[foreign]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_context_entry_failure_releases_all_leases_without_waiting_for_exit",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_context_entry_failure_releases_all_leases_without_waiting_for_exit"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_each_view_guard_requires_original_physical_exclusive_lock[closed]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_each_view_guard_requires_original_physical_exclusive_lock[closed]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_each_view_guard_requires_original_physical_exclusive_lock[released]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_each_view_guard_requires_original_physical_exclusive_lock[released]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_each_view_guard_requires_original_physical_exclusive_lock[replaced]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_each_view_guard_requires_original_physical_exclusive_lock[replaced]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_each_view_guard_requires_original_physical_exclusive_lock[wrong-file]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_each_view_guard_requires_original_physical_exclusive_lock[wrong-file]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_epoch_completion_or_new_event_blocks_all_old_commands",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_epoch_completion_or_new_event_blocks_all_old_commands"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_external_guard_failure_propagates_and_partial_construction_closes_leases",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_external_guard_failure_propagates_and_partial_construction_closes_leases"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_finished_evidence_cannot_be_overwritten_or_closed_twice",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_finished_evidence_cannot_be_overwritten_or_closed_twice"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[active.json]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[active.json]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[configuration.json]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[configuration.json]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[program-context.json]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[program-context.json]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[program-execution-binding.json]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[program-execution-binding.json]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[request.json]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[request.json]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[resource-reservation.json]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[resource-reservation.json]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[target.json]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_metadata_changes_after_admission_fail_even_when_original_bytes_restored[target.json]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_native_evidence_combines_phases_and_pending_unknown_without_losing_last_exit",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_native_evidence_combines_phases_and_pending_unknown_without_losing_last_exit"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_preparation_binds_full_owner_before_use_and_preserves_originals",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_preparation_binds_full_owner_before_use_and_preserves_originals"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_preparation_rejects_any_full_configuration_change[credential]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_preparation_rejects_any_full_configuration_change[credential]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_preparation_rejects_any_full_configuration_change[database]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_preparation_rejects_any_full_configuration_change[database]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_preparation_rejects_any_full_configuration_change[other-target]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_preparation_rejects_any_full_configuration_change[other-target]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_preparation_rejects_any_full_configuration_change[runtime]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_preparation_rejects_any_full_configuration_change[runtime]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_preparation_rejects_any_full_configuration_change[unrelated]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_preparation_rejects_any_full_configuration_change[unrelated]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_published_generation_without_stage_invalidates_old_view",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_published_generation_without_stage_invalidates_old_view"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_same_budget_is_never_reset_or_swallowed[begin]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_same_budget_is_never_reset_or_swallowed[begin]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_same_budget_is_never_reset_or_swallowed[constructor]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_same_budget_is_never_reset_or_swallowed[constructor]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_same_budget_is_never_reset_or_swallowed[guard]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_same_budget_is_never_reset_or_swallowed[guard]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_same_budget_is_never_reset_or_swallowed[stage]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_same_budget_is_never_reset_or_swallowed[stage]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_same_budget_is_never_reset_or_swallowed[view]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_same_budget_is_never_reset_or_swallowed[view]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_stage_is_monotonic_and_restore_requires_exact_runtime_configuration",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_stage_is_monotonic_and_restore_requires_exact_runtime_configuration"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_stage_requires_every_invocation_succeeded_without_discarding_failures[FAILED_RETAINED]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_stage_requires_every_invocation_succeeded_without_discarding_failures[FAILED_RETAINED]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_stage_requires_every_invocation_succeeded_without_discarding_failures[TERMINAL_UNKNOWN]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_stage_requires_every_invocation_succeeded_without_discarding_failures[TERMINAL_UNKNOWN]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_stage_requires_every_invocation_succeeded_without_discarding_failures[pending]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_stage_requires_every_invocation_succeeded_without_discarding_failures[pending]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_terminal_cannot_replace_unrelated_invocation[action]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_terminal_cannot_replace_unrelated_invocation[action]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_terminal_cannot_replace_unrelated_invocation[argvSha256]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_terminal_cannot_replace_unrelated_invocation[argvSha256]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_terminal_cannot_replace_unrelated_invocation[exit]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_terminal_cannot_replace_unrelated_invocation[exit]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_terminal_cannot_replace_unrelated_invocation[mutation]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_terminal_cannot_replace_unrelated_invocation[mutation]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_terminal_cannot_replace_unrelated_invocation[operationId]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_terminal_cannot_replace_unrelated_invocation[operationId]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_terminal_cannot_replace_unrelated_invocation[path]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_terminal_cannot_replace_unrelated_invocation[path]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_terminal_cannot_replace_unrelated_invocation[startedAt]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_terminal_cannot_replace_unrelated_invocation[startedAt]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_timeout_or_lost_execution_lock_does_not_discard_terminal_evidence",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_timeout_or_lost_execution_lock_does_not_discard_terminal_evidence"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_unsettled_invocation_blocks_next_dispatch_but_not_its_own_guard_or_evidence[TERMINAL_UNKNOWN]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_unsettled_invocation_blocks_next_dispatch_but_not_its_own_guard_or_evidence[TERMINAL_UNKNOWN]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_native.py::test_unsettled_invocation_blocks_next_dispatch_but_not_its_own_guard_or_evidence[pending]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_native::test_unsettled_invocation_blocks_next_dispatch_but_not_its_own_guard_or_evidence[pending]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_actual_credential_and_protection_program_pin_drift_blocks_transport[credential]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_actual_credential_and_protection_program_pin_drift_blocks_transport[credential]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_actual_credential_and_protection_program_pin_drift_blocks_transport[fence-program]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_actual_credential_and_protection_program_pin_drift_blocks_transport[fence-program]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_actual_credential_and_protection_program_pin_drift_blocks_transport[mount-program]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_actual_credential_and_protection_program_pin_drift_blocks_transport[mount-program]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_another_real_context_cannot_borrow_the_original_custody",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_another_real_context_cannot_borrow_the_original_custody"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_captured_protection_object_is_bound_to_same_native_and_phase_on_every_call",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_captured_protection_object_is_bound_to_same_native_and_phase_on_every_call"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_changed_native_cannot_borrow_protection_transport[budget]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_changed_native_cannot_borrow_protection_transport[budget]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_changed_native_cannot_borrow_protection_transport[mysql-id]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_changed_native_cannot_borrow_protection_transport[mysql-id]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_changed_native_cannot_borrow_protection_transport[native-config]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_changed_native_cannot_borrow_protection_transport[native-config]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_changed_native_cannot_borrow_protection_transport[policy]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_changed_native_cannot_borrow_protection_transport[policy]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_changed_native_cannot_borrow_protection_transport[request]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_changed_native_cannot_borrow_protection_transport[request]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_changed_native_cannot_borrow_protection_transport[service-cache]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_changed_native_cannot_borrow_protection_transport[service-cache]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_changed_native_cannot_borrow_protection_transport[source]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_changed_native_cannot_borrow_protection_transport[source]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_custody_cannot_be_created_from_restore_view",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_custody_cannot_be_created_from_restore_view"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_duck_typed_native_view_has_no_protection_authority",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_duck_typed_native_view_has_no_protection_authority"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_lock_loss_and_closed_context_cannot_release_protection",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_lock_loss_and_closed_context_cannot_release_protection"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_old_preparation_retains_no_command_or_protection_exception_after_stage",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_old_preparation_retains_no_command_or_protection_exception_after_stage"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_original_journal_drift_is_rejected_before_transport[active]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_original_journal_drift_is_rejected_before_transport[active]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_original_journal_drift_is_rejected_before_transport[intent]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_original_journal_drift_is_rejected_before_transport[intent]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_original_journal_drift_is_rejected_before_transport[journal]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_original_journal_drift_is_rejected_before_transport[journal]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_protection_views_expose_no_general_command_query_or_mutable_scope",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_protection_views_expose_no_general_command_query_or_mutable_scope"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_real_context_original_protections_survive_stage_and_release_in_original_order",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_real_context_original_protections_survive_stage_and_release_in_original_order"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_release_failure_preserves_prior_steps_and_does_not_release_later_protections[archive]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_release_failure_preserves_prior_steps_and_does_not_release_later_protections[archive]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_release_failure_preserves_prior_steps_and_does_not_release_later_protections[fence]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_release_failure_preserves_prior_steps_and_does_not_release_later_protections[fence]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_release_failure_preserves_prior_steps_and_does_not_release_later_protections[scheduler]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_release_failure_preserves_prior_steps_and_does_not_release_later_protections[scheduler]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_program_protection.py::test_release_never_installs_again_or_runs_out_of_order",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_program_protection::test_release_never_installs_again_or_runs_out_of_order"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_target_capture.py::test_active_capture_rejects_barrier_and_original_journal_drift[journal]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_target_capture::test_active_capture_rejects_barrier_and_original_journal_drift[journal]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_target_capture.py::test_active_capture_rejects_barrier_and_original_journal_drift[readonly]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_target_capture::test_active_capture_rejects_barrier_and_original_journal_drift[readonly]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_target_capture.py::test_active_capture_rejects_barrier_and_original_journal_drift[scheduler]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_target_capture::test_active_capture_rejects_barrier_and_original_journal_drift[scheduler]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_target_capture.py::test_active_capture_rejects_barrier_and_original_journal_drift[transactions]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_target_capture::test_active_capture_rejects_barrier_and_original_journal_drift[transactions]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_target_capture.py::test_active_capture_rejects_barrier_and_original_journal_drift[uuid]",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_target_capture::test_active_capture_rejects_barrier_and_original_journal_drift[uuid]"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_target_capture.py::test_actual_lock_loss_blocks_capture_before_any_sql_dispatch",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_target_capture::test_actual_lock_loss_blocks_capture_before_any_sql_dispatch"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_target_capture.py::test_capture_close_never_restores_flags_or_releases_or_replays",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_target_capture::test_capture_close_never_restores_flags_or_releases_or_replays"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_target_capture.py::test_capture_lease_is_single_and_blocks_stage_without_preservation_proof",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_target_capture::test_capture_lease_is_single_and_blocks_stage_without_preservation_proof"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_target_capture.py::test_capture_lease_requires_installed_original_protections_before_first_sql",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_target_capture::test_capture_lease_requires_installed_original_protections_before_first_sql"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_target_capture.py::test_main_session_rejects_duck_typed_view_before_output_or_transport",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_target_capture::test_main_session_rejects_duck_typed_view_before_output_or_transport"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_target_capture.py::test_ordinary_scheduler_still_refuses_one_one_flags",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_target_capture::test_ordinary_scheduler_still_refuses_one_one_flags"
+    },
+    {
+      "nodeId": "scripts/tests/test_recovery_target_capture.py::test_typed_capture_fence_keeps_three_original_journals_and_paused_scheduler",
+      "evidenceReport": "capture-components-linux-regression-20261110-r8.json",
+      "entry": "r8-actual-fresh-process-source-entry",
+      "junitIdentity": "scripts.tests.test_recovery_target_capture::test_typed_capture_fence_keeps_three_original_journals_and_paused_scheduler"
+    }
+  ],
+  "sourceRawLogPins": [
+    {
+      "file": "capture-components-linux-regression-20261110-r8.log",
+      "bytes": 68943,
+      "sha256": "63e0b8989e350db24398de33fbbf90e3691d260ed64035010440c61ad7a704ef"
+    },
+    {
+      "file": "capture-archive-scope-linux-20261110-r9.log",
+      "bytes": 4939,
+      "sha256": "704b3e008ff6658e7ab2d6976d5dec03613e07847dd6b5597828f85843287fc7"
+    }
+  ],
+  "testsRerun": false
+}

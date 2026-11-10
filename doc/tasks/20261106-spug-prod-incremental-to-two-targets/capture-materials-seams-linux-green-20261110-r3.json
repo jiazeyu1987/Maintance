@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "TaskCaptureMaterialsSeamsVerification/v1",
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--name",
+    "spug-capture-materials-seams-linux-green-20261110-r3",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--memory",
+    "512m",
+    "--cpus",
+    "1",
+    "--pids-limit",
+    "128",
+    "--tmpfs",
+    "/work:rw,exec,nosuid,nodev,size=256m",
+    "--tmpfs",
+    "/tmp:rw,nosuid,nodev,size=128m",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\capture-materials-seams-linux-green-20261110-r3.tar,target=/inputs/source.tar,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\capture-materials-seams-linux-green-20261110-r3-runner.py,target=/inputs/runner.py,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\linux-test-wheels,target=/inputs/wheels,readonly",
+    "sha256:14a4933e6cef421424f7a66d89a3f4eafcbd0d90e0a822251f298e05132dc735",
+    "python",
+    "-B",
+    "/inputs/runner.py"
+  ],
+  "exitCode": 0,
+  "counts": {
+    "tests": 49,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "elapsedSeconds": 16.438,
+  "sourceSnapshotPin": {
+    "file": "capture-materials-seams-linux-green-20261110-r3.tar",
+    "bytes": 7219200,
+    "sha256": "b26f971e5fb8a478dc01e8a784b2a64bc72873015d6515558bfb273530491fe4"
+  },
+  "rawLogPin": {
+    "file": "capture-materials-seams-linux-green-20261110-r3.log",
+    "bytes": 11765,
+    "sha256": "8ca263f90306d75c1d920c4194d15459fdc9aa8f1d4dad2cff199422ec013f1b"
+  },
+  "hostInputsUnchanged": true,
+  "runtimeInputsUnchanged": true,
+  "containerRemoved": true,
+  "remoteActions": 0,
+  "businessWrites": 0
+}

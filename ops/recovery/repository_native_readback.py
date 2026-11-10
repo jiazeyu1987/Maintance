@@ -6,7 +6,7 @@ import re
 import stat
 
 from repository_records import (absolute, document, exact, pin_file, read_pin,
-                                require, safe_path, write_new)
+                                require, safe_path, validate_pin, write_new)
 from repository_host_view import logical
 
 
@@ -210,3 +210,70 @@ class SmbReadback:
 
     def __exit__(self, kind, value, trace):
         self.close()
+
+
+def read_verified(self, repository_path, expected=None, retain=False):
+    self.check()
+    remote = self.remote(repository_path)
+    before = self.client.stat(remote, follow_symlinks=False, **self.kwargs)
+    require(stat.S_ISREG(before.st_mode) and not (getattr(before, 'st_file_attributes', 0) & 1024),
+            'REPOSITORY_SMB_FILE_REQUIRED')
+    if retain:
+        require(before.st_size <= self.configuration['maximumRecordBytes'] and
+                self.record_bytes + before.st_size <= self.configuration['maximumTotalRecordBytes'],
+                'REPOSITORY_READBACK_RECORD_BUDGET_EXCEEDED')
+    digest, length, raw = hashlib.sha256(), 0, bytearray()
+    with self.client.open_file(remote, mode='rb', share_access='r', **self.kwargs) as stream:
+        while True:
+            self.check()
+            chunk = stream.read(1024 * 1024)
+            if not chunk:
+                break
+            length += len(chunk)
+            digest.update(chunk)
+            require(length <= before.st_size, 'REPOSITORY_SMB_INPUT_CHANGED')
+            if retain:
+                raw.extend(chunk)
+    after = self.client.stat(remote, follow_symlinks=False, **self.kwargs)
+    require((before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) ==
+            (after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns) and
+            length == before.st_size, 'REPOSITORY_SMB_INPUT_CHANGED')
+    reference = dict(path=logical(repository_path).as_posix(), bytes=length, sha256=digest.hexdigest())
+    if expected is not None:
+        require(reference == expected, 'REPOSITORY_INDEPENDENT_READBACK_MISMATCH')
+    retained = None
+    if retain:
+        path = self.records / (hashlib.sha256(repository_path.encode()).hexdigest() + '.raw')
+        with path.open('xb') as output:
+            output.write(raw)
+            output.flush()
+            os.fsync(output.fileno())
+        retained = pin_file(path, self.deadline)
+        self.record_bytes += length
+    return reference, retained
+
+class PreservationReadback(SmbReadback):
+    """Explicit strict MAIN entry; the default LIGHT reader remains unchanged."""
+    read = read_verified
+
+    def __init__(self, configuration, deadline):
+        # The LIGHT read_pin intentionally does not compare hashes. Prove the
+        # selected auth/client bytes before the original strict constructor.
+        from recovery_backup_epoch import _read_file
+        for reference, limit in [(configuration['credentialPin'], 65536),
+                *((p, 32*1024*1024) for p in configuration['libraryPins'])]:
+            validate_pin(reference)
+            deadline.check()
+            _, actual = _read_file(reference['path'], limit)
+            require(actual == reference, 'REPOSITORY_SMB_INPUT_PIN_CHANGED')
+        try:
+            super().__init__(configuration, deadline, verify_environment=True)
+        except BaseException as error:
+            # __enter__ was never reached, so close the constructor's own cache
+            # here. Keep the original rejection and report uncertain cleanup.
+            if hasattr(self,'client') and hasattr(self,'cache'):
+                try:self.close()
+                except BaseException as cleanup:
+                    error.cleanupError=cleanup
+                    error.unknown=True
+            raise

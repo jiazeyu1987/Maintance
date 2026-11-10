@@ -36,10 +36,30 @@ def parse_rows(raw):
     except UnicodeError:raise FormalSnapshotError('FORMAL_SCHEMA_TRANSPORT_INVALID') from None
 
 
-def _bounded_process(command, input_bytes, limit, seconds, *, sink=None):
+def _bounded_process(command, input_bytes, limit, seconds, *, sink=None, process_observer=None):
     """Deadline includes blocked stdin; remote coreutils timeout is also required."""
+    if process_observer is not None:process_observer.before(command)
     try:process=subprocess.Popen(command,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     except OSError:raise FormalSnapshotError('FORMAL_SCHEMA_CLIENT_UNAVAILABLE') from None
+    if process_observer is not None:
+        from formal_capture_budget import active_budget
+        from formal_snapshot_linux import _drain_observed_process
+        output=bytearray();budget=active_budget.get()
+        deadline=time.monotonic()+seconds
+        if budget is not None:deadline=min(deadline,budget.deadline)
+        class Output:
+            total=0
+            def write(self,chunk):
+                require(self.total+len(chunk)<=limit,'FORMAL_SCHEMA_STREAM_LIMIT_OR_IO')
+                if sink is None:output.extend(chunk)
+                else:sink.write(chunk)
+                self.total+=len(chunk)
+        def check():
+            require(time.monotonic()<deadline,'FORMAL_SCHEMA_QUERY_TIMEOUT')
+            if budget is not None:budget.check()
+        _drain_observed_process(process,input_bytes,Output(),guard=check,deadline=deadline,
+            observer=process_observer,argv=command)
+        return bytes(output)
     output=bytearray();failed=threading.Event();errors=[];stderr_seen=[]
     def read_output():
         try:
@@ -110,7 +130,8 @@ class SchemaMySql(PrivateDockerMySql):
         seconds=self.query_seconds()
         command=self._command('timeout --signal=TERM --kill-after=5 '+str(math.ceil(seconds))+'s mysql',
             ['-uroot','--batch','--skip-column-names','--default-character-set=utf8mb4','--binary-as-hex'])
-        rows=parse_rows(_bounded_process(command,(self._password+'\n'+wrapped).encode(),max_bytes,seconds))
+        rows=parse_rows(_bounded_process(command,(self._password+'\n'+wrapped).encode(),max_bytes,seconds,
+            process_observer=self._process_observer))
         require(len(rows)>=3 and rows[0]==rows[-1]==[expected_uuid] and rows[-2]==['0'],
                 'FORMAL_SCHEMA_IDENTITY_OR_WARNING')
         return rows[1:-2]
