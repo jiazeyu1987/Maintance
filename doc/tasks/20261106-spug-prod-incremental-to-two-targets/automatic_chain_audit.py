@@ -15,6 +15,8 @@ import stat
 import sys
 import time
 
+MAIN_SPEC_SCHEMA = 'MainProgramAutomaticBackupChainAuditSpec/v1'
+
 
 def need(condition, code):
     if not condition:
@@ -127,9 +129,10 @@ def check_reader_contract(caller_raw, reader_raw):
 def verify_package(reader, spec):
     engine = Path(spec['engine'])
     version = reader.local(engine / 'package.json')
+    count = 147 if spec.get('schemaVersion') == MAIN_SPEC_SCHEMA else 130
     need(version['variant'] == 'standard' and version['fileVerification'] is True and
-         version['payloadContentVerification'] is True and len(version['files']) == spec['fileCount'] == 130,
-         'AUDIT_STANDARD_130_REQUIRED')
+         version['payloadContentVerification'] is True and len(version['files']) == spec['fileCount'] == count,
+         'AUDIT_MAIN_STANDARD_147_REQUIRED' if count == 147 else 'AUDIT_STANDARD_130_REQUIRED')
     need(version['files'] == spec['files'] and version['packageSha256'] == spec['fileManifestSha256'] ==
          hashlib.sha256(canonical(version['files'])).hexdigest(), 'AUDIT_PACKAGE_MANIFEST_CHANGED')
     for name, digest in version['files'].items():
@@ -140,10 +143,25 @@ def verify_package(reader, spec):
     caller = reader.raw(reader.local_pin(engine / 'common/repository_minimal.py'))
     full_reader = reader.raw(reader.local_pin(engine / 'common/repository_native_readback.py'))
     check_reader_contract(caller, full_reader)
-    return dict(engine=engine.as_posix(), variant='standard', fileCount=130,
+    return dict(engine=engine.as_posix(), variant='standard', fileCount=count,
         fileManifestSha256=version['packageSha256'], allInstalledFilesShaVerified=True,
         repositoryProgramPin=reader.local_pin(engine / 'common/repository_minimal.py'),
         fullReaderPin=reader.local_pin(engine / 'common/repository_native_readback.py'))
+
+
+def verify_main_configuration(reader, spec, config, request):
+    if spec.get('schemaVersion') != MAIN_SPEC_SCHEMA:
+        return
+    deployment = spec['deployment']; source = request['sourceConfigRef']
+    owner_pin = config['sourceConfigurations'][source]
+    need(owner_pin == deployment['sourceOwnerConfigurationPin'], 'AUDIT_MAIN_OWNER_CHANGED')
+    owner = reader.document(owner_pin)
+    path = owner['sources'][source]['configurationPath']
+    need(reader.local_pin(path) == deployment['sourceCaptureConfigurationPin'], 'AUDIT_MAIN_CAPTURE_CHANGED')
+    inputs = reader.local(Path(config['taskRoot'])/'request-configurations'/request['operationId']/'request-inputs.json')
+    need(inputs['ownerConfigurationPin'] == deployment['sourceOwnerConfigurationPin'] and
+         inputs['captureConfigurationPin'] == deployment['sourceCaptureConfigurationPin'],
+         'AUDIT_MAIN_REQUEST_CONFIGURATION_CHANGED')
 
 
 def read_chain(reader, config, source, references):
@@ -315,6 +333,7 @@ def audit(spec):
     reader = AuditReader(seconds=spec.get('seconds', 120))
     package = verify_package(reader, spec)
     config = reader.document(spec['controlConfigurationPin'])
+    verify_main_configuration(reader, spec, config, spec['request'])
     need(config['programPins']['repository'] == reader.local_pin(Path(spec['engine']) / 'repository_entry.py'),
          'AUDIT_OWNER_PROGRAM_NOT_PACKAGED')
     sys.path[:0] = config['environment']['PYTHONPATH'].split(os.pathsep)
